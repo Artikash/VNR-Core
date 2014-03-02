@@ -1,0 +1,42 @@
+# tr.pro
+# 2/17/2013 jichi
+
+CODECFORTR = UTF-8
+TRANSLATIONS = tr/zh_CN.ts tr/zh_TW.ts
+SOURCES = \
+  dialogs/chart.py \
+  dialogs/gameedit.py \
+  dialogs/help.py \
+  dialogs/hookprefs.py \
+  dialogs/gamewiz.py \
+  dialogs/prompt.py \
+  dialogs/info.py \
+  dialogs/mttest.py \
+  dialogs//refinput.py \
+  dialogs/subedit.py \
+  dialogs/_prefs.py \
+  dialogs/prefs.py \
+  dialogs/terminput.py \
+  dialogs/textprefs.py \
+  dialogs/ytinput.py \
+  managers/coffeebean.py \
+  managers/dataman.py \
+  managers/dictman.py \
+  managers/dicts.py \
+  managers/gameman.py \
+  managers/netman.py \
+  managers/rpcman.py \
+  managers/textman.py \
+  managers/_trman.py \
+  managers/_ttsman.py \
+  managers/ttsman.py \
+  views/gameview.py \
+  views/userview.py \
+  qml/kagami.py \
+  widgets/textspy.py \
+  utilities/procutil.py \
+  utilities/winutil.py \
+  i18n.py \
+  main.py
+
+# EOF

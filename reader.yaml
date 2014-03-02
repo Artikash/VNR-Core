@@ -1,0 +1,96 @@
+# reader.yaml
+# 11/1/2012 jichi
+#
+# Difference between 'location' and 'path'
+# See: http://stackoverflow.com/questions/7195717/what-is-the-difference-between-the-pathelement-attributes-path-and-location
+
+# Application
+version:
+  id: 3
+  name: reader
+  organization: sakuradite
+  domain: sakuradite.org
+  timestamp: 1393493964
+
+app:
+  #debug: true
+  debug: false
+  saveSettingsInterval:     300         # every 5 minutes
+  updateTermsInterval:      3600 * 8    # every 8 hours
+  greetingInterval:         3600 * 10   # every 10 hours
+  updateDigestsInterval:    3600 * 18   # every 18 hours
+  updateInterval:           3600 * 24   # every 1 day
+  updateCommentsInterval:   86400 * 1   # every 1 day
+  updateRefsInterval:       86400 * 1   # every 1 day
+  nameExpireTime:           86400 * 5   # every 5 days, mecab name
+  refExpireTime:            86400 * 7   # every 7 days, reference
+
+# Environment variables
+env:
+  pythonpath:
+  - $PWD/py/apps/reader/dialogs
+  - $PWD/py/apps/reader/managers
+  - $PWD/py/apps/reader/qml
+  - $PWD/py/apps/reader/utilities
+  - $PWD/py/apps/reader/views
+  - $PWD/py/apps/reader/widgets
+
+qt:
+  metaCallPort: 6103    # IPC QMetaCall listening port (6100 + app.id)
+  threadCount:  1000    # QtCore.QThreadPool.maxThreadCount
+  threadTimeout: 6000   # QThreadPool.waitForDone timeout in msecs
+  #quitTimeout: 3000     # time taken for closing the app
+
+py:
+  socketTimeout: 5000 # socket.defaulttimeout, default is None
+  recursionLimit: 10000 # sys.recursionlimit, default is 1000. See: http://stackoverflow.com/questions/4378786/python-exception-in-exception
+  #stackSize: 67108864 # i.e. 64MB. threading.stack_size, default is 1MB. See: http://stackoverflow.com/questions/2917210/python-what-is-the-hard-recursion-limit-for-linux-mac-and-windows
+
+settings:
+  # Factors:
+  textCapacity: 301 # 150 words
+  zoomFactor: 1.33
+  widthFactor: 0.7
+  shadowOpacity: 0.7
+  # Grimoire colors:
+  fontColor: snow #'#fffafa'
+  shadowColor: black
+  #textColor: '#aa007f' # dark magenta
+  #textColor: '#800000' # red
+  textColor: '#000080'  # blue
+  #translationColor: '#008b8b' # deep green
+  #subtitleColor: '#2d5f5f' # dark green
+  #subtitleColor: '#cccc00' # yellow
+  subtitleColor: '#aa00ff' # purple
+  commentColor: '#2d5f5f' # dark green
+  danmakuColor: '#2d5f5f' # dark green
+  # Translator colors:
+  bingColor: '#14ff14' # green
+  googleColor: '#0055ff' # blue
+  infoseekColor: '#ff5500' # orange
+  exciteColor: '#000000' # black
+  baiduColor: '#800080' # purple
+  #youdaoColor: '#555500' # yellow
+  jbeijingColor: '#0055ff' # blue
+  dreyeColor: '#555500' # yellow
+  ezTransColor: '#0055ff' # blue
+  atlasColor: '#555500' # orange
+  lecColor: '#0055ff'   # blue
+  lougoColor: '#000000' # black
+
+# User profile
+user:
+  profiles:
+    mac:    "$HOME/Library/Application Support/org.sakuradite.reader"
+    win:    $APPDATA/org.sakuradite.reader  # ~/AppData/Roaming/org.sakuradite.reader
+    posix:  $HOME/.sakuradite/reader
+
+# Translations
+tr:
+  - $PWD/py/libs/sakurakit/tr
+  - $PWD/py/apps/reader/mytr
+  - $PWD/py/apps/reader/tr
+  - $PWD/qml/reader/tr
+  #- $PWD/js/reader/tr
+
+# EOF

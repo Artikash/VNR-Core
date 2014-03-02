@@ -1,0 +1,455 @@
+; game.haml
+; 6/29/2013 jichi
+; @param  title  unicode
+; @param  game  dataman.GameInfo
+; @param  tr  sktr.tr_
+; @param  i18n  i18n
+; @param  rc  rc
+; @param  py  py
+; @param  jlp  MeCabManager
+; @param  settings  Settings
+; @param  mainland  bool
+; @param  onlne  bool
+; @param  proxy  proxy.ProxyManager
+; @param  cache  cacheman.Cacher
+;!!! 5
+%html(lang="ja")
+  %head
+    -for it in 'bootstrap.css', 'metro.css', 'font-awesome.css', 'dragdealer.css', 'game.css'
+      %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
+    -if game.getchu and (game.getchu.hasDescriptions() or game.getchu.review)
+      %link(rel="stylesheet",href="#{rc.cdn_url('getchu.css')}")
+    -elif game.amazon and game.amazon.hasDescriptions()
+      %link(rel="stylesheet",href="#{rc.cdn_url('amazon.css')}")
+    -if game and game.gyutto and game.gyutto.review
+      %link(rel="stylesheet",href="#{rc.cdn_url('gyutto.css')}")
+    -if game and game.dlsite and game.dlsite.review
+      %link(rel="stylesheet",href="#{rc.cdn_url('dlsite.css')}")
+    -if game and game.dmmItem and game.dmmItem.review
+      %link(rel="stylesheet",href="#{rc.cdn_url('dmm.css')}")
+    :css
+      body {
+        margin: 18px 9px;
+        font-family: youyuan,geneva,arial,helvetica,clean,sans-serif;
+        background-repeat: repeat;
+        background-image: url("#{rc.image_url('background').toString()}");
+      }
+
+    -if mainland
+      :javascript
+        MAINLAND = true;
+    -else
+      :javascript
+        MAINLAND = false;
+
+  -if not game
+    %body
+      -if title
+        %center: %b.ja: #{'「' + title + '」'|e}
+      .blocker: #{tr('Empty') + ' ><'}
+  -else
+    %body(data-id="#{game.itemId}")
+      %p
+        -if game.homepage
+          %a(href="#{game.homepage}",title="公式HP: #{game.homepage}")
+            #{tr('Title')}:
+        -else
+           %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=公式HP　#{game.title|e}",title="Google: 公式HP+#{game.title|e}")
+             #{tr('Title')}:
+        %b.ruby: #{jlp.toRuby(game.title)}
+        -if game.upcoming
+          %b.text-error: (未発売)
+        -elif game.recent
+          %b.text-error: (新作)
+      %p
+        -if game.romajiTitle
+          %a.romaji(href="#{proxy.google_search}?#hl=ja&safe=off&q=#{game.romajiTitle|e}",title="Google: #{game.romajiTitle|e}")
+            #{tr('Romaji')}:
+            %b: #{game.romajiTitle|e}
+        -else
+          #{tr('Romaji')}:
+          %span.muted (#{tr('unknown')})
+      .layout-body
+        -if game.image
+          ;.cover.pull-right
+          %a(href="#{game.imageUrl}",title="表紙")
+            %img.cover.pull-right.img-rounded(src="#{game.imageUrl}")
+        -else
+          %p.pull-right 表紙: (#{tr('unknown')})
+        %p.metro
+          #{tr('Save')}:
+          -if game.itemId
+            %button.btn.btn-mini.btn-dl-img(title="画像"")
+              %i.icon-save
+              画像
+            -if online and game.hasVideos()
+              %button.btn.btn-mini.btn-dl-yt(title="YouTube動画")
+                %i.icon-download-alt
+                動画
+          -else
+            %span.muted (#{tr('none')})
+        %p
+          #{tr('Release')}:
+          -if game.date
+            %b #{i18n.timestamp2date(game.date)}
+          -else
+            %span.muted (#{tr('unknown')})
+        %p
+          #{tr('Price')}:
+          -if game.price
+            -if game.price < 4000
+              %b.text-error: ￥#{game.price}
+            -else
+              %b: ￥#{game.price}
+          -else
+            %span.muted (#{tr('unknown')})
+        %p
+          -if game.brand
+            %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=公式HP　#{game.brand|e}",title="Google: 公式HP+#{game.brand|e}")
+              #{tr('Brand')}:
+            -for it in game.brand.split(',')
+              %b.ruby: #{jlp.toRuby(it)}
+          -else
+            #{tr('Brand')}:
+            %span.muted (#{tr('unknown')})
+        %p
+          -if game.series
+            %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=Wiki　アダルトゲーム　#{game.series|e}シリーズ",title="Google: Wiki+アダルトゲーム+#{game.series|e}シリーズ")
+              #{tr('Series')}:
+            %b.ruby: #{jlp.toRuby(game.series)}
+          -else
+            #{tr('Series')}:
+            %span.muted (#{tr('unknown')})
+        %p
+          -if game.slogan
+            %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=#{game.slogan|e}",title="Google: #{game.slogan|e}")
+              #{tr('Slogan')}:
+            %b.ruby: #{jlp.toRuby(game.slogan)}
+          -else
+            #{tr('Slogan')}:
+            %span.muted (#{tr('unknown')})
+        %p
+          #{tr('Genre')}:
+            -if game.doujin
+              %a.label.label-important(href="http://ja.wikipedia.org/wiki/同人",title="Wikipedia: 同人") 同人
+            -else
+              %a.label(href="http://ja.wikipedia.org/wiki/ADV",title="Wikipedia: ADV") ADV
+            -if game.genres
+              -for it in game.genres
+                %a.label.label-important(href="http://ja.wikipedia.org/wiki/#{it|e}",title="Wikipedia: #{it|e}") #{it|e}
+        %p
+          #{tr('Gender')}:
+          -if game.otome
+            %span.label.label-important.yomi 女性向け
+            ;%a.label.label-important(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　女性向け",title="Google画像: エロゲ+女性向け") 女性向け
+          -else
+            %span.yomi.label 男性向け
+            ;%a.label(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　男性向け",title="Google画像: エロゲ+男性向け") 男性向け
+          -if game.ecchi
+            %span.yomi.label 18禁
+            ;%a.label(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　18禁",title="Google画像: エロゲ+18禁") 18禁
+          -else
+            %span.yomi.label.label-important 一般作品
+            ;%a.label.label-important(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　一般作品",title="Google画像: エロゲ+一般作品") 一般作品
+          -if game.okazu
+            %span.yomi.label.label-inverse 抜きゲー
+            ;%a.label.label-inverse(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　抜きゲー",title="Google画像: エロゲ+抜きゲー") 抜きゲー
+          -else
+            %span.yomi.label.label-success 純愛系
+            ;%a.label.label-success(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　純愛系",title="Google画像: エロゲ+純愛系") 純愛系
+        %p
+          -if game.scape.trialUrl
+            %a(href="#{game.scape.trialUrl}",title="#{game.scape.trialUrl}")
+              体験版:
+              -if game.scape.trialH
+                %span.label.label-important Hあり
+              -else
+                %span.label H無し
+          -else
+            %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=#{game.title|e}　体験版　ダウンロード",title="Google: 体験版+ダウンロード+#{game.title|e}")
+              体験版:
+            %span.muted (#{tr('unknown')})
+        %p
+          #{tr('Links')}:
+          -for url,type in game.iterUrlsWithName()
+            %a.label(href="#{url}",title="#{url}") #{type|e}
+        %p
+          #{tr('Keywords')}:
+          -if game.tags
+            -for it in game.tags.split(',')
+              -if it == "イチオシ作品"
+                %span.yomi.label.label-important(title="#{i18n.tip(it) or jlp.toYomi(it)}") #{it}
+                ;%a.ja.label.label-important(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　#{it|e}",title="#{i18n.tip(it)|e}") #{it|e}
+              -else
+                %span.yomi.label(title="#{i18n.tip(it) or jlp.toYomi(it)}") #{it}
+                ;%a.ja.label(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　#{it|e}",title="#{i18n.tip(it)|e}") #{it|e}
+          -else
+            %span.muted (#{tr('none')})
+        %p.text-success
+          #{tr('Visits')}:
+          -if game.visitCount
+            %span.badge.badge-success: {{game.visitCount}}
+          -else
+            %span.muted (#{tr('unknown')})
+          #{tr('Subtitles')}:
+          -if game.commentCount
+            %span.badge.badge-success: {{game.commentCount}}
+          -else
+            %span.muted (#{tr('none')})
+        %p
+          -set url = proxy.google_search + "?#hl=ja&safe=off&q=ErogameScape　" + game.title if not game.scape else game.scape.url
+          %a(href="#{url}",title="ErogameScape -エロゲー批評空間-")
+            批評空間:
+          -if not game.scape.median
+            %span.muted (#{tr('unknown')})
+          -else
+            %a.badge.badge-info(href="#{url}",title="得点×点数")
+              #{game.scape.median}×#{game.scape.medianCount}
+            %a(href="#{url}",title="楽しい ÷ プレイ時間")
+              時間:
+            -if game.scape.funTime
+              %a.badge.badge-info(href="#{url}",title="楽しい ÷ プレイ時間")
+                #{game.scape.funTime}／#{game.scape.playTime}
+            -else
+              %span.muted (#{tr('unknown')})
+        %p
+          %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=#{game.title|e}",title="Google: #{game.title|e}") Google:
+          %a.label(href="#{proxy.google_search}?#hl=ja&safe=off&q=#{game.title|e}",title="Google: #{game.title|e}") Google
+          %a.label(href="#{proxy.google_search}?#hl=ja&safe=off&q=Wiki　アダルトゲーム　#{game.title|e}",title="Google: Wiki+アダルトゲーム+#{game.title|e}") Wiki
+          %a.label(href="#{proxy.google_search}?#hl=ja&tbm=vid&safe=off&q=YouTube　#{game.title|e}",title="Google動画: YouTube+#{game.title|e}") YouTube
+          %a.label(href="#{proxy.google_search}?#hl=ja&safe=off&q=redistribution.cc　#{game.title|e}",title="Google: redistribution.cc+#{game.title|e}") Redist
+          %a.label(href="#{proxy.google_search}?#hl=ja&safe=off&q=sagaoz.net　#{game.title|e}",title="Google: sagaoz.net+#{game.title|e}") SAGAO
+          %a.label(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=#{game.title|e}",title="Google画像: #{game.title|e}") 画像
+          %a.label(href="#{proxy.google_search}?#hl=ja&safe=off&q=アップデート　#{game.title|e}",title="Google: アップデート+#{game.title|e}") 更新
+          %a.label(href="#{proxy.google_search}?#hl=ja&safe=off&q=攻略　#{game.title|e}",title="Google: 攻略+#{game.title|e}") 攻略
+        %p
+          %a(href="#{proxy.twitter_search}?q=#{game.title|e}",title="Twitter: #{game.title|e}")
+            %i.icon-twitter
+            Twitter:
+          -if game.brands or game.creators
+            .section
+              ;.masonry-container
+              ; here, %div is needed instead of making label and badge display:block
+              -if game.brands
+                -for it in game.brands
+                  .brand
+                    .header: .yomi.label #{it.name}
+                    ;.header: %a.label.ja(href="#{proxy.twitter_search}?q=#{it.name|e}",title="Twitter: #{it.name|e}") #{'#' + it.name|e}
+                    -set image = cache.image(it.img) if it.img else ""
+                    -if image
+                      .body: %a(href="#{image}",title="#{it.name} (ブランド)")
+                        %img(src="#{image}")
+                    .footer: .yomi.badge.badge-info ブランド
+              -if game.creators
+                -for it in game.creators
+                  .creator
+                    .header: .yomi.label #{it.name|e}
+                    ;.header: %a.label.ja(href="#{proxy.twitter_search}?q=#{it.name|e}",title="Twitter: #{it.name|e}") @#{it.name|e}
+                    -if it.twimg or it.img
+                      -set url = cache.image(proxy.twimg_pbs + '/profile_images/' + it.twimg if it.twimg else it.img)
+                      .body: %a(href="#{url}",title="#{it.name|e}")
+                        %img.img-rounded(src="#{url}")
+                    -if it.roles
+                      .footer
+                        -for role in it.roles
+                          .yomi.badge.badge-info #{i18n.tag(role)}
+          -else
+            %span.muted (#{tr('unknown')})
+
+          ; https://dev.twitter.com/docs/embedded-timelines
+          -if online and not mainland and game.hasTwitterWidgets()
+            %center
+              -for it in game.iterTwitterWidgets()
+                %a.twitter-timeline(height="400",href="https://twitter.com/twitterapi",data-widget-id="#{it}",data-chrome="nofooter noborders transparent")
+              %script(src="#{rc.cdn_url('twitter-widgets')}")
+        %p
+          %a(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=応援バナー　#{game.title|e}",title="Google画像: 応援バナー+#{game.title|e}") Banner:
+          -if game.hasBannerImages()
+            .section
+              -for it in game.iterBannerImageUrls()
+                .banner
+                  %a(href="#{it}",title="応援バナー")
+                    %img(src="#{it}")
+          -else
+            %span.muted (#{tr('unknown')})
+        %p
+          ;-if game.getchu
+          ;  %a(href="#{game.getchu.url}",title="#{game.getchu.url}") Getchu:
+          ;-else
+          ;  %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=Getchu　#{game.title|e}",title="Google: Getchu+#{game.title|e}") Getchu:
+          %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=Wiki　登場人物　#{game.title|e}",title="Google: Wiki+登場人物+#{game.title|e}") 登場人物:
+          -if game.characters
+            .section
+              -for it in game.characters
+                .chara
+                  .header
+                    -if it.label == "主人公" or it.label == "【主人公】"
+                      .yomi.label.label-important(title="#{it.yomi}") #{it.name|e}
+                    -else
+                      .yomi.label(title="#{it.yomi}") #{it.name|e}
+                  -if it.img
+                    -set url = cache.image(it.img)
+                    .body: %a(href="#{url}",title="#{it.name|e} #{it.label|e}")
+                      %img.img-rounded(src="#{url}")
+                  .footer
+                    -if it.cv
+                      .yomi.badge.badge-info #{it.cv}
+                    -else
+                      %span.muted (CV無し)
+          -else
+            %span.muted (#{tr('unknown')})
+        %p
+          %a(href="#{proxy.google_search}?#hl=ja&tbm=vid&safe=off&q=YouTube　#{game.title|e}",title="Google動画: YouTube+#{game.title|e}")
+            %i.icon-youtube-play
+            YouTube:
+          -if game.hasVideos()
+            ;.masonry-container
+            %center.section
+              -for it in game.iterVideos()
+                .youtube(data-id="#{it.youtube}")
+                  .header
+                    %a.label(href="javascript:;",title="#{it.date}")
+                      #{it.title if py.len(it.title) <= 12 else it.title[:12] + '...'|e}
+                    -if online
+                      -if not mainland
+                        %a.btn.btn-link.btn-play(href="javascript:;",title="#{tr('Play')}")
+                          %i.icon-play
+                      %a.btn.btn-link(href="http://youtube.com/watch?v=#{it.youtube}",title="#{tr('Open')}")
+                        %i.icon-external-link
+                      %a.btn.btn-link.btn-dl(href="javascript:;",title="#{tr('Download')}")
+                        %i.icon-download-alt
+                  -set url = cache.image(proxy.ytimg_i + '/vi/' + it.youtube + '/maxresdefault.jpg')
+                  -if online
+                    %img.img-rounded(src="#{url}",title="#{it.title|e} #{it.date}")
+                  -else
+                    %a(href="#{url}",title="#{it.title|e} #{it.date}")
+                      %img.img-rounded(src="#{url}")
+          -else
+            %span.muted (#{tr('unknown')})
+        %p
+          %a(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=コミクス　#{game.title|e}",title="Google画像: コミックス+#{game.title|e}") Comics:
+          -if game.comics
+            ;.js-masonry(data-masonry-options="{'itemSelector':'.masonry-item'}")
+            ;#cg-container
+            %center.section
+              -for i,it in py.enumerate(game.comics)
+                %a(href="#{it}",title="Comics #{'#'}#{i+1}")
+                  %img.cg.img-rounded(src="#{it}")
+          -else
+            %span.muted (#{tr('unknown')})
+        %p
+          %a(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=#{game.title|e}",title="Google画像: #{game.title|e}") CG:
+          -if game.hasSampleImages()
+            ;.js-masonry(data-masonry-options="{'itemSelector':'.masonry-item'}")
+            ;#cg-container
+            %center.section
+              -for i,it in py.enumerate(game.iterSampleImageUrls())
+                %a(href="#{it}",title="CG #{'#'}#{i+1}")
+                  %img.cg.img-rounded(src="#{it}")
+          -else
+            %span.muted (#{tr('unknown')})
+        %p
+          -if game.getchu and game.getchu.hasDescriptions()
+            %a(href="#{game.getchu.url}",title="#{game.getchu.url}") 紹介:
+            .getchu.description.ruby.article
+              -for it in game.getchu.iterDescriptions()
+                #{jlp.toRuby(cache.html(it), html=True)}
+          -elif game.amazon and game.amazon.hasDescriptions()
+            %a(href="#{game.amazon.url}",title="#{game.amazon.url}") 紹介:
+            .amazon.productDescription
+              .productDescriptionSource.ruby.article
+                -for it in game.amazon.iterDescriptions()
+                  #{jlp.toRuby(cache.html(it), html=True)}
+          -elif game.dlsite and game.dlsite.description
+            %a(href="#{game.dlsite.url}",title="#{game.dlsite.url}") 紹介:
+            .dlsite.description.ruby.article
+              #{jlp.toRuby(game.dlsite.description, html=True)}
+          -elif game.dmmItem and game.dmmItem.description
+            %a(href="#{game.dmm.url}",title="#{game.dmm.url}") 紹介:
+            .dmm.description.ruby.article
+              #{jlp.toRuby(game.dmmItem.description, html=True)}
+          -else
+            %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=紹介　#{game.title|e}",title="Google: 紹介+#{game.title|e}") 紹介:
+            %span.muted (#{tr('none')})
+        %p
+          -if game.getchu
+            %a(href="#{game.getchu.url}",title="#{game.getchu.url}") Getchu:
+          -else
+            %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=Getchu.com　#{game.title|e}",title="Google: Getchu.com+#{game.title|e}") Getchu:
+          -if game.getchu and game.getchu.review
+            .getchu.review.ruby.article
+              #{jlp.toRuby(cache.html(game.getchu.review), html=True)}
+          -else
+            %span.muted (#{tr('unknown')})
+        %p
+          -if game.gyutto
+            %a(href="#{game.gyutto.url}",title="#{game.gyutto.url}") Gyutto:
+          -else
+            %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=Gyutto.com　#{game.title|e}",title="Google: Gyutto.com+#{game.title|e}") Gyutto:
+          -if game.gyutto and game.gyutto.review
+            .gyutto.review.ruby.article
+              #{jlp.toRuby(cache.html(game.gyutto.renderReview()), html=True)}
+          -else
+            %span.muted (#{tr('unknown')})
+        %p
+          -if game.dmm
+            %a(href="#{game.dmm.url}",title="#{game.dmm.url}") DMM:
+          -else
+            %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=DMM.co.jp　#{game.title|e}",title="Google: DMM.co.jp+#{game.title|e}") DMM:
+          -if game.dmmItem and game.dmmItem.review
+            .dmm.review.ruby.article
+              #{jlp.toRuby(game.dmmItem.review, html=True)}
+          -else
+            %span.muted (#{tr('unknown')})
+        %p
+          -if game.dlsite
+            %a(href="#{game.dlsite.url}",title="#{game.dlsite.url}") DLsite:
+          -else
+            %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=DLsite.com　#{game.title|e}",title="Google: DLsite.com+#{game.title|e}") DLsite:
+          -if game.dlsite and game.dlsite.review
+            .dlsite.review.ruby.article
+              #{jlp.toRuby(game.dlsite.renderReview(), html=True)}
+          -else
+            %span.muted (#{tr('unknown')})
+        %p
+          -if game.amazon
+            %a(href="#{game.amazon.url}",title="#{game.amazon.url}") Amazon:
+          -else
+            %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=Amazon.co.jp　#{game.title|e}",title="Google: Amazon.co.jp+#{game.title|e}") Amazon:
+          -if not game.amazon or not game.amazon.review
+            %span.muted (#{tr('unknown')})
+          -elif not online
+            %span.text-error (#{tr('offline')})
+          -else
+            ; See: http://uphero.com/game.php?id=5267
+            ;%center
+            ; allowtransparency is only needed by IE
+             %iframe.amazon(src="#{game.amazon.review}",width="480",height="360",frameborder="0",allowtransparency="true",seamless="true")
+
+      #toolbar.metro
+        #zoomSlider.dragdealer.rounded.vertical
+          .handle.red(title="#{tr('Zoom')}"): 拡大
+        .btn.btn-block.btn-mini.btn-refresh(title="#{tr('Refresh')}")
+          %i.icon-refresh
+        .btn.btn-block.btn-mini.btn-top(title="#{tr('Scroll to top')}")
+          %i.icon-chevron-up
+        .btn.btn-block.btn-mini.btn-bottom(title="#{tr('Scroll to bottom')}")
+          %i.icon-chevron-down
+
+      ; Scripts
+      ;-for it in 'jquery', 'jquery.imagesloaded', 'masonry', 'game'
+      -for it in 'jquery', 'dragdealer', 'widgets', 'game'
+        %script(src="#{rc.cdn_url(it)}")
+
+      ; 9/21/2013: Masonry is fancy, but useless
+      ;$('#cg-container').imagesLoaded(function (e){
+      ;  $('#cg-container').masonry({itemSelector:'.cg'});
+      ;});
+      -if online
+        :javascript
+          $(function () {
+            bindAmazon();
+            setTimeout(bindYoutube, 1000); // bind is defined in game.coffee. Delay initliazation for 1 second.
+          })
+
+; EOF

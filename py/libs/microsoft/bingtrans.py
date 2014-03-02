@@ -1,0 +1,135 @@
+# coding: utf8
+# BingTranslator.py
+# 8/21/2012 jichi
+#
+# See: http://www.forum-invaders.com.br/vb/showthread.php/42510-API-do-Bing-para-Traduzir-Textos
+if __name__ == '__main__':
+  import sys
+  sys.path.append('..')
+
+import json, re, requests
+from sakurakit import skstr
+from sakurakit.skdebug import dwarn, derror
+from sakurakit.sknetio import GZIP_HEADERS
+
+# See: http://msdn.microsoft.com/en-us/library/hh456380.aspx
+MS_LCODE = {
+  'zht': 'zh-CHT',
+  'zhs': 'zh-CHS',
+}
+def _lcode(lang):
+  """
+  @param  lang  unicode
+  @return  unicode
+  """
+  return MS_LCODE.get(lang) or lang
+
+class _BingTranslator:
+
+  TOKEN_RE = re.compile(r"Default.Constants.RTTAppID = '(.*?)';")
+  TOKEN_URL = "http://www.bing.com/translator/"
+
+  TRANSLATE_URL = "http://api.microsofttranslator.com/v2/ajax.svc/TranslateArray2"
+
+  def __init__(self):
+    self._token = None # str
+
+  @property
+  def token(self):
+    if not self._token:
+      self.resetToken()
+    return self._token
+
+  # See: http://d.hatena.ne.jp/syonbori_tech/?of=5
+  def resetToken(self):
+    try:
+      r = requests.get(_BingTranslator.TOKEN_URL, headers=GZIP_HEADERS)
+      t = r.content
+      if r.ok and t:
+        m = _BingTranslator.TOKEN_RE.search(t)
+        if m:
+          self._token = m.group(1)
+    #except socket.error, e:
+    #  dwarn("socket error", e.args)
+    except requests.ConnectionError, e:
+      dwarn("connection error", e.args)
+    except requests.HTTPError, e:
+      dwarn("http error", e.args)
+    except Exception, e:
+      derror(e)
+
+class BingTranslator(object):
+
+  def __init__(self):
+    self.__d = _BingTranslator()
+
+  def reset(self): self.__d.resetToken()
+
+  def translate(self, text, to='en', fr='ja'):
+    """Return translated text, which is NOT in unicode format
+    @param  text  unicode not None
+    @param  fr  unicode not None, must be valid language code
+    @param  to  unicode not None, must be valid language code
+    @return  unicode or None
+    """
+    tok = self.__d.token
+    if tok:
+      try:
+        # See: http://www.forum-invaders.com.br/vb/showthread.php/42510-API-do-Bing-para-Traduzir-Textos
+        # Example:
+        # http://api.microsofttranslator.com/v2/ajax.svc/TranslateArray2?appId=%22TLxLo1mCVB0gJQETyvO96kBhkckrhqTQ0I6ciRT8M3f0r_QJ3gmiH4tWHK0YQybpK%22&texts=[%22hello%22]&from=%22ja%22&to=%22zh-chs%22
+
+        r = requests.get(_BingTranslator.TRANSLATE_URL,
+          #headers=GZIP_HEADERS,
+          params={
+            'appId': '"%s"' % tok,
+            'from': '"%s"' % _lcode(fr),
+            'to': '"%s"' % _lcode(to),
+            'texts': '["%s"]' % '","'.join(text.replace('\\', '\\\\').replace('"', '\\"').split('\n')),
+          }
+        )
+
+        ret = r.content
+        if r.ok and len(ret) > 20:
+          i = ret.index('[')
+          if i >= 0:
+            ret = ret[i:] # skip leading garbage
+            l = json.loads(ret)
+            if len(l) == 1:
+               ret = l[0]['TranslatedText']
+            else:
+              ret = '\n'.join(it['TranslatedText'] for it in l)
+            ret = skstr.unescapehtml(ret)
+            return ret
+
+      #except socket.error, e:
+      #  dwarn("socket error", e.args)
+      except requests.ConnectionError, e:
+        dwarn("connection error", e.args)
+      except requests.HTTPError, e:
+        dwarn("http error", e.args)
+      #except UnicodeDecodeError, e:
+      #  dwarn("unicode decode error", e)
+      #except (ValueError, KeyError, IndexError, TypeError), e:
+      #  dwarn("json format error", e)
+      #except Exception, e:
+      #  derror(e)
+      dwarn("failed")
+      try: dwarn(r.url)
+      except: pass
+
+def create_engine(): return BingTranslator()
+
+if __name__ == "__main__":
+  import sys
+  e = create_engine()
+  t = e.translate(u'"こんにちは！"\nこん"fawe\\"にちは！', to='en', fr='ja')
+  #t = e.translate(u'こんにちは！\nこんにちは！', to='vi', fr='ja')
+  import sys
+  from PySide.QtGui import *
+  a = QApplication(sys.argv)
+  w = QLabel(t)
+  w.show()
+  a.exec_()
+
+# EOF

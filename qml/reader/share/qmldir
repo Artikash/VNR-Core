@@ -1,0 +1,23 @@
+# share/qmldir
+# 1/6/2013 jichi
+AvatarImage     avatarimage.qml
+Blocker         blocker.qml
+BusySpinner     busyspinner.qml
+CachedAvatarImage cachedavatarimage.qml
+CheckBox        checkbox.qml
+ClearButton     clearbutton.qml
+CloseButton     closebutton.qml
+FadeInImage     fadeinimage.qml
+FadeOutImage    fadeoutimage.qml
+FadingImage     fadingimage.qml
+FadingItem      fadingitem.qml
+FadingRectangle fadingrectangle.qml
+FloatingRectangle floatingrectangle.qml
+InputBar        inputbar.qml
+InputBox        inputbox.qml
+LabeledSlider   labeledslider.qml
+SearchBox       searchbox.qml
+Slider          slider.qml
+TextButton      textbutton.qml
+TextEffect      texteffect.qml
+View            view.qml

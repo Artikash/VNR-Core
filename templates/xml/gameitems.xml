@@ -1,0 +1,62 @@
+{# gameitems.xml 9/11/2013 jichi
+ # @param  now  datetime.datetime
+ # @param  items  iter[dataman.GameItem]
+-#}
+<?xml version="1.0" encoding="utf-8"?>
+<!-- itemdigest.xml {{now.strftime("%Y-%m-%d %H:%M")}} -->
+<grimoire version="1.0">
+	<items>
+%for it in items
+		<item id="{{it.id}}">
+%	if it.timestamp
+			<timestamp>{{it.timestamp}}</timestamp>
+%	endif
+%	if it.title
+			<title>{{it.title|e}}</title>
+%	endif
+%	if it.romajiTitle
+			<romajiTitle>{{it.romajiTitle|e}}</romajiTitle>
+%	endif
+%	if it.brand
+			<brand>{{it.brand|e}}</brand>
+%	endif
+%	if it.series
+			<series>{{it.series|e}}</series>
+%	endif
+%	if it.image
+			<image>{{it.image|e}}</image>
+%	endif
+%	if it.tags
+			<tags>{{it.tags|e}}</tags>
+%	endif
+%	if it.date
+			<date>{{it.date.strftime("%Y%m%d")}}</date>
+%	endif
+%	if it.artists
+			<artists>{{it.artists|e}}</artists>
+%	endif
+%	if it.sdartists
+			<sdartists>{{it.sdartists|e}}</sdartists>
+%	endif
+%	if it.writers
+			<writers>{{it.writers|e}}</writers>
+%	endif
+%	if it.musicians
+			<musicians>{{it.musicians|e}}</musicians>
+%	endif
+%	if it.otome
+			<otome>true</otome>
+%	endif
+%	if it.okazu
+			<okazu>true</okazu>
+%	endif
+%	if it.scapeMedian
+			<scapeMedian>{{it.scapeMedian}}</scapeMedian>
+%	endif
+%	if it.scapeCount
+			<scapeCount>{{it.scapeCount}}</scapeCount>
+%	endif
+		</item>
+%endfor
+	</items>
+</grimoire>

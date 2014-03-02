@@ -1,0 +1,50 @@
+{# shiori.html 11/25/2012 jichi
+ # @param  text  unicode not None  The orignal text to translate
+ # @param  feature  unicode or None
+ # @param  edict_tuples  [cjklib.dictionary.EntryTuple(Headword, Reading, Translation)]
+ # @param  ld_tuples  [unicode word, unicode xmls]
+ # @param  eb_strings  [unicode]
+ #
+ # Escaping is disabled to improve performance.
+-#}
+<html>
+	<head>
+		<style type="text/css">
+a{color:silver}
+i{font-style:normal}
+.f{font-size:134%;background-color:rgba(255,0,0,50%)}
+.sr{font-weight:normal}
+.sk,.th{font-size:150%;background-color:rgba(255,255,0,40%)}
+.ta{text-align:right}
+		</style>
+	</head>
+	<body>
+%if feature
+		<p><span class="f">{{feature}}</span></p>
+%endif
+%if ld_tuples
+%	for word, xml in ld_tuples
+		<p class="t">
+			<div><span class="th">{{word}}</span></div>
+			<div class="tt">{{xml}}</div>
+		</p>
+%	endfor
+%endif
+%if eb_strings
+%	for s in eb_strings
+		<p class="s">{{s}}</p>
+%	endfor
+%endif
+%if edict_tuples
+%	for t in edict_tuples
+		<p class="t">
+			<div>
+				<span class="th">{{t.Headword}}</span>
+{{" "}}
+				<span class="tr">{{t.Reading or t.Headword}}</span>
+			<div class="tt">{{t.Translation}}</div>
+		</p>
+%	endfor
+%endif
+	</body>
+</html>

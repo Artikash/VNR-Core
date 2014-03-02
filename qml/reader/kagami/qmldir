@@ -1,0 +1,15 @@
+# kagami/qmldir
+# 10/10/2012 jichi
+AjaxIndicator   ajaxindicator.qml
+AppMenu         appmenu.qml
+CentralArea     centralarea.qml
+Clock           clock.qml
+CommentBar      commentbar.qml
+Dock            dock.qml
+Gospel          gospel.qml
+Gossip          gossip.qml
+Grimoire        grimoire.qml
+Growl           growl.qml
+MenuButton      menubutton.qml
+Omajinai        omajinai.qml
+Shiori          shiori.qml
