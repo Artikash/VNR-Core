@@ -15,7 +15,7 @@ include(../launcher.pri)
 
 TEMPLATE  = app
 win32: CONFIG += windows
-TARGET    = "annot-reader"
+TARGET    = reader
 
 HEADERS += config.h
 SOURCES += main.cc

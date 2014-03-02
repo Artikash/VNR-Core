@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "config.h"
-#if !defined(AUTOIT_PATH) || !defined(AU_PATH)
+#if !defined(PLAYER_PATH) || !defined(SCRIPT_PATH)
 # error "app path not defined"
 #endif
 
@@ -48,8 +48,15 @@ int CALLBACK WinMain(__in HINSTANCE hInstance, __in HINSTANCE hPrevInstance, __i
   //wsDir += L"\\" CWD;
   ::SetCurrentDirectory(wsDir.c_str());
 
-  std::wstring wsApp = wsDir + L"\\" AUTOIT_PATH;
-  std::wstring wsAppPath = dirname(wsApp);
+  //std::wstring wsApp = wsDir + L"\\" PLAYER_PATH;
+  //std::wstring wsAppPath = dirname(wsApp);
+
+  std::wstring wsApp = PLAYER_PATH;
+
+  // $widir/system32
+  if (!GetSystemDirectoryW(wszBuffer, BUFFER_SIZE))
+    return -1;
+  std::wstring wsAppPath = wszBuffer;
 
   // See: http://msdn.microsoft.com/en-us/library/windows/desktop/cc144102(v=vs.85).aspx
   //::SetFileAttributesW(wsDir.c_str(), FILE_ATTRIBUTE_READONLY);
@@ -68,7 +75,7 @@ int CALLBACK WinMain(__in HINSTANCE hInstance, __in HINSTANCE hPrevInstance, __i
   std::wstring wsCmdLine =
       L"\"" + wsApp + L"\"" L" "
       //L"-OO " // python -OO optimization
-      L"\"" + wsDir + L"\\" AU_PATH L"\"";
+      L"\"" + wsDir + L"\\" SCRIPT_PATH L"\"";
 
   // See: http://codingmisadventures.wordpress.com/2009/03/10/retrieving-command-line-parameters-from-winmain-in-win32/
   if (lpCmdLine &&
