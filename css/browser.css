@@ -1,0 +1,51 @@
+/** browser.css
+ *  3/29/2013 jichi
+ */
+
+/** Tab bar
+ *  See: http://stackoverflow.com/questions/7340046/qtabwidget-tabposition-when-using-stylesheets
+ * */
+QTabBar::tab {
+  background: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(73, 73, 74, 255), stop:1 rgba(40, 40, 40, 255));
+  border: 1px solid rgb(190, 190, 190);
+  max-height: 0.6em;
+  min-width: 0.6em;
+  padding: 5px;
+  margin-left: -1px;
+  margin-right: -1px;
+}
+
+QTabBar::tab:selected,
+QTabBar::tab:hover {
+  background: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(39, 117, 219, 255), stop:1 rgba(107, 171, 249, 255));
+}
+
+QTabBar::tab:last {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  margin-right: 0px;
+}
+
+QTabBar::tab:first {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+  margin-left: 0px;
+}
+
+QTabBar::tab:only-one {
+  border-radius: 3px;
+  margin: 0px;
+}
+
+/** Status bar */
+
+QStatusBar {
+  color: snow;
+}
+
+QStatusBar.warning,
+QStatusBar.error {
+  font-weight:: bold;
+}
+
+/* EOF */

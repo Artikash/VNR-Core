@@ -1,0 +1,55 @@
+{# furigana.html 11/28/2012 jichi
+ # @param  tuples  [unicode surface, unicode yomigana, str color]
+ # @param* bgcolor  str or None  background color
+ # @param* rubySize  str  yomigana font size
+ # @param* center  bool  align ment
+ #
+ # Tuples will be iterated twice.
+ # Tuple elements can be None.
+ # This file is not written in HAML for performance reason.
+-#}
+<html>
+	<head>
+		<style type="text/css">
+.ruby {
+	font-size: {{rubySize or '10px'}};
+	font-weight: bold;
+%if bgcolor
+	background-color: {{bgcolor}};
+%endif
+}
+		</style>
+	</head>
+	<body>
+%if center
+		<center>
+%endif
+			<table>
+				<tr class="ruby" valign="bottom">
+%for _, yomi, _ in tuples
+%	if yomi
+					<td align="center">{{yomi}}</td>
+%	else
+					<td />
+%	endif
+%endfor
+				</tr>
+				<tr class="surface">
+%for surface, _, color in tuples
+%	if surface
+				<td align="center"
+%		if color or bgcolor
+                  style="background-color:{{color or bgcolor}}"
+%		endif
+                >{{surface|e}}</td>
+%	else
+					<td />
+%	endif
+%endfor
+				</tr>
+			</table>
+%if center
+		</center>
+%endif
+	</body>
+</html>

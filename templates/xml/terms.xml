@@ -1,0 +1,53 @@
+{# terms.xml 2/17/2013 jichi
+ # @param  now  datetime.datetime
+ # @param  terms  iter[dataman.Term]
+-#}
+<?xml version="1.0" encoding="utf-8"?>
+<!-- terms.xml {{now.strftime("%Y-%m-%d %H:%M")}} -->
+<grimoire version="1.0">
+	<terms>
+%for it in terms
+%	if it.id
+		<term id="{{it.id}}" type="{{it.type}}" {%- if it.disabled %} disabled="true" {%- endif %}>
+%		if it.gameId
+			<gameId>{{it.gameId}}</gameId>
+%		endif
+			<userId>{{it.userId}}</userId>
+%		if it.userHash
+			<userHash>{{it.userHash}}</userHash>
+%		endif
+			<language>{{it.language}}</language>
+			<timestamp>{{it.timestamp}}</timestamp>
+%		if it.updateTimestamp
+			<updateTimestamp>{{it.updateTimestamp}}</updateTimestamp>
+			<updateUserId>{{it.updateUserId}}</updateUserId>
+%		endif
+%		if it.hentai
+			<hentai>true</hentai>
+%		endif
+%		if it.special
+			<special>true</special>
+%		endif
+%		if it.private
+			<private>true</private>
+%		endif
+%		if it.regex
+			<regex>true</regex>
+%		endif
+%		if it.pattern
+			<pattern>{{it.pattern|e}}</pattern>
+%		endif
+%		if it.text
+			<text>{{it.text|e}}</text>
+%		endif
+%		if it.comment
+			<comment>{{it.comment|e}}</comment>
+%		endif
+%		if it.updateComment
+			<updateComment>{{it.updateComment|e}}</updateComment>
+%		endif
+		</term>
+%	endif
+%endfor
+	</terms>
+</grimoire>

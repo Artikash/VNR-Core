@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<!-- typesyste_winutil.xml 4/1/2013 jichi -->
+<typesystem package='pywinutil'>
+  <load-typesystem name="typesystem_core_common.xml" generate="no" />
+  <namespace-type name="WinUtil" />
+</typesystem>

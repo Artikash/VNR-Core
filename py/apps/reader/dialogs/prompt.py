@@ -1,0 +1,481 @@
+# coding: utf8
+# prompt.py
+# 6/4/2013 jichi
+
+from functools import partial
+from PySide.QtCore import QObject, Slot
+from Qt5.QtWidgets import QInputDialog, QLineEdit, QMessageBox
+from sakurakit import skevents
+from sakurakit.sktr import tr_
+from sakurakit.skqml import QmlObject
+from mytr import my, mytr_
+import config, growl, i18n, netman, settings #ttsman
+
+Yes = QMessageBox.Yes
+No = QMessageBox.No
+
+def _parent():
+  """
+  @return  QWidget  parent window
+  """
+  import windows
+  return windows.top()
+
+def _speak(t):
+  """
+  @param  t  unicode
+  """
+  # Disabled
+  pass
+  #skevents.runlater(partial(
+  #    ttsman.speak, t, verbose=False))
+
+def getUpdateComment(default=""):
+  """
+  @param  default  unicode
+  @return  unicode
+  """
+  ret, ok = QInputDialog.getText(_parent(),
+      my.tr("Update reason"),
+      my.tr(
+"""You are not the author of this entry.
+Please specify the REASON for modifying other's work.
+For example, you can put in "typo", "inaccurate", or "scam".
+"""),
+      QLineEdit.Normal,
+      default)
+  return ret.strip() if ok else ""
+
+#def showAbout():
+#  t = config.VERSION_TIMESTAMP
+#  line1 = tr_("Version") + " " + i18n.timestamp2datetime(t)
+#  t = settings.global_().updateTime() or config.VERSION_TIMESTAMP
+#  line2 = tr_("Update") + " " + i18n.timestamp2datetime(t)
+#  msg = '\n'.join((line1, line2))
+#  QMessageBox.about(_parent(),
+#      tr_("About {0}").format(mytr_("Visual Novel Reader")),
+#      msg)
+
+def confirmQuit():
+  """
+  @return  bool
+  """
+  #_speak(u"終了しますか？")
+  return Yes == QMessageBox.question(_parent(),
+      mytr_("Visual Novel Reader"),
+      my.tr("Quit {0}?").format(mytr_("Visual Novel Reader")),
+      Yes|No, No)
+
+def confirmRestart():
+  """
+  @return  bool
+  """
+  #_speak(u"再起動しますか？")
+  return Yes == QMessageBox.question(_parent(),
+      mytr_("Visual Novel Reader"),
+      '\n'.join((
+        my.tr("Restart {0}?").format(mytr_("Visual Novel Reader")),
+        "",
+        my.tr("If VNR is taking too much memory, restarting it might help reduce its memory usage."),
+      )),
+      Yes|No, No)
+
+def confirmDeleteGame(game):
+  """
+  @param  game  dataman.GameObject
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      mytr_("Visual Novel Reader"),
+      "\n".join((
+        my.tr("Remove this game from the dashboard?"),
+        "",
+        tr_("Name") + ": " + game.name,
+        tr_("Location") + ": " + game.path,
+      )),
+      Yes|No, No)
+
+def confirmDeleteHookCode():
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Remove Game-specific Hook Code"),
+      my.tr(
+"""Do you want to delete the hook code for this game?
+It is recommended that you have the Internet access now, so that VNR will delete the hook code from the online database as well.
+
+But other users might revert your deletion later.
+If the hook code appear here again, please delete it here again."""),
+      Yes|No, No)
+
+def confirmDeleteComment(comment):
+  """
+  @param  dataman.Comment
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Confirm deletion"),
+      "\n".join((
+        my.tr("Do you want to permanently delete this entry?"),
+        "",
+        tr_("Text") + ": " + comment.text,
+        tr_("Context") + ": " + comment.context,
+      )),
+      Yes|No, No)
+
+#def confirmDeleteSubtitle():
+#  return Yes == QMessageBox.question(_parent(),
+#      my.tr("Confirm deletion"),
+#      my.tr("Do you want to permanently delete this subtitle?"),
+#      Yes|No, No)
+
+def confirmClearEntries():
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Confirm deletion"),
+      my.tr("Do you want to permanently delete all entries?"),
+      Yes|No, No)
+
+def confirmDeleteTerm(term):
+  """
+  @param  dataman.Term
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Confirm deletion"),
+      "\n".join((
+        my.tr("Do you want to permanently delete this entry?"),
+        "",
+        tr_("Pattern") + ": " + term.pattern,
+        tr_("Text") + ": " + term.text,
+      )),
+      Yes|No, No)
+
+def confirmDeleteCharacter(c):
+  """
+  @param  dataman.Character
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Confirm deletion"),
+      "\n".join((
+        my.tr("Do you want to permanently delete this entry?"),
+        "",
+        tr_("Name") + ": " + (c.name or tr_("Aside")),
+        tr_("Gender") + ": " + i18n.gender_name(c.gender),
+      )),
+      Yes|No, No)
+
+def confirmDeleteRef(ref):
+  """
+  @param  dataman.Reference
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Confirm deletion"),
+      "\n".join((
+        my.tr("Do you want to permanently delete this entry?"),
+        "",
+        tr_("Title") + ": " + ref.title,
+        tr_("Release date") + ": " + i18n.timestamp2date(ref.date),
+      )),
+      Yes|No, No)
+
+def confirmUpdateRefs(game=None):
+  """
+  @param  game  dataman.Game or None
+  @return  bool
+  """
+  #if not game:
+  #  growl.notify(my.tr("Unknown game. Please try updating the database."))
+  #  return
+  if not netman.manager().isOnline():
+    growl.warn(my.tr("Cannot perform update when offline"))
+    return
+  #_speak(u"今すぐゲーム情報を更新しますか？")
+
+  msg = ""
+  if game:
+    t = game.refsUpdateTime or game.visitTime or config.VERSION_TIMESTAMP
+    msg += my.tr("Game references are updated on: {0}.").format(
+        i18n.timestamp2datetime(t)) + "\n"
+
+  msg += "\n\n".join((
+my.tr("VNR will automatically check for updates."),
+my.tr("""Do you want to update now?
+It might take a couple of seconds to complete."""),
+))
+
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Update game references"),
+      msg,
+      Yes|No, No)
+
+def confirmUpdateComments(game=None):
+  """
+  @param  game  dataman.Game or None
+  @return  bool
+  """
+  #if not game:
+  #  growl.notify(my.tr("Unknown game. Please try updating the database."))
+  #  return
+  if not netman.manager().isOnline():
+    growl.warn(my.tr("Cannot perform update when offline"))
+    return
+  _speak(u"今すぐ字幕を更新しますか？")
+
+  msg = "\n\n".join((
+my.tr("VNR will automatically check for updates."),
+my.tr("""Do you want to update now?
+It might take a couple of seconds to complete."""),
+))
+
+  t = game.commentsUpdateTime or game.visitTime if game else 0
+  if t > 0:
+    msg = "\n".join((
+        my.tr("Comments are updated on: {0}.").format(i18n.timestamp2datetime(t)),
+        msg))
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Update user-contributed comments"),
+      msg, Yes|No, No)
+
+def confirmUpdateTerms():
+  """
+  @return  bool
+  """
+  if not netman.manager().isOnline():
+    growl.warn(my.tr("Cannot perform update when offline"))
+    return
+  #_speak(u"今すぐ辞書を更新しますか？")
+  t = settings.global_().termsTime() or config.VERSION_TIMESTAMP
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Update user-contributed dictionary"),
+      "\n\n".join((
+my.tr("""Dictionary terms are updated on: {0}.
+The dictionary might enhance machine translation quality.
+VNR will check for automatically updates."""),
+my.tr("""Do you want to update now?
+It might take a couple of seconds to complete."""),
+)).format(i18n.timestamp2datetime(t)),
+      Yes|No, No)
+
+def confirmUpdateGameFiles():
+  """
+  @return  bool
+  """
+  if not netman.manager().isOnline():
+    growl.warn(my.tr("Cannot perform update when offline"))
+    return
+  _speak(u"今すぐゲーム情報を更新しますか？")
+
+  t = settings.global_().gameFilesTime() or config.VERSION_TIMESTAMP
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Update online game database"),
+      "\n\n".join((
+my.tr("""Game database is updated on: {0}.
+The database is used to detect new games.
+VNR will automatically check for updates."""),
+my.tr("""Do you want to update now?
+It might take a couple of seconds to complete."""),
+)).format(i18n.timestamp2datetime(t)),
+      Yes|No, No)
+
+def confirmBlockLanguage(lang):
+  """
+  @param  lang  str
+  @return  bool
+  """
+  lang = i18n.language_name(lang)
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Block user language"),
+      my.tr(
+"""Are you sure to block {0}?
+It is the same as your current user language.
+If yes, VNR will block all settings for this language."""
+).format(lang),
+      Yes|No, No)
+
+def confirmStretchGameWindow():
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Switch to full screen"),
+      my.tr(
+"""Do you want to stretch the game window to full screen?
+You can click the same button again to switch back.
+
+Note: This function does not work well for all games ><"""),
+      Yes|No, No)
+
+def confirmRemoveRepeat():
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      "%s: %s" % (tr_("Warning"), my.tr("Enable repetition filter")),
+      my.tr(
+"""Are you sure to turn on repetition filter?
+You might NOT want to turn this on unless the game text is FULL OF repeats.
+Few games really need this option.
+
+This option only serves to eliminate repetition.
+It has NOTHING to do with finding NEW game text.
+
+WARNING: If the game do NOT have repetition but you turn it on,
+it might significantly downgrade the translation quality.
+
+If only some of the game text repeat while some not,
+it is better to add some regular expressions to Shared Dictionary
+than turning on global repetition filters here."""),
+      Yes|No, No)
+
+def confirmKeepThreads():
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      "%s: %s" % (tr_("Warning"), my.tr("Keep all text threads")),
+      my.tr(
+"""Are you sure to keep all scenario text threads?
+You might NOT want to enable this unless the ADDRESS OF TEXT
+(the gray the number) varies each time you launch the game!
+
+WARNING:
+For example, if there are several threads marked as KiriKiri,
+when you turn this option on, VNR will translate ALL KIRIKIRI TEXTS.
+This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!"""),
+      Yes|No, No)
+
+def confirmKeepSpace():
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      "%s: %s" % (tr_("Warning"), my.tr("Insert spaces")),
+      my.tr(
+"""Are you sure to preserve spaces in the game text?
+This might be useful for English games.
+
+WARNING:
+This might result in redundant spaces for Japanese games."""),
+      Yes|No, No)
+
+def confirmDownloadGameVideos():
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Download YouTube videos"),
+      my.tr("Do you want to download all YouTube videos to your Desktop?"),
+      Yes|No, No)
+
+def confirmDownloadGameImages():
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Save game images"),
+      my.tr("Do you want to save all images to your Desktop?"),
+      Yes|No, No)
+
+def confirmExportCsv():
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Export Excel CSV"),
+      my.tr("Do you want to export the data into an Excel CSV file?"),
+      Yes|No, No)
+
+def confirmRemoveDictionary(name): # unicode
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Remove dictionary"),
+      my.tr("""Do you want to remove the {0} dictionary?
+You can redownload it later if you have Internet access.""").format(name),
+      Yes|No, No)
+
+def confirmDownloadDictionary(name): # unicode
+  """
+  @return  bool
+  """
+  location = "Caches/Dictionaries"
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Download dictionary"),
+      my.tr("""Do you want to download the {0} dictionary?
+It requires Internet access and might take a couple of minutes.
+The dictionary will be installed to {1}.""").format(name, location),
+      Yes|No, No)
+
+def confirmRemoveEDICT():
+  """
+  @return  bool
+  """
+  name = 'EDICT'
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Remove dictionary"),
+      my.tr("""Do you want to remove the {0} dictionary?
+You can redownload it later if you have Internet access.""").format(name)
++ '\n\n' +
+my.tr("If EDICT is installed, VNR's Updater will also update EDICT monthly."),
+      Yes|No, No)
+
+def confirmDownloadEDICT():
+  """
+  @return  bool
+  """
+  name = 'EDICT'
+  location = "Caches/Dictionaries"
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Download dictionary"),
+      my.tr("""Do you want to download the {0} dictionary?
+It requires Internet access and might take a couple of minutes.
+The dictionary will be installed to {1}.""").format(name, location)
++ '\n\n' +
+my.tr("If EDICT is installed, VNR's Updater will also update EDICT monthly."),
+      Yes|No, No)
+
+def confirmRemoveApploc():
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Remove AppLocale"),
+      my.tr("""Do you want to remove AppLocale?
+It requires Internet access and might take a couple of minutes.
+You can reinstall it later if you have Internet access."""),
+      Yes|No, No)
+
+def confirmDownloadApploc():
+  """
+  @return  bool
+  """
+  from sakurakit import skpaths
+  location = skpaths.WINDIR + r"\AppPatch"
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Install Microsoft AppLocale"),
+      my.tr("""Do you want to install the @piaip version of Microsoft AppLocale?
+It requires Internet access and might take a couple of minutes.
+The program will be installed to {0}.
+There is no way to change the installation location.
+VNR can also uninstall it later if you want.""").format(location),
+      Yes|No, No)
+
+# QML
+
+@QmlObject
+class PromptProxy(QObject):
+  def __init__(self, parent=None):
+    QObject.__init__(self, parent)
+
+  @Slot(result=bool)
+  def confirmStretchGameWindow(self):
+    return confirmStretchGameWindow()
+
+# EOF

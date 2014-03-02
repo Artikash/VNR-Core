@@ -1,0 +1,70 @@
+# engines.yaml
+# 12/7/2013 jichi
+
+gui:
+  - DrawTextA
+  - DrawTextW
+  - DrawTextExA
+  - DrawTextExW
+  - ExtTextOutA
+  - ExtTextOutW
+  - GetCharABCWidthsA
+  - GetCharABCWidthsW
+  - GetGlyphOutlineA
+  - GetGlyphOutlineW
+  - GetTextExtentPoint32A
+  - GetTextExtentPoint32W
+  - TextOutA
+  - TextOutW
+
+nongui:
+  - lstrlenA
+  - lstrlenW
+  - MultiByteToWideChar
+  - WideCharToMultiByte
+  - _strinc
+  - _wcsinc
+  - _mbsinc
+  - _mbsinc_l
+
+# no repeat & no float
+simple:
+  - ApRicot
+  - BGI
+  - BGI2
+  - CIRCUS
+  - KiriKiri1
+  - KiriKiri2
+  - MAJIRO
+  - Malie2
+  - Pensil
+  - RealLive
+  - System43
+  - Taskforce2
+  - WAFFLE
+
+# No repetition int the game text
+norepeat:
+  - Artemis
+  - BALDR
+  - Gesen18
+  - QLIE
+  - QLIE2
+  - NEXTON
+  - Rejet
+  - ShinaRio
+  - SiglusEngine
+  - SiglusEngine2
+
+# Not floating address
+nofloat:
+  - Bruns
+  - Bruns2
+  - Malie
+
+#float:
+#  - Gesen18
+#  - Rejet
+#  - SiglusEngine2
+
+# EOF

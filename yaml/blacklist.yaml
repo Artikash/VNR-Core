@@ -1,0 +1,151 @@
+# blacklist.yaml
+# 10/14/2012 jichi
+
+hcode:
+  - /HS8@41FDCB # DC3
+  - /HB8*0:D4@0:GDI32.dll:GetTextExtentPoint32A # 幻創のイデア
+  - /HA-C:40@0:GDI32.dll:GetTextMetricsA # 幻創のイデア
+  - /HA8@394F8:gdi32.dll # 幻創のイデア
+  #-/HS-8@42D8F4 # X: 媚肉の香り, O: スクエアな関係</
+  #-/HB18*0@4D2CD8 # X: 少女騎士物語, O: はつゆきさくら
+  #-/HWN-8*0@14F36:libscr.dll # Berry's
+  #-/HSN-4@B14B4 # Justy×Nasty ～魔王はじめました～
+
+hcodefile:
+  - DC3.EXE     # DC3
+  - IDEA.EXE    # 幻創のイデア
+
+processes:
+  - AUTORUN.EXE
+  - Autorun.exe
+  - autorun.exe
+  - SETUP.EXE
+  - Setup.exe
+  - setup.exe
+  - INSTALL.EXE
+  - Install.exe
+  - install.exe
+  - Unnstall.exe
+  - uninstall.exe
+  - 360Chrome.exe       # 360
+  - 360chrome.exe       # 360
+  - 360Desktop.exe      # 360
+  - 360desktop.exe      # 360
+  - 360Kantu.exe        # 360
+  - 360kantu.exe        # 360
+  - 360SE.exe           # 360
+  - 360se.exe           # 360
+  - 360Zip.exe          # 360
+  - 360zip.exe          # 360
+  - 7zG.exe             # 7-zip
+  - 7zFM.exe            # 7-zip
+  - agth.exe            # AGTH
+  - AppUpdate.exe       # JBeijing
+  - Atlas.exe           # Atlas
+  - Apoint.exe          # Dell
+  - ApntEx.exe          # Dell
+  - AutoHotKey.exe      # AutoHotKey
+  - AutoHotkey.exe      # AutoHotKey
+  - AutoIt3.exe         # AutoIt
+  - AutoIt3_x64.exe     # AutoIt
+  - BaiduPlayer.exe     # Baidu
+  - BaiduYunGuanjia.exe # Baidu
+  - baiduyunguanjia.exe # Baidu
+  - BingDesktop.exe     # Microsoft
+  - BitComet.exe        # BitComet
+  - Bootcamp.exe        # Apple
+  - chrome.exe          # Google
+  - DTLite.exe          # Daemon Tools
+  - Dwm.exe             # Windows
+  - dwm.exe             # Windows
+  - emacs.exe           # GNU
+  - explore.exe         # Windows
+  - Explore.EXE         # Windows
+  - Evernote.exe        # Evernote
+  - EvernoteTray.exe    # Evernote
+  - EXCEL.EXE           # Microsoft Office
+  - firefox.exe         # Mozilla
+  - flashget.exe        # Flashget
+  - "Foxit Reader.exe"  # Foxit Reader
+  - foobar2000.exe      # foobar
+  - googledrivesync.exe # Google
+  - GoogleIMEJaConverter.exe # Google
+  - GoogleIMEJaRenderer.exe  # Google
+  - gvim.exe            # GVIM
+  - hidfind.exe         # Dell
+  - idaq.exe            # IDA
+  - idea.exe            # Intelij IDEA
+  - iexplore.exe        # Windows
+  - IEXPLORE.EXE        # Windows
+  - IMJPDUS.EXE         # Microsoft
+  - imjpdus.exe         # Microsoft
+  - ITH.exe             # ITH
+  - iTunes.exe          # Apple
+  - iTunesHelper.exe    # Apple
+  - JCT.exe             # JBeijing
+  - jct.exe             # JBeijing
+  - JCTchs.exe          # JBeijing
+  - KHALMNPR.exe        # Logitech
+  - MacDrive.exe        # MacDrive
+  - mousegesture.exe    # Sogou
+  - netbeans.exe        # NetBeans
+  - ollydbg.exe         # OllyDbg
+  - java.exe            # Java
+  - javaw.exe           # Java
+  - jusched.exe         # Java
+  - iCloudServices.exe  # Apple
+  - kmplayer.exe        # KMPlayer
+  - KSafeTray.exe       # Kingsoft
+  - LEGUI.exe           # Locale Emulator
+  - Maxthon.exe         # Maxthon
+  - MediaInfo.exe       # MediaInfo
+  - mpc-be.exe          # MPC
+  - mpc-hc.exe          # MPC
+  - mpcstar.exe         # MPC
+  - ntleac.exe          # NTLER
+  - NtleaGUI.exe        # NTLER
+  - opera.exe           # Opera
+  - perl.exe            # Perl
+  - python.exe          # Python
+  - pythonw.exe         # Python
+  - PinyinUp.exe        # Sogou
+  - plugin-container.exe # Mozilla
+  - POWERPNT.EXE        # Microsoft Office
+  - PotPlayer.exe       # Pot Player
+  - PotPlayerMini.exe   # Pot Player
+  - QQ.exe              # Tencent
+  - QQBrowser.exe       # Tencent
+  - QQPlayer.exe        # Tencent
+  - qtcreator.exe       # Qt
+  - QuickTime.exe       # Apple
+  - saayaa.exe          # Baidu
+  - Safari.exe          # Apple
+  - SetPoint.exe        # Logitech
+  - sidebar.exe         # Microsoft Windows
+  - SogouCloud.exe      # Sogou
+  - SogouExplorer.exe   # Sogou
+  - sogouexplorer.exe   # Sogou
+  - splayer.exe         # SPlayer
+  - StormPlayer.exe     # Storm player
+  - sttray.exe          # Dell
+  - sublime_text.exe    # Sublime Text
+  - TaoBrowser.exe      # TaoBao
+  - TheWorld.exe        # Browser
+  - thunderbird.exe     # Mozilla
+  - Thunder.exe         # Xunlei
+  - thunder.exe         # Xunlei
+  - TranEdit.exe        # Dr.eye
+  - TTraveler.exe       # Tencent
+  - vlc.exe             # VLC
+  - VOICEROID.exe       # AHS
+  - translation aggregator.exe
+  - Translation Aggregator.exe
+  - TranslationAggregator.exe
+  - TXPlatform.exe      # Tencent
+  - WinRAR.exe          # WinRAR
+  - WINWORD.EXE         # Microsoft Office
+  - wmplayer.exe        # Windows media player
+  - XMP.exe             # Xunlei KanKan
+  - YoukuDesktop.exe    # Youku
+
+# EOF

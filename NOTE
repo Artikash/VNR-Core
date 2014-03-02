@@ -1,0 +1,30 @@
+# 2/14/2014
+
+# Languages related files
+wiki:
+-
+
+api:
+- defs.py
+
+service:
+- defs.coffee
+- i18n.coffee
+- I18n.groovy
+
+client:
+- share.yaml
+- util.js
+- kagami.qml
+- grimoire.qml
+- mirage.qml
+- sakurakit/tr/Makefile
+- tsupdate.py
+- sktr.py
+- settings.py
+- i18n.py
+- config.py
+- _prefs.py
+- _trman.py
+
+# EOF

@@ -1,0 +1,120 @@
+#pragma once
+
+// ihf_p.h
+// 10/15/2011 jichi
+// Internal header.
+// Wrapper of IHF functions.
+
+#include <QtCore/QHash>
+#include <QtCore/QList>
+#include <QtCore/QString>
+#include <QtGui/qwindowdefs.h> // for WId
+
+//struct Settings; // opaque in ith/srv/settings.h
+class HookManager; // opaque in ith/srv/hookman.h
+class TextThread; // opaque in ith/srv/textthread.h
+class TextThreadDelegate;
+
+enum { ITH_MAX_THREAD_NAME = 0x200 }; // used internally by ITH
+
+class Ihf
+{
+  Ihf() {} // Singleton
+
+  static bool debug_;
+  static bool enabled_;
+
+  //static Settings *settings_;
+  static HookManager *hookManager_;
+  static qint64 messageInterval_;
+  static WId parentWindow_;
+
+  static QHash<TextThread *, TextThreadDelegate *> threadDelegates_;
+  //static QHash<TextThreadDelegate *, TextThreadDelegate *> linkedDelegates_;
+  static QHash<QString, ulong> hookAddresses_;
+
+  enum { WhitelistSize = 0x20 + 1 }; // ITH capacity is 0x20
+  static qint32 whitelist_[WhitelistSize]; // List of signatures. The last element is zero. I.e., at most BlackSize-1 threads.
+  static bool whitelistEnabled_;
+  static wchar_t keptThreadName_[ITH_MAX_THREAD_NAME];
+  //static QString userDefinedThreadName_;
+
+public:
+
+  // - Initialization -
+  static bool load();
+  static bool isLoaded() { return hookManager_; }
+  static void unload();
+
+  // - Properties -
+
+  static bool isDebug() { return debug_; }
+  static void setDebug(bool t) { debug_ = t; }
+
+  static bool isEnabled() { return enabled_; }
+  static void setEnabled(bool t) { enabled_ = t; }
+
+  ///  A valid window handle is required to make ITH work
+  //static WId parentWindow() { return parentWindow_; }
+  //static void setParentWindow(WId hwnd) { parentWindow_ = hwnd; }
+
+  ///  Timeout (msecs) for a text message
+  static qint64 messageInterval() { return messageInterval_; }
+  static void setMessageInterval(qint64 msecs) { messageInterval_ = msecs; }
+
+  // - Injection -
+  static bool attachProcess(ulong pid);
+  static bool detachProcess(ulong pid);
+
+  ///  Add hook code
+  static bool addHook(ulong pid, const QString &code, const QString &name = QString());
+  static bool updateHook(ulong pid, const QString &code);
+  static bool removeHook(ulong pid, const QString &code);
+  static bool verifyHookCode(const QString &code);
+
+  // - Whitelist -
+  static bool isWhitelistEnabled() { return whitelistEnabled_; }
+  static void setWhitelistEnabled(bool t) { whitelistEnabled_ = t; }
+
+  static QList<qint32> whitelist();
+  static void setWhitelist(const QList<qint32> &l);
+  static void clearWhitelist();
+
+  //static QString userDefinedThreadName() { return userDefinedThreadName_; }
+  //static void setUserDefinedThreadName(const QString &val) { userDefinedThreadName_ = val; }
+  static QString keptThreadName()
+  {  return QString::fromWCharArray(keptThreadName_);  }
+
+  static void setKeptThreadName(const QString &v)
+  {
+    if (v.size() < ITH_MAX_THREAD_NAME) {
+      keptThreadName_[v.size()] = 0;
+      v.toWCharArray(keptThreadName_);
+    } else
+      setKeptThreadName(v.left(ITH_MAX_THREAD_NAME - 1));
+  }
+
+protected:
+  static bool whitelistContains(qint32 signature);
+
+  // - Callbacks -
+protected:
+  //static ulong processAttach(ulong pid);
+  //static ulong processDetach(ulong pid);
+  //static ulong processNewHook(ulong pid);
+
+  static ulong threadCreate(__in TextThread *t);
+  static ulong threadRemove(__in TextThread *t);
+  static ulong threadOutput(__in TextThread *t, __in uchar *data, __in ulong dataLength, __in ulong bNewLine, __in void *pUserData, __in bool space);
+  //static ulong threadFilter(__in TextThread *t, __out uchar *data, __in ulong dataLength, __in ulong bNewLine, __in void *pUserData);
+  //static ulong threadReset(TextThread *t);
+  static void consoleOutput(const char *text);
+  static void consoleOutputW(const wchar_t *text);
+
+  // - Linked threasds -
+private:
+  //static TextThreadDelegate *findLinkedDelegate(TextThreadDelegate *d);
+  static void updateLinkedDelegate(TextThreadDelegate *d);
+};
+
+// EOF

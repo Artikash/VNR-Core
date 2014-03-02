@@ -1,0 +1,132 @@
+// amazon.sass
+// 10/3/2013 jichi
+// See: productDescription in http://www.amazon.co.jp/dp/B009SIZJRO/
+
+.amazon // 10/3/2013: add amazon class
+  &.technicalProductFeatures ul
+    list-style-type: disc
+    margin: 1.12em 0
+    margin-left: 20px
+  &.productDescription
+    h2.productDescriptionHeader
+      margin-bottom: 0em
+    .emptyClear
+      clear: left
+      height: 0px
+      font-size: 0px
+    div.productDescriptionWrapper
+      margin: 0 0 1em 0
+    h3.productDescriptionSource
+      font-weight: normal
+      color: #333333
+      font-size: 1.23em
+      margin: 0.75em 0 0.375em -15px
+      clear: left
+    .seeAll
+      margin-top: 1.25em
+      margin-left: -15px
+    ul
+      list-style-type: disc
+      margin: 1.12em 0
+      margin-left: 20px
+      li
+        margin: 0 0 0 20px
+        ul
+          list-style-type: disc
+          margin-left: 20px
+          li
+            margin: 0 0 0 20px
+    .aplus
+      h4, h5
+        margin: 0 0 .75em 0
+        font-size: 1em
+      h4
+        color: #cc6600
+      p
+        margin: 0 0 1em 0
+      .break
+        clear: both
+        height: 0px
+        font-size: 0px
+      .spacer
+        margin-bottom: 13px
+      img
+        border: none
+      .leftImage, .rightImage, .centerImage
+        margin-bottom: 1em
+        margin-top: 0
+        text-align: center
+        vertical-align: top
+      .leftImage
+        margin-right: 15px
+        float: left
+        clear: left
+      .rightImage
+        margin-left: 15px
+        float: right
+        clear: right
+      .imageCaption
+        clear: both
+        padding: .5em .5em 0 .5em
+        font-size: .846em
+        display: block
+      table.data
+        border-collapse: collapse
+        margin-bottom: 1.25em
+        th
+          font-weight: bold
+          background: #f7f7f7
+          border-style: solid
+          border-color: #cccccc
+          border-width: 0 0 1px 1px
+        td
+          border-left: 1px solid #ccc
+          border-bottom: 1px dotted #cccccc
+        th, td
+          padding: 3px 10px
+          text-align: left
+        tfoot
+          font-style: italic
+        caption
+          background: #eee
+          font-size: .8125em
+        tr
+          td:first-child, th:first-child
+            border-left-width: 0px
+      ul
+        margin: 0 0 1em 0
+      .center
+        text-align: center
+      .right
+        text-align: right
+      .sixth-col, .fourth-col, .third-col, .half-col, .two-third-col, .three-fourth-col, .one-col
+        float: left
+        margin-right: 1.6760%
+        overflow: hidden
+      .last
+        margin-right: 0px
+      .sixth-col
+        width: 15.080%
+      .fourth-col
+        width: 23.4637%
+      .third-col
+        width: 31.8436%
+      .half-col
+        width: 48.6034%
+      .two-third-col
+        width: 65.3631%
+      .three-fourth-col
+        width: 73.7430%
+      .one-col
+        width: 98.8827%
+        margin-right: 0
+      .last
+        margin-right: 0
+      // 10/3/2013: removed
+      //width: 100%
+      //min-width: 895px
+
+//* html .amazon.productDescription .aplus
+//  width: expression((document.body.clientWidth < 936) ? "895px" : "100%" )
+
+// EOF
