@@ -24,13 +24,13 @@ VS_VERSION_INFO VERSIONINFO
     BEGIN
       BLOCK "000004b0"
       BEGIN
-        VALUE "CompanyName", "Annot Cloud"
-        VALUE "FileDescription", "Annot Updater"
+        VALUE "CompanyName", "Sakuradite"
+        VALUE "FileDescription", "VNR Updater"
         VALUE "FileVersion", VERSION
         VALUE "LegalCopyright", "Copyright (C) 2012."
-        VALUE "InternalName", "Annot Updater.exe"
-        VALUE "OriginalFilename", "Annot Updater.exe"
-        VALUE "ProductName", "Annot Updater"
+        VALUE "InternalName", "VNR Updater.exe"
+        VALUE "OriginalFilename", "VNR Updater.exe"
+        VALUE "ProductName", "VNR Updater"
         VALUE "ProductVersion", VERSION
       END
     END

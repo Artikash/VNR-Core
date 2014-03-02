@@ -4,6 +4,6 @@
 // 9/3/2011 jichi
 
 #define APP_PREFIX      L"Library\\Frameworks\\Sakura\\bin\\"
-#define APP_EXE         L"annot-reader.exe"
+#define APP_EXE         L"reader.exe"
 
 // EOF
