@@ -299,6 +299,8 @@ Item { id: root_
         property int count: Math.max(1, gameComet_.connectionCount)
         text: String(count)
 
+        property bool highlight: count > 1
+
         visible: gameComet_.active
 
         font.pixelSize: parent.pixelSize * 0.9
@@ -308,7 +310,9 @@ Item { id: root_
         //visible: !statusPlugin_.wine
 
         property bool checked
-        pauseColor: checked ? parent.buttonCheckedColor : parent.buttonColor
+
+        //pauseColor: checked ? parent.buttonCheckedColor : parent.buttonColor
+        pauseColor: '#aa555555' // black
 
         //language: root_.language
         font.family: parent.cellFont
