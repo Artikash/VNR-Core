@@ -296,10 +296,10 @@ Item { id: root_
       Share.TwinkleButton { id: chatButton_
         height: parent.cellHeight; width: parent.cellWidth
 
-        property int count: 123
+        property int count: Math.max(1, gameComet_.connectionCount)
         text: String(count)
 
-        visible: statusPlugin_.online
+        visible: gameComet_.active
 
         font.pixelSize: parent.pixelSize * 0.9
         //font.bold: true

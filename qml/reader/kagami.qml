@@ -7,6 +7,7 @@ import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
 import '../../js/sakurakit.min.js' as Sk
 //import '../../js/reader.min.js' as My
+import 'comet' as Comet
 import 'kagami' as Kagami
 //import 'share' as Share
 
@@ -197,6 +198,11 @@ Item { id: root_
   }
 
   Plugin.DataManagerProxy { id: datamanPlugin_ }
+
+  property int gameItemId: datamanPlugin_.gameItemId // cached
+  Comet.GameComet { id: gameComet_
+    active: !!gameItemId && gameWindow_.active && statusPlugin_.online
+  }
 
   Plugin.TextManagerProxy { id: textmanPlugin_
     enabled: dock_.visibleChecked
