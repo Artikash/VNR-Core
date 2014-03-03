@@ -5,6 +5,7 @@ Blocker         blocker.qml
 BusySpinner     busyspinner.qml
 CachedAvatarImage cachedavatarimage.qml
 CheckBox        checkbox.qml
+CircleButton    circlebutton.qml
 ClearButton     clearbutton.qml
 CloseButton     closebutton.qml
 FadeInImage     fadeinimage.qml
@@ -20,4 +21,6 @@ SearchBox       searchbox.qml
 Slider          slider.qml
 TextButton      textbutton.qml
 TextEffect      texteffect.qml
+TwinkleCircleButton twinklecirclebutton.qml
+TwinkleButton   twinklebutton.qml
 View            view.qml
