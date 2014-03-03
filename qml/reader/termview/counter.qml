@@ -20,6 +20,6 @@ Text {
 
   text: {
     var t = '<span style="color:red;font-weight:bold">' + count + '</span>'
-    return My.tr("{0} people are viewing this page").replace("{0}", t)
+    return My.tr("{0} people are viewing this page").replace('{0}', t)
   }
 }
