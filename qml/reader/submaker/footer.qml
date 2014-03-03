@@ -139,7 +139,7 @@ Item { id: root_
         append({text:Sk.tr("Danmaku"), value:'danmaku'})
         append({text:Sk.tr("Comment"), value:'comment'})
         append({text:Sk.tr("Subtitle"), value:'subtitle'})
-        append({text:Sk.tr("Pop-up"), value:'popup'})
+        append({text:My.tr("Note"), value:'popup'})
       }
     }
     tooltip: Sk.tr("Type")

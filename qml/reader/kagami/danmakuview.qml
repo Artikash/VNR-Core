@@ -1,4 +1,4 @@
-/** omajinai.qml
+/** danmaku.qml
  *  9/29/2012 jichi
  */
 import QtQuick 1.1

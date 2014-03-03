@@ -142,7 +142,7 @@ Item { id: root_
             case 'danmaku': return Sk.tr("Danmaku")
             case 'comment': return Sk.tr("Comment")
             case 'subtitle': return Sk.tr("Subtitle")
-            case 'popup': return Sk.tr("Pop-up")
+            case 'popup': return My.tr("Note")
             default: return Sk.tr("Danmaku")
             }
           }
@@ -158,7 +158,7 @@ Item { id: root_
               append({value:'danmaku', text:Sk.tr("Danmaku")})
               append({value:'comment', text:Sk.tr("Comment")})
               append({value:'subtitle', text:Sk.tr("Subtitle")})
-              append({value:'popup', text:Sk.tr("Pop-up")})
+              append({value:'popup', text:My.tr("Note")})
             }
           }
 

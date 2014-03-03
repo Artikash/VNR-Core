@@ -7,6 +7,7 @@ import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
 import '../../js/sakurakit.min.js' as Sk
 //import '../../js/reader.min.js' as My
+import 'comet' as Comet
 import 'kagami' as Kagami
 //import 'share' as Share
 
@@ -198,6 +199,11 @@ Item { id: root_
 
   Plugin.DataManagerProxy { id: datamanPlugin_ }
 
+  property int gameItemId: datamanPlugin_.gameItemId // cached
+  Comet.GameComet { id: gameComet_
+    active: !!gameItemId && gameWindow_.active && statusPlugin_.online
+  }
+
   Plugin.TextManagerProxy { id: textmanPlugin_
     enabled: dock_.visibleChecked
   }
@@ -379,7 +385,7 @@ Item { id: root_
         //  gamePanel_.paddingVisible = stretched
       }
 
-      Kagami.Gossip { id: gossip_
+      Kagami.CommentView { //id: gossip_
         anchors {
           top: center_.top; bottom: center_.bottom
           left: center_.left
@@ -589,7 +595,7 @@ Item { id: root_
         //}
       }
 
-      Kagami.Gospel { //id: gospel_
+      Kagami.NoteView { //id: gospel_
         minimumX: 0; minimumY: 0
         maximumX: parent.width - width
         maximumY: parent.height - height
@@ -615,7 +621,7 @@ Item { id: root_
         }
       }
 
-      Kagami.Omajinai { //id: omajinai_
+      Kagami.DanmakuView { //id: omajinai_
         anchors {
           fill: center_
           //topMargin: center_.fullScreen ? 0 : 25 // skip header of the window

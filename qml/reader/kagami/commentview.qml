@@ -1,4 +1,4 @@
-/** gossip.qml
+/** commentview.qml
  *  12/2/2012 jichi
  */
 import QtQuick 1.1

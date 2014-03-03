@@ -59,6 +59,8 @@ Item { id: root_
   property alias danmakuChecked: danmakuButton_.checked
   property alias nameChecked: nameButton_.checked
 
+  property alias chatChecked: chatButton_.checked
+
   //property alias furiganaChecked: furiganaButton_.checked
   //property alias furiganaEnabled: furiganaButton_.enabled
 
@@ -291,6 +293,35 @@ Item { id: root_
       //  }
       //}
 
+      Share.TwinkleButton { id: chatButton_
+        height: parent.cellHeight; width: parent.cellWidth
+
+        property int count: Math.max(1, gameComet_.connectionCount)
+        text: String(count)
+
+        property bool highlight: count > 1
+
+        visible: gameComet_.active
+
+        font.pixelSize: parent.pixelSize * 0.9
+        //font.bold: true
+        radius: parent.cellRadius
+        //visible: !root_.ignoresFocus
+        //visible: !statusPlugin_.wine
+
+        property bool checked
+
+        //pauseColor: checked ? parent.buttonCheckedColor : parent.buttonColor
+        pauseColor: '#aa555555' // black
+
+        //language: root_.language
+        font.family: parent.cellFont
+        //toolTip: qsTr("Read current Japanese game text using TTS")
+        toolTip: qsTr("{0} people are playing this game now").replace('{0}', count)
+
+        onClicked: checked = !checked
+      }
+
       Share.TextButton { id: commentBarButton_
         height: parent.cellHeight; width: parent.cellWidth
         //text: checked ? "×" : "◯" // ばつ、まる
@@ -347,7 +378,6 @@ Item { id: root_
           //growl_.showMessage(toolTip)
         }
       }
-
 
       Share.TextButton { id: captureButton_
         height: parent.cellHeight; width: parent.cellWidth
@@ -419,7 +449,6 @@ Item { id: root_
           //if (checked && !stretchRect_.visible)
           //  stretchWindowButton_.checked = stretchDisplayButton_.checked = false
           //else
-
 
         Share.FadingRectangle { id: stretchRect_
           visible: false
@@ -615,6 +644,7 @@ Item { id: root_
                          //closeButton_.hover ||
                          textButton_.hover ||
                          nameButton_.hover ||
+                         chatButton_.hover ||
                          translationButton_.hover ||
                          subtitleButton_.hover ||
                          commentButton_.hover ||

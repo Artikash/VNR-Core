@@ -7492,10 +7492,13 @@ class DataManagerProxy(QObject):
     super(DataManagerProxy, self).__init__(parent)
     dm = manager()
     dm.commentCountChanged.connect(self.commentCountChanged)
+    dm.currentGameChanged.connect(lambda:
+        self.gameMd5Changed.emit(self.gameMd5))
+    # Not used
     #dm.currentGameChanged.connect(lambda:
     #    self.gameIdChanged.emit(self.gameId))
     dm.currentGameChanged.connect(lambda:
-        self.gameMd5Changed.emit(self.gameMd5))
+        self.gameItemIdChanged.emit(self.gameItemId))
 
   ## Games ##
 
@@ -7511,8 +7514,14 @@ class DataManagerProxy(QObject):
       lambda _: manager().commentCount(),
       notify=commentCountChanged)
 
-  #gameIdChanged = Signal(str)
-  #gameId = Property(str,
+  gameItemIdChanged = Signal(long)
+  gameItemId = Property(long,
+      lambda _: manager().currentGameItemId(),
+      notify=gameItemIdChanged)
+
+  # Not used
+  #gameIdChanged = Signal(long)
+  #gameId = Property(long,
   #    lambda _: manager().currentGameId(),
   #    notify=gameIdChanged)
 

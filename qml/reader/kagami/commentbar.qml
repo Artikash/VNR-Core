@@ -5,6 +5,7 @@ import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 //import org.sakuradite.reader 1.0 as Plugin
 import '../../../js/sakurakit.min.js' as Sk
+import '../../../js/reader.min.js' as My
 import '../../../js/util.min.js' as Util
 import '../../bootstrap3' as Bootstrap
 import '../share' as Share
@@ -63,7 +64,7 @@ Share.InputBar { id: root_
         append({text:Sk.tr("Danmaku"), value:'danmaku'})
         append({text:Sk.tr("Comment"), value:'comment'})
         append({text:Sk.tr("Subtitle"), value:'subtitle'})
-        append({text:Sk.tr("Pop-up"), value:'popup'})
+        append({text:My.tr("Note"), value:'popup'})
       }
     }
     tooltip: Sk.tr("Type")

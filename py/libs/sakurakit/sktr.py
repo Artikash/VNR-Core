@@ -91,6 +91,7 @@ class sakurakit(QObject):
       self.tr("Buy"),
       self.tr("Cancel"),
       self.tr("Category"),
+      self.tr("Chat"),
       self.tr("Clear"),
       self.tr("Close"),
       self.tr("Cluster"),
