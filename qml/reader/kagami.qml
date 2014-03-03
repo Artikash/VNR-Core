@@ -595,7 +595,7 @@ Item { id: root_
         //}
       }
 
-      Kagami.NoteViwe { //id: gospel_
+      Kagami.NoteView { //id: gospel_
         minimumX: 0; minimumY: 0
         maximumX: parent.width - width
         maximumY: parent.height - height
