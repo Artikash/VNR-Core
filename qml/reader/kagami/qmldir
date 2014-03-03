@@ -5,11 +5,11 @@ AppMenu         appmenu.qml
 CentralArea     centralarea.qml
 Clock           clock.qml
 CommentBar      commentbar.qml
+CommentView     commentview.qml
+DanmakuView     danmakuview.qml
 Dock            dock.qml
-Gospel          gospel.qml
-Gossip          gossip.qml
 Grimoire        grimoire.qml
 Growl           growl.qml
 MenuButton      menubutton.qml
-Omajinai        omajinai.qml
+NoteView        noteview.qml
 Shiori          shiori.qml

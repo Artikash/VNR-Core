@@ -100,7 +100,7 @@ Item { id: root_
     case 'danmaku': return Sk.tr("danmaku")
     case 'comment': return Sk.tr("comment")
     case 'subtitle': return Sk.tr("subtitle")
-    case 'popup': return Sk.tr("pop-up")
+    case 'popup': return My.tr("note")
 
     case 'tr': return Sk.tr("translation")
     case 'text': return Sk.tr("text")

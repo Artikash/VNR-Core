@@ -43,6 +43,8 @@ class reader(QObject):
 
       self.tr("Title"),
 
+      self.tr("Note"),
+
       # Messages
 
       self.tr("Unknown game"),

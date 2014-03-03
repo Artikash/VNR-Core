@@ -385,7 +385,7 @@ Item { id: root_
         //  gamePanel_.paddingVisible = stretched
       }
 
-      Kagami.Gossip { id: gossip_
+      Kagami.CommentView { //id: gossip_
         anchors {
           top: center_.top; bottom: center_.bottom
           left: center_.left
@@ -595,7 +595,7 @@ Item { id: root_
         //}
       }
 
-      Kagami.Gospel { //id: gospel_
+      Kagami.NoteViwe { //id: gospel_
         minimumX: 0; minimumY: 0
         maximumX: parent.width - width
         maximumY: parent.height - height
@@ -621,7 +621,7 @@ Item { id: root_
         }
       }
 
-      Kagami.Omajinai { //id: omajinai_
+      Kagami.DanmakuView { //id: omajinai_
         anchors {
           fill: center_
           //topMargin: center_.fullScreen ? 0 : 25 // skip header of the window

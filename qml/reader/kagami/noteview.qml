@@ -1,4 +1,4 @@
-/** gospel.qml
+/** noteview.qml
  *  12/21/2012 jichi
  */
 import QtQuick 1.1
