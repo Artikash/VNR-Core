@@ -275,7 +275,16 @@ def main():
     dprint("app update detected, migrate settings")
 
     if ss_version:
+
       from sakurakit import skfileio
+      if ss_version <= 1393896804:
+        if ss.isMainlandChina():
+          path = rc.DIR_CACHE_IMAGE
+          if os.path.exists(path):
+            skfileio.removetree(path)
+            try: os.makedirs(path)
+            except OSError:
+              dwarn("warning: failed to create directory: %s" % path)
 
       if ss_version <= 1393493964:
         if ss.value("LocaleSwitchEnabled"):
