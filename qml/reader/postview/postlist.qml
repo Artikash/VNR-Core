@@ -134,18 +134,18 @@ Item { id: root_
 
       Share.AvatarImage { id: avatar_
         anchors { left: parent.left; top: parent.top }
-        width: 40; height: 40
+        width: 30; height: 30
         url: model.userAvatar ? 'http://avatars.io/' + model.userAvatar + '?size=large' : ''
       }
 
       Text { //id: editButton_
         visible: postItem_.owner
         anchors { // the same as postUser_
-          top: avatar_.bottom
+          top: avatar_.url ? avatar_.bottom : parent.bottom
           verticalCenter: avatar_.verticalCenter
           topMargin: 5
         }
-        font.pixelSize: 10
+        font.pixelSize: 12
         text: '<a style="color:#2a6496;text-decoration:none" href="#">' + Sk.tr("Edit") + '</a>'
         textFormat: Text.RichText
 
