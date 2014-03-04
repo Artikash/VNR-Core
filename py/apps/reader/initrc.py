@@ -55,10 +55,10 @@ Note that the paths and file names are CASE-SENSITIVE.
   Library/Frameworks/Qt/PySide/QtCore4.dll
   Library/Frameworks/Qt/PySide/QtCore.pyd
 
+I hope if you can turn off your antivirus soft and redownload VNR manually from one of the following:
 
-I hope if you can turn off your antivirus soft and redownload VNR manually from:
-
-  http://sakuradite.org/reader.7z
+  Google Drive: http://goo.gl/t31MqY
+  Baidu Disk: http://pan.baidu.com/s/1jGftD9W
 
 Feel free to complain to me (annotcloud@gmail.com) if this error keeps bothering you.
 
@@ -117,8 +117,10 @@ I am sorry that VNR got a severe problem on startup m(_ _)m
 It seems that some of the files needed by VNR are missing.
 Either VNR is corrupted after download, or some files are quarantined by anti-virus soft after update.
 
-I hope if you can re-download VNR from the following URL while keeping your anti-virus soft off.
-        http://sakurakit.org/reader.7z
+I hope if you can turn off your antivirus soft and redownload VNR manually from one of the following:
+
+    Google Drive: http://goo.gl/t31MqY
+    Baidu Disk: http://pan.baidu.com/s/1jGftD9W
 
 Feel free to complain to me (annotcloud@gmail.com) if this error keeps bothering you.
 

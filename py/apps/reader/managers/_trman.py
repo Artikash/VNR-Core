@@ -695,7 +695,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
     """@reimp"""
     if fr != 'ja':
       return None, None, None
-    to = 'en' if to in ('ru', 'nl', 'pl') else to
+    to = 'en' if to in ('ms', 'ru', 'nl', 'pl') else to
     if emit:
       self.emitLanguages(fr=fr, to=to)
     text = self._escapeText(text, to=to, emit=emit)
@@ -730,7 +730,7 @@ class ExciteTranslator(OnlineMachineTranslator):
     """@reimp"""
     if fr != 'ja':
       return None, None, None
-    to = 'en' if to in ('id', 'th', 'vi', 'nl', 'pl') else to
+    to = 'en' if to in ('ms', 'id', 'th', 'vi', 'nl', 'pl') else to
     if emit:
       self.emitLanguages(fr=fr, to=to)
     text = self._escapeText(text, to=to, emit=emit)

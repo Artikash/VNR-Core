@@ -39,6 +39,7 @@ ESCAPE = frozenset((
   'ko',
   'vi',
   'th',
+  'ms',
   'id',
   'de',
   'es',

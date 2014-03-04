@@ -2,7 +2,7 @@
 
 # Languages related files
 wiki:
--
+- sidebar
 
 api:
 - defs.py
@@ -13,18 +13,21 @@ service:
 - I18n.groovy
 
 client:
-- share.yaml
-- util.js
-- kagami.qml
-- grimoire.qml
-- mirage.qml
-- sakurakit/tr/Makefile
-- tsupdate.py
-- sktr.py
-- settings.py
-- i18n.py
-- config.py
-- _prefs.py
-- _trman.py
+- share.yaml: -id:, id:
+- util.js: 'id', id:
+- kagami.qml: indonesianFont
+- grimoire.qml: ..
+- mirage.qml: ..
+- tsupdate.py: 'id'
+- sktr.py: "id" "Indonesian"
+- sakurakit/tr/Makefile: id_ID.ts id_ID.qm
+- settings.py: indonesianFont
+- i18n.py: 'id'
+- config.py: 'it'
+- _prefs.py: 'id', Indonesian
+- _trman.py: 'id'
+- baidufanyi.py: 'id'
+
+- Changes
 
 # EOF

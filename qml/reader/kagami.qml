@@ -432,6 +432,7 @@ Item { id: root_
         koreanFont: settings_.koreanFont
         thaiFont: settings_.thaiFont
         vietnameseFont: settings_.vietnameseFont
+        malaysianFont: settings_.malaysianFont
         indonesianFont: settings_.indonesianFont
         germanFont: settings_.germanFont
         frenchFont: settings_.frenchFont

@@ -65,6 +65,7 @@ Item { id: root_
   property string koreanFont
   property string thaiFont
   property string vietnameseFont
+  property string malaysianFont
   property string indonesianFont
   property string germanFont
   property string frenchFont
@@ -210,6 +211,7 @@ Item { id: root_
     case 'ko': return koreanFont
     case 'th': return thaiFont
     case 'vi': return vietnameseFont
+    case 'ms': return malaysianFont
     case 'id': return indonesianFont
     case 'de': return germanFont
     case 'es': return spanishFont
