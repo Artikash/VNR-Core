@@ -134,22 +134,8 @@ Item { id: root_
 
       Share.AvatarImage { id: avatar_
         anchors { left: parent.left; top: parent.top }
-        width: 30; height: 30
+        width: 40; height: 40
         url: model.userAvatar ? 'http://avatars.io/' + model.userAvatar + '?size=large' : ''
-      }
-
-      Text { //id: editButton_
-        visible: postItem_.owner
-        anchors { // the same as postUser_
-          top: avatar_.url ? avatar_.bottom : parent.bottom
-          verticalCenter: avatar_.verticalCenter
-          topMargin: 5
-        }
-        font.pixelSize: 12
-        text: '<a style="color:#2a6496;text-decoration:none" href="#">' + Sk.tr("Edit") + '</a>'
-        textFormat: Text.RichText
-
-        onLinkActivated: editDialog_.showPost(model)
       }
 
       Rectangle { id: postHeader_
@@ -173,6 +159,20 @@ Item { id: root_
           textFormat: Text.RichText
 
           onLinkActivated: Qt.openUrlExternally(link)
+        }
+
+        Text { //id: editButton_
+          visible: postItem_.owner
+          anchors { // the same as postUser_
+            verticalCenter: parent.verticalCenter
+            right: postDate_.left
+            rightMargin: 9
+          }
+          font.pixelSize: 12
+          text: '<a href="#" style="color:darkgreen;text-decoration:none">' + Sk.tr("Edit") + '</a>'
+          textFormat: Text.RichText
+
+          onLinkActivated: editDialog_.showPost(model)
         }
 
         //Share.TextButton { id: editButton_
