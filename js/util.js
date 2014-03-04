@@ -148,6 +148,7 @@ var TRANSLATOR_NAME = {
   , eztrans: "ezTrans XP"
   , atlas: "ATLAS"
   , lec: "LEC"
+  , lecol: "LEC Online"
   , lou: "ルー語"
 }
 function translatorName(tr) { return TRANSLATOR_NAME[tr] }

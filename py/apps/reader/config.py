@@ -158,6 +158,7 @@ SETTINGS_DREYE_COLOR = _SETTINGS['dreyeColor']
 SETTINGS_EZTRANS_COLOR = _SETTINGS['ezTransColor']
 SETTINGS_ATLAS_COLOR = _SETTINGS['atlasColor']
 SETTINGS_LEC_COLOR = _SETTINGS['lecColor']
+SETTINGS_LECONLINE_COLOR = _SETTINGS['lecOnlineColor']
 
 ## Environment variables ##
 

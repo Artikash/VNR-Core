@@ -122,7 +122,7 @@ Item { id: root_
       }
       height: Math.max(avatar_.height, postHeader_.height + postText_.height) + 10
 
-      property bool owner: statusPlugin_.userName == model.userName
+      property bool owner: statusPlugin_.userName === model.userName
 
       //Item { id: avatar_
       //  anchors {
@@ -149,38 +149,50 @@ Item { id: root_
         color: Qt.rgba(0,255,127,.1)
 
         Text { id: postUser_
-          visible: !postItem_.owner
           anchors {
             left: parent.left
             verticalCenter: parent.verticalCenter
           }
           // The color is the same as bootstrap 3 link hover color
           font.pixelSize: 12
-          text: '<a style="color:#2a6496;text-decoration:none" href="http://sakuradite.com/user/' + model.userName + '">' + model.userName + '</a>'
+          text: '<a style="color:#2a6496;text-decoration:none" href="http://sakuradite.com/user/' + model.userName + '">@' + model.userName + '</a>'
           textFormat: Text.RichText
 
           onLinkActivated: Qt.openUrlExternally(link)
         }
 
-        Share.TextButton { id: editButton_
+        Text { //id: editButton_
           visible: postItem_.owner
           anchors { // the same as postUser_
-            left: parent.left
             verticalCenter: parent.verticalCenter
+            right: postDate_.left
+            rightMargin: 9
           }
-          font.pixelSize: 10
-          height: 20; width: 40
-          text: Sk.tr("Edit")
-          toolTip: Sk.tr("Edit")
-          color: '#2a6496' // bootstrap link color
-          radius: 4
-          font.bold: false
-          //radius: parent.cellRadius
-          //backgroundColor: parent.buttonColor
-          //visible: !root_.ignoresFocus && !slimChecked
+          font.pixelSize: 12
+          text: '<a href="#" style="color:darkgreen;text-decoration:none">' + Sk.tr("Edit") + '</a>'
+          textFormat: Text.RichText
 
-          onClicked: editDialog_.showPost(model)
+          onLinkActivated: editDialog_.showPost(model)
         }
+
+        //Share.TextButton { id: editButton_
+        //  visible: postItem_.owner
+        //  anchors { // the same as postUser_
+        //    left: parent.left
+        //    verticalCenter: parent.verticalCenter
+        //  }
+        //  font.pixelSize: 10
+        //  height: 20; width: 40
+        //  text: Sk.tr("Edit")
+        //  toolTip: Sk.tr("Edit")
+        //  color: '#2a6496' // bootstrap link color
+        //  radius: 4
+        //  font.bold: false
+        //  //radius: parent.cellRadius
+        //  //backgroundColor: parent.buttonColor
+        //  //visible: !root_.ignoresFocus && !slimChecked
+        //  onClicked: editDialog_.showPost(model)
+        //}
 
         Text { id: postDate_
           anchors {

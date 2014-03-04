@@ -1258,6 +1258,7 @@ class _TextTab(object):
       #('Lougo', None,  u"ルー語", None),
       ('Google', None,  mytr_("Google"), None),
       ('Bing', None,  mytr_("Bing"), None),
+      ('LecOnline', 'lecOnline',  mytr_("LEC Online"), None),
       ('Infoseek', None,  mytr_("Infoseek"), None),
       ('Excite', None,  mytr_("Excite"), None),
       ('Baidu', None,  mytr_("Baidu"), 'zh'),
@@ -1317,7 +1318,7 @@ class _TextTab(object):
 
     for Name in ('Font', 'Shadow', 'Text', 'Subtitle', 'Comment', 'Danmaku',
                  #'Lougo',
-                 'Bing', 'Google', 'Infoseek', 'Excite', 'Baidu', 'JBeijing', 'Dreye', 'EzTrans', 'Atlas', 'Lec'):
+                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Baidu', 'JBeijing', 'Dreye', 'EzTrans', 'Atlas', 'Lec'):
       try: getattr(self, '_load{0}Color'.format(Name))(self)
       except AttributeError: pass
 
@@ -1735,6 +1736,7 @@ class _HonyakuTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.bingButton)
     layout.addWidget(self.googleButton)
+    layout.addWidget(self.lecOnlineButton)
     layout.addWidget(self.infoseekButton)
     layout.addWidget(self.exciteButton)
     if 'zh' not in blans:
@@ -1781,7 +1783,7 @@ class _HonyakuTab(object):
             tr_("Russian"),
             tr_("Dutch"),
             tr_("Polish"),
-            )))))
+    )))))
     ret.setChecked(settings.global_().isInfoseekEnabled())
     ret.toggled.connect(settings.global_().setInfoseekEnabled)
     return ret
@@ -1799,6 +1801,21 @@ class _HonyakuTab(object):
             tr_("Dutch"),
             tr_("Polish"),
             )))))
+    ret.setChecked(settings.global_().isExciteEnabled())
+    ret.toggled.connect(settings.global_().setExciteEnabled)
+    return ret
+
+  @memoizedproperty
+  def lecOnlineButton(self):
+    ret = QtWidgets.QCheckBox("(%s) %s (%s, %s)" % (
+        tr_("Online"),
+        my.tr("LEC.com multilingual translation service"),
+        my.tr("recommended for European"),
+        my.tr("excluding {0}").format(', '.join((
+            tr_("Thai"),
+            tr_("Vietnamese"),
+            tr_("Malaysian"),
+    )))))
     ret.setChecked(settings.global_().isExciteEnabled())
     ret.toggled.connect(settings.global_().setExciteEnabled)
     return ret

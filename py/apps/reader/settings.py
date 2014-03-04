@@ -386,6 +386,15 @@ class Settings(QSettings):
       self.setValue('BaiduColor', value)
       self.baiduColorChanged.emit(value)
 
+  lecOnlineColorChanged = Signal(str)
+  def lecOnlineColor(self):
+    return self.value('LecOnlineColor', config.SETTINGS_LECONLINE_COLOR)
+  def setLecOnlineColor(self, value):
+    value = value or config.SETTINGS_LECONLINE_COLOR
+    if value != self.lecOnlineColor():
+      self.setValue('LecOnlineColor', value)
+      self.lecOnlineColorChanged.emit(value)
+
   lougoColorChanged = Signal(str)
   def lougoColor(self):
     return self.value('LougoColor', config.SETTINGS_LOUGO_COLOR)
@@ -891,6 +900,14 @@ class Settings(QSettings):
       self.setValue('BaiduEnabled', value)
       self.baiduEnabledChanged.emit(value)
 
+  lecOnlineEnabledChanged = Signal(bool)
+  def isLecOnlineEnabled(self):
+    return to_bool(self.value('LecOnlineEnabled'))
+  def setLecOnlinenabled(self, value):
+    if value != self.isLecOnlineEnabled():
+      self.setValue('LecOnlineEnabled', value)
+      self.LecOnlineEnabledChanged.emit(value)
+
   lougoEnabledChanged = Signal(bool)
   def isLougoEnabled(self):
     #return to_bool(self.value('LougoEnabled'))
@@ -1167,6 +1184,7 @@ class SettingsProxy(QObject):
     g.bingColorChanged.connect(self.bingColorChanged)
     g.googleColorChanged.connect(self.googleColorChanged)
     g.baiduColorChanged.connect(self.baiduColorChanged)
+    g.lecOnlineColorChanged.connect(self.lecOnlineColorChanged)
     g.lougoColorChanged.connect(self.lougoColorChanged)
     g.jbeijingColorChanged.connect(self.jbeijingColorChanged)
     g.dreyeColorChanged.connect(self.dreyeColorChanged)
@@ -1391,6 +1409,8 @@ class SettingsProxy(QObject):
   bingColor = unicode_property('BingColor', config.SETTINGS_BING_COLOR, notify=bingColorChanged)
   baiduColorChanged = Signal(unicode)
   baiduColor = unicode_property('BaiduColor', config.SETTINGS_BAIDU_COLOR, notify=baiduColorChanged)
+  lecOnlineColorChanged = Signal(unicode)
+  lecOnlineColor = unicode_property('LecOnlineColor', config.SETTINGS_LECONLINE_COLOR, notify=lecOnlineColorChanged)
   lougoColorChanged = Signal(unicode)
   lougoColor = unicode_property('LougoColor', config.SETTINGS_LOUGO_COLOR, notify=lougoColorChanged)
   jbeijingColorChanged = Signal(unicode)
