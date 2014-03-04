@@ -551,6 +551,7 @@ Item { id: root_
         ezTransColor: settings_.ezTransColor
         atlasColor: settings_.atlasColor
         lecColor: settings_.lecColor
+        lecOnlineColor: settings_.lecOnlineColor
 
         property int relativeX: settings_.grimoireNormalizedX * center_.width + (center_.width - width) / 2
         property int relativeY: settings_.grimoireNormalizedY * center_.height + (center_.fullScreen ? 0 : 25)

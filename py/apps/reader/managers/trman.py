@@ -30,6 +30,7 @@ class _TranslatorManager(object):
     self.bingEnabled = \
     self.googleEnabled = \
     self.baiduEnabled = \
+    self.lecOnlineEnabled = \
     self.lougoEnabled = \
     self.jbeijingEnabled = \
     self.dreyeEnabled = \
@@ -77,6 +78,10 @@ class _TranslatorManager(object):
     return _trman.BingTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
 
   @memoizedproperty
+  def lecOnlineTranslator(self):
+    return _trman.LecOnlineTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+
+  @memoizedproperty
   def infoseekTranslator(self):
     return _trman.InfoseekTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
 
@@ -102,6 +107,8 @@ class _TranslatorManager(object):
     """
     if key == 'eztrans':
       return self.ezTranslator
+    if key == 'lecol':
+      return self.lecOnlineTranslator
     if key == 'lou':
       return self.lougoTranslator
     try: return getattr(self, key + 'Translator')
@@ -111,7 +118,7 @@ class _TranslatorManager(object):
     """
     @yield  Translator
     """
-    if self.lougoEnabled: yield self.lougoTranslator
+    #if self.lougoEnabled: yield self.lougoTranslator
     if self.jbeijingEnabled: yield self.jbeijingTranslator
     if self.dreyeEnabled: yield self.dreyeTranslator
     if self.ezTransEnabled: yield self.ezTranslator
@@ -125,9 +132,9 @@ class _TranslatorManager(object):
     if self.online:
       if self.infoseekEnabled: yield self.infoseekTranslator
       if self.exciteEnabled: yield self.exciteTranslator
+      if self.lecOnlineEnabled: yield self.lecOnlineTranslator
       if self.bingEnabled: yield self.bingTranslator
       if self.googleEnabled: yield self.googleTranslator
-      #if self.youdaoEnabled: yield self.youdaoTranslator
       if self.baiduEnabled: yield self.baiduTranslator
 
   def iterTranslators(self):
@@ -194,6 +201,9 @@ class TranslatorManager(QObject):
   def isBaiduEnabled(self): return self.__d.baiduEnabled
   def setBaiduEnabled(self, value): self.__d.baiduEnabled = value
 
+  def isLecOnlineEnabled(self): return self.__d.lecOnlineEnabled
+  def setLecOnlineEnabled(self, value): self.__d.lecOnlineEnabled = value
+
   def isLougoEnabled(self): return self.__d.lougoEnabled
   def setLougoEnabled(self, value): self.__d.lougoEnabled = value
 
@@ -229,9 +239,9 @@ class TranslatorManager(QObject):
       d.baiduEnabled,
       d.googleEnabled,
       d.bingEnabled,
-      d.ezTransEnabled,
-      d.lecEnabled,
-      d.atlasEnabled,
+      d.lecOnlineEnabled,
+      d.infoseekEnabled,
+      d.exciteEnabled,
     ))
 
   def hasOfflineTranslators(self):
@@ -240,7 +250,7 @@ class TranslatorManager(QObject):
     """
     d = self.__d
     return any((
-      d.lougoEnabled,
+      #d.lougoEnabled,
       d.jbeijingEnabled,
       d.dreyeEnabled,
       d.ezTransEnabled,

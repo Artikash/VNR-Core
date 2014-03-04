@@ -129,6 +129,7 @@ Item { id: root_
   property color ezTransColor: settings_.ezTransColor
   property color atlasColor: settings_.atlasColor
   property color lecColor: settings_.lecColor
+  property color lecOnlineColor: settings_.lecOnlineColor
 
   property string japaneseFont: settings_.japaneseFont
   property string englishFont: settings_.englishFont
@@ -713,6 +714,7 @@ Item { id: root_
               case 'eztrans': return root_.ezTransColor
               case 'atlas': return root_.atlasColor
               case 'lec': return root_.lecColor
+              case 'lecol': return root_.lecOnlineColor
               case 'infoseek': return root_.infoseekColor
               case 'excite': return root_.exciteColor
               case 'bing': return root_.bingColor

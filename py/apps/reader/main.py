@@ -436,6 +436,9 @@ class _MainObject(object):
     ret.setBaiduEnabled(ss.isBaiduEnabled())
     ss.baiduEnabledChanged.connect(ret.setBaiduEnabled)
 
+    ret.setLecOnlineEnabled(ss.isLecOnlineEnabled())
+    ss.lecOnlineEnabledChanged.connect(ret.setLecOnlineEnabled)
+
     #ret.setYoudaoEnabled(ss.isYoudaoEnabled())
     #ss.youdaoEnabledChanged.connect(ret.setYoudaoEnabled)
 

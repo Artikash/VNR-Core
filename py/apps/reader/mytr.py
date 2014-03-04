@@ -97,6 +97,7 @@ class reader(QObject):
       self.tr("Bing"),
       self.tr("Google"),
       self.tr("LEC"),
+      self.tr("LEC Online"),
       self.tr("ezTrans XP"),
       self.tr("Kojien"),
       self.tr("Wadoku"),

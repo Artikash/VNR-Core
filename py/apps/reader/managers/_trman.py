@@ -15,10 +15,6 @@ from cconv.cconv import wide2thin, zhs2zht, zht2zhs
 from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
-from baidu import baidufanyi
-from google import googletrans
-from transer import infoseek
-from excite import worldtrans
 from mytr import my, mytr_
 import config, growl, mecabman, termman, textutil
 import trman
@@ -686,6 +682,8 @@ class InfoseekTranslator(OnlineMachineTranslator):
 
   def __init__(self, **kwargs):
     super(InfoseekTranslator, self).__init__(**kwargs)
+    from transer import infoseek
+    self.engine = infoseek
 
   #__infoseek_repl_after = staticmethod(skstr.multireplacer({
   #  '[': u'【',
@@ -700,7 +698,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
       self.emitLanguages(fr=fr, to=to)
     text = self._escapeText(text, to=to, emit=emit)
     if text:
-      text = self._translate(emit, text, infoseek.translate,
+      text = self._translate(emit, text, self.engine.translate,
           to=to, fr=fr, async=async)
       if text:
         text = self._unescapeTranslation(text, to=to, emit=emit)
@@ -713,7 +711,8 @@ class InfoseekTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translatetest(infoseek.translate, text, to=to, fr=fr, async=async)
+    try: return self._translatetest(self.engine.translate,
+            text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
 class ExciteTranslator(OnlineMachineTranslator):
@@ -721,6 +720,8 @@ class ExciteTranslator(OnlineMachineTranslator):
 
   def __init__(self, **kwargs):
     super(ExciteTranslator, self).__init__(**kwargs)
+    from excite import worldtrans
+    self.engine = worldtrans
 
   #__excite_repl_after = staticmethod(skstr.multireplacer({
   #  '[': u'【',
@@ -735,7 +736,7 @@ class ExciteTranslator(OnlineMachineTranslator):
       self.emitLanguages(fr=fr, to=to)
     text = self._escapeText(text, to=to, emit=emit)
     if text:
-      text = self._translate(emit, text, worldtrans.translate,
+      text = self._translate(emit, text, self.engine.translate,
           to=to, fr=fr, async=async)
       if text:
         text = self._unescapeTranslation(text, to=to, emit=emit)
@@ -748,7 +749,41 @@ class ExciteTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translatetest(worldtrans.translate, text, to=to, fr=fr, async=async)
+    try: return self._translatetest(self.engine.translate,
+            text, to=to, fr=fr, async=async)
+    except Exception, e: dwarn(e); return ''
+
+class LecOnlineTranslator(OnlineMachineTranslator):
+  key = 'lecol' # override
+
+  def __init__(self, **kwargs):
+    super(LecOnlineTranslator, self).__init__(**kwargs)
+
+    from lec import leconline
+    self.engine = leconline
+
+  def translate(self, text, to='en', fr='ja', async=False, emit=False):
+    """@reimp"""
+    to = 'en' if to in ('ms', 'th', 'vi') else to
+    if emit:
+      self.emitLanguages(fr=fr, to=to)
+    text = self._escapeText(text, to=to, emit=emit)
+    if text:
+      text = self._translate(emit, text, self.engine.translate,
+          to=to, fr=fr, async=async)
+      if text:
+        text = self._unescapeTranslation(text, to=to, emit=emit)
+    return text, to, self.key
+
+  def translateTest(self, text, to='en', fr='ja', async=False):
+    """
+    @param  text  unicode
+    @param* fr  unicode
+    @param* async  bool  ignored, always sync
+    @return  unicode sub, unicode lang, unicode provider
+    """
+    try: return self._translatetest(self.engine.translate,
+            text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
 class GoogleTranslator(OnlineMachineTranslator):
@@ -756,6 +791,9 @@ class GoogleTranslator(OnlineMachineTranslator):
 
   def __init__(self, **kwargs):
     super(GoogleTranslator, self).__init__(**kwargs)
+
+    from google import googletrans
+    self.engine = googletrans
 
   #__google_repl_after = staticmethod(skstr.multireplacer({
   #  '...': u'…',
@@ -766,7 +804,7 @@ class GoogleTranslator(OnlineMachineTranslator):
       self.emitLanguages(fr=fr, to=to)
     text = self._escapeText(text, to=to, emit=emit)
     if text:
-      text = self._translate(emit, text, googletrans.translate,
+      text = self._translate(emit, text, self.engine.translate,
           to=to, fr=fr, async=async)
       if text:
         text = self._unescapeTranslation(text, to=to, emit=emit)
@@ -781,7 +819,8 @@ class GoogleTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translatetest(googletrans.translate, text, to=to, fr=fr, async=async) #.decode('utf8', errors='ignore')
+    try: return self._translatetest(self.engine.translate,
+            text, to=to, fr=fr, async=async) #.decode('utf8', errors='ignore')
     except Exception, e: dwarn(e); return ''
 
 class BingTranslator(OnlineMachineTranslator):
@@ -828,6 +867,8 @@ class BaiduTranslator(OnlineMachineTranslator):
 
   def __init__(self, **kwargs):
     super(BaiduTranslator, self).__init__(**kwargs)
+    from baidu import baidufanyi
+    self.engine = baidufanyi
 
   __baidu_repl_before = staticmethod(skstr.multireplacer({
     #u'【': u'‘', # open single quote
@@ -857,7 +898,7 @@ class BaiduTranslator(OnlineMachineTranslator):
     text = self._escapeText(text, to=to, emit=emit)
     if text:
       text = self.__baidu_repl_before(text)
-      text = self._translate(emit, text, baidufanyi.translate,
+      text = self._translate(emit, text, self.engine.translate,
           to=to, fr=fr, async=async)
       if text:
         if to == 'zht':
@@ -873,7 +914,8 @@ class BaiduTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translatetest(baidufanyi.translate, text, to=to, fr=fr, async=async)
+    try: return self._translatetest(self.engine.translate,
+            text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
 # EOF

@@ -1,5 +1,5 @@
 # coding: utf8
-# powertrans_online.py
+# leconline.py
 # 12/27/2012 jichi
 #
 # See: http://www.lec.com/translate-demos.asp
