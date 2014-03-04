@@ -52,13 +52,17 @@ I am sorry that VNR got a severe error on startup m(_ _)m
 It seems VNR is corrupted that one of the following files are missing, broken, renamed, or quarantined by antivirus software.
 Note that the paths and file names are CASE-SENSITIVE.
 
-  Library/Frameworks/Qt/PySide/QtCore4.dll
-  Library/Frameworks/Qt/PySide/QtCore.pyd
+    Library/Frameworks/Qt/PySide/QtCore4.dll
+    Library/Frameworks/Qt/PySide/QtCore.pyd
 
 I hope if you can turn off your antivirus soft and redownload VNR manually from one of the following:
 
-  Google Drive: http://goo.gl/t31MqY
-  Baidu Disk: http://pan.baidu.com/s/1jGftD9W
+    Google Drive: http://goo.gl/t31MqY
+    Baidu Disk: http://pan.baidu.com/s/1jGftD9W
+
+If VNR is on a NTFS drive, the following post about file permissions might also be helpful:
+
+    http://sakuradite.com/topic/136
 
 Feel free to complain to me (annotcloud@gmail.com) if this error keeps bothering you.
 
