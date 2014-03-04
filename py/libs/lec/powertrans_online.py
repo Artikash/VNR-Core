@@ -11,6 +11,7 @@ if __name__ == '__main__':
 import requests
 from sakurakit.skdebug import dwarn, derror
 from sakurakit.sknetio import GZIP_HEADERS
+#from sakurakit.skstr import escapehtml
 
 import requests
 LEC_API = "http://www.lec.com/translate-demos.asp"
@@ -25,6 +26,7 @@ def _make_post(text, to, fr):
   # See source code: http://www.lec.com/translate-demos.asp
   ret = {
     'DoTransText': 'go',
+    #'SourceText': escapehtml(text), # FIXME: escapehtml cannot fix the illegal characters
     'SourceText': text,
     'selectTargetLang': to[:2],
     'selectSourceLang': fr[:2],
@@ -33,7 +35,11 @@ def _make_post(text, to, fr):
     ret['simplifiedChinese'] = 0
   return ret
 
-def _strip_content(text):
+# Example:
+# <textarea ReadOnly class="inputtext" cols="30" id="TranslationText" name="TranslationText" rows="6"  style="width: 323px""wrap="soft">
+# Teclear su texto aquí ><
+# </textarea>
+def _parse(text): # html -> html
   """
   @param  text  unicode
   @return  unicode
@@ -48,7 +54,7 @@ def _strip_content(text):
       if pos > 0:
         text = text[:pos]
         return text.strip()
-  dwarn("failed to parse text: %s" % text)
+  dwarn("failed to parse text")
   return ""
 
 def translate(text, to='en', fr='ja'):
@@ -69,9 +75,9 @@ def translate(text, to='en', fr='ja'):
     # return error message if not r.ok
     # example response: {"t":[{"text":"hello"}]}
     if r.ok and len(ret) > 100:
-      ret = _strip_content(ret)
+      ret = _parse(ret)
     else:
-      dwarn("return content too short: %s" % ret)
+      dwarn("return content too short")
     return ret
 
   #except socket.error, e:
@@ -93,7 +99,14 @@ def translate(text, to='en', fr='ja'):
   return ""
 
 if __name__ == '__main__':
-  print translate(u"あのね  すもももももももものうち")
+  #t = u"あのね  すもももももももものうち><" # Fixme: illegal html characters does not work
+  t = u"あのね  すもももももももものうち"
+  print translate(t)
+
+  #print translate(t, 'ko')
+
+  #print translate(t, 'zh')
+  #print translate(t, 'zhs')
 
 # EOF
 
