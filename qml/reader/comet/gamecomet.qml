@@ -5,8 +5,8 @@ import QtQuick 1.1
 import '.' as Comet
 
 Comet.PostComet { //id: root_
-  property int id
+  property int gameId
 
   // - Private -
-  path: 'game/' + id
+  path: 'game/' + gameId
 }

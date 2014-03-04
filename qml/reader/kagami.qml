@@ -199,9 +199,9 @@ Item { id: root_
 
   Plugin.DataManagerProxy { id: datamanPlugin_ }
 
-  property int gameItemId: datamanPlugin_.gameItemId // cached
   Comet.GameComet { id: gameComet_
-    active: !!gameItemId && gameWindow_.active && statusPlugin_.online
+    gameId: datamanPlugin_.gameItemId
+    active: gameId > 0 && gameWindow_.active && statusPlugin_.online
   }
 
   Plugin.TextManagerProxy { id: textmanPlugin_
