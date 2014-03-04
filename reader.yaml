@@ -10,7 +10,7 @@ version:
   name: reader
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1393897110
+  timestamp: 1393920311
 
 app:
   #debug: true
@@ -68,13 +68,13 @@ settings:
   bingColor: '#14ff14' # green
   googleColor: '#0055ff' # blue
   infoseekColor: '#ff5500' # orange
-  exciteColor: '#555500' # yellow
+  exciteColor: '#a52a2a' # brown
   baiduColor: '#800080' # purple
   #youdaoColor: '#555500' # yellow
   jbeijingColor: '#0055ff' # blue
   dreyeColor: '#555500' # yellow
   ezTransColor: '#0055ff' # blue
-  atlasColor: '#555500' # orange
+  atlasColor: '#555500' # yellow
   lecColor: '#0055ff'   # blue
   lecOnlineColor: '#000000' # black
   lougoColor: '#000000' # black
