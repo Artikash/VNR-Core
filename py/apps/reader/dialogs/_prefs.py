@@ -1089,7 +1089,7 @@ class _TextTab(object):
       ret.currentFontChanged.connect(sig)
     return ret
 
-  LANGUAGES = "Japanese", "English", "Chinese", "Korean", "Thai", "Vietnamese", "Melayu", "Indonesian", "German", "Spanish", "French", "Italian",  "Dutch", "Polish", "Portuguese", "Russian"
+  LANGUAGES = "Japanese", "English", "Chinese", "Korean", "Thai", "Vietnamese", "Malaysian", "Indonesian", "German", "Spanish", "French", "Italian",  "Dutch", "Polish", "Portuguese", "Russian"
   LANGS =     'ja',       'en',      'zht',     'ko',     'th',   'vi',         'ms',     'id',         'de',     'es',      'fr',     'it',       'nl',    'pl',     'pt',         'ru'
   assert len(LANGUAGES) == len(LANGS)
 
