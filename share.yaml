@@ -148,22 +148,22 @@ emails:
   help: "annotcloud@gmail.com"
 
 proxies:
-  ip: 210.175.52.140
+  ip: 153.121.52.138
 
   twittersearch: http://websearch.excite.co.jp/
   googlesearch: http://websearch.excite.co.jp/
-  googletrans:  http://210.175.52.140/proxy/gg/trans/m
-  googletts:    http://210.175.52.140/proxy/gg/trans/translate_tts
+  googletrans:  http://153.121.52.138/proxy/gg/trans/m
+  googletts:    http://153.121.52.138/proxy/gg/trans/translate_tts
   ytimg:
-    i:          http://210.175.52.140/proxy/ytimg/i2
-    s:          http://210.175.52.140/proxy/ytimg/s
+    i:          http://153.121.52.138/proxy/ytimg/i2
+    s:          http://153.121.52.138/proxy/ytimg/s
   twimg:
-    a:          http://210.175.52.140/proxy/twimg/a0
-    pbs:        http://210.175.52.140/proxy/twimg/pbs
-  erogamescape: http://210.175.52.140/proxy/scape/~ap2/ero/toukei_kaiseki
-  dmm:          http://210.175.52.140/proxy/dmm
-  dlsite:       http://210.175.52.140/proxy/dlsite/www
-  dlsite_img:   http://210.175.52.140/proxy/dlsite/img
+    a:          http://153.121.52.138/proxy/twimg/a0
+    pbs:        http://153.121.52.138/proxy/twimg/pbs
+  erogamescape: http://153.121.52.138/proxy/scape/~ap2/ero/toukei_kaiseki
+  dmm:          http://153.121.52.138/proxy/dmm
+  dlsite:       http://153.121.52.138/proxy/dlsite/www
+  dlsite_img:   http://153.121.52.138/proxy/dlsite/img
 
   # http://sakuradite.com/topic/140
   # http://9gal.com/read.php?tid=417812&page=e

@@ -18,7 +18,7 @@ TMP_DIR = initdefs.TMP_RELPATH
 # http://www2.ninjal.ac.jp/lrc/index.php?UniDic%2F%B6%E1%C2%E5%CA%B8%B8%ECUniDic
 # https://docs.google.com/file/d/0ByoM4WpH84qIS2Q1UU9tbnRDVk0/edit?pli=1
 #UNIDIC_URL = 'http://sakurakit.org/pub/unidic-mlj/unidic-MLJ_13.zip'
-UNIDIC_URL = 'http://210.175.52.140/pub/unidic-mlj/unidic-MLJ_13.zip'
+UNIDIC_URL = 'http://153.121.52.138/pub/unidic-mlj/unidic-MLJ_13.zip'
 UNIDIC_FILESIZE = 104344408
 UNIDIC_FILENAME = 'unidicmlj'
 UNIDIC_SUFFIX = '.zip'
