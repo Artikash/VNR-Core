@@ -20,6 +20,8 @@ QtObject { id: root_
   property string host: Define.DOMAIN_COM + '/push/vnr/'
   //property string host: 'http://localhost:8080/push/vnr/'
 
+  Timer { id: cometTimer_ }
+
   onActiveChanged:
     if (active) open()
     else close()
@@ -39,6 +41,7 @@ QtObject { id: root_
   Component.onCompleted: {
     var url = root_.host + root_.path
     var comet = Local.comet = Atmosphere.subscribe(url)
+    comet.setReconnectTimer(cometTimer_)
     comet.onMessage = function (xhr, data) {
       if (data) root_.message(data)
     }

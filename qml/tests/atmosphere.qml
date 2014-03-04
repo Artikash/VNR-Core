@@ -10,10 +10,13 @@ Item { id: root_
   implicitWidth: 250; implicitHeight: 400
 
   // - Private -
+  Timer { id: cometTimer_ }
+
   Component.onCompleted: {
     //var url = "http://localhost:8080/push/vnr/topic/term"
     var url = 'http://sakuradite.com/push/vnr/topic/term'
     var comet = Global.comet = Atmosphere.subscribe(url)
+    comet.setReconnectTimer(cometTimer_)
 
     //var url = "http://localhost:8080/push/vnr/topic/term"
     comet.onError = function (xhr, msg) { console.log(msg) }

@@ -203,7 +203,7 @@ var Comet = (function() {
   // Constructor
   var __methods = [] // [string}
 
-  function Comet(url) {
+  function Comet(url, reconnectTimerId) { // string, QML timer ID ->
     for (var k in __methods)
       this[k] = bind(this[k], this);
 
@@ -214,7 +214,7 @@ var Comet = (function() {
 
     this.reconnectCount = 0; // int
     this.maxReconnectCount = 5; // int, 5 times
-    //this.reconnectInterval = 5000; // int, 5 seconds // setTimeout is not supported by QML
+    this.reconnectInterval = 5000; // int, 5 seconds // setTimeout is not supported by QML
 
     this.onMessage = function(xhr, data) {}; // onPop, naming is consistent with atmosphere
     this.onMessagePublished = function(xhr, data) {}; // onPush,naming is consistent with atmosphere
@@ -222,9 +222,23 @@ var Comet = (function() {
     this.onDisconnect = function(xhr) {};
     this.onReconnect = function(xhr) {};
     this.onError = function(xhr, message) {};
+
+    if (reconnectTimerId)
+      this.setReconnectTimer(reconnectTimerId);
   }
 
   // Methods
+  __methods.push('setReconnectTimer');
+  Comet.prototype.setReconnectTimer = function(timerId) { // QML timer ID ->
+    if (this.reconnectTimer !== timerId) {
+      this.reconnectTimer = timerId;
+      if (timerId) {
+        timerId.interval = this.reconnectInterval;
+        timerId.repeat = false;
+        timerId.triggered.connect(this.pop);
+      }
+    }
+  }
 
   __methods.push('connect');
   Comet.prototype.connect = function() { // -> xhr
@@ -295,6 +309,8 @@ var Comet = (function() {
 
   __methods.push('push');
   Comet.prototype.push = function (data) { // string -> xhr
+    if (this.state != 'connected')
+      return;
     var params = {};
     params[REQ_KEY_ID] = this.trackingId;
     params[REQ_KEY_TIMESTAMP] = currentTimeMillis();
@@ -317,6 +333,8 @@ var Comet = (function() {
 
   __methods.push('pop');
   Comet.prototype.pop = function() { // -> xhr
+    if (this.state != 'connected')
+      return;
     var params = {};
     params[REQ_KEY_ID] = this.trackingId;
     params[REQ_KEY_TIMESTAMP] = currentTimeMillis();
@@ -334,7 +352,8 @@ var Comet = (function() {
             console.log("atmosphere: reconnect", this.reconnectCount, '/', this.maxReconnectCount);
           this.onReconnect(xhr);
           //setTimeout(this.pop, this.reconnectInterval); // FIXME: Not supported in QML
-          this.pop();
+          //this.pop();
+          this.reconnectTimer.start();
         } else
           this.disconnect();
       }, this)
