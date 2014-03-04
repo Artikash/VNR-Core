@@ -903,7 +903,7 @@ class Settings(QSettings):
   lecOnlineEnabledChanged = Signal(bool)
   def isLecOnlineEnabled(self):
     return to_bool(self.value('LecOnlineEnabled'))
-  def setLecOnlinenabled(self, value):
+  def setLecOnlineEnabled(self, value):
     if value != self.isLecOnlineEnabled():
       self.setValue('LecOnlineEnabled', value)
       self.LecOnlineEnabledChanged.emit(value)
