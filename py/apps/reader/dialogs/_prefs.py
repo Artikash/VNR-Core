@@ -345,7 +345,7 @@ class _UserTab(object):
           my.tr("GUI language changed."),
           my.tr("VNR will use the new language next time."),
         )))
-      #elif lang in ('vi', 'id', 'th'):
+      #elif lang in ('vi', 'id', 'ms', 'th'):
       #  growl.notify("<br/>".join((
       #    my.tr("I am so sorry that"),
       #    my.tr("Currently, {0} is the only machine translator that supports {1}.")
@@ -977,7 +977,7 @@ class TtsTab(QtWidgets.QDialog):
 @Q_Q
 class _I18nTab(object):
 
-  LANGUAGES = 'en', 'zh', 'ko', 'th', 'vi', 'id', 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru'
+  LANGUAGES = 'en', 'zh', 'ko', 'th', 'vi', 'ms', 'id', 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru'
 
   def __init__(self, q):
     self._createUi(q)
@@ -1089,8 +1089,8 @@ class _TextTab(object):
       ret.currentFontChanged.connect(sig)
     return ret
 
-  LANGUAGES = "Japanese", "English", "Chinese", "Korean", "Thai", "Vietnamese", "Indonesian", "German", "Spanish", "French", "Italian",  "Dutch", "Polish", "Portuguese", "Russian"
-  LANGS =     'ja',       'en',      'zht',     'ko',     'th',   'vi',         'id',         'de',     'es',      'fr',     'it',       'nl',    'pl',     'pt',         'ru'
+  LANGUAGES = "Japanese", "English", "Chinese", "Korean", "Thai", "Vietnamese", "Melayu", "Indonesian", "German", "Spanish", "French", "Italian",  "Dutch", "Polish", "Portuguese", "Russian"
+  LANGS =     'ja',       'en',      'zht',     'ko',     'th',   'vi',         'ms',     'id',         'de',     'es',      'fr',     'it',       'nl',    'pl',     'pt',         'ru'
   assert len(LANGUAGES) == len(LANGS)
 
   def _synthesizeLoadSaveFont(self, Lang):
@@ -1777,6 +1777,7 @@ class _HonyakuTab(object):
         tr_("Online"),
         my.tr("Infoseek.ne.jp multilingual translation service"),
         my.tr("excluding {0}").format(', '.join((
+            tr_("Malaysian"),
             tr_("Russian"),
             tr_("Dutch"),
             tr_("Polish"),
@@ -1793,6 +1794,7 @@ class _HonyakuTab(object):
         my.tr("excluding {0}").format(', '.join((
             tr_("Thai"),
             tr_("Vietnamese"),
+            tr_("Malaysian"),
             tr_("Indonesian"),
             tr_("Dutch"),
             tr_("Polish"),

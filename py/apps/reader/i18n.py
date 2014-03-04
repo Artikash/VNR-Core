@@ -18,6 +18,7 @@ LANGUAGE_NAMES = {
   'ko': tr_("Korean"),
   'th': tr_("Thai"),
   'vi': tr_("Vietnamese"),
+  'ms': tr_("Malaysian"),
   'id': tr_("Indonesian"),
   'de': tr_("German"),
   'fr': tr_("French"),

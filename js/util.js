@@ -10,7 +10,7 @@ var LANGUAGES = [
   , 'ja'
   , 'zht', 'zhs'
   , 'ko'
-  , 'th', 'vi', 'id'
+  , 'th', 'vi', 'ms', 'id'
   , 'de', 'fr', 'es', 'it', 'nl', 'pl', 'pt', 'ru'
 ]
 
@@ -30,6 +30,7 @@ var LANGUAGE_NAME = {
  , ko: "Korean"
  , th: "Thai"
  , vi: "Vietnamese"
+ , ms: "Melayu"
  , id: "Indonesian"
  , de: "German"
  , es: "Spanish"
@@ -45,7 +46,7 @@ function languageName(lang) { return LANGUAGE_NAME[lang] }
 var LATIN_LANGUAGES = [
   'en'
   , 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru'
-  , 'th', 'vi', 'id'
+  , 'th', 'vi', 'ms', 'id'
 ]
 /**
  *  @param  lang  string
@@ -116,7 +117,8 @@ var LANGUAGE_FONT = {
   , ko: "Batang"
   , vi: "Tahoma"
   , th: "Tahoma"
-  , id: "Tahoma" //"Aria"
+  , ms: "Helvetica" //"Aria"
+  , id: "Helvetica" //"Aria"
   , fr: "Helvetica"
   , es: "Helvetica"
   , de: "Helvetica"

@@ -1025,6 +1025,14 @@ class Settings(QSettings):
       self.setValue('VietnameseFont', value)
       self.vietnameseFontChanged.emit(value)
 
+  malaysianFontChanged = Signal(unicode)
+  def malaysianFont(self):
+    return self.value('MalaysianFont', config.FONT_MS)
+  def setMalaysianFont(self, value):
+    if value != self.malaysianFont():
+      self.setValue('MalaysianFont', value)
+      self.malaysianFontChanged.emit(value)
+
   indonesianFontChanged = Signal(unicode)
   def indonesianFont(self):
     return self.value('IndonesianFont', config.FONT_ID)
@@ -1193,6 +1201,7 @@ class SettingsProxy(QObject):
     g.koreanFontChanged.connect(self.koreanFontChanged)
     g.thaiFontChanged.connect(self.thaiFontChanged)
     g.vietnameseFontChanged.connect(self.vietnameseFontChanged)
+    g.malaysianFontChanged.connect(self.malaysianFontChanged)
     g.indonesianFontChanged.connect(self.indonesianFontChanged)
     g.germanFontChanged.connect(self.germanFontChanged)
     g.frenchFontChanged.connect(self.frenchFontChanged)
@@ -1284,6 +1293,8 @@ class SettingsProxy(QObject):
   thaiFont = unicode_property('ThaiFont', config.FONT_TH, notify=thaiFontChanged)
   vietnameseFontChanged = Signal(unicode)
   vietnameseFont = unicode_property('VietnameseFont', config.FONT_VI, notify=vietnameseFontChanged)
+  malaysianFontChanged = Signal(unicode)
+  malaysianFont = unicode_property('MalaysianFont', config.FONT_ID, notify=malaysianFontChanged)
   indonesianFontChanged = Signal(unicode)
   indonesianFont = unicode_property('IndonesianFont', config.FONT_ID, notify=indonesianFontChanged)
   germanFontChanged = Signal(unicode)

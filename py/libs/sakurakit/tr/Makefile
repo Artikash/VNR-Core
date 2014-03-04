@@ -7,6 +7,7 @@ LOCALES = \
 	ko_KR \
 	th_TH \
 	vi_VN \
+	ms_MS \
 	id_ID \
 	de_DE \
 	fr_FR \
