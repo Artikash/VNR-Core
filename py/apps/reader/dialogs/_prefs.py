@@ -1816,8 +1816,8 @@ class _HonyakuTab(object):
             tr_("Vietnamese"),
             tr_("Malaysian"),
     )))))
-    ret.setChecked(settings.global_().isExciteEnabled())
-    ret.toggled.connect(settings.global_().setExciteEnabled)
+    ret.setChecked(settings.global_().isLecOnlineEnabled())
+    ret.toggled.connect(settings.global_().setLecOnlineEnabled)
     return ret
 
   @memoizedproperty
