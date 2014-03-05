@@ -20,14 +20,14 @@ QtObject { id: root_
   property string host: Define.DOMAIN_COM + '/push/vnr/'
   //property string host: 'http://localhost:8080/push/vnr/'
 
-  Timer { id: reconnectTimer_
-    interval: 5000 // 5 seconds
-    repeat: false
-    onTriggered:
-      if (active)
-        Local.comet.reconnect()
-    //onRunningChanged: console.log("timer: running = ", running)
-  }
+  //Timer { id: reconnectTimer_
+  //  interval: 5000 // 5 seconds
+  //  repeat: false
+  //  onTriggered:
+  //    if (active)
+  //      Local.comet.reconnect()
+  //  //onRunningChanged: console.log("timer: running = ", running)
+  //}
 
   onActiveChanged:
     if (active) connect()
@@ -48,7 +48,7 @@ QtObject { id: root_
   Component.onCompleted: {
     var url = root_.host + root_.path
     var comet = Local.comet = Atmosphere.subscribe(url)
-    comet.reconnectTimer = reconnectTimer_
+    //comet.reconnectTimer = reconnectTimer_
     comet.onMessage = function (xhr, data) {
       if (data) root_.message(data)
     }
