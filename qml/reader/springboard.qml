@@ -63,7 +63,7 @@ Item { id: root_
   //color: '#343434'
   //Image { source: 'image://rc/stripes'; fillMode: Image.Tile; anchors.fill: parent; opacity: 0.3 }
 
-  Comet.GlobalComet { id: globalComet_ }
+  //Comet.GlobalComet { id: globalComet_ } // replaced by gComet
 
   Plugin.SystemStatus { id: statusPlugin_ }
   Plugin.MainObjectProxy { id: mainPlugin_ }
@@ -217,8 +217,8 @@ Item { id: root_
       bottom: inspector_.top
       margins: 10
     }
-    count: globalComet_.connectionCount
-    visible: globalComet_.active && count > 1
+    count: gComet.connectionCount
+    visible: gComet.active && count > 1
   }
 
   SpringBoard.Inspector { id: inspector_

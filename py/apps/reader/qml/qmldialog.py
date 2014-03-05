@@ -2,10 +2,11 @@
 # qmldialog.py
 # 10/5/2012 jichi
 
+from PySide.QtCore import QObject
+from PySide.QtGui import QIcon
 from sakurakit.skdebug import dprint
 from sakurakit.skqml import SkDeclarativeView
 from sakurakit.skwidgets import shortcut
-from PySide.QtGui import QIcon
 import rc, qmlrc
 
 #class Omajinai(SkDeclarativeView):
@@ -22,6 +23,12 @@ class Kagami(SkDeclarativeView):
       #  (qmlrc.ResourceImageProvider.PROVIDER_ID, qmlrc.ResourceImageProvider()),
       #))
     Kagami.instance = self
+
+    ctx = ('gComet',)
+    for k in ctx:
+      obj = self.rootObject().findChild(QObject, k)
+      assert obj
+      setattr(self, k, obj)
 
     # Not used ...
     #self._createShortcuts()
