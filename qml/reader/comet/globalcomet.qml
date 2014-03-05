@@ -56,26 +56,28 @@ QtObject { id: root_
 
   function bindComet(comet) {
 
-    var clients = Global.globalCometClients
+    var objs = Global.globalCometClients
 
     // Bind
 
     comet.connectionCountChanged.connect(function() {
-      for (var it in clients)
-        it.connectionCount = comet.connectionCount
+      var count = comet.connectionCount
+      for (var i in objs)
+        objs[i].connectionCount = count
     })
     comet.activeChanged.connect(function() {
-      for (var it in clients)
-        it.active = comet.active
+      var t = comet.active
+      for (var i in objs)
+        objs[i].active = t
     })
 
     comet.postReceived.connect(function() {
-      for (var it in clients)
-        it.postReceived.apply(it, arguments)
+      for (var i in objs)
+        objs[i].postReceived.apply(it, arguments)
     })
     comet.postUpdated.connect(function() {
-      for (var it in clients)
-        it.postReceived.apply(it, arguments)
+      for (var i in objs)
+        objs[i].postReceived.apply(it, arguments)
     })
 
     // Detect online, require SystemStatus plugin
