@@ -58,8 +58,6 @@ Item { id: root_
 
   function updateZoomFactorLater() { zoomFactorTimer_.restart() }
 
-  Plugin.SystemStatus { id: statusPlugin_ }
-
   Plugin.TaskBarProxy { id: taskBar_
     Component.onCompleted: root_.taskBarNeedsAutoHide = !autoHide
   }
@@ -198,6 +196,10 @@ Item { id: root_
   }
 
   Plugin.DataManagerProxy { id: datamanPlugin_ }
+
+  Plugin.SystemStatus { id: statusPlugin_ }
+
+  Comet.GlobalComet { id: globalComet_ }
 
   Comet.GameComet { id: gameComet_
     gameId: datamanPlugin_.gameItemId
@@ -963,10 +965,10 @@ Item { id: root_
     switch (mirageComp.status) {
     case Component.Ready:
       var mirage = mirageComp.createObject(root_, {
-        'x': 100
-        , 'y': 100
-        , 'width': 640
-        , 'height': 480
+        x: 100
+        , y: 100
+        , width: 640
+        , height: 480
       });
       if (mirage) {
         mirage.yakuAt.connect(shiori_.popup)

@@ -103,14 +103,18 @@ class _SpringBoard(object):
 
 class SpringBoard(SkDeclarativeView):
   def __init__(self, parent=None):
-    import qmlrc, rc
+    import qmldialog, qmlrc, rc
     ips = (
       qmlrc.ResourceImageProvider,
       qmlrc.FileImageProvider,
       qmlrc.SpringImageProvider,
     )
+    ctx = (
+      ('gComet', qmldialog.Kagami.instance.gComet),
+    )
     super(SpringBoard, self).__init__(rc.qml_url('springboard'), parent,
-        imageProviders=[(ip.PROVIDER_ID, ip()) for ip in ips])
+        imageProviders=[(ip.PROVIDER_ID, ip()) for ip in ips],
+        contextProperties=ctx)
     self.__d = _SpringBoard(self)
 
     #self.setAcceptDrops(True)

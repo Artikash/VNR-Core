@@ -9,9 +9,9 @@ Item {
 
   // - Private -
 
-  Comet.GlobalComet { id: root_ }
-  Component.onCompleted: {
-    console.log("completed")
-    root_.create()
+  Comet.GlobalComet {
+    active: true
+    onConnectionCountChanged:
+      console.log("connection count changed:", connectionCount)
   }
 }

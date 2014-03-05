@@ -91,11 +91,12 @@ class _SkDeclarativeView:
   #  root.setProperty('windowVisible', value)
 
 class SkDeclarativeView(QDeclarativeView):
-  def __init__(self, source, parent=None, imageProviders=[]):
+  def __init__(self, source, parent=None, imageProviders=[], contextProperties=[]):
     """
     @param  source  QUrl or None
     @param  parent  QObject or None
     @param  imageProviders  [(int providerId, QDeclarativeImageProvider object)]
+    @param  contextProperties  [(String key, QObject value)]
     """
     super(SkDeclarativeView, self).__init__(parent)
 
@@ -103,11 +104,13 @@ class SkDeclarativeView(QDeclarativeView):
       for providerId, providerObject in imageProviders:
         self.engine().addImageProvider(providerId, providerObject)
 
-    ctx = (
-      ('qApp', QCoreApplication.instance()),
-    )
-    for var, value in ctx:
-      self.rootContext().setContextProperty(var, value)
+    #ctx = (
+    #  ('qApp', QCoreApplication.instance()),
+    #)
+    self.rootContext().setContextProperty('qApp', QCoreApplication.instance())
+    if contextProperties:
+      for var, value in contextProperties:
+        self.rootContext().setContextProperty(var, value)
 
     if source:
       self.setSource(source)
