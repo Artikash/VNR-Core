@@ -15,6 +15,11 @@ QtObject { id: root_
 
   signal message(string data)
 
+  // Expose to C++, since connect/disconnect names are already taken by QObject
+  // http://stackoverflow.com/questions/18712095/how-to-call-a-qml-function-from-c-in-bb10
+  //function start() { connect() }
+  //function stop() { disconnect() }
+
   // - Private -
 
   property string url: Define.DOMAIN_COM + '/push/vnr/' + path

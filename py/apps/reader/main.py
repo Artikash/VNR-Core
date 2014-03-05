@@ -901,6 +901,10 @@ class _MainObject(object):
     dprint("shutdown rpc server")
     self.rpcServer.stop()
 
+    # Already stopped while quit
+    #dprint("stop comets")
+    #qmldialog.Kagami.instance.stopComets()
+
     import curtheme
     curtheme.unload()
 
@@ -1720,6 +1724,10 @@ class MainObject(QObject):
 
     if d.gameManager.isWindowHookConnected:
       d.rpcServer.disableClient()
+
+    # Stop earlier to give them time to send stop messages
+    dprint("stop comets")
+    qmldialog.Kagami.instance.stopComets()
 
     skevents.runlater(partial(d.exit, exitCode), interval)
     dprint("leave")

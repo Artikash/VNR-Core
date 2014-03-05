@@ -285,9 +285,9 @@ var Comet = (function() {
   Comet.prototype.disconnect = function() { // -> xhr
     if (this.state == 'disconnected')
       return;
+    this.state = 'disconnected';
     if (DEBUG)
       console.log("atmosphere: disconnect enter")
-    this.state = 'disconnected';
     var params = {};
     params[REQ_KEY_ID] = this.trackingId;
     params[REQ_KEY_TIMESTAMP] = currentTimeMillis();

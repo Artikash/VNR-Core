@@ -24,7 +24,7 @@ class Kagami(SkDeclarativeView):
       #))
     Kagami.instance = self
 
-    ctx = ('gComet',)
+    ctx = 'globalComet', 'gameComet'
     for k in ctx:
       obj = self.rootObject().findChild(QObject, k)
       assert obj
@@ -33,6 +33,15 @@ class Kagami(SkDeclarativeView):
     # Not used ...
     #self._createShortcuts()
     dprint("pass")
+
+  def comets(self):
+    return self.globalComet, self.gameComet
+
+  def stopComets(self):
+    for it in self.comets():
+      if it.property('active'):
+        it.setProperty('active', False)
+      #it.stop()
 
   def _createShortcuts(self):
     from functools import partial
