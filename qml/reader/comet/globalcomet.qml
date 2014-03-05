@@ -2,7 +2,7 @@
  *  3/4/2014 jichi
  */
 import QtQuick 1.1
-import '../../../js/global.js' as Global // Global.globalComet
+import '../../../js/global.js' as Global // Global.globalCometClients  [QML objects]
 
 QtObject { id: root_
 
@@ -16,39 +16,27 @@ QtObject { id: root_
 
   // - Private -
 
-  property string path: 'global' // /push/vnr/global
+  Component.onCompleted: subscribe(root_)
 
-  Component.onCompleted:
-    if (!Global.globalComet) {
-      Global.globalComet = 'locked'
-      create();
+  // All following functions are almost stateless
+
+  function subscribe(obj) { // Qt object
+    if (Global.globalCometClients)
+      Global.globalCometClients.push(obj)
+    else {
+      Global.globalCometClients = [obj] // first, save list of callback object in comet
+      createComet(bindComet)
     }
+  }
 
-  function create() {
+  function createComet(callback) { // function (comet) ->
     var comp = Qt.createComponent('postcomet.qml')
 
     function finished() {
       console.log("globalcomet.qml: create finished")
-      if (Global.globalComet = 'locked') {
-        Global.globalComet = 'unlocked'
-        var comet = Global.globalComet = comp.createObject(root_, {
-          path:root_.path
-        })
-        comet.postReceived.connect(root_.postReceived)
-        comet.postUpdated.connect(root_.postUpdated)
-        comet.connectionCountChanged.connect(function() {
-          root_.connectionCount = comet.connectionCount
-        })
-        //comet.activeChanged.connect(function() {
-        //  root_.active = comet.active
-        //})
-        // Require SystemStatus plugin
-        statusPlugin_.onlineChanged.connect(function(t) {
-          comet.active = root_.active = t
-        })
-        if (statusPlugin_.online)
-          comet.active = root_.active = true
-      }
+      callback(comp.createObject(root_, {
+        path: 'global' // /push/vnr/global
+      }))
     }
 
     //comp = Qt.createComponent('comet.qml');
@@ -64,5 +52,37 @@ QtObject { id: root_
       comp.statusChanged.connect(finished) // wait
     }
     console.log("globalcomet.qml: create: leave")
+  }
+
+  function bindComet(comet) {
+
+    var clients = Global.globalCometClients
+
+    // Bind
+
+    comet.connectionCountChanged.connect(function() {
+      for (var it in clients)
+        it.connectionCount = comet.connectionCount
+    })
+    comet.activeChanged.connect(function() {
+      for (var it in clients)
+        it.active = comet.active
+    })
+
+    comet.postReceived.connect(function() {
+      for (var it in clients)
+        it.postReceived.apply(it, arguments)
+    })
+    comet.postUpdated.connect(function() {
+      for (var it in clients)
+        it.postReceived.apply(it, arguments)
+    })
+
+    // Detect online, require SystemStatus plugin
+    statusPlugin_.onlineChanged.connect(function(t) {
+      comet.active = t
+    })
+    if (statusPlugin_.online)
+      comet.active = true
   }
 }
