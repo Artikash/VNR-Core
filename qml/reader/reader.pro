@@ -18,6 +18,7 @@ SOURCES = \
   refview/toolbar.qml \
   springboard.qml \
   springboard/appmodel.qml \
+  springboard/cometcounter.qml \
   springboard/dockmodel.qml \
   springboard/inspector.qml \
   submaker.qml \

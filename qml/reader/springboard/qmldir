@@ -2,6 +2,7 @@
 # 9/25/2012 jichi
 AppMenu         appmenu.qml
 AppModel        appmodel.qml
+CometCounter    cometcounter.qml
 Curtain         curtain.qml
 Dashboard       dashboard.qml
 Desktop         desktop.qml

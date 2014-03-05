@@ -17,6 +17,7 @@ import org.sakuradite.reader 1.0 as Plugin
 import '../../js/sakurakit.min.js' as Sk
 import '../../js/reader.min.js' as My
 import '../../js/util.min.js' as Util
+import 'comet' as Comet
 import 'share' as Share
 import 'springboard' as SpringBoard
 
@@ -61,6 +62,8 @@ Item { id: root_
   //}
   //color: '#343434'
   //Image { source: 'image://rc/stripes'; fillMode: Image.Tile; anchors.fill: parent; opacity: 0.3 }
+
+  Comet.GlobalComet { id: globalComet_ }
 
   Plugin.SystemStatus { id: statusPlugin_ }
   Plugin.MainObjectProxy { id: mainPlugin_ }
@@ -206,6 +209,16 @@ Item { id: root_
       }
       onClicked: parent.text = ""
     }
+  }
+
+  SpringBoard.CometCounter { //id: counter_
+    anchors {
+      right: parent.right
+      bottom: inspector_.top
+      margins: 10
+    }
+    count: globalComet_.connectionCount
+    visible: globalComet_.active
   }
 
   SpringBoard.Inspector { id: inspector_

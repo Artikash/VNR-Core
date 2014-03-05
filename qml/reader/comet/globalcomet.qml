@@ -6,10 +6,13 @@ import '../../../js/global.js' as Global // Global.globalComet
 
 QtObject { id: root_
 
-  property bool active
+  property bool active // read-only
   property int connectionCount
   signal postReceived(variant obj)
   signal postUpdated(variant obj)
+
+  // Require statusPlugin_ to be created
+  //Plugin.SystemStatus { id: statusPlugin_ }
 
   // - Private -
 
@@ -36,11 +39,15 @@ QtObject { id: root_
         comet.connectionCountChanged.connect(function() {
           root_.connectionCount = comet.connectionCount
         })
-        comet.activeChanged.connect(function() {
-          root_.active = comet.active
+        //comet.activeChanged.connect(function() {
+        //  root_.active = comet.active
+        //})
+        // Require SystemStatus plugin
+        statusPlugin_.onlineChanged.connect(function(t) {
+          comet.active = root_.active = t
         })
-        if (root_.active)
-          comet.connect()
+        if (statusPlugin_.online)
+          comet.active = root_.active = true
       }
     }
 
