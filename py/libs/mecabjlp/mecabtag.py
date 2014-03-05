@@ -65,7 +65,7 @@ def gettagger(**kwargs):
 
 # Environment variables
 
-def setenvrc(path): # unicode
+def setenvrc(path): # unicode  path to dic rcfile
   try:
     if os.name == 'nt':
       path = path.replace('/', os.path.sep)
