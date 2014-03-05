@@ -110,7 +110,7 @@ class SpringBoard(SkDeclarativeView):
       qmlrc.SpringImageProvider,
     )
     ctx = (
-      ('gComet', qmldialog.Kagami.instance.gComet),
+      ('gComet', qmldialog.Kagami.instance.globalComet),
     )
     super(SpringBoard, self).__init__(rc.qml_url('springboard'), parent,
         imageProviders=[(ip.PROVIDER_ID, ip()) for ip in ips],
