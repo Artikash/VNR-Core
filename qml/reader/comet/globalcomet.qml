@@ -2,7 +2,7 @@
  *  3/4/2014 jichi
  */
 import QtQuick 1.1
-import '../../../js/global.js' as Global
+import '../../../js/global.js' as Global // Global.globalComet
 
 QtObject { id: root_
 
@@ -13,19 +13,24 @@ QtObject { id: root_
 
   // - Private -
 
-  property string path: 'global'
+  property string path: 'global' // /push/vnr/global
 
   Component.onCompleted:
-    if (!Global.globalComet)
+    if (!Global.globalComet) {
+      Global.globalComet = 'locked'
       create();
+    }
 
   function create() {
     var comp = Qt.createComponent('postcomet.qml')
 
     function finished() {
       console.log("globalcomet.qml: create finished")
-      if (!Global.globalcomet) {
-        var comet = Global.globalComet = comp.createObject(root_, {path:root_.path})
+      if (Global.globalComet = 'locked') {
+        Global.globalComet = 'unlocked'
+        var comet = Global.globalComet = comp.createObject(root_, {
+          path:root_.path
+        })
         comet.postReceived.connect(root_.postReceived)
         comet.postUpdated.connect(root_.postUpdated)
         comet.connectionCountChanged.connect(function() {
@@ -49,7 +54,7 @@ QtObject { id: root_
       finished()
       break
     default:
-      comp.statusChanged.connect(finished)
+      comp.statusChanged.connect(finished) // wait
     }
     console.log("globalcomet.qml: create: leave")
   }
