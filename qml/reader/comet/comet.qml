@@ -30,20 +30,20 @@ QtObject { id: root_
   }
 
   onActiveChanged:
-    if (active) open()
-    else close()
+    if (active) connect()
+    else disconnect()
 
-  function open() {
-    console.log("comet.qml:open: path =", path)
+  function connect() {
+    console.log("comet.qml:connect: path =", path)
     Local.comet.connect()
   }
 
-  function close() {
-    console.log("comet.qml:close: path =", path)
+  function disconnect() {
+    console.log("comet.qml:disconnect: path =", path)
     Local.comet.disconnect()
   }
 
-  Component.onDestruction: close()
+  Component.onDestruction: disconnect()
 
   Component.onCompleted: {
     var url = root_.host + root_.path
