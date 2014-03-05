@@ -34,7 +34,7 @@ Share.TwinkleButton { //id: root_
   //language: root_.language
   font.family: 'DFGirl'
   //toolTip: qsTr("Read current Japanese game text using TTS")
-  toolTip: qsTr("{0} people are playing games now").replace('{0}', count)
+  toolTip: qsTr("{0} people are online now").replace('{0}', count)
 
   //onClicked: checked = !checked
 }
