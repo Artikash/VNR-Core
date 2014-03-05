@@ -199,7 +199,7 @@ Item { id: root_
 
   Plugin.SystemStatus { id: statusPlugin_ }
 
-  //Comet.GlobalComet { id: globalComet_ }
+  Comet.GlobalComet { id: globalComet_ }
 
   Comet.GameComet { id: gameComet_
     gameId: datamanPlugin_.gameItemId

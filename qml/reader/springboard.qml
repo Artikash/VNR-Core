@@ -218,7 +218,7 @@ Item { id: root_
       margins: 10
     }
     count: globalComet_.connectionCount
-    visible: globalComet_.active
+    visible: globalComet_.active && count > 1
   }
 
   SpringBoard.Inspector { id: inspector_
