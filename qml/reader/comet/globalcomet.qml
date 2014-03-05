@@ -1,0 +1,9 @@
+/** globalcomet.qml
+ *  3/4/2014 jichi
+ */
+import QtQuick 1.1
+import '.' as Comet
+
+Comet.PostComet { //id: root_
+  path: 'global'
+}

@@ -10,6 +10,7 @@ Item { id: root_
   implicitWidth: 250; implicitHeight: 400
 
   // - Private -
+
   Timer { id: reconnectTimer_
     onRunningChanged: console.log("timer: running = ", running)
 
