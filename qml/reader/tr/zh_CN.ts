@@ -261,10 +261,6 @@
         <translation>透明</translation>
     </message>
     <message>
-        <source>{0} people are playing this game now</source>
-        <translation type="obsolete">{0}个人正在玩这个游戏</translation>
-    </message>
-    <message>
         <location filename="../kagami/dock.qml" line="387"/>
         <source>Toggle background shadow</source>
         <translation>切换透明背景</translation>

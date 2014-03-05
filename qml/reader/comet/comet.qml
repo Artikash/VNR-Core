@@ -4,7 +4,7 @@
 import QtQuick 1.1
 import '../../../js/atmosphere.min.js' as Atmosphere
 import '../../../js/define.min.js' as Define
-import '../../../js/local.js' as Local
+import '../../../js/local.js' as Local // Local.comet
 
 QtObject { id: root_
 
@@ -17,37 +17,50 @@ QtObject { id: root_
 
   // - Private -
 
-  property string host: Define.DOMAIN_COM + '/push/vnr/'
-  //property string host: 'http://localhost:8080/push/vnr/'
+  property string url: Define.DOMAIN_COM + '/push/vnr/' + path
 
   property QtObject reconnectTimer: Timer {
     interval: 5000 // 5 seconds
     repeat: false
     onTriggered:
-      if (root_.active)
+      if (root_.active && Local.comet)
         Local.comet.reconnect()
     //onRunningChanged: console.log("timer: running = ", running)
   }
+
+  Component.onCompleted: if (active) connect()
+  Component.onDestruction: disconnect()
 
   onActiveChanged:
     if (active) connect()
     else disconnect()
 
+  onPathChanged:
+    if (Local.comet && Local.comet.url != root_.url) {
+      if (active) {
+        destroyComet()
+        connect()
+      } else
+        Local.comet = undefined
+    }
+
   function connect() {
-    console.log("comet.qml:connect: path =", path)
+    if (!Local.comet)
+      createComet()
+    console.log("comet.qml:connect: path =", root_.path)
     Local.comet.connect()
   }
 
   function disconnect() {
-    console.log("comet.qml:disconnect: path =", path)
-    Local.comet.disconnect()
+    if (Local.comet) {
+      console.log("comet.qml:disconnect: path =", root_.path)
+      Local.comet.disconnect()
+    }
   }
 
-  Component.onDestruction: disconnect()
-
-  Component.onCompleted: {
-    var url = root_.host + root_.path
-    var comet = Local.comet = Atmosphere.subscribe(url)
+  function createComet() {
+    console.log("comet.qml:createComet: path =", root_.path)
+    var comet = Local.comet = Atmosphere.subscribe(root_.url)
     comet.reconnectTimer = reconnectTimer
     comet.onMessage = function (xhr, data) {
       if (data) root_.message(data)
@@ -59,4 +72,13 @@ QtObject { id: root_
       console.log("comet.qml: reconnect: path =", root_.path)
     }
   }
+
+  function destroyComet() {
+    if (Local.comet) {
+      console.log("comet.qml:destroyComet: path =", root_.path)
+      Local.comet.disconnect()
+      Local.comet = undefined
+    }
+  }
+
 }
