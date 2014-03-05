@@ -297,13 +297,14 @@ Item { id: root_
         height: parent.cellHeight; width: parent.cellWidth
 
         property int count: Math.max(1, gameComet_.connectionCount)
-        text: String(count)
+        property int totalCount: Math.max(count, globalComet_.connectionCount)
+        text: count + "/" + totalCount
 
-        property bool highlight: count > 1
+        //property bool highlight: count > 1
 
         visible: gameComet_.active
 
-        font.pixelSize: parent.pixelSize * 0.9
+        font.pixelSize: parent.pixelSize * 0.8
         //font.bold: true
         radius: parent.cellRadius
         //visible: !root_.ignoresFocus
@@ -317,7 +318,9 @@ Item { id: root_
         //language: root_.language
         font.family: parent.cellFont
         //toolTip: qsTr("Read current Japanese game text using TTS")
-        toolTip: qsTr("{0} people are playing this game now").replace('{0}', count)
+        toolTip: qsTr("{0} out of {1} online users are playing this game now")
+            .replace('{0}', count)
+            .replace('{1}', totalCount)
 
         onClicked: checked = !checked
       }

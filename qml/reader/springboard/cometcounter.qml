@@ -18,7 +18,7 @@ Share.TwinkleButton { //id: root_
 
   //property int count: Math.max(1, globalComet_.connectionCount)
 
-  property bool highlight: count > 1
+  //property bool highlight: count > 1
 
   font.pixelSize: 12
   //font.bold: true
@@ -26,7 +26,7 @@ Share.TwinkleButton { //id: root_
   //visible: !root_.ignoresFocus
   //visible: !statusPlugin_.wine
 
-  property bool checked
+  //property bool checked
 
   //pauseColor: checked ? parent.buttonCheckedColor : parent.buttonColor
   pauseColor: '#aa555555' // black
@@ -36,5 +36,5 @@ Share.TwinkleButton { //id: root_
   //toolTip: qsTr("Read current Japanese game text using TTS")
   toolTip: qsTr("{0} people are playing games now").replace('{0}', count)
 
-  onClicked: checked = !checked
+  //onClicked: checked = !checked
 }
