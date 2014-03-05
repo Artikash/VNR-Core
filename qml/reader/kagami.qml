@@ -963,10 +963,10 @@ Item { id: root_
     switch (mirageComp.status) {
     case Component.Ready:
       var mirage = mirageComp.createObject(root_, {
-        'x': 100
-        , 'y': 100
-        , 'width': 640
-        , 'height': 480
+        x: 100
+        , y: 100
+        , width: 640
+        , height: 480
       });
       if (mirage) {
         mirage.yakuAt.connect(shiori_.popup)

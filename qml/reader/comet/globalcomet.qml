@@ -6,51 +6,51 @@ import '../../../js/global.js' as Global
 
 QtObject { id: root_
 
+  property bool active
   property int connectionCount
   signal postReceived(variant obj)
   signal postUpdated(variant obj)
 
   // - Private -
 
-  property QtObject comp
+  property string path: 'global'
+
+  Component.onCompleted:
+    if (!Global.globalComet)
+      create();
 
   function create() {
-    //comp = Qt.createComponent('postcomet.qml');
-    comp = Qt.createComponent('comet.qml');
+    var comp = Qt.createComponent('postcomet.qml')
+
+    function finished() {
+      console.log("globalcomet.qml: create finished")
+      if (!Global.globalcomet) {
+        var comet = Global.globalComet = comp.createObject(root_, {path:root_.path})
+        comet.postReceived.connect(root_.postReceived)
+        comet.postUpdated.connect(root_.postUpdated)
+        comet.connectionCountChanged.connect(function() {
+          root_.connectionCount = comet.connectionCount
+        })
+        comet.activeChanged.connect(function() {
+          root_.active = comet.active
+        })
+        if (root_.active)
+          comet.connect()
+      }
+    }
+
+    //comp = Qt.createComponent('comet.qml');
     console.log("globalcomet.qml: create: status:", comp.status)
     switch (comp.status) {
     case Component.Error:
       console.log("globalcomet.qml: ERROR: failed to create component:", comp.errorString())
       break
-    case Component.Ready:
-      onCompFinished()
+    case Component.Ready: // == 1
+      finished()
       break
     default:
-      comp.statusChanged.connect(onCompFinished)
+      comp.statusChanged.connect(finished)
     }
     console.log("globalcomet.qml: create: leave")
-  }
-
-  function onCompFinished() {
-    /*
-    switch (mirageComp.status) {
-    case Component.Ready:
-      var mirage = mirageComp.createObject(root_, {
-        'x': 100
-        , 'y': 100
-        , 'width': 640
-        , 'height': 480
-      });
-      if (mirage) {
-        mirage.yakuAt.connect(shiori_.popup)
-        console.log("kagami.qml: mirage created")
-      } else
-        console.log("kagami.qml: ERROR: failed to create mirage object")
-      break
-    case Component.Error:
-    default:
-      console.log("kagami.qml: ERROR: failed to create mirage component:", mirageComp.errorString());
-    }
-  */
   }
 }

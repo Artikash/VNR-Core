@@ -11,7 +11,7 @@ QtObject { id: root_
   property string path
   //string path: 'topic/term'
 
-  property bool active: false
+  property bool active
 
   signal message(string data)
 
