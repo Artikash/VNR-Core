@@ -360,8 +360,11 @@ TEMPLATE_ENTRIES = SHARE_YAML['templates']['entries'] # {str name:unicode relpat
 
 JCUSERDIC_LOCATIONS = map(parse_path, SHARE_YAML['jcuserdic']) # [unicode abspath]
 
-MECAB_DICS = {k: parse_path(v) # {str name:unicode relpath}
-    for k,v in SHARE_YAML['mecab'].iteritems()}
+#MECAB_DICS = {k: parse_path(v) # {str name:unicode relpath}
+#    for k,v in SHARE_YAML['mecab'].iteritems()}
+
+MECAB_RCFILES = {k: parse_path(v) # {str name:unicode abspath}
+    for k,v in SHARE_YAML['mecabrc'].iteritems()}
 
 GAIJI_LOCATIONS = {k: parse_path(v) # {str name:unicode abspath}
     for k,v in SHARE_YAML['gaiji'].iteritems()}
