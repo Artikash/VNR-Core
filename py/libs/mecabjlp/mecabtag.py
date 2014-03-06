@@ -21,10 +21,10 @@ def normalizepath(path):
   path = path.encode('utf8', errors='ignore')
   if not os.path.exists(path):
     return ''
-  #if os.name == 'nt': # not needed since I already use relative path
-  #  import win32api
-  #  path = win32api.GetShortPathName(path) # eliminate spaces on the path
-  #  path = path.replace('\\', os.path.sep) #.lower()
+  if os.name == 'nt':
+    path = path.replace('/', os.path.sep) #.lower()
+    import win32api
+    path = win32api.GetShortPathName(path) # eliminate spaces on the path
   return path
 
 def maketaggerargs(**kwargs):
