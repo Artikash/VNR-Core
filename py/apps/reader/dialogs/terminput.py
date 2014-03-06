@@ -202,6 +202,7 @@ class _TermInput(object):
       lang = self._getLanguage()
       type = self._getType()
       pattern = self.patternEdit.text().strip()
+      comment = self.commentEdit.text().strip()
       text = self.textEdit.text().strip()
       regex = self.regexButton.isChecked()
       special = self.specialButton.isChecked() and bool(gameId or md5)
@@ -210,7 +211,7 @@ class _TermInput(object):
           language=lang, type=type,
           special=special, regex=regex,
           timestamp=skdatetime.current_unixtime(),
-          pattern=pattern, text=text)
+          pattern=pattern, text=text, comment=comment)
 
       self.clear()
       self.q.hide()
