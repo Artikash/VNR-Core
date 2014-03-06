@@ -18,7 +18,9 @@ TMP_DIR = initdefs.TMP_RELPATH
 # http://sourceforge.jp/projects/unidic/
 # http://jaist.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip
 # ftp://ftp.jaist.ac.jp/pub/sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip
-UNIDIC_URL = 'http://jaist.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
+#UNIDIC_URL = 'http://jaist.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
+#UNIDIC_URL = 'http://ftp.jaist.ac.jp/pub/sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
+UNIDIC_URL = 'http://osdn.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
 UNIDIC_FILESIZE = 46307109
 UNIDIC_FILENAME = 'unidic'
 UNIDIC_SUFFIX = '.zip'
@@ -33,7 +35,7 @@ def get(): # return bool
   path = TMP_DIR + '/' + UNIDIC_FILENAME + UNIDIC_SUFFIX
   size = UNIDIC_FILESIZE
 
-  dprint("enter: size = %s" % size)
+  dprint("enter: size = %s, url = %s" % (size, url))
 
   from sakurakit import skfileio
   if os.path.exists(path) and skfileio.filesize(path) == size:

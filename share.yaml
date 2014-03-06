@@ -401,10 +401,16 @@ avatars:
 #  #lingoes:          $APPDATA/org.sakuradite.reader/db/lingoes
 
 # Must be consistent with python scripts and dicts.py
+#mecab:
 mecab:
-  ipadic:             $PWD/../../../Caches/Dictionaries/IPAdic
-  unidic:             $PWD/../../../Caches/Dictionaries/UniDic
-  unidic-mlj:         $PWD/../../../Caches/Dictionaries/UniDicMLJ
+  dicdir:
+    ipadic:         $PWD/../../../Caches/Dictionaries/IPAdic
+    unidic:         $PWD/../../../Caches/Dictionaries/UniDic
+    unidic-mlj:     $PWD/../../../Caches/Dictionaries/UniDicMLJ
+  rcfile:
+    ipadic:         $PWD/../../Dictionaries/mecabrc/ipadic.rc
+    unidic:         $PWD/../../Dictionaries/mecabrc/unidic.rc
+    unidic-mlj:     $PWD/../../Dictionaries/mecabrc/unidic-mlj.rc
 
 lingoes: # language
   - zh

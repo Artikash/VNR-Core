@@ -18,12 +18,12 @@ from sakurakit import skfileio
 
 MIN_CSV_SIZE = 10 # minimum CSV file size
 
-def csv2dic(dic, csv, exe='mecab-dict-index', dicpath='', async=False):
+def csv2dic(dic, csv, exe='mecab-dict-index', dicdir='', async=False):
   """Note: this process would take at least 10 seconds
   @param  dic  unicode
   @param  csv  unicode
   @param* exe  unicode
-  @param* dicpath  unicode
+  @param* dicdir  unicode
   @return  bool
   """
   # MeCab would crash for empty sized csv
@@ -36,16 +36,16 @@ def csv2dic(dic, csv, exe='mecab-dict-index', dicpath='', async=False):
     '-u', dic,
     csv,
   ]
-  if dicpath:
+  if dicdir:
     args.extend((
-      '-d', dicpath
+      '-d', dicdir
     ))
   from sakurakit import skproc
   run = skproc.detachgui if async else skproc.attachgui
   return bool(run(args)) and os.path.exists(dic)
 
 if __name__ == '__main__':
-  dicpath = r'S:\Stream\Library\Dictionaries\ipadic'
-  print csv2dic('test.dic', 'test.csv', dicpath=dicpath)
+  dicdir = r'S:\Stream\Library\Dictionaries\ipadic'
+  print csv2dic('test.dic', 'test.csv', dicdir=dicdir)
 
 # EOF

@@ -34,7 +34,7 @@ def get(): # return bool
   path = TMP_DIR + '/' + UNIDIC_FILENAME + UNIDIC_SUFFIX
   size = UNIDIC_FILESIZE
 
-  dprint("enter: size = %s" % size)
+  dprint("enter: size = %s, url = %s" % (size, url))
 
   from sakurakit import skfileio
   if os.path.exists(path) and skfileio.filesize(path) == size:

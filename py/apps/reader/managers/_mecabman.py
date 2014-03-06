@@ -49,7 +49,7 @@ class MeCabParser:
   def __init__(self):
     self.enabled = False # bool
     self.userdic = '' # unicode
-    self.dicdir = '' # unicode
+    self.rcfile = '' # unicode
     self.fmt = mecabfmt.DEFAULT
 
     self.deftagger = None # cached tagger without user dic
@@ -66,14 +66,15 @@ class MeCabParser:
       self.userdic = v
       self.usertagger = None
 
-  def setdicdir(self, v):
-    v = osutil.get_relpath(v) if v else '' # force relative path
+  def setrcfile(self, v):
+    #v = osutil.get_relpath(v) if v else '' # force relative path
     #v = os.path.abspath(v) if v else ''
     #v = v.replace('\\', '/')
-    if v != self.dicdir:
-      self.dicdir = v
+    if v != self.rcfile:
+      self.rcfile = v
       self.deftagger = None
       self.usertagger = None
+      mecabtag.setenvrc(v) if v else mecabtag.delenvrc()
 
   def tagger(self):
     """
@@ -81,24 +82,24 @@ class MeCabParser:
     """
     if not self.enabled:
       return None
-    if self.userdic and self.dicdir:
+    if self.userdic and self.rcfile:
       if self.usertagger:
         return self.usertagger
       if os.path.exists(self.userdic):
-        args = mecabtag.maketaggerargs(dicdir=self.dicdir, userdic=self.userdic)
+        args = mecabtag.maketaggerargs(userdic=self.userdic)
         self.usertagger = mecabtag.createtagger(args)
         if self.usertagger:
           return self.usertagger
       self.userdic = ''
-    if self.dicdir:
+    if self.rcfile:
       if self.deftagger:
         return self.deftagger
-      if os.path.exists(self.dicdir):
-        args = mecabtag.maketaggerargs(dicdir=self.dicdir)
+      if os.path.exists(self.rcfile):
+        args = mecabtag.maketaggerargs()
         self.deftagger = mecabtag.createtagger(args)
         if self.deftagger:
           return self.deftagger
-      self.dicdir = ''
+      self.rcfile = ''
 
   #_rx_cypher = re.compile(ur"(?<=["
   #  u"ルユュムフブプヌツヅスク"

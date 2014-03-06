@@ -70,6 +70,8 @@ def get(lang): # str -> bool
   url = URL + DICS[lang]['file']
   path = TMP_DIR + '/' + FILENAME_TPL % lang
 
+  dprint("enter: url = %s" % url)
+
   #from sakurakit import skfileio
   #if os.path.exists(path) and skfileio.filesize(path) == size:
   #  dprint("leave: already downloaded")

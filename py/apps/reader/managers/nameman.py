@@ -97,7 +97,7 @@ class NameManager(object):
       names = self._iterMeCabNameYomi(names) # FIXME: check empty
       if mecabcsv.writecsv(names, csvpath):
         dicpath = rc.mecab_userdic_path(itemId, self.dicname)
-        if mecabdic.csv2dic(dicpath, csvpath, dicpath=self.dicdir):
+        if mecabdic.csv2dic(dicpath, csvpath, dicdir=self.dicdir):
           return dicpath
 
   # Pares name items for Shared Dictionary
