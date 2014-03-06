@@ -35,7 +35,7 @@ def get(): # -> bool
   url = APPLOC_URL
   size = APPLOC_FILESIZE
 
-  dprint("enter: size = %s" % size)
+  dprint("enter: size = %s, url = %s" % (size, url))
 
   from sakurakit import skfileio
   if os.path.exists(targetpath) and skfileio.filesize(targetpath) == size:

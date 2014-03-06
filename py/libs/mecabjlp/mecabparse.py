@@ -201,6 +201,10 @@ if __name__ == '__main__':
   dicdir = '/Users/jichi/opt/Visual Novel Reader/Library/Dictionaries/ipadic'
   dicdir = '/Users/jichi/src/unidic'
   dicdir = '/opt/local/lib/mecab/dic/naist-jdic-utf8'
+
+  #rcfile = '/Users/jichi/stream/Library/Dictionaries/mecabrc/ipadic.rc'
+  rcfile = '/Users/jichi/stream/Library/Dictionaries/mecabrc/unidic.rc'
+  mecabtag.setenvrc(rcfile)
   tagger = mecabtag.gettagger(dicdir=dicdir)
 
   t = u"可愛いよ"
@@ -208,6 +212,7 @@ if __name__ == '__main__':
   t = u'すもももももももものうち'
   t = u'しようぜ'
   t = u'思ってる'
+  t = u'巨乳'
   print toyomi(t)
   print toromaji(t)
 

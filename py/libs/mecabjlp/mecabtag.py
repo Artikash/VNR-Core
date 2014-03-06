@@ -84,7 +84,10 @@ if __name__ == '__main__':
   dicdir = '/Users/jichi/opt/Visual Novel Reader/Library/Dictionaries/ipadic'
   dicdir = '/Users/jichi/src/unidic'
   dicdir = '/opt/local/lib/mecab/dic/naist-jdic-utf8'
-  tagger = gettagger(dicdir=dicdir)
+  rcfile = '/Users/jichi/stream/Library/Dictionaries/mecabrc/ipadic.rc'
+  setenvrc(rcfile)
+  #tagger = gettagger(dicdir=dicdir)
+  tagger = gettagger()
   print tagger
 
   #if os.name == 'nt' and hasattr(config, 'ENV_MECABRC'):
