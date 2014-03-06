@@ -14,7 +14,7 @@ from sakurakit import skevents, skqss, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty, hasmemoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
-from sakurakit.skunicode import u
+#from sakurakit.skunicode import u
 from texthook import texthook
 from mytr import my, mytr_
 import config, defs, growl, i18n, rc, textman, textutil
@@ -638,7 +638,7 @@ class _TextTab(object):
       col = n % THREADLAYOUT_COLUMN_COUNT
       self.threadLayout.addWidget(view, row, col)
 
-    f = lambda it: self._transformText(u(it, encoding))
+    f = lambda it: self._transformText(textutil.to_unicode(it, encoding))
     text = '\n\n'.join(imap(f, thread.data))
     view.setText(text)
 
@@ -736,7 +736,7 @@ class _TextTab(object):
         name=name, signature=signature, data=[data], type=tt))
       view = self._threadViews[signature]
 
-    text = self._transformText(u(data, self._encoding()))
+    text = self._transformText(textutil.to_unicode(data, self._encoding()))
     if view.hasText():
       view.appendText('\n' + text)
     else:

@@ -15,7 +15,7 @@ from sakurakit import skclip, skdatetime, skevents, skthreads
 from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dwarn
 from sakurakit.skqml import QmlObject
-from sakurakit.skunicode import u
+#from sakurakit.skunicode import u
 from memcache.container import SizeLimitedList
 from mytr import my
 from texthook import texthook
@@ -290,7 +290,7 @@ class _TextManager(object):
 
   def _decodeText(self, data):
     #return qunicode(data, self.encoding)
-    return u(data, self.encoding)
+    return textutil.to_unicode(data, self.encoding)
 
   def _translateTextAndShow(self, text, time):
     trman.manager().translateApply(partial(self._showTranslation, time),

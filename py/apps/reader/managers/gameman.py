@@ -11,7 +11,7 @@ from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_, notr_
-from sakurakit.skunicode import sjis_encodable, u, u_sjis
+from sakurakit.skunicode import sjis_encodable, u_sjis
 from sakurakit.skwinobj import SkWindowObject #, SkTaskBarObject
 from texthook import texthook
 from mytr import my
