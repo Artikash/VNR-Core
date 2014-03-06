@@ -93,7 +93,7 @@ class _TermInput(object):
     ret = QtWidgets.QPushButton(tr_("Cancel"))
     ret.setToolTip(tr_("Cancel"))
     skqss.class_(ret, 'btn btn-default')
-    ret.setDefault(True)
+    #ret.setDefault(True)
     ret.clicked.connect(self.q.hide)
     return ret
 
@@ -101,6 +101,7 @@ class _TermInput(object):
   def saveButton(self):
     ret = QtWidgets.QPushButton(tr_("Submit"))
     ret.setToolTip(tr_("Submit"))
+    ret.setDefault(True)
     skqss.class_(ret, 'btn btn-primary')
     ret.clicked.connect(self.save)
     return ret

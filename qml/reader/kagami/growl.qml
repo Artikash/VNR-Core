@@ -223,7 +223,10 @@ Item { id: root_
 
   Timer { id: visibleTimer_
     interval: _VISIBLE_DURATION
-    onTriggered: root_.hideMe()
+    onTriggered: {
+      root_.lastText = ''
+      root_.hideMe()
+    }
   }
 
   NumberAnimation on opacity { id: fadeOutAni_
@@ -272,6 +275,7 @@ Item { id: root_
   //Component.onCompleted: console.log("growl.qml: pass")
 
   property bool modelLocked: false
+  property string lastText // previous showed message text
 
   function appendItem(item) {
     if (modelLocked)
@@ -283,6 +287,9 @@ Item { id: root_
   }
 
   function addText(text, type) {
+    if (text === root_.lastText)
+      return
+    root_.lastText = text
     var item = {text:text, type:type}
     //listModel_.append(item)
     if (appendItem(item)) {
