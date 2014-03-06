@@ -70,11 +70,12 @@ def decodable(s, enc):
   try: s.decode(enc); return True
   except (UnicodeDecodeError, LookupError, AttributeError): return False
 
-def sjis_encodable(s): return encodable(s, 'sjis')
-def sjis_decodable(s): return decodable(s, 'sjis')
+# Use shift_jis_2004 instead of sjis
+def sjis_encodable(s): return encodable(s, 'sjis_2004')
+def sjis_decodable(s): return decodable(s, 'sjis_2004')
 
 def u_sjis(s):
-  try: return s.decode('sjis')
+  try: return s.decode('sjis_2004')
   except (UnicodeDecodeError, AttributeError): return u(s)
 
 # EOF

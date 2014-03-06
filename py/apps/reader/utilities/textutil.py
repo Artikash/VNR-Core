@@ -4,7 +4,20 @@
 
 import re
 from sakurakit import skstr
+from sakurakit.skunicode import u
 from jptraits import jpchars
+
+## Encoding ##
+
+# About SHIFT-JIS_2004
+# http://ja.wikipedia.org/wiki/Shift_JIS-2004
+# http://homepage1.nifty.com/~petronius/kana/kakutyaumozi.html
+# http://docs.python.jp/2.4/lib/standard-encodings.html
+def to_unicode(data, encoding): # str, str -> unicode
+  if encoding == 'shift-jis':
+    encoding = 'shift_jis_2004' # or sjis_2004
+  return u(data, encoding)
+  #return qunicode(data, encoding)
 
 ## Helpers ##
 

@@ -15,7 +15,7 @@ from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.skmvc import SkFilterTableController
 from sakurakit.sktr import tr_
-from sakurakit.skunicode import u
+#from sakurakit.skunicode import u
 from texthook import texthook
 from mousehook import winpicker
 from gameman import GameProfile
@@ -943,7 +943,7 @@ class SelectThreadPage(QtWidgets.QWizardPage):
     else:
       t = self._threads[sig]
       enc = self._currentEncoding()
-      f = lambda it : self._transformText(u(it, enc))
+      f = lambda it : self._transformText(textutil.to_unicode(it, enc))
       text = "\n\n".join(imap(f, t.data))
       self._textEdit.setPlainText(text)
       self._textEdit.moveCursor(QtWidgets.QTextCursor.End)
