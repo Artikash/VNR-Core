@@ -31,13 +31,13 @@ def qunicode(s, enc):
   try: d = _Q_D[enc]
   except KeyError:
     from PySide.QtCore import QTextCodec
-    c = QTextCodec.codecForName(enc.encode('utf-8'))
+    c = QTextCodec.codecForName(enc.encode('utf8'))
     d = c.makeDecoder()
     _Q_C[enc] = c
     _Q_D[enc] = d
   return d.toUnicode(s) if s else u""
 
-def qu8(s): return qunicode(s, 'utf-8')
+def qu8(s): return qunicode(s, 'utf8')
 def qu16(s): return qunicode(s, 'utf-16')
 
 _Q_C0 = _Q_D0 = None
@@ -71,11 +71,11 @@ def decodable(s, enc):
   except (UnicodeDecodeError, LookupError, AttributeError): return False
 
 # Use shift_jis_2004 instead of sjis
-def sjis_encodable(s): return encodable(s, 'sjis_2004')
-def sjis_decodable(s): return decodable(s, 'sjis_2004')
+def sjis_encodable(s): return encodable(s, 'cp932')
+def sjis_decodable(s): return decodable(s, 'cp932')
 
 def u_sjis(s):
-  try: return s.decode('sjis_2004')
+  try: return s.decode('cp932')
   except (UnicodeDecodeError, AttributeError): return u(s)
 
 # EOF
