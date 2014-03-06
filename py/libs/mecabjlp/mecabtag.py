@@ -19,13 +19,13 @@ def normalizepath(path):
   if not path:
     return ''
   path = path.encode('utf8', errors='ignore')
-  if not os.path.exists(path):
-    return ''
-  if os.name == 'nt':
+  #if not os.path.exists(path):
+  #  return ''
+  if os.name == 'nt' and ' ' in path:
     path = path.replace('/', os.path.sep) #.lower()
     import win32api
     path = win32api.GetShortPathName(path) # eliminate spaces on the path
-  return path
+  return '' if ' ' in path else path # the path cannont contain spaces
 
 def maketaggerargs(**kwargs):
   if not kwargs:
@@ -35,7 +35,10 @@ def maketaggerargs(**kwargs):
     if v:
       if k in ('dicdir', 'rcfile', 'userdic'):
         v = normalizepath(v)
-      l.append('--%s %s' % (k, v))
+      if not v:
+        dwarn("skip path with spaces for %s" % k)
+      else:
+        l.append('--%s %s' % (k, v))
   return ''.join(l)
 
 def createtagger(args):
