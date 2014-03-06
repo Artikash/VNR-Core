@@ -332,7 +332,7 @@ class MeCabManager:
       dprint(v)
       self.dicName = v
       _MP.setfmt(mecabfmt.getfmt(v))
-      _MP.setdicdir(rc.mecab_dic_path(v))
+      _MP.setrcfile(rc.mecab_rc_path(v))
 
   def toRuby(self, text, html=False):
     """

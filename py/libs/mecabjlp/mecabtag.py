@@ -75,7 +75,7 @@ def setenvrc(path): # unicode  path to dic rcfile
 def getenvrc(path): # -> unicode
   return os.environ.get('MECABRC')
 
-def clearenvrc():
+def delenvrc():
   try: del os.environ['MECABRC']
   except: pass
 

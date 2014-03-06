@@ -173,6 +173,15 @@ def mecab_dic_path(name):
   #return config.get_rel_path(DIR_CACHE_DICT) + '/' + config.MECAB_DICS[name] if name else ''
   return config.MECAB_DICS[name] if name else ''
 
+def mecab_rc_path(name):
+  """
+  @param  str  name
+  @return  unicode  path
+  @throw  KeyError
+  """
+  return config.MECAB_RCFILES[name] if name else ''
+
+
 # CDN
 
 def cdn_url(key):
