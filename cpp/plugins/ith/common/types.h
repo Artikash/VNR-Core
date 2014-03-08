@@ -6,22 +6,33 @@
 
 #include <windows.h> // needed for windef types
 
+ /** jichi 3/7/2014: Add guessed comment
+  *
+  *  DWORD  addr  absolute or relative address
+  *  DWORD  split   esp offset of the split character
+  *
+  *  http://faydoc.tripod.com/cpu/pushad.htm
+  *  http://agth.wikia.com/wiki/Cheat_Engine_AGTH_Tutorial
+  *  The order is the same as pushd
+  *  EAX, ECX, EDX, EBX, EBP, ESP (original value), EBP, ESI, and EDI (if the current operand-size attribute is 32) and AX, CX, DX, BX, SP
+  *  Negative values of 'data_offset' and 'sub_offset' refer to registers:-4 for EAX, -8 for ECX, -C for EDX, -10 for EBX, -14 for ESP, -18 for EBP, -1C for ESI, -20 for EDIhttp://agth.wikia.com/wiki/Cheat_Engine_AGTH_Tutorial
+  */
 struct HookParam { // size: 0x24
   // jichi 8/24/2013: For special hooks. Orignial name: DataFun
-  typedef void (* extern_fun_t)(DWORD, HookParam *, DWORD *, DWORD *, DWORD *);
+  typedef void (*extern_fun_t)(DWORD, HookParam *, DWORD *, DWORD *, DWORD *);
 
-  DWORD addr;
-  DWORD off,
-        ind,
-        split,
-        split_ind;
-  DWORD module,
+  DWORD addr;   // absolute or relative address
+  DWORD off,    // offset of the data in the memory
+        ind,    // ?
+        split,  // esp offset of the split character
+        split_ind;  // ?
+  DWORD module, // hash of the module
         function;
   extern_fun_t extern_fun;
-  DWORD type;
-  WORD length_offset;
-  BYTE hook_len,
-       recover_len;
+  DWORD type;   // flags
+  WORD length_offset; // index of the string length
+  BYTE hook_len, // ?
+       recover_len; // ?
 };
 
 struct SendParam {

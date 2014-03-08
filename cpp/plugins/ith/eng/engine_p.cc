@@ -73,7 +73,7 @@ int GetHookDataLength(const HookParam &hp, DWORD base, DWORD in)
     break;
   case 1:
     if (hp.type & USING_UNICODE)
-      len=2;
+      len = 2;
     else {
       if (hp.type & BIG_ENDIAN)
         in >>= 8;
@@ -1929,14 +1929,24 @@ bool InsertMalie2Hook()
 }
 
 /**
+ *  jichi 8/20/2013: Add hook for 相州戦神館學園 八命陣
+ *  See: http://sakuradite.com/topic/157
+ *  check 0x5b51ed for ecx+edx*2
+ *  Also need to skip furigana.
  */
 void SpecialHookMalie3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  ConsoleOutput("vnreng: special");
+  // http://faydoc.tripod.com/cpu/pushad.htm
+  // http://faydoc.tripod.com/cpu/pushad.htm
+  enum { ecx_off = -8, edx_off = -c };
+  // ecx+edx*2
+  *data = *(DWORD *)(esp_base + ecx_off)  // ecx
+        + (*(DWORD *)(esp_base + edx_off) << 1); // edx*2
+  *len = GetHookDataLength(*hp, esp_base, (DWORD)data);
 }
 
 /**
- *  jichi 8/20/2013: Add hook for sweet light BRAVA!!
+ *  jichi 8/20/2013: Add hook for 相州戦神館學園 八命陣
  *  See: http://sakuradite.com/topic/157
  *  Credits: @ok123
  */
