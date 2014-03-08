@@ -1214,7 +1214,7 @@ class MainObject(QObject):
     dprint("create dictionary manager")
     d.dictionaryManager
 
-    dprint("create mecab manager")
+    dprint("create mecab manager") # Move this upward before kagami
     d.meCabManager
     d.nameManager
 

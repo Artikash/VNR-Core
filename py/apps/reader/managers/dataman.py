@@ -5279,8 +5279,8 @@ class _DataManager(object):
                 nm.compileMeCabDic,
                 names,
                 itemId))
-          if dicpath and not mm.dictionary():
-            mm.setDictionary(dicpath)
+          if dicpath and not mm.userDictionary():
+            mm.setUserDictionary(dicpath)
           dprint("leave: item count = %i" % len(self.nameItems))
           return
     growl.msg(my.tr("Game character names not found"))

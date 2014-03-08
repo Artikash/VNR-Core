@@ -283,13 +283,12 @@ def extracttarxz(path, location): # unicode, unicode -> bool
 
 def extract7zarchive(z, location): # py7zlib.Archive7z, unicode ->, throws
   for name in z.getnames():
-    outfilename = os.path.join(location, name)
-    outdir = os.path.dirname(outfilename)
+    outfile = os.path.join(location, name)
+    outdir = os.path.dirname(outfile)
     if not os.path.exists(outdir):
       os.makedirs(outdir)
-    outfile = open(outfilename, 'wb')
-    outfile.write(z.getmember(name).read())
-    outfile.close()
+    with open(outfile, 'wb') as f:
+      f.write(z.getmember(name).read())
 
 # Warning: This only support 7z version 0.3 and does not support 7z 0.4
 def extract7z(path, location): # unicode, unicode -> bool

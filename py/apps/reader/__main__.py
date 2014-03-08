@@ -188,7 +188,7 @@ def main():
       rc.DIR_XML_COMMENT,
       rc.DIR_XML_VOICE,
       rc.DIR_XML_REF,
-      rc.DIR_DICT_MECAB,
+      #rc.DIR_DICT_MECAB, # not needed to create
       rc.DIR_CACHE_AVATAR,
       rc.DIR_CACHE_AWS,
       rc.DIR_CACHE_DATA,

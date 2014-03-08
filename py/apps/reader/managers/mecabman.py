@@ -333,6 +333,7 @@ class MeCabManager:
       dprint(v)
       self.dicName = v
       _MP.setfmt(mecabfmt.getfmt(v))
+      _MP.setuserdic('') # clear default user dic
       _MP.setrcfile(rc.mecab_rc_path(v))
 
   def toRuby(self, text, html=False):

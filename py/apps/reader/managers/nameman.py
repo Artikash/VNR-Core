@@ -99,7 +99,7 @@ class NameManager(object):
       fmt = mecabfmt.getfmt(self.dicname)
       if mecabcsv.writecsv(names, csvpath, fmt=fmt):
         dicpath = rc.mecab_userdic_path(itemId, self.dicname)
-        if mecabdic.csv2dic(dicpath, csvpath, dicdir=self.dicdir):
+        if mecabdic.csv2dic(dicpath, csvpath, dicdir=dicdir):
           return dicpath
 
   # Pares name items for Shared Dictionary
