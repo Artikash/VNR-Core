@@ -35,6 +35,11 @@ class DEFAULT(object):
   def getsurface(cls, f): # unicode feature -> unicode or None
     return cls.getcol(f, cls.COL_SURFACE)
 
+  @classmethod
+  def csv(cls, surf, cost, hira, kata): # unicode* -> unicode
+    #u"工藤,1223,1223,6058,名詞,固有名詞,人名,名,*,*,くどう,クドウ,クドウ"
+    return u"%s,,,%s,名詞,固有名詞,人名,名,*,*,%s,%s,%s" % (surf, cost, hira, kata, kata)
+
 # Example: 名詞,一般,*,*,*,*,憎しみ,ニクシミ,ニクシミ
 class IPADIC(DEFAULT):
 
@@ -46,7 +51,6 @@ class IPADIC(DEFAULT):
       if j > 0:
         return f[j+1:i]
 
-# Example: 名詞,普通名詞,一般,*,*,*,スモモ,李,すもも,スモモ,すもも,スモモ,和,*,*,*,*,スモモ,スモモ,スモモ,スモモ,*,*,0,C2,*
 class UNIDIC(DEFAULT):
   COL_KANJI = DEFAULT.COL_BASIC + 2
   COL_SURFACE = COL_KANJI + 1
@@ -61,6 +65,16 @@ class UNIDIC(DEFAULT):
   def getorig(cls, f): # unicode feature -> unicode or None
     return cls.getcol(f, cls.COL_ORIG)
 
+  # http://chocolapod.sakura.ne.jp/blog/entry/56
+  @classmethod
+  def csv(cls, surf, cost, hira, kata): # override
+    # ジョジョの奇妙な冒険,,,0,名詞,固有名詞,一般,*,*,*,ジョジョノキミョウナボウケン,ジョジョの奇妙な冒険,ジョジョの奇妙な冒険,ジョジョノキミョーナボウケン,ジョジョの奇妙な冒険,ジョジョノキミョーナボウケン,*,*,*,*
+    #return u"%s,,,%s,名詞,固有名詞,人名,姓,*,*,%s,%s,%s,%s,%s,%s,*,*,*,*" % (surf, cost, kata, surf, surf, kata, surf, kata)
+    # FIXME: The above does not work
+    return u"%s,,,%s,名詞,固有名詞,一般,*,*,*,%s,%s,%s,%s,%s,%s,*,*,*,固" % (surf, cost, kata, surf, surf, kata, surf, kata)
+
+# ジョジョの奇妙な冒険,,,0,名詞,固有名詞,一般,*,*,*,ジョジョノキミョウナボウケン,ジョジョの奇妙な冒険,ジョジョの奇妙な冒険,ジョジョノキミョーナボウケン,ジョジョの奇妙な冒険,ジョジョノキミョーナボウケン,*,*,*,*
+
 FORMATS = {
   'ipadic': IPADIC,
   'unidic': UNIDIC,
@@ -68,5 +82,7 @@ FORMATS = {
 }
 def getfmt(name):
   return FORMATS.get(name) or DEFAULT
+
+DEFAULT = UNIDIC
 
 # EOF

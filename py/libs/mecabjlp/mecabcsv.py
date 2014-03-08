@@ -18,6 +18,7 @@ if __name__ == '__main__': # DEBUG
 import codecs
 from sakurakit.skdebug import dwarn
 from cconv import cconv
+import mecabfmt
 
 def costof(surf):
   """
@@ -27,9 +28,7 @@ def costof(surf):
   # http://yukihir0.hatenablog.jp/entry/20110201/1296565687
   return int(max(-36000, -400*len(surf)**1.5))
 
-#u"工藤,1223,1223,6058,名詞,固有名詞,人名,名,*,*,くどう,クドウ,クドウ"
-FMT_NAME = u"%s,,,%d,名詞,固有名詞,人名,名,*,*,%s,%s,%s" "\n" # end with line
-def writecsv(dic, path, mode='w', encoding='utf8'):
+def writecsv(dic, path, mode='w', encoding='utf8', fmt=mecabfmt.DEFAULT):
   """
   @param  dic  [unicode surface, unicode yomi]
   @return  bool
@@ -40,7 +39,7 @@ def writecsv(dic, path, mode='w', encoding='utf8'):
       cost = costof(surf)
       hira = cconv.kata2hira(yomi)
       kata = cconv.hira2kata(yomi)
-      line = FMT_NAME % (surf, cost, hira, kata, kata)
+      line = fmt.csv(surf, cost, hira, kata) + '\n'
       fout.write(line)
     fout.close()
     return True

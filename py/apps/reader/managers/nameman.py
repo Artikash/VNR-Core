@@ -7,11 +7,13 @@ from sakurakit import skdatetime, skfileio
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skclass import memoized
 from jptraits import jpchars
-from mecabjlp import mecabcsv, mecabdic
+from mecabjlp import mecabcsv, mecabdic, mecabfmt
 import config, dataman, os, rc
 
 @memoized
 def manager(): return NameManager()
+
+SUPPORTED_DICS = 'ipadic', 'unidic'
 
 class NameManager(object):
 
@@ -20,11 +22,9 @@ class NameManager(object):
 
   def __init__(self):
     self.dicname = '' # name
-    self.dicdir = '' # path
 
   def setMeCabDictionary(self, v):
     self.dicname = v
-    self.dicdir = os.path.abspath(rc.mecab_dic_path(v)) if v else '' # force absolute path
 
   # Create name dictionary for MeCab
 
@@ -89,13 +89,15 @@ class NameManager(object):
     @param  itemId  long
     @return  unicode or None  MeCab dicpath
     """
-    if itemId and self.dicdir:
+    if itemId and self.dicname in SUPPORTED_DICS:
+      dicdir = os.path.abspath(rc.mecab_dic_path(self.dicname))
       csvpath = rc.mecab_usercsv_path(itemId, self.dicname)
       dir = os.path.dirname(csvpath)
       if not os.path.exists(dir):
         os.makedirs(dir)
       names = self._iterMeCabNameYomi(names) # FIXME: check empty
-      if mecabcsv.writecsv(names, csvpath):
+      fmt = mecabfmt.getfmt(self.dicname)
+      if mecabcsv.writecsv(names, csvpath, fmt=fmt):
         dicpath = rc.mecab_userdic_path(itemId, self.dicname)
         if mecabdic.csv2dic(dicpath, csvpath, dicdir=self.dicdir):
           return dicpath

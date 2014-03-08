@@ -155,7 +155,7 @@ class MeCabParser:
     return ' '.join(furigana or surface for surface,furigana in
         self.parse(text, termEnabled=termEnabled, reading=True, lougo=True, furiType=furiType))
 
-  def parse(self, text, termEnabled=False, type=False, reading=False, feature=False, lougo=False, furiType=defs.FURI_HIRA, readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)):
+  def parse(self, text, termEnabled=False, type=False, fmt=None, reading=False, feature=False, lougo=False, furiType=defs.FURI_HIRA, readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)):
     """
     @param  text  unicode
     @param* termEnabled  bool  whether query terms
@@ -175,6 +175,8 @@ class MeCabParser:
       termEnabled = tm.isEnabled()
     if termEnabled:
       text = tm.applyWordTerms(text)
+    if not fmt:
+      fmt = self.fmt # mecabfmt
     if reading:
       wordtrans = _wordtrans if furiType == defs.FURI_TR else None
       katatrans = (cconv.kata2hira if furiType == defs.FURI_HIRA else
@@ -191,7 +193,6 @@ class MeCabParser:
                      cconv.yomi2romaji)
       if furiType in (defs.FURI_ROMAJI, defs.FURI_HANGUL, defs.FURI_THAI, defs.FURI_KANJI):
         readingTypes = None
-    fmt = self.fmt # mecabfmt
     feature2katana = fmt.getkata
     node = tagger.parseToNode(text.encode(mecabdef.DICT_ENCODING))
     while node:

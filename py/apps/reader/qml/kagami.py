@@ -8,6 +8,7 @@ import textwrap
 from functools import partial
 from PySide.QtCore import Signal, Slot, Property, QObject, QTimer
 from cconv.cconv import zhs2zht, wide2thin
+from mecabjlp import mecabfmt
 from sakurakit import skdatetime
 from sakurakit.skclass import classproperty, staticproperty
 from sakurakit.skdebug import dprint, dwarn
@@ -84,9 +85,10 @@ class GrimoireBean(QObject):
     feature = colorize
     if feature and d.features:
       d.features = {}
+    fmt = mecabfmt.getfmt(meCabDic)
     return ''.join(
         d.renderJapanese(t, feature=feature, # keep features when colorized
-            furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
+            fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
         for t in text.split('\n') if t)
 
   @Slot(unicode, result=unicode)
