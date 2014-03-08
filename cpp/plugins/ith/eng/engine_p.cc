@@ -13,42 +13,16 @@
 #include "ith/cli/cli.h"
 #include "ith/sys/sys.h"
 #include "ith/common/except.h"
-//#include "ith/common/growl.h"
 #include "disasm/disasm.h"
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 
-namespace { // unnamed helpers
+#define DEBUG "engine_p.h"
 
-// jichi 8/18/2013: Original maximum relative address in ITH
-//enum { MAX_REL_ADDR = 0x200000 };
-
-// jichi 10/1/2013: Increase relative address limit. Certain game engine like Artemis has larger code region
-enum { MAX_REL_ADDR = 0x300000 };
-
-static union {
-  char text_buffer[0x1000];
-  wchar_t wc_buffer[0x800];
-
-  struct { // CodeSection
-    DWORD base;
-    DWORD size;
-  } code_section[0x200];
-};
-
-char text_buffer_prev[0x1000];
-DWORD buffer_index,
-      buffer_length;
-
-BOOL SafeFillRange(LPCWSTR dll, DWORD *lower, DWORD *upper)
-{
-  BOOL ret = FALSE;
-  ITH_WITH_SEH(ret = FillRange(dll, lower, upper));
-  return ret;
-}
-
+#ifdef DEBUG
+# include "ith/common/growl.h"
+namespace { // anonymous
 // jichi 12/17/2013: Copied from int TextHook::GetLength(DWORD base, DWORD in)
-// TODO: I should not duplicate function definition!
 int GetHookDataLength(const HookParam &hp, DWORD base, DWORD in)
 {
   if (base == 0)
@@ -84,6 +58,37 @@ int GetHookDataLength(const HookParam &hp, DWORD base, DWORD in)
   // jichi 12/25/2013: This function originally return -1 if failed
   //return len;
   return max(0, len);
+}
+} // unnamed
+#endif // DEBUG
+
+namespace { // unnamed helpers
+
+// jichi 8/18/2013: Original maximum relative address in ITH
+//enum { MAX_REL_ADDR = 0x200000 };
+
+// jichi 10/1/2013: Increase relative address limit. Certain game engine like Artemis has larger code region
+enum { MAX_REL_ADDR = 0x300000 };
+
+static union {
+  char text_buffer[0x1000];
+  wchar_t wc_buffer[0x800];
+
+  struct { // CodeSection
+    DWORD base;
+    DWORD size;
+  } code_section[0x200];
+};
+
+char text_buffer_prev[0x1000];
+DWORD buffer_index,
+      buffer_length;
+
+BOOL SafeFillRange(LPCWSTR dll, DWORD *lower, DWORD *upper)
+{
+  BOOL ret = FALSE;
+  ITH_WITH_SEH(ret = FillRange(dll, lower, upper));
+  return ret;
 }
 
 } // unnamed namespace
@@ -1851,7 +1856,8 @@ void SpecialHookMalie2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split,
     DWORD s2 = *(DWORD *)(esp_base + 0xc); // second split
     *split = last_split = s1 + s2; // not sure if plus is a good way
   }
-  *len = GetHookDataLength(*hp, esp_base, (DWORD)data);
+  //*len = GetHookDataLength(*hp, esp_base, (DWORD)data);
+  *len = 2;
 }
 
 /**
@@ -1936,13 +1942,23 @@ bool InsertMalie2Hook()
  */
 void SpecialHookMalie3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  // http://faydoc.tripod.com/cpu/pushad.htm
-  // http://faydoc.tripod.com/cpu/pushad.htm
-  enum { ecx_off = -8, edx_off = -c };
-  // ecx+edx*2
-  *data = *(DWORD *)(esp_base + ecx_off)  // ecx
-        + (*(DWORD *)(esp_base + edx_off) << 1); // edx*2
-  *len = GetHookDataLength(*hp, esp_base, (DWORD)data);
+  DWORD ecx = *(DWORD *)(esp_base + pusha_ecx_off),
+        edx = *(DWORD *)(esp_base + pusha_edx_off),
+        esi = *(DWORD *)(esp_base + pusha_esi_off);
+  ConsoleOutput("111111111");
+  ITH_GROWL_DWORD(esi);
+  ITH_GROWL_DWORD(ecx + edx*2);
+  ConsoleOutput("222222222");
+  //*data = //ds:[ecx+edx*2]
+  //    *(DWORD *)(esp_base + pusha_ecx_off)  // ecx
+  //    + (*(DWORD *)(esp_base + pusha_edx_off)) * 2; // edx*2
+  //    //+ (*(DWORD *)(esp_base + pusha_edx_off) << 1); // edx*2
+  //ITH_GROWL_DWORD2(*(DWORD *)(esp_base + pusha_ecx_off), *(DWORD *)(esp_base + pusha_edx_off));
+  //*data = *(DWORD *)(esp_base + pusha_esi_off);
+  //*len = GetHookDataLength(*hp, esp_base, (DWORD)data);
+  //*len = wcslen((LPWSTR)*data) << 1;
+  //ITH_GROWL((LPCWSTR)*data);
+  //*len = 2;
 }
 
 /**
@@ -1953,11 +1969,17 @@ void SpecialHookMalie3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split,
 bool InsertMalie3Hook()
 {
   HookParam hp = {};
-  hp.addr = 0x5b51ed;
+  //hp.addr = 0x5b51ed;
+  //hp.addr = 0x5b51f1;
+  hp.addr = 0x5b51f2;
+  //ITH_GROWL_DWORD(*(BYTE *)hp.addr);
   //hp.off = -8;
+  hp.off = pusha_esi_off;
   //hp.length_offset = 1;
-  hp.extern_fun = SpecialHookMalie3;
-  hp.type = EXTERN_HOOK|USING_UNICODE;
+  //hp.extern_fun = SpecialHookMalie3;
+  //hp.type = EXTERN_HOOK|USING_UNICODE;
+  hp.type = USING_UNICODE;
+  //hp.type = USING_UNICODE|DATA_INDIRECT;
   //hp.type = EXTERN_HOOK|USING_SPLIT|USING_UNICODE|NO_CONTEXT;
   ConsoleOutput("vnreng: INSERT Malie3");
   NewHook(hp, L"Malie3");
@@ -1974,8 +1996,8 @@ bool InsertMalieHook()
     // jichi 8/20/2013: Add hook for sweet light engine
     // Insert both malie and malie2 hook.
     bool ok = InsertMalieHook2();
-    //ok = InsertMalie2Hook() || ok; // jichi 8/20/2013 TO BE RESTORED
-    ok = InsertMalie3Hook() || ok; // jichi 3/7/2014
+    ok = InsertMalie2Hook() || ok; // jichi 8/20/2013 TO BE RESTORED
+    //ok = InsertMalie3Hook() || ok; // jichi 3/7/2014
     return ok;
   }
 }
