@@ -247,7 +247,7 @@ def extractxz(infile, outfile): # unicode, unicode -> bool
 # http://stackoverflow.com/questions/17217073/how-to-decompress-a-xz-file-which-has-multiple-folders-files-inside-in-a-singl
 def extracttarxz(path, location): # unicode, unicode -> bool
   try:
-    import contextlib, tarfile, pylzma
+    import pylzma
     with open(path, 'rb') as fp:
       z = pylzma.decompressobj()
       data = ''
@@ -256,6 +256,7 @@ def extracttarxz(path, location): # unicode, unicode -> bool
         if not trunk: break
         data += z.decompress(trunk)
       data += z.flush()
+    import tarfile
     from cStringIO import StringIO
     with tarfile.open(mode= "r:", fileobj=StringIO(data)) as t:
       t.extractall(location)
@@ -274,23 +275,36 @@ def extracttarxz(path, location): # unicode, unicode -> bool
   #  dwarn(e)
   #return False
 
-# http://stackoverflow.com/questions/11466572/python-how-to-compress-with-7zip-instead-of-zip-code-changing
+# http://stackoverflow.com/questions/10701528/example-of-how-to-use-pylzma
+# http://www.dreamincode.net/forums/topic/296783-how-to-cope-with-the-occasional-administrator-privledge-requirement/
 # Only needed by Python2. 7zip is supported by Python3 by default.
 # Note: This require pylzma to be installed first
 # FIXME: py7zlib does not support latest 7zip
+
+def extract7zarchive(z, location): # py7zlib.Archive7z, unicode ->, throws
+  for name in z.getnames():
+    outfilename = os.path.join(location, name)
+    outdir = os.path.dirname(outfilename)
+    if not os.path.exists(outdir):
+      os.makedirs(outdir)
+    outfile = open(outfilename, 'wb')
+    outfile.write(z.getmember(name).read())
+    outfile.close()
+
+# Warning: This only support 7z version 0.3 and does not support 7z 0.4
 def extract7z(path, location): # unicode, unicode -> bool
   import py7zlib # could be found in pylzma from pip
-  #try:
-  if True:
+  try:
     with open(path, 'rb') as fp:
-      with py7zlib.Archive7z(fp) as z:
-        z.extractall(location)
-        return True
-  #except Exception, e:
-  #  dwarn(e)
+      z = py7zlib.Archive7z(fp)
+      extract7zarchive(z, location)
+      return True
+  except Exception, e:
+    dwarn(e)
   return False
 
 if __name__ == '__main__':
-  extract7z('test.7z', 'tmp')
+  #extract7z('test.7z', 'tmp')
+  extract7z('/Users/jichi/tmp/unidic-2.1.2.7z', 'tmp')
 
 # EOF
