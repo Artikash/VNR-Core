@@ -1928,6 +1928,32 @@ bool InsertMalie2Hook()
   return true;
 }
 
+/**
+ */
+void SpecialHookMalie3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  ConsoleOutput("vnreng: special");
+}
+
+/**
+ *  jichi 8/20/2013: Add hook for sweet light BRAVA!!
+ *  See: http://sakuradite.com/topic/157
+ *  Credits: @ok123
+ */
+bool InsertMalie3Hook()
+{
+  HookParam hp = {};
+  hp.addr = 0x5b51ed;
+  //hp.off = -8;
+  //hp.length_offset = 1;
+  hp.extern_fun = SpecialHookMalie3;
+  hp.type = EXTERN_HOOK|USING_UNICODE;
+  //hp.type = EXTERN_HOOK|USING_SPLIT|USING_UNICODE|NO_CONTEXT;
+  ConsoleOutput("vnreng: INSERT Malie3");
+  NewHook(hp, L"Malie3");
+  return true;
+}
+
 } // unnamed Malie
 
 bool InsertMalieHook()
@@ -1937,9 +1963,10 @@ bool InsertMalieHook()
   else {
     // jichi 8/20/2013: Add hook for sweet light engine
     // Insert both malie and malie2 hook.
-    bool b1 = InsertMalieHook2(),
-         b2 = InsertMalie2Hook(); // jichi 8/20/2013 CHECKPOINT: test new sweet light game later
-    return b1 || b2; // prevent conditional shortcut
+    bool ok = InsertMalieHook2();
+    //ok = InsertMalie2Hook() || ok; // jichi 8/20/2013 TO BE RESTORED
+    ok = InsertMalie3Hook() || ok; // jichi 3/7/2014
+    return ok;
   }
 }
 
