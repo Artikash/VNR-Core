@@ -737,6 +737,7 @@ void InsertMajiroHook()
   NewHook(hp, L"MAJIRO");
   //RegisterEngineType(ENGINE_MAJIRO);
 }
+
 /********************************************************************************************
 CMVS hook:
   Process name is cmvs.exe or cnvs.exe or cmvs*.exe. Used by PurpleSoftware games.
@@ -744,12 +745,15 @@ CMVS hook:
   Font caching issue. Find call to GetGlyphOutlineA and the function entry.
 ********************************************************************************************/
 
-// jichi 2/16/2014: Check the hook addr and change the return type to bool
-bool InsertCMVSHook()
+namespace { // anonymous
+
+// jichi 3/6/2014: This is the original CMVS hook in ITH
+// It does not work for パープルソフトウェア games after しあわせ家族部 (2012)
+bool InsertCMVS1Hook()
 {
   DWORD addr = Util::FindCallAndEntryAbs((DWORD)GetGlyphOutlineA, module_limit_ - module_base_, module_base_, 0xec83);
   if (addr) {
-    ConsoleOutput("vnreng:CMVS: failed");
+    ConsoleOutput("vnreng:CMVS1: failed");
     return false;
   }
   HookParam hp = {};
@@ -759,11 +763,136 @@ bool InsertCMVSHook()
   hp.type = BIG_ENDIAN|USING_SPLIT;
   hp.length_offset= 1 ;
 
-  ConsoleOutput("vnreng: INSERT CMVS");
+  ConsoleOutput("vnreng: INSERT CMVS1");
   NewHook(hp, L"CMVS");
   //RegisterEngineType(ENGINE_CMVS);
   return true;
 }
+
+/**
+ *  CMSV
+ *  Sample games:
+ *  ハピメア: /HAC@48FF3:cmvs32.exe
+ *  ハピメアFD: /HB-1C*0@44EE95
+ *
+ *  Optional: ハピメアFD: /HB-1C*0@44EE95
+ *  This hook has issue that the text will be split to a large amount of threads
+ *  - length_offset: 1
+ *  - off: 4294967264 = 0xffffffe0 = -0x20
+ *  - type: 8
+ *
+ *  ハピメア: /HAC@48FF3:cmvs32.exe
+ *  base: 0x400000
+ *  - length_offset: 1
+ *  - off: 12 = 0xc
+ *  - type: 68 = 0x44
+ *
+ *  00448fee     cc             int3
+ *  00448fef     cc             int3
+ *  00448ff0  /$ 55             push ebp
+ *  00448ff1  |. 8bec           mov ebp,esp
+ *  00448ff3  |. 83ec 68        sub esp,0x68 ; jichi: hook here
+ *  00448ff6  |. 8b01           mov eax,dword ptr ds:[ecx]
+ *  00448ff8  |. 56             push esi
+ *  00448ff9  |. 33f6           xor esi,esi
+ *  00448ffb  |. 33d2           xor edx,edx
+ *  00448ffd  |. 57             push edi
+ *  00448ffe  |. 894d fc        mov dword ptr ss:[ebp-0x4],ecx
+ *  00449001  |. 3bc6           cmp eax,esi
+ *  00449003  |. 74 37          je short cmvs32.0044903c
+ *  00449005  |> 66:8b78 08     /mov di,word ptr ds:[eax+0x8]
+ *  00449009  |. 66:3b7d 0c     |cmp di,word ptr ss:[ebp+0xc]
+ *  0044900d  |. 75 0a          |jnz short cmvs32.00449019
+ *  0044900f  |. 66:8b7d 10     |mov di,word ptr ss:[ebp+0x10]
+ *  00449013  |. 66:3978 0a     |cmp word ptr ds:[eax+0xa],di
+ *  00449017  |. 74 0a          |je short cmvs32.00449023
+ *  00449019  |> 8bd0           |mov edx,eax
+ *  0044901b  |. 8b00           |mov eax,dword ptr ds:[eax]
+ *  0044901d  |. 3bc6           |cmp eax,esi
+ *  0044901f  |.^75 e4          \jnz short cmvs32.00449005
+ *  00449021  |. eb 19          jmp short cmvs32.0044903c
+ *  00449023  |> 3bd6           cmp edx,esi
+ *  00449025  |. 74 0a          je short cmvs32.00449031
+ *  00449027  |. 8b38           mov edi,dword ptr ds:[eax]
+ *  00449029  |. 893a           mov dword ptr ds:[edx],edi
+ *  0044902b  |. 8b11           mov edx,dword ptr ds:[ecx]
+ *  0044902d  |. 8910           mov dword ptr ds:[eax],edx
+ *  0044902f  |. 8901           mov dword ptr ds:[ecx],eax
+ *  00449031  |> 8b40 04        mov eax,dword ptr ds:[eax+0x4]
+ *  00449034  |. 3bc6           cmp eax,esi
+ *  00449036  |. 0f85 64010000  jnz cmvs32.004491a0
+ *  0044903c  |> 8b55 08        mov edx,dword ptr ss:[ebp+0x8]
+ *  0044903f  |. 53             push ebx
+ *  00449040  |. 0fb75d 0c      movzx ebx,word ptr ss:[ebp+0xc]
+ *  00449044  |. b8 00000100    mov eax,0x10000
+ *  00449049  |. 8945 e4        mov dword ptr ss:[ebp-0x1c],eax
+ *  0044904c  |. 8945 f0        mov dword ptr ss:[ebp-0x10],eax
+ *  0044904f  |. 8d45 e4        lea eax,dword ptr ss:[ebp-0x1c]
+ *  00449052  |. 50             push eax                                 ; /pMat2
+ *  00449053  |. 56             push esi                                 ; |Buffer
+ *  00449054  |. 56             push esi                                 ; |BufSize
+ *  00449055  |. 8d4d d0        lea ecx,dword ptr ss:[ebp-0x30]          ; |
+ *  00449058  |. 51             push ecx                                 ; |pMetrics
+ *  00449059  |. 6a 05          push 0x5                                 ; |Format = GGO_GRAY4_BITMAP
+ *  0044905b  |. 53             push ebx                                 ; |Char
+ *  0044905c  |. 52             push edx                                 ; |hDC
+ *  0044905d  |. 8975 e8        mov dword ptr ss:[ebp-0x18],esi          ; |
+ *  00449060  |. 8975 ec        mov dword ptr ss:[ebp-0x14],esi          ; |
+ *  00449063  |. ff15 5cf05300  call dword ptr ds:[<&gdi32.getglyphoutli>; \GetGlyphOutlineA ; jichi 3/7/2014: Should I hook here?
+ *  00449069  |. 8b75 10        mov esi,dword ptr ss:[ebp+0x10]
+ *  0044906c  |. 0faff6         imul esi,esi
+ *  0044906f  |. 8bf8           mov edi,eax
+ *  00449071  |. 8d04bd 0000000>lea eax,dword ptr ds:[edi*4]
+ *  00449078  |. 3bc6           cmp eax,esi
+ *  0044907a  |. 76 02          jbe short cmvs32.0044907e
+ *  0044907c  |. 8bf0           mov esi,eax
+ *  0044907e  |> 56             push esi                                 ; /Size
+ *  0044907f  |. 6a 00          push 0x0                                 ; |Flags = LMEM_FIXED
+ *  00449081  |. ff15 34f25300  call dword ptr ds:[<&kernel32.localalloc>; \LocalAlloc
+ */
+bool InsertCMVS2Hook()
+{
+  // There are multiple functions satisfy the pattern below.
+  // Hook to any one of them is OK.
+  const BYTE ins[] = {  // function begin
+    0x55,               // 00448ff0  /$ 55             push ebp
+    0x8b,0xec,          // 00448ff1  |. 8bec           mov ebp,esp
+    0x83,0xec, 0x68,    // 00448ff3  |. 83ec 68        sub esp,0x68 ; jichi: hook here
+    0x8b,0x01,          // 00448ff6  |. 8b01           mov eax,dword ptr ds:[ecx]
+    0x56,               // 00448ff8  |. 56             push esi
+    0x33,0xf6,          // 00448ff9  |. 33f6           xor esi,esi
+    0x33,0xd2,          // 00448ffb  |. 33d2           xor edx,edx
+    0x57,               // 00448ffd  |. 57             push edi
+    0x89,0x4d, 0xfc,    // 00448ffe  |. 894d fc        mov dword ptr ss:[ebp-0x4],ecx
+    0x3b,0xc6,          // 00449001  |. 3bc6           cmp eax,esi
+    0x74, 0x37          // 00449003  |. 74 37          je short cmvs32.0044903c
+  };
+  enum { hook_offset = 3 }; // offset from the beginning of the function
+  ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
+  ULONG reladdr = SearchPattern(module_base_, range, ins, sizeof(ins));
+  if (!reladdr) {
+    ConsoleOutput("vnreng:CMVS2: pattern not found");
+    return false;
+  }
+
+  //reladdr = 0x48ff0;
+  //reladdr = 0x48ff3;
+  HookParam hp = {};
+  hp.addr = module_base_ + reladdr + hook_offset;
+  hp.off = 0xc;
+  hp.type = BIG_ENDIAN;
+  hp.length_offset= 1 ;
+
+  ConsoleOutput("vnreng: INSERT CMVS2");
+  NewHook(hp, L"CMVS2");
+  return true;
+}
+
+} // anonymous namespace
+
+// jichi 3/7/2014: Insert the old hook first since GetGlyphOutlineA can NOT be found in new games
+bool InsertCMVSHook()
+{ return InsertCMVS1Hook() || InsertCMVS2Hook(); }
 
 /********************************************************************************************
 rUGP hook:
@@ -1414,7 +1543,7 @@ void InsertTinkerBellHook()
 //  {
 //    for (i=s1;i>s1-0x400;i--)
 //    {
-//      if (*(WORD*)(module_base_+i)==0xEC83)
+//      if (*(WORD*)(module_base_+i)==0xec83)
 //      {
 //        hp.addr=module_base_+i;
 //        NewHook(hp, L"C.System");
@@ -1427,7 +1556,7 @@ void InsertTinkerBellHook()
 //  {
 //    for (i=s2;i>s2-0x400;i--)
 //    {
-//      if (*(WORD*)(module_base_+i)==0xEC83)
+//      if (*(WORD*)(module_base_+i)==0xec83)
 //      {
 //        hp.addr=module_base_+i;
 //        NewHook(hp, L"TinkerBell");

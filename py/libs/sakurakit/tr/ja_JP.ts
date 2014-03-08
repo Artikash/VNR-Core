@@ -1826,7 +1826,7 @@
     <message>
         <location filename="sktr.py" line="75"/>
         <source>Scroll to Top</source>
-        <translation>最上部への移動</translation>
+        <translation>最上部に移動する</translation>
     </message>
     <message>
         <location filename="sktr.py" line="75"/>
