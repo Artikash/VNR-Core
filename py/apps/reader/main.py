@@ -1187,10 +1187,6 @@ class MainObject(QObject):
     dprint("create coffeebean manager")
     d.coffeeBeanManager
 
-    dprint("create mecab manager")
-    d.meCabManager # this must be before kagami (before qmlsettings)
-    d.nameManager
-
     dprint("create kagami")
     d.kagamiWindow
 
@@ -1217,6 +1213,10 @@ class MainObject(QObject):
 
     dprint("create dictionary manager")
     d.dictionaryManager
+
+    dprint("create mecab manager")
+    d.meCabManager
+    d.nameManager
 
     dprint("create reference manager")
     d.referenceManager

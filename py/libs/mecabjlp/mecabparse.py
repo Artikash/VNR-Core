@@ -31,7 +31,7 @@ HAS_MSIME = False
 #  """
 #  return _rx_cypher.sub(u'ウ', text)
 
-def parse(text, tagger=None, type=False, fmt=mecabfmt.UNIDIC, reading=False, feature=False, lougo=False, ruby=mecabdef.RB_HIRA, readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)):
+def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, feature=False, lougo=False, ruby=mecabdef.RB_HIRA, readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)):
   """
   @param  text  unicode
   @param  tagger  MeCabTagger

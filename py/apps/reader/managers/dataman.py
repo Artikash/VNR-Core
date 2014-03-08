@@ -6776,7 +6776,7 @@ class DataManager(QObject):
 
     #gid = self.currentGameId()
     #if gid:
-    if mecabman.manager().isEnabled():
+    if mecabman.manager().isEnabled() and mecabman.manager().supportsUserDic():
       dprint("update game-specicfic translation")
       skevents.runlater(d.updateNameItems, 3000) # delay a little
 

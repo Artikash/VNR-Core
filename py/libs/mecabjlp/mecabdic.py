@@ -45,7 +45,7 @@ def csv2dic(dic, csv, exe='mecab-dict-index', dicdir='', async=False):
   return bool(run(args)) and os.path.exists(dic)
 
 if __name__ == '__main__':
-  dicdir = r'S:\Stream\Library\Dictionaries\ipadic'
+  dicdir = r'S:\Stream\Caches\Dictionaries\UniDic'
   print csv2dic('test.dic', 'test.csv', dicdir=dicdir)
 
 # EOF

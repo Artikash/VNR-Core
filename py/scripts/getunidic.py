@@ -15,15 +15,22 @@ import initdefs
 TARGET_DIR = initdefs.CACHE_UNIDIC_RELPATH
 TMP_DIR = initdefs.TMP_RELPATH
 
+# Note: The original unidic is missing def. Need to get the Debian package.
+# http://http.us.debian.org/debian/pool/main/u/unidic-mecab/unidic-mecab_2.1.2~dfsg-2_all.deb
+#
 # http://sourceforge.jp/projects/unidic/
 # http://jaist.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip
 # ftp://ftp.jaist.ac.jp/pub/sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip
 #UNIDIC_URL = 'http://jaist.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
 #UNIDIC_URL = 'http://ftp.jaist.ac.jp/pub/sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
-UNIDIC_URL = 'http://osdn.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
-UNIDIC_FILESIZE = 46307109
+#UNIDIC_URL = 'http://osdn.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
+#UNIDIC_FILESIZE = 46307109
+#UNIDIC_URL = 'http://osdn.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
+UNIDIC_URL = "http://%s/pub/unidic/unidic-2.1.2.7z" % initdefs.DOMAIN_ORG
 UNIDIC_FILENAME = 'unidic'
-UNIDIC_SUFFIX = '.zip'
+UNIDIC_SUFFIX = '.7z'
+
+MIN_FILESIZE = 20000000 # 20 < 28 MB
 
 def init():
   for it in TMP_DIR:
@@ -33,12 +40,12 @@ def init():
 def get(): # return bool
   url = UNIDIC_URL
   path = TMP_DIR + '/' + UNIDIC_FILENAME + UNIDIC_SUFFIX
-  size = UNIDIC_FILESIZE
+  minsize = MIN_FILESIZE
 
-  dprint("enter: size = %s, url = %s" % (size, url))
+  dprint("enter: url = %s" % url)
 
   from sakurakit import skfileio
-  if os.path.exists(path) and skfileio.filesize(path) == size:
+  if os.path.exists(path) and skfileio.filesize(path) > minsize:
     dprint("leave: already downloaded")
     return True
 
@@ -46,7 +53,7 @@ def get(): # return bool
   ok = False
   with SkProfiler():
     if sknetio.getfile(url, path, flush=False): # flush=false to use more memory to reduce disk access
-      ok = skfileio.filesize(path) == size
+      ok = skfileio.filesize(path) > minsize
   if not ok and os.path.exists(path):
     os.remove(path)
   dprint("leave: ok = %s" % ok)
@@ -61,7 +68,7 @@ def extract():
 
   import shutil
   from sakurakit import skfileio
-  ok = skfileio.extractzip(srcpath, tmppath)
+  ok = skfileio.extract7z(srcpath, tmppath)
   if ok:
     if os.path.exists(targetpath):
       shutil.rmtree(targetpath)
