@@ -303,7 +303,8 @@ def extract7z(path, location): # unicode, unicode -> bool
   return False
 
 if __name__ == '__main__':
-  #extract7z('test.7z', 'tmp')
-  extract7z('/Users/jichi/tmp/unidic-2.1.2.7z', 'tmp')
+  #f = '/Users/jichi/tmp/unidic-2.1.2.7z'
+  f = r'S:\Stream\Caches\tmp\unidic-mlj.7z'
+  extract7z(f, 'tmp')
 
 # EOF
