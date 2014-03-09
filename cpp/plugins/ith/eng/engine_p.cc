@@ -1939,7 +1939,8 @@ bool InsertMalie2Hook()
 // jichi 2/8/3014: Return the beginning and the end of the text
 LPCWSTR _Malie3Ltrim(LPCWSTR p)
 {
-  for (;; p++)
+  for (int count = 0; count < 100; count++,
+      p++)
     if (p[0] == L'v' && p[1] == L'_') { // ex. v_akr0001, v_mzk0001
       p += 9;
       return p; // must return otherwise trimming more will break the ITH repetition elimination
@@ -1948,7 +1949,8 @@ LPCWSTR _Malie3Ltrim(LPCWSTR p)
 }
 LPCWSTR _Malie3Rtrim(LPCWSTR p)
 {
-  for (;; p++)
+  for (int count = 0; count < 100; count++,
+      p++)
     switch (p[0]) {
     case 0: // \0
     case 0xa: // \n // the text after 0xa is furigana
@@ -1988,7 +1990,7 @@ void SpecialHookMalie3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split,
 bool InsertMalie3Hook()
 {
   const BYTE ins[] = {
-    // 90 nop
+    // 0x90 nop
     0x8b,0x44,0x24, 0x04,   // 5b51e0  mov eax,dword ptr ss:[esp+0x4]
     0x56,                   // 5b51e4  push esi
     0x57,                   // 5b51e5  push edi

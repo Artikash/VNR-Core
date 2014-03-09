@@ -218,7 +218,7 @@ Item { id: root_
       margins: 10
     }
     count: gComet.connectionCount
-    visible: gComet.active && count > 1
+    visible: gComet.active && count > 1 && settingsPlugin_.cometCounterVisible
   }
 
   SpringBoard.Inspector { id: inspector_

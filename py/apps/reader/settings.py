@@ -262,6 +262,14 @@ class Settings(QSettings):
       if value: curtheme.load()
       else: curtheme.unload()
 
+  cometCounterVisibleChanged = Signal(bool)
+  def isCometCounterVisible(self):
+    return to_bool(self.value('CometCounterVisible', True))
+  def setCometCounterVisible(self, value):
+    if value != self.isCometCounterVisible():
+      self.setValue('CometCounterVisible', value)
+      self.cometCounterVisibleChanged.emit(value)
+
   springBoardWallpaperUrlChanged = Signal(unicode)
   def springBoardWallpaperUrl(self):
     return to_unicode(self.value('SpringBoardWallpaperUrl'))
@@ -1199,6 +1207,8 @@ class SettingsProxy(QObject):
     #g.meCabEnabledChanged.connect(self.meCabEnabledChanged)
     g.meCabDictionaryChanged.connect(self.meCabDictionaryChanged)
 
+    g.cometCounterVisibleChanged.connect(self.cometCounterVisibleChanged)
+
     self.hentaiChanged.connect(g.hentaiChanged)
 
     self.termEnabledChanged.connect(g.termEnabledChanged)
@@ -1423,6 +1433,9 @@ class SettingsProxy(QObject):
   atlasColor = unicode_property('AtlasColor', config.SETTINGS_ATLAS_COLOR, notify=atlasColorChanged)
   lecColorChanged = Signal(unicode)
   lecColor = unicode_property('LecColor', config.SETTINGS_LEC_COLOR, notify=lecColorChanged)
+
+  cometCounterVisibleChanged = Signal(bool)
+  cometCounterVisible = bool_property('CometCounterVisible', True, notify=cometCounterVisibleChanged)
 
   #grimoireRevertsColor = bool_property('GrimoireRevertsColor', False)
   grimoireShadowEnabled = bool_property('GrimoireShadow', True)
