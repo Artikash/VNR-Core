@@ -14,10 +14,11 @@
 #include "ith/sys/sys.h"
 #include "ith/common/except.h"
 #include "disasm/disasm.h"
+#include "cc/ccmacro.h"
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 
-#define DEBUG "engine_p.h"
+//#define DEBUG "engine_p.h"
 
 #ifdef DEBUG
 # include "ith/common/growl.h"
@@ -41,9 +42,9 @@ int GetHookDataLength(const HookParam &hp, DWORD base, DWORD in)
     //len == -1 then continue to case 0.
   case 0:
     if (hp.type & USING_UNICODE)
-      len = wcslen((LPWSTR)in) << 1;
+      len = wcslen((LPCWSTR)in) << 1;
     else
-      len = strlen((char *)in);
+      len = strlen((LPCSTR)in);
     break;
   case 1:
     if (hp.type & USING_UNICODE)
@@ -574,6 +575,7 @@ void InsertRealliveHook()
 /**
  *  jichi 8/16/2013: Insert new siglus hook
  *  See (CaoNiMaGeBi): http://tieba.baidu.com/p/2531786952
+ *  Issue: floating text
  *  Example:
  *  0153588b9534fdffff8b43583bd7
  *  0153 58          add dword ptr ds:[ebx+58],edx
@@ -619,7 +621,7 @@ bool InsertSiglus2Hook()
   }
 
   HookParam hp = {};
-  hp.type = USING_UNICODE;
+  hp.type = USING_UNICODE; //|NO_CONTEXT; // jichi 3/8/2014: Use no_context to prevent floating threads.
   hp.length_offset = 1;
   hp.off = -0x20;
   hp.addr = module_base_ + reladdr + hook_offset;
@@ -1934,31 +1936,48 @@ bool InsertMalie2Hook()
   return true;
 }
 
+// jichi 2/8/3014: Return the beginning and the end of the text
+LPCWSTR _Malie3Ltrim(LPCWSTR p)
+{
+  for (;; p++)
+    if (p[0] == L'v' && p[1] == L'_') { // ex. v_akr0001, v_mzk0001
+      p += 9;
+      return p; // must return otherwise trimming more will break the ITH repetition elimination
+    } else if (p[0] > 9) // ltrim illegal characers
+      return p;
+}
+LPCWSTR _Malie3Rtrim(LPCWSTR p)
+{
+  for (;; p++)
+    switch (p[0]) {
+    case 0: // \0
+    case 0xa: // \n // the text after 0xa is furigana
+      for (;; p--) // rtrim illegal characters
+        if (p[-1] > 9)
+          return p;
+    }
+}
+
 /**
- *  jichi 8/20/2013: Add hook for 相州戦神館學園 八命陣
+ *  jichi 3/8/2014: Add hook for 相州戦神館學園 八命陣
  *  See: http://sakuradite.com/topic/157
  *  check 0x5b51ed for ecx+edx*2
  *  Also need to skip furigana.
  */
+
 void SpecialHookMalie3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  DWORD ecx = *(DWORD *)(esp_base + pusha_ecx_off),
-        edx = *(DWORD *)(esp_base + pusha_edx_off),
-        esi = *(DWORD *)(esp_base + pusha_esi_off);
-  ConsoleOutput("111111111");
-  ITH_GROWL_DWORD(esi);
-  ITH_GROWL_DWORD(ecx + edx*2);
-  ConsoleOutput("222222222");
-  //*data = //ds:[ecx+edx*2]
-  //    *(DWORD *)(esp_base + pusha_ecx_off)  // ecx
-  //    + (*(DWORD *)(esp_base + pusha_edx_off)) * 2; // edx*2
-  //    //+ (*(DWORD *)(esp_base + pusha_edx_off) << 1); // edx*2
-  //ITH_GROWL_DWORD2(*(DWORD *)(esp_base + pusha_ecx_off), *(DWORD *)(esp_base + pusha_edx_off));
-  //*data = *(DWORD *)(esp_base + pusha_esi_off);
-  //*len = GetHookDataLength(*hp, esp_base, (DWORD)data);
-  //*len = wcslen((LPWSTR)*data) << 1;
-  //ITH_GROWL((LPCWSTR)*data);
-  //*len = 2;
+  CC_UNUSED(split);
+  DWORD ecx = *(DWORD *)(esp_base + pusha_ecx_off - 4),
+        edx = *(DWORD *)(esp_base + pusha_edx_off - 4);
+  //*data = ecx + edx*2; // [ecx+edx*2];
+  //*len = wcslen((LPCWSTR)data) << 2;
+  // There are garbage characters
+  DWORD start = (DWORD)_Malie3Ltrim((LPCWSTR)(ecx + edx*2)),
+        stop = (DWORD)_Malie3Rtrim((LPCWSTR)start);
+  *data = start;
+  *len = max(0, stop - start);
+  *split = 0x10001; // fuse all threads, and prevent floating
 }
 
 /**
@@ -1968,19 +1987,31 @@ void SpecialHookMalie3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split,
  */
 bool InsertMalie3Hook()
 {
+  const BYTE ins[] = {
+    // 90 nop
+    0x8b,0x44,0x24, 0x04,   // 5b51e0  mov eax,dword ptr ss:[esp+0x4]
+    0x56,                   // 5b51e4  push esi
+    0x57,                   // 5b51e5  push edi
+    0x8b,0x50, 0x08,        // 5b51e6  mov edx,dword ptr ds:[eax+0x8]
+    0x8b,0x08,              // 5b51e9  mov ecx,dword ptr ds:[eax]
+    0x33,0xf6,              // 5b51eb  xor esi,esi
+    0x66,0x8b,0x34,0x51,    // 5b51ed  mov si,word ptr ds:[ecx+edx*2] // jichi: hook here
+    0x42                    // 5b51f1  inc edx
+  };
+  enum {hook_offset = 0x5b51ed - 0x5b51e0};
+  DWORD reladdr = SearchPattern(module_base_, module_limit_ - module_base_, ins, sizeof(ins));
+  if (!reladdr) {
+    ConsoleOutput("vnreng:Malie3: pattern not found");
+    return false;
+  }
   HookParam hp = {};
+  hp.addr = module_base_ + reladdr + hook_offset;
+  //ITH_GROWL(hp.addr);
   //hp.addr = 0x5b51ed;
   //hp.addr = 0x5b51f1;
-  hp.addr = 0x5b51f2;
-  //ITH_GROWL_DWORD(*(BYTE *)hp.addr);
-  //hp.off = -8;
-  hp.off = pusha_esi_off;
-  //hp.length_offset = 1;
-  //hp.extern_fun = SpecialHookMalie3;
-  //hp.type = EXTERN_HOOK|USING_UNICODE;
-  hp.type = USING_UNICODE;
-  //hp.type = USING_UNICODE|DATA_INDIRECT;
-  //hp.type = EXTERN_HOOK|USING_SPLIT|USING_UNICODE|NO_CONTEXT;
+  //hp.addr = 0x5b51f2;
+  hp.extern_fun = SpecialHookMalie3;
+  hp.type = EXTERN_HOOK|USING_UNICODE|NO_CONTEXT;
   ConsoleOutput("vnreng: INSERT Malie3");
   NewHook(hp, L"Malie3");
   return true;
@@ -1997,7 +2028,7 @@ bool InsertMalieHook()
     // Insert both malie and malie2 hook.
     bool ok = InsertMalieHook2();
     ok = InsertMalie2Hook() || ok; // jichi 8/20/2013 TO BE RESTORED
-    //ok = InsertMalie3Hook() || ok; // jichi 3/7/2014
+    ok = InsertMalie3Hook() || ok; // jichi 3/7/2014
     return ok;
   }
 }

@@ -18,14 +18,11 @@ TMP_DIR = initdefs.TMP_RELPATH
 # http://www2.ninjal.ac.jp/lrc/index.php?UniDic%2F%B6%E1%C2%E5%CA%B8%B8%ECUniDic
 # https://docs.google.com/file/d/0ByoM4WpH84qIS2Q1UU9tbnRDVk0/edit?pli=1
 #UNIDIC_URL = 'http://sakurakit.org/pub/unidic-mlj/unidic-MLJ_13.zip'
-#UNIDIC_URL = 'http://%s/pub/unidic-mlj/unidic-MLJ_13.zip' % initdefs.DOMAIN_ORG
-UNIDIC_URL = "http://%s/pub/unidic-mlj/unidic-MLJ-1.3.7z" % initdefs.DOMAIN_ORG
-#UNIDIC_FILESIZE = 104344408
+UNIDIC_URL = 'http://%s/pub/unidic-mlj/unidic-MLJ_13.zip' % initdefs.DOMAIN_ORG
+UNIDIC_FILESIZE = 104344408
 UNIDIC_FILENAME = 'unidicmlj'
-UNIDIC_SUFFIX = '.7z'
-#UNIDIC_RELPATH = '/Files/dic/unidic-mecab'
-
-MIN_FILESIZE = 40000000 # 40 < 49 MB
+UNIDIC_SUFFIX = '.zip'
+UNIDIC_RELPATH = '/Files/dic/unidic-mecab'
 
 def init():
   for it in TMP_DIR:
@@ -35,12 +32,12 @@ def init():
 def get(): # return bool
   url = UNIDIC_URL
   path = TMP_DIR + '/' + UNIDIC_FILENAME + UNIDIC_SUFFIX
-  minsize = MIN_FILESIZE
+  size = UNIDIC_FILESIZE
 
-  dprint("enter: url = %s" % url)
+  dprint("enter: size = %s, url = %s" % (size, url))
 
   from sakurakit import skfileio
-  if os.path.exists(path) and skfileio.filesize(path) > minsize:
+  if os.path.exists(path) and skfileio.filesize(path) == size:
     dprint("leave: already downloaded")
     return True
 
@@ -48,7 +45,7 @@ def get(): # return bool
   ok = False
   with SkProfiler():
     if sknetio.getfile(url, path, flush=False): # flush=false to use more memory to reduce disk access
-      ok = skfileio.filesize(path) > minsize
+      ok = skfileio.filesize(path) == size
   if not ok and os.path.exists(path):
     os.remove(path)
   dprint("leave: ok = %s" % ok)
@@ -63,11 +60,12 @@ def extract():
 
   import shutil
   from sakurakit import skfileio
-  ok = skfileio.extract7z(srcpath, tmppath)
+  ok = skfileio.extractzip(srcpath, tmppath)
   if ok:
     if os.path.exists(targetpath):
       shutil.rmtree(targetpath)
-    child = skfileio.getfirstchilddir(tmppath)
+    #child = skfileio.getfirstchilddir(tmppath)
+    child = tmppath + UNIDIC_RELPATH
     os.renames(child, targetpath)
   if os.path.exists(tmppath):
     shutil.rmtree(tmppath)

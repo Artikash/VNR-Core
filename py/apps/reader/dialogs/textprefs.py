@@ -76,7 +76,7 @@ class _TextThreadView(object):
       n = mytr_("H-code")
     elif self.name in defs.CAONIMAGEBI_ENGINES:
       n = self.name + '<span style="color:red">%s</span>' % defs.CAONIMAGEBI_USERNAME
-    elif self.name == defs.OK123_ENGINE:
+    elif self.name in defs.OK123_ENGINES:
       n = self.name + '<span style="color:red">%s</span>' % defs.OK123_USERNAME
     else:
       n = self.name

@@ -291,6 +291,7 @@ def extract7zarchive(z, location): # py7zlib.Archive7z, unicode ->, throws
       f.write(z.getmember(name).read())
 
 # Warning: This only support 7z version 0.3 and does not support 7z 0.4
+# Warning: This could cause out of memory error
 def extract7z(path, location): # unicode, unicode -> bool
   import py7zlib # could be found in pylzma from pip
   try:

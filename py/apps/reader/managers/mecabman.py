@@ -299,7 +299,8 @@ class MeCabManager:
     return _MP.enabled #and os.path.exists(_MP.dicdir)
 
   def supportsUserDic(self): # -> bool
-    return self.dicName in ('ipadic', 'unidic')
+    import nameman
+    return self.dicName in nameman.SUPPORTED_DICS
 
   def setEnabled(self, t): # bool
     _MP.setenabled(t)

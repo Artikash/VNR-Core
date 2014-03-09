@@ -13,7 +13,8 @@ import config, dataman, os, rc
 @memoized
 def manager(): return NameManager()
 
-SUPPORTED_DICS = 'ipadic', 'unidic'
+#SUPPORTED_DICS = 'ipadic', 'unidic'
+SUPPORTED_DICS = 'ipadic',
 
 class NameManager(object):
 

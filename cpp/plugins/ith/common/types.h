@@ -24,7 +24,7 @@ struct HookParam { // size: 0x24
   DWORD addr;   // absolute or relative address
   DWORD off,    // offset of the data in the memory
         ind,    // ?
-        split,  // esp offset of the split character
+        split,  // esp offset of the split character = pusha offset - 4
         split_ind;  // ?
   DWORD module, // hash of the module
         function;
