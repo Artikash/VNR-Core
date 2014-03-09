@@ -401,8 +401,29 @@ class _UiTab(object):
     if not features.WINE:
       layout.addWidget(self.mouseGroup)
     layout.addWidget(self.springBoardGroup)
+    layout.addWidget(self.statusGroup)
     layout.addStretch()
     q.setLayout(layout)
+
+  ## Comet ##
+
+  @memoizedproperty
+  def statusGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.cometCounterButton)
+
+    ret = QtWidgets.QGroupBox(my.tr("Peer status"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def cometCounterButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display online user counter on the Spring Board"))
+    #ret.setToolTip(my.tr("Automatically change wallpaper for different games"))
+    ss = settings.global_()
+    ret.setChecked(ss.isCometCounterVisible())
+    ret.toggled.connect(ss.setCometCounterVisible)
+    return ret
 
   ## SpringBoard ##
 
