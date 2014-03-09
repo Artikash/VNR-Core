@@ -38,7 +38,6 @@ CAONIMAGEBI_USERNAME = '@CaoNiMaGeBi'
 CAONIMAGEBI_ENGINES = frozenset((
   'Artemis',
   'Gesen18',
-  #'Malie2',
   'NEXTON',
   'QLIE2',
   'Rejet',
@@ -46,7 +45,10 @@ CAONIMAGEBI_ENGINES = frozenset((
 ))
 
 OK123_USERNAME = '@ok123'
-OK123_ENGINE = 'BALDR' # http://9gal.com/read.php?tid=411756
+OK123_ENGINES = frozenset((
+  'BALDR',
+  'Malie3',
+))
 
 CONTEXT_SEP = "||"
 

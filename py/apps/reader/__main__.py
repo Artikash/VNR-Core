@@ -188,7 +188,7 @@ def main():
       rc.DIR_XML_COMMENT,
       rc.DIR_XML_VOICE,
       rc.DIR_XML_REF,
-      rc.DIR_DICT_MECAB,
+      #rc.DIR_DICT_MECAB, # not needed to create
       rc.DIR_CACHE_AVATAR,
       rc.DIR_CACHE_AWS,
       rc.DIR_CACHE_DATA,
@@ -277,6 +277,14 @@ def main():
     if ss_version:
 
       from sakurakit import skfileio
+
+      if ss_version <= 1394254407:
+        location = rc.DIR_DICT_MECAB
+        for it in 'unidic', 'unidic-mlj':
+          path = location + '/' + it
+          if os.path.exists(path):
+            skfileio.removetree(path)
+
       if ss_version <= 1393896804:
         if ss.isMainlandChina():
           path = rc.DIR_CACHE_IMAGE

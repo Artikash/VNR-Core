@@ -272,7 +272,7 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
 {
   enum { SMALL_BUFF_SIZE = 0x80 };
   enum { MAX_DATA_SIZE = 0x10000 }; // jichi 12/25/2013: The same as the orignal ITH
-  DWORD dwCount,
+  DWORD dwCount = 0,
       dwAddr,
       dwDataIn,
       dwSplit = 0;
@@ -283,7 +283,6 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
     return 0;
   if ((dwType & NO_CONTEXT) == 0 && HookFilter(dwRetn))
     return 0;
-  dwCount = 0;
   dwAddr = hp.addr;
   if (trigger) {
     if (InsertDynamicHook)

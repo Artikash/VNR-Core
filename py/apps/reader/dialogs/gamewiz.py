@@ -970,7 +970,7 @@ class SelectThreadPage(QtWidgets.QWizardPage):
         n = mytr_("H-code")
       elif name in defs.CAONIMAGEBI_ENGINES:
         n = name + defs.CAONIMAGEBI_USERNAME
-      elif name == defs.OK123_ENGINE:
+      elif name in defs.OK123_ENGINES:
         n = name + defs.OK123_USERNAME
       else:
         n = name

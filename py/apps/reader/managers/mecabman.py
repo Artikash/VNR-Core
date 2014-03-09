@@ -142,14 +142,12 @@ def renderfeature(feature, fmt):
 
   return ', '.join(ret)
 
-def rendertable(text, termEnabled=False, furiType=defs.FURI_HIRA, features=None, rubySize='10px', colorize=False, center=True):
+def rendertable(text, features=None, rubySize='10px', colorize=False, center=True, **kwargs):
   """
   @param  text  unicode
-  @param* furiType  int
   @param* rubySize  str
   @param* colorsize  bool
   @param* center  bool
-  @param* termEnabled  bool  whether enable terms
   @param* features  {unicode surface:(unicode feature, fmt)} or None
   @return  unicode  HTML table
   """
@@ -157,7 +155,7 @@ def rendertable(text, termEnabled=False, furiType=defs.FURI_HIRA, features=None,
   i = j = 0
   hasfeature = features is not None
   color = None
-  for it in parse(text, termEnabled=termEnabled, type=True, feature=hasfeature, reading=True, furiType=furiType):
+  for it in parse(text, type=True, feature=hasfeature, reading=True, **kwargs):
     if hasfeature:
       surface, ch, yomi, f, fmt = it
     else:
@@ -300,6 +298,10 @@ class MeCabManager:
   def isEnabled(self):
     return _MP.enabled #and os.path.exists(_MP.dicdir)
 
+  def supportsUserDic(self): # -> bool
+    import nameman
+    return self.dicName in nameman.SUPPORTED_DICS
+
   def setEnabled(self, t): # bool
     _MP.setenabled(t)
 
@@ -332,6 +334,7 @@ class MeCabManager:
       dprint(v)
       self.dicName = v
       _MP.setfmt(mecabfmt.getfmt(v))
+      _MP.setuserdic('') # clear default user dic
       _MP.setrcfile(rc.mecab_rc_path(v))
 
   def toRuby(self, text, html=False):

@@ -200,7 +200,8 @@ def getfirstchilddir(path): # unicode -> unicode or None
 # Compression
 
 # http://docs.python.org/2/library/tarfile.html
-# mode: r, r:gz, r:bz2
+# mode: r, r:, r:gz, r:bz2
+# http://stackoverflow.com/questions/740820/python-write-string-directly-to-tarfile
 def extracttar(path, location, mode='r'): # unicode, unicode -> bool
   import tarfile
   try:
@@ -208,19 +209,6 @@ def extracttar(path, location, mode='r'): # unicode, unicode -> bool
     with tarfile.open(path, mode) as z:
       z.extractall(location)
       return True
-  except Exception, e:
-    dwarn(e)
-  return False
-
-# http://stackoverflow.com/questions/17217073/how-to-decompress-a-xz-file-which-has-multiple-folders-files-inside-in-a-singl
-# Only needed by Python2. tar.xz is supported by Python3 by default.
-def extracttarxz(path, location): # unicode, unicode -> bool
-  import tarfile
-  try:
-    with contextlib.closing(lzma.LZMAFile(path)) as xz:
-      with tarfile.open(fileobj=xz) as f:
-        f.extractall(location)
-        return True
   except Exception, e:
     dwarn(e)
   return False
@@ -236,17 +224,88 @@ def extractzip(path, location): # unicode, unicode -> bool
     dwarn(e)
   return False
 
-# http://stackoverflow.com/questions/11466572/python-how-to-compress-with-7zip-instead-of-zip-code-changing
-# Only needed by Python2. 7zip is supported by Python3 by default.
-# Note: This require pylzma to be installed first
-def extract7z(path, location): # unicode, unicode -> bool
-  import py7zlib # could be found in pylzma from pip
+# Python 3 is different
+# github.com/fancycode/pylzma/blob/master/doc/usage.txt
+# http://stackoverflow.com/questions/10701528/example-of-how-to-use-pylzma
+def extractxz(infile, outfile): # unicode, unicode -> bool
+  import pylzma
   try:
-    with py7zlib.Archive7z(path, 'r') as z:
-      z.extractall(location)
+    with open(infile, 'rb') as i:
+      with open(outfile, 'wb') as o:
+        z = pylzma.decompressobj()
+        while True:
+          data = i.read(1)
+          if not data: break
+          o.write(z.decompress(data))
+        o.write(z.flush())
+  except Exception, e:
+    dwarn(e)
+  return False
+
+# Only needed by Python2. tar.xz is supported by Python3 by default.
+# http://stackoverflow.com/questions/10701528/example-of-how-to-use-pylzma
+# http://stackoverflow.com/questions/17217073/how-to-decompress-a-xz-file-which-has-multiple-folders-files-inside-in-a-singl
+def extracttarxz(path, location): # unicode, unicode -> bool
+  try:
+    import pylzma
+    with open(path, 'rb') as fp:
+      z = pylzma.decompressobj()
+      data = ''
+      while True:
+        trunk = fp.read(1)
+        if not trunk: break
+        data += z.decompress(trunk)
+      data += z.flush()
+    import tarfile
+    from cStringIO import StringIO
+    with tarfile.open(mode= "r:", fileobj=StringIO(data)) as t:
+      t.extractall(location)
       return True
   except Exception, e:
     dwarn(e)
   return False
+
+  #import contextlib, tarfile, lzma
+  #try:
+  #  with contextlib.closing(lzma.LZMAFile(path)) as xz:
+  #    with tarfile.open(fileobj=xz) as f:
+  #      f.extractall(location)
+  #      return True
+  #except Exception, e:
+  #  dwarn(e)
+  #return False
+
+# http://stackoverflow.com/questions/10701528/example-of-how-to-use-pylzma
+# http://www.dreamincode.net/forums/topic/296783-how-to-cope-with-the-occasional-administrator-privledge-requirement/
+# Only needed by Python2. 7zip is supported by Python3 by default.
+# Note: This require pylzma to be installed first
+# FIXME: py7zlib does not support latest 7zip
+
+def extract7zarchive(z, location): # py7zlib.Archive7z, unicode ->, throws
+  for name in z.getnames():
+    outfile = os.path.join(location, name)
+    outdir = os.path.dirname(outfile)
+    if not os.path.exists(outdir):
+      os.makedirs(outdir)
+    with open(outfile, 'wb') as f:
+      f.write(z.getmember(name).read())
+
+# Warning: This only support 7z version 0.3 and does not support 7z 0.4
+# Warning: This could cause out of memory error
+def extract7z(path, location): # unicode, unicode -> bool
+  import py7zlib # could be found in pylzma from pip
+  try:
+    with open(path, 'rb') as fp:
+      z = py7zlib.Archive7z(fp)
+      extract7zarchive(z, location)
+      return True
+  except Exception, e:
+    dwarn(e)
+  return False
+
+if __name__ == '__main__':
+  #f = '/Users/jichi/tmp/unidic-2.1.2.7z'
+  f = r'S:\Stream\Caches\tmp\unidic-mlj.7z'
+  extract7z(f, 'tmp')
 
 # EOF

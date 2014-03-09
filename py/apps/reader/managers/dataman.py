@@ -5279,8 +5279,8 @@ class _DataManager(object):
                 nm.compileMeCabDic,
                 names,
                 itemId))
-          if dicpath and not mm.dictionary():
-            mm.setDictionary(dicpath)
+          if dicpath and not mm.userDictionary():
+            mm.setUserDictionary(dicpath)
           dprint("leave: item count = %i" % len(self.nameItems))
           return
     growl.msg(my.tr("Game character names not found"))
@@ -6776,7 +6776,7 @@ class DataManager(QObject):
 
     #gid = self.currentGameId()
     #if gid:
-    if mecabman.manager().isEnabled():
+    if mecabman.manager().isEnabled() and mecabman.manager().supportsUserDic():
       dprint("update game-specicfic translation")
       skevents.runlater(d.updateNameItems, 3000) # delay a little
 
