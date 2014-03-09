@@ -1026,27 +1026,27 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>文件不存在：{0}</translation>
     </message>
     <message>
-        <location filename="main.py" line="1525"/>
+        <location filename="main.py" line="1534"/>
         <source>Update requires Internet access</source>
         <translation>更新需要網絡連接</translation>
     </message>
     <message>
-        <location filename="main.py" line="1538"/>
+        <location filename="main.py" line="1547"/>
         <source>You are using the latest app</source>
         <translation>已經是最新的版本了呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="1543"/>
+        <location filename="main.py" line="1552"/>
         <source>Update released</source>
         <translation>發現軟件更新</translation>
     </message>
     <message>
-        <location filename="main.py" line="1567"/>
+        <location filename="main.py" line="1576"/>
         <source>Critical update message</source>
         <translation>非常重要的更新信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1663"/>
+        <location filename="main.py" line="1672"/>
         <source>The dictionary is empty. Please refresh it when you are online.</source>
         <translation>辭書是空的。請在有網絡連接時再更新吧。</translation>
     </message>
@@ -1143,7 +1143,7 @@ It might take a couple of seconds to complete.</source>
         <translation>{0}需要管理員權限。請以管理員身份重新啟動VNR</translation>
     </message>
     <message>
-        <location filename="main.py" line="1678"/>
+        <location filename="main.py" line="1687"/>
         <source>There are no user-contributed subtitles</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
@@ -1188,7 +1188,7 @@ It might take a couple of seconds to complete.</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="1408"/>
+        <location filename="main.py" line="1417"/>
         <source>Loading comment ... patient!</source>
         <translation>載入字幕中…請稍等片刻！</translation>
     </message>
@@ -1538,7 +1538,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>沒有找到遊戲的信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1448"/>
+        <location filename="main.py" line="1457"/>
         <source>Unknown game. Please try updating the database.</source>
         <translation>未知的遊戲。請更新下遊戲數據庫。</translation>
     </message>
@@ -1924,7 +1924,7 @@ than turning on global repetition filters here.</source>
         <translation>警告：請不要打開重复過濾的選項，除非文本中真的有重复！</translation>
     </message>
     <message>
-        <location filename="main.py" line="1384"/>
+        <location filename="main.py" line="1388"/>
         <source>The feature is not available on Wine</source>
         <translation>Wine上不支持這個功能呢</translation>
     </message>
@@ -2945,7 +2945,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
         <translation>請再檢查下使用偏好中程序的位置。</translation>
     </message>
     <message>
-        <location filename="main.py" line="1438"/>
+        <location filename="main.py" line="1447"/>
         <source>Unknown game. Please try editing the game information.</source>
         <translation>未知的遊戲。請嘗試編輯下遊戲情報。</translation>
     </message>
@@ -3278,6 +3278,11 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <location filename="dialogs/_prefs.py" line="421"/>
         <source>Display online user counter on the Spring Board</source>
         <translation>在Spring Board上顯示在線的同學數</translation>
+    </message>
+    <message>
+        <location filename="main.py" line="1399"/>
+        <source>Processing Shared Dictionary ... Please try later</source>
+        <translation>正在處理共享辭書…請稍等一下下</translation>
     </message>
 </context>
 </TS>

@@ -8,7 +8,9 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
+from functools import partial
 from cconv.cconv import zhs2zht
+from sakurakit import skthreads
 from sakurakit.skclass import memoized, staticproperty
 from sakurakit.skdebug import dprint, dwarn
 import config, dataman, defs, i18n
@@ -18,6 +20,7 @@ class _TermManager:
   def __init__(self):
     #self.convertsChinese = False
     self.enabled = True # bool
+    self.locked = False  # bool
     self.hentai = False # bool
     self.language = 'en' # str
 
@@ -75,6 +78,30 @@ class _TermManager:
       if (not td.hentai or self.hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
         yield term
 
+  def warmup(self, terms, language='', hasTitles=False, hentai=False): # [dataman.Term], str, bool ->
+    dprint("enter")
+    needsEscape = config.is_asian_language(language)
+    for term in terms:
+      td = term.d # To improve performance
+      if not td.disabled and not td.special and (not td.hentai or hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
+        if hasTitles and term.needsReplace():
+          try:
+            if needsEscape:
+              term.prepareReplace
+              term.applyReplace
+            else:
+              term.replace
+          except Exception, e: dwarn(td.pattern, td.text, e)
+        elif td.pattern and term.patternNeedsRe():
+          try: term.patternRe
+          except Exception, e: dwarn(td.pattern, td.text, e)
+
+    import trman
+    trman.manager().clearCacheRequested.emit()
+
+    self.locked = False
+    dprint("leave")
+
 class TermManager:
 
   ## Construction ##
@@ -82,6 +109,8 @@ class TermManager:
   def __init__(self): self.__d = _TermManager()
 
   ## Properties ##
+
+  def isLocked(self): return self.__d.locked
 
   def language(self): return self.__d.language
   def setLanguage(self, value): self.__d.language = value
@@ -99,29 +128,27 @@ class TermManager:
 
   ## Warm up ##
 
-  def warmup(self):
+  def warmup(self, async=True, interval=0): # bool, int
     d = self.__d
-    if not d.enabled:
+    if not d.enabled or d.locked:
       return
     dprint("enter")
-    language = d.language
-    needsEscape = config.is_asian_language(language)
     dm = dataman.manager()
-    hasTitles = dm.hasTermTitles() # cached
-    for term in dm.terms():
-      td = term.d # To improve performance
-      if not td.disabled and not td.special and (not td.hentai or d.hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
-        if hasTitles and term.needsReplace():
-          try:
-            if needsEscape:
-              term.prepareReplace
-              term.applyReplace
-            else:
-              term.replace
-          except Exception, e: dwarn(td.pattern, td.text, e)
-        elif td.pattern and term.patternNeedsRe():
-          try: term.patternRe
-          except Exception, e: dwarn(td.pattern, td.text, e)
+
+    task = partial(d.warmup,
+        terms=dm.terms(),
+        hasTitles=dm.hasTermTitles(),
+        hentai=d.hentai,
+        language=d.language)
+
+    if not async:
+      apply(task)
+    else:
+      d.locked = True
+      if interval:
+        skthreads.runasynclater(task, interval)
+      else:
+        skthreads.runasync(task)
     dprint("leave")
 
   ## Queries ##
@@ -133,7 +160,7 @@ class TermManager:
     """
     d = self.__d
     ret = {'':''}
-    if not d.enabled:
+    if not d.enabled or d.locked:
       return ret
     zht = language == 'zht'
     q = self.__d.iterTerms(
@@ -213,7 +240,7 @@ class TermManager:
     @return  unicode
     """
     d = self.__d
-    if not d.enabled:
+    if not d.enabled or d.locked:
       return text
     dm = dataman.manager()
     hasTitles = dm.hasTermTitles() # cached
@@ -249,7 +276,7 @@ class TermManager:
     @return  unicode
     """
     d = self.__d
-    if not d.enabled:
+    if not d.enabled or d.locked:
       return text
     dm = dataman.manager()
     hasTitles = dm.hasTermTitles() # cached
@@ -293,7 +320,7 @@ class TermManager:
     return text
 
     #d = self.__d
-    #if not d.enabled:
+    #if not d.enabled or d.locked:
     #  return text
     #dm = dataman.manager()
     #for term in dm.iterWordTerms():
@@ -311,7 +338,7 @@ class TermManager:
     @return  unicode or None
     """
     d = self.__d
-    if not d.enabled:
+    if not d.enabled or d.locked:
       return text
     dm = dataman.manager()
     for term in dm.iterLatinSourceTerms():
@@ -326,7 +353,7 @@ class TermManager:
     @return  unicode or None
     """
     d = self.__d
-    if not d.enabled:
+    if not d.enabled or d.locked:
       return text
     dm = dataman.manager()
     for term in dm.iterFuriTerms():

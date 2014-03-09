@@ -1272,9 +1272,9 @@ class MainObject(QObject):
     #  dprint("warm up google tts engine")
     #  d.googleTtsEngine.warmup()
 
-    if dm.hasTerms():
-      dprint("warm up dictionary terms")
-      d.termManager.warmup()
+    #if dm.hasTerms():
+    #  dprint("warm up dictionary terms")
+    #  d.termManager.warmup()
 
     dprint("login later")
     skevents.runlater(dm.reloadUser)
@@ -1354,6 +1354,10 @@ class MainObject(QObject):
     skevents.runlater(self.checkDigests, 90000) # 1.5min
     skevents.runlater(self.checkTerms, 120000) # 2min
 
+    if dm.hasTerms():
+      dprint("warm up dictionary terms")
+      d.termManager.warmup(async=True, interval=1000) # warm up after 1 second
+
     dprint("show windows")
     skevents.runlater(self.showKagami)
 
@@ -1389,10 +1393,15 @@ class MainObject(QObject):
     d.kagamiWindow.setMirageVisible(True)
     d.mirage.show()
 
+  def showTermView(self):
+    d = self.__d
+    if d.termManager.isLocked():
+      growl.msg(my.tr("Processing Shared Dictionary ... Please try later"));
+    else:
+      skevents.runlater(partial(_MainObject.showQmlWindow, d.termView))
+
   def showSpringBoard(self):
     skevents.runlater(partial(_MainObject.showQmlWindow, self.__d.springBoardDialog))
-  def showTermView(self):
-    skevents.runlater(partial(_MainObject.showQmlWindow, self.__d.termView))
   def showVoiceSettings(self):
     skevents.runlater(partial(_MainObject.showQmlWindow, self.__d.voiceView))
   def showSubtitleMaker(self):
