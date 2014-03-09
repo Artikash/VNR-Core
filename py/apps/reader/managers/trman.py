@@ -10,7 +10,7 @@
 
 import os, itertools
 from functools import partial
-from PySide.QtCore import QObject, Signal, Slot
+from PySide.QtCore import QObject, Signal, Slot, Qt
 from sakurakit import skevents
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
@@ -151,6 +151,8 @@ class TranslatorManager(QObject):
     super(TranslatorManager, self).__init__(parent)
     self.__d = _TranslatorManager(self)
 
+    self.clearCacheRequested.connect(self.clearCache, Qt.QueuedConnection)
+
   ## Signals ##
 
   onlineAbortionRequested = Signal()
@@ -167,6 +169,8 @@ class TranslatorManager(QObject):
   jointTranslationReceived = Signal(unicode)  # translation before applying terms
   escapedTranslationReceived = Signal(unicode)  # translation after unescaping terms
   targetTranslationReceived = Signal(unicode)  # translation after applying target terms
+
+  clearCacheRequested = Signal() # async
 
   def abortOnline(self):
     self.onlineAbortionRequested.emit()
