@@ -1937,27 +1937,45 @@ bool InsertMalie2Hook()
 }
 
 // jichi 2/8/3014: Return the beginning and the end of the text
-LPCWSTR _Malie3Ltrim(LPCWSTR p)
+// Remove the leading illegal characters
+LPCWSTR _Malie3LTrim(LPCWSTR p)
 {
-  for (int count = 0; count < 100; count++,
-      p++)
-    if (p[0] == L'v' && p[1] == L'_') { // ex. v_akr0001, v_mzk0001
-      p += 9;
-      return p; // must return otherwise trimming more will break the ITH repetition elimination
-    } else if (p[0] > 9) // ltrim illegal characers
-      return p;
+  if (p)
+    for (int count = 0; count < 100; count++,
+        p++)
+      if (p[0] == L'v' && p[1] == L'_') { // ex. v_akr0001, v_mzk0001
+        p += 9;
+        return p; // must return otherwise trimming more will break the ITH repetition elimination
+      } else if (p[0] > 9) // ltrim illegal characers
+        return p;
+  return nullptr;
 }
-LPCWSTR _Malie3Rtrim(LPCWSTR p)
+// Remove the trailing illegal characters
+LPCWSTR _Malie3RTrim(LPCWSTR p)
 {
-  for (int count = 0; count < 100; count++,
-      p++)
-    switch (p[0]) {
-    case 0: // \0
-    case 0xa: // \n // the text after 0xa is furigana
-      for (;; p--) // rtrim illegal characters
-        if (p[-1] > 9)
+  if (p)
+    for (int count = 0; count < 100; count++,
+         p--)
+      if (p[-1] > 9) {
+        if (p[-1] >= L'0' && p[-1] <= L'9'&& p[-1-7] == L'_')
+          p -= 9;
+        else
           return p;
-    }
+      }
+  return nullptr;
+}
+// Return the end of the line
+LPCWSTR _Malie3GetEOL(LPCWSTR p)
+{
+  if (p)
+    for (int count = 0; count < 100; count++,
+        p++)
+      switch (p[0]) {
+      case 0: // \0
+      case 0xa: // \n // the text after 0xa is furigana
+        return p;
+      }
+  return nullptr;
 }
 
 /**
@@ -1975,10 +1993,10 @@ void SpecialHookMalie3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split,
   //*data = ecx + edx*2; // [ecx+edx*2];
   //*len = wcslen((LPCWSTR)data) << 2;
   // There are garbage characters
-  DWORD start = (DWORD)_Malie3Ltrim((LPCWSTR)(ecx + edx*2)),
-        stop = (DWORD)_Malie3Rtrim((LPCWSTR)start);
-  *data = start;
-  *len = max(0, stop - start);
+  LPCWSTR start = _Malie3LTrim((LPCWSTR)(ecx + edx*2)),
+          stop = _Malie3RTrim(_Malie3GetEOL(start));
+  *data = (DWORD)start;
+  *len = max(0, stop - start) << 1;
   *split = 0x10001; // fuse all threads, and prevent floating
 }
 
