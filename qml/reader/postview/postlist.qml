@@ -40,7 +40,7 @@ Item { id: root_
 
   function remove(post) { // obj -> bool  if exists
     var id = post.id
-    for (var i = 0; i < listModel_.count; i++)
+    for (var i = 0; i < listModel_.count; ++i)
       if (listModel_.get(i).id === id) {
         listModel_.remove(i)
         return true

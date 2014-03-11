@@ -18,13 +18,7 @@ import '.' as Kagami
 Item { id: root_
   // should be larger enough to hold the panel
   width: 410 + floatingWidth
-  height: 50 +
-      _SHADOW_HEIGHT_3 +
-      _SHADOW_HEIGHT_3 +
-      _SHADOW_HEIGHT_1 +
-      _SHADOW_HEIGHT_1 +
-      _SHADOW_HEIGHT_4 +
-      _SHADOW_HEIGHT_1
+  height: 16 + shadowCol_.height // margin: 8 why does not work?!
 
   property alias floatingWidth: floatingRect_.width
 
@@ -635,11 +629,6 @@ Item { id: root_
   onVisibleChanged: stretchRect_.visible = false
   onIgnoresFocusChanged: stretchRect_.visible = false
 
-  property int _SHADOW_HEIGHT_1: buttonGrid_.spacing + 3
-  property int _SHADOW_HEIGHT_2: buttonGrid_.spacing * 2 + buttonGrid_.cellHeight + 3
-  property int _SHADOW_HEIGHT_3: buttonGrid_.spacing * 3 + buttonGrid_.cellHeight * 2 + 3
-  property int _SHADOW_HEIGHT_4: buttonGrid_.spacing * 4 + buttonGrid_.cellHeight * 3 + 5
-
   Share.FadingRectangle { id: panel_
     anchors.fill: parent
     anchors.leftMargin: root_.floatingWidth + 2
@@ -687,72 +676,62 @@ Item { id: root_
 
     color: '#66000000' // black
 
-    Rectangle { id: shadow1_ // Group#1 shadow
+    Column { id: shadowCol_
       anchors {
-        left: parent.left; right: parent.right
-        top: parent.top
         leftMargin: 10; rightMargin: 10
-        topMargin: 8
+        left: parent.left; right: parent.right
+        verticalCenter: parent.verticalCenter
       }
-      radius: 10
-      height: _SHADOW_HEIGHT_3
+      spacing: 7
 
-      //color: '#8b545454' // gray
-      color: '#55000000' // black
-      //gradient: Gradient {  // color: aarrggbb
-      //  GradientStop { position: 0.0;  color: '#9c8f8c00' }
-      //  GradientStop { position: 0.17; color: '#7a6a6d00' }
-      //  GradientStop { position: 0.77; color: '#4f3f3f00' }
-      //  GradientStop { position: 1.0;  color: '#7a6a6d00' }
+      property int cellRadius: 10
+      property color cellColor: '#55000000' // black with transparency
+
+      property int cellHeight1: buttonGrid_.spacing + 3
+      property int cellHeight2: buttonGrid_.spacing * 2 + buttonGrid_.cellHeight + 3
+      property int cellHeight3: buttonGrid_.spacing * 3 + buttonGrid_.cellHeight * 2 + 3
+      property int cellHeight4: buttonGrid_.spacing * 4 + buttonGrid_.cellHeight * 3 + 5
+
+      // http://www.qtcentre.org/threads/37381-Iterating-through-Items-put-within-a-QML-Column-element
+      //height: {
+      //  var ret = spacing * 3
+      //  for (var i in children)
+      //    ret += children[i].height
+      //  return ret
       //}
-    }
+      height: spacing * 3 // children.length
+            + cellHeight3
+            + cellHeight4
+            + cellHeight1
+            + cellHeight4
+            //+ shadow1_.height
+            //+ shadow2_.height
+            //+ shadow3_.height
+            //+ shadow4_.height
 
-    Rectangle { id: shadow2_// Group#2 shadow
-      anchors {
-        left: parent.left; right: parent.right
-        top: shadow1_.bottom
-        leftMargin: 10; rightMargin: 10
-        topMargin: 7
+      Rectangle { // Group#1 shadow
+        radius: parent.cellRadius
+        color: parent.cellColor
+        height: parent.cellHeight3
       }
-      radius: shadow1_.radius
-      height: _SHADOW_HEIGHT_3
-      color: shadow1_.color
-    }
 
-    Rectangle { id: shadow3_// Group#3 shadow
-      anchors {
-        left: parent.left; right: parent.right
-        top: shadow2_.bottom
-        leftMargin: 10; rightMargin: 10
-        topMargin: 7
+      Rectangle { // Group#2 shadow
+        radius: parent.cellRadius
+        color: parent.cellColor
+        height: parent.cellHeight4
       }
-      radius: shadow1_.radius
-      height: _SHADOW_HEIGHT_1
-      color: shadow1_.color
-    }
 
-    Rectangle { id: shadow4_ // Group#4 shadow
-      anchors {
-        left: parent.left; right: parent.right
-        top: shadow3_.bottom
-        leftMargin: 10; rightMargin: 10
-        topMargin: 7
+      Rectangle { // Group#3 shadow
+        radius: parent.cellRadius
+        color: parent.cellColor
+        height: parent.cellHeight1
       }
-      radius: shadow1_.radius
-      height: _SHADOW_HEIGHT_1
-      color: shadow1_.color
-    }
 
-    Rectangle { id: shadow5_ // Group#5 shadow
-      anchors {
-        left: parent.left; right: parent.right
-        top: shadow4_.bottom
-        leftMargin: 10; rightMargin: 10
-        topMargin: 7
+      Rectangle { // Group#4 shadow
+        radius: parent.cellRadius
+        color: parent.cellColor
+        height: parent.cellHeight4
       }
-      radius: shadow1_.radius
-      height: _SHADOW_HEIGHT_4
-      color: shadow1_.color
     }
 
     MouseArea { id: mouseArea_
@@ -771,7 +750,6 @@ Item { id: root_
       property int pixelSize: 14
       property string cellFont: 'YouYuan'
       property color buttonColor: '#8b434343' // gray
-
 
       // - Group#1: text filers -
 
@@ -918,29 +896,6 @@ Item { id: root_
         //language: root_.language
       }
 
-      // - Group#3: Other
-
-      Share.CheckBox { id: clockButton_
-        width: parent.cellWidth; height: parent.cellHeight
-        text: qsTr("Show current time")
-        font.pixelSize: parent.pixelSize
-        font.bold: true
-        font.family: parent.cellFont
-        toolTip: qsTr("Show current time")
-      }
-
-      Item { width: 1; height: 1 }
-
-      //Share.CheckBox { id: copyButton_
-      //  width: parent.cellWidth; height: parent.cellHeight
-      //  text: qsTr("Copy when click")
-      //  font.pixelSize: parent.pixelSize
-      //  font.bold: true
-      //  font.family: parent.cellFont
-      //  toolTip: qsTr("Copy the clicked text to clipboard")
-      //  //language: root_.language
-      //}
-
       Share.CheckBox { id: hentaiButton_
         width: parent.cellWidth; height: parent.cellHeight
         text: qsTr("Enable hentai terms")
@@ -954,6 +909,27 @@ Item { id: root_
               qsTr("Enter hentai mode") :
               qsTr("Leave hentai mode"))
       }
+
+      Share.CheckBox { id: clockButton_
+        width: parent.cellWidth; height: parent.cellHeight
+        text: qsTr("Show current time")
+        font.pixelSize: parent.pixelSize
+        font.bold: true
+        font.family: parent.cellFont
+        toolTip: qsTr("Show current time")
+      }
+
+      //Item { width: 1; height: 1 }
+
+      //Share.CheckBox { id: copyButton_
+      //  width: parent.cellWidth; height: parent.cellHeight
+      //  text: qsTr("Copy when click")
+      //  font.pixelSize: parent.pixelSize
+      //  font.bold: true
+      //  font.family: parent.cellFont
+      //  toolTip: qsTr("Copy the clicked text to clipboard")
+      //  //language: root_.language
+      //}
 
       //Share.CheckBox { id: gameBorderButton_
       //  width: parent.cellWidth; height: parent.cellHeight
@@ -974,7 +950,7 @@ Item { id: root_
       //  toolTip: qsTr("Use black font and white shadow")
       //}
 
-      // - Group#4: Hook
+      // - Group#3: Hook
 
       Share.CheckBox { id: windowHookButton_
         width: parent.cellWidth; height: parent.cellHeight
@@ -1035,7 +1011,7 @@ Item { id: root_
       //  //language: root_.language
       //}
 
-      // - Group #5: Sliders
+      // - Group #4: Sliders
 
       Share.LabeledSlider { id: textSlider_
         height: parent.cellHeight

@@ -273,6 +273,7 @@ Item { id: root_
       anchors.fill: parent
 
       visible: gameWindow_.visible && !gameWindow_.minimized
+      //visible: true // debug
 
       onVisibleChanged: //console.log("kagami.qml: visible =", visible)
         if (visible)
