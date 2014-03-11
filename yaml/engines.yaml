@@ -81,6 +81,45 @@ char:
   - GetTextExtentPoint32A
   - TextOutA
   - lstrlenA
+  - AbelSoftware
+  - Anex86
+  - Artemis
+  - Atelier KAGUYA
+  - BGI
+  - C4
+  - CaramelBox
+  - CatSystem2
+  - CIRCUS
+  - CMVS
+  - Debonosu
+  - EmonEngine
+  - Gesen18
+  - Live
+  - Lucifen
+  - MAJIRO
+  - MBL
+  - MED
+  - NEXTON
+  - NitroPlus
+  - Pensil
+  - QLIE
+  - RealLive
+  - Rejet
+  - RetouchSystem
+  - ShinaRio
+  - StudioRyokucha
+  - StuffScriptEngine
+  - System40
+  - System43
+  - SystemC
+  - TanukiSoft
+  - Taskforce2
+  - TinkerBell
+  - Triangle
+  - Waffle
+  - WillPlus
+  - WolfRPG
+  - YU-RIS
 
 # Wide character, UTF-16
 wchar:
@@ -92,10 +131,19 @@ wchar:
   - GetTextExtentPoint32W
   - TextOutW
   - lstrlenW
+  - ApRicot
+  - BALDRk
+  - Bruns
+  - Cotopha
+  - GXP
+  - IronGameSystem
   - KiriKiri1
   - KiriKiri2
   - Malie
   - Malie2
   - Malie3
+  - ShinyDays
+  - SiglusEngine
+  - SoftHouseChara
 
 # EOF
