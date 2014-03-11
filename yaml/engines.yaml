@@ -70,4 +70,30 @@ nofloat:
 #  - Rejet
 #  - SiglusEngine2
 
+
+# Thin character, SHIFT-JIS or GBK
+char:
+  - DrawTextA
+  - DrawTextExA
+  - ExtTextOutA
+  - GetCharABCWidthsA
+  - GetGlyphOutlineA
+  - GetTextExtentPoint32A
+  - TextOutA
+  - lstrlenA
+
+# Wide character, UTF-16
+wchar:
+  - DrawTextW
+  - DrawTextExW
+  - ExtTextOutW
+  - GetCharABCWidthsW
+  - GetGlyphOutlineW
+  - GetTextExtentPoint32W
+  - TextOutW
+  - lstrlenW
+  - Malie
+  - Malie2
+  - Malie3
+
 # EOF
