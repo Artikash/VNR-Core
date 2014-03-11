@@ -3191,32 +3191,16 @@ bool InsertWillPlusHook()
  *  Seems to be broken for new games in 2012 such like となりの
  *
  *  微少女: /HSN4@004983E0
+ *  This is the same hook as ITH
  *  - addr: 4817888 (0x4983e0)
  *  - extern_fun: 0x0
- *  - function: 0
- *  - hook_len: 0
- *  - ind: 0
- *  - length_of
- *  - fset: 0
- *  - module: 0
  *  - off: 4
- *  - recover_len: 0
- *  - split: 0
- *  - split_ind: 0
  *  - type: 1025 (0x401)
  *
  *  隣りのぷ～さん: /HSN-8@200FE7:TONARINO.EXE
  *  - addr: 2101223 (0x200fe7)
- *  - extern_fun: 0x0
- *  - function: 0
- *  - hook_len: 0
- *  - ind: 0
- *  - length_offset: 0
  *  - module: 2343491905 (0x8baed941)
  *  - off: 4294967284 (0xfffffff4, -0xc)
- *  - recover_len: 0
- *  - split: 0
- *  - split_ind: 0
  *  - type: 1089 (0x441)
  */
 bool InsertTanukiHook()
