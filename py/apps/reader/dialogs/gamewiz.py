@@ -977,7 +977,7 @@ class SelectThreadPage(QtWidgets.QWizardPage):
       text = "%s %x" % (n, signature)
       enc = config.guess_thread_encoding(name)
       if enc:
-        text += ' ' + enc
+        text += " (%s)" % enc
       b = self._grid.addButton(text,
           tip=str(signature),
           value=signature)  # value MUST BE signature, which is used to get the current signature ID
