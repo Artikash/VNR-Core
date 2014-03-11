@@ -95,6 +95,7 @@ HCODE_BLACKLIST = frozenset(BLACKLIST_YAML['hcode'])
 HCODE_FILE_BLACKLIST = frozenset(BLACKLIST_YAML['hcodefile'])
 
 ## Game engine ##
+
 NOREPEAT_GAME_ENGINES = frozenset(ENGINES_YAML['simple'] + ENGINES_YAML['norepeat'])
 NOFLOAT_GAME_ENGINES = frozenset(
     ENGINES_YAML['simple'] + ENGINES_YAML['nofloat'] +
@@ -102,6 +103,15 @@ NOFLOAT_GAME_ENGINES = frozenset(
 
 GUI_TEXT_THREADS = frozenset(ENGINES_YAML['gui'])
 NON_GUI_TEXT_THREADS = frozenset(ENGINES_YAML['nongui'])
+
+CHAR_TEXT_THREADS = frozenset(ENGINES_YAML['char'])
+WCHAR_TEXT_THREADS = frozenset(ENGINES_YAML['wchar'])
+
+def guess_thread_encoding(name): # str -> str or None
+  if name in CHAR_TEXT_THREADS:
+    return 'SHIFT-JIS'
+  if name in WCHAR_TEXT_THREADS:
+    return 'UTF-16'
 
 ## Game info ##
 

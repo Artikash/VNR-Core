@@ -82,6 +82,10 @@ class _TextThreadView(object):
       n = self.name
 
     title = """%s <span style="color:gray">%x</span>""" % (n, self.signature)
+    enc = config.guess_thread_encoding(self.name)
+    if enc:
+      title += """ <span style="color:black">%s</span>""" % enc
+
     label = QtWidgets.QLabel(title)
     label.setStyleSheet(SS_LABELS[tt])
     label.setToolTip(ttip)

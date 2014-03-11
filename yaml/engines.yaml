@@ -92,6 +92,8 @@ wchar:
   - GetTextExtentPoint32W
   - TextOutW
   - lstrlenW
+  - KiriKiri1
+  - KiriKiri2
   - Malie
   - Malie2
   - Malie3
