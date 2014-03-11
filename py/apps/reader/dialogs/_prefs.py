@@ -2111,7 +2111,11 @@ unless you have been familiar with VNR."""
   def internetGroup(self):
     ret = QtWidgets.QGroupBox(tr_("Internet"))
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.internetEdit)
+
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.internetEdit)
+    row.addStretch()
+    layout.addLayout(row)
 
     infoLabel = QtWidgets.QLabel(my.tr(
 "By default, VNR will automatically detect whether you have got Internet access. If the detection does not work well, you can force enabling/disabling the Internet here."))

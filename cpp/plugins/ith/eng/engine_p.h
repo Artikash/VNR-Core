@@ -38,7 +38,7 @@ bool InsertGesen18Hook();       // Gsen18: *.szs
 bool InsertGXPHook();           // GXP: *.gxp
 bool InsertLiveHook();          // Live: live.dll
 bool InsertMalieHook();         // Malie@light: malie.ini
-bool InsertMEDHook();           // RunrunEngine: *.med
+bool InsertMEDHook();           // MED: *.med
 bool InsertNextonHook();        // NEXTON: aInfo.db
 bool InsertNitroPlusHook();     // NitroPlus: *.npa
 bool InsertPensilHook();        // Pensil: PSetup.exe
@@ -47,7 +47,7 @@ bool InsertQLIEHook();          // QLiE: GameData/*.pack
 bool InsertRejetHook();         // Rejet: Module/{gd.dat,pf.dat,sd.dat}
 bool InsertRUGPHook();          // rUGP: rUGP.exe
 bool InsertRetouchHook();       // Retouch: resident.dll
-bool InsertRREHook();           // RRE: rrecfg.rcf
+bool InsertRREHook();           // RunrunEngine: rrecfg.rcf
 bool InsertShinaHook();         // ShinaRio: Rio.ini
 bool InsertShinyDaysHook();     // ShinyDays
 bool InsertSystem43Hook();      // System43@AliceSoft: AliceStart.ini

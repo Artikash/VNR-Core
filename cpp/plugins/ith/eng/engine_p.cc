@@ -3207,7 +3207,7 @@ bool InsertTanukiHook()
 {
   for (DWORD i = module_base_; i < module_limit_ - 4; i++)
     if (*(DWORD *)i == 0x8140)
-      if (DWORD j = Util::FindEntryAligned(i,0x400)) {  // jichi 9/14/2013: might crash without admin priv
+      if (DWORD j = Util::FindEntryAligned(i,0x400)) {  // jichi 9/14/2013: might crash without admin priv. Maybe, I should move seh here? Or if /eha works?
         //ITH_GROWL_DWORD2(i, j);
         HookParam hp = {};
         hp.addr = j;
