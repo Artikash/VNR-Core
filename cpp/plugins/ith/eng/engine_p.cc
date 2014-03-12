@@ -2693,25 +2693,26 @@ bool InsertDebonosuHook()
   }
   DWORD search = 0x15ff | (addr << 16);
   addr >>= 16;
-  for (DWORD i = module_base_; i < module_limit_ - 4; i++) {
-    if (*(DWORD*)i != search) continue;
-    if (*(WORD*)(i + 4) != addr) continue;// call dword ptr lstrcatA
-    if (*(BYTE*)(i - 5) != 0x68) continue;// push $
-    DWORD push = *(DWORD*)(i - 4);
-    for (DWORD j = i + 6, k = j + 0x10; j < k; j++) {
-      if (*(BYTE*)j != 0xB8) continue;
-      if (*(DWORD*)(j + 1) != push) continue;
-      HookParam hp = {};
-      hp.addr = SafeFindEntryAligned(i, 0x200);
-      hp.extern_fun = SpecialHookDebonosu;
-      if (hp.addr == 0) continue;
-      hp.type = USING_STRING | EXTERN_HOOK;
-      ConsoleOutput("vnreng: INSERT Debonosu");
-      NewHook(hp, L"Debonosu");
-      //RegisterEngineType(ENGINE_DEBONOSU);
-      return true;
-    }
-  }
+  for (DWORD i = module_base_; i < module_limit_ - 4; i++)
+    if (*(DWORD *)i == search &&
+        *(WORD *)(i + 4) == addr && // call dword ptr lstrcatA
+        *(BYTE *)(i - 5) == 0x68) { // push $
+      DWORD push = *(DWORD *)(i - 4);
+      for (DWORD j = i + 6, k = j + 0x10; j < k; j++)
+        if (*(BYTE *)j == 0xb8 &&
+            *(DWORD *)(j + 1) == push)
+          if (DWORD addr = SafeFindEntryAligned(i, 0x200)) {
+            HookParam hp = {};
+            hp.addr = addr;
+            hp.extern_fun = SpecialHookDebonosu;
+            hp.type = USING_STRING | EXTERN_HOOK;
+            ConsoleOutput("vnreng: INSERT Debonosu");
+            NewHook(hp, L"Debonosu");
+            //RegisterEngineType(ENGINE_DEBONOSU);
+            return true;
+          }
+      }
+
   ConsoleOutput("vnreng:Debonosu: failed");
   //ConsoleOutput("Unknown Debonosu engine.");
   return false;
