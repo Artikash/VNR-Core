@@ -17,8 +17,9 @@ import '.' as Kagami
 
 Item { id: root_
   // should be larger enough to hold the panel
-  width: 410 + floatingWidth
-  height: 16 + shadowCol_.height // margin: 8 why does not work?!
+  //width: 390 + floatingWidth
+  width: buttonGrid_.width + 60 // margin: 20
+  height: buttonGrid_.height + 20 // margin: 10
 
   property alias floatingWidth: floatingRect_.width
 
@@ -674,8 +675,10 @@ Item { id: root_
     //  GradientStop { position: 1.0;  color: '#7a6a6d6a' }
     //}
 
-    color: '#66000000' // black
+    //color: '#66000000' // black
+    color: '#aa000000' // black with transparency, the same as dock hover color
 
+    /*
     Column { id: shadowCol_
       anchors {
         leftMargin: 10; rightMargin: 10
@@ -713,26 +716,31 @@ Item { id: root_
         radius: parent.cellRadius
         color: parent.cellColor
         height: parent.cellHeight3
+        width: parent.width
       }
 
       Rectangle { // Group#2 shadow
         radius: parent.cellRadius
         color: parent.cellColor
         height: parent.cellHeight4
+        width: parent.width
       }
 
       Rectangle { // Group#3 shadow
         radius: parent.cellRadius
         color: parent.cellColor
         height: parent.cellHeight1
+        width: parent.width
       }
 
       Rectangle { // Group#4 shadow
         radius: parent.cellRadius
         color: parent.cellColor
         height: parent.cellHeight4
+        width: parent.width
       }
     }
+    */
 
     MouseArea { id: mouseArea_
       anchors.fill: parent
@@ -742,6 +750,7 @@ Item { id: root_
 
     Grid { id: buttonGrid_
       anchors.centerIn: parent
+      anchors.horizontalCenterOffset: -2
       columns: 2
       spacing: 20
 
@@ -1019,6 +1028,7 @@ Item { id: root_
         text: qsTr("Count")
         font.pixelSize: parent.pixelSize
         font.bold: true
+        labelWidth: 40
         handleWidth: 15
         toolTip: qsTr("The maximum length of allowed game text. Text longer than that will be ignored.")
         handleToolTip: qsTr("Maximum number of allowed characters in the game text is {0}").replace('{0}', Math.round(value / 2))
@@ -1033,9 +1043,11 @@ Item { id: root_
       Share.LabeledSlider { id: shadowSlider_
         height: parent.cellHeight
         width: parent.cellWidth
-        text: Sk.tr("Opacity")
+        //text: Sk.tr("Opacity")
+        text: qsTr("Transp")
         font.pixelSize: parent.pixelSize
         font.bold: true
+        labelWidth: 40
         handleWidth: 15
         toolTip: qsTr("Text background shadow transparency")
         handleToolTip: Math.round(value * 100 / maximumValue) + "%"
@@ -1055,6 +1067,7 @@ Item { id: root_
         text: Sk.tr("Zoom")
         font.pixelSize: parent.pixelSize
         font.bold: true
+        labelWidth: 40
         handleWidth: 15
         toolTip: qsTr("Zoom font size")
         handleToolTip: Math.round(value * 100) + "%"
@@ -1072,6 +1085,7 @@ Item { id: root_
         text: Sk.tr("Width")
         font.pixelSize: parent.pixelSize
         font.bold: true
+        labelWidth: 40
         handleWidth: 15
         toolTip: qsTr("Text box width")
         handleToolTip: Math.round(value * 100) + "%"
@@ -1089,6 +1103,7 @@ Item { id: root_
         text: Sk.tr("Popup")
         font.pixelSize: parent.pixelSize
         font.bold: true
+        labelWidth: 40
         handleWidth: 15
         toolTip: qsTr("Zoom popup size")
         handleToolTip: Math.round(value * 100) + "%"
@@ -1108,6 +1123,7 @@ Item { id: root_
         text: qsTr("G.I")
         font.pixelSize: parent.pixelSize
         font.bold: true
+        labelWidth: 40
         handleWidth: 15
         toolTip: qsTr("Text glowing intensity")
         handleToolTip: Math.round(value * 100 / maximumValue) + "%"
@@ -1125,6 +1141,7 @@ Item { id: root_
         text: qsTr("G.R")
         font.pixelSize: parent.pixelSize
         font.bold: true
+        labelWidth: 40
         handleWidth: 15
         toolTip: qsTr("Text glowing range")
         handleToolTip: Math.round(value * 100 / maximumValue) + "%"

@@ -11,6 +11,9 @@ Item { id: root_
   property alias text: label_.text
   property alias font: label_.font
   property alias color: label_.color
+  //property alias horizontalAlignment: label_.horizontalAlignment
+  //property alias verticalAlignment: label_.verticalAlignment
+  property alias labelWidth: label_.width
   property alias toolTip: toolTip_.text
   property alias handleToolTip: slider_.toolTip
   property bool hover: enabled && (toolTip_.containsMouse || slider_.hover)
@@ -28,7 +31,8 @@ Item { id: root_
       top: parent.top; bottom: parent.bottom
       left: parent.left
     }
-    verticalAlignment: Qt.AlignVCenter
+    verticalAlignment: Text.AlignVCenter
+    horizontalAlignment: Text.AlignRight
     color: root_.enabled ? 'snow' : 'silver'
     effect: Share.TextEffect { highlight: root_.enabled && root_.hover }
 
