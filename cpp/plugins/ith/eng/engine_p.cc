@@ -92,6 +92,14 @@ BOOL SafeFillRange(LPCWSTR dll, DWORD *lower, DWORD *upper)
   return ret;
 }
 
+// jichi 3/11/2014: The original FindEntryAligned function could raise exceptions without admin priv
+DWORD SafeFindEntryAligned(DWORD start, DWORD back_range)
+{
+  DWORD ret = 0;
+  ITH_WITH_SEH(ret = Util::FindEntryAligned(start, back_range));
+  return ret;
+}
+
 } // unnamed namespace
 
 namespace Engine {
@@ -279,7 +287,7 @@ bool InsertBGI1Hook()
     if (ib[0] == 0x3D) {
       i++;
       if (id[0] == 0xffff) { //cmp eax,0xffff
-        hp.addr = Util::FindEntryAligned(i, 0x40);
+        hp.addr = SafeFindEntryAligned(i, 0x40);
         if (hp.addr) {
           hp.off = 0xc;
           hp.split = -0x18;
@@ -295,7 +303,7 @@ bool InsertBGI1Hook()
     if (ib[0] == 0x81 && ((ib[1] & 0xf8) == 0xf8)) {
       i += 2;
       if (id[0] == 0xffff) { //cmp reg,0xffff
-        hp.addr = Util::FindEntryAligned(i, 0x40);
+        hp.addr = SafeFindEntryAligned(i, 0x40);
         if (hp.addr) {
           hp.off = 0xc;
           hp.split = -0x18;
@@ -955,7 +963,7 @@ bool InsertRUGPHook()
   if (t != range) { // jichi 10/1/2013: Changed to compare with 0x20000
     if (*(s - 2) != 0x81)
       return false;
-    if (DWORD i = Util::FindEntryAligned((DWORD)s, 0x200)) {
+    if (DWORD i = SafeFindEntryAligned((DWORD)s, 0x200)) {
       HookParam hp = {};
       hp.addr = i;
       //hp.off= -8;
@@ -1261,7 +1269,7 @@ bool InsertCircusHook2() // jichi 10/2/2013: Change return type to bool
 {
   for (DWORD i = module_base_ + 0x1000; i < module_limit_ -4; i++)
     if ((*(DWORD *)i & 0xffffff) == 0x75243c) { // cmp al, 24; je
-      if (DWORD j = Util::FindEntryAligned(i, 0x80)) {
+      if (DWORD j = SafeFindEntryAligned(i, 0x80)) {
         HookParam hp = {};
         hp.addr = j;
         hp.off = 0x8;
@@ -1428,7 +1436,7 @@ bool InsertWaffleDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
   // jichi 9/30/2013: Fix the bug in ITH logic where j is unintialized
   for (i = module_base_ + 0x1000; i < module_limit_ - 4; i++)
     if (*id == handler && *(ib - 1) == 0x68)
-      if (DWORD t = Util::FindEntryAligned(i, 0x40)) {
+      if (DWORD t = SafeFindEntryAligned(i, 0x40)) {
         HookParam hp = {};
         hp.addr = t;
         hp.off = 8;
@@ -2624,7 +2632,7 @@ bool InsertPensilHook()
 {
   for (DWORD i = module_base_; i < module_limit_ - 4; i++)
     if (*(DWORD *)i == 0x6381) // cmp *,8163
-      if (DWORD j = Util::FindEntryAligned(i, 0x100)) {
+      if (DWORD j = SafeFindEntryAligned(i, 0x100)) {
         HookParam hp = {};
         hp.addr = j;
         hp.off = 8;
@@ -2694,7 +2702,7 @@ bool InsertDebonosuHook()
       if (*(BYTE*)j != 0xB8) continue;
       if (*(DWORD*)(j + 1) != push) continue;
       HookParam hp = {};
-      hp.addr = Util::FindEntryAligned(i, 0x200);
+      hp.addr = SafeFindEntryAligned(i, 0x200);
       hp.extern_fun = SpecialHookDebonosu;
       if (hp.addr == 0) continue;
       hp.type = USING_STRING | EXTERN_HOOK;
@@ -3205,9 +3213,10 @@ bool InsertWillPlusHook()
  */
 bool InsertTanukiHook()
 {
+  ConsoleOutput("vnreng: trying TanukiSoft");
   for (DWORD i = module_base_; i < module_limit_ - 4; i++)
     if (*(DWORD *)i == 0x8140)
-      if (DWORD j = Util::FindEntryAligned(i,0x400)) {  // jichi 9/14/2013: might crash without admin priv. Maybe, I should move seh here? Or if /eha works?
+      if (DWORD j = SafeFindEntryAligned(i,0x400)) { // jichi 9/14/2013: might crash the game without admin priv
         //ITH_GROWL_DWORD2(i, j);
         HookParam hp = {};
         hp.addr = j;

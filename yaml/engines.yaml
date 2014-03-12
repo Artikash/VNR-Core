@@ -58,6 +58,7 @@ norepeat:
   - Rejet
   - SiglusEngine
   - SiglusEngine2
+  - TanukiSoft # But this thread is floating
 
 # Not floating address
 nofloat:
