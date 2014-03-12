@@ -454,7 +454,8 @@ EXCEPTION_DISPOSITION ExceptHandler(PEXCEPTION_RECORD ExceptionRecord, LPVOID, P
   }
   //ContextRecord->Esp = recv_esp;
   //ContextRecord->Eip = recv_eip;
-  return ExceptionContinueExecution;
+  //return ExceptionContinueExecution; // jichi 3/11/2014: this will still crash. Not sure why ITH use this. Change to ExceptionContinueSearch
+  return ExceptionContinueSearch; // an unwind is in progress,
 }
 
 // jichi 9/14/2013: Certain ITH functions like FindEntryAligned might raise exception without admin priv
