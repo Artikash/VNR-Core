@@ -385,8 +385,6 @@ class _TextManager(object):
       ctx = defs.CONTEXT_SEP.join(self.texts[-sz:])
       dm.updateContext(h, ctx)
       q.rawTextReceived.emit(text, self.gameLanguage, h, sz)
-    if settings.global_().copiesGameText():
-      skclip.settext(text)
 
     q.contextChanged.emit()
 
@@ -432,7 +430,10 @@ class _TextManager(object):
                 #dm.updateContext(c.hash, c.context)
             self._showComment(c)
 
+
     if text:
+      if settings.global_().copiesGameText():
+        skclip.settext(text)
       self._translateTextAndShow(text, timestamp)
 
   def showNameText(self, data):
@@ -496,6 +497,8 @@ class _TextManager(object):
         self._showComment(c)
 
     if text:
+      if settings.global_().copiesGameText():
+        skclip.settext(text)
       self._translateTextAndShow(text, timestamp)
 
   ## Window translation ##
