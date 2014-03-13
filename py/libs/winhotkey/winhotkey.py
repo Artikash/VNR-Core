@@ -14,6 +14,16 @@ from sakurakit.skdebug import dprint
 
 # Debug entry
 if __name__ == '__main__' and os.name == 'nt':
+  # http://schurpf.com/python/python-hotkey-module/
+  import pyhk
+  def fun():
+    print "Do something"
+
+  #create pyhk class instance
+  hot = pyhk.pyhk()
+  #add hotkey
+  hot.addHotkey(['Alt', 'a'],fun)
+
   # Start event loop and block the main thread
   import pythoncom
   pythoncom.PumpMessages() # wait forever
