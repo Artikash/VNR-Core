@@ -38,15 +38,16 @@ Item { id: root_
     //width: 150
     //enabled: root_.canLock
     //visible: status_.online && root_.canLock
-    text: ' ' + qsTr("Enable voices for new characters")
+    //text: ' ' + qsTr("Enable voices for new characters")
+    text: ' ' + qsTr("Dub voices for newly discovered characters (disabled by default)")
 
-    Desktop.TooltipArea{
-      anchors {
-        fill: parent
-        leftMargin: 20
-      }
-      text: qsTr("Dub voices for newly discovered characters (disabled by default)")
-    }
+    //Desktop.TooltipArea{
+    //  anchors {
+    //    fill: parent
+    //    leftMargin: 20
+    //  }
+    //  text: qsTr("Dub voices for newly discovered characters (disabled by default)")
+    //}
   }
 
   Text {
