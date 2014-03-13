@@ -44,6 +44,10 @@ function ajax(options) {
 
   xhr.open(type, url, true);
 
+  // timeout is not implemented in QML? https://qt-project.org/forums/viewthread/18666
+  //xhr.timeout
+  //xhr.ontimeout
+
   if (contentType)
     xhr.setRequestHeader('Content-Type', contentType);
 
