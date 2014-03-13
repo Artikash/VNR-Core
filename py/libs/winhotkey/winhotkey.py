@@ -10,19 +10,25 @@ if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
+import os
 from sakurakit.skdebug import dprint
 
 # Debug entry
 if __name__ == '__main__' and os.name == 'nt':
   # http://schurpf.com/python/python-hotkey-module/
   import pyhk
-  def fun():
-    print "Do something"
+  def fun_k():
+    print "key"
+  def fun_m():
+    print "mouse"
 
   #create pyhk class instance
   hot = pyhk.pyhk()
   #add hotkey
-  hot.addHotkey(['Alt', 'a'],fun)
+  hot.addHotkey(['Ctrl', 'A'],fun_k)
+  hot.removeHotkey(['Ctrl', 'A'])
+
+  hot.addHotkey(['mouse right'],fun_m)
 
   # Start event loop and block the main thread
   import pythoncom
