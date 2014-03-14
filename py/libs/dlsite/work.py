@@ -146,9 +146,7 @@ class WorkApi(object):
     @param  h  unicode  html
     @return  str or None
     """
-    t = self._parsemeta(self._rx_meta_img, h)
-    if t:
-      return 'http:' + t
+    return self._parsemeta(self._rx_meta_img, h)
 
   def _parseimage(self, h):
     """
