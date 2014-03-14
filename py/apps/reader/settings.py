@@ -14,7 +14,8 @@ def to_bool(value):
   return value == True or value  == 'true'
 
 #def to_str(value):
-#  return value if isinstance(value, str) else '' if value is None else "%s" % value
+#  return value if isinstance(value, str) else ''
+#  return value is None else "%s" % value
 
 def to_float(value, default=0.0):
   try: return float(value)
@@ -501,6 +502,24 @@ class Settings(QSettings):
     if value != self.allowsTextToSpeech():
       self.setValue('TextToSpeechEnabled', value)
       self.allowsTextToSpeechChanged.emit(value)
+
+  ## Hotkeys ##
+
+  ttsHotkeyEnabledChanged = Signal(bool)
+  def isTtsHotkeyEnabled(self):
+    return to_bool(self.value('TTSHotkeyEnabled'))
+  def setTtsHotkeyEnabled(self, value):
+    if value != self.isTtsHotkeyEnabled():
+      self.setValue('TTSHotkeyEnabled', value)
+      self.ttsHotkeyEnabledChanged.emit(value)
+
+  ttsHotkeyChanged = Signal(str)
+  def ttsHotkey(self):
+    return self.value('TTSHotkey')
+  def setTtsHotkey(self, value):
+    if value != self.ttsHotkey():
+      self.setValue('TTSHotkey', value)
+      self.ttsHotkeyChanged.emit(value)
 
   ## TTS ##
 
