@@ -20,15 +20,15 @@ if not skos.WIN:
 @memoized
 def manager(): return HotkeyManager()
 
-class NameManager:
+class HotkeyManager:
 
   def __init__(self):
-    self.__d = _NameManager()
+    self.__d = _HotkeyManager()
 
   def isEnabled(self): return self.__d.enabled
   def setEnabled(self, v): self.__d.enabled = v
 
-class _NameManager(object):
+class _HotkeyManager(object):
   def __init__(self):
     self.enabled = False # bool
 
@@ -60,6 +60,5 @@ if __name__ == '__main__': #and os.name == 'nt':
   # Start event loop and block the main thread
   import pythoncom
   pythoncom.PumpMessages() # wait forever
-
 
 # EOF

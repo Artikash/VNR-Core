@@ -205,8 +205,8 @@ void FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag)
 
 void InsertKiriKiriHook()
 {
-  FindKiriKiriHook((DWORD)GetGlyphOutlineW,      module_limit_ - module_base_, module_base_, 0);
-  FindKiriKiriHook((DWORD)GetTextExtentPoint32W, module_limit_ - module_base_, module_base_, 1);
+  FindKiriKiriHook((DWORD)GetGlyphOutlineW,      module_limit_ - module_base_, module_base_, 0); // KiriKiri1
+  FindKiriKiriHook((DWORD)GetTextExtentPoint32W, module_limit_ - module_base_, module_base_, 1); // KiriKiri2
   //RegisterEngineType(ENGINE_KIRIKIRI);
 }
 
