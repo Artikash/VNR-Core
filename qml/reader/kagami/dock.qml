@@ -386,10 +386,12 @@ Item { id: root_
 
       Share.TextButton { id: hotkeyButton_
         height: parent.cellHeight; width: parent.cellWidth
-        text: slimChecked ? My.tr("Shortcuts").charAt(0) : My.tr("Shortcuts")
+        text: slimChecked ? Sk.tr("Keyboard").charAt(0) : My.tr("Shortcuts")
         font.pixelSize: parent.pixelSize
         //font.bold: true
         radius: parent.cellRadius
+
+        visible: !root_.wine
 
         property bool checked
         backgroundColor: checked ? parent.buttonCheckedColor : parent.buttonColor

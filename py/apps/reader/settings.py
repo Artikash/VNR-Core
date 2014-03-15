@@ -1456,6 +1456,8 @@ class SettingsProxy(QObject):
   cometCounterVisibleChanged = Signal(bool)
   cometCounterVisible = bool_property('CometCounterVisible', True, notify=cometCounterVisibleChanged)
 
+  hotkeyEnabled = bool_property('Hotkey', False)
+
   #grimoireRevertsColor = bool_property('GrimoireRevertsColor', False)
   grimoireShadowEnabled = bool_property('GrimoireShadow', True)
   grimoireHoverEnabled = bool_property('GrimoireHover', False)

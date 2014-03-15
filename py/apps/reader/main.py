@@ -905,6 +905,9 @@ class _MainObject(object):
 
     EXITED = True
 
+    dprint("stop hot keys")
+    self.hotkeyManager.setEnabled(False)
+
     dprint("shutdown rpc server")
     self.rpcServer.stop()
 

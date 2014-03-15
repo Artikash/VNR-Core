@@ -757,8 +757,7 @@ class _ShortcutsTab(object):
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
-    #if features.WINE:
-    if False:
+    if features.WINE:
       label =QtWidgets.QLabel(my.tr("Global shortcuts are not supported in Wine."))
       l = skwidgets.SkWidgetLayout(label)
       w = QtWidgets.QGroupBox(tr_("About"))

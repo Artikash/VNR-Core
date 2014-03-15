@@ -25,7 +25,11 @@ HOTKEY_DELIM = '\n'
 def packhotkey(l): # list -> str
   return HOTKEY_DELIM.join(l)
 def unpackhotkey(s): # str -> list
+  if isinstance(s, unicode):
+    s = s.encode('utf8', errors='ignore')
   return s.split(HOTKEY_DELIM)
+  #l = s.split(HOTKEY_DELIM)
+  #return [it.encode('utf8', errors='ignore') for it in l]
 
 @memoized
 def manager(): return HotkeyManager()
@@ -60,6 +64,7 @@ class HotkeyManager(QObject):
 class _HotkeyManager(object):
   def __init__(self):
     self.enabled = False # bool
+    self._pyhk = None # pyhk instance
 
     ss = settings.global_()
 
@@ -81,12 +86,12 @@ class _HotkeyManager(object):
 
   def start(self):
     for hk in self._mapping.itervalues():
-      if hk['on']:
+      if hk['on'] and hk['key']:
         self._addHotkey(hk['key'])
 
   def stop(self):
     for hk in self._mapping.itervalues():
-      if hk['on']:
+      if hk['on'] and hk['key']:
         self._removeHotkey(hk['key'])
 
   def setMappingEnabled(self, name, t):
@@ -111,6 +116,10 @@ class _HotkeyManager(object):
     l = unpackhotkey(k)
     self.pyhk.addHotkey(l, partial(self._onHotkey, k))
 
+    #from pyhk import pyhk
+    #h = pyhk()
+    #h.addHotkey(l, partial(self._onHotkey, k))
+
   def _removeHotkey(self, k): # str
     l = unpackhotkey(k)
     self.pyhk.removeHotkey(l)
@@ -131,7 +140,7 @@ class _HotkeyManager(object):
 
   def _onHotkey(self, key): # callback
     for name, hk in self._mapping.iteritems():
-      if hk == key and hk['on']:
+      if hk['key'] == key and hk['on']:
         apply(hk['do'])
 
   @staticmethod
@@ -149,7 +158,7 @@ class HotkeyManagerProxy(QObject):
   enabledChanged = Signal(bool)
   enabled = Property(bool,
       lambda self: manager().isEnabled(),
-      lambda self, v: manager().setEnabled(t),
+      lambda self, v: manager().setEnabled(v),
       notify=enabledChanged)
 
 # Debug entry
@@ -170,7 +179,9 @@ if __name__ == '__main__': #and os.name == 'nt':
   hot.addHotkey(['mouse right'],fun_m)
 
   # Start event loop and block the main thread
-  import pythoncom
-  pythoncom.PumpMessages() # wait forever
+  #import pythoncom
+  #pythoncom.PumpMessages() # wait forever
+  a = debug.app()
+  a.exec_()
 
 # EOF
