@@ -9,7 +9,7 @@ from PySide.QtCore import Signal, Slot, Property, Qt
 from sakurakit import skcursor, skdatetime, skevents, skos, skpaths, skwin
 from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dprint, dwarn
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_, notr_
 from sakurakit.skunicode import sjis_encodable, u_sjis
 from sakurakit.skwinobj import SkWindowObject #, SkTaskBarObject
@@ -94,7 +94,7 @@ class _GameWindowProxy:
   #      growl.msg, t),
   #      1000) # delay 1 second to avoid crashing
 
-@QmlObject
+#@QmlObject
 class GameWindowProxy(SkWindowObject):
   """Used as delegate of kagami/centralarea.qml"""
 
@@ -228,7 +228,7 @@ class _TaskBarProxy:
     if self._autoHide != skwin.is_taskbar_autohide():
       skwin.set_taskbar_autohide(self._autoHide)
 
-@QmlObject
+#@QmlObject
 class TaskBarProxy(QtCore.QObject):
   def __init__(self, parent=None):
     """Set task bar height iff it is in the bottom of the screen"""
@@ -697,7 +697,7 @@ class _GameProxy(object):
     if hasattr(self, '_postReturnTimer') and self._postReturnTimer.isActive():
       self._postReturnTimer.stop()
 
-@QmlObject
+#@QmlObject
 class GameProxy(QtCore.QObject):
   """Proxy to control game process"""
   def __init__(self, parent=None):
@@ -1358,7 +1358,7 @@ def manager(): return GameManager()
 
 ## QML game launcher ##
 
-@QmlObject
+#@QmlObject
 class GameManagerProxy(QtCore.QObject):
   def __init__(self, parent=None):
     QtCore.QObject.__init__(self, parent)

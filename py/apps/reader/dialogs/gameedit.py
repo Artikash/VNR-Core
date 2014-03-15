@@ -12,7 +12,7 @@ from Qt5 import QtWidgets
 from sakurakit import skqss, skwidgets
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_, notr_
 from mytr import my, mytr_
 import config, dataman, features, growl, i18n, osutil, rc
@@ -526,7 +526,7 @@ class GameEditorManager:
 @memoized
 def manager(): return GameEditorManager()
 
-@QmlObject
+#@QmlObject
 class GameEditorManagerProxy(QtCore.QObject):
   def __init__(self, parent=None):
     QtCore.QObject.__init__(self, parent)

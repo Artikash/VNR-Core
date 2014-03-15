@@ -4,13 +4,13 @@
 
 from PySide.QtCore import Signal, Slot, Property, QObject
 from sakurakit.skdebug import dprint, dwarn
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_
 from mytr import my
 from kagami import GrimoireBean
 import dictman, qmldialog, settings
 
-@QmlObject
+#@QmlObject
 class ShioriBean(QObject):
 
   instance = None
@@ -55,7 +55,7 @@ def popupshiori(text, x, y):
     qmldialog.Kagami.instance.raise_()
     ShioriBean.instance.popup.emit(text, x, y)
 
-@QmlObject
+#@QmlObject
 class ShioriQmlProxy(QObject):
   def __init__(self, parent=None):
     QObject.__init__(self, parent)

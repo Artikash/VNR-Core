@@ -15,7 +15,7 @@ from Qt5.QtCore import QSortFilterProxyModel
 from sakurakit import skclip, skdatetime, skqss
 from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.skdebug import dprint
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 #from sakurakit.skmvc import SkMultiFilterProxyModel
 from sakurakit.sktr import tr_
 from sakurakit.skwidgets import shortcut
@@ -497,7 +497,7 @@ class GameFinder(ReferenceInput):
     self.setWindowTitle(mytr_("Game Finder"))
     self.setWindowIcon(rc.icon('window-gamefinder'))
 
-@QmlObject
+#@QmlObject
 class QmlReferenceInput(QObject):
   def __init__(self, parent=None):
     QObject.__init__(self, parent)

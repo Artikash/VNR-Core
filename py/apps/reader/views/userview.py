@@ -8,7 +8,7 @@ from PySide.QtCore import Qt, Slot
 from PySide import QtCore
 from sakurakit.skclass import memoized
 from sakurakit.sktr import tr_
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 from sakurakit.skwebkit import SkWebView
 from mytr import my, mytr_
 import dataman, growl, i18n, osutil, rc
@@ -118,7 +118,7 @@ def manager():
   webrc.init()
   return UserViewManager()
 
-@QmlObject
+#@QmlObject
 class UserViewManagerProxy(QtCore.QObject):
   def __init__(self, parent=None):
     QtCore.QObject.__init__(self, parent)

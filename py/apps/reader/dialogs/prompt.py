@@ -7,7 +7,7 @@ from PySide.QtCore import QObject, Slot
 from Qt5.QtWidgets import QInputDialog, QLineEdit, QMessageBox
 from sakurakit import skevents
 from sakurakit.sktr import tr_
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
 import config, growl, i18n, netman, settings #ttsman
 
@@ -469,7 +469,7 @@ VNR can also uninstall it later if you want.""").format(location),
 
 # QML
 
-@QmlObject
+#@QmlObject
 class PromptProxy(QObject):
   def __init__(self, parent=None):
     QObject.__init__(self, parent)

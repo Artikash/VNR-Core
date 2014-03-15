@@ -6,10 +6,10 @@ import os
 from PySide.QtCore import Slot, QObject, QUrl
 from sakurakit import skmeta
 from sakurakit.skdebug import dwarn
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 import bbcode
 
-@QmlObject
+#@QmlObject
 class BBCodeParser(QObject):
   def __init__(self, parent=None):
     QObject.__init__(self, parent)
@@ -17,7 +17,7 @@ class BBCodeParser(QObject):
   @Slot(unicode, result=unicode)
   def parse(self, text): return bbcode.parse(text)
 
-@QmlObject
+#@QmlObject
 class QmlUtil(QObject):
   def __init__(self, parent=None):
     QObject.__init__(self, parent)

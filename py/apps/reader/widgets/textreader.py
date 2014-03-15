@@ -10,7 +10,7 @@ from functools import partial
 from PySide.QtCore import Signal, Slot, QObject #, QTimer
 from sakurakit import skdatetime, skevents, skstr, skthreads
 from sakurakit.skclass import Q_Q, memoized
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 from sakurakit.skdebug import dwarn
 #from msime import msime
 from mytr import my
@@ -120,7 +120,7 @@ class TextReader(QObject):
 @memoized
 def manager(): return TextReader()
 
-@QmlObject
+#@QmlObject
 class TextReaderProxy(QObject):
   def __init__(self, parent=None):
     QObject.__init__(self, parent)

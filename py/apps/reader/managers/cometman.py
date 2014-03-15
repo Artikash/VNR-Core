@@ -11,7 +11,7 @@ if __name__ == '__main__':
 from PySide.QtCore import Signal, Property, Qt, QObject
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty, hasmemoizedproperty
 from sakurakit.skdebug import dprint, dwarn
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 import json
 
 PATH_TOPIC_TERM = 'vnr/topic/term'
@@ -103,7 +103,7 @@ class CometManager(QObject):
 @memoized
 def manager(): return CometManager()
 
-@QmlObject
+#@QmlObject
 class CometManagerProxy(QObject):
   def __init__(self, parent=None):
     super(CometManagerProxy, self).__init__(parent)

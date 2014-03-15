@@ -14,7 +14,7 @@ from sakurakit.skdebug import dprint, dwarn
 from sakurakit.sktr import tr_
 from sakurakit.skwebkit import SkWebView, SkWebViewBean
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
 import cacheman, dataman, features, growl, i18n, main, mecabman, netman, osutil, prompt, proxy, py, rc
 
@@ -439,7 +439,7 @@ def manager():
   webrc.init()
   return GameViewManager()
 
-@QmlObject
+#@QmlObject
 class GameViewManagerProxy(QObject):
   def __init__(self, parent=None):
     QObject.__init__(self, parent)

@@ -462,7 +462,7 @@ class _SkClipboardProxy(object):
     q = self.q
     q.textChanged.emit(q.text)
 
-@QmlObject
+#@QmlObject
 class SkClipboardProxy(QObject):
   def __init__(self, parent=None):
     super(SkClipboardProxy, self).__init__(parent)
@@ -477,7 +477,7 @@ class SkClipboardProxy(QObject):
       lambda _, v: QApplication.clipboard().setText(v),
       notify=textChanged)
 
-@QmlObject
+#@QmlObject
 class SkDesktopProxy(QObject):
   def __init__(self, parent=None):
     super(SkDesktopProxy, self).__init__(parent)
