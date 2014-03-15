@@ -14,7 +14,7 @@ from sakurakit.sktr import tr_, notr_
 from msime import msime
 from dataman import GUEST
 from mytr import my, mytr_
-import config, cacheman, defs, dicts, ebdict, features, growl, i18n, info, libman, netman, prompt, osutil, rc, res, sapiman, settings, ttsman
+import config, cacheman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, osutil, rc, res, sapiman, settings, ttsman
 
 MECAB_DICT_NAMES = {
   'unidic': my.tr("UniDic modern Japanese dictionary"),
@@ -542,7 +542,7 @@ class UiTab(QtWidgets.QDialog):
 
 ## Game ##
 
-@Q_Q
+#@Q_Q
 class _GameTab(object):
 
   def __init__(self, q):
@@ -741,6 +741,93 @@ class GameTab(QtWidgets.QDialog):
     super(GameTab, self).__init__(parent)
     skqss.class_(self, 'texture')
     self.__d = _GameTab(self)
+    #self.setMinimumWidth(330)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): pass
+
+## Shortcuts ##
+
+@Q_Q
+class _ShortcutsTab(object):
+
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    #if features.WINE:
+    if False:
+      label =QtWidgets.QLabel(my.tr("Global shortcuts are not supported in Wine."))
+      l = skwidgets.SkWidgetLayout(label)
+      w = QtWidgets.QGroupBox(tr_("About"))
+      w.setLayout(l)
+      layout.addWidget(w)
+    else:
+      layout.addWidget(self.globalGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+
+  ## Global shortcuts ##
+
+  @memoizedproperty
+  def globalGroup(self):
+    grid = QtWidgets.QGridLayout()
+
+    r = 0
+    grid.addWidget(self.ttsCheckBox, r, 0)
+    grid.addWidget(self.ttsButton, r, 1)
+    r += 1
+
+    ret = QtWidgets.QGroupBox(my.tr("Global shortcuts"))
+    ret.setLayout(grid)
+    return ret
+
+  @memoizedproperty
+  def ttsButton(self):
+    ret = QtWidgets.QPushButton()
+    ret.setToolTip(mytr_("Shortcuts"))
+    ss = settings.global_()
+
+    def _refresh():
+      t = ss.ttsHotkey()
+      ret.setText(i18n.key_name(t) if t else tr_("Not specified"))
+      skqss.class_(ret, 'btn btn-default' if t else 'btn btn-danger')
+    _refresh()
+    ss.ttsHotkeyChanged.connect(_refresh)
+
+    ret.clicked.connect(lambda:
+        self.ttsDialog.setValue(ss.ttsHotkey()) or self.ttsDialog.show())
+
+    ret.setEnabled(self.ttsCheckBox.isChecked())
+    self.ttsCheckBox.toggled.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def ttsCheckBox(self):
+    ret = QtWidgets.QCheckBox(my.tr("Speak the current game text using TTS"))
+    ss = settings.global_()
+    ret.setChecked(ss.isTtsHotkeyEnabled())
+    ret.toggled.connect(ss.setTtsHotkeyEnabled)
+    return ret
+
+  @memoizedproperty
+  def ttsDialog(self):
+    import hkinput
+    ret = hkinput.HotkeyInput(self.q)
+    ret.setWindowTitle("%s - %s" % (
+      ret.windowTitle(), mytr_("Text-to-speech")))
+    ss = settings.global_()
+    ret.valueChanged.connect(ss.setTtsHotkey)
+    return ret
+
+class ShortcutsTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(ShortcutsTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _ShortcutsTab(self)
     #self.setMinimumWidth(330)
 
   def save(self): pass
@@ -995,7 +1082,7 @@ class TtsTab(QtWidgets.QDialog):
 
 ## i18n ##
 
-@Q_Q
+#@Q_Q
 class _I18nTab(object):
 
   LANGUAGES = 'en', 'zh', 'ko', 'th', 'vi', 'ms', 'id', 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru'
@@ -1357,7 +1444,7 @@ class TextTab(QtWidgets.QDialog):
 
 ## Honyaku ##
 
-@Q_Q
+#@Q_Q
 class _HonyakuTab(object):
 
   def __init__(self, q):
@@ -2009,7 +2096,7 @@ class HonyakuTab(QtWidgets.QDialog):
 
 ## App features ##
 
-@Q_Q
+#@Q_Q
 class _FeatureTab(object):
 
   def __init__(self, q):
@@ -2265,7 +2352,7 @@ You can select only the resources you need to download here."""))
 
 # Dictionary downloads
 
-@Q_Q
+#@Q_Q
 class _DictionaryDownloadsTab(object):
   def __init__(self, q):
     self.meCabButtons = {}
@@ -2765,7 +2852,7 @@ class DictionaryDownloadsTab(QtWidgets.QDialog):
 
 # Launcher downloads
 
-@Q_Q
+#@Q_Q
 class _LauncherDownloadsTab(object):
   def __init__(self, q):
     self._createUi(q)

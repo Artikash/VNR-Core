@@ -109,6 +109,8 @@ class reader(QObject):
       self.tr("Built-in"),
       self.tr("built-in"),
 
+      self.tr("Shortcuts"),
+
       self.tr("Need to install"),
       self.tr("need to install"),
 

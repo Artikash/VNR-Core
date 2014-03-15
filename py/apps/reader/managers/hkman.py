@@ -12,7 +12,7 @@ from functools import partial
 from PySide.QtCore import QObject, Signal, Property
 from sakurakit import skos
 from sakurakit.skdebug import dprint, dwarn
-from sakurakit.skclass import memoized
+from sakurakit.skclass import memoized, memoizedproperty
 from sakurakit.skqml import QmlObject
 import settings
 
@@ -121,7 +121,7 @@ class _HotkeyManager(object):
     else:
       self._removeHotkey(k)
 
-  @memoized
+  @memoizedproperty
   def pyhk(self): # pyhk instance
     if skos.WIN:
       from pyhk import pyhk

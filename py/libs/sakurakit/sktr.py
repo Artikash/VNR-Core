@@ -85,6 +85,8 @@ class sakurakit(QObject):
       self.tr("Right Click"), self.tr("Right click"),
       self.tr("Right-Click"), self.tr("Right-click"),
 
+      self.tr("Space"),
+
       self.tr("About {0}"),
       self.tr("About"),
       self.tr("Add"),

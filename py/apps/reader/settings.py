@@ -503,11 +503,11 @@ class Settings(QSettings):
       self.setValue('TextToSpeechEnabled', value)
       self.allowsTextToSpeechChanged.emit(value)
 
-  ## Hotkeys ##
+  ## Shortcuts ##
 
   ttsHotkeyEnabledChanged = Signal(bool)
   def isTtsHotkeyEnabled(self):
-    return to_bool(self.value('TTSHotkeyEnabled'))
+    return to_bool(self.value('TTSHotkeyEnabled', True))
   def setTtsHotkeyEnabled(self, value):
     if value != self.isTtsHotkeyEnabled():
       self.setValue('TTSHotkeyEnabled', value)
@@ -515,7 +515,7 @@ class Settings(QSettings):
 
   ttsHotkeyChanged = Signal(str)
   def ttsHotkey(self):
-    return self.value('TTSHotkey')
+    return self.value('TTSHotkey', 'mouse right') # right click by default
   def setTtsHotkey(self, value):
     if value != self.ttsHotkey():
       self.setValue('TTSHotkey', value)
