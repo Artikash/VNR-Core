@@ -263,6 +263,7 @@ class sakurakit(QObject):
       self.tr("International"),
       self.tr("Internet status"),
       self.tr("i18n"),
+      self.tr("Keyboard"),
       self.tr("Keyword"),
       self.tr("Keywords"),
       self.tr("Language"), self.tr("language"),
