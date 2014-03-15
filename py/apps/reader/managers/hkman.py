@@ -143,7 +143,7 @@ class _HotkeyManager(object):
 @QmlObject
 class HotkeyManagerProxy(QObject):
   def __init__(self, parent=None):
-    QtCore.QObject.__init__(self, parent)
+    QObject.__init__(self, parent)
     manager().enabledChanged.connect(self.enabledChanged)
 
   enabledChanged = Signal(bool)

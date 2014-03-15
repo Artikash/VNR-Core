@@ -210,6 +210,10 @@ Item { id: root_
     enabled: dock_.visibleChecked
   }
 
+  Plugin.HotkeyManagerProxy { id: hotkeyPlugin_
+    enabled: dock_.hotkeyChecked
+  }
+
   Plugin.BBCodeParser { id: bbcodePlugin_ }
 
   Plugin.SubtitleEditorManagerProxy { id: subeditPlugin_ }
