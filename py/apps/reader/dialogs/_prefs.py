@@ -779,8 +779,13 @@ class _ShortcutsTab(object):
     grid.addWidget(self.ttsButton, r, 1)
     r += 1
 
-    ret = QtWidgets.QGroupBox(my.tr("Global shortcuts"))
-    ret.setLayout(grid)
+    layout = QtWidgets.QVBoxLayout()
+    layout.addLayout(grid)
+    infoLabel = QtWidgets.QLabel(my.tr("These shortcuts can only be enabled when the game is running."))
+    infoLabel.setWordWrap(True)
+    layout.addWidget(infoLabel)
+    ret = QtWidgets.QGroupBox(my.tr("Global game shortcuts"))
+    ret.setLayout(layout)
     return ret
 
   @memoizedproperty
