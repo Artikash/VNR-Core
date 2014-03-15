@@ -538,6 +538,13 @@ class _MainObject(object):
     return ret
 
   @memoizedproperty
+  def hotkeyManager(self):
+    import hkman
+    ret = hkman.manager()
+    ret.setParent(self.q)
+    return ret
+
+  @memoizedproperty
   def ttsManager(self):
     import ttsman
     ret = ttsman.manager()
@@ -898,6 +905,9 @@ class _MainObject(object):
 
     EXITED = True
 
+    dprint("stop hot keys")
+    self.hotkeyManager.setEnabled(False)
+
     dprint("shutdown rpc server")
     self.rpcServer.stop()
 
@@ -1232,6 +1242,9 @@ class MainObject(QObject):
 
     dprint("create subtitle editor manager")
     d.subtitleEditorManager
+
+    dprint("create hotkey manager")
+    d.hotkeyManager
 
     dprint("create tts manager")
     d.ttsManager

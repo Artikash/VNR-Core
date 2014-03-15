@@ -470,6 +470,7 @@ icons:
   pref-feature:     $PWD/images/gear.png
   pref-i18n:        $PWD/images/earth.png
   pref-locale-path: $PWD/images/dock/launch.png
+  pref-shortcuts:   $PWD/images/passage.png
   pref-tr-path:     $PWD/images/dock/yaku.png
   pref-tr:          $PWD/images/people.png
   pref-user:        $PWD/images/user.png
@@ -488,6 +489,7 @@ icons:
   window-refinput:  $PWD/images/reader.png
   window-refview:   $PWD/images/dock/edit.png
   window-regexp:    $PWD/images/dock/exp.png
+  window-shortcuts: $PWD/images/passage.png
   window-submaker:  $PWD/images/dock/edit.png
   window-subview:   $PWD/images/dock/edit.png
   window-textedit:  $PWD/images/dock/edit.png

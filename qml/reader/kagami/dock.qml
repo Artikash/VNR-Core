@@ -55,6 +55,7 @@ Item { id: root_
   property alias nameChecked: nameButton_.checked
 
   property alias chatChecked: chatButton_.checked
+  property alias hotkeyChecked: hotkeyButton_.checked
 
   //property alias furiganaChecked: furiganaButton_.checked
   //property alias furiganaEnabled: furiganaButton_.enabled
@@ -383,6 +384,23 @@ Item { id: root_
         onClicked: checked = !checked
       }
 
+      Share.TextButton { id: hotkeyButton_
+        height: parent.cellHeight; width: parent.cellWidth
+        text: slimChecked ? Sk.tr("Keyboard").charAt(0) : My.tr("Shortcuts")
+        font.pixelSize: parent.pixelSize
+        //font.bold: true
+        radius: parent.cellRadius
+
+        visible: !root_.wine
+
+        property bool checked
+        backgroundColor: checked ? parent.buttonCheckedColor : parent.buttonColor
+
+        font.family: parent.cellFont
+        toolTip: qsTr("Toggle mouse and keyboard shortcuts")
+        onClicked: checked = !checked
+      }
+
       Share.TextButton { id: stretchButton_
         height: parent.cellHeight; width: parent.cellWidth
         //text: checked ? "×" : "◯" // ばつ、まる
@@ -639,6 +657,7 @@ Item { id: root_
                          textButton_.hover ||
                          nameButton_.hover ||
                          chatButton_.hover ||
+                         hotkeyButton_.hover ||
                          translationButton_.hover ||
                          subtitleButton_.hover ||
                          commentButton_.hover ||

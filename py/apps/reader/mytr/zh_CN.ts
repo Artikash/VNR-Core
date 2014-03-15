@@ -49,22 +49,22 @@
         <translation>社区评论</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="169"/>
+        <location filename="mytr.py" line="171"/>
         <source>Auto Hide</source>
         <translation>自动隐藏</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="170"/>
+        <location filename="mytr.py" line="172"/>
         <source>Edit Subtitle</source>
         <translation>编辑字幕</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="172"/>
+        <location filename="mytr.py" line="174"/>
         <source>New subtitle</source>
         <translation>新字幕</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="171"/>
+        <location filename="mytr.py" line="173"/>
         <source>New comment</source>
         <translation>新评论</translation>
     </message>
@@ -104,42 +104,42 @@
         <translation>LEC</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="122"/>
+        <location filename="mytr.py" line="124"/>
         <source>Text thread</source>
         <translation>文本序列</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="123"/>
+        <location filename="mytr.py" line="125"/>
         <source>Text threads</source>
         <translation>文本序列</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="178"/>
+        <location filename="mytr.py" line="180"/>
         <source>Sync with Running Game</source>
         <translation>与运行中的游戏同步</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="129"/>
+        <location filename="mytr.py" line="131"/>
         <source>Background shadow</source>
         <translation>背景阴影</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="173"/>
+        <location filename="mytr.py" line="175"/>
         <source>Add comment</source>
         <translation>添加评论</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="173"/>
+        <location filename="mytr.py" line="175"/>
         <source>add comment</source>
         <translation>添加评论</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="174"/>
+        <location filename="mytr.py" line="176"/>
         <source>Add subtitle</source>
         <translation>添加字幕</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="174"/>
+        <location filename="mytr.py" line="176"/>
         <source>add subtitle</source>
         <translation>添加字幕</translation>
     </message>
@@ -159,7 +159,7 @@
         <translation>日中統合辞典</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="131"/>
+        <location filename="mytr.py" line="133"/>
         <source>Text color</source>
         <translation>字体颜色</translation>
     </message>
@@ -179,17 +179,17 @@
         <translation>语音</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="176"/>
+        <location filename="mytr.py" line="178"/>
         <source>Read Sentence</source>
         <translation>读出句子</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="119"/>
+        <location filename="mytr.py" line="121"/>
         <source>Launcher</source>
         <translation>启动程序</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="124"/>
+        <location filename="mytr.py" line="126"/>
         <source>Hook code</source>
         <translation>特殊码</translation>
     </message>
@@ -214,7 +214,7 @@
         <translation>Excite</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="121"/>
+        <location filename="mytr.py" line="123"/>
         <source>Game language</source>
         <translation>游戏语言</translation>
     </message>
@@ -234,32 +234,32 @@
         <translation>Dr.eye</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="145"/>
+        <location filename="mytr.py" line="147"/>
         <source>Game-specific</source>
         <translation>游戏专用</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="147"/>
+        <location filename="mytr.py" line="149"/>
         <source>Current game</source>
         <translation>当前的游戏</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="149"/>
+        <location filename="mytr.py" line="151"/>
         <source>{0} games</source>
         <translation>{0}本游戏</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="179"/>
+        <location filename="mytr.py" line="181"/>
         <source>Update Shared Dictionary</source>
         <translation>更新共享辞书</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="180"/>
+        <location filename="mytr.py" line="182"/>
         <source>Update Shared Subtitles</source>
         <translation>更新人工字幕</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="181"/>
+        <location filename="mytr.py" line="183"/>
         <source>Update Game Database</source>
         <translation>更新游戏数据</translation>
     </message>
@@ -304,12 +304,12 @@
         <translation>之前的语境</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="126"/>
+        <location filename="mytr.py" line="128"/>
         <source>Update reason</source>
         <translation>更新的原因</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="133"/>
+        <location filename="mytr.py" line="135"/>
         <source>Sub</source>
         <translation>字幕</translation>
     </message>
@@ -379,7 +379,7 @@
         <translation>人物名称</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="128"/>
+        <location filename="mytr.py" line="130"/>
         <source>Fill color</source>
         <translation>填充颜色</translation>
     </message>
@@ -424,7 +424,7 @@
         <translation type="obsolete">隐藏{0}</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="159"/>
+        <location filename="mytr.py" line="161"/>
         <source>Speak {0}</source>
         <translation>朗读{0}</translation>
     </message>
@@ -454,12 +454,12 @@
         <translation>人物</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="166"/>
+        <location filename="mytr.py" line="168"/>
         <source>Monitor mouse</source>
         <translation>监视鼠标移动</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="167"/>
+        <location filename="mytr.py" line="169"/>
         <source>Monitor clipboard</source>
         <translation>监视剪贴板</translation>
     </message>
@@ -474,7 +474,7 @@
         <translation>全屏</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="134"/>
+        <location filename="mytr.py" line="136"/>
         <source>Info</source>
         <translation>情报</translation>
     </message>
@@ -489,7 +489,7 @@
         <translation>游戏情报</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="136"/>
+        <location filename="mytr.py" line="138"/>
         <source>Transp</source>
         <translation>透明</translation>
     </message>
@@ -519,7 +519,7 @@
         <translation>编辑匿名词条</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="146"/>
+        <location filename="mytr.py" line="148"/>
         <source>Series-specific</source>
         <translation>系列专用</translation>
     </message>
@@ -559,17 +559,17 @@
         <translation>YouTube下载</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="161"/>
+        <location filename="mytr.py" line="163"/>
         <source>Capture</source>
         <translation>截图</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="112"/>
+        <location filename="mytr.py" line="114"/>
         <source>Need to install</source>
         <translation>要额外安装</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="113"/>
+        <location filename="mytr.py" line="115"/>
         <source>need to install</source>
         <translation>要额外安装</translation>
     </message>
@@ -604,17 +604,17 @@
         <translation>游戏讨论</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="115"/>
+        <location filename="mytr.py" line="117"/>
         <source>Installing</source>
         <translation>安装中</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="116"/>
+        <location filename="mytr.py" line="118"/>
         <source>Installed</source>
         <translation>已安装</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="117"/>
+        <location filename="mytr.py" line="119"/>
         <source>Not installed</source>
         <translation>未安装</translation>
     </message>
@@ -629,17 +629,17 @@
         <translation>日本语辞书</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="151"/>
+        <location filename="mytr.py" line="153"/>
         <source>{0} people are viewing this page</source>
         <translation>{0}人正在浏览这个页面</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="163"/>
+        <location filename="mytr.py" line="165"/>
         <source>Open in external browser</source>
         <translation>用外部的浏览器打开</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="164"/>
+        <location filename="mytr.py" line="166"/>
         <source>Open in external window</source>
         <translation>用外部的窗口打开</translation>
     </message>
@@ -652,6 +652,11 @@
         <location filename="mytr.py" line="100"/>
         <source>LEC Online</source>
         <translation>LEC在线</translation>
+    </message>
+    <message>
+        <location filename="mytr.py" line="112"/>
+        <source>Shortcuts</source>
+        <translation>快捷键</translation>
     </message>
 </context>
 </TS>

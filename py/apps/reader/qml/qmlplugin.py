@@ -81,6 +81,9 @@ qmlRegisterType(textman.TextManagerProxy, QML_PLUGIN, 1, 0, 'TextManagerProxy')
 #import cometman
 #qmlRegisterType(cometman.CometManagerProxy, QML_PLUGIN, 1, 0, 'CometManagerProxy')
 
+import hkman
+qmlRegisterType(hkman.HotkeyManagerProxy, QML_PLUGIN, 1, 0, 'HotkeyManagerProxy')
+
 import dataman
 qmlRegisterType(dataman.DataManagerProxy, QML_PLUGIN, 1, 0, 'DataManagerProxy')
 qmlRegisterType(dataman.CommentModel, QML_PLUGIN, 1, 0, 'CommentModel')

@@ -94,6 +94,8 @@ Item { id: root_
 
     dock_.clockChecked = settings_.kagamiClockEnabled
 
+    dock_.hotkeyChecked = settings_.hotkeyEnabled
+
     dock_.hentaiChecked = settings_.hentai
 
     dock_.slimChecked = settings_.grimoireSlimDock
@@ -138,6 +140,8 @@ Item { id: root_
     settings_.glowRadius = dock_.glowRadius
 
     //settings_.gameTextCapacity = dock_.gameTextCapacity
+
+    settings_.hotkeyEnabled = dock_.hotkeyChecked
 
     settings_.kagamiClockEnabled = dock_.clockChecked
     settings_.kagamiClockX = clock_.x
@@ -208,6 +212,10 @@ Item { id: root_
 
   Plugin.TextManagerProxy { id: textmanPlugin_
     enabled: dock_.visibleChecked
+  }
+
+  Plugin.HotkeyManagerProxy { id: hotkeyPlugin_
+    enabled: dock_.hotkeyChecked && gamePanel_.visible
   }
 
   Plugin.BBCodeParser { id: bbcodePlugin_ }

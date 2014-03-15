@@ -85,6 +85,8 @@ class sakurakit(QObject):
       self.tr("Right Click"), self.tr("Right click"),
       self.tr("Right-Click"), self.tr("Right-click"),
 
+      self.tr("Space"),
+
       self.tr("About {0}"),
       self.tr("About"),
       self.tr("Add"),
@@ -203,6 +205,11 @@ class sakurakit(QObject):
       self.tr("Desc"), self.tr("desc"),
       self.tr("Descending"),
 
+      self.tr("Up"),
+      self.tr("Down"),
+      self.tr("Left"),
+      self.tr("Right"),
+
       self.tr("Male"),
       self.tr("Female"),
 
@@ -261,6 +268,7 @@ class sakurakit(QObject):
       self.tr("International"),
       self.tr("Internet status"),
       self.tr("i18n"),
+      self.tr("Keyboard"),
       self.tr("Keyword"),
       self.tr("Keywords"),
       self.tr("Language"), self.tr("language"),

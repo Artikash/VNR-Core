@@ -58,6 +58,7 @@ class _PrefsDialog(object):
     self.textTab = _prefs.TextTab()
     self.ttsTab = _prefs.TtsTab()
     self.gameTab = _prefs.GameTab()
+    self.shortcutsTab = _prefs.ShortcutsTab()
     self.uiTab = _prefs.UiTab()
     self.i18nTab = _prefs.I18nTab()
     self.featureTab = _prefs.FeatureTab()
@@ -169,6 +170,12 @@ class _PrefsDialog(object):
           'display': tr_("Launch"),
           'toolTip': my.tr("Game launch settings"),
         },
+        { 'widget': self.shortcutsTab,
+          'user': self._indexWidget(self.shortcutsTab),
+          'decoration': rc.icon('pref-shortcuts'),
+          'display': mytr_("Shortcuts"),
+          'toolTip': my.tr("Mouse and keyboard shortcuts"),
+        },
         { 'widget': self.uiTab,
           'user': self._indexWidget(self.uiTab),
           'decoration': rc.icon('pref-ui'),
@@ -228,6 +235,7 @@ class _PrefsDialog(object):
     yield self.uiTab
     yield self.ttsTab
     yield self.gameTab
+    yield self.shortcutsTab
     yield self.i18nTab
     yield self.featureTab
     #yield self.pluginTab
