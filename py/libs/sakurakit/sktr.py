@@ -205,6 +205,11 @@ class sakurakit(QObject):
       self.tr("Desc"), self.tr("desc"),
       self.tr("Descending"),
 
+      self.tr("Up"),
+      self.tr("Down"),
+      self.tr("Left"),
+      self.tr("Right"),
+
       self.tr("Male"),
       self.tr("Female"),
 
