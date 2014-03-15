@@ -32,12 +32,15 @@ class _HotkeyInput(object):
     grid.setHorizontalSpacing(0)
     grid.setVerticalSpacing(0)
 
+    # These keys must be consistent with pyhk
+
     KEYBOARD  = (
-      ('F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'), #'Escape'
-      ('`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'),
-      ('Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\\'),
-      ('A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', "'"), # '\n',
-      ('Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/'),
+      ('Escape',  'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'), #'Escape'
+      ('`',       '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Back'),
+      ('Capital', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\\'),
+      (None,      'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', "'"), # '\n',
+      (None,      'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/'),
+      ('Up', 'Down', 'Left', 'Right'),
     )
 
     r = 0
@@ -48,13 +51,16 @@ class _HotkeyInput(object):
       r += 1
 
     WIDE_COL = 2
-
-    grid.addWidget(self.createKeyButton('Space'), r, col / 2, 1, WIDE_COL)
-    r += 1
-
-    MOUSE = 'mouse middle', 'mouse right'
-    for i, key in enumerate(MOUSE):
-      grid.addWidget(self.createKeyButton(key), r, col / 2 + i * WIDE_COL, 1, WIDE_COL)
+    KEYBOARD2  = (
+      ('Space', 'Insert', 'Delete', 'Home', 'End', 'Prior', 'Next'),
+      ('mouse middle', 'mouse right'),
+    )
+    for keys in KEYBOARD2:
+      for i,key in enumerate(keys):
+        col = i * WIDE_COL
+        if key:
+          grid.addWidget(self.createKeyButton(key), r, col, 1, WIDE_COL)
+      r += 1
 
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)
@@ -72,6 +78,7 @@ class _HotkeyInput(object):
 
   def createKeyButton(self, key): # str -> QPushButton
     ret = QtWidgets.QPushButton(i18n.key_name(key))
+    ret.setToolTip(key)
     skqss.class_(ret, 'btn btn-default')
     ret.setCheckable(True)
     ret.value = key

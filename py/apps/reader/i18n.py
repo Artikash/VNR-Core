@@ -76,6 +76,15 @@ KEY_NAMES = {
   'mouse middle': tr_("Middle-click"),
   'mouse right': tr_("Right-click"),
   'Space': tr_("Space"),
+  'Back': u'←', # ひだり
+  'Left': u'←', # ひだり
+  'Right': u'→', # みぎ
+  'Up': u'↑', # うえ
+  'Down': u'↓', # した
+  'Prior': 'PageUp',
+  'Next': 'PageDown',
+  'Capital': 'Cap', #'CapsLock',
+  'Escape': 'Esc',
 }
 def key_name(t): # str -> unicode
   return KEY_NAMES.get(t) or t

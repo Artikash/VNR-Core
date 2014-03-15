@@ -22,8 +22,8 @@ if not skos.WIN:
     def removeHotkey(self, *args, **kwargs): pass
 
 HOTKEY_DELIM = '\n'
-def packhotkey(l): # list -> str
-  return HOTKEY_DELIM.join(l)
+#def packhotkey(l): # list -> str
+#  return HOTKEY_DELIM.join(l)
 def unpackhotkey(s): # str -> list
   if isinstance(s, unicode):
     s = s.encode('utf8', errors='ignore')
