@@ -11,7 +11,7 @@ if __name__ == '__main__':
 from functools import partial
 from PySide.QtCore import QObject, Signal, Property
 from sakurakit import skos
-from sakurakit.skdebug import dprint, dwarn
+from sakurakit.skdebug import dprint
 from sakurakit.skclass import memoized, memoizedproperty
 from sakurakit.skqml import QmlObject
 import settings
@@ -137,7 +137,8 @@ class _HotkeyManager(object):
   @staticmethod
   def _onTts():
     import textman
-    dwarn("speak last text")
+    textman.speak_current_text()
+    dprint("pass")
 
 @QmlObject
 class HotkeyManagerProxy(QObject):

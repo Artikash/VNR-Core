@@ -38,6 +38,14 @@ SCENARIO_THREAD_TYPE = 1
 NAME_THREAD_TYPE = 2
 SUPPORT_THREAD_TYPE = 3
 
+def speak_current_text():
+  t = manager().ttsText()
+  if t:
+    import ttsman
+    ttsman.speak(t, termEnabled=True, language=manager().gameLanguage())
+  #else:
+  #  growl.warn(my.tr("No game text"))
+
 class TextThread:
   MAX_DATA_COUNT = 5 # number of data to keep
 
@@ -969,12 +977,6 @@ class TextManagerProxy(QObject):
   def reload(self): manager().confirmReload()
 
   @Slot()
-  def speakCurrentText(self):
-    t = manager().ttsText()
-    if t:
-      import ttsman
-      ttsman.speak(t, termEnabled=True, language=manager().gameLanguage())
-    else:
-      growl.warn(my.tr("No game text"))
+  def speakCurrentText(self): speak_current_text()
 
 # EOF
