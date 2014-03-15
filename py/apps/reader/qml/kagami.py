@@ -12,7 +12,7 @@ from mecabjlp import mecabfmt
 from sakurakit import skdatetime
 from sakurakit.skclass import classproperty, staticproperty
 from sakurakit.skdebug import dprint, dwarn
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 #from sakurakit.sktr import tr_
 #from msime import msime
 from mytr import my
@@ -56,7 +56,7 @@ class _GrimoireBean:
     else:
       return [text]
 
-@QmlObject
+#@QmlObject
 class GrimoireBean(QObject):
 
   instance = None
@@ -215,7 +215,7 @@ class GrimoireController(QObject):
 
 ## Gospel ##
 
-@QmlObject
+#@QmlObject
 class GospelBean(QObject):
 
   instance = None
@@ -246,7 +246,7 @@ class GospelController:
 
 ## Gossip ##
 
-@QmlObject
+#@QmlObject
 class GossipBean(QObject):
 
   instance = None
@@ -274,7 +274,7 @@ class GossipController:
 
 ## Omajinai ##
 
-@QmlObject
+#@QmlObject
 class OmajinaiBean(QObject):
 
   instance = None
@@ -363,7 +363,7 @@ class _MirageBean:
     else:
       return [text]
 
-@QmlObject
+#@QmlObject
 class MirageBean(QObject):
 
   instance = None

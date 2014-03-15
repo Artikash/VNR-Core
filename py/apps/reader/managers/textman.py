@@ -14,7 +14,7 @@ from PySide.QtCore import Signal, Slot, Property, QObject, QTimer
 from sakurakit import skclip, skdatetime, skevents, skthreads
 from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dwarn
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 #from sakurakit.skunicode import u
 from memcache.container import SizeLimitedList
 from mytr import my
@@ -933,7 +933,7 @@ class _TextManagerProxy(object):
     self.q.contextSizeChanged.emit(
         manager().contextSize())
 
-@QmlObject
+#@QmlObject
 class TextManagerProxy(QObject):
   def __init__(self, parent=None):
     super(TextManagerProxy, self).__init__(parent)

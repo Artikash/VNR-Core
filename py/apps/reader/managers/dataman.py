@@ -16,7 +16,7 @@ from sakurakit import skcursor, skdatetime, skevents, skfileio, sknetio, skpaths
 from sakurakit.skclass import Q_Q, staticproperty, memoized, memoizedproperty
 from sakurakit.skcontainer import uniquelist
 from sakurakit.skdebug import dprint, dwarn, derror
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_
 from sakurakit.skunicode import sjis_encodable
 from cconv import cconv
@@ -2994,7 +2994,7 @@ class _GameModel(object):
       #growl.warn(message)
     return False
 
-@QmlObject
+#@QmlObject
 class GameModel(QAbstractListModel):
   """Constructed by SpringBoard QML"""
   def __init__(self, parent=None):
@@ -3211,7 +3211,7 @@ class _VoiceModel(object):
       #growl.warn(message)
     return False
 
-@QmlObject
+#@QmlObject
 class VoiceModel(QAbstractListModel):
   """Constructed by VoiceView QML"""
 
@@ -3435,7 +3435,7 @@ class _TermModel(object):
       #growl.warn(message)
     return False
 
-@QmlObject
+#@QmlObject
 class TermModel(QAbstractListModel):
   """Constructed by TermView QML"""
 
@@ -3774,7 +3774,7 @@ class _CommentModel(object):
       #growl.warn(message)
     return False
 
-@QmlObject
+#@QmlObject
 class CommentModel(QAbstractListModel):
   """Constructed by SubtitleView QML"""
 
@@ -4137,7 +4137,7 @@ class _ReferenceModel(object):
         if it.type == type and not it.disabled and not it.deleted:
           return it
 
-@QmlObject
+#@QmlObject
 class ReferenceModel(QAbstractListModel):
   """Constructed by ReferenceView QML"""
 
@@ -7486,7 +7486,7 @@ def manager(): return DataManager()
 
 ## QML plugin ##
 
-@QmlObject
+#@QmlObject
 class DataManagerProxy(QObject):
   def __init__(self, parent=None):
     super(DataManagerProxy, self).__init__(parent)

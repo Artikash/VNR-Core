@@ -8,7 +8,7 @@ from Qt5.QtWidgets import QDesktopServices
 from sakurakit import skclip, skos, skwin
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint, dwarn
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 import features
 
 def get_relpath(path): # unicode -> unicode
@@ -104,7 +104,7 @@ def backup_file(path, fmt="%Y-%m-%d", now=None):
     dwarn("warning: failed to backup file '%s'" % path)
 
 class _BackupFileManager: pass
-@QmlObject
+#@QmlObject
 class BackupFileManager(QtCore.QObject):
   def __init__(self, parent=None):
     super(BackupFileManager, self).__init__(parent)

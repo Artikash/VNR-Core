@@ -9,7 +9,7 @@ from PySide.QtCore import QObject, Slot, QTimer
 #from sakurakit import skevents, skthreads
 from sakurakit.skdebug import dwarn, dprint
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 from mytr import my
 import features, growl, settings, termman
 import _ttsman
@@ -291,10 +291,10 @@ def stop(): manager().stop()
 
 ## Beans ##
 
-@QmlObject
+#@QmlObject
 class TtsQmlProxy(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(TtsQmlProxy, self).__init__(parent)
 
   @Slot(unicode, unicode)
   def speak(self, text, language):

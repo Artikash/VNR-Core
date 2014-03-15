@@ -9,7 +9,7 @@ from PySide import QtCore
 from Qt5 import QtWidgets
 from sakurakit import skqss
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_
 from mytr import mytr_, my
 import config, defs, dataman, i18n, netman, rc
@@ -370,10 +370,10 @@ class SubtitleEditorManager:
 @memoized
 def manager(): return SubtitleEditorManager()
 
-@QmlObject
+#@QmlObject
 class SubtitleEditorManagerProxy(QtCore.QObject):
   def __init__(self, parent=None):
-    QtCore.QObject.__init__(self, parent)
+    super(SubtitleEditorManagerProxy, self).__init__(parent)
 
   @Slot(QtCore.QObject) # dataman.Comment
   def showComment(self, c):

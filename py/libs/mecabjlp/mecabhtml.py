@@ -24,7 +24,6 @@ if __name__ == '__main__':
 import re, weakref
 from itertools import ifilter
 from sakurakit import skstr
-#from sakurakit.skqml import QmlObject
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint
 from cconv import cconv

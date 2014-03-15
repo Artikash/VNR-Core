@@ -9,7 +9,7 @@ from PySide.QtCore import Slot, Signal, Property, Qt, QObject
 from PySide.QtGui import QTextCharFormat
 from Qt5.QtWidgets import QSyntaxHighlighter
 from sakurakit.skclass import Q_Q
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 import rc
 
 class _SpellHighlighter(object):

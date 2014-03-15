@@ -8,7 +8,7 @@ from ctypes import c_longlong
 from PySide.QtCore import Signal, Slot, QObject
 from sakurakit import skdatetime
 from sakurakit.skdebug import dprint
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_
 from mytr import mytr_
 import qmldialog, textman
@@ -24,7 +24,7 @@ import qmldialog, textman
 #    if self.q is GraffitiBean.instance:
 #      GraffitiBean.instance = None
 
-@QmlObject
+#@QmlObject
 class GraffitiBean(QObject):
 
   def __init__(self, parent=None):
@@ -54,7 +54,7 @@ class GraffitiBean(QObject):
   @Slot(result=int)
   def y(self): return qmldialog.SubtitleMaker.instance.y()
 
-@QmlObject
+#@QmlObject
 class SubtitleContextBean(QObject):
 
   def __init__(self, parent=None):

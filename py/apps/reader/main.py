@@ -19,7 +19,7 @@ from PySide.QtCore import Property, Signal, Slot, Qt, QCoreApplication, QObject,
 from sakurakit import skdatetime, skevents, skos
 from sakurakit.skclass import Q_Q, memoizedproperty, hasmemoizedproperty
 from sakurakit.skdebug import dprint, dwarn, debugmethod
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_
 from mytr import my, mytr_
 import config, defs, features, growl, libman, prompt, qmldialog, rc, settings, winutil
@@ -1754,10 +1754,10 @@ class MainObject(QObject):
     skevents.runlater(partial(d.exit, exitCode), interval)
     dprint("leave")
 
-@QmlObject
+#@QmlObject
 class MainObjectProxy(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(MainObjectProxy, self).__init__(parent)
 
   #@Slot()
   #def showOmajinai(self): manager().showOmajinai()

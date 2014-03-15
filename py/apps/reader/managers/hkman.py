@@ -13,7 +13,7 @@ from PySide.QtCore import QObject, Signal, Property
 from sakurakit import skos
 from sakurakit.skdebug import dprint
 from sakurakit.skclass import memoized, memoizedproperty
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 import settings
 
 if not skos.WIN:
@@ -149,10 +149,10 @@ class _HotkeyManager(object):
     textman.speak_current_text()
     dprint("pass")
 
-@QmlObject
+#@QmlObject
 class HotkeyManagerProxy(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(HotkeyManagerProxy, self).__init__(parent)
     manager().enabledChanged.connect(self.enabledChanged)
 
   enabledChanged = Signal(bool)

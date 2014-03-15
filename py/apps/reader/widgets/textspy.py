@@ -6,7 +6,7 @@ from PySide.QtCore import Signal, Slot, QObject, QTimer
 from sakurakit import skwin
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty, hasmemoizedproperty
 from sakurakit.skdebug import dprint
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 from mytr import my
 from wintext import wintext
 import growl, procutil
@@ -78,10 +78,10 @@ class TextSpy(QObject):
 @memoized
 def manager(): return TextSpy()
 
-@QmlObject
+#@QmlObject
 class TextSpyProxy(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(TextSpyProxy, self).__init__(parent)
 
   @Slot()
   def start(self): manager().start()

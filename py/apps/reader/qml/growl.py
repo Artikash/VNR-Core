@@ -4,7 +4,7 @@
 
 from PySide.QtCore import Signal, Slot, Qt, QObject
 from sakurakit.skdebug import dprint
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 
 #@Q_Q
 #class _GrowlBean(object):
@@ -81,10 +81,10 @@ def notify(text, async=False):
     else: GrowlBean.instance.notification.emit(text)
   except AttributeError: pass
 
-@QmlObject
+#@QmlObject
 class GrowlQmlProxy(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(GrowlQmlProxy, self).__init__(parent)
 
   @Slot()
   def show(self): show()

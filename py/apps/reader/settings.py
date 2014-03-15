@@ -4,7 +4,7 @@
 
 from PySide.QtCore import Signal, Slot, Property, Qt, QObject, QSettings, QTimer, QSize
 from sakurakit.skclass import memoized, memoizedproperty
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 from sakurakit.sktypes import to_int, to_unicode #to_long
 import defs, config
 
@@ -1184,7 +1184,7 @@ def unicode_property(name, default="", notify=None):
       lambda _, value: global_().setValue(name, value),
       notify=notify)
 
-@QmlObject
+#@QmlObject
 class SettingsProxy(QObject):
 
   @Slot()

@@ -344,7 +344,7 @@ Item { id: root_
       property int pixelSize: 14
       property color hoverColor: '#556a6d6a' // black
       property string fontFamily: 'MS Gothic'
-      property bool hover: closeButton_.hover || clearButton_.hover || speakButton_.hover
+      property bool hover: closeButton_.hover || speakButton_.hover
 
       Share.CloseButton { id: closeButton_
         width: parent.buttonSize; height: parent.buttonSize
@@ -352,23 +352,33 @@ Item { id: root_
         font.family: parent.fontFamily
         color: root_.fontColor
         backgroundColor: hover ?  parent.hoverColor : 'transparent'
-        onClicked: root_.hide()
-        toolTip: qsTr("Pause VNR. You can re-enable it from the left dock.")
-      }
-
-      Share.TextButton { id: clearButton_
-        width: parent.buttonSize; height: parent.buttonSize
-        //shadowWidth: width + 15; shadowHeight: height + 15
-        font.pixelSize: parent.pixelSize
-        font.bold: hover
-        font.family: parent.fontFamily
-        color: root_.fontColor
-        backgroundColor: hover ?  parent.hoverColor : 'transparent'
-
-        text: "≠" // not equal
-        toolTip: qsTr("Clear the text box")
+        //onClicked: root_.hide()
         onClicked: root_.clear()
+        toolTip: qsTr("Clear the text box")
       }
+
+      //Share.CloseButton { id: closeButton_
+      //  width: parent.buttonSize; height: parent.buttonSize
+      //  font.pixelSize: parent.pixelSize
+      //  font.family: parent.fontFamily
+      //  color: root_.fontColor
+      //  backgroundColor: hover ?  parent.hoverColor : 'transparent'
+      //  onClicked: root_.hide()
+      //  toolTip: qsTr("Pause VNR. You can re-enable it from the left dock.")
+      //}
+
+      //Share.TextButton { id: clearButton_
+      //  width: parent.buttonSize; height: parent.buttonSize
+      //  //shadowWidth: width + 15; shadowHeight: height + 15
+      //  font.pixelSize: parent.pixelSize
+      //  font.bold: hover
+      //  font.family: parent.fontFamily
+      //  color: root_.fontColor
+      //  backgroundColor: hover ?  parent.hoverColor : 'transparent'
+      //  text: "≠" // not equal
+      //  toolTip: qsTr("Clear the text box")
+      //  onClicked: root_.clear()
+      //}
 
       Share.TextButton { id: speakButton_
         width: parent.buttonSize; height: parent.buttonSize

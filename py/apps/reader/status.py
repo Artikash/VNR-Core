@@ -5,7 +5,7 @@
 from PySide.QtCore import Signal, Slot, Property, QObject, QTimer, QThreadPool
 from sakurakit import skos, skwin
 from sakurakit.skclass import Q_Q
-from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlObject
 import dataman, features, gameman, netman, settings
 
 @Q_Q
@@ -24,7 +24,7 @@ class _SystemStatus(object):
     q = self.q
     q.gameAttachedChanged.emit(q.gameAttached)
 
-@QmlObject
+#@QmlObject
 class SystemStatus(QObject):
   def __init__(self, parent=None):
     super(SystemStatus, self).__init__(parent)
@@ -113,7 +113,7 @@ class _ThreadPoolStatus(object):
       self.activeThreadCount = value
       self.q.threadCountChanged.emit(value)
 
-@QmlObject
+#@QmlObject
 class ThreadPoolStatus(QObject):
   def __init__(self, parent=None):
     super(ThreadPoolStatus, self).__init__(parent)
