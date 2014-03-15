@@ -18,12 +18,16 @@ TMP_DIR = initdefs.TMP_RELPATH
 # Note: The original unidic is missing def. Need to get the Debian package.
 # http://http.us.debian.org/debian/pool/main/u/unidic-mecab/unidic-mecab_2.1.2~dfsg-2_all.deb
 #
+# http://sakuradite.com/topic/167
+#
 # http://sourceforge.jp/projects/unidic/
 # http://jaist.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip
 # ftp://ftp.jaist.ac.jp/pub/sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip
 #UNIDIC_URL = 'http://jaist.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
 #UNIDIC_URL = 'http://ftp.jaist.ac.jp/pub/sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
-UNIDIC_URL = 'http://osdn.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
+#UNIDIC_URL = 'http://osdn.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
+#UNIDIC_URL = 'http://mse.uk.distfiles.macports.org/sites/distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip'
+UNIDIC_URL = 'http://distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip'
 UNIDIC_FILESIZE = 46307109
 UNIDIC_FILENAME = 'unidic'
 UNIDIC_SUFFIX = '.zip'
