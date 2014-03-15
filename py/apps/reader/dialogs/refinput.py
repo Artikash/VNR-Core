@@ -500,7 +500,7 @@ class GameFinder(ReferenceInput):
 #@QmlObject
 class QmlReferenceInput(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(QmlReferenceInput, self).__init__(parent)
     self.__d = _QmlRefrenceInput(self)
 
   referenceSelected = Signal(QObject)

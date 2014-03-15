@@ -121,7 +121,7 @@ def manager():
 #@QmlObject
 class UserViewManagerProxy(QtCore.QObject):
   def __init__(self, parent=None):
-    QtCore.QObject.__init__(self, parent)
+    super(UserViewManagerProxy, self).__init__(parent)
 
   @Slot(int)
   def showUser(self, id):

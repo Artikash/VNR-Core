@@ -123,7 +123,7 @@ def manager(): return TextReader()
 #@QmlObject
 class TextReaderProxy(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(TextReaderProxy, self).__init__(parent)
 
   @Slot(unicode)
   def addText(self, text): manager().addText(text)

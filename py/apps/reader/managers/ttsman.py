@@ -294,7 +294,7 @@ def stop(): manager().stop()
 #@QmlObject
 class TtsQmlProxy(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(TtsQmlProxy, self).__init__(parent)
 
   @Slot(unicode, unicode)
   def speak(self, text, language):

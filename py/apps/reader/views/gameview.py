@@ -442,7 +442,7 @@ def manager():
 #@QmlObject
 class GameViewManagerProxy(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(GameViewManagerProxy, self).__init__(parent)
 
   @Slot(int)
   def showGame(self, id):

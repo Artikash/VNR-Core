@@ -373,7 +373,7 @@ def manager(): return SubtitleEditorManager()
 #@QmlObject
 class SubtitleEditorManagerProxy(QtCore.QObject):
   def __init__(self, parent=None):
-    QtCore.QObject.__init__(self, parent)
+    super(SubtitleEditorManagerProxy, self).__init__(parent)
 
   @Slot(QtCore.QObject) # dataman.Comment
   def showComment(self, c):

@@ -12,7 +12,7 @@ import bbcode
 #@QmlObject
 class BBCodeParser(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(BBCodeParser, self).__init__(parent)
 
   @Slot(unicode, result=unicode)
   def parse(self, text): return bbcode.parse(text)
@@ -20,7 +20,7 @@ class BBCodeParser(QObject):
 #@QmlObject
 class QmlUtil(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(QmlUtil, self).__init__(parent)
 
   @Slot(unicode, result=bool)
   def fileExists(self, value):

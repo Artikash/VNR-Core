@@ -472,7 +472,7 @@ VNR can also uninstall it later if you want.""").format(location),
 #@QmlObject
 class PromptProxy(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(PromptProxy, self).__init__(parent)
 
   @Slot(result=bool)
   def confirmStretchGameWindow(self):

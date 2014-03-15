@@ -84,7 +84,7 @@ def notify(text, async=False):
 #@QmlObject
 class GrowlQmlProxy(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(GrowlQmlProxy, self).__init__(parent)
 
   @Slot()
   def show(self): show()

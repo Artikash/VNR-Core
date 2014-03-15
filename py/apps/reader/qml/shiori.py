@@ -58,7 +58,7 @@ def popupshiori(text, x, y):
 #@QmlObject
 class ShioriQmlProxy(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(ShioriQmlProxy, self).__init__(parent)
 
   @Slot(unicode, int, int)
   def popup(self, text, x, y):

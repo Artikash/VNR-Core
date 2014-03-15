@@ -529,7 +529,7 @@ def manager(): return GameEditorManager()
 #@QmlObject
 class GameEditorManagerProxy(QtCore.QObject):
   def __init__(self, parent=None):
-    QtCore.QObject.__init__(self, parent)
+    super(GameEditorManagerProxy, self).__init__(parent)
 
   @Slot(unicode)
   def showGame(self, md5):

@@ -81,7 +81,7 @@ def manager(): return TextSpy()
 #@QmlObject
 class TextSpyProxy(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(TextSpyProxy, self).__init__(parent)
 
   @Slot()
   def start(self): manager().start()

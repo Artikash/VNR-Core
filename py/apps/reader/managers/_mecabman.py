@@ -306,7 +306,7 @@ class MeCabParser:
 #@QmlObject
 #class MeCabJinja(QObject):
 #  def __init__(self, parent=None):
-#    QObject.__init__(self, parent)
+#    super(MeCabJinja, self).__init__(parent)
 
 #@Slot(unicode, bool, result=unicode)
   #@Slot(unicode, result=unicode)

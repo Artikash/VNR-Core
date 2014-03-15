@@ -1757,7 +1757,7 @@ class MainObject(QObject):
 #@QmlObject
 class MainObjectProxy(QObject):
   def __init__(self, parent=None):
-    QObject.__init__(self, parent)
+    super(MainObjectProxy, self).__init__(parent)
 
   #@Slot()
   #def showOmajinai(self): manager().showOmajinai()
