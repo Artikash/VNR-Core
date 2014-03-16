@@ -172,7 +172,7 @@ proxies:
   getchu:       http://210.155.150.152
 
   sites:
-    adlib-software: www.adlib-software.com
+    #adlib-software: www.adlib-software.com
     alicesoft: www.alicesoft.com
     applique-soft: www.applique-soft.com
     akabeesoft2: www.akabeesoft2.com
