@@ -3,6 +3,7 @@
 # Build vnrcli.dll for Windows 7+
 
 CONFIG += eh eha # exception handler to catch all exceptions
+#CONFIG += noeh # msvcrt on Windows XP does not has exception handler
 include(../dllconfig.pri)
 include(../sys/sys.pri)
 include($$LIBDIR/disasm/disasm.pri)
