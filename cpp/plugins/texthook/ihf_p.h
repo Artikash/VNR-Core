@@ -55,8 +55,8 @@ public:
   static void setEnabled(bool t) { enabled_ = t; }
 
   ///  A valid window handle is required to make ITH work
-  //static WId parentWindow() { return parentWindow_; }
-  //static void setParentWindow(WId hwnd) { parentWindow_ = hwnd; }
+  static WId parentWindow() { return parentWindow_; }
+  static void setParentWindow(WId hwnd) { parentWindow_ = hwnd; }
 
   ///  Timeout (msecs) for a text message
   static qint64 messageInterval() { return messageInterval_; }

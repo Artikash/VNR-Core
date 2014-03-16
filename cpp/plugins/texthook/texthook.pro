@@ -2,12 +2,13 @@
 # 10/13/2011 jichi
 # Build ith texthook dll.
 
-CONFIG += noqtgui dll eha # catch all exceptions
+CONFIG += noqtgui dll #eha # eha will catch all exceptions, but does not work on Windows XP
 include(../../../config.pri)
 include($$PLUGINDIR/ith/srv/srv.pri)
-include($$LIBDIR/winmaker/winmaker.pri)
 include($$LIBDIR/winmutex/winmutex.pri)
 include($$LIBDIR/wintimer/wintimer.pri)
+
+#include($$LIBDIR/winmaker/winmaker.pri)
 
 DEFINES  += ITH_HAS_CRT # Use native CRT
 

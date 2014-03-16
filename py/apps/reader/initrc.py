@@ -162,9 +162,9 @@ def initenv():
   import config
 
   # http://stackoverflow.com/questions/196930/how-to-check-if-os-is-vista-in-python
-  import platform
-  if platform.release() == 'XP':
-    map(sys.path.append, config.ENV_PYTHONPATH_XP)
+  #import platform
+  #if platform.release() == 'XP':
+  #  map(sys.path.append, config.ENV_PYTHONPATH_XP)
 
   #for path in config.ENV_PYTHONPATH:
   #  sys.path.append(path)

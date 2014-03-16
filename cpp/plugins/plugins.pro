@@ -17,7 +17,7 @@ SUBDIRS += pyreader
 #SUBDIRS += pytexscript
 win32: SUBDIRS += ith
 win32: SUBDIRS += texthook pytexthook
-win32: SUBDIRS += texthookxp pytexthookxp
+#win32: SUBDIRS += texthookxp pytexthookxp
 
 #win32: SUBDIRS += pyeffects
 

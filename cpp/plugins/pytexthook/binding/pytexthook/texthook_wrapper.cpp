@@ -1006,6 +1006,34 @@ static PyObject* Sbk_TextHookFunc_keptThreadName(PyObject* self)
     return pyResult;
 }
 
+static PyObject* Sbk_TextHookFunc_parentWinId(PyObject* self)
+{
+    TextHookWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (TextHookWrapper*)((::TextHook*)Shiboken::Conversions::cppPointer(SbkpytexthookTypes[SBK_TEXTHOOK_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+
+    // Call function/method
+    {
+
+        if (!PyErr_Occurred()) {
+            // parentWinId()const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            WId cppResult = const_cast<const ::TextHookWrapper*>(cppSelf)->parentWinId();
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtGuiTypeConverters[SBK_WID_IDX], &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+}
+
 static PyObject* Sbk_TextHookFunc_removeHookCode(PyObject* self, PyObject* pyArg)
 {
     TextHookWrapper* cppSelf = 0;
@@ -1389,6 +1417,50 @@ static PyObject* Sbk_TextHookFunc_setKeptThreadName(PyObject* self, PyObject* py
         return 0;
 }
 
+static PyObject* Sbk_TextHookFunc_setParentWinId(PyObject* self, PyObject* pyArg)
+{
+    TextHookWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (TextHookWrapper*)((::TextHook*)Shiboken::Conversions::cppPointer(SbkpytexthookTypes[SBK_TEXTHOOK_IDX], (SbkObject*)self));
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: setParentWinId(WId)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtGuiTypeConverters[SBK_WID_IDX], (pyArg)))) {
+        overloadId = 0; // setParentWinId(WId)
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_TextHookFunc_setParentWinId_TypeError;
+
+    // Call function/method
+    {
+        ::WId cppArg0 = ::WId();
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // setParentWinId(WId)
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            cppSelf->setParentWinId(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+        }
+    }
+
+    if (PyErr_Occurred()) {
+        return 0;
+    }
+    Py_RETURN_NONE;
+
+    Sbk_TextHookFunc_setParentWinId_TypeError:
+        const char* overloads[] = {"HWND", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pytexthook.TextHook.setParentWinId", overloads);
+        return 0;
+}
+
 static PyObject* Sbk_TextHookFunc_setRemovesRepeat(PyObject* self, PyObject* pyArg)
 {
     TextHookWrapper* cppSelf = 0;
@@ -1731,6 +1803,7 @@ static PyMethodDef Sbk_TextHook_methods[] = {
     {"isThreadWhitelistEnabled", (PyCFunction)Sbk_TextHookFunc_isThreadWhitelistEnabled, METH_NOARGS},
     {"keepsSpace", (PyCFunction)Sbk_TextHookFunc_keepsSpace, METH_NOARGS},
     {"keptThreadName", (PyCFunction)Sbk_TextHookFunc_keptThreadName, METH_NOARGS},
+    {"parentWinId", (PyCFunction)Sbk_TextHookFunc_parentWinId, METH_NOARGS},
     {"removeHookCode", (PyCFunction)Sbk_TextHookFunc_removeHookCode, METH_O},
     {"removesRepeat", (PyCFunction)Sbk_TextHookFunc_removesRepeat, METH_NOARGS},
     {"setDataCapacity", (PyCFunction)Sbk_TextHookFunc_setDataCapacity, METH_O},
@@ -1740,6 +1813,7 @@ static PyMethodDef Sbk_TextHook_methods[] = {
     {"setInterval", (PyCFunction)Sbk_TextHookFunc_setInterval, METH_O},
     {"setKeepsSpace", (PyCFunction)Sbk_TextHookFunc_setKeepsSpace, METH_O},
     {"setKeptThreadName", (PyCFunction)Sbk_TextHookFunc_setKeptThreadName, METH_O},
+    {"setParentWinId", (PyCFunction)Sbk_TextHookFunc_setParentWinId, METH_O},
     {"setRemovesRepeat", (PyCFunction)Sbk_TextHookFunc_setRemovesRepeat, METH_O},
     {"setThreadWhitelist", (PyCFunction)Sbk_TextHookFunc_setThreadWhitelist, METH_O},
     {"setThreadWhitelistEnabled", (PyCFunction)Sbk_TextHookFunc_setThreadWhitelistEnabled, METH_O},

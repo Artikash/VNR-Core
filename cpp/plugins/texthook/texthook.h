@@ -41,8 +41,8 @@ public:
   bool isDebug() const;
   void setDebug(bool t);
 
-  //WId parentWinId() const; ///< Must be set to a valid window so that ::SetTimer works
-  //void setParentWinId(WId hwnd);
+  WId parentWinId() const; ///< Must be set to a valid window so that ::SetTimer works
+  void setParentWinId(WId hwnd);
 
   int interval() const; ///< Time to differentiate sentences
   void setInterval(int msecs);

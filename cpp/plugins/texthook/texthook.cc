@@ -112,11 +112,11 @@ void TextHook::stop()
   Ihf::unload();
 }
 
-//WId TextHook::parentWinId() const
-//{ return Ihf::parentWindow(); }
+WId TextHook::parentWinId() const
+{ return Ihf::parentWindow(); }
 
-//void TextHook::setParentWinId(WId hwnd)
-//{ Ihf::setParentWindow(hwnd); }
+void TextHook::setParentWinId(WId hwnd)
+{ Ihf::setParentWindow(hwnd); }
 
 int TextHook::interval() const
 { return Ihf::messageInterval(); }
@@ -243,12 +243,12 @@ bool TextHook::detachProcess(ulong pid, bool checkActive)
     return false;
   }
 
-  bool ret = false;
-  try {
-    ret = Ihf::detachProcess(pid);
-  } catch (...) {
-    DOUT("warning: detach exception");
-  }
+  bool ret = Ihf::detachProcess(pid);
+  //try {
+  //  ret = Ihf::detachProcess(pid);
+  //} catch (...) {
+  //  DOUT("warning: detach exception");
+  //}
 
   emit processDetached(pid);
   DOUT("leave: ret =" << ret);
