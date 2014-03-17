@@ -19,14 +19,14 @@ Item { id: root_
     termComet_.postReceived.connect(function(post) {
       growlPlugin_.msg(qsTr("New post from {0}").replace("{0}", post.userName))
       if (!searchEdit_.searchText)
-        postList_.append(post)
+        postList_.prepend(post)
     })
 
     termComet_.postUpdated.connect(function(post) {
       growlPlugin_.msg(qsTr("Post edited from {0}").replace("{0}", post.userName))
       if (!searchEdit_.searchText) {
         postList_.remove(post)
-        postList_.append(post)
+        postList_.prepend(post)
       }
     })
   }
