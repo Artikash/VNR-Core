@@ -136,10 +136,10 @@ if skos.WIN:
         d.setWideCharacter(v.lower() == 'utf-16') # consistent with share.yaml
         self.encodingChanged.emit(v)
 
-    #def setParentWinId(self, hwnd):
-    #  dprint(hwnd)
-    #  self.__d.setParentWinId(hwnd)
-    #def parentWinId(self, hwnd): return self.__d.parentWinId(hwnd)
+    def setParentWinId(self, hwnd):
+      dprint(hwnd)
+      self.__d.setParentWinId(hwnd)
+    def parentWinId(self, hwnd): return self.__d.parentWinId(hwnd)
 
     def isDebug(self): return self.__d.isDebug()
     def setDebug(self, t):
@@ -345,8 +345,8 @@ else:
     def encoding(self): return 'shift-jis'
     def setEncoding(self, value): pass
 
-    #def setParentWinId(self, hwnd): pass
-    #def parentWinId(self, hwnd): return 0
+    def setParentWinId(self, hwnd): pass
+    def parentWinId(self, hwnd): return 0
     def setEnabled(self, enabled): pass
     def isEnabled(self): return False
 

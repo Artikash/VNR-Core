@@ -78,7 +78,8 @@ class _MainObject(object):
     ret = texthook.global_()
     ret.setDebug(config.APP_DEBUG)
     ret.setParent(self.q)
-    #ret.setParentWinId(self.topWindow.winId())
+
+    ret.setParentWinId(self.topWindow.winId())
 
     ret.processDetached.connect(ret.clearWhitelist)
     ret.processAttached.connect(lambda:

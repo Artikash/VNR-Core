@@ -15,7 +15,7 @@ _seh_asm_handler proto
 
 .code
 _seh_asm_handler proc
-  jmp _seh_handler
+jmp _seh_handler
 _seh_asm_handler endp
 
 end

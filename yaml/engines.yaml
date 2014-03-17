@@ -82,6 +82,7 @@ char:
   - GetTextExtentPoint32A
   - TextOutA
   - lstrlenA
+  - MultiByteToWideChar
   - AbelSoftware
   - Anex86
   - Artemis
@@ -133,6 +134,7 @@ wchar:
   - GetTextExtentPoint32W
   - TextOutW
   - lstrlenW
+  - WideCharToMultiByte
   - ApRicot
   - BALDRk
   - Bruns

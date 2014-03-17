@@ -10,6 +10,9 @@ win32 {
   CONFIG(noeh): DEFINES -= ITH_HAS_SEH # Do not have exception handler in msvcrt.dll on Windows XP and before
 }
 include(../../../config.pri)
+#win32 {
+#  CONFIG(noeh): include($$LIBDIR/winseh/winseh_safe.pri)
+#}
 
 # jichi 11/24/2013: Disable manual heap
 DEFINES -= ITH_HAS_HEAP

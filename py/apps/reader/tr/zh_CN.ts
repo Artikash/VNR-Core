@@ -996,57 +996,57 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>你想要永久的移除这个条目吗？</translation>
     </message>
     <message>
-        <location filename="main.py" line="87"/>
+        <location filename="main.py" line="88"/>
         <source>Apply user-defined hook</source>
         <translation>使用自定义特殊码</translation>
     </message>
     <message>
-        <location filename="main.py" line="1060"/>
+        <location filename="main.py" line="1061"/>
         <source>Please close the current game first before opening new games</source>
         <translation>打开新游戏前，请先关闭当前的游戏</translation>
     </message>
     <message>
-        <location filename="main.py" line="1330"/>
+        <location filename="main.py" line="1331"/>
         <source>Found running game</source>
         <translation>发现运行中的游戏</translation>
     </message>
     <message>
-        <location filename="main.py" line="1340"/>
+        <location filename="main.py" line="1341"/>
         <source>Found new game</source>
         <translation>发现新游戏</translation>
     </message>
     <message>
-        <location filename="main.py" line="1349"/>
+        <location filename="main.py" line="1350"/>
         <source>Because you are offline, please manually add game using Game Wizard</source>
         <translation>因为没有网络连接，请在游戏向导中手动添加游戏</translation>
     </message>
     <message>
-        <location filename="main.py" line="1148"/>
+        <location filename="main.py" line="1149"/>
         <source>File does not exist {0}</source>
         <translation>文件不存在：{0}</translation>
     </message>
     <message>
-        <location filename="main.py" line="1547"/>
+        <location filename="main.py" line="1548"/>
         <source>Update requires Internet access</source>
         <translation>更新需要网络连接</translation>
     </message>
     <message>
-        <location filename="main.py" line="1560"/>
+        <location filename="main.py" line="1561"/>
         <source>You are using the latest app</source>
         <translation>已经是最新的版本了呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="1565"/>
+        <location filename="main.py" line="1566"/>
         <source>Update released</source>
         <translation>发现软件更新</translation>
     </message>
     <message>
-        <location filename="main.py" line="1589"/>
+        <location filename="main.py" line="1590"/>
         <source>Critical update message</source>
         <translation>非常重要的更新信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1685"/>
+        <location filename="main.py" line="1686"/>
         <source>The dictionary is empty. Please refresh it when you are online.</source>
         <translation>辞书是空的。请在有网络连接时再更新吧。</translation>
     </message>
@@ -1143,7 +1143,7 @@ It might take a couple of seconds to complete.</source>
         <translation>{0}需要管理员权限。请以管理员身份重新启动VNR</translation>
     </message>
     <message>
-        <location filename="main.py" line="1700"/>
+        <location filename="main.py" line="1701"/>
         <source>There are no user-contributed subtitles</source>
         <translation>没有来自其他同学的字幕呢</translation>
     </message>
@@ -1188,7 +1188,7 @@ It might take a couple of seconds to complete.</source>
         <translation>没有来自其他同学的字幕呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="1430"/>
+        <location filename="main.py" line="1431"/>
         <source>Loading comment ... patient!</source>
         <translation>载入字幕中…请稍等片刻！</translation>
     </message>
@@ -1259,7 +1259,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>以日本时区启动游戏</translation>
     </message>
     <message>
-        <location filename="main.py" line="870"/>
+        <location filename="main.py" line="871"/>
         <source>Analyzing data ... patient!</source>
         <translation>分析数据中…请稍等片刻！</translation>
     </message>
@@ -1279,12 +1279,12 @@ Kojien is detected on your system at the above location.</source>
         <translation>正在网上检索游戏信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1159"/>
+        <location filename="main.py" line="1160"/>
         <source>It seems to be an unknown game. Please add it using Game Wizard</source>
         <translation>未知的游戏，请在游戏向导中手动添加</translation>
     </message>
     <message>
-        <location filename="main.py" line="1157"/>
+        <location filename="main.py" line="1158"/>
         <source>The game already exists</source>
         <translation>游戏已经存在了呢</translation>
     </message>
@@ -1538,7 +1538,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>没有找到游戏的信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1470"/>
+        <location filename="main.py" line="1471"/>
         <source>Unknown game. Please try updating the database.</source>
         <translation>未知的游戏。请更新下游戏数据库。</translation>
     </message>
@@ -1738,7 +1738,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>游戏信息已经存在了</translation>
     </message>
     <message>
-        <location filename="main.py" line="89"/>
+        <location filename="main.py" line="90"/>
         <source>Ignore infinite cyclic repetition in the text</source>
         <translation>忽略无限循环重复的句子</translation>
     </message>
@@ -1798,7 +1798,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>是否允许其他人修改</translation>
     </message>
     <message>
-        <location filename="main.py" line="1091"/>
+        <location filename="main.py" line="1092"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Drag game lnk/exe to Spring Board
@@ -1876,7 +1876,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>恢复到上次保存的设定</translation>
     </message>
     <message>
-        <location filename="main.py" line="1095"/>
+        <location filename="main.py" line="1096"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Add the game using Game Wizard</source>
@@ -1924,7 +1924,7 @@ than turning on global repetition filters here.</source>
         <translation>警告：请不要打开重复过滤的选项，除非文本中真的有重复！</translation>
     </message>
     <message>
-        <location filename="main.py" line="1401"/>
+        <location filename="main.py" line="1402"/>
         <source>The feature is not available on Wine</source>
         <translation>Wine上不支持这个功能呢</translation>
     </message>
@@ -2121,7 +2121,7 @@ DMM上几乎可以找到近期发售的全部游戏，但是不缺少很老的�
         <translation>在单词间插入空格</translation>
     </message>
     <message>
-        <location filename="main.py" line="91"/>
+        <location filename="main.py" line="92"/>
         <source>Preserve spaces in the game text</source>
         <translation>保留游戏文本中的空格</translation>
     </message>
@@ -2945,7 +2945,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
         <translation>请再检查下使用偏好中程序的位置。</translation>
     </message>
     <message>
-        <location filename="main.py" line="1460"/>
+        <location filename="main.py" line="1461"/>
         <source>Unknown game. Please try editing the game information.</source>
         <translation>未知的游戏。请尝试编辑下游戏情报。</translation>
     </message>
@@ -3079,22 +3079,22 @@ It requires Internet access and might take a couple of minutes.</source>
         <translation>Excite.co.jp的多国语言翻译服务</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="245"/>
+        <location filename="dialogs/terminput.py" line="279"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="248"/>
+        <location filename="dialogs/terminput.py" line="282"/>
         <source>The pattern is kind of short. You might want to turn on the series-specific option.</source>
         <translation>匹配的文本太短了呢。你最好把词条设定为系列专用的。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="254"/>
+        <location filename="dialogs/terminput.py" line="288"/>
         <source>Everything looks OK</source>
         <translation>看起来还好</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="263"/>
+        <location filename="dialogs/terminput.py" line="297"/>
         <source>Create dictionary entry</source>
         <translation>创建词条</translation>
     </message>
@@ -3108,7 +3108,7 @@ The dictionary will be installed to {1}.</source>
 完成后，辞书会被安装到{1}。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="251"/>
+        <location filename="dialogs/terminput.py" line="285"/>
         <source>The translation is empty. VNR will delete the text matched with the pattern.</source>
         <translation>没有指定翻译。这样的话VNR会删掉匹配的文本。</translation>
     </message>
@@ -3205,7 +3205,7 @@ VNR可以自动从台湾大学下载并安装pAppLocale。
         <translation>JMDict日文-荷兰文辞书</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="223"/>
+        <location filename="dialogs/terminput.py" line="256"/>
         <source>Add new term</source>
         <translation>添加词条</translation>
     </message>
@@ -3280,7 +3280,7 @@ VNR可以自动从台湾大学下载并安装pAppLocale。
         <translation>在Spring Board上显示在线的同学数</translation>
     </message>
     <message>
-        <location filename="main.py" line="1412"/>
+        <location filename="main.py" line="1413"/>
         <source>Processing Shared Dictionary ... Please try later</source>
         <translation>正在处理共享辞书…请稍等一下下</translation>
     </message>
@@ -3313,6 +3313,41 @@ VNR可以自动从台湾大学下载并安装pAppLocale。
         <location filename="dialogs/_prefs.py" line="787"/>
         <source>Global game shortcuts</source>
         <translation>全局的游戏快捷键</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="139"/>
+        <source>a Japanese name</source>
+        <translation>这是个日文名字</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="141"/>
+        <source>a title after names</source>
+        <translation>这是日文名字后的称谓</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="133"/>
+        <source>replace after translation</source>
+        <translation>替换翻译后的文字</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="135"/>
+        <source>replace Japanese before translation</source>
+        <translation type="unfinished">替换翻译前的日文</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="137"/>
+        <source>escape the Japanese word</source>
+        <translation type="unfinished">转义日文单词以避免被翻译</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="143"/>
+        <source>replace Japanese for TTS</source>
+        <translation>替换语音合成前的日文</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="145"/>
+        <source>replace Japanese before whatever</source>
+        <translation>在一切处理前替换日文原文</translation>
     </message>
 </context>
 </TS>

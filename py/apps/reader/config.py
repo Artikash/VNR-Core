@@ -174,7 +174,7 @@ SETTINGS_LECONLINE_COLOR = _SETTINGS['lecOnlineColor']
 
 ENV_PATH = map(parse_path, SHARE_YAML['env']['path']) # [unicode abspath]
 ENV_PYTHONPATH = map(parse_path, SHARE_YAML['env']['pythonpath']) # [unicode abspath]
-ENV_PYTHONPATH_XP = map(parse_path, SHARE_YAML['env']['xp']['pythonpath']) # [unicode abspath]
+#ENV_PYTHONPATH_XP = map(parse_path, SHARE_YAML['env']['xp']['pythonpath']) # [unicode abspath]
 
 ENV_INTEGRITYPATH = map(parse_path, SHARE_YAML['env']['integritypath']) # [unicode abspath]
 

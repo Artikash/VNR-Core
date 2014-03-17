@@ -7,8 +7,11 @@
 #include "ith/common/types.h"
 #include "ith/srv/srv.h"
 //#include "ith/srv/settings.h"
-#include "winmaker/winmaker.h"
 #include <QtCore/QDebug>
+
+#ifdef WITH_LIB_WINMAKER
+# include "winmaker/winmaker.h"
+#endif // WITH_LIB_WINMAKER
 
 //#define ITH_RUNNING_EVENT L"ITH_PIPE_EXIST"
 //#define ITH_RUNNING_MUTEX L"ITH_RUNNING"
@@ -72,8 +75,10 @@ bool Ihf::load()
   //}
 
   if (::IHF_Init()) {
+#ifdef WITH_LIB_WINMAKER
     if (!parentWindow_)
       parentWindow_ = (WId)::wm_create_hidden_window("vnrtexthook");
+#endif // WITH_LIB_WINMAKER
     ::IHF_GetHookManager(&hookManager_);
     if (hookManager_) {
       //::IHF_GetSettings(&settings_);
@@ -113,10 +118,12 @@ void Ihf::unload()
     hookManager_ = nullptr;
     //settings_ = nullptr;
 
+#ifdef WITH_LIB_WINMAKER
     if (parentWindow_) {
       wm_destroy_window(parentWindow_);
       parentWindow_ = nullptr;
     }
+#endif // WITH_LIB_WINMAKER
   }
   //if (parentWindow_) {
   //  wm_destroy_window(parentWindow_);

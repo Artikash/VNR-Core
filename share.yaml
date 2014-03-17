@@ -25,9 +25,9 @@ env:
 
   #mecabrc: $PWD/../../Dictionaries/mecabrc
 
-  xp: # only for Windows XP
-    pythonpath:
-    - $PWD/bin/xp
+  #xp: # only for Windows XP
+  #  pythonpath:
+  #  - $PWD/bin/xp
 
   integritypath:
   - $PWD/bin/vnrcli.dll

@@ -271,7 +271,7 @@ DWORD TextHook::Send(DWORD dwDataBase, DWORD dwRetn)
 DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
 {
   enum { SMALL_BUFF_SIZE = 0x80 };
-  enum { MAX_DATA_SIZE = 0x10000 }; // jichi 12/25/2013: The same as the orignal ITH
+  enum { MAX_DATA_SIZE = 0x10000 }; // jichi 12/25/2013: The same as the original ITH
   DWORD dwCount = 0,
       dwAddr,
       dwDataIn,
@@ -516,7 +516,7 @@ int TextHook::UnsafeInsertHookCode()
     }
   }
   // Insert hook and flush instruction cache.
-  enum { c8 = 0xcccccccc };
+  enum {c8 = 0xcccccccc};
   DWORD int3[] = {c8, c8};
   DWORD t = 0x100,
       old,
