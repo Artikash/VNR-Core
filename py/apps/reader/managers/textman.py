@@ -248,7 +248,10 @@ class _TextManager(object):
             dm.addCharacter(name)
         c = dm.queryCharacter(name)
         ttsman.stop()
-        if c and c.d.ttsEnabled and (name or not text.startswith(u"「") and not text.endswith(u"」")): # do not speak if no character name is detected
+        if c and c.d.ttsEnabled and (name or
+            not text.startswith(u"「") and not text.endswith(u"」")
+            or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
+          ): # do not speak if no character name is detected
           ttsman.speak(text, termEnabled=True, language=self.gameLanguage,
               engine=c.ttsEngine)
         #else:
@@ -347,6 +350,7 @@ class _TextManager(object):
       self.oldHashes[0] = hashutil.strhash_old_vnr(rawData)
 
     text = self._decodeText(renderedData).strip()
+    #text = u"「なにこれ」"
     #text = u"めばえちゃん"
     #text = u"ツナ缶"
     #text = u"秀隆"
