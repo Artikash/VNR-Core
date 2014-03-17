@@ -19,7 +19,8 @@ from sakurakit.sktr import tr_
 from mytr import my, mytr_
 import config, dataman, growl, i18n, rc
 
-COMBOBOX_MAXWIDTH = 100
+#COMBOBOX_MAXWIDTH = 100
+COMBOBOX_MAXWIDTH = 80
 
 @Q_Q
 class _TermInput(object):
@@ -37,7 +38,10 @@ class _TermInput(object):
     r += 1
 
     grid.addWidget(QtWidgets.QLabel(tr_("Target") + ":"), r, 0)
-    grid.addWidget(self.typeEdit, r, 1)
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.typeEdit)
+    row.addWidget(self.typeLabel)
+    grid.addLayout(row, r, 1)
     r += 1
 
     grid.addWidget(QtWidgets.QLabel(tr_("Options") + ":"), r, 0)
@@ -113,7 +117,36 @@ class _TermInput(object):
     ret.addItems(dataman.Term.TR_TYPES)
     ret.setMaxVisibleItems(ret.count())
     ret.setMaximumWidth(COMBOBOX_MAXWIDTH)
+    ret.currentIndexChanged.connect(self._refreshTypeLabel)
     return ret
+
+  @memoizedproperty
+  def typeLabel(self):
+    ret = QtWidgets.QLabel()
+    skqss.class_(ret, 'text-info')
+    return ret
+
+  def _refreshTypeLabel(self):
+    tt = self._getType()
+    if tt == 'target':
+      t = my.tr("replace after translation")
+    elif tt == 'source':
+      t = my.tr("replace Japanese before translation")
+    elif tt == 'escape':
+      t = my.tr("escape the Japanese word")
+    elif tt == 'name':
+      t = my.tr("a Japanese name")
+    elif tt == 'title':
+      t = my.tr("a title after names")
+    elif tt == 'speech':
+      t = my.tr("replace Japanese for TTS")
+    elif tt == 'origin':
+      t = my.tr("replace Japanese before whatever")
+    else:
+      t = ''
+    if t:
+      t = "<= " + t
+    self.typeLabel.setText(t)
 
   @memoizedproperty
   def languageEdit(self):
@@ -235,6 +268,7 @@ class _TermInput(object):
 
   def refresh(self):
     self.saveButton.setEnabled(self._canSave())
+    self._refreshTypeLabel()
     self._refreshStatus()
 
   def _refreshStatus(self):
