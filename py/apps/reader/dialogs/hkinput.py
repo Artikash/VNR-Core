@@ -59,7 +59,7 @@ class _HotkeyInput(object):
 
     KEYBOARD2  = (
       ('Space', 'Insert', 'Delete', 'Home', 'End', 'Prior', 'Next'),
-      ('mouse middle', 'mouse right'),
+      ('mouse left', 'mouse middle', 'mouse right'),
     )
     for keys in KEYBOARD2:
       for i,key in enumerate(keys):
