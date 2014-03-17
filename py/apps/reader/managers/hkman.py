@@ -9,7 +9,7 @@ if __name__ == '__main__':
   debug.initenv()
 
 from functools import partial
-from PySide.QtCore import QObject, Qt, Signal, Property
+from PySide.QtCore import Qt, Signal, Property, QObject, QThread
 from sakurakit import skos
 from sakurakit.skdebug import dprint
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
@@ -38,7 +38,7 @@ class HotkeyManager(QObject):
 
   def __init__(self, parent=None):
     super(HotkeyManager, self).__init__(parent)
-    self.__d = _HotkeyManager(self)
+    self.__d = _HotkeyManager()
 
   enabledChanged = Signal(bool)
   def isEnabled(self): return self.__d.enabled
@@ -53,9 +53,6 @@ class HotkeyManager(QObject):
         d.stop()
       self.enabledChanged.emit(t)
 
-  # Internal usage
-  hotkeyReceived = Signal(str)
-
   #def setTtsEnabled(self, t):
   #  self.__d.setMappingEnabled('tts', t)
   #  settings.global_().setTtsHotkeyEnabled(t)
@@ -64,9 +61,8 @@ class HotkeyManager(QObject):
   #  self.__d.setMappingKey('tts', k)
   #  settings.global_().setTtsHotkey(k)
 
-@Q_Q
 class _HotkeyManager(object):
-  def __init__(self, q):
+  def __init__(self):
     self.enabled = False # bool
     self._pyhk = None # pyhk instance
 
@@ -88,7 +84,12 @@ class _HotkeyManager(object):
     #qApp = QtCore.QCoreApplication.instance()
     #qApp.aboutToQuit.connect(self.stop)
 
-    q.hotkeyReceived.connect(self._onHotkey, Qt.QueuedConnection) # delay processing hotkeys to the next event loop
+  @memoizedproperty
+  def thread(self):
+    ret = HotkeyThread()
+    ret.hotkeyReceived.connect(self._onHotkey, Qt.QueuedConnection) # delay processing hotkeys to the next event loop
+    ret.start(QThread.LowPriority)
+    return ret
 
   def start(self):
     for hk in self._mapping.itervalues():
@@ -119,19 +120,14 @@ class _HotkeyManager(object):
         self._addHotkey(k)
 
   def _addHotkey(self, k):
-    l = unpackhotkey(k)
-    self.pyhk.addHotkey(l, partial(self._emitHotkey, k))
-
-    #from pyhk import pyhk
-    #h = pyhk()
-    #h.addHotkey(l, partial(self._onHotkey, k))
-
-  def _emitHotkey(self, k):
-    self.q.hotkeyReceived.emit(k)
+    self.thread.addHotkey(k)
+    #l = unpackhotkey(k)
+    #self.pyhk.addHotkey(l, partial(self._emitHotkey, k))
 
   def _removeHotkey(self, k): # str
-    l = unpackhotkey(k)
-    self.pyhk.removeHotkey(l)
+    self.thread.removeHotkey(k)
+    #l = unpackhotkey(k)
+    #self.pyhk.removeHotkey(l)
 
   def _toggleHotkey(self, k, t):
     if t:
@@ -139,13 +135,13 @@ class _HotkeyManager(object):
     else:
       self._removeHotkey(k)
 
-  @memoizedproperty
-  def pyhk(self): # pyhk instance
-    if skos.WIN:
-      from pyhk import pyhk
-      return pyhk()
-    else:
-      return dummy_pyhk()
+  #@memoizedproperty
+  #def pyhk(self): # pyhk instance
+  #  if skos.WIN:
+  #    from pyhk import pyhk
+  #    return pyhk()
+  #  else:
+  #    return dummy_pyhk()
 
   def _onHotkey(self, key): # callback
     for name, hk in self._mapping.iteritems():
@@ -169,6 +165,54 @@ class HotkeyManagerProxy(QObject):
       lambda self: manager().isEnabled(),
       lambda self, v: manager().setEnabled(v),
       notify=enabledChanged)
+
+# Threading
+
+class HotkeyThread(QThread):
+  def __init__(self, parent=None):
+    super(HotkeyThread, self).__init__(parent)
+    d = self.__d = _HotkeyThread(self)
+
+    self.hotkeyAdded.connect(d.addHotkey, Qt.QueuedConnection)
+    self.hotkeyRemoved.connect(d.removeHotkey, Qt.QueuedConnection)
+
+  def addHotkey(self, k): # str ->
+    self.hotkeyAdded.emit(k)
+
+  def removeHotkey(self, k): # str ->
+    self.hotkeyRemoved.emit(k)
+
+  #def stop(self):
+  #  self.quit()
+  #  #self.__d.stop()
+
+  hotkeyReceived = Signal(str)
+
+  # Private signals
+  hotkeyAdded = Signal(str)
+  hotkeyRemoved = Signal(str)
+
+@Q_Q
+class _HotkeyThread(object):
+
+  def addHotkey(self, k): # str ->
+    l = unpackhotkey(k)
+    self.pyhk.addHotkey(l, partial(self._emitHotkey, k))
+
+  def removeHotkey(self, k): # str ->
+    l = unpackhotkey(k)
+    self.pyhk.removeHotkey(l)
+
+  def _emitHotkey(self, k):
+    self.q.hotkeyReceived.emit(k)
+
+  @memoizedproperty
+  def pyhk(self): # pyhk instance
+    if skos.WIN:
+      from pyhk import pyhk
+      return pyhk()
+    else:
+      return dummy_pyhk()
 
 # Debug entry
 if __name__ == '__main__': #and os.name == 'nt':
