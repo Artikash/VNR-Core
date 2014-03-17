@@ -758,7 +758,7 @@ class _ShortcutsTab(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     if features.WINE:
-      label =QtWidgets.QLabel(my.tr("Global shortcuts are not supported in Wine."))
+      label = QtWidgets.QLabel(my.tr("Global shortcuts are not supported in Wine."))
       l = skwidgets.SkWidgetLayout(label)
       w = QtWidgets.QGroupBox(tr_("About"))
       w.setLayout(l)
@@ -796,7 +796,7 @@ class _ShortcutsTab(object):
 
     def _refresh():
       t = ss.ttsHotkey()
-      ret.setText(i18n.key_name(t) if t else tr_("Not specified"))
+      ret.setText(i18n.combined_key_name(t) if t else tr_("Not specified"))
       skqss.class_(ret, 'btn btn-default' if t else 'btn btn-danger')
     _refresh()
     ss.ttsHotkeyChanged.connect(_refresh)

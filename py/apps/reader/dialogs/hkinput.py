@@ -19,12 +19,16 @@ from sakurakit.sktr import tr_
 from sakurakit.skwidgets import shortcut
 from mytr import mytr_
 import i18n, rc
+from hkman import packhotkey, unpackhotkey
 
 @Q_Q
 class _HotkeyInput(object):
   def __init__(self, q):
     self.defaultValue = ''
-    self.keyButtons = [] # QPushButton
+    self.keyButtons = {
+      'key': [], # [QPushButton]
+      'modifier': [],
+    }
     self._createUi(q)
 
   def _createUi(self, q):
@@ -47,20 +51,31 @@ class _HotkeyInput(object):
     for keys in KEYBOARD:
       for col,key in enumerate(keys):
         if key:
-          grid.addWidget(self.createKeyButton(key), r, col)
+          btn = self.createKeyButton(key)
+          grid.addWidget(btn, r, col)
       r += 1
 
     WIDE_COL = 2
+
     KEYBOARD2  = (
       ('Space', 'Insert', 'Delete', 'Home', 'End', 'Prior', 'Next'),
-      ('mouse middle', 'mouse right'),
+      ('mouse left', 'mouse middle', 'mouse right'),
     )
     for keys in KEYBOARD2:
       for i,key in enumerate(keys):
         col = i * WIDE_COL
         if key:
-          grid.addWidget(self.createKeyButton(key), r, col, 1, WIDE_COL)
+          btn = self.createKeyButton(key)
+          grid.addWidget(btn, r, col, 1, WIDE_COL)
       r += 1
+
+    MODIFIERS  = 'Ctrl', 'Alt' #, 'Shift'
+    for i,key in enumerate(MODIFIERS):
+      col = i * WIDE_COL
+      if key:
+        btn = self.createKeyButton(key, group='modifier', styleClass='btn btn-info')
+        grid.addWidget(btn, r, col, 1, WIDE_COL)
+    r += 1
 
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)
@@ -76,14 +91,17 @@ class _HotkeyInput(object):
 
     shortcut('ctrl+s', self.save, parent=q)
 
-  def createKeyButton(self, key): # str -> QPushButton
+  def createKeyButton(self, key, group='key', styleClass='btn btn-default'): # str -> QPushButton
     ret = QtWidgets.QPushButton(i18n.key_name(key))
     ret.setToolTip(key)
-    skqss.class_(ret, 'btn btn-default')
+    if styleClass:
+      skqss.class_(ret, styleClass)
     ret.setCheckable(True)
     ret.value = key
-    ret.clicked.connect(partial(self.setCurrentValue, key))
-    self.keyButtons.append(ret)
+    ret.clicked.connect(partial(lambda ret, key, group:
+        self.updateCurrentValue(key, toggled=ret.isChecked(), group=group),
+        ret, key, group))
+    self.keyButtons[group].append(ret)
     return ret
 
   @memoizedproperty
@@ -121,18 +139,39 @@ class _HotkeyInput(object):
       self.q.valueChanged.emit(v)
 
   def currentValue(self): # -> str
-    for it in self.keyButtons:
-      if it.isChecked():
-        return it.value
-    return ''
+    l = []
+    for group in 'modifier', 'key': # modifiers at first, key at last
+      for it in self.keyButtons[group]:
+        if it.isChecked():
+          l.append(it.value)
+    return packhotkey(l)
 
   def setCurrentValue(self, value): # str ->
-    for it in self.keyButtons:
-      if value == it.value:
-        it.setChecked(True)
+    l = unpackhotkey(value)
+    for buttons in self.keyButtons.itervalues():
+      for it in buttons:
+        it.setChecked(it.value in l)
         #it.setFocus(Qt.MouseFocusReason)
-      elif it.isChecked():
+
+  def _findValue(self, group): # str -> str
+    for it in self.keyButtons[group]:
+      if it.isChecked():
+        return it.value
+
+  def updateCurrentValue(self, value, toggled=True, group='key'): # str ->
+    if group == 'modifier' and not self._findValue('key'):
+      for it in self.keyButtons['modifier']: # clear modifiers
         it.setChecked(False)
+      return
+
+    # Note: Multiple modifiers are not allowed
+    modifier = self._findValue('modifier')
+
+    if modifier:
+      for it in self.keyButtons[group]:
+        it.setChecked(it.value == value)
+    elif group != 'modifier' or toggled:
+      self.setCurrentValue(value)
 
   def refresh(self):
     self.setCurrentValue(self.defaultValue)

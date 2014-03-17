@@ -89,6 +89,10 @@ KEY_NAMES = {
 def key_name(t): # str -> unicode
   return KEY_NAMES.get(t) or t
 
+def combined_key_name(t, delim='+'): # str -> unicode
+  from hkman import unpackhotkey
+  return delim.join(map(key_name, unpackhotkey(t)))
+
 #def key_from_name(t): # unicode -> str
 #  for k,v in KEY_NAMES.iteritems():
 #    if v == t:
