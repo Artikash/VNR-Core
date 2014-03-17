@@ -9,10 +9,10 @@ if __name__ == '__main__':
   debug.initenv()
 
 from functools import partial
-from PySide.QtCore import QObject, Signal, Property
+from PySide.QtCore import QObject, Qt, Signal, Property
 from sakurakit import skos
 from sakurakit.skdebug import dprint
-from sakurakit.skclass import memoized, memoizedproperty
+from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 #from sakurakit.skqml import QmlObject
 import settings
 
@@ -38,7 +38,7 @@ class HotkeyManager(QObject):
 
   def __init__(self, parent=None):
     super(HotkeyManager, self).__init__(parent)
-    self.__d = _HotkeyManager()
+    self.__d = _HotkeyManager(self)
 
   enabledChanged = Signal(bool)
   def isEnabled(self): return self.__d.enabled
@@ -53,6 +53,9 @@ class HotkeyManager(QObject):
         d.stop()
       self.enabledChanged.emit(t)
 
+  # Internal usage
+  hotkeyReceived = Signal(str)
+
   #def setTtsEnabled(self, t):
   #  self.__d.setMappingEnabled('tts', t)
   #  settings.global_().setTtsHotkeyEnabled(t)
@@ -61,8 +64,9 @@ class HotkeyManager(QObject):
   #  self.__d.setMappingKey('tts', k)
   #  settings.global_().setTtsHotkey(k)
 
+@Q_Q
 class _HotkeyManager(object):
-  def __init__(self):
+  def __init__(self, q):
     self.enabled = False # bool
     self._pyhk = None # pyhk instance
 
@@ -83,6 +87,8 @@ class _HotkeyManager(object):
     #from PySide import QtCore
     #qApp = QtCore.QCoreApplication.instance()
     #qApp.aboutToQuit.connect(self.stop)
+
+    q.hotkeyReceived.connect(self._onHotkey, Qt.QueuedConnection) # delay processing hotkeys to the next event loop
 
   def start(self):
     for hk in self._mapping.itervalues():
@@ -114,11 +120,14 @@ class _HotkeyManager(object):
 
   def _addHotkey(self, k):
     l = unpackhotkey(k)
-    self.pyhk.addHotkey(l, partial(self._onHotkey, k))
+    self.pyhk.addHotkey(l, partial(self._emitHotkey, k))
 
     #from pyhk import pyhk
     #h = pyhk()
     #h.addHotkey(l, partial(self._onHotkey, k))
+
+  def _emitHotkey(self, k):
+    self.q.hotkeyReceived.emit(k)
 
   def _removeHotkey(self, k): # str
     l = unpackhotkey(k)
