@@ -88,7 +88,8 @@ class _HotkeyManager(object):
   def thread(self):
     ret = HotkeyThread()
     ret.hotkeyReceived.connect(self._onHotkey, Qt.QueuedConnection) # delay processing hotkeys to the next event loop
-    ret.start(QThread.LowPriority)
+    ret.start()
+    #ret.start(QThread.LowPriority)
     return ret
 
   def start(self):
