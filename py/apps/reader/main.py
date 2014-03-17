@@ -906,9 +906,6 @@ class _MainObject(object):
 
     EXITED = True
 
-    dprint("stop hot keys")
-    self.hotkeyManager.setEnabled(False)
-
     dprint("shutdown rpc server")
     self.rpcServer.stop()
 
@@ -1723,6 +1720,9 @@ class MainObject(QObject):
       return
 
     d = self.__d
+
+    dprint("stop hot keys")
+    d.hotkeyManager.setEnabled(False)
 
     dprint("hide all windows")
     d.trayIcon.hide()
