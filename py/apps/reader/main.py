@@ -434,6 +434,9 @@ class _MainObject(object):
     ret.setGoogleEnabled(ss.isGoogleEnabled())
     ss.googleEnabledChanged.connect(ret.setGoogleEnabled)
 
+    ret.setTransruEnabled(ss.isTransruEnabled())
+    ss.transruEnabledChanged.connect(ret.setTransruEnabled)
+
     ret.setBaiduEnabled(ss.isBaiduEnabled())
     ss.baiduEnabledChanged.connect(ret.setBaiduEnabled)
 

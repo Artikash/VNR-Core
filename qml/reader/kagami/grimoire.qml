@@ -58,6 +58,7 @@ Item { id: root_
   property color atlasColor
   property color lecColor
   property color lecOnlineColor
+  property color transruColor
 
   property string japaneseFont
   property string englishFont
@@ -946,6 +947,7 @@ Item { id: root_
               case 'atlas': return root_.atlasColor
               case 'lec': return root_.lecColor
               case 'lecol': return root_.lecOnlineColor
+              case 'transru': return root_.transruColor
               case 'infoseek': return root_.infoseekColor
               case 'excite': return root_.exciteColor
               case 'bing': return root_.bingColor

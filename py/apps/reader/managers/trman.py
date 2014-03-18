@@ -31,6 +31,7 @@ class _TranslatorManager(object):
     self.googleEnabled = \
     self.baiduEnabled = \
     self.lecOnlineEnabled = \
+    self.transruEnabled = \
     self.lougoEnabled = \
     self.jbeijingEnabled = \
     self.dreyeEnabled = \
@@ -82,6 +83,10 @@ class _TranslatorManager(object):
     return _trman.LecOnlineTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
 
   @memoizedproperty
+  def transruTranslator(self):
+    return _trman.TransruTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+
+  @memoizedproperty
   def infoseekTranslator(self):
     return _trman.InfoseekTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
 
@@ -109,6 +114,8 @@ class _TranslatorManager(object):
       return self.ezTranslator
     if key == 'lecol':
       return self.lecOnlineTranslator
+    if key == 'transru':
+      return self.transruTranslator
     if key == 'lou':
       return self.lougoTranslator
     try: return getattr(self, key + 'Translator')
@@ -133,6 +140,7 @@ class _TranslatorManager(object):
       if self.infoseekEnabled: yield self.infoseekTranslator
       if self.exciteEnabled: yield self.exciteTranslator
       if self.lecOnlineEnabled: yield self.lecOnlineTranslator
+      if self.transruEnabled: yield self.transruTranslator
       if self.bingEnabled: yield self.bingTranslator
       if self.googleEnabled: yield self.googleTranslator
       if self.baiduEnabled: yield self.baiduTranslator
@@ -208,6 +216,9 @@ class TranslatorManager(QObject):
   def isLecOnlineEnabled(self): return self.__d.lecOnlineEnabled
   def setLecOnlineEnabled(self, value): self.__d.lecOnlineEnabled = value
 
+  def isTransruEnabled(self): return self.__d.transruEnabled
+  def setTransruEnabled(self, value): self.__d.transruEnabled = value
+
   def isLougoEnabled(self): return self.__d.lougoEnabled
   def setLougoEnabled(self, value): self.__d.lougoEnabled = value
 
@@ -244,6 +255,7 @@ class TranslatorManager(QObject):
       d.googleEnabled,
       d.bingEnabled,
       d.lecOnlineEnabled,
+      d.transruEnabled,
       d.infoseekEnabled,
       d.exciteEnabled,
     ))

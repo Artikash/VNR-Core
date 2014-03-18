@@ -413,6 +413,15 @@ class Settings(QSettings):
       self.setValue('LougoColor', value)
       self.lougoColorChanged.emit(value)
 
+  transruColorChanged = Signal(str)
+  def transruColor(self):
+    return self.value('TransruColor', config.SETTINGS_TRANSRU_COLOR)
+  def setTransruColor(self, value):
+    value = value or config.SETTINGS_TRANSRU_COLOR
+    if value != self.transruColor():
+      self.setValue('TransruColor', value)
+      self.transruColorChanged.emit(value)
+
   jbeijingColorChanged = Signal(str)
   def jbeijingColor(self):
     return self.value('JBeijingColor', config.SETTINGS_JBEIJING_COLOR)
@@ -935,6 +944,14 @@ class Settings(QSettings):
       self.setValue('LecOnlineEnabled', value)
       self.lecOnlineEnabledChanged.emit(value)
 
+  transruEnabledChanged = Signal(bool)
+  def isTransruEnabled(self):
+    return to_bool(self.value('TransruEnabled'))
+  def setTransruEnabled(self, value):
+    if value != self.isTransruEnabled():
+      self.setValue('TransruEnabled', value)
+      self.transruEnabledChanged.emit(value)
+
   lougoEnabledChanged = Signal(bool)
   def isLougoEnabled(self):
     #return to_bool(self.value('LougoEnabled'))
@@ -1212,6 +1229,7 @@ class SettingsProxy(QObject):
     g.googleColorChanged.connect(self.googleColorChanged)
     g.baiduColorChanged.connect(self.baiduColorChanged)
     g.lecOnlineColorChanged.connect(self.lecOnlineColorChanged)
+    g.transruColorChanged.connect(self.transruColorChanged)
     g.lougoColorChanged.connect(self.lougoColorChanged)
     g.jbeijingColorChanged.connect(self.jbeijingColorChanged)
     g.dreyeColorChanged.connect(self.dreyeColorChanged)
@@ -1440,6 +1458,8 @@ class SettingsProxy(QObject):
   baiduColor = unicode_property('BaiduColor', config.SETTINGS_BAIDU_COLOR, notify=baiduColorChanged)
   lecOnlineColorChanged = Signal(unicode)
   lecOnlineColor = unicode_property('LecOnlineColor', config.SETTINGS_LECONLINE_COLOR, notify=lecOnlineColorChanged)
+  transruColorChanged = Signal(unicode)
+  transruColor = unicode_property('TransruColor', config.SETTINGS_TRANSRU_COLOR, notify=transruColorChanged)
   lougoColorChanged = Signal(unicode)
   lougoColor = unicode_property('LougoColor', config.SETTINGS_LOUGO_COLOR, notify=lougoColorChanged)
   jbeijingColorChanged = Signal(unicode)
