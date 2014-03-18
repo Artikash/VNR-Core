@@ -20,7 +20,7 @@ from sakurakit.skdebug import dwarn, derror
 #RU_API = "http://logrus.ru" "/services/TranslationService.asmx/GetTranslateNew"
 RU_API = "http://www.translate.ru" "/services/TranslationService.asmx/GetTranslateNew"
 
-RU_HEADERS = {'Content-Type':'application/json'}
+RU_HEADERS = {'Content-Type':'application/json'} # use json type
 
 # https://github.com/mishin/gists/blob/master/4translate_tmp.pl
 # $.ajax({
@@ -72,8 +72,8 @@ def translate(text, to='ru', fr='ja'):
     ret = r.content
 
     # return error message if not r.ok
-    # example response: {"t":[{"text":"hello"}]}
-    if r.ok and ret and ret[0] == '{' and ret[-1] == '}':
+    # Example: {"__type":"TranslationResult","isURL":false,"isWord":false,"ptsDirCode":"je","advise":"","autoCode":0,"result":"You see, as for the plum and the peach among peaches","resultNoTags":"","dirNames":"Translation is completed from Japanese into English","adviseParams":{"showIntime":false,"adviseText":null},"errCodeInt":0,"errCode":0,"errMessage":null}
+    if r.ok and len(ret) > 20 and ret[0] == '{' and ret[-1] == '}':
       # Unicode char, see: http://schneide.wordpress.com/2009/05/18/the-perils-of-u0027/
       #ret = __repl(ret[15:-4])
       ret = json.loads(ret)['result']
@@ -85,7 +85,7 @@ def translate(text, to='ru', fr='ja'):
     dwarn("connection error", e.args)
   except requests.HTTPError, e:
     dwarn("http error", e.args)
-  except (ValueError|KeyError), e:
+  except (ValueError, KeyError), e:
     dwarn("invalid response json", e.args)
   except Exception, e:
     derror(e)

@@ -88,7 +88,7 @@ def translate(text, to='zhs', fr='ja'):
     )
 
     ret = r.content
-    if r.ok and len(ret) > 20:
+    if r.ok and len(ret) > 20 and ret[0] == '{' and ret[-1] == '}':
       #ret = ret.decode('utf8')
       js = json.loads(ret)
       l = js['data']

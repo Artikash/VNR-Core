@@ -69,7 +69,7 @@ def translate(t, to='auto', fr='auto'):
   #except UnicodeDecodeError, e:
   #  dwarn("unicode decode error", e)
   except (ValueError, KeyError, IndexError, TypeError), e:
-    dwarn("json format error", e)
+    dwarn("format error", e)
   except Exception, e:
     derror(e)
   dwarn("failed")
