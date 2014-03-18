@@ -10,7 +10,7 @@ TRAITS = [ # [TranslatorTraits]
   {'key':'lecol',   'online':True, 'name':mytr_("LEC Online")},
   {'key':'infoseek','online':True, 'name':mytr_("Infoseek")},
   {'key':'excite',  'online':True, 'name':mytr_("Excite")},
-  {'key':'transru', 'online':True, 'name':mytr_("Translate.ru")},
+  {'key':'transru', 'online':True, 'name':mytr_("Translate.Ru")},
   {'key':'baidu',   'online':True, 'name':mytr_("Baidu")},
   {'key':'jbeijing','online':False, 'name':mytr_("JBeijing")},
   {'key':'dreye',   'online':False, 'name':mytr_("Dr.eye")},
