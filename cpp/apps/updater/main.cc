@@ -6,8 +6,8 @@
 #include <memory>
 
 #include "config.h"
-#if !defined(PLAYER_PATH) || !defined(SCRIPT_PATH)
-# error "app path not defined"
+#ifndef SCRIPT_PATH
+# error "script path not defined"
 #endif
 
 //#define DEBUG "main"
@@ -51,12 +51,12 @@ int CALLBACK WinMain(__in HINSTANCE hInstance, __in HINSTANCE hPrevInstance, __i
   //std::wstring wsApp = wsDir + L"\\" PLAYER_PATH;
   //std::wstring wsAppPath = dirname(wsApp);
 
-  std::wstring wsApp = PLAYER_PATH;
-
   // $widir/system32
   if (!GetSystemDirectoryW(wszBuffer, BUFFER_SIZE))
     return -1;
-  std::wstring wsAppPath = wszBuffer;
+
+  std::wstring wsApp = wszBuffer;
+  wsApp += L"\\cmd.exe";
 
   // See: http://msdn.microsoft.com/en-us/library/windows/desktop/cc144102(v=vs.85).aspx
   //::SetFileAttributesW(wsDir.c_str(), FILE_ATTRIBUTE_READONLY);
@@ -73,9 +73,9 @@ int CALLBACK WinMain(__in HINSTANCE hInstance, __in HINSTANCE hPrevInstance, __i
   LPVOID lpEnvironment = nullptr;
 
   std::wstring wsCmdLine =
-      L"\"" + wsApp + L"\"" L" "
-      //L"-OO " // python -OO optimization
-      L"\"" + wsDir + L"\\" SCRIPT_PATH L"\"";
+      L"\"" + wsApp + L"\"" // cmd.exe
+      L" /c "               // /c
+      L"\"" SCRIPT_PATH L"\""; // *.cmd
 
   // See: http://codingmisadventures.wordpress.com/2009/03/10/retrieving-command-line-parameters-from-winmain-in-win32/
   if (lpCmdLine &&
@@ -110,7 +110,7 @@ int CALLBACK WinMain(__in HINSTANCE hInstance, __in HINSTANCE hPrevInstance, __i
     FALSE,              // inherited
     CREATE_DEFAULT_ERROR_MODE, // creation flags
     lpEnvironment,
-    wsAppPath.c_str(),
+    wsDir.c_str(),
     &siStartupInfo,
     &piProcessInfo
   );
