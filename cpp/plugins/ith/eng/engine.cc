@@ -394,7 +394,15 @@ DWORD DetermineNoHookEngine()
 {
   enum : DWORD { yes = 0, no = 1 }; // return value
 
-  if (IthCheckFile(L"bsz.exe")) return yes; // jichi 12/3/2013: BALDRSKY ZERO
+  if (IthCheckFile(L"bsz.exe")) { // jichi 12/3/2013: BALDRSKY ZERO
+    ConsoleOutput("vnreng: IGNORE BALDRSKY ZERO");
+    return yes;
+  }
+
+  if (IthCheckFile(L"AGERC.DLL")) { // jichi 3/17/2014: Eushully
+    ConsoleOutput("vnreng: IGNORE Eushully");
+    return yes;
+  }
 
   if (IthCheckFile(L"game_sys.exe")) {
     ConsoleOutput("vnreng: IGNORE Atelier Kaguya BY/TH");
