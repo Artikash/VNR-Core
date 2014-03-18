@@ -933,7 +933,7 @@ class Settings(QSettings):
   def setLecOnlineEnabled(self, value):
     if value != self.isLecOnlineEnabled():
       self.setValue('LecOnlineEnabled', value)
-      self.LecOnlineEnabledChanged.emit(value)
+      self.lecOnlineEnabledChanged.emit(value)
 
   lougoEnabledChanged = Signal(bool)
   def isLougoEnabled(self):

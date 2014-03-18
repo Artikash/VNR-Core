@@ -1846,14 +1846,17 @@ class _HonyakuTab(object):
     blans = settings.global_().blockedLanguages()
     ret = QtWidgets.QGroupBox(my.tr("Preferred machine translation providers"))
     layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(QtWidgets.QLabel(my.tr("Online translators") + ":"))
+    if 'zh' not in blans:
+      layout.addWidget(self.baiduButton)
+      #layout.addWidget(self.youdaoButton)
     layout.addWidget(self.bingButton)
     layout.addWidget(self.googleButton)
     layout.addWidget(self.lecOnlineButton)
     layout.addWidget(self.infoseekButton)
     layout.addWidget(self.exciteButton)
+    layout.addWidget(QtWidgets.QLabel(my.tr("Offline translators") + ":"))
     if 'zh' not in blans:
-      layout.addWidget(self.baiduButton)
-      #layout.addWidget(self.youdaoButton)
       layout.addWidget(self.jbeijingButton)
       layout.addWidget(self.dreyeButton)
     if 'ko' not in blans:
@@ -1867,34 +1870,27 @@ class _HonyakuTab(object):
 
   @memoizedproperty
   def bingButton(self):
-    ret = QtWidgets.QCheckBox("(%s) %s" % (
-        tr_("Online"),
-        my.tr("Microsoft Bing multilingual translation service")))
-        #" (%s)" % my.tr("excluding {0}").format("%s, %s, %s" % (tr_("Vietnamese"), tr_("Thai"), tr_("Indonesian"))))
+    ret = QtWidgets.QCheckBox(my.tr("Microsoft Bing multilingual translation service"))
     ret.setChecked(settings.global_().isBingEnabled())
     ret.toggled.connect(settings.global_().setBingEnabled)
     return ret
 
   @memoizedproperty
   def googleButton(self):
-    ret = QtWidgets.QCheckBox("(%s) %s" % (
-        tr_("Online"),
-        my.tr("Google multilingual translation service")))
-        #" (%s)" % my.tr("excluding {0}").format("%s, %s, %s" % (tr_("Vietnamese"), tr_("Thai"), tr_("Indonesian"))))
+    ret = QtWidgets.QCheckBox(my.tr("Google multilingual translation service"))
     ret.setChecked(settings.global_().isGoogleEnabled())
     ret.toggled.connect(settings.global_().setGoogleEnabled)
     return ret
 
   @memoizedproperty
   def infoseekButton(self):
-    ret = QtWidgets.QCheckBox("(%s) %s (%s)" % (
-        tr_("Online"),
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("Infoseek.ne.jp multilingual translation service"),
         my.tr("excluding {0}").format(', '.join((
-            tr_("Malaysian"),
-            tr_("Russian"),
-            tr_("Dutch"),
-            tr_("Polish"),
+            tr_("ms"),
+            tr_("nl"),
+            tr_("pl"),
+            tr_("ru"),
     )))))
     ret.setChecked(settings.global_().isInfoseekEnabled())
     ret.toggled.connect(settings.global_().setInfoseekEnabled)
@@ -1902,16 +1898,15 @@ class _HonyakuTab(object):
 
   @memoizedproperty
   def exciteButton(self):
-    ret = QtWidgets.QCheckBox("(%s) %s (%s)" % (
-        tr_("Online"),
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("Excite.co.jp multilingual translation service"),
         my.tr("excluding {0}").format(', '.join((
-            tr_("Thai"),
-            tr_("Vietnamese"),
-            tr_("Malaysian"),
-            tr_("Indonesian"),
-            tr_("Dutch"),
-            tr_("Polish"),
+            tr_("ms"),
+            tr_("th"),
+            tr_("vi"),
+            tr_("id"),
+            tr_("nl"),
+            tr_("pl"),
             )))))
     ret.setChecked(settings.global_().isExciteEnabled())
     ret.toggled.connect(settings.global_().setExciteEnabled)
@@ -1919,14 +1914,13 @@ class _HonyakuTab(object):
 
   @memoizedproperty
   def lecOnlineButton(self):
-    ret = QtWidgets.QCheckBox("(%s) %s (%s, %s)" % (
-        tr_("Online"),
+    ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
         my.tr("LEC.com multilingual translation service"),
         my.tr("recommended for European"),
         my.tr("excluding {0}").format(', '.join((
-            tr_("Thai"),
-            tr_("Vietnamese"),
-            tr_("Malaysian"),
+            tr_("ms"),
+            tr_("th"),
+            tr_("vi"),
     )))))
     ret.setChecked(settings.global_().isLecOnlineEnabled())
     ret.toggled.connect(settings.global_().setLecOnlineEnabled)
@@ -1934,8 +1928,7 @@ class _HonyakuTab(object):
 
   @memoizedproperty
   def baiduButton(self):
-    ret = QtWidgets.QCheckBox("(%s) %s (%s)" % (
-        tr_("Online"),
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("Baidu.com Chinese translation service"),
         my.tr("recommended for Chinese")))
     ret.setChecked(settings.global_().isBaiduEnabled())
@@ -1944,44 +1937,29 @@ class _HonyakuTab(object):
 
   #@memoizedproperty
   #def youdaoButton(self):
-  #  ret = QtWidgets.QCheckBox("(%s) %s" % (
-  #      tr_("Online"),
-  #      my.tr("Youdao.com Chinese translation service")))
+  #  ret = QtWidgets.QCheckBox(my.tr("Youdao.com Chinese translation service"))
   #  ret.setChecked(settings.global_().isYoudaoEnabled())
   #  ret.toggled.connect(settings.global_().setYoudaoEnabled)
   #  return ret
 
   #@memoizedproperty
   #def lougoButton(self):
-  #  ret = QtWidgets.QCheckBox(u"(%s) ルー語%s" % (
-  #      tr_("Offline"),
+  #  ret = QtWidgets.QCheckBox(u"ルー語%s" % (
   #      my.tr("Japanese-English hybrid language")))
   #  ret.setChecked(settings.global_().isLougoEnabled())
   #  ret.toggled.connect(settings.global_().setLougoEnabled)
   #  return ret
 
-  #@memoizedproperty
-  #def bingButton(self):
-  #  ret = QtWidgets.QCheckBox(
-  #    "(%s) " % tr_("Online") +
-  #    my.tr("Microsoft Bing multilingual translation service"))
-  #  ret.setChecked(settings.global_().isBingEnabled())
-  #  ret.toggled.connect(settings.global_().setBingEnabled)
-  #  return ret
-
   @memoizedproperty
   def dreyeButton(self):
-    ret = QtWidgets.QCheckBox("(%s) %s" % (
-        tr_("Offline"),
-        my.tr("Dr.eye Chinese-Japanese/English translator")))
+    ret = QtWidgets.QCheckBox(my.tr("Dr.eye Chinese-Japanese/English translator"))
     ret.setChecked(settings.global_().isDreyeEnabled())
     ret.toggled.connect(settings.global_().setDreyeEnabled)
     return ret
 
   @memoizedproperty
   def jbeijingButton(self):
-    ret = QtWidgets.QCheckBox("(%s) %s (%s)" % (
-        tr_("Offline"),
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("JBeijing Chinese translator"),
         my.tr("recommended for Chinese")))
     ret.setChecked(settings.global_().isJBeijingEnabled())
@@ -1990,27 +1968,21 @@ class _HonyakuTab(object):
 
   @memoizedproperty
   def ezTransButton(self):
-    ret = QtWidgets.QCheckBox("(%s) %s" % (
-        tr_("Offline"),
-        my.tr("ezTrans XP Korean translator")))
+    ret = QtWidgets.QCheckBox(my.tr("ezTrans XP Korean translator"))
     ret.setChecked(settings.global_().isEzTransEnabled())
     ret.toggled.connect(settings.global_().setEzTransEnabled)
     return ret
 
   @memoizedproperty
   def atlasButton(self):
-    ret = QtWidgets.QCheckBox("(%s) %s" % (
-        tr_("Offline"),
-        my.tr("ATLAS English translator")))
+    ret = QtWidgets.QCheckBox(my.tr("ATLAS English translator"))
     ret.setChecked(settings.global_().isAtlasEnabled())
     ret.toggled.connect(settings.global_().setAtlasEnabled)
     return ret
 
   @memoizedproperty
   def lecButton(self):
-    ret = QtWidgets.QCheckBox("(%s) %s" % (
-        tr_("Offline"),
-        my.tr("LEC English translator")))
+    ret = QtWidgets.QCheckBox(my.tr("LEC English translator"))
     ret.setChecked(settings.global_().isLecEnabled())
     ret.toggled.connect(settings.global_().setLecEnabled)
     return ret
