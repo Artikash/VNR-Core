@@ -11,7 +11,8 @@ if __name__ == '__main__':
   import sys
   sys.path.append('..')
 
-import json, requests
+import json
+import requests
 #from time import time
 from sakurakit.skdebug import dwarn, derror
 #from sakurakit.sknetio import GZIP_HEADERS
