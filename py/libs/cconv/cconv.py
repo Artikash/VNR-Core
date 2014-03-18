@@ -274,6 +274,22 @@ def yomi2romaji(text):
 kata2romaji = yomi2romaji
 hira2romaji = yomi2romaji
 
+# re classes: http://www.gnu.org/software/grep/manual/html_node/Character-Classes-and-Bracket-Expressions.html
+WIDE_DIST = ord(u'０') - ord(u'0')
+RE_WIDE_CLASSES = {
+  'blank': re.compile(ur'　'), # u\3000
+  'digit': re.compile(ur'[０-９]'),
+  'alpha': re.compile(ur'[ａ-ｚＡ-Ｚ]'),
+  'alnum': re.compile(ur'[ａ-ｚＡ-Ｚ０-９]'),
+}
+def wide2thin_class(text, cls): # unicode, str -> unicode
+  rx = RE_WIDE_CLASSES[cls]
+  return rx.sub(_wide2thin_repl, text)
+def _wide2thin_repl(m): # re match -> unicode
+  return unichr(ord(m.group(0)) - WIDE_DIST)
+
+def wide2thin_digit(text): return wide2thin_class(text, 'digit')
+
 if __name__ == '__main__':
   print kata2hira(u'バカだ?')
   print hira2kata(u'バカだ?')
@@ -282,6 +298,8 @@ if __name__ == '__main__':
 
   print wide2thin(u'あの１２３４５０９ｂ！！［[。、')
   print thin2wide(u'あの12344０９ｂ?！')
+
+  print wide2thin_digit(u'あの12344０９ｂ?！')
 
   print hira2thai(u'バカだ?')
   print kata2thai(u'バカだ?')

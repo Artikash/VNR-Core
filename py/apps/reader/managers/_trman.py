@@ -11,7 +11,7 @@
 import os, re
 from functools import partial
 from itertools import ifilter, imap
-from cconv.cconv import wide2thin, zhs2zht, zht2zhs
+from cconv.cconv import zhs2zht, zht2zhs, wide2thin, wide2thin_digit
 from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
@@ -222,7 +222,7 @@ class MachineTranslator(Translator):
     else:
       return ''.join(self._itertranslate(*args, **kwargs))
 
-  def _translatetest(self, fn, text, async=False, **kwargs):
+  def _translateTest(self, fn, text, async=False, **kwargs):
     """
     @param  fn  translator
     @param  text  unicode
@@ -321,7 +321,7 @@ class AtlasTranslator(OfflineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translatetest(self.engine.translate, text, async=async)
+    try: return self._translateTest(self.engine.translate, text, async=async)
     except Exception, e:
       dwarn(e)
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("ATLAS")),
@@ -391,7 +391,7 @@ class LecTranslator(OfflineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translatetest(self.engine.translate, text, async=async)
+    try: return self._translateTest(self.engine.translate, text, async=async)
     except Exception, e:
       dwarn(e)
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("LEC")),
@@ -459,7 +459,7 @@ class EzTranslator(OfflineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translatetest(self.engine.translate, text, async=async)
+    try: return self._translateTest(self.engine.translate, text, async=async)
     except Exception, e:
       dwarn(e)
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("ezTrans XP")),
@@ -553,7 +553,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
     @return  unicode sub, unicode lang, unicode provider
     """
     simplified = to == 'zhs'
-    try: return self._translatetest(self.engine.translate, text, async=async, simplified=simplified)
+    try: return self._translateTest(self.engine.translate, text, async=async, simplified=simplified)
     except Exception, e:
       dwarn(e)
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("JBeijing")),
@@ -574,6 +574,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
       try:
         text = self._translate(emit, text, self.engine.translate, async=async, simplified=simplified)
         if text:
+          text = wide2thin_digit(text) # convert wide digits to thin digits
           text = self._unescapeTranslation(text, to=to, emit=emit)
           return text, to, self.key
       #except RuntimeError, e:
@@ -628,7 +629,7 @@ class DreyeTranslator(OfflineMachineTranslator):
     """
     try:
       engine = self.jcEngine if fr == 'ja' else self.ecEngine
-      return self._translatetest(engine.translate, text, to=to, fr=fr, async=async)
+      return self._translateTest(engine.translate, text, to=to, fr=fr, async=async)
     except Exception, e:
       dwarn(e)
       growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("Dr.eye")),
@@ -711,7 +712,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translatetest(self.engine.translate,
+    try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
@@ -749,7 +750,7 @@ class ExciteTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translatetest(self.engine.translate,
+    try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
@@ -782,7 +783,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translatetest(self.engine.translate,
+    try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
@@ -815,7 +816,7 @@ class TransruTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translatetest(self.engine.translate,
+    try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
@@ -852,7 +853,7 @@ class GoogleTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translatetest(self.engine.translate,
+    try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async) #.decode('utf8', errors='ignore')
     except Exception, e: dwarn(e); return ''
 
@@ -892,7 +893,7 @@ class BingTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translatetest(self.engine.translate, text, to=to, fr=fr, async=async)
+    try: return self._translateTest(self.engine.translate, text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
 class BaiduTranslator(OnlineMachineTranslator):
@@ -947,7 +948,7 @@ class BaiduTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translatetest(self.engine.translate,
+    try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
@@ -1013,5 +1014,5 @@ class BaiduTranslator(OnlineMachineTranslator):
 #    @param* async  bool  ignored, always sync
 #    @return  unicode sub, unicode lang, unicode provider
 #    """
-#    try: return self._translatetest(youdaofanyi.translate, text, to=to, fr=fr, async=async)
+#    try: return self._translateTest(youdaofanyi.translate, text, to=to, fr=fr, async=async)
 #    except Exception, e: dwarn(e); return ''
