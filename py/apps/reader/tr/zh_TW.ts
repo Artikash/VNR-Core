@@ -3275,8 +3275,8 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="1944"/>
-        <source>Translate.ru multilingual translation service</source>
-        <translation>Translate.ru的多國語言翻譯服務</translation>
+        <source>Translate.Ru multilingual translation service</source>
+        <translation>Translate.Ru的多國語言翻譯服務</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="1945"/>

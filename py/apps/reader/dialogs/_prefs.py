@@ -1373,7 +1373,7 @@ class _TextTab(object):
       ('LecOnline', 'lecOnline',  mytr_("LEC Online"), None),
       ('Infoseek', None,  mytr_("Infoseek"), None),
       ('Excite', None,  mytr_("Excite"), None),
-      ('Transru', None,  mytr_("Translate.ru"), None),
+      ('Transru', None,  mytr_("Translate.Ru"), None),
       ('Baidu', None,  mytr_("Baidu"), 'zh'),
       #('Youdao', None,  mytr_("Youdao"), 'zh'),
       ('JBeijing', None,  mytr_("JBeijing"), 'zh'),
@@ -1941,7 +1941,7 @@ class _HonyakuTab(object):
   @memoizedproperty
   def transruButton(self):
     ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
-        my.tr("Translate.ru multilingual translation service"),
+        my.tr("Translate.Ru multilingual translation service"),
         my.tr("recommended for Russian"),
         my.tr("including {0}").format(', '.join((
             tr_("ja"),
