@@ -11,7 +11,8 @@ if __name__ == '__main__':
   import sys
   sys.path.append('..')
 
-import json, requests
+import json
+import requests
 #from time import time
 from sakurakit.skdebug import dwarn, derror
 #from sakurakit.sknetio import GZIP_HEADERS
@@ -87,7 +88,7 @@ def translate(text, to='zhs', fr='ja'):
     )
 
     ret = r.content
-    if r.ok and len(ret) > 20:
+    if r.ok and len(ret) > 20 and ret[0] == '{' and ret[-1] == '}':
       #ret = ret.decode('utf8')
       js = json.loads(ret)
       l = js['data']

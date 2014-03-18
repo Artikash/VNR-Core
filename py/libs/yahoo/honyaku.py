@@ -94,7 +94,7 @@ class YahooHonyaku(object):
         )
 
         ret = r.content
-        if r.ok and len(ret) > 20:
+        if r.ok and len(ret) > 20 and ret[0] == '{' and ret[-1] == '}':
           #ret = ret.decode('utf8')
           js = json.loads(ret)
           l = js['ResultSet']['ResultText']['Results']
@@ -125,8 +125,8 @@ def create_engine(): return YahooHonyaku()
 if __name__ == "__main__":
   import sys
   e = create_engine()
-  #t = e.translate(u'こんにちは！\nこんにちは！', to='en', fr='ja')
-  t = e.translate(u'こんにちは！\nこんにちは！', to='vi', fr='ja')
+  t = e.translate(u'こんにちは！\nこんにちは！', to='en', fr='ja')
+  #t = e.translate(u'こんにちは！\nこんにちは！', to='vi', fr='ja')
   import sys
   from PySide.QtGui import *
   a = QApplication(sys.argv)
