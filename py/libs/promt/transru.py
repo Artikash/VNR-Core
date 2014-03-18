@@ -1,7 +1,9 @@
 # coding: utf8
-# trans.py
+# transru.py
 # 3/17/2014 jichi
+#
 # http://sakuradite.com/topic/166
+# http://en.wikipedia.org/wiki/PROMT
 # http://translate.ru
 # http://online-translator.com
 # https://github.com/mishin/gists/blob/master/4translate_tmp.pl

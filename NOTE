@@ -14,7 +14,7 @@ service:
 
 client:
 - share.yaml: -id:, id:
-- util.js: 'id', id:
+- util.js: 'id', id: & make
 - kagami.qml: indonesianFont
 - grimoire.qml: ..
 - mirage.qml: ..
@@ -31,7 +31,7 @@ client:
 - Changes
 
 # Translator related files
-util.js: jbeijing:
+util.js: jbeijing: & make
 kagami.qml: jbeijingColor
 grimoire.qml: ..
 mirage.qml: ..

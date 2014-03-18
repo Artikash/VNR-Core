@@ -1368,11 +1368,12 @@ class _TextTab(object):
     blans = settings.global_().blockedLanguages()
     conf = ( # Name, name, tr, lang
       #('Lougo', None,  u"ルー語", None),
-      ('Google', None,  mytr_("Google"), None),
       ('Bing', None,  mytr_("Bing"), None),
+      ('Google', None,  mytr_("Google"), None),
       ('LecOnline', 'lecOnline',  mytr_("LEC Online"), None),
       ('Infoseek', None,  mytr_("Infoseek"), None),
       ('Excite', None,  mytr_("Excite"), None),
+      ('Transru', None,  mytr_("Translate.ru"), None),
       ('Baidu', None,  mytr_("Baidu"), 'zh'),
       #('Youdao', None,  mytr_("Youdao"), 'zh'),
       ('JBeijing', None,  mytr_("JBeijing"), 'zh'),
@@ -1430,7 +1431,7 @@ class _TextTab(object):
 
     for Name in ('Font', 'Shadow', 'Text', 'Subtitle', 'Comment', 'Danmaku',
                  #'Lougo',
-                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Baidu', 'JBeijing', 'Dreye', 'EzTrans', 'Atlas', 'Lec'):
+                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Baidu', 'JBeijing', 'Dreye', 'EzTrans', 'Atlas', 'Lec'):
       try: getattr(self, '_load{0}Color'.format(Name))(self)
       except AttributeError: pass
 
@@ -1855,6 +1856,8 @@ class _HonyakuTab(object):
     layout.addWidget(self.lecOnlineButton)
     layout.addWidget(self.infoseekButton)
     layout.addWidget(self.exciteButton)
+    if 'ru' not in blans:
+      layout.addWidget(self.transruButton)
     layout.addWidget(QtWidgets.QLabel(my.tr("Offline translators") + ":"))
     if 'zh' not in blans:
       layout.addWidget(self.jbeijingButton)
@@ -1933,6 +1936,25 @@ class _HonyakuTab(object):
         my.tr("recommended for Chinese")))
     ret.setChecked(settings.global_().isBaiduEnabled())
     ret.toggled.connect(settings.global_().setBaiduEnabled)
+    return ret
+
+  @memoizedproperty
+  def transruButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
+        my.tr("Translate.ru multilingual translation service"),
+        my.tr("recommended for Russian"),
+        my.tr("including {0}").format(', '.join((
+            tr_("ja"),
+            tr_("en"),
+            tr_("de"),
+            tr_("es"),
+            tr_("fr"),
+            tr_("it"),
+            tr_("pt"),
+            tr_("ru"),
+    )))))
+    ret.setChecked(settings.global_().isTransruEnabled())
+    ret.toggled.connect(settings.global_().setTransruEnabled)
     return ret
 
   #@memoizedproperty

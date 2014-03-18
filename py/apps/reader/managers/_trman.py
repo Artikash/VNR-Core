@@ -786,6 +786,39 @@ class LecOnlineTranslator(OnlineMachineTranslator):
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
+class TransruTranslator(OnlineMachineTranslator):
+  key = 'transru' # override
+
+  def __init__(self, **kwargs):
+    super(TransruTranslator, self).__init__(**kwargs)
+
+    from promt import transru
+    self.engine = transru
+
+  def translate(self, text, to='en', fr='ja', async=False, emit=False):
+    """@reimp"""
+    to = 'en' if to not in ('ja', 'en', 'ru', 'it', 'fr', 'de', 'pt', 'es') else to
+    if emit:
+      self.emitLanguages(fr=fr, to=to)
+    text = self._escapeText(text, to=to, emit=emit)
+    if text:
+      text = self._translate(emit, text, self.engine.translate,
+          to=to, fr=fr, async=async)
+      if text:
+        text = self._unescapeTranslation(text, to=to, emit=emit)
+    return text, to, self.key
+
+  def translateTest(self, text, to='en', fr='ja', async=False):
+    """
+    @param  text  unicode
+    @param* fr  unicode
+    @param* async  bool  ignored, always sync
+    @return  unicode sub, unicode lang, unicode provider
+    """
+    try: return self._translatetest(self.engine.translate,
+            text, to=to, fr=fr, async=async)
+    except Exception, e: dwarn(e); return ''
+
 class GoogleTranslator(OnlineMachineTranslator):
   key = 'google' # override
 

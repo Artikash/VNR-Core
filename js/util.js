@@ -149,6 +149,7 @@ var TRANSLATOR_NAME = {
   , atlas: "ATLAS"
   , lec: "LEC"
   , lecol: "LEC Online"
+  , transru: "Translate.ru"
   , lou: "ルー語"
 }
 function translatorName(tr) { return TRANSLATOR_NAME[tr] }
