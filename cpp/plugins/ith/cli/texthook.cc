@@ -835,8 +835,11 @@ void IHFAPI InsertNonGuiHooks()
   //   _In_opt_   LPCSTR lpDefaultChar,
   //   _Out_opt_  LPBOOL lpUsedDefaultChar
   // );
-  _(L"MultiByteToWideChar", MultiByteToWideChar, 0xc,  0,4,0, USING_STRING, 4)
-  _(L"WideCharToMultiByte", WideCharToMultiByte, 0xc,  0,4,0, USING_UNICODE|USING_STRING, 4)
+
+  // 3/17/2014 jichi: Temporarily disabled
+  // http://sakuradite.com/topic/159
+  //_(L"MultiByteToWideChar", MultiByteToWideChar, 0xc,  0,4,0, USING_STRING, 4)
+  //_(L"WideCharToMultiByte", WideCharToMultiByte, 0xc,  0,4,0, USING_UNICODE|USING_STRING, 4)
 #undef _
   ConsoleOutput("vnrcli:InsertNonGuiHooks: leave");
 }
