@@ -1711,6 +1711,7 @@ class _HonyakuTab(object):
     #if 'en' not in blans:
     ret = QtWidgets.QGroupBox(my.tr("Preferred Japanese phrase dictionaries")) #+ " (%s)" % tr_("offline")) # looked very bad in Korean langua
     layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(QtWidgets.QLabel(my.tr("Download required") + ":"))
     if 'zh' not in blans:
       layout.addWidget(self.lingoesJaZhButton)
     if 'ko' not in blans:
@@ -1729,6 +1730,7 @@ class _HonyakuTab(object):
       layout.addWidget(self.jmdictRuButton)
     if 'nl' not in blans:
       layout.addWidget(self.jmdictNlButton)
+    layout.addWidget(QtWidgets.QLabel(my.tr("Manual installation required") + ":"))
     if 'ja' not in blans:
       layout.addWidget(self.kojienButton)
     if 'zh' not in blans:
@@ -1743,99 +1745,83 @@ class _HonyakuTab(object):
 
   @memoizedproperty
   def edictButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        my.tr("EDICT Japanese-English dictionary"),
-        tr_("download")))
+    ret = QtWidgets.QCheckBox(my.tr("EDICT Japanese-English dictionary"))
     ret.setChecked(settings.global_().isEdictEnabled())
     ret.toggled.connect(settings.global_().setEdictEnabled)
     return ret
 
   @memoizedproperty
   def kojienButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
         my.tr("Kojien (広辞苑) Japanese-Japanese dictionary"),
-        mytr_("need to install"), tr_("recommended")))
+        my.tr("recommended for Japanese learners")))
     ret.setChecked(settings.global_().isKojienEnabled())
     ret.toggled.connect(settings.global_().setKojienEnabled)
     return ret
 
   @memoizedproperty
   def wadokuButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        my.tr("Wadoku (和独) Japanese-German dictionary"),
-        tr_("download")))
+    ret = QtWidgets.QCheckBox(my.tr("Wadoku (和独) Japanese-German dictionary"))
     ret.setChecked(settings.global_().isWadokuEnabled())
     ret.toggled.connect(settings.global_().setWadokuEnabled)
     return ret
 
   @memoizedproperty
   def zhongriButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        my.tr("Zhongri (日中) Japanese-Chinese dictionary"),
-        mytr_("need to install")))
+    ret = QtWidgets.QCheckBox(my.tr("Zhongri (日中) Japanese-Chinese dictionary"))
     ret.setChecked(settings.global_().isZhongriEnabled())
     ret.toggled.connect(settings.global_().setZhongriEnabled)
     return ret
 
   @memoizedproperty
   def jmdictFrButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        JMDICT_DICT_NAMES['fr'],
-        tr_("download")))
+    ret = QtWidgets.QCheckBox(JMDICT_DICT_NAMES['fr'])
     ret.setChecked(settings.global_().isJMDictFrEnabled())
     ret.toggled.connect(settings.global_().setJMDictFrEnabled)
     return ret
 
   @memoizedproperty
   def jmdictRuButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        JMDICT_DICT_NAMES['ru'],
-        tr_("download")))
+    ret = QtWidgets.QCheckBox(JMDICT_DICT_NAMES['ru'])
     ret.setChecked(settings.global_().isJMDictRuEnabled())
     ret.toggled.connect(settings.global_().setJMDictRuEnabled)
     return ret
 
   @memoizedproperty
   def jmdictNlButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        JMDICT_DICT_NAMES['nl'],
-        tr_("download")))
+    ret = QtWidgets.QCheckBox(JMDICT_DICT_NAMES['nl'])
     ret.setChecked(settings.global_().isJMDictNlEnabled())
     ret.toggled.connect(settings.global_().setJMDictNlEnabled)
     return ret
 
   @memoizedproperty
   def lingoesJaZhButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
         LINGOES_DICT_NAMES['ja-zh'],
-        tr_("download"), my.tr("recommended for Chinese")))
+        my.tr("recommended for Chinese")))
     ret.setChecked(settings.global_().isLingoesJaZhEnabled())
     ret.toggled.connect(settings.global_().setLingoesJaZhEnabled)
     return ret
 
   @memoizedproperty
   def lingoesJaKoButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        LINGOES_DICT_NAMES['ja-ko'],
-        tr_("download")))
+    ret = QtWidgets.QCheckBox(LINGOES_DICT_NAMES['ja-ko'])
     ret.setChecked(settings.global_().isLingoesJaKoEnabled())
     ret.toggled.connect(settings.global_().setLingoesJaKoEnabled)
     return ret
 
   @memoizedproperty
   def lingoesJaViButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        LINGOES_DICT_NAMES['ja-vi'],
-        tr_("download")))
+    ret = QtWidgets.QCheckBox(LINGOES_DICT_NAMES['ja-vi'])
     ret.setChecked(settings.global_().isLingoesJaViEnabled())
     ret.toggled.connect(settings.global_().setLingoesJaViEnabled)
     return ret
 
   @memoizedproperty
   def lingoesJaEnButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
         LINGOES_DICT_NAMES['ja-en'],
-        tr_("download"), my.tr("recommended for English")))
+        my.tr("recommended for English")))
     ret.setChecked(settings.global_().isLingoesJaEnEnabled())
     ret.toggled.connect(settings.global_().setLingoesJaEnEnabled)
     return ret
