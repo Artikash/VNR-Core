@@ -7,6 +7,7 @@
 #else
 # include <windows.h>
 #endif // QT_CORE_LIB
+#include "cc/ccmacro.h"
 
 //#define DEBUG "wintimerbase.cc"
 #include "sakurakit/skdebug.h"
@@ -23,7 +24,7 @@ VOID CALLBACK TimerProc(
   Q_UNUSED(dwTime)
   Q_UNUSED(uMsg)
   Q_ASSERT(idEvent);
-  if (!idEvent)
+  if (CC_UNLIKELY(!idEvent))
     return;
   DOUT("enter");
   WinTimerBase *t = reinterpret_cast<WinTimerBase *>(idEvent);

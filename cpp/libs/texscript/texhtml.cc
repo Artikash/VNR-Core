@@ -49,14 +49,14 @@ TexHtmlParser::~TexHtmlParser()
 
 TexHtmlSettings *TexHtmlParser::settings() const
 {
-  if (!d_->settings)
+  if (Q_UNLIKELY(!d_->settings))
     d_->settings = new TexHtmlSettings(self());
   return d_->settings;
 }
 
 void TexHtmlParser::setSettings(TexHtmlSettings *settings)
 {
-  if (settings != d_->settings) {
+  if (Q_LIKELY(settings != d_->settings)) {
     if (d_->settings && d_->settings->parent() == this)
       d_->settings->deleteLater();
     d_->settings = settings;

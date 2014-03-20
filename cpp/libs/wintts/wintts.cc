@@ -4,6 +4,7 @@
 #include "wintts/wintts.h"
 #include <windows.h>
 #include <sapi.h>
+#include "cc/ccmacro.h"
 
 wintts_t *wintts_create()
 {
@@ -16,13 +17,13 @@ wintts_t *wintts_create()
 void wintts_destroy(wintts_t *voice)
 {
   // FIXME: voice's token is not destroyed?
-  if (voice)
+  if (CC_LIKELY(voice))
     voice->Release();
 }
 
 bool wintts_set_voice(wintts_t *voice, const wchar_t *reg)
 {
-  if (!voice || !reg)
+  if (CC_UNLIKELY(!voice || !reg))
     return false;
 
   enum { fCreateIfNotExist = FALSE };

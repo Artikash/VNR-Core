@@ -45,7 +45,7 @@ MetaCallSocketFilter::~MetaCallSocketFilter()
 
 void MetaCallSocketFilter::setSocket(QAbstractSocket *socket)
 {
-  if (d_->socket != socket) {
+  if (Q_LIKELY(d_->socket != socket)) {
     d_->socket = socket;
     if (socket)
       connect(socket, SIGNAL(readyRead()), SLOT(readSocket()));
@@ -100,16 +100,15 @@ void MetaCallSocketFilter::writeSocket(const QMetaCallEvent *e)
       << m_id
       << m_nargs;
 
-
   bool ok = true;
   for (int i = 1; i < e->nargs() && ok; i++) {
     out << e->types()[i];
     ok = QMetaType::save(out, e->types()[i], e->args()[i]);
-    if (!ok)
+    if (Q_UNLIKELY(!ok))
       DOUT("warning: unregisted metatype");
   }
 
-  if (ok) {
+  if (Q_LIKELY(ok)) {
     out.device()->seek(0);
     out << D::message_size_t(message.size());
     d_->socket->write(message);
@@ -167,7 +166,7 @@ void MetaCallSocketFilter::readSocket()
 
     ok = QMetaType::load(in, m_types[i], m_args[i]) && ok;
   }
-  if (!ok)
+  if (Q_UNLIKELY(!ok))
     DOUT("warning: unregisted metatype");
 
   if (ok && d_->watched) {

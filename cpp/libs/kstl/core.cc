@@ -32,7 +32,7 @@ extern __declspec(allocate(".CRT$XCZ")) _PVFV __xc_z[];    // C++ initializers
 
 
 // Call C constructors
-inline int _initterm_e(_PIFV * pfbegin, _PIFV * pfend)
+inline int _initterm_e(_PIFV *pfbegin, _PIFV *pfend)
 {
   int ret = 0;
 
@@ -50,7 +50,7 @@ inline int _initterm_e(_PIFV * pfbegin, _PIFV * pfend)
 }
 
 // Call C++ constructors
-inline void _initterm(_PVFV * pfbegin, _PVFV * pfend)
+inline void _initterm(_PVFV *pfbegin, _PVFV *pfend)
 {
   // walk the table of function pointers from the bottom up, until
   // the end is encountered.  Do not skip the first entry.  The initial

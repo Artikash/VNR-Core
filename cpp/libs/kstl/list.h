@@ -360,8 +360,7 @@ template<typename _Tp, typename _Alloc = allocator<_Tp> >
     void
     _M_insert(iterator __pos, const value_type &x)
     {
-      _Node *t = _M_create_node(x);
-      if (t)
+      if (_Node *t = _M_create_node(x))
         t->_M_hook(__pos._M_node);
     }
 
@@ -394,27 +393,21 @@ mespace kstd {
 inline void
 _List_node_base::swap(_List_node_base& __x, _List_node_base& __y)
 {
-  if ( __x._M_next != &__x )
-  {
-    if ( __y._M_next != &__y )
-    {
+  if (__x._M_next != &__x) {
+    if (__y._M_next != &__y) {
       // Both __x and __y are not empty.
       kstd::swap(__x._M_next,__y._M_next);
       kstd::swap(__x._M_prev,__y._M_prev);
       __x._M_next->_M_prev = __x._M_prev->_M_next = &__x;
       __y._M_next->_M_prev = __y._M_prev->_M_next = &__y;
-    }
-    else
-    {
+    } else {
       // __x is not empty, __y is empty.
       __y._M_next = __x._M_next;
       __y._M_prev = __x._M_prev;
       __y._M_next->_M_prev = __y._M_prev->_M_next = &__y;
       __x._M_next = __x._M_prev = &__x;
     }
-  }
-  else if ( __y._M_next != &__y )
-  {
+  } else if (__y._M_next != &__y) {
     // __x is empty, __y is not empty.
     __x._M_next = __y._M_next;
     __x._M_prev = __y._M_prev;
@@ -427,8 +420,7 @@ inline void
 _List_node_base::_M_transfer(_List_node_base * const __first,
                           _List_node_base * const __last)
 {
-  if (this != __last)
-  {
+  if (this != __last) {
     // Remove [first, last) from its old position.
     __last->_M_prev->_M_next  = this;
     __first->_M_prev->_M_next = __last;
@@ -446,14 +438,12 @@ inline void
 _List_node_base::_M_reverse()
 {
   _List_node_base* __tmp = this;
-  do
-  {
+  do {
     kstd::swap(__tmp->_M_next, __tmp->_M_prev);
 
     // Old next node is now prev.
     __tmp = __tmp->_M_prev;
-  }
-  while (__tmp != this);
+  } while (__tmp != this);
 }
 
 inline void

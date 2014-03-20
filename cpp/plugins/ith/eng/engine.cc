@@ -399,7 +399,7 @@ DWORD DetermineNoHookEngine()
     return yes;
   }
 
-  if (IthCheckFile(L"AGERC.DLL")) { // jichi 3/17/2014: Eushully
+  if (IthCheckFile(L"AGERC.DLL")) { // jichi 3/17/2014: Eushully, AGE.EXE
     ConsoleOutput("vnreng: IGNORE Eushully");
     return yes;
   }
@@ -426,6 +426,12 @@ DWORD DetermineNoHookEngine()
       return yes;
     }
   }
+
+  if (wcsstr(process_name_, L"lcsebody") || !wcsncmp(process_name_, L"lcsebod~", 7)) { // jichi 3/19/2014: lcsebody.exe, GetGlyphOutlineA
+    ConsoleOutput("vnreng: IGNORE lcsebody");
+    return yes;
+  }
+
   wchar_t str[MAX_PATH];
   DWORD i;
   for (i = 0; process_name_[i]; i++) {

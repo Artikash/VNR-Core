@@ -26,7 +26,7 @@ namespace { // anonymous
 // jichi 12/17/2013: Copied from int TextHook::GetLength(DWORD base, DWORD in)
 int GetHookDataLength(const HookParam &hp, DWORD base, DWORD in)
 {
-  if (base == 0)
+  if (CC_UNLIKELY(!base))
     return 0;
   int len;
   switch (hp.length_offset) {
@@ -739,13 +739,18 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam* hp, DWORD* data, DWORD*
 }
 void InsertMajiroHook()
 {
-  HookParam hp = {};
+  DWORD addr = Util::FindCallAndEntryAbs((DWORD)TextOutA,module_limit_-module_base_,module_base_,0xec81);
+  if (!addr) {
+    ConsoleOutput("vnreng:MAJIRO: failed");
+    return false;
+  }
 
+  HookParam hp = {};
   //hp.off=0xC;
   //hp.split=4;
   //hp.split_ind=0x28;
   //hp.type|=USING_STRING|USING_SPLIT|SPLIT_INDIRECT;
-  hp.addr = Util::FindCallAndEntryAbs((DWORD)TextOutA,module_limit_-module_base_,module_base_,0xEC81);
+  hp.addr = addr;
   hp.type = EXTERN_HOOK;
   hp.extern_fun = SpecialHookMajiro;
   ConsoleOutput("vnreng: INSERT MAJIRO");
@@ -767,7 +772,7 @@ namespace { // anonymous
 bool InsertCMVS1Hook()
 {
   DWORD addr = Util::FindCallAndEntryAbs((DWORD)GetGlyphOutlineA, module_limit_ - module_base_, module_base_, 0xec83);
-  if (addr) {
+  if (!addr) {
     ConsoleOutput("vnreng:CMVS1: failed");
     return false;
   }
@@ -1662,12 +1667,13 @@ bool InsertWhirlpoolHook()
 
 bool InsertCotophaHook()
 {
-  HookParam hp = {};
-  hp.addr = Util::FindCallAndEntryAbs((DWORD)GetTextMetricsA,module_limit_-module_base_,module_base_,0xEC8B55);
-  if (!hp.addr) {
+  DWORD addr = Util::FindCallAndEntryAbs((DWORD)GetTextMetricsA,module_limit_-module_base_,module_base_,0xec8b55);
+  if (!addr) {
     ConsoleOutput("vnreng:Cotopha: pattern not exist");
     return false;
   }
+  HookParam hp = {};
+  hp.addr = addr;
   hp.off = 4;
   hp.split = -0x1c;
   hp.type = USING_UNICODE|USING_SPLIT|USING_STRING;
@@ -1679,7 +1685,6 @@ bool InsertCotophaHook()
 
 bool InsertCatSystem2Hook()
 {
-  HookParam hp = {};
   //DWORD search=0x95EB60F;
   //DWORD j,i=SearchPattern(module_base_,module_limit_-module_base_,&search,4);
   //if (i==0) return;
@@ -1695,12 +1700,13 @@ bool InsertCatSystem2Hook()
   //hp.type=BIG_ENDIAN|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
   //hp.length_offset=1;
 
-  hp.addr = Util::FindCallAndEntryAbs((DWORD)GetTextMetricsA, module_limit_ - module_base_, module_base_, 0xff6acccc);
-  if (!hp.addr) {
+  DWORD addr = Util::FindCallAndEntryAbs((DWORD)GetTextMetricsA, module_limit_ - module_base_, module_base_, 0xff6acccc);
+  if (addr) {
     ConsoleOutput("vnreng:CatSystem2: pattern not exist");
     return false;
   }
-  hp.addr += 2;
+  HookParam hp = {};
+  hp.addr = addr + 2;
   hp.off = 8;
   hp.split = -0x10;
   hp.length_offset = 1;
@@ -3178,14 +3184,15 @@ static void SpecialHookWillPlus(DWORD esp_base, HookParam* hp, DWORD* data, DWOR
 
 bool InsertWillPlusHook()
 {
-  HookParam hp = {};
   //__debugbreak();
-  hp.addr = Util::FindCallAndEntryAbs((DWORD)GetGlyphOutlineA,module_limit_-module_base_,module_base_,0xEC81);
-  if (hp.addr == 0) {
+  DWORD addr = Util::FindCallAndEntryAbs((DWORD)GetGlyphOutlineA,module_limit_-module_base_,module_base_,0xec81);
+  if (!addr) {
     ConsoleOutput("vnreng:WillPlus: function call not found");
     return false;
   }
 
+  HookParam hp = {};
+  hp.addr = addr;
   hp.extern_fun = SpecialHookWillPlus;
   hp.type = USING_STRING | EXTERN_HOOK;
   ConsoleOutput("vnreng: INSERT WillPlus");
