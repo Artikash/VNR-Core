@@ -89,7 +89,9 @@ class SoftApi(object):
     }
 
   # 'banner' is mistyped as 'bannner'
-  _rx_banner = re.compile(r'bannner -->.*?<img src="(.+?)"', re.DOTALL)
+  # <div style="text-align: center; padding-top:10px;"><img src="http://www.noukano.com/koisen/banner/koisen-600x120-5.jpg" /></div>
+  #_rx_banner = re.compile(r'bannner -->.*?<img src="(.+?)"', re.DOTALL)
+  _rx_banner = re.compile(r'"><img src="(.+?)"')
   def _parsebanner(self, h):
     """
     @param  h  unicode  html
@@ -106,7 +108,8 @@ class SoftApi(object):
     """
     return u"女性向）</small></td></tr>" in h
 
-  _rx_series = re.compile(ur'series -->.*?>([^>]+?)シリーズ', re.DOTALL)
+  #_rx_series = re.compile(ur'series -->.*?>([^>]+?)シリーズ', re.DOTALL)
+  _rx_series = re.compile(ur'>([^>]+?)シリーズ')
   def _parseseries(self, h):
     """
     @param  h  unicode  html
@@ -242,14 +245,15 @@ class SoftApi(object):
 
 if __name__ == '__main__':
   api = SoftApi()
-  k = 7998
-  k = 9
+  k = 11571
+  k = 11395
   print '-' * 10
   q = api.query(k)
   #for k,v in q.iteritems():
   #  print k, ':', v
-  for it in q['brands']:
-    print it
+  print q['banner']
+  #for it in q['brands']:
+  #  print it
   #for it in q['creators']:
   #  print it['name'], it['roles']
   #print q['videos']
