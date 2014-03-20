@@ -1044,7 +1044,7 @@ Item { id: root_
       Share.LabeledSlider { id: textSlider_
         height: parent.cellHeight
         width: parent.cellWidth
-        text: qsTr("Count")
+        text: qsTr("Length")
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40

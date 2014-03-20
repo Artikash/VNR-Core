@@ -412,8 +412,8 @@
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1045"/>
-        <source>Count</source>
-        <translation>文本長</translation>
+        <source>Length</source>
+        <translation>長度</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1050"/>
