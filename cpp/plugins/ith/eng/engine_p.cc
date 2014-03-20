@@ -914,8 +914,9 @@ bool InsertCMVS2Hook()
 // jichi 3/7/2014: Insert the old hook first since GetGlyphOutlineA can NOT be found in new games
 bool InsertCMVSHook()
 {
-  // Both CMVS1 and CMVS2 exists in new games. Not sure about the old games.
+  // Both CMVS1 and CMVS2 exists in new games.
   // Insert the CMVS2 first. Since CMVS1 could break CMVS2
+  // And the CMVS1 games do not have CMVS2 patterns.
   return InsertCMVS2Hook() || InsertCMVS1Hook();
 }
 
