@@ -427,7 +427,7 @@ DWORD DetermineNoHookEngine()
     }
   }
 
-  if (wcsstr(process_name_, L"lcsebody") || !wcsncmp(process_name_, L"lcsebod~", 7)) { // jichi 3/19/2014: lcsebody.exe, GetGlyphOutlineA
+  if (wcsstr(process_name_, L"lcsebody") || !wcsncmp(process_name_, L"lcsebo~", 7)) { // jichi 3/19/2014: lcsebody.exe, GetGlyphOutlineA
     ConsoleOutput("vnreng: IGNORE lcsebody");
     return yes;
   }

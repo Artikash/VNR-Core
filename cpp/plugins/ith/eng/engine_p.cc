@@ -737,7 +737,7 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam* hp, DWORD* data, DWORD*
     mov [ecx],edx
   }
 }
-void InsertMajiroHook()
+bool InsertMajiroHook()
 {
   DWORD addr = Util::FindCallAndEntryAbs((DWORD)TextOutA,module_limit_-module_base_,module_base_,0xec81);
   if (!addr) {
@@ -756,6 +756,7 @@ void InsertMajiroHook()
   ConsoleOutput("vnreng: INSERT MAJIRO");
   NewHook(hp, L"MAJIRO");
   //RegisterEngineType(ENGINE_MAJIRO);
+  return true;
 }
 
 /********************************************************************************************
@@ -912,7 +913,11 @@ bool InsertCMVS2Hook()
 
 // jichi 3/7/2014: Insert the old hook first since GetGlyphOutlineA can NOT be found in new games
 bool InsertCMVSHook()
-{ return InsertCMVS1Hook() || InsertCMVS2Hook(); }
+{
+  // Both CMVS1 and CMVS2 exists in new games. Not sure about the old games.
+  // Insert the CMVS2 first. Since CMVS1 could break CMVS2
+  return InsertCMVS2Hook() || InsertCMVS1Hook();
+}
 
 /********************************************************************************************
 rUGP hook:
@@ -1587,31 +1592,29 @@ void InsertTinkerBellHook()
 //  //if (count)
   //RegisterEngineType(ENGINE_TINKER);
 
+// jichi 3/19/2014: Insert both hooks
 void InsertLuneHook()
 {
-  HookParam hp = {};
-  DWORD c = Util::FindCallOrJmpAbs((DWORD)ExtTextOutA, module_limit_ - module_base_, (DWORD)module_base_, true);
-  if (!c)
-    return;
-  hp.addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, (DWORD)module_base_, 0xec8b55);
-  if (!hp.addr)
-    return;
-  hp.off = 4;
-  hp.type = USING_STRING;
-  ConsoleOutput("vnreng:INSERT MBL-Furigana");
-  NewHook(hp, L"MBL-Furigana");
-  c = Util::FindCallOrJmpAbs((DWORD)GetGlyphOutlineA, module_limit_ - module_base_, (DWORD)module_base_, true);
-  if (!c)
-    return;
-  hp.addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, (DWORD)module_base_, 0xec8b55);
-  if (!hp.addr)
-    return;
-  hp.split = -0x18;
-  hp.length_offset = 1;
-  hp.type = BIG_ENDIAN|USING_SPLIT;
-  ConsoleOutput("vnreng:INSERT MBL");
-  NewHook(hp, L"MBL");
-  //RegisterEngineType(ENGINE_LUNE);
+  if (DWORD c = Util::FindCallOrJmpAbs((DWORD)ExtTextOutA, module_limit_ - module_base_, (DWORD)module_base_, true))
+    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, (DWORD)module_base_, 0xec8b55)) {
+      HookParam hp = {};
+      hp.addr = addr;
+      hp.off = 4;
+      hp.type = USING_STRING;
+      ConsoleOutput("vnreng:INSERT MBL-Furigana");
+      NewHook(hp, L"MBL-Furigana");
+    }
+  if (DWORD c = Util::FindCallOrJmpAbs((DWORD)GetGlyphOutlineA, module_limit_ - module_base_, (DWORD)module_base_, true))
+    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, (DWORD)module_base_, 0xec8b55)) {
+      HookParam hp = {};
+      hp.addr = addr;
+      hp.off = 4;
+      hp.split = -0x18;
+      hp.length_offset = 1;
+      hp.type = BIG_ENDIAN|USING_SPLIT;
+      ConsoleOutput("vnreng:INSERT MBL");
+      NewHook(hp, L"MBL");
+    }
 }
 /********************************************************************************************
 YU-RIS hook:
@@ -2079,7 +2082,7 @@ EMEHook hook: (Contributed by Freaka)
 ********************************************************************************************/
 bool InsertEMEHook()
 {
-  DWORD c = Util::FindCallOrJmpAbs((DWORD)IsDBCSLeadByte,module_limit_-module_base_,(DWORD)module_base_,false);
+  DWORD addr = Util::FindCallOrJmpAbs((DWORD)IsDBCSLeadByte,module_limit_-module_base_,(DWORD)module_base_,false);
   // no needed as first call to IsDBCSLeadByte is correct, but sig could be used for further verification
   //WORD sig = 0x51C3;
   //while (c && (*(WORD*)(c-2)!=sig))
@@ -2087,12 +2090,12 @@ bool InsertEMEHook()
   //  //-0x1000 as FindCallOrJmpAbs always uses an offset of 0x1000
   //  c = Util::FindCallOrJmpAbs((DWORD)IsDBCSLeadByte,module_limit_-c-0x1000+4,c-0x1000+4,false);
   //}
-  if (!c) {
+  if (!addr) {
     ConsoleOutput("vnreng:EME: pattern does not exist");
     return false;
   }
   HookParam hp = {};
-  hp.addr = c;
+  hp.addr = addr;
   hp.off = -0x8;
   hp.length_offset = 1;
   hp.type = NO_CONTEXT|DATA_INDIRECT;
@@ -2110,17 +2113,17 @@ void SpecialRunrunEngine(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* spli
 }
 bool InsertRREHook()
 {
-  DWORD c = Util::FindCallOrJmpAbs((DWORD)IsDBCSLeadByte,module_limit_-module_base_,(DWORD)module_base_,false);
-  if (!c) {
+  DWORD addr = Util::FindCallOrJmpAbs((DWORD)IsDBCSLeadByte,module_limit_-module_base_,(DWORD)module_base_,false);
+  if (!addr) {
     ConsoleOutput("vnreng:RRE: function call does not exist");
     return false;
   }
   WORD sig = 0x51c3;
   HookParam hp = {};
-  hp.addr = c;
+  hp.addr = addr;
   hp.length_offset = 1;
   hp.type = NO_CONTEXT|DATA_INDIRECT;
-  if ((*(WORD *)(c-2) != sig)) {
+  if ((*(WORD *)(addr-2) != sig)) {
     hp.extern_fun = SpecialRunrunEngine;
     hp.type |= EXTERN_HOOK;
     ConsoleOutput("vnreng: INSERT Runrun#1");
@@ -2688,7 +2691,7 @@ static void SpecialHookDebonosu(DWORD esp_base, HookParam* hp, DWORD* data, DWOR
 bool InsertDebonosuHook()
 {
   DWORD fun;
-  if (GetFunctionAddr("lstrcatA",&fun,0,0,0) == 0)  {
+  if (CC_UNLIKELY(!GetFunctionAddr("lstrcatA", &fun, 0, 0, 0))) {
     ConsoleOutput("vnreng:Debonosu: failed to find lstrcatA");
     return false;
   }
