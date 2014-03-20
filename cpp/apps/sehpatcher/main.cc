@@ -35,7 +35,7 @@ int main()
     ReadFile(hFile, file, 0x1000, &d, 0);
     IMAGE_DOS_HEADER *DosHdr = (IMAGE_DOS_HEADER *)file;
     IMAGE_NT_HEADERS *NtHdr = (IMAGE_NT_HEADERS *)((DWORD)DosHdr+DosHdr->e_lfanew);
-    if ((BYTE*)&NtHdr->OptionalHeader.DllCharacteristics - file >= 0x1000)
+    if ((BYTE *)&NtHdr->OptionalHeader.DllCharacteristics - file >= 0x1000)
       growl(0, L"Overflow");
     else {
       // 12/3/2013 jichi

@@ -38,6 +38,7 @@ bool InsertGesen18Hook();       // Gsen18: *.szs
 bool InsertGXPHook();           // GXP: *.gxp
 bool InsertLiveHook();          // Live: live.dll
 bool InsertMalieHook();         // Malie@light: malie.ini
+bool InsertMajiroHook();        // MAJIRO: *.arc
 bool InsertMEDHook();           // MED: *.med
 bool InsertNextonHook();        // NEXTON: aInfo.db
 bool InsertNitroPlusHook();     // NitroPlus: *.npa
@@ -65,7 +66,6 @@ bool InsertWolfHook();          // Wolf: Data.wolf
 void InsertAB2TryHook();        // Yane@AkabeiSoft2Try: YaneSDK.dll.
 void InsertBrunsHook();         // Bruns: bruns.exe
 void InsertLuneHook();          // Lune: *.mbl
-void InsertMajiroHook();        // MAJIRO: *.arc
 void InsertKiriKiriHook();      // KiriKiri: *.xp3, resource string
 void InsertIronGameSystemHook();// IroneGameSystem: igs_sample.exe
 void InsertLucifenHook();       // Lucifen@Navel: *.lpk

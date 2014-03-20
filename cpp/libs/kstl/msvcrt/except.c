@@ -232,8 +232,7 @@ static void *get_this_pointer(const cxx_type_info *type, void *object)
 
   if (!type || !object) return NULL;
   this_ptr = (char *)object + type->this_offset;
-  if (type->vbase_descr >= 0)
-  {
+  if (type->vbase_descr >= 0) {
     /* move this ptr to vbase descriptor */
     this_ptr = (char *)this_ptr + type->vbase_descr;
     /* and fetch additional offset from vbase descriptor */
@@ -251,18 +250,15 @@ static const cxx_type_info *find_caught_type(cxx_exception_type *exception_type,
   unsigned int i;
 
   if (!catchblock->type_info)
-  {
     return exception_type->type_info_table->cxx_type_info[0]; /* catch(...) matches any type */
-  }
 
-  for (i = 0; i < exception_type->type_info_table->count; i++)
-  {
+
+  for (i = 0; i < exception_type->type_info_table->count; i++) {
     const cxx_type_info *type = exception_type->type_info_table->cxx_type_info[i];
 
-    if (catchblock->type_info != type->type_info)
-    {
-      if (strcmp(catchblock->type_info->name, type->type_info->name)) continue;
-    }
+    if (catchblock->type_info != type->type_info &&
+        strcmp(catchblock->type_info->name, type->type_info->name)) continue;
+
     /* type is the same, now check the flags */
     if ((exception_type->flags & TYPE_FLAG_CONST) &&
       !(catchblock->flags & TYPE_FLAG_CONST)) continue;
@@ -285,28 +281,20 @@ static void copy_exception(void *object, cxx_exception_frame *frame,
   dest_ptr = (void **)((char *)&frame->ebp + catchblock->offset);
 
   if (catchblock->flags & TYPE_FLAG_REFERENCE)
-  {
     *dest_ptr = get_this_pointer(type, object);
-  }
-  else if (type->flags & CLASS_IS_SIMPLE_TYPE)
-  {
+  else if (type->flags & CLASS_IS_SIMPLE_TYPE) {
     memcpy(dest_ptr, object, type->size);
     /* if it is a pointer, adjust it */
     if (type->size == sizeof(void *)) *dest_ptr = get_this_pointer(type, *dest_ptr);
-  }
-  else  /* copy the object */
-  {
-    if (type->copy_constructor)
-    {
+  } else { /* copy the object */
+    if (type->copy_constructor) {
       cxx_push_handler(unexpected_handler);
       cxx_call_copy_constructor(type->copy_constructor, dest_ptr, get_this_pointer(type, object),
         (type->flags & CLASS_HAS_VIRTUAL_BASE_CLASS));
       cxx_pop_handler();
-    }
-    else
-    {
+    } else
       memcpy(dest_ptr, get_this_pointer(type, object), type->size);
-    }
+
   }
 }
 
@@ -314,14 +302,11 @@ static void copy_exception(void *object, cxx_exception_frame *frame,
 static void cxx_local_unwind(cxx_exception_frame *frame, cxx_function_descr *descr,
                int last_level)
 {
-  while (frame->trylevel != last_level)
-  {
+  while (frame->trylevel != last_level) {
     if (frame->trylevel < 0 || frame->trylevel >= descr->unwind_count)
-    {
       terminate();
-    }
-    if (descr->unwind_table[frame->trylevel].handler)
-    {
+
+    if (descr->unwind_table[frame->trylevel].handler) {
       cxx_push_handler(unexpected_handler);
       cxx_call_handler(descr->unwind_table[frame->trylevel].handler, &frame->ebp);
       cxx_pop_handler();
@@ -349,27 +334,23 @@ static void cxx_global_unwind(PEXCEPTION_FRAME last_frame)
     mov  dword ptr [stack_base], eax
   }
 
-  rec = ExAllocatePool(NonPagedPool, (sizeof(EXCEPTION_RECORD)));
+  rec = ExAllocatePool(NonPagedPool, sizeof(EXCEPTION_RECORD));
   memset(rec, 0, sizeof(EXCEPTION_RECORD));
   //rec->ExceptionCode = STATUS_UNWIND;
   rec->ExceptionFlags = EH_UNWINDING;
   rec->ExceptionAddress = 0;
   rec->ExceptionRecord = 0;
 
-  context = ExAllocatePool(NonPagedPool, (sizeof(CONTEXT)));
+  context = ExAllocatePool(NonPagedPool, sizeof(CONTEXT));
   memset(context, 0, sizeof(CONTEXT));
 
-  for (frame = current_frame; frame != last_frame; frame = frame->Prev)
-  {
+  for (frame = current_frame; frame != last_frame; frame = frame->Prev) {
     //check for possible stack corruption
     if (frame < stack_base ||
-      frame + sizeof(EXCEPTION_FRAME) > stack_top ||
-      frame > last_frame ||
-      (frame->Prev != (PEXCEPTION_FRAME) -1 && frame > frame->Prev)
-      )
-    {
+        frame + sizeof(EXCEPTION_FRAME) > stack_top ||
+        frame > last_frame ||
+        (frame->Prev != (PEXCEPTION_FRAME) -1 && frame > frame->Prev))
       terminate();
-    }
 
     cxx_push_handler(unexpected_handler);
     (*frame->Handler)(rec, frame, context, 0);
@@ -390,31 +371,23 @@ static void cxx_global_unwind(PEXCEPTION_FRAME last_frame)
 static EXCEPTION_DISPOSITION __stdcall catch_block_protector(PEXCEPTION_RECORD rec, PEXCEPTION_FRAME frame,
                                PCONTEXT context, void *dispatch)
 {
-  if (!(rec->ExceptionFlags & (EH_UNWINDING | EH_EXIT_UNWIND)))
-  {
+  if (!(rec->ExceptionFlags & (EH_UNWINDING | EH_EXIT_UNWIND))) {
     /* get the previous exception saved on the stack */
     void* exception_object = (void*) ((ULONG*)frame)[2];
     cxx_exception_type* exception_type = (cxx_exception_type*) ((ULONG*)frame)[3];
 
     if (rec->ExceptionCode == CXX_EXCEPTION &&
-      rec->NumberParameters == 3 &&
-      rec->ExceptionInformation[0] == CXX_FRAME_MAGIC &&
-      rec->ExceptionInformation[1] == 0 &&
-      rec->ExceptionInformation[2] == 0)
-    {
+        rec->NumberParameters == 3 &&
+        rec->ExceptionInformation[0] == CXX_FRAME_MAGIC &&
+        rec->ExceptionInformation[1] == 0 &&
+        rec->ExceptionInformation[2] == 0) {
       /* rethrow the previous exception */
       rec->ExceptionInformation[1] = (ULONG) exception_object;
       rec->ExceptionInformation[2] = (ULONG) exception_type;
-    }
-    else
-    {
-      /* throw of new exception, delete the previous exception object */
-      if (exception_object && exception_type->destructor)
-      {
-        cxx_push_handler(unexpected_handler);
-        cxx_call_destructor(exception_type->destructor, exception_object);
-        cxx_pop_handler();
-      }
+    } else if (exception_object && exception_type->destructor) { /* throw of new exception, delete the previous exception object */
+      cxx_push_handler(unexpected_handler);
+      cxx_call_destructor(exception_type->destructor, exception_object);
+      cxx_pop_handler();
     }
   }
   return ExceptionContinueSearch;
@@ -432,16 +405,14 @@ static void *call_catch_block(PEXCEPTION_RECORD rec, cxx_exception_frame *frame,
   cxx_exception_type *exception_type = (cxx_exception_type *) rec->ExceptionInformation[2];
   int trylevel = frame->trylevel;
 
-  for (i = 0; i < descr->tryblock_count; i++)
-  {
+  for (i = 0; i < descr->tryblock_count; i++) {
     tryblock_info *tryblock = &descr->tryblock[i];
 
     if (trylevel < tryblock->start_level) continue;
     if (trylevel > tryblock->end_level) continue;
 
     /* got a try block */
-    for (j = 0; j < tryblock->catchblock_count; j++)
-    {
+    for (j = 0; j < tryblock->catchblock_count; j++) {
       catchblock_info *catchblock = &tryblock->catchblock[j];
       const cxx_type_info *type = find_caught_type(exception_type, catchblock);
       if (!type) continue;
@@ -465,8 +436,7 @@ static void *call_catch_block(PEXCEPTION_RECORD rec, cxx_exception_frame *frame,
       __asm add esp, 8
 
       /* delete the exception object */
-      if (exception_object && exception_type->destructor)
-      {
+      if (exception_object && exception_type->destructor) {
         cxx_push_handler(unexpected_handler);
         cxx_call_destructor(exception_type->destructor, exception_object);
         cxx_pop_handler();
@@ -482,41 +452,25 @@ static EXCEPTION_DISPOSITION cxx_frame_handler(PEXCEPTION_RECORD rec, cxx_except
                          cxx_function_descr *descr)
 {
   if (descr->magic != CXX_FRAME_MAGIC)
-  {
     return ExceptionContinueSearch;
-  }
 
   /* stack unwinding */
-  if (rec->ExceptionFlags & (EH_UNWINDING | EH_EXIT_UNWIND))
-  {
+  if (rec->ExceptionFlags & (EH_UNWINDING | EH_EXIT_UNWIND)) {
     if(frame->trylevel >= descr->unwind_count) //stack corruption
-    {
       terminate();
-    }
     if (descr->unwind_count)
-    {
       cxx_local_unwind(frame, descr, -1);
-    }
-  }
-  /* non C++ exception */
-  else if (rec->ExceptionCode != CXX_EXCEPTION)
-  {
-    if (_se_translator)
-    {
+  } else if (rec->ExceptionCode != CXX_EXCEPTION) { /* non C++ exception */
+    if (_se_translator) {
       EXCEPTION_POINTERS ep = {rec, context};
       (*_se_translator)(rec->ExceptionCode, &ep);
     }
-  }
-  /* C++ exception */
-  else if (rec->NumberParameters == 3 &&
-       rec->ExceptionInformation[0] == CXX_FRAME_MAGIC &&
-       rec->ExceptionInformation[1] != 0 &&
-       rec->ExceptionInformation[2] != 0)
-  {
-    void *ret_addr = call_catch_block(rec, frame, descr);
+  } else if (rec->NumberParameters == 3 &&
+      rec->ExceptionInformation[0] == CXX_FRAME_MAGIC &&
+      rec->ExceptionInformation[1] != 0 &&
+      rec->ExceptionInformation[2] != 0) { /* C++ exception */
 
-    if (ret_addr)
-    {
+    if (void *ret_addr = call_catch_block(rec, frame, descr)) {
       rec->ExceptionFlags &= ~EH_NONCONTINUABLE;
       context->Eip = (ULONG)ret_addr;
       context->Ebp = (ULONG)&frame->ebp;

@@ -41,7 +41,7 @@ int CALLBACK WinMain(__in HINSTANCE hInstance, __in HINSTANCE hPrevInstance, __i
 
   enum { BUFFER_SIZE = MAX_PATH * 3 };
   WCHAR wszBuffer[BUFFER_SIZE];
-  if (::GetModuleFileNameW(0, wszBuffer, BUFFER_SIZE) == BUFFER_SIZE)
+  if (CC_UNLIKELY(::GetModuleFileNameW(0, wszBuffer, BUFFER_SIZE) == BUFFER_SIZE))
     return -1;
 
   std::wstring wsDir = dirname(wszBuffer);

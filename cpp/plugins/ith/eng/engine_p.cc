@@ -26,7 +26,7 @@ namespace { // anonymous
 // jichi 12/17/2013: Copied from int TextHook::GetLength(DWORD base, DWORD in)
 int GetHookDataLength(const HookParam &hp, DWORD base, DWORD in)
 {
-  if (base == 0)
+  if (CC_UNLIKELY(!base))
     return 0;
   int len;
   switch (hp.length_offset) {
@@ -737,20 +737,26 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam* hp, DWORD* data, DWORD*
     mov [ecx],edx
   }
 }
-void InsertMajiroHook()
+bool InsertMajiroHook()
 {
-  HookParam hp = {};
+  DWORD addr = Util::FindCallAndEntryAbs((DWORD)TextOutA,module_limit_-module_base_,module_base_,0xec81);
+  if (!addr) {
+    ConsoleOutput("vnreng:MAJIRO: failed");
+    return false;
+  }
 
+  HookParam hp = {};
   //hp.off=0xC;
   //hp.split=4;
   //hp.split_ind=0x28;
   //hp.type|=USING_STRING|USING_SPLIT|SPLIT_INDIRECT;
-  hp.addr = Util::FindCallAndEntryAbs((DWORD)TextOutA,module_limit_-module_base_,module_base_,0xEC81);
+  hp.addr = addr;
   hp.type = EXTERN_HOOK;
   hp.extern_fun = SpecialHookMajiro;
   ConsoleOutput("vnreng: INSERT MAJIRO");
   NewHook(hp, L"MAJIRO");
   //RegisterEngineType(ENGINE_MAJIRO);
+  return true;
 }
 
 /********************************************************************************************
@@ -767,7 +773,7 @@ namespace { // anonymous
 bool InsertCMVS1Hook()
 {
   DWORD addr = Util::FindCallAndEntryAbs((DWORD)GetGlyphOutlineA, module_limit_ - module_base_, module_base_, 0xec83);
-  if (addr) {
+  if (!addr) {
     ConsoleOutput("vnreng:CMVS1: failed");
     return false;
   }
@@ -907,7 +913,11 @@ bool InsertCMVS2Hook()
 
 // jichi 3/7/2014: Insert the old hook first since GetGlyphOutlineA can NOT be found in new games
 bool InsertCMVSHook()
-{ return InsertCMVS1Hook() || InsertCMVS2Hook(); }
+{
+  // Both CMVS1 and CMVS2 exists in new games. Not sure about the old games.
+  // Insert the CMVS2 first. Since CMVS1 could break CMVS2
+  return InsertCMVS2Hook() || InsertCMVS1Hook();
+}
 
 /********************************************************************************************
 rUGP hook:
@@ -1582,31 +1592,29 @@ void InsertTinkerBellHook()
 //  //if (count)
   //RegisterEngineType(ENGINE_TINKER);
 
+// jichi 3/19/2014: Insert both hooks
 void InsertLuneHook()
 {
-  HookParam hp = {};
-  DWORD c = Util::FindCallOrJmpAbs((DWORD)ExtTextOutA, module_limit_ - module_base_, (DWORD)module_base_, true);
-  if (!c)
-    return;
-  hp.addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, (DWORD)module_base_, 0xec8b55);
-  if (!hp.addr)
-    return;
-  hp.off = 4;
-  hp.type = USING_STRING;
-  ConsoleOutput("vnreng:INSERT MBL-Furigana");
-  NewHook(hp, L"MBL-Furigana");
-  c = Util::FindCallOrJmpAbs((DWORD)GetGlyphOutlineA, module_limit_ - module_base_, (DWORD)module_base_, true);
-  if (!c)
-    return;
-  hp.addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, (DWORD)module_base_, 0xec8b55);
-  if (!hp.addr)
-    return;
-  hp.split = -0x18;
-  hp.length_offset = 1;
-  hp.type = BIG_ENDIAN|USING_SPLIT;
-  ConsoleOutput("vnreng:INSERT MBL");
-  NewHook(hp, L"MBL");
-  //RegisterEngineType(ENGINE_LUNE);
+  if (DWORD c = Util::FindCallOrJmpAbs((DWORD)ExtTextOutA, module_limit_ - module_base_, (DWORD)module_base_, true))
+    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, (DWORD)module_base_, 0xec8b55)) {
+      HookParam hp = {};
+      hp.addr = addr;
+      hp.off = 4;
+      hp.type = USING_STRING;
+      ConsoleOutput("vnreng:INSERT MBL-Furigana");
+      NewHook(hp, L"MBL-Furigana");
+    }
+  if (DWORD c = Util::FindCallOrJmpAbs((DWORD)GetGlyphOutlineA, module_limit_ - module_base_, (DWORD)module_base_, true))
+    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, (DWORD)module_base_, 0xec8b55)) {
+      HookParam hp = {};
+      hp.addr = addr;
+      hp.off = 4;
+      hp.split = -0x18;
+      hp.length_offset = 1;
+      hp.type = BIG_ENDIAN|USING_SPLIT;
+      ConsoleOutput("vnreng:INSERT MBL");
+      NewHook(hp, L"MBL");
+    }
 }
 /********************************************************************************************
 YU-RIS hook:
@@ -1662,12 +1670,13 @@ bool InsertWhirlpoolHook()
 
 bool InsertCotophaHook()
 {
-  HookParam hp = {};
-  hp.addr = Util::FindCallAndEntryAbs((DWORD)GetTextMetricsA,module_limit_-module_base_,module_base_,0xEC8B55);
-  if (!hp.addr) {
+  DWORD addr = Util::FindCallAndEntryAbs((DWORD)GetTextMetricsA,module_limit_-module_base_,module_base_,0xec8b55);
+  if (!addr) {
     ConsoleOutput("vnreng:Cotopha: pattern not exist");
     return false;
   }
+  HookParam hp = {};
+  hp.addr = addr;
   hp.off = 4;
   hp.split = -0x1c;
   hp.type = USING_UNICODE|USING_SPLIT|USING_STRING;
@@ -1679,7 +1688,6 @@ bool InsertCotophaHook()
 
 bool InsertCatSystem2Hook()
 {
-  HookParam hp = {};
   //DWORD search=0x95EB60F;
   //DWORD j,i=SearchPattern(module_base_,module_limit_-module_base_,&search,4);
   //if (i==0) return;
@@ -1695,12 +1703,13 @@ bool InsertCatSystem2Hook()
   //hp.type=BIG_ENDIAN|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
   //hp.length_offset=1;
 
-  hp.addr = Util::FindCallAndEntryAbs((DWORD)GetTextMetricsA, module_limit_ - module_base_, module_base_, 0xff6acccc);
-  if (!hp.addr) {
+  DWORD addr = Util::FindCallAndEntryAbs((DWORD)GetTextMetricsA, module_limit_ - module_base_, module_base_, 0xff6acccc);
+  if (addr) {
     ConsoleOutput("vnreng:CatSystem2: pattern not exist");
     return false;
   }
-  hp.addr += 2;
+  HookParam hp = {};
+  hp.addr = addr + 2;
   hp.off = 8;
   hp.split = -0x10;
   hp.length_offset = 1;
@@ -2073,7 +2082,7 @@ EMEHook hook: (Contributed by Freaka)
 ********************************************************************************************/
 bool InsertEMEHook()
 {
-  DWORD c = Util::FindCallOrJmpAbs((DWORD)IsDBCSLeadByte,module_limit_-module_base_,(DWORD)module_base_,false);
+  DWORD addr = Util::FindCallOrJmpAbs((DWORD)IsDBCSLeadByte,module_limit_-module_base_,(DWORD)module_base_,false);
   // no needed as first call to IsDBCSLeadByte is correct, but sig could be used for further verification
   //WORD sig = 0x51C3;
   //while (c && (*(WORD*)(c-2)!=sig))
@@ -2081,12 +2090,12 @@ bool InsertEMEHook()
   //  //-0x1000 as FindCallOrJmpAbs always uses an offset of 0x1000
   //  c = Util::FindCallOrJmpAbs((DWORD)IsDBCSLeadByte,module_limit_-c-0x1000+4,c-0x1000+4,false);
   //}
-  if (!c) {
+  if (!addr) {
     ConsoleOutput("vnreng:EME: pattern does not exist");
     return false;
   }
   HookParam hp = {};
-  hp.addr = c;
+  hp.addr = addr;
   hp.off = -0x8;
   hp.length_offset = 1;
   hp.type = NO_CONTEXT|DATA_INDIRECT;
@@ -2104,17 +2113,17 @@ void SpecialRunrunEngine(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* spli
 }
 bool InsertRREHook()
 {
-  DWORD c = Util::FindCallOrJmpAbs((DWORD)IsDBCSLeadByte,module_limit_-module_base_,(DWORD)module_base_,false);
-  if (!c) {
+  DWORD addr = Util::FindCallOrJmpAbs((DWORD)IsDBCSLeadByte,module_limit_-module_base_,(DWORD)module_base_,false);
+  if (!addr) {
     ConsoleOutput("vnreng:RRE: function call does not exist");
     return false;
   }
   WORD sig = 0x51c3;
   HookParam hp = {};
-  hp.addr = c;
+  hp.addr = addr;
   hp.length_offset = 1;
   hp.type = NO_CONTEXT|DATA_INDIRECT;
-  if ((*(WORD *)(c-2) != sig)) {
+  if ((*(WORD *)(addr-2) != sig)) {
     hp.extern_fun = SpecialRunrunEngine;
     hp.type |= EXTERN_HOOK;
     ConsoleOutput("vnreng: INSERT Runrun#1");
@@ -2682,7 +2691,7 @@ static void SpecialHookDebonosu(DWORD esp_base, HookParam* hp, DWORD* data, DWOR
 bool InsertDebonosuHook()
 {
   DWORD fun;
-  if (GetFunctionAddr("lstrcatA",&fun,0,0,0) == 0)  {
+  if (CC_UNLIKELY(!GetFunctionAddr("lstrcatA", &fun, 0, 0, 0))) {
     ConsoleOutput("vnreng:Debonosu: failed to find lstrcatA");
     return false;
   }
@@ -3178,14 +3187,15 @@ static void SpecialHookWillPlus(DWORD esp_base, HookParam* hp, DWORD* data, DWOR
 
 bool InsertWillPlusHook()
 {
-  HookParam hp = {};
   //__debugbreak();
-  hp.addr = Util::FindCallAndEntryAbs((DWORD)GetGlyphOutlineA,module_limit_-module_base_,module_base_,0xEC81);
-  if (hp.addr == 0) {
+  DWORD addr = Util::FindCallAndEntryAbs((DWORD)GetGlyphOutlineA,module_limit_-module_base_,module_base_,0xec81);
+  if (!addr) {
     ConsoleOutput("vnreng:WillPlus: function call not found");
     return false;
   }
 
+  HookParam hp = {};
+  hp.addr = addr;
   hp.extern_fun = SpecialHookWillPlus;
   hp.type = USING_STRING | EXTERN_HOOK;
   ConsoleOutput("vnreng: INSERT WillPlus");

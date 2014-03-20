@@ -31,7 +31,7 @@ public:
   QCoreApplication *app;
 
   QApplicationLoaderPrivate(): app(nullptr) {}
-  ~QApplicationLoaderPrivate() { if (app) delete app; }
+  ~QApplicationLoaderPrivate() { if (Q_LIKELY(app)) delete app; }
 
   void init(int interval)
   {
@@ -43,7 +43,7 @@ public:
   void destroy()
   {
     t_.stop();
-    if (app) {
+    if (Q_LIKELY(app)) {
       delete app;
       app = nullptr;
     }
@@ -51,7 +51,7 @@ public:
 
   void processEvents()
   {
-    if (app)
+    if (Q_LIKELY(app))
       app->processEvents(QEventLoop::AllEvents, t_.interval());
   }
 };
@@ -82,7 +82,7 @@ QCoreApplication *QApplicationLoader::createApplication()
   static int argc = 1;
   static char arg0[MAX_PATH * 2] = {0};
   static char *argv[] = { arg0, nullptr };
-  if (!*arg0)
+  if (Q_UNLIKELY(!*arg0))
     ::GetModuleFileNameA(nullptr, arg0, sizeof(arg0)/sizeof(*arg0));
   return new QCoreApplication(argc, argv);
 }
