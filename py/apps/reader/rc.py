@@ -405,7 +405,6 @@ def wiki_url(name, language=''):
   """
   @param  name  str
   @param* language  str
-  @param* host  str
   @return  str  URL
   """
   topic = name.replace(' ', '_')
@@ -413,7 +412,7 @@ def wiki_url(name, language=''):
   locale = 'zh_CN' if language == 'zhs' else 'zh_TW' if language == 'zht' else lang2
   #import features
   #host = '210.175.54.32' if features.MAINLAND_CHINA else 'sakuradite.com'
-  return "http://sakuradite.com/wiki/%s/%s?locale=%s" % (host, lang2, topic, locale)
+  return "http://sakuradite.com/wiki/%s/%s?locale=%s" % (lang2, topic, locale)
 
 # EOF
 
