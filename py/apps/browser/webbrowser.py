@@ -118,6 +118,26 @@ class WbWebView(QtWebKit.QWebView):
 
 ## WebBrowser ##
 
+class WebBrowser(QtWidgets.QMainWindow):
+  def __init__(self, parent=None):
+    #WINDOW_FLAGS = (
+    #  Qt.Window
+    #  | Qt.CustomizeWindowHint
+    #  | Qt.WindowTitleHint
+    #  | Qt.WindowSystemMenuHint
+    #  | Qt.WindowMinMaxButtonsHint
+    #  | Qt.WindowCloseButtonHint
+    #)
+    super(WebBrowser, self).__init__(parent)
+    self.__d = _WebBrowser(self)
+
+  def showStatusMessage(self, t, type='message'):
+    """
+    @param  t  unicode
+    @param  type  'message', 'warning', or 'error'
+    """
+    self.statusBar().showMessage(text)
+
 @Q_Q
 class _WebBrowser(object):
   def __init__(self, q):
@@ -143,7 +163,16 @@ class _WebBrowser(object):
     ret = WbTabWidget()
     ret.setTabBar(self.tabBar)
     ret.doubleClicked.connect(self.newTabAtLastWithBlankPage, Qt.QueuedConnection)
+    ret.currentChanged.connect(self._loadAddress)
     return ret
+
+  def _loadAddress(self):
+    w = self.tabWidget.currentWidget()
+    if w:
+      url = w.url().toString()
+    else:
+      url = ''
+    self.addressEdit.setEditText(url)
 
   @memoizedproperty
   def tabBar(self):
@@ -187,7 +216,7 @@ class _WebBrowser(object):
     if self.tabWidget.isEmpty():
       self.newTabAtLast()
     v = self.tabWidget.currentWidget()
-    assert v
+    #assert v
     if v:
       v.setUrl("https://google.com")
       #v->setContent(::rc_html_start_(), "text/html");
@@ -307,25 +336,5 @@ class _WebBrowser(object):
       return t
     else:
       return t[:13] + ' ...'
-
-class WebBrowser(QtWidgets.QMainWindow):
-  def __init__(self, parent=None):
-    #WINDOW_FLAGS = (
-    #  Qt.Window
-    #  | Qt.CustomizeWindowHint
-    #  | Qt.WindowTitleHint
-    #  | Qt.WindowSystemMenuHint
-    #  | Qt.WindowMinMaxButtonsHint
-    #  | Qt.WindowCloseButtonHint
-    #)
-    super(WebBrowser, self).__init__(parent)
-    self.__d = _WebBrowser(self)
-
-  def showStatusMessage(self, t, type='message'):
-    """
-    @param  t  unicode
-    @param  type  'message', 'warning', or 'error'
-    """
-    self.statusBar().showMessage(text)
 
 # EOF

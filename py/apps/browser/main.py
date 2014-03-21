@@ -10,6 +10,56 @@ from sakurakit.skdebug import dprint, dwarn, debugmethod
 from sakurakit.skclass import memoizedproperty
 import config
 
+class MainObject(QObject):
+  """Root of most objects"""
+  instance = None
+
+  # Supposed to be top-level, no parent allowed
+  def __init__(self):
+    dprint('enter')
+    super(MainObject, self).__init__()
+    self.__d = _MainObject()
+    MainObject.instance = self
+
+    dprint('leave')
+
+  def run(self, args):
+    """Starting point for the entire app"""
+    dprint("enter: args =", args)
+    d = self.__d
+
+    dprint("show root window")
+    w = d.mainWindow
+    w.resize(800, 600)
+    w.show()
+
+    dprint("leave")
+
+  ## Quit ##
+
+  def quit(self, interval=200):
+    dprint("enter: interval = %i" % interval)
+    d = self.__d
+    if d.hasQuit:
+      dprint("leave: has quit")
+      return
+
+    d.mainWindow.hide()
+
+    skevents.runlater(self.__d.quit, interval)
+    dprint("leave")
+
+  def confirmQuit(self):
+    from Qt5.QtWidgets import QMessageBox
+    yes = QMessageBox.Yes
+    no = QMessageBox.No
+    sel = QMessageBox.question(self.__d.rootWindow,
+        self.tr("Web Browser"),
+        self.tr("Quit the browser?"),
+        yes|no, no)
+    if sel == yes:
+      self.quit()
+
 # MainObject private data
 class _MainObject(object):
   def __init__(self):
@@ -51,55 +101,5 @@ class _MainObject(object):
     #qApp.aboutToQuit.connect(self.settings.sync)
 
     skevents.runlater(qApp.quit)
-
-class MainObject(QObject):
-  """Root of most objects"""
-  instance = None
-
-  # Supposed to be top-level, no parent allowed
-  def __init__(self):
-    dprint('enter')
-    super(MainObject, self).__init__()
-    self.__d = _MainObject()
-    MainObject.instance = self
-
-    dprint('leave')
-
-  def run(self, args):
-    """Starting point for the entire app"""
-    dprint("enter: args =", args)
-    d = self.__d
-
-    dprint("show root window")
-    w = d.mainWindow
-    w.resize(800, 600)
-    w.show()
-
-    dprint("leave")
-
-  ## Quit ##
-
-  def quit(self, interval=200):
-    dprint("enter: interval = %i" % interval)
-    d = self.__d
-    if d.hasQuit:
-      dprint("leave: has quit")
-      return
-
-    d.wizard.hide()
-
-    skevents.runlater(self.__d.quit, interval)
-    dprint("leave")
-
-  def confirmQuit(self):
-    from Qt5.QtWidgets import QMessageBox
-    yes = QMessageBox.Yes
-    no = QMessageBox.No
-    sel = QMessageBox.question(self.__d.rootWindow,
-        self.tr("Web Browser"),
-        self.tr("Quit the browser?"),
-        yes|no, no)
-    if sel == yes:
-      self.quit()
 
 # EOF
