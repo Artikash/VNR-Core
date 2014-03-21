@@ -236,7 +236,7 @@ class _TextTab(object):
     wikiButton.setToolTip(tr_("Wiki"))
     skqss.class_(wikiButton, 'btn btn-default')
     import main
-    wikiButton.clicked.connect(partial(main.manager().openWiki, 'VNR'))
+    wikiButton.clicked.connect(partial(main.manager().openWiki, 'VNR/Text Settings'))
 
     #cancelButton = QtWidgets.QPushButton(tr_("Cancel"))
     #cancelButton.clicked.connect(self.q.hide)
