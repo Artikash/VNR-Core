@@ -2,6 +2,7 @@
 # about.py
 # 12/28/2013 jichi
 
+from functools import partial
 from PySide.QtCore import Qt
 from Qt5 import QtWidgets
 from sakurakit import skqss
@@ -30,7 +31,7 @@ class _AboutDialog:
     wikiButton = QtWidgets.QPushButton(tr_("Wiki"))
     wikiButton.setToolTip(tr_("Wiki"))
     skqss.class_(wikiButton, 'btn btn-default')
-    wikiButton.clicked.connect(lambda: m.openWiki('VNR/Text Settings'))
+    wikiButton.clicked.connect(partial(m.openWiki, 'VNR'))
 
     updateButton = QtWidgets.QPushButton(tr_("Update"))
     updateButton.setToolTip(tr_("Update"))
