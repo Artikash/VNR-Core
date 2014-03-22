@@ -64,8 +64,16 @@ class _WebBrowser(object):
   def __init__(self, q):
     self.loadProgress = 100 # int [0,100]
 
-    q.setCentralWidget(self.tabWidget)
+    #layout = QtWidgets.QVBoxLayout()
+    #layout.addWidget(self.addressWidget)
+    #layout.addWidget(self.tabWidget)
 
+    #w = QtWidgets.QWidget()
+    #w.setLayout(layout)
+    #layout.setContentsMargins(0, 0, 0, 0)
+    #q.setCentralWidget(w)
+
+    q.setCentralWidget(self.tabWidget)
     dock = SkTitlelessDockWidget(self.addressWidget)
     dock.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
     dock.setAllowedAreas(Qt.TopDockWidgetArea)
@@ -118,6 +126,7 @@ class _WebBrowser(object):
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.addressToolBar)
     row.addWidget(self.addressEdit, 1)
+    row.setContentsMargins(2, 2, 2, 2)
     ret = QtWidgets.QWidget()
     ret.setLayout(row)
     return ret
