@@ -72,7 +72,9 @@ class _MainObject(object):
   @memoizedproperty
   def mainWindow(self):
     import mainwindow
-    return mainwindow.MainWindow()
+    ret = mainwindow.MainWindow()
+    ret.quitRequested.connect(self.quit)
+    return ret
 
   ## Actions ##
 

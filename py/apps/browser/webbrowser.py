@@ -37,6 +37,7 @@ class WbAddressEdit(QtWidgets.QComboBox):
 class WbTabBar(QtWidgets.QTabBar):
   def __init__(self, parent=None):
     super(WbTabBar, self).__init__(parent)
+    self.setTabsClosable(True)
 
   doubleClickedAt = Signal(int) # index
 
@@ -119,6 +120,9 @@ class WbWebView(QtWebKit.QWebView):
 ## WebBrowser ##
 
 class WebBrowser(QtWidgets.QMainWindow):
+
+  quitRequested = Signal()
+
   def __init__(self, parent=None):
     #WINDOW_FLAGS = (
     #  Qt.Window
@@ -162,22 +166,23 @@ class _WebBrowser(object):
   def tabWidget(self):
     ret = WbTabWidget()
     ret.setTabBar(self.tabBar)
+    ret.setCornerWidget(self.closeTabButton)
+    ret.currentChanged.connect(self.loadAddress)
+    ret.tabCloseRequested.connect(self.closeTab)
     ret.doubleClicked.connect(self.newTabAtLastWithBlankPage, Qt.QueuedConnection)
-    ret.currentChanged.connect(self._loadAddress)
     return ret
-
-  def _loadAddress(self):
-    w = self.tabWidget.currentWidget()
-    if w:
-      url = w.url().toString()
-    else:
-      url = ''
-    self.addressEdit.setEditText(url)
 
   @memoizedproperty
   def tabBar(self):
     ret = WbTabBar()
     #ret.doubleClickedAt.connect(self.newTabAfter, Qt.QueuedConnection)
+    return ret
+
+  @memoizedproperty
+  def closeTabButton(self):
+    ret = QtWidgets.QPushButton()
+    ret.setText("X")
+    ret.clicked.connect(self.closeCurrentTab)
     return ret
 
   @memoizedproperty
@@ -257,6 +262,24 @@ class _WebBrowser(object):
       if not url.isEmpty():
         url = url.toString()
         self.addressEdit.setUrl(url)
+
+  def loadAddress(self):
+    w = self.tabWidget.currentWidget()
+    if w:
+      url = w.url().toString()
+    else:
+      url = ''
+    self.addressEdit.setEditText(url)
+
+  def closeTab(self, index):
+    if self.tabWidget.count() <= 1:
+      self.q.quitRequested.emit()
+    else:
+      if index >= 0 and index < self.tabWidget.count():
+        self.tabWidget.removeTab(index)
+
+  def closeCurrentTab(self):
+    self.closeTab(self.tabWidget.currentIndex())
 
 #    if (textSizeMultiplier_ > 0)
 #      view->setTextSizeMultiplier(textSizeMultiplier_);
