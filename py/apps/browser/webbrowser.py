@@ -49,7 +49,8 @@ class WebBrowser(QtWidgets.QMainWindow):
 
   def openUrls(self, urls): # [unicode url]
     for url in urls:
-      self.__d.openUrl(url)
+      self.__d.openUnknown(url)
+      #self.__d.openUrl(url)
 
 @Q_Q
 class _WebBrowser(object):
