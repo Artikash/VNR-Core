@@ -52,7 +52,7 @@ class ProxyManager:
     def repl(m):
       key = config.PROXY_SITES.get(m.group(1))
       if key:
-        return "//%s/proxy/%s/" % (config.PROXY_IP, key)
+        return "//%s/proxy/%s/" % (config.PROXY_HOST, key)
       else:
         return m.group(0)
     return self._RX_HOST.sub(repl, url)

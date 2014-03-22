@@ -4,6 +4,7 @@
 
 __all__ = ['WebBrowser']
 
+import re
 from functools import partial
 from PySide.QtCore import Qt, Signal
 from PySide import QtGui, QtWebKit
@@ -11,8 +12,9 @@ from Qt5 import QtWidgets
 from sakurakit.skclass import memoizedproperty, Q_Q
 from sakurakit.skwidgets import SkTitlelessDockWidget, shortcut
 from sakurakit.sktr import tr_
-from network import *
+from netman import *
 from widgets import *
+import textutil
 
 ## WbWebView ##
 
@@ -123,13 +125,14 @@ class _WebBrowser(object):
 
   ## Actions ##
 
-  def openUnknown(self, text):
+  def openUnknown(self, text): # string ->
     """
     @param  text  unicode
     """
-    self.openUrl(text)
+    url = textutil.completeurl(text)
+    self.openUrl(url)
 
-  def openUrl(self, url):
+  def openUrl(self, url): # string ->
     """
     @param  url  unicode
     """
@@ -181,14 +184,16 @@ class _WebBrowser(object):
     v = self.tabWidget.currentWidget()
     if v:
       url = v.url()
-      if not url.isEmpty():
-        url = url.toString()
-        self.addressEdit.setUrl(url)
+      url = '' if url.isEmpty() else url.toString()
+      url = textutil.simplifyurl(url)
+      self.addressEdit.setUrl(url)
 
   def loadAddress(self):
     w = self.tabWidget.currentWidget()
     if w:
-      url = w.url().toString()
+      url = w.url()
+      url = '' if url.isEmpty() else url.toString()
+      url = textutil.simplifyurl(url)
     else:
       url = ''
     self.addressEdit.setEditText(url)

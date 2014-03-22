@@ -152,7 +152,7 @@ emails:
   help: "annotcloud@gmail.com"
 
 proxies:
-  ip: 153.121.52.138
+  host: 153.121.52.138
 
   twittersearch: http://websearch.excite.co.jp/
   googlesearch: http://websearch.excite.co.jp/
@@ -192,6 +192,8 @@ proxies:
     syangrila: www.syangrila.com
     wheel-soft: www.wheel-soft.com
     witchflame: www.witchflame.jp
+
+    scape: erogamescape.dyndns.org
 
 google:
   search:       https://google.co.jp/search

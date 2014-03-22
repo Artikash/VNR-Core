@@ -194,7 +194,7 @@ EMAIL_HELP = SHARE_YAML['emails']['help']
 
 _PROXY = SHARE_YAML['proxies']
 
-PROXY_IP = _PROXY['ip']
+PROXY_HOST = _PROXY['host']
 
 PROXY_TWITTER_SEARCH = _PROXY['twittersearch']
 PROXY_GOOGLE_SEARCH = _PROXY['googlesearch']

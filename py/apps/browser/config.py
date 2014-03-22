@@ -126,4 +126,9 @@ ICON_LOCATIONS = {k: parse_path(v)  # {str name:unicode path}
 IMAGE_LOCATIONS = {k: parse_path(v) # {str name:unicode path}
     for k,v in SHARE_YAML['images'].iteritems()}
 
+## Proxy ##
+
+PROXY_HOST = SHARE_YAML['proxies']['host']
+PROXY_SITES = SHARE_YAML['proxies']['sites'] # {string key:string host}
+
 # EOF
