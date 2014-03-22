@@ -106,7 +106,8 @@ class SoftApi(object):
     @param  h  unicode  html
     @return  bool
     """
-    return u"女性向）</small></td></tr>" in h
+    return u"女性向" in h
+    #return u"女性向）</small></td></tr>" in h
 
   #_rx_series = re.compile(ur'series -->.*?>([^>]+?)シリーズ', re.DOTALL)
   _rx_series = re.compile(ur'>([^>]+?)シリーズ')
@@ -245,17 +246,9 @@ class SoftApi(object):
 
 if __name__ == '__main__':
   api = SoftApi()
-  k = 11571
-  k = 11395
+  k = 8710
   print '-' * 10
   q = api.query(k)
-  #for k,v in q.iteritems():
-  #  print k, ':', v
-  print q['banner']
-  #for it in q['brands']:
-  #  print it
-  #for it in q['creators']:
-  #  print it['name'], it['roles']
-  #print q['videos']
+  print q['otome']
 
 # EOF
