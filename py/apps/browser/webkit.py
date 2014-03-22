@@ -34,7 +34,6 @@ class WbWebView(skwebkit.SkWebView):
     if self.onCreateWindow:
       return self.onCreateWindow(type)
 
-
   def _showMessage(self, t): # unicode ->
     self.messageReceived.emit(t)
 
@@ -65,7 +64,7 @@ class WbWebView(skwebkit.SkWebView):
 class WbWebPage(skwebkit.SkWebPage):
   def __init__(self, parent=None):
     super(WbWebPage, self).__init__(parent)
-    self.setLinkDelegationPolicy(QWebPage.DelegateAllLinks) # handle all links
+    #self.setLinkDelegationPolicy(QWebPage.DelegateAllLinks) # handle all links
     self.linkClicked.connect(self.openUrl)
 
     self._progress = 100 # int [0,100]

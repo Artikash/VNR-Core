@@ -187,25 +187,24 @@ class _WebBrowser(object):
     @param  text  unicode
     """
     url = textutil.completeurl(text)
-    self.openUrlAfterCurrent(url)
+    self.openUrl(url)
 
-  def openUrl(self, url): # string ->
+  def openUrl(self, url, focus=True): # string ->
     """
     @param  url  unicode
     """
     self.addRecentUrl(url)
     if self.tabWidget.isEmpty():
-      self.newTabAfterCurrent()
+      self.newTabAfterCurrent(focus=focus)
     v = self.tabWidget.currentWidget()
     v.load(url)
 
-  def openUrlAfterCurrent(self, url): # string ->
+  def openUrlAfterCurrent(self, url, focus=False): # string ->
     """
     @param  url  unicode
     """
     self.addRecentUrl(url)
-    self.newTabAfterCurrent()
-    v = self.tabWidget.currentWidget()
+    v = self.newTabAfterCurrent(focus=focus)
     v.load(url)
 
   def addRecentUrl(self, url): # string|QUrl ->
@@ -240,14 +239,19 @@ class _WebBrowser(object):
     self.newTabAfterCurrent()
     self.openBlankPage()
 
-  def newTabAfterCurrent(self, focus=True):
-    self.newTabAfter(index=self.tabWidget.currentIndex(), focus=focus)
+  def newTabAfterCurrent(self, focus=True): # -> webview
+    return self.newTabAfter(index=self.tabWidget.currentIndex(), focus=focus)
 
-  def newTabAtLast(self, focus=True):
-    self.newTabAfter(index=self.tabWidget.count() -1, focus=focus)
+  def newTabAtLast(self, focus=True): # -> webview
+    return self.newTabAfter(index=self.tabWidget.count() -1, focus=focus)
 
-  def newTabAfter(self, index, focus=True):
-    self.tabWidget.newTab(self.createWebView(), index=index+1, focus=focus)
+  def newTabAfter(self, index, focus=True): # -> webview
+    w = self.createWebView()
+    self.tabWidget.newTab(w, index=index+1, focus=focus)
+    return w
+
+  def _createWindow(self, type): # QWebPage::WebWindowType -> QWebView
+    return self.newTabAfterCurrent()
 
   def createWebView(self):
     ret = WbWebView()
@@ -256,7 +260,7 @@ class _WebBrowser(object):
     page = ret.page()
     page.setNetworkAccessManager(self.networkAccessManager)
     page.linkHovered.connect(self.showLink)
-    page.linkClickedWithModifiers.connect(self.openUrl)
+    page.linkClickedWithModifiers.connect(self.openUrlAfterCurrent)
 
     ret.titleChanged.connect(partial(self.setTabTitle, ret))
     ret.urlChanged.connect(self.refreshAddress)
@@ -293,13 +297,6 @@ class _WebBrowser(object):
     w = self.tabWidget.currentWidget()
     if w:
       w.reload()
-
-  def _createWindow(self, type): # QWebPage::WebWindowType -> QWebView
-    ret = self.createWebView()
-    self.tabWidget.newTab(ret,
-        index=self.tabWidget.currentIndex() + 1,
-        focus=True)
-    return ret
 
   def tabTitle(self, index=-1): # int -> unicode
     w = self.tabWidget
