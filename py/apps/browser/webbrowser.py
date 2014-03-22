@@ -9,6 +9,7 @@ from functools import partial
 from PySide.QtCore import Qt, Signal
 from PySide import QtGui, QtWebKit
 from Qt5 import QtWidgets
+from sakurakit import skwebkit
 from sakurakit.skclass import memoizedproperty, Q_Q
 from sakurakit.skwidgets import SkTitlelessDockWidget, shortcut
 from sakurakit.sktr import tr_
@@ -18,15 +19,13 @@ import textutil
 
 ## WbWebView ##
 
-class WbWebView(QtWebKit.QWebView):
+class WbWebView(skwebkit.SkWebView):
   def __init__(self, parent=None):
     super(WbWebView, self).__init__(parent)
+    self.enableHighlight()
 
     self.titleChanged.connect(self.setWindowTitle)
-
-    a = self.page().action(QtWebKit.QWebPage.Reload)
-    a.setShortcut(QtGui.QKeySequence('ctrl+r')) # force CTRL+R on different OSes
-    shortcut('ctrl+r', a.trigger, parent=self)
+    self.onCreateWindow = None # -> QWebView
 
     #ret.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks) # Since there are local images
     ##ret.page().setLinkDelegationPolicy(QWebPage.DelegateExternalLinks)
@@ -34,6 +33,11 @@ class WbWebView(QtWebKit.QWebView):
     #    self.updateAndRefresh, Qt.QueuedConnection)
     #import osutil
     #ret.linkClicked.connect(osutil.open_url)
+
+  # QWebView * QWebView::createWindow ( QWebPage::WebWindowType type ) [virtual protected]
+  def createWindow(self, type): # override
+    if self.onCreateWindow:
+      return self.onCreateWindow(type)
 
 ## WebBrowser ##
 
@@ -80,7 +84,7 @@ class _WebBrowser(object):
 
     shortcut('ctrl+w', self.closeCurrentTab, parent=q)
     for k in 'ctrl+l', 'alt+d':
-      shortcut(k, self.focusAddressEdit, parent=q)
+      shortcut(k, self.addressEdit.focus, parent=q)
 
   ## Properties ##
 
@@ -126,11 +130,17 @@ class _WebBrowser(object):
   def addressEdit(self):
     ret = WbAddressEdit()
     ret.textEntered.connect(self.openUnknown)
+    ret.editTextChanged.connect(self.highlightText)
     return ret
 
   ## Actions ##
 
-  def focusAddressEdit(self): self.addressEdit.focus()
+  def highlightText(self, t):
+    t = t.strip()
+    if t:
+      w = self.tabWidget.currentWidget()
+      if w:
+        w.rehighlight(t)
 
   def openUnknown(self, text): # string ->
     """
@@ -182,9 +192,17 @@ class _WebBrowser(object):
 
   def createWebView(self):
     ret = WbWebView()
+    ret.onCreateWindow = self._createWindow
     ret.page().setNetworkAccessManager(self.networkAccessManager)
     ret.titleChanged.connect(partial(self.setTabTitle, ret))
     ret.urlChanged.connect(self.updateAddress)
+    return ret
+
+  def _createWindow(self, type): # QWebPage::WebWindowType -> QWebView
+    ret = self.createWebView()
+    self.tabWidget.newTab(ret,
+        index=self.tabWidget.currentIndex() + 1,
+        focus=True)
     return ret
 
   def updateAddress(self):

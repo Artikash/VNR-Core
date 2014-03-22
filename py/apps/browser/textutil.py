@@ -5,6 +5,7 @@
 #import re
 
 def completeurl(url): # str -> str
+  url = url.strip()
   if '://' not in url:
     url = 'http://' + url
   return url
