@@ -6,20 +6,33 @@
  *  See: http://stackoverflow.com/questions/7340046/qtabwidget-tabposition-when-using-stylesheets
  * */
 QTabBar::tab {
+  padding: 5px;
+  /*
   background: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(73, 73, 74, 255), stop:1 rgba(40, 40, 40, 255));
   border: 1px solid rgb(190, 190, 190);
   max-height: 0.6em;
-  min-width: 0.6em;
-  padding: 5px;
   margin-left: -1px;
   margin-right: -1px;
+  max-width: 30em;
+  */
+  min-width: 5em;
+  border-radius: 3px;
+  color: snow;
+  background-color: rgba(255,255,255,20%); /* white */
 }
 
-QTabBar::tab:selected,
+QTabBar::tab:selected {
+  color: black;
+  background-color: rgba(255,255,255,90%);
+  /*background: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(39, 117, 219, 255), stop:1 rgba(107, 171, 249, 255));*/
+}
+
 QTabBar::tab:hover {
-  background: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(39, 117, 219, 255), stop:1 rgba(107, 171, 249, 255));
+  color: black;
+  background-color: #ffe; /* slightly yellow */
 }
 
+/*
 QTabBar::tab:last {
   border-top-right-radius: 3px;
   border-bottom-right-radius: 3px;
@@ -36,6 +49,7 @@ QTabBar::tab:only-one {
   border-radius: 3px;
   margin: 0px;
 }
+*/
 
 /** Status bar */
 
