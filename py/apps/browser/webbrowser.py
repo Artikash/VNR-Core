@@ -9,96 +9,12 @@ from PySide.QtCore import Qt, Signal
 from PySide import QtGui, QtWebKit
 from Qt5 import QtWidgets
 from sakurakit.skclass import memoizedproperty, Q_Q
-from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
+from sakurakit.skwidgets import SkTitlelessDockWidget, shortcut
 from sakurakit.sktr import tr_
+from network import *
+from widgets import *
 
-## WbAddressEdit ##
-
-class WbAddressEdit(QtWidgets.QComboBox):
-  def __init__(self, parent=None):
-    super(WbAddressEdit, self).__init__(parent)
-    self.setInsertPolicy(QtWidgets.QComboBox.InsertAtTop)
-    self.setEditable(True)
-    self.lineEdit().returnPressed.connect(self.enter)
-
-  textEntered = Signal(unicode)
-
-  def enter(self):
-    t = self.currentText().strip()
-    if t:
-      self.textEntered.emit(t)
-
-  def setUrl(self, url):
-    if not self.hasFocus():
-      self.setEditText(url)
-
-## WbTabWidget ##
-
-class WbTabBar(QtWidgets.QTabBar):
-  def __init__(self, parent=None):
-    super(WbTabBar, self).__init__(parent)
-    self.setTabsClosable(True)
-
-  doubleClickedAt = Signal(int) # index
-
-  ## Events ##
-  def mouseDoubleClickEvent(self, e):
-    """@reimp"""
-    if e.button() == Qt.LeftButton: #and not e.modifiers():
-      index = self.tabAt(e.globalPos())
-      if index >= 0:
-        self.doubleClickedAt.emit(index)
-      e.accept();
-    else:
-      super(WbTabBar, self).mouseDoubleClickEvent(e)
-
-class WbTabWidget(QtWidgets.QTabWidget):
-  def __init__(self, parent=None):
-    super(WbTabWidget, self).__init__(parent)
-
-  doubleClicked = Signal()
-  rightButtonClicked = Signal()
-
-  ## Events ##
-
-  def mouseDoubleClickEvent(self, e):
-    """@reimp"""
-    if e.button() == Qt.LeftButton: # and not e.modifiers():
-      self.doubleClicked.emit()
-      e.accept()
-    else:
-      super(WbTabWidget, self).mouseDoubleClickEvent(e)
-
-  def mouseReleaseEvent(self, e):
-    """@reimp"""
-    if e.button() == Qt.RightButton:
-      self.rightButtonClicked.emit()
-    super(WbTabWidget, self).mouseReleaseEvent(e)
-
-  ## Actions ##
-
-  def newTab(self, view, index=-1, focus=True):
-    """
-    @param  view  QWidget
-    @param  index  int
-    @param  focus  bool
-    """
-    title = tr_("Empty")
-    if index < 0 or index >= self.count():
-      index = self.addTab(view, title)
-    else:
-      self.insertTab(index, view, title)
-    if focus:
-      self.focusTab(index)
-
-  def isEmpty(self): return self.count() <= 0
-
-  def focusTab(self, index):
-    """
-    @param  index  int
-    """
-    if index >= 0 and index < self.count():
-      self.setCurrentIndex(index)
+## WbWebView ##
 
 class WbWebView(QtWebKit.QWebView):
   def __init__(self, parent=None):
@@ -163,6 +79,11 @@ class _WebBrowser(object):
   ## Properties ##
 
   @memoizedproperty
+  def networkAccessManager(self):
+    ret = WbNetworkAccessManager(self.q)
+    return ret
+
+  @memoizedproperty
   def tabWidget(self):
     ret = WbTabWidget()
     ret.setTabBar(self.tabBar)
@@ -181,7 +102,8 @@ class _WebBrowser(object):
   @memoizedproperty
   def closeTabButton(self):
     ret = QtWidgets.QPushButton()
-    ret.setText("X")
+    ret.setText("x")
+    ret.setToolTip(tr_("Close"))
     ret.clicked.connect(self.closeCurrentTab)
     return ret
 
@@ -250,7 +172,7 @@ class _WebBrowser(object):
 
   def createWebView(self):
     ret = WbWebView()
-    #view->page()->setNetworkAccessManager(networkAccessManager());
+    ret.page().setNetworkAccessManager(self.networkAccessManager)
     ret.titleChanged.connect(partial(self.setTabTitle, ret))
     ret.urlChanged.connect(self.updateAddress)
     return ret
