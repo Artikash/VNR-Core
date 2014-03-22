@@ -9,6 +9,7 @@ from PySide.QtWebKit import QWebPage
 from Qt5 import QtWidgets
 from sakurakit import skwebkit
 from sakurakit.skdebug import dprint
+from sakurakit.sktr import tr_
 import rc
 
 ## WbWebView ##
@@ -21,13 +22,6 @@ class WbWebView(skwebkit.SkWebView):
     self.titleChanged.connect(self.setWindowTitle)
     self.onCreateWindow = None # -> QWebView
 
-    #ret.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks) # Since there are local images
-    ##ret.page().setLinkDelegationPolicy(QWebPage.DelegateExternalLinks)
-    #ret.pageAction(QWebPage.Reload).triggered.connect(
-    #    self.updateAndRefresh, Qt.QueuedConnection)
-    #import osutil
-    #ret.linkClicked.connect(osutil.open_url)
-
   # QWebView * QWebView::createWindow ( QWebPage::WebWindowType type ) [virtual protected]
   def createWindow(self, type): # override
     if self.onCreateWindow:
@@ -38,6 +32,11 @@ class WbWebView(skwebkit.SkWebView):
 class WbWebPage(skwebkit.SkWebPage):
   def __init__(self, parent=None):
     super(WbWebPage, self).__init__(parent)
+    self.setLinkDelegationPolicy(QWebPage.DelegateAllLinks) # handle all links
+    self.linkClicked.connect(self.openUrl)
+
+  def openUrl(self, url): # QUrl
+    self.mainFrame().load(url)
 
   # bool supportsExtension(Extension extension) const
   def supportsExtension(self, extension): # override
@@ -58,14 +57,21 @@ class WbWebPage(skwebkit.SkWebPage):
     dprint("enter: error = %s, message = %s" % (option.error, option.errorString))
     output.encoding = "UTF-8" # force UTF-8
     #output.baseUrl = option.url # local url
-    #output.contentType = "text/html" # automaticly detected
+    #output.contentType = "text/html" # already automaticly detected
     output.content = rc.jinja_template('error').render({
-      code: option.error,
-      message: option.errorString,
-      url: option.url,
-    })
-    dprint("exit");
+      'tr': tr_,
+      'code': self.extensionErrorCode(option.error),
+      'message': option.errorString,
+      'url': option.url.toString(),
+    }).encode('utf8', 'ignore')
     return True
+
+  @staticmethod
+  def extensionErrorCode(error): # int -> int
+    if error == 3:
+      return 404
+    else:
+      return error
 
   # See: WebKit/qt/Api/qwebpage.cpp
   # Example: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/534.34 (KHTML, like Gecko) MYAPP/MYVERSION Safari/534.34

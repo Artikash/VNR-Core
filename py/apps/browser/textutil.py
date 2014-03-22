@@ -13,6 +13,8 @@ def completeurl(url): # str -> str
 def simplifyurl(url): # str -> str
   if url and url.startswith('http://'):
     url = url[len('http://'):]
+  if url and url[-1] == '/':
+    url = url[:-1]
   return url
 
 # EOF

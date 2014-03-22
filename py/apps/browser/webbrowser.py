@@ -15,7 +15,11 @@ from sakurakit.sktr import tr_
 from netman import *
 from webkit import *
 from widgets import *
-import textutil
+import rc, textutil
+
+START_HTML = rc.jinja_template('start').render({
+  'tr': tr_,
+}) # unicode html
 
 class WebBrowser(QtWidgets.QMainWindow):
 
@@ -141,9 +145,8 @@ class _WebBrowser(object):
     v = self.tabWidget.currentWidget()
     #assert v
     if v:
-      v.setUrl("https://google.com")
-      #v->setContent(::rc_html_start_(), "text/html");
-      #ui->tabWidget->setTabText(tabIndex(), tr("Start Page"));
+      v.setHtml(START_HTML)
+      #self.tabWidget.setTabText(self.currentIndex(), tr("Start Page"));
       #int i = ui->addressEdit->findText(WB_BLANK_PAGE);
       #if (i >= 0)
       #  ui->addressEdit->setCurrentIndex(i);

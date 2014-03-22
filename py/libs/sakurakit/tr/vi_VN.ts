@@ -394,7 +394,7 @@
         <translation>Tab</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="389"/>
+        <location filename="sktr.py" line="392"/>
         <source>Text</source>
         <translation>Văn bản</translation>
     </message>
@@ -414,7 +414,7 @@
         <translation>Dấu thời gian</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="388"/>
+        <location filename="sktr.py" line="391"/>
         <source>Translation</source>
         <translation>Dịch</translation>
     </message>
@@ -494,12 +494,12 @@
         <translation>có thể chỉnh sửa</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="363"/>
+        <location filename="sktr.py" line="366"/>
         <source>Found</source>
         <translation>Tìm thấy</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="364"/>
+        <location filename="sktr.py" line="367"/>
         <source>Not found</source>
         <translation>Không tìm thấy</translation>
     </message>
@@ -704,12 +704,12 @@
         <translation>Zoom</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="382"/>
+        <location filename="sktr.py" line="385"/>
         <source>Subtitle</source>
         <translation>Phụ đề</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="385"/>
+        <location filename="sktr.py" line="388"/>
         <source>Comment</source>
         <translation>Bình luận</translation>
     </message>
@@ -819,17 +819,17 @@
         <translation>Tiêu đề cửa sổ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="365"/>
+        <location filename="sktr.py" line="368"/>
         <source>Not specified</source>
         <translation>Không quy định</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="371"/>
+        <location filename="sktr.py" line="374"/>
         <source>Administrator</source>
         <translation>Quản trị viên</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="372"/>
+        <location filename="sktr.py" line="375"/>
         <source>Not administrator</source>
         <translation>Không quản trị</translation>
     </message>
@@ -929,12 +929,12 @@
         <translation>Khởi động lại</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="374"/>
+        <location filename="sktr.py" line="377"/>
         <source>For example</source>
         <translation>Ví dụ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="374"/>
+        <location filename="sktr.py" line="377"/>
         <source>for example</source>
         <translation>ví dụ</translation>
     </message>
@@ -1044,7 +1044,7 @@
         <translation>i18n</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="376"/>
+        <location filename="sktr.py" line="379"/>
         <source>Check for updates</source>
         <translation>Kiểm tra cập nhật</translation>
     </message>
@@ -1069,7 +1069,7 @@
         <translation>Sơ yếu lý lịch</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="387"/>
+        <location filename="sktr.py" line="390"/>
         <source>Danmaku</source>
         <translation>Danmaku</translation>
     </message>
@@ -1189,12 +1189,12 @@
         <translation>Tình trạng internet</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="383"/>
+        <location filename="sktr.py" line="386"/>
         <source>Subtitles</source>
         <translation>Phụ đề</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="386"/>
+        <location filename="sktr.py" line="389"/>
         <source>Comments</source>
         <translation>Bình luận</translation>
     </message>
@@ -1239,37 +1239,37 @@
         <translation>del</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="382"/>
+        <location filename="sktr.py" line="385"/>
         <source>subtitle</source>
         <translation>phụ đề</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="383"/>
+        <location filename="sktr.py" line="386"/>
         <source>subtitles</source>
         <translation>phụ đề</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="385"/>
+        <location filename="sktr.py" line="388"/>
         <source>comment</source>
         <translation>bình luận</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="386"/>
+        <location filename="sktr.py" line="389"/>
         <source>comments</source>
         <translation>ý kiến</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="387"/>
+        <location filename="sktr.py" line="390"/>
         <source>danmaku</source>
         <translation>danmaku</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="388"/>
+        <location filename="sktr.py" line="391"/>
         <source>translation</source>
         <translation>dịch</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="389"/>
+        <location filename="sktr.py" line="392"/>
         <source>text</source>
         <translation>văn bản</translation>
     </message>
@@ -1424,7 +1424,7 @@
         <translation>Tiêu đề</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="365"/>
+        <location filename="sktr.py" line="368"/>
         <source>not specified</source>
         <translation>không quy định</translation>
     </message>
@@ -1434,12 +1434,12 @@
         <translation>Bộ lọc</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="369"/>
+        <location filename="sktr.py" line="372"/>
         <source>Unknown</source>
         <translation>Chưa biết</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="369"/>
+        <location filename="sktr.py" line="372"/>
         <source>unknown</source>
         <translation>chưa biết</translation>
     </message>
@@ -1574,12 +1574,12 @@
         <translation>Đặt hàng</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="384"/>
+        <location filename="sktr.py" line="387"/>
         <source>Subs</source>
         <translation>Dự bị</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="384"/>
+        <location filename="sktr.py" line="387"/>
         <source>subs</source>
         <translation>tàu ngầm</translation>
     </message>
@@ -1629,7 +1629,7 @@
         <translation>Địa phương</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="367"/>
+        <location filename="sktr.py" line="370"/>
         <source>Press Enter to submit</source>
         <translation>Nhấn Enter để nộp</translation>
     </message>
@@ -2077,6 +2077,11 @@
         <location filename="sktr.py" line="211"/>
         <source>Right</source>
         <translation>Ngay</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="363"/>
+        <source>Network Error</source>
+        <translation>Lỗi mạng</translation>
     </message>
 </context>
 </TS>

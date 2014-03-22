@@ -359,6 +359,9 @@ class sakurakit(QObject):
       self.tr("Case-insensitive"), self.tr("case-insensitive"),
       self.tr("Ignore Case"), self.tr("Ignore case"),
 
+      # Errors
+      self.tr("Network Error"),
+
       # Messages
       self.tr("Found"),
       self.tr("Not found"),

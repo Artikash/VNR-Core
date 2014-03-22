@@ -190,16 +190,19 @@ proxies:
     collaborations2005: www.collaborations2005.com
     #effordomsoft: www.effordomsoft.com
     effordomsoft: effordomsoft.com
+    hibiki: www.hibiki-site.com
     minori: www.minori.ph
-    shallotsoft: www.shallotsoft.com
-    spermaniax: www.spermaniax.net
-    spielsoft: spielsoft.1000.tv
-    sprite: sprite.gr.jp
-    syangrila: www.syangrila.com
-    wheel-soft: www.wheel-soft.com
-    witchflame: www.witchflame.jp
+    #shallotsoft: www.shallotsoft.com   # DOWN
+    #spermaniax: www.spermaniax.net     # DOWN
+    #spielsoft: spielsoft.1000.tv       # Do not need proxy
+    #sprite: sprite.gr.jp               # Do not need proxy
+    #syangrila: www.syangrila.com       # DOWN
+    #wheel-soft: www.wheel-soft.com     # DOWN
+    #witchflame: www.witchflame.jp      # Do not need proxy
 
     dmm: dmm.co.jp
+    #dlsite
+    #dlsite_img
     #getchu: getchu.com
     scape: erogamescape.dyndns.org
 
@@ -401,8 +404,8 @@ templates:
     xml/users:      xml/users.xml
     xml/voices:     xml/voices.xml
 
-    haml/browser/error:     haml/browser/error.haml
-    haml/browser/startup:   haml/browser/startup.haml
+    haml/browser/error: haml/browser/error.haml
+    haml/browser/start: haml/browser/start.haml
 
 avatars:
   location:         $PWD/images/avatars
