@@ -1,6 +1,6 @@
 ; start.haml
 ; 3/21/2014 jichi
-; Parameters: tr
+; Parameters: tr, rc
 ;!!! 5
 %html
   %head
@@ -23,7 +23,9 @@
       }
       /* Global */
       body {
-        background-color: #ececec;
+        /*background-color: #ececec;*/
+        background-repeat: repeat;
+        background-image: url("#{rc.image_url('background')}");
         color: #bababa;
         /*color: #cacaca;*/
         font: 1em arial,helvetica,clean,sans-serif;

@@ -1,6 +1,6 @@
 ; error.haml
 ; 9/14/2012 jichi
-; tr, int code, string message, string url
+; rc, tr, int code, string message, string url
 ;!!! 5
 %html
   %head
@@ -23,7 +23,9 @@
       }
       /* Global */
       body {
-        background-color: #ececec;
+        /*background-color: #ececec;*/
+        background-repeat: repeat;
+        background-image: url("#{rc.image_url('background')}");
         color: #bababa;
         /*color: #cacaca;*/
         font: 120% arial,helvetica,clean,sans-serif;

@@ -3,9 +3,10 @@
 # 12/13/2012 jichi
 # Runtime resource locations
 
-import config
+import os
 import jinja2
 from sakurakit import skos, skpaths
+import config
 
 DIR_USER = (config.USER_PROFILES[skos.name]
     .replace('$HOME', skpaths.HOME)
@@ -32,6 +33,16 @@ def image_path(name):
   @throw  KeyError  when unknown name
   """
   return config.IMAGE_LOCATIONS[name]
+
+def image_url(name):
+  """
+  @param  name  str  id
+  @return  unicode
+  @throw  KeyError  when unknown name
+  """
+  from PySide.QtCore import QUrl
+  return QUrl.fromLocalFile(
+      os.path.abspath(image_path(name))).toString()
 
 def qss_path(name):
   """

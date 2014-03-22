@@ -106,10 +106,11 @@ class WbWebPage(skwebkit.SkWebPage):
     #output.baseUrl = option.url # local url
     #output.contentType = "text/html" # already automaticly detected
     output.content = rc.jinja_template('error').render({
-      'tr': tr_,
       'code': self.extensionErrorCode(option.error),
       'message': option.errorString,
       'url': option.url.toString(),
+      'tr': tr_,
+      'rc': rc,
     }).encode('utf8', 'ignore')
     return True
 

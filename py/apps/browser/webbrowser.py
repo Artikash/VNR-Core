@@ -22,6 +22,7 @@ import rc, textutil, ui
 
 START_HTML = rc.jinja_template('start').render({
   'tr': tr_,
+  'rc': rc,
 }) # unicode html
 
 MAX_TITLE_LENGTH = 20
