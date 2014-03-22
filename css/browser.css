@@ -62,4 +62,19 @@ QStatusBar.error {
   font-weight:: bold;
 }
 
+/** Tab corner button, see: bootstrap .close */
+QPushButton.btn-tab-corner {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #000;
+  background-color: rgba(128, 128, 128, 50%); /* gray */
+}
+QPushButton.btn-tab-corner:hover,
+QPushButton.btn-tab-corner:focus {
+  background-color: rgba(128, 128, 128, 90%); /* gray */
+}
+
 /* EOF */

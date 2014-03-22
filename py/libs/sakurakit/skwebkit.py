@@ -50,6 +50,14 @@ class SkWebView(QWebView):
     a.setShortcut(QKeySequence('ctrl+r')) # force CTRL+R on different OSes
     shortcut("ctrl+r", a.trigger, parent=self)
 
+    a = page.action(QWebPage.Back)
+    a.setShortcut(QKeySequence('ctrl+[')) # force CTRL+R on different OSes
+    shortcut("ctrl+[", a.trigger, parent=self)
+
+    a = page.action(QWebPage.Forward)
+    a.setShortcut(QKeySequence('ctrl+]')) # force CTRL+R on different OSes
+    shortcut("ctrl+]", a.trigger, parent=self)
+
     # Download
     page.downloadRequested.connect(self.downloadRequest)
 

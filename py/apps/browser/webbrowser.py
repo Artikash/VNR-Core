@@ -9,6 +9,7 @@ from functools import partial
 from PySide.QtCore import Qt, Signal
 from PySide import QtGui
 from Qt5 import QtWidgets
+from sakurakit import skqss
 from sakurakit.skclass import memoizedproperty, Q_Q
 from sakurakit.skwidgets import SkTitlelessDockWidget, shortcut
 from sakurakit.sktr import tr_
@@ -85,7 +86,7 @@ class _WebBrowser(object):
   def tabWidget(self):
     ret = WbTabWidget()
     ret.setTabBar(self.tabBar)
-    #ret.setCornerWidget(self.closeTabButton)
+    ret.setCornerWidget(self.newTabButton)
     ret.currentChanged.connect(self.loadAddress)
     ret.tabCloseRequested.connect(self.closeTab)
     ret.doubleClicked.connect(self.newTabAtLastWithBlankPage, Qt.QueuedConnection)
@@ -97,21 +98,13 @@ class _WebBrowser(object):
     #ret.doubleClickedAt.connect(self.newTabAfter, Qt.QueuedConnection)
     return ret
 
-  # FIXME: This button is too ugly
-  @memoizedproperty
-  def closeTabButton(self):
-    ret = QtWidgets.QPushButton()
-    ret.setText("x")
-    ret.setToolTip(tr_("Close"))
-    ret.clicked.connect(self.closeCurrentTab)
-    return ret
-
   @memoizedproperty
   def header(self):
-    layout = QtWidgets.QHBoxLayout()
-    layout.addWidget(self.addressEdit)
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.headerToolBar)
+    row.addWidget(self.addressEdit, 1)
     ret = QtWidgets.QWidget()
-    ret.setLayout(layout)
+    ret.setLayout(row)
     return ret
 
   @memoizedproperty
@@ -119,6 +112,32 @@ class _WebBrowser(object):
     ret = WbAddressEdit()
     ret.textEntered.connect(self.openUnknown)
     ret.editTextChanged.connect(self.highlightText)
+    return ret
+
+  @memoizedproperty
+  def newTabButton(self):
+    ret = QtWidgets.QPushButton()
+    skqss.class_(ret, 'btn-tab-corner')
+    ret.setText("+")
+    ret.setToolTip(tr_("New"))
+    ret.clicked.connect(self.newTabAtLastWithBlankPage)
+    return ret
+
+  @memoizedproperty
+  def headerToolBar(self):
+    ret = QtWidgets.QToolBar()
+
+    a = ret.addAction(u"\u25c0") # left triangle
+    a.triggered.connect(self.back)
+    a.setToolTip("%s (cmd+[)" % tr_("Back"))
+
+    a = ret.addAction(u"\u25B6") # right triangle
+    a.triggered.connect(self.forward)
+    a.setToolTip("%s (cmd+])" % tr_("Forward"))
+
+    a = ret.addAction(u'\u27f3') # circle
+    a.triggered.connect(self.refresh)
+    a.setToolTip("%s (cmd+R)" % tr_("Refresh"))
     return ret
 
   ## Actions ##
@@ -184,6 +203,19 @@ class _WebBrowser(object):
     ret.titleChanged.connect(partial(self.setTabTitle, ret))
     ret.urlChanged.connect(self.updateAddress)
     return ret
+
+  def forward(self):
+    w = self.tabWidget.currentWidget()
+    if w:
+      w.forward()
+  def back(self):
+    w = self.tabWidget.currentWidget()
+    if w:
+      w.back()
+  def refresh(self):
+    w = self.tabWidget.currentWidget()
+    if w:
+      w.reload()
 
   def _createWindow(self, type): # QWebPage::WebWindowType -> QWebView
     ret = self.createWebView()
