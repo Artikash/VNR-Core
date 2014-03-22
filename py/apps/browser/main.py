@@ -64,8 +64,8 @@ class MainObject(QObject):
     yes = QMessageBox.Yes
     no = QMessageBox.No
     sel = QMessageBox.question(self.__d.rootWindow,
-        self.tr("Web Browser"),
-        self.tr("Quit the browser?"),
+        self.tr("Kagami"),
+        self.tr("Quit the Kagami Browser?"),
         yes|no, no)
     if sel == yes:
       self.quit()

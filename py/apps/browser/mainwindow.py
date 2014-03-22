@@ -40,7 +40,7 @@ class MainWindow(WebBrowser):
       'browser',
     ))).replace('$PWD', config.root_abspath()))
 
-    self.setWindowTitle(u"VNR Browser (α)")
+    self.setWindowTitle(u"Kagami (α)")
     self.setWindowIcon(rc.icon('logo-browser'))
     ui.glassifyWidget(self)
     self.__d = _MainWindow(self)

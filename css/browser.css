@@ -67,14 +67,28 @@ QPushButton.btn-tab-corner {
   width: 18px;
   height: 18px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
-  color: #000;
-  background-color: rgba(128, 128, 128, 50%); /* gray */
+  color: white;
+  background-color: rgba(224, 224, 224, 10%); /* gray */
 }
 QPushButton.btn-tab-corner:hover,
 QPushButton.btn-tab-corner:focus {
-  background-color: rgba(128, 128, 128, 90%); /* gray */
+  border: 1px solid white;
+  background-color: rgba(224, 224, 224, 20%); /* gray */
+}
+
+/** Address toolbar */
+QToolBar.toolbar-address {
+  border: 1px solid white;
+  border-radius: 4px;
+}
+
+QToolBar.toolbar-address QToolButton {
+  color: snow;
+  width: 16px;
+  height: 16px;
+  font-size: 12px;
 }
 
 /* EOF */

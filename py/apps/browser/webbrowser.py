@@ -16,7 +16,7 @@ from sakurakit.sktr import tr_
 from netman import *
 from webkit import *
 from widgets import *
-import rc, textutil
+import rc, textutil, ui
 
 START_HTML = rc.jinja_template('start').render({
   'tr': tr_,
@@ -101,7 +101,7 @@ class _WebBrowser(object):
   @memoizedproperty
   def header(self):
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(self.headerToolBar)
+    row.addWidget(self.addressToolBar)
     row.addWidget(self.addressEdit, 1)
     ret = QtWidgets.QWidget()
     ret.setLayout(row)
@@ -117,15 +117,19 @@ class _WebBrowser(object):
   @memoizedproperty
   def newTabButton(self):
     ret = QtWidgets.QPushButton()
+    ret.setGraphicsEffect(ui.glowEffect(ret))
     skqss.class_(ret, 'btn-tab-corner')
     ret.setText("+")
-    ret.setToolTip(tr_("New"))
+    #ret.setToolTip(tr_("New Tab"))
+    ret.setToolTip("cmd+T")
     ret.clicked.connect(self.newTabAtLastWithBlankPage)
     return ret
 
   @memoizedproperty
-  def headerToolBar(self):
+  def addressToolBar(self):
     ret = QtWidgets.QToolBar()
+    ret.setGraphicsEffect(ui.glowEffect(ret))
+    skqss.class_(ret, 'toolbar-address')
 
     a = ret.addAction(u"\u25c0") # left triangle
     a.triggered.connect(self.back)
@@ -135,7 +139,8 @@ class _WebBrowser(object):
     a.triggered.connect(self.forward)
     a.setToolTip("%s (cmd+])" % tr_("Forward"))
 
-    a = ret.addAction(u'\u27f3') # circle
+    #a = ret.addAction(u'\u27f3') # circle
+    a = ret.addAction(u"◯") # まる
     a.triggered.connect(self.refresh)
     a.setToolTip("%s (cmd+R)" % tr_("Refresh"))
     return ret
