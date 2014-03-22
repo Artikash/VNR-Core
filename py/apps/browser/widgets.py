@@ -19,7 +19,10 @@ class WbAddressEdit(QtWidgets.QComboBox):
     super(WbAddressEdit, self).__init__(parent)
     self.setInsertPolicy(QtWidgets.QComboBox.InsertAtTop)
     self.setEditable(True)
+    #self.currentIndexChanged.connect(self.enter) # recursion
     self.lineEdit().returnPressed.connect(self.enter)
+
+    self.maxCount = 20 # int  maximum number of items
 
   textEntered = Signal(unicode)
 
@@ -35,6 +38,14 @@ class WbAddressEdit(QtWidgets.QComboBox):
   def focus(self):
     self.setFocus()
     self.lineEdit().selectAll()
+
+  def addUrl(self, text): # string ->
+    index = self.findText(text)
+    if index >= 0:
+      self.removeItem(index)
+    self.insertItem(0, text) # FIXME: This will change current item!
+    if self.count() > self.maxCount:
+      self.removeItem(self.maxCount)
 
 ## WbTabWidget ##
 

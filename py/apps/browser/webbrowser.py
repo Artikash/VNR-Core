@@ -6,7 +6,7 @@ __all__ = ['WebBrowser']
 
 import re
 from functools import partial
-from PySide.QtCore import Qt, Signal
+from PySide.QtCore import Qt, Signal, QUrl
 from PySide import QtGui
 from Qt5 import QtWidgets
 from sakurakit import skqss
@@ -166,11 +166,18 @@ class _WebBrowser(object):
     """
     @param  url  unicode
     """
-    #self.addRecentUrl(url)
+    self.addRecentUrl(url)
     if self.tabWidget.isEmpty():
       self.newTabAfterCurrent()
     v = self.tabWidget.currentWidget()
     v.load(url)
+
+  def addRecentUrl(self, url): # string|QUrl ->
+    if isinstance(url, QUrl):
+      url = url.toString()
+    if url:
+      url = textutil.simplifyurl(url)
+      self.addressEdit.addUrl(url)
 
   def openBlankPage(self):
     if self.tabWidget.isEmpty():
@@ -208,6 +215,7 @@ class _WebBrowser(object):
     ret.page().setNetworkAccessManager(self.networkAccessManager)
     ret.titleChanged.connect(partial(self.setTabTitle, ret))
     ret.urlChanged.connect(self.updateAddress)
+    ret.linkClicked.connect(self.addRecentUrl)
     return ret
 
   def forward(self):
