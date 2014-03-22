@@ -93,7 +93,7 @@ class _WebBrowser(object):
   def tabWidget(self):
     ret = WbTabWidget()
     ret.setTabBar(self.tabBar)
-    ret.setCornerWidget(self.closeTabButton)
+    #ret.setCornerWidget(self.closeTabButton)
     ret.currentChanged.connect(self.loadAddress)
     ret.tabCloseRequested.connect(self.closeTab)
     ret.doubleClicked.connect(self.newTabAtLastWithBlankPage, Qt.QueuedConnection)
@@ -105,6 +105,7 @@ class _WebBrowser(object):
     #ret.doubleClickedAt.connect(self.newTabAfter, Qt.QueuedConnection)
     return ret
 
+  # FIXME: This button is too ugly
   @memoizedproperty
   def closeTabButton(self):
     ret = QtWidgets.QPushButton()

@@ -13,7 +13,7 @@ class Application(QApplication):
   def __init__(self, argv):
     super(Application, self).__init__(argv)
 
-    self.setApplicationName("%s - VNR" % self.tr("Web Browser"))
+    self.setApplicationName(u"VNR Browser")
     self.setApplicationVersion(str(config.VERSION_TIMESTAMP))
     self.setOrganizationName(config.VERSION_ORGANIZATION)
     self.setOrganizationDomain(config.VERSION_DOMAIN)
@@ -21,6 +21,33 @@ class Application(QApplication):
     dprint("pass")
 
   def loadTranslations(self):
-    pass
+    locale = self.applicationLocale()
+    #if locale in config.TR_LOCALES:
+    dprint("loading translation for %s" % locale)
+
+    t = QTranslator(self)
+    ok = t.load('qt_%s' % locale, config.QT_TRANSLATIONS_LOCATION)
+    #assert ok, "failed to load qt translation"
+    if ok:
+      self.installTranslator(t)
+    else:
+      location = config.QT_TRANSLATIONS_LOCATION
+      dprint("cannot find translation at %s" % location)
+
+    for location in config.TR_LOCATIONS:
+      t = QTranslator(self)
+      ok = t.load(locale, location)
+      #assert ok, "failed to load translation"
+      if ok:
+        self.installTranslator(t)
+      else:
+        dprint("cannot find translation at %s" % location)
+
+  @staticmethod
+  def applicationLocale():
+    import settings
+    lang = settings.reader().userLanguage()
+    locale = config.language2locale(lang)
+    return locale
 
 # EOF
