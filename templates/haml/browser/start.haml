@@ -24,48 +24,63 @@
       /* Global */
       body {
         background-color: #ececec;
-        color: #cacaca;
+        color: #bababa;
+        /*color: #cacaca;*/
         font: 1em arial,helvetica,clean,sans-serif;
         text-align: center;
 
         /* See: http://www.w3.org/Style/Examples/007/text-shadow */
-        text-shadow:1px 1px white,-1px -1px #555;
+        text-shadow: 1px 1px white,-1px -1px #555;
       }
       .site {
         margin-bottom: 15px;
       }
+      .layout-left {
+        width: 50%;
+        float: left;
+      }
+      .layout-right {
+        width: 50%;
+        float: right;
+      }
   %body
-    %section
-      %h2 批評空間
-      -for url,name in \
-          ("erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/", "エロゲ批評空間"),
-        %div(class="site")
-          %a(href="http://#{url}",title="#{url}") #{name}
-    %section
-      %h2 通販サイト
-      -for url,name in \
-          ("www.getchu.com", "Getchu"), \
-          ("www.dmm.co.jp", "DMM"),
-        %div(class="site")
-          %a(href="http://#{url}",title="#{url}") #{name}
-    %section
-      %h2 ブランドHP
-      -for url,name in \
-          ("www.alicesoft.com", "アリスソフト"), \
-          ("www.minori.ph", "minori")
-        %div(class="site")
-          %a(href="http://#{url}",title="#{url}") #{name}
-      %h2 あかべぇそふと
-      -for url,name in \
-          ("www.akabeesoft3.com", "あかべぇそふとすりぃ"), \
-          ("www.akabeesoft2.com", "あかべぇそふとつぅ"), \
-          ("www.akabeesoft2-try.com", "あかべぇそふとつぅTRY"), \
-          ("www.applique-soft.com", "あっぷりけ"), \
-          ("www.effordomsoft.com", "エフォルダムソフト"), \
-          ("www.akatsukiworks.com", "暁WORKS"), \
-          ("www.collaborations2005.com", "CollaborationS"), \
-          ("www.hibiki-site.com", "hibiki"),
-        %div(class="site")
-          %a(href="http://#{url}",title="#{url}") #{name}
+    .layout-content
+      ; http://stackoverflow.com/questions/1964297/split-div-into-2-columns-using-css
+      %br(style="clear:both")
+      .layout-left
+        %section
+          %h2 批評空間
+          -for url,name in \
+              ("erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/", "エロゲ批評空間"),
+            %div(class="site")
+              %a(href="http://#{url}",title="#{url}") #{name}
+        %section
+          %h2 通販サイト
+          -for url,name in \
+              ("www.getchu.com", "Getchu"), \
+              ("www.dmm.co.jp", "DMM"),
+            %div(class="site")
+              %a(href="http://#{url}",title="#{url}") #{name}
+        %section
+          %h2 ブランドHP
+          -for url,name in \
+              ("www.alicesoft.com", "アリスソフト"), \
+              ("www.minori.ph", "minori")
+            %div(class="site")
+              %a(href="http://#{url}",title="#{url}") #{name}
+      .layout-right
+        %section
+          %h2 あかべぇそふと
+          -for url,name in \
+              ("www.akabeesoft3.com", "あかべぇそふとすりぃ"), \
+              ("www.akabeesoft2.com", "あかべぇそふとつぅ"), \
+              ("www.akabeesoft2-try.com", "あかべぇそふとつぅTRY"), \
+              ("www.applique-soft.com", "あっぷりけ"), \
+              ("www.effordomsoft.com", "エフォルダムソフト"), \
+              ("www.akatsukiworks.com", "暁WORKS"), \
+              ("www.collaborations2005.com", "CollaborationS"), \
+              ("www.hibiki-site.com", "hibiki"),
+            %div(class="site")
+              %a(href="http://#{url}",title="#{url}") #{name}
 
 ; EOF

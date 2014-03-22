@@ -5,7 +5,7 @@
 __all__ = ['MainObject']
 
 from PySide.QtCore import QCoreApplication, QObject
-from sakurakit import skevents
+from sakurakit import skevents, skos
 from sakurakit.skdebug import dprint, dwarn, debugmethod
 from sakurakit.skclass import memoizedproperty
 import config
@@ -31,13 +31,16 @@ class MainObject(QObject):
     dprint("show root window")
     w = d.mainWindow
 
-    urls = [it for it in args[1:] if not it.startswith('-')]
+    args_offset = 2 if skos.WIN else 1
+    urls = [it for it in args[args_offset:] if not it.startswith('-')]
     if urls:
       w.openUrls(urls)
     else:
       w.openDefaultPage()
 
-    w.resize(800, 600)
+    # TODO: Remember the last close size
+    #w.resize(800, 600)
+    w.resize(700, 500)
     w.show()
 
     dprint("leave")

@@ -7,6 +7,7 @@ __all__ = ['MainWindow']
 from itertools import imap
 from PySide.QtCore import QTimer
 from sakurakit.skclass import memoizedproperty, Q_Q
+from sakurakit.sktr import tr_
 from webbrowser import WebBrowser
 import config, rc, ui
 
@@ -47,7 +48,7 @@ class MainWindow(WebBrowser):
     b = self.statusBar()
     b.setGraphicsEffect(ui.glowEffect(b))
 
-    self.showStatusMessage(self.tr("Ready"))
+    self.showStatusMessage(tr_("Ready"))
 
   def showStatusMessage(self, t, type='message'):
     """@reimp
