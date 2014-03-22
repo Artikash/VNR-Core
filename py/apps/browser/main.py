@@ -30,6 +30,13 @@ class MainObject(QObject):
 
     dprint("show root window")
     w = d.mainWindow
+
+    urls = [it for it in args[1:] if not it.startswith('-')]
+    if urls:
+      w.openUrls(urls)
+    else:
+      w.openDefaultPage()
+
     w.resize(800, 600)
     w.show()
 

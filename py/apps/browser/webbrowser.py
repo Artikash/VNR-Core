@@ -44,6 +44,13 @@ class WebBrowser(QtWidgets.QMainWindow):
     """
     self.statusBar().showMessage(text)
 
+  def openDefaultPage(self):
+    self.__d.newTabAfterCurrentWithBlankPage()
+
+  def openUrls(self, urls): # [unicode url]
+    for url in urls:
+      self.__d.openUrl(url)
+
 @Q_Q
 class _WebBrowser(object):
   def __init__(self, q):
@@ -56,7 +63,7 @@ class _WebBrowser(object):
 
     self._createShortcuts()
 
-    self.newTabAfterCurrentWithBlankPage()
+    #self.newTabAfterCurrentWithBlankPage()
 
   def _createShortcuts(self):
     q = self.q
