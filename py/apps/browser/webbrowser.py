@@ -125,6 +125,9 @@ class _WebBrowser(object):
   @memoizedproperty
   def addressEdit(self):
     ret = WbAddressEdit()
+    ret.setGraphicsEffect(ui.glowEffect(ret))
+    skqss.class_(ret, "address-edit")
+    # Not sure why that global shortcut does not work
     ret.textEntered.connect(self.openUnknown)
     ret.editTextChanged.connect(self.highlightText)
     return ret

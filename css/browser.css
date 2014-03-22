@@ -24,12 +24,12 @@ QTabBar::tab {
   margin-bottom: 4px; /* margin to the tabview */
 }
 
-QTabBar::tab:hover,
 QTabBar::tab:selected {
-  border: 1px solid white;
+  border: 1px solid rgba(255,255,255,80%); /* white */
 }
 
 QTabBar::tab:hover {
+  border: 1px solid white;
   background-color: rgba(255,255,255,10%);
 }
 
@@ -64,6 +64,7 @@ QStatusBar.error {
 }
 
 /** Tab corner button, see: bootstrap .close */
+
 QPushButton.btn-tab-corner {
   width: 18px;
   height: 18px;
@@ -74,8 +75,8 @@ QPushButton.btn-tab-corner {
   background-color: rgba(224, 224, 224, 10%); /* gray */
   margin-bottom: 4px; /* margin to the tabview */
 }
-QPushButton.btn-tab-corner:hover,
-QPushButton.btn-tab-corner:focus {
+QPushButton.btn-tab-corner:focus,
+QPushButton.btn-tab-corner:hover {
   border: 1px solid white;
   background-color: rgba(224, 224, 224, 20%); /* gray */
 }
@@ -83,7 +84,8 @@ QPushButton.btn-tab-corner:focus {
 /** Address toolbar */
 
 QToolBar.toolbar-address {
-  border: 1px solid white;
+  border: 1px solid rgba(255,255,255,80%); /* white */
+  /*border: 1px solid white; */
   border-radius: 4px;
 }
 
@@ -92,6 +94,45 @@ QToolBar.toolbar-address QToolButton {
   width: 16px;
   height: 16px;
   font-size: 12px;
+  /*font-weight: bold;*/
+}
+
+/** Address combobox edit */
+
+QComboBox.address-edit {
+  height: 22px;
+  color: snow;
+  border-radius: 4px;
+  background-color: transparent;
+  /*padding-left: 2px;*/
+  border: 1px solid transparent;
+}
+
+QComboBox.address-edit:hover {
+  border: 1px solid white;
+}
+
+QComboBox.address-edit:focus {
+  border: 1px solid #add8e6; /* lightblue */
+}
+
+QComboBox.address-edit::drop-down {
+  subcontrol-position: left;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  width: 16px;
+  height: 16px;
+  margin: 2px;
+}
+QComboBox.address-edit::drop-down:on,
+QComboBox.address-edit::drop-down:hover {
+  border-color: white;
+  background-color: rgba(255,255,255,10%);
+}
+QComboBox.address-edit::down-arrow {
+  background-color: white;
+  width: 7px;
+  height: 1px;
 }
 
 /* EOF */
