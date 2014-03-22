@@ -7,39 +7,15 @@ __all__ = ['WebBrowser']
 import re
 from functools import partial
 from PySide.QtCore import Qt, Signal
-from PySide import QtGui, QtWebKit
+from PySide import QtGui
 from Qt5 import QtWidgets
-from sakurakit import skwebkit
 from sakurakit.skclass import memoizedproperty, Q_Q
 from sakurakit.skwidgets import SkTitlelessDockWidget, shortcut
 from sakurakit.sktr import tr_
 from netman import *
+from webkit import *
 from widgets import *
 import textutil
-
-## WbWebView ##
-
-class WbWebView(skwebkit.SkWebView):
-  def __init__(self, parent=None):
-    super(WbWebView, self).__init__(parent)
-    self.enableHighlight()
-
-    self.titleChanged.connect(self.setWindowTitle)
-    self.onCreateWindow = None # -> QWebView
-
-    #ret.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks) # Since there are local images
-    ##ret.page().setLinkDelegationPolicy(QWebPage.DelegateExternalLinks)
-    #ret.pageAction(QWebPage.Reload).triggered.connect(
-    #    self.updateAndRefresh, Qt.QueuedConnection)
-    #import osutil
-    #ret.linkClicked.connect(osutil.open_url)
-
-  # QWebView * QWebView::createWindow ( QWebPage::WebWindowType type ) [virtual protected]
-  def createWindow(self, type): # override
-    if self.onCreateWindow:
-      return self.onCreateWindow(type)
-
-## WebBrowser ##
 
 class WebBrowser(QtWidgets.QMainWindow):
 

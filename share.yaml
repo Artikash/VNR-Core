@@ -401,6 +401,9 @@ templates:
     xml/users:      xml/users.xml
     xml/voices:     xml/voices.xml
 
+    haml/browser/error:     haml/browser/error.haml
+    haml/browser/startup:   haml/browser/startup.haml
+
 avatars:
   location:         $PWD/images/avatars
   count:            132

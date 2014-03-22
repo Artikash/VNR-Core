@@ -4,6 +4,7 @@
 # Runtime resource locations
 
 import config
+import jinja2
 from sakurakit import skos, skpaths
 
 DIR_USER = (config.USER_PROFILES[skos.name]
@@ -48,5 +49,27 @@ def qss(name):
   """
   from sakurakit import skfileio
   return skfileio.readfile(qss_path(name))
+
+# HAML Jinja
+
+__jinja_loader = jinja2.FileSystemLoader(config.TEMPLATE_LOCATION)
+JINJA = jinja2.Environment(
+  loader = __jinja_loader,
+  auto_reload = False,  # do not check if the template file is modified
+  extensions = config.JINJA_HAML['extensions'],
+)
+
+JINJA_TEMPLATES = {} # {str name:jinja_template}
+def jinja_template(name):
+  """
+  @param  name  str  id
+  @return  jinjia2.template  path
+  @throw  KeyError  when unknown name
+  """
+  key = 'haml/browser/' + name
+  ret = JINJA_TEMPLATES.get(key)
+  if not ret:
+    ret = JINJA_TEMPLATES[key] = JINJA.get_template(config.TEMPLATE_ENTRIES[key])
+  return ret
 
 # EOF

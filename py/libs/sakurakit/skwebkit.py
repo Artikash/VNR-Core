@@ -6,7 +6,7 @@ __all__ = ['SkWebViewBean', 'SkWebView', 'SkReadOnlyWebView']
 
 import os
 from functools import partial
-from PySide.QtCore import Signal, Slot, Property, QObject, QPoint, QUrl
+from PySide.QtCore import Signal, Slot, Qt, Property, QObject, QPoint, QUrl
 from PySide.QtGui import QKeySequence
 from PySide.QtWebKit import QWebPage, QWebView
 from Qt5.QtWidgets import QApplication
@@ -30,13 +30,20 @@ class SkReadOnlyWebView(QWebView):
 
 ## Views ##
 
+class SkWebPage(QWebPage): # placeholder
+  def __init__(self, parent=None):
+    super(SkWebPage, self).__init__(parent)
+
 class SkWebView(QWebView):
-  def __init__(self, parent=None, f=0):
+  def __init__(self, parent=None, f=0, page=None): # QWidget, Qt.WindowFlags, QWebPage
     super(SkWebView, self).__init__(parent)
     if f:
       self.setWindowFlags(f)
 
-    page = self.page()
+    if page:
+      self.setPage(page)
+    else:
+      page = self.page()
 
     # Refresh
     a = page.action(QWebPage.Reload)
@@ -48,6 +55,11 @@ class SkWebView(QWebView):
 
     # Highlight selection
     #self.selectionChanged.connect(self.highlightSelection)
+
+    # Mouse gestures
+    # No effect?
+    for g in Qt.PanGesture, Qt.SwipeGesture, Qt.PinchGesture:
+      self.grabGesture(g)
 
   ## Slots ##
 
