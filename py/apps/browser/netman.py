@@ -18,6 +18,11 @@ _PROXY_SITES = {
   for key,host in config.PROXY_SITES.iteritems()
 } # {string host: string key}
 
+_PROXY_DOMAINS = {
+  _normalize_host(host):ip
+  for host,ip in config.PROXY_DOMAINS.iteritems()
+} # {string host: string ip}
+
 class WbNetworkAccessManager(QNetworkAccessManager):
   def __init__(self, parent=None):
     super(WbNetworkAccessManager, self).__init__(parent)
@@ -27,8 +32,9 @@ class WbNetworkAccessManager(QNetworkAccessManager):
     url = req.url() # QUrl
     if url.scheme() == 'http':
       host = _normalize_host(url.host())
-      if host == 'www.getchu.com':
-        url.setHost(config.GETCHU_HOST)
+      ip = _PROXY_DOMAINS.get(host)
+      if ip:
+        url.setHost(ip)
       else:
         key = _PROXY_SITES.get(host)
         if key:

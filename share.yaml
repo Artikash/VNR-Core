@@ -173,6 +173,12 @@ proxies:
   # http://9gal.com/read.php?tid=417812&page=e
   getchu:       http://210.155.150.152
 
+  domains:
+    annot.me:       153.121.54.194
+    sakuradite.com: 153.121.54.194
+    sakuradite.org: 153.121.52.138
+    getchu.com:     210.155.150.152
+
   sites:
     #adlib-software: www.adlib-software.com
     alicesoft: www.alicesoft.com
