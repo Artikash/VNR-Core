@@ -129,7 +129,7 @@ class _WebBrowser(object):
 
   ## Actions ##
 
-  def focusAddressEdit(self): self.addressEdit.setFocus()
+  def focusAddressEdit(self): self.addressEdit.focus()
 
   def openUnknown(self, text): # string ->
     """

@@ -193,6 +193,8 @@ proxies:
     wheel-soft: www.wheel-soft.com
     witchflame: www.witchflame.jp
 
+    dmm: dmm.co.jp
+    #getchu: getchu.com
     scape: erogamescape.dyndns.org
 
 google:

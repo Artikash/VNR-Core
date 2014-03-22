@@ -13,7 +13,6 @@ def _normalize_host(url): # str -> str
     url = 'www.' + url
   return url
 
-_PROXY_HOST = config.PROXY_HOST
 _PROXY_SITES = {
   _normalize_host(host):key
   for key,host in config.PROXY_SITES.iteritems()
@@ -28,11 +27,14 @@ class WbNetworkAccessManager(QNetworkAccessManager):
     url = req.url() # QUrl
     if url.scheme() == 'http':
       host = _normalize_host(url.host())
-      key = _PROXY_SITES.get(host)
-      if key:
-        url.setHost(_PROXY_HOST)
-        path = '/proxy/' + key + url.path()
-        url.setPath(path)
+      if host == 'www.getchu.com':
+        url.setHost(config.GETCHU_HOST)
+      else:
+        key = _PROXY_SITES.get(host)
+        if key:
+          url.setHost(config.PROXY_HOST)
+          path = '/proxy/' + key + url.path()
+          url.setPath(path)
       req = QNetworkRequest(req) # since request tis constent
       req.setUrl(url)
     return super(WbNetworkAccessManager, self).createRequest(op, req, outgoingData)

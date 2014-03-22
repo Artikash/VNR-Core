@@ -32,6 +32,10 @@ class WbAddressEdit(QtWidgets.QComboBox):
     if not self.hasFocus():
       self.setEditText(url)
 
+  def focus(self):
+    self.setFocus()
+    self.lineEdit().selectAll()
+
 ## WbTabWidget ##
 
 class WbTabBar(QtWidgets.QTabBar):

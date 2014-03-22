@@ -131,4 +131,6 @@ IMAGE_LOCATIONS = {k: parse_path(v) # {str name:unicode path}
 PROXY_HOST = SHARE_YAML['proxies']['host']
 PROXY_SITES = SHARE_YAML['proxies']['sites'] # {string key:string host}
 
+GETCHU_HOST = SHARE_YAML['proxies']['getchu'].replace('http://', '')
+
 # EOF
