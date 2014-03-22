@@ -170,5 +170,18 @@ Plugin.MainObjectProxy { \
 } \
 "
     })
+
+    if (!statusPlugin_.wine)
+      append({ name: My.tr("Web Browser")
+      , searchText: "Web Browser" + "\n" + My.tr("Web Browser")
+      , icon: 'image://rc/dock-browser'
+      , toolTip: qsTr("VNR's built-in web browser")
+      , qml: "\
+import org.sakuradite.reader 1.0 as Plugin; \
+Plugin.MainObjectProxy { \
+  function run() { showWebBrowser() } \
+} \
+"
+    })
   }
 }

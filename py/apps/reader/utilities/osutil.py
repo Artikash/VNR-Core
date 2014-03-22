@@ -9,7 +9,8 @@ from sakurakit import skclip, skos, skwin
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint, dwarn
 #from sakurakit.skqml import QmlObject
-import features
+from mytr import my, mytr_
+import features, growl, proxy
 
 def get_relpath(path): # unicode -> unicode
   return os.path.relpath(os.path.abspath(path), os.path.abspath(os.getcwd())) # Does not work on Wine
@@ -62,15 +63,21 @@ def open_url(url):
   #dprint("url = %s" % url)
   dprint(url)
   if isinstance(url, QtCore.QUrl):
-    _clip(url.toString())
+    t = url.toString()
+    _clip(t)
   else:
-    _clip(url)
+    _clip(t)
   if features.WINE:
     dwarn("disabled under wine") # this will hang several seconds on wine
     #if isinstance(url, QtCore.QUrl):
     #  url = url.toString()
     #os.startfile(url)
+  elif proxy.manager().isBlockedUrl(t):
+    growl.msg(my.tr("Open in VNR's browser for sites that might be blocked"))
+    from scripts import browser
+    browser.open(t)
   else:
+    growl.msg(mytr_("Open in external browser"))
     QDesktopServices.openUrl(url)
   #if isinstance(url, QtCore.QUrl):
   #  url = url.toString()

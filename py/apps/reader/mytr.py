@@ -19,6 +19,7 @@ class reader(QObject):
     return (
       # Windows
       self.tr("Visual Novel Reader"),
+      self.tr("Web Browser"),
       self.tr("Spring Board"),
       self.tr("Game Board"),
       self.tr("Subtitle Maker"), self.tr("Subtitle maker"),

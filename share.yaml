@@ -524,6 +524,7 @@ images:
   game-cover:       $PWD/images/cover.png
   arrow-down:       $PWD/images/arrow.png
   dock-bbcode:      $PWD/images/dock/bb.png
+  dock-browser:     $PWD/images/dock/browser.png
   dock-dict:        $PWD/images/dock/dict.png
   dock-jdict:       $PWD/images/dock/jdict.png
   dock-gameboard:   $PWD/images/dock/reader.png

@@ -214,6 +214,7 @@ PROXY_DLSITE = _PROXY['dlsite']
 PROXY_DLSITE_IMG = _PROXY['dlsite_img']
 
 PROXY_SITES = {v:k for k,v in _PROXY['sites'].iteritems()} # {string host url:string proxy key}
+PROXY_DOMAINS = frozenset((it.replace('www.', '') for it in PROXY_SITES))
 
 GOOGLE = SHARE_YAML['google']
 GOOGLE_SEARCH = GOOGLE['search']
