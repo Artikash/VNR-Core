@@ -7,6 +7,11 @@ from sakurakit.skclass import memoized
 #from sakurakit.skdebug import dprint
 import config
 
+_RX_HOST = re.compile(r'http://([^/]*)')
+def _hostof(url): # unicode -> unicode
+  m = _RX_HOST.match(url.lower())
+  return m.group(1) if m else ''
+
 class ProxyManager:
 
   def __init__(self):
@@ -23,6 +28,13 @@ class ProxyManager:
     self.twimg_a = config.PROXY_TWIMG_A if t else config.TWITTER_TWIMG_A
     self.twimg_pbs = config.PROXY_TWIMG_PBS if t else config.TWITTER_TWIMG_PBS
     #self.getchu = config.PROXY_GETCHU if t else 'http://www.getchu.com'
+
+  def isBlockedUrl(self, url): # unicode -> bool
+    host = _hostof(url)
+    if host:
+      host = host.replace('www.', '')
+      return self.isEnabled() and host == 'getchu.com' or host in config.PROXY_DOMAINS
+    return False
 
   def getGetchuUrl(self, url):
     """

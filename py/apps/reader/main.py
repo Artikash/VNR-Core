@@ -1687,6 +1687,10 @@ class MainObject(QObject):
     else: _MainObject.showWindow(self.__d.termChartDialog)
     dprint("pass")
 
+  def showWebBrowser(self):
+    from scripts import browser
+    browser.open()
+
   def showCommentChart(self, comments, md5=None):
     """
     @param  comments  [dataman.Comment]
@@ -1762,6 +1766,9 @@ class MainObject(QObject):
 class MainObjectProxy(QObject):
   def __init__(self, parent=None):
     super(MainObjectProxy, self).__init__(parent)
+
+  @Slot()
+  def showWebBrowser(self): manager().showWebBrowser()
 
   #@Slot()
   #def showOmajinai(self): manager().showOmajinai()

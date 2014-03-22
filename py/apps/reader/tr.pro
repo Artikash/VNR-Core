@@ -34,6 +34,7 @@ SOURCES = \
   views/userview.py \
   qml/kagami.py \
   widgets/textspy.py \
+  utilities/osutil.py \
   utilities/procutil.py \
   utilities/winutil.py \
   i18n.py \

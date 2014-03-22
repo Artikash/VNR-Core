@@ -836,12 +836,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>加載LEC日英翻譯引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="604"/>
+        <location filename="managers/_trman.py" line="605"/>
         <source>Dr.eye Japanese-Chinese translator is loaded</source>
         <translation>加載Dr.eye日中翻譯引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="617"/>
+        <location filename="managers/_trman.py" line="618"/>
         <source>Dr.eye English-Chinese translator is loaded</source>
         <translation>加載Dr.eye中英翻譯引擎</translation>
     </message>
@@ -876,7 +876,7 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>更新來自其他同學的評論</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="674"/>
+        <location filename="managers/_trman.py" line="675"/>
         <source>Cannot load {0} for machine translation. Please check Preferences/Location</source>
         <translation>無法載入{0}機翻引擎。請檢查下使用偏好中的軟件位置</translation>
     </message>
@@ -1123,7 +1123,7 @@ It might take a couple of seconds to complete.</source>
         <translation>{0}需要管理員權限。請以管理員身份重新啟動VNR</translation>
     </message>
     <message>
-        <location filename="main.py" line="1701"/>
+        <location filename="main.py" line="1705"/>
         <source>There are no user-contributed subtitles</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
@@ -3302,6 +3302,11 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <location filename="dialogs/_prefs.py" line="1733"/>
         <source>Manual installation required</source>
         <translation>需要手動安裝</translation>
+    </message>
+    <message>
+        <location filename="utilities/osutil.py" line="76"/>
+        <source>Open in VNR&apos;s browser for sites that might be blocked</source>
+        <translation>用VNR自帶的瀏覽器打卡可能被屏蔽的網站</translation>
     </message>
 </context>
 </TS>

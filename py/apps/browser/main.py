@@ -32,8 +32,9 @@ class MainObject(QObject):
     dprint("show root window")
     w = d.mainWindow
 
+    urls = [it for it in args if not it.startswith('-')]
     args_offset = 2 if skos.WIN else 1
-    urls = [it for it in args[args_offset:] if not it.startswith('-')]
+    urls = urls[args_offset:]
     if urls:
       w.openUrls(urls)
     else:
