@@ -78,6 +78,10 @@ class _WebBrowser(object):
     q = self.q
     shortcut(QtGui.QKeySequence.AddTab, self.newTabAfterCurrentWithBlankPage, parent=q)
 
+    shortcut('ctrl+w', self.closeCurrentTab, parent=q)
+    for k in 'ctrl+l', 'alt+d':
+      shortcut(k, self.focusAddressEdit, parent=q)
+
   ## Properties ##
 
   @memoizedproperty
@@ -124,6 +128,8 @@ class _WebBrowser(object):
     return ret
 
   ## Actions ##
+
+  def focusAddressEdit(self): self.addressEdit.setFocus()
 
   def openUnknown(self, text): # string ->
     """
