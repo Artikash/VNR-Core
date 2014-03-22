@@ -11,7 +11,7 @@ from PySide import QtGui
 from Qt5 import QtWidgets
 from sakurakit import skqss
 from sakurakit.skclass import memoizedproperty, Q_Q
-from sakurakit.skwidgets import SkTitlelessDockWidget, shortcut
+from sakurakit.skwidgets import SkTitlelessDockWidget, SkDraggableMainWindow, shortcut
 from sakurakit.sktr import tr_
 from netman import *
 from webkit import *
@@ -22,9 +22,11 @@ START_HTML = rc.jinja_template('start').render({
   'tr': tr_,
 }) # unicode html
 
-class WebBrowser(QtWidgets.QMainWindow):
+#class WebBrowser(QtWidgets.QMainWindow):
+class WebBrowser(SkDraggableMainWindow):
 
   quitRequested = Signal()
+  messageReceived = Signal(unicode)
 
   def __init__(self, parent=None):
     #WINDOW_FLAGS = (
@@ -213,10 +215,15 @@ class _WebBrowser(object):
     ret = WbWebView()
     ret.onCreateWindow = self._createWindow
     ret.page().setNetworkAccessManager(self.networkAccessManager)
+    ret.page().linkHovered.connect(self.showLink)
     ret.titleChanged.connect(partial(self.setTabTitle, ret))
     ret.urlChanged.connect(self.updateAddress)
     ret.linkClicked.connect(self.addRecentUrl)
     return ret
+
+  def showLink(self, url, content): # unicode, unicode
+    if url:
+      self.q.messageReceived.emit(textutil.simplifyurl(url))
 
   def forward(self):
     w = self.tabWidget.currentWidget()
@@ -302,7 +309,6 @@ class _WebBrowser(object):
 #  connect(view, SIGNAL(urlChanged(QUrl)), SLOT(updateAddressbar()));
 #  connect(view, SIGNAL(loadStarted()), SLOT(handleLoadStarted()));
 #  connect(view, SIGNAL(loadFinished(bool)), SLOT(handleLoadFinished()));
-#  connect(view, SIGNAL(linkClicked(QUrl)), SLOT(addRecentUrl(QUrl)));
 #
 #  view->installEventFilter(mouseGestureFilter_);
 #

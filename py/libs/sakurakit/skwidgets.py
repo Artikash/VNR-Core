@@ -6,6 +6,7 @@ __all__ = [
   'to_wid', 'shortcut', 'clear_layout',
   'SkButtonRow',
   'SkContainerWidget',
+  'SkDraggableWidget', 'SkDraggableMainWindow',
   'SkWidgetLayout', 'SkLayoutWidget',
   'SkRadioButtonGrid',
   'SkTabPane',
@@ -62,6 +63,68 @@ def clear_layout(layout, delwidget=False):
         if item_as_layout:
           clear_layout(item_as_layout, delwidget=delwidget)
       del item
+
+## Draggable ##
+
+class _SkDraggableWidget:
+  def __init__(self):
+    self.draggable = True # bool
+    self.pos = None # int, int
+class SkDraggableWidget(QtWidgets.QWidget):
+  def __init__(self, parent=None, f=0):
+    super(SkDraggableWidget, self).__init__(parent, f)
+    self.__d = _SkDraggableWidget()
+
+  def isDraggable(self): return self.__d.draggable
+  def setDraggable(self, t): self.__d.draggable = t
+
+  def mousePressEvent(self, event): # override;
+    d = self.__d
+    if d.draggable and not d.pos and event.button() == Qt.LeftButton and not self.isMaximized() and not self.isFullScreen():
+      d.pos = event.globalPos() - self.frameGeometry().topLeft()
+      event.accept()
+    super(SkDraggableWidget, self).mousePressEvent(event)
+
+  def mouseMoveEvent(self, event): # override;
+    d = self.__d
+    if d.draggable and not d.pos and (event.button() & Qt.LeftButton) and not self.isMaximized() and not self.isFullScreen():
+      self.move(event.globalPos() - d.pos)
+      event.accept()
+    super(SkDraggableWidget, self).mouseMoveEvent(event)
+
+  def mouseReleaseEvent(self, event): # override;
+    self.__d.pos = None
+    super(SkDraggableWidget, self).mouseReleaseEvent(event)
+
+class _SkDraggableMainWindow:
+  def __init__(self):
+    self.draggable = True # bool
+    self.pos = None # int, int
+class SkDraggableMainWindow(QtWidgets.QMainWindow):
+  def __init__(self, parent=None, f=0):
+    super(SkDraggableMainWindow, self).__init__(parent, f)
+    self.__d = _SkDraggableMainWindow()
+
+  def isDraggable(self): return self.__d.draggable
+  def setDraggable(self, t): self.__d.draggable = t
+
+  def mousePressEvent(self, event): # override;
+    d = self.__d
+    if d.draggable and not d.pos and event.button() == Qt.LeftButton and not self.isMaximized() and not self.isFullScreen():
+      d.pos = event.globalPos() - self.frameGeometry().topLeft()
+      event.accept()
+    super(SkDraggableMainWindow, self).mousePressEvent(event)
+
+  def mouseMoveEvent(self, event): # override;
+    d = self.__d
+    if d.draggable and not d.pos and (event.button() & Qt.LeftButton) and not self.isMaximized() and not self.isFullScreen():
+      self.move(event.globalPos() - d.pos)
+      event.accept()
+    super(SkDraggableMainWindow, self).mouseMoveEvent(event)
+
+  def mouseReleaseEvent(self, event): # override;
+    self.__d.pos = None
+    super(SkDraggableMainWindow, self).mouseReleaseEvent(event)
 
 ## Widgets ##
 

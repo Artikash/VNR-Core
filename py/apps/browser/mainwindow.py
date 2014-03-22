@@ -48,7 +48,9 @@ class MainWindow(WebBrowser):
     b = self.statusBar()
     b.setGraphicsEffect(ui.glowEffect(b))
 
-    self.showStatusMessage(tr_("Ready"))
+    self.messageReceived.connect(self.showStatusMessage)
+    #self.showStatusMessage(tr_("Ready"))
+    self.statusBar().hide()
 
   def showStatusMessage(self, t, type='message'):
     """@reimp
