@@ -91,6 +91,7 @@ class sakurakit(QObject):
       self.tr("About"),
       self.tr("Add"),
       self.tr("Advanced"),
+      self.tr("Back"),
       self.tr("Browse"),
       self.tr("Buy"),
       self.tr("Cancel"),
@@ -122,6 +123,7 @@ class sakurakit(QObject):
       self.tr("Export"),
       self.tr("Extra"), self.tr("extra"),
       self.tr("Filter"),
+      self.tr("Forward"),
       self.tr("Full screen"),
       self.tr("Finish"),
       self.tr("Folder"),
@@ -358,6 +360,9 @@ class sakurakit(QObject):
       self.tr("Case-sensitive"), self.tr("case-sensitive"),
       self.tr("Case-insensitive"), self.tr("case-insensitive"),
       self.tr("Ignore Case"), self.tr("Ignore case"),
+
+      # Errors
+      self.tr("Network Error"),
 
       # Messages
       self.tr("Found"),

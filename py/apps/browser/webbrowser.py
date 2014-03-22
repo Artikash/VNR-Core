@@ -4,198 +4,224 @@
 
 __all__ = ['WebBrowser']
 
+import re
 from functools import partial
-from PySide.QtCore import Qt, Signal
-from PySide import QtGui, QtWebKit
+from PySide.QtCore import Qt, Signal, QUrl
+from PySide import QtGui
 from Qt5 import QtWidgets
+from sakurakit import skqss
 from sakurakit.skclass import memoizedproperty, Q_Q
-from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
+from sakurakit.skwidgets import SkTitlelessDockWidget, SkDraggableMainWindow, shortcut
 from sakurakit.sktr import tr_
+from addressui import *
+from netman import *
+from tabui import *
+from webkit import *
+from i18n import i18n
+import rc, textutil, ui
 
-## WbAddressEdit ##
+START_HTML = rc.jinja_template('start').render({
+  'tr': tr_,
+  'rc': rc,
+}) # unicode html
 
-class WbAddressEdit(QtWidgets.QComboBox):
+MAX_TITLE_LENGTH = 20
+
+#class WebBrowser(QtWidgets.QMainWindow):
+class WebBrowser(SkDraggableMainWindow):
+
+  quitRequested = Signal()
+  messageReceived = Signal(unicode)
+
   def __init__(self, parent=None):
-    super(WbAddressEdit, self).__init__(parent)
-    self.setInsertPolicy(QtWidgets.QComboBox.InsertAtTop)
-    self.setEditable(True)
-    self.lineEdit().returnPressed.connect(self.enter)
+    #WINDOW_FLAGS = (
+    #  Qt.Window
+    #  | Qt.CustomizeWindowHint
+    #  | Qt.WindowTitleHint
+    #  | Qt.WindowSystemMenuHint
+    #  | Qt.WindowMinMaxButtonsHint
+    #  | Qt.WindowCloseButtonHint
+    #)
+    super(WebBrowser, self).__init__(parent)
+    self.__d = _WebBrowser(self)
 
-  textEntered = Signal(unicode)
-
-  def enter(self):
-    t = self.currentText().strip()
-    if t:
-      self.textEntered.emit(t)
-
-  def setUrl(self, url):
-    if not self.hasFocus():
-      self.setEditText(url)
-
-## WbTabWidget ##
-
-class WbTabBar(QtWidgets.QTabBar):
-  def __init__(self, parent=None):
-    super(WbTabBar, self).__init__(parent)
-
-  doubleClickedAt = Signal(int) # index
-
-  ## Events ##
-  def mouseDoubleClickEvent(self, e):
-    """@reimp"""
-    if e.button() == Qt.LeftButton: #and not e.modifiers():
-      index = self.tabAt(e.globalPos())
-      if index >= 0:
-        self.doubleClickedAt.emit(index)
-      e.accept();
-    else:
-      super(WbTabBar, self).mouseDoubleClickEvent(e)
-
-class WbTabWidget(QtWidgets.QTabWidget):
-  def __init__(self, parent=None):
-    super(WbTabWidget, self).__init__(parent)
-
-  doubleClicked = Signal()
-  rightButtonClicked = Signal()
-
-  ## Events ##
-
-  def mouseDoubleClickEvent(self, e):
-    """@reimp"""
-    if e.button() == Qt.LeftButton: # and not e.modifiers():
-      self.doubleClicked.emit()
-      e.accept()
-    else:
-      super(WbTabWidget, self).mouseDoubleClickEvent(e)
-
-  def mouseReleaseEvent(self, e):
-    """@reimp"""
-    if e.button() == Qt.RightButton:
-      self.rightButtonClicked.emit()
-    super(WbTabWidget, self).mouseReleaseEvent(e)
-
-  ## Actions ##
-
-  def newTab(self, view, index=-1, focus=True):
+  def showStatusMessage(self, t, type='message'):
     """
-    @param  view  QWidget
-    @param  index  int
-    @param  focus  bool
+    @param  t  unicode
+    @param  type  'message', 'warning', or 'error'
     """
-    title = tr_("Empty")
-    if index < 0 or index >= self.count():
-      index = self.addTab(view, title)
-    else:
-      self.insertTab(index, view, title)
-    if focus:
-      self.focusTab(index)
+    self.statusBar().showMessage(text)
 
-  def isEmpty(self): return self.count() <= 0
+  def openDefaultPage(self):
+    self.__d.newTabAfterCurrentWithBlankPage()
 
-  def focusTab(self, index):
-    """
-    @param  index  int
-    """
-    if index >= 0 and index < self.count():
-      self.setCurrentIndex(index)
-
-class WbWebView(QtWebKit.QWebView):
-  def __init__(self, parent=None):
-    super(WbWebView, self).__init__(parent)
-
-    self.titleChanged.connect(self.setWindowTitle)
-
-    a = self.page().action(QtWebKit.QWebPage.Reload)
-    a.setShortcut(QtGui.QKeySequence('ctrl+r')) # force CTRL+R on different OSes
-    shortcut('ctrl+r', a.trigger, parent=self)
-
-    #ret.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks) # Since there are local images
-    ##ret.page().setLinkDelegationPolicy(QWebPage.DelegateExternalLinks)
-    #ret.pageAction(QWebPage.Reload).triggered.connect(
-    #    self.updateAndRefresh, Qt.QueuedConnection)
-    #import osutil
-    #ret.linkClicked.connect(osutil.open_url)
-
-## WebBrowser ##
+  def openUrls(self, urls): # [unicode url]
+    for url in urls:
+      self.__d.openUnknown(url)
+      #self.__d.openUrl(url)
 
 @Q_Q
 class _WebBrowser(object):
   def __init__(self, q):
-    q.setCentralWidget(self.tabWidget)
+    self.loadProgress = 100 # int [0,100]
 
-    dock = SkTitlelessDockWidget(self.header)
+    #layout = QtWidgets.QVBoxLayout()
+    #layout.addWidget(self.addressWidget)
+    #layout.addWidget(self.tabWidget)
+
+    #w = QtWidgets.QWidget()
+    #w.setLayout(layout)
+    #layout.setContentsMargins(0, 0, 0, 0)
+    #q.setCentralWidget(w)
+
+    q.setCentralWidget(self.tabWidget)
+    dock = SkTitlelessDockWidget(self.addressWidget)
     dock.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
     dock.setAllowedAreas(Qt.TopDockWidgetArea)
     q.addDockWidget(Qt.TopDockWidgetArea, dock)
 
     self._createShortcuts()
 
-    self.newTabAfterCurrentWithBlankPage()
+    #self.newTabAfterCurrentWithBlankPage()
 
   def _createShortcuts(self):
     q = self.q
     shortcut(QtGui.QKeySequence.AddTab, self.newTabAfterCurrentWithBlankPage, parent=q)
 
+    shortcut('ctrl+w', self.closeCurrentTab, parent=q)
+    for k in 'ctrl+l', 'alt+d':
+      shortcut(k, self.addressEdit.focus, parent=q)
+
+    for i in range(1, 10):
+      shortcut('ctrl+%i' % i, partial(self.activateTab, i-1), parent=q)
+    #shortcut('ctrl+0', partial(self.activateTab, 10-9), parent=q) # ctrl+ 0 used by zoom reset
+
   ## Properties ##
+
+  @memoizedproperty
+  def networkAccessManager(self):
+    ret = WbNetworkAccessManager(self.q)
+    return ret
 
   @memoizedproperty
   def tabWidget(self):
     ret = WbTabWidget()
     ret.setTabBar(self.tabBar)
+    ret.setCornerWidget(self.newTabButton)
+    ret.tabCloseRequested.connect(self.closeTab)
+    ret.currentChanged.connect(self.loadAddress)
+    ret.currentChanged.connect(self.refreshLoadProgress)
+    ret.currentChanged.connect(self.refreshWindowTitle)
     ret.doubleClicked.connect(self.newTabAtLastWithBlankPage, Qt.QueuedConnection)
     return ret
 
   @memoizedproperty
   def tabBar(self):
     ret = WbTabBar()
+    ret.setGraphicsEffect(ui.glowEffect(ret))
     #ret.doubleClickedAt.connect(self.newTabAfter, Qt.QueuedConnection)
     return ret
 
   @memoizedproperty
-  def header(self):
-    layout = QtWidgets.QHBoxLayout()
-    layout.addWidget(self.addressEdit)
+  def addressWidget(self):
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.addressToolBar)
+    row.addWidget(self.addressEdit, 1)
+    row.setContentsMargins(2, 2, 2, 2)
     ret = QtWidgets.QWidget()
-    ret.setLayout(layout)
+    ret.setLayout(row)
     return ret
 
   @memoizedproperty
   def addressEdit(self):
     ret = WbAddressEdit()
+    ret.setGraphicsEffect(ui.glowEffect(ret))
+    skqss.class_(ret, "address-edit")
+    # Not sure why that global shortcut does not work
     ret.textEntered.connect(self.openUnknown)
+    ret.editTextChanged.connect(self.highlightText)
+    return ret
+
+  @memoizedproperty
+  def newTabButton(self):
+    ret = QtWidgets.QPushButton()
+    ret.setGraphicsEffect(ui.glowEffect(ret))
+    skqss.class_(ret, 'btn-tab-corner')
+    ret.setText("+")
+    #ret.setToolTip(tr_("New Tab"))
+    ret.setToolTip("%s (%s, %s)" % (i18n.tr("New Tab"), "cmd+T", tr_("Double-click")))
+    ret.clicked.connect(self.newTabAtLastWithBlankPage)
+    return ret
+
+  @memoizedproperty
+  def addressToolBar(self):
+    ret = QtWidgets.QToolBar()
+    ret.setGraphicsEffect(ui.glowEffect(ret))
+    skqss.class_(ret, 'toolbar-address')
+
+    a = ret.addAction(u"\u25c0") # left triangle
+    a.triggered.connect(self.back)
+    a.setToolTip("%s (cmd+[)" % tr_("Back"))
+
+    a = ret.addAction(u"\u25B6") # right triangle
+    a.triggered.connect(self.forward)
+    a.setToolTip("%s (cmd+])" % tr_("Forward"))
+
+    #a = ret.addAction(u'\u27f3') # circle
+    a = ret.addAction(u"◯") # まる
+    a.triggered.connect(self.refresh)
+    a.setToolTip("%s (cmd+R)" % tr_("Refresh"))
     return ret
 
   ## Actions ##
 
-  def openUnknown(self, text):
+  def highlightText(self, t):
+    t = t.strip()
+    if t:
+      w = self.tabWidget.currentWidget()
+      if w:
+        w.rehighlight(t)
+
+  def openUnknown(self, text): # string ->
     """
     @param  text  unicode
     """
-    self.openUrl(text)
+    url = textutil.completeurl(text)
+    self.openUrl(url)
 
-  def openUrl(self, url):
+  def openUrl(self, url): # string ->
     """
     @param  url  unicode
     """
-    #self.addRecentUrl(url)
+    self.addRecentUrl(url)
     if self.tabWidget.isEmpty():
       self.newTabAfterCurrent()
     v = self.tabWidget.currentWidget()
     v.load(url)
 
+  def addRecentUrl(self, url): # string|QUrl ->
+    if isinstance(url, QUrl):
+      url = url.toString()
+    if url:
+      url = textutil.simplifyurl(url)
+      self.addressEdit.addUrl(url)
+
   def openBlankPage(self):
     if self.tabWidget.isEmpty():
       self.newTabAtLast()
     v = self.tabWidget.currentWidget()
-    assert v
+    #assert v
     if v:
-      v.setUrl("https://google.com")
-      #v->setContent(::rc_html_start_(), "text/html");
-      #ui->tabWidget->setTabText(tabIndex(), tr("Start Page"));
+      v.setHtml(START_HTML)
+      #self.tabWidget.setTabText(self.currentIndex(), tr("Start Page"));
       #int i = ui->addressEdit->findText(WB_BLANK_PAGE);
       #if (i >= 0)
       #  ui->addressEdit->setCurrentIndex(i);
       #ui->addressEdit->setIcon(WBRC_IMAGE_APP);
+
+  def activateTab(self, index): # int ->
+    if index >=0 and index < self.tabWidget.count():
+      self.tabWidget.setCurrentIndex(index)
 
   def newTabAfterCurrentWithBlankPage(self):
     self.newTabAfterCurrent()
@@ -216,76 +242,114 @@ class _WebBrowser(object):
 
   def createWebView(self):
     ret = WbWebView()
-    #view->page()->setNetworkAccessManager(networkAccessManager());
+    ret.onCreateWindow = self._createWindow
+
+    page = ret.page()
+    page.setNetworkAccessManager(self.networkAccessManager)
+    page.linkHovered.connect(self.showLink)
+
     ret.titleChanged.connect(partial(self.setTabTitle, ret))
-    ret.urlChanged.connect(self.updateAddress)
+    ret.urlChanged.connect(self.refreshAddress)
+    ret.messageReceived.connect(self.q.messageReceived)
+    ret.linkClicked.connect(self.addRecentUrl)
+    ret.linkClicked.connect(lambda url:
+        url.isEmpty() or self.setDisplayAddress(url))
+
+    ret.titleChanged.connect(partial(lambda view, value:
+        view == self.tabWidget.currentWidget() and self.refreshWindowTitle(),
+        ret))
+    page.loadProgress.connect(partial(lambda view, value:
+        view == self.tabWidget.currentWidget() and self.refreshLoadProgress(),
+        ret))
+
     return ret
 
-  def updateAddress(self):
+  def showMessage(self, t): # unicode ->
+      self.q.messageReceived.emit(t)
+
+  def showLink(self, url, content): # unicode, unicode
+    if url:
+      self.showMessage(textutil.simplifyurl(url))
+
+  def forward(self):
+    w = self.tabWidget.currentWidget()
+    if w:
+      w.forward()
+  def back(self):
+    w = self.tabWidget.currentWidget()
+    if w:
+      w.back()
+  def refresh(self):
+    w = self.tabWidget.currentWidget()
+    if w:
+      w.reload()
+
+  def _createWindow(self, type): # QWebPage::WebWindowType -> QWebView
+    ret = self.createWebView()
+    self.tabWidget.newTab(ret,
+        index=self.tabWidget.currentIndex() + 1,
+        focus=True)
+    return ret
+
+  def tabTitle(self, index=-1): # int -> unicode
+    w = self.tabWidget
+    if index == -1:
+      index = w.currentIndex()
+    return w.tabToolTip(index) if index >=0 and index < w.count() else ''
+
+  def refreshWindowTitle(self):
+    t = self.tabTitle()
+    if not t:
+      t = u"Kagami (α)"
+    self.q.setWindowTitle(t)
+
+  def refreshLoadProgress(self):
+    v = self.loadProgress
+    w = self.tabWidget.currentWidget()
+    if w:
+      v = w.page().progress()
+    if self.loadProgress != v:
+      self.loadProgress = v
+      self.showProgressMessage()
+      self.addressEdit.setProgress(v)
+
+  def showProgressMessage(self):
+    if self.loadProgress == 0:
+      t = "%s ..." % i18n.tr("Loading")
+    elif self.loadProgress == 100:
+      t = i18n.tr("Loading complete")
+    else:
+      t = "%s ... %i/100" % (i18n.tr("Loading"), self.loadProgress)
+    self.showMessage(t)
+
+  def setDisplayAddress(self, url):
+    if isinstance(url, QUrl):
+      url = '' if url.isEmpty() else url.toString()
+    url = textutil.simplifyurl(url)
+    self.addressEdit.setUrl(url)
+
+  def refreshAddress(self):
     v = self.tabWidget.currentWidget()
     if v:
-      url = v.url()
-      if not url.isEmpty():
-        url = url.toString()
-        self.addressEdit.setUrl(url)
+      self.setDisplayAddress(v.url())
 
-#    if (textSizeMultiplier_ > 0)
-#      view->setTextSizeMultiplier(textSizeMultiplier_);
-#
-#    wbview->setSearchEngines(qxSubList(searchEngines_, SearchEngineFactory::VisibleEngineCount));
-#    wbview->setSearchEngine(searchEngine_);
-#
-#    connect(wbview, SIGNAL(message(QString)), SLOT(showMessage(QString)));
-#    connect(wbview, SIGNAL(errorMessage(QString)), SLOT(showError(QString)));
-#    connect(wbview, SIGNAL(warning(QString)), SLOT(warn(QString)));
-#    connect(wbview, SIGNAL(notification(QString)), SLOT(notify(QString)));
-#
-#    connect(wbview, SIGNAL(selectedTextChanged(QString)), SIGNAL(selectedTextChanged(QString)));
-#    connect(wbview, SIGNAL(windowCreated(QWebView*)), SLOT(newTab(QWebView*)));
-#    connect(wbview, SIGNAL(openLinkRequested(QString)), SLOT(newTabInBackground(QString)));
-#
-#    connect(wbview, SIGNAL(openUrlWithAcPlayerRequested(QString)), SIGNAL(openUrlWithAcPlayerRequested(QString)));
-#    connect(wbview, SIGNAL(importUrlToAcPlayerRequested(QString)), SIGNAL(importUrlToAcPlayerRequested(QString)));
-#    connect(wbview, SIGNAL(openUrlWithAcDownloaderRequested(QString)), SIGNAL(openUrlWithAcDownloaderRequested(QString)));
-#    connect(wbview, SIGNAL(downloadAnnotationUrlRequested(QString)), SIGNAL(downloadAnnotationUrlRequested(QString)));
-#    connect(wbview, SIGNAL(undoClosedTabRequested()), SLOT(undoCloseTab()));
-#    connect(wbview, SIGNAL(newWindowRequested()), SIGNAL(newWindowRequested()));
-#    connect(wbview, SIGNAL(fullScreenRequested()), SIGNAL(fullScreenRequested()));
-#
-#    connect(wbview, SIGNAL(searchWithEngineRequested(QString,int)), SLOT(searchInNewTab(QString,int)));
-##ifdef Q_OS_WIN
-#    connect(wbview, SIGNAL(menuBarVisibilityChangeRequested(bool)), menuBar(), SLOT(setVisible(bool)));
-#    connect(wbview, SIGNAL(toggleMenuBarVisibleRequested()), SLOT(toggleMenuBarVisible()));
-##endif // Q_OS_WIN
-#    connect(this, SIGNAL(searchEngineChanged(int)), wbview, SLOT(setSearchEngine(int)));
-#  }
-#
-#  connect(view, SIGNAL(loadProgress(int)), SLOT(updateLoadProgress()));
-#  connect(view, SIGNAL(statusBarMessage(QString)), SLOT(showMessage(QString)));
-#  connect(view, SIGNAL(urlChanged(QUrl)), SLOT(updateAddressbar()));
-#  connect(view, SIGNAL(loadStarted()), SLOT(handleLoadStarted()));
-#  connect(view, SIGNAL(loadFinished(bool)), SLOT(handleLoadFinished()));
-#  connect(view, SIGNAL(linkClicked(QUrl)), SLOT(addRecentUrl(QUrl)));
-#
-#  view->installEventFilter(mouseGestureFilter_);
-#
-#  QString t; //= tr("New Tab");
-#  if (index < 0 || index >= tabCount())
-#    index = ui->tabWidget->addTab(view, t);
-#  else
-#    ui->tabWidget->insertTab(index, view, t);
-#
-#  auto textDaemon = new detail::SetTabText(ui->tabWidget, view);
-#  connect(view, SIGNAL(titleChanged(QString)), textDaemon, SLOT(trigger(QString)));
-#
-#  auto iconDaemon = new detail::SetTabIcon(ui->tabWidget, view);
-#  connect(view, SIGNAL(loadStarted()), iconDaemon, SLOT(trigger()));
-#  connect(view, SIGNAL(loadFinished(bool)), iconDaemon, SLOT(trigger(bool)));
-#
-#  auto searchDaemon = new detail::SearchTab(this, ui->tabWidget, view);
-#  connect(view, SIGNAL(loadFinished(bool)), searchDaemon, SLOT(trigger(bool)));
-#
-#  connect(view, SIGNAL(titleChanged(QString)), SLOT(updateWindowTitle()));
+  def loadAddress(self):
+    w = self.tabWidget.currentWidget()
+    url = w.url() if w else ''
+    self.setDisplayAddress(url)
+
+  def closeTab(self, index):
+    if self.tabWidget.count() <= 1:
+      self.q.quitRequested.emit()
+    else:
+      if index >= 0 and index < self.tabWidget.count():
+        w = self.tabWidget.widget(index)
+        self.tabWidget.removeTab(index)
+        #w.stop() # does not work!
+        w.clear()
+
+  def closeCurrentTab(self):
+    self.closeTab(self.tabWidget.currentIndex())
 
   def setTabTitle(self, tab, title):
     """
@@ -303,29 +367,9 @@ class _WebBrowser(object):
 
   @staticmethod
   def shortenTitle(t):
-    if len(t) < 15:
+    if len(t) < MAX_TITLE_LENGTH:
       return t
     else:
-      return t[:13] + ' ...'
-
-class WebBrowser(QtWidgets.QMainWindow):
-  def __init__(self, parent=None):
-    #WINDOW_FLAGS = (
-    #  Qt.Window
-    #  | Qt.CustomizeWindowHint
-    #  | Qt.WindowTitleHint
-    #  | Qt.WindowSystemMenuHint
-    #  | Qt.WindowMinMaxButtonsHint
-    #  | Qt.WindowCloseButtonHint
-    #)
-    super(WebBrowser, self).__init__(parent)
-    self.__d = _WebBrowser(self)
-
-  def showStatusMessage(self, t, type='message'):
-    """
-    @param  t  unicode
-    @param  type  'message', 'warning', or 'error'
-    """
-    self.statusBar().showMessage(text)
+      return t[:MAX_TITLE_LENGTH - 2] + ' ...'
 
 # EOF

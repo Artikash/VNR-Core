@@ -6,6 +6,9 @@ from PySide.QtCore import Qt
 from PySide.QtGui import QColor, QGraphicsDropShadowEffect
 from sakurakit import skdwm, skwin, skos
 
+#GLOW_COLOR = 'yellow'
+GLOW_COLOR = '#ffffe0' # lightyellow
+
 ## Interface ##
 
 def glassifyWidget(w):
@@ -24,7 +27,7 @@ def glassifyWindow(hwnd):
   if isDwmEnabled():
     setWindowDwmEnabled(hwnd, True)
 
-def glowEffect(parent=None, color='yellow', radius=16, offset=1):
+def glowEffect(parent=None, color=GLOW_COLOR, radius=16, offset=1):
   """
   @param* parent  QWidget
   @param* color  QColor or str or None

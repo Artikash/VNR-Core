@@ -5,10 +5,71 @@
 __all__ = ['MainObject']
 
 from PySide.QtCore import QCoreApplication, QObject
-from sakurakit import skevents
+from sakurakit import skevents, skos
 from sakurakit.skdebug import dprint, dwarn, debugmethod
 from sakurakit.skclass import memoizedproperty
+from i18n import i18n
 import config
+
+class MainObject(QObject):
+  """Root of most objects"""
+  instance = None
+
+  # Supposed to be top-level, no parent allowed
+  def __init__(self):
+    dprint('enter')
+    super(MainObject, self).__init__()
+    self.__d = _MainObject()
+    MainObject.instance = self
+
+    dprint('leave')
+
+  def run(self, args):
+    """Starting point for the entire app"""
+    dprint("enter: args =", args)
+    d = self.__d
+
+    dprint("show root window")
+    w = d.mainWindow
+
+    args_offset = 2 if skos.WIN else 1
+    urls = [it for it in args[args_offset:] if not it.startswith('-')]
+    if urls:
+      w.openUrls(urls)
+    else:
+      w.openDefaultPage()
+
+    # TODO: Remember the last close size
+    #w.resize(800, 600)
+    w.resize(700, 500)
+    w.show()
+
+    dprint("leave")
+
+  ## Quit ##
+
+  def quit(self, interval=200):
+    dprint("enter: interval = %i" % interval)
+    d = self.__d
+    if d.hasQuit:
+      dprint("leave: has quit")
+      return
+
+    d.mainWindow.hide()
+
+    skevents.runlater(self.__d.quit, interval)
+    dprint("leave")
+
+  def confirmQuit(self):
+    from Qt5.QtWidgets import QMessageBox
+    yes = QMessageBox.Yes
+    no = QMessageBox.No
+    sel = QMessageBox.question(self.__d.rootWindow,
+        u"Kagami Browser",
+        i18n.tr("Quit the Kagami Browser?"),
+        yes|no, no)
+    if sel == yes:
+      self.quit()
 
 # MainObject private data
 class _MainObject(object):
@@ -22,7 +83,9 @@ class _MainObject(object):
   @memoizedproperty
   def mainWindow(self):
     import mainwindow
-    return mainwindow.MainWindow()
+    ret = mainwindow.MainWindow()
+    ret.quitRequested.connect(self.quit)
+    return ret
 
   ## Actions ##
 
@@ -51,55 +114,5 @@ class _MainObject(object):
     #qApp.aboutToQuit.connect(self.settings.sync)
 
     skevents.runlater(qApp.quit)
-
-class MainObject(QObject):
-  """Root of most objects"""
-  instance = None
-
-  # Supposed to be top-level, no parent allowed
-  def __init__(self):
-    dprint('enter')
-    super(MainObject, self).__init__()
-    self.__d = _MainObject()
-    MainObject.instance = self
-
-    dprint('leave')
-
-  def run(self, args):
-    """Starting point for the entire app"""
-    dprint("enter: args =", args)
-    d = self.__d
-
-    dprint("show root window")
-    w = d.mainWindow
-    w.resize(800, 600)
-    w.show()
-
-    dprint("leave")
-
-  ## Quit ##
-
-  def quit(self, interval=200):
-    dprint("enter: interval = %i" % interval)
-    d = self.__d
-    if d.hasQuit:
-      dprint("leave: has quit")
-      return
-
-    d.wizard.hide()
-
-    skevents.runlater(self.__d.quit, interval)
-    dprint("leave")
-
-  def confirmQuit(self):
-    from Qt5.QtWidgets import QMessageBox
-    yes = QMessageBox.Yes
-    no = QMessageBox.No
-    sel = QMessageBox.question(self.__d.rootWindow,
-        self.tr("Web Browser"),
-        self.tr("Quit the browser?"),
-        yes|no, no)
-    if sel == yes:
-      self.quit()
 
 # EOF

@@ -7,6 +7,7 @@ __all__ = ['MainWindow']
 from itertools import imap
 from PySide.QtCore import QTimer
 from sakurakit.skclass import memoizedproperty, Q_Q
+from sakurakit.sktr import tr_
 from webbrowser import WebBrowser
 import config, rc, ui
 
@@ -39,7 +40,7 @@ class MainWindow(WebBrowser):
       'browser',
     ))).replace('$PWD', config.root_abspath()))
 
-    self.setWindowTitle(u"%s - VNR (α)" % self.tr("Web Browser"))
+    self.setWindowTitle(u"Kagami (α)")
     self.setWindowIcon(rc.icon('logo-browser'))
     ui.glassifyWidget(self)
     self.__d = _MainWindow(self)
@@ -47,7 +48,9 @@ class MainWindow(WebBrowser):
     b = self.statusBar()
     b.setGraphicsEffect(ui.glowEffect(b))
 
-    self.showStatusMessage(self.tr("Ready"))
+    self.messageReceived.connect(self.showStatusMessage)
+    #self.showStatusMessage(tr_("Ready"))
+    self.statusBar().hide()
 
   def showStatusMessage(self, t, type='message'):
     """@reimp

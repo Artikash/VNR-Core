@@ -152,7 +152,7 @@ emails:
   help: "annotcloud@gmail.com"
 
 proxies:
-  ip: 153.121.52.138
+  host: 153.121.52.138
 
   twittersearch: http://websearch.excite.co.jp/
   googlesearch: http://websearch.excite.co.jp/
@@ -173,6 +173,12 @@ proxies:
   # http://9gal.com/read.php?tid=417812&page=e
   getchu:       http://210.155.150.152
 
+  domains:
+    annot.me:       153.121.54.194
+    sakuradite.com: 153.121.54.194
+    sakuradite.org: 153.121.52.138
+    getchu.com:     210.155.150.152
+
   sites:
     #adlib-software: www.adlib-software.com
     alicesoft: www.alicesoft.com
@@ -184,14 +190,21 @@ proxies:
     collaborations2005: www.collaborations2005.com
     #effordomsoft: www.effordomsoft.com
     effordomsoft: effordomsoft.com
+    hibiki: www.hibiki-site.com
     minori: www.minori.ph
-    shallotsoft: www.shallotsoft.com
-    spermaniax: www.spermaniax.net
-    spielsoft: spielsoft.1000.tv
-    sprite: sprite.gr.jp
-    syangrila: www.syangrila.com
-    wheel-soft: www.wheel-soft.com
-    witchflame: www.witchflame.jp
+    #shallotsoft: www.shallotsoft.com   # DOWN
+    #spermaniax: www.spermaniax.net     # DOWN
+    #spielsoft: spielsoft.1000.tv       # Do not need proxy
+    #sprite: sprite.gr.jp               # Do not need proxy
+    #syangrila: www.syangrila.com       # DOWN
+    #wheel-soft: www.wheel-soft.com     # DOWN
+    #witchflame: www.witchflame.jp      # Do not need proxy
+
+    dmm: dmm.co.jp
+    #dlsite
+    #dlsite_img
+    #getchu: getchu.com
+    scape: erogamescape.dyndns.org
 
 google:
   search:       https://google.co.jp/search
@@ -390,6 +403,9 @@ templates:
     xml/terms:      xml/terms.xml
     xml/users:      xml/users.xml
     xml/voices:     xml/voices.xml
+
+    haml/browser/error: haml/browser/error.haml
+    haml/browser/start: haml/browser/start.haml
 
 avatars:
   location:         $PWD/images/avatars

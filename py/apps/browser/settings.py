@@ -7,6 +7,12 @@ from sakurakit.skclass import memoized
 from sakurakit.sktypes import to_int, to_unicode
 import config
 
+@memoized
+def global_(): return Settings()
+
+@memoized
+def reader(): return ReaderSettings()
+
 def to_bool(value): return value == True or value  == 'true'
 
 class Settings(QSettings):
@@ -28,7 +34,13 @@ class Settings(QSettings):
   def setReaderActivated(self, value): self.setValue("ReaderActivated", value)
   def isReaderActivated(self): return to_bool(self.value("ReaderActivated", True))
 
-@memoized
-def global_(): return Settings()
+class ReaderSettings(QSettings):
+
+  def __init__(self):
+    super(ReaderSettings, self).__init__(
+      QSettings.NativeFormat, QSettings.UserScope,
+      config.VERSION_DOMAIN, "reader")
+
+  def userLanguage(self): return self.value('UserLanguage')
 
 # EOF

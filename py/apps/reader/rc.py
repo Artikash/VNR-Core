@@ -267,7 +267,7 @@ def jinja_template(name):
   """
   ret = TEMPLATES.get(name)
   if not ret:
-    TEMPLATES[name] = ret = jinja.get_template(config.TEMPLATE_ENTRIES[name])
+    ret = TEMPLATES[name] = jinja.get_template(config.TEMPLATE_ENTRIES[name])
   return ret
 
 HAML_TEMPLATES = {} # {str name:jinja_template}
@@ -279,7 +279,7 @@ def haml_template(name):
   """
   ret = HAML_TEMPLATES.get(name)
   if not ret:
-    HAML_TEMPLATES[name] = ret = jinja_haml.get_template(config.TEMPLATE_ENTRIES[name])
+    ret = HAML_TEMPLATES[name] = jinja_haml.get_template(config.TEMPLATE_ENTRIES[name])
   return ret
 
 # Spells

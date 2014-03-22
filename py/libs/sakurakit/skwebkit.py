@@ -6,8 +6,8 @@ __all__ = ['SkWebViewBean', 'SkWebView', 'SkReadOnlyWebView']
 
 import os
 from functools import partial
-from PySide.QtCore import Signal, Slot, Property, QObject, QPoint, QUrl
-from PySide.QtGui import QKeySequence
+from PySide.QtCore import Signal, Slot, Qt, Property, QObject, QPoint, QUrl
+from PySide.QtGui import QKeySequence, QPinchGesture, QSwipeGesture
 from PySide.QtWebKit import QWebPage, QWebView
 from Qt5.QtWidgets import QApplication
 import skthreads
@@ -30,18 +30,56 @@ class SkReadOnlyWebView(QWebView):
 
 ## Views ##
 
+class SkWebPage(QWebPage): # placeholder
+  def __init__(self, parent=None):
+    super(SkWebPage, self).__init__(parent)
+
+  def scrollTop(self):
+    f = self.mainFrame()
+    f.setScrollBarValue(Qt.Vertical, 0)
+  def scrollBottom(self):
+    f = self.mainFrame()
+    f.setScrollBarValue(Qt.Vertical, f.scrollBarMaximum(Qt.Vertical))
+  def scrollLeft(self):
+    f = self.mainFrame()
+    f.setScrollBarValue(Qt.Horizontal, 0)
+  def scrollRight(self):
+    f = self.mainFrame()
+    f.setScrollBarValue(Qt.Horizontal, f.scrollBarMaximum(Qt.Horizontal))
+
 class SkWebView(QWebView):
-  def __init__(self, parent=None, f=0):
+  def __init__(self, parent=None, f=0, page=None): # QWidget, Qt.WindowFlags, QWebPage
     super(SkWebView, self).__init__(parent)
     if f:
       self.setWindowFlags(f)
 
-    page = self.page()
+    self.maxZoomFactor = 5.0 # float
+    self.minZoomFactor = 0.5 # float
+
+    if page:
+      self.setPage(page)
+    else:
+      page = self.page()
 
     # Refresh
     a = page.action(QWebPage.Reload)
     a.setShortcut(QKeySequence('ctrl+r')) # force CTRL+R on different OSes
     shortcut("ctrl+r", a.trigger, parent=self)
+
+    a = page.action(QWebPage.Back)
+    a.setShortcut(QKeySequence('ctrl+[')) # force CTRL+R on different OSes
+    shortcut("ctrl+[", a.trigger, parent=self)
+    shortcut(QKeySequence.Back, a.trigger, parent=self)
+
+    a = page.action(QWebPage.Forward)
+    a.setShortcut(QKeySequence('ctrl+]')) # force CTRL+R on different OSes
+    shortcut("ctrl+]", a.trigger, parent=self)
+    shortcut(QKeySequence.Forward, a.trigger, parent=self)
+
+    shortcut("esc", self.stop, parent=self)
+    shortcut("ctrl+=", self.zoomIn, parent=self)
+    shortcut("ctrl+-", self.zoomOut, parent=self)
+    shortcut("ctrl+0", self.zoomReset, parent=self)
 
     # Download
     page.downloadRequested.connect(self.downloadRequest)
@@ -49,7 +87,72 @@ class SkWebView(QWebView):
     # Highlight selection
     #self.selectionChanged.connect(self.highlightSelection)
 
+    # Mouse gestures
+    for g in Qt.PanGesture, Qt.SwipeGesture, Qt.PinchGesture:
+      self.grabGesture(g)
+
+  ## Gesture ##
+
+  #def panGesture(seslf, g): # override
+  #  DOUT("enter");
+  #  Q_UNUSED(g)
+  #  //switch (gesture->state()) {
+  #  //case Qt::GestureStarted:
+  #  //case Qt::GestureUpdated:
+  #  //  setCursor(Qt::SizeAllCursor);
+  #  //  break;
+  #  //default:
+  #  //  setCursor(Qt::ArrowCursor);
+  #  //}
+  #  //QPointF delta = gesture->delta();
+  #  //horizontalOffset += delta.x();
+  #  //verticalOffset += delta.y();
+
+  def pinchGesture(self, g): # override, QPinchGesture
+    f = g.changeFlags();
+    if f & QPinchGesture.ScaleFactorChanged:
+      if g.scaleFactor() > 1:
+        self.zoomIn()
+      else:
+        self.zoomOut()
+
+  def swipeGesture(self, g): # override, QSwipeGesture
+    if g.state() == Qt.GestureFinished:
+      h = g.horizontalDirection() # uint
+      d = g.verticalDirection() # uint
+      if h ^ d:
+        v = h | d
+        if v == QSwipeGesture.Left:     self.back()
+        elif v == QSwipeGesture.Right:  self.forward()
+        elif v == QSwipeGesture.Up:    self.scrollTop()
+        elif v == QSwipeGesture.Down:  self.scrollBottom()
+
+  def scrollTop(self):
+    f = self.page().mainFrame()
+    f.setScrollBarValue(Qt.Vertical, 0)
+  def scrollBottom(self):
+    f = self.page().mainFrame()
+    f.setScrollBarValue(Qt.Vertical, f.scrollBarMaximum(Qt.Vertical))
+  def scrollLeft(self):
+    f = self.page().mainFrame()
+    f.setScrollBarValue(Qt.Horizontal, 0)
+  def scrollRight(self):
+    f = self.page().mainFrame()
+    f.setScrollBarValue(Qt.Horizontal, f.scrollBarMaximum(Qt.Horizontal))
+
   ## Slots ##
+
+  def zoomIn(self):
+    z = self.zoomFactor()
+    z *= 1.2
+    self.setZoomFactor(min(z, self.maxZoomFactor))
+
+  def zoomOut(self):
+    z = self.zoomFactor()
+    z /= 1.2
+    self.setZoomFactor(max(z, self.minZoomFactor))
+
+  def zoomReset(self): self.setZoomFactor(1.0)
 
   def triggerReloadAction(self):
     # Trigger action instead of directly calling reload

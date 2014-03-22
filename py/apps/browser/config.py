@@ -126,4 +126,19 @@ ICON_LOCATIONS = {k: parse_path(v)  # {str name:unicode path}
 IMAGE_LOCATIONS = {k: parse_path(v) # {str name:unicode path}
     for k,v in SHARE_YAML['images'].iteritems()}
 
+## Jinja ##
+
+JINJA_HAML = SHARE_YAML['jinja_haml']
+
+TEMPLATE_LOCATION = parse_path(SHARE_YAML['templates']['location']) # unicode abspath
+TEMPLATE_ENTRIES = SHARE_YAML['templates']['entries'] # {str name:unicode relpath}
+
+## Proxy ##
+
+PROXY_HOST = SHARE_YAML['proxies']['host']
+PROXY_SITES = SHARE_YAML['proxies']['sites'] # {string key:string host}
+PROXY_DOMAINS = SHARE_YAML['proxies']['domains'] # {string host:string ip}
+
+GETCHU_HOST = SHARE_YAML['proxies']['getchu'].replace('http://', '')
+
 # EOF
