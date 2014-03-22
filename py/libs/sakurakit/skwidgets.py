@@ -28,7 +28,7 @@ def to_wid(lp):
 
 def shortcut(key, slot, parent=None):
   """
-  @param  key  str
+  @param  key  str or QKeySequence
   @param  slot  function
   @param  parent  QWidget
   @return QShortcut
@@ -37,7 +37,9 @@ def shortcut(key, slot, parent=None):
       hasattr(slot, '__self__') and
       isinstance(slot.__self__, QtWidgets.QWidget)):
     parent = slot.__self__
-  return QtWidgets.QShortcut(QtGui.QKeySequence(key), parent, slot)
+  if not isinstance(key, QtGui.QKeySequence):
+    key = QtGui.QKeySequence(key)
+  return QtWidgets.QShortcut(key, parent, slot)
 
 #def del_all(obj):
 #  for c in obj.children():

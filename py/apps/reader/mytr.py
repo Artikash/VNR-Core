@@ -1,5 +1,5 @@
 # coding: utf8
-# my.py
+# mytr.py
 # 10/8/2012 jichi
 
 __all__ = ['my', 'mytr_']

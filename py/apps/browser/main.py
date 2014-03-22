@@ -8,6 +8,7 @@ from PySide.QtCore import QCoreApplication, QObject
 from sakurakit import skevents, skos
 from sakurakit.skdebug import dprint, dwarn, debugmethod
 from sakurakit.skclass import memoizedproperty
+from i18n import i18n
 import config
 
 class MainObject(QObject):
@@ -64,8 +65,8 @@ class MainObject(QObject):
     yes = QMessageBox.Yes
     no = QMessageBox.No
     sel = QMessageBox.question(self.__d.rootWindow,
-        self.tr("Kagami"),
-        self.tr("Quit the Kagami Browser?"),
+        u"Kagami Browser",
+        i18n.tr("Quit the Kagami Browser?"),
         yes|no, no)
     if sel == yes:
       self.quit()

@@ -1,51 +1,12 @@
 # coding: utf8
-# widgets.py
+# tabui.py
 # 12/13/2012 jichi
 
-__all__ = [
-  'WbAddressEdit',
-  'WbTabBar',
-  'WbTabWidget',
-]
+__all__ = ['WbTabBar', 'WbTabWidget']
 
 from PySide.QtCore import Qt, Signal
 from Qt5 import QtWidgets
 from sakurakit.sktr import tr_
-
-## WbAddressEdit ##
-
-class WbAddressEdit(QtWidgets.QComboBox):
-  def __init__(self, parent=None):
-    super(WbAddressEdit, self).__init__(parent)
-    self.setInsertPolicy(QtWidgets.QComboBox.InsertAtTop)
-    self.setEditable(True)
-    #self.currentIndexChanged.connect(self.enter) # recursion
-    self.lineEdit().returnPressed.connect(self.enter)
-
-    self.maxCount = 20 # int  maximum number of items
-
-  textEntered = Signal(unicode)
-
-  def enter(self):
-    t = self.currentText().strip()
-    if t:
-      self.textEntered.emit(t)
-
-  def setUrl(self, url):
-    if not self.hasFocus():
-      self.setEditText(url)
-
-  def focus(self):
-    self.setFocus()
-    self.lineEdit().selectAll()
-
-  def addUrl(self, text): # string ->
-    index = self.findText(text)
-    if index >= 0:
-      self.removeItem(index)
-    self.insertItem(0, text) # FIXME: This will change current item!
-    if self.count() > self.maxCount:
-      self.removeItem(self.maxCount)
 
 ## WbTabWidget ##
 
@@ -53,6 +14,7 @@ class WbTabBar(QtWidgets.QTabBar):
   def __init__(self, parent=None):
     super(WbTabBar, self).__init__(parent)
     self.setTabsClosable(True)
+    self.setMovable(True) # draggable
 
   doubleClickedAt = Signal(int) # index
 

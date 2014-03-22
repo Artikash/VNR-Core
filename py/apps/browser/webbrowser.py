@@ -13,14 +13,18 @@ from sakurakit import skqss
 from sakurakit.skclass import memoizedproperty, Q_Q
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkDraggableMainWindow, shortcut
 from sakurakit.sktr import tr_
+from addressui import *
 from netman import *
+from tabui import *
 from webkit import *
-from widgets import *
+from i18n import i18n
 import rc, textutil, ui
 
 START_HTML = rc.jinja_template('start').render({
   'tr': tr_,
 }) # unicode html
+
+MAX_TITLE_LENGTH = 20
 
 #class WebBrowser(QtWidgets.QMainWindow):
 class WebBrowser(SkDraggableMainWindow):
@@ -58,6 +62,8 @@ class WebBrowser(SkDraggableMainWindow):
 @Q_Q
 class _WebBrowser(object):
   def __init__(self, q):
+    self.loadProgress = 100 # int [0,100]
+
     q.setCentralWidget(self.tabWidget)
 
     dock = SkTitlelessDockWidget(self.addressWidget)
@@ -77,6 +83,10 @@ class _WebBrowser(object):
     for k in 'ctrl+l', 'alt+d':
       shortcut(k, self.addressEdit.focus, parent=q)
 
+    for i in range(1, 10):
+      shortcut('ctrl+%i' % i, partial(self.activateTab, i-1), parent=q)
+    #shortcut('ctrl+0', partial(self.activateTab, 10-9), parent=q) # ctrl+ 0 used by zoom reset
+
   ## Properties ##
 
   @memoizedproperty
@@ -89,8 +99,10 @@ class _WebBrowser(object):
     ret = WbTabWidget()
     ret.setTabBar(self.tabBar)
     ret.setCornerWidget(self.newTabButton)
-    ret.currentChanged.connect(self.loadAddress)
     ret.tabCloseRequested.connect(self.closeTab)
+    ret.currentChanged.connect(self.loadAddress)
+    ret.currentChanged.connect(self.refreshLoadProgress)
+    ret.currentChanged.connect(self.refreshWindowTitle)
     ret.doubleClicked.connect(self.newTabAtLastWithBlankPage, Qt.QueuedConnection)
     return ret
 
@@ -124,7 +136,7 @@ class _WebBrowser(object):
     skqss.class_(ret, 'btn-tab-corner')
     ret.setText("+")
     #ret.setToolTip(tr_("New Tab"))
-    ret.setToolTip("%s, %s" % ("cmd+T", tr_("Double-click")))
+    ret.setToolTip("%s (%s, %s)" % (i18n.tr("New Tab"), "cmd+T", tr_("Double-click")))
     ret.clicked.connect(self.newTabAtLastWithBlankPage)
     return ret
 
@@ -194,6 +206,10 @@ class _WebBrowser(object):
       #  ui->addressEdit->setCurrentIndex(i);
       #ui->addressEdit->setIcon(WBRC_IMAGE_APP);
 
+  def activateTab(self, index): # int ->
+    if index >=0 and index < self.tabWidget.count():
+      self.tabWidget.setCurrentIndex(index)
+
   def newTabAfterCurrentWithBlankPage(self):
     self.newTabAfterCurrent()
     self.openBlankPage()
@@ -214,16 +230,33 @@ class _WebBrowser(object):
   def createWebView(self):
     ret = WbWebView()
     ret.onCreateWindow = self._createWindow
-    ret.page().setNetworkAccessManager(self.networkAccessManager)
-    ret.page().linkHovered.connect(self.showLink)
+
+    page = ret.page()
+    page.setNetworkAccessManager(self.networkAccessManager)
+    page.linkHovered.connect(self.showLink)
+
     ret.titleChanged.connect(partial(self.setTabTitle, ret))
-    ret.urlChanged.connect(self.updateAddress)
+    ret.urlChanged.connect(self.refreshAddress)
+    ret.messageReceived.connect(self.q.messageReceived)
     ret.linkClicked.connect(self.addRecentUrl)
+    ret.linkClicked.connect(lambda url:
+        url.isEmpty() or self.setDisplayAddress(url))
+
+    ret.titleChanged.connect(partial(lambda view, value:
+        view == self.tabWidget.currentWidget() and self.refreshWindowTitle(),
+        ret))
+    page.loadProgress.connect(partial(lambda view, value:
+        view == self.tabWidget.currentWidget() and self.refreshLoadProgress(),
+        ret))
+
     return ret
+
+  def showMessage(self, t): # unicode ->
+      self.q.messageReceived.emit(t)
 
   def showLink(self, url, content): # unicode, unicode
     if url:
-      self.q.messageReceived.emit(textutil.simplifyurl(url))
+      self.showMessage(textutil.simplifyurl(url))
 
   def forward(self):
     w = self.tabWidget.currentWidget()
@@ -245,90 +278,65 @@ class _WebBrowser(object):
         focus=True)
     return ret
 
-  def updateAddress(self):
+  def tabTitle(self, index=-1): # int -> unicode
+    w = self.tabWidget
+    if index == -1:
+      index = w.currentIndex()
+    return w.tabToolTip(index) if index >=0 and index < w.count() else ''
+
+  def refreshWindowTitle(self):
+    t = self.tabTitle()
+    if not t:
+      t = u"Kagami (α)"
+    self.q.setWindowTitle(t)
+
+  def refreshLoadProgress(self):
+    v = self.loadProgress
+    w = self.tabWidget.currentWidget()
+    if w:
+      v = w.page().progress()
+    if self.loadProgress != v:
+      self.loadProgress = v
+      self.showProgressMessage()
+      self.addressEdit.setProgress(v)
+
+  def showProgressMessage(self):
+    if self.loadProgress == 0:
+      t = "%s ..." % i18n.tr("Loading")
+    elif self.loadProgress == 100:
+      t = i18n.tr("Loading complete")
+    else:
+      t = "%s ... %i/100" % (i18n.tr("Loading"), self.loadProgress)
+    self.showMessage(t)
+
+  def setDisplayAddress(self, url):
+    if isinstance(url, QUrl):
+      url = '' if url.isEmpty() else url.toString()
+    url = textutil.simplifyurl(url)
+    self.addressEdit.setUrl(url)
+
+  def refreshAddress(self):
     v = self.tabWidget.currentWidget()
     if v:
-      url = v.url()
-      url = '' if url.isEmpty() else url.toString()
-      url = textutil.simplifyurl(url)
-      self.addressEdit.setUrl(url)
+      self.setDisplayAddress(v.url())
 
   def loadAddress(self):
     w = self.tabWidget.currentWidget()
-    if w:
-      url = w.url()
-      url = '' if url.isEmpty() else url.toString()
-      url = textutil.simplifyurl(url)
-    else:
-      url = ''
-    self.addressEdit.setEditText(url)
+    url = w.url() if w else ''
+    self.setDisplayAddress(url)
 
   def closeTab(self, index):
     if self.tabWidget.count() <= 1:
       self.q.quitRequested.emit()
     else:
       if index >= 0 and index < self.tabWidget.count():
+        w = self.tabWidget.widget(index)
         self.tabWidget.removeTab(index)
+        #w.stop() # does not work!
+        w.clear()
 
   def closeCurrentTab(self):
     self.closeTab(self.tabWidget.currentIndex())
-
-#    if (textSizeMultiplier_ > 0)
-#      view->setTextSizeMultiplier(textSizeMultiplier_);
-#
-#    wbview->setSearchEngines(qxSubList(searchEngines_, SearchEngineFactory::VisibleEngineCount));
-#    wbview->setSearchEngine(searchEngine_);
-#
-#    connect(wbview, SIGNAL(message(QString)), SLOT(showMessage(QString)));
-#    connect(wbview, SIGNAL(errorMessage(QString)), SLOT(showError(QString)));
-#    connect(wbview, SIGNAL(warning(QString)), SLOT(warn(QString)));
-#    connect(wbview, SIGNAL(notification(QString)), SLOT(notify(QString)));
-#
-#    connect(wbview, SIGNAL(selectedTextChanged(QString)), SIGNAL(selectedTextChanged(QString)));
-#    connect(wbview, SIGNAL(windowCreated(QWebView*)), SLOT(newTab(QWebView*)));
-#    connect(wbview, SIGNAL(openLinkRequested(QString)), SLOT(newTabInBackground(QString)));
-#
-#    connect(wbview, SIGNAL(openUrlWithAcPlayerRequested(QString)), SIGNAL(openUrlWithAcPlayerRequested(QString)));
-#    connect(wbview, SIGNAL(importUrlToAcPlayerRequested(QString)), SIGNAL(importUrlToAcPlayerRequested(QString)));
-#    connect(wbview, SIGNAL(openUrlWithAcDownloaderRequested(QString)), SIGNAL(openUrlWithAcDownloaderRequested(QString)));
-#    connect(wbview, SIGNAL(downloadAnnotationUrlRequested(QString)), SIGNAL(downloadAnnotationUrlRequested(QString)));
-#    connect(wbview, SIGNAL(undoClosedTabRequested()), SLOT(undoCloseTab()));
-#    connect(wbview, SIGNAL(newWindowRequested()), SIGNAL(newWindowRequested()));
-#    connect(wbview, SIGNAL(fullScreenRequested()), SIGNAL(fullScreenRequested()));
-#
-#    connect(wbview, SIGNAL(searchWithEngineRequested(QString,int)), SLOT(searchInNewTab(QString,int)));
-##ifdef Q_OS_WIN
-#    connect(wbview, SIGNAL(menuBarVisibilityChangeRequested(bool)), menuBar(), SLOT(setVisible(bool)));
-#    connect(wbview, SIGNAL(toggleMenuBarVisibleRequested()), SLOT(toggleMenuBarVisible()));
-##endif // Q_OS_WIN
-#    connect(this, SIGNAL(searchEngineChanged(int)), wbview, SLOT(setSearchEngine(int)));
-#  }
-#
-#  connect(view, SIGNAL(loadProgress(int)), SLOT(updateLoadProgress()));
-#  connect(view, SIGNAL(statusBarMessage(QString)), SLOT(showMessage(QString)));
-#  connect(view, SIGNAL(urlChanged(QUrl)), SLOT(updateAddressbar()));
-#  connect(view, SIGNAL(loadStarted()), SLOT(handleLoadStarted()));
-#  connect(view, SIGNAL(loadFinished(bool)), SLOT(handleLoadFinished()));
-#
-#  view->installEventFilter(mouseGestureFilter_);
-#
-#  QString t; //= tr("New Tab");
-#  if (index < 0 || index >= tabCount())
-#    index = ui->tabWidget->addTab(view, t);
-#  else
-#    ui->tabWidget->insertTab(index, view, t);
-#
-#  auto textDaemon = new detail::SetTabText(ui->tabWidget, view);
-#  connect(view, SIGNAL(titleChanged(QString)), textDaemon, SLOT(trigger(QString)));
-#
-#  auto iconDaemon = new detail::SetTabIcon(ui->tabWidget, view);
-#  connect(view, SIGNAL(loadStarted()), iconDaemon, SLOT(trigger()));
-#  connect(view, SIGNAL(loadFinished(bool)), iconDaemon, SLOT(trigger(bool)));
-#
-#  auto searchDaemon = new detail::SearchTab(this, ui->tabWidget, view);
-#  connect(view, SIGNAL(loadFinished(bool)), searchDaemon, SLOT(trigger(bool)));
-#
-#  connect(view, SIGNAL(titleChanged(QString)), SLOT(updateWindowTitle()));
 
   def setTabTitle(self, tab, title):
     """
@@ -346,9 +354,9 @@ class _WebBrowser(object):
 
   @staticmethod
   def shortenTitle(t):
-    if len(t) < 15:
+    if len(t) < MAX_TITLE_LENGTH:
       return t
     else:
-      return t[:13] + ' ...'
+      return t[:MAX_TITLE_LENGTH - 2] + ' ...'
 
 # EOF

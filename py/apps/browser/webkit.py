@@ -5,6 +5,7 @@
 __all__ = ['WbWebView', 'WbWebPage']
 
 import re
+from PySide.QtCore import Qt, Signal
 from PySide.QtWebKit import QWebPage
 from Qt5 import QtWidgets
 from sakurakit import skwebkit
@@ -15,6 +16,8 @@ import rc
 ## WbWebView ##
 
 class WbWebView(skwebkit.SkWebView):
+  messageReceived = Signal(unicode)
+
   def __init__(self, parent=None):
     super(WbWebView, self).__init__(parent, page=WbWebPage())
     self.enableHighlight()
@@ -22,10 +25,40 @@ class WbWebView(skwebkit.SkWebView):
     self.titleChanged.connect(self.setWindowTitle)
     self.onCreateWindow = None # -> QWebView
 
+    page = self.page()
+    page.loadStarted.connect(self._onLoadStarted)
+    page.loadFinished.connect(self._onLoadFinished)
+
   # QWebView * QWebView::createWindow ( QWebPage::WebWindowType type ) [virtual protected]
   def createWindow(self, type): # override
     if self.onCreateWindow:
       return self.onCreateWindow(type)
+
+
+  def _showMessage(self, t): # unicode ->
+    self.messageReceived.emit(t)
+
+  def _onLoadStarted(self):
+    self.setCursor(Qt.BusyCursor)
+  def _onLoadFinished(self, success): # bool ->
+    self.setCursor(Qt.ArrowCursor)
+
+  def zoomIn(self): # override
+    super(WbWebView, self).zoomIn()
+    self._showZoomMessage()
+
+  def zoomOut(self): # override
+    super(WbWebView, self).zoomOut()
+    self._showZoomMessage()
+
+  def zoomReset(self): # override
+    super(WbWebView, self).zoomReset()
+    self._showZoomMessage()
+
+  def _showZoomMessage(self):
+    z = self.zoomFactor()
+    t = "%s %i%%" % (tr_("Zoom"), int(z * 100))
+    self._showMessage(t)
 
 ## WbWebPage ##
 
@@ -34,6 +67,20 @@ class WbWebPage(skwebkit.SkWebPage):
     super(WbWebPage, self).__init__(parent)
     self.setLinkDelegationPolicy(QWebPage.DelegateAllLinks) # handle all links
     self.linkClicked.connect(self.openUrl)
+
+    self._progress = 100 # int [0,100]
+
+    self.loadProgress.connect(self._onLoadProgress)
+    self.loadStarted.connect(self._onLoadStarted)
+    self.loadFinished.connect(self._onLoadFinished)
+
+  def progress(self): return self._progress # -> int [0,100]
+  def isLoading(self): return self._progress < 100
+  def isFinished(self): return self._progress == 100
+
+  def _onLoadProgress(self, value): self._progress = value # int ->
+  def _onLoadStarted(self): self._progress = 0
+  def _onLoadFinished(self, success): self._progress = 100
 
   def openUrl(self, url): # QUrl
     self.mainFrame().load(url)
