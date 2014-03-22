@@ -171,8 +171,7 @@ Plugin.MainObjectProxy { \
 "
     })
 
-    if (!statusPlugin_.wine)
-      append({ name: My.tr("Web Browser")
+    append({ name: My.tr("Web Browser") + " (α)" // あるふぁ
       , searchText: "Web Browser" + "\n" + My.tr("Web Browser")
       , icon: 'image://rc/dock-browser'
       , toolTip: qsTr("VNR's built-in web browser")
