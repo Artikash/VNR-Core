@@ -16,20 +16,21 @@ QTabBar::tab {
   max-width: 30em;
   */
   min-width: 5em;
-  border-radius: 3px;
+  border-radius: 4px;
   color: snow;
-  background-color: rgba(255,255,255,20%); /* white */
+  /*background-color: rgba(255,255,255,20%);*/ /* white */
+  margin-left: 2px;
+  margin-right: 2px;
+  margin-bottom: 4px; /* margin to the tabview */
 }
 
+QTabBar::tab:hover,
 QTabBar::tab:selected {
-  color: black;
-  background-color: rgba(255,255,255,90%);
-  /*background: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(39, 117, 219, 255), stop:1 rgba(107, 171, 249, 255));*/
+  border: 1px solid white;
 }
 
 QTabBar::tab:hover {
-  color: black;
-  background-color: #ffe; /* slightly yellow */
+  background-color: rgba(255,255,255,10%);
 }
 
 /*
@@ -71,6 +72,7 @@ QPushButton.btn-tab-corner {
   font-weight: bold;
   color: white;
   background-color: rgba(224, 224, 224, 10%); /* gray */
+  margin-bottom: 4px; /* margin to the tabview */
 }
 QPushButton.btn-tab-corner:hover,
 QPushButton.btn-tab-corner:focus {
@@ -79,6 +81,7 @@ QPushButton.btn-tab-corner:focus {
 }
 
 /** Address toolbar */
+
 QToolBar.toolbar-address {
   border: 1px solid white;
   border-radius: 4px;

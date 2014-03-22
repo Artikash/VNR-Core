@@ -58,7 +58,7 @@ class _WebBrowser(object):
   def __init__(self, q):
     q.setCentralWidget(self.tabWidget)
 
-    dock = SkTitlelessDockWidget(self.header)
+    dock = SkTitlelessDockWidget(self.addressWidget)
     dock.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
     dock.setAllowedAreas(Qt.TopDockWidgetArea)
     q.addDockWidget(Qt.TopDockWidgetArea, dock)
@@ -95,11 +95,12 @@ class _WebBrowser(object):
   @memoizedproperty
   def tabBar(self):
     ret = WbTabBar()
+    ret.setGraphicsEffect(ui.glowEffect(ret))
     #ret.doubleClickedAt.connect(self.newTabAfter, Qt.QueuedConnection)
     return ret
 
   @memoizedproperty
-  def header(self):
+  def addressWidget(self):
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.addressToolBar)
     row.addWidget(self.addressEdit, 1)
@@ -121,7 +122,7 @@ class _WebBrowser(object):
     skqss.class_(ret, 'btn-tab-corner')
     ret.setText("+")
     #ret.setToolTip(tr_("New Tab"))
-    ret.setToolTip("cmd+T")
+    ret.setToolTip("%s, %s" % ("cmd+T", tr_("Double-click")))
     ret.clicked.connect(self.newTabAtLastWithBlankPage)
     return ret
 
