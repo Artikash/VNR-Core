@@ -8,7 +8,9 @@ if __name__ == '__main__':
   import debug
   debug.initenv()
 
+import re
 from sakurakit import skhash
+import defs
 
 MD5SUM = {} # {unicode path : str hex}
 def md5sum(path):
@@ -48,16 +50,16 @@ urlsum = skhash.md5sumdata
 #    ret = ret[-maxsize:]
 #  return ret
 
-"""
+"""Hash raw data.
 @param  s  str or unicode not None
-@param  h long or None
+@param* h long or None
 @return   long
 """
 strhash = skhash.djb2_64
 
 """Backward compat for VNR alpha
 @param  s  str or unicode not None
-@param  h long or None
+@param* h long or None
 @return   long
 """
 strhash_old_vnr = skhash.djb2_64_s
@@ -70,8 +72,48 @@ The problem is caused by 0 values in utf16 encoding.
 """
 strhash_old_ap = skhash.djb2_64_s_nz
 
+_normalizetext_space = re.compile(r'\s', re.UNICODE)
+def _normalizetext(t):
+  """Normalize game text
+  @param  t  unicode
+  @return   unicode
+  """
+  t = _normalizetext_space.sub(t, '')
+  return t
+
+def hashtext(t, h=None):
+  """Hash unicode text
+  @param  t  unicode
+  @param* h long or None
+  @return   long
+  """
+  return strhash(_normalizetext(t), h)
+
+def hashtexts(l, h=None):
+  """Hash unicode text list
+  @param  l  [unicode]
+  @param* h long or None
+  @return   long
+  """
+  if len(l) == 1:
+    return hashtext(l[0], h)
+  else:
+    for it in l:
+     h = hashtext(it, h)
+    return h
+
+def hashcontext(t):
+  """Hash unicode text combined with context_sep
+  @param  t  unicode
+  @return   long
+  """
+  return hashtexts(t.split(defs.CONTEXT_SEP))
+
 if __name__ == '__main__':
   print urlsum("http://www.amazon.co.jp")
   print urlsum("http://www.amazon.co.jp/")
+
+  print hashcontext(u"111||222")
+  print hashtext(u"111222\n\u3000")
 
 # EOF

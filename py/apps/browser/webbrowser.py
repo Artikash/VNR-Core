@@ -187,7 +187,7 @@ class _WebBrowser(object):
     @param  text  unicode
     """
     url = textutil.completeurl(text)
-    self.openUrl(url)
+    self.openUrlAfterCurrent(url)
 
   def openUrl(self, url): # string ->
     """
@@ -196,6 +196,15 @@ class _WebBrowser(object):
     self.addRecentUrl(url)
     if self.tabWidget.isEmpty():
       self.newTabAfterCurrent()
+    v = self.tabWidget.currentWidget()
+    v.load(url)
+
+  def openUrlAfterCurrent(self, url): # string ->
+    """
+    @param  url  unicode
+    """
+    self.addRecentUrl(url)
+    self.newTabAfterCurrent()
     v = self.tabWidget.currentWidget()
     v.load(url)
 
@@ -247,6 +256,7 @@ class _WebBrowser(object):
     page = ret.page()
     page.setNetworkAccessManager(self.networkAccessManager)
     page.linkHovered.connect(self.showLink)
+    page.linkClickedWithModifiers.connect(self.openUrl)
 
     ret.titleChanged.connect(partial(self.setTabTitle, ret))
     ret.urlChanged.connect(self.refreshAddress)

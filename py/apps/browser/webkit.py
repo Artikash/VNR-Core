@@ -5,7 +5,7 @@
 __all__ = ['WbWebView', 'WbWebPage']
 
 import re
-from PySide.QtCore import Qt, Signal
+from PySide.QtCore import Qt, Signal, QEvent
 from PySide.QtWebKit import QWebPage
 from Qt5 import QtWidgets
 from sakurakit import skwebkit
@@ -74,6 +74,14 @@ class WbWebPage(skwebkit.SkWebPage):
     self.loadStarted.connect(self._onLoadStarted)
     self.loadFinished.connect(self._onLoadFinished)
 
+    self._hoveredLink = ''
+    self.linkHovered.connect(self.setHoveredLink)
+
+  linkClickedWithModifiers = Signal(unicode)
+
+  def hoveredLink(self): return self._hoveredLink
+  def setHoveredLink(self, v): self._hoveredLink = v
+
   def progress(self): return self._progress # -> int [0,100]
   def isLoading(self): return self._progress < 100
   def isFinished(self): return self._progress == 100
@@ -81,6 +89,15 @@ class WbWebPage(skwebkit.SkWebPage):
   def _onLoadProgress(self, value): self._progress = value # int ->
   def _onLoadStarted(self): self._progress = 0
   def _onLoadFinished(self, success): self._progress = 100
+
+  def event(self, ev): # override
+    if (ev.type() == QEvent.MouseButtonRelease and
+        ev.button() == Qt.LeftButton and ev.modifiers() == Qt.ControlModifier and
+        self._hoveredLink):
+      self.linkClickedWithModifiers.emit(self._hoveredLink)
+      ev.accept()
+      return True
+    return super(WbWebPage, self).event(ev)
 
   def openUrl(self, url): # QUrl
     self.mainFrame().load(url)
