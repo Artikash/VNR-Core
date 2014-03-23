@@ -64,7 +64,12 @@ class WbWebView(skwebkit.SkWebView):
 class WbWebPage(skwebkit.SkWebPage):
   def __init__(self, parent=None):
     super(WbWebPage, self).__init__(parent)
+    # 3/22/2014: FIXME
+    # If I use DelegateNoLinks, linkClicked will not emit
+    # Otherwise when disabled, createWindow will not be called
     #self.setLinkDelegationPolicy(QWebPage.DelegateAllLinks) # handle all links
+    self.setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
+
     self.linkClicked.connect(self.openUrl)
 
     self._progress = 100 # int [0,100]
