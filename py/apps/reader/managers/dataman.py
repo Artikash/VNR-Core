@@ -5291,15 +5291,16 @@ class _DataManager(object):
   def _updateComments2(self):
     dprint("enter")
     d = {}
-    for c in self.iterComments():
-      context = c.d.context
-      if context:
-        h = hashutil.hashcontext(context)
-        l = d.get(h)
-        if l:
-          l.append(c)
-        else:
-          d[h] = [c]
+    if self.comments:
+      for c in self.iterComments():
+        context = c.d.context
+        if context:
+          h = hashutil.hashcontext(context)
+          l = d.get(h)
+          if l:
+            l.append(c)
+          else:
+            d[h] = [c]
     self.comments2 = d
     dprint("leave: len = %i" % len(d))
 
