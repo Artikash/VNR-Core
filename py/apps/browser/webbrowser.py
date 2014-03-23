@@ -112,14 +112,14 @@ class _WebBrowser(object):
     ret.currentChanged.connect(self.loadAddress)
     ret.currentChanged.connect(self.refreshLoadProgress)
     ret.currentChanged.connect(self.refreshWindowTitle)
-    ret.doubleClicked.connect(self.newTabAtLastWithBlankPage, Qt.QueuedConnection)
+    ret.doubleClicked.connect(self.newTabAtLastWithBlankPage)
     return ret
 
   @memoizedproperty
   def tabBar(self):
     ret = WbTabBar()
     ret.setGraphicsEffect(ui.glowEffect(ret))
-    #ret.doubleClickedAt.connect(self.newTabAfter, Qt.QueuedConnection)
+    #ret.doubleClickedAt.connect(self.newTabAfter)
     return ret
 
   @memoizedproperty
