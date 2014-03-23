@@ -50,7 +50,7 @@ urlsum = skhash.md5sumdata
 #    ret = ret[-maxsize:]
 #  return ret
 
-"""Hash raw data.
+"""Hash raw data. (hash1)
 @param  s  str or unicode not None
 @param* h long or None
 @return   long
@@ -78,11 +78,11 @@ def _normalizetext(t):
   @param  t  unicode
   @return   unicode
   """
-  t = _normalizetext_space.sub(t, '')
-  return t
+  # Remove unicode spaces
+  return _normalizetext_space.sub('', t)
 
 def hashtext(t, h=None):
-  """Hash unicode text
+  """Hash unicode text (hash2)
   @param  t  unicode
   @param* h long or None
   @return   long
@@ -107,12 +107,14 @@ def hashcontext(t):
   @param  t  unicode
   @return   long
   """
-  return hashtexts(t.split(defs.CONTEXT_SEP))
+  #return hashtexts(t.split(defs.CONTEXT_SEP))
+  return hashtext(t.replace(defs.CONTEXT_SEP, ''))
 
 if __name__ == '__main__':
   print urlsum("http://www.amazon.co.jp")
   print urlsum("http://www.amazon.co.jp/")
 
+  print hashcontext(u"1")
   print hashcontext(u"111||222")
   print hashtext(u"111222\n\u3000")
 

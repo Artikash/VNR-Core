@@ -295,7 +295,6 @@ IHFSERVICE DWORD IHFAPI IHF_Cleanup()
     result = TRUE;
   }
   LeaveCriticalSection(&cs);
-  printf("2222222222\n");
   return result;
 }
 

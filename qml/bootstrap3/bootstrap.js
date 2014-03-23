@@ -9,18 +9,18 @@ var styles = {
 
   // Buttons
   , 'btn btn-default': {
-    textColor: '#333333'
-    , startColor: 'white'
+    textColor: '#333'
+    , startColor: '#fff' // white
     , stopColor: '#e6e6e6'
     , hoverColor: '#e6e6e6'
-    , activeColor: '#cccccc'
+    , activeColor: '#ccc'
   }
   , 'btn btn-primary': {
     textColor: 'snow'
-    , startColor: '#0088cc'
-    , stopColor: '#0044cc'
-    , hoverColor: '#0044cc'
-    , activeColor: '#003399'
+    , startColor: '#08c'
+    , stopColor: '#04c'
+    , hoverColor: '#04c'
+    , activeColor: '#039'
   }
   , 'btn btn-warning': {
     textColor: 'snow'
@@ -52,9 +52,9 @@ var styles = {
   }
   , 'btn btn-inverse': {
     textColor: 'snow'
-    , startColor: '#444444'
-    , stopColor: '#222222'
-    , hoverColor: '#222222'
+    , startColor: '#444'
+    , stopColor: '#222'
+    , hoverColor: '#222'
     , activeColor: '#090909'
   }
 }
