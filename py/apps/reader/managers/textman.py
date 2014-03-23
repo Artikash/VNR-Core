@@ -126,6 +126,7 @@ class _TextManager(object):
 
   def resetHashes(self):
     self.hashes = [0] * CONTEXT_CAPACITY # [long], context hashes, no more than CONTEXT_CAPACITY
+    self.hashes2 = [0] * CONTEXT_CAPACITY # [long], context hashes, no more than CONTEXT_CAPACITY
     if FIX_OLD_SUBS:
       self.oldHashes = [0] * CONTEXT_CAPACITY
 
@@ -366,10 +367,17 @@ class _TextManager(object):
       #dprint("ignore text")
       return
 
+    # Calculate hash1
     self.hashes[1:CONTEXT_CAPACITY] = [
         hashutil.strhash(rawData, h) if h else 0
           for h in self.hashes[0:CONTEXT_CAPACITY-1]]
     self.hashes[0] = hashutil.strhash(rawData)
+
+    # Calculate hash2
+    self.hashes2[1:CONTEXT_CAPACITY] = [
+        hashutil.hashtext(text, h) if h else 0
+          for h in self.hashes2[0:CONTEXT_CAPACITY-1]]
+    self.hashes2[0] = hashutil.hashtext(text)
 
     self.texts.append(text)
     dm = dataman.manager()
@@ -402,6 +410,8 @@ class _TextManager(object):
 
     userId = dm.user().id
     if dm.hasComments():
+      hitCommentIds = set() # comments that have been shown
+      # Hash1 as back up
       for h in self.hashes:
         if not h: break
         for c in dm.queryComments(hash=h):
@@ -417,8 +427,18 @@ class _TextManager(object):
               c.context = cur_ctx
           #if c.contextSize >= h_index +1: # saved context size is larger
           self._showComment(c)
+          hitCommentIds.add(cd.id)
           #if cd.type == 'subtitle' and not cd.disabled: #and not cd.deleted:
           #  self._updateTtsSubtitle(cd.text, cd.language)
+
+      # Hash2 as back up
+      for h in self.hashes2:
+        if not h: break
+        for c in dm.queryComments(hash2=h):
+          cd = c.d
+          if cd.id not in hitCommentIds:
+            self._showComment(c)
+            hitCommentIds.add(cd.id)
 
       if FIX_OLD_SUBS:
         for h_index, h in enumerate(self.oldHashes):
