@@ -112,12 +112,12 @@
 }
 .btn-primary:hover {
   background-color: #3276b1;
-  /*background-color: #0044cc;*/
+  /*background-color: #04c;*/
 }
 .btn-primary:checked,
 .btn-primary:pressed {
   background-color: #2266a1; /* = #3276b1 - #101010, darker then focused */
-  /*background-color: #003399;*/
+  /*background-color: #039;*/
 }
 .btn-success {
   color: #fff;

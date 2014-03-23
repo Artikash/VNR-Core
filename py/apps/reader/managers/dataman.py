@@ -21,7 +21,7 @@ from sakurakit.sktr import tr_
 from sakurakit.skunicode import sjis_encodable
 from cconv import cconv
 from mytr import my, mytr_
-import cacheman, config, csvutil, defs, growl, i18n, main, mecabman, nameman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
+import cacheman, config, csvutil, defs, growl, hashutil, i18n, main, mecabman, nameman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
 
 SUBMIT_INTERVAL = 5000 # 5 seconds
 REF_SUBMIT_INTERVAL = 1000 # 1 second
@@ -2447,7 +2447,6 @@ class TrailersItem: #(object):
     @yield  (str vid, str url)
     """
     if self.videos:
-      import proxy
       host = proxy.manager().ytimg_i
       for it in self.videos:
         vid = it['youtube']
@@ -2601,7 +2600,6 @@ class GetchuReference(Reference): #(object):
     @yield  (str vid, str url)
     """
     if self.videos:
-      import proxy
       host = proxy.manager().ytimg_i
       for vid in self.videos:
         img = host + '/vi/' + vid + '/0.jpg'
@@ -4368,7 +4366,8 @@ class _DataManager(object):
     self.contexts = {}    # {str:str}, not None
 
     # Comments of current game, indexed by hash, nullable
-    self.comments = {}                # {str hash:[Comment]}, not None
+    self.comments = {}                # {long hash:[Comment]}, not None
+    self.comments2 = {}               # {long hash:[Comment]}, not None
     self._commentsDirty = False       # bool
     self.dirtyComments = set()        # set(Comment)
     self.dirtyCommentsLocked = False  # bool
@@ -5289,9 +5288,24 @@ class _DataManager(object):
   def _updateContexts(self):
     self.contexts = {h:c[0].context for h,c in self.comments.iteritems()} if self.comments else {}
 
+  def _updateComments2(self):
+    dprint("enter")
+    d = {}
+    for c in self.iterComments():
+      if c.context:
+        h = hashutil.hashcontext(c.context)
+        l = d.get(h)
+        if l:
+          l.append(c)
+        else:
+          d[h] = [c]
+    self.comments2 = d
+    dprint("leave: len = %i" % len(d))
+
   def reloadComments(self, online=True):
-    self.comments = {}
     self.contexts = {}
+    self.comments = {}
+    self.comments2 = {}
     g = self.currentGame
     if not g or not g.md5:
       return
@@ -5307,6 +5321,7 @@ class _DataManager(object):
         _DataManager.removeComments(md5=g.md5)
       self.comments = r or {}
       self._updateContexts()
+      self._updateComments2()
       if self.comments:
         g.commentsUpdateTime = skdatetime.current_unixtime()
         self._saveCommentsLater()
@@ -5314,6 +5329,7 @@ class _DataManager(object):
       growl.msg(my.tr("Loading offline comments") + " ...")
       self.comments = _DataManager.loadComments(md5=g.md5, hash=True) or {}
       self._updateContexts()
+      self._updateComments2()
       self._commentsDirty = False
 
     if self.comments:
@@ -6696,9 +6712,7 @@ class DataManager(QObject):
       dwarn("missing path");
       return
     if not md5:
-      import osutil
       np = osutil.normalize_path(path)
-      import hashutil
       md5 = hashutil.md5sum(np)
       if not md5:
         dwarn("failed to hash game executable")
@@ -7001,13 +7015,12 @@ class DataManager(QObject):
   def hasComments(self): return bool(self.__d.comments)
 
   commentCountChanged = Signal(int)
-  def commentCount(self):
-    try: return len(self.__d.comments)
-    except TypeError: return 0 # comments is None
+  def commentCount(self): return len(self.__d.comments)
 
-  def queryComments(self, hash=None, md5=None, online=False):
+  def queryComments(self, hash=None, hash2=None, md5=None, online=False):
     """
-    @param  hash  long
+    @param  hash  long  data hash
+    @param  hash2  long  text hash
     @param  md5  unicode
     @param* online  bool
     @return  [Comment] or [], not None
@@ -7030,8 +7043,9 @@ class DataManager(QObject):
         if md5 == self.currentGameMd5(): return self.comments()
         return _DataManager.loadComments(md5=md5, hash=False) or []
     elif hash:
-      try: return self.__d.comments[hash]
-      except (KeyError, TypeError, AttributeError): pass
+      return self.__d.comments.get(hash) or []
+    elif hash2:
+      return self.__d.comments2.get(hash2) or []
     return []
 
   def queryContext(self, hash=None):
