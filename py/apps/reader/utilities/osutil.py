@@ -66,6 +66,7 @@ def open_url(url):
     t = url.toString()
     _clip(t)
   else:
+    t = url
     _clip(t)
   if features.WINE:
     dwarn("disabled under wine") # this will hang several seconds on wine
