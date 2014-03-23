@@ -1059,26 +1059,7 @@ Item { id: root_
         //language: root_.language
       }
 
-      Share.LabeledSlider { id: shadowSlider_
-        height: parent.cellHeight
-        width: parent.cellWidth
-        //text: Sk.tr("Opacity")
-        text: qsTr("Transp")
-        font.pixelSize: parent.pixelSize
-        font.bold: true
-        labelWidth: 40
-        handleWidth: 15
-        toolTip: qsTr("Text background shadow transparency")
-        handleToolTip: Math.round(value * 100 / maximumValue) + "%"
-
-        enabled: root_.shadowChecked
-
-        //value: 0.27
-        minimumValue: 0.0
-        maximumValue: 1.0
-        font.family: parent.cellFont
-        //language: root_.language
-      }
+      Item { width: 1; height: 1 }
 
       Share.LabeledSlider { id: grimoireZoomSlider_
         height: parent.cellHeight
@@ -1134,7 +1115,26 @@ Item { id: root_
         //language: root_.language
       }
 
-      Item { width: 1; height: 1 }
+      Share.LabeledSlider { id: shadowSlider_
+        height: parent.cellHeight
+        width: parent.cellWidth
+        //text: Sk.tr("Opacity")
+        text: qsTr("Transp")
+        font.pixelSize: parent.pixelSize
+        font.bold: true
+        labelWidth: 40
+        handleWidth: 15
+        toolTip: qsTr("Text background shadow transparency")
+        handleToolTip: Math.round(value * 100 / maximumValue) + "%"
+
+        enabled: root_.shadowChecked
+
+        //value: 0.27
+        minimumValue: 0.0
+        maximumValue: 1.0
+        font.family: parent.cellFont
+        //language: root_.language
+      }
 
       Share.LabeledSlider { id: glowIntensitySlider_
         height: parent.cellHeight
