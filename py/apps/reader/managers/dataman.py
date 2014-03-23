@@ -5292,8 +5292,9 @@ class _DataManager(object):
     dprint("enter")
     d = {}
     for c in self.iterComments():
-      if c.context:
-        h = hashutil.hashcontext(c.context)
+      context = c.d.context
+      if context:
+        h = hashutil.hashcontext(context)
         l = d.get(h)
         if l:
           l.append(c)

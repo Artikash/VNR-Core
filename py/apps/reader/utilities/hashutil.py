@@ -78,8 +78,8 @@ def _normalizetext(t):
   @param  t  unicode
   @return   unicode
   """
-  t = _normalizetext_space.sub(t, '')
-  return t
+  # Remove unicode spaces
+  return _normalizetext_space.sub('', t)
 
 def hashtext(t, h=None):
   """Hash unicode text (hash2)
@@ -114,6 +114,7 @@ if __name__ == '__main__':
   print urlsum("http://www.amazon.co.jp")
   print urlsum("http://www.amazon.co.jp/")
 
+  print hashcontext(u"1")
   print hashcontext(u"111||222")
   print hashtext(u"111222\n\u3000")
 
