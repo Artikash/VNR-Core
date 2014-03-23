@@ -426,17 +426,18 @@ class _TextManager(object):
               c.hash = cur_hash
               c.context = cur_ctx
           #if c.contextSize >= h_index +1: # saved context size is larger
-          self._showComment(c)
-          hitCommentIds.add(cd.id)
-          #if cd.type == 'subtitle' and not cd.disabled: #and not cd.deleted:
-          #  self._updateTtsSubtitle(cd.text, cd.language)
+          if not cd.deleted and not cd.disabled:
+            self._showComment(c)
+            hitCommentIds.add(cd.id)
+            #if cd.type == 'subtitle' and not cd.disabled: #and not cd.deleted:
+            #  self._updateTtsSubtitle(cd.text, cd.language)
 
       # Hash2 as back up
       for h in self.hashes2:
         if not h: break
         for c in dm.queryComments(hash2=h):
           cd = c.d
-          if cd.id not in hitCommentIds:
+          if not cd.deleted and not cd.disabled and cd.id not in hitCommentIds:
             self._showComment(c)
             hitCommentIds.add(cd.id)
 
