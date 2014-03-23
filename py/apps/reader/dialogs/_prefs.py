@@ -2389,7 +2389,7 @@ class _DictionaryDownloadsTab(object):
   def getMeCabButton(self, name):
     ret = self.meCabButtons.get(name)
     if not ret:
-      self.meCabButtons[name] = ret = QtWidgets.QPushButton()
+      ret = self.meCabButtons[name] = QtWidgets.QPushButton()
       ret.role = ''
       ret.clicked.connect(partial(lambda name:
         self._getMeCab(name) if ret.role == 'get' else
@@ -2401,10 +2401,11 @@ class _DictionaryDownloadsTab(object):
   def getMeCabStatusLabel(self, name):
     ret = self.meCabStatusLabels.get(name)
     if not ret:
-      self.meCabStatusLabels[name] = ret = QtWidgets.QLabel()
+      ret = self.meCabStatusLabels[name] = QtWidgets.QLabel()
       dic = dicts.mecab(name)
       ret.linkActivated.connect(dic.open)
-      ret.setToolTip(dic.path)
+      path = QtCore.QDir.toNativeSeparators(dic.path)
+      ret.setToolTip(path)
     return ret
 
   def getMeCabIntroLabel(self, name):
@@ -2414,7 +2415,7 @@ class _DictionaryDownloadsTab(object):
         t = "%s (%s, %s)" % (MECAB_DICT_NAMES[name], MECAB_DICT_SIZES[name], tr_("recommended"))
       else:
         t = "%s (%s)" % (MECAB_DICT_NAMES[name], MECAB_DICT_SIZES[name])
-      self.meCabIntroLabels[name] = ret = QtWidgets.QLabel(t)
+      ret = self.meCabIntroLabels[name] = QtWidgets.QLabel(t)
     return ret
 
   def _getMeCab(self, name):
@@ -2538,8 +2539,9 @@ class _DictionaryDownloadsTab(object):
   def wadokuStatusLabel(self):
     ret = QtWidgets.QLabel()
     dic = dicts.wadoku()
-    ret.setToolTip(dic.path)
     ret.linkActivated.connect(dic.open)
+    path = QtCore.QDir.toNativeSeparators(dic.path)
+    ret.setToolTip(path)
     return ret
 
   @memoizedproperty
@@ -2605,8 +2607,9 @@ class _DictionaryDownloadsTab(object):
   def edictStatusLabel(self):
     ret = QtWidgets.QLabel()
     dic = dicts.edict()
-    ret.setToolTip(dic.path)
     ret.linkActivated.connect(dic.open)
+    path = QtCore.QDir.toNativeSeparators(dic.path)
+    ret.setToolTip(path)
     return ret
 
   @memoizedproperty
@@ -2663,7 +2666,7 @@ class _DictionaryDownloadsTab(object):
   def getLingoesButton(self, name):
     ret = self.lingoesButtons.get(name)
     if not ret:
-      self.lingoesButtons[name] = ret = QtWidgets.QPushButton()
+      ret = self.lingoesButtons[name] = QtWidgets.QPushButton()
       ret.role = ''
       ret.clicked.connect(partial(lambda name:
         self._getLingoes(name) if ret.role == 'get' else
@@ -2675,10 +2678,11 @@ class _DictionaryDownloadsTab(object):
   def getLingoesStatusLabel(self, name):
     ret = self.lingoesStatusLabels.get(name)
     if not ret:
-      self.lingoesStatusLabels[name] = ret = QtWidgets.QLabel()
+      ret = self.lingoesStatusLabels[name] = QtWidgets.QLabel()
       dic = dicts.lingoes(name)
       ret.linkActivated.connect(dic.open)
-      ret.setToolTip(dic.path)
+      path = QtCore.QDir.toNativeSeparators(dic.path)
+      ret.setToolTip(path)
     return ret
 
   def getLingoesIntroLabel(self, name):
@@ -2690,7 +2694,7 @@ class _DictionaryDownloadsTab(object):
         t = "%s (%s, %s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name], my.tr("recommended for English"))
       else:
         t = "%s (%s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name])
-      self.lingoesIntroLabels[name] = ret = QtWidgets.QLabel(t)
+      ret = self.lingoesIntroLabels[name] = QtWidgets.QLabel(t)
     return ret
 
   def _getLingoes(self, name):
@@ -2741,7 +2745,7 @@ class _DictionaryDownloadsTab(object):
   def getJMDictButton(self, name):
     ret = self.jmdictButtons.get(name)
     if not ret:
-      self.jmdictButtons[name] = ret = QtWidgets.QPushButton()
+      ret = self.jmdictButtons[name] = QtWidgets.QPushButton()
       ret.role = ''
       ret.clicked.connect(partial(lambda name:
         self._getJMDict(name) if ret.role == 'get' else
@@ -2753,17 +2757,18 @@ class _DictionaryDownloadsTab(object):
   def getJMDictStatusLabel(self, name):
     ret = self.jmdictStatusLabels.get(name)
     if not ret:
-      self.jmdictStatusLabels[name] = ret = QtWidgets.QLabel()
+      ret = self.jmdictStatusLabels[name] = QtWidgets.QLabel()
+      dic = dicts.jmdict(name)
+      ret.linkActivated.connect(dic.open)
+      path = QtCore.QDir.toNativeSeparators(dic.path)
+      ret.setToolTip(path)
     return ret
 
   def getJMDictIntroLabel(self, name):
     ret = self.jmdictIntroLabels.get(name)
     if not ret:
-      self.jmdictIntroLabels[name] = ret = QtWidgets.QLabel(
+      ret = self.jmdictIntroLabels[name] = QtWidgets.QLabel(
           "%s (%s)" % (JMDICT_DICT_NAMES[name], JMDICT_DICT_SIZES[name]))
-      dic = dicts.jmdict(name)
-      ret.linkActivated.connect(dic.open)
-      ret.setToolTip(dic.path)
     return ret
 
   def _getJMDict(self, name):
