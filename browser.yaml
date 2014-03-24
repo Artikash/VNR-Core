@@ -29,9 +29,9 @@ py:
 # User profile
 user:
   profiles:
-    mac:    "$HOME/Library/Application Support/org.sakuradite.reader"
-    win:    $APPDATA/org.sakuradite.reader  # ~/AppData/Roaming/org.sakuradite.reader
-    posix:  $HOME/.sakuradite/reader
+    mac:    "$HOME/Library/Application Support/org.sakuradite.browser"
+    win:    $APPDATA/org.sakuradite.browser  # ~/AppData/Roaming/org.sakuradite.browser
+    posix:  $HOME/.sakuradite/browser
 
 # Translations
 tr:

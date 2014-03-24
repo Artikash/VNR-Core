@@ -13,7 +13,8 @@ DIR_USER = (config.USER_PROFILES[skos.name]
     .replace('$APPDATA', skpaths.APPDATA))
 
 DIR_USER_CACHE = DIR_USER + '/caches'       # $user/caches
-DIR_CACHE_WEB = DIR_USER_CACHE + '/webkit'  # $user/caches/webkit
+DIR_CACHE_NETMAN = DIR_USER_CACHE + '/netman'  # $user/caches/netman
+DIR_CACHE_WEBKIT = DIR_USER_CACHE + '/webkit'  # $user/caches/webkit
 
 # Image locations
 
