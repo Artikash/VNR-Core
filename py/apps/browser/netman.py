@@ -4,8 +4,8 @@
 
 __all__ = ['WbNetworkAccessManager']
 
-from PySide.QtNetwork import QNetworkAccessManager, QNetworkRequest
-import config
+from PySide.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkDiskCache
+import config, rc
 
 def _normalize_host(url): # str -> str
   url = url.lower()
@@ -26,6 +26,12 @@ _PROXY_DOMAINS = {
 class WbNetworkAccessManager(QNetworkAccessManager):
   def __init__(self, parent=None):
     super(WbNetworkAccessManager, self).__init__(parent)
+
+    # Enable offline cache
+    cachedir = rc.DIR_CACHE_NETMAN
+    cache = QNetworkDiskCache(self)
+    cache.setCacheDirectory(cachedir) # QNetworkDiskCache will create this directory if it does not exists.
+    self.setCache(cache)
 
   # QNetworkReply *createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData = nullptr) override;
   def createRequest(self, op, req, outgoingData=None): # override

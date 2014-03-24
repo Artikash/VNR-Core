@@ -61,7 +61,8 @@ def main():
 
   import rc
   for it in (
-      rc.DIR_CACHE_WEB,
+      rc.DIR_CACHE_NETMAN,
+      rc.DIR_CACHE_WEBKIT,
       ):
     if not os.path.exists(it):
       try: os.makedirs(it)

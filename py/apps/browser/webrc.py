@@ -32,7 +32,7 @@ def update_web_settings(settings=None):
 
   #ws.setDefaultTextEncoding("SHIFT-JIS")
 
-  cachedir = rc.DIR_CACHE_WEB
+  cachedir = rc.DIR_CACHE_WEBKIT
   ws.setLocalStoragePath(cachedir)
   ws.setIconDatabasePath(cachedir)
   ws.setOfflineStoragePath(cachedir)
