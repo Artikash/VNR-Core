@@ -71,7 +71,7 @@ class _DictionaryManager:
           my.tr("Please double check its location in Preferences."))))
 
   @classmethod
-  def lookupEB(cls, text, limit=5):
+  def lookupEB(cls, text, limit=3): # Use less count to save memory
     """
     @param  text  unicode
     @param  limit  int
