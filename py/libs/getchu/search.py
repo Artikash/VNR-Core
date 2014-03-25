@@ -85,7 +85,7 @@ class SearchApi(object):
   , re.IGNORECASE|re.DOTALL)
   _rx_media = re.compile(ur'メディア：([^<]+?)<!--MEDIA-->')
   _rx_date = re.compile(ur'発売日：([0-9/]+)<!--発売日-->')
-  _rx_price = re.compile(ur'税込￥([0-9,]+)')
+  _rx_price = re.compile(ur'定価：\s*￥([0-9,]+)')
   _rx_brand = re.compile(ur'ブランド名：(.*?)<!--BRAND-->')
   _rx_brand2 = re.compile(r'>([^<]+)<')
   def _iterparse(self, h):
@@ -117,7 +117,7 @@ class SearchApi(object):
 
         mm = self._rx_price.search(hh)
         try: item['price'] = int(mm.group(1).replace(',', ''))
-        except ValueError: item['price'] = 0
+        except (KeyError, ValueError, AttributeError): item['price'] = 0
 
         mm = self._rx_brand.search(hh)
         brand = mm.group(1) if mm else ''
