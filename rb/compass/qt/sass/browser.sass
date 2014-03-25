@@ -5,7 +5,7 @@
 // See: http://stackoverflow.com/questions/7340046/qtabwidget-tabposition-when-using-stylesheets
 QTabBar::tab
   padding: 5px
-  //background: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(73, 73, 74, 255), stop:1 rgba(40, 40, 40, 255))
+  //background: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(73,73,74,255), stop:1 rgba(40,40,40,255))
   //border: 1px solid rgb(190, 190, 190)
   //max-height: 0.6em
   //margin-left: -1px
@@ -14,16 +14,16 @@ QTabBar::tab
   min-width: 5em
   border-radius: 4px
   color: snow
-  //background-color: rgba(255,255,255,20%) // white
+  //background-color: rgba(255,255,255,0.2) // white
   margin-left: 2px
   margin-right: 2px
   margin-bottom: 4px // margin to the tabview
 
   &:selected
-    border: 1px solid rgba(255,255,255,80%) // white
+    border: 1px solid rgba(255,255,255,0.8) // white
   &:hover
     border: 1px solid white
-    background-color: rgba(255,255,255,10%)
+    background-color: rgba(255,255,255,0.1)
 
 /*
   QTabBar::tab:last
@@ -56,18 +56,18 @@ QPushButton.btn-tab-corner
   font-size: 12px
   font-weight: bold
   color: white
-  background-color: rgba(224, 224, 224, 10%) // gray
+  background-color: rgba(224,224,224,0.1) // gray
   margin-bottom: 4px // margin to the tabview
 
   &.focus,
   &:hover
     border: 1px solid white
-    background-color: rgba(224, 224, 224, 20%) // gray
+    background-color: rgba(224,224,224,0.2) // gray
 
 // Address toolbar
 
 QToolBar.toolbar-address
-  border: 1px solid rgba(255,255,255,80%) // white
+  border: 1px solid rgba(255,255,255,0.8) // white
   //border: 1px solid white
   border-radius: 4px
   min-width: 71px
@@ -111,6 +111,6 @@ QComboBox.address-edit
     &:on,
     &:hover
       border-color: white
-      background-color: rgba(255,255,255,10%)
+      background-color: rgba(255,255,255,0.1)
 
 // EOF
