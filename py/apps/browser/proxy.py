@@ -6,16 +6,14 @@ import re
 from PySide.QtCore import QUrl
 import config
 
+import settings
+_MAINLAND = settings.reader().isMainlandChina()
+
 def _normalize_host(url): # str -> str
   url = url.lower()
   if not url.startswith('www.'):
     url = 'www.' + url
   return url
-
-_PROXY_SITES = {
-  _normalize_host(host):key
-  for key,host in config.PROXY_SITES.iteritems()
-} # {string host: string key}
 
 _PROXY_DOMAINS = {
   _normalize_host(host):ip
@@ -26,6 +24,21 @@ _PROXY_IPS = {
   ip:host
   for host,ip in config.PROXY_DOMAINS.iteritems()
 } # {string ip: string host}
+
+_PROXY_SITES = {
+  _normalize_host(host):key
+  for key,host in config.PROXY_SITES.iteritems()
+} # {string host: string key}
+
+_DLSITE_PROXY_SITES = {
+  _normalize_host(host):key
+  for host,key in (
+    ('www.dlsite.com', '/dlsite/www'),
+    ('img.dlsite.jp', '/dlsite/img'),
+  )
+} # {string host: string key}
+
+## Functions ##
 
 def toproxyurl(url): # QUrl -> QUrl or None
   #if not isinstance(url, QUrl)
@@ -38,6 +51,8 @@ def toproxyurl(url): # QUrl -> QUrl or None
       url.setHost(ip)
     else:
       key = _PROXY_SITES.get(host)
+      if not key and _MAINLAND:
+        key = _DLSITE_PROXY_SITES.get(host)
       if key:
         url.setHost(config.PROXY_HOST)
         path = '/proxy/' + key + url.path()
@@ -65,6 +80,20 @@ def fromproxyurl(url): # QUrl -> QUrl or None
               path = '/' + path
             url.setPath(path)
             return url
+          #elif _MAINLAND and key == 'dlsite':
+          #  host = None
+          #  path = m.group(2) or '/'
+          #  if path.startswith('/www'):
+          #    host = _DLSITE_PROXY_SITES['/dlsite/www']
+          #    path = path[4:] or '/'
+          #  elif path.startswith('/img'):
+          #    host = _DLSITE_PROXY_SITES['/dlsite/img']
+          #    path = path[4:] or '/'
+          #  if host:
+          #    url = QUrl(url)
+          #    url.setHost(host)
+          #    url.setPath(path)
+          #    return url
     else:
       host = _PROXY_IPS.get(host)
       if host:
