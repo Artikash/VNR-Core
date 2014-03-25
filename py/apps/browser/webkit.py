@@ -1,5 +1,5 @@
 # coding: utf8
-# webbrowser.py
+# webkit.py
 # 12/13/2012 jichi
 
 __all__ = ['WbWebView', 'WbWebPage']
