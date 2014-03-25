@@ -124,10 +124,14 @@ class WbNetworkAccessManager(QNetworkAccessManager):
 
   # QNetworkReply *createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData = nullptr) override;
   def createRequest(self, op, req, outgoingData=None): # override
-    url = toproxyurl(req.url())
-    if url:
+    url = req.url()
+    newurl = toproxyurl(url)
+    if newurl:
       req = QNetworkRequest(req) # since request tis constent
-      req.setUrl(url)
+      req.setUrl(newurl)
+      reply = super(WbNetworkAccessManager, self).createRequest(op, req, outgoingData)
+      reply.setUrl(url) # restore the old url
+      return reply
     return super(WbNetworkAccessManager, self).createRequest(op, req, outgoingData)
 
 # EOF
