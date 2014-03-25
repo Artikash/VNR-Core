@@ -14,7 +14,7 @@ from sakurakit.skclass import memoizedproperty, Q_Q
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkDraggableMainWindow, shortcut
 from sakurakit.sktr import tr_
 from addressui import *
-from netman import *
+from network import *
 from tabui import *
 from webkit import *
 from i18n import i18n
