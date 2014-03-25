@@ -73,6 +73,8 @@ ENV_PYTHONPATH = map(parse_path, SHARE_YAML['env']['pythonpath']) # [str path]
 QT_THREAD_COUNT = parse_int(APP_YAML['qt']['threadCount'])
 QT_THREAD_TIMEOUT = parse_int(APP_YAML['qt']['threadTimeout'])
 
+QT_STYLESHEETS = APP_YAML['qt']['css'] # [str name]
+
 #QT_QUIT_TIMEOUT = parse_int(APP_YAML['qt']['quitTimeout'])
 
 ## User profile ##

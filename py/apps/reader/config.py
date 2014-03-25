@@ -246,6 +246,8 @@ _QT = APP_YAML['qt']
 QT_THREAD_COUNT = parse_int(_QT['threadCount'])
 QT_THREAD_TIMEOUT = parse_int(_QT['threadTimeout'])
 
+QT_STYLESHEETS = _QT['css'] # [str name]
+
 #QT_QUIT_TIMEOUT = parse_int(_QT['quitTimeout'])
 
 QT_METACALL_PORT = parse_int(_QT['metaCallPort'])

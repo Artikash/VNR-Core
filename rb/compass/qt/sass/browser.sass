@@ -1,0 +1,116 @@
+/* browser.sass
+   3/29/2013 jichi
+
+// Tab bar
+// See: http://stackoverflow.com/questions/7340046/qtabwidget-tabposition-when-using-stylesheets
+QTabBar::tab
+  padding: 5px
+  //background: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(73, 73, 74, 255), stop:1 rgba(40, 40, 40, 255))
+  //border: 1px solid rgb(190, 190, 190)
+  //max-height: 0.6em
+  //margin-left: -1px
+  //margin-right: -1px
+  //max-width: 30em
+  min-width: 5em
+  border-radius: 4px
+  color: snow
+  //background-color: rgba(255,255,255,20%) // white
+  margin-left: 2px
+  margin-right: 2px
+  margin-bottom: 4px // margin to the tabview
+
+  &:selected
+    border: 1px solid rgba(255,255,255,80%) // white
+  &:hover
+    border: 1px solid white
+    background-color: rgba(255,255,255,10%)
+
+/*
+  QTabBar::tab:last
+    border-top-right-radius: 3px
+    border-bottom-right-radius: 3px
+    margin-right: 0px
+  QTabBar::tab:first
+    border-top-left-radius: 3px
+    border-bottom-left-radius: 3px
+    margin-left: 0px
+  QTabBar::tab:only-one
+    border-radius: 3px
+    margin: 0px
+
+// Status bar
+
+QStatusBar
+  color: snow
+
+  &.warning,
+  &.error
+    font-weight: bold
+
+// Tab corner button, see: bootstrap .close
+
+QPushButton.btn-tab-corner
+  width: 18px
+  height: 18px
+  border-radius: 4px
+  font-size: 12px
+  font-weight: bold
+  color: white
+  background-color: rgba(224, 224, 224, 10%) // gray
+  margin-bottom: 4px // margin to the tabview
+
+  &.focus,
+  &:hover
+    border: 1px solid white
+    background-color: rgba(224, 224, 224, 20%) // gray
+
+// Address toolbar
+
+QToolBar.toolbar-address
+  border: 1px solid rgba(255,255,255,80%) // white
+  //border: 1px solid white
+  border-radius: 4px
+  min-width: 71px
+
+  QToolButton
+    color: snow
+    width: 16px
+    height: 16px
+    font-size: 12px
+    //font-weight: bold
+
+// Address combobox edit
+
+QComboBox.address-edit
+  height: 22px
+  color: snow
+  border-radius: 4px
+  background-color: transparent
+  //padding-left: 2px
+  border: 1px solid transparent
+
+  &:hover
+    border: 1px solid white
+  &:focus
+    border: 1px solid #add8e6 // lightblue
+
+  // Paint the down-arrow as a minus sign
+  &::down-arrow
+    background-color: white
+    width: 7px
+    height: 1px
+
+  &::drop-down
+    subcontrol-position: left
+    border: 1px solid transparent
+    border-radius: 3px
+    width: 16px
+    height: 16px
+    margin: 2px
+
+    &:on,
+    &:hover
+      border-color: white
+      background-color: rgba(255,255,255,10%)
+
+// EOF

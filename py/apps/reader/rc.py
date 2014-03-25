@@ -360,7 +360,7 @@ def qss(name):
   The return string  is not cached.
   """
   #return cssmin(skfileio.readfile(qss_path(name)))
-  return skfileio.readfile(qss_path(name))
+  return skfileio.readfile(qss_path(name)).replace('$PWD', config.root_abspath())
 
 # Image locations
 

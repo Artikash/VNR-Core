@@ -4,12 +4,12 @@
 
 __all__ = ['MainWindow']
 
-from itertools import imap
+#from itertools import imap
 from PySide.QtCore import QTimer
 from sakurakit.skclass import memoizedproperty, Q_Q
 from sakurakit.sktr import tr_
 from webbrowser import WebBrowser
-import config, rc, ui
+import rc, ui
 
 @Q_Q
 class _MainWindow(object):
@@ -34,11 +34,9 @@ class MainWindow(WebBrowser):
     #  | Qt.WindowCloseButtonHint
     #)
     super(MainWindow, self).__init__(parent)
-    self.setStyleSheet(''.join(imap(rc.qss, (
-      #'bootstrap',
-      #'share',
-      'browser',
-    ))).replace('$PWD', config.root_abspath()))
+
+    #self.setStyleSheet(''.join(imap(rc.qss, config.QT_STYLESHEETS)))
+    self.setStyleSheet(rc.qss('browser'))
 
     self.setWindowTitle(u"Kagami (α)")
     self.setWindowIcon(rc.icon('logo-browser'))

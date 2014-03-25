@@ -116,18 +116,18 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   # Sass & coffeescript
   choco: $PWD/coffee/choco.min.js
   game: $PWD/coffee/game.min.js
-  game.css: $PWD/compass/web/css/game.min.css
+  game.css: $PWD/rb/compass/web/css/game.min.css
   gameboard: $PWD/coffee/gameboard.min.js
-  gameboard.css: $PWD/compass/web/css/gameboard.min.css
+  gameboard.css: $PWD/rb/compass/web/css/gameboard.min.css
   widgets: $PWD/coffee/widgets.min.js
-  amazon.css: $PWD/compass/web/css/amazon.min.css
-  getchu.css: $PWD/compass/web/css/getchu.min.css
-  gyutto.css: $PWD/compass/web/css/gyutto.min.css
-  dlsite.css: $PWD/compass/web/css/dlsite.min.css
-  dmm.css: $PWD/compass/web/css/dmm.min.css
-  dragdealer.css: $PWD/compass/web/css/dragdealer.min.css
-  metro.css: $PWD/compass/web/css/metro.min.css
-  #iframe.css: $PWD/compass/web/css/iframe.min.css
+  amazon.css: $PWD/rb/compass/web/css/amazon.min.css
+  getchu.css: $PWD/rb/compass/web/css/getchu.min.css
+  gyutto.css: $PWD/rb/compass/web/css/gyutto.min.css
+  dlsite.css: $PWD/rb/compass/web/css/dlsite.min.css
+  dmm.css: $PWD/rb/compass/web/css/dmm.min.css
+  dragdealer.css: $PWD/rb/compass/web/css/dragdealer.min.css
+  metro.css: $PWD/rb/compass/web/css/metro.min.css
+  #iframe.css: $PWD/rb/compass/web/css/iframe.min.css
 
 # Qt
 
@@ -469,11 +469,9 @@ qml:
   #omajinai:         $PWD/qml/applet/omajinai.qml
 
 qss:
-  #bootstrap:        $PWD/css/bootstrap2.min.css
-  bootstrap:        $PWD/css/bootstrap3.min.css
-  browser:          $PWD/css/browser.min.css
-  reader:           $PWD/css/reader.min.css
-  share:            $PWD/css/share.min.css
+  share:            $PWD/rb/compass/qt/css/share.min.css
+  browser:          $PWD/rb/compass/qt/css/browser.min.css
+  reader:           $PWD/rb/compass/qt/css/reader.min.css
 
 icons:
   logo-browser:     $PWD/images/browser.png
