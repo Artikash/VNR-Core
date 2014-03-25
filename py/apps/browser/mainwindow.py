@@ -6,6 +6,7 @@ __all__ = ['MainWindow']
 
 #from itertools import imap
 from PySide.QtCore import QTimer
+from sakurakit import skos, skqss
 from sakurakit.skclass import memoizedproperty, Q_Q
 from sakurakit.sktr import tr_
 from webbrowser import WebBrowser
@@ -23,6 +24,29 @@ class _MainWindow(object):
     ret.timeout.connect(q.statusBar().hide)
     return ret
 
+  @staticmethod
+  def styleClass(): # -> str
+    ret = 'main'
+
+    if skos.MAC:
+      ret += ' mac'
+    elif skos.LINUX:
+      ret += ' linux'
+    elif skos.WIN:
+      ret += ' win'
+      if skos.WINXP:
+        ret += ' winxp'
+      elif skos.WIN7:
+        ret += ' win7'
+      elif skos.WIN8:
+        ret += ' win8'
+
+    if ui.DWM_ENABLED:
+      ret += ' aero'
+    else:
+      ret += ' notaero'
+    return ret
+
 class MainWindow(WebBrowser):
   def __init__(self, parent=None):
     #WINDOW_FLAGS = (
@@ -34,6 +58,7 @@ class MainWindow(WebBrowser):
     #  | Qt.WindowCloseButtonHint
     #)
     super(MainWindow, self).__init__(parent)
+    skqss.addclass(self, _MainWindow.styleClass())
 
     #self.setStyleSheet(''.join(imap(rc.qss, config.QT_STYLESHEETS)))
     self.setStyleSheet(rc.qss('browser'))

@@ -1,4 +1,4 @@
-# rescure.rb
+# compass-qt/color.rb
 # 3/25/2014 jichi
 # Disable error checking
 require_relative 'config'
@@ -8,8 +8,13 @@ require_relative 'config'
 # See: sass/script/color.rb
 module Sass::Script
   class Color < Literal
+    def rgba_str # @override  render alpha as percentage
+      #delim = options[:style] == :compressed ? ',' : ', '
+      delim = ','
+      "rgba(#{rgb.join(delim)}#{delim}#{Number.round(alpha*100)}%)"
+    end
 
-    # Alpha could be a percentage string
+    # Enable this if alpha could be a percentage string
     #def alpha? # override
     #  if alpha.is_a? Number
     #    alpha < 1
@@ -20,11 +25,6 @@ module Sass::Script
     #  end
     #end
 
-    def rgba_str # @override
-      #split = options[:style] == :compressed ? ',' : ', '
-      split = ','
-      "rgba(#{rgb.join(split)}#{split}#{Number.round(alpha*100)}%)"
-    end
   end
 end
 

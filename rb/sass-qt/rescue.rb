@@ -1,4 +1,4 @@
-# rescure.rb
+# compass-qt/rescue.rb
 # 3/25/2014 jichi
 # Disable error checking
 require_relative 'config'
