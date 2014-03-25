@@ -68,15 +68,15 @@ def open_url(url):
   else:
     t = url
     _clip(t)
-  if features.WINE:
+  if proxy.manager().isBlockedUrl(t):
+    growl.msg(my.tr("Open in VNR's browser for sites that might be blocked"))
+    from scripts import browser
+    browser.open(t)
+  elif features.WINE:
     dwarn("disabled under wine") # this will hang several seconds on wine
     #if isinstance(url, QtCore.QUrl):
     #  url = url.toString()
     #os.startfile(url)
-  elif proxy.manager().isBlockedUrl(t):
-    growl.msg(my.tr("Open in VNR's browser for sites that might be blocked"))
-    from scripts import browser
-    browser.open(t)
   else:
     growl.msg(mytr_("Open in external browser"))
     QDesktopServices.openUrl(url)
