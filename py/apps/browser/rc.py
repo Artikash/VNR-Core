@@ -16,6 +16,8 @@ DIR_USER_CACHE = DIR_USER + '/caches'       # $user/caches
 DIR_CACHE_NETMAN = DIR_USER_CACHE + '/netman'  # $user/caches/netman
 DIR_CACHE_WEBKIT = DIR_USER_CACHE + '/webkit'  # $user/caches/webkit
 
+COOKIE_LOCATION = DIR_CACHE_NETMAN + '/cookies'  # $user/caches/netman/cookies
+
 # Image locations
 
 def icon(name):
