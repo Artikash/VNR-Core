@@ -1,0 +1,34 @@
+/* share.sass
+ * 3/29/2013 jichi
+ * Current directory is py/apps/reader
+ * See: http://qt-project.org/doc/qt-4.8/stylesheet-examples.html
+ *
+ * Syntax examples::
+ * - ClassName { ... }     // ClassName:   QObject.metaObject.className
+ * - #objectName { ... }   // objectName:  QObject.objectName
+ * - #className { ... }    // className:   QObject.property('class')
+ * - [name="value"] { ... }// name, value: QObject.property('name'), QString
+ * - *                     // match any QWidget
+
+@import 'bootstrap3'
+
+// Texture
+
+//QWebView, no effect?!
+QInputDialog,
+QMessageBox,
+.texture
+  background-image: url('$PWD/images/textures/marble.jpg')
+
+// Bootstrap  buttons
+
+QInputDialog QPushButton,
+QMessageBox QPushButton
+  @extend .btn
+  @extend .btn-default
+
+QInputDialog QPushButton:default
+  @extend .btn
+  @extend .btn-primary
+
+// EOF

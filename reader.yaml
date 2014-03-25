@@ -10,7 +10,7 @@ version:
   name: reader
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1395763001
+  timestamp: 1395775253
 
 app:
   #debug: true
@@ -40,6 +40,9 @@ qt:
   threadCount:  1000    # QtCore.QThreadPool.maxThreadCount
   threadTimeout: 6000   # QThreadPool.waitForDone timeout in msecs
   #quitTimeout: 3000     # time taken for closing the app
+  css: # QSS
+    - share
+    - reader
 
 py:
   socketTimeout: 5000 # socket.defaulttimeout, default is None

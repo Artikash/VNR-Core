@@ -8,10 +8,10 @@ SUBDIRS = \
     qml/reader/tr \
     qml/bootstrap2 \
     qml/bootstrap3 \
-    css \
     js \
     coffee \
     rb/compass
+    #css
     #py/libs/sakurakit/tr # too slow to make
 
 .PHONY: all $(SUBDIRS)

@@ -24,11 +24,7 @@ class _Window(QWidget):
     self.setWindowTitle(QCoreApplication.instance().applicationName())
     self.showNothing()
 
-    self.setStyleSheet(''.join(imap(rc.qss, (
-      'bootstrap',
-      'share',
-      'reader',
-    ))).replace('$PWD', config.root_abspath()))
+    self.setStyleSheet(''.join(imap(rc.qss, config.QT_STYLESHEETS)))
 
   closeRequested = Signal()
 

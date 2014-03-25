@@ -62,7 +62,7 @@ def qss(name):
   @throw  KeyError  when unknown name
   """
   from sakurakit import skfileio
-  return skfileio.readfile(qss_path(name))
+  return skfileio.readfile(qss_path(name)) #.replace('$PWD', config.root_abspath())
 
 # HAML Jinja
 

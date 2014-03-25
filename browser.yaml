@@ -20,6 +20,9 @@ qt:
   threadCount:  10      # QtCore.QThreadPool.maxThreadCount
   threadTimeout: 6000   # QThreadPool.waitForDone timeout in msecs
   #quitTimeout: 3000     # time taken for closing the app
+  css: # QSS
+    - share
+    - reader
 
 py:
   socketTimeout: 5000 # socket.defaulttimeout, default is None
