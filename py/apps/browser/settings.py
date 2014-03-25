@@ -43,4 +43,6 @@ class ReaderSettings(QSettings):
 
   def userLanguage(self): return self.value('UserLanguage')
 
+  def isCursorThemeEnabled(self): return to_bool(self.value('CursorThemeEnabled', True))
+
 # EOF

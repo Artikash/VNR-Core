@@ -233,11 +233,6 @@ def main():
       from sakurakit import skfileio
       skfileio.removetree(it)
 
-  if ss.isCursorThemeEnabled():
-    dprint("load cursor theme")
-    import curtheme
-    curtheme.load()
-
   if sys.getrecursionlimit() < config.PY_RECURSION_LIMIT:
     dprint("increase recursion limit")
     sys.setrecursionlimit(config.PY_RECURSION_LIMIT)
@@ -439,6 +434,11 @@ def main():
     ss.setValue('UserGender', '')
     ss.setValue('UserAvatar', '')
     ss.setValue('UserColor', '')
+
+  if ss.isCursorThemeEnabled():
+    dprint("load cursor theme")
+    import curtheme
+    curtheme.load()
 
   #dprint("set max thread count")
   from PySide.QtCore import QThreadPool

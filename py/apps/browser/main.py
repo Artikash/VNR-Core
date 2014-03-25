@@ -97,6 +97,9 @@ class _MainObject(object):
 
     self.hasQuit = True
 
+    import curtheme
+    curtheme.unload()
+
     for w in self.widgets:
       if w.isVisible():
         w.hide()

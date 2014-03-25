@@ -91,6 +91,11 @@ def main():
     ss.setVersion(config.VERSION_TIMESTAMP)
     ss.sync()
 
+  if settings.reader().isCursorThemeEnabled():
+    dprint("load cursor theme")
+    import curtheme
+    curtheme.load()
+
   dprint("set max thread count")
   from PySide.QtCore import QThreadPool
   if QThreadPool.globalInstance().maxThreadCount() < config.QT_THREAD_COUNT:
