@@ -11,10 +11,10 @@ javascripts_dir = 'js'
 
 # Import sass QT extension
 
-ROOT_DIR = "../../.."
+ROOT_DIR = '../../..'
 
 def require_all(dir)
-  Dir["#{dir}/*.rb"].each {|file| require_relative file }
+  Dir["#{dir}/*.rb"].each { |file| require_relative file }
 end
 
 require_all "#{ROOT_DIR}/rb/sass-qt"

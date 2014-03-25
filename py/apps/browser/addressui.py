@@ -22,6 +22,8 @@ class WbAddressEdit(QtWidgets.QComboBox):
 
     self.maxCount = 20 # int  maximum number of items
 
+    self.setToolTip("Ctrl+L, Alt+D")
+
   textEntered = Signal(unicode)
 
   def enter(self):
