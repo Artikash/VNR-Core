@@ -15,7 +15,7 @@ def glassifyWidget(w):
   """
   @param  w  QWidget
   """
-  if isDwmEnabled():
+  if DWM_ENABLED:
     w.setAttribute(Qt.WA_TranslucentBackground)
     w.setAttribute(Qt.WA_NoSystemBackground)
     setWidgetDwmEnabled(w, True);
@@ -24,7 +24,7 @@ def glassifyWindow(hwnd):
   """
   @param  hwnd  HWND
   """
-  if isDwmEnabled():
+  if DWM_ENABLED:
     setWindowDwmEnabled(hwnd, True)
 
 def glowEffect(parent=None, color=GLOW_COLOR, radius=16, offset=1):
@@ -48,15 +48,7 @@ def glowEffect(parent=None, color=GLOW_COLOR, radius=16, offset=1):
 
 ## Implementation ##
 
-DWM_ENABLED = None # cached
-def isDwmEnabled():
-  """
-  @return  bool
-  """
-  global DWM_ENABLED
-  if DWM_ENABLED is None:
-    DWM_ENABLED = skos.WIN and skdwm.isCompositionEnabled()
-  return DWM_ENABLED
+DWM_ENABLED = skos.WIN and skdwm.isCompositionEnabled() # bool
 
 def setWidgetDwmEnabled(w, t=True):
   wid = w.winId()
