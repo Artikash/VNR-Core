@@ -106,6 +106,7 @@ class _WebBrowser(object):
   @memoizedproperty
   def tabWidget(self):
     ret = WbTabWidget()
+    skqss.class_(ret, 'webkit')
     ret.setTabBar(self.tabBar)
     ret.setCornerWidget(self.newTabButton)
     ret.tabCloseRequested.connect(self.closeTab)
@@ -118,6 +119,7 @@ class _WebBrowser(object):
   @memoizedproperty
   def tabBar(self):
     ret = WbTabBar()
+    skqss.class_(ret, 'webkit')
     ret.setGraphicsEffect(ui.glowEffect(ret))
     #ret.doubleClickedAt.connect(self.newTabAfter)
     return ret
@@ -136,7 +138,7 @@ class _WebBrowser(object):
   def addressEdit(self):
     ret = WbAddressEdit()
     ret.setGraphicsEffect(ui.glowEffect(ret))
-    skqss.class_(ret, "address-edit")
+    skqss.class_(ret, 'webkit address-edit')
     # Not sure why that global shortcut does not work
     ret.textEntered.connect(self.openUnknown)
     ret.editTextChanged.connect(self.highlightText)
@@ -146,7 +148,7 @@ class _WebBrowser(object):
   def newTabButton(self):
     ret = QtWidgets.QPushButton()
     ret.setGraphicsEffect(ui.glowEffect(ret))
-    skqss.class_(ret, 'btn-tab-corner')
+    skqss.class_(ret, 'webkit btn-tab-corner')
     ret.setText("+")
     #ret.setToolTip(tr_("New Tab"))
     ret.setToolTip("%s (%s, %s)" % (i18n.tr("New Tab"), "cmd+T", tr_("Double-click")))
@@ -157,7 +159,7 @@ class _WebBrowser(object):
   def addressToolBar(self):
     ret = QtWidgets.QToolBar()
     ret.setGraphicsEffect(ui.glowEffect(ret))
-    skqss.class_(ret, 'toolbar-address')
+    skqss.class_(ret, 'webkit toolbar-address')
 
     a = ret.addAction(u"\u25c0") # left triangle
     a.triggered.connect(self.back)

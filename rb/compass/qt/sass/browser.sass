@@ -3,7 +3,7 @@
 
 // Tab bar
 // See: http://stackoverflow.com/questions/7340046/qtabwidget-tabposition-when-using-stylesheets
-QTabBar::tab
+QTabBar::tab.webkit
   padding: 5px
   //background: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(73,73,74,255), stop:1 rgba(40,40,40,255))
   //border: 1px solid rgb(190, 190, 190)
@@ -25,18 +25,18 @@ QTabBar::tab
     border: 1px solid white
     background-color: rgba(255,255,255,0.1)
 
-/*
-  QTabBar::tab:last
-    border-top-right-radius: 3px
-    border-bottom-right-radius: 3px
-    margin-right: 0px
-  QTabBar::tab:first
-    border-top-left-radius: 3px
-    border-bottom-left-radius: 3px
-    margin-left: 0px
-  QTabBar::tab:only-one
-    border-radius: 3px
-    margin: 0px
+  /*
+    &:last
+      border-top-right-radius: 3px
+      border-bottom-right-radius: 3px
+      margin-right: 0px
+    &:first
+      border-top-left-radius: 3px
+      border-bottom-left-radius: 3px
+      margin-left: 0px
+    &:only-one
+      border-radius: 3px
+      margin: 0px
 
 // Status bar
 
@@ -49,24 +49,25 @@ QStatusBar
 
 // Tab corner button, see: bootstrap .close
 
-QPushButton.btn-tab-corner
-  width: 18px
-  height: 18px
-  border-radius: 4px
-  font-size: 12px
-  font-weight: bold
-  color: white
-  background-color: rgba(224,224,224,0.1) // gray
-  margin-bottom: 4px // margin to the tabview
+QTabWidget.webkit
+  QPushButton.btn-tab-corner
+    width: 18px
+    height: 18px
+    border-radius: 4px
+    font-size: 12px
+    font-weight: bold
+    color: white
+    background-color: rgba(224,224,224,0.1) // gray
+    margin-bottom: 4px // margin to the tabview
 
-  &.focus,
-  &:hover
-    border: 1px solid white
-    background-color: rgba(224,224,224,0.2) // gray
+    &.focus,
+    &:hover
+      border: 1px solid white
+      background-color: rgba(224,224,224,0.2) // gray
 
 // Address toolbar
 
-QToolBar.toolbar-address
+QToolBar.webkit.toolbar-address
   border: 1px solid rgba(255,255,255,0.8) // white
   //border: 1px solid white
   border-radius: 4px
@@ -81,7 +82,7 @@ QToolBar.toolbar-address
 
 // Address combobox edit
 
-QComboBox.address-edit
+QComboBox.webkit.address-edit
   height: 22px
   color: snow
   border-radius: 4px
