@@ -151,7 +151,7 @@ class _WebBrowser(object):
     skqss.class_(ret, 'webkit btn-tab-corner')
     ret.setText("+")
     #ret.setToolTip(tr_("New Tab"))
-    ret.setToolTip("%s (%s, %s)" % (i18n.tr("New Tab"), "cmd+T", tr_("Double-click")))
+    ret.setToolTip("%s (%s, %s)" % (i18n.tr("New Tab"), "Ctrl+T", tr_("Double-click")))
     ret.clicked.connect(self.newTabAtLastWithBlankPage)
     return ret
 
@@ -163,16 +163,16 @@ class _WebBrowser(object):
 
     a = ret.addAction(u"\u25c0") # left triangle
     a.triggered.connect(self.back)
-    a.setToolTip("%s (cmd+[)" % tr_("Back"))
+    a.setToolTip("%s (Ctrl+[, Alt+Left)" % tr_("Back"))
 
     a = ret.addAction(u"\u25B6") # right triangle
     a.triggered.connect(self.forward)
-    a.setToolTip("%s (cmd+])" % tr_("Forward"))
+    a.setToolTip("%s (Ctrl+], Alt+Right)" % tr_("Forward"))
 
     #a = ret.addAction(u'\u27f3') # circle
     a = ret.addAction(u"◯") # まる
     a.triggered.connect(self.refresh)
-    a.setToolTip("%s (cmd+R)" % tr_("Refresh"))
+    a.setToolTip("%s (Ctrl+R)" % tr_("Refresh"))
     return ret
 
   ## Actions ##
