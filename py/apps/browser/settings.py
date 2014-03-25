@@ -43,6 +43,7 @@ class ReaderSettings(QSettings):
 
   def userLanguage(self): return self.value('UserLanguage')
 
+  def isMainlandChina(self): return to_bool(self.value('MainlandChina'))
   def isCursorThemeEnabled(self): return to_bool(self.value('CursorThemeEnabled', True))
 
 # EOF
