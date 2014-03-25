@@ -29,7 +29,10 @@ name = 'mac' if MAC else 'win' if WIN else 'posix'
 # '5.1.2600'
 # >>> platform.release()
 # 'XP'
-WINXP = platform.release() == 'XP'
+
+WINXP = WIN and platform.release() == 'XP'
+WIN7 = WIN and platform.release() == '7'
+WIN8 = WIN and platform.release() == '8'
 
 def kill_my_process():
   # http://stackoverflow.com/questions/1533200/qt-kill-current-process/9920452#9920452

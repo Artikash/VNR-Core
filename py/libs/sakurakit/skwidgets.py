@@ -89,7 +89,7 @@ class SkDraggableWidget(QtWidgets.QWidget):
 
   def mouseMoveEvent(self, event): # override;
     d = self.__d
-    if d.draggable and not d.pos and (event.button() & Qt.LeftButton) and not self.isMaximized() and not self.isFullScreen():
+    if d.draggable and d.pos and not self.isMaximized() and not self.isFullScreen():
       self.move(event.globalPos() - d.pos)
       event.accept()
     super(SkDraggableWidget, self).mouseMoveEvent(event)
@@ -119,7 +119,7 @@ class SkDraggableMainWindow(QtWidgets.QMainWindow):
 
   def mouseMoveEvent(self, event): # override;
     d = self.__d
-    if d.draggable and not d.pos and (event.button() & Qt.LeftButton) and not self.isMaximized() and not self.isFullScreen():
+    if d.draggable and d.pos and not self.isMaximized() and not self.isFullScreen():
       self.move(event.globalPos() - d.pos)
       event.accept()
     super(SkDraggableMainWindow, self).mouseMoveEvent(event)
