@@ -404,10 +404,16 @@ DWORD DetermineNoHookEngine()
     return yes;
   }
 
+  if (IthCheckFile(L"EAGLS.dll")) { // jichi 3/24/2014: E.A.G.L.S
+    ConsoleOutput("vnreng: IGNORE EAGLS");
+    return yes;
+  }
+
   if (IthCheckFile(L"game_sys.exe")) {
     ConsoleOutput("vnreng: IGNORE Atelier Kaguya BY/TH");
     return yes;
   }
+
   if (IthFindFile(L"*.ykc")) {
     ConsoleOutput("vnreng: IGNORE YKC:Feng/HookSoft(SMEE)");
     return yes;
