@@ -13,6 +13,9 @@ import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
 
 Item {
+
+  property alias growlChecked: growlAct_.checked
+
   function showPopup(x, y) {
     //updateDictionaryAct_.enabled = updateCommentAct_.enabled = updateDatabaseAct_.enabled = statusPlugin_.online
     //updateDictionaryAct_.enabled =
@@ -132,9 +135,13 @@ Item {
 
     Desktop.Separator {}
 
-    Desktop.MenuItem {
+    Desktop.MenuItem { id: growlAct_
       text: Sk.tr("Notification")
-      onTriggered: growl_.show()
+      checkable: true
+      checked: true
+      onTriggered:
+        if (checked)
+          growl_.show()
     }
 
     //Desktop.MenuItem {
