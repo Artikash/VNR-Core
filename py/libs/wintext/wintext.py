@@ -9,9 +9,21 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 from sakurakit import skos
-from sakurakit.skdebug import dwarn
+from sakurakit.skdebug import derror, dwarn
 
+SUPPORTED = False # bool
 if skos.WIN:
+  try:
+    from comtypes.gen.Accessibility import IAccessible
+    SUPPORTED = True
+  except ImportError, e:
+    derror(e)
+
+if not SUPPORTED:
+  def textat(x, y): pass # not supported
+
+else:
+
   import ctypes
   from ctypes import oledll, byref, POINTER
   from ctypes.wintypes import POINT
@@ -46,9 +58,6 @@ if skos.WIN:
       return pacc.accName[index]
     #except (WindowsError, comtypes.COMError), e:
     except Exception, e: dwarn(e)
-
-else: # skos.WIN
-  def textat(x, y): pass
 
 if __name__ == "__main__":
   import sys, time
