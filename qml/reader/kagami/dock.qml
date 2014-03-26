@@ -1070,9 +1070,12 @@ Item { id: root_
         toolTip: qsTr("Show notification at the corner of the screen")
 
         checked: true
-        onCheckedChanged:
+        onCheckedChanged: {
+          if (appMenu_.growlChecked != checked)
+            appMenu_.growlChecked = checked
           if (checked)
             growl_.show()
+        }
       }
 
       Share.LabeledSlider { id: grimoireZoomSlider_
@@ -1239,7 +1242,11 @@ Item { id: root_
     }
   }
 
-  Kagami.AppMenu { id: appMenu_ }
+  Kagami.AppMenu { id: appMenu_
+    onGrowlCheckedChanged:
+      if (root_.growlChecked != growlChecked)
+        root_.growlChecked = growlChecked
+  }
 
   MouseArea {
     anchors.fill: parent
