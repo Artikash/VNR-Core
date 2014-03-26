@@ -873,7 +873,7 @@ Item { id: root_
       property QtObject target: center_.fullScreen ? center_ : parent
       ignoresFocus: root_.ignoresFocus
 
-      visible: !center_.fullScreen || dock_.visibleChecked
+      visible: dock_.growlChecked && (!center_.fullScreen || dock_.visibleChecked)
 
       // Mac OS X menu bar height is around 22px
       // http://stackoverflow.com/questions/2867503/height-of-the-apple-menubar
