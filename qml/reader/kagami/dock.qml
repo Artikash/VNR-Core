@@ -1043,6 +1043,23 @@ Item { id: root_
 
       // - Group #4: Sliders
 
+      Share.CheckBox { id: growlButton_
+        width: parent.cellWidth; height: parent.cellHeight
+        text: qsTr("Show notification")
+        font.pixelSize: parent.pixelSize
+        font.bold: true
+        font.family: parent.cellFont
+        toolTip: qsTr("Show notification at the corner of the screen")
+
+        checked: true
+        onCheckedChanged: {
+          if (appMenu_.growlChecked != checked)
+            appMenu_.growlChecked = checked
+          if (checked)
+            growl_.show()
+        }
+      }
+
       Share.LabeledSlider { id: textSlider_
         height: parent.cellHeight
         width: parent.cellWidth
@@ -1059,23 +1076,6 @@ Item { id: root_
         maximumValue: 1000.0
         font.family: parent.cellFont
         //language: root_.language
-      }
-
-      Share.CheckBox { id: growlButton_
-        width: parent.cellWidth; height: parent.cellHeight
-        text: qsTr("Show notification")
-        font.pixelSize: parent.pixelSize
-        font.bold: true
-        font.family: parent.cellFont
-        toolTip: qsTr("Show notification at the corner of the screen")
-
-        checked: true
-        onCheckedChanged: {
-          if (appMenu_.growlChecked != checked)
-            appMenu_.growlChecked = checked
-          if (checked)
-            growl_.show()
-        }
       }
 
       Share.LabeledSlider { id: grimoireZoomSlider_
