@@ -31,15 +31,15 @@ class WbAddressEdit(QtWidgets.QComboBox):
     if t:
       self.textEntered.emit(t)
 
-  def setUrl(self, url):
-    if not self.hasFocus():
-      self.setEditText(url)
-
   def focus(self):
     self.setFocus()
     self.lineEdit().selectAll()
 
-  def addUrl(self, text): # string ->
+  def setTextIfInactive(self, text): # unicode ->
+    if not self.hasFocus():
+      self.setEditText(text)
+
+  def addText(self, text): # unicode ->
     index = self.findText(text)
     if index >= 0:
       self.removeItem(index)
