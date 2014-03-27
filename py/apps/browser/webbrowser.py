@@ -339,8 +339,8 @@ class _WebBrowser(object):
 
   def setDisplayAddress(self, url):
     text = urltext(url)
-    if text:
-      self.addressEdit.setTextIfInactive(text)
+    #if text:
+    self.addressEdit.setEditText(text)
 
   def refreshAddress(self):
     v = self.tabWidget.currentWidget()
