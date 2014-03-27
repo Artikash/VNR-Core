@@ -26,12 +26,6 @@ $hover-border-color: #7da8e6 // bluer
   // See: http://stackoverflow.com/questions/7340046/qtabwidget-tabposition-when-using-stylesheets
   QTabBar::tab.webkit
     padding: 5px
-    //background: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(73,73,74,255), stop:1 rgba(40,40,40,255))
-    //border: 1px solid rgb(190, 190, 190)
-    //max-height: 0.6em
-    //margin-left: -1px
-    //margin-right: -1px
-    //max-width: 30em
     min-width: 5em
     border-radius: 4px
     color: $foreground-color
@@ -39,6 +33,8 @@ $hover-border-color: #7da8e6 // bluer
     margin-left: 2px
     margin-right: 2px
     margin-bottom: 4px // margin to the tabview
+
+    //background: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(73,73,74,255), stop:1 rgba(40,40,40,255))
 
     &:selected
       border: 1px solid rgba($border-color, 0.8)
