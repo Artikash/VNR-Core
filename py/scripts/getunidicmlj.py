@@ -16,7 +16,7 @@ TARGET_DIR = initdefs.CACHE_UNIDICMLJ_RELPATH
 TMP_DIR = initdefs.TMP_RELPATH
 
 # http://www2.ninjal.ac.jp/lrc/index.php?UniDic%2F%B6%E1%C2%E5%CA%B8%B8%ECUniDic
-# https://docs.google.com/file/d/0ByoM4WpH84qIS2Q1UU9tbnRDVk0/edit?pli=1
+# https://docs.google.com/file/d/0ByoM4WpH84qIS2Q1UU9tbnRDVk0
 #UNIDIC_URL = 'http://sakurakit.org/pub/unidic-mlj/unidic-MLJ_13.zip'
 UNIDIC_URL = 'http://%s/pub/unidic-mlj/unidic-MLJ_13.zip' % initdefs.DOMAIN_ORG
 UNIDIC_FILESIZE = 104344408
@@ -84,7 +84,7 @@ def msg():
     size=UNIDIC_FILESIZE,
     urls=[
       'http://www2.ninjal.ac.jp/lrc/index.php?UniDic%2F%B6%E1%C2%E5%CA%B8%B8%ECUniDic',
-      'https://docs.google.com/file/d/0ByoM4WpH84qIS2Q1UU9tbnRDVk0/edit?pli=1',
+      'https://docs.google.com/file/d/0ByoM4WpH84qIS2Q1UU9tbnRDVk0',
       'http://sakuradite.org/pub/unidic-mlj/unidic-mlj-1.3.tar.xz',
     ]
   )
