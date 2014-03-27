@@ -243,7 +243,7 @@ class _WebBrowser(object):
     self.openBlankPage()
 
   def newTabAtLastWithBlankPage(self):
-    self.newTabAfterCurrent()
+    self.newTabAtLast()
     self.openBlankPage()
 
   def newTabAfterCurrent(self, focus=True): # -> webview
