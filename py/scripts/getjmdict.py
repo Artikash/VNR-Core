@@ -107,6 +107,16 @@ def run(lang): # str -> bool
 def usage():
   print 'usage:', '|'.join(LANGS)
 
+def msg(lang): # str ->
+  dic = DICS[lang]
+  import messages
+  messages.info(
+    name="JMDict (%s)" % lang,
+    location="Caches/Dictionaries/JMDict/%s.fpw" % lang,
+    size=dic['size'],
+    urls=["http://ftp.monash.edu.au/pub/nihongo/" + dic['file']],
+  )
+
 def main(argv):
   """
   @param  argv  [unicode]
@@ -122,6 +132,7 @@ def main(argv):
   else:
     lang, = argv
     try:
+      msg(lang)
       init()
       ok = run(lang)
       if ok:

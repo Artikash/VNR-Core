@@ -68,7 +68,16 @@ def run(): # -> bool
   dprint("leave: ok = %s" % ok)
   return ok
 
-# Main process
+## Main ##
+
+def msg():
+  import messages
+  messages.info(
+    name="pAppLocale",
+    location="Caches/Installers/AppLocale",
+    size=APPLOC_FILESIZE,
+    urls=[APPLOC_URL],
+  )
 
 def main(argv):
   """
@@ -94,6 +103,8 @@ if __name__ == '__main__':
   if not initrc.lock('apploc.lock'):
     dwarn("multiple instances")
     sys.exit(1)
+
+  msg()
   ret = main(sys.argv[1:])
   sys.exit(ret)
 
