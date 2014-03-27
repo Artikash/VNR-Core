@@ -94,7 +94,7 @@ def fromproxyurl(url): # QUrl -> QUrl or None
           #    url.setHost(host)
           #    url.setPath(path)
           #    return url
-    else:
+    elif _MAINLAND:
       host = _PROXY_IPS.get(host)
       if host:
         url = QUrl(url)
