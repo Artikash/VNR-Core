@@ -84,7 +84,7 @@ def msg():
     size=UNIDIC_FILESIZE,
     urls=[
       'http://www2.ninjal.ac.jp/lrc/index.php?UniDic%2F%B6%E1%C2%E5%CA%B8%B8%ECUniDic',
-      'https://docs.google.com/file/d/0byom4wph84qis2q1uu9tbnrdvk0/edit?pli=1',
+      'https://docs.google.com/file/d/0ByoM4WpH84qIS2Q1UU9tbnRDVk0/edit?pli=1',
       'http://sakuradite.org/pub/unidic-mlj/unidic-mlj-1.3.tar.xz',
     ]
   )
