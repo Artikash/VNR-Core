@@ -19,10 +19,9 @@ win32: SUBDIRS += ith
 win32: SUBDIRS += texthook pytexthook
 #win32: SUBDIRS += texthookxp pytexthookxp
 
-#win32: SUBDIRS += pyeffects
-
 win32: SUBDIRS += winhook
 
+#win32: SUBDIRS += pyeffects
 win32: SUBDIRS += pymsime
 win32: SUBDIRS += pywintts
 win32: SUBDIRS += pywinutil
