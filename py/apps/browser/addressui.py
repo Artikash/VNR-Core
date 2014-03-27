@@ -35,9 +35,9 @@ class WbAddressEdit(QtWidgets.QComboBox):
     self.setFocus()
     self.lineEdit().selectAll()
 
-  def setTextIfInactive(self, text): # unicode ->
-    if not self.hasFocus():
-      self.setEditText(text)
+  #def setTextIfInactive(self, text): # unicode ->
+  #  if not self.hasFocus():
+  #    self.setEditText(text)
 
   def addText(self, text): # unicode ->
     index = self.findText(text)

@@ -67,22 +67,25 @@
         %section
           %h2 ブランドHP
           -for url,name in \
-              ("www.alicesoft.com", "アリスソフト"), \
-              ("www.minori.ph", "minori")
+              ("www.alicesoft.com/main.html", "アリスソフト"), \
+              ("www.minori.ph/index_02.html", "minori")
             %div(class="site")
               %a(href="http://#{url}",title="#{url}") #{name}
       .layout-right
         %section
           %h2 あかべぇそふと
           -for url,name in \
-              ("www.akabeesoft3.com", "あかべぇそふとすりぃ"), \
               ("www.akabeesoft2.com", "あかべぇそふとつぅ"), \
-              ("www.akabeesoft2-try.com", "あかべぇそふとつぅTRY"), \
-              ("www.applique-soft.com", "あっぷりけ"), \
+              ("www.akabeesoft2-try.com/top/top.php", "あかべぇそふとつぅTRY"), \
+              ("www.akabeesoft3.com/top.html", "あかべぇそふとすりぃ"), \
+              ("www.applique-soft.com/main.html", "あっぷりけ"), \
               ("www.effordomsoft.com", "エフォルダムソフト"), \
-              ("www.akatsukiworks.com", "暁WORKS"), \
-              ("www.collaborations2005.com", "CollaborationS"), \
-              ("www.hibiki-site.com", "hibiki"),
+              ("www.tigresoft.com/top.htm", "てぃ～ぐる"), \
+              ("www.akatsukiworks.com/top.html", "暁WORKS"), \
+              ("www.collaborations2005.com/index02.html", "CollaborationS"), \
+              ("www.cosmiccute.com/top.html", "COSMIC CUTE"), \
+              ("www.hibiki-site.com/top.html", "hibiki"), \
+              ("www.nostalgicchord.com/top.html", "NostalgicChord"),
             %div(class="site")
               %a(href="http://#{url}",title="#{url}") #{name}
 
