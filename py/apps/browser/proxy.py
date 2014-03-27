@@ -46,7 +46,7 @@ def toproxyurl(url): # QUrl -> QUrl or None
   if url.scheme() == 'http':
     url = QUrl(url)
     host = _normalize_host(url.host())
-    ip = _PROXY_DOMAINS.get(host)
+    ip = _PROXY_DOMAINS.get(host) if _MAINLAND else None
     if ip:
       url.setHost(ip)
     else:
