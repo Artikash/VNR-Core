@@ -50,12 +50,12 @@
       ; http://stackoverflow.com/questions/1964297/split-div-into-2-columns-using-css
       %br(style="clear:both")
       .layout-left
-        ;%section
-        ;  %h2 批評空間
-        ;  -for url,name in \
-        ;      ("erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki", "エロゲ批評空間"),
-        ;    %div(class="site")
-        ;      %a(href="http://#{url}",title="#{url}") #{name}
+        %section
+          %h2 批評空間
+          -for url,name in \
+              ("erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki", "エロゲ批評空間"),
+            %div(class="site")
+              %a(href="http://#{url}",title="#{url}") #{name}
         %section
           %h2 通販サイト
           -for url,name in \
