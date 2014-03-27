@@ -81,6 +81,24 @@ def extract():
   dprint("leave: ok = %s" % ok)
   return ok
 
+## Main ##
+
+def msg():
+  import messages
+  messages.info(
+    name="UniDic",
+    location="Caches/Dictionaries/UniDic",
+    size=UNIDIC_FILESIZE,
+    urls=[
+      'http://sourceforge.jp/projects/unidic',
+      'http://jaist.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip',
+      'http://osdn.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip',
+      'http://distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip',
+      'http://mse.uk.distfiles.macports.org/sites/distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip',
+      'http://sakuradite.org/pub/unidic/unidic-2.1.2.tar.xz',
+    ]
+  )
+
 def main():
   """
   @param  argv  [unicode]
@@ -105,6 +123,7 @@ if __name__ == '__main__':
   if not initrc.lock('unidic.lock'):
     dwarn("multiple instances")
     sys.exit(1)
+  msg()
   ret = main()
   sys.exit(ret)
 

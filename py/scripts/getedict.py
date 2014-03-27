@@ -53,6 +53,8 @@ def get(): # return bool
   dprint("leave: ok = %s" % ok)
   return ok
 
+## Main ##
+
 def main():
   """
   @param  argv  [unicode]

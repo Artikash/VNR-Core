@@ -75,6 +75,20 @@ def extract():
   dprint("leave: ok = %s" % ok)
   return ok
 
+## Main ##
+
+def msg():
+  import messages
+  messages.info(
+    name="IPAdic",
+    location="Caches/Dictionaries/IPAdic",
+    size=IPADIC_FILESIZE,
+    urls=[IPADIC_URL],
+  )
+  #"https://packages.macports.org/mecab-ipadic-utf8",
+  #"https://sourceforge.net/projects/mecab/files/mecab-ipadic",
+  #"https://code.google.com/p/mecab/downloads",
+
 def main():
   """
   @param  argv  [unicode]
@@ -99,6 +113,7 @@ if __name__ == '__main__':
   if not initrc.lock('ipadic.lock'):
     dwarn("multiple instances")
     sys.exit(1)
+  msg()
   ret = main()
   sys.exit(ret)
 

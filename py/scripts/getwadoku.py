@@ -69,6 +69,20 @@ def extract():
   dprint("leave: ok = %s" % ok)
   return ok
 
+## Main ##
+
+def msg():
+  import messages
+  messages.info(
+    name="Wadoku",
+    location="Caches/Dictionaries/Wadoku",
+    size=WADOKU_FILESIZE,
+    urls=[
+      'http://www.wadoku.de/wiki/display/WAD/Downloads+und+Links',
+      WADOKU_URL,
+    ],
+  )
+
 def main():
   """
   @param  argv  [unicode]
@@ -93,6 +107,7 @@ if __name__ == '__main__':
   if not initrc.lock('wadoku.lock'):
     dwarn("multiple instances")
     sys.exit(1)
+  msg()
   ret = main()
   sys.exit(ret)
 

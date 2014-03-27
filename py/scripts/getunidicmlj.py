@@ -74,6 +74,21 @@ def extract():
   dprint("leave: ok = %s" % ok)
   return ok
 
+## Main ##
+
+def msg():
+  import messages
+  messages.info(
+    name="UniDicMLJ",
+    location="Caches/Dictionaries/UniDicMLJ",
+    size=UNIDIC_FILESIZE,
+    urls=[
+      'http://www2.ninjal.ac.jp/lrc/index.php?unidic%2f%b6%e1%c2%e5%ca%b8%b8%ecunidic',
+      'https://docs.google.com/file/d/0byom4wph84qis2q1uu9tbnrdvk0/edit?pli=1',
+      'http://sakuradite.org/pub/unidic-mlj/unidic-mlj-1.3.tar.xz',
+    ]
+  )
+
 def main():
   """
   @param  argv  [unicode]
@@ -98,6 +113,7 @@ if __name__ == '__main__':
   if not initrc.lock('unidicmlj.lock'):
     dwarn("multiple instances")
     sys.exit(1)
+  msg()
   ret = main()
   sys.exit(ret)
 
