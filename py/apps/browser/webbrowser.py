@@ -18,7 +18,7 @@ from network import *
 from tabui import *
 from webkit import *
 from i18n import i18n
-import rc, textutil, ui
+import proxy, rc, textutil, ui
 
 START_HTML = rc.jinja_template('start').render({
   'tr': tr_,
@@ -26,6 +26,12 @@ START_HTML = rc.jinja_template('start').render({
 }) # unicode html
 
 MAX_TITLE_LENGTH = 20
+
+def urltext(url): # unicode|QUrl -> unicode
+  if isinstance(url, QUrl):
+    url = proxy.fromproxyurl(url) or url
+    url = url.toString()
+  return textutil.simplifyurl(url) if url else ''
 
 #class WebBrowser(QtWidgets.QMainWindow):
 class WebBrowser(SkDraggableMainWindow):
@@ -120,7 +126,8 @@ class _WebBrowser(object):
   def tabBar(self):
     ret = WbTabBar()
     skqss.class_(ret, 'webkit')
-    ret.setGraphicsEffect(ui.glowEffect(ret))
+    # FIXME: Enable glowing effect will cause issue for Flash
+    #ret.setGraphicsEffect(ui.glowEffect(ret))
     #ret.doubleClickedAt.connect(self.newTabAfter)
     return ret
 
@@ -210,11 +217,9 @@ class _WebBrowser(object):
     v.load(url)
 
   def addRecentUrl(self, url): # string|QUrl ->
-    if isinstance(url, QUrl):
-      url = url.toString()
-    if url:
-      url = textutil.simplifyurl(url)
-      self.addressEdit.addUrl(url)
+    text = urltext(url)
+    if text:
+      self.addressEdit.addText(text)
 
   def openBlankPage(self):
     if self.tabWidget.isEmpty():
@@ -284,8 +289,9 @@ class _WebBrowser(object):
       self.q.messageReceived.emit(t)
 
   def showLink(self, url, content): # unicode, unicode
-    if url:
-      self.showMessage(textutil.simplifyurl(url))
+    text = urltext(url)
+    if text:
+      self.showMessage(text)
 
   def forward(self):
     w = self.tabWidget.currentWidget()
@@ -332,10 +338,9 @@ class _WebBrowser(object):
     self.showMessage(t)
 
   def setDisplayAddress(self, url):
-    if isinstance(url, QUrl):
-      url = '' if url.isEmpty() else url.toString()
-    url = textutil.simplifyurl(url)
-    self.addressEdit.setUrl(url)
+    text = urltext(url)
+    if text:
+      self.addressEdit.setTextIfInactive(text)
 
   def refreshAddress(self):
     v = self.tabWidget.currentWidget()
