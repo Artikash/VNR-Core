@@ -113,8 +113,8 @@ class _WebBrowser(object):
   def tabWidget(self):
     ret = WbTabWidget()
     skqss.class_(ret, 'webkit')
-    ret.setDocumentMode(True) # only useful on mac
     ret.setTabBar(self.tabBar)
+    ret.setDocumentMode(True) # only useful on mac, must comes after tabbar is set
     ret.setCornerWidget(self.newTabButton)
     ret.tabCloseRequested.connect(self.closeTab)
     ret.currentChanged.connect(self.loadAddress)

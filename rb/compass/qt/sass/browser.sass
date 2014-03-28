@@ -4,15 +4,15 @@
 // Global
 
 $win-background-color: #b9d1ea // light blue, the same as win7 basic background color
+//background: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgb(222, 232, 245), stop:1 rgb(247, 251, 255)) // win7 paint toolbar color
+
+$mac-background-color: #939393 // gray, the same as mac os x
 
 //$hover-border-color: #add8e6 // lightblue
 $hover-border-color: #7da8e6 // bluer, emulate bootstrap border
 
 .texture
   background-image: url('$PWD/images/textures/marble.jpg')
-.background
-  background-color: $win-background-color
-  //background: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgb(222, 232, 245), stop:1 rgb(247, 251, 255)) // win7 paint toolbar color
 
 /** Main */
 
@@ -283,10 +283,17 @@ QMainWindow.main
     +tabwidget-aero-style(black, $hover-border-color, white)
 
   &.win7.notaero,
+  &.winxp
+    background-color: $win-background-color
+
+  &.mac,
+  &.linux
+    background-color: $mac-background-color
+
+  &.win7.notaero,
   &.winxp,
   &.mac,
   &.linux
-    @extend .background
     +main-style(black, white, $hover-border-color)
     +address-style(black, white, $hover-border-color)
     +toolbar-style(black, white, $hover-border-color)
