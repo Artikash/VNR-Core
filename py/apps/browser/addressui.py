@@ -24,7 +24,7 @@ class WbAddressEdit(QtWidgets.QComboBox):
 
     completer = self.completer()
     completer.setCaseSensitivity(Qt.CaseInsensitive)
-    completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
+    completer.setCompletionMode(QtWidgets.QCompleter.UnfilteredPopupCompletion)
     completer.setModelSorting(QtWidgets.QCompleter.CaseInsensitivelySortedModel)
 
   textEntered = Signal(unicode)
