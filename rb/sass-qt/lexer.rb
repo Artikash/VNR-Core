@@ -1,7 +1,7 @@
 # compass-qt/rescue.rb
 # 3/25/2014 jichi
 # Disable error checking
-require_relative 'config'
+#require_relative 'config'
 
 # Enable support qlineargradient
 # https://groups.google.com/forum/#!msg/haml/fg9Pwzb20h4/UFAH3L2wcg4J
@@ -14,6 +14,7 @@ module Sass::Script
       return if sass_special_fun
       #return unless str1 = scan(/((-[\w-]+-)?qlineargradient:[a-z\.]*)\(/i)
       return unless str1 = scan(/((-[\w-]+-)?qlineargradient|expression:[a-z\.]*)\(/i)
+      dprint 'unparsing qlineargradient'
       str2, _ = Sass::Shared.balance(@scanner, ?(, ?), 1)
       c = str2.count("\n")
       old_line = @line

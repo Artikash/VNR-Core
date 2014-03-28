@@ -12,7 +12,7 @@ require_relative 'config'
 #    begin
 #      return sass_check_range(name, range, value, unit)
 #    rescue ArgumentError => msg
-#      puts "jichi: ignore range check exception: #{msg}" if DEBUG
+#      dprint "ignore range check exception: #{msg}"
 #      value = "#{value}%" if value.is_a? Numeric
 #      return value
 #    end
