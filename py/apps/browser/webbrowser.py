@@ -9,7 +9,7 @@ from functools import partial
 from PySide.QtCore import Qt, Signal, QUrl
 from PySide import QtGui
 from Qt5 import QtWidgets
-from sakurakit import skqss
+from sakurakit import skqss, skos
 from sakurakit.skclass import memoizedproperty, Q_Q
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkDraggableMainWindow, shortcut
 from sakurakit.sktr import tr_
@@ -114,7 +114,8 @@ class _WebBrowser(object):
     ret = WbTabWidget()
     skqss.class_(ret, 'webkit')
     ret.setTabBar(self.tabBar)
-    ret.setDocumentMode(True) # only useful on mac, must comes after tabbar is set
+    if skos.MAC:
+      ret.setDocumentMode(True) # only useful on mac, must comes after tabbar is set. This will disable double-click event on tabbar
     ret.setCornerWidget(self.newTabButton)
     ret.tabCloseRequested.connect(self.closeTab)
     ret.currentChanged.connect(self.loadAddress)
