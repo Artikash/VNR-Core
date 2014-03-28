@@ -7,6 +7,7 @@
 # http://sic.no-ammo.org/git/index.cgi/Client.git/blob_plain/HEAD:/modules/qtwin/qtwin.h
 # http://sic.no-ammo.org/git/index.cgi/Client.git/blob_plain/HEAD:/modules/qtwin/qtwin.cpp
 
+## DWM API
 import skos
 if skos.WIN:
   import ctypes
@@ -67,38 +68,35 @@ if skos.WIN:
   #         QApplication::palette().window().color();
   #}
 
+## WindowNotifier
+# Note: This will delay all winEvent!
+
 # EOF
 
-### WindowNotifier ##
-#
 #from Qt5.QtWidgets import QWidget
+#
+#WM_DWMCOMPOSITIONCHANGED = 0x031e
 #
 ## Invisible background window.
 ## Inherit QWidget to access protected winEvent.
-#class DwmWindowNotifier(QWidget):
+#class DwmEventListener(QWidget):
 #
-#  def __init__(self):
-#    self.widgets = set() # [QWidget]
+#  compositionEnabledChanged = Signal()
+#
+#  def __init__(self, parent=None):
+#    super(DwmEventListener, self).__init__(parent)
 #    self.winId() # enforce a valid hwnd
 #
-#  def addWidget(self, w):
-#    """
-#    @param  QWidget
-#    """
-#    self.widgets.add(w)
-#  def removeWidget(self, w):
-#    """
-#    @param  QWidget
-#    """
-#    try: self.widgets.remove(w)
-#    except KeyError: pass
-#
-#  def winEvent(message, result):
+#  def winEvent(self, message, result):
 #    """@reimp @protected
 #    @param  message LPMSG
 #    @param  result LPLONG
 #    @return  bool
 #    """
+#    if  message.message == WM_DWMCOMPOSITIONCHANGED:
+#      self.compositionEnabledChanged.emit()
+#    return super(DwmEventListener, self).winEvent(message, result)
+#
 #    # Not implemented
 #    #Q_ASSERT(message);
 #    #if (!widgets_.empty() &&
@@ -117,5 +115,4 @@ if skos.WIN:
 #    #    w->update();
 #    #  }
 #    #}
-#    return super(WindowNotifier, self).winEvent(message, result)
-#
+
