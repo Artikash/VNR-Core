@@ -113,6 +113,7 @@ class _WebBrowser(object):
   def tabWidget(self):
     ret = WbTabWidget()
     skqss.class_(ret, 'webkit')
+    ret.setDocumentMode(True) # only useful on mac
     ret.setTabBar(self.tabBar)
     ret.setCornerWidget(self.newTabButton)
     ret.tabCloseRequested.connect(self.closeTab)
@@ -145,7 +146,7 @@ class _WebBrowser(object):
   def addressEdit(self):
     ret = WbAddressEdit()
     ret.setGraphicsEffect(ui.glowEffect(ret))
-    skqss.class_(ret, 'webkit address-edit')
+    skqss.class_(ret, 'webkit address')
     # Not sure why that global shortcut does not work
     ret.textEntered.connect(self.openUnknown)
     ret.editTextChanged.connect(self.highlightText)
@@ -166,7 +167,7 @@ class _WebBrowser(object):
   def addressToolBar(self):
     ret = QtWidgets.QToolBar()
     ret.setGraphicsEffect(ui.glowEffect(ret))
-    skqss.class_(ret, 'webkit toolbar-address')
+    skqss.class_(ret, 'webkit toolbar toolbar-nav')
 
     a = ret.addAction(u"\u25c0") # left triangle
     a.triggered.connect(self.back)
