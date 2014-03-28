@@ -18,11 +18,14 @@ class WbAddressEdit(QtWidgets.QComboBox):
     #self.currentIndexChanged.connect(self.enter) # recursion
     self.lineEdit().returnPressed.connect(self.enter)
 
-    self.completer().setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
-
     self.maxCount = 20 # int  maximum number of items
 
     self.setToolTip("Ctrl+L, Alt+D")
+
+    completer = self.completer()
+    completer.setCaseSensitivity(Qt.CaseInsensitive)
+    completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
+    completer.setModelSorting(QtWidgets.QCompleter.CaseInsensitivelySortedModel)
 
   textEntered = Signal(unicode)
 
