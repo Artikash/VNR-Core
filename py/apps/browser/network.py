@@ -54,7 +54,7 @@ class WbNetworkAccessManager(QNetworkAccessManager):
     self.setCache(cache)
 
     # Load cookies
-    jar = WbNetworkCookieJar(rc.COOKIE_LOCATION)
+    jar = WbNetworkCookieJar(rc.COOKIES_LOCATION)
     self.setCookieJar(jar)
 
   # QNetworkReply *createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData = nullptr) override;

@@ -37,7 +37,7 @@ class MainObject(QObject):
     urls = urls[args_offset:]
     if urls:
       w.openUrls(urls)
-    else:
+    elif not w.loadTabs():
       w.openDefaultPage()
 
     # TODO: Remember the last close size

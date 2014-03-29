@@ -77,6 +77,11 @@ QT_STYLESHEETS = APP_YAML['qt']['css'] # [str name]
 
 #QT_QUIT_TIMEOUT = parse_int(APP_YAML['qt']['quitTimeout'])
 
+## History ##
+
+VISIT_HISTORY_SIZE = APP_YAML['app']['visitHistorySize'] # int
+CLOSE_HISTORY_SIZE = APP_YAML['app']['closeHistorySize'] # int
+
 ## User profile ##
 
 # Paths are in str, but will be converted to unicode in rc.py as DIR_USER.
