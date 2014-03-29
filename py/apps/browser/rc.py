@@ -71,10 +71,14 @@ def qss(name):
 # Webkit
 
 from PySide.QtWebKit import QWebSettings
-def url_icon(url): # str|QUrl -> QIcon or None
+def url_icon(url):
+  """
+  @param  str|QUrl
+  @return  QIcon not None
+  """
   if not isinstance(url, QUrl) and '://' not in url:
     url = 'http://' + url
-  return QWebSettings.globalSettings().iconForUrl(url)
+  return QWebSettings.globalSettings().iconForUrl(url) or icon('logo-browser')
 
 # HAML Jinja
 
