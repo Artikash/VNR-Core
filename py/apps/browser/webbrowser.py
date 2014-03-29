@@ -246,10 +246,8 @@ class _WebBrowser(object):
   def loadVisitedUrls(self):
     data = skfileio.readfile(rc.VISIT_HISTORY_LOCATION)
     if data:
-      urls = data.split('\n')
-      self.visitedUrls = urls
-      for url in reversed(urls):
-        self.addressEdit.addItem(url)
+      l = self.visitedUrls = data.split('\n')
+      self.addressEdit.addItems(list(reversed(l)))
     dprint("pass")
 
   def saveVisitedUrls(self):
