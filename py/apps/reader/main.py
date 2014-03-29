@@ -74,6 +74,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def textHook(self):
+    dprint("create text hook")
     from texthook import texthook
     ret = texthook.global_()
     ret.setDebug(config.APP_DEBUG)
@@ -102,6 +103,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def nameManager(self):
+    dprint("create name manager") # Move this upward before kagami
     import nameman
     ret = nameman.manager()
 
@@ -114,6 +116,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def meCabManager(self):
+    dprint("create mecab manager") # Move this upward before kagami
     import mecabman
     ret = mecabman.manager()
 
@@ -135,6 +138,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def proxyManager(self):
+    dprint("create proxy manager")
     import proxy
     ret = proxy.manager()
     ss = settings.global_()
@@ -144,6 +148,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def networkManager(self):
+    dprint("create network manager")
     import netman
     ret = netman.manager()
     ret.setParent(self.q)
@@ -156,6 +161,7 @@ class _MainObject(object):
 
   #@memoizedproperty
   #def cometManager(self):
+  #  dprint("create comet manager")
   #  import cometman
   #  ret = cometman.manager()
   #  ret.setParent(self.q)
@@ -166,6 +172,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def dataManager(self):
+    dprint("create data manager")
     q = self.q
     import dataman
     ret = dataman.manager()
@@ -174,6 +181,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def dictionaryManager(self):
+    dprint("create dictionary manager")
     import dictman
     ret = dictman.manager()
     ss = settings.global_()
@@ -183,6 +191,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def cacheManager(self):
+    dprint("create cache manager")
     import cacheman
     ret = cacheman.manager()
     ret.setParent(self.q)
@@ -200,6 +209,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def gameManager(self):
+    dprint("create game manager")
     import gameman
     ret = gameman.manager()
     ret.setParent(self.q)
@@ -258,6 +268,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def textManager(self):
+    dprint("create text manager")
     import textman
     ret = textman.manager()
     ret.setParent(self.q)
@@ -327,6 +338,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def referenceManager(self):
+    dprint("create reference manager")
     import refman
     ret = refman.manager()
     ret.setParent(self.q)
@@ -337,6 +349,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def trailersManager(self):
+    dprint("create trailers manager")
     import refman
     ret = refman.trailers()
     ret.setParent(self.q)
@@ -347,6 +360,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def gyuttoManager(self):
+    dprint("create gyutto manager")
     import refman
     ret = refman.gyutto()
     ret.setParent(self.q)
@@ -357,6 +371,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def getchuManager(self):
+    dprint("create getchu manager")
     import refman
     ret = refman.getchu()
     ret.setParent(self.q)
@@ -367,6 +382,7 @@ class _MainObject(object):
 
   #@memoizedproperty
   #def scapeManager(self):
+  #  dprint("create scape manager")
   #  import refman
   #  ret = refman.scape()
   #  ret.setParent(self.q)
@@ -378,6 +394,7 @@ class _MainObject(object):
   @memoizedproperty
   def dmmManager(self):
     import refman
+    dprint("create dmm manager")
     ret = refman.dmm()
     ret.setParent(self.q)
     nm = self.networkManager
@@ -387,6 +404,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def termManager(self):
+    dprint("create term manager")
     import termman
     ret = termman.manager()
     #ret.setParent(self.q)
@@ -408,6 +426,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def translatorManager(self):
+    dprint("create translation manager")
     import trman
     ret = trman.manager()
     ret.setParent(self.q)
@@ -497,6 +516,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def coffeeBeanManager(self):
+    dprint("create coffeebean manager")
     import coffeebean
     ret = coffeebean.manager()
     ret.setParent(self.q)
@@ -504,6 +524,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def subtitleEditorManager(self):
+    dprint("create subtitle editor manager")
     import subedit
     ret = subedit.manager()
     #ret.setParent(self.q)
@@ -543,6 +564,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def hotkeyManager(self):
+    dprint("create hotkey manager")
     import hkman
     ret = hkman.manager()
     ret.setParent(self.q)
@@ -550,6 +572,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def ttsManager(self):
+    dprint("create tts manager")
     import ttsman
     ret = ttsman.manager()
     ret.setParent(self.q)
@@ -666,6 +689,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def kagamiWindow(self):
+    dprint("create kagami")
     ret = qmldialog.Kagami(self.topWindow)
     self.widgets.append(ret)
     assert ret.rootObject(), "unless fail to load kagami.qml"
@@ -673,6 +697,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def subtitleMakerDialog(self):
+    #dprint("create subtitle maker")
     ret = qmldialog.SubtitleMaker(self.topWindow)
     self.widgets.append(ret)
 
@@ -1183,71 +1208,36 @@ class MainObject(QObject):
     dprint("show tray icon")
     d.trayIcon.show()
 
-    dprint("create text hook")
     d.textHook # must be after topwindow show up and have a valid winId
-
-    dprint("create proxy manager")
     d.proxyManager
-
-    dprint("create network manager")
     d.networkManager
-
-    #dprint("create comet manager")
     #d.cometManager
-
-    dprint("create coffeebean manager")
     d.coffeeBeanManager
-
-    dprint("create kagami")
     d.kagamiWindow
-
-    #dprint("create subtitle maker")
     #d.subtitleMakerDialog
 
     online = self.isOnline()
     dprint("online = %s" % online)
 
-    dprint("create data manager")
     dm = d.dataManager
-
-    dprint("create text manager")
     tm = d.textManager
-
-    dprint("create game manager")
     gm = d.gameManager
 
-    dprint("create term manager")
     d.termManager
-
-    dprint("create translation manager")
     d.translatorManager
-
-    dprint("create dictionary manager")
     d.dictionaryManager
-
-    dprint("create mecab manager") # Move this upward before kagami
     d.meCabManager
     d.nameManager
-
-    dprint("create reference manager")
     d.referenceManager
     d.trailersManager
     d.dmmManager
     d.getchuManager
     d.gyuttoManager
     #d.scapeManager
-
-    dprint("create cache manager")
     d.cacheManager
     #d.cacheManager.updateAvatar("AQKI6jsmz")
-
-    dprint("create subtitle editor manager")
     d.subtitleEditorManager
-
-    dprint("create hotkey manager")
     d.hotkeyManager
-
-    dprint("create tts manager")
     d.ttsManager
 
     dprint("warm up tts")

@@ -74,19 +74,29 @@ def cdn_path(name):
   @return  unicode
   @throw  KeyError  when unknown name
   """
-  return config.CDN_LOCATIONS[name]
+  return config.CDN[name].replace('$PWD', config.root_abspath())
 
-CDN = {} # {str name:unicode data}
-def cdn(name):
+def cdn_url(name):
+  url = config.CDN[name]
+  if '$PWD' in url:
+    return 'file:///' + url.replace('$PWD', config.root_abspath())
+  else:
+    return url
+  # TODO: cache URL
+  #else:
+  #  return cacheman.cache_url(url)
+
+CDN_DATA = {} # {str name:unicode data}
+def cdn_data(name):
   """
   @param  name  str  id
   @return  unicode
   @throw  KeyError  when unknown name
   """
-  ret = CDN.get(name)
+  ret = CDN_DATA.get(name)
   if not ret:
     from sakurakit import skfileio
-    ret = CDN[name] = skfileio.readfile(cdn_path(name)).replace('$PWD', config.root_abspath())
+    ret = CDN_DATA[name] = skfileio.readfile(cdn_path(name)).replace('$PWD', config.root_abspath())
   return ret
 
 #js = cdn

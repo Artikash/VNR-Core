@@ -7,7 +7,7 @@ __all__ = ['MainObject']
 from PySide.QtCore import QCoreApplication, QObject
 from sakurakit import skevents, skos
 from sakurakit.skdebug import dprint, dwarn, debugmethod
-from sakurakit.skclass import memoizedproperty
+from sakurakit.skclass import Q_Q, memoizedproperty
 from i18n import i18n
 import config
 
@@ -19,7 +19,7 @@ class MainObject(QObject):
   def __init__(self):
     dprint('enter')
     super(MainObject, self).__init__()
-    self.__d = _MainObject()
+    self.__d = _MainObject(self)
     MainObject.instance = self
 
     dprint('leave')
@@ -28,6 +28,10 @@ class MainObject(QObject):
     """Starting point for the entire app"""
     dprint("enter: args =", args)
     d = self.__d
+
+    dprint("create managers")
+    d.beanManager
+    d.jlpManager
 
     dprint("show root window")
     w = d.mainWindow
@@ -72,6 +76,7 @@ class MainObject(QObject):
       self.quit()
 
 # MainObject private data
+@Q_Q
 class _MainObject(object):
   def __init__(self):
     self.hasQuit = False # if the application has quit
@@ -85,6 +90,27 @@ class _MainObject(object):
     import mainwindow
     ret = mainwindow.MainWindow()
     ret.quitRequested.connect(self.quit)
+    return ret
+
+  # Managers
+
+  @memoizedproperty
+  def beanManager(self):
+    dprint("create bean manager")
+    import beans
+    ret = beans.manager()
+    ret.setParent(self.q)
+    return ret
+
+  @memoizedproperty
+  def jlpManager(self):
+    dprint("create jlp manager")
+    import jlpman, settings
+    ret = jlpman.manager()
+
+    reader = settings.reader()
+    ret.setRuby(reader.rubyType())
+    #ret.setRuby(reader.meCabDictionary())
     return ret
 
   ## Actions ##

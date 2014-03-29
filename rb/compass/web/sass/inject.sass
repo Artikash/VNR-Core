@@ -1,0 +1,49 @@
+/* inject.sass
+   3/29/2014 jichi
+
+@import main/cursor
+
+.inject-sentence
+  //a:hover,
+  &:hover
+    .word1
+      background-color: rgba(250,0,0,.15)   // red
+      rt
+        background-color: rgba(250,0,0,.15)
+    .word2
+      background-color: rgba(250,250,0,.15) // yellow
+      rt
+        background-color: rgba(250,250,0,.15)
+    .word3
+      background-color: rgba(0,250,0,.15)   // green
+      rt
+        background-color: rgba(0,250,0,.15)
+    .word4
+      background-color: rgba(0,0,250,.15)   // blue
+      rt
+        background-color: rgba(0,0,250,.15)
+
+  // change font
+  ruby
+    @extend .cursor-pointer
+    //@extend .ja
+    //font-weight: bold
+    //font-size: 18px
+    rt
+      font-size: 70% // default 50% is too small
+  // remove underline for furigana
+  a,
+  a:active,
+  a:focus,
+  a:hover,
+  a:link,
+  a:visited
+    //rt  // does not work
+    text-decoration: none
+  a:active,
+  a:focus,
+  a:hover
+    rb
+      text-decoration: underline
+
+// EOF

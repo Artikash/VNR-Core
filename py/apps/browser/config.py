@@ -137,8 +137,9 @@ IMAGE_LOCATIONS = {k: parse_path(v) # {str name:unicode path}
 CURSOR_LOCATIONS = {k: parse_path(v) # {str name:unicode apspath}
     for k,v in SHARE_YAML['cursors'].iteritems()}
 
-CDN_LOCATIONS = {k: parse_path(v) # {str name:unicode apspath}
-    for k,v in SHARE_YAML['cdn'].iteritems()}
+CDN = SHARE_YAML['cdn']
+#CDN_LOCATIONS = {k: parse_path(v) # {str name:unicode apspath}
+#    for k,v in SHARE_YAML['cdn'].iteritems()}
 
 ## Jinja ##
 

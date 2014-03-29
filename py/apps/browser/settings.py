@@ -46,4 +46,15 @@ class ReaderSettings(QSettings):
   def isMainlandChina(self): return to_bool(self.value('MainlandChina'))
   def isCursorThemeEnabled(self): return to_bool(self.value('CursorThemeEnabled', True))
 
+  def rubyType(self):
+    ret = self.value('FuriganaType', 'hira')
+    if ret == 'hiragana':
+      ret = 'hira'
+    elif ret == 'katagana':
+      ret = 'kata'
+    return ret
+
+  def meCabDictionary(self):
+    return self.value('MeCabDictionary', '') # str
+
 # EOF

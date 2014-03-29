@@ -1,6 +1,9 @@
 # inject.coffee
 # 3/28/2014 jichi
 # Invoked by QWebFrame::evaluaeJavaScript
+# Beans:
+# - jlpBean
+# - ttsBean
 
 
 # Underscore
@@ -62,9 +65,45 @@ trim = (str, chars) ->
   chars = chars or WHITE_SPACES
   ltrim(rtrim(str, chars), chars)
 
-# Injection
+## Render
+
+# %span sentence
+#   %ruby(class=word#{number})
+#     %rb text
+#     %rt ruby
+renderruby = (text, ruby, feature, className) ->
+  rb = document.createElement 'rb'
+  rb.textContent = text
+  rt = document.createElement 'rt'
+  rt.textContent = ruby
+  ret = document.createElement 'ruby'
+  ret.title = feature if feature
+  ret.className = className
+  ret.appendChild rb
+  ret.appendChild rt
+  ret
+
+rendertext = (text) -> # string -> node
+  ret = document.createDocumentFragment()
+
+  data = jlpBean.parse text
+  if data
+    for sentence in JSON.parse data
+      seg = document.createElement 'span'
+      seg.className = 'inject-sentence'
+      for word in sentence
+        #[surf, ruby, feature, className] = word
+        ruby = renderruby.apply @, word
+        seg.appendChild ruby
+      ret.appendChild seg
+    ret
+
+## Inject
 
 itertextnodes = (node, callback) -> # DocumentElement, function(DocumentElement) ->
+  # Note: the first node is not traversed
+  #if node.nodeType is 3
+  #  callback node
   node = node.firstChild
   while node
     if node.nodeType is 3
@@ -73,29 +112,29 @@ itertextnodes = (node, callback) -> # DocumentElement, function(DocumentElement)
       itertextnodes node, callback
     node = node.nextSibling
 
-render = (text) -> # string -> node
-  tpl = document.createElement 'span'
-  tpl.className = 'shiny-letter'
-
-  ret = document.createDocumentFragment()
-  child = tpl.cloneNode true   # Create clone from base
-  child.textContent = 'hello'
-  ret.appendChild child
-
-  ret
-
 # http://stackoverflow.com/questions/9452340/iterating-through-each-text-element-in-a-page
 inject = (el) -> # DocumentElement ->
-
   itertextnodes el, (node) ->
     text = trim node.textContent
     if text
-      repl = render text
-      node.parentNode.replaceChild repl, node
+      repl = rendertext text
+      if repl
+        node.parentNode.replaceChild repl, node
 
-## Main ##
+## Main
+
+linkcss = (url) -> # string -> el  return the inserted element
+  el = document.createElement 'link'
+  #el.type = 'text/css'
+  el.rel = 'stylesheet'
+  el.href = url #+ '.css'
+  document.head.appendChild el
+  el
+
+linkcss cdnBean.url 'inject.css'
 
 #window.onload = ->
+#  inject document.body
 inject document.body
 
 #do ->

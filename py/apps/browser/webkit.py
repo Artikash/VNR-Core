@@ -11,7 +11,7 @@ from Qt5 import QtWidgets
 from sakurakit import skwebkit
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
-import rc
+import beans, rc
 
 ## WbWebView ##
 
@@ -97,6 +97,7 @@ class WbWebPage(skwebkit.SkWebPage):
   def _onLoadFinished(self, success): # bool ->
     self._progress = 100
     if success:
+      self._injectBeans()
       self._injectJavaScript()
 
   def event(self, ev): # override
@@ -160,6 +161,25 @@ class WbWebPage(skwebkit.SkWebPage):
   ## JavaScript
 
   def _injectJavaScript(self):
-    self.mainFrame().evaluateJavaScript(rc.cdn('inject'))
+    self.mainFrame().evaluateJavaScript(rc.cdn_data('inject'))
+
+  def _injectBeans(self):
+    f = self.mainFrame()
+    #f.addToJavaScriptWindowObject('bean', self._webBean)
+    for name,obj in self._iterbeans():
+      f.addToJavaScriptWindowObject(name, obj)
+
+  @staticmethod
+  def _iterbeans():
+    """
+    return  [(unicode name, QObject bean)]
+    """
+    import beans
+    m = beans.manager()
+    return (
+      ('cdnBean', m.cdnBean),
+      ('jlpBean', m.jlpBean),
+      ('ttsBean', m.ttsBean),
+    )
 
 # EOF
