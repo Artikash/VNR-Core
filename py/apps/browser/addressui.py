@@ -16,8 +16,9 @@ class WbAddressEdit(QtWidgets.QComboBox):
     self.__d = _WbAddressEdit(self)
     self.setInsertPolicy(QtWidgets.QComboBox.InsertAtTop)
     self.setEditable(True)
+
     #self.currentIndexChanged.connect(self.enter) # recursion
-    self.lineEdit().returnPressed.connect(self.enter)
+    #self.lineEdit().returnPressed.connect(self.enter)
 
     self.maxCount = config.ADDRESS_HISTORY_SIZE
 
@@ -30,18 +31,15 @@ class WbAddressEdit(QtWidgets.QComboBox):
 
   textEntered = Signal(unicode)
 
-  def enter(self):
-    t = self.currentText().strip()
-    if t:
-      self.textEntered.emit(t)
+  #def enter(self):
+  #  t = self.currentText().strip()
+  #  if t:
+  #    self.setText(t)
+  #    self.textEntered.emit(t)
 
   def focus(self):
     self.setFocus()
     self.lineEdit().selectAll()
-
-  #def setTextIfInactive(self, text): # unicode ->
-  #  if not self.hasFocus():
-  #    self.setEditText(text)
 
   def setText(self, text): # unicode ->
     self.addText(text)
@@ -70,12 +68,15 @@ class _WbAddressEdit(object):
   def __init__(self, q):
     self.progress = 100 # int [0,100]
 
+    # Enter-pressed or clicked
     q.activated[int].connect(self._activate)
 
   def _activate(self, index):
     q = self.q
     text = q.itemText(index)
     if text:
+      q.setText(text)
+      q.setEditText(text) # enforce current text
       q.textEntered.emit(text)
 
   def refreshPallete(self):
