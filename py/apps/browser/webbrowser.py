@@ -483,8 +483,6 @@ class _WebBrowser(object):
   def refreshWindowIcon(self):
     icon = self.currentTabIcon()
     self.addressEdit.setItemIcon(0, icon)
-    if not icon:
-      icon = rc.icon('logo-browser')
     self.q.setWindowIcon(icon)
 
   def refreshLoadProgress(self):
