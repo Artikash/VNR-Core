@@ -144,7 +144,8 @@ Item { id: root_
   //property color styleColor: 'deepskyblue'
 
   // Shadow
-  Share.FadingRectangle { id: floatingRect_
+  //Share.FadingRectangle { id: floatingRect_ // Remove the fade animation
+  Rectangle { id: floatingRect_
     anchors {
       left: parent.left
       verticalCenter: parent.verticalCenter
