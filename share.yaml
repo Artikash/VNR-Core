@@ -114,12 +114,12 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   haml: $PWD/../AJAX/npm/haml.min.js
 
   # Sass & coffeescript
-  choco: $PWD/coffee/choco.min.js
-  game: $PWD/coffee/game.min.js
+  choco: $PWD/coffee/reader/choco.min.js
+  game: $PWD/coffee/reader/game.min.js
   game.css: $PWD/rb/compass/web/css/game.min.css
-  gameboard: $PWD/coffee/gameboard.min.js
+  gameboard: $PWD/coffee/reader/gameboard.min.js
   gameboard.css: $PWD/rb/compass/web/css/gameboard.min.css
-  widgets: $PWD/coffee/widgets.min.js
+  widgets: $PWD/coffee/reader/widgets.min.js
   amazon.css: $PWD/rb/compass/web/css/amazon.min.css
   getchu.css: $PWD/rb/compass/web/css/getchu.min.css
   gyutto.css: $PWD/rb/compass/web/css/gyutto.min.css
@@ -128,6 +128,9 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   dragdealer.css: $PWD/rb/compass/web/css/dragdealer.min.css
   metro.css: $PWD/rb/compass/web/css/metro.min.css
   #iframe.css: $PWD/rb/compass/web/css/iframe.min.css
+
+  # Browser
+  inject: $PWD/coffee/browser/inject.min.js
 
 # Qt
 

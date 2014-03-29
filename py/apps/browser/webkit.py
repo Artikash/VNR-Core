@@ -90,9 +90,14 @@ class WbWebPage(skwebkit.SkWebPage):
   def isLoading(self): return self._progress < 100
   def isFinished(self): return self._progress == 100
 
-  def _onLoadProgress(self, value): self._progress = value # int ->
-  def _onLoadStarted(self): self._progress = 0
-  def _onLoadFinished(self, success): self._progress = 100
+  def _onLoadProgress(self, value):
+    self._progress = value # int ->
+  def _onLoadStarted(self):
+    self._progress = 0
+  def _onLoadFinished(self, success): # bool ->
+    self._progress = 100
+    if success:
+      self._injectJavaScript()
 
   def event(self, ev): # override
     if (ev.type() == QEvent.MouseButtonRelease and
@@ -105,6 +110,8 @@ class WbWebPage(skwebkit.SkWebPage):
 
   def openUrl(self, url): # QUrl
     self.mainFrame().load(url)
+
+  ## Extensions
 
   # bool supportsExtension(Extension extension) const
   def supportsExtension(self, extension): # override
@@ -149,5 +156,10 @@ class WbWebPage(skwebkit.SkWebPage):
   #  # Get rid of app name from user agent
   #  ret = super(WbWebPage, self).userAgentForUrl(url)
   #  return re.sub(r" \\S+ Safari/", " Safari/", ret)
+
+  ## JavaScript
+
+  def _injectJavaScript(self):
+    self.mainFrame().evaluateJavaScript(rc.cdn('inject'))
 
 # EOF

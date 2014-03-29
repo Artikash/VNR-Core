@@ -68,6 +68,29 @@ def qss(name):
   from sakurakit import skfileio
   return skfileio.readfile(qss_path(name)).replace('$PWD', config.root_abspath())
 
+def cdn_path(name):
+  """
+  @param  name  str  id
+  @return  unicode
+  @throw  KeyError  when unknown name
+  """
+  return config.CDN_LOCATIONS[name]
+
+CDN = {} # {str name:unicode data}
+def cdn(name):
+  """
+  @param  name  str  id
+  @return  unicode
+  @throw  KeyError  when unknown name
+  """
+  ret = CDN.get(name)
+  if not ret:
+    from sakurakit import skfileio
+    ret = CDN[name] = skfileio.readfile(cdn_path(name)).replace('$PWD', config.root_abspath())
+  return ret
+
+#js = cdn
+
 # Webkit
 
 from PySide.QtWebKit import QWebSettings

@@ -1,26 +1,19 @@
 # Makefile
 # 8/8/2013 jichi
 
-all: Makefile compress
+# http://lackof.org/taggart/hacking/make-example/
+SUBDIRS = browser reader
 
-ifeq ($(OS),Windows_NT)
-  COFFEE = coffee
-  CLOSURE = closure.cmd
-else
-  COFFEE = coffee
-  #CLOSURE = closure --compilation_level ADVANCED_OPTIMIZATIONS
-  CLOSURE = closure
-endif
+.PHONY: all $(SUBDIRS)
 
-compress: $(wildcard *.min.js)
-compile: $(wildcard *.js)
+all: $(SUBDIRS)
 
-%.min.js: %.js
-	$(CLOSURE) --js $^ --js_output_file $@
-
-%.js: %.coffee
-	$(COFFEE) -c $^
+$(SUBDIRS):
+	$(MAKE) -C $@
 
 clean:
+	@for it in $(SUBDIRS); do \
+	$(MAKE) -C $$it $@; \
+	done
 
 # EOF
