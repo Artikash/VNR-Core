@@ -324,7 +324,10 @@ class _WebBrowser(object):
     self.addRecentUrl(url)
     if self.tabWidget.isEmpty():
       self.newTabAfterCurrent(focus=focus)
-    v = self.tabWidget.currentWidget()
+      v = self.tabWidget.currentWidget()
+    else:
+      v = self.tabWidget.currentWidget()
+      v.stop()
     v.load(url)
 
   def openUrlBeforeCurrent(self, url, focus=True): # string ->
