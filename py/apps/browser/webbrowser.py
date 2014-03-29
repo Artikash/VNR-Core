@@ -146,6 +146,7 @@ class _WebBrowser(object):
     ret.currentChanged.connect(self.loadAddress)
     ret.currentChanged.connect(self.refreshLoadProgress)
     ret.currentChanged.connect(self.refreshWindowTitle)
+    ret.currentChanged.connect(self.refreshWindowIcon)
     ret.doubleClicked.connect(self.newTabAtLastWithBlankPage)
     return ret
 
@@ -233,24 +234,29 @@ class _WebBrowser(object):
     urls = [] # [unicode url]
     for i in xrange(w.count()):
       v = w.widget(i)
-      url = _urltext(v.url())
+      url = v.url().toString()
       if url != EMPTY_URL:
         urls.append(url)
+    path = rc.TABS_LOCATION
     if urls:
       data = '\n'.join(urls)
-      path = rc.TABS_LOCATION
       ret = skfileio.writefile(path, data)
+    else:
+      skfileio.removefile(path)
     dprint("pass: ret = %s" % ret)
     return ret
 
   def loadVisitedUrls(self):
     data = skfileio.readfile(rc.VISIT_HISTORY_LOCATION)
     if data:
-      l = self.visitedUrls = data.split('\n')
-      self.addressEdit.addItems(list(reversed(l)))
+      self.visitedUrls = data.split('\n')
+      for url in reversed(self.visitedUrls):
+        icon = rc.url_icon(url)
+        self.addressEdit.addItem(icon, url)
     dprint("pass")
 
   def saveVisitedUrls(self):
+    path = rc.VISIT_HISTORY_LOCATION
     if self.visitedUrls:
       from sakurakit import skcontainer
       l = skcontainer.uniquelist(reversed(self.visitedUrls))
@@ -258,8 +264,9 @@ class _WebBrowser(object):
         del l[config.VISIT_HISTORY_SIZE:]
       l.reverse()
       data = '\n'.join(l)
-      path = rc.VISIT_HISTORY_LOCATION
       skfileio.writefile(path, data)
+    #else: # never not remove old history
+    #  skfileio.removefile(path)
     dprint("pass")
 
   def loadClosedUrls(self):
@@ -339,8 +346,12 @@ class _WebBrowser(object):
   def addRecentUrl(self, url): # string|QUrl ->
     text = _urltext(url)
     if text:
-      self.visitedUrls.append(text)
+      if text != EMPTY_URL:
+        self.visitedUrls.append(text)
       self.addressEdit.addText(text)
+
+      #urltext = url.toString() if isinstance(url, QUrl) else url
+      #self.visitedUrls.append(urltext)
 
   def openBlankPage(self):
     if self.tabWidget.isEmpty():
@@ -414,6 +425,10 @@ class _WebBrowser(object):
     ret.linkClicked.connect(lambda url:
         url.isEmpty() or self.setDisplayAddress(url))
 
+    ret.iconChanged.connect(partial(lambda view:
+        view == self.tabWidget.currentWidget() and self.refreshWindowIcon(),
+        ret))
+
     ret.titleChanged.connect(partial(lambda view, value:
         view == self.tabWidget.currentWidget() and self.refreshWindowTitle(),
         ret))
@@ -444,17 +459,30 @@ class _WebBrowser(object):
     if w:
       w.reload()
 
-  def tabTitle(self, index=-1): # int -> unicode
-    w = self.tabWidget
-    if index == -1:
-      index = w.currentIndex()
-    return w.tabToolTip(index) if index >=0 and index < w.count() else ''
+  def currentTabTitle(self): # -> unicode
+    w = self.tabWidget.currentWidget()
+    return w.title() if w else ''
+
+  def currentTabIcon(self): # int -> unicode
+    w = self.tabWidget.currentWidget()
+    if w:
+      icon = w.icon()
+      if not icon:
+        icon = rc.url_icon(w.url())
+      return icon
 
   def refreshWindowTitle(self):
-    t = self.tabTitle()
+    t = self.currentTabTitle()
     if not t:
       t = u"Kagami (α)"
     self.q.setWindowTitle(t)
+
+  def refreshWindowIcon(self):
+    icon = self.currentTabIcon()
+    self.addressEdit.setItemIcon(0, icon)
+    if not icon:
+      icon = rc.icon('logo-browser')
+    self.q.setWindowIcon(icon)
 
   def refreshLoadProgress(self):
     v = self.loadProgress
@@ -478,7 +506,8 @@ class _WebBrowser(object):
   def setDisplayAddress(self, url):
     text = _urltext(url)
     #if text:
-    self.addressEdit.setEditText(text)
+    #self.addressEdit.setEditText(text)
+    self.addressEdit.setText(text)
 
   def refreshAddress(self):
     v = self.tabWidget.currentWidget()
@@ -500,6 +529,7 @@ class _WebBrowser(object):
         self.tabWidget.removeTab(index)
         w.clear()
 
+        #url = url.toString()
         url = _urltext(url)
         if url != EMPTY_URL:
           self.closedUrls.append(url)

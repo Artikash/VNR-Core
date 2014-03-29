@@ -14,8 +14,9 @@ version:
 
 app:
   debug: false
-  visitHistorySize: 20
-  closeHistorySize: 20
+  addressHistorySize: 20    # max number of items in address edit
+  closeHistorySize: 20  # max number of saved closed tabs
+  visitHistorySize: 20  # max number of saved visited urls
 
 qt:
   #metaCallPort: 6104    # IPC QMetaCall listening port (6100 + app.id)

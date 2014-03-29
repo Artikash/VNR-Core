@@ -8,6 +8,7 @@ from PySide import QtGui
 from PySide.QtCore import Qt, Signal
 from Qt5 import QtWidgets
 from sakurakit.skclass import Q_Q
+import config, rc
 
 class WbAddressEdit(QtWidgets.QComboBox):
   def __init__(self, parent=None):
@@ -18,7 +19,7 @@ class WbAddressEdit(QtWidgets.QComboBox):
     #self.currentIndexChanged.connect(self.enter) # recursion
     self.lineEdit().returnPressed.connect(self.enter)
 
-    self.maxCount = 20 # int  maximum number of items
+    self.maxCount = config.ADDRESS_HISTORY_SIZE
 
     self.setToolTip("Ctrl+L, Alt+D")
 
@@ -42,11 +43,18 @@ class WbAddressEdit(QtWidgets.QComboBox):
   #  if not self.hasFocus():
   #    self.setEditText(text)
 
+  def setText(self, text): # unicode ->
+    self.addText(text)
+    #self.setEditText(text)
+    self.setCurrentIndex(0)
+
   def addText(self, text): # unicode ->
     index = self.findText(text)
     if index >= 0:
       self.removeItem(index)
-    self.insertItem(0, text) # FIXME: This will change current item!
+
+    icon = rc.url_icon(text)
+    self.insertItem(0, icon, text) # Note: This will change current item!
     if self.count() > self.maxCount:
       self.removeItem(self.maxCount)
 
@@ -54,15 +62,23 @@ class WbAddressEdit(QtWidgets.QComboBox):
     d = self.__d
     if d.progress != v:
       d.progress = v
-      d.refrehPallete()
+      d.refreshPallete()
 
 @Q_Q
 class _WbAddressEdit(object):
 
-  def __init__(self):
+  def __init__(self, q):
     self.progress = 100 # int [0,100]
 
-  def refrehPallete(self):
+    q.activated[int].connect(self._activate)
+
+  def _activate(self, index):
+    q = self.q
+    text = q.itemText(index)
+    if text:
+      q.textEntered.emit(text)
+
+  def refreshPallete(self):
     q = self.q
     if self.progress == 100:
       q.setStyleSheet(q.styleSheet()) # invalidate pallete
