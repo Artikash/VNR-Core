@@ -17,7 +17,9 @@ DIR_CACHE_HISTORY = DIR_USER_CACHE + '/history' # $user/caches/history
 DIR_CACHE_NETMAN = DIR_USER_CACHE + '/netman'   # $user/caches/netman
 DIR_CACHE_WEBKIT = DIR_USER_CACHE + '/webkit'   # $user/caches/webkit
 
-COOKIE_LOCATION = DIR_CACHE_HISTORY + '/cookies' # $user/caches/netman/cookies
+COOKIES_LOCATION = DIR_CACHE_HISTORY + '/cookies'    # $user/caches/history/cookies
+TABS_LOCATION = DIR_CACHE_HISTORY + '/tabs.txt'     # $user/caches/history/tabs.txt
+HISTORY_LOCATION = DIR_CACHE_HISTORY + '/address.txt' # $user/caches/history/address.txt
 
 # Image locations
 

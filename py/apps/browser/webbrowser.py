@@ -9,8 +9,9 @@ from functools import partial
 from PySide.QtCore import Qt, Signal, QUrl
 from PySide import QtGui
 from Qt5 import QtWidgets
-from sakurakit import skqss, skos
+from sakurakit import skfileio, skqss, skos
 from sakurakit.skclass import memoizedproperty, Q_Q
+from sakurakit.skdebug import dprint
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkDraggableMainWindow, shortcut
 from sakurakit.sktr import tr_
 from addressui import *
@@ -27,7 +28,7 @@ START_HTML = rc.jinja_template('start').render({
 
 MAX_TITLE_LENGTH = 20
 
-def urltext(url): # unicode|QUrl -> unicode
+def _urltext(url): # unicode|QUrl -> unicode
   if isinstance(url, QUrl):
     url = proxy.fromproxyurl(url) or url
     url = url.toString()
@@ -63,8 +64,11 @@ class WebBrowser(SkDraggableMainWindow):
 
   def openUrls(self, urls): # [unicode url]
     for url in urls:
-      self.__d.openUnknown(url)
+      self.__d.openUnknownAfterCurrent(url)
       #self.__d.openUrl(url)
+
+  def loadTabs(self): # -> bool
+    return self.__d.loadTabs()
 
 @Q_Q
 class _WebBrowser(object):
@@ -88,7 +92,16 @@ class _WebBrowser(object):
 
     self._createShortcuts()
 
+    from PySide.QtCore import QCoreApplication
+    qApp = QCoreApplication.instance()
+    qApp.aboutToQuit.connect(self._onQuit)
+
     #self.newTabAfterCurrentWithBlankPage()
+
+  def _onQuit(self):
+    dprint("enter")
+    self.saveTabs()
+    dprint("exit")
 
   def _createShortcuts(self):
     q = self.q
@@ -184,6 +197,35 @@ class _WebBrowser(object):
     a.setToolTip("%s (Ctrl+R)" % tr_("Refresh"))
     return ret
 
+  ## Load/save ##
+
+  def loadTabs(self): # -> bool
+    ret = False
+    data = skfileio.readfile(rc.TABS_LOCATION)
+    if data:
+      urls = data.split('\n')
+      for url in urls:
+        self.openUnknownAfterCurrent(url)
+      ret = True
+    dprint("pass: ret = %s" % ret)
+    return ret
+
+  def saveTabs(self): # -> bool
+    ret = False
+    w = self.tabWidget
+    urls = [] # [unicode url]
+    for i in xrange(w.count()):
+      v = w.widget(i)
+      url = _urltext(v.url())
+      if url != "about:blank":
+        urls.append(url)
+    if urls:
+      data = '\n'.join(urls)
+      path = rc.TABS_LOCATION
+      ret = skfileio.writefile(path, data)
+    dprint("pass: ret = %s" % ret)
+    return ret
+
   ## Actions ##
 
   def highlightText(self, t):
@@ -199,6 +241,13 @@ class _WebBrowser(object):
     """
     url = textutil.completeurl(text)
     self.openUrl(url)
+
+  def openUnknownAfterCurrent(self, text): # string ->
+    """
+    @param  text  unicode
+    """
+    url = textutil.completeurl(text)
+    self.openUrlAfterCurrent(url)
 
   def openUrl(self, url, focus=True): # string ->
     """
@@ -219,7 +268,7 @@ class _WebBrowser(object):
     v.load(url)
 
   def addRecentUrl(self, url): # string|QUrl ->
-    text = urltext(url)
+    text = _urltext(url)
     if text:
       self.addressEdit.addText(text)
 
@@ -291,7 +340,7 @@ class _WebBrowser(object):
       self.q.messageReceived.emit(t)
 
   def showLink(self, url, content): # unicode, unicode
-    text = urltext(url)
+    text = _urltext(url)
     if text:
       self.showMessage(text)
 
@@ -340,7 +389,7 @@ class _WebBrowser(object):
     self.showMessage(t)
 
   def setDisplayAddress(self, url):
-    text = urltext(url)
+    text = _urltext(url)
     #if text:
     self.addressEdit.setEditText(text)
 
