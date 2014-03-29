@@ -5,6 +5,7 @@
 
 import os
 import jinja2
+from PySide.QtCore import QUrl
 from sakurakit import skos, skpaths
 import config
 
@@ -47,7 +48,6 @@ def image_url(name):
   @return  unicode
   @throw  KeyError  when unknown name
   """
-  from PySide.QtCore import QUrl
   return QUrl.fromLocalFile(
       os.path.abspath(image_path(name))).toString()
 
@@ -67,6 +67,14 @@ def qss(name):
   """
   from sakurakit import skfileio
   return skfileio.readfile(qss_path(name)).replace('$PWD', config.root_abspath())
+
+# Webkit
+
+from PySide.QtWebKit import QWebSettings
+def url_icon(url): # str|QUrl -> QIcon or None
+  if not isinstance(url, QUrl) and '://' not in url:
+    url = 'http://' + url
+  return QWebSettings.globalSettings().iconForUrl(url)
 
 # HAML Jinja
 

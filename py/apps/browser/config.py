@@ -81,6 +81,7 @@ QT_STYLESHEETS = APP_YAML['qt']['css'] # [str name]
 
 VISIT_HISTORY_SIZE = APP_YAML['app']['visitHistorySize'] # int
 CLOSE_HISTORY_SIZE = APP_YAML['app']['closeHistorySize'] # int
+ADDRESS_HISTORY_SIZE = APP_YAML['app']['addressHistorySize'] # int
 
 ## User profile ##
 
