@@ -19,7 +19,7 @@ from network import *
 from tabui import *
 from webkit import *
 from i18n import i18n
-import proxy, rc, textutil, ui
+import config, proxy, rc, textutil, ui
 
 START_HTML = rc.jinja_template('start').render({
   'tr': tr_,
@@ -27,6 +27,8 @@ START_HTML = rc.jinja_template('start').render({
 }) # unicode html
 
 MAX_TITLE_LENGTH = 20
+
+EMPTY_URL = "about:blank"
 
 def _urltext(url): # unicode|QUrl -> unicode
   if isinstance(url, QUrl):
@@ -75,6 +77,9 @@ class _WebBrowser(object):
   def __init__(self, q):
     self.loadProgress = 100 # int [0,100]
 
+    self.visitedUrls = [] # [str url]
+    self.closedUrls = [] # [str url]
+
     #layout = QtWidgets.QVBoxLayout()
     #layout.addWidget(self.addressWidget)
     #layout.addWidget(self.tabWidget)
@@ -98,14 +103,21 @@ class _WebBrowser(object):
 
     #self.newTabAfterCurrentWithBlankPage()
 
+    self.loadVisitedUrls()
+    self.loadClosedUrls()
+
   def _onQuit(self):
     dprint("enter")
     self.saveTabs()
+    self.saveVisitedUrls()
+    self.saveClosedUrls()
     dprint("exit")
 
   def _createShortcuts(self):
     q = self.q
     shortcut(QtGui.QKeySequence.AddTab, self.newTabAfterCurrentWithBlankPage, parent=q)
+
+    shortcut('ctrl+shift+t', self.undoCloseTab, parent=q)
 
     shortcut('ctrl+w', self.closeCurrentTab, parent=q)
     for k in 'ctrl+l', 'alt+d':
@@ -195,6 +207,11 @@ class _WebBrowser(object):
     a = ret.addAction(u"◯") # まる
     a.triggered.connect(self.refresh)
     a.setToolTip("%s (Ctrl+R)" % tr_("Refresh"))
+
+    #a = ret.addAction(u"\u238c")
+    a = ret.addAction(u"←") # ひだり
+    a.triggered.connect(self.undoCloseTab)
+    a.setToolTip("%s (Ctrl+Shift+T)" % i18n.tr("Undo close tab"))
     return ret
 
   ## Load/save ##
@@ -217,7 +234,7 @@ class _WebBrowser(object):
     for i in xrange(w.count()):
       v = w.widget(i)
       url = _urltext(v.url())
-      if url != "about:blank":
+      if url != EMPTY_URL:
         urls.append(url)
     if urls:
       data = '\n'.join(urls)
@@ -225,6 +242,45 @@ class _WebBrowser(object):
       ret = skfileio.writefile(path, data)
     dprint("pass: ret = %s" % ret)
     return ret
+
+  def loadVisitedUrls(self):
+    data = skfileio.readfile(rc.VISIT_HISTORY_LOCATION)
+    if data:
+      urls = data.split('\n')
+      self.visitedUrls = urls
+      for url in reversed(urls):
+        self.addressEdit.addItem(url)
+    dprint("pass")
+
+  def saveVisitedUrls(self):
+    if self.visitedUrls:
+      from sakurakit import skcontainer
+      l = skcontainer.uniquelist(reversed(self.visitedUrls))
+      if len(l) > config.VISIT_HISTORY_SIZE:
+        del l[config.VISIT_HISTORY_SIZE:]
+      l.reverse()
+      data = '\n'.join(l)
+      path = rc.VISIT_HISTORY_LOCATION
+      skfileio.writefile(path, data)
+    dprint("pass")
+
+  def loadClosedUrls(self):
+    data = skfileio.readfile(rc.CLOSE_HISTORY_LOCATION)
+    if data:
+      self.closedUrls = data.split('\n')
+    dprint("pass")
+
+  def saveClosedUrls(self):
+    path = rc.CLOSE_HISTORY_LOCATION
+    if self.closedUrls:
+      l = self.closedUrls
+      if len(l) > config.CLOSE_HISTORY_SIZE:
+        l = l[len(l) - config.CLOSE_HISTORY_SIZE:]
+      data = '\n'.join(l)
+      skfileio.writefile(path, data)
+    else:
+      skfileio.removefile(path)
+    dprint("pass")
 
   ## Actions ##
 
@@ -241,6 +297,13 @@ class _WebBrowser(object):
     """
     url = textutil.completeurl(text)
     self.openUrl(url)
+
+  def openUnknownBeforeCurrent(self, text): # string ->
+    """
+    @param  text  unicode
+    """
+    url = textutil.completeurl(text)
+    self.openUrlBeforeCurrent(url)
 
   def openUnknownAfterCurrent(self, text): # string ->
     """
@@ -259,6 +322,14 @@ class _WebBrowser(object):
     v = self.tabWidget.currentWidget()
     v.load(url)
 
+  def openUrlBeforeCurrent(self, url, focus=True): # string ->
+    """
+    @param  url  unicode
+    """
+    self.addRecentUrl(url)
+    v = self.newTabBeforeCurrent(focus=focus)
+    v.load(url)
+
   def openUrlAfterCurrent(self, url, focus=False): # string ->
     """
     @param  url  unicode
@@ -270,6 +341,7 @@ class _WebBrowser(object):
   def addRecentUrl(self, url): # string|QUrl ->
     text = _urltext(url)
     if text:
+      self.visitedUrls.append(text)
       self.addressEdit.addText(text)
 
   def openBlankPage(self):
@@ -285,6 +357,12 @@ class _WebBrowser(object):
       #  ui->addressEdit->setCurrentIndex(i);
       #ui->addressEdit->setIcon(WBRC_IMAGE_APP);
 
+  def undoCloseTab(self):
+    if self.closedUrls:
+      url = self.closedUrls[-1]
+      del self.closedUrls[-1]
+      self.openUnknownBeforeCurrent(url)
+
   def activateTab(self, index): # int ->
     if index >=0 and index < self.tabWidget.count():
       self.tabWidget.setCurrentIndex(index)
@@ -297,6 +375,9 @@ class _WebBrowser(object):
     self.newTabAtLast()
     self.openBlankPage()
 
+  def newTabBeforeCurrent(self, focus=True): # -> webview
+    return self.newTabBefore(index=self.tabWidget.currentIndex(), focus=focus)
+
   def newTabAfterCurrent(self, focus=True): # -> webview
     return self.newTabAfter(index=self.tabWidget.currentIndex(), focus=focus)
 
@@ -304,8 +385,16 @@ class _WebBrowser(object):
     return self.newTabAfter(index=self.tabWidget.count() -1, focus=focus)
 
   def newTabAfter(self, index, focus=True): # -> webview
+    index += 1
+    index = min(max(0, index), self.tabWidget.count())
     w = self.createWebView()
-    self.tabWidget.newTab(w, index=index+1, focus=focus)
+    self.tabWidget.newTab(w, index=index, focus=focus)
+    return w
+
+  def newTabBefore(self, index, focus=True): # -> webview
+    index = min(max(0, index), self.tabWidget.count())
+    w = self.createWebView()
+    self.tabWidget.newTab(w, index=index, focus=focus)
     return w
 
   def _createWindow(self, type): # QWebPage::WebWindowType -> QWebView
@@ -409,9 +498,13 @@ class _WebBrowser(object):
     else:
       if index >= 0 and index < self.tabWidget.count():
         w = self.tabWidget.widget(index)
+        url = w.url()
         self.tabWidget.removeTab(index)
-        #w.stop() # does not work!
         w.clear()
+
+        url = _urltext(url)
+        if url != EMPTY_URL:
+          self.closedUrls.append(url)
 
   def closeCurrentTab(self):
     self.closeTab(self.tabWidget.currentIndex())

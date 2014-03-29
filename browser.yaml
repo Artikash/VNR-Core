@@ -10,10 +10,12 @@ version:
   name: browser
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1395942302
+  timestamp: 1396067668
 
 app:
   debug: false
+  visitHistorySize: 20
+  closeHistorySize: 20
 
 qt:
   #metaCallPort: 6104    # IPC QMetaCall listening port (6100 + app.id)
