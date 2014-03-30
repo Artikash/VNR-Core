@@ -13,7 +13,7 @@ class JlpManager:
   def __init__(self):
     self.__d = _JlpManager()
 
-  def isEnabled(self):
+  def isAvailable(self):
     return bool(self.__d.mecabdic and self.__d.tagger())
 
   def setRubyType(self, v):

@@ -7,6 +7,9 @@
 # - jlpBean
 # - ttsBean
 
+# Make sure this script is only evaluated once
+return if @injected
+@injected = true
 
 # Underscore
 
@@ -142,20 +145,17 @@ linkcss = (url) -> # string -> el  return the inserted element
   document.head.appendChild el
   el
 
-linkcss cdnBean.url 'inject.css'
-
-#window.onload = ->
-#  inject document.body
-#inject document.body
-
 do ->
+  linkcss cdnBean.url 'inject.css'
+  if document.body?
+    inject document.body
+  else
+    window.onload = -> inject document.body
   #if @$
   #  $ ->
   #    #// jQuery plugin, example:
   #    $.fn.inject = ->
   #        @each -> inject @
   #    $('body').inject()
-  #else
-  inject document.body
 
 # EOF

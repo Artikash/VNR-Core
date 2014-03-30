@@ -34,6 +34,12 @@ class Settings(QSettings):
   def setReaderActivated(self, value): self.setValue("ReaderActivated", value)
   def isReaderActivated(self): return to_bool(self.value("ReaderActivated", True))
 
+  def setMeCabEnabled(self, value): self.setValue("MeCabEnabled", value)
+  def isMeCabEnabled(self): return to_bool(self.value("MeCabEnabled"))
+
+  def setTtsEnabled(self, value): self.setValue("TtsEnabled", value)
+  def isTtsEnabled(self): return to_bool(self.value("TtsEnabled"))
+
 class ReaderSettings(QSettings):
 
   def __init__(self):

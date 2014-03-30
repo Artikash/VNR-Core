@@ -4,7 +4,7 @@
 
 __all__ = ['WebBrowser']
 
-import re
+import re, weakref
 from functools import partial
 from PySide.QtCore import Qt, Signal, QUrl
 from PySide import QtGui
@@ -19,7 +19,7 @@ from network import *
 from tabui import *
 from webkit import *
 from i18n import i18n
-import config, proxy, rc, textutil, ui
+import config, proxy, rc, settings, textutil, ui
 
 START_HTML = rc.jinja_template('start').render({
   'tr': tr_,
@@ -162,8 +162,9 @@ class _WebBrowser(object):
   @memoizedproperty
   def addressWidget(self):
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(self.addressToolBar)
+    row.addWidget(self.navigationToolBar)
     row.addWidget(self.addressEdit, 1)
+    row.addWidget(self.optionToolBar)
     row.setContentsMargins(2, 2, 2, 2)
     ret = QtWidgets.QWidget()
     ret.setLayout(row)
@@ -191,7 +192,7 @@ class _WebBrowser(object):
     return ret
 
   @memoizedproperty
-  def addressToolBar(self):
+  def navigationToolBar(self):
     ret = QtWidgets.QToolBar()
     ret.setGraphicsEffect(ui.glowEffect(ret))
     skqss.class_(ret, 'webkit toolbar toolbar-nav')
@@ -214,6 +215,43 @@ class _WebBrowser(object):
     a.triggered.connect(self.undoCloseTab)
     a.setToolTip("%s (Ctrl+Shift+T)" % i18n.tr("Undo close tab"))
     return ret
+
+  @memoizedproperty
+  def optionToolBar(self):
+    ret = QtWidgets.QToolBar()
+    ret.setGraphicsEffect(ui.glowEffect(ret))
+    skqss.class_(ret, 'webkit toolbar toolbar-opt')
+
+    import settings
+    ss = settings.global_()
+
+    import jlpman
+    JLP_ENABLED = jlpman.manager().isAvailable()
+
+    a = ret.addAction(u"あ")
+    a.setCheckable(True)
+    a.setToolTip(i18n.tr("Toggle Japanese parser"))
+    a.setEnabled(JLP_ENABLED)
+    a.setChecked(ss.isMeCabEnabled())
+    a.triggered[bool].connect(ss.setMeCabEnabled)
+    a.triggered[bool].connect(self._onJlpToggled)
+
+    a = ret.addAction(u"♪") # おんぷ
+    a.setCheckable(True)
+    a.setToolTip("%s (TTS)" % i18n.tr("Toggle text-to-speech") )
+    a.setEnabled(JLP_ENABLED)
+    a.setChecked(ss.isTtsEnabled())
+    a.triggered[bool].connect(ss.setTtsEnabled)
+    a.triggered[bool].connect(self._onTtsToggled)
+    return ret
+
+  ## JLP ##
+
+  def _onJlpToggled(self, t):
+    pass
+
+  def _onTtsToggled(self, t):
+    pass
 
   ## Load/save ##
 
@@ -421,23 +459,29 @@ class _WebBrowser(object):
     page.linkHovered.connect(self.showLink)
     page.linkClickedWithModifiers.connect(self.openUrlAfterCurrent)
 
-    ret.titleChanged.connect(partial(self.setTabTitle, ret))
+    ref = weakref.ref(ret)
+
+    #ret.titleChanged.connect(partial(self.setTabTitle, ret))
+    ret.titleChanged.connect(partial(lambda ref, v:
+        self.setTabTitle(ref(), v),
+        ref))
+
     ret.urlChanged.connect(self.refreshAddress)
     ret.messageReceived.connect(self.q.messageReceived)
     ret.linkClicked.connect(self.addRecentUrl)
     ret.linkClicked.connect(lambda url:
         url.isEmpty() or self.setDisplayAddress(url))
 
-    ret.iconChanged.connect(partial(lambda view:
-        view == self.tabWidget.currentWidget() and self.refreshWindowIcon(),
-        ret))
+    ret.iconChanged.connect(partial(lambda ref:
+        ref() == self.tabWidget.currentWidget() and self.refreshWindowIcon(),
+        ref))
 
-    ret.titleChanged.connect(partial(lambda view, value:
-        view == self.tabWidget.currentWidget() and self.refreshWindowTitle(),
-        ret))
-    page.loadProgress.connect(partial(lambda view, value:
-        view == self.tabWidget.currentWidget() and self.refreshLoadProgress(),
-        ret))
+    ret.titleChanged.connect(partial(lambda ref, value:
+        ref() == self.tabWidget.currentWidget() and self.refreshWindowTitle(),
+        ref))
+    page.loadProgress.connect(partial(lambda ref, value:
+        ref() == self.tabWidget.currentWidget() and self.refreshLoadProgress(),
+        ref))
 
     return ret
 
@@ -528,7 +572,9 @@ class _WebBrowser(object):
         w = self.tabWidget.widget(index)
         url = w.url()
         self.tabWidget.removeTab(index)
-        w.clear()
+
+        w.clear() # enforce clear flash
+        w.setParent(None) # only needed in PySide, otherwise the parent is QStackWidget
 
         #url = url.toString()
         url = _urltext(url)
