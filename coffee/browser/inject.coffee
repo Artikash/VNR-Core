@@ -102,21 +102,30 @@ rendertext = (text) -> # string -> node
 
 ## Inject
 
-itertextnodes = (node, callback) -> # DocumentElement, function(DocumentElement) ->
-  # Note: the first node is not traversed
-  #if node.nodeType is 3
-  #  callback node
+# http://stackoverflow.com/questions/9452340/iterating-through-each-text-element-in-a-page
+# http://javascript.info/tutorial/traversing-dom
+#itertextnodes = (node, callback) -> # DocumentElement, function(DocumentElement) ->
+#  node = node.firstChild
+#  while node?
+#    if node.nodeType is 3
+#      callback node
+#    else if node.nodeType is 1
+#      itertextnodes node, callback
+#    node = node.nextSibling
+
+collecttextnodes = (node, ret) -> # DocumentElement, [] ->
   node = node.firstChild
-  while node
+  while node?
     if node.nodeType is 3
-      callback node
+      ret.push node
     else if node.nodeType is 1
-      itertextnodes node, callback
+      collecttextnodes node, ret
     node = node.nextSibling
 
-# http://stackoverflow.com/questions/9452340/iterating-through-each-text-element-in-a-page
 inject = (el) -> # DocumentElement ->
-  itertextnodes el, (node) ->
+  nodes = []
+  collecttextnodes el, nodes
+  for node in nodes
     text = trim node.textContent
     if text
       repl = rendertext text
