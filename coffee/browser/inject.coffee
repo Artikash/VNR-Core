@@ -10,10 +10,21 @@ getdataset = ->
   ret.push 'tts' if settingsBean.isTtsEnabled()
   ret.join ' '
 
+repaint = ->
+  # http://stackoverflow.com/questions/3485365/how-can-i-force-webkit-to-redraw-repaint-to-propagate-style-changes
+  v = document.body.className
+  document.body.className += ' inject-dummy'
+  document.body.className = v
+  #if @$
+  #  $('body').addClass('inject-dummy').removeClass('inject-dummy')
+  #  $('body').addClass('inject-dummy').delay(0).removeClass('inject-dummy')
+
 document.body.dataset.inject = getdataset()
 
 # Make sure this script is only evaluated once
-unless @injected
+if @injected
+  repaint()
+else
   @injected = true
 
   linkcss = (url) -> # string -> el  return the inserted element
@@ -34,3 +45,14 @@ unless @injected
   linkjs cdnBean.url 'browser'
 
 # EOF
+
+#repaint = -> # Force a repaint
+#  # http://stackoverflow.com/questions/3485365/how-can-i-force-webkit-to-redraw-repaint-to-propagate-style-changes
+#  # http://stackoverflow.com/questions/8840580/force-dom-redraw-refresh-on-chrome-mac
+#  if document.body
+#    v = document.body.style.display
+#    v = 'block'
+#    if v isnt 'none'
+#      document.body.style.display = 'none'
+#      h = document.body.offsetHeight
+#      document.body.style.display = v
