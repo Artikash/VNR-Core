@@ -204,6 +204,7 @@ class _WbWebPage(object):
     return (
       ('cdnBean', m.cdnBean),
       ('clipBean', m.clipBean),
+      ('settingsBean', m.settingsBean),
       ('jlpBean', m.jlpBean),
       ('ttsBean', m.ttsBean),
     )

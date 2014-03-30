@@ -25,7 +25,7 @@
 
   // change font
   ruby
-    @extend .cursor-pointer
+    //@extend .cursor-pointer
     //@extend .ja
     //font-weight: bold
     //font-size: 18px
@@ -45,5 +45,10 @@
   a:hover
     rb
       text-decoration: underline
+
+body[data-inject*="tts"]
+  .inject-sentence
+    ruby
+      @extend .cursor-pointer
 
 // EOF

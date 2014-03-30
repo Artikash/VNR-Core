@@ -23,6 +23,10 @@ class BeanManager(object):
     return CdnBean(self.parent)
 
   @memoizedproperty
+  def settingsBean(self):
+    return SettingsBean(self.parent)
+
+  @memoizedproperty
   def jlpBean(self):
     return JlpBean(self.parent)
 
@@ -57,5 +61,19 @@ class JlpBean(QObject):
 class TtsBean(QObject):
   def __init__(self, parent):
     super(TtsBean, self).__init__(parent)
+
+class SettingsBean(QObject):
+  def __init__(self, parent):
+    super(SettingsBean, self).__init__(parent)
+
+  @Slot(result=bool)
+  def isJlpEnabled(self):
+    import settings
+    return settings.global_().isMeCabEnabled()
+
+  @Slot(result=bool)
+  def isTtsEnabled(self):
+    import settings
+    return settings.global_().isTtsEnabled()
 
 # EOF
