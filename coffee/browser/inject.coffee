@@ -6,8 +6,7 @@
 # - settingsBean
 
 getdataset = ->
-  ret = []
-  ret.push 'jlp' if settingsBean.isJlpEnabled()
+  ret = if settingsBean.isJlpEnabled() then ['enabled'] else ['disabled']
   ret.push 'tts' if settingsBean.isTtsEnabled()
   ret.join ' '
 

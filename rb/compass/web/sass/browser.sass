@@ -3,7 +3,7 @@
 
 @import main/cursor
 
-.inject-sentence
+.inject-ruby
   //a:hover,
   &:hover
     .word1
@@ -46,9 +46,13 @@
     rb
       text-decoration: underline
 
-body[data-inject*="tts"]
-  .inject-sentence
-    ruby
-      @extend .cursor-pointer
+body[data-inject*="tts"] .inject-ruby ruby
+  @extend .cursor-pointer
+
+body[data-inject*="enabled"] .inject-src
+  display: none
+
+body[data-inject*="disabled"] .inject-ruby
+  display: none
 
 // EOF

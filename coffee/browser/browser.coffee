@@ -84,20 +84,29 @@ renderruby = (text, ruby, feature, className) -> # must be consistent with parse
   ret.appendChild rt
   ret
 
-rendertext = (text) -> # string -> node
+renderrepl = (text) -> # string -> node
   ret = document.createDocumentFragment()
 
   data = jlpBean.parse text
   if data
     for sentence in JSON.parse data
       seg = document.createElement 'span'
-      seg.className = 'inject-sentence'
+      seg.className = 'inject-ruby'
       for word in sentence
         #[surf, ruby, feature, className] = word
         ruby = renderruby.apply @, word
         seg.appendChild ruby
       ret.appendChild seg
     ret
+
+rendersrc = (el) -> # node -> node
+  if el.nodeName is '#text'
+    ret = document.createElement 'span'
+    ret.className = 'inject-src'
+    ret.textContent = el.textContent
+    ret
+  else
+    el.cloneNode()
 
 ## Inject
 
@@ -127,9 +136,13 @@ inject = (el) -> # DocumentElement ->
   for node in nodes
     text = trim node.textContent
     if text
-      repl = rendertext text
+      repl = renderrepl text
       if repl
+        src = rendersrc node
+        repl.appendChild src
         node.parentNode.replaceChild repl, node
+        #node.className += ' inject-src'
+        #node.parentNode.insertBefore repl, node
 
 ## Main
 

@@ -52,6 +52,19 @@ class WbWebView(skwebkit.SkWebView):
     super(WbWebView, self).zoomReset()
     self.__d.showZoomMessage()
 
+  # Injection
+
+  def inject(self):
+    if not self.url().isEmpty():
+      self.page().inject()
+
+  def isInjectEnabled(self): return self.page().injectEnabled
+  def setInjectEnabled(self, t):
+    page = self.page()
+    if page.isInjectEnabled() != t:
+      page.setInjectEnabled(t)
+      self.inject()
+
 @Q_Q
 class _WbWebView(object):
 
@@ -99,6 +112,14 @@ class WbWebPage(skwebkit.SkWebPage):
   def isLoading(self): return self.__d.progress < 100
   def isFinished(self): return self.__d.progress == 100
 
+  def inject(self): self.__d.injectJavaScript() # Force inject
+
+  def isInjectEnabled(self): return self.__d.injectEnabled
+  def setInjectEnabled(self, t): self.__d.injectEnabled = t
+    #d = self.__d
+    #if d.injectEnabled != t:
+    #  d.injectEnabled = t
+    #  d.injectJavaScript()
 
   def event(self, ev): # override
     if (ev.type() == QEvent.MouseButtonRelease and
@@ -166,9 +187,15 @@ class _WbWebPage(object):
 
     self.progress = 100 # int [0,100]
 
+    self.injectEnabled = False # bool
+    self._beansInjected = False # bool
+
     q.loadProgress.connect(self._onLoadProgress)
     q.loadStarted.connect(self._onLoadStarted)
     q.loadFinished.connect(self._onLoadFinished)
+
+    f = q.mainFrame()
+    f.javaScriptWindowObjectCleared.connect(self._onJavaScriptCleared)
 
   ## Progress
 
@@ -178,21 +205,30 @@ class _WbWebPage(object):
     self.progress = 0
   def _onLoadFinished(self, success): # bool ->
     self.progress = 100
-    if success:
-      self.injectBeans()
+    if success and self.injectEnabled:
       self.injectJavaScript()
 
   ## JavaScript
 
+  def _onJavaScriptCleared(self):
+    self._beansInjected = False
+    if self.injectEnabled:
+      self.injectBeans()
+
   def injectJavaScript(self):
+    #if not self.q.parent().url().isEmpty():
+    self.injectBeans()
     f = self.q.mainFrame()
     f.evaluateJavaScript(rc.cdn_data('inject'))
 
   def injectBeans(self):
-    f = self.q.mainFrame()
-    #f.addToJavaScriptWindowObject('bean', self._webBean)
-    for name,obj in self._iterbeans():
-      f.addToJavaScriptWindowObject(name, obj)
+    if not self._beansInjected: # and not self.q.parent().url().isEmpty():
+      self._beansInjected = True
+
+      f = self.q.mainFrame()
+      #f.addToJavaScriptWindowObject('bean', self._webBean)
+      for name,obj in self._iterbeans():
+        f.addToJavaScriptWindowObject(name, obj)
 
   @staticmethod
   def _iterbeans():

@@ -75,6 +75,10 @@ class WebBrowser(SkDraggableMainWindow):
 @Q_Q
 class _WebBrowser(object):
   def __init__(self, q):
+    ss = settings.global_()
+    self._injectEnabled = ss.isMeCabEnabled()
+    self._ttsEnabled = ss.isTtsEnabled() # cached
+
     self.loadProgress = 100 # int [0,100]
 
     self.visitedUrls = [] # [str url]
@@ -222,7 +226,6 @@ class _WebBrowser(object):
     ret.setGraphicsEffect(ui.glowEffect(ret))
     skqss.class_(ret, 'webkit toolbar toolbar-opt')
 
-    import settings
     ss = settings.global_()
 
     import jlpman
@@ -232,26 +235,35 @@ class _WebBrowser(object):
     a.setCheckable(True)
     a.setToolTip(i18n.tr("Toggle Japanese parser"))
     a.setEnabled(JLP_ENABLED)
-    a.setChecked(ss.isMeCabEnabled())
+    a.setChecked(self._injectEnabled)
     a.triggered[bool].connect(ss.setMeCabEnabled)
-    a.triggered[bool].connect(self._onJlpToggled)
+    a.triggered[bool].connect(self._setInjectEnabled)
 
     a = ret.addAction(u"♪") # おんぷ
     a.setCheckable(True)
     a.setToolTip("%s (TTS)" % i18n.tr("Toggle text-to-speech") )
     a.setEnabled(JLP_ENABLED)
-    a.setChecked(ss.isTtsEnabled())
+    a.setChecked(self._ttsEnabled)
     a.triggered[bool].connect(ss.setTtsEnabled)
-    a.triggered[bool].connect(self._onTtsToggled)
+    a.triggered[bool].connect(self._setTtsEnabled)
     return ret
+
+  def _iterTabWidgets(self): # yield QWebView
+    w = self.tabWidget
+    for i in xrange(w.count()):
+      yield w.widget(i)
 
   ## JLP ##
 
-  def _onJlpToggled(self, t):
-    pass
+  def _setInjectEnabled(self, t): # bool ->
+    self._injectEnabled = t
+    for w in self._iterTabWidgets():
+      w.setInjectEnabled(t)
 
-  def _onTtsToggled(self, t):
-    pass
+  def _setTtsEnabled(self, t): # bool ->
+    self._ttsEnabled = t
+    for w in self._iterTabWidgets():
+      w.inject()
 
   ## Load/save ##
 
@@ -268,11 +280,9 @@ class _WebBrowser(object):
 
   def saveTabs(self): # -> bool
     ret = False
-    w = self.tabWidget
     urls = [] # [unicode url]
-    for i in xrange(w.count()):
-      v = w.widget(i)
-      url = v.url().toString()
+    for w in self._iterTabWidgets():
+      url = w.url().toString()
       if url != EMPTY_URL:
         urls.append(url)
     path = rc.TABS_LOCATION
@@ -482,6 +492,8 @@ class _WebBrowser(object):
     page.loadProgress.connect(partial(lambda ref, value:
         ref() == self.tabWidget.currentWidget() and self.refreshLoadProgress(),
         ref))
+
+    ret.setInjectEnabled(self._injectEnabled)
 
     return ret
 
