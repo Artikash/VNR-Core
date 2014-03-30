@@ -131,7 +131,8 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
 
   # Browser
   inject: $PWD/coffee/browser/inject.min.js
-  inject.css: $PWD/rb/compass/web/css/inject.min.css
+  browser: $PWD/coffee/browser/browser.min.js
+  browser.css: $PWD/rb/compass/web/css/browser.min.css
 
 # Qt
 
