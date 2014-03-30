@@ -33,12 +33,16 @@ from sakurakit import skstr
 from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dprint
 from cconv import cconv
-from mecabjlp import mecabdef, mecabfmt
+from mecabjlp import mecabdef, mecabfmt, mecabrender
 import defs, rc
 import _mecabman
 
 _rx_spaces = re.compile(r'\s+')
 _rx_match_spaces = re.compile(r'^\s+$')
+
+## Render ##
+
+renderfeature = mecabrender.renderfeature
 
 ## Parser ##
 
@@ -95,52 +99,6 @@ def toromaji(text, **kwargs):
   @return  unicode  plain text
   """
   return toyomi(text, furiType=defs.FURI_ROMAJI, **kwargs)
-
-#def getfeaturesurface(feature):
-#  """
-#  @param  feature  unicode
-#  @return  unicode
-#  """
-#  if feature:
-#    ret = feature.split(',')[-3]
-#    if ret != '*':
-#      return ret
-
-def renderfeature(feature, fmt):
-  """
-  @param  feature  unicode
-  @param  fmt  mecabfmt
-  @return  unicode or None
-
-  Example feature: 名詞,サ変接続,*,*,*,*,感謝,カンシャ,カンシャ
-  Input feature:
-    品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用形,活用型,原形,読み,発音
-  Rendered feature:
-    原形,発音,品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用形
-  """
-  l = feature.replace('*', '').split(',')
-
-  ret = filter(bool, l[:fmt.COL_BASIC])
-
-  surface = l[fmt.COL_SURFACE]
-  kata = l[fmt.COL_KATA]
-  hira = cconv.kata2hira(kata)
-
-  if hasattr(fmt, 'COL_KANJI'):
-    kanji = l[fmt.COL_KANJI]
-    if kanji not in (surface, kata, hira):
-      ret.insert(0, kanji)
-
-  if hasattr(fmt, 'COL_ORIG'):
-    orig = l[fmt.COL_ORIG]
-    ret.append(orig)
-
-  #if surface not in (hira, kata):
-  if hira != surface:
-    ret.insert(0, hira)
-  ret.insert(0, surface)
-
-  return ', '.join(ret)
 
 def rendertable(text, features=None, rubySize='10px', colorize=False, center=True, **kwargs):
   """

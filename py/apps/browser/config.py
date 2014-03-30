@@ -141,6 +141,9 @@ CDN = SHARE_YAML['cdn']
 #CDN_LOCATIONS = {k: parse_path(v) # {str name:unicode apspath}
 #    for k,v in SHARE_YAML['cdn'].iteritems()}
 
+MECAB_RCFILES = {k: parse_path(v) # {str name:unicode abspath}
+    for k,v in SHARE_YAML['mecab']['rcfile'].iteritems()}
+
 ## Jinja ##
 
 JINJA_HAML = SHARE_YAML['jinja_haml']

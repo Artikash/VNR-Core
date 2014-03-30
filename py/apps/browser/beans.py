@@ -30,6 +30,11 @@ class BeanManager(object):
   def ttsBean(self):
     return TtsBean(self.parent)
 
+  @memoizedproperty
+  def clipBean(self):
+    from sakurakit import skwebkit
+    return skwebkit.SkClipboardProxy(self.parent)
+
 class CdnBean(QObject):
   def __init__(self, parent):
     super(CdnBean, self).__init__(parent)

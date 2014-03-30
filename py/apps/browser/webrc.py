@@ -8,8 +8,15 @@ def update_web_settings(settings=None):
   """
   @param  settings  QWebSettings or None
   """
-  from PySide.QtWebKit import QWebSettings
+  from PySide.QtWebKit import QWebSettings, QWebSecurityOrigin
   import rc
+
+  # When combined with QWebSettings.LocalContentCanAccess*, it will by pass same-domain constraints
+  dprint("disable same origin principal")
+  for scheme in 'http', 'https':
+    QWebSecurityOrigin.addLocalScheme(scheme)
+  #dprint("local security origin schemes:", QWebSecurityOrigin.localSchemes())
+
   ws = settings or QWebSettings.globalSettings()
   ws.setAttribute(QWebSettings.PluginsEnabled, True)
   ws.setAttribute(QWebSettings.JavaEnabled, True)

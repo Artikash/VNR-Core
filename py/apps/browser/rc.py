@@ -51,6 +51,14 @@ def image_url(name):
   return QUrl.fromLocalFile(
       os.path.abspath(image_path(name))).toString()
 
+def mecab_rc_path(name):
+  """
+  @param  str  name
+  @return  unicode  path
+  @throw  KeyError
+  """
+  return config.MECAB_RCFILES[name] if name else ''
+
 def qss_path(name):
   """
   @param  name  str  id

@@ -178,6 +178,7 @@ class WbWebPage(skwebkit.SkWebPage):
     m = beans.manager()
     return (
       ('cdnBean', m.cdnBean),
+      ('clipBean', m.clipBean),
       ('jlpBean', m.jlpBean),
       ('ttsBean', m.ttsBean),
     )

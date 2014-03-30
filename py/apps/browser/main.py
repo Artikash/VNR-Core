@@ -109,8 +109,8 @@ class _MainObject(object):
     ret = jlpman.manager()
 
     reader = settings.reader()
-    ret.setRuby(reader.rubyType())
-    #ret.setRuby(reader.meCabDictionary())
+    ret.setRubyType(reader.rubyType())
+    ret.setMeCabDicType(reader.meCabDictionary())
     return ret
 
   ## Actions ##

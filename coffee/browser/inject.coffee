@@ -2,6 +2,8 @@
 # 3/28/2014 jichi
 # Invoked by QWebFrame::evaluaeJavaScript
 # Beans:
+# - cdnBean
+# - clipBean
 # - jlpBean
 # - ttsBean
 
@@ -71,7 +73,7 @@ trim = (str, chars) ->
 #   %ruby(class=word#{number})
 #     %rb text
 #     %rt ruby
-renderruby = (text, ruby, feature, className) ->
+renderruby = (text, ruby, feature, className) -> # must be consistent with parseparagraph in mecabrender.py
   rb = document.createElement 'rb'
   rb.textContent = text
   rt = document.createElement 'rt'
@@ -135,16 +137,16 @@ linkcss cdnBean.url 'inject.css'
 
 #window.onload = ->
 #  inject document.body
-inject document.body
+#inject document.body
 
-#do ->
-#  if @$
-#    $ ->
-#      #// jQuery plugin, example:
-#      $.fn.inject = ->
-#          @each -> inject @
-#      $('body').inject()
-#  else
-#    console.log 'vnr:inject: missing jquery'
+do ->
+  #if @$
+  #  $ ->
+  #    #// jQuery plugin, example:
+  #    $.fn.inject = ->
+  #        @each -> inject @
+  #    $('body').inject()
+  #else
+  inject document.body
 
 # EOF
