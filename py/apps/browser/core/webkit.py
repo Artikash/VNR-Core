@@ -5,7 +5,7 @@
 __all__ = ['WbWebView', 'WbWebPage']
 
 import re
-from PySide.QtCore import Qt, Signal, QEvent
+from PySide.QtCore import Qt, Signal, QEvent, QUrl
 from PySide.QtWebKit import QWebPage
 from Qt5 import QtWidgets
 from sakurakit import skwebkit
@@ -65,6 +65,14 @@ class WbWebView(skwebkit.SkWebView):
       page.setInjectEnabled(t)
       self.inject()
 
+  def load(self, url): # QUrl ->
+    t = url.toString() if isinstance(url, QUrl) else url
+    if t.startswith('about:'):
+      data = rc.html_data(t)
+      if data:
+        self.setHtml(data)
+        return
+    super(WbWebView, self).load(url)
 @Q_Q
 class _WbWebView(object):
 

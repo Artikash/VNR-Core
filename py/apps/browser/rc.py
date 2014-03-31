@@ -3,7 +3,7 @@
 # 12/13/2012 jichi
 # Runtime resource locations
 
-import os
+import os, sys
 import jinja2
 from PySide.QtCore import QUrl
 from sakurakit import skos, skpaths
@@ -145,6 +145,24 @@ def jinja_template(name):
   ret = JINJA_TEMPLATES.get(key)
   if not ret:
     ret = JINJA_TEMPLATES[key] = JINJA.get_template(config.TEMPLATE_ENTRIES[key])
+  return ret
+
+URL_TEMPLATE = {
+  'about:blank': 'start',
+}
+HTML_DATA = {} # {str url:unicode data}
+def html_data(url): # QUrl|str -> unicode|None
+  if isinstance(url, QUrl):
+    url = url.toString()
+  ret = HTML_DATA.get(url)
+  if not ret:
+    key = URL_TEMPLATE.get(url)
+    if key:
+      from sakurakit.sktr import tr_
+      ret = HTML_DATA[url] = jinja_template(key).render({
+        'tr': tr_,
+        'rc': sys.modules[__name__],
+      }) # unicode html
   return ret
 
 # EOF

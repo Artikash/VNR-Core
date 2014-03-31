@@ -21,14 +21,9 @@ from webkit import *
 from i18n import i18n
 import config, proxy, rc, settings, textutil, ui
 
-START_HTML = rc.jinja_template('start').render({
-  'tr': tr_,
-  'rc': rc,
-}) # unicode html
-
 MAX_TITLE_LENGTH = 20
 
-EMPTY_URL = "about:blank"
+BLANK_URL = "about:blank"
 
 def _urltext(url): # unicode|QUrl -> unicode
   if isinstance(url, QUrl):
@@ -303,7 +298,7 @@ class _WebBrowser(object):
     urls = [] # [unicode url]
     for w in self._iterTabWidgets():
       url = w.url().toString()
-      if url != EMPTY_URL:
+      if url != BLANK_URL:
         urls.append(url)
     path = rc.TABS_LOCATION
     if urls:
@@ -423,7 +418,7 @@ class _WebBrowser(object):
   def addRecentUrl(self, url): # string|QUrl ->
     text = _urltext(url)
     if text:
-      if text != EMPTY_URL:
+      if text != BLANK_URL:
         self.visitedUrls.append(text)
       self.addressEdit.addText(text)
 
@@ -436,7 +431,8 @@ class _WebBrowser(object):
     v = self.tabWidget.currentWidget()
     #assert v
     if v:
-      v.setHtml(START_HTML)
+      v.load(BLANK_URL)
+      #v.setHtml(START_HTML)
       #self.tabWidget.setTabText(self.currentIndex(), tr("Start Page"));
       #int i = ui->addressEdit->findText(WB_BLANK_PAGE);
       #if (i >= 0)
@@ -616,7 +612,7 @@ class _WebBrowser(object):
 
         #url = url.toString()
         url = _urltext(url)
-        if url != EMPTY_URL:
+        if url != BLANK_URL:
           self.closedUrls.append(url)
 
   def closeCurrentTab(self):
