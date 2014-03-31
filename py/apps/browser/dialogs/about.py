@@ -95,11 +95,11 @@ class _AboutDialog:
     q.setLayout(layout)
 
   def refresh(self):
-    import config, i18n, settings
+    import config, i18nutil, settings
     t = config.VERSION_TIMESTAMP
-    line1 = tr_("Version") + " " + i18n.timestamp2datetime(t)
+    line1 = tr_("Version") + " " + i18nutil.timestamp2datetime(t)
     t = settings.reader().updateTime() or config.VERSION_TIMESTAMP
-    line2 = tr_("Update") + " " + i18n.timestamp2datetime(t)
+    line2 = tr_("Update") + " " + i18nutil.timestamp2datetime(t)
     msg = '\n'.join((line1, line2))
     self.versionLabel.setText(msg)
 

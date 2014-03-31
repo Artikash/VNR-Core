@@ -259,9 +259,18 @@ class _WebBrowser(object):
   @memoizedproperty
   def optionMenu(self):
     ret = QtWidgets.QMenu(self.q)
+
     import main
     m = main.global_()
-    ret.addAction(tr_("About")).triggered.connect(m.about)
+
+    #a = ret.addAction(rc.standard_icon(QtWidgets.QStyle.SP_DialogHelpButton), tr_("Help"))
+    a = ret.addAction(tr_("Help"))
+    a.triggered.connect(m.help)
+    a.setToolTip("about:help")
+
+    a = ret.addAction(tr_("About"))
+    a.triggered.connect(m.about)
+    a.setToolTip("about:version")
     return ret
 
   ## JLP ##

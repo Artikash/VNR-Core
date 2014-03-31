@@ -34,6 +34,10 @@ def icon(name):
   from PySide.QtGui import QIcon
   return QIcon(config.ICON_LOCATIONS[name])
 
+def standard_icon(key): # QStyle::StandardPixmap -> QIcon
+  from PySide.QtCore import QCoreApplication
+  return QCoreApplication.instance().style().standardIcon(key)
+
 def image_path(name):
   """
   @param  name  str  id

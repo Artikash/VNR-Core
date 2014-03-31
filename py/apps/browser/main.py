@@ -78,7 +78,9 @@ class MainObject(QObject):
       self.quit()
 
   def showAbout(self): _MainObject.showWindow(self.__d.aboutDialog)
+  def showHelp(self): _MainObject.showWindow(self.__d.helpDialog)
   about = showAbout
+  help = showHelp
 
 # MainObject private data
 @Q_Q
@@ -141,6 +143,13 @@ class _MainObject(object):
   def aboutDialog(self):
     import about
     ret = about.AboutDialog(self.mainWindow)
+    self.widgets.append(ret)
+    return ret
+
+  @memoizedproperty
+  def helpDialog(self):
+    import help
+    ret = help.AppHelpDialog(self.mainWindow)
     self.widgets.append(ret)
     return ret
 

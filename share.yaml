@@ -411,6 +411,7 @@ templates:
     xml/users:      xml/users.xml
     xml/voices:     xml/voices.xml
 
+    haml/browser/help:  haml/browser/help.haml
     haml/browser/error: haml/browser/error.haml
     haml/browser/start: haml/browser/start.haml
 
