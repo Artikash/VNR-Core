@@ -18,6 +18,14 @@ app:
   closeHistorySize: 20  # max number of saved closed tabs
   visitHistorySize: 20  # max number of saved visited urls
 
+# Environment variables
+env:
+  pythonpath:
+  - $PWD/py/apps/browser/core
+  - $PWD/py/apps/browser/dialogs
+  - $PWD/py/apps/browser/managers
+  - $PWD/py/apps/browser/utilities
+
 qt:
   #metaCallPort: 6104    # IPC QMetaCall listening port (6100 + app.id)
   threadCount:  10      # QtCore.QThreadPool.maxThreadCount

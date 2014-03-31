@@ -47,6 +47,9 @@ class ReaderSettings(QSettings):
       QSettings.NativeFormat, QSettings.UserScope,
       config.VERSION_DOMAIN, "reader")
 
+  def version(self): return to_int(self.value('Version'))
+  def updateTime(self): return to_int(self.value('UpdateTime'))
+
   def userLanguage(self): return self.value('UserLanguage')
 
   def isMainlandChina(self): return to_bool(self.value('MainlandChina'))

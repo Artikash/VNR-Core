@@ -68,6 +68,8 @@ VERSION_TIMESTAMP = long(APP_YAML['version']['timestamp'])
 ENV_PATH = map(parse_path, SHARE_YAML['env']['path']) # [unicode path]
 ENV_PYTHONPATH = map(parse_path, SHARE_YAML['env']['pythonpath']) # [str path]
 
+APP_PYTHONPATH = map(parse_path, APP_YAML['env']['pythonpath']) # [unicode abspath]
+
 ## Settings ##
 
 QT_THREAD_COUNT = parse_int(APP_YAML['qt']['threadCount'])

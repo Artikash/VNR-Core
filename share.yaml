@@ -523,6 +523,7 @@ icons:
   window-voice:     $PWD/images/sound.png
 
 images:
+  logo-browser:     $PWD/images/browser.png
   logo-reader:      $PWD/images/reader.png
   app-update:       $PWD/images/updater.png
   avatar:           $PWD/images/avatar.png

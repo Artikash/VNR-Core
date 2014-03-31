@@ -1,5 +1,5 @@
 # coding: utf8
-# webbrowser.py
+# browserui.py
 # 12/13/2012 jichi
 
 __all__ = ['WebBrowser']
@@ -246,12 +246,23 @@ class _WebBrowser(object):
     a.setChecked(self._ttsEnabled)
     a.triggered[bool].connect(ss.setTtsEnabled)
     a.triggered[bool].connect(self._setTtsEnabled)
+
+    a = ret.addAction(u"⌘") # U+2318 コマンド記号
+    a.setToolTip(tr_("Menu"))
+    a.setMenu(self.optionMenu)
+    #a.triggered.connect(a.menu().exec_)
+    # https://bugreports.qt-project.org/browse/QTBUG-1453
+    btn = ret.widgetForAction(a)
+    btn.setPopupMode(QtWidgets.QToolButton.InstantPopup)
     return ret
 
-  def _iterTabWidgets(self): # yield QWebView
-    w = self.tabWidget
-    for i in xrange(w.count()):
-      yield w.widget(i)
+  @memoizedproperty
+  def optionMenu(self):
+    ret = QtWidgets.QMenu(self.q)
+    import main
+    m = main.global_()
+    ret.addAction(tr_("About")).triggered.connect(m.about)
+    return ret
 
   ## JLP ##
 
@@ -336,6 +347,12 @@ class _WebBrowser(object):
     dprint("pass")
 
   ## Actions ##
+
+  def _iterTabWidgets(self): # yield QWebView
+    w = self.tabWidget
+    for i in xrange(w.count()):
+      yield w.widget(i)
+
 
   def highlightText(self, t):
     t = t.strip()

@@ -11,6 +11,8 @@ from sakurakit.skclass import Q_Q, memoizedproperty
 from i18n import i18n
 import config
 
+def global_(): return MainObject.instance
+
 class MainObject(QObject):
   """Root of most objects"""
   instance = None
@@ -75,6 +77,9 @@ class MainObject(QObject):
     if sel == yes:
       self.quit()
 
+  def showAbout(self): _MainObject.showWindow(self.__d.aboutDialog)
+  about = showAbout
+
 # MainObject private data
 @Q_Q
 class _MainObject(object):
@@ -82,6 +87,23 @@ class _MainObject(object):
     self.hasQuit = False # if the application has quit
     self.widgets = [] # [QWidget]
     #q.destroyed.connect(self._onDestroyed)
+
+  # Helpers
+  @staticmethod
+  def showWindow(w):
+    """
+    @param  w  QWidget
+    """
+    if w.isMaximized() and w.isMinimized():
+      w.showMaximized()
+    elif w.isMinimized():
+      w.showNormal()
+    else:
+      w.show()
+    w.raise_()
+    #if not features.WINE:
+    #  w.raise_()
+    #  winutil.set_foreground_widget(w)
 
   ## Windows ##
 
@@ -111,6 +133,15 @@ class _MainObject(object):
     reader = settings.reader()
     ret.setRubyType(reader.rubyType())
     ret.setMeCabDicType(reader.meCabDictionary())
+    return ret
+
+  # Dialogs
+
+  @memoizedproperty
+  def aboutDialog(self):
+    import about
+    ret = about.AboutDialog(self.mainWindow)
+    self.widgets.append(ret)
     return ret
 
   ## Actions ##

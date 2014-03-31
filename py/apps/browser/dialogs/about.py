@@ -10,14 +10,14 @@ if __name__ == '__main__':
   import debug
   debug.initenv()
 
-from functools import partial
+#from functools import partial
 from PySide.QtCore import Qt
 from Qt5 import QtWidgets
 from sakurakit import skqss
 from sakurakit.skclass import Q_Q
 from sakurakit.sktr import tr_
 #from mytr import mytr_
-import info
+#import info
 
 class AboutDialog(QtWidgets.QDialog):
   def __init__(self, parent=None):
@@ -27,7 +27,8 @@ class AboutDialog(QtWidgets.QDialog):
     self.__d = _AboutDialog(self)
     #self.setWindowTitle(tr_("About {0}").format(mytr_("Visual Novel Reader")))
     self.setWindowTitle(tr_("About {0}").format("Visual Novel Reader"))
-    self.resize(450, 400)
+    #self.resize(350, 400)
+    self.resize(200, 100)
 
   def setVisible(self, t):
     """@reimp"""
@@ -46,33 +47,32 @@ class _AboutDialog:
     #self.versionLabel.setWordWrap(True)
 
     import rc
-    url = rc.image_path('logo-reader')
+    url = rc.image_path('logo-browser')
     img = '<img src="%s" width=60 height=60 />' % url
     imageLabel = QtWidgets.QLabel(img)
 
-    import main
-    m = main.manager()
-    wikiButton = QtWidgets.QPushButton(tr_("Wiki"))
-    wikiButton.setToolTip(tr_("Wiki"))
-    skqss.class_(wikiButton, 'btn btn-default')
-    wikiButton.clicked.connect(partial(m.openWiki, 'VNR'))
+    #import main
+    #m = main.manager()
+    #wikiButton = QtWidgets.QPushButton(tr_("Wiki"))
+    #wikiButton.setToolTip(tr_("Wiki"))
+    #skqss.class_(wikiButton, 'btn btn-default')
+    #wikiButton.clicked.connect(partial(m.openWiki, 'VNR'))
 
-    updateButton = QtWidgets.QPushButton(tr_("Update"))
-    updateButton.setToolTip(tr_("Update"))
-    skqss.class_(updateButton, 'btn btn-primary')
-    updateButton.clicked.connect(m.checkUpdate)
+    #updateButton = QtWidgets.QPushButton(tr_("Update"))
+    #updateButton.setToolTip(tr_("Update"))
+    #skqss.class_(updateButton, 'btn btn-primary')
+    #updateButton.clicked.connect(m.checkUpdate)
 
-    creditButton = QtWidgets.QPushButton(tr_("Credits"))
-    creditButton.setToolTip(tr_("Credits"))
-    skqss.class_(creditButton, 'btn btn-info')
-    creditButton.clicked.connect(m.showCredits)
+    #creditButton = QtWidgets.QPushButton(tr_("Credits"))
+    #creditButton.setToolTip(tr_("Credits"))
+    #skqss.class_(creditButton, 'btn btn-info')
+    #creditButton.clicked.connect(m.showCredits)
 
-    #helpEdit = QtWidgets.QLabel()
-    helpEdit = QtWidgets.QTextBrowser()
-    skqss.class_(helpEdit, 'texture')
-    helpEdit.setReadOnly(True)
-    helpEdit.setOpenExternalLinks(True)
-    helpEdit.setHtml(info.renderAppHelp())
+    #helpEdit = QtWidgets.QTextBrowser()
+    #skqss.class_(helpEdit, 'texture')
+    #helpEdit.setReadOnly(True)
+    #helpEdit.setOpenExternalLinks(True)
+    #helpEdit.setHtml(info.renderAppHelp())
 
     #labels = QtWidgets.QHBoxLayout()
     #labels.addWidget(self.versionLabel)
@@ -85,12 +85,12 @@ class _AboutDialog:
     row.addWidget(imageLabel)
     row.addWidget(self.versionLabel)
     row.addStretch()
-    row.addWidget(updateButton)
-    row.addWidget(creditButton)
-    row.addWidget(wikiButton)
+    #row.addWidget(updateButton)
+    #row.addWidget(creditButton)
+    #row.addWidget(wikiButton)
     layout.addLayout(row)
 
-    layout.addWidget(helpEdit)
+    #layout.addWidget(helpEdit)
 
     q.setLayout(layout)
 
@@ -98,7 +98,7 @@ class _AboutDialog:
     import config, i18n, settings
     t = config.VERSION_TIMESTAMP
     line1 = tr_("Version") + " " + i18n.timestamp2datetime(t)
-    t = settings.global_().updateTime() or config.VERSION_TIMESTAMP
+    t = settings.reader().updateTime() or config.VERSION_TIMESTAMP
     line2 = tr_("Update") + " " + i18n.timestamp2datetime(t)
     msg = '\n'.join((line1, line2))
     self.versionLabel.setText(msg)

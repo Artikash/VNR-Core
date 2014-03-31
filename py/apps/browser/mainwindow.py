@@ -9,7 +9,7 @@ from PySide.QtCore import QTimer
 from sakurakit import skos, skqss
 from sakurakit.skclass import memoizedproperty, Q_Q
 from sakurakit.sktr import tr_
-from webbrowser import WebBrowser
+from browserui import WebBrowser
 import rc, ui
 
 @Q_Q

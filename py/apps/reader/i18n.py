@@ -129,20 +129,6 @@ WEEK_NAMES = [
   u"土",
 ]
 
-def timestamp2datetime(sec):
-  """
-  @param  sec  long
-  @return  str
-  """
-  return unparsedatetime(datetime.fromtimestamp(sec))
-
-def timestamp2date(sec):
-  """
-  @param  sec  long
-  @return  str
-  """
-  return unparsedate(datetime.fromtimestamp(sec))
-
 def unparsedatetime(d):
   #return d.strftime("%m/%d/%Y {0} %H:%M").format(
   #    WEEK_NAMES[d.weekday()]).lstrip('0')
@@ -159,6 +145,20 @@ def unparsedate(d):
   return "%s/%s/%s %s" % (
       d.month, d.day, d.year,
       WEEK_NAMES[d.weekday()])
+
+def timestamp2datetime(sec):
+  """
+  @param  sec  long
+  @return  str
+  """
+  return unparsedatetime(datetime.fromtimestamp(sec))
+
+def timestamp2date(sec):
+  """
+  @param  sec  long
+  @return  str
+  """
+  return unparsedate(datetime.fromtimestamp(sec))
 
 ## Threads ##
 
