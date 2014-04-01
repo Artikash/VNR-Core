@@ -1,6 +1,6 @@
 # browser.coffee
 # 3/28/2014 jichi
-# Invoked by QWebFrame::evaluaeJavaScript
+# Invoked by QWebFrame::evaluateJavaScript
 # Beans:
 # - cdnBean
 # - clipBean
@@ -87,10 +87,9 @@ renderruby = (text, ruby, feature, className) -> # must be consistent with parse
   ret
 
 renderrepl = (text) -> # string -> node
-  ret = document.createDocumentFragment()
-
   data = jlpBean.parse text
   if data
+    ret = document.createDocumentFragment()
     for sentence in JSON.parse data
       seg = document.createElement 'span'
       seg.className = 'inject-ruby'
@@ -101,7 +100,7 @@ renderrepl = (text) -> # string -> node
         ruby = renderruby.apply @, word
         seg.appendChild ruby
       if segtext
-        seg.onclick = do (segtext) -> -> # bind segtext
+        seg.onclick = do (segtext) ->-> # bind segtext
           ttsBean.speak segtext if ttsBean.isEnabled()
       ret.appendChild seg
     ret
