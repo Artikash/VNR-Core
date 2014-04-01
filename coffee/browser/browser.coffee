@@ -1,6 +1,6 @@
 # browser.coffee
 # 3/28/2014 jichi
-# Invoked by QWebFrame::evaluaeJavaScript
+# Invoked by QWebFrame::evaluateJavaScript
 # Beans:
 # - cdnBean
 # - clipBean
@@ -101,7 +101,7 @@ renderrepl = (text) -> # string -> node
         ruby = renderruby.apply @, word
         seg.appendChild ruby
       if segtext
-        seg.onclick = do (segtext) -> -> # bind segtext
+        seg.onclick = do (segtext) ->-> # bind segtext
           ttsBean.speak segtext if ttsBean.isEnabled()
       ret.appendChild seg
     ret
