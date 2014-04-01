@@ -161,4 +161,7 @@ PROXY_DOMAINS = SHARE_YAML['proxies']['domains'] # {string host:string ip}
 
 GETCHU_HOST = SHARE_YAML['proxies']['getchu'].replace('http://', '')
 
+PROXY_GETCHU_URL = SHARE_YAML['proxies']['getchu']
+PROXY_DMM_URL = SHARE_YAML['proxies']['dmm']
+
 # EOF
