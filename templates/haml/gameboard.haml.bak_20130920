@@ -9,7 +9,7 @@
 ;!!! 5
 %html
   %head
-    -for it in 'bootstrap.css', 'gameboard.css'
+    -for it in 'bootstrap2.css', 'gameboard.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
     :css
       body {

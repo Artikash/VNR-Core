@@ -5,12 +5,12 @@
 # - cdnBean
 # - settingsBean
 
-getdataset = ->
+getdataset = -> # -> string  the value of %body[data-inject[
   ret = if settingsBean.isJlpEnabled() then ['enabled'] else ['disabled']
   ret.push 'tts' if settingsBean.isTtsEnabled()
   ret.join ' '
 
-repaint = ->
+repaint = -> # ->
   # http://stackoverflow.com/questions/3485365/how-can-i-force-webkit-to-redraw-repaint-to-propagate-style-changes
   v = document.body.className
   document.body.className += ' inject-dummy'
