@@ -79,6 +79,10 @@ class _WebBrowser(object):
     self.visitedUrls = [] # [str url]
     self.closedUrls = [] # [str url]
 
+    import jlpman, ttsman
+    self._jlpAvailable = jlpman.manager().isAvailable() # bool
+    self._ttsAvailable = ttsman.manager().isAvailable() # bool
+
     #layout = QtWidgets.QVBoxLayout()
     #layout.addWidget(self.addressWidget)
     #layout.addWidget(self.tabWidget)
@@ -228,24 +232,22 @@ class _WebBrowser(object):
 
     ss = settings.global_()
 
-    import jlpman
-    JLP_ENABLED = jlpman.manager().isAvailable()
-
     a = ret.addAction(u"あ")
     a.setCheckable(True)
     a.setToolTip(i18n.tr("Toggle Japanese parser"))
-    a.setEnabled(JLP_ENABLED)
+    a.setEnabled(self._jlpAvailable)
     a.setChecked(self._injectEnabled)
     a.triggered[bool].connect(ss.setMeCabEnabled)
     a.triggered[bool].connect(self._setInjectEnabled)
 
-    a = ret.addAction(u"♪") # おんぷ
+    a = self.ttsAct = ret.addAction(u"♪") # おんぷ
     a.setCheckable(True)
     a.setToolTip("%s (TTS)" % i18n.tr("Toggle text-to-speech") )
-    a.setEnabled(JLP_ENABLED)
+    a.setEnabled(self._jlpAvailable and self._ttsAvailable)
     a.setChecked(self._ttsEnabled)
     a.triggered[bool].connect(ss.setTtsEnabled)
     a.triggered[bool].connect(self._setTtsEnabled)
+    a.setVisible(skos.WIN) # only enabled on Windows
 
     a = ret.addAction(u"⌘") # U+2318 コマンド記号
     a.setToolTip(tr_("Menu"))
@@ -276,6 +278,9 @@ class _WebBrowser(object):
     self._injectEnabled = t
     for w in self._iterTabWidgets():
       w.setInjectEnabled(t)
+
+    if self._ttsAvailable:
+      self.ttsAct.setEnabled(t)
 
   def _setTtsEnabled(self, t): # bool ->
     self._ttsEnabled = t

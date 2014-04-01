@@ -32,6 +32,7 @@ class MainObject(QObject):
     d = self.__d
 
     dprint("create managers")
+    d.ttsManager
     d.beanManager
     d.jlpManager
     d.cacheManager
@@ -154,16 +155,24 @@ class _MainObject(object):
   @memoizedproperty
   def ttsManager(self):
     dprint("create tts manager")
-    import ttsman
+    import ttsman, settings
     ret = ttsman.manager()
     ret.setParent(self.q)
+
+    ss = settings.global_()
+
+    if ss.isTtsEnabled() and not ret.isAvailable():
+      ss.setTtsEnabled(False)
+
+    ret.setEnabled(ss.isTtsEnabled())
+    ss.ttsEnabledChanged.emit(ret.setEnabled)
 
     #ret.setOnline(self.networkManager.isOnline())
     #self.networkManager.onlineChanged.connect(ret.setOnline)
 
-    ss = settings.reader()
-    ret.setDefaultEngine(ss.ttsEngine())
-    ss.ttsEngineChanged.connect(ret.setDefaultEngine)
+    reader = settings.reader()
+    ret.setDefaultEngine(reader.ttsEngine())
+    reader.ttsEngineChanged.connect(ret.setDefaultEngine)
     return ret
 
   # Dialogs

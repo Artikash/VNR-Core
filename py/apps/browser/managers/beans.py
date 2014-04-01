@@ -62,6 +62,11 @@ class TtsBean(QObject):
   def __init__(self, parent):
     super(TtsBean, self).__init__(parent)
 
+  @Slot(result=bool)
+  def isEnabled(self):
+    import ttsman
+    return ttsman.manager().isEnabled()
+
   @Slot(unicode)
   def speak(self, text):
     import ttsman

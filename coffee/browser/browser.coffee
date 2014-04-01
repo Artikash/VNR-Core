@@ -82,6 +82,8 @@ renderruby = (text, ruby, feature, className) -> # must be consistent with parse
   ret.className = className
   ret.appendChild rb
   ret.appendChild rt
+  ret.ondblclick = ->
+    ttsBean.speak text if text and ttsBean.isEnabled()
   ret
 
 renderrepl = (text) -> # string -> node
@@ -92,10 +94,15 @@ renderrepl = (text) -> # string -> node
     for sentence in JSON.parse data
       seg = document.createElement 'span'
       seg.className = 'inject-ruby'
+      segtext = ''
       for word in sentence
+        segtext += word[0]
         #[surf, ruby, feature, className] = word
         ruby = renderruby.apply @, word
         seg.appendChild ruby
+      if segtext
+        seg.onclick = do (segtext) -> -> # bind segtext
+          ttsBean.speak segtext if ttsBean.isEnabled()
       ret.appendChild seg
     ret
 

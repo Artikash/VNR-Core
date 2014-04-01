@@ -7,6 +7,7 @@ __all__ = ['TtsQmlProxy', 'TtsCoffeeProxy']
 from functools import partial
 from PySide.QtCore import QObject, QTimer
 #from sakurakit import skevents, skthreads
+from sakurakit import skos
 from sakurakit.skdebug import dwarn, dprint
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 #from sakurakit.skqml import QmlObject
@@ -28,7 +29,11 @@ class TtsManager(QObject):
     d = self.__d = _TtsManager(self)
 
   def stop(self):
-    self.__d.stop()
+    if self.__d.enabled:
+      self.__d.stop()
+
+  def isEnabled(self): return self.__d.enabled
+  def setEnabled(self, t): self.__d.enabled = t
 
   def defaultEngine(self): return self.__d.defaultEngineKey
   def setDefaultEngine(self, key):
@@ -38,7 +43,7 @@ class TtsManager(QObject):
     d = self.__d
     if d.defaultEngineKey != key:
       d.defaultEngineKey = key
-      settings.reader().setTtsEngine(key)
+      #settings.reader().setTtsEngine(key)
 
   def getSapiSpeed(self, v):
     return self.__d.getSapiSpeed(v)
@@ -50,8 +55,9 @@ class TtsManager(QObject):
 
   def speak(self, text, interval=100, **kwargs):
     d = self.__d
-    d.speakTask = partial(self._speak, text, **kwargs)
-    d.speakTimer.start(interval)
+    if d.enabled:
+      d.speakTask = partial(self._speak, text, **kwargs)
+      d.speakTimer.start(interval)
 
   def _speak(self, text, engine='', language='', verbose=True):
     """
@@ -101,6 +107,16 @@ class TtsManager(QObject):
   def runYukari(self): return self.__d.yukariEngine.run()
   def runZunko(self): return self.__d.zunkoEngine.run()
 
+  def isAvailable(self):
+    if not skos.WIN:
+      return False
+    d = self.__d
+    for it in d.yukariEngine, d.zunkoEngine:
+      if it.isValid():
+        return True
+    import sapiman
+    return bool(sapiman.voices())
+
   def availableEngines(self):
     """
     @return  [unicode]
@@ -124,6 +140,7 @@ def stop(): manager().stop()
 class _TtsManager(object):
 
   def __init__(self):
+    self.enabled = True
     self.defaultEngineKey = '' # str
     self.speakTask = None   # partial function object
 
