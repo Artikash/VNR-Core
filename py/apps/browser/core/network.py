@@ -16,6 +16,7 @@ class WbNetworkCookieJar(sknetwork.SkNetworkCookieJar):
     super(WbNetworkCookieJar, self).__init__(parent)
     self.path = path
     self.load()
+    self._injectCookies()
 
     # Automatically save cookies using timer
     from PySide.QtCore import QCoreApplication
@@ -31,6 +32,25 @@ class WbNetworkCookieJar(sknetwork.SkNetworkCookieJar):
 
   def save(self): # unicode -> bool
     return bool(self.path) and skfileio.writedata(self.path, self.marshal())
+
+  def _injectCookies(self):
+    from PySide.QtCore import QUrl
+    from PySide.QtNetwork import QNetworkCookie
+    import config
+
+    GETCHU_COOKIES = {'getchu_adalt_flag':'getchu.com'}
+    GETCHU_URLS = "http://www.getchu.com", config.PROXY_GETCHU_URL
+
+    DMM_COOKIES = {'cklg':'ja', 'ckcy':'2'}
+    DMM_URLS = "http://www.dmm.co.jp", config.PROXY_DMM_URL
+
+    for cookies, urls in (
+        (GETCHU_COOKIES, GETCHU_URLS),
+        (DMM_COOKIES, DMM_URLS),
+      ):
+      l = [QNetworkCookie(k,v) for k,v in cookies.iteritems()]
+      for url in urls:
+        self.setCookiesFromUrl(l, QUrl(url))
 
   # Proxy
 

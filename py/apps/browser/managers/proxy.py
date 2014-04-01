@@ -8,6 +8,7 @@ import config
 
 import settings
 _MAINLAND = settings.reader().isMainlandChina()
+#_MAINLAND = True
 
 def _normalize_host(url): # str -> str
   url = url.lower()
@@ -41,8 +42,8 @@ _DLSITE_PROXY_SITES = {
 ## Functions ##
 
 def toproxyurl(url): # QUrl -> QUrl or None
-  #if not isinstance(url, QUrl)
-  #  url = QUrl(url)
+  if not isinstance(url, QUrl):
+    url = QUrl(url)
   if url.scheme() == 'http':
     url = QUrl(url)
     host = _normalize_host(url.host())
@@ -61,8 +62,8 @@ def toproxyurl(url): # QUrl -> QUrl or None
 
 _re_proxy_key = re.compile(r'/proxy/([^/]+)(.*)')
 def fromproxyurl(url): # QUrl -> QUrl or None
-  #if not isinstance(url, QUrl)
-  #  url = QUrl(url)
+  if not isinstance(url, QUrl):
+    url = QUrl(url)
   if url.scheme() == 'http':
     host = url.host()
     if host == config.PROXY_HOST:
