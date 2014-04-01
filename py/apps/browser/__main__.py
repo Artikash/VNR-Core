@@ -88,8 +88,16 @@ def main():
   ss.setParent(a)
 
   dprint("update settings")
-  if ss.version() != config.VERSION_TIMESTAMP:
+  ss_version = ss.version()
+  if ss_version != config.VERSION_TIMESTAMP:
     dprint("app update detected, migrate settings")
+
+    if ss_version:
+      from sakurakit import skfileio
+
+      if ss_version <= 1396371158:
+        skfileio.removefile(rc.COOKIES_LOCATION)
+
     ss.setVersion(config.VERSION_TIMESTAMP)
     ss.sync()
 
