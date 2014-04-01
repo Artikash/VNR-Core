@@ -243,7 +243,7 @@ class _WebBrowser(object):
     a = self.ttsAct = ret.addAction(u"♪") # おんぷ
     a.setCheckable(True)
     a.setToolTip("%s (TTS)" % i18n.tr("Toggle text-to-speech") )
-    a.setEnabled(self._jlpAvailable and self._ttsAvailable)
+    a.setEnabled(self._injectEnabled and self._jlpAvailable and self._ttsAvailable)
     a.setChecked(self._ttsEnabled)
     a.triggered[bool].connect(ss.setTtsEnabled)
     a.triggered[bool].connect(self._setTtsEnabled)

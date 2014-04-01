@@ -49,7 +49,7 @@ class MainObject(QObject):
       w.openDefaultPage()
 
     # TODO: Remember the last close size
-    w.resize(700, 560)
+    w.resize(700, 580)
     w.show()
 
     dprint("leave")
@@ -165,7 +165,7 @@ class _MainObject(object):
       ss.setTtsEnabled(False)
 
     ret.setEnabled(ss.isTtsEnabled())
-    ss.ttsEnabledChanged.emit(ret.setEnabled)
+    ss.ttsEnabledChanged.connect(ret.setEnabled)
 
     #ret.setOnline(self.networkManager.isOnline())
     #self.networkManager.onlineChanged.connect(ret.setOnline)
