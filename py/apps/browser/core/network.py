@@ -7,6 +7,7 @@ __all__ = ['WbNetworkAccessManager']
 import os
 from PySide.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkDiskCache
 from sakurakit import skfileio, sknetwork
+#from sakurakit.skdebug import dprint
 import proxy, rc
 
 ## Cookie ##
@@ -67,6 +68,7 @@ class WbNetworkCookieJar(sknetwork.SkNetworkCookieJar):
 class WbNetworkAccessManager(QNetworkAccessManager):
   def __init__(self, parent=None):
     super(WbNetworkAccessManager, self).__init__(parent)
+    self.sslErrors.connect(_WbNetworkAccessManager.onSslErrors)
 
     # Enable offline cache
     cache = QNetworkDiskCache(self)
@@ -89,5 +91,13 @@ class WbNetworkAccessManager(QNetworkAccessManager):
       reply.setUrl(url) # restore the old url
       return reply
     return super(WbNetworkAccessManager, self).createRequest(op, req, outgoingData)
+
+class _WbNetworkAccessManager:
+
+  # http://stackoverflow.com/questions/8362506/qwebview-qt-webkit-wont-open-some-ssl-pages-redirects-not-allowed
+  @staticmethod
+  def onSslErrors(reply, errors): # QNetworkReply, [QSslError] ->
+    reply.ignoreSslErrors()
+    #dprint("ignore ssl error")
 
 # EOF
