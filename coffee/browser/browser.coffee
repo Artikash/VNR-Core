@@ -18,9 +18,8 @@ WHITE_SPACES = [
 
 toString = (val) -> if val? then val.toString() else ''
 
-ltrim = (str, chars) ->
+ltrim = (str, chars=WHITE_SPACES) ->
   str = toString str
-  chars = chars or WHITE_SPACES
 
   start = 0
   len = str.length
@@ -40,9 +39,8 @@ ltrim = (str, chars) ->
 
   if start >= len then '' else str.substr(start, len)
 
-rtrim = (str, chars) ->
+rtrim = (str, chars=WHITE_SPACES) ->
   str = toString str
-  chars = chars or WHITE_SPACES
 
   end = str.length - 1
   charLen = chars.length
@@ -61,9 +59,8 @@ rtrim = (str, chars) ->
 
   if end >= 0 then str.substring(0, end + 1) else ''
 
-trim = (str, chars) ->
+trim = (str, chars=WHITE_SPACES) ->
   str = toString str
-  chars = chars or WHITE_SPACES
   ltrim(rtrim(str, chars), chars)
 
 ## Render
