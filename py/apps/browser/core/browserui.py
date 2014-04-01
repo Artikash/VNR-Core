@@ -234,7 +234,7 @@ class _WebBrowser(object):
 
     a = ret.addAction(u"あ")
     a.setCheckable(True)
-    a.setToolTip(i18n.tr("Toggle Japanese parser"))
+    a.setToolTip("%s (MeCab)" % i18n.tr("Toggle Japanese parser"))
     a.setEnabled(self._jlpAvailable)
     a.setChecked(self._injectEnabled)
     a.triggered[bool].connect(ss.setMeCabEnabled)
