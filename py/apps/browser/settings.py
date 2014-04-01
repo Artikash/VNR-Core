@@ -2,7 +2,7 @@
 # settings.py
 # 12/13/2012 jichi
 
-from PySide.QtCore import QSettings
+from PySide.QtCore import QSettings, Signal
 from sakurakit.skclass import memoized
 from sakurakit.sktypes import to_int, to_unicode
 import config
@@ -14,6 +14,13 @@ def global_(): return Settings()
 def reader(): return ReaderSettings()
 
 def to_bool(value): return value == True or value  == 'true'
+
+def to_dict(value):
+  """
+  @param  dict or None
+  @return  dict
+  """
+  return value if isinstance(value, dict) else {}
 
 class Settings(QSettings):
 
@@ -55,6 +62,8 @@ class ReaderSettings(QSettings):
   def isMainlandChina(self): return to_bool(self.value('MainlandChina'))
   def isCursorThemeEnabled(self): return to_bool(self.value('CursorThemeEnabled', True))
 
+  ## MeCab
+
   def rubyType(self):
     ret = self.value('FuriganaType', 'hira')
     if ret == 'hiragana':
@@ -63,7 +72,23 @@ class ReaderSettings(QSettings):
       ret = 'kata'
     return ret
 
-  def meCabDictionary(self):
-    return self.value('MeCabDictionary', '') # str
+  def meCabDictionary(self): return self.value('MeCabDictionary', '') # str
+
+  ## TTS
+
+  ttsEngineChanged = Signal(unicode)
+  def ttsEngine(self): return to_unicode(self.value('TTSEngine'))
+
+  zunkoLocationChanged = Signal(unicode)
+  def zunkoLocation(self): return to_unicode(self.value('ZunkoLocation'))
+
+  yukariLocationChanged = Signal(unicode)
+  def yukariLocation(self): return to_unicode(self.value('YukariLocation'))
+
+  def sapiSpeeds(self):
+    """
+    @return  {str ttskey:int speed}
+    """
+    return to_dict(self.value('SAPISpeeds'))
 
 # EOF
