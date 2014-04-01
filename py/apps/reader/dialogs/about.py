@@ -2,6 +2,14 @@
 # about.py
 # 12/28/2013 jichi
 
+__all__ = ['AboutDialog']
+
+if __name__ == '__main__':
+  import sys
+  sys.path.append('..')
+  import debug
+  debug.initenv()
+
 from functools import partial
 from PySide.QtCore import Qt
 from Qt5 import QtWidgets
@@ -10,6 +18,22 @@ from sakurakit.skclass import Q_Q
 from sakurakit.sktr import tr_
 #from mytr import mytr_
 import info
+
+class AboutDialog(QtWidgets.QDialog):
+  def __init__(self, parent=None):
+    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    super(AboutDialog, self).__init__(parent, WINDOW_FLAGS)
+    skqss.class_(self, 'texture')
+    self.__d = _AboutDialog(self)
+    #self.setWindowTitle(tr_("About {0}").format(mytr_("Visual Novel Reader")))
+    self.setWindowTitle(tr_("About {0}").format("Visual Novel Reader"))
+    self.resize(450, 400)
+
+  def setVisible(self, t):
+    """@reimp"""
+    if t and t != self.isVisible():
+      self.__d.refresh()
+    super(AboutDialog, self).setVisible(t)
 
 class _AboutDialog:
   def __init__(self, q):
@@ -79,20 +103,10 @@ class _AboutDialog:
     msg = '\n'.join((line1, line2))
     self.versionLabel.setText(msg)
 
-class AboutDialog(QtWidgets.QDialog):
-  def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
-    super(AboutDialog, self).__init__(parent, WINDOW_FLAGS)
-    skqss.class_(self, 'texture')
-    self.__d = _AboutDialog(self)
-    #self.setWindowTitle(tr_("About {0}").format(mytr_("Visual Novel Reader")))
-    self.setWindowTitle(tr_("About {0}").format("Visual Novel Reader"))
-    self.resize(450, 400)
-
-  def setVisible(self, t):
-    """@reimp"""
-    if t and t != self.isVisible():
-      self.__d.refresh()
-    super(AboutDialog, self).setVisible(t)
+if __name__ == '__main__':
+  a = debug.app()
+  w = AboutDialog()
+  w.show()
+  a.exec_()
 
 # EOF

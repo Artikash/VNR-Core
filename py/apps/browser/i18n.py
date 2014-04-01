@@ -6,6 +6,8 @@ __all__ = ['i18n']
 
 from PySide.QtCore import QObject
 
+# Translations
+
 class i18n(QObject): pass
 i18n = i18n()
 

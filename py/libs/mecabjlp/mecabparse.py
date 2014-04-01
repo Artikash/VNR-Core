@@ -11,12 +11,16 @@ if __name__ == '__main__': # DEBUG
 
 #import re
 import MeCab
-from sakurakit import skstr
+from sakurakit import skos, skstr
 from cconv import cconv
 from jptraits import jpchars
 import mecabdef, mecabfmt, mecabtag
 
-HAS_MSIME = False
+if skos.WIN:
+  from msime import msime
+  HAS_MSIME = msime.ja_valid() # cached
+else:
+  HAS_MSIME = False
 
 ## Parser ##
 
@@ -184,18 +188,6 @@ def toromaji(text, capitalize=True, **kwargs):
     ret = capitalizeromaji(ret)
   return ret
 
-#def tolou(self, text, termEnabled=False, ruby=mecabdef.RB_TR):
-#  """
-#  @param  text  unicode
-#  @param* termEnabled  bool  whether query terms
-#  @param* type  bool  whether return type
-#  @param* ruby  unicode
-#  @return  unicode
-#  """
-#  # Add space between words
-#  return ' '.join(furigana or surface for surface,furigana in
-#      self.parse(text, termEnabled=termEnabled, reading=True, lougo=True, ruby=ruby))
-
 if __name__ == '__main__':
   dicdir = '/opt/local/lib/mecab/dic/ipadic-utf8'
   dicdir = '/Users/jichi/opt/Visual Novel Reader/Library/Dictionaries/ipadic'
@@ -219,3 +211,16 @@ if __name__ == '__main__':
   print toyomi(t)
 
 # EOF
+
+#def tolou(self, text, termEnabled=False, ruby=mecabdef.RB_TR):
+#  """
+#  @param  text  unicode
+#  @param* termEnabled  bool  whether query terms
+#  @param* type  bool  whether return type
+#  @param* ruby  unicode
+#  @return  unicode
+#  """
+#  # Add space between words
+#  return ' '.join(furigana or surface for surface,furigana in
+#      self.parse(text, termEnabled=termEnabled, reading=True, lougo=True, ruby=ruby))
+

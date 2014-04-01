@@ -110,7 +110,11 @@ $hover-border-color: #7da8e6 // bluer, emulate bootstrap border
     border: 1px solid rgba($border-color, 0.8)
     //border: 1px solid $border-color
     border-radius: 4px
-    min-width: 71px
+
+    &.toolbar-nav
+      min-width: 80px
+    &.toolbar-opt
+      min-width: 40px
 
     QToolButton
       color: $foreground-color
@@ -118,6 +122,21 @@ $hover-border-color: #7da8e6 // bluer, emulate bootstrap border
       height: 16px
       font-size: 12px
       //font-weight: bold
+      &:checked
+        font-weight: bold
+        //border: 2px solid $hover-border-color
+        //border: 1px solid $hover-border-color
+        //border: 1px solid rgba($border-color, 0.4)
+        //border: 2px solid transparent
+        //background-color: rgba($background-color, 0.1)
+      &:disabled // disabled must come at last
+        color: #bbb // gray
+        font-weight: normal
+        //border: none
+
+      // https://bugreports.qt-project.org/browse/QTBUG-2036
+      &::menu-indicator // disable menu arrow
+        image: none
 
 =toolbar-style($foreground-color, $background-color, $border-color)
   // Address toolbar
@@ -125,19 +144,28 @@ $hover-border-color: #7da8e6 // bluer, emulate bootstrap border
     border: 1px solid rgba($border-color, 0.8)
     //border: 1px solid $border-color
     border-radius: 4px
-    min-width: 71px
     background-color: rgba($background-color, 0.5)
+
+    &.toolbar-nav
+      min-width: 80px
+    &.toolbar-opt
+      min-width: 40px
 
     QToolButton
       color: $foreground-color
       width: 16px
       height: 16px
       font-size: 12px
+      &:disabled
+        color: #bbb // gray
+
       //font-weight: bold
       //&:hover
       //  border-radius: 4px
       //  background-color: $background-color
       //  border: 1px solid $border-color
+      &::menu-indicator // disable menu arrow
+        image: none
 
 /** Tabbar style */
 

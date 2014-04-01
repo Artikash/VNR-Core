@@ -27,118 +27,23 @@ from sakurakit import skstr
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint
 from cconv import cconv
-import mecabdef, mecabparse
+import mecabdef, mecabfmt, mecabparse, mecabrender
 
 _rx_spaces = re.compile(r'\s+')
 _rx_match_spaces = re.compile(r'^\s+$')
 
-## Parser ##
-
-#toyomi = _MP.toyomi
-#def toyomi(text, space=True, capital=False, **kwargs):
-#  """
-#  @param  text  unicode
-#  @param* space  bool
-#  @return  unicode  plan text
-#  """
-#  ret = ' '.join(_MP.toyomi(it, **kwargs)
-#    for it in _rx_spaces.split(text) if it
-#  ) if space else _MP.toyomi(it, **kwargs)
-#  if capital:
-#    ret = capitalizeromaji(ret)
-#  return ret
-
-def getfeaturesurface(feature):
-  """
-  @param  feature  unicode
-  @return  unicode
-  """
-  if feature:
-    ret = feature.split(',')[-3]
-    if ret != '*':
-      return ret
-
-def renderfeature(feature):
-  """
-  @param  feature  unicode
-  @param* surface  text
-  @return  unicode or None
-
-  Example feature: 名詞,サ変接続,*,*,*,*,感謝,カンシャ,カンシャ
-  Input feature:
-    品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用形,活用型,原形,読み,発音
-  Rendered feature:
-    原形,発音,品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用形
-  """
-  l = feature.replace('*', '').split(',')
-
-  l.insert(0, l[-3])
-  del l[-3] # move 原形 to l[0]
-
-  del l[-2] # delete 読み
-
-  yomi = cconv.kata2hira(l[-1])
-  del l[-1]
-  if yomi != l[0]:
-    l.insert(1, yomi) # move 発音 after 原形
-
-  l = ifilter(bool, l)
-  return ','.join(l)
-
-#def rendertable(text, ruby=mecabdef.RB_HIRA, features=None, rubySize='10px', colorize=False, center=True):
-#  """
-#  @param  text  unicode
-#  @param* ruby  int
-#  @param* rubySize  str
-#  @param* colorsize  bool
-#  @param* center  bool
-#  @param* features  {unicode surface:unicode feature} or None
-#  @return  unicode  HTML table
-#  """
-#  l = []
-#  i = j = 0
-#  feature = features is not None
-#  color = None
-#  for it in parse(text, type=True, feature=feature, reading=True, ruby=ruby):
-#    if feature:
-#      surface, ch, yomi, f = it
-#    else:
-#      surface, ch, yomi = it
-#    if colorize:
-#      color = None
-#      if ch in (mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN, mecabdef.TYPE_KATAGANA):
-#          i += 1
-#          color = 'rgba(255,0,0,40)' if i % 2 else 'rgba(255,255,0,40)'   # red or yellow
-#      elif ch == mecabdef.TYPE_MODIFIER: # adj or adv
-#        j += 1
-#        #color = "rgba(0,255,0,40)" if j % 2 else "rgba(255,0,255,40)" # green or magenta
-#        color = "rgba(0,255,0,40)" if j % 2 else "rgba(0,0,255,40)" # green or blue
-#    l.append((surface, yomi, color))
-#    if feature:
-#      features[surface] = f
-#  return "" if not l else rc.jinja_template('html/furigana').render({
-#    'tuples': l,
-#    #'bgcolor': "rgba(0,0,0,5)",
-#    'rubySize': rubySize,
-#    'center': center,
-#  })
-
-## Render HTML ruby ##
+## Render HTML ##
 
 _WORD_CSS_CLASSES = 'word2', 'word1', 'word4', 'word3'
-def _renderruby_word_iter(text, hasClass, features, **kwargs):
+def _renderruby_word_iter(text, hasClass, fmt=mecabfmt.DEFAULT, **kwargs):
   """
-  @yield  (str styleClass or None, unicode surface, unicode furigana not None)
+  @yield  (str styleClass or None, unicode feature, unicode surface, unicode furigana not None)
   """
   l = []
   i = j = 0
-  feature = features is not None
   styleClass = None
-  for it in mecabparse.parse(text, type=True, reading=True, feature=feature, **kwargs):
-    if feature:
-      surface, ch, yomi, f = it
-    else:
-      surface, ch, yomi = it
+  for surface, ch, yomi, feature in mecabparse.parse(text, type=True, reading=True, feature=True, fmt=fmt, **kwargs):
+    feature = mecabrender.renderfeature(feature, fmt) if feature else ''
     if hasClass:
       styleClass = None
       if ch in (mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN, mecabdef.TYPE_KATAGANA):
@@ -149,9 +54,7 @@ def _renderruby_word_iter(text, hasClass, features, **kwargs):
         j += 1
         #color = "rgba(0,255,0,40)" if j % 2 else "rgba(0,0,255,40)" # green or blue
         styleClass = _WORD_CSS_CLASSES[2 + j % 2]
-    if feature:
-      features[surface] = f
-    yield styleClass, surface, yomi or ''
+    yield styleClass, feature, surface, (yomi or '')
 
 def _renderruby_word(text, hasClass, **kwargs):
   """
@@ -159,9 +62,9 @@ def _renderruby_word(text, hasClass, **kwargs):
   """
   q = _renderruby_word_iter(text, hasClass=hasClass, **kwargs)
   if hasClass:
-    return ''.join('<ruby class="%s"><rb>%s</rb><rt>%s</rt></ruby>' % it for it in q)
+    return ''.join('<ruby class="%s" title="%s"><rb>%s</rb><rt>%s</rt></ruby>' % it for it in q)
   else:
-    return ''.join('<ruby><rb>%s</rb><rt>%s</rt></ruby>' % it[1:] for it in q)
+    return ''.join('<ruby title="%s"><rb>%s</rb><rt>%s</rt></ruby>' % it[1:] for it in q)
 
 #_rx_spaces = re.compile(r'\s+')
 def _renderruby_segment(text, **kwargs):
@@ -212,21 +115,20 @@ def _renderruby_html(text, **kwargs):
   """
   return ''.join(_renderruby_html_iter(text, **kwargs))
 
-def renderruby(text, html=False, hasClass=True, ruby=mecabdef.RB_HIRA, features=None):
+def renderruby(text, html=False, hasClass=True, ruby=mecabdef.RB_HIRA):
   """
   @param  text  unicode
   @param* html  bool  whether input text contains html tags
   @param* ruby  str
   @param* hasClass  bool  whether have style classes
-  @param* features  {unicode surface:unicode feature} or None
   @return  unicode  HTML ruby list
   """
   if not text:
     return ''
   if html:
-    return _renderruby_html(text, hasClass=hasClass, ruby=ruby, features=features)
+    return _renderruby_html(text, hasClass=hasClass, ruby=ruby)
   else:
-    return _renderruby_segment(text, hasClass=hasClass, ruby=ruby, features=features)
+    return _renderruby_segment(text, hasClass=hasClass, ruby=ruby)
 
 def renderhtml(text, ruby=mecabdef.RB_HIRA):
   """
@@ -234,7 +136,6 @@ def renderhtml(text, ruby=mecabdef.RB_HIRA):
   @param* ruby  str
   """
   return renderruby(text, html=True, ruby=ruby)
-
 
 if __name__ == '__main__':
   #t = u"すもももももももものうち"
@@ -251,3 +152,94 @@ if __name__ == '__main__':
   print renderhtml("<a href='hello'>%s</a>" % t)
 
 # EOF
+
+## Parser ##
+
+#toyomi = _MP.toyomi
+#def toyomi(text, space=True, capital=False, **kwargs):
+#  """
+#  @param  text  unicode
+#  @param* space  bool
+#  @return  unicode  plan text
+#  """
+#  ret = ' '.join(_MP.toyomi(it, **kwargs)
+#    for it in _rx_spaces.split(text) if it
+#  ) if space else _MP.toyomi(it, **kwargs)
+#  if capital:
+#    ret = capitalizeromaji(ret)
+#  return ret
+
+#def getfeaturesurface(feature):
+#  """
+#  @param  feature  unicode
+#  @return  unicode
+#  """
+#  if feature:
+#    ret = feature.split(',')[-3]
+#    if ret != '*':
+#      return ret
+#
+#def renderfeature(feature):
+#  """
+#  @param  feature  unicode
+#  @param* surface  text
+#  @return  unicode or None
+#
+#  Example feature: 名詞,サ変接続,*,*,*,*,感謝,カンシャ,カンシャ
+#  Input feature:
+#    品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用形,活用型,原形,読み,発音
+#  Rendered feature:
+#    原形,発音,品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用形
+#  """
+#  l = feature.replace('*', '').split(',')
+#
+#  l.insert(0, l[-3])
+#  del l[-3] # move 原形 to l[0]
+#
+#  del l[-2] # delete 読み
+#
+#  yomi = cconv.kata2hira(l[-1])
+#  del l[-1]
+#  if yomi != l[0]:
+#    l.insert(1, yomi) # move 発音 after 原形
+#
+#  l = ifilter(bool, l)
+#  return ','.join(l)
+
+#def rendertable(text, ruby=mecabdef.RB_HIRA, features=None, rubySize='10px', colorize=False, center=True):
+#  """
+#  @param  text  unicode
+#  @param* ruby  int
+#  @param* rubySize  str
+#  @param* colorsize  bool
+#  @param* center  bool
+#  @param* features  {unicode surface:unicode feature} or None
+#  @return  unicode  HTML table
+#  """
+#  l = []
+#  i = j = 0
+#  feature = features is not None
+#  color = None
+#  for it in parse(text, type=True, feature=feature, reading=True, ruby=ruby):
+#    if feature:
+#      surface, ch, yomi, f = it
+#    else:
+#      surface, ch, yomi = it
+#    if colorize:
+#      color = None
+#      if ch in (mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN, mecabdef.TYPE_KATAGANA):
+#          i += 1
+#          color = 'rgba(255,0,0,40)' if i % 2 else 'rgba(255,255,0,40)'   # red or yellow
+#      elif ch == mecabdef.TYPE_MODIFIER: # adj or adv
+#        j += 1
+#        #color = "rgba(0,255,0,40)" if j % 2 else "rgba(255,0,255,40)" # green or magenta
+#        color = "rgba(0,255,0,40)" if j % 2 else "rgba(0,0,255,40)" # green or blue
+#    l.append((surface, yomi, color))
+#    if feature:
+#      features[surface] = f
+#  return "" if not l else rc.jinja_template('html/furigana').render({
+#    'tuples': l,
+#    #'bgcolor': "rgba(0,0,0,5)",
+#    'rubySize': rubySize,
+#    'center': center,
+#  })

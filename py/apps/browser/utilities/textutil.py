@@ -6,7 +6,7 @@
 
 def completeurl(url): # str -> str
   url = url.strip()
-  if '://' not in url:
+  if '://' not in url and not url.startswith('about:'):
     url = 'http://' + url
   return url
 

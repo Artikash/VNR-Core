@@ -1,10 +1,10 @@
 # coding: utf8
-# webbrowser.py
+# browserui.py
 # 12/13/2012 jichi
 
 __all__ = ['WebBrowser']
 
-import re
+import re, weakref
 from functools import partial
 from PySide.QtCore import Qt, Signal, QUrl
 from PySide import QtGui
@@ -19,16 +19,11 @@ from network import *
 from tabui import *
 from webkit import *
 from i18n import i18n
-import config, proxy, rc, textutil, ui
-
-START_HTML = rc.jinja_template('start').render({
-  'tr': tr_,
-  'rc': rc,
-}) # unicode html
+import config, proxy, rc, settings, textutil, ui
 
 MAX_TITLE_LENGTH = 20
 
-EMPTY_URL = "about:blank"
+BLANK_URL = "about:blank"
 
 def _urltext(url): # unicode|QUrl -> unicode
   if isinstance(url, QUrl):
@@ -75,10 +70,18 @@ class WebBrowser(SkDraggableMainWindow):
 @Q_Q
 class _WebBrowser(object):
   def __init__(self, q):
+    ss = settings.global_()
+    self._injectEnabled = ss.isMeCabEnabled()
+    self._ttsEnabled = ss.isTtsEnabled() # cached
+
     self.loadProgress = 100 # int [0,100]
 
     self.visitedUrls = [] # [str url]
     self.closedUrls = [] # [str url]
+
+    import jlpman, ttsman
+    self._jlpAvailable = jlpman.manager().isAvailable() # bool
+    self._ttsAvailable = ttsman.manager().isAvailable() # bool
 
     #layout = QtWidgets.QVBoxLayout()
     #layout.addWidget(self.addressWidget)
@@ -123,9 +126,14 @@ class _WebBrowser(object):
     for k in 'ctrl+l', 'alt+d':
       shortcut(k, self.addressEdit.focus, parent=q)
 
+    for k in 'ctrl+{', 'ctrl+shift+tab':
+      shortcut(k, self.previousTab, parent=q)
+    for k in 'ctrl+}', 'ctrl+tab':
+      shortcut(k, self.nextTab, parent=q)
+
     for i in range(1, 10):
-      shortcut('ctrl+%i' % i, partial(self.activateTab, i-1), parent=q)
-    #shortcut('ctrl+0', partial(self.activateTab, 10-9), parent=q) # ctrl+ 0 used by zoom reset
+      shortcut('ctrl+%i' % i, partial(self.focusTab, i-1), parent=q)
+    #shortcut('ctrl+0', partial(self.focusTab, 10-9), parent=q) # ctrl+ 0 used by zoom reset
 
   ## Properties ##
 
@@ -162,8 +170,9 @@ class _WebBrowser(object):
   @memoizedproperty
   def addressWidget(self):
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(self.addressToolBar)
+    row.addWidget(self.navigationToolBar)
     row.addWidget(self.addressEdit, 1)
+    row.addWidget(self.optionToolBar)
     row.setContentsMargins(2, 2, 2, 2)
     ret = QtWidgets.QWidget()
     ret.setLayout(row)
@@ -191,7 +200,7 @@ class _WebBrowser(object):
     return ret
 
   @memoizedproperty
-  def addressToolBar(self):
+  def navigationToolBar(self):
     ret = QtWidgets.QToolBar()
     ret.setGraphicsEffect(ui.glowEffect(ret))
     skqss.class_(ret, 'webkit toolbar toolbar-nav')
@@ -215,6 +224,69 @@ class _WebBrowser(object):
     a.setToolTip("%s (Ctrl+Shift+T)" % i18n.tr("Undo close tab"))
     return ret
 
+  @memoizedproperty
+  def optionToolBar(self):
+    ret = QtWidgets.QToolBar()
+    ret.setGraphicsEffect(ui.glowEffect(ret))
+    skqss.class_(ret, 'webkit toolbar toolbar-opt')
+
+    ss = settings.global_()
+
+    a = ret.addAction(u"あ")
+    a.setCheckable(True)
+    a.setToolTip(i18n.tr("Toggle Japanese parser"))
+    a.setEnabled(self._jlpAvailable)
+    a.setChecked(self._injectEnabled)
+    a.triggered[bool].connect(ss.setMeCabEnabled)
+    a.triggered[bool].connect(self._setInjectEnabled)
+
+    a = self.ttsAct = ret.addAction(u"♪") # おんぷ
+    a.setCheckable(True)
+    a.setToolTip("%s (TTS)" % i18n.tr("Toggle text-to-speech") )
+    a.setEnabled(self._injectEnabled and self._jlpAvailable and self._ttsAvailable)
+    a.setChecked(self._ttsEnabled)
+    a.triggered[bool].connect(ss.setTtsEnabled)
+    a.triggered[bool].connect(self._setTtsEnabled)
+    a.setVisible(skos.WIN) # only enabled on Windows
+
+    a = ret.addAction(u"⌘") # U+2318 コマンド記号
+    a.setToolTip(tr_("Menu"))
+    a.setMenu(self.optionMenu)
+    #a.triggered.connect(a.menu().exec_)
+    # https://bugreports.qt-project.org/browse/QTBUG-1453
+    btn = ret.widgetForAction(a)
+    btn.setPopupMode(QtWidgets.QToolButton.InstantPopup)
+    return ret
+
+  @memoizedproperty
+  def optionMenu(self):
+    ret = QtWidgets.QMenu(self.q)
+
+    #a = ret.addAction(rc.standard_icon(QtWidgets.QStyle.SP_DialogHelpButton), tr_("Help"))
+    a = ret.addAction(tr_("Help"))
+    a.triggered.connect(self._openHelpPage)
+    a.setToolTip("about:help")
+
+    a = ret.addAction(tr_("About"))
+    a.triggered.connect(self._openAboutPage)
+    a.setToolTip("about:version")
+    return ret
+
+  ## JLP ##
+
+  def _setInjectEnabled(self, t): # bool ->
+    self._injectEnabled = t
+    for w in self._iterTabWidgets():
+      w.setInjectEnabled(t)
+
+    if self._ttsAvailable:
+      self.ttsAct.setEnabled(t)
+
+  def _setTtsEnabled(self, t): # bool ->
+    self._ttsEnabled = t
+    for w in self._iterTabWidgets():
+      w.inject()
+
   ## Load/save ##
 
   def loadTabs(self): # -> bool
@@ -230,12 +302,10 @@ class _WebBrowser(object):
 
   def saveTabs(self): # -> bool
     ret = False
-    w = self.tabWidget
     urls = [] # [unicode url]
-    for i in xrange(w.count()):
-      v = w.widget(i)
-      url = v.url().toString()
-      if url != EMPTY_URL:
+    for w in self._iterTabWidgets():
+      url = w.url().toString()
+      if url != BLANK_URL:
         urls.append(url)
     path = rc.TABS_LOCATION
     if urls:
@@ -289,12 +359,21 @@ class _WebBrowser(object):
 
   ## Actions ##
 
+  def _iterTabWidgets(self): # yield QWebView
+    w = self.tabWidget
+    for i in xrange(w.count()):
+      yield w.widget(i)
+
+
   def highlightText(self, t):
     t = t.strip()
     if t:
       w = self.tabWidget.currentWidget()
       if w:
         w.rehighlight(t)
+
+  def _openHelpPage(self): self.openUrlAfterCurrent('about:help', focus=True)
+  def _openAboutPage(self): self.openUrlAfterCurrent('about:version', focus=True)
 
   def openUnknown(self, text): # string ->
     """
@@ -349,7 +428,7 @@ class _WebBrowser(object):
   def addRecentUrl(self, url): # string|QUrl ->
     text = _urltext(url)
     if text:
-      if text != EMPTY_URL:
+      if text != BLANK_URL:
         self.visitedUrls.append(text)
       self.addressEdit.addText(text)
 
@@ -362,7 +441,8 @@ class _WebBrowser(object):
     v = self.tabWidget.currentWidget()
     #assert v
     if v:
-      v.setHtml(START_HTML)
+      v.load(BLANK_URL)
+      #v.setHtml(START_HTML)
       #self.tabWidget.setTabText(self.currentIndex(), tr("Start Page"));
       #int i = ui->addressEdit->findText(WB_BLANK_PAGE);
       #if (i >= 0)
@@ -375,9 +455,14 @@ class _WebBrowser(object):
       del self.closedUrls[-1]
       self.openUnknownBeforeCurrent(url)
 
-  def activateTab(self, index): # int ->
+  def focusTab(self, index): # int ->
     if index >=0 and index < self.tabWidget.count():
       self.tabWidget.setCurrentIndex(index)
+
+  def previousTab(self):
+    self.focusTab(self.tabWidget.currentIndex() - 1)
+  def nextTab(self):
+    self.focusTab(self.tabWidget.currentIndex() + 1)
 
   def newTabAfterCurrentWithBlankPage(self):
     self.newTabAfterCurrent()
@@ -421,23 +506,31 @@ class _WebBrowser(object):
     page.linkHovered.connect(self.showLink)
     page.linkClickedWithModifiers.connect(self.openUrlAfterCurrent)
 
-    ret.titleChanged.connect(partial(self.setTabTitle, ret))
+    ref = weakref.ref(ret)
+
+    #ret.titleChanged.connect(partial(self.setTabTitle, ret))
+    ret.titleChanged.connect(partial(lambda ref, v:
+        self.setTabTitle(ref(), v),
+        ref))
+
     ret.urlChanged.connect(self.refreshAddress)
     ret.messageReceived.connect(self.q.messageReceived)
     ret.linkClicked.connect(self.addRecentUrl)
     ret.linkClicked.connect(lambda url:
         url.isEmpty() or self.setDisplayAddress(url))
 
-    ret.iconChanged.connect(partial(lambda view:
-        view == self.tabWidget.currentWidget() and self.refreshWindowIcon(),
-        ret))
+    ret.iconChanged.connect(partial(lambda ref:
+        ref() == self.tabWidget.currentWidget() and self.refreshWindowIcon(),
+        ref))
 
-    ret.titleChanged.connect(partial(lambda view, value:
-        view == self.tabWidget.currentWidget() and self.refreshWindowTitle(),
-        ret))
-    page.loadProgress.connect(partial(lambda view, value:
-        view == self.tabWidget.currentWidget() and self.refreshLoadProgress(),
-        ret))
+    ret.titleChanged.connect(partial(lambda ref, value:
+        ref() == self.tabWidget.currentWidget() and self.refreshWindowTitle(),
+        ref))
+    page.loadProgress.connect(partial(lambda ref, value:
+        ref() == self.tabWidget.currentWidget() and self.refreshLoadProgress(),
+        ref))
+
+    ret.setInjectEnabled(self._injectEnabled)
 
     return ret
 
@@ -528,11 +621,13 @@ class _WebBrowser(object):
         w = self.tabWidget.widget(index)
         url = w.url()
         self.tabWidget.removeTab(index)
-        w.clear()
+
+        w.clear() # enforce clear flash
+        w.setParent(None) # only needed in PySide, otherwise the parent is QStackWidget
 
         #url = url.toString()
         url = _urltext(url)
-        if url != EMPTY_URL:
+        if url != BLANK_URL:
           self.closedUrls.append(url)
 
   def closeCurrentTab(self):

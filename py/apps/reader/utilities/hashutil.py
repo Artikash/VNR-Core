@@ -25,7 +25,6 @@ def md5sum(path):
       MD5SUM[path] = ret
     return ret
 
-
 """
 @param  str or unicode not None
 @return   str
@@ -63,7 +62,6 @@ strhash = skhash.djb2_64
 @return   long
 """
 strhash_old_vnr = skhash.djb2_64_s
-
 
 """Backward compat for Zky's subs of「はつゆきさくら」.
 The problem is caused by 0 values in utf16 encoding.

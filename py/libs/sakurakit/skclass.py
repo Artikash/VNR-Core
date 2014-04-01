@@ -208,6 +208,31 @@ def Q_Q(cls):
 
   return cls
 
+if __name__ == '__main__':
+  from PySide.QtCore import QObject
+
+  @Q_Q
+  class _A(object):
+    def __init__(self, q):
+      pass
+
+    def __del__(self):
+      print "del B"
+
+  class A(QObject):
+    def __init__(self):
+      super(A, self).__init__()
+      self.__d = _A(self)
+
+    def __del__(self):
+      print "del A"
+
+  a = A()
+  b = QObject()
+  #b.setParent(a)
+  a = 0
+  print "exit"
+
 # EOF
 
 #class cached_property(object):

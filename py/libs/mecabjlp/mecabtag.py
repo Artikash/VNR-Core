@@ -41,13 +41,13 @@ def maketaggerargs(**kwargs):
         l.append('--%s %s' % (k, v))
   return ''.join(l)
 
-def createtagger(args):
+def createtagger(args=None):
   """
   @param  args  str not unicode
   @return  MeCab.Tagger or None
   """
   try:
-    ret = MeCab.Tagger(args)
+    ret = MeCab.Tagger(args) if args else MeCab.Tagger()
     ret.parse("") # critical
     return ret
   except Exception, e:

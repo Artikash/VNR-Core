@@ -61,6 +61,7 @@ def main():
 
   import rc
   for it in (
+      rc.DIR_CACHE_DATA,
       rc.DIR_CACHE_HISTORY,
       rc.DIR_CACHE_NETMAN,
       rc.DIR_CACHE_WEBKIT,

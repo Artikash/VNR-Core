@@ -68,6 +68,8 @@ VERSION_TIMESTAMP = long(APP_YAML['version']['timestamp'])
 ENV_PATH = map(parse_path, SHARE_YAML['env']['path']) # [unicode path]
 ENV_PYTHONPATH = map(parse_path, SHARE_YAML['env']['pythonpath']) # [str path]
 
+APP_PYTHONPATH = map(parse_path, APP_YAML['env']['pythonpath']) # [unicode abspath]
+
 ## Settings ##
 
 QT_THREAD_COUNT = parse_int(APP_YAML['qt']['threadCount'])
@@ -136,6 +138,13 @@ IMAGE_LOCATIONS = {k: parse_path(v) # {str name:unicode path}
 
 CURSOR_LOCATIONS = {k: parse_path(v) # {str name:unicode apspath}
     for k,v in SHARE_YAML['cursors'].iteritems()}
+
+CDN = SHARE_YAML['cdn']
+#CDN_LOCATIONS = {k: parse_path(v) # {str name:unicode apspath}
+#    for k,v in SHARE_YAML['cdn'].iteritems()}
+
+MECAB_RCFILES = {k: parse_path(v) # {str name:unicode abspath}
+    for k,v in SHARE_YAML['mecab']['rcfile'].iteritems()}
 
 ## Jinja ##
 

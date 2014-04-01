@@ -7,20 +7,22 @@ __all__ = ['MainObject']
 from PySide.QtCore import QCoreApplication, QObject
 from sakurakit import skevents, skos
 from sakurakit.skdebug import dprint, dwarn, debugmethod
-from sakurakit.skclass import memoizedproperty
+from sakurakit.skclass import Q_Q, memoizedproperty
 from i18n import i18n
 import config
 
+#def global_(): return MainObject.instance
+
 class MainObject(QObject):
   """Root of most objects"""
-  instance = None
+  #instance = None
 
   # Supposed to be top-level, no parent allowed
   def __init__(self):
     dprint('enter')
     super(MainObject, self).__init__()
-    self.__d = _MainObject()
-    MainObject.instance = self
+    self.__d = _MainObject(self)
+    #MainObject.instance = self
 
     dprint('leave')
 
@@ -28,6 +30,12 @@ class MainObject(QObject):
     """Starting point for the entire app"""
     dprint("enter: args =", args)
     d = self.__d
+
+    dprint("create managers")
+    d.ttsManager
+    d.beanManager
+    d.jlpManager
+    d.cacheManager
 
     dprint("show root window")
     w = d.mainWindow
@@ -41,7 +49,7 @@ class MainObject(QObject):
       w.openDefaultPage()
 
     # TODO: Remember the last close size
-    w.resize(700, 560)
+    w.resize(700, 580)
     w.show()
 
     dprint("leave")
@@ -71,12 +79,35 @@ class MainObject(QObject):
     if sel == yes:
       self.quit()
 
+  #def showAbout(self): _MainObject.showWindow(self.__d.aboutDialog)
+  #def showHelp(self): _MainObject.showWindow(self.__d.helpDialog)
+  #about = showAbout
+  #help = showHelp
+
 # MainObject private data
+@Q_Q
 class _MainObject(object):
   def __init__(self):
     self.hasQuit = False # if the application has quit
     self.widgets = [] # [QWidget]
     #q.destroyed.connect(self._onDestroyed)
+
+  # Helpers
+  @staticmethod
+  def showWindow(w):
+    """
+    @param  w  QWidget
+    """
+    if w.isMaximized() and w.isMinimized():
+      w.showMaximized()
+    elif w.isMinimized():
+      w.showNormal()
+    else:
+      w.show()
+    w.raise_()
+    #if not features.WINE:
+    #  w.raise_()
+    #  winutil.set_foreground_widget(w)
 
   ## Windows ##
 
@@ -86,6 +117,79 @@ class _MainObject(object):
     ret = mainwindow.MainWindow()
     ret.quitRequested.connect(self.quit)
     return ret
+
+  # Managers
+
+  @memoizedproperty
+  def beanManager(self):
+    dprint("create bean manager")
+    import beans
+    ret = beans.manager()
+    ret.setParent(self.q)
+    return ret
+
+  @memoizedproperty
+  def jlpManager(self):
+    dprint("create jlp manager")
+    import jlpman, settings
+    ret = jlpman.manager()
+
+    reader = settings.reader()
+    ret.setRubyType(reader.rubyType())
+    ret.setMeCabDicType(reader.meCabDictionary())
+    return ret
+
+  @memoizedproperty
+  def cacheManager(self):
+    dprint("create cache manager")
+    import cacheman
+    ret = cacheman.manager()
+    ret.setParent(self.q)
+
+    #ret.setEnabled(self.networkManager.isOnline())
+    #self.networkManager.onlineChanged.connect(ret.setEnabled)
+
+    ret.clearTemporaryFiles()
+    return ret
+
+  @memoizedproperty
+  def ttsManager(self):
+    dprint("create tts manager")
+    import ttsman, settings
+    ret = ttsman.manager()
+    ret.setParent(self.q)
+
+    ss = settings.global_()
+
+    if ss.isTtsEnabled() and not ret.isAvailable():
+      ss.setTtsEnabled(False)
+
+    ret.setEnabled(ss.isTtsEnabled())
+    ss.ttsEnabledChanged.connect(ret.setEnabled)
+
+    #ret.setOnline(self.networkManager.isOnline())
+    #self.networkManager.onlineChanged.connect(ret.setOnline)
+
+    reader = settings.reader()
+    ret.setDefaultEngine(reader.ttsEngine())
+    reader.ttsEngineChanged.connect(ret.setDefaultEngine)
+    return ret
+
+  # Dialogs
+
+  #@memoizedproperty
+  #def aboutDialog(self):
+  #  import about
+  #  ret = about.AboutDialog(self.mainWindow)
+  #  self.widgets.append(ret)
+  #  return ret
+
+  #@memoizedproperty
+  #def helpDialog(self):
+  #  import help
+  #  ret = help.AppHelpDialog(self.mainWindow)
+  #  self.widgets.append(ret)
+  #  return ret
 
   ## Actions ##
 

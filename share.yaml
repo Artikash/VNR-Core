@@ -48,11 +48,15 @@ env:
 cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as qrc://
   # Twitter
   # http://www.bootstrapcdn.com/#tab_fontawesome
-  bootstrap: http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js
-  bootstrap.css: http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css
+  bootstrap2: http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js
+  bootstrap2.css: http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css
+
+  bootstrap3: http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js
+  bootstrap3.css: http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css
 
   #font-awesome.css: http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css
-  font-awesome.css: $PWD/../AJAX/font-awesome/3.2.1/css/font-awesome.min.css
+  font-awesome3.css: $PWD/../AJAX/font-awesome/3.2.1/css/font-awesome.min.css
+  font-awesome4.css: $PWD/../AJAX/font-awesome/4.0.3/css/font-awesome.min.css
 
   twitter-widgets: http://platform.twitter.com/widgets.js
 
@@ -114,12 +118,12 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   haml: $PWD/../AJAX/npm/haml.min.js
 
   # Sass & coffeescript
-  choco: $PWD/coffee/choco.min.js
-  game: $PWD/coffee/game.min.js
+  choco: $PWD/coffee/reader/choco.min.js
+  game: $PWD/coffee/reader/game.min.js
   game.css: $PWD/rb/compass/web/css/game.min.css
-  gameboard: $PWD/coffee/gameboard.min.js
+  gameboard: $PWD/coffee/reader/gameboard.min.js
   gameboard.css: $PWD/rb/compass/web/css/gameboard.min.css
-  widgets: $PWD/coffee/widgets.min.js
+  widgets: $PWD/coffee/reader/widgets.min.js
   amazon.css: $PWD/rb/compass/web/css/amazon.min.css
   getchu.css: $PWD/rb/compass/web/css/getchu.min.css
   gyutto.css: $PWD/rb/compass/web/css/gyutto.min.css
@@ -128,6 +132,11 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   dragdealer.css: $PWD/rb/compass/web/css/dragdealer.min.css
   metro.css: $PWD/rb/compass/web/css/metro.min.css
   #iframe.css: $PWD/rb/compass/web/css/iframe.min.css
+
+  # Browser
+  inject: $PWD/coffee/browser/inject.min.js
+  browser: $PWD/coffee/browser/browser.min.js
+  browser.css: $PWD/rb/compass/web/css/browser.min.css
 
 # Qt
 
@@ -406,6 +415,8 @@ templates:
     xml/users:      xml/users.xml
     xml/voices:     xml/voices.xml
 
+    haml/browser/about: haml/browser/about.haml
+    haml/browser/help:  haml/browser/help.haml
     haml/browser/error: haml/browser/error.haml
     haml/browser/start: haml/browser/start.haml
 
@@ -518,6 +529,7 @@ icons:
   window-voice:     $PWD/images/sound.png
 
 images:
+  logo-browser:     $PWD/images/browser.png
   logo-reader:      $PWD/images/reader.png
   app-update:       $PWD/images/updater.png
   avatar:           $PWD/images/avatar.png
