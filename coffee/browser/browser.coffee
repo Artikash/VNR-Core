@@ -87,10 +87,9 @@ renderruby = (text, ruby, feature, className) -> # must be consistent with parse
   ret
 
 renderrepl = (text) -> # string -> node
-  ret = document.createDocumentFragment()
-
   data = jlpBean.parse text
   if data
+    ret = document.createDocumentFragment()
     for sentence in JSON.parse data
       seg = document.createElement 'span'
       seg.className = 'inject-ruby'
