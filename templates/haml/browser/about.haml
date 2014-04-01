@@ -1,21 +1,54 @@
 ; about.haml
 ; 3/31/2014 jichi
-; tr
-;!!! 5
+; @param  cdn
+; @param  tr  i18n.tr
+; @param  version  str
+!!! 5
 %html
   %head
+    %title #{tr('Start')}
+    %link(rel="stylesheet",href="#{rc.cdn_url('bootstrap3.css')}")
     :css
-      /* Bootstrap link */
-      a {
-        color: #0088cc;
-        text-decoration: none;
+      /* Global */
+      body {
+        /*background-color: #ececec;*/
+        background-repeat: repeat;
+        background-image: url("#{rc.image_url('background')}");
+        font: 120% arial,helvetica,clean,sans-serif;
       }
-      a:hover,
-      a:focus {
-        color: #005580;
-        text-decoration: underline;
+      .portal {
+        border-radius: 4px;
+        background-color: rgba(255,255,255,0.9);
+        margin: 50px auto;
+        max-width: 300px;
+        padding: 9px;
+      }
+      img.logo {
+        width: 80px;
+        height: 80px;
+        margin-left: 20px;
+      }
+      hr {
+        margin: 10px 0;
+      }
+      .links a {
+        margin-right: 10px;
       }
   %body
-    %h4 #{tr('Shortcuts')}
-
+    .portal
+      .row.head
+        %img.logo(src="#{rc.image_url('logo-browser')}")
+        #{tr('About')}
+      %hr
+      .body.form-horizontal
+        .form-group
+          %label.control-label.col-xs-4 #{tr('Version')}:
+          .form-control-static.col-xs-8 #{version}
+        .form-group
+          %label.control-label.col-xs-4 #{tr('Download')}:
+          .form-control-static.col-xs-8.links
+            -set url = "http://goo.gl/t31MqY"
+            %a(target="_blank",href="#{url}",title="#{url}") Google Drive
+            -set url = "http://pan.baidu.com/s/1jGftD9W"
+            %a(target="_blank",href="#{url}",title="#{url}") Baidu Disk
 ; EOF

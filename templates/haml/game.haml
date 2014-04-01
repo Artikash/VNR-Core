@@ -15,7 +15,7 @@
 ;!!! 5
 %html(lang="ja")
   %head
-    -for it in 'bootstrap.css', 'metro.css', 'font-awesome.css', 'dragdealer.css', 'game.css'
+    -for it in 'bootstrap2.css', 'metro.css', 'font-awesome3.css', 'dragdealer.css', 'game.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
     -if game.getchu and (game.getchu.hasDescriptions() or game.getchu.review)
       %link(rel="stylesheet",href="#{rc.cdn_url('getchu.css')}")

@@ -122,9 +122,14 @@ class _WebBrowser(object):
     for k in 'ctrl+l', 'alt+d':
       shortcut(k, self.addressEdit.focus, parent=q)
 
+    for k in 'ctrl+{', 'ctrl+shift+tab':
+      shortcut(k, self.previousTab, parent=q)
+    for k in 'ctrl+}', 'ctrl+tab':
+      shortcut(k, self.nextTab, parent=q)
+
     for i in range(1, 10):
-      shortcut('ctrl+%i' % i, partial(self.activateTab, i-1), parent=q)
-    #shortcut('ctrl+0', partial(self.activateTab, 10-9), parent=q) # ctrl+ 0 used by zoom reset
+      shortcut('ctrl+%i' % i, partial(self.focusTab, i-1), parent=q)
+    #shortcut('ctrl+0', partial(self.focusTab, 10-9), parent=q) # ctrl+ 0 used by zoom reset
 
   ## Properties ##
 
@@ -445,9 +450,14 @@ class _WebBrowser(object):
       del self.closedUrls[-1]
       self.openUnknownBeforeCurrent(url)
 
-  def activateTab(self, index): # int ->
+  def focusTab(self, index): # int ->
     if index >=0 and index < self.tabWidget.count():
       self.tabWidget.setCurrentIndex(index)
+
+  def previousTab(self):
+    self.focusTab(self.tabWidget.currentIndex() - 1)
+  def nextTab(self):
+    self.focusTab(self.tabWidget.currentIndex() + 1)
 
   def newTabAfterCurrentWithBlankPage(self):
     self.newTabAfterCurrent()

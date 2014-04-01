@@ -16,7 +16,8 @@ BAD_SUFFIX = '.bad'
 @memoized
 def manager(): return CacheManager()
 
-def url(url): return manager().cacheUrl(url) # cache url
+def cache_url(url): return manager().cacheUrl(url) # cache url
+#url = cache_url
 
 def _getdata(url, path, tmppath=None, touchbad=False, mimefilter=None, **kwargs):
   """

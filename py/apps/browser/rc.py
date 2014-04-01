@@ -7,7 +7,7 @@ import os, sys
 import jinja2
 from PySide.QtCore import QUrl
 from sakurakit import skos, skpaths
-import config
+import config, cacheman
 
 DIR_USER = (config.USER_PROFILES[skos.name]
     .replace('$HOME', skpaths.HOME)
@@ -95,10 +95,7 @@ def cdn_url(name):
   if '$PWD' in url:
     return 'file:///' + url.replace('$PWD', config.root_abspath())
   else:
-    return url
-  # TODO: cache URL
-  #else:
-  #  return cacheman.cache_url(url)
+    return cacheman.cache_url(url)
 
 CDN_DATA = {} # {str name:unicode data}
 def cdn_data(name):
@@ -175,12 +172,15 @@ def html_data(url): # QUrl|str -> unicode|None
     key = URL_TEMPLATE.get(url)
     if key:
       from sakurakit.sktr import tr_
-      import cacheman
       params = {
-        'cache': cacheman,
+        #'cache': cacheman,
         'tr': tr_,
         'rc': sys.modules[__name__],
       }
+      if key == 'about':
+        import i18nutil, settings
+        t = settings.global_().version()
+        params['version'] = i18nutil.timestamp2datetime(t)
       ret = HTML_DATA[url] = jinja_template(key).render(params) # unicode html
   return ret
 
