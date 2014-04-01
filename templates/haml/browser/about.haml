@@ -31,7 +31,7 @@
       hr {
         margin: 10px 0;
       }
-      .links a {
+      .links a.first {
         margin-right: 10px;
       }
   %body
@@ -48,7 +48,7 @@
           %label.control-label.col-xs-4 #{tr('Download')}:
           .form-control-static.col-xs-8.links
             -set url = "http://goo.gl/t31MqY"
-            %a(target="_blank",href="#{url}",title="#{url}") Google Drive
+            %a.first(target="_blank",href="#{url}",title="#{url}") Google Drive
             -set url = "http://pan.baidu.com/s/1jGftD9W"
             %a(target="_blank",href="#{url}",title="#{url}") Baidu Disk
 ; EOF
