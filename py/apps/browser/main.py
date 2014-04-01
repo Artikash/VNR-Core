@@ -11,18 +11,18 @@ from sakurakit.skclass import Q_Q, memoizedproperty
 from i18n import i18n
 import config
 
-def global_(): return MainObject.instance
+#def global_(): return MainObject.instance
 
 class MainObject(QObject):
   """Root of most objects"""
-  instance = None
+  #instance = None
 
   # Supposed to be top-level, no parent allowed
   def __init__(self):
     dprint('enter')
     super(MainObject, self).__init__()
     self.__d = _MainObject(self)
-    MainObject.instance = self
+    #MainObject.instance = self
 
     dprint('leave')
 
@@ -34,6 +34,7 @@ class MainObject(QObject):
     dprint("create managers")
     d.beanManager
     d.jlpManager
+    d.cacheManager
 
     dprint("show root window")
     w = d.mainWindow
@@ -77,10 +78,10 @@ class MainObject(QObject):
     if sel == yes:
       self.quit()
 
-  def showAbout(self): _MainObject.showWindow(self.__d.aboutDialog)
-  def showHelp(self): _MainObject.showWindow(self.__d.helpDialog)
-  about = showAbout
-  help = showHelp
+  #def showAbout(self): _MainObject.showWindow(self.__d.aboutDialog)
+  #def showHelp(self): _MainObject.showWindow(self.__d.helpDialog)
+  #about = showAbout
+  #help = showHelp
 
 # MainObject private data
 @Q_Q
@@ -137,21 +138,34 @@ class _MainObject(object):
     ret.setMeCabDicType(reader.meCabDictionary())
     return ret
 
+  @memoizedproperty
+  def cacheManager(self):
+    dprint("create cache manager")
+    import cacheman
+    ret = cacheman.manager()
+    ret.setParent(self.q)
+
+    #ret.setEnabled(self.networkManager.isOnline())
+    #self.networkManager.onlineChanged.connect(ret.setEnabled)
+
+    ret.clearTemporaryFiles()
+    return ret
+
   # Dialogs
 
-  @memoizedproperty
-  def aboutDialog(self):
-    import about
-    ret = about.AboutDialog(self.mainWindow)
-    self.widgets.append(ret)
-    return ret
+  #@memoizedproperty
+  #def aboutDialog(self):
+  #  import about
+  #  ret = about.AboutDialog(self.mainWindow)
+  #  self.widgets.append(ret)
+  #  return ret
 
-  @memoizedproperty
-  def helpDialog(self):
-    import help
-    ret = help.AppHelpDialog(self.mainWindow)
-    self.widgets.append(ret)
-    return ret
+  #@memoizedproperty
+  #def helpDialog(self):
+  #  import help
+  #  ret = help.AppHelpDialog(self.mainWindow)
+  #  self.widgets.append(ret)
+  #  return ret
 
   ## Actions ##
 

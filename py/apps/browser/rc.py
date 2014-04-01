@@ -14,6 +14,8 @@ DIR_USER = (config.USER_PROFILES[skos.name]
     .replace('$APPDATA', skpaths.APPDATA))
 
 DIR_USER_CACHE = DIR_USER + '/caches'       # $user/caches
+
+DIR_CACHE_DATA = DIR_USER_CACHE + '/data'       # $user/caches/data
 DIR_CACHE_HISTORY = DIR_USER_CACHE + '/history' # $user/caches/history
 DIR_CACHE_NETMAN = DIR_USER_CACHE + '/netman'   # $user/caches/netman
 DIR_CACHE_WEBKIT = DIR_USER_CACHE + '/webkit'   # $user/caches/webkit
@@ -111,6 +113,17 @@ def cdn_data(name):
     ret = CDN_DATA[name] = skfileio.readfile(cdn_path(name)).replace('$PWD', config.root_abspath())
   return ret
 
+#_MAX_CACHE_NAME_LENGTH = 32
+def data_cache_path(key):
+  """
+  @param  key  unicode
+  @return  unicode  path
+  @nothrow
+  """
+  import hashutil
+  name = hashutil.urlsum(key)
+  return "%s/%s" % (DIR_CACHE_DATA, name)
+
 #js = cdn
 
 # Webkit
@@ -149,6 +162,9 @@ def jinja_template(name):
 
 URL_TEMPLATE = {
   'about:blank': 'start',
+  #'about:error': 'error',
+  'about:help': 'help',
+  'about:version': 'about',
 }
 HTML_DATA = {} # {str url:unicode data}
 def html_data(url): # QUrl|str -> unicode|None
@@ -159,10 +175,13 @@ def html_data(url): # QUrl|str -> unicode|None
     key = URL_TEMPLATE.get(url)
     if key:
       from sakurakit.sktr import tr_
-      ret = HTML_DATA[url] = jinja_template(key).render({
+      import cacheman
+      params = {
+        'cache': cacheman,
         'tr': tr_,
         'rc': sys.modules[__name__],
-      }) # unicode html
+      }
+      ret = HTML_DATA[url] = jinja_template(key).render(params) # unicode html
   return ret
 
 # EOF

@@ -255,16 +255,13 @@ class _WebBrowser(object):
   def optionMenu(self):
     ret = QtWidgets.QMenu(self.q)
 
-    import main
-    m = main.global_()
-
     #a = ret.addAction(rc.standard_icon(QtWidgets.QStyle.SP_DialogHelpButton), tr_("Help"))
     a = ret.addAction(tr_("Help"))
-    a.triggered.connect(m.help)
+    a.triggered.connect(self._openHelpPage)
     a.setToolTip("about:help")
 
     a = ret.addAction(tr_("About"))
-    a.triggered.connect(m.about)
+    a.triggered.connect(self._openAboutPage)
     a.setToolTip("about:version")
     return ret
 
@@ -364,6 +361,9 @@ class _WebBrowser(object):
       w = self.tabWidget.currentWidget()
       if w:
         w.rehighlight(t)
+
+  def _openHelpPage(self): self.openUrlAfterCurrent('about:help', focus=True)
+  def _openAboutPage(self): self.openUrlAfterCurrent('about:version', focus=True)
 
   def openUnknown(self, text): # string ->
     """

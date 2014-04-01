@@ -2,7 +2,7 @@
 # cacheman.py
 # 7/4/2012 jichi
 
-import os, re
+import os
 from functools import partial
 from PySide.QtCore import QObject, QTimer
 from sakurakit import skfileio, sknetio, skthreads
@@ -13,42 +13,10 @@ import osutil, rc
 TMP_SUFFIX = '.tmp'
 BAD_SUFFIX = '.bad'
 
-def _avatarurl(token):
-  """
-  @param  token  unicode
-  @return  unicode
-  """
-  return "http://avatars.io/%s?size=large" % token
+@memoized
+def manager(): return CacheManager()
 
-def _getavatar(token):
-  """
-  @param  token  unicode
-  @return  image data or None
-  """
-  url = _avatarurl(token)
-  data = sknetio.getdata(url, mimefilter=sknetio.IMAGE_MIME_FILTER)
-  # len 4071 is the bad avatar ><
-  if data and len(data) != 4071:
-    return data
-
-def _saveavatar(token, path):
-  """
-  @param  token  unicode
-  @param  path  unicode
-  @return  bool
-  """
-  data = _getavatar(token)
-  return bool(data) and skfileio.writedata(path, data)
-
-def _fixtwimg(url):
-  """
-  @param  url  str
-  @return  str or None
-  """
-  if '_normal.' not in url and ('.twimg.com' in url or '/twimg/' in url):
-    i = url.rfind('.') # insert '_normal' before the last '.;
-    if i > 0:
-      return '_normal'.join((url[:i], url[i:]))
+def url(url): return manager().cacheUrl(url) # cache url
 
 def _getdata(url, path, tmppath=None, touchbad=False, mimefilter=None, **kwargs):
   """
@@ -79,7 +47,7 @@ def _getdata(url, path, tmppath=None, touchbad=False, mimefilter=None, **kwargs)
 #@Q_Q
 class _CacheManager:
   def __init__(self, q):
-    self.enabled = False # bool
+    self.enabled = True
     self._tasks = [] # [function] not None
 
     #@memoizedproperty
@@ -121,7 +89,7 @@ class CacheManager(QObject):
   @staticmethod
   def clearTemporaryFiles():
     from sakurakit import skfileio
-    for tmpdir in rc.DIR_CACHE_AVATAR, rc.DIR_CACHE_DATA, rc.DIR_CACHE_IMAGE:
+    for tmpdir in rc.DIR_CACHE_DATA,:
       try:
         for root, dirs, files in os.walk(tmpdir):
           for f in files:
@@ -134,55 +102,6 @@ class CacheManager(QObject):
   def isEnabled(self): return self.__d.enabled
   def setEnabled(self, v): self.__d.enabled = v
 
-  def updateAvatar(self, token):
-    """
-    @param  token  unicode
-    @return  bool  whether succeeded
-    """
-    path = rc.avatar_image_path(token)
-    if os.path.exists(path):
-      return True
-    if not self.__d.enabled:
-      return False
-    path_tmp = path + TMP_SUFFIX
-    if os.path.exists(path_tmp):
-      return False
-    skfileio.touchfile(path_tmp)
-    ok = skthreads.runsync(partial(
-        _saveavatar, token, path_tmp),
-        parent=self)
-    if ok and skfileio.rename(path_tmp, path):
-      return True
-    else:
-      skfileio.removefile(path_tmp)
-      return False
-
-  def cacheAvatar(self, token):
-    """
-    @param  token  unicode
-    """
-    path = rc.avatar_image_path(token)
-    if os.path.exists(path):
-      return
-    d = self.__d
-    if not d.enabled:
-      return
-    path_tmp = path + TMP_SUFFIX
-    if os.path.exists(path_tmp):
-      return
-    skfileio.touchfile(path_tmp)
-    url = _avatarurl(token)
-    d.schedule(partial(
-        _getdata, url, path, path_tmp, mimefilter=sknetio.IMAGE_MIME_FILTER))
-
-  def cachePath(self, url, image=False):
-    """
-    @param  url  unicode
-    @param* img  bool
-    @return  unicode  path to local file
-    """
-    return rc.image_cache_path(url) if image else rc.data_cache_path(url)
-
   def cacheUrl(self, url, image=False, mimefilter=None):
     """
     @param  url  unicode
@@ -192,7 +111,8 @@ class CacheManager(QObject):
     """
     if not url.startswith('http'): # ignore local files
       return url
-    path = self.cachePath(url, image=image)
+
+    path = rc.data_cache_path(url)
     if os.path.exists(path):
       #dprint("cache HIT")
       return osutil.path_url(path)
@@ -219,45 +139,5 @@ class CacheManager(QObject):
         mimefilter=mimefilter,
         touchbad=bad, allow_redirects=not bad))
     return url
-
-  def cacheImageUrl(self, url):
-    """
-    @param  url  unicode
-    @return  unicode  url to remote or local file
-    """
-    return self.cacheUrl(url, image=True, mimefilter=sknetio.IMAGE_MIME_FILTER)
-
-  def cacheImagePath(self, url):
-    return self.cachePath(url, image=True)
-
-  _rx_html_img = re.compile(r'''(?<=['"])(.+?(?:jpg|png))(?=['"])''', re.IGNORECASE)
-  def cacheHtmlText(self, text):
-    """
-    @param  text  unicode
-    @return  unicode
-    """
-    def repl(m):
-      return self.cacheImageUrl(m.group(1))
-    if text:
-      text = self._rx_html_img.sub(repl, text)
-    return text
-
-@memoized
-def manager(): return CacheManager()
-
-def cache_url(url): return manager().cacheUrl(url) # cache url
-def cache_path(url): return manager().cachePath(url) # return cached path for url without caching it
-def cache_image_url(url): return manager().cacheImageUrl(url)
-def cache_image_path(url): return manager().cacheImagePath(url)
-
-def cache_html_text(text): return manager().cacheHtmlText(text)
-
-class Cacher:
-  @staticmethod
-  def url(url): return cache_url(url)
-  @staticmethod
-  def image(url): return cache_image_url(url)
-  @staticmethod
-  def html(text): return cache_html_text(text)
 
 # EOF
