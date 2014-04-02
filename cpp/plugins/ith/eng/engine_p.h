@@ -25,6 +25,7 @@ bool InsertAnex86Hook();        // Anex86: anex86.exe
 bool InsertApricotHook();       // Apricot: arc.a*
 bool InsertArtemisHook();       // Artemis Engine: *.pfs
 bool InsertAtelierHook();       // Atelier Kaguya: message.dat
+bool InsertAUHook();            // Eiyuu Senki: Check.mdx
 bool InsertBGIHook();           // BGI: BGI.*
 bool InsertC4Hook();            // C4: C4.EXE or XEX.EXE
 bool InsertCaramelBoxHook();    // Caramel: *.bin

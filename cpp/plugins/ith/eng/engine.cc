@@ -66,10 +66,6 @@ DWORD DetermineEngineByFile1()
     InsertWolfHook();
     return yes;
   }
-  if (IthCheckFile(L"message.dat")) {
-    InsertAtelierHook();
-    return yes;
-  }
   if (IthCheckFile(L"advdata\\dat\\names.dat")) {
     InsertCircusHook1();
     return yes;
@@ -88,6 +84,14 @@ DWORD DetermineEngineByFile1()
   }
   if (IthFindFile(L"*.int")) {
     InsertCatSystem2Hook();
+    return yes;
+  }
+  if (IthCheckFile(L"message.dat")) {
+    InsertAtelierHook();
+    return yes;
+  }
+  if (IthCheckFile(L"Check.mdx")) { // jichi 4/1/2014: AUGame
+    InsertAUHook();
     return yes;
   }
   // jichi 12/25/2013: It may or may not be QLIE.
