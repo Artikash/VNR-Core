@@ -7,7 +7,7 @@ from functools import partial
 from PySide.QtCore import Qt, QTimer
 from PySide import QtCore, QtGui
 from Qt5 import QtWidgets
-from sakurakit import skpaths, skqss, skwidgets
+from sakurakit import skevents, skpaths, skqss, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_, notr_
@@ -2440,10 +2440,10 @@ class _DictionaryDownloadsTab(object):
   def _removeMeCab(self, name):
     if prompt.confirmRemoveDictionary('MeCab (%s)' % name):
       dicts.mecab(name).remove()
-      settings.global_().setMeCabDictionaryEnabled(name, False)
+      #settings.global_().setMeCabDictionaryEnabled(name, False)
       self.refreshMeCab(name)
 
-  def refreshMeCab(self, name): # -> bool locked
+  def refreshMeCab(self, name): # -> bool exists
     b = self.getMeCabButton(name)
     status = self.getMeCabStatusLabel(name)
     dic = dicts.mecab(name)
@@ -2455,6 +2455,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(True)
       b.setText(tr_("Remove"))
       skqss.class_(b, 'btn btn-default')
+      return True
     elif dic.locked():
       status.setText(mytr_("Installing"))
       skqss.class_(status, 'text-info')
@@ -2462,7 +2463,6 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(False)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
-      return False
     else:
       online = netman.manager().isOnline()
       status.setText(mytr_("Not installed"))
@@ -2471,7 +2471,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(online)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
-    return True
+    return False
 
   # - Phrase dictionaries -
 
@@ -2573,7 +2573,7 @@ class _DictionaryDownloadsTab(object):
       settings.global_().setWadokuEnabled(False)
       self.refreshWadoku()
 
-  def refreshWadoku(self): # -> bool locked
+  def refreshWadoku(self): # -> bool exists
     b = self.wadokuButton
     status = self.wadokuStatusLabel
     dic = dicts.wadoku()
@@ -2585,6 +2585,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(True)
       b.setText(tr_("Remove"))
       skqss.class_(b, 'btn btn-default')
+      return True
     elif dic.locked():
       status.setText(mytr_("Installing"))
       skqss.class_(status, 'text-info')
@@ -2592,7 +2593,6 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(False)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
-      return False
     else:
       online = netman.manager().isOnline()
       status.setText(mytr_("Not installed"))
@@ -2601,7 +2601,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(online)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
-    return True
+    return False
 
   ## EDICT
 
@@ -2644,7 +2644,7 @@ class _DictionaryDownloadsTab(object):
       settings.global_().setEdictEnabled(False)
       self.refreshEdict()
 
-  def refreshEdict(self): # -> bool locked
+  def refreshEdict(self): # -> bool exists
     b = self.edictButton
     status = self.edictStatusLabel
     dic = dicts.edict()
@@ -2656,6 +2656,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(True)
       b.setText(tr_("Remove"))
       skqss.class_(b, 'btn btn-default')
+      return True
     elif dic.locked():
       status.setText(mytr_("Installing"))
       skqss.class_(status, 'text-info')
@@ -2663,7 +2664,6 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(False)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
-      return False
     else:
       online = netman.manager().isOnline()
       status.setText(mytr_("Not installed"))
@@ -2672,7 +2672,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(online)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
-    return True
+    return False
 
   ## Lingoes
 
@@ -2725,7 +2725,7 @@ class _DictionaryDownloadsTab(object):
       settings.global_().setLingoesDictionaryEnabled(name, False)
       self.refreshLingoes(name)
 
-  def refreshLingoes(self, name): # -> bool locked
+  def refreshLingoes(self, name): # -> bool exists
     b = self.getLingoesButton(name)
     status = self.getLingoesStatusLabel(name)
     dic = dicts.lingoes(name)
@@ -2737,6 +2737,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(True)
       b.setText(tr_("Remove"))
       skqss.class_(b, 'btn btn-default')
+      return True
     elif dic.locked():
       status.setText(mytr_("Installing"))
       skqss.class_(status, 'text-info')
@@ -2744,7 +2745,6 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(False)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
-      return False
     else:
       online = netman.manager().isOnline()
       status.setText(mytr_("Not installed"))
@@ -2753,7 +2753,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(online)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
-    return True
+    return False
 
   ## JMDict
 
@@ -2801,7 +2801,7 @@ class _DictionaryDownloadsTab(object):
       settings.global_().setJMDictDictionaryEnabled(name, False)
       self.refreshJMDict(name)
 
-  def refreshJMDict(self, name): # -> bool locked
+  def refreshJMDict(self, name): # -> bool exists
     b = self.getJMDictButton(name)
     status = self.getJMDictStatusLabel(name)
     dic = dicts.jmdict(name)
@@ -2813,6 +2813,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(True)
       b.setText(tr_("Remove"))
       skqss.class_(b, 'btn btn-default')
+      return True
     elif dic.locked():
       status.setText(mytr_("Installing"))
       skqss.class_(status, 'text-info')
@@ -2820,7 +2821,6 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(False)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
-      return False
     else:
       online = netman.manager().isOnline()
       status.setText(mytr_("Not installed"))
@@ -2829,7 +2829,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(online)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
-    return True
+    return False
 
   def refresh(self):
     self.refreshEdict()
@@ -2859,14 +2859,14 @@ class _DictionaryDownloadsTab(object):
       self.stopRefresh()
       return
 
-    locked = False
+    exists = False
     tasks = []
     for t in self._refreshTasks:
       dic, refresh = t
-      if dic.locked():
+      if not dic.exists():
         tasks.append(t)
-      else:
-        refresh()
+      #else:
+      refresh()
 
     if len(tasks) != len(self._refreshTasks):
       self._refreshTasks = tasks
@@ -2973,7 +2973,7 @@ You can also install pAppLocale manually from the @piaip's homepage at Taiwan Un
       res.apploc().remove()
       self.refreshApploc()
 
-  def refreshApploc(self): # -> bool locked
+  def refreshApploc(self): # -> bool exists
     b = self.applocButton
     label = self.applocLabel
     r = res.apploc()
@@ -2984,6 +2984,7 @@ You can also install pAppLocale manually from the @piaip's homepage at Taiwan Un
       b.setEnabled(True)
       b.setText(tr_("Remove"))
       skqss.class_(b, 'btn btn-default')
+      return True
     elif r.locked():
       label.setText(mytr_("Installing"))
       skqss.class_(label, 'text-info')
@@ -2991,7 +2992,6 @@ You can also install pAppLocale manually from the @piaip's homepage at Taiwan Un
       b.setEnabled(False)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
-      return False
     else:
       online = netman.manager().isOnline()
       label.setText(mytr_("Not installed"))
@@ -3000,22 +3000,23 @@ You can also install pAppLocale manually from the @piaip's homepage at Taiwan Un
       b.setEnabled(online)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
-    return True
+    return False
 
   def refresh(self):
     if not features.WINE:
       self.refreshApploc()
 
-  def startRefresh(self): self.refreshTimer.start()
+  def startRefresh(self):
+    self.refreshTimer.start()
   def stopRefresh(self):
     if self.refreshTimer.isActive():
       self.refreshTimer.stop()
 
   def _tryRefresh(self):
+    self.refreshApploc()
     r = res.apploc()
-    if not r.locked:
+    if r.exists():
       self.stopRefresh()
-      self.refreshApploc()
 
 class LauncherDownloadsTab(QtWidgets.QDialog):
 
