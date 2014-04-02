@@ -250,6 +250,12 @@ class _PrefsDialog(object):
     yield self.dictionaryLibraryTab
     yield self.ttsLibraryTab
 
+  def stop(self):
+    for t in self.itertabs():
+      if hasattr(t, 'stop'):
+        t.stop()
+    dprint("pass")
+
 class PrefsDialog(QtWidgets.QSplitter):
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
@@ -275,6 +281,7 @@ class PrefsDialog(QtWidgets.QSplitter):
     super(PrefsDialog, self).setVisible(visible)
     if not visible:
       self.save()
+      self.__d.stop()
 
   def load(self):
     for t in self.__d.itertabs():

@@ -4,10 +4,10 @@
 
 import os
 from functools import partial
-from PySide.QtCore import Qt
+from PySide.QtCore import Qt, QTimer
 from PySide import QtCore, QtGui
 from Qt5 import QtWidgets
-from sakurakit import skevents, skpaths, skqss, skwidgets
+from sakurakit import skpaths, skqss, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_, notr_
@@ -15,6 +15,8 @@ from msime import msime
 from dataman import GUEST
 from mytr import my, mytr_
 import config, cacheman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, osutil, rc, res, sapiman, settings, ttsman
+
+DOWNLOAD_REFRESH_INTERVAL = 3000 # 3 seconds
 
 MECAB_DICT_NAMES = {
   'unidic': my.tr("UniDic modern Japanese dictionary"),
@@ -73,6 +75,7 @@ class TabAdaptor(object):
   def save(self): pass
   def load(self): pass
   def refresh(self): pass
+  def stop(self): pass
 
 @Q_Q
 class _UserTab(object):
@@ -2351,6 +2354,13 @@ class _DictionaryDownloadsTab(object):
     self.jmdictStatusLabels = {}
     self.jmdictIntroLabels = {}
 
+    t = self.refreshTimer = QTimer(q)
+    t.setSingleShot(False)
+    t.setInterval(DOWNLOAD_REFRESH_INTERVAL)
+    t.timeout.connect(self._tryRefresh)
+
+    self._refreshTasks = [] # [(dic, refresh ->)]
+
     self._createUi(q)
 
   def _createUi(self, q):
@@ -2423,9 +2433,9 @@ class _DictionaryDownloadsTab(object):
       dic = dicts.mecab(name)
       if not dic.exists(): #and not dic.locked():
         dic.get()
-      self.refreshMeCab(name)
-      for t in 2000, 4000, 6000, 8000:
-        skevents.runlater(partial(self.refreshMeCab, name), t)
+      refresh = partial(self.refreshMeCab, name)
+      if not refresh():
+        self.startRefresh(dic, refresh)
 
   def _removeMeCab(self, name):
     if prompt.confirmRemoveDictionary('MeCab (%s)' % name):
@@ -2433,7 +2443,7 @@ class _DictionaryDownloadsTab(object):
       settings.global_().setMeCabDictionaryEnabled(name, False)
       self.refreshMeCab(name)
 
-  def refreshMeCab(self, name):
+  def refreshMeCab(self, name): # -> bool locked
     b = self.getMeCabButton(name)
     status = self.getMeCabStatusLabel(name)
     dic = dicts.mecab(name)
@@ -2452,6 +2462,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(False)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
+      return False
     else:
       online = netman.manager().isOnline()
       status.setText(mytr_("Not installed"))
@@ -2460,7 +2471,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(online)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
-
+    return True
 
   # - Phrase dictionaries -
 
@@ -2553,9 +2564,8 @@ class _DictionaryDownloadsTab(object):
       dic = dicts.wadoku()
       if not dic.exists(): #and not dic.locked():
         dic.get()
-      self.refreshWadoku()
-      for t in 2000, 4000, 6000, 8000:
-        skevents.runlater(self.refreshWadoku, t)
+      if not self.refreshWadoku():
+        self.startRefresh(dic, self.refreshWadoku)
 
   def _removeWadoku(self):
     if prompt.confirmRemoveDictionary('Wadoku'):
@@ -2563,7 +2573,7 @@ class _DictionaryDownloadsTab(object):
       settings.global_().setWadokuEnabled(False)
       self.refreshWadoku()
 
-  def refreshWadoku(self):
+  def refreshWadoku(self): # -> bool locked
     b = self.wadokuButton
     status = self.wadokuStatusLabel
     dic = dicts.wadoku()
@@ -2582,6 +2592,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(False)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
+      return False
     else:
       online = netman.manager().isOnline()
       status.setText(mytr_("Not installed"))
@@ -2590,6 +2601,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(online)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
+    return True
 
   ## EDICT
 
@@ -2622,9 +2634,8 @@ class _DictionaryDownloadsTab(object):
       dic = dicts.edict()
       if not dic.exists(): #and not dic.locked():
         dic.get()
-      self.refreshEdict()
-      for t in 2000, 4000, 6000, 8000:
-        skevents.runlater(self.refreshEdict, t)
+      if not self.refreshEdict():
+        self.startRefresh(dic, self.refreshEdict)
 
   def _removeEdict(self):
     #if prompt.confirmRemoveDictionary('EDICT'):
@@ -2633,7 +2644,7 @@ class _DictionaryDownloadsTab(object):
       settings.global_().setEdictEnabled(False)
       self.refreshEdict()
 
-  def refreshEdict(self):
+  def refreshEdict(self): # -> bool locked
     b = self.edictButton
     status = self.edictStatusLabel
     dic = dicts.edict()
@@ -2652,6 +2663,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(False)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
+      return False
     else:
       online = netman.manager().isOnline()
       status.setText(mytr_("Not installed"))
@@ -2660,6 +2672,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(online)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
+    return True
 
   ## Lingoes
 
@@ -2702,9 +2715,9 @@ class _DictionaryDownloadsTab(object):
       dic = dicts.lingoes(name)
       if not dic.exists(): #and not dic.locked():
         dic.get()
-      self.refreshLingoes(name)
-      for t in 2000, 4000, 6000, 8000:
-        skevents.runlater(partial(self.refreshLingoes, name), t)
+      refresh = partial(self.refreshLingoes, name)
+      if not refresh():
+        self.startRefresh(dic, refresh)
 
   def _removeLingoes(self, name):
     if prompt.confirmRemoveDictionary('Lingoes (%s)' % name):
@@ -2712,7 +2725,7 @@ class _DictionaryDownloadsTab(object):
       settings.global_().setLingoesDictionaryEnabled(name, False)
       self.refreshLingoes(name)
 
-  def refreshLingoes(self, name):
+  def refreshLingoes(self, name): # -> bool locked
     b = self.getLingoesButton(name)
     status = self.getLingoesStatusLabel(name)
     dic = dicts.lingoes(name)
@@ -2731,6 +2744,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(False)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
+      return False
     else:
       online = netman.manager().isOnline()
       status.setText(mytr_("Not installed"))
@@ -2739,6 +2753,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(online)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
+    return True
 
   ## JMDict
 
@@ -2776,9 +2791,9 @@ class _DictionaryDownloadsTab(object):
       dic = dicts.jmdict(name)
       if not dic.exists(): #and not dic.locked():
         dic.get()
-      self.refreshJMDict(name)
-      for t in 2000, 4000, 6000, 8000:
-        skevents.runlater(partial(self.refreshJMDict, name), t)
+      refresh = partial(self.refreshJMDict, name)
+      if not refresh():
+        self.startRefresh(dic, refresh)
 
   def _removeJMDict(self, name):
     if prompt.confirmRemoveDictionary('JMDict (%s)' % name):
@@ -2786,7 +2801,7 @@ class _DictionaryDownloadsTab(object):
       settings.global_().setJMDictDictionaryEnabled(name, False)
       self.refreshJMDict(name)
 
-  def refreshJMDict(self, name):
+  def refreshJMDict(self, name): # -> bool locked
     b = self.getJMDictButton(name)
     status = self.getJMDictStatusLabel(name)
     dic = dicts.jmdict(name)
@@ -2805,6 +2820,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(False)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
+      return False
     else:
       online = netman.manager().isOnline()
       status.setText(mytr_("Not installed"))
@@ -2813,6 +2829,7 @@ class _DictionaryDownloadsTab(object):
       b.setEnabled(online)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
+    return True
 
   def refresh(self):
     self.refreshEdict()
@@ -2825,6 +2842,36 @@ class _DictionaryDownloadsTab(object):
     for lang in config.LINGOES_LANGS:
       name = 'ja-' + lang
       self.refreshLingoes(name)
+
+  def startRefresh(self, dic, refresh):  # dic, ->
+    self._refreshTasks.append((dic, refresh))
+    if not self.refreshTimer.isActive():
+      self.refreshTimer.start()
+
+  def stopRefresh(self):
+    if self.refreshTimer.isActive():
+      self.refreshTimer.stop()
+    if self._refreshTasks:
+      self._refreshTasks = []
+
+  def _tryRefresh(self):
+    if not self._refreshTasks:
+      self.stopRefresh()
+      return
+
+    locked = False
+    tasks = []
+    for t in self._refreshTasks:
+      dic, refresh = t
+      if dic.locked():
+        tasks.append(t)
+      else:
+        refresh()
+
+    if len(tasks) != len(self._refreshTasks):
+      self._refreshTasks = tasks
+      if not tasks:
+        self.stopRefresh()
 
 class DictionaryDownloadsTab(QtWidgets.QDialog):
 
@@ -2839,12 +2886,20 @@ class DictionaryDownloadsTab(QtWidgets.QDialog):
   def load(self): pass
   def refresh(self): self.__d.refresh()
 
+  def stop(self): self.__d.stopRefresh()
+
 # Launcher downloads
 
 #@Q_Q
 class _LauncherDownloadsTab(object):
   def __init__(self, q):
+    t = self.refreshTimer = QTimer(q)
+    t.setSingleShot(False)
+    t.setInterval(DOWNLOAD_REFRESH_INTERVAL)
+    t.timeout.connect(self._tryRefresh)
+
     self._createUi(q)
+
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
@@ -2910,16 +2965,15 @@ You can also install pAppLocale manually from the @piaip's homepage at Taiwan Un
       r = res.apploc()
       if not r.exists(): #and not dic.locked():
         r.get()
-      self.refreshApploc()
-      for t in 2000, 4000, 6000, 8000:
-        skevents.runlater(self.refreshApploc, t)
+      if not self.refreshApploc():
+        self.startRefresh()
 
   def _removeApploc(self):
     if prompt.confirmRemoveApploc():
       res.apploc().remove()
       self.refreshApploc()
 
-  def refreshApploc(self):
+  def refreshApploc(self): # -> bool locked
     b = self.applocButton
     label = self.applocLabel
     r = res.apploc()
@@ -2937,6 +2991,7 @@ You can also install pAppLocale manually from the @piaip's homepage at Taiwan Un
       b.setEnabled(False)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
+      return False
     else:
       online = netman.manager().isOnline()
       label.setText(mytr_("Not installed"))
@@ -2945,9 +3000,21 @@ You can also install pAppLocale manually from the @piaip's homepage at Taiwan Un
       b.setEnabled(online)
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
+    return True
 
   def refresh(self):
     if not features.WINE:
+      self.refreshApploc()
+
+  def startRefresh(self): self.refreshTimer.start()
+  def stopRefresh(self):
+    if self.refreshTimer.isActive():
+      self.refreshTimer.stop()
+
+  def _tryRefresh(self):
+    r = res.apploc()
+    if not r.locked:
+      self.stopRefresh()
       self.refreshApploc()
 
 class LauncherDownloadsTab(QtWidgets.QDialog):
@@ -2962,6 +3029,8 @@ class LauncherDownloadsTab(QtWidgets.QDialog):
   def save(self): pass #self.__d.save()
   def load(self): pass
   def refresh(self): self.__d.refresh()
+
+  def stop(self): self.__d.stopRefresh()
 
 # External libraries
 
