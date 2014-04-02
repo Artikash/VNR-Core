@@ -30,7 +30,6 @@ nongui:
 # no repeat & no float
 simple:
   - ApRicot
-  - AUEngine
   - BGI
   - BGI2
   - CIRCUS
@@ -46,6 +45,7 @@ simple:
   - ShinaRio
   - System43
   - Taskforce2
+  - Tenco
   - WAFFLE
 
 # No repetition int the game text
@@ -88,7 +88,6 @@ char:
   - Anex86
   - Artemis
   - Atelier KAGUYA
-  - AUEngine
   - BGI
   - C4
   - CaramelBox
@@ -119,6 +118,7 @@ char:
   - SystemC
   - TanukiSoft
   - Taskforce2
+  - Tenco
   - TinkerBell
   - Triangle
   - Waffle

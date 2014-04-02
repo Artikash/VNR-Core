@@ -91,7 +91,7 @@ DWORD DetermineEngineByFile1()
     return yes;
   }
   if (IthCheckFile(L"Check.mdx")) { // jichi 4/1/2014: AUGame
-    InsertAUHook();
+    InsertTencoHook();
     return yes;
   }
   // jichi 12/25/2013: It may or may not be QLIE.
