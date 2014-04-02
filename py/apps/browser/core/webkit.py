@@ -84,7 +84,7 @@ class _WbWebView(object):
   def _showMessage(self, t): # unicode ->
     self.q.messageReceived.emit(t)
 
-  def _showZoomMessage(self):
+  def showZoomMessage(self):
     z = self.q.zoomFactor()
     t = "%s %i%%" % (tr_("Zoom"), int(z * 100))
     self._showMessage(t)
