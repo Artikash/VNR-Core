@@ -30,6 +30,7 @@ nongui:
 # no repeat & no float
 simple:
   - ApRicot
+  - AUEngine
   - BGI
   - BGI2
   - CIRCUS
