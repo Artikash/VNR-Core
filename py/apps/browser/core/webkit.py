@@ -73,6 +73,7 @@ class WbWebView(skwebkit.SkWebView):
         self.setHtml(data)
         return
     super(WbWebView, self).load(url)
+
 @Q_Q
 class _WbWebView(object):
 
