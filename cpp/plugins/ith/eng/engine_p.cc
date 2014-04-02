@@ -1956,10 +1956,11 @@ bool InsertMalie2Hook()
 
 // jichi 2/8/3014: Return the beginning and the end of the text
 // Remove the leading illegal characters
+enum { _MALIE3_MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
 LPCWSTR _Malie3LTrim(LPCWSTR p)
 {
   if (p)
-    for (int count = 0; count < 100; count++,
+    for (int count = 0; count < _MALIE3_MAX_LENGTH; count++,
         p++)
       if (p[0] == L'v' && p[1] == L'_') { // ex. v_akr0001, v_mzk0001
         p += 9;
@@ -1972,7 +1973,7 @@ LPCWSTR _Malie3LTrim(LPCWSTR p)
 LPCWSTR _Malie3RTrim(LPCWSTR p)
 {
   if (p)
-    for (int count = 0; count < 100; count++,
+    for (int count = 0; count < _MALIE3_MAX_LENGTH; count++,
          p--)
       if (p[-1] > 9) {
         if (p[-1] >= L'0' && p[-1] <= L'9'&& p[-1-7] == L'_')
@@ -1986,7 +1987,7 @@ LPCWSTR _Malie3RTrim(LPCWSTR p)
 LPCWSTR _Malie3GetEOL(LPCWSTR p)
 {
   if (p)
-    for (int count = 0; count < 100; count++,
+    for (int count = 0; count < _MALIE3_MAX_LENGTH; count++,
         p++)
       switch (p[0]) {
       case 0: // \0
@@ -2016,6 +2017,7 @@ void SpecialHookMalie3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split,
   *data = (DWORD)start;
   *len = max(0, stop - start) << 1;
   *split = 0x10001; // fuse all threads, and prevent floating
+  //ITH_GROWL_DWORD5((DWORD)start, (DWORD)stop, *len, (DWORD)*start, (DWORD)_Malie3GetEOL(start));
 }
 
 /**
