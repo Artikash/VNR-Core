@@ -89,6 +89,7 @@ processes:
   - MacDrive.exe        # MacDrive
   - mousegesture.exe    # Sogou
   - netbeans.exe        # NetBeans
+  - notepad++.exe       # Notepad++
   - ollydbg.exe         # OllyDbg
   - java.exe            # Java
   - javaw.exe           # Java
