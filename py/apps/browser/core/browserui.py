@@ -207,11 +207,11 @@ class _WebBrowser(object):
 
     a = ret.addAction(u"\u25c0") # left triangle
     a.triggered.connect(self.back)
-    a.setToolTip("%s (Ctrl+[, Alt+Left)" % tr_("Back"))
+    a.setToolTip(u"%s (Ctrl+[, Alt+←)" % tr_("Back"))
 
     a = ret.addAction(u"\u25B6") # right triangle
     a.triggered.connect(self.forward)
-    a.setToolTip("%s (Ctrl+], Alt+Right)" % tr_("Forward"))
+    a.setToolTip(u"%s (Ctrl+], Alt+→)" % tr_("Forward"))
 
     #a = ret.addAction(u'\u27f3') # circle
     a = ret.addAction(u"◯") # まる
