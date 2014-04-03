@@ -49,7 +49,7 @@ class MainObject(QObject):
       w.openDefaultPage()
 
     # TODO: Remember the last close size
-    w.resize(700, 580)
+    w.resize(800, 610)
     w.show()
 
     dprint("leave")
