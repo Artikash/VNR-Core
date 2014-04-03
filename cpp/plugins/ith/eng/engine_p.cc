@@ -4226,7 +4226,7 @@ bool InsertRejetHook()
  *  004ad834  |. e9 75010000    |jmp 英雄＊戦.004ad9ae
  *  004ad839  |> 8bbf b4000000  |mov edi,dword ptr ds:[edi+0xb4]         ;  case 5 of switch 004ad76d
  */
-bool InsertTenco()
+bool InsertTencoHook()
 {
   const BYTE ins[] = {
     0x6a, 0x00,                     // 004ad7f8  |> 6a 00          |push 0x0

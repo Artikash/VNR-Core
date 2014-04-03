@@ -94,7 +94,7 @@ class _HookPrefsDialog(object):
 
   def setDeletedHook(self, text):
     self._deletedHookLabel.setText(tr_("Empty") if not text else
-        '<a href="%s">%s</a>' % (text, text))
+        '<a style="color:#428bca" href="%s">%s</a>' % (text, text)) # Same color as bootstrap 3 btn-link
 
   def _refresh(self):
     ok = self.isComplete()
