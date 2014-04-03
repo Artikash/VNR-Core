@@ -43,14 +43,24 @@ def kill_my_process():
   else:
     os.system("kill -9 %i" % os.getpid())
 
-def restart_my_process():
+def restart_my_process(params=None): # extra parameters
+  """
+  @param* params  [unicode]
+  """
   dwarn("pass")
   arg0 = sys.executable # path to python executable
   if not WIN:
     # See: http://www.daniweb.com/software-development/python/code/260268/restart-your-python-program
-    os.execl(arg0, arg0, *sys.argv) # execl(path, *args)
+    if params:
+      argv = params[:]
+      argv.extend(sys.argv)
+    else:
+      argv = sys.argv
+    os.execl(arg0, arg0, *argv) # execl(path, *args)
   else:
     args = [arg0]
+    if params:
+      args.extend(params)
     args.extend(sys.argv)
     import skproc
     skproc.detach(args)
