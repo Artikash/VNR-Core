@@ -22,6 +22,7 @@ extern trigger_fun_t trigger_fun_;
 bool InsertAbelHook();          // Abel
 bool InsertAliceHook();         // System40@AliceSoft; do not work for latest alice games
 bool InsertAnex86Hook();        // Anex86: anex86.exe
+bool InsertAOSHook();           // AOS: *.aos
 bool InsertApricotHook();       // Apricot: arc.a*
 bool InsertArtemisHook();       // Artemis Engine: *.pfs
 bool InsertAtelierHook();       // Atelier Kaguya: message.dat

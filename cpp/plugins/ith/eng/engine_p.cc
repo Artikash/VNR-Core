@@ -1,8 +1,6 @@
 // eng/engine_p.cc
 // 8/9/2013 jichi
 // Branch: ITH_Engine/engine.cpp, revision 133
-//
-// 8/24/2013 TODO: Clean up the code
 
 #ifdef _MSC_VER
 # pragma warning (disable:4100)   // C4100: unreference formal parameter
@@ -4253,6 +4251,123 @@ bool InsertTencoHook()
 
   ConsoleOutput("vnreng: INSERT Tenco");
   NewHook(hp, L"Tenco");
+  return true;
+}
+
+/**
+ *  jichi 4/1/2014: Insert AOS hook
+ *  About 彩文館: http://erogetrailers.com/brand/165
+ *  About AOS: http://asmodean.reverse.net/pages/exaos.html
+ *
+ *  Sample games:
+ *
+ *  [140228] [Sugar Pot] 恋する少女と想いのキセキ V1.00 H-CODE by 소쿠릿
+ *  - /HB8*0@3C2F0:恋する少女と想いのキセキ.exe
+ *  - /HBC*0@3C190:恋する少女と想いのキセキ.exe
+ *
+ *  [120224] [Sugar Pot]  ツクモノツキ
+ *
+ *  LiLiM games
+ *
+ *  /HB8*0@3C2F0:恋する少女と想いのキセ
+ *  - addr: 246512 = 0x3c2f0
+ *  - length_offset: 1
+ *  - module: 1814017450
+ *  - off: 8
+ *  - type: 72 = 0x48
+ *
+ *  00e3c2ed     cc                         int3
+ *  00e3c2ee     cc                         int3
+ *  00e3c2ef     cc                         int3
+ *  00e3c2f0  /$ 51                         push ecx    ; jichi: hook here, function starts
+ *  00e3c2f1  |. a1 0c64eb00                mov eax,dword ptr ds:[0xeb640c]
+ *  00e3c2f6  |. 8b0d 7846eb00              mov ecx,dword ptr ds:[0xeb4678]
+ *  00e3c2fc  |. 53                         push ebx
+ *  00e3c2fd  |. 55                         push ebp
+ *  00e3c2fe  |. 8b6c24 10                  mov ebp,dword ptr ss:[esp+0x10]
+ *  00e3c302  |. 56                         push esi
+ *  00e3c303  |. 8b35 c446eb00              mov esi,dword ptr ds:[0xeb46c4]
+ *  00e3c309  |. 57                         push edi
+ *  00e3c30a  |. 0fb63d c746eb00            movzx edi,byte ptr ds:[0xeb46c7]
+ *  00e3c311  |. 81e6 ffffff00              and esi,0xffffff
+ *  00e3c317  |. 894424 18                  mov dword ptr ss:[esp+0x18],eax
+ *  00e3c31b  |. 85ff                       test edi,edi
+ *  00e3c31d  |. 74 6b                      je short 恋する少.00e3c38a
+ *  00e3c31f  |. 8bd9                       mov ebx,ecx
+ *  00e3c321  |. 85db                       test ebx,ebx
+ *  00e3c323  |. 74 17                      je short 恋する少.00e3c33c
+ *  00e3c325  |. 8b4b 28                    mov ecx,dword ptr ds:[ebx+0x28]
+ *  00e3c328  |. 56                         push esi                                 ; /color
+ *  00e3c329  |. 51                         push ecx                                 ; |hdc
+ *  00e3c32a  |. ff15 3c40e800              call dword ptr ds:[<&gdi32.settextcolor>>; \settextcolor
+ *  00e3c330  |. 89b3 c8000000              mov dword ptr ds:[ebx+0xc8],esi
+ *  00e3c336  |. 8b0d 7846eb00              mov ecx,dword ptr ds:[0xeb4678]
+ *  00e3c33c  |> 0fbf55 1c                  movsx edx,word ptr ss:[ebp+0x1c]
+ *  00e3c340  |. 0fbf45 0a                  movsx eax,word ptr ss:[ebp+0xa]
+ *  00e3c344  |. 0fbf75 1a                  movsx esi,word ptr ss:[ebp+0x1a]
+ *  00e3c348  |. 03d7                       add edx,edi
+ *  00e3c34a  |. 03c2                       add eax,edx
+ *  00e3c34c  |. 0fbf55 08                  movsx edx,word ptr ss:[ebp+0x8]
+ *  00e3c350  |. 03f7                       add esi,edi
+ *  00e3c352  |. 03d6                       add edx,esi
+ *  00e3c354  |. 85c9                       test ecx,ecx
+ *  00e3c356  |. 74 32                      je short 恋する少.00e3c38a
+ */
+bool InsertAOSHook()
+{
+  // jichi 4/2/2014: The starting of this function is different from ツクモノツキ
+  // So, use a pattern in the middle of the function instead.
+  //
+  //const BYTE ins[] = {
+  //  0x51,                // 00e3c2f0  /$ 51              push ecx    ; jichi: hook here, function begins
+  //  0xa1, 0x0c,0x64,0xeb,0x00,      // 00e3c2f1  |. a1 0c64eb00     mov eax,dword ptr ds:[0xeb640c]
+  //  0x8b,0x0d, 0x78,0x46,0xeb,0x00,    // 00e3c2f6  |. 8b0d 7846eb00   mov ecx,dword ptr ds:[0xeb4678]
+  //  0x53,               // 00e3c2fc  |. 53              push ebx
+  //  0x55,               // 00e3c2fd  |. 55              push ebp
+  //  0x8b,0x6c,0x24, 0x10,        // 00e3c2fe  |. 8b6c24 10       mov ebp,dword ptr ss:[esp+0x10]
+  //  0x56,               // 00e3c302  |. 56              push esi
+  //  0x8b,0x35, 0xc4,0x46,0xeb,0x00,    // 00e3c303  |. 8b35 c446eb00   mov esi,dword ptr ds:[0xeb46c4]
+  //  0x57,               // 00e3c309  |. 57              push edi
+  //  0x0f,0xb6,0x3d, 0xc7,0x46,0xeb,0x00,  // 00e3c30a  |. 0fb63d c746eb00 movzx edi,byte ptr ds:[0xeb46c7]
+  //  0x81,0xe6, 0xff,0xff,0xff,0x00    // 00e3c311  |. 81e6 ffffff00   and esi,0xffffff
+  //};
+  //enum { hook_offset = 0 };
+
+  const BYTE ins[] = {
+    0x0f,0xbf,0x55, 0x1c,   // 00e3c33c  |> 0fbf55 1c                  movsx edx,word ptr ss:[ebp+0x1c]
+    0x0f,0xbf,0x45, 0x0a,   // 00e3c340  |. 0fbf45 0a                  movsx eax,word ptr ss:[ebp+0xa]
+    0x0f,0xbf,0x75, 0x1a,   // 00e3c344  |. 0fbf75 1a                  movsx esi,word ptr ss:[ebp+0x1a]
+    0x03,0xd7,        // 00e3c348  |. 03d7                       add edx,edi
+    0x03,0xc2,        // 00e3c34a  |. 03c2                       add eax,edx
+    0x0f,0xbf,0x55, 0x08,   // 00e3c34c  |. 0fbf55 08                  movsx edx,word ptr ss:[ebp+0x8]
+    0x03,0xf7,        // 00e3c350  |. 03f7                       add esi,edi
+    0x03,0xd6,        // 00e3c352  |. 03d6                       add edx,esi
+    0x85,0xc9        // 00e3c354  |. 85c9                       test ecx,ecx
+  };
+  enum { hook_offset = 0x00e3c2f0 - 0x00e3c33c };
+  ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
+  ULONG reladdr = SearchPattern(module_base_, range, ins, sizeof(ins));
+  //ITH_GROWL(reladdr);
+  if (!reladdr) {
+    ConsoleOutput("vnreng:AOS: pattern not found");
+    return false;
+  }
+  DWORD addr = module_base_ + reladdr + hook_offset;
+  //ITH_GROWL(addr);
+  enum { push_ecx = 0x51 }; // beginning of the function
+  if (*(BYTE *)addr != push_ecx) {
+    ConsoleOutput("vnreng:AOS: beginning of the function not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr;
+  hp.length_offset = 1;
+  hp.off = 8;
+  hp.type = DATA_INDIRECT;
+
+  ConsoleOutput("vnreng: INSERT AOS");
+  NewHook(hp, L"AOS");
   return true;
 }
 

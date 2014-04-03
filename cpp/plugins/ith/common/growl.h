@@ -8,6 +8,7 @@
 #include <windows.h>
 #include "ith/common/string.h"
 
+#define ITH_MSG_A(_msg)     MessageBoxA(nullptr, _msg, "VNR Message", MB_OK)
 #define ITH_MSG(_msg)       MessageBoxW(nullptr, _msg, L"VNR Message", MB_OK)
 #define ITH_WARN(_msg)      MessageBoxW(nullptr, _msg, L"VNR Warning", MB_OK)
 #define ITH_ERROR(_msg)     MessageBoxW(nullptr, _msg, L"VNR Error", MB_OK)
@@ -77,6 +78,7 @@ inline void ITH_GROWL_DWORD9(DWORD v, DWORD v2, DWORD v3, DWORD v4, DWORD v5, DW
 
 inline void ITH_GROWL(DWORD v) { ITH_GROWL_DWORD(v); }
 inline void ITH_GROWL(LPCWSTR v) { ITH_MSG(v); }
+inline void ITH_GROWL(LPCSTR v) { ITH_MSG_A(v); }
 
 //#endif // ITH_HAS_GROWL
 

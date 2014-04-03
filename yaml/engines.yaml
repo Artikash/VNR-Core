@@ -29,6 +29,7 @@ nongui:
 
 # no repeat & no float
 simple:
+  - AOS
   - ApRicot
   - BGI
   - BGI2
@@ -86,6 +87,7 @@ char:
   - MultiByteToWideChar
   - AbelSoftware
   - Anex86
+  - AOS
   - Artemis
   - Atelier KAGUYA
   - BGI
