@@ -35,6 +35,7 @@ class _HookPrefsDialog(object):
     self._deletedHookLabel = QtWidgets.QLabel()
     skqss.class_(self._deletedHookLabel, 'text-info')
     self._deletedHookLabel.setText(tr_("Empty"))
+    self._deletedHookLabel.linkActivated.connect(self._hookEdit.setText)
 
     #self._deletedHookEdit.setText("%s (%s)" %
     #    (my.tr("Deleted hook code"), tr_("Empty")))
@@ -92,7 +93,8 @@ class _HookPrefsDialog(object):
         texthook.TextHook.verifyHookCode(t))
 
   def setDeletedHook(self, text):
-    self._deletedHookLabel.setText(text or tr_("Empty"))
+    self._deletedHookLabel.setText(tr_("Empty") if not text else
+        '<a style="color:#428bca" href="%s">%s</a>' % (text, text)) # Same color as bootstrap 3 btn-link
 
   def _refresh(self):
     ok = self.isComplete()

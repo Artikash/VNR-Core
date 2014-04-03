@@ -486,7 +486,7 @@ def main():
 
   import defs
   if returnCode == defs.EXIT_RESTART:
-    skos.restart_my_process()
+    skos.restart_my_process(['-B']) # -B: disable *.pyc
   else:
     #sys.exit(returnCode)
     #if skos.WIN: # prevent hanging on windows/mac

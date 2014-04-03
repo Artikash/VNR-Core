@@ -4226,7 +4226,7 @@ bool InsertRejetHook()
  *  004ad834  |. e9 75010000    |jmp 英雄＊戦.004ad9ae
  *  004ad839  |> 8bbf b4000000  |mov edi,dword ptr ds:[edi+0xb4]         ;  case 5 of switch 004ad76d
  */
-bool InsertAUHook()
+bool InsertTencoHook()
 {
   const BYTE ins[] = {
     0x6a, 0x00,                     // 004ad7f8  |> 6a 00          |push 0x0
@@ -4240,7 +4240,7 @@ bool InsertAUHook()
   ULONG reladdr = SearchPattern(module_base_, range, ins, sizeof(ins));
   //reladdr = 0x4ad807;
   if (!reladdr) {
-    ConsoleOutput("vnreng:AUHook: pattern not found");
+    ConsoleOutput("vnreng:Tenco: pattern not found");
     return false;
   }
 
@@ -4251,8 +4251,8 @@ bool InsertAUHook()
   hp.off = -0xc;
   hp.type = NO_CONTEXT | DATA_INDIRECT;
 
-  ConsoleOutput("vnreng: INSERT AUHook");
-  NewHook(hp, L"AUEngine");
+  ConsoleOutput("vnreng: INSERT Tenco");
+  NewHook(hp, L"Tenco");
   return true;
 }
 
