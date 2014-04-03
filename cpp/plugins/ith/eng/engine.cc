@@ -118,6 +118,23 @@ DWORD DetermineEngineByFile1()
 DWORD DetermineEngineByFile2()
 {
   enum : DWORD { yes = 0, no = 1 }; // return value
+  if (IthCheckFile(L"resident.dll")) {
+    InsertRetouchHook();
+    return yes;
+  }
+  if (IthCheckFile(L"malie.ini")) {
+    InsertMalieHook();
+    return yes;
+  }
+  if (IthCheckFile(L"live.dll")) {
+    InsertLiveHook();
+    return yes;
+  }
+  // 9/5/2013 jichi
+  if (IthCheckFile(L"aInfo.db")) {
+    InsertNextonHook();
+    return yes;
+  }
   if (IthFindFile(L"*.lpk")) {
     InsertLucifenHook();
     return yes;
@@ -146,23 +163,6 @@ DWORD DetermineEngineByFile2()
   }
   if (IthFindFile(L"*.npa")) {
     InsertNitroPlusHook();
-    return yes;
-  }
-  if (IthCheckFile(L"resident.dll")) {
-    InsertRetouchHook();
-    return yes;
-  }
-  if (IthCheckFile(L"malie.ini")) {
-    InsertMalieHook();
-    return yes;
-  }
-  if (IthCheckFile(L"live.dll")) {
-    InsertLiveHook();
-    return yes;
-  }
-  // 9/5/2013 jichi
-  if (IthCheckFile(L"aInfo.db")) {
-    InsertNextonHook();
     return yes;
   }
   return no;
@@ -215,12 +215,12 @@ DWORD DetermineEngineByFile3()
     InsertPensilHook();
     return yes;
   }
-  if (IthFindFile(L"*.med")) {
-    InsertMEDHook();
-    return yes;
-  }
   if (IthCheckFile(L"Yanesdk.dll")) {
     InsertAB2TryHook();
+    return yes;
+  }
+  if (IthFindFile(L"*.med")) {
+    InsertMEDHook();
     return yes;
   }
   return no;
@@ -247,6 +247,10 @@ DWORD DetermineEngineByFile4()
   }
   if (IthFindFile(L"*.gxp")) {
     InsertGXPHook();
+    return yes;
+  }
+  if (IthFindFile(L"*.aos")) { // jichi 4/2/1014: AOS hook
+    InsertAOSHook();
     return yes;
   }
   return no;
