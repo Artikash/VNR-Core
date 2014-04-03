@@ -4337,12 +4337,12 @@ bool InsertAOSHook()
     0x0f,0xbf,0x55, 0x1c,   // 00e3c33c  |> 0fbf55 1c                  movsx edx,word ptr ss:[ebp+0x1c]
     0x0f,0xbf,0x45, 0x0a,   // 00e3c340  |. 0fbf45 0a                  movsx eax,word ptr ss:[ebp+0xa]
     0x0f,0xbf,0x75, 0x1a,   // 00e3c344  |. 0fbf75 1a                  movsx esi,word ptr ss:[ebp+0x1a]
-    0x03,0xd7,        // 00e3c348  |. 03d7                       add edx,edi
-    0x03,0xc2,        // 00e3c34a  |. 03c2                       add eax,edx
+    0x03,0xd7,              // 00e3c348  |. 03d7                       add edx,edi
+    0x03,0xc2,              // 00e3c34a  |. 03c2                       add eax,edx
     0x0f,0xbf,0x55, 0x08,   // 00e3c34c  |. 0fbf55 08                  movsx edx,word ptr ss:[ebp+0x8]
-    0x03,0xf7,        // 00e3c350  |. 03f7                       add esi,edi
-    0x03,0xd6,        // 00e3c352  |. 03d6                       add edx,esi
-    0x85,0xc9        // 00e3c354  |. 85c9                       test ecx,ecx
+    0x03,0xf7,              // 00e3c350  |. 03f7                       add esi,edi
+    0x03,0xd6,              // 00e3c352  |. 03d6                       add edx,esi
+    0x85,0xc9               // 00e3c354  |. 85c9                       test ecx,ecx
   };
   enum { hook_offset = 0x00e3c2f0 - 0x00e3c33c };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
