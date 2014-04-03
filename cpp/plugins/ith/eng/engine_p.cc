@@ -4344,7 +4344,7 @@ bool InsertAOSHook()
     0x03,0xd6,              // 00e3c352  |. 03d6                       add edx,esi
     0x85,0xc9               // 00e3c354  |. 85c9                       test ecx,ecx
   };
-  enum { hook_offset = 0x00e3c2f0 - 0x00e3c33c };
+  enum { hook_offset = 0x00e3c2f0 - 0x00e3c33c }; // distance to the beginning of the function, which is 0x85 (push ecx)
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG reladdr = SearchPattern(module_base_, range, ins, sizeof(ins));
   //ITH_GROWL(reladdr);
