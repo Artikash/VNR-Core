@@ -526,7 +526,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
         return "* " + '/'.join((ddd, dd))
       if ok:
         dics = '<br/>'.join(imap(_tidy, paths))
-        dics = dics.replace('@Goodboyye','@goodboyye').replace('@Hdgdyl','@好大個的鴨梨').replace('@Zhugeqiu', '@諸葛秋')
+        #dics = dics.replace('@Goodboyye','@goodboyye').replace('@Hdgdyl','@好大個的鴨梨').replace('@Zhugeqiu', '@諸葛秋')
         growl.msg('<br/>'.join((
           my.tr("Load user-defined dictionaries") + ":",
           dics
