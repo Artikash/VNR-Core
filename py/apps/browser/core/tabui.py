@@ -15,6 +15,8 @@ class WbTabBar(QtWidgets.QTabBar):
     super(WbTabBar, self).__init__(parent)
     self.setTabsClosable(True)
     self.setMovable(True) # draggable
+    self.setElideMode(Qt.ElideRight) # show eclipse on the right
+    #self.setExpanding(False) # fix tab size
 
   doubleClickedAt = Signal(int) # index
 
@@ -32,6 +34,7 @@ class WbTabBar(QtWidgets.QTabBar):
 class WbTabWidget(QtWidgets.QTabWidget):
   def __init__(self, parent=None):
     super(WbTabWidget, self).__init__(parent)
+    #self.setElideMode(Qt.ElideRight)
 
   doubleClicked = Signal()
   rightButtonClicked = Signal()
@@ -54,15 +57,21 @@ class WbTabWidget(QtWidgets.QTabWidget):
 
   ## Actions ##
 
-  def newTab(self, view, index=-1, focus=True):
+  def newTab(self, view, index=-1, focus=True, title="", icon=None):
     """
     @param  view  QWidget
     @param  index  int
     @param  focus  bool
+    @param* title  unicode
+    @param* icon  QIcon
     """
-    title = tr_("Empty")
+    if not title:
+      title = tr_("Empty")
     if index < 0 or index >= self.count():
-      index = self.addTab(view, title)
+      if icon:
+        index = self.addTab(view, icon, title)
+      else:
+        index = self.addTab(view, title)
     else:
       self.insertTab(index, view, title)
     if focus:

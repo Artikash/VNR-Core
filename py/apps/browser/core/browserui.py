@@ -482,16 +482,15 @@ class _WebBrowser(object):
     return self.newTabAfter(index=self.tabWidget.count() -1, focus=focus)
 
   def newTabAfter(self, index, focus=True): # -> webview
-    index += 1
-    index = min(max(0, index), self.tabWidget.count())
-    w = self.createWebView()
-    self.tabWidget.newTab(w, index=index, focus=focus)
-    return w
+    return self.newTabBefore(index + 1, focus=focus)
 
   def newTabBefore(self, index, focus=True): # -> webview
+
     index = min(max(0, index), self.tabWidget.count())
     w = self.createWebView()
-    self.tabWidget.newTab(w, index=index, focus=focus)
+    #title = w.title() or w.url().toString()
+    #icon = w.icon() or rc.url_icon(w.url())
+    self.tabWidget.newTab(w, index=index, focus=focus) #, title=title, icon=icon)
     return w
 
   def _createWindow(self, type): # QWebPage::WebWindowType -> QWebView
@@ -506,26 +505,36 @@ class _WebBrowser(object):
     page.linkHovered.connect(self.showLink)
     page.linkClickedWithModifiers.connect(self.openUrlAfterCurrent)
 
-    ref = weakref.ref(ret)
-
-    #ret.titleChanged.connect(partial(self.setTabTitle, ret))
-    ret.titleChanged.connect(partial(lambda ref, v:
-        self.setTabTitle(ref(), v),
-        ref))
-
-    ret.urlChanged.connect(self.refreshAddress)
     ret.messageReceived.connect(self.q.messageReceived)
+
     ret.linkClicked.connect(self.addRecentUrl)
     ret.linkClicked.connect(lambda url:
         url.isEmpty() or self.setDisplayAddress(url))
 
-    ret.iconChanged.connect(partial(lambda ref:
-        ref() == self.tabWidget.currentWidget() and self.refreshWindowIcon(),
+    ref = weakref.ref(ret)
+
+    ret.urlChanged.connect(partial(lambda ref, value:
+        self._updateTabTitleIcon(ref()),
+        ref))
+
+    ret.urlChanged.connect(self.refreshAddress)
+
+    ret.titleChanged.connect(partial(lambda ref, value:
+        self._updateTabTitle(ref()),
         ref))
 
     ret.titleChanged.connect(partial(lambda ref, value:
         ref() == self.tabWidget.currentWidget() and self.refreshWindowTitle(),
         ref))
+
+    ret.iconChanged.connect(partial(lambda ref:
+        self._updateTabIcon(ref()),
+        ref))
+
+    ret.iconChanged.connect(partial(lambda ref:
+        ref() == self.tabWidget.currentWidget() and self.refreshWindowIcon(),
+        ref))
+
     page.loadProgress.connect(partial(lambda ref, value:
         ref() == self.tabWidget.currentWidget() and self.refreshLoadProgress(),
         ref))
@@ -557,15 +566,15 @@ class _WebBrowser(object):
 
   def currentTabTitle(self): # -> unicode
     w = self.tabWidget.currentWidget()
-    return w.title() if w else ''
+    if w:
+      return w.title() or w.url().toString()
+    else:
+      return ''
 
   def currentTabIcon(self): # int -> unicode
     w = self.tabWidget.currentWidget()
     if w:
-      icon = w.icon()
-      if not icon:
-        icon = rc.url_icon(w.url())
-      return icon
+      return w.icon() or rc.url_icon(w.url())
 
   def refreshWindowTitle(self):
     t = self.currentTabTitle()
@@ -633,25 +642,44 @@ class _WebBrowser(object):
   def closeCurrentTab(self):
     self.closeTab(self.tabWidget.currentIndex())
 
-  def setTabTitle(self, tab, title):
-    """
-    @param  tab  index or QWidget
-    @param  title  unicode
-    """
-    tw = self.tabWidget
-    if not isinstance(tab, int) and not isinstance(tab, long):
-      tab = tw.indexOf(tab)
-    if not title:
-      title = tr_("Empty")
-    if tab >= 0 and tab < self.tabWidget.count():
-      tw.setTabToolTip(tab, title)
-      tw.setTabText(tab, self.shortenTitle(title))
+  def _updateTabTitleIcon(self, w): # QWebView
+    self._updateTabTitle(w)
+    self._updateTabIcon(w)
 
-  @staticmethod
-  def shortenTitle(t):
-    if len(t) < MAX_TITLE_LENGTH:
-      return t
-    else:
-      return t[:MAX_TITLE_LENGTH - 2] + ' ...'
+  def _updateTabIcon(self, w): # QWebView
+    index = self.tabWidget.indexOf(w)
+    if index >= 0:
+      icon = w.icon() or rc.url_icon(w.url())
+      self.tabWidget.setTabIcon(index, icon)
+
+  def _updateTabTitle(self, w): # QWebView
+    tw = self.tabWidget
+    index = tw.indexOf(w)
+    if index >= 0:
+      title = w.title() or w.url().toString() or tr_("Empty")
+      tw.setTabText(index, title)
+      tw.setTabToolTip(index, title)
+
+  #def setTabTitle(self, tab, title):
+  #  """
+  #  @param  tab  index or QWidget
+  #  @param  title  unicode
+  #  """
+  #  tw = self.tabWidget
+  #  if not isinstance(tab, int) and not isinstance(tab, long):
+  #    tab = tw.indexOf(tab)
+  #  if not title:
+  #    title = tr_("Empty")
+  #  if tab >= 0 and tab < self.tabWidget.count():
+  #    tw.setTabToolTip(tab, title)
+  #    tw.setTabText(tab, title)
+  #    #tw.setTabText(tab, self.shortenTitle(title))
+
+  #@staticmethod
+  #def shortenTitle(t):
+  #  if len(t) < MAX_TITLE_LENGTH:
+  #    return t
+  #  else:
+  #    return t[:MAX_TITLE_LENGTH - 2] + ' ...'
 
 # EOF

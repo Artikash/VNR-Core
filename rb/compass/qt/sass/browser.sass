@@ -172,7 +172,9 @@ $hover-border-color: #7da8e6 // bluer, emulate bootstrap border
 =tabbar-aero-style($foreground-color, $background-color, $border-color)
   QTabBar::tab.webkit
     padding: 5px
-    min-width: 5em
+    //min-width: 5em
+    min-width: 100px
+    //width: 20px
     border-radius: 4px
     color: $foreground-color
     //background-color: rgba($border-color, 0.2)
@@ -182,11 +184,13 @@ $hover-border-color: #7da8e6 // bluer, emulate bootstrap border
 
     //background: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(73,73,74,255), stop:1 rgba(40,40,40,255))
 
+    border: 1px solid transparent
+
     &:selected
-      border: 1px solid rgba($border-color, 0.8)
+      border-color: rgba($border-color, 0.8)
     &:hover
       //border: 1px solid $border-color
-      border: 1px solid $hover-border-color
+      border-color: $hover-border-color
       background-color: rgba($background-color, 0.1)
 
     /*
@@ -208,7 +212,9 @@ $hover-border-color: #7da8e6 // bluer, emulate bootstrap border
     //$tab-border-width: 1px
     //$tab-border-radius: 3px
     padding: 5px
-    min-width: 5em
+    //min-width: 5em
+    min-width: 100px
+    //width: 20px
 
     //border-top-left-radius: 4px
     //border-top-right-radius: 4px

@@ -133,7 +133,7 @@ def url_icon(url):
   """
   if not isinstance(url, QUrl) and '://' not in url:
     url = 'http://' + url
-  return QWebSettings.globalSettings().iconForUrl(url) or icon('logo-browser')
+  return QWebSettings.iconForUrl(url) or icon('logo-browser')
 
 # HAML Jinja
 
