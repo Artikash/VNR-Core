@@ -166,9 +166,9 @@ def update_web_settings(settings=None):
   #ws.setDefaultTextEncoding("EUC-JP")
 
   #ws.setLocalStoragePath(G_PATH_CACHES)
-  #ws.setIconDatabasePath(G_PATH_CACHES)
-  #ws.setOfflineStoragePath(G_PATH_CACHES)
-  #ws.setOfflineWebApplicationCachePath(G_PATH_CACHES)
+  #QWebSettings.setIconDatabasePath(G_PATH_CACHES)
+  #QWebSettings.setOfflineStoragePath(G_PATH_CACHES)
+  #QWebSettings.setOfflineWebApplicationCachePath(G_PATH_CACHES)
 
   # See: http://webkit.org/blog/427/webkit-page-cache-i-the-basics/
   ws.setMaximumPagesInCache(30)

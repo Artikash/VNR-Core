@@ -40,13 +40,15 @@ def update_web_settings(settings=None):
   #ws.setDefaultTextEncoding("SHIFT-JIS")
 
   cachedir = rc.DIR_CACHE_WEBKIT
+
   ws.setLocalStoragePath(cachedir)
-  ws.setIconDatabasePath(cachedir)
-  ws.setOfflineStoragePath(cachedir)
-  ws.setOfflineWebApplicationCachePath(cachedir)
+
+  QWebSettings.setIconDatabasePath(cachedir)
+  QWebSettings.setOfflineStoragePath(cachedir)
+  QWebSettings.setOfflineWebApplicationCachePath(cachedir)
 
   # See: http://webkit.org/blog/427/webkit-page-cache-i-the-basics/
-  ws.setMaximumPagesInCache(30)
+  #QWebSettings.setMaximumPagesInCache(100) # default is 0
 
   dprint("pass")
 
