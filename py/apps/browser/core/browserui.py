@@ -21,8 +21,6 @@ from webkit import *
 from i18n import i18n
 import config, proxy, rc, settings, textutil, ui
 
-MAX_TITLE_LENGTH = 20
-
 BLANK_URL = "about:blank"
 
 def _urltext(url): # unicode|QUrl -> unicode
@@ -567,7 +565,7 @@ class _WebBrowser(object):
   def currentTabTitle(self): # -> unicode
     w = self.tabWidget.currentWidget()
     if w:
-      return w.title() or w.url().toString()
+      return w.title() or _urltext(w.url())
     else:
       return ''
 
@@ -656,9 +654,15 @@ class _WebBrowser(object):
     tw = self.tabWidget
     index = tw.indexOf(w)
     if index >= 0:
-      title = w.title() or w.url().toString() or tr_("Empty")
+      title = w.title() or _urltext(w.url()) or tr_("Empty")
       tw.setTabText(index, title)
-      tw.setTabToolTip(index, title)
+      url = _urltext(w.url())
+      if url:
+        tip = "%s - %s" % (title,
+            textutil.elidetext(url, 30))
+      else:
+        tip = title
+      tw.setTabToolTip(index, tip)
 
   #def setTabTitle(self, tab, title):
   #  """
@@ -674,12 +678,5 @@ class _WebBrowser(object):
   #    tw.setTabToolTip(tab, title)
   #    tw.setTabText(tab, title)
   #    #tw.setTabText(tab, self.shortenTitle(title))
-
-  #@staticmethod
-  #def shortenTitle(t):
-  #  if len(t) < MAX_TITLE_LENGTH:
-  #    return t
-  #  else:
-  #    return t[:MAX_TITLE_LENGTH - 2] + ' ...'
 
 # EOF
