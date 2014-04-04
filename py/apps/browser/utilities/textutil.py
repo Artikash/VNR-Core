@@ -19,4 +19,10 @@ def simplifyurl(url): # str -> str
     url = url[:-1]
   return url.strip()
 
+def elidetext(t, maxsize=20):
+  if len(t) <= maxsize:
+    return t
+  else:
+    return t[:maxsize - 4] + ' ...'
+
 # EOF
