@@ -15,6 +15,7 @@ import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
 import '../../../js/util.min.js' as Util
 import '../../imports/qmleffects' as Effects
+//import '../../imports/qmltext' as QmlText
 import '../../imports/texscript' as TexScript
 import '../../ui' as Ui
 import '../share' as Share
@@ -810,6 +811,7 @@ Item { id: root_
       //  from: 0; to: 1; duration: _FADE_DURATION
       //}
 
+      //QmlText.ContouredTextEdit { id: textEdit_
       TextEdit { id: textEdit_
         Component.onCompleted:
           listModel_.setProperty(model.index, 'textEdit', textEdit_) // Needed for contextMenu event

@@ -1,6 +1,6 @@
 # declarative.pri
 # 4/5/2014 jichi
-#include(../../../../config.pri)
+#include(../../../config.pri)
 DEFINES += WITH_LIB_QTPRIVATE_DECLARATIVE
 
 DEPENDPATH += $$PWD
@@ -12,6 +12,10 @@ mac:    QT_SRC  = /Users/jichi/src
 
 #QT_DECLARATIVE_SRC = $$PWD
 QT_DECLARATIVE_SRC = $$QT_SRC/qt/src/declarative
+
+INCLUDEPATH += \
+  $$QT_SRC \
+  $$QT_SRC/qt/src/3rdparty/harfbuzz/src # fro harfbuzz-shaper.h
 
 HEADERS += \
   $$QT_DECLARATIVE_SRC/graphicsitems/qdeclarativeimplicitsizeitem_p.h \
