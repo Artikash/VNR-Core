@@ -21,7 +21,15 @@
 // Outline text
 // Other methods: http://www.codeproject.com/Articles/42529/Outline-Text
 
-QImage contourImage(const QImage &src, const QColor &color, int radius = 8, int offsetX = 1, int offsetY = 1, int alphaThreshold = 255)
+void maskImage(QImage &src, int alphaThreshold = 255)
+{
+  for (int x = 0; x < src.width(); x++)
+    for (int y = 0; y < src.height(); y++)
+      if (qAlpha(src.pixel(x, y)) < alphaThreshold)
+        src.setPixel(x, y, 0);
+}
+
+QImage contourImage(const QImage &src, const QColor &color, int radius = 8, int offsetX = 2, int offsetY = 2, int alphaThreshold = 255)
 {
   QRgb fill = color.rgb();
   int width = src.width(),
@@ -45,6 +53,8 @@ QImage contourImage(const QImage &src, const QColor &color, int radius = 8, int 
               if (xx >= 0 && yy >= 0 && xx < width && yy < height &&
                   qAlpha(src.pixel(xx, yy)) < alphaThreshold) {
                 QRgb alpha = 255 * (radius2 - dist2) / radius2;
+                //qreal dist = qSqrt(dist2);
+                //QRgb alpha = 255 * (radius - dist) / radius;
                 QRgb oldpixel = ret.pixel(xx, yy);
                 if (oldpixel)
                   alpha = qMax<uint>(alpha, qAlpha(oldpixel));
@@ -52,13 +62,47 @@ QImage contourImage(const QImage &src, const QColor &color, int radius = 8, int 
                 //QRgb alpha = 255 * (radius - dist) / radius;
                 //QRgb pixel = qRgba(qRed(fill), qGreen(fill), qBlue(fill), alpha);
                 QRgb pixel = (fill & 0xffffff) | (alpha << 24);
-                pixel = qRgba(0, 255, 0, 128);
                 ret.setPixel(xx, yy, pixel);
               }
             }
           }
       }
   return ret;
+}
+
+QImage shadowImage(const QImage &src, const QColor &color, int radius = 8, int offsetX = 2, int offsetY = 2, int alphaThreshold = 255)
+{
+  QRgb fill = color.rgb();
+  int width = src.width(),
+      height = src.height();
+  //int radius2 = radius * radius;
+  // Step 1: Found contour points
+  // Step 2: Paint out side of contour according to distance
+  QImage ret(width, height, src.format());
+  for (int x = 0; x < src.width(); x++)
+    for (int y = 0; y < src.height(); y++)
+      if (qAlpha(src.pixel(x, y)) >= alphaThreshold) {
+        //contourPixel();
+        for (int i = -radius; i <= radius; i++)
+          for (int j = -radius; j <= radius; j++) {
+            int dx = i + offsetX,
+                dy = j + offsetY;
+            int xx = x + dx,
+                yy = y + dy;
+            if (xx >= 0 && yy >= 0 && xx < width && yy < height &&
+                qAlpha(src.pixel(xx, yy)) < alphaThreshold)
+              ret.setPixel(xx, yy, fill);
+          }
+      }
+  return ret;
+}
+
+void mergeImage(QImage &target, const QImage &src)
+{
+  for (int x = 0; x < qMin(target.width(), src.width()); x++)
+    for (int y = 0; y < qMin(target.height(), src.height()); y++)
+      if (QRgb pixel = src.pixel(x, y))
+        target.setPixel(x, y, pixel);
 }
 
 void TextEdit::paintEvent(QPaintEvent *e)
@@ -84,9 +128,17 @@ void TextEdit::paintEvent(QPaintEvent *e)
   d->control->document()->drawContents(&imgPainter, r);
   imgPainter.end();
 
-  img = contourImage(img, Qt::red);
+  //maskImage(img, 255);
 
-  p->drawImage(0, 0, img);
+  // QImage contourImage(const QImage &src, const QColor &color, int radius = 8, int offsetX = 2, int offsetY = 2, int alphaThreshold = 255)
+  QImage img2 = contourImage(img, Qt::green, 8, 2, 2, 255);
+
+  //mergeImage(img, img2);
+  //QImage img3 = shadowImage(img, Qt::black, 1, 1, 1, 128);
+  //mergeImage(img2, img3);
+
+  p->drawImage(0, 0, img2);
+
   d->control->drawContents(p, r, this);
 }
 
