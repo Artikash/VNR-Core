@@ -38,6 +38,8 @@ void PixmapGlowFilter::draw(QPainter *p, const QPointF &pos, const QPixmap &px, 
   tmpPainter.fillRect(tmp.rect(), d->color);
   tmpPainter.end();
   qt_blurImage(tmp, radius, true);
+
+  // FIXME: This is very inefficient
   for (int i = 0; i < d->intensity; i++)
     p->drawImage(pos, tmp);
 
