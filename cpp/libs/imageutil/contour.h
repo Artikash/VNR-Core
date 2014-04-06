@@ -6,7 +6,25 @@
 
 #include <QtGui/QImage>
 
-//QImage contourImage(const QImage &src, const QColor &color, QPoint radius = 8, const QPoint &offset = QPoint(2,2), int alphaThreshold = 255);
-QImage contourImage(const QImage &src, const QColor &color, QPoint radius, const QPoint &offset, int alphaThreshold = 255);
+namespace ImageUtil {
+
+inline bool isPremultipliedImageFormat(QImage::Format fmt)
+{
+  switch (fmt) {
+  case QImage::Format_ARGB32_Premultiplied:
+  case QImage::Format_ARGB8565_Premultiplied:
+  case QImage::Format_ARGB6666_Premultiplied:
+  case QImage::Format_ARGB8555_Premultiplied:
+  case QImage::Format_ARGB4444_Premultiplied:
+    return true;
+  default:
+    return false;
+  }
+}
+
+QImage contourImage(const QImage &src, const QColor &color, int radius, const QPoint &offset,
+                    bool easingAlpha = true, int alphaThreshold = 255);
+
+} // namespae ImageUtil
 
 #endif // _IMAGEUTIL_CONTOUR_H
