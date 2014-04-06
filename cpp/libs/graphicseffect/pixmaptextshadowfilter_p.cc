@@ -29,21 +29,21 @@ void PixmapTextShadowFilter::draw(QPainter *p, const QPointF &pos, const QPixmap
           return;
         }
 
-  //QImage tmp(px.size() + QSize(d->radius * 2, d->radius * 2),
-  QImage tmp(px.size(), QImage::Format_ARGB32_Premultiplied);
-  tmp.fill(0);
-  QPainter tmpPainter(&tmp);
-  tmpPainter.setCompositionMode(QPainter::CompositionMode_Source);
-  tmpPainter.drawPixmap(d->offset, px);
-  tmpPainter.end();
+  //QImage img(px.size() + QSize(d->radius * 2, d->radius * 2),
+  QImage img(px.size(), QImage::Format_ARGB32_Premultiplied);
+  img.fill(0);
+  QPainter imgPainter(&img);
+  imgPainter.setCompositionMode(QPainter::CompositionMode_Source);
+  imgPainter.drawPixmap(d->offset, px);
+  imgPainter.end();
 
   // blur the alpha channel
-  QImage blurred(tmp.size(), QImage::Format_ARGB32_Premultiplied);
+  QImage blurred(img.size(), QImage::Format_ARGB32_Premultiplied);
   blurred.fill(0);
 
   QPainter blurPainter(&blurred);
   for (int i = 0; i < d->intensity; i++)
-    ::blurImage(&blurPainter, tmp, d->radius, false, true); // quality = false, alphaOnly = true
+    ::blurImage(&blurPainter, img, d->radius, false, true); // quality = false, alphaOnly = true
   blurPainter.end();
 
   // blacken the image...

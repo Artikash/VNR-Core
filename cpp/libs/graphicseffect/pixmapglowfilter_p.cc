@@ -30,18 +30,18 @@ void PixmapGlowFilter::draw(QPainter *p, const QPointF &pos, const QPixmap &px, 
 
   // See: https://github.com/qtcn/tianchi/blob/master/src/gui/tcgloweffect.cpp
   qreal radius = d->radius;
-  QImage tmp(px.size() + QSize(radius * 2, radius * 2), QImage::Format_ARGB32_Premultiplied);
-  tmp.fill(0);
-  QPainter tmpPainter(&tmp);
-  tmpPainter.drawPixmap(d->offset, px);
-  tmpPainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
-  tmpPainter.fillRect(tmp.rect(), d->color);
-  tmpPainter.end();
-  qt_blurImage(tmp, radius, true);
+  QImage img(px.size() + QSize(radius * 2, radius * 2), QImage::Format_ARGB32_Premultiplied);
+  img.fill(0);
+  QPainter imgPainter(&img);
+  imgPainter.drawPixmap(d->offset, px);
+  imgPainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+  imgPainter.fillRect(img.rect(), d->color);
+  imgPainter.end();
+  qt_blurImage(img, radius, true);
 
   // FIXME: This is very inefficient
   for (int i = 0; i < d->intensity; i++)
-    p->drawImage(pos, tmp);
+    p->drawImage(pos, img);
 
   p->drawPixmap(pos, px);
 }

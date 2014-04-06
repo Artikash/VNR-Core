@@ -8,7 +8,7 @@
 
 QT_FORWARD_DECLARE_CLASS(QObjectPrivate)
 
-namespace QtInside {
+namespace QtPrivate {
 
 class DQObject : public QObject
 {
@@ -18,11 +18,11 @@ public:
 };
 
 inline QObjectPrivate *d_qobject(const QObject *q)
-{ return !q ? nullptr : reinterpret_cast<const DQObject *>(q)->d(); }
+{ return !q ? nullptr : static_cast<const DQObject *>(q)->d(); }
 
 inline QObjectPrivate *d_q(const QObject *q)
 { return d_qobject(q); }
 
-} // namespace QtInside
+} // namespace QtPrivate
 
 #endif // D_QOBJECT_H

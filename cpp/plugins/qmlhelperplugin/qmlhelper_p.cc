@@ -2,7 +2,7 @@
 // 12/9/2012 jichi
 
 #include "qmlhelperplugin/qmlhelper_p.h"
-#include "qtinside/d_qdeclarativetextedit.h"
+#include "qtprivate/d_qdeclarativetextedit.h"
 #include <QtCore/QObject>
 
 QmlHelper::QmlHelper(QObject *parent): Base(parent) {}
@@ -10,12 +10,12 @@ QmlHelper::QmlHelper(QObject *parent): Base(parent) {}
 QObject *QmlHelper::textedit_document(QDeclarativeItem *q)
 {
   //if (auto p = dynamic_cast<const QDeclarativeTextEdit *>(q))
-  //  return QtInside::d_qdeclarativetextedit_document(p);
+  //  return QtPrivate::d_qdeclarativetextedit_document(p);
   //else
   //  return nullptr;
   if (!q || !q->metaObject() || qstrcmp("QDeclarativeTextEdit", q->metaObject()->className()))
     return nullptr;
-  return QtInside::d_qdeclarativetextedit_document(static_cast<const QDeclarativeTextEdit *>(q));
+  return QtPrivate::d_qdeclarativetextedit_document(static_cast<const QDeclarativeTextEdit *>(q));
 }
 
 // EOF

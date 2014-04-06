@@ -8,7 +8,7 @@
 
 QT_FORWARD_DECLARE_CLASS(QGraphicsItemPrivate)
 
-namespace QtInside {
+namespace QtPrivate {
 
 class DQGraphicsItem : public QGraphicsItem
 {
@@ -18,11 +18,11 @@ public:
 };
 
 inline QGraphicsItemPrivate *d_qgraphicsitem(const QGraphicsItem *q)
-{ return !q ? nullptr : reinterpret_cast<const DQGraphicsItem *>(q)->d(); }
+{ return !q ? nullptr : static_cast<const DQGraphicsItem *>(q)->d(); }
 
 inline QGraphicsItemPrivate *d_q(const QGraphicsItem *q)
 { return d_qgraphicsitem(q); }
 
-} // namespace QtInside
+} // namespace QtPrivate
 
 #endif // D_QGRAPHICSITEM_H
