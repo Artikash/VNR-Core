@@ -5,6 +5,7 @@
 # http://dev.libqxt.org/libqxt/src
 # Version: 0.7
 # Checkout: 2/3/2012
+# Update: 4/5/2014
 
 DEFINES += WITH_LIB_HTMLUTIL
 DEFINES += QXT_STATIC QXT_DOXYGEN_RUN

@@ -60,7 +60,7 @@
 #else
 #    define QXT_CORE_EXPORT
 #endif // BUILD_QXT_CORE
-
+ 
 #if !defined(QXT_STATIC) && !defined(QXT_DOXYGEN_RUN)
 #    if defined(BUILD_QXT_GUI)
 #        define QXT_GUI_EXPORT Q_DECL_EXPORT
@@ -70,7 +70,7 @@
 #else
 #    define QXT_GUI_EXPORT
 #endif // BUILD_QXT_GUI
-
+ 
 #if !defined(QXT_STATIC) && !defined(QXT_DOXYGEN_RUN)
 #    if defined(BUILD_QXT_NETWORK)
 #        define QXT_NETWORK_EXPORT Q_DECL_EXPORT
@@ -80,7 +80,7 @@
 #else
 #    define QXT_NETWORK_EXPORT
 #endif // BUILD_QXT_NETWORK
-
+ 
 #if !defined(QXT_STATIC) && !defined(QXT_DOXYGEN_RUN)
 #    if defined(BUILD_QXT_SQL)
 #        define QXT_SQL_EXPORT Q_DECL_EXPORT
@@ -90,7 +90,7 @@
 #else
 #    define QXT_SQL_EXPORT
 #endif // BUILD_QXT_SQL
-
+ 
 #if !defined(QXT_STATIC) && !defined(QXT_DOXYGEN_RUN)
 #    if defined(BUILD_QXT_WEB)
 #        define QXT_WEB_EXPORT Q_DECL_EXPORT
@@ -100,7 +100,7 @@
 #else
 #    define QXT_WEB_EXPORT
 #endif // BUILD_QXT_WEB
-
+ 
 #if !defined(QXT_STATIC) && !defined(QXT_DOXYGEN_RUN)
 #    if defined(BUILD_QXT_BERKELEY)
 #        define QXT_BERKELEY_EXPORT Q_DECL_EXPORT
@@ -218,11 +218,11 @@ public:
     }
     inline PVT * operator->()
     {
-    return static_cast<PVT*>(pvt);
+	return static_cast<PVT*>(pvt);
     }
     inline const PVT * operator->() const
     {
-    return static_cast<PVT*>(pvt);
+	return static_cast<PVT*>(pvt);
     }
 private:
     QxtPrivateInterface(const QxtPrivateInterface&) { }
