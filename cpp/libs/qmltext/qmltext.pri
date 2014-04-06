@@ -7,11 +7,9 @@ DEFINES += WITH_LIB_QMLTEXT
 DEPENDPATH += $$PWD
 
 HEADERS += \
-  $$PWD/contouredtext.h \
   $$PWD/contouredtextedit.h
 
 SOURCES += \
-  $$PWD/contouredtext.cc \
   $$PWD/contouredtextedit.cc
 
 #INCLUDEPATH     += $$QT_SRC

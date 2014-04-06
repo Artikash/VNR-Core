@@ -1,7 +1,6 @@
 // qmltextplugin.cc
 // 4/5/2014 jichi
 #include "qmltextplugin/qmltextplugin.h"
-#include "qmltext/contouredtext.h"
 #include "qmltext/contouredtextedit.h"
 #include <QtDeclarative/qdeclarative.h>
 

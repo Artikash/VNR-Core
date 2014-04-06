@@ -3,6 +3,7 @@
 
 TEMPLATE = subdirs
 
+SUBDIRS += qtprivate
 win32: SUBDIRS += disasm wintimer
 
 include(cc/cc.pri)
@@ -14,7 +15,6 @@ include(libqxt/libqxt.pri)
 include(metacall/metacall.pri)
 include(qmltext/qmltext.pri)
 include(qtmodule/qtmodule.pri)
-include(qtprivate/qtprivate.pri)
 include(sakurakit/sakurakit.pri)
 include(singleapp/singleapp.pri)
 include(texscript/texscript.pri)

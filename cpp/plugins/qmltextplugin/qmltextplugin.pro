@@ -6,8 +6,12 @@ CONFIG += qmlplugin
 include(../../../config.pri)
 include($$LIBDIR/imageutil/imageutil.pri)
 include($$LIBDIR/qmltext/qmltext.pri)
+include($$LIBDIR/qtprivate/declarative.pri)
 
 ## Sources
+
+INCLUDEPATH += /Users/jichi/src/qt/src/3rdparty/harfbuzz/src
+
 
 TEMPLATE = lib
 TARGET  = qmltextplugin

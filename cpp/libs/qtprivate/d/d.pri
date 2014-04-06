@@ -1,6 +1,6 @@
 # d.pri
 # 4/9/2012 jichi
-#include(../../../config.pri)
+#include(../../../../config.pri)
 DEFINES += WITH_LIB_QTPRIVATE_D
 
 DEPENDPATH += $$PWD
