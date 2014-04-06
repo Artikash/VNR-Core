@@ -3,7 +3,9 @@
 
 TEMPLATE = subdirs
 
-SUBDIRS += pytest
+SUBDIRS += \
+  pytest \
+  uitest
 
 win32: SUBDIRS += \
   test \
