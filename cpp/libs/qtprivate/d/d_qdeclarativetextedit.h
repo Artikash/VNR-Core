@@ -8,9 +8,9 @@
 # pragma clang diagnostic ignored "-Wunused-private-field"  // in <qmime.h> included by <qtextcontrol_p>
 #endif // __clang__
 
-#include "qtprivate/d_qgraphicsitem.h"
+#include "qtprivate/d/d_qgraphicsitem.h"
 
-#include <qt/src/gui/text/qtextcontrol_p.h>
+//#include <qt/src/gui/text/qtextcontrol_p.h>
 #include <qt/src/declarative/graphicsitems/qdeclarativetextedit_p.h>
 #include <qt/src/declarative/graphicsitems/qdeclarativetextedit_p_p.h>
 

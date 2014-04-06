@@ -14,6 +14,8 @@ SOURCES += \
   $$PWD/contouredtext.cc \
   $$PWD/contouredtextedit.cc
 
+#INCLUDEPATH     += $$QT_SRC
+
 QT      += core gui
 
 # EOF

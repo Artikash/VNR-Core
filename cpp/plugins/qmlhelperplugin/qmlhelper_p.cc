@@ -2,7 +2,7 @@
 // 12/9/2012 jichi
 
 #include "qmlhelperplugin/qmlhelper_p.h"
-#include "qtprivate/d_qdeclarativetextedit.h"
+#include "qtprivate/d/d_qdeclarativetextedit.h"
 #include <QtCore/QObject>
 
 QmlHelper::QmlHelper(QObject *parent): Base(parent) {}

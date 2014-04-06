@@ -18,7 +18,7 @@ SOURCES += qmltextplugin.cc
 QT += core gui declarative
 
 #!wince*: LIBS += -lshell32
-#RC_FILE += qmltexscriptplugin.rc
+#RC_FILE += qmltextplugin.rc
 
 OTHER_FILES += qmldir
 

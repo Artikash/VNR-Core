@@ -9,6 +9,7 @@
 
 class DeclarativeContouredTextEditPrivate;
 class DeclarativeContouredTextEdit : public QDeclarativeTextEdit
+
 {
   Q_OBJECT
   SK_EXTEND_CLASS(DeclarativeContouredTextEdit, QDeclarativeTextEdit)
@@ -17,5 +18,7 @@ public:
   DeclarativeContouredTextEdit(QDeclarativeItem *parent = nullptr);
   ~DeclarativeContouredTextEdit();
 };
+
+QML_DECLARE_TYPE(DeclarativeContouredTextEdit)
 
 #endif // _QMLTEXT_CONTOURED_TEXTEDIT_H
