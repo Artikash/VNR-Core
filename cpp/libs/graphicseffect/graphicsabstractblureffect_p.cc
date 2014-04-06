@@ -162,8 +162,8 @@ void GraphicsAbstractBlurEffect::draw(QPainter *painter)
 {
   Q_ASSERT(painter);
   Q_ASSERT(painter->isActive());    // NOT true when rendering widgets on mac
-#ifdef Q_OS_MAC // FIXME
-  if (!painter->isActive()) {
+#ifdef Q_OS_MAC
+  if (!painter->isActive() || !painter->paintEngine()) {
     drawSource(painter);
     return;
   }

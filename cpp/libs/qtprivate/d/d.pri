@@ -1,7 +1,7 @@
-# metacall.pri
+# d.pri
 # 4/9/2012 jichi
-
-DEFINES += WITH_LIB_METACALL
+#include(../../../../config.pri)
+DEFINES += WITH_LIB_QTPRIVATE_D
 
 DEPENDPATH += $$PWD
 

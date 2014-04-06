@@ -3,15 +3,17 @@
 
 TEMPLATE = subdirs
 
+SUBDIRS += qtprivate
 win32: SUBDIRS += disasm wintimer
 
 include(cc/cc.pri)
 include(disasm/disasm.pri)
 include(graphicseffect/graphicseffect.pri)
 include(htmlutil/htmlutil.pri)
+include(imageutil/imageutil.pri)
 include(libqxt/libqxt.pri)
 include(metacall/metacall.pri)
-include(qtinside/qtinside.pri)
+include(qmltext/qmltext.pri)
 include(qtmodule/qtmodule.pri)
 include(sakurakit/sakurakit.pri)
 include(singleapp/singleapp.pri)

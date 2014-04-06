@@ -35,6 +35,8 @@ def glowEffect(parent=None, color=GLOW_COLOR, radius=16, offset=1):
   @param* offset  int
   @return  QGraphicsEffect
   """
+  if skos.MAC: # graphics effect on mac is not observable
+    return None
   #from pyeffects import GraphicsTextShadowEffect
   #ret = GraphicsTextShadowEffect(parent)
   ret = QGraphicsDropShadowEffect(parent)

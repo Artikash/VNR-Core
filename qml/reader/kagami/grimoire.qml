@@ -15,6 +15,7 @@ import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
 import '../../../js/util.min.js' as Util
 import '../../imports/qmleffects' as Effects
+//import '../../imports/qmltext' as QmlText
 import '../../imports/texscript' as TexScript
 import '../../ui' as Ui
 import '../share' as Share
@@ -29,6 +30,9 @@ Item { id: root_
 
   property int glowIntensity: 2
   property real glowRadius: 8
+
+  //property int contourRadius: glowRadius
+  //property int contourRadius: 8
 
   property bool alignCenter
   //property bool outlineEnabled
@@ -490,7 +494,8 @@ Item { id: root_
     color: '#44000000'
     opacity: 0.27 // #44
     z: -1
-    radius: 18
+    //radius: 18
+    radius: 8 * root_.zoomFactor
 
     //Share.CloseButton {
     //  anchors { left: parent.left; top: parent.top; margins: 2 }
@@ -810,9 +815,47 @@ Item { id: root_
       //  from: 0; to: 1; duration: _FADE_DURATION
       //}
 
+      //property color itemColor: _itemColor() // cached
+      function itemColor() {
+        if (toolTip_.containsMouse || textCursor_.containsMouse)
+          return 'red'
+        switch (model.type) {
+        case 'text':
+        case 'name': return root_.textColor
+        case 'comment': return model.comment.color || root_.commentColor
+        case 'tr':
+        case 'name.tr':
+          switch(model.provider) {
+          case 'jbeijing': return root_.jbeijingColor
+          case 'dreye': return root_.dreyeColor
+          case 'eztrans': return root_.ezTransColor
+          case 'atlas': return root_.atlasColor
+          case 'lec': return root_.lecColor
+          case 'lecol': return root_.lecOnlineColor
+          case 'transru': return root_.transruColor
+          case 'infoseek': return root_.infoseekColor
+          case 'excite': return root_.exciteColor
+          case 'bing': return root_.bingColor
+          case 'google': return root_.googleColor
+          case 'baidu': return root_.baiduColor
+          case 'lou': return root_.lougoColor
+          default: return root_.translationColor
+          }
+        default: return  'transparent'
+        }
+      }
+
+      //QmlText.ContouredTextEdit { id: textEdit_
       TextEdit { id: textEdit_
         Component.onCompleted:
           listModel_.setProperty(model.index, 'textEdit', textEdit_) // Needed for contextMenu event
+
+        //contourEenabled: !!text
+        //contourOffset: '4,4'
+        ////contourRadius: root_.contourRadius
+        //contourRadius: 6
+        //contourColor: textItem_.itemColor
+        //contourColor: '#aa0000bb'
 
         //Rectangle {   // Shadow
         //  color: '#44000000'
@@ -918,6 +961,7 @@ Item { id: root_
         // height is the same as painted height
         width: listView_.width
 
+        //property QtObject effect: Effects.Glow {
         effect: Effects.Glow {
           //enabled2: root_.outlineEnabled
           //blurRadius2: 4
@@ -931,34 +975,7 @@ Item { id: root_
           blurIntensity: !textItem_.hover ? root_.glowIntensity :
                          root_.shadowEnabled ? 1 : 2
           enabled: !!textEdit_.text
-          color: {
-            if (toolTip_.containsMouse || textCursor_.containsMouse)
-              return 'red'
-            switch (model.type) {
-            case 'text':
-            case 'name': return root_.textColor
-            case 'comment': return model.comment.color || root_.commentColor
-            case 'tr':
-            case 'name.tr':
-              switch(model.provider) {
-              case 'jbeijing': return root_.jbeijingColor
-              case 'dreye': return root_.dreyeColor
-              case 'eztrans': return root_.ezTransColor
-              case 'atlas': return root_.atlasColor
-              case 'lec': return root_.lecColor
-              case 'lecol': return root_.lecOnlineColor
-              case 'transru': return root_.transruColor
-              case 'infoseek': return root_.infoseekColor
-              case 'excite': return root_.exciteColor
-              case 'bing': return root_.bingColor
-              case 'google': return root_.googleColor
-              case 'baidu': return root_.baiduColor
-              case 'lou': return root_.lougoColor
-              default: return root_.translationColor
-              }
-            default: return  'transparent'
-            }
-          }
+          color: textItem_.itemColor()
         }
 
         anchors.centerIn: parent

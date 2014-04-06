@@ -4,7 +4,7 @@
 // texscriptplugin.h
 // 11/12/2012 jichi
 
- #include <QtDeclarative/QDeclarativeExtensionPlugin>
+#include <QtDeclarative/QDeclarativeExtensionPlugin>
 
 class TexScriptPlugin : public QDeclarativeExtensionPlugin
 {

@@ -4,7 +4,7 @@
 
 CONFIG += qmlplugin
 include(../../../config.pri)
-include($$LIBDIR/qtinside/qtinside.pri)
+include($$LIBDIR/qtprivate/d/d.pri)
 
 ## Sources
 

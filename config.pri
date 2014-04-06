@@ -97,6 +97,8 @@ mac {
 INCLUDEPATH     += $$BOOST_HOME/include
 LIBS            += -L$$BOOST_HOME/lib
 
+INCLUDEPATH     += $$QT_SRC # always allow access to Qt source code
+
 ## Config
 
 CONFIG(release) {
