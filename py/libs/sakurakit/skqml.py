@@ -237,9 +237,9 @@ class SkDeclarativeView(QDeclarativeView):
 
   # Cannot be reverted
   def setTranslucent(self):
-    self.setAttribute(Qt.WA_TranslucentBackground);
+    self.setAttribute(Qt.WA_TranslucentBackground)
     #skqss.class_(self, 'transp')
-    self.setStyleSheet("QDeclarativeView { background-color:transparent }")
+    self.setStyleSheet("QDeclarativeView{background-color:transparent}")
 
   ## Events ##
 
@@ -286,7 +286,7 @@ class SkDeclarativeView(QDeclarativeView):
         not(self.windowFlags() & (Qt.WindowMaximized | Qt.WindowFullScreen)) and
         event.button() == Qt.LeftButton and self.__d.dragPos is None):
       self.__d.dragPos = event.globalPos() - self.frameGeometry().topLeft()
-      event.accept();
+      event.accept()
     super(SkDeclarativeView, self).mousePressEvent(event)
 
   def mouseMoveEvent(self, event):
@@ -301,7 +301,7 @@ class SkDeclarativeView(QDeclarativeView):
   def mouseReleaseEvent(self, event):
     """@reimp @protected"""
     self.__d.dragPos = None
-    super(SkDeclarativeView, self).mouseReleaseEvent(event);
+    super(SkDeclarativeView, self).mouseReleaseEvent(event)
 
 ## Components ##
 
@@ -407,13 +407,13 @@ class SkDeclarativeBusySpinner(QDeclarativeItem):
 
   def paint(self, painter, option, widget=None):
     """@reimp @public
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0)
     """
     #Q_UNUSED(option)
     #Q_UNUSED(widget)
     d = self.__d
     key = d.hash
-    pm = QPixmap();
+    pm = QPixmap()
     if not QPixmapCache.find(key, pm):
       # Set up a convenient path
       path = QPainterPath()
@@ -423,12 +423,12 @@ class SkDeclarativeBusySpinner(QDeclarativeItem):
 
       nActualDiameter = 2.0 * d.actualOuterRadius
       pm = QPixmap(nActualDiameter, nActualDiameter)
-      pm.fill(Qt.transparent);
+      pm.fill(Qt.transparent)
       p = QPainter(pm)
 
       # Draw the ring background
       p.setPen(Qt.NoPen)
-      p.setBrush(d.backgroundColor );
+      p.setBrush(d.backgroundColor)
       p.setRenderHint(QPainter.Antialiasing)
       p.drawPath(path)
 

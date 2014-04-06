@@ -77,7 +77,7 @@ class SkMultiFilterProxyModel(QSortFilterProxyModel):
       # See: http://www.qtcentre.org/threads/46471-QTreeView-Filter
       if model.rowCount(index):
         for row in xrange(model.rowCount(index)):
-          #childIndex = model.index(row, col, index);
+          #childIndex = model.index(row, col, index)
           if row != source_row and self.filterAcceptsRow(row, index):
             return True
     return False
@@ -144,14 +144,14 @@ class _SkFilterTableController(object):
 
   def clearData(self):
     while self.sourceModel.rowCount():
-      sourceModel.removeRow(0);
-    self._updateCount();
+      sourceModel.removeRow(0)
+    self._updateCount()
 
   def removeCurrentRow(self):
     mi = self.sourceModel.currentIndex()
     if mi.isValid():
       self.proxyModel.removeRow(mi.row())
-    self._updateCount();
+    self._updateCount()
 
 class SkFilterTableController(QtCore.QObject):
   def __init__(self, parent=None):
@@ -195,8 +195,8 @@ class SkFilterTableController(QtCore.QObject):
     index = self.currentIndex()
     if not index.isValid():
       return
-    row = index.row();
-    index = index.sibling(row, col);
+    row = index.row()
+    index = index.sibling(row, col)
     if not index.isValid():
       return
     return index.data(role)
@@ -457,14 +457,14 @@ class _SkWidgetTreeController(object):
 
   #def clearData(self):
   #  while self.sourceModel.rowCount():
-  #    sourceModel.removeRow(0);
-  #  self._updateCount();
+  #    sourceModel.removeRow(0)
+  #  self._updateCount()
 
   #def removeCurrentRow(self):
   #  mi = self.sourceModel.currentIndex()
   #  if mi.isValid():
   #    self.proxyModel.removeRow(mi.row())
-  #  self._updateCount();
+  #  self._updateCount()
 
   def resetData(self, data):
     model = self.sourceModel
@@ -593,8 +593,8 @@ class SkWidgetTreeController(QtCore.QObject):
   #  index = self.currentIndex()
   #  if not index.isValid():
   #    return
-  #  row = index.row();
-  #  index = index.sibling(row, col);
+  #  row = index.row()
+  #  index = index.sibling(row, col)
   #  if not index.isValid():
   #    return
   #  return index.data(role)
@@ -604,9 +604,9 @@ class SkWidgetTreeController(QtCore.QObject):
     index = self.currentIndex()
     if not index.isValid():
       return
-    row = index.row();
+    row = index.row()
     col = 0
-    index = index.sibling(row, col);
+    index = index.sibling(row, col)
     if not index.isValid():
       return
     index = index.model().mapToSource(index) # index.model() is the same as d.proxyModel
