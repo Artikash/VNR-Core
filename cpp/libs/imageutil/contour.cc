@@ -1,6 +1,7 @@
 // contour.cc
 // 4/5/2014 jichi
 #include "imageutil/contour.h"
+#include <QtGui/QColor>
 
 QImage contourImage(const QImage &src, const QColor &color, int radius, const QPoint &offset, int alphaThreshold)
 {

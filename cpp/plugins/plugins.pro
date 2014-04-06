@@ -9,6 +9,7 @@ TEMPLATE = subdirs
 SUBDIRS += qmleffectsplugin
 SUBDIRS += qmlhelperplugin
 SUBDIRS += qmltexscriptplugin
+SUBDIRS += qmltextplugin
 
 SUBDIRS += pyreader
 
