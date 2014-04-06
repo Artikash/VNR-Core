@@ -495,7 +495,8 @@ Item { id: root_
     opacity: 0.27 // #44
     z: -1
     //radius: 18
-    radius: 8 * root_.zoomFactor
+    //radius: 8 * root_.zoomFactor
+    radius: 8
 
     //Share.CloseButton {
     //  anchors { left: parent.left; top: parent.top; margins: 2 }
