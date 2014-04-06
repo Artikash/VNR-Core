@@ -154,7 +154,9 @@ Item { id: root_
         z: -1
         width: textEdit_.paintedWidth + 20
         height: textEdit_.paintedHeight + 20
-        radius: 15
+        //radius: 15
+        //radius: 8 * root_.zoomFactor
+        radius: 8
       }
 
       TextEdit { id: textEdit_
