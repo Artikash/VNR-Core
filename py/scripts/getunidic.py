@@ -27,10 +27,12 @@ TMP_DIR = initdefs.TMP_RELPATH
 #UNIDIC_URL = 'http://ftp.jaist.ac.jp/pub/sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
 #UNIDIC_URL = 'http://osdn.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
 #UNIDIC_URL = 'http://mse.uk.distfiles.macports.org/sites/distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip'
-UNIDIC_URL = 'http://distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip'
-UNIDIC_FILESIZE = 46307109
+#UNIDIC_URL = 'http://distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip'
+#UNIDIC_URL = 'http://sakuradite.org/pub/unidic/unidic-2.1.2.tar.bz2'
+UNIDIC_URL = 'http://%s/pub/unidic/unidic-2.1.2.tar.bz2' % initdefs.DOMAIN_ORG
+UNIDIC_MIN_FILESIZE = 25000000
 UNIDIC_FILENAME = 'unidic'
-UNIDIC_SUFFIX = '.zip'
+UNIDIC_SUFFIX = '.tbz2'
 
 def init():
   for it in TMP_DIR:
@@ -40,12 +42,12 @@ def init():
 def get(): # return bool
   url = UNIDIC_URL
   path = TMP_DIR + '/' + UNIDIC_FILENAME + UNIDIC_SUFFIX
-  size = UNIDIC_FILESIZE
+  size = UNIDIC_MIN_FILESIZE
 
   dprint("enter: size = %s, url = %s" % (size, url))
 
   from sakurakit import skfileio
-  if os.path.exists(path) and skfileio.filesize(path) == size:
+  if os.path.exists(path) and skfileio.filesize(path) > size:
     dprint("leave: already downloaded")
     return True
 
@@ -53,7 +55,7 @@ def get(): # return bool
   ok = False
   with SkProfiler():
     if sknetio.getfile(url, path, flush=False): # flush=false to use more memory to reduce disk access
-      ok = skfileio.filesize(path) == size
+      ok = skfileio.filesize(path) > size
   if not ok and os.path.exists(path):
     os.remove(path)
   dprint("leave: ok = %s" % ok)
@@ -68,7 +70,7 @@ def extract():
 
   import shutil
   from sakurakit import skfileio
-  ok = skfileio.extractzip(srcpath, tmppath)
+  ok = skfileio.extracttar(srcpath, tmppath, mode='r:bz2')
   if ok:
     if os.path.exists(targetpath):
       shutil.rmtree(targetpath)
@@ -88,7 +90,7 @@ def msg():
   messages.info(
     name="UniDic",
     location="Caches/Dictionaries/UniDic",
-    size=UNIDIC_FILESIZE,
+    size=UNIDIC_MIN_FILESIZE,
     urls=[
       'http://sourceforge.jp/projects/unidic',
       'http://jaist.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip',
