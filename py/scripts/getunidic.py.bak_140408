@@ -18,19 +18,19 @@ TMP_DIR = initdefs.TMP_RELPATH
 # Note: The original unidic is missing def. Need to get the Debian package.
 # http://http.us.debian.org/debian/pool/main/u/unidic-mecab/unidic-mecab_2.1.2~dfsg-2_all.deb
 #
+# http://sakuradite.com/topic/167
+#
 # http://sourceforge.jp/projects/unidic/
 # http://jaist.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip
 # ftp://ftp.jaist.ac.jp/pub/sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip
 #UNIDIC_URL = 'http://jaist.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
 #UNIDIC_URL = 'http://ftp.jaist.ac.jp/pub/sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
 #UNIDIC_URL = 'http://osdn.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
-#UNIDIC_FILESIZE = 46307109
-#UNIDIC_URL = 'http://osdn.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip'
-UNIDIC_URL = "http://%s/pub/unidic/unidic-2.1.2.7z" % initdefs.DOMAIN_ORG
+#UNIDIC_URL = 'http://mse.uk.distfiles.macports.org/sites/distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip'
+UNIDIC_URL = 'http://distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip'
+UNIDIC_FILESIZE = 46307109
 UNIDIC_FILENAME = 'unidic'
-UNIDIC_SUFFIX = '.7z'
-
-MIN_FILESIZE = 20000000 # 20 < 28 MB
+UNIDIC_SUFFIX = '.zip'
 
 def init():
   for it in TMP_DIR:
@@ -40,12 +40,12 @@ def init():
 def get(): # return bool
   url = UNIDIC_URL
   path = TMP_DIR + '/' + UNIDIC_FILENAME + UNIDIC_SUFFIX
-  minsize = MIN_FILESIZE
+  size = UNIDIC_FILESIZE
 
-  dprint("enter: url = %s" % url)
+  dprint("enter: size = %s, url = %s" % (size, url))
 
   from sakurakit import skfileio
-  if os.path.exists(path) and skfileio.filesize(path) > minsize:
+  if os.path.exists(path) and skfileio.filesize(path) == size:
     dprint("leave: already downloaded")
     return True
 
@@ -53,7 +53,7 @@ def get(): # return bool
   ok = False
   with SkProfiler():
     if sknetio.getfile(url, path, flush=False): # flush=false to use more memory to reduce disk access
-      ok = skfileio.filesize(path) > minsize
+      ok = skfileio.filesize(path) == size
   if not ok and os.path.exists(path):
     os.remove(path)
   dprint("leave: ok = %s" % ok)
@@ -68,7 +68,7 @@ def extract():
 
   import shutil
   from sakurakit import skfileio
-  ok = skfileio.extract7z(srcpath, tmppath)
+  ok = skfileio.extractzip(srcpath, tmppath)
   if ok:
     if os.path.exists(targetpath):
       shutil.rmtree(targetpath)
@@ -80,6 +80,24 @@ def extract():
 
   dprint("leave: ok = %s" % ok)
   return ok
+
+## Main ##
+
+def msg():
+  import messages
+  messages.info(
+    name="UniDic",
+    location="Caches/Dictionaries/UniDic",
+    size=UNIDIC_FILESIZE,
+    urls=[
+      'http://sourceforge.jp/projects/unidic',
+      'http://jaist.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip',
+      'http://osdn.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip',
+      'http://distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip',
+      'http://mse.uk.distfiles.macports.org/sites/distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip',
+      'http://sakuradite.org/pub/unidic/unidic-2.1.2.tar.xz',
+    ]
+  )
 
 def main():
   """
@@ -105,6 +123,7 @@ if __name__ == '__main__':
   if not initrc.lock('unidic.lock'):
     dwarn("multiple instances")
     sys.exit(1)
+  msg()
   ret = main()
   sys.exit(ret)
 
