@@ -87,7 +87,7 @@ class _TextManager(object):
     self.language = 'en' # str, user language
     self.gameLanguage = 'ja' # str, game language
     #self.locked = False
-    self.encoding = 'shift-jis'
+    self.encoding = 'shift-jis' # str
     self.contextSizeHint = 0 # int
 
     self.reset()
@@ -224,13 +224,14 @@ class _TextManager(object):
     else:
       self._speakTextTimer.start(1000)
 
-  def guessName(self, text):
+  @staticmethod
+  def guessName(text):
     """
     @param  text  unicode
     @return  unicode or None
     """
     ret = textutil.guess_text_name(text) #or termman.manager().applyNameTerms(text, self.language)
-    if ret and len(ret) <= 16:
+    if ret and len(ret) <= 16: # limit max name size
       return ret
 
   def _speakText(self):
