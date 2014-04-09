@@ -12,7 +12,7 @@ Share.AvatarImage {
 
   // - Private -
 
-  url: !userId ? '' : dataman_.queryUserAvatarUrlWithHash(userId, userHash, 'small') // small: 50x50
+  url: !userId ? '' : dataman_.queryUserAvatarUrlWithHash(userId, userHash)
 
   Plugin.DataManagerProxy { id: dataman_ }
 }

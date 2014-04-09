@@ -135,7 +135,8 @@ Item { id: root_
       Share.AvatarImage { id: avatar_
         anchors { left: parent.left; top: parent.top }
         width: 40; height: 40
-        url: model.userAvatar ? 'http://avatars.io/' + model.userAvatar + '?size=large' : ''
+        url: model.userAvatar ? 'http://media.getchute.com/media/' + model.userAvatar + '/64x64' : ''
+        //url: model.userAvatar ? 'http://avatars.io/' + model.userAvatar + '?size=large' : ''
       }
 
       Rectangle { id: postHeader_

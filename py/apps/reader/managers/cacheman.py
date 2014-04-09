@@ -13,12 +13,16 @@ import osutil, rc
 TMP_SUFFIX = '.tmp'
 BAD_SUFFIX = '.bad'
 
-def _avatarurl(token):
+#def _avatarurl(token, size=128):
+def _avatarurl(token): # string -> string
   """
   @param  token  unicode
   @return  unicode
   """
-  return "http://avatars.io/%s?size=large" % token
+  return "http://media.getchute.com/media/%s/128x128" % token
+  #return "http://avatars.io/%s?size=large" % token
+
+avatarurl = _avatarurl
 
 def _getavatar(token):
   """

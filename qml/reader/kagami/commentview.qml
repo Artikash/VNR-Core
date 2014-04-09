@@ -264,7 +264,7 @@ Item { id: root_
           asynchronous: !!url && url.indexOf('http://') === 0
           //asynchronous: true
           source: url
-          property string url: datamanPlugin_.queryUserAvatarUrlWithHash(model.comment.userId, model.comment.userHash, 'small') // small: 50x50
+          property string url: datamanPlugin_.queryUserAvatarUrlWithHash(model.comment.userId, model.comment.userHash)
         }
       }
 

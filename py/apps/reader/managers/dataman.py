@@ -6223,7 +6223,7 @@ class DataManager(QObject):
       cacheman.manager().cacheAvatar(ret)
     return ret
 
-  def queryUserAvatarUrl(self, id, hash=0, size='large', cache=False):
+  def queryUserAvatarUrl(self, id, hash=0, cache=False):
     """
     @param  id  int
     @param* hash  int
@@ -6239,7 +6239,7 @@ class DataManager(QObject):
     if os.path.exists(path):
       return osutil.path_url(path)
     else:
-     return "http://avatars.io/%s?size=%s" % (av, size)
+      return cacheman.avatarurl(av)
 
   def queryGameItem(self, id):
     """
@@ -7736,16 +7736,16 @@ class DataManagerProxy(QObject):
   #def queryGameImage(self, id):
   #  return manager().queryGameImageUrl(id=id)
 
-  @Slot(long, unicode, result=unicode)
-  def queryUserAvatarUrl(self, id, size):
-    ret = manager().queryUserAvatarUrl(id, size=size, cache=True)
+  @Slot(long, result=unicode)
+  def queryUserAvatarUrl(self, id):
+    ret = manager().queryUserAvatarUrl(id, cache=True)
     if ret and not netman.manager().isOnline() and ret.startswith("http://"):
       ret = ""
     return ret
 
-  @Slot(long, long, unicode, result=unicode)
-  def queryUserAvatarUrlWithHash(self, id, hash, size):
-    ret = manager().queryUserAvatarUrl(id, hash=hash, size=size, cache=True)
+  @Slot(long, long, result=unicode)
+  def queryUserAvatarUrlWithHash(self, id, hash):
+    ret = manager().queryUserAvatarUrl(id, hash=hash, cache=True)
     if ret and not netman.manager().isOnline() and ret.startswith("http://"):
       ret = ""
     return ret
