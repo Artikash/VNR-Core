@@ -62,7 +62,7 @@ class SoftApi(object):
       if h:
         ret = self._parse(h)
         if ret:
-          ret['id'] = id # str or int
+          ret['id'] = long(id)
           ret['url'] = "http://getchu.com/soft.phtml?id=%s" % id # str
           img = "brandnew/%s/c%spackage.jpg" % (id, id)    # str, example: www.getchu.com/brandnew/756396/c756396package.jpg
           ret['img'] = self.HOST + img if img in h else '' # str

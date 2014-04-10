@@ -54,7 +54,7 @@ class ItemApi(object):
       if h:
         ret = self._parse(h)
         if ret:
-          ret['id'] = id # str or int
+          ret['id'] = long(id)
           ret['url'] = url
           return ret
 
@@ -68,6 +68,7 @@ class ItemApi(object):
       return {
         'title': title,
         'image': self._parseimage(h),
+        #'date': self._parsedate(h),
         'theme': self._parsetheme(h),
         'tags': list(self._iterparsetags(h)),
         'sampleImages': list(self._iterparsesampleimages(h)),
@@ -106,6 +107,7 @@ class ItemApi(object):
     t = self._parsemetakeyword(h)
     if t:
       return skstr.unescapehtml(t.partition(',')[0])
+
   # Examplee:
   # <dt>作品テーマ</dt>
   # <dd>演劇de恋するアドベンチャー</dd>
@@ -130,6 +132,25 @@ class ItemApi(object):
     m = self._rx_image.search(h)
     if m:
       return self.IMAGE_HOST + m.group()
+
+  # Note: There are two kinds of date: http://gyutto.com/i/item16775
+  # Example:
+  #  1.
+  # <dt>配信開始日</dt>
+  # <dd>2007年05月25日</dd>
+  # 2.
+  # パッケージ販売開始日
+  _rx_date = re.compile(ur"<dt>配信開始日</dt>\n<dd>(\d+年\d\d月\d\d日)</dd>")
+  def _parsedate(self, h):
+    """
+    @param  h  unicode  html
+    @return  str  such as 2007/05/25
+    """
+    m = self._rx_date.search(h)
+    if m:
+      ret = m.group(1)
+      if ret:
+        return ret.replace(u"年", '/').replace(u"月", '/').replace(u"日", '/')
 
   _rx_sampleimage = re.compile(r'/data/item_img/[0-9]+/[0-9]+/[0-9]+_[0-9]+.jpg')
   def _iterparsesampleimages(self, h):
