@@ -88,9 +88,7 @@ class SoftApi(object):
       'creators': self._parsecreators(h), # [kw]
     }
 
-  # 'banner' is mistyped as 'bannner'
   # <div style="text-align: center; padding-top:10px;"><img src="http://www.noukano.com/koisen/banner/koisen-600x120-5.jpg" /></div>
-  #_rx_banner = re.compile(r'bannner -->.*?<img src="(.+?)"', re.DOTALL)
   _rx_banner = re.compile(r'"><img src="(.+?)"')
   def _parsebanner(self, h):
     """

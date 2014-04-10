@@ -1,4 +1,5 @@
 # coding: utf8
+# caching.py
 # 11/26/2013 jichi
 
 __all__ = ['CachingSearchApi', 'CachingSoftApi']
