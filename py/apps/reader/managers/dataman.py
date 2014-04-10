@@ -2464,6 +2464,7 @@ class ScapeReference(Reference):
       funtime=None, playtime=None,
       twitter_data_widget_id=None,
       twitter_data_widget_id_official=None,
+      twitter_data_widget_id_before=None,
       shoukai='',
       **kwargs):
     super(ScapeReference, self).__init__(parent=parent,
@@ -2479,7 +2480,7 @@ class ScapeReference(Reference):
     self.slogan = genre or '' # unicode
     self.homepage = shoukai or '' # str
     self.twitterWidgets = []
-    for it in twitter_data_widget_id, twitter_data_widget_id_official:
+    for it in twitter_data_widget_id, twitter_data_widget_id_official, twitter_data_widget_id_before:
       if it:
         self.twitterWidgets.append(it)
 
