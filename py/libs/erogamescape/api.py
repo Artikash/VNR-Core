@@ -106,6 +106,7 @@ _FIELDS = {
   'twitter': __unicode, # twitter user name
   'twitter_search': __unicode,  # twitter search key words
   'twitter_data_widget_id': __long,
+  'twitter_data_widget_id_before': __long, # before release
   'twitter_data_widget_id_official': __long,
 
   'erogetrailers': __long,
@@ -235,16 +236,12 @@ class Api(object):
 
 if __name__ == '__main__':
   api = Api()
-  t = 15986
+  t = 18942
   q = api.query(t)
   #print q
   for it in q:
-    print it['gamename']
+    print it['twitter_data_widget_id_before']
 
-  t = u'暁の護衛'
-  q = api.query(text=t)
-  for it in q:
-    print it['gamename']
 
   #t = 9610
   #q = api.query(t, type=api.EROGETRAILERS_TYPE)
