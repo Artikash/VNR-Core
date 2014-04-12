@@ -9,19 +9,19 @@ if __name__ == '__main__': # DEBUG
 
 from time import time
 from hashlib import md5 # pylint: disable-msg=E0611
-import restful.caching
+import restful.offline
 from rest import RestApi
 from game import GameApi
 from tag import TagApi
 
 def _htmlcacher(cls):
-  from restful.caching import DataCacher
+  from restful.offline import DataCacher
   return DataCacher(cls, suffix='.html')
 
 CachingGameApi = _htmlcacher(GameApi)
 CachingTagApi = _htmlcacher(TagApi)
 
-class RestCacherBase(restful.caching.CacherBase):
+class RestCacherBase(restful.offline.CacherBase):
   def __init__(self, *args, **kwargs):
     super(RestCacherBase, self).__init__(*args, **kwargs)
 
@@ -39,7 +39,7 @@ class RestCacherBase(restful.caching.CacherBase):
       url += '&__expire=' + str(now/self.expiretime)
     return md5(url).hexdigest()
 
-CachingRestApi = restful.caching.FileCacher(RestApi, Base=RestCacherBase, suffix='.xml')
+CachingRestApi = restful.offline.FileCacher(RestApi, Base=RestCacherBase, suffix='.xml')
 
 if __name__ == '__main__':
   cachedir = "s:/tmp/dmm"

@@ -212,6 +212,9 @@ proxies:
     #wheel-soft: www.wheel-soft.com     # DOWN
     #witchflame: www.witchflame.jp      # Do not need proxy
 
+    # Example:
+    # http://www.dmm.co.jp/mono/pcgame/-/detail/=/cid=1715apc10593/
+    # http://sakuradite.org/proxy/dmm/mono/pcgame/-/detail/=/cid=1715apc10593/
     dmm: dmm.co.jp
     #dlsite
     #dlsite_img

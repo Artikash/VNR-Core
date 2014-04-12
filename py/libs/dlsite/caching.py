@@ -12,7 +12,7 @@ from search import SearchApi
 from work import WorkApi
 
 def _htmlcacher(cls):
-  from restful.caching import DataCacher
+  from restful.offline import DataCacher
   return DataCacher(cls, suffix='.html')
 
 CachingSearchApi = _htmlcacher(SearchApi)

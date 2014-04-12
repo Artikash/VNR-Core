@@ -8,7 +8,7 @@ if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
-from restful.caching import DataCacher, FileCacher
+from restful.offline import DataCacher, FileCacher
 from rest import RestApi
 from soft import SoftApi
 
