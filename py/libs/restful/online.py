@@ -4,7 +4,7 @@
 #
 # See: http://ymotongpoo.hatenablog.com/entry/20081123/1227430671
 
-__all__ = ['FileParser', 'JsonFileParser']
+__all__ = ['DataParser', 'FileParser', 'JsonFileParser']
 
 if __name__ == '__main__': # DEBUG
   import sys
@@ -126,8 +126,6 @@ class FileParser(ParserBase):
     See: http://ymotongpoo.hatenablog.com/entry/20081123/1227430671
     See: http://ketsuage.seesaa.net/article/263754550.html
     """
-    params['md'] = 'search_game'
-
     # paramsのハッシュを展開
     request = ["%s=%s" % (k, urllib2.quote(self._encodeparam(v)))
         for k,v in params.iteritems()]
