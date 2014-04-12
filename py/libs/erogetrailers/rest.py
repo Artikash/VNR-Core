@@ -34,8 +34,7 @@ if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
-import json, urllib2
-from sakurakit.skdebug import dprint, dwarn
+from restful.online import JsonFileParser
 from sakurakit.skstr import unescapehtml
 
 _PATCHES = { # {long id:kw}
@@ -50,42 +49,30 @@ _PATCHES = { # {long id:kw}
 
 # API is stateless
 # Make this class so that _fetch could be overridden
-class RestApi(object):
-  URL = 'http://erogetrailers.com/api'
+class RestApi(JsonFileParser):
+  URL = 'http://erogetrailers.com/api' # str  override
 
   EROGAMESCAPE_TYPE = 'erogamescape' # にするとエロゲー批評空間のゲームIDで検索
   HOLYSEAL_TYPE = 'holyseal' # にすると聖封のゲームIDで検索
   EROGETRAILERS_TYPE = 'erogetrailers' # にするとエロトレのゲームIDで検索
 
-  #ERROR_MESSAGE = "\nFatal error:"
+  def _makeparams(self, text, type=None):
+    """@reimp
+    @param  kw
+    @return  kw
 
-  def __init__(self):
-    self.debug = False
-    self.encoding = 'utf8'
+    See: http://ymotongpoo.hatenablog.com/entry/20081123/1227430671
+    See: http://ketsuage.seesaa.net/article/263754550.html
+    """
+    return {'sw':text, 'pg':type, 'md':'search_game'}
 
-  def query(self, text, type=None):
-    """
-    @param  text  unicode
-    @param  type  str
-    @return  list or None
-    """
-    try: return self._apply(sw=text, pg=type)
-    except Exception, e: dwarn(e)
-
-  def _parse(self, fp):
-    """
-    @param  fp  file pointer
-    @return  list or None
-    @raise
-    """
-    return self._patch(json.load(fp)['items'])
-
-  def _patch(self, items):
-    """
-    @param  items  {kw}
+  def _parsejson(self, data):
+    """@reimp
+    @param  data
     @return  {kw}
     @raise
     """
+    items = data['items']
     for item in items:
       if item['romanTitle'] == '::inedited:: ':
         item['romanTitle'] = ''
@@ -99,65 +86,6 @@ class RestApi(object):
         if t:
           item[k] = unescapehtml(t).rstrip() # remove right most space
     return items
-
-  def _apply(self, **params):
-    """
-    @return  list or None
-    @raise
-    """
-    req = self._makereq(**params)
-    r = self._fetch(**req)
-    return self._parse(r)
-
-  def _fetch(self, url):
-    """
-    @param  url  str
-    @return  file object
-    @raise
-    """
-    req = urllib2.Request(url)
-    handler = urllib2.HTTPHandler(debuglevel=self.debug)
-    opener = urllib2.build_opener(handler)
-    return opener.open(req)
-
-  def _makereq(self, **kw):
-    """
-    @param  kw
-    @return  kw
-    """
-    return {'url':self._makeurl(**kw)}
-
-  def _makeurl(self, **params):
-    """
-    @param  params  request params
-    @return  str
-
-    See: http://ketsuage.seesaa.net/article/263754550.html
-    """
-    params['md'] = 'search_game'
-
-    # paramsのハッシュを展開
-    request = ["%s=%s" % (k, urllib2.quote(self._encodeparam(v)))
-        for k,v in params.iteritems()]
-
-    ret = self.URL + "?" + "&".join(request)
-    if self.debug:
-      dprint(ret)
-    return ret
-
-  def _encodeparam(self, v):
-    """
-    @param  v  any
-    @return  str
-    """
-    if isinstance(v, str):
-      return v
-    elif isinstance(v, unicode):
-      return v.encode(self.encoding, errors='ignore')
-    elif v is None:
-      return ''
-    else:
-      return str(v) # May throw
 
 if __name__ == '__main__':
   api = RestApi()

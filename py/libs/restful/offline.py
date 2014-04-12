@@ -1,5 +1,5 @@
 # coding: utf8
-# caching.py
+# offline.py
 # 11/16/2013 jichi
 
 __all__ = [

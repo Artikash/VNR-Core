@@ -9,7 +9,8 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 import re
-from sakurakit import sknetio, skstr
+from restful.online import DataParser
+from sakurakit import skstr
 from sakurakit.skdebug import dwarn
 
 # http://stackoverflow.com/questions/38987/how-can-i-merge-union-two-python-dictionaries-in-a-single-expression
@@ -22,31 +23,16 @@ def _mergedictwith(x, y):
     if not x.get(k): #== None:
       x[k] = v
 
-class SoftApi(object):
+class SoftApi(DataParser):
 
   API = "http://erogetrailers.com/soft/%s"
-  ENCODING = 'utf8'
-
-  def _makereq(self, id):
-    """
-    @param  kw
-    @return  kw
-    """
-    return {'url':self._makeurl(id)}
 
   def _makeurl(self, id):
-    """
+    """@reimp
     @param  id  int
     @return  str
     """
     return self.API % id
-
-  def _fetch(self, url):
-    """
-    @param  url  str
-    @return  str
-    """
-    return sknetio.getdata(url, gzip=True)
 
   # Example:
   # http://erogetrailers.com/soft/3424
@@ -62,20 +48,8 @@ class SoftApi(object):
   # </p>
   # <p class="desc"><span>02:13</span></p>
   # </section>
-  def query(self, id):
-    """
-    @param  id  str or int  softId
-    @return  {kw} or None
-    """
-    req = self._makereq(id)
-    h = self._fetch(**req)
-    if h:
-      h = h.decode(self.ENCODING, errors='ignore')
-      if h:
-        return self._parse(h)
-
   def _parse(self, h):
-    """
+    """@reimp
     @param  h  unicode  html
     @return  {kw}
     """

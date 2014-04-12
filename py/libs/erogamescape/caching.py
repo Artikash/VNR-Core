@@ -8,7 +8,7 @@ if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
-from restful.caching import DataCacher
+from restful.offline import DataCacher
 from api import Api
 
 CachingApi = DataCacher(Api, suffix='.html')

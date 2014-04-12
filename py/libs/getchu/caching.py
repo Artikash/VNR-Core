@@ -13,7 +13,7 @@ from soft import SoftApi
 from review import ReviewApi
 
 def _htmlcacher(cls):
-  from restful.caching import DataCacher
+  from restful.offline import DataCacher
   return DataCacher(cls, suffix='.html')
 
 CachingSearchApi = _htmlcacher(SearchApi)

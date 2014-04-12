@@ -10,10 +10,10 @@ if __name__ == '__main__': # DEBUG
 from time import time
 from hashlib import md5 # pylint: disable-msg=E0611
 from amazonproduct.api import API
-import restful.caching
+import restful.offline
 #from amazonproduct.contrib.caching import ResponseCachingAPI
 
-class RestCacherBase(restful.caching.CacherBase):
+class RestCacherBase(restful.offline.CacherBase):
   def __init__(self, *args, **kwargs):
     super(RestCacherBase, self).__init__(*args, **kwargs)
 
@@ -32,7 +32,7 @@ class RestCacherBase(restful.caching.CacherBase):
       url += '&__expire=' + str(now/self.expiretime)
     return md5(url).hexdigest()
 
-CachingRestApi = restful.caching.FileCacher(API, Base=RestCacherBase, suffix='.xml')
+CachingRestApi = restful.offline.FileCacher(API, Base=RestCacherBase, suffix='.xml')
 
 if __name__ == '__main__':
 
