@@ -36,14 +36,14 @@ def __unicode(t):
   @param  t  str
   @return  unicode or None
   """
-  return skstr.unescapehtml(t).decode('utf8', errors='ignore') if t else None
+  return skstr.unescapehtml(t).decode('utf8', errors='ignore').strip() if t else None
 
 def __str(t):
   """
   @param  t  str
   @return  str or None
   """
-  return skstr.unescapehtml(t) if t else None
+  return skstr.unescapehtml(t).strip() if t else None
 
 def __int(t):
   """
