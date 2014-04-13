@@ -887,7 +887,10 @@ class DmmApi(object):
             tag = el.tag
             if tag == 'content_id':
               k = el.text
-              if not key:
+              if key:
+                if key != k:
+                  continue
+              else:
                 if k in keys:
                   continue
                 else:
@@ -956,7 +959,7 @@ class DmmApi(object):
                 except Exception, e: dwarn(e)
 
           if 'key' not in kw or 'title' not in kw:
-            dwarn("missing key cid or title")
+            dprint("missing key cid or title")
             continue
 
           try: # mono, pcgame, doujin,

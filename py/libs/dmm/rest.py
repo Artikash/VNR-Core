@@ -190,6 +190,7 @@ if __name__ == '__main__':
   t = u"000_029pcg" # content_id
   t = '1196wp111' # cid
   t = u'魔王はじめました'
+  t = 'hawkeye_0005'
   dmm.debug = 1
   # https://affiliate.dmm.com/api/reference/com/iroiro/
   for item in dmm.query(t, hits=20):
