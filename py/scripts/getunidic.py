@@ -92,11 +92,12 @@ def msg():
     location="Caches/Dictionaries/UniDic",
     size=UNIDIC_MIN_FILESIZE,
     urls=[
-      'http://sourceforge.jp/projects/unidic',
-      'http://jaist.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip',
-      'http://osdn.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip',
-      'http://distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip',
-      'http://mse.uk.distfiles.macports.org/sites/distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip',
+      #'http://sourceforge.jp/projects/unidic',
+      #'http://jaist.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip',
+      #'http://osdn.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip',
+      #'http://distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip',
+      #'http://mse.uk.distfiles.macports.org/sites/distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip',
+      initdefs.DOWNLOAD_BAIDU_URL,
       'http://sakuradite.org/pub/unidic/unidic-2.1.2.tar.xz',
     ]
   )
