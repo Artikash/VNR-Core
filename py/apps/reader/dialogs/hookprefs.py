@@ -133,13 +133,12 @@ class _HookPrefsDialog(object):
         texthook.TextHook.verifyHookCode(t))
 
   def _addHookToHistory(self, hcode): # str
-    if hcode not in self._hookHistory:
+    if hcode and hcode not in self._hookHistory:
       self._hookHistory.add(hcode)
       self._hookEdit.addItem(hcode)
 
   def setDeletedHook(self, hcode): # str ->
-    if hcode:
-      self._addHookToHistory(hcode)
+    self._addHookToHistory(hcode)
     self._deletedHookLabel.setText(tr_("Empty") if not hcode else
         '<a style="color:#428bca" href="%s">%s</a>' % (hcode, hcode)) # Same color as bootstrap 3 btn-link
 
