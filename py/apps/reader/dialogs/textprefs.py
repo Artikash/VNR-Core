@@ -136,9 +136,9 @@ class _TextThreadView(object):
         SS_TEXTEDIT_IGNORED)
 
     header = QtWidgets.QHBoxLayout()
-    header.addWidget(label)
-    header.addStretch()
     header.addWidget(self.buttonRow)
+    header.addStretch()
+    header.addWidget(label)
     layout.addLayout(header)
     layout.addWidget(self.textEdit)
     q.setLayout(layout)
