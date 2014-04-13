@@ -46,9 +46,9 @@ class VoiceroidController(ProcessBottle):
     """@reimp"""
     if skos.WIN:
       from apploc import applocale
-      return applocale.create_process(self.path, lcid=self.LCID)
-    else:
-      return super(VoiceroidController, self).createProcess()
+      if applocale.exists():
+        return applocale.create_process(self.path, lcid=self.LCID)
+    return super(VoiceroidController, self).createProcess()
 
   @property
   def wid(self):
