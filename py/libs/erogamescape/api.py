@@ -237,11 +237,12 @@ class Api(object):
 if __name__ == '__main__':
   api = Api()
   t = 18942
+  t = 17716
   q = api.query(t)
   #print q
   for it in q:
-    print it['twitter_data_widget_id_before']
-
+    print it['dmm']
+    #print it['twitter_data_widget_id_before']
 
   #t = 9610
   #q = api.query(t, type=api.EROGETRAILERS_TYPE)
