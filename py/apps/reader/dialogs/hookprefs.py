@@ -60,8 +60,9 @@ class _HookPrefsDialog(object):
     introEdit.setHtml(info.renderHookCodeHelp())
 
     self._hookEdit = QtWidgets.QComboBox()
+    self._hookEdit.setEditable(True)
     self._hookEdit.setToolTip(my.tr("Your hook code"))
-    self._hookEdit.lineEdit().setPlaceholderText(my.tr("Type /H code here"))
+    #self._hookEdit.lineEdit().setPlaceholderText(my.tr("Type /H code here"))
     self._hookEdit.editTextChanged.connect(self._refresh)
     #self._hookEdit = QtWidgets.QLineEdit()
     #self._hookEdit.setToolTip(my.tr("Your hook code"))
@@ -119,6 +120,9 @@ class _HookPrefsDialog(object):
     q.setLayout(layout)
 
     cancelButton.setFocus()
+
+    # Do this after setLayout, otherwise QLineEdit is None
+    self._hookEdit.lineEdit().setPlaceholderText(my.tr("Type /H code here"))
 
   def isComplete(self):
     t = self.currentHookCode()
