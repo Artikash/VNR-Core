@@ -128,7 +128,7 @@ class FileParser(ParserBase):
     """
     # paramsのハッシュを展開
     request = ["%s=%s" % (k, urllib2.quote(self._encodeparam(v)))
-        for k,v in params.iteritems()]
+        for k,v in sorted(params.iteritems())]
 
     #urllib.encodeparams
 
