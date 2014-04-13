@@ -19,6 +19,8 @@ if skos.WIN:
   from sakurakit import skwin
 
 class VoiceroidController(ProcessBottle):
+  LCID = 0x0411 # long
+
   def __init__(self, voiceroid=None, parent=None, pid=0, path=""):
     """
     @param  parent  QObject
@@ -39,6 +41,14 @@ class VoiceroidController(ProcessBottle):
       self.minimize()
       if not self.isMimimized():
         skevents.runlater(self.minimize, 1000)
+
+  def createProcess(self):
+    """@reimp"""
+    if skos.WIN:
+      from apploc import applocale
+      return applocale.create_process(self.path, lcid=self.LCID)
+    else:
+      return super(VoiceroidController, self).createProcess()
 
   @property
   def wid(self):
