@@ -65,11 +65,17 @@ class ProcessBottle(QObject): #QRunnable
         dprint('found existing process')
       else:
         dprint('launch new process')
-        cwd = os.path.dirname(self.path)
-        pid = skproc.detach([self.path], path=cwd)
+        pid = self.createProcess()
       self.setPid(pid)
       return bool(pid)
     return False
+
+  def createProcess(self):
+    """Create new process
+    @return  pid  long
+    """
+    cwd = os.path.dirname(self.path)
+    return skproc.detach([self.path], path=cwd)
 
   #def kill(self):
   #  """
