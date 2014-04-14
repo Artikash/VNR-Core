@@ -286,7 +286,9 @@ class SoftApi(object):
       return skstr.unescapehtml(kw[0])
 
   # Example: 価格：	￥7,140 (税抜￥6,800)
-  _rx_price = re.compile(ur'￥([0-9,]+?) \(税抜')
+  #_rx_price = re.compile(ur'￥([0-9,]+?) \(税抜')
+  # ￥7,500 (税込￥8,100)
+  _rx_price = re.compile(ur'税込￥([0-9,]+)')
   def _parseprice(self, h):
     """
     @param  h  unicode  html
@@ -589,8 +591,10 @@ if __name__ == '__main__':
   k = 627665 # AlterEgo
   k = 771638 # 相州戦神館學園 八命陣
   k = 789990 # 女王蜂の王房 めのう編
+  k = 774400
   print '-' * 10
   q = api.query(k)
+  print q['price']
   print q['otome']
   print q['title']
   print q['genre']
