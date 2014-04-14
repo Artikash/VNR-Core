@@ -50,18 +50,21 @@
       .col.col-1
         %section
           %h2 ウィキペディア
+          ; Candidates:
+          ; http://ja.wikipedia.org/wiki/ちよれん
+          ; http://ja.wikipedia.org/wiki/埼玉連合
+          ; http://ja.wikipedia.org/wiki/Category:北海道えろげー組合
           -for url,name in \
-              ("ja.wikipedia.org/wiki/アダルトゲームメーカー一覧", "ゲームメーカー"), \
-              ("ja.wikipedia.org/wiki/Category:テレビアニメ化されたアダルトゲーム", "アニメ化されたゲーム"), \
-              ("ja.wikipedia.org/wiki/Category:各年のアダルトゲーム", "各年のゲーム一覧"), \
+              ("ja.wikipedia.org/wiki/Category:2014年のアダルトゲーム", "2014年のゲーム"), \
               ("ja.wikipedia.org/wiki/Category:未発売のアダルトゲーム", "未発売のゲーム"), \
-              ("ja.wikipedia.org/wiki/Category:2014年のアダルトゲーム", "2014"), \
-              ("ja.wikipedia.org/wiki/Category:2013年のアダルトゲーム", "2013"), \
-              ("ja.wikipedia.org/wiki/Category:2012年のアダルトゲーム", "2012"), \
-              ("ja.wikipedia.org/wiki/Category:2011年のアダルトゲーム", "2011"), \
-              ("ja.wikipedia.org/wiki/Category:2010年のアダルトゲーム", "2010"), \
-              ("ja.wikipedia.org/wiki/Category:2009年のアダルトゲーム", "2009"), \
-              ("ja.wikipedia.org/wiki/Category:2008年のアダルトゲーム", "2008"),
+              ("ja.wikipedia.org/wiki/Category:各年のアダルトゲーム", "各年のゲーム一覧"), \
+              ("ja.wikipedia.org/wiki/Category:テレビアニメ化されたアダルトゲーム", "アニメ化されたゲーム"), \
+              ("ja.wikipedia.org/wiki/アダルトゲームメーカー一覧", "ゲームメーカー"), \
+              ("ja.wikipedia.org/wiki/Category:アダルトゲームブランドの歴史", "解散されたブランド"), \
+              ("ja.wikipedia.org/wiki/アダルトゲーム関連人物一覧", "関連人物一覧"), \
+              ("ja.wikipedia.org/wiki/Category:アダルトゲームライター", "ライター"), \
+              ("ja.wikipedia.org/wiki/Category:ゲームのグラフィッカー・原画家", "原画家"), \
+              ("ja.wikipedia.org/wiki/Category:ゲーム音楽グループ", "音楽グループ"),
             %div(class="site")
               %a(href="http://#{url}",title="#{url}") #{name}
       .col.col-2
