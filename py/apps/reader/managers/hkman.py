@@ -153,7 +153,7 @@ class _HotkeyManager(object):
   @staticmethod
   def _onTts():
     import textman
-    textman.speak_current_text()
+    textman.manager().speakCurrentText()
     dprint("pass")
 
 #@QmlObject

@@ -39,7 +39,7 @@ class _TtsManager(object):
     t.timeout.connect(self._doSpeakTask)
 
   @staticmethod
-  def _repairtext(text):
+  def _repairText(text):
     """
     @param  text  unicode
     @return  unicode
@@ -63,10 +63,10 @@ class _TtsManager(object):
       it.stop()
 
   def speakLater(self, text, interval, **kwargs): # unicode, long ->
-    self._speakTask = partial(self.speak, text, **kwargs)
+    self._speakTask = partial(self._speak, text, **kwargs)
     self._speakTimer.start(interval)
 
-  def speak(self, text, engine='', termEnabled=False, language='', verbose=True):
+  def _speak(self, text, engine='', termEnabled=False, language='', verbose=True):
     """
     @param  text  unicode
     @param* engine  str
@@ -96,7 +96,7 @@ class _TtsManager(object):
       )))
       dprint("invalid engine: %s" % (eng.key))
       return
-    if language and language != eng.language:
+    if language and language[:2] != eng.language[:2]:
       dprint("language mismatch: %s != %s" % (language, eng.language))
       return
 
@@ -105,7 +105,7 @@ class _TtsManager(object):
     # Even if text is empty, trigger stop tts
     #if not text:
     #  return
-    text = self._repairtext(text)
+    text = self._repairText(text)
     eng.speak(text)
 
     #skevents.runlater(partial(eng.speak, text))
@@ -225,6 +225,7 @@ class _TtsManager(object):
     if self._speakTask:
       try: apply(self._speakTask)
       except Exception, e: dwarn(e)
+      self._speakTask = None
 
 class TtsManager(QObject):
 
@@ -270,15 +271,12 @@ class TtsManager(QObject):
       return
     self.__d.speakLater(text, interval=interval, **kwargs)
 
-  def queryEngineLanguage(self, key): # unicode -> str
+  def queryEngineLanguage(self, key): # unicode -> str not None
     eng = self.__d.getEngine(key)
-    if eng:
-      return eng.language
+    return eng.language or '' if eng else ''
 
-  #def queryEngineGender(self, key): # unicode -> str
-  #  eng = self.__d.getEngine(key)
-  #  if eng:
-  #    return eng.gender
+  def defaultEngineLanguage(self): # -> str not None
+    return self.queryEngineLanguage(self.__d.defaultEngineKey)
 
   def yukariLocation(self): return self.__d.yukariEngine.getPath()
   def zunkoLocation(self): return self.__d.zunkoEngine.getPath()

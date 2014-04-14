@@ -1405,7 +1405,7 @@ class Character(QObject):
     d = self.__d = _Character()
     d.name = name
     d.gender = gender # 'm' or 'f'
-    d.ttsEngine = ttsEngine # str
+    d.ttsEngine = ttsEngine # str  '' for default engine
     d.ttsEnabled = ttsEnabled # bool
     d.timestamp = timestamp or skdatetime.CURRENT_UNIXTIME # long
 

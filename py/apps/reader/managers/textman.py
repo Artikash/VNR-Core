@@ -38,14 +38,6 @@ SCENARIO_THREAD_TYPE = 1
 NAME_THREAD_TYPE = 2
 SUPPORT_THREAD_TYPE = 3
 
-def speak_current_text():
-  t = manager().ttsText()
-  if t:
-    import ttsman
-    ttsman.speak(t, termEnabled=True, language=manager().gameLanguage())
-  #else:
-  #  growl.warn(my.tr("No game text"))
-
 class TextThread:
   MAX_DATA_COUNT = 5 # number of data to keep
 
@@ -76,9 +68,9 @@ class _TextManager(object):
     t.setSingleShot(True)
     t.timeout.connect(self._speakText)
 
-    #t = self._speakSubtitleTimer = QTimer(q)
-    #t.setSingleShot(True)
-    #t.timeout.connect(self._speakSubtitle)
+    t = self._speakSubtitleTimer = QTimer(q)
+    t.setSingleShot(True)
+    t.timeout.connect(self._speakSubtitle)
 
     self.gameTextCapacity = 100 # int
 
@@ -98,10 +90,14 @@ class _TextManager(object):
     self.blockedLanguages = set() # {str}
 
   def reset(self):
-    #self.ttsSubtitle = "" # unicode not None, either subtitle or translation
     self.ttsName = "" # unicode not None, character name
+    self.ttsNameForSubtitle = "" # unicode, ttsName for subtitle
     self.ttsText = "" # unicode, game text, might be reset
     self.lastTtsText = "" # unicode, current game text
+    self.ttsSubtitle = "" # unicode not None, either subtitle or translation
+    self.ttsSubtitleLanguage = "" # str not None
+    self.lastTtsSubtitle = "" # unicode, current translation
+    self.lastTtsSubtitleLanguage = "" # str not None
 
     self.removesRepeat = False # bool
     self.keepsThreads = False # bool
@@ -185,17 +181,20 @@ class _TextManager(object):
     return (self.suggestedContextSize() if not self.contextSizeHint else
         min(len(self.texts), self.contextSizeHint))
 
-  #def _updateTtsSubtitle(self, text, language):
-  #  ss = settings.global_()
-  #  if not ss.speaksGameText(): #or not ss.isVoiceCharacterEnabled() or not ss.isSubtitleVoiceEnabled():
-  #    return
-  #  if self.ttsSubtitle or not i18n.language_compatible_to(language, self.language):
-  #    return
-  #  self.ttsSubtitle = text
-  #  if text and self.ttsName:
-  #    self._speakSubtitleTimer.start(0)
-  #  else:
-  #    self._speakSubtitleTimer.start(200)
+  def _updateTtsSubtitle(self, text, language):
+    ss = settings.global_()
+    if not ss.speaksGameText(): #or not ss.isVoiceCharacterEnabled() or not ss.isSubtitleVoiceEnabled():
+      return
+    # Speak only the first subtitle, and the language must be matched
+    if self.ttsSubtitle or language[:2] != self.language[:2]:
+      return
+    self.lastTtsSubtitle = self.ttsSubtitle = text
+    self.lastTtsSubtitleLanguage = self.ttsSubtitleLanguage = language
+    if text and self.ttsNameForSubtitle:
+      self._speakSubtitleTimer.start(0)
+    else:
+      t = 500 if self.nameSignature else 0
+      self._speakSubtitleTimer.start(t)
 
   def _updateTtsText(self, text):
     self.lastTtsText = self.ttsText = text
@@ -212,7 +211,7 @@ class _TextManager(object):
     ss = settings.global_()
     if not ss.speaksGameText() or not ss.isVoiceCharacterEnabled():
       return
-    self.ttsName = text
+    self.ttsName = self.ttsNameForSubtitle = text
     #if ss.isSubtitleVoiceEnabled():
     #  if text and self.ttsSubtitle:
     #    self._speakSubtitleTimer.start(0)
@@ -221,8 +220,10 @@ class _TextManager(object):
     #else:
     if text and self.ttsText:
       self._speakTextTimer.start(0)
+      self._speakSubtitleTimer.start(0)
     else:
       self._speakTextTimer.start(1000)
+      self._speakSubtitleTimer.start(1000)
 
   @staticmethod
   def guessName(text):
@@ -234,11 +235,34 @@ class _TextManager(object):
     if ret and len(ret) <= 16: # limit max name size
       return ret
 
+  def speakLastTextOrSubtitle(self):
+    tm = ttsman.manager()
+    lang = tm.defaultEngineLanguage()
+    if lang:
+      if lang[:2] == self.gameLanguage[:2]:
+        t = self.lastTtsText
+        if t:
+          tm.stop()
+          tm.speak(t, termEnabled=True, language=lang)
+          return
+      elif lang[:2] == self.lastTtsSubtitleLanguage[:2]
+        t = self.lastTtsSubtitle
+        if t:
+          tm.stop()
+          tm.speak(t, termEnabled=False, language=lang)
+          return
+    tm.stop()
+    #else:
+    #  growl.warn(my.tr("No game text"))
+
   def _speakText(self):
     text = self.ttsText
+    tm = ttsman.manager()
     if text: #and self.gameLanguage == 'ja':
       if not settings.global_().isVoiceCharacterEnabled():
-        ttsman.speak(text, termEnabled=True, language=self.gameLanguage)
+        lang = tm.defaultEngineLanguage()
+        if lang[:2] == self.gameLanguage[:2]
+          tm.speak(text, termEnabled=True, language=lang)
       else:
         dm = dataman.manager()
         name = self.ttsName
@@ -248,37 +272,48 @@ class _TextManager(object):
           name = self._repairText(name) # terms are disabled as language is None
           if name:
             dm.addCharacter(name)
+            self.ttsNameForSubtitle = name
         c = dm.queryCharacter(name)
-        ttsman.stop()
-        if c and c.d.ttsEnabled and (name or
-            not text.startswith(u"「") and not text.endswith(u"」")
-            or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
-          ): # do not speak if no character name is detected
-          ttsman.speak(text, termEnabled=True, language=self.gameLanguage,
-              engine=c.ttsEngine)
+        tm.stop() # this requires that ttsSubtitle always comes after ttsText
+        if c:
+          cd = c.d
+          if cd.ttsEnabled:
+            lang = tm.getEngineLanguage(cd.ttsEngine)
+            if lang and lang[:2] == self.gameLanguage[:2]:
+              if (name or
+                  not text.startswith(u"「") and not text.endswith(u"」")
+                  or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
+                ): # do not speak if no character name is detected
+                tm.speak(text, termEnabled=True, language=lang, engine=cd.ttsEngine)
         #else:
-        #  ttsman.stop()
+        #  tm.stop()
     self.ttsText = self.ttsName = ""
 
-  #def _speakSubtitle(self):
-  #  ss = settings.global_()
-  #  if self.ttsSubtitle:
-  #    if not settings.global_().isVoiceCharacterEnabled():
-  #      ttsman.speak(text, interval=200, termEnabled=True, language=self.language)
-  #    else:
-  #      dm = dataman.manager()
-  #      name = self.ttsName
-  #      if not name: #and not self.nameSignature:
-  #        name = self.guessName(self.ttsText)
-  #        if name:
-  #          dm.addCharacter(name)
-  #      c = dm.queryCharacter(name)
-  #      if c and c.d.ttsEnabled and (name or not self.ttsSubtitle.startswith(u"「")): # do not speak if no character name is detected
-  #        ttsman.speak(self.ttsSubtitle, interval=200, termEnabled=True,
-  #            language=self.language)
-  #      else:
-  #        ttsman.stop()
-  #  self.ttsSubtitle = self.ttsName = ""
+  def _speakSubtitle(self):
+    text = self.ttsSubtitle
+    tm = ttsman.manager()
+    if text: #and self.gameLanguage == 'ja':
+      if not settings.global_().isVoiceCharacterEnabled():
+        lang = tm.defaultEngineLanguage()
+        if lang[:2] == self.ttsSubtitleLanguage[:2]
+          tm.speak(text, termEnabled=False, language=lang)
+      else:
+        dm = dataman.manager()
+        name = self.ttsNameForSubtitle
+        c = dm.queryCharacter(name)
+        #tm.stop()
+        if c:
+          cd = c.d
+          if cd.ttsEnabled:
+            lang = tm.getEngineLanguage(cd.ttsEngine)
+            if lang and lang[:2] == self.ttsSubtitleLanguage[:2]:
+              tm.stop()
+              if (name
+                  #not text.startswith(u"「") and not text.endswith(u"」")
+                  or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
+                ): # do not speak if no character name is detected
+                tm.speak(text, termEnabled=False, language=self.ttsSubtitleLanguage, engine=cd.ttsEngine)
+    self.ttsSubtitle = self.ttsSubtitleLanguage = self.ttsNameForSubtitle = ""
 
   def _repairText(self, text, language=None):
     """
@@ -326,7 +361,7 @@ class _TextManager(object):
     #sub = userplugin.revise_translation(sub, language)
     if sub:
       self.q.translationReceived.emit(sub, language, provider, time)
-      #self._updateTtsSubtitle(sub, language)
+      self._updateTtsSubtitle(sub, language)
 
   #def _maximumDataSize(self):
   #  return defs.MAX_REPEAT_DATA_LENGTH if self.removesRepeat else defs.MAX_DATA_LENGTH
@@ -430,8 +465,8 @@ class _TextManager(object):
           if not cd.deleted and not cd.disabled:
             self._showComment(c)
             hitCommentIds.add(cd.id)
-            #if cd.type == 'subtitle' and not cd.disabled: #and not cd.deleted:
-            #  self._updateTtsSubtitle(cd.text, cd.language)
+            if cd.type == 'subtitle':
+              self._updateTtsSubtitle(cd.text, cd.language)
 
       # Hash2 as back up
       for h in self.hashes2:
@@ -441,6 +476,8 @@ class _TextManager(object):
           if not cd.deleted and not cd.disabled and cd.id not in hitCommentIds:
             self._showComment(c)
             hitCommentIds.add(cd.id)
+            if cd.type == 'subtitle':
+              self._updateTtsSubtitle(cd.text, cd.language)
 
       if FIX_OLD_SUBS:
         for h_index, h in enumerate(self.oldHashes):
@@ -627,8 +664,6 @@ class TextManager(QObject):
   def blockedLanguages(self): return self.__d.blockedLanguages
   def setBlockedLanguages(self, value): self.__d.blockedLanguages = value
 
-  def ttsText(self): return self.__d.lastTtsText
-
   def isOnline(self): return self.__d.online
   def setOnline(self, value): self.__d.online = value
 
@@ -662,6 +697,8 @@ class TextManager(QObject):
     texthook.global_().setKeptThreadName(name)
     if value and name:
       growl.notify(my.tr("Keep all text threads generated from {0}").format(name))
+
+  def speakCurrentText(): self.__d.speakLastTextOrSubtitle()
 
   def recentTexts(self):
     """
@@ -1003,6 +1040,6 @@ class TextManagerProxy(QObject):
   def reload(self): manager().confirmReload()
 
   @Slot()
-  def speakCurrentText(self): speak_current_text()
+  def speakCurrentText(self): manager().speakCurrentText()
 
 # EOF

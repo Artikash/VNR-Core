@@ -15,13 +15,6 @@ from i18n import i18n
 import growl, settings
 import _ttsman
 
-def _repairtext(text):
-  """
-  @param  text  unicode
-  @return  unicode
-  """
-  return text.replace(u'…', '.') # てんてんてん
-
 class TtsManager(QObject):
 
   def __init__(self, parent=None):
@@ -54,52 +47,7 @@ class TtsManager(QObject):
     self.__d.setSapiSpeed(key, v)
 
   def speak(self, text, interval=100, **kwargs):
-    d = self.__d
-    if d.enabled:
-      d.speakTask = partial(self._speak, text, **kwargs)
-      d.speakTimer.start(interval)
-
-  def _speak(self, text, engine='', language='', verbose=True):
-    """
-    @param  text  unicode
-    @param* engine  str
-    @param* language  unicode
-    @param* verbose  bool  whether warn on error
-    """
-    if not text:
-      return
-
-    d = self.__d
-
-    eng = d.getEngine(engine) if engine else None
-    if not eng and d.defaultEngineKey and d.defaultEngineKey != engine:
-      eng = d.getEngine(d.defaultEngineKey)
-
-    if not eng:
-      if verbose:
-        growl.warn(i18n.tr("TTS is not available in Preferences"))
-      dprint("missing engine: %s" % (engine or d.defaultEngineKey))
-      return
-    if not eng.isValid():
-      #if verbose:
-      # Always warn
-      growl.warn('<br/>'.join((
-        i18n.tr("TTS is not available"),
-        eng.name,
-      )))
-      dprint("invalid engine: %s" % (eng.key))
-      return
-    if language and language != eng.language:
-      dprint("language mismatch: %s != %s" % (language, eng.language))
-      return
-
-    # Even if text is empty, trigger stop tts
-    #if not text:
-    #  return
-    text = _repairtext(text)
-    eng.speak(text)
-
-    #skevents.runlater(partial(eng.speak, text))
+    self.__d.speakLater(text, interval=interval, **kwargs)
 
   def yukariLocation(self): return self.__d.yukariEngine.getPath()
   def zunkoLocation(self): return self.__d.zunkoEngine.getPath()
@@ -136,13 +84,13 @@ def manager(): return TtsManager()
 def speak(*args, **kwargs): manager().speak(*args, **kwargs)
 def stop(): manager().stop()
 
-@Q_Q
+#@Q_Q
 class _TtsManager(object):
 
-  def __init__(self):
+  def __init__(self, q):
     self.enabled = True
     self.defaultEngineKey = '' # str
-    self.speakTask = None   # partial function object
+    self._speakTask = None   # partial function object
 
     self._yukariEngine = None # _ttsman.YukariEngine
     self._zunkoEngine = None  # _ttsman.ZunkoEngine
@@ -153,6 +101,18 @@ class _TtsManager(object):
     #self.defaultEngineKey = 'VW Show'
     #self.defaultEngineKey = 'zunko'
     #self.defaultEngineKey = 'yukari'
+
+    t = self._speakTimer = QTimer(q)
+    t.setSingleShot(True)
+    t.timeout.connect(self._doSpeakTask)
+
+  @staticmethod
+  def _repairText(text):
+    """
+    @param  text  unicode
+    @return  unicode
+    """
+    return text.replace(u'…', '.') # てんてんてん
 
   def iterActiveEngines(self):
     """
@@ -168,6 +128,51 @@ class _TtsManager(object):
   def stop(self):
     for it in self.iterActiveEngines():
       it.stop()
+
+  def speakLater(self, text, interval, **kwargs):
+    if self.enabled:
+      self._speakTask = partial(self._speak, text, **kwargs)
+      self._speakTimer.start(interval)
+
+  def _speak(self, text, engine='', language='', verbose=True):
+    """
+    @param  text  unicode
+    @param* engine  str
+    @param* language  unicode
+    @param* verbose  bool  whether warn on error
+    """
+    if not text:
+      return
+
+    eng = self.getEngine(engine) if engine else None
+    if not eng and self.defaultEngineKey and self.defaultEngineKey != engine:
+      eng = self.getEngine(self.defaultEngineKey)
+
+    if not eng:
+      if verbose:
+        growl.warn(i18n.tr("TTS is not available in Preferences"))
+      dprint("missing engine: %s" % (engine or self.defaultEngineKey))
+      return
+    if not eng.isValid():
+      #if verbose:
+      # Always warn
+      growl.warn('<br/>'.join((
+        i18n.tr("TTS is not available"),
+        eng.name,
+      )))
+      dprint("invalid engine: %s" % (eng.key))
+      return
+    if language and language[:2] != eng.language[:2]:
+      dprint("language mismatch: %s != %s" % (language, eng.language))
+      return
+
+    # Even if text is empty, trigger stop tts
+    #if not text:
+    #  return
+    text = self._repairText(text)
+    eng.speak(text)
+
+    #skevents.runlater(partial(eng.speak, text))
 
   # Voiceroid
 
@@ -250,15 +255,10 @@ class _TtsManager(object):
       return self.yukariEngine
     return self.getSapiEngine(key)
 
-  @memoizedproperty
-  def speakTimer(self):
-    ret = QTimer(self.q)
-    ret.setSingleShot(True)
-    ret.timeout.connect(self._doSpeakTask)
-    return ret
-
   def _doSpeakTask(self):
-    try: apply(self.speakTask)
-    except Exception, e: dwarn(e)
+    if self._speakTask:
+      try: apply(self._speakTask)
+      except Exception, e: dwarn(e)
+      self._speakTask = None
 
 # EOF
