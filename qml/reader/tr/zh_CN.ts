@@ -534,7 +534,7 @@
     </message>
     <message>
         <location filename="../voiceview/footer.qml" line="23"/>
-        <source>VNR will read subtitles instead of game text if TTS&apos;s language is different from game&apos;s</source>
+        <source>VNR will read translations instead of game texts if TTS&apos;s language is different from game&apos;s</source>
         <translation>当TTS的语言和游戏不同时，VNR会读出翻译而不会读出游戏原文</translation>
     </message>
 </context>

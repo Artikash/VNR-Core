@@ -20,7 +20,7 @@ Item { id: root_
       rightMargin: 10
       verticalCenter: parent.verticalCenter
     }
-    text: Sk.tr("Note") + ": " + qsTr("VNR will read subtitles instead of game text if TTS's language is different from game's") + '.'
+    text: Sk.tr("Note") + ": " + qsTr("VNR will read translations instead of game texts if TTS's language is different from game's") + '.'
     wrapMode: Text.WordWrap
     color: 'purple'
   }
