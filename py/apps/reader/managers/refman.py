@@ -743,6 +743,9 @@ class AmazonApi(object):
             try: kw[k] = unicode(getattr(attrs, a))
             except (AttributeError, UnicodeDecodeError): pass
 
+          if kw.get('brand') == u"不明":
+            del kw['brand']
+
           try:
             title = self._beautifyTitle(kw['title'])
             if title:
