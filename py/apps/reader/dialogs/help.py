@@ -69,7 +69,7 @@ class VoiceHelpDialog(HelpDialog):
     self.setWindowTitle("%s - %s" %
         (tr_("Help"), mytr_("Voice Settings")))
     self.setHtml(info.renderVoiceHelp())
-    self.resize(400, 230)
+    self.resize(500, 400)
     dprint("pass")
 
 class TermHelpDialog(HelpDialog):

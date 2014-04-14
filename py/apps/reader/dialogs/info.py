@@ -89,9 +89,20 @@ More information could be found on the Wiki:
 </center>
 
 <h3>Usage</h3>
-Character-ware TTS is not enabled by default.
+Character-aware TTS is not enabled by default.
 You can enable it by first turning on TTS in Preferences/Voices,
-and then clicking <span style="color:green">Enable</span> in Voice Settings.""")
+and then clicking <span style="color:green">Enable</span> in Voice Settings.
+
+<h3>Reading game text VS reading translation</h3>
+By default, VNR will read the original game text.
+However, if your selected TTS's language is the same as your language but different from game's language, VNR will read translations instead of game texts.
+The translations could be either user-shared subtitles or machine translations in your language.
+
+For example, after installing and enabling an English TTS, VNR could read English subtitles for you.
+
+<h3>Recommended TTS software</h3>
+TTS soft from VoiceText is recommended.
+It supports not only Japanese, but also English, Chinese, and many other languages.""")
 
 #<h3>Non-Japanese TTS</h3>
 #When <span style="color:green">"Dub subtitles"</span> is the docked panel is checked,

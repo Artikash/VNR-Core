@@ -10,15 +10,16 @@ Item { id: root_
 
   // - Private -
 
-  height: text_.height + 10
+  height: text_.height + 9
 
   Text { id: text_
     anchors {
       left: parent.left
       right: parent.right
-      leftMargin: 10
-      rightMargin: 10
-      verticalCenter: parent.verticalCenter
+      bottom: parent.bottom
+      leftMargin: 9
+      rightMargin: 9
+      bottomMargin: 9
     }
     text: Sk.tr("Note") + ": " + qsTr("VNR will read translations instead of game texts if TTS's language is different from game's") + '.'
     wrapMode: Text.WordWrap
