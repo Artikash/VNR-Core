@@ -959,8 +959,15 @@ class _TtsTab(object):
       e = self.createSapiSpeedEdit(k)
       grid.addWidget(e, r, 2)
 
+    layout = QtWidgets.QVBoxLayout()
+    layout.addLayout(grid)
+
+    info = QtWidgets.QLabel(tr_("Note") + ": " + my.tr("VNR supports not only Japanese TTS, but all SAPI TTS in any languages. VNR will read translations instead of game texts if TTS's language is different from game's."))
+    info.setWordWrap(True)
+    layout.addWidget(info)
+
     ret = QtWidgets.QGroupBox(my.tr("Preferred text-to-speech voice"))
-    ret.setLayout(grid)
+    ret.setLayout(layout)
     self._loadEngine()
     return ret
 

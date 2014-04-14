@@ -8,26 +8,19 @@ from functools import partial
 from PySide.QtCore import QObject, Slot, QTimer
 #from sakurakit import skevents, skthreads
 from sakurakit.skdebug import dwarn, dprint
-from sakurakit.skclass import Q_Q, memoized, memoizedproperty
+from sakurakit.skclass import memoized
 #from sakurakit.skqml import QmlObject
 from mytr import my
 import features, growl, settings, termman
 import _ttsman
 
-def _repairtext(text):
-  """
-  @param  text  unicode
-  @return  unicode
-  """
-  return text.replace(u'…', '.') # てんてんてん
-
-@Q_Q
+#@Q_Q
 class _TtsManager(object):
 
-  def __init__(self):
+  def __init__(self, q):
     self.defaultEngineKey = '' # str
     self._online = True     # bool
-    self.speakTask = None   # partial function object
+    self._speakTask = None   # partial function object
 
     self._googleEngine = None # _ttsman.GoogleEngine
     self._yukariEngine = None # _ttsman.YukariEngine
@@ -40,6 +33,19 @@ class _TtsManager(object):
     #self.defaultEngineKey = 'zunko'
     #self.defaultEngineKey = 'yukari'
     #self.defaultEngineKey = 'google'
+
+    t = self._speakTimer = QTimer(q)
+    t.setSingleShot(True)
+    t.timeout.connect(self._doSpeakTask)
+
+  @staticmethod
+  def _repairText(text):
+    """
+    @param  text  unicode
+    @return  unicode
+    """
+    return text.replace(u'…', '.') # てんてんてん
+
 
   def iterActiveEngines(self):
     """
@@ -55,6 +61,54 @@ class _TtsManager(object):
   def stop(self):
     for it in self.iterActiveEngines():
       it.stop()
+
+  def speakLater(self, text, interval, **kwargs): # unicode, long ->
+    self._speakTask = partial(self._speak, text, **kwargs)
+    self._speakTimer.start(interval)
+
+  def _speak(self, text, engine='', termEnabled=False, language='', verbose=True):
+    """
+    @param  text  unicode
+    @param* engine  str
+    @param* termEnabled  bool  whether apply game-specific terms
+    @param* language  unicode
+    @param* verbose  bool  whether warn on error
+    """
+    #if not features.TEXT_TO_SPEECH or not text:
+    if not text:
+      return
+
+    eng = self.getEngine(engine)
+    if not eng and self.defaultEngineKey and self.defaultEngineKey != engine:
+      eng = self.getEngine(self.defaultEngineKey)
+
+    if not eng:
+      if verbose:
+        growl.warn(my.tr("TTS is not available in Preferences"))
+      dprint("missing engine: %s" % (engine or self.defaultEngineKey))
+      return
+    if not eng.isValid():
+      #if verbose:
+      # Always warn
+      growl.warn('<br/>'.join((
+        my.tr("TTS is not available"),
+        eng.name,
+      )))
+      dprint("invalid engine: %s" % (eng.key))
+      return
+    if language and language[:2] != eng.language[:2]:
+      dprint("language mismatch: %s != %s" % (language, eng.language))
+      return
+
+    if termEnabled and (not language or language == 'ja'):
+      text = termman.manager().applySpeechTerms(text)
+    # Even if text is empty, trigger stop tts
+    #if not text:
+    #  return
+    text = self._repairText(text)
+    eng.speak(text)
+
+    #skevents.runlater(partial(eng.speak, text))
 
   # Google
 
@@ -152,6 +206,8 @@ class _TtsManager(object):
     """
     @return  _ttsman.VoiceEngine or None
     """
+    if not key:
+      return None
     if key == 'zunko':
       return self.zunkoEngine
     if key == 'yukari':
@@ -160,16 +216,18 @@ class _TtsManager(object):
       return self.googleEngine
     return self.getSapiEngine(key)
 
-  @memoizedproperty
-  def speakTimer(self):
-    ret = QTimer(self.q)
-    ret.setSingleShot(True)
-    ret.timeout.connect(self._doSpeakTask)
-    return ret
+  #@memoizedproperty
+  #def speakTimer(self):
+  #  ret = QTimer(self.q)
+  #  ret.setSingleShot(True)
+  #  ret.timeout.connect(self._doSpeakTask)
+  #  return ret
 
   def _doSpeakTask(self):
-    try: apply(self.speakTask)
-    except Exception, e: dwarn(e)
+    if self._speakTask:
+      try: apply(self._speakTask)
+      except Exception, e: dwarn(e)
+      self._speakTask = None
 
 class TtsManager(QObject):
 
@@ -213,55 +271,14 @@ class TtsManager(QObject):
   def speak(self, text, interval=100, **kwargs):
     if not features.TEXT_TO_SPEECH:
       return
-    d = self.__d
-    d.speakTask = partial(self._speak, text, **kwargs)
-    d.speakTimer.start(interval)
+    self.__d.speakLater(text, interval=interval, **kwargs)
 
-  def _speak(self, text, engine='', termEnabled=False, language='', verbose=True):
-    """
-    @param  text  unicode
-    @param* engine  str
-    @param* termEnabled  bool  whether apply game-specific terms
-    @param* language  unicode
-    @param* verbose  bool  whether warn on error
-    """
-    #if not features.TEXT_TO_SPEECH or not text:
-    if not text:
-      return
+  def getEngineLanguage(self, key): # str  engine key -> str not None
+    eng = self.__d.getEngine(key)
+    return eng.language or '' if eng else ''
 
-    d = self.__d
-
-    eng = d.getEngine(engine) if engine else None
-    if not eng and d.defaultEngineKey and d.defaultEngineKey != engine:
-      eng = d.getEngine(d.defaultEngineKey)
-
-    if not eng:
-      if verbose:
-        growl.warn(my.tr("TTS is not available in Preferences"))
-      dprint("missing engine: %s" % (engine or d.defaultEngineKey))
-      return
-    if not eng.isValid():
-      #if verbose:
-      # Always warn
-      growl.warn('<br/>'.join((
-        my.tr("TTS is not available"),
-        eng.name,
-      )))
-      dprint("invalid engine: %s" % (eng.key))
-      return
-    if language and language != eng.language:
-      dprint("language mismatch: %s != %s" % (language, eng.language))
-      return
-
-    if termEnabled and (not language or language == 'ja'):
-      text = termman.manager().applySpeechTerms(text)
-    # Even if text is empty, trigger stop tts
-    #if not text:
-    #  return
-    text = _repairtext(text)
-    eng.speak(text)
-
-    #skevents.runlater(partial(eng.speak, text))
+  def defaultEngineLanguage(self): # -> str not None
+    return self.getEngineLanguage(self.__d.defaultEngineKey)
 
   def yukariLocation(self): return self.__d.yukariEngine.getPath()
   def zunkoLocation(self): return self.__d.zunkoEngine.getPath()

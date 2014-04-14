@@ -18,6 +18,7 @@ client:
 - kagami.qml: indonesianFont
 - grimoire.qml: ..
 - mirage.qml: ..
+- windefs.py
 - tsupdate.py: 'id'
 - sktr.py: "id" "Indonesian"
 - sakurakit/tr/Makefile: id_ID.ts id_ID.qm
