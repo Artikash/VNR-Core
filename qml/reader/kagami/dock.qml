@@ -613,7 +613,7 @@ Item { id: root_
 
         property int count: Math.max(1, gameComet_.connectionCount)
         property int totalCount: Math.max(count, globalComet_.connectionCount)
-        text: count + "." + totalCount
+        text: count + (slimChecked ? "." : "/") + totalCount
 
         //property bool highlight: count > 1
 

@@ -78,7 +78,7 @@ class _TtsManager(object):
     if not text:
       return
 
-    eng = self.getEngine(engine) if engine else None
+    eng = self.getEngine(engine)
     if not eng and self.defaultEngineKey and self.defaultEngineKey != engine:
       eng = self.getEngine(self.defaultEngineKey)
 
@@ -206,6 +206,8 @@ class _TtsManager(object):
     """
     @return  _ttsman.VoiceEngine or None
     """
+    if not key:
+      return None
     if key == 'zunko':
       return self.zunkoEngine
     if key == 'yukari':
@@ -271,12 +273,12 @@ class TtsManager(QObject):
       return
     self.__d.speakLater(text, interval=interval, **kwargs)
 
-  def queryEngineLanguage(self, key): # unicode -> str not None
+  def getEngineLanguage(self, key): # str  engine key -> str not None
     eng = self.__d.getEngine(key)
     return eng.language or '' if eng else ''
 
   def defaultEngineLanguage(self): # -> str not None
-    return self.queryEngineLanguage(self.__d.defaultEngineKey)
+    return self.getEngineLanguage(self.__d.defaultEngineKey)
 
   def yukariLocation(self): return self.__d.yukariEngine.getPath()
   def zunkoLocation(self): return self.__d.zunkoEngine.getPath()
