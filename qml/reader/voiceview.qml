@@ -12,7 +12,7 @@ import 'voiceview' as VoiceView
 
 Share.View { id: root_
   //implicitWidth: 480; implicitHeight: 360
-  width: 500; height: 300
+  width: 500; height: 350
 
   // Window properties
   property string windowTitle: title() ///< window title
@@ -119,6 +119,12 @@ Share.View { id: root_
   }
 
   VoiceView.OptionBar { id: optionBar_
+    anchors {
+      left: parent.left; right: parent.right
+      bottom: footer_.top
+    }
+  }
+  VoiceView.Footer { id: footer_
     anchors {
       left: parent.left; right: parent.right
       bottom: parent.bottom

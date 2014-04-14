@@ -49,7 +49,4 @@ Item { id: root_
     //  text: qsTr("Dub voices for newly discovered characters (disabled by default)")
     //}
   }
-
-  Text {
-  }
 }
