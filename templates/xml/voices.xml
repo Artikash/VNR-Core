@@ -11,7 +11,7 @@
 		<voice {%- if not it.ttsEnabled %} disabled="true" {%- endif %}>
 			<name>{{it.name|e if it.name else ''}}</name>
 			<gender>{{it.gender or ''}}</gender>
-			<ttsEngine>{{it.ttsEngine}}</ttsEngine>
+			<ttsEngine>{{it.ttsEngine or ''}}</ttsEngine>
 			<timestamp>{{it.timestamp}}</timestamp>
 		</voice>
 %	endif
