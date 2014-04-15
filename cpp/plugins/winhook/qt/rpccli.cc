@@ -39,7 +39,7 @@ bool RpcClientPrivate::reconnect()
 
 void RpcClientPrivate::onCall(const QString &cmd)
 {
-  enum {
+  enum { // pre-computed qhash
     H_ENABLE    = 113539365, // "enable"
     H_DISABLE   = 185170405, // "disable"
     H_CLEAR     = 6957954    // "clear"

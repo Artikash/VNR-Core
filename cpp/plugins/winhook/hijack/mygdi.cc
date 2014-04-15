@@ -11,7 +11,7 @@
 # pragma warning (disable:4996)   // C4996: use POSIX function (wcscat)
 #endif // _MSC_VER
 
-//#define DEBUG "myfunc"
+//#define DEBUG "mygdi"
 #ifdef DEBUG
 # include "growl.h"
 #endif // DEBUG
@@ -93,6 +93,8 @@ void My::OverrideGDIModules()
 
 // - My Functions -
 
+BOOL gdi_enabled = TRUE; // CHECKPOINT
+
 BOOL WINAPI MyTextOutA(
   __in  HDC hdc,
   __in  int nXStart,
@@ -101,7 +103,7 @@ BOOL WINAPI MyTextOutA(
   __in  int cchString
 )
 {
-  return ::TextOutA(hdc, nXStart, nYStart, lpString, cchString);
+  return ::gdi_enabled || ::TextOutA(hdc, nXStart, nYStart, lpString, cchString);
 }
 
 // EOF

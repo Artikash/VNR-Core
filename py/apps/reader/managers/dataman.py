@@ -4744,7 +4744,7 @@ class _DataManager(object):
       if os.path.exists(xmlfile):
         skfileio.removefile(xmlfile)
     else:
-      data =rc.jinja_template('xml/games').render({
+      data = rc.jinja_template('xml/games').render({
         'now': datetime.now(),
         'games': self.games.itervalues(),
       })
