@@ -268,4 +268,43 @@ bool Util::SearchResourceString(LPCWSTR str)
   return false;
 }
 
+// jichi 4/15/2014: Copied from GetModuleBase in ITH CLI, for debugging purpose
+DWORD Util::FindModuleBase(DWORD hash)
+{
+  __asm
+  {
+    mov eax,fs:[0x30]
+    mov eax,[eax+0xC]
+    mov esi,[eax+0x14]
+    mov edi,_wcslwr
+listfind:
+    mov edx,[esi+0x28]
+    test edx,edx
+    jz notfound
+    push edx
+    call edi
+    pop edx
+    xor eax,eax
+calc:
+    movzx ecx, word ptr [edx]
+    test cl,cl
+    jz fin
+    ror eax,7
+    add eax,ecx
+    add edx,2
+    jmp calc
+fin:
+    cmp eax,[hash]
+    je found
+    mov esi,[esi]
+    jmp listfind
+notfound:
+    xor eax,eax
+    jmp termin
+found:
+    mov eax,[esi+0x10]
+termin:
+  }
+}
+
 // EOF

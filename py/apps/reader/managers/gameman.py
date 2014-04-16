@@ -1072,7 +1072,9 @@ class GameManager(QtCore.QObject):
       skevents.runlater(task, 200)
 
       if g.threadName in defs.SLOW_GAME_ENGINES:
-        growl.notify(my.tr("This game require the text speed to be either Normal or Slow instead of Fast to work"))
+        growl.notify(my.tr("This game requires the text speed to be either Normal or Slow instead of Fast to work"))
+      if g.threadName in defs.DELAY_ENGINES:
+        growl.notify(my.tr("This game requires opening VNR after starting/loading the game"))
 
     finally:
       try:

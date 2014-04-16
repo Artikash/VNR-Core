@@ -53,7 +53,12 @@ OK123_ENGINES = frozenset((
 CONTEXT_SEP = "||"
 
 # The game engines that require the game to have normal/slow text speed
-SLOW_GAME_ENGINES = 'EmonEngine', 'RunrunEngine', 'RunrunEngine Old'
+SLOW_GAME_ENGINES = frozenset(('EmonEngine', 'RunrunEngine', 'RunrunEngine Old'))
+
+# The game engines that require the game to be hooked after loaded
+DELAY_ENGINES = 'Adobe AIR',
+
+# The game engines that require the game to have normal/slow text speed
 
 # Back up file suffix
 BACKUP_FILE_SUFFIX = '.bak'

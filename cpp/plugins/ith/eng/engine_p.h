@@ -20,6 +20,7 @@ extern trigger_fun_t trigger_fun_;
 // Engine-specific hooks
 
 bool InsertAbelHook();          // Abel
+bool InsertAdobeAirHook();      // Adobe AIR
 bool InsertAliceHook();         // System40@AliceSoft; do not work for latest alice games
 bool InsertAnex86Hook();        // Anex86: anex86.exe
 bool InsertAOSHook();           // AOS: *.aos

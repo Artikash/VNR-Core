@@ -28,7 +28,8 @@ QT      -= gui
 #INCLUDEPATH += $$DETOURS_HOME/include
 #LIBS    += -ldetours -L$$DETOURS_HOME/lib
 
-LIBS    += -luser32 -lpsapi #-lgdi32
+LIBS    += -luser32 -lpsapi
+LIBS    += -lgdi32
 
 #QMAKE_LFLAGS += /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:msvcrtd.lib
 #DEFINES += _CRT_SECURE_NO_WARNINGS _CRT_NON_CONFORMING_SWPRINTFS
