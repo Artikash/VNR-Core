@@ -4744,7 +4744,7 @@ class _DataManager(object):
       if os.path.exists(xmlfile):
         skfileio.removefile(xmlfile)
     else:
-      data =rc.jinja_template('xml/games').render({
+      data = rc.jinja_template('xml/games').render({
         'now': datetime.now(),
         'games': self.games.itervalues(),
       })
@@ -4966,12 +4966,34 @@ class _DataManager(object):
     #  dprint("leave")
 
   def reloadGames(self):
-    xmlfile = rc.xml_path('games')
     self._gamesDirty = False
     self.games = {}
+
+    xmlfile = rc.xml_path('games')
+    xmlfile_bak = rc.xml_path('games', backup=True)
+
+    self._reloadGames(xmlfile)
+    if self.games:
+      dprint("backup game profile")
+      skfileio.copyfile(xmlfile, xmlfile_bak)
+    else:
+      dprint("try recovering backup profile")
+      self._reloadGames(xmlfile_bak)
+      if self.games:
+        growl.notify(my.tr("VNR's game profile (%s) was corrupted. Recovered from backup.") % "games.xml")
+        skfileio.copyfile(xmlfile_bak, xmlfile)
+      else:
+        dprint("failed to recover from backup file")
+    self.q.gamesChanged.emit()
+
+    # If games, backup games
+
+  def _reloadGames(self, xmlfile):
+    """This function is only called by reloadGames!
+    @param  xmlfile  str  path
+    """
     if not os.path.exists(xmlfile):
       dprint("pass: xml not found, %s" % xmlfile)
-      self.q.gamesChanged.emit()
       return
 
     try:
@@ -5083,8 +5105,6 @@ class _DataManager(object):
       dwarn("xml malformat", e.args)
     except Exception, e:
       derror(e)
-    finally:
-      self.q.gamesChanged.emit()
 
     dwarn("warning: failed to load xml from %s" % xmlfile)
 

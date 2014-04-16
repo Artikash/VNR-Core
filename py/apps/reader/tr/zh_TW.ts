@@ -901,62 +901,62 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>登錄&apos;{0}&apos;失敗了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5321"/>
+        <location filename="managers/dataman.py" line="5340"/>
         <source>Fetching comments</source>
         <translation>更新評論中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5332"/>
+        <location filename="managers/dataman.py" line="5351"/>
         <source>Loading offline comments</source>
         <translation>載入離線評論</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5342"/>
+        <location filename="managers/dataman.py" line="5361"/>
         <source>Found {0} comments</source>
         <translation>找到{0}條評論</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5865"/>
+        <location filename="managers/dataman.py" line="5884"/>
         <source>Failed to save changes, will try later</source>
         <translation>這次保存變更沒有成功呢，VNR等下會重試的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6493"/>
+        <location filename="managers/dataman.py" line="6512"/>
         <source>Updating dictionary terms online</source>
         <translation>更新共享詞條中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6503"/>
+        <location filename="managers/dataman.py" line="6522"/>
         <source>Found {0} terms</source>
         <translation>找到{0}個詞條</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6506"/>
+        <location filename="managers/dataman.py" line="6525"/>
         <source>Failed to download terms online</source>
         <translation>更新詞條失敗了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6507"/>
+        <location filename="managers/dataman.py" line="6526"/>
         <source>Something might be wrong with the Internet connection</source>
         <translation>也許網絡連接不暢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6819"/>
+        <location filename="managers/dataman.py" line="6838"/>
         <source>Failed to get game information</source>
         <translation>獲取遊戲信息失敗了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6973"/>
+        <location filename="managers/dataman.py" line="6992"/>
         <source>The game does not exist. Did you delete it?</source>
         <translation>遊戲並不存在。是不是已經被你刪除了呢？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7392"/>
+        <location filename="managers/dataman.py" line="7411"/>
         <source>Please sign in to submit comment</source>
         <translation>請先登錄再提交評論</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7409"/>
+        <location filename="managers/dataman.py" line="7428"/>
         <source>Cannot connect to the Internet</source>
         <translation>無法連接到網絡</translation>
     </message>
@@ -1071,17 +1071,17 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>請選擇圖片的位置</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6428"/>
+        <location filename="managers/dataman.py" line="6447"/>
         <source>Updating game database online</source>
         <translation>更新在線遊戲數據庫中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6450"/>
+        <location filename="managers/dataman.py" line="6469"/>
         <source>Failed to update game database</source>
         <translation>更新遊戲數據庫沒有成功</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6446"/>
+        <location filename="managers/dataman.py" line="6465"/>
         <source>Game database is updated</source>
         <translation>遊戲數據庫更新完成</translation>
     </message>
@@ -1128,22 +1128,22 @@ It might take a couple of seconds to complete.</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7450"/>
+        <location filename="managers/dataman.py" line="7469"/>
         <source>Shared dictionary is empty</source>
         <translation>共享辭書是空的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7447"/>
+        <location filename="managers/dataman.py" line="7466"/>
         <source>Dictionary entries are saved to the desktop</source>
         <translation>詞條數據保存到了桌面</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7493"/>
+        <location filename="managers/dataman.py" line="7512"/>
         <source>There are no subtitles</source>
         <translation>這個遊戲還沒有人工字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7490"/>
+        <location filename="managers/dataman.py" line="7509"/>
         <source>Subtitles are saved to the desktop</source>
         <translation>字幕數據保存到了桌面</translation>
     </message>
@@ -1158,7 +1158,7 @@ It might take a couple of seconds to complete.</source>
         <translation>缺少語音合成需要的QuickTime</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7229"/>
+        <location filename="managers/dataman.py" line="7248"/>
         <source>Please start the game to submit comment</source>
         <translation>請在開始遊戲后提交字幕</translation>
     </message>
@@ -1254,7 +1254,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>{0}的百分比</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6727"/>
+        <location filename="managers/dataman.py" line="6746"/>
         <source>Searching game information online</source>
         <translation>正在網上檢索遊戲信息</translation>
     </message>
@@ -1399,7 +1399,7 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>百度中文翻譯服務</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6009"/>
+        <location filename="managers/dataman.py" line="6028"/>
         <source>Your {0} is &apos;{1}&apos;</source>
         <translation>你的{0}是&apos;{1}&apos;</translation>
     </message>
@@ -1480,7 +1480,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>快捷方式指向的位置並不存在呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5042"/>
+        <location filename="managers/dataman.py" line="5063"/>
         <source>Remove bad user-defined hcode</source>
         <translation>自動移除錯誤的特殊碼</translation>
     </message>
@@ -1505,7 +1505,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>未知的遊戲。請更新下遊戲數據庫。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7126"/>
+        <location filename="managers/dataman.py" line="7145"/>
         <source>Please sign in to submit reference</source>
         <translation>請先登錄再提交信息</translation>
     </message>
@@ -1899,17 +1899,17 @@ This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source
 這樣將會產生大量的垃圾文本，而這不會是你想要達到的！</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5259"/>
+        <location filename="managers/dataman.py" line="5278"/>
         <source>Searching for game character names</source>
         <translation>搜索遊戲中人物的姓名</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5269"/>
+        <location filename="managers/dataman.py" line="5288"/>
         <source>Found {0} game characters</source>
         <translation>找到{0}個遊戲人物</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5286"/>
+        <location filename="managers/dataman.py" line="5305"/>
         <source>Game character names not found</source>
         <translation>沒有找到人物的姓名</translation>
     </message>
@@ -2095,7 +2095,7 @@ This might result in redundant spaces for Japanese games.</source>
         <translation>保留（英文）單詞之間的空格</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5072"/>
+        <location filename="managers/dataman.py" line="5093"/>
         <source>Remove non-existed game</source>
         <translation>移除不存在的遊戲</translation>
     </message>
@@ -2518,12 +2518,12 @@ Just don&apos;t forget to export LC_ALL=ja_JP.UTF8 before launching VNR.</source
         <translation>找到{0}個YouTube動畫</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5063"/>
+        <location filename="managers/dataman.py" line="5084"/>
         <source>Do not keep all scenario threads in text settings</source>
         <translation>不保留遊戲的全部對話文本</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5054"/>
+        <location filename="managers/dataman.py" line="5075"/>
         <source>Ignore repetition filters in text settings</source>
         <translation>不過濾遊戲文本中的重复</translation>
     </message>
@@ -3333,6 +3333,11 @@ VNR默認會使用TTS讀出遊戲的原始文本。
         <location filename="dialogs/_prefs.py" line="965"/>
         <source>VNR supports not only Japanese TTS, but all SAPI TTS in any languages. VNR will read translations instead of game texts if TTS&apos;s language is different from game&apos;s.</source>
         <translation>VNR不僅支持日文TTS，還支持包括中文、英文等其他語言的SAPI TTS。當這裡選擇的TTS的語言和遊戲語言不同時，VNR會轉而讀出翻譯字幕，而不會出遊戲文本。</translation>
+    </message>
+    <message>
+        <location filename="managers/dataman.py" line="4983"/>
+        <source>VNR&apos;s game profile (%s) was corrupted. Recovered from backup.</source>
+        <translation>VNR的遊戲設定（%s）損壞了呢。恢复到過去備份的設定。</translation>
     </message>
 </context>
 </TS>

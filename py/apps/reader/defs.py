@@ -55,6 +55,9 @@ CONTEXT_SEP = "||"
 # The game engines that require the game to have normal/slow text speed
 SLOW_GAME_ENGINES = 'EmonEngine', 'RunrunEngine', 'RunrunEngine Old'
 
+# Back up file suffix
+BACKUP_FILE_SUFFIX = '.bak'
+
 # User
 
 USER_DEFAULT_COLOR = '#006400' # darkgreen

@@ -92,6 +92,18 @@ def iterwritefile(path, iterdata, mode='w', flush=True):
 def writedata(path, data, **kwargs): return writefile(path, data, mode='wb', **kwargs)
 def iterwritedata(path, iterdata, **kwargs): return iterwritefile(path, terdata, mode='wb', **kwargs)
 
+def copyfile(src, dst):
+  """
+  @param  src  str  path
+  @param  dst  str  path
+  @return  bool
+  """
+  try:
+    import shutil
+    shutil.copyfile(src, dst)
+    return True
+  except: return False
+
 def removefile(path):
   """
   @param  path  str
@@ -106,10 +118,11 @@ def removetree(path): # remove the whole directory recursively
   @param  path  str
   @return  bool
   """
-  dprint(path)
   try:
-    import shutil
-    shutil.rmtree(path)
+    if os.paths.exists(path):
+      dprint(path)
+      import shutil
+      shutil.rmtree(path)
     return True
   except: return False
 

@@ -83,7 +83,7 @@ _FIELDS = {
   'id': __int,         # game id
   #'brandname': __int,  # brand id
   'gamename': __unicode, # title
-  #'furigana': __unicode,
+  'furigana': __unicode, # katagana
   'sellday': __date,
   'erogame': __bool,    # アダルト
   'okazu': __bool,      # 抜きゲー
@@ -242,6 +242,7 @@ if __name__ == '__main__':
   #print q
   for it in q:
     print it['dmm']
+    print it['furigana']
     #print it['twitter_data_widget_id_before']
 
   #t = 9610
