@@ -656,6 +656,10 @@ class SyncGamePage(QtWidgets.QWizardPage):
     if pid and pid != th.currentPid():
       ok = th.attachProcess(pid)
       dprint("attached = %s" % ok)
+
+      if ok:
+        from gameengine import gameengine
+        gameengine.inject(pid)
     self._refresh()
     dprint("pass")
 
