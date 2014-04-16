@@ -108,10 +108,10 @@ DWORD DetermineEngineByFile1()
     InsertRejetHook();
     return yes;
   }
-  //if (IthFindFile(L"*.iar")) {
-  //  InsertSolfaHook();
-  //  return yes;
-  //}
+  if (IthFindFile(L"*.iar")) {
+    InsertSolfaHook();
+    return yes;
+  }
   // Only examined with version 1.0
   //if (IthFindFile(L"Adobe AIR\\Versions\\*\\Adobe AIR.dll")) { // jichi 4/15/2014: FIXME: Wildcard not working
   if (IthCheckFile(L"Adobe AIR\\Versions\\1.0\\Adobe AIR.dll")) { // jichi 4/15/2014: Adobe AIR
