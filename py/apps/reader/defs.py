@@ -46,8 +46,8 @@ CAONIMAGEBI_ENGINES = frozenset((
 
 OK123_USERNAME = '@ok123'
 OK123_ENGINES = frozenset((
-  'BALDR',
   'Malie3',
+  'Unity',
 ))
 
 CONTEXT_SEP = "||"
