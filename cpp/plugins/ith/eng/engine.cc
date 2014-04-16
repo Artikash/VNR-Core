@@ -112,6 +112,12 @@ DWORD DetermineEngineByFile1()
   //  InsertSolfaHook();
   //  return yes;
   //}
+  // Only examined with version 1.0
+  //if (IthFindFile(L"Adobe AIR\\Versions\\*\\Adobe AIR.dll")) { // jichi 4/15/2014: FIXME: Wildcard not working
+  if (IthCheckFile(L"Adobe AIR\\Versions\\1.0\\Adobe AIR.dll")) { // jichi 4/15/2014: Adobe AIR
+    InsertAdobeAirHook();
+    return yes;
+  }
   return no;
 }
 
@@ -249,7 +255,7 @@ DWORD DetermineEngineByFile4()
     InsertGXPHook();
     return yes;
   }
-  if (IthFindFile(L"*.aos")) { // jichi 4/2/1014: AOS hook
+  if (IthFindFile(L"*.aos")) { // jichi 4/2/2014: AOS hook
     InsertAOSHook();
     return yes;
   }
