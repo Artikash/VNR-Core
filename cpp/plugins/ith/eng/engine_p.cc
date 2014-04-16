@@ -4490,7 +4490,6 @@ bool InsertAdobeAirHook()
 //{
 //}
 
-#if 0
 /**
  *  jichi 10/1/2013: sol-fa-soft
  *  See (tryguy): http://www.hongfire.com/forum/printthread.php?t=36807&pp=10&page=639
@@ -4527,45 +4526,73 @@ bool InsertAdobeAirHook()
  *  - length_offset: 1
  *  - off: 4
  *  - type: 4
+ *
+ *  Pattern 1:
+ *  Function starts
+ *  00609bf0  /> 55             push ebp
+ *  00609bf1  |. 8bec           mov ebp,esp
+ *  00609bf3  |. 64:a1 00000000 mov eax,dword ptr fs:[0]
+ *  00609bf9  |. 6a ff          push -0x1
+ *  00609bfb  |. 68 e1266300    push あやめ.006326e1
+ *  00609c00  |. 50             push eax
+ *  00609c01  |. 64:8925 000000>mov dword ptr fs:[0],esp
+ *  00609c08  |. 81ec 80000000  sub esp,0x80
+ *  00609c0e  |. 53             push ebx
+ *  00609c0f  |. 8b5d 08        mov ebx,dword ptr ss:[ebp+0x8]
+ *  00609c12  |. 57             push edi
+ *  00609c13  |. 8bf9           mov edi,ecx
+ *  00609c15  |. 8b07           mov eax,dword ptr ds:[edi]
+ *  00609c17  |. 83f8 02        cmp eax,0x2
+ *  00609c1a  |. 75 1f          jnz short あやめ.00609c3b
+ *  00609c1c  |. 3b5f 40        cmp ebx,dword ptr ds:[edi+0x40]
+ *  00609c1f  |. 75 1a          jnz short あやめ.00609c3b
+ *  00609c21  |. 837f 44 00     cmp dword ptr ds:[edi+0x44],0x0
+ *  00609c25  |. 74 14          je short あやめ.00609c3b
+ *  00609c27  |. 5f             pop edi
+ *  00609c28  |. b0 01          mov al,0x1
+ *  00609c2a  |. 5b             pop ebx
+ *  00609c2b  |. 8b4d f4        mov ecx,dword ptr ss:[ebp-0xc]
+ *  00609c2e  |. 64:890d 000000>mov dword ptr fs:[0],ecx
+ *  00609c35  |. 8be5           mov esp,ebp
+ *  00609c37  |. 5d             pop ebp
+ *  00609c38  |. c2 0400        retn 0x4
+ *  Function stops
+ *
+ *  FIXME 4/15/2014: The pattern is incompleted and does not working for old games
  */
 bool InsertSolfaHook()
 {
   const BYTE ins[] = {
-     // 005f2afd   eb 13          jmp short おぼえた.005f2b12
-     0x33,0xc0, // 005f2aff   33c0           xor eax,eax
-     0x40, // 005f2b01   40             inc eax
-     0xc3, // 005f2b02   c3             retn
-     0x8b,0x65, 0xe8 // 005f2b03   8b65 e8        mov esp,dword ptr ss:[ebp-0x18]
-     // 005f2b06   c745 fc feffff>mov dword ptr ss:[ebp-0x4],-0x2
-     // 005f2b0d   b8 ff000000    mov eax,0xff
-     // 005f2b12   e8 865a0000    call おぼえた.005f859d
-     // 005f2b17   c3             retn
-     // 005f2b18   e8 395c0000    call おぼえた.005f8756
+   0x53,                    // 00609c0e  |. 53             push ebx
+   0x8b,0x5d,0x08,          // 00609c0f  |. 8b5d 08        mov ebx,dword ptr ss:[ebp+0x8]
+   0x57,                    // 00609c12  |. 57             push edi
+   0x8b,0xf9,               // 00609c13  |. 8bf9           mov edi,ecx
+   0x8b,0x07,               // 00609c15  |. 8b07           mov eax,dword ptr ds:[edi]
+   0x83,0xf8, 0x02,         // 00609c17  |. 83f8 02        cmp eax,0x2
+   0x75, 0x1f,              // 00609c1a  |. 75 1f          jnz short あやめ.00609c3b
+   0x3b,0x5f, 0x40,         // 00609c1c  |. 3b5f 40        cmp ebx,dword ptr ds:[edi+0x40]
+   0x75, 0x1a,              // 00609c1f  |. 75 1a          jnz short あやめ.00609c3b
+   0x83,0x7f, 0x44, 0x00,   // 00609c21  |. 837f 44 00     cmp dword ptr ds:[edi+0x44],0x0
+   0x74, 0x14,              // 00609c25  |. 74 14          je short あやめ.00609c3b
   };
+  enum { hook_offset = 0x00609bf0 - 0x00609c0e }; // distance to the beginning of the function
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG reladdr = SearchPattern(module_base_, range, ins, sizeof(ins));
-  //ITH_GROWL_DWORD4(reladdr, module_base_, range, module_base_ + reladdr);
   if (!reladdr) {
     ConsoleOutput("vnreng:SolfaSoft: pattern not found");
     return false;
   }
-  const BYTE ins2[] = {
-    0xc3,   // retn
-    0xe8    // call XXXX
-  };
-  ULONG cur = module_base_ + reladdr + sizeof(ins2);
-  reladdr = SearchPattern(cur, 0x100, ins2, sizeof(ins2));
-  //ITH_GROWL_DWORD3(reladdr, base, base + reladdr);
-  if (!reladdr)
+
+  ULONG addr = module_base_ + reladdr + hook_offset;
+  enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
+  //ITH_GROWL(addr);
+  if (*(BYTE *)addr != push_ebp) {
+    ConsoleOutput("vnreng:SolfaSoft: pattern found but the function offset is invalid");
     return false;
-  cur += reladdr + sizeof(ins2);
-  DWORD func = *(DWORD *)cur;
-  ITH_GROWL_DWORD2(cur, func);
-  // CHECKPOINT: the hooked address is where this func is being invoked
-  //return false;
+  }
 
   HookParam hp = {};
-  hp.addr = module_base_ + reladdr;
+  hp.addr = addr;
   hp.length_offset = 1;
   hp.off = 4;
   hp.type = BIG_ENDIAN; // 4
@@ -4577,7 +4604,6 @@ bool InsertSolfaHook()
   NewHook(hp, L"SolfaSoft");
   return true;
 }
-#endif // 0
 
 #if 0
 

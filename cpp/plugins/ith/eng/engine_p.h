@@ -59,7 +59,7 @@ bool InsertTanukiHook();        // Tanuki: *.tak
 bool InsertTaskforce2Hook();    // Taskforce2.exe
 bool InsertTencoHook();         // Tenco: Check.mdx
 bool InsertTriangleHook();      // Triangle: Execle.exe
-//bool InsertSolfaHook();         // sol-fa-soft: *.iar
+bool InsertSolfaHook();         // sol-fa-soft: *.iar
 bool InsertWhirlpoolHook();     // YU-RIS: *.ypf
 bool InsertWillPlusHook();      // WillPlus: Rio.arc
 bool InsertWolfHook();          // Wolf: Data.wolf
