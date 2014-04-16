@@ -4455,7 +4455,7 @@ bool InsertAdobeAirHook()
     0xff,0x45, 0xfc, // 0f8f04bd  |. ff45 fc       |inc dword ptr ss:[ebp-0x4]
     0xeb, 0x3a       // 0f8f04c0  |. eb 3a         |jmp short adobe_ai.0f8f04fc
   };
-  enum { hook_offset = 0x0f8f04b5 - 0x0f8f04b2 }; // = 3
+  enum { hook_offset = 0x0f8f04b5 - 0x0f8f04b2 }; // = 3. 0 also works.
   enum { range = 0x600000 }; // larger than relative addresses
   ULONG reladdr = SearchPattern(base, range, ins, sizeof(ins));
   //ITH_GROWL(reladdr);

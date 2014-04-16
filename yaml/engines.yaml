@@ -29,6 +29,7 @@ nongui:
 
 # no repeat & no float
 simple:
+  - Adobe AIR
   - AOS
   - ApRicot
   - BGI
@@ -52,7 +53,7 @@ simple:
 # No repetition int the game text
 norepeat:
   - Artemis
-  - BALDR
+  - BALDR # deprecated
   - Gesen18
   - QLIE
   - QLIE2
@@ -61,6 +62,7 @@ norepeat:
   - SiglusEngine
   - SiglusEngine2
   - TanukiSoft # But this thread is floating
+  - Unity
 
 # Not floating address
 nofloat:
@@ -139,8 +141,9 @@ wchar:
   - TextOutW
   - lstrlenW
   - WideCharToMultiByte
+  - Adobe AIR
   - ApRicot
-  - BALDRk
+  - BALDR # deprecated
   - Bruns
   - Cotopha
   - GXP
@@ -153,5 +156,6 @@ wchar:
   - ShinyDays
   - SiglusEngine
   - SoftHouseChara
+  - Unity
 
 # EOF

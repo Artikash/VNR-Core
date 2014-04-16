@@ -970,7 +970,7 @@ class GameManager(QtCore.QObject):
           return
 
         from gameengine import gameengine
-        gameengine.process(g.pid)
+        gameengine.inject(g.pid)
 
       if not g.hasThread():
         dprint("update thread")
