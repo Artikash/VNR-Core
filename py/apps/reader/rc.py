@@ -11,7 +11,7 @@ from PySide.QtGui import QIcon
 from Qt5.QtWidgets import QFileIconProvider
 from sakurakit import skfileio, skos, skpaths, sktr
 from sakurakit.skdebug import dwarn
-import cacheman, config, hashutil
+import cacheman, config, defs, hashutil
 
 # Directories
 
@@ -111,13 +111,17 @@ XML_PATHS = {
   'users': DIR_USER_XML + '/users.xml',  # $user/xml/1/users.xml, user library
 }
 
-def xml_path(name):
+def xml_path(name, backup=False):
   """
   @param  name  str  id
+  @param  backup  bool
   @return  unicode  path
   @throw  KeyError when unknown name
   """
-  return XML_PATHS[name]
+  ret = XML_PATHS[name]
+  if backup:
+    ret += defs.BACKUP_FILE_SUFFIX
+  return ret
 
 def comments_xml_path(md5):
   """
