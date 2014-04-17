@@ -32,6 +32,7 @@ simple:
   - Adobe AIR
   - AOS
   - ApRicot
+  - AUEngine # deprecated
   - BGI
   - BGI2
   - CIRCUS
@@ -93,6 +94,7 @@ char:
   - AOS
   - Artemis
   - Atelier KAGUYA
+  - AUEngine # deprecated
   - BGI
   - C4
   - CaramelBox
