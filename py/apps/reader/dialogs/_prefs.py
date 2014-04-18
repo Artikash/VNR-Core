@@ -1624,7 +1624,9 @@ class _HonyakuTab(object):
       layout.addWidget(self.thaiButton)
     if 'zh' not in blans:
       layout.addWidget(self.kanjiButton)
-    ret = QtWidgets.QGroupBox(my.tr("Preferred Japanese furigana characters"))
+    ret = QtWidgets.QGroupBox("%s (%s)" % (
+        my.tr("Preferred Japanese furigana characters"),
+        my.tr("require MeCab dictionaries")))
     ret.setLayout(layout)
     self._loadFurigana()
 
