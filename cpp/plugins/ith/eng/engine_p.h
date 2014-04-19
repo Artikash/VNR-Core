@@ -41,6 +41,7 @@ bool InsertGXPHook();           // GXP: *.gxp
 bool InsertLiveHook();          // Live: live.dll
 bool InsertMalieHook();         // Malie@light: malie.ini
 bool InsertMajiroHook();        // MAJIRO: *.arc
+bool InsertMarineHeartHook();   // Marine Heart: SAISYS.exe
 bool InsertMEDHook();           // MED: *.med
 bool InsertNextonHook();        // NEXTON: aInfo.db
 bool InsertNitroPlusHook();     // NitroPlus: *.npa

@@ -716,12 +716,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>請在文本設定中調整</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1093"/>
+        <location filename="managers/gameman.py" line="1096"/>
         <source>Translating window text</source>
         <translation>翻譯窗口文本</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1103"/>
+        <location filename="managers/gameman.py" line="1106"/>
         <source>Stop translating window text</source>
         <translation>停止翻譯窗口文本</translation>
     </message>
@@ -731,12 +731,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>從Dashboard移除這個遊戲嗎？</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1382"/>
+        <location filename="managers/gameman.py" line="1385"/>
         <source>Game removed</source>
         <translation>遊戲移除</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1392"/>
+        <location filename="managers/gameman.py" line="1395"/>
         <source>Location does not exist</source>
         <translation>位置不存在</translation>
     </message>
@@ -3340,7 +3340,7 @@ VNR默認會使用TTS讀出遊戲的原始文本。
         <translation>這個遊戲要求文本速度必須是Normal或者是Slow而不能是Fast才可以工作</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1077"/>
+        <location filename="managers/gameman.py" line="1080"/>
         <source>This game requires opening VNR after starting/loading the game</source>
         <translation>這個遊戲要求一定要在先載入遊戲，再打開VNR</translation>
     </message>
@@ -3348,6 +3348,11 @@ VNR默認會使用TTS讀出遊戲的原始文本。
         <location filename="dialogs/_prefs.py" line="1629"/>
         <source>require MeCab dictionaries</source>
         <translation>需要MeCab辭書</translation>
+    </message>
+    <message>
+        <location filename="managers/gameman.py" line="1077"/>
+        <source>This game requires the text speed to be Fast to work</source>
+        <translation>這個遊戲要求文本速度必須是Fast才可以工作</translation>
     </message>
 </context>
 </TS>

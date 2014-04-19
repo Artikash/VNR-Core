@@ -54,6 +54,7 @@ CONTEXT_SEP = "||"
 
 # The game engines that require the game to have normal/slow text speed
 SLOW_GAME_ENGINES = frozenset(('EmonEngine', 'RunrunEngine', 'RunrunEngine Old'))
+FAST_GAME_ENGINES = 'MarineHeart',
 
 # The game engines that require the game to be hooked after loaded
 DELAY_ENGINES = 'Adobe AIR',

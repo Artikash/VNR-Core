@@ -323,6 +323,11 @@ DWORD DetermineEngineByProcessName()
   //  return yes;
   //}
 
+  if (wcsstr(process_name_, L"SAISYS")) { // jichi 4/19/2014: Marine Heart
+    InsertMarineHeartHook();
+    return yes;
+  }
+
   DWORD len = wcslen(str);
 
   static WCHAR saveman[] = L"_checksum.exe";
