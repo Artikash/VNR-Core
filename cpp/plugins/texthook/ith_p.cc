@@ -37,7 +37,7 @@ namespace { namespace detail { // unnamed
 
 // See: ITH/ITH.h
 // Revision: 133
-inline DWORD Hash(__in LPWSTR module, int length = -1)
+inline DWORD Hash(_In_ LPWSTR module, int length = -1)
 {
   bool flag = length == -1;
   DWORD hash = 0;
@@ -51,7 +51,7 @@ inline DWORD Hash(__in LPWSTR module, int length = -1)
 //
 // jichi note: str[0xF] will be modified and restored.
 // So, the buffer of str must be larger than 0xF.
-int Convert(__in LPWSTR str, __out DWORD *num, __in LPWSTR delim)
+int Convert(_In_ LPWSTR str, _Out_ DWORD *num, _In_ LPWSTR delim)
 {
   if (!num)
     return -1;
@@ -90,7 +90,7 @@ int Convert(__in LPWSTR str, __out DWORD *num, __in LPWSTR delim)
 //
 // jichi note: str[0xF] will be modified and restored.
 // So, the buffer of cmd must be larger than 0xF*2 = 0x1F.
-bool Parse(__in LPWSTR cmd, __out HookParam &hp)
+bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
 {
   ::memset(&hp, 0, sizeof(hp));
 

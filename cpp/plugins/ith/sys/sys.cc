@@ -1212,24 +1212,24 @@ HANDLE IthCreateThread(LPCVOID start_addr, DWORD param, HANDLE hProc)
      // NTSTATUS
      // NTAPI
      // NtCreateThread(
-     //   __out PHANDLE             ThreadHandle,
-     //   __in  ACCESS_MASK         DesiredAccess,
-     //   __in  POBJECT_ATTRIBUTES  ObjectAttributes,
-     //   __in  HANDLE              ProcessHandle,
-     //   __out PCLIENT_ID          ClientId,
-     //   __in  PCONTEXT            ThreadContext,
-     //   __in  PUSER_STACK         UserStack,
-     //   __in  BOOLEAN             CreateSuspended
+     //   _Out_ PHANDLE             ThreadHandle,
+     //   _In_  ACCESS_MASK         DesiredAccess,
+     //   _In_  POBJECT_ATTRIBUTES  ObjectAttributes,
+     //   _In_  HANDLE              ProcessHandle,
+     //   _Out_ PCLIENT_ID          ClientId,
+     //   _In_  PCONTEXT            ThreadContext,
+     //   _In_  PUSER_STACK         UserStack,
+     //   _In_  BOOLEAN             CreateSuspended
      // );
     if (NT_SUCCESS(NtCreateThread(
-        &hThread, // __out PHANDLE             ThreadHandle,
-        THREAD_ALL_ACCESS, // __in ACCESS_MASK DesiredAccess,
-        nullptr,  // __in  POBJECT_ATTRIBUTES  ObjectAttributes,
-        hProc,    // __in  HANDLE              ProcessHandle,
-        &id,      // __out PCLIENT_ID          ClientId,
-        &ctx,     // __in  PCONTEXT            ThreadContext,
-        &stack,   // __in  PUSER_STACK         UserStack,
-        TRUE      // __in  BOOLEAN             CreateSuspended
+        &hThread, // _Out_ PHANDLE             ThreadHandle,
+        THREAD_ALL_ACCESS, // _In_ ACCESS_MASK DesiredAccess,
+        nullptr,  // _In_  POBJECT_ATTRIBUTES  ObjectAttributes,
+        hProc,    // _In_  HANDLE              ProcessHandle,
+        &id,      // _Out_ PCLIENT_ID          ClientId,
+        &ctx,     // _In_  PCONTEXT            ThreadContext,
+        &stack,   // _In_  PUSER_STACK         UserStack,
+        TRUE      // _In_  BOOLEAN             CreateSuspended
       ))) {
       // On x64 Windows, NtCreateThread in ntdll calls NtCreateThread in ntoskrnl via WOW64,
       // which maps 32-bit system call to the correspond 64-bit version.

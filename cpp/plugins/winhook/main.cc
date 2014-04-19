@@ -10,7 +10,7 @@
 
 // - Main -
 
-BOOL WINAPI DllMain(__in HINSTANCE hInstance, __in DWORD fdwReason, __in LPVOID lpvReserved)
+BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID lpvReserved)
 {
   CC_UNUSED(lpvReserved);
   switch (fdwReason) {

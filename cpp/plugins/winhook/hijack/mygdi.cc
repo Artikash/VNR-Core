@@ -96,11 +96,11 @@ void My::OverrideGDIModules()
 BOOL gdi_enabled = TRUE; // CHECKPOINT
 
 BOOL WINAPI MyTextOutA(
-  __in  HDC hdc,
-  __in  int nXStart,
-  __in  int nYStart,
-  __in  LPCSTR lpString,
-  __in  int cchString
+  _In_  HDC hdc,
+  _In_  int nXStart,
+  _In_  int nYStart,
+  _In_  LPCSTR lpString,
+  _In_  int cchString
 )
 {
   return ::gdi_enabled || ::TextOutA(hdc, nXStart, nYStart, lpString, cchString);

@@ -12,18 +12,18 @@ struct MyFunctionInfo {
 // - GDI32 -
 
 BOOL WINAPI MyTextOutA(
-  __in  HDC hdc,
-  __in  int nXStart,
-  __in  int nYStart,
-  __in  LPCSTR lpString,
-  __in  int cchString
+  _In_  HDC hdc,
+  _In_  int nXStart,
+  _In_  int nYStart,
+  _In_  LPCSTR lpString,
+  _In_  int cchString
 );
 //BOOL WINAPI MyTextOutW(
-//  __in  HDC hdc,
-//  __in  int nXStart,
-//  __in  int nYStart,
-//  __in  LPCWSTR lpString,
-//  __in  int cchString
+//  _In_  HDC hdc,
+//  _In_  int nXStart,
+//  _In_  int nYStart,
+//  _In_  LPCWSTR lpString,
+//  _In_  int cchString
 //);
 
 #define MY_GDI_FUNCTIONS_INITIALIZER \

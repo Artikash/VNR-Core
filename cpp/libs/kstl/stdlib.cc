@@ -56,7 +56,7 @@ NTSYSAPI
 VOID
 NTAPI
 RtlRaiseException (
-  IN PEXCEPTION_RECORD ExceptionRecord
+  _In_ PEXCEPTION_RECORD ExceptionRecord
   );
 
 }

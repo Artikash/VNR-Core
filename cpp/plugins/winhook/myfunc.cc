@@ -111,7 +111,7 @@ void My::OverrideModules()
 
 // - My Functions -
 
-HMODULE WINAPI MyLoadLibrary(__in LPCTSTR lpFileName)
+HMODULE WINAPI MyLoadLibrary(_In_ LPCTSTR lpFileName)
 {
   HMODULE ret = ::LoadLibrary(lpFileName);
   if (!::GetModuleHandle(lpFileName)) // this is the first load
@@ -119,7 +119,7 @@ HMODULE WINAPI MyLoadLibrary(__in LPCTSTR lpFileName)
   return ret;
 }
 
-HMODULE WINAPI MyLoadLibraryEx(__in LPCTSTR lpFileName, __reserved HANDLE hFile, __in DWORD dwFlags)
+HMODULE WINAPI MyLoadLibraryEx(_In_ LPCTSTR lpFileName, __reserved HANDLE hFile, _In_ DWORD dwFlags)
 {
   HMODULE ret = ::LoadLibraryEx(lpFileName, hFile, dwFlags);
   if (!::GetModuleHandle(lpFileName)) // this is the first load
@@ -201,36 +201,36 @@ BOOL WINAPI MyTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int c
 
 /*
 HRESULT MyD3DXCreateFontA(
-  __in LPDIRECT3DDEVICE9 pDevice,
-  __in INT Height,
-  __in UINT Width,
-  __in UINT Weight,
-  __in UINT MipLevels,
-  __in BOOL Italic,
-  __in DWORD CharSet,
-  __in DWORD OutputPrecision,
-  __in DWORD Quality,
-  __in DWORD PitchAndFamily,
-  __in LPCSTR pFacename,
-  __out LPD3DXFONT *ppFont
+  _In_ LPDIRECT3DDEVICE9 pDevice,
+  _In_ INT Height,
+  _In_ UINT Width,
+  _In_ UINT Weight,
+  _In_ UINT MipLevels,
+  _In_ BOOL Italic,
+  _In_ DWORD CharSet,
+  _In_ DWORD OutputPrecision,
+  _In_ DWORD Quality,
+  _In_ DWORD PitchAndFamily,
+  _In_ LPCSTR pFacename,
+  _Out_ LPD3DXFONT *ppFont
 )
 {
   growl::warn(L"message A");
   return ::D3DXCreateFontA(pDevice, Height, Width, Weight, MipLevels, Italic, CharSet, OutputPrecision, Quality, PitchAndFamily, pFacename, ppFont);
 }
 HRESULT MyD3DXCreateFontW(
-  __in LPDIRECT3DDEVICE9 pDevice,
-  __in INT Height,
-  __in UINT Width,
-  __in UINT Weight,
-  __in UINT MipLevels,
-  __in BOOL Italic,
-  __in DWORD CharSet,
-  __in DWORD OutputPrecision,
-  __in DWORD Quality,
-  __in DWORD PitchAndFamily,
-  __in LPCWSTR pFacename,
-  __out LPD3DXFONT *ppFont
+  _In_ LPDIRECT3DDEVICE9 pDevice,
+  _In_ INT Height,
+  _In_ UINT Width,
+  _In_ UINT Weight,
+  _In_ UINT MipLevels,
+  _In_ BOOL Italic,
+  _In_ DWORD CharSet,
+  _In_ DWORD OutputPrecision,
+  _In_ DWORD Quality,
+  _In_ DWORD PitchAndFamily,
+  _In_ LPCWSTR pFacename,
+  _Out_ LPD3DXFONT *ppFont
 )
 {
   growl::warn(L"message W");

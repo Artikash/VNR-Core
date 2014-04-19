@@ -14,7 +14,7 @@ NTSYSAPI
 VOID
 NTAPI
 RtlRaiseException (
-  __in PEXCEPTION_RECORD ExceptionRecord
+  _In_ PEXCEPTION_RECORD ExceptionRecord
 );
 
 #ifdef __cplusplus
