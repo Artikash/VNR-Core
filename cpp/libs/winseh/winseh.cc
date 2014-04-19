@@ -16,10 +16,10 @@ seh_dword_t seh_count;
 
 // VC 2013: http://msdn.microsoft.com/en-us/library/b6sf5kbd.aspx
 // typedef EXCEPTION_DISPOSITION (*PEXCEPTION_ROUTINE) (
-//   IN PEXCEPTION_RECORD ExceptionRecord,
-//   IN ULONG64 EstablisherFrame,
-//   IN OUT PCONTEXT ContextRecord,
-//   IN OUT PDISPATCHER_CONTEXT DispatcherContext
+//   _In_ PEXCEPTION_RECORD ExceptionRecord,
+//   _In_ ULONG64 EstablisherFrame,
+//   _Inout_ PCONTEXT ContextRecord,
+//   _Inout_ PDISPATCHER_CONTEXT DispatcherContext
 // );
 //
 // winnt.h: http://www.codemachine.com/downloads/win81/ntdef.h
@@ -29,16 +29,16 @@ seh_dword_t seh_count;
 // EXCEPTION_DISPOSITION
 // NTAPI
 // EXCEPTION_ROUTINE (
-//     __inout struct _EXCEPTION_RECORD *ExceptionRecord,
-//     __in PVOID EstablisherFrame,
-//     __inout struct _CONTEXT *ContextRecord,
-//     __in PVOID DispatcherContext
+//     _Inout_ struct _EXCEPTION_RECORD *ExceptionRecord,
+//     _In_ PVOID EstablisherFrame,
+//     _In_ struct _CONTEXT *ContextRecord,
+//     _In_ PVOID DispatcherContext
 //     );
 extern "C" EXCEPTION_DISPOSITION _seh_handler( // extern C is needed to avoid name hashing in C++
-  IN PEXCEPTION_RECORD ExceptionRecord,
-  IN PVOID EstablisherFrame,     // does not work if I use ULONG64
-  IN OUT PCONTEXT ContextRecord,
-  IN PVOID DispatcherContext) // PDISPATCHER_CONTEXT is not declared in windows.h
+  _In_ PEXCEPTION_RECORD ExceptionRecord,
+  _In_ PVOID EstablisherFrame,     // does not work if I use ULONG64
+  _Inout_ PCONTEXT ContextRecord,
+  _In_ PVOID DispatcherContext) // PDISPATCHER_CONTEXT is not declared in windows.h
 {
   //assert(::seh_count > 0);
   ContextRecord->Esp = ::seh_esp[::seh_count - 1];

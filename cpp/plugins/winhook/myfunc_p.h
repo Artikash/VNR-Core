@@ -12,67 +12,67 @@ struct MyFunctionInfo {
 // - KERNEL32 -
 
 LPVOID WINAPI MyGetProcAddress(
-  __in HMODULE hModule,
-  __in LPCSTR lpProcName
+  _In_ HMODULE hModule,
+  _In_ LPCSTR lpProcName
 );
 HMODULE WINAPI MyLoadLibrary(
-  __in  LPCTSTR lpFileName
+  _In_  LPCTSTR lpFileName
 );
 HMODULE WINAPI MyLoadLibraryEx(
-  __in LPCTSTR lpFileName,
+  _In_ LPCTSTR lpFileName,
   __reserved HANDLE hFile,
-  __in DWORD dwFlags
+  _In_ DWORD dwFlags
 );
 
 // - USER32 -
 
 BOOL WINAPI MyTrackPopupMenu(
-  __in HMENU hMenu,
-  __in UINT uFlags,
-  __in int x,
-  __in int y,
-  __in int nReserved,
-  __in HWND hWnd,
-  __in_opt CONST RECT *prcRect
+  _In_ HMENU hMenu,
+  _In_ UINT uFlags,
+  _In_ int x,
+  _In_ int y,
+  _In_ int nReserved,
+  _In_ HWND hWnd,
+  _In_opt_ CONST RECT *prcRect
 );
 BOOL WINAPI MyTrackPopupMenuEx(
-  __in HMENU hMenu,
-  __in UINT uFlags,
-  __in int x,
-  __in int y,
-  __in HWND hWnd,
-  __in_opt LPTPMPARAMS lptpm
+  _In_ HMENU hMenu,
+  _In_ UINT uFlags,
+  _In_ int x,
+  _In_ int y,
+  _In_ HWND hWnd,
+  _In_opt_ LPTPMPARAMS lptpm
 );
 
 //int WINAPI MyMessageBoxA(
-//  __in_opt HWND hWnd,
-//  __in_opt LPCSTR lpText,
-//  __in_opt LPCSTR lpCaption,
-//  __in UINT uType
+//  _In_opt_ HWND hWnd,
+//  _In_opt_ LPCSTR lpText,
+//  _In_opt_ LPCSTR lpCaption,
+//  _In_ UINT uType
 //);
 //int WINAPI MyMessageBoxW(
-//  __in HWND hWnd,
-//  __in LPCWSTR lpText,
-//  __in LPCWSTR lpCaption,
-//  __in UINT uType
+//  _In_ HWND hWnd,
+//  _In_ LPCWSTR lpText,
+//  _In_ LPCWSTR lpCaption,
+//  _In_ UINT uType
 //);
 
 // - GDI32 -
 
 /* // CHECKPOINT
 BOOL WINAPI MyTextOutA(
-  __in  HDC hdc,
-  __in  int nXStart,
-  __in  int nYStart,
-  __in  LPCSTR lpString,
-  __in  int cchString
+  _In_  HDC hdc,
+  _In_  int nXStart,
+  _In_  int nYStart,
+  _In_  LPCSTR lpString,
+  _In_  int cchString
 );
 //BOOL WINAPI MyTextOutW(
-//  __in  HDC hdc,
-//  __in  int nXStart,
-//  __in  int nYStart,
-//  __in  LPCWSTR lpString,
-//  __in  int cchString
+//  _In_  HDC hdc,
+//  _In_  int nXStart,
+//  _In_  int nYStart,
+//  _In_  LPCWSTR lpString,
+//  _In_  int cchString
 //);
 */
 
@@ -101,57 +101,57 @@ BOOL WINAPI MyTextOutA(
 
 /*
 HDC WINAPI MyGetDC(
-  __in HWND hWnd
+  _In_ HWND hWnd
 );
 HDC WINAPI MyGetDCEx(
-  __in HWND hWnd,
-  __in HRGN hrgnClip,
-  __in DWORD flags
+  _In_ HWND hWnd,
+  _In_ HRGN hrgnClip,
+  _In_ DWORD flags
 );
 
 HDC WINAPI MyBeginPaint(
-  __in HWND hWnd,
-  __out LPPAINTSTRUCT lpPaint
+  _In_ HWND hWnd,
+  _Out_ LPPAINTSTRUCT lpPaint
 );
 #include <d3dx9core.h>
 //
 //INT WINAPI MyDrawTextW(
-//  __in LPD3DXSPRITE pSprite,
-//  __in LPCWSTR pString,
-//  __in INT Count,
-//  __in LPRECT pRect,
-//  __in DWORD Format,
-//  __in D3DCOLOR Color
+//  _In_ LPD3DXSPRITE pSprite,
+//  _In_ LPCWSTR pString,
+//  _In_ INT Count,
+//  _In_ LPRECT pRect,
+//  _In_ DWORD Format,
+//  _In_ D3DCOLOR Color
 //);
 
 HRESULT MyD3DXCreateFontA(
-  __in LPDIRECT3DDEVICE9 pDevice,
-  __in INT Height,
-  __in UINT Width,
-  __in UINT Weight,
-  __in UINT MipLevels,
-  __in BOOL Italic,
-  __in DWORD CharSet,
-  __in DWORD OutputPrecision,
-  __in DWORD Quality,
-  __in DWORD PitchAndFamily,
-  __in LPCSTR pFacename,
-  __out LPD3DXFONT *ppFont
+  _In_ LPDIRECT3DDEVICE9 pDevice,
+  _In_ INT Height,
+  _In_ UINT Width,
+  _In_ UINT Weight,
+  _In_ UINT MipLevels,
+  _In_ BOOL Italic,
+  _In_ DWORD CharSet,
+  _In_ DWORD OutputPrecision,
+  _In_ DWORD Quality,
+  _In_ DWORD PitchAndFamily,
+  _In_ LPCSTR pFacename,
+  _Out_ LPD3DXFONT *ppFont
 );
 
 HRESULT MyD3DXCreateFontW(
-  __in LPDIRECT3DDEVICE9 pDevice,
-  __in INT Height,
-  __in UINT Width,
-  __in UINT Weight,
-  __in UINT MipLevels,
-  __in BOOL Italic,
-  __in DWORD CharSet,
-  __in DWORD OutputPrecision,
-  __in DWORD Quality,
-  __in DWORD PitchAndFamily,
-  __in LPCWSTR pFacename,
-  __out LPD3DXFONT *ppFont
+  _In_ LPDIRECT3DDEVICE9 pDevice,
+  _In_ INT Height,
+  _In_ UINT Width,
+  _In_ UINT Weight,
+  _In_ UINT MipLevels,
+  _In_ BOOL Italic,
+  _In_ DWORD CharSet,
+  _In_ DWORD OutputPrecision,
+  _In_ DWORD Quality,
+  _In_ DWORD PitchAndFamily,
+  _In_ LPCWSTR pFacename,
+  _Out_ LPD3DXFONT *ppFont
 );
    { "D3DXCreateFontA", "d3dx9_24.dll", MyD3DXCreateFontA },
    { "D3DXCreateFontW", "d3dx9_24.dll", MyD3DXCreateFontW },

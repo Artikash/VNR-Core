@@ -103,10 +103,10 @@ protected:
   //static ulong processDetach(ulong pid);
   //static ulong processNewHook(ulong pid);
 
-  static ulong threadCreate(__in TextThread *t);
-  static ulong threadRemove(__in TextThread *t);
-  static ulong threadOutput(__in TextThread *t, __in uchar *data, __in ulong dataLength, __in ulong bNewLine, __in void *pUserData, __in bool space);
-  //static ulong threadFilter(__in TextThread *t, __out uchar *data, __in ulong dataLength, __in ulong bNewLine, __in void *pUserData);
+  static ulong threadCreate(_In_ TextThread *t);
+  static ulong threadRemove(_In_ TextThread *t);
+  static ulong threadOutput(_In_ TextThread *t, _In_ uchar *data, _In_ ulong dataLength, _In_ ulong bNewLine, _In_ void *pUserData, _In_ bool space);
+  //static ulong threadFilter(_In_ TextThread *t, _Out_ uchar *data, _In_ ulong dataLength, _In_ ulong bNewLine, _In_ void *pUserData);
   //static ulong threadReset(TextThread *t);
   static void consoleOutput(const char *text);
   static void consoleOutputW(const wchar_t *text);

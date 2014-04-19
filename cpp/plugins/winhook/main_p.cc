@@ -29,16 +29,16 @@ inline bool InjectDll(HANDLE hProcess)
 
 BOOL CALLBACK PostCreateProcessW(
   BOOL exitCode,
-  __in_opt     LPCWSTR lpApplicationName,
-  __inout_opt  LPWSTR lpCommandLine,
-  __in_opt     LPSECURITY_ATTRIBUTES lpProcessAttributes,
-  __in_opt     LPSECURITY_ATTRIBUTES lpThreadAttributes,
-  __in         BOOL bInheritHandles,
-  __in         DWORD dwCreationFlags,
-  __in_opt     LPVOID lpEnvironment,
-  __in_opt     LPCWSTR lpCurrentDirectory,
-  __in         LPSTARTUPINFOW lpStartupInfo,
-  __out        LPPROCESS_INFORMATION lpProcessInformation
+  _In_opt_     LPCWSTR lpApplicationName,
+  _Inout_opt_  LPWSTR lpCommandLine,
+  _In_opt_     LPSECURITY_ATTRIBUTES lpProcessAttributes,
+  _In_opt_     LPSECURITY_ATTRIBUTES lpThreadAttributes,
+  _In_         BOOL bInheritHandles,
+  _In_         DWORD dwCreationFlags,
+  _In_opt_     LPVOID lpEnvironment,
+  _In_opt_     LPCWSTR lpCurrentDirectory,
+  _In_         LPSTARTUPINFOW lpStartupInfo,
+  _Out_        LPPROCESS_INFORMATION lpProcessInformation
   )
 {
   CC_UNUSED(lpApplicationName);
@@ -58,16 +58,16 @@ BOOL CALLBACK PostCreateProcessW(
 
 BOOL CALLBACK PostCreateProcessA(
   BOOL exitCode,
-  __in_opt     LPCSTR lpApplicationName,
-  __inout_opt  LPSTR lpCommandLine,
-  __in_opt     LPSECURITY_ATTRIBUTES lpProcessAttributes,
-  __in_opt     LPSECURITY_ATTRIBUTES lpThreadAttributes,
-  __in         BOOL bInheritHandles,
-  __in         DWORD dwCreationFlags,
-  __in_opt     LPVOID lpEnvironment,
-  __in_opt     LPCSTR lpCurrentDirectory,
-  __in         LPSTARTUPINFOA lpStartupInfo,
-  __out        LPPROCESS_INFORMATION lpProcessInformation
+  _In_opt_     LPCSTR lpApplicationName,
+  _Inout_opt_  LPSTR lpCommandLine,
+  _In_opt_     LPSECURITY_ATTRIBUTES lpProcessAttributes,
+  _In_opt_     LPSECURITY_ATTRIBUTES lpThreadAttributes,
+  _In_         BOOL bInheritHandles,
+  _In_         DWORD dwCreationFlags,
+  _In_opt_     LPVOID lpEnvironment,
+  _In_opt_     LPCSTR lpCurrentDirectory,
+  _In_         LPSTARTUPINFOA lpStartupInfo,
+  _Out_        LPPROCESS_INFORMATION lpProcessInformation
   )
 {
   CC_UNUSED(lpApplicationName);

@@ -544,7 +544,7 @@ RaiseException(
   ULONG         ExceptionCode,
   ULONG         ExceptionFlags,
   ULONG         NumberParameters,
-  __in PULONG   ExceptionInformation
+  _In_ PULONG   ExceptionInformation
 )
 {
   EXCEPTION_RECORD ExceptionRecord = {

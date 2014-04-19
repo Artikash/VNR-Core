@@ -41,9 +41,9 @@ inline FARPROC GetModuleFunctionAddressA(LPCSTR func, LPCSTR module = nullptr)
  *  @param  timeout  msec
  *  @return  BOOL
  */
-BOOL InjectFunction1(__in LPCVOID addr, __in LPCVOID arg, __in SIZE_T argSize,
-    __in DWORD pid = 0, __in HANDLE hProcess = INVALID_HANDLE_VALUE,
-    __in INT timeout = INJECT_TIMEOUT);
+BOOL InjectFunction1(_In_ LPCVOID addr, _In_ LPCVOID arg, _In_ SIZE_T argSize,
+    _In_ DWORD pid = 0, _In_ HANDLE hProcess = INVALID_HANDLE_VALUE,
+    _In_ INT timeout = INJECT_TIMEOUT);
 
 /**
  *  Either pid or the process handle should be specified
@@ -53,9 +53,9 @@ BOOL InjectFunction1(__in LPCVOID addr, __in LPCVOID arg, __in SIZE_T argSize,
  *  @param  timeout  msec
  *  @return  BOOL
  */
-BOOL InjectDllW(__in LPCWSTR dllPath,
-  __in DWORD pid = 0, __in HANDLE hProcess = INVALID_HANDLE_VALUE,
-  __in INT timeout = INJECT_TIMEOUT);
+BOOL InjectDllW(_In_ LPCWSTR dllPath,
+  _In_ DWORD pid = 0, _In_ HANDLE hProcess = INVALID_HANDLE_VALUE,
+  _In_ INT timeout = INJECT_TIMEOUT);
 
 /**
  * Replace the named function entry with the new one.
@@ -66,7 +66,7 @@ BOOL InjectDllW(__in LPCWSTR dllPath,
  *
  * See: http://www.codeproject.com/KB/DLL/DLL_Injection_tutorial.aspx
  */
-PVOID OverrideFunctionA(__in HMODULE stealFrom, __in LPCSTR oldFunctionModule, __in LPCSTR functionName, __in LPCVOID newFunction);
+PVOID OverrideFunctionA(_In_ HMODULE stealFrom, _In_ LPCSTR oldFunctionModule, _In_ LPCSTR functionName, _In_ LPCVOID newFunction);
 
 #ifdef __cplusplus
 class ThreadsSuspenderPrivate;

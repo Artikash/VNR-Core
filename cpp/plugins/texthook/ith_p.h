@@ -12,8 +12,8 @@ struct HookParam; // opaque, declared in ITH/common.h
 namespace Ith {
 
 ///  Parse hook code, and save the result to hook param if succeeded.
-bool parseHookCode(__in const QString &code, __out HookParam *hp);
-bool verifyHookCode(__in const QString &code);
+bool parseHookCode(_In_ const QString &code, _Out_ HookParam *hp);
+bool verifyHookCode(_In_ const QString &code);
 
 } // namespace Ith
 

@@ -22,9 +22,9 @@ __declspec(dllimport) int __stdcall RtlFreeHeap(void *HeapHandle, unsigned long 
 //BOOL
 //NTAPI
 //RtlFreeHeap(
-//  __in  HANDLE   hHeap,
-//  __in  DWORD    dwFlags,
-//  __in  LPVOID   lpMem
+//  _In_  HANDLE   hHeap,
+//  _In_  DWORD    dwFlags,
+//  _In_  LPVOID   lpMem
 //);
 
 extern void *hHeap; // defined in ith/sys.cc
