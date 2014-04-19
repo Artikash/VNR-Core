@@ -140,42 +140,6 @@ BOOL WINAPI MyExtTextOutW(
 )
 { return ::hijack_gdi || ::ExtTextOutW(hdc, X,Y, fuOptions, lprc, lpString, cbCount, lpDx); }
 
-int WINAPI MyDrawTextA(
-  _In_     HDC hDC,
-  _Inout_  LPCSTR lpchText,
-  _In_     int nCount,
-  _Inout_  LPRECT lpRect,
-  _In_     UINT uFormat
-)
-{ return ::hijack_gdi ? 0 : ::DrawTextA(hDC, lpchText, nCount, lpRect, uFormat); }
-int WINAPI MyDrawTextW(
-  _In_     HDC hDC,
-  _Inout_  LPCWSTR lpchText,
-  _In_     int nCount,
-  _Inout_  LPRECT lpRect,
-  _In_     UINT uFormat
-)
-{ return ::hijack_gdi ? 0 : ::DrawTextW(hDC, lpchText, nCount, lpRect, uFormat); }
-
-int WINAPI MyDrawTextExA(
-  _In_     HDC hdc,
-  _Inout_  LPSTR lpchText,
-  _In_     int cchText,
-  _Inout_  LPRECT lprc,
-  _In_     UINT dwDTFormat,
-  _In_     LPDRAWTEXTPARAMS lpDTParams
-)
-{ return ::hijack_gdi ? 0 : ::DrawTextExA(hdc, lpchText, cchText, lprc, dwDTFormat, lpDTParams); }
-int WINAPI MyDrawTextExW(
-  _In_     HDC hdc,
-  _Inout_  LPWSTR lpchText,
-  _In_     int cchText,
-  _Inout_  LPRECT lprc,
-  _In_     UINT dwDTFormat,
-  _In_     LPDRAWTEXTPARAMS lpDTParams
-)
-{ return ::hijack_gdi ? 0 : ::DrawTextExW(hdc, lpchText, cchText, lprc, dwDTFormat, lpDTParams); }
-
 DWORD WINAPI MyGetGlyphOutlineA(
   _In_   HDC hdc,
   _In_   UINT uChar,
@@ -205,4 +169,58 @@ DWORD WINAPI MyGetGlyphOutlineW(
       : ::GetGlyphOutlineW(hdc, uChar, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
 }
 
+HFONT WINAPI MyCreateFontIndirectA(
+  _In_  const LOGFONTA *lplf
+)
+{
+  if (::hijack_gdi && lplf)
+    ::strcpy(lplf->lfFaceName, "TODO");
+  return CreateFontIndirectA(lplf);
+}
+
+HFONT WINAPI MyCreateFontIndirectW(
+  _In_  const LOGFONTW *lplf
+)
+{
+  if (::hijack_gdi && lplf)
+    ::wcscpy(lplf->lfFaceName, L"TODO");
+  return CreateFontIndirectA(lplf);
+}
+
 // EOF
+
+//int WINAPI MyDrawTextA(
+//  _In_     HDC hDC,
+//  _Inout_  LPCSTR lpchText,
+//  _In_     int nCount,
+//  _Inout_  LPRECT lpRect,
+//  _In_     UINT uFormat
+//)
+//{ return ::hijack_gdi ? 0 : ::DrawTextA(hDC, lpchText, nCount, lpRect, uFormat); }
+//int WINAPI MyDrawTextW(
+//  _In_     HDC hDC,
+//  _Inout_  LPCWSTR lpchText,
+//  _In_     int nCount,
+//  _Inout_  LPRECT lpRect,
+//  _In_     UINT uFormat
+//)
+//{ return ::hijack_gdi ? 0 : ::DrawTextW(hDC, lpchText, nCount, lpRect, uFormat); }
+//
+//int WINAPI MyDrawTextExA(
+//  _In_     HDC hdc,
+//  _Inout_  LPSTR lpchText,
+//  _In_     int cchText,
+//  _Inout_  LPRECT lprc,
+//  _In_     UINT dwDTFormat,
+//  _In_     LPDRAWTEXTPARAMS lpDTParams
+//)
+//{ return ::hijack_gdi ? 0 : ::DrawTextExA(hdc, lpchText, cchText, lprc, dwDTFormat, lpDTParams); }
+//int WINAPI MyDrawTextExW(
+//  _In_     HDC hdc,
+//  _Inout_  LPWSTR lpchText,
+//  _In_     int cchText,
+//  _Inout_  LPRECT lprc,
+//  _In_     UINT dwDTFormat,
+//  _In_     LPDRAWTEXTPARAMS lpDTParams
+//)
+//{ return ::hijack_gdi ? 0 : ::DrawTextExW(hdc, lpchText, cchText, lprc, dwDTFormat, lpDTParams); }

@@ -92,13 +92,22 @@ DWORD WINAPI MyGetGlyphOutlineW(
   _In_   const MAT2 *lpmat2
 );
 
+HFONT WINAPI MyCreateFontIndirectA(
+  _In_  const LOGFONTA *lplf
+);
+HFONT WINAPI MyCreateFontIndirectW(
+  _In_  const LOGFONTW *lplf
+);
+
 #define MY_GDI_FUNCTIONS_INITIALIZER \
    { "TextOutA", "gdi32.dll", MyTextOutA }, \
    { "TextOutW", "gdi32.dll", MyTextOutW }, \
    { "ExtTextOutA", "gdi32.dll", MyExtTextOutA }, \
    { "ExtTextOutW", "gdi32.dll", MyExtTextOutW }, \
    { "GetGlyphOutlineA", "gdi32.dll", MyGetGlyphOutlineA }, \
-   { "GetGlyphOutlineW", "gdi32.dll", MyGetGlyphOutlineW }
+   { "GetGlyphOutlineW", "gdi32.dll", MyGetGlyphOutlineW }, \
+   { "CreateFontIndirectA", "gdi32.dll", MyCreateFontIndirectA }, \
+   { "CreateFontIndirectW", "gdi32.dll", MyCreateFontIndirectW }
 
     // TODO: DrawText an DrawTextEx are not tested
    //  jichi 4/13/2014: I am tno sure if _Out_ lpRect coud crash game if not proper computed
