@@ -4672,22 +4672,22 @@ bool InsertSolfaHook()
 bool InsertMarineHeartHook()
 {
   const BYTE ins[] = {
-    0x51,                       // 0040d1c6  |> 51                 push ecx                                 ; /facename
-    0x6a, 0x01,                 // 0040d1c7  |. 6a 01              push 0x1                                 ; |pitchandfamily = fixed_pitch|ff_dontcare
-    0x6a, 0x03,                 // 0040d1c9  |. 6a 03              push 0x3                                 ; |quality = 3.
-    0x6a, 0x00,                 // 0040d1cb  |. 6a 00              push 0x0                                 ; |clipprecision = clip_default_precis
-    0x6a, 0x00,                 // 0040d1cd  |. 6a 00              push 0x0                                 ; |outputprecision = out_default_precis
-    0x68, 0x80,0x00,0x00,0x00,  // 0040d1cf  |. 68 80000000        push 0x80                                ; |charset = 128.
-    0x6a, 0x00,                 // 0040d1d4  |. 6a 00              push 0x0                                 ; |strikeout = false
-    0x6a, 0x00,                 // 0040d1d6  |. 6a 00              push 0x0                                 ; |underline = false
-    0x6a, 0x00,                 // 0040d1d8  |. 6a 00              push 0x0                                 ; |italic = false
-    0x68, 0x90,0x01,0x00,0x00,  // 0040d1da  |. 68 90010000        push 0x190                               ; |weight = fw_normal
-    0x6a, 0x00,                 // 0040d1df  |. 6a 00              push 0x0                                 ; |orientation = 0x0
-    0x6a, 0x00,                 // 0040d1e1  |. 6a 00              push 0x0                                 ; |escapement = 0x0
-    0x6a, 0x00,                 // 0040d1e3  |. 6a 00              push 0x0                                 ; |width = 0x0 0x8b,0x46, 0x04,     // 0040d1e5  |. 8b46 04            mov eax,dword ptr ds:[esi+0x4]           ; |
-    0x8b,0x46, 0x04,            // 0040d1e5  |. 8b46 04            mov eax,dword ptr ds:[esi+0x4]           ; |
-    0x50,                       // 0040d1e8  |. 50                 push eax                                 ; |height
-    0xe8, 0x00,0xfa,0x06,0x00   // 0040d1e9  |. e8 00fa0600        call <jmp.&gdi32.CreateFontA>            ; \createfonta
+    0x51,                       // 0040d1c6  |> 51                 push ecx                        ; /facename
+    0x6a, 0x01,                 // 0040d1c7  |. 6a 01              push 0x1                        ; |pitchandfamily = fixed_pitch|ff_dontcare
+    0x6a, 0x03,                 // 0040d1c9  |. 6a 03              push 0x3                        ; |quality = 3.
+    0x6a, 0x00,                 // 0040d1cb  |. 6a 00              push 0x0                        ; |clipprecision = clip_default_precis
+    0x6a, 0x00,                 // 0040d1cd  |. 6a 00              push 0x0                        ; |outputprecision = out_default_precis
+    0x68, 0x80,0x00,0x00,0x00,  // 0040d1cf  |. 68 80000000        push 0x80                       ; |charset = 128.
+    0x6a, 0x00,                 // 0040d1d4  |. 6a 00              push 0x0                        ; |strikeout = false
+    0x6a, 0x00,                 // 0040d1d6  |. 6a 00              push 0x0                        ; |underline = false
+    0x6a, 0x00,                 // 0040d1d8  |. 6a 00              push 0x0                        ; |italic = false
+    0x68, 0x90,0x01,0x00,0x00,  // 0040d1da  |. 68 90010000        push 0x190                      ; |weight = fw_normal
+    0x6a, 0x00,                 // 0040d1df  |. 6a 00              push 0x0                        ; |orientation = 0x0
+    0x6a, 0x00,                 // 0040d1e1  |. 6a 00              push 0x0                        ; |escapement = 0x0
+    0x6a, 0x00,                 // 0040d1e3  |. 6a 00              push 0x0                        ; |width = 0x0 0x8b,0x46, 0x04,
+    0x8b,0x46, 0x04,            // 0040d1e5  |. 8b46 04            mov eax,dword ptr ds:[esi+0x4]  ; |
+    0x50,                       // 0040d1e8  |. 50                 push eax                        ; |height
+    0xe8, 0x00,0xfa,0x06,0x00   // 0040d1e9  |. e8 00fa0600        call <jmp.&gdi32.CreateFontA>   ; \createfonta
   };
   enum { hook_offset = 0x0040d160 - 0x0040d1c6 }; // distance to the beginning of the function
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
