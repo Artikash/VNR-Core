@@ -4,6 +4,8 @@
 #include "winhook/hijack/mygdi_p.h"
 //#include "winhook/qt/mainobj.h"
 #include "winhook/util/winsec.h"
+#include "winhook/myfunc.h"
+#include "winhook/myfunc_p.h"
 #include <psapi.h>
 #include <boost/foreach.hpp>
 
@@ -19,6 +21,7 @@
 // - Helpers -
 
 namespace { // unnamed
+
 const MyFunctionInfo MY_FUNCTIONS[] = { MY_GDI_FUNCTIONS_INITIALIZER };
 
 enum { PATH_SEP = '\\' };
@@ -59,13 +62,15 @@ inline LPCWSTR applicationNameW()
 
 // - Hooker -
 
+//BOOL (WINAPI *OldTextOutA)(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString) = TextOutA;
 void My::OverrideGDIModuleFunctions(HMODULE hModule)
 {
+ // growl::show("override GDI functions");
   BOOST_FOREACH (const MyFunctionInfo &fn, MY_FUNCTIONS) {
 #ifdef DEBUG
     PVOID ret = winsec::OverrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
     if (ret)
-      growl::warn(fn.functionName);
+      growl::show(fn.functionName); // success
 #else
     winsec::OverrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
 #endif // DEBUG
@@ -93,7 +98,7 @@ void My::OverrideGDIModules()
 
 // - My Functions -
 
-BOOL gdi_enabled = TRUE; // CHECKPOINT
+BOOL hijack_gdi = TRUE;
 
 BOOL WINAPI MyTextOutA(
   _In_  HDC hdc,
@@ -102,8 +107,73 @@ BOOL WINAPI MyTextOutA(
   _In_  LPCSTR lpString,
   _In_  int cchString
 )
-{
-  return ::gdi_enabled || ::TextOutA(hdc, nXStart, nYStart, lpString, cchString);
-}
+{ return ::hijack_gdi || ::TextOutA(hdc, nXStart, nYStart, lpString, cchString); }
+BOOL WINAPI MyTextOutW(
+  _In_  HDC hdc,
+  _In_  int nXStart,
+  _In_  int nYStart,
+  _In_  LPCWSTR lpString,
+  _In_  int cchString
+)
+{ return ::hijack_gdi || ::TextOutW(hdc, nXStart, nYStart, lpString, cchString); }
+
+BOOL WINAPI MyExtTextOutA(
+  _In_  HDC hdc,
+  _In_  int X,
+  _In_  int Y,
+  _In_  UINT fuOptions,
+  _In_  const RECT *lprc,
+  _In_  LPCSTR lpString,
+  _In_  UINT cbCount,
+  _In_  const INT *lpDx
+)
+{ return ::hijack_gdi || ExtTextOutA(hdc, X,Y, fuOptions, lprc, lpString, cbCount, lpDx); }
+BOOL WINAPI MyExtTextOutW(
+  _In_  HDC hdc,
+  _In_  int X,
+  _In_  int Y,
+  _In_  UINT fuOptions,
+  _In_  const RECT *lprc,
+  _In_  LPCWSTR lpString,
+  _In_  UINT cbCount,
+  _In_  const INT *lpDx
+)
+{ return ::hijack_gdi || ExtTextOutW(hdc, X,Y, fuOptions, lprc, lpString, cbCount, lpDx); }
+
+int WINAPI MyDrawTextA(
+  _In_     HDC hDC,
+  _Inout_  LPCSTR lpchText,
+  _In_     int nCount,
+  _Inout_  LPRECT lpRect,
+  _In_     UINT uFormat
+)
+{ return ::hijack_gdi ? 0 : DrawTextA(hDC, lpchText, nCount, lpRect, uFormat); }
+int WINAPI MyDrawTextW(
+  _In_     HDC hDC,
+  _Inout_  LPCWSTR lpchText,
+  _In_     int nCount,
+  _Inout_  LPRECT lpRect,
+  _In_     UINT uFormat
+)
+{ return ::hijack_gdi ? 0 : DrawTextW(hDC, lpchText, nCount, lpRect, uFormat); }
+
+int WINAPI MyDrawTextExA(
+  _In_     HDC hdc,
+  _Inout_  LPSTR lpchText,
+  _In_     int cchText,
+  _Inout_  LPRECT lprc,
+  _In_     UINT dwDTFormat,
+  _In_     LPDRAWTEXTPARAMS lpDTParams
+)
+{ return ::hijack_gdi ? 0 : DrawTextExA(hdc, lpchText, cchText, lprc, dwDTFormat, lpDTParams); }
+int WINAPI MyDrawTextExW(
+  _In_     HDC hdc,
+  _Inout_  LPWSTR lpchText,
+  _In_     int cchText,
+  _Inout_  LPRECT lprc,
+  _In_     UINT dwDTFormat,
+  _In_     LPDRAWTEXTPARAMS lpDTParams
+)
+{ return ::hijack_gdi ? 0 : DrawTextExW(hdc, lpchText, cchText, lprc, dwDTFormat, lpDTParams); }
 
 // EOF
