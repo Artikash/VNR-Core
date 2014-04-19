@@ -3264,7 +3264,8 @@ static void SpecialHookRyokucha(DWORD esp_base, HookParam* hp, DWORD* data, DWOR
 }
 bool InsertRyokuchaDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 {
-  if (addr != GetGlyphOutlineA) return false;
+  if (addr != GetGlyphOutlineA)
+    return false;
   bool flag;
   DWORD insert_addr;
   __asm

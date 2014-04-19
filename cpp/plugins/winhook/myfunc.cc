@@ -83,7 +83,7 @@ void My::OverrideModuleFunctions(HMODULE hModule)
 #ifdef DEBUG
     PVOID ret = winsec::OverrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
     if (ret)
-      growl::warn(fn.functionName);
+      growl::show(fn.functionName); // success
 #else
     winsec::OverrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
 #endif // DEBUG

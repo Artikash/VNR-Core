@@ -8,6 +8,8 @@
 #include "singleapp/singleapp.h"
 #include "cc/ccmacro.h"
 
+#include "hijack/mygdi.h"
+
 // - Main -
 
 BOOL WINAPI DllMain(__in HINSTANCE hInstance, __in DWORD fdwReason, __in LPVOID lpvReserved)
@@ -32,6 +34,8 @@ BOOL WINAPI DllMain(__in HINSTANCE hInstance, __in DWORD fdwReason, __in LPVOID 
         ::GetCurrentProcessId()));
 
     WinTimer::singleShot(1000, boost::bind(Main::initWithInstance, hInstance));
+
+    My::OverrideGDIModules();
     break;
 
   case DLL_PROCESS_DETACH:
