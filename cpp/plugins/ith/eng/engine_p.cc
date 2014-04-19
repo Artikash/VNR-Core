@@ -3300,6 +3300,7 @@ void InsertRyokuchaHook()
   SwitchTrigger(true);
   ConsoleOutput("vnreng: TRIGGER Ryokucha");
 }
+
 bool InsertGXPHook()
 {
   union {
