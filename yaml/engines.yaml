@@ -52,6 +52,10 @@ simple:
   - Tenco
   - WAFFLE
 
+repeat:
+  - Malie       # finite
+  - MarineHeart # finite
+
 # No repetition int the game text
 norepeat:
   - Artemis
