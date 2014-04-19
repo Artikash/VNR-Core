@@ -1071,6 +1071,9 @@ class GameManager(QtCore.QObject):
       task = partial(dataman.manager().loadGame, gameData)
       skevents.runlater(task, 200)
 
+      if g.threadName in config.REPEAT_GAME_ENGINES:
+        growl.notify(my.tr("This game might need turning on repetition elimination"))
+
       if g.threadName in defs.SLOW_GAME_ENGINES:
         growl.notify(my.tr("This game requires the text speed to be either Normal or Slow instead of Fast to work"))
       elif g.threadName in defs.FAST_GAME_ENGINES:

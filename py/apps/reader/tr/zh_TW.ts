@@ -716,12 +716,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>請在文本設定中調整</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1096"/>
+        <location filename="managers/gameman.py" line="1099"/>
         <source>Translating window text</source>
         <translation>翻譯窗口文本</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1106"/>
+        <location filename="managers/gameman.py" line="1109"/>
         <source>Stop translating window text</source>
         <translation>停止翻譯窗口文本</translation>
     </message>
@@ -731,12 +731,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>從Dashboard移除這個遊戲嗎？</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1385"/>
+        <location filename="managers/gameman.py" line="1388"/>
         <source>Game removed</source>
         <translation>遊戲移除</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1395"/>
+        <location filename="managers/gameman.py" line="1398"/>
         <source>Location does not exist</source>
         <translation>位置不存在</translation>
     </message>
@@ -3335,12 +3335,12 @@ VNR默認會使用TTS讀出遊戲的原始文本。
         <translation>VNR的遊戲設定（%s）損壞了呢。恢复到過去備份的設定。</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1075"/>
+        <location filename="managers/gameman.py" line="1078"/>
         <source>This game requires the text speed to be either Normal or Slow instead of Fast to work</source>
         <translation>這個遊戲要求文本速度必須是Normal或者是Slow而不能是Fast才可以工作</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1080"/>
+        <location filename="managers/gameman.py" line="1083"/>
         <source>This game requires opening VNR after starting/loading the game</source>
         <translation>這個遊戲要求一定要在先載入遊戲，再打開VNR</translation>
     </message>
@@ -3350,9 +3350,14 @@ VNR默認會使用TTS讀出遊戲的原始文本。
         <translation>需要MeCab辭書</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1077"/>
+        <location filename="managers/gameman.py" line="1080"/>
         <source>This game requires the text speed to be Fast to work</source>
         <translation>這個遊戲要求文本速度必須是Fast才可以工作</translation>
+    </message>
+    <message>
+        <location filename="managers/gameman.py" line="1075"/>
+        <source>This game might need turning on repetition elimination</source>
+        <translation>這個遊戲也許需要打開去除重复的選項</translation>
     </message>
 </context>
 </TS>
