@@ -76,6 +76,7 @@ SOURCES += \
 
 DEPENDPATH += hijack
 HEADERS += \
+  hijack/myd3d.h \
   hijack/mygdi.h \
   hijack/mygdi_p.h
 SOURCES += \
