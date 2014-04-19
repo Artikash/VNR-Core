@@ -43,7 +43,6 @@ simple:
   - MAJIRO
   - Malie2
   - Malie3
-  - MarineHeart
   - Pensil
   - RealLive
   - ShinaRio
@@ -72,6 +71,7 @@ nofloat:
   - Bruns
   - Bruns2
   - Malie
+  - MarineHeart # sometimes has limited repetition
 
 #float:
 #  - Gesen18

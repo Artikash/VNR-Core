@@ -4612,6 +4612,8 @@ bool InsertSolfaHook()
  *  See: http://blgames.proboards.com/post/1984
  *       http://www.yaoiotaku.com/forums/threads/11440-huge-bl-game-torrent
  *
+ *  Issue: The extracted text someitems has limited repetition
+ *
  *  妖恋愛奇譚 ～神サマの堕し方～ /HS4*0@40D160
  *  - addr: 4247904 = 0x40d160
  *  - off: 4
