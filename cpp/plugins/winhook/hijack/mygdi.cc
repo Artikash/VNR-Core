@@ -13,7 +13,7 @@
 # pragma warning (disable:4996)   // C4996: use POSIX function (wcscat)
 #endif // _MSC_VER
 
-//#define DEBUG "mygdi"
+#define DEBUG "mygdi"
 #ifdef DEBUG
 # include "growl.h"
 #endif // DEBUG
@@ -127,7 +127,7 @@ BOOL WINAPI MyExtTextOutA(
   _In_  UINT cbCount,
   _In_  const INT *lpDx
 )
-{ return ::hijack_gdi || ExtTextOutA(hdc, X,Y, fuOptions, lprc, lpString, cbCount, lpDx); }
+{ return ::hijack_gdi || ::ExtTextOutA(hdc, X,Y, fuOptions, lprc, lpString, cbCount, lpDx); }
 BOOL WINAPI MyExtTextOutW(
   _In_  HDC hdc,
   _In_  int X,
@@ -138,7 +138,7 @@ BOOL WINAPI MyExtTextOutW(
   _In_  UINT cbCount,
   _In_  const INT *lpDx
 )
-{ return ::hijack_gdi || ExtTextOutW(hdc, X,Y, fuOptions, lprc, lpString, cbCount, lpDx); }
+{ return ::hijack_gdi || ::ExtTextOutW(hdc, X,Y, fuOptions, lprc, lpString, cbCount, lpDx); }
 
 int WINAPI MyDrawTextA(
   _In_     HDC hDC,
@@ -147,7 +147,7 @@ int WINAPI MyDrawTextA(
   _Inout_  LPRECT lpRect,
   _In_     UINT uFormat
 )
-{ return ::hijack_gdi ? 0 : DrawTextA(hDC, lpchText, nCount, lpRect, uFormat); }
+{ return ::hijack_gdi ? 0 : ::DrawTextA(hDC, lpchText, nCount, lpRect, uFormat); }
 int WINAPI MyDrawTextW(
   _In_     HDC hDC,
   _Inout_  LPCWSTR lpchText,
@@ -155,7 +155,7 @@ int WINAPI MyDrawTextW(
   _Inout_  LPRECT lpRect,
   _In_     UINT uFormat
 )
-{ return ::hijack_gdi ? 0 : DrawTextW(hDC, lpchText, nCount, lpRect, uFormat); }
+{ return ::hijack_gdi ? 0 : ::DrawTextW(hDC, lpchText, nCount, lpRect, uFormat); }
 
 int WINAPI MyDrawTextExA(
   _In_     HDC hdc,
@@ -165,7 +165,7 @@ int WINAPI MyDrawTextExA(
   _In_     UINT dwDTFormat,
   _In_     LPDRAWTEXTPARAMS lpDTParams
 )
-{ return ::hijack_gdi ? 0 : DrawTextExA(hdc, lpchText, cchText, lprc, dwDTFormat, lpDTParams); }
+{ return ::hijack_gdi ? 0 : ::DrawTextExA(hdc, lpchText, cchText, lprc, dwDTFormat, lpDTParams); }
 int WINAPI MyDrawTextExW(
   _In_     HDC hdc,
   _Inout_  LPWSTR lpchText,
@@ -174,6 +174,35 @@ int WINAPI MyDrawTextExW(
   _In_     UINT dwDTFormat,
   _In_     LPDRAWTEXTPARAMS lpDTParams
 )
-{ return ::hijack_gdi ? 0 : DrawTextExW(hdc, lpchText, cchText, lprc, dwDTFormat, lpDTParams); }
+{ return ::hijack_gdi ? 0 : ::DrawTextExW(hdc, lpchText, cchText, lprc, dwDTFormat, lpDTParams); }
+
+DWORD WINAPI MyGetGlyphOutlineA(
+  _In_   HDC hdc,
+  _In_   UINT uChar,
+  _In_   UINT uFormat,
+  _Out_  LPGLYPHMETRICS lpgm,
+  _In_   DWORD cbBuffer,
+  _Out_  LPVOID lpvBuffer,
+  _In_   const MAT2 *lpmat2
+)
+{
+  return ::hijack_gdi
+      ? ::GetGlyphOutlineA(hdc, ' ', uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2)
+      : ::GetGlyphOutlineA(hdc, uChar, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
+}
+DWORD WINAPI MyGetGlyphOutlineW(
+  _In_   HDC hdc,
+  _In_   UINT uChar,
+  _In_   UINT uFormat,
+  _Out_  LPGLYPHMETRICS lpgm,
+  _In_   DWORD cbBuffer,
+  _Out_  LPVOID lpvBuffer,
+  _In_   const MAT2 *lpmat2
+)
+{
+  return ::hijack_gdi
+      ? ::GetGlyphOutlineW(hdc, L' ', uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2)
+      : ::GetGlyphOutlineW(hdc, uChar, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
+}
 
 // EOF
