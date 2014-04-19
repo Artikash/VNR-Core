@@ -108,10 +108,6 @@ DWORD DetermineEngineByFile1()
     InsertRejetHook();
     return yes;
   }
-  if (IthFindFile(L"*.iar")) {
-    InsertSolfaHook();
-    return yes;
-  }
   // Only examined with version 1.0
   //if (IthFindFile(L"Adobe AIR\\Versions\\*\\Adobe AIR.dll")) { // jichi 4/15/2014: FIXME: Wildcard not working
   if (IthCheckFile(L"Adobe AIR\\Versions\\1.0\\Adobe AIR.dll")) { // jichi 4/15/2014: Adobe AIR
@@ -259,6 +255,8 @@ DWORD DetermineEngineByFile4()
     InsertAOSHook();
     return yes;
   }
+  if (IthFindFile(L"*.iar") && InsertSolfaHook()) // jichi 4/18/2014: Other game engine could also have *.iar such as Ryokucha
+    return yes;
   return no;
 }
 
