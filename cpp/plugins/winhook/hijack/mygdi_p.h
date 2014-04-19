@@ -73,14 +73,38 @@ int WINAPI MyDrawTextExW(
   _In_     LPDRAWTEXTPARAMS lpDTParams
 );
 
+DWORD WINAPI MyGetGlyphOutlineA(
+  _In_   HDC hdc,
+  _In_   UINT uChar,
+  _In_   UINT uFormat,
+  _Out_  LPGLYPHMETRICS lpgm,
+  _In_   DWORD cbBuffer,
+  _Out_  LPVOID lpvBuffer,
+  _In_   const MAT2 *lpmat2
+);
+DWORD WINAPI MyGetGlyphOutlineW(
+  _In_   HDC hdc,
+  _In_   UINT uChar,
+  _In_   UINT uFormat,
+  _Out_  LPGLYPHMETRICS lpgm,
+  _In_   DWORD cbBuffer,
+  _Out_  LPVOID lpvBuffer,
+  _In_   const MAT2 *lpmat2
+);
+
 #define MY_GDI_FUNCTIONS_INITIALIZER \
    { "TextOutA", "gdi32.dll", MyTextOutA }, \
    { "TextOutW", "gdi32.dll", MyTextOutW }, \
    { "ExtTextOutA", "gdi32.dll", MyExtTextOutA }, \
    { "ExtTextOutW", "gdi32.dll", MyExtTextOutW }, \
-   { "DrawTextA", "gdi32.dll", MyDrawTextA }, \
-   { "DrawTextW", "gdi32.dll", MyDrawTextW }, \
-   { "DrawTextExA", "gdi32.dll", MyDrawTextExA }, \
-   { "DrawTextExW", "gdi32.dll", MyDrawTextExW }
+   { "GetGlyphOutlineA", "gdi32.dll", MyGetGlyphOutlineA }, \
+   { "GetGlyphOutlineW", "gdi32.dll", MyGetGlyphOutlineW }
+
+    // TODO: DrawText an DrawTextEx are not tested
+   //  jichi 4/13/2014: I am tno sure if _Out_ lpRect coud crash game if not proper computed
+   //{ "DrawTextA", "gdi32.dll", MyDrawTextA },
+   //{ "DrawTextW", "gdi32.dll", MyDrawTextW },
+   //{ "DrawTextExA", "gdi32.dll", MyDrawTextExA },
+   //{ "DrawTextExW", "gdi32.dll", MyDrawTextExW },
 
 // EOF
