@@ -492,7 +492,7 @@ class GameProfile(QtCore.QObject):
           growl.notify(my.tr("Waiting game starts") + " ...")
         skevents.runlater(partial(
             self.updateProcess, launch=False, retries=retries-1),
-            6000)
+            7000)
       return ret
 
     dprint("enter")
