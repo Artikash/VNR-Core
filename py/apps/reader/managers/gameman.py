@@ -970,7 +970,9 @@ class GameManager(QtCore.QObject):
           return
 
         from gameengine import gameengine
-        gameengine.inject(g.pid)
+        skevents.runlater(partial(
+            gameengine.inject, g.pid),
+            3000) # wait for 3 seconds so that the gameengine will not crash the game on the start up (such as BALDR)
 
       if not g.hasThread():
         dprint("update thread")
