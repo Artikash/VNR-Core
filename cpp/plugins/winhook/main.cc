@@ -8,7 +8,7 @@
 #include "singleapp/singleapp.h"
 #include "cc/ccmacro.h"
 
-//#include "hijack/mygdi.h"
+#include "hijack/majiro.h"
 
 // - Main -
 
@@ -36,6 +36,10 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
     WinTimer::singleShot(1000, boost::bind(Main::initWithInstance, hInstance));
 
     //My::OverrideGDIModules();
+    if (auto eng = Engine::getEngine()) {
+      Engine::setEnabled(true);
+      eng->inject();
+    }
     break;
 
   case DLL_PROCESS_DETACH:

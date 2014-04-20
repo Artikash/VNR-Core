@@ -94,6 +94,7 @@ PVOID OverrideFunctionA(HMODULE stealFrom, LPCSTR oldFunctionModule, LPCSTR func
     return nullptr;
   if (!ntHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress)
     return nullptr;
+  // See: http://msdn.microsoft.com/en-us/magazine/cc301808.aspx
   IMAGE_IMPORT_DESCRIPTOR *import =
       reinterpret_cast<IMAGE_IMPORT_DESCRIPTOR *>(base + ntHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress);
 

@@ -25,8 +25,9 @@ QT      -= gui
 #INCLUDEPATH += $$D3D_HOME/include
 #LIBS    += -ld3d9 -L$$D3D_HOME/lib/x86
 
-#INCLUDEPATH += $$DETOURS_HOME/include
-#LIBS    += -ldetours -L$$DETOURS_HOME/lib
+# It must be detours version 2.1
+INCLUDEPATH += $$DETOURS_HOME/include
+LIBS    += -ldetours -L$$DETOURS_HOME/lib
 
 LIBS    += -luser32 -lpsapi
 LIBS    += -lgdi32
@@ -74,13 +75,12 @@ SOURCES += \
   qt/mainobj.cc \
   qt/rpccli.cc
 
-#DEPENDPATH += hijack
-#HEADERS += \
-#  hijack/myd3d.h \
-#  hijack/mygdi.h \
-#  hijack/mygdi_p.h
-#SOURCES += \
-#  hijack/mygdi.cc
+DEPENDPATH += hijack
+HEADERS += \
+  hijack/majiro.h \
+  hijack/majiro_p.h
+SOURCES += \
+  hijack/majiro.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += winhook.rc

@@ -12,7 +12,6 @@
 #include "winhook/qt/mainobj.h"
 #include "winhook/util/winsec.h"
 #include <psapi.h>
-//#include <detours.h>
 #include <boost/foreach.hpp>
 
 #ifdef _MSC_VER
@@ -67,18 +66,8 @@ inline LPCWSTR applicationNameW()
 
 // - Hooker -
 
-//BOOL (WINAPI *OldTextOutA)(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString) = TextOutA;
 void My::OverrideModuleFunctions(HMODULE hModule)
 {
-  // http://social.msdn.microsoft.com/Forums/en-US/vcgeneral/thread/ef4a6bdd-6e9f-4f0a-9096-ca07ad65ddc2/
-  // http://stackoverflow.com/questions/3263688/using-detours-for-hooking-writing-text-in-notepad
-  //
-  //::DetourRestoreAfterWith();
-  //::DetourTransactionBegin();
-  //::DetourUpdateThread(::GetCurrentThread());
-  //::DetourAttach((PVOID *)&OldTextOutA, MyTextOutA);
-  //::DetourTransactionCommit();
-
   BOOST_FOREACH (const MyFunctionInfo &fn, MY_FUNCTIONS) {
 #ifdef DEBUG
     PVOID ret = winsec::OverrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
