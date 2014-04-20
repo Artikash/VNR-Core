@@ -8,7 +8,7 @@
 #include "singleapp/singleapp.h"
 #include "cc/ccmacro.h"
 
-#include "hijack/mygdi.h"
+//#include "hijack/mygdi.h"
 
 // - Main -
 
@@ -35,7 +35,7 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
 
     WinTimer::singleShot(1000, boost::bind(Main::initWithInstance, hInstance));
 
-    My::OverrideGDIModules();
+    //My::OverrideGDIModules();
     break;
 
   case DLL_PROCESS_DETACH:
@@ -50,33 +50,3 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
 }
 
 // EOF
-
-/*
-// - Test -
-
-#include <d3d9.h>
-#include <d3dx9.h>
-#include <detours.h>
-
-typedef LPDIRECT3D9 (WINAPI *D3DCreate9) (UINT SDKVersion);
-D3DCreate9 pD3DCreate9 = (D3DCreate9)::GetProcAddress(::LoadLibraryA("d3d9.dll"), "Direct3DCreate9");
-IDirect3D9 *d3d;
-LPDIRECT3D9 WINAPI nD3DCreate9(UINT SDKVersion) {
-  d3d = pD3DCreate9(SDKVersion);
-  ::MessageBoxA(nullptr, "d3d", "Error", MB_OK);
-  return d3d;
-}
-
-DWORD d3dhook(LPVOID lpThreadParameter)
-{
-  Q_UNUSED(lpThreadParameter);
-  //pD3DCreate9 = (D3DCreate9)DetourFunction((BYTE*)GetProcAddress(LoadLibraryA("d3d9.dll"), "Direct3DCreate9"), (BYTE*)nD3DCreate9);
-
-  ::DetourRestoreAfterWith();
-  ::DetourTransactionBegin();
-  ::DetourUpdateThread(::GetCurrentThread());
-  ::DetourAttach((PVOID *)&pD3DCreate9, nD3DCreate9);
-  ::DetourTransactionCommit();
-  return 0;
-}
-*/

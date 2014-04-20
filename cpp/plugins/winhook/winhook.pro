@@ -74,13 +74,13 @@ SOURCES += \
   qt/mainobj.cc \
   qt/rpccli.cc
 
-DEPENDPATH += hijack
-HEADERS += \
-  hijack/myd3d.h \
-  hijack/mygdi.h \
-  hijack/mygdi_p.h
-SOURCES += \
-  hijack/mygdi.cc
+#DEPENDPATH += hijack
+#HEADERS += \
+#  hijack/myd3d.h \
+#  hijack/mygdi.h \
+#  hijack/mygdi_p.h
+#SOURCES += \
+#  hijack/mygdi.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += winhook.rc
