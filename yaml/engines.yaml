@@ -77,11 +77,11 @@ nofloat:
   - Malie
   - MarineHeart # sometimes has limited repetition
 
-#float:
-#  - Gesen18
-#  - Rejet
-#  - SiglusEngine2
-
+float:
+  - Gesen18
+  #- Rejet # it depends
+  - SiglusEngine2
+  - Unity
 
 # Thin character, SHIFT-JIS or GBK
 char:

@@ -102,7 +102,6 @@ class UnityEngine(Engine):
         from texthook import texthook
         th = texthook.global_()
         ret = th.addHook(code, name=self.NAME)
-        #ret = th.addHook(code, name="BALDR")
     dprint(ret)
     return ret
 
