@@ -11,7 +11,7 @@ enum : unsigned {
   , C_LOCK      = 0x00000004    // lock
   , C_REP       = 0x00000008    // repz/repnz
   , C_SEG       = 0x00000010    // seg-prefix
-  , C_OPCODE2   = 0x00000020    // 2nd opcode present (1st==0F)
+  , C_OPCODE2   = 0x00000020    // 2nd opcode present (1st==0f)
   , C_MODRM     = 0x00000040    // modrm present
   , C_SIB       = 0x00000080    // sib present
   , C_ANYPREFIX = (C_66|C_67|C_LOCK|C_REP|C_SEG)
@@ -19,14 +19,9 @@ enum : unsigned {
 
 DISASM_BEGIN_NAMESPACE
 
+// These values are served as the output of disasm
+// But the are currently unused and could make disasm thread-unsafe
 namespace { // unnamed
-
-DWORD disasm_len,       // 0 if error
-      disasm_flag,      // C_xxx
-      disasm_memsize,   // value = disasm_mem
-      disasm_datasize,  // value = disasm_data
-      disasm_defdata,   // == C_66 ? 2 : 4
-      disasm_defmem;    // == C_67 ? 2 : 4
 
 BYTE  disasm_seg,       // CS DS ES SS FS GS
       disasm_rep,       // REPZ/REPNZ
@@ -40,16 +35,16 @@ BYTE  disasm_seg,       // CS DS ES SS FS GS
 } // unnamed namespace
 
 // return: length if success, 0 if error
-int disasm(BYTE *opcode0)
+int disasm(const BYTE *opcode0)
 {
-  BYTE *opcode = opcode0;
+  const BYTE *opcode = opcode0;
 
-  disasm_len = 0;
-  disasm_flag = 0;
-  disasm_datasize = 0;
-  disasm_memsize = 0;
-  disasm_defdata = 4;
-  disasm_defmem = 4;
+  DWORD disasm_len = 0,      // 0 if error
+        disasm_flag = 0,     // C_xxx
+        disasm_memsize = 0,  // value = disasm_mem
+        disasm_datasize = 0, // value = disasm_data
+        disasm_defdata = 4,  // == C_66 ? 2 : 4
+        disasm_defmem = 4;   // == C_67 ? 2 : 4
 
 retry:
   disasm_opcode = *opcode++;
@@ -240,9 +235,9 @@ retry:
     }
   } // C_MODRM
 
-  for (DWORD i=0; i<disasm_memsize; i++)
+  for (DWORD i = 0; i < disasm_memsize; i++)
     disasm_mem[i] = *opcode++;
-  for (DWORD i=0; i<disasm_datasize; i++)
+  for (DWORD i = 0; i < disasm_datasize; i++)
     disasm_data[i] = *opcode++;
 
   disasm_len = opcode - opcode0;

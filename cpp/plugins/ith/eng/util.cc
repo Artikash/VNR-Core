@@ -8,7 +8,8 @@
 
 namespace { // unnamed
 
-inline DWORD SigMask(DWORD sig)
+// jichi 4/19/2014: Return the integer that can mask the signature
+DWORD SigMask(DWORD sig)
 {
   __asm
   {
@@ -54,12 +55,12 @@ DWORD Util::GetCodeRange(DWORD hModule,DWORD *low, DWORD *high)
 DWORD Util::FindCallAndEntryBoth(DWORD fun, DWORD size, DWORD pt, DWORD sig)
 {
   //WCHAR str[0x40];
-  DWORD i, j, t, l, mask;
-  DWORD reverse_length = 0x800;
-  mask = SigMask(sig);
-  bool flag1, flag2;
-  for (i = 0x1000; i < size-4; i++) {
-    flag1 = false;
+  enum { reverse_length = 0x800 };
+  DWORD t, l;
+  DWORD mask = SigMask(sig);
+  bool flag2;
+  for (DWORD i = 0x1000; i < size-4; i++) {
+    bool flag1 = false;
     if (*(BYTE *)(pt + i) == 0xe8) {
       flag1 = flag2 = true;
       t = *(DWORD *)(pt + i + 1);
@@ -76,11 +77,11 @@ DWORD Util::FindCallAndEntryBoth(DWORD fun, DWORD size, DWORD pt, DWORD sig)
         flag1 = fun == *(DWORD *)t;
         l = 6;
       } else
-        flag1=false;
+        flag1 = false;
       if (flag1)
         //swprintf(str,L"CALL addr: 0x%.8X",pt + i);
         //OutputConsole(str);
-        for (j = i; j > i - reverse_length; j--)
+        for (DWORD j = i; j > i - reverse_length; j--)
           if ((*(WORD *)(pt + j)) == (sig & mask))  //Fun entry 1.
             //swprintf(str,L"Entry: 0x%.8X",pt + j);
             //OutputConsole(str);
@@ -95,11 +96,10 @@ DWORD Util::FindCallAndEntryBoth(DWORD fun, DWORD size, DWORD pt, DWORD sig)
 
 DWORD Util::FindCallOrJmpRel(DWORD fun, DWORD size, DWORD pt, bool jmp)
 {
-  DWORD i, t;
   BYTE sig = (jmp) ? 0xe9 : 0xe8;
-  for (i = 0x1000; i < size - 4; i++)
+  for (DWORD i = 0x1000; i < size - 4; i++)
     if (sig == *(BYTE *)(pt + i)) {
-      t = *(DWORD *)(pt + i + 1);
+      DWORD t = *(DWORD *)(pt + i + 1);
       if(fun == pt + i + 5 + t)
         //OutputDWORD(pt + i);
         return pt + i;
@@ -111,11 +111,10 @@ DWORD Util::FindCallOrJmpRel(DWORD fun, DWORD size, DWORD pt, bool jmp)
 
 DWORD Util::FindCallOrJmpAbs(DWORD fun, DWORD size, DWORD pt, bool jmp)
 {
-  DWORD i,t;
   WORD sig = jmp ? 0x25ff : 0x15ff;
-  for (i = 0x1000; i < size - 4; i++)
+  for (DWORD i = 0x1000; i < size - 4; i++)
     if (sig == *(WORD *)(pt + i)) {
-      t = *(DWORD *)(pt + i + 2);
+      DWORD t = *(DWORD *)(pt + i + 2);
       if (t > pt && t < pt + size) {
         if (fun == *(DWORD *)t)
           return pt + i;
@@ -128,15 +127,14 @@ DWORD Util::FindCallOrJmpAbs(DWORD fun, DWORD size, DWORD pt, bool jmp)
 
 DWORD Util::FindCallBoth(DWORD fun, DWORD size, DWORD pt)
 {
-  DWORD i, t;
-  for (i = 0x1000; i < size - 4; i++) {
+  for (DWORD i = 0x1000; i < size - 4; i++) {
     if (*(BYTE *)(pt + i) == 0xe8) {
-      t = *(DWORD *)(pt + i + 1) + pt + i + 5;
+      DWORD t = *(DWORD *)(pt + i + 1) + pt + i + 5;
       if (t == fun)
         return i;
     }
     if (*(WORD *)(pt + i) == 0x15ff) {
-      t = *(DWORD *)(pt + i + 2);
+      DWORD t = *(DWORD *)(pt + i + 2);
       if (t >= pt && t <= pt + size - 4) {
         if (*(DWORD *)t == fun)
           return i;
@@ -151,18 +149,17 @@ DWORD Util::FindCallBoth(DWORD fun, DWORD size, DWORD pt)
 DWORD Util::FindCallAndEntryAbs(DWORD fun, DWORD size, DWORD pt, DWORD sig)
 {
   //WCHAR str[0x40];
-  DWORD i, j, t, mask;
-  DWORD reverse_length = 0x800;
-  mask = SigMask(sig);
-  for (i = 0x1000; i < size - 4; i++)
+  enum { reverse_length = 0x800 };
+  DWORD mask = SigMask(sig);
+  for (DWORD i = 0x1000; i < size - 4; i++)
     if (*(WORD *)(pt + i) == 0x15ff) {
-      t = *(DWORD *)(pt + i + 2);
+      DWORD t = *(DWORD *)(pt + i + 2);
       if (t >= pt && t <= pt + size - 4) {
         if (*(DWORD *)t == fun)
           //swprintf(str,L"CALL addr: 0x%.8X",pt + i);
           //OutputConsole(str);
-          for (j = i ; j > i - reverse_length; j--)
-            if ((*(DWORD *)(pt + j) & mask) == sig) //Fun entry 1.
+          for (DWORD j = i ; j > i - reverse_length; j--)
+            if ((*(DWORD *)(pt + j) & mask) == sig) // Fun entry 1.
               //swprintf(str,L"Entry: 0x%.8X",pt + j);
               //OutputConsole(str);
               return pt + j;
@@ -177,32 +174,30 @@ DWORD Util::FindCallAndEntryAbs(DWORD fun, DWORD size, DWORD pt, DWORD sig)
 DWORD Util::FindCallAndEntryRel(DWORD fun, DWORD size, DWORD pt, DWORD sig)
 {
   //WCHAR str[0x40];
-  DWORD i, j, mask;
-  DWORD reverse_length = 0x800;
-  mask = SigMask(sig);
-  i = FindCallOrJmpRel(fun, size, pt, false);
-  if (i)
-    for (j = i; j > i - reverse_length; j--)
+  enum { reverse_length = 0x800 };
+  if (DWORD i = FindCallOrJmpRel(fun, size, pt, false)) {
+    DWORD mask = SigMask(sig);
+    for (DWORD j = i; j > i - reverse_length; j--)
       if (((*(DWORD *)j) & mask) == sig)  //Fun entry 1.
         //swprintf(str,L"Entry: 0x%.8X",j);
         //OutputConsole(str);
         return j;
       //OutputConsole(L"Find call and entry failed.");
+  }
   return 0;
 }
 DWORD Util::FindEntryAligned(DWORD start, DWORD back_range)
 {
-  DWORD i,j,k,t;
   start &= ~0xf;
-  for (i = start, j = start - back_range; i > j; i-=0x10) {
-    k = *(DWORD *)(i-4);
+  for (DWORD i = start, j = start - back_range; i > j; i-=0x10) {
+    DWORD k = *(DWORD *)(i-4);
     if (k == 0xcccccccc
       || k == 0x90909090
       || k == 0xccccccc3
       || k == 0x909090c3
       )
       return i;
-    t = k & 0xff0000ff;
+    DWORD t = k & 0xff0000ff;
     if (t == 0xcc0000c2 || t == 0x900000c2)
       return i;
     k >>= 8;
