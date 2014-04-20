@@ -3,21 +3,21 @@
 
 #include "hijack/majiro.h"
 #include "hijack/majiro_p.h"
+#include "ntdll/ntdll.h"
+#include "growl.h"
 
 /** Helpers */
-
 #include <detours.h>
 namespace detour {
 // http://research.microsoft.com/en-us/projects/detours/
 // Version 3.0 license costs $10000 orz
 //
-// Version 2.1:
 // http://social.msdn.microsoft.com/Forums/en-US/vcgeneral/thread/ef4a6bdd-6e9f-4f0a-9096-ca07ad65ddc2/
 // http://stackoverflow.com/questions/3263688/using-detours-for-hooking-writing-text-in-notepad
 //BOOL (WINAPI *OldTextOutA)(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString) = TextOutA;
-PVOID replace(_In_ PVOID oldfunc, _In_ PVOID &newfunc)  // version 2.0
+LPVOID replace(_In_ LPVOID oldfunc, _In_ LPVOID newfunc)  // version 2.0
 {
-  PVOID ret = oldfunc;
+  LPVOID ret = oldfunc;
   ::DetourRestoreAfterWith();
   ::DetourTransactionBegin();
   ::DetourUpdateThread(::GetCurrentThread());
@@ -25,12 +25,33 @@ PVOID replace(_In_ PVOID oldfunc, _In_ PVOID &newfunc)  // version 2.0
   ::DetourTransactionCommit();
   return ret;
 }
+
 } // detour
 
 namespace Util {
 DWORD FindCallAndEntryAbs(DWORD fun, DWORD size, DWORD pt, DWORD sig);
 BOOL FillRange(LPCWSTR name, DWORD *lower, DWORD *upper);
 void GetProcessName(wchar_t *name);
+
+// jichi 4/19/2014: Return the integer that can mask the signature
+DWORD SigMask(DWORD sig)
+{
+  __asm
+  {
+    xor ecx,ecx
+    mov eax,sig
+_mask:
+    shr eax,8
+    inc ecx
+    test eax,eax
+    jnz _mask
+    sub ecx,4
+    neg ecx
+    or eax,-1
+    shl ecx,3
+    shr eax,cl
+  }
+}
 } // namespace Util
 
 void Util::GetProcessName(wchar_t *name)
@@ -127,7 +148,7 @@ void Engine::setEnabled(bool t) { EngineData::enabled = t; }
 Engine *Engine::getEngine()
 {
   if (Majiro::match())
-    return Majiro();
+    return new Majiro;
   return nullptr;
 }
 
@@ -137,11 +158,16 @@ Engine *Engine::getEngine()
 
 namespace majiro {
 
-LPVOID paint;
-void mypaint()
+// int __cdecl sub_41AF90(CHAR String, int, LPCSTR lpString, int, int);
+typedef int (* paint_func_t)(char, int, LPCSTR, int, int);
+paint_func_t paint;
+int mypaint(char ch, int x, LPCSTR str, int y, int z)
 {
-  if (!paint)
-    return;
+  return 0;
+  //growl::debug("majiro::paint");
+  //if (!paint)
+  //  return 0;
+  return paint(ch, x, str, y, z);
 }
 
 } // majiro
@@ -160,9 +186,13 @@ bool Majiro::inject()
   if (!Util::FillRange(process_name_, &module_base_, &module_limit_))
     return false;
   DWORD addr = Util::FindCallAndEntryAbs((DWORD)TextOutA, module_limit_ - module_base_, module_base_, 0xec81);
+  addr = 0x41af90;
   if (!addr)
     return false;
-  majiro::paint = detour::replace(addr, majiro::mypaint);
+  //growl::debug(*(BYTE*)addr);
+  majiro::paint = (majiro::paint_func_t)detour::replace((LPVOID)addr, (LPVOID)majiro::mypaint);
+  //growl::debug((DWORD)((DWORD)majiro::paint == addr));
+  //growl::debug((DWORD)majiro::paint);
   return addr;
 }
 

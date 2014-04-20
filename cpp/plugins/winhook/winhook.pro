@@ -25,9 +25,10 @@ QT      -= gui
 #INCLUDEPATH += $$D3D_HOME/include
 #LIBS    += -ld3d9 -L$$D3D_HOME/lib/x86
 
-# It must be detours version 2.1
 INCLUDEPATH += $$DETOURS_HOME/include
 LIBS    += -ldetours -L$$DETOURS_HOME/lib
+
+LIBS        += -L$$WDK_HOME/lib/wxp/i386 -lntdll
 
 LIBS    += -luser32 -lpsapi
 LIBS    += -lgdi32

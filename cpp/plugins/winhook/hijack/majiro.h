@@ -11,10 +11,10 @@ class Engine // abstract
 public:
   static Self *getEngine();
 
-  static bool isEnabled(bool t);
+  static bool isEnabled();
   static void setEnabled(bool t);
 
-  Enine() {}
+  Engine() {}
   virtual ~Engine() {}
   virtual bool inject() = 0;
 };
@@ -24,6 +24,8 @@ class Majiro : public Engine
   SK_EXTEND_CLASS(Majiro, Engine)
   SK_DISABLE_COPY(Majiro)
 public:
+  Majiro() {}
+  ~Majiro() {}
   static bool match();
   bool inject() override;
 };
