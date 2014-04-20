@@ -13,7 +13,7 @@ from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 #from sakurakit.skqml import QmlObject
 from i18n import i18n
 import growl, settings
-import _ttsman
+import _ttsman #textutil
 
 class TtsManager(QObject):
 
@@ -107,12 +107,17 @@ class _TtsManager(object):
     t.timeout.connect(self._doSpeakTask)
 
   @staticmethod
-  def _repairText(text):
+  def _repairText(text, key=''):
     """
     @param  text  unicode
+    @param* key  str  engine key
     @return  unicode
     """
-    return text.replace(u'…', '.') # てんてんてん
+    ret = text.replace(u'…', '.') # てんてんてん
+    # TODO
+    #if key in ('zunko', 'yukari'):
+    #  ret = textutil.repair_voceroid_text(key)
+    return ret
 
   def iterActiveEngines(self):
     """
@@ -169,7 +174,7 @@ class _TtsManager(object):
     # Even if text is empty, trigger stop tts
     #if not text:
     #  return
-    text = self._repairText(text)
+    text = self._repairText(text, eng.key)
     eng.speak(text)
 
     #skevents.runlater(partial(eng.speak, text))

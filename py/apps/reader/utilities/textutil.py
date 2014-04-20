@@ -81,14 +81,13 @@ def beautify_subtitle(text):
   """
   return __beauty_sub_re.sub('】\n', text)
 
+__normalize_name_re = re.compile(ur"[【】]")
 """
 @param  text  unicode
 @return  unicode
 """
-normalize_name = skstr.multireplacer({
-  u'【': '',
-  u'】': '',
-})
+def normalize_name(text):
+  return __normalize_name_re.sub('', text)
 
 def skip_empty_line(text):
   """
@@ -110,6 +109,13 @@ def match_kata_hira_punc(text):
   @return  bool
   """
   return bool(__match_kata_hira_punc_re.match(text))
+
+# TTS
+# http://www.sakuradite.com/wiki/zh/VNR/Voice_Settings
+repair_voiceroid_text = skstr.multireplacer({
+  u'淫乱': 'インラン',
+  u'いんらん': 'インラン',
+})
 
 if __name__ == '__main__':
   t = u"かたがな"
