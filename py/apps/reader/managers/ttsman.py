@@ -46,7 +46,7 @@ class _TtsManager(object):
     @return  unicode
     """
     ret = text.replace(u'…', '.') # てんてんてん
-    if key = 'zunko':
+    if key == 'zunko':
       ret = textutil.repair_zunko_text(ret)
     return ret
 
