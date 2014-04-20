@@ -46,8 +46,8 @@ class _TtsManager(object):
     @return  unicode
     """
     ret = text.replace(u'…', '.') # てんてんてん
-    if key in ('zunko', 'yukari'):
-      ret = textutil.repair_voiceroid_text(ret)
+    if key = 'zunko':
+      ret = textutil.repair_zunko_text(ret)
     return ret
 
   def iterActiveEngines(self):

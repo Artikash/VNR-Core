@@ -112,9 +112,11 @@ def match_kata_hira_punc(text):
 
 # TTS
 # http://www.sakuradite.com/wiki/zh/VNR/Voice_Settings
-repair_voiceroid_text = skstr.multireplacer({
-  u'淫乱': 'インラン',
-  u'いんらん': 'インラン',
+repair_zunko_text = skstr.multireplacer({
+  u'淫乱': u'インラン',
+  u'いんらん': u'インラン',
+  u'おっぱい': u'オッパイ',
+  u'精液': u'セイエキ',
 })
 
 if __name__ == '__main__':
