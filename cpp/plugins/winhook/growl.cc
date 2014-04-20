@@ -7,6 +7,12 @@
 # include <windows.h>
 #endif // QT_CORE_LIB
 
+void growl::debug(const char *message)
+{ ::MessageBoxA(nullptr, message, "VNR Debug", MB_OK); }
+
+void growl::debug(const wchar_t *message)
+{ ::MessageBoxW(nullptr, message, L"VNR Debug", MB_OK); }
+
 void growl::show(const char *message)
 { ::MessageBoxA(nullptr, message, "VNR Message", MB_OK); }
 
@@ -24,18 +30,5 @@ void growl::error(const char *message)
 
 void growl::error(const wchar_t *message)
 { ::MessageBoxW(nullptr, message, L"VNR Error", MB_OK); }
-
-#ifdef QT_CORE_LIB
-
-void growl::show(const QString &message)
-{ show(message.toStdWString().c_str()); }
-
-void growl::warn(const QString &message)
-{ warn(message.toStdWString().c_str()); }
-
-void growl::error(const QString &message)
-{ error(message.toStdWString().c_str()); }
-
-#endif // QT_CORE_LIB
 
 // EOF

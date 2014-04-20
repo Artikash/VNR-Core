@@ -65,12 +65,12 @@ inline LPCWSTR applicationNameW()
 //BOOL (WINAPI *OldTextOutA)(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString) = TextOutA;
 void My::OverrideGDIModuleFunctions(HMODULE hModule)
 {
- // growl::show("override GDI functions");
+ // growl::debug("override GDI functions");
   BOOST_FOREACH (const MyFunctionInfo &fn, MY_FUNCTIONS) {
 #ifdef DEBUG
     PVOID ret = winsec::OverrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
     if (ret)
-      growl::show(fn.functionName); // success
+      growl::debug(fn.functionName); // success
 #else
     winsec::OverrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
 #endif // DEBUG
@@ -98,7 +98,7 @@ void My::OverrideGDIModules()
 
 // - My Functions -
 
-BOOL hijack_gdi = TRUE;
+BOOL hijack_gdi = FALSE;
 
 BOOL WINAPI MyTextOutA(
   _In_  HDC hdc,
@@ -107,7 +107,26 @@ BOOL WINAPI MyTextOutA(
   _In_  LPCSTR lpString,
   _In_  int cchString
 )
-{ return ::hijack_gdi || ::TextOutA(hdc, nXStart, nYStart, lpString, cchString); }
+{
+  //POINT pt = {};
+  //SIZE sz = {};
+  //XFORM xf = {};
+  // http://wenku.baidu.com/view/a07c062abd64783e09122be4.html
+  //if (::GetCurrentPositionEx(hdc, &pt)) {
+  //if (::GetDCOrgEx(hdc, &pt)) {
+  //if (::GetViewportOrgEx(hdc, &pt)) {
+  //if (::GetViewportExtEx(hdc, &sz)) {
+  //if (::GetWindowOrgEx(hdc, &pt)) {
+  //if (::GetWindowExtEx(hdc, &sz)) {
+  //if (::GetWorldTransform(hdc, &xf)) {
+  //  growl::debug(QString::number((DWORD)hdc, 16) + ":"
+  //             + QString::number(nXStart) + "," + QString::number(nYStart) + ":"
+  //             //+ QString::number(pt.x) + "," + QString::number(pt.y) + ":"
+  //             + QString::number(sz.cx) + "," + QString::number(sz.cy) + ":"
+  //             + QString::fromLocal8Bit(lpString, cchString));
+  //}
+  return ::hijack_gdi || ::TextOutA(hdc, nXStart, nYStart, lpString, cchString);
+}
 BOOL WINAPI MyTextOutW(
   _In_  HDC hdc,
   _In_  int nXStart,
@@ -139,6 +158,68 @@ BOOL WINAPI MyExtTextOutW(
   _In_  const INT *lpDx
 )
 { return ::hijack_gdi || ::ExtTextOutW(hdc, X,Y, fuOptions, lprc, lpString, cbCount, lpDx); }
+
+DWORD WINAPI MyGetGlyphOutlineA(
+  _In_   HDC hdc,
+  _In_   UINT uChar,
+  _In_   UINT uFormat,
+  _Out_  LPGLYPHMETRICS lpgm,
+  _In_   DWORD cbBuffer,
+  _Out_  LPVOID lpvBuffer,
+  _In_   const MAT2 *lpmat2
+)
+{
+  return ::hijack_gdi
+      ? ::GetGlyphOutlineA(hdc, ' ', uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2)
+      : ::GetGlyphOutlineA(hdc, uChar, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
+}
+DWORD WINAPI MyGetGlyphOutlineW(
+  _In_   HDC hdc,
+  _In_   UINT uChar,
+  _In_   UINT uFormat,
+  _Out_  LPGLYPHMETRICS lpgm,
+  _In_   DWORD cbBuffer,
+  _Out_  LPVOID lpvBuffer,
+  _In_   const MAT2 *lpmat2
+)
+{
+  return ::hijack_gdi
+      ? ::GetGlyphOutlineW(hdc, L' ', uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2)
+      : ::GetGlyphOutlineW(hdc, uChar, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
+}
+
+// EOF
+
+/* TODO: Support more GDI functions
+
+#define INVISIBLE_FONT_A    "invisible"
+#define INVISIBLE_FONT_W    L"invisible"
+
+HFONT WINAPI MyCreateFontIndirectA(
+  _In_  const LOGFONTA *lplf
+)
+{
+  if (::hijack_gdi && lplf) {
+    LOGFONTA lf;
+    memcpy(&lf, lplf, sizeof(lf));
+    ::strcpy(lf.lfFaceName, INVISIBLE_FONT_A);
+    return ::CreateFontIndirectA(lplf);
+  } else
+    return ::CreateFontIndirectA(lplf);
+}
+
+HFONT WINAPI MyCreateFontIndirectW(
+  _In_  const LOGFONTW *lplf
+)
+{
+  if (::hijack_gdi && lplf) {
+    LOGFONTW lf;
+    memcpy(&lf, lplf, sizeof(lf));
+    ::wcscpy(lf.lfFaceName, INVISIBLE_FONT_W);
+    return ::CreateFontIndirectW(lplf);
+  } else
+    return ::CreateFontIndirectW(lplf);
+}
 
 int WINAPI MyDrawTextA(
   _In_     HDC hDC,
@@ -176,33 +257,4 @@ int WINAPI MyDrawTextExW(
 )
 { return ::hijack_gdi ? 0 : ::DrawTextExW(hdc, lpchText, cchText, lprc, dwDTFormat, lpDTParams); }
 
-DWORD WINAPI MyGetGlyphOutlineA(
-  _In_   HDC hdc,
-  _In_   UINT uChar,
-  _In_   UINT uFormat,
-  _Out_  LPGLYPHMETRICS lpgm,
-  _In_   DWORD cbBuffer,
-  _Out_  LPVOID lpvBuffer,
-  _In_   const MAT2 *lpmat2
-)
-{
-  return ::hijack_gdi
-      ? ::GetGlyphOutlineA(hdc, ' ', uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2)
-      : ::GetGlyphOutlineA(hdc, uChar, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
-}
-DWORD WINAPI MyGetGlyphOutlineW(
-  _In_   HDC hdc,
-  _In_   UINT uChar,
-  _In_   UINT uFormat,
-  _Out_  LPGLYPHMETRICS lpgm,
-  _In_   DWORD cbBuffer,
-  _Out_  LPVOID lpvBuffer,
-  _In_   const MAT2 *lpmat2
-)
-{
-  return ::hijack_gdi
-      ? ::GetGlyphOutlineW(hdc, L' ', uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2)
-      : ::GetGlyphOutlineW(hdc, uChar, uFormat, lpgm, cbBuffer, lpvBuffer, lpmat2);
-}
-
-// EOF
+*/

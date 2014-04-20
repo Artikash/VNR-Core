@@ -1,5 +1,5 @@
 # coding: utf8
-# gamedebugger
+# gamedebugger.py
 # 10/3/2013 jichi
 # Windows only
 # See: http://code.google.com/p/paimei/source/browse/trunk/MacOSX/PaiMei-1.1-REV122/build/lib/pydbg/pydbg.py?r=234
@@ -32,14 +32,18 @@ class debug(object):
 
   def __exit__(self, *err): pass
 
+def _empty_func(self, *args, **kwargs): pass
+
 class GameDebugger(object):
   def __init__(self, pid):
     """
     @param  pid  long
     """
-    from pydbg import pydbg
-    self.debugger = pydbg() # pydbg
     self.pid = pid # long
+
+    from pysafedbg import pysafedbg
+    self.debugger = pysafedbg() # pydbg
+
     if self.pid:
       try: self.debugger.attach(self.pid)
       except Exception, e:

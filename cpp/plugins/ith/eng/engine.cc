@@ -411,8 +411,8 @@ DWORD DetermineNoHookEngine()
 {
   enum : DWORD { yes = 0, no = 1 }; // return value
 
-  if (IthCheckFile(L"bsz.exe")) { // jichi 12/3/2013: BALDRSKY ZERO
-    ConsoleOutput("vnreng: IGNORE BALDRSKY ZERO");
+  if (IthFindFile(L"*\\Managed\\UnityEngine.dll")) { // jichi 12/3/2013: Unity (BALDRSKY ZERO)
+    ConsoleOutput("vnreng: IGNORE Unity");
     return yes;
   }
 
