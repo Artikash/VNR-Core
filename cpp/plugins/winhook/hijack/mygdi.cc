@@ -98,8 +98,10 @@ void My::OverrideGDIModules()
 
 // - My Functions -
 
+
 BOOL hijack_gdi = FALSE;
 
+// CHECKPOINT: How to handle memory DC?
 BOOL WINAPI MyTextOutA(
   _In_  HDC hdc,
   _In_  int nXStart,
@@ -108,23 +110,6 @@ BOOL WINAPI MyTextOutA(
   _In_  int cchString
 )
 {
-  //POINT pt = {};
-  //SIZE sz = {};
-  //XFORM xf = {};
-  // http://wenku.baidu.com/view/a07c062abd64783e09122be4.html
-  //if (::GetCurrentPositionEx(hdc, &pt)) {
-  //if (::GetDCOrgEx(hdc, &pt)) {
-  //if (::GetViewportOrgEx(hdc, &pt)) {
-  //if (::GetViewportExtEx(hdc, &sz)) {
-  //if (::GetWindowOrgEx(hdc, &pt)) {
-  //if (::GetWindowExtEx(hdc, &sz)) {
-  //if (::GetWorldTransform(hdc, &xf)) {
-  //  growl::debug(QString::number((DWORD)hdc, 16) + ":"
-  //             + QString::number(nXStart) + "," + QString::number(nYStart) + ":"
-  //             //+ QString::number(pt.x) + "," + QString::number(pt.y) + ":"
-  //             + QString::number(sz.cx) + "," + QString::number(sz.cy) + ":"
-  //             + QString::fromLocal8Bit(lpString, cchString));
-  //}
   return ::hijack_gdi || ::TextOutA(hdc, nXStart, nYStart, lpString, cchString);
 }
 BOOL WINAPI MyTextOutW(
@@ -191,6 +176,46 @@ DWORD WINAPI MyGetGlyphOutlineW(
 // EOF
 
 /* TODO: Support more GDI functions
+BOOL WINAPI MyTextOutA(
+  _In_  HDC hdc,
+  _In_  int nXStart,
+  _In_  int nYStart,
+  _In_  LPCSTR lpString,
+  _In_  int cchString
+)
+{
+  growl::debug(QString::fromLocal8Bit(lpString, cchString) + "," + QString::fromLocal8Bit(lpString));
+  ::_hdc = hdc;
+  :: _nXStart = nXStart;
+  :: _nYStart = nYStart;
+  return TRUE;
+  //POINT pt = {};
+  //SIZE sz = {};
+  //XFORM xf = {};
+  // http://wenku.baidu.com/view/a07c062abd64783e09122be4.html
+  //HWND hwnd = ::WindowFromDC(hdc);
+  //if (::GetCurrentPositionEx(hdc, &pt)) {
+  //if (::GetDCOrgEx(hdc, &pt)) {
+  //if (::GetViewportOrgEx(hdc, &pt)) {
+  //if (::GetViewportExtEx(hdc, &sz)) {
+  //if (::GetWindowOrgEx(hdc, &pt)) {
+  //if (::GetWindowExtEx(hdc, &sz)) {
+  //if (::GetWorldTransform(hdc, &xf))
+  //RECT rc = {};
+  //::GetClipBox(hdc, &rc);
+  //HRGN rgn = ::CreateRectRgn(0, 0, 0, 0);
+  //BOOL ok = ::GetClipRgn(hdc, rgn);
+  //growl::debug(QString::number((DWORD)hdc, 16) + ":"
+  //           + QString::number(nXStart) + "," + QString::number(nYStart) + ":"
+  //           + QString::number(ok) + ":"
+  //           //+ QString::number(rc.top) + "," + QString::number(rc.right) + "," + QString::number(rc.bottom) + "," + QString::number(rc.left) + ":"
+  //           //+ QString::number(pt.x) + "," + QString::number(pt.y) + ":"
+  //           //+ QString::number(sz.cx) + "," + QString::number(sz.cy) + ":"
+  //           + QString::fromLocal8Bit(lpString, cchString));
+  //lpString = "a" ;
+  //cchString = ::strlen(lpString);
+  return ::TextOutA(hdc, nXStart, nYStart, lpString, cchString);
+}
 
 #define INVISIBLE_FONT_A    "invisible"
 #define INVISIBLE_FONT_W    L"invisible"

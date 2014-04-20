@@ -243,7 +243,7 @@ static bool FindBGIHook(DWORD fun, DWORD size, DWORD pt, WORD sig)
             //swprintf(str, L"CALL to entry 1: 0x%.8X",pt+k);
             //ConsoleOutput(str);
             for (DWORD l = k; l > k - 0x100;l--)
-              if ((*(WORD *)(pt+l))==0xec83) { //Fun entry 2.
+              if ((*(WORD *)(pt + l)) == 0xec83) { // Fun entry 2.
                 //swprintf(str, L"Entry 2(final): 0x%.8X",pt+l);
                 //ConsoleOutput(str);
                 HookParam hp = {};
@@ -345,61 +345,61 @@ bool InsertBGI1Hook()
  *  base: 0x11a0000
  *  hook_addr = base + addr = 0x11d4c80
  *
- *  011D4C7E     CC             INT3
- *  011D4C7F     CC             INT3
- *  011D4C80  /$ 55             PUSH EBP    ; jichi: hook here
- *  011D4C81  |. 8BEC           MOV EBP,ESP
- *  011D4C83  |. 6A FF          PUSH -0x1
- *  011D4C85  |. 68 E6592601    PUSH sekachu.012659E6
- *  011D4C8A  |. 64:A1 00000000 MOV EAX,DWORD PTR FS:[0]
- *  011D4C90  |. 50             PUSH EAX
- *  011D4C91  |. 81EC 300D0000  SUB ESP,0xD30
- *  011D4C97  |. A1 D8C82801    MOV EAX,DWORD PTR DS:[0x128C8D8]
- *  011D4C9C  |. 33C5           XOR EAX,EBP
- *  011D4C9E  |. 8945 F0        MOV DWORD PTR SS:[EBP-0x10],EAX
- *  011D4CA1  |. 53             PUSH EBX
- *  011D4CA2  |. 56             PUSH ESI
- *  011D4CA3  |. 57             PUSH EDI
- *  011D4CA4  |. 50             PUSH EAX
- *  011D4CA5  |. 8D45 F4        LEA EAX,DWORD PTR SS:[EBP-0xC]
- *  011D4CA8  |. 64:A3 00000000 MOV DWORD PTR FS:[0],EAX
- *  011D4CAE  |. 8B4D 0C        MOV ECX,DWORD PTR SS:[EBP+0xC]
- *  011D4CB1  |. 8B55 18        MOV EDX,DWORD PTR SS:[EBP+0x18]
- *  011D4CB4  |. 8B45 08        MOV EAX,DWORD PTR SS:[EBP+0x8]
- *  011D4CB7  |. 8B5D 10        MOV EBX,DWORD PTR SS:[EBP+0x10]
- *  011D4CBA  |. 8B7D 38        MOV EDI,DWORD PTR SS:[EBP+0x38]
- *  011D4CBD  |. 898D D8F3FFFF  MOV DWORD PTR SS:[EBP-0xC28],ECX
- *  011D4CC3  |. 8B4D 28        MOV ECX,DWORD PTR SS:[EBP+0x28]
- *  011D4CC6  |. 8995 9CF3FFFF  MOV DWORD PTR SS:[EBP-0xC64],EDX
- *  011D4CCC  |. 51             PUSH ECX
- *  011D4CCD  |. 8B0D 305C2901  MOV ECX,DWORD PTR DS:[0x1295C30]
- *  011D4CD3  |. 8985 E0F3FFFF  MOV DWORD PTR SS:[EBP-0xC20],EAX
- *  011D4CD9  |. 8B45 1C        MOV EAX,DWORD PTR SS:[EBP+0x1C]
- *  011D4CDC  |. 8D95 4CF4FFFF  LEA EDX,DWORD PTR SS:[EBP-0xBB4]
- *  011D4CE2  |. 52             PUSH EDX
- *  011D4CE3  |. 899D 40F4FFFF  MOV DWORD PTR SS:[EBP-0xBC0],EBX
- *  011D4CE9  |. 8985 1CF4FFFF  MOV DWORD PTR SS:[EBP-0xBE4],EAX
- *  011D4CEF  |. 89BD F0F3FFFF  MOV DWORD PTR SS:[EBP-0xC10],EDI
- *  011D4CF5  |. E8 862EFDFF    CALL sekachu.011A7B80
- *  011D4CFA  |. 33C9           XOR ECX,ECX
- *  011D4CFC  |. 8985 60F3FFFF  MOV DWORD PTR SS:[EBP-0xCA0],EAX
- *  011D4D02  |. 3BC1           CMP EAX,ECX
- *  011D4D04  |. 0F84 0F1C0000  JE sekachu.011D6919
- *  011D4D0A  |. E8 31F6FFFF    CALL sekachu.011D4340
- *  011D4D0F  |. E8 6CF8FFFF    CALL sekachu.011D4580
- *  011D4D14  |. 8985 64F3FFFF  MOV DWORD PTR SS:[EBP-0xC9C],EAX
- *  011D4D1A  |. 8A03           MOV AL,BYTE PTR DS:[EBX]
- *  011D4D1C  |. 898D 90F3FFFF  MOV DWORD PTR SS:[EBP-0xC70],ECX
- *  011D4D22  |. 898D 14F4FFFF  MOV DWORD PTR SS:[EBP-0xBEC],ECX
- *  011D4D28  |. 898D 38F4FFFF  MOV DWORD PTR SS:[EBP-0xBC8],ECX
- *  011D4D2E  |. 8D71 01        LEA ESI,DWORD PTR DS:[ECX+0x1]
- *  011D4D31  |. 3C 20          CMP AL,0x20
- *  011D4D33  |. 7D 75          JGE SHORT sekachu.011D4DAA
- *  011D4D35  |. 0FBEC0         MOVSX EAX,AL
- *  011D4D38  |. 83C0 FE        ADD EAX,-0x2                             ;  Switch (cases 2..8)
- *  011D4D3B  |. 83F8 06        CMP EAX,0x6
- *  011D4D3E  |. 77 6A          JA SHORT sekachu.011D4DAA
- *  011D4D40  |. FF2485 38691D0>JMP DWORD PTR DS:[EAX*4+0x11D6938]
+ *  011d4c7e     cc             int3
+ *  011d4c7f     cc             int3
+ *  011d4c80  /$ 55             push ebp    ; jichi: hook here
+ *  011d4c81  |. 8bec           mov ebp,esp
+ *  011d4c83  |. 6a ff          push -0x1
+ *  011d4c85  |. 68 e6592601    push sekachu.012659e6
+ *  011d4c8a  |. 64:a1 00000000 mov eax,dword ptr fs:[0]
+ *  011d4c90  |. 50             push eax
+ *  011d4c91  |. 81ec 300d0000  sub esp,0xd30
+ *  011d4c97  |. a1 d8c82801    mov eax,dword ptr ds:[0x128c8d8]
+ *  011d4c9c  |. 33c5           xor eax,ebp
+ *  011d4c9e  |. 8945 f0        mov dword ptr ss:[ebp-0x10],eax
+ *  011d4ca1  |. 53             push ebx
+ *  011d4ca2  |. 56             push esi
+ *  011d4ca3  |. 57             push edi
+ *  011d4ca4  |. 50             push eax
+ *  011d4ca5  |. 8d45 f4        lea eax,dword ptr ss:[ebp-0xc]
+ *  011d4ca8  |. 64:a3 00000000 mov dword ptr fs:[0],eax
+ *  011d4cae  |. 8b4d 0c        mov ecx,dword ptr ss:[ebp+0xc]
+ *  011d4cb1  |. 8b55 18        mov edx,dword ptr ss:[ebp+0x18]
+ *  011d4cb4  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
+ *  011d4cb7  |. 8b5d 10        mov ebx,dword ptr ss:[ebp+0x10]
+ *  011d4cba  |. 8b7d 38        mov edi,dword ptr ss:[ebp+0x38]
+ *  011d4cbd  |. 898d d8f3ffff  mov dword ptr ss:[ebp-0xc28],ecx
+ *  011d4cc3  |. 8b4d 28        mov ecx,dword ptr ss:[ebp+0x28]
+ *  011d4cc6  |. 8995 9cf3ffff  mov dword ptr ss:[ebp-0xc64],edx
+ *  011d4ccc  |. 51             push ecx
+ *  011d4ccd  |. 8b0d 305c2901  mov ecx,dword ptr ds:[0x1295c30]
+ *  011d4cd3  |. 8985 e0f3ffff  mov dword ptr ss:[ebp-0xc20],eax
+ *  011d4cd9  |. 8b45 1c        mov eax,dword ptr ss:[ebp+0x1c]
+ *  011d4cdc  |. 8d95 4cf4ffff  lea edx,dword ptr ss:[ebp-0xbb4]
+ *  011d4ce2  |. 52             push edx
+ *  011d4ce3  |. 899d 40f4ffff  mov dword ptr ss:[ebp-0xbc0],ebx
+ *  011d4ce9  |. 8985 1cf4ffff  mov dword ptr ss:[ebp-0xbe4],eax
+ *  011d4cef  |. 89bd f0f3ffff  mov dword ptr ss:[ebp-0xc10],edi
+ *  011d4cf5  |. e8 862efdff    call sekachu.011a7b80
+ *  011d4cfa  |. 33c9           xor ecx,ecx
+ *  011d4cfc  |. 8985 60f3ffff  mov dword ptr ss:[ebp-0xca0],eax
+ *  011d4d02  |. 3bc1           cmp eax,ecx
+ *  011d4d04  |. 0f84 0f1c0000  je sekachu.011d6919
+ *  011d4d0a  |. e8 31f6ffff    call sekachu.011d4340
+ *  011d4d0f  |. e8 6cf8ffff    call sekachu.011d4580
+ *  011d4d14  |. 8985 64f3ffff  mov dword ptr ss:[ebp-0xc9c],eax
+ *  011d4d1a  |. 8a03           mov al,byte ptr ds:[ebx]
+ *  011d4d1c  |. 898d 90f3ffff  mov dword ptr ss:[ebp-0xc70],ecx
+ *  011d4d22  |. 898d 14f4ffff  mov dword ptr ss:[ebp-0xbec],ecx
+ *  011d4d28  |. 898d 38f4ffff  mov dword ptr ss:[ebp-0xbc8],ecx
+ *  011d4d2e  |. 8d71 01        lea esi,dword ptr ds:[ecx+0x1]
+ *  011d4d31  |. 3c 20          cmp al,0x20
+ *  011d4d33  |. 7d 75          jge short sekachu.011d4daa
+ *  011d4d35  |. 0fbec0         movsx eax,al
+ *  011d4d38  |. 83c0 fe        add eax,-0x2                             ;  switch (cases 2..8)
+ *  011d4d3b  |. 83f8 06        cmp eax,0x6
+ *  011d4d3e  |. 77 6a          ja short sekachu.011d4daa
+ *  011d4d40  |. ff2485 38691d0>jmp dword ptr ds:[eax*4+0x11d6938]
  */
 bool InsertBGI2Hook()
 {
@@ -550,7 +550,7 @@ bool InsertRealliveDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
   if (DWORD i = frame) {
     i = *(DWORD *)(i + 4);
     for (DWORD j = i; j > i - 0x100; j--)
-      if (*(WORD *)j==0xec83) {
+      if (*(WORD *)j == 0xec83) {
         HookParam hp = {};
         hp.addr = j;
         hp.off = 0x14;
@@ -706,7 +706,7 @@ MAJIRO hook:
   To split them out we need to find a parameter. Seems there's no
   simple way to handle this case.
   At the function entry, EAX seems to point to a structure to describe
-  current  drawing context. +28 seems to be font size. +48 is negative
+  current drawing context. +28 seems to be font size. +48 is negative
   if furigana. I don't know exact meaning of this structure,
   just do memory comparisons and get the value working for current release.
 
@@ -716,10 +716,10 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam* hp, DWORD* data, DWORD*
   __asm
   {
     mov edx,esp_base
-    mov edi,[edx+0xC]
+    mov edi,[edx+0xc]
     mov eax,data
     mov [eax],edi
-    or ecx,0xFFFFFFFF
+    or ecx,0xffffffff
     xor eax,eax
     repne scasb
     not ecx
@@ -729,7 +729,7 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam* hp, DWORD* data, DWORD*
     mov eax,[edx+4]
     mov edx,[eax+0x28]
     mov eax,[eax+0x48]
-    sar eax,0x1F
+    sar eax,0x1f
     mov dh,al
     mov ecx,split
     mov [ecx],edx
@@ -737,7 +737,9 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam* hp, DWORD* data, DWORD*
 }
 bool InsertMajiroHook()
 {
-  DWORD addr = Util::FindCallAndEntryAbs((DWORD)TextOutA,module_limit_-module_base_,module_base_,0xec81);
+  // jichi 4/19/2014: There must be a function in Majiro game which contains 6 TextOutA.
+  // That function draws all texts.
+  DWORD addr = Util::FindCallAndEntryAbs((DWORD)TextOutA, module_limit_ - module_base_, module_base_, 0xec81);
   if (!addr) {
     ConsoleOutput("vnreng:MAJIRO: failed");
     return false;
@@ -4613,6 +4615,8 @@ bool InsertSolfaHook()
  *       http://www.yaoiotaku.com/forums/threads/11440-huge-bl-game-torrent
  *
  *  Issue: The extracted text someitems has limited repetition
+ *  TODO: It might be better to use FindCallAndEntryAbs for gdi32.CreateFontA?
+ *        See how FindCallAndEntryAbs is used in Majiro.
  *
  *  妖恋愛奇譚 ～神サマの堕し方～ /HS4*0@40D160
  *  - addr: 4247904 = 0x40d160
@@ -4665,7 +4669,7 @@ bool InsertSolfaHook()
  *  0040d1e3  |. 6a 00              push 0x0                                 ; |width = 0x0
  *  0040d1e5  |. 8b46 04            mov eax,dword ptr ds:[esi+0x4]           ; |
  *  0040d1e8  |. 50                 push eax                                 ; |height
- *  0040d1e9  |. e8 00fa0600        call <jmp.&gdi32.createfonta>            ; \createfonta
+ *  0040d1e9  |. e8 00fa0600        call <jmp.&gdi32.CreateFontA>            ; \createfonta
  *  0040d1ee  |. 8945 b8            mov dword ptr ss:[ebp-0x48],eax
  *  0040d1f1  |. 8b55 b8            mov edx,dword ptr ss:[ebp-0x48]
  *  0040d1f4  |. 85d2               test edx,edx
