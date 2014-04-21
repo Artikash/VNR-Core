@@ -3,6 +3,7 @@
 
 CONFIG += noqtgui dll
 include(../../../config.pri)
+include($$LIBDIR/detoursutil/detoursutil.pri)
 include($$LIBDIR/libqxt/libqxt.pri)
 include($$LIBDIR/metacall/metacall.pri)
 include($$LIBDIR/qtmodule/qtmodule.pri)
@@ -24,9 +25,6 @@ QT      -= gui
 
 #INCLUDEPATH += $$D3D_HOME/include
 #LIBS    += -ld3d9 -L$$D3D_HOME/lib/x86
-
-INCLUDEPATH += $$DETOURS_HOME/include
-LIBS    += -ldetours -L$$DETOURS_HOME/lib
 
 LIBS        += -L$$WDK_HOME/lib/wxp/i386 -lntdll
 

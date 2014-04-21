@@ -3,30 +3,9 @@
 
 #include "hijack/majiro.h"
 #include "hijack/majiro_p.h"
+#include "detoursutil/detoursutil.h"
 #include "ntdll/ntdll.h"
 #include "growl.h"
-
-/** Helpers */
-#include <detours.h>
-namespace detour {
-// http://research.microsoft.com/en-us/projects/detours/
-// Version 3.0 license costs $10000 orz
-//
-// http://social.msdn.microsoft.com/Forums/en-US/vcgeneral/thread/ef4a6bdd-6e9f-4f0a-9096-ca07ad65ddc2/
-// http://stackoverflow.com/questions/3263688/using-detours-for-hooking-writing-text-in-notepad
-//BOOL (WINAPI *OldTextOutA)(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString) = TextOutA;
-LPVOID replace(_In_ LPVOID oldfunc, _In_ LPVOID newfunc)  // version 2.0
-{
-  LPVOID ret = oldfunc;
-  ::DetourRestoreAfterWith();
-  ::DetourTransactionBegin();
-  ::DetourUpdateThread(::GetCurrentThread());
-  ::DetourAttach(&ret, newfunc);
-  ::DetourTransactionCommit();
-  return ret;
-}
-
-} // detour
 
 namespace Util {
 DWORD FindCallAndEntryAbs(DWORD fun, DWORD size, DWORD pt, DWORD sig);
@@ -190,7 +169,7 @@ bool Majiro::inject()
   if (!addr)
     return false;
   //growl::debug(*(BYTE*)addr);
-  majiro::paint = (majiro::paint_func_t)detour::replace((LPVOID)addr, (LPVOID)majiro::mypaint);
+  majiro::paint = detours::replace<majiro::paint_func_t>(addr, majiro::mypaint);
   //growl::debug((DWORD)((DWORD)majiro::paint == addr));
   //growl::debug((DWORD)majiro::paint);
   return addr;
