@@ -38,7 +38,7 @@ BOOL getModuleMemoryRange(LPCWSTR moduleName, DWORD *lowerBound, DWORD *upperBou
     if (_wcsicmp(it->BaseDllName.Buffer, moduleName) == 0) {
       DWORD lower = (DWORD)it->DllBase;
       if (lowerBound)
-        *lowerBound = lower;
+        *lowerBound = lower
 
       if (upperBound) {
         DWORD upper = lower;

@@ -62,7 +62,7 @@ bool Majiro::inject()
     return false;
   if (!NtInspect::getModuleMemoryRange(process_name_, &module_base_, &module_limit_))
     return false;
-  DWORD addr = ::FindCallAndEntryAbs((DWORD)TextOutA, module_limit_ - module_base_, module_base_, 0xec81);
+  DWORD addr = MemDbg::findCallerAddress((DWORD)TextOutA, 0xec81, module_base_, module_limit_);
   // Note: ITH will mess up this value
   addr = 0x41af90;
   if (!addr)

@@ -6,9 +6,12 @@ DEFINES += WITH_LIB_MEMDBG
 
 DEPENDPATH += $$PWD
 
-HEADERS += $$PWD/memsearch.h
-SOURCES += $$PWD/memsearch.cc
+HEADERS += \
+  $$PWD/memdbg.h \
+  $$PWD/memsearch.h
 
+SOURCES += \
+  $$PWD/memsearch.cc
 }
 
 # EOF

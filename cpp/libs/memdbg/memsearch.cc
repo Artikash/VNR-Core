@@ -1,6 +1,7 @@
 // memsearch.cc
 // 4/20/2014 jichi
 #include "memdbg/memsearch.h"
+#include <windows.h>
 
 // Helpers
 
@@ -28,24 +29,26 @@ _mask:
 
 } // namespace unnamed
 
+MEMDBG_BEGIN_NAMESPACE
 
-DWORD FindCallAndEntryAbs(DWORD fun, DWORD size, DWORD pt, DWORD sig)
+DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverse_length)
 {
+  DWORD  size = upperBound - lowerBound;
+  DWORD fun = (DWORD)funcAddr;
   //WCHAR str[0x40];
-  enum { reverse_length = 0x800 };
   DWORD mask = SigMask(sig);
   for (DWORD i = 0x1000; i < size - 4; i++)
-    if (*(WORD *)(pt + i) == 0x15ff) {
-      DWORD t = *(DWORD *)(pt + i + 2);
-      if (t >= pt && t <= pt + size - 4) {
+    if (*(WORD *)(lowerBound + i) == 0x15ff) {
+      DWORD t = *(DWORD *)(lowerBound + i + 2);
+      if (t >= lowerBound && t <= upperBound - 4) {
         if (*(DWORD *)t == fun)
-          //swprintf(str,L"CALL addr: 0x%.8X",pt + i);
+          //swprintf(str,L"CALL addr: 0x%.8X",lowerBound + i);
           //OutputConsole(str);
           for (DWORD j = i ; j > i - reverse_length; j--)
-            if ((*(DWORD *)(pt + j) & mask) == sig) // Fun entry 1.
-              //swprintf(str,L"Entry: 0x%.8X",pt + j);
+            if ((*(DWORD *)(lowerBound + j) & mask) == sig) // Fun entry 1.
+              //swprintf(str,L"Entry: 0x%.8X",lowerBound + j);
               //OutputConsole(str);
-              return pt + j;
+              return lowerBound + j;
 
       } else
         i += 6;
@@ -53,5 +56,7 @@ DWORD FindCallAndEntryAbs(DWORD fun, DWORD size, DWORD pt, DWORD sig)
   //OutputConsole(L"Find call and entry failed.");
   return 0;
 }
+
+MEMDBG_END_NAMESPACE
 
 // EOF
