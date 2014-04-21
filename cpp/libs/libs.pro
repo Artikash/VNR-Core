@@ -26,8 +26,8 @@ win32: include(winmaker/winmaker.pri)
 win32: include(winmutex/winmutex.pri)
 win32: include(winseh/winseh_unsafe.pri)
 win32: include(winseh/winseh_safe.pri)
+win32: include(winshell/winshell.pri)
 win32: include(wintimer/wintimer.pri)
 win32: include(wintts/wintts.pri)
-win32: include(winutil/winutil.pri)
 
 # EOF

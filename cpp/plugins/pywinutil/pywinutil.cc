@@ -2,7 +2,7 @@
 // 6/13/2013
 
 #include "pywinutil/pywinutil.h"
-#include "winutil/winutil.h"
+#include "winshell/winshell.h"
 #include <qt_windows.h>
 #include <QtCore/QDir>
 #include <QtCore>
@@ -11,8 +11,8 @@ QString WinUtil::resolveLink(const QString &input)
 {
   wchar_t buf[MAX_PATH];
   QString path = QDir::toNativeSeparators(input);
-  return ::winutil_resolve_link(path.toStdWString().c_str(), buf, MAX_PATH) ?
-        QString::fromWCharArray(buf) : QString();
+  return WinShell::resolveLink(path.toStdWString().c_str(), buf, MAX_PATH) ?
+      QString::fromWCharArray(buf) : QString();
 }
 
 QString WinUtil::toLongPath(const QString &input)

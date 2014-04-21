@@ -1,13 +1,13 @@
-// winutil.cc
+// winshell.cc
 // 6/13/2013 jichi
 
-#include "winutil/winutil.h"
+#include "winshell/winshell.h"
 #include <windows.h>
 #include <shlguid.h>
 #include <shobjidl.h>
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/bb776891%28v=vs.85%29.aspx
-bool winutil_resolve_link(const wchar_t *link, wchar_t *buf, int bufsize)
+bool WinShell::resolveLink(const wchar_t *link, wchar_t *buf, int bufsize)
 {
   //Q_ASSERT(link);
   //Q_ASSERT(buf);
