@@ -1,7 +1,7 @@
-# imageutil.pri
+# qtimage.pri
 # 4/5/2014 jichi
 #include(../../../config.pri)
-DEFINES += WITH_LIB_IMAGEUTIL
+DEFINES += WITH_LIB_QTIMAGE
 
 DEPENDPATH += $$PWD
 

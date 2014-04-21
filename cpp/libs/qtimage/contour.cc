@@ -1,9 +1,9 @@
 // contour.cc
 // 4/5/2014 jichi
-#include "imageutil/contour.h"
+#include "qtimage/contour.h"
 #include <QtGui/QColor>
 
-QImage ImageUtil::contourImage(const QImage &src, const QColor &color, int radius, const QPoint &offset,
+QImage QtImage::contourImage(const QImage &src, const QColor &color, int radius, const QPoint &offset,
                                bool easingAlpha, int alphaThreshold)
 {
   bool premultiplied  = isPremultipliedImageFormat(src.format());
