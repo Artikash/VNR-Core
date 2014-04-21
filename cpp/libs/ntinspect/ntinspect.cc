@@ -16,7 +16,7 @@ BOOL getCurrentProcessName(LPWSTR buffer, int bufferSize)
     mov eax,[eax+0xc]
     mov it,eax
   }
-  return wcscpy_s(buffer, bufferSize, it->BaseDllName.Buffer);
+  return 0 == wcscpy_s(buffer, bufferSize, it->BaseDllName.Buffer);
 }
 
 BOOL getModuleMemoryRange(LPCWSTR moduleName, DWORD *lowerBound, DWORD *upperBound)
