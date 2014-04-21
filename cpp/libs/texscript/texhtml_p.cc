@@ -5,7 +5,7 @@
 #include "texscript/texhtml_p.h"
 #include "texscript/textag.h"
 
-#include "htmlutil/htmltags.h"
+#include "htmldefs/htmltags.h"
 #include <boost/tuple/tuple.hpp>
 #include <stack>
 

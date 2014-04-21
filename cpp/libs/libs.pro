@@ -9,7 +9,7 @@ win32: SUBDIRS += disasm wintimer
 include(cc/cc.pri)
 include(disasm/disasm.pri)
 include(graphicseffect/graphicseffect.pri)
-include(htmlutil/htmlutil.pri)
+include(htmldefs/htmldefs.pri)
 include(imageutil/imageutil.pri)
 include(libqxt/libqxt.pri)
 include(metacall/metacall.pri)
