@@ -23,6 +23,4 @@ detours::address_t detours::replace(address_t old_addr, const_address_t new_addr
   return ret;
 }
 
-} // detour
-
 // EOF

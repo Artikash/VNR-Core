@@ -1,4 +1,4 @@
-# winhook.pro
+/# winhook.pro
 # 1/22/2013 jichi
 
 CONFIG += noqtgui dll
@@ -29,7 +29,7 @@ QT      -= gui
 LIBS        += -L$$WDK_HOME/lib/wxp/i386 -lntdll
 
 LIBS    += -luser32 -lpsapi
-#LIBS    += -lgdi32
+LIBS    += -lgdi32
 
 #QMAKE_LFLAGS += /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:msvcrtd.lib
 #DEFINES += _CRT_SECURE_NO_WARNINGS _CRT_NON_CONFORMING_SWPRINTFS

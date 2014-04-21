@@ -9,7 +9,7 @@ typedef void *address_t; // LPVOID
 typedef const void *const_address_t; // LPCVOID
 
 // Replace old_addr with new_addr, and return the backup of old_addr if succeed or 0 if fails.
-address_t replace(_Inout_ address_t old_addr, _In_ const_address_t new_addr);
+address_t replace(address_t old_addr, const_address_t new_addr);
 
 // Ignore type checking
 template<typename Ret, typename Old, typename New>
