@@ -4,6 +4,8 @@
 // memsearch.h
 // 4/20/2014 jichi
 
-void mem_search_func();
+#include <windows.h>
+// TO BE RENAMED
+DWORD FindCallAndEntryAbs(DWORD funAddr, DWORD upperBound, DWORD lowerBound, DWORD entrySig);
 
 #endif // _MEMDBG_MEMSEARCH_H
