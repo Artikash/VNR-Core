@@ -1,4 +1,4 @@
-/# winhook.pro
+# winhook.pro
 # 1/22/2013 jichi
 
 CONFIG += noqtgui dll

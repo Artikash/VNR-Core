@@ -6,10 +6,10 @@
 #include <windows.h>
 
 #ifndef NTINSPECT_BEGIN_NAMESPACE
-# define NTINSPECT_BEGIN_NAMESPACE NtInspect {
+# define NTINSPECT_BEGIN_NAMESPACE  namespace NtInspect {
 #endif
-#ifndef NTINSPECT_END_NAMESPACE } // NtInspect
-# define NTINSPECT_END_NAMESPACE
+#ifndef NTINSPECT_END_NAMESPACE
+# define NTINSPECT_END_NAMESPACE    } // NtInspect
 #endif
 
 NTINSPECT_BEGIN_NAMESPACE

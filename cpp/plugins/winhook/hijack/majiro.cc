@@ -8,31 +8,6 @@
 #include "ntinspect/ntinspect.h"
 #include "growl.h"
 
-DWORD Util::FindCallAndEntryAbs(DWORD fun, DWORD size, DWORD pt, DWORD sig)
-{
-  //WCHAR str[0x40];
-  enum { reverse_length = 0x800 };
-  DWORD mask = SigMask(sig);
-  for (DWORD i = 0x1000; i < size - 4; i++)
-    if (*(WORD *)(pt + i) == 0x15ff) {
-      DWORD t = *(DWORD *)(pt + i + 2);
-      if (t >= pt && t <= pt + size - 4) {
-        if (*(DWORD *)t == fun)
-          //swprintf(str,L"CALL addr: 0x%.8X",pt + i);
-          //OutputConsole(str);
-          for (DWORD j = i ; j > i - reverse_length; j--)
-            if ((*(DWORD *)(pt + j) & mask) == sig) // Fun entry 1.
-              //swprintf(str,L"Entry: 0x%.8X",pt + j);
-              //OutputConsole(str);
-              return pt + j;
-
-      } else
-        i += 6;
-    }
-  //OutputConsole(L"Find call and entry failed.");
-  return 0;
-}
-
 /** Engine */
 
 namespace { // unnamed
@@ -83,7 +58,7 @@ bool Majiro::inject()
 {
   wchar_t process_name_[MAX_PATH]; // cached
   DWORD module_base_, module_limit_;
-  if (!NtInspect::getCurrentProcessName(process_name_)) // Initialize process name
+  if (!NtInspect::getCurrentProcessName(process_name_, MAX_PATH)) // Initialize process name
     return false;
   if (!NtInspect::getModuleMemoryRange(process_name_, &module_base_, &module_limit_))
     return false;
