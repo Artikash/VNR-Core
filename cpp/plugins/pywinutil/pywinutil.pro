@@ -7,7 +7,7 @@
 
 CONFIG += pysideplugin noqtgui
 include(../../../config.pri)
-include($$LIBDIR/wnishell/winshell.pri)
+include($$LIBDIR/winshell/winshell.pri)
 
 INCLUDEPATH += $$LIBDIR/winshell # needed by shiboken generated code
 
