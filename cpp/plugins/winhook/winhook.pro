@@ -5,7 +5,9 @@ CONFIG += noqtgui dll
 include(../../../config.pri)
 include($$LIBDIR/detoursutil/detoursutil.pri)
 include($$LIBDIR/libqxt/libqxt.pri)
+include($$LIBDIR/memdbg/memdbg.pri)
 include($$LIBDIR/metacall/metacall.pri)
+include($$LIBDIR/ntinspect/ntinspect.pri)
 include($$LIBDIR/qtmodule/qtmodule.pri)
 include($$LIBDIR/sakurakit/sakurakit.pri)
 include($$LIBDIR/singleapp/singleapp.pri)
@@ -25,8 +27,6 @@ QT      -= gui
 
 #INCLUDEPATH += $$D3D_HOME/include
 #LIBS    += -ld3d9 -L$$D3D_HOME/lib/x86
-
-LIBS        += -L$$WDK_HOME/lib/wxp/i386 -lntdll
 
 LIBS    += -luser32 -lpsapi
 LIBS    += -lgdi32

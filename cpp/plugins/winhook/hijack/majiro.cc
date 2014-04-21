@@ -4,48 +4,9 @@
 #include "hijack/majiro.h"
 #include "hijack/majiro_p.h"
 #include "detoursutil/detoursutil.h"
-#include "ntdll/ntdll.h"
+#include "memdbg/memsearch.h"
+#include "ntinspect/ntinspect.h"
 #include "growl.h"
-
-namespace Util {
-DWORD FindCallAndEntryAbs(DWORD fun, DWORD size, DWORD pt, DWORD sig);
-BOOL FillRange(LPCWSTR name, DWORD *lower, DWORD *upper);
-void GetProcessName(wchar_t *name);
-
-// jichi 4/19/2014: Return the integer that can mask the signature
-DWORD SigMask(DWORD sig)
-{
-  __asm
-  {
-    xor ecx,ecx
-    mov eax,sig
-_mask:
-    shr eax,8
-    inc ecx
-    test eax,eax
-    jnz _mask
-    sub ecx,4
-    neg ecx
-    or eax,-1
-    shl ecx,3
-    shr eax,cl
-  }
-}
-} // namespace Util
-
-void Util::GetProcessName(wchar_t *name)
-{
-  //assert(name);
-  PLDR_DATA_TABLE_ENTRY it;
-  __asm
-  {
-    mov eax,fs:[0x30]
-    mov eax,[eax+0xc]
-    mov eax,[eax+0xc]
-    mov it,eax
-  }
-  wcscpy(name, it->BaseDllName.Buffer);
-}
 
 DWORD Util::FindCallAndEntryAbs(DWORD fun, DWORD size, DWORD pt, DWORD sig)
 {
@@ -71,45 +32,6 @@ DWORD Util::FindCallAndEntryAbs(DWORD fun, DWORD size, DWORD pt, DWORD sig)
   //OutputConsole(L"Find call and entry failed.");
   return 0;
 }
-
-BOOL Util::FillRange(LPCWSTR name, DWORD *lower, DWORD *upper)
-{
-  PLDR_DATA_TABLE_ENTRY it;
-  LIST_ENTRY *begin;
-  __asm
-  {
-    mov eax,fs:[0x30]
-    mov eax,[eax+0xC]
-    mov eax,[eax+0xC]
-    mov it,eax
-    mov begin,eax
-  }
-
-  while (it->SizeOfImage) {
-    if (_wcsicmp(it->BaseDllName.Buffer, name)==0) {
-      *lower = (DWORD)it->DllBase;
-      *upper = *lower;
-      MEMORY_BASIC_INFORMATION info = {};
-      DWORD l,size;
-      size = 0;
-      do {
-        NtQueryVirtualMemory(NtCurrentProcess(), (LPVOID)(*upper), MemoryBasicInformation, &info, sizeof(info), &l);
-        if (info.Protect&PAGE_NOACCESS) {
-          it->SizeOfImage=size;
-          break;
-        }
-        size += info.RegionSize;
-        *upper += info.RegionSize;
-      } while (size < it->SizeOfImage);
-      return TRUE;
-    }
-    it = (PLDR_DATA_TABLE_ENTRY)it->InLoadOrderModuleList.Flink;
-    if (it->InLoadOrderModuleList.Flink == begin)
-      break;
-  }
-  return FALSE;
-}
-
 
 /** Engine */
 
@@ -161,11 +83,12 @@ bool Majiro::inject()
 {
   wchar_t process_name_[MAX_PATH]; // cached
   DWORD module_base_, module_limit_;
-  Util::GetProcessName(process_name_); // Initialize process name
-  if (!Util::FillRange(process_name_, &module_base_, &module_limit_))
+  if (!NtInspect::getCurrentProcessName(process_name_)) // Initialize process name
     return false;
-  DWORD addr = Util::FindCallAndEntryAbs((DWORD)TextOutA, module_limit_ - module_base_, module_base_, 0xec81);
-  addr = 0x41af90;
+  if (!NtInspect::getModuleMemoryRange(process_name_, &module_base_, &module_limit_))
+    return false;
+  //DWORD addr = Util::FindCallAndEntryAbs((DWORD)TextOutA, module_limit_ - module_base_, module_base_, 0xec81);
+  DWORD addr = 0x41af90;
   if (!addr)
     return false;
   //growl::debug(*(BYTE*)addr);
