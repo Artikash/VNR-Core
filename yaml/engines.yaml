@@ -43,6 +43,7 @@ simple:
   - MAJIRO
   - Malie2
   - Malie3
+  - Mono # Deprecated
   - Pensil
   - RealLive
   - ShinaRio
@@ -68,7 +69,7 @@ norepeat:
   - SiglusEngine
   - SiglusEngine2
   - TanukiSoft # But this thread is floating
-  - Unity
+  - Unity # deprecated
 
 # Not floating address
 nofloat:
@@ -81,7 +82,7 @@ float:
   - Gesen18
   #- Rejet # it depends
   - SiglusEngine2
-  - Unity
+  - Unity # deprecated
 
 # Thin character, SHIFT-JIS or GBK
 char:
@@ -163,9 +164,11 @@ wchar:
   - Malie
   - Malie2
   - Malie3
+  - Mono # deprecated
   - ShinyDays
   - SiglusEngine
+  - SiglusEngine2
   - SoftHouseChara
-  - Unity
+  - Unity # deprecated
 
 # EOF

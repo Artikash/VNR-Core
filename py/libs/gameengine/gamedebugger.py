@@ -15,8 +15,8 @@ from sakurakit.skdebug import dprint, dwarn
 # Default values in CheatEngine
 #SEARCH_START = 0x0
 #SEARCH_STOP = 0x7fffffff
-SEARCH_START =  0x400000    # base address for most games
-SEARCH_LENGTH = 0x300000    # range to search
+#SEARCH_START =  0x400000    # base address for most games
+#SEARCH_LENGTH = 0x300000    # range to search
 
 class debug(object):
   def __init__(self, pid):
@@ -63,7 +63,70 @@ class GameDebugger(object):
     """
     return bool(self.pid)
 
-  def searchhex(self, pattern, start=SEARCH_START, length=SEARCH_LENGTH):
+  # Debug
+
+  def dump_module_names(self): # debug only
+    dprint("enter")
+    for it in self.iterate_modules():
+      dprint(it.szModule)
+    dprint("leave")
+
+  # Modules
+
+  def iterate_modules(self):
+    """
+    @yield  module
+    """
+    if self.debugger and self.pid:
+      for it in self.debugger.iterate_modules():
+        yield it
+
+  def get_module(self, moduleName):
+    """
+    @param  moduleName  str
+    @return   module or None
+    """
+    moduleName = moduleName.lower()
+    for module in self.iterate_modules():
+      if module.szModule.lower() == moduleName:
+        return module
+
+  def get_module_range(self, moduleName):
+    """
+    @param  moduleName  str
+    @return  (int lowerBound, int upperBound) or None
+    """
+    module = self.get_module(moduleName)
+    if module:
+      return module.modBaseAddr, module.modBaseAddr + module.modBaseSize
+
+  # Search
+
+  def search_module_memory(self, moduleName, pattern):
+    """Search memory
+    @param  moduleName  str
+    @param  pattern  int or str or [int]
+    @return  long  addr
+    """
+    r = self.get_module_range(moduleName)
+    return self.search_memory(pattern, start=r[0], stop=r[1]) if r else -1
+
+  def search_memory(self, pattern, *args, **kwargs):
+    """Search memory
+    @param  pattern  int or [int] or str
+    @return  long  addr
+    """
+    if isinstance(pattern, int) or isinstance(pattern, long):
+      return self.search_memory_long(pattern, *args, **kwargs)
+    elif isinstance(pattern, str) or isinstance(pattern, unicode):
+      return self.search_memory_string(pattern, *args, **kwargs)
+    elif isinstance(pattern, list):
+      return self.search_memory_list(pattern, *args, **kwargs)
+    else:
+      dwarn("invalid pattern type: %s" % type(pattern))
+      return -1
+
+  def search_memory_long(self, pattern, *args, **kwargs):
     """Search memory
     @param  pattern  int
     @return  long  addr
@@ -71,41 +134,46 @@ class GameDebugger(object):
     # http://stackoverflow.com/questions/6187699/how-to-convert-integer-value-to-array-of-four-bytes-in-python
     r = xrange(int(math.log(pattern, 2)/8) * 8, -1, -8)
     s = (pattern >> i & 0xff for i in r)
-    return self.searchbytes(s, start=start, length=length)
+    return self.search_memory_list(s, *args, **kwargs)
 
-  def searchbytes(self, pattern, start=SEARCH_START, length=SEARCH_LENGTH):
+  def search_memory_list(self, pattern, *args, **kwargs):
     """Search memory
     @param  pattern  [int]
     @return  long  addr
     """
     #pattern = 0x90ff503c83c4208b45ec
     s = ''.join(imap(chr, pattern))
-    return self.searchstring(s, start=start, length=length)
+    return self.search_memory_string(s, *args, **kwargs)
 
-  def searchstring(self, pattern, start=SEARCH_START, length=SEARCH_LENGTH):
+  def search_memory_string(self, pattern, start, stop):
     """Search memory
     @param  pattern  str  regular expression
+    @param  start  int  search memory lower bound
+    @param  stop  int  search memory upper bound
     @return  long  addr
     See:  http://paimei.googlecode.com/svn-history/r234/trunk/MacOSX/PaiMei-1.1-REV122/build/lib/pydbg/pydbg.py
     """
+    if stop <= start:
+      return 0
+
     #if start > stop:
     #  return -1
     #import re
     #rx = re.compile(pattern)
+
     from pydbg import defines
-    skipped = defines.PAGE_GUARD|defines.PAGE_NOACCESS|defines.PAGE_READONLY
+    skipped_perms = defines.PAGE_GUARD|defines.PAGE_NOACCESS|defines.PAGE_READONLY
 
     pydbg = self.debugger
     cursor  = start
     # scan through the entire memory range and save a copy of suitable memory blocks.
-    stop = start + length
     while cursor < stop:
       try: mbi = pydbg.virtual_query(cursor)
       except: break # out of region
       #if(mbi.BaseAddress):
       #  print ("%08x, size %x " % (mbi.BaseAddress, mbi.RegionSize))
 
-      if not mbi.Protect&skipped:
+      if not mbi.Protect & skipped_perms:
         # read the raw bytes from the memory block.
         try:
           data = pydbg.read_process_memory(mbi.BaseAddress, mbi.RegionSize)

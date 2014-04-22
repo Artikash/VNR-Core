@@ -15,12 +15,12 @@ def inject(pid):
   @return  bool
   """
   from engines import engines
-  try:
+  if True:
     for eng in engines():
       if eng.match(pid):
         return eng.inject(pid)
-  except Exception, e:
-    dwarn(e)
+  #except Exception, e:
+  #  dwarn(e)
   return False
 
 # EOF
