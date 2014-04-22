@@ -8,11 +8,7 @@
 # error "missing disasm lib"
 #endif // WITH_LIB_DISASM
 
-#ifdef _MSC_VER
-# pragma warning (disable:4996)   // C4996: use POSIX function (stricmp)
-#endif // _MSC_VER
-
-#define JUNK 0xDEADBEEF
+#define JUNK 0xdeadbeef
 
 namespace { // unnamed
 
@@ -365,12 +361,16 @@ int HookAddress(void *vaddr, wchar_t *id, void *param, HookFxn *hookFxn, int typ
   return 1;
 }
 
-int HookAfterFunction(void *addr, wchar_t *id, void *param, void *hookFxn)
+WINHOOK_BEGIN_NAMESPACE
+
+int hookAfterFunction(void *addr, wchar_t *id, void *param, void *hookFxn)
 { return HookAddress(addr, id, param, reinterpret_cast<HookFxn *>(hookFxn), HOOK_AFTER); }
 
 // hookFxn passed param and stack from the middle of a code point.
-int HookRawAddress(void *addr, wchar_t *id, void *param, void *hookFxn)
+int hookRawAddress(void *addr, wchar_t *id, void *param, void *hookFxn)
 { return HookAddress(addr, id, param, reinterpret_cast<HookFxn *>(hookFxn), HOOK_BEFORE); }
+
+WINHOOK_END_NAMESPACE
 
 // EOF
 

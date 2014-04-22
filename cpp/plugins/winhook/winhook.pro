@@ -3,11 +3,16 @@
 
 CONFIG += noqtgui dll
 include(../../../config.pri)
+include($$LIBDIR/detoursutil/detoursutil.pri)
 include($$LIBDIR/libqxt/libqxt.pri)
+include($$LIBDIR/memdbg/memdbg.pri)
 include($$LIBDIR/metacall/metacall.pri)
+include($$LIBDIR/ntinspect/ntinspect.pri)
 include($$LIBDIR/qtmodule/qtmodule.pri)
 include($$LIBDIR/sakurakit/sakurakit.pri)
 include($$LIBDIR/singleapp/singleapp.pri)
+include($$LIBDIR/windbg/windbg.pri)
+include($$LIBDIR/winquery/winquery.pri)
 include($$LIBDIR/wintimer/wintimer.pri)
 
 #include($$LIBDIR/disasm/disasm.pri)
@@ -24,9 +29,6 @@ QT      -= gui
 
 #INCLUDEPATH += $$D3D_HOME/include
 #LIBS    += -ld3d9 -L$$D3D_HOME/lib/x86
-
-#INCLUDEPATH += $$DETOURS_HOME/include
-#LIBS    += -ldetours -L$$DETOURS_HOME/lib
 
 LIBS    += -luser32 -lpsapi
 LIBS    += -lgdi32
@@ -51,15 +53,6 @@ SOURCES += \
   myfunc.cc \
   growl.cc
 
-DEPENDPATH += util
-INCLUDEPATH += util
-HEADERS += \
-  util/wingui.h \
-  util/winsec.h
-SOURCES += \
-  util/wingui.cc \
-  util/winsec.cc
-
 DEPENDPATH += qt
 HEADERS += \
   qt/dataman.h \
@@ -76,11 +69,10 @@ SOURCES += \
 
 DEPENDPATH += hijack
 HEADERS += \
-  hijack/myd3d.h \
-  hijack/mygdi.h \
-  hijack/mygdi_p.h
+  hijack/majiro.h \
+  hijack/majiro_p.h
 SOURCES += \
-  hijack/mygdi.cc
+  hijack/majiro.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += winhook.rc

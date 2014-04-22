@@ -1,7 +1,7 @@
-# htmlutil.pri
+# htmldefs.pri
 # 9/15/2012 jichi
 
-DEFINES += WITH_LIB_HTMLUTIL
+DEFINES += WITH_LIB_HTMLDEFS
 
 DEPENDPATH += $$PWD
 

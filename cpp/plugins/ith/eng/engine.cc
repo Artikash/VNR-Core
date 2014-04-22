@@ -114,6 +114,11 @@ DWORD DetermineEngineByFile1()
     InsertAdobeAirHook();
     return yes;
   }
+  //if (IthFindFile(L"*\\Mono\\mono.dll")) { // jichi 4/21/2014: Mono
+  //if (IthCheckFile(L"bsz2_Data\\Mono\\mono.dll")) { // jichi 4/21/2014: Mono
+  //  InsertMonoHook();
+  //  return yes;
+  //}
   return no;
 }
 
@@ -411,10 +416,10 @@ DWORD DetermineNoHookEngine()
 {
   enum : DWORD { yes = 0, no = 1 }; // return value
 
-  if (IthFindFile(L"*\\Managed\\UnityEngine.dll")) { // jichi 12/3/2013: Unity (BALDRSKY ZERO)
-    ConsoleOutput("vnreng: IGNORE Unity");
-    return yes;
-  }
+  //if (IthFindFile(L"*\\Managed\\UnityEngine.dll")) { // jichi 12/3/2013: Unity (BALDRSKY ZERO)
+  //  ConsoleOutput("vnreng: IGNORE Unity");
+  //  return yes;
+  //}
 
   if (IthCheckFile(L"AGERC.DLL")) { // jichi 3/17/2014: Eushully, AGE.EXE
     ConsoleOutput("vnreng: IGNORE Eushully");

@@ -377,16 +377,15 @@ int FillRange(LPCWSTR name, DWORD *lower, DWORD *upper)
   __asm
   {
     mov eax,fs:[0x30]
-    mov eax,[eax+0xC]
-    mov eax,[eax+0xC]
+    mov eax,[eax+0xc]
+    mov eax,[eax+0xc]
     mov it,eax
     mov begin,eax
   }
 
   while (it->SizeOfImage) {
-    if (_wcsicmp(it->BaseDllName.Buffer, name)==0) {
-      *lower = (DWORD)it->DllBase;
-      *upper = *lower;
+    if (_wcsicmp(it->BaseDllName.Buffer, name) == 0) {
+      *lower = *upper = (DWORD)it->DllBase;
       MEMORY_BASIC_INFORMATION info = {};
       DWORD l,size;
       size = 0;
@@ -1338,7 +1337,7 @@ DWORD GetExportAddress(DWORD hModule,DWORD hash)
     if (IMAGE_NT_SIGNATURE == NtHdr->Signature) {
       pcExportAddr = (char*)((DWORD)hModule+
           (DWORD)NtHdr->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress);
-      if (pcExportAddr==0)
+      if (!pcExportAddr)
         return 0;
       ExtDir = (IMAGE_EXPORT_DIRECTORY*)pcExportAddr;
       pcExportAddr = (char*)((DWORD)hModule+(DWORD)ExtDir->AddressOfNames);

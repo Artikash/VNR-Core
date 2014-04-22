@@ -1,7 +1,7 @@
 // contouredtextedit.cc
 // 4/5/2014 jichi
 #include "qmltext/contouredtextedit.h"
-#include "imageutil/contour.h"
+#include "qtimage/contour.h"
 #include <qt/src/declarative/graphicsitems/qdeclarativetextedit_p_p.h>
 #include <qt/src/gui/text/qtextcontrol_p.h>
 #include <QtGui/QPainter>
@@ -104,7 +104,7 @@ void DeclarativeContouredTextEdit::drawContents(QPainter *painter, const QRect &
   d->control->document()->drawContents(&imgPainter, r);
   imgPainter.end();
 
-  img = ImageUtil::contourImage(img, d_->color, d_->radius, d_->offset); // easingAlpha = true
+  img = QtImage::contourImage(img, d_->color, d_->radius, d_->offset); // easingAlpha = true
   painter->drawImage(0, 0, img);
 
   d->control->drawContents(painter, r);

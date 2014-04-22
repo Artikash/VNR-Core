@@ -1,6 +1,6 @@
-// wingui.cc
+// winquery.cc
 // 2/1/2013 jichi
-#include "wingui.h"
+#include "winquery/winquery.h"
 
 //#define DEBUG "wingui"
 #include "sakurakit/skdebug.h"
@@ -41,22 +41,25 @@ BOOL CALLBACK GetAnyWindowWithProcessIdProc(HWND hwnd, LPARAM lparam)
 
 }} // unnamed detail
 
-WINGUI_BEGIN_NAMESPACE
+WINQUERY_BEGIN_NAMESPACE
 
-HWND GetAnyWindowWithThread(DWORD threadId)
+HWND getAnyWindowWithThreadId(DWORD threadId)
 {
   detail::HWND_DWORD tuple = { nullptr, threadId };
   ::EnumWindows(detail::GetAnyWindowWithThreadIdProc, reinterpret_cast<LPARAM>(&tuple));
   return tuple.hwnd;
 }
 
-HWND GetAnyWindowWithProcessId(DWORD processId)
+HWND getAnyWindowWithProcessId(DWORD processId)
 {
   detail::HWND_DWORD tuple = { nullptr, processId };
   ::EnumWindows(detail::GetAnyWindowWithProcessIdProc, reinterpret_cast<LPARAM>(&tuple));
   return tuple.hwnd;
 }
 
-WINGUI_END_NAMESPACE
+HWND getAnyWindowInCurrentProcess()
+{  return getAnyWindowWithProcessId(::GetCurrentProcessId()); }
+
+WINQUERY_END_NAMESPACE
 
 // EOF

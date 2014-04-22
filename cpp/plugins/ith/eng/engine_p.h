@@ -43,6 +43,7 @@ bool InsertMalieHook();         // Malie@light: malie.ini
 bool InsertMajiroHook();        // MAJIRO: *.arc
 bool InsertMarineHeartHook();   // Marine Heart: SAISYS.exe
 bool InsertMEDHook();           // MED: *.med
+bool InsertMonoHook();          // Mono (Unity3D): */Mono/mono.dll
 bool InsertNextonHook();        // NEXTON: aInfo.db
 bool InsertNitroPlusHook();     // NitroPlus: *.npa
 bool InsertPensilHook();        // Pensil: PSetup.exe
@@ -64,8 +65,6 @@ bool InsertSolfaHook();         // sol-fa-soft: *.iar
 bool InsertWhirlpoolHook();     // YU-RIS: *.ypf
 bool InsertWillPlusHook();      // WillPlus: Rio.arc
 bool InsertWolfHook();          // Wolf: Data.wolf
-
-//bool InsertBaldrHook();         // BaldrSkyZero (Unity3D): bsz.exe
 
 void InsertAB2TryHook();        // Yane@AkabeiSoft2Try: YaneSDK.dll.
 void InsertBrunsHook();         // Bruns: bruns.exe
