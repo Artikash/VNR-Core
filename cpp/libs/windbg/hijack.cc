@@ -1,6 +1,7 @@
 // hijack.cc
 // 1/27/2013 jichi
 #include "windbg/hijack.h"
+#include "windbg/windbg_p.h"
 
 #ifdef _MSC_VER
 # pragma warning (disable:4996)   // C4996: use POSIX function (stricmp)
@@ -21,7 +22,7 @@ PVOID overrideFunctionA(HMODULE stealFrom, LPCSTR oldFunctionModule, LPCSTR func
   //if (!oldModule)
   //  return nullptr;
   //void *originalAddress = GetProcAddress(oldModule, functionName);
-  LPVOID originalAddress = GetModuleFunctionAddressA(functionName, oldFunctionModule);
+  LPVOID originalAddress = details::getModuleFunctionAddressA(functionName, oldFunctionModule);
   if (!originalAddress)
     return nullptr;
   IMAGE_DOS_HEADER *dosHeader = reinterpret_cast<IMAGE_DOS_HEADER *>(stealFrom);

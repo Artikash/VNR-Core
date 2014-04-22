@@ -60,6 +60,6 @@ HWND getAnyWindowWithProcessId(DWORD processId)
 HWND getAnyWindowInCurrentProcess()
 {  return getAnyWindowWithProcessId(::GetCurrentProcessId()); }
 
-WINQUERY_BEGIN_NAMESPACE
+WINQUERY_END_NAMESPACE
 
 // EOF

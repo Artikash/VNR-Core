@@ -10,6 +10,7 @@ HEADERS += \
   $$PWD/hijack.h \
   $$PWD/inject.h \
   $$PWD/util.h \
+  $$PWD/windbg_p.h \
   $$PWD/windbg.h
 
 SOURCES += \

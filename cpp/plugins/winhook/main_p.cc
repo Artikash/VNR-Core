@@ -7,6 +7,7 @@
 #include "winhook/qt/mydef.h"
 #include "winhook/qt/mainobj.h"
 #include "windbg/inject.h"
+#include "windbg/util.h"
 #include "cc/ccmacro.h"
 
 #ifdef _MSC_VER
