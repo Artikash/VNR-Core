@@ -2,7 +2,7 @@
 // 1/27/2013
 // Restrict from accessing QObject in this file, and make sure the instance to start with wintimer.
 
-#include "winhook/main.h"
+#include "main.h"
 #include "winquery/winquery.h"
 #include "wintimer/wintimer.h"
 #include "singleapp/singleapp.h"
@@ -33,6 +33,7 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
 
     WinTimer::singleShot(1000, boost::bind(Main::initWithInstance, hInstance));
 
+    // CHECKPOINT
     //My::OverrideGDIModules();
     if (auto eng = Engine::getEngine()) {
       Engine::setEnabled(true);
@@ -41,10 +42,10 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
     break;
 
   case DLL_PROCESS_DETACH:
-    Main::destroy();
     WinTimer::singleShot(5000, []() { // If hang, terminate the process in 5 seconds.
       ::TerminateProcess(::GetCurrentProcess(), EXIT_SUCCESS);
     });
+    Main::destroy();
     break;
   }
   //SK_ASSERT(0);

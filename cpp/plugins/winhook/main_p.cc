@@ -14,6 +14,58 @@
 # pragma warning (disable:4996)   // C4996: use POSIX function (stricmp)
 #endif // _MSC_VER
 
+// - Construction -
+
+namespace { namespace detail { MainPrivate *d_ptr = nullptr; }}
+
+void Main::initWithInstance(HINSTANCE hInstance)
+{
+#ifdef WITH_LIB_WINHOOK
+  ::GetModuleFileNameW(hInstance, MODULE_PATH, MAX_PATH);
+#else
+  CC_UNUSED(hInstance);
+#endif // WITH_LIB_WINHOOK
+
+  MainObject::init();
+  detail::d_ptr = new MainPrivate;
+}
+
+void Main::destroy()
+{
+  delete detail::d_ptr;
+  detail::d_ptr = nullptr;
+  MainObject::destroy();
+}
+
+MainPrivate::MainPrivate()
+{
+  WinDbg::ThreadsSuspender suspendedThreads; // lock all threads
+  My::OverrideModules();
+
+  rehookTimer.setInterval(My::EventLoopTimeout * 10);
+  rehookTimer.setFunction(&My::OverrideModules);
+
+  retransTimer.setInterval(My::EventLoopTimeout);
+  retransTimer.setFunction(boost::bind(&MainObject::updateProcessWindows, 0));
+
+#ifdef WITH_LIB_WINHOOK
+  // FIXME: Enable this after metacall supports multiple clients
+  WinHook::hookAfterFunction(::CreateProcessW, L"", nullptr, PostCreateProcessW);
+  WinHook::hookAfterFunction(::CreateProcessA, L"", nullptr, PostCreateProcessA);
+#endif // WITH_LIB_WINHOOK
+
+  retransTimer.start();
+  rehookTimer.start();
+}
+
+MainPrivate::~MainPrivate()
+{
+  retransTimer.stop();
+  rehookTimer.stop();
+}
+
+// EOF
+
 #ifdef WITH_LIB_WINHOOK
 # include "winhook/funchook.h"
 
@@ -87,58 +139,6 @@ BOOL CALLBACK PostCreateProcessA(
 }
 } // unnamed namespace
 #endif // WITH_LIB_WINHOOK
-
-// - Construction -
-
-namespace { namespace detail { MainPrivate *d_ptr = nullptr; }}
-
-void Main::initWithInstance(HINSTANCE hInstance)
-{
-#ifdef WITH_LIB_WINHOOK
-  ::GetModuleFileNameW(hInstance, MODULE_PATH, MAX_PATH);
-#else
-  CC_UNUSED(hInstance);
-#endif // WITH_LIB_WINHOOK
-
-  MainObject::init();
-  detail::d_ptr = new MainPrivate;
-}
-
-void Main::destroy()
-{
-  delete detail::d_ptr;
-  detail::d_ptr = nullptr;
-  MainObject::destroy();
-}
-
-MainPrivate::MainPrivate()
-{
-  WinDbg::ThreadsSuspender suspendedThreads; // lock all threads
-  My::OverrideModules();
-
-  rehookTimer.setInterval(My::EventLoopTimeout * 10);
-  rehookTimer.setFunction(&My::OverrideModules);
-
-  retransTimer.setInterval(My::EventLoopTimeout);
-  retransTimer.setFunction(boost::bind(&MainObject::updateProcessWindows, 0));
-
-#ifdef WITH_LIB_WINHOOK
-  // FIXME: Enable this after metacall supports multiple clients
-  WinHook::hookAfterFunction(::CreateProcessW, L"", nullptr, PostCreateProcessW);
-  WinHook::hookAfterFunction(::CreateProcessA, L"", nullptr, PostCreateProcessA);
-#endif // WITH_LIB_WINHOOK
-
-  retransTimer.start();
-  rehookTimer.start();
-}
-
-MainPrivate::~MainPrivate()
-{
-  retransTimer.stop();
-  rehookTimer.stop();
-}
-
-// EOF
 
 /*
   DWORD WINAPI ThreadProc(LPVOID params)

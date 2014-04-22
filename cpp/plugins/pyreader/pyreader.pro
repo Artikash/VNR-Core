@@ -3,11 +3,11 @@
 
 CONFIG += pysideplugin noqtgui
 include(../../../config.pri)
-include($$LIBDIR/metacall/metacall.pri)
+include($$LIBDIR/qtmetacall/qtmetacall.pri)
 include($$MODULEDIR/reader/reader.pri)
 
 INCLUDEPATH += $$MODULEDIR/reader # needed by shiboken
-INCLUDEPATH += $$LIBDIR/metacall # needed by shiboken generated code
+INCLUDEPATH += $$LIBDIR/qtmetacall # needed by shiboken generated code
 
 ## Libraries
 

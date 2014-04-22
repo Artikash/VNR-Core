@@ -2,6 +2,7 @@
 
 // growl.h
 // 2/1/2013 jichi
+// These functions are mostly for debugging usage
 
 #ifdef QT_CORE_LIB
 # include <QtCore/QString>

@@ -6,9 +6,9 @@ include(../../../config.pri)
 include($$LIBDIR/detoursutil/detoursutil.pri)
 include($$LIBDIR/libqxt/libqxt.pri)
 include($$LIBDIR/memdbg/memdbg.pri)
-include($$LIBDIR/metacall/metacall.pri)
 include($$LIBDIR/ntinspect/ntinspect.pri)
-include($$LIBDIR/qtmodule/qtmodule.pri)
+include($$LIBDIR/qtembedded/qtembedded.pri)
+include($$LIBDIR/qtmetacall/qtmetacall.pri)
 include($$LIBDIR/sakurakit/sakurakit.pri)
 include($$LIBDIR/singleapp/singleapp.pri)
 include($$LIBDIR/windbg/windbg.pri)
@@ -30,49 +30,42 @@ QT      -= gui
 #INCLUDEPATH += $$D3D_HOME/include
 #LIBS    += -ld3d9 -L$$D3D_HOME/lib/x86
 
-LIBS    += -luser32 -lpsapi
-LIBS    += -lgdi32
-
-#QMAKE_LFLAGS += /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:msvcrtd.lib
-#DEFINES += _CRT_SECURE_NO_WARNINGS _CRT_NON_CONFORMING_SWPRINTFS
+LIBS    += -luser32 -lpsapi -lgdi32
 
 ## Sources
 
 TEMPLATE = lib
 TARGET  = winhook
 
+#DEPENDPATH += driver engine game ui
+
 HEADERS += \
+  driver/mainobj.h \
+  driver/mainobj_p.h \
+  driver/rpccli.h \
+  driver/rpccli_p.h
+  ui/uidef.h \
+  ui/uihash.h \
+  ui/uihijack.h \
+  ui/uihijack_p.h \
+  ui/uitextman.h \
   main.h \
   main_p.h \
-  myfunc.h \
-  myfunc_p.h \
   growl.h
 SOURCES += \
+  driver/mainobj.cc \
+  driver/rpccli.cc \
+  ui/uihijack.cc \
+  ui/uitextman.cc \
   main.cc \
   main_p.cc \
-  myfunc.cc \
   growl.cc
 
-DEPENDPATH += qt
 HEADERS += \
-  qt/dataman.h \
-  qt/mainobj.h \
-  qt/mainobj_p.h \
-  qt/mydef.h \
-  qt/myhash.h \
-  qt/rpccli.h \
-  qt/rpccli_p.h
+  engine/majiro.h \
+  engine/majiro_p.h
 SOURCES += \
-  qt/dataman.cc \
-  qt/mainobj.cc \
-  qt/rpccli.cc
-
-DEPENDPATH += hijack
-HEADERS += \
-  hijack/majiro.h \
-  hijack/majiro_p.h
-SOURCES += \
-  hijack/majiro.cc
+  engine/majiro.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += winhook.rc

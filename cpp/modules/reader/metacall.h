@@ -3,14 +3,14 @@
 // reader/metacall.h
 // 2/1/2013 jichi
 
-#include "metacall/metacallpropagator.h"
+#include "qtmetacall/metacallpropagator.h"
 #include <QtCore/QObject>
 
-class ReaderMetaCallPropagator : public MetaCallPropagator
+class ReaderMetaCallPropagator : public QtMetaCall::MetaCallPropagator
 {
   Q_OBJECT
   Q_DISABLE_COPY(ReaderMetaCallPropagator)
-  SK_EXTEND_CLASS(ReaderMetaCallPropagator, MetaCallPropagator)
+  SK_EXTEND_CLASS(ReaderMetaCallPropagator, QtMetaCall::MetaCallPropagator)
 
 public:
   explicit ReaderMetaCallPropagator(QObject *parent = nullptr) : Base(parent) {}
@@ -33,9 +33,10 @@ signals:
   void q_updateServerData(const QString &json);
 
   void updateClientData(const QString &json); // s=>c
-  void q_updateClientData(const QString &json); // s=>c
+  void q_updateClientData(const QString &json);
 
   // - Messages
+
   void growlServerMessage(const QString &text); // c=>s
   void q_growlServerMessage(const QString &text);
 

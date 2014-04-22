@@ -17,7 +17,7 @@ rm -Rf %OUTDIR% %LOG%
 
 set LIBPATH=%CD%/../../libs
 
-set TARGET_INC=../..;../../libs/metacall
+set TARGET_INC=../..;../../libs/qtmetacall
 set QT_HOME=c:/qt/4
 ::set PYTHON_HOME=%CD%/../../../../Python
 set PYTHON_HOME=c:/python27
