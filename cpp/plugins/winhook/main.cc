@@ -3,7 +3,7 @@
 // Restrict from accessing QObject in this file, and make sure the instance to start with wintimer.
 
 #include "winhook/main.h"
-#include "winhook/util/wingui.h"
+#include "winquery/winquery.h"
 #include "wintimer/wintimer.h"
 #include "singleapp/singleapp.h"
 #include "cc/ccmacro.h"
@@ -29,9 +29,7 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
 
     //::CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(d3dhook), nullptr, 0, nullptr);
 
-    WinTimer::setGlobalWindow(
-      wingui::GetAnyWindowWithProcessId(
-        ::GetCurrentProcessId()));
+    WinTimer::setGlobalWindow(WinQuery::getAnyWindowInCurrentProcess());
 
     WinTimer::singleShot(1000, boost::bind(Main::initWithInstance, hInstance));
 

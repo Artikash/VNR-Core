@@ -10,7 +10,7 @@
 #include "winhook/myfunc.h"
 #include "winhook/myfunc_p.h"
 #include "winhook/qt/mainobj.h"
-#include "winhook/util/winsec.h"
+#include "windbg/hijack.h"
 #include <psapi.h>
 #include <boost/foreach.hpp>
 
@@ -70,11 +70,11 @@ void My::OverrideModuleFunctions(HMODULE hModule)
 {
   BOOST_FOREACH (const MyFunctionInfo &fn, MY_FUNCTIONS) {
 #ifdef DEBUG
-    PVOID ret = winsec::OverrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
+    PVOID ret = WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
     if (ret)
       growl::debug(fn.functionName); // success
 #else
-    winsec::OverrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
+    WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
 #endif // DEBUG
   }
 }

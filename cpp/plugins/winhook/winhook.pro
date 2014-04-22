@@ -11,6 +11,8 @@ include($$LIBDIR/ntinspect/ntinspect.pri)
 include($$LIBDIR/qtmodule/qtmodule.pri)
 include($$LIBDIR/sakurakit/sakurakit.pri)
 include($$LIBDIR/singleapp/singleapp.pri)
+include($$LIBDIR/windbg/windbg.pri)
+include($$LIBDIR/winquery/winquery.pri)
 include($$LIBDIR/wintimer/wintimer.pri)
 
 #include($$LIBDIR/disasm/disasm.pri)
@@ -50,15 +52,6 @@ SOURCES += \
   main_p.cc \
   myfunc.cc \
   growl.cc
-
-DEPENDPATH += util
-INCLUDEPATH += util
-HEADERS += \
-  util/wingui.h \
-  util/winsec.h
-SOURCES += \
-  util/wingui.cc \
-  util/winsec.cc
 
 DEPENDPATH += qt
 HEADERS += \

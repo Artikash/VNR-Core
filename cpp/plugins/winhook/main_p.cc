@@ -6,7 +6,7 @@
 #include "winhook/myfunc.h"
 #include "winhook/qt/mydef.h"
 #include "winhook/qt/mainobj.h"
-#include "winhook/util/winsec.h"
+#include "windbg/inject.h"
 #include "cc/ccmacro.h"
 
 #ifdef _MSC_VER
@@ -23,7 +23,7 @@ wchar_t MODULE_PATH[MAX_PATH]; // dll path
 // - Helpers -
 
 inline bool InjectDll(HANDLE hProcess)
-{ return winsec::InjectDllW(MODULE_PATH, 0, hProcess); }
+{ return WinDbg::injectDllW(MODULE_PATH, 0, hProcess); }
 
 // - Callbacks -
 
@@ -112,7 +112,7 @@ void Main::destroy()
 
 MainPrivate::MainPrivate()
 {
-  winsec::ThreadsSuspender suspendedThreads; // lock all threads
+  WinDbg::ThreadsSuspender suspendedThreads; // lock all threads
   My::OverrideModules();
 
   rehookTimer.setInterval(My::EventLoopTimeout * 10);
@@ -123,8 +123,8 @@ MainPrivate::MainPrivate()
 
 #ifdef WITH_LIB_WINHOOK
   // FIXME: Enable this after metacall supports multiple clients
-  ::HookAfterFunction(::CreateProcessW, L"", nullptr, PostCreateProcessW);
-  ::HookAfterFunction(::CreateProcessA, L"", nullptr, PostCreateProcessA);
+  WinHook::hookAfterFunction(::CreateProcessW, L"", nullptr, PostCreateProcessW);
+  WinHook::hookAfterFunction(::CreateProcessA, L"", nullptr, PostCreateProcessA);
 #endif // WITH_LIB_WINHOOK
 
   retransTimer.start();
