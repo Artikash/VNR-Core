@@ -6,6 +6,8 @@
 
 #define D_F PixmapGlowFilter2 * const f = static_cast<PixmapGlowFilter2 *>(pixmapFilter())
 
+QTEFFECTS_BEGIN_NAMESPACE
+
 // - Construction -
 
 GraphicsGlowEffect2::GraphicsGlowEffect2(QObject *parent)
@@ -108,5 +110,7 @@ void GraphicsGlowEffect2::setColor2(const QColor &color)
     update();
   emit color2Changed(color);
 }
+
+QTEFFECTS_END_NAMESPACE
 
 // EOF

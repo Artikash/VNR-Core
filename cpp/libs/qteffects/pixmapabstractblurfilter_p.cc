@@ -5,6 +5,8 @@
 #include "qteffects/pixmapabstractblurfilter_p.h"
 #include "qteffects/pixmapabstractblurfilter_p_p.h"
 
+QTEFFECTS_BEGIN_NAMESPACE
+
 // - Construction -
 
 PixmapAbstractBlurFilter::PixmapAbstractBlurFilter(QObject *parent)
@@ -71,5 +73,7 @@ QRectF PixmapAbstractBlurFilter::boundingRectFor(const QRectF &rect) const
     rect.translated(d->offset).adjusted(-radius, -radius, radius, radius)
   );
 }
+
+QTEFFECTS_END_NAMESPACE
 
 // EOF

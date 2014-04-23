@@ -8,6 +8,8 @@
 #include <QtGui/QPainter>
 #include <QtGui/QPaintEngine>
 
+QTEFFECTS_BEGIN_NAMESPACE
+
 PixmapGlowFilter::PixmapGlowFilter(QObject *parent): Base(parent) {}
 PixmapGlowFilter::~PixmapGlowFilter() {}
 
@@ -45,5 +47,7 @@ void PixmapGlowFilter::draw(QPainter *p, const QPointF &pos, const QPixmap &px, 
 
   p->drawPixmap(pos, px);
 }
+
+QTEFFECTS_END_NAMESPACE
 
 // EOF

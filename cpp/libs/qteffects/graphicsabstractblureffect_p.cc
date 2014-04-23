@@ -7,6 +7,8 @@
 #include <qt/src/gui/painting/qdrawhelper_p.h>
 #include <QtGui/QPaintEngine>
 
+QTEFFECTS_BEGIN_NAMESPACE
+
 /** Private class */
 
 class GraphicsAbstractBlurEffectPrivate : public QGraphicsEffectPrivate
@@ -201,5 +203,7 @@ void GraphicsAbstractBlurEffect::draw(QPainter *painter)
 
   painter->setWorldTransform(restoreTransform);
 }
+
+QTEFFECTS_END_NAMESPACE
 
 // EOF

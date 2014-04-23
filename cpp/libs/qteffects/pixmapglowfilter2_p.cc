@@ -8,6 +8,8 @@
 #include <QtGui/QPainter>
 #include <QtGui/QPaintEngine>
 
+QTEFFECTS_BEGIN_NAMESPACE
+
 /** Private class **/
 
 class PixmapGlowFilter2Private : public PixmapAbstractBlurFilterPrivate
@@ -153,5 +155,7 @@ void PixmapGlowFilter2::draw(QPainter *p, const QPointF &pos, const QPixmap &px,
 
   p->drawPixmap(pos, px);
 }
+
+QTEFFECTS_END_NAMESPACE
 
 // EOF

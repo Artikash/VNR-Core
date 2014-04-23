@@ -4,6 +4,7 @@
 // metacallpropagator_p.h
 // 4/9/2012 jichi
 
+#include "qtmetacall/qtmetacall.h"
 #include "sakurakit/skglobal.h"
 #include <QtCore/QObject>
 

@@ -6,11 +6,11 @@
 #include "qtmetacall/metacallpropagator.h"
 #include <QtCore/QObject>
 
-class ReaderMetaCallPropagator : public QtMetaCall::MetaCallPropagator
+class ReaderMetaCallPropagator : public MetaCallPropagator
 {
   Q_OBJECT
   Q_DISABLE_COPY(ReaderMetaCallPropagator)
-  SK_EXTEND_CLASS(ReaderMetaCallPropagator, QtMetaCall::MetaCallPropagator)
+  SK_EXTEND_CLASS(ReaderMetaCallPropagator, MetaCallPropagator)
 
 public:
   explicit ReaderMetaCallPropagator(QObject *parent = nullptr) : Base(parent) {}

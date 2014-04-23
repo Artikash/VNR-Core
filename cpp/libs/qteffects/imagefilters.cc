@@ -4,6 +4,8 @@
 #include "qteffects/imagefilters_p.h"
 #include <QtGui/QPainter>
 
+QTEFFECTS_BEGIN_NAMESPACE
+
 // Alpha precsion & z precision, must be assigned at compile-time to specialize template
 //enum { blurImage_aprec = 12, blurImage_zprec = 10 }; // defaults
 enum { blurImage_aprec = 8, blurImage_zprec = 4 }; // essential, decide how text shadow effect is rendered
@@ -44,6 +46,8 @@ void blurImage(QPainter *painter, QImage &blurImage, qreal radius, bool quality,
     painter->drawImage(QRect(0, 0, blurImage.width(), blurImage.height()), blurImage);
   }
 }
+
+QTEFFECTS_END_NAMESPACE
 
 // EOF
 

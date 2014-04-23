@@ -9,8 +9,14 @@
 #include <QtGui/QPainter>
 #include <QtGui/QPaintEngine>
 
+QTEFFECTS_BEGIN_NAMESPACE
+
+// Construction
+
 PixmapTextShadowFilter::PixmapTextShadowFilter(QObject *parent): Base(parent) {}
 PixmapTextShadowFilter::~PixmapTextShadowFilter() {}
+
+// Paint
 
 void PixmapTextShadowFilter::draw(QPainter *p, const QPointF &pos, const QPixmap &px, const QRectF &src) const
 {
@@ -58,5 +64,7 @@ void PixmapTextShadowFilter::draw(QPainter *p, const QPointF &pos, const QPixmap
   // Draw the actual pixmap...
   p->drawPixmap(pos, px, src);
 }
+
+QTEFFECTS_END_NAMESPACE
 
 // EOF
