@@ -1,12 +1,13 @@
 // mainobj.cc
 // 2/1/2013 jichi
 
-#include "winhook/qt/mainobj.h"
-#include "winhook/qt/mainobj_p.h"
-#include "winhook/qt/myhash.h"
-#include "winhook/qt/dataman.h"
-#include "winhook/qt/rpccli.h"
-#include "qtmodule/qapplicationloader.h"
+#include "main.h"
+#include "driver/mainobj.h"
+#include "driver/mainobj_p.h"
+#include "driver/rpccli.h"
+#include "ui/uihash.h"
+#include "ui/uitextman.h"
+#include "qtembedded/applicationloader.h"
 //#include "wintimer/wintimer.h"
 #include <Commctrl.h>
 #include <TlHelp32.h>
@@ -22,7 +23,7 @@ enum { TEXT_BUFFER_SIZE = 256 };
 // - Initialization -
 
 namespace { namespace detail { // unnamed
-QApplicationLoader *loader;
+QtEmbedded::ApplicationLoader *loader;
 MainObject *instance;
 
 // Because boost::bind does not support __stdcall.
@@ -45,8 +46,9 @@ void MainObject::init()
   QTextCodec::setCodecForCStrings(codec);
   //QTextCodec::setCodecForTr(codec);
 
-  QCoreApplication *app = QApplicationLoader::createApplication();
-  detail::loader = new QApplicationLoader(app, My::EventLoopTimeout);
+  //detail::loader = QtEmbedded::ApplicationLoader::createInstance();
+  QCoreApplication *app = QtEmbedded::ApplicationLoader::createApplication();
+  detail::loader = new QtEmbedded::ApplicationLoader(app, Main::EventLoopInterval);
   detail::instance = new Self();
 }
 

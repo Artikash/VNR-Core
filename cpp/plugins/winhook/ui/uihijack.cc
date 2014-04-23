@@ -7,9 +7,9 @@
 // - Detours has thread-safe lock
 // - InjectFunction cannot override executable module?
 //
-#include "winhook/myfunc.h"
-#include "winhook/myfunc_p.h"
-#include "winhook/qt/mainobj.h"
+#include "ui/uihijack.h"
+#include "ui/uihijack_p.h"
+#include "driver/mainobj.h"
 #include "windbg/hijack.h"
 #include <psapi.h>
 #include <boost/foreach.hpp>

@@ -1,8 +1,9 @@
 // dataman.cc
 // 2/1/2013 jichi
 
-#include "winhook/qt/dataman.h"
-#include "winhook/qt/myhash.h"
+#include "main.h"
+#include "ui/uitextman.h"
+#include "ui/uihash.h"
 #include "wintimer/wintimer.h"
 #include "sakurakit/skhash.h"
 #include "QxtCore/QxtJSON"
@@ -11,7 +12,7 @@
 
 /** Private class */
 
-namespace {  DataManager::TextEntry NULL_TEXT_ENTRY; }
+namespace { DataManager::TextEntry NULL_TEXT_ENTRY; }
 
 class DataManagerPrivate
 {
@@ -31,7 +32,7 @@ public:
 public:
   explicit DataManagerPrivate(Q *q) : q_(q), textsDirty(false)
   {
-    refreshTextsTimer_.setInterval(My::EventLoopTimeout / 2);
+    refreshTextsTimer_.setInterval(Main::EventLoopInterval / 2);
     refreshTextsTimer_.setMethod(this, &Self::emitChangedTexts);
     // FIXME: Single shot does not work in this environment.
     // After kill a timer, cannot restart it again orz.

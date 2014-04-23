@@ -1,11 +1,10 @@
 // main_p.cc
 // 1/27/2013
 
-#include "winhook/main.h"
-#include "winhook/main_p.h"
-#include "winhook/myfunc.h"
-#include "winhook/qt/mydef.h"
-#include "winhook/qt/mainobj.h"
+#include "main.h"
+#include "main_p.h"
+#include "driver/mainobj.h"
+#include "ui/uihijack.h"
 #include "windbg/inject.h"
 #include "windbg/util.h"
 #include "cc/ccmacro.h"
@@ -42,10 +41,10 @@ MainPrivate::MainPrivate()
   WinDbg::ThreadsSuspender suspendedThreads; // lock all threads
   My::OverrideModules();
 
-  rehookTimer.setInterval(My::EventLoopTimeout * 10);
+  rehookTimer.setInterval(Main::EventLoopInterval * 10);
   rehookTimer.setFunction(&My::OverrideModules);
 
-  retransTimer.setInterval(My::EventLoopTimeout);
+  retransTimer.setInterval(Main::EventLoopInterval);
   retransTimer.setFunction(boost::bind(&MainObject::updateProcessWindows, 0));
 
 #ifdef WITH_LIB_WINHOOK

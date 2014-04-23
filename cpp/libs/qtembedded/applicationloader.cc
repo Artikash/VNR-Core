@@ -42,6 +42,8 @@ public:
     t_.start();
   }
 
+  int interval() const { return t_.interval(); }
+
   void destroy()
   {
     t_.stop();
@@ -79,6 +81,9 @@ ApplicationLoader::~ApplicationLoader()
 void ApplicationLoader::quit()
 { d_->destroy(); }
 
+int ApplicationLoader::eventLoopInterval() const
+{ return d_->interval(); }
+
 QCoreApplication *ApplicationLoader::createApplication()
 {
   static int argc = 1;
@@ -90,6 +95,23 @@ QCoreApplication *ApplicationLoader::createApplication()
 }
 
 void ApplicationLoader::processEvents() { d_->processEvents(); }
+
+//ApplicationLoader *ApplicationLoader::createInstance(int interval)
+//{
+//  QCoreApplication *app = QCoreApplication::instance();
+//  if (!app)
+//    app = createApplication();
+//  return new Self(app, interval);
+//}
+
+//void ApplicationLoader::destroyInstance(Self *inst)
+//{
+//  Q_ASSERT(inst);
+//  if (inst) {
+//    inst->quit();
+//    delete inst;
+//  }
+//}
 
 QTEMBEDDED_END_NAMESPACE
 

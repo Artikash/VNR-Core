@@ -21,19 +21,33 @@ class ApplicationLoader
   SK_DECLARE_PRIVATE(ApplicationLoaderPrivate)
 
 public:
+  // Default event loop timer interval in ms
+  enum { DefaultEventLoopInterval = 100 };
+
+  static QCoreApplication *createApplication();
+
+  ///**
+  // *  Create an instance in the memory.
+  // *  @param  interval  msecs to refresh the event loops
+  // */
+  //static Self *createInstance(int interval = DefaultEventLoopInterval);
+
+  /////  Stop the event loop and delete the instance.
+  //static void destroyInstance(Self *inst);
+
   /**
    *  App will be automatically deleted after destruction.
    *  @param  app
-   *  @param  window
    *  @param  interval  msecs to refresh the event loops
    */
-  ApplicationLoader(QCoreApplication *app, int interval);
+  explicit ApplicationLoader(QCoreApplication *app, int interval = DefaultEventLoopInterval);
   ~ApplicationLoader();
 
-  void quit();
+  int eventLoopInterval() const;
 
+  void quit();
   void processEvents();
-  static QCoreApplication *createApplication();
+
 };
 
 QTEMBEDDED_END_NAMESPACE

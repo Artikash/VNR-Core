@@ -8,7 +8,7 @@
 #include "singleapp/singleapp.h"
 #include "cc/ccmacro.h"
 
-#include "hijack/majiro.h"
+//#include "engine/majiro.h"
 
 // - Main -
 
@@ -35,10 +35,10 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
 
     // CHECKPOINT
     //My::OverrideGDIModules();
-    if (auto eng = Engine::getEngine()) {
-      Engine::setEnabled(true);
-      eng->inject();
-    }
+    //if (auto eng = Engine::getEngine()) {
+    //  Engine::setEnabled(true);
+    //  eng->inject();
+    //}
     break;
 
   case DLL_PROCESS_DETACH:

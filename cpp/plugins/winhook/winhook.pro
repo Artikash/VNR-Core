@@ -30,7 +30,8 @@ QT      -= gui
 #INCLUDEPATH += $$D3D_HOME/include
 #LIBS    += -ld3d9 -L$$D3D_HOME/lib/x86
 
-LIBS    += -luser32 -lpsapi -lgdi32
+LIBS    += -luser32 -lpsapi
+#LIBS    += -lgdi32
 
 ## Sources
 
@@ -43,8 +44,7 @@ HEADERS += \
   driver/mainobj.h \
   driver/mainobj_p.h \
   driver/rpccli.h \
-  driver/rpccli_p.h
-  ui/uidef.h \
+  driver/rpccli_p.h \
   ui/uihash.h \
   ui/uihijack.h \
   ui/uihijack_p.h \
@@ -61,11 +61,11 @@ SOURCES += \
   main_p.cc \
   growl.cc
 
-HEADERS += \
-  engine/majiro.h \
-  engine/majiro_p.h
-SOURCES += \
-  engine/majiro.cc
+#HEADERS += \
+#  engine/majiro.h \
+#  engine/majiro_p.h
+#SOURCES += \
+#  engine/majiro.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += winhook.rc

@@ -1,10 +1,10 @@
 // rpccli.cc
 // 2/1/2013 jichi
 
-#include "winhook/qt/rpccli.h"
-#include "winhook/qt/rpccli_p.h"
-#include "winhook/growl.h"
-#include "metacall/metacallpropagator.h"
+#include "driver/rpccli.h"
+#include "driver/rpccli_p.h"
+#include "growl.h"
+//#include "qtmetacall/metacallpropagator.h"
 #include <QtCore/QHash>
 
 /** Private class */

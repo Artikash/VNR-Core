@@ -4,7 +4,6 @@
 // dataman.h
 // 2/1/2013 jichi
 
-#include "winhook/qt/mydef.h"
 #include "sakurakit/skglobal.h"
 #include <QtCore/QList>
 #include <QtCore/QObject>

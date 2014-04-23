@@ -8,6 +8,8 @@
 
 namespace Main {
 
+enum { EventLoopInterval = 500 };
+
 /**
  *  Invoked when attached to the process
  *  @param  hInstance  the main dll instance

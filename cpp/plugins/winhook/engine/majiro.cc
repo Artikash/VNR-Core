@@ -1,8 +1,8 @@
 // majiro.cc
 // 4/20/2014 jichi
 
-#include "hijack/majiro.h"
-#include "hijack/majiro_p.h"
+#include "engine/majiro.h"
+#include "engine/majiro_p.h"
 #include "detoursutil/detoursutil.h"
 #include "memdbg/memsearch.h"
 #include "ntinspect/ntinspect.h"
