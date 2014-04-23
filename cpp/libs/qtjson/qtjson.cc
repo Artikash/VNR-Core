@@ -13,6 +13,7 @@
 // Helpers
 namespace { // unamed
 
+  ///  Return escaped special string if succeed
   const char *escapeSpecialChar(ushort ch)
   {
     switch (ch) {
@@ -27,6 +28,7 @@ namespace { // unamed
     }
   }
 
+  ///  Return \uXXXX
   QString escapeUnicode(ushort ch)
   {
     QString r = QString::number(ch, 16);
@@ -46,13 +48,11 @@ QString QtJson::stringify(const QVariant &v)
   switch (v.type()) {
     case QVariant::Bool: return v.toBool() ? "true" : "false";
 
-    case QVariant::ULongLong:
-    case QVariant::UInt:
-      return QString::number(v.toULongLong());
+    case QVariant::ULongLong: return QString::number(v.toULongLong());
+    case QVariant::UInt: return QString::number(v.toUInt());
 
-    case QVariant::LongLong:
-    case QVariant::Int:
-      return QString::number(v.toLongLong());
+    case QVariant::LongLong: return QString::number(v.toLongLong());
+    case QVariant::Int: return QString::number(v.toInt());
 
     case QVariant::Double: return QString::number(v.toDouble());
 
@@ -65,9 +65,9 @@ QString QtJson::stringify(const QVariant &v)
           i.next();
           r += "\"" + i.key() + "\":" + stringify(i.value()) + "," ;
         }
-        if (r.length()>1)
+        if (r.length() > 1)
           r.chop(1); // chop the last comma
-        r+="}";
+        r.append('}');
         return r;
       }
 
@@ -83,7 +83,7 @@ QString QtJson::stringify(const QVariant &v)
         }
         if (r.length()>1)
           r.chop(1); // chop the last comma
-        r += "}";
+        r.append('}');
         return r;
       }
 #endif
@@ -92,11 +92,10 @@ QString QtJson::stringify(const QVariant &v)
       {
         QString r = "[";
         QStringList l = v.toStringList();
-        foreach (QString i, l) {
-          r += "\"" + i + "\",";
-        }
-        if (r.length()>1)
-          r.chop(1);
+        foreach (const QString &it, l)
+          r += "\"" + it + "\",";
+        if (r.length() > 1)
+          r.chop(1); // chop the trailing comma
         r.append(']');
         return r;
       }
@@ -105,31 +104,39 @@ QString QtJson::stringify(const QVariant &v)
       {
         QString r = "[";
         QVariantList l = v.toList();
-        foreach (QVariant i, l)
-          r += stringify(i) + ",";
+        foreach (const QVariant &it, l)
+          r += stringify(it) + ",";
         if (r.length() > 1)
           r.chop(1);
         r.append(']');
         return r;
       }
 
+    //case QVariant::Char:
+    //case QVariant::ByteArray:
+    //case QVariant::Date:
+    //case QVariant::DateTime:
+    //case QVariant::Time:
     case QVariant::String:
     default:
       {
         QString in = v.toString();
         QString out;
-        for (QString::ConstIterator i = in.constBegin(); i != in.constEnd(); ++i) {
-          ushort w = i->unicode();
+        for (QString::ConstIterator p = in.constBegin(); p != in.constEnd(); ++p) {
+          ushort w = p->unicode();
           if (!w) // w == 0, which should never happen
             continue;
           else if (const char *s = escapeSpecialChar(w))
             out.append(s);
-          else if (w > 127 || w < 32)
+          else if (w > 127 || w < 32) // non-ascii or non-printable
             out += escapeUnicode(w);
           else
-            out.append(*i);
+            out.append(*p);
         }
-        return "\"" + out + "\"";
+        //return "\"" + out + "\"";
+        out.append('"')
+           .prepend('"');
+        return out;
       }
   }
   return QString();
