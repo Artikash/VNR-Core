@@ -6,7 +6,7 @@
 #include "ui/uihash.h"
 #include "wintimer/wintimer.h"
 #include "sakurakit/skhash.h"
-#include "QxtCore/QxtJSON"
+#include "qtjson/qtjson"
 #include <QtCore/QHash>
 #include <unordered_set>
 
@@ -69,7 +69,7 @@ void DataManagerPrivate::emitChangedTexts()
       texts[QString::number(e.hash)] = e.text;
 
   if (!texts.isEmpty()) {
-    QString json = QxtJSON::stringify(texts);
+    QString json = QtJson::stringify(texts);
     q_->emit textsChanged(json);
   }
 }
