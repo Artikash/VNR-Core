@@ -13,6 +13,20 @@
 // Helpers
 namespace { // unamed
 
+  const char *escapeSpecialChar(ushort ch)
+  {
+    switch (ch) {
+    case '\\': return "\\\\";
+    case '"': return "\\\"";
+    case '\n': return "\\n";
+    case '\r': return "\\r";
+    case '\t': return "\\t";
+    case '\b': return "\\b";
+    case '\f': return "\\f";
+    default: return nullptr;
+    }
+  }
+
   QString escapeUnicode(ushort ch)
   {
     QString r = QString::number(ch, 16);
@@ -106,7 +120,9 @@ QString QtJson::stringify(const QVariant &v)
         QString out;
         for (QString::ConstIterator i = in.constBegin(); i != in.constEnd(); ++i) {
           ushort w = i->unicode();
-          if (w > 127 || w < 32)
+          if (const char *s = escapeSpecialChar(w))
+            out.append(s);
+          else if (w > 127 || w < 32)
             out += escapeUnicode(w);
           else
             out.append(*i);
@@ -118,22 +134,3 @@ QString QtJson::stringify(const QVariant &v)
 }
 
 // EOF
-
-//QString QtJson::tryEscape(const QChar &ch)
-//{
-//  ushort w = ch.unicode();
-//  if (w > 127 || w < 32)
-//    return "\\u" + QString::number(w, 16);
-//  else
-//    return QString();
-//  //switch (ch.unicode()) {
-//  //case '\b': return "\\b";
-//  //case '\f': return "\\f";
-//  //case '\n': return "\\n";
-//  //case '\r': return "\\r";
-//  //case '\t': return "\\t";
-//  //case '\f': return "\\f";
-//  //case '\\': return "\\\\";
-//  //default: return QString();
-//  //}
-//}

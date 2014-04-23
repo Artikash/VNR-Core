@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
   QApplication a(argc, argv);
 
   QHash<QString, QVariant> x;
-  x["hello"] = QString::fromWCharArray(L"こんにちは");
+  x["hello"] = QString::fromWCharArray(L"\"");
 
   QString t = QtJson::stringify(x);
 
