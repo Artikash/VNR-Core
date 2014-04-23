@@ -6,8 +6,10 @@
 #include "ui/uihash.h"
 #include "wintimer/wintimer.h"
 #include "sakurakit/skhash.h"
-#include "qtjson/qtjson"
+#include "QxtCore/QxtJSON"
+#include "qtjson/qtjson.h"
 #include <QtCore/QHash>
+#include <QtCore/QVariant>
 #include <unordered_set>
 
 /** Private class */

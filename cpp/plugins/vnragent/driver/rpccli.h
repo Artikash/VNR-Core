@@ -5,7 +5,6 @@
 // 2/1/2013 jichi
 
 #include "sakurakit/skglobal.h"
-//#include "winhook/qt/mydef.h"
 #include <QtCore/QObject>
 
 class RpcClientPrivate;

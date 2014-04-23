@@ -1,10 +1,10 @@
-# winhook.pro
+# vnragent.pro
 # 1/22/2013 jichi
 
 CONFIG += noqtgui dll
 include(../../../config.pri)
 include($$LIBDIR/detoursutil/detoursutil.pri)
-#include($$LIBDIR/libqxt/libqxt.pri)
+include($$LIBDIR/libqxt/libqxt.pri)
 include($$LIBDIR/memdbg/memdbg.pri)
 include($$LIBDIR/ntinspect/ntinspect.pri)
 include($$LIBDIR/qtembedded/qtembedded.pri)
@@ -17,7 +17,7 @@ include($$LIBDIR/winquery/winquery.pri)
 include($$LIBDIR/wintimer/wintimer.pri)
 
 #include($$LIBDIR/disasm/disasm.pri)
-#include($$LIBDIR/winhook/winhook.pri)
+#include($$LIBDIR/vnragent/vnragent.pri)
 
 # Modules
 HEADERS += $$SERVICEDIR/reader/metacall.h
@@ -37,7 +37,7 @@ LIBS    += -luser32 -lpsapi
 ## Sources
 
 TEMPLATE = lib
-TARGET  = winhook
+TARGET  = vnragent
 
 #DEPENDPATH += driver engine game ui
 
@@ -69,8 +69,8 @@ SOURCES += \
 #  engine/majiro.cc
 
 #!wince*: LIBS += -lshell32
-#RC_FILE += winhook.rc
+#RC_FILE += vnragent.rc
 
-OTHER_FILES += winhook.rc
+OTHER_FILES += vnragent.rc
 
 # EOF

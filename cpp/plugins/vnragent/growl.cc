@@ -1,6 +1,6 @@
 // growl.cc
 // 2/1/2013
-#include "winhook/growl.h"
+#include "growl.h"
 #ifdef QT_CORE_LIB
 # include <qt_windows.h>
 #else

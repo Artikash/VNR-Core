@@ -1,5 +1,5 @@
 /*
- * winhook.rc
+ * vnragent.rc
  * 10/20/2011 jichi
  */
 #if defined(UNDER_CE)
@@ -29,8 +29,8 @@ VS_VERSION_INFO VERSIONINFO
             VALUE "FileDescription", "Window Hook\0"
             VALUE "FileVersion", "0.0.0.1\0"
             VALUE "LegalCopyright", "Copyright (C) 2012.\0"
-            VALUE "OriginalFilename", "winhook.dll\0"
-            VALUE "ProductName", "winhook\0"
+            VALUE "OriginalFilename", "vnragegnt.dll\0"
+            VALUE "ProductName", "vnragent\0"
          END
       END
    END

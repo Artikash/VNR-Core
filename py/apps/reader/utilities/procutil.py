@@ -173,8 +173,8 @@ def open_executable(path, lcid=0, params=None):
 
     #from sakurakit import skwinsec
     #with skwinsec.SkProcessCreator(path, params=params) as proc:
-    #  import winhook
-    #  winhook.inject_process(proc.processId)
+    #  import vnragent
+    #  vnragent.inject_process(proc.processId)
     #  return proc.processId
 
 def open_executable_with_ntlea(path, params=None):

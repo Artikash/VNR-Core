@@ -45,38 +45,4 @@ if __name__ == '__main__':
   ss.setBlockedLanguages({'en','de'})
   print ss.blockedLanguages()
 
-  def test_winhook():
-    import rpcman, config
-
-    if False:
-      import app
-      a = QApplication(sys.argv)
-
-      d = rpcman._RpcServer()
-      d.startClient('127.0.0.1', config.QT_METACALL_PORT)
-      d.waitForReady()
-      #d.q_activated.emit()
-      #d.q_pingServer.emit(123)
-      d.q_updateServerJson.emit("123456")
-      #d.q_push.emit(123)
-      a.processEvents()
-      sys.exit(0)
-
-    import procutil
-    path = ur'S:\Games\カミカゼ☆エクスプローラー！\cs2.exe'
-    pid = procutil.get_process_by_path(path).pid
-
-    from sakurakit import skwinsec
-    # It is better to use injectfunc1(AddDllDirectory), which is only supported by win8
-    dlls = [
-      r'S:\Stream\Library\Frameworks\Qt\PySide\QtCore4.dll',
-      r'S:\Stream\Library\Frameworks\Qt\PySide\QtNetwork4.dll',
-      r'S:\Stream\Library\Frameworks\Sakura\build\winhook.dll',
-    ]
-    for dll in dlls:
-      import os
-      print os.path.exists(dll)
-      skwinsec.injectdll(dll, pid=pid)
-    print "debug: leave"
-
 # EOF

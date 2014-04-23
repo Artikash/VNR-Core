@@ -1,5 +1,5 @@
 # coding: utf8
-# winhook.py
+# vnragent.py
 # 2/3/2013 jichi
 # Windows only
 
@@ -16,7 +16,7 @@ if skos.WIN:
     """
     dprint("enter: pid = %s" % pid)
     ret = True
-    for dllpath in config.WINHOOK_DLLS:
+    for dllpath in config.VNRAGENT_DLLS:
       #dllpath = os.path.abspath(dllpath)
       dllpath = skpaths.abspath(dllpath)
       assert os.path.exists(dllpath), "needed dll does not exist"

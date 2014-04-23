@@ -15,7 +15,7 @@ from sakurakit.skunicode import sjis_encodable, u_sjis
 from sakurakit.skwinobj import SkWindowObject #, SkTaskBarObject
 from texthook import texthook
 from mytr import my
-import config, dataman, defs, displayutil, features, growl, hashutil, netman, osutil, procutil, rc, rpcman, settings, textman, textutil, winhook, winutil
+import config, dataman, defs, displayutil, features, growl, hashutil, netman, osutil, procutil, rc, rpcman, settings, textman, textutil, vnragent, winutil
 
 PROGRAMFILES = QtCore.QDir.fromNativeSeparators(skpaths.PROGRAMFILES)
 PROGRAMFILES_RE = re.compile(re.escape(PROGRAMFILES), re.IGNORECASE)
@@ -631,7 +631,7 @@ class GameProfile(QtCore.QObject):
                 elif not features.WINE:
                   growl.notify(my.tr("Launch the game in original Japanese locale"))
                 self.pid = procutil.open_executable(self.path, lcid=lcid)
-                #winhook.inject_process(self.pid)
+                #vnragent.inject_process(self.pid)
                 #rpcman.manager().enableClient()
                 if not self.pid:
                   proc = procutil.get_process_by_path(self.path)
@@ -1100,8 +1100,8 @@ class GameManager(QtCore.QObject):
       if d.game and d.game.pid:
         growl.msg(my.tr("Translating window text"))
         if not d.windowHookConnected and not textman.manager().hasWindowTexts():
-          dprint("inject window hook to game")
-          winhook.inject_process(d.game.pid)
+          dprint("inject vnr agent to the game")
+          vnragent.inject_process(d.game.pid)
         rpcman.manager().enableClient()
 
   def disableWindowHook(self):

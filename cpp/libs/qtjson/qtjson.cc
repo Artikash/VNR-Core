@@ -120,7 +120,9 @@ QString QtJson::stringify(const QVariant &v)
         QString out;
         for (QString::ConstIterator i = in.constBegin(); i != in.constEnd(); ++i) {
           ushort w = i->unicode();
-          if (const char *s = escapeSpecialChar(w))
+          if (!w) // w == 0, which should never happen
+            continue;
+          else if (const char *s = escapeSpecialChar(w))
             out.append(s);
           else if (w > 127 || w < 32)
             out += escapeUnicode(w);

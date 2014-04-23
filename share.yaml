@@ -581,12 +581,12 @@ cursors:
   IDC_HAND:         $PWD/cursors/blue_B/15.cur
 
 dlls:
-  winhook:
+  vnragent:
   - $PWD/../Python/msvcr100.dll         # depends on kernel
   - $PWD/../Python/msvcp100.dll         # depends on msvcr
   - $PWD/../Qt/PySide/QtCore4.dll       # depends on msvcr, msvcp
   - $PWD/../Qt/PySide/QtNetwork4.dll    # depends on qtcore
-  - $PWD/bin/winhook.dll
+  - $PWD/bin/vnragent.dll
 
 # EOF
 
