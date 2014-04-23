@@ -19,7 +19,7 @@ include($$LIBDIR/wintimer/wintimer.pri)
 #include($$LIBDIR/winhook/winhook.pri)
 
 # Modules
-HEADERS += $$MODULEDIR/reader/metacall.h
+HEADERS += $$SERVICEDIR/reader/metacall.h
 
 ## Libraries
 

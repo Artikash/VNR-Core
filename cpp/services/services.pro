@@ -1,4 +1,4 @@
-# modules.pro
+# services.pro
 # 7/31/2011 jichi
 
 TEMPLATE = subdirs

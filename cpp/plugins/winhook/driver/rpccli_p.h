@@ -3,7 +3,7 @@
 // rpccli_p.h
 // 2/1/2013 jichi
 
-#include "modules/reader/metacall.h"
+#include "services/reader/metacall.h"
 #include "wintimer/wintimer.h"
 #include <QtCore/QObject>
 
