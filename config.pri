@@ -9,8 +9,8 @@ BUILDDIR = $$ROOTDIR/build
 SRCDIR  = $$ROOTDIR/cpp
 CONFDIR = $$SRCDIR/conf
 LIBDIR  = $$SRCDIR/libs
-MODULEDIR  = $$SRCDIR/modules
-PLUGINDIR  = $$SRCDIR/plugins
+PLUGINDIR = $$SRCDIR/plugins
+SERVICEDIR = $$SRCDIR/services
 
 DESTDIR         = $$BUILDDIR
 #win32:  DESTDIR_TARGET  = $$BUILDDIR/release.win
@@ -23,8 +23,8 @@ mac:  LIBS      += -F$$DESTDIR
 INCLUDEPATH += \
   $$SRCDIR \
   $$LIBDIR \
-  $$MODULEDIR \
-  $$PLUGINDIR
+  $$PLUGINDIR \
+  $$SERVICEDIR
 
 ## Compiling options
 

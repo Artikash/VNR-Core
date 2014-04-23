@@ -43,7 +43,7 @@ simple:
   - MAJIRO
   - Malie2
   - Malie3
-  - Mono # Deprecated
+  - Mono
   - Pensil
   - RealLive
   - ShinaRio
@@ -164,7 +164,7 @@ wchar:
   - Malie
   - Malie2
   - Malie3
-  - Mono # deprecated
+  - Mono
   - ShinyDays
   - SiglusEngine
   - SiglusEngine2

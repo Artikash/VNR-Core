@@ -45,7 +45,7 @@ if __name__ == '__main__':
   ss.setBlockedLanguages({'en','de'})
   print ss.blockedLanguages()
 
-  def test_winhook():
+  def test_vnragent():
     import rpcman, config
 
     if False:
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     dlls = [
       r'S:\Stream\Library\Frameworks\Qt\PySide\QtCore4.dll',
       r'S:\Stream\Library\Frameworks\Qt\PySide\QtNetwork4.dll',
-      r'S:\Stream\Library\Frameworks\Sakura\build\winhook.dll',
+      r'S:\Stream\Library\Frameworks\Sakura\build\vnragent.dll',
     ]
     for dll in dlls:
       import os

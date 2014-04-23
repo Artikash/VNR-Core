@@ -20,6 +20,6 @@
 
 //#include <QtCore>
 //#include "metacall/metacallrouter.h"
-#include "modules/reader/metacall.h"
+#include "services/reader/metacall.h"
 
 // EOF

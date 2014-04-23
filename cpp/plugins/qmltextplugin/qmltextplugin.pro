@@ -4,8 +4,8 @@
 
 CONFIG += qmlplugin
 include(../../../config.pri)
-include($$LIBDIR/imageutil/imageutil.pri)
 include($$LIBDIR/qmltext/qmltext.pri)
+include($$LIBDIR/qtimage/qtimage.pri)
 include($$LIBDIR/qtprivate/declarative.pri)
 
 ## Sources

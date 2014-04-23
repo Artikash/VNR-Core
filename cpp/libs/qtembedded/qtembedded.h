@@ -1,0 +1,17 @@
+#ifndef QTEMBEDDED_H
+#define QTEMBEDDED_H
+
+// qtembedded.h
+// 2/1/2013 jichi
+
+#ifndef QTEMBEDDED_BEGIN_NAMESPACE
+# define QTEMBEDDED_BEGIN_NAMESPACE namespace QtEmbedded {
+#endif
+#ifndef QTEMBEDDED_END_NAMESPACE
+# define QTEMBEDDED_END_NAMESPACE   } // namespace QtEmbedded
+#endif
+
+QTEMBEDDED_BEGIN_NAMESPACE
+QTEMBEDDED_END_NAMESPACE
+
+#endif // QTEMBEDDED_H

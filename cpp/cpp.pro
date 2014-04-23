@@ -4,7 +4,7 @@ TEMPLATE = subdirs
 SUBDIRS += \
   confs \
   libs \
-  modules \
+  services \
   plugins \
   apps \
   tests

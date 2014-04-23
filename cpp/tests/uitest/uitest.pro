@@ -2,7 +2,7 @@
 # 4/5/2014
 
 include(../../../config.pri)
-#include($$LIBDIR/graphicseffect/graphicseffect.pri)
+#include($$LIBDIR/qteffects/qteffects.pri)
 
 # Source
 

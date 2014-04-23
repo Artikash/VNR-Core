@@ -4,6 +4,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
+  jsontest \
   pytest \
   uitest
 
