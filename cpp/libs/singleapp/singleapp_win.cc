@@ -51,7 +51,7 @@ public:
 
 SINGLEAPP_BEGIN_NAMESPACE
 
-bool single_app() { return detail::a.ownMutex(); }
+bool singleapp() { return detail::a.ownMutex(); }
 
 SINGLEAPP_END_NAMESPACE
 

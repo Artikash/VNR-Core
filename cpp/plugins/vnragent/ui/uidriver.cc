@@ -1,7 +1,7 @@
-// mainobj.cc
+// uidriver.cc
 // 2/1/2013 jichi
 
-#include "main.h"
+#include "global.h"
 #include "driver/mainobj.h"
 #include "driver/mainobj_p.h"
 #include "driver/rpccli.h"
@@ -9,8 +9,8 @@
 #include "ui/uitextman.h"
 #include "qtembedded/applicationloader.h"
 //#include "wintimer/wintimer.h"
-#include <Commctrl.h>
-#include <TlHelp32.h>
+#include <commctrl.h>
+#include <tlhelp32.h>
 #include <QtCore/QHash>
 #include <QtCore/QTextCodec>
 
@@ -48,7 +48,7 @@ void MainObject::init()
 
   //detail::loader = QtEmbedded::ApplicationLoader::createInstance();
   QCoreApplication *app = QtEmbedded::ApplicationLoader::createApplication();
-  detail::loader = new QtEmbedded::ApplicationLoader(app, Main::EventLoopInterval);
+  detail::loader = new QtEmbedded::ApplicationLoader(app, Global::EventLoopInterval);
   detail::instance = new Self();
 }
 

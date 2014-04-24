@@ -13,7 +13,7 @@
 
 SINGLEAPP_BEGIN_NAMESPACE
 /// Return if this is the first process of the application
-bool single_app();
+bool singleapp();
 SINGLEAPP_END_NAMESPACE
 
 #endif // SINGLEAPP_H

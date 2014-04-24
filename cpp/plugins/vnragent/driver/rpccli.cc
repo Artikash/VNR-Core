@@ -15,14 +15,14 @@ RpcClientPrivate::RpcClientPrivate(Q *q)
   connect(r, SIGNAL(updateClientData(QString)), q, SIGNAL(dataReceived(QString)));
   connect(r, SIGNAL(callClient(QString)), SLOT(onCall(QString)));
 
-  reconnectTimer.setInterval(3000);
-  reconnectTimer.setMethod(this, &Self::reconnect);
+  reconnectTimer = new QTimer(q);
+  reconnectTimer->setSingleShot(true);
+  reconnectTimer->setInterval(3000);
+  connect(reconnectTimer, SIGNAL(timeout()), SLOT(reconnect()));
+
   //connect(r, SIGNAL(disconnected()), SLOT(reconnect()), Qt::QueuedConnection);
   //connect(r, SIGNAL(socketError()), SLOT(reconnect()), Qt::QueuedConnection);
 }
-
-RpcClientPrivate::~RpcClientPrivate()
-{ reconnectTimer.stop(); }
 
 bool RpcClientPrivate::reconnect()
 {

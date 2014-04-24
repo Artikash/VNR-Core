@@ -24,7 +24,7 @@ public:
   // Default event loop timer interval in ms
   enum { DefaultEventLoopInterval = 100 };
 
-  static QCoreApplication *createApplication();
+  static QCoreApplication *createApplication(HINSTANCE hInstance = nullptr);
 
   ///**
   // *  Create an instance in the memory.

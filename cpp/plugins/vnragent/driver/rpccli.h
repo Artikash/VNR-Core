@@ -22,6 +22,7 @@ public:
 
   // - API -
 signals:
+  // UI
   void clearRequested();
   void enableRequested();
   void disableRequested();

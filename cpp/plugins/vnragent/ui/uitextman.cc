@@ -4,7 +4,6 @@
 #include "main.h"
 #include "ui/uitextman.h"
 #include "ui/uihash.h"
-#include "wintimer/wintimer.h"
 #include "sakurakit/skhash.h"
 #include "QxtCore/QxtJSON"
 #include "qtjson/qtjson.h"
@@ -22,7 +21,7 @@ class DataManagerPrivate
   SK_DISABLE_COPY(DataManagerPrivate)
   SK_DECLARE_PUBLIC(DataManager)
 
-  WinTimer refreshTextsTimer_; // QTimer is not working
+  QTimer *refreshTextsTimer_; // QTimer is not working
   bool textsDirty;
 public:
   Q::TextEntryList entries;
@@ -34,7 +33,7 @@ public:
 public:
   explicit DataManagerPrivate(Q *q) : q_(q), textsDirty(false)
   {
-    refreshTextsTimer_.setInterval(Main::EventLoopInterval / 2);
+    refreshTextsTimer_.setInterval(Global::EventLoopInterval / 2);
     refreshTextsTimer_.setMethod(this, &Self::emitChangedTexts);
     // FIXME: Single shot does not work in this environment.
     // After kill a timer, cannot restart it again orz.

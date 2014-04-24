@@ -4,8 +4,8 @@
 // 2/1/2013 jichi
 
 #include "services/reader/metacall.h"
-#include "wintimer/wintimer.h"
 #include <QtCore/QObject>
+#include <QtCore/QTimer>
 
 class RpcClient;
 class RpcClientPrivate;
@@ -40,17 +40,15 @@ class RpcClientPrivate : public QObject
 
 public:
   explicit RpcClientPrivate(Q *q);
-  ~RpcClientPrivate();
 
   RpcPropagator *r;
-  WinTimer reconnectTimer;
+  QTimer *reconnectTimer;
 
   enum { PORT = 6103 }; // must be consistent with the metacall port defined in reader.yaml
   bool start() { return r->startClient("127.0.0.1", PORT); }
 
-  bool reconnect();
-
 protected slots:
+  bool reconnect();
   void onCall(const QString &cmd);
 };
 

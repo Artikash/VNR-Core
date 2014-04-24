@@ -1,9 +1,6 @@
-// main_p.cc
+// driverloader.cc
 // 1/27/2013
 
-#include "main.h"
-#include "main_p.h"
-#include "driver/mainobj.h"
 #include "ui/uihijack.h"
 #include "windbg/inject.h"
 #include "windbg/util.h"
@@ -31,8 +28,10 @@ void Main::initWithInstance(HINSTANCE hInstance)
 
 void Main::destroy()
 {
-  delete detail::d_ptr;
-  detail::d_ptr = nullptr;
+  if (d_ptr) {
+    delete detail::d_ptr;
+    detail::d_ptr = nullptr;
+  }
   MainObject::destroy();
 }
 
@@ -41,10 +40,10 @@ MainPrivate::MainPrivate()
   WinDbg::ThreadsSuspender suspendedThreads; // lock all threads
   My::OverrideModules();
 
-  rehookTimer.setInterval(Main::EventLoopInterval * 10);
+  rehookTimer.setInterval(Global::EventLoopInterval * 10);
   rehookTimer.setFunction(&My::OverrideModules);
 
-  retransTimer.setInterval(Main::EventLoopInterval);
+  retransTimer.setInterval(Global::EventLoopInterval);
   retransTimer.setFunction(boost::bind(&MainObject::updateProcessWindows, 0));
 
 #ifdef WITH_LIB_WINHOOK

@@ -1,7 +1,7 @@
-#ifndef MYHASH_H
-#define MYHASH_H
+#ifndef UIHASH_H
+#define UIHASH_H
 
-// myhash.h
+// uihash.h
 // 2/1/2013 jichi
 
 #include "sakurakit/skhash.h"
@@ -9,7 +9,7 @@
 #include <QtGui/qwindowdefs.h>
 //#include <qt_windows.h>
 
-namespace My {
+namespace Ui {
 
 // Cast quint64 to qint64
 
@@ -38,6 +38,6 @@ inline long hashWindow(WId window)
 inline long hashWindowItem(WId window, TextRole role, size_t index = 0)
 { return reinterpret_cast<long>(window) + index + role; }
 
-} // namespace My
+} // namespace Ui
 
-#endif // MYHASH_H
+#endif // UIHASH_H

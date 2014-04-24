@@ -122,17 +122,15 @@ QString QtJson::stringify(const QVariant &v)
       {
         QString in = v.toString();
         QString out;
-        for (QString::ConstIterator p = in.constBegin(); p != in.constEnd(); ++p) {
-          ushort w = p->unicode();
-          if (!w) // w == 0, which should never happen
-            continue;
-          else if (const char *s = escapeSpecialChar(w))
-            out.append(s);
-          else if (w > 127 || w < 32) // non-ascii or non-printable
-            out += escapeUnicode(w);
-          else
-            out.append(*p);
-        }
+        for (QString::ConstIterator p = in.constBegin(); p != in.constEnd(); ++p)
+          if (ushort w = p->unicode()) { // skip '\0' character
+            if (const char *s = escapeSpecialChar(w))
+              out.append(s);
+            else if (w > 127 || w < 32) // non-ascii or non-printable
+              out += escapeUnicode(w);
+            else
+              out.append(*p);
+          }
         //return "\"" + out + "\"";
         out.append('"')
            .prepend('"');

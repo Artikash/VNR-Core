@@ -32,32 +32,32 @@ class ApplicationLoaderPrivate
 public:
   QCoreApplication *app;
 
-  ApplicationLoaderPrivate(): app(nullptr) {}
-  ~ApplicationLoaderPrivate() { if (Q_LIKELY(app)) delete app; }
+  explicit ApplicationLoaderPrivate(QCoreApplication *app)
+    : app(app) { Q_ASSERT(app); }
 
-  void init(int interval)
+  // App is never deleted
+  //~ApplicationLoaderPrivate()
+  //{ delete app; }
+
+  void initTimer(int interval)
   {
     t_.setInterval(interval);
+    t_.setSingleShot(false); // repeat
     t_.setMethod(this, &Self::processEvents);
     t_.start();
   }
 
   int interval() const { return t_.interval(); }
 
-  void destroy()
+  void quit()
   {
     t_.stop();
-    if (Q_LIKELY(app)) {
-      delete app;
-      app = nullptr;
-    }
+    app->quit();
+    app->processEvents(); // hang
   }
 
   void processEvents()
-  {
-    if (Q_LIKELY(app))
-      app->processEvents(QEventLoop::AllEvents, t_.interval());
-  }
+  { app->processEvents(QEventLoop::AllEvents, t_.interval()); }
 };
 
 /** Public class */
@@ -65,11 +65,10 @@ public:
 // - Construction -
 
 ApplicationLoader::ApplicationLoader(QCoreApplication *app, int interval)
-  : d_(new D)
+  : d_(new D(app))
 {
   Q_ASSERT(app);
-  d_->app = app;
-  d_->init(interval);
+  d_->initTimer(interval);
 }
 
 ApplicationLoader::~ApplicationLoader()
@@ -79,22 +78,27 @@ ApplicationLoader::~ApplicationLoader()
 }
 
 void ApplicationLoader::quit()
-{ d_->destroy(); }
+{ d_->quit(); }
 
 int ApplicationLoader::eventLoopInterval() const
 { return d_->interval(); }
 
-QCoreApplication *ApplicationLoader::createApplication()
+QCoreApplication *ApplicationLoader::createApplication(HINSTANCE hInstance)
 {
-  static int argc = 1;
-  static char arg0[MAX_PATH * 2] = {0};
+  static char arg0[MAX_PATH * 2]; // in case it is wchar
+
   static char *argv[] = { arg0, nullptr };
-  if (Q_UNLIKELY(!*arg0))
-    ::GetModuleFileNameA(nullptr, arg0, sizeof(arg0)/sizeof(*arg0));
+  static int argc = 1;
+
+ ::GetModuleFileNameA(hInstance, arg0, sizeof(arg0)/sizeof(*arg0));
   return new QCoreApplication(argc, argv);
 }
 
 void ApplicationLoader::processEvents() { d_->processEvents(); }
+
+QTEMBEDDED_END_NAMESPACE
+
+// EOF
 
 //ApplicationLoader *ApplicationLoader::createInstance(int interval)
 //{
@@ -112,7 +116,3 @@ void ApplicationLoader::processEvents() { d_->processEvents(); }
 //    delete inst;
 //  }
 //}
-
-QTEMBEDDED_END_NAMESPACE
-
-// EOF
