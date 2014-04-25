@@ -39,6 +39,7 @@ def getchu(): return GetchuManager()
 
 _re_title = '|'.join((
   ur'\[同人PCソフト\]',
+  ur'＜特価セール.*', # getchu
   ur'【..特典.*',
   ur' DVD .*',
   ur' DVD版.*',
