@@ -35,7 +35,7 @@ from sakurakit.sktr import tr_
 from mytr import my, mytr_
 import i18n
 
-# FIXME: redraw dows not work!!!!
+# FIXME: redraw dows not work
 
 class DataInfo(object):
 
@@ -170,15 +170,18 @@ class _ChartDialog(object):
     mint = info.times[0]
     maxt = info.times[-1]
 
-    ax.xaxis.set_major_formatter(mpl.dates.DateFormatter('%a %b %d')) # "Feb 2, Mon"
-    ax.xaxis.set_major_locator(mpl.dates.MonthLocator()
-        if maxt - mint > 86400 * 90 else # 3 month
-        mpl.dates.WeekdayLocator())
+    if maxt - mint > 86400 * 90: # 3 months
+      ax.xaxis.set_major_formatter(mpl.dates.DateFormatter('%b')) # "Feb 2"
+      ax.xaxis.set_major_locator(mpl.dates.MonthLocator())
+    else:
+      ax.xaxis.set_major_formatter(mpl.dates.DateFormatter('%a %b %d')) # "Feb 2, Mon"
+      ax.xaxis.set_major_locator(mpl.dates.WeekdayLocator())
 
     ax.grid(True)
     mindate = info.dates[0]
     maxdate = info.dates[-1]
     ax.set_xlim(mindate, maxdate)
+    #ax.set_ylim(ymin=0) # http://stackoverflow.com/questions/5548121/minimum-value-of-y-axis-is-not-being-applied-in-matplotlib-vlines-plot
 
   @classmethod
   def _plotUserStackFigure(cls, ax, info):
@@ -200,6 +203,12 @@ class _ChartDialog(object):
         c += stats[n].get(t) or 0
         l.append(c)
       plots.append(l)
+
+    # Not sure why it is optional to user count
+    # Force changing ymin to 0
+    # http://stackoverflow.com/questions/5548121/minimum-value-of-y-axis-is-not-being-applied-in-matplotlib-vlines-plot
+    #ymax = sum(it[-1] for it in plots)
+    #ax.set_ylim(0, ymax)
 
     ax.stackplot(info.dates, plots)
 
@@ -223,6 +232,11 @@ class _ChartDialog(object):
         c += stats[n].get(t) or 0
         l.append(c)
       plots.append(l)
+
+    # Force changing ymin to 0
+    # http://stackoverflow.com/questions/5548121/minimum-value-of-y-axis-is-not-being-applied-in-matplotlib-vlines-plot
+    ymax = sum(it[-1] for it in plots) + 600 # larger, 600 = 16000 - 15400
+    ax.set_ylim(0, ymax)
 
     ax.stackplot(info.dates, plots)
 
