@@ -35,7 +35,7 @@ signals:
   void updateClientData(const QString &json); // s=>c
   void q_updateClientData(const QString &json);
 
-  // - Messages
+  // - Messages -
 
   void growlServerMessage(const QString &text); // c=>s
   void q_growlServerMessage(const QString &text);
