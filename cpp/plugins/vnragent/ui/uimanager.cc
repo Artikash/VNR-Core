@@ -1,29 +1,31 @@
-// dataman.cc
+// uimanager.cc
 // 2/1/2013 jichi
 
-#include "main.h"
-#include "ui/uitextman.h"
+#include "global.h"
+#include "ui/uimanager.h"
 #include "ui/uihash.h"
 #include "sakurakit/skhash.h"
 #include "QxtCore/QxtJSON"
 #include "qtjson/qtjson.h"
 #include <QtCore/QHash>
+#include <QtCore/QTimer>
 #include <QtCore/QVariant>
 #include <unordered_set>
 
 /** Private class */
 
-namespace { DataManager::TextEntry NULL_TEXT_ENTRY; }
+namespace { UiManager::TextEntry NULL_TEXT_ENTRY; }
 
-class DataManagerPrivate
+class UiManagerPrivate
 {
-  SK_CLASS(DataManagerPrivate)
-  SK_DISABLE_COPY(DataManagerPrivate)
-  SK_DECLARE_PUBLIC(DataManager)
+  SK_CLASS(UiManagerPrivate)
+  SK_DISABLE_COPY(UiManagerPrivate)
+  //SK_DECLARE_PUBLIC(UiManager)
+  typedef UiManager Q;
 
   QTimer *refreshTextsTimer_; // QTimer is not working
-  bool textsDirty;
 public:
+  bool textsDirty;
   Q::TextEntryList entries;
   QHash<qint64, QString> trs;   // {hash : tr}
 
@@ -31,22 +33,19 @@ public:
   std::unordered_set<qint64> h_trs; // hashes
 
 public:
-  explicit DataManagerPrivate(Q *q) : q_(q), textsDirty(false)
+  explicit UiManagerPrivate(Q *q) : textsDirty(false)
   {
-    refreshTextsTimer_.setInterval(Global::EventLoopInterval / 2);
-    refreshTextsTimer_.setMethod(this, &Self::emitChangedTexts);
-    // FIXME: Single shot does not work in this environment.
-    // After kill a timer, cannot restart it again orz.
-    //refreshTextsTimer_.setSingleShot(true);
+    refreshTextsTimer_ = new QTimer(q);
+    refreshTextsTimer_->setSingleShot(true);
+    refreshTextsTimer_->setInterval(Global::EventLoopInterval / 2);
+    q->connect(refreshTextsTimer_, SIGNAL(timeout()), SLOT(refreshTexts()));
   }
 
-  ~DataManagerPrivate()
-  {
-    if (refreshTextsTimer_.isActive())
-      refreshTextsTimer_.stop();
-  }
-
-  void emitChangedTexts();
+  //~UiManagerPrivate()
+  //{
+  //  if (refreshTextsTimer_.isActive())
+  //    refreshTextsTimer_.stop();
+  //}
 
   void touchTexts()
   {
@@ -55,42 +54,52 @@ public:
   }
 };
 
-// - RPC Data -
+/** Public class */
 
-void DataManagerPrivate::emitChangedTexts()
+// - Construction -
+
+static UiManager *instance_;
+UiManager *UiManager::instance() { return instance_; }
+
+UiManager::UiManager(QObject *parent)
+  : Base(parent), d_(new D(this))
 {
-  if (!textsDirty)
+  ::instance_ = this;
+}
+
+UiManager::~UiManager()
+{
+  ::instance_ = nullptr;
+  delete d_;
+}
+
+// - Actions -
+
+void UiManager::refreshTexts()
+{
+  if (!d_->textsDirty)
     return;
-  textsDirty = false;
+  d_->textsDirty = false;
 
   //QHash<QString, QVariant> texts;
   QVariantHash texts;
-  foreach (const Q::TextEntry &e, entries)
+  foreach (const TextEntry &e, d_->entries)
     if (!trs.contains(e.hash))
       texts[QString::number(e.hash)] = e.text;
 
   if (!texts.isEmpty()) {
     QString json = QtJson::stringify(texts);
-    q_->emit textsChanged(json);
+    emit textsChanged(json);
   }
 }
 
-/** Public class */
-
-// - Construction -
-
-DataManager::DataManager(QObject *parent) : Base(parent), d_(new D(this)) {}
-DataManager::~DataManager() { delete d_; }
-
-// - Actions -
-
-void DataManager::clearTranslation()
+void UiManager::clearTranslation()
 {
   d_->trs.clear();
   d_->touchTexts();
 }
 
-void DataManager::updateTranslation(const QString &json)
+void UiManager::updateTranslation(const QString &json)
 {
   QVariant data = QxtJSON::parse(json);
   if (data.isNull())
@@ -108,7 +117,7 @@ void DataManager::updateTranslation(const QString &json)
 
 // - Queries -
 
-//bool DataManager::containsWindow(WId window, My::TextRole role) const
+//bool UiManager::containsWindow(WId window, My::TextRole role) const
 //{
   //QMutexLocker locker(&d_->mutex);
 //  foreach (const Entry &e, d_->entries)
@@ -117,7 +126,7 @@ void DataManager::updateTranslation(const QString &json)
 //  return false;
 //}
 
-bool DataManager::containsAnchor(ulong anchor) const
+bool UiManager::containsAnchor(ulong anchor) const
 {
   foreach (const TextEntry &e, d_->entries)
     if (e.anchor == anchor)
@@ -125,13 +134,13 @@ bool DataManager::containsAnchor(ulong anchor) const
   return false;
 }
 
-bool DataManager::containsText(qint64 hash) const
+bool UiManager::containsText(qint64 hash) const
 { return d_->h_texts.find(hash) != d_->h_texts.end(); }
 
-bool DataManager::containsTranslation(qint64 hash) const
+bool UiManager::containsTranslation(qint64 hash) const
 { return d_->h_trs.find(hash) != d_->h_trs.end(); }
 
-const DataManager::TextEntry &DataManager::findTextEntry(qint64 hash) const
+const UiManager::TextEntry &UiManager::findTextEntry(qint64 hash) const
 {
   foreach (const TextEntry &e, d_->entries)
     if (e.hash == hash)
@@ -139,7 +148,7 @@ const DataManager::TextEntry &DataManager::findTextEntry(qint64 hash) const
   return NULL_TEXT_ENTRY;
 }
 
-const DataManager::TextEntry &DataManager::findTextEntryAtAnchor(ulong anchor) const
+const UiManager::TextEntry &UiManager::findTextEntryAtAnchor(ulong anchor) const
 {
   foreach (const TextEntry &e, d_->entries)
     if (e.anchor == anchor)
@@ -147,7 +156,7 @@ const DataManager::TextEntry &DataManager::findTextEntryAtAnchor(ulong anchor) c
   return NULL_TEXT_ENTRY;
 }
 
-QString DataManager::findTextTranslation(qint64 hash) const
+QString UiManager::findTextTranslation(qint64 hash) const
 { return d_->trs.value(hash); }
 //{
 //  QString ret = d_->trs.value(hash);
@@ -156,14 +165,14 @@ QString DataManager::findTextTranslation(qint64 hash) const
 //  return ret;
 //}
 
-void DataManager::updateTextTranslation(const QString &tr, qint64 hash, qint64 trhash)
+void UiManager::updateTextTranslation(const QString &tr, qint64 hash, qint64 trhash)
 {
   Q_ASSERT(hash);
   d_->trs[hash] = tr;
   d_->h_trs.insert(trhash ? trhash : My::hashString(tr));
 }
 
-void DataManager::updateText(const QString &text, qint64 hash, ulong anchor)
+void UiManager::updateText(const QString &text, qint64 hash, ulong anchor)
 {
   Q_ASSERT(anchor);
   if (!hash)

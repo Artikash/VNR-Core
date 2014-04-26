@@ -41,25 +41,27 @@ TARGET  = vnragent
 
 HEADERS += \
   driver/driver.h \
+  driver/driver_p.h \
   driver/rpccli.h \
   driver/rpccli_p.h \
-  ui/driverloader_p.h \
   ui/uidriver.h \
   ui/uidriver_p.h \
   ui/uihash.h \
   ui/uihijack.h \
   ui/uihijack_p.h \
-  ui/uitextman.h \
+  ui/uimanager.h \
+  config.h \
   global.h \
   growl.h \
   loader.h
 SOURCES += \
   driver/driver.cc \
   driver/rpccli.cc \
-  ui/driverloader.cc \
   ui/uidriver.cc \
+  ui/uidriver_p.cc \
   ui/uihijack.cc \
-  ui/uitextman.cc \
+  ui/uihijack_p.cc \
+  ui/uimanager.cc \
   growl.cc \
   loader.cc \
   main.cc

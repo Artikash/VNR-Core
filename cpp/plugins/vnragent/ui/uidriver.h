@@ -1,12 +1,10 @@
-#ifndef UIDRIVER_H
-#define UIDRIVER_H
+#pragma once
 
 // uidriver.h
 // 2/1/2013 jichi
 
 #include "sakurakit/skglobal.h"
 #include <QtCore/QObject>
-#include <qt_windows.h>
 
 class UiDriverPrivate;
 class UiDriver : public QObject
@@ -17,17 +15,17 @@ class UiDriver : public QObject
   SK_DECLARE_PRIVATE(UiDriverPrivate)
 
 public:
-  static Self *instance();
   explicit UiDriver(QObject *parent = nullptr);
   ~UiDriver();
 
+signals:
+  void translationRequested(QString json);
+public slots:
+  void updateTranslation(QString json);
+  void clearTranslation();
+  void setEnable(bool t);
 public:
-  void updateWindow(HWND hWnd);
-  void updateContextMenu(HMENU hMenu, HWND hWnd);
-
-  static void updateProcessWindows(DWORD processId = 0);
-protected:
-  static void updateThreadWindows(DWORD threadId = 0);
+  bool isEnabled() const;
 };
 
-#endif // UIDRIVER_H
+// EOF

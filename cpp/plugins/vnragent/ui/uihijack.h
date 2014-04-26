@@ -1,11 +1,10 @@
 #pragma once
-// myfunc.h
+// uihijack.h
 // 1/27/2013 jichi
-#include <windows.h>
 
-namespace My {
-void OverrideModules();
-void OverrideModuleFunctions(HMODULE hModule);
-} // namespace My
+namespace Ui {
+void overrideModules();
+void overrideModuleFunctions(void *hModule); // HMODULE
+} // namespace Ui
 
 // EOF

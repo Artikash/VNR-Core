@@ -1,8 +1,9 @@
-#ifndef RPCCLI_P_H
-#define RPCCLI_P_H
+#pragma once
+
 // rpccli_p.h
 // 2/1/2013 jichi
 
+#include "config.h"
 #include "services/reader/metacall.h"
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
@@ -10,6 +11,53 @@
 class RpcClient;
 class RpcClientPrivate;
 
+typedef ReaderMetaCallPropagator RpcPropagator;
+class RpcClientPrivate : public QObject
+{
+  Q_OBJECT
+  Q_DISABLE_COPY(RpcClientPrivate)
+  SK_DECLARE_PUBLIC(RpcClient)
+  SK_EXTEND_CLASS(RpcClientPrivate, QObject)
+
+  enum { ReconnectInterval = 5000 }; // reconnect on failed
+  enum { Port = VNRAGENT_METACALL_PORT };
+
+public:
+  explicit RpcClientPrivate(Q *q);
+
+  RpcPropagator *r;
+  QTimer *reconnectTimer;
+
+  bool start() { return r->startClient(VNRAGENT_METACALL_HOST, Port); }
+
+private slots:
+  bool reconnect();
+  void onMessage(const QString &cmd, const QString &param);
+
+private:
+  void callServer(const QString &cmd, const QString &param) { r->emit serverMessageRequested(cmd, param); }
+  void callServer(const QString &cmd) { r->emit serverMessageRequested(cmd, QString()); }
+
+  // Server calls, must be consistent with rpcman.py
+public:
+  void pingServer() { callServer("ping"); }
+
+  enum GrowlType { GrowlMessage = 0, GrowlWarning, GrowlError };
+  void growlServer(const QString &msg, GrowlType t = GrowlMessage)
+  {
+    switch (t) {
+    case GrowlMessage: callServer("growl.msg", msg); break;
+    case GrowlWarning: callServer("growl.warn", msg); break;
+    case GrowlError: callServer("growl.error", msg); break;
+    }
+  }
+
+  void sendUiTexts(const QString &json) { callServer("ui.text", json); }
+};
+
+// EOF
+
+/*
 class RpcPropagator : public ReaderMetaCallPropagator
 {
   Q_OBJECT
@@ -31,32 +79,6 @@ public:
   }
 };
 
-class RpcClientPrivate : public QObject
-{
-  Q_OBJECT
-  Q_DISABLE_COPY(RpcClientPrivate)
-  SK_DECLARE_PUBLIC(RpcClient)
-  SK_EXTEND_CLASS(RpcClientPrivate, QObject)
-
-public:
-  explicit RpcClientPrivate(Q *q);
-
-  RpcPropagator *r;
-  QTimer *reconnectTimer;
-
-  enum { PORT = 6103 }; // must be consistent with the metacall port defined in reader.yaml
-  bool start() { return r->startClient("127.0.0.1", PORT); }
-
-protected slots:
-  bool reconnect();
-  void onCall(const QString &cmd);
-};
-
-#endif // RPCCLI_P_H
-
-// EOF
-
-/*
 class RpcRouter : public MetaCallRouter
 {
 public:

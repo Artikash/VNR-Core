@@ -5,6 +5,9 @@
 #include "global.h"
 #include "driver/driver.h"
 #include "qtembedded/applicationloader.h"
+#include "windbg/inject.h"
+#include "windbg/util.h"
+#include "ui/uihijack.h"
 #include <QtCore/QTextCodec>
 
 // Global variables
@@ -30,6 +33,12 @@ void Loader::initWithInstance(HINSTANCE hInstance)
   ::appLoader_ = new QtEmbedded::ApplicationLoader(app, Global::EventLoopInterval);
 
   ::driver_ = new Driver;
+
+  // Hijack UI threads
+  {
+    WinDbg::ThreadsSuspender suspendedThreads; // lock all threads
+    Ui::overrideModules();
+  }
 }
 
 void Loader::destroy()

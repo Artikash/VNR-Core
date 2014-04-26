@@ -1,7 +1,6 @@
-#ifndef RPCCLI_H
-#define RPCCLI_H
+#pragma once
 
-// netman.h
+// rpccli.h
 // 2/1/2013 jichi
 
 #include "sakurakit/skglobal.h"
@@ -23,23 +22,16 @@ public:
   // - API -
 signals:
   // UI
-  void clearRequested();
-  void enableRequested();
-  void disableRequested();
+  void clearUiRequested();
+  void enableUiRequested(bool t);
+  void uiTranslationReceived(QString json); // json: {hash:text}
 
-  /**
-   *  @param  json  {hash:text}
-   */
-  void dataReceived(QString json);
 public slots:
-  /**
-   *  @param  json  {hash:context}
-   */
-  void sendData(const QString &json);
+  void requestUiTranslation(const QString &json); // json: {hash:text}
 
   void showMessage(const QString &message);
   void showWarning(const QString &message);
   void showError(const QString &message);
 };
 
-#endif // RPCCLI_H
+// EOF

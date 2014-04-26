@@ -12,9 +12,6 @@
 
 namespace growl {
 
-void debug(const char *message);
-void debug(const wchar_t *message);
-
 void show(const char *message);
 void show(const wchar_t *message);
 
@@ -23,6 +20,14 @@ void warn(const wchar_t *message);
 
 void error(const char *message);
 void error(const wchar_t *message);
+
+#ifdef DEBUG
+void debug(const char *message) { warn(message); }
+void debug(const wchar_t *message) { warn(message); }
+#else
+void debug(const char *) {}
+void debug(const wchar_t *) {}
+#endif // DEBUG
 
 #ifdef QT_CORE_LIB
 inline void debug(const QString &message) { debug(message.toStdWString().c_str()); }
