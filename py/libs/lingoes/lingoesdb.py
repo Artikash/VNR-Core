@@ -38,7 +38,12 @@ class LingoesDb(object):
       dwarn(e)
     return False
 
-  def lookup(self, t, limit=0): # unicode, int* -> yield (unicode word, unicode xml) or return None
+  def _lookup(self, t, limit=0):
+    """
+    @param  t  unicode
+    @Param  limit  int
+    @return  iter(unicode word, unicode xml) or None
+    """
     #if self.trie:
     #  return self.trie.iteritems(t)
     #if os.path.exists(self.dbpath):
@@ -49,6 +54,20 @@ class LingoesDb(object):
       return
     except Exception, e:
       dwarn(e)
+
+  def lookup(self, *args, **kwargs):
+    """Lookup dictionary while eliminate duplicate definitions
+    @param  t  unicode
+    @Param  limit  int
+    @yield  (unicode word, unicode xml)
+    """
+    lastxml = None
+    q = self._lookup(*args, **kwargs)
+    if q:
+      for key, xml in q:
+        if lastxml != xml:
+          yield key, xml
+          lastxml = xml
 
 if __name__ == '__main__':
   import os
@@ -66,22 +85,22 @@ if __name__ == '__main__':
 
   print '-' * 4
 
-  dic = location + 'New Japanese-Chinese Dictionary.ld2'
+  #dic = location + 'New Japanese-Chinese Dictionary.ld2'
 
-  HOME = os.path.expanduser('~')
-  if os.name == 'nt':
-    from sakurakit import skpaths
-    APPDATA = skpaths.APPDATA
-  else: # mac
-    import getpass
-    HOME = os.path.expanduser('~')
-    USER = getpass.getuser() # http://stackoverflow.com/questions/842059/is-there-a-portable-way-to-get-the-current-username-in-python
-    APPDATA = os.path.join(HOME, '.wine/drive_c/users/' + USER + '/Application Data')
-  dbpath = APPDATA + '/org.sakuradite.reader/db/lingoes/'
-
-  #dbpath += 'ja-zh.db'
+  #HOME = os.path.expanduser('~')
+  #if os.name == 'nt':
+  #  from sakurakit import skpaths
+  #  APPDATA = skpaths.APPDATA
+  #else: # mac
+  #  import getpass
+  #  HOME = os.path.expanduser('~')
+  #  USER = getpass.getuser() # http://stackoverflow.com/questions/842059/is-there-a-portable-way-to-get-the-current-username-in-python
+  #  APPDATA = os.path.join(os., '.wine/drive_c/users/' + USER + '/Application Data')
+  PWD = os.getcwd()
+  dbpath = os.path.join(PWD, '../../../../../../Caches/Dictionaries/Lingoes')
+  dbpath = os.path.join(dbpath, 'ja-zh.db')
   #dbpath += 'ja-ko.db'
-  dbpath += 'ja-vi.db'
+  #dbpath += 'ja-vi.db'
 
   ld = LingoesDb(dbpath)
 
@@ -97,7 +116,8 @@ if __name__ == '__main__':
   with SkProfiler():
     print "lookup start"
     t = u"かわいい"
-    t = u"ちょっと"
+    #t = u"ちょっと"
+    #t = u"だしゃれ"
     it = ld.lookup(t, limit=6)
     if it:
       for key, xml in it:
