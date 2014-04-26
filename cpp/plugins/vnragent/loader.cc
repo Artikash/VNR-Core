@@ -1,8 +1,8 @@
 // loader.cc
 // 1/27/2013
 
+#include "config.h"
 #include "loader.h"
-#include "global.h"
 #include "driver/driver.h"
 #include "qtembedded/applicationloader.h"
 #include "windbg/inject.h"
@@ -30,7 +30,7 @@ void Loader::initWithInstance(HINSTANCE hInstance)
   QTextCodec::setCodecForTr(codec);
 
   QCoreApplication *app = QtEmbedded::ApplicationLoader::createApplication(hInstance);
-  ::appLoader_ = new QtEmbedded::ApplicationLoader(app, Global::EventLoopInterval);
+  ::appLoader_ = new QtEmbedded::ApplicationLoader(app, QT_EVENTLOOP_INTERVAL);
 
   ::driver_ = new Driver;
 

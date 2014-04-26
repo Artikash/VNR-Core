@@ -1,7 +1,6 @@
 // uidriver_p.cc
 // 2/1/2013 jichi
 
-#include "global.h"
 #include "ui/uidriver_p.h"
 #include "ui/uihash.h"
 #include "ui/uihijack.h"
@@ -27,17 +26,23 @@ UiDriverPrivate::UiDriverPrivate(QObject *parent)
   manager = new UiManager(this);
 
   rehookTimer = new QTimer(this);
-  rehookTimer->setInterval(Global::EventLoopInterval * 10);
+  rehookTimer->setInterval(RehookInterval);
   connect(rehookTimer, SIGNAL(timeout()), SLOT(rehook()));
 
   retransTimer = new QTimer(this);
-  retransTimer->setInterval(Global::EventLoopInterval);
+  retransTimer->setInterval(RetransInterval);
   connect(retransTimer, SIGNAL(timeout()), SLOT(retrans()));
 
   ::instance_ = this;
 }
 
 UiDriverPrivate::~UiDriverPrivate() { ::instance_ = nullptr; }
+
+void UiDriverPrivate::start()
+{
+  rehookTimer->start();
+  retransTimer->start();
+}
 
 void UiDriverPrivate::retrans() { updateProcessWindows(); }
 void UiDriverPrivate::rehook() { Ui::overrideModules(); }

@@ -51,7 +51,6 @@ signals:
   //void translationChanged(); // send to main object
   void textsChanged(QString json); // send to server
 
-
 private slots:
   void refreshTexts(); // invoked by refresh timer
 };

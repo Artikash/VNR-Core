@@ -51,7 +51,6 @@ HEADERS += \
   ui/uihijack_p.h \
   ui/uimanager.h \
   config.h \
-  global.h \
   growl.h \
   loader.h
 SOURCES += \

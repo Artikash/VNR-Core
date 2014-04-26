@@ -1,7 +1,6 @@
 // uimanager.cc
 // 2/1/2013 jichi
 
-#include "global.h"
 #include "ui/uimanager.h"
 #include "ui/uihash.h"
 #include "sakurakit/skhash.h"
@@ -23,6 +22,7 @@ class UiManagerPrivate
   //SK_DECLARE_PUBLIC(UiManager)
   typedef UiManager Q;
 
+  enum { RefreshInterval = 200 };
   QTimer *refreshTextsTimer_; // QTimer is not working
 public:
   bool textsDirty;
@@ -37,7 +37,7 @@ public:
   {
     refreshTextsTimer_ = new QTimer(q);
     refreshTextsTimer_->setSingleShot(true);
-    refreshTextsTimer_->setInterval(Global::EventLoopInterval / 2);
+    refreshTextsTimer_->setInterval(RefreshInterval);
     q->connect(refreshTextsTimer_, SIGNAL(timeout()), SLOT(refreshTexts()));
   }
 

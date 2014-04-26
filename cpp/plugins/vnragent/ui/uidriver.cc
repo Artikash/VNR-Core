@@ -1,7 +1,6 @@
 // uidriver.cc
 // 2/1/2013 jichi
 
-#include "global.h"
 #include "ui/uidriver.h"
 #include "ui/uidriver_p.h"
 #include "ui/uimanager.h"
@@ -10,6 +9,8 @@ UiDriver::UiDriver(QObject *parent)
   : Base(parent), d_(new D(this))
 {
   connect(d_->manager, SIGNAL(textsChanged(QString)), SIGNAL(translationRequested(QString)));
+
+  d_->start();
 }
 
 ~UiDriver() { delete d_; }
