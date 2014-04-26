@@ -6,6 +6,7 @@
 #include <QtCore/QEvent>
 #include <QtNetwork/QAbstractSocket>
 #include <memory> // for unique_ptr
+//#include "../../plugins/vnragent/growl.h"
 
 #define DEBUG "metacallfilter"
 #include "sakurakit/skdebug.h"

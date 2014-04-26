@@ -27,17 +27,17 @@ public:
   bool enabled;
   UiManager *manager;
 
-  //static Self *instance();
+  static Self *instance();
   explicit UiDriverPrivate(QObject *parent=nullptr);
   ~UiDriverPrivate();
 
   // Start refresh timers
   void start();
 
-private:
-  void updateWindow(HWND hWnd);
   void updateContextMenu(HMENU hMenu, HWND hWnd);
+  void updateWindow(HWND hWnd);
 
+private:
   bool updateWindow(HWND hWnd, LPWSTR buffer, int bufferSize); // window
   bool updateListView(HWND hWnd, LPWSTR buffer, int bufferSize); // SysListView
   bool updateTabControl(HWND hWnd, LPWSTR buffer, int bufferSize); // SysTabControl

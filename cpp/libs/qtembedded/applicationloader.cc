@@ -39,7 +39,7 @@ public:
   //~ApplicationLoaderPrivate()
   //{ delete app; }
 
-  void initTimer(int interval)
+  void startTimer(int interval)
   {
     t_.setInterval(interval);
     t_.setSingleShot(false); // repeat
@@ -49,15 +49,14 @@ public:
 
   int interval() const { return t_.interval(); }
 
+  void processEvents() { app->processEvents(QEventLoop::AllEvents, t_.interval()); }
+
   void quit()
   {
     t_.stop();
     app->quit();
-    app->processEvents(); // hang
+    app->processEvents(); // supposed to hang until all events are processed
   }
-
-  void processEvents()
-  { app->processEvents(QEventLoop::AllEvents, t_.interval()); }
 };
 
 /** Public class */
@@ -68,7 +67,7 @@ ApplicationLoader::ApplicationLoader(QCoreApplication *app, int interval)
   : d_(new D(app))
 {
   Q_ASSERT(app);
-  d_->initTimer(interval);
+  d_->startTimer(interval);
 }
 
 ApplicationLoader::~ApplicationLoader()

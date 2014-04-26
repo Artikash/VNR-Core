@@ -9,13 +9,12 @@ UiDriver::UiDriver(QObject *parent)
   : Base(parent), d_(new D(this))
 {
   connect(d_->manager, SIGNAL(textsChanged(QString)), SIGNAL(translationRequested(QString)));
-
   d_->start();
 }
 
-~UiDriver() { delete d_; }
+UiDriver::~UiDriver() { delete d_; }
 
-void UiDriver::updateTranslation(QString json) { d_->manager->updateTranslationData(json); }
+void UiDriver::updateTranslation(const QString &json) { d_->manager->updateTranslationData(json); }
 void UiDriver::clearTranslation() { d_->manager->clearTranslation(); }
 
 bool UiDriver::isEnabled() const { return d_->enabled; }

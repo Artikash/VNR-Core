@@ -5,13 +5,29 @@
 
 #include "config.h"
 #include "services/reader/metacall.h"
+#include "qtmetacall/metacallobserver.h"
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
 
-class RpcClient;
-class RpcClientPrivate;
+// The only purpose of this class is to make signals in the propagator public
+// No signals are allowed in this class
+class RpcPropagator : public ReaderMetaCallPropagator
+{
+  Q_OBJECT
+  Q_DISABLE_COPY(RpcPropagator)
+  SK_EXTEND_CLASS(RpcPropagator, ReaderMetaCallPropagator)
 
-typedef ReaderMetaCallPropagator RpcPropagator;
+  friend class RpcClient;
+  friend class RpcClientPrivate;
+public:
+  explicit RpcPropagator(QObject *parent = nullptr)
+    : Base(parent)
+  {
+    setSocketObserver(new MetaCallSocketObserver(this));
+  }
+};
+
+class RpcClient;
 class RpcClientPrivate : public QObject
 {
   Q_OBJECT
@@ -20,9 +36,9 @@ class RpcClientPrivate : public QObject
   SK_EXTEND_CLASS(RpcClientPrivate, QObject)
 
   enum { ReconnectInterval = 5000 }; // reconnect on failed
+public:
   enum { Port = VNRAGENT_METACALL_PORT };
 
-public:
   explicit RpcClientPrivate(Q *q);
 
   RpcPropagator *r;
@@ -58,27 +74,6 @@ public:
 // EOF
 
 /*
-class RpcPropagator : public ReaderMetaCallPropagator
-{
-  Q_OBJECT
-  Q_DISABLE_COPY(RpcPropagator)
-  SK_EXTEND_CLASS(RpcPropagator, ReaderMetaCallPropagator)
-  friend class RpcClient;
-  friend class RpcClientPrivate;
-
-public:
-  explicit RpcPropagator(QObject *parent = nullptr)
-    : Base(parent)
-  {
-    connect(this, SIGNAL(q_pingServer(int)), SIGNAL(pingServer(int)), Qt::QueuedConnection);
-    connect(this, SIGNAL(q_updateServerData(QString)), SIGNAL(updateServerData(QString)), Qt::QueuedConnection);
-
-    connect(this, SIGNAL(q_growlServerMessage(QString)), SIGNAL(growlServerMessage(QString)), Qt::QueuedConnection);
-    connect(this, SIGNAL(q_growlServerWarning(QString)), SIGNAL(growlServerWarning(QString)), Qt::QueuedConnection);
-    connect(this, SIGNAL(q_growlServerError(QString)), SIGNAL(growlServerError(QString)), Qt::QueuedConnection);
-  }
-};
-
 class RpcRouter : public MetaCallRouter
 {
 public:

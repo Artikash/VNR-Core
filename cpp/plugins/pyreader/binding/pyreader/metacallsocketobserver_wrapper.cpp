@@ -11,11 +11,10 @@
 #include <pysidemetafunction.h>
 #include "pyreader_python.h"
 
-#include "readermetacallpropagator_wrapper.h"
+#include "metacallsocketobserver_wrapper.h"
 
 // Extra includes
 #include <QList>
-#include <metacall.h>
 #include <metacallobserver.h>
 #include <qbytearray.h>
 #include <qcoreevent.h>
@@ -27,15 +26,15 @@
 
 // Native ---------------------------------------------------------
 
-void ReaderMetaCallPropagatorWrapper::pysideInitQtMetaTypes()
+void MetaCallSocketObserverWrapper::pysideInitQtMetaTypes()
 {
 }
 
-ReaderMetaCallPropagatorWrapper::ReaderMetaCallPropagatorWrapper(QObject * parent) : ReaderMetaCallPropagator(parent) {
+MetaCallSocketObserverWrapper::MetaCallSocketObserverWrapper(QObject * parent) : MetaCallSocketObserver(parent) {
     // ... middle
 }
 
-void ReaderMetaCallPropagatorWrapper::childEvent(QChildEvent * arg__1)
+void MetaCallSocketObserverWrapper::childEvent(QChildEvent * arg__1)
 {
     Shiboken::GilState gil;
     if (PyErr_Occurred())
@@ -61,7 +60,7 @@ void ReaderMetaCallPropagatorWrapper::childEvent(QChildEvent * arg__1)
         Shiboken::Object::invalidate(PyTuple_GET_ITEM(pyArgs, 0));
 }
 
-void ReaderMetaCallPropagatorWrapper::connectNotify(const char * signal)
+void MetaCallSocketObserverWrapper::connectNotify(const char * signal)
 {
     Shiboken::GilState gil;
     if (PyErr_Occurred())
@@ -84,7 +83,7 @@ void ReaderMetaCallPropagatorWrapper::connectNotify(const char * signal)
     }
 }
 
-void ReaderMetaCallPropagatorWrapper::customEvent(QEvent * arg__1)
+void MetaCallSocketObserverWrapper::customEvent(QEvent * arg__1)
 {
     Shiboken::GilState gil;
     if (PyErr_Occurred())
@@ -110,7 +109,7 @@ void ReaderMetaCallPropagatorWrapper::customEvent(QEvent * arg__1)
         Shiboken::Object::invalidate(PyTuple_GET_ITEM(pyArgs, 0));
 }
 
-void ReaderMetaCallPropagatorWrapper::disconnectNotify(const char * signal)
+void MetaCallSocketObserverWrapper::disconnectNotify(const char * signal)
 {
     Shiboken::GilState gil;
     if (PyErr_Occurred())
@@ -133,7 +132,7 @@ void ReaderMetaCallPropagatorWrapper::disconnectNotify(const char * signal)
     }
 }
 
-bool ReaderMetaCallPropagatorWrapper::event(QEvent * arg__1)
+bool MetaCallSocketObserverWrapper::event(QEvent * arg__1)
 {
     Shiboken::GilState gil;
     if (PyErr_Occurred())
@@ -158,7 +157,7 @@ bool ReaderMetaCallPropagatorWrapper::event(QEvent * arg__1)
     // Check return type
     PythonToCppFunc pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), pyResult);
     if (!pythonToCpp) {
-        Shiboken::warning(PyExc_RuntimeWarning, 2, "Invalid return value in function %s, expected %s, got %s.", "ReaderMetaCallPropagator.event", "bool", pyResult->ob_type->tp_name);
+        Shiboken::warning(PyExc_RuntimeWarning, 2, "Invalid return value in function %s, expected %s, got %s.", "MetaCallSocketObserver.event", "bool", pyResult->ob_type->tp_name);
         return ((bool)0);
     }
     bool cppResult;
@@ -168,7 +167,7 @@ bool ReaderMetaCallPropagatorWrapper::event(QEvent * arg__1)
     return cppResult;
 }
 
-bool ReaderMetaCallPropagatorWrapper::eventFilter(QObject * arg__1, QEvent * arg__2)
+bool MetaCallSocketObserverWrapper::eventFilter(QObject * arg__1, QEvent * arg__2)
 {
     Shiboken::GilState gil;
     if (PyErr_Occurred())
@@ -194,7 +193,7 @@ bool ReaderMetaCallPropagatorWrapper::eventFilter(QObject * arg__1, QEvent * arg
     // Check return type
     PythonToCppFunc pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), pyResult);
     if (!pythonToCpp) {
-        Shiboken::warning(PyExc_RuntimeWarning, 2, "Invalid return value in function %s, expected %s, got %s.", "ReaderMetaCallPropagator.eventFilter", "bool", pyResult->ob_type->tp_name);
+        Shiboken::warning(PyExc_RuntimeWarning, 2, "Invalid return value in function %s, expected %s, got %s.", "MetaCallSocketObserver.eventFilter", "bool", pyResult->ob_type->tp_name);
         return ((bool)0);
     }
     bool cppResult;
@@ -204,7 +203,7 @@ bool ReaderMetaCallPropagatorWrapper::eventFilter(QObject * arg__1, QEvent * arg
     return cppResult;
 }
 
-void ReaderMetaCallPropagatorWrapper::timerEvent(QTimerEvent * arg__1)
+void MetaCallSocketObserverWrapper::timerEvent(QTimerEvent * arg__1)
 {
     Shiboken::GilState gil;
     if (PyErr_Occurred())
@@ -230,33 +229,33 @@ void ReaderMetaCallPropagatorWrapper::timerEvent(QTimerEvent * arg__1)
         Shiboken::Object::invalidate(PyTuple_GET_ITEM(pyArgs, 0));
 }
 
-const QMetaObject* ReaderMetaCallPropagatorWrapper::metaObject() const
+const QMetaObject* MetaCallSocketObserverWrapper::metaObject() const
 {
     #if QT_VERSION >= 0x040700
     if (QObject::d_ptr->metaObject) return QObject::d_ptr->metaObject;
     #endif
     SbkObject* pySelf = Shiboken::BindingManager::instance().retrieveWrapper(this);
     if (pySelf == NULL)
-        return ReaderMetaCallPropagator::metaObject();
+        return MetaCallSocketObserver::metaObject();
     return PySide::SignalManager::retriveMetaObject(reinterpret_cast<PyObject*>(pySelf));
 }
 
-int ReaderMetaCallPropagatorWrapper::qt_metacall(QMetaObject::Call call, int id, void** args)
+int MetaCallSocketObserverWrapper::qt_metacall(QMetaObject::Call call, int id, void** args)
 {
-    int result = ReaderMetaCallPropagator::qt_metacall(call, id, args);
+    int result = MetaCallSocketObserver::qt_metacall(call, id, args);
     return result < 0 ? result : PySide::SignalManager::qt_metacall(this, call, id, args);
 }
 
-void* ReaderMetaCallPropagatorWrapper::qt_metacast(const char* _clname)
+void* MetaCallSocketObserverWrapper::qt_metacast(const char* _clname)
 {
         if (!_clname) return 0;
         SbkObject* pySelf = Shiboken::BindingManager::instance().retrieveWrapper(this);
         if (pySelf && PySide::inherits(Py_TYPE(pySelf), _clname))
-                return static_cast<void*>(const_cast< ReaderMetaCallPropagatorWrapper* >(this));
-        return ReaderMetaCallPropagator::qt_metacast(_clname);
+                return static_cast<void*>(const_cast< MetaCallSocketObserverWrapper* >(this));
+        return MetaCallSocketObserver::qt_metacast(_clname);
 }
 
-ReaderMetaCallPropagatorWrapper::~ReaderMetaCallPropagatorWrapper()
+MetaCallSocketObserverWrapper::~MetaCallSocketObserverWrapper()
 {
     SbkObject* wrapper = Shiboken::BindingManager::instance().retrieveWrapper(this);
     Shiboken::Object::destroy(wrapper, this);
@@ -266,15 +265,15 @@ ReaderMetaCallPropagatorWrapper::~ReaderMetaCallPropagatorWrapper()
 
 extern "C" {
 static int
-Sbk_ReaderMetaCallPropagator_Init(PyObject* self, PyObject* args, PyObject* kwds)
+Sbk_MetaCallSocketObserver_Init(PyObject* self, PyObject* args, PyObject* kwds)
 {
-    const char* argNames[] = {"parent"};
+    const char** argNames = 0;
     const QMetaObject* metaObject;
     SbkObject* sbkSelf = reinterpret_cast<SbkObject*>(self);
-    if (Shiboken::Object::isUserType(self) && !Shiboken::ObjectType::canCallConstructor(self->ob_type, Shiboken::SbkType< ::ReaderMetaCallPropagator >()))
+    if (Shiboken::Object::isUserType(self) && !Shiboken::ObjectType::canCallConstructor(self->ob_type, Shiboken::SbkType< ::MetaCallSocketObserver >()))
         return -1;
 
-    ::ReaderMetaCallPropagatorWrapper* cptr = 0;
+    ::MetaCallSocketObserverWrapper* cptr = 0;
     int overloadId = -1;
     PythonToCppFunc pythonToCpp[] = { 0 };
     SBK_UNUSED(pythonToCpp)
@@ -284,48 +283,36 @@ Sbk_ReaderMetaCallPropagator_Init(PyObject* self, PyObject* args, PyObject* kwds
     // invalid argument lengths
 
 
-    if (!PyArg_ParseTuple(args, "|O:ReaderMetaCallPropagator", &(pyArgs[0])))
+    if (!PyArg_UnpackTuple(args, "MetaCallSocketObserver", 1, 1, &(pyArgs[0])))
         return -1;
 
 
     // Overloaded function decisor
-    // 0: ReaderMetaCallPropagator(QObject*)
-    if (numArgs == 0) {
-        overloadId = 0; // ReaderMetaCallPropagator(QObject*)
-    } else if ((pythonToCpp[0] = Shiboken::Conversions::isPythonToCppPointerConvertible((SbkObjectType*)SbkPySide_QtCoreTypes[SBK_QOBJECT_IDX], (pyArgs[0])))) {
-        overloadId = 0; // ReaderMetaCallPropagator(QObject*)
+    // 0: MetaCallSocketObserver(QObject*)
+    if (numArgs == 1
+        && (pythonToCpp[0] = Shiboken::Conversions::isPythonToCppPointerConvertible((SbkObjectType*)SbkPySide_QtCoreTypes[SBK_QOBJECT_IDX], (pyArgs[0])))) {
+        overloadId = 0; // MetaCallSocketObserver(QObject*)
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_ReaderMetaCallPropagator_Init_TypeError;
+    if (overloadId == -1) goto Sbk_MetaCallSocketObserver_Init_TypeError;
 
     // Call function/method
     {
-        if (kwds) {
-            PyObject* value = PyDict_GetItemString(kwds, "parent");
-            if (value && pyArgs[0]) {
-                PyErr_SetString(PyExc_TypeError, "pyreader.ReaderMetaCallPropagator(): got multiple values for keyword argument 'parent'.");
-                return -1;
-            } else if (value) {
-                pyArgs[0] = value;
-                if (!(pythonToCpp[0] = Shiboken::Conversions::isPythonToCppPointerConvertible((SbkObjectType*)SbkPySide_QtCoreTypes[SBK_QOBJECT_IDX], (pyArgs[0]))))
-                    goto Sbk_ReaderMetaCallPropagator_Init_TypeError;
-            }
-        }
         if (!Shiboken::Object::isValid(pyArgs[0]))
             return -1;
-        ::QObject* cppArg0 = nullptr;
-        if (pythonToCpp[0]) pythonToCpp[0](pyArgs[0], &cppArg0);
+        ::QObject* cppArg0;
+        pythonToCpp[0](pyArgs[0], &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // ReaderMetaCallPropagator(QObject*)
+            // MetaCallSocketObserver(QObject*)
             void* addr = PySide::nextQObjectMemoryAddr();
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
             if (addr) {
-                cptr = new (addr) ::ReaderMetaCallPropagatorWrapper(cppArg0);
+                cptr = new (addr) ::MetaCallSocketObserverWrapper(cppArg0);
                 PySide::setNextQObjectMemoryAddr(0);
             } else {
-                cptr = new ::ReaderMetaCallPropagatorWrapper(cppArg0);
+                cptr = new ::MetaCallSocketObserverWrapper(cppArg0);
             }
 
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
@@ -333,11 +320,11 @@ Sbk_ReaderMetaCallPropagator_Init(PyObject* self, PyObject* args, PyObject* kwds
         }
     }
 
-    if (PyErr_Occurred() || !Shiboken::Object::setCppPointer(sbkSelf, Shiboken::SbkType< ::ReaderMetaCallPropagator >(), cptr)) {
+    if (PyErr_Occurred() || !Shiboken::Object::setCppPointer(sbkSelf, Shiboken::SbkType< ::MetaCallSocketObserver >(), cptr)) {
         delete cptr;
         return -1;
     }
-    if (!cptr) goto Sbk_ReaderMetaCallPropagator_Init_TypeError;
+    if (!cptr) goto Sbk_MetaCallSocketObserver_Init_TypeError;
 
     Shiboken::Object::setValidCpp(sbkSelf, true);
     Shiboken::Object::setHasCppWrapper(sbkSelf, true);
@@ -346,38 +333,38 @@ Sbk_ReaderMetaCallPropagator_Init(PyObject* self, PyObject* args, PyObject* kwds
     // QObject setup
     PySide::Signal::updateSourceObject(self);
     metaObject = cptr->metaObject(); // <- init python qt properties
-    if (kwds && !PySide::fillQtProperties(self, metaObject, kwds, argNames, 1))
+    if (kwds && !PySide::fillQtProperties(self, metaObject, kwds, argNames, 0))
         return -1;
 
 
     return 1;
 
-    Sbk_ReaderMetaCallPropagator_Init_TypeError:
-        const char* overloads[] = {"PySide.QtCore.QObject = nullptr", 0};
-        Shiboken::setErrorAboutWrongArguments(args, "pyreader.ReaderMetaCallPropagator", overloads);
+    Sbk_MetaCallSocketObserver_Init_TypeError:
+        const char* overloads[] = {"PySide.QtCore.QObject", 0};
+        Shiboken::setErrorAboutWrongArguments(args, "pyreader.MetaCallSocketObserver", overloads);
         return -1;
 }
 
-static PyMethodDef Sbk_ReaderMetaCallPropagator_methods[] = {
+static PyMethodDef Sbk_MetaCallSocketObserver_methods[] = {
 
     {0} // Sentinel
 };
 
 } // extern "C"
 
-static int Sbk_ReaderMetaCallPropagator_traverse(PyObject* self, visitproc visit, void* arg)
+static int Sbk_MetaCallSocketObserver_traverse(PyObject* self, visitproc visit, void* arg)
 {
     return reinterpret_cast<PyTypeObject*>(&SbkObject_Type)->tp_traverse(self, visit, arg);
 }
-static int Sbk_ReaderMetaCallPropagator_clear(PyObject* self)
+static int Sbk_MetaCallSocketObserver_clear(PyObject* self)
 {
     return reinterpret_cast<PyTypeObject*>(&SbkObject_Type)->tp_clear(self);
 }
 // Class Definition -----------------------------------------------
 extern "C" {
-static SbkObjectType Sbk_ReaderMetaCallPropagator_Type = { { {
+static SbkObjectType Sbk_MetaCallSocketObserver_Type = { { {
     PyVarObject_HEAD_INIT(&SbkObjectType_Type, 0)
-    /*tp_name*/             "pyreader.ReaderMetaCallPropagator",
+    /*tp_name*/             "pyreader.MetaCallSocketObserver",
     /*tp_basicsize*/        sizeof(SbkObject),
     /*tp_itemsize*/         0,
     /*tp_dealloc*/          &SbkDeallocWrapper,
@@ -397,13 +384,13 @@ static SbkObjectType Sbk_ReaderMetaCallPropagator_Type = { { {
     /*tp_as_buffer*/        0,
     /*tp_flags*/            Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_GC,
     /*tp_doc*/              0,
-    /*tp_traverse*/         Sbk_ReaderMetaCallPropagator_traverse,
-    /*tp_clear*/            Sbk_ReaderMetaCallPropagator_clear,
+    /*tp_traverse*/         Sbk_MetaCallSocketObserver_traverse,
+    /*tp_clear*/            Sbk_MetaCallSocketObserver_clear,
     /*tp_richcompare*/      0,
     /*tp_weaklistoffset*/   0,
     /*tp_iter*/             0,
     /*tp_iternext*/         0,
-    /*tp_methods*/          Sbk_ReaderMetaCallPropagator_methods,
+    /*tp_methods*/          Sbk_MetaCallSocketObserver_methods,
     /*tp_members*/          0,
     /*tp_getset*/           0,
     /*tp_base*/             0,
@@ -411,7 +398,7 @@ static SbkObjectType Sbk_ReaderMetaCallPropagator_Type = { { {
     /*tp_descr_get*/        0,
     /*tp_descr_set*/        0,
     /*tp_dictoffset*/       0,
-    /*tp_init*/             Sbk_ReaderMetaCallPropagator_Init,
+    /*tp_init*/             Sbk_MetaCallSocketObserver_Init,
     /*tp_alloc*/            0,
     /*tp_new*/              SbkObjectTpNew,
     /*tp_free*/             0,
@@ -426,10 +413,10 @@ static SbkObjectType Sbk_ReaderMetaCallPropagator_Type = { { {
 };
 } //extern
 
-static void* Sbk_ReaderMetaCallPropagator_typeDiscovery(void* cptr, SbkObjectType* instanceType)
+static void* Sbk_MetaCallSocketObserver_typeDiscovery(void* cptr, SbkObjectType* instanceType)
 {
     if (instanceType == reinterpret_cast<SbkObjectType*>(Shiboken::SbkType< ::QObject >()))
-        return dynamic_cast< ::ReaderMetaCallPropagator*>(reinterpret_cast< ::QObject*>(cptr));
+        return dynamic_cast< ::MetaCallSocketObserver*>(reinterpret_cast< ::QObject*>(cptr));
     return 0;
 }
 
@@ -437,50 +424,50 @@ static void* Sbk_ReaderMetaCallPropagator_typeDiscovery(void* cptr, SbkObjectTyp
 // Type conversion functions.
 
 // Python to C++ pointer conversion - returns the C++ object of the Python wrapper (keeps object identity).
-static void ReaderMetaCallPropagator_PythonToCpp_ReaderMetaCallPropagator_PTR(PyObject* pyIn, void* cppOut) {
-    Shiboken::Conversions::pythonToCppPointer(&Sbk_ReaderMetaCallPropagator_Type, pyIn, cppOut);
+static void MetaCallSocketObserver_PythonToCpp_MetaCallSocketObserver_PTR(PyObject* pyIn, void* cppOut) {
+    Shiboken::Conversions::pythonToCppPointer(&Sbk_MetaCallSocketObserver_Type, pyIn, cppOut);
 }
-static PythonToCppFunc is_ReaderMetaCallPropagator_PythonToCpp_ReaderMetaCallPropagator_PTR_Convertible(PyObject* pyIn) {
+static PythonToCppFunc is_MetaCallSocketObserver_PythonToCpp_MetaCallSocketObserver_PTR_Convertible(PyObject* pyIn) {
     if (pyIn == Py_None)
         return Shiboken::Conversions::nonePythonToCppNullPtr;
-    if (PyObject_TypeCheck(pyIn, (PyTypeObject*)&Sbk_ReaderMetaCallPropagator_Type))
-        return ReaderMetaCallPropagator_PythonToCpp_ReaderMetaCallPropagator_PTR;
+    if (PyObject_TypeCheck(pyIn, (PyTypeObject*)&Sbk_MetaCallSocketObserver_Type))
+        return MetaCallSocketObserver_PythonToCpp_MetaCallSocketObserver_PTR;
     return 0;
 }
 
 // C++ to Python pointer conversion - tries to find the Python wrapper for the C++ object (keeps object identity).
-static PyObject* ReaderMetaCallPropagator_PTR_CppToPython_ReaderMetaCallPropagator(const void* cppIn) {
-    return PySide::getWrapperForQObject((::ReaderMetaCallPropagator*)cppIn, &Sbk_ReaderMetaCallPropagator_Type);
+static PyObject* MetaCallSocketObserver_PTR_CppToPython_MetaCallSocketObserver(const void* cppIn) {
+    return PySide::getWrapperForQObject((::MetaCallSocketObserver*)cppIn, &Sbk_MetaCallSocketObserver_Type);
 
 }
 
-void init_ReaderMetaCallPropagator(PyObject* module)
+void init_MetaCallSocketObserver(PyObject* module)
 {
-    SbkpyreaderTypes[SBK_READERMETACALLPROPAGATOR_IDX] = reinterpret_cast<PyTypeObject*>(&Sbk_ReaderMetaCallPropagator_Type);
+    SbkpyreaderTypes[SBK_METACALLSOCKETOBSERVER_IDX] = reinterpret_cast<PyTypeObject*>(&Sbk_MetaCallSocketObserver_Type);
 
-    if (!Shiboken::ObjectType::introduceWrapperType(module, "ReaderMetaCallPropagator", "ReaderMetaCallPropagator*",
-        &Sbk_ReaderMetaCallPropagator_Type, &Shiboken::callCppDestructor< ::ReaderMetaCallPropagator >, (SbkObjectType*)SbkpyreaderTypes[SBK_METACALLPROPAGATOR_IDX])) {
+    if (!Shiboken::ObjectType::introduceWrapperType(module, "MetaCallSocketObserver", "MetaCallSocketObserver*",
+        &Sbk_MetaCallSocketObserver_Type, &Shiboken::callCppDestructor< ::MetaCallSocketObserver >, (SbkObjectType*)SbkPySide_QtCoreTypes[SBK_QOBJECT_IDX])) {
         return;
     }
 
     // Register Converter
-    SbkConverter* converter = Shiboken::Conversions::createConverter(&Sbk_ReaderMetaCallPropagator_Type,
-        ReaderMetaCallPropagator_PythonToCpp_ReaderMetaCallPropagator_PTR,
-        is_ReaderMetaCallPropagator_PythonToCpp_ReaderMetaCallPropagator_PTR_Convertible,
-        ReaderMetaCallPropagator_PTR_CppToPython_ReaderMetaCallPropagator);
+    SbkConverter* converter = Shiboken::Conversions::createConverter(&Sbk_MetaCallSocketObserver_Type,
+        MetaCallSocketObserver_PythonToCpp_MetaCallSocketObserver_PTR,
+        is_MetaCallSocketObserver_PythonToCpp_MetaCallSocketObserver_PTR_Convertible,
+        MetaCallSocketObserver_PTR_CppToPython_MetaCallSocketObserver);
 
-    Shiboken::Conversions::registerConverterName(converter, "ReaderMetaCallPropagator");
-    Shiboken::Conversions::registerConverterName(converter, "ReaderMetaCallPropagator*");
-    Shiboken::Conversions::registerConverterName(converter, "ReaderMetaCallPropagator&");
-    Shiboken::Conversions::registerConverterName(converter, typeid(::ReaderMetaCallPropagator).name());
-    Shiboken::Conversions::registerConverterName(converter, typeid(::ReaderMetaCallPropagatorWrapper).name());
+    Shiboken::Conversions::registerConverterName(converter, "MetaCallSocketObserver");
+    Shiboken::Conversions::registerConverterName(converter, "MetaCallSocketObserver*");
+    Shiboken::Conversions::registerConverterName(converter, "MetaCallSocketObserver&");
+    Shiboken::Conversions::registerConverterName(converter, typeid(::MetaCallSocketObserver).name());
+    Shiboken::Conversions::registerConverterName(converter, typeid(::MetaCallSocketObserverWrapper).name());
 
 
-    Shiboken::ObjectType::setTypeDiscoveryFunctionV2(&Sbk_ReaderMetaCallPropagator_Type, &Sbk_ReaderMetaCallPropagator_typeDiscovery);
+    Shiboken::ObjectType::setTypeDiscoveryFunctionV2(&Sbk_MetaCallSocketObserver_Type, &Sbk_MetaCallSocketObserver_typeDiscovery);
 
-    PySide::Signal::registerSignals(&Sbk_ReaderMetaCallPropagator_Type, &::ReaderMetaCallPropagator::staticMetaObject);
+    PySide::Signal::registerSignals(&Sbk_MetaCallSocketObserver_Type, &::MetaCallSocketObserver::staticMetaObject);
 
-    ReaderMetaCallPropagatorWrapper::pysideInitQtMetaTypes();
-    Shiboken::ObjectType::setSubTypeInitHook(&Sbk_ReaderMetaCallPropagator_Type, &PySide::initQObjectSubType);
-    PySide::initDynamicMetaObject(&Sbk_ReaderMetaCallPropagator_Type, &::ReaderMetaCallPropagator::staticMetaObject, sizeof(::ReaderMetaCallPropagator));
+    MetaCallSocketObserverWrapper::pysideInitQtMetaTypes();
+    Shiboken::ObjectType::setSubTypeInitHook(&Sbk_MetaCallSocketObserver_Type, &PySide::initQObjectSubType);
+    PySide::initDynamicMetaObject(&Sbk_MetaCallSocketObserver_Type, &::MetaCallSocketObserver::staticMetaObject, sizeof(::MetaCallSocketObserver));
 }

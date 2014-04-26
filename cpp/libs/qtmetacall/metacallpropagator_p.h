@@ -14,6 +14,7 @@ QT_FORWARD_DECLARE_CLASS(QTcpSocket)
 QTMETACALL_BEGIN_NAMESPACE
 
 class MetaCallSocketFilter;
+class MetaCallSocketObserver;
 class MetaCallPropagator;
 class MetaCallPropagatorPrivate : public QObject
 {
@@ -24,6 +25,7 @@ class MetaCallPropagatorPrivate : public QObject
 
 public:
   MetaCallSocketFilter *filter;
+  MetaCallSocketObserver *socketObserver;
   QTcpServer *server; // for receiver
   QTcpSocket *socket; // for both sender and receiver
 
@@ -31,6 +33,7 @@ public:
 
   void createFilter(QObject *watched);
 
+  void connectSocketObserver();
 public slots:
   void dumpSocket() const; // for Debug only
   void serverAcceptsConnection();

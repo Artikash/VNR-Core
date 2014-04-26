@@ -15,6 +15,7 @@
 
 // Extra includes
 #include <QList>
+#include <metacallobserver.h>
 #include <metacallpropagator.h>
 #include <qbytearray.h>
 #include <qcoreevent.h>
@@ -469,6 +470,81 @@ static PyObject* Sbk_MetaCallPropagatorFunc_isServer(PyObject* self)
     return pyResult;
 }
 
+static PyObject* Sbk_MetaCallPropagatorFunc_setSocketObserver(PyObject* self, PyObject* pyArg)
+{
+    MetaCallPropagatorWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (MetaCallPropagatorWrapper*)((::MetaCallPropagator*)Shiboken::Conversions::cppPointer(SbkpyreaderTypes[SBK_METACALLPROPAGATOR_IDX], (SbkObject*)self));
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: setSocketObserver(MetaCallSocketObserver*)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppPointerConvertible((SbkObjectType*)SbkpyreaderTypes[SBK_METACALLSOCKETOBSERVER_IDX], (pyArg)))) {
+        overloadId = 0; // setSocketObserver(MetaCallSocketObserver*)
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_MetaCallPropagatorFunc_setSocketObserver_TypeError;
+
+    // Call function/method
+    {
+        if (!Shiboken::Object::isValid(pyArg))
+            return 0;
+        ::MetaCallSocketObserver* cppArg0;
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // setSocketObserver(MetaCallSocketObserver*)
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            cppSelf->setSocketObserver(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+        }
+    }
+
+    if (PyErr_Occurred()) {
+        return 0;
+    }
+    Py_RETURN_NONE;
+
+    Sbk_MetaCallPropagatorFunc_setSocketObserver_TypeError:
+        const char* overloads[] = {"pyreader.MetaCallSocketObserver", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyreader.MetaCallPropagator.setSocketObserver", overloads);
+        return 0;
+}
+
+static PyObject* Sbk_MetaCallPropagatorFunc_socketObserver(PyObject* self)
+{
+    MetaCallPropagatorWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (MetaCallPropagatorWrapper*)((::MetaCallPropagator*)Shiboken::Conversions::cppPointer(SbkpyreaderTypes[SBK_METACALLPROPAGATOR_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+
+    // Call function/method
+    {
+
+        if (!PyErr_Occurred()) {
+            // socketObserver()const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            MetaCallSocketObserver * cppResult = const_cast<const ::MetaCallPropagatorWrapper*>(cppSelf)->socketObserver();
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkpyreaderTypes[SBK_METACALLSOCKETOBSERVER_IDX], cppResult);
+            Shiboken::Object::setParent(self, pyResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+}
+
 static PyObject* Sbk_MetaCallPropagatorFunc_startClient(PyObject* self, PyObject* args)
 {
     MetaCallPropagatorWrapper* cppSelf = 0;
@@ -644,6 +720,8 @@ static PyMethodDef Sbk_MetaCallPropagator_methods[] = {
     {"isClient", (PyCFunction)Sbk_MetaCallPropagatorFunc_isClient, METH_NOARGS},
     {"isReady", (PyCFunction)Sbk_MetaCallPropagatorFunc_isReady, METH_NOARGS},
     {"isServer", (PyCFunction)Sbk_MetaCallPropagatorFunc_isServer, METH_NOARGS},
+    {"setSocketObserver", (PyCFunction)Sbk_MetaCallPropagatorFunc_setSocketObserver, METH_O},
+    {"socketObserver", (PyCFunction)Sbk_MetaCallPropagatorFunc_socketObserver, METH_NOARGS},
     {"startClient", (PyCFunction)Sbk_MetaCallPropagatorFunc_startClient, METH_VARARGS},
     {"startServer", (PyCFunction)Sbk_MetaCallPropagatorFunc_startServer, METH_VARARGS},
     {"stop", (PyCFunction)Sbk_MetaCallPropagatorFunc_stop, METH_NOARGS},

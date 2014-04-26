@@ -17,12 +17,12 @@ import config, growl
 
 class RpcSignals(pyreader.ReaderMetaCallPropagator):
 
-  activatedRequested = Signal()
-  activatedReceived = Signal()
+  activationRequested = Signal()
+  activationReceived = Signal()
 
   def __init__(self, parent=None):
     super(RpcSignals, self).__init__(parent)
-    self.activatedRequested.connect(self.activatedReceived, Qt.QueuedConnection)
+    self.activationRequested.connect(self.activationReceived, Qt.QueuedConnection)
 
 class RpcClient(QObject):
 
@@ -32,7 +32,7 @@ class RpcClient(QObject):
     super(RpcClient, self).__init__(parent)
     self.__d = d = RpcSignals(self)
 
-  def activate(self): self.__d.activatedRequested.emit()
+  def activate(self): self.__d.activationRequested.emit()
 
   def stop(self): self.__d.stop()
   def isActive(self): return self.__d.isActive()
@@ -43,7 +43,7 @@ class RpcClient(QObject):
 class _RpcServer(object):
   def __init__(self, q):
     self.r = r = RpcSignals(q)
-    r.activated.connect(q.activated)
+    r.activationReceived.connect(q.activated)
     r.serverMessageReceived.connect(self._onMessage)
 
     #r.q_pingClient.connect(r.pingClient, Qt.QueuedConnection)
@@ -126,19 +126,19 @@ class RpcServer(QObject):
     @param  data  {hash:translation}
     """
     try:
-      data = json.dumps(data) #, ensure_ascii=False)
+      data = json.dumps(data) #, ensure_ascii=False) # the json parser in vnragent don't enforce ascii
       self.__d.callAgent('ui.text', data)
     except TypeError, e:
       dwarn("failed to encode json: %s" % e)
 
   def clearTranslation(self):
-    self.__d.callAgent.emit('ui.clear')
+    self.__d.callAgent('ui.clear')
 
   def enableClient(self):
-    self.__d.callAgent.emit('ui.enable')
+    self.__d.callAgent('ui.enable')
 
   def disableClient(self):
-    self.__d.callAgent.emit('ui.disable')
+    self.__d.callAgent('ui.disable')
 
 @memoized
 def manager(): return RpcServer()

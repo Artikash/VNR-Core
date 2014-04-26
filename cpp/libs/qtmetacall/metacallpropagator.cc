@@ -2,6 +2,7 @@
 // 4/9/2012 jichi
 #include "qtmetacall/metacallpropagator.h"
 #include "qtmetacall/metacallpropagator_p.h"
+#include "qtmetacall/metacallobserver.h"
 #include "qtmetacall/metacallfilter_p.h"
 #include <QtCore/QEventLoop>
 #include <QtNetwork/QHostAddress>
@@ -18,7 +19,7 @@
 /** Private class */
 
 MetaCallPropagatorPrivate::MetaCallPropagatorPrivate(Q *q)
-  : Base(q), q_(q), filter(nullptr), server(nullptr), socket(nullptr)
+  : Base(q), q_(q), filter(nullptr), socketObserver(nullptr), server(nullptr), socket(nullptr)
 {}
 
 void MetaCallPropagatorPrivate::dumpSocket() const
@@ -43,6 +44,8 @@ void MetaCallPropagatorPrivate::createFilter(QObject *watched)
   watched->installEventFilter(filter);
 }
 
+// FIXME: According to this structure, it can only accept one client at a time
+// The client has to reconnect on error.
 void MetaCallPropagatorPrivate::serverAcceptsConnection()
 {
   DOUT("enter");
@@ -63,11 +66,18 @@ void MetaCallPropagatorPrivate::serverAcceptsConnection()
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(dumpSocket()));
     connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), SLOT(dumpSocket()));
 #endif // DEBUG
-    //connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), q_, SIGNAL(socketError()));
-    //connect(socket, SIGNAL(connected()), q_, SIGNAL(connected()));
-    //connect(socket, SIGNAL(disconnected()), q_, SIGNAL(disconnected()));
+    connectSocketObserver();
   }
   DOUT("leave: ok =" << bool(socket));
+}
+
+void MetaCallPropagatorPrivate::connectSocketObserver()
+{
+  if (socket && socketObserver) {
+    connect(socket, SIGNAL(connected()), socketObserver, SIGNAL(connected()));
+    connect(socket, SIGNAL(disconnected()), socketObserver, SIGNAL(disconnected()));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), socketObserver, SIGNAL(error()));
+  }
 }
 
 /** Public class */
@@ -97,6 +107,20 @@ void MetaCallPropagator::setRouter(MetaCallRouter *value)
   if (!d_->filter)
     d_->createFilter(this);
   d_->filter->setRouter(value);
+}
+
+MetaCallSocketObserver *MetaCallPropagator::socketObserver() const
+{ return d_->socketObserver; }
+
+void MetaCallPropagator::setSocketObserver(MetaCallSocketObserver *value)
+{
+  if (d_->socketObserver != value) {
+    if (d_->socketObserver)
+      disconnect(d_->socketObserver);
+    d_->socketObserver = value;
+    if (value && d_->socket)
+      d_->connectSocketObserver();
+  }
 }
 
 // - Service -
@@ -164,15 +188,13 @@ bool MetaCallPropagator::startClient(const QString &address, int port)
   connect(d_->socket, SIGNAL(error(QAbstractSocket::SocketError)), d_, SLOT(dumpSocket()));
   connect(d_->socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), d_, SLOT(dumpSocket()));
 #endif // DEBUG
-
-  //connect(d_->socket, SIGNAL(error(QAbstractSocket::SocketError)), SIGNAL(socketError()));
-  //connect(d_->socket, SIGNAL(connected()), SIGNAL(connected()));
-  //connect(d_->socket, SIGNAL(disconnected()), SIGNAL(disconnected()));
   d_->socket->connectToHost(QHostAddress(address), port);
 
   if (!d_->filter)
     d_->createFilter(this);
   d_->filter->setSocket(d_->socket);
+
+  d_->connectSocketObserver();
 
   DOUT("leave: ret = true");
   return true;

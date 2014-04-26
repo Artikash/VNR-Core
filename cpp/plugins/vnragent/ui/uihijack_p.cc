@@ -1,13 +1,13 @@
 // uihijack_p.cc
 // 1/27/2013 jichi
 #include "ui/uihijack_p.h"
-#include "ui/uimanager.h"
+#include "ui/uidriver_p.h"
 
 BOOL WINAPI Ui::MyTrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, int nReserved, HWND hWnd, CONST RECT * prcRect)
 {
   //if (HANDLE hThread = CreateThread(0, 0, TranslateMenuThreadProc, hMenu, 0, 0))
   //  CloseHandle(hThread);
-  if (auto p = UiManager::instance())
+  if (auto p = UiDriverPrivate::instance())
     p->updateContextMenu(hMenu, hWnd);
   return ::TrackPopupMenu(hMenu, uFlags, x, y, nReserved, hWnd, prcRect);
 }
@@ -16,7 +16,7 @@ BOOL WINAPI Ui::MyTrackPopupMenuEx(HMENU hMenu, UINT uFlags, int x, int y, HWND 
 {
   //if (HANDLE hThread = CreateThread(0, 0, TranslateMenuThreadProc, hMenu, 0, 0))
   //  CloseHandle(hThread);
-  if (auto p = UiManager::instance())
+  if (auto p = UiDriverPrivate::instance())
     p->updateContextMenu(hMenu, hWnd);
   return ::TrackPopupMenuEx(hMenu, uFlags, x, y, hWnd, lptpm);
 }

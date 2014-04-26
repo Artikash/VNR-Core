@@ -43,13 +43,12 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
 
     ::DisableThreadLibraryCalls(hInstance); // Disable DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications
 
-    HWND winId = waitForWindowReady();
-    if (!winId) {
+    if (HWND winId = waitForWindowReady())
+      WinTimer::setGlobalWindow(winId);
+    else {
       //growl::error("cannot find window");
       return FALSE;
     }
-
-    WinTimer::setGlobalWindow(winId);
 
     //while(!::GetModuleHandleA("gdi32.dll"))
     //  ::Sleep(200);

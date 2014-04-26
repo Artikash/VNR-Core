@@ -11,6 +11,7 @@
 QTMETACALL_BEGIN_NAMESPACE
 
 class MetaCallRouter;
+class MetaCallSocketObserver;
 class MetaCallPropagatorPrivate;
 /**
  *  All signals in this class will be propagated to the remote object.
@@ -39,8 +40,13 @@ public:
   ///  Return true after started, but is not guranteed to isActive
   bool isReady() const;
 
+  ///  Used to convert method ID
   MetaCallRouter *router() const;
   void setRouter(MetaCallRouter *value);
+
+  ///  Used to receive local signals. This class will NOT take the ownership.
+  MetaCallSocketObserver *socketObserver() const;
+  void setSocketObserver(MetaCallSocketObserver *value);
 
 // Local signals has no effect!
 //signals:

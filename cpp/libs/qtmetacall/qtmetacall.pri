@@ -7,6 +7,7 @@ DEPENDPATH += $$PWD
 
 HEADERS += \
   $$PWD/metacallfilter_p.h \
+  $$PWD/metacallobserver.h \
   $$PWD/metacallpropagator.h \
   $$PWD/metacallpropagator_p.h \
   $$PWD/metacallrouter.h \

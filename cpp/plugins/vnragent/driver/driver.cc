@@ -25,6 +25,8 @@ DriverPrivate::DriverPrivate(QObject *parent)
   rpc = new RpcClient(this);
   ui = new UiDriver(this); // TODO: Selective create ui only if enabled at server side, i.e. only called by rpc
 
+  connect(ui, SIGNAL(translationRequested(QString)), rpc, SLOT(requestUiTranslation(QString)));
+
   connect(rpc, SIGNAL(clearUiRequested()), ui, SLOT(clearTranslation()));
   connect(rpc, SIGNAL(enableUiRequested(bool)), ui, SLOT(setEnable(bool)));
   connect(rpc, SIGNAL(uiTranslationReceived(QString)), ui, SLOT(updateTranslation(QString)));

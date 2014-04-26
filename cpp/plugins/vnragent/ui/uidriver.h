@@ -21,7 +21,7 @@ public:
 signals:
   void translationRequested(QString json);
 public slots:
-  void updateTranslation(QString json);
+  void updateTranslation(const QString &json);
   void clearTranslation();
   void setEnable(bool t);
 public:

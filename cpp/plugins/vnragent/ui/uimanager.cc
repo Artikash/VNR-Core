@@ -11,6 +11,9 @@
 #include <QtCore/QVariant>
 #include <unordered_set>
 
+//#define DEBUG "uimanager"
+//#include "growl.h"
+
 /** Private class */
 
 namespace { UiManager::TextEntry NULL_TEXT_ENTRY; }
@@ -50,7 +53,8 @@ public:
   void touchTexts()
   {
     textsDirty = true;
-    refreshTextsTimer_.start();
+    //if (!refreshTextsTimer_->isActive())
+    refreshTextsTimer_->start();
   }
 };
 
@@ -84,7 +88,7 @@ void UiManager::refreshTexts()
   //QHash<QString, QVariant> texts;
   QVariantHash texts;
   foreach (const TextEntry &e, d_->entries)
-    if (!trs.contains(e.hash))
+    if (!d_->trs.contains(e.hash))
       texts[QString::number(e.hash)] = e.text;
 
   if (!texts.isEmpty()) {
@@ -99,7 +103,7 @@ void UiManager::clearTranslation()
   d_->touchTexts();
 }
 
-void UiManager::updateTranslation(const QString &json)
+void UiManager::updateTranslationData(const QString &json)
 {
   QVariant data = QxtJSON::parse(json);
   if (data.isNull())
@@ -111,13 +115,13 @@ void UiManager::updateTranslation(const QString &json)
   for (auto it = map.constBegin(); it != map.constEnd(); ++it)
     if (qint64 hash = it.key().toLongLong()) {
       QString t = d_->trs[hash] = it.value().toString();
-      d_->h_trs.insert(My::hashString(t));
+      d_->h_trs.insert(Ui::hashString(t));
     }
 }
 
 // - Queries -
 
-//bool UiManager::containsWindow(WId window, My::TextRole role) const
+//bool UiManager::containsWindow(WId window, Ui::TextRole role) const
 //{
   //QMutexLocker locker(&d_->mutex);
 //  foreach (const Entry &e, d_->entries)
@@ -169,14 +173,14 @@ void UiManager::updateTextTranslation(const QString &tr, qint64 hash, qint64 trh
 {
   Q_ASSERT(hash);
   d_->trs[hash] = tr;
-  d_->h_trs.insert(trhash ? trhash : My::hashString(tr));
+  d_->h_trs.insert(trhash ? trhash : Ui::hashString(tr));
 }
 
 void UiManager::updateText(const QString &text, qint64 hash, ulong anchor)
 {
   Q_ASSERT(anchor);
   if (!hash)
-    hash = My::hashString(text);
+    hash = Ui::hashString(text);
   foreach (const TextEntry &e, d_->entries)
     if (e.hash == hash && e.anchor == anchor)
       return;

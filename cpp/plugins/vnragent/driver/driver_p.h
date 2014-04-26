@@ -12,9 +12,8 @@ class UiDriver;
 class DriverPrivate : public QObject
 {
   Q_OBJECT
-  Q_DISABLE_COPY(Driver)
-  SK_EXTEND_CLASS(Driver, QObject)
-  SK_DECLARE_PRIVATE(DriverPrivate)
+  Q_DISABLE_COPY(DriverPrivate)
+  SK_EXTEND_CLASS(DriverPrivate, QObject)
 
   RpcClient *rpc;
   UiDriver *ui;

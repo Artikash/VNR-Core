@@ -4,18 +4,28 @@
 #include "config.h"
 #include "loader.h"
 #include "driver/driver.h"
-#include "qtembedded/applicationloader.h"
+//#include "qtembedded/applicationloader.h"
 #include "windbg/inject.h"
 #include "windbg/util.h"
 #include "ui/uihijack.h"
+#include <QtCore/QCoreApplication>
 #include <QtCore/QTextCodec>
+#include "growl.h"
 
 // Global variables
 
 namespace { // unnamed
 
+QCoreApplication *createApplication_(HINSTANCE hInstance)
+{
+  static char arg0[MAX_PATH * 2]; // in case it is wchar
+  static char *argv[] = { arg0, nullptr };
+  static int argc = 1;
+ ::GetModuleFileNameA(hInstance, arg0, sizeof(arg0)/sizeof(*arg0));
+  return new QCoreApplication(argc, argv);
+}
+
 Driver *driver_;
-QtEmbedded::ApplicationLoader *appLoader_;
 
 } // unnamed namespace
 
@@ -29,8 +39,8 @@ void Loader::initWithInstance(HINSTANCE hInstance)
   QTextCodec::setCodecForCStrings(codec);
   QTextCodec::setCodecForTr(codec);
 
-  QCoreApplication *app = QtEmbedded::ApplicationLoader::createApplication(hInstance);
-  ::appLoader_ = new QtEmbedded::ApplicationLoader(app, QT_EVENTLOOP_INTERVAL);
+  ::createApplication_(hInstance);
+  //::appLoader_ = new QtEmbedded::ApplicationLoader(app, QT_EVENTLOOP_INTERVAL);
 
   ::driver_ = new Driver;
 
@@ -39,23 +49,16 @@ void Loader::initWithInstance(HINSTANCE hInstance)
     WinDbg::ThreadsSuspender suspendedThreads; // lock all threads
     Ui::overrideModules();
   }
+
+  qApp->exec(); // hang here
 }
 
 void Loader::destroy()
 {
-  if (::appLoader_) {
+  if (qApp) {
     if (::driver_)
       ::driver_->quit();
-
-    ::appLoader_->quit();
-
-    if (::driver_) {
-      delete driver_;
-      ::driver_ = nullptr;
-    }
-
-    delete ::appLoader_;
-    ::appLoader_ = nullptr;
+    qApp->quit();
   }
 }
 

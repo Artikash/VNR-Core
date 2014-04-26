@@ -22,11 +22,11 @@ void error(const char *message);
 void error(const wchar_t *message);
 
 #ifdef DEBUG
-void debug(const char *message) { warn(message); }
-void debug(const wchar_t *message) { warn(message); }
+inline void debug(const char *message) { warn(message); }
+inline void debug(const wchar_t *message) { warn(message); }
 #else
-void debug(const char *) {}
-void debug(const wchar_t *) {}
+inline void debug(const char *) {}
+inline void debug(const wchar_t *) {}
 #endif // DEBUG
 
 #ifdef QT_CORE_LIB
