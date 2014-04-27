@@ -22,7 +22,6 @@ class DriverPrivate : public QObject
 
 public:
   explicit DriverPrivate(QObject *parent=nullptr);
-  void quit(); // called before qApp->quit()
 };
 
 // EOF

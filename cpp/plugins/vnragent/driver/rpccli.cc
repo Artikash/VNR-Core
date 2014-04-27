@@ -98,8 +98,6 @@ RpcClient::~RpcClient() { ::instance_ = nullptr; }
 bool RpcClient::isActive() const
 { return d_->r->isActive(); }
 
-void RpcClient::quit() {}
-
 // - Requests -
 
 void RpcClient::requestUiTranslation(const QString &json) { d_->sendUiTexts(json); }
@@ -107,9 +105,9 @@ void RpcClient::requestUiTranslation(const QString &json) { d_->sendUiTexts(json
 void RpcClient::requestEngineTranslation(const QString &json)
 { d_->sendEngineTexts(json); }
 
-void RpcClient::showMessage(const QString &t) { d_->growlServer(t, D::GrowlMessage); }
-void RpcClient::showWarning(const QString &t) { d_->growlServer(t, D::GrowlWarning); }
-void RpcClient::showError(const QString &t) { d_->growlServer(t, D::GrowlError); }
-void RpcClient::showNotification(const QString &t) { d_->growlServer(t, D::GrowlNotification); }
+void RpcClient::growlMessage(const QString &t) { d_->growlServer(t, D::GrowlMessage); }
+void RpcClient::growlWarning(const QString &t) { d_->growlServer(t, D::GrowlWarning); }
+void RpcClient::growlError(const QString &t) { d_->growlServer(t, D::GrowlError); }
+void RpcClient::growlNotification(const QString &t) { d_->growlServer(t, D::GrowlNotification); }
 
 // EOF

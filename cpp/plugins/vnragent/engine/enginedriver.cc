@@ -13,6 +13,7 @@ class EngineDriverPrivate
 public:
   bool enabled;
   EngineManager *manager;
+  //AbstractEngine *engine;
 
   explicit EngineDriverPrivate(QObject *parent)
     : enabled(true), manager(new EngineManager(parent)) {}
@@ -20,51 +21,37 @@ public:
 
 /** Public class */
 
-static EngineDriver *instance_;
-EngineDriver *EngineDriver::instance() { return instance_; }
+//static EngineDriver *instance_;
+//EngineDriver *EngineDriver::instance() { return instance_; }
 
 EngineDriver::EngineDriver(QObject *parent)
   : Base(parent), d_(new D(this))
 {
-  connect(d_->manager, SIGNAL(translationRequested(QString)), SIGNAL(translationRequested(QString)));
+  connect(d_->manager, SIGNAL(textsReceived(QString)), SIGNAL(textsReceived(QString)));
 
   if (auto p = AbstractEngine::instance())
+    //p->setParent(this);
     if (p->inject()) {
+      //d_->engine = p;
       // FIXME: Only one instance can be send at a time?!
       //growl::notify(tr("Recognize game engine: %1").arg(p->name()));
+      //connect(d_->engine, SIGNAL(textReceived(QString,qint64,int,void*)), d_->manager, SLOT(addText(QString,qint64,int,void*)));
     }
 
-  ::instance_ = this;
+
+  //::instance_ = this;
 }
 
 EngineDriver::~EngineDriver()
 {
-  ::instance_ = nullptr;
+  //::instance_ = nullptr;
   delete d_;
 }
 
 void EngineDriver::updateTranslation(const QString &json) { d_->manager->updateTranslation(json); }
 void EngineDriver::clearTranslation() { d_->manager->clearTranslation(); }
-void EngineDriver::abortTranslation() { d_->manager->abortTranslation(); }
 
 bool EngineDriver::isEnabled() const { return d_->enabled; }
 void EngineDriver::setEnable(bool t) { d_->enabled = t; }
-
-void EngineDriver::quit() { d_->manager->quit(); }
-
-// Translate
-
-QString EngineDriver::translate(const QString &text, qint64 hash, bool block)
-{
-  if (!d_->enabled)
-    return QString();
-
-  d_->manager->updateText(text, hash);
-  QString ret = d_->manager->findTranslation(hash);
-  block = false;
-  if (ret.isEmpty() && block)
-    ret = d_->manager->waitForTranslation(hash);
-  return ret;
-}
 
 // EOF

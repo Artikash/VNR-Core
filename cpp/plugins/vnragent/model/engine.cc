@@ -3,7 +3,7 @@
 
 #include "model/engine.h"
 #include "model/manifest.h"
-#include "engine/enginedriver.h"
+#include "engine/enginemanager.h"
 #include "engine/enginehash.h"
 #include <QtCore/QTextCodec>
 #include <QtCore/QTextDecoder>
@@ -61,18 +61,18 @@ AbstractEngine::~AbstractEngine() { delete d_; }
 const char *AbstractEngine::name() const { return d_->name; }
 const char *AbstractEngine::encoding() const { return d_->encoding; }
 
-// - Translate -
+// - Dispatch -
 
-QString AbstractEngine::translate(const QByteArray &data) const
+QString AbstractEngine::dispatchText(const QByteArray &data, int role, void *context) const
 {
-  if (auto p = EngineDriver::instance())
-    if (p->isEnabled()) {
-      QString text = d_->decode(data);
-      if (!text.isEmpty()) {
-        qint64 hash = Engine::hashByteArray(data);
-        return p->translate(text, hash);
-      }
-    }
+  QString text = d_->decode(data);
+  if (!text.isEmpty()) {
+    qint64 hash = Engine::hashByteArray(data);
+    auto p = EngineManager::instance();
+    QString ret = p->findTranslation(hash, role);
+    p->addText(text, hash, role, context);
+    return ret;
+  }
   return QString();
 }
 

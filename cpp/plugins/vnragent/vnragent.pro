@@ -45,6 +45,7 @@ HEADERS += \
   driver/rpccli.h \
   driver/rpccli_p.h \
   engine/enginedriver.h \
+  engine/enginedef.h \
   engine/enginehash.h \
   engine/enginehijack.h \
   engine/enginemanager.h \

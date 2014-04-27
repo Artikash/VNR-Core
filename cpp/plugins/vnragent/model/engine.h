@@ -4,14 +4,15 @@
 // 4/20/2014 jichi
 
 #include "sakurakit/skglobal.h"
-#include <QtCore/QString>
+#include <QtCore/QObject>
 
 class AbstractEnginePrivate;
 class AbstractEngine
 {
+  //Q_OBJECT
   SK_CLASS(AbstractEngine)
-  SK_DISABLE_COPY(AbstractEngine)
   SK_DECLARE_PRIVATE(AbstractEnginePrivate)
+  SK_DISABLE_COPY(AbstractEngine)
 
 public:
   static Self *instance();
@@ -27,9 +28,15 @@ public:
   //static bool isEnabled();
   //static void setEnabled(bool t);
 
-  // Helper functions only used by descendant classes
+//signals:
+//  // context is opaque, and the receiver of this signal is responsible to release the context
+//  void textReceived(const QString &text, qint64 hash, int role, void *context);
 public:
-  QString translate(const QByteArray &data) const;
+  virtual void drawText(const QString &text, const void *context) = 0;
+  virtual void releaseContext(void *context) = 0;
+
+protected:
+  QString dispatchText(const QByteArray &data, int role, void *context) const;
 };
 
 // EOF

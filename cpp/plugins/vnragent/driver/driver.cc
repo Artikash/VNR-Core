@@ -12,7 +12,7 @@
 Driver::Driver() : d_(new D) {}
 Driver::~Driver() { delete d_; }
 
-void Driver::quit() { d_->quit(); }
+void Driver::quit() {}
 
 /** Private class */
 
@@ -31,21 +31,11 @@ DriverPrivate::DriverPrivate(QObject *parent)
 
   eng = new EngineDriver(this); // TODO: Selective create engine only if enabled at server side, i.e. only called by rpc {
   {
-    connect(eng, SIGNAL(translationRequested(QString)), rpc, SLOT(requestEngineTranslation(QString)));
+    connect(eng, SIGNAL(textsReceived(QString)), rpc, SLOT(requestEngineTranslation(QString)));
     connect(rpc, SIGNAL(clearEngineRequested()), eng, SLOT(clearTranslation()));
     connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));
     connect(rpc, SIGNAL(engineTranslationReceived(QString)), eng, SLOT(updateTranslation(QString)));
-    connect(rpc, SIGNAL(aborted()), eng, SLOT(abortTranslation()));
   }
 }
-
-void DriverPrivate::quit()
-{
-  if (eng)
-    eng->quit();
-  if (rpc)
-    rpc->quit();
-}
-
 
 // EOF

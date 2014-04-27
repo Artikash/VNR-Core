@@ -16,26 +16,20 @@ class EngineDriver : public QObject
   SK_DECLARE_PRIVATE(EngineDriverPrivate)
 
 public:
-  static Self *instance(); // needed by Engine
+  //static Self *instance(); // needed by Engine
   explicit EngineDriver(QObject *parent = nullptr);
   ~EngineDriver();
 
 signals:
-  void translationRequested(QString json); // {long hash:unicode text}
+  void textsReceived(QString json); // [{role:int,hash:long,text:unicode}]
 public slots:
-  void updateTranslation(const QString &json); // {long hash:unicode translation}
+  void updateTranslation(const QString &json); // [{role:int,hash:long,text:unicode}]
   void clearTranslation();
-  void abortTranslation();
   void setEnable(bool t);
-public:
-  void quit(); // called before qApp->quit()
 
   // Called by engine
 public:
   bool isEnabled() const;
-
-  // Blocking
-  QString translate(const QString &text, qint64 hash, bool block = true);
 };
 
 // EOF

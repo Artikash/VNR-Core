@@ -4,37 +4,71 @@
 
 #include "model/engine/majiro.h"
 #include "model/env.h"
+#include "engine/enginedef.h"
 #include "detoursutil/detoursutil.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 #include <QtCore/QStringList>
 //#include <QtCore/QDebug>
 
-/**
- * レミニセンス:
- * int __cdecl sub_41AF90(CHAR ch, int arg2, LPCSTR str, arg4, arg5);
- * - ch: static, different for different kinds of text (chara, dialogue, etc.), this might be type ID
- * - arg2: dynamic, different for different kinds of text, this might be texture ID
- * - str: static, the real text
- * - arg4: dynamci, different for different scene (scenario, config, etc.), this might be deviceId
- * - arg5: static, always 1
- * Scenario text's ch seems to always be one.
- */
-typedef int (* paint_fun_t)(char, int, const char *, int, int);
-static paint_fun_t oldpaint;
+/** Private class */
 
-//static int newpaint(char ch, int arg2, const char *str, int arg4, int arg5)
-//qDebug() << ch << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
-static int newpaint(char type, int textureId, const char *str, int deviceId, int flags)
+// Make this as class instead of namespace so that it can be specified as friend
+class MajiroEnginePrivate
 {
-  QString t = AbstractEngine::instance()->translate(str);
-  if (t.isEmpty())
-    return ::oldpaint(type, arg2, str, arg4, flags);
-  else
-    return ::oldpaint(ch, arg2, t.toLocal8Bit(), arg4, flags);
-}
+  typedef MajiroEngine Q;
+public:
+  struct Context
+  {
+    char arg1;
+    int arg2;
+    //const char *arg3;
+    int arg4;
+    int arg5;
 
-bool MajiroEngine::match() { return Env::glob(QStringList() << "data*.arc" << "stream*.arc"); }
+    Context(char arg1, int arg2, int arg4, int arg5) : arg1(arg1), arg2(arg2), arg4(arg4), arg5(arg5) {}
+
+    Engine::TextRole role() const
+    {
+      switch (arg1) {
+      case 0: return Engine::ScenarioRole;
+      //case 1: return Engine::NameRole;
+      default: return Engine::OtherRole;
+      }
+    }
+  };
+
+  /**
+   *  Sample game: レミニセンス:
+   *  int __cdecl sub_41AF90(CHAR ch, int arg2, LPCSTR str, arg4, arg5);
+   *  - ch: static, different for different kinds of text (chara, dialogue, etc.), this might be type ID
+   *  - arg2: dynamic, different for different kinds of text, this might be texture ID
+   *  - str: static, the real text
+   *  - arg4: dynamci, different for different scene (scenario, config, etc.), this might be deviceId
+   *  - arg5: static, always 1
+   *  - return: unknown
+   *  Scenario text's ch seems to always be one.
+   */
+  typedef int (* draw_fun_t)(char, int, const char *, int, int);
+  static draw_fun_t olddraw;
+
+  static int newdraw(char arg1, int arg2, const char *str, int arg4, int arg5)
+  {
+    //qDebug() << arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
+    //return olddraw(type, textureId, str, deviceId, flags);
+    auto ctx = new Context(arg1, arg2, arg4, arg5);
+    QString t = AbstractEngine::instance()->dispatchText(str, ctx->role(), ctx);
+    if (!t.isEmpty())
+      return olddraw(type, textureId, t.toLocal8Bit(), deviceId, flags);
+    return 0;
+  }
+};
+MajiroEnginePrivate::draw_fun_t olddraw;
+
+/** Public class */
+
+bool MajiroEngine::match()
+{ return Env::glob(QStringList() << "data*.arc" << "stream*.arc"); }
 
 bool MajiroEngine::inject()
 {
@@ -46,8 +80,21 @@ bool MajiroEngine::inject()
   addr = 0x41af90;
   if (!addr)
     return false;
-  ::oldpaint = detours::replace<paint_fun_t>(addr, ::newpaint);
+  D::olddraw = detours::replace<D::draw_fun_t>(addr, D::newdraw);
   return addr;
+}
+
+void MajiroEngine::drawText(const QString &text, const void *context) override
+{
+  Q_ASSERT(context);
+  auto params = static_cast<D::Context *>(context);
+  D::olddraw(params->arg1, params->arg2, text.toLocal8Bit(), params->arg4, params->arg5);
+}
+
+void MajiroEngine::releaseContext(void *context)
+{
+  Q_ASSERT(context);
+  delete static_cast<D::Context *>(context);
 }
 
 // EOF

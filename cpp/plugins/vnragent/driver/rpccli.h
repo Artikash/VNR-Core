@@ -38,10 +38,10 @@ public slots:
   void requestUiTranslation(const QString &json); // json: {hash:text}
   void requestEngineTranslation(const QString &json); // json: {hash:text}
 
-  void showMessage(const QString &message);
-  void showWarning(const QString &message);
-  void showError(const QString &message);
-  void showNotification(const QString &message);
+  void growlMessage(const QString &message);
+  void growlWarning(const QString &message);
+  void growlError(const QString &message);
+  void growlNotification(const QString &message);
 
 public:
   void quit(); // called before qApp->quit()

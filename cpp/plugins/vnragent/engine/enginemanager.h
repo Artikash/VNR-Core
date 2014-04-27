@@ -17,23 +17,25 @@ class EngineManager : public QObject
   SK_DECLARE_PRIVATE(EngineManagerPrivate)
 
 public:
+  static Self *instance(); // needed by Engine
+
   explicit EngineManager(QObject *parent = nullptr);
   ~EngineManager();
 
   // Interface to RPC
 signals:
-  void translationRequested(const QString &json);
+  void textsReceived(QString json); // [{role:int,hash:long,text:unicode}]
 public:
-  void quit();
-  void updateTranslation(const QString &json); // received from the server
+  void updateTranslation(const QString &json); // [{role:int,hash:long,text:unicode}]
   void clearTranslation();
-  void abortTranslation();
 
-  // Interface to driver
+  // Interface to engine
 public:
-  void updateText(const QString &text, qint64 hash);
-  QString findTranslation(qint64 hash) const;
-  QString waitForTranslation(qint64 hash) const;
+  QString findTranslation(qint64 hash, int role) const;
+  void addText(const QString &text, qint64 hash, int role, void *context);
+
+private slots:
+  void submitTasks();
 };
 
 // EOF
