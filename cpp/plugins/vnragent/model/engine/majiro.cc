@@ -1,15 +1,12 @@
 // majiro.cc
 // 4/20/2014 jichi
+// See also: http://bbs.sumisora.org/read.php?tid=10983263
 
 #include "model/engine/majiro.h"
 #include "detoursutil/detoursutil.h"
 #include "memdbg/memsearch.h"
 #include "ntinspect/ntinspect.h"
-#include "growl.h"
-
-/** Majiro
- *  See: http://bbs.sumisora.org/read.php?tid=10983263
- */
+#include <QtCore/QStringList>
 
 namespace majiro {
 
@@ -27,12 +24,7 @@ int mypaint(char ch, int x, LPCSTR str, int y, int z)
 
 } // majiro
 
-bool MajiroEngine::match()
-{
-  // TODO: Implement glob using QDir: http://qt-project.org/doc/qt-4.8/qdir.html
-  // return glob("./data*.arc") and glob("./stream*.arc")
-  return true;
-}
+bool MajiroEngine::match() { return glob(QStringList() << "data*.arc" << "stream*.arc"); }
 
 bool MajiroEngine::inject()
 {

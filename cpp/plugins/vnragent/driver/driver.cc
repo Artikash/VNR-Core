@@ -36,8 +36,8 @@ DriverPrivate::DriverPrivate(QObject *parent)
     connect(rpc, SIGNAL(engineTranslationReceived(QString)), eng, SLOT(updateTranslation(QString)));
   }
 
-  //if (auto p = AbstractEngine::getEngine())
-  //  p->inject();
+  if (auto p = AbstractEngine::getEngine())
+    p->inject();
 }
 
 // EOF

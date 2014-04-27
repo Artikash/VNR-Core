@@ -63,7 +63,7 @@ void Loader::destroy()
 
   if (qApp) {
     qApp->quit();
-    qApp->processEvents();
+    qApp->processEvents(); // might hang here
   }
 }
 
