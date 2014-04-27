@@ -13,13 +13,13 @@ MetaCallThreadPrivate::MetaCallThreadPrivate(Q *q)
   : Base(q), q_(q), propagator(nullptr), role(ClientRole), port(0)
 {}
 
-MetaCallThreadPrivate::connectPropagator()
+void MetaCallThreadPrivate::connectPropagator()
 {
   if (propagator)
-    connect(this, SIGNAL(asyncStopRequested()), propagator, SLOT(stop()), Qt::QueuedConnection);
+    connect(this, SIGNAL(stopRequested()), propagator, SLOT(stop()), Qt::QueuedConnection);
 }
 
-MetaCallThreadPrivate::disconnectPropagator()
+void MetaCallThreadPrivate::disconnectPropagator()
 {
   if (propagator)
     disconnect(propagator);

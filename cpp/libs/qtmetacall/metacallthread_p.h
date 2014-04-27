@@ -34,7 +34,7 @@ public:
   void disconnectPropagator();
 
 signals:
-  void asyncStopRequested();
+  void stopRequested();
 };
 
 QTMETACALL_END_NAMESPACE

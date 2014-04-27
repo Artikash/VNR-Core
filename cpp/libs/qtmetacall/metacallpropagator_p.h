@@ -21,7 +21,7 @@ class MetaCallPropagatorPrivate : public QObject
   Q_OBJECT
   Q_DISABLE_COPY(MetaCallPropagatorPrivate)
   SK_EXTEND_CLASS(MetaCallPropagatorPrivate, QObject)
-  SK_DECLARE_PUBLIC(MetaCallPropagator)
+  //SK_DECLARE_PUBLIC(MetaCallPropagator)
 
 public:
   MetaCallSocketFilter *filter;
