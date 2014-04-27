@@ -27,8 +27,6 @@ public:
   };
   typedef QList<TextEntry> TextEntryList;
 
-  static Self *instance();
-
   explicit UiManager(QObject *parent = nullptr);
   ~UiManager();
 
@@ -44,7 +42,7 @@ public:
   void updateText(const QString &text, qint64 hash, ulong anchor);
   void updateTextTranslation(const QString &tr, qint64 hash, qint64 trhash = 0);
 
-  void updateTranslationData(const QString &json); // received from the server
+  void updateTranslation(const QString &json); // received from the server
   void clearTranslation();
 
 signals:

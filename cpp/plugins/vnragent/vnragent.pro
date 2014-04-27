@@ -44,6 +44,10 @@ HEADERS += \
   driver/driver_p.h \
   driver/rpccli.h \
   driver/rpccli_p.h \
+  engine/enginedriver.h \
+  engine/enginehash.h \
+  engine/enginehijack.h \
+  engine/enginemanager.h \
   ui/uidriver.h \
   ui/uidriver_p.h \
   ui/uihash.h \
@@ -56,6 +60,9 @@ HEADERS += \
 SOURCES += \
   driver/driver.cc \
   driver/rpccli.cc \
+  engine/enginedriver.cc \
+  engine/enginehijack.cc \
+  engine/enginemanager.cc \
   ui/uidriver.cc \
   ui/uidriver_p.cc \
   ui/uihijack.cc \

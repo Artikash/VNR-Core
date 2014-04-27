@@ -69,6 +69,7 @@ public:
   }
 
   void sendUiTexts(const QString &json) { callServer("agent.ui.text", json); }
+  void sendEngineTexts(const QString &json) { callServer("agent.engine.text", json); }
 };
 
 // EOF
