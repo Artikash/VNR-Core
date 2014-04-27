@@ -3,14 +3,16 @@
 #include "qtmetacall/metacallthread.h"
 #include "qtmetacall/metacallthread_p.h"
 #include "qtmetacall/metacallpropagator.h"
+#include "qtmetacall/metacallobserver.h"
+#include <QtCore/QEventLoop>
 
 #define DEBUG "metacallthread"
 #include "sakurakit/skdebug.h"
 
 /** Private class */
 
-MetaCallThreadPrivate::MetaCallThreadPrivate(Q *q)
-  : Base(q), q_(q), propagator(nullptr), role(ClientRole), port(0)
+MetaCallThreadPrivate::MetaCallThreadPrivate(QObject *parent)
+  : Base(parent), propagator(nullptr), role(ClientRole), port(0)
 {}
 
 void MetaCallThreadPrivate::connectPropagator()
@@ -43,8 +45,11 @@ void MetaCallThread::setPropagator(MetaCallPropagator *value)
     if (d_->propagator)
       d_->disconnectPropagator();
     d_->propagator = value;
-    if (value)
+    if (value) {
+      if (!value->socketObserver())
+        value->setSocketObserver(new MetaCallSocketObserver(value));
       d_->connectPropagator();
+    }
   }
 }
 
@@ -76,13 +81,20 @@ void MetaCallThread::run()
   exec();
 }
 
+void MetaCallThread::stop() { d_->emit stopRequested(); }
+
 void MetaCallThread::waitForReady() const
 {
-}
-
-void MetaCallThread::stop()
-{
-  d_->emit stopRequested();
+  if (d_->propagator && !d_->propagator->isReady())
+    if (MetaCallSocketObserver *s = d_->propagator->socketObserver()) {
+      QEventLoop loop;
+      connect(s, SIGNAL(connected()), &loop, SLOT(quit()));
+      connect(s, SIGNAL(disconnected()), &loop, SLOT(quit()));
+      connect(s, SIGNAL(error()), &loop, SLOT(quit()));
+      loop.exec();
+      //do loop.exec();
+      //while (!d_->propagator->isReady());
+    }
 }
 
 // - Actions -

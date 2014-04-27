@@ -17,8 +17,9 @@ class MetaCallThreadPrivate : public QObject
   Q_OBJECT
   Q_DISABLE_COPY(MetaCallThreadPrivate)
   SK_EXTEND_CLASS(MetaCallThreadPrivate, QObject)
-  SK_DECLARE_PUBLIC(MetaCallThread)
+  //SK_DECLARE_PUBLIC(MetaCallThread)
 
+  friend class MetaCallThread;
 public:
   MetaCallPropagator *propagator;
 
@@ -28,7 +29,7 @@ public:
   QString address;
   int port;
 
-  explicit MetaCallThreadPrivate(Q *q);
+  explicit MetaCallThreadPrivate(QObject *parent = nullptr);
 
   void connectPropagator();
   void disconnectPropagator();

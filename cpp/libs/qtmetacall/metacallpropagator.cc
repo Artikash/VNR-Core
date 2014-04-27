@@ -103,10 +103,10 @@ MetaCallPropagator::~MetaCallPropagator()
   delete d_;
 }
 
-bool MetaCallPropagator::isServer() const
+bool MetaCallPropagator::isServer() const // thread-safe
 { return d_->server; }
 
-bool MetaCallPropagator::isClient() const
+bool MetaCallPropagator::isClient() const // thread-safe
 { return !d_->server && d_->socket; }
 
 MetaCallRouter *MetaCallPropagator::router() const
@@ -135,17 +135,22 @@ void MetaCallPropagator::setSocketObserver(MetaCallSocketObserver *value)
 
 // - Service -
 
-bool MetaCallPropagator::isActive() const
+bool MetaCallPropagator::isActive() const // thread-safe
 {
-  return d_->server && d_->server->isListening() ||
-         d_->socket && d_->socket->state() == QAbstractSocket::ConnectedState;
+  if (auto p = d_->server)
+    return p->isListening();
+  if (auto p = d_->socket)
+    return p->state() == QAbstractSocket::ConnectedState;
+  return false;
 }
 
-bool MetaCallPropagator::isReady() const
+bool MetaCallPropagator::isReady() const // thread-safe
 {
-  return !d_->socket ||
-         d_->socket->state() == QAbstractSocket::ConnectedState ||
-         d_->socket->state() == QAbstractSocket::UnconnectedState;
+  if (auto p = d_->socket) {
+    auto s = p->state();
+    return s == QAbstractSocket::ConnectedState || s == QAbstractSocket::UnconnectedState;
+  }
+  return false;
 }
 
 void MetaCallPropagator::waitForReady() const

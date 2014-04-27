@@ -28,17 +28,17 @@ public:
   explicit MetaCallPropagator(QObject *parent = nullptr);
   ~MetaCallPropagator();
 
-  bool startServer(const QString &address, int port);
-  bool startClient(const QString &address, int port);
+  bool startServer(const QString &address, int port); ///< Not thread-safe
+  bool startClient(const QString &address, int port); ///< Not thread-safe
 
-  bool isServer() const; ///< Return true after startServer is invoked
-  bool isClient() const; ///< Return true after startClient is invoked
+  bool isServer() const; ///< Thread-safe. Return true after startServer is invoked
+  bool isClient() const; ///< Thread-safe. Return true after startClient is invoked
 
   ///  Return true if startServer or startClient succeed
-  bool isActive() const;
+  bool isActive() const; ///< Thread-safe
 
   ///  Return true after started, but is not guranteed to isActive
-  bool isReady() const;
+  bool isReady() const; ///< Thread-safe
 
   ///  Used to convert method ID
   MetaCallRouter *router() const;
@@ -56,10 +56,10 @@ public:
 
 public slots:
   ///  Wait until ready. Only needed by client.
-  void waitForReady() const;
+  void waitForReady() const; ///< Not thread-safe
 
   ///  Stop server/client
-  void stop();
+  void stop(); ///< Not thread-safe
 };
 
 QTMETACALL_END_NAMESPACE
