@@ -48,6 +48,8 @@ void EngineDriver::abortTranslation() { d_->manager->abortTranslation(); }
 bool EngineDriver::isEnabled() const { return d_->enabled; }
 void EngineDriver::setEnable(bool t) { d_->enabled = t; }
 
+void EngineDriver::quit() { d_->manager->quit(); }
+
 // Translate
 
 QString EngineDriver::translate(const QString &text, qint64 hash, bool block)

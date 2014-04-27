@@ -24,6 +24,7 @@ public:
 signals:
   void translationRequested(const QString &json);
 public:
+  void quit();
   void updateTranslation(const QString &json); // received from the server
   void clearTranslation();
   void abortTranslation();

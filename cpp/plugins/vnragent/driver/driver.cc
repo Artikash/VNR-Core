@@ -12,6 +12,8 @@
 Driver::Driver() : d_(new D) {}
 Driver::~Driver() { delete d_; }
 
+void Driver::quit() { d_->quit(); }
+
 /** Private class */
 
 DriverPrivate::DriverPrivate(QObject *parent)
@@ -36,5 +38,12 @@ DriverPrivate::DriverPrivate(QObject *parent)
     connect(rpc, SIGNAL(aborted()), eng, SLOT(abortTranslation()));
   }
 }
+
+void DriverPrivate::quit()
+{
+  if (eng)
+    eng->quit();
+}
+
 
 // EOF

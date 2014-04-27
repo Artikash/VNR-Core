@@ -57,9 +57,10 @@ void Loader::initWithInstance(HINSTANCE hInstance)
 
 void Loader::destroy()
 {
+  if (::driver_)
+    ::driver_->quit();
   if (::appRunner_ && ::appRunner_->isActive())
     ::appRunner_->stop(); // this class is not deleted
-
   if (qApp) {
     qApp->quit();
     qApp->processEvents(); // might hang here

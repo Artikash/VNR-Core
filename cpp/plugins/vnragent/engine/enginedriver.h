@@ -27,6 +27,8 @@ public slots:
   void clearTranslation();
   void abortTranslation();
   void setEnable(bool t);
+public:
+  void quit();
 
   // Called by engine
 public:

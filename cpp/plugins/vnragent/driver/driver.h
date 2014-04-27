@@ -16,7 +16,7 @@ public:
   Driver();
   ~Driver();
 
-  //void quit();
+  void quit();
 };
 
 // EOF

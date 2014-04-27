@@ -6,7 +6,7 @@
 #include "QxtCore/QxtJSON"
 #include "qtjson/qtjson.h"
 #include <QtCore/QCoreApplication>
-#include <QtCore/QEventLoop>
+//#include <QtCore/QEventLoop>
 #include <QtCore/QHash>
 #include <QtCore/QVariant>
 
@@ -14,38 +14,41 @@
 
 class EngineManagerPrivate
 {
-  QEventLoop *loop;
+  bool blocked;
 public:
   QHash<qint64, QString> texts, // {hash:text}
                          trs;   // {hash:tr}
 
+  EngineManagerPrivate() : blocked(false) {}
+
   enum { TranslationTimeout = 5000 }; // wait for at most 5 seconds
 
-  explicit EngineManagerPrivate(QObject *parent)
-    : loop(new QEventLoop(parent))
+  bool isBlocked() const { return blocked; }
+  void unblock() { blocked = false; }
+
+  void block(int interval = 0) // TODO: get system time to prevent timeout
   {
-    QObject::connect(qApp, SIGNAL(aboutToQuit()), loop, SLOT(quit()));
+    if (!blocked) {
+      blocked = true;
+      while (blocked) // FIXME: Avoid using spin lock
+        qApp->processEvents(QEventLoop::AllEvents, interval);
+    }
   }
 
   // TODO: Add a timer to quit loop
-  void block(int interval = 0)
-  {
-    if (!loop->isRunning())
-      loop->exec();
-  }
 
-  void unblock()
-  {
-    if (loop->isRunning())
-      loop->quit();
-  }
+  //explicit EngineManagerPrivate(QObject *parent)
+  //  : loop(new QEventLoop(parent)
+  //{ QObject::connect(qApp, SIGNAL(aboutToQuit()), loop, SLOT(quit())); }
+  //void block(int interval = 0) { if (!loop->isRunning()) loop->exec(); }
+  //void unblock() { if (loop->isRunning()) loop->quit(); }
 };
 
 /** Public class */
 
 // - Construction -
 
-EngineManager::EngineManager(QObject *parent) : Base(parent), d_(new D(this)) {}
+EngineManager::EngineManager(QObject *parent) : Base(parent), d_(new D) {}
 EngineManager::~EngineManager() { delete d_; }
 
 // - Actions -
@@ -64,6 +67,9 @@ void EngineManager::updateTranslation(const QString &json)
   }
   d_->unblock();
 }
+
+void EngineManager::quit()
+{ d_->unblock(); }
 
 void EngineManager::abortTranslation()
 { d_->unblock(); }
