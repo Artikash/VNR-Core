@@ -7,6 +7,7 @@
 #include <QtCore/QObject>
 
 class RpcClient;
+class EngineDriver;
 class UiDriver;
 
 class DriverPrivate : public QObject
@@ -16,6 +17,7 @@ class DriverPrivate : public QObject
   SK_EXTEND_CLASS(DriverPrivate, QObject)
 
   RpcClient *rpc;
+  EngineDriver *eng;
   UiDriver *ui;
 
 public:

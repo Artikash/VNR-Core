@@ -12,9 +12,7 @@ UiDriver::UiDriver(QObject *parent)
   d_->start();
 }
 
-UiDriver::~UiDriver() { delete d_; }
-
-void UiDriver::updateTranslation(const QString &json) { d_->manager->updateTranslationData(json); }
+void UiDriver::updateTranslation(const QString &json) { d_->manager->updateTranslation(json); }
 void UiDriver::clearTranslation() { d_->manager->clearTranslation(); }
 
 bool UiDriver::isEnabled() const { return d_->enabled; }

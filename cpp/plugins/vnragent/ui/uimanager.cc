@@ -3,7 +3,6 @@
 
 #include "ui/uimanager.h"
 #include "ui/uihash.h"
-#include "sakurakit/skhash.h"
 #include "QxtCore/QxtJSON"
 #include "qtjson/qtjson.h"
 #include <QtCore/QHash>
@@ -62,20 +61,9 @@ public:
 
 // - Construction -
 
-static UiManager *instance_;
-UiManager *UiManager::instance() { return instance_; }
+UiManager::UiManager(QObject *parent) : Base(parent), d_(new D(this)) {}
 
-UiManager::UiManager(QObject *parent)
-  : Base(parent), d_(new D(this))
-{
-  ::instance_ = this;
-}
-
-UiManager::~UiManager()
-{
-  ::instance_ = nullptr;
-  delete d_;
-}
+UiManager::~UiManager() { delete d_; }
 
 // - Actions -
 
@@ -103,7 +91,7 @@ void UiManager::clearTranslation()
   d_->touchTexts();
 }
 
-void UiManager::updateTranslationData(const QString &json)
+void UiManager::updateTranslation(const QString &json)
 {
   QVariant data = QxtJSON::parse(json);
   if (data.isNull())

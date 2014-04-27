@@ -16,12 +16,11 @@ class UiDriver : public QObject
 
 public:
   explicit UiDriver(QObject *parent = nullptr);
-  ~UiDriver();
 
 signals:
-  void translationRequested(QString json);
+  void translationRequested(QString json); // {long hash : unicode text}
 public slots:
-  void updateTranslation(const QString &json);
+  void updateTranslation(const QString &json); // {long hash : unicode translation}
   void clearTranslation();
   void setEnable(bool t);
 public:

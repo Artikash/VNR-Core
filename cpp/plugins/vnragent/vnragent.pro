@@ -7,7 +7,7 @@ include($$LIBDIR/detoursutil/detoursutil.pri)
 include($$LIBDIR/libqxt/libqxt.pri)
 include($$LIBDIR/memdbg/memdbg.pri)
 include($$LIBDIR/ntinspect/ntinspect.pri)
-#include($$LIBDIR/qtembedded/qtembedded.pri)
+include($$LIBDIR/qtembedded/qtembedded.pri)
 include($$LIBDIR/qtmetacall/qtmetacall.pri)
 include($$LIBDIR/qtjson/qtjson.pri)
 include($$LIBDIR/sakurakit/sakurakit.pri)
@@ -19,7 +19,7 @@ include($$LIBDIR/wintimer/wintimer.pri)
 #include($$LIBDIR/disasm/disasm.pri)
 #include($$LIBDIR/vnragent/vnragent.pri)
 
-# Modules
+# Services
 HEADERS += $$SERVICEDIR/reader/metacall.h
 
 ## Libraries
@@ -32,7 +32,7 @@ QT      -= gui
 #LIBS    += -ld3d9 -L$$D3D_HOME/lib/x86
 
 LIBS    += -luser32 -lpsapi
-#LIBS    += -lgdi32
+LIBS    += -lgdi32 # needed by game engines
 
 ## Sources
 
@@ -44,6 +44,10 @@ HEADERS += \
   driver/driver_p.h \
   driver/rpccli.h \
   driver/rpccli_p.h \
+  engine/enginedriver.h \
+  engine/enginehash.h \
+  engine/enginehijack.h \
+  engine/enginemanager.h \
   ui/uidriver.h \
   ui/uidriver_p.h \
   ui/uihash.h \
@@ -56,6 +60,9 @@ HEADERS += \
 SOURCES += \
   driver/driver.cc \
   driver/rpccli.cc \
+  engine/enginedriver.cc \
+  engine/enginehijack.cc \
+  engine/enginemanager.cc \
   ui/uidriver.cc \
   ui/uidriver_p.cc \
   ui/uihijack.cc \
@@ -65,11 +72,13 @@ SOURCES += \
   loader.cc \
   main.cc
 
-#HEADERS += \
-#  model/majiro.h \
-#  model/majiro_p.h
-#SOURCES += \
-#  model/majiro.cc
+HEADERS += \
+  model/engine/majiro.h \
+  model/engine.h \
+  model/manifest.h
+SOURCES += \
+  model/engine/majiro.cc \
+  model/engine.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += vnragent.rc

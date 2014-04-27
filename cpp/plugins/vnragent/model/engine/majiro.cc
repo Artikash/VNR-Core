@@ -1,32 +1,11 @@
 // majiro.cc
 // 4/20/2014 jichi
 
-#include "engine/majiro.h"
-#include "engine/majiro_p.h"
+#include "model/engine/majiro.h"
 #include "detoursutil/detoursutil.h"
 #include "memdbg/memsearch.h"
 #include "ntinspect/ntinspect.h"
 #include "growl.h"
-
-/** Engine */
-
-namespace { // unnamed
-
-namespace EngineData {
-bool enabled = false;
-} // namespace EngineData
-
-} // unnamed namespace
-
-bool Engine::isEnabled() { return EngineData::enabled; }
-void Engine::setEnabled(bool t) { EngineData::enabled = t; }
-
-Engine *Engine::getEngine()
-{
-  if (Majiro::match())
-    return new Majiro;
-  return nullptr;
-}
 
 /** Majiro
  *  See: http://bbs.sumisora.org/read.php?tid=10983263
@@ -39,22 +18,23 @@ typedef int (* paint_func_t)(char, int, LPCSTR, int, int);
 paint_func_t paint;
 int mypaint(char ch, int x, LPCSTR str, int y, int z)
 {
-  return 0;
   //growl::debug("majiro::paint");
-  //if (!paint)
-  //  return 0;
+  if (!paint)
+    return 0;
+  str = "hello world";
   return paint(ch, x, str, y, z);
 }
 
 } // majiro
 
-bool Majiro::match()
+bool MajiroEngine::match()
 {
+  // TODO: Implement glob using QDir: http://qt-project.org/doc/qt-4.8/qdir.html
   // return glob("./data*.arc") and glob("./stream*.arc")
   return true;
 }
 
-bool Majiro::inject()
+bool MajiroEngine::inject()
 {
   wchar_t process_name_[MAX_PATH]; // cached
   DWORD module_base_, module_limit_;

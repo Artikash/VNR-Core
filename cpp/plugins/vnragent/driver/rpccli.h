@@ -16,7 +16,6 @@ class RpcClient : public QObject
 
 public:
   explicit RpcClient(QObject *parent = nullptr);
-  ~RpcClient();
   bool isActive() const;
 
   // - API -
@@ -26,8 +25,14 @@ signals:
   void enableUiRequested(bool t);
   void uiTranslationReceived(QString json); // json: {hash:text}
 
+  // Engine
+  void clearEngineRequested();
+  void enableEngineRequested(bool t);
+  void engineTranslationReceived(QString json); // json: {hash:text}
+
 public slots:
   void requestUiTranslation(const QString &json); // json: {hash:text}
+  void requestEngineTranslation(const QString &json); // json: {hash:text}
 
   void showMessage(const QString &message);
   void showWarning(const QString &message);

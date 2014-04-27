@@ -10,10 +10,10 @@ DEFINES += WITH_LIB_QTEMBEDDED
 DEPENDPATH += $$PWD
 
 HEADERS += \
-  $$PWD/applicationloader.h \
+  $$PWD/applicationrunner.h \
   $$PWD/qtembedded.h
-SOURCES += \
-  $$PWD/applicationloader.cc
+
+win32: SOURCES += $$PWD/applicationrunner_win.cc
 
 QT += core
 

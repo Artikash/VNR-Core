@@ -56,7 +56,7 @@ private:
 
   // Server calls, must be consistent with rpcman.py
 public:
-  void pingServer() { callServer("ping"); }
+  void pingServer() { callServer("agent.ping"); }
 
   enum GrowlType { GrowlMessage = 0, GrowlWarning, GrowlError };
   void growlServer(const QString &msg, GrowlType t = GrowlMessage)
@@ -68,7 +68,8 @@ public:
     }
   }
 
-  void sendUiTexts(const QString &json) { callServer("ui.text", json); }
+  void sendUiTexts(const QString &json) { callServer("agent.ui.text", json); }
+  void sendEngineTexts(const QString &json) { callServer("agent.engine.text", json); }
 };
 
 // EOF

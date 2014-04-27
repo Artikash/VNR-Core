@@ -4,7 +4,7 @@
 #include "config.h"
 #include "loader.h"
 #include "driver/driver.h"
-//#include "qtembedded/applicationloader.h"
+#include "qtembedded/applicationrunner.h"
 #include "windbg/inject.h"
 #include "windbg/util.h"
 #include "ui/uihijack.h"
@@ -21,11 +21,12 @@ QCoreApplication *createApplication_(HINSTANCE hInstance)
   static char arg0[MAX_PATH * 2]; // in case it is wchar
   static char *argv[] = { arg0, nullptr };
   static int argc = 1;
- ::GetModuleFileNameA(hInstance, arg0, sizeof(arg0)/sizeof(*arg0));
+  ::GetModuleFileNameA(hInstance, arg0, sizeof(arg0)/sizeof(*arg0));
   return new QCoreApplication(argc, argv);
 }
 
 Driver *driver_;
+QtEmbedded::ApplicationRunner *appRunner_;
 
 } // unnamed namespace
 
@@ -39,7 +40,7 @@ void Loader::initWithInstance(HINSTANCE hInstance)
   QTextCodec::setCodecForCStrings(codec);
   QTextCodec::setCodecForTr(codec);
 
-  ::createApplication_(hInstance);
+  auto app = ::createApplication_(hInstance);
   //::appLoader_ = new QtEmbedded::ApplicationLoader(app, QT_EVENTLOOP_INTERVAL);
 
   ::driver_ = new Driver;
@@ -50,15 +51,19 @@ void Loader::initWithInstance(HINSTANCE hInstance)
     Ui::overrideModules();
   }
 
-  qApp->exec(); // hang here
+  appRunner_ = new QtEmbedded::ApplicationRunner(app, QT_EVENTLOOP_INTERVAL);
+  appRunner_->start();
+  //qApp->exec(); // This might hang the game
 }
 
 void Loader::destroy()
 {
+  if (::appRunner_ && ::appRunner_->isActive())
+    ::appRunner_->stop(); // this class is not deleted
+
   if (qApp) {
-    if (::driver_)
-      ::driver_->quit();
     qApp->quit();
+    qApp->processEvents();
   }
 }
 
