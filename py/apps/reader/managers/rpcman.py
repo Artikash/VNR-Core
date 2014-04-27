@@ -79,11 +79,16 @@ class _RpcServer(object):
     elif cmd == 'growl.error':
       if param:
         growl.error(param)
+
     elif cmd == 'agent.ping':
       growl.msg(my.tr("Window text translator is loaded"))
       self.q.connected.emit()
     elif cmd == 'agent.ui.text':
       self._onWindowTexts(param)
+
+    elif cmd == 'agent.engine.text':
+      self.callAgent('engine.text', '{"123":"hello world"}') # CHECKPOINT
+
     else:
       dwarn("unknown command: %s" % cmd)
 

@@ -72,11 +72,13 @@ SOURCES += \
   loader.cc \
   main.cc
 
-#HEADERS += \
-#  model/majiro.h \
-#  model/majiro_p.h
-#SOURCES += \
-#  model/majiro.cc
+HEADERS += \
+  model/engine/majiro.h \
+  model/engine.h \
+  model/manifest.h
+SOURCES += \
+  model/engine/majiro.cc \
+  model/engine.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += vnragent.rc
