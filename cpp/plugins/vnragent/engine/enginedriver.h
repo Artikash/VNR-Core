@@ -25,6 +25,7 @@ signals:
 public slots:
   void updateTranslation(const QString &json); // {long hash:unicode translation}
   void clearTranslation();
+  void abortTranslation();
   void setEnable(bool t);
 
   // Called by engine
@@ -32,7 +33,7 @@ public:
   bool isEnabled() const;
 
   // Blocking
-  QString translate(const QString &text, qint64 hash = 0);
+  QString translate(const QString &text, qint64 hash, bool block = true);
 };
 
 // EOF

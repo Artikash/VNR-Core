@@ -25,6 +25,9 @@ RpcClientPrivate::RpcClientPrivate(Q *q)
 
   connect(s, SIGNAL(disconnected()), reconnectTimer, SLOT(start()));
   connect(s, SIGNAL(error()), reconnectTimer, SLOT(start()));
+
+  connect(s, SIGNAL(disconnected()), q, SIGNAL(aborted()));
+  connect(s, SIGNAL(error()), q, SIGNAL(aborted()));
 }
 
 bool RpcClientPrivate::reconnect()
@@ -86,6 +89,7 @@ RpcClient::RpcClient(QObject *parent)
   if (!d_->reconnect()) {
     //growl::debug(QString().sprintf("Visual Novel Reader is not ready! Maybe the port %i is blocked?", D::Port));
   }
+
   ::instance_ = this;
 }
 

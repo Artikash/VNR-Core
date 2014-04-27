@@ -90,7 +90,7 @@ class _RpcServer(object):
       self._onWindowTexts(param)
 
     elif cmd == 'agent.engine.text':
-      self.callAgent('engine.text', '{"123":"hello world"}') # CHECKPOINT
+      self.callAgent('engine.text', '{"123":"ano ne world"}') # CHECKPOINT
 
     else:
       dwarn("unknown command: %s" % cmd)

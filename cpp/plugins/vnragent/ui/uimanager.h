@@ -2,6 +2,7 @@
 
 // uimanager.h
 // 2/1/2013 jichi
+// Window text manager.
 
 #include "sakurakit/skglobal.h"
 #include <QtCore/QList>

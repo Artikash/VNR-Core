@@ -5,11 +5,6 @@
 #include "engine/enginedriver.h"
 #include "engine/enginemanager.h"
 #include "model/engine.h"
-#include "qtjson/qtjson.h"
-#include "QxtCore/QxtJSON"
-#include <QtCore/QEventLoop>
-#include <QtCore/QHash>
-#include <QtCore/QVariant>
 
 /** Private class */
 
@@ -48,46 +43,23 @@ EngineDriver::~EngineDriver()
 
 void EngineDriver::updateTranslation(const QString &json) { d_->manager->updateTranslation(json); }
 void EngineDriver::clearTranslation() { d_->manager->clearTranslation(); }
+void EngineDriver::abortTranslation() { d_->manager->abortTranslation(); }
 
 bool EngineDriver::isEnabled() const { return d_->enabled; }
 void EngineDriver::setEnable(bool t) { d_->enabled = t; }
 
 // Translate
 
-QString EngineDriver::translate(const QString &text, qint64 hash)
+QString EngineDriver::translate(const QString &text, qint64 hash, bool block)
 {
   if (!d_->enabled)
     return QString();
 
-  {
-    QVariantHash map;
-    map[QString::number(hash)] = text;
-    QString json = QtJson::stringify(map);
-    emit translationRequested(json);
-  }
-
-  QEventLoop loop;
-  for sig in signals:
-    sig.connect(loop.quit, type)
-
-  # Make sure the eventloop quit before closing
-  if autoQuit:
-    QtCore.QCoreApplication.instance().aboutToQuit.connect(loop.quit)
-
-
-  {
-    QVariant data = QxtJSON::parse(json);
-    if (data.isNull())
-      return QString();
-    QVariantMap map = data.toMap();
-    if (map.isEmpty())
-      return QString();
-
-    auto it = map.constBegin();
-    //qint64 hash = it.key().toLongLong();
-    QString t = it.value().toString();
-    return t;
-  }
+  d_->manager->updateText(text, hash);
+  QString ret = d_->manager->findTranslation(hash);
+  if (ret.isEmpty() && block)
+    ret = d_->manager->waitForTranslation(hash);
+  return ret;
 }
 
 // EOF

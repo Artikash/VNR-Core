@@ -33,6 +33,7 @@ DriverPrivate::DriverPrivate(QObject *parent)
     connect(rpc, SIGNAL(clearEngineRequested()), eng, SLOT(clearTranslation()));
     connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));
     connect(rpc, SIGNAL(engineTranslationReceived(QString)), eng, SLOT(updateTranslation(QString)));
+    connect(rpc, SIGNAL(aborted()), eng, SLOT(abortTranslation()));
   }
 }
 

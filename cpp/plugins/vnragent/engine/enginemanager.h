@@ -2,6 +2,7 @@
 
 // enginemanager.h
 // 4/26/2014 jichi
+// Game engine text manager.
 
 #include "sakurakit/skglobal.h"
 #include <QtCore/QList>
@@ -19,10 +20,19 @@ public:
   explicit EngineManager(QObject *parent = nullptr);
   ~EngineManager();
 
-public:
+  // Interface to RPC
+signals:
   void translationRequested(const QString &json);
+public:
   void updateTranslation(const QString &json); // received from the server
   void clearTranslation();
+  void abortTranslation();
+
+  // Interface to driver
+public:
+  void updateText(const QString &text, qint64 hash);
+  QString findTranslation(qint64 hash) const;
+  QString waitForTranslation(qint64 hash) const;
 };
 
 // EOF

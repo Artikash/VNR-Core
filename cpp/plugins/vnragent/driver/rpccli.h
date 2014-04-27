@@ -22,6 +22,8 @@ public:
 
   // - API -
 signals:
+  void aborted(); // the last communication was aborted
+
   // UI
   void clearUiRequested();
   void enableUiRequested(bool t);
