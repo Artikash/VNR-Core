@@ -29,11 +29,13 @@ HEADERS += \
   pyreader_config.h \
   $$SRCPATH/pyreader_python.h \
   $$SRCPATH/metacallpropagator_wrapper.h \
+  $$SRCPATH/metacallsocketobserver_wrapper.h \
   $$SRCPATH/readermetacallpropagator_wrapper.h
 
 SOURCES += \
   $$SRCPATH/pyreader_module_wrapper.cpp \
   $$SRCPATH/metacallpropagator_wrapper.cpp \
+  $$SRCPATH/metacallsocketobserver_wrapper.cpp \
   $$SRCPATH/readermetacallpropagator_wrapper.cpp
 
 #!wince*: LIBS += -lshell32

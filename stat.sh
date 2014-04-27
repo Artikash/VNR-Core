@@ -67,14 +67,14 @@ exit
 
 # EOF
 
-# 8/6/2013
+# 4/25/2014
 Line numbers for different languages
-Total: 273424
-Python: 61909
-C/C++:  43582
-QML: 15107
-HTML/CSS/Javascript: 3236
-Ruby/HAML/SASS/Coffee: 2920
-XML/YAML: 1250
-CMD/Shell/Makefile: 1093
-TS: 16232
+Total: 391682
+Python: 83453
+C/C++: 49290
+QML: 17307
+HTML/CSS/Javascript: 6675
+Ruby/HAML/SASS/Coffee: 5151
+XML/YAML: 1728
+CMD/Shell/Makefile: 1315
+TS: 44635

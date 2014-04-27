@@ -1,14 +1,12 @@
 #pragma once
 
-// main.h
+// loader.h
 // 1/31/2013 jichi
+// No Qt can appear in this file.
 
-#include "wintimer/wintimer.h"
 #include <windows.h>
 
-namespace Main {
-
-enum { EventLoopInterval = 500 };
+namespace Loader {
 
 /**
  *  Invoked when attached to the process

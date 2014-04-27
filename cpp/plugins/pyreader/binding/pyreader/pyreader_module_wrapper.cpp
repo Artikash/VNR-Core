@@ -29,6 +29,7 @@ static PyMethodDef pyreader_methods[] = {
 // Classes initialization functions ------------------------------------------------------------
 void init_MetaCallPropagator(PyObject* module);
 void init_ReaderMetaCallPropagator(PyObject* module);
+void init_MetaCallSocketObserver(PyObject* module);
 
 // Required modules' type and converter arrays.
 PyTypeObject** SbkPySide_QtCoreTypes;
@@ -265,6 +266,7 @@ SBK_MODULE_INIT_FUNCTION_BEGIN(pyreader)
     // Initialize classes in the type system
     init_MetaCallPropagator(module);
     init_ReaderMetaCallPropagator(module);
+    init_MetaCallSocketObserver(module);
 
     // Register converter for type 'const QList<QObject*>&'.
     SbkpyreaderTypeConverters[SBK_PYREADER_QLIST_QOBJECTPTR_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _constQList_QObjectPTR_REF_CppToPython__constQList_QObjectPTR_REF);

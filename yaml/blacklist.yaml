@@ -131,12 +131,14 @@ processes:
   - sttray.exe          # Dell
   - sublime_text.exe    # Sublime Text
   - TaoBrowser.exe      # TaoBao
+  - TextAloudMP3.exe    # TextAloud TTS
   - TheWorld.exe        # Browser
   - thunderbird.exe     # Mozilla
   - Thunder.exe         # Xunlei
   - thunder.exe         # Xunlei
   - TranEdit.exe        # Dr.eye
   - TTraveler.exe       # Tencent
+  - TTSReader.exe       # TextAloud TTS
   - vlc.exe             # VLC
   - VOICEROID.exe       # AHS
   - translation aggregator.exe

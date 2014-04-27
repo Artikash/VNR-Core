@@ -7,7 +7,7 @@ include($$LIBDIR/detoursutil/detoursutil.pri)
 include($$LIBDIR/libqxt/libqxt.pri)
 include($$LIBDIR/memdbg/memdbg.pri)
 include($$LIBDIR/ntinspect/ntinspect.pri)
-include($$LIBDIR/qtembedded/qtembedded.pri)
+#include($$LIBDIR/qtembedded/qtembedded.pri)
 include($$LIBDIR/qtmetacall/qtmetacall.pri)
 include($$LIBDIR/qtjson/qtjson.pri)
 include($$LIBDIR/sakurakit/sakurakit.pri)
@@ -39,34 +39,37 @@ LIBS    += -luser32 -lpsapi
 TEMPLATE = lib
 TARGET  = vnragent
 
-#DEPENDPATH += driver engine game ui
-
 HEADERS += \
-  driver/mainobj.h \
-  driver/mainobj_p.h \
+  driver/driver.h \
+  driver/driver_p.h \
   driver/rpccli.h \
   driver/rpccli_p.h \
+  ui/uidriver.h \
+  ui/uidriver_p.h \
   ui/uihash.h \
   ui/uihijack.h \
   ui/uihijack_p.h \
-  ui/uitextman.h \
-  main.h \
-  main_p.h \
-  growl.h
+  ui/uimanager.h \
+  config.h \
+  growl.h \
+  loader.h
 SOURCES += \
-  driver/mainobj.cc \
+  driver/driver.cc \
   driver/rpccli.cc \
+  ui/uidriver.cc \
+  ui/uidriver_p.cc \
   ui/uihijack.cc \
-  ui/uitextman.cc \
-  main.cc \
-  main_p.cc \
-  growl.cc
+  ui/uihijack_p.cc \
+  ui/uimanager.cc \
+  growl.cc \
+  loader.cc \
+  main.cc
 
 #HEADERS += \
-#  engine/majiro.h \
-#  engine/majiro_p.h
+#  model/majiro.h \
+#  model/majiro_p.h
 #SOURCES += \
-#  engine/majiro.cc
+#  model/majiro.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += vnragent.rc

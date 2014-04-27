@@ -16,6 +16,7 @@
 
 // Binded library includes
 #include <metacall.h>
+#include <metacallobserver.h>
 #include <metacallpropagator.h>
 // Conversion Includes - Primitive Types
 #include <QString>
@@ -39,8 +40,9 @@
 
 // Type indices
 #define SBK_METACALLPROPAGATOR_IDX                                   0
-#define SBK_READERMETACALLPROPAGATOR_IDX                             1
-#define SBK_pyreader_IDX_COUNT                                       2
+#define SBK_READERMETACALLPROPAGATOR_IDX                             2
+#define SBK_METACALLSOCKETOBSERVER_IDX                               1
+#define SBK_pyreader_IDX_COUNT                                       3
 
 // This variable stores all Python types exported by this module.
 extern PyTypeObject** SbkpyreaderTypes;
@@ -64,6 +66,7 @@ namespace Shiboken
 // PyType functions, to get the PyObjectType for a type T
 template<> inline PyTypeObject* SbkType< ::MetaCallPropagator >() { return reinterpret_cast<PyTypeObject*>(SbkpyreaderTypes[SBK_METACALLPROPAGATOR_IDX]); }
 template<> inline PyTypeObject* SbkType< ::ReaderMetaCallPropagator >() { return reinterpret_cast<PyTypeObject*>(SbkpyreaderTypes[SBK_READERMETACALLPROPAGATOR_IDX]); }
+template<> inline PyTypeObject* SbkType< ::MetaCallSocketObserver >() { return reinterpret_cast<PyTypeObject*>(SbkpyreaderTypes[SBK_METACALLSOCKETOBSERVER_IDX]); }
 
 } // namespace Shiboken
 

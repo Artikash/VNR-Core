@@ -119,12 +119,18 @@
               %div(class="site")
                 %a(href="http://#{url}",title="#{url}") #{name}
           .group
+            %h5 出版社
+            -for url,name in \
+                ("www.sun-magazine.jp/index.php", "サン出版"),
+              %div(class="site")
+                %a(href="http://#{url}",title="#{url}") #{name}
+          .group
             %h5 ブランドHP
             -for url,name in \
                 ("www.alicesoft.com/main.html", "アリスソフト"), \
                 ("tenco.cc/home/top", "天狐"), \
                 ("asring.1000.tv/top.html", "A&#39;sRing"), \
-                ("www.minori.ph/index_02.html", "minori")
+                ("www.minori.ph/index_02.html", "minori"),
               %div(class="site")
                 %a(href="http://#{url}",title="#{url}") #{name}
           .group

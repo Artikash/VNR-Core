@@ -123,7 +123,7 @@ class SoftApi(object):
           'artists': artists, # [unicode]
           'sdartists': sdartists, # [unicode]
           'musicians': list(self._iterparsemusicians(h)), # [unicode]
-          'brand': self._fixbrand(meta.get(u"ブランド")), # unicode or None
+          'brand': self._fixbrand(meta.get(u"ブランド") or meta.get(u"サークル")), # unicode or None
           'genre': self._parsegenre(h), # unicode or None
           'subgenres': subgenres, # [unicode]
           'categories': categories, # [unicode]

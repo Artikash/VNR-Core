@@ -1,9 +1,20 @@
 #pragma once
+
 // myfunc_p.h
 // 1/27/2013 jichi
+
 #include <windows.h>
 
-struct MyFunctionInfo {
+#define UI_HIJACK_FUNCTIONS_INITIALIZER \
+   { "GetProcAddress", "kernel32.dll", Ui::MyGetProcAddress }, \
+   { "LoadLibrary", "kernel32.dll", Ui::MyLoadLibrary }, \
+   { "LoadLibraryEx", "kernel32.dll", Ui::MyLoadLibraryEx }, \
+   { "TrackPopupMenu", "user32.dll", Ui::MyTrackPopupMenu }, \
+   { "TrackPopupMenuEx", "user32.dll", Ui::MyTrackPopupMenuEx }
+
+namespace Ui {
+
+struct FunctionInfo {
   LPCSTR functionName;
   LPCSTR moduleName;
   LPVOID functionAddress;
@@ -44,6 +55,18 @@ BOOL WINAPI MyTrackPopupMenuEx(
   _In_opt_ LPTPMPARAMS lptpm
 );
 
+} // namespace Ui
+
+// EOF
+
+//   { "TextOutA", "gdi32.dll", MyTextOutA }
+//   { "GetDC", "gdi32.dll", MyGetDC }, \
+//   { "GetDCEx", "gdi32.dll", MyGetDCEx }
+// { "TextOutW", "gdi32.dll", MyTextOutW }
+// { "MessageBoxA", "user32.dll", MyMessageBoxA }
+// { "MessageBoxW", "user32.dll", MyMessageBoxW }
+// { "Direct3DCreate9", "d3d9.dll", MyDirect3DCreate9 }
+
 //int WINAPI MyMessageBoxA(
 //  _In_opt_ HWND hWnd,
 //  _In_opt_ LPCSTR lpText,
@@ -56,8 +79,6 @@ BOOL WINAPI MyTrackPopupMenuEx(
 //  _In_ LPCWSTR lpCaption,
 //  _In_ UINT uType
 //);
-
-// - GDI32 -
 
 /* // CHECKPOINT
 BOOL WINAPI MyTextOutA(
@@ -82,22 +103,6 @@ BOOL WINAPI MyTextOutA(
 //IDirect3D9* WINAPI MyDirect3DCreate9(
 //  UINT SDKVersion
 //);
-
-#define MY_FUNCTIONS_INITIALIZER \
-   { "GetProcAddress", "kernel32.dll", MyGetProcAddress }, \
-   { "LoadLibrary", "kernel32.dll", MyLoadLibrary }, \
-   { "LoadLibraryEx", "kernel32.dll", MyLoadLibraryEx }, \
-   { "TrackPopupMenu", "user32.dll", MyTrackPopupMenu }, \
-   { "TrackPopupMenuEx", "user32.dll", MyTrackPopupMenuEx }
-//   { "TextOutA", "gdi32.dll", MyTextOutA }
-//   { "GetDC", "gdi32.dll", MyGetDC }, \
-//   { "GetDCEx", "gdi32.dll", MyGetDCEx }
-// { "TextOutW", "gdi32.dll", MyTextOutW }
-// { "MessageBoxA", "user32.dll", MyMessageBoxA }
-// { "MessageBoxW", "user32.dll", MyMessageBoxW }
-// { "Direct3DCreate9", "d3d9.dll", MyDirect3DCreate9 }
-
-// EOF
 
 /*
 HDC WINAPI MyGetDC(

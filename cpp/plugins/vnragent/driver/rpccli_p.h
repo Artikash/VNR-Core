@@ -1,36 +1,33 @@
-#ifndef RPCCLI_P_H
-#define RPCCLI_P_H
+#pragma once
+
 // rpccli_p.h
 // 2/1/2013 jichi
 
+#include "config.h"
 #include "services/reader/metacall.h"
-#include "wintimer/wintimer.h"
+#include "qtmetacall/metacallobserver.h"
 #include <QtCore/QObject>
+#include <QtCore/QTimer>
 
-class RpcClient;
-class RpcClientPrivate;
-
+// The only purpose of this class is to make signals in the propagator public
+// No signals are allowed in this class
 class RpcPropagator : public ReaderMetaCallPropagator
 {
   Q_OBJECT
   Q_DISABLE_COPY(RpcPropagator)
   SK_EXTEND_CLASS(RpcPropagator, ReaderMetaCallPropagator)
+
   friend class RpcClient;
   friend class RpcClientPrivate;
-
 public:
   explicit RpcPropagator(QObject *parent = nullptr)
     : Base(parent)
   {
-    connect(this, SIGNAL(q_pingServer(int)), SIGNAL(pingServer(int)), Qt::QueuedConnection);
-    connect(this, SIGNAL(q_updateServerData(QString)), SIGNAL(updateServerData(QString)), Qt::QueuedConnection);
-
-    connect(this, SIGNAL(q_growlServerMessage(QString)), SIGNAL(growlServerMessage(QString)), Qt::QueuedConnection);
-    connect(this, SIGNAL(q_growlServerWarning(QString)), SIGNAL(growlServerWarning(QString)), Qt::QueuedConnection);
-    connect(this, SIGNAL(q_growlServerError(QString)), SIGNAL(growlServerError(QString)), Qt::QueuedConnection);
+    setSocketObserver(new MetaCallSocketObserver(this));
   }
 };
 
+class RpcClient;
 class RpcClientPrivate : public QObject
 {
   Q_OBJECT
@@ -38,23 +35,41 @@ class RpcClientPrivate : public QObject
   SK_DECLARE_PUBLIC(RpcClient)
   SK_EXTEND_CLASS(RpcClientPrivate, QObject)
 
+  enum { ReconnectInterval = 5000 }; // reconnect on failed
 public:
+  enum { Port = VNRAGENT_METACALL_PORT };
+
   explicit RpcClientPrivate(Q *q);
-  ~RpcClientPrivate();
 
   RpcPropagator *r;
-  WinTimer reconnectTimer;
+  QTimer *reconnectTimer;
 
-  enum { PORT = 6103 }; // must be consistent with the metacall port defined in reader.yaml
-  bool start() { return r->startClient("127.0.0.1", PORT); }
+  bool start() { return r->startClient(VNRAGENT_METACALL_HOST, Port); }
 
+private slots:
   bool reconnect();
+  void onMessage(const QString &cmd, const QString &param);
 
-protected slots:
-  void onCall(const QString &cmd);
+private:
+  void callServer(const QString &cmd, const QString &param) { r->emit serverMessageRequested(cmd, param); }
+  void callServer(const QString &cmd) { r->emit serverMessageRequested(cmd, QString()); }
+
+  // Server calls, must be consistent with rpcman.py
+public:
+  void pingServer() { callServer("ping"); }
+
+  enum GrowlType { GrowlMessage = 0, GrowlWarning, GrowlError };
+  void growlServer(const QString &msg, GrowlType t = GrowlMessage)
+  {
+    switch (t) {
+    case GrowlMessage: callServer("growl.msg", msg); break;
+    case GrowlWarning: callServer("growl.warn", msg); break;
+    case GrowlError: callServer("growl.error", msg); break;
+    }
+  }
+
+  void sendUiTexts(const QString &json) { callServer("ui.text", json); }
 };
-
-#endif // RPCCLI_P_H
 
 // EOF
 

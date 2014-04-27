@@ -1,20 +1,19 @@
-#ifndef DATAMAN_H
-#define DATAMAN_H
+#pragma once
 
-// dataman.h
+// uimanager.h
 // 2/1/2013 jichi
 
 #include "sakurakit/skglobal.h"
 #include <QtCore/QList>
 #include <QtCore/QObject>
 
-class DataManagerPrivate;
-class DataManager : public QObject
+class UiManagerPrivate;
+class UiManager : public QObject
 {
   Q_OBJECT
-  Q_DISABLE_COPY(DataManager)
-  SK_EXTEND_CLASS(DataManager, QObject)
-  SK_DECLARE_PRIVATE(DataManagerPrivate)
+  Q_DISABLE_COPY(UiManager)
+  SK_EXTEND_CLASS(UiManager, QObject)
+  SK_DECLARE_PRIVATE(UiManagerPrivate)
 
 public:
   struct TextEntry { // Window text entry QString text;
@@ -28,8 +27,10 @@ public:
   };
   typedef QList<TextEntry> TextEntryList;
 
-  explicit DataManager(QObject *parent = nullptr);
-  ~DataManager();
+  static Self *instance();
+
+  explicit UiManager(QObject *parent = nullptr);
+  ~UiManager();
 
 public:
   bool containsAnchor(ulong anchor) const;
@@ -43,13 +44,15 @@ public:
   void updateText(const QString &text, qint64 hash, ulong anchor);
   void updateTextTranslation(const QString &tr, qint64 hash, qint64 trhash = 0);
 
+  void updateTranslationData(const QString &json); // received from the server
+  void clearTranslation();
+
 signals:
   //void translationChanged(); // send to main object
   void textsChanged(QString json); // send to server
 
-public slots:
-  void updateTranslation(const QString &json); // received from the server
-  void clearTranslation();
+private slots:
+  void refreshTexts(); // invoked by refresh timer
 };
 
-#endif // DATAMAN_H
+// EOF

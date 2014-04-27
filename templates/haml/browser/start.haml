@@ -33,6 +33,9 @@
 
         /* See: http://www.w3.org/Style/Examples/007/text-shadow */
         text-shadow: 1px 1px white,-1px -1px #555;
+
+        /* Remove bootstrap margin-top */
+        margin-top: -20px;
       }
       .site {
         margin-bottom: 15px;
@@ -114,7 +117,8 @@
           -for url,name in \
               ("www.getchu.com/top.html", "Getchu"), \
               ("www.dlsite.com", "DLsite"), \
-              ("www.dmm.co.jp/top", "DMM"),
+              ("www.dmm.co.jp/top", "DMM"), \
+              ("www.sun-magazine.jp/index.php", "サン出版"),
             %div(class="site")
               %a(href="http://#{url}",title="#{url}") #{name}
         %section

@@ -94,11 +94,10 @@ public:
       setKeptThreadName(v.left(ITH_MAX_THREAD_NAME - 1));
   }
 
-protected:
+private:
   static bool whitelistContains(qint32 signature);
 
   // - Callbacks -
-protected:
   //static ulong processAttach(ulong pid);
   //static ulong processDetach(ulong pid);
   //static ulong processNewHook(ulong pid);

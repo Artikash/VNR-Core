@@ -505,7 +505,7 @@ class _MainObject(object):
     ret.activated.connect(q.activate, Qt.QueuedConnection)
     #ret.arguments.connect(q.open_, Qt.QueuedConnection)
 
-    ret.textsReceived.connect(self.textManager.addWindowTexts)
+    ret.windowTextsReceived.connect(self.textManager.addWindowTexts)
     self.textManager.windowTranslationCleared.connect(ret.clearTranslation)
     self.textManager.windowTranslationChanged.connect(ret.sendTranslation)
 
