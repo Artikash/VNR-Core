@@ -46,6 +46,10 @@ class _RpcServer(object):
     r.activationReceived.connect(q.activated)
     r.serverMessageReceived.connect(self._onMessage)
 
+    self.s = s = pyreader.MetaCallSocketObserver(r)
+    r.setSocketObserver(s)
+    s.disconnected.connect(q.disconnected)
+
     #r.q_pingClient.connect(r.pingClient, Qt.QueuedConnection)
     #r.q_callClient.connect(r.callClient, Qt.QueuedConnection)
     #r.q_updateClientData.connect(r.updateClientData, Qt.QueuedConnection)
@@ -66,10 +70,7 @@ class _RpcServer(object):
     @param  cmd  str
     @param  param  unicode
     """
-    if cmd == 'ping':
-      growl.msg(my.tr("Window text translator is loaded"))
-      self.q.connected.emit()
-    elif cmd == 'growl.msg':
+    if cmd == 'growl.msg':
       if param:
         growl.msg(param)
     elif cmd == 'growl.warn':
@@ -78,7 +79,10 @@ class _RpcServer(object):
     elif cmd == 'growl.error':
       if param:
         growl.error(param)
-    elif cmd == 'ui.text':
+    elif cmd == 'agent.ping':
+      growl.msg(my.tr("Window text translator is loaded"))
+      self.q.connected.emit()
+    elif cmd == 'agent.ui.text':
       self._onWindowTexts(param)
     else:
       dwarn("unknown command: %s" % cmd)
@@ -119,6 +123,7 @@ class RpcServer(QObject):
     return self.__d.r.isActive()
 
   connected = Signal()
+  disconnected = Signal() # TODO: Use this signal with isActive to check if game process is running
   windowTextsReceived = Signal(dict) # [long hash:unicode text]
 
   def sendTranslation(self, data):
