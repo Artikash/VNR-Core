@@ -66,7 +66,7 @@ const char *AbstractEngine::encoding() const { return d_->encoding; }
 QString AbstractEngine::translate(const QByteArray &data) const
 {
   if (auto p = EngineDriver::instance())
-    if (p->isActive()) {
+    if (p->isEnabled()) {
       QString text = d_->decode(data);
       if (!text.isEmpty()) {
         qint64 hash = Engine::hashByteArray(data);

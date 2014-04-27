@@ -24,17 +24,14 @@ public:
   explicit EngineManagerPrivate(QObject *parent)
     : loop(new QEventLoop(parent))
   {
-    QObject::connect(qApp, SIGNAL(aboutToQuit()), loop, SLOT(quit());
+    QObject::connect(qApp, SIGNAL(aboutToQuit()), loop, SLOT(quit()));
   }
 
+  // TODO: Add a timer to quit loop
   void block(int interval = 0)
   {
-    if (!loop->isRunning()) {
-      if (interval)
-        loop->exec(QEventLoop::AllEvents, interval);
-      else
-        loop->exec();
-    }
+    if (!loop->isRunning())
+      loop->exec();
   }
 
   void unblock()
