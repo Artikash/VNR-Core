@@ -86,7 +86,7 @@ RpcClient *RpcClient::instance() { return ::instance_; }
 RpcClient::RpcClient(QObject *parent)
   : Base(parent), d_(new D(this))
 {
-  if (!d_->reconnect()) {
+  if (!d_->reconnect()) { // connect on startup
     //growl::debug(QString().sprintf("Visual Novel Reader is not ready! Maybe the port %i is blocked?", D::Port));
   }
 

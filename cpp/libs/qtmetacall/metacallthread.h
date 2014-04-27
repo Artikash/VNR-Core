@@ -16,7 +16,7 @@ class MetaCallThreadPrivate;
  *  All signals in this class will be propagated to the remote object.
  *  DO NOT USE LOCAL SIGNALS
  */
-class MetaCallThread : public QObject
+class MetaCallThread : public QThread
 {
   Q_OBJECT
   Q_DISABLE_COPY(MetaCallThread)
@@ -30,19 +30,8 @@ public:
   MetaCallPropagator *propagator() const;
   void setPropagator(MetaCallPropagator *value);
 
-  // Following methods have the same interface with the propagator
-
-  bool startServer(const QString &address, int port);
-  bool startClient(const QString &address, int port);
-
-  bool isServer() const; ///< Return true after startServer is invoked
-  bool isClient() const; ///< Return true after startClient is invoked
-
-  ///  Return true if startServer or startClient succeed
-  bool isActive() const;
-
-  ///  Return true after started, but is not guranteed to isActive
-  bool isReady() const;
+  void startServer(const QString &address, int port);
+  void startClient(const QString &address, int port);
 
 public slots:
   ///  Wait until ready. Only needed by client.
@@ -50,6 +39,9 @@ public slots:
 
   ///  Stop server/client
   void stop();
+
+protected:
+  void run() override;
 };
 
 QTMETACALL_END_NAMESPACE
