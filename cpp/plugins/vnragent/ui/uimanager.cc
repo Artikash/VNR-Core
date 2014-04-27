@@ -3,8 +3,8 @@
 
 #include "ui/uimanager.h"
 #include "ui/uihash.h"
-#include "QxtCore/QxtJSON"
 #include "qtjson/qtjson.h"
+#include "QxtCore/QxtJSON"
 #include <QtCore/QHash>
 #include <QtCore/QTimer>
 #include <QtCore/QVariant>

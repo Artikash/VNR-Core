@@ -6,7 +6,6 @@
 #include "driver/rpccli.h"
 #include "engine/enginedriver.h"
 #include "ui/uidriver.h"
-#include "model/engine.h"
 
 /** Public class */
 
@@ -35,9 +34,6 @@ DriverPrivate::DriverPrivate(QObject *parent)
     connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));
     connect(rpc, SIGNAL(engineTranslationReceived(QString)), eng, SLOT(updateTranslation(QString)));
   }
-
-  if (auto p = AbstractEngine::getEngine())
-    p->inject();
 }
 
 // EOF

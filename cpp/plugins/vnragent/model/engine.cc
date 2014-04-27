@@ -3,28 +3,77 @@
 
 #include "model/engine.h"
 #include "model/manifest.h"
-#include <QtCore/QDir>
-#include <QtCore/QCoreApplication>
-#include <QtCore/QStringList>
+#include "engine/enginedriver.h"
+#include "engine/enginehash.h"
+#include <QtCore/QTextCodec>
+#include <QtCore/QTextDecoder>
+#include <QtCore/QTextEncoder>
 
-// - Creation -
+/** Private class */
 
-AbstractEngine *AbstractEngine::getEngine()
+class AbstractEnginePrivate
 {
-  if (MajiroEngine::match())
-    return new MajiroEngine;
-  return nullptr;
+  QTextCodec *codec;
+  QTextEncoder *encoder;
+  QTextDecoder *decoder;
+public:
+  const char *name,
+             *encoding;
+
+  AbstractEnginePrivate(const char *name, const char *encoding)
+    : codec(nullptr), encoder(nullptr), decoder(nullptr),
+      name(name), encoding(encoding)
+  {
+    if (encoding) {
+      codec = QTextCodec::codecForName(encoding);
+      encoder = codec->makeEncoder();
+      decoder = codec->makeDecoder();
+    }
+  }
+
+  QByteArray encode(const QString &text) const
+  { return encoder ? encoder->fromUnicode(text) : QByteArray(); }
+
+  QString decode(const QByteArray &data) const
+  { return decoder ? decoder->toUnicode(data) : QString(); }
+};
+
+/** Public class */
+
+// - Detection -
+
+static AbstractEngine *instance_;
+
+AbstractEngine *AbstractEngine::instance()
+{
+  if (!::instance_)
+    ::instance_ = Engine::getEngine();
+  return ::instance_;
 }
 
-// - Utilities -
+// - Construction -
 
-bool AbstractEngine::glob(const QString &nameFilter)
-{ return glob(QStringList(nameFilter)); }
+AbstractEngine::AbstractEngine(const char *name, const char *encoding)
+  : d_(new D(name, encoding)) {}
 
-bool AbstractEngine::glob(const QStringList &nameFilters)
+AbstractEngine::~AbstractEngine() { delete d_; }
+
+const char *AbstractEngine::name() const { return d_->name; }
+const char *AbstractEngine::encoding() const { return d_->encoding; }
+
+// - Translate -
+
+QString AbstractEngine::translate(const QByteArray &data) const
 {
-  QDir cwd = QCoreApplication::applicationDirPath();
-  return !cwd.entryList(nameFilters).isEmpty();
+  if (auto p = EngineDriver::instance())
+    if (p->isActive()) {
+      QString text = d_->decode(data);
+      if (!text.isEmpty()) {
+        qint64 hash = Engine::hashByteArray(data);
+        return p->translate(text, hash);
+      }
+    }
+  return QString();
 }
 
 // EOF

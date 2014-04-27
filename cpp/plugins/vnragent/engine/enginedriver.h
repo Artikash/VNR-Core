@@ -5,6 +5,7 @@
 
 #include "sakurakit/skglobal.h"
 #include <QtCore/QObject>
+#include <QtCore/QString>
 
 class EngineDriverPrivate;
 class EngineDriver : public QObject
@@ -15,6 +16,7 @@ class EngineDriver : public QObject
   SK_DECLARE_PRIVATE(EngineDriverPrivate)
 
 public:
+  static Self *instance(); // needed by Engine
   explicit EngineDriver(QObject *parent = nullptr);
   ~EngineDriver();
 
@@ -24,8 +26,13 @@ public slots:
   void updateTranslation(const QString &json); // {long hash:unicode translation}
   void clearTranslation();
   void setEnable(bool t);
+
+  // Called by engine
 public:
   bool isEnabled() const;
+
+  // Blocking
+  QString translate(const QString &text, qint64 hash = 0);
 };
 
 // EOF

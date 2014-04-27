@@ -77,13 +77,19 @@ void RpcClientPrivate::onMessage(const QString &cmd, const QString &param)
 
 // - Construction -
 
+static RpcClient *instance_;
+RpcClient *RpcClient::instance() { return ::instance_; }
+
 RpcClient::RpcClient(QObject *parent)
   : Base(parent), d_(new D(this))
 {
   if (!d_->reconnect()) {
     //growl::debug(QString().sprintf("Visual Novel Reader is not ready! Maybe the port %i is blocked?", D::Port));
   }
+  ::instance_ = this;
 }
+
+RpcClient::~RpcClient() { ::instance_ = nullptr; }
 
 bool RpcClient::isActive() const
 { return d_->r->isActive(); }
@@ -99,5 +105,6 @@ void RpcClient::requestEngineTranslation(const QString &json)
 void RpcClient::showMessage(const QString &t) { d_->growlServer(t, D::GrowlMessage); }
 void RpcClient::showWarning(const QString &t) { d_->growlServer(t, D::GrowlWarning); }
 void RpcClient::showError(const QString &t) { d_->growlServer(t, D::GrowlError); }
+void RpcClient::showNotification(const QString &t) { d_->growlServer(t, D::GrowlNotification); }
 
 // EOF

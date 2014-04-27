@@ -3,46 +3,39 @@
 // See also: http://bbs.sumisora.org/read.php?tid=10983263
 
 #include "model/engine/majiro.h"
+#include "model/env.h"
 #include "detoursutil/detoursutil.h"
 #include "memdbg/memsearch.h"
-#include "ntinspect/ntinspect.h"
+#include <qt_windows.h>
 #include <QtCore/QStringList>
 
-namespace majiro {
-
+// レミニセンス:
 // int __cdecl sub_41AF90(CHAR String, int, LPCSTR lpString, int, int);
-typedef int (* paint_func_t)(char, int, LPCSTR, int, int);
-paint_func_t paint;
-int mypaint(char ch, int x, LPCSTR str, int y, int z)
+typedef int (* paint_fun_t)(char, int, const char *, int, int);
+static paint_fun_t oldpaint;
+
+static int newpaint(char ch, int arg2, const char *str, int arg4, int arg5)
 {
-  //growl::debug("majiro::paint");
-  if (!paint)
-    return 0;
-  str = "hello world";
-  return paint(ch, x, str, y, z);
+  QString t = AbstractEngine::instance()->translate(str);
+  if (t.isEmpty())
+    return ::oldpaint(ch, arg2, str, arg4, arg5);
+  else
+    return ::oldpaint(ch, arg2, t.toLocal8Bit(), arg4, arg5);
 }
 
-} // majiro
-
-bool MajiroEngine::match() { return glob(QStringList() << "data*.arc" << "stream*.arc"); }
+bool MajiroEngine::match() { return Env::glob(QStringList() << "data*.arc" << "stream*.arc"); }
 
 bool MajiroEngine::inject()
 {
-  wchar_t process_name_[MAX_PATH]; // cached
-  DWORD module_base_, module_limit_;
-  if (!NtInspect::getCurrentProcessName(process_name_, MAX_PATH)) // Initialize process name
+  DWORD startAddress, stopAddress;
+  if (!Env::getMemoryRange(nullptr, &startAddress, &stopAddress))
     return false;
-  if (!NtInspect::getModuleMemoryRange(process_name_, &module_base_, &module_limit_))
-    return false;
-  DWORD addr = MemDbg::findCallerAddress((DWORD)TextOutA, 0xec81, module_base_, module_limit_);
+  DWORD addr = MemDbg::findCallerAddress((DWORD)TextOutA, 0xec81, startAddress, stopAddress);
   // Note: ITH will mess up this value
   addr = 0x41af90;
   if (!addr)
     return false;
-  //growl::debug(*(BYTE*)addr);
-  majiro::paint = detours::replace<majiro::paint_func_t>(addr, majiro::mypaint);
-  //growl::debug((DWORD)((DWORD)majiro::paint == addr));
-  //growl::debug((DWORD)majiro::paint);
+  ::oldpaint = detours::replace<paint_fun_t>(addr, ::newpaint);
   return addr;
 }
 

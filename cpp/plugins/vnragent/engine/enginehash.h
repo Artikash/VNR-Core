@@ -6,7 +6,7 @@
 #include "sakurakit/skhash.h"
 #include <QtCore/QString>
 
-namespace Ui {
+namespace Engine {
 
 // Cast quint64 to qint64
 
@@ -22,6 +22,6 @@ inline qint64 hashCharArray(const void *lp, size_t len)
 inline qint64 hashWCharArray(const wchar_t *lp, size_t len)
 { return Sk::djb2_n(reinterpret_cast<const quint8 *>(lp), 2 * len); }
 
-} // namespace Ui
+} // namespace Engine
 
 // EOF

@@ -58,13 +58,19 @@ private:
 public:
   void pingServer() { callServer("agent.ping"); }
 
-  enum GrowlType { GrowlMessage = 0, GrowlWarning, GrowlError };
+  enum GrowlType {
+    GrowlMessage = 0,
+    GrowlWarning,
+    GrowlError,
+    GrowlNotification
+  };
   void growlServer(const QString &msg, GrowlType t = GrowlMessage)
   {
     switch (t) {
     case GrowlMessage: callServer("growl.msg", msg); break;
     case GrowlWarning: callServer("growl.warn", msg); break;
     case GrowlError: callServer("growl.error", msg); break;
+    case GrowlNotification: callServer("growl.notify", msg); break;
     }
   }
 

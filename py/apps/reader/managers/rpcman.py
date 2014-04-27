@@ -79,6 +79,9 @@ class _RpcServer(object):
     elif cmd == 'growl.error':
       if param:
         growl.error(param)
+    elif cmd == 'growl.notify':
+      if param:
+        growl.notify(param)
 
     elif cmd == 'agent.ping':
       growl.msg(my.tr("Window text translator is loaded"))

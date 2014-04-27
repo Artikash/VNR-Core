@@ -4,29 +4,32 @@
 // 4/20/2014 jichi
 
 #include "sakurakit/skglobal.h"
-#include <QtCore/QtGlobal>
+#include <QtCore/QString>
 
-QT_FORWARD_DECLARE_CLASS(QString)
-QT_FORWARD_DECLARE_CLASS(QStringList)
+class AbstractEnginePrivate;
 class AbstractEngine
 {
   SK_CLASS(AbstractEngine)
   SK_DISABLE_COPY(AbstractEngine)
-public:
-  static Self *getEngine();
+  SK_DECLARE_PRIVATE(AbstractEnginePrivate)
 
-  AbstractEngine() {}
-  virtual ~AbstractEngine() {}
+public:
+  static Self *instance();
+
+  AbstractEngine(const char *name, const char *encoding);
+  virtual ~AbstractEngine();
+
+  const char *name() const;
+  const char *encoding() const;
+
   virtual bool inject() = 0;
 
   //static bool isEnabled();
   //static void setEnabled(bool t);
 
-protected:
-  // FIXME: This function currently do not support subdirectory
-  static bool glob(const QString &nameFilter);
-  static bool glob(const QStringList &nameFilters);
+  // Helper functions only used by descendant classes
+public:
+  QString translate(const QByteArray &data) const;
 };
-
 
 // EOF

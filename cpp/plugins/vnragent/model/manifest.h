@@ -2,8 +2,11 @@
 
 // manifest.h
 // 4/26/2014 jichi
-// List of all engines
 
-#include "model/engine/majiro.h"
+class AbstractEngine;
+
+namespace Engine {
+AbstractEngine *getEngine();
+} // namespace Engine
 
 // EOF

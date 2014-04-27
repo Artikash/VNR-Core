@@ -15,7 +15,9 @@ class RpcClient : public QObject
   SK_DECLARE_PRIVATE(RpcClientPrivate)
 
 public:
+  static Self *instance(); // only used by growl
   explicit RpcClient(QObject *parent = nullptr);
+  ~RpcClient();
   bool isActive() const;
 
   // - API -
@@ -37,6 +39,7 @@ public slots:
   void showMessage(const QString &message);
   void showWarning(const QString &message);
   void showError(const QString &message);
+  void showNotification(const QString &message);
 };
 
 // EOF
