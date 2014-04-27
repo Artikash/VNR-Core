@@ -13,6 +13,18 @@ MetaCallThreadPrivate::MetaCallThreadPrivate(Q *q)
   : Base(q), q_(q), propagator(nullptr), role(ClientRole), port(0)
 {}
 
+MetaCallThreadPrivate::connectPropagator()
+{
+  if (propagator)
+    connect(this, SIGNAL(asyncStopRequested()), propagator, SLOT(stop()), Qt::QueuedConnection);
+}
+
+MetaCallThreadPrivate::disconnectPropagator()
+{
+  if (propagator)
+    disconnect(propagator);
+}
+
 /** Public class */
 
 // - Construction -
@@ -22,8 +34,19 @@ MetaCallThread::MetaCallThread(QObject *parent)
 
 MetaCallThread::~MetaCallThread() { delete d_; }
 
-MetaCallPropagator *MetaCallThread::propagator() const { return d_->propagator; }
-void MetaCallThread::setPropagator(MetaCallPropagator *value) { d_->propagator = value; }
+MetaCallPropagator *MetaCallThread::propagator() const
+{ return d_->propagator; }
+
+void MetaCallThread::setPropagator(MetaCallPropagator *value)
+{
+  if (d_->propagator != value) {
+    if (d_->propagator)
+      d_->disconnectPropagator();
+    d_->propagator = value;
+    if (value)
+      d_->connectPropagator();
+  }
+}
 
 // - Run -
 
@@ -59,6 +82,7 @@ void MetaCallThread::waitForReady() const
 
 void MetaCallThread::stop()
 {
+  d_->emit stopRequested();
 }
 
 // - Actions -

@@ -29,6 +29,12 @@ public:
   int port;
 
   explicit MetaCallThreadPrivate(Q *q);
+
+  void connectPropagator();
+  void disconnectPropagator();
+
+signals:
+  void asyncStopRequested();
 };
 
 QTMETACALL_END_NAMESPACE

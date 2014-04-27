@@ -18,8 +18,8 @@
 
 /** Private class */
 
-MetaCallPropagatorPrivate::MetaCallPropagatorPrivate(Q *q)
-  : Base(q), q_(q), filter(nullptr), socketObserver(nullptr), server(nullptr), socket(nullptr)
+MetaCallPropagatorPrivate::MetaCallPropagatorPrivate(QObject *parent)
+  : Base(parent), filter(nullptr), socketObserver(nullptr), server(nullptr), socket(nullptr)
 {}
 
 void MetaCallPropagatorPrivate::dumpSocket() const
@@ -80,6 +80,16 @@ void MetaCallPropagatorPrivate::connectSocketObserver()
   }
 }
 
+void MetaCallPropagatorPrivate::disconnectSocketObserver()
+{
+  if (socket && socketObserver)
+    socket->disconnect(socketObserver);
+    //disconnect(socket, SIGNAL(connected()), socketObserver, SIGNAL(connected()));
+    //disconnect(socket, SIGNAL(disconnected()), socketObserver, SIGNAL(disconnected()));
+    //disconnect(socket, SIGNAL(error(QAbstractSocket::SocketError)), socketObserver, SIGNAL(error()));
+}
+
+
 /** Public class */
 
 // - Construction -
@@ -116,7 +126,7 @@ void MetaCallPropagator::setSocketObserver(MetaCallSocketObserver *value)
 {
   if (d_->socketObserver != value) {
     if (d_->socketObserver)
-      disconnect(d_->socketObserver);
+      d_->disconnectSocketObserver();
     d_->socketObserver = value;
     if (value && d_->socket)
       d_->connectSocketObserver();
