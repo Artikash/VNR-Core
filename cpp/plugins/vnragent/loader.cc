@@ -11,7 +11,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTextCodec>
 
-#define DEBUG "loader"
+//#define DEBUG "loader"
 #ifdef DEBUG
 # include "util/msghandler.h"
 #endif // DEBUG
