@@ -34,6 +34,7 @@ DriverPrivate::DriverPrivate(QObject *parent)
   }
 
   eng = new EngineDriver(this); // TODO: Selective create engine only if enabled at server side, i.e. only called by rpc {
+  {
     connect(eng, SIGNAL(translationRequested(QString)), rpc, SLOT(requestEngineTranslation(QString)));
     connect(rpc, SIGNAL(clearEngineRequested()), eng, SLOT(clearTranslation()));
     connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));

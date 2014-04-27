@@ -15,10 +15,6 @@
 
 class EngineManagerPrivate
 {
-  SK_CLASS(EngineManagerPrivate)
-  SK_DISABLE_COPY(EngineManagerPrivate)
-  //SK_DECLARE_PUBLIC(EngineManager)
-
 public:
   QHash<qint64, QString> texts, // {hash:text}
                          trs;   // {hash:tr}
