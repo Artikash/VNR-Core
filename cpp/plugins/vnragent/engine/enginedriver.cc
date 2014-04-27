@@ -29,8 +29,10 @@ EngineDriver::EngineDriver(QObject *parent)
   connect(d_->manager, SIGNAL(translationRequested(QString)), SIGNAL(translationRequested(QString)));
 
   if (auto p = AbstractEngine::instance())
-    if (p->inject())
-      growl::notify(tr("Recognize game engine: %1").arg(p->name()));
+    if (p->inject()) {
+      // FIXME: Only one instance can be send at a time?!
+      //growl::notify(tr("Recognize game engine: %1").arg(p->name()));
+    }
 
   ::instance_ = this;
 }

@@ -28,7 +28,7 @@ public slots:
   void abortTranslation();
   void setEnable(bool t);
 public:
-  void quit();
+  void quit(); // called before qApp->quit()
 
   // Called by engine
 public:

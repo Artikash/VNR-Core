@@ -98,10 +98,11 @@ RpcClient::~RpcClient() { ::instance_ = nullptr; }
 bool RpcClient::isActive() const
 { return d_->r->isActive(); }
 
+void RpcClient::quit() {}
+
 // - Requests -
 
-void RpcClient::requestUiTranslation(const QString &json)
-{ d_->sendUiTexts(json); }
+void RpcClient::requestUiTranslation(const QString &json) { d_->sendUiTexts(json); }
 
 void RpcClient::requestEngineTranslation(const QString &json)
 { d_->sendEngineTexts(json); }

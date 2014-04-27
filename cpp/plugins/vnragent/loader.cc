@@ -11,6 +11,11 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTextCodec>
 
+#define DEBUG "loader"
+#ifdef DEBUG
+# include "util/msghandler.h"
+#endif // DEBUG
+
 // Global variables
 
 namespace { // unnamed
@@ -24,6 +29,7 @@ QCoreApplication *createApplication_(HINSTANCE hInstance)
   return new QCoreApplication(argc, argv);
 }
 
+// Persistent data
 Driver *driver_;
 //QtEmbedded::ApplicationRunner *appRunner_;
 
@@ -41,6 +47,10 @@ void Loader::initWithInstance(HINSTANCE hInstance)
 
   ::createApplication_(hInstance);
   //::appLoader_ = new QtEmbedded::ApplicationLoader(app, QT_EVENTLOOP_INTERVAL);
+
+ #ifdef DEBUG
+  Util::installDebugMsgHandler();
+ #endif // DEBUG
 
   ::driver_ = new Driver;
 

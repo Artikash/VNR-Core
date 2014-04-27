@@ -43,6 +43,8 @@ void DriverPrivate::quit()
 {
   if (eng)
     eng->quit();
+  if (rpc)
+    rpc->quit();
 }
 
 

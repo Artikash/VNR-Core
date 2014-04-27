@@ -18,11 +18,13 @@ inline void dmsg(const wchar_t *message)
 { ::MessageBoxW(nullptr, message, L"VNR Message", MB_OK); }
 
 #ifdef QT_CORE_LIB
-inline void dmsg(const QString &message) { dmsg(message.toStdWString().c_str()); }
 
+inline void dmsg(const QString &message) { dmsg(message.toStdWString().c_str()); }
 template <typename T> inline void dmsg(T number) { dmsg(QString::number(number)); }
+
 #endif //QT_CORE_LIB
 
 #define DMSG(...) dmsg(__VA_ARGS__)
+//#define DLOG(...) dlog(__VA_ARGS__)
 
 // EOF

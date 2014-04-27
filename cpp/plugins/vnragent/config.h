@@ -10,4 +10,6 @@
 #define VNRAGENT_METACALL_PORT  6103
 #define VNRAGENT_METACALL_HOST  "127.0.0.1"
 
+#define VNRAGENT_DEBUG_LOG      "vnragent.log"
+
 // EOF

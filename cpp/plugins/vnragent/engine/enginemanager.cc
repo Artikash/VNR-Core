@@ -15,8 +15,8 @@
 
 class EngineManagerPrivate
 {
-  //QEventLoop *loop;
-  bool blocked;
+  QEventLoop *loop;
+  //bool blocked;
 public:
   QHash<qint64, QString> texts, // {hash:text}
                          trs;   // {hash:tr}
@@ -24,33 +24,33 @@ public:
   //enum { TranslationTimeout = 5000 }; // wait for at most 5 seconds
   enum { TranslationTimeout = 50 }; // wait for at most 5 seconds
 
-  EngineManagerPrivate() : blocked(false) {}
-  bool isBlocked() const { return blocked; }
-  void unblock() { blocked = false; }
-  // TODO: Add a timer to quit loop
-  void block(int interval = 0) // TODO: get system time to prevent timeout
-  {
-    if (!blocked) {
-      blocked = true;
-      while (blocked) // FIXME: Avoid using spin lock
-        qApp->processEvents(QEventLoop::AllEvents, interval);
-    }
-  }
+  //EngineManagerPrivate() : blocked(false) {}
+  //bool isBlocked() const { return blocked; }
+  //void unblock() { blocked = false; }
+  //// TODO: Add a timer to quit loop
+  //void block(int interval = 0) // TODO: get system time to prevent timeout
+  //{
+  //  if (!blocked) {
+  //    blocked = true;
+  //    while (blocked) // FIXME: Avoid using spin lock
+  //      qApp->processEvents(QEventLoop::AllEvents, interval);
+  //  }
+  //}
 
-  //explicit EngineManagerPrivate(QObject *parent)
-  //  : loop(new QEventLoop(parent))
-  //{ QObject::connect(qApp, SIGNAL(aboutToQuit()), loop, SLOT(quit())); }
+  explicit EngineManagerPrivate(QObject *parent)
+    : loop(new QEventLoop(parent))
+  { QObject::connect(qApp, SIGNAL(aboutToQuit()), loop, SLOT(quit())); }
 
-  //bool isBlocked() const { return loop->isRunning(); }
-  //void block(int interval = 0) { if (!loop->isRunning()) loop->exec(); }
-  //void unblock() { if (loop->isRunning()) loop->quit(); }
+  bool isBlocked() const { return loop->isRunning(); }
+  void block(int interval = 0) { if (!loop->isRunning()) loop->exec(); }
+  void unblock() { if (loop->isRunning()) loop->quit(); }
 };
 
 /** Public class */
 
 // - Construction -
 
-EngineManager::EngineManager(QObject *parent) : Base(parent), d_(new D) {}
+EngineManager::EngineManager(QObject *parent) : Base(parent), d_(new D(this)) {}
 EngineManager::~EngineManager() { delete d_; }
 
 // - Actions -

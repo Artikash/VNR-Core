@@ -162,7 +162,8 @@ void MetaCallPropagator::waitForReady() const
     connect(d_->socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), &loop, SLOT(quit()));
     connect(d_->socket, SIGNAL(error(QAbstractSocket::SocketError)), &loop, SLOT(quit()));
     do loop.exec();
-    while (d_->socket->state() == QAbstractSocket::HostLookupState ||
+    while (!d_->socket ||
+           d_->socket->state() == QAbstractSocket::HostLookupState ||
            d_->socket->state() == QAbstractSocket::ConnectingState);
   }
 }

@@ -28,7 +28,7 @@ public:
   ~MetaCallThread();
 
   MetaCallPropagator *propagator() const;
-  void setPropagator(MetaCallPropagator *value);
+  void setPropagator(MetaCallPropagator *value); ///< Do not take ownership
 
   void startServer(const QString &address, int port);
   void startClient(const QString &address, int port);

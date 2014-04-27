@@ -42,6 +42,9 @@ public slots:
   void showWarning(const QString &message);
   void showError(const QString &message);
   void showNotification(const QString &message);
+
+public:
+  void quit(); // called before qApp->quit()
 };
 
 // EOF

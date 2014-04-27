@@ -54,6 +54,7 @@ HEADERS += \
   ui/uihijack.h \
   ui/uihijack_p.h \
   ui/uimanager.h \
+  util/msghandler.h \
   config.h \
   debug.h \
   growl.h \
@@ -70,6 +71,7 @@ SOURCES += \
   ui/uihijack.cc \
   ui/uihijack_p.cc \
   ui/uimanager.cc \
+  util/msghandler.cc \
   growl.cc \
   loader.cc \
   main.cc
