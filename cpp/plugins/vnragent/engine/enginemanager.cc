@@ -8,9 +8,6 @@
 #include <QtCore/QHash>
 #include <QtCore/QVariant>
 
-//#define DEBUG "EngineManager"
-//#include "growl.h"
-
 /** Private class */
 
 class EngineManagerPrivate

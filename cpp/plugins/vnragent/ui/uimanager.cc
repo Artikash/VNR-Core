@@ -10,9 +10,6 @@
 #include <QtCore/QVariant>
 #include <unordered_set>
 
-//#define DEBUG "uimanager"
-//#include "growl.h"
-
 /** Private class */
 
 namespace { UiManager::TextEntry NULL_TEXT_ENTRY; }

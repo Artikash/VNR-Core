@@ -10,7 +10,6 @@
 #include "ui/uihijack.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTextCodec>
-#include "growl.h"
 
 // Global variables
 

@@ -55,8 +55,9 @@ HEADERS += \
   ui/uihijack_p.h \
   ui/uimanager.h \
   config.h \
-  growl.h \
+  debug.h \
   loader.h
+
 SOURCES += \
   driver/driver.cc \
   driver/rpccli.cc \
@@ -68,7 +69,6 @@ SOURCES += \
   ui/uihijack.cc \
   ui/uihijack_p.cc \
   ui/uimanager.cc \
-  growl.cc \
   loader.cc \
   main.cc
 

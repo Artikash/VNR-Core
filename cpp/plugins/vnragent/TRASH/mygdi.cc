@@ -15,7 +15,7 @@
 
 #define DEBUG "mygdi"
 #ifdef DEBUG
-# include "growl.h"
+# include "debug.h"
 #endif // DEBUG
 
 // - Helpers -
@@ -65,12 +65,12 @@ inline LPCWSTR applicationNameW()
 //BOOL (WINAPI *OldTextOutA)(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString) = TextOutA;
 void My::OverrideGDIModuleFunctions(HMODULE hModule)
 {
- // growl::debug("override GDI functions");
+ // DPRINT("override GDI functions");
   BOOST_FOREACH (const MyFunctionInfo &fn, MY_FUNCTIONS) {
 #ifdef DEBUG
     PVOID ret = winsec::OverrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
     if (ret)
-      growl::debug(fn.functionName); // success
+      DPRINT(fn.functionName); // success
 #else
     winsec::OverrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
 #endif // DEBUG
