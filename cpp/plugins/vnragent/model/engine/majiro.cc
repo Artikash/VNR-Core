@@ -8,6 +8,7 @@
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 #include <QtCore/QStringList>
+#include "debug.h"
 
 // レミニセンス:
 // int __cdecl sub_41AF90(CHAR String, int, LPCSTR lpString, int, int);
@@ -16,6 +17,15 @@ static paint_fun_t oldpaint;
 
 static int newpaint(char ch, int arg2, const char *str, int arg4, int arg5)
 {
+  //dmsg(QString("%1:%2: %3:%4:%5 :%6:%7")
+  //  .arg(QString(QChar(ch)))
+  //  .arg(QString::number(arg2))
+  //  .arg(QString::fromLocal8Bit(str))
+  //    .arg(QString::fromLocal8Bit(str).size())
+  //    .arg(QString::number(qstrlen(str)))
+  //  .arg(QString::number(arg4))
+  //  .arg(QString::number(arg5))
+  //);
   QString t = AbstractEngine::instance()->translate(str);
   if (t.isEmpty())
     return ::oldpaint(ch, arg2, str, arg4, arg5);

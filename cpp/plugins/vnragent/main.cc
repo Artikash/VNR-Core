@@ -11,11 +11,9 @@
 #include "loader.h"
 #include "cc/ccmacro.h"
 
-//#include "engine/majiro.h"
-
 namespace { // unnamed
 
-HWND waitForWindowReady(int retryCount = 100, int sleepInterval = 100) // retry for 10 seconds
+HWND waitForWindowReady_(int retryCount = 100, int sleepInterval = 100) // retry for 10 seconds
 {
   for (int i = 0; i < retryCount; i++) {
     if (HWND winId = WinQuery::getAnyWindowInCurrentProcess())
@@ -25,7 +23,7 @@ HWND waitForWindowReady(int retryCount = 100, int sleepInterval = 100) // retry 
   return nullptr;
 }
 
-void harakiri() { ::TerminateProcess(::GetCurrentProcess(), EXIT_SUCCESS); }
+void harakiri_() { ::TerminateProcess(::GetCurrentProcess(), EXIT_SUCCESS); }
 
 } // unnamed namespace
 
@@ -36,19 +34,18 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
   CC_UNUSED(lpvReserved);
   switch (fdwReason) {
   case DLL_PROCESS_ATTACH:
-    if (!::singleapp()) {
+    if (!::singleapp())
       //growl::error("already injected");
       return FALSE;
-    }
 
     ::DisableThreadLibraryCalls(hInstance); // Disable DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications
 
-    if (HWND winId = waitForWindowReady())
+    if (HWND winId = waitForWindowReady_())
       WinTimer::setGlobalWindow(winId);
-    else {
-      //growl::error("cannot find window");
-      return FALSE;
-    }
+    // Since qthread is used, window timer is not indispensible
+    //else
+    //  //growl::error("cannot find window");
+    //  return FALSE;
 
     //while(!::GetModuleHandleA("gdi32.dll"))
     //  ::Sleep(200);
@@ -57,17 +54,18 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
     //::CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(d3dhook), nullptr, 0, nullptr);
 
     // It is critical to launch Qt application in the same thread as main window
-    WinTimer::singleShot(100, boost::bind(Loader::initWithInstance, hInstance));
+    //WinTimer::singleShot(100, boost::bind(Loader::initWithInstance, hInstance));
 
-    //My::OverrideGDIModules();
-    //if (auto eng = Engine::getEngine()) {
-    //  Engine::setEnabled(true);
-    //  eng->inject();
-    //}
+    if (HANDLE h = ::CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)Loader::initWithInstance, hInstance, 0, nullptr))
+      ::CloseHandle(h);
+    else
+      //growl::error("failed to create thread");
+      return FALSE;
     break;
 
   case DLL_PROCESS_DETACH:
-    WinTimer::singleShot(5000, harakiri);  // If hang, terminate the process in 5 seconds.
+    if (HWND winId = WinQuery::getAnyWindowInCurrentProcess())
+      WinTimer::singleShot(5000, harakiri_, winId);  // If hang, terminate the process in 5 seconds.
     Loader::destroy();
     break;
   }

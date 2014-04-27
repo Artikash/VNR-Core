@@ -9,23 +9,25 @@
 //#include <QtCore/QEventLoop>
 #include <QtCore/QHash>
 #include <QtCore/QVariant>
+//#include "debug.h"
 
 /** Private class */
 
 class EngineManagerPrivate
 {
+  //QEventLoop *loop;
   bool blocked;
 public:
   QHash<qint64, QString> texts, // {hash:text}
                          trs;   // {hash:tr}
 
+  //enum { TranslationTimeout = 5000 }; // wait for at most 5 seconds
+  enum { TranslationTimeout = 50 }; // wait for at most 5 seconds
+
   EngineManagerPrivate() : blocked(false) {}
-
-  enum { TranslationTimeout = 5000 }; // wait for at most 5 seconds
-
   bool isBlocked() const { return blocked; }
   void unblock() { blocked = false; }
-
+  // TODO: Add a timer to quit loop
   void block(int interval = 0) // TODO: get system time to prevent timeout
   {
     if (!blocked) {
@@ -35,11 +37,11 @@ public:
     }
   }
 
-  // TODO: Add a timer to quit loop
-
   //explicit EngineManagerPrivate(QObject *parent)
-  //  : loop(new QEventLoop(parent)
+  //  : loop(new QEventLoop(parent))
   //{ QObject::connect(qApp, SIGNAL(aboutToQuit()), loop, SLOT(quit())); }
+
+  //bool isBlocked() const { return loop->isRunning(); }
   //void block(int interval = 0) { if (!loop->isRunning()) loop->exec(); }
   //void unblock() { if (loop->isRunning()) loop->quit(); }
 };

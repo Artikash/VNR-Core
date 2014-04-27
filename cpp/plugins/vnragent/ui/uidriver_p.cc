@@ -101,18 +101,12 @@ void UiDriverPrivate::updateWindow(HWND hWnd)
     }
   }
 
-  if (updateWindow(hWnd, buf, TEXT_BUFFER_SIZE)) {
-    // No effect?
-    //WinTimer::singleShot(200, boost::bind(
-    //    &_repaintWindow, hWnd));
-  }
+  if (updateWindow(hWnd, buf, TEXT_BUFFER_SIZE))
+    repaintWindow(hWnd);
 
   if (HMENU hMenu = ::GetMenu(hWnd))
-    if (updateMenu(hMenu, hWnd, buf, TEXT_BUFFER_SIZE)) {
-      // No effect?!
-      //WinTimer::singleShot(200, boost::bind(
-      //    &_repaintMenuBar, hWnd));
-    }
+    if (updateMenu(hMenu, hWnd, buf, TEXT_BUFFER_SIZE))
+      repaintMenuBar(hWnd);
 }
 
 void UiDriverPrivate::updateContextMenu(HMENU hMenu, HWND hWnd)
@@ -120,6 +114,9 @@ void UiDriverPrivate::updateContextMenu(HMENU hMenu, HWND hWnd)
   wchar_t buf[TEXT_BUFFER_SIZE];
   updateMenu(hMenu, hWnd, buf, TEXT_BUFFER_SIZE);
 }
+
+void UiDriverPrivate::repaintWindow(HWND hWnd) { ::InvalidateRect(hWnd, nullptr, TRUE); }
+void UiDriverPrivate::repaintMenuBar(HWND hWnd) { ::DrawMenuBar(hWnd); }
 
 bool UiDriverPrivate::updateWindow(HWND hWnd, LPWSTR buffer, int bufferSize)
 {
@@ -338,13 +335,6 @@ bool UiDriverPrivate::updateListView(HWND hWnd, LPWSTR buffer, int bufferSize)
 /*
 
 // - Helpers -
-
-// Because boost::bind does not support __stdcall.
-
-inline void _repaintWindow(HWND hWnd) { ::InvalidateRect(hWnd, nullptr, TRUE); }
-
-inline void _repaintMenuBar(HWND hWnd) { ::DrawMenuBar(hWnd); }
-
 
 void UiDriverPrivate::updateWindows()
 {

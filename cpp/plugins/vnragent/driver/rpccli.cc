@@ -67,10 +67,10 @@ void RpcClientPrivate::onMessage(const QString &cmd, const QString &param)
   case H_UI_DISABLE:    q_->emit enableUiRequested(false); break;
   case H_UI_TEXT:       q_->emit uiTranslationReceived(param); break;
 
-  case H_ENG_CLEAR:      q_->emit clearEngineRequested(); break;
-  case H_ENG_ENABLE:     q_->emit enableEngineRequested(true); break;
-  case H_ENG_DISABLE:    q_->emit enableEngineRequested(false); break;
-  case H_ENG_TEXT:       q_->emit engineTranslationReceived(param); break;
+  case H_ENG_CLEAR:     q_->emit clearEngineRequested(); break;
+  case H_ENG_ENABLE:    q_->emit enableEngineRequested(true); break;
+  case H_ENG_DISABLE:   q_->emit enableEngineRequested(false); break;
+  case H_ENG_TEXT:      q_->emit engineTranslationReceived(param); break;
 
   default: ; //growl::debug(QString("Unknown command: %s").arg(cmd));
   }

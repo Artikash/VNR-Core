@@ -44,6 +44,9 @@ private:
   bool updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int bufferSize); // MenuItem
   bool updateTabView();
 
+  static void repaintWindow(HWND hWnd);
+  static void repaintMenuBar(HWND hWnd);
+
   static void updateProcessWindows(DWORD processId = 0);
   static void updateThreadWindows(DWORD threadId = 0);
 

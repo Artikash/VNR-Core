@@ -114,13 +114,15 @@ class _RpcServer(object):
     """
     @param  data  json
     """
+    print 1111111111111
     try:
       d = json.loads(data)
       if d and type(d) == dict:
-        text, h = d.items()[0]
+        h, text = d.items()[0]
         self.q.engineTextReceived.emit(text, h)
 # CHECKPOINT
-        self.callAgent('engine.text', '{"%s":"ano ne world"}' % h)
+        self.callAgent('engine.text', u'{"%s":"何これ、神马玩意"}' % h)
+        print 2222222222222222
       else:
         dwarn("error: json is not a map: %s" % data)
     except (ValueError, TypeError, AttributeError), e:

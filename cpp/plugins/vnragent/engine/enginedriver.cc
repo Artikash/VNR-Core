@@ -59,6 +59,7 @@ QString EngineDriver::translate(const QString &text, qint64 hash, bool block)
 
   d_->manager->updateText(text, hash);
   QString ret = d_->manager->findTranslation(hash);
+  block = false;
   if (ret.isEmpty() && block)
     ret = d_->manager->waitForTranslation(hash);
   return ret;
