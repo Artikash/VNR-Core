@@ -7,7 +7,7 @@
 
 class MajiroEngine : public AbstractEngine
 {
-  SK_EXTEND_CLASS(MajiroEngine, EngineModel)
+  SK_EXTEND_CLASS(MajiroEngine, AbstractEngine)
   SK_DISABLE_COPY(MajiroEngine)
 public:
   MajiroEngine() {}

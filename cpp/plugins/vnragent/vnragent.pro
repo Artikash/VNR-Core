@@ -7,7 +7,7 @@ include($$LIBDIR/detoursutil/detoursutil.pri)
 include($$LIBDIR/libqxt/libqxt.pri)
 include($$LIBDIR/memdbg/memdbg.pri)
 include($$LIBDIR/ntinspect/ntinspect.pri)
-#include($$LIBDIR/qtembedded/qtembedded.pri)
+include($$LIBDIR/qtembedded/qtembedded.pri)
 include($$LIBDIR/qtmetacall/qtmetacall.pri)
 include($$LIBDIR/qtjson/qtjson.pri)
 include($$LIBDIR/sakurakit/sakurakit.pri)
@@ -19,7 +19,7 @@ include($$LIBDIR/wintimer/wintimer.pri)
 #include($$LIBDIR/disasm/disasm.pri)
 #include($$LIBDIR/vnragent/vnragent.pri)
 
-# Modules
+# Services
 HEADERS += $$SERVICEDIR/reader/metacall.h
 
 ## Libraries
@@ -32,7 +32,7 @@ QT      -= gui
 #LIBS    += -ld3d9 -L$$D3D_HOME/lib/x86
 
 LIBS    += -luser32 -lpsapi
-#LIBS    += -lgdi32
+LIBS    += -lgdi32 # needed by game engines
 
 ## Sources
 

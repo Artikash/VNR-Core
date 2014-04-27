@@ -6,17 +6,12 @@
 #include "driver/rpccli.h"
 #include "engine/enginedriver.h"
 #include "ui/uidriver.h"
+#include "model/engine.h"
 
 /** Public class */
 
 Driver::Driver() : d_(new D) {}
 Driver::~Driver() { delete d_; }
-
-void Driver::quit()
-{
-  // TODO
-  //d_->rpc->close();
-}
 
 /** Private class */
 
@@ -40,6 +35,9 @@ DriverPrivate::DriverPrivate(QObject *parent)
     connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));
     connect(rpc, SIGNAL(engineTranslationReceived(QString)), eng, SLOT(updateTranslation(QString)));
   }
+
+  //if (auto p = AbstractEngine::getEngine())
+  //  p->inject();
 }
 
 // EOF
