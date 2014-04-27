@@ -14,6 +14,15 @@
 #include <QtCore/QVariant>
 //#include "debug.h"
 
+#include "wintimer/wintimer.h"
+
+// TODO: Create a wrapper for the event
+#include <qt_windows.h>
+#define MY_EVENT_NAME L"vnragent_engine"
+
+#define DEBUG "enginemanager"
+#include "sakurakit/skdebug.h"
+
 /** Private class */
 
 class EngineManagerPrivate
@@ -22,7 +31,7 @@ class EngineManagerPrivate
   //QEventLoop *loop;
   //bool blocked;
 public:
-  QHash<qint64, QString> trs;   // cached, {key:text}
+  // - Tasks -
 
   struct Task
   {
@@ -44,13 +53,12 @@ public:
       return ret;
     }
 
-    bool isEmpty() const { return !context; }
-    void release()
+    bool isEmpty() const { return !role; }
+    void release() const
     {
-      if (context) {
+      if (context)
         AbstractEngine::instance()->releaseContext(context);
-        context = nullptr;
-      }
+        //context = nullptr;
     }
   };
 
@@ -83,7 +91,11 @@ public:
     otherTaskCleanSize = 0;
   }
 
-  void touchTasks() { refreshTaskTimer->start(); }
+  void touchTasks()
+  {
+    //refreshTaskTimer->start();
+    submitDirtyTasks();
+  }
 
   void submitDirtyTasks()
   {
@@ -91,7 +103,7 @@ public:
     if (scenarioTaskDirty)
       l.append(scenarioTask.toVariant());
     if (nameTaskDirty)
-      l.append(nameTaskDirty.toVariant());
+      l.append(nameTask.toVariant());
     if (otherTaskCleanSize < otherTasks.size())
       for (auto p = otherTasks.constBegin() + qMax(0, otherTaskCleanSize); p != otherTasks.constEnd(); ++p)
         l.append(p->toVariant());
@@ -104,7 +116,7 @@ public:
   void doTask(const QString &text, qint64 hash, int role)
   {
     Task t;
-    switch (role)
+    switch (role) {
     case Engine::ScenarioRole:
       if (hash == scenarioTask.hash) {
         t = scenarioTask;
@@ -130,27 +142,54 @@ public:
           index++;
         }
       }
+    }
     if (!t.isEmpty()) {
-      if (text.isEmpty())
-        text = t.text;
-      AbstractEngine::instance()->drawText(text, t.context);
+      AbstractEngine::instance()->drawText(text.isEmpty() ? t.text : text, t.context);
       t.release();
     }
   }
 
+  // - Sync -
+
+public:
+  void sleep(int interval = 0)
+  {
+    HANDLE event = ::OpenEvent(EVENT_ALL_ACCESS, FALSE, MY_EVENT_NAME);
+    ::WaitForSingleObject(event, INFINITE);
+    ::ResetEvent(event);
+    ::CloseHandle(event);
+  }
+
+  void notify()
+  {
+    HANDLE event = ::OpenEvent(EVENT_ALL_ACCESS, FALSE, MY_EVENT_NAME);
+    ::SetEvent(event);
+    ::CloseHandle(event);
+  }
+
+  // - Construction -
+public:
   enum { RefreshTaskInterval = 200 };
 
   explicit EngineManagerPrivate(Q *q)
     : q_(q), scenarioTaskDirty(false), nameTaskDirty(false), otherTaskCleanSize(0)
   {
-    refreshTaskTimer = new QTimer(q);
+    //refreshTaskTimer = new QTimer(q);
+    refreshTaskTimer = new WinTimer;
     refreshTaskTimer->setSingleShot(true);
     refreshTaskTimer->setInterval(RefreshTaskInterval);
-    q->connect(refreshTaskTimer, SIGNAL(timeout), SLOT(submitTasks));
+    //q->connect(refreshTaskTimer, SIGNAL(timeout()), SLOT(submitTasks()));
+    refreshTaskTimer->setMethod(q, &EngineManager::submitTasks);
+
+    HANDLE event = ::CreateEvent(nullptr, TRUE, FALSE, MY_EVENT_NAME);
+    //::CloseHandle(event);
   }
 
+public:
+  QHash<qint64, QString> trs;   // cached, {key:text}
 private:
-  QTimer *refreshTaskTimer;
+  //QTimer *refreshTaskTimer;
+  WinTimer *refreshTaskTimer;
 
   bool scenarioTaskDirty,
        nameTaskDirty;
@@ -225,7 +264,7 @@ void EngineManager::updateTranslation(const QString &json)
         }
       }
   }
-  //d_->unblock();
+  d_->notify();
 }
 
 //void EngineManager::abortTranslation()
@@ -252,15 +291,18 @@ void EngineManager::addText(const QString &text, qint64 hash, int role, void *co
   d_->touchTasks();
 }
 
+void EngineManager::submitTasks() { d_->submitDirtyTasks(); }
+
 QString EngineManager::findTranslation(qint64 hash, int role) const
 {
   qint64 key = Engine::hashTextKey(hash, role);
   return d_->trs.value(key);
 }
 
-void EngineManager::submitTasks()
+QString EngineManager::waitForTranslation(qint64 hash, int role) const
 {
-  d_->submitDirtyTasks();
+  d_->sleep();
+  return findTranslation(hash, role);
 }
 
 // EOF

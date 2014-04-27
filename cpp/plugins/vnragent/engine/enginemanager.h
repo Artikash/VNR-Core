@@ -32,6 +32,7 @@ public:
   // Interface to engine
 public:
   QString findTranslation(qint64 hash, int role) const;
+  QString waitForTranslation(qint64 hash, int role) const;
   void addText(const QString &text, qint64 hash, int role, void *context);
 
 private slots:

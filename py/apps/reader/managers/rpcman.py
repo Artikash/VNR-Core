@@ -126,8 +126,10 @@ class _RpcServer(object):
           reply.append({
             'hash': item['hash'],
             'role': item['role'],
-            'text': u'何これ、神马玩意',
+            'text': "//"+item['text'],
+            #'text': u'何これ、神马玩意',
           })
+          print item['text']
         reply = json.dumps(reply) #, ensure_ascii=False) # the json parser in vnragent don't enforce ascii
         self.callAgent('engine.text', reply)
         print 2222222

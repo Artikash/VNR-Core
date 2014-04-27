@@ -4,14 +4,14 @@
 #include "config.h"
 #include "loader.h"
 #include "driver/driver.h"
-//#include "qtembedded/applicationrunner.h"
+#include "qtembedded/applicationrunner.h"
 #include "windbg/inject.h"
 #include "windbg/util.h"
 #include "ui/uihijack.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTextCodec>
 
-//#define DEBUG "loader"
+#define DEBUG "loader"
 #ifdef DEBUG
 # include "util/msghandler.h"
 #endif // DEBUG
@@ -31,7 +31,7 @@ QCoreApplication *createApplication_(HINSTANCE hInstance)
 
 // Persistent data
 Driver *driver_;
-//QtEmbedded::ApplicationRunner *appRunner_;
+QtEmbedded::ApplicationRunner *appRunner_;
 
 } // unnamed namespace
 
@@ -46,7 +46,6 @@ void Loader::initWithInstance(HINSTANCE hInstance)
   QTextCodec::setCodecForTr(codec);
 
   ::createApplication_(hInstance);
-  //::appLoader_ = new QtEmbedded::ApplicationLoader(app, QT_EVENTLOOP_INTERVAL);
 
  #ifdef DEBUG
   Util::installDebugMsgHandler();
@@ -60,8 +59,8 @@ void Loader::initWithInstance(HINSTANCE hInstance)
     Ui::overrideModules();
   }
 
-  //appRunner_ = new QtEmbedded::ApplicationRunner(app, QT_EVENTLOOP_INTERVAL);
-  //appRunner_->start();
+  //::appRunner_ = new QtEmbedded::ApplicationRunner(qApp, QT_EVENTLOOP_INTERVAL);
+  //::appRunner_->start();
   qApp->exec(); // This might hang the game
 }
 

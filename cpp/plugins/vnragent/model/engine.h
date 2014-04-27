@@ -36,7 +36,7 @@ public:
   virtual void releaseContext(void *context) = 0;
 
 protected:
-  QString dispatchText(const QByteArray &data, int role, void *context) const;
+  QString dispatchText(const QByteArray &data, int role, void *context, bool blocking) const;
 };
 
 // EOF
