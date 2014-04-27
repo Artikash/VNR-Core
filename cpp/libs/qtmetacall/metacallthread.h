@@ -20,7 +20,7 @@ class MetaCallThread : public QThread
 {
   Q_OBJECT
   Q_DISABLE_COPY(MetaCallThread)
-  SK_EXTEND_CLASS(MetaCallThread, QObject)
+  SK_EXTEND_CLASS(MetaCallThread, QThread)
   SK_DECLARE_PRIVATE(MetaCallThreadPrivate)
 
 public:

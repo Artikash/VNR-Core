@@ -53,7 +53,7 @@ void MetaCallThread::run()
   exec();
 }
 
-void MetaCallThread::waitForReady()
+void MetaCallThread::waitForReady() const
 {
 }
 
