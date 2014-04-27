@@ -1407,7 +1407,7 @@ class Character(QObject):
     d.gender = gender # 'm' or 'f'
     d.ttsEngine = ttsEngine # str  '' for default engine
     d.ttsEnabled = ttsEnabled # bool
-    d.timestamp = timestamp or skdatetime.CURRENT_UNIXTIME # long
+    d.timestamp = timestamp or skdatetime.current_unixtime() # long
 
   @property
   def d(self): return self.__d
@@ -3160,10 +3160,12 @@ class _VoiceModel(object):
       #  else:
       #    self._sortedData = data
       #else:
+      #if not self.sortingColumn: # first column is timestamp
+      #  reverse = not reverse
       col = self.COLUMNS[self.sortingColumn]
       self._sortedData = sorted(data,
           key=operator.attrgetter(col),
-          reverse=self.sortingReverse,)
+          reverse=self.sortingReverse)
     return self._sortedData
   @sortedData.setter
   def sortedData(self, value): self._sortedData = value
