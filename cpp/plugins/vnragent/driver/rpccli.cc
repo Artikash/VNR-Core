@@ -5,9 +5,6 @@
 #include "driver/rpccli_p.h"
 #include <QtCore/QHash>
 
-//#define DEBUG "rpccli"
-#include "growl.h"
-
 /** Private class */
 
 RpcClientPrivate::RpcClientPrivate(Q *q)
@@ -28,6 +25,9 @@ RpcClientPrivate::RpcClientPrivate(Q *q)
 
   connect(s, SIGNAL(disconnected()), reconnectTimer, SLOT(start()));
   connect(s, SIGNAL(error()), reconnectTimer, SLOT(start()));
+
+  connect(s, SIGNAL(disconnected()), q, SIGNAL(aborted()));
+  connect(s, SIGNAL(error()), q, SIGNAL(aborted()));
 }
 
 bool RpcClientPrivate::reconnect()
@@ -72,7 +72,7 @@ void RpcClientPrivate::onMessage(const QString &cmd, const QString &param)
   case H_ENG_DISABLE:    q_->emit enableEngineRequested(false); break;
   case H_ENG_TEXT:       q_->emit engineTranslationReceived(param); break;
 
-  default: growl::debug(QString("Unknown command: %s").arg(cmd));
+  default: ; //growl::debug(QString("Unknown command: %s").arg(cmd));
   }
 }
 
@@ -80,12 +80,20 @@ void RpcClientPrivate::onMessage(const QString &cmd, const QString &param)
 
 // - Construction -
 
+static RpcClient *instance_;
+RpcClient *RpcClient::instance() { return ::instance_; }
+
 RpcClient::RpcClient(QObject *parent)
   : Base(parent), d_(new D(this))
 {
-  if (!d_->reconnect())
-    growl::debug(QString().sprintf("Visual Novel Reader is not ready! Maybe the port %i is blocked?", D::Port));
+  if (!d_->reconnect()) {
+    //growl::debug(QString().sprintf("Visual Novel Reader is not ready! Maybe the port %i is blocked?", D::Port));
+  }
+
+  ::instance_ = this;
 }
+
+RpcClient::~RpcClient() { ::instance_ = nullptr; }
 
 bool RpcClient::isActive() const
 { return d_->r->isActive(); }
@@ -101,5 +109,6 @@ void RpcClient::requestEngineTranslation(const QString &json)
 void RpcClient::showMessage(const QString &t) { d_->growlServer(t, D::GrowlMessage); }
 void RpcClient::showWarning(const QString &t) { d_->growlServer(t, D::GrowlWarning); }
 void RpcClient::showError(const QString &t) { d_->growlServer(t, D::GrowlError); }
+void RpcClient::showNotification(const QString &t) { d_->growlServer(t, D::GrowlNotification); }
 
 // EOF

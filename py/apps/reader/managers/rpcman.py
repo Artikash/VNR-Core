@@ -4,6 +4,7 @@
 
 __all__ = ['RpcServer', 'RpcClient']
 
+from ctypes import c_longlong
 from functools import partial
 import json
 from PySide.QtCore import Signal, Qt, QObject
@@ -79,15 +80,17 @@ class _RpcServer(object):
     elif cmd == 'growl.error':
       if param:
         growl.error(param)
+    elif cmd == 'growl.notify':
+      if param:
+        growl.notify(param)
 
     elif cmd == 'agent.ping':
       growl.msg(my.tr("Window text translator is loaded"))
       self.q.connected.emit()
     elif cmd == 'agent.ui.text':
       self._onWindowTexts(param)
-
     elif cmd == 'agent.engine.text':
-      self.callAgent('engine.text', '{"123":"hello world"}') # CHECKPOINT
+      self._onEngineText(param)
 
     else:
       dwarn("unknown command: %s" % cmd)
@@ -103,7 +106,24 @@ class _RpcServer(object):
         self.q.windowTextsReceived.emit(d)
       else:
         dwarn("error: json is not a map: %s" % data)
-    except ValueError, e:
+    except (ValueError, TypeError, AttributeError), e:
+      dwarn(e)
+      #dwarn("error: malformed json: %s" % data)
+
+  def _onEngineText(self, data):
+    """
+    @param  data  json
+    """
+    try:
+      d = json.loads(data)
+      if d and type(d) == dict:
+        text, h = d.items()[0]
+        self.q.engineTextReceived.emit(text, h)
+# CHECKPOINT
+        self.callAgent('engine.text', '{"%s":"ano ne world"}' % h)
+      else:
+        dwarn("error: json is not a map: %s" % data)
+    except (ValueError, TypeError, AttributeError), e:
       dwarn(e)
       #dwarn("error: malformed json: %s" % data)
 
@@ -130,6 +150,7 @@ class RpcServer(QObject):
   connected = Signal()
   disconnected = Signal() # TODO: Use this signal with isActive to check if game process is running
   windowTextsReceived = Signal(dict) # [long hash:unicode text]
+  engineTextReceived = Signal(unicode, c_longlong) # (text, hash)
 
   def sendTranslation(self, data):
     """

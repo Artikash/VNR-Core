@@ -55,8 +55,10 @@ HEADERS += \
   ui/uihijack_p.h \
   ui/uimanager.h \
   config.h \
+  debug.h \
   growl.h \
   loader.h
+
 SOURCES += \
   driver/driver.cc \
   driver/rpccli.cc \
@@ -75,10 +77,13 @@ SOURCES += \
 HEADERS += \
   model/engine/majiro.h \
   model/engine.h \
+  model/env.h \
   model/manifest.h
 SOURCES += \
   model/engine/majiro.cc \
-  model/engine.cc
+  model/engine.cc \
+  model/env.cc \
+  model/manifest.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += vnragent.rc

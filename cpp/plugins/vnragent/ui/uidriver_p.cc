@@ -11,9 +11,6 @@
 #include <QtCore/QTextCodec>
 #include <QtCore/QTimer>
 
-//#define DEBUG "uidriver_p"
-#include "growl.h"
-
 enum { TEXT_BUFFER_SIZE = 256 };
 
 #define NTLEA_COMPAT // Fix the text of NTLEA

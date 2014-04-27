@@ -10,9 +10,6 @@
 # pragma warning (disable:4996)   // C4996: use POSIX function (wcscat)
 #endif // _MSC_VER
 
-//#define DEBUG "uihijack"
-#include "growl.h"
-
 // - Helpers -
 
 namespace { // unnamed
@@ -62,7 +59,7 @@ void Ui::overrideModules()
   LPCWSTR exeName = applicationNameW(),
           exePath = applicationPathW();
   if (!exeName || !exePath) {
-    growl::debug("failed to get application name or path");
+    //growl::debug("failed to get application name or path");
     return;
   }
 
@@ -83,8 +80,9 @@ void Ui::overrideModuleFunctions(LPVOID pModule)
   HMODULE hModule = (HMODULE)pModule;
   BOOST_FOREACH (const FunctionInfo &fn, UI_HIJACK_FUNCTIONS) {
     PVOID ret = WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
-    if (ret)
-      growl::debug(fn.functionName); // success
+    if (ret) {
+      //growl::debug(fn.functionName); // success
+    }
   }
 }
 

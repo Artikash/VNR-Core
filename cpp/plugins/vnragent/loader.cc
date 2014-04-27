@@ -10,7 +10,6 @@
 #include "ui/uihijack.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTextCodec>
-#include "growl.h"
 
 // Global variables
 
@@ -58,12 +57,13 @@ void Loader::initWithInstance(HINSTANCE hInstance)
 
 void Loader::destroy()
 {
+  if (::driver_)
+    ::driver_->quit();
   if (::appRunner_ && ::appRunner_->isActive())
     ::appRunner_->stop(); // this class is not deleted
-
   if (qApp) {
     qApp->quit();
-    qApp->processEvents();
+    qApp->processEvents(); // might hang here
   }
 }
 
