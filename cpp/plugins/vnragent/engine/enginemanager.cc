@@ -209,7 +209,7 @@ QString EngineManager::waitForTranslation(qint64 hash, int role) const
         l.append(p->toVariant());
     if (!l.isEmpty()) {
       QString json = QtJson::stringify(l);
-      q_->emit textsReceived(json);
+      q_->emit textReceived(json);
     }
   }
 

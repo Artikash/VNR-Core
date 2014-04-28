@@ -21,7 +21,7 @@ public:
   ~EngineDriver();
 
 signals:
-  void textsReceived(QString json); // [{role:int,hash:long,text:unicode}]
+  void textReceived(QString json); // [{role:int,hash:long,text:unicode}]
 public slots:
   void updateTranslation(const QString &json); // [{role:int,hash:long,text:unicode}]
   void clearTranslation();

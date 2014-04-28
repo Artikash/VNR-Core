@@ -63,7 +63,7 @@ const char *AbstractEngine::encoding() const { return d_->encoding; }
 
 // - Dispatch -
 
-QString AbstractEngine:::dispatchText(const QByteArray &data, int role, bool blocking) const
+QString AbstractEngine::dispatchText(const QByteArray &data, int role, bool blocking) const
 {
   QString text = d_->decode(data);
   if (!text.isEmpty()) {

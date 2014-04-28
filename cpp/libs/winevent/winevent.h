@@ -25,7 +25,7 @@ public:
   typedef __native_handle_type native_handle_type;
   typedef __native_string_type native_string_type;
 
-  explicit win_event(string_type name, bool create = true)
+  explicit win_event(native_string_type name, bool create = true)
     : _M_name(name)
   {
     _M_handle = create ? // lpEventAttributes, bManualReset, bInitialState, lpName
@@ -38,12 +38,14 @@ public:
   native_handle_type native_handle() const { return _M_handle; }
   native_string_type native_name() const { return _M_name; }
 
-  bool valid() { return _M_handle; }
+  bool valid() const { return _M_handle; }
 
-  void signal(bool t)
+  bool signal(bool t)
   { return t ? ::SetEvent(_M_handle) : ::ResetEvent(_M_handle); }
 
+  ///  Return true only if when it is wake up by notify instead of timeout
   bool wait(DWORD msec = INFINITE)
-  { return WAIT_OBJECT_0 == ::WaitForSingleObject(event, msec); }
+  { return WAIT_OBJECT_0 == ::WaitForSingleObject(_M_handle, msec); }
+};
 
 // EOF

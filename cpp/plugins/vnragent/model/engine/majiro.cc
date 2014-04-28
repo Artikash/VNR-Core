@@ -18,8 +18,11 @@ class MajiroEnginePrivate
 {
   typedef MajiroEngine Q;
 
-  static Engine::TextRole roleOf(char arg1, int arg2, int arg4, int arg5) : arg1(arg1), arg2(arg2), arg4(arg4), arg5(arg5)
+  static Engine::TextRole roleOf(char arg1, int arg2, int arg4, int arg5)
   {
+    Q_UNUSED(arg2)
+    Q_UNUSED(arg4)
+    Q_UNUSED(arg5)
     switch (arg1) {
     case 0: return Engine::NameRole;
     //case 1: return Engine::NameRole;

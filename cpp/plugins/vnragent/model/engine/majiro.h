@@ -17,8 +17,6 @@ public:
 
   static bool match();
   bool inject() override;
-  void drawText(const QString &text, const void *context) override;
-  void releaseContext(void *context) override;
 };
 
 // EOF

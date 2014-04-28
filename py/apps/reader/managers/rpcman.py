@@ -4,7 +4,7 @@
 
 __all__ = ['RpcServer', 'RpcClient']
 
-#from ctypes import c_longlong
+from ctypes import c_longlong
 from functools import partial
 import json
 from PySide.QtCore import Signal, Qt, QObject
@@ -116,21 +116,16 @@ class _RpcServer(object):
     """
     print 1111111111111
     try:
-      d = json.loads(data)
-      if d and type(d) == list:
-        self.q.engineTextsReceived.emit(d)
+      l = data.split('||')
+      if l and len(l) == 3:
+        role = int(l[0])
+        h = long(l[1])
+        text = l[2]
+        self.q.engineTextReceived.emit(role, h, text)
 
 # CHECKPOINT
-        reply = []
-        for item in d:
-          reply.append({
-            'hash': item['hash'],
-            'role': item['role'],
-            'text': "//"+item['text'],
-            #'text': u'何これ、神马玩意',
-          })
-          print item['text']
-        reply = json.dumps(reply) #, ensure_ascii=False) # the json parser in vnragent don't enforce ascii
+        reply = '||'.join((str(role), str(h), '//' + text))
+        print role, text
         self.callAgent('engine.text', reply)
         print 2222222
       else:
@@ -162,7 +157,7 @@ class RpcServer(QObject):
   connected = Signal()
   disconnected = Signal() # TODO: Use this signal with isActive to check if game process is running
   windowTextsReceived = Signal(dict) # {long hash:unicode text}
-  engineTextsReceived = Signal(list) # [{role:int,hash:long,text:unicode}]
+  engineTextReceived = Signal(int, c_longlong, unicode) # role, hash, text
 
   def sendTranslation(self, data):
     """
