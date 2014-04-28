@@ -17,26 +17,17 @@
 class MajiroEnginePrivate
 {
   typedef MajiroEngine Q;
-public:
-  struct Context
+
+  static Engine::TextRole roleOf(char arg1, int arg2, int arg4, int arg5) : arg1(arg1), arg2(arg2), arg4(arg4), arg5(arg5)
   {
-    char arg1;
-    int arg2;
-    //const char *arg3;
-    int arg4;
-    int arg5;
-
-    Context(char arg1, int arg2, int arg4, int arg5) : arg1(arg1), arg2(arg2), arg4(arg4), arg5(arg5) {}
-
-    Engine::TextRole role() const
-    {
-      switch (arg1) {
-      case 0: return Engine::NameRole;
-      //case 1: return Engine::NameRole;
-      default: return Engine::ScenarioRole;
-      }
+    switch (arg1) {
+    case 0: return Engine::NameRole;
+    //case 1: return Engine::NameRole;
+    default: return Engine::ScenarioRole;
     }
-  };
+  }
+
+public:
 
   /**
    *  Sample game: レミニセンス:
@@ -58,30 +49,21 @@ public:
 
   static int newdraw(char arg1, int arg2, const char *str, int arg4, int arg5)
   {
-    enum { Blocking = true };
-    //return olddraw(arg1, arg2, str, arg4, arg5);
-    auto p = static_cast<MajiroEngine *>(AbstractEngine::instance());
     //qDebug() << arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
-    auto ctx = new Context(arg1, arg2, arg4, arg5);
+    //return olddraw(arg1, arg2, str, arg4, arg5);
+    auto q = static_cast<Q *>(AbstractEngine::instance());
+    auto role = roleOf(arg1, arg2, arg4, arg5);
     QByteArray data = str;
-    QString t = p->dispatchText(data, ctx->role(), ctx, Blocking);
+    QString t = q->dispatchText(data, role);
     if (!t.isEmpty())
       return olddraw(arg1, arg2, t.toLocal8Bit(), arg4, arg5);
 
+    // Estimated return result
     enum { FontWidth = 26 };
     return FontWidth * data.size() * 2;
   }
-
-  typedef int (* test_fun_t)(DWORD);
-  static test_fun_t oldtest;
-  static int newtest(DWORD x)
-  {
-    qDebug() << 111111<<x;
-    return oldtest(x);
-  }
 };
 MajiroEnginePrivate::draw_fun_t MajiroEnginePrivate::olddraw;
-MajiroEnginePrivate::test_fun_t MajiroEnginePrivate::oldtest;
 
 /** Public class */
 
@@ -94,10 +76,10 @@ bool MajiroEngine::inject()
   if (!Env::getMemoryRange(nullptr, &startAddress, &stopAddress))
     return false;
   DWORD addr = MemDbg::findCallerAddress((DWORD)TextOutA, 0xec81, startAddress, stopAddress);
-  //if (!addr)
-  //  return false;
   // Note: ITH will mess up this value
   addr = 0x41af90;
+  if (!addr)
+    return false;
   D::olddraw = detours::replace<D::draw_fun_t>(addr, D::newdraw);
   //addr = 0x41f650; // 2
   //addr = 0x416ab0;
@@ -105,11 +87,14 @@ bool MajiroEngine::inject()
   return addr;
 }
 
+// EOF
+
+/*
 void MajiroEngine::drawText(const QString &text, const void *context)
 {
   Q_ASSERT(context);
-  //auto params = static_cast<const D::Context *>(context);
-  //D::olddraw(params->arg1, params->arg2, text.toLocal8Bit(), params->arg4, params->arg5);
+  auto params = static_cast<const D::Context *>(context);
+  D::olddraw(params->arg1, params->arg2, text.toLocal8Bit(), params->arg4, params->arg5);
 }
 
 void MajiroEngine::releaseContext(void *context)
@@ -117,5 +102,4 @@ void MajiroEngine::releaseContext(void *context)
   Q_ASSERT(context);
   delete static_cast<D::Context *>(context);
 }
-
-// EOF
+*/

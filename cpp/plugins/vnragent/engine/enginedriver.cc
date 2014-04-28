@@ -27,8 +27,7 @@ public:
 EngineDriver::EngineDriver(QObject *parent)
   : Base(parent), d_(new D(this))
 {
-  connect(d_->manager, SIGNAL(textsReceived(QString)), SIGNAL(textsReceived(QString)),
-          Qt::QueuedConnection); // queued is indispensible, as this signal could be triggered by non-QThread engine
+  connect(d_->manager, SIGNAL(textReceived(QString)), SIGNAL(textReceived(QString)));
 
   if (auto p = AbstractEngine::instance())
     //p->setParent(this);

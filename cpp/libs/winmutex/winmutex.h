@@ -39,14 +39,14 @@ template <typename _Mutex, size_t _Irql = 0>
     win_mutex(const _Self&);
     _Self &operator=(const _Self&);
   private:
-    win_mutex() { }
+    win_mutex() {}
     typedef __native_type *native_handle_type;
     native_handle_type native_handle() { return &_M_mutex; }
     static size_t minimal_irql() { return __minimal_irql; }
 
-    void unlock() { }
-    void lock() { }
-    bool try_lock() { }
+    void unlock() {}
+    void lock() {}
+    bool try_lock() {}
   };
 
 template <>

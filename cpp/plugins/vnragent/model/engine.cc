@@ -63,17 +63,15 @@ const char *AbstractEngine::encoding() const { return d_->encoding; }
 
 // - Dispatch -
 
-QString AbstractEngine::dispatchText(const QByteArray &data, int role, void *context, bool blocking) const
+QString AbstractEngine:::dispatchText(const QByteArray &data, int role, bool blocking) const
 {
   QString text = d_->decode(data);
   if (!text.isEmpty()) {
     qint64 hash = Engine::hashByteArray(data);
     auto p = EngineManager::instance();
-    QString ret = p->findTranslation(hash, role);
-    p->addText(text, hash, role, context);
-    if (ret.isEmpty() && blocking)
-      ret = p->waitForTranslation(hash, role);
-    return ret;
+    p->addText(text, hash, role);
+    return blocking ? p->waitForTranslation(hash, role)
+                    : p->findTranslation(hash, role);
   }
   return QString();
 }

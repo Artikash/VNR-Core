@@ -3,6 +3,7 @@
 #include "ui/uihijack_p.h"
 #include "ui/uidriver_p.h"
 
+// FIXME: This function is not thread-safe
 BOOL WINAPI Ui::MyTrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, int nReserved, HWND hWnd, CONST RECT * prcRect)
 {
   //if (HANDLE hThread = CreateThread(0, 0, TranslateMenuThreadProc, hMenu, 0, 0))
@@ -12,6 +13,7 @@ BOOL WINAPI Ui::MyTrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, int nRe
   return ::TrackPopupMenu(hMenu, uFlags, x, y, nReserved, hWnd, prcRect);
 }
 
+// FIXME: This function is not thread-safe
 BOOL WINAPI Ui::MyTrackPopupMenuEx(HMENU hMenu, UINT uFlags, int x, int y, HWND hWnd, LPTPMPARAMS lptpm)
 {
   //if (HANDLE hThread = CreateThread(0, 0, TranslateMenuThreadProc, hMenu, 0, 0))

@@ -24,19 +24,16 @@ public:
 
   // Interface to RPC
 signals:
-  void textsReceived(QString json); // [{role:int,hash:long,text:unicode}]
+  void textReceived(QString data); // int role||long hash||text:unicode
 public:
-  void updateTranslation(const QString &json); // [{role:int,hash:long,text:unicode}]
+  void updateTranslation(const QString &data); // int role||long hash||unicode text
   void clearTranslation();
 
   // Interface to engine
 public:
   QString findTranslation(qint64 hash, int role) const;
   QString waitForTranslation(qint64 hash, int role) const;
-  void addText(const QString &text, qint64 hash, int role, void *context);
-
-private slots:
-  void submitTasks();
+  void addText(const QString &text, qint64 hash, int role);
 };
 
 // EOF

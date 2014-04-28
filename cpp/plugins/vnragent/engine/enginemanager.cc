@@ -1,24 +1,21 @@
 // enginemanager.cc
 // 4/26/2014 jichi
 
+#include "config.h"
 #include "engine/enginemanager.h"
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "model/engine.h"
-#include "QxtCore/QxtJSON"
-#include "qtjson/qtjson.h"
-#include <QtCore/QCoreApplication>
-//#include <QtCore/QEventLoop>
+//#include "QxtCore/QxtJSON"
+//#include "qtjson/qtjson.h"
+#include "winevent/winevent.h"
+#include "winmutex/winmutex.h"
 #include <QtCore/QHash>
-#include <QtCore/QTimer>
-#include <QtCore/QVariant>
+#include <QtCore/QStringList>
 //#include "debug.h"
 
-#include "wintimer/wintimer.h"
-
-// TODO: Create a wrapper for the event
-#include <qt_windows.h>
-#define MY_EVENT_NAME L"vnragent_engine"
+#define ENGINE_EVENT_NAME "vnragent_engine"
+#define D_SYNCHRONIZE  win_mutex_locker<D::mutex_type> d_locker(&d_->mutex);
 
 #define DEBUG "enginemanager"
 #include "sakurakit/skdebug.h"
@@ -27,10 +24,113 @@
 
 class EngineManagerPrivate
 {
-  SK_DECLARE_PUBLIC(EngineManager)
-  //QEventLoop *loop;
-  //bool blocked;
+  win_event event;
 public:
+  typedef win_mutex<CRITICAL_SECTION> mutex_type;
+  mutex_type mutex;
+
+  QHash<qint64, QString> trs;   // cached, {key:text}
+
+  EngineManagerPrivate()
+    : event(ENGINE_EVENT_NAME) {}
+
+  // - Lock -
+  void lock() { mutex.lock(); }
+  void unlock() { mutex.unlock(); }
+
+  // - Event -
+
+  enum { SleepTimeout = 5000 }; // at most 5 seconds
+  void sleep(int interval = SleepTimeout)
+  {
+    event.wait(interval);
+    event.signal(false);
+  }
+
+  void notify()
+  {
+    event.signal(true);
+  }
+};
+
+/** Public class */
+
+// - Construction -
+
+static EngineManager *instance_;
+EngineManager *EngineManager::instance() { return instance_; }
+
+EngineManager::EngineManager(QObject *parent)
+  : Base(parent), d_(new D)
+{ ::instance_ = this; }
+
+EngineManager::~EngineManager()
+{
+  ::instance_ = nullptr;
+  delete d_;
+}
+
+// - Actions -
+
+void EngineManager::clearTranslation()
+{
+  D_SYNCHRONIZE
+  d_->trs.clear();
+}
+
+void EngineManager::updateTranslation(const QString &data)
+{
+  D_SYNCHRONIZE
+  QStringList l = data.split(VNRAGENT_MESSAGE_SEP);
+  if (l.size() >= 3) {
+    int role = l.first().toInt();
+    qint64 hash = l[1].toLongLong();
+    if (role && hash) {
+      QString text = l.last();
+      qint64 key = Engine::hashTextKey(hash, role);
+      d_->trs[key] = text;
+    }
+  }
+  d_->notify();
+}
+
+//void EngineManager::abortTranslation()
+//{ d_->unblock(); }
+
+void EngineManager::addText(const QString &text, qint64 hash, int role)
+{
+  //D_SYNCHRONIZE   // not needed
+  QString data =
+      QString::number(role) + VNRAGENT_MESSAGE_SEP +
+      QString::number(hash) + VNRAGENT_MESSAGE_SEP +
+      text;
+  emit textReceived(data);
+}
+
+QString EngineManager::findTranslation(qint64 hash, int role) const
+{
+  D_SYNCHRONIZE
+  qint64 key = Engine::hashTextKey(hash, role);
+  return d_->trs.value(key);
+}
+
+QString EngineManager::waitForTranslation(qint64 hash, int role) const
+{
+  D_SYNCHRONIZE
+  qint64 key = Engine::hashTextKey(hash, role);
+  auto it = d_->trs.constFind(key);
+  while (it == d_->trs.constEnd()) {
+    d_->unlock();
+    d_->sleep();
+    d_->lock();
+    it = d_->trs.constFind(key);
+  }
+  return it.value();
+}
+
+// EOF
+
+/*
   // - Tasks -
 
   struct Task
@@ -148,58 +248,8 @@ public:
       t.release();
     }
   }
+*/
 
-  // - Sync -
-
-public:
-  void sleep(int interval = 0)
-  {
-    HANDLE event = ::OpenEvent(EVENT_ALL_ACCESS, FALSE, MY_EVENT_NAME);
-    ::WaitForSingleObject(event, INFINITE);
-    ::ResetEvent(event);
-    ::CloseHandle(event);
-  }
-
-  void notify()
-  {
-    HANDLE event = ::OpenEvent(EVENT_ALL_ACCESS, FALSE, MY_EVENT_NAME);
-    ::SetEvent(event);
-    ::CloseHandle(event);
-  }
-
-  // - Construction -
-public:
-  enum { RefreshTaskInterval = 200 };
-
-  explicit EngineManagerPrivate(Q *q)
-    : q_(q), scenarioTaskDirty(false), nameTaskDirty(false), otherTaskCleanSize(0)
-  {
-    //refreshTaskTimer = new QTimer(q);
-    refreshTaskTimer = new WinTimer;
-    refreshTaskTimer->setSingleShot(true);
-    refreshTaskTimer->setInterval(RefreshTaskInterval);
-    //q->connect(refreshTaskTimer, SIGNAL(timeout()), SLOT(submitTasks()));
-    refreshTaskTimer->setMethod(q, &EngineManager::submitTasks);
-
-    HANDLE event = ::CreateEvent(nullptr, TRUE, FALSE, MY_EVENT_NAME);
-    //::CloseHandle(event);
-  }
-
-public:
-  QHash<qint64, QString> trs;   // cached, {key:text}
-private:
-  //QTimer *refreshTaskTimer;
-  WinTimer *refreshTaskTimer;
-
-  bool scenarioTaskDirty,
-       nameTaskDirty;
-  int otherTaskCleanSize;
-
-  typedef QList<Task> TaskList;
-  Task scenarioTask,
-       nameTask;
-  TaskList otherTasks;
-};
 
   //enum { TranslationTimeout = 5000 }; // wait for at most 5 seconds
   //enum { TranslationTimeout = 50 }; // wait for at most 5 seconds
@@ -224,85 +274,3 @@ private:
   //bool isBlocked() const { return loop->isRunning(); }
   //void block(int interval = 0) { if (!loop->isRunning()) loop->exec(); }
   //void unblock() { if (loop->isRunning()) loop->quit(); }
-
-/** Public class */
-
-// - Construction -
-
-static EngineManager *instance_;
-EngineManager *EngineManager::instance() { return instance_; }
-
-EngineManager::EngineManager(QObject *parent)
-  : Base(parent), d_(new D(this))
-{ ::instance_ = this; }
-
-EngineManager::~EngineManager()
-{
-  ::instance_ = nullptr;
-  delete d_;
-}
-
-// - Actions -
-
-void EngineManager::clearTranslation()  { d_->trs.clear(); }
-
-void EngineManager::updateTranslation(const QString &json)
-{
-  QVariant data = QxtJSON::parse(json);
-  if (!data.isNull()) {
-    QVariantList l = data.toList();
-    if (!l.isEmpty())
-      for (auto it = l.constBegin(); it != l.constEnd(); ++it) {
-        QVariantMap map = it->toMap();
-        if (!map.isEmpty()) {
-          qint64 hash = map["hash"].toLongLong();
-          int role = map["role"].toInt();
-          QString text = map["text"].toString();
-          qint64 key = Engine::hashTextKey(hash, role);
-          d_->trs[key] = text;
-          d_->doTask(text, hash, role);
-        }
-      }
-  }
-  d_->notify();
-}
-
-//void EngineManager::abortTranslation()
-//{ d_->unblock(); }
-
-void EngineManager::addText(const QString &text, qint64 hash, int role, void *context)
-{
-  D::Task t(text, hash, role, context);
-  switch (role) {
-  case Engine::ScenarioRole:
-    d_->setScenarioTask(t); // TODO: Merge scenario tasks on certain condition, say, texts in multiple lines
-    d_->clearOtherTasks();
-    break;
-  case Engine::NameRole:
-    d_->setNameTask(t);
-    d_->clearOtherTasks();
-    break;
-  case Engine::OtherRole:
-    d_->addOtherTask(t);
-    break;
-  default: ;
-  }
-
-  d_->touchTasks();
-}
-
-void EngineManager::submitTasks() { d_->submitDirtyTasks(); }
-
-QString EngineManager::findTranslation(qint64 hash, int role) const
-{
-  qint64 key = Engine::hashTextKey(hash, role);
-  return d_->trs.value(key);
-}
-
-QString EngineManager::waitForTranslation(qint64 hash, int role) const
-{
-  d_->sleep();
-  return findTranslation(hash, role);
-}
-
-// EOF

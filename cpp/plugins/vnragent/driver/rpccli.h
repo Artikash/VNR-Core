@@ -36,7 +36,7 @@ signals:
 
 public slots:
   void requestUiTranslation(const QString &json); // json: {hash:text}
-  void requestEngineTranslation(const QString &json); // json: {hash:text}
+  void requestEngineTranslation(const QString &data);
 
   void growlMessage(const QString &message);
   void growlWarning(const QString &message);
