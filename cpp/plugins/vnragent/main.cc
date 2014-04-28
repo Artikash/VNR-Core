@@ -42,9 +42,9 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
 
     if (HWND winId = waitForWindowReady_())
       WinTimer::setGlobalWindow(winId);
-    else
-      //growl::error("cannot find window");
-      return FALSE;
+    //else
+    //  //growl::error("cannot find window");
+    //  return FALSE;
 
     //while(!::GetModuleHandleA("gdi32.dll"))
     //  ::Sleep(200);

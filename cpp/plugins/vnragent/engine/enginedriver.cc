@@ -36,6 +36,9 @@ EngineDriver::EngineDriver(QObject *parent)
       //connect(d_->engine, SIGNAL(textReceived(QString,qint64,int,void*)), d_->manager, SLOT(addText(QString,qint64,int,void*)));
       // FIXME: Only one instance can be send at a time?!
       //growl::notify(tr("Recognize game engine: %1").arg(p->name()));
+      growl::notify("11111");
+      growl::notify("22222");
+      growl::notify("33333");
     }
 
 

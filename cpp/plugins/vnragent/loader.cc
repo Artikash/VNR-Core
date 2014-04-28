@@ -4,7 +4,7 @@
 #include "config.h"
 #include "loader.h"
 #include "driver/driver.h"
-#include "qtembedded/applicationrunner.h"
+//#include "qtembedded/applicationrunner.h"
 #include "windbg/inject.h"
 #include "windbg/util.h"
 #include "ui/uihijack.h"
@@ -31,7 +31,7 @@ QCoreApplication *createApplication_(HINSTANCE hInstance)
 
 // Persistent data
 Driver *driver_;
-QtEmbedded::ApplicationRunner *appRunner_;
+//QtEmbedded::ApplicationRunner *appRunner_;
 
 } // unnamed namespace
 
