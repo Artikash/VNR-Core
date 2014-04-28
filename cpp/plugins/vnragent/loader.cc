@@ -4,12 +4,17 @@
 #include "config.h"
 #include "loader.h"
 #include "driver/driver.h"
-//#include "qtembedded/applicationrunner.h"
 #include "windbg/inject.h"
 #include "windbg/util.h"
 #include "ui/uihijack.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTextCodec>
+
+//#define VNRAGENT_ENABLE_APPRUNNER
+
+#ifdef VNRAGENT_ENABLE_APPRUNNER
+#include "qtembedded/applicationrunner.h"
+#endif // VNRAGENT_ENABLE_APPRUNNER
 
 #define DEBUG "loader"
 #ifdef DEBUG
@@ -31,7 +36,10 @@ QCoreApplication *createApplication_(HINSTANCE hInstance)
 
 // Persistent data
 Driver *driver_;
-//QtEmbedded::ApplicationRunner *appRunner_;
+
+#ifdef VNRAGENT_ENABLE_APPRUNNER
+QtEmbedded::ApplicationRunner *appRunner_;
+#endif // VNRAGENT_ENABLE_APPRUNNER
 
 } // unnamed namespace
 
@@ -59,17 +67,22 @@ void Loader::initWithInstance(HINSTANCE hInstance)
     Ui::overrideModules();
   }
 
-  //::appRunner_ = new QtEmbedded::ApplicationRunner(qApp, QT_EVENTLOOP_INTERVAL);
-  //::appRunner_->start();
-  qApp->exec(); // This might hang the game
+#ifdef VNRAGENT_ENABLE_APPRUNNER
+  ::appRunner_ = new QtEmbedded::ApplicationRunner(qApp, QT_EVENTLOOP_INTERVAL);
+  ::appRunner_->start();
+#else
+  qApp->exec(); // block here
+#endif // VNRAGENT_ENABLE_APPRUNNER
 }
 
 void Loader::destroy()
 {
   if (::driver_)
     ::driver_->quit();
-  //if (::appRunner_ && ::appRunner_->isActive())
-  //  ::appRunner_->stop(); // this class is not deleted
+#ifdef VNRAGENT_ENABLE_APPRUNNER
+  if (::appRunner_ && ::appRunner_->isActive())
+    ::appRunner_->stop(); // this class is not deleted
+#endif // VNRAGENT_ENABLE_APPRUNNER
   if (qApp) {
     qApp->quit();
     qApp->processEvents(); // might hang here

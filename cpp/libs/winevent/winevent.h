@@ -10,6 +10,7 @@
 
 // - win_event -
 
+// Example: http://www.geocities.jp/debu0510/personal/kusosure.html
 class win_event
 {
   typedef win_event _Self;

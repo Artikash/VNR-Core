@@ -11,6 +11,8 @@
 #include "loader.h"
 #include "cc/ccmacro.h"
 
+#define VNRAGENT_ENABLE_THREAD
+
 namespace { // unnamed
 
 HWND waitForWindowReady_(int retryCount = 100, int sleepInterval = 100) // retry for 10 seconds
@@ -18,6 +20,16 @@ HWND waitForWindowReady_(int retryCount = 100, int sleepInterval = 100) // retry
   for (int i = 0; i < retryCount; i++) {
     if (HWND winId = WinQuery::getAnyWindowInCurrentProcess())
       return winId;
+    ::Sleep(sleepInterval);
+  }
+  return nullptr;
+}
+
+HMODULE waitForModuleReady_(const char *name, int retryCount = 100, int sleepInterval = 100) // retry for 10 seconds
+{
+  for (int i = 0; i < retryCount; i++) {
+    if (HMODULE h = ::GetModuleHandleA(name))
+      return h;
     ::Sleep(sleepInterval);
   }
   return nullptr;
@@ -42,24 +54,17 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
 
     if (HWND winId = waitForWindowReady_())
       WinTimer::setGlobalWindow(winId);
-    //else
-    //  //growl::error("cannot find window");
-    //  return FALSE;
 
-    //while(!::GetModuleHandleA("gdi32.dll"))
-    //  ::Sleep(200);
-    //while(!::GetModuleHandleA("d3d9.dll"))
-    //  ::Sleep(200);
-    //::CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(d3dhook), nullptr, 0, nullptr);
-
-    // It is critical to launch Qt application in the same thread as main window
-    //WinTimer::singleShot(100, boost::bind(Loader::initWithInstance, hInstance));
-
+#ifdef VNRAGENT_ENABLE_THREAD
     if (HANDLE h = ::CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)Loader::initWithInstance, hInstance, 0, nullptr))
       ::CloseHandle(h);
     else
       //growl::error("failed to create thread");
       return FALSE;
+#else
+    // It is critical to launch Qt application in the same thread as main window
+    WinTimer::singleShot(100, boost::bind(Loader::initWithInstance, hInstance));
+#endif // VNRAGENT_ENABLE_THREAD
     break;
 
   case DLL_PROCESS_DETACH:
@@ -73,3 +78,13 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
 }
 
 // EOF
+
+    //else
+    //  //growl::error("cannot find window");
+    //  return FALSE;
+
+    //while(!::GetModuleHandleA("gdi32.dll"))
+    //  ::Sleep(200);
+    //while(!::GetModuleHandleA("d3d9.dll"))
+    //  ::Sleep(200);
+    //::CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(d3dhook), nullptr, 0, nullptr);

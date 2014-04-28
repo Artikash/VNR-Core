@@ -11,14 +11,14 @@ HEADERS += \
   $$PWD/metacallpropagator.h \
   $$PWD/metacallpropagator_p.h \
   $$PWD/metacallrouter.h \
-  $$PWD/metacallthread.h \
-  $$PWD/metacallthread_p.h \
   $$PWD/qmetacallevent_p.h \
   $$PWD/qtmetacall.h
+  #$$PWD/metacallthread.h
+  #$$PWD/metacallthread_p.h
 SOURCES += \
   $$PWD/metacallfilter_p.cc \
-  $$PWD/metacallpropagator.cc \
-  $$PWD/metacallthread.cc
+  $$PWD/metacallpropagator.cc
+  #$$PWD/metacallthread.cc
 
 QT += core network
 
