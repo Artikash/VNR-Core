@@ -123,16 +123,19 @@ void MetaCallSocketFilter::readSocket()
     return;
   DOUT("enter");
 
-  QDataStream in(d_->socket);
-  if (!d_->messageSize) { // Save messageSize_ since none-blocking read is used
-    if (d_->socket->bytesAvailable() < int(sizeof(D::message_size_t))) {
-      DOUT("leave: insufficient messageSize");
-      return;
-    }
-    in >> d_->messageSize;
+  qint64 bytesAvailable = d_->socket->bytesAvailable();
+
+  // Save messageSize_ since none-blocking read is used
+  if (!d_->messageSize && bytesAvailable < int(sizeof(D::message_size_t))) {
+    DOUT("leave: insufficient messageSize");
+    return;
   }
 
-  if (d_->socket->bytesAvailable() < int(d_->messageSize - sizeof(D::message_size_t))) {
+  QDataStream in(d_->socket);
+  if (!d_->messageSize) {
+    in >> d_->messageSize;
+
+  if (bytesAvailable < int(d_->messageSize - sizeof(D::message_size_t))) {
     DOUT("leave: insufficient messageSize");
     return;
   }
