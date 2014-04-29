@@ -60,6 +60,7 @@ class SocketClient(QObject):
 @Q_Q
 class _SocketClient(object):
   def __init__(self, q):
+    self.encoding = 'utf8'
     self.address = '127.0.0.1' # host name without http prefix
     self.port = 0 # int
     self.socket = None # # QTcpSocket
@@ -87,9 +88,13 @@ class _SocketClient(object):
 
   def writeSocket(self, data):
     if self.socket:
+      if isinstance(data, unicode):
+        data = data.encode(self.encoding, errors='ignore')
       socketio.writesocket(data, self.socket)
 
 if __name__ == '__main__':
+  t = "hello"
+  t = u"こんにちは"
   import sys
   from PySide.QtCore import QCoreApplication
   app =  QCoreApplication(sys.argv)
@@ -97,7 +102,7 @@ if __name__ == '__main__':
   c.setPort(6002)
   c.start()
   c.waitForReady()
-  c.sendData("hello")
+  c.sendData(t)
   c.disconnected.connect(app.quit)
 
   sys.exit(app.exec_())

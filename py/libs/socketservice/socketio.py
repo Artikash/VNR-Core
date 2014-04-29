@@ -8,9 +8,18 @@ import socketmarshal
 
 MESSAGE_HEADER_SIZE = 4 # 4 bytes
 
-def writesocket(data, socket): # str|unicode|QBytArray, QAbstractSocket -> bool
+def writesocket(data, socket):
+  """
+  @param  data  str or QBytArray not unicode
+  @param  socket  QAbstractSocket
+  @return  bool
+
+  Passing unicode will crash Python
+  """
   ok = False
   # Explicitly use QByteArray to preserve message size
+  #if isinstance(data, unicode):
+  #  data = data.encode(encoding, errors=encodingErrors)
   if not isinstance(data, QByteArray):
     data = QByteArray(data)
   size = len(data)
@@ -21,8 +30,13 @@ def writesocket(data, socket): # str|unicode|QBytArray, QAbstractSocket -> bool
   dprint("pass: ok = %s" % ok)
   return ok
 
-# Note: The socket used in this function must have messageSize property assigned to 0
-def readsocket(socket): # QAbstractSocket -> QByteArray or None
+def readsocket(socket):
+  """
+  @param  QAbstractSocket
+  @return  QByteArray or None
+
+  The socket used in this function must have messageSize property initialized to 0
+  """
   headerSize = MESSAGE_HEADER_SIZE
   bytesAvailable = socket.bytesAvailable()
   if not socket.messageSize and bytesAvailable < headerSize:
