@@ -30,7 +30,7 @@ def writesocket(data, socket):
   #if not isinstance(data, QByteArray):
   #  data = QByteArray(data)
   size = len(data)
-  header = socketpack.int32bytes(size)
+  header = socketpack.packint32(size)
   #data.prepend(header)
   data = header + data
   #assert len(data) == size
@@ -52,7 +52,7 @@ def readsocket(socket):
     return
   if not socket.messageSize:
     ba = socket.read(headerSize)
-    size = socketpack.bytes2int(ba)
+    size = socketpack.unpackint32(ba)
     if not size:
       dwarn("empty message size")
       return

@@ -20,8 +20,16 @@ INT_SIZE = INT32_SIZE
 
 # Bytes
 
+#def signedord(c):
+#  """Return signed char value of the character
+#  @param  c  char
+#  @return  int[-128,127]
+#  """
+#  ret = ord(c)
+#  return ret if ret < 128 else ret - 256
+
 # http://stackoverflow.com/questions/444591/convert-a-string-of-bytes-into-an-int-python
-def bytes2int(s): #
+def unpackint(s): #
   """
   @param  s  str|bytearray|QByteArray
   @return  int
@@ -30,15 +38,15 @@ def bytes2int(s): #
   size = len(s)
   return sum((ord(c) << (8 * (size - i - 1))) for i,c in enumerate(s))
 
-def bytes2int32(s, i=0): #
+def unpackint32(s, i=0): #
   """
   @param  s  str|bytearray|QByteArray
   @param*  i  int  start index
   @return  int
   """
-  return (ord(s[i]) << 24) + (ord(s[i+1]) << 16) + (ord(s[i+2]) << 8) + ord(s[i+3]) if len(s) >= 4 + i else 0
+  return (ord(s[i]) << 24) | (ord(s[i+1]) << 16) | (ord(s[i+2]) << 8) | ord(s[i+3]) if len(s) >= 4 + i else 0
 
-def int2bytes(i, size=0): # int -> str
+def packint(i, size=0): # int -> str
   """
   @param  i  int
   @param* size  int  total size after padding
@@ -49,12 +57,12 @@ def int2bytes(i, size=0): # int -> str
     r = chr(0) + r
   return r
 
-def int32bytes(int32): # int -> str
+def packint32(int32): # int -> str
   """
   @param  number  int32
   @return  str  4 bytes
   """
-  return int2bytes(int32, INT32_SIZE)
+  return packint(int32, INT32_SIZE)
 
 # String list
 
@@ -77,7 +85,7 @@ def packstrlist(l, encoding='utf8'):
       s = s.encode(encoding, errors='ignore')
     head.append(len(s))
     body.append(s)
-  return ''.join(imap(int32bytes, head)) + ''.join(body)
+  return ''.join(imap(packint32, head)) + ''.join(body)
 
 def unpackstrlist(data, encoding='utf8'):
   """
@@ -89,7 +97,7 @@ def unpackstrlist(data, encoding='utf8'):
     dwarn("insufficient list size")
     return []
   index = 0
-  count = bytes2int32(data, index); index += INT32_SIZE
+  count = unpackint32(data, index); index += INT32_SIZE
   if count == 0:
     dwarn("empty list")
     return []
@@ -101,7 +109,7 @@ def unpackstrlist(data, encoding='utf8'):
     return []
   sizes = [] # [int]
   for i in range(0, count):
-    size = bytes2int32(data, index); index += INT32_SIZE
+    size = unpackint32(data, index); index += INT32_SIZE
     if size < 0:
       dwarn("negative string size")
       return []
