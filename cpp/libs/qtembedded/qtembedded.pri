@@ -7,6 +7,8 @@
 
 DEFINES += WITH_LIB_QTEMBEDDED
 
+QT += core
+
 DEPENDPATH += $$PWD
 
 HEADERS += \
@@ -14,8 +16,6 @@ HEADERS += \
   $$PWD/qtembedded.h
 
 win32: SOURCES += $$PWD/applicationrunner_win.cc
-
-QT += core
 
 #INCLUDEPATH += $$QT_SRC
 

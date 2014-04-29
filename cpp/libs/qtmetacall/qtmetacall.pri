@@ -3,6 +3,9 @@
 
 DEFINES += WITH_LIB_METACALL
 
+#INCLUDEPATH += $$QT_SRC
+QT += core network
+
 DEPENDPATH += $$PWD
 
 HEADERS += \
@@ -19,9 +22,5 @@ SOURCES += \
   $$PWD/metacallfilter_p.cc \
   $$PWD/metacallpropagator.cc
   #$$PWD/metacallthread.cc
-
-QT += core network
-
-#INCLUDEPATH += $$QT_SRC
 
 # EOF

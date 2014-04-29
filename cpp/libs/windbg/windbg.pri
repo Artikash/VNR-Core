@@ -4,7 +4,9 @@ win32 {
 
 DEFINES += WITH_LIB_WINDBG
 
-DEPENDPATH      += $$PWD
+LIBS    += -lkernel32 -luser32
+
+DEPENDPATH += $$PWD
 
 HEADERS += \
   $$PWD/hijack.h \
@@ -17,8 +19,6 @@ SOURCES += \
   $$PWD/hijack.cc \
   $$PWD/inject.cc \
   $$PWD/util.cc
-
-LIBS    += -lkernel32 -luser32
 }
 
 # EOF

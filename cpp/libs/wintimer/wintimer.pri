@@ -4,7 +4,9 @@ win32 {
 
 DEFINES += WITH_LIB_WINTIMER
 
-DEPENDPATH      += $$PWD
+LIBS += -lkernel32 -luser32 -lwintimer
+
+DEPENDPATH += $$PWD
 
 HEADERS += \
   $$PWD/wintimer.h \
@@ -13,8 +15,6 @@ HEADERS += \
 #SOURCES += \
 #  $$PWD/wintimer.cc \
 #  $$PWD/wintimerbase.cc
-
-LIBS    += -lkernel32 -luser32 -lwintimer
 }
 
 # EOF

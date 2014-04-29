@@ -3,12 +3,12 @@
 
 DEFINES += WITH_LIB_HTMLDEFS
 
+QT += core
+
 DEPENDPATH += $$PWD
 
 HEADERS += \
   $$PWD/htmltags.h \
   $$PWD/sstags.h
-
-QT += core
 
 # EOF

@@ -6,15 +6,15 @@ win32 {
 
 DEFINES += WITH_LIB_WINHOOK
 
-DEPENDPATH      += $$PWD
+LIBS += -lkernel32 -luser32
+
+DEPENDPATH += $$PWD
 
 HEADERS += \
   $$PWD/funchook.h \
   $$PWD/winhook.h
 SOURCES += \
    $$PWD/funchook.cc
-
-LIBS    += -lkernel32 -luser32
 }
 
 # EOF

@@ -4,7 +4,7 @@
 
 DEFINES += WITH_LIB_SINGLEAPP
 
-DEPENDPATH      += $$PWD
+DEPENDPATH += $$PWD
 
 HEADERS += $$PWD/singleapp.h
 win32: SOURCES += $$PWD/singleapp_win.cc

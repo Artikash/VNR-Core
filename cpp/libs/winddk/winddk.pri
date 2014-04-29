@@ -3,9 +3,10 @@
 
 DEFINES += WITH_LIB_WINDDK
 
+LIBS += -lntoskrnl
+
 DEPENDPATH += $$PWD
 
 HEADERS += $$PWD/winddk.h
-LIBS += -lntoskrnl
 
 # EOF

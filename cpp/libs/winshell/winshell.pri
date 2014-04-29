@@ -3,12 +3,12 @@
 win32 {
 DEFINES += WITH_LIB_WINSHELL
 
-DEPENDPATH      += $$PWD
+LIBS += -lshell32 -lole32
+
+DEPENDPATH += $$PWD
 
 HEADERS += $$PWD/winshell.h
 SOURCES += $$PWD/winshell.cc
-
-LIBS += -lshell32 -lole32
 }
 
 # EOF

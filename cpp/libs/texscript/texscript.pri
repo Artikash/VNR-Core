@@ -3,6 +3,8 @@
 
 DEFINES += WITH_LIB_TEXSCRIPT
 
+QT += core
+
 DEPENDPATH +=$$PWD
 
 HEADERS += \
@@ -13,7 +15,5 @@ HEADERS += \
 SOURCES += \
   $$PWD/texhtml_p.cc \
   $$PWD/texhtml.cc
-
-QT      += core
 
 # EOF

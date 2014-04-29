@@ -7,7 +7,7 @@
 win32 {
 DEFINES += WITH_LIB_WINSEH
 
-DEPENDPATH      += $$PWD
+DEPENDPATH += $$PWD
 
 HEADERS += $$PWD/winseh.h
 SOURCES += \
