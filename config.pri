@@ -10,7 +10,7 @@ SRCDIR  = $$ROOTDIR/cpp
 CONFDIR = $$SRCDIR/conf
 LIBDIR  = $$SRCDIR/libs
 PLUGINDIR = $$SRCDIR/plugins
-SERVICEDIR = $$SRCDIR/services
+#SERVICEDIR = $$SRCDIR/services
 
 DESTDIR         = $$BUILDDIR
 #win32:  DESTDIR_TARGET  = $$BUILDDIR/release.win
