@@ -8,6 +8,12 @@ import socketmarshal
 
 MESSAGE_HEADER_SIZE = 4 # 4 bytes
 
+def initsocket(socket):
+  """
+  @param  socket  QAbstractSocket
+  """
+  socket.messageSize = 0 # body size of the current message
+
 def writesocket(data, socket):
   """
   @param  data  str or QBytArray not unicode

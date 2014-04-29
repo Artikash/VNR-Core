@@ -32,7 +32,7 @@ class SocketServer(QObject):
   dataReceived = Signal(bytearray, QObject) # data, client socket
 
   def sendData(self, data, socket):  # str, QTcpSocket
-    pass
+    self.__d.writeSocket(data, socket)
 
   def broadcastData(self, data):
     for s in self.__d.sockets:
@@ -61,6 +61,7 @@ class SocketServer(QObject):
 @Q_Q
 class _SocketServer(object):
   def __init__(self, q):
+    self.encoding = 'utf8'
     self.address = '127.0.0.1' # host name without http prefix
     self.port = 0 # int
     self.server = None # QTcpServer
@@ -89,7 +90,7 @@ class _SocketServer(object):
     #assert self.server
     socket = self.server.nextPendingConnection();
     if socket:
-      socket.messageSize = 0 # int
+      socketio.initsocket(socket)
       self.sockets.append(socket)
       ref = weakref.ref(socket)
       socket.error.connect(partial(lambda ref, error:
@@ -120,6 +121,11 @@ class _SocketServer(object):
     if data != None:
       self.q.dataReceived.emit(data, socket)
 
+  def writeSocket(self, data, socket):
+    if isinstance(data, unicode):
+      data = data.encode(self.encoding, errors='ignore')
+    socketio.writesocket(data, socket)
+
 if __name__ == '__main__':
   import sys
   from PySide.QtCore import QCoreApplication
@@ -130,7 +136,8 @@ if __name__ == '__main__':
 
   def f(data):
     print data, type(data), len(data)
-    app.quit()
+    s.broadcastData(u"なにこれ")
+    #app.quit()
   s.dataReceived.connect(f)
 
   sys.exit(app.exec_())

@@ -69,9 +69,11 @@ class _SocketClient(object):
     from PySide.QtNetwork import QTcpSocket
     q = self.q
     ret = QTcpSocket(q)
+    socketio.initsocket(ret)
     ret.error.connect(q.socketError)
     ret.connected.connect(q.connected)
     ret.disconnected.connect(q.disconnected)
+    ret.readyRead.connect(self.readSocket)
     return ret
 
   def start(self):
@@ -85,6 +87,12 @@ class _SocketClient(object):
     if self.socket and self.socket.isOpen():
       self.socket.close()
       dprint("pass")
+
+  def readSocket(self):
+    if self.socket:
+      data = socketio.readsocket(self.socket)
+      if data != None:
+        self.q.dataReceived.emit(data)
 
   def writeSocket(self, data):
     if self.socket:
@@ -100,10 +108,14 @@ if __name__ == '__main__':
   app =  QCoreApplication(sys.argv)
   c = SocketClient()
   c.setPort(6002)
+  def f(data):
+    print data, type(data), len(data)
+  c.dataReceived.connect(f)
   c.start()
   c.waitForReady()
   c.sendData(t)
   c.disconnected.connect(app.quit)
+
 
   sys.exit(app.exec_())
 
