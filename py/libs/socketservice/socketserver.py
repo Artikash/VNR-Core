@@ -13,7 +13,7 @@ from functools import partial
 from PySide.QtCore import QObject, Signal
 from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint, dwarn
-import socketmarshal
+import socketio, socketmarshal
 
 class SocketServer(QObject):
   """
@@ -116,39 +116,9 @@ class _SocketServer(object):
     except ValueError: pass
 
   def readSocket(self, socket):
-    headerSize = socketmarshal.MESSAGE_HEADER_SIZE
-    bytesAvailable = socket.bytesAvailable()
-    if not socket.messageSize and bytesAvailable < headerSize:
-      dprint("insufficient header size")
-      return
-    if not socket.messageSize:
-      ba = socket.read(headerSize)
-      size = socketmarshal.bytes2int(ba)
-      if not size:
-        dwarn("empty message size")
-        return
-      socket.messageSize = size
-      bytesAvailable -= headerSize
-
-    bodySize = socket.messageSize
-    if bodySize < 0:
-      dwarn("negative data size = %s" % bodySize)
-      return
-    if bodySize == 0:
-      dwarn("zero data size")
-      self.q.dataReceived.emit('', socket)
-      return
-
-    if bytesAvailable < bodySize:
-      dprint("insufficient message size: %s < %s" % (bytesAvailable, bodySize))
-      return
-
-    dprint("message size = %s" % socket.messageSize)
-
-    data = socket.read(bodySize)
-    socket.messageSize = 0
-
-    self.q.dataReceived.emit(data, socket)
+    data = socketio.readsocket(socket)
+    if data != None:
+      self.q.dataReceived.emit(data, socket)
 
 if __name__ == '__main__':
   import sys

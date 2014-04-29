@@ -8,11 +8,11 @@ if __name__ == '__main__':
 
 __all__ = ['SocketClient']
 
-from PySide.QtCore import QObject, Signal, QByteArray
+from PySide.QtCore import QObject, Signal
 #from PySide.QtNetwork import QAbstractSocket
 from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint
-import socketmarshal
+import socketio, socketmarshal
 
 class SocketClient(QObject):
 
@@ -85,19 +85,9 @@ class _SocketClient(object):
       self.socket.close()
       dprint("pass")
 
-  def writeSocket(self, data): # -> bool
-    ok = False
-    # Explicitly use QByteArray to preserve message size
-    if not isinstance(data, QByteArray):
-      data = QByteArray(data)
-    size = len(data)
-    header = socketmarshal.int32bytes(size)
-    data.prepend(header)
-    #assert len(data) == size
+  def writeSocket(self, data):
     if self.socket:
-      ok = len(data) == self.socket.write(data)
-    dprint("pass: ok = %s" % ok)
-    return ok
+      socketio.writesocket(data, self.socket)
 
 if __name__ == '__main__':
   import sys
