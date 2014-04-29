@@ -11,7 +11,7 @@ SUBDIRS += qmlhelperplugin
 SUBDIRS += qmltexscriptplugin
 SUBDIRS += qmltextplugin
 
-SUBDIRS += pyreader
+#SUBDIRS += pyreader
 
 #SUBDIRS += pyqthelper
 #SUBDIRS += pymetacall

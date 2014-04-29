@@ -1,5 +1,5 @@
 # coding: utf8
-# socketclient.py
+# socketcli.py
 # jichi 4/28/2014
 
 if __name__ == '__main__':
@@ -12,7 +12,7 @@ from PySide.QtCore import QObject, Signal
 #from PySide.QtNetwork import QAbstractSocket
 from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint
-import socketio, socketmarshal
+import socketio
 
 class SocketClient(QObject):
 
@@ -43,7 +43,7 @@ class SocketClient(QObject):
     s = self.__d.socket
     return bool(s) and s.state() in (s.ConnectedState, s.UnconnectedState)
 
-  def start(self): self.__d.start()
+  def start(self): return self.__d.start() # -> bool, always return true
   def stop(self): self.__d.stop()
 
   def waitForReady(self):
@@ -82,6 +82,7 @@ class _SocketClient(object):
       self.socket = self._createSocket()
     self.socket.connectToHost(QHostAddress(self.address), self.port)
     dprint("pass")
+    return True
 
   def stop(self):
     if self.socket and self.socket.isOpen():

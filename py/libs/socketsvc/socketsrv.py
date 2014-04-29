@@ -1,5 +1,5 @@
 # coding: utf8
-# socketserver.py
+# socketsrv.py
 # jichi 4/28/2014
 
 if __name__ == '__main__':
@@ -13,7 +13,7 @@ from functools import partial
 from PySide.QtCore import QObject, Signal
 from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint, dwarn
-import socketio, socketmarshal
+import socketio
 
 class SocketServer(QObject):
   """

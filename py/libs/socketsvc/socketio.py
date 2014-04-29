@@ -4,9 +4,9 @@
 
 #from PySide.QtCore import QByteArray
 from sakurakit.skdebug import dprint, dwarn
-import socketmarshal
+import socketpack
 
-MESSAGE_HEADER_SIZE = socketmarshal.INT_SIZE # = 4
+MESSAGE_HEADER_SIZE = socketpack.INT_SIZE # = 4
 
 def initsocket(socket):
   """
@@ -30,7 +30,7 @@ def writesocket(data, socket):
   #if not isinstance(data, QByteArray):
   #  data = QByteArray(data)
   size = len(data)
-  header = socketmarshal.int32bytes(size)
+  header = socketpack.int32bytes(size)
   #data.prepend(header)
   data = header + data
   #assert len(data) == size
@@ -52,7 +52,7 @@ def readsocket(socket):
     return
   if not socket.messageSize:
     ba = socket.read(headerSize)
-    size = socketmarshal.bytes2int(ba)
+    size = socketpack.bytes2int(ba)
     if not size:
       dwarn("empty message size")
       return

@@ -1,6 +1,7 @@
 # coding: utf8
-# socketmarshal.py
+# socketpack.py
 # jichi 4/28/2014
+# Marshal bytes
 
 if __name__ == '__main__':
   import sys
@@ -8,6 +9,8 @@ if __name__ == '__main__':
 
 from itertools import imap
 from sakurakit.skdebug import dwarn
+from sakurakit.skunicode import qunicode
+#from PySide.QtCore import QByteArray
 
 # Little endian
 ENDIANNESS = 'little'
@@ -55,7 +58,13 @@ def int32bytes(int32): # int -> str
 
 # String list
 
-def marshalstrlist(l, encoding='utf8'):
+def _unicode(data, encoding): # str|QByteArray, str -> unicode
+  if isinstance(data, str):
+    return s.decode(encoding, errors='ignore')
+  else:
+    return qunicode(data, encoding)
+
+def packstrlist(l, encoding='utf8'):
   """
   @param  l  [unicode]
   @return  str
@@ -70,7 +79,7 @@ def marshalstrlist(l, encoding='utf8'):
     body.append(s)
   return ''.join(imap(int32bytes, head)) + ''.join(body)
 
-def unmarshalstrlist(data, encoding='utf8'):
+def unpackstrlist(data, encoding='utf8'):
   """
   @param  data  str|bytearray|QByteArray
   @return  [unicode] not None
@@ -103,7 +112,7 @@ def unmarshalstrlist(data, encoding='utf8'):
   ret = []
   for size in sizes:
     s = data[index:index+size]
-    s = s.decode(encoding, errors='ignore')
+    s = _unicode(s, encoding)
     ret.append(s)
     index += size
   return ret
@@ -115,9 +124,9 @@ if __name__ == '__main__':
   for it in l:
     print it
 
-  data =  marshalstrlist(l)
+  data =  packstrlist(l)
   print len(data), data
-  l = unmarshalstrlist(data)
+  l = unpackstrlist(data)
   print len(l), l
   for it in l:
     print it
