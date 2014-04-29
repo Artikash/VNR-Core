@@ -6,10 +6,10 @@
 
 // Namespaces are disabled
 #ifndef QTSS_BEGIN_NAMESPACE
-# define QTEFFECTS_BEGIN_NAMESPACE //namespace QtSocketService {
+# define QTSS_BEGIN_NAMESPACE //namespace QtSS {
 #endif
 #ifndef QTSS_END_NAMESPACE
-# define QTSS_END_NAMESPACE   //} // namespace QtSocketService
+# define QTSS_END_NAMESPACE   //} // namespace QtSS
 #endif
 
 QTSS_BEGIN_NAMESPACE
