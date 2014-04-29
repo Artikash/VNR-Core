@@ -134,6 +134,8 @@ void MetaCallSocketFilter::readSocket()
   QDataStream in(d_->socket);
   if (!d_->messageSize) {
     in >> d_->messageSize;
+    bytesAvailable -= sizeof(D::message_size_t);
+  }
 
   if (bytesAvailable < int(d_->messageSize - sizeof(D::message_size_t))) {
     DOUT("leave: insufficient messageSize");

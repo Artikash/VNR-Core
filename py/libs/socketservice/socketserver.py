@@ -12,16 +12,13 @@ import weakref
 from functools import partial
 from PySide.QtCore import QObject, Signal
 from sakurakit.skclass import Q_Q
-from sakurakit.skdebug import dprint
-
-# http://stackoverflow.com/questions/444591/convert-a-string-of-bytes-into-an-int-python
-def _bytes2int(ba): # QByteArray => int
-  return sum(ord(c) << (i * 8) for i, c in enumerate(ba[::-1]))
+from sakurakit.skdebug import dprint, dwarn
+import socketmarshal, socketprotocol
 
 class SocketServer(QObject):
   """
   Message protocol:
-  The first 4b is int32 message size.
+  The first 4b is int32 message size (little-endian).
   """
 
   def __init__(self, parent=None):
@@ -32,7 +29,7 @@ class SocketServer(QObject):
   disconnected = Signal(QObject) # client socket
   socketError = Signal(QObject) # client socket
 
-  dataReceived = Signal(str, QObject) # data, client socket
+  dataReceived = Signal(bytearray, QObject) # data, client socket
 
   def sendData(self, data, client):  # str, client socket
     pass
@@ -46,8 +43,8 @@ class SocketServer(QObject):
   def port(self): return self.__d.port # -> int
   def setPort(self, v): self.__d.port = v
 
-  def start(self): pass
-  def stop(self): pass
+  def start(self): return self.__d.start() # -> bool
+  def stop(self): self.__d.stop()
 
   def isActive(self): # -> bool
     return bool(self.__d.server) and self.__d.server.isListening()
@@ -57,8 +54,6 @@ class SocketServer(QObject):
       socket.close()
     self.__d.deleteSocket(socket)
 
-MESSAGE_HEADER_SIZE = 4 # 4 bytes
-
 @Q_Q
 class _SocketServer(object):
   def __init__(self, q):
@@ -67,7 +62,7 @@ class _SocketServer(object):
     self.server = None # QTcpServer
     self.sockets = [] # [QTcpSocket]
 
-  def createServer(self):
+  def _createServer(self):
     from PySide.QtNetwork import QTcpServer
     ret = QTcpServer(self.q)
     ret.newConnection.connect(self._onNewConnection)
@@ -76,11 +71,19 @@ class _SocketServer(object):
   def start(self): # -> bool
     from PySide.QtNetwork import QHostAddress
     if not self.server:
-      self.server = self.createServer()
-    return self.server.listen(QHostAddress(self.address), self.port)
+      self.server = self._createServer()
+    ok = self.server.listen(QHostAddress(self.address), self.port)
+    dprint("pass: ok = %s" % ok)
+    return ok
+
+  def stop(self):
+    if self.server:
+      self.server.close()
+      dprint("pass")
 
   def _onNewConnection(self):
-    socket = self._server.nextPendingConnection();
+    #assert self.server
+    socket = self.server.nextPendingConnection();
     if socket:
       socket.messageSize = 0 # int
       self.sockets.append(socket)
@@ -110,22 +113,34 @@ class _SocketServer(object):
 
   def readSocket(self, socket):
     bytesAvailable = socket.bytesAvailable()
-    if not socket.messageSize and bytesAvailable < MESSAGE_HEADER_SIZE:
+    if not socket.messageSize and bytesAvailable < socketprotocol.MESSAGE_HEADER_SIZE:
       dprint("insufficient header size")
       return
     if not socket.messageSize:
-      ba = socket.read(MESSAGE_HEADER_SIZE)
-      size = _bytes2int(ba)
+      ba = socket.read(socketprotocol.MESSAGE_HEADER_SIZE)
+      size = socketmarshal.bytes2int(ba)
       if not size:
         dwarn("empty message size")
         return
       socket.messageSize = size
+      bytesAvailable -= socketprotocol.MESSAGE_HEADER_SIZE
 
-    if bytesAvailable < socket.messageSize - message:
-      dprint("insufficient message size")
+    dataSize = socket.messageSize - socketprotocol.MESSAGE_HEADER_SIZE
+    if dataSize < 0:
+      dwarn("negative data size = %s" % dataSize)
+      return
+    if dataSize == 0:
+      dwarn("zero data size")
+      self.q.dataReceived.emit('', socket)
       return
 
-    data = socket.readAll()
+    if bytesAvailable < dataSize:
+      dprint("insufficient message size: %s < %s" % (bytesAvailable, dataSize))
+      return
+
+    dprint("message size = %s" % socket.messageSize)
+
+    data = socket.read(dataSize)
     socket.messageSize = 0
 
     self.q.dataReceived.emit(data, socket)
@@ -137,6 +152,11 @@ if __name__ == '__main__':
   s = SocketServer()
   s.setPort(6002)
   s.start()
+
+  def f(data):
+    print data, type(data), len(data)
+    app.quit()
+  s.dataReceived.connect(f)
 
   sys.exit(app.exec_())
 
