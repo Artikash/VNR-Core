@@ -5,6 +5,8 @@
 # Little endian
 ENDIANNESS = 'little'
 
+MESSAGE_HEADER_SIZE = 4 # 4 bytes
+
 # http://stackoverflow.com/questions/444591/convert-a-string-of-bytes-into-an-int-python
 def bytes2int(s): # QByteArray -> int
   #return sum(ord(c) << (i * 8) for i,c in enumerate(s[::-1])) # reverse sign does not work for QByteArray

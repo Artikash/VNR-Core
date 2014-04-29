@@ -13,12 +13,12 @@ from functools import partial
 from PySide.QtCore import QObject, Signal
 from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint, dwarn
-import socketmarshal, socketprotocol
+import socketmarshal
 
 class SocketServer(QObject):
   """
   Message protocol:
-  The first 4b is int32 message size (little-endian).
+  The first 4b is int32 (message size - 4) (little-endian).
   """
 
   def __init__(self, parent=None):
@@ -31,11 +31,15 @@ class SocketServer(QObject):
 
   dataReceived = Signal(bytearray, QObject) # data, client socket
 
-  def sendData(self, data, client):  # str, client socket
+  def sendData(self, data, socket):  # str, QTcpSocket
     pass
 
   def broadcastData(self, data):
-    pass
+    for s in self.__d.sockets:
+      self.sendData(data, s)
+
+  def connectionCount(self):
+    return len(self.__d.sockets)
 
   def address(self): return self.__d.address # -> str
   def setAddress(self, v): self.__d.address = v
@@ -112,35 +116,36 @@ class _SocketServer(object):
     except ValueError: pass
 
   def readSocket(self, socket):
+    headerSize = socketmarshal.MESSAGE_HEADER_SIZE
     bytesAvailable = socket.bytesAvailable()
-    if not socket.messageSize and bytesAvailable < socketprotocol.MESSAGE_HEADER_SIZE:
+    if not socket.messageSize and bytesAvailable < headerSize:
       dprint("insufficient header size")
       return
     if not socket.messageSize:
-      ba = socket.read(socketprotocol.MESSAGE_HEADER_SIZE)
+      ba = socket.read(headerSize)
       size = socketmarshal.bytes2int(ba)
       if not size:
         dwarn("empty message size")
         return
       socket.messageSize = size
-      bytesAvailable -= socketprotocol.MESSAGE_HEADER_SIZE
+      bytesAvailable -= headerSize
 
-    dataSize = socket.messageSize - socketprotocol.MESSAGE_HEADER_SIZE
-    if dataSize < 0:
-      dwarn("negative data size = %s" % dataSize)
+    bodySize = socket.messageSize
+    if bodySize < 0:
+      dwarn("negative data size = %s" % bodySize)
       return
-    if dataSize == 0:
+    if bodySize == 0:
       dwarn("zero data size")
       self.q.dataReceived.emit('', socket)
       return
 
-    if bytesAvailable < dataSize:
-      dprint("insufficient message size: %s < %s" % (bytesAvailable, dataSize))
+    if bytesAvailable < bodySize:
+      dprint("insufficient message size: %s < %s" % (bytesAvailable, bodySize))
       return
 
     dprint("message size = %s" % socket.messageSize)
 
-    data = socket.read(dataSize)
+    data = socket.read(bodySize)
     socket.messageSize = 0
 
     self.q.dataReceived.emit(data, socket)

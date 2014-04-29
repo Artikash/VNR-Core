@@ -12,7 +12,7 @@ from PySide.QtCore import QObject, Signal, QByteArray
 #from PySide.QtNetwork import QAbstractSocket
 from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint
-import socketmarshal, socketprotocol
+import socketmarshal
 
 class SocketClient(QObject):
 
@@ -27,7 +27,7 @@ class SocketClient(QObject):
   dataReceived = Signal(bytearray) # data
 
   def sendData(self, data):  # str -> bool
-    return self.__d.send(data)
+    return self.__d.writeSocket(data)
 
   def address(self): return self.__d.address # -> str
   def setAddress(self, v): self.__d.address = v
@@ -85,12 +85,12 @@ class _SocketClient(object):
       self.socket.close()
       dprint("pass")
 
-  def send(self, data): # -> bool
+  def writeSocket(self, data): # -> bool
     ok = False
     # Explicitly use QByteArray to preserve message size
     if not isinstance(data, QByteArray):
       data = QByteArray(data)
-    size = len(data) + socketprotocol.MESSAGE_HEADER_SIZE
+    size = len(data)
     header = socketmarshal.int32bytes(size)
     data.prepend(header)
     #assert len(data) == size
