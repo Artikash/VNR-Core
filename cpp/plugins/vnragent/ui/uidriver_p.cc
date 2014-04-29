@@ -35,6 +35,9 @@ UiDriverPrivate::UiDriverPrivate(QObject *parent)
   retransTimer->setInterval(RetransInterval);
   connect(retransTimer, SIGNAL(timeout()), SLOT(retrans()));
 
+  connect(this, SIGNAL(updateContextMenuRequested(void*,void*)), SLOT(onUpdateContextMenuRequested(void*,void*)),
+          Qt::QueuedConnection);
+
   ::instance_ = this;
 }
 
@@ -51,21 +54,22 @@ void UiDriverPrivate::rehook() { Ui::overrideModules(); }
 
 // - Processes and threads -
 
-static BOOL CALLBACK _enumThreadWndProc(HWND hWnd, LPARAM lParam)
+BOOL CALLBACK UiDriverPrivate::enumThreadWndProc(HWND hWnd, LPARAM lParam)
 {
   //if (!NotSupportedWindow(hWnd))
   //  return TRUE;
   if (::instance_) {
-    ::instance_->updateWindow(hWnd);
+    ::instance_->updateAbstractWindow(hWnd);
     ::EnumChildWindows(hWnd, (WNDENUMPROC)_enumThreadWndProc, lParam);
   }
   return TRUE;
 }
+
 void UiDriverPrivate::updateThreadWindows(DWORD threadId)
 {
   if (!threadId)
     threadId = ::GetCurrentThreadId();
-  ::EnumThreadWindows(threadId, (WNDENUMPROC)::_enumThreadWndProc, 0);
+  ::EnumThreadWindows(threadId, (WNDENUMPROC)::enumThreadWndProc, 0);
 }
 
 void UiDriverPrivate::updateProcessWindows(DWORD processId)
@@ -86,7 +90,7 @@ void UiDriverPrivate::updateProcessWindows(DWORD processId)
 
 // - Windows -
 
-void UiDriverPrivate::updateWindow(HWND hWnd)
+void UiDriverPrivate::updateAbstractWindow(HWND hWnd)
 {
   wchar_t buf[TEXT_BUFFER_SIZE];
 
@@ -101,7 +105,7 @@ void UiDriverPrivate::updateWindow(HWND hWnd)
     }
   }
 
-  if (updateWindow(hWnd, buf, TEXT_BUFFER_SIZE))
+  if (updateStandardWindow(hWnd, buf, TEXT_BUFFER_SIZE))
     repaintWindow(hWnd);
 
   if (HMENU hMenu = ::GetMenu(hWnd))
@@ -118,7 +122,7 @@ void UiDriverPrivate::updateContextMenu(HMENU hMenu, HWND hWnd)
 void UiDriverPrivate::repaintWindow(HWND hWnd) { ::InvalidateRect(hWnd, nullptr, TRUE); }
 void UiDriverPrivate::repaintMenuBar(HWND hWnd) { ::DrawMenuBar(hWnd); }
 
-bool UiDriverPrivate::updateWindow(HWND hWnd, LPWSTR buffer, int bufferSize)
+bool UiDriverPrivate::updateStandardWindow(HWND hWnd, LPWSTR buffer, int bufferSize)
 {
   qint64 h = 0;
   int sz = ::GetWindowTextW(hWnd, buffer, bufferSize);

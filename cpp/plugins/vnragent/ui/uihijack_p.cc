@@ -9,7 +9,7 @@ BOOL WINAPI Ui::MyTrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, int nRe
   //if (HANDLE hThread = CreateThread(0, 0, TranslateMenuThreadProc, hMenu, 0, 0))
   //  CloseHandle(hThread);
   if (auto p = UiDriverPrivate::instance())
-    p->updateContextMenu(hMenu, hWnd);
+    p->requestUpdateContextMenu(hMenu, hWnd);
   return ::TrackPopupMenu(hMenu, uFlags, x, y, nReserved, hWnd, prcRect);
 }
 
@@ -19,7 +19,7 @@ BOOL WINAPI Ui::MyTrackPopupMenuEx(HMENU hMenu, UINT uFlags, int x, int y, HWND 
   //if (HANDLE hThread = CreateThread(0, 0, TranslateMenuThreadProc, hMenu, 0, 0))
   //  CloseHandle(hThread);
   if (auto p = UiDriverPrivate::instance())
-    p->updateContextMenu(hMenu, hWnd);
+    p->requestUpdateContextMenu(hMenu, hWnd);
   return ::TrackPopupMenuEx(hMenu, uFlags, x, y, hWnd, lptpm);
 }
 

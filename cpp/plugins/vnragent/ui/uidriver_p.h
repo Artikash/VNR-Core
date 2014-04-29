@@ -27,6 +27,7 @@ public:
   bool enabled;
   UiManager *manager;
 
+public:
   static Self *instance();
   explicit UiDriverPrivate(QObject *parent=nullptr);
   ~UiDriverPrivate();
@@ -34,11 +35,24 @@ public:
   // Start refresh timers
   void start();
 
-  void updateContextMenu(HMENU hMenu, HWND hWnd);
-  void updateWindow(HWND hWnd);
+  void requestUpdateContextMenu(HMENU hMenu, HWND hWnd) // queued
+  { emit updateContextMenuRequested(hMenu, hWnd); }
+
+signals:
+  void updateContextMenuRequested(void *hMenu, void *hWnd);
+private slots:
+  // Needed as HWMD and HMENU are not registered by Qt
+  void onUpdateContextMenuRequested(void *hMenu, void *hWnd)
+  { updateContextMenu((HMENU)hMenu, (HWND)hWnd); }
+
+  void retrans();
+  void rehook();
 
 private:
-  bool updateWindow(HWND hWnd, LPWSTR buffer, int bufferSize); // window
+  void updateAbstractWindow(HWND hWnd); // The type of the window is unknown
+
+  bool updateStandardWindow(HWND hWnd, LPWSTR buffer, int bufferSize); // window
+  void updateContextMenu(HMENU hMenu, HWND hWnd);
   bool updateListView(HWND hWnd, LPWSTR buffer, int bufferSize); // SysListView
   bool updateTabControl(HWND hWnd, LPWSTR buffer, int bufferSize); // SysTabControl
   bool updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int bufferSize); // MenuItem
@@ -50,9 +64,7 @@ private:
   static void updateProcessWindows(DWORD processId = 0);
   static void updateThreadWindows(DWORD threadId = 0);
 
-private slots:
-  void retrans();
-  void rehook();
+  static BOOL CALLBACK enumThreadWndProc(HWND hWnd, LPARAM lParam); // invoked only by updateThreadWindows
 };
 
 // EOF

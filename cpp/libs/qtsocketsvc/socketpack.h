@@ -25,11 +25,12 @@ inline QByteArray packInt32(qint32 value)
 
 inline qint32 unpackInt32(const QByteArray &data, int offset = 0)
 {
+  // QByteArray by default is an array of char, which is signed char. quint8 is unsigned.
   return data.size() < 4 ? 0 :
-        (data[offset]     << 24)
-      | (data[offset + 1] << 16)
-      | (data[offset + 2] <<  8)
-      |  data[offset + 3];
+        (quint8(data[offset])     << 24)
+      | (quint8(data[offset + 1]) << 16)
+      | (quint8(data[offset + 2]) <<  8)
+      |  quint8(data[offset + 3]);
 }
 
 QByteArray packStringList(const QStringList &l);
