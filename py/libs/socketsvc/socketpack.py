@@ -96,33 +96,36 @@ def unpackstrlist(data, encoding='utf8'):
   if dataSize < INT32_SIZE:
     dwarn("insufficient list size")
     return []
-  index = 0
-  count = unpackint32(data, index); index += INT32_SIZE
+  offset = 0
+  count = unpackint32(data, offset); offset += INT32_SIZE
   if count == 0:
     dwarn("empty list")
     return []
   if count < 0:
     dwarn("negative count")
     return []
-  if count * INT32_SIZE > dataSize - index:
+  if count * INT32_SIZE > dataSize - offset:
     dwarn("insufficient header size")
     return []
   sizes = [] # [int]
   for i in range(0, count):
-    size = unpackint32(data, index); index += INT32_SIZE
+    size = unpackint32(data, offset); offset += INT32_SIZE
     if size < 0:
       dwarn("negative string size")
       return []
     sizes.append(size)
-  if sum(sizes) > dataSize - index:
+  if sum(sizes) > dataSize - offset:
     dwarn("insufficient body size")
     return []
   ret = []
   for size in sizes:
-    s = data[index:index+size]
-    s = _unicode(s, encoding)
-    ret.append(s)
-    index += size
+    if size == 0:
+      ret.append('')
+    else:
+      s = data[offset:offset+size]
+      s = _unicode(s, encoding)
+      ret.append(s)
+      offset += size
   return ret
 
 if __name__ == '__main__':

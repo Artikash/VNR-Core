@@ -9,11 +9,10 @@ DEPENDPATH += $$PWD
 QT += core network
 
 HEADERS += \
-  $$PWD/qtsocketcli.h \
-  $$PWD/qtsocketpack.h \
-  $$PWD/qtsocketsvc.h
+  $$PWD/socketclient.h \
+  $$PWD/socketpack.h
 
 SOURCES += \
-  $$PWD/qtsocketcli.cc
+  $$PWD/socketclient.cc
 
 # EOF

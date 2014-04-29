@@ -7,6 +7,7 @@ SUBDIRS += \
   hashtest \
   jsontest \
   pytest \
+  socktest \
   uitest
 
 win32: SUBDIRS += \

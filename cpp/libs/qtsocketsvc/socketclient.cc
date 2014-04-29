@@ -8,7 +8,7 @@
 #define DEBUG "socketclient"
 #include <sakurakit/skdebug.h>
 
-QTSS_BEGIN_NAMESPACE
+//QTSS_BEGIN_NAMESPACE
 
 /** Private class */
 
@@ -26,7 +26,7 @@ public:
 
   void createSocket()
   {
-    socket = new QTcpSocket(this);
+    socket = new QTcpSocket(q_);
     q_->connect(socket, SIGNAL(readyRead()), SLOT(readSocket()));
   }
 
@@ -38,15 +38,15 @@ public:
 bool SocketClientPrivate::writeSocket(const QByteArray &data)
 {
   // CHECKPOINT
-  if (!socket)
+  if (Q_UNLIKELY(!socket))
     return false;
   return false;
 }
 
-QByteArray SocketClientPrivate::writeSocket()
+QByteArray SocketClientPrivate::readSocket()
 {
   // CHECKPOINT
-  if (!socket)
+  if (Q_UNLIKELY(!socket))
     return QByteArray();
   return QByteArray();
 }
@@ -71,7 +71,7 @@ void SocketClient::start()
 {
   if (!d_->socket)
     d_->createSocket();
-  d_->socket.connectToHost(QHostAddress(d_->address), d_->port);
+  d_->socket->connectToHost(QHostAddress(d_->address), d_->port);
   DOUT("pass");
 }
 
@@ -85,22 +85,22 @@ void SocketClient::stop()
 
 bool SocketClient::isActive() const
 {
-  return d_->socket && d_->socket.state() == QAbstractSocket::ConnectedState;
+  return d_->socket && d_->socket->state() == QAbstractSocket::ConnectedState;
 }
 
 bool SocketClient::isReady() const
 {
   return d_->socket && (
-    d_->socket.state() == QAbstractSocket::ConnectedState ||
-    d_->socket.state() == QAbstractSocket::UnconnectedState
+    d_->socket->state() == QAbstractSocket::ConnectedState ||
+    d_->socket->state() == QAbstractSocket::UnconnectedState
   );
 }
 
 void SocketClient::waitForReady()
 {
   if (d_->socket &&
-    d_->socket.state() != QAbstractSocket::ConnectedState &&
-    d_->socket.state() != QAbstractSocket::UnconnectedState) {
+    d_->socket->state() != QAbstractSocket::ConnectedState &&
+    d_->socket->state() != QAbstractSocket::UnconnectedState) {
 
     QEventLoop loop;
     connect(d_->socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), &loop, SLOT(quit()));
@@ -119,13 +119,13 @@ bool SocketClient::sendData(const QByteArray &data)
 
 void SocketClient::readSocket()
 {
-  if (d_->socket) {
+  if (Q_LIKELY(d_->socket)) {
     QByteArray data = d_->readSocket();
     if (!data.isEmpty())
       emit dataReceived(data);
   }
 }
 
-QTSS_END_NAMESPACE
+//QTSS_END_NAMESPACE
 
 // EOF

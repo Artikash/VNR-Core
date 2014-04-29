@@ -1,15 +1,12 @@
-#ifndef _QTSOCKETSVC_SOCKETCLIENT_H
-#define _QTSOCKETSVC_SOCKETCLIENT_H
+#ifndef _SOCKETSVC_SOCKETCLIENT_H
+#define _SOCKETSVC_SOCKETCLIENT_H
 
 // socketclient.h
 // 4/29/2014 jichi
 //
 // This class must be consistent with socketsvc/socketcli.py
-#include "qtsocketsvc/qtsocketsvc.h"
 #include "sakurakit/skglobal.h"
 #include <QtCore/QObject>
-
-QTSS_BEGIN_NAMESPACE
 
 class SocketClientPrivate;
 class SocketClient : public QObject
@@ -17,7 +14,7 @@ class SocketClient : public QObject
   Q_OBJECT
   Q_DISABLE_COPY(SocketClient)
   SK_EXTEND_CLASS(SocketClient, QObject)
-  SK_DECLARE_PRIVATE(SocketClient)
+  SK_DECLARE_PRIVATE(SocketClientPrivate)
 public:
   explicit SocketClient(QObject *parent = nullptr);
   ~SocketClient();
@@ -49,11 +46,9 @@ signals:
 private slots:
   /**
    *  Invoked by QAbstractSocket::readyRead.
-   *  It might be better to make this method virutal protected in the future.
+   *  Leave it in the public class as it  might be better to use  virutal protected in the future.
    */
   void readSocket();
 };
 
-QTSS_END_NAMESPACE
-
-#endif // _QTSOCKETSVC_SOCKETCLIENT_H
+#endif // _SOCKETSVC_SOCKETCLIENT_H

@@ -6,36 +6,29 @@
 #include "engine/enginemanager.h"
 #include "engine/enginehash.h"
 #include <QtCore/QTextCodec>
-#include <QtCore/QTextDecoder>
-#include <QtCore/QTextEncoder>
 
 /** Private class */
 
 class AbstractEnginePrivate
 {
   QTextCodec *codec;
-  QTextEncoder *encoder;
-  QTextDecoder *decoder;
 public:
   const char *name,
              *encoding;
 
   AbstractEnginePrivate(const char *name, const char *encoding)
-    : codec(nullptr), encoder(nullptr), decoder(nullptr),
+    : codec(nullptr),
       name(name), encoding(encoding)
   {
-    if (encoding) {
+    if (encoding)
       codec = QTextCodec::codecForName(encoding);
-      encoder = codec->makeEncoder();
-      decoder = codec->makeDecoder();
-    }
   }
 
   QByteArray encode(const QString &text) const
-  { return encoder ? encoder->fromUnicode(text) : QByteArray(); }
+  { return encoder ? codec->fromUnicode(text) : QByteArray(); }
 
   QString decode(const QByteArray &data) const
-  { return decoder ? decoder->toUnicode(data) : QString(); }
+  { return decoder ? codec->toUnicode(data) : QString(); }
 };
 
 /** Public class */
