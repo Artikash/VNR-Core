@@ -2,11 +2,11 @@
 # socketio.py
 # jichi 4/28/2014
 
-from PySide.QtCore import QByteArray
+#from PySide.QtCore import QByteArray
 from sakurakit.skdebug import dprint, dwarn
 import socketmarshal
 
-MESSAGE_HEADER_SIZE = 4 # 4 bytes
+MESSAGE_HEADER_SIZE = socketmarshal.INT_SIZE # = 4
 
 def initsocket(socket):
   """
@@ -16,21 +16,23 @@ def initsocket(socket):
 
 def writesocket(data, socket):
   """
-  @param  data  str or QBytArray not unicode
+  @param  data  str not unicode
   @param  socket  QAbstractSocket
   @return  bool
 
   Passing unicode will crash Python
   """
+  #assert isinstance(data, str)
   ok = False
   # Explicitly use QByteArray to preserve message size
   #if isinstance(data, unicode):
   #  data = data.encode(encoding, errors=encodingErrors)
-  if not isinstance(data, QByteArray):
-    data = QByteArray(data)
+  #if not isinstance(data, QByteArray):
+  #  data = QByteArray(data)
   size = len(data)
   header = socketmarshal.int32bytes(size)
-  data.prepend(header)
+  #data.prepend(header)
+  data = header + data
   #assert len(data) == size
   ok = len(data) == socket.write(data)
   dprint("pass: ok = %s" % ok)
