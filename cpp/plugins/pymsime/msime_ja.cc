@@ -14,7 +14,7 @@ enum {
     //WINIME_MODE_NONE
 };
 
-namespace { namespace detail { // unnamed
+namespace { // unnamed
 
 class ime_applier
 {
@@ -38,7 +38,7 @@ public:
   }
 };
 
-}} // unnamed detail
+} // unnamed namespace
 
 /** Private class */
 
@@ -73,7 +73,7 @@ QString Msime_ja::toYomigana(const QString& text, int type) const
     ::winime_apply(d_->ime,
          WINIME_REQ_REV,
          MSIME_MODE_FLAGS | (type == Katagana ? WINIME_MODE_KATAGANA : WINIME_MODE_HIRAGANA),
-         detail::ime_applier(&ret),
+         ime_applier(&ret),
          text.toStdWString().c_str(),
          text.size());
   return ret;
@@ -86,7 +86,7 @@ QList<QPair<QString, QString> > Msime_ja::toFurigana(const QString& text, int ty
     ::winime_collect(d_->ime,
          WINIME_REQ_REV,
          MSIME_MODE_FLAGS | (type == Katagana ? WINIME_MODE_KATAGANA : WINIME_MODE_HIRAGANA),
-         detail::ime_collector(&ret),
+         ime_collector(&ret),
          text.toStdWString().c_str(),
          text.size());
   return ret;
@@ -99,7 +99,7 @@ QString Msime_ja::toKanji(const QString &text, ulong flags) const
     ::winime_apply(d_->ime,
          flags & Autocorrect ? WINIME_REQ_RECONV : WINIME_REQ_CONV,
          MSIME_MODE_FLAGS,
-         detail::ime_applier(&ret),
+         ime_applier(&ret),
          text.toStdWString().c_str(),
          text.size());
   return ret;
