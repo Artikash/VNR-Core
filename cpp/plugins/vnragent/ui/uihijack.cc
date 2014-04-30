@@ -64,7 +64,7 @@ void Ui::overrideModules()
   }
 
   WCHAR path[MAX_PATH];
-  WinIter::iterProcessModules([&](HMODULE hModule) {
+  WinIter::iterProcessModules([=, &path](HMODULE hModule) {
     if (::GetModuleFileNameW(hModule, path, MAX_PATH) &&
         !::wcsnicmp(path, exePath, exeName - exePath))
       overrideModuleFunctions(hModule);

@@ -20,9 +20,9 @@ WINITER_BEGIN_NAMESPACE
  *  Top-down iterate the windows belong to the thread and their child windows.
  *  If threadId is 0, process current thread.
  */
-void iterThreadChildWindows(DWORD threadId, boost::function<void (HWND)> closure);
+void iterThreadChildWindows(DWORD threadId, const boost::function<void (HWND)> &closure);
 
-inline void iterThreadChildWindows(boost::function<void (HWND)> closure)
+inline void iterThreadChildWindows(const boost::function<void (HWND)> &closure)
 { iterThreadChildWindows(::GetCurrentThreadId(), closure); }
 
 WINITER_END_NAMESPACE

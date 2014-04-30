@@ -6,7 +6,7 @@
 
 WINITER_BEGIN_NAMESPACE
 
-void iterProcessThreadIds(DWORD processId, boost::function<void (DWORD)> closure)
+void iterProcessThreadIds(DWORD processId, const boost::function<void (DWORD)> &closure)
 {
   HANDLE h = ::CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, processId);
   if (h == INVALID_HANDLE_VALUE)

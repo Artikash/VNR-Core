@@ -14,7 +14,7 @@ static BOOL CALLBACK iterThreadChildWindowsProc(HWND hWnd, LPARAM lParam)
   return TRUE;
 }
 
-void iterThreadChildWindows(DWORD threadId, boost::function<void (HWND)> closure)
+void iterThreadChildWindows(DWORD threadId, const boost::function<void (HWND)> &closure)
 {
   if (!threadId)
     threadId = ::GetCurrentThreadId();

@@ -12,9 +12,9 @@ WINITER_BEGIN_NAMESPACE
  *  Traverse the modules.
  *  If hProcess is null, process current process.
  */
-void iterProcessModules(HANDLE hProcess, boost::function<void (HMODULE)> closure);
+void iterProcessModules(HANDLE hProcess, const boost::function<void (HMODULE)> &closure);
 
-inline void iterProcessModules(boost::function<void (HMODULE)> closure)
+inline void iterProcessModules(const boost::function<void (HMODULE)> &closure)
 { iterProcessModules(::GetCurrentProcess(), closure); }
 
 WINITER_END_NAMESPACE

@@ -12,29 +12,29 @@ SK_BEGIN_NAMESPACE
 class SkAutoRun
 {
 public:
-  typedef boost::function<void ()> function_t;
-  SkAutoRun(const function_t &start, const function_t &exit)
+  typedef boost::function<void ()> function_type;
+  SkAutoRun(const function_type &start, const function_type &exit)
     : exit_(exit) { start(); }
   ~SkAutoRun() { exit_(); }
 private:
-  function_t exit_;
+  function_type exit_;
 };
 
 class SkAutoRunAtStartup
 {
 public:
-  typedef SkAutoRun::function_t function_t;
-  explicit SkAutoRunAtStartup(const function_t &start) { start(); }
+  typedef SkAutoRun::function_type function_type;
+  explicit SkAutoRunAtStartup(const function_type &start) { start(); }
 };
 
 class SkAutoRunAtExit
 {
 public:
-  typedef SkAutoRun::function_t function_t;
-  explicit SkAutoRunAtExit(const function_t &exit) : exit_(exit) {}
+  typedef SkAutoRun::function_type function_type;
+  explicit SkAutoRunAtExit(const function_type &exit) : exit_(exit) {}
   ~SkAutoRunAtExit() { exit_(); }
 private:
-  function_t exit_;
+  function_type exit_;
 };
 
 SK_END_NAMESPACE
