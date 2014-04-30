@@ -27,7 +27,7 @@ public:
 EngineDriver::EngineDriver(QObject *parent)
   : Base(parent), d_(new D(this))
 {
-  connect(d_->manager, SIGNAL(textReceived(QString)), SIGNAL(textReceived(QString)));
+  connect(d_->manager, SIGNAL(textReceived(QString,qint64,int)), SIGNAL(textReceived(QString,qint64,int)));
 
   if (auto p = AbstractEngine::instance())
     //p->setParent(this);
@@ -51,10 +51,13 @@ EngineDriver::~EngineDriver()
   delete d_;
 }
 
-void EngineDriver::updateTranslation(const QString &json) { d_->manager->updateTranslation(json); }
-void EngineDriver::clearTranslation() { d_->manager->clearTranslation(); }
-
 bool EngineDriver::isEnabled() const { return d_->enabled; }
 void EngineDriver::setEnable(bool t) { d_->enabled = t; }
+
+void EngineDriver::clearTranslation()  { d_->manager->clearTranslation(); }
+
+void EngineDriver::updateTranslation(const QString &text, qint64 hash, int role)
+{ d_->manager->updateTranslation(text, hash, role); }
+
 
 // EOF

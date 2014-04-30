@@ -11,6 +11,6 @@
 
 #define VNRAGENT_DEBUG_LOG      "vnragent.log"
 
-#define VNRAGENT_MESSAGE_SEP    "||" // seperator for rpc message
+//#define VNRAGENT_MESSAGE_SEP    "||" // seperator for rpc message
 
 // EOF

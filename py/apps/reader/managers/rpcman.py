@@ -111,6 +111,17 @@ class _RpcServer(object):
 
   # Receive
 
+  @staticmethod
+  def _unmarshalNumber(s): # str -> int, use hex
+    try: return int(s)
+    except ValueError:
+      dwarn("failed to marshal number %s" % s)
+      return 0
+
+  @staticmethod
+  def _marshalNumber(i): # int -> str, use hex
+    return hex(i)
+
   def _onDataReceived(self, data, socket):
     args = socketpack.unpackstrlist(data)
     if not args:
@@ -141,9 +152,7 @@ class _RpcServer(object):
 
     elif cmd == 'agent.ping':
       if params:
-        pid = 0
-        try: pid = int(params[0], 16)
-        except ValueError: dwarn("failed to decode agent process ID:", params)
+        pid = self._unmarshalNumber(params[0])
         if pid:
           growl.msg(my.tr("Window text translator is loaded"))
           self.q.connected.emit()
@@ -180,9 +189,15 @@ class _RpcServer(object):
     @param  hash  qint64
     @param  role  int
     """
-    self.q.engineTextReceived.emit(text, hash, roll)
-    text = u"なにこれ"
-    self.callAgent('engine.text', text, hash, roll)
+    try:
+      hash = self._unmarshalNumber(hash)
+      role = self._unmarshalNumber(role)
+      self.q.engineTextReceived.emit(text, hash, role)
+      text = u"なにこれ"
+      self.callAgent('engine.text',
+          text, self._marshalNumber(hash), self._marshalNumber(role))
+    except ValueError:
+      dwarn("failed to convert text hash or role to integer")
 
 if __name__ == '__main__':
   a = debug.app()

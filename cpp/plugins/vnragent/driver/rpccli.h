@@ -32,11 +32,11 @@ signals:
   // Engine
   void clearEngineRequested();
   void enableEngineRequested(bool t);
-  void engineTranslationReceived(QString json); // json: {hash:text}
+  void engineTranslationReceived(QString text, qint64 hash, int role); // json: {hash:text}
 
 public slots:
+  void sendEngineText(const QString &text, qint64 hash, int role);
   void requestUiTranslation(const QString &json); // json: {hash:text}
-  void requestEngineTranslation(const QString &data);
 
   void growlMessage(const QString &message);
   void growlWarning(const QString &message);

@@ -24,9 +24,9 @@ public:
 
   // Interface to RPC
 signals:
-  void textReceived(QString data); // int role||long hash||text:unicode
+  void textReceived(QString text, qint64 hash, int role);
 public:
-  void updateTranslation(const QString &data); // int role||long hash||unicode text
+  void updateTranslation(const QString &text, qint64 hash, int role);
   void clearTranslation();
 
   // Interface to engine

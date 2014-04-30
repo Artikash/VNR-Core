@@ -1,7 +1,6 @@
 // enginemanager.cc
 // 4/26/2014 jichi
 
-#include "config.h"
 #include "engine/enginemanager.h"
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
@@ -78,19 +77,10 @@ void EngineManager::clearTranslation()
   d_->trs.clear();
 }
 
-void EngineManager::updateTranslation(const QString &data)
+void EngineManager::updateTranslation(const QString &text, qint64 hash, int role)
 {
-  D_SYNCHRONIZE
-  QStringList l = data.split(VNRAGENT_MESSAGE_SEP);
-  if (l.size() >= 3) {
-    int role = l.first().toInt();
-    qint64 hash = l[1].toLongLong();
-    if (role && hash) {
-      QString text = l.last();
-      qint64 key = Engine::hashTextKey(hash, role);
-      d_->trs[key] = text;
-    }
-  }
+  qint64 key = Engine::hashTextKey(hash, role);
+  d_->trs[key] = text;
   d_->notify();
 }
 
@@ -99,12 +89,7 @@ void EngineManager::updateTranslation(const QString &data)
 
 void EngineManager::addText(const QString &text, qint64 hash, int role)
 {
-  //D_SYNCHRONIZE   // not needed
-  QString data =
-      QString::number(role) + VNRAGENT_MESSAGE_SEP +
-      QString::number(hash) + VNRAGENT_MESSAGE_SEP +
-      text;
-  emit textReceived(data);
+  emit textReceived(text, hash, role);
 }
 
 QString EngineManager::findTranslation(qint64 hash, int role) const

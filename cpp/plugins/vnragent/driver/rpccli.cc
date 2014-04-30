@@ -48,7 +48,7 @@ bool RpcClientPrivate::reconnect()
 void RpcClientPrivate::pingServer()
 {
   auto pid = QCoreApplication::applicationPid();
-  callServer("agent.ping", QString::number(pid, 16));
+  callServer("agent.ping", marshalNumber(pid, 16));
 }
 
 void RpcClientPrivate::callServer(const QStringlist &args)
@@ -96,8 +96,12 @@ void RpcClientPrivate::onCall(const QStringList &args)
   case H_ENG_DISABLE:   q_->emit enableEngineRequested(false); break;
 
   case H_ENG_TEXT:
-    if (args.size() == 2)
-      q_->emit engineTranslationReceived(args.last());
+    if (args.size() == 4) {
+      QString text = args[1];
+      qint64 hash = unmarshalLongLong(args[2]);
+      int role = unmarshalLongLong(args[3]);
+      q_->emit engineTranslationReceived(text, hash, role);
+    }
     break;
 
   default: ; //growl::debug(QString("Unknown command: %s").arg(cmd));
@@ -130,8 +134,8 @@ bool RpcClient::isActive() const
 
 void RpcClient::requestUiTranslation(const QString &json) { d_->sendUiTexts(json); }
 
-void RpcClient::requestEngineTranslation(const QString &json)
-{ d_->sendEngineTexts(json); }
+void RpcClient::sendEngineText(const QString &text, qint64 hash, int role)
+{ d_->sendEngineText(text, hash, role); }
 
 void RpcClient::growlMessage(const QString &t) { d_->growlServer(t, D::GrowlMessage); }
 void RpcClient::growlWarning(const QString &t) { d_->growlServer(t, D::GrowlWarning); }
