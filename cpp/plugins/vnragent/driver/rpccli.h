@@ -15,10 +15,12 @@ class RpcClient : public QObject
   SK_DECLARE_PRIVATE(RpcClientPrivate)
 
 public:
-  static Self *instance(); // only used by growl
+  static Self *instance();
   explicit RpcClient(QObject *parent = nullptr);
   ~RpcClient();
   bool isActive() const;
+
+  bool waitForDataReceived(int interval); // wait until after the server message is received and emit
 
   // - API -
 signals:
@@ -42,9 +44,6 @@ public slots:
   void growlWarning(const QString &message);
   void growlError(const QString &message);
   void growlNotification(const QString &message);
-
-public:
-  bool waitForDataReceived(int interval); // wait until after the server message is received and emit
 };
 
 // EOF

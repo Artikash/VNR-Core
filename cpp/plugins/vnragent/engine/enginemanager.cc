@@ -98,12 +98,15 @@ QString EngineManager::findTranslation(qint64 hash, int role) const
   return d_->trs.value(key);
 }
 
+#include "driver/rpccli.h"
 QString EngineManager::waitForTranslation(qint64 hash, int role) const
 {
+  enum { WaitTime = 3000 }; // wait for at most 3 seconds
   QString ret = findTranslation(hash, role);
   if (ret.isEmpty()) {
-    d_->sleep();
-    ret = findTranslation(hash, role);
+    //d_->sleep();
+    if (RpcClient::instance()->waitForDataReceived(WaitTime))
+      ret = findTranslation(hash, role);
   }
   return ret;
 

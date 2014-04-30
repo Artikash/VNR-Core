@@ -74,8 +74,10 @@ void Loader::initWithInstance(HINSTANCE hInstance)
 
 void Loader::destroy()
 {
-  if (::driver_)
+  if (::driver_) {
     ::driver_->quit();
+    //delete ::driver_; // Driver is never deleted.
+  }
 #ifdef VNRAGENT_ENABLE_APPRUNNER
   if (::appRunner_ && ::appRunner_->isActive())
     ::appRunner_->stop(); // this class is not deleted
