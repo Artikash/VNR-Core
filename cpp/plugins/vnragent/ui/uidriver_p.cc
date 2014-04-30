@@ -58,7 +58,7 @@ void UiDriverPrivate::rehook() { Ui::overrideModules(); }
 
 void UiDriverPrivate::updateThreadWindows(DWORD threadId)
 {
-  WinIter::iterThreadChildWindows(threadId, []() {
+  WinIter::iterThreadChildWindows(threadId, [] {
     ::instance_->updateAbstractWindow();
   });
   //WinIter::iterThreadChildWindows(threadId,
