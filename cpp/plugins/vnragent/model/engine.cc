@@ -61,9 +61,11 @@ QString AbstractEngine::dispatchText(const QByteArray &data, int role, bool bloc
   if (!text.isEmpty()) {
     qint64 hash = Engine::hashByteArray(data);
     auto p = EngineManager::instance();
-    p->addText(text, hash, role);
-    return blocking ? p->waitForTranslation(hash, role)
-                    : p->findTranslation(hash, role);
+    QString ret = p->findTranslation(hash, role);
+    p->addText(text, hash, role, ret.isEmpty());
+    if (blocking && ret.isEmpty())
+      ret = p->waitForTranslation(hash, role);
+    return ret;
   }
   return QString();
 }

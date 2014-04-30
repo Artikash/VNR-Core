@@ -44,6 +44,23 @@ class RpcClient:
 
 # Server
 
+def _unmarshalInteger(s): # str -> int, use hex
+  #try: return int(s, 16) #if s.startswith('0x') else int(s)
+  try: return int(s)
+  except ValueError:
+    dwarn("failed to marshal number %s" % s)
+    return 0
+
+def _marshalInteger(v): # int -> str, use hex
+  return str(v)
+  #return hex(i).replace('0x', '').replace('L', '') # remove prefix '+-0x' and trailing 'L'
+
+def _unmarshalBool(s): # str -> bool
+  return s == '1'
+
+def _marshalBool(v): # int -> str, use hex
+  return '1' if v else '0'
+
 from ctypes import c_longlong
 from functools import partial
 import json
@@ -115,19 +132,6 @@ class _RpcServer(object):
 
   # Receive
 
-  @staticmethod
-  def _unmarshalNumber(s): # str -> int, use hex
-    #try: return int(s, 16) #if s.startswith('0x') else int(s)
-    try: return int(s)
-    except ValueError:
-      dwarn("failed to marshal number %s" % s)
-      return 0
-
-  @staticmethod
-  def _marshalNumber(i): # int -> str, use hex
-    return str(i)
-    #return hex(i).replace('0x', '').replace('L', '') # remove prefix '+-0x' and trailing 'L'
-
   def _onDataReceived(self, data, socket):
     args = socketpack.unpackstrlist(data)
     if not args:
@@ -158,7 +162,7 @@ class _RpcServer(object):
 
     elif cmd == 'agent.ping':
       if params:
-        pid = self._unmarshalNumber(params[0])
+        pid = _unmarshalInteger(params[0])
         if pid:
           growl.msg(my.tr("Window text translator is loaded"))
           self.q.connected.emit()
@@ -166,7 +170,7 @@ class _RpcServer(object):
       if params:
         self._onWindowTexts(params[0])
     elif cmd == 'agent.engine.text':
-      if len(params) == 3:
+      if len(params) == 4:
         self._onEngineText(*params)
       else:
         dwarn("invalid parameter count:", params)
@@ -189,20 +193,23 @@ class _RpcServer(object):
       dwarn(e)
       #dwarn("error: malformed json: %s" % data)
 
-  def _onEngineText(self, text, hash, role):
+  def _onEngineText(self, text, hash, role, trans):
     """
     @param  text  unicode
     @param  hash  qint64
     @param  role  int
+    @param  trans  bool   need translation
     """
     try:
-      hash = self._unmarshalNumber(hash)
-      role = self._unmarshalNumber(role)
+      hash = _unmarshalInteger(hash)
+      role = _unmarshalInteger(role)
+      trans = _unmarshalBool(trans)
       self.q.engineTextReceived.emit(text, hash, role)
-      text = '//' + text
-      print 11111111,text,hash,role
-      self.callAgent('engine.text',
-          text, self._marshalNumber(hash), self._marshalNumber(role))
+      if trans:
+        text = '//' + text
+        print 11111111,text,hash,role, len(text)
+        self.callAgent('engine.text',
+            text, _marshalInteger(hash), _marshalInteger(role))
     except ValueError:
       dwarn("failed to convert text hash or role to integer")
 

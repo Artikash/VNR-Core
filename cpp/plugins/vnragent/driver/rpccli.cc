@@ -52,7 +52,7 @@ bool RpcClientPrivate::reconnect()
 void RpcClientPrivate::pingServer()
 {
   auto pid = QCoreApplication::applicationPid();
-  callServer("agent.ping", marshalNumber(pid));
+  callServer("agent.ping", marshalInteger(pid));
 }
 
 bool RpcClientPrivate::callServer(const QStringList &args)
@@ -143,8 +143,8 @@ bool RpcClient::isActive() const { return d_->client->isActive(); }
 
 void RpcClient::requestUiTranslation(const QString &json) { d_->sendUiTexts(json); }
 
-void RpcClient::sendEngineText(const QString &text, qint64 hash, int role)
-{ d_->sendEngineText(text, hash, role); }
+void RpcClient::sendEngineText(const QString &text, qint64 hash, int role, bool needsTranslation)
+{ d_->sendEngineText(text, hash, role, needsTranslation); }
 
 void RpcClient::growlMessage(const QString &t) { d_->growlServer(t, D::GrowlMessage); }
 void RpcClient::growlWarning(const QString &t) { d_->growlServer(t, D::GrowlWarning); }

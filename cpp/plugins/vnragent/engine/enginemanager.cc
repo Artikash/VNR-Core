@@ -42,6 +42,7 @@ public:
   enum { SleepTimeout = 5000 }; // at most 5 seconds
   void sleep(int interval = SleepTimeout)
   {
+    event.signal(false);
     event.wait(interval);
     event.signal(false);
   }
@@ -85,9 +86,9 @@ void EngineManager::updateTranslation(const QString &text, qint64 hash, int role
 //void EngineManager::abortTranslation()
 //{ d_->unblock(); }
 
-void EngineManager::addText(const QString &text, qint64 hash, int role)
+void EngineManager::addText(const QString &text, qint64 hash, int role, bool needsTranslation)
 {
-  emit textReceived(text, hash, role);
+  emit textReceived(text, hash, role, needsTranslation);
 }
 
 QString EngineManager::findTranslation(qint64 hash, int role) const
@@ -99,17 +100,24 @@ QString EngineManager::findTranslation(qint64 hash, int role) const
 
 QString EngineManager::waitForTranslation(qint64 hash, int role) const
 {
-  D_SYNCHRONIZE
-  qint64 key = Engine::hashTextKey(hash, role);
-  auto it = d_->trs.constFind(key);
-  if (it == d_->trs.constEnd()) { // FIXME: supposed to be while
-  //while (it == d_->trs.constEnd()) {
-    d_->unlock();
+  QString ret = findTranslation(hash, role);
+  if (ret.isEmpty()) {
     d_->sleep();
-    d_->lock();
-    it = d_->trs.constFind(key);
+    ret = findTranslation(hash, role);
   }
-  return it == d_->trs.constEnd() ? QString() : it.value();
+  return ret;
+
+  //D_SYNCHRONIZE
+  //qint64 key = Engine::hashTextKey(hash, role);
+  //auto it = d_->trs.constFind(key);
+  //if (it == d_->trs.constEnd()) { // FIXME: supposed to be while
+  ////while (it == d_->trs.constEnd()) {
+  //  d_->unlock();
+  //  d_->sleep();
+  //  d_->lock();
+  //  it = d_->trs.constFind(key);
+  //}
+  //return it == d_->trs.constEnd() ? QString() : it.value();
 }
 
 // EOF

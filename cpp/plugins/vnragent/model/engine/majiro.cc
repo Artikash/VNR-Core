@@ -61,6 +61,8 @@ public:
     if (!t.isEmpty())
       return olddraw(arg1, arg2, t.toLocal8Bit(), arg4, arg5);
 
+    return olddraw(arg1, arg2, str, arg4, arg5);
+
     // Estimated return result
     enum { FontWidth = 26 };
     return FontWidth * data.size() * 2;

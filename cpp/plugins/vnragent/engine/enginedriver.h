@@ -21,7 +21,7 @@ public:
   ~EngineDriver();
 
 signals:
-  void textReceived(QString text, qint64 hash, int role);
+  void textReceived(QString text, qint64 hash, int role, bool needsTranslation);
 public slots:
   void updateTranslation(const QString &text, qint64 hash, int role);
   void clearTranslation();

@@ -26,7 +26,7 @@ public:
 EngineDriver::EngineDriver(QObject *parent)
   : Base(parent), d_(new D(this))
 {
-  connect(d_->manager, SIGNAL(textReceived(QString,qint64,int)), SIGNAL(textReceived(QString,qint64,int)));
+  connect(d_->manager, SIGNAL(textReceived(QString,qint64,int,bool)), SIGNAL(textReceived(QString,qint64,int,bool)));
 
   if (auto p = AbstractEngine::instance())
     //p->setParent(this);

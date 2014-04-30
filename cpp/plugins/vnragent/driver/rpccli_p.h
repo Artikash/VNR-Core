@@ -38,29 +38,17 @@ private:
   void callServer(const QString &arg0, const QString &arg1)
   { callServer(QStringList() << arg0 << arg1); }
 
-  void callServer(const QString &arg0, const QString &arg1, const QString &arg2)
-  { callServer(QStringList() << arg0 << arg1 << arg2); }
-
-  void callServer(const QString &arg0, const QString &arg1, const QString &arg2, const QString &arg3)
-  { callServer(QStringList() << arg0 << arg1 << arg2 << arg3); }
-
   // Server calls, must be consistent with rpcman.py
 
+  static bool unmarshalBool(const QString &s) { return s == "1"; }
+  static int unmarshalInt(const QString &s) { return s.toInt(); }
+  static qint64 unmarshalLongLong(const QString &s) { return s.toLongLong(); }
+
+  static QString marshalBool(bool t) { return t ? '1' : '0'; }
+
   template<typename Number>
-  static QString marshalNumber(Number value)
+  static QString marshalInteger(Number value)
   { return QString::number(value); }
-  //{ return QString::number(value, 16); }
-  //{ return "0x" + QString::number(value, 16); }
-
-  static int unmarshalInt(const QString &s)
-  { return s.toInt(); }
-  //{ return s.toInt(nullptr, 16); }
-  //{ return s.startsWith("0x") ?  s.mid(2).toInt(nullptr, 16) : s.toInt(); }
-
-  static qint64 unmarshalLongLong(const QString &s)
-  { return s.toLongLong(); }
-  //{ return s.toLongLong(nullptr, 16); }
-  //{ return s.startsWith("0x") ?  s.mid(2).toLongLong(nullptr, 16) : s.toLongLong(); }
 
 public:
   void pingServer();
@@ -83,8 +71,15 @@ public:
 
   void sendUiTexts(const QString &json) { callServer("agent.ui.text", json); }
 
-  void sendEngineText(const QString &text, qint64 hash, int role)
-  { callServer("agent.engine.text", text, marshalNumber(hash), marshalNumber(role)); }
+  void sendEngineText(const QString &text, qint64 hash, int role, bool needsTranslation)
+  {
+    callServer(QStringList()
+        << "agent.engine.text"
+        << text
+        << marshalInteger(hash)
+        << marshalInteger(role)
+        << marshalBool(needsTranslation));
+  }
 };
 
 // EOF

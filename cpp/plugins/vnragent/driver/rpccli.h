@@ -35,7 +35,7 @@ signals:
   void engineTranslationReceived(QString text, qint64 hash, int role); // json: {hash:text}
 
 public slots:
-  void sendEngineText(const QString &text, qint64 hash, int role);
+  void sendEngineText(const QString &text, qint64 hash, int role, bool needsTranslation);
   void requestUiTranslation(const QString &json); // json: {hash:text}
 
   void growlMessage(const QString &message);
