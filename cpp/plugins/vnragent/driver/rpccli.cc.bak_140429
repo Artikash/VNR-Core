@@ -1,72 +1,51 @@
 // rpccli.cc
 // 2/1/2013 jichi
-#include "config.h"
+
 #include "driver/rpccli.h"
 #include "driver/rpccli_p.h"
-#include "qtsocketsvc/socketclient.h"
-#include "qtsocketsvc/socketpack.h"
 #include <QtCore/QHash>
-#include <QtCore/QCoreApplication>
 
 /** Private class */
 
 RpcClientPrivate::RpcClientPrivate(Q *q)
-  : Base(q), q_(q), client(new SocketClient(this))
+  : Base(q), q_(q), r(new RpcPropagator(this))
 {
   reconnectTimer = new QTimer(q);
   reconnectTimer->setSingleShot(false); // until reconnect successfully
   reconnectTimer->setInterval(ReconnectInterval);
   connect(reconnectTimer, SIGNAL(timeout()), SLOT(reconnect()));
 
-  client->setPort(VNRAGENT_METACALL_PORT);
-  client->setAddress(VNRAGENT_METACALL_HOST);
+  connect(r, SIGNAL(agentMessageReceived(QString,QString)), SLOT(onMessage(QString,QString)));
+  //connect(r, SIGNAL(updateClientData(QString)), q, SIGNAL(dataReceived(QString)));
+  //connect(r, SIGNAL(callClient(QString)), SLOT(onCall(QString)));
 
-  connect(client, SIGNAL(dataReceived(QByteArray)), SLOT(onDataReceived(QByteArray)));
+  MetaCallSocketObserver *s = r->socketObserver();
+  //connect(s, SIGNAL(disconnected()), SLOT(reconnect()), Qt::QueuedConnection);
+  connect(s, SIGNAL(error()), SLOT(reconnect()), Qt::QueuedConnection);
 
-  connect(client, SIGNAL(error()), SLOT(reconnect()), Qt::QueuedConnection);
+  connect(s, SIGNAL(disconnected()), reconnectTimer, SLOT(start()));
+  connect(s, SIGNAL(error()), reconnectTimer, SLOT(start()));
 
-  connect(client, SIGNAL(disconnected()), reconnectTimer, SLOT(start()));
-  connect(client, SIGNAL(error()), reconnectTimer, SLOT(start()));
-
-  connect(client, SIGNAL(disconnected()), q, SIGNAL(aborted()));
-  connect(client, SIGNAL(error()), q, SIGNAL(aborted()));
+  connect(s, SIGNAL(disconnected()), q, SIGNAL(aborted()));
+  connect(s, SIGNAL(error()), q, SIGNAL(aborted()));
 }
 
 bool RpcClientPrivate::reconnect()
 {
   if (reconnectTimer->isActive())
     reconnectTimer->stop();
-  if (client->isActive())
+  if (r->isActive())
     return true;
-  client->stop();
-  client->start();
-  client->waitForReady();
-  pingServer();
-  return true;
+  r->stop();
+  if (start()) {
+    r->waitForReady();
+    pingServer();
+    return true;
+  } else
+    return false;
 }
 
-void RpcClientPrivate::pingServer()
-{
-  auto pid = QCoreApplication::applicationPid();
-  callServer("agent.ping", QString::number(pid, 16));
-}
-
-void RpcClientPrivate::callServer(const QStringlist &args)
-{
-  if (client->isActive()) {
-    QByteArray data = SocketService::packStringList(args);
-    client->sendData(data);
-  }
-}
-
-void RpcClientPrivate::onDataReceived(const QByteArray &data)
-{
-  QStringList l = SocketService::unpackStringList(data);
-  if (!l.isEmpty())
-    onCall(l);
-}
-
-void RpcClientPrivate::onCall(const QStringList &args)
+void RpcClientPrivate::onMessage(const QString &cmd, const QString &param)
 {
   enum { // pre-computed qHash(QString) values
     H_PING          = 487495,   // "ping"
@@ -80,10 +59,7 @@ void RpcClientPrivate::onCall(const QStringList &args)
     H_ENG_TEXT      = 81604852      // "engine.text"
   };
 
-  if (args.isEmpty())
-    return;
-
-  switch (qHash(args.first())) {
+  switch (qHash(cmd)) {
   case H_PING: ;
 
   case H_UI_CLEAR:      q_->emit clearUiRequested(); break;
@@ -94,11 +70,7 @@ void RpcClientPrivate::onCall(const QStringList &args)
   case H_ENG_CLEAR:     q_->emit clearEngineRequested(); break;
   case H_ENG_ENABLE:    q_->emit enableEngineRequested(true); break;
   case H_ENG_DISABLE:   q_->emit enableEngineRequested(false); break;
-
-  case H_ENG_TEXT:
-    if (args.size() == 2)
-      q_->emit engineTranslationReceived(args.last());
-    break;
+  case H_ENG_TEXT:      q_->emit engineTranslationReceived(param); break;
 
   default: ; //growl::debug(QString("Unknown command: %s").arg(cmd));
   }

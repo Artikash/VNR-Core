@@ -3,12 +3,30 @@
 // rpccli_p.h
 // 2/1/2013 jichi
 
-#include "sakurakit/skglobal.h"
+#include "config.h"
+#include "services/reader/metacall.h"
+#include "qtmetacall/metacallobserver.h"
 #include <QtCore/QObject>
-#include <QtCore/QStringList>
+#include <QtCore/QTimer>
 
-QT_FORWARD_DECLARE_CLASS(QTimer)
-class SocketClient;
+// The only purpose of this class is to make signals in the propagator public
+// No signals are allowed in this class
+class RpcPropagator : public ReaderMetaCallPropagator
+{
+  Q_OBJECT
+  Q_DISABLE_COPY(RpcPropagator)
+  SK_EXTEND_CLASS(RpcPropagator, ReaderMetaCallPropagator)
+
+  friend class RpcClient;
+  friend class RpcClientPrivate;
+public:
+  explicit RpcPropagator(QObject *parent = nullptr)
+    : Base(parent)
+  {
+    setSocketObserver(new MetaCallSocketObserver(this));
+  }
+};
+
 class RpcClient;
 class RpcClientPrivate : public QObject
 {
@@ -19,26 +37,26 @@ class RpcClientPrivate : public QObject
 
   enum { ReconnectInterval = 5000 }; // reconnect on failed
 public:
+  enum { Port = VNRAGENT_METACALL_PORT };
+
   explicit RpcClientPrivate(Q *q);
 
-  SocketClient *client;
+  RpcPropagator *r;
   QTimer *reconnectTimer;
+
+  bool start() { return r->startClient(VNRAGENT_METACALL_HOST, Port); }
 
 private slots:
   bool reconnect();
-  void onDataReceived(const QByteArray &data);
+  void onMessage(const QString &cmd, const QString &param);
 
 private:
-  void onCall(const QStringList &args); // called from server
-
-  void callServer(const QStringlist &args); // call server
-
-  void callServer(const QString &arg0, const QString &arg1)
-  { callServer(QStringList() << arg0 << arg1); }
+  void callServer(const QString &cmd, const QString &param) { r->emit serverMessageRequested(cmd, param); }
+  void callServer(const QString &cmd) { r->emit serverMessageRequested(cmd, QString()); }
 
   // Server calls, must be consistent with rpcman.py
 public:
-  void pingServer();
+  void pingServer() { callServer("agent.ping"); }
 
   enum GrowlType {
     GrowlMessage = 0,

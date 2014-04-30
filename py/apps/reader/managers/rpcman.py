@@ -20,6 +20,8 @@ class _RpcClient:
     self.client.setPort(config.QT_METACALL_PORT)
 
   def invoke(self, *args): # [str] -> bool
+    if not self.client.isActive():
+      return False
     data = socketpack.packstrlist(args)
     return self.client.sendData(data)
 
@@ -97,24 +99,26 @@ class _RpcServer(object):
   def __init__(self, q):
     self.server = socketsrv.SocketServer(q)
     self.server.setPort(config.QT_METACALL_PORT)
-    self.server.dataReceived.connect(self._onData)
+    self.server.dataReceived.connect(self._onDataReceived)
 
   # Send
 
   def callAgent(self, *args):
     data = socketpack.packstrlist(args)
-    self.server.broadcastData(data) # TODO: identify the agent socket
+    # TODO: identify the agent socket
+    # Don't forget to check if it is active before senddata
+    self.server.broadcastData(data)
 
   # Receive
 
-  def _onData(self, data, socket):
+  def _onDataReceived(self, data, socket):
     args = socketpack.unpackstrlist(data)
     if not args:
       dwarn("unpack data failed")
       return
-    self._onMessage(*args)
+    self._onCall(*args)
 
-  def _onMessage(self, cmd, *params): # on serverMessageReceived
+  def _onCall(self, cmd, *params): # on serverMessageReceived
     """
     @param  cmd  str
     @param  params  [unicode]

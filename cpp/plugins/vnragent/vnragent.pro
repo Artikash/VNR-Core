@@ -24,7 +24,7 @@ include($$LIBDIR/winmutex/winmutex.pri)
 #include($$LIBDIR/vnragent/vnragent.pri)
 
 # Services
-HEADERS += $$SERVICEDIR/reader/metacall.h
+#HEADERS += $$SERVICEDIR/reader/metacall.h
 
 ## Libraries
 
