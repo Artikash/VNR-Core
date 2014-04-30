@@ -44,7 +44,7 @@ public slots:
   void growlNotification(const QString &message);
 
 public:
-  void quit(); // called before qApp->quit()
+  bool waitForDataReceived(int interval); // wait until after the server message is received and emit
 };
 
 // EOF

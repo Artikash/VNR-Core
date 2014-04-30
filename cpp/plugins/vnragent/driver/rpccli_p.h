@@ -36,7 +36,6 @@ public:
   RpcSocketClient *client;
   QTimer *reconnectTimer;
 
-
 private slots:
   bool reconnect();
   void onDataReceived(const QByteArray &data);

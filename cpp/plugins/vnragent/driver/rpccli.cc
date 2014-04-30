@@ -156,4 +156,7 @@ void RpcClient::growlWarning(const QString &t) { d_->growlServer(t, D::GrowlWarn
 void RpcClient::growlError(const QString &t) { d_->growlServer(t, D::GrowlError); }
 void RpcClient::growlNotification(const QString &t) { d_->growlServer(t, D::GrowlNotification); }
 
+bool RpcClient::waitForDataReceived(int interval)
+{ return d_->client->isConnected() && d_->client->waitForDataReceived(interval); }
+
 // EOF
