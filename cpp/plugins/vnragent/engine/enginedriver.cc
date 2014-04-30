@@ -5,7 +5,6 @@
 #include "engine/enginedriver.h"
 #include "engine/enginemanager.h"
 #include "model/engine.h"
-
 /** Private class */
 
 class EngineDriverPrivate
@@ -35,10 +34,7 @@ EngineDriver::EngineDriver(QObject *parent)
       //d_->engine = p;
       //connect(d_->engine, SIGNAL(textReceived(QString,qint64,int,void*)), d_->manager, SLOT(addText(QString,qint64,int,void*)));
       // FIXME: Only one instance can be send at a time?!
-      //growl::notify(tr("Recognize game engine: %1").arg(p->name()));
-      growl::notify("11111");
-      growl::notify("22222");
-      growl::notify("33333");
+      growl::notify(tr("Recognize game engine: %1").arg(p->name()));
     }
 
 

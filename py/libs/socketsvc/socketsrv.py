@@ -31,12 +31,21 @@ class SocketServer(QObject):
 
   dataReceived = Signal(bytearray, QObject) # data, client socket
 
-  def sendData(self, data, socket):  # str, QTcpSocket -> bool
-    return self.__d.writeSocket(data, socket)
+  def sendData(self, data, socket, waitTime=0):  # str, QTcpSocket, int -> bool
+    ok = self.__d.writeSocket(data, socket)
+    if ok and waitTime:
+      ok = socket.waitForBytesWritten(waitTime)
+    return ok
 
-  def broadcastData(self, data):
+  def waitForBytesWritten(self, waitTime=30000): # -> bool
+    ok = True
     for s in self.__d.sockets:
-      self.sendData(data, s)
+      ok = s.waitForBytesWritten(waitTime) and ok
+    return ok
+
+  def broadcastData(self, data, *args, **kwargs):  # str, int -> bool
+    for s in self.__d.sockets:
+      self.sendData(data, s, *args, **kwargs)
 
   def connectionCount(self):
     return len(self.__d.sockets)
@@ -117,9 +126,12 @@ class _SocketServer(object):
     except ValueError: pass
 
   def readSocket(self, socket):
-    data = socketio.readsocket(socket)
-    if data != None:
-      self.q.dataReceived.emit(data, socket)
+    while socket.bytesAvailable():
+      data = socketio.readsocket(socket)
+      if data == None:
+        break
+      else:
+        self.q.dataReceived.emit(data, socket)
 
   def writeSocket(self, data, socket):
     if isinstance(data, unicode):
@@ -136,8 +148,11 @@ if __name__ == '__main__':
 
   def f(data):
     print data, type(data), len(data)
-    s.broadcastData(u"なにこれ")
-    app.quit()
+    #t = '0' * 100
+    #t = u'あ' * 1000
+    #s.broadcastData(t)
+    #s.waitForBytesWritten()
+    #app.quit()
   s.dataReceived.connect(f)
 
   sys.exit(app.exec_())

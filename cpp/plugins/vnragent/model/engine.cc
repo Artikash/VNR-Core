@@ -17,18 +17,17 @@ public:
              *encoding;
 
   AbstractEnginePrivate(const char *name, const char *encoding)
-    : codec(nullptr),
-      name(name), encoding(encoding)
+    : codec(nullptr), name(name), encoding(encoding)
   {
     if (encoding)
       codec = QTextCodec::codecForName(encoding);
   }
 
   QByteArray encode(const QString &text) const
-  { return encoder ? codec->fromUnicode(text) : QByteArray(); }
+  { return codec ? codec->fromUnicode(text) : QByteArray(); }
 
   QString decode(const QByteArray &data) const
-  { return decoder ? codec->toUnicode(data) : QString(); }
+  { return codec ? codec->toUnicode(data) : QString(); }
 };
 
 /** Public class */

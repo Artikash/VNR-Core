@@ -18,11 +18,13 @@ class RpcClientPrivate : public QObject
   SK_EXTEND_CLASS(RpcClientPrivate, QObject)
 
   enum { ReconnectInterval = 5000 }; // reconnect on failed
+  enum { WaitInterval = 5000 }; // wait for data sent
 public:
   explicit RpcClientPrivate(Q *q);
 
   SocketClient *client;
   QTimer *reconnectTimer;
+
 
 private slots:
   bool reconnect();
@@ -31,7 +33,7 @@ private slots:
 private:
   void onCall(const QStringList &args); // called from server
 
-  void callServer(const QStringlist &args); // call server
+  bool callServer(const QStringList &args); // call server
 
   void callServer(const QString &arg0, const QString &arg1)
   { callServer(QStringList() << arg0 << arg1); }
@@ -46,13 +48,19 @@ private:
 
   template<typename Number>
   static QString marshalNumber(Number value)
-  { return "0x" + QString::number(value, 16); }
+  { return QString::number(value); }
+  //{ return QString::number(value, 16); }
+  //{ return "0x" + QString::number(value, 16); }
 
   static int unmarshalInt(const QString &s)
-  { return s.startsWith("0x") ?  s.right(2).toInt(nullptr, 16) : s.toInt(); }
+  { return s.toInt(); }
+  //{ return s.toInt(nullptr, 16); }
+  //{ return s.startsWith("0x") ?  s.mid(2).toInt(nullptr, 16) : s.toInt(); }
 
   static qint64 unmarshalLongLong(const QString &s)
-  { return s.startsWith("0x") ?  s.right(2).toLongLong(nullptr, 16) : s.toLongLong(); }
+  { return s.toLongLong(); }
+  //{ return s.toLongLong(nullptr, 16); }
+  //{ return s.startsWith("0x") ?  s.mid(2).toLongLong(nullptr, 16) : s.toLongLong(); }
 
 public:
   void pingServer();

@@ -56,9 +56,10 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
       WinTimer::setGlobalWindow(winId);
 
 #ifdef VNRAGENT_ENABLE_THREAD
-    if (HANDLE h = ::CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)Loader::initWithInstance, hInstance, 0, nullptr))
+    if (HANDLE h = ::CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)Loader::initWithInstance, hInstance, 0, nullptr)) {
+      //::SetThreadPriority(h, THREAD_PRIORITY_HIGHEST|THREAD_PRIORITY_TIME_CRITICAL);
       ::CloseHandle(h);
-    else
+    } else
       //growl::error("failed to create thread");
       return FALSE;
 #else

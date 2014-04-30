@@ -26,8 +26,11 @@ class SocketClient(QObject):
 
   dataReceived = Signal(bytearray) # data
 
-  def sendData(self, data):  # str -> bool
-    return self.__d.writeSocket(data)
+  def sendData(self, data, waitTime=0):  # str -> bool
+    ok = self.__d.writeSocket(data)
+    if ok and waitTime:
+      ok = self.__d.socket.waitForBytesWritten(waitTime)
+    return ok
 
   def address(self): return self.__d.address # -> str
   def setAddress(self, v): self.__d.address = v
@@ -43,19 +46,29 @@ class SocketClient(QObject):
     s = self.__d.socket
     return bool(s) and s.state() in (s.ConnectedState, s.UnconnectedState)
 
-  def start(self): return self.__d.start() # -> bool, always return true
+  def start(self): self.__d.start()
   def stop(self): self.__d.stop()
 
-  def waitForReady(self):
-    s = self.__d.socket
-    if s and s.state() not in (s.ConnectedState, s.UnconnectedState):
-      from PySide.QtCore import QEventLoop
-      loop = QEventLoop()
-      s.stateChanged.connect(loop.quit)
-      s.error.connect(loop.quit)
-      loop.exec_();
-      while s.state() in (s.HostLookupState, s.ConnectingState):
-        loop.exec_()
+  #def waitForReady(self):
+  #  s = self.__d.socket
+  #  if s and s.state() not in (s.ConnectedState, s.UnconnectedState):
+  #    from PySide.QtCore import QEventLoop
+  #    loop = QEventLoop()
+  #    s.stateChanged.connect(loop.quit)
+  #    s.error.connect(loop.quit)
+  #    loop.exec_();
+  #    while s.state() in (s.HostLookupState, s.ConnectingState):
+  #      loop.exec_()
+
+  # QAbstractSocket default wait time is 30 seconds
+  def waitForConnected(self, interval=30000): # -> bool
+    return bool(self.__d.socket) and self.__d.socket.waitForConnected(interval)
+  def waitForDisconnected(self, interval=30000): # -> bool
+    return bool(self.__d.socket) and self.__d.socket.waitForDisconnected(interval)
+  def waitForBytesWritten(self, interval=30000): # -> bool
+    return bool(self.__d.socket) and self.__d.socket.waitForBytesWritten(interval)
+  def waitForReadyRead(self, interval=30000): # -> bool
+    return bool(self.__d.socket) and self.__d.socket.waitForReadyRead(interval)
 
   def dumpSocketInfo(self): # print the status of the socket. for debug only
     self.__d.dumpSocketInfo()
@@ -85,7 +98,6 @@ class _SocketClient(object):
       self.socket = self._createSocket()
     self.socket.connectToHost(QHostAddress(self.address), self.port)
     dprint("pass")
-    return True
 
   def stop(self):
     if self.socket and self.socket.isOpen():
@@ -93,10 +105,14 @@ class _SocketClient(object):
       dprint("pass")
 
   def readSocket(self):
-    if self.socket:
-      data = socketio.readsocket(self.socket)
-      if data != None:
-        self.q.dataReceived.emit(data)
+    s = self.socket
+    if s:
+      while s.bytesAvailable():
+        data = socketio.readsocket(s)
+        if data == None:
+          break
+        else:
+          self.q.dataReceived.emit(data)
 
   def writeSocket(self, data):
     if not self.socket:
@@ -115,8 +131,6 @@ class _SocketClient(object):
       dprint("error = %s" % self.socket.errorString())
 
 if __name__ == '__main__':
-  t = "hello"
-  t = u"こんにちは"
   import sys
   from PySide.QtCore import QCoreApplication
   app =  QCoreApplication(sys.argv)
@@ -124,13 +138,42 @@ if __name__ == '__main__':
   c.setPort(6002)
   def f(data):
     print data, type(data), len(data)
+    app.quit()
   c.dataReceived.connect(f)
   c.start()
-  c.waitForReady()
-  c.sendData(t)
+  #c.waitForReady()
+  c.waitForConnected()
+
+  #t = "hello"
+  #t = u"こんにちは"
+
+  t = '0' * 100
+  #print t
+  c.sendData(t, 30000)
+  t = '1' * 100
+  #print t
+  c.sendData(t, 30000)
+  t = '2' * 100
+  #print t
+  c.sendData(t, 30000)
+  t = '3' * 100
+  #print t
+  c.sendData(t, 30000)
+  t = '4' * 100
+  #print t
+  c.sendData(t, 30000)
+  t = '5' * 100
+  #print t
+  c.sendData(t, 30000)
+  print c.isActive()
+
+  #t = '1' * 100
+  #ok = c.sendData(t)
+  #print ok
+
   c.disconnected.connect(app.quit)
 
-  c.dumpSocketInfo()
+  #c.dumpSocketInfo()
 
   sys.exit(app.exec_())
 

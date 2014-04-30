@@ -10,6 +10,8 @@ if __name__ == '__main__':
   import debug
   debug.initenv()
 
+RPC_WAIT_TIME = 3000 # wait time after sending data
+
 from socketsvc import socketcli, socketpack, socketsrv
 
 # Client
@@ -23,16 +25,18 @@ class _RpcClient:
     if not self.client.isActive():
       return False
     data = socketpack.packstrlist(args)
-    return self.client.sendData(data)
+    return self.client.sendData(data, waitTime=0) # no wait time
 
 class RpcClient:
   def __init__(self, parent=None):
     self.__d = _RpcClient(parent)
 
   def isActive(self): return self.__d.client.isActive() # -> bool
-  def start(self): return self.__d.client.start() # -> bool
+  def start(self): self.__d.client.start()
   def stop(self): self.__d.client.stop()
-  def waitForReady(self): self.__d.client.waitForReady()
+
+  def waitForConnected(self, interval=RPC_WAIT_TIME): # -> bool
+    return self.__d.client.waitForConnected(interval)
 
   # Actions
   # -> bool
@@ -107,12 +111,13 @@ class _RpcServer(object):
     data = socketpack.packstrlist(args)
     # TODO: identify the agent socket
     # Don't forget to check if it is active before senddata
-    self.server.broadcastData(data)
+    self.server.broadcastData(data, waitTime=RPC_WAIT_TIME)
 
   # Receive
 
   @staticmethod
   def _unmarshalNumber(s): # str -> int, use hex
+    #try: return int(s, 16) #if s.startswith('0x') else int(s)
     try: return int(s)
     except ValueError:
       dwarn("failed to marshal number %s" % s)
@@ -120,7 +125,8 @@ class _RpcServer(object):
 
   @staticmethod
   def _marshalNumber(i): # int -> str, use hex
-    return hex(i)
+    return str(i)
+    #return hex(i).replace('0x', '').replace('L', '') # remove prefix '+-0x' and trailing 'L'
 
   def _onDataReceived(self, data, socket):
     args = socketpack.unpackstrlist(data)
@@ -193,7 +199,8 @@ class _RpcServer(object):
       hash = self._unmarshalNumber(hash)
       role = self._unmarshalNumber(role)
       self.q.engineTextReceived.emit(text, hash, role)
-      text = u"なにこれ"
+      text = '//' + text
+      print 11111111,text,hash,role
       self.callAgent('engine.text',
           text, self._marshalNumber(hash), self._marshalNumber(role))
     except ValueError:
@@ -204,8 +211,8 @@ if __name__ == '__main__':
 
   cli = RpcClient()
   cli.setPort(6003)
-  if r.start():
-    r.waitForReady()
+  r.start()
+  if r.waitForConnected():
     r.activate()
     a.processEvents()
 

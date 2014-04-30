@@ -75,10 +75,13 @@ bool MajiroEngine::match()
 
 bool MajiroEngine::inject()
 {
+  DWORD dwTextOutA = Env::getModuleFunction("gdi32.dll", "TextOutA");
+  if (!dwTextOutA)
+    return false;
   DWORD startAddress, stopAddress;
   if (!Env::getMemoryRange(nullptr, &startAddress, &stopAddress))
     return false;
-  DWORD addr = MemDbg::findCallerAddress((DWORD)TextOutA, 0xec81, startAddress, stopAddress);
+  DWORD addr = MemDbg::findCallerAddress(dwTextOutA, 0xec81, startAddress, stopAddress);
   // Note: ITH will mess up this value
   addr = 0x41af90;
   if (!addr)

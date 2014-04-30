@@ -17,6 +17,9 @@ QString getNormalizedProcessName();
 
 bool getMemoryRange(const wchar_t *moduleName, unsigned long *startAddress, unsigned long *stopAddress);
 
+// This function might be cached and hence not thread-safe
+unsigned long getModuleFunction(const char *moduleName, const char *funcName);
+
 } // namespace Env
 
 // EOF

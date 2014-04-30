@@ -66,3 +66,15 @@ bool Env::getMemoryRange(const wchar_t *moduleName, unsigned long *startAddress,
     *stopAddress = stop;
   return true;
 }
+
+unsigned long Env::getModuleFunction(const char *moduleName, const char *funcName)
+{
+  if (HMODULE h = ::GetModuleHandleA(moduleName)) {
+    DWORD ret = (DWORD)::GetProcAddress(h, funcName);
+    ::CloseHandle(h);
+    return ret;
+  }
+  return 0;
+}
+
+// EOF

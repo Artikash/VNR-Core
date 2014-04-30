@@ -52,23 +52,26 @@ def packuint(i, size=0): # int -> str
   @param* size  int  total size after padding
   @return  str
   """
-  r = bytes(chr(i))
+  r = ''
+  while i:
+    r = chr(i & 0xff) + r
+    i = i >> 8
   while len(r) < size:
     r = chr(0) + r
   return r
 
-def packuint32(int32): # int -> str
+def packuint32(i): # int -> str
   """
-  @param  number  int32
+  @param  number  i
   @return  str  4 bytes
   """
-  return packuint(int32, INT32_SIZE)
+  return chr((i >> 24) & 0xff) + chr((i >> 16) & 0xff) + chr((i >> 8) & 0xff) + chr(i & 0xff)
 
 # String list
 
 def _unicode(data, encoding): # str|QByteArray, str -> unicode
   if isinstance(data, str):
-    return s.decode(encoding, errors='ignore')
+    return data.decode(encoding, errors='ignore')
   else:
     return qunicode(data, encoding)
 
@@ -135,5 +138,8 @@ if __name__ == '__main__':
   print len(l), l
   for it in l:
     print it
+
+  i = 128
+  print packuint(i, 4) == packuint32(i)
 
 # EOF

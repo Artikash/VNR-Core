@@ -31,7 +31,11 @@ int main(int argc, char *argv[])
   bool ok = cli.sendData(text);
   qDebug() << ok;
 
-  cli.dumpSocketInfo();
+  cli.waitForBytesWritten();
+  ok = cli.sendData(text);
+  qDebug() << ok;
+
+  //cli.dumpSocketInfo();
 
   QObject::connect(&cli, SIGNAL(disconnected()), qApp, SLOT(quit()));
   return a.exec();

@@ -29,13 +29,16 @@ DriverPrivate::DriverPrivate(QObject *parent)
     connect(rpc, SIGNAL(uiTranslationReceived(QString)), ui, SLOT(updateTranslation(QString)));
   }
 
-  eng = new EngineDriver(this); // TODO: Selective create engine only if enabled at server side, i.e. only called by rpc {
-  {
-    connect(eng, SIGNAL(textReceived(QString,qint64,int)), rpc, SLOT(sendEngineText(QString,qint64,int)));
-    connect(rpc, SIGNAL(clearEngineRequested()), eng, SLOT(clearTranslation()));
-    connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));
-    connect(rpc, SIGNAL(engineTranslationReceived(QString,qint64,int)), eng, SLOT(updateTranslation(QString,qint64,int)));
-  }
+  //eng = new EngineDriver(this); // TODO: Selective create engine only if enabled at server side, i.e. only called by rpc {
+  //{
+  //  // Use queued connection to quarantine the engine thrread
+  //  connect(eng, SIGNAL(textReceived(QString,qint64,int)), rpc, SLOT(sendEngineText(QString,qint64,int)),
+  //          Qt::QueuedConnection);
+  //  connect(rpc, SIGNAL(clearEngineRequested()), eng, SLOT(clearTranslation()));
+  //  connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));
+  //  connect(rpc, SIGNAL(engineTranslationReceived(QString,qint64,int)), eng, SLOT(updateTranslation(QString,qint64,int)),
+  //          Qt::QueuedConnection);
+  //}
 }
 
 // EOF

@@ -60,7 +60,7 @@ BOOL CALLBACK UiDriverPrivate::enumThreadWndProc(HWND hWnd, LPARAM lParam)
   //  return TRUE;
   if (::instance_) {
     ::instance_->updateAbstractWindow(hWnd);
-    ::EnumChildWindows(hWnd, (WNDENUMPROC)_enumThreadWndProc, lParam);
+    ::EnumChildWindows(hWnd, (WNDENUMPROC)enumThreadWndProc, lParam);
   }
   return TRUE;
 }
@@ -69,7 +69,7 @@ void UiDriverPrivate::updateThreadWindows(DWORD threadId)
 {
   if (!threadId)
     threadId = ::GetCurrentThreadId();
-  ::EnumThreadWindows(threadId, (WNDENUMPROC)::enumThreadWndProc, 0);
+  ::EnumThreadWindows(threadId, (WNDENUMPROC)enumThreadWndProc, 0);
 }
 
 void UiDriverPrivate::updateProcessWindows(DWORD processId)

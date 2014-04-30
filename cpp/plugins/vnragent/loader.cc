@@ -16,10 +16,9 @@
 #include "qtembedded/applicationrunner.h"
 #endif // VNRAGENT_ENABLE_APPRUNNER
 
-#define DEBUG "loader"
-#ifdef DEBUG
+#ifdef VNRAGENT_DEBUG
 # include "util/msghandler.h"
-#endif // DEBUG
+#endif // VNRAGENT_DEBUG
 
 // Global variables
 
@@ -55,9 +54,9 @@ void Loader::initWithInstance(HINSTANCE hInstance)
 
   ::createApplication_(hInstance);
 
- #ifdef DEBUG
+#ifdef VNRAGENT_DEBUG
   Util::installDebugMsgHandler();
- #endif // DEBUG
+#endif // VNRAGENT_DEBUG
 
   ::driver_ = new Driver;
 

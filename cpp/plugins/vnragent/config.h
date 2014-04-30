@@ -9,7 +9,8 @@
 #define VNRAGENT_METACALL_PORT  6103
 #define VNRAGENT_METACALL_HOST  "127.0.0.1"
 
-#define VNRAGENT_DEBUG_LOG      "vnragent.log"
+//#define VNRAGENT_DEBUG      1   // whether log debug message
+#define VNRAGENT_DEBUG_FILE "vnragent.log"
 
 //#define VNRAGENT_MESSAGE_SEP    "||" // seperator for rpc message
 

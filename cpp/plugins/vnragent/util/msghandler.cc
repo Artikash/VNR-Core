@@ -7,7 +7,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 
-#define DEBUG_LOG    VNRAGENT_DEBUG_LOG
+#define DEBUG_FILE      VNRAGENT_DEBUG_FILE
 #define DEBUG_TIMESTAMP QDateTime::currentDateTime().toString("MM:dd: hh:mm:ss")
 
 // See: http://www.cppblog.com/lauer3912/archive/2011/04/10/143870.html
@@ -22,14 +22,14 @@ void Util::debugMsgHandler(QtMsgType type, const char *msg)
   default: return;
   }
 
-  QFile file(DEBUG_LOG);
+  QFile file(DEBUG_FILE);
   if (file.open(QIODevice::Text|QIODevice::WriteOnly|QIODevice::Append))
     QTextStream(&file) << output;
 }
 
 void Util::installDebugMsgHandler()
 {
-  QFile file(DEBUG_LOG);
+  QFile file(DEBUG_FILE);
   if (file.open(QIODevice::Text|QIODevice::WriteOnly)) {
     QTextStream(&file) << "\n--------\n\n";
     qInstallMsgHandler(debugMsgHandler);

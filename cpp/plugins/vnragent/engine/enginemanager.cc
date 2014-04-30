@@ -46,10 +46,7 @@ public:
     event.signal(false);
   }
 
-  void notify()
-  {
-    event.signal(true);
-  }
+  void notify() { event.signal(true); }
 };
 
 /** Public class */
@@ -79,6 +76,7 @@ void EngineManager::clearTranslation()
 
 void EngineManager::updateTranslation(const QString &text, qint64 hash, int role)
 {
+  D_SYNCHRONIZE
   qint64 key = Engine::hashTextKey(hash, role);
   d_->trs[key] = text;
   d_->notify();
@@ -104,13 +102,14 @@ QString EngineManager::waitForTranslation(qint64 hash, int role) const
   D_SYNCHRONIZE
   qint64 key = Engine::hashTextKey(hash, role);
   auto it = d_->trs.constFind(key);
-  while (it == d_->trs.constEnd()) {
+  if (it == d_->trs.constEnd()) { // FIXME: supposed to be while
+  //while (it == d_->trs.constEnd()) {
     d_->unlock();
     d_->sleep();
     d_->lock();
     it = d_->trs.constFind(key);
   }
-  return it.value();
+  return it == d_->trs.constEnd() ? QString() : it.value();
 }
 
 // EOF

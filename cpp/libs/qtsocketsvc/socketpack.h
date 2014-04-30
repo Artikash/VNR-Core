@@ -19,7 +19,7 @@ enum { // number of bytes of an int32 number
 
 inline QByteArray packUInt32(quint32 value)
 {
-  enum { size = 4 };
+  enum { size = UInt32Size };
   quint8 bytes[size] = {
     static_cast<quint8>( value >> 24),
     static_cast<quint8>((value >> 16) & 0xff),
@@ -32,11 +32,12 @@ inline QByteArray packUInt32(quint32 value)
 inline quint32 unpackUInt32(const QByteArray &data, int offset = 0)
 {
   // QByteArray by default is an array of char, which is signed char. quint8 is unsigned.
+  const quint8 *p = reinterpret_cast<const quint8 *>(data.constData()); // signed to unsigned
   return data.size() < 4 ? 0 :
-        (static_cast<quint32>(data[offset])     << 24)
-      | (static_cast<quint32>(data[offset + 1]) << 16)
-      | (static_cast<quint32>(data[offset + 2]) <<  8)
-      |  static_cast<quint32>(data[offset + 3]);
+        (static_cast<quint32>(p[offset])     << 24)
+      | (static_cast<quint32>(p[offset + 1]) << 16)
+      | (static_cast<quint32>(p[offset + 2]) <<  8)
+      |  static_cast<quint32>(p[offset + 3]);
 }
 
 // Force using utf8 encoding

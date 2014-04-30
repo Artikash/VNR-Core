@@ -5,8 +5,12 @@
 #include "driver/rpccli_p.h"
 #include "qtsocketsvc/socketclient.h"
 #include "qtsocketsvc/socketpack.h"
-#include <QtCore/QHash>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QHash>
+#include <QtCore/QTimer>
+
+#define DEBUG "rpccli"
+#include "sakurakit/skdebug.h"
 
 /** Private class */
 
@@ -23,13 +27,13 @@ RpcClientPrivate::RpcClientPrivate(Q *q)
 
   connect(client, SIGNAL(dataReceived(QByteArray)), SLOT(onDataReceived(QByteArray)));
 
-  connect(client, SIGNAL(error()), SLOT(reconnect()), Qt::QueuedConnection);
+  connect(client, SIGNAL(socketError()), SLOT(reconnect()), Qt::QueuedConnection);
 
   connect(client, SIGNAL(disconnected()), reconnectTimer, SLOT(start()));
-  connect(client, SIGNAL(error()), reconnectTimer, SLOT(start()));
+  connect(client, SIGNAL(socketError()), reconnectTimer, SLOT(start()));
 
   connect(client, SIGNAL(disconnected()), q, SIGNAL(aborted()));
-  connect(client, SIGNAL(error()), q, SIGNAL(aborted()));
+  connect(client, SIGNAL(socketError()), q, SIGNAL(aborted()));
 }
 
 bool RpcClientPrivate::reconnect()
@@ -38,25 +42,29 @@ bool RpcClientPrivate::reconnect()
     reconnectTimer->stop();
   if (client->isActive())
     return true;
-  client->stop();
+  //client->stop();
   client->start();
-  client->waitForReady();
-  pingServer();
+  if (client->waitForConnected())
+    pingServer();
   return true;
 }
 
 void RpcClientPrivate::pingServer()
 {
   auto pid = QCoreApplication::applicationPid();
-  callServer("agent.ping", marshalNumber(pid, 16));
+  callServer("agent.ping", marshalNumber(pid));
 }
 
-void RpcClientPrivate::callServer(const QStringlist &args)
+bool RpcClientPrivate::callServer(const QStringList &args)
 {
+  bool ok = false;
   if (client->isActive()) {
     QByteArray data = SocketService::packStringList(args);
-    client->sendData(data);
+    ok = client->sendData(data, WaitInterval);
+    if (!ok)
+      DOUT("failed to send data to server");
   }
+  return ok;
 }
 
 void RpcClientPrivate::onDataReceived(const QByteArray &data)
@@ -89,12 +97,14 @@ void RpcClientPrivate::onCall(const QStringList &args)
   case H_UI_CLEAR:      q_->emit clearUiRequested(); break;
   case H_UI_ENABLE:     q_->emit enableUiRequested(true); break;
   case H_UI_DISABLE:    q_->emit enableUiRequested(false); break;
-  case H_UI_TEXT:       q_->emit uiTranslationReceived(param); break;
+  case H_UI_TEXT:
+    if (args.size() == 2)
+      q_->emit uiTranslationReceived(args.last());
+    break;
 
   case H_ENG_CLEAR:     q_->emit clearEngineRequested(); break;
   case H_ENG_ENABLE:    q_->emit enableEngineRequested(true); break;
   case H_ENG_DISABLE:   q_->emit enableEngineRequested(false); break;
-
   case H_ENG_TEXT:
     if (args.size() == 4) {
       QString text = args[1];
@@ -127,8 +137,7 @@ RpcClient::RpcClient(QObject *parent)
 
 RpcClient::~RpcClient() { ::instance_ = nullptr; }
 
-bool RpcClient::isActive() const
-{ return d_->r->isActive(); }
+bool RpcClient::isActive() const { return d_->client->isActive(); }
 
 // - Requests -
 

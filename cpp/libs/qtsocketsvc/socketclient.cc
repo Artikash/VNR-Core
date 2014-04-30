@@ -130,16 +130,36 @@ void SocketClient::waitForReady()
 
 // I/O:
 
-bool SocketClient::sendData(const QByteArray &data)
-{ return d_->writeSocket(data); }
+bool SocketClient::sendData(const QByteArray &data, int waitTime)
+{
+  bool ok = d_->writeSocket(data);
+  if (ok && waitTime)
+    ok = d_->socket->waitForBytesWritten(waitTime);
+  return ok;
+}
+
+bool SocketClient::waitForConnected(int interval)
+{ return d_->socket && d_->socket->waitForConnected(interval); }
+
+bool SocketClient::waitForDisconnected(int interval)
+{ return d_->socket && d_->socket->waitForDisconnected(interval); }
+
+bool SocketClient::waitForBytesWritten(int interval)
+{ return d_->socket && d_->socket->waitForBytesWritten(interval); }
+
+bool SocketClient::waitForReadyRead(int interval)
+{ return d_->socket && d_->socket->waitForReadyRead(interval); }
 
 void SocketClient::readSocket()
 {
-  if (Q_LIKELY(d_->socket)) {
-    QByteArray data = d_->readSocket();
-    if (!data.isEmpty())
-      emit dataReceived(data);
-  }
+  if (Q_LIKELY(d_->socket))
+    while (d_->socket->bytesAvailable()) {
+      QByteArray data = d_->readSocket();
+      if (data.isEmpty())
+        break;
+      else
+        emit dataReceived(data);
+    }
 }
 
 void SocketClient::dumpSocketInfo() const { d_->dumpSocketInfo(); }
