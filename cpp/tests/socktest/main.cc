@@ -25,9 +25,8 @@ int main(int argc, char *argv[])
   BufferedSocketClient cli;
   cli.setPort(6002);
   cli.start();
-  cli.waitForReady();
-  qDebug() << cli.isActive();
-  qDebug() << cli.isReady();
+  cli.waitForConnected();
+  qDebug() << cli.isConnected();
   const char *text = "hello";
   cli.sendDataLater(text);
 

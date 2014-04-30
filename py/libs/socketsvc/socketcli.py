@@ -14,6 +14,10 @@ from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint
 import socketio, socketpack
 
+def _now(): # -> long  current time in milliseconds
+  from time import time
+  return long(time() * 1000)
+
 class SocketClient(QObject):
 
   def __init__(self, parent=None):
@@ -77,6 +81,12 @@ class SocketClient(QObject):
   def waitForReadyRead(self, interval=30000): # -> bool
     return bool(self.__d.socket) and self.__d.socket.waitForReadyRead(interval)
 
+  # Invoked after the dataReceived signal is emitted
+  def waitForDataReceived(self, interval=30000): # -> bool
+    return self.__d.waitForDataReceived(interval)
+
+  waitForDataSent = waitForBytesWritten
+
   def dumpSocketInfo(self): # print the status of the socket. for debug only
     self.__d.dumpSocketInfo()
 
@@ -87,6 +97,7 @@ class _SocketClient(object):
     self.address = '127.0.0.1' # host name without http prefix
     self.port = 0 # int
     self.socket = None # # QTcpSocket
+    self._dataJustReceived = False # bool
 
   def _createSocket(self):
     from PySide.QtNetwork import QTcpSocket
@@ -120,6 +131,7 @@ class _SocketClient(object):
           break
         else:
           self.q.dataReceived.emit(data)
+          self._dataJustReceived = True
 
   def writeSocket(self, data, pack=True):
     if not self.socket:
@@ -136,6 +148,16 @@ class _SocketClient(object):
       dprint("peerPort =  %s" % self.socket.peerPort())
       dprint("state = %s" % self.socket.state())
       dprint("error = %s" % self.socket.errorString())
+
+  def waitForDataReceived(self, interval): # int -> bool
+    self._dataJustReceived = False
+    socket = self.socket
+    if socket:
+      startTime = _now()
+      while socket.waitForReadyRead(interval) and not self._dataJustReceived and _now() < startTime + interval:
+        pass
+    dprint("pass: ret = %s" % self._dataJustReceived)
+    return self._dataJustReceived
 
 # Cached
 
@@ -188,26 +210,31 @@ if __name__ == '__main__':
   #t = "hello"
   #t = u"こんにちは"
 
-  interval = 200
+  interval = 2000
 
   t = '0' * 100
   #print t
-  c.sendDataLater(t)
+  #c.sendDataLater(t, interval)
+  #c.sendData(t, interval)
+  c.sendData(t, 0)
+
+  c.waitForDataReceived()
+
   t = '1' * 100
   #print t
-  c.sendDataLater(t)
+  c.sendDataLater(t, interval)
   t = '2' * 100
   #print t
-  c.sendDataLater(t)
+  c.sendDataLater(t, interval)
   t = '3' * 100
   #print t
-  c.sendDataLater(t)
+  c.sendDataLater(t, interval)
   t = '4' * 100
   #print t
-  c.sendDataLater(t)
+  c.sendDataLater(t, interval)
   t = '5' * 100
   #print t
-  c.sendDataLater(t)
+  c.sendDataLater(t, interval)
   print c.isActive()
 
   #t = '1' * 100

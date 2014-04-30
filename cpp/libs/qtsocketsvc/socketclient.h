@@ -43,6 +43,9 @@ public:
   bool waitForBytesWritten(int interval = 30000);
   bool waitForReadyRead(int interval = 30000);
 
+  // Invoked just after the dataReceived is emit
+  bool waitForDataReceived(int interval = 30000);
+
   void dumpSocketInfo() const; // for debug only
 
 signals:

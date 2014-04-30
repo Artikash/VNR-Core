@@ -3,6 +3,7 @@
 #include "qtsocketsvc/socketdef.h"
 #include "qtsocketsvc/socketclient.h"
 #include "qtsocketsvc/socketio_p.h"
+#include <QtCore/QDateTime>
 //#include <QtCore/QEventLoop>
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QTcpSocket>
@@ -22,9 +23,13 @@ public:
   int port;
   QString address;
   quint32 currentDataSize; // current message body size read from socket
+  bool dataJustReceived;
 
   explicit SocketClientPrivate(Q *q)
-    : q_(q), socket(nullptr), port(0), address(SOCKET_SERVICE_HOST), currentDataSize(0) {}
+    : q_(q),
+      socket(nullptr), port(0), address(SOCKET_SERVICE_HOST), currentDataSize(0),
+      dataJustReceived(false)
+  {}
 
   void createSocket()
   {
@@ -39,9 +44,14 @@ public:
   bool writeSocket(const QByteArray &data, bool pack);
   QByteArray readSocket();
 
-  void dumpSocketInfo() const; // for debug only
-};
+  bool waitForDataReceived(int interval);
 
+  void dumpSocketInfo() const; // for debug only
+
+private:
+  // Return current msec
+  static qint64 now() { return QDateTime::currentMSecsSinceEpoch(); }
+};
 
 bool SocketClientPrivate::writeSocket(const QByteArray &data, bool pack)
 { return socket && SocketService::writeSocket(socket, data, pack); }
@@ -51,6 +61,16 @@ QByteArray SocketClientPrivate::readSocket()
   if (Q_UNLIKELY(!socket))
     return QByteArray();
   return SocketService::readSocket(socket, currentDataSize);
+}
+
+bool SocketClientPrivate::waitForDataReceived(int interval)
+{
+  if (Q_UNLIKELY(!socket))
+    return false;
+  dataJustReceived = false;
+  qint64 startTime = now();
+  while(socket->waitForReadyRead(interval) && !dataJustReceived && now() < startTime + interval);
+  return dataJustReceived;
 }
 
 void SocketClientPrivate::dumpSocketInfo() const
@@ -148,6 +168,9 @@ bool SocketClient::waitForBytesWritten(int interval)
 bool SocketClient::waitForReadyRead(int interval)
 { return d_->socket && d_->socket->waitForReadyRead(interval); }
 
+bool SocketClient::waitForDataReceived(int interval)
+{ return d_->waitForDataReceived(interval); }
+
 void SocketClient::readSocket()
 {
   if (Q_LIKELY(d_->socket))
@@ -155,8 +178,10 @@ void SocketClient::readSocket()
       QByteArray data = d_->readSocket();
       if (data.isEmpty())
         break;
-      else
+      else {
         emit dataReceived(data);
+        d_->dataJustReceived = true;
+      }
     }
 }
 
