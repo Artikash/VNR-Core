@@ -11,7 +11,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QTextCodec>
 #include <QtCore/QTimer>
-#include <boost/bind.hpp>
+//#include <boost/bind.hpp>
 
 enum { TEXT_BUFFER_SIZE = 256 };
 
@@ -58,8 +58,11 @@ void UiDriverPrivate::rehook() { Ui::overrideModules(); }
 
 void UiDriverPrivate::updateThreadWindows(DWORD threadId)
 {
-  WinIter::iterThreadChildWindows(threadId,
-    boost::bind(&Self::updateAbstractWindow, instance_, _1));
+  WinIter::iterThreadChildWindows(threadId, []() {
+    ::instance_->updateAbstractWindow();
+  });
+  //WinIter::iterThreadChildWindows(threadId,
+  //  boost::bind(&Self::updateAbstractWindow, ::instance_, _1));
 }
 
 void UiDriverPrivate::updateProcessWindows(DWORD processId)
