@@ -8,7 +8,7 @@
 #include <QtCore/QStringList>
 
 QT_FORWARD_DECLARE_CLASS(QTimer)
-class SocketClient;
+class BufferedSocketClient;
 class RpcClient;
 class RpcClientPrivate : public QObject
 {
@@ -18,11 +18,13 @@ class RpcClientPrivate : public QObject
   SK_EXTEND_CLASS(RpcClientPrivate, QObject)
 
   enum { ReconnectInterval = 5000 }; // reconnect on failed
+
+  enum { BufferInterval = 200 }; // wait for next buffered data
   enum { WaitInterval = 5000 }; // wait for data sent
 public:
   explicit RpcClientPrivate(Q *q);
 
-  SocketClient *client;
+  BufferedSocketClient *client;
   QTimer *reconnectTimer;
 
 
@@ -33,7 +35,8 @@ private slots:
 private:
   void onCall(const QStringList &args); // called from server
 
-  bool callServer(const QStringList &args); // call server
+  void callServer(const QStringList &args); // call server
+  void sendData(const QByteArray &data);
 
   void callServer(const QString &arg0, const QString &arg1)
   { callServer(QStringList() << arg0 << arg1); }

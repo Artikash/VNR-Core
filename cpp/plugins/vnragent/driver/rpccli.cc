@@ -3,7 +3,7 @@
 #include "config.h"
 #include "driver/rpccli.h"
 #include "driver/rpccli_p.h"
-#include "qtsocketsvc/socketclient.h"
+#include "qtsocketsvc/bufferedsocketclient.h"
 #include "qtsocketsvc/socketpack.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QHash>
@@ -55,17 +55,16 @@ void RpcClientPrivate::pingServer()
   callServer("agent.ping", marshalInteger(pid));
 }
 
-bool RpcClientPrivate::callServer(const QStringList &args)
+void RpcClientPrivate::callServer(const QStringList &args)
 {
-  bool ok = false;
   if (client->isActive()) {
     QByteArray data = SocketService::packStringList(args);
-    ok = client->sendData(data, WaitInterval);
-    if (!ok)
-      DOUT("failed to send data to server");
+    sendData(data);
   }
-  return ok;
 }
+
+void RpcClientPrivate::sendData(const QByteArray &data)
+{ client->sendDataLater(data, BufferInterval, WaitInterval);
 
 void RpcClientPrivate::onDataReceived(const QByteArray &data)
 {
