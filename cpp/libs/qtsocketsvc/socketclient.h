@@ -26,14 +26,14 @@ public:
   QString address() const;
   void setAddress(const QString &value);
 
-  bool isActive() const;
-  bool isReady() const;
+  bool isConnected() const;
+  //bool isReady() const;
 
   // Actions:
 public:
   void start();
   void stop();
-  void waitForReady();
+  //void waitForReady();
 
   bool sendData(const QByteArray &data, int waitTime = 0, bool pack = true);
 

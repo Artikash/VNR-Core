@@ -3,7 +3,7 @@
 #include "qtsocketsvc/socketdef.h"
 #include "qtsocketsvc/socketclient.h"
 #include "qtsocketsvc/socketio_p.h"
-#include <QtCore/QEventLoop>
+//#include <QtCore/QEventLoop>
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QTcpSocket>
 
@@ -99,34 +99,32 @@ void SocketClient::stop()
   }
 }
 
-bool SocketClient::isActive() const
-{
-  return d_->socket && d_->socket->state() == QAbstractSocket::ConnectedState;
-}
+bool SocketClient::isConnected() const
+{ return d_->socket && d_->socket->state() == QAbstractSocket::ConnectedState; }
 
-bool SocketClient::isReady() const
-{
-  return d_->socket && (
-    d_->socket->state() == QAbstractSocket::ConnectedState ||
-    d_->socket->state() == QAbstractSocket::UnconnectedState
-  );
-}
+//bool SocketClient::isReady() const
+//{
+//  return d_->socket && (
+//    d_->socket->state() == QAbstractSocket::ConnectedState ||
+//    d_->socket->state() == QAbstractSocket::UnconnectedState
+//  );
+//}
 
-void SocketClient::waitForReady()
-{
-  if (d_->socket &&
-    d_->socket->state() != QAbstractSocket::ConnectedState &&
-    d_->socket->state() != QAbstractSocket::UnconnectedState) {
-
-    QEventLoop loop;
-    connect(d_->socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), &loop, SLOT(quit()));
-    connect(d_->socket, SIGNAL(error(QAbstractSocket::SocketError)), &loop, SLOT(quit()));
-    do loop.exec();
-    while (!d_->socket ||
-           d_->socket->state() == QAbstractSocket::HostLookupState ||
-           d_->socket->state() == QAbstractSocket::ConnectingState);
-  }
-}
+//void SocketClient::waitForReady()
+//{
+//  if (d_->socket &&
+//    d_->socket->state() != QAbstractSocket::ConnectedState &&
+//    d_->socket->state() != QAbstractSocket::UnconnectedState) {
+//
+//    QEventLoop loop;
+//    connect(d_->socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), &loop, SLOT(quit()));
+//    connect(d_->socket, SIGNAL(error(QAbstractSocket::SocketError)), &loop, SLOT(quit()));
+//    do loop.exec();
+//    while (!d_->socket ||
+//           d_->socket->state() == QAbstractSocket::HostLookupState ||
+//           d_->socket->state() == QAbstractSocket::ConnectingState);
+//  }
+//}
 
 // I/O:
 

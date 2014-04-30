@@ -59,8 +59,10 @@ class SocketServer(QObject):
   def start(self): return self.__d.start() # -> bool
   def stop(self): self.__d.stop()
 
-  def isActive(self): # -> bool
+  def isListening(self): # -> bool
     return bool(self.__d.server) and self.__d.server.isListening()
+
+  isActive = isListening
 
   def removeSocket(self, socket): # QTcpSocket
     if socket.isOpen():

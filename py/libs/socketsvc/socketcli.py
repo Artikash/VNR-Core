@@ -43,13 +43,15 @@ class SocketClient(QObject):
   def port(self): return self.__d.port # -> int
   def setPort(self, v): self.__d.port = v
 
-  def isActive(self): # -> bool, is connected
+  def isConnected(self): # -> bool
     s = self.__d.socket
     return bool(s) and s.state() == s.ConnectedState
 
-  def isReady(self): # -> bool, is connected or disconnected instead of connecting or uninitialized
-    s = self.__d.socket
-    return bool(s) and s.state() in (s.ConnectedState, s.UnconnectedState)
+  isActive = isConnected
+
+  #def isReady(self): # -> bool, is connected or disconnected instead of connecting or uninitialized
+  #  s = self.__d.socket
+  #  return bool(s) and s.state() in (s.ConnectedState, s.UnconnectedState)
 
   def start(self): self.__d.start()
   def stop(self): self.__d.stop()

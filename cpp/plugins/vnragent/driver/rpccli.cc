@@ -40,7 +40,7 @@ bool RpcClientPrivate::reconnect()
 {
   if (reconnectTimer->isActive())
     reconnectTimer->stop();
-  if (client->isActive())
+  if (client->isConnected())
     return true;
   //client->stop();
   client->start();
@@ -57,7 +57,7 @@ void RpcClientPrivate::pingServer()
 
 void RpcClientPrivate::callServer(const QStringList &args)
 {
-  if (client->isActive()) {
+  if (client->isConnected()) {
     QByteArray data = SocketService::packStringList(args);
     sendData(data);
   }
@@ -142,7 +142,7 @@ RpcClient::RpcClient(QObject *parent)
 
 RpcClient::~RpcClient() { ::instance_ = nullptr; }
 
-bool RpcClient::isActive() const { return d_->client->isActive(); }
+bool RpcClient::isActive() const { return d_->client->isConnected(); }
 
 // - Requests -
 
