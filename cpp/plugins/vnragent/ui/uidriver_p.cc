@@ -5,11 +5,13 @@
 #include "ui/uihash.h"
 #include "ui/uihijack.h"
 #include "ui/uimanager.h"
+#include "winiter/winiter.h"
+#include "winiter/winitertl.h"
 #include <commctrl.h>
-#include <tlhelp32.h>
 #include <QtCore/QHash>
 #include <QtCore/QTextCodec>
 #include <QtCore/QTimer>
+#include <boost/bind.hpp>
 
 enum { TEXT_BUFFER_SIZE = 256 };
 
@@ -54,39 +56,14 @@ void UiDriverPrivate::rehook() { Ui::overrideModules(); }
 
 // - Processes and threads -
 
-BOOL CALLBACK UiDriverPrivate::enumThreadWndProc(HWND hWnd, LPARAM lParam)
-{
-  //if (!NotSupportedWindow(hWnd))
-  //  return TRUE;
-  if (::instance_) {
-    ::instance_->updateAbstractWindow(hWnd);
-    ::EnumChildWindows(hWnd, (WNDENUMPROC)enumThreadWndProc, lParam);
-  }
-  return TRUE;
-}
-
 void UiDriverPrivate::updateThreadWindows(DWORD threadId)
 {
-  if (!threadId)
-    threadId = ::GetCurrentThreadId();
-  ::EnumThreadWindows(threadId, (WNDENUMPROC)enumThreadWndProc, 0);
+  WinIter::iterThreadChildWindows(threadId,
+    boost::bind(&Self::updateAbstractWindow, instance_, _1));
 }
 
 void UiDriverPrivate::updateProcessWindows(DWORD processId)
- {
-  HANDLE h = ::CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, processId);
-  if (h == INVALID_HANDLE_VALUE)
-    return;
-  if (!processId)
-    processId = ::GetCurrentProcessId();
-  THREADENTRY32 thread = {0};
-  thread.dwSize = sizeof(thread);
-  if (::Thread32First(h, &thread))
-    do if (thread.th32OwnerProcessID == processId)
-      updateThreadWindows(thread.th32ThreadID);
-    while (::Thread32Next(h, &thread));
-  ::CloseHandle(h);
-}
+{ WinIter::iterProcessThreadIds(processId, updateThreadWindows); }
 
 // - Windows -
 

@@ -15,7 +15,7 @@
 /** Private class */
 
 RpcClientPrivate::RpcClientPrivate(Q *q)
-  : Base(q), q_(q), client(new SocketClient(this))
+  : Base(q), q_(q), client(new RpcSocketClient(this))
 {
   reconnectTimer = new QTimer(q);
   reconnectTimer->setSingleShot(false); // until reconnect successfully
@@ -64,7 +64,13 @@ void RpcClientPrivate::callServer(const QStringList &args)
 }
 
 void RpcClientPrivate::sendData(const QByteArray &data)
-{ client->sendDataLater(data, BufferInterval, WaitInterval);
+{
+#ifdef VNRAGENT_BUFFER_SOCKET
+  client->sendDataLater(data, BufferInterval, WaitInterval);
+#else
+  client->sendData(data, WaitInterval);
+#endif // VNRAGENT_BUFER_SOCKET
+}
 
 void RpcClientPrivate::onDataReceived(const QByteArray &data)
 {

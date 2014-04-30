@@ -3,12 +3,21 @@
 // rpccli_p.h
 // 2/1/2013 jichi
 
+#include "config.h"
 #include "sakurakit/skglobal.h"
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 
-QT_FORWARD_DECLARE_CLASS(QTimer)
+#ifdef VNRAGENT_BUFFER_SOCKET
 class BufferedSocketClient;
+typedef BufferedSocketClient RpcSocketClient;
+#else
+class SocketClient;
+typedef SocketClient RpcSocketClient;
+#endif // VNRAGENT_BUFFER_SOCKET
+
+QT_FORWARD_DECLARE_CLASS(QTimer)
+
 class RpcClient;
 class RpcClientPrivate : public QObject
 {
@@ -19,12 +28,12 @@ class RpcClientPrivate : public QObject
 
   enum { ReconnectInterval = 5000 }; // reconnect on failed
 
-  enum { BufferInterval = 200 }; // wait for next buffered data
+  enum { BufferInterval = 20 }; // wait for next buffered data
   enum { WaitInterval = 5000 }; // wait for data sent
 public:
   explicit RpcClientPrivate(Q *q);
 
-  BufferedSocketClient *client;
+  RpcSocketClient *client;
   QTimer *reconnectTimer;
 
 

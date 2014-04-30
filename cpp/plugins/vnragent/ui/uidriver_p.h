@@ -63,8 +63,6 @@ private:
 
   static void updateProcessWindows(DWORD processId = 0);
   static void updateThreadWindows(DWORD threadId = 0);
-
-  static BOOL CALLBACK enumThreadWndProc(HWND hWnd, LPARAM lParam); // invoked only by updateThreadWindows
 };
 
 // EOF

@@ -10,8 +10,6 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTextCodec>
 
-//#define VNRAGENT_ENABLE_APPRUNNER
-
 #ifdef VNRAGENT_ENABLE_APPRUNNER
 #include "qtembedded/applicationrunner.h"
 #endif // VNRAGENT_ENABLE_APPRUNNER

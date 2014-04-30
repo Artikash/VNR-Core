@@ -5,13 +5,13 @@
 // It is very important to restrict from accessing Qt in this file, and make sure the instance to start with wintimer.
 // Qt must have the same internal timer with the program's main window.
 
+#include "config.h"
 #include "winquery/winquery.h"
 #include "wintimer/wintimer.h"
+#include "winiter/winitertl.h"
 #include "singleapp/singleapp.h"
 #include "loader.h"
 #include "cc/ccmacro.h"
-
-#define VNRAGENT_ENABLE_THREAD
 
 namespace { // unnamed
 
@@ -35,7 +35,19 @@ HMODULE waitForModuleReady_(const char *name, int retryCount = 100, int sleepInt
   return nullptr;
 }
 
+///  Kill the current process
 void harakiri_() { ::TerminateProcess(::GetCurrentProcess(), EXIT_SUCCESS); }
+
+///  Set the priority of all existing threads to the lowest.
+void suppressExistingThreadsPriories_()
+{
+  WinIter::iterProcessThreadIds([] (DWORD threadId) {
+    if (HANDLE h = ::OpenThread(THREAD_ALL_ACCESS, FALSE, threadId)) {
+      ::SetThreadPriority(h, THREAD_PRIORITY_LOWEST);
+      ::CloseHandle(h);
+    }
+  });
+}
 
 } // unnamed namespace
 
@@ -56,6 +68,7 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
       WinTimer::setGlobalWindow(winId);
 
 #ifdef VNRAGENT_ENABLE_THREAD
+    suppressExistingThreadsPriories_();
     if (HANDLE h = ::CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)Loader::initWithInstance, hInstance, 0, nullptr)) {
       // This is critical to make sure that the socket communication is delivered
       ::SetThreadPriority(h, THREAD_PRIORITY_HIGHEST|THREAD_PRIORITY_TIME_CRITICAL);

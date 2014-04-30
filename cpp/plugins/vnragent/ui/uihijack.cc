@@ -3,7 +3,7 @@
 #include "ui/uihijack.h"
 #include "ui/uihijack_p.h"
 #include "windbg/hijack.h"
-#include <psapi.h>
+#include "winiter/winiterps.h"
 #include <boost/foreach.hpp>
 
 #ifdef _MSC_VER
@@ -63,16 +63,12 @@ void Ui::overrideModules()
     return;
   }
 
-  // For each matched module, override functions
-  enum { MAX_MODULE = 0x800 };
   WCHAR path[MAX_PATH];
-  HMODULE modules[MAX_MODULE];
-  DWORD size;
-  if (::EnumProcessModules(::GetCurrentProcess(), modules, sizeof(modules), &size) && (size/=4))
-    for (size_t i = 0; i < size; i++)
-      if (::GetModuleFileNameW(modules[i], path, sizeof(path)/sizeof(*path)) &&
-          !::wcsnicmp(path, exePath, exeName - exePath))
-        overrideModuleFunctions(modules[i]);
+  WinIter::iterProcessModules([&](HMODULE hModule) {
+    if (::GetModuleFileNameW(hModule, path, MAX_PATH) &&
+        !::wcsnicmp(path, exePath, exeName - exePath))
+      overrideModuleFunctions(hModule);
+  });
 }
 
 void Ui::overrideModuleFunctions(LPVOID pModule)

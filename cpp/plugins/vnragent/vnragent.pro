@@ -16,6 +16,7 @@ include($$LIBDIR/sakurakit/sakurakit.pri)
 include($$LIBDIR/singleapp/singleapp.pri)
 include($$LIBDIR/windbg/windbg.pri)
 include($$LIBDIR/winevent/winevent.pri)
+include($$LIBDIR/winiter/winiter.pri)
 include($$LIBDIR/winquery/winquery.pri)
 include($$LIBDIR/wintimer/wintimer.pri)
 include($$LIBDIR/winmutex/winmutex.pri)
@@ -35,7 +36,7 @@ QT      -= gui
 #INCLUDEPATH += $$D3D_HOME/include
 #LIBS    += -ld3d9 -L$$D3D_HOME/lib/x86
 
-LIBS    += -luser32 -lpsapi
+#LIBS    += -luser32 -lpsapi
 #LIBS    += -lgdi32 # needed by game engines
 
 ## Sources

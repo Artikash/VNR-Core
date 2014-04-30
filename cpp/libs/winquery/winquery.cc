@@ -1,5 +1,6 @@
 // winquery.cc
 // 2/1/2013 jichi
+// TODO: Rewrite this class using my winiter lib.
 #include "winquery/winquery.h"
 
 //#define DEBUG "wingui"
