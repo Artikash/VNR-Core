@@ -1,0 +1,22 @@
+#ifndef _SOCKETSVC_SOCKET_P_H
+#define _SOCKETSVC_SOCKET_P_H
+
+// socketio_p.h
+// 4/29/2014 jichi
+//
+// This class must be consistent with socketsvc/socketpack.py
+#include "qtsocketsvc/socketdef.h"
+#include <QtCore/QByteArray>
+
+QT_FORWARD_DECLARE_CLASS(QAbstractSocket)
+
+namespace SocketService {
+
+QByteArray readSocket(QAbstractSocket *socket, quint32 &dataSize);
+bool writeSocket(QAbstractSocket *socket, const QByteArray &data);
+
+} // SocketService
+
+//QTSS_END_NAMESPACE
+
+#endif // _SOCKETSVC_SOCKETIO_P_H

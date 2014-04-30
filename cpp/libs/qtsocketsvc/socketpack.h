@@ -5,17 +5,19 @@
 // 4/29/2014 jichi
 //
 // This class must be consistent with socketsvc/socketpack.py
+#include "qtsocketsvc/socketdef.h"
 #include <QtCore/QStringList>
 
 //QTSS_BEGIN_NAMESPACE
 
-#define SOCKET_SERVICE_ENCODING "UTF-8"
-
 namespace SocketService {
 
-enum { Int32Size = 4 }; // number of bytes of an int32 number
+enum { // number of bytes of an int32 number
+  Int32Size = 4,
+  UInt32Size = Int32Size
+};
 
-inline QByteArray packInt32(qint32 value)
+inline QByteArray packUInt32(quint32 value)
 {
   enum { size = 4 };
   quint8 bytes[size] = {
@@ -27,14 +29,14 @@ inline QByteArray packInt32(qint32 value)
   return QByteArray(reinterpret_cast<char *>(bytes), size);
 }
 
-inline qint32 unpackInt32(const QByteArray &data, int offset = 0)
+inline quint32 unpackUInt32(const QByteArray &data, int offset = 0)
 {
   // QByteArray by default is an array of char, which is signed char. quint8 is unsigned.
-  return data.size() < 4 ? 0 : static_cast<qint32>(
+  return data.size() < 4 ? 0 :
         (static_cast<quint32>(data[offset])     << 24)
       | (static_cast<quint32>(data[offset + 1]) << 16)
       | (static_cast<quint32>(data[offset + 2]) <<  8)
-      |  static_cast<quint32>(data[offset + 3]));
+      |  static_cast<quint32>(data[offset + 3]);
 }
 
 // Force using utf8 encoding

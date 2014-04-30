@@ -1,6 +1,8 @@
 // socketclient.cc
 // 4/29/2014 jichi
+#include "qtsocketsvc/socketdef.h"
 #include "qtsocketsvc/socketclient.h"
+#include "qtsocketsvc/socketio_p.h"
 #include <QtCore/QEventLoop>
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QTcpSocket>
@@ -19,36 +21,50 @@ public:
   QTcpSocket *socket;
   int port;
   QString address;
-  int currentDataSize; // current message body size read from socket
+  quint32 currentDataSize; // current message body size read from socket
 
   explicit SocketClientPrivate(Q *q)
-    : q_(q), socket(nullptr), port(0), currentDataSize(0) {}
+    : q_(q), socket(nullptr), port(0), address(SOCKET_SERVICE_HOST), currentDataSize(0) {}
 
   void createSocket()
   {
     socket = new QTcpSocket(q_);
     q_->connect(socket, SIGNAL(readyRead()), SLOT(readSocket()));
+
+    q_->connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), SIGNAL(socketError()));
+    q_->connect(socket, SIGNAL(connected()), SIGNAL(connected()));
+    q_->connect(socket, SIGNAL(disconnected()), SIGNAL(disconnected()));
   }
 
   bool writeSocket(const QByteArray &data);
   QByteArray readSocket();
+
+  void dumpSocketInfo() const; // for debug only
 };
 
 
 bool SocketClientPrivate::writeSocket(const QByteArray &data)
-{
-  // CHECKPOINT
-  if (Q_UNLIKELY(!socket))
-    return false;
-  return false;
-}
+{ return socket && SocketService::writeSocket(socket, data); }
 
 QByteArray SocketClientPrivate::readSocket()
 {
-  // CHECKPOINT
   if (Q_UNLIKELY(!socket))
     return QByteArray();
-  return QByteArray();
+  return SocketService::readSocket(socket, currentDataSize);
+}
+
+void SocketClientPrivate::dumpSocketInfo() const
+{
+  if (socket)
+    DOUT("socket"
+         ": localAddress ="<< socket->localAddress() <<
+         ", localPort ="   << socket->localPort() <<
+         ", peerAddress =" << socket->peerAddress() <<
+         ", peerPort ="    << socket->peerPort() <<
+         ", state ="       << socket->state() <<
+         ", error ="       << socket->errorString());
+  else
+    DOUT("socket = null");
 }
 
 /** Public class */
@@ -125,6 +141,8 @@ void SocketClient::readSocket()
       emit dataReceived(data);
   }
 }
+
+void SocketClient::dumpSocketInfo() const { d_->dumpSocketInfo(); }
 
 //QTSS_END_NAMESPACE
 

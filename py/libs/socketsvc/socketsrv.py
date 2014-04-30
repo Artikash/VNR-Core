@@ -31,8 +31,8 @@ class SocketServer(QObject):
 
   dataReceived = Signal(bytearray, QObject) # data, client socket
 
-  def sendData(self, data, socket):  # str, QTcpSocket
-    self.__d.writeSocket(data, socket)
+  def sendData(self, data, socket):  # str, QTcpSocket -> bool
+    return self.__d.writeSocket(data, socket)
 
   def broadcastData(self, data):
     for s in self.__d.sockets:
@@ -124,7 +124,7 @@ class _SocketServer(object):
   def writeSocket(self, data, socket):
     if isinstance(data, unicode):
       data = data.encode(self.encoding, errors='ignore')
-    socketio.writesocket(data, socket)
+    return socketio.writesocket(data, socket)
 
 if __name__ == '__main__':
   import sys
@@ -137,7 +137,7 @@ if __name__ == '__main__':
   def f(data):
     print data, type(data), len(data)
     s.broadcastData(u"なにこれ")
-    #app.quit()
+    app.quit()
   s.dataReceived.connect(f)
 
   sys.exit(app.exec_())

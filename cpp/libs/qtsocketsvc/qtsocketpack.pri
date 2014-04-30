@@ -8,7 +8,11 @@ DEPENDPATH += $$PWD
 
 QT += core
 
-HEADERS += $$PWD/socketpack.h
-SOURCES += $$PWD/socketpack.cc
+HEADERS += \
+  $$PWD/socketdef.h \
+  $$PWD/socketpack.h
+
+SOURCES += \
+  $$PWD/socketpack.cc
 
 # EOF

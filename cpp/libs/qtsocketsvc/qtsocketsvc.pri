@@ -1,4 +1,4 @@
-# qtsocketcli.pri
+# qtsocketsvc.pri
 # 4/29/2014 jichi
 # Socket service client.
 #include(../../../config.pri)
@@ -16,6 +16,12 @@ HEADERS += \
 
 SOURCES += \
   $$PWD/socketclient.cc \
-  $$PWD/socketio_p.cc
+  $$PWD/socketio_p.cc \
+  $$PWD/socketpack.cc
+
+OTHER_FILES += \
+  $$PWD/qtsocketcli.pri \
+  $$PWD/qtsocketpack.pri
+  #$$PWD/qtsocketsrv.pri
 
 # EOF

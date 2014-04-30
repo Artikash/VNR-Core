@@ -57,6 +57,9 @@ class SocketClient(QObject):
       while s.state() in (s.HostLookupState, s.ConnectingState):
         loop.exec_()
 
+  def dumpSocketInfo(self): # print the status of the socket. for debug only
+    self.__d.dumpSocketInfo()
+
 @Q_Q
 class _SocketClient(object):
   def __init__(self, q):
@@ -96,10 +99,20 @@ class _SocketClient(object):
         self.q.dataReceived.emit(data)
 
   def writeSocket(self, data):
+    if not self.socket:
+      return False;
+    if isinstance(data, unicode):
+      data = data.encode(self.encoding, errors='ignore')
+    return socketio.writesocket(data, self.socket)
+
+  def dumpSocketInfo(self): # for debug only
     if self.socket:
-      if isinstance(data, unicode):
-        data = data.encode(self.encoding, errors='ignore')
-      socketio.writesocket(data, self.socket)
+      dprint("localAddress = %s" % self.socket.localAddress())
+      dprint("localPort = %s" % self.socket.localPort())
+      dprint("peerAddress = %s" % self.socket.peerAddress())
+      dprint("peerPort =  %s" % self.socket.peerPort())
+      dprint("state = %s" % self.socket.state())
+      dprint("error = %s" % self.socket.errorString())
 
 if __name__ == '__main__':
   t = "hello"
@@ -117,6 +130,7 @@ if __name__ == '__main__':
   c.sendData(t)
   c.disconnected.connect(app.quit)
 
+  c.dumpSocketInfo()
 
   sys.exit(app.exec_())
 

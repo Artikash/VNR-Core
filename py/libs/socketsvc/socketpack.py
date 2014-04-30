@@ -29,7 +29,7 @@ INT_SIZE = INT32_SIZE
 #  return ret if ret < 128 else ret - 256
 
 # http://stackoverflow.com/questions/444591/convert-a-string-of-bytes-into-an-int-python
-def unpackint(s): #
+def unpackuint(s): #
   """
   @param  s  str|bytearray|QByteArray
   @return  int
@@ -38,7 +38,7 @@ def unpackint(s): #
   size = len(s)
   return sum((ord(c) << (8 * (size - i - 1))) for i,c in enumerate(s))
 
-def unpackint32(s, i=0): #
+def unpackuint32(s, i=0): #
   """
   @param  s  str|bytearray|QByteArray
   @param*  i  int  start index
@@ -46,7 +46,7 @@ def unpackint32(s, i=0): #
   """
   return (ord(s[i]) << 24) | (ord(s[i+1]) << 16) | (ord(s[i+2]) << 8) | ord(s[i+3]) if len(s) >= 4 + i else 0
 
-def packint(i, size=0): # int -> str
+def packuint(i, size=0): # int -> str
   """
   @param  i  int
   @param* size  int  total size after padding
@@ -57,12 +57,12 @@ def packint(i, size=0): # int -> str
     r = chr(0) + r
   return r
 
-def packint32(int32): # int -> str
+def packuint32(int32): # int -> str
   """
   @param  number  int32
   @return  str  4 bytes
   """
-  return packint(int32, INT32_SIZE)
+  return packuint(int32, INT32_SIZE)
 
 # String list
 
@@ -85,7 +85,7 @@ def packstrlist(l, encoding='utf8'):
       s = s.encode(encoding, errors='ignore')
     head.append(len(s))
     body.append(s)
-  return ''.join(imap(packint32, head)) + ''.join(body)
+  return ''.join(imap(packuint32, head)) + ''.join(body)
 
 def unpackstrlist(data, encoding='utf8'):
   """
@@ -97,22 +97,16 @@ def unpackstrlist(data, encoding='utf8'):
     dwarn("insufficient list size")
     return []
   offset = 0
-  count = unpackint32(data, offset); offset += INT32_SIZE
+  count = unpackuint32(data, offset); offset += INT32_SIZE
   if count == 0:
     dwarn("empty list")
     return []
-  if count < 0:
-    dwarn("negative count")
-    return []
   if count * INT32_SIZE > dataSize - offset:
-    dwarn("insufficient header size")
+    dwarn("insufficient head size")
     return []
   sizes = [] # [int]
   for i in range(0, count):
-    size = unpackint32(data, offset); offset += INT32_SIZE
-    if size < 0:
-      dwarn("negative string size")
-      return []
+    size = unpackuint32(data, offset); offset += INT32_SIZE
     sizes.append(size)
   if sum(sizes) > dataSize - offset:
     dwarn("insufficient body size")

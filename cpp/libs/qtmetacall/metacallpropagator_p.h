@@ -36,7 +36,7 @@ public:
   void connectSocketObserver();
   void disconnectSocketObserver();
 public slots:
-  void dumpSocket() const; // for Debug only
+  void dumpSocketInfo() const; // for Debug only
   void serverAcceptsConnection();
 };
 

@@ -6,7 +6,7 @@
 from sakurakit.skdebug import dprint, dwarn
 import socketpack
 
-MESSAGE_HEADER_SIZE = socketpack.INT_SIZE # = 4
+MESSAGE_HEAD_SIZE = socketpack.INT_SIZE # = 4
 
 def initsocket(socket):
   """
@@ -30,9 +30,9 @@ def writesocket(data, socket):
   #if not isinstance(data, QByteArray):
   #  data = QByteArray(data)
   size = len(data)
-  header = socketpack.packint32(size)
-  #data.prepend(header)
-  data = header + data
+  head = socketpack.packuint32(size)
+  #data.prepend(head)
+  data = head + data
   #assert len(data) == size
   ok = len(data) == socket.write(data)
   dprint("pass: ok = %s" % ok)
@@ -45,24 +45,21 @@ def readsocket(socket):
 
   The socket used in this function must have messageSize property initialized to 0
   """
-  headerSize = MESSAGE_HEADER_SIZE
+  headSize = MESSAGE_HEAD_SIZE
   bytesAvailable = socket.bytesAvailable()
-  if not socket.messageSize and bytesAvailable < headerSize:
-    dprint("insufficient header size")
-    return
   if not socket.messageSize:
-    ba = socket.read(headerSize)
-    size = socketpack.unpackint32(ba)
+    if bytesAvailable < headSize:
+      dprint("insufficient head size")
+      return
+    ba = socket.read(headSize)
+    size = socketpack.unpackuint32(ba)
     if not size:
       dwarn("empty message size")
       return
     socket.messageSize = size
-    bytesAvailable -= headerSize
+    bytesAvailable -= headSize
 
   bodySize = socket.messageSize
-  if bodySize < 0:
-    dwarn("negative data size = %s" % bodySize)
-    return
   if bodySize == 0:
     dwarn("zero data size")
     return ''

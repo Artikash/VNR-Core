@@ -22,7 +22,7 @@ MetaCallPropagatorPrivate::MetaCallPropagatorPrivate(QObject *parent)
   : Base(parent), filter(nullptr), socketObserver(nullptr), server(nullptr), socket(nullptr)
 {}
 
-void MetaCallPropagatorPrivate::dumpSocket() const
+void MetaCallPropagatorPrivate::dumpSocketInfo() const
 {
   if (socket)
     DOUT("socket"
@@ -60,11 +60,11 @@ void MetaCallPropagatorPrivate::serverAcceptsConnection()
     socket = nullptr;
   if (filter)
     filter->setSocket(socket);
-  //dumpSocket();
+  //dumpSocketInfo();
   if (socket) {
 #ifdef DEBUG
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(dumpSocket()));
-    connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), SLOT(dumpSocket()));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(dumpSocketInfo()));
+    connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), SLOT(dumpSocketInfo()));
 #endif // DEBUG
     connectSocketObserver();
   }
@@ -201,8 +201,8 @@ bool MetaCallPropagator::startClient(const QString &address, int port)
 
   d_->socket = new QTcpSocket(this);
 #ifdef DEBUG
-  connect(d_->socket, SIGNAL(error(QAbstractSocket::SocketError)), d_, SLOT(dumpSocket()));
-  connect(d_->socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), d_, SLOT(dumpSocket()));
+  connect(d_->socket, SIGNAL(error(QAbstractSocket::SocketError)), d_, SLOT(dumpSocketInfo()));
+  connect(d_->socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), d_, SLOT(dumpSocketInfo()));
 #endif // DEBUG
   d_->socket->connectToHost(QHostAddress(address), port);
 

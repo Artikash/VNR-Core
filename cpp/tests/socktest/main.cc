@@ -8,12 +8,11 @@
 
 int main(int argc, char *argv[])
 {
-  QCoreApplication a(argc, argv);
   QByteArray data;
 
   int x = 100;
-  data = SocketService::packInt32(x);
-  x = SocketService::unpackInt32(data);
+  data = SocketService::packUInt32(x);
+  x = SocketService::unpackUInt32(data);
   qDebug() << x;
 
   QStringList l = QStringList() << "hello" << "world";
@@ -21,8 +20,21 @@ int main(int argc, char *argv[])
   l = SocketService::unpackStringList(data);
   qDebug() << l;
 
-  //return a.exec();
-  return 0;
+  QCoreApplication a(argc, argv);
+  SocketClient cli;
+  cli.setPort(6002);
+  cli.start();
+  cli.waitForReady();
+  qDebug() << cli.isActive();
+  qDebug() << cli.isReady();
+  const char *text = "hello";
+  bool ok = cli.sendData(text);
+  qDebug() << ok;
+
+  cli.dumpSocketInfo();
+
+  QObject::connect(&cli, SIGNAL(disconnected()), qApp, SLOT(quit()));
+  return a.exec();
 }
 
 // EOF

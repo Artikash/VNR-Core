@@ -37,6 +37,8 @@ public:
 
   bool sendData(const QByteArray &data);
 
+  void dumpSocketInfo() const; // for debug only
+
 signals:
   void connected();
   void disconnected();
