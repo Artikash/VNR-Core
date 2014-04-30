@@ -67,6 +67,21 @@ def packuint32(i): # int -> str
   """
   return chr((i >> 24) & 0xff) + chr((i >> 16) & 0xff) + chr((i >> 8) & 0xff) + chr(i & 0xff)
 
+# Raw data
+
+def packdata(data):
+  """
+  @param  data  str not unicode
+  @return  str
+  """
+  # Explicitly use QByteArray to preserve message size
+  #if isinstance(data, unicode):
+  #  data = data.encode(encoding, errors=encodingErrors)
+  #if not isinstance(data, QByteArray):
+  #  data = QByteArray(data)
+  size = len(data)
+  return packuint32(size) + data
+
 # String list
 
 def _unicode(data, encoding): # str|QByteArray, str -> unicode

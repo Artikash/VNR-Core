@@ -35,7 +35,7 @@ public:
   void stop();
   void waitForReady();
 
-  bool sendData(const QByteArray &data, int waitTime = 0);
+  bool sendData(const QByteArray &data, int waitTime = 0, bool pack = true);
 
   // QAbstractSocket default wait time is 30 seconds
   bool waitForConnected(int interval = 30000);

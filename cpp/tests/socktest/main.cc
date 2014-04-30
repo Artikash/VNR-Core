@@ -1,7 +1,8 @@
 // main.cc
 // 4/29/2014 jichi
 
-#include "qtsocketsvc/socketclient.h"
+//#include "qtsocketsvc/socketclient.h"
+#include "qtsocketsvc/bufferedsocketclient.h"
 #include "qtsocketsvc/socketpack.h"
 #include <QtCore>
 
@@ -21,19 +22,17 @@ int main(int argc, char *argv[])
   qDebug() << l;
 
   QCoreApplication a(argc, argv);
-  SocketClient cli;
+  BufferedSocketClient cli;
   cli.setPort(6002);
   cli.start();
   cli.waitForReady();
   qDebug() << cli.isActive();
   qDebug() << cli.isReady();
   const char *text = "hello";
-  bool ok = cli.sendData(text);
-  qDebug() << ok;
+  cli.sendDataLater(text);
 
-  cli.waitForBytesWritten();
-  ok = cli.sendData(text);
-  qDebug() << ok;
+  //cli.waitForBytesWritten();
+  cli.sendDataLater(text);
 
   //cli.dumpSocketInfo();
 

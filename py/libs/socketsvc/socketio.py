@@ -14,26 +14,18 @@ def initsocket(socket):
   """
   socket.messageSize = 0 # body size of the current message
 
-def writesocket(data, socket):
+def writesocket(data, socket, pack=True):
   """
   @param  data  str not unicode
   @param  socket  QAbstractSocket
+  @param* pack  bool  whether pack data
   @return  bool
 
   Passing unicode will crash Python
   """
   #assert isinstance(data, str)
-  ok = False
-  # Explicitly use QByteArray to preserve message size
-  #if isinstance(data, unicode):
-  #  data = data.encode(encoding, errors=encodingErrors)
-  #if not isinstance(data, QByteArray):
-  #  data = QByteArray(data)
-  size = len(data)
-  head = socketpack.packuint32(size)
-  #data.prepend(head)
-  data = head + data
-  #assert len(data) == size
+  if pack:
+    data = socketpack.packdata(data)
   ok = len(data) == socket.write(data)
   dprint("pass: ok = %s" % ok)
   return ok

@@ -12,6 +12,8 @@
 
 namespace SocketService {
 
+// Numbers
+
 enum { // number of bytes of an int32 number
   Int32Size = 4,
   UInt32Size = Int32Size
@@ -39,6 +41,13 @@ inline quint32 unpackUInt32(const QByteArray &data, int offset = 0)
       | (static_cast<quint32>(p[offset + 2]) <<  8)
       |  static_cast<quint32>(p[offset + 3]);
 }
+
+// Raw data
+
+inline QByteArray packData(const QByteArray &data)
+{ return packUInt32(data.size()) + data; }
+
+// StingList
 
 // Force using utf8 encoding
 QByteArray packStringList(const QStringList &l, const char *encoding = SOCKET_SERVICE_ENCODING);

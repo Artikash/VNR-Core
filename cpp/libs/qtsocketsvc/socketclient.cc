@@ -36,15 +36,15 @@ public:
     q_->connect(socket, SIGNAL(disconnected()), SIGNAL(disconnected()));
   }
 
-  bool writeSocket(const QByteArray &data);
+  bool writeSocket(const QByteArray &data, bool pack);
   QByteArray readSocket();
 
   void dumpSocketInfo() const; // for debug only
 };
 
 
-bool SocketClientPrivate::writeSocket(const QByteArray &data)
-{ return socket && SocketService::writeSocket(socket, data); }
+bool SocketClientPrivate::writeSocket(const QByteArray &data, bool pack)
+{ return socket && SocketService::writeSocket(socket, data, pack); }
 
 QByteArray SocketClientPrivate::readSocket()
 {
@@ -130,9 +130,9 @@ void SocketClient::waitForReady()
 
 // I/O:
 
-bool SocketClient::sendData(const QByteArray &data, int waitTime)
+bool SocketClient::sendData(const QByteArray &data, int waitTime, bool pack)
 {
-  bool ok = d_->writeSocket(data);
+  bool ok = d_->writeSocket(data, pack);
   if (ok && waitTime)
     ok = d_->socket->waitForBytesWritten(waitTime);
   return ok;

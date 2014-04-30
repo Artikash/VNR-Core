@@ -8,11 +8,11 @@ if __name__ == '__main__':
 
 __all__ = ['SocketClient']
 
-from PySide.QtCore import QObject, Signal
+from PySide.QtCore import QObject, Signal, QTimer
 #from PySide.QtNetwork import QAbstractSocket
 from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint
-import socketio
+import socketio, socketpack
 
 class SocketClient(QObject):
 
@@ -26,8 +26,13 @@ class SocketClient(QObject):
 
   dataReceived = Signal(bytearray) # data
 
-  def sendData(self, data, waitTime=0):  # str -> bool
-    ok = self.__d.writeSocket(data)
+  def sendData(self, data, waitTime=0, **kwargs):
+    """
+    @param  data  str or unicode
+    @param* waitTime  int
+    @param* pack  bool  whether prepend header to data
+    """
+    ok = self.__d.writeSocket(data, **kwargs)
     if ok and waitTime:
       ok = self.__d.socket.waitForBytesWritten(waitTime)
     return ok
@@ -114,12 +119,12 @@ class _SocketClient(object):
         else:
           self.q.dataReceived.emit(data)
 
-  def writeSocket(self, data):
+  def writeSocket(self, data, pack=True):
     if not self.socket:
       return False;
     if isinstance(data, unicode):
       data = data.encode(self.encoding, errors='ignore')
-    return socketio.writesocket(data, self.socket)
+    return socketio.writesocket(data, self.socket, pack=pack)
 
   def dumpSocketInfo(self): # for debug only
     if self.socket:
@@ -130,11 +135,45 @@ class _SocketClient(object):
       dprint("state = %s" % self.socket.state())
       dprint("error = %s" % self.socket.errorString())
 
+# Cached
+
+class BufferedSocketClient(SocketClient):
+
+  def __init__(self, parent=None):
+    super(BufferedSocketClient, self).__init__(parent)
+    self.__d = _BufferedSocketClient(self)
+
+  def sendDataLater(self, data, interval=200, waitTime=0):
+    self.__d.sendBuffer += socketpack.packdata(data)
+    self.__d.sendTimer.start(interval)
+    self.__d.sendWaitTime = waitTime
+
+  def flushSendBuffer(self): self.__d.flushSendBuffer()
+
+class _BufferedSocketClient(object):
+  def __init__(self, q):
+    self.q_sendData = q.sendData
+
+    self.sendBuffer = '' # str
+    self.sendWaitTime = 0 # int
+
+    self.sendTimer = t = QTimer(q)
+    t.setSingleShot(True)
+    t.timeout.connect(self.flushSendBuffer)
+
+  def flushSendBuffer(self):
+    if self.sendTimer.isActive():
+      self.sendTimer.stop()
+    if self.sendBuffer:
+      self.q_sendData(self.sendBuffer, waitTime=self.sendWaitTime, pack=False)
+      self.sendBuffer = ''
+
 if __name__ == '__main__':
   import sys
   from PySide.QtCore import QCoreApplication
   app =  QCoreApplication(sys.argv)
-  c = SocketClient()
+  #c = SocketClient()
+  c = BufferedSocketClient()
   c.setPort(6002)
   def f(data):
     print data, type(data), len(data)
@@ -147,24 +186,26 @@ if __name__ == '__main__':
   #t = "hello"
   #t = u"こんにちは"
 
+  interval = 200
+
   t = '0' * 100
   #print t
-  c.sendData(t, 30000)
+  c.sendDataLater(t)
   t = '1' * 100
   #print t
-  c.sendData(t, 30000)
+  c.sendDataLater(t)
   t = '2' * 100
   #print t
-  c.sendData(t, 30000)
+  c.sendDataLater(t)
   t = '3' * 100
   #print t
-  c.sendData(t, 30000)
+  c.sendDataLater(t)
   t = '4' * 100
   #print t
-  c.sendData(t, 30000)
+  c.sendDataLater(t)
   t = '5' * 100
   #print t
-  c.sendData(t, 30000)
+  c.sendDataLater(t)
   print c.isActive()
 
   #t = '1' * 100

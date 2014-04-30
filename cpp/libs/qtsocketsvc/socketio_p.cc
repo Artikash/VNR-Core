@@ -7,6 +7,16 @@
 #define DEBUG "socketio_p"
 #include "sakurakit/skdebug.h"
 
+bool SocketService::writeSocket(QAbstractSocket *socket, const QByteArray &data, bool pack)
+{
+  Q_ASSERT(socket);
+  if (pack) {
+    QByteArray packet = packData(data);
+    return socket->write(packet) == packet.size();
+  } else
+    return socket->write(data) == data.size();
+}
+
 QByteArray SocketService::readSocket(QAbstractSocket *socket, quint32 &dataSize)
 {
   Q_ASSERT(socket);
@@ -40,14 +50,6 @@ QByteArray SocketService::readSocket(QAbstractSocket *socket, quint32 &dataSize)
   QByteArray data = socket->read(dataSize);
   dataSize = 0;
   return data;
-}
-
-bool SocketService::writeSocket(QAbstractSocket *socket, const QByteArray &data)
-{
-  Q_ASSERT(socket);
-  int size = data.size();
-  QByteArray packet = packUInt32(size) + data;
-  return socket->write(packet) == packet.size();
 }
 
 // EOF

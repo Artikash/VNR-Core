@@ -9,12 +9,14 @@ DEPENDPATH += $$PWD
 QT += core network
 
 HEADERS += \
+  $$PWD/bufferedsocketclient.h \
   $$PWD/socketdef.h \
   $$PWD/socketclient.h \
   $$PWD/socketio_p.h \
   $$PWD/socketpack.h
 
 SOURCES += \
+  $$PWD/bufferedsocketclient.cc \
   $$PWD/socketclient.cc \
   $$PWD/socketio_p.cc
 

@@ -13,7 +13,7 @@ QT_FORWARD_DECLARE_CLASS(QAbstractSocket)
 namespace SocketService {
 
 QByteArray readSocket(QAbstractSocket *socket, quint32 &dataSize);
-bool writeSocket(QAbstractSocket *socket, const QByteArray &data);
+bool writeSocket(QAbstractSocket *socket, const QByteArray &data, bool pack = true);
 
 } // SocketService
 
