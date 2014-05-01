@@ -1,9 +1,9 @@
 #pragma once
 // enginehijack.h
-// 4/26/2014 jichi
+// 1/27/2013 jichi
 
-// TODO: Hijack GDI functions here
 namespace Engine {
+void overrideModules();
 } // namespace Engine
 
 // EOF

@@ -4,7 +4,6 @@
 
 namespace Ui {
 void overrideModules();
-void overrideModuleFunctions(void *hModule); // HMODULE
 } // namespace Ui
 
 // EOF

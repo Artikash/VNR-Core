@@ -53,6 +53,7 @@ HEADERS += \
   engine/enginedef.h \
   engine/enginehash.h \
   engine/enginehijack.h \
+  engine/enginehijack_p.h \
   engine/enginemanager.h \
   ui/uidriver.h \
   ui/uidriver_p.h \
@@ -71,6 +72,7 @@ SOURCES += \
   driver/rpccli.cc \
   engine/enginedriver.cc \
   engine/enginehijack.cc \
+  engine/enginehijack_p.cc \
   engine/enginemanager.cc \
   ui/uidriver.cc \
   ui/uidriver_p.cc \

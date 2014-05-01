@@ -71,9 +71,8 @@ void Ui::overrideModules()
   });
 }
 
-void Ui::overrideModuleFunctions(LPVOID pModule)
+void Ui::overrideModuleFunctions(HMODULE hModule)
 {
-  HMODULE hModule = (HMODULE)pModule;
   BOOST_FOREACH (const FunctionInfo &fn, UI_HIJACK_FUNCTIONS) {
     PVOID ret = WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
     if (ret) {

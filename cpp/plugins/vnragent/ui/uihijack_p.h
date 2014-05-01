@@ -1,6 +1,6 @@
 #pragma once
 
-// myfunc_p.h
+// uihijack_p.h
 // 1/27/2013 jichi
 
 #include <windows.h>
@@ -19,6 +19,8 @@ struct FunctionInfo {
   LPCSTR moduleName;
   LPVOID functionAddress;
 };
+
+void overrideModuleFunctions(HMODULE hModule);
 
 // - KERNEL32 -
 
