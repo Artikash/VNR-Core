@@ -73,12 +73,10 @@ void Ui::overrideModules()
 
 void Ui::overrideModuleFunctions(HMODULE hModule)
 {
-  BOOST_FOREACH (const FunctionInfo &fn, UI_HIJACK_FUNCTIONS) {
-    PVOID ret = WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
-    if (ret) {
+  BOOST_FOREACH (const FunctionInfo &fn, UI_HIJACK_FUNCTIONS)
+    if (PVOID ret = WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress)) {
       //growl::debug(fn.functionName); // success
     }
-  }
 }
 
 // - My Functions -

@@ -37,7 +37,7 @@ QT      -= gui
 #LIBS    += -ld3d9 -L$$D3D_HOME/lib/x86
 
 #LIBS    += -luser32 -lpsapi
-#LIBS    += -lgdi32 # needed by game engines
+LIBS    += -lgdi32 # needed by game engines
 
 ## Sources
 

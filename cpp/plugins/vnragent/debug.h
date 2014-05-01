@@ -14,7 +14,13 @@
 inline void dmsg(const char *message)
 { ::MessageBoxA(nullptr, message, "VNR Message", MB_OK); }
 
+inline void dmsg(char *message)
+{ ::MessageBoxA(nullptr, message, "VNR Message", MB_OK); }
+
 inline void dmsg(const wchar_t *message)
+{ ::MessageBoxW(nullptr, message, L"VNR Message", MB_OK); }
+
+inline void dmsg(wchar_t *message)
 { ::MessageBoxW(nullptr, message, L"VNR Message", MB_OK); }
 
 #ifdef QT_CORE_LIB

@@ -73,12 +73,10 @@ void Engine::overrideModules()
 
 void Engine::overrideModuleFunctions(HMODULE hModule)
 {
-  BOOST_FOREACH (const FunctionInfo &fn, ENGINE_HIJACK_FUNCTIONS) {
-    PVOID ret = WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress);
-    if (ret) {
+  BOOST_FOREACH (const FunctionInfo &fn, ENGINE_HIJACK_FUNCTIONS)
+    if (PVOID ret = WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress)) {
       //growl::debug(fn.functionName); // success
     }
-  }
 }
 
 // EOF

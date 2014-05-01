@@ -9,7 +9,8 @@
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 #include <QtCore/QStringList>
-#include <QtCore/QDebug>
+#include <QtCore/QTextCodec>
+//#include <QDebug>
 
 /** Private class */
 
@@ -18,16 +19,27 @@ class MajiroEnginePrivate
 {
   typedef MajiroEngine Q;
 
+  /**
+   *  Observeations from レミニセンス:
+   *  - arg1 of the scenario is a fixed portable value.
+   *  - arg2 of the scenario is not portable, but a constant for each run.
+   *  - arg1 and arg2 2of both the name and other texts are random number.
+   *  - arg2's first 4 bytes of name and scenario texts are the same.
+   *  - arg4 is not portable, but a contant for each run.
+   *  - arg5 is aways 1.
+   */
   static Engine::TextRole roleOf(char arg1, int arg2, int arg4, int arg5)
   {
-    Q_UNUSED(arg2)
     Q_UNUSED(arg4)
     Q_UNUSED(arg5)
-    switch (arg1) {
-    case 0: return Engine::NameRole;
-    //case 1: return Engine::NameRole;
-    default: return Engine::ScenarioRole;
-    }
+    enum { ScenarioMask = 0xffff0000 };
+    static int lastScenarioArg2_;
+    if (arg1 == '0')
+      lastScenarioArg2_ = arg2;
+      return Engine::ScenarioRole; // hidetaka?
+    if (lastScenarioArg2_ & ScenarioMask == arg2 & ScenarioMask)
+      return Engine::NameRole;
+    return Engine::OtherRole;
   }
 
 public:
@@ -52,14 +64,17 @@ public:
 
   static int newdraw(char arg1, int arg2, const char *str, int arg4, int arg5)
   {
-    //qDebug() << arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
+    //qDebug() << (int)arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
     //return olddraw(arg1, arg2, str, arg4, arg5);
     auto q = static_cast<Q *>(AbstractEngine::instance());
     auto role = roleOf(arg1, arg2, arg4, arg5);
     QByteArray data = str;
     QString t = q->dispatchText(data, role);
-    if (!t.isEmpty())
-      return olddraw(arg1, arg2, t.toLocal8Bit(), arg4, arg5);
+    if (!t.isEmpty()) {
+      //data = t.toLocal8Bit();
+      data = QTextCodec::codecForName("SHIFT-JIS")->fromUnicode(t);
+      return olddraw(arg1, arg2, data, arg4, arg5);
+    }
 
     return olddraw(arg1, arg2, str, arg4, arg5);
 

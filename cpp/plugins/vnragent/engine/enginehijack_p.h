@@ -6,7 +6,8 @@
 #include <windows.h>
 
 #define ENGINE_HIJACK_FUNCTIONS_INITIALIZER \
-   { "MultiByteToWideChar", "kernel32.dll", Engine::MyMultiByteToWideChar }
+   { "TextOutA", "gdi32.dll", Engine::MyTextOutA }
+   //{ "MultiByteToWideChar", "kernel32.dll", Engine::MyMultiByteToWideChar }
 
 namespace Engine {
 
@@ -27,6 +28,14 @@ int WINAPI MyMultiByteToWideChar(
   _In_       int cbMultiByte,
   _Out_opt_  LPWSTR lpWideCharStr,
   _In_       int cchWideChar
+);
+
+BOOL WINAPI MyTextOutA(
+  _In_  HDC hdc,
+  _In_  int nXStart,
+  _In_  int nYStart,
+  _In_  LPCSTR lpString,
+  _In_  int cchString
 );
 
 } // namespace Engine
