@@ -13,7 +13,7 @@
 #include <QtCore/QStringList>
 //#include "debug.h"
 
-#define ENGINE_EVENT_NAME "vnragent_engine"
+#define ENGINE_SLEEP_EVENT "vnragent_engine_sleep"
 #define D_SYNCHRONIZE  win_mutex_locker<D::mutex_type> d_locker(&d_->mutex);
 
 #define DEBUG "enginemanager"
@@ -23,7 +23,7 @@
 
 class EngineManagerPrivate
 {
-  win_event event;
+  win_event sleepEvent;
 public:
   typedef win_mutex<CRITICAL_SECTION> mutex_type;
   mutex_type mutex;
@@ -31,7 +31,7 @@ public:
   QHash<qint64, QString> trs;   // cached, {key:text}
 
   EngineManagerPrivate()
-    : event(ENGINE_EVENT_NAME) {}
+    : sleepEvent(ENGINE_SLEEP_EVENT) {}
 
   // - Lock -
   void lock() { mutex.lock(); }
@@ -39,15 +39,16 @@ public:
 
   // - Event -
 
-  enum { SleepTimeout = 5000 }; // at most 5 seconds
+  //enum { SleepTimeout = 5000 }; // at most 5 seconds
+  enum { SleepTimeout = 1000 }; // at most 1 second
   void sleep(int interval = SleepTimeout)
   {
-    event.signal(false);
-    event.wait(interval);
-    event.signal(false);
+    sleepEvent.signal(false);
+    sleepEvent.wait(interval);
+    sleepEvent.signal(false);
   }
 
-  void notify() { event.signal(true); }
+  void notify() { sleepEvent.signal(true); }
 };
 
 /** Public class */
@@ -98,17 +99,17 @@ QString EngineManager::findTranslation(qint64 hash, int role) const
   return d_->trs.value(key);
 }
 
-#include "driver/rpccli.h"
 QString EngineManager::waitForTranslation(qint64 hash, int role) const
 {
   enum { WaitTime = 3000 }; // wait for at most 3 seconds
   QString ret = findTranslation(hash, role);
   if (ret.isEmpty()) {
-    //d_->sleep();
-    if (RpcClient::instance()->waitForDataReceived(WaitTime))
-      ret = findTranslation(hash, role);
+    d_->sleep();
+    //if (RpcClient::instance()->waitForDataReceived(WaitTime))
+    ret = findTranslation(hash, role);
   }
   return ret;
+}
 
   //D_SYNCHRONIZE
   //qint64 key = Engine::hashTextKey(hash, role);
@@ -121,7 +122,6 @@ QString EngineManager::waitForTranslation(qint64 hash, int role) const
   //  it = d_->trs.constFind(key);
   //}
   //return it == d_->trs.constEnd() ? QString() : it.value();
-}
 
 // EOF
 

@@ -7,7 +7,7 @@ include($$LIBDIR/detoursutil/detoursutil.pri)
 include($$LIBDIR/libqxt/libqxt.pri)
 include($$LIBDIR/memdbg/memdbg.pri)
 include($$LIBDIR/ntinspect/ntinspect.pri)
-#include($$LIBDIR/qtembedded/qtembedded.pri)
+#include($$LIBDIR/qtembedded/qtembedded.pri) # needed by app runner
 #include($$LIBDIR/qtmetacall/qtmetacall.pri)
 include($$LIBDIR/qtjson/qtjson.pri)
 include($$LIBDIR/qtsocketsvc/qtsocketcli.pri)

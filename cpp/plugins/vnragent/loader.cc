@@ -45,7 +45,6 @@ QtEmbedded::ApplicationRunner *appRunner_;
 void Loader::initWithInstance(HINSTANCE hInstance)
 {
   //::GetModuleFileNameW(hInstance, MODULE_PATH, MAX_PATH);
-
   QTextCodec *codec = QTextCodec::codecForName("UTF-8");
   QTextCodec::setCodecForCStrings(codec);
   QTextCodec::setCodecForTr(codec);

@@ -8,13 +8,13 @@ WINITER_BEGIN_NAMESPACE
 
 static BOOL CALLBACK iterThreadChildWindowsProc(HWND hWnd, LPARAM lParam)
 {
-  typedef boost::function<void (HWND)> fun_type;
+  typedef std::function<void (HWND)> fun_type;
   (*(fun_type *)lParam)(hWnd);
   ::EnumChildWindows(hWnd, (WNDENUMPROC)iterThreadChildWindowsProc, lParam);
   return TRUE;
 }
 
-void iterThreadChildWindows(DWORD threadId, const boost::function<void (HWND)> &closure)
+void iterThreadChildWindows(DWORD threadId, const std::function<void (HWND)> &closure)
 {
   if (!threadId)
     threadId = ::GetCurrentThreadId();

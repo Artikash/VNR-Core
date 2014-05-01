@@ -6,7 +6,7 @@
 
 WINITER_BEGIN_NAMESPACE
 
-void iterProcessModules(HANDLE hProcess, const boost::function<void (HMODULE)> &closure)
+void iterProcessModules(HANDLE hProcess, const std::function<void (HMODULE)> &closure)
 {
   if (!hProcess)
     hProcess = ::GetCurrentProcess();

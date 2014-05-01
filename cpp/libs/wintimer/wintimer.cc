@@ -5,7 +5,7 @@
 
 //#define DEBUG "wintimer.cc"
 #include "sakurakit/skdebug.h"
-
+#include <windows.h>
 WINTIMER_BEGIN_NAMESPACE
 
 void WinTimer::singleShot(int msecs, const function_type &f, WId parent)
@@ -13,9 +13,9 @@ void WinTimer::singleShot(int msecs, const function_type &f, WId parent)
   Self *t = new Self(parent);
   t->setInterval(msecs);
   t->setSingleShot(true);
-  t->setFunction([t, &f] {
-    f_();
-    delete t_;
+  t->setFunction([=] { // Copy function f instead of pass by reference.
+    f();
+    delete t;
   });
   t->start();
 }

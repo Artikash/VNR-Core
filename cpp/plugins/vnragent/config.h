@@ -27,13 +27,13 @@
  *  This is not needed to translate UI text.
  *  But it is indispensible to hijack engine which require blocking the main thread.
  */
-//#define VNRAGENT_ENABLE_THREAD
+#define VNRAGENT_ENABLE_THREAD
 
 /**
  *  Use timer to drive event loop instead of exec.
  *  This is needed if VNRAGENT_ENABLE_THREAD is disabled.
  */
-#define VNRAGENT_ENABLE_APPRUNNER
+//#define VNRAGENT_ENABLE_APPRUNNER
 
 #ifdef VNRAGENT_ENABLE_APPRUNNER
 # define QT_EVENTLOOP_INTERVAL   10 // in ms

@@ -78,7 +78,9 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
       return FALSE;
 #else
     // It is critical to launch Qt application in the same thread as main window
-    WinTimer::singleShot(100, boost::bind(Loader::initWithInstance, hInstance));
+    WinTimer::singleShot(100, [hInstance] {
+      Loader::initWithInstance(hInstance);
+    });
 #endif // VNRAGENT_ENABLE_THREAD
     break;
 
