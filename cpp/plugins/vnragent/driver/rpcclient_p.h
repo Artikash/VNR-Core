@@ -1,6 +1,6 @@
 #pragma once
 
-// rpccli_p.h
+// rpcclient_p.h
 // 2/1/2013 jichi
 
 #include "config.h"

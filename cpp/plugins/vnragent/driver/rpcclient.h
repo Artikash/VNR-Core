@@ -1,6 +1,6 @@
 #pragma once
 
-// rpccli.h
+// rpcclient.h
 // 2/1/2013 jichi
 
 #include "sakurakit/skglobal.h"

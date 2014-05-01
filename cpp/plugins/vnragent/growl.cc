@@ -2,7 +2,7 @@
 // 2/1/2013 jichi
 
 #include "growl.h"
-#include "driver/rpccli.h"
+#include "driver/rpcclient.h"
 
 void growl::msg(const QString &msg) { if (auto p = RpcClient::instance()) p->growlMessage(msg); }
 void growl::warn(const QString &msg) { if (auto p = RpcClient::instance()) p->growlWarning(msg); }

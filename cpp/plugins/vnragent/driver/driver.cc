@@ -3,7 +3,7 @@
 
 #include "driver/driver.h"
 #include "driver/driver_p.h"
-#include "driver/rpccli.h"
+#include "driver/rpcclient.h"
 #include "engine/enginedriver.h"
 #include "ui/uidriver.h"
 

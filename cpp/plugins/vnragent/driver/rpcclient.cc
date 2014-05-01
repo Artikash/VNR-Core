@@ -1,15 +1,15 @@
-// rpccli.cc
+// rpcclient.cc
 // 2/1/2013 jichi
 #include "config.h"
-#include "driver/rpccli.h"
-#include "driver/rpccli_p.h"
+#include "driver/rpcclient.h"
+#include "driver/rpcclient_p.h"
 #include "qtsocketsvc/bufferedsocketclient.h"
 #include "qtsocketsvc/socketpack.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QHash>
 #include <QtCore/QTimer>
 
-#define DEBUG "rpccli"
+#define DEBUG "rpcclient"
 #include "sakurakit/skdebug.h"
 
 /** Private class */

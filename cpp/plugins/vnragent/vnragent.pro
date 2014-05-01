@@ -47,8 +47,8 @@ TARGET  = vnragent
 HEADERS += \
   driver/driver.h \
   driver/driver_p.h \
-  driver/rpccli.h \
-  driver/rpccli_p.h \
+  driver/rpcclient.h \
+  driver/rpcclient_p.h \
   engine/enginedriver.h \
   engine/enginedef.h \
   engine/enginehash.h \
@@ -69,7 +69,7 @@ HEADERS += \
 
 SOURCES += \
   driver/driver.cc \
-  driver/rpccli.cc \
+  driver/rpcclient.cc \
   engine/enginedriver.cc \
   engine/enginehijack.cc \
   engine/enginehijack_p.cc \
