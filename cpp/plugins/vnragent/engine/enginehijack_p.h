@@ -6,6 +6,7 @@
 #include <windows.h>
 
 #define ENGINE_HIJACK_FUNCTIONS_INITIALIZER \
+   { "CreateFontIndirectA", "gdi32.dll", Engine::MyCreateFontIndirectA }, \
    { "TextOutA", "gdi32.dll", Engine::MyTextOutA }
    //{ "MultiByteToWideChar", "kernel32.dll", Engine::MyMultiByteToWideChar }
 
@@ -21,14 +22,18 @@ void overrideModuleFunctions(HMODULE hModule);
 
 // - KERNEL32 -
 
-int WINAPI MyMultiByteToWideChar(
-  _In_       UINT CodePage,
-  _In_       DWORD dwFlags,
-  _In_       LPCSTR lpMultiByteStr,
-  _In_       int cbMultiByte,
-  _Out_opt_  LPWSTR lpWideCharStr,
-  _In_       int cchWideChar
+HFONT WINAPI MyCreateFontIndirectA(
+  _In_  const LOGFONTA *lplf
 );
+
+//int WINAPI MyMultiByteToWideChar(
+//  _In_       UINT CodePage,
+//  _In_       DWORD dwFlags,
+//  _In_       LPCSTR lpMultiByteStr,
+//  _In_       int cbMultiByte,
+//  _Out_opt_  LPWSTR lpWideCharStr,
+//  _In_       int cchWideChar
+//);
 
 BOOL WINAPI MyTextOutA(
   _In_  HDC hdc,

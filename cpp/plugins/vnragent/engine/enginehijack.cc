@@ -71,12 +71,13 @@ void Engine::overrideModules()
   });
 }
 
+#include "growl.h"
+#include <QtCore/QString>
 void Engine::overrideModuleFunctions(HMODULE hModule)
 {
   BOOST_FOREACH (const FunctionInfo &fn, ENGINE_HIJACK_FUNCTIONS)
-    if (PVOID ret = WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress)) {
-      //growl::debug(fn.functionName); // success
-    }
+    if (PVOID ret = WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress))
+      growl::msg(QString("Hijack function %1").arg(fn.functionName)); // success
 }
 
 // EOF

@@ -38,7 +38,7 @@ EngineDriver::EngineDriver(QObject *parent)
       // FIXME: Only one instance can be send at a time?!
       growl::notify(tr("Recognize game engine: %1").arg(p->name()));
 
-      //Engine::overrideModules();
+      Engine::overrideModules();
     }
 
   //::instance_ = this;

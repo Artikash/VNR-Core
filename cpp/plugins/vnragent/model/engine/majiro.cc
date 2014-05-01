@@ -10,7 +10,7 @@
 #include <qt_windows.h>
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
-//#include <QDebug>
+#include <QDebug>
 
 /** Private class */
 
@@ -34,10 +34,10 @@ class MajiroEnginePrivate
     Q_UNUSED(arg5)
     enum { ScenarioMask = 0xffff0000 };
     static int lastScenarioArg2_;
-    if (arg1 == '0')
+    if (arg1 == '0') // 48
       lastScenarioArg2_ = arg2;
       return Engine::ScenarioRole; // hidetaka?
-    if (lastScenarioArg2_ & ScenarioMask == arg2 & ScenarioMask)
+    if ((lastScenarioArg2_ & ScenarioMask) == (arg2 & ScenarioMask))
       return Engine::NameRole;
     return Engine::OtherRole;
   }
@@ -64,7 +64,7 @@ public:
 
   static int newdraw(char arg1, int arg2, const char *str, int arg4, int arg5)
   {
-    //qDebug() << (int)arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
+    qDebug() << (int)arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
     //return olddraw(arg1, arg2, str, arg4, arg5);
     auto q = static_cast<Q *>(AbstractEngine::instance());
     auto role = roleOf(arg1, arg2, arg4, arg5);
@@ -72,7 +72,9 @@ public:
     QString t = q->dispatchText(data, role);
     if (!t.isEmpty()) {
       //data = t.toLocal8Bit();
-      data = QTextCodec::codecForName("SHIFT-JIS")->fromUnicode(t);
+      //data = QTextCodec::codecForName("SHIFT-JIS")->fromUnicode(t);
+      //data = QTextCodec::codecForName("GBK")->fromUnicode(t);
+      data = QTextCodec::codecForName("GB2312")->fromUnicode(t);
       return olddraw(arg1, arg2, data, arg4, arg5);
     }
 
