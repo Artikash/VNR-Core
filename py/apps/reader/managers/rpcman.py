@@ -206,8 +206,7 @@ class _RpcServer(object):
       trans = _unmarshalBool(trans)
       self.q.engineTextReceived.emit(text, hash, role)
       if trans:
-        text = '//' + text
-        print 11111111,text,hash,role, len(text)
+        text = u'简体中文' + text
         self.callAgent('engine.text',
             text, _marshalInteger(hash), _marshalInteger(role))
     except ValueError:
