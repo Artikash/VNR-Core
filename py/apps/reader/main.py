@@ -509,7 +509,7 @@ class _MainObject(object):
     self.textManager.windowTranslationCleared.connect(ret.clearTranslation)
     self.textManager.windowTranslationChanged.connect(ret.sendTranslation)
 
-    ret.connected.connect(partial(
+    ret.agentConnected.connect(partial(
         self.gameManager.setWindowHookConnected, True))
 
     return ret
@@ -1742,7 +1742,7 @@ class MainObject(QObject):
     d.dataManager.submitDirtyComments()
 
     if d.gameManager.isWindowHookConnected:
-      d.rpcServer.disableClient()
+      d.rpcServer.disableAgent()
 
     # Stop earlier to give them time to send stop messages
     dprint("stop comets")

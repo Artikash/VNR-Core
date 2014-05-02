@@ -64,7 +64,7 @@ class SocketServer(QObject):
 
   isActive = isListening
 
-  def removeSocket(self, socket): # QTcpSocket
+  def closeSocket(self, socket): # QTcpSocket
     if socket.isOpen():
       socket.close()
     self.__d.deleteSocket(socket)

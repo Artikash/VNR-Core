@@ -1102,14 +1102,14 @@ class GameManager(QtCore.QObject):
         if not d.windowHookConnected and not textman.manager().hasWindowTexts():
           dprint("inject vnr agent to the game")
           vnragent.inject_process(d.game.pid)
-        rpcman.manager().enableClient()
+        rpcman.manager().enableAgent()
 
   def disableWindowHook(self):
     d = self.__d
     if d.game and d.game.pid:
       if d.windowHookConnected or textman.manager().hasWindowTexts():
         growl.msg(my.tr("Stop translating window text"))
-      rpcman.manager().disableClient()
+      rpcman.manager().disableAgent()
 
   def setRemovesRepeat(self, value):
     """

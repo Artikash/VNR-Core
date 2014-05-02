@@ -92,10 +92,16 @@ class RpcServer(QObject):
     return self.__d.server.isActive()
 
   activated = Signal()
-  connected = Signal()
-  disconnected = Signal() # TODO: Use this signal with isActive to check if game process is running
+
+  # Agent
+
+  agentConnected = Signal(long) # pid
+  agentDisconnected = Signal(long) # pid
   windowTextsReceived = Signal(dict) # {long hash:unicode text}
   engineTextReceived = Signal(unicode, c_longlong, int) # text, hash, role
+
+  def isAgentConnected(self): return bool(self.__d.agentSocket)
+  def closeAgent(self): self.__d.closeAgentSocket()
 
   def sendTranslation(self, data):
     """
@@ -107,14 +113,10 @@ class RpcServer(QObject):
     except TypeError, e:
       dwarn("failed to encode json: %s" % e)
 
-  def clearTranslation(self):
-    self.__d.callAgent('ui.clear')
-
-  def enableClient(self):
-    self.__d.callAgent('ui.enable')
-
-  def disableClient(self):
-    self.__d.callAgent('ui.disable')
+  # TODO: Change to all agent instead of just UI
+  def clearTranslation(self): self.__d.callAgent('ui.clear')
+  def enableAgent(self): self.__d.callAgent('ui.enable')
+  def disableAgent(self): self.__d.callAgent('ui.disable')
 
 @Q_Q
 class _RpcServer(object):
@@ -123,15 +125,25 @@ class _RpcServer(object):
     self.server.setPort(config.QT_METACALL_PORT)
     self.server.dataReceived.connect(self._onDataReceived)
 
+    self.server.disconnected.connect(self._onDisconnected)
+
+    self.agentSocket = None # QAbstractSocket
+    self.agentPid = 0 # long
+
   # Send
 
   def callAgent(self, *args):
-    data = socketpack.packstrlist(args)
-    # TODO: identify the agent socket
-    # Don't forget to check if it is active before senddata
-    self.server.broadcastData(data, waitTime=RPC_WAIT_TIME)
+    if self.agentSocket:
+      data = socketpack.packstrlist(args)
+      self.server.sendData(data, self.agentSocket, waitTime=RPC_WAIT_TIME)
 
   # Receive
+
+  def _onDisconnected(self, socket):
+    if socket is self.agentSocket:
+      self.agentSocket = None
+      self.q.agentDisconnected.emit(self.agentPid)
+      self.agentPid  = 0
 
   def _onDataReceived(self, data, socket):
     args = socketpack.unpackstrlist(data)
@@ -179,13 +191,24 @@ class _RpcServer(object):
     else:
       dwarn("unknown command: %s" % cmd)
 
+  def closeAgentSocket(self):
+    self.agentPid = 0
+    if self.agentSocket:
+      self.server.closeSocket(self.agentSocket)
+      self.agentSocket = None
+      self.q.agentDisconnected.emit()
+
   def _onAgentPing(self, socket, pid):
     """
     @param  socket  QTcpSocket
     @param  pid  long
     """
     growl.msg(my.tr("Window text translator is loaded"))
-    self.q.connected.emit() # SIGNAL TO BE CHANGED
+    if self.agentSocket:
+      self.server.closeSocket(self.agentSocket)
+    self.agentPid = pid
+    self.agentSocket = socket
+    self.q.agentConnected.emit(pid) # SIGNAL TO BE CHANGED
 
     #reply = {
     #  'debug': config.APP_DEBUG,
