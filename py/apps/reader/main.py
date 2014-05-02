@@ -506,8 +506,8 @@ class _MainObject(object):
     #ret.arguments.connect(q.open_, Qt.QueuedConnection)
 
     ret.windowTextsReceived.connect(self.textManager.addWindowTexts)
-    self.textManager.windowTranslationCleared.connect(ret.clearTranslation)
-    self.textManager.windowTranslationChanged.connect(ret.sendTranslation)
+    self.textManager.windowTranslationCleared.connect(ret.clearWindowTranslation)
+    self.textManager.windowTranslationChanged.connect(ret.sendWindowTranslation)
 
     ret.agentConnected.connect(partial(
         self.gameManager.setWindowHookConnected, True))

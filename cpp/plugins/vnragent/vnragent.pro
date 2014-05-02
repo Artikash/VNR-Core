@@ -46,6 +46,7 @@ TARGET  = vnragent
 
 HEADERS += \
   driver/maindriver.h \
+  driver/maindriver_p.h \
   driver/rpcclient.h \
   driver/rpcclient_p.h \
   driver/settings.h \

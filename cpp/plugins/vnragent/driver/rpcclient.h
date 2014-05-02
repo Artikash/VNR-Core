@@ -24,6 +24,7 @@ public:
 
   // - API -
 signals:
+  void disconnected(); // server disconnected
   void aborted(); // the last communication was aborted
 
   // UI

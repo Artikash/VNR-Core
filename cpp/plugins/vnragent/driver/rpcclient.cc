@@ -27,13 +27,14 @@ RpcClientPrivate::RpcClientPrivate(Q *q)
 
   connect(client, SIGNAL(dataReceived(QByteArray)), SLOT(onDataReceived(QByteArray)));
 
-  connect(client, SIGNAL(socketError()), SLOT(reconnect()), Qt::QueuedConnection);
+  connect(client, SIGNAL(disconnected()), q, SLOT(disconnected()));
+  connect(client, SIGNAL(disconnected()), q, SIGNAL(aborted()));
+  connect(client, SIGNAL(socketError()), q, SIGNAL(aborted()));
 
+  connect(client, SIGNAL(socketError()), SLOT(reconnect()), Qt::QueuedConnection);
   connect(client, SIGNAL(disconnected()), reconnectTimer, SLOT(start()));
   connect(client, SIGNAL(socketError()), reconnectTimer, SLOT(start()));
 
-  connect(client, SIGNAL(disconnected()), q, SIGNAL(aborted()));
-  connect(client, SIGNAL(socketError()), q, SIGNAL(aborted()));
 }
 
 bool RpcClientPrivate::reconnect()

@@ -103,7 +103,12 @@ class RpcServer(QObject):
   def isAgentConnected(self): return bool(self.__d.agentSocket)
   def closeAgent(self): self.__d.closeAgentSocket()
 
-  def sendTranslation(self, data):
+  def enableAgent(self): self.__d.callAgent('ui.enable')
+  def disableAgent(self): self.__d.callAgent('ui.disable')
+
+  def clearWindowTranslation(self): self.__d.callAgent('ui.clear')
+
+  def sendWindowTranslation(self, data):
     """
     @param  data  {hash:translation}
     """
@@ -112,11 +117,6 @@ class RpcServer(QObject):
       self.__d.callAgent('ui.text', data)
     except TypeError, e:
       dwarn("failed to encode json: %s" % e)
-
-  # TODO: Change to all agent instead of just UI
-  def clearTranslation(self): self.__d.callAgent('ui.clear')
-  def enableAgent(self): self.__d.callAgent('ui.enable')
-  def disableAgent(self): self.__d.callAgent('ui.disable')
 
 @Q_Q
 class _RpcServer(object):

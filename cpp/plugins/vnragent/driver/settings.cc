@@ -19,16 +19,18 @@ public:
 
 /** Public class */
 
-static Settings *instance_;
-Settings *Settings::instance() { return ::instance_; }
+//static Settings *instance_;
+//Settings *Settings::instance() { return ::instance_; }
 
 Settings::Settings(QObject *parent)
   : Base(parent), d_(new D)
-{ instance_ = this; }
+{
+  //instance_ = this;
+}
 
 Settings::~Settings()
 {
-  instance_ = nullptr;
+  //instance_ = nullptr;
   delete d_;
 }
 

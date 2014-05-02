@@ -15,7 +15,7 @@ class Settings : public QObject
   SK_EXTEND_CLASS(Settings, QObject)
   SK_DECLARE_PRIVATE(SettingsPrivate)
 public:
-  static Self *instance();
+  //static Self *instance();
 
   explicit Settings(QObject *parent = nullptr);
   ~Settings();
