@@ -9,13 +9,18 @@
 class SettingsPrivate
 {
 public:
+  bool uiTranslationEnabled;
   QString language;
+
+  SettingsPrivate()
+    : uiTranslationEnabled(false)
+  {}
 };
 
 /** Public class */
 
 static Settings *instance_;
-Settings *Settings::instance(){ return ::instance_; }
+Settings *Settings::instance() { return ::instance_; }
 
 Settings::Settings(QObject *parent)
   : Base(parent), d_(new D)
@@ -27,10 +32,13 @@ Settings::~Settings()
   delete d_;
 }
 
-#define DEFINE_PROPERTY(getter, setter, rettype, argtype) \
-  rettype Settings::getter() { return d_->getter; } \
-  void Settings::getter(argtype value) { d_->getter = value; }
+#define DEFINE_PROPERTY(property, getter, setter, rettype, argtype) \
+  rettype Settings::getter() \
+  { return d_->property; } \
+  void Settings::getter(argtype value)  \
+  { if (d_->property != value) { d_->property = value; emit property##Changed(value); } }
 
-DEFINE_PROPERTY(language, setLanguage, QString, const QString &)
+DEFINE_PROPERTY(language, language, setLanguage, QString, const QString &)
+DEFINE_PROPERTY(uiTranslationEnabled, isUiTranslationEnabled, setUiTranslationEnabled, bool, bool)
 
 // EOF

@@ -13,6 +13,7 @@ if __name__ == '__main__':
 RPC_WAIT_TIME = 3000 # wait time after sending data
 
 from socketsvc import socketcli, socketpack, socketsrv
+import config
 
 # Client
 
@@ -68,7 +69,7 @@ from PySide.QtCore import Signal, Qt, QObject
 from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dwarn
 from mytr import my
-import config, growl
+import growl
 
 @memoized
 def manager(): return RpcServer()
@@ -137,10 +138,11 @@ class _RpcServer(object):
     if not args:
       dwarn("unpack data failed")
       return
-    self._onCall(*args)
+    self._onCall(socket, *args)
 
-  def _onCall(self, cmd, *params): # on serverMessageReceived
+  def _onCall(self, socket, cmd, *params): # on serverMessageReceived
     """
+    @param  socket  QTcpSocket
     @param  cmd  str
     @param  params  [unicode]
     """
@@ -164,8 +166,7 @@ class _RpcServer(object):
       if params:
         pid = _unmarshalInteger(params[0])
         if pid:
-          growl.msg(my.tr("Window text translator is loaded"))
-          self.q.connected.emit()
+          self._onAgentPing(socket, pid)
     elif cmd == 'agent.ui.text':
       if params:
         self._onWindowTexts(params[0])
@@ -177,6 +178,22 @@ class _RpcServer(object):
 
     else:
       dwarn("unknown command: %s" % cmd)
+
+  def _onAgentPing(self, socket, pid):
+    """
+    @param  socket  QTcpSocket
+    @param  pid  long
+    """
+    growl.msg(my.tr("Window text translator is loaded"))
+    self.q.connected.emit() # SIGNAL TO BE CHANGED
+
+    #reply = {
+    #  'debug': config.APP_DEBUG,
+    #  'userLanguage': 'en', # TODO
+    #  'gameLanguage': 'en', # TODO
+    #}
+    #self.callAgent('config', json.dumps(reply))
+    self.callAgent('config.debug', self._marshalBool(config.APP_DEBUG))
 
   def _onWindowTexts(self, data):
     """

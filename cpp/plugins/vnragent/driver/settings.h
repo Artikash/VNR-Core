@@ -20,8 +20,17 @@ public:
   explicit Settings(QObject *parent = nullptr);
   ~Settings();
 
+public:
   QString language() const;
+  bool isUiTranslationEnabled() const;
+
+public slots:
   void setLanguage(const QString &v);
+  void setUiTranslationEnabled(bool v);
+
+signals:
+  void languageChanged(QString);
+  void uiTranslationEnabledChanged(bool);
 };
 
 // EOF

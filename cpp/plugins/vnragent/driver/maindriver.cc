@@ -3,6 +3,7 @@
 
 #include "driver/maindriver.h"
 #include "driver/rpcclient.h"
+#include "driver/settings.h"
 #include "engine/enginedriver.h"
 #include "hijack/hijackdriver.h"
 #include "ui/uidriver.h"
@@ -12,6 +13,7 @@
 class MainDriverPrivate
 {
 public:
+  Settings *settings;
   RpcClient *rpc;
   HijackDriver *hijack;
   EngineDriver *eng;
@@ -22,15 +24,22 @@ public:
 
 MainDriverPrivate::MainDriverPrivate(QObject *q)
 {
+  settings = new Setttings(q);
+
   rpc = new RpcClient(q);
+  {
+    QObject::connect(rpc, SIGNAL(enableUiRequested(bool)), settings, SLOT(setUiTranslationEnabled(bool)));
+  }
 
   hijack = new HijackDriver(q);
 
   ui = new UiDriver(q); // TODO: Selective create ui only if enabled at server side, i.e. only called by rpc
   {
     QObject::connect(ui, SIGNAL(translationRequested(QString)), rpc, SLOT(requestUiTranslation(QString)));
+
+    QObject::connect(settings, SIGNAL(uiTranslationEnabledChanged(bool)), ui, SLOT(setEnable(bool)));
+
     QObject::connect(rpc, SIGNAL(clearUiRequested()), ui, SLOT(clearTranslation()));
-    QObject::connect(rpc, SIGNAL(enableUiRequested(bool)), ui, SLOT(setEnable(bool)));
     QObject::connect(rpc, SIGNAL(uiTranslationReceived(QString)), ui, SLOT(updateTranslation(QString)));
   }
 
@@ -45,7 +54,6 @@ MainDriverPrivate::MainDriverPrivate(QObject *q)
         Qt::QueuedConnection);
   }
 }
-
 
 /** Public class */
 
