@@ -1,5 +1,5 @@
 # coding: utf8
-# vnragent.py
+# inject.py
 # 2/3/2013 jichi
 # Windows only
 
@@ -9,7 +9,7 @@ if skos.WIN:
   import config
   from sakurakit.skdebug import dprint
 
-  def inject_process(pid):
+  def inject_agent(pid):
     """
     @param  pid  ulong
     @return  bool
@@ -23,5 +23,8 @@ if skos.WIN:
       ret = skwinsec.injectdll(dllpath, pid=pid) and ret
     dprint("leave: ret = %s" % ret)
     return ret
+
+else:
+  def inject_agent(pid): return False
 
 # EOF

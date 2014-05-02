@@ -267,6 +267,14 @@ class _MainObject(object):
   #    skevents.runlater(self.googleTtsEngine.warmup, 2000)
 
   @memoizedproperty
+  def gameAgent(self):
+    dprint("create game agent")
+    import gameagent
+    ret = gameagent.manager()
+    ret.setParent(self.q)
+    return ret
+
+  @memoizedproperty
   def textManager(self):
     dprint("create text manager")
     import textman
@@ -1222,6 +1230,7 @@ class MainObject(QObject):
     dm = d.dataManager
     tm = d.textManager
     gm = d.gameManager
+    d.gameAgent
 
     d.termManager
     d.translatorManager
