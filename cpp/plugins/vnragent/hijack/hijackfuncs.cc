@@ -1,7 +1,7 @@
-// uihijack.cc
+// hijackfuncs.cc
 // 1/27/2013 jichi
-#include "ui/uihijack.h"
-#include "ui/uihijack_p.h"
+#include "hijack/hijackfuncs.h"
+#include "hijack/hijackfuncs_p.h"
 #include "windbg/hijack.h"
 #include "winiter/winiterps.h"
 #include <boost/foreach.hpp>
@@ -14,7 +14,7 @@
 
 namespace { // unnamed
 
-const Ui::FunctionInfo UI_HIJACK_FUNCTIONS[] = { UI_HIJACK_FUNCTIONS_INITIALIZER };
+const Hijack::FunctionInfo HIJACK_FUNCTIONS[] = { HIJACK_FUNCTIONS_INITIALIZER };
 
 enum { PATH_SEP = '\\' };
 
@@ -54,7 +54,7 @@ inline LPCWSTR applicationNameW()
 
 // - Hijack -
 
-void Ui::overrideModules()
+void Hijack::overrideModules()
 {
   LPCWSTR exeName = applicationNameW(),
           exePath = applicationPathW();
@@ -71,9 +71,9 @@ void Ui::overrideModules()
   });
 }
 
-void Ui::overrideModuleFunctions(HMODULE hModule)
+void Hijack::overrideModuleFunctions(HMODULE hModule)
 {
-  BOOST_FOREACH (const FunctionInfo &fn, UI_HIJACK_FUNCTIONS)
+  BOOST_FOREACH (const FunctionInfo &fn, HIJACK_FUNCTIONS)
     if (PVOID ret = WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress)) {
       //growl::debug(fn.functionName); // success
     }
@@ -81,28 +81,28 @@ void Ui::overrideModuleFunctions(HMODULE hModule)
 
 // - My Functions -
 
-HMODULE WINAPI Ui::MyLoadLibrary(_In_ LPCTSTR lpFileName)
+HMODULE WINAPI Hijack::MyLoadLibrary(_In_ LPCTSTR lpFileName)
 {
   HMODULE ret = ::LoadLibrary(lpFileName);
   if (!::GetModuleHandle(lpFileName)) // this is the first load
-    Ui::overrideModuleFunctions(ret);
+    Hijack::overrideModuleFunctions(ret);
   return ret;
 }
 
-HMODULE WINAPI Ui::MyLoadLibraryEx(_In_ LPCTSTR lpFileName, __reserved HANDLE hFile, _In_ DWORD dwFlags)
+HMODULE WINAPI Hijack::MyLoadLibraryEx(_In_ LPCTSTR lpFileName, __reserved HANDLE hFile, _In_ DWORD dwFlags)
 {
   HMODULE ret = ::LoadLibraryEx(lpFileName, hFile, dwFlags);
   if (!::GetModuleHandle(lpFileName)) // this is the first load
-    Ui::overrideModuleFunctions(ret);
+    Hijack::overrideModuleFunctions(ret);
   return ret;
 }
 
-LPVOID WINAPI Ui::MyGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
+LPVOID WINAPI Hijack::MyGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
 {
   char modulePath[MAX_PATH];
   if (::GetModuleFileNameA(hModule, modulePath, MAX_PATH)) {
     const char *moduleName = ::basename(modulePath);
-    BOOST_FOREACH (const FunctionInfo &fn, UI_HIJACK_FUNCTIONS)
+    BOOST_FOREACH (const FunctionInfo &fn, HIJACK_FUNCTIONS)
       if (!::stricmp(moduleName, fn.moduleName) && !::stricmp(lpProcName, fn.functionName))
         return fn.functionAddress;
   }
@@ -111,6 +111,7 @@ LPVOID WINAPI Ui::MyGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
 
 // EOF
 
+/*
 #ifdef WITH_LIB_WINHOOK
 # include "winhook/funchook.h"
 
@@ -184,6 +185,7 @@ BOOL CALLBACK PostCreateProcessA(
 }
 } // unnamed namespace
 #endif // WITH_LIB_WINHOOK
+*/
 
 /*
   DWORD WINAPI ThreadProc(LPVOID params)

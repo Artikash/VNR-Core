@@ -1,9 +1,9 @@
 #pragma once
-// enginehijack.h
+// hijackfuncs.h
 // 1/27/2013 jichi
 
-namespace Engine {
+namespace Hijack {
 void overrideModules();
-} // namespace Engine
+} // namespace Hijack
 
 // EOF

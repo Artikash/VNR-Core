@@ -1,18 +1,19 @@
 #pragma once
 
-// uihijack_p.h
+// hijack_p.h
 // 1/27/2013 jichi
 
 #include <windows.h>
 
-#define UI_HIJACK_FUNCTIONS_INITIALIZER \
-   { "GetProcAddress", "kernel32.dll", Ui::MyGetProcAddress }, \
-   { "LoadLibrary", "kernel32.dll", Ui::MyLoadLibrary }, \
-   { "LoadLibraryEx", "kernel32.dll", Ui::MyLoadLibraryEx }, \
-   { "TrackPopupMenu", "user32.dll", Ui::MyTrackPopupMenu }, \
-   { "TrackPopupMenuEx", "user32.dll", Ui::MyTrackPopupMenuEx }
+#define HIJACK_FUNCTIONS_INITIALIZER \
+   { "GetProcAddress", "kernel32.dll", Hijack::MyGetProcAddress }, \
+   { "LoadLibrary", "kernel32.dll", Hijack::MyLoadLibrary }, \
+   { "LoadLibraryEx", "kernel32.dll", Hijack::MyLoadLibraryEx }, \
+   { "TrackPopupMenu", "user32.dll", Hijack::MyTrackPopupMenu }, \
+   { "TrackPopupMenuEx", "user32.dll", Hijack::MyTrackPopupMenuEx } \
+   { "CreateFontIndirectA", "gdi32.dll", Hijack::MyCreateFontIndirectA }
 
-namespace Ui {
+namespace Hijack {
 
 struct FunctionInfo {
   LPCSTR functionName;
@@ -57,7 +58,13 @@ BOOL WINAPI MyTrackPopupMenuEx(
   _In_opt_ LPTPMPARAMS lptpm
 );
 
-} // namespace Ui
+// - GDI32 -
+
+HFONT WINAPI MyCreateFontIndirectA(
+  _In_  const LOGFONTA *lplf
+);
+
+} // namespace Hijack
 
 // EOF
 

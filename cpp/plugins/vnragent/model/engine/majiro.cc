@@ -1,6 +1,9 @@
 // majiro.cc
 // 4/20/2014 jichi
-// See also: http://bbs.sumisora.org/read.php?tid=10983263
+// See: http://dev.haeleth.net/majiro.shtml
+// See: http://bbs.sumisora.org/read.php?tid=10983263
+// See: http://bbs.sumisora.org/read.php?tid=10917044
+// See: http://bbs.sumisora.org/read.php?tid=225250
 
 #include "model/engine/majiro.h"
 #include "model/env.h"

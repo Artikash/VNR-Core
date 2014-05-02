@@ -22,7 +22,7 @@ inline qint64 hashCharArray(const void *lp, size_t len)
 inline qint64 hashWCharArray(const wchar_t *lp, size_t len)
 { return Sk::djb2_n(reinterpret_cast<const quint8 *>(lp), 2 * len); }
 
-inline qint64 hashTextKey(qint64 hash, int role) { return hash + role; }
+inline qint64 hashTextKey(qint64 hash, unsigned role) { return hash + (1 << role); }
 
 } // namespace Engine
 

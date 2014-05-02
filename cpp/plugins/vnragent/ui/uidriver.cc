@@ -9,7 +9,6 @@ UiDriver::UiDriver(QObject *parent)
   : Base(parent), d_(new D(this))
 {
   connect(d_->manager, SIGNAL(textsChanged(QString)), SIGNAL(translationRequested(QString)));
-  d_->start();
 }
 
 void UiDriver::updateTranslation(const QString &json) { d_->manager->updateTranslation(json); }

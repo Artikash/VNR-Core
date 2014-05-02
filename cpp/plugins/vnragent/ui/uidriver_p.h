@@ -18,10 +18,8 @@ class UiDriverPrivate : public QObject
   //SK_DECLARE_PUBLIC(UiDriver)
   SK_EXTEND_CLASS(UiDriverPrivate, QObject)
 
-  enum { RetransInterval = 500 }; // interval checking if new window is created
-  enum { RehookInterval = 5000 }; // interval checking if new module/process is loaded
-  QTimer *retransTimer,
-         *rehookTimer;
+  enum { RefreshInterval = 500 }; // interval checking if new window is created
+  QTimer *refreshTimer;
 
 public:
   bool enabled;
@@ -31,9 +29,6 @@ public:
   static Self *instance();
   explicit UiDriverPrivate(QObject *parent=nullptr);
   ~UiDriverPrivate();
-
-  // Start refresh timers
-  void start();
 
   void requestUpdateContextMenu(HMENU hMenu, HWND hWnd) // queued
   { emit updateContextMenuRequested(hMenu, hWnd); }
@@ -45,8 +40,7 @@ private slots:
   void onUpdateContextMenuRequested(void *hMenu, void *hWnd)
   { updateContextMenu((HMENU)hMenu, (HWND)hWnd); }
 
-  void retrans();
-  void rehook();
+  void refresh() { updateProcessWindows(); }
 
 private:
   void updateAbstractWindow(HWND hWnd); // The type of the window is unknown

@@ -3,10 +3,10 @@
 
 #include "config.h"
 #include "loader.h"
-#include "driver/driver.h"
+#include "driver/maindriver.h"
 #include "windbg/inject.h"
 #include "windbg/util.h"
-#include "ui/uihijack.h"
+#include "hijack/hijackfuncs.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTextCodec>
 
@@ -32,7 +32,7 @@ QCoreApplication *createApplication_(HINSTANCE hInstance)
 }
 
 // Persistent data
-Driver *driver_;
+MainDriver *driver_;
 
 #ifdef VNRAGENT_ENABLE_APPRUNNER
 QtEmbedded::ApplicationRunner *appRunner_;
@@ -55,12 +55,12 @@ void Loader::initWithInstance(HINSTANCE hInstance)
   Util::installDebugMsgHandler();
 #endif // VNRAGENT_DEBUG
 
-  ::driver_ = new Driver;
+  ::driver_ = new MainDriver;
 
   // Hijack UI threads
   {
     WinDbg::ThreadsSuspender suspendedThreads; // lock all threads
-    Ui::overrideModules();
+    Hijack::overrideModules();
   }
 
 #ifdef VNRAGENT_ENABLE_APPRUNNER

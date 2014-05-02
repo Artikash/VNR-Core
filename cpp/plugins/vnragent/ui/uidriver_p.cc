@@ -3,7 +3,6 @@
 
 #include "ui/uidriver_p.h"
 #include "ui/uihash.h"
-#include "ui/uihijack.h"
 #include "ui/uimanager.h"
 #include "winiter/winiter.h"
 #include "winiter/winitertl.h"
@@ -27,32 +26,20 @@ UiDriverPrivate::UiDriverPrivate(QObject *parent)
 {
   manager = new UiManager(this);
 
-  rehookTimer = new QTimer(this);
-  rehookTimer->setSingleShot(false);
-  rehookTimer->setInterval(RehookInterval);
-  connect(rehookTimer, SIGNAL(timeout()), SLOT(rehook()));
-
-  retransTimer = new QTimer(this);
-  retransTimer->setSingleShot(false);
-  retransTimer->setInterval(RetransInterval);
-  connect(retransTimer, SIGNAL(timeout()), SLOT(retrans()));
+  refreshTimer = new QTimer(this);
+  refreshTimer->setSingleShot(false);
+  refreshTimer->setInterval(refreshInterval);
+  connect(refreshTimer, SIGNAL(timeout()), SLOT(refresh()));
 
   connect(this, SIGNAL(updateContextMenuRequested(void*,void*)), SLOT(onUpdateContextMenuRequested(void*,void*)),
           Qt::QueuedConnection);
 
   ::instance_ = this;
+
+  refreshTimer->start();
 }
 
 UiDriverPrivate::~UiDriverPrivate() { ::instance_ = nullptr; }
-
-void UiDriverPrivate::start()
-{
-  rehookTimer->start();
-  retransTimer->start();
-}
-
-void UiDriverPrivate::retrans() { updateProcessWindows(); }
-void UiDriverPrivate::rehook() { Ui::overrideModules(); }
 
 // - Processes and threads -
 

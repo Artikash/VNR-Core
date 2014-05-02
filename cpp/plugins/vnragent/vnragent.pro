@@ -45,21 +45,20 @@ TEMPLATE = lib
 TARGET  = vnragent
 
 HEADERS += \
-  driver/driver.h \
-  driver/driver_p.h \
+  driver/maindriver.h \
   driver/rpcclient.h \
   driver/rpcclient_p.h \
+  driver/settings.h \
   engine/enginedriver.h \
   engine/enginedef.h \
   engine/enginehash.h \
-  engine/enginehijack.h \
-  engine/enginehijack_p.h \
   engine/enginemanager.h \
+  hijack/hijackdriver.h \
+  hijack/hijackfuncs.h \
+  hijack/hijackfuncs_p.h \
   ui/uidriver.h \
   ui/uidriver_p.h \
   ui/uihash.h \
-  ui/uihijack.h \
-  ui/uihijack_p.h \
   ui/uimanager.h \
   util/msghandler.h \
   config.h \
@@ -68,16 +67,17 @@ HEADERS += \
   loader.h
 
 SOURCES += \
-  driver/driver.cc \
+  driver/maindriver.cc \
   driver/rpcclient.cc \
+  driver/settings.cc \
   engine/enginedriver.cc \
-  engine/enginehijack.cc \
-  engine/enginehijack_p.cc \
   engine/enginemanager.cc \
+  hijack/hijackdriver.cc \
+  hijack/hijackfuncs.cc \
+  hijack/hijackfuncs_ui.cc \
+  hijack/hijackfuncs_engine.cc \
   ui/uidriver.cc \
   ui/uidriver_p.cc \
-  ui/uihijack.cc \
-  ui/uihijack_p.cc \
   ui/uimanager.cc \
   util/msghandler.cc \
   growl.cc \
