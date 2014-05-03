@@ -26,7 +26,7 @@ RpcClientPrivate::RpcClientPrivate(Q *q)
   connect(client, SIGNAL(disconnected()), q, SIGNAL(aborted()));
   connect(client, SIGNAL(socketError()), q, SIGNAL(aborted()));
 
-#ifdef VNRAGENT_RECONNECT
+#ifdef VNRAGENT_ENABLE_RECONNECT
   reconnectTimer = new QTimer(q);
   reconnectTimer->setSingleShot(false); // until reconnect successfully
   reconnectTimer->setInterval(ReconnectInterval);
@@ -35,15 +35,15 @@ RpcClientPrivate::RpcClientPrivate(Q *q)
   connect(client, SIGNAL(socketError()), SLOT(reconnect()), Qt::QueuedConnection);
   connect(client, SIGNAL(disconnected()), reconnectTimer, SLOT(start()));
   connect(client, SIGNAL(socketError()), reconnectTimer, SLOT(start()));
-#endif // VNRAGENT_RECONNECT
+#endif // VNRAGENT_ENABLE_RECONNECT
 }
 
 bool RpcClientPrivate::reconnect()
 {
-#ifdef VNRAGENT_RECONNECT
+#ifdef VNRAGENT_ENABLE_RECONNECT
   if (reconnectTimer->isActive())
     reconnectTimer->stop();
-#endif // VNRAGENT_RECONNECT
+#endif // VNRAGENT_ENABLE_RECONNECT
   if (client->isConnected())
     return true;
   //client->stop();

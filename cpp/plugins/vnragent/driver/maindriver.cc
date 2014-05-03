@@ -1,6 +1,7 @@
 // maindriver.cc
 // 2/1/2013 jichi
 
+#include "config.h"
 #include "driver/maindriver.h"
 #include "driver/maindriver_p.h"
 #include "driver/rpcclient.h"
@@ -62,10 +63,12 @@ void MainDriverPrivate::onDisconnected()
 
 void MainDriverPrivate::unload()
 {
+#ifdef VNRAGENT_ENABLE_UNLOAD
   // FIXME: Detach WILL crash the application
   hijack->unload();
   eng->unload();
   WinDbg::unloadCurrentModule();
+#endif // VNRAGENT_ENABLE_UNLOAD
 }
 
 // EOF

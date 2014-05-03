@@ -32,7 +32,12 @@
 /**
  *  Automatically reconnect on error.
  */
-#define VNRAGENT_RECONNECT
+#define VNRAGENT_ENABLE_RECONNECT
+
+/**
+ *  Unload the DLLs
+ */
+//#define VNRAGENT_ENABLE_UNLOAD
 
 /**
  *  Use timer to drive event loop instead of exec.
