@@ -34,7 +34,10 @@ public:
   explicit RpcClientPrivate(Q *q);
 
   RpcSocketClient *client;
+
+#ifdef VNRAGENT_RECONNECT
   QTimer *reconnectTimer;
+#endif // VNRAGENT_RECONNECT
 
 private slots:
   bool reconnect();

@@ -12,13 +12,15 @@ HEADERS += \
   $$PWD/hijack.h \
   $$PWD/inject.h \
   $$PWD/util.h \
+  $$PWD/unload.h \
   $$PWD/windbg_p.h \
   $$PWD/windbg.h
 
 SOURCES += \
   $$PWD/hijack.cc \
   $$PWD/inject.cc \
-  $$PWD/util.cc
+  $$PWD/util.cc \
+  $$PWD/unload.cc
 }
 
 # EOF

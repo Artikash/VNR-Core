@@ -30,6 +30,11 @@
 #define VNRAGENT_ENABLE_THREAD
 
 /**
+ *  Automatically reconnect on error.
+ */
+//#define VNRAGENT_RECONNECT
+
+/**
  *  Use timer to drive event loop instead of exec.
  *  This is needed if VNRAGENT_ENABLE_THREAD is disabled.
  */

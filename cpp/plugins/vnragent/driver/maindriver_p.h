@@ -24,6 +24,7 @@ public:
 
 private slots:
   void onDisconnected();
+  void detach();
 };
 
 // EOF

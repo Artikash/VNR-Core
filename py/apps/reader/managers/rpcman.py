@@ -106,6 +106,10 @@ class RpcServer(QObject):
   def enableAgent(self): self.__d.callAgent('ui.enable')
   def disableAgent(self): self.__d.callAgent('ui.disable')
 
+  def detachAgent(self): self.__d.callAgent('detach')
+
+  def agentProcessId(self): return self.__d.agentPid
+
   def clearWindowTranslation(self): self.__d.callAgent('ui.clear')
 
   def sendWindowTranslation(self, data):

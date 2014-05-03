@@ -39,12 +39,13 @@ public:
 
   // - Event -
 
-  //enum { SleepTimeout = 5000 }; // at most 5 seconds
-  enum { SleepTimeout = 1000 }; // at most 1 second
-  void sleep(int interval = SleepTimeout)
+  // Sleep 10*100 = 1 second
+  enum { SleepTimeout = 100 };
+  enum { SleepCount = 10 };
+  void sleep(int interval = SleepTimeout, int count = SleepCount)
   {
     sleepEvent.signal(false);
-    sleepEvent.wait(interval);
+    for (int i = 0; !sleepEvent.wait(interval) && i < SleepCount; i++);
     sleepEvent.signal(false);
   }
 

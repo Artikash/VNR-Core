@@ -48,7 +48,7 @@ BOOL InjectFunction1(LPCVOID addr, LPCVOID data, SIZE_T dataSize, DWORD pid, HAN
   return ret;
 }
 
-BOOL InjectDllW(LPCWSTR dllPath, DWORD pid, HANDLE hProcess, INT timeout)
+BOOL injectDllW(LPCWSTR dllPath, DWORD pid, HANDLE hProcess, INT timeout)
 {
   DOUT("enter: pid =" <<  pid);
   LPCVOID LOADLIBRARYW = details::getModuleFunctionAddressA("LoadLibraryW", "kernel32.dll");

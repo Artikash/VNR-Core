@@ -4,7 +4,6 @@
 // 1/27/2013 jichi
 
 #include "windbg/windbg.h"
-
 #include <windows.h>
 
 WINDBG_BEGIN_NAMESPACE

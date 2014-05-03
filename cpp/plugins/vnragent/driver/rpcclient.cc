@@ -17,11 +17,6 @@
 RpcClientPrivate::RpcClientPrivate(Q *q)
   : Base(q), q_(q), client(new RpcSocketClient(this))
 {
-  reconnectTimer = new QTimer(q);
-  reconnectTimer->setSingleShot(false); // until reconnect successfully
-  reconnectTimer->setInterval(ReconnectInterval);
-  connect(reconnectTimer, SIGNAL(timeout()), SLOT(reconnect()));
-
   client->setPort(VNRAGENT_METACALL_PORT);
   client->setAddress(VNRAGENT_METACALL_HOST);
 
@@ -31,16 +26,24 @@ RpcClientPrivate::RpcClientPrivate(Q *q)
   connect(client, SIGNAL(disconnected()), q, SIGNAL(aborted()));
   connect(client, SIGNAL(socketError()), q, SIGNAL(aborted()));
 
+#ifdef VNRAGENT_RECONNECT
+  reconnectTimer = new QTimer(q);
+  reconnectTimer->setSingleShot(false); // until reconnect successfully
+  reconnectTimer->setInterval(ReconnectInterval);
+  connect(reconnectTimer, SIGNAL(timeout()), SLOT(reconnect()));
+
   connect(client, SIGNAL(socketError()), SLOT(reconnect()), Qt::QueuedConnection);
   connect(client, SIGNAL(disconnected()), reconnectTimer, SLOT(start()));
   connect(client, SIGNAL(socketError()), reconnectTimer, SLOT(start()));
-
+#endif // VNRAGENT_RECONNECT
 }
 
 bool RpcClientPrivate::reconnect()
 {
+#ifdef VNRAGENT_RECONNECT
   if (reconnectTimer->isActive())
     reconnectTimer->stop();
+#endif // VNRAGENT_RECONNECT
   if (client->isConnected())
     return true;
   //client->stop();
@@ -83,22 +86,24 @@ void RpcClientPrivate::onDataReceived(const QByteArray &data)
 void RpcClientPrivate::onCall(const QStringList &args)
 {
   enum { // pre-computed qHash(QString) values
-    H_PING          = 487495,   // "ping"
-    H_UI_ENABLE     = 79990437,     // "ui.enable"
-    H_UI_DISABLE    = 184943013,    // "ui.disable"
-    H_UI_CLEAR      = 206185698,    // "ui.clear"
-    H_UI_TEXT       = 197504020,    // "ui.text"
-    H_ENG_ENABLE    = 207122565,    // "engine.enable"
-    H_ENG_DISABLE   = 46785189,     // "engine.disable"
-    H_ENG_CLEAR     = 230943490,    // "engine.clear"
-    H_ENG_TEXT      = 81604852      // "engine.text"
+    H_PING          = 487495        // "ping"
+    , H_DETACH      = 111978392     // "detach"
+    , H_UI_ENABLE   = 79990437      // "ui.enable"
+    , H_UI_DISABLE  = 184943013     // "ui.disable"
+    , H_UI_CLEAR    = 206185698     // "ui.clear"
+    , H_UI_TEXT     = 197504020     // "ui.text"
+    , H_ENG_ENABLE  = 207122565     // "engine.enable"
+    , H_ENG_DISABLE = 46785189      // "engine.disable"
+    , H_ENG_CLEAR   = 230943490     // "engine.clear"
+    , H_ENG_TEXT    = 81604852      // "engine.text"
   };
 
   if (args.isEmpty())
     return;
 
   switch (qHash(args.first())) {
-  case H_PING: ;
+  case H_PING:          break;
+  case H_DETACH:        q_->emit detachRequested(); break;
 
   case H_UI_CLEAR:      q_->emit clearUiRequested(); break;
   case H_UI_ENABLE:     q_->emit enableUiRequested(true); break;

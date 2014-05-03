@@ -7,7 +7,9 @@
 #include "driver/settings.h"
 #include "engine/enginedriver.h"
 #include "hijack/hijackdriver.h"
+#include "hijack/hijackdriver.h"
 #include "ui/uidriver.h"
+#include "windbg/unload.h"
 
 /** Public class */
 
@@ -27,6 +29,7 @@ MainDriverPrivate::MainDriverPrivate(QObject *parent)
   {
     connect(rpc, SIGNAL(enableUiRequested(bool)), settings, SLOT(setUiTranslationEnabled(bool)));
     connect(rpc, SIGNAL(disconnected()), SLOT(onDisconnected()));
+    connect(rpc, SIGNAL(detachRequested()), SLOT(detach()));
   }
 
   hijack = new HijackDriver(this);
@@ -53,11 +56,14 @@ MainDriverPrivate::MainDriverPrivate(QObject *parent)
   }
 }
 
-// RPC
-
 void MainDriverPrivate::onDisconnected()
 {
   settings->setUiTranslationEnabled(false);
+}
+
+void MainDriverPrivate::detach()
+{
+  WinDbg::unloadCurrentModule();
 }
 
 // EOF

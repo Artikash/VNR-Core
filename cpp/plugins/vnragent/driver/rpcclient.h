@@ -24,6 +24,8 @@ public:
 
   // - API -
 signals:
+  void detachRequested(); // unload this DLL
+
   void disconnected(); // server disconnected
   void aborted(); // the last communication was aborted
 
