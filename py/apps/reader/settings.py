@@ -469,11 +469,11 @@ class Settings(QSettings):
 
   ## Plugin ##
 
-  def isPyPluginEnabled(self): return to_bool(self.value('PyPluginEnabled'))
-  def setPyPluginEnabled(self, value): self.setValue('PyPluginEnabled', value)
+  #def isPyPluginEnabled(self): return to_bool(self.value('PyPluginEnabled'))
+  #def setPyPluginEnabled(self, value): self.setValue('PyPluginEnabled', value)
 
-  def isJsPluginEnabled(self): return to_bool(self.value('JsPluginEnabled'))
-  def setJsPluginEnabled(self, value): self.setValue('JsPluginEnabled', value)
+  #def isJsPluginEnabled(self): return to_bool(self.value('JsPluginEnabled'))
+  #def setJsPluginEnabled(self, value): self.setValue('JsPluginEnabled', value)
 
   ## Features ##
 
@@ -669,7 +669,7 @@ class Settings(QSettings):
     return max(20,
         to_int(self.value('GameTextCapacity', config.SETTINGS_TEXT_CAPACITY)))
 
-  #  - Dictionaries -
+  ## Dictionaries ##
 
   meCabEnabledChanged = Signal(bool)
   def isMeCabEnabled(self): return bool(self.meCabDictionary())
@@ -879,22 +879,6 @@ class Settings(QSettings):
     return to_unicode(self.value('LecLocation'))
   def setLecLocation(self, path):
     self.setValue('LecLocation', path)
-
-  windowHookEnabledChanged = Signal(bool)
-  def isWindowHookEnabled(self):
-    return to_bool(self.value('WindowHookEnabled')) # disabled by default
-  #def setWindowHookEnabled(self, value):
-  #  if value != self.isWindowHookEnabled():
-  #    self.setValue('WindowHookEnabled', value)
-  #    self.windowHookEnabledChanged.emit(value)
-
-  windowTextVisibleChanged = Signal(bool)
-  def isWindowTextVisible(self):
-    return to_bool(self.value('WindowTextVisible', True))
-  #def setWindowTextVisible(self, value):
-  #  if value != self.isWindowTextVisible():
-  #    self.setValue('WindowTextVisible', value)
-  #    self.windowTextVisibleChanged.emit(value)
 
   infoseekEnabledChanged = Signal(bool)
   def isInfoseekEnabled(self):
@@ -1165,6 +1149,57 @@ class Settings(QSettings):
     if value != self.dutchFont():
       self.setValue('DutchFont', value)
       self.dutchFontChanged.emit(value)
+
+  ## Game agent ##
+
+  gameAgentEnabledChanged = Signal(bool)
+  def isGameAgentEnabled(self):
+    return to_bool(self.value('GameAgent', True))
+  def setGameAgentEnabled(self, value):
+    if value != self.isGameAgentEnabled():
+      self.setValue('GameAgent', value)
+      self.gameAgentEnabledChanged.emit(value)
+
+  windowTranslationEnabled = Signal(bool)
+  def isWindowTranslationEnabled(self):
+    return to_bool(self.value('WindowTranslation', False))
+  def setWindowTranslationEnabled(self, value):
+    if value != self.isWindowTranslationEnabled():
+      self.setValue('WindowTranslation', value)
+      self.windowTranslationEnabledChanged.emit(value)
+
+  windowTextVisibleChanged = Signal(bool)
+  def isWindowTextVisible(self):
+    return to_bool(self.value('WindowTextVisible', False))
+  def setWindowTextVisible(self, value):
+    if value != self.isWindowTextVisible():
+      self.setValue('WindowTextVisible', value)
+      self.windowTextVisibleChanged.emit(value)
+
+  embededTranslationEnabled = Signal(bool)
+  def isEmbeddedTranslationEnabled(self):
+    return to_bool(self.value('EmbeddedTranslation', True))
+  def setEmbeddedTranslationEnabled(self, value):
+    if value != self.isEmbeddedTranslationEnabled():
+      self.setValue('EmbeddedTranslation', value)
+      self.embeddedTranslationEnabledChanged.emit(value)
+
+  embeddedTextVisibleChanged = Signal(bool)
+  def isEmbeddedTextVisible(self):
+    return to_bool(self.value('EmbeddedTextVisible', True))
+  def setEmbeddedTextVisible(self, value):
+    if value != self.isEmbeddedTextVisible():
+      self.setValue('EmbeddedTextVisible', value)
+      self.embeddedTextVisibleChanged.emit(value)
+
+  # TO BE DELETED
+  windowHookEnabledChanged = Signal(bool)
+  def isWindowHookEnabled(self):
+    return to_bool(self.value('WindowHookEnabled')) # disabled by default
+  #def setWindowHookEnabled(self, value):
+  #  if value != self.isWindowHookEnabled():
+  #    self.setValue('WindowHookEnabled', value)
+  #    self.windowHookEnabledChanged.emit(value)
 
 @memoized
 def global_(): return Settings()
