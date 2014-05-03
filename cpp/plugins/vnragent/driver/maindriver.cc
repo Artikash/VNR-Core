@@ -5,7 +5,7 @@
 #include "driver/maindriver_p.h"
 #include "driver/rpcclient.h"
 #include "driver/settings.h"
-#include "engine/enginedriver.h"
+#include "embed/embeddriver.h"
 #include "hijack/hijackdriver.h"
 #include "hijack/hijackdriver.h"
 #include "window/windowdriver.h"
@@ -44,7 +44,7 @@ MainDriverPrivate::MainDriverPrivate(QObject *parent)
     connect(rpc, SIGNAL(windowTranslationReceived(QString)), win, SLOT(updateTranslation(QString)));
   }
 
-  eng = new EngineDriver(this); // TODO: Selective create engine only if enabled at server side, i.e. only called by rpc {
+  eng = new EmbedDriver(this); // TODO: Selective create engine only if enabled at server side, i.e. only called by rpc {
   {
     // Use queued connection to quarantine the engine thrread
     connect(eng, SIGNAL(textReceived(QString,qint64,int,bool)), rpc, SLOT(sendEngineText(QString,qint64,int,bool)),

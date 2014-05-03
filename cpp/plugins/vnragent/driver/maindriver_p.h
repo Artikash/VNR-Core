@@ -3,7 +3,7 @@
 #include "sakurakit/skglobal.h"
 #include <QtCore/QObject>
 
-class EngineDriver;
+class EmbedDriver;
 class HijackDriver;
 class RpcClient;
 class Settings;
@@ -17,7 +17,7 @@ class MainDriverPrivate : public QObject
   Settings *settings;
   RpcClient *rpc;
   HijackDriver *hijack;
-  EngineDriver *eng;
+  EmbedDriver *eng;
   WindowDriver *win;
 public:
   explicit MainDriverPrivate(QObject *parent = nullptr);
