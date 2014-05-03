@@ -16,8 +16,6 @@
 MainDriver::MainDriver(QObject *parent) : Base(parent), d_(new D(this)) {}
 MainDriver::~MainDriver() { delete d_; }
 
-void MainDriver::quit() {}
-
 /** Private class */
 
 MainDriverPrivate::MainDriverPrivate(QObject *parent)
@@ -59,11 +57,14 @@ MainDriverPrivate::MainDriverPrivate(QObject *parent)
 void MainDriverPrivate::onDisconnected()
 {
   settings->setWindowTranslationEnabled(false);
-  unload();
+  //unload();
 }
 
 void MainDriverPrivate::unload()
 {
+  // FIXME: Detach WILL crash the application
+  hijack->unload();
+  eng->unload();
   WinDbg::unloadCurrentModule();
 }
 

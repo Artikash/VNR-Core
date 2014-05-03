@@ -106,7 +106,7 @@ class RpcServer(QObject):
   def enableAgent(self): self.__d.callAgent('window.enable')
   def disableAgent(self): self.__d.callAgent('window.disable')
 
-  def detachAgent(self): self.__d.callAgent('detach')
+  #def detachAgent(self): self.__d.callAgent('detach')
 
   def agentProcessId(self): return self.__d.agentPid
 

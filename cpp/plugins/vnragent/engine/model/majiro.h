@@ -17,6 +17,7 @@ public:
 
   static bool match();
   bool inject() override;
+  bool unload() override;
 };
 
 // EOF

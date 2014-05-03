@@ -6,22 +6,27 @@
 #include <windows.h>
 
 #define HIJACK_FUNCTIONS_INITIALIZER \
-   { "GetProcAddress", "kernel32.dll", Hijack::MyGetProcAddress }, \
-   { "LoadLibrary", "kernel32.dll", Hijack::MyLoadLibrary }, \
-   { "LoadLibraryEx", "kernel32.dll", Hijack::MyLoadLibraryEx }, \
-   { "TrackPopupMenu", "user32.dll", Hijack::MyTrackPopupMenu }, \
-   { "TrackPopupMenuEx", "user32.dll", Hijack::MyTrackPopupMenuEx }, \
-   { "CreateFontIndirectA", "gdi32.dll", Hijack::MyCreateFontIndirectA }
+   { "kernel32.dll", "GetProcAddress", ::GetProcAddress, Hijack::MyGetProcAddress }, \
+   { "kernel32.dll", "LoadLibraryA", ::LoadLibraryA, Hijack::MyLoadLibraryA }, \
+   { "kernel32.dll", "LoadLibraryW", ::LoadLibraryW, Hijack::MyLoadLibraryW }, \
+   { "kernel32.dll", "LoadLibraryExA", ::LoadLibraryExA, Hijack::MyLoadLibraryExA }, \
+   { "kernel32.dll", "LoadLibraryExW", ::LoadLibraryExW, Hijack::MyLoadLibraryExW }, \
+   { "user32.dll", "TrackPopupMenu", ::TrackPopupMenu, Hijack::MyTrackPopupMenu }, \
+   { "user32.dll", "TrackPopupMenuEx", ::TrackPopupMenuEx, Hijack::MyTrackPopupMenuEx }, \
+   { "gdi32.dll", "CreateFontIndirectA", ::CreateFontIndirectA, Hijack::MyCreateFontIndirectA }
+   //{ "gdi32.dll", "CreateFontIndirectW", ::CreateFontIndirectW, Hijack::MyCreateFontIndirectW }
 
 namespace Hijack {
 
 struct FunctionInfo {
-  LPCSTR functionName;
   LPCSTR moduleName;
-  LPVOID functionAddress;
+  LPCSTR functionName;
+  LPVOID oldFunctionAddress;
+  LPVOID newFunctionAddress;
 };
 
 void overrideModuleFunctions(HMODULE hModule);
+void restoreModuleFunctions(HMODULE hModule);
 
 // - KERNEL32 -
 
@@ -29,11 +34,19 @@ LPVOID WINAPI MyGetProcAddress(
   _In_ HMODULE hModule,
   _In_ LPCSTR lpProcName
 );
-HMODULE WINAPI MyLoadLibrary(
-  _In_  LPCTSTR lpFileName
+HMODULE WINAPI MyLoadLibraryA(
+  _In_  LPCSTR lpFileName
 );
-HMODULE WINAPI MyLoadLibraryEx(
-  _In_ LPCTSTR lpFileName,
+HMODULE WINAPI MyLoadLibraryW(
+  _In_  LPCWSTR lpFileName
+);
+HMODULE WINAPI MyLoadLibraryExA(
+  _In_ LPCSTR lpFileName,
+  __reserved HANDLE hFile,  // _Reserved_ not supported in MSVC 2010
+  _In_ DWORD dwFlags
+);
+HMODULE WINAPI MyLoadLibraryExW(
+  _In_ LPCWSTR lpFileName,
   __reserved HANDLE hFile,
   _In_ DWORD dwFlags
 );

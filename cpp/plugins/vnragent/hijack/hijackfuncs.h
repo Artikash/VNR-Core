@@ -4,6 +4,7 @@
 
 namespace Hijack {
 void overrideModules();
+void restoreModules();
 } // namespace Hijack
 
 // EOF

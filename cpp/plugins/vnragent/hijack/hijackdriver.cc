@@ -34,4 +34,9 @@ HijackDriver::~HijackDriver() { delete d_; }
 
 void HijackDriver::refresh() { Hijack::overrideModules(); }
 
+void HijackDriver::unload()
+{
+  Hijack::restoreModules();
+}
+
 // EOF

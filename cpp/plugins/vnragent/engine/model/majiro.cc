@@ -62,13 +62,14 @@ public:
    *  0x41aa10 @ 0x416ab0 // Scenario
    *  0x41f650 // Name
    */
-  typedef int (* draw_fun_t)(char, int, const char *, int, int);
-  static draw_fun_t olddraw;
+  static DWORD hookAddress;
+  typedef int (* hook_fun_t)(char, int, const char *, int, int);
+  static hook_fun_t oldHook;
 
-  static int newdraw(char arg1, int arg2, const char *str, int arg4, int arg5)
+  static int newHook(char arg1, int arg2, const char *str, int arg4, int arg5)
   {
     qDebug() << (int)arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
-    //return olddraw(arg1, arg2, str, arg4, arg5);
+    //return oldHook(arg1, arg2, str, arg4, arg5);
     auto q = static_cast<Q *>(AbstractEngine::instance());
     auto role = roleOf(arg1, arg2, arg4, arg5);
     QByteArray data = str;
@@ -78,17 +79,18 @@ public:
       //data = QTextCodec::codecForName("SHIFT-JIS")->fromUnicode(t);
       //data = QTextCodec::codecForName("GBK")->fromUnicode(t);
       data = QTextCodec::codecForName("GB2312")->fromUnicode(t);
-      return olddraw(arg1, arg2, data, arg4, arg5);
+      return oldHook(arg1, arg2, data, arg4, arg5);
     }
 
-    return olddraw(arg1, arg2, str, arg4, arg5);
+    return oldHook(arg1, arg2, str, arg4, arg5);
 
     // Estimated return result
     enum { FontWidth = 26 };
     return FontWidth * data.size() * 2;
   }
 };
-MajiroEnginePrivate::draw_fun_t MajiroEnginePrivate::olddraw;
+DWORD MajiroEnginePrivate::hookAddress;
+MajiroEnginePrivate::hook_fun_t MajiroEnginePrivate::oldHook;
 
 /** Public class */
 
@@ -103,16 +105,21 @@ bool MajiroEngine::inject()
   DWORD startAddress, stopAddress;
   if (!Engine::getMemoryRange(nullptr, &startAddress, &stopAddress))
     return false;
-  DWORD addr = MemDbg::findCallerAddress(dwTextOutA, 0xec81, startAddress, stopAddress);
+  D::hookAddress = MemDbg::findCallerAddress(dwTextOutA, 0xec81, startAddress, stopAddress);
   // Note: ITH will mess up this value
-  addr = 0x41af90;
-  if (!addr)
+  D::hookAddress = 0x41af90;
+  if (!D::hookAddress)
     return false;
-  D::olddraw = detours::replace<D::draw_fun_t>(addr, D::newdraw);
+  D::oldHook = detours::replace<D::hook_fun_t>(D::hookAddress, D::newHook);
   //addr = 0x41f650; // 2
   //addr = 0x416ab0;
   //D::oldtest = detours::replace<D::test_fun_t>(addr, D::newtest);
-  return addr;
+  return true;
+}
+
+bool MajiroEngine::unload()
+{
+  return !D::oldHook || detours::replace<D::hook_fun_t>(D::hookAddress, D::oldHook);
 }
 
 // EOF

@@ -6,7 +6,7 @@
 class AbstractEngine;
 
 namespace Engine {
-AbstractEngine *getEngine();
+AbstractEngine *getEngine();  // Needed to be explicitly deleted on exit
 } // namespace Engine
 
 // EOF

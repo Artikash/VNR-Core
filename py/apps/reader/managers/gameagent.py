@@ -31,7 +31,7 @@ class GameAgent(QObject):
     if self.__d.pid:
       rpc = self.__d.rpc
       rpc.disableAgent()
-      rpc.detachAgent()
+      #rpc.detachAgent()
       rpc.closeAgent()
 
   activeChanged = Signal(bool)

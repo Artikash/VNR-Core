@@ -15,7 +15,7 @@ class AbstractEngine
   SK_DISABLE_COPY(AbstractEngine)
 
 public:
-  static Self *instance();
+  static Self *instance(); // Needed to be explicitly deleted on exit
 
   AbstractEngine(const char *name, const char *encoding);
   virtual ~AbstractEngine();
@@ -24,6 +24,7 @@ public:
   const char *encoding() const;
 
   virtual bool inject() = 0;
+  virtual bool unload() = 0;
 
   //static bool isEnabled();
   //static void setEnabled(bool t);

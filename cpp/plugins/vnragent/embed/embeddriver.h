@@ -29,6 +29,7 @@ public slots:
   // Called by engine
 public:
   bool isEnabled() const;
+  void unload();
 };
 
 // EOF

@@ -17,8 +17,6 @@ class MainDriver : public QObject
 public:
   explicit MainDriver(QObject *parent = nullptr);
   ~MainDriver();
-
-  void quit();
 };
 
 // EOF

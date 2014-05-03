@@ -17,6 +17,7 @@ public:
   explicit HijackDriver(QObject *parent = nullptr);
   ~HijackDriver();
 
+  void unload();
 private slots:
   void refresh();
 };

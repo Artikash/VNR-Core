@@ -13,9 +13,12 @@ class EmbedDriverPrivate
 public:
   bool enabled;
   EmbedManager *manager;
+  AbstractEngine *engine;
 
   explicit EmbedDriverPrivate(QObject *parent)
-    : enabled(true), manager(new EmbedManager(parent)) {}
+    : enabled(true), manager(new EmbedManager(parent)), engine(nullptr) {}
+
+  ~EmbedDriverPrivate() { if (engine) delete engine; }
 };
 
 /** Public class */
@@ -28,13 +31,12 @@ EmbedDriver::EmbedDriver(QObject *parent)
 {
   connect(d_->manager, SIGNAL(textReceived(QString,qint64,int,bool)), SIGNAL(textReceived(QString,qint64,int,bool)));
 
-  if (auto p = AbstractEngine::instance())
-    //p->setParent(this);
-    if (p->inject()) {
+  if (d_->engine = AbstractEngine::instance())
+    if (d_->engine->inject()) {
       //d_->engine = p;
       //connect(d_->engine, SIGNAL(textReceived(QString,qint64,int,void*)), d_->manager, SLOT(addText(QString,qint64,int,void*)));
       // FIXME: Only one instance can be send at a time?!
-      growl::notify(tr("Recognize game engine: %1").arg(p->name()));
+      growl::notify(tr("Recognize game engine: %1").arg(d_->engine->name()));
     }
 
   //::instance_ = this;
@@ -54,5 +56,10 @@ void EmbedDriver::clearTranslation()  { d_->manager->clearTranslation(); }
 void EmbedDriver::updateTranslation(const QString &text, qint64 hash, int role)
 { d_->manager->updateTranslation(text, hash, role); }
 
+void EmbedDriver::unload()
+{
+  if (d_->engine)
+    d_->engine->unload();
+}
 
 // EOF

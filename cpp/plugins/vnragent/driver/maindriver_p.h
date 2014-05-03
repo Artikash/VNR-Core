@@ -3,6 +3,7 @@
 #include "sakurakit/skglobal.h"
 #include <QtCore/QObject>
 
+class AbstractEngine;
 class EmbedDriver;
 class HijackDriver;
 class RpcClient;

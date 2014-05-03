@@ -52,7 +52,7 @@ inline LPCWSTR applicationNameW()
 
 } // unnamed namespace
 
-// - Hijack -
+// API
 
 void Hijack::overrideModules()
 {
@@ -71,28 +71,65 @@ void Hijack::overrideModules()
   });
 }
 
+void Hijack::restoreModules()
+{
+  LPCWSTR exeName = applicationNameW(),
+          exePath = applicationPathW();
+  if (!exeName || !exePath)
+    return;
+
+  WCHAR path[MAX_PATH];
+  WinIter::iterProcessModules([=, &path](HMODULE hModule) {
+    if (::GetModuleFileNameW(hModule, path, MAX_PATH) &&
+        !::wcsnicmp(path, exePath, exeName - exePath))
+      restoreModuleFunctions(hModule);
+  });
+}
+
 void Hijack::overrideModuleFunctions(HMODULE hModule)
 {
   BOOST_FOREACH (const FunctionInfo &fn, HIJACK_FUNCTIONS)
-    if (PVOID ret = WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.functionAddress)) {
+    if (PVOID ret = WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.newFunctionAddress)) {
       //growl::debug(fn.functionName); // success
     }
 }
 
+void Hijack::restoreModuleFunctions(HMODULE hModule)
+{
+  BOOST_FOREACH (const FunctionInfo &fn, HIJACK_FUNCTIONS)
+    WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.oldFunctionAddress);
+}
+
 // - My Functions -
 
-HMODULE WINAPI Hijack::MyLoadLibrary(_In_ LPCTSTR lpFileName)
+HMODULE WINAPI Hijack::MyLoadLibraryA(_In_ LPCSTR lpFileName)
 {
-  HMODULE ret = ::LoadLibrary(lpFileName);
-  if (!::GetModuleHandle(lpFileName)) // this is the first load
+  HMODULE ret = ::LoadLibraryA(lpFileName);
+  if (!::GetModuleHandleA(lpFileName)) // this is the first load
     Hijack::overrideModuleFunctions(ret);
   return ret;
 }
 
-HMODULE WINAPI Hijack::MyLoadLibraryEx(_In_ LPCTSTR lpFileName, __reserved HANDLE hFile, _In_ DWORD dwFlags)
+HMODULE WINAPI Hijack::MyLoadLibraryW(_In_ LPCWSTR lpFileName)
 {
-  HMODULE ret = ::LoadLibraryEx(lpFileName, hFile, dwFlags);
-  if (!::GetModuleHandle(lpFileName)) // this is the first load
+  HMODULE ret = ::LoadLibraryW(lpFileName);
+  if (!::GetModuleHandleW(lpFileName)) // this is the first load
+    Hijack::overrideModuleFunctions(ret);
+  return ret;
+}
+
+HMODULE WINAPI Hijack::MyLoadLibraryExA(_In_ LPCSTR lpFileName, __reserved HANDLE hFile, _In_ DWORD dwFlags)
+{
+  HMODULE ret = ::LoadLibraryExA(lpFileName, hFile, dwFlags);
+  if (!::GetModuleHandleA(lpFileName)) // this is the first load
+    Hijack::overrideModuleFunctions(ret);
+  return ret;
+}
+
+HMODULE WINAPI Hijack::MyLoadLibraryExW(_In_ LPCWSTR lpFileName, __reserved HANDLE hFile, _In_ DWORD dwFlags)
+{
+  HMODULE ret = ::LoadLibraryExW(lpFileName, hFile, dwFlags);
+  if (!::GetModuleHandleW(lpFileName)) // this is the first load
     Hijack::overrideModuleFunctions(ret);
   return ret;
 }
@@ -104,7 +141,7 @@ LPVOID WINAPI Hijack::MyGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
     const char *moduleName = ::basename(modulePath);
     BOOST_FOREACH (const FunctionInfo &fn, HIJACK_FUNCTIONS)
       if (!::stricmp(moduleName, fn.moduleName) && !::stricmp(lpProcName, fn.functionName))
-        return fn.functionAddress;
+        return fn.newFunctionAddress;
   }
   return ::GetProcAddress(hModule, lpProcName);
 }

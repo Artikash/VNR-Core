@@ -32,7 +32,7 @@
 /**
  *  Automatically reconnect on error.
  */
-//#define VNRAGENT_RECONNECT
+#define VNRAGENT_RECONNECT
 
 /**
  *  Use timer to drive event loop instead of exec.
