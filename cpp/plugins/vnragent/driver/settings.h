@@ -22,15 +22,15 @@ public:
 
 public:
   QString language() const;
-  bool isUiTranslationEnabled() const;
+  bool isWindowTranslationEnabled() const;
 
 public slots:
   void setLanguage(const QString &v);
-  void setUiTranslationEnabled(bool v);
+  void setWindowTranslationEnabled(bool v);
 
 signals:
   void languageChanged(QString);
-  void uiTranslationEnabledChanged(bool);
+  void windowTranslationEnabledChanged(bool);
 };
 
 // EOF

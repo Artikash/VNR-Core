@@ -8,7 +8,7 @@
 #include "engine/enginedriver.h"
 #include "hijack/hijackdriver.h"
 #include "hijack/hijackdriver.h"
-#include "ui/uidriver.h"
+#include "window/windowdriver.h"
 #include "windbg/unload.h"
 
 /** Public class */
@@ -27,21 +27,21 @@ MainDriverPrivate::MainDriverPrivate(QObject *parent)
 
   rpc = new RpcClient(this);
   {
-    connect(rpc, SIGNAL(enableUiRequested(bool)), settings, SLOT(setUiTranslationEnabled(bool)));
+    connect(rpc, SIGNAL(enableWindowTranslationRequested(bool)), settings, SLOT(setWindowTranslationEnabled(bool)));
     connect(rpc, SIGNAL(disconnected()), SLOT(onDisconnected()));
     connect(rpc, SIGNAL(detachRequested()), SLOT(detach()));
   }
 
   hijack = new HijackDriver(this);
 
-  ui = new UiDriver(this); // TODO: Selective create ui only if enabled at server side, i.e. only called by rpc
+  win = new WindowDriver(this); // TODO: Selective create driver only if enabled at server side, i.e. only called by rpc
   {
-    connect(ui, SIGNAL(translationRequested(QString)), rpc, SLOT(requestUiTranslation(QString)));
+    connect(win, SIGNAL(translationRequested(QString)), rpc, SLOT(requestWindowTranslation(QString)));
 
-    connect(settings, SIGNAL(uiTranslationEnabledChanged(bool)), ui, SLOT(setEnable(bool)));
+    connect(settings, SIGNAL(windowTranslationEnabledChanged(bool)), win, SLOT(setEnable(bool)));
 
-    connect(rpc, SIGNAL(clearUiRequested()), ui, SLOT(clearTranslation()));
-    connect(rpc, SIGNAL(uiTranslationReceived(QString)), ui, SLOT(updateTranslation(QString)));
+    connect(rpc, SIGNAL(clearWindowTranslationRequested()), win, SLOT(clearTranslation()));
+    connect(rpc, SIGNAL(windowTranslationReceived(QString)), win, SLOT(updateTranslation(QString)));
   }
 
   eng = new EngineDriver(this); // TODO: Selective create engine only if enabled at server side, i.e. only called by rpc {
@@ -58,7 +58,7 @@ MainDriverPrivate::MainDriverPrivate(QObject *parent)
 
 void MainDriverPrivate::onDisconnected()
 {
-  settings->setUiTranslationEnabled(false);
+  settings->setWindowTranslationEnabled(false);
 }
 
 void MainDriverPrivate::detach()

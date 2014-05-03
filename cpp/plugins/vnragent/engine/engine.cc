@@ -1,10 +1,10 @@
-// majiro.cc
+// engine.cc
 // 4/20/2014 jichi
 
-#include "model/engine.h"
-#include "model/manifest.h"
-#include "engine/enginemanager.h"
+#include "engine/engine.h"
 #include "engine/enginehash.h"
+#include "engine/engineloader.h"
+#include "embed/embedmanager.h"
 #include <QtCore/QTextCodec>
 
 /** Private class */
@@ -60,7 +60,7 @@ QString AbstractEngine::dispatchText(const QByteArray &data, int role, bool bloc
   QString text = d_->decode(data);
   if (!text.isEmpty()) {
     qint64 hash = Engine::hashByteArray(data);
-    auto p = EngineManager::instance();
+    auto p = EmbedManager::instance();
     QString ret = p->findTranslation(hash, role);
     p->addText(text, hash, role, ret.isEmpty());
     if (blocking && ret.isEmpty())

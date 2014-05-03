@@ -2,18 +2,17 @@
 // 5/1/2014 jichi
 
 #include "driver/settings.h"
-#include "ui/uidriver.h"
 
 /** Private class */
 
 class SettingsPrivate
 {
 public:
-  bool uiTranslationEnabled;
+  bool windowTranslationEnabled;
   QString language;
 
   SettingsPrivate()
-    : uiTranslationEnabled(false)
+    : windowTranslationEnabled(false)
   {}
 };
 
@@ -41,6 +40,6 @@ Settings::~Settings()
   { if (d_->property != value) { d_->property = value; emit property##Changed(value); } }
 
 DEFINE_PROPERTY(language, language, setLanguage, QString, const QString &)
-DEFINE_PROPERTY(uiTranslationEnabled, isUiTranslationEnabled, setUiTranslationEnabled, bool, bool)
+DEFINE_PROPERTY(windowTranslationEnabled, isWindowTranslationEnabled, setWindowTranslationEnabled, bool, bool)
 
 // EOF

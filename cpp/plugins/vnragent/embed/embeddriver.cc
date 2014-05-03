@@ -1,30 +1,30 @@
-// enginedriver.cc
+// embeddriver.cc
 // 4/26/2014 jichi
 
 #include "growl.h"
-#include "engine/enginedriver.h"
-#include "engine/enginemanager.h"
-#include "model/engine.h"
+#include "embed/embeddriver.h"
+#include "embed/embedmanager.h"
+#include "engine/engine.h"
 
 /** Private class */
 
-class EngineDriverPrivate
+class EmbedDriverPrivate
 {
 public:
   bool enabled;
   EngineManager *manager;
   //AbstractEngine *engine;
 
-  explicit EngineDriverPrivate(QObject *parent)
+  explicit EmbedDriverPrivate(QObject *parent)
     : enabled(true), manager(new EngineManager(parent)) {}
 };
 
 /** Public class */
 
-//static EngineDriver *instance_;
-//EngineDriver *EngineDriver::instance() { return instance_; }
+//static EmbedDriver *instance_;
+//EmbedDriver *EmbedDriver::instance() { return instance_; }
 
-EngineDriver::EngineDriver(QObject *parent)
+EmbedDriver::EmbedDriver(QObject *parent)
   : Base(parent), d_(new D(this))
 {
   connect(d_->manager, SIGNAL(textReceived(QString,qint64,int,bool)), SIGNAL(textReceived(QString,qint64,int,bool)));
@@ -41,18 +41,18 @@ EngineDriver::EngineDriver(QObject *parent)
   //::instance_ = this;
 }
 
-EngineDriver::~EngineDriver()
+EmbedDriver::~EmbedDriver()
 {
   //::instance_ = nullptr;
   delete d_;
 }
 
-bool EngineDriver::isEnabled() const { return d_->enabled; }
-void EngineDriver::setEnable(bool t) { d_->enabled = t; }
+bool EmbedDriver::isEnabled() const { return d_->enabled; }
+void EmbedDriver::setEnable(bool t) { d_->enabled = t; }
 
-void EngineDriver::clearTranslation()  { d_->manager->clearTranslation(); }
+void EmbedDriver::clearTranslation()  { d_->manager->clearTranslation(); }
 
-void EngineDriver::updateTranslation(const QString &text, qint64 hash, int role)
+void EmbedDriver::updateTranslation(const QString &text, qint64 hash, int role)
 { d_->manager->updateTranslation(text, hash, role); }
 
 

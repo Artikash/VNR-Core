@@ -29,10 +29,10 @@ signals:
   void disconnected(); // server disconnected
   void aborted(); // the last communication was aborted
 
-  // UI
-  void clearUiRequested();
-  void enableUiRequested(bool t);
-  void uiTranslationReceived(QString json); // json: {hash:text}
+  // Window
+  void clearWindowTranslationRequested();
+  void enableWindowTranslationRequested(bool t);
+  void windowTranslationReceived(QString json); // json: {hash:text}
 
   // Engine
   void clearEngineRequested();
@@ -41,7 +41,7 @@ signals:
 
 public slots:
   void sendEngineText(const QString &text, qint64 hash, int role, bool needsTranslation);
-  void requestUiTranslation(const QString &json); // json: {hash:text}
+  void requestWindowTranslation(const QString &json); // json: {hash:text}
 
   void growlMessage(const QString &message);
   void growlWarning(const QString &message);

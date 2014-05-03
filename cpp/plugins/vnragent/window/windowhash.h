@@ -1,14 +1,13 @@
 #pragma once
 
-// uihash.h
+// windowhash.h
 // 2/1/2013 jichi
 
 #include "sakurakit/skhash.h"
 #include <QtCore/QString>
 #include <QtGui/qwindowdefs.h>
-//#include <qt_windows.h>
 
-namespace Ui {
+namespace Window {
 
 // Cast quint64 to qint64
 
@@ -39,6 +38,6 @@ inline long hashWindowItem(WId window, TextRole role, size_t index = 0)
 
 inline bool isTranslatedText(const QString &t) { return t.contains('<') && !t.contains('>'); }
 
-} // namespace Ui
+} // namespace Window
 
 // EOF

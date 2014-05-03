@@ -1,6 +1,6 @@
 #pragma once
 
-// uidriver_p.h
+// windowdriver_p.h
 // 2/1/2013 jichi
 
 #include "sakurakit/skglobal.h"
@@ -9,26 +9,25 @@
 
 QT_FORWARD_DECLARE_CLASS(QTimer)
 
-class UiManager;
-//class UiDriver;
-class UiDriverPrivate : public QObject
+class WindowManager;
+class WindowDriverPrivate : public QObject
 {
   Q_OBJECT
-  Q_DISABLE_COPY(UiDriverPrivate)
-  //SK_DECLARE_PUBLIC(UiDriver)
-  SK_EXTEND_CLASS(UiDriverPrivate, QObject)
+  Q_DISABLE_COPY(WindowDriverPrivate)
+  SK_EXTEND_CLASS(WindowDriverPrivate, QObject)
+  //SK_DECLARE_PUBLIC(WindowDriver)
 
   enum { RefreshInterval = 500 }; // interval checking if new window is created
   QTimer *refreshTimer;
 
 public:
   bool enabled;
-  UiManager *manager;
+  WindowManager *manager;
 
 public:
   static Self *instance();
-  explicit UiDriverPrivate(QObject *parent=nullptr);
-  ~UiDriverPrivate();
+  explicit WindowDriverPrivate(QObject *parent=nullptr);
+  ~WindowDriverPrivate();
 
   void requestUpdateContextMenu(HMENU hMenu, HWND hWnd) // queued
   { emit updateContextMenuRequested(hMenu, hWnd); }

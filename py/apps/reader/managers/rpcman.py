@@ -103,14 +103,14 @@ class RpcServer(QObject):
   def isAgentConnected(self): return bool(self.__d.agentSocket)
   def closeAgent(self): self.__d.closeAgentSocket()
 
-  def enableAgent(self): self.__d.callAgent('ui.enable')
-  def disableAgent(self): self.__d.callAgent('ui.disable')
+  def enableAgent(self): self.__d.callAgent('window.enable')
+  def disableAgent(self): self.__d.callAgent('window.disable')
 
   def detachAgent(self): self.__d.callAgent('detach')
 
   def agentProcessId(self): return self.__d.agentPid
 
-  def clearWindowTranslation(self): self.__d.callAgent('ui.clear')
+  def clearWindowTranslation(self): self.__d.callAgent('window.clear')
 
   def sendWindowTranslation(self, data):
     """
@@ -118,7 +118,7 @@ class RpcServer(QObject):
     """
     try:
       data = json.dumps(data) #, ensure_ascii=False) # the json parser in vnragent don't enforce ascii
-      self.__d.callAgent('ui.text', data)
+      self.__d.callAgent('window.text', data)
     except TypeError, e:
       dwarn("failed to encode json: %s" % e)
 
@@ -183,7 +183,7 @@ class _RpcServer(object):
         pid = _unmarshalInteger(params[0])
         if pid:
           self._onAgentPing(socket, pid)
-    elif cmd == 'agent.ui.text':
+    elif cmd == 'agent.window.text':
       if params:
         self._onWindowTexts(params[0])
     elif cmd == 'agent.engine.text':

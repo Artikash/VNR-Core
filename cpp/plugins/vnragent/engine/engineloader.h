@@ -1,6 +1,6 @@
 #pragma once
 
-// manifest.h
+// engineloader.h
 // 4/26/2014 jichi
 
 class AbstractEngine;

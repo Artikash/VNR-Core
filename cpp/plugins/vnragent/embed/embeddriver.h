@@ -1,24 +1,23 @@
 #pragma once
 
-// enginedriver.h
+// embeddriver.h
 // 4/26/2014 jichi
 
 #include "sakurakit/skglobal.h"
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
-class EngineDriverPrivate;
-class EngineDriver : public QObject
+class EmbedDriverPrivate;
+class EmbedDriver : public QObject
 {
   Q_OBJECT
-  Q_DISABLE_COPY(EngineDriver)
-  SK_EXTEND_CLASS(EngineDriver, QObject)
-  SK_DECLARE_PRIVATE(EngineDriverPrivate)
+  Q_DISABLE_COPY(EmbedDriver)
+  SK_EXTEND_CLASS(EmbedDriver, QObject)
+  SK_DECLARE_PRIVATE(EmbedDriverPrivate)
 
 public:
-  //static Self *instance(); // needed by Engine
-  explicit EngineDriver(QObject *parent = nullptr);
-  ~EngineDriver();
+  explicit EmbedDriver(QObject *parent = nullptr);
+  ~EmbedDriver();
 
 signals:
   void textReceived(QString text, qint64 hash, int role, bool needsTranslation);

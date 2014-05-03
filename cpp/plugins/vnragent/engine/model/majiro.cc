@@ -5,9 +5,9 @@
 // See: http://bbs.sumisora.org/read.php?tid=10917044
 // See: http://bbs.sumisora.org/read.php?tid=225250
 
-#include "model/engine/majiro.h"
-#include "model/env.h"
+#include "engine/model/majiro.h"
 #include "engine/enginedef.h"
+#include "engine/engineenv.h"
 #include "detoursutil/detoursutil.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
@@ -93,15 +93,15 @@ MajiroEnginePrivate::draw_fun_t MajiroEnginePrivate::olddraw;
 /** Public class */
 
 bool MajiroEngine::match()
-{ return Env::glob(QStringList() << "data*.arc" << "stream*.arc"); }
+{ return Engine::glob(QStringList() << "data*.arc" << "stream*.arc"); }
 
 bool MajiroEngine::inject()
 {
-  DWORD dwTextOutA = Env::getModuleFunction("gdi32.dll", "TextOutA");
+  DWORD dwTextOutA = Engine::getModuleFunction("gdi32.dll", "TextOutA");
   if (!dwTextOutA)
     return false;
   DWORD startAddress, stopAddress;
-  if (!Env::getMemoryRange(nullptr, &startAddress, &stopAddress))
+  if (!Engine::getMemoryRange(nullptr, &startAddress, &stopAddress))
     return false;
   DWORD addr = MemDbg::findCallerAddress(dwTextOutA, 0xec81, startAddress, stopAddress);
   // Note: ITH will mess up this value

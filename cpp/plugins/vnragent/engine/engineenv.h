@@ -1,11 +1,11 @@
 #pragma once
 
-// engine.h
+// engineenv.h
 // 4/20/2014 jichi
 
 #include <QtCore/QString>
 
-namespace Env {
+namespace engine {
 
 // File system
 bool glob(const QString &nameFilter);
@@ -20,6 +20,6 @@ bool getMemoryRange(const wchar_t *moduleName, unsigned long *startAddress, unsi
 // This function might be cached and hence not thread-safe
 unsigned long getModuleFunction(const char *moduleName, const char *funcName);
 
-} // namespace Env
+} // namespace Engine
 
 // EOF

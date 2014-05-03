@@ -1,26 +1,26 @@
 #pragma once
 
-// enginemanager.h
+// embedmanager.h
 // 4/26/2014 jichi
-// Game engine text manager.
+// Embedded game engine text manager.
 
 #include "sakurakit/skglobal.h"
 #include <QtCore/QList>
 #include <QtCore/QObject>
 
-class EngineManagerPrivate;
-class EngineManager : public QObject
+class EmbedManagerPrivate;
+class EmbedManager : public QObject
 {
   Q_OBJECT
-  Q_DISABLE_COPY(EngineManager)
-  SK_EXTEND_CLASS(EngineManager, QObject)
-  SK_DECLARE_PRIVATE(EngineManagerPrivate)
+  Q_DISABLE_COPY(EmbedManager)
+  SK_EXTEND_CLASS(EmbedManager, QObject)
+  SK_DECLARE_PRIVATE(EmbedManagerPrivate)
 
 public:
   static Self *instance(); // needed by Engine
 
-  explicit EngineManager(QObject *parent = nullptr);
-  ~EngineManager();
+  explicit EmbedManager(QObject *parent = nullptr);
+  ~EmbedManager();
 
   // Interface to RPC
 signals:

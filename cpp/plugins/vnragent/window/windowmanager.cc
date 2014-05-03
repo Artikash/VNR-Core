@@ -1,8 +1,8 @@
-// uimanager.cc
+// windowmanager.cc
 // 2/1/2013 jichi
 
-#include "ui/uimanager.h"
-#include "ui/uihash.h"
+#include "window/windowmanager.h"
+#include "window/windowhash.h"
 #include "qtjson/qtjson.h"
 #include "QxtCore/QxtJSON"
 #include <QtCore/QHash>
@@ -12,14 +12,14 @@
 
 /** Private class */
 
-namespace { UiManager::TextEntry NULL_TEXT_ENTRY; }
+namespace { WindowManager::TextEntry NULL_TEXT_ENTRY; }
 
-class UiManagerPrivate
+class WindowManagerPrivate
 {
-  SK_CLASS(UiManagerPrivate)
-  SK_DISABLE_COPY(UiManagerPrivate)
-  //SK_DECLARE_PUBLIC(UiManager)
-  typedef UiManager Q;
+  SK_CLASS(WindowManagerPrivate)
+  SK_DISABLE_COPY(WindowManagerPrivate)
+  //SK_DECLARE_PUBLIC(WindowManager)
+  typedef WindowManager Q;
 
   enum { RefreshInterval = 200 };
   QTimer *refreshTextsTimer_; // QTimer is not working
@@ -32,7 +32,7 @@ public:
   std::unordered_set<qint64> h_trs; // hashes
 
 public:
-  explicit UiManagerPrivate(Q *q) : textsDirty(false)
+  explicit WindowManagerPrivate(Q *q) : textsDirty(false)
   {
     refreshTextsTimer_ = new QTimer(q);
     refreshTextsTimer_->setSingleShot(true);
@@ -40,7 +40,7 @@ public:
     q->connect(refreshTextsTimer_, SIGNAL(timeout()), SLOT(refreshTexts()));
   }
 
-  //~UiManagerPrivate()
+  //~WindowManagerPrivate()
   //{
   //  if (refreshTextsTimer_.isActive())
   //    refreshTextsTimer_.stop();
@@ -58,13 +58,13 @@ public:
 
 // - Construction -
 
-UiManager::UiManager(QObject *parent) : Base(parent), d_(new D(this)) {}
+WindowManager::WindowManager(QObject *parent) : Base(parent), d_(new D(this)) {}
 
-UiManager::~UiManager() { delete d_; }
+WindowManager::~WindowManager() { delete d_; }
 
 // - Actions -
 
-void UiManager::refreshTexts()
+void WindowManager::refreshTexts()
 {
   if (!d_->textsDirty)
     return;
@@ -82,13 +82,13 @@ void UiManager::refreshTexts()
   }
 }
 
-void UiManager::clearTranslation()
+void WindowManager::clearTranslation()
 {
   d_->trs.clear();
   d_->touchTexts();
 }
 
-void UiManager::updateTranslation(const QString &json)
+void WindowManager::updateTranslation(const QString &json)
 {
   QVariant data = QxtJSON::parse(json);
   if (data.isNull())
@@ -100,13 +100,13 @@ void UiManager::updateTranslation(const QString &json)
   for (auto it = map.constBegin(); it != map.constEnd(); ++it)
     if (qint64 hash = it.key().toLongLong()) {
       QString t = d_->trs[hash] = it.value().toString();
-      d_->h_trs.insert(Ui::hashString(t));
+      d_->h_trs.insert(Window::hashString(t));
     }
 }
 
 // - Queries -
 
-//bool UiManager::containsWindow(WId window, Ui::TextRole role) const
+//bool WindowManager::containsWindow(WId window, Window::TextRole role) const
 //{
   //QMutexLocker locker(&d_->mutex);
 //  foreach (const Entry &e, d_->entries)
@@ -115,7 +115,7 @@ void UiManager::updateTranslation(const QString &json)
 //  return false;
 //}
 
-bool UiManager::containsAnchor(ulong anchor) const
+bool WindowManager::containsAnchor(ulong anchor) const
 {
   foreach (const TextEntry &e, d_->entries)
     if (e.anchor == anchor)
@@ -123,13 +123,13 @@ bool UiManager::containsAnchor(ulong anchor) const
   return false;
 }
 
-bool UiManager::containsText(qint64 hash) const
+bool WindowManager::containsText(qint64 hash) const
 { return d_->h_texts.find(hash) != d_->h_texts.end(); }
 
-bool UiManager::containsTranslation(qint64 hash) const
+bool WindowManager::containsTranslation(qint64 hash) const
 { return d_->h_trs.find(hash) != d_->h_trs.end(); }
 
-const UiManager::TextEntry &UiManager::findTextEntry(qint64 hash) const
+const WindowManager::TextEntry &WindowManager::findTextEntry(qint64 hash) const
 {
   foreach (const TextEntry &e, d_->entries)
     if (e.hash == hash)
@@ -137,7 +137,7 @@ const UiManager::TextEntry &UiManager::findTextEntry(qint64 hash) const
   return NULL_TEXT_ENTRY;
 }
 
-const UiManager::TextEntry &UiManager::findTextEntryAtAnchor(ulong anchor) const
+const WindowManager::TextEntry &WindowManager::findTextEntryAtAnchor(ulong anchor) const
 {
   foreach (const TextEntry &e, d_->entries)
     if (e.anchor == anchor)
@@ -145,7 +145,7 @@ const UiManager::TextEntry &UiManager::findTextEntryAtAnchor(ulong anchor) const
   return NULL_TEXT_ENTRY;
 }
 
-QString UiManager::findTextTranslation(qint64 hash) const
+QString WindowManager::findTextTranslation(qint64 hash) const
 { return d_->trs.value(hash); }
 //{
 //  QString ret = d_->trs.value(hash);
@@ -154,18 +154,18 @@ QString UiManager::findTextTranslation(qint64 hash) const
 //  return ret;
 //}
 
-void UiManager::updateTextTranslation(const QString &tr, qint64 hash, qint64 trhash)
+void WindowManager::updateTextTranslation(const QString &tr, qint64 hash, qint64 trhash)
 {
   Q_ASSERT(hash);
   d_->trs[hash] = tr;
-  d_->h_trs.insert(trhash ? trhash : Ui::hashString(tr));
+  d_->h_trs.insert(trhash ? trhash : Window::hashString(tr));
 }
 
-void UiManager::updateText(const QString &text, qint64 hash, ulong anchor)
+void WindowManager::updateText(const QString &text, qint64 hash, ulong anchor)
 {
   Q_ASSERT(anchor);
   if (!hash)
-    hash = Ui::hashString(text);
+    hash = Window::hashString(text);
   foreach (const TextEntry &e, d_->entries)
     if (e.hash == hash && e.anchor == anchor)
       return;

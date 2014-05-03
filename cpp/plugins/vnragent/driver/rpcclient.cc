@@ -88,10 +88,10 @@ void RpcClientPrivate::onCall(const QStringList &args)
   enum { // pre-computed qHash(QString) values
     H_PING          = 487495        // "ping"
     , H_DETACH      = 111978392     // "detach"
-    , H_UI_ENABLE   = 79990437      // "ui.enable"
-    , H_UI_DISABLE  = 184943013     // "ui.disable"
-    , H_UI_CLEAR    = 206185698     // "ui.clear"
-    , H_UI_TEXT     = 197504020     // "ui.text"
+    , H_WIN_ENABLE   = 147657733    // "window.enable"
+    , H_WIN_DISABLE  = 195013157    // "window.disable"
+    , H_WIN_CLEAR    = 160087362    // "window.clear"
+    , H_WIN_TEXT     = 110732692    // "window.text"
     , H_ENG_ENABLE  = 207122565     // "engine.enable"
     , H_ENG_DISABLE = 46785189      // "engine.disable"
     , H_ENG_CLEAR   = 230943490     // "engine.clear"
@@ -105,12 +105,12 @@ void RpcClientPrivate::onCall(const QStringList &args)
   case H_PING:          break;
   case H_DETACH:        q_->emit detachRequested(); break;
 
-  case H_UI_CLEAR:      q_->emit clearUiRequested(); break;
-  case H_UI_ENABLE:     q_->emit enableUiRequested(true); break;
-  case H_UI_DISABLE:    q_->emit enableUiRequested(false); break;
-  case H_UI_TEXT:
+  case H_WIN_CLEAR:     q_->emit clearWindowTranslationRequested(); break;
+  case H_WIN_ENABLE:    q_->emit enableWindowTranslationRequested(true); break;
+  case H_WIN_DISABLE:   q_->emit enableWindowTranslationRequested(false); break;
+  case H_WIN_TEXT:
     if (args.size() == 2)
-      q_->emit uiTranslationReceived(args.last());
+      q_->emit windowTranslationReceived(args.last());
     break;
 
   case H_ENG_CLEAR:     q_->emit clearEngineRequested(); break;
@@ -152,7 +152,7 @@ bool RpcClient::isActive() const { return d_->client->isConnected(); }
 
 // - Requests -
 
-void RpcClient::requestUiTranslation(const QString &json) { d_->sendUiTexts(json); }
+void RpcClient::requestWindowTranslation(const QString &json) { d_->sendWindowTexts(json); }
 
 void RpcClient::sendEngineText(const QString &text, qint64 hash, int role, bool needsTranslation)
 { d_->sendEngineText(text, hash, role, needsTranslation); }

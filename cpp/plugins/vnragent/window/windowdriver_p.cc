@@ -1,9 +1,9 @@
-// uidriver_p.cc
+// windowdriver_p.cc
 // 2/1/2013 jichi
 
-#include "ui/uidriver_p.h"
-#include "ui/uihash.h"
-#include "ui/uimanager.h"
+#include "window/windowdriver_p.h"
+#include "window/windowhash.h"
+#include "window/windowmanager.h"
 #include "winiter/winiter.h"
 #include "winiter/winitertl.h"
 #include <commctrl.h>
@@ -18,13 +18,13 @@ enum { TEXT_BUFFER_SIZE = 256 };
 
 // - Construction -
 
-static UiDriverPrivate *instance_;
-UiDriverPrivate *UiDriverPrivate::instance() { return instance_; }
+static WindowDriverPrivate *instance_;
+WindowDriverPrivate *WindowDriverPrivate::instance() { return instance_; }
 
-UiDriverPrivate::UiDriverPrivate(QObject *parent)
+WindowDriverPrivate::WindowDriverPrivate(QObject *parent)
   : Base(parent), enabled(true) // enable by default
 {
-  manager = new UiManager(this);
+  manager = new WindowManager(this);
 
   refreshTimer = new QTimer(this);
   refreshTimer->setSingleShot(false);
@@ -39,11 +39,11 @@ UiDriverPrivate::UiDriverPrivate(QObject *parent)
   refreshTimer->start();
 }
 
-UiDriverPrivate::~UiDriverPrivate() { ::instance_ = nullptr; }
+WindowDriverPrivate::~WindowDriverPrivate() { ::instance_ = nullptr; }
 
 // - Processes and threads -
 
-void UiDriverPrivate::updateThreadWindows(DWORD threadId)
+void WindowDriverPrivate::updateThreadWindows(DWORD threadId)
 {
   WinIter::iterThreadChildWindows(threadId, [](HWND hWnd) {
     ::instance_->updateAbstractWindow(hWnd);
@@ -52,12 +52,12 @@ void UiDriverPrivate::updateThreadWindows(DWORD threadId)
   //  boost::bind(&Self::updateAbstractWindow, ::instance_, _1));
 }
 
-void UiDriverPrivate::updateProcessWindows(DWORD processId)
+void WindowDriverPrivate::updateProcessWindows(DWORD processId)
 { WinIter::iterProcessThreadIds(processId, updateThreadWindows); }
 
 // - Windows -
 
-void UiDriverPrivate::updateAbstractWindow(HWND hWnd)
+void WindowDriverPrivate::updateAbstractWindow(HWND hWnd)
 {
   wchar_t buf[TEXT_BUFFER_SIZE];
 
@@ -80,24 +80,24 @@ void UiDriverPrivate::updateAbstractWindow(HWND hWnd)
       repaintMenuBar(hWnd);
 }
 
-void UiDriverPrivate::updateContextMenu(HMENU hMenu, HWND hWnd)
+void WindowDriverPrivate::updateContextMenu(HMENU hMenu, HWND hWnd)
 {
   wchar_t buf[TEXT_BUFFER_SIZE];
   updateMenu(hMenu, hWnd, buf, TEXT_BUFFER_SIZE);
 }
 
-void UiDriverPrivate::repaintWindow(HWND hWnd) { ::InvalidateRect(hWnd, nullptr, TRUE); }
-void UiDriverPrivate::repaintMenuBar(HWND hWnd) { ::DrawMenuBar(hWnd); }
+void WindowDriverPrivate::repaintWindow(HWND hWnd) { ::InvalidateRect(hWnd, nullptr, TRUE); }
+void WindowDriverPrivate::repaintMenuBar(HWND hWnd) { ::DrawMenuBar(hWnd); }
 
-bool UiDriverPrivate::updateStandardWindow(HWND hWnd, LPWSTR buffer, int bufferSize)
+bool WindowDriverPrivate::updateStandardWindow(HWND hWnd, LPWSTR buffer, int bufferSize)
 {
   qint64 h = 0;
   int sz = ::GetWindowTextW(hWnd, buffer, bufferSize);
   if (sz)
-    h = Ui::hashWCharArray(buffer, sz);
+    h = Window::hashWCharArray(buffer, sz);
 
-  long anchor = Ui::hashWindow(hWnd);
-  const UiManager::TextEntry &e = manager->findTextEntryAtAnchor(anchor);
+  long anchor = Window::hashWindow(hWnd);
+  const auto &e = manager->findTextEntryAtAnchor(anchor);
   QString trans;
   if (e.hash)
     trans = manager->findTextTranslation(e.hash);
@@ -109,7 +109,7 @@ bool UiDriverPrivate::updateStandardWindow(HWND hWnd, LPWSTR buffer, int bufferS
 #else
       QString t = QString::fromWCharArray(buffer, sz);
 #endif // NTLEA_COMPAT
-      if (!Ui::isTranslatedText(t)) {
+      if (!Window::isTranslatedText(t)) {
         manager->updateText(t, h, anchor);
         trans = manager->findTextTranslation(h);
       }
@@ -120,7 +120,7 @@ bool UiDriverPrivate::updateStandardWindow(HWND hWnd, LPWSTR buffer, int bufferS
 
   // DefWindowProcW is used instead of SetWindowTextW
   // https://groups.google.com/forum/?fromgroups#!topic/microsoft.public.platformsdk.mslayerforunicode/nWi3dlZeS60
-  if (!trans.isEmpty() && h != Ui::hashString(trans)) {
+  if (!trans.isEmpty() && h != Window::hashString(trans)) {
     if (trans.size() >= bufferSize)
       //::SetWindowTextW(hWnd, trans.toStdWString().c_str());
       ::DefWindowProcW(hWnd, WM_SETTEXT, 0, (LPARAM)trans.toStdWString().c_str());
@@ -136,7 +136,7 @@ bool UiDriverPrivate::updateStandardWindow(HWND hWnd, LPWSTR buffer, int bufferS
   return false;
 }
 
-bool UiDriverPrivate::updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int bufferSize)
+bool WindowDriverPrivate::updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int bufferSize)
 {
   if (!hMenu)
     return false;
@@ -156,11 +156,11 @@ bool UiDriverPrivate::updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int buff
 
       qint64 h = 0;
       if (info.cch)
-        h = Ui::hashWCharArray(info.dwTypeData, info.cch);
+        h = Window::hashWCharArray(info.dwTypeData, info.cch);
 
       QString trans;
-      long anchor = Ui::hashWindowItem(hWnd, Ui::MenuTextRole, info.wID + (i<<4));
-      const UiManager::TextEntry &e = manager->findTextEntryAtAnchor(anchor);
+      long anchor = Window::hashWindowItem(hWnd, Window::MenuTextRole, info.wID + (i<<4));
+      const auto &e = manager->findTextEntryAtAnchor(anchor);
       if (e.hash)
         trans = manager->findTextTranslation(e.hash);
 
@@ -171,7 +171,7 @@ bool UiDriverPrivate::updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int buff
 #else
           QString t = QString::fromWCharArray(buffer, info.cch);
 #endif // NTLEA_COMPAT
-          if (!Ui::isTranslatedText(t)) {
+          if (!Window::isTranslatedText(t)) {
             manager->updateText(t, h, anchor);
             trans = manager->findTextTranslation(h);
           }
@@ -180,7 +180,7 @@ bool UiDriverPrivate::updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int buff
       if (!enabled)
         trans = e.text;
 
-      if (!trans.isEmpty() && h != Ui::hashString(trans)) {
+      if (!trans.isEmpty() && h != Window::hashString(trans)) {
         int sz = qMin(trans.size(), bufferSize);
         info.fMask = MIIM_STRING;
         info.dwTypeData = buffer;
@@ -198,7 +198,7 @@ bool UiDriverPrivate::updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int buff
   return ret;
 }
 
-bool UiDriverPrivate::updateTabControl(HWND hWnd, LPWSTR buffer, int bufferSize)
+bool WindowDriverPrivate::updateTabControl(HWND hWnd, LPWSTR buffer, int bufferSize)
 {
   bool ret = false;
   LRESULT count = ::SendMessageW(hWnd, TCM_GETITEMCOUNT, 0, 0);
@@ -210,16 +210,16 @@ bool UiDriverPrivate::updateTabControl(HWND hWnd, LPWSTR buffer, int bufferSize)
     if (!::SendMessageW(hWnd, TCM_GETITEM, i, (LPARAM)&item))
       break;
     QString t = QString::fromWCharArray(item.pszText);
-    qint64 h = Ui::hashString(t);
+    qint64 h = Window::hashString(t);
 
     QString trans;
-    long anchor = Ui::hashWindowItem(hWnd, Ui::TabTextRole, i);
-    const UiManager::TextEntry &e = manager->findTextEntryAtAnchor(anchor);
+    long anchor = Window::hashWindowItem(hWnd, Window::TabTextRole, i);
+    const auto &e = manager->findTextEntryAtAnchor(anchor);
     if (e.hash)
       trans = manager->findTextTranslation(e.hash);
 
     if (h && trans.isEmpty())
-      if (!manager->containsTranslation(h) && !Ui::isTranslatedText(t)) {
+      if (!manager->containsTranslation(h) && !Window::isTranslatedText(t)) {
         manager->updateText(t, h, anchor);
         trans = manager->findTextTranslation(h);
       }
@@ -227,7 +227,7 @@ bool UiDriverPrivate::updateTabControl(HWND hWnd, LPWSTR buffer, int bufferSize)
     if (!enabled)
       trans = e.text;
 
-    if (!trans.isEmpty() && h != Ui::hashString(trans)) {
+    if (!trans.isEmpty() && h != Window::hashString(trans)) {
       ret = true;
       if (trans.size() < bufferSize) {
         buffer[trans.size()] = 0;
@@ -249,7 +249,7 @@ bool UiDriverPrivate::updateTabControl(HWND hWnd, LPWSTR buffer, int bufferSize)
   return ret;
 }
 
-bool UiDriverPrivate::updateListView(HWND hWnd, LPWSTR buffer, int bufferSize)
+bool WindowDriverPrivate::updateListView(HWND hWnd, LPWSTR buffer, int bufferSize)
 {
   enum { MAX_COLUMN = 100 };
   bool ret = false;
@@ -262,16 +262,16 @@ bool UiDriverPrivate::updateListView(HWND hWnd, LPWSTR buffer, int bufferSize)
       break;
 
     QString t = QString::fromWCharArray(column.pszText);
-    qint64 h = Ui::hashString(t);
+    qint64 h = Window::hashString(t);
 
     QString trans;
-    long anchor = Ui::hashWindowItem(hWnd, Ui::ListTextRole, i);
-    const UiManager::TextEntry &e = manager->findTextEntryAtAnchor(anchor);
+    long anchor = Window::hashWindowItem(hWnd, Window::ListTextRole, i);
+    const auto &e = manager->findTextEntryAtAnchor(anchor);
     if (e.hash)
       trans = manager->findTextTranslation(e.hash);
 
     if (h && trans.isEmpty())
-      if (!manager->containsTranslation(h) && !Ui::isTranslatedText(t)) {
+      if (!manager->containsTranslation(h) && !Window::isTranslatedText(t)) {
         manager->updateText(t, h, anchor);
         trans = manager->findTextTranslation(h);
       }
@@ -279,7 +279,7 @@ bool UiDriverPrivate::updateListView(HWND hWnd, LPWSTR buffer, int bufferSize)
     if (!enabled)
       trans = e.text;
 
-    if (!trans.isEmpty() && h != Ui::hashString(trans)) {
+    if (!trans.isEmpty() && h != Window::hashString(trans)) {
       ret = true;
       if (trans.size() < bufferSize) {
         buffer[trans.size()] = 0;
@@ -307,10 +307,10 @@ bool UiDriverPrivate::updateListView(HWND hWnd, LPWSTR buffer, int bufferSize)
 
 // - Helpers -
 
-void UiDriverPrivate::updateWindows()
+void WindowDriverPrivate::updateWindows()
 {
   QHash<HWND, uint> w;
-  foreach (const UiManager::Entry &e, manager->entries())
+  foreach (const auto &e, manager->entries())
     w[e.window] |= e.role;
 
   enum { BUFFER_SIZE = 256 };
@@ -320,9 +320,9 @@ void UiDriverPrivate::updateWindows()
     HWND h = it.key();
     if (::IsWindow(h)) {
       uint roles = it.value();
-      if (roles & Ui::WindowTextRole)
+      if (roles & Window::WindowTextRole)
         updateWindow(h, buf, BUFFER_SIZE);
-      if (roles & Ui::MenuTextRole)
+      if (roles & Window::MenuTextRole)
         if (HMENU hMenu = ::GetMenu(h)) {
           updateMenu(hMenu, h, buf, BUFFER_SIZE);
           ::DrawMenuBar(h);

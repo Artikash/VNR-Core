@@ -50,17 +50,20 @@ HEADERS += \
   driver/rpcclient.h \
   driver/rpcclient_p.h \
   driver/settings.h \
-  engine/enginedriver.h \
+  embed/embeddriver.h \
+  embed/embedmanager.h \
+  engine/engine.h \
   engine/enginedef.h \
+  engine/engineenv.h \
   engine/enginehash.h \
-  engine/enginemanager.h \
+  engine/engineloader.h
   hijack/hijackdriver.h \
   hijack/hijackfuncs.h \
   hijack/hijackfuncs_p.h \
-  ui/uidriver.h \
-  ui/uidriver_p.h \
-  ui/uihash.h \
-  ui/uimanager.h \
+  window/windowdriver.h \
+  window/windowdriver_p.h \
+  window/windowhash.h \
+  window/windowmanager.h \
   util/msghandler.h \
   config.h \
   debug.h \
@@ -71,30 +74,28 @@ SOURCES += \
   driver/maindriver.cc \
   driver/rpcclient.cc \
   driver/settings.cc \
-  engine/enginedriver.cc \
-  engine/enginemanager.cc \
+  embed/embeddriver.cc \
+  embed/embedmanager.cc \
+  engine/engine.cc \
+  engine/engineenv.cc \
+  engine/engineloader.cc \
   hijack/hijackdriver.cc \
   hijack/hijackfuncs.cc \
   hijack/hijackfuncs_ui.cc \
   hijack/hijackfuncs_engine.cc \
-  ui/uidriver.cc \
-  ui/uidriver_p.cc \
-  ui/uimanager.cc \
+  window/windowdriver.cc \
+  window/windowdriver_p.cc \
+  window/windowmanager.cc \
   util/msghandler.cc \
   growl.cc \
   loader.cc \
   main.cc
 
+# Engine models
 HEADERS += \
-  model/engine/majiro.h \
-  model/engine.h \
-  model/env.h \
-  model/manifest.h
+  engine/model/majiro.h
 SOURCES += \
-  model/engine/majiro.cc \
-  model/engine.cc \
-  model/env.cc \
-  model/manifest.cc
+  engine/model/majiro.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += vnragent.rc

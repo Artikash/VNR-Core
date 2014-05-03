@@ -83,7 +83,7 @@ public:
     }
   }
 
-  void sendUiTexts(const QString &json) { callServer("agent.ui.text", json); }
+  void sendWindowTexts(const QString &json) { callServer("agent.window.text", json); }
 
   void sendEngineText(const QString &text, qint64 hash, int role, bool needsTranslation)
   {

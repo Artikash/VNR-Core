@@ -1,10 +1,9 @@
-// enginemanager.cc
+// embedmanager.cc
 // 4/26/2014 jichi
 
-#include "engine/enginemanager.h"
+#include "embed/embedmanager.h"
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
-#include "model/engine.h"
 //#include "QxtCore/QxtJSON"
 //#include "qtjson/qtjson.h"
 #include "winevent/winevent.h"
@@ -16,12 +15,12 @@
 #define ENGINE_SLEEP_EVENT "vnragent_engine_sleep"
 #define D_SYNCHRONIZE  win_mutex_locker<D::mutex_type> d_locker(&d_->mutex);
 
-#define DEBUG "enginemanager"
+#define DEBUG "EmbedManager"
 #include "sakurakit/skdebug.h"
 
 /** Private class */
 
-class EngineManagerPrivate
+class EmbedManagerPrivate
 {
   win_event sleepEvent;
 public:
@@ -30,7 +29,7 @@ public:
 
   QHash<qint64, QString> trs;   // cached, {key:text}
 
-  EngineManagerPrivate()
+  EmbedManagerPrivate()
     : sleepEvent(ENGINE_SLEEP_EVENT) {}
 
   // - Lock -
@@ -56,14 +55,14 @@ public:
 
 // - Construction -
 
-static EngineManager *instance_;
-EngineManager *EngineManager::instance() { return instance_; }
+static EmbedManager *instance_;
+EmbedManager *EmbedManager::instance() { return instance_; }
 
-EngineManager::EngineManager(QObject *parent)
+EmbedManager::EmbedManager(QObject *parent)
   : Base(parent), d_(new D)
 { ::instance_ = this; }
 
-EngineManager::~EngineManager()
+EmbedManager::~EmbedManager()
 {
   ::instance_ = nullptr;
   delete d_;
@@ -71,13 +70,13 @@ EngineManager::~EngineManager()
 
 // - Actions -
 
-void EngineManager::clearTranslation()
+void EmbedManager::clearTranslation()
 {
   D_SYNCHRONIZE
   d_->trs.clear();
 }
 
-void EngineManager::updateTranslation(const QString &text, qint64 hash, int role)
+void EmbedManager::updateTranslation(const QString &text, qint64 hash, int role)
 {
   D_SYNCHRONIZE
   qint64 key = Engine::hashTextKey(hash, role);
@@ -85,22 +84,22 @@ void EngineManager::updateTranslation(const QString &text, qint64 hash, int role
   d_->notify();
 }
 
-//void EngineManager::abortTranslation()
+//void EmbedManager::abortTranslation()
 //{ d_->unblock(); }
 
-void EngineManager::addText(const QString &text, qint64 hash, int role, bool needsTranslation)
+void EmbedManager::addText(const QString &text, qint64 hash, int role, bool needsTranslation)
 {
   emit textReceived(text, hash, role, needsTranslation);
 }
 
-QString EngineManager::findTranslation(qint64 hash, int role) const
+QString EmbedManager::findTranslation(qint64 hash, int role) const
 {
   D_SYNCHRONIZE
   qint64 key = Engine::hashTextKey(hash, role);
   return d_->trs.value(key);
 }
 
-QString EngineManager::waitForTranslation(qint64 hash, int role) const
+QString EmbedManager::waitForTranslation(qint64 hash, int role) const
 {
   enum { WaitTime = 3000 }; // wait for at most 3 seconds
   QString ret = findTranslation(hash, role);
@@ -250,7 +249,7 @@ QString EngineManager::waitForTranslation(qint64 hash, int role) const
   //enum { TranslationTimeout = 5000 }; // wait for at most 5 seconds
   //enum { TranslationTimeout = 50 }; // wait for at most 5 seconds
 
-  //EngineManagerPrivate() : blocked(false) {}
+  //EmbedManagerPrivate() : blocked(false) {}
   //bool isBlocked() const { return blocked; }
   //void unblock() { blocked = false; }
   // TODO: Add a timer to quit loop
@@ -263,7 +262,7 @@ QString EngineManager::waitForTranslation(qint64 hash, int role) const
   //  }
   //}
 
-  //explicit EngineManagerPrivate(QObject *parent)
+  //explicit EmbedManagerPrivate(QObject *parent)
   //  : loop(new QEventLoop(parent))
   //{ QObject::connect(qApp, SIGNAL(aboutToQuit()), loop, SLOT(quit())); }
 

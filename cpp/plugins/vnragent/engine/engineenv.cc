@@ -1,7 +1,7 @@
-// env.cc
+// engineenv.cc
 // 4/26/2014 jichi
 
-#include "model/env.h"
+#include "engine/engineenv.h"
 #include "ntinspect/ntinspect.h"
 #include <QtCore/QDir>
 #include <QtCore/QCoreApplication>
@@ -13,10 +13,10 @@
 
 // - File -
 
-bool Env::glob(const QString &nameFilter)
+bool Engine::glob(const QString &nameFilter)
 { return glob(QStringList(nameFilter)); }
 
-bool Env::glob(const QStringList &nameFilters)
+bool Engine::glob(const QStringList &nameFilters)
 {
   static QDir cwd;
   if (cwd.path().isEmpty())
@@ -26,7 +26,7 @@ bool Env::glob(const QStringList &nameFilters)
 
 // - Process and threads -
 
-QString Env::getNormalizedProcessName()
+QString Engine::getNormalizedProcessName()
 {
   static QString ret;
   if (ret.isEmpty()) {
@@ -36,7 +36,7 @@ QString Env::getNormalizedProcessName()
   return ret;
 }
 
-bool Env::getMemoryRange(const wchar_t *moduleName, unsigned long *startAddress, unsigned long *stopAddress)
+bool Engine::getMemoryRange(const wchar_t *moduleName, unsigned long *startAddress, unsigned long *stopAddress)
 {
   static std::unordered_map<const wchar_t *, std::pair<DWORD, DWORD> > cache;
   auto p = cache.find(moduleName);
@@ -67,7 +67,7 @@ bool Env::getMemoryRange(const wchar_t *moduleName, unsigned long *startAddress,
   return true;
 }
 
-unsigned long Env::getModuleFunction(const char *moduleName, const char *funcName)
+unsigned long Engine::getModuleFunction(const char *moduleName, const char *funcName)
 {
   if (HMODULE h = ::GetModuleHandleA(moduleName)) {
     DWORD ret = (DWORD)::GetProcAddress(h, funcName);

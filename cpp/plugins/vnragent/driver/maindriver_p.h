@@ -7,7 +7,7 @@ class EngineDriver;
 class HijackDriver;
 class RpcClient;
 class Settings;
-class UiDriver;
+class WindowDriver;
 class MainDriverPrivate : public QObject
 {
   Q_OBJECT
@@ -18,7 +18,7 @@ class MainDriverPrivate : public QObject
   RpcClient *rpc;
   HijackDriver *hijack;
   EngineDriver *eng;
-  UiDriver *ui;
+  WindowDriver *win;
 public:
   explicit MainDriverPrivate(QObject *parent = nullptr);
 

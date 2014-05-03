@@ -1,6 +1,6 @@
 #pragma once
 
-// uimanager.h
+// windowmanager.h
 // 2/1/2013 jichi
 // Window text manager.
 
@@ -8,13 +8,13 @@
 #include <QtCore/QList>
 #include <QtCore/QObject>
 
-class UiManagerPrivate;
-class UiManager : public QObject
+class WindowManagerPrivate;
+class WindowManager : public QObject
 {
   Q_OBJECT
-  Q_DISABLE_COPY(UiManager)
-  SK_EXTEND_CLASS(UiManager, QObject)
-  SK_DECLARE_PRIVATE(UiManagerPrivate)
+  Q_DISABLE_COPY(WindowManager)
+  SK_EXTEND_CLASS(WindowManager, QObject)
+  SK_DECLARE_PRIVATE(WindowManagerPrivate)
 
 public:
   struct TextEntry { // Window text entry QString text;
@@ -28,8 +28,8 @@ public:
   };
   typedef QList<TextEntry> TextEntryList;
 
-  explicit UiManager(QObject *parent = nullptr);
-  ~UiManager();
+  explicit WindowManager(QObject *parent = nullptr);
+  ~WindowManager();
 
 public:
   bool containsAnchor(ulong anchor) const;
