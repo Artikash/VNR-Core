@@ -22,7 +22,7 @@ RpcClientPrivate::RpcClientPrivate(Q *q)
 
   connect(client, SIGNAL(dataReceived(QByteArray)), SLOT(onDataReceived(QByteArray)));
 
-  connect(client, SIGNAL(disconnected()), q, SLOT(disconnected()));
+  connect(client, SIGNAL(disconnected()), q, SIGNAL(disconnected()));
   connect(client, SIGNAL(disconnected()), q, SIGNAL(aborted()));
   connect(client, SIGNAL(socketError()), q, SIGNAL(aborted()));
 

@@ -29,7 +29,7 @@ MainDriverPrivate::MainDriverPrivate(QObject *parent)
   {
     connect(rpc, SIGNAL(enableWindowTranslationRequested(bool)), settings, SLOT(setWindowTranslationEnabled(bool)));
     connect(rpc, SIGNAL(disconnected()), SLOT(onDisconnected()));
-    connect(rpc, SIGNAL(detachRequested()), SLOT(detach()));
+    connect(rpc, SIGNAL(detachRequested()), SLOT(unload()));
   }
 
   hijack = new HijackDriver(this);
@@ -59,9 +59,10 @@ MainDriverPrivate::MainDriverPrivate(QObject *parent)
 void MainDriverPrivate::onDisconnected()
 {
   settings->setWindowTranslationEnabled(false);
+  unload();
 }
 
-void MainDriverPrivate::detach()
+void MainDriverPrivate::unload()
 {
   WinDbg::unloadCurrentModule();
 }

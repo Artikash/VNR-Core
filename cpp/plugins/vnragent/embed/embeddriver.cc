@@ -12,11 +12,10 @@ class EmbedDriverPrivate
 {
 public:
   bool enabled;
-  EngineManager *manager;
-  //AbstractEngine *engine;
+  EmbedManager *manager;
 
   explicit EmbedDriverPrivate(QObject *parent)
-    : enabled(true), manager(new EngineManager(parent)) {}
+    : enabled(true), manager(new EmbedManager(parent)) {}
 };
 
 /** Public class */

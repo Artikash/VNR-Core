@@ -1,14 +1,14 @@
 // hijack_ui.cc
 // 1/27/2013 jichi
 #include "hijack/hijackfuncs_p.h"
-#include "ui/uidriver_p.h"
+#include "window/windowdriver_p.h"
 
 // FIXME: This function is not thread-safe
 BOOL WINAPI Hijack::MyTrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, int nReserved, HWND hWnd, CONST RECT * prcRect)
 {
   //if (HANDLE hThread = CreateThread(0, 0, TranslateMenuThreadProc, hMenu, 0, 0))
   //  CloseHandle(hThread);
-  if (auto p = UiDriverPrivate::instance())
+  if (auto p = WindowDriverPrivate::instance())
     p->requestUpdateContextMenu(hMenu, hWnd);
   return ::TrackPopupMenu(hMenu, uFlags, x, y, nReserved, hWnd, prcRect);
 }
@@ -18,7 +18,7 @@ BOOL WINAPI Hijack::MyTrackPopupMenuEx(HMENU hMenu, UINT uFlags, int x, int y, H
 {
   //if (HANDLE hThread = CreateThread(0, 0, TranslateMenuThreadProc, hMenu, 0, 0))
   //  CloseHandle(hThread);
-  if (auto p = UiDriverPrivate::instance())
+  if (auto p = WindowDriverPrivate::instance())
     p->requestUpdateContextMenu(hMenu, hWnd);
   return ::TrackPopupMenuEx(hMenu, uFlags, x, y, hWnd, lptpm);
 }

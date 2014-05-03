@@ -3,7 +3,7 @@
 // majiro.h
 // 4/20/2014 jichi
 
-#include "model/engine.h"
+#include "engine/engine.h"
 
 class MajiroEnginePrivate;
 class MajiroEngine : public AbstractEngine

@@ -44,7 +44,7 @@ public:
   void sleep(int interval = SleepTimeout, int count = SleepCount)
   {
     sleepEvent.signal(false);
-    for (int i = 0; !sleepEvent.wait(interval) && i < SleepCount; i++);
+    for (int i = 0; !sleepEvent.wait(interval) && i < count; i++);
     sleepEvent.signal(false);
   }
 

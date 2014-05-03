@@ -34,9 +34,9 @@ Settings::~Settings()
 }
 
 #define DEFINE_PROPERTY(property, getter, setter, rettype, argtype) \
-  rettype Settings::getter() \
+  rettype Settings::getter() const \
   { return d_->property; } \
-  void Settings::getter(argtype value)  \
+  void Settings::setter(argtype value)  \
   { if (d_->property != value) { d_->property = value; emit property##Changed(value); } }
 
 DEFINE_PROPERTY(language, language, setLanguage, QString, const QString &)

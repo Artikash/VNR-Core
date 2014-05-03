@@ -6,6 +6,10 @@
 #include "sakurakit/skhash.h"
 #include <QtCore/QString>
 
+#ifdef _MSC_VER
+# pragma warning (disable:4334)   // C4334: 32-bit shift implicit converted to 64 bits
+#endif // _MSC_VER
+
 namespace Engine {
 
 // Cast quint64 to qint64

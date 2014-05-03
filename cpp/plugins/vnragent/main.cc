@@ -64,9 +64,6 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
 
     ::DisableThreadLibraryCalls(hInstance); // Disable DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications
 
-    if (HWND winId = waitForWindowReady_())
-      WinTimer::setGlobalWindow(winId);
-
 #ifdef VNRAGENT_ENABLE_THREAD
     suppressExistingThreadsPriories_();
     if (HANDLE h = ::CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)Loader::initWithInstance, hInstance, 0, nullptr)) {
@@ -77,6 +74,13 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
       //growl::error("failed to create thread");
       return FALSE;
 #else
+    if (HWND winId = waitForWindowReady_())
+      WinTimer::setGlobalWindow(winId);
+    else {
+      //growl::error("failed to find main window");
+      return FALSE;
+    }
+
     // It is critical to launch Qt application in the same thread as main window
     WinTimer::singleShot(100, [hInstance] {
       Loader::initWithInstance(hInstance);
@@ -85,8 +89,8 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
     break;
 
   case DLL_PROCESS_DETACH:
-    if (HWND winId = WinQuery::getAnyWindowInCurrentProcess())
-      WinTimer::singleShot(5000, harakiri_, winId);  // If hang, terminate the process in 5 seconds.
+    //if (HWND winId = WinQuery::getAnyWindowInCurrentProcess())
+    //  WinTimer::singleShot(5000, harakiri_, winId);  // If hang, terminate the process in 5 seconds.
     Loader::destroy();
     break;
   }

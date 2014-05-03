@@ -7,7 +7,7 @@
 #define FONT_ZHS "KaiTi_GB2312"
 
 // This only works before starting the game
-HFONT WINAPI Engine::MyCreateFontIndirectA(const LOGFONTA *lplf)
+HFONT WINAPI Hijack::MyCreateFontIndirectA(const LOGFONTA *lplf)
 {
   HFONT ret = nullptr;
   if (lplf) {

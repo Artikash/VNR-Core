@@ -64,7 +64,7 @@ win32 {
   # Disable CRT posix warnings
   #DEFINES += _CRT_NONSTDC_NO_DEPRECATE
 
-  QMAKE_CXXFLAGS_WARN_ON += -wd4819 # ignore warning on Japanese characters
+  QMAKE_CXXFLAGS += -wd4819 # ignore warning on Japanese characters
 }
 
 ## External Libraries
@@ -206,6 +206,8 @@ CONFIG(pysideplugin) {
 
   # Ignore warnings from Shiboken and PySide
   win32 {
+    # QMAKE_CXXFLAGS_WARN_ON does not work on windows
+    #
     #ifdef _MSC_VER
     # pragma warning (disable:4099)   // C4099: mix class and struct
     # pragma warning (disable:4100)   // C4100: unreferenced parametter
@@ -214,7 +216,7 @@ CONFIG(pysideplugin) {
     # pragma warning (disable:4522)   // C4522: multiple assignment operators
     # pragma warning (disable:4800)   // C4800: forcing value to bool
     #endif // _MSC_VER
-    QMAKE_CXXFLAGS_WARN_ON += -wd4099 -wd4100 -wd4244 -wd4390 -wd4522 -wd4800
+    QMAKE_CXXFLAGS += -wd4099 -wd4100 -wd4244 -wd4390 -wd4522 -wd4800
   }
 }
 

@@ -67,7 +67,7 @@ from functools import partial
 import json
 from PySide.QtCore import Signal, Qt, QObject
 from sakurakit.skclass import Q_Q, memoized
-from sakurakit.skdebug import dwarn
+from sakurakit.skdebug import dwarn, dprint
 from mytr import my
 import growl
 
@@ -145,6 +145,7 @@ class _RpcServer(object):
 
   def _onDisconnected(self, socket):
     if socket is self.agentSocket:
+      dprint("pass: pid = %s" % self.agentPid)
       self.agentSocket = None
       self.q.agentDisconnected.emit(self.agentPid)
       self.agentPid  = 0
@@ -220,7 +221,7 @@ class _RpcServer(object):
     #  'gameLanguage': 'en', # TODO
     #}
     #self.callAgent('config', json.dumps(reply))
-    self.callAgent('config.debug', self._marshalBool(config.APP_DEBUG))
+    self.callAgent('config.debug', _marshalBool(config.APP_DEBUG))
 
   def _onWindowTexts(self, data):
     """

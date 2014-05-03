@@ -18,7 +18,7 @@ include($$LIBDIR/windbg/windbg.pri)
 include($$LIBDIR/winevent/winevent.pri)
 include($$LIBDIR/winiter/winiter.pri)
 include($$LIBDIR/winquery/winquery.pri)
-include($$LIBDIR/wintimer/wintimer.pri)
+#include($$LIBDIR/wintimer/wintimer.pri)
 include($$LIBDIR/winmutex/winmutex.pri)
 
 #include($$LIBDIR/disasm/disasm.pri)

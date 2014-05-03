@@ -30,7 +30,7 @@ HijackDriverPrivate::HijackDriverPrivate(Q *q)
 /** Public class */
 
 HijackDriver::HijackDriver(QObject *parent) : Base(parent), d_(new D(this)) {}
-HijackDriver::~HijackDriver() : { delete d_; }
+HijackDriver::~HijackDriver() { delete d_; }
 
 void HijackDriver::refresh() { Hijack::overrideModules(); }
 

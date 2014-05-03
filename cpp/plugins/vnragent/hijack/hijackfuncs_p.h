@@ -10,7 +10,7 @@
    { "LoadLibrary", "kernel32.dll", Hijack::MyLoadLibrary }, \
    { "LoadLibraryEx", "kernel32.dll", Hijack::MyLoadLibraryEx }, \
    { "TrackPopupMenu", "user32.dll", Hijack::MyTrackPopupMenu }, \
-   { "TrackPopupMenuEx", "user32.dll", Hijack::MyTrackPopupMenuEx } \
+   { "TrackPopupMenuEx", "user32.dll", Hijack::MyTrackPopupMenuEx }, \
    { "CreateFontIndirectA", "gdi32.dll", Hijack::MyCreateFontIndirectA }
 
 namespace Hijack {

@@ -5,7 +5,7 @@
 
 #include <QtCore/QString>
 
-namespace engine {
+namespace Engine {
 
 // File system
 bool glob(const QString &nameFilter);

@@ -28,7 +28,7 @@ WindowDriverPrivate::WindowDriverPrivate(QObject *parent)
 
   refreshTimer = new QTimer(this);
   refreshTimer->setSingleShot(false);
-  refreshTimer->setInterval(refreshInterval);
+  refreshTimer->setInterval(RefreshInterval);
   connect(refreshTimer, SIGNAL(timeout()), SLOT(refresh()));
 
   connect(this, SIGNAL(updateContextMenuRequested(void*,void*)), SLOT(onUpdateContextMenuRequested(void*,void*)),
