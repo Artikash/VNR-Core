@@ -6,6 +6,7 @@ from PySide.QtCore import QObject, Signal
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint
 from vnragent import vnragent
+import config, settings
 
 @memoized
 def global_(): return GameAgent()
@@ -79,10 +80,14 @@ class GameAgent(QObject):
   #def setGameLanguage(self, v):
   #  self.__d.gameLanguage = v
 
-  def setUserEncoding(self, v): # str ->
-    d = self.__d
-    if d.userEncoding != v:
-      d.userEncoding = v
+  #def setUserEncoding(self, v): # str ->
+  #  d = self.__d
+  #  if d.userEncoding != v:
+  #    d.userEncoding = v
+
+  def sendSettings(self):
+    if self.isConnected():
+      self.__d.sendSettings()
 
   #def engine
 
@@ -94,17 +99,37 @@ class _GameAgent(object):
     self.rpc.agentConnected.connect(q.processAttached)
     self.rpc.agentDisconnected.connect(q.processDetached)
 
+    q.processAttached.connect(self._onAttached)
+
     self.clear()
 
   def clear(self):
+    ss = settings.global_()
     self.injectedPid = 0 # long
     self.active = False # bool
+    self.engineEnabled = ss.isGameAgentEnabled()
+    self.windowTranslationEnabled = ss.isWindowTranslationEnabled()
     #self.gameLanguage = 'ja' # str
     #self.gameEncoding = '' # str
     #self.userLanguage = 'en' # str
-    self.userEncoding = '' # str
+    #self.userEncoding = '' # str
 
   @property # read only
   def connectedPid(self): return self.rpc.agentProcessId()
+
+  def _onAttached(self):
+    self.sendSettings()
+    self.rpc.enableAgent()
+    self.active = True
+
+  def sendSettings(self):
+    data = {
+      #'userEncoding': self.userEncoding,
+      'engine.enable': self.engineEnabled,
+      'window.enable': self.windowTranslationEnabled,
+    }
+    if config.APP_DEBUG:
+      data['debug'] = True
+    self.rpc.setAgentSettings(data)
 
 # EOF

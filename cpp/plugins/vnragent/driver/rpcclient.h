@@ -29,6 +29,9 @@ signals:
   void disconnected(); // server disconnected
   void aborted(); // the last communication was aborted
 
+  void enabledRequested(bool t);
+  void settingsReceived(QString json);
+
   // Window
   void clearWindowTranslationRequested();
   void enableWindowTranslationRequested(bool t);

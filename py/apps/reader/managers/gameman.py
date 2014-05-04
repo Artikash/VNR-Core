@@ -994,8 +994,14 @@ class GameManager(QtCore.QObject):
           dwarn("leave: cannot find game process")
           return
 
+      if g.pid == gameagent.global_().connectedPid():
+        skevents.runlater(lambda: (
+          gameagent.global_().sendSettings(),
+          gameagent.global_().setActive(True),
+        ), 3000)
+
       # g.hasProcess() must be true here, i.e. processId is valid
-      if not g.isAttached():
+      elif not g.isAttached():
         attached = False
 
         if agentEnabled and agentEngine:

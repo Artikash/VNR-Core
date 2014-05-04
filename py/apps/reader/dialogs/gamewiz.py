@@ -711,9 +711,10 @@ class SyncThreadPage(QtWidgets.QWizardPage):
     self._complete = False
     profile = self.wizard().profile()
     if not profile.hasThread():
-      skevents.runlater(lambda:
-          profile.updateThread() or profile.updateHook(),
-          200)
+      skevents.runlater(lambda: (
+        profile.updateThread(),
+        profile.updateHook(),
+      ), 200)
     dprint("pass")
 
   def cleanupPage(self):

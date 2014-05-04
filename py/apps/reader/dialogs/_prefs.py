@@ -804,8 +804,9 @@ class _ShortcutsTab(object):
     _refresh()
     ss.ttsHotkeyChanged.connect(_refresh)
 
-    ret.clicked.connect(lambda:
-        self.ttsDialog.setValue(ss.ttsHotkey()) or self.ttsDialog.show())
+    ret.clicked.connect(lambda: (
+        self.ttsDialog.setValue(ss.ttsHotkey()),
+        self.ttsDialog.show()))
 
     ret.setEnabled(self.ttsCheckBox.isChecked())
     self.ttsCheckBox.toggled.connect(ret.setEnabled)
@@ -1116,9 +1117,9 @@ class _I18nTab(object):
     def _button(lang):
       ret = QtWidgets.QCheckBox(i18n.language_name(lang))
       ret.setChecked(lang in ss.blockedLanguages())
-      ret.toggled.connect(lambda value:
-          self._toggleLanguage(lang, value) or
-          ret.setChecked(not value))
+      ret.toggled.connect(lambda value: (
+          self._toggleLanguage(lang, value),
+          ret.setChecked(not value)))
       return ret
 
     layout = QtWidgets.QVBoxLayout()

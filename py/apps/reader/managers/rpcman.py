@@ -126,12 +126,22 @@ class RpcServer(QObject):
   def isAgentConnected(self): return bool(self.__d.agentSocket)
   def closeAgent(self): self.__d.closeAgentSocket()
 
-  def enableAgent(self): self.__d.callAgent('window.enable')
-  def disableAgent(self): self.__d.callAgent('window.disable')
+  def enableAgent(self): self.__d.callAgent('enable')
+  def disableAgent(self): self.__d.callAgent('disable')
 
   #def detachAgent(self): self.__d.callAgent('detach')
 
   def agentProcessId(self): return self.__d.agentPid
+
+  def setAgentSettings(self, data):
+    """
+    @param  data  {k:v}
+    """
+    try:
+      data = json.dumps(data) #, ensure_ascii=False) # the json parser in vnragent don't enforce ascii
+      self.__d.callAgent('settings', data)
+    except TypeError, e:
+      dwarn("failed to encode json: %s" % e)
 
   def clearWindowTranslation(self): self.__d.callAgent('window.clear')
 
@@ -238,14 +248,6 @@ class _RpcServer(object):
     self.agentPid = pid
     self.agentSocket = socket
     self.q.agentConnected.emit(pid) # SIGNAL TO BE CHANGED
-
-    #reply = {
-    #  'debug': config.APP_DEBUG,
-    #  'userLanguage': 'en', # TODO
-    #  'gameLanguage': 'en', # TODO
-    #}
-    #self.callAgent('config', json.dumps(reply))
-    #self.callAgent('config.debug', _marshalBool(config.APP_DEBUG))
 
   def _onWindowTexts(self, data):
     """

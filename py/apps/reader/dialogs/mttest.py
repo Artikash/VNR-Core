@@ -41,9 +41,9 @@ class _MTTester(object):
 
     tm = trman.manager()
 
-    tm.languagesReceived.connect(lambda fr, to:
-        self.setFromLanguageLabelText(fr) or
-        self.setToLanguageLabelText(to))
+    tm.languagesReceived.connect(lambda fr, to: (
+        self.setFromLanguageLabelText(fr),
+        self.setToLanguageLabelText(to)))
     tm.sourceTextReceived.connect(lambda t:
         self.sourceTextEdit.setPlainText(t or _EMPTY_TEXT))
     tm.escapedTextReceived.connect(lambda t:

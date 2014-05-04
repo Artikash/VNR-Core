@@ -15,22 +15,29 @@ class Settings : public QObject
   SK_EXTEND_CLASS(Settings, QObject)
   SK_DECLARE_PRIVATE(SettingsPrivate)
 public:
-  //static Self *instance();
+  static Self *instance();
 
   explicit Settings(QObject *parent = nullptr);
   ~Settings();
 
 public:
-  QString language() const;
+  bool isEnabled() const;
+  bool isEngineEnabled() const;
   bool isWindowTranslationEnabled() const;
+  //QString language() const;
 
 public slots:
-  void setLanguage(const QString &v);
+  void load(const QString &json);
+  void setEnabled(bool t);
+  void setEngineEnabled(bool v);
   void setWindowTranslationEnabled(bool v);
+  //void setLanguage(const QString &v);
 
 signals:
-  void languageChanged(QString);
+  void enabledChanged(bool t);
+  void engineEnabledChanged(bool);
   void windowTranslationEnabledChanged(bool);
+  //void languageChanged(QString);
 };
 
 // EOF

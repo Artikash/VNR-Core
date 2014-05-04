@@ -122,10 +122,15 @@ void RpcClientPrivate::onCall(const QStringList &args)
   enum { // pre-computed qHash(QString) values
     H_PING          = 487495        // "ping"
     , H_DETACH      = 111978392     // "detach"
+    , H_ENABLE      = 113539365     // "enable"
+    , H_DISABLE     = 185170405     // "disable"
+    , H_SETTINGS    = 213584835     // "settings"
+
     , H_WIN_ENABLE   = 147657733    // "window.enable"
     , H_WIN_DISABLE  = 195013157    // "window.disable"
     , H_WIN_CLEAR    = 160087362    // "window.clear"
     , H_WIN_TEXT     = 110732692    // "window.text"
+
     , H_ENG_ENABLE  = 207122565     // "engine.enable"
     , H_ENG_DISABLE = 46785189      // "engine.disable"
     , H_ENG_CLEAR   = 230943490     // "engine.clear"
@@ -138,6 +143,12 @@ void RpcClientPrivate::onCall(const QStringList &args)
   switch (qHash(args.first())) {
   case H_PING:          break;
   case H_DETACH:        q_->emit detachRequested(); break;
+  case H_ENABLE:        q_->emit enableRequested(true); break;
+  case H_DISABLE:       q_->emit enableRequested(false); break;
+  case H_SETTINGS:
+    if (args.size() == 2)
+      q_->emit settingsReceived(args.last());
+    break;
 
   case H_WIN_CLEAR:     q_->emit clearWindowTranslationRequested(); break;
   case H_WIN_ENABLE:    q_->emit enableWindowTranslationRequested(true); break;

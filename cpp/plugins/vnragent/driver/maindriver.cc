@@ -40,6 +40,8 @@ MainDriverPrivate::MainDriverPrivate(QObject *parent)
     connect(rpc, SIGNAL(enableWindowTranslationRequested(bool)), settings, SLOT(setWindowTranslationEnabled(bool)));
     connect(rpc, SIGNAL(disconnected()), SLOT(onDisconnected()));
     connect(rpc, SIGNAL(detachRequested()), SLOT(unload()));
+    connect(rpc, SIGNAL(enabledRequested(bool)), settings, SLOT(setEnabled(bool)));
+    connect(rpc, SIGNAL(settingsReceived(QString)), settings, SLOT(load(QString)));
   }
 
   hijack = new HijackDriver(this);
