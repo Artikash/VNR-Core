@@ -18,7 +18,7 @@ def _parselang(lcid):
   @param  lcid  int
   @return  str
   """
-  return windefs.LCID_LOCALES2.get(lcid) or ''
+  return windefs.lcid2locale(lcid)[:2] # only keep the first 2 characters
 
 _GENDERS = {
  'Female': 'f',

@@ -44,10 +44,14 @@ void Util::debugMsgHandler(QtMsgType type, const char *msg)
 
 void Util::installDebugMsgHandler()
 {
-  QFile file(debugFileLocation());
-  if (file.open(QIODevice::Text|QIODevice::WriteOnly)) {
-    QTextStream(&file) << "\n--------\n\n";
-    qInstallMsgHandler(debugMsgHandler);
+  static bool installed = false; // only install once
+  if (!installed)
+    installed = true;
+    QFile file(debugFileLocation());
+    if (file.open(QIODevice::Text|QIODevice::WriteOnly)) {
+      QTextStream(&file) << "\n--------\n\n";
+      qInstallMsgHandler(debugMsgHandler);
+    }
   }
 }
 

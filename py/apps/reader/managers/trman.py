@@ -286,6 +286,24 @@ class TranslatorManager(QObject):
     """
     return features.MACHINE_TRANSLATION and self.hasTranslators()
 
+  def guessTranslationLanguage(self): # -> str
+    if not self.isEnabled():
+      return ''
+    if self.ezTransEnabled:
+      return 'ko'
+    if self.jbeijingEnabled or self.baiduEnabled or self.dreyeEnabled:
+      return 'zhs' if self.language == 'zhs' else 'zht'
+    if (self.atlasEnabled or self.lecEnabled) and not any(
+        self.infoseekEnabled,
+        self.transruEnabled,
+        self.exciteEnabled,
+        self.bingEnabled,
+        self.googleEnabled,
+        self.lecOnlineEnabled,
+      ):
+      return 'en'
+    return self.language
+
   def translate(self, *args, **kwargs):
     """
     @return  unicode

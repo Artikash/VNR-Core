@@ -266,7 +266,8 @@ class GameProfile(QtCore.QObject):
       linkName="", folderName="", brandName="",
       loader="", language='ja',
       removesRepeat=False, ignoresRepeat=False, keepsSpace=False, threadKept=False,
-      timeZoneEnabled=None):
+      timeZoneEnabled=None,
+      launchLanguage=''):
     super(GameProfile, self).__init__(parent)
     d = self.__d = _GameProfile()
     d.locked = False
@@ -281,7 +282,7 @@ class GameProfile(QtCore.QObject):
     self.windowName = windowName    # unicode
 
     # Thread
-    self.encoding = encoding    # str
+    self.encoding = encoding    # str  game encoding
     self.threadSignature = threadSignature  # long
     self.threadName = threadName    # str
     self.removesRepeat = removesRepeat # bool
@@ -299,11 +300,19 @@ class GameProfile(QtCore.QObject):
     self.brandName = brandName      # unicode
 
     # Hook
-    self.hook = hook
-    self.deletedHook = deletedHook
+    self.hook = hook # str
+    self.deletedHook = deletedHook # str
 
     # Launcher
-    self.loader = loader
+    self.loader = loader # str
+
+    # Game agent
+    self.launchLanguage = launchLanguage # str
+
+  def lcid(self): # -> long not None
+    if self.launchLanguage:
+      return config.language2lcid(self.launchLanguage) or 0x0411 # ja by default
+    return 0x0411
 
   def applyHook(self):
     """
@@ -472,14 +481,16 @@ class GameProfile(QtCore.QObject):
     self.brandName = ""
     #self.supportThreads = None
     self.loader = "" # apploc, etc
+    self.launchLanguage = ''
 
   processUpdated = Signal()
 
-  def usingNoneLoader(self): return self.loader == 'none'
-  def usingApploc(self): return self.loader == 'apploc'
-  def usingNtlea(self): return self.loader == 'ntlea'
-  def usingLocaleSwitch(self): return self.loader == 'lsc'
-  def usingLocaleEmulator(self): return self.loader == 'le'
+  # Always use apploc when launchLanguage is specified by game agent
+  #def usingNoneLoader(self): return self.loader == 'none'
+  def usingApploc(self): return bool(self.launchLanguage) or self.loader == 'apploc' or not self.loader and settings.global_().isApplocEnabled()
+  def usingNtlea(self): return not self.launchLanguage and (self.loader == 'ntlea' or not self.loader and settings.global_().isNtleaEnabled())
+  def usingLocaleSwitch(self): return not self.launchLanguage and (self.loader == 'lsc' or not self.loader and settings.global_().isLocaleSwitchEnabled())
+  def usingLocaleEmulator(self): return not self.launchLanguage and (self.loader == 'le' or not self.loader and settings.global_().isLocaleEmulatorEnabled())
 
   def updateProcess(self, retries=2, launch=True):
     """
@@ -517,9 +528,9 @@ class GameProfile(QtCore.QObject):
       if not proc:
         dprint("launching process path = %s" % self.path)
 
-        usingLocaleEmulator = self.usingLocaleEmulator() or not self.loader and settings.global_().isLocaleEmulatorEnabled()
-        usingLocaleSwitch = self.usingLocaleSwitch() or not self.loader and settings.global_().isLocaleSwitchEnabled()
-        usingNtlea = self.usingNtlea() or not self.loader and settings.global_().isNtleaEnabled()
+        usingLocaleEmulator = self.usingLocaleEmulator()
+        usingLocaleSwitch = self.usingLocaleSwitch()
+        usingNtlea = self.usingNtlea()
 
         #if features.ADMIN == False and (usingLocaleSwitch or usingLocaleEmulator):
         if features.ADMIN == False and usingLocaleSwitch:
@@ -630,7 +641,9 @@ class GameProfile(QtCore.QObject):
             if not launch:
               if updateLater(verbose=True): return
             else:
-              lcid = 0 if features.WINE else 0x0411 if self.usingApploc() or not self.loader and settings.global_().isApplocEnabled() else 0
+              # CHECKPOINT: if agent engine exist, guess game encoding and use apploc to open it
+
+              lcid = 0 if features.WINE else self.lcid() if self.usingApploc() else 0
               if not self.launchPath or not os.path.exists(self.launchPath):
                 if lcid:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("AppLocale")))
@@ -883,6 +896,7 @@ class GameManager(QtCore.QObject):
 
   def openGame(self, pid=0, wid=0, path="", launchPath="", linkName="",
       hook="", threadName="", threadSignature=0, encoding="", language="",
+      launchEncoding='',
       game=None):
     """
     @param  game  dataman.Game or None
@@ -936,7 +950,8 @@ class GameManager(QtCore.QObject):
           deletedHook=game.deletedHook if game else "",
           encoding=encoding, hook=hook, threadName=threadName, threadSignature=threadSignature,
           removesRepeat=removesRepeat, ignoresRepeat=ignoresRepeat, keepsSpace=keepsSpace, threadKept=threadKept, language=language,
-          loader=loader, timeZoneEnabled=timeZoneEnabled)
+          loader=loader, timeZoneEnabled=timeZoneEnabled,
+          launchLanguage=launchLanguage)
 
       md5 = g.md5()
       oldGame = dataman.manager().queryGame(md5=md5, online=False)
@@ -955,6 +970,16 @@ class GameManager(QtCore.QObject):
 
       if not g.language: g.language = 'ja'
 
+      agentEnabled = settings.global_().isGameAgentEnabled() # bool
+      if agentEnabled and not g.launchLanguage:
+        agentEngine = gameagent.global_().guessEngine(pid=pid, path=path)
+        if agentEngine:
+          if g.encoding and g.encoding != 'utf-16' or not g.encoding and agentEngine.encoding() == 'utf-16':
+            import trman
+            launchLanguage = trman.manager().guessTranslationLanguage()
+            if launchLanguage in ('en', 'ja'):
+              launchLanguage = ''
+
       if not g.hasProcess():
         dprint("update process")
         # exec event loop until the process is refreshed
@@ -972,8 +997,7 @@ class GameManager(QtCore.QObject):
       if not g.isAttached():
         attached = False
 
-        agentEnabled = settings.global_().isGameAgentEnabled()
-        if agentEnabled: # use ITH
+        if agentEnabled and agentEngine:
           dprint("attach using game agent")
           attached = gameagent.global_().attachProcess(g.pid)
 

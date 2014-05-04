@@ -5,6 +5,7 @@
 from PySide.QtCore import QObject, Signal
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint
+from vnragent import vnragent
 
 @memoized
 def global_(): return GameAgent()
@@ -49,6 +50,17 @@ class GameAgent(QObject):
       rpc.closeAgent()
     self.__d.clear()
 
+  ## Query ##
+
+  @staticmethod
+  def guessEngine(**kwargs):
+    """
+    @param* pid  long
+    @param* path  unicode  game executable path
+    @return  vnragent.Engine
+    """
+    return vnragent.match(**kwargs)
+
   ## States ##
 
   activeChanged = Signal(bool)
@@ -71,6 +83,8 @@ class GameAgent(QObject):
     d = self.__d
     if d.userEncoding != v:
       d.userEncoding = v
+
+  #def engine
 
 class _GameAgent(object):
   def __init__(self, q):

@@ -344,8 +344,13 @@ def check_valid_language(lang):
   if not is_valid_language(lang):
     raise ValueError("invalid language %s" % lang)
 
-def language2locale(lang):
+def language2locale(lang): # str -> str
   return LANGUAGE_LOCALES.get(lang) or ""
+
+def language2lcid(lang): # str -> long
+  loc = language2locale(lang)
+  from windefs import windefs
+  return windefs.locale2lcid(loc)
 
 LINGOES_LANGS = SHARE_YAML['lingoes'] # [str lang]
 JMDICT_LANGS = SHARE_YAML['jmdict'] # [str lang]
