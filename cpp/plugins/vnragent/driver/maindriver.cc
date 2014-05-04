@@ -12,16 +12,27 @@
 #include "window/windowdriver.h"
 #include "windbg/unload.h"
 
+#define DEBUG "maindriver"
+#include "sakurakit/skdebug.h"
+
 /** Public class */
 
-MainDriver::MainDriver(QObject *parent) : Base(parent), d_(new D(this)) {}
+MainDriver::MainDriver(QObject *parent)
+  : Base(parent), d_(new D(this))
+{
+  connect(this, SIGNAL(deleteLaterRequested()), SLOT(deleteLater()), Qt::QueuedConnection);
+}
+
 MainDriver::~MainDriver() { delete d_; }
+
+void MainDriver::requestDeleteLater() { emit deleteLaterRequested(); }
 
 /** Private class */
 
 MainDriverPrivate::MainDriverPrivate(QObject *parent)
   : Base(parent)
 {
+  DOUT("enter");
   settings = new Settings(this);
 
   rpc = new RpcClient(this);
@@ -53,20 +64,24 @@ MainDriverPrivate::MainDriverPrivate(QObject *parent)
     connect(rpc, SIGNAL(engineTranslationReceived(QString,qint64,int)), eng, SLOT(updateTranslation(QString,qint64,int)),
         Qt::QueuedConnection);
   }
+  DOUT("leave");
 }
 
 void MainDriverPrivate::onDisconnected()
 {
   settings->setWindowTranslationEnabled(false);
-  //unload();
+  //DOUT("pass");
+  unload();
 }
 
 void MainDriverPrivate::unload()
 {
 #ifdef VNRAGENT_ENABLE_UNLOAD
-  // FIXME: Detach WILL crash the application
+  // Add contents to qDebug will crash the application while unload.
+  //DOUT("enter");
   hijack->unload();
   eng->unload();
+  //DOUT("leave");
   WinDbg::unloadCurrentModule();
 #endif // VNRAGENT_ENABLE_UNLOAD
 }

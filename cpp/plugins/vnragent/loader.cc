@@ -74,18 +74,28 @@ void Loader::initWithInstance(HINSTANCE hInstance)
 void Loader::destroy()
 {
 #ifdef VNRAGENT_ENABLE_UNLOAD
-  if (::driver_)
-    delete ::driver_;
+  if (::driver_) {
+    ::driver_->requestDeleteLater();
+    ::driver_ = nullptr;
+  }
 #endif // VNRAGENT_ENABLE_UNLOAD
 
 #ifdef VNRAGENT_ENABLE_APPRUNNER
-  if (::appRunner_ && ::appRunner_->isActive())
+  if (::appRunner_ && ::appRunner_->isActive()) {
     ::appRunner_->stop(); // this class is not deleted
+#ifdef VNRAGENT_ENABLE_UNLOAD
+    delete ::appRunner_;
+    ::appRunner_ = nullptr;
+#endif // VNRAGENT_ENABLE_UNLOAD
+  }
 #endif // VNRAGENT_ENABLE_APPRUNNER
 
   if (qApp) {
     qApp->quit();
     qApp->processEvents(); // might hang here
+#ifdef VNRAGENT_ENABLE_UNLOAD
+    delete qApp;
+#endif // VNRAGENT_ENABLE_UNLOAD
   }
 }
 

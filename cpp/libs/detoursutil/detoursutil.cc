@@ -23,4 +23,15 @@ detours::address_t detours::replace(address_t old_addr, const_address_t new_addr
   return ret;
 }
 
+ detours::address_t detours::restore(address_t restore_addr, const_address_t old_addr)
+{
+  address_t ret = restore_addr;
+  //::DetourRestoreAfterWith();
+  ::DetourTransactionBegin();
+  ::DetourUpdateThread(::GetCurrentThread());
+  ::DetourDetach((PVOID *)&ret, (PVOID)old_addr);
+  ::DetourTransactionCommit();
+  return ret;
+}
+
 // EOF

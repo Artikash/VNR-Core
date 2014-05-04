@@ -17,6 +17,12 @@ class MainDriver : public QObject
 public:
   explicit MainDriver(QObject *parent = nullptr);
   ~MainDriver();
+
+  // Connected with deleteLater through queued signal
+  void requestDeleteLater();
+
+signals:
+  void deleteLaterRequested();
 };
 
 // EOF

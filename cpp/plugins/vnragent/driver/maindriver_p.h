@@ -21,7 +21,10 @@ class MainDriverPrivate : public QObject
   EmbedDriver *eng;
   WindowDriver *win;
 public:
-  explicit MainDriverPrivate(QObject *parent = nullptr);
+  explicit MainDriverPrivate(QObject *parent);
+
+signals:
+  void deleteLaterRequestd();
 
 private slots:
   void onDisconnected();

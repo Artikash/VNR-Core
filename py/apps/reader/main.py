@@ -517,8 +517,8 @@ class _MainObject(object):
     self.textManager.windowTranslationCleared.connect(ret.clearWindowTranslation)
     self.textManager.windowTranslationChanged.connect(ret.sendWindowTranslation)
 
-    ret.agentConnected.connect(partial(
-        self.gameManager.setWindowHookConnected, True))
+    ret.agentConnected.connect(lambda pid:
+        self.gameManager.setWindowHookConnected(True))
 
     return ret
 

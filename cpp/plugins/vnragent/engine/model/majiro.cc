@@ -119,7 +119,11 @@ bool MajiroEngine::inject()
 
 bool MajiroEngine::unload()
 {
-  return !D::oldHook || detours::replace<D::hook_fun_t>(D::hookAddress, D::oldHook);
+  if (!D::hookAddress || !D::oldHook)
+    return false;
+  bool ok = detours::restore<D::hook_fun_t>(D::hookAddress, D::oldHook);
+  D::hookAddress = 0;
+  return ok;
 }
 
 // EOF
