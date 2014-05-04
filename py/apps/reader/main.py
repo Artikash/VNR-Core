@@ -279,6 +279,10 @@ class _MainObject(object):
     import gameagent
     ret = gameagent.global_()
     ret.setParent(self.q)
+
+    ret.engineChanged.connect(lambda name:
+        name or ret.connectedPid() == self.texthook.currentPid() or
+        self.texthook.attachProcess(ret.connectedPid()))
     return ret
 
   @memoizedproperty

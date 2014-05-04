@@ -114,7 +114,7 @@ class _GameAgent(object):
     ss = settings.global_()
     self.injectedPid = 0 # long
     self.active = False # bool
-    senf.engineName = '' # str
+    self.engineName = '' # str
     self.engineEnabled = ss.isGameAgentEnabled()
     self.windowTranslationEnabled = ss.isWindowTranslationEnabled()
     #self.gameLanguage = 'ja' # str

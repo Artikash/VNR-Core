@@ -220,6 +220,8 @@ if skos.WIN:
       @return  bool
       """
       dprint("enter")
+      if not pid:
+        return False
       d = self.__d
       #d.signature = 0
       if d.pid and d.pid != pid:
