@@ -3,11 +3,24 @@
 #include "config.h"
 #include "driver/rpcclient.h"
 #include "driver/rpcclient_p.h"
-#include "qtsocketsvc/bufferedsocketclient.h"
 #include "qtsocketsvc/socketpack.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QHash>
 #include <QtCore/QTimer>
+
+#ifdef VNRAGENT_ENABLE_TCP_SOCKET
+# ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
+#  include "qtsocketsvc/bufferedtcpsocketclient.h"
+# else
+#  include "qtsocketsvc/tcpsocketclient.h"
+# endif // VNRAGENT_ENABLE_BUFFERED_SOCKET
+#else
+# ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
+#  include "qtsocketsvc/bufferedlocalsocketclient.h"
+# else
+#  include "qtsocketsvc/localsocketclient.h"
+# endif // VNRAGENT_ENABLE_BUFFERED_SOCKET
+#endif // VNRAGENT_ENABLE_TCP_SOCKET
 
 #define DEBUG "rpcclient"
 #include "sakurakit/skdebug.h"
@@ -17,8 +30,12 @@
 RpcClientPrivate::RpcClientPrivate(Q *q)
   : Base(q), q_(q), client(new RpcSocketClient(this))
 {
-  client->setPort(VNRAGENT_METACALL_PORT);
-  client->setAddress(VNRAGENT_METACALL_HOST);
+#ifdef VNR_ENABLE_TCP_SOCKET
+  client->setPort(VNRAGENT_SOCKET_PORT);
+  client->setAddress(VNRAGENT_SOCKET_HOST);
+#else
+  client->setAddress(VNRAGENT_SOCKET_PIPE);
+#endif // VNRAGENT_ENABLE_TCP_SOCKET
 
   connect(client, SIGNAL(dataReceived(QByteArray)), SLOT(onDataReceived(QByteArray)));
 
@@ -69,11 +86,11 @@ void RpcClientPrivate::callServer(const QStringList &args)
 
 void RpcClientPrivate::sendData(const QByteArray &data)
 {
-#ifdef VNRAGENT_BUFFER_SOCKET
+#ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
   client->sendDataLater(data, BufferInterval, WaitInterval);
 #else
   client->sendData(data, WaitInterval);
-#endif // VNRAGENT_BUFER_SOCKET
+#endif // VNRAGENT_ENABLE_BUFFERED_SOCKET
 }
 
 void RpcClientPrivate::onDataReceived(const QByteArray &data)

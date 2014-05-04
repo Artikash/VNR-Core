@@ -9,7 +9,6 @@ if __name__ == '__main__':
 __all__ = ['LocalSocketClient']
 
 from PySide.QtCore import QObject, Signal, QTimer
-#from PySide.QtNetwork import QAbstractSocket
 from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint, dwarn
 import socketio, socketpack
@@ -197,7 +196,7 @@ if __name__ == '__main__':
   app =  QCoreApplication(sys.argv)
   #c = LocalSocketClient()
   c = BufferedLocalSocketClient()
-  c.setServerName("pipetest")
+  c.setServerName("/tmp/pipetest")
   def f(data):
     print data, type(data), len(data)
     app.quit()

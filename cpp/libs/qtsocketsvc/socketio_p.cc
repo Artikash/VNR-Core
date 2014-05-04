@@ -2,12 +2,11 @@
 // 4/29/2014 jichi
 #include "qtsocketsvc/socketio_p.h"
 #include "qtsocketsvc/socketpack.h"
-#include <QtNetwork/QAbstractSocket>
 
 #define DEBUG "socketio_p"
 #include "sakurakit/skdebug.h"
 
-bool SocketService::writeSocket(QAbstractSocket *socket, const QByteArray &data, bool pack)
+bool SocketService::writeSocket(QIODevice *socket, const QByteArray &data, bool pack)
 {
   Q_ASSERT(socket);
   if (pack) {
@@ -17,7 +16,7 @@ bool SocketService::writeSocket(QAbstractSocket *socket, const QByteArray &data,
     return socket->write(data) == data.size();
 }
 
-QByteArray SocketService::readSocket(QAbstractSocket *socket, quint32 &dataSize)
+QByteArray SocketService::readSocket(QIODevice *socket, quint32 &dataSize)
 {
   Q_ASSERT(socket);
   enum { HeadSize = UInt32Size };

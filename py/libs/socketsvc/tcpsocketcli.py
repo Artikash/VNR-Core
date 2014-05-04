@@ -9,7 +9,6 @@ if __name__ == '__main__':
 __all__ = ['TcpSocketClient']
 
 from PySide.QtCore import QObject, Signal, QTimer
-#from PySide.QtNetwork import QAbstractSocket
 from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint, dwarn
 import socketio, socketpack

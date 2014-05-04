@@ -143,7 +143,7 @@ if __name__ == '__main__':
   from PySide.QtCore import QCoreApplication
   app =  QCoreApplication(sys.argv)
   s = LocalSocketServer()
-  s.setServerName("pipetest")
+  s.setServerName("/tmp/pipetest")
   s.start()
 
   def f(data):

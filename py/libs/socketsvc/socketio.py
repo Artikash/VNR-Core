@@ -22,14 +22,14 @@ def parseiomode(s): # str -> QIODevice::OpenMode
 
 def initsocket(socket):
   """
-  @param  socket  QAbstractSocket
+  @param  socket  QIODevice
   """
   socket.messageSize = 0 # body size of the current message
 
 def writesocket(data, socket, pack=True):
   """
   @param  data  str not unicode
-  @param  socket  QAbstractSocket
+  @param  socket  QQIODevice
   @param* pack  bool  whether pack data
   @return  bool
 
@@ -44,7 +44,7 @@ def writesocket(data, socket, pack=True):
 
 def readsocket(socket):
   """
-  @param  QAbstractSocket
+  @param  QIODevice
   @return  QByteArray or None
 
   The socket used in this function must have messageSize property initialized to 0

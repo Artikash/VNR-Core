@@ -1,23 +1,23 @@
-// socketclient.cc
+// tcpsocketclient.cc
 // 4/29/2014 jichi
 #include "qtsocketsvc/socketdef.h"
-#include "qtsocketsvc/socketclient.h"
+#include "qtsocketsvc/tcpsocketclient.h"
 #include "qtsocketsvc/socketio_p.h"
 #include <QtCore/QDateTime>
 //#include <QtCore/QEventLoop>
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QTcpSocket>
 
-#define DEBUG "socketclient"
+#define DEBUG "TcpSocketClient"
 #include <sakurakit/skdebug.h>
 
 //QTSS_BEGIN_NAMESPACE
 
 /** Private class */
 
-class SocketClientPrivate
+class TcpSocketClientPrivate
 {
-  SK_DECLARE_PUBLIC(SocketClient)
+  SK_DECLARE_PUBLIC(TcpSocketClient)
 public:
   QTcpSocket *socket;
   int port;
@@ -25,7 +25,7 @@ public:
   quint32 currentDataSize; // current message body size read from socket
   bool dataJustReceived;
 
-  explicit SocketClientPrivate(Q *q)
+  explicit TcpSocketClientPrivate(Q *q)
     : q_(q),
       socket(nullptr), port(0), address(SOCKET_SERVICE_HOST), currentDataSize(0),
       dataJustReceived(false)
@@ -53,17 +53,17 @@ private:
   static qint64 now() { return QDateTime::currentMSecsSinceEpoch(); }
 };
 
-bool SocketClientPrivate::writeSocket(const QByteArray &data, bool pack)
+bool TcpSocketClientPrivate::writeSocket(const QByteArray &data, bool pack)
 { return socket && SocketService::writeSocket(socket, data, pack); }
 
-QByteArray SocketClientPrivate::readSocket()
+QByteArray TcpSocketClientPrivate::readSocket()
 {
   if (Q_UNLIKELY(!socket))
     return QByteArray();
   return SocketService::readSocket(socket, currentDataSize);
 }
 
-bool SocketClientPrivate::waitForDataReceived(int interval)
+bool TcpSocketClientPrivate::waitForDataReceived(int interval)
 {
   if (Q_UNLIKELY(!socket))
     return false;
@@ -73,7 +73,7 @@ bool SocketClientPrivate::waitForDataReceived(int interval)
   return dataJustReceived;
 }
 
-void SocketClientPrivate::dumpSocketInfo() const
+void TcpSocketClientPrivate::dumpSocketInfo() const
 {
   if (socket)
     DOUT("socket"
@@ -91,19 +91,19 @@ void SocketClientPrivate::dumpSocketInfo() const
 
 // Constructions:
 
-SocketClient::SocketClient(QObject *parent)
+TcpSocketClient::TcpSocketClient(QObject *parent)
   : Base(parent), d_(new D(this))
 {}
 
-SocketClient::~SocketClient() { delete d_; }
+TcpSocketClient::~TcpSocketClient() { delete d_; }
 
-int SocketClient::port() const { return d_->port; }
-void SocketClient::setPort(int value) { d_->port = value; }
+int TcpSocketClient::port() const { return d_->port; }
+void TcpSocketClient::setPort(int value) { d_->port = value; }
 
-QString SocketClient::address() const { return d_->address; }
-void SocketClient::setAddress(const QString &value) { d_->address = value; }
+QString TcpSocketClient::address() const { return d_->address; }
+void TcpSocketClient::setAddress(const QString &value) { d_->address = value; }
 
-void SocketClient::start()
+void TcpSocketClient::start()
 {
   if (!d_->socket)
     d_->createSocket();
@@ -111,7 +111,7 @@ void SocketClient::start()
   DOUT("pass");
 }
 
-void SocketClient::stop()
+void TcpSocketClient::stop()
 {
   if (d_->socket && d_->socket->isOpen()) {
     d_->socket->close();
@@ -119,10 +119,10 @@ void SocketClient::stop()
   }
 }
 
-bool SocketClient::isConnected() const
+bool TcpSocketClient::isConnected() const
 { return d_->socket && d_->socket->state() == QAbstractSocket::ConnectedState; }
 
-//bool SocketClient::isReady() const
+//bool TcpSocketClient::isReady() const
 //{
 //  return d_->socket && (
 //    d_->socket->state() == QAbstractSocket::ConnectedState ||
@@ -130,7 +130,7 @@ bool SocketClient::isConnected() const
 //  );
 //}
 
-//void SocketClient::waitForReady()
+//void TcpSocketClient::waitForReady()
 //{
 //  if (d_->socket &&
 //    d_->socket->state() != QAbstractSocket::ConnectedState &&
@@ -148,7 +148,7 @@ bool SocketClient::isConnected() const
 
 // I/O:
 
-bool SocketClient::sendData(const QByteArray &data, int waitTime, bool pack)
+bool TcpSocketClient::sendData(const QByteArray &data, int waitTime, bool pack)
 {
   bool ok = d_->writeSocket(data, pack);
   if (ok && waitTime)
@@ -156,22 +156,22 @@ bool SocketClient::sendData(const QByteArray &data, int waitTime, bool pack)
   return ok;
 }
 
-bool SocketClient::waitForConnected(int interval)
+bool TcpSocketClient::waitForConnected(int interval)
 { return d_->socket && d_->socket->waitForConnected(interval); }
 
-bool SocketClient::waitForDisconnected(int interval)
+bool TcpSocketClient::waitForDisconnected(int interval)
 { return d_->socket && d_->socket->waitForDisconnected(interval); }
 
-bool SocketClient::waitForBytesWritten(int interval)
+bool TcpSocketClient::waitForBytesWritten(int interval)
 { return d_->socket && d_->socket->waitForBytesWritten(interval); }
 
-bool SocketClient::waitForReadyRead(int interval)
+bool TcpSocketClient::waitForReadyRead(int interval)
 { return d_->socket && d_->socket->waitForReadyRead(interval); }
 
-bool SocketClient::waitForDataReceived(int interval)
+bool TcpSocketClient::waitForDataReceived(int interval)
 { return d_->waitForDataReceived(interval); }
 
-void SocketClient::readSocket()
+void TcpSocketClient::readSocket()
 {
   if (Q_LIKELY(d_->socket))
     while (d_->socket->bytesAvailable()) {
@@ -185,7 +185,7 @@ void SocketClient::readSocket()
     }
 }
 
-void SocketClient::dumpSocketInfo() const { d_->dumpSocketInfo(); }
+void TcpSocketClient::dumpSocketInfo() const { d_->dumpSocketInfo(); }
 
 //QTSS_END_NAMESPACE
 

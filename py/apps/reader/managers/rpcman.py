@@ -17,8 +17,8 @@ import config
 
 ENABLE_TCP_SOCKET = config.APP_SOCKET_TYPE == 'tcp'
 
-def createSocketClient(parent=None, tcp=ENABLE_TCP_SOCKET):
-  if tcp:
+def createSocketClient(parent=None, usetcp=ENABLE_TCP_SOCKET):
+  if usetcp:
     from socketsvc.tcpsocketcli import TcpSocketClient
     ret = TcpSocketClient(parent)
     ret.setPort(config.APP_SOCKET_PORT)
@@ -28,8 +28,8 @@ def createSocketClient(parent=None, tcp=ENABLE_TCP_SOCKET):
     ret.setServerName(config.APP_SOCKET_NAME)
   return ret
 
-def createSocketServer(parent=None, tcp=ENABLE_TCP_SOCKET):
-  if tcp:
+def createSocketServer(parent=None, usetcp=ENABLE_TCP_SOCKET):
+  if usetcp:
     from socketsvc.tcpsocketsrv import TcpSocketServer
     ret = TcpSocketServer(parent)
     ret.setPort(config.APP_SOCKET_PORT)

@@ -1,4 +1,4 @@
-# qtsocketcli.pri
+# qtlocalcli.pri
 # 4/29/2014 jichi
 # Socket service client.
 #include(../../../config.pri)
@@ -9,15 +9,15 @@ DEPENDPATH += $$PWD
 QT += core network
 
 HEADERS += \
-  $$PWD/bufferedsocketclient.h \
+  $$PWD/bufferedlocalsocketclient.h \
+  $$PWD/localsocketclient.h \
   $$PWD/socketdef.h \
-  $$PWD/socketclient.h \
   $$PWD/socketio_p.h \
   $$PWD/socketpack.h
 
 SOURCES += \
-  $$PWD/bufferedsocketclient.cc \
-  $$PWD/socketclient.cc \
+  $$PWD/bufferedlocalsocketclient.cc \
+  $$PWD/localsocketclient.cc \
   $$PWD/socketio_p.cc
 
 # EOF

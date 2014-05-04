@@ -3,8 +3,7 @@
 
 CONFIG += nogui
 include(../../../config.pri)
-include($$LIBDIR/qtsocketsvc/qtsocketcli.pri)
-include($$LIBDIR/qtsocketsvc/qtsocketpack.pri)
+include($$LIBDIR/qtsocketsvc/qtsocketsvc.pri)
 
 # Source
 

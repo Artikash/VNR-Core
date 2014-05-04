@@ -8,12 +8,12 @@
 #include "qtsocketsvc/socketdef.h"
 #include <QtCore/QByteArray>
 
-QT_FORWARD_DECLARE_CLASS(QAbstractSocket)
+QT_FORWARD_DECLARE_CLASS(QIODevice)
 
 namespace SocketService {
 
-QByteArray readSocket(QAbstractSocket *socket, quint32 &dataSize);
-bool writeSocket(QAbstractSocket *socket, const QByteArray &data, bool pack = true);
+QByteArray readSocket(QIODevice *socket, quint32 &dataSize);
+bool writeSocket(QIODevice *socket, const QByteArray &data, bool pack = true);
 
 } // SocketService
 

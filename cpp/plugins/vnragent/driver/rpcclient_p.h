@@ -8,13 +8,23 @@
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 
-#ifdef VNRAGENT_BUFFER_SOCKET
-class BufferedSocketClient;
-typedef BufferedSocketClient RpcSocketClient;
+#ifdef VNRAGENT_ENABLE_TCP_SOCKET
+# ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
+class BufferedTcpSocketClient;
+typedef BufferedTcpSocketClient RpcSocketClient;
+# else
+class TcpSocketClient;
+typedef TcpSocketClient RpcSocketClient;
+# endif // VNRAGENT_ENABLE_BUFFERED_SOCKET
 #else
-class SocketClient;
-typedef SocketClient RpcSocketClient;
-#endif // VNRAGENT_BUFFER_SOCKET
+# ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
+class BufferedLocalSocketClient;
+typedef BufferedLocalSocketClient RpcSocketClient;
+# else
+class LocalSocketClient;
+typedef LocalSocketClient RpcSocketClient;
+# endif // VNRAGENT_ENABLE_BUFFERED_SOCKET
+#endif // VNRAGENT_ENABLE_TCP_SOCKET
 
 QT_FORWARD_DECLARE_CLASS(QTimer)
 

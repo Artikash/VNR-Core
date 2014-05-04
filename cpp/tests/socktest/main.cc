@@ -2,7 +2,7 @@
 // 4/29/2014 jichi
 
 //#include "qtsocketsvc/socketclient.h"
-#include "qtsocketsvc/bufferedsocketclient.h"
+#include "qtsocketsvc/bufferedlocalsocketclient.h"
 #include "qtsocketsvc/socketpack.h"
 #include <QtCore>
 
@@ -22,11 +22,12 @@ int main(int argc, char *argv[])
   qDebug() << l;
 
   QCoreApplication a(argc, argv);
-  BufferedSocketClient cli;
-  cli.setPort(6002);
+  BufferedLocalSocketClient cli;
+  cli.setServerName("/tmp/pipetest");
   cli.start();
   cli.waitForConnected();
   qDebug() << cli.isConnected();
+  cli.dumpSocketInfo();
   const char *text = "hello";
   cli.sendDataLater(text);
 

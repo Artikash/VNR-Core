@@ -1,20 +1,20 @@
-// bufferedsocketclient.cc
+// bufferedlocalsocketclient.cc
 // 4/29/2014 jichi
-#include "qtsocketsvc/bufferedsocketclient.h"
+#include "qtsocketsvc/bufferedlocalsocketclient.h"
 #include "qtsocketsvc/socketpack.h"
 #include <QtCore/QTimer>
 
 /** Private class */
 
-class BufferedSocketClientPrivate
+class BufferedLocalSocketClientPrivate
 {
-  SK_DECLARE_PUBLIC(BufferedSocketClient)
+  SK_DECLARE_PUBLIC(BufferedLocalSocketClient)
 public:
   QByteArray sendBuffer;
   QTimer *sendTimer;
   int sendWaitTime;
 
-  explicit BufferedSocketClientPrivate(Q *q)
+  explicit BufferedLocalSocketClientPrivate(Q *q)
     : q_(q), sendWaitTime(0)
   {
     sendTimer = new QTimer(q);
@@ -26,7 +26,7 @@ public:
 };
 
 
-void BufferedSocketClientPrivate::flushSendBuffer()
+void BufferedLocalSocketClientPrivate::flushSendBuffer()
 {
   if (sendTimer->isActive())
     sendTimer->stop();
@@ -41,15 +41,15 @@ void BufferedSocketClientPrivate::flushSendBuffer()
 
 // Constructions:
 
-BufferedSocketClient::BufferedSocketClient(QObject *parent)
+BufferedLocalSocketClient::BufferedLocalSocketClient(QObject *parent)
   : Base(parent), d_(new D(this))
 {}
 
-BufferedSocketClient::~BufferedSocketClient() { delete d_; }
+BufferedLocalSocketClient::~BufferedLocalSocketClient() { delete d_; }
 
-void BufferedSocketClient::flushSendBuffer() { d_->flushSendBuffer(); }
+void BufferedLocalSocketClient::flushSendBuffer() { d_->flushSendBuffer(); }
 
-void BufferedSocketClient::sendDataLater(const QByteArray &data, int interval, int waitTime)
+void BufferedLocalSocketClient::sendDataLater(const QByteArray &data, int interval, int waitTime)
 {
   d_->sendBuffer.append(SocketService::packData(data));
   d_->sendTimer->start(interval);

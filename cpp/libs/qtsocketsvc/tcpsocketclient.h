@@ -1,23 +1,23 @@
-#ifndef _SOCKETSVC_SOCKETCLIENT_H
-#define _SOCKETSVC_SOCKETCLIENT_H
+#ifndef _SOCKETSVC_TCPSOCKETCLIENT_H
+#define _SOCKETSVC_TCPSOCKETCLIENT_H
 
-// socketclient.h
+// tcpsocketclient.h
 // 4/29/2014 jichi
 //
 // This class must be consistent with socketsvc/socketcli.py
 #include "sakurakit/skglobal.h"
 #include <QtCore/QObject>
 
-class SocketClientPrivate;
-class SocketClient : public QObject
+class TcpSocketClientPrivate;
+class TcpSocketClient : public QObject
 {
   Q_OBJECT
-  Q_DISABLE_COPY(SocketClient)
-  SK_EXTEND_CLASS(SocketClient, QObject)
-  SK_DECLARE_PRIVATE(SocketClientPrivate)
+  Q_DISABLE_COPY(TcpSocketClient)
+  SK_EXTEND_CLASS(TcpSocketClient, QObject)
+  SK_DECLARE_PRIVATE(TcpSocketClientPrivate)
 public:
-  explicit SocketClient(QObject *parent = nullptr);
-  ~SocketClient();
+  explicit TcpSocketClient(QObject *parent = nullptr);
+  ~TcpSocketClient();
 
   // Properties:
   int port() const;
@@ -62,4 +62,4 @@ private slots:
   void readSocket();
 };
 
-#endif // _SOCKETSVC_SOCKETCLIENT_H
+#endif // _SOCKETSVC_TCPSOCKETCLIENT_H
