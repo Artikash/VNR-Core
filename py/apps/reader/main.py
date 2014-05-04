@@ -277,7 +277,7 @@ class _MainObject(object):
   def gameAgent(self):
     dprint("create game agent")
     import gameagent
-    ret = gameagent.manager()
+    ret = gameagent.global_()
     ret.setParent(self.q)
     return ret
 
@@ -1762,7 +1762,7 @@ class MainObject(QObject):
 
     #if d.gameManager.isWindowHookConnected:
     #  d.rpcServer.disableAgent()
-    if d.gameAgent.isAttached:
+    if d.gameAgent.isConnected():
       d.gameAgent.setActive(False)
 
     skevents.runlater(partial(d.exit, exitCode), interval)

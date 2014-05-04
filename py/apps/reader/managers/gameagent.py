@@ -7,7 +7,7 @@ from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint
 
 @memoized
-def manager(): return GameAgent()
+def global_(): return GameAgent()
 
 class GameAgent(QObject):
   def __init__(self, parent=None):
@@ -22,16 +22,24 @@ class GameAgent(QObject):
 
   ## Inject ##
 
-  def isAttached(self): return bool(self.__d.pid)
-  def processId(self): return self.__d.pid # -> long not None
+  def isAttached(self): return bool(self.__d.injectedPid)
+  def attachedPid(self): return self.__d.injectedPid # -> long not None
 
-  def attachProcess(self, pid):
-    if pid and pid != self.__d.pid:
+  def isConnected(self): return bool(self.__d.connectedPid)
+  def connectedPid(self): return self.__d.connectedPid # -> long not None
+
+  def attachProcess(self, pid): # -> bool
+    if pid == self.__d.pid:
+      return True
+    else:
       if self.__d.pid:
         self.detachProcess()
       self.clear()
       import inject
-      inject.inject_agent(pid)
+      ok = inject.inject_agent(pid)
+      if ok:
+        self.__d.injectedPid = pid
+      return ok
 
   def detachProcess(self):
     if self.__d.pid:
@@ -75,6 +83,7 @@ class _GameAgent(object):
     self.clear()
 
   def clear(self):
+    self.injectedPid = 0 # long
     self.active = False # bool
     #self.gameLanguage = 'ja' # str
     #self.gameEncoding = '' # str
@@ -82,6 +91,6 @@ class _GameAgent(object):
     self.userEncoding = '' # str
 
   @property # read only
-  def pid(self): return self.rpc.agentProcessId()
+  def connectedPid(self): return self.rpc.agentProcessId()
 
 # EOF

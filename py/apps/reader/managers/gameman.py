@@ -15,7 +15,7 @@ from sakurakit.skunicode import sjis_encodable, u_sjis
 from sakurakit.skwinobj import SkWindowObject #, SkTaskBarObject
 from texthook import texthook
 from mytr import my
-import config, dataman, defs, displayutil, features, growl, hashutil, netman, osutil, procutil, rc, rpcman, settings, textman, textutil, winutil
+import config, dataman, defs, displayutil, features, gameagent, growl, hashutil, netman, osutil, procutil, rc, rpcman, settings, textman, textutil, winutil
 
 PROGRAMFILES = QtCore.QDir.fromNativeSeparators(skpaths.PROGRAMFILES)
 PROGRAMFILES_RE = re.compile(re.escape(PROGRAMFILES), re.IGNORECASE)
@@ -339,12 +339,18 @@ class GameProfile(QtCore.QObject):
     """Compute md5 digest for the file at path"""
     return hashutil.md5sum(osutil.normalize_path(self.path)) if self.path else ""
 
+  # This function is only called by gamewizard for text hook
+  def isTextHookAttached(self):
+    return self.pid and self.pid == texthook.global_().currentPid()
+
   def isAttached(self):
-    return self.pid != 0 and self.pid == texthook.global_().currentPid()
+    return self.pid and self.pid in (
+        texthook.global_().currentPid(),
+        gameagent.global_().attachedPid())
 
   def hasProcess(self):
     #return all((self.wid, self.pid, self.path, self.processName, self.windowName))
-    return all((self.wid, self.pid, self.path, self.processName))
+    return all((self.wid, self.pid, self.path, self.processName)) and skwin.is_process_active(self.pid)
 
   def hasThread(self):
     return (self.threadSignature != 0 and
@@ -962,21 +968,39 @@ class GameManager(QtCore.QObject):
           dwarn("leave: cannot find game process")
           return
 
+      # g.hasProcess() must be true here, i.e. processId is valid
       if not g.isAttached():
-        # Enable ITH hook here
-        #if features.WINE:
-        #  # 9/18/2013: I am not sure if this could help reduce CreateRemoteThread in vnrsys from crashing
-        #  skevents.sleep(5000) # Wait for 5 more seconds on Wine
-        if not texthook.global_().attachProcess(g.pid):
+        attached = False
+
+        agentEnabled = settings.global_().isGameAgentEnabled()
+        if agentEnabled: # use ITH
+          dprint("attach using game agent")
+          attached = gameagent.global_().attachProcess(g.pid)
+
+          if attached:
+            dprint("disable h-code as game agent is used")
+            hookEnabled = False
+
+        if not attached: # Use VNR agent or ITH as fallback
+          # Enable ITH hook here
+          #if features.WINE:
+          #  # 9/18/2013: I am not sure if this could help reduce CreateRemoteThread in vnrsys from crashing
+          #  skevents.sleep(5000) # Wait for 5 more seconds on Wine
+          dprint("attach using text hook")
+          attached = texthook.global_().attachProcess(g.pid)
+
+          if attached:
+            dprint("try game engine")
+            from gameengine import gameengine
+            skevents.runlater(partial(
+                gameengine.inject, g.pid),
+                3000) # wait for 3 seconds so that the gameengine will not crash the game on the start up (such as BALDR)
+
+        if not attached:
           growl.error(my.tr("Cannot sync with game. Try restarting the game or using Game Wizard to set up connection"))
           self.openGameFailed.emit()
           dwarn("leave: cannot attach to game process")
           return
-
-        from gameengine import gameengine
-        skevents.runlater(partial(
-            gameengine.inject, g.pid),
-            3000) # wait for 3 seconds so that the gameengine will not crash the game on the start up (such as BALDR)
 
       if not g.hasThread():
         dprint("update thread")

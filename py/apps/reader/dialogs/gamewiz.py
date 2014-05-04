@@ -683,7 +683,7 @@ class SyncGamePage(QtWidgets.QWizardPage):
 
   def isComplete(self):
     """@reimp @public"""
-    return self.wizard().profile().isAttached()
+    return self.wizard().profile().isTextHookAttached() # FIXME: Only texthook is supported
 
 class SyncThreadPage(QtWidgets.QWizardPage):
   def __init__(self, wiz):
@@ -959,7 +959,7 @@ class SelectThreadPage(QtWidgets.QWizardPage):
     @param  signature  long
     @param  name  str
     """
-    if not self.wizard().profile().isAttached():
+    if not self.wizard().profile().isTextHookAttached(): # FIXME: only texthook is supported
       return
     dprint("thread name = %s" % name)
     try:
@@ -1057,7 +1057,7 @@ Especially if you would like to translate this game.""") % (mail, mail))
     profile = self.wizard().profile()
     assert profile.hasProcess(), "profile should be valid in final page"
     #assert profile.isAttached(), "game process should be attached"
-    if profile.isAttached():
+    if profile.isTextHookAttached(): # FIXME: Only texthook is supported
       profile.openGame()
 
     tray.log(my.tr("I am minimized here!"))

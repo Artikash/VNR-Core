@@ -184,6 +184,8 @@ if skos.WIN:
 
     def isActive(self): return self.__d.isActive()
 
+    def isAttached(self): return bool(self.__d.pid) # -> bool
+
     def currentPid(self):
       """
       @return  long
@@ -366,6 +368,7 @@ else:
     ## Status ##
 
     def isActive(self): return False
+    def isAttached(self): return False
 
     def currentPid(self): return 0
     def currentHookCode(self): return ""
