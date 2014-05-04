@@ -51,7 +51,7 @@ class LocalSocketServer(QObject):
     return len(self.__d.sockets)
 
   def serverName(self): return self.__d.name # -> str
-  def setServerName(self, v): self.__d.name = v
+  def setServerName(self, v): self.__d.name = socketio.pipename(v)
 
   def start(self): return self.__d.start() # -> bool
   def stop(self): self.__d.stop()
@@ -141,9 +141,12 @@ class _LocalSocketServer(object):
 if __name__ == '__main__':
   import sys
   from PySide.QtCore import QCoreApplication
+
+  pipeName = 'pipetest'
+
   app =  QCoreApplication(sys.argv)
   s = LocalSocketServer()
-  s.setServerName("/tmp/pipetest")
+  s.setServerName(pipeName)
   s.start()
 
   def f(data):

@@ -34,7 +34,7 @@ RpcClientPrivate::RpcClientPrivate(Q *q)
   client->setPort(VNRAGENT_SOCKET_PORT);
   client->setAddress(VNRAGENT_SOCKET_HOST);
 #else
-  client->setAddress(VNRAGENT_SOCKET_PIPE);
+  client->setServerName(VNRAGENT_SOCKET_PIPE);
 #endif // VNRAGENT_ENABLE_TCP_SOCKET
 
   connect(client, SIGNAL(dataReceived(QByteArray)), SLOT(onDataReceived(QByteArray)));

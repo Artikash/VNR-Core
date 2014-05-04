@@ -41,7 +41,7 @@ class LocalSocketClient(QObject):
     return ok
 
   def serverName(self): return self.__d.name # -> str
-  def setServerName(self, v): self.__d.name = v
+  def setServerName(self, v): self.__d.name = socketio.pipename(v)
 
   def isConnected(self): # -> bool
     s = self.__d.socket
@@ -106,7 +106,7 @@ class _LocalSocketClient(object):
     return ret
 
   def start(self, modeStr):
-    mode = socketio.parseiomode(modeStr)
+    mode = socketio.iomode(modeStr)
     if not mode:
       dwarn("failed to parse IO device mode: %s" % modeStr)
       return
@@ -193,10 +193,13 @@ class _BufferedLocalSocketClient(object):
 if __name__ == '__main__':
   import sys
   from PySide.QtCore import QCoreApplication
+
+  pipeName = 'pipetest'
+
   app =  QCoreApplication(sys.argv)
   #c = LocalSocketClient()
   c = BufferedLocalSocketClient()
-  c.setServerName("/tmp/pipetest")
+  c.setServerName(pipeName)
   def f(data):
     print data, type(data), len(data)
     app.quit()

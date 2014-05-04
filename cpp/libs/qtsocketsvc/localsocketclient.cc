@@ -92,14 +92,17 @@ LocalSocketClient::LocalSocketClient(QObject *parent)
 
 LocalSocketClient::~LocalSocketClient() { delete d_; }
 
-QString LocalSocketClient::serverName() const { return d_->serverName; }
-void LocalSocketClient::setServerName(const QString &value) { d_->serverName = value; }
+QString LocalSocketClient::serverName() const
+{ return d_->serverName; }
 
-void LocalSocketClient::start()
+void LocalSocketClient::setServerName(const QString &value)
+{ d_->serverName = SocketService::toPipeName(value); }
+
+void LocalSocketClient::start(QIODevice::OpenMode mode)
 {
   if (!d_->socket)
     d_->createSocket();
-  d_->socket->connectToServer(d_->serverName);
+  d_->socket->connectToServer(d_->serverName, mode);
   DOUT("pass");
 }
 

@@ -103,11 +103,11 @@ void TcpSocketClient::setPort(int value) { d_->port = value; }
 QString TcpSocketClient::address() const { return d_->address; }
 void TcpSocketClient::setAddress(const QString &value) { d_->address = value; }
 
-void TcpSocketClient::start()
+void TcpSocketClient::start(QIODevice::OpenMode mode)
 {
   if (!d_->socket)
     d_->createSocket();
-  d_->socket->connectToHost(QHostAddress(d_->address), d_->port);
+  d_->socket->connectToHost(QHostAddress(d_->address), d_->port, mode);
   DOUT("pass");
 }
 

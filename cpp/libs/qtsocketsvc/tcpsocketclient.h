@@ -6,7 +6,7 @@
 //
 // This class must be consistent with socketsvc/socketcli.py
 #include "sakurakit/skglobal.h"
-#include <QtCore/QObject>
+#include <QtCore/QIODevice>
 
 class TcpSocketClientPrivate;
 class TcpSocketClient : public QObject
@@ -31,7 +31,7 @@ public:
 
   // Actions:
 public:
-  void start();
+  void start(QIODevice::OpenMode mode = QIODevice::ReadWrite);
   void stop();
   //void waitForReady();
 

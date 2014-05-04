@@ -110,7 +110,7 @@ class _TcpSocketClient(object):
     return ret
 
   def start(self, modeStr):
-    mode = socketio.parseiomode(modeStr)
+    mode = socketio.iomode(modeStr)
     if not mode:
       dwarn("failed to parse IO device mode: %s" % modeStr)
       return

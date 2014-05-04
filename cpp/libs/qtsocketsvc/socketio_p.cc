@@ -6,6 +6,20 @@
 #define DEBUG "socketio_p"
 #include "sakurakit/skdebug.h"
 
+QString SocketService::toPipeName(const QString &serverName)
+{
+  if (serverName.isEmpty())
+    return serverName;
+#ifdef Q_OS_WIN
+  if (!serverName.startsWith('\\'))
+    return "\\\\.\\pipe\\" + serverName;
+#else
+  if (!serverName.startsWith('/'))
+    return "/tmp" + serverName;
+#endif // Q_OS_WIN
+  return serverName;
+}
+
 bool SocketService::writeSocket(QIODevice *socket, const QByteArray &data, bool pack)
 {
   Q_ASSERT(socket);

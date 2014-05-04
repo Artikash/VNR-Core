@@ -12,6 +12,8 @@ QT_FORWARD_DECLARE_CLASS(QIODevice)
 
 namespace SocketService {
 
+QString toPipeName(const QString &serverName);
+
 QByteArray readSocket(QIODevice *socket, quint32 &dataSize);
 bool writeSocket(QIODevice *socket, const QByteArray &data, bool pack = true);
 

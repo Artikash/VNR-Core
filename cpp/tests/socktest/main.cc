@@ -6,6 +6,12 @@
 #include "qtsocketsvc/socketpack.h"
 #include <QtCore>
 
+//#ifdef Q_OS_WIN
+//# define SERVER_PIPE_NAME "\\\\.\\pipe\\pipetest"
+//#else
+//# define SERVER_PIPE_NAME "/tmp/pipetest"
+//#endif // Q_OS_WIN
+#define SERVER_PIPE_NAME "pipetest"
 
 int main(int argc, char *argv[])
 {
@@ -23,7 +29,7 @@ int main(int argc, char *argv[])
 
   QCoreApplication a(argc, argv);
   BufferedLocalSocketClient cli;
-  cli.setServerName("/tmp/pipetest");
+  cli.setServerName(SERVER_PIPE_NAME);
   cli.start();
   cli.waitForConnected();
   qDebug() << cli.isConnected();

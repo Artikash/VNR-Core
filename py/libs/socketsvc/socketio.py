@@ -2,13 +2,25 @@
 # socketio.py
 # jichi 4/28/2014
 
+import os
 from PySide.QtCore import QIODevice
 from sakurakit.skdebug import dprint, dwarn
 import socketpack
 
 MESSAGE_HEAD_SIZE = socketpack.INT_SIZE # = 4
 
-def parseiomode(s): # str -> QIODevice::OpenMode
+def pipename(s): # s -> s
+  if not s:
+    return s
+  if os.name == 'nt':
+    if not s.startswith('\\'):
+      s = "\\\\.\\pipe\\" + s
+  else:
+    if not s.startswith('/'):
+      s = "/tmp/" + s
+  return s
+
+def iomode(s): # str -> QIODevice::OpenMode
   if s == 'rw':
     return QIODevice.ReadWrite
   elif s == 'r':
