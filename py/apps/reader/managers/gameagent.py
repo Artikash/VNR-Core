@@ -2,7 +2,7 @@
 # gameagent.py
 # 5/2/2014 jichi
 
-from PySide.QtCore import QObject, Signal
+from PySide.QtCore import QObject, Signal, QTimer
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint
 from vnragent import vnragent
@@ -20,6 +20,7 @@ class GameAgent(QObject):
   processAttached = Signal(long) # pid
   processDetached = Signal(long) # pid
 
+  processAttachTimeout = Signal(long)
   engineChanged = Signal(str) # name
 
   # Not used
@@ -44,6 +45,7 @@ class GameAgent(QObject):
       ok = inject.inject_agent(pid)
       if ok:
         self.__d.injectedPid = pid
+        self.__d.injectTimer.start()
       return ok
 
   def detachProcess(self):
@@ -106,6 +108,11 @@ class _GameAgent(object):
     self.rpc.agentDisconnected.connect(q.processDetached)
     self.rpc.engineReceived.connect(self._onEngineReceived)
 
+    t = self.injectTimer = QTimer(q)
+    t.setSingleShot(False)
+    t.setInterval(5000)
+    t.timeout.connect(self._onInjectTimeout)
+
     q.processAttached.connect(self._onAttached)
 
     self.clear()
@@ -125,7 +132,13 @@ class _GameAgent(object):
   @property # read only
   def connectedPid(self): return self.rpc.agentProcessId()
 
+  def _onInjectTimeout(self):
+    if self.injectedPid:
+      self.q.processAttachTimeout.emit(self.injectedPid)
+      self.injectedPid = 0
+
   def _onAttached(self):
+    self.injectTimer.stop()
     self.sendSettings()
     self.rpc.enableAgent()
     self.active = True

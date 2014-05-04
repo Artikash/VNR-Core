@@ -806,7 +806,26 @@ class GameManager(QtCore.QObject):
     """
     return self.__d.game
 
+  def currentGamePid(self):
+    """
+    @return  long
+    """
+    return self.__d.game.pid if self.__d.game else 0
+
   ## Actions ##
+
+  def attachTextHook(self):
+    pid = self.currentGamePid()
+    if pid:
+      return
+
+    agent = gameagent.global_()
+    if agent.isConnected() and agent.hasEngine():
+      return
+
+    th = texthook.global_()
+    if pid != th.currentPid():
+      th.attachProcess(pid)
 
   def clear(self):
     self.__d.game = None

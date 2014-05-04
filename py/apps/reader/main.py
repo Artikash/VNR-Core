@@ -237,6 +237,10 @@ class _MainObject(object):
 
     agent = self.gameAgent
     agent.processDetached.connect(ret.processDetached)
+    agent.engineChanged.connect(lambda name:
+        not name and agent.connectedPid() == ret.currentGamePid() and ret.attachTextHook())
+    agent.processAttachTimeout.connect(lambda pid:
+        pid == ret.currentGamePid() and ret.attachTextHook())
 
     th = self.textHook
     th.processDetached.connect(ret.processDetached)
@@ -279,10 +283,6 @@ class _MainObject(object):
     import gameagent
     ret = gameagent.global_()
     ret.setParent(self.q)
-
-    ret.engineChanged.connect(lambda name:
-        name or ret.connectedPid() == self.texthook.currentPid() or
-        self.texthook.attachProcess(ret.connectedPid()))
     return ret
 
   @memoizedproperty
