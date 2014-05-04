@@ -12,6 +12,8 @@ from sakurakit import skos
 from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dprint
 
+ENABLE_GAMEENGINE = True
+
 if skos.WIN:
   import pytexthook
   #from numpy import * # for int types
@@ -232,6 +234,14 @@ if skos.WIN:
       if ok:
         d.pid = pid
         self.processAttached.emit(d.pid)
+
+        if ENABLE_GAMEENGINE:
+          dprint("try game engine")
+          from gameengine import gameengine
+          gameengine.inject(pid)
+          #skevents.runlater(partial(
+          #    gameengine.inject, g.pid),
+          #    3000) # wait for 3 seconds so that the gameengine will not crash the game on the start up (such as BALDR)
       dprint("leave: ret = %s" % ok)
       return ok
 

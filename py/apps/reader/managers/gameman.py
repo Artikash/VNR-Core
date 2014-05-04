@@ -989,12 +989,12 @@ class GameManager(QtCore.QObject):
           dprint("attach using text hook")
           attached = texthook.global_().attachProcess(g.pid)
 
-          if attached:
-            dprint("try game engine")
-            from gameengine import gameengine
-            skevents.runlater(partial(
-                gameengine.inject, g.pid),
-                3000) # wait for 3 seconds so that the gameengine will not crash the game on the start up (such as BALDR)
+          #if attached:
+          #  dprint("try game engine")
+          #  from gameengine import gameengine
+          #  skevents.runlater(partial(
+          #      gameengine.inject, g.pid),
+          #      3000) # wait for 3 seconds so that the gameengine will not crash the game on the start up (such as BALDR)
 
         if not attached:
           growl.error(my.tr("Cannot sync with game. Try restarting the game or using Game Wizard to set up connection"))
