@@ -22,6 +22,11 @@ def engines():
   return ENGINES
 
 class Engine(object): # placeholder
+  NAME = ''
+
+  def addHook(self, code, name=''): # str, str -> bool
+   from texthook import texthook
+   return texthook.global_().addHook(code, name=name or self.NAME)
 
   # Pure virtual functions
   def match(self, pid):
@@ -129,7 +134,7 @@ class Engine(object): # placeholder
 #  1003b86f  |.^7e d5          \jle short mono.1003b846
 class MonoEngine(Engine):
 
-  NAME = "Mono" # str
+  NAME = "Mono" # str, override
 
   def match(self, pid): # override
     return bool(self.globAppDirectory(pid,
@@ -149,9 +154,7 @@ class MonoEngine(Engine):
       addr = dbg.search_module_memory("mono.dll", pattern)
       if addr > 0:
         code = "/HWN-8*0:3C@%x" % addr
-        from texthook import texthook
-        th = texthook.global_()
-        ret = th.addHook(code, name=self.NAME)
+        ret = self.addHook(code)
     dprint(ret)
     return ret
 
