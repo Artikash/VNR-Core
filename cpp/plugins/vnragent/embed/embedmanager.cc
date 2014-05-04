@@ -89,7 +89,10 @@ void EmbedManager::updateTranslation(const QString &text, qint64 hash, int role)
 
 void EmbedManager::addText(const QString &text, qint64 hash, int role, bool needsTranslation)
 {
-  emit textReceived(text, hash, role, needsTranslation);
+  if (needsTranslation)
+    emit textReceived(text, hash, role, needsTranslation);
+  else
+    emit textReceivedDelayed(text, hash, role, needsTranslation);
 }
 
 QString EmbedManager::findTranslation(qint64 hash, int role) const

@@ -29,7 +29,7 @@
  *  Use bufferd socket to communicate with VNR.
  *  This might cause delay in transfering translation.
  */
-//#define VNRAGENT_ENABLE_BUFFERED_SOCKET
+#define VNRAGENT_ENABLE_BUFFERED_SOCKET
 
 /**
  *  Put QCoreApplication on another thread

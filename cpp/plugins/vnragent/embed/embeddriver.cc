@@ -30,6 +30,7 @@ EmbedDriver::EmbedDriver(QObject *parent)
   : Base(parent), d_(new D(this))
 {
   connect(d_->manager, SIGNAL(textReceived(QString,qint64,int,bool)), SIGNAL(textReceived(QString,qint64,int,bool)));
+  connect(d_->manager, SIGNAL(textReceivedDelayed(QString,qint64,int,bool)), SIGNAL(textReceivedDelayed(QString,qint64,int,bool)));
 
   if (d_->engine = AbstractEngine::instance())
     if (d_->engine->inject()) {

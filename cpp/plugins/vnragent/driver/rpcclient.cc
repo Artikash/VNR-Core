@@ -84,12 +84,29 @@ void RpcClientPrivate::callServer(const QStringList &args)
   }
 }
 
+void RpcClientPrivate::callServerLater(const QStringList &args)
+{
+  if (client->isConnected()) {
+    QByteArray data = SocketService::packStringList(args);
+    sendDataLater(data);
+  }
+}
+
 void RpcClientPrivate::sendData(const QByteArray &data)
 {
 #ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
-  client->sendDataLater(data, BufferInterval, WaitInterval);
+  client->sendDataNow(data, WaitInterval);
 #else
   client->sendData(data, WaitInterval);
+#endif // VNRAGENT_ENABLE_BUFFERED_SOCKET
+}
+
+void RpcClientPrivate::sendDataLater(const QByteArray &data)
+{
+#ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
+  client->sendDataLater(data);
+#else
+  sendData(data);
 #endif // VNRAGENT_ENABLE_BUFFERED_SOCKET
 }
 
@@ -173,6 +190,9 @@ void RpcClient::requestWindowTranslation(const QString &json) { d_->sendWindowTe
 
 void RpcClient::sendEngineText(const QString &text, qint64 hash, int role, bool needsTranslation)
 { d_->sendEngineText(text, hash, role, needsTranslation); }
+
+void RpcClient::sendEngineTextLater(const QString &text, qint64 hash, int role, bool needsTranslation)
+{ d_->sendEngineTextLater(text, hash, role, needsTranslation); }
 
 void RpcClient::growlMessage(const QString &t) { d_->growlServer(t, D::GrowlMessage); }
 void RpcClient::growlWarning(const QString &t) { d_->growlServer(t, D::GrowlWarning); }

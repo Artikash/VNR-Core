@@ -59,6 +59,8 @@ MainDriverPrivate::MainDriverPrivate(QObject *parent)
     // Use queued connection to quarantine the engine thrread
     connect(eng, SIGNAL(textReceived(QString,qint64,int,bool)), rpc, SLOT(sendEngineText(QString,qint64,int,bool)),
         Qt::QueuedConnection);
+    connect(eng, SIGNAL(textReceivedDelayed(QString,qint64,int,bool)), rpc, SLOT(sendEngineTextLater(QString,qint64,int,bool)),
+        Qt::QueuedConnection);
     connect(rpc, SIGNAL(clearEngineRequested()), eng, SLOT(clearTranslation()));
     connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));
     connect(rpc, SIGNAL(engineTranslationReceived(QString,qint64,int)), eng, SLOT(updateTranslation(QString,qint64,int)),

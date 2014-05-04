@@ -10,6 +10,7 @@ QT += core network
 
 HEADERS += \
   $$PWD/bufferedtcpsocketclient.h \
+  $$PWD/queuedtcpsocketclient.h \
   $$PWD/socketdef.h \
   $$PWD/socketio_p.h \
   $$PWD/socketpack.h \
@@ -17,6 +18,7 @@ HEADERS += \
 
 SOURCES += \
   $$PWD/bufferedtcpsocketclient.cc \
+  $$PWD/queuedtcpsocketclient.cc \
   $$PWD/socketio_p.cc \
   $$PWD/tcpsocketclient.cc
 

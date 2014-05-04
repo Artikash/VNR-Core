@@ -11,6 +11,7 @@ QT += core network
 HEADERS += \
   $$PWD/bufferedlocalsocketclient.h \
   $$PWD/localsocketclient.h \
+  $$PWD/quueuedlocalsocketclient.h \
   $$PWD/socketdef.h \
   $$PWD/socketio_p.h \
   $$PWD/socketpack.h
@@ -18,6 +19,7 @@ HEADERS += \
 SOURCES += \
   $$PWD/bufferedlocalsocketclient.cc \
   $$PWD/localsocketclient.cc \
+  $$PWD/queuedlocalsocketclient.cc \
   $$PWD/socketio_p.cc
 
 # EOF

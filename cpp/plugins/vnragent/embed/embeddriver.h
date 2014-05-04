@@ -21,6 +21,7 @@ public:
 
 signals:
   void textReceived(QString text, qint64 hash, int role, bool needsTranslation);
+  void textReceivedDelayed(QString text, qint64 hash, int role, bool needsTranslation);
 public slots:
   void updateTranslation(const QString &text, qint64 hash, int role);
   void clearTranslation();

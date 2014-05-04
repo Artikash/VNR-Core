@@ -1,7 +1,7 @@
 #ifndef _SOCKETSVC_BUFFEREDLOCALSOCKETCLIENT_H
 #define _SOCKETSVC_BUFFEREDLOCALSOCKETCLIENT_H
 
-// bufferedLocalSocketClient.h
+// bufferedlocalsocketclient.h
 // 4/29/2014 jichi
 //
 // This class must be consistent with socketsvc/socketcli.py

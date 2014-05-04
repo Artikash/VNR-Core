@@ -10,16 +10,16 @@
 
 #ifdef VNRAGENT_ENABLE_TCP_SOCKET
 # ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
-class BufferedTcpSocketClient;
-typedef BufferedTcpSocketClient RpcSocketClient;
+class QueuedTcpSocketClient;
+typedef QueuedTcpSocketClient RpcSocketClient;
 # else
 class TcpSocketClient;
 typedef TcpSocketClient RpcSocketClient;
 # endif // VNRAGENT_ENABLE_BUFFERED_SOCKET
 #else
 # ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
-class BufferedLocalSocketClient;
-typedef BufferedLocalSocketClient RpcSocketClient;
+class QueuedLocalSocketClient;
+typedef QueuedLocalSocketClient RpcSocketClient;
 # else
 class LocalSocketClient;
 typedef LocalSocketClient RpcSocketClient;
@@ -38,7 +38,7 @@ class RpcClientPrivate : public QObject
 
   enum { ReconnectInterval = 5000 }; // reconnect on failed
 
-  enum { BufferInterval = 20 }; // wait for next buffered data
+  //enum { BufferInterval = 20 }; // wait for next buffered data
   enum { WaitInterval = 5000 }; // wait for data sent
 public:
   explicit RpcClientPrivate(Q *q);
@@ -57,7 +57,9 @@ private:
   void onCall(const QStringList &args); // called from server
 
   void callServer(const QStringList &args); // call server
+  void callServerLater(const QStringList &args); // call server
   void sendData(const QByteArray &data);
+  void sendDataLater(const QByteArray &data);
 
   void callServer(const QString &arg0, const QString &arg1)
   { callServer(QStringList() << arg0 << arg1); }
@@ -98,6 +100,16 @@ public:
   void sendEngineText(const QString &text, qint64 hash, int role, bool needsTranslation)
   {
     callServer(QStringList()
+        << "agent.engine.text"
+        << text
+        << marshalInteger(hash)
+        << marshalInteger(role)
+        << marshalBool(needsTranslation));
+  }
+
+  void sendEngineTextLater(const QString &text, qint64 hash, int role, bool needsTranslation)
+  {
+    callServerLater(QStringList()
         << "agent.engine.text"
         << text
         << marshalInteger(hash)
