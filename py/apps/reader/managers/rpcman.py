@@ -12,14 +12,15 @@ if __name__ == '__main__':
 
 RPC_WAIT_TIME = 3000 # wait time after sending data
 
-from socketsvc import socketcli, socketpack, socketsrv
+from socketsvc import socketpack
 import config
 
 # Client
 
 class _RpcClient:
   def __init__(self, parent):
-    self.client = socketcli.SocketClient(parent)
+    from socketsvc.tcpsocketcli import TcpSocketClient
+    self.client = TcpSocketClient(parent)
     self.client.setPort(config.QT_METACALL_PORT)
 
   def invoke(self, *args): # [str] -> bool
@@ -125,7 +126,8 @@ class RpcServer(QObject):
 @Q_Q
 class _RpcServer(object):
   def __init__(self, q):
-    self.server = socketsrv.SocketServer(q)
+    from socketsvc.tcpsocketsrv import TcpSocketServer
+    self.server = TcpSocketServer(q)
     self.server.setPort(config.QT_METACALL_PORT)
     self.server.dataReceived.connect(self._onDataReceived)
 

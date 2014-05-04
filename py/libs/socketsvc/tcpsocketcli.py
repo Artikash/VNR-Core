@@ -1,12 +1,12 @@
 # coding: utf8
-# socketcli.py
+# tcpsocketcli.py
 # jichi 4/28/2014
 
 if __name__ == '__main__':
   import sys
   sys.path.append('..')
 
-__all__ = ['SocketClient']
+__all__ = ['TcpSocketClient']
 
 from PySide.QtCore import QObject, Signal, QTimer
 #from PySide.QtNetwork import QAbstractSocket
@@ -18,11 +18,11 @@ def _now(): # -> long  current time in milliseconds
   from time import time
   return long(time() * 1000)
 
-class SocketClient(QObject):
+class TcpSocketClient(QObject):
 
   def __init__(self, parent=None):
-    super(SocketClient, self).__init__(parent)
-    self.__d = _SocketClient(self)
+    super(TcpSocketClient, self).__init__(parent)
+    self.__d = _TcpSocketClient(self)
 
   connected = Signal()
   disconnected = Signal()
@@ -91,7 +91,7 @@ class SocketClient(QObject):
     self.__d.dumpSocketInfo()
 
 @Q_Q
-class _SocketClient(object):
+class _TcpSocketClient(object):
   def __init__(self, q):
     self.encoding = 'utf8'
     self.address = '127.0.0.1' # host name without http prefix
@@ -164,11 +164,11 @@ class _SocketClient(object):
 
 # Cached
 
-class BufferedSocketClient(SocketClient):
+class BufferedTcpSocketClient(TcpSocketClient):
 
   def __init__(self, parent=None):
-    super(BufferedSocketClient, self).__init__(parent)
-    self.__d = _BufferedSocketClient(self)
+    super(BufferedTcpSocketClient, self).__init__(parent)
+    self.__d = _BufferedTcpSocketClient(self)
 
   def sendDataLater(self, data, interval=200, waitTime=0):
     self.__d.sendBuffer += socketpack.packdata(data)
@@ -177,7 +177,7 @@ class BufferedSocketClient(SocketClient):
 
   def flushSendBuffer(self): self.__d.flushSendBuffer()
 
-class _BufferedSocketClient(object):
+class _BufferedTcpSocketClient(object):
   def __init__(self, q):
     self.q_sendData = q.sendData
 
@@ -199,8 +199,8 @@ if __name__ == '__main__':
   import sys
   from PySide.QtCore import QCoreApplication
   app =  QCoreApplication(sys.argv)
-  #c = SocketClient()
-  c = BufferedSocketClient()
+  #c = TcpSocketClient()
+  c = BufferedTcpSocketClient()
   c.setPort(6002)
   def f(data):
     print data, type(data), len(data)

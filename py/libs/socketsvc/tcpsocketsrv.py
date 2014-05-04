@@ -6,7 +6,7 @@ if __name__ == '__main__':
   import sys
   sys.path.append('..')
 
-__all__ = ['SocketServer']
+__all__ = ['TcpSocketServer']
 
 import weakref
 from functools import partial
@@ -15,15 +15,15 @@ from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint, dwarn
 import socketio
 
-class SocketServer(QObject):
+class TcpSocketServer(QObject):
   """
   Message protocol:
   The first 4b is int32 (message size - 4) (little-endian).
   """
 
   def __init__(self, parent=None):
-    super(SocketServer, self).__init__(parent)
-    self.__d = _SocketServer(self)
+    super(TcpSocketServer, self).__init__(parent)
+    self.__d = _TcpSocketServer(self)
 
   connected = Signal(QObject) # client socket
   disconnected = Signal(QObject) # client socket
@@ -70,7 +70,7 @@ class SocketServer(QObject):
     self.__d.deleteSocket(socket)
 
 @Q_Q
-class _SocketServer(object):
+class _TcpSocketServer(object):
   def __init__(self, q):
     self.encoding = 'utf8'
     self.address = '127.0.0.1' # host name without http prefix
@@ -147,7 +147,7 @@ if __name__ == '__main__':
   import sys
   from PySide.QtCore import QCoreApplication
   app =  QCoreApplication(sys.argv)
-  s = SocketServer()
+  s = TcpSocketServer()
   s.setPort(6002)
   s.start()
 
