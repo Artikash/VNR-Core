@@ -12,10 +12,15 @@ def manager(): return GameAgent()
 class GameAgent(QObject):
   def __init__(self, parent=None):
     super(GameAgent, self).__init__(parent)
-    self.__ = _GameAgent(self)
+    self.__d = _GameAgent(self)
 
   processAttached = Signal(long) # pid
   processDetached = Signal(long) # pid
+
+  # Not used
+  #def clear(self): self.__d.clear()
+
+  ## Inject ##
 
   def isAttached(self): return bool(self.__d.pid)
   def processId(self): return self.__d.pid # -> long not None
@@ -24,6 +29,7 @@ class GameAgent(QObject):
     if pid and pid != self.__d.pid:
       if self.__d.pid:
         self.detachProcess()
+      self.clear()
       import inject
       inject.inject_agent(pid)
 
@@ -33,6 +39,9 @@ class GameAgent(QObject):
       rpc.disableAgent()
       #rpc.detachAgent()
       rpc.closeAgent()
+    self.clear()
+
+  ## States ##
 
   activeChanged = Signal(bool)
 
@@ -47,6 +56,14 @@ class GameAgent(QObject):
       d.active = t
       self.activeChanged.emit(t)
 
+  #def setGameLanguage(self, v):
+  #  self.__d.gameLanguage = v
+
+  def setUserEncoding(self, v): # str ->
+    d = self.__d
+    if d.userEncoding != v:
+      d.userEncoding = v
+
 class _GameAgent(object):
   def __init__(self, q):
     import rpcman
@@ -55,7 +72,14 @@ class _GameAgent(object):
     self.rpc.agentConnected.connect(q.processAttached)
     self.rpc.agentDisconnected.connect(q.processDetached)
 
-    self.active = True # bool
+    self.clear()
+
+  def clear(self):
+    self.active = False # bool
+    #self.gameLanguage = 'ja' # str
+    #self.gameEncoding = '' # str
+    #self.userLanguage = 'en' # str
+    self.userEncoding = '' # str
 
   @property # read only
   def pid(self): return self.rpc.agentProcessId()

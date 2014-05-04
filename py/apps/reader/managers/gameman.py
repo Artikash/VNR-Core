@@ -745,18 +745,22 @@ class GameProxy(QtCore.QObject):
 
 ## Game manager ##
 
-class _GameManager: pass
+class _GameManager:
+  def __init__(self):
+    self.game = None # GameProfile
+    self.locked = False # bool
+    #self.windowHookConnected = False # bool
+
 class GameManager(QtCore.QObject):
 
   def __init__(self, parent=None):
     super(GameManager, self).__init__(parent)
-    d = self.__d = _GameManager()
-    d.game = None
-    d.locked = False
-    d.windowHookConnected = False
+    self.__d = _GameManager()
     dprint("pass")
 
   ## Signals ##
+
+  processDetached = Signal() # either texthook or gameagent is detached
 
   openingGame = Signal()
   openGameFailed = Signal()
@@ -789,7 +793,7 @@ class GameManager(QtCore.QObject):
 
   def clear(self):
     self.__d.game = None
-    self.__d.windowHookConnected = False
+    #self.__d.windowHookConnected = False
     self.cleared.emit()
 
   def refreshWindow(self):
@@ -999,7 +1003,7 @@ class GameManager(QtCore.QObject):
           my.tr("Try adjusting it in Text Settings"),
         )))
 
-      skevents.runlater(self.enableWindowHook, 4000)
+      #skevents.runlater(self.enableWindowHook, 4000)
 
       path = skwin.get_process_path(g.pid)
       if path:
@@ -1091,26 +1095,26 @@ class GameManager(QtCore.QObject):
       except NameError: pass
       d.locked = False
 
-  def isWindowHookConnected(self): return self.__d.windowHookConnected
-  def setWindowHookConnected(self, value): self.__d.windowHookConnected = value
+  #def isWindowHookConnected(self): return self.__d.windowHookConnected
+  #def setWindowHookConnected(self, value): self.__d.windowHookConnected = value
 
-  def enableWindowHook(self):
-    if settings.global_().isWindowHookEnabled():
-      d = self.__d
-      if d.game and d.game.pid:
-        growl.msg(my.tr("Translating window text"))
-        if not d.windowHookConnected and not textman.manager().hasWindowTexts():
-          dprint("inject vnr agent to the game")
-          import inject
-          inject.inject_agent(d.game.pid)
-        rpcman.manager().enableAgent()
+  #def enableWindowHook(self):
+  #  if settings.global_().isWindowHookEnabled():
+  #    d = self.__d
+  #    if d.game and d.game.pid:
+  #      growl.msg(my.tr("Translating window text"))
+  #      if not d.windowHookConnected and not textman.manager().hasWindowTexts():
+  #        dprint("inject vnr agent to the game")
+  #        import inject
+  #        inject.inject_agent(d.game.pid)
+  #      rpcman.manager().enableAgent()
 
-  def disableWindowHook(self):
-    d = self.__d
-    if d.game and d.game.pid:
-      if d.windowHookConnected or textman.manager().hasWindowTexts():
-        growl.msg(my.tr("Stop translating window text"))
-      rpcman.manager().disableAgent()
+  #def disableWindowHook(self):
+  #  d = self.__d
+  #  if d.game and d.game.pid:
+  #    if d.windowHookConnected or textman.manager().hasWindowTexts():
+  #      growl.msg(my.tr("Stop translating window text"))
+  #    rpcman.manager().disableAgent()
 
   def setRemovesRepeat(self, value):
     """

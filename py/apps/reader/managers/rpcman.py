@@ -221,7 +221,7 @@ class _RpcServer(object):
     #  'gameLanguage': 'en', # TODO
     #}
     #self.callAgent('config', json.dumps(reply))
-    self.callAgent('config.debug', _marshalBool(config.APP_DEBUG))
+    #self.callAgent('config.debug', _marshalBool(config.APP_DEBUG))
 
   def _onWindowTexts(self, data):
     """
