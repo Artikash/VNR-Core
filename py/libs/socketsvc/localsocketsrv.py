@@ -1,12 +1,12 @@
 # coding: utf8
-# tcpsocketsrv.py
+# localsocketsrv.py
 # jichi 4/28/2014
 
 if __name__ == '__main__':
   import sys
   sys.path.append('..')
 
-__all__ = ['TcpSocketServer']
+__all__ = ['LocalSocketServer']
 
 import weakref
 from functools import partial
@@ -15,15 +15,15 @@ from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint, dwarn
 import socketio
 
-class TcpSocketServer(QObject):
+class LocalSocketServer(QObject):
   """
   Message protocol:
   The first 4b is int32 (message size - 4) (little-endian).
   """
 
   def __init__(self, parent=None):
-    super(TcpSocketServer, self).__init__(parent)
-    self.__d = _TcpSocketServer(self)
+    super(LocalSocketServer, self).__init__(parent)
+    self.__d = _LocalSocketServer(self)
 
   connected = Signal(QObject) # client socket
   disconnected = Signal(QObject) # client socket
@@ -31,7 +31,7 @@ class TcpSocketServer(QObject):
 
   dataReceived = Signal(bytearray, QObject) # data, client socket
 
-  def sendData(self, data, socket, waitTime=0):  # str, QTcpSocket, int -> bool
+  def sendData(self, data, socket, waitTime=0):  # str, QLocalSocket, int -> bool
     ok = self.__d.writeSocket(data, socket)
     if ok and waitTime:
       ok = socket.waitForBytesWritten(waitTime)
@@ -50,11 +50,8 @@ class TcpSocketServer(QObject):
   def connectionCount(self):
     return len(self.__d.sockets)
 
-  def address(self): return self.__d.address # -> str
-  def setAddress(self, v): self.__d.address = v
-
-  def port(self): return self.__d.port # -> int
-  def setPort(self, v): self.__d.port = v
+  def pipeName(self): return self.__d.name # -> str
+  def setPipeName(self, v): self.__d.name = v
 
   def start(self): return self.__d.start() # -> bool
   def stop(self): self.__d.stop()
@@ -64,31 +61,29 @@ class TcpSocketServer(QObject):
 
   isActive = isListening
 
-  def closeSocket(self, socket): # QTcpSocket
+  def closeSocket(self, socket): # QLocalSocket
     if socket.isOpen():
       socket.close()
     self.__d.deleteSocket(socket)
 
 @Q_Q
-class _TcpSocketServer(object):
+class _LocalSocketServer(object):
   def __init__(self, q):
     self.encoding = 'utf8'
-    self.address = '127.0.0.1' # host name without http prefix
-    self.port = 0 # int
-    self.server = None # QTcpServer
-    self.sockets = [] # [QTcpSocket]
+    self.name = '' # pipe name
+    self.server = None # QLocalServer
+    self.sockets = [] # [QLocalSocket]
 
   def _createServer(self):
-    from PySide.QtNetwork import QTcpServer
-    ret = QTcpServer(self.q)
+    from PySide.QtNetwork import QLocalServer
+    ret = QLocalServer(self.q)
     ret.newConnection.connect(self._onNewConnection)
     return ret
 
   def start(self): # -> bool
-    from PySide.QtNetwork import QHostAddress
     if not self.server:
       self.server = self._createServer()
-    ok = self.server.listen(QHostAddress(self.address), self.port)
+    ok = self.server.listen(self.name)
     dprint("pass: ok = %s" % ok)
     return ok
 
@@ -147,8 +142,8 @@ if __name__ == '__main__':
   import sys
   from PySide.QtCore import QCoreApplication
   app =  QCoreApplication(sys.argv)
-  s = TcpSocketServer()
-  s.setPort(6002)
+  s = LocalSocketServer()
+  s.setPipeName("pipetest")
   s.start()
 
   def f(data):

@@ -2,11 +2,23 @@
 # socketio.py
 # jichi 4/28/2014
 
-#from PySide.QtCore import QByteArray
+from PySide.QtCore import QIODevice
 from sakurakit.skdebug import dprint, dwarn
 import socketpack
 
 MESSAGE_HEAD_SIZE = socketpack.INT_SIZE # = 4
+
+def parseiomode(s): # str -> QIODevice::OpenMode
+  if s == 'rw':
+    return QIODevice.ReadWrite
+  elif s == 'r':
+    return QIODevice.ReadOnly
+  elif s == 'r+':
+    return QIODevice.ReadOnly|QIODevice.Append
+  elif s == 'w':
+    return QIODevice.WriteOnly
+  elif s == 'w+':
+    return QIODevice.WriteOnly|QIODevice.Append
 
 def initsocket(socket):
   """

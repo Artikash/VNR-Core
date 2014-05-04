@@ -1,12 +1,12 @@
 # coding: utf8
-# tcpsocketcli.py
+# localsocketcli.py
 # jichi 4/28/2014
 
 if __name__ == '__main__':
   import sys
   sys.path.append('..')
 
-__all__ = ['TcpSocketClient']
+__all__ = ['LocalSocketClient']
 
 from PySide.QtCore import QObject, Signal, QTimer
 #from PySide.QtNetwork import QAbstractSocket
@@ -18,11 +18,11 @@ def _now(): # -> long  current time in milliseconds
   from time import time
   return long(time() * 1000)
 
-class TcpSocketClient(QObject):
+class LocalSocketClient(QObject):
 
   def __init__(self, parent=None):
-    super(TcpSocketClient, self).__init__(parent)
-    self.__d = _TcpSocketClient(self)
+    super(LocalSocketClient, self).__init__(parent)
+    self.__d = _LocalSocketClient(self)
 
   connected = Signal()
   disconnected = Signal()
@@ -41,11 +41,8 @@ class TcpSocketClient(QObject):
       ok = self.__d.socket.waitForBytesWritten(waitTime)
     return ok
 
-  def address(self): return self.__d.address # -> str
-  def setAddress(self, v): self.__d.address = v
-
-  def port(self): return self.__d.port # -> int
-  def setPort(self, v): self.__d.port = v
+  def pipeName(self): return self.__d.name # -> str
+  def setPipeName(self, v): self.__d.name = v
 
   def isConnected(self): # -> bool
     s = self.__d.socket
@@ -91,18 +88,17 @@ class TcpSocketClient(QObject):
     self.__d.dumpSocketInfo()
 
 @Q_Q
-class _TcpSocketClient(object):
+class _LocalSocketClient(object):
   def __init__(self, q):
     self.encoding = 'utf8'
-    self.address = '127.0.0.1' # host name without http prefix
-    self.port = 0 # int
-    self.socket = None # # QTcpSocket
+    self.name = '' # pipe name
+    self.socket = None # # QLocalSocket
     self._dataJustReceived = False # bool
 
   def _createSocket(self):
-    from PySide.QtNetwork import QTcpSocket
+    from PySide.QtNetwork import QLocalSocket
     q = self.q
-    ret = QTcpSocket(q)
+    ret = QLocalSocket(q)
     socketio.initsocket(ret)
     ret.error.connect(q.socketError)
     ret.connected.connect(q.connected)
@@ -115,10 +111,9 @@ class _TcpSocketClient(object):
     if not mode:
       dwarn("failed to parse IO device mode: %s" % modeStr)
       return
-    from PySide.QtNetwork import QHostAddress
     if not self.socket:
       self.socket = self._createSocket()
-    self.socket.connectToHost(QHostAddress(self.address), self.port, mode)
+    self.socket.connectToServer(self.name, mode)
     dprint("pass")
 
   def stop(self):
@@ -149,10 +144,7 @@ class _TcpSocketClient(object):
 
   def dumpSocketInfo(self): # for debug only
     if self.socket:
-      dprint("localAddress = %s" % self.socket.localAddress())
-      dprint("localPort = %s" % self.socket.localPort())
-      dprint("peerAddress = %s" % self.socket.peerAddress())
-      dprint("peerPort =  %s" % self.socket.peerPort())
+      dprint("name = %s" % self.socket.serverName())
       dprint("state = %s" % self.socket.state())
       dprint("error = %s" % self.socket.errorString())
 
@@ -168,11 +160,11 @@ class _TcpSocketClient(object):
 
 # Cached
 
-class BufferedTcpSocketClient(TcpSocketClient):
+class BufferedLocalSocketClient(LocalSocketClient):
 
   def __init__(self, parent=None):
-    super(BufferedTcpSocketClient, self).__init__(parent)
-    self.__d = _BufferedTcpSocketClient(self)
+    super(BufferedLocalSocketClient, self).__init__(parent)
+    self.__d = _BufferedLocalSocketClient(self)
 
   def sendDataLater(self, data, interval=200, waitTime=0):
     self.__d.sendBuffer += socketpack.packdata(data)
@@ -181,7 +173,7 @@ class BufferedTcpSocketClient(TcpSocketClient):
 
   def flushSendBuffer(self): self.__d.flushSendBuffer()
 
-class _BufferedTcpSocketClient(object):
+class _BufferedLocalSocketClient(object):
   def __init__(self, q):
     self.q_sendData = q.sendData
 
@@ -203,9 +195,9 @@ if __name__ == '__main__':
   import sys
   from PySide.QtCore import QCoreApplication
   app =  QCoreApplication(sys.argv)
-  #c = TcpSocketClient()
-  c = BufferedTcpSocketClient()
-  c.setPort(6002)
+  #c = LocalSocketClient()
+  c = BufferedLocalSocketClient()
+  c.setPipeName("pipetest")
   def f(data):
     print data, type(data), len(data)
     app.quit()
