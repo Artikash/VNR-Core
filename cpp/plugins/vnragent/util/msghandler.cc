@@ -45,7 +45,7 @@ void Util::debugMsgHandler(QtMsgType type, const char *msg)
 void Util::installDebugMsgHandler()
 {
   static bool installed = false; // only install once
-  if (!installed)
+  if (!installed) {
     installed = true;
     QFile file(debugFileLocation());
     if (file.open(QIODevice::Text|QIODevice::WriteOnly)) {

@@ -641,8 +641,6 @@ class GameProfile(QtCore.QObject):
             if not launch:
               if updateLater(verbose=True): return
             else:
-              # CHECKPOINT: if agent engine exist, guess game encoding and use apploc to open it
-
               lcid = 0 if features.WINE else self.lcid() if self.usingApploc() else 0
               if not self.launchPath or not os.path.exists(self.launchPath):
                 if lcid:
@@ -896,7 +894,7 @@ class GameManager(QtCore.QObject):
 
   def openGame(self, pid=0, wid=0, path="", launchPath="", linkName="",
       hook="", threadName="", threadSignature=0, encoding="", language="",
-      launchEncoding='',
+      launchLanguage='',
       game=None):
     """
     @param  game  dataman.Game or None
@@ -956,6 +954,7 @@ class GameManager(QtCore.QObject):
       md5 = g.md5()
       oldGame = dataman.manager().queryGame(md5=md5, online=False)
       if oldGame:
+        if not g.encoding: g.encoding = oldGame.encoding
         if not g.language: g.language = oldGame.language
         if not g.loader: g.loader = oldGame.loader
         if not g.launchPath: g.launchPath = oldGame.launchPath
@@ -971,14 +970,16 @@ class GameManager(QtCore.QObject):
       if not g.language: g.language = 'ja'
 
       agentEnabled = settings.global_().isGameAgentEnabled() # bool
+      agentEngine = None
       if agentEnabled and not g.launchLanguage:
         agentEngine = gameagent.global_().guessEngine(pid=pid, path=path)
         if agentEngine:
-          if g.encoding and g.encoding != 'utf-16' or not g.encoding and agentEngine.encoding() == 'utf-16':
+          if g.encoding and g.encoding != 'utf-16' or not g.encoding and agentEngine.encoding() != 'utf-16':
             import trman
             launchLanguage = trman.manager().guessTranslationLanguage()
             if launchLanguage in ('en', 'ja'):
               launchLanguage = ''
+            g.launchLanguage = launchLanguage
 
       if not g.hasProcess():
         dprint("update process")

@@ -289,20 +289,21 @@ class TranslatorManager(QObject):
   def guessTranslationLanguage(self): # -> str
     if not self.isEnabled():
       return ''
-    if self.ezTransEnabled:
+    d = self.__d
+    if d.ezTransEnabled:
       return 'ko'
-    if self.jbeijingEnabled or self.baiduEnabled or self.dreyeEnabled:
-      return 'zhs' if self.language == 'zhs' else 'zht'
-    if (self.atlasEnabled or self.lecEnabled) and not any(
-        self.infoseekEnabled,
-        self.transruEnabled,
-        self.exciteEnabled,
-        self.bingEnabled,
-        self.googleEnabled,
-        self.lecOnlineEnabled,
+    if d.jbeijingEnabled or d.baiduEnabled or d.dreyeEnabled:
+      return 'zhs' if d.language == 'zhs' else 'zht'
+    if (d.atlasEnabled or d.lecEnabled) and not any(
+        d.infoseekEnabled,
+        d.transruEnabled,
+        d.exciteEnabled,
+        d.bingEnabled,
+        d.googleEnabled,
+        d.lecOnlineEnabled,
       ):
       return 'en'
-    return self.language
+    return d.language
 
   def translate(self, *args, **kwargs):
     """

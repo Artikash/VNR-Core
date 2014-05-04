@@ -11,7 +11,7 @@ __all__ = ['SocketClient']
 from PySide.QtCore import QObject, Signal, QTimer
 #from PySide.QtNetwork import QAbstractSocket
 from sakurakit.skclass import Q_Q
-from sakurakit.skdebug import dprint
+from sakurakit.skdebug import dprint, dwarn
 import socketio, socketpack
 
 def _now(): # -> long  current time in milliseconds
@@ -125,13 +125,16 @@ class _SocketClient(object):
   def readSocket(self):
     s = self.socket
     if s:
-      while s.bytesAvailable():
-        data = socketio.readsocket(s)
-        if data == None:
-          break
-        else:
-          self.q.dataReceived.emit(data)
-          self._dataJustReceived = True
+      try:
+        while s.bytesAvailable():
+          data = socketio.readsocket(s)
+          if data == None:
+            break
+          else:
+            self.q.dataReceived.emit(data)
+            self._dataJustReceived = True
+      except Exception, e: # might raise runtime exception since the socket has been deleted
+        dwarn(e)
 
   def writeSocket(self, data, pack=True):
     if not self.socket:

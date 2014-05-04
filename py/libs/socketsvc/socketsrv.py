@@ -128,12 +128,15 @@ class _SocketServer(object):
     except ValueError: pass
 
   def readSocket(self, socket):
-    while socket.bytesAvailable():
-      data = socketio.readsocket(socket)
-      if data == None:
-        break
-      else:
-        self.q.dataReceived.emit(data, socket)
+    try:
+      while socket.bytesAvailable():
+        data = socketio.readsocket(socket)
+        if data == None:
+          break
+        else:
+          self.q.dataReceived.emit(data, socket)
+    except Exception, e: # might raise runtime exception since the socket has been deleted
+      dwarn(e)
 
   def writeSocket(self, data, socket):
     if isinstance(data, unicode):

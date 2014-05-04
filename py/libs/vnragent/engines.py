@@ -76,18 +76,23 @@ class Engine(object): # placeholder
     @param  pattern  str
     @return  [unicode path] or None
     """
-    path = path or self.getAppDirectory(pid)
+    if path:
+      path = os.path.dirname(path)
+    if not path and pid:
+      path = self.getAppDirectory(pid)
     if path:
       from glob import glob
       return glob(os.path.join(path, pattern))
 
   def globAppDirectories(self, patterns, pid=0, path=''):
     """Return all paths or None if failed
-    @param  pid  long
     @param  pattern  [str]
     @return  [unicode path] or None  if return list, it must have the same length as patterns
     """
-    path = path or self.getAppDirectory(pid)
+    if path:
+      path = os.path.dirname(path)
+    if not path and pid:
+      path = self.getAppDirectory(pid)
     if path:
       from glob import glob
       ret = []
