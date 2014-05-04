@@ -22,6 +22,7 @@ public:
 signals:
   void textReceived(QString text, qint64 hash, int role, bool needsTranslation);
   void textReceivedDelayed(QString text, qint64 hash, int role, bool needsTranslation);
+  void engineNameChanged(QString name);
 public slots:
   void updateTranslation(const QString &text, qint64 hash, int role);
   void clearTranslation();
@@ -29,8 +30,10 @@ public slots:
 
   // Called by engine
 public:
+  bool inject();
   bool isEnabled() const;
   void unload();
+  QString engineName() const;
 };
 
 // EOF

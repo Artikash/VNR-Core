@@ -1,7 +1,6 @@
 // embeddriver.cc
 // 4/26/2014 jichi
 
-#include "growl.h"
 #include "embed/embeddriver.h"
 #include "embed/embedmanager.h"
 #include "engine/engine.h"
@@ -31,22 +30,22 @@ EmbedDriver::EmbedDriver(QObject *parent)
 {
   connect(d_->manager, SIGNAL(textReceived(QString,qint64,int,bool)), SIGNAL(textReceived(QString,qint64,int,bool)));
   connect(d_->manager, SIGNAL(textReceivedDelayed(QString,qint64,int,bool)), SIGNAL(textReceivedDelayed(QString,qint64,int,bool)));
-
-  if (d_->engine = AbstractEngine::instance())
-    if (d_->engine->inject()) {
-      //d_->engine = p;
-      //connect(d_->engine, SIGNAL(textReceived(QString,qint64,int,void*)), d_->manager, SLOT(addText(QString,qint64,int,void*)));
-      // FIXME: Only one instance can be send at a time?!
-      growl::notify(tr("Recognize game engine: %1").arg(d_->engine->name()));
-    }
-
-  //::instance_ = this;
 }
 
 EmbedDriver::~EmbedDriver()
 {
   //::instance_ = nullptr;
   delete d_;
+}
+
+bool EmbedDriver::inject()
+{
+  if (d_->engine = AbstractEngine::instance())
+    if (!d_->engine->inject())
+      d_->engine = nullptr;
+
+  emit engineNameChanged(engineName());
+  return d_->engine;
 }
 
 bool EmbedDriver::isEnabled() const { return d_->enabled; }
@@ -62,5 +61,8 @@ void EmbedDriver::unload()
   if (d_->engine)
     d_->engine->unload();
 }
+
+QString EmbedDriver::engineName() const
+{ return d_->engine ? d_->engine->name() : QString(); }
 
 // EOF

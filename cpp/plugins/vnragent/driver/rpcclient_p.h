@@ -97,6 +97,8 @@ public:
 
   void sendWindowTexts(const QString &json) { callServer("agent.window.text", json); }
 
+  void sendEngineName(const QString &name) { callServer("agent.engine.name", name); }
+
   void sendEngineText(const QString &text, qint64 hash, int role, bool needsTranslation)
   {
     callServer(QStringList()

@@ -3,10 +3,11 @@
 # 5/2/2014 jichi
 
 from PySide.QtCore import QObject, Signal
-from sakurakit.skclass import memoized
+from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint
 from vnragent import vnragent
-import config, settings
+from mytr import my
+import config, growl, settings
 
 @memoized
 def global_(): return GameAgent()
@@ -18,6 +19,8 @@ class GameAgent(QObject):
 
   processAttached = Signal(long) # pid
   processDetached = Signal(long) # pid
+
+  engineChanged = Signal(str) # name
 
   # Not used
   #def clear(self): self.__d.clear()
@@ -50,6 +53,8 @@ class GameAgent(QObject):
       #rpc.detachAgent()
       rpc.closeAgent()
     self.__d.clear()
+
+  def hasEngine(self): return bool(self.__d.engineName)
 
   ## Query ##
 
@@ -91,6 +96,7 @@ class GameAgent(QObject):
 
   #def engine
 
+@Q_Q
 class _GameAgent(object):
   def __init__(self, q):
     import rpcman
@@ -98,6 +104,7 @@ class _GameAgent(object):
 
     self.rpc.agentConnected.connect(q.processAttached)
     self.rpc.agentDisconnected.connect(q.processDetached)
+    self.rpc.engineReceived.connect(self._onEngineReceived)
 
     q.processAttached.connect(self._onAttached)
 
@@ -107,6 +114,7 @@ class _GameAgent(object):
     ss = settings.global_()
     self.injectedPid = 0 # long
     self.active = False # bool
+    senf.engineName = '' # str
     self.engineEnabled = ss.isGameAgentEnabled()
     self.windowTranslationEnabled = ss.isWindowTranslationEnabled()
     #self.gameLanguage = 'ja' # str
@@ -121,6 +129,12 @@ class _GameAgent(object):
     self.sendSettings()
     self.rpc.enableAgent()
     self.active = True
+
+  def _onEngineReceived(self, name): # str
+    self.engineName = name
+    self.q.engineChanged.emit(name)
+    if name:
+      growl.notify("%s: %s" % (my.tr("Detect game engine"), name))
 
   def sendSettings(self):
     data = {

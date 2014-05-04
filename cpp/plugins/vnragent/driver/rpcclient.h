@@ -43,6 +43,7 @@ signals:
   void engineTranslationReceived(QString text, qint64 hash, int role); // json: {hash:text}
 
 public slots:
+  void sendEngineName(const QString &name);
   void sendEngineText(const QString &text, qint64 hash, int role, bool needsTranslation);
   void sendEngineTextLater(const QString &text, qint64 hash, int role, bool needsTranslation);
   void requestWindowTranslation(const QString &json); // json: {hash:text}

@@ -23,6 +23,7 @@ SOURCES = \
   managers/dataman.py \
   managers/dictman.py \
   managers/dicts.py \
+  managers/gameagent.py \
   managers/gameman.py \
   managers/netman.py \
   managers/rpcman.py \

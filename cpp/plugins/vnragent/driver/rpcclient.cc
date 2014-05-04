@@ -199,6 +199,9 @@ bool RpcClient::isActive() const { return d_->client->isConnected(); }
 
 void RpcClient::requestWindowTranslation(const QString &json) { d_->sendWindowTexts(json); }
 
+void RpcClient::sendEngineName(const QString &name)
+{ d_->sendEngineName(name); }
+
 void RpcClient::sendEngineText(const QString &text, qint64 hash, int role, bool needsTranslation)
 { d_->sendEngineText(text, hash, role, needsTranslation); }
 

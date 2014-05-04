@@ -30,7 +30,7 @@ void MainDriver::requestDeleteLater() { emit deleteLaterRequested(); }
 /** Private class */
 
 MainDriverPrivate::MainDriverPrivate(QObject *parent)
-  : Base(parent)
+  : Base(parent), settings(nullptr), rpc(nullptr), hijack(nullptr), win(nullptr), eng(nullptr)
 {
   DOUT("enter");
   settings = new Settings(this);
@@ -42,33 +42,51 @@ MainDriverPrivate::MainDriverPrivate(QObject *parent)
     connect(rpc, SIGNAL(detachRequested()), SLOT(unload()));
     connect(rpc, SIGNAL(enabledRequested(bool)), settings, SLOT(setEnabled(bool)));
     connect(rpc, SIGNAL(settingsReceived(QString)), settings, SLOT(load(QString)));
-  }
 
-  hijack = new HijackDriver(this);
-
-  win = new WindowDriver(this); // TODO: Selective create driver only if enabled at server side, i.e. only called by rpc
-  {
-    connect(win, SIGNAL(translationRequested(QString)), rpc, SLOT(requestWindowTranslation(QString)));
-
-    connect(settings, SIGNAL(windowTranslationEnabledChanged(bool)), win, SLOT(setEnable(bool)));
-
-    connect(rpc, SIGNAL(clearWindowTranslationRequested()), win, SLOT(clearTranslation()));
-    connect(rpc, SIGNAL(windowTranslationReceived(QString)), win, SLOT(updateTranslation(QString)));
-  }
-
-  eng = new EmbedDriver(this); // TODO: Selective create engine only if enabled at server side, i.e. only called by rpc {
-  {
-    // Use queued connection to quarantine the engine thrread
-    connect(eng, SIGNAL(textReceived(QString,qint64,int,bool)), rpc, SLOT(sendEngineText(QString,qint64,int,bool)),
-        Qt::QueuedConnection);
-    connect(eng, SIGNAL(textReceivedDelayed(QString,qint64,int,bool)), rpc, SLOT(sendEngineTextLater(QString,qint64,int,bool)),
-        Qt::QueuedConnection);
-    connect(rpc, SIGNAL(clearEngineRequested()), eng, SLOT(clearTranslation()));
-    connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));
-    connect(rpc, SIGNAL(engineTranslationReceived(QString,qint64,int)), eng, SLOT(updateTranslation(QString,qint64,int)),
-        Qt::QueuedConnection);
+    connect(rpc, SIGNAL(enabledRequested(bool)), SLOT(onEnabledChanged()));
+    connect(rpc, SIGNAL(enableEngineRequested(bool)), SLOT(onEnabledChanged()));
+    connect(rpc, SIGNAL(enableWindowTranslationRequested(bool)), SLOT(onEnabledChanged()));
   }
   DOUT("leave");
+}
+
+void MainDriverPrivate::createHijackDriver()
+{
+  if (hijack)
+    return;
+  hijack = new HijackDriver(this);
+}
+
+void MainDriverPrivate::createWindowDriver()
+{
+  if (win)
+    return;
+
+  win = new WindowDriver(this);
+  connect(win, SIGNAL(translationRequested(QString)), rpc, SLOT(requestWindowTranslation(QString)));
+
+  connect(rpc, SIGNAL(clearWindowTranslationRequested()), win, SLOT(clearTranslation()));
+  connect(rpc, SIGNAL(windowTranslationReceived(QString)), win, SLOT(updateTranslation(QString)));
+}
+
+void MainDriverPrivate::createEmbedDriver()
+{
+  if (eng)
+    return;
+
+  eng = new EmbedDriver(this);
+  // Use queued connection to quarantine the engine thrread
+  connect(eng, SIGNAL(textReceived(QString,qint64,int,bool)), rpc, SLOT(sendEngineText(QString,qint64,int,bool)),
+      Qt::QueuedConnection);
+  connect(eng, SIGNAL(textReceivedDelayed(QString,qint64,int,bool)), rpc, SLOT(sendEngineTextLater(QString,qint64,int,bool)),
+      Qt::QueuedConnection);
+  connect(eng, SIGNAL(engineNameChanged(QString)), rpc, SLOT(sendEngineName(QString)));
+  connect(rpc, SIGNAL(clearEngineRequested()), eng, SLOT(clearTranslation()));
+  connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));
+  connect(rpc, SIGNAL(engineTranslationReceived(QString,qint64,int)), eng, SLOT(updateTranslation(QString,qint64,int)),
+      Qt::QueuedConnection);
+
+  eng->inject();
 }
 
 void MainDriverPrivate::onDisconnected()
@@ -83,11 +101,34 @@ void MainDriverPrivate::unload()
 #ifdef VNRAGENT_ENABLE_UNLOAD
   // Add contents to qDebug will crash the application while unload.
   //DOUT("enter");
-  hijack->unload();
-  eng->unload();
+  if (hijack) hijack->unload();
+  if (eng) eng->unload();
   //DOUT("leave");
   WinDbg::unloadCurrentModule();
 #endif // VNRAGENT_ENABLE_UNLOAD
+}
+
+void MainDriverPrivate::onEnabledChanged()
+{
+  if (!settings->isEnabled()) {
+    if (eng)
+      eng->setEnable(false);
+    if (win)
+      win->setEnable(false);
+  } else {
+    if (eng)
+      eng->setEnable(settings->isEngineEnabled());
+    else if (settings->isEngineEnabled()){
+      createEmbedDriver();
+      createHijackDriver();
+    }
+    if (win)
+      win->setEnable(settings->isWindowTranslationEnabled());
+    else if (settings->isWindowTranslationEnabled()){
+      createWindowDriver();
+      createHijackDriver();
+    }
+  }
 }
 
 // EOF

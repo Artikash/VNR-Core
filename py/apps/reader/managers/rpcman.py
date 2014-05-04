@@ -121,6 +121,7 @@ class RpcServer(QObject):
   agentConnected = Signal(long) # pid
   agentDisconnected = Signal(long) # pid
   windowTextsReceived = Signal(dict) # {long hash:unicode text}
+  engineReceived = Signal(str) # name
   engineTextReceived = Signal(unicode, c_longlong, int) # text, hash, role
 
   def isAgentConnected(self): return bool(self.__d.agentSocket)
@@ -220,6 +221,9 @@ class _RpcServer(object):
     elif cmd == 'agent.window.text':
       if params:
         self._onWindowTexts(params[0])
+    elif cmd == 'agent.engine.name':
+      if params:
+        self.q.engineReceived.emit(parans[0])
     elif cmd == 'agent.engine.text':
       if len(params) == 4:
         self._onEngineText(*params)

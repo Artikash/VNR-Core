@@ -29,6 +29,13 @@ signals:
 private slots:
   void onDisconnected();
   void unload();
+
+  void onEnabledChanged();
+
+private:
+  void createHijackDriver();
+  void createEmbedDriver();
+  void createWindowDriver();
 };
 
 // EOF
