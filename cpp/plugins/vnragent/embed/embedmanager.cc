@@ -89,6 +89,7 @@ void EmbedManager::updateTranslation(const QString &text, qint64 hash, int role)
 
 void EmbedManager::addText(const QString &text, qint64 hash, int role, bool needsTranslation)
 {
+  // TODO: Only delay the text if the role is not scenario
   if (needsTranslation)
     emit textReceived(text, hash, role, needsTranslation);
   else

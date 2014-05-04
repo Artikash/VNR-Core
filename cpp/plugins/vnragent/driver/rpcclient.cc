@@ -10,13 +10,13 @@
 
 #ifdef VNRAGENT_ENABLE_TCP_SOCKET
 # ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
-#  include "qtsocketsvc/bufferedtcpsocketclient.h"
+#  include "qtsocketsvc/queuedtcpsocketclient.h"
 # else
 #  include "qtsocketsvc/tcpsocketclient.h"
 # endif // VNRAGENT_ENABLE_BUFFERED_SOCKET
 #else
 # ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
-#  include "qtsocketsvc/bufferedlocalsocketclient.h"
+#  include "qtsocketsvc/queuedlocalsocketclient.h"
 # else
 #  include "qtsocketsvc/localsocketclient.h"
 # endif // VNRAGENT_ENABLE_BUFFERED_SOCKET

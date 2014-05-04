@@ -11,7 +11,7 @@ QT += core network
 HEADERS += \
   $$PWD/bufferedlocalsocketclient.h \
   $$PWD/localsocketclient.h \
-  $$PWD/quueuedlocalsocketclient.h \
+  $$PWD/queuedlocalsocketclient.h \
   $$PWD/socketdef.h \
   $$PWD/socketio_p.h \
   $$PWD/socketpack.h
