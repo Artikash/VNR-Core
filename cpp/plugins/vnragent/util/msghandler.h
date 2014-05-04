@@ -3,10 +3,11 @@
 // msghandler.h
 // 4/27/2014 jichi
 
-#include <QtCore/QtGlobal>
+#include <QtCore/QString>
 
 namespace Util {
 
+QString debugFileLocation();
 void debugMsgHandler(QtMsgType type, const char *msg);
 void installDebugMsgHandler();
 

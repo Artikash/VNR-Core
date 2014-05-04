@@ -197,11 +197,12 @@ class _RpcServer(object):
       dwarn("unknown command: %s" % cmd)
 
   def closeAgentSocket(self):
+    pid = self.agentPid
     self.agentPid = 0
     if self.agentSocket:
       self.server.closeSocket(self.agentSocket)
       self.agentSocket = None
-      self.q.agentDisconnected.emit()
+      self.q.agentDisconnected.emit(pid)
 
   def _onAgentPing(self, socket, pid):
     """

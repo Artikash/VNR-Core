@@ -1192,10 +1192,9 @@ class Settings(QSettings):
       self.setValue('EmbeddedTextVisible', value)
       self.embeddedTextVisibleChanged.emit(value)
 
-  # TO BE DELETED
-  windowHookEnabledChanged = Signal(bool)
-  def isWindowHookEnabled(self):
-    return to_bool(self.value('WindowHookEnabled')) # disabled by default
+  #windowHookEnabledChanged = Signal(bool)
+  #def isWindowHookEnabled(self):
+  #  return to_bool(self.value('WindowHookEnabled')) # disabled by default
   #def setWindowHookEnabled(self, value):
   #  if value != self.isWindowHookEnabled():
   #    self.setValue('WindowHookEnabled', value)
@@ -1286,8 +1285,8 @@ class SettingsProxy(QObject):
     self.termEnabledChanged.connect(g.termEnabledChanged)
     self.copiesGameTextChanged.connect(g.copiesGameTextChanged)
 
-    self.windowHookEnabledChanged.connect(g.windowHookEnabledChanged)
-    self.windowTextVisibleChanged.connect(g.windowTextVisibleChanged)
+    #self.windowHookEnabledChanged.connect(g.windowHookEnabledChanged)
+    #self.windowTextVisibleChanged.connect(g.windowTextVisibleChanged)
 
     self.gameTextCapacityChanged.connect(g.gameTextCapacityChanged)
 
@@ -1345,25 +1344,25 @@ class SettingsProxy(QObject):
       setTermEnabled,
       notify=termEnabledChanged)
 
-  def setWindowHookEnabled(self, value):
-    if value != self.windowHookEnabled:
-      global_().setValue('WindowHookEnabled', value)
-      self.windowHookEnabledChanged.emit(value)
-  windowHookEnabledChanged = Signal(bool)
-  windowHookEnabled = Property(bool,
-      lambda _: global_().isWindowHookEnabled(),
-      setWindowHookEnabled,
-      notify=windowHookEnabledChanged)
+  #def setWindowHookEnabled(self, value):
+  #  if value != self.windowHookEnabled:
+  #    global_().setValue('WindowHookEnabled', value)
+  #    self.windowHookEnabledChanged.emit(value)
+  #windowHookEnabledChanged = Signal(bool)
+  #windowHookEnabled = Property(bool,
+  #    lambda _: global_().isWindowHookEnabled(),
+  #    setWindowHookEnabled,
+  #    notify=windowHookEnabledChanged)
 
-  def setWindowTextVisible(self, value):
-    if value != self.windowTextVisible:
-      global_().setValue('WindowTextVisible', value)
-      self.windowTextVisibleChanged.emit(value)
-  windowTextVisibleChanged = Signal(bool)
-  windowTextVisible = Property(bool,
-      lambda _: global_().isWindowTextVisible(),
-      setWindowTextVisible,
-      notify=windowTextVisibleChanged)
+  #def setWindowTextVisible(self, value):
+  #  if value != self.windowTextVisible:
+  #    global_().setValue('WindowTextVisible', value)
+  #    self.windowTextVisibleChanged.emit(value)
+  #windowTextVisibleChanged = Signal(bool)
+  #windowTextVisible = Property(bool,
+  #    lambda _: global_().isWindowTextVisible(),
+  #    setWindowTextVisible,
+  #    notify=windowTextVisibleChanged)
 
   speaksGameTextChanged = Signal(bool)
   speaksGameText = Property(bool,

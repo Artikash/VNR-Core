@@ -18,6 +18,9 @@
 # include "util/msghandler.h"
 #endif // VNRAGENT_DEBUG
 
+#define DEBUG "loader"
+#include "sakurakit/skdebug.h"
+
 // Global variables
 
 namespace { // unnamed
@@ -54,6 +57,8 @@ void Loader::initWithInstance(HINSTANCE hInstance)
 #ifdef VNRAGENT_DEBUG
   Util::installDebugMsgHandler();
 #endif // VNRAGENT_DEBUG
+
+  DOUT(QCoreApplication::applicationFilePath());
 
   ::driver_ = new MainDriver;
 

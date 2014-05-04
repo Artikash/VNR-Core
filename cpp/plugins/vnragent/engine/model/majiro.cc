@@ -107,7 +107,7 @@ bool MajiroEngine::inject()
     return false;
   D::hookAddress = MemDbg::findCallerAddress(dwTextOutA, 0xec81, startAddress, stopAddress);
   // Note: ITH will mess up this value
-  D::hookAddress = 0x41af90;
+  //D::hookAddress = 0x41af90;
   if (!D::hookAddress)
     return false;
   D::oldHook = detours::replace<D::hook_fun_t>(D::hookAddress, D::newHook);

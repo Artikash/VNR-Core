@@ -29,12 +29,12 @@ class GameAgent(QObject):
   def connectedPid(self): return self.__d.connectedPid # -> long not None
 
   def attachProcess(self, pid): # -> bool
-    if pid == self.__d.pid:
+    if pid == self.__d.injectedPid:
       return True
     else:
-      if self.__d.pid:
+      if self.__d.connectedPid:
         self.detachProcess()
-      self.clear()
+      self.__d.clear()
       import inject
       ok = inject.inject_agent(pid)
       if ok:
@@ -42,21 +42,21 @@ class GameAgent(QObject):
       return ok
 
   def detachProcess(self):
-    if self.__d.pid:
+    if self.__d.connectedPid:
       rpc = self.__d.rpc
       rpc.disableAgent()
       #rpc.detachAgent()
       rpc.closeAgent()
-    self.clear()
+    self.__d.clear()
 
   ## States ##
 
   activeChanged = Signal(bool)
 
-  def isActive(self): return bool(self.__d.pid) and self.__d.active
+  def isActive(self): return bool(self.__d.connectedPid) and self.__d.active
   def setActive(self, t):
     d = self.__d
-    if d.pid:
+    if d.connectedPid:
       d.rpc.enableAgent() if t else d.rpc.disableAgent()
     else:
       t = False

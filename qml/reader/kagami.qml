@@ -82,8 +82,8 @@ Item { id: root_
   }
 
   function loadSettings() {
-    dock_.windowHookChecked = settings_.windowHookEnabled
-    dock_.windowTextChecked = settings_.windowTextVisible
+    //dock_.windowHookChecked = settings_.windowHookEnabled
+    //dock_.windowTextChecked = settings_.windowTextVisible
     dock_.speaksTextChecked = settings_.speaksGameText
     dock_.copiesTextChecked = settings_.copiesGameText
     //dock_.voiceChecked = settings_.voiceCharacterEnabled
@@ -712,8 +712,8 @@ Item { id: root_
             if (settings_.gameTextCapacity !== Math.round(gameTextCapacity))
               settings_.gameTextCapacity = Math.round(gameTextCapacity)
 
-        onWindowHookCheckedChanged: settings_.windowHookEnabled = windowHookChecked
-        onWindowTextCheckedChanged: settings_.windowTextVisible = windowTextChecked
+        //onWindowHookCheckedChanged: settings_.windowHookEnabled = windowHookChecked
+        //onWindowTextCheckedChanged: settings_.windowTextVisible = windowTextChecked
         onSpeaksTextCheckedChanged: settings_.speaksGameText = speaksTextChecked
 
         onClockCheckedChanged:

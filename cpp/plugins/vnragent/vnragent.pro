@@ -37,7 +37,8 @@ QT      -= gui
 #LIBS    += -ld3d9 -L$$D3D_HOME/lib/x86
 
 #LIBS    += -luser32 -lpsapi
-LIBS    += -lgdi32 # needed by game engines
+LIBS    += -lgdi32   # needed by game engines
+LIBS    += -lshell32 # needed by get system path
 
 ## Sources
 
@@ -64,6 +65,7 @@ HEADERS += \
   window/windowdriver_p.h \
   window/windowhash.h \
   window/windowmanager.h \
+  util/location.h \
   util/msghandler.h \
   config.h \
   debug.h \
@@ -86,6 +88,7 @@ SOURCES += \
   window/windowdriver.cc \
   window/windowdriver_p.cc \
   window/windowmanager.cc \
+  util/location.cc \
   util/msghandler.cc \
   growl.cc \
   loader.cc \
