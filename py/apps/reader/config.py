@@ -141,6 +141,10 @@ APP_UPDATE_REFS_INTERVAL = parse_int(_APP['updateRefsInterval'])
 APP_UPDATE_TERMS_INTERVAL = parse_int(_APP['updateTermsInterval'])
 APP_UPDATE_DIGESTS_INTERVAL = parse_int(_APP['updateDigestsInterval'])
 
+APP_SOCKET_TYPE = _APP['socketType'] # str
+APP_SOCKET_NAME = _APP['socketName'] # str
+APP_SOCKET_PORT = parse_int(_APP['socketPort']) # int
+
 REF_EXPIRE_TIME = parse_int(_APP['refExpireTime'])
 NAME_EXPIRE_TIME = parse_int(_APP['nameExpireTime'])
 
@@ -251,8 +255,6 @@ QT_THREAD_TIMEOUT = parse_int(_QT['threadTimeout'])
 QT_STYLESHEETS = _QT['css'] # [str name]
 
 #QT_QUIT_TIMEOUT = parse_int(_QT['quitTimeout'])
-
-QT_METACALL_PORT = parse_int(_QT['metaCallPort'])
 
 _PY = APP_YAML['py']
 PY_SOCKET_TIMEOUT = parse_int(_PY['socketTimeout'])

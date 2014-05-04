@@ -50,8 +50,8 @@ class LocalSocketServer(QObject):
   def connectionCount(self):
     return len(self.__d.sockets)
 
-  def pipeName(self): return self.__d.name # -> str
-  def setPipeName(self, v): self.__d.name = v
+  def serverName(self): return self.__d.name # -> str
+  def setServerName(self, v): self.__d.name = v
 
   def start(self): return self.__d.start() # -> bool
   def stop(self): self.__d.stop()
@@ -143,7 +143,7 @@ if __name__ == '__main__':
   from PySide.QtCore import QCoreApplication
   app =  QCoreApplication(sys.argv)
   s = LocalSocketServer()
-  s.setPipeName("pipetest")
+  s.setServerName("pipetest")
   s.start()
 
   def f(data):

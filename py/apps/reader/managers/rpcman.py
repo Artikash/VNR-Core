@@ -15,13 +15,35 @@ RPC_WAIT_TIME = 3000 # wait time after sending data
 from socketsvc import socketpack
 import config
 
+ENABLE_TCP_SOCKET = config.APP_SOCKET_TYPE == 'tcp'
+
+def createSocketClient(parent=None, tcp=ENABLE_TCP_SOCKET):
+  if tcp:
+    from socketsvc.tcpsocketcli import TcpSocketClient
+    ret = TcpSocketClient(parent)
+    ret.setPort(config.APP_SOCKET_PORT)
+  else:
+    from socketsvc.localsocketcli import LocalSocketClient
+    ret = LocalSocketClient(parent)
+    ret.setServerName(config.APP_SOCKET_NAME)
+  return ret
+
+def createSocketServer(parent=None, tcp=ENABLE_TCP_SOCKET):
+  if tcp:
+    from socketsvc.tcpsocketsrv import TcpSocketServer
+    ret = TcpSocketServer(parent)
+    ret.setPort(config.APP_SOCKET_PORT)
+  else:
+    from socketsvc.localsocketsrv import LocalSocketServer
+    ret = LocalSocketServer(parent)
+    ret.setServerName(config.APP_SOCKET_NAME)
+  return ret
+
 # Client
 
 class _RpcClient:
   def __init__(self, parent):
-    from socketsvc.tcpsocketcli import TcpSocketClient
-    self.client = TcpSocketClient(parent)
-    self.client.setPort(config.QT_METACALL_PORT)
+    self.client = createSocketClient(parent=parent)
 
   def invoke(self, *args): # [str] -> bool
     if not self.client.isActive():
@@ -126,9 +148,8 @@ class RpcServer(QObject):
 @Q_Q
 class _RpcServer(object):
   def __init__(self, q):
-    from socketsvc.tcpsocketsrv import TcpSocketServer
-    self.server = TcpSocketServer(q)
-    self.server.setPort(config.QT_METACALL_PORT)
+    self.server = createSocketServer(parent=q)
+
     self.server.dataReceived.connect(self._onDataReceived)
 
     self.server.disconnected.connect(self._onDisconnected)

@@ -41,8 +41,8 @@ class LocalSocketClient(QObject):
       ok = self.__d.socket.waitForBytesWritten(waitTime)
     return ok
 
-  def pipeName(self): return self.__d.name # -> str
-  def setPipeName(self, v): self.__d.name = v
+  def serverName(self): return self.__d.name # -> str
+  def setServerName(self, v): self.__d.name = v
 
   def isConnected(self): # -> bool
     s = self.__d.socket
@@ -197,7 +197,7 @@ if __name__ == '__main__':
   app =  QCoreApplication(sys.argv)
   #c = LocalSocketClient()
   c = BufferedLocalSocketClient()
-  c.setPipeName("pipetest")
+  c.setServerName("pipetest")
   def f(data):
     print data, type(data), len(data)
     app.quit()

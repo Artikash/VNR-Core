@@ -25,6 +25,11 @@ app:
   nameExpireTime:           86400 * 5   # every 5 days, mecab name
   refExpireTime:            86400 * 7   # every 7 days, reference
 
+  #socketType:   tcp         # Use QTcpSocket
+  socketType:   local       # Use QLocalSocket
+  socketPort:   6103        # IPC QMetaCall listening port (6100 + app.id)
+  socketName:   vnr_socket  # local socket pipe name
+
 # Environment variables
 env:
   pythonpath:
@@ -36,7 +41,7 @@ env:
   - $PWD/py/apps/reader/widgets
 
 qt:
-  metaCallPort: 6103    # IPC QMetaCall listening port (6100 + app.id)
+  #metaCallPort: 6103    # IPC QMetaCall listening port (6100 + app.id)
   threadCount:  1000    # QtCore.QThreadPool.maxThreadCount
   threadTimeout: 6000   # QThreadPool.waitForDone timeout in msecs
   #quitTimeout: 3000     # time taken for closing the app
