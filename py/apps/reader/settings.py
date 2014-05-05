@@ -1162,6 +1162,7 @@ class Settings(QSettings):
       self.gameAgentEnabledChanged.emit(value)
 
   # Whether translate window components
+  # This implies transcoding enabled
   windowTranslationEnabledChanged = Signal(bool)
   def isWindowTranslationEnabled(self):
     return to_bool(self.value('WindowTranslation', False))
@@ -1171,6 +1172,7 @@ class Settings(QSettings):
       self.windowTranslationEnabledChanged.emit(value)
 
   # Whether display original text after the translation
+  # This implies translation enabled
   windowTextVisibleChanged = Signal(bool)
   def isWindowTextVisible(self):
     return to_bool(self.value('WindowTextVisible', False))
@@ -1191,7 +1193,7 @@ class Settings(QSettings):
   # Whether translate embedded scenario text
   embeddedScenarioTranslationEnabledChanged = Signal(bool)
   def isEmbeddedScenarioTranslationEnabled(self):
-    return to_bool(self.value('EmbeddedScenarioTranslation', True))
+    return to_bool(self.value('EmbeddedScenarioTranslation', False))
   def setEmbeddedScenarioTranslationEnabled(self, value):
     if value != self.isEmbeddedScenarioTranslationEnabled():
       self.setValue('EmbeddedScenarioTranslation', value)
@@ -1208,7 +1210,7 @@ class Settings(QSettings):
 
   embeddedNameTranslationEnabledChanged = Signal(bool)
   def isEmbeddedNameTranslationEnabled(self):
-    return to_bool(self.value('EmbeddedNameTranslation', True))
+    return to_bool(self.value('EmbeddedNameTranslation', False))
   def setEmbeddedNameTranslationEnabled(self, value):
     if value != self.isEmbeddedNameTranslationEnabled():
       self.setValue('EmbeddedNameTranslation', value)
@@ -1224,7 +1226,7 @@ class Settings(QSettings):
 
   embeddedOtherTranslationEnabledChanged = Signal(bool)
   def isEmbeddedOtherTranslationEnabled(self):
-    return to_bool(self.value('EmbeddedOtherTranslation', True))
+    return to_bool(self.value('EmbeddedOtherTranslation', False))
   def setEmbeddedOtherTranslationEnabled(self, value):
     if value != self.isEmbeddedOtherTranslationEnabled():
       self.setValue('EmbeddedOtherTranslation', value)
