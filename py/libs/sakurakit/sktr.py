@@ -352,6 +352,8 @@ class sakurakit(QObject):
       self.tr("Read-only"), self.tr("read-only"),
       self.tr("Editable"), self.tr("editable"),
 
+      self.tr("Slow"),
+
       self.tr("Public"),
       self.tr("Private"),
 

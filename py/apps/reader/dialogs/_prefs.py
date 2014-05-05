@@ -672,9 +672,18 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     layout.addWidget(self.localeEmulatorButton)
     layout.addWidget(self.ntleaButton)
     #layout.addWidget(self.localeSwitchButton)
+    layout.addWidget(self.launchInfoLabel)
     ret = QtWidgets.QGroupBox(my.tr("Preferred game loader"))
     ret.setLayout(layout)
     self._loadLauncher()
+    return ret
+
+  @memoizedproperty
+  def launchInfoLabel(self):
+    ret = QtWidgets.QLabel(my.tr(
+      "When embedding translation is enabled, if the game's encoding is SHIFT-JIS and your language is not SHIFT-JIS compatible, VNR will always launch the game using AppLocale"
+     ))
+    ret.setWordWrap(True)
     return ret
 
   @memoizedproperty
@@ -4400,22 +4409,45 @@ class _EngineTab(object):
   @memoizedproperty
   def windowGroup(self):
     layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.windowDisableButton)
+    layout.addWidget(self.windowEncodingButton)
     layout.addWidget(self.windowTranslationButton)
     layout.addWidget(self.windowTextButton)
     layout.addWidget(self.windowInfoLabel)
 
-    self.windowTextButton.setEnabled(self.windowTranslationButton.isChecked())
-    self.windowTranslationButton.toggled.connect(self.windowTextButton.setEnabled)
+    #self.windowTextButton.setEnabled(self.windowTranslationButton.isChecked())
+    #self.windowTranslationButton.toggled.connect(self.windowTextButton.setEnabled)
 
     ret = QtWidgets.QGroupBox(my.tr("Standard window components (menu, button, dialog, etc.)"))
     ret.setLayout(layout)
     return ret
 
   @memoizedproperty
+  def windowDisableButton(self):
+    ss = settings.global_()
+    ret = QtWidgets.QRadioButton(my.tr(
+      "Do not modify the standard window components"
+    ))
+    ret.setChecked(ss.isWindowTranslationEnabled())
+    ret.toggled.connect(ss.setWindowTranslationEnabled)
+    return ret
+
+  @memoizedproperty
+  def windowEncodingButton(self):
+    ss = settings.global_()
+    ret = QtWidgets.QRadioButton(my.tr(
+      "Fix the encoding of the texts without translating them"
+    ))
+    ret.setChecked(ss.isWindowTranslationEnabled())
+    ret.toggled.connect(ss.setWindowTranslationEnabled)
+    return ret
+
+  @memoizedproperty
   def windowTranslationButton(self):
     ss = settings.global_()
-    ret = QtWidgets.QCheckBox(my.tr(
-      "Translate standard window components"
+    ret = QtWidgets.QRadioButton("%s (%s)" % (
+      my.tr("Translate the texts"),
+      tr_("Slow"),
     ))
     ret.setChecked(ss.isWindowTranslationEnabled())
     ret.toggled.connect(ss.setWindowTranslationEnabled)
@@ -4424,8 +4456,9 @@ class _EngineTab(object):
   @memoizedproperty
   def windowTextButton(self):
     ss = settings.global_()
-    ret = QtWidgets.QCheckBox(my.tr(
-      "Display the original text after the translation"
+    ret = QtWidgets.QRadioButton("%s (%s)" % (
+      my.tr("Display both the translation and the original text"),
+      tr_("Slow"),
     ))
     ret.setChecked(ss.isWindowTextVisible())
     ret.toggled.connect(ss.setWindowTextVisible)
