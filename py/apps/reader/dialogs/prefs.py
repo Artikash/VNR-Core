@@ -61,6 +61,7 @@ class _PrefsDialog(object):
     self.shortcutsTab = _prefs.ShortcutsTab()
     self.uiTab = _prefs.UiTab()
     self.i18nTab = _prefs.I18nTab()
+    self.engineTab = _prefs.EngineTab()
     self.featureTab = _prefs.FeatureTab()
     #self.pluginTab = _prefs.PluginTab()
 
@@ -187,6 +188,12 @@ class _PrefsDialog(object):
           'display': tr_("i18n"),
           'decoration': rc.icon('pref-i18n'),
           'toolTip': tr_("International"),
+        },
+        { 'widget': self.engineTab,
+          'user': self._indexWidget(self.engineTab),
+          'display': u"%s (α)" % mytr_("Embedded"),
+          'decoration': rc.icon('pref-config'),
+          'toolTip': my.tr("Embedded subtitles"),
         },
         { 'widget': self.featureTab,
           'user': self._indexWidget(self.featureTab),

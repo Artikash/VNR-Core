@@ -1160,7 +1160,7 @@ class Settings(QSettings):
       self.setValue('GameAgent', value)
       self.gameAgentEnabledChanged.emit(value)
 
-  windowTranslationEnabled = Signal(bool)
+  windowTranslationEnabledChanged = Signal(bool)
   def isWindowTranslationEnabled(self):
     return to_bool(self.value('WindowTranslation', False))
   def setWindowTranslationEnabled(self, value):
@@ -1176,7 +1176,7 @@ class Settings(QSettings):
       self.setValue('WindowTextVisible', value)
       self.windowTextVisibleChanged.emit(value)
 
-  embededTranslationEnabled = Signal(bool)
+  embeddedTranslationEnabledChanged = Signal(bool)
   def isEmbeddedTranslationEnabled(self):
     return to_bool(self.value('EmbeddedTranslation', True))
   def setEmbeddedTranslationEnabled(self, value):

@@ -4338,6 +4338,203 @@ class TtsLibraryTab(QtWidgets.QDialog):
   def save(self): pass #self.__d.save()
   def refresh(self): pass
 
+# Embedded subtitle
+
+#@Q_Q
+class _EngineTab(object):
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.agentGroup)
+    layout.addWidget(self.engineGroup)
+    layout.addWidget(self.windowGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+
+    b = self.agentEnableButton
+    for w in self.windowGroup, self.engineGroup:
+      w.setEnabled(b.isChecked())
+      b.toggled.connect(w.setEnabled)
+
+  ## Agent ##
+
+  @memoizedproperty
+  def agentGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.agentEnableButton)
+    layout.addWidget(self.agentInfoLabel)
+    ret = QtWidgets.QGroupBox(my.tr("Preferred game text extraction method"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def agentEnableButton(self):
+    ss = settings.global_()
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Use VNR's built-in hook instead of ITH if possible"
+    ))
+    ret.setChecked(ss.isGameAgentEnabled())
+    ret.toggled.connect(ss.setGameAgentEnabled)
+    return ret
+
+  @memoizedproperty
+  def agentInfoLabel(self):
+    ret = QtWidgets.QLabel('<br/>'.join((
+      my.tr("Changing the text extraction method requires restarting the game."),
+      my.tr("This feature is currently under development, and only supports a small portion of the games that ITH supports."),
+      my.tr('See <a href="#">Game Settings</a> for more details.'),
+    )))
+    skqss.class_(ret, 'text-info')
+    ret.setWordWrap(True)
+    #ret.setOpenExternalLinks(True)
+
+    import main
+    m = main.manager()
+    ret.linkActivated.connect(partial(m.openWiki, 'VNR/Game Settings'))
+    return ret
+
+  ## Window translation ##
+
+  @memoizedproperty
+  def windowGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.windowTranslationButton)
+    layout.addWidget(self.windowTextButton)
+    layout.addWidget(self.windowInfoLabel)
+
+    self.windowTextButton.setEnabled(self.windowTranslationButton.isChecked())
+    self.windowTranslationButton.toggled.connect(self.windowTextButton.setEnabled)
+
+    ret = QtWidgets.QGroupBox(my.tr("Standard window components (menu, button, dialog, etc.)"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def windowTranslationButton(self):
+    ss = settings.global_()
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Translate standard window components"
+    ))
+    ret.setChecked(ss.isWindowTranslationEnabled())
+    ret.toggled.connect(ss.setWindowTranslationEnabled)
+    return ret
+
+  @memoizedproperty
+  def windowTextButton(self):
+    ss = settings.global_()
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Display the original text after the translation"
+    ))
+    ret.setChecked(ss.isWindowTextVisible())
+    ret.toggled.connect(ss.setWindowTextVisible)
+    return ret
+
+  @memoizedproperty
+  def windowInfoLabel(self):
+    ret = QtWidgets.QLabel("%s: %s" % (
+      tr_("Note"),
+      my.tr("If the window contains many texts, the translation will become slow and could take several minutes."),
+    ))
+    ret.setWordWrap(True)
+    return ret
+
+  ## Game engine ##
+
+  @memoizedproperty
+  def engineGroup(self):
+    grid = QtWidgets.QGridLayout()
+
+    r = 0
+    grid.addWidget(QtWidgets.QLabel(mytr_("Dialog")), r, 0)
+    for i, b in enumerate(self.engineDialogGroup.buttons()):
+      grid.addWidget(b, r, 1 + i)
+
+    r += 1
+    grid.addWidget(QtWidgets.QLabel(mytr_("Character")), r, 0)
+    for i, b in enumerate(self.engineNameGroup.buttons()):
+      grid.addWidget(b, r, 1 + i)
+
+    r += 1
+    grid.addWidget(QtWidgets.QLabel(tr_("Other")), r, 0)
+    for i, b in enumerate(self.engineOtherGroup.buttons()):
+      grid.addWidget(b, r, 1 + i)
+
+    layout = QtWidgets.QVBoxLayout()
+    layout.addLayout(grid)
+    layout.addWidget(self.engineInfoLabel)
+    ret = QtWidgets.QGroupBox(my.tr("GDI and DirectX"))
+    ret.setLayout(layout)
+
+    for it in self.engineDialogGroup, self.engineNameGroup, self.engineOtherGroup:
+      it.setParent(ret)
+    return ret
+
+  @memoizedproperty
+  def engineInfoLabel(self):
+    ret = QtWidgets.QLabel("%s: %s" % (
+      tr_("Note"),
+      my.tr("For SHIFT-JIS games, displaying non SHIFT-JIS compatible language requires AppLocale and might only work on Japanese Windows."),
+    ))
+    ret.setWordWrap(True)
+    return ret
+
+  @memoizedproperty
+  def engineDialogGroup(self):
+    ret = QtWidgets.QButtonGroup()
+
+    b = QtWidgets.QRadioButton(tr_("Translate"))
+    ret.addButton(b)
+
+    b = QtWidgets.QRadioButton(my.tr("Do not translate"))
+    ret.addButton(b)
+
+    b = QtWidgets.QRadioButton(tr_("Hide"))
+    ret.addButton(b)
+    return ret
+
+  @memoizedproperty
+  def engineNameGroup(self):
+    ret = QtWidgets.QButtonGroup()
+
+    b = QtWidgets.QRadioButton(tr_("Translate"))
+    ret.addButton(b)
+
+    b = QtWidgets.QRadioButton(my.tr("Do not translate"))
+    ret.addButton(b)
+
+    b = QtWidgets.QRadioButton(tr_("Hide"))
+    ret.addButton(b)
+    return ret
+
+  @memoizedproperty
+  def engineOtherGroup(self):
+    ret = QtWidgets.QButtonGroup()
+
+    b = QtWidgets.QRadioButton(tr_("Translate"))
+    ret.addButton(b)
+
+    b = QtWidgets.QRadioButton(my.tr("Do not translate"))
+    ret.addButton(b)
+
+    #b = QtWidgets.QRadioButton(my.tr("Hide"))
+    #ret.addButton(b)
+    return ret
+
+class EngineTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(EngineTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _EngineTab(self)
+    #self.setChildrenCollapsible(False)
+    #self.setMinimumWidth(LIBRARY_MINIMUM_WIDTH)
+
+  def load(self): pass
+  def save(self): pass
+  def refresh(self): pass
+
 # EOF
 
 #    layout = QtWidgets.QVBoxLayout()
