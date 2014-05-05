@@ -8,15 +8,26 @@
 class SettingsPrivate
 {
 public:
-  bool enabled,
-       engineEnabled,
-       windowTranslationEnabled;
-  //QString language;
+  bool windowTranslationEnabled
+     , windowTranscodingEnabled
+     , windowTextVisible
+     , embeddedScenarioVisible
+     , embeddedScenarioTranslationEnabled
+     , embeddedNameVisible
+     , embeddedNameTranslationEnabled
+     , embeddedOtherVisible
+     , embeddedOtherTranslationEnabled;
 
   SettingsPrivate()
-    : enabled(false),
-      engineEnabled(false),
-      windowTranslationEnabled(false)
+     : windowTranslationEnabled(false)
+     , windowTranscodingEnabled(false)
+     , windowTextVisible(false)
+     , embeddedScenarioVisible(false)
+     , embeddedScenarioTranslationEnabled(false)
+     , embeddedNameVisible(false)
+     , embeddedNameTranslationEnabled(false)
+     , embeddedOtherVisible(false)
+     , embeddedOtherTranslationEnabled(false)
   {}
 };
 
@@ -43,10 +54,20 @@ Settings::~Settings()
   void Settings::setter(argtype value)  \
   { if (d_->property != value) { d_->property = value; emit property##Changed(value); } }
 
-DEFINE_PROPERTY(enabled, isEnabled, setEnabled, bool, bool)
-DEFINE_PROPERTY(engineEnabled, isEngineEnabled, setEngineEnabled, bool, bool)
-DEFINE_PROPERTY(windowTranslationEnabled, isWindowTranslationEnabled, setWindowTranslationEnabled, bool, bool)
-//DEFINE_PROPERTY(language, language, setLanguage, QString, const QString &)
+#define DEFINE_STRING_PROPERTY(property, getter, setter)    DEFINE_PROPERTY(property, setter, getter, QString, const QString &)
+#define DEFINE_BOOL_PROPERTY(property, getter, setter)      DEFINE_PROPERTY(property, setter, getter, bool, bool)
+
+DEFINE_BOOL_PROPERTY(windowTranslationEnabled, isWindowTranslationEnabled, setWindowTranslationEnabled)
+
+DEFINE_BOOL_PROPERTY(windowTranslationEnabled, isWindowTranslationEnabled, setWindowTranslationEnabled)
+DEFINE_BOOL_PROPERTY(windowTranscodingEnabled, isWindowTranscodingEnabled, setWindowTranscodingEnabled)
+DEFINE_BOOL_PROPERTY(windowTextVisible, isWindowTextVisible, setWindowTextVisible)
+DEFINE_BOOL_PROPERTY(embeddedScenarioVisible, isEmbeddedScenarioVisible, setEmbeddedScenarioVisible)
+DEFINE_BOOL_PROPERTY(embeddedScenarioTranslationEnabled, isEmbeddedScenarioTranslationEnabled, setEmbeddedScenarioTranslationEnabled)
+DEFINE_BOOL_PROPERTY(embeddedNameVisible, isEmbeddedNameVisible, setEmbeddedNameVisible)
+DEFINE_BOOL_PROPERTY(embeddedNameTranslationEnabled, isEmbeddedNameTranslationEnabled, setEmbeddedNameTranslationEnabled)
+DEFINE_BOOL_PROPERTY(embeddedOtherVisible, isEmbeddedOtherVisible, setEmbeddedOtherVisible)
+DEFINE_BOOL_PROPERTY(embeddedOtherTranslationEnabled, isEmbeddedOtherTranslationEnabled, setEmbeddedOtherTranslationEnabled)
 
 // Marshal
 
@@ -58,8 +79,8 @@ void Settings::load(const QString &json)
 {
   enum {
     H_DEBUG = 6994359 // "debug"
-    , H_ENGINE_ENABLE = 207122565   // "engine.enable"
-    , H_WINDOW_ENABLE = 147657733   // "window.enable"
+    //, H_ENGINE_ENABLE = 207122565   // "engine.enable"
+    //, H_WINDOW_ENABLE = 147657733   // "window.enable"
   };
   QVariant data = QxtJSON::parse(json);
   if (data.isNull())
@@ -73,8 +94,8 @@ void Settings::load(const QString &json)
     bool bValue = value == "true";
     switch (qHash(it.key())) {
     case H_DEBUG: if (bValue) Util::installDebugMsgHandler(); break;
-    case H_ENGINE_ENABLE: setEngineEnabled(bValue); break;
-    case H_WINDOW_ENABLE: setWindowTranslationEnabled(bValue); break;
+    //case H_ENGINE_ENABLE: setEngineEnabled(bValue); break;
+    //case H_WINDOW_ENABLE: setWindowTranslationEnabled(bValue); break;
     default: ;
     }
   }
