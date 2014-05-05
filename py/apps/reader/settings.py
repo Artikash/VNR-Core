@@ -1152,6 +1152,7 @@ class Settings(QSettings):
 
   ## Game agent ##
 
+  # Whether use game agent over texthook
   gameAgentEnabledChanged = Signal(bool)
   def isGameAgentEnabled(self):
     return to_bool(self.value('GameAgent', True))
@@ -1160,6 +1161,7 @@ class Settings(QSettings):
       self.setValue('GameAgent', value)
       self.gameAgentEnabledChanged.emit(value)
 
+  # Whether translate window components
   windowTranslationEnabledChanged = Signal(bool)
   def isWindowTranslationEnabled(self):
     return to_bool(self.value('WindowTranslation', False))
@@ -1168,6 +1170,7 @@ class Settings(QSettings):
       self.setValue('WindowTranslation', value)
       self.windowTranslationEnabledChanged.emit(value)
 
+  # Whether display original text after the translation
   windowTextVisibleChanged = Signal(bool)
   def isWindowTextVisible(self):
     return to_bool(self.value('WindowTextVisible', False))
@@ -1176,6 +1179,7 @@ class Settings(QSettings):
       self.setValue('WindowTextVisible', value)
       self.windowTextVisibleChanged.emit(value)
 
+  # Whether fix window translation encoding
   windowTranscodingEnabledChanged = Signal(bool)
   def isWindowTranscodingEnabled(self):
     return to_bool(self.value('WindowTranscoding', True))
@@ -1184,6 +1188,7 @@ class Settings(QSettings):
       self.setValue('WindowTranscoding', value)
       self.windowTranscodingEnabledChanged.emit(value)
 
+  # Whether translate embedded scenario text
   embeddedScenarioTranslationEnabledChanged = Signal(bool)
   def isEmbeddedScenarioTranslationEnabled(self):
     return to_bool(self.value('EmbeddedScenarioTranslation', True))
@@ -1192,6 +1197,7 @@ class Settings(QSettings):
       self.setValue('EmbeddedScenarioTranslation', value)
       self.embeddedScenarioTranslationEnabledChanged.emit(value)
 
+  # Whether delete scenario text
   embeddedScenarioVisibleChanged = Signal(bool)
   def isEmbeddedScenarioVisible(self):
     return to_bool(self.value('EmbeddedScenarioVisible', True))
@@ -1224,6 +1230,7 @@ class Settings(QSettings):
       self.setValue('EmbeddedOtherTranslation', value)
       self.embeddedOtherTranslationEnabledChanged.emit(value)
 
+  # This method is not used, though
   embeddedOtherVisibleChanged = Signal(bool)
   def isEmbeddedOtherVisible(self):
     return to_bool(self.value('EmbeddedOtherVisible', True))

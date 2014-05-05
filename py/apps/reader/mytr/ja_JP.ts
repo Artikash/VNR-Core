@@ -436,12 +436,12 @@
     <message>
         <location filename="mytr.py" line="83"/>
         <source>Dialog</source>
-        <translation>シナリオ</translation>
+        <translation>對話</translation>
     </message>
     <message>
         <location filename="mytr.py" line="83"/>
         <source>dialog</source>
-        <translation>シナリオ</translation>
+        <translation>對話</translation>
     </message>
     <message>
         <location filename="mytr.py" line="84"/>

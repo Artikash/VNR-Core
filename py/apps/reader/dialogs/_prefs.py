@@ -4418,7 +4418,7 @@ class _EngineTab(object):
     #self.windowTextButton.setEnabled(self.windowTranslationButton.isChecked())
     #self.windowTranslationButton.toggled.connect(self.windowTextButton.setEnabled)
 
-    ret = QtWidgets.QGroupBox(my.tr("Standard window components (menu, button, dialog, etc.)"))
+    ret = QtWidgets.QGroupBox(my.tr("Standard window components (menu, button, etc.)"))
     ret.setLayout(layout)
     return ret
 
@@ -4485,7 +4485,7 @@ class _EngineTab(object):
       grid.addWidget(b, r, 1 + i)
 
     r += 1
-    grid.addWidget(QtWidgets.QLabel(mytr_("Character")), r, 0)
+    grid.addWidget(QtWidgets.QLabel(tr_("Name")), r, 0)
     for i, b in enumerate(self.engineNameGroup.buttons()):
       grid.addWidget(b, r, 1 + i)
 
