@@ -292,7 +292,7 @@ class GameProfile(QtCore.QObject):
     self.timeZoneEnabled = timeZoneEnabled # bool
 
     # {long signature : str name} or None
-    #self.supportThreads = None
+    #self.otherThreads = None
 
     # Alias
     self.linkName = linkName        # unicode
@@ -389,7 +389,7 @@ class GameProfile(QtCore.QObject):
       self.encoding = game.encoding
       self.threadName = game.threadName
       self.threadSignature = game.threadSignature
-      #self.supportThreads = game.supportThreads
+      #self.otherThreads = game.otherThreads
       self.removesRepeat = game.removesRepeat
       self.ignoresRepeat = game.ignoresRepeat
       self.keepsSpace = game.keepsSpace
@@ -431,7 +431,7 @@ class GameProfile(QtCore.QObject):
     #        ret = self.applyHook()
     #return ret
 
-  #def updateSupportThreads(self):
+  #def updateOtherThreads(self):
   #  md5 = self.md5()
   #  if not md5:
   #    dwarn("failed to create md5 digest")
@@ -440,7 +440,7 @@ class GameProfile(QtCore.QObject):
   #  if not game:
   #    dprint("could not find game info")
   #    return
-  #  self.supportThreads = game.supportThreads
+  #  self.otherThreads = game.otherThreads
 
   def updateGameNames(self):
     self.folderName = ""
@@ -479,7 +479,7 @@ class GameProfile(QtCore.QObject):
     self.processName = ""
     self.folderName = ""
     self.brandName = ""
-    #self.supportThreads = None
+    #self.otherThreads = None
     self.loader = "" # apploc, etc
     self.launchLanguage = ''
 
@@ -794,7 +794,7 @@ class GameManager(QtCore.QObject):
 
   nameThreadChanged = Signal(long, unicode) # signature, name, won't emit when game closed
   nameThreadDisabled = Signal() # signature, name, won't emit when game closed
-  supportThreadsChanged = Signal(dict) # {long signature:str name}
+  otherThreadsChanged = Signal(dict) # {long signature:str name}
 
   cleared = Signal()
 
@@ -1062,11 +1062,11 @@ class GameManager(QtCore.QObject):
           dwarn("leave: cannot find game thread")
           return
 
-      #if g.supportThreads is None:
+      #if g.otherThreads is None:
       #  dprint("update support threads")
-      #  g.updateSupportThreads()
-      #  if g.supportThreads is None:
-      #    g.supportThreads = {}
+      #  g.updateOtherThreads()
+      #  if g.otherThreads is None:
+      #    g.otherThreads = {}
 
       g.updateGameNames()
 
@@ -1136,8 +1136,8 @@ class GameManager(QtCore.QObject):
         if it:
           if not gameData.launchPath:
             gameData.launchPath = it.launchPath
-          if not gameData.supportThreads:
-            gameData.supportThreads = it.supportThreads
+          if not gameData.otherThreads:
+            gameData.otherThreads = it.otherThreads
           if not gameData.nameThreadSignature:
             gameData.nameThreadSignature = it.nameThreadSignature
           if not gameData.nameThreadName:
@@ -1146,7 +1146,7 @@ class GameManager(QtCore.QObject):
             gameData.nameThreadDisabled = it.nameThreadDisabled
 
       self.nameThreadChanged.emit(gameData.nameThreadSignature, gameData.nameThreadName)
-      self.supportThreadsChanged.emit(gameData.supportThreads)
+      self.otherThreadsChanged.emit(gameData.otherThreads)
 
       task = partial(dataman.manager().loadGame, gameData)
       skevents.runlater(task, 200)
@@ -1353,7 +1353,7 @@ class GameManager(QtCore.QObject):
     self.nameThreadDisabled.emit()
     dprint("leave")
 
-  def setSupportThreads(self, threads):
+  def setOtherThreads(self, threads):
     """
     @param  threads  {long signature:str name} or None
     """
@@ -1364,8 +1364,8 @@ class GameManager(QtCore.QObject):
     if g:
       md5 = g.md5()
       if md5:
-        dataman.manager().setGameSupportThreads(threads, md5=md5)
-    self.supportThreadsChanged.emit(threads)
+        dataman.manager().setGameOtherThreads(threads, md5=md5)
+    self.otherThreadsChanged.emit(threads)
     dprint("leave")
 
   def setCurrentHook(self, hook):

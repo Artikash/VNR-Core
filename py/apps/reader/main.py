@@ -221,7 +221,7 @@ class _MainObject(object):
     ret.encodingChanged.connect(tm.setEncoding)
     ret.threadChanged.connect(tm.setScenarioThread)
 
-    ret.supportThreadsChanged.connect(tm.setSupportThreads)
+    ret.otherThreadsChanged.connect(tm.setOtherThreads)
 
     ret.nameThreadChanged.connect(tm.setNameThread)
     ret.nameThreadDisabled.connect(tm.clearNameThread)
@@ -884,7 +884,7 @@ class _MainObject(object):
 
     ret.nameThreadChanged.connect(gm.setNameThread)
     ret.nameThreadDisabled.connect(gm.disableNameThread)
-    ret.supportThreadsChanged.connect(gm.setSupportThreads)
+    ret.otherThreadsChanged.connect(gm.setOtherThreads)
 
     tm = self.textManager
     tm.cleared.connect(ret.clear)

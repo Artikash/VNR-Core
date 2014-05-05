@@ -36,7 +36,7 @@ FIX_OLD_SUBS = False # whether fix the hashes and contexts for old annotations
 IGNORED_THREAD_TYPE = 0
 SCENARIO_THREAD_TYPE = 1
 NAME_THREAD_TYPE = 2
-SUPPORT_THREAD_TYPE = 3
+OTHER_THREAD_TYPE = 3
 
 class TextThread:
   MAX_DATA_COUNT = 5 # number of data to keep
@@ -106,7 +106,7 @@ class _TextManager(object):
     self.scenarioSignature = 0
     self.scenarioThreadName = "" # str
     self.nameSignature = 0
-    self.supportSignatures = set() # [long signature]
+    self.otherSignatures = set() # [long signature]
     self.resetTexts()
     self.resetHashes()
     self.resetWindowTexts()
@@ -149,8 +149,8 @@ class _TextManager(object):
       yield self.scenarioSignature
     if self.nameSignature:
       yield self.nameSignature
-    if self.supportSignatures:
-      for it in self.supportSignatures:
+    if self.otherSignatures:
+      for it in self.otherSignatures:
         yield it
 
   def invalidWhitelist(self):
@@ -535,7 +535,7 @@ class _TextManager(object):
     if sub:
       self.q.nameTranslationReceived.emit(sub, lang, provider)
 
-  def showSupportText(self, data):
+  def showOtherText(self, data):
     """
     @param  data  bytearray
     """
@@ -743,8 +743,8 @@ class TextManager(QObject):
     except KeyError:
       if signature == d.scenarioSignature:
         tt = SCENARIO_THREAD_TYPE
-      elif d.supportSignatures and signature in d.supportSignatures:
-        tt = SUPPORT_THREAD_TYPE
+      elif d.otherSignatures and signature in d.otherSignatures:
+        tt = OTHER_THREAD_TYPE
       else:
         tt = IGNORED_THREAD_TYPE
       thread = d.threads[signature] = TextThread(name=name, signature=signature, type=tt)
@@ -757,8 +757,8 @@ class TextManager(QObject):
     #  else:
     #    if signature == d.scenarioSignature:
     #      tt = SCENARIO_THREAD_TYPE
-    #    elif signature in d.supportSignatures:
-    #      tt = SUPPORT_THREAD_TYPE
+    #    elif signature in d.otherSignatures:
+    #      tt = OTHER_THREAD_TYPE
     #    else:
     #      tt = IGNORED_THREAD_TYPE
     #    thread = d.threads[signature] = TextThread(name=name, signature=signature, type=tt)
@@ -767,8 +767,8 @@ class TextManager(QObject):
 
     if signature == d.nameSignature:
       d.showNameText(renderedData)
-    elif d.supportSignatures and signature in d.supportSignatures:
-      d.showSupportText(renderedData)
+    elif d.otherSignatures and signature in d.otherSignatures:
+      d.showOtherText(renderedData)
     elif signature == d.scenarioSignature or d.keepsThreads and name == d.scenarioThreadName:
       d.showScenarioText(rawData, renderedData)
     #d.locked = False
@@ -797,8 +797,8 @@ class TextManager(QObject):
       if d.keepsThreads:
         texthook.global_().setKeptThreadName(name)
 
-    if d.supportSignatures:
-      try: d.supportSignatures.remove(signature)
+    if d.otherSignatures:
+      try: d.otherSignatures.remove(signature)
       except KeyError: pass
     if d.nameSignature == signature:
       t = d.threads[signature]
@@ -825,8 +825,8 @@ class TextManager(QObject):
         d.updateThread(name=name, signature=signature, type=NAME_THREAD_TYPE)
 
     if signature:
-      if d.supportSignatures:
-        try: d.supportSignatures.remove(signature)
+      if d.otherSignatures:
+        try: d.otherSignatures.remove(signature)
         except KeyError: pass
       if d.scenarioSignature == signature:
         t = d.threads[signature]
@@ -834,22 +834,22 @@ class TextManager(QObject):
           t.type = IGNORED_THREAD_TYPE
     d.invalidWhitelist()
 
-  def setSupportThreads(self, threads):
+  def setOtherThreads(self, threads):
     """
     @param  threads  {long signature:str name}
     """
     d = self.__d
-    if d.supportSignatures:
-      for sig in d.supportSignatures:
+    if d.otherSignatures:
+      for sig in d.otherSignatures:
         d.threads[sig].type = IGNORED_THREAD_TYPE
-      d.supportSignatures.clear()
+      d.otherSignatures.clear()
     for sig, name in threads.iteritems():
       if sig == d.scenarioSignature:
         d.scenarioSignature = 0
       if sig == d.nameSignature:
         d.nameSignature = 0
-      d.supportSignatures.add(sig)
-      d.updateThread(name=name, signature=sig, type=SUPPORT_THREAD_TYPE)
+      d.otherSignatures.add(sig)
+      d.updateThread(name=name, signature=sig, type=OTHER_THREAD_TYPE)
     d.invalidWhitelist()
 
   def scenarioSignature(self):
@@ -864,11 +864,11 @@ class TextManager(QObject):
     """
     return self.__d.nameSignature
 
-  def supportSignatures(self):
+  def otherSignatures(self):
     """
     @return  set(long signature)
     """
-    return self.__d.supportSignatures
+    return self.__d.otherSignatures
 
   def hasThreads(self):
     return bool(self.__d.threads)

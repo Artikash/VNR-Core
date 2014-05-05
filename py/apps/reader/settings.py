@@ -1176,21 +1176,61 @@ class Settings(QSettings):
       self.setValue('WindowTextVisible', value)
       self.windowTextVisibleChanged.emit(value)
 
-  embeddedTranslationEnabledChanged = Signal(bool)
-  def isEmbeddedTranslationEnabled(self):
-    return to_bool(self.value('EmbeddedTranslation', True))
-  def setEmbeddedTranslationEnabled(self, value):
-    if value != self.isEmbeddedTranslationEnabled():
-      self.setValue('EmbeddedTranslation', value)
-      self.embeddedTranslationEnabledChanged.emit(value)
+  windowTranscodingEnabledChanged = Signal(bool)
+  def isWindowTranscodingEnabled(self):
+    return to_bool(self.value('WindowTranscoding', True))
+  def setWindowTranscodingEnabled(self, value):
+    if value != self.isWindowTranscodingEnabled():
+      self.setValue('WindowTranscoding', value)
+      self.windowTranscodingEnabledChanged.emit(value)
 
-  embeddedTextVisibleChanged = Signal(bool)
-  def isEmbeddedTextVisible(self):
-    return to_bool(self.value('EmbeddedTextVisible', True))
-  def setEmbeddedTextVisible(self, value):
-    if value != self.isEmbeddedTextVisible():
-      self.setValue('EmbeddedTextVisible', value)
-      self.embeddedTextVisibleChanged.emit(value)
+  embeddedScenarioTranslationEnabledChanged = Signal(bool)
+  def isEmbeddedScenarioTranslationEnabled(self):
+    return to_bool(self.value('EmbeddedScenarioTranslation', True))
+  def setEmbeddedScenarioTranslationEnabled(self, value):
+    if value != self.isEmbeddedScenarioTranslationEnabled():
+      self.setValue('EmbeddedScenarioTranslation', value)
+      self.embeddedScenarioTranslationEnabledChanged.emit(value)
+
+  embeddedScenarioVisibleChanged = Signal(bool)
+  def isEmbeddedScenarioVisible(self):
+    return to_bool(self.value('EmbeddedScenarioVisible', True))
+  def setEmbeddedScenarioVisible(self, value):
+    if value != self.isEmbeddedScenarioVisible():
+      self.setValue('EmbeddedScenarioVisible', value)
+      self.embeddedScenarioVisibleChanged.emit(value)
+
+  embeddedNameTranslationEnabledChanged = Signal(bool)
+  def isEmbeddedNameTranslationEnabled(self):
+    return to_bool(self.value('EmbeddedNameTranslation', True))
+  def setEmbeddedNameTranslationEnabled(self, value):
+    if value != self.isEmbeddedNameTranslationEnabled():
+      self.setValue('EmbeddedNameTranslation', value)
+      self.embeddedNameTranslationEnabledChanged.emit(value)
+
+  embeddedNameVisibleChanged = Signal(bool)
+  def isEmbeddedNameVisible(self):
+    return to_bool(self.value('EmbeddedNameVisible', True))
+  def setEmbeddedNameVisible(self, value):
+    if value != self.isEmbeddedNameVisible():
+      self.setValue('EmbeddedNameVisible', value)
+      self.embeddedNameVisibleChanged.emit(value)
+
+  embeddedOtherTranslationEnabledChanged = Signal(bool)
+  def isEmbeddedOtherTranslationEnabled(self):
+    return to_bool(self.value('EmbeddedOtherTranslation', True))
+  def setEmbeddedOtherTranslationEnabled(self, value):
+    if value != self.isEmbeddedOtherTranslationEnabled():
+      self.setValue('EmbeddedOtherTranslation', value)
+      self.embeddedOtherTranslationEnabledChanged.emit(value)
+
+  embeddedOtherVisibleChanged = Signal(bool)
+  def isEmbeddedOtherVisible(self):
+    return to_bool(self.value('EmbeddedOtherVisible', True))
+  def setEmbeddedOtherVisible(self, value):
+    if value != self.isEmbeddedOtherVisible():
+      self.setValue('EmbeddedOtherVisible', value)
+      self.embeddedOtherVisibleChanged.emit(value)
 
   #windowHookEnabledChanged = Signal(bool)
   #def isWindowHookEnabled(self):

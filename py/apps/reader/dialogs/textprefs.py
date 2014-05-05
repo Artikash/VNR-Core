@@ -28,7 +28,7 @@ THREADLAYOUT_COLUMN_COUNT = 2
 
 SS_TEXTEDIT_SCENE = "QTextEdit{color:blue}" # btn-primary
 SS_TEXTEDIT_NAME = "QTextEdit{color:green}" # btn-success
-SS_TEXTEDIT_SUPPORT = "QTextEdit{color:steelblue}" # btn-info
+SS_TEXTEDIT_OTHER = "QTextEdit{color:steelblue}" # btn-info
 #SS_TEXTEDIT_IGNORED = "QTextEdit{text-decoration:line-through}" # btn-danger
 SS_TEXTEDIT_IGNORED = "" # btn-danger
 SS_TEXTEDIT_HOOK = "QTextEdit{color:red}"
@@ -56,7 +56,7 @@ def _gameprofile():
 class _TextThreadView(object):
   SCENARIO_BUTTON_ROW = 0
   NAME_BUTTON_ROW = 1
-  SUPPORT_BUTTON_ROW = 2
+  OTHER_BUTTON_ROW = 2
   IGNORE_BUTTON_ROW = 3
 
   def __init__(self, q, name, signature):
@@ -108,7 +108,7 @@ class _TextThreadView(object):
         b))
 
     b = self.buttonRow.addButton(tr_("other"),
-        tip=my.tr("This is extra scenario"))   # supportive
+        tip=my.tr("This is extra scenario"))   # other
     skqss.class_(b, 'btn btn-default btn-sm')
     b.toggled.connect(partial(lambda b, value:
         skqss.toggleclass(b, 'btn-info', value),
@@ -157,7 +157,7 @@ class _TextThreadView(object):
     else:
       ss = (SS_TEXTEDIT_SCENE if row == _TextThreadView.SCENARIO_BUTTON_ROW else
             SS_TEXTEDIT_NAME if row == _TextThreadView.NAME_BUTTON_ROW else
-            SS_TEXTEDIT_SUPPORT if row == _TextThreadView.SUPPORT_BUTTON_ROW else
+            SS_TEXTEDIT_OTHER if row == _TextThreadView.OTHER_BUTTON_ROW else
             SS_TEXTEDIT_IGNORED)
     self.textEdit.setStyleSheet(ss)
 
@@ -194,7 +194,7 @@ class TextThreadView(QtWidgets.QWidget):
     row = self.__d.buttonRow.currentIndex()
     return (textman.SCENARIO_THREAD_TYPE if row == _TextThreadView.SCENARIO_BUTTON_ROW else
             textman.NAME_THREAD_TYPE if row == _TextThreadView.NAME_BUTTON_ROW else
-            textman.SUPPORT_THREAD_TYPE if row == _TextThreadView.SUPPORT_BUTTON_ROW else
+            textman.OTHER_THREAD_TYPE if row == _TextThreadView.OTHER_BUTTON_ROW else
             textman.IGNORED_THREAD_TYPE)
 
   def setThreadType(self, type):
@@ -205,7 +205,7 @@ class TextThreadView(QtWidgets.QWidget):
       self.__d.buttonRow.setCurrentIndex(
         _TextThreadView.SCENARIO_BUTTON_ROW if type == textman.SCENARIO_THREAD_TYPE else
         _TextThreadView.NAME_BUTTON_ROW if type == textman.NAME_THREAD_TYPE else
-        _TextThreadView.SUPPORT_BUTTON_ROW if type == textman.SUPPORT_THREAD_TYPE else
+        _TextThreadView.OTHER_BUTTON_ROW if type == textman.OTHER_THREAD_TYPE else
         _TextThreadView.IGNORE_BUTTON_ROW
       )
       self.__d.updateStyleSheet()
@@ -566,12 +566,12 @@ class _TextTab(object):
             q.nameThreadChanged.emit,
             namesig, name))
 
-    sig_set = set(self._supportSignatures())
-    if sig_set != tm.supportSignatures():
-      dprint("support threads changed")
+    sig_set = set(self._otherSignatures())
+    if sig_set != tm.otherSignatures():
+      dprint("other threads changed")
       changed = True
       skevents.runlater(partial(
-          q.supportThreadsChanged.emit,
+          q.otherThreadsChanged.emit,
           {sig:threads[sig].name for sig in sig_set}))
 
     if sig:
@@ -758,10 +758,10 @@ class _TextTab(object):
         return sig
     return 0
 
-  def _supportSignatures(self):
+  def _otherSignatures(self):
     return [sig
       for sig, view in self._threadViews.iteritems()
-      if view.threadType() == textman.SUPPORT_THREAD_TYPE
+      if view.threadType() == textman.OTHER_THREAD_TYPE
     ]
 
   def _encoding(self):
@@ -792,7 +792,7 @@ class TextTab(QtWidgets.QWidget):
   scenarioThreadChanged = Signal(long, unicode, unicode) # signature, name, encoding
   nameThreadChanged = Signal(long, unicode) # signature, name
   nameThreadDisabled = Signal()
-  supportThreadsChanged = Signal(dict) # {long signature:str name}
+  otherThreadsChanged = Signal(dict) # {long signature:str name}
 
   def clear(self): self.__d.clear()
   def load(self): self.__d.load()
@@ -861,7 +861,7 @@ class _TextPrefsDialog(object):
     ret.scenarioThreadChanged.connect(q.scenarioThreadChanged)
     ret.nameThreadChanged.connect(q.nameThreadChanged)
     ret.nameThreadDisabled.connect(q.nameThreadDisabled)
-    ret.supportThreadsChanged.connect(q.supportThreadsChanged)
+    ret.otherThreadsChanged.connect(q.otherThreadsChanged)
     ret.removesRepeatTextChanged.connect(q.removesRepeatTextChanged)
     ret.ignoresRepeatTextChanged.connect(q.ignoresRepeatTextChanged)
     ret.keepsSpaceChanged.connect(q.keepsSpaceChanged)
@@ -924,7 +924,7 @@ class TextPrefsDialog(QtWidgets.QMainWindow):
   scenarioThreadChanged = Signal(long, unicode, unicode) # signature, name, encoding
   nameThreadChanged = Signal(long, unicode) # signature, name
   nameThreadDisabled = Signal()
-  supportThreadsChanged = Signal(dict) # {long signature:str name}
+  otherThreadsChanged = Signal(dict) # {long signature:str name}
   removesRepeatTextChanged = Signal(bool)
   ignoresRepeatTextChanged = Signal(bool)
   keepsSpaceChanged = Signal(bool)
