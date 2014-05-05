@@ -999,7 +999,7 @@ class GameManager(QtCore.QObject):
           if agentEngine.encoding() != 'utf-16':
             import trman
             launchLanguage = trman.manager().guessTranslationLanguage()
-            if launchLanguage in ('en', 'ja'):
+            if launchLanguage in config.SJIS_LANGUAGE_SET:
               launchLanguage = ''
             g.launchLanguage = launchLanguage
 
