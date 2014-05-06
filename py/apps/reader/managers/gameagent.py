@@ -121,13 +121,15 @@ class _GameAgent(object):
     q.processAttached.connect(self._onAttached)
 
     self.clear()
+    def f():pass
 
     ss = settings.global_()
     for k,v in _SETTINGS_DICT.iteritems():
       sig = getattr(ss, k + 'Changed')
+
       sig.connect(partial(lambda k, t:
-        self.connectedPid and self.sendSetting(k, t))
-      , k)
+        self.connectedPid and self.sendSetting(k, t)
+      , k))
 
   def clear(self):
     self.injectedPid = 0 # long

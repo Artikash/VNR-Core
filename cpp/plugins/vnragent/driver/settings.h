@@ -46,6 +46,7 @@ public slots:
   void setEmbeddedNameVisible(bool t);
   void setEmbeddedNameTranslationEnabled(bool t);
   void setEmbeddedOtherVisible(bool t);
+  void setEmbeddedOtherTranslationEnabled(bool t);
 
 signals:
   void loadFinished(); // emit after load() is invoked

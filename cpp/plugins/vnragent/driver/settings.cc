@@ -54,10 +54,8 @@ Settings::~Settings()
   void Settings::setter(argtype value)  \
   { if (d_->property != value) { d_->property = value; emit property##Changed(value); } }
 
-#define DEFINE_STRING_PROPERTY(property, getter, setter)    DEFINE_PROPERTY(property, setter, getter, QString, const QString &)
-#define DEFINE_BOOL_PROPERTY(property, getter, setter)      DEFINE_PROPERTY(property, setter, getter, bool, bool)
-
-DEFINE_BOOL_PROPERTY(windowTranslationEnabled, isWindowTranslationEnabled, setWindowTranslationEnabled)
+#define DEFINE_STRING_PROPERTY(property, getter, setter)    DEFINE_PROPERTY(property, getter, setter, QString, const QString &)
+#define DEFINE_BOOL_PROPERTY(property, getter, setter)      DEFINE_PROPERTY(property, getter, setter, bool, bool)
 
 DEFINE_BOOL_PROPERTY(windowTranslationEnabled, isWindowTranslationEnabled, setWindowTranslationEnabled)
 DEFINE_BOOL_PROPERTY(windowTranscodingEnabled, isWindowTranscodingEnabled, setWindowTranscodingEnabled)
