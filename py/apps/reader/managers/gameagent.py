@@ -97,10 +97,13 @@ _SETTINGS_DICT = {
 
   'embeddedScenarioVisible': 'isEmbeddedScenarioVisible',
   'embeddedScenarioTranslationEnabled': 'isEmbeddedScenarioTranslationEnabled',
+  'embeddedScenarioTranscodingEnabled': 'isEmbeddedScenarioTranscodingEnabled',
   'embeddedNameVisible': 'isEmbeddedNameVisible',
   'embeddedNameTranslationEnabled': 'isEmbeddedNameTranslationEnabled',
+  'embeddedNameTranscodingEnabled': 'isEmbeddedNameTranscodingEnabled',
   'embeddedOtherVisible': 'isEmbeddedOtherVisible',
   'embeddedOtherTranslationEnabled': 'isEmbeddedOtherTranslationEnabled',
+  'embeddedOtherTranscodingEnabled': 'isEmbeddedOtherTranscodingEnabled',
 }
 
 @Q_Q
@@ -134,6 +137,7 @@ class _GameAgent(object):
   def clear(self):
     self.injectedPid = 0 # long
     self.engineName = '' # str
+    self.gameEncoding = 'shift-jis' # placeholder
     #self.gameLanguage = 'ja' # str
     #self.gameEncoding = '' # str
     #self.userLanguage = 'en' # str
@@ -161,6 +165,7 @@ class _GameAgent(object):
   def sendSettings(self):
     ss = settings.global_()
     data = {k:apply(getattr(ss, v)) for k,v in _SETTINGS_DICT.iteritems()}
+    data['gameEncoding'] = self.gameEncoding
     if config.APP_DEBUG:
       data['debug'] = True
     self.rpc.setAgentSettings(data)

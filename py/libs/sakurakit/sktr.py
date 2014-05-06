@@ -179,6 +179,7 @@ class sakurakit(QObject):
       self.tr("Site"),
       self.tr("Submit"),
       self.tr("Translate"),
+      self.tr("Transcode"),
       self.tr("Test"),
       self.tr("Type"),
       self.tr("Quit"),

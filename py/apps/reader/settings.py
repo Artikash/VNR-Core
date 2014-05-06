@@ -1193,11 +1193,19 @@ class Settings(QSettings):
   # Whether translate embedded scenario text
   embeddedScenarioTranslationEnabledChanged = Signal(bool)
   def isEmbeddedScenarioTranslationEnabled(self):
-    return to_bool(self.value('EmbeddedScenarioTranslation', False))
+    return to_bool(self.value('EmbeddedScenarioTranslation', True))
   def setEmbeddedScenarioTranslationEnabled(self, value):
     if value != self.isEmbeddedScenarioTranslationEnabled():
       self.setValue('EmbeddedScenarioTranslation', value)
       self.embeddedScenarioTranslationEnabledChanged.emit(value)
+
+  embeddedScenarioTranscodingEnabledChanged = Signal(bool)
+  def isEmbeddedScenarioTranscodingEnabled(self):
+    return to_bool(self.value('EmbeddedScenarioTranscoding', True))
+  def setEmbeddedScenarioTranscodingEnabled(self, value):
+    if value != self.isEmbeddedScenarioTranscodingEnabled():
+      self.setValue('EmbeddedScenarioTranscoding', value)
+      self.embeddedScenarioTranscodingEnabledChanged.emit(value)
 
   # Whether delete scenario text
   embeddedScenarioVisibleChanged = Signal(bool)
@@ -1210,11 +1218,19 @@ class Settings(QSettings):
 
   embeddedNameTranslationEnabledChanged = Signal(bool)
   def isEmbeddedNameTranslationEnabled(self):
-    return to_bool(self.value('EmbeddedNameTranslation', False))
+    return to_bool(self.value('EmbeddedNameTranslation', True))
   def setEmbeddedNameTranslationEnabled(self, value):
     if value != self.isEmbeddedNameTranslationEnabled():
       self.setValue('EmbeddedNameTranslation', value)
       self.embeddedNameTranslationEnabledChanged.emit(value)
+
+  embeddedNameTranscodingEnabledChanged = Signal(bool)
+  def isEmbeddedNameTranscodingEnabled(self):
+    return to_bool(self.value('EmbeddedNameTranscoding', True))
+  def setEmbeddedNameTranscodingEnabled(self, value):
+    if value != self.isEmbeddedNameTranscodingEnabled():
+      self.setValue('EmbeddedNameTranscoding', value)
+      self.embeddedNameTranscodingEnabledChanged.emit(value)
 
   embeddedNameVisibleChanged = Signal(bool)
   def isEmbeddedNameVisible(self):
@@ -1231,6 +1247,14 @@ class Settings(QSettings):
     if value != self.isEmbeddedOtherTranslationEnabled():
       self.setValue('EmbeddedOtherTranslation', value)
       self.embeddedOtherTranslationEnabledChanged.emit(value)
+
+  embeddedOtherTranscodingEnabledChanged = Signal(bool)
+  def isEmbeddedOtherTranscodingEnabled(self):
+    return to_bool(self.value('EmbeddedOtherTranscoding', True))
+  def setEmbeddedOtherTranscodingEnabled(self, value):
+    if value != self.isEmbeddedOtherTranscodingEnabled():
+      self.setValue('EmbeddedOtherTranscoding', value)
+      self.embeddedOtherTranscodingEnabledChanged.emit(value)
 
   # This method is not used, though
   embeddedOtherVisibleChanged = Signal(bool)

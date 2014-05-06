@@ -4527,7 +4527,7 @@ class _EngineTab(object):
   def engineInfoLabel(self):
     ret = QtWidgets.QLabel("%s: %s" % (
       tr_("Note"),
-      my.tr("For SHIFT-JIS games, displaying non SHIFT-JIS compatible language requires AppLocale and might only work on Japanese Windows."),
+      my.tr("For SHIFT-JIS games, displaying non SHIFT-JIS compatible language will disable the game launchers such as Locale Emulator."),
     ))
     ret.setWordWrap(True)
     return ret
@@ -4536,11 +4536,14 @@ class _EngineTab(object):
   def engineDialogGroup(self):
     ret = QtWidgets.QButtonGroup()
 
+    self.dialogDisableButton = QtWidgets.QRadioButton(tr_("Disable"))
+    ret.addButton(self.dialogDisableButton)
+
+    self.dialogTranscodeButton = QtWidgets.QRadioButton(tr_("Transcode"))
+    ret.addButton(self.dialogTranscodeButton)
+
     self.dialogTranslateButton = QtWidgets.QRadioButton(tr_("Translate"))
     ret.addButton(self.dialogTranslateButton)
-
-    self.dialogDisableButton = QtWidgets.QRadioButton(my.tr("Do not translate"))
-    ret.addButton(self.dialogDisableButton)
 
     self.dialogHideButton = QtWidgets.QRadioButton(tr_("Hide"))
     ret.addButton(self.dialogHideButton)
@@ -4555,6 +4558,8 @@ class _EngineTab(object):
       self.dialogHideButton.setChecked(True)
     elif ss.isEmbeddedScenarioTranslationEnabled():
       self.dialogTranslateButton.setChecked(True)
+    elif ss.isEmbeddedScenarioTranscodingEnabled():
+      self.dialogTranscodeButton.setChecked(True)
     else:
       self.dialogDisableButton.setChecked(True)
 
@@ -4562,23 +4567,33 @@ class _EngineTab(object):
     ss = settings.global_()
     if self.dialogTranslateButton.isChecked():
       ss.setEmbeddedScenarioVisible(True)
+      ss.setEmbeddedScenarioTranscodingEnabled(True)
       ss.setEmbeddedScenarioTranslationEnabled(True)
+    elif self.dialogTranscodeButton.isChecked():
+      ss.setEmbeddedScenarioVisible(True)
+      ss.setEmbeddedScenarioTranscodingEnabled(True)
+      ss.setEmbeddedScenarioTranslationEnabled(False)
     elif self.dialogDisableButton.isChecked():
       ss.setEmbeddedScenarioVisible(True)
+      ss.setEmbeddedScenarioTranscodingEnabled(False)
       ss.setEmbeddedScenarioTranslationEnabled(False)
     elif self.dialogHideButton.isChecked():
       ss.setEmbeddedScenarioVisible(False)
+      ss.setEmbeddedScenarioTranscodingEnabled(False)
       ss.setEmbeddedScenarioTranslationEnabled(False)
 
   @memoizedproperty
   def engineNameGroup(self):
     ret = QtWidgets.QButtonGroup()
 
+    self.nameDisableButton = QtWidgets.QRadioButton(tr_("Disable"))
+    ret.addButton(self.nameDisableButton)
+
+    self.nameTranscodeButton = QtWidgets.QRadioButton(tr_("Transcode"))
+    ret.addButton(self.nameTranscodeButton)
+
     self.nameTranslateButton = QtWidgets.QRadioButton(tr_("Translate"))
     ret.addButton(self.nameTranslateButton)
-
-    self.nameDisableButton = QtWidgets.QRadioButton(my.tr("Do not translate"))
-    ret.addButton(self.nameDisableButton)
 
     self.nameHideButton = QtWidgets.QRadioButton(tr_("Hide"))
     ret.addButton(self.nameHideButton)
@@ -4593,6 +4608,8 @@ class _EngineTab(object):
       self.nameHideButton.setChecked(True)
     elif ss.isEmbeddedNameTranslationEnabled():
       self.nameTranslateButton.setChecked(True)
+    elif ss.isEmbeddedNameTranscodingEnabled():
+      self.nameTranscodeButton.setChecked(True)
     else:
       self.nameDisableButton.setChecked(True)
 
@@ -4600,23 +4617,33 @@ class _EngineTab(object):
     ss = settings.global_()
     if self.nameTranslateButton.isChecked():
       ss.setEmbeddedNameVisible(True)
+      ss.setEmbeddedNameTranscodingEnabled(True)
       ss.setEmbeddedNameTranslationEnabled(True)
+    elif self.nameTranscodeButton.isChecked():
+      ss.setEmbeddedNameVisible(True)
+      ss.setEmbeddedNameTranscodingEnabled(True)
+      ss.setEmbeddedNameTranslationEnabled(False)
     elif self.nameDisableButton.isChecked():
       ss.setEmbeddedNameVisible(True)
+      ss.setEmbeddedNameTranscodingEnabled(False)
       ss.setEmbeddedNameTranslationEnabled(False)
     elif self.nameHideButton.isChecked():
       ss.setEmbeddedNameVisible(False)
+      ss.setEmbeddedNameTranscodingEnabled(False)
       ss.setEmbeddedNameTranslationEnabled(False)
 
   @memoizedproperty
   def engineOtherGroup(self):
     ret = QtWidgets.QButtonGroup()
 
+    self.otherDisableButton = QtWidgets.QRadioButton(tr_("Disable"))
+    ret.addButton(self.otherDisableButton)
+
+    self.otherTranscodeButton = QtWidgets.QRadioButton(tr_("Transcode"))
+    ret.addButton(self.otherTranscodeButton)
+
     self.otherTranslateButton = QtWidgets.QRadioButton(tr_("Translate"))
     ret.addButton(self.otherTranslateButton)
-
-    self.otherDisableButton = QtWidgets.QRadioButton(my.tr("Do not translate"))
-    ret.addButton(self.otherDisableButton)
 
     #self.otherHideButton = QtWidgets.QRadioButton(tr_("Hide"))
     #ret.addButton(self.otherHideButton)
@@ -4631,6 +4658,8 @@ class _EngineTab(object):
     #  self.otherHideButton.setChecked(True)
     if ss.isEmbeddedOtherTranslationEnabled():
       self.otherTranslateButton.setChecked(True)
+    elif ss.isEmbeddedOtherTranscodingEnabled():
+      self.otherTranscodeButton.setChecked(True)
     else:
       self.otherDisableButton.setChecked(True)
 
@@ -4638,12 +4667,19 @@ class _EngineTab(object):
     ss = settings.global_()
     if self.otherTranslateButton.isChecked():
       ss.setEmbeddedOtherVisible(True)
+      ss.setEmbeddedOtherTranscodingEnabled(True)
       ss.setEmbeddedOtherTranslationEnabled(True)
+    elif self.otherTranscodeButton.isChecked():
+      ss.setEmbeddedOtherVisible(True)
+      ss.setEmbeddedOtherTranscodingEnabled(True)
+      ss.setEmbeddedOtherTranslationEnabled(False)
     elif self.otherDisableButton.isChecked():
       ss.setEmbeddedOtherVisible(True)
+      ss.setEmbeddedOtherTranscodingEnabled(False)
       ss.setEmbeddedOtherTranslationEnabled(False)
     #elif self.otherHideButton.isChecked():
     #  ss.setEmbeddedOtherVisible(False)
+    #  ss.setEmbeddedOtherTranscodingEnabled(False)
     #  ss.setEmbeddedOtherTranslationEnabled(False)
 
 class EngineTab(QtWidgets.QDialog):

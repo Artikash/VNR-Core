@@ -3,6 +3,9 @@
 
 #include "driver/settings.h"
 
+#define DEBUG "settings"
+#include "sakurakit/skdebug.h"
+
 /** Private class */
 
 class SettingsPrivate
@@ -13,10 +16,15 @@ public:
      , windowTextVisible
      , embeddedScenarioVisible
      , embeddedScenarioTranslationEnabled
+     , embeddedScenarioTranscodingEnabled
      , embeddedNameVisible
      , embeddedNameTranslationEnabled
+     , embeddedNameTranscodingEnabled
      , embeddedOtherVisible
-     , embeddedOtherTranslationEnabled;
+     , embeddedOtherTranslationEnabled
+     , embeddedOtherTranscodingEnabled;
+
+  QString gameEncoding;
 
   SettingsPrivate()
      : windowTranslationEnabled(false)
@@ -24,10 +32,14 @@ public:
      , windowTextVisible(false)
      , embeddedScenarioVisible(false)
      , embeddedScenarioTranslationEnabled(false)
+     , embeddedScenarioTranscodingEnabled(false)
      , embeddedNameVisible(false)
      , embeddedNameTranslationEnabled(false)
+     , embeddedNameTranscodingEnabled(false)
      , embeddedOtherVisible(false)
      , embeddedOtherTranslationEnabled(false)
+     , embeddedOtherTranscodingEnabled(false)
+     , gameEncoding("shift-jis")
   {}
 };
 
@@ -67,6 +79,8 @@ DEFINE_BOOL_PROPERTY(embeddedNameTranslationEnabled, isEmbeddedNameTranslationEn
 DEFINE_BOOL_PROPERTY(embeddedOtherVisible, isEmbeddedOtherVisible, setEmbeddedOtherVisible)
 DEFINE_BOOL_PROPERTY(embeddedOtherTranslationEnabled, isEmbeddedOtherTranslationEnabled, setEmbeddedOtherTranslationEnabled)
 
+DEFINE_STRING_PROPERTY(gameEncoding, gameEncoding, setGameEncoding)
+
 // Groupped settings
 
 void Settings::disable()
@@ -86,9 +100,12 @@ void Settings::disable()
 bool Settings::isWindowDriverNeeded() const
 { return isWindowTranslationEnabled() || isWindowTranscodingEnabled(); }
 
+bool Settings::isEmbeddedTextNeeded() const { return true; } // placeholder
+
 bool Settings::isEmbedDriverNeeded() const
 {
-  return isEmbeddedScenarioTranslationEnabled() || !isEmbeddedScenarioVisible()
+  return isEmbeddedTextNeeded()
+      || isEmbeddedScenarioTranslationEnabled() || !isEmbeddedScenarioVisible()
       || isEmbeddedNameTranslationEnabled() || !isEmbeddedNameVisible()
       || isEmbeddedOtherTranslationEnabled() || !isEmbeddedOtherVisible();
 }
@@ -103,15 +120,19 @@ void Settings::load(const QString &json)
 {
   enum {
     H_debug = 6994359 // "debug"
+    , H_gameEncoding = 156622791
     , H_windowTranslationEnabled = 79059828
     , H_windowTranscodingEnabled = 219567700
     , H_windowTextVisibleChange = 190229845
     , H_embeddedScenarioVisible = 207043173
     , H_embeddedScenarioTranslationEnabled = 132391348
+    , H_embeddedScenarioTranscodingEnabled = 105135476
     , H_embeddedNameVisible = 180590501
     , H_embeddedNameTranslationEnabled = 239147220
+    , H_embeddedNameTranscodingEnabled = 19782804
     , H_embeddedOtherVisible = 32685349
     , H_embeddedOtherTranslationEnabled = 9290068
+    , H_embeddedOtherTranscodingEnabled = 19782804
   };
 
   QVariant data = QxtJSON::parse(json);
@@ -126,16 +147,20 @@ void Settings::load(const QString &json)
     bool bValue = value == "true";
     switch (qHash(it.key())) {
     case H_debug: if (bValue) Util::installDebugMsgHandler(); break;
+    case H_gameEncoding: setGameEncoding(value); break;
     case H_windowTranslationEnabled: setWindowTranslationEnabled(bValue); break;
     case H_windowTranscodingEnabled: setWindowTranscodingEnabled(bValue); break;
     case H_windowTextVisibleChange: setWindowTextVisible(bValue); break;
     case H_embeddedScenarioVisible: setEmbeddedScenarioVisible(bValue); break;
     case H_embeddedScenarioTranslationEnabled: setEmbeddedScenarioTranslationEnabled(bValue); break;
+    case H_embeddedScenarioTranscodingEnabled: setEmbeddedScenarioTranscodingEnabled(bValue); break;
     case H_embeddedNameVisible: setEmbeddedNameVisible(bValue); break;
     case H_embeddedNameTranslationEnabled: setEmbeddedNameTranslationEnabled(bValue); break;
+    case H_embeddedNameTranscodingEnabled: setEmbeddedNameTranscodingEnabled(bValue); break;
     case H_embeddedOtherVisible: setEmbeddedOtherVisible(bValue); break;
     case H_embeddedOtherTranslationEnabled: setEmbeddedOtherTranslationEnabled(bValue); break;
-    default: ;
+    case H_embeddedOtherTranscodingEnabled: setEmbeddedOtherTranscodingEnabled(bValue); break;
+    default: DOUT("warning: unknown key:" << it.key());
     }
   }
 

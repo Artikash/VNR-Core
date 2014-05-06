@@ -24,15 +24,22 @@ public:
   bool isEmbedDriverNeeded() const;
   bool isWindowDriverNeeded() const;
 
+  bool isEmbeddedTextNeeded() const; // Whether send embedded text; placeholder that always returns true
+
   bool isWindowTranslationEnabled() const; // Whether translate text
   bool isWindowTranscodingEnabled() const; // Whether fix text encoding
   bool isWindowTextVisible() const; // Whether display text after the translation
   bool isEmbeddedScenarioVisible() const; // Whether disable scenario text
   bool isEmbeddedScenarioTranslationEnabled() const; // Whether translate scenario text
+  bool isEmbeddedScenarioTranscodingEnabled() const; // Whether translate scenario text
   bool isEmbeddedNameVisible() const;
   bool isEmbeddedNameTranslationEnabled() const;
+  bool isEmbeddedNameTranscodingEnabled() const;
   bool isEmbeddedOtherVisible() const;
   bool isEmbeddedOtherTranslationEnabled() const;
+  bool isEmbeddedOtherTranscodingEnabled() const;
+
+  QString gameEncoding() const;
 
 public slots:
   void load(const QString &json);
@@ -43,10 +50,15 @@ public slots:
   void setWindowTextVisible(bool t);
   void setEmbeddedScenarioVisible(bool t);
   void setEmbeddedScenarioTranslationEnabled(bool t);
+  void setEmbeddedScenarioTranscodingEnabled(bool t);
   void setEmbeddedNameVisible(bool t);
   void setEmbeddedNameTranslationEnabled(bool t);
+  void setEmbeddedNameTranscodingEnabled(bool t);
   void setEmbeddedOtherVisible(bool t);
   void setEmbeddedOtherTranslationEnabled(bool t);
+  void setEmbeddedOtherTranscodingEnabled(bool t);
+
+  void setGameEncoding(const QString &v);
 
 signals:
   void loadFinished(); // emit after load() is invoked
@@ -56,10 +68,15 @@ signals:
   void windowTextVisibleChanged(bool t);
   void embeddedScenarioVisibleChanged(bool t);
   void embeddedScenarioTranslationEnabledChanged(bool t);
+  void embeddedScenarioTranscodingEnabledChanged(bool t);
   void embeddedNameVisibleChanged(bool t);
   void embeddedNameTranslationEnabledChanged(bool t);
+  void embeddedNameTranscodingEnabledChanged(bool t);
   void embeddedOtherVisibleChanged(bool t);
   void embeddedOtherTranslationEnabledChanged(bool t);
+  void embeddedOtherTranscodingEnabledChanged(bool t);
+
+  void gameEncodingChanged(QString v);
 };
 
 // EOF
