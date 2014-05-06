@@ -45,7 +45,7 @@ RpcClientPrivate::RpcClientPrivate(Q *q)
 
 #ifdef VNRAGENT_ENABLE_RECONNECT
   reconnectTimer = new QTimer(q);
-  reconnectTimer->setSingleShot(false); // until reconnect successfully
+  reconnectTimer->setSingleShot(true); // until reconnect successfully
   reconnectTimer->setInterval(ReconnectInterval);
   connect(reconnectTimer, SIGNAL(timeout()), SLOT(reconnect()));
 
@@ -119,6 +119,9 @@ void RpcClientPrivate::onDataReceived(const QByteArray &data)
 
 void RpcClientPrivate::onCall(const QStringList &args)
 {
+  if (args.isEmpty())
+    return;
+
   enum { // pre-computed qHash(QString) values
     H_PING          = 487495        // "ping"
     , H_DETACH      = 111978392     // "detach"
@@ -137,9 +140,6 @@ void RpcClientPrivate::onCall(const QStringList &args)
     //, H_ENG_CLEAR   = 230943490     // "engine.clear"
     , H_ENG_TEXT    = 81604852      // "engine.text"
   };
-
-  if (args.isEmpty())
-    return;
 
   switch (qHash(args.first())) {
   case H_PING:          break;

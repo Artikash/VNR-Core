@@ -110,7 +110,7 @@ void MainDriverPrivate::unload()
 
 void MainDriverPrivate::onLoadFinished()
 {
-  if (!eng)
+  if (eng)
     eng->setEnable(settings->isEmbedDriverNeeded());
   else if (settings->isEmbedDriverNeeded()){
     createEmbedDriver();

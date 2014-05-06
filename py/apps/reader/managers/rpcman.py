@@ -223,7 +223,7 @@ class _RpcServer(object):
         self._onWindowTexts(params[0])
     elif cmd == 'agent.engine.name':
       if params:
-        self.q.engineReceived.emit(parans[0])
+        self.q.engineReceived.emit(params[0])
     elif cmd == 'agent.engine.text':
       if len(params) == 4:
         self._onEngineText(*params)
