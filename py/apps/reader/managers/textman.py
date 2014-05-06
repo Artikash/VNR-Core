@@ -958,7 +958,8 @@ class TextManager(QObject):
   ## Window translation ##
 
   windowTranslationChanged = Signal(dict) # {long hash, unicode text}
-  windowTranslationCleared = Signal()
+
+  translationCacheCleared = Signal()
 
   def addWindowTexts(self, texts):
     """
@@ -972,9 +973,10 @@ class TextManager(QObject):
   def hasWindowTexts(self):
     return bool(self.__d.windowTexts)
 
-  def clearWindowTranslation(self):
+  def clearTranslationCache(self):
     self.__d.resetWindowTranslation()
-    self.windowTranslationCleared.emit()
+
+    self.translationCacheCleared.emit()
 
   def refreshWindowTranslation(self):
     #self.windowTranslationCleared.emit()

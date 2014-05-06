@@ -144,7 +144,7 @@ class RpcServer(QObject):
     except TypeError, e:
       dwarn("failed to encode json: %s" % e)
 
-  def clearWindowTranslation(self): self.__d.callAgent('window.clear')
+  def clearAgentTranslation(self): self.__d.callAgent('clear')
 
   def sendWindowTranslation(self, data):
     """

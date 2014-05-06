@@ -226,7 +226,7 @@ class _MainObject(object):
     ret.nameThreadChanged.connect(tm.setNameThread)
     ret.nameThreadDisabled.connect(tm.clearNameThread)
 
-    ret.processChanged.connect(tm.clearWindowTranslation)
+    ret.processChanged.connect(tm.clearTranslationCache)
     #ret.processChanged.connect(partial(tm.setEnabled, True))
 
     ret.processChanged.connect(self.meCabManager.clearUserDictionary)
@@ -342,7 +342,7 @@ class _MainObject(object):
         self.dataManager.termsChanged,
         #self.gameManager.processChanged,   # this would cause recursion
         ):
-      sig.connect(ret.clearWindowTranslation)
+      sig.connect(ret.clearTranslationCache)
 
     ss.windowTextVisibleChanged.connect(ret.refreshWindowTranslation)
     return ret
@@ -524,7 +524,7 @@ class _MainObject(object):
     #ret.arguments.connect(q.open_, Qt.QueuedConnection)
 
     ret.windowTextsReceived.connect(self.textManager.addWindowTexts)
-    self.textManager.windowTranslationCleared.connect(ret.clearWindowTranslation)
+    self.textManager.translationCacheCleared.connect(ret.clearAgentTranslation)
     self.textManager.windowTranslationChanged.connect(ret.sendWindowTranslation)
 
     #ret.agentConnected.connect(lambda pid:
