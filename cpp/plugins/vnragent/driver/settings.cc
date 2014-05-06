@@ -69,6 +69,32 @@ DEFINE_BOOL_PROPERTY(embeddedNameTranslationEnabled, isEmbeddedNameTranslationEn
 DEFINE_BOOL_PROPERTY(embeddedOtherVisible, isEmbeddedOtherVisible, setEmbeddedOtherVisible)
 DEFINE_BOOL_PROPERTY(embeddedOtherTranslationEnabled, isEmbeddedOtherTranslationEnabled, setEmbeddedOtherTranslationEnabled)
 
+// Groupped settings
+
+void Settings::disable()
+{
+  setWindowTranslationEnabled(false);
+  setWindowTextVisible(false);
+  //setWindowTranscodingEnabled(false);
+
+  setEmbeddedScenarioVisible(true);
+  setEmbeddedScenarioTranslationEnabled(false);
+  setEmbeddedNameVisible(true);
+  setEmbeddedNameTranslationEnabled(false);
+  setEmbeddedOtherVisible(true);
+  setEmbeddedOtherTranslationEnabled(false);
+}
+
+bool Settings::isWindowDriverNeeded() const
+{ return isWindowTranslationEnabled() || isWindowTranscodingEnabled(); }
+
+bool Settings::isEmbedDriverNeeded() const
+{
+  return isEmbeddedScenarioTranslationEnabled() || !isEmbeddedScenarioVisible()
+      || isEmbeddedNameTranslationEnabled() || !isEmbeddedNameVisible()
+      || isEmbeddedOtherTranslationEnabled() || !isEmbeddedOtherVisible();
+}
+
 // Marshal
 
 #include "QxtCore/QxtJSON"
@@ -78,10 +104,18 @@ DEFINE_BOOL_PROPERTY(embeddedOtherTranslationEnabled, isEmbeddedOtherTranslation
 void Settings::load(const QString &json)
 {
   enum {
-    H_DEBUG = 6994359 // "debug"
-    //, H_ENGINE_ENABLE = 207122565   // "engine.enable"
-    //, H_WINDOW_ENABLE = 147657733   // "window.enable"
+    H_debug = 6994359 // "debug"
+    , H_windowTranslationEnabled = 79059828
+    , H_windowTranscodingEnabled = 219567700
+    , H_windowTextVisibleChange = 190229845
+    , H_embeddedScenarioVisible = 207043173
+    , H_embeddedScenarioTranslationEnabled = 132391348
+    , H_embeddedNameVisible = 180590501
+    , H_embeddedNameTranslationEnabled = 239147220
+    , H_embeddedOtherVisible = 32685349
+    , H_embeddedOtherTranslationEnabled = 9290068
   };
+
   QVariant data = QxtJSON::parse(json);
   if (data.isNull())
     return;
@@ -93,12 +127,21 @@ void Settings::load(const QString &json)
     QString value = it.value().toString();
     bool bValue = value == "true";
     switch (qHash(it.key())) {
-    case H_DEBUG: if (bValue) Util::installDebugMsgHandler(); break;
-    //case H_ENGINE_ENABLE: setEngineEnabled(bValue); break;
-    //case H_WINDOW_ENABLE: setWindowTranslationEnabled(bValue); break;
+    case H_debug: if (bValue) Util::installDebugMsgHandler(); break;
+    case H_windowTranslationEnabled: setWindowTranslationEnabled(bValue); break;
+    case H_windowTranscodingEnabled: setWindowTranscodingEnabled(bValue); break;
+    case H_windowTextVisibleChange: setWindowTextVisible(bValue); break;
+    case H_embeddedScenarioVisible: setEmbeddedScenarioVisible(bValue); break;
+    case H_embeddedScenarioTranslationEnabled: setEmbeddedScenarioTranslationEnabled(bValue); break;
+    case H_embeddedNameVisible: setEmbeddedNameVisible(bValue); break;
+    case H_embeddedNameTranslationEnabled: setEmbeddedNameTranslationEnabled(bValue); break;
+    case H_embeddedOtherVisible: setEmbeddedOtherVisible(bValue); break;
+    case H_embeddedOtherTranslationEnabled: setEmbeddedOtherTranslationEnabled(bValue); break;
     default: ;
     }
   }
+
+  emit loadFinished();
 }
 
 // EOF

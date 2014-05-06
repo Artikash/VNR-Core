@@ -25,11 +25,12 @@ public:
   // - API -
 signals:
   void detachRequested(); // unload this DLL
+  void disableRequested();
+  void clearTranslationRequested();
 
   void disconnected(); // server disconnected
   void aborted(); // the last communication was aborted
 
-  void enabledRequested(bool t);
   void settingsReceived(QString json);
 
   // Window

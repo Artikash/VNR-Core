@@ -2,6 +2,7 @@
 # gameagent.py
 # 5/2/2014 jichi
 
+from functools import partial
 from PySide.QtCore import QObject, Signal, QTimer
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint
@@ -71,18 +72,9 @@ class GameAgent(QObject):
 
   ## States ##
 
-  activeChanged = Signal(bool)
-
-  def isActive(self): return bool(self.__d.connectedPid) and self.__d.active
-  def setActive(self, t):
-    d = self.__d
-    if d.connectedPid:
-      d.rpc.enableAgent() if t else d.rpc.disableAgent()
-    else:
-      t = False
-    if d.active != t:
-      d.active = t
-      self.activeChanged.emit(t)
+  def disable(self):
+    if self.__d.connectedPid:
+      self.__d.rpc.disableAgent()
 
   #def setGameLanguage(self, v):
   #  self.__d.gameLanguage = v
@@ -97,6 +89,19 @@ class GameAgent(QObject):
       self.__d.sendSettings()
 
   #def engine
+
+_SETTINGS_DICT = {
+  'windowTranslationEnabled': 'isWindowTranslationEnabled',
+  'windowTranscodingEnabled': 'isWindowTranscodingEnabled',
+  'windowTextVisible': 'isWindowTextVisible',
+
+  'embeddedScenarioVisible': 'isEmbeddedScenarioVisible',
+  'embeddedScenarioTranslationEnabled': 'isEmbeddedScenarioTranslationEnabled',
+  'embeddedNameVisible': 'isEmbeddedNameVisible',
+  'embeddedNameTranslationEnabled': 'isEmbeddedNameTranslationEnabled',
+  'embeddedOtherVisible': 'isEmbeddedOtherVisible',
+  'embeddedOtherTranslationEnabled': 'isEmbeddedOtherTranslationEnabled',
+}
 
 @Q_Q
 class _GameAgent(object):
@@ -117,13 +122,16 @@ class _GameAgent(object):
 
     self.clear()
 
-  def clear(self):
     ss = settings.global_()
+    for k,v in _SETTINGS_DICT.iteritems():
+      sig = getattr(ss, k + 'Changed')
+      sig.connect(partial(lambda k, t:
+        self.connectedPid and self.sendSetting(k, t))
+      , k)
+
+  def clear(self):
     self.injectedPid = 0 # long
-    self.active = False # bool
     self.engineName = '' # str
-    self.engineEnabled = ss.isGameAgentEnabled()
-    self.windowTranslationEnabled = ss.isWindowTranslationEnabled()
     #self.gameLanguage = 'ja' # str
     #self.gameEncoding = '' # str
     #self.userLanguage = 'en' # str
@@ -140,8 +148,7 @@ class _GameAgent(object):
   def _onAttached(self):
     self.injectTimer.stop()
     self.sendSettings()
-    self.rpc.enableAgent()
-    self.active = True
+    #self.rpc.enableAgent()
 
   def _onEngineReceived(self, name): # str
     self.engineName = name
@@ -150,13 +157,14 @@ class _GameAgent(object):
       growl.notify("%s: %s" % (my.tr("Detect game engine"), name))
 
   def sendSettings(self):
-    data = {
-      #'userEncoding': self.userEncoding,
-      'engine.enable': self.engineEnabled,
-      'window.enable': self.windowTranslationEnabled,
-    }
+    ss = settings.global_()
+    data = {k:apply(getattr(ss, v)) for k,v in _SETTINGS_DICT.iteritems()}
     if config.APP_DEBUG:
       data['debug'] = True
+    self.rpc.setAgentSettings(data)
+
+  def sendSetting(self, k, v):
+    data = {k:v}
     self.rpc.setAgentSettings(data)
 
 # EOF

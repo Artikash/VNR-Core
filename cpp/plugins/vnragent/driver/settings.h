@@ -21,6 +21,9 @@ public:
   ~Settings();
 
 public:
+  bool isEmbedDriverNeeded() const;
+  bool isWindowDriverNeeded() const;
+
   bool isWindowTranslationEnabled() const; // Whether translate text
   bool isWindowTranscodingEnabled() const; // Whether fix text encoding
   bool isWindowTextVisible() const; // Whether display text after the translation
@@ -33,6 +36,7 @@ public:
 
 public slots:
   void load(const QString &json);
+  void disable();
 
   void setWindowTranslationEnabled(bool t);
   void setWindowTranscodingEnabled(bool t);
@@ -44,6 +48,8 @@ public slots:
   void setEmbeddedOtherVisible(bool t);
 
 signals:
+  void loadFinished(); // emit after load() is invoked
+
   void windowTranslationEnabledChanged(bool t);
   void windowTranscodingEnabledChanged(bool t);
   void windowTextVisibleChanged(bool t);

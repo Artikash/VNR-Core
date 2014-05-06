@@ -30,7 +30,7 @@ private slots:
   void onDisconnected();
   void unload();
 
-  void onEnabledChanged();
+  void onLoadFinished();
 
 private:
   void createHijackDriver();

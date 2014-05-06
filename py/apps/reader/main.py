@@ -1766,8 +1766,7 @@ class MainObject(QObject):
 
     #if d.gameManager.isWindowHookConnected:
     #  d.rpcServer.disableAgent()
-    if d.gameAgent.isConnected():
-      d.gameAgent.setActive(False)
+    d.gameAgent.disable()
 
     skevents.runlater(partial(d.exit, exitCode), interval)
     dprint("leave")

@@ -122,18 +122,19 @@ void RpcClientPrivate::onCall(const QStringList &args)
   enum { // pre-computed qHash(QString) values
     H_PING          = 487495        // "ping"
     , H_DETACH      = 111978392     // "detach"
-    , H_ENABLE      = 113539365     // "enable"
+    , H_CLEAR       = 6957954       // "clear"
+    //, H_ENABLE      = 113539365     // "enable"
     , H_DISABLE     = 185170405     // "disable"
     , H_SETTINGS    = 213584835     // "settings"
 
-    , H_WIN_ENABLE   = 147657733    // "window.enable"
-    , H_WIN_DISABLE  = 195013157    // "window.disable"
-    , H_WIN_CLEAR    = 160087362    // "window.clear"
+    //, H_WIN_ENABLE   = 147657733    // "window.enable"
+    //, H_WIN_DISABLE  = 195013157    // "window.disable"
+    //, H_WIN_CLEAR    = 160087362    // "window.clear"
     , H_WIN_TEXT     = 110732692    // "window.text"
 
-    , H_ENG_ENABLE  = 207122565     // "engine.enable"
-    , H_ENG_DISABLE = 46785189      // "engine.disable"
-    , H_ENG_CLEAR   = 230943490     // "engine.clear"
+    //, H_ENG_ENABLE  = 207122565     // "engine.enable"
+    //, H_ENG_DISABLE = 46785189      // "engine.disable"
+    //, H_ENG_CLEAR   = 230943490     // "engine.clear"
     , H_ENG_TEXT    = 81604852      // "engine.text"
   };
 
@@ -143,24 +144,26 @@ void RpcClientPrivate::onCall(const QStringList &args)
   switch (qHash(args.first())) {
   case H_PING:          break;
   case H_DETACH:        q_->emit detachRequested(); break;
-  case H_ENABLE:        q_->emit enableRequested(true); break;
-  case H_DISABLE:       q_->emit enableRequested(false); break;
+  case H_CLEAR:         q_->emit clearTranslationRequested(); break;
+  //case H_ENABLE:        q_->emit enableRequested(true); break;
+  case H_DISABLE:       q_->emit disableRequested(); break;
+
   case H_SETTINGS:
     if (args.size() == 2)
       q_->emit settingsReceived(args.last());
     break;
 
-  case H_WIN_CLEAR:     q_->emit clearWindowTranslationRequested(); break;
-  case H_WIN_ENABLE:    q_->emit enableWindowTranslationRequested(true); break;
-  case H_WIN_DISABLE:   q_->emit enableWindowTranslationRequested(false); break;
+  //case H_WIN_CLEAR:     q_->emit clearWindowTranslationRequested(); break;
+  //case H_WIN_ENABLE:    q_->emit enableWindowTranslationRequested(true); break;
+  //case H_WIN_DISABLE:   q_->emit enableWindowTranslationRequested(false); break;
   case H_WIN_TEXT:
     if (args.size() == 2)
       q_->emit windowTranslationReceived(args.last());
     break;
 
-  case H_ENG_CLEAR:     q_->emit clearEngineRequested(); break;
-  case H_ENG_ENABLE:    q_->emit enableEngineRequested(true); break;
-  case H_ENG_DISABLE:   q_->emit enableEngineRequested(false); break;
+  //case H_ENG_CLEAR:     q_->emit clearEngineRequested(); break;
+  //case H_ENG_ENABLE:    q_->emit enableEngineRequested(true); break;
+  //case H_ENG_DISABLE:   q_->emit enableEngineRequested(false); break;
   case H_ENG_TEXT:
     if (args.size() == 4) {
       QString text = args[1];

@@ -34,18 +34,18 @@ MainDriverPrivate::MainDriverPrivate(QObject *parent)
 {
   DOUT("enter");
   settings = new Settings(this);
+  {
+    connect(settings, SIGNAL(loadFinished()), SLOT(onLoadFinished()));
+  }
 
   rpc = new RpcClient(this);
   {
-    connect(rpc, SIGNAL(enableWindowTranslationRequested(bool)), settings, SLOT(setWindowTranslationEnabled(bool)));
+    //connect(rpc, SIGNAL(enableWindowTranslationRequested(bool)), settings, SLOT(setWindowTranslationEnabled(bool)));
     connect(rpc, SIGNAL(disconnected()), SLOT(onDisconnected()));
     connect(rpc, SIGNAL(detachRequested()), SLOT(unload()));
-    connect(rpc, SIGNAL(enabledRequested(bool)), settings, SLOT(setEnabled(bool)));
+    //connect(rpc, SIGNAL(enabledRequested(bool)), settings, SLOT(setEnabled(bool)));
     connect(rpc, SIGNAL(settingsReceived(QString)), settings, SLOT(load(QString)));
-
-    connect(rpc, SIGNAL(enabledRequested(bool)), SLOT(onEnabledChanged()));
-    connect(rpc, SIGNAL(enableEngineRequested(bool)), SLOT(onEnabledChanged()));
-    connect(rpc, SIGNAL(enableWindowTranslationRequested(bool)), SLOT(onEnabledChanged()));
+    connect(rpc, SIGNAL(disableRequested()), settings, SLOT(disable()));
   }
   DOUT("leave");
 }
@@ -65,7 +65,7 @@ void MainDriverPrivate::createWindowDriver()
   win = new WindowDriver(this);
   connect(win, SIGNAL(translationRequested(QString)), rpc, SLOT(requestWindowTranslation(QString)));
 
-  connect(rpc, SIGNAL(clearWindowTranslationRequested()), win, SLOT(clearTranslation()));
+  connect(rpc, SIGNAL(clearTranslationRequested()), win, SLOT(clearTranslation()));
   connect(rpc, SIGNAL(windowTranslationReceived(QString)), win, SLOT(updateTranslation(QString)));
 }
 
@@ -81,8 +81,8 @@ void MainDriverPrivate::createEmbedDriver()
   connect(eng, SIGNAL(textReceivedDelayed(QString,qint64,int,bool)), rpc, SLOT(sendEngineTextLater(QString,qint64,int,bool)),
       Qt::QueuedConnection);
   connect(eng, SIGNAL(engineNameChanged(QString)), rpc, SLOT(sendEngineName(QString)));
-  connect(rpc, SIGNAL(clearEngineRequested()), eng, SLOT(clearTranslation()));
-  connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));
+  connect(rpc, SIGNAL(clearTranslationRequested()), eng, SLOT(clearTranslation()));
+  //connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));
   connect(rpc, SIGNAL(engineTranslationReceived(QString,qint64,int)), eng, SLOT(updateTranslation(QString,qint64,int)),
       Qt::QueuedConnection);
 
@@ -108,26 +108,19 @@ void MainDriverPrivate::unload()
 #endif // VNRAGENT_ENABLE_UNLOAD
 }
 
-void MainDriverPrivate::onEnabledChanged()
+void MainDriverPrivate::onLoadFinished()
 {
-  if (!settings->isEnabled()) {
-    if (eng)
-      eng->setEnable(false);
-    if (win)
-      win->setEnable(false);
-  } else {
-    if (eng)
-      eng->setEnable(settings->isEngineEnabled());
-    else if (settings->isEngineEnabled()){
-      createEmbedDriver();
-      createHijackDriver();
-    }
-    if (win)
-      win->setEnable(settings->isWindowTranslationEnabled());
-    else if (settings->isWindowTranslationEnabled()){
-      createWindowDriver();
-      createHijackDriver();
-    }
+  if (!eng)
+    eng->setEnable(settings->isEmbedDriverNeeded());
+  else if (settings->isEmbedDriverNeeded()){
+    createEmbedDriver();
+    createHijackDriver();
+  }
+  if (win)
+    win->setEnable(settings->isWindowDriverNeeded());
+  else if (settings->isWindowDriverNeeded()){
+    createWindowDriver();
+    createHijackDriver();
   }
 }
 

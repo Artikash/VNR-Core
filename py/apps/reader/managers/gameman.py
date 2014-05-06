@@ -1017,10 +1017,7 @@ class GameManager(QtCore.QObject):
           return
 
       if g.pid == gameagent.global_().connectedPid():
-        skevents.runlater(lambda: (
-          gameagent.global_().sendSettings(),
-          gameagent.global_().setActive(True),
-        ), 3000)
+        skevents.runlater(gameagent.global_().sendSettings, 3000)
 
       # g.hasProcess() must be true here, i.e. processId is valid
       elif not g.isAttached():

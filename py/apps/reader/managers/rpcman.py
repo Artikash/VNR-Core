@@ -127,7 +127,7 @@ class RpcServer(QObject):
   def isAgentConnected(self): return bool(self.__d.agentSocket)
   def closeAgent(self): self.__d.closeAgentSocket()
 
-  def enableAgent(self): self.__d.callAgent('enable')
+  #def enableAgent(self): self.__d.callAgent('enable')
   def disableAgent(self): self.__d.callAgent('disable')
 
   #def detachAgent(self): self.__d.callAgent('detach')
