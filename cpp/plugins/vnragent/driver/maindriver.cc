@@ -124,13 +124,13 @@ void MainDriverPrivate::unload()
 void MainDriverPrivate::onLoadFinished()
 {
   if (eng)
-    eng->setEnable(settings->isEmbedDriverNeeded());
+    eng->setEnabled(settings->isEmbedDriverNeeded());
   else if (settings->isEmbedDriverNeeded()){
     createEmbedDriver();
     createHijackDriver();
   }
   if (win)
-    win->setEnable(settings->isWindowDriverNeeded());
+    win->setEnabled(settings->isWindowDriverNeeded());
   else if (settings->isWindowDriverNeeded()){
     createWindowDriver();
     createHijackDriver();

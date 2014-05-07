@@ -73,8 +73,10 @@ public:
   {
     if (entries.isEmpty())
       return;
-    foreach (auto &e, entries)
-      e.text = decodeText(d.data);
+    //foreach (auto &e, entries)
+    //  e.text = decodeText(e.data);
+    for (auto p = entries.begin(); p != entries.end(); ++p)
+      p->text = decodeText(p->data);
     clearTranslation();
   }
 
@@ -102,7 +104,7 @@ QString WindowManagerPrivate::decodeText(const QByteArray &data) const
     return QString();
 
   std::wstring returnBuffer(returnSize, 0);
-  returnSize = ::MultiByteToWideChar(encodingCodePage, 0, buffer, bufferSizeNeeded, &returnBuffer[0], returnSize);
+  returnSize = ::MultiByteToWideChar(encodingCodePage, 0, &convertBuffer[0], bufferSizeNeeded, &returnBuffer[0], returnSize);
   return QString::fromStdWString(returnBuffer);
 }
 
@@ -156,7 +158,7 @@ const WindowManager::TextEntry &WindowManager::findEntryWithAnchor(ulong anchor)
 }
 
 QString WindowManager::findTranslationWithHash(qint64 hash) const
-{ return d_->trs.value(hash); }
+{ return d_->translations.value(hash); }
 
 // - Update -
 

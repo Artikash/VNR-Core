@@ -49,7 +49,7 @@ bool EmbedDriver::inject()
 }
 
 bool EmbedDriver::isEnabled() const { return d_->enabled; }
-void EmbedDriver::setEnable(bool t) { d_->enabled = t; }
+void EmbedDriver::setEnabled(bool t) { d_->enabled = t; }
 
 void EmbedDriver::clearTranslation()  { d_->manager->clearTranslation(); }
 

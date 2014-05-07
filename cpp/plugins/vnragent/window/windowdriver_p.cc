@@ -49,12 +49,13 @@ QString WindowDriverPrivate::transformText(const QString &text, qint64 hash) con
 {
   QString ret;
   if (translationEnabled) {
-    repl = manager->findTranslationWithHash(hash);
+    ret = manager->findTranslationWithHash(hash);
     //if (repl.isEmpty()) {
     //  if (enabled)
     //    manager->requestTranslation(text, hash);
     if (textVisible && !ret.isEmpty())
-      ret.prepend('<').prepend(text)
+      ret.prepend('<')
+         .prepend(text);
   }
   if (ret.isEmpty())
     ret = text;

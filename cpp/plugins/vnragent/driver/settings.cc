@@ -74,10 +74,13 @@ DEFINE_BOOL_PROPERTY(windowTranscodingEnabled, isWindowTranscodingEnabled, setWi
 DEFINE_BOOL_PROPERTY(windowTextVisible, isWindowTextVisible, setWindowTextVisible)
 DEFINE_BOOL_PROPERTY(embeddedScenarioVisible, isEmbeddedScenarioVisible, setEmbeddedScenarioVisible)
 DEFINE_BOOL_PROPERTY(embeddedScenarioTranslationEnabled, isEmbeddedScenarioTranslationEnabled, setEmbeddedScenarioTranslationEnabled)
+DEFINE_BOOL_PROPERTY(embeddedScenarioTranscodingEnabled, isEmbeddedScenarioTranscodingEnabled, setEmbeddedScenarioTranscodingEnabled)
 DEFINE_BOOL_PROPERTY(embeddedNameVisible, isEmbeddedNameVisible, setEmbeddedNameVisible)
 DEFINE_BOOL_PROPERTY(embeddedNameTranslationEnabled, isEmbeddedNameTranslationEnabled, setEmbeddedNameTranslationEnabled)
+DEFINE_BOOL_PROPERTY(embeddedNameTranscodingEnabled, isEmbeddedNameTranscodingEnabled, setEmbeddedNameTranscodingEnabled)
 DEFINE_BOOL_PROPERTY(embeddedOtherVisible, isEmbeddedOtherVisible, setEmbeddedOtherVisible)
 DEFINE_BOOL_PROPERTY(embeddedOtherTranslationEnabled, isEmbeddedOtherTranslationEnabled, setEmbeddedOtherTranslationEnabled)
+DEFINE_BOOL_PROPERTY(embeddedOtherTranscodingEnabled, isEmbeddedOtherTranscodingEnabled, setEmbeddedOtherTranscodingEnabled)
 
 DEFINE_STRING_PROPERTY(gameEncoding, gameEncoding, setGameEncoding)
 
@@ -129,7 +132,7 @@ void Settings::load(const QString &json)
     , H_embeddedScenarioTranscodingEnabled = 105135476
     , H_embeddedNameVisible = 180590501
     , H_embeddedNameTranslationEnabled = 239147220
-    , H_embeddedNameTranscodingEnabled = 19782804
+    , H_embeddedNameTranscodingEnabled = 266409492
     , H_embeddedOtherVisible = 32685349
     , H_embeddedOtherTranslationEnabled = 9290068
     , H_embeddedOtherTranscodingEnabled = 19782804

@@ -26,7 +26,7 @@ signals:
 public slots:
   void updateTranslation(const QString &text, qint64 hash, int role);
   void clearTranslation();
-  void setEnable(bool t);
+  void setEnabled(bool t);
 
   // Called by engine
 public:
