@@ -7,6 +7,13 @@
 
 QT_FORWARD_DECLARE_CLASS(QString)
 
+#define ENC_UTF8    "utf-8"
+#define ENC_UTF16   "utf-16"
+#define ENC_SJIS    "shift-jis"
+#define ENC_GBK     "gbk"
+#define ENC_BIG5    "big5"
+#define ENC_KSC     "euc-kr"
+
 namespace Util {
 
 // See: http://msdn.microsoft.com/en-us/library/dd317756%28VS.85%29.aspx
@@ -16,11 +23,12 @@ enum CodePage {
   , Utf16CodePage = 1200 // UTF-16
   , SjisCodePage = 932  // SHIFT-JIS
   , GbkCodePage = 936    // GB2312
-  , KscCodePage = 949   // KS_C
+  , KscCodePage = 949   // EUC-KR
   , Big5CodePage = 950  // BIG5
 };
 
 uint codePageForEncoding(const QString &encoding);
+const char *encodingForCodePage(uint cp);
 
 } // namespace Util
 

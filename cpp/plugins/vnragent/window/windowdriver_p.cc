@@ -112,6 +112,7 @@ void WindowDriverPrivate::repaintMenuBar(HWND hWnd) { ::DrawMenuBar(hWnd); }
 
 bool WindowDriverPrivate::updateStandardWindow(HWND hWnd, LPWSTR buffer, int bufferSize)
 {
+  enum { TextRole = Window::WindowTextRole };
   qint64 h = 0;
   int sz = ::GetWindowTextW(hWnd, buffer, bufferSize);
   if (sz) {
@@ -128,8 +129,8 @@ bool WindowDriverPrivate::updateStandardWindow(HWND hWnd, LPWSTR buffer, int buf
     repl = transformText(e.text, e.hash);
   else if (enabled && h && sz) {
     QByteArray data((const char *)buffer, sz * 2);
-    repl = manager->decodeText(data);
-    manager->addEntry(data, repl, h, anchor);
+    repl = manager->decodeText(data, TextRole);
+    manager->addEntry(data, repl, h, anchor, TextRole);
   }
 
   // DefWindowProcW is used instead of SetWindowTextW
@@ -152,6 +153,7 @@ bool WindowDriverPrivate::updateStandardWindow(HWND hWnd, LPWSTR buffer, int buf
 
 bool WindowDriverPrivate::updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int bufferSize)
 {
+  enum { TextRole = Window::MenuTextRole };
   if (!hMenu)
     return false;
   int count = ::GetMenuItemCount(hMenu);
@@ -167,37 +169,34 @@ bool WindowDriverPrivate::updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int 
     info.cch = bufferSize;
     info.dwTypeData = buffer;
     if (::GetMenuItemInfoW(hMenu, i, TRUE, &info)) { // fByPosition: TRUE
-
-      int sz = info.cch;
-      qint64 h = 0;
-      if (sz) {
+      if (int sz = info.cch) {
 #ifdef VNRAGENT_ENABLE_NTLEA // NTLEA could mess up the length of the string orz
         sz = ::wcslen(buffer);
 #endif // VNRAGENT_ENABLE_NTLEA
-        h = Window::hashWCharArray(buffer, sz);
-      }
+        qint64 h = Window::hashWCharArray(buffer, sz);
 
-      QString repl;
-      long anchor = Window::hashWindowItem(hWnd, Window::MenuTextRole, info.wID + (i<<4));
-      const auto &e = manager->findEntryWithAnchor(anchor);
-      if (!e.isEmpty())
-        repl = transformText(e.text, e.hash);
-      else if (enabled && h && sz) {
-        QByteArray data((const char *)buffer, sz * 2);
-        QString t = QString::fromWCharArray(buffer, sz);
-        repl = manager->decodeText(data);
-        manager->addEntry(data, repl, h, anchor);
-      }
+        QString repl;
+        long anchor = Window::hashWindowItem(hWnd, Window::MenuTextRole, (info.wID<<2) + (i<<4));
+        const auto &e = manager->findEntryWithAnchor(anchor);
+        if (!e.isEmpty())
+          repl = transformText(e.text, e.hash);
+        else if (enabled && h && sz) {
+          QByteArray data((const char *)buffer, sz * 2);
+          QString t = QString::fromWCharArray(buffer, sz);
+          repl = manager->decodeText(data, TextRole);
+          manager->addEntry(data, repl, h, anchor, TextRole);
+        }
 
-      if (!repl.isEmpty() && h != Window::hashString(repl)) {
-        int sz = qMin(repl.size(), bufferSize);
-        info.fMask = MIIM_STRING;
-        info.dwTypeData = buffer;
-        info.cch = sz;
-        info.dwTypeData[sz] = 0;
-        repl.toWCharArray(info.dwTypeData);
-        ::SetMenuItemInfoW(hMenu, i, TRUE, &info);
-        ret = true;
+        if (!repl.isEmpty() && h != Window::hashString(repl)) {
+          int sz = qMin(repl.size(), bufferSize);
+          info.fMask = MIIM_STRING;
+          info.dwTypeData = buffer;
+          info.cch = sz;
+          info.dwTypeData[sz] = 0;
+          repl.toWCharArray(info.dwTypeData);
+          ::SetMenuItemInfoW(hMenu, i, TRUE, &info);
+          ret = true;
+        }
       }
 
       if (info.hSubMenu)
@@ -209,6 +208,7 @@ bool WindowDriverPrivate::updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int 
 
 bool WindowDriverPrivate::updateTabControl(HWND hWnd, LPWSTR buffer, int bufferSize)
 {
+  enum { TextRole = Window::TabTextRole };
   bool ret = false;
   LRESULT count = ::SendMessageW(hWnd, TCM_GETITEMCOUNT, 0, 0);
   TCITEMW item = {};
@@ -224,14 +224,14 @@ bool WindowDriverPrivate::updateTabControl(HWND hWnd, LPWSTR buffer, int bufferS
     qint64 h = Window::hashWCharArray(buffer, sz);
 
     QString repl;
-    long anchor = Window::hashWindowItem(hWnd, Window::TabTextRole, i);
+    long anchor = Window::hashWindowItem(hWnd, TextRole, i);
     const auto &e = manager->findEntryWithAnchor(anchor);
     if (!e.isEmpty())
       repl = transformText(e.text, e.hash);
     else if (enabled && h && sz) {
       QByteArray data((const char *)buffer, sz * 2);
-      repl = manager->decodeText(data);
-      manager->addEntry(data, repl, h, anchor);
+      repl = manager->decodeText(data, TextRole);
+      manager->addEntry(data, repl, h, anchor, TextRole);
     }
 
     if (!repl.isEmpty() && h != Window::hashString(repl)) {
@@ -258,6 +258,7 @@ bool WindowDriverPrivate::updateTabControl(HWND hWnd, LPWSTR buffer, int bufferS
 
 bool WindowDriverPrivate::updateListView(HWND hWnd, LPWSTR buffer, int bufferSize)
 {
+  enum { TextRole = Window::ListTextRole };
   enum { MAX_COLUMN = 100 };
   bool ret = false;
   for (int i = 0; i < MAX_COLUMN; i++) {
@@ -273,14 +274,14 @@ bool WindowDriverPrivate::updateListView(HWND hWnd, LPWSTR buffer, int bufferSiz
 
     qint64 h = Window::hashWCharArray(buffer, sz);
     QString repl;
-    long anchor = Window::hashWindowItem(hWnd, Window::ListTextRole, i);
+    long anchor = Window::hashWindowItem(hWnd, TextRole, i);
     const auto &e = manager->findEntryWithAnchor(anchor);
     if (!e.isEmpty())
       repl = transformText(e.text, e.hash);
     else if (enabled && h && sz) {
       QByteArray data((const char *)buffer, sz * 2);
-      repl = manager->decodeText(data);
-      manager->addEntry(data, repl, h, anchor);
+      repl = manager->decodeText(data, TextRole);
+      manager->addEntry(data, repl, h, anchor, TextRole);
     }
 
     if (!repl.isEmpty() && h != Window::hashString(repl)) {

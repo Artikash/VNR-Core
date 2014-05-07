@@ -22,10 +22,11 @@ public:
     QString text; //  text after transcoding
     qint64 hash;  // data hash
     ulong anchor; // window hash
+    uint role; // TextRole
 
     TextEntry() : hash(0), anchor(0) {}
-    TextEntry(const QByteArray &d, const QString &t, qint64 h, ulong a)
-      : data(d), text(t), hash(h), anchor(a) {}
+    TextEntry(const QByteArray &data, const QString &text, qint64 hash, ulong anchor, uint role)
+      : data(data), text(text), hash(hash), anchor(anchor), role(role) {}
 
     bool isEmpty() const { return !hash; }
   };
@@ -49,13 +50,13 @@ public:
   // Queries:
 
   // Buffer is optional. Enable it for performance reason
-  QString decodeText(const QByteArray &data) const;
+  QString decodeText(const QByteArray &data, uint role) const;
 
   const TextEntry &findEntryWithAnchor(ulong anchor) const;
   QString findTranslationWithHash(qint64 hash) const;
 
   // Update:
-  void addEntry(const QByteArray &data, const QString &text, qint64 hash, ulong anchor);
+  void addEntry(const QByteArray &data, const QString &text, qint64 hash, ulong anchor, uint role);
 
   //void updateText(const QString &text, qint64 hash, ulong anchor);
   //void updateTextTranslation(const QString &tr, qint64 hash, qint64 trhash = 0);

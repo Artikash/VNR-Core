@@ -24,16 +24,16 @@ inline qint64 hashWCharArray(const wchar_t *lp, size_t len)
 { return Sk::djb2_n(reinterpret_cast<const quint8 *>(lp), 2 * len); }
 
 enum TextRole {
-  WindowTextRole = 0,
-  MenuTextRole = 1 << 16,
-  ListTextRole = 2 << 16,
-  TabTextRole = 3 << 16
+  WindowTextRole = 0
+  , MenuTextRole = 1 << 16
+  , ListTextRole = 2 << 16
+  , TabTextRole = 3 << 16
 };
 
 inline long hashWindow(WId window)
 { return reinterpret_cast<long>(window); }
 
-inline long hashWindowItem(WId window, TextRole role, size_t index = 0)
+inline long hashWindowItem(WId window, uint role, size_t index = 0)
 { return reinterpret_cast<long>(window) + index + role; }
 
 //inline bool isTranslatedText(const QString &t)

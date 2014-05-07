@@ -6,6 +6,7 @@
 #include "util/codepage.h"
 #include "qtjson/qtjson.h"
 #include "QxtCore/QxtJSON"
+#include <QtCore/QTextCodec>
 #include <QtCore/QTimer>
 #include <QtCore/QVariantHash>
 #include <qt_windows.h> // for MultiByteToWideChar
@@ -30,8 +31,9 @@ public:
   bool encodingEnabled;
   bool translationEnabled;
 
-  const uint systemCodePage;
-  uint encodingCodePage;
+  QString systemEncoding;
+  QTextCodec *systemCodec,
+             *encodingCodec;
 
   bool textsDirty;
   Q::TextEntryList entries;
@@ -45,17 +47,22 @@ public:
     : encodingEnabled(false)
     , translationEnabled(false)
     , textsDirty(false)
-    , systemCodePage(::GetACP())
-    , encodingCodePage(0)
+    , encodingCodec(nullptr)
   {
     refreshTextsTimer_ = new QTimer(q);
     refreshTextsTimer_->setSingleShot(true);
     refreshTextsTimer_->setInterval(RefreshInterval);
     q->connect(refreshTextsTimer_, SIGNAL(timeout()), SLOT(sendDirtyTexts()));
+
+    const char *enc = Util::encodingForCodePage(::GetACP());
+    if (!enc)
+      enc = ENC_SJIS;
+    systemEncoding = enc;
+    systemCodec = QTextCodec::codecForName(enc);
   }
 
   bool isTranscodingNeeded() const
-  { return encodingEnabled && encodingCodePage != systemCodePage; }
+  { return encodingEnabled && encodingCodec && systemCodec && encodingCodec != systemCodec; }
 
   void touchTexts()
   {
@@ -79,37 +86,47 @@ public:
     //foreach (auto &e, entries)
     //  e.text = decodeText(e.data);
     for (auto p = entries.begin(); p != entries.end(); ++p)
-      p->text = decodeText(p->data);
+      p->text = decodeText(p->data, p->role);
     clearTranslation();
   }
 
-  QString decodeText(const QByteArray &data) const;
+  QString decodeText(const QByteArray &data, uint role) const
+  {
+    const wchar_t *ws = (LPCWSTR)data.constData();
+    const int wsSize = data.size() / 2;
+    if (!wsSize || role == Window::MenuTextRole || !isTranscodingNeeded())
+      return QString::fromWCharArray(ws, wsSize);
+    return encodingCodec->toUnicode(
+        systemCodec->fromUnicode(
+            QString::fromWCharArray(ws, wsSize)));
+  }
 };
 
+// Does not work?!
 // See: http://stackoverflow.com/questions/215963/how-do-you-properly-use-widechartomultibyte
-QString WindowManagerPrivate::decodeText(const QByteArray &data) const
-{
-  const wchar_t *ws = (LPCWSTR)data.constData();
-  const int wsSize = data.size() / 2;
-
-  if (!wsSize || !isTranscodingNeeded())
-    return QString::fromWCharArray(ws, wsSize);
-
-  int bufferSizeNeeded = ::WideCharToMultiByte(encodingCodePage, 0, ws, wsSize, nullptr, 0, nullptr, nullptr);
-  if (bufferSizeNeeded <= 0)
-    return QString();
-
-  std::string convertBuffer(bufferSizeNeeded, 0);
-  bufferSizeNeeded = ::WideCharToMultiByte(encodingCodePage, 0, ws, wsSize, &convertBuffer[0], bufferSizeNeeded, nullptr, nullptr);
-
-  int returnSize = ::MultiByteToWideChar(systemCodePage, 0, &convertBuffer[0], bufferSizeNeeded, nullptr, 0);
-  if (returnSize <= 0)
-    return QString();
-
-  std::wstring returnBuffer(returnSize, 0);
-  returnSize = ::MultiByteToWideChar(systemCodePage, 0, &convertBuffer[0], bufferSizeNeeded, &returnBuffer[0], returnSize);
-  return QString::fromStdWString(returnBuffer);
-}
+//QString WindowManagerPrivate::decodeText(const QByteArray &data) const
+//{
+//  const wchar_t *ws = (LPCWSTR)data.constData();
+//  const int wsSize = data.size() / 2;
+//
+//  if (!wsSize || !isTranscodingNeeded())
+//    return QString::fromWCharArray(ws, wsSize);
+//
+//  int bufferSizeNeeded = ::WideCharToMultiByte(encodingCodePage, 0, ws, wsSize, nullptr, 0, nullptr, nullptr);
+//  if (bufferSizeNeeded <= 0)
+//    return QString();
+//
+//  std::string convertBuffer(bufferSizeNeeded, 0);
+//  bufferSizeNeeded = ::WideCharToMultiByte(encodingCodePage, 0, ws, wsSize, &convertBuffer[0], bufferSizeNeeded, nullptr, nullptr);
+//
+//  int returnSize = ::MultiByteToWideChar(systemCodePage, 0, &convertBuffer[0], bufferSizeNeeded, nullptr, 0);
+//  if (returnSize <= 0)
+//    return QString();
+//
+//  std::wstring returnBuffer(returnSize, 0);
+//  returnSize = ::MultiByteToWideChar(systemCodePage, 0, &convertBuffer[0], bufferSizeNeeded, &returnBuffer[0], returnSize);
+//  return QString::fromStdWString(returnBuffer);
+//}
 
 /** Public class */
 
@@ -134,11 +151,10 @@ void WindowManager::setEncoding(const QString &v)
 {
   if (d_->encoding != v) {
     d_->encoding = v;
-    d_->encodingCodePage = Util::codePageForEncoding(d_->encoding);
+    d_->encodingCodec = QTextCodec::codecForName(v.toAscii());
 
     DOUT("encoding =" << d_->encoding  <<
-         ", code page =" << d_->encodingCodePage <<
-         ", GetACP =" << d_->systemCodePage);
+         ", system =" << d_->systemEncoding);
 
     d_->invalidateTexts();
   }
@@ -154,8 +170,8 @@ void WindowManager::setEncodingEnabled(bool t)
 
 // - Queries -
 
-QString WindowManager::decodeText(const QByteArray &data) const
-{ return d_->decodeText(data); }
+QString WindowManager::decodeText(const QByteArray &data, uint role) const
+{ return d_->decodeText(data, role); }
 
 const WindowManager::TextEntry &WindowManager::findEntryWithAnchor(ulong anchor) const
 {
@@ -173,9 +189,9 @@ QString WindowManager::findTranslationWithHash(qint64 hash) const
 void WindowManager::clearTranslation()
 { d_->clearTranslation(); }
 
-void WindowManager::addEntry(const QByteArray &data, const QString &text, qint64 hash, ulong anchor)
+void WindowManager::addEntry(const QByteArray &data, const QString &text, qint64 hash, ulong anchor, uint role)
 {
-  d_->entries.append(TextEntry(data, text, hash, anchor));
+  d_->entries.append(TextEntry(data, text, hash, anchor, role));
   d_->touchTexts();
 }
 
