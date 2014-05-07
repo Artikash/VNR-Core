@@ -344,7 +344,7 @@ class _MainObject(object):
         ):
       sig.connect(ret.clearTranslationCache)
 
-    ss.windowTextVisibleChanged.connect(ret.refreshWindowTranslation)
+    #ss.windowTextVisibleChanged.connect(ret.refreshWindowTranslation)
     return ret
 
   #@memoizedproperty

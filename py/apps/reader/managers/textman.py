@@ -596,30 +596,29 @@ class _TextManager(object):
     if changedTranslation:
       #growl.msg(my.tr("Updating window text ..."))
       self.windowTranslation.update(changedTranslation)
-      self.q.windowTranslationChanged.emit(
-          self.adjustWindowTranslation(changedTranslation))
-    else:
-      #growl.msg(my.tr("Not found machine translation"))
-      pass
+      self.q.windowTranslationChanged.emit(changedTranslation)
+    #else:
+    #  #growl.msg(my.tr("Not found machine translation"))
+    #  pass
 
-  def adjustWindowTranslation(self, trs):
-    """
-    @param[in]  trs  {long contextHash:unicode trText}
-    @return  type(trs)
-    """
-    if not settings.global_().isWindowTextVisible():
-      return trs
-    ret = {}
-    for h, t in trs.iteritems():
-      try:
-        context = self.windowTexts[h]
-        if context == t:
-          ret[h] = context
-        else:
-          ret[h] = context + "<" + t
-      except (KeyError, TypeError):
-        ret[h] = t
-    return ret
+  #def adjustWindowTranslation(self, trs):
+  #  """
+  #  @param[in]  trs  {long contextHash:unicode trText}
+  #  @return  type(trs)
+  #  """
+  #  #if not settings.global_().isWindowTextVisible():
+  #  #  return trs
+  #  ret = {}
+  #  for h, t in trs.iteritems():
+  #    try:
+  #      context = self.windowTexts[h]
+  #      if context == t:
+  #        ret[h] = context
+  #      else:
+  #        ret[h] = context + "<" + t
+  #    except (KeyError, TypeError):
+  #      ret[h] = t
+  #  return ret
 
 class TextManager(QObject):
 
@@ -978,11 +977,10 @@ class TextManager(QObject):
 
     self.translationCacheCleared.emit()
 
-  def refreshWindowTranslation(self):
-    #self.windowTranslationCleared.emit()
-    if self.__d.windowTranslation:
-      self.windowTranslationChanged.emit(
-          self.__d.adjustWindowTranslation(self.__d.windowTranslation))
+  #def refreshWindowTranslation(self):
+  #  #self.windowTranslationCleared.emit()
+  #  if self.__d.windowTranslation:
+  #    self.windowTranslationChanged.emit(self.__d.windowTranslation)
 
 @memoized
 def manager(): return TextManager()
