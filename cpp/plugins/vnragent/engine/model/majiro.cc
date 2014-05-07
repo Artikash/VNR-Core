@@ -12,7 +12,6 @@
 #include <qt_windows.h>
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
-#include <QDebug>
 
 /** Private class */
 
@@ -67,7 +66,7 @@ public:
 
   static int newHook(char arg1, int arg2, const char *str, int arg4, int arg5)
   {
-    qDebug() << (int)arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
+    //qDebug() << (int)arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
     //return oldHook(arg1, arg2, str, arg4, arg5);
     auto q = static_cast<Q *>(AbstractEngine::instance());
     auto role = roleOf(arg1, arg2, arg4, arg5);

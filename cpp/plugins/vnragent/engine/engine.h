@@ -5,7 +5,7 @@
 
 #include "sakurakit/skglobal.h"
 #include "engine/enginedef.h"
-#include <QtCore/QObject>
+#include <QtCore/QString>
 
 class EngineSettings
 {
@@ -38,10 +38,12 @@ public:
   AbstractEngine(const char *name, const char *encoding);
   virtual ~AbstractEngine();
 
-  EngineSettings *settings();
+  EngineSettings *settings() const;
 
   const char *name() const;
   const char *encoding() const;
+
+  bool isTranscodingNeeded() const;
 
   virtual bool inject() = 0;
   virtual bool unload() = 0;
@@ -51,7 +53,7 @@ public:
 
 public: // only needed by descendants
   QByteArray dispatchTextA(const QByteArray &data, int role, bool blocking = true) const;
-  //QString dispatchTextW(const QQString &text, int role, bool blocking = true) const;
+  QString dispatchTextW(const QString &text, int role, bool blocking = true) const;
 };
 
 // EOF

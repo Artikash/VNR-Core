@@ -58,7 +58,7 @@ QByteArray SocketService::readSocket(QIODevice *socket, quint32 &dataSize)
     DOUT("insufficient message size:" << bytesAvailable << "<" << dataSize);
     return QByteArray();
   }
-  DOUT("message size =" << dataSize);
+  //DOUT("message size =" << dataSize);
 
   QByteArray data = socket->read(dataSize);
   dataSize = 0;

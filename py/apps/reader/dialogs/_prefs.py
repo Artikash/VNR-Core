@@ -4395,7 +4395,7 @@ class _EngineTab(object):
       my.tr("This feature is currently under development, and only supports a small portion of the games that ITH supports."),
       my.tr('See <a href="#">Game Settings</a> for more details.'),
     )))
-    skqss.class_(ret, 'text-info')
+    skqss.class_(ret, 'text-error')
     ret.setWordWrap(True)
     #ret.setOpenExternalLinks(True)
 
@@ -4459,28 +4459,21 @@ class _EngineTab(object):
 
   @memoizedproperty
   def windowDisableButton(self):
-    return QtWidgets.QRadioButton(my.tr(
-      "Do not modify the standard window components"
-    ))
+    return QtWidgets.QRadioButton(tr_("Disable"))
 
   @memoizedproperty
   def windowTranscodingButton(self):
-    return QtWidgets.QRadioButton(my.tr(
-      "Fix the encoding of the texts without translating them"
-    ))
+    return QtWidgets.QRadioButton("%s (%s)" % (tr_("Transcode"), tr_("default")))
 
   @memoizedproperty
   def windowTranslationButton(self):
-    return QtWidgets.QRadioButton("%s (%s)" % (
-      my.tr("Translate the texts"),
-      tr_("Slow"),
-    ))
+    return QtWidgets.QRadioButton("%s (%s)" % (tr_("Translate"), tr_("slow")))
 
   @memoizedproperty
   def windowTextButton(self):
     return QtWidgets.QRadioButton("%s (%s)" % (
       my.tr("Display both the translation and the original text"),
-      tr_("Slow"),
+      tr_("slow"),
     ))
 
   @memoizedproperty
@@ -4500,18 +4493,24 @@ class _EngineTab(object):
 
     r = 0
     grid.addWidget(QtWidgets.QLabel(mytr_("Dialog")), r, 0)
-    for i, b in enumerate(self.engineDialogGroup.buttons()):
-      grid.addWidget(b, r, 1 + i)
+    row = QtWidgets.QHBoxLayout()
+    l = self.engineDialogGroup.buttons()
+    grid.addLayout(row, r, 1, 1, len(l))
+    map(row.addWidget, l)
 
     r += 1
     grid.addWidget(QtWidgets.QLabel(tr_("Name")), r, 0)
-    for i, b in enumerate(self.engineNameGroup.buttons()):
-      grid.addWidget(b, r, 1 + i)
+    row = QtWidgets.QHBoxLayout()
+    l = self.engineNameGroup.buttons()
+    grid.addLayout(row, r, 1, 1, len(l))
+    map(row.addWidget, l)
 
     r += 1
     grid.addWidget(QtWidgets.QLabel(tr_("Other")), r, 0)
-    for i, b in enumerate(self.engineOtherGroup.buttons()):
-      grid.addWidget(b, r, 1 + i)
+    row = QtWidgets.QHBoxLayout()
+    l = self.engineOtherGroup.buttons()
+    grid.addLayout(row, r, 1, 1, len(l))
+    map(row.addWidget, l)
 
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)
