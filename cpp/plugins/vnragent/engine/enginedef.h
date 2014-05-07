@@ -6,7 +6,8 @@
 namespace Engine {
 
 // These values must be consistent with VNR's textman.py
-enum TextRole { NullRole = 0, ScenarioRole,  NameRole, OtherRole };
+enum TextRole { NullRole = 0, ScenarioRole,  NameRole, OtherRole,
+                RoleCount };
 
 } // namespace Engine
 

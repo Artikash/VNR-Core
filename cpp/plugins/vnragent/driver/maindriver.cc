@@ -87,6 +87,7 @@ void MainDriverPrivate::createEmbedDriver()
     return;
 
   eng = new EmbedDriver(this);
+
   // Use queued connection to quarantine the engine thrread
   connect(eng, SIGNAL(textReceived(QString,qint64,int,bool)), rpc, SLOT(sendEngineText(QString,qint64,int,bool)),
       Qt::QueuedConnection);
@@ -100,7 +101,28 @@ void MainDriverPrivate::createEmbedDriver()
 
   connect(rpc, SIGNAL(reconnected()), eng, SLOT(sendEngineName()));
 
-  eng->inject();
+  connect(settings, SIGNAL(embeddedScenarioVisibleChanged(bool)), eng, SLOT(setScenarioVisible(bool)));
+  connect(settings, SIGNAL(embeddedScenarioTranscodingEnabledChanged(bool)), eng, SLOT(setScenarioTranscodingEnabled(bool)));
+  connect(settings, SIGNAL(embeddedScenarioTranslationEnabledChanged(bool)), eng, SLOT(setScenarioTranslationEnabled(bool)));
+  connect(settings, SIGNAL(embeddedNameVisibleChanged(bool)), eng, SLOT(setNameVisible(bool)));
+  connect(settings, SIGNAL(embeddedNameTranscodingEnabledChanged(bool)), eng, SLOT(setNameTranscodingEnabled(bool)));
+  connect(settings, SIGNAL(embeddedNameTranslationEnabledChanged(bool)), eng, SLOT(setNameTranslationEnabled(bool)));
+  connect(settings, SIGNAL(embeddedOtherVisibleChanged(bool)), eng, SLOT(setOtherVisible(bool)));
+  connect(settings, SIGNAL(embeddedOtherTranscodingEnabledChanged(bool)), eng, SLOT(setOtherTranscodingEnabled(bool)));
+  connect(settings, SIGNAL(embeddedOtherTranslationEnabledChanged(bool)), eng, SLOT(setOtherTranslationEnabled(bool)));
+
+  if (eng->inject()) {
+    eng->setScenarioVisible(settings->isEmbeddedScenarioVisible());
+    eng->setScenarioTranscodingEnabled(settings->isEmbeddedScenarioTranscodingEnabled());
+    eng->setScenarioTranslationEnabled(settings->isEmbeddedScenarioTranslationEnabled());
+    eng->setNameVisible(settings->isEmbeddedNameVisible());
+    eng->setNameTranscodingEnabled(settings->isEmbeddedNameTranscodingEnabled());
+    eng->setNameTranslationEnabled(settings->isEmbeddedNameTranslationEnabled());
+    eng->setOtherVisible(settings->isEmbeddedOtherVisible());
+    eng->setOtherTranscodingEnabled(settings->isEmbeddedOtherTranscodingEnabled());
+    eng->setOtherTranslationEnabled(settings->isEmbeddedOtherTranslationEnabled());
+  }
+  eng->setEnabled(settings->isEmbedDriverNeeded()); // enable it at last
 }
 
 void MainDriverPrivate::onDisconnected()

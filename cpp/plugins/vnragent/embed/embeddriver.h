@@ -29,10 +29,20 @@ public slots:
   void clearTranslation();
   void setEnabled(bool t);
 
+  void setScenarioVisible(bool t);
+  void setScenarioTranscodingEnabled(bool t);
+  void setScenarioTranslationEnabled(bool t);
+  void setNameVisible(bool t);
+  void setNameTranscodingEnabled(bool t);
+  void setNameTranslationEnabled(bool t);
+  void setOtherVisible(bool t);
+  void setOtherTranscodingEnabled(bool t);
+  void setOtherTranslationEnabled(bool t);
+
   // Called by engine
 public:
   bool inject();
-  bool isEnabled() const;
+  //bool isEnabled() const;
   void unload();
   QString engineName() const;
 };

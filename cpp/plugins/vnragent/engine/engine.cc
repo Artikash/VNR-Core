@@ -5,29 +5,47 @@
 #include "engine/enginehash.h"
 #include "engine/engineloader.h"
 #include "embed/embedmanager.h"
+#include "util/codepage.h"
 #include <QtCore/QTextCodec>
 
 /** Private class */
 
 class AbstractEnginePrivate
 {
-  QTextCodec *codec;
+  QTextCodec *encoder,
+             *decoder;
+  const char *systemEncoding;
 public:
   const char *name,
              *encoding;
 
+  EngineSettings *settings;
+
   AbstractEnginePrivate(const char *name, const char *encoding)
-    : codec(nullptr), name(name), encoding(encoding)
+    :  name(name), encoding(encoding)
+    , settings(new EngineSettings)
   {
-    if (encoding)
-      codec = QTextCodec::codecForName(encoding);
+    decoder = encoding ? QTextCodec::codecForName(encoding) : nullptr;
+
+    systemEncoding = Util::encodingForCodePage(::GetACP());
+    if (!systemEncoding)
+      systemEncoding = ENC_SJIS;
+    encoder = QTextCodec::codecForName(systemEncoding);
   }
 
+  ~AbstractEnginePrivate() { delete settings; }
+
+  // Utilities
+
   QByteArray encode(const QString &text) const
-  { return codec ? codec->fromUnicode(text) : QByteArray(); }
+  { return encoder ? encoder->fromUnicode(text) : text.toLocal8Bit(); }
 
   QString decode(const QByteArray &data) const
-  { return codec ? codec->toUnicode(data) : QString(); }
+  { return decoder ? decoder->toUnicode(data) : QString::fromLocal8Bit(data); }
+
+  QByteArray transcode(const QByteArray &data) const
+  { return !encoder || !decoder ? data : decoder->fromUnicode(encoder->toUnicode(data)); }
+
 };
 
 /** Public class */
@@ -50,24 +68,31 @@ AbstractEngine::AbstractEngine(const char *name, const char *encoding)
 
 AbstractEngine::~AbstractEngine() { delete d_; }
 
+EngineSettings *AbstractEngine::settings() const { return d_->settings; }
 const char *AbstractEngine::name() const { return d_->name; }
 const char *AbstractEngine::encoding() const { return d_->encoding; }
 
 // - Dispatch -
 
-QString AbstractEngine::dispatchText(const QByteArray &data, int role, bool blocking) const
+QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool blocking) const
 {
+  if (!d_->settings->textVisible[role])
+    return QByteArray();
+  if (!d_->settings->translationEnabled[role] && d_->settings->transcodingEnabled[role])
+    return d_->transcode(data);
+
   QString text = d_->decode(data);
-  if (!text.isEmpty()) {
-    qint64 hash = Engine::hashByteArray(data);
-    auto p = EmbedManager::instance();
-    QString ret = p->findTranslation(hash, role);
-    p->addText(text, hash, role, ret.isEmpty());
-    if (blocking && ret.isEmpty())
-      ret = p->waitForTranslation(hash, role);
-    return ret;
-  }
-  return QString();
+  if (text.isEmpty())
+    return data;
+
+  qint64 hash = Engine::hashByteArray(data);
+  auto p = EmbedManager::instance();
+  QString ret = p->findTranslation(hash, role);
+  p->addText(text, hash, role, ret.isEmpty());
+  if (blocking && ret.isEmpty())
+    ret = p->waitForTranslation(hash, role);
+
+  return d_->encode(ret);
 }
 
 // EOF

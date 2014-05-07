@@ -6,7 +6,6 @@
 // See: http://bbs.sumisora.org/read.php?tid=225250
 
 #include "engine/model/majiro.h"
-#include "engine/enginedef.h"
 #include "engine/engineenv.h"
 #include "detoursutil/detoursutil.h"
 #include "memdbg/memsearch.h"
@@ -72,21 +71,14 @@ public:
     //return oldHook(arg1, arg2, str, arg4, arg5);
     auto q = static_cast<Q *>(AbstractEngine::instance());
     auto role = roleOf(arg1, arg2, arg4, arg5);
-    QByteArray data = str;
-    QString t = q->dispatchText(data, role);
-    if (!t.isEmpty()) {
-      //data = t.toLocal8Bit();
-      //data = QTextCodec::codecForName("SHIFT-JIS")->fromUnicode(t);
-      //data = QTextCodec::codecForName("GBK")->fromUnicode(t);
-      data = QTextCodec::codecForName("GB2312")->fromUnicode(t);
+    QByteArray data = q->dispatchTextA(str, role);
+    if (!data.isEmpty())
       return oldHook(arg1, arg2, data, arg4, arg5);
+    else {
+      // Estimated return result
+      enum { FontWidth = 26 };
+      return FontWidth * ::strlen(str) * 2;
     }
-
-    return oldHook(arg1, arg2, str, arg4, arg5);
-
-    // Estimated return result
-    enum { FontWidth = 26 };
-    return FontWidth * data.size() * 2;
   }
 };
 DWORD MajiroEnginePrivate::hookAddress;

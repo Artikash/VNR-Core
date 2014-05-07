@@ -4,7 +4,25 @@
 // 4/20/2014 jichi
 
 #include "sakurakit/skglobal.h"
+#include "engine/enginedef.h"
 #include <QtCore/QObject>
+
+class EngineSettings
+{
+public:
+  bool enabled;
+  bool textVisible[Engine::RoleCount],
+       transcodingEnabled[Engine::RoleCount],
+       translationEnabled[Engine::RoleCount];
+
+  EngineSettings()
+    : enabled(false)
+  {
+    qMemSet(textVisible, 0, sizeof(textVisible));
+    qMemSet(transcodingEnabled, 0, sizeof(textVisible));
+    qMemSet(translationEnabled, 0, sizeof(textVisible));
+  }
+};
 
 class AbstractEnginePrivate;
 class AbstractEngine
@@ -20,6 +38,8 @@ public:
   AbstractEngine(const char *name, const char *encoding);
   virtual ~AbstractEngine();
 
+  EngineSettings *settings();
+
   const char *name() const;
   const char *encoding() const;
 
@@ -30,7 +50,8 @@ public:
   //static void setEnabled(bool t);
 
 public: // only needed by descendants
-  QString dispatchText(const QByteArray &data, int role, bool blocking = true) const;
+  QByteArray dispatchTextA(const QByteArray &data, int role, bool blocking = true) const;
+  //QString dispatchTextW(const QQString &text, int role, bool blocking = true) const;
 };
 
 // EOF
