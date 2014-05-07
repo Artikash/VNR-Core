@@ -116,6 +116,8 @@ class _LocalSocketServer(object):
       socket.readyRead.connect(partial(lambda ref:
           self.readSocket(ref()),
           ref))
+    dprint("pass");
+    #self.readSocket(socket)
 
   def deleteSocket(self, socket):
     socket.deleteLater()

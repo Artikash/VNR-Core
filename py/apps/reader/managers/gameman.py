@@ -642,6 +642,7 @@ class GameProfile(QtCore.QObject):
               if updateLater(verbose=True): return
             else:
               lcid = 0 if features.WINE else self.lcid() if self.usingApploc() else 0
+              dprint("lcid = %s" % lcid)
               if not self.launchPath or not os.path.exists(self.launchPath):
                 if lcid:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("AppLocale")))

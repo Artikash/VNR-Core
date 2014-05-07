@@ -29,7 +29,7 @@ WindowDriverPrivate::WindowDriverPrivate(QObject *parent)
   manager = new WindowManager(this);
 
   refreshTimer = new QTimer(this);
-  refreshTimer->setSingleShot(false);
+  refreshTimer->setSingleShot(false); // keep refreshing
   refreshTimer->setInterval(RefreshInterval);
   connect(refreshTimer, SIGNAL(timeout()), SLOT(refresh()));
 
@@ -184,6 +184,7 @@ bool WindowDriverPrivate::updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int 
         repl = transformText(e.text, e.hash);
       else if (enabled && h && sz) {
         QByteArray data((const char *)buffer, sz * 2);
+        QString t = QString::fromWCharArray(buffer, sz);
         repl = manager->decodeText(data);
         manager->addEntry(data, repl, h, anchor);
       }

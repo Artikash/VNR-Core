@@ -578,7 +578,7 @@ class _TextManager(object):
   def updateWindowTranslation(self):
     if not self.windowTexts:
       return
-    #growl.msg(my.tr("Translating window text ..."))
+    growl.msg(my.tr("Translating window text ..."))
     #if not features.MACHINE_TRANSLATION:
     #  #growl.msg(my.tr("You have disabled machine translation"))
     #  return
@@ -594,12 +594,11 @@ class _TextManager(object):
         if sub:
           changedTranslation[h] = sub
     if changedTranslation:
-      #growl.msg(my.tr("Updating window text ..."))
+      growl.msg(my.tr("Updating window text ..."))
       self.windowTranslation.update(changedTranslation)
       self.q.windowTranslationChanged.emit(changedTranslation)
-    #else:
-    #  #growl.msg(my.tr("Not found machine translation"))
-    #  pass
+    else:
+      growl.msg(my.tr("Not found machine translation"))
 
   #def adjustWindowTranslation(self, trs):
   #  """

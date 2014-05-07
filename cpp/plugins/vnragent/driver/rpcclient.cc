@@ -49,7 +49,7 @@ RpcClientPrivate::RpcClientPrivate(Q *q)
   reconnectTimer->setInterval(ReconnectInterval);
   connect(reconnectTimer, SIGNAL(timeout()), SLOT(reconnect()));
 
-  connect(client, SIGNAL(socketError()), SLOT(reconnect()), Qt::QueuedConnection);
+  //connect(client, SIGNAL(socketError()), SLOT(reconnect()), Qt::QueuedConnection);
   connect(client, SIGNAL(disconnected()), reconnectTimer, SLOT(start()));
   connect(client, SIGNAL(socketError()), reconnectTimer, SLOT(start()));
 #endif // VNRAGENT_ENABLE_RECONNECT
@@ -65,8 +65,11 @@ bool RpcClientPrivate::reconnect()
     return true;
   //client->stop();
   client->start();
-  if (client->waitForConnected())
+  if (client->waitForConnected()) {
+    DOUT("connected");
     pingServer();
+  } else
+    DOUT("not connected");
   return true;
 }
 

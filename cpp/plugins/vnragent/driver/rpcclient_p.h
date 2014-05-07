@@ -54,6 +54,8 @@ private slots:
   void onDataReceived(const QByteArray &data);
 
 private:
+  void pingServer();
+
   void onCall(const QStringList &args); // called from server
 
   void callServer(const QStringList &args); // call server
@@ -77,7 +79,6 @@ private:
   { return QString::number(value); }
 
 public:
-  void pingServer();
 
   enum GrowlType {
     GrowlMessage = 0,

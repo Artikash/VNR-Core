@@ -41,7 +41,8 @@ signals:
 public:
   // Properties:
 
-  void setEnabled(bool t);
+  void setTranslationEnabled(bool t);
+
   void setEncoding(const QString &v);
   void setEncodingEnabled(bool t);
 

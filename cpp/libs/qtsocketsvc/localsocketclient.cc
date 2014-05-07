@@ -102,6 +102,9 @@ void LocalSocketClient::start(QIODevice::OpenMode mode)
 {
   if (!d_->socket)
     d_->createSocket();
+  //d_->socket->flush();
+  //d_->socket->disconnectFromServer();
+  //d_->socket->close();
   d_->socket->connectToServer(d_->serverName, mode);
   DOUT("pass");
 }

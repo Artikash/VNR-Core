@@ -197,6 +197,7 @@ class _RpcServer(object):
     @param  cmd  str
     @param  params  [unicode]
     """
+    dprint(cmd)
     if cmd == 'app.activate':
       self.q.activated.emit()
 

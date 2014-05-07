@@ -11,6 +11,9 @@
 #include <qt_windows.h> // for MultiByteToWideChar
 //#include <unordered_set>
 
+#define DEBUG "windowmanager"
+#include "sakurakit/skdebug.h"
+
 /** Private class */
 
 namespace { WindowManager::TextEntry NULL_TEXT_ENTRY; }
@@ -23,9 +26,9 @@ class WindowManagerPrivate
   enum { RefreshInterval = 200 };
   QTimer *refreshTextsTimer_; // QTimer is not working
 public:
-  bool enabled;
   QString encoding;
   bool encodingEnabled;
+  bool translationEnabled;
 
   const uint systemCodePage;
   uint encodingCodePage;
@@ -39,8 +42,8 @@ public:
 
 public:
   explicit WindowManagerPrivate(Q *q)
-    : enabled(true)
-    , encodingEnabled(false)
+    : encodingEnabled(false)
+    , translationEnabled(false)
     , textsDirty(false)
     , systemCodePage(::GetACP())
     , encodingCodePage(0)
@@ -57,7 +60,7 @@ public:
   void touchTexts()
   {
     textsDirty = true;
-    if (!enabled)
+    if (!translationEnabled)
       return;
     //if (!refreshTextsTimer_->isActive())
     refreshTextsTimer_->start();
@@ -87,24 +90,24 @@ public:
 QString WindowManagerPrivate::decodeText(const QByteArray &data) const
 {
   const wchar_t *ws = (LPCWSTR)data.constData();
-  const int wsSize = data.size() * 2;
+  const int wsSize = data.size() / 2;
 
-  if (!isTranscodingNeeded())
+  if (!wsSize || !isTranscodingNeeded())
     return QString::fromWCharArray(ws, wsSize);
 
-  int bufferSizeNeeded = ::WideCharToMultiByte(systemCodePage, 0, ws, wsSize, nullptr, 0, nullptr, nullptr);
+  int bufferSizeNeeded = ::WideCharToMultiByte(encodingCodePage, 0, ws, wsSize, nullptr, 0, nullptr, nullptr);
   if (bufferSizeNeeded <= 0)
     return QString();
 
   std::string convertBuffer(bufferSizeNeeded, 0);
-  bufferSizeNeeded = ::WideCharToMultiByte(systemCodePage, 0, ws, wsSize, &convertBuffer[0], bufferSizeNeeded, nullptr, nullptr);
+  bufferSizeNeeded = ::WideCharToMultiByte(encodingCodePage, 0, ws, wsSize, &convertBuffer[0], bufferSizeNeeded, nullptr, nullptr);
 
-  int returnSize = ::MultiByteToWideChar(encodingCodePage, 0, &convertBuffer[0], bufferSizeNeeded, nullptr, 0);
+  int returnSize = ::MultiByteToWideChar(systemCodePage, 0, &convertBuffer[0], bufferSizeNeeded, nullptr, 0);
   if (returnSize <= 0)
     return QString();
 
   std::wstring returnBuffer(returnSize, 0);
-  returnSize = ::MultiByteToWideChar(encodingCodePage, 0, &convertBuffer[0], bufferSizeNeeded, &returnBuffer[0], returnSize);
+  returnSize = ::MultiByteToWideChar(systemCodePage, 0, &convertBuffer[0], bufferSizeNeeded, &returnBuffer[0], returnSize);
   return QString::fromStdWString(returnBuffer);
 }
 
@@ -118,10 +121,10 @@ WindowManager::~WindowManager() { delete d_; }
 
 // - Properties -
 
-void WindowManager::setEnabled(bool t)
+void WindowManager::setTranslationEnabled(bool t)
 {
-  if (d_->enabled != t) {
-    d_->enabled = t;
+  if (d_->translationEnabled != t) {
+    d_->translationEnabled = t;
     if (t)
       sendDirtyTexts();
   }
@@ -132,6 +135,11 @@ void WindowManager::setEncoding(const QString &v)
   if (d_->encoding != v) {
     d_->encoding = v;
     d_->encodingCodePage = Util::codePageForEncoding(d_->encoding);
+
+    DOUT("encoding =" << d_->encoding  <<
+         ", code page =" << d_->encodingCodePage <<
+         ", GetACP =" << d_->systemCodePage);
+
     d_->invalidateTexts();
   }
 }
@@ -173,7 +181,7 @@ void WindowManager::addEntry(const QByteArray &data, const QString &text, qint64
 
 void WindowManager::sendDirtyTexts()
 {
-  if (!d_->enabled || !d_->textsDirty)
+  if (!d_->translationEnabled || !d_->textsDirty)
     return;
   d_->textsDirty = false;
 

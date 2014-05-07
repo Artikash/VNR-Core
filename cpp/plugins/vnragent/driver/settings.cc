@@ -126,7 +126,7 @@ void Settings::load(const QString &json)
     , H_gameEncoding = 156622791
     , H_windowTranslationEnabled = 79059828
     , H_windowTranscodingEnabled = 219567700
-    , H_windowTextVisibleChange = 190229845
+    , H_windowTextVisibleChange = 23360709
     , H_embeddedScenarioVisible = 207043173
     , H_embeddedScenarioTranslationEnabled = 132391348
     , H_embeddedScenarioTranscodingEnabled = 105135476

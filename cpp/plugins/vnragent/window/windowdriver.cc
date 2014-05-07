@@ -16,12 +16,21 @@ void WindowDriver::clearTranslation() { d_->manager->clearTranslation(); }
 
 void WindowDriver::setEnabled(bool t)
 {
-  d_->enabled = t;
-  d_->manager->setEnabled(t);
+  if (d_->enabled != t) {
+    d_->enabled = t;
+    d_->manager->setTranslationEnabled(d_->translationEnabled && t);
+  }
 }
 
 void WindowDriver::setTextVisible(bool t) { d_->textVisible = t; }
-void WindowDriver::setTranslationEnabled(bool t) { d_->translationEnabled = t; }
+
+void WindowDriver::setTranslationEnabled(bool t)
+{
+  if (d_->translationEnabled != t) {
+    d_->translationEnabled = t;
+    d_->manager->setTranslationEnabled(d_->enabled && t);
+  }
+}
 
 void WindowDriver::setTranscodingEnabled(bool t) { d_->manager->setEncodingEnabled(t); }
 void WindowDriver::setEncoding(const QString &v) { d_->manager->setEncoding(v); }

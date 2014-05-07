@@ -4642,7 +4642,9 @@ class _EngineTab(object):
     self.otherTranscodeButton = QtWidgets.QRadioButton(tr_("Transcode"))
     ret.addButton(self.otherTranscodeButton)
 
-    self.otherTranslateButton = QtWidgets.QRadioButton(tr_("Translate"))
+    self.otherTranslateButton = QtWidgets.QRadioButton("%s (%s)" % (
+        tr_("Translate"),
+        tr_("slow")))
     ret.addButton(self.otherTranslateButton)
 
     #self.otherHideButton = QtWidgets.QRadioButton(tr_("Hide"))
