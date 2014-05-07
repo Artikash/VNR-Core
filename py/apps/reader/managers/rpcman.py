@@ -85,7 +85,7 @@ def _unmarshalBool(s): # str -> bool
 def _marshalBool(v): # int -> str, use hex
   return '1' if v else '0'
 
-from ctypes import c_longlong
+#from ctypes import c_longlong
 from functools import partial
 import json
 from PySide.QtCore import Signal, Qt, QObject
@@ -122,7 +122,8 @@ class RpcServer(QObject):
   agentDisconnected = Signal(long) # pid
   windowTextsReceived = Signal(dict) # {long hash:unicode text}
   engineReceived = Signal(str) # name
-  engineTextReceived = Signal(unicode, c_longlong, int) # text, hash, role
+  #engineTextReceived = Signal(unicode, c_longlong, int) # text, hash, role
+  engineTextReceived = Signal(unicode, str, int) # text, hash, role
 
   def isAgentConnected(self): return bool(self.__d.agentSocket)
   def closeAgent(self): self.__d.closeAgentSocket()
@@ -155,6 +156,17 @@ class RpcServer(QObject):
       self.__d.callAgent('window.text', data)
     except TypeError, e:
       dwarn("failed to encode json: %s" % e)
+
+  def sendEngineTranslation(self, text, hash, role):
+    """
+    @param  text  unicode
+    @param  hash  long
+    @param  role  int
+    """
+    if isinstance(hash, int) or isinstance(hash, long):
+      hash = _marshalInteger(hash)
+    self.__d.callAgent('engine.text',
+        text, hash, _marshalInteger(role))
 
 @Q_Q
 class _RpcServer(object):
@@ -277,16 +289,16 @@ class _RpcServer(object):
     @param  trans  bool   need translation
     """
     try:
-      hash = _unmarshalInteger(hash)
+      #hash = _unmarshalInteger(hash) # delay convert it to number
       role = _unmarshalInteger(role)
       trans = _unmarshalBool(trans)
       self.q.engineTextReceived.emit(text, hash, role)
-      if trans:
-        print role, len(text)
-        text = u'简体中文' + text
-        #text = u'简体中文'
-        self.callAgent('engine.text',
-            text, _marshalInteger(hash), _marshalInteger(role))
+      #if trans:
+      #  print role, len(text)
+      #  text = u'简体中文' + text
+      #  #text = u'简体中文'
+      #  self.callAgent('engine.text',
+      #      text, _marshalInteger(hash), _marshalInteger(role))
     except ValueError:
       dwarn("failed to convert text hash or role to integer")
 

@@ -641,6 +641,8 @@ class TextManager(QObject):
   nameTextReceived = Signal(unicode, unicode)  # text, lang
   nameTranslationReceived = Signal(unicode, unicode, unicode)  # text, lang, provider
 
+  agentTranslationProcessed = Signal(unicode, str, int) # text, hash, role
+
   #def setMachineTranslator(self, value):
   #  self.__d.preferredMT = value
 
@@ -723,7 +725,7 @@ class TextManager(QObject):
     """
     return self.__d.currentContextSize()
 
-  def addText(self, rawData, renderedData, signature, name):
+  def addIthText(self, rawData, renderedData, signature, name):
     """
     @param  rawData  bytearray
     @param  renderedData  bytearray
@@ -747,20 +749,6 @@ class TextManager(QObject):
         tt = IGNORED_THREAD_TYPE
       thread = d.threads[signature] = TextThread(name=name, signature=signature, type=tt)
 
-    #except OverflowError:
-    #  # FIXME: Mystery runtime warning and OverflowError
-    #  #   RuntimeWarning: tp_compare didn't return -1 or -2 for exception
-    #  if signature in d.threads:
-    #    thread = d.threads[signature]
-    #  else:
-    #    if signature == d.scenarioSignature:
-    #      tt = SCENARIO_THREAD_TYPE
-    #    elif signature in d.otherSignatures:
-    #      tt = OTHER_THREAD_TYPE
-    #    else:
-    #      tt = IGNORED_THREAD_TYPE
-    #    thread = d.threads[signature] = TextThread(name=name, signature=signature, type=tt)
-
     thread.appendData(renderedData)
 
     if signature == d.nameSignature:
@@ -770,6 +758,18 @@ class TextManager(QObject):
     elif signature == d.scenarioSignature or d.keepsThreads and name == d.scenarioThreadName:
       d.showScenarioText(rawData, renderedData)
     #d.locked = False
+
+  def addAgentText(self, text, rawHash, role):
+    """
+    @param  text  unicode
+    @param  rawHash  str
+    @param  role  int
+    """
+    if isinstance(rawHash, str) or isinstance(rawHash, unicode):
+      try: rawHash = long(rawHash)
+      except ValueError:
+        dwarn("failed to parse text hash: %s" % rawHash)
+        return
 
   def encoding(self): return self.__d.encoding
   def setEncoding(self, encoding):

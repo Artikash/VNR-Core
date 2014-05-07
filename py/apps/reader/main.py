@@ -297,10 +297,18 @@ class _MainObject(object):
 
     # Text might be sent from different threads? Need Qt.QueuedConnection?
     th = self.textHook
-    th.dataReceived.connect(ret.addText)
+    th.dataReceived.connect(ret.addIthText)
 
     th.realDataCapacityChanged.connect(ret.setGameTextCapacity)
     ret.setGameTextCapacity(th.realDataCapacity())
+
+    rpc = self.rpcServer
+    rpc.windowTextsReceived.connect(ret.addWindowTexts)
+    ret.translationCacheCleared.connect(rpc.clearAgentTranslation)
+    ret.windowTranslationChanged.connect(rpc.sendWindowTranslation)
+
+    rpc.engineTextReceived.connect(ret.addAgentText)
+    ret.agentTranslationProcessed.connect(rpc.sendEngineTranslation)
 
     grimoire = self.grimoire
 
@@ -522,10 +530,6 @@ class _MainObject(object):
     ret.setParent(q)
     ret.activated.connect(q.activate, Qt.QueuedConnection)
     #ret.arguments.connect(q.open_, Qt.QueuedConnection)
-
-    ret.windowTextsReceived.connect(self.textManager.addWindowTexts)
-    self.textManager.translationCacheCleared.connect(ret.clearAgentTranslation)
-    self.textManager.windowTranslationChanged.connect(ret.sendWindowTranslation)
 
     #ret.agentConnected.connect(lambda pid:
     #    self.gameManager.setWindowHookConnected(True))
