@@ -98,6 +98,8 @@ void MainDriverPrivate::createEmbedDriver()
   connect(rpc, SIGNAL(engineTranslationReceived(QString,qint64,int)), eng, SLOT(updateTranslation(QString,qint64,int)),
       Qt::QueuedConnection);
 
+  connect(rpc, SIGNAL(reconnected()), eng, SLOT(sendEngineName()));
+
   eng->inject();
 }
 

@@ -55,22 +55,39 @@ RpcClientPrivate::RpcClientPrivate(Q *q)
 #endif // VNRAGENT_ENABLE_RECONNECT
 }
 
-bool RpcClientPrivate::reconnect()
+void RpcClientPrivate::start()
+{
+  //if (client->isConnected())
+  //  return true;
+  //client->stop();
+  client->start();
+  if (client->waitForConnected())
+    onConnected();
+}
+
+void RpcClientPrivate::reconnect()
 {
 #ifdef VNRAGENT_ENABLE_RECONNECT
   if (reconnectTimer->isActive())
     reconnectTimer->stop();
 #endif // VNRAGENT_ENABLE_RECONNECT
   if (client->isConnected())
-    return true;
+    return;
   //client->stop();
   client->start();
   if (client->waitForConnected()) {
-    DOUT("connected");
-    pingServer();
-  } else
-    DOUT("not connected");
-  return true;
+    client->restart();
+    if (client->waitForConnected()) {
+      onConnected();
+      q_->emit reconnected();
+    }
+  }
+}
+
+void RpcClientPrivate::onConnected()
+{
+  DOUT("connected");
+  pingServer();
 }
 
 void RpcClientPrivate::pingServer()
@@ -190,10 +207,7 @@ RpcClient *RpcClient::instance() { return ::instance_; }
 RpcClient::RpcClient(QObject *parent)
   : Base(parent), d_(new D(this))
 {
-  if (!d_->reconnect()) { // connect on startup
-    //growl::debug(QString().sprintf("Visual Novel Reader is not ready! Maybe the port %i is blocked?", D::Port));
-  }
-
+  d_->start();
   ::instance_ = this;
 }
 

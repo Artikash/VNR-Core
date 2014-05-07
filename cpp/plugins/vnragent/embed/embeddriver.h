@@ -24,6 +24,7 @@ signals:
   void textReceivedDelayed(QString text, qint64 hash, int role, bool needsTranslation);
   void engineNameChanged(QString name);
 public slots:
+  void sendEngineName();
   void updateTranslation(const QString &text, qint64 hash, int role);
   void clearTranslation();
   void setEnabled(bool t);

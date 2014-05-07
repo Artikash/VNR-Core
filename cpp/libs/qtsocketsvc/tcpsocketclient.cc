@@ -41,6 +41,14 @@ public:
     q_->connect(socket, SIGNAL(disconnected()), SIGNAL(disconnected()));
   }
 
+  void deleteSocket()
+  {
+    if (socket) {
+      delete socket;
+      socket = nullptr;
+    }
+  }
+
   bool writeSocket(const QByteArray &data, bool pack);
   QByteArray readSocket();
 
@@ -108,6 +116,13 @@ void TcpSocketClient::start(QIODevice::OpenMode mode)
   if (!d_->socket)
     d_->createSocket();
   d_->socket->connectToHost(QHostAddress(d_->address), d_->port, mode);
+  DOUT("pass");
+}
+
+void TcpSocketClient::restart(QIODevice::OpenMode mode)
+{
+  d_->deleteSocket();
+  start(mode);
   DOUT("pass");
 }
 

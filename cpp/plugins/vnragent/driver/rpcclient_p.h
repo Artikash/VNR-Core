@@ -49,11 +49,13 @@ public:
   QTimer *reconnectTimer;
 #endif // VNRAGENT_ENABLE_RECONNECT
 
+  void start(); // This method is only called once on the startup
 private slots:
-  bool reconnect();
+  void reconnect();
   void onDataReceived(const QByteArray &data);
 
 private:
+  void onConnected();
   void pingServer();
 
   void onCall(const QStringList &args); // called from server

@@ -28,6 +28,7 @@ signals:
   void disableRequested();
   void clearTranslationRequested();
 
+  void reconnected(); // server close/open
   void disconnected(); // server disconnected
   void aborted(); // the last communication was aborted
 

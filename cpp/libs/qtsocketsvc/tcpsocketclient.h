@@ -32,6 +32,7 @@ public:
   // Actions:
 public:
   void start(QIODevice::OpenMode mode = QIODevice::ReadWrite);
+  void restart(QIODevice::OpenMode mode = QIODevice::ReadWrite);
   void stop();
   //void waitForReady();
 

@@ -44,7 +44,7 @@ bool EmbedDriver::inject()
     if (!d_->engine->inject())
       d_->engine = nullptr;
 
-  emit engineNameChanged(engineName());
+  sendEngineName();
   return d_->engine;
 }
 
@@ -64,5 +64,10 @@ void EmbedDriver::unload()
 
 QString EmbedDriver::engineName() const
 { return d_->engine ? d_->engine->name() : QString(); }
+
+void EmbedDriver::sendEngineName()
+{
+  emit engineNameChanged(engineName());
+}
 
 // EOF
