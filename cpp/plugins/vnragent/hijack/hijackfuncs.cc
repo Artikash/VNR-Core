@@ -88,7 +88,7 @@ void Hijack::restoreModules()
 
 void Hijack::overrideModuleFunctions(HMODULE hModule)
 {
-  BOOST_FOREACH (const FunctionInfo &fn, HIJACK_FUNCTIONS)
+  BOOST_FOREACH (const auto &fn, HIJACK_FUNCTIONS)
     if (PVOID ret = WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.newFunctionAddress)) {
       //growl::debug(fn.functionName); // success
     }
@@ -96,7 +96,7 @@ void Hijack::overrideModuleFunctions(HMODULE hModule)
 
 void Hijack::restoreModuleFunctions(HMODULE hModule)
 {
-  BOOST_FOREACH (const FunctionInfo &fn, HIJACK_FUNCTIONS)
+  BOOST_FOREACH (const auto &fn, HIJACK_FUNCTIONS)
     WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.oldFunctionAddress);
 }
 
@@ -139,7 +139,7 @@ LPVOID WINAPI Hijack::MyGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
   char modulePath[MAX_PATH];
   if (::GetModuleFileNameA(hModule, modulePath, MAX_PATH)) {
     const char *moduleName = ::basename(modulePath);
-    BOOST_FOREACH (const FunctionInfo &fn, HIJACK_FUNCTIONS)
+    BOOST_FOREACH (const auto &fn, HIJACK_FUNCTIONS)
       if (!::stricmp(moduleName, fn.moduleName) && !::stricmp(lpProcName, fn.functionName))
         return fn.newFunctionAddress;
   }

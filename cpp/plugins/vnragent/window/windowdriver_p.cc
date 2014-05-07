@@ -1,6 +1,7 @@
 // windowdriver_p.cc
 // 2/1/2013 jichi
 
+#include "config.h"
 #include "window/windowdriver_p.h"
 #include "window/windowhash.h"
 #include "window/windowmanager.h"
@@ -14,15 +15,16 @@
 
 enum { TEXT_BUFFER_SIZE = 256 };
 
-#define NTLEA_COMPAT // Fix the text of NTLEA
-
 // - Construction -
 
 static WindowDriverPrivate *instance_;
 WindowDriverPrivate *WindowDriverPrivate::instance() { return instance_; }
 
 WindowDriverPrivate::WindowDriverPrivate(QObject *parent)
-  : Base(parent), enabled(true) // enable by default
+  : Base(parent)
+  , enabled(false)
+  , textVisible(false)
+  , translationEnabled(false)
 {
   manager = new WindowManager(this);
 
@@ -40,6 +42,24 @@ WindowDriverPrivate::WindowDriverPrivate(QObject *parent)
 }
 
 WindowDriverPrivate::~WindowDriverPrivate() { ::instance_ = nullptr; }
+
+// - Text -
+
+QString WindowDriverPrivate::transformText(const QString &text, qint64 hash) const
+{
+  QString ret;
+  if (translationEnabled) {
+    repl = manager->findTranslationWithHash(hash);
+    //if (repl.isEmpty()) {
+    //  if (enabled)
+    //    manager->requestTranslation(text, hash);
+    if (textVisible && !ret.isEmpty())
+      ret.prepend('<').prepend(text)
+  }
+  if (ret.isEmpty())
+    ret = text;
+  return ret;
+}
 
 // - Processes and threads -
 
@@ -93,40 +113,33 @@ bool WindowDriverPrivate::updateStandardWindow(HWND hWnd, LPWSTR buffer, int buf
 {
   qint64 h = 0;
   int sz = ::GetWindowTextW(hWnd, buffer, bufferSize);
-  if (sz)
+  if (sz) {
+#ifdef VNRAGENT_ENABLE_NTLEA // NTLEA could mess up the length of the string orz
+    sz = ::wcslen(buffer);
+#endif // VNRAGENT_ENABLE_NTLEA
     h = Window::hashWCharArray(buffer, sz);
+  }
 
+  QString repl;
   long anchor = Window::hashWindow(hWnd);
-  const auto &e = manager->findTextEntryAtAnchor(anchor);
-  QString trans;
-  if (e.hash)
-    trans = manager->findTextTranslation(e.hash);
-
-  if (h && trans.isEmpty())
-    if (!manager->containsTranslation(h)) {
-#ifdef NTLEA_COMPAT // NTLEA could mess up the length of the string orz
-      QString t = QString::fromWCharArray(buffer);
-#else
-      QString t = QString::fromWCharArray(buffer, sz);
-#endif // NTLEA_COMPAT
-      if (!Window::isTranslatedText(t)) {
-        manager->updateText(t, h, anchor);
-        trans = manager->findTextTranslation(h);
-      }
-    }
-
-  if (!enabled)
-    trans = e.text;
+  const auto &e = manager->findEntryWithAnchor(anchor);
+  if (!e.isEmpty())
+    repl = transformText(e.text, e.hash);
+  else if (enabled && h && sz) {
+    QByteArray data((const char *)buffer, sz * 2);
+    repl = manager->decodeText(data);
+    manager->addEntry(data, repl, h, anchor);
+  }
 
   // DefWindowProcW is used instead of SetWindowTextW
   // https://groups.google.com/forum/?fromgroups#!topic/microsoft.public.platformsdk.mslayerforunicode/nWi3dlZeS60
-  if (!trans.isEmpty() && h != Window::hashString(trans)) {
-    if (trans.size() >= bufferSize)
-      //::SetWindowTextW(hWnd, trans.toStdWString().c_str());
-      ::DefWindowProcW(hWnd, WM_SETTEXT, 0, (LPARAM)trans.toStdWString().c_str());
-    else {
-      buffer[trans.size()] = 0;
-      trans.toWCharArray(buffer);
+  if (!repl.isEmpty() && h != Window::hashString(repl)) {
+    if (repl.size() >= bufferSize)
+      //::SetWindowTextW(hWnd, repl.toStdWString().c_str());
+      ::DefWindowProcW(hWnd, WM_SETTEXT, 0, (LPARAM)repl.toStdWString().c_str());
+    else { // faster
+      buffer[repl.size()] = 0;
+      repl.toWCharArray(buffer);
       //::SetWindowTextW(hWnd, buffer);
       ::DefWindowProcW(hWnd, WM_SETTEXT, 0, (LPARAM)buffer);
     }
@@ -146,7 +159,7 @@ bool WindowDriverPrivate::updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int 
 
   bool ret = false;
 
-  MENUITEMINFOW info = {0};
+  MENUITEMINFOW info = {};
   info.cbSize = sizeof(info);
   for (int i = 0; i < count; i++) {
     info.fMask = MIIM_SUBMENU | MIIM_TYPE | MIIM_ID;
@@ -154,39 +167,33 @@ bool WindowDriverPrivate::updateMenu(HMENU hMenu, HWND hWnd, LPWSTR buffer, int 
     info.dwTypeData = buffer;
     if (::GetMenuItemInfoW(hMenu, i, TRUE, &info)) { // fByPosition: TRUE
 
+      int sz = info.cch;
       qint64 h = 0;
-      if (info.cch)
-        h = Window::hashWCharArray(info.dwTypeData, info.cch);
+      if (sz) {
+#ifdef VNRAGENT_ENABLE_NTLEA // NTLEA could mess up the length of the string orz
+        sz = ::wcslen(buffer);
+#endif // VNRAGENT_ENABLE_NTLEA
+        h = Window::hashWCharArray(buffer, sz);
+      }
 
-      QString trans;
+      QString repl;
       long anchor = Window::hashWindowItem(hWnd, Window::MenuTextRole, info.wID + (i<<4));
-      const auto &e = manager->findTextEntryAtAnchor(anchor);
-      if (e.hash)
-        trans = manager->findTextTranslation(e.hash);
+      const auto &e = manager->findEntryWithAnchor(anchor);
+      if (!e.isEmpty())
+        repl = transformText(e.text, e.hash);
+      else if (enabled && h && sz) {
+        QByteArray data((const char *)buffer, sz * 2);
+        repl = manager->decodeText(data);
+        manager->addEntry(data, repl, h, anchor);
+      }
 
-      if (h && trans.isEmpty())
-        if (!manager->containsTranslation(h)) {
-#ifdef NTLEA_COMPAT // NTLEA could mess up the length of the string orz
-          QString t = QString::fromWCharArray(buffer);
-#else
-          QString t = QString::fromWCharArray(buffer, info.cch);
-#endif // NTLEA_COMPAT
-          if (!Window::isTranslatedText(t)) {
-            manager->updateText(t, h, anchor);
-            trans = manager->findTextTranslation(h);
-          }
-        }
-
-      if (!enabled)
-        trans = e.text;
-
-      if (!trans.isEmpty() && h != Window::hashString(trans)) {
-        int sz = qMin(trans.size(), bufferSize);
+      if (!repl.isEmpty() && h != Window::hashString(repl)) {
+        int sz = qMin(repl.size(), bufferSize);
         info.fMask = MIIM_STRING;
         info.dwTypeData = buffer;
         info.cch = sz;
         info.dwTypeData[sz] = 0;
-        trans.toWCharArray(info.dwTypeData);
+        repl.toWCharArray(info.dwTypeData);
         ::SetMenuItemInfoW(hMenu, i, TRUE, &info);
         ret = true;
       }
@@ -202,43 +209,41 @@ bool WindowDriverPrivate::updateTabControl(HWND hWnd, LPWSTR buffer, int bufferS
 {
   bool ret = false;
   LRESULT count = ::SendMessageW(hWnd, TCM_GETITEMCOUNT, 0, 0);
-  TCITEMW item = {0};
+  TCITEMW item = {};
   for (int i = 0; i < count; i++) {
     item.mask = TCIF_TEXT;
     item.pszText = buffer;
     item.cchTextMax = bufferSize;
     if (!::SendMessageW(hWnd, TCM_GETITEM, i, (LPARAM)&item))
       break;
-    QString t = QString::fromWCharArray(item.pszText);
-    qint64 h = Window::hashString(t);
+    int sz = ::wcslen(item.pszText);
+    if (!sz)
+      continue;
+    qint64 h = Window::hashWCharArray(buffer, sz);
 
-    QString trans;
+    QString repl;
     long anchor = Window::hashWindowItem(hWnd, Window::TabTextRole, i);
-    const auto &e = manager->findTextEntryAtAnchor(anchor);
-    if (e.hash)
-      trans = manager->findTextTranslation(e.hash);
+    const auto &e = manager->findEntryWithAnchor(anchor);
+    if (!e.isEmpty())
+      repl = transformText(e.text, e.hash);
+    else if (enabled && h && sz) {
+      QByteArray data((const char *)buffer, sz * 2);
+      repl = manager->decodeText(data);
+      manager->addEntry(data, repl, h, anchor);
+    }
 
-    if (h && trans.isEmpty())
-      if (!manager->containsTranslation(h) && !Window::isTranslatedText(t)) {
-        manager->updateText(t, h, anchor);
-        trans = manager->findTextTranslation(h);
-      }
-
-    if (!enabled)
-      trans = e.text;
-
-    if (!trans.isEmpty() && h != Window::hashString(trans)) {
+    if (!repl.isEmpty() && h != Window::hashString(repl)) {
       ret = true;
-      if (trans.size() < bufferSize) {
-        buffer[trans.size()] = 0;
-        trans.toWCharArray(buffer);
+      if (repl.size() < bufferSize) {
+        buffer[repl.size()] = 0;
+        repl.toWCharArray(buffer);
         item.pszText = buffer;
         item.mask = TCIF_TEXT;
         ::SendMessageW(hWnd, TCM_SETITEM, i, (LPARAM)&item);
       } else {
-        wchar_t *w = new wchar_t[trans.size() +1];
-        w[trans.size()] = 0;
-        trans.toWCharArray(w);
+        wchar_t *w = new wchar_t[repl.size() +1];
+        w[repl.size()] = 0;
+        repl.toWCharArray(w);
         item.pszText = w;
         item.mask = TCIF_TEXT;
         ::SendMessageW(hWnd, TCM_SETITEM, i, (LPARAM)&item);
@@ -254,43 +259,40 @@ bool WindowDriverPrivate::updateListView(HWND hWnd, LPWSTR buffer, int bufferSiz
   enum { MAX_COLUMN = 100 };
   bool ret = false;
   for (int i = 0; i < MAX_COLUMN; i++) {
-    LVCOLUMNW column = {0};
+    LVCOLUMNW column = {};
     column.mask = LVCF_TEXT;
     column.pszText = buffer;
     column.cchTextMax = bufferSize;
     if (!ListView_GetColumn(hWnd, i, &column))
       break;
+    int sz = ::wcslen(buffer);
+    if (!sz)
+      continue;
 
-    QString t = QString::fromWCharArray(column.pszText);
-    qint64 h = Window::hashString(t);
-
-    QString trans;
+    qint64 h = Window::hashWCharArray(buffer, sz);
+    QString repl;
     long anchor = Window::hashWindowItem(hWnd, Window::ListTextRole, i);
-    const auto &e = manager->findTextEntryAtAnchor(anchor);
-    if (e.hash)
-      trans = manager->findTextTranslation(e.hash);
+    const auto &e = manager->findEntryWithAnchor(anchor);
+    if (!e.isEmpty())
+      repl = transformText(e.text, e.hash);
+    else if (enabled && h && sz) {
+      QByteArray data((const char *)buffer, sz * 2);
+      repl = manager->decodeText(data);
+      manager->addEntry(data, repl, h, anchor);
+    }
 
-    if (h && trans.isEmpty())
-      if (!manager->containsTranslation(h) && !Window::isTranslatedText(t)) {
-        manager->updateText(t, h, anchor);
-        trans = manager->findTextTranslation(h);
-      }
-
-    if (!enabled)
-      trans = e.text;
-
-    if (!trans.isEmpty() && h != Window::hashString(trans)) {
+    if (!repl.isEmpty() && h != Window::hashString(repl)) {
       ret = true;
-      if (trans.size() < bufferSize) {
-        buffer[trans.size()] = 0;
-        trans.toWCharArray(buffer);
+      if (repl.size() < bufferSize) {
+        buffer[repl.size()] = 0;
+        repl.toWCharArray(buffer);
         column.mask = TCIF_TEXT;
         column.pszText = buffer;
         ListView_SetColumn(hWnd, i, &column);
       } else {
-        wchar_t *w = new wchar_t[trans.size() +1];
-        w[trans.size()] = 0;
-        trans.toWCharArray(w);
+        wchar_t *w = new wchar_t[repl.size() +1];
+        w[repl.size()] = 0;
+        repl.toWCharArray(w);
         column.mask = TCIF_TEXT;
         column.pszText = w;
         ListView_SetColumn(hWnd, i, &column);

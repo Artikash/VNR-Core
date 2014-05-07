@@ -183,7 +183,7 @@ QString EmbedManager::waitForTranslation(qint64 hash, int role) const
   void clearOtherTasks()
   {
     if (!otherTasks.isEmpty()) {
-      foreach (const Task &it, otherTasks)
+      foreach (const auto &it, otherTasks)
         it.release();
       otherTasks.clear();
     }

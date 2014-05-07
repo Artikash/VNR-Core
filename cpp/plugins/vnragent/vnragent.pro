@@ -66,6 +66,7 @@ HEADERS += \
   window/windowdriver_p.h \
   window/windowhash.h \
   window/windowmanager.h \
+  util/codepage.h \
   util/location.h \
   util/msghandler.h \
   config.h \
@@ -89,6 +90,7 @@ SOURCES += \
   window/windowdriver.cc \
   window/windowdriver_p.cc \
   window/windowmanager.cc \
+  util/codepage.cc \
   util/location.cc \
   util/msghandler.cc \
   growl.cc \

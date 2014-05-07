@@ -72,6 +72,7 @@ processes:
   - GoogleIMEJaConverter.exe # Google
   - GoogleIMEJaRenderer.exe  # Google
   - gvim.exe            # GVIM
+  - HaoZip.exe          # HaoYa
   - hidfind.exe         # Dell
   - idaq.exe            # IDA
   - idea.exe            # Intelij IDEA

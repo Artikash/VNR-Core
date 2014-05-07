@@ -18,40 +18,53 @@ class WindowManager : public QObject
 
 public:
   struct TextEntry { // Window text entry QString text;
-    QString text;
-    qint64 hash;  // text hash
+    QByteArray data; // raw text data in wchar_t format
+    QString text; //  text after transcoding
+    qint64 hash;  // data hash
     ulong anchor; // window hash
 
     TextEntry() : hash(0), anchor(0) {}
-    TextEntry(const QString &t, qint64 h, ulong a)
-      : text(t), hash(h), anchor(a) {}
+    TextEntry(const QByteArray &d, const QString &t, qint64 h, ulong a)
+      : data(d), text(t), hash(h), anchor(a) {}
+
+    bool isEmpty() const { return !hash; }
   };
   typedef QList<TextEntry> TextEntryList;
 
   explicit WindowManager(QObject *parent = nullptr);
   ~WindowManager();
 
-public:
-  bool containsAnchor(ulong anchor) const;
-  bool containsText(qint64 hash) const;
-  bool containsTranslation(qint64 trhash) const;
-
-  const TextEntry &findTextEntry(qint64 hash) const;
-  const TextEntry &findTextEntryAtAnchor(ulong anchor) const;
-  QString findTextTranslation(qint64 hash) const;
-
-  void updateText(const QString &text, qint64 hash, ulong anchor);
-  void updateTextTranslation(const QString &tr, qint64 hash, qint64 trhash = 0);
-
-  void updateTranslation(const QString &json); // received from the server
-  void clearTranslation();
-
 signals:
   //void translationChanged(); // send to main object
-  void textsChanged(QString json); // send to server
+  void textDataChanged(QString json); // send to server
 
+public:
+  // Properties:
+
+  void setEnabled(bool t);
+  void setEncoding(const QString &v);
+  void setEncodingEnabled(bool t);
+
+  // Queries:
+
+  // Buffer is optional. Enable it for performance reason
+  QString decodeText(const QByteArray &data) const;
+
+  const TextEntry &findEntryWithAnchor(ulong anchor) const;
+  QString findTranslationWithHash(qint64 hash) const;
+
+  // Update:
+  void addEntry(const QByteArray &data, const QString &text, qint64 hash, ulong anchor);
+
+  //void updateText(const QString &text, qint64 hash, ulong anchor);
+  //void updateTextTranslation(const QString &tr, qint64 hash, qint64 trhash = 0);
+
+  void updateTranslationData(const QString &json); // received from the server
+  void clearTranslation();
+
+  //void invalidateTexts(); // invoked when encoding changed
 private slots:
-  void refreshTexts(); // invoked by refresh timer
+  void sendDirtyTexts(); // invoked by refresh timer
 };
 
 // EOF

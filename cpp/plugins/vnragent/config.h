@@ -43,6 +43,12 @@
  */
 #define VNRAGENT_ENABLE_RECONNECT
 
+
+/**
+ *  Aware of the NTLEA bugs when the game is launched by ntleac.
+ */
+#define VNRAGENT_ENABLE_NTLEA
+
 /**
  *  Unload the DLLs
  */

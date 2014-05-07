@@ -8,13 +8,22 @@
 WindowDriver::WindowDriver(QObject *parent)
   : Base(parent), d_(new D(this))
 {
-  connect(d_->manager, SIGNAL(textsChanged(QString)), SIGNAL(translationRequested(QString)));
+  connect(d_->manager, SIGNAL(textDataChanged(QString)), SIGNAL(translationRequested(QString)));
 }
 
-void WindowDriver::updateTranslation(const QString &json) { d_->manager->updateTranslation(json); }
+void WindowDriver::updateTranslation(const QString &json) { d_->manager->updateTranslationData(json); }
 void WindowDriver::clearTranslation() { d_->manager->clearTranslation(); }
 
-bool WindowDriver::isEnabled() const { return d_->enabled; }
-void WindowDriver::setEnable(bool t) { d_->enabled = t; }
+void WindowDriver::setEnabled(bool t)
+{
+  d_->enabled = t;
+  d_->manager->setEnabled(t);
+}
+
+void WindowDriver::setTextVisible(bool t) { d_->textVisible = t; }
+void WindowDriver::setTranslationEnabled(bool t) { d_->translationEnabled = t; }
+
+void WindowDriver::setTranscodingEnabled(bool t) { d_->manager->setEncodingEnabled(t); }
+void WindowDriver::setEncoding(const QString &v) { d_->manager->setEncoding(v); }
 
 // EOF

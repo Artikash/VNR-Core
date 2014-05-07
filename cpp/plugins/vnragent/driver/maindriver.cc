@@ -63,10 +63,22 @@ void MainDriverPrivate::createWindowDriver()
     return;
 
   win = new WindowDriver(this);
-  connect(win, SIGNAL(translationRequested(QString)), rpc, SLOT(requestWindowTranslation(QString)));
 
+  win->setEncoding(settings->gameEncoding());
+  win->setTextVisible(settings->isWindowTextVisible());
+  win->setTranscodingEnabled(settings->isWindowTranscodingEnabled());
+  win->setTranslationEnabled(settings->isWindowTranslationEnabled());
+
+  connect(settings, SIGNAL(gameEncodingChanged(QString)), win, SLOT(setEncoding(QString)));
+  connect(settings, SIGNAL(windowTextVisibleChanged(bool)), win, SLOT(setTextVisible(bool)));
+  connect(settings, SIGNAL(windowTranscodingEnabledChanged(bool)), win, SLOT(setTranscodingEnabled(bool)));
+  connect(settings, SIGNAL(windowTranslationEnabledChanged(bool)), win, SLOT(setTranslationEnabled(bool)));
+
+  connect(win, SIGNAL(translationRequested(QString)), rpc, SLOT(requestWindowTranslation(QString)));
   connect(rpc, SIGNAL(clearTranslationRequested()), win, SLOT(clearTranslation()));
   connect(rpc, SIGNAL(windowTranslationReceived(QString)), win, SLOT(updateTranslation(QString)));
+
+  win->setEnabled(settings->isWindowDriverNeeded()); // enable it at last
 }
 
 void MainDriverPrivate::createEmbedDriver()
@@ -91,7 +103,8 @@ void MainDriverPrivate::createEmbedDriver()
 
 void MainDriverPrivate::onDisconnected()
 {
-  settings->setWindowTranslationEnabled(false);
+  if (win)
+    win->setEnabled(false);
   //DOUT("pass");
   unload();
 }

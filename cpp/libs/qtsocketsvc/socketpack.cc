@@ -13,7 +13,7 @@ QByteArray SocketService::packStringList(const QStringList &l, const char *encod
   QByteArray head, body;
   head.append(packUInt32(l.size()));
   QTextCodec *codec = QTextCodec::codecForName(encoding);
-  foreach (const QString &s, l) {
+  foreach (const auto &s, l) {
     QByteArray data = codec->fromUnicode(s);
     head.append(packUInt32(data.size()));
     body.append(data);

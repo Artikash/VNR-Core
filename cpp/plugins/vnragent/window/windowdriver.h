@@ -22,9 +22,12 @@ signals:
 public slots:
   void updateTranslation(const QString &json); // {long hash : unicode translation}
   void clearTranslation();
-  void setEnable(bool t);
-public:
-  bool isEnabled() const;
+
+  void setEnabled(bool t);
+  void setTextVisible(bool t);
+  void setTranslationEnabled(bool t);
+  void setTranscodingEnabled(bool t);
+  void setEncoding(const QString &v);
 };
 
 // EOF
