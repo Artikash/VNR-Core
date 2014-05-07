@@ -354,6 +354,7 @@ class sakurakit(QObject):
       self.tr("Editable"), self.tr("editable"),
 
       self.tr("Slow"),
+      self.tr("slow"),
 
       self.tr("Public"),
       self.tr("Private"),

@@ -1,31 +1,24 @@
-// hijackfuncs_engine.cc
+// hijackfuncs_gdi32.cc
 // 4/30/2014 jichi
 #include "hijack/hijackfuncs_p.h"
+#include "hijack/hijackhelper.h"
 #include "util/codepage.h"
-#include "engine/engine.h"
-//#include <QtCore/QString>
-//#include <QtCore/QTextCodec>
 
 //#define FONT_ZHS "楷体_GB2312"
 //#define FONT_ZHS "KaiTi_GB2312"
 
-namespace { // unnamed
-
-
-} // namespace
-
 // This only works before starting the game
-HFONT WINAPI Hijack::MyCreateFontIndirectA(const LOGFONTA *lplf)
+HFONT WINAPI Hijack::myCreateFontIndirectA(const LOGFONTA *lplf)
 {
   HFONT ret = nullptr;
-  if (auto charSet = Util::currentCharSet())
-    if (auto p = AbstractEngine::instance())
+  if (auto p = HijackHelper::instance())
+    if (auto charSet = p->systemCharSet())
       if (p->isTranscodingNeeded() && lplf) {
-        LOGFONTA lf(*lplf);
-        //::strcpy(lf.lfFaceName, FONT_ZHS);
-        //lf.lfCharSet = GB2312_CHARSET;
-        lf.lfCharSet = charSet;
-        ret = ::CreateFontIndirectA(&lf);
+        LOGFONTA f(*lplf);
+        f.lfCharSet = charSet;
+        //:qstrcpy(f.lfFaceName, FONT_ZHS);
+        //f.lfCharSet = GB2312_CHARSET;
+        ret = ::CreateFontIndirectA(&f);
       }
   if (!ret)
     ret = ::CreateFontIndirectA(lplf);

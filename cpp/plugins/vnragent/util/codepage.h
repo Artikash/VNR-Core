@@ -34,8 +34,6 @@ const char *encodingForCodePage(uint cp);
 
 quint8 charSetForCodePage(uint cp);
 
-quint8 currentCharSet();
-
 } // namespace Util
 
 // EOF

@@ -6,14 +6,14 @@
 #include <windows.h>
 
 #define HIJACK_FUNCTIONS_INITIALIZER \
-   { "kernel32.dll", "GetProcAddress", ::GetProcAddress, Hijack::MyGetProcAddress }, \
-   { "kernel32.dll", "LoadLibraryA", ::LoadLibraryA, Hijack::MyLoadLibraryA }, \
-   { "kernel32.dll", "LoadLibraryW", ::LoadLibraryW, Hijack::MyLoadLibraryW }, \
-   { "kernel32.dll", "LoadLibraryExA", ::LoadLibraryExA, Hijack::MyLoadLibraryExA }, \
-   { "kernel32.dll", "LoadLibraryExW", ::LoadLibraryExW, Hijack::MyLoadLibraryExW }, \
-   { "user32.dll", "TrackPopupMenu", ::TrackPopupMenu, Hijack::MyTrackPopupMenu }, \
-   { "user32.dll", "TrackPopupMenuEx", ::TrackPopupMenuEx, Hijack::MyTrackPopupMenuEx }, \
-   { "gdi32.dll", "CreateFontIndirectA", ::CreateFontIndirectA, Hijack::MyCreateFontIndirectA }
+   { "kernel32.dll", "GetProcAddress", ::GetProcAddress, Hijack::FunctionInfomyGetProcAddress }, \
+   { "kernel32.dll", "LoadLibraryA", ::LoadLibraryA, Hijack::myLoadLibraryA }, \
+   { "kernel32.dll", "LoadLibraryW", ::LoadLibraryW, Hijack::myLoadLibraryW }, \
+   { "kernel32.dll", "LoadLibraryExA", ::LoadLibraryExA, Hijack::myLoadLibraryExA }, \
+   { "kernel32.dll", "LoadLibraryExW", ::LoadLibraryExW, Hijack::myLoadLibraryExW }, \
+   { "user32.dll", "TrackPopupMenu", ::TrackPopupMenu, Hijack::myTrackPopupMenu }, \
+   { "user32.dll", "TrackPopupMenuEx", ::TrackPopupMenuEx, Hijack::myTrackPopupMenuEx }, \
+   { "gdi32.dll", "CreateFontIndirectA", ::CreateFontIndirectA, Hijack::myCreateFontIndirectA }
    //{ "gdi32.dll", "CreateFontIndirectW", ::CreateFontIndirectW, Hijack::MyCreateFontIndirectW }
 
 namespace Hijack {
@@ -28,24 +28,27 @@ struct FunctionInfo {
 void overrideModuleFunctions(HMODULE hModule);
 void restoreModuleFunctions(HMODULE hModule);
 
+// Return my function used to override proc name
+LPVOID getOverridingFunctionAddress(HMODULE hModule, LPCSTR lpProcName);
+
 // - KERNEL32 -
 
-LPVOID WINAPI MyGetProcAddress(
+LPVOID WINAPI myGetProcAddress(
   _In_ HMODULE hModule,
   _In_ LPCSTR lpProcName
 );
-HMODULE WINAPI MyLoadLibraryA(
+HMODULE WINAPI myLoadLibraryA(
   _In_  LPCSTR lpFileName
 );
-HMODULE WINAPI MyLoadLibraryW(
+HMODULE WINAPI myLoadLibraryW(
   _In_  LPCWSTR lpFileName
 );
-HMODULE WINAPI MyLoadLibraryExA(
+HMODULE WINAPI myLoadLibraryExA(
   _In_ LPCSTR lpFileName,
   __reserved HANDLE hFile,  // _Reserved_ not supported in MSVC 2010
   _In_ DWORD dwFlags
 );
-HMODULE WINAPI MyLoadLibraryExW(
+HMODULE WINAPI myLoadLibraryExW(
   _In_ LPCWSTR lpFileName,
   __reserved HANDLE hFile,
   _In_ DWORD dwFlags
@@ -53,7 +56,7 @@ HMODULE WINAPI MyLoadLibraryExW(
 
 // - USER32 -
 
-BOOL WINAPI MyTrackPopupMenu(
+BOOL WINAPI myTrackPopupMenu(
   _In_ HMENU hMenu,
   _In_ UINT uFlags,
   _In_ int x,
@@ -62,7 +65,7 @@ BOOL WINAPI MyTrackPopupMenu(
   _In_ HWND hWnd,
   _In_opt_ CONST RECT *prcRect
 );
-BOOL WINAPI MyTrackPopupMenuEx(
+BOOL WINAPI myTrackPopupMenuEx(
   _In_ HMENU hMenu,
   _In_ UINT uFlags,
   _In_ int x,
@@ -73,7 +76,7 @@ BOOL WINAPI MyTrackPopupMenuEx(
 
 // - GDI32 -
 
-HFONT WINAPI MyCreateFontIndirectA(
+HFONT WINAPI myCreateFontIndirectA(
   _In_  const LOGFONTA *lplf
 );
 

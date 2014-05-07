@@ -55,6 +55,8 @@ void MainDriverPrivate::createHijackDriver()
   if (hijack)
     return;
   hijack = new HijackDriver(this);
+  hijack->setEncoding(settings->gameEncoding());
+  connect(settings, SIGNAL(gameEncodingChanged(QString)), hijack, SLOT(setEncoding(QString)));
 }
 
 void MainDriverPrivate::createWindowDriver()

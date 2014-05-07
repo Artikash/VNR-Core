@@ -1,10 +1,10 @@
-// hijack_ui.cc
+// hijackfuncs_user32.cc
 // 1/27/2013 jichi
 #include "hijack/hijackfuncs_p.h"
 #include "window/windowdriver_p.h"
 
 // FIXME: This function is not thread-safe
-BOOL WINAPI Hijack::MyTrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, int nReserved, HWND hWnd, CONST RECT * prcRect)
+BOOL WINAPI Hijack::myTrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, int nReserved, HWND hWnd, CONST RECT *prcRect)
 {
   //if (HANDLE hThread = CreateThread(0, 0, TranslateMenuThreadProc, hMenu, 0, 0))
   //  CloseHandle(hThread);
@@ -14,7 +14,7 @@ BOOL WINAPI Hijack::MyTrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, int
 }
 
 // FIXME: This function is not thread-safe
-BOOL WINAPI Hijack::MyTrackPopupMenuEx(HMENU hMenu, UINT uFlags, int x, int y, HWND hWnd, LPTPMPARAMS lptpm)
+BOOL WINAPI Hijack::myTrackPopupMenuEx(HMENU hMenu, UINT uFlags, int x, int y, HWND hWnd, LPTPMPARAMS lptpm)
 {
   //if (HANDLE hThread = CreateThread(0, 0, TranslateMenuThreadProc, hMenu, 0, 0))
   //  CloseHandle(hThread);

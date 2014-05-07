@@ -74,13 +74,4 @@ quint8 Util::charSetForCodePage(uint cp)
   }
 }
 
-quint8 Util::currentCharSet()
-{
-  enum { INVALID_CHARSET = 99 };
-  static quint8 ret = INVALID_CHARSET;
-  if (ret == INVALID_CHARSET)
-    ret = charSetForCodePage(::GetACP());
-  return ret;
-}
-
 // EOF

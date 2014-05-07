@@ -76,10 +76,9 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
 #else
     if (HWND winId = waitForWindowReady_())
       WinTimer::setGlobalWindow(winId);
-    else {
+    else
       //growl::error("failed to find main window");
       return FALSE;
-    }
 
     // It is critical to launch Qt application in the same thread as main window
     WinTimer::singleShot(100, [hInstance] {

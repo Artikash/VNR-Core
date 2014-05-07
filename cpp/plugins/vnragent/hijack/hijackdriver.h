@@ -18,6 +18,10 @@ public:
   ~HijackDriver();
 
   void unload();
+
+public slots:
+  void setEncoding(const QString &v);
+
 private slots:
   void refresh();
 };

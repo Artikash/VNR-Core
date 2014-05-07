@@ -62,6 +62,7 @@ HEADERS += \
   hijack/hijackdriver.h \
   hijack/hijackfuncs.h \
   hijack/hijackfuncs_p.h \
+  hijack/hijackhelper.h \
   window/windowdriver.h \
   window/windowdriver_p.h \
   window/windowhash.h \
@@ -85,8 +86,10 @@ SOURCES += \
   engine/engineloader.cc \
   hijack/hijackdriver.cc \
   hijack/hijackfuncs.cc \
-  hijack/hijackfuncs_ui.cc \
-  hijack/hijackfuncs_engine.cc \
+  hijack/hijackfuncs_gdi32.cc \
+  hijack/hijackfuncs_kernel32.cc \
+  hijack/hijackfuncs_user32.cc \
+  hijack/hijackhelper.cc \
   window/windowdriver.cc \
   window/windowdriver_p.cc \
   window/windowmanager.cc \
