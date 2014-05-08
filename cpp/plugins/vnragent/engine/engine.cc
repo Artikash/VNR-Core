@@ -99,6 +99,8 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool 
   p->addText(text, hash, role, repl.isEmpty());
   if (blocking && repl.isEmpty())
     repl = p->waitForTranslation(hash, role);
+  if (repl.isEmpty())
+    repl = text;
 
   return d_->encode(repl);
 }
@@ -114,6 +116,8 @@ QString AbstractEngine::dispatchTextW(const QString &text, int role, bool blocki
   p->addText(text, hash, role, repl.isEmpty());
   if (blocking && repl.isEmpty())
     repl = p->waitForTranslation(hash, role);
+  if (repl.isEmpty())
+    repl = text;
 
   return repl;
 }

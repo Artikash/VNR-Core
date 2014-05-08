@@ -27,7 +27,7 @@ public:
   typedef win_mutex<CRITICAL_SECTION> mutex_type;
   mutex_type mutex;
 
-  QHash<qint64, QString> trs;   // cached, {key:text}
+  QHash<qint64, QString> translations;   // cached, {key:text}
 
   EmbedManagerPrivate()
     : sleepEvent(ENGINE_SLEEP_EVENT) {}
@@ -73,14 +73,14 @@ EmbedManager::~EmbedManager()
 void EmbedManager::clearTranslation()
 {
   D_SYNCHRONIZE
-  d_->trs.clear();
+  d_->translations.clear();
 }
 
 void EmbedManager::updateTranslation(const QString &text, qint64 hash, int role)
 {
   D_SYNCHRONIZE
   qint64 key = Engine::hashTextKey(hash, role);
-  d_->trs[key] = text;
+  d_->translations[key] = text;
   d_->notify();
 }
 
@@ -100,7 +100,7 @@ QString EmbedManager::findTranslation(qint64 hash, int role) const
 {
   D_SYNCHRONIZE
   qint64 key = Engine::hashTextKey(hash, role);
-  return d_->trs.value(key);
+  return d_->translations.value(key);
 }
 
 QString EmbedManager::waitForTranslation(qint64 hash, int role) const
@@ -109,6 +109,7 @@ QString EmbedManager::waitForTranslation(qint64 hash, int role) const
   QString ret = findTranslation(hash, role);
   if (ret.isEmpty()) {
     d_->sleep();
+
     //if (RpcClient::instance()->waitForDataReceived(WaitTime))
     ret = findTranslation(hash, role);
   }
@@ -117,15 +118,15 @@ QString EmbedManager::waitForTranslation(qint64 hash, int role) const
 
   //D_SYNCHRONIZE
   //qint64 key = Engine::hashTextKey(hash, role);
-  //auto it = d_->trs.constFind(key);
-  //if (it == d_->trs.constEnd()) { // FIXME: supposed to be while
-  ////while (it == d_->trs.constEnd()) {
+  //auto it = d_->translations.constFind(key);
+  //if (it == d_->translations.constEnd()) { // FIXME: supposed to be while
+  ////while (it == d_->translations.constEnd()) {
   //  d_->unlock();
   //  d_->sleep();
   //  d_->lock();
-  //  it = d_->trs.constFind(key);
+  //  it = d_->translations.constFind(key);
   //}
-  //return it == d_->trs.constEnd() ? QString() : it.value();
+  //return it == d_->translations.constEnd() ? QString() : it.value();
 
 // EOF
 

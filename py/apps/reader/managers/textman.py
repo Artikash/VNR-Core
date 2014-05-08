@@ -759,11 +759,12 @@ class TextManager(QObject):
       d.showScenarioText(rawData, renderedData)
     #d.locked = False
 
-  def addAgentText(self, text, rawHash, role):
+  def addAgentText(self, text, rawHash, role, needsTranslation):
     """
     @param  text  unicode
     @param  rawHash  str
     @param  role  int
+    @param  needsTranslation  bool
     """
     d = self.__d
     if not d.enabled:
@@ -780,10 +781,10 @@ class TextManager(QObject):
     #elif role == NAME_THREAD_TYPE:
     #  pass
     #elif role == OTHER_THREAD_TYPE:
-    if True:
+    if needsTranslation:
       sub, lang, provider = trman.manager().translateOne(text, async=True, online=True)
       if sub:
-        self.agentTranslationProcessed.emit(sub, text, rawHash, role)
+        self.agentTranslationProcessed.emit(sub, rawHash, role)
 
   def encoding(self): return self.__d.encoding
   def setEncoding(self, encoding):

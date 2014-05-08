@@ -123,7 +123,7 @@ class RpcServer(QObject):
   windowTextsReceived = Signal(dict) # {long hash:unicode text}
   engineReceived = Signal(str) # name
   #engineTextReceived = Signal(unicode, c_longlong, int) # text, hash, role
-  engineTextReceived = Signal(unicode, str, int) # text, hash, role
+  engineTextReceived = Signal(unicode, str, int, bool) # text, hash, role, needsTranslation
 
   def isAgentConnected(self): return bool(self.__d.agentSocket)
   def closeAgent(self): self.__d.closeAgentSocket()
@@ -292,7 +292,7 @@ class _RpcServer(object):
       #hash = _unmarshalInteger(hash) # delay convert it to number
       role = _unmarshalInteger(role)
       trans = _unmarshalBool(trans)
-      self.q.engineTextReceived.emit(text, hash, role)
+      self.q.engineTextReceived.emit(text, hash, role, trans)
       #if trans:
       #  print role, len(text)
       #  text = u'简体中文' + text

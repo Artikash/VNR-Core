@@ -161,6 +161,8 @@ void RpcClientPrivate::onCall(const QStringList &args)
     , H_ENG_TEXT    = 81604852      // "engine.text"
   };
 
+  //DOUT("cmd:" << args.first());
+
   switch (qHash(args.first())) {
   case H_PING:          break;
   case H_DETACH:        q_->emit detachRequested(); break;
@@ -188,7 +190,7 @@ void RpcClientPrivate::onCall(const QStringList &args)
     if (args.size() == 4) {
       QString text = args[1];
       qint64 hash = unmarshalLongLong(args[2]);
-      int role = unmarshalLongLong(args[3]);
+      int role = unmarshalInt(args[3]);
       q_->emit engineTranslationReceived(text, hash, role);
     }
     break;
