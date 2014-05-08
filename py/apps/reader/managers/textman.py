@@ -765,11 +765,25 @@ class TextManager(QObject):
     @param  rawHash  str
     @param  role  int
     """
-    if isinstance(rawHash, str) or isinstance(rawHash, unicode):
-      try: rawHash = long(rawHash)
-      except ValueError:
-        dwarn("failed to parse text hash: %s" % rawHash)
-        return
+    d = self.__d
+    if not d.enabled:
+      return
+
+    #if isinstance(rawHash, str) or isinstance(rawHash, unicode):
+    #  try: rawHash = long(rawHash)
+    #  except ValueError:
+    #    dwarn("failed to parse text hash: %s" % rawHash)
+    #    return
+
+    #if role == SCENARIO_THREAD_TYPE:
+    #  pass
+    #elif role == NAME_THREAD_TYPE:
+    #  pass
+    #elif role == OTHER_THREAD_TYPE:
+    if True:
+      sub, lang, provider = trman.manager().translateOne(text, async=True, online=True)
+      if sub:
+        self.agentTranslationProcessed.emit(sub, text, rawHash, role)
 
   def encoding(self): return self.__d.encoding
   def setEncoding(self, encoding):
