@@ -32,10 +32,10 @@ void Util::debugMsgHandler(QtMsgType type, const char *msg)
 
   QString output;
   switch (type) {
-  case QtDebugMsg:    output = QString("%1: %2\n").arg(DEBUG_TIMESTAMP).arg(msg); break;
-  case QtWarningMsg:  output = QString("%1: warning: %2\n").arg(DEBUG_TIMESTAMP).arg(msg); break;
-  case QtCriticalMsg: output = QString("%1: critical: %2\n").arg(DEBUG_TIMESTAMP).arg(msg); break;
-  case QtFatalMsg:    output = QString("%1: fatal: %2\n").arg(DEBUG_TIMESTAMP).arg(msg); break;
+  case QtDebugMsg:    output = QString("%1: %2\n").arg(DEBUG_TIMESTAMP, msg); break;
+  case QtWarningMsg:  output = QString("%1: warning: %2\n").arg(DEBUG_TIMESTAMP, msg); break;
+  case QtCriticalMsg: output = QString("%1: critical: %2\n").arg(DEBUG_TIMESTAMP, msg); break;
+  case QtFatalMsg:    output = QString("%1: fatal: %2\n").arg(DEBUG_TIMESTAMP, msg); break;
   default: return;
   }
 

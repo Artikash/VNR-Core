@@ -31,7 +31,7 @@ BOOL WINAPI Hijack::myTrackPopupMenuEx(HMENU hMenu, UINT uFlags, int x, int y, H
 static int i = 0;
 BOOL WINAPI MyTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString)
 {
-  //growl::warn(QString("%1, %2").arg(QString::number(nXStart)).arg(QString::number(nYStart)));
+  //growl::warn(QString("%1, %2").arg(QString::number(nXStart), QString::number(nYStart)));
   int j = i++;
   if (j < 0)
     return true;

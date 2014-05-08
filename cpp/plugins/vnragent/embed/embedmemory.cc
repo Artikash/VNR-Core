@@ -5,7 +5,7 @@
 #include "embed/embedmemory.h"
 #include <QtCore/QCoreApplication>
 
-// Helprs
+// Helpers
 
 namespace { // unamed
 
