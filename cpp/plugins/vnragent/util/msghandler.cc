@@ -16,7 +16,9 @@ QString Util::debugFileLocation()
 {
   static QString ret;
   if (ret.isEmpty()) {
-    ret = desktopLocation();
+    ret = vnrLocation();
+    if (ret.isEmpty())
+      ret = desktopLocation();
     if (!ret.isEmpty())
       ret.append(QDir::separator());
     ret.append(DEBUG_FILE);
