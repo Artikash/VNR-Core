@@ -107,10 +107,10 @@ template <typename _Cond>
     void wait(_Mutex &mutex, _Pred pred) {}
 
     template <typename _Mutex>
-    wait_status wait_for(mutex_type &mutex, int msecs) {}
+    wait_status wait_for(_Mutex &mutex, int msecs) {}
 
     template <typename _Mutex, typename _Pred>
-    wait_status wait_for(mutex_type &mutex, int msecs, _Pred pred) {}
+    wait_status wait_for(_Mutex &mutex, int msecs, _Pred pred) {}
   };
 
 // See: http://en.cppreference.com/w/cpp/thread/condition_variable
@@ -143,11 +143,11 @@ template <>
     { while (!pred()) wait(mutex); }
 
     template <typename _Mutex>
-    wait_status wait_for(mutex_type &mutex, int msecs)
+    wait_status wait_for(_Mutex &mutex, int msecs)
     { return ::SleepConditionVariableCS(&_M_cond, mutex.native_handle(), msecs) ? no_timeout : timeout; }
 
     template <typename _Mutex, typename _Pred>
-    wait_status wait_for(mutex_type &mutex, int msecs, _Pred pred)
+    wait_status wait_for(_Mutex &mutex, int msecs, _Pred pred)
     {
       auto start = ::GetTickCount();
       while (!pred()) {

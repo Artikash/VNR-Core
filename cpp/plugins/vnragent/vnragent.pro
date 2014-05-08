@@ -37,6 +37,7 @@ QT      -= gui
 #INCLUDEPATH += $$D3D_HOME/include
 #LIBS    += -ld3d9 -L$$D3D_HOME/lib/x86
 
+#LIBS    += -lkernel32
 #LIBS    += -luser32 -lpsapi
 LIBS    += -lgdi32   # needed by game engines
 LIBS    += -lshell32 # needed by get system path

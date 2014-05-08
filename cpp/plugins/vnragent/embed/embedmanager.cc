@@ -41,28 +41,25 @@ public:
   // Sleep 10*100 = 1 second
   enum { SleepTimeout = 100 };
   enum { SleepCount = 10 };
-  //void sleep(int interval = SleepTimeout, int count = SleepCount)
+  void sleep(int interval = SleepTimeout, int count = SleepCount)
+  {
+    sleepEvent.signal(false);
+    for (int i = 0; !sleepEvent.wait(interval) && i < count; i++);
+    //sleepEvent.signal(false);
+  }
+
+  void notify() { sleepEvent.signal(true); }
+
+  //mutex_type sleepMutex;
+  //typedef win_mutex_cond<CONDITION_VARIABLE> cond_type;
+  //cond_type sleepCond;
+  //void sleep()
   //{
-  //  sleepEvent.signal(false);
-  //  for (int i = 0; !sleepEvent.wait(interval) && i < count; i++);
-  //  //sleepEvent.signal(false);
+  //  sleepMutex.lock();
+  //  sleepCond.wait_for(sleepMutex, SleepTimeout * SleepCount);
   //}
 
-  //void notify() { sleepEvent.signal(true); }
-
-  mutex_type sleepMutex;
-  typedef win_mutex_cond<CONDITIONAL_VARIABLE> cond_type;
-  cond_type sleepCond;
-  void sleep()
-  {
-    sleepMutex.lock();
-    sleepCond.wait_for(sleepMutex, SleepTimeout * SleepCount);
-  }
-
-  void notify()
-  {
-    sleepCond.notify_all();
-  }
+  //void notify() { sleepCond.notify_all(); }
 };
 
 /** Public class */
