@@ -113,6 +113,7 @@ template <typename _Cond>
     wait_status wait_for(_Mutex &mutex, int msecs, _Pred pred) {}
   };
 
+// Note: Conditional variables are NOT availabe on Windows XP/2003
 // See: http://en.cppreference.com/w/cpp/thread/condition_variable
 // See: http://msdn.microsoft.com/en-us/library/windows/desktop/ms686903%28v=vs.85%29.aspx
 template <>
