@@ -4,6 +4,7 @@
 #include "window/windowmanager.h"
 #include "window/windowhash.h"
 #include "util/codepage.h"
+#include "util/textutil.h"
 #include "qtjson/qtjson.h"
 #include "QxtCore/QxtJSON"
 #include <QtCore/QTextCodec>
@@ -192,7 +193,10 @@ void WindowManager::clearTranslation()
 void WindowManager::addEntry(const QByteArray &data, const QString &text, qint64 hash, ulong anchor, uint role)
 {
   d_->entries.append(TextEntry(data, text, hash, anchor, role));
-  d_->touchTexts();
+  if (Util::needsTranslation(text))
+    d_->touchTexts();
+  else
+    d_->translations[hash] = text;
 }
 
 void WindowManager::sendDirtyTexts()

@@ -6,6 +6,7 @@
 #include "engine/engineloader.h"
 #include "embed/embedmanager.h"
 #include "util/codepage.h"
+#include "util/textutil.h"
 #include <qt_windows.h>
 #include <QtCore/QTextCodec>
 
@@ -92,6 +93,9 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool 
   QString text = d_->decode(data);
   if (text.isEmpty())
     return data;
+
+  if (role == Engine::OtherRole && !Util::needsTranslation(text))
+    return d_->encode(text);
 
   qint64 hash = Engine::hashByteArray(data);
   auto p = EmbedManager::instance();
