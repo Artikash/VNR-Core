@@ -2,11 +2,15 @@
 // 1/27/2013 jichi
 #include "hijack/hijackfuncs_p.h"
 
+#ifdef _MSC_VER
+# pragma warning(disable:4800) // C4800: forcing value to bool
+#endif // _MSC_VER
+
 // - My Functions -
 
 HMODULE WINAPI Hijack::myLoadLibraryA(_In_ LPCSTR lpFileName)
 {
-  BOOL loaded = ::GetModuleHandleA(lpFileName); // this is the first load
+  bool loaded = ::GetModuleHandleA(lpFileName); // this is the first load
   HMODULE ret = ::LoadLibraryA(lpFileName);
   if (ret && !loaded)
     overrideModuleFunctions(ret);
@@ -15,7 +19,7 @@ HMODULE WINAPI Hijack::myLoadLibraryA(_In_ LPCSTR lpFileName)
 
 HMODULE WINAPI Hijack::myLoadLibraryW(_In_ LPCWSTR lpFileName)
 {
-  BOOL loaded = ::GetModuleHandleW(lpFileName); // this is the first load
+  bool loaded = ::GetModuleHandleW(lpFileName); // this is the first load
   HMODULE ret = ::LoadLibraryW(lpFileName);
   if (ret && !loaded)
     overrideModuleFunctions(ret);
@@ -24,7 +28,7 @@ HMODULE WINAPI Hijack::myLoadLibraryW(_In_ LPCWSTR lpFileName)
 
 HMODULE WINAPI Hijack::myLoadLibraryExA(_In_ LPCSTR lpFileName, __reserved HANDLE hFile, _In_ DWORD dwFlags)
 {
-  BOOL loaded = ::GetModuleHandleA(lpFileName); // this is the first load
+  bool loaded = ::GetModuleHandleA(lpFileName); // this is the first load
   HMODULE ret = ::LoadLibraryExA(lpFileName, hFile, dwFlags);
   if (ret && !loaded)
     overrideModuleFunctions(ret);
@@ -33,7 +37,7 @@ HMODULE WINAPI Hijack::myLoadLibraryExA(_In_ LPCSTR lpFileName, __reserved HANDL
 
 HMODULE WINAPI Hijack::myLoadLibraryExW(_In_ LPCWSTR lpFileName, __reserved HANDLE hFile, _In_ DWORD dwFlags)
 {
-  BOOL loaded = ::GetModuleHandleW(lpFileName); // this is the first load
+  bool loaded = ::GetModuleHandleW(lpFileName); // this is the first load
   HMODULE ret = ::LoadLibraryExW(lpFileName, hFile, dwFlags);
   if (ret && !loaded)
     overrideModuleFunctions(ret);
@@ -42,7 +46,7 @@ HMODULE WINAPI Hijack::myLoadLibraryExW(_In_ LPCWSTR lpFileName, __reserved HAND
 
 LPVOID WINAPI Hijack::myGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
 {
-  if (LPVOID *ret = getOverridingFunctionAddress(hModule, lpprocName))
+  if (LPVOID ret = getOverridingFunctionAddress(hModule, lpProcName))
     return ret;
   return ::GetProcAddress(hModule, lpProcName);
 }

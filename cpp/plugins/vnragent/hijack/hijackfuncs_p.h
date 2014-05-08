@@ -6,7 +6,7 @@
 #include <windows.h>
 
 #define HIJACK_FUNCTIONS_INITIALIZER \
-   { "kernel32.dll", "GetProcAddress", ::GetProcAddress, Hijack::FunctionInfomyGetProcAddress }, \
+   { "kernel32.dll", "GetProcAddress", ::GetProcAddress, Hijack::myGetProcAddress }, \
    { "kernel32.dll", "LoadLibraryA", ::LoadLibraryA, Hijack::myLoadLibraryA }, \
    { "kernel32.dll", "LoadLibraryW", ::LoadLibraryW, Hijack::myLoadLibraryW }, \
    { "kernel32.dll", "LoadLibraryExA", ::LoadLibraryExA, Hijack::myLoadLibraryExA }, \

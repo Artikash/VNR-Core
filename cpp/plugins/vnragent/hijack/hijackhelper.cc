@@ -21,7 +21,7 @@ public:
     , encodingEnabled(true)
   {
     systemCodePage = ::GetACP();
-    systemCharSet = Util::charSetForCodePage(sysetmCodePage);
+    systemCharSet = Util::charSetForCodePage(systemCodePage);
   }
 };
 

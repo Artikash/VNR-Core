@@ -6,9 +6,9 @@
 #include "winiter/winiterps.h"
 #include <boost/foreach.hpp>
 
-//#ifdef _MSC_VER
-//# pragma warning (disable:4996)   // C4996: use POSIX function (wcscat)
-//#endif // _MSC_VER
+#ifdef _MSC_VER
+# pragma warning (disable:4996)   // C4996: use POSIX function (wcsnimp)
+#endif // _MSC_VER
 
 // - Helpers -
 
@@ -100,15 +100,14 @@ void Hijack::restoreModuleFunctions(HMODULE hModule)
     WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.oldFunctionAddress);
 }
 
-LPVOID Hijack::getOverridingFunctionAddress(HMODULE hModule, LPCSTR lpProcName);
+LPVOID Hijack::getOverridingFunctionAddress(HMODULE hModule, LPCSTR lpProcName)
 {
   char modulePath[MAX_PATH];
-  if (::GetModuleFileNameA(hModule, modulePath, MAX_PATH)) {
-    const char *moduleName = ::basename(modulePath);
-    BOOST_FOREACH (const auto &fn, HIJACK_FUNCTIONS)
-      if (!::stricmp(moduleName, fn.moduleName) && !::stricmp(lpProcName, fn.functionName))
-        return fn.newFunctionAddress;
-  }
+  if (::GetModuleFileNameA(hModule, modulePath, MAX_PATH))
+    if (const char *moduleName = ::basename(modulePath))
+      BOOST_FOREACH (const auto &fn, HIJACK_FUNCTIONS)
+        if (!::stricmp(moduleName, fn.moduleName) && !::stricmp(lpProcName, fn.functionName))
+          return fn.newFunctionAddress;
   return nullptr;
 }
 

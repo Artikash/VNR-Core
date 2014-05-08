@@ -19,7 +19,7 @@ public:
   ~HijackHelper();
 
   void setEncoding(const QString &v);
-  bool setEncodingEnabled(bool t);
+  void setEncodingEnabled(bool t);
 
   bool isTranscodingNeeded() const;
 
