@@ -19,7 +19,7 @@
 namespace { // unnamed
 enum { MAX_ENTRY = 0x40 };
 
-#define HM_SYNC win_mutex_lock<HookManager::mutex_type> d_locker(hmcs) // Synchronized scope for accessing private data
+#define HM_LOCK win_mutex_lock<HookManager::mutex_type> d_locker(hmcs) // Synchronized scope for accessing private data
 // jichi 9/23/2013: wine deficenciy on mapping sections
 // Whe set to false, do not map sections.
 //bool ith_has_section = true;
@@ -349,7 +349,7 @@ void HookManager::SelectCurrent(DWORD num)
 }
 void HookManager::RemoveSingleHook(DWORD pid, DWORD addr)
 {
-  HM_SYNC;
+  HM_LOCK;
   //ConsoleOutput("vnrsrv:RemoveSingleHook: lock");
   //EnterCriticalSection(&hmcs);
   DWORD max = thread_table->Used();
@@ -390,7 +390,7 @@ void HookManager::RemoveSingleThread(DWORD number)
 {
   if (number == 0)
     return;
-  HM_SYNC;
+  HM_LOCK;
   //ConsoleOutput("vnrsrv:RemoveSingleThread: lock");
   //EnterCriticalSection(&hmcs);
   if (TextThread *it = thread_table->FindThread(number)) {
@@ -424,7 +424,7 @@ void HookManager::RemoveSingleThread(DWORD number)
 
 void HookManager::RemoveProcessContext(DWORD pid)
 {
-  HM_SYNC;
+  HM_LOCK;
   bool flag = false;
   //ConsoleOutput("vnrsrv:RemoveProcessContext: lock");
   //EnterCriticalSection(&hmcs);
@@ -481,7 +481,7 @@ void HookManager::RegisterPipe(HANDLE text, HANDLE cmd, HANDLE thread)
 }
 void HookManager::RegisterProcess(DWORD pid, DWORD hookman, DWORD module, DWORD engine)
 {
-  HM_SYNC;
+  HM_LOCK;
   wchar_t str[0x40],
           path[MAX_PATH];
   //pid_map->Set(pid>>2);
@@ -553,7 +553,7 @@ void HookManager::RegisterProcess(DWORD pid, DWORD hookman, DWORD module, DWORD 
 
 void HookManager::UnRegisterProcess(DWORD pid)
 {
-  HM_SYNC;
+  HM_LOCK;
   //ConsoleOutput("vnrsrv:UnRegisterProcess: lock");
   //EnterCriticalSection(&hmcs);
 
@@ -625,7 +625,7 @@ void HookManager::UnRegisterProcess(DWORD pid)
 
 void HookManager::AddLink(WORD from, WORD to)
 {
-  HM_SYNC;
+  HM_LOCK;
   //bool flag=false;
   //ConsoleOutput("vnrsrv:AddLink: lock");
   //EnterCriticalSection(&hmcs);
@@ -655,7 +655,7 @@ void HookManager::AddLink(WORD from, WORD to)
 }
 void HookManager::UnLink(WORD from)
 {
-  HM_SYNC;
+  HM_LOCK;
   //bool flag=false;
   //ConsoleOutput("vnrsrv:UnLink: lock");
   //EnterCriticalSection(&hmcs);
@@ -671,7 +671,7 @@ void HookManager::UnLink(WORD from)
 }
 void HookManager::UnLinkAll(WORD from)
 {
-  HM_SYNC;
+  HM_LOCK;
   //bool flag=false;
   //ConsoleOutput("vnrsrv:UnLinkAll: lock");
   //EnterCriticalSection(&hmcs);
@@ -693,7 +693,7 @@ void HookManager::DispatchText(DWORD pid, const BYTE *text, DWORD hook, DWORD re
   // jichi 20/27/2013: When PID is zero, the text comes from console, which I don't need
   if (!text || !pid || (len <= 0 && !space))
     return;
-  HM_SYNC;
+  HM_LOCK;
   //bool flag=false;
   ThreadParameter tp = {pid, hook, retn, spl};
   //ConsoleOutput("vnrsrv:DispatchText: lock");
@@ -738,7 +738,7 @@ void HookManager::DispatchText(DWORD pid, const BYTE *text, DWORD hook, DWORD re
 
 void HookManager::ClearText(DWORD pid, DWORD hook, DWORD retn, DWORD spl)
 {
-  HM_SYNC;
+  HM_LOCK;
   //bool flag=false;
   //ConsoleOutput("vnrsrv:ClearText: lock");
   //EnterCriticalSection(&hmcs);
@@ -757,7 +757,7 @@ void HookManager::ClearText(DWORD pid, DWORD hook, DWORD retn, DWORD spl)
 }
 void HookManager::ClearCurrent()
 {
-  HM_SYNC;
+  HM_LOCK;
   //ConsoleOutput("vnrsrv:ClearCurrent: lock");
   //EnterCriticalSection(&hmcs);
   if (current) {
@@ -771,7 +771,7 @@ void HookManager::ClearCurrent()
 }
 void HookManager::ResetRepeatStatus()
 {
-  HM_SYNC;
+  HM_LOCK;
   //ConsoleOutput("vnrsrv:ResetRepeatStatus: lock");
   //EnterCriticalSection(&hmcs);
   for (int i = 1; i < thread_table->Used(); i++)
@@ -797,7 +797,7 @@ void HookManager::ResetRepeatStatus()
 
 ProcessRecord *HookManager::GetProcessRecord(DWORD pid)
 {
-  HM_SYNC;
+  HM_LOCK;
   //EnterCriticalSection(&hmcs);
   for (int i = 0; i < MAX_REGISTER; i++)
     if (record[i].pid_register == pid)
@@ -823,7 +823,7 @@ DWORD HookManager::GetCurrentPID() { return current_pid; }
 
 HANDLE HookManager::GetCmdHandleByPID(DWORD pid)
 {
-  HM_SYNC;
+  HM_LOCK;
   //EnterCriticalSection(&hmcs);
   for (int i = 0; i < MAX_REGISTER; i++)
     if (record[i].pid_register == pid)

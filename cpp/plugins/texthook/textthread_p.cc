@@ -17,7 +17,7 @@ enum { ITH_MAX_THREAD_NAME = 0x200 }; // used internally by ITH
 
 /** Private class */
 
-#define D_SYNC_SCOPE D::mutex_lock_type d_lock(D::globalMutex) // Synchronized scope for accessing private data
+#define D_LOCK win_mutex_lock<D::mutex_type> d_lock(D::globalMutex) // Synchronized scope for accessing private data
 
 class TextThreadDelegatePrivate
 {
@@ -26,7 +26,6 @@ class TextThreadDelegatePrivate
 
 public:
   typedef win_mutex<CRITICAL_SECTION> mutex_type;
-  typedef win_mutex_lock<mutex_type> mutex_lock_type;
 
   static mutex_type globalMutex; // Used only in public class. Because ITH is running in another single thread
   static int globalCapacity; // maximum text size
@@ -327,20 +326,20 @@ void TextThreadDelegate::setParentWindow(WId winId)
 
 void TextThreadDelegate::flush()
 {
-  D_SYNC_SCOPE;
+  D_LOCK;
   d_->flush();
   d_->syncGlobal();
 }
 
 void TextThreadDelegate::touch()
 {
-  D_SYNC_SCOPE;
+  D_LOCK;
   d_->flushTimer.start();
 }
 
 void TextThreadDelegate::append(const char *data, int len, bool space)
 {
-  D_SYNC_SCOPE;
+  D_LOCK;
   if (space && D::globalKeepsSpace)
     d_->appendSpace();
   if (data && len) {

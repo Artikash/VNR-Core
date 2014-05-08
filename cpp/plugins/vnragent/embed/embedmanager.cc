@@ -13,7 +13,7 @@
 //#include "debug.h"
 
 #define ENGINE_SLEEP_EVENT "vnragent_engine_sleep"
-#define D_SYNCHRONIZE  win_mutex_lock<D::mutex_type> d_lock(d_->mutex);
+#define D_LOCK win_mutex_lock<D::mutex_type> d_lock(d_->mutex)
 
 #define DEBUG "EmbedManager"
 #include "sakurakit/skdebug.h"
@@ -83,13 +83,13 @@ EmbedManager::~EmbedManager()
 
 void EmbedManager::clearTranslation()
 {
-  D_SYNCHRONIZE
+  D_LOCK;
   d_->translations.clear();
 }
 
 void EmbedManager::updateTranslation(const QString &text, qint64 hash, int role)
 {
-  D_SYNCHRONIZE
+  D_LOCK;
   qint64 key = Engine::hashTextKey(hash, role);
   d_->translations[key] = text;
   d_->notify();
@@ -109,7 +109,7 @@ void EmbedManager::addText(const QString &text, qint64 hash, int role, bool need
 
 QString EmbedManager::findTranslation(qint64 hash, int role) const
 {
-  D_SYNCHRONIZE
+  D_LOCK;
   qint64 key = Engine::hashTextKey(hash, role);
   return d_->translations.value(key);
 }
@@ -131,7 +131,7 @@ QString EmbedManager::waitForTranslation(qint64 hash, int role) const
   return ret;
 }
 
-  //D_SYNCHRONIZE
+  //D_LOCK;
   //qint64 key = Engine::hashTextKey(hash, role);
   //auto it = d_->translations.constFind(key);
   //if (it == d_->translations.constEnd()) { // FIXME: supposed to be while
