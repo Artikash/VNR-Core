@@ -3,6 +3,8 @@
 
 TEMPLATE = subdirs
 
+SUBDIRS += test
+
 SUBDIRS += \
   hashtest \
   jsontest \
@@ -11,7 +13,6 @@ SUBDIRS += \
   uitest
 
 win32: SUBDIRS += \
-  test \
   sehtest
 
 # EOF
