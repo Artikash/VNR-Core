@@ -9,8 +9,9 @@ class VnrSharedMemoryPrivate
 {
 public:
   struct Head {
+    qint8 status;
     qint64 hash;
-    qint32 role;
+    qint8 role;
     qint32 textSize;
     wchar_t text[0];
   private:
@@ -18,8 +19,11 @@ public:
   };
 
   QSharedMemory *memory;
+
   explicit VnrSharedMemoryPrivate(QObject *parent)
     : memory(new QSharedMemory(parent)) {}
+  VnrSharedMemoryPrivate(const QString &key, QObject *parent)
+    : memory(new QSharedMemory(key, parent)) {}
 
   Head *head() { return reinterpret_cast<Head *>(memory->data()); }
   const Head *constHead() const { return reinterpret_cast<const Head *>(memory->constData()); }
@@ -32,6 +36,9 @@ public:
 
 VnrSharedMemory::VnrSharedMemory(QObject *parent)
   : Base(parent), d_(new D(this)) {}
+
+VnrSharedMemory::VnrSharedMemory(const QString &key, QObject *parent)
+  : Base(parent), d_(new D(key, this)) {}
 
 VnrSharedMemory::~VnrSharedMemory() { delete d_; }
 
@@ -61,10 +68,10 @@ bool VnrSharedMemory::hasError() const { return d_->memory->error() != QSharedMe
 const char *VnrSharedMemory::constData() const
 { return reinterpret_cast<const char *>(d_->memory->constData()); }
 
-int VnrSharedMemory::maximumTextSize() const
+int VnrSharedMemory::dataTextMaximumSize() const
 { return qMax(0, d_->maxTextSize()); }
 
-qint64 VnrSharedMemory::hash() const
+qint64 VnrSharedMemory::dataHash() const
 {
   if (auto h = d_->constHead())
     return h->hash;
@@ -72,13 +79,27 @@ qint64 VnrSharedMemory::hash() const
     return 0;
 }
 
-void VnrSharedMemory::setHash(qint64 v)
+void VnrSharedMemory::setDataHash(qint64 v)
 {
   if (auto h = d_->head())
     h->hash = v;
 }
 
-qint32 VnrSharedMemory::role() const
+qint8 VnrSharedMemory::dataStatus() const
+{
+  if (auto h = d_->constHead())
+    return h->status;
+  else
+    return 0;
+}
+
+void VnrSharedMemory::setDataStatus(qint8 v)
+{
+  if (auto h = d_->head())
+    h->status = v;
+}
+
+qint8 VnrSharedMemory::dataRole() const
 {
   if (auto h = d_->constHead())
     return h->role;
@@ -86,13 +107,13 @@ qint32 VnrSharedMemory::role() const
     return 0;
 }
 
-void VnrSharedMemory::setRole(qint32 v)
+void VnrSharedMemory::setDataRole(qint8 v)
 {
   if (auto h = d_->head())
     h->role = v;
 }
 
-QString VnrSharedMemory::text() const
+QString VnrSharedMemory::dataText() const
 {
   if (auto h = d_->constHead())
     if (h->textSize > 0 && h->textSize <= d_->maxTextSize())
@@ -100,7 +121,7 @@ QString VnrSharedMemory::text() const
   return QString();
 }
 
-void VnrSharedMemory::setText(const QString &v)
+void VnrSharedMemory::setDataText(const QString &v)
 {
   if (auto h = d_->head()) {
     int limit = d_->maxTextSize();

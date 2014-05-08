@@ -15,6 +15,7 @@ class VnrSharedMemory : public QObject
   SK_EXTEND_CLASS(VnrSharedMemory, QObject)
   SK_DECLARE_PRIVATE(VnrSharedMemoryPrivate)
 public:
+  explicit VnrSharedMemory(const QString &key, QObject *parent = nullptr);
   explicit VnrSharedMemory(QObject *parent = nullptr);
   ~VnrSharedMemory();
 
@@ -40,16 +41,19 @@ public:
   // Contents
 
   const char *constData() const; // for debuggong purpose
-  int maximumTextSize() const;
 
-  qint64 hash() const;
-  void setHash(qint64 v);
+  qint8 dataStatus() const;
+  void setDataStatus(qint8 v);
 
-  qint32 role() const;
-  void setRole(qint32 v);
+  qint64 dataHash() const;
+  void setDataHash(qint64 v);
 
-  QString text() const;
-  void setText(const QString &v);
+  qint8 dataRole() const;
+  void setDataRole(qint8 v);
+
+  QString dataText() const;
+  void setDataText(const QString &v);
+  int dataTextMaximumSize() const;
 };
 
 #endif // VNRSHAREDMEMORY_H

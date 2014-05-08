@@ -10,9 +10,18 @@
 #define VNRAGENT_SOCKET_PORT  6103
 #define VNRAGENT_SOCKET_HOST  "127.0.0.1"
 
+/**
+ * Pipe name of the VNR socket server.
+ */
 // http://www.qtcentre.org/threads/14753-Named-pipes-in-Qt
 //#define VNRAGENT_SOCKET_PIPE  "\\\\.\\pipe\\vnr.socket"
 #define VNRAGENT_SOCKET_PIPE  "vnr.socket"
+
+/**
+ *  Shared memory key and max size.
+ */
+#define VNRAGENT_MEMORY_KEY "vnragent.%1" // vnragent.pid
+#define VNRAGENT_MEMORY_SIZE 4096
 
 /**
  *  Log qDebug message and save to a file.

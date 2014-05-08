@@ -4677,6 +4677,10 @@ class _DataManager(object):
       if game.launchPath:
         g.launchPath = game.launchPath
 
+      # TODO: Broadcast the changes of itemId
+      if game.itemId:
+        g.itemId = game.itemId
+
       #g.otherThreads = game.otherThreads if game.otherThreads is not None else {}
       #elif game.otherThreads: # merge thread
       #  g.otherThreads.update(game.otherThreads)

@@ -2,6 +2,7 @@
 // 4/26/2014 jichi
 
 #include "embed/embedmanager.h"
+#include "embed/embedmemory.h"
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 //#include "QxtCore/QxtJSON"
@@ -23,44 +24,49 @@
 class EmbedManagerPrivate
 {
 public:
-  win_event sleepEvent;
   typedef win_mutex<CRITICAL_SECTION> mutex_type;
   mutex_type mutex;
 
   QHash<qint64, QString> translations;   // cached, {key:text}
 
-  EmbedManagerPrivate()
-    : sleepEvent(ENGINE_SLEEP_EVENT) {}
+  EmbedMemory *memory;
 
-  // - Lock -
-  void lock() { mutex.lock(); }
-  void unlock() { mutex.unlock(); }
-
-  // - Event -
-
-  // Sleep 10*100 = 1 second
-  enum { SleepTimeout = 100 };
-  enum { SleepCount = 10 };
-  void sleep(int interval = SleepTimeout, int count = SleepCount)
+  EmbedManagerPrivate(QObject *parent)
+    : sleepEvent(ENGINE_SLEEP_EVENT)
   {
-    sleepEvent.signal(false);
-    for (int i = 0; !sleepEvent.wait(interval) && i < count; i++);
-    //sleepEvent.signal(false);
+    memory = new EmbedMemory(parent);
+    memory->create();
   }
 
-  void notify() { sleepEvent.signal(true); }
+  //void lock() { mutex.lock(); }
+  //void unlock() { mutex.unlock(); }
 
-  //mutex_type sleepMutex;
-  //typedef win_mutex_cond<CONDITION_VARIABLE> cond_type;
-  //cond_type sleepCond;
-  //void sleep()
-  //{
-  //  sleepMutex.lock();
-  //  sleepCond.wait_for(sleepMutex, SleepTimeout * SleepCount);
-  //}
-
-  //void notify() { sleepCond.notify_all(); }
+  void sleep() {}
+  void notify() {}
 };
+
+//  // - Event -
+//  // Sleep 10*100 = 1 second
+//  enum { SleepTimeout = 100 };
+//  enum { SleepCount = 10 };
+//  void sleep(int interval = SleepTimeout, int count = SleepCount)
+//  {
+//    sleepEvent.signal(false);
+//    for (int i = 0; !sleepEvent.wait(interval) && i < count; i++);
+//    //sleepEvent.signal(false);
+//  }
+//
+//  void notify() { sleepEvent.signal(true); }
+
+//  mutex_type sleepMutex;
+//  typedef win_mutex_cond<CONDITION_VARIABLE> cond_type;
+//  cond_type sleepCond;
+//  void sleep()
+//  {
+//    sleepMutex.lock();
+//    sleepCond.wait_for(sleepMutex, SleepTimeout * SleepCount);
+//  }
+//  void notify() { sleepCond.notify_all(); }
 
 /** Public class */
 

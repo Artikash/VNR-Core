@@ -17,7 +17,7 @@ include($$LIBDIR/sakurakit/sakurakit.pri)
 include($$LIBDIR/singleapp/singleapp.pri)
 include($$LIBDIR/vnrsharedmemory/vnrsharedmemory.pri)
 include($$LIBDIR/windbg/windbg.pri)
-include($$LIBDIR/winevent/winevent.pri)
+#include($$LIBDIR/winevent/winevent.pri)
 include($$LIBDIR/winiter/winiter.pri)
 include($$LIBDIR/winquery/winquery.pri)
 #include($$LIBDIR/wintimer/wintimer.pri)
@@ -56,6 +56,7 @@ HEADERS += \
   driver/settings.h \
   embed/embeddriver.h \
   embed/embedmanager.h \
+  embed/embedmemory.h \
   engine/engine.h \
   engine/enginedef.h \
   engine/engineenv.h \
@@ -85,6 +86,7 @@ SOURCES += \
   driver/settings.cc \
   embed/embeddriver.cc \
   embed/embedmanager.cc \
+  embed/embedmemory.cc \
   engine/engine.cc \
   engine/engineenv.cc \
   engine/engineloader.cc \
