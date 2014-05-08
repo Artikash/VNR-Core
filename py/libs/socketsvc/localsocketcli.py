@@ -152,8 +152,10 @@ class _LocalSocketClient(object):
     socket = self.socket
     if socket:
       startTime = _now()
-      while socket.waitForReadyRead(interval) and not self._dataJustReceived and _now() < startTime + interval:
-        pass
+      while interval > 0 and socket.waitForReadyRead(interval) and not self._dataJustReceived:
+        now = _now()
+        interval -= now - startTime
+        startTime = now
     dprint("pass: ret = %s" % self._dataJustReceived)
     return self._dataJustReceived
 

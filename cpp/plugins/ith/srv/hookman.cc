@@ -19,7 +19,7 @@
 namespace { // unnamed
 enum { MAX_ENTRY = 0x40 };
 
-#define HM_SYNC win_mutex_locker<HookManager::mutex_type> d_locker(&hmcs) // Synchronized scope for accessing private data
+#define HM_SYNC win_mutex_lock<HookManager::mutex_type> d_locker(hmcs) // Synchronized scope for accessing private data
 // jichi 9/23/2013: wine deficenciy on mapping sections
 // Whe set to false, do not map sections.
 //bool ith_has_section = true;

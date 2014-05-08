@@ -11,7 +11,8 @@
 #define VNRAGENT_SOCKET_HOST  "127.0.0.1"
 
 // http://www.qtcentre.org/threads/14753-Named-pipes-in-Qt
-#define VNRAGENT_SOCKET_PIPE  "\\\\.\\pipe\\vnr_socket"
+//#define VNRAGENT_SOCKET_PIPE  "\\\\.\\pipe\\vnr.socket"
+#define VNRAGENT_SOCKET_PIPE  "vnr.socket"
 
 /**
  *  Log qDebug message and save to a file.

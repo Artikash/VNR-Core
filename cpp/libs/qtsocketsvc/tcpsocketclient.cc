@@ -77,7 +77,11 @@ bool TcpSocketClientPrivate::waitForDataReceived(int interval)
     return false;
   dataJustReceived = false;
   qint64 startTime = now();
-  while(socket->waitForReadyRead(interval) && !dataJustReceived && now() < startTime + interval);
+  while (interval > 0 && socket->waitForReadyRead(interval) && !dataJustReceived) {
+    qint64 time = now();
+    interval -= time - startTime;
+    startTime = time;
+  }
   return dataJustReceived;
 }
 

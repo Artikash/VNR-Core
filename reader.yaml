@@ -28,7 +28,7 @@ app:
   #socketType:   tcp         # Use QTcpSocket
   socketType:   local       # Use QLocalSocket
   socketPort:   6103        # IPC QMetaCall listening port (6100 + app.id)
-  socketName:   vnr_socket  # local socket pipe name
+  socketName:   vnr.socket  # local socket pipe name
 
 # Environment variables
 env:
