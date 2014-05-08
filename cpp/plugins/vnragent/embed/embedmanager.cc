@@ -22,8 +22,8 @@
 
 class EmbedManagerPrivate
 {
-  win_event sleepEvent;
 public:
+  win_event sleepEvent;
   typedef win_mutex<CRITICAL_SECTION> mutex_type;
   mutex_type mutex;
 
@@ -45,7 +45,7 @@ public:
   {
     sleepEvent.signal(false);
     for (int i = 0; !sleepEvent.wait(interval) && i < count; i++);
-    sleepEvent.signal(false);
+    //sleepEvent.signal(false);
   }
 
   void notify() { sleepEvent.signal(true); }
@@ -109,6 +109,10 @@ QString EmbedManager::waitForTranslation(qint64 hash, int role) const
   QString ret = findTranslation(hash, role);
   if (ret.isEmpty()) {
     d_->sleep();
+
+    //d_->sleepEvent.signal(false);
+    //for (int i = 0; ret.isEmpty() && !d_->sleepEvent.wait(D::SleepTimeout) && i < D::SleepCount; i++)
+    //  ret = findTranslation(hash, role);
 
     //if (RpcClient::instance()->waitForDataReceived(WaitTime))
     ret = findTranslation(hash, role);
