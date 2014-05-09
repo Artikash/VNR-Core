@@ -13,7 +13,7 @@ public:
     qint64 hash;
     qint8 role;
     qint32 textSize;
-    wchar_t text[0];
+    wchar_t text[1];
   private:
     Head() {} // disable constructor
   };

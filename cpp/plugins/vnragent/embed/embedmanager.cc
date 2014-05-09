@@ -13,7 +13,7 @@
 #include <QtCore/QStringList>
 //#include "debug.h"
 
-#define ENGINE_SLEEP_EVENT "vnragent_engine_sleep"
+//#define ENGINE_SLEEP_EVENT "vnragent_engine_sleep"
 #define D_LOCK win_mutex_lock<D::mutex_type> d_lock(d_->mutex)
 
 #define DEBUG "EmbedManager"
@@ -32,7 +32,6 @@ public:
   EmbedMemory *memory;
 
   EmbedManagerPrivate(QObject *parent)
-    : sleepEvent(ENGINE_SLEEP_EVENT)
   {
     memory = new EmbedMemory(parent);
     memory->create();
@@ -73,7 +72,7 @@ static EmbedManager *instance_;
 EmbedManager *EmbedManager::instance() { return instance_; }
 
 EmbedManager::EmbedManager(QObject *parent)
-  : Base(parent), d_(new D)
+  : Base(parent), d_(new D(this))
 { ::instance_ = this; }
 
 EmbedManager::~EmbedManager()
@@ -140,7 +139,7 @@ QString EmbedManager::waitForTranslation(qint64 hash, int role) const
         ret = d_->memory->dataText();
         d_->memory->unlock();
         if (!ret.isEmpty())
-          d_->translations[key] = text;
+          d_->translations[key] = ret;
         break;
       }
       D::sleep(SleepInterval);

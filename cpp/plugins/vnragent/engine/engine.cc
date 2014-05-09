@@ -13,7 +13,7 @@
 EngineSettings::EngineSettings()
   : enabled(false)
 {
-  for (int role = 0; i < Engine::RoleCount; role++)
+  for (int role = 0; role < Engine::RoleCount; role++)
     textVisible[role] =
     transcodingEnabled[role] =
     translationEnabled[role] =
@@ -117,7 +117,7 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool 
 
   QString repl = p->findTranslation(hash, role);
   bool needsTranslation = repl.isEmpty();
-  p->addText(text, hash, role, needsTranslation);
+  p->sendText(text, hash, role, needsTranslation);
   if (needsTranslation && blocking)
     repl = p->waitForTranslation(hash, role);
 
