@@ -1161,13 +1161,13 @@ class Settings(QSettings):
       self.setValue('GameAgent', value)
       self.gameAgentEnabledChanged.emit(value)
 
-  gameAgentTranslationWaitTimeChanged = Signal(int)
-  def gameAgentTranslationWaitTime(self):
-    return to_int(self.value('GameAgentTranslationWaitTime', 1000)) # 1 second by default
-  def setGameAgentTranslationWaitTime(self, value):
-    if value != self.isGameAgentEnabled():
-      self.setValue('GameAgentTranslationWaitTime', value)
-      self.gameAgentTranslationWaitTimeChanged.emit(value)
+  embeddedTranslationWaitTimeChanged = Signal(int)
+  def embeddedTranslationWaitTime(self):
+    return to_int(self.value('EmbeddedTranslationWaitTime', 1000)) # 1 second by default
+  def setembeddedTranslationWaitTime(self, value):
+    if value != self.isembeddedEnabled():
+      self.setValue('EmbeddedTranslationWaitTime', value)
+      self.embeddedTranslationWaitTimeChanged.emit(value)
 
   # Whether translate window components
   # This implies transcoding enabled

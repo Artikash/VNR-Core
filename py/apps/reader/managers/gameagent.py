@@ -113,7 +113,7 @@ class GameAgent(QObject):
   #def engine
 
 _SETTINGS_DICT = {
-  'translationWaitTime': 'gameAgentTranslationWaitTime',
+  'embeddedTranslationWaitTime': 'embeddedTranslationWaitTime',
 
   'windowTranslationEnabled': 'isWindowTranslationEnabled',
   'windowTranscodingEnabled': 'isWindowTranscodingEnabled',

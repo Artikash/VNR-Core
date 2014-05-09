@@ -24,7 +24,7 @@ public:
      , embeddedOtherTranslationEnabled
      , embeddedOtherTranscodingEnabled;
 
-  int translationWaitTime;
+  int embeddedTranslationWaitTime;
 
   QString gameEncoding;
 
@@ -41,7 +41,7 @@ public:
      , embeddedOtherVisible(false)
      , embeddedOtherTranslationEnabled(false)
      , embeddedOtherTranscodingEnabled(false)
-     , translationWaitTime(1000) // 1 second
+     , embeddedTranslationWaitTime(1000) // 1 second
      , gameEncoding("shift-jis")
   {}
 };
@@ -86,7 +86,7 @@ DEFINE_BOOL_PROPERTY(embeddedOtherVisible, isEmbeddedOtherVisible, setEmbeddedOt
 DEFINE_BOOL_PROPERTY(embeddedOtherTranslationEnabled, isEmbeddedOtherTranslationEnabled, setEmbeddedOtherTranslationEnabled)
 DEFINE_BOOL_PROPERTY(embeddedOtherTranscodingEnabled, isEmbeddedOtherTranscodingEnabled, setEmbeddedOtherTranscodingEnabled)
 
-DEFINE_INT_PROPERTY(translationWaitTime, translationWaitTime, setTranslationWaitTime)
+DEFINE_INT_PROPERTY(embeddedTranslationWaitTime, embeddedTranslationWaitTime, setEmbeddedTranslationWaitTime)
 
 DEFINE_STRING_PROPERTY(gameEncoding, gameEncoding, setGameEncoding)
 
@@ -130,7 +130,8 @@ void Settings::load(const QString &json)
   enum {
     H_debug = 6994359 // "debug"
     , H_gameEncoding = 156622791
-    , H_translationWaitTime = 193692917
+    , H_embeddedTranslationWaitTime = 245002357
+
     , H_windowTranslationEnabled = 79059828
     , H_windowTranscodingEnabled = 219567700
     , H_windowTextVisibleChange = 23360709
@@ -171,7 +172,7 @@ void Settings::load(const QString &json)
     case H_embeddedOtherTranslationEnabled: setEmbeddedOtherTranslationEnabled(bValue); break;
     case H_embeddedOtherTranscodingEnabled: setEmbeddedOtherTranscodingEnabled(bValue); break;
 
-    case H_translationWaitTime: setTranslationWaitTime(value.toInt()); break;
+    case H_embeddedTranslationWaitTime: setEmbeddedTranslationWaitTime(value.toInt()); break;
     default: DOUT("warning: unknown key:" << it.key());
     }
   }
