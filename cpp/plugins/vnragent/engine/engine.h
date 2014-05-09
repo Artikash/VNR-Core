@@ -4,21 +4,9 @@
 // 4/20/2014 jichi
 
 #include "sakurakit/skglobal.h"
-#include "engine/enginedef.h"
 #include <QtCore/QString>
 
-class EngineSettings
-{
-public:
-  bool enabled;
-  bool textVisible[Engine::RoleCount],
-       transcodingEnabled[Engine::RoleCount],
-       translationEnabled[Engine::RoleCount],
-       extractionEnabled[Engine::RoleCount];
-
-  EngineSettings();  // initalize all of the settings to false
-};
-
+class EngineSettings;
 class AbstractEnginePrivate;
 class AbstractEngine
 {

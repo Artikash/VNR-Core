@@ -4,6 +4,7 @@
 #include "embed/embeddriver.h"
 #include "embed/embedmanager.h"
 #include "engine/engine.h"
+#include "engine/enginesettings.h"
 
 /** Private class */
 
@@ -42,6 +43,7 @@ EmbedDriver::~EmbedDriver()
 void EmbedDriver::setTranslationWaitTime(int v)  { d_->manager->setTranslationWaitTime(v); }
 
 void EmbedDriver::setEnabled(bool t)  { if (d_->engine) d_->engine->settings()->enabled = t; }
+void EmbedDriver::setNameTextVisible(bool t) { if (d_->engine) d_->engine->settings()->nameTextVisible = t; }
 
 void EmbedDriver::setScenarioVisible(bool t) { if (d_->engine) d_->engine->settings()->textVisible[Engine::ScenarioRole] = t; }
 void EmbedDriver::setScenarioExtractionEnabled(bool t) { if (d_->engine) d_->engine->settings()->extractionEnabled[Engine::ScenarioRole] = t; }

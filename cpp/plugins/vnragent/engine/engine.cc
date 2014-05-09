@@ -4,22 +4,12 @@
 #include "engine/engine.h"
 #include "engine/enginehash.h"
 #include "engine/engineloader.h"
+#include "engine/enginesettings.h"
 #include "embed/embedmanager.h"
 #include "util/codepage.h"
 #include "util/textutil.h"
 #include <qt_windows.h>
 #include <QtCore/QTextCodec>
-
-EngineSettings::EngineSettings()
-  : enabled(false)
-{
-  for (int role = 0; role < Engine::RoleCount; role++)
-    textVisible[role] =
-    transcodingEnabled[role] =
-    translationEnabled[role] =
-    extractionEnabled[role] =
-    false;
-}
 
 /** Private class */
 
@@ -123,6 +113,8 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool 
 
   if (repl.isEmpty())
     repl = text;
+  else if (role == Engine::NameRole && d_->settings->nameTextVisible)
+    repl = QString("%1 (%2)").arg(text, repl);
 
   return d_->encode(repl);
 }

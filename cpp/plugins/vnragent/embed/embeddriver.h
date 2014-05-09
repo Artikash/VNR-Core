@@ -36,6 +36,7 @@ public slots:
   void setScenarioTranscodingEnabled(bool t);
   void setScenarioTranslationEnabled(bool t);
   void setNameVisible(bool t);
+  void setNameTextVisible(bool t);
   void setNameExtractionEnabled(bool t);
   void setNameTranscodingEnabled(bool t);
   void setNameTranslationEnabled(bool t);

@@ -123,6 +123,7 @@ _SETTINGS_DICT = {
   'embeddedScenarioTranslationEnabled': 'isEmbeddedScenarioTranslationEnabled',
   'embeddedScenarioTranscodingEnabled': 'isEmbeddedScenarioTranscodingEnabled',
   'embeddedNameVisible': 'isEmbeddedNameVisible',
+  'embeddedNameTextVisible': 'isEmbeddedNameTextVisible',
   'embeddedNameTranslationEnabled': 'isEmbeddedNameTranslationEnabled',
   'embeddedNameTranscodingEnabled': 'isEmbeddedNameTranscodingEnabled',
   'embeddedOtherVisible': 'isEmbeddedOtherVisible',

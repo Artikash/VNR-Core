@@ -36,6 +36,7 @@ public:
      , embeddedScenarioTranslationEnabled(false)
      , embeddedScenarioTranscodingEnabled(false)
      , embeddedNameVisible(false)
+     , embeddedNameTextVisible(false)
      , embeddedNameTranslationEnabled(false)
      , embeddedNameTranscodingEnabled(false)
      , embeddedOtherVisible(false)
@@ -80,6 +81,7 @@ DEFINE_BOOL_PROPERTY(embeddedScenarioVisible, isEmbeddedScenarioVisible, setEmbe
 DEFINE_BOOL_PROPERTY(embeddedScenarioTranslationEnabled, isEmbeddedScenarioTranslationEnabled, setEmbeddedScenarioTranslationEnabled)
 DEFINE_BOOL_PROPERTY(embeddedScenarioTranscodingEnabled, isEmbeddedScenarioTranscodingEnabled, setEmbeddedScenarioTranscodingEnabled)
 DEFINE_BOOL_PROPERTY(embeddedNameVisible, isEmbeddedNameVisible, setEmbeddedNameVisible)
+DEFINE_BOOL_PROPERTY(embeddedNameTextVisible, isEmbeddedNameTextVisible, setEmbeddedNameTextVisible)
 DEFINE_BOOL_PROPERTY(embeddedNameTranslationEnabled, isEmbeddedNameTranslationEnabled, setEmbeddedNameTranslationEnabled)
 DEFINE_BOOL_PROPERTY(embeddedNameTranscodingEnabled, isEmbeddedNameTranscodingEnabled, setEmbeddedNameTranscodingEnabled)
 DEFINE_BOOL_PROPERTY(embeddedOtherVisible, isEmbeddedOtherVisible, setEmbeddedOtherVisible)
@@ -139,6 +141,7 @@ void Settings::load(const QString &json)
     , H_embeddedScenarioTranslationEnabled = 132391348
     , H_embeddedScenarioTranscodingEnabled = 105135476
     , H_embeddedNameVisible = 180590501
+    , H_embeddedNameTextVisible = 60027589
     , H_embeddedNameTranslationEnabled = 239147220
     , H_embeddedNameTranscodingEnabled = 266409492
     , H_embeddedOtherVisible = 32685349
@@ -166,6 +169,7 @@ void Settings::load(const QString &json)
     case H_embeddedScenarioTranslationEnabled: setEmbeddedScenarioTranslationEnabled(bValue); break;
     case H_embeddedScenarioTranscodingEnabled: setEmbeddedScenarioTranscodingEnabled(bValue); break;
     case H_embeddedNameVisible: setEmbeddedNameVisible(bValue); break;
+    case H_embeddedNameTextVisible: setEmbeddedNameTextVisible(bValue); break;
     case H_embeddedNameTranslationEnabled: setEmbeddedNameTranslationEnabled(bValue); break;
     case H_embeddedNameTranscodingEnabled: setEmbeddedNameTranscodingEnabled(bValue); break;
     case H_embeddedOtherVisible: setEmbeddedOtherVisible(bValue); break;

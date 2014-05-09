@@ -33,6 +33,7 @@ public:
   bool isEmbeddedScenarioTranslationEnabled() const; // Whether translate scenario text
   bool isEmbeddedScenarioTranscodingEnabled() const; // Whether translate scenario text
   bool isEmbeddedNameVisible() const;
+  bool isEmbeddedNameTextVisible() const;
   bool isEmbeddedNameTranslationEnabled() const;
   bool isEmbeddedNameTranscodingEnabled() const;
   bool isEmbeddedOtherVisible() const;
@@ -54,6 +55,7 @@ public slots:
   void setEmbeddedScenarioTranslationEnabled(bool t);
   void setEmbeddedScenarioTranscodingEnabled(bool t);
   void setEmbeddedNameVisible(bool t);
+  void setEmbeddedNameTextVisible(bool t);
   void setEmbeddedNameTranslationEnabled(bool t);
   void setEmbeddedNameTranscodingEnabled(bool t);
   void setEmbeddedOtherVisible(bool t);
@@ -74,6 +76,7 @@ signals:
   void embeddedScenarioTranslationEnabledChanged(bool t);
   void embeddedScenarioTranscodingEnabledChanged(bool t);
   void embeddedNameVisibleChanged(bool t);
+  void embeddedNameTextVisibleChanged(bool t);
   void embeddedNameTranslationEnabledChanged(bool t);
   void embeddedNameTranscodingEnabledChanged(bool t);
   void embeddedOtherVisibleChanged(bool t);

@@ -62,6 +62,7 @@ HEADERS += \
   engine/engineenv.h \
   engine/enginehash.h \
   engine/engineloader.h \
+  engine/enginesettings.h \
   hijack/hijackdriver.h \
   hijack/hijackfuncs.h \
   hijack/hijackfuncs_p.h \
