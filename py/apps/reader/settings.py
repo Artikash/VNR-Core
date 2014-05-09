@@ -1224,13 +1224,13 @@ class Settings(QSettings):
       self.setValue('EmbeddedScenarioVisible', value)
       self.embeddedScenarioVisibleChanged.emit(value)
 
-  embeddedNameTextEnabledChanged = Signal(bool)
-  def isEmbeddedNameTextEnabled(self):
+  embeddedNameTextVisibleChanged = Signal(bool)
+  def isEmbeddedNameTextVisible(self):
     return to_bool(self.value('EmbeddedNameText', False))
-  def setEmbeddedNameTextEnabled(self, value):
-    if value != self.isEmbeddedNameTextEnabled():
+  def setEmbeddedNameTextVisible(self, value):
+    if value != self.isEmbeddedNameTextVisible():
       self.setValue('EmbeddedNameText', value)
-      self.embeddedNameTextEnabledChanged.emit(value)
+      self.embeddedNameTextVisibleChanged.emit(value)
 
   embeddedNameTranslationEnabledChanged = Signal(bool)
   def isEmbeddedNameTranslationEnabled(self):

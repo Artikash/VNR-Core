@@ -59,6 +59,38 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
 超能力 describes what you can do to other users' efforts (like subs) with/without their permissions.""")
 % ("http://sakuradite.com", "http://sakuradite.com"))
 
+def renderGameAgentHelp():
+  return my.tr(
+"""<h3>Explanation of the options</h3>
+* Disable: leave the text unchanged<br/>
+* Transcode: display the text and try to fix its encoding<br/>
+* Translate: display the translation<br/>
+* Both: display both the text and its translation<br/>
+* Hide: display nothing<br/>
+
+<br/>
+This feature is currently under development and only supports a small portion of the games that ITH supports.
+More information could be found on the Wiki:
+<center>
+<a href="http://sakuradite.com/wiki/en/VNR/Game_Settings">http://sakuradite.com/wiki/en/VNR/Game_Settings</a>
+</center>
+
+<h3>Knowing issues</h3>
+* Embedding online machine translation could make game slow.
+
+<h3>Language limitations</h3>
+For SHIFT-JIS games, if you want to enable displaying translations into the game,
+depending which language you are speaking, it could result in huge problems.
+<br/>
+A. Subset of Japanese: English<br/>
+B. Superset of Japanese: Simplified Chinese<br/>
+C. Intersects Japanese: Traditional Chinese, Korean<br/>
+For type A languages, there is not problem. You can ignore this limitation section.<br/>
+For both type B and C languages, VNR has to launch the game in your native locale than Japanese.<br/>
+For Type B languages, there is no problem if the game is able to start in your locale.<br/>
+For Type C languages, there will be encoding issue that the untranslated Japanese text could become garbage characters.<br/>
+For other languages, I haven't got time to test them yet.""")
+
 def renderTextReaderHelp():
   return my.tr(
 """<h3>Introduction</h3>
