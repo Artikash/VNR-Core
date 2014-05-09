@@ -32,16 +32,16 @@ class MajiroEnginePrivate
    *  - arg5 is aways 1.
    *
    *  Game-specific arg1:
-   *  - 暁の護衛 罪深き終末論: 32 = ' '
-   *  - レミニセンス: 48 = '0'
+   *  - 暁の護衛 罪深き終末論: 32 = 0x20 = ' '
+   *  - レミニセンス: 48 = 0x30 = '0'
    */
-  static Engine::TextRole roleOf(char arg1, int arg2, int arg4, int arg5)
+  static Engine::TextRole roleOf(quint32 arg1, int arg2, int arg4, int arg5)
   {
     Q_UNUSED(arg4)
     Q_UNUSED(arg5)
     enum { ScenarioMask = 0xffff0000 };
     static int lastScenarioArg2_;
-    if (arg1 > 0 && arg1 < '9') {
+    if (arg1 < 0x40) {
       lastScenarioArg2_ = arg2;
       return Engine::ScenarioRole;
     }
@@ -71,10 +71,10 @@ public:
   typedef int (* hook_fun_t)(char, int, const char *, int, int);
   static hook_fun_t oldHook;
 
-  static int newHook(char arg1, int arg2, const char *str, int arg4, int arg5)
+  static int newHook(quint8 arg1, int arg2, const char *str, int arg4, int arg5)
   {
 #ifdef DEBUG
-    qDebug() << (int)arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
+    qDebug() << arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
 #endif // DEBUG
     //return oldHook(arg1, arg2, str, arg4, arg5);
     auto q = static_cast<Q *>(AbstractEngine::instance());

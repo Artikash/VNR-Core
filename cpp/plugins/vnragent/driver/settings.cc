@@ -24,6 +24,8 @@ public:
      , embeddedOtherTranslationEnabled
      , embeddedOtherTranscodingEnabled;
 
+  int translationWaitTime;
+
   QString gameEncoding;
 
   SettingsPrivate()
@@ -39,6 +41,7 @@ public:
      , embeddedOtherVisible(false)
      , embeddedOtherTranslationEnabled(false)
      , embeddedOtherTranscodingEnabled(false)
+     , translationWaitTime(1000) // 1 second
      , gameEncoding("shift-jis")
   {}
 };
@@ -66,8 +69,9 @@ Settings::~Settings()
   void Settings::setter(argtype value)  \
   { if (d_->property != value) { d_->property = value; emit property##Changed(value); } }
 
-#define DEFINE_STRING_PROPERTY(property, getter, setter)    DEFINE_PROPERTY(property, getter, setter, QString, const QString &)
 #define DEFINE_BOOL_PROPERTY(property, getter, setter)      DEFINE_PROPERTY(property, getter, setter, bool, bool)
+#define DEFINE_INT_PROPERTY(property, getter, setter)       DEFINE_PROPERTY(property, getter, setter, int, int)
+#define DEFINE_STRING_PROPERTY(property, getter, setter)    DEFINE_PROPERTY(property, getter, setter, QString, const QString &)
 
 DEFINE_BOOL_PROPERTY(windowTranslationEnabled, isWindowTranslationEnabled, setWindowTranslationEnabled)
 DEFINE_BOOL_PROPERTY(windowTranscodingEnabled, isWindowTranscodingEnabled, setWindowTranscodingEnabled)
@@ -81,6 +85,8 @@ DEFINE_BOOL_PROPERTY(embeddedNameTranscodingEnabled, isEmbeddedNameTranscodingEn
 DEFINE_BOOL_PROPERTY(embeddedOtherVisible, isEmbeddedOtherVisible, setEmbeddedOtherVisible)
 DEFINE_BOOL_PROPERTY(embeddedOtherTranslationEnabled, isEmbeddedOtherTranslationEnabled, setEmbeddedOtherTranslationEnabled)
 DEFINE_BOOL_PROPERTY(embeddedOtherTranscodingEnabled, isEmbeddedOtherTranscodingEnabled, setEmbeddedOtherTranscodingEnabled)
+
+DEFINE_INT_PROPERTY(translationWaitTime, translationWaitTime, setTranslationWaitTime)
 
 DEFINE_STRING_PROPERTY(gameEncoding, gameEncoding, setGameEncoding)
 
@@ -124,6 +130,7 @@ void Settings::load(const QString &json)
   enum {
     H_debug = 6994359 // "debug"
     , H_gameEncoding = 156622791
+    , H_translationWaitTime = 193692917
     , H_windowTranslationEnabled = 79059828
     , H_windowTranscodingEnabled = 219567700
     , H_windowTextVisibleChange = 23360709
@@ -163,6 +170,8 @@ void Settings::load(const QString &json)
     case H_embeddedOtherVisible: setEmbeddedOtherVisible(bValue); break;
     case H_embeddedOtherTranslationEnabled: setEmbeddedOtherTranslationEnabled(bValue); break;
     case H_embeddedOtherTranscodingEnabled: setEmbeddedOtherTranscodingEnabled(bValue); break;
+
+    case H_translationWaitTime: setTranslationWaitTime(value.toInt()); break;
     default: DOUT("warning: unknown key:" << it.key());
     }
   }

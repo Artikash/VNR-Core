@@ -29,6 +29,8 @@ public slots:
   void clearTranslation();
   void setEnabled(bool t);
 
+  void setTranslationWaitTime(int v);
+
   void setScenarioVisible(bool t);
   void setScenarioExtractionEnabled(bool t);
   void setScenarioTranscodingEnabled(bool t);

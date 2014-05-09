@@ -776,12 +776,13 @@ class TextManager(QObject):
     #    dwarn("failed to parse text hash: %s" % rawHash)
     #    return
 
-    #if role == SCENARIO_THREAD_TYPE:
-    #  pass
-    #elif role == NAME_THREAD_TYPE:
-    #  pass
-    #elif role == OTHER_THREAD_TYPE:
-    print 11111111111,role, text
+    if role == SCENARIO_THREAD_TYPE:
+      pass
+    elif role == NAME_THREAD_TYPE:
+      pass
+    elif role == OTHER_THREAD_TYPE:
+      pass
+
     if needsTranslation:
       async = role == OTHER_THREAD_TYPE
       sub, lang, provider = trman.manager().translateOne(text, async=async, online=True)

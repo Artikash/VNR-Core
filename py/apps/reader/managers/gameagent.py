@@ -101,13 +101,14 @@ class GameAgent(QObject):
     if isinstance(hash, str) or isinstance(hash, unicode):
       hash = long(hash)
     m = self.__d.mem
-    if m.isAttached() and m.lock():
+    if m.isAttached(): # and m.lock():
+      # Due to the logic, locking is not needed
       m.setDataStatus(m.STATUS_BUSY)
       m.setDataHash(hash)
       m.setDataRole(role)
       m.setDataText(text)
       m.setDataStatus(m.STATUS_READY)
-      m.unlock()
+      #m.unlock()
 
   #def engine
 

@@ -29,9 +29,12 @@ public:
 
   QHash<qint64, QString> translations;   // cached, {key:text}
 
+  int maximumSleepTime;
+
   EmbedMemory *memory;
 
   EmbedManagerPrivate(QObject *parent)
+    : maximumSleepTime(1000) // 1 second
   {
     memory = new EmbedMemory(parent);
     memory->create();
@@ -81,6 +84,9 @@ EmbedManager::~EmbedManager()
   delete d_;
 }
 
+void EmbedManager::setTranslationWaitTime(int msecs)
+{ d_->maximumSleepTime = msecs; }
+
 // - Actions -
 
 void EmbedManager::quit()
@@ -125,25 +131,27 @@ QString EmbedManager::findTranslation(qint64 hash, int role) const
 QString EmbedManager::waitForTranslation(qint64 hash, int role) const
 {
   D_LOCK;
-
-  enum { SleepInterval = 10, SleepCount = 100 }; // sleep for at most 1 second
+  enum { SleepInterval = 10 }; // sleep by 10 ms
 
   qint64 key = Engine::hashTextKey(hash, role);
   QString ret = d_->translations.value(key);
-  if (ret.isEmpty())
-    for (int i = 0; i < SleepCount; i++) {
+  if (ret.isEmpty()) {
+    int sleepCount = d_->maximumSleepTime / SleepInterval;
+    for (int i = 0; i < sleepCount; i++) {
       if (!d_->memory->isAttached() || d_->memory->isDataCanceled())
         break;
       if (d_->memory->isDataReady() && d_->memory->dataHash() == hash && d_->memory->dataRole() == role) {
-        d_->memory->lock();
+        // Lock is not needed since DataReady status has been set
+        //d_->memory->lock();
         ret = d_->memory->dataText();
-        d_->memory->unlock();
+        //d_->memory->unlock();
         if (!ret.isEmpty())
           d_->translations[key] = ret;
         break;
       }
       D::sleep(SleepInterval);
     }
+  }
   return ret;
 }
 

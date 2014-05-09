@@ -1218,7 +1218,7 @@ class Settings(QSettings):
 
   embeddedNameTranslationEnabledChanged = Signal(bool)
   def isEmbeddedNameTranslationEnabled(self):
-    return to_bool(self.value('EmbeddedNameTranslation', True))
+    return to_bool(self.value('EmbeddedNameTranslation', False))
   def setEmbeddedNameTranslationEnabled(self, value):
     if value != self.isEmbeddedNameTranslationEnabled():
       self.setValue('EmbeddedNameTranslation', value)

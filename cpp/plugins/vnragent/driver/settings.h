@@ -39,6 +39,8 @@ public:
   bool isEmbeddedOtherTranslationEnabled() const;
   bool isEmbeddedOtherTranscodingEnabled() const;
 
+  int translationWaitTime() const;
+
   QString gameEncoding() const;
 
 public slots:
@@ -58,6 +60,8 @@ public slots:
   void setEmbeddedOtherTranslationEnabled(bool t);
   void setEmbeddedOtherTranscodingEnabled(bool t);
 
+  void setTranslationWaitTime(int v);
+
   void setGameEncoding(const QString &v);
 
 signals:
@@ -75,6 +79,8 @@ signals:
   void embeddedOtherVisibleChanged(bool t);
   void embeddedOtherTranslationEnabledChanged(bool t);
   void embeddedOtherTranscodingEnabledChanged(bool t);
+
+  void translationWaitTimeChanged(int v);
 
   void gameEncodingChanged(QString v);
 };

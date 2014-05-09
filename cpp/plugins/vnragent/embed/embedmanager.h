@@ -34,6 +34,8 @@ public:
   // Interface to engine
 public:
   QString findTranslation(qint64 hash, int role) const;
+
+  void setTranslationWaitTime(int msecs);
   QString waitForTranslation(qint64 hash, int role) const;
 
   void sendText(const QString &text, qint64 hash, int role, bool needsTranslation);
