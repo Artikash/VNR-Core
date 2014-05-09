@@ -29,8 +29,10 @@ public:
   ///  The initial size must be larger than 20.
   bool create(int size, bool readOnly = false);
   bool attach(bool readOnly = false);
-  bool detach();
   bool isAttached() const;
+
+  bool detach();
+  bool detach_() { return detach(); } // escape keyword for Shiboken
 
   bool lock();
   bool unlock();

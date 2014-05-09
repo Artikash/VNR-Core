@@ -19,6 +19,8 @@ class VnrAgentSharedMemory(VnrSharedMemory):
     super(VnrAgentSharedMemory, self).__init__(parent)
     self.processId = 0 # long
 
+  def detach(self): return self.detach_() # shiboken bug
+
   def attachProcess(self, pid): # long -> bool
     key = config.VNRAGENT_MEMORY_KEY % pid
     self.setKey(key)

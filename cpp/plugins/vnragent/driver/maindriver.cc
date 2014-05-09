@@ -86,7 +86,7 @@ void MainDriverPrivate::createWindowDriver()
 
   connect(win, SIGNAL(translationRequested(QString)), rpc, SLOT(requestWindowTranslation(QString)));
   connect(rpc, SIGNAL(clearTranslationRequested()), win, SLOT(clearTranslation()));
-  //connect(rpc, SIGNAL(windowTranslationReceived(QString)), win, SLOT(updateTranslation(QString)));
+  connect(rpc, SIGNAL(windowTranslationReceived(QString)), win, SLOT(updateTranslation(QString)));
 
   win->setEnabled(settings->isWindowDriverNeeded()); // enable it at last
 }
@@ -106,8 +106,7 @@ void MainDriverPrivate::createEmbedDriver()
   connect(eng, SIGNAL(engineNameChanged(QString)), rpc, SLOT(sendEngineName(QString)));
   connect(rpc, SIGNAL(clearTranslationRequested()), eng, SLOT(clearTranslation()));
   //connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));
-  connect(rpc, SIGNAL(engineTranslationReceived(QString,qint64,int)), eng, SLOT(updateTranslation(QString,qint64,int)),
-      Qt::QueuedConnection);
+  //connect(rpc, SIGNAL(engineTranslationReceived(QString,qint64,int)), eng, SLOT(updateTranslation(QString,qint64,int)));
 
   connect(rpc, SIGNAL(reconnected()), eng, SLOT(sendEngineName()));
 

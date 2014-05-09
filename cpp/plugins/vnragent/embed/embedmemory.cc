@@ -5,6 +5,9 @@
 #include "embed/embedmemory.h"
 #include <QtCore/QCoreApplication>
 
+#define DEBUG "embedmemory"
+#include "sakurakit/skdebug.h"
+
 // Helpers
 
 namespace { // unamed
@@ -27,7 +30,9 @@ EmbedMemory::~EmbedMemory() {}
 bool EmbedMemory::create()
 {
   enum { ReadOnly = 1 };
-  return Base::create(VNRAGENT_MEMORY_SIZE, ReadOnly);
+  bool ok = Base::create(VNRAGENT_MEMORY_SIZE, ReadOnly);
+  DOUT("ret =" << ok);
+  return ok;
 }
 
 // EOF
