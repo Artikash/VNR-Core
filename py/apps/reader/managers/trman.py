@@ -187,7 +187,7 @@ class TranslatorManager(QObject):
 
   def clearCache(self):
     for it in self.__d.iterTranslators():
-      it.reset()
+      it.clearCache()
     dprint("pass")
 
   ## Properties ##

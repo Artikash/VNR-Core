@@ -11,6 +11,7 @@
 import os, re
 from functools import partial
 from itertools import ifilter, imap
+from time import time
 from cconv.cconv import zhs2zht, zht2zhs, wide2thin, wide2thin_digit
 from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
@@ -31,12 +32,44 @@ _PARAGRAPH_RE = re.compile(r"(%s)" % '|'.join(_PARAGRAPH_SET))
 #_SENTENCE_SET = frozenset(__SENTENCE_DELIM)
 _SENTENCE_RE = re.compile(ur"([。？！」\n])(?![。！？）」\n]|$)")
 
+class TranslationCache:
+  def __init__(self, maxSize=100, shrinkSize=30):
+    """
+    @param  maxSize  max data size
+    @param  shrinkSize  data to delete when oversize
+    """
+    self.maxSize = maxSize
+    self.data = {} # {unicode text:[unicode sub, long timestamp]}
+
+  def clear(self):
+    if self.data:
+      self.data = {}
+
+  def get(self, key): # unicode -> unicode
+    t = self.data.get(key)
+    if t:
+      t[1] = self._now()
+      return t[0]
+
+  def update(self, key, value): # unicode, unicode -> unicode
+    self.data[key] = [value, self._now()]
+    if len(self.data) > self.maxSize:
+      self._shrink()
+    return value
+
+  def _now(self):
+    return long(time()) # -> long  msecs
+
+  def _shrink(self):
+    l = sorted(self.data.iteritems(), key=lambda it:it[1][1])
+    self.data = {k:v for k,v in l[self.shrinkSize:]}
+
 ## Translators
 
 class Translator(object):
   key = 'tr' # str
 
-  def reset(self): pass
+  def clearCache(self): pass
 
   def warmup(self): pass
 
@@ -130,20 +163,20 @@ class MachineTranslator(Translator):
 
   splitsSentences = False # bool
 
-  _CACHE_LENGTH = 10 # length of the translation to cache
+  #_CACHE_LENGTH = 10 # length of the translation to cache
 
   #_DELIM_SET = _PARAGRAPH_SET # set of deliminators
   #_DELIM_RE = _PARAGRAPH_RE   # rx of deliminators
 
   def __init__(self, parent=None, abortSignal=None):
     super(MachineTranslator, self).__init__()
-    self._cache = {} # {unicode text:unicode sub}
+    self._cache = TranslationCache() #
     self.parent = parent  # QObject
     self.abortSignal = abortSignal # QtCore.Signal abort translation
 
-  def reset(self):
+  def clearCache(self):
     """@reimp"""
-    self._cache = {}
+    self._cache.clear()
 
   def __cachedtr(self, text, async, tr, **kwargs):
     """
@@ -152,27 +185,26 @@ class MachineTranslator(Translator):
     @param  tr  function(unicode text, str to, str fr)
     @return  unicode or None
     """
-    if len(text) > self._CACHE_LENGTH:
-      return skthreads.runsync(partial(
-           tr, text, **kwargs),
-           abortSignal=self.abortSignal,
-           parent=self.parent) if async else tr(text, **kwargs)
-    else:
-      ret = self._cache.get(text)
-      if not ret:
-        ret = self._cache[text] = skthreads.runsync(partial(
-            tr, text, **kwargs),
-            abortSignal=self.abortSignal,
-            parent=self.parent) if async else tr(text, **kwargs)
-      return ret
+    #if len(text) > self._CACHE_LENGTH:
+    #  return skthreads.runsync(partial(
+    #       tr, text, **kwargs),
+    #       abortSignal=self.abortSignal,
+    #       parent=self.parent) if async else tr(text, **kwargs)
+    return self._cache.get(text) or (self._cache.update(text,
+        skthreads.runsync(partial(
+          tr, text, **kwargs),
+          abortSignal=self.abortSignal,
+          parent=self.parent) if async else
+        tr(text, **kwargs)))
 
   def __tr(self, text, *args, **kwargs):
     """
     @param  t  unicode
     @return  unicode or None
     """
+    # Current max length of escaped char is 12
     return ('' if not text else
-        text if len(text) == 1 and text in _PARAGRAPH_SET or len(text) <= 10 and sktypes.is_float(text) else
+        text if len(text) == 1 and text in _PARAGRAPH_SET or len(text) <= 12 and sktypes.is_float(text) else
         self.__cachedtr(text, *args, **kwargs))
 
   def _itertexts(self, text):
