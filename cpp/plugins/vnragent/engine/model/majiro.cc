@@ -4,7 +4,6 @@
 // See: http://bbs.sumisora.org/read.php?tid=10983263
 // See: http://bbs.sumisora.org/read.php?tid=10917044
 // See: http://bbs.sumisora.org/read.php?tid=225250
-
 #include "engine/model/majiro.h"
 #include "engine/engineenv.h"
 #include "detoursutil/detoursutil.h"
@@ -12,6 +11,9 @@
 #include <qt_windows.h>
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
+
+//#define DEBUG "majiro"
+#include "sakurakit/skdebug.h"
 
 /** Private class */
 
@@ -28,6 +30,10 @@ class MajiroEnginePrivate
    *  - arg2's first 4 bytes of name and scenario texts are the same.
    *  - arg4 is not portable, but a contant for each run.
    *  - arg5 is aways 1.
+   *
+   *  Game-specific arg1:
+   *  - 暁の護衛 罪深き終末論: 32 = ' '
+   *  - レミニセンス: 48 = '0'
    */
   static Engine::TextRole roleOf(char arg1, int arg2, int arg4, int arg5)
   {
@@ -35,9 +41,10 @@ class MajiroEnginePrivate
     Q_UNUSED(arg5)
     enum { ScenarioMask = 0xffff0000 };
     static int lastScenarioArg2_;
-    if (arg1 == '0') // 48
+    if (arg1 > 0 && arg1 < '9') {
       lastScenarioArg2_ = arg2;
-      return Engine::ScenarioRole; // hidetaka?
+      return Engine::ScenarioRole;
+    }
     if ((lastScenarioArg2_ & ScenarioMask) == (arg2 & ScenarioMask))
       return Engine::NameRole;
     return Engine::OtherRole;
@@ -66,7 +73,9 @@ public:
 
   static int newHook(char arg1, int arg2, const char *str, int arg4, int arg5)
   {
-    //qDebug() << (int)arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
+#ifdef DEBUG
+    qDebug() << (int)arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
+#endif // DEBUG
     //return oldHook(arg1, arg2, str, arg4, arg5);
     auto q = static_cast<Q *>(AbstractEngine::instance());
     auto role = roleOf(arg1, arg2, arg4, arg5);

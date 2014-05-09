@@ -781,8 +781,10 @@ class TextManager(QObject):
     #elif role == NAME_THREAD_TYPE:
     #  pass
     #elif role == OTHER_THREAD_TYPE:
+    print 11111111111,role, text
     if needsTranslation:
-      sub, lang, provider = trman.manager().translateOne(text, async=True, online=True)
+      async = role == OTHER_THREAD_TYPE
+      sub, lang, provider = trman.manager().translateOne(text, async=async, online=True)
       if sub:
         self.agentTranslationProcessed.emit(sub, rawHash, role)
 
