@@ -1058,7 +1058,7 @@ Item { id: root_
       , text: text
       , type: type // text, tr, comment, name, or name.tr
       , provider: provider
-      //, textEdit: undefined // callbacks
+      , textEdit: undefined // placeHolder property
     }
   }
 
