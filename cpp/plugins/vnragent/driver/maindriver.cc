@@ -27,6 +27,8 @@ MainDriver::~MainDriver() { delete d_; }
 
 void MainDriver::requestDeleteLater() { emit deleteLaterRequested(); }
 
+void MainDriver::quit() { d_->quit(); }
+
 /** Private class */
 
 MainDriverPrivate::MainDriverPrivate(QObject *parent)
@@ -48,6 +50,12 @@ MainDriverPrivate::MainDriverPrivate(QObject *parent)
     connect(rpc, SIGNAL(disableRequested()), settings, SLOT(disable()));
   }
   DOUT("leave");
+}
+
+void MainDriverPrivate::quit()
+{
+  if (eng)
+    eng->quit();
 }
 
 void MainDriverPrivate::createHijackDriver()
@@ -78,7 +86,7 @@ void MainDriverPrivate::createWindowDriver()
 
   connect(win, SIGNAL(translationRequested(QString)), rpc, SLOT(requestWindowTranslation(QString)));
   connect(rpc, SIGNAL(clearTranslationRequested()), win, SLOT(clearTranslation()));
-  connect(rpc, SIGNAL(windowTranslationReceived(QString)), win, SLOT(updateTranslation(QString)));
+  //connect(rpc, SIGNAL(windowTranslationReceived(QString)), win, SLOT(updateTranslation(QString)));
 
   win->setEnabled(settings->isWindowDriverNeeded()); // enable it at last
 }
@@ -123,6 +131,10 @@ void MainDriverPrivate::createEmbedDriver()
     eng->setOtherVisible(settings->isEmbeddedOtherVisible());
     eng->setOtherTranscodingEnabled(settings->isEmbeddedOtherTranscodingEnabled());
     eng->setOtherTranslationEnabled(settings->isEmbeddedOtherTranslationEnabled());
+
+    // Always enable text extraction
+    eng->setScenarioExtractionEnabled(true);
+    eng->setNameExtractionEnabled(true);
   }
   eng->setEnabled(settings->isEmbedDriverNeeded()); // enable it at last
 }

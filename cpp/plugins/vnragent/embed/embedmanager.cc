@@ -38,11 +38,8 @@ public:
     memory->create();
   }
 
-  //void lock() { mutex.lock(); }
-  //void unlock() { mutex.unlock(); }
-
-  void sleep() {}
-  void notify() {}
+  static void sleep(int msecs) { ::Sleep(msecs); }
+  //void notify() {}
 };
 
 //  // - Event -
@@ -87,26 +84,32 @@ EmbedManager::~EmbedManager()
 
 // - Actions -
 
+void EmbedManager::quit()
+{
+  D_LOCK;
+  if (d_->memory->isAttached())
+    d_->memory->detach();
+}
+
 void EmbedManager::clearTranslation()
 {
   D_LOCK;
   d_->translations.clear();
 }
 
-void EmbedManager::updateTranslation(const QString &text, qint64 hash, int role)
-{
-  D_LOCK;
-  qint64 key = Engine::hashTextKey(hash, role);
-  d_->translations[key] = text;
-  d_->notify();
-}
+//void EmbedManager::updateTranslation(const QString &text, qint64 hash, int role)
+//{
+//  D_LOCK;
+//  qint64 key = Engine::hashTextKey(hash, role);
+//  d_->translations[key] = text;
+//  //d_->notify();
+//}
 
 //void EmbedManager::abortTranslation()
 //{ d_->unblock(); }
 
-void EmbedManager::addText(const QString &text, qint64 hash, int role, bool needsTranslation)
+void EmbedManager::sendText(const QString &text, qint64 hash, int role, bool needsTranslation)
 {
-  // TODO: Only delay the text if the role is not scenario
   if (needsTranslation)
     emit textReceived(text, hash, role, needsTranslation);
   else
@@ -122,18 +125,24 @@ QString EmbedManager::findTranslation(qint64 hash, int role) const
 
 QString EmbedManager::waitForTranslation(qint64 hash, int role) const
 {
-  enum { WaitTime = 3000 }; // wait for at most 3 seconds
-  QString ret = findTranslation(hash, role);
-  if (ret.isEmpty()) {
-    d_->sleep();
+  D_LOCK;
 
-    //d_->sleepEvent.signal(false);
-    //for (int i = 0; ret.isEmpty() && !d_->sleepEvent.wait(D::SleepTimeout) && i < D::SleepCount; i++)
-    //  ret = findTranslation(hash, role);
+  enum { SleepInterval = 10, SleepCount = 100 }; // sleep for at most 1 second
 
-    //if (RpcClient::instance()->waitForDataReceived(WaitTime))
-    ret = findTranslation(hash, role);
-  }
+  qint64 key = Engine::hashTextKey(hash, role);
+  QString ret = d_->translations.value(key);
+  if (ret.isEmpty())
+    for (int i = 0; i < SleepCount; i++) {
+      if (!d_->memory->isAttached() || d_->memory->isDataCanceled())
+        break;
+      if (d_->memory->dataHash() == hash && d_->memory->dataRole() == role) {
+        ret = d_->memory->dataText();
+        if (!ret.isEmpty())
+          d_->translations[key] = text;
+        break;
+      }
+      d_->sleep(SleepInterval);
+    }
   return ret;
 }
 
@@ -141,7 +150,7 @@ QString EmbedManager::waitForTranslation(qint64 hash, int role) const
   //qint64 key = Engine::hashTextKey(hash, role);
   //auto it = d_->translations.constFind(key);
   //if (it == d_->translations.constEnd()) { // FIXME: supposed to be while
-  ////while (it == d_->translations.constEnd()) {
+  //while (it == d_->translations.constEnd()) {
   //  d_->unlock();
   //  d_->sleep();
   //  d_->lock();

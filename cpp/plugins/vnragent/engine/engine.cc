@@ -10,6 +10,17 @@
 #include <qt_windows.h>
 #include <QtCore/QTextCodec>
 
+EngineSettings::EngineSettings()
+  : enabled(false)
+{
+  for (int role = 0; i < Engine::RoleCount; role++)
+    textVisible[role] =
+    transcodingEnabled[role] =
+    translationEnabled[role] =
+    extractionEnabled[role] =
+    false;
+}
+
 /** Private class */
 
 class AbstractEnginePrivate
@@ -46,8 +57,8 @@ public:
   QString decode(const QByteArray &data) const
   { return decoder ? decoder->toUnicode(data) : QString::fromLocal8Bit(data); }
 
-  QByteArray transcode(const QByteArray &data) const
-  { return !encoder || !decoder || encoder == decoder ? data : encoder->fromUnicode(decoder->toUnicode(data)); }
+  //QByteArray transcode(const QByteArray &data) const
+  //{ return !encoder || !decoder || encoder == decoder ? data : encoder->fromUnicode(decoder->toUnicode(data)); }
 
 };
 
@@ -84,46 +95,53 @@ bool AbstractEngine::isTranscodingNeeded() const
 
 QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool blocking) const
 {
-  if (data.isEmpty() || !d_->settings->textVisible[role])
-    return QByteArray();
-  if (!d_->settings->translationEnabled[role] && d_->settings->transcodingEnabled[role]) {
-    return d_->transcode(data);
-  }
-
   QString text = d_->decode(data);
   if (text.isEmpty())
     return data;
 
+  auto p = EmbedManager::instance();
+
+  qint64 hash = Engine::hashByteArray(data);
+  if (d_->settings->extractionEnabled[role] && !d_->settings->translationEnabled[role]) {
+    enum { NeedsTranslation = false };
+    p->sendText(text, hash, role, NeedsTranslation);
+  }
+
+  if (!d_->settings->textVisible[role])
+    return QByteArray();
+
+  if (!d_->settings->translationEnabled[role])
+    return d_->settings->transcodingEnabled[role] ? d_->encode(text) : data;
   if (role == Engine::OtherRole && !Util::needsTranslation(text))
     return d_->encode(text);
 
-  qint64 hash = Engine::hashByteArray(data);
-  auto p = EmbedManager::instance();
   QString repl = p->findTranslation(hash, role);
-  p->addText(text, hash, role, repl.isEmpty());
-  if (blocking && repl.isEmpty())
+  bool needsTranslation = repl.isEmpty();
+  p->addText(text, hash, role, needsTranslation);
+  if (needsTranslation && blocking)
     repl = p->waitForTranslation(hash, role);
+
   if (repl.isEmpty())
     repl = text;
 
   return d_->encode(repl);
 }
 
-QString AbstractEngine::dispatchTextW(const QString &text, int role, bool blocking) const
-{
-  if (text.isEmpty() || !d_->settings->textVisible[role])
-    return QString();
-
-  qint64 hash = Engine::hashString(text);
-  auto p = EmbedManager::instance();
-  QString repl = p->findTranslation(hash, role);
-  p->addText(text, hash, role, repl.isEmpty());
-  if (blocking && repl.isEmpty())
-    repl = p->waitForTranslation(hash, role);
-  if (repl.isEmpty())
-    repl = text;
-
-  return repl;
-}
+//QString AbstractEngine::dispatchTextW(const QString &text, int role, bool blocking) const
+//{
+//  if (text.isEmpty() || !d_->settings->textVisible[role])
+//    return QString();
+//
+//  qint64 hash = Engine::hashString(text);
+//  auto p = EmbedManager::instance();
+//  QString repl = p->findTranslation(hash, role);
+//  p->addText(text, hash, role, repl.isEmpty());
+//  if (blocking && repl.isEmpty())
+//    repl = p->waitForTranslation(hash, role);
+//  if (repl.isEmpty())
+//    repl = text;
+//
+//  return repl;
+//}
 
 // EOF

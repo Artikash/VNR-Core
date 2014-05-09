@@ -78,12 +78,13 @@ void Loader::initWithInstance(HINSTANCE hInstance)
 
 void Loader::destroy()
 {
-#ifdef VNRAGENT_ENABLE_UNLOAD
   if (::driver_) {
+    ::driver_->quit()();
+#ifdef VNRAGENT_ENABLE_UNLOAD
     ::driver_->requestDeleteLater();
     ::driver_ = nullptr;
-  }
 #endif // VNRAGENT_ENABLE_UNLOAD
+  }
 
 #ifdef VNRAGENT_ENABLE_APPRUNNER
   if (::appRunner_ && ::appRunner_->isActive()) {

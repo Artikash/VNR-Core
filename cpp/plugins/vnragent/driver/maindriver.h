@@ -18,6 +18,7 @@ public:
   explicit MainDriver(QObject *parent = nullptr);
   ~MainDriver();
 
+  void quit();
   // Connected with deleteLater through queued signal
   void requestDeleteLater();
 

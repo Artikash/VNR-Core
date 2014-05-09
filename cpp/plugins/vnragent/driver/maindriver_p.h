@@ -22,6 +22,7 @@ class MainDriverPrivate : public QObject
   WindowDriver *win;
 public:
   explicit MainDriverPrivate(QObject *parent);
+  void quit();
 
 signals:
   void deleteLaterRequestd();

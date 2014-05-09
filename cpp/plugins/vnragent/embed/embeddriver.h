@@ -25,22 +25,26 @@ signals:
   void engineNameChanged(QString name);
 public slots:
   void sendEngineName();
-  void updateTranslation(const QString &text, qint64 hash, int role);
+  //void updateTranslation(const QString &text, qint64 hash, int role);
   void clearTranslation();
   void setEnabled(bool t);
 
   void setScenarioVisible(bool t);
+  void setScenarioExtractionEnabled(bool t);
   void setScenarioTranscodingEnabled(bool t);
   void setScenarioTranslationEnabled(bool t);
   void setNameVisible(bool t);
+  void setNameExtractionEnabled(bool t);
   void setNameTranscodingEnabled(bool t);
   void setNameTranslationEnabled(bool t);
   void setOtherVisible(bool t);
+  void setOtherExtractionEnabled(bool t);
   void setOtherTranscodingEnabled(bool t);
   void setOtherTranslationEnabled(bool t);
 
   // Called by engine
 public:
+  void quit();
   bool inject();
   //bool isEnabled() const;
   void unload();

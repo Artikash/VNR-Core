@@ -42,12 +42,15 @@ EmbedDriver::~EmbedDriver()
 void EmbedDriver::setEnabled(bool t)  { if (d_->engine) d_->engine->settings()->enabled = t; }
 
 void EmbedDriver::setScenarioVisible(bool t) { if (d_->engine) d_->engine->settings()->textVisible[Engine::ScenarioRole] = t; }
+void EmbedDriver::setScenarioExtractionEnabled(bool t) { if (d_->engine) d_->engine->settings()->extractionEnabled[Engine::ScenarioRole] = t; }
 void EmbedDriver::setScenarioTranscodingEnabled(bool t) { if (d_->engine) d_->engine->settings()->transcodingEnabled[Engine::ScenarioRole] = t; }
 void EmbedDriver::setScenarioTranslationEnabled(bool t) { if (d_->engine) d_->engine->settings()->translationEnabled[Engine::ScenarioRole] = t; }
 void EmbedDriver::setNameVisible(bool t) { if (d_->engine) d_->engine->settings()->textVisible[Engine::NameRole] = t; }
+void EmbedDriver::setNameExtractionEnabled(bool t) { if (d_->engine) d_->engine->settings()->extractionEnabled[Engine::NameRole] = t; }
 void EmbedDriver::setNameTranscodingEnabled(bool t) { if (d_->engine) d_->engine->settings()->transcodingEnabled[Engine::NameRole] = t; }
 void EmbedDriver::setNameTranslationEnabled(bool t) { if (d_->engine) d_->engine->settings()->translationEnabled[Engine::NameRole] = t; }
 void EmbedDriver::setOtherVisible(bool t) { if (d_->engine) d_->engine->settings()->textVisible[Engine::OtherRole] = t; }
+void EmbedDriver::setOtherExtractionEnabled(bool t) { if (d_->engine) d_->engine->settings()->extractionEnabled[Engine::OtherRole] = t; }
 void EmbedDriver::setOtherTranscodingEnabled(bool t) { if (d_->engine) d_->engine->settings()->transcodingEnabled[Engine::OtherRole] = t; }
 void EmbedDriver::setOtherTranslationEnabled(bool t) { if (d_->engine) d_->engine->settings()->translationEnabled[Engine::OtherRole] = t; }
 
@@ -71,8 +74,13 @@ bool EmbedDriver::inject()
 
 void EmbedDriver::clearTranslation()  { d_->manager->clearTranslation(); }
 
-void EmbedDriver::updateTranslation(const QString &text, qint64 hash, int role)
-{ d_->manager->updateTranslation(text, hash, role); }
+//void EmbedDriver::updateTranslation(const QString &text, qint64 hash, int role)
+//{ d_->manager->updateTranslation(text, hash, role); }
+
+void EmbedDriver::quit()
+{
+  d_->manager->quit();
+}
 
 void EmbedDriver::unload()
 {

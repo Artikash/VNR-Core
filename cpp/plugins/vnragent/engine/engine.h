@@ -13,15 +13,10 @@ public:
   bool enabled;
   bool textVisible[Engine::RoleCount],
        transcodingEnabled[Engine::RoleCount],
-       translationEnabled[Engine::RoleCount];
+       translationEnabled[Engine::RoleCount],
+       extractionEnabled[Engine::RoleCount];
 
-  EngineSettings()
-    : enabled(false)
-  {
-    qMemSet(textVisible, 0, sizeof(textVisible));
-    qMemSet(transcodingEnabled, 0, sizeof(textVisible));
-    qMemSet(translationEnabled, 0, sizeof(textVisible));
-  }
+  EngineSettings();  // initalize all of the settings to false
 };
 
 class AbstractEnginePrivate;
@@ -53,7 +48,7 @@ public:
 
 public: // only needed by descendants
   QByteArray dispatchTextA(const QByteArray &data, int role, bool blocking = true) const;
-  QString dispatchTextW(const QString &text, int role, bool blocking = true) const;
+  //QString dispatchTextW(const QString &text, int role, bool blocking = true) const;
 };
 
 // EOF

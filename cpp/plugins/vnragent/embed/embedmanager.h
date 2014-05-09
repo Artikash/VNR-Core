@@ -27,15 +27,16 @@ signals:
   void textReceived(QString text, qint64 hash, int role, bool needsTranslation);
   void textReceivedDelayed(QString text, qint64 hash, int role, bool needsTranslation);
 public:
-  void updateTranslation(const QString &text, qint64 hash, int role);
+  //void updateTranslation(const QString &text, qint64 hash, int role);
   void clearTranslation();
+  void quit();
 
   // Interface to engine
 public:
   QString findTranslation(qint64 hash, int role) const;
   QString waitForTranslation(qint64 hash, int role) const;
 
-  void addText(const QString &text, qint64 hash, int role, bool needsTranslation);
+  void sendText(const QString &text, qint64 hash, int role, bool needsTranslation);
 };
 
 // EOF
