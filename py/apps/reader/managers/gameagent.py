@@ -8,7 +8,7 @@ from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint
 from vnragent import vnragent
 from mytr import my
-import config, growl, settings
+import config, growl, sharedmem, settings
 
 @memoized
 def global_(): return GameAgent()
@@ -72,9 +72,11 @@ class GameAgent(QObject):
 
   ## States ##
 
-  def disable(self):
-    if self.__d.connectedPid:
-      self.__d.rpc.disableAgent()
+  def quit(self):
+    d = self.__d
+    d.mem.quit()
+    if d.connectedPid:
+      d.rpc.disableAgent()
 
   #def setGameLanguage(self, v):
   #  self.__d.gameLanguage = v
@@ -87,6 +89,25 @@ class GameAgent(QObject):
   def sendSettings(self):
     if self.isConnected():
       self.__d.sendSettings()
+
+  # Shared memory
+
+  def sendEmbeddedTranslation(self, text, hash, role):
+    """
+    @param  text  unicode
+    @param  hash  str or int64
+    @param  role  int
+    """
+    if isinstance(hash, str) or isinstance(hash, unicode):
+      hash = long(hash)
+    m = self.__d.mem
+    if m.isAttached() and m.lock():
+      m.setDataStatus(m.STATUS_BUSY)
+      m.setDataHash(hash)
+      m.setDataRole(role)
+      m.setDataText(text)
+      m.setDataStatus(m.STATUS_READY)
+      m.unlock()
 
   #def engine
 
@@ -109,6 +130,8 @@ _SETTINGS_DICT = {
 @Q_Q
 class _GameAgent(object):
   def __init__(self, q):
+    self.mem = sharedmem.VnrAgentSharedMemory()
+
     import rpcman
     self.rpc = rpcman.manager()
 
@@ -122,6 +145,7 @@ class _GameAgent(object):
     t.timeout.connect(self._onInjectTimeout)
 
     q.processAttached.connect(self._onAttached)
+    q.processDetached.connect(self._onDetached)
 
     self.clear()
     def f():pass
@@ -156,10 +180,16 @@ class _GameAgent(object):
     self.sendSettings()
     #self.rpc.enableAgent()
 
+  def _onDetached(self, pid): # long ->
+    self.mem.detachProcess(pid)
+
   def _onEngineReceived(self, name): # str
     self.engineName = name
     self.q.engineChanged.emit(name)
-    if name:
+
+    if name and self.connectedPid:
+      self.mem.attachProcess(self.connectedPid)
+
       growl.notify("%s: %s" % (my.tr("Detect game engine"), name))
 
   def sendSettings(self):

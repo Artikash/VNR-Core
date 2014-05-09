@@ -308,7 +308,9 @@ class _MainObject(object):
     ret.windowTranslationChanged.connect(rpc.sendWindowTranslation)
 
     rpc.engineTextReceived.connect(ret.addAgentText)
-    ret.agentTranslationProcessed.connect(rpc.sendEngineTranslation)
+
+    agent = self.gameAgent
+    ret.agentTranslationProcessed.connect(agent.sendEmbeddedTranslation)
 
     grimoire = self.grimoire
 
@@ -1770,7 +1772,7 @@ class MainObject(QObject):
 
     #if d.gameManager.isWindowHookConnected:
     #  d.rpcServer.disableAgent()
-    d.gameAgent.disable()
+    d.gameAgent.quit()
 
     skevents.runlater(partial(d.exit, exitCode), interval)
     dprint("leave")

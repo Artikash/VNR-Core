@@ -30,6 +30,9 @@ app:
   socketPort:   6103        # IPC QMetaCall listening port (6100 + app.id)
   socketName:   vnr.socket  # local socket pipe name
 
+vnragent:
+  memoryKey:    vnragent.%s # %s is process ID
+
 # Environment variables
 env:
   pythonpath:

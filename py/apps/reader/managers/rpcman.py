@@ -157,16 +157,16 @@ class RpcServer(QObject):
     except TypeError, e:
       dwarn("failed to encode json: %s" % e)
 
-  def sendEngineTranslation(self, text, hash, role):
-    """
-    @param  text  unicode
-    @param  hash  long
-    @param  role  int
-    """
-    if isinstance(hash, int) or isinstance(hash, long):
-      hash = _marshalInteger(hash)
-    self.__d.callAgent('engine.text',
-        text, hash, _marshalInteger(role))
+  #def sendEngineTranslation(self, text, hash, role):
+  #  """
+  #  @param  text  unicode
+  #  @param  hash  long
+  #  @param  role  int
+  #  """
+  #  if isinstance(hash, int) or isinstance(hash, long):
+  #    hash = _marshalInteger(hash)
+  #  self.__d.callAgent('engine.text',
+  #      text, hash, _marshalInteger(role))
 
 @Q_Q
 class _RpcServer(object):

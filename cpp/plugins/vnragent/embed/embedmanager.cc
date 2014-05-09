@@ -135,13 +135,15 @@ QString EmbedManager::waitForTranslation(qint64 hash, int role) const
     for (int i = 0; i < SleepCount; i++) {
       if (!d_->memory->isAttached() || d_->memory->isDataCanceled())
         break;
-      if (d_->memory->dataHash() == hash && d_->memory->dataRole() == role) {
+      if (d_->memory->isDataReady() && d_->memory->dataHash() == hash && d_->memory->dataRole() == role) {
+        d_->memory->lock();
         ret = d_->memory->dataText();
+        d_->memory->unlock();
         if (!ret.isEmpty())
           d_->translations[key] = text;
         break;
       }
-      d_->sleep(SleepInterval);
+      D::sleep(SleepInterval);
     }
   return ret;
 }

@@ -17,10 +17,11 @@ public:
 
   bool create();
 
-  enum { EmptyStatus = 0, ReadyStatus, CancelStatus };
+  enum { EmptyStatus = 0, ReadyStatus, BusyStatus, CancelStatus };
 
   bool isDataEmpty() const { return dataStatus() == EmptyStatus; }
   bool isDataReady() const { return dataStatus() == ReadyStatus; }
+  bool isDataBusy() const { return dataStatus() == BusyStatus; }
   bool isDataCanceled() const { return dataStatus() == CancelStatus; }
 };
 

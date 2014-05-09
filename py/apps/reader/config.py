@@ -145,6 +145,8 @@ APP_SOCKET_TYPE = _APP['socketType'] # str
 APP_SOCKET_NAME = _APP['socketName'] # str
 APP_SOCKET_PORT = parse_int(_APP['socketPort']) # int
 
+VNRAGENT_MEMORY_KEY = APP_YAML['vnragent']['memoryKey']
+
 REF_EXPIRE_TIME = parse_int(_APP['refExpireTime'])
 NAME_EXPIRE_TIME = parse_int(_APP['nameExpireTime'])
 
