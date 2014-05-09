@@ -367,6 +367,58 @@ class _TextManager(object):
   #def _maximumDataSize(self):
   #  return defs.MAX_REPEAT_DATA_LENGTH if self.removesRepeat else defs.MAX_DATA_LENGTH
 
+  def querySharedTranslation(self, hash=0, text=''):
+    """
+    @param* hash  long
+    @param* text  unicode
+    @return  unicode or None
+    """
+    dm = dataman.manager()
+    if not dm.hasComments():
+      return
+
+    lang2 = self.language[:2]
+
+    if text:
+      # Calculate hash2
+      hashes2[1:CONTEXT_CAPACITY] = [
+          hashutil.hashtext(text, h) if h else 0
+            for h in self.hashes2[0:CONTEXT_CAPACITY-1]]
+      hashes2[0] = hashutil.hashtext(text)
+
+      # Hash2 as back up
+      for h in self.hashes2:
+        if not h: break
+        for c in dm.queryComments(hash2=h):
+          cd = c.d
+          if not cd.deleted and not cd.disabled and cd.type == 'subtitle' and cd.language.startswith(lang2):
+            return cd.text
+
+    rawData = None
+    if text:
+      try: rawData = text.encode(self.encoding)
+      except UnicodeEncodeError:
+        dwarn("cannot extract raw data from text")
+
+    if not rawData and hash:
+      for c in dm.queryComments(hash=hash):
+        cd = c.d
+        if not cd.deleted and not cd.disabled and cd.type == 'subtitle' and cd.language.startswith(lang2):
+          return cd.text
+
+    if rawData:
+      hashes[1:CONTEXT_CAPACITY] = [
+          hashutil.strhash(rawData, h) if h else 0
+            for h in self.hashes[0:CONTEXT_CAPACITY-1]]
+      hashes[0] = hashutil.strhash(rawData)
+
+      for h in hashes:
+        if not h: break
+        for c in dm.queryComments(hash=h):
+          cd = c.d # For performance reason
+          if not cd.deleted and not cd.disabled and cd.type == 'subtitle' and cd.language.startswith(lang2): #language_compatible_to(cd.language, lang)
+            return cd.text
+
   def showScenarioText(self, rawData, renderedData):
     """
     @param  rawData  bytearray
@@ -776,16 +828,21 @@ class TextManager(QObject):
     #    dwarn("failed to parse text hash: %s" % rawHash)
     #    return
 
-    if role == SCENARIO_THREAD_TYPE:
-      pass
-    elif role == NAME_THREAD_TYPE:
-      pass
-    elif role == OTHER_THREAD_TYPE:
-      pass
+    #if role == SCENARIO_THREAD_TYPE:
+    #  pass
+    #elif role == NAME_THREAD_TYPE:
+    #  pass
+    #elif role == OTHER_THREAD_TYPE:
+    #  pass
 
     if needsTranslation:
-      async = role == OTHER_THREAD_TYPE
-      sub, lang, provider = trman.manager().translateOne(text, async=async, online=True)
+      sub = None
+      if role == SCENARIO_THREAD_TYPE:
+        hash = long(rawHash)
+        sub = d.querySharedTranslation(hash=hash, text=text)
+      if not sub:
+        async = role == OTHER_THREAD_TYPE
+        sub, lang, provider = trman.manager().translateOne(text, async=async, online=True)
       if sub:
         self.agentTranslationProcessed.emit(sub, rawHash, role)
 
