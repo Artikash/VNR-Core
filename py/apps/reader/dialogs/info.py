@@ -89,7 +89,11 @@ For type A languages, there is not problem. You can ignore this limitation secti
 For both type B and C languages, VNR has to launch the game in your native locale than Japanese.<br/>
 For Type B languages, there is no problem if the game is able to start in your locale.<br/>
 For Type C languages, there will be encoding issue that the untranslated Japanese text could become garbage characters.<br/>
-For other languages, I haven't got time to test them yet.""")
+For other languages, I haven't got time to test them yet.
+
+<h3>Debug</h3>
+If this feature crashes your game, please try starting VNR using Debug VNR,
+and there will be a vnragent.log file generated in VNR's directory.""")
 
 def renderTextReaderHelp():
   return my.tr(
