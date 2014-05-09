@@ -1493,13 +1493,18 @@ class MainObject(QObject):
       w.setText(text)
     _MainObject.showWindow(w)
 
+  def showTextSettings(self):
+    if self.__d.textHook.isAttached():
+      _MainObject.showWindow(self.__d.textPrefsDialog)
+    else:
+      growl.notify(my.tr("I am sorry that this feature has not been implemented yet."))
+
   def showGameBoard(self): _MainObject.showWindow(self.__d.gameBoardDialog)
   def showYouTubeInput(self): _MainObject.showWindow(self.__d.youTubeInputDialog)
   def showDictionaryTester(self): _MainObject.showWindow(self.__d.dictionaryTesterDialog)
   def showMachineTranslationTester(self): _MainObject.showWindow(self.__d.machineTranslationTesterDialog)
   def showBBCodeTester(self): _MainObject.showWindow(self.__d.bbcodeTesterDialog)
   def showRegExpTester(self): _MainObject.showWindow(self.__d.regExpTesterDialog)
-  def showTextSettings(self): _MainObject.showWindow(self.__d.textPrefsDialog)
   def showGameFinder(self): _MainObject.showWindow(self.__d.gameFinderDialog)
   def showPreferences(self): _MainObject.showWindow(self.__d.prefsDialog)
   def showAbout(self): _MainObject.showWindow(self.__d.aboutDialog)
