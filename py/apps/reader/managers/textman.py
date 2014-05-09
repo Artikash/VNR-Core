@@ -17,6 +17,7 @@ from sakurakit.skdebug import dwarn
 #from sakurakit.skqml import QmlObject
 #from sakurakit.skunicode import u
 from memcache.container import SizeLimitedList
+from cconv.cconv import zhs2zht #, zht2zhs
 from mytr import my
 from texthook import texthook
 import config, dataman, defs, features, growl, hashutil, i18n, settings, termman, textutil, trman, ttsman
@@ -419,11 +420,21 @@ class _TextManager(object):
           if not cd.deleted and not cd.disabled and cd.type == 'subtitle' and cd.language.startswith(lang2): #language_compatible_to(cd.language, lang)
             return cd.text
 
-  def showScenarioText(self, rawData, renderedData):
+  def showScenarioText(self, rawData=None, renderedData=None, text=None, agent=True):
     """
-    @param  rawData  bytearray
-    @param  renderedData  bytearray
+    @param* rawData  bytearray
+    @param* renderedData  bytearray
+    @param* text  unicode
+    @param* agent  bool
     """
+    if not rawData and text:
+      rawData = text.encode(self.encoding, errors='ignore')
+    if not rawData:
+      growl.warn("%s (%s):<br/>%s" % (
+        my.tr("Failed to encode text"), self.encoding, text))
+      return
+    if renderedData is None:
+      renderedData = rawData
     dataSize = len(renderedData)
     if dataSize >= self.gameTextCapacity:
       self.resetHashes()
@@ -431,6 +442,7 @@ class _TextManager(object):
       growl.msg(my.tr("Game text is ignored for being too long")
           + u" (&gt;%s)" % int(self.gameTextCapacity/2))
       return
+
     q = self.q
 
     if FIX_OLD_SUBS:
@@ -439,7 +451,8 @@ class _TextManager(object):
             for h in self.oldHashes[0:CONTEXT_CAPACITY-1]]
       self.oldHashes[0] = hashutil.strhash_old_vnr(rawData)
 
-    text = self._decodeText(renderedData).strip()
+    if not text:
+      text = self._decodeText(renderedData).strip()
     #text = u"「なにこれ」"
     #text = u"めばえちゃん"
     #text = u"ツナ缶"
@@ -560,21 +573,24 @@ class _TextManager(object):
         skclip.settext(text)
       self._translateTextAndShow(text, timestamp)
 
-  def showNameText(self, data):
+  def showNameText(self, data=None, text=None, agent=True):
     """
-    @param  data  bytearray
+    @param* data  bytearray
+    @param* text  unicode
+    @param* agent  bool
     """
-    dataSize = len(data)
-    if dataSize > defs.MAX_NAME_LENGTH:
-      dwarn("ignore long name text, size = %i" % dataSize)
-      return
-
-    text = self._decodeText(data).strip()
+    if not text and data:
+      dataSize = len(data)
+      if dataSize > defs.MAX_NAME_LENGTH:
+        dwarn("ignore long name text, size = %i" % dataSize)
+        return
+      text = self._decodeText(data).strip()
     if not text:
       return
-    text = self._repairText(text, self.language)
-    if not text:
-      return
+    if not agent:
+      text = self._repairText(text, self.language)
+      if not text:
+        return
     text = textutil.normalize_name(text)
     if not text:
       return
@@ -804,11 +820,11 @@ class TextManager(QObject):
     thread.appendData(renderedData)
 
     if signature == d.nameSignature:
-      d.showNameText(renderedData)
+      d.showNameText(data=renderedData, agent=False)
     elif d.otherSignatures and signature in d.otherSignatures:
       d.showOtherText(renderedData)
     elif signature == d.scenarioSignature or d.keepsThreads and name == d.scenarioThreadName:
-      d.showScenarioText(rawData, renderedData)
+      d.showScenarioText(rawData=rawData, renderedData=renderedData, agent=False)
     #d.locked = False
 
   def addAgentText(self, text, rawHash, role, needsTranslation):
@@ -822,19 +838,6 @@ class TextManager(QObject):
     if not d.enabled:
       return
 
-    #if isinstance(rawHash, str) or isinstance(rawHash, unicode):
-    #  try: rawHash = long(rawHash)
-    #  except ValueError:
-    #    dwarn("failed to parse text hash: %s" % rawHash)
-    #    return
-
-    #if role == SCENARIO_THREAD_TYPE:
-    #  pass
-    #elif role == NAME_THREAD_TYPE:
-    #  pass
-    #elif role == OTHER_THREAD_TYPE:
-    #  pass
-
     if needsTranslation:
       sub = None
       if role == SCENARIO_THREAD_TYPE:
@@ -844,7 +847,20 @@ class TextManager(QObject):
         async = role == OTHER_THREAD_TYPE
         sub, lang, provider = trman.manager().translateOne(text, async=async, online=True)
       if sub:
+        # Enforce Chinese encoding
+        if self.language == 'zht' and lang.startswith('zh'):
+          sub = zhs2zht(sub)
+        #elif self.language == 'zhs' and lang.startswith('zh'):
+        #  sub = zht2zhs(sub)
         self.agentTranslationProcessed.emit(sub, rawHash, role)
+
+    # TODO: Use a timer here
+    if role == SCENARIO_THREAD_TYPE:
+      self.showScenarioText(text=text, agent=True)
+    elif role == NAME_THREAD_TYPE:
+      self.showNameText(text=text, agent=True)
+    #elif role == OTHER_THREAD_TYPE:
+    #  pass
 
   def encoding(self): return self.__d.encoding
   def setEncoding(self, encoding):
