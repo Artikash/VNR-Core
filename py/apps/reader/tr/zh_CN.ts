@@ -1525,7 +1525,7 @@ For example, you can put in &quot;typo&quot;, &quot;inaccurate&quot;, or &quot;s
         <translation>请选择游戏的名字</translation>
     </message>
     <message>
-        <location filename="dialogs/info.py" line="111"/>
+        <location filename="dialogs/info.py" line="112"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 Text Reader can translate the Japanese text under mouse.
 For example, it can translate hovered Japanese Wikipedia articles in Firefox, online visual novels, or light novel paragraphs in Notepad.
@@ -1899,7 +1899,7 @@ This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source
         <translation>没有找到人物的姓名</translation>
     </message>
     <message utf8="true">
-        <location filename="dialogs/info.py" line="199"/>
+        <location filename="dialogs/info.py" line="200"/>
         <source>&lt;h3&gt;Motivation&lt;/h3&gt;
 In VNR, game settings including user-contributed subtitles and series-specific dictionary terms
 are bound with the game&apos;s executable.
@@ -2528,7 +2528,7 @@ Just don&apos;t forget to export LC_ALL=ja_JP.UTF8 before launching VNR.</source
         <translation>你要把这些数据导出到Excel CSV文件中码？</translation>
     </message>
     <message>
-        <location filename="dialogs/info.py" line="271"/>
+        <location filename="dialogs/info.py" line="272"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 This shared dictionary serves to improve machine translation for game texts and window texts.
 It will not affect user-contributed subtitles.
@@ -2584,7 +2584,7 @@ VNR每隔几天会自动更新辞书的。
 不过你也可以点击【刷新】来手动更新辞书的条目。</translation>
     </message>
     <message>
-        <location filename="dialogs/info.py" line="239"/>
+        <location filename="dialogs/info.py" line="240"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 VNR supports sharing &lt;span style=&apos;color:purple&apos;&gt;annotations (danmaku, comments, and subtitles, etc.)&lt;/span&gt; for game text.
 That&apos;s why it is under the &lt;span style=&apos;color:purple&apos;&gt;Annot(ation) Player&lt;/span&gt; project.
@@ -2660,7 +2660,7 @@ VNR中可以共享对游戏内容的&lt;span style=&apos;color:purple&apos;&gt;�
 </translation>
     </message>
     <message utf8="true">
-        <location filename="dialogs/info.py" line="329"/>
+        <location filename="dialogs/info.py" line="330"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 In Text Settings and Game Wizard,
 you can select which text threads to display and translate in VNR.
@@ -2833,7 +2833,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
         <translation>未知的游戏。请尝试编辑下游戏情报。</translation>
     </message>
     <message utf8="true">
-        <location filename="dialogs/info.py" line="364"/>
+        <location filename="dialogs/info.py" line="365"/>
         <source>The hook code is a &lt;i&gt;hash string&lt;/i&gt; encoded by the information needed to sync with specific game.
 It is not required by all the games, but is essential for some ones.
 It is a string that always starts with &lt;span style=&quot;color:green&quot;&gt;&quot;/H&quot;&lt;/span&gt;.
@@ -3261,7 +3261,7 @@ VNR可以自动从台湾大学下载并安装pAppLocale。
         <translation>用VNR自带的浏览器打卡可能被屏蔽的网站</translation>
     </message>
     <message>
-        <location filename="dialogs/info.py" line="145"/>
+        <location filename="dialogs/info.py" line="146"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 Usually, not all game characters are covered by voice actors.
 In Voice Settings, you can assign specific TTS voice to the game character that does not have a CV.
@@ -3491,7 +3491,7 @@ For other languages, I haven&apos;t got time to test them yet.
 &lt;h3&gt;Debug&lt;/h3&gt;
 If this feature crashes your game, please try starting VNR using Debug VNR,
 and there will be a vnragent.log file generated in VNR&apos;s directory.</source>
-        <translation>&lt;h3&gt;嵌入文字中选项的含义&lt;/h3&gt;
+        <translation type="obsolete">&lt;h3&gt;嵌入文字中选项的含义&lt;/h3&gt;
 * 无效：不修改文字&lt;br/&gt;
 * 转码：显示转码后的文字&lt;br/&gt;
 * 翻译：显示人工或者机器翻译&lt;br/&gt;
@@ -3512,6 +3512,69 @@ A. 日文的子集：英文和其他拉丁文字的语言&lt;br/&gt;
 B. 日文的超集：简体中文&lt;br/&gt;
 C. 日文的交集：正体中文，谚文&lt;br/&gt;
 内嵌翻译A类型的语言没有任何影响。&lt;br/&gt;
+内嵌翻译B或者C类型的语言，需要游戏用你自己的编码启动而不能用日文编码启动&lt;br/&gt;
+对B类型的语言，如果启动成功，那么内嵌翻译就不会有任何问题了。&lt;br/&gt;
+对C类型的语言，即使启动成功，仍旧会有编码的问题，需要将全部文字都翻译成你的语言才可以。&lt;br/&gt;
+
+&lt;h3&gt;Debug&lt;/h3&gt;
+如果这个功能会让你的游戏崩溃掉，那么可以尝试运行Debug VNR，然后将VNR文件夹下的vnragent.log和崩溃游戏的名字一起发给我。</translation>
+    </message>
+    <message>
+        <location filename="dialogs/info.py" line="96"/>
+        <source>&lt;h3&gt;Explanation of the options&lt;/h3&gt;
+* Disable: leave the text unchanged&lt;br/&gt;
+* Transcode: display the text and try to fix its encoding&lt;br/&gt;
+* Translate: display the translation&lt;br/&gt;
+* Both: display both the text and its translation&lt;br/&gt;
+* Hide: display nothing&lt;br/&gt;
+
+&lt;br/&gt;
+This feature is currently under development and only supports a small portion of the games that ITH supports.
+More information could be found on the Wiki:
+&lt;center&gt;
+&lt;a href=&quot;http://sakuradite.com/wiki/en/VNR/Game_Settings&quot;&gt;http://sakuradite.com/wiki/en/VNR/Game_Settings&lt;/a&gt;
+&lt;/center&gt;
+
+&lt;h3&gt;Language limitations&lt;/h3&gt;
+For SHIFT-JIS games, if you want to enable displaying translations into the game,
+depending which language you are speaking, it could result in huge problems.
+&lt;br/&gt;
+A. Subset of Japanese: English and other Latin-based languages&lt;br/&gt;
+B. Superset of Japanese: Simplified Chinese&lt;br/&gt;
+C. Intersects Japanese: Traditional Chinese, Korean&lt;br/&gt;
+D. Independent from Japanese: Thai&lt;br/&gt;
+For type A languages, there is no problem. You can ignore this limitation section.&lt;br/&gt;
+For Type D languages, there is currently no way to correctly embed the translation.&lt;br/&gt;
+For both type B and C languages, VNR has to launch the game in your native locale than Japanese.&lt;br/&gt;
+For Type B languages, there is no problem if the game is able to start in your locale.&lt;br/&gt;
+For Type C languages, there will be encoding issue that the untranslated Japanese text could become garbage characters.&lt;br/&gt;
+
+&lt;h3&gt;Debug&lt;/h3&gt;
+If this feature crashes your game, please try starting VNR using Debug VNR,
+and there will be a vnragent.log file generated in VNR&apos;s directory.</source>
+        <translation>&lt;h3&gt;嵌入文字中选项的含义&lt;/h3&gt;
+* 无效：不修改文字&lt;br/&gt;
+* 转码：显示转码后的文字&lt;br/&gt;
+* 翻译：显示人工或者机器翻译&lt;br/&gt;
+* Both：即显示转码文字，有显示它的翻译&lt;br/&gt;
+* 隐藏：什么都不显示&lt;br/&gt;
+
+&lt;br/&gt;
+这个功能还在开发中，当前支持的游戏要远远少于ITH。
+更多的信息可以参看Wiki：
+&lt;center&gt;
+&lt;a href=&quot;http://sakuradite.com/wiki/zh/VNR/Game_Settings&quot;&gt;http://sakuradite.com/wiki/zh/VNR/Game_Settings&lt;/a&gt;
+&lt;/center&gt;
+
+&lt;h3&gt;语言的局限性&lt;/h3&gt;
+SHIFT-JIS编码的游戏要显示嵌入翻译，取决于翻译的语言，可能会带来很多问题。
+&lt;br/&gt;
+A. 日文的子集：英文和其他拉丁文字的语言&lt;br/&gt;
+B. 日文的超集：简体中文&lt;br/&gt;
+C. 日文有交集：正体中文，谚文&lt;br/&gt;
+D. 日文无交集：泰文&lt;br/&gt;
+内嵌翻译A类型的语言没有任何影响。&lt;br/&gt;
+对D类型的语言，现在无法支持内嵌翻译。&lt;br/&gt;
 内嵌翻译B或者C类型的语言，需要游戏用你自己的编码启动而不能用日文编码启动&lt;br/&gt;
 对B类型的语言，如果启动成功，那么内嵌翻译就不会有任何问题了。&lt;br/&gt;
 对C类型的语言，即使启动成功，仍旧会有编码的问题，需要将全部文字都翻译成你的语言才可以。&lt;br/&gt;

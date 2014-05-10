@@ -82,11 +82,12 @@ depending which language you are speaking, it could result in huge problems.
 A. Subset of Japanese: English and other Latin-based languages<br/>
 B. Superset of Japanese: Simplified Chinese<br/>
 C. Intersects Japanese: Traditional Chinese, Korean<br/>
+D. Independent from Japanese: Thai<br/>
 For type A languages, there is no problem. You can ignore this limitation section.<br/>
+For Type D languages, there is currently no way to correctly embed the translation.<br/>
 For both type B and C languages, VNR has to launch the game in your native locale than Japanese.<br/>
 For Type B languages, there is no problem if the game is able to start in your locale.<br/>
 For Type C languages, there will be encoding issue that the untranslated Japanese text could become garbage characters.<br/>
-For other languages, I haven't got time to test them yet.
 
 <h3>Debug</h3>
 If this feature crashes your game, please try starting VNR using Debug VNR,

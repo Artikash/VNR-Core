@@ -23,6 +23,23 @@ class MajiroEnginePrivate
 {
   typedef MajiroEngine Q;
 
+  // Return the number of bits in the integer
+  // Brian-Kemighan's method
+  // http://stackoverflow.com/questions/109023/how-to-count-the-number-of-set-bits-in-a-32-bit-integer
+  //static int bitCount(quint8 value)
+  //{
+  //  int count = 0;
+  //  for (; value; count++)
+  //    value &= value -1;
+  //  return count;
+  //}
+  //static int bitCount(qint32 i)
+  //static {
+  //static   i = i - ((i >> 1) & 0x55555555);
+  //static   i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
+  //static   return (((i + (i >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
+  //static }
+
   /**
    *  Observeations from レミニセンス:
    *  - arg1 of the scenario is a fixed portable value.
@@ -31,6 +48,7 @@ class MajiroEnginePrivate
    *  - arg2's first 4 bytes of name and scenario texts are the same.
    *  - arg4 is not portable, but a contant for each run.
    *  - arg5 is aways 1.
+   *  - Scenario always comes after name
    *
    *  Game-specific arg1:
    *  - 暁の護衛 罪深き終末論: 32 = 0x20 = ' '
@@ -43,11 +61,12 @@ class MajiroEnginePrivate
     Q_UNUSED(arg5)
     enum { ScenarioMask = 0xffff0000 };
     static int lastScenarioArg2_;
-    if (arg1 && !(arg1 & 0xf)) { // the lower 4 bits are zero
+    if (arg1 && !(arg1 & 0xf) &&  // the lower 4 bits are zero
+       (!lastScenarioArg2_ || lastScenarioArg2_ >= arg2)) { // keep the smaller arg
       lastScenarioArg2_ = arg2;
       return Engine::ScenarioRole;
     }
-    if ((lastScenarioArg2_ & ScenarioMask) == (arg2 & ScenarioMask))
+    if ((lastScenarioArg2_ & ScenarioMask) == (arg2 & ScenarioMask)) // the higher four bits of the scenario and the name are the same
       return Engine::NameRole;
     return Engine::OtherRole;
   }

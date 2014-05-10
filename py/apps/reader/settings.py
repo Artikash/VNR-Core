@@ -1246,7 +1246,7 @@ class Settings(QSettings):
 
   embeddedNameTextVisibleChanged = Signal(bool)
   def isEmbeddedNameTextVisible(self):
-    return to_bool(self.value('EmbeddedNameText', False))
+    return to_bool(self.value('EmbeddedNameText', True))
   def setEmbeddedNameTextVisible(self, value):
     if value != self.isEmbeddedNameTextVisible():
       self.setValue('EmbeddedNameText', value)
@@ -1254,7 +1254,7 @@ class Settings(QSettings):
 
   embeddedNameTranslationEnabledChanged = Signal(bool)
   def isEmbeddedNameTranslationEnabled(self):
-    return to_bool(self.value('EmbeddedNameTranslation', False))
+    return to_bool(self.value('EmbeddedNameTranslation', True))
   def setEmbeddedNameTranslationEnabled(self, value):
     if value != self.isEmbeddedNameTranslationEnabled():
       self.setValue('EmbeddedNameTranslation', value)

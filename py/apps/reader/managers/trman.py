@@ -294,14 +294,14 @@ class TranslatorManager(QObject):
       return 'ko'
     if d.jbeijingEnabled or d.baiduEnabled or d.dreyeEnabled:
       return 'zhs' if d.language == 'zhs' else 'zht'
-    if (d.atlasEnabled or d.lecEnabled) and not any(
+    if (d.atlasEnabled or d.lecEnabled) and not any((
         d.infoseekEnabled,
         d.transruEnabled,
         d.exciteEnabled,
         d.bingEnabled,
         d.googleEnabled,
         d.lecOnlineEnabled,
-      ):
+      )):
       return 'en'
     return d.language
 

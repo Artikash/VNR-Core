@@ -311,6 +311,8 @@ languages:
   # Asian
   - vi
   - ms
+  # Not supported
+  - th
 
 languageNames:
   ja: 日本語
