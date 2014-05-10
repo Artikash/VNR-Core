@@ -420,6 +420,10 @@ DWORD DetermineNoHookEngine()
   //  ConsoleOutput("vnreng: IGNORE Unity");
   //  return yes;
   //}
+  if (IthCheckFile(L"bsz_Data\\Managed\\UnityEngine.dll") || IthCheckFile(L"bsz2_Data\\Managed\\UnityEngine.dll")) {
+    ConsoleOutput("vnreng: IGNORE Unity");
+    return yes;
+  }
 
   if (IthCheckFile(L"AGERC.DLL")) { // jichi 3/17/2014: Eushully, AGE.EXE
     ConsoleOutput("vnreng: IGNORE Eushully");
