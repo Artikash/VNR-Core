@@ -30,6 +30,7 @@ APP_YAML_LOCATION = os.path.join(ROOT_LOCATION, "reader.yaml")
 BLACKLIST_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/blacklist.yaml")
 BRANDS_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/brands.yaml")
 ENGINES_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/engines.yaml")
+ZUNKO_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/zunko.yaml")
 
 ROOT_LOCATION_U = u(ROOT_LOCATION)
 
