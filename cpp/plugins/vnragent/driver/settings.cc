@@ -18,6 +18,7 @@ public:
      , embeddedScenarioTranslationEnabled
      , embeddedScenarioTranscodingEnabled
      , embeddedNameVisible
+     , embeddedNameTextVisible
      , embeddedNameTranslationEnabled
      , embeddedNameTranscodingEnabled
      , embeddedOtherVisible

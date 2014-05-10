@@ -20,7 +20,7 @@ public:
   // Set all properties to false
   EngineSettings()
     : enabled(false)
-    , detectsCtrl(false)
+    , detectsControl(false)
     , nameTextVisible(false)
   {
     for (int role = 0; role < Engine::RoleCount; role++)

@@ -5,6 +5,7 @@
 // See: http://bbs.sumisora.org/read.php?tid=10917044
 // See: http://bbs.sumisora.org/read.php?tid=225250
 #include "engine/model/majiro.h"
+#include "engine/enginedef.h"
 #include "engine/engineenv.h"
 #include "detoursutil/detoursutil.h"
 #include "memdbg/memsearch.h"

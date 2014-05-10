@@ -87,8 +87,8 @@ signals:
   void embeddedOtherTranslationEnabledChanged(bool t);
   void embeddedOtherTranscodingEnabledChanged(bool t);
 
-  void embeddedTextEnabled(bool t);
-  void embeddedTextCancellableByControl(bool t);
+  void embeddedTextEnabledChanged(bool t);
+  void embeddedTextCancellableByControlChanged(bool t);
   void embeddedTranslationWaitTimeChanged(int v);
 
   void gameEncodingChanged(QString v);
