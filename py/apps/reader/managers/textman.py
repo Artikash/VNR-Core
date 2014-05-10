@@ -65,9 +65,9 @@ CONTEXT_CAPACITY = 4 # max number of context to hash
 class _TextManager(object):
 
   def __init__(self, q):
-    t = self._flushAgentTextTimer = QTimer(q)
+    t = self._flushAgentScenarioTimer = QTimer(q)
     t.setSingleShot(True)
-    t.timeout.connect(self._flushAgentText)
+    t.timeout.connect(self._flushAgentScenario)
 
     t = self._speakTextTimer = QTimer(q)
     t.setSingleShot(True)
@@ -95,7 +95,7 @@ class _TextManager(object):
     self.blockedLanguages = set() # {str}
 
   def reset(self):
-    self.agentTextBuffer = [] # [unicode scenario text]
+    self.agentScenarioBuffer = [] # [unicode scenario text]
 
     self.ttsName = "" # unicode not None, character name
     self.ttsNameForSubtitle = "" # unicode, ttsName for subtitle
@@ -374,14 +374,17 @@ class _TextManager(object):
   #def _maximumDataSize(self):
   #  return defs.MAX_REPEAT_DATA_LENGTH if self.removesRepeat else defs.MAX_DATA_LENGTH
 
-  def _flushAgentText(self):
-    if self._flushAgentTextTimer.isActive():
-      self._flushAgentTextTimer.stop()
-    if not self.agentTextBuffer:
+  def _flushAgentScenario(self):
+    self._flushAgentScenarioTimer.stop()
+    if not self.agentScenarioBuffer:
       return
-    text = ''.join(self.agentTextBuffer)
-    self.agentTextBuffer = []
+    text = ''.join(self.agentScenarioBuffer)
+    self.agentScenarioBuffer = []
     self.showScenarioText(text=text, agent=True)
+
+  def _cancelAgentScenario(self):
+    self._flushAgentScenarioTimer.stop()
+    self.agentScenarioBuffer = []
 
   def addAgentText(self, text, role, needsTranslation=False):
     """
@@ -389,13 +392,15 @@ class _TextManager(object):
     @param  role  int
     @param* needsTranslation  bool
     """
-    # TODO: Use a timer here for joining scenarioText and handle multiple line issue
-    # Buffer agent texts
     if role == SCENARIO_THREAD_TYPE:
-      self.agentTextBuffer.append(text)
-      self._flushAgentTextTimer.start(500 if needsTranslation else 50)
+      self.agentScenarioBuffer.append(text)
+      if sum(map(len, self.agentScenarioBuffer)) > self.gameTextCapacity:
+        self._cancelAgentScenario()
+      else:
+        self._flushAgentScenarioTimer.start(500 if needsTranslation else 50)
     else:
-      self._flushAgentText()
+      if self.agentScenarioBuffer:
+        self._flushAgentText()
       if role == NAME_THREAD_TYPE:
         self.showNameText(text=text, agent=True)
     #elif role == OTHER_THREAD_TYPE:

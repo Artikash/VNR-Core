@@ -51,10 +51,13 @@ void Util::installDebugMsgHandler()
     installed = true;
     QFile file(debugFileLocation());
     if (file.open(QIODevice::Text|QIODevice::WriteOnly)) {
-      QTextStream(&file) << "\n--------\n\n";
+      QTextStream(&file) << "This log file is created by VNR hook for each game. For bug report, please also attach this file.\n";
       qInstallMsgHandler(debugMsgHandler);
     }
   }
 }
+
+void Util::uninstallDebugMsgHandler()
+{ qInstallMsgHandler(nullptr); }
 
 // EOF

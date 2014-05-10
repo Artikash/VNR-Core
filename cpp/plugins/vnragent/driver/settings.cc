@@ -160,8 +160,6 @@ void Settings::load(const QString &json)
     QString value = it.value().toString();
     bool bValue = value == "true";
     switch (qHash(it.key())) {
-    case H_debug: if (bValue) Util::installDebugMsgHandler(); break;
-    case H_gameEncoding: setGameEncoding(value); break;
     case H_windowTranslationEnabled: setWindowTranslationEnabled(bValue); break;
     case H_windowTranscodingEnabled: setWindowTranscodingEnabled(bValue); break;
     case H_windowTextVisibleChange: setWindowTextVisible(bValue); break;
@@ -177,6 +175,15 @@ void Settings::load(const QString &json)
     case H_embeddedOtherTranscodingEnabled: setEmbeddedOtherTranscodingEnabled(bValue); break;
 
     case H_embeddedTranslationWaitTime: setEmbeddedTranslationWaitTime(value.toInt()); break;
+
+    case H_gameEncoding: setGameEncoding(value); break;
+
+    case H_debug:
+      if (bValue)
+        Util::installDebugMsgHandler();
+      else
+        Util::uninstallDebugMsgHandler();
+      break;
     default: DOUT("warning: unknown key:" << it.key());
     }
   }

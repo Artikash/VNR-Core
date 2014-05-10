@@ -10,6 +10,7 @@ namespace Util {
 QString debugFileLocation();
 void debugMsgHandler(QtMsgType type, const char *msg);
 void installDebugMsgHandler();
+void uninstallDebugMsgHandler();
 
 } // namespace Util
 
