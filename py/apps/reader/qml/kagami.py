@@ -151,7 +151,12 @@ class GrimoireController(QObject):
     GrimoireBean.instance.clear.emit()
 
   def pageBreak(self):
-    self.__d.append(GrimoireBean.instance.pageBreak.emit)
+    ss = settings.global_()
+    if (ss.isGrimoireTextVisible() or
+        ss.isGrimoireNameVisible() or
+        ss.isGrimoireTranslationVisible() or
+        ss.isGrimoireSubtitleVisible()):
+      self.__d.append(GrimoireBean.instance.pageBreak.emit)
 
   def showText(self, text, language, timestamp):
     if not settings.global_().isGrimoireTextVisible():
@@ -342,7 +347,8 @@ class OmajinaiController(QObject):
     OmajinaiBean.instance.clear.emit()
 
   def showComment(self, c):
-    if features.USER_COMMENT and c.type == 'danmaku' and not c.disabled and not c.deleted:
+    if (features.USER_COMMENT and settings.global_().isGrimoireDanmakuVisible() and
+        c.type == 'danmaku' and not c.disabled and not c.deleted):
       self.__d.append(c)
 
 ## Mirage ##
