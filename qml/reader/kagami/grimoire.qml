@@ -1116,10 +1116,12 @@ Item { id: root_
 
   // Insert a page break
   function pageBreak() {
-    slimList()
-    _pageIndex = listModel_.count
-    addText()
-    cls()
+    if (listModel_.count) { // only add pagebreak if there are texts
+      slimList()
+      _pageIndex = listModel_.count
+      addText()
+      cls()
+    }
   }
 
   // Limit total number of items in the list by removing extra items in the beginning
