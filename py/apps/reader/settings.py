@@ -1309,6 +1309,20 @@ class Settings(QSettings):
   #    self.setValue('WindowHookEnabled', value)
   #    self.windowHookEnabledChanged.emit(value)
 
+  # Kagami
+  def isGrimoireTextVisible(self):
+    return to_bool(self.value('GrimoireText', True))
+  def isGrimoireTranslationVisible(self):
+    return to_bool(self.value('GrimoireTranslation', True))
+  def isGrimoireSubtitleVisible(self):
+    return to_bool(self.value('GrimoireSubtitle', True))
+  def isGrimoireCommentVisible(self):
+    return to_bool(self.value('GrimoireComment', True))
+  def isGrimoireDanmakuVisible(self):
+    return to_bool(self.value('GrimoireDanmaku', True))
+  def isGrimoireNameVisible(self):
+    return to_bool(self.value('GrimoireName', True))
+
 @memoized
 def global_(): return Settings()
 
