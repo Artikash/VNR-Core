@@ -1044,7 +1044,7 @@ class _TtsTab(object):
     ret.setSingleStep(1)
     tm = ttsman.manager()
     ret.setValue(tm.getSapiSpeed(key))
-    ret.valueChanged.connect(partial(tm.setSapiSpeed, key))
+    ret.valueChanged[int].connect(partial(tm.setSapiSpeed, key))
     return ret
 
   @memoizedproperty
@@ -4358,12 +4358,13 @@ class _EngineTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.agentGroup)
     layout.addWidget(self.launchGroup)
+    layout.addWidget(self.optionGroup)
     layout.addWidget(self.textGroup)
     layout.addStretch()
     q.setLayout(layout)
 
     b = self.agentEnableButton
-    for w in self.textGroup, self.launchGroup:
+    for w in self.launchGroup, self.optionGroup, self.textGroup:
       w.setEnabled(b.isChecked())
       b.toggled.connect(w.setEnabled)
 
@@ -4431,6 +4432,42 @@ class _EngineTab(object):
       my.tr("This is indispensable for SHIFT-JIS games when your language is NOT Latin-based"),
       my.tr("The current implementation is buggy, though."),
     )))
+    ret.setWordWrap(True)
+    return ret
+
+  ## Options ##
+
+  @memoizedproperty
+  def optionGroup(self):
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(QtWidgets.QLabel(my.tr("Translation wait time")))
+    row.addWidget(self.translationWaitTimeButton)
+    row.addWidget(QtWidgets.QLabel("msec (1000 msec = 1 sec)"))
+    row.addStretch()
+    layout = QtWidgets.QVBoxLayout()
+    layout.addLayout(row)
+    layout.addWidget(self.optionInfoLabel)
+    ret = QtWidgets.QGroupBox(my.tr("Embedding options"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def translationWaitTimeButton(self):
+    ret = QtWidgets.QSpinBox()
+    ret.setToolTip("%s: %s" % (tr_("Default"), 1000))
+    ret.setRange(100, 10000)
+    ret.setSingleStep(10)
+    ss = settings.global_()
+    ret.setValue(ss.embeddedTranslationWaitTime())
+    ret.valueChanged[int].connect(ss.setEmbeddedTranslationWaitTime)
+    return ret
+
+  @memoizedproperty
+  def optionInfoLabel(self):
+    ret = QtWidgets.QLabel("%s: %s" % (
+      tr_("Note"),
+      my.tr("A large wait time might also cause the game to block longer when your machine translator is slow."),
+    ))
     ret.setWordWrap(True)
     return ret
 

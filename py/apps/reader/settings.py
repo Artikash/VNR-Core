@@ -1172,7 +1172,7 @@ class Settings(QSettings):
   embeddedTranslationWaitTimeChanged = Signal(int)
   def embeddedTranslationWaitTime(self):
     return to_int(self.value('EmbeddedTranslationWaitTime', 1000)) # 1 second by default
-  def setembeddedTranslationWaitTime(self, value):
+  def setEmbeddedTranslationWaitTime(self, value):
     if value != self.isembeddedEnabled():
       self.setValue('EmbeddedTranslationWaitTime', value)
       self.embeddedTranslationWaitTimeChanged.emit(value)
