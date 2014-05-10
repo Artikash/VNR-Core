@@ -4357,16 +4357,36 @@ class _EngineTab(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.agentGroup)
+    layout.addWidget(self.textGroup)
     layout.addWidget(self.launchGroup)
     layout.addWidget(self.optionGroup)
-    layout.addWidget(self.textGroup)
+    layout.addWidget(self.infoEdit)
     layout.addStretch()
     q.setLayout(layout)
 
     b = self.agentEnableButton
-    for w in self.launchGroup, self.optionGroup, self.textGroup:
+    for w in self.textGroup,:
       w.setEnabled(b.isChecked())
       b.toggled.connect(w.setEnabled)
+
+    ss = settings.global_()
+    for w in self.launchGroup, self.optionGroup:
+      slot = partial(lambda w, value: w.setEnabled(ss.isGameAgentLauncherNeeded()), w)
+      slot(None)
+      for key in 'Scenario', 'Name', 'Other':
+        sig = getattr(ss, 'embedded{0}TranslationEnabledChanged'.format(key))
+        sig.connect(slot)
+
+  @memoizedproperty
+  def infoEdit(self):
+    ret = QtWidgets.QTextBrowser()
+    skqss.class_(ret, 'texture')
+    #ret.setAlignment(Qt.AlignCenter)
+    ret.setReadOnly(True)
+    ret.setOpenExternalLinks(True)
+    #ret.setMaximumHeight(145)
+    ret.setHtml(info.renderGameAgentHelp())
+    return ret
 
   ## Agent ##
 
@@ -4429,7 +4449,8 @@ class _EngineTab(object):
   @memoizedproperty
   def launchInfoLabel(self):
     ret = QtWidgets.QLabel(''.join((
-      my.tr("This is indispensable for SHIFT-JIS games when your language is NOT Latin-based"),
+      my.tr("This is indispensable for SHIFT-JIS games when your language is NOT Latin-based."),
+      my.tr("It is only needed when embedding translation is enabled."),
       my.tr("The current implementation is buggy, though."),
     )))
     ret.setWordWrap(True)
@@ -4440,14 +4461,14 @@ class _EngineTab(object):
   @memoizedproperty
   def optionGroup(self):
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(QtWidgets.QLabel(my.tr("Translation wait time")))
+    row.addWidget(QtWidgets.QLabel(my.tr("Translation wait time") + ":"))
     row.addWidget(self.translationWaitTimeButton)
     row.addWidget(QtWidgets.QLabel("msec (1000 msec = 1 sec)"))
     row.addStretch()
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(row)
     layout.addWidget(self.optionInfoLabel)
-    ret = QtWidgets.QGroupBox(my.tr("Embedding options"))
+    ret = QtWidgets.QGroupBox(my.tr("Translation options"))
     ret.setLayout(layout)
     return ret
 
@@ -4485,7 +4506,7 @@ class _EngineTab(object):
         ('window', tr_("Window")),
       ):
       row = QtWidgets.QHBoxLayout()
-      row.addWidget(QtWidgets.QLabel(label))
+      row.addWidget(QtWidgets.QLabel(label + ":"))
       group = getattr(self, key + 'TextGroup')
       group.setParent(ret)
       l = group.buttons()
@@ -4493,20 +4514,9 @@ class _EngineTab(object):
       row.addStretch()
       cols.addLayout(row)
 
-    cols.addWidget(self.textInfoEdit)
+    #cols.addWidget(self.textInfoEdit)
 
     ret.setLayout(cols)
-    return ret
-
-  @memoizedproperty
-  def textInfoEdit(self):
-    ret = QtWidgets.QTextBrowser()
-    skqss.class_(ret, 'texture')
-    #ret.setAlignment(Qt.AlignCenter)
-    ret.setReadOnly(True)
-    ret.setOpenExternalLinks(True)
-    #ret.setMaximumHeight(145)
-    ret.setHtml(info.renderGameAgentHelp())
     return ret
 
   # Scenario

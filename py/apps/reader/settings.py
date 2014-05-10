@@ -1158,7 +1158,11 @@ class Settings(QSettings):
   def setGameAgentLauncherEnabled(self, value):
     self.setValue('GameAgentLauncher', value)
 
-  #def isGameAgentLauncherNeeded(self):
+  def isGameAgentLauncherNeeded(self):
+    return self.isGameAgentEnabled() and (
+        self.isEmbeddedScenarioTranslationEnabled() or
+        self.isEmbeddedNameTranslationEnabled() or
+        self.isEmbeddedOtherTranslationEnabled())
 
   # Whether use game agent over texthook
   gameAgentEnabledChanged = Signal(bool)

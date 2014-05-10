@@ -927,9 +927,11 @@ class GameManager(QtCore.QObject):
       return
     cursor = skcursor.SkAutoBusyCursor()
     self.openingGame.emit()
+
+    ss = settings.global_()
     try:
       d.locked = True
-      hookEnabled = settings.global_().isHookCodeEnabled()
+      hookEnabled = ss.isHookCodeEnabled()
       removesRepeat = None
       ignoresRepeat = None
       keepsSpace = None
@@ -989,11 +991,11 @@ class GameManager(QtCore.QObject):
 
       if not g.language: g.language = 'ja'
 
-      agentEnabled = settings.global_().isGameAgentEnabled() # bool
+      agentEnabled = ss.isGameAgentEnabled() # bool
       agentEngine = None
       if agentEnabled and not g.launchLanguage:
         agentEngine = gameagent.global_().guessEngine(pid=pid, path=path)
-        if agentEngine and settings.global_().isGameAgentLauncherEnabled():
+        if agentEngine and ss.isGameAgentLauncherEnabled() and ss.isGameAgentLauncherNeeded():
           # TODO: Restore get game encoding in the future
           # First, allow modify game encoding in game edit
           #if g.encoding and g.encoding != 'utf-16' or not g.encoding and agentEngine.encoding() != 'utf-16':

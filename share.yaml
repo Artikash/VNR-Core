@@ -297,8 +297,20 @@ languages:
   - zht
   - zhs
   sjis: # SHIFT-JIS compatible
-  - en
   - ja
+  # Latin (European)
+  - en
+  - de
+  - es
+  - fr
+  - it
+  - nl
+  - pl
+  - pt
+  - ru
+  # Asian
+  - vi
+  - ms
 
 languageNames:
   ja: 日本語
