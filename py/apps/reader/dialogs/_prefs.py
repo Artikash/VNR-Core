@@ -4357,12 +4357,13 @@ class _EngineTab(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.agentGroup)
+    layout.addWidget(self.launchGroup)
     layout.addWidget(self.textGroup)
     layout.addStretch()
     q.setLayout(layout)
 
     b = self.agentEnableButton
-    for w in self.textGroup,:
+    for w in self.textGroup, self.launchGroup:
       w.setEnabled(b.isChecked())
       b.toggled.connect(w.setEnabled)
 
@@ -4401,6 +4402,36 @@ class _EngineTab(object):
     import main
     m = main.manager()
     ret.linkActivated.connect(partial(m.openWiki, 'VNR/Game Settings'))
+    return ret
+
+  ## Launcher ##
+
+  @memoizedproperty
+  def launchGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.launchEnableButton)
+    layout.addWidget(self.launchInfoLabel)
+    ret = QtWidgets.QGroupBox(my.tr("Preferred game launch method"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def launchEnableButton(self):
+    ss = settings.global_()
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Use VNR's built-in game launcher instead of NTLEA/LocaleEmulator if have to"
+    ))
+    ret.setChecked(ss.isGameAgentLauncherEnabled())
+    ret.toggled.connect(ss.setGameAgentLauncherEnabled)
+    return ret
+
+  @memoizedproperty
+  def launchInfoLabel(self):
+    ret = QtWidgets.QLabel("\n".join((
+      my.tr("This is indispensable for SHIFT-JIS games when your language is NOT Latin-based"),
+      my.tr("The current implementation is buggy, though."),
+    )))
+    ret.setWordWrap(True)
     return ret
 
   ## Text ##

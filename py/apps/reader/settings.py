@@ -1152,6 +1152,14 @@ class Settings(QSettings):
 
   ## Game agent ##
 
+  # Whether allow disabling game launchers
+  def isGameAgentLauncherEnabled(self):
+    return to_bool(self.value('GameAgentLauncher', True))
+  def setGameAgentLauncherEnabled(self, value):
+    self.setValue('GameAgentLauncher', value)
+
+  #def isGameAgentLauncherNeeded(self):
+
   # Whether use game agent over texthook
   gameAgentEnabledChanged = Signal(bool)
   def isGameAgentEnabled(self):

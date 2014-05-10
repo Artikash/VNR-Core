@@ -993,7 +993,7 @@ class GameManager(QtCore.QObject):
       agentEngine = None
       if agentEnabled and not g.launchLanguage:
         agentEngine = gameagent.global_().guessEngine(pid=pid, path=path)
-        if agentEngine:
+        if agentEngine and settings.global_().isGameAgentLauncherEnabled():
           # TODO: Restore get game encoding in the future
           # First, allow modify game encoding in game edit
           #if g.encoding and g.encoding != 'utf-16' or not g.encoding and agentEngine.encoding() != 'utf-16':
