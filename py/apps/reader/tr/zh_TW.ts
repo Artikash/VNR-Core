@@ -3460,66 +3460,6 @@ VNR默認會使用TTS讀出遊戲的原始文本。
         <translation>當前的實現還很不穩定。要保證嵌入字幕正常顯示，最好在日文的Windows上執行遊戲。</translation>
     </message>
     <message>
-        <location filename="dialogs/info.py" line="95"/>
-        <source>&lt;h3&gt;Explanation of the options&lt;/h3&gt;
-* Disable: leave the text unchanged&lt;br/&gt;
-* Transcode: display the text and try to fix its encoding&lt;br/&gt;
-* Translate: display the translation&lt;br/&gt;
-* Both: display both the text and its translation&lt;br/&gt;
-* Hide: display nothing&lt;br/&gt;
-
-&lt;br/&gt;
-This feature is currently under development and only supports a small portion of the games that ITH supports.
-More information could be found on the Wiki:
-&lt;center&gt;
-&lt;a href=&quot;http://sakuradite.com/wiki/en/VNR/Game_Settings&quot;&gt;http://sakuradite.com/wiki/en/VNR/Game_Settings&lt;/a&gt;
-&lt;/center&gt;
-
-&lt;h3&gt;Language limitations&lt;/h3&gt;
-For SHIFT-JIS games, if you want to enable displaying translations into the game,
-depending which language you are speaking, it could result in huge problems.
-&lt;br/&gt;
-A. Subset of Japanese: English and other Latin-based languages&lt;br/&gt;
-B. Superset of Japanese: Simplified Chinese&lt;br/&gt;
-C. Intersects Japanese: Traditional Chinese, Korean&lt;br/&gt;
-For type A languages, there is no problem. You can ignore this limitation section.&lt;br/&gt;
-For both type B and C languages, VNR has to launch the game in your native locale than Japanese.&lt;br/&gt;
-For Type B languages, there is no problem if the game is able to start in your locale.&lt;br/&gt;
-For Type C languages, there will be encoding issue that the untranslated Japanese text could become garbage characters.&lt;br/&gt;
-For other languages, I haven&apos;t got time to test them yet.
-
-&lt;h3&gt;Debug&lt;/h3&gt;
-If this feature crashes your game, please try starting VNR using Debug VNR,
-and there will be a vnragent.log file generated in VNR&apos;s directory.</source>
-        <translation type="obsolete">&lt;h3&gt;嵌入文字中選項的含義&lt;/h3&gt;
-* 無效：不修改文字&lt;br/&gt;
-* 轉碼：顯示轉碼后的文字&lt;br/&gt;
-* 翻譯：顯示人工或者機器翻譯&lt;br/&gt;
-* Both：即顯示轉碼文字，有顯示它的翻譯&lt;br/&gt;
-* 隱藏：什麼都不顯示&lt;br/&gt;
-
-&lt;br/&gt;
-這個功能還在開發中，當前支持的遊戲要遠遠少于ITH。
-更多的信息可以參看Wiki：
-&lt;center&gt;
-&lt;a href=&quot;http://sakuradite.com/wiki/zh/VNR/Game_Settings&quot;&gt;http://sakuradite.com/wiki/zh/VNR/Game_Settings&lt;/a&gt;
-&lt;/center&gt;
-
-&lt;h3&gt;語言的局限性&lt;/h3&gt;
-SHIFT-JIS編碼的遊戲要顯示嵌入翻譯，取決于翻譯的語言，可能會帶來很多問題。
-&lt;br/&gt;
-A. 日文的子集：英文和其他拉丁文字的語言&lt;br/&gt;
-B. 日文的超集：簡體中文&lt;br/&gt;
-C. 日文的交集：正體中文，諺文&lt;br/&gt;
-內嵌翻譯A類型的語言沒有任何影響。&lt;br/&gt;
-內嵌翻譯B或者C類型的語言，需要遊戲用你自己的編碼啟動而不能用日文編碼啟動&lt;br/&gt;
-對B類型的語言，如果啟動成功，那麼內嵌翻譯就不會有任何問題了。&lt;br/&gt;
-對C類型的語言，即使啟動成功，仍舊會有編碼的問題，需要將全部文字都翻譯成你的語言才可以。&lt;br/&gt;
-
-&lt;h3&gt;Debug&lt;/h3&gt;
-如果這個功能會讓你的遊戲崩潰掉，那麼可以嘗試運行Debug VNR，然后將VNR文件夾下的vnragent.log和崩潰遊戲的名字一起發給我。</translation>
-    </message>
-    <message>
         <location filename="dialogs/info.py" line="96"/>
         <source>&lt;h3&gt;Explanation of the options&lt;/h3&gt;
 * Disable: leave the text unchanged&lt;br/&gt;
@@ -3537,7 +3477,7 @@ More information could be found on the Wiki:
 
 &lt;h3&gt;Language limitations&lt;/h3&gt;
 For SHIFT-JIS games, if you want to enable displaying translations into the game,
-depending which language you are speaking, it could result in huge problems.
+depending on which language you are speaking, it could result in lots of problems.
 &lt;br/&gt;
 A. Subset of Japanese: English and other Latin-based languages&lt;br/&gt;
 B. Superset of Japanese: Simplified Chinese&lt;br/&gt;
@@ -3556,7 +3496,7 @@ and there will be a vnragent.log file generated in VNR&apos;s directory.</source
 * 無效：不修改文字&lt;br/&gt;
 * 轉碼：顯示轉碼后的文字&lt;br/&gt;
 * 翻譯：顯示人工或者機器翻譯&lt;br/&gt;
-* Both：即顯示轉碼文字，有顯示它的翻譯&lt;br/&gt;
+* Both：既顯示轉碼文字，又顯示它的翻譯&lt;br/&gt;
 * 隱藏：什麼都不顯示&lt;br/&gt;
 
 &lt;br/&gt;
