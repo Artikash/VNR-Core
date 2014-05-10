@@ -153,7 +153,6 @@ class _GameAgent(object):
     q.processDetached.connect(self._onDetached)
 
     self.clear()
-    def f():pass
 
     ss = settings.global_()
     for k,v in _SETTINGS_DICT.iteritems():
@@ -162,6 +161,16 @@ class _GameAgent(object):
       sig.connect(partial(lambda k, t:
         self.connectedPid and self.sendSetting(k, t)
       , k))
+
+    import textman
+    self.textExtractionEnabled = textman.manager().isEnabled()
+    textman.manager().enabledChanged.connect(self._setTextExtractionEnabled)
+
+  def _setTextExtractionEnabled(self, t):
+    if self.textExtractionEnabled != t:
+      self.textExtractionEnabled = t
+      if self.connectedPid:
+        self.sendSettings('embeddedTextEnabled', t)
 
   def clear(self):
     self.injectedPid = 0 # long
@@ -200,9 +209,9 @@ class _GameAgent(object):
   def sendSettings(self):
     ss = settings.global_()
     data = {k:apply(getattr(ss, v)) for k,v in _SETTINGS_DICT.iteritems()}
+    data['debug'] = config.APP_DEBUG
     data['gameEncoding'] = self.gameEncoding
-    if config.APP_DEBUG:
-      data['debug'] = True
+    data['embeddedTextEnabled'] = self.textExtractionEnabled
     self.rpc.setAgentSettings(data)
 
   def sendSetting(self, k, v):

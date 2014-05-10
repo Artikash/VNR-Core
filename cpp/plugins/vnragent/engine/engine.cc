@@ -92,9 +92,10 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool 
 
   auto p = EmbedManager::instance();
 
-  bool canceled = d_->settings->detectsControl && WinKey::isKeyControlPressed();
+  bool canceled = !d_->settings->enabled ||
+      d_->settings->detectsControl && WinKey::isKeyControlPressed();
 
-  qint64 hash = Engine::hashByteArray(data);
+  qint64 hash = canceled ? 0 : Engine::hashByteArray(data);
   if (!canceled && d_->settings->extractionEnabled[role] && !d_->settings->translationEnabled[role]) {
     enum { NeedsTranslation = false };
     p->sendText(text, hash, role, NeedsTranslation);

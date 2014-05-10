@@ -40,6 +40,7 @@ public:
   bool isEmbeddedOtherTranslationEnabled() const;
   bool isEmbeddedOtherTranscodingEnabled() const;
 
+  bool isEmbeddedTextEnabled() const;
   bool isEmbeddedTextCancellableByControl() const;
   int embeddedTranslationWaitTime() const;
 
@@ -63,6 +64,7 @@ public slots:
   void setEmbeddedOtherTranslationEnabled(bool t);
   void setEmbeddedOtherTranscodingEnabled(bool t);
 
+  void setEmbeddedTextEnabled(bool t);
   void setEmbeddedTextCancellableByControl(bool v);
   void setEmbeddedTranslationWaitTime(int v);
 
@@ -85,6 +87,7 @@ signals:
   void embeddedOtherTranslationEnabledChanged(bool t);
   void embeddedOtherTranscodingEnabledChanged(bool t);
 
+  void embeddedTextEnabled(bool t);
   void embeddedTextCancellableByControl(bool t);
   void embeddedTranslationWaitTimeChanged(int v);
 

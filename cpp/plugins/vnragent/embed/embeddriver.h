@@ -27,10 +27,10 @@ public slots:
   void sendEngineName();
   //void updateTranslation(const QString &text, qint64 hash, int role);
   void clearTranslation();
-  void setEnabled(bool t);
 
   void setTranslationWaitTime(int v);
 
+  void setEnabled(bool t);
   void setDetectsControl(bool t);
   void setScenarioVisible(bool t);
   void setScenarioExtractionEnabled(bool t);

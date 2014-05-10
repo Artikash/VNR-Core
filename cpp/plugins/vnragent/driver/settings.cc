@@ -22,7 +22,10 @@ public:
      , embeddedNameTranscodingEnabled
      , embeddedOtherVisible
      , embeddedOtherTranslationEnabled
-     , embeddedOtherTranscodingEnabled;
+     , embeddedOtherTranscodingEnabled
+     , embeddedTextEnabled
+     , embeddedTextCancellableByControl
+     ;
 
   int embeddedTranslationWaitTime;
 
@@ -42,6 +45,7 @@ public:
      , embeddedOtherVisible(false)
      , embeddedOtherTranslationEnabled(false)
      , embeddedOtherTranscodingEnabled(false)
+     , embeddedTextEnabled(false)
      , embeddedTextCancellableByControl(false)
      , embeddedTranslationWaitTime(1000) // 1 second
      , gameEncoding("shift-jis")
@@ -89,6 +93,7 @@ DEFINE_BOOL_PROPERTY(embeddedOtherVisible, isEmbeddedOtherVisible, setEmbeddedOt
 DEFINE_BOOL_PROPERTY(embeddedOtherTranslationEnabled, isEmbeddedOtherTranslationEnabled, setEmbeddedOtherTranslationEnabled)
 DEFINE_BOOL_PROPERTY(embeddedOtherTranscodingEnabled, isEmbeddedOtherTranscodingEnabled, setEmbeddedOtherTranscodingEnabled)
 
+DEFINE_BOOL_PROPERTY(embeddedTextEnabled, isEmbeddedTextEnabled, setEmbeddedTextEnabled)
 DEFINE_BOOL_PROPERTY(embeddedTextCancellableByControl, isEmbeddedTextCancellableByControl, setEmbeddedTextCancellableByControl)
 
 DEFINE_INT_PROPERTY(embeddedTranslationWaitTime, embeddedTranslationWaitTime, setEmbeddedTranslationWaitTime)
@@ -103,12 +108,15 @@ void Settings::disable()
   setWindowTextVisible(false);
   //setWindowTranscodingEnabled(false);
 
-  setEmbeddedScenarioVisible(true);
-  setEmbeddedScenarioTranslationEnabled(false);
-  setEmbeddedNameVisible(true);
-  setEmbeddedNameTranslationEnabled(false);
-  setEmbeddedOtherVisible(true);
-  setEmbeddedOtherTranslationEnabled(false);
+  setEmbeddedTextEnabled(false);
+
+  //setEmbeddedScenarioVisible(true);
+  //setEmbeddedScenarioTranslationEnabled(false);
+  //setEmbeddedNameVisible(true);
+  //setEmbeddedNameTextVisible(true);
+  //setEmbeddedNameTranslationEnabled(false);
+  //setEmbeddedOtherVisible(true);
+  //setEmbeddedOtherTranslationEnabled(false);
 }
 
 bool Settings::isWindowDriverNeeded() const
@@ -136,6 +144,7 @@ void Settings::load(const QString &json)
     H_debug = 6994359 // "debug"
     , H_gameEncoding = 156622791
     , H_embeddedTranslationWaitTime = 245002357
+    , H_embeddedTextEnabled = 261153908
     , H_embeddedTextCancellableByControl = 96153884
 
     , H_windowTranslationEnabled = 79059828
@@ -177,6 +186,9 @@ void Settings::load(const QString &json)
     case H_embeddedOtherVisible: setEmbeddedOtherVisible(bValue); break;
     case H_embeddedOtherTranslationEnabled: setEmbeddedOtherTranslationEnabled(bValue); break;
     case H_embeddedOtherTranscodingEnabled: setEmbeddedOtherTranscodingEnabled(bValue); break;
+
+    case H_embeddedTextEnabled: setEmbeddedTextEnabled(bValue); break;
+    case H_embeddedTextCancellableByControl: setEmbeddedTextCancellableByControl(bValue); break;
 
     case H_embeddedTranslationWaitTime: setEmbeddedTranslationWaitTime(value.toInt()); break;
 

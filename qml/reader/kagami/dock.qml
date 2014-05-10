@@ -913,7 +913,7 @@ Item { id: root_
         font.pixelSize: parent.pixelSize
         font.bold: true
         font.family: parent.cellFont
-        toolTip: qsTr("Popup translation from dictionary when hover the game text")
+        toolTip: qsTr("Popup translation while hovering instead of clicking the game text")
         //language: root_.language
       }
 
