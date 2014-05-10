@@ -82,10 +82,10 @@ More information could be found on the Wiki:
 For SHIFT-JIS games, if you want to enable displaying translations into the game,
 depending which language you are speaking, it could result in huge problems.
 <br/>
-A. Subset of Japanese: English<br/>
+A. Subset of Japanese: English and other Latin-based languages<br/>
 B. Superset of Japanese: Simplified Chinese<br/>
 C. Intersects Japanese: Traditional Chinese, Korean<br/>
-For type A languages, there is not problem. You can ignore this limitation section.<br/>
+For type A languages, there is no problem. You can ignore this limitation section.<br/>
 For both type B and C languages, VNR has to launch the game in your native locale than Japanese.<br/>
 For Type B languages, there is no problem if the game is able to start in your locale.<br/>
 For Type C languages, there will be encoding issue that the untranslated Japanese text could become garbage characters.<br/>

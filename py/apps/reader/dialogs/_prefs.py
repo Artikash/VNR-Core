@@ -4428,7 +4428,7 @@ class _EngineTab(object):
 
   @memoizedproperty
   def launchInfoLabel(self):
-    ret = QtWidgets.QLabel("\n".join((
+    ret = QtWidgets.QLabel(''.join((
       my.tr("This is indispensable for SHIFT-JIS games when your language is NOT Latin-based"),
       my.tr("The current implementation is buggy, though."),
     )))
