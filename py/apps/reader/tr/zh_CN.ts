@@ -3477,7 +3477,7 @@ More information could be found on the Wiki:
 
 &lt;h3&gt;Language limitations&lt;/h3&gt;
 For SHIFT-JIS games, if you want to enable displaying translations into the game,
-depending which language you are speaking, it could result in huge problems.
+depending on which language you are speaking, it could result in lots of problems.
 &lt;br/&gt;
 A. Subset of Japanese: English and other Latin-based languages&lt;br/&gt;
 B. Superset of Japanese: Simplified Chinese&lt;br/&gt;
