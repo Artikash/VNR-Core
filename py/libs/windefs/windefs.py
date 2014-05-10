@@ -35,25 +35,31 @@ LCID_ZH_CN = 0x804 # 2052
 LCID_PT_PT = 0x816 # 2070
 LCID_ES_ES = 0xC0A # 3082
 
-LCID_LOCALES = {
-  LCID_ZH_TW: 'zh-TW',
-  LCID_ZH_CN: 'zh-CN',
-  LCID_EN_US: 'en-US',
-  LCID_JA_JP: 'ja-JP',
-  LCID_KO_KR: 'ko-KR',
-  LCID_TH_TH: 'th-TH',
-  LCID_VI_VN: 'vi-VN',
-  LCID_ID_ID: 'id-ID',
-  LCID_DE_DE: 'de-DE',
-  LCID_IT_IT: 'it-IT',
-  LCID_NL_NL: 'nl-NL',
-  LCID_PL_PL: 'pl-PL',
-  LCID_RU_RU: 'ru-RU',
-  LCID_FR_FR: 'fr-FR',
-  LCID_PT_PT: 'pt-PT',
-  LCID_ES_ES: 'es-ES',
+LCID_LOCALE = {
+  LCID_ZH_TW: 'zh_TW',
+  LCID_ZH_CN: 'zh_CN',
+  LCID_EN_US: 'en_US',
+  LCID_JA_JP: 'ja_JP',
+  LCID_KO_KR: 'ko_KR',
+  LCID_TH_TH: 'th_TH',
+  LCID_VI_VN: 'vi_VN',
+  LCID_ID_ID: 'id_ID',
+  LCID_DE_DE: 'de_DE',
+  LCID_IT_IT: 'it_IT',
+  LCID_NL_NL: 'nl_NL',
+  LCID_PL_PL: 'pl_PL',
+  LCID_RU_RU: 'ru_RU',
+  LCID_FR_FR: 'fr_FR',
+  LCID_PT_PT: 'pt_PT',
+  LCID_ES_ES: 'es_ES',
 }
 
-LCID_LOCALES2 = {k:v[:2] for k,v in LCID_LOCALES.iteritems()}
+#LCID_LOCALE2 = {k:v[:2] for k,v in LCID_LOCALE.iteritems()}
+
+LOCALE_LCID = {v:k for k,v in LCID_LOCALE.iteritems()}
+
+def lcid2locale(k): return LCID_LOCALE.get(k) or '' # long -> str
+def locale2lcid(k): return LOCALE_LCID.get(k) or 0  # str ->long
+
 
 # EOF

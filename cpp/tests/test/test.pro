@@ -1,11 +1,10 @@
 # test.pro
 # 12/2/2013
 
-CONFIG += console noqt nocrt noeh #nosafeseh
+CONFIG += console
 include(../../../config.pri)
-include($$LIBDIR/winseh/winseh_safe.pri)
-
-LIBS += -luser32
+#include($$LIBDIR/winseh/winseh_safe.pri)
+include($$LIBDIR/vnrsharedmemory/vnrsharedmemory.pri)
 
 # Source
 

@@ -5,6 +5,9 @@ DEFINES += WITH_LIB_QTEFFECT
 
 DEPENDPATH += $$PWD
 
+INCLUDEPATH += $$QT_SRC
+QT += core gui
+
 HEADERS += \
   $$PWD/graphicsabstractblureffect_p.h \
   $$PWD/graphicsgloweffect.h \
@@ -31,8 +34,5 @@ SOURCES += \
   $$PWD/pixmapglowfilter_p.cc \
   $$PWD/pixmapglowfilter2_p.cc \
   $$PWD/pixmaptextshadowfilter_p.cc
-
-INCLUDEPATH     += $$QT_SRC
-QT      += core gui
 
 # EOF

@@ -131,24 +131,20 @@
         <translation type="obsolete">点击的日文词语时弹出翻译</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="988"/>
         <source>Translate window</source>
-        <translation>翻译窗口文本</translation>
+        <translation type="obsolete">翻译窗口文本</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="992"/>
         <source>Translate window title, menu, label, button, etc.</source>
-        <translation>翻译标题，菜单，标签，按钮上的文本。</translation>
+        <translation type="obsolete">翻译标题，菜单，标签，按钮上的文本。</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="998"/>
         <source>Keep Japanese text</source>
-        <translation>保留日文文本</translation>
+        <translation type="obsolete">保留日文文本</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1002"/>
         <source>Keep original Japanese text in window translation</source>
-        <translation>翻译窗口时保留原来的日文文本</translation>
+        <translation type="obsolete">翻译窗口时保留原来的日文文本</translation>
     </message>
     <message>
         <source>Automatic TTS</source>
@@ -227,9 +223,8 @@
         <translation>翻译鼠标下的文本</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="916"/>
         <source>Popup translation from dictionary when hover the game text</source>
-        <translation>弹出鼠标指向的日文词语的翻译</translation>
+        <translation type="obsolete">弹出鼠标指向的日文词语的翻译</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="922"/>
@@ -386,6 +381,11 @@
         <translation>缩放字体大小</translation>
     </message>
     <message>
+        <location filename="../kagami/dock.qml" line="916"/>
+        <source>Popup translation while hovering instead of clicking the game text</source>
+        <translation>弹出鼠标指向的日文词语的翻译（禁用时需要点击文本才会弹出）</translation>
+    </message>
+    <message>
         <location filename="../kagami/dock.qml" line="1049"/>
         <source>Show notification</source>
         <translation>显示提醒</translation>
@@ -533,7 +533,7 @@
         <translation>按下Shift+回车来前进游戏</translation>
     </message>
     <message>
-        <location filename="../voiceview/footer.qml" line="23"/>
+        <location filename="../voiceview/footer.qml" line="24"/>
         <source>VNR will read translations instead of game texts if TTS&apos;s language is different from game&apos;s</source>
         <translation>当TTS的语言和游戏不同时，VNR会读出翻译而不会读出游戏原文</translation>
     </message>

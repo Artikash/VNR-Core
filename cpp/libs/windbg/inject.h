@@ -35,7 +35,7 @@ BOOL injectFunction1(_In_ LPCVOID addr, _In_ LPCVOID arg, _In_ SIZE_T argSize,
  *  @param  timeout  msec
  *  @return  BOOL
  */
-BOOL InjectDllW(_In_ LPCWSTR dllPath,
+BOOL injectDllW(_In_ LPCWSTR dllPath,
   _In_ DWORD pid = 0, _In_ HANDLE hProcess = INVALID_HANDLE_VALUE,
   _In_ INT timeout = INJECT_TIMEOUT);
 

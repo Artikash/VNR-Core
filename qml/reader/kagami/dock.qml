@@ -73,8 +73,8 @@ Item { id: root_
 
   property alias alignCenterChecked: centerButton_.checked
 
-  property alias windowHookChecked: windowHookButton_.checked
-  property alias windowTextChecked: windowTextButton_.checked
+  //property alias windowHookChecked: windowHookButton_.checked
+  //property alias windowTextChecked: windowTextButton_.checked
 
   //property alias speaksTextChecked: speakTextButton_.checked
   property alias speaksTextChecked: speakButton_.checked
@@ -672,8 +672,8 @@ Item { id: root_
                          splitsTranslationButton_.hover ||
                          shadowButton_.hover ||
                          centerButton_.hover ||
-                         windowHookButton_.hover ||
-                         windowTextButton_.hover ||
+                         //windowHookButton_.hover ||
+                         //windowTextButton_.hover ||
                          //speakTextButton_.hover ||
                          copyTextButton_.hover ||
                          //voiceButton_.hover ||
@@ -913,7 +913,7 @@ Item { id: root_
         font.pixelSize: parent.pixelSize
         font.bold: true
         font.family: parent.cellFont
-        toolTip: qsTr("Popup translation from dictionary when hover the game text")
+        toolTip: qsTr("Popup translation while hovering instead of clicking the game text")
         //language: root_.language
       }
 
@@ -983,26 +983,26 @@ Item { id: root_
 
       // - Group#3: Hook
 
-      Share.CheckBox { id: windowHookButton_
-        width: parent.cellWidth; height: parent.cellHeight
-        text: qsTr("Translate window")
-        font.pixelSize: parent.pixelSize
-        font.bold: true
-        font.family: parent.cellFont
-        toolTip: qsTr("Translate window title, menu, label, button, etc.")
-        //language: root_.language
-      }
+      //Share.CheckBox { id: windowHookButton_
+      //  width: parent.cellWidth; height: parent.cellHeight
+      //  text: qsTr("Translate window")
+      //  font.pixelSize: parent.pixelSize
+      //  font.bold: true
+      //  font.family: parent.cellFont
+      //  toolTip: qsTr("Translate window title, menu, label, button, etc.")
+      //  //language: root_.language
+      //}
 
-      Share.CheckBox { id: windowTextButton_
-        width: parent.cellWidth; height: parent.cellHeight
-        text: qsTr("Keep Japanese text")
-        font.pixelSize: parent.pixelSize
-        font.bold: true
-        font.family: parent.cellFont
-        toolTip: qsTr("Keep original Japanese text in window translation")
-        //language: root_.language
-        enabled: windowHookButton_.checked
-      }
+      //Share.CheckBox { id: windowTextButton_
+      //  width: parent.cellWidth; height: parent.cellHeight
+      //  text: qsTr("Keep Japanese text")
+      //  font.pixelSize: parent.pixelSize
+      //  font.bold: true
+      //  font.family: parent.cellFont
+      //  toolTip: qsTr("Keep original Japanese text in window translation")
+      //  //language: root_.language
+      //  enabled: windowHookButton_.checked
+      //}
 
       // - Group #4: TTS
 

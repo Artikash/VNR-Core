@@ -4,13 +4,13 @@ win32 {
 
 DEFINES += WITH_LIB_WINTTS
 
-DEPENDPATH      += $$PWD
+INCLUDEPATH += $$SAPI_HOME/include
+LIBS  += -lole32
+
+DEPENDPATH += $$PWD
 
 HEADERS += $$PWD/wintts.h
 SOURCES += $$PWD/wintts.cc
-
-INCLUDEPATH += $$SAPI_HOME/include
-LIBS    += -lole32
 }
 
 # EOF

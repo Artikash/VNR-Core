@@ -211,6 +211,25 @@ if skos.WIN:
     dprint("exit: ret = ok")
     return ok
 
+  def unloaddll(dllhandle, pid=0, handle=None, timeout=3000):
+    """Either pid or the process handle should be specified
+    @param  dllhandle  handle of the injected dll
+    @param  pid  LONG
+    @param  handle  HANDLE
+    @param  timeout  int  msecs
+    @return  bool
+    """
+    dprint("enter: pid = %s" % pid)
+    LOADLIBRARYW = getModuleFunctionAddress('LoadLibraryW', 'kernel32.dll')
+    if not LOADLIBRARYW:
+      dprint("exit error: cannot find LoadLibraryW from kernel32")
+      return False
+    data = dllhandle
+    dataSize = 4 # size of DWORD
+    ok = injectfunc1(LOADLIBRARYW, data, dataSize, pid=pid, handle=handle, timeout=INJECT_TIMEOUT)
+    dprint("exit: ret = ok")
+    return 0
+
   class _SkProcessCreator: pass
   class SkProcessCreator:
     def __init__(self, path, *args, **kwargs):

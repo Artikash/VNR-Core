@@ -12,6 +12,8 @@ from sakurakit import skos
 from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dprint
 
+ENABLE_GAMEENGINE = True
+
 if skos.WIN:
   import pytexthook
   #from numpy import * # for int types
@@ -184,6 +186,8 @@ if skos.WIN:
 
     def isActive(self): return self.__d.isActive()
 
+    def isAttached(self): return bool(self.__d.pid) # -> bool
+
     def currentPid(self):
       """
       @return  long
@@ -216,6 +220,8 @@ if skos.WIN:
       @return  bool
       """
       dprint("enter")
+      if not pid:
+        return False
       d = self.__d
       #d.signature = 0
       if d.pid and d.pid != pid:
@@ -230,6 +236,14 @@ if skos.WIN:
       if ok:
         d.pid = pid
         self.processAttached.emit(d.pid)
+
+        if ENABLE_GAMEENGINE:
+          dprint("try game engine")
+          from gameengine import gameengine
+          gameengine.inject(pid)
+          #skevents.runlater(partial(
+          #    gameengine.inject, g.pid),
+          #    3000) # wait for 3 seconds so that the gameengine will not crash the game on the start up (such as BALDR)
       dprint("leave: ret = %s" % ok)
       return ok
 
@@ -366,6 +380,7 @@ else:
     ## Status ##
 
     def isActive(self): return False
+    def isAttached(self): return False
 
     def currentPid(self): return 0
     def currentHookCode(self): return ""

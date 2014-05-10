@@ -28,10 +28,12 @@ def qunicode(s, enc):
   @param  s  str or bytearray or None
   @return  unicode or u""
   """
+  if isinstance(enc, unicode):
+    enc = enc.encode('utf8', errors='ignore')
   try: d = _Q_D[enc]
   except KeyError:
     from PySide.QtCore import QTextCodec
-    c = QTextCodec.codecForName(enc.encode('utf8'))
+    c = QTextCodec.codecForName(enc)
     d = c.makeDecoder()
     _Q_C[enc] = c
     _Q_D[enc] = d

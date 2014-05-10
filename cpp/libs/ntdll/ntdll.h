@@ -1,4 +1,6 @@
-#pragma once
+//#pragma once
+#ifndef NTDLL_H
+#define NTDLL_H
 
 // ntdll.h  10/14/2011
 
@@ -4331,4 +4333,4 @@ RtlDestroyHeap (
 } // extern "C"
 #endif // __cplusplus
 
-// EOF
+#endif // NTDLL_H

@@ -15,7 +15,7 @@ from sakurakit.skunicode import sjis_encodable, u_sjis
 from sakurakit.skwinobj import SkWindowObject #, SkTaskBarObject
 from texthook import texthook
 from mytr import my
-import config, dataman, defs, displayutil, features, growl, hashutil, netman, osutil, procutil, rc, rpcman, settings, textman, textutil, vnragent, winutil
+import config, dataman, defs, displayutil, features, gameagent, growl, hashutil, netman, osutil, procutil, rc, rpcman, settings, textman, textutil, winutil
 
 PROGRAMFILES = QtCore.QDir.fromNativeSeparators(skpaths.PROGRAMFILES)
 PROGRAMFILES_RE = re.compile(re.escape(PROGRAMFILES), re.IGNORECASE)
@@ -266,7 +266,8 @@ class GameProfile(QtCore.QObject):
       linkName="", folderName="", brandName="",
       loader="", language='ja',
       removesRepeat=False, ignoresRepeat=False, keepsSpace=False, threadKept=False,
-      timeZoneEnabled=None):
+      timeZoneEnabled=None,
+      launchLanguage=''):
     super(GameProfile, self).__init__(parent)
     d = self.__d = _GameProfile()
     d.locked = False
@@ -281,7 +282,7 @@ class GameProfile(QtCore.QObject):
     self.windowName = windowName    # unicode
 
     # Thread
-    self.encoding = encoding    # str
+    self.encoding = encoding    # str  game encoding
     self.threadSignature = threadSignature  # long
     self.threadName = threadName    # str
     self.removesRepeat = removesRepeat # bool
@@ -291,7 +292,7 @@ class GameProfile(QtCore.QObject):
     self.timeZoneEnabled = timeZoneEnabled # bool
 
     # {long signature : str name} or None
-    #self.supportThreads = None
+    #self.otherThreads = None
 
     # Alias
     self.linkName = linkName        # unicode
@@ -299,11 +300,19 @@ class GameProfile(QtCore.QObject):
     self.brandName = brandName      # unicode
 
     # Hook
-    self.hook = hook
-    self.deletedHook = deletedHook
+    self.hook = hook # str
+    self.deletedHook = deletedHook # str
 
     # Launcher
-    self.loader = loader
+    self.loader = loader # str
+
+    # Game agent
+    self.launchLanguage = launchLanguage # str
+
+  def lcid(self): # -> long not None
+    if self.launchLanguage:
+      return config.language2lcid(self.launchLanguage) or 0x0411 # ja by default
+    return 0x0411
 
   def applyHook(self):
     """
@@ -339,12 +348,18 @@ class GameProfile(QtCore.QObject):
     """Compute md5 digest for the file at path"""
     return hashutil.md5sum(osutil.normalize_path(self.path)) if self.path else ""
 
+  # This function is only called by gamewizard for text hook
+  def isTextHookAttached(self):
+    return self.pid and self.pid == texthook.global_().currentPid()
+
   def isAttached(self):
-    return self.pid != 0 and self.pid == texthook.global_().currentPid()
+    return self.pid and self.pid in (
+        texthook.global_().currentPid(),
+        gameagent.global_().attachedPid())
 
   def hasProcess(self):
     #return all((self.wid, self.pid, self.path, self.processName, self.windowName))
-    return all((self.wid, self.pid, self.path, self.processName))
+    return all((self.wid, self.pid, self.path, self.processName)) and skwin.is_process_active(self.pid)
 
   def hasThread(self):
     return (self.threadSignature != 0 and
@@ -374,7 +389,7 @@ class GameProfile(QtCore.QObject):
       self.encoding = game.encoding
       self.threadName = game.threadName
       self.threadSignature = game.threadSignature
-      #self.supportThreads = game.supportThreads
+      #self.otherThreads = game.otherThreads
       self.removesRepeat = game.removesRepeat
       self.ignoresRepeat = game.ignoresRepeat
       self.keepsSpace = game.keepsSpace
@@ -416,7 +431,7 @@ class GameProfile(QtCore.QObject):
     #        ret = self.applyHook()
     #return ret
 
-  #def updateSupportThreads(self):
+  #def updateOtherThreads(self):
   #  md5 = self.md5()
   #  if not md5:
   #    dwarn("failed to create md5 digest")
@@ -425,7 +440,7 @@ class GameProfile(QtCore.QObject):
   #  if not game:
   #    dprint("could not find game info")
   #    return
-  #  self.supportThreads = game.supportThreads
+  #  self.otherThreads = game.otherThreads
 
   def updateGameNames(self):
     self.folderName = ""
@@ -464,16 +479,18 @@ class GameProfile(QtCore.QObject):
     self.processName = ""
     self.folderName = ""
     self.brandName = ""
-    #self.supportThreads = None
+    #self.otherThreads = None
     self.loader = "" # apploc, etc
+    self.launchLanguage = ''
 
   processUpdated = Signal()
 
-  def usingNoneLoader(self): return self.loader == 'none'
-  def usingApploc(self): return self.loader == 'apploc'
-  def usingNtlea(self): return self.loader == 'ntlea'
-  def usingLocaleSwitch(self): return self.loader == 'lsc'
-  def usingLocaleEmulator(self): return self.loader == 'le'
+  # Always use apploc when launchLanguage is specified by game agent
+  #def usingNoneLoader(self): return self.loader == 'none'
+  def usingApploc(self): return bool(self.launchLanguage) or self.loader == 'apploc' or not self.loader and settings.global_().isApplocEnabled()
+  def usingNtlea(self): return not self.launchLanguage and (self.loader == 'ntlea' or not self.loader and settings.global_().isNtleaEnabled())
+  def usingLocaleSwitch(self): return not self.launchLanguage and (self.loader == 'lsc' or not self.loader and settings.global_().isLocaleSwitchEnabled())
+  def usingLocaleEmulator(self): return not self.launchLanguage and (self.loader == 'le' or not self.loader and settings.global_().isLocaleEmulatorEnabled())
 
   def updateProcess(self, retries=2, launch=True):
     """
@@ -511,9 +528,9 @@ class GameProfile(QtCore.QObject):
       if not proc:
         dprint("launching process path = %s" % self.path)
 
-        usingLocaleEmulator = self.usingLocaleEmulator() or not self.loader and settings.global_().isLocaleEmulatorEnabled()
-        usingLocaleSwitch = self.usingLocaleSwitch() or not self.loader and settings.global_().isLocaleSwitchEnabled()
-        usingNtlea = self.usingNtlea() or not self.loader and settings.global_().isNtleaEnabled()
+        usingLocaleEmulator = self.usingLocaleEmulator()
+        usingLocaleSwitch = self.usingLocaleSwitch()
+        usingNtlea = self.usingNtlea()
 
         #if features.ADMIN == False and (usingLocaleSwitch or usingLocaleEmulator):
         if features.ADMIN == False and usingLocaleSwitch:
@@ -624,7 +641,8 @@ class GameProfile(QtCore.QObject):
             if not launch:
               if updateLater(verbose=True): return
             else:
-              lcid = 0 if features.WINE else 0x0411 if self.usingApploc() or not self.loader and settings.global_().isApplocEnabled() else 0
+              lcid = 0 if features.WINE else self.lcid() if self.usingApploc() else 0
+              dprint("lcid = %s" % lcid)
               if not self.launchPath or not os.path.exists(self.launchPath):
                 if lcid:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("AppLocale")))
@@ -745,18 +763,22 @@ class GameProxy(QtCore.QObject):
 
 ## Game manager ##
 
-class _GameManager: pass
+class _GameManager:
+  def __init__(self):
+    self.game = None # GameProfile
+    self.locked = False # bool
+    #self.windowHookConnected = False # bool
+
 class GameManager(QtCore.QObject):
 
   def __init__(self, parent=None):
     super(GameManager, self).__init__(parent)
-    d = self.__d = _GameManager()
-    d.game = None
-    d.locked = False
-    d.windowHookConnected = False
+    self.__d = _GameManager()
     dprint("pass")
 
   ## Signals ##
+
+  processDetached = Signal() # either texthook or gameagent is detached
 
   openingGame = Signal()
   openGameFailed = Signal()
@@ -773,7 +795,7 @@ class GameManager(QtCore.QObject):
 
   nameThreadChanged = Signal(long, unicode) # signature, name, won't emit when game closed
   nameThreadDisabled = Signal() # signature, name, won't emit when game closed
-  supportThreadsChanged = Signal(dict) # {long signature:str name}
+  otherThreadsChanged = Signal(dict) # {long signature:str name}
 
   cleared = Signal()
 
@@ -785,11 +807,30 @@ class GameManager(QtCore.QObject):
     """
     return self.__d.game
 
+  def currentGamePid(self):
+    """
+    @return  long
+    """
+    return self.__d.game.pid if self.__d.game else 0
+
   ## Actions ##
+
+  def attachTextHook(self):
+    pid = self.currentGamePid()
+    if pid:
+      return
+
+    agent = gameagent.global_()
+    if agent.isConnected() and agent.hasEngine():
+      return
+
+    th = texthook.global_()
+    if pid != th.currentPid():
+      th.attachProcess(pid)
 
   def clear(self):
     self.__d.game = None
-    self.__d.windowHookConnected = False
+    #self.__d.windowHookConnected = False
     self.cleared.emit()
 
   def refreshWindow(self):
@@ -799,8 +840,10 @@ class GameManager(QtCore.QObject):
       return
 
     if g.wid and procutil.is_active_window(g.wid):
-      #self.windowChanged.emit(0)
-      dprint("ignore active window")
+      # Enforce window visible
+      self.windowChanged.emit(g.wid)
+      #self.minimizedChanged.emit(self.isMinimized())
+      dprint("active window")
       return
 
     #if not procutil.get_process_by_pid(g.pid):
@@ -811,7 +854,7 @@ class GameManager(QtCore.QObject):
       return
 
     wid = procutil.get_process_active_window(g.pid)
-    if not wid or wid == g.wid:
+    if not wid:
       growl.notify(my.tr("Cannot find game window"))
       self.windowChanged.emit(0)
       return
@@ -873,6 +916,7 @@ class GameManager(QtCore.QObject):
 
   def openGame(self, pid=0, wid=0, path="", launchPath="", linkName="",
       hook="", threadName="", threadSignature=0, encoding="", language="",
+      launchLanguage='',
       game=None):
     """
     @param  game  dataman.Game or None
@@ -885,9 +929,11 @@ class GameManager(QtCore.QObject):
       return
     cursor = skcursor.SkAutoBusyCursor()
     self.openingGame.emit()
+
+    ss = settings.global_()
     try:
       d.locked = True
-      hookEnabled = settings.global_().isHookCodeEnabled()
+      hookEnabled = ss.isHookCodeEnabled()
       removesRepeat = None
       ignoresRepeat = None
       keepsSpace = None
@@ -926,11 +972,13 @@ class GameManager(QtCore.QObject):
           deletedHook=game.deletedHook if game else "",
           encoding=encoding, hook=hook, threadName=threadName, threadSignature=threadSignature,
           removesRepeat=removesRepeat, ignoresRepeat=ignoresRepeat, keepsSpace=keepsSpace, threadKept=threadKept, language=language,
-          loader=loader, timeZoneEnabled=timeZoneEnabled)
+          loader=loader, timeZoneEnabled=timeZoneEnabled,
+          launchLanguage=launchLanguage)
 
       md5 = g.md5()
       oldGame = dataman.manager().queryGame(md5=md5, online=False)
       if oldGame:
+        if not g.encoding: g.encoding = oldGame.encoding
         if not g.language: g.language = oldGame.language
         if not g.loader: g.loader = oldGame.loader
         if not g.launchPath: g.launchPath = oldGame.launchPath
@@ -945,6 +993,21 @@ class GameManager(QtCore.QObject):
 
       if not g.language: g.language = 'ja'
 
+      agentEnabled = ss.isGameAgentEnabled() # bool
+      agentEngine = None
+      if agentEnabled and not g.launchLanguage:
+        agentEngine = gameagent.global_().guessEngine(pid=pid, path=path)
+        if agentEngine and ss.isGameAgentLauncherEnabled() and ss.isGameAgentLauncherNeeded():
+          # TODO: Restore get game encoding in the future
+          # First, allow modify game encoding in game edit
+          #if g.encoding and g.encoding != 'utf-16' or not g.encoding and agentEngine.encoding() != 'utf-16':
+          if agentEngine.encoding() != 'utf-16':
+            import trman
+            launchLanguage = trman.manager().guessTranslationLanguage()
+            if launchLanguage in config.SJIS_LANGUAGE_SET:
+              launchLanguage = ''
+            g.launchLanguage = launchLanguage
+
       if not g.hasProcess():
         dprint("update process")
         # exec event loop until the process is refreshed
@@ -958,21 +1021,41 @@ class GameManager(QtCore.QObject):
           dwarn("leave: cannot find game process")
           return
 
-      if not g.isAttached():
-        # Enable ITH hook here
-        #if features.WINE:
-        #  # 9/18/2013: I am not sure if this could help reduce CreateRemoteThread in vnrsys from crashing
-        #  skevents.sleep(5000) # Wait for 5 more seconds on Wine
-        if not texthook.global_().attachProcess(g.pid):
+      if g.pid == gameagent.global_().connectedPid():
+        skevents.runlater(gameagent.global_().sendSettings, 3000)
+
+      # g.hasProcess() must be true here, i.e. processId is valid
+      elif not g.isAttached():
+        attached = False
+
+        if agentEnabled and agentEngine:
+          dprint("attach using game agent")
+          growl.notify(my.tr("Use VNR's built-in hook instead of ITH"))
+          attached = gameagent.global_().attachProcess(g.pid)
+          if attached:
+            dprint("disable h-code as game agent is used")
+            hookEnabled = False
+
+        if not attached: # Use VNR agent or ITH as fallback
+          # Enable ITH hook here
+          #if features.WINE:
+          #  # 9/18/2013: I am not sure if this could help reduce CreateRemoteThread in vnrsys from crashing
+          #  skevents.sleep(5000) # Wait for 5 more seconds on Wine
+          dprint("attach using text hook")
+          attached = texthook.global_().attachProcess(g.pid)
+
+          #if attached:
+          #  dprint("try game engine")
+          #  from gameengine import gameengine
+          #  skevents.runlater(partial(
+          #      gameengine.inject, g.pid),
+          #      3000) # wait for 3 seconds so that the gameengine will not crash the game on the start up (such as BALDR)
+
+        if not attached:
           growl.error(my.tr("Cannot sync with game. Try restarting the game or using Game Wizard to set up connection"))
           self.openGameFailed.emit()
           dwarn("leave: cannot attach to game process")
           return
-
-        from gameengine import gameengine
-        skevents.runlater(partial(
-            gameengine.inject, g.pid),
-            3000) # wait for 3 seconds so that the gameengine will not crash the game on the start up (such as BALDR)
 
       if not g.hasThread():
         dprint("update thread")
@@ -984,11 +1067,11 @@ class GameManager(QtCore.QObject):
           dwarn("leave: cannot find game thread")
           return
 
-      #if g.supportThreads is None:
+      #if g.otherThreads is None:
       #  dprint("update support threads")
-      #  g.updateSupportThreads()
-      #  if g.supportThreads is None:
-      #    g.supportThreads = {}
+      #  g.updateOtherThreads()
+      #  if g.otherThreads is None:
+      #    g.otherThreads = {}
 
       g.updateGameNames()
 
@@ -999,7 +1082,7 @@ class GameManager(QtCore.QObject):
           my.tr("Try adjusting it in Text Settings"),
         )))
 
-      skevents.runlater(self.enableWindowHook, 4000)
+      #skevents.runlater(self.enableWindowHook, 4000)
 
       path = skwin.get_process_path(g.pid)
       if path:
@@ -1024,6 +1107,10 @@ class GameManager(QtCore.QObject):
       self.windowChanged.emit(g.wid)
       self.hookChanged.emit(g.hook)
       self.languageChanged.emit(g.language)
+
+      # Enforce window visible
+      #for t in 500, 3000, 5000:
+      #  skevents.runlater(self.refreshWindow, t)
 
       commentCount = 0
       nm = netman.manager()
@@ -1058,8 +1145,8 @@ class GameManager(QtCore.QObject):
         if it:
           if not gameData.launchPath:
             gameData.launchPath = it.launchPath
-          if not gameData.supportThreads:
-            gameData.supportThreads = it.supportThreads
+          if not gameData.otherThreads:
+            gameData.otherThreads = it.otherThreads
           if not gameData.nameThreadSignature:
             gameData.nameThreadSignature = it.nameThreadSignature
           if not gameData.nameThreadName:
@@ -1068,7 +1155,7 @@ class GameManager(QtCore.QObject):
             gameData.nameThreadDisabled = it.nameThreadDisabled
 
       self.nameThreadChanged.emit(gameData.nameThreadSignature, gameData.nameThreadName)
-      self.supportThreadsChanged.emit(gameData.supportThreads)
+      self.otherThreadsChanged.emit(gameData.otherThreads)
 
       task = partial(dataman.manager().loadGame, gameData)
       skevents.runlater(task, 200)
@@ -1091,25 +1178,26 @@ class GameManager(QtCore.QObject):
       except NameError: pass
       d.locked = False
 
-  def isWindowHookConnected(self): return self.__d.windowHookConnected
-  def setWindowHookConnected(self, value): self.__d.windowHookConnected = value
+  #def isWindowHookConnected(self): return self.__d.windowHookConnected
+  #def setWindowHookConnected(self, value): self.__d.windowHookConnected = value
 
-  def enableWindowHook(self):
-    if settings.global_().isWindowHookEnabled():
-      d = self.__d
-      if d.game and d.game.pid:
-        growl.msg(my.tr("Translating window text"))
-        if not d.windowHookConnected and not textman.manager().hasWindowTexts():
-          dprint("inject vnr agent to the game")
-          vnragent.inject_process(d.game.pid)
-        rpcman.manager().enableClient()
+  #def enableWindowHook(self):
+  #  if settings.global_().isWindowHookEnabled():
+  #    d = self.__d
+  #    if d.game and d.game.pid:
+  #      growl.msg(my.tr("Translating window text"))
+  #      if not d.windowHookConnected and not textman.manager().hasWindowTexts():
+  #        dprint("inject vnr agent to the game")
+  #        import inject
+  #        inject.inject_agent(d.game.pid)
+  #      rpcman.manager().enableAgent()
 
-  def disableWindowHook(self):
-    d = self.__d
-    if d.game and d.game.pid:
-      if d.windowHookConnected or textman.manager().hasWindowTexts():
-        growl.msg(my.tr("Stop translating window text"))
-      rpcman.manager().disableClient()
+  #def disableWindowHook(self):
+  #  d = self.__d
+  #  if d.game and d.game.pid:
+  #    if d.windowHookConnected or textman.manager().hasWindowTexts():
+  #      growl.msg(my.tr("Stop translating window text"))
+  #    rpcman.manager().disableAgent()
 
   def setRemovesRepeat(self, value):
     """
@@ -1274,7 +1362,7 @@ class GameManager(QtCore.QObject):
     self.nameThreadDisabled.emit()
     dprint("leave")
 
-  def setSupportThreads(self, threads):
+  def setOtherThreads(self, threads):
     """
     @param  threads  {long signature:str name} or None
     """
@@ -1285,8 +1373,8 @@ class GameManager(QtCore.QObject):
     if g:
       md5 = g.md5()
       if md5:
-        dataman.manager().setGameSupportThreads(threads, md5=md5)
-    self.supportThreadsChanged.emit(threads)
+        dataman.manager().setGameOtherThreads(threads, md5=md5)
+    self.otherThreadsChanged.emit(threads)
     dprint("leave")
 
   def setCurrentHook(self, hook):

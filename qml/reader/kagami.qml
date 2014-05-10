@@ -82,8 +82,8 @@ Item { id: root_
   }
 
   function loadSettings() {
-    dock_.windowHookChecked = settings_.windowHookEnabled
-    dock_.windowTextChecked = settings_.windowTextVisible
+    //dock_.windowHookChecked = settings_.windowHookEnabled
+    //dock_.windowTextChecked = settings_.windowTextVisible
     dock_.speaksTextChecked = settings_.speaksGameText
     dock_.copiesTextChecked = settings_.copiesGameText
     //dock_.voiceChecked = settings_.voiceCharacterEnabled
@@ -157,12 +157,14 @@ Item { id: root_
     settings_.grimoireWidthFactor = dock_.widthFactor
     settings_.grimoireShadowOpacity = dock_.shadowOpacity
     settings_.grimoireAlignCenter = dock_.alignCenterChecked
-    settings_.grimoireTextVisible = dock_.textChecked
-    settings_.grimoireNameVisible = dock_.nameChecked
-    settings_.grimoireTranslationVisible = dock_.translationChecked
-    settings_.grimoireSubtitleVisible = dock_.subtitleChecked
-    settings_.grimoireCommentVisible = dock_.commentChecked
-    settings_.grimoireDanmakuVisible = dock_.danmakuChecked
+
+    //settings_.grimoireTextVisible = dock_.textChecked
+    //settings_.grimoireNameVisible = dock_.nameChecked
+    //settings_.grimoireTranslationVisible = dock_.translationChecked
+    //settings_.grimoireSubtitleVisible = dock_.subtitleChecked
+    //settings_.grimoireCommentVisible = dock_.commentChecked
+    //settings_.grimoireDanmakuVisible = dock_.danmakuChecked
+
     //settings_.grimoirePopupEnabled = dock_.popupChecked
     settings_.grimoireHoverEnabled = dock_.hoverChecked
     //settings_.grimoireCopyEnabled = dock_.copyChecked
@@ -281,11 +283,12 @@ Item { id: root_
       anchors.fill: parent
 
       visible: gameWindow_.visible && !gameWindow_.minimized
-      //visible: true // debug
 
-      onVisibleChanged: //console.log("kagami.qml: visible =", visible)
+      onVisibleChanged: {
         if (visible)
           dock_.show()
+        console.log("kagami.qml: visible = " + visible)
+      }
 
       // 4 paddings surrounding the center
       property int paddingMargin: -center_.borderWidth - (dock_.displayStretchedChecked ? 2 : 0)
@@ -707,13 +710,20 @@ Item { id: root_
 
         //furiganaEnabled: root_.rubyEnabled
 
+        onTextCheckedChanged: settings_.grimoireTextVisible = textChecked
+        onNameCheckedChanged: settings_.grimoireNameVisible = nameChecked
+        onTranslationCheckedChanged: settings_.grimoireTranslationVisible = translationChecked
+        onSubtitleCheckedChanged: settings_.grimoireSubtitleVisible = subtitleChecked
+        onCommentCheckedChanged: settings_.grimoireCommentVisible = commentChecked
+        onDanmakuCheckedChanged: settings_.grimoireDanmakuVisible = danmakuChecked
+
         onGameTextCapacityChanged:
           if (gameTextCapacity > 20)
             if (settings_.gameTextCapacity !== Math.round(gameTextCapacity))
               settings_.gameTextCapacity = Math.round(gameTextCapacity)
 
-        onWindowHookCheckedChanged: settings_.windowHookEnabled = windowHookChecked
-        onWindowTextCheckedChanged: settings_.windowTextVisible = windowTextChecked
+        //onWindowHookCheckedChanged: settings_.windowHookEnabled = windowHookChecked
+        //onWindowTextCheckedChanged: settings_.windowTextVisible = windowTextChecked
         onSpeaksTextCheckedChanged: settings_.speaksGameText = speaksTextChecked
 
         onClockCheckedChanged:

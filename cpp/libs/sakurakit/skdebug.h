@@ -13,9 +13,9 @@
 
 # ifdef QT_CORE_LIB
 #   include <QtCore/QDebug>
-#   define DPRINT(...)    qDebug(QString("%1:%2:").arg(DEBUG).arg(__FUNCTION__).toLocal8Bit().constData(), __VA_ARGS__)
-#   define DOUT(_msg)     qDebug() << QString("%1:%2:").arg(DEBUG).arg(__FUNCTION__).toLocal8Bit().constData() << _msg
-#   define DERR(_msg)     qWarning() << QString("%1:%2:").arg(DEBUG).arg(__FUNCTION__).toLocal8Bit().constData() << _msg
+#   define DPRINT(...)    qDebug(QString("%1:%2:").arg((DEBUG), (__FUNCTION__)).toLocal8Bit().constData(), __VA_ARGS__)
+#   define DOUT(_msg)     qDebug() << QString("%1:%2:").arg((DEBUG), (__FUNCTION__)).toLocal8Bit().constData() << _msg
+#   define DERR(_msg)     qWarning() << QString("%1:%2:").arg((DEBUG), (__FUNCTION__)).toLocal8Bit().constData() << _msg
 # else
 #   include <iostream>
 #   include <cstdio>

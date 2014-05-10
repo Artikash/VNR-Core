@@ -4,12 +4,11 @@ win32 {
 
 DEFINES += WITH_LIB_WINSEARCH
 
-DEPENDPATH      += $$PWD
+DEPENDPATH += $$PWD
+LIBS += -lkernel32 -luser32
 
 HEADERS += $$PWD/winquery.h
 SOURCES += $$PWD/winquery.cc
-
-LIBS    += -lkernel32 -luser32
 }
 
 # EOF

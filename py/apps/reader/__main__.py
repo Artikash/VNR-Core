@@ -120,8 +120,8 @@ def main():
     from rpcman import RpcClient
     dprint("send metacall")
     r = RpcClient()
-    if r.start():
-      r.waitForReady()
+    r.start()
+    if r.waitForConnected():
       r.activate()
       a.processEvents()
     else:

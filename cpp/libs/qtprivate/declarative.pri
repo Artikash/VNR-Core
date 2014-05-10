@@ -13,6 +13,9 @@ mac:    QT_SRC  = /Users/jichi/src
 #QT_DECLARATIVE_SRC = $$PWD
 QT_DECLARATIVE_SRC = $$QT_SRC/qt/src/declarative
 
+INCLUDEPATH += $$QT_SRC
+#QT += core gui declarative
+
 INCLUDEPATH += \
   $$QT_SRC \
   $$QT_SRC/qt/src/3rdparty/harfbuzz/src # fro harfbuzz-shaper.h
@@ -29,8 +32,5 @@ SOURCES += \
   $$QT_DECLARATIVE_SRC/graphicsitems/qdeclarativeimplicitsizeitem.cpp \
   $$QT_DECLARATIVE_SRC/graphicsitems/qdeclarativepainteditem.cpp \
   $$QT_DECLARATIVE_SRC/graphicsitems/qdeclarativetextedit.cpp
-
-INCLUDEPATH     += $$QT_SRC
-#QT      += core gui declarative
 
 # EOF

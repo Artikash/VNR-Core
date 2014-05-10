@@ -3,13 +3,23 @@
 
 #include "config.h"
 #include "loader.h"
-#include "driver/driver.h"
-#include "qtembedded/applicationrunner.h"
+#include "driver/maindriver.h"
 #include "windbg/inject.h"
 #include "windbg/util.h"
-#include "ui/uihijack.h"
+#include "hijack/hijackfuncs.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTextCodec>
+
+#ifdef VNRAGENT_ENABLE_APPRUNNER
+#include "qtembedded/applicationrunner.h"
+#endif // VNRAGENT_ENABLE_APPRUNNER
+
+#ifdef VNRAGENT_DEBUG
+# include "util/msghandler.h"
+#endif // VNRAGENT_DEBUG
+
+#define DEBUG "loader"
+#include "sakurakit/skdebug.h"
 
 // Global variables
 
@@ -24,8 +34,12 @@ QCoreApplication *createApplication_(HINSTANCE hInstance)
   return new QCoreApplication(argc, argv);
 }
 
-Driver *driver_;
+// Persistent data
+MainDriver *driver_;
+
+#ifdef VNRAGENT_ENABLE_APPRUNNER
 QtEmbedded::ApplicationRunner *appRunner_;
+#endif // VNRAGENT_ENABLE_APPRUNNER
 
 } // unnamed namespace
 
@@ -34,36 +48,60 @@ QtEmbedded::ApplicationRunner *appRunner_;
 void Loader::initWithInstance(HINSTANCE hInstance)
 {
   //::GetModuleFileNameW(hInstance, MODULE_PATH, MAX_PATH);
-
   QTextCodec *codec = QTextCodec::codecForName("UTF-8");
   QTextCodec::setCodecForCStrings(codec);
   QTextCodec::setCodecForTr(codec);
 
-  auto app = ::createApplication_(hInstance);
-  //::appLoader_ = new QtEmbedded::ApplicationLoader(app, QT_EVENTLOOP_INTERVAL);
+  ::createApplication_(hInstance);
 
-  ::driver_ = new Driver;
+#ifdef VNRAGENT_DEBUG
+  Util::installDebugMsgHandler();
+#endif // VNRAGENT_DEBUG
+
+  DOUT(QCoreApplication::applicationFilePath());
+
+  ::driver_ = new MainDriver;
 
   // Hijack UI threads
   {
     WinDbg::ThreadsSuspender suspendedThreads; // lock all threads
-    Ui::overrideModules();
+    Hijack::overrideModules();
   }
 
-  appRunner_ = new QtEmbedded::ApplicationRunner(app, QT_EVENTLOOP_INTERVAL);
-  appRunner_->start();
-  //qApp->exec(); // This might hang the game
+#ifdef VNRAGENT_ENABLE_APPRUNNER
+  ::appRunner_ = new QtEmbedded::ApplicationRunner(qApp, QT_EVENTLOOP_INTERVAL);
+  ::appRunner_->start();
+#else
+  qApp->exec(); // block here
+#endif // VNRAGENT_ENABLE_APPRUNNER
 }
 
 void Loader::destroy()
 {
-  if (::driver_)
+  if (::driver_) {
     ::driver_->quit();
-  if (::appRunner_ && ::appRunner_->isActive())
+#ifdef VNRAGENT_ENABLE_UNLOAD
+    ::driver_->requestDeleteLater();
+    ::driver_ = nullptr;
+#endif // VNRAGENT_ENABLE_UNLOAD
+  }
+
+#ifdef VNRAGENT_ENABLE_APPRUNNER
+  if (::appRunner_ && ::appRunner_->isActive()) {
     ::appRunner_->stop(); // this class is not deleted
+#ifdef VNRAGENT_ENABLE_UNLOAD
+    delete ::appRunner_;
+    ::appRunner_ = nullptr;
+#endif // VNRAGENT_ENABLE_UNLOAD
+  }
+#endif // VNRAGENT_ENABLE_APPRUNNER
+
   if (qApp) {
     qApp->quit();
     qApp->processEvents(); // might hang here
+#ifdef VNRAGENT_ENABLE_UNLOAD
+    delete qApp;
+#endif // VNRAGENT_ENABLE_UNLOAD
   }
 }
 

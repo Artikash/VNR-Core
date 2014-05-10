@@ -17,6 +17,7 @@ from sakurakit.skdebug import dwarn
 #from sakurakit.skqml import QmlObject
 #from sakurakit.skunicode import u
 from memcache.container import SizeLimitedList
+from cconv.cconv import zhs2zht #, zht2zhs
 from mytr import my
 from texthook import texthook
 import config, dataman, defs, features, growl, hashutil, i18n, settings, termman, textutil, trman, ttsman
@@ -36,7 +37,7 @@ FIX_OLD_SUBS = False # whether fix the hashes and contexts for old annotations
 IGNORED_THREAD_TYPE = 0
 SCENARIO_THREAD_TYPE = 1
 NAME_THREAD_TYPE = 2
-SUPPORT_THREAD_TYPE = 3
+OTHER_THREAD_TYPE = 3
 
 class TextThread:
   MAX_DATA_COUNT = 5 # number of data to keep
@@ -64,6 +65,14 @@ CONTEXT_CAPACITY = 4 # max number of context to hash
 class _TextManager(object):
 
   def __init__(self, q):
+    t = self._flushAgentScenarioTimer = QTimer(q)
+    t.setSingleShot(True)
+    t.timeout.connect(self._flushAgentScenario)
+
+    #t = self._flushAgentNameTimer = QTimer(q)
+    #t.setSingleShot(True)
+    #t.timeout.connect(self._flushAgentName)
+
     t = self._speakTextTimer = QTimer(q)
     t.setSingleShot(True)
     t.timeout.connect(self._speakText)
@@ -90,6 +99,9 @@ class _TextManager(object):
     self.blockedLanguages = set() # {str}
 
   def reset(self):
+    self.agentScenarioBuffer = [] # [unicode scenario text]
+    self.agentNameBuffer = '' # unicode
+
     self.ttsName = "" # unicode not None, character name
     self.ttsNameForSubtitle = "" # unicode, ttsName for subtitle
     self.ttsText = "" # unicode, game text, might be reset
@@ -106,7 +118,7 @@ class _TextManager(object):
     self.scenarioSignature = 0
     self.scenarioThreadName = "" # str
     self.nameSignature = 0
-    self.supportSignatures = set() # [long signature]
+    self.otherSignatures = set() # [long signature]
     self.resetTexts()
     self.resetHashes()
     self.resetWindowTexts()
@@ -149,8 +161,8 @@ class _TextManager(object):
       yield self.scenarioSignature
     if self.nameSignature:
       yield self.nameSignature
-    if self.supportSignatures:
-      for it in self.supportSignatures:
+    if self.otherSignatures:
+      for it in self.otherSignatures:
         yield it
 
   def invalidWhitelist(self):
@@ -367,11 +379,141 @@ class _TextManager(object):
   #def _maximumDataSize(self):
   #  return defs.MAX_REPEAT_DATA_LENGTH if self.removesRepeat else defs.MAX_DATA_LENGTH
 
-  def showScenarioText(self, rawData, renderedData):
+  def _flushAgentScenario(self):
+    self._flushAgentScenarioTimer.stop()
+
+    if self.agentNameBuffer:
+       self._flushAgentName()
+
+    if self.agentScenarioBuffer:
+      text = ''.join(self.agentScenarioBuffer)
+      self.agentScenarioBuffer = []
+      self.showScenarioText(text=text, agent=True)
+
+  def _cancelAgentScenario(self):
+    self._flushAgentScenarioTimer.stop()
+    self.agentNameBuffer = ''
+    self.agentScenarioBuffer = []
+
+  def _flushAgentName(self):
+    #self._flushAgentNameTimer.stop()
+    if self.agentNameBuffer:
+      self.showNameText(text=self.agentNameBuffer, agent=True)
+      self.agentNameBuffer = ''
+
+  #def _cancelAgentName(self):
+  #  self._flushAgentNameTimer.stop()
+  #  self.agentNameBuffer = ''
+
+  def stopAgentScenarioTimer(self):
+    if self._flushAgentScenarioTimer.isActive():
+      self._flushAgentScenarioTimer.stop()
+
+  def addAgentText(self, text, role, needsTranslation=False):
     """
-    @param  rawData  bytearray
-    @param  renderedData  bytearray
+    @param  text  unicode
+    @param  role  int
+    @param* needsTranslation  bool
     """
+    if role == SCENARIO_THREAD_TYPE:
+      #if self.agentNameBuffer:
+      #  self._flushAgentName()
+      self.agentScenarioBuffer.append(text)
+      if sum(map(len, self.agentScenarioBuffer)) > self.gameTextCapacity:
+        self._cancelAgentScenario()
+      else:
+        waitTime = 50 if not needsTranslation else settings.global_().embeddedTranslationWaitTime() / 4
+        self._flushAgentScenarioTimer.start(waitTime)
+    else:
+      # I assumes the name will come before scenario
+      # This assumption might hold true for all games.
+      if self.agentScenarioBuffer:
+        self._flushAgentScenario()
+      if role == NAME_THREAD_TYPE:
+        #self.showNameText(text=text, agent=True)
+        if len(text) > defs.MAX_NAME_LENGTH:
+          self.agentNameBuffer = ''
+        else:
+          self.agentNameBuffer = text
+        #if len(self.agentNameBuffer) > defs.MAX_NAME_LENGTH:
+        #  self._cancelAgentName()
+        #else:
+        #  waitTime = 50 if not needsTranslation else settings.global_().embeddedTranslationWaitTime() * 3 # must be the same as the scenario
+        #  self._flushAgentNameTimer.start(waitTime)
+    #elif role == OTHER_THREAD_TYPE:
+    #  pass
+
+  def querySharedTranslation(self, hash=0, text=''):
+    """
+    @param* hash  long
+    @param* text  unicode
+    @return  unicode or None
+    """
+    dm = dataman.manager()
+    if not dm.hasComments():
+      return
+
+    lang2 = self.language[:2]
+
+    if text:
+      # Calculate hash2
+      hashes2 = [hashutil.hashtext(text)]
+      for h in self.hashes2:
+        if h:
+          hashes2.append(hashutil.hashtext(text, h))
+        else:
+          break
+
+      # Hash2 as back up
+      for h in self.hashes2:
+        if not h: break
+        for c in dm.queryComments(hash2=h):
+          cd = c.d
+          if not cd.deleted and not cd.disabled and cd.type == 'subtitle' and cd.language.startswith(lang2):
+            return cd.text
+
+    rawData = None
+    if text:
+      try: rawData = text.encode(self.encoding)
+      except UnicodeEncodeError:
+        dwarn("cannot extract raw data from text")
+
+    if not rawData and hash:
+      for c in dm.queryComments(hash=hash):
+        cd = c.d
+        if not cd.deleted and not cd.disabled and cd.type == 'subtitle' and cd.language.startswith(lang2):
+          return cd.text
+
+    if rawData:
+      hashes = [hashutil.strhash(rawData)]
+      for h in self.hashes:
+        if h:
+          hashes.append(hashutil.strhash(rawData, h))
+        else:
+          break
+
+      for h in hashes:
+        if not h: break
+        for c in dm.queryComments(hash=h):
+          cd = c.d # For performance reason
+          if not cd.deleted and not cd.disabled and cd.type == 'subtitle' and cd.language.startswith(lang2): #language_compatible_to(cd.language, lang)
+            return cd.text
+
+  def showScenarioText(self, rawData=None, renderedData=None, text=None, agent=True):
+    """
+    @param* rawData  bytearray
+    @param* renderedData  bytearray
+    @param* text  unicode
+    @param* agent  bool
+    """
+    if not rawData and text:
+      rawData = text.encode(self.encoding, errors='ignore')
+    if not rawData:
+      growl.warn("%s (%s):<br/>%s" % (
+        my.tr("Failed to encode text"), self.encoding, text))
+      return
+    if renderedData is None:
+      renderedData = rawData
     dataSize = len(renderedData)
     if dataSize >= self.gameTextCapacity:
       self.resetHashes()
@@ -379,6 +521,7 @@ class _TextManager(object):
       growl.msg(my.tr("Game text is ignored for being too long")
           + u" (&gt;%s)" % int(self.gameTextCapacity/2))
       return
+
     q = self.q
 
     if FIX_OLD_SUBS:
@@ -387,7 +530,8 @@ class _TextManager(object):
             for h in self.oldHashes[0:CONTEXT_CAPACITY-1]]
       self.oldHashes[0] = hashutil.strhash_old_vnr(rawData)
 
-    text = self._decodeText(renderedData).strip()
+    if not text:
+      text = self._decodeText(renderedData).strip()
     #text = u"「なにこれ」"
     #text = u"めばえちゃん"
     #text = u"ツナ缶"
@@ -508,21 +652,24 @@ class _TextManager(object):
         skclip.settext(text)
       self._translateTextAndShow(text, timestamp)
 
-  def showNameText(self, data):
+  def showNameText(self, data=None, text=None, agent=True):
     """
-    @param  data  bytearray
+    @param* data  bytearray
+    @param* text  unicode
+    @param* agent  bool
     """
-    dataSize = len(data)
-    if dataSize > defs.MAX_NAME_LENGTH:
-      dwarn("ignore long name text, size = %i" % dataSize)
-      return
-
-    text = self._decodeText(data).strip()
+    if not text and data:
+      dataSize = len(data)
+      if dataSize > defs.MAX_NAME_LENGTH:
+        dwarn("ignore long name text, size = %i" % dataSize)
+        return
+      text = self._decodeText(data).strip()
     if not text:
       return
-    text = self._repairText(text, self.language)
-    if not text:
-      return
+    if not agent:
+      text = self._repairText(text, self.language)
+      if not text:
+        return
     text = textutil.normalize_name(text)
     if not text:
       return
@@ -535,7 +682,7 @@ class _TextManager(object):
     if sub:
       self.q.nameTranslationReceived.emit(sub, lang, provider)
 
-  def showSupportText(self, data):
+  def showOtherText(self, data):
     """
     @param  data  bytearray
     """
@@ -578,7 +725,7 @@ class _TextManager(object):
   def updateWindowTranslation(self):
     if not self.windowTexts:
       return
-    #growl.msg(my.tr("Translating window text ..."))
+    growl.msg(my.tr("Translating window text ..."))
     #if not features.MACHINE_TRANSLATION:
     #  #growl.msg(my.tr("You have disabled machine translation"))
     #  return
@@ -594,32 +741,30 @@ class _TextManager(object):
         if sub:
           changedTranslation[h] = sub
     if changedTranslation:
-      #growl.msg(my.tr("Updating window text ..."))
+      growl.msg(my.tr("Updating window text ..."))
       self.windowTranslation.update(changedTranslation)
-      self.q.windowTranslationChanged.emit(
-          self.adjustWindowTranslation(changedTranslation))
+      self.q.windowTranslationChanged.emit(changedTranslation)
     else:
-      #growl.msg(my.tr("Not found machine translation"))
-      pass
+      growl.msg(my.tr("Not found machine translation"))
 
-  def adjustWindowTranslation(self, trs):
-    """
-    @param[in]  trs  {long contextHash:unicode trText}
-    @return  type(trs)
-    """
-    if not settings.global_().isWindowTextVisible():
-      return trs
-    ret = {}
-    for h, t in trs.iteritems():
-      try:
-        context = self.windowTexts[h]
-        if context == t:
-          ret[h] = context
-        else:
-          ret[h] = context + "<" + t
-      except (KeyError, TypeError):
-        ret[h] = t
-    return ret
+  #def adjustWindowTranslation(self, trs):
+  #  """
+  #  @param[in]  trs  {long contextHash:unicode trText}
+  #  @return  type(trs)
+  #  """
+  #  #if not settings.global_().isWindowTextVisible():
+  #  #  return trs
+  #  ret = {}
+  #  for h, t in trs.iteritems():
+  #    try:
+  #      context = self.windowTexts[h]
+  #      if context == t:
+  #        ret[h] = context
+  #      else:
+  #        ret[h] = context + "<" + t
+  #    except (KeyError, TypeError):
+  #      ret[h] = t
+  #  return ret
 
 class TextManager(QObject):
 
@@ -642,6 +787,8 @@ class TextManager(QObject):
 
   nameTextReceived = Signal(unicode, unicode)  # text, lang
   nameTranslationReceived = Signal(unicode, unicode, unicode)  # text, lang, provider
+
+  agentTranslationProcessed = Signal(unicode, str, int) # text, hash, role
 
   #def setMachineTranslator(self, value):
   #  self.__d.preferredMT = value
@@ -725,7 +872,7 @@ class TextManager(QObject):
     """
     return self.__d.currentContextSize()
 
-  def addText(self, rawData, renderedData, signature, name):
+  def addIthText(self, rawData, renderedData, signature, name):
     """
     @param  rawData  bytearray
     @param  renderedData  bytearray
@@ -743,35 +890,52 @@ class TextManager(QObject):
     except KeyError:
       if signature == d.scenarioSignature:
         tt = SCENARIO_THREAD_TYPE
-      elif d.supportSignatures and signature in d.supportSignatures:
-        tt = SUPPORT_THREAD_TYPE
+      elif d.otherSignatures and signature in d.otherSignatures:
+        tt = OTHER_THREAD_TYPE
       else:
         tt = IGNORED_THREAD_TYPE
       thread = d.threads[signature] = TextThread(name=name, signature=signature, type=tt)
 
-    #except OverflowError:
-    #  # FIXME: Mystery runtime warning and OverflowError
-    #  #   RuntimeWarning: tp_compare didn't return -1 or -2 for exception
-    #  if signature in d.threads:
-    #    thread = d.threads[signature]
-    #  else:
-    #    if signature == d.scenarioSignature:
-    #      tt = SCENARIO_THREAD_TYPE
-    #    elif signature in d.supportSignatures:
-    #      tt = SUPPORT_THREAD_TYPE
-    #    else:
-    #      tt = IGNORED_THREAD_TYPE
-    #    thread = d.threads[signature] = TextThread(name=name, signature=signature, type=tt)
-
     thread.appendData(renderedData)
 
     if signature == d.nameSignature:
-      d.showNameText(renderedData)
-    elif d.supportSignatures and signature in d.supportSignatures:
-      d.showSupportText(renderedData)
+      d.showNameText(data=renderedData, agent=False)
+    elif d.otherSignatures and signature in d.otherSignatures:
+      d.showOtherText(renderedData)
     elif signature == d.scenarioSignature or d.keepsThreads and name == d.scenarioThreadName:
-      d.showScenarioText(rawData, renderedData)
+      d.showScenarioText(rawData=rawData, renderedData=renderedData, agent=False)
     #d.locked = False
+
+  def addAgentText(self, text, rawHash, role, needsTranslation):
+    """
+    @param  text  unicode
+    @param  rawHash  str
+    @param  role  int
+    @param  needsTranslation  bool
+    """
+    d = self.__d
+    if not d.enabled:
+      return
+
+    if needsTranslation:
+      d.stopAgentScenarioTimer()
+
+      sub = None
+      if role == SCENARIO_THREAD_TYPE:
+        hash = long(rawHash)
+        sub = d.querySharedTranslation(hash=hash, text=text)
+      if not sub:
+        async = role == OTHER_THREAD_TYPE
+        sub, lang, provider = trman.manager().translateOne(text, async=async, online=True)
+      if sub:
+        # Enforce Traditional Chinese encoding
+        if d.language == 'zht' and lang.startswith('zh'):
+          sub = zhs2zht(sub)
+        #elif d.language == 'zhs' and lang.startswith('zh'):
+        #  sub = zht2zhs(sub)
+        self.agentTranslationProcessed.emit(sub, rawHash, role)
+
+    d.addAgentText(text, role, needsTranslation=needsTranslation)
 
   def encoding(self): return self.__d.encoding
   def setEncoding(self, encoding):
@@ -797,8 +961,8 @@ class TextManager(QObject):
       if d.keepsThreads:
         texthook.global_().setKeptThreadName(name)
 
-    if d.supportSignatures:
-      try: d.supportSignatures.remove(signature)
+    if d.otherSignatures:
+      try: d.otherSignatures.remove(signature)
       except KeyError: pass
     if d.nameSignature == signature:
       t = d.threads[signature]
@@ -825,8 +989,8 @@ class TextManager(QObject):
         d.updateThread(name=name, signature=signature, type=NAME_THREAD_TYPE)
 
     if signature:
-      if d.supportSignatures:
-        try: d.supportSignatures.remove(signature)
+      if d.otherSignatures:
+        try: d.otherSignatures.remove(signature)
         except KeyError: pass
       if d.scenarioSignature == signature:
         t = d.threads[signature]
@@ -834,22 +998,22 @@ class TextManager(QObject):
           t.type = IGNORED_THREAD_TYPE
     d.invalidWhitelist()
 
-  def setSupportThreads(self, threads):
+  def setOtherThreads(self, threads):
     """
     @param  threads  {long signature:str name}
     """
     d = self.__d
-    if d.supportSignatures:
-      for sig in d.supportSignatures:
+    if d.otherSignatures:
+      for sig in d.otherSignatures:
         d.threads[sig].type = IGNORED_THREAD_TYPE
-      d.supportSignatures.clear()
+      d.otherSignatures.clear()
     for sig, name in threads.iteritems():
       if sig == d.scenarioSignature:
         d.scenarioSignature = 0
       if sig == d.nameSignature:
         d.nameSignature = 0
-      d.supportSignatures.add(sig)
-      d.updateThread(name=name, signature=sig, type=SUPPORT_THREAD_TYPE)
+      d.otherSignatures.add(sig)
+      d.updateThread(name=name, signature=sig, type=OTHER_THREAD_TYPE)
     d.invalidWhitelist()
 
   def scenarioSignature(self):
@@ -864,11 +1028,11 @@ class TextManager(QObject):
     """
     return self.__d.nameSignature
 
-  def supportSignatures(self):
+  def otherSignatures(self):
     """
     @return  set(long signature)
     """
-    return self.__d.supportSignatures
+    return self.__d.otherSignatures
 
   def hasThreads(self):
     return bool(self.__d.threads)
@@ -958,7 +1122,8 @@ class TextManager(QObject):
   ## Window translation ##
 
   windowTranslationChanged = Signal(dict) # {long hash, unicode text}
-  windowTranslationCleared = Signal()
+
+  translationCacheCleared = Signal()
 
   def addWindowTexts(self, texts):
     """
@@ -972,15 +1137,15 @@ class TextManager(QObject):
   def hasWindowTexts(self):
     return bool(self.__d.windowTexts)
 
-  def clearWindowTranslation(self):
+  def clearTranslationCache(self):
     self.__d.resetWindowTranslation()
-    self.windowTranslationCleared.emit()
 
-  def refreshWindowTranslation(self):
-    #self.windowTranslationCleared.emit()
-    if self.__d.windowTranslation:
-      self.windowTranslationChanged.emit(
-          self.__d.adjustWindowTranslation(self.__d.windowTranslation))
+    self.translationCacheCleared.emit()
+
+  #def refreshWindowTranslation(self):
+  #  #self.windowTranslationCleared.emit()
+  #  if self.__d.windowTranslation:
+  #    self.windowTranslationChanged.emit(self.__d.windowTranslation)
 
 @memoized
 def manager(): return TextManager()

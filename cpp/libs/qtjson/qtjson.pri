@@ -7,12 +7,12 @@
 
 DEFINES += WITH_LIB_QTJSON
 
+QT += core
+
 DEPENDPATH += $$PWD
 
 HEADERS += $$PWD/qtjson.h
 SOURCES += $$PWD/qtjson.cc
-
-QT += core
 
 #INCLUDEPATH += $$QT_SRC
 

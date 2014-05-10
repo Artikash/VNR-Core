@@ -10,6 +10,8 @@
 DEFINES += WITH_LIB_QXT
 DEFINES += QXT_STATIC QXT_DOXYGEN_RUN
 
+QT += core
+
 INCLUDEPATH += \
   $$PWD/include \
   $$PWD/include/QxtCore \
@@ -27,7 +29,5 @@ HEADERS += \
 SOURCES += \
   $$PWD/src/core/qxtglobal.cpp \
   $$PWD/src/core/qxtjson.cpp
-
-QT += core
 
 # EOF

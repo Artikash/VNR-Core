@@ -1058,7 +1058,7 @@ Item { id: root_
       , text: text
       , type: type // text, tr, comment, name, or name.tr
       , provider: provider
-      //, textEdit: undefined // callbacks
+      , textEdit: undefined // placeHolder property
     }
   }
 
@@ -1069,11 +1069,17 @@ Item { id: root_
   }
 
   function showText(text, lang, timestamp) {
+    //if (!listModel_.count)
+    //  pageBreak()
+
     _timestamp = timestamp
     addText(text, lang, 'text')
   }
 
   function showNameText(text, lang) {
+    //if (!listModel_.count)
+    //  pageBreak()
+
     text = "【" + text + "】"
     var item = createTextItem(text, lang, 'name')
     var index = _pageIndex + 1
@@ -1088,6 +1094,9 @@ Item { id: root_
   }
 
   function showTranslation(text, lang, provider, timestamp) {
+    //if (!listModel_.count)
+    //  pageBreak()
+
     //text = text.replace(/\n/g, "<br/>")
     var item = createTextItem(text, lang, 'tr', provider)
     if (_timestamp === Number(timestamp))
@@ -1100,6 +1109,9 @@ Item { id: root_
   }
 
   function showNameTranslation(text, lang, provider) {
+    //if (!listModel_.count)
+    //  pageBreak()
+
     text = "【" + text + "】"
     var item = createTextItem(text, lang, 'name.tr', provider)
     var index = _pageIndex + 3
@@ -1110,16 +1122,21 @@ Item { id: root_
     listView_.currentIndex = _pageIndex
   }
 
-  function showComment(c) {
+  function showComment(c) { // actually subtitle rather than comment
+    //if (!listModel_.count)
+    //  pageBreak()
+
     addText(c.text, c.language, 'comment', undefined, c)
   }
 
   // Insert a page break
   function pageBreak() {
-    slimList()
-    _pageIndex = listModel_.count
-    addText()
-    cls()
+    if (listModel_.count) { // only add pagebreak if there are texts
+      slimList()
+      _pageIndex = listModel_.count
+      addText()
+      cls()
+    }
   }
 
   // Limit total number of items in the list by removing extra items in the beginning

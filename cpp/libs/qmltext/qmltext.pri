@@ -6,6 +6,8 @@ DEFINES += WITH_LIB_QMLTEXT
 
 DEPENDPATH += $$PWD
 
+QT += core gui
+
 HEADERS += \
   $$PWD/contouredtextedit.h
 
@@ -13,7 +15,5 @@ SOURCES += \
   $$PWD/contouredtextedit.cc
 
 #INCLUDEPATH     += $$QT_SRC
-
-QT      += core gui
 
 # EOF

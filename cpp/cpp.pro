@@ -4,9 +4,9 @@ TEMPLATE = subdirs
 SUBDIRS += \
   confs \
   libs \
-  services \
   plugins \
   apps \
   tests
+  #services
 
 # EOF

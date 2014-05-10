@@ -1141,7 +1141,7 @@ class Game(object):
       removesRepeat=None, ignoresRepeat=None, keepsSpace=None,
       nameThreadName="", nameThreadSignature=0, nameThreadDisabled=None,
       windowNames=[], fileNames=[], linkNames=[], folderNames=[], brandNames=[],
-      path="", launchPath="", supportThreads=None,
+      path="", launchPath="", otherThreads=None,
       loader="", hookDisabled=None, threadKept=None, timeZoneEnabled=None, language='',
       userDefinedName="", visitTime=0, visitCount=0, commentCount=0,
       **ignored):
@@ -1167,7 +1167,7 @@ class Game(object):
     self.nameThreadDisabled  = nameThreadDisabled # bool or None
 
     # {long signature: str} not None
-    self.supportThreads = supportThreads if supportThreads is not None else {}
+    self.otherThreads = otherThreads if otherThreads is not None else {}
 
     self.userDefinedName = userDefinedName
 
@@ -4677,9 +4677,13 @@ class _DataManager(object):
       if game.launchPath:
         g.launchPath = game.launchPath
 
-      #g.supportThreads = game.supportThreads if game.supportThreads is not None else {}
-      #elif game.supportThreads: # merge thread
-      #  g.supportThreads.update(game.supportThreads)
+      # TODO: Broadcast the changes of itemId
+      if game.itemId:
+        g.itemId = game.itemId
+
+      #g.otherThreads = game.otherThreads if game.otherThreads is not None else {}
+      #elif game.otherThreads: # merge thread
+      #  g.otherThreads.update(game.otherThreads)
 
       for t in game.names:
         if game.names[t]:
@@ -5040,7 +5044,7 @@ class _DataManager(object):
 
             support = e.iterfind('./thread[@type="support"]')
             if support:
-              g.supportThreads = {
+              g.otherThreads = {
                 long(e.find('./signature').text) : e.find('./name').text
                 for e in support
               }
@@ -6984,7 +6988,7 @@ class DataManager(QObject):
     self.__d.touchGames()
     #self.__d.backupGamesXmlLater()
 
-  def setGameSupportThreads(self, threads, md5):
+  def setGameOtherThreads(self, threads, md5):
     """Either id or md5 should be given
     @param  name unicode
     @param  md5  str
@@ -6996,7 +7000,7 @@ class DataManager(QObject):
         name,
       )))
       return
-    g.supportThreads = threads
+    g.otherThreads = threads
     self.__d.touchGames()
     #self.__d.backupGamesXmlLater()
 

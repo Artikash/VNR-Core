@@ -187,7 +187,7 @@ class TranslatorManager(QObject):
 
   def clearCache(self):
     for it in self.__d.iterTranslators():
-      it.reset()
+      it.clearCache()
     dprint("pass")
 
   ## Properties ##
@@ -285,6 +285,25 @@ class TranslatorManager(QObject):
     @return  bool
     """
     return features.MACHINE_TRANSLATION and self.hasTranslators()
+
+  def guessTranslationLanguage(self): # -> str
+    if not self.isEnabled():
+      return ''
+    d = self.__d
+    if d.ezTransEnabled:
+      return 'ko'
+    if d.jbeijingEnabled or d.baiduEnabled or d.dreyeEnabled:
+      return 'zhs' if d.language == 'zhs' else 'zht'
+    if (d.atlasEnabled or d.lecEnabled) and not any((
+        d.infoseekEnabled,
+        d.transruEnabled,
+        d.exciteEnabled,
+        d.bingEnabled,
+        d.googleEnabled,
+        d.lecOnlineEnabled,
+      )):
+      return 'en'
+    return d.language
 
   def translate(self, *args, **kwargs):
     """

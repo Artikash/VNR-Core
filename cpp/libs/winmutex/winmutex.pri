@@ -4,6 +4,7 @@
 DEFINES += WITH_LIB_WINMUTEX
 
 DEPENDPATH += $$PWD
+#LIBS += -lkernel32 -luser32
 
 HEADERS += \
   $$PWD/winmutex \

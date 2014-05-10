@@ -4,96 +4,267 @@
 
 __all__ = ['RpcServer', 'RpcClient']
 
-from ctypes import c_longlong
+if __name__ == '__main__':
+  import sys
+  sys.path.append('..')
+  import debug
+  debug.initenv()
+
+RPC_WAIT_TIME = 3000 # wait time after sending data
+
+from socketsvc import socketpack
+import config
+
+ENABLE_TCP_SOCKET = config.APP_SOCKET_TYPE == 'tcp'
+
+def createSocketClient(parent=None, usetcp=ENABLE_TCP_SOCKET):
+  if usetcp:
+    from socketsvc.tcpsocketcli import TcpSocketClient
+    ret = TcpSocketClient(parent)
+    ret.setPort(config.APP_SOCKET_PORT)
+  else:
+    from socketsvc.localsocketcli import LocalSocketClient
+    ret = LocalSocketClient(parent)
+    ret.setServerName(config.APP_SOCKET_NAME)
+  return ret
+
+def createSocketServer(parent=None, usetcp=ENABLE_TCP_SOCKET):
+  if usetcp:
+    from socketsvc.tcpsocketsrv import TcpSocketServer
+    ret = TcpSocketServer(parent)
+    ret.setPort(config.APP_SOCKET_PORT)
+  else:
+    from socketsvc.localsocketsrv import LocalSocketServer
+    ret = LocalSocketServer(parent)
+    ret.setServerName(config.APP_SOCKET_NAME)
+  return ret
+
+# Client
+
+class _RpcClient:
+  def __init__(self, parent):
+    self.client = createSocketClient(parent=parent)
+
+  def invoke(self, *args): # [str] -> bool
+    if not self.client.isActive():
+      return False
+    data = socketpack.packstrlist(args)
+    return self.client.sendData(data, waitTime=0) # no wait time
+
+class RpcClient:
+  def __init__(self, parent=None):
+    self.__d = _RpcClient(parent)
+
+  def isActive(self): return self.__d.client.isActive() # -> bool
+  def start(self): self.__d.client.start()
+  def stop(self): self.__d.client.stop()
+
+  def waitForConnected(self, interval=RPC_WAIT_TIME): # -> bool
+    return self.__d.client.waitForConnected(interval)
+
+  # Actions
+  # -> bool
+  def activate(self): return self.__d.invoke('app.activate')
+
+# Server
+
+def _unmarshalInteger(s): # str -> int, use hex
+  #try: return int(s, 16) #if s.startswith('0x') else int(s)
+  try: return int(s)
+  except ValueError:
+    dwarn("failed to marshal number %s" % s)
+    return 0
+
+def _marshalInteger(v): # int -> str, use hex
+  return str(v)
+  #return hex(i).replace('0x', '').replace('L', '') # remove prefix '+-0x' and trailing 'L'
+
+def _unmarshalBool(s): # str -> bool
+  return s == '1'
+
+def _marshalBool(v): # int -> str, use hex
+  return '1' if v else '0'
+
+#from ctypes import c_longlong
 from functools import partial
 import json
 from PySide.QtCore import Signal, Qt, QObject
 from sakurakit.skclass import Q_Q, memoized
-from sakurakit.skdebug import dwarn
-import pyreader
+from sakurakit.skdebug import dwarn, dprint
 from mytr import my
-import config, growl
+import growl
 
-# Server
+@memoized
+def manager(): return RpcServer()
 
-class RpcSignals(pyreader.ReaderMetaCallPropagator):
-
-  activationRequested = Signal()
-  activationReceived = Signal()
+class RpcServer(QObject):
 
   def __init__(self, parent=None):
-    super(RpcSignals, self).__init__(parent)
-    self.activationRequested.connect(self.activationReceived, Qt.QueuedConnection)
+    super(RpcServer, self).__init__(parent)
+    self.__d =_RpcServer(self)
 
-class RpcClient(QObject):
+  activated = Signal()
 
-  LOCALHOST = '127.0.0.1'
+  def stop(self):
+    self.__d.server.stop()
+  def start(self):
+    """@return  bool"""
+    return self.__d.server.start()
+  def isActive(self):
+    """@return  bool"""
+    return self.__d.server.isActive()
 
-  def __init__(self, parent=None):
-    super(RpcClient, self).__init__(parent)
-    self.__d = d = RpcSignals(self)
+  activated = Signal()
 
-  def activate(self): self.__d.activationRequested.emit()
+  # Agent
 
-  def stop(self): self.__d.stop()
-  def isActive(self): return self.__d.isActive()
-  def start(self): return self.__d.startClient(self.LOCALHOST, config.QT_METACALL_PORT)
-  def waitForReady(self): self.__d.waitForReady()
+  agentConnected = Signal(long) # pid
+  agentDisconnected = Signal(long) # pid
+  windowTextsReceived = Signal(dict) # {long hash:unicode text}
+  engineReceived = Signal(str) # name
+  #engineTextReceived = Signal(unicode, c_longlong, int) # text, hash, role
+  engineTextReceived = Signal(unicode, str, int, bool) # text, hash, role, needsTranslation
+
+  def isAgentConnected(self): return bool(self.__d.agentSocket)
+  def closeAgent(self): self.__d.closeAgentSocket()
+
+  #def enableAgent(self): self.__d.callAgent('enable')
+  def disableAgent(self): self.__d.callAgent('disable')
+
+  #def detachAgent(self): self.__d.callAgent('detach')
+
+  def agentProcessId(self): return self.__d.agentPid
+
+  def setAgentSettings(self, data):
+    """
+    @param  data  {k:v}
+    """
+    try:
+      data = json.dumps(data) #, ensure_ascii=False) # the json parser in vnragent don't enforce ascii
+      self.__d.callAgent('settings', data)
+    except TypeError, e:
+      dwarn("failed to encode json: %s" % e)
+
+  def clearAgentTranslation(self): self.__d.callAgent('clear')
+
+  def sendWindowTranslation(self, data):
+    """
+    @param  data  {hash:translation}
+    """
+    try:
+      data = json.dumps(data) #, ensure_ascii=False) # the json parser in vnragent don't enforce ascii
+      self.__d.callAgent('window.text', data)
+    except TypeError, e:
+      dwarn("failed to encode json: %s" % e)
+
+  #def sendEngineTranslation(self, text, hash, role):
+  #  """
+  #  @param  text  unicode
+  #  @param  hash  long
+  #  @param  role  int
+  #  """
+  #  if isinstance(hash, int) or isinstance(hash, long):
+  #    hash = _marshalInteger(hash)
+  #  self.__d.callAgent('engine.text',
+  #      text, hash, _marshalInteger(role))
 
 @Q_Q
 class _RpcServer(object):
   def __init__(self, q):
-    self.r = r = RpcSignals(q)
-    r.activationReceived.connect(q.activated)
-    r.serverMessageReceived.connect(self._onMessage)
+    self.server = createSocketServer(parent=q)
 
-    self.s = s = pyreader.MetaCallSocketObserver(r)
-    r.setSocketObserver(s)
-    s.disconnected.connect(q.disconnected)
+    self.server.dataReceived.connect(self._onDataReceived)
 
-    #r.q_pingClient.connect(r.pingClient, Qt.QueuedConnection)
-    #r.q_callClient.connect(r.callClient, Qt.QueuedConnection)
-    #r.q_updateClientData.connect(r.updateClientData, Qt.QueuedConnection)
+    self.server.disconnected.connect(self._onDisconnected)
 
-    #r.growlServerMessage.connect(growl.msg)
-    #r.growlServerWarning.connect(growl.warn)
-    #r.growlServerError.connect(growl.error)
+    self.agentSocket = None # QAbstractSocket
+    self.agentPid = 0 # long
 
-    #r.pingServer.connect(partial(growl.msg,
-    #  my.tr("Window text translator is loaded")
-    #))
-    #r.pingServer.connect(q.connected)
+  # Send
 
-    #r.updateServerData.connect(self._onDataReceived)
+  def callAgent(self, *args):
+    if self.agentSocket:
+      data = socketpack.packstrlist(args)
+      self.server.sendData(data, self.agentSocket, waitTime=RPC_WAIT_TIME)
 
-  def _onMessage(self, cmd, param): # on serverMessageReceived
+  # Receive
+
+  def _onDisconnected(self, socket):
+    if socket is self.agentSocket:
+      dprint("pass: pid = %s" % self.agentPid)
+      self.agentSocket = None
+      self.q.agentDisconnected.emit(self.agentPid)
+      self.agentPid  = 0
+
+  def _onDataReceived(self, data, socket):
+    args = socketpack.unpackstrlist(data)
+    if not args:
+      dwarn("unpack data failed")
+      return
+    self._onCall(socket, *args)
+
+  def _onCall(self, socket, cmd, *params): # on serverMessageReceived
     """
+    @param  socket  QTcpSocket
     @param  cmd  str
-    @param  param  unicode
+    @param  params  [unicode]
     """
-    if cmd == 'growl.msg':
-      if param:
-        growl.msg(param)
+    dprint(cmd)
+    if cmd == 'app.activate':
+      self.q.activated.emit()
+
+    elif cmd == 'growl.msg':
+      if params:
+        growl.msg(params[0])
     elif cmd == 'growl.warn':
-      if param:
-        growl.warn(param)
+      if params:
+        growl.warn(params[0])
     elif cmd == 'growl.error':
-      if param:
-        growl.error(param)
+      if params:
+        growl.error(params[0])
     elif cmd == 'growl.notify':
-      if param:
-        growl.notify(param)
+      if params:
+        growl.notify(params[0])
 
     elif cmd == 'agent.ping':
-      growl.msg(my.tr("Window text translator is loaded"))
-      self.q.connected.emit()
-    elif cmd == 'agent.ui.text':
-      self._onWindowTexts(param)
+      if params:
+        pid = _unmarshalInteger(params[0])
+        if pid:
+          self._onAgentPing(socket, pid)
+    elif cmd == 'agent.window.text':
+      if params:
+        self._onWindowTexts(params[0])
+    elif cmd == 'agent.engine.name':
+      if params:
+        self.q.engineReceived.emit(params[0])
     elif cmd == 'agent.engine.text':
-      self._onEngineText(param)
+      if len(params) == 4:
+        self._onEngineText(*params)
+      else:
+        dwarn("invalid parameter count:", params)
 
     else:
       dwarn("unknown command: %s" % cmd)
+
+  def closeAgentSocket(self):
+    pid = self.agentPid
+    self.agentPid = 0
+    if self.agentSocket:
+      self.server.closeSocket(self.agentSocket)
+      self.agentSocket = None
+      self.q.agentDisconnected.emit(pid)
+
+  def _onAgentPing(self, socket, pid):
+    """
+    @param  socket  QTcpSocket
+    @param  pid  long
+    """
+    growl.msg(my.tr("Window text translator is loaded"))
+    if self.agentSocket:
+      self.server.closeSocket(self.agentSocket)
+    self.agentPid = pid
+    self.agentSocket = socket
+    self.q.agentConnected.emit(pid) # SIGNAL TO BE CHANGED
 
   def _onWindowTexts(self, data):
     """
@@ -110,68 +281,37 @@ class _RpcServer(object):
       dwarn(e)
       #dwarn("error: malformed json: %s" % data)
 
-  def _onEngineText(self, data):
+  def _onEngineText(self, text, hash, role, trans):
     """
-    @param  data  json
-    """
-    try:
-      d = json.loads(data)
-      if d and type(d) == dict:
-        text, h = d.items()[0]
-        self.q.engineTextReceived.emit(text, h)
-# CHECKPOINT
-        self.callAgent('engine.text', '{"%s":"ano ne world"}' % h)
-      else:
-        dwarn("error: json is not a map: %s" % data)
-    except (ValueError, TypeError, AttributeError), e:
-      dwarn(e)
-      #dwarn("error: malformed json: %s" % data)
-
-  def callAgent(self, cmd, param=''):
-    self.r.agentMessageRequested.emit(cmd, param)
-
-class RpcServer(QObject):
-
-  def __init__(self, parent=None):
-    super(RpcServer, self).__init__(parent)
-    self.__d =_RpcServer(self)
-
-  activated = Signal()
-
-  def stop(self):
-    self.__d.r.stop()
-  def start(self):
-    """@return  bool"""
-    return self.__d.r.startServer('127.0.0.1', config.QT_METACALL_PORT)
-  def isActive(self):
-    """@return  bool"""
-    return self.__d.r.isActive()
-
-  connected = Signal()
-  disconnected = Signal() # TODO: Use this signal with isActive to check if game process is running
-  windowTextsReceived = Signal(dict) # [long hash:unicode text]
-  engineTextReceived = Signal(unicode, c_longlong) # (text, hash)
-
-  def sendTranslation(self, data):
-    """
-    @param  data  {hash:translation}
+    @param  text  unicode
+    @param  hash  qint64
+    @param  role  int
+    @param  trans  bool   need translation
     """
     try:
-      data = json.dumps(data) #, ensure_ascii=False) # the json parser in vnragent don't enforce ascii
-      self.__d.callAgent('ui.text', data)
-    except TypeError, e:
-      dwarn("failed to encode json: %s" % e)
+      #hash = _unmarshalInteger(hash) # delay convert it to number
+      role = _unmarshalInteger(role)
+      trans = _unmarshalBool(trans)
+      self.q.engineTextReceived.emit(text, hash, role, trans)
+      #if trans:
+      #  print role, len(text)
+      #  text = u'简体中文' + text
+      #  #text = u'简体中文'
+      #  self.callAgent('engine.text',
+      #      text, _marshalInteger(hash), _marshalInteger(role))
+    except ValueError:
+      dwarn("failed to convert text hash or role to integer")
 
-  def clearTranslation(self):
-    self.__d.callAgent('ui.clear')
+if __name__ == '__main__':
+  a = debug.app()
 
-  def enableClient(self):
-    self.__d.callAgent('ui.enable')
+  cli = RpcClient()
+  cli.setPort(6003)
+  r.start()
+  if r.waitForConnected():
+    r.activate()
+    a.processEvents()
 
-  def disableClient(self):
-    self.__d.callAgent('ui.disable')
-
-@memoized
-def manager(): return RpcServer()
+  a.exec_()
 
 # EOF

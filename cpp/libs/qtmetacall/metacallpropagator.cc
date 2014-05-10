@@ -18,11 +18,11 @@
 
 /** Private class */
 
-MetaCallPropagatorPrivate::MetaCallPropagatorPrivate(Q *q)
-  : Base(q), q_(q), filter(nullptr), socketObserver(nullptr), server(nullptr), socket(nullptr)
+MetaCallPropagatorPrivate::MetaCallPropagatorPrivate(QObject *parent)
+  : Base(parent), filter(nullptr), socketObserver(nullptr), server(nullptr), socket(nullptr)
 {}
 
-void MetaCallPropagatorPrivate::dumpSocket() const
+void MetaCallPropagatorPrivate::dumpSocketInfo() const
 {
   if (socket)
     DOUT("socket"
@@ -60,11 +60,11 @@ void MetaCallPropagatorPrivate::serverAcceptsConnection()
     socket = nullptr;
   if (filter)
     filter->setSocket(socket);
-  //dumpSocket();
+  //dumpSocketInfo();
   if (socket) {
 #ifdef DEBUG
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(dumpSocket()));
-    connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), SLOT(dumpSocket()));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(dumpSocketInfo()));
+    connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), SLOT(dumpSocketInfo()));
 #endif // DEBUG
     connectSocketObserver();
   }
@@ -80,6 +80,16 @@ void MetaCallPropagatorPrivate::connectSocketObserver()
   }
 }
 
+void MetaCallPropagatorPrivate::disconnectSocketObserver()
+{
+  if (socket && socketObserver)
+    socket->disconnect(socketObserver);
+    //disconnect(socket, SIGNAL(connected()), socketObserver, SIGNAL(connected()));
+    //disconnect(socket, SIGNAL(disconnected()), socketObserver, SIGNAL(disconnected()));
+    //disconnect(socket, SIGNAL(error(QAbstractSocket::SocketError)), socketObserver, SIGNAL(error()));
+}
+
+
 /** Public class */
 
 // - Construction -
@@ -93,10 +103,10 @@ MetaCallPropagator::~MetaCallPropagator()
   delete d_;
 }
 
-bool MetaCallPropagator::isServer() const
+bool MetaCallPropagator::isServer() const // thread-safe
 { return d_->server; }
 
-bool MetaCallPropagator::isClient() const
+bool MetaCallPropagator::isClient() const // thread-safe
 { return !d_->server && d_->socket; }
 
 MetaCallRouter *MetaCallPropagator::router() const
@@ -116,7 +126,7 @@ void MetaCallPropagator::setSocketObserver(MetaCallSocketObserver *value)
 {
   if (d_->socketObserver != value) {
     if (d_->socketObserver)
-      disconnect(d_->socketObserver);
+      d_->disconnectSocketObserver();
     d_->socketObserver = value;
     if (value && d_->socket)
       d_->connectSocketObserver();
@@ -125,17 +135,22 @@ void MetaCallPropagator::setSocketObserver(MetaCallSocketObserver *value)
 
 // - Service -
 
-bool MetaCallPropagator::isActive() const
+bool MetaCallPropagator::isActive() const // thread-safe
 {
-  return d_->server && d_->server->isListening() ||
-         d_->socket && d_->socket->state() == QAbstractSocket::ConnectedState;
+  if (auto p = d_->server)
+    return p->isListening();
+  if (auto p = d_->socket)
+    return p->state() == QAbstractSocket::ConnectedState;
+  return false;
 }
 
-bool MetaCallPropagator::isReady() const
+bool MetaCallPropagator::isReady() const // thread-safe
 {
-  return !d_->socket ||
-         d_->socket->state() == QAbstractSocket::ConnectedState ||
-         d_->socket->state() == QAbstractSocket::UnconnectedState;
+  if (auto p = d_->socket) {
+    auto s = p->state();
+    return s == QAbstractSocket::ConnectedState || s == QAbstractSocket::UnconnectedState;
+  }
+  return false;
 }
 
 void MetaCallPropagator::waitForReady() const
@@ -147,7 +162,8 @@ void MetaCallPropagator::waitForReady() const
     connect(d_->socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), &loop, SLOT(quit()));
     connect(d_->socket, SIGNAL(error(QAbstractSocket::SocketError)), &loop, SLOT(quit()));
     do loop.exec();
-    while (d_->socket->state() == QAbstractSocket::HostLookupState ||
+    while (!d_->socket ||
+           d_->socket->state() == QAbstractSocket::HostLookupState ||
            d_->socket->state() == QAbstractSocket::ConnectingState);
   }
 }
@@ -185,8 +201,8 @@ bool MetaCallPropagator::startClient(const QString &address, int port)
 
   d_->socket = new QTcpSocket(this);
 #ifdef DEBUG
-  connect(d_->socket, SIGNAL(error(QAbstractSocket::SocketError)), d_, SLOT(dumpSocket()));
-  connect(d_->socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), d_, SLOT(dumpSocket()));
+  connect(d_->socket, SIGNAL(error(QAbstractSocket::SocketError)), d_, SLOT(dumpSocketInfo()));
+  connect(d_->socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), d_, SLOT(dumpSocketInfo()));
 #endif // DEBUG
   d_->socket->connectToHost(QHostAddress(address), port);
 

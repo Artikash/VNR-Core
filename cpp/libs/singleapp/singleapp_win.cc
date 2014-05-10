@@ -11,7 +11,7 @@
 //#define DEBUG "singleapp_win.cc"
 //#include "sakurakit/skdebug.h"
 
-namespace { namespace detail { // unnamed
+namespace { // unnamed
 
 class SingleApp
 {
@@ -47,11 +47,11 @@ public:
   bool ownMutex() const { return hMutex; }
 } a;
 
-}} // unnamed namespace detail
+} // unnamed namespace
 
 SINGLEAPP_BEGIN_NAMESPACE
 
-bool singleapp() { return detail::a.ownMutex(); }
+bool singleapp() { return a.ownMutex(); }
 
 SINGLEAPP_END_NAMESPACE
 

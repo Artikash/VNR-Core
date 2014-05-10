@@ -1,5 +1,6 @@
 // winquery.cc
 // 2/1/2013 jichi
+// TODO: Rewrite these functinos using my winiter lib.
 #include "winquery/winquery.h"
 
 //#define DEBUG "wingui"
@@ -7,14 +8,14 @@
 
 // - Helprs -
 
-namespace { namespace detail { // unnamed
+namespace { // unnamed
 
 typedef struct tag_HWND_DWORD {
   HWND hwnd;
   DWORD dword;
 } HWND_DWORD, *PHWND_DWORD;
 
-BOOL CALLBACK GetAnyWindowWithThreadIdProc(HWND hwnd, LPARAM lparam)
+BOOL CALLBACK getAnyWindowWithThreadIdProc(HWND hwnd, LPARAM lparam)
 {
   DWORD dwThreadId = ::GetWindowThreadProcessId(hwnd, nullptr);
   auto lp = reinterpret_cast<PHWND_DWORD>(lparam);
@@ -26,7 +27,7 @@ BOOL CALLBACK GetAnyWindowWithThreadIdProc(HWND hwnd, LPARAM lparam)
     return TRUE; // continue enumeration
 }
 
-BOOL CALLBACK GetAnyWindowWithProcessIdProc(HWND hwnd, LPARAM lparam)
+BOOL CALLBACK getAnyWindowWithProcessIdProc(HWND hwnd, LPARAM lparam)
 {
   DWORD dwProcessId;
   ::GetWindowThreadProcessId(hwnd, &dwProcessId);
@@ -39,21 +40,21 @@ BOOL CALLBACK GetAnyWindowWithProcessIdProc(HWND hwnd, LPARAM lparam)
     return TRUE; // continue enumeration
 }
 
-}} // unnamed detail
+} // unnamed namespace
 
 WINQUERY_BEGIN_NAMESPACE
 
 HWND getAnyWindowWithThreadId(DWORD threadId)
 {
-  detail::HWND_DWORD tuple = { nullptr, threadId };
-  ::EnumWindows(detail::GetAnyWindowWithThreadIdProc, reinterpret_cast<LPARAM>(&tuple));
+  HWND_DWORD tuple = { nullptr, threadId };
+  ::EnumWindows(getAnyWindowWithThreadIdProc, reinterpret_cast<LPARAM>(&tuple));
   return tuple.hwnd;
 }
 
 HWND getAnyWindowWithProcessId(DWORD processId)
 {
-  detail::HWND_DWORD tuple = { nullptr, processId };
-  ::EnumWindows(detail::GetAnyWindowWithProcessIdProc, reinterpret_cast<LPARAM>(&tuple));
+  HWND_DWORD tuple = { nullptr, processId };
+  ::EnumWindows(getAnyWindowWithProcessIdProc, reinterpret_cast<LPARAM>(&tuple));
   return tuple.hwnd;
 }
 

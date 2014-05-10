@@ -10,7 +10,7 @@ SRCDIR  = $$ROOTDIR/cpp
 CONFDIR = $$SRCDIR/conf
 LIBDIR  = $$SRCDIR/libs
 PLUGINDIR = $$SRCDIR/plugins
-SERVICEDIR = $$SRCDIR/services
+#SERVICEDIR = $$SRCDIR/services
 
 DESTDIR         = $$BUILDDIR
 #win32:  DESTDIR_TARGET  = $$BUILDDIR/release.win
@@ -26,14 +26,21 @@ INCLUDEPATH += \
   $$PLUGINDIR \
   $$SERVICEDIR
 
+## Qt Translation
+
+CODECFORTR = UTF-8
+#CODECFORSRC = UTF-8    # there are sources in SJIS encoding
+
 ## Compiling options
 
-mac:    CONFIG -= ppc ppc64
-win32: DEFINES += UNICODE
+# Windows
+win32:  DEFINES += UNICODE  # force using UNICODE interface by default
 
+# Mac
 #CONFIG += x86 x86_64 ppc64
+mac:    CONFIG -= ppc ppc64 # disable compiling fat architectures
 
-# C++11
+# Enable C++11
 win32:  QMAKE_CXXFLAGS += -Zc:auto
 unix:   QMAKE_CXXFLAGS += -std=c++11
 #mac {
@@ -43,7 +50,7 @@ unix:   QMAKE_CXXFLAGS += -std=c++11
 #  QMAKE_LFLAGS += -stdlib=libc++
 #}
 
-# MSVC
+# MSVC warnings
 win32 {
   # Disable checked iterator and compiler warning.
   # SCL: http://msdn.microsoft.com/en-us/library/aa985896.aspx
@@ -59,10 +66,6 @@ win32 {
 
   QMAKE_CXXFLAGS += -wd4819 # ignore warning on Japanese characters
 }
-
-# GCC
-
-#QMAKE_LFLAGS +=
 
 ## External Libraries
 
@@ -97,8 +100,6 @@ mac {
 INCLUDEPATH     += $$BOOST_HOME/include
 LIBS            += -L$$BOOST_HOME/lib
 
-INCLUDEPATH     += $$QT_SRC # always allow access to Qt source code
-
 ## Config
 
 CONFIG(release) {
@@ -113,13 +114,13 @@ CONFIG(noqt) {
 }
 CONFIG(noqtcore) {
   message(CONFIG noqtcore)
-  QT     -= core
-  LIBS   -= -lQtCore
+  QT    -= core
+  LIBS  -= -lQtCore
 }
 CONFIG(noqtgui) {
   message(CONFIG noqtgui)
-  QT     -= gui
-  LIBS   -= -lQtGui
+  QT    -= gui
+  LIBS  -= -lQtGui
   mac: CONFIG -= app_bundle
 }
 
@@ -205,6 +206,8 @@ CONFIG(pysideplugin) {
 
   # Ignore warnings from Shiboken and PySide
   win32 {
+    # QMAKE_CXXFLAGS_WARN_ON does not work on windows
+    #
     #ifdef _MSC_VER
     # pragma warning (disable:4099)   // C4099: mix class and struct
     # pragma warning (disable:4100)   // C4100: unreferenced parametter
@@ -221,18 +224,25 @@ CONFIG(pyplugin) {
   message(CONFIG pyplugin)
   INCLUDEPATH   += $$PYTHON_HOME/include/python2.7 $$PYTHON_HOME/include
 
-  unix:   LIBS  += -L$$PYTHON_HOME/lib -lpython2.7
-  win32:  LIBS  += -L$$PYTHON_HOME/libs -lpython27
+  unix:  LIBS   += -L$$PYTHON_HOME/lib -lpython2.7
+  win32: LIBS   += -L$$PYTHON_HOME/libs -lpython27
 
-  win32: CONFIG += dll
   unix:  QMAKE_EXTENSION_SHLIB = so
   win32: QMAKE_EXTENSION_SHLIB = pyd
+  win32: CONFIG += dll
 }
 
-## Translation
+CONFIG(qt) {
+  message(CONFIG qt)
+  INCLUDEPATH += $$QT_SRC # always allow access to Qt source code
 
-CODECFORTR = UTF-8
-#CODECFORSRC = UTF-8    # there are sources in SJIS encoding
+  # Clang: Disable warning while processing Qt library headers
+  # http://stackoverflow.com/questions/17846909/how-can-i-stop-warnings-about-unused-private-fields
+  mac {
+    QMAKE_CXXFLAGS_WARN_ON += -Wno-deprecated-register  # register storage class specifier is deprecated
+    QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-private-field # private field 'type' is not used in qmime.h
+  }
+}
 
 # EOF
 

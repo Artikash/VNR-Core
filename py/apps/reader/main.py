@@ -84,7 +84,7 @@ class _MainObject(object):
 
     ret.processDetached.connect(ret.clearWhitelist)
     ret.processAttached.connect(lambda:
-        ret.setWhitelistEnabled(True)) # FIXME: Why partial does not work here?!
+        ret.setWhitelistEnabled(True)) # Why partial does not work here?!
     ret.hookCodeChanged.connect(lambda hcode:
         hcode and growl.msg(my.tr("Apply user-defined hook") + "<br/>" + hcode))
     ret.removesRepeatChanged.connect(lambda t:
@@ -215,16 +215,18 @@ class _MainObject(object):
     ret.setParent(self.q)
 
     tm = self.textManager
+    ret.processDetached.connect(tm.clear)
+
     ret.languageChanged.connect(tm.setGameLanguage)
     ret.encodingChanged.connect(tm.setEncoding)
     ret.threadChanged.connect(tm.setScenarioThread)
 
-    ret.supportThreadsChanged.connect(tm.setSupportThreads)
+    ret.otherThreadsChanged.connect(tm.setOtherThreads)
 
     ret.nameThreadChanged.connect(tm.setNameThread)
     ret.nameThreadDisabled.connect(tm.clearNameThread)
 
-    ret.processChanged.connect(tm.clearWindowTranslation)
+    ret.processChanged.connect(tm.clearTranslationCache)
     #ret.processChanged.connect(partial(tm.setEnabled, True))
 
     ret.processChanged.connect(self.meCabManager.clearUserDictionary)
@@ -233,7 +235,16 @@ class _MainObject(object):
 
     ret.removesRepeatChanged.connect(tm.setRemovesRepeatText)
 
+    agent = self.gameAgent
+    agent.processDetached.connect(ret.processDetached)
+    agent.engineChanged.connect(lambda name:
+        not name and agent.connectedPid() == ret.currentGamePid() and ret.attachTextHook())
+    agent.processAttachTimeout.connect(lambda pid:
+        pid == ret.currentGamePid() and ret.attachTextHook())
+
     th = self.textHook
+    th.processDetached.connect(ret.processDetached)
+
     ret.ignoresRepeatChanged.connect(th.setRemovesRepeat)
     ret.keepsSpaceChanged.connect(th.setKeepsSpace)
     #ret.removesRepeatChanged.connect(lambda value:
@@ -251,9 +262,9 @@ class _MainObject(object):
     #ret.processChanged.connect(lambda:
     #    self.networkManager.isOnline() and self._warmupGoogleTtsLater)
 
-    settings.global_().windowHookEnabledChanged.connect(lambda enabled:
-        self.gameManager.enableWindowHook() if enabled else
-        self.gameManager.disableWindowHook())
+    #settings.global_().windowHookEnabledChanged.connect(lambda enabled:
+    #    self.gameManager.enableWindowHook() if enabled else
+    #    self.gameManager.disableWindowHook())
     return ret
 
   #def _warmupEdictLater(self):
@@ -267,6 +278,14 @@ class _MainObject(object):
   #    skevents.runlater(self.googleTtsEngine.warmup, 2000)
 
   @memoizedproperty
+  def gameAgent(self):
+    dprint("create game agent")
+    import gameagent
+    ret = gameagent.global_()
+    ret.setParent(self.q)
+    return ret
+
+  @memoizedproperty
   def textManager(self):
     dprint("create text manager")
     import textman
@@ -278,11 +297,20 @@ class _MainObject(object):
 
     # Text might be sent from different threads? Need Qt.QueuedConnection?
     th = self.textHook
-    th.dataReceived.connect(ret.addText)
-    th.processDetached.connect(ret.clear)
+    th.dataReceived.connect(ret.addIthText)
 
     th.realDataCapacityChanged.connect(ret.setGameTextCapacity)
     ret.setGameTextCapacity(th.realDataCapacity())
+
+    rpc = self.rpcServer
+    rpc.windowTextsReceived.connect(ret.addWindowTexts)
+    ret.translationCacheCleared.connect(rpc.clearAgentTranslation)
+    ret.windowTranslationChanged.connect(rpc.sendWindowTranslation)
+
+    rpc.engineTextReceived.connect(ret.addAgentText)
+
+    agent = self.gameAgent
+    ret.agentTranslationProcessed.connect(agent.sendEmbeddedTranslation)
 
     grimoire = self.grimoire
 
@@ -324,9 +352,9 @@ class _MainObject(object):
         self.dataManager.termsChanged,
         #self.gameManager.processChanged,   # this would cause recursion
         ):
-      sig.connect(ret.clearWindowTranslation)
+      sig.connect(ret.clearTranslationCache)
 
-    ss.windowTextVisibleChanged.connect(ret.refreshWindowTranslation)
+    #ss.windowTextVisibleChanged.connect(ret.refreshWindowTranslation)
     return ret
 
   #@memoizedproperty
@@ -505,12 +533,8 @@ class _MainObject(object):
     ret.activated.connect(q.activate, Qt.QueuedConnection)
     #ret.arguments.connect(q.open_, Qt.QueuedConnection)
 
-    ret.windowTextsReceived.connect(self.textManager.addWindowTexts)
-    self.textManager.windowTranslationCleared.connect(ret.clearTranslation)
-    self.textManager.windowTranslationChanged.connect(ret.sendTranslation)
-
-    ret.connected.connect(partial(
-        self.gameManager.setWindowHookConnected, True))
+    #ret.agentConnected.connect(lambda pid:
+    #    self.gameManager.setWindowHookConnected(True))
 
     return ret
 
@@ -703,7 +727,7 @@ class _MainObject(object):
 
     assert ret.rootObject(), "unless fail to load submaker.qml"
 
-    self.textHook.processDetached.connect(ret.hide)
+    self.gameManager.processDetached.connect(ret.hide)
     return ret
 
   @memoizedproperty
@@ -731,7 +755,7 @@ class _MainObject(object):
   @memoizedproperty
   def voiceView(self):
     ret = qmldialog.VoiceView(self.topWindow)
-    self.textHook.processDetached.connect(ret.hide)
+    self.gameManager.processDetached.connect(ret.hide)
     self.widgets.append(ret)
     assert ret.rootObject(), "unless fail to load voiceview.qml"
     return ret
@@ -866,7 +890,7 @@ class _MainObject(object):
 
     ret.nameThreadChanged.connect(gm.setNameThread)
     ret.nameThreadDisabled.connect(gm.disableNameThread)
-    ret.supportThreadsChanged.connect(gm.setSupportThreads)
+    ret.otherThreadsChanged.connect(gm.setOtherThreads)
 
     tm = self.textManager
     tm.cleared.connect(ret.clear)
@@ -1222,6 +1246,7 @@ class MainObject(QObject):
     dm = d.dataManager
     tm = d.textManager
     gm = d.gameManager
+    d.gameAgent
 
     d.termManager
     d.translatorManager
@@ -1468,13 +1493,18 @@ class MainObject(QObject):
       w.setText(text)
     _MainObject.showWindow(w)
 
+  def showTextSettings(self):
+    if self.__d.textHook.isAttached():
+      _MainObject.showWindow(self.__d.textPrefsDialog)
+    else:
+      growl.notify(my.tr("I am sorry that this feature has not been implemented yet."))
+
   def showGameBoard(self): _MainObject.showWindow(self.__d.gameBoardDialog)
   def showYouTubeInput(self): _MainObject.showWindow(self.__d.youTubeInputDialog)
   def showDictionaryTester(self): _MainObject.showWindow(self.__d.dictionaryTesterDialog)
   def showMachineTranslationTester(self): _MainObject.showWindow(self.__d.machineTranslationTesterDialog)
   def showBBCodeTester(self): _MainObject.showWindow(self.__d.bbcodeTesterDialog)
   def showRegExpTester(self): _MainObject.showWindow(self.__d.regExpTesterDialog)
-  def showTextSettings(self): _MainObject.showWindow(self.__d.textPrefsDialog)
   def showGameFinder(self): _MainObject.showWindow(self.__d.gameFinderDialog)
   def showPreferences(self): _MainObject.showWindow(self.__d.prefsDialog)
   def showAbout(self): _MainObject.showWindow(self.__d.aboutDialog)
@@ -1741,12 +1771,13 @@ class MainObject(QObject):
     dprint("save local changes")
     d.dataManager.submitDirtyComments()
 
-    if d.gameManager.isWindowHookConnected:
-      d.rpcServer.disableClient()
-
     # Stop earlier to give them time to send stop messages
     dprint("stop comets")
     qmldialog.Kagami.instance.stopComets()
+
+    #if d.gameManager.isWindowHookConnected:
+    #  d.rpcServer.disableAgent()
+    d.gameAgent.quit()
 
     skevents.runlater(partial(d.exit, exitCode), interval)
     dprint("leave")

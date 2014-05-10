@@ -4,7 +4,6 @@
 // Motivations:
 // http://stackoverflow.com/questions/2150488/using-a-qt-based-dll-in-a-non-qt-application
 // http://stackoverflow.com/questions/1786438/qt-library-event-loop-problems
-
 #include "qtembedded/applicationrunner.h"
 #ifdef WITH_LIB_WINTIMER
 # include "wintimer/wintimer.h"
@@ -33,8 +32,7 @@ public:
     timer.setMethod(this, &Self::processEvents);
   }
 
-  void processEvents()
-  { if (app) app->processEvents(QEventLoop::AllEvents, timer.interval()); }
+  void processEvents() { if (app) app->processEvents(QEventLoop::AllEvents, timer.interval()); }
 };
 
 /** Public class */

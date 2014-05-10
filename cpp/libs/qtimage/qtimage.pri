@@ -3,6 +3,9 @@
 #include(../../../config.pri)
 DEFINES += WITH_LIB_QTIMAGE
 
+INCLUDEPATH += $$QT_SRC
+QT += core gui
+
 DEPENDPATH += $$PWD
 
 HEADERS += \
@@ -10,8 +13,5 @@ HEADERS += \
 
 SOURCES += \
   $$PWD/contour.cc
-
-INCLUDEPATH     += $$QT_SRC
-QT      += core gui
 
 # EOF

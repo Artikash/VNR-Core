@@ -12,8 +12,7 @@
 //#define DEBUG "wintimerbase.cc"
 #include "sakurakit/skdebug.h"
 
-namespace { namespace detail { // unnamed
-VOID CALLBACK TimerProc(
+static VOID CALLBACK WinTimerProc(
   HWND hwnd,         // ウィンドウのハンドル
   UINT uMsg,         // WM_TIMER メッセージ
   UINT_PTR idEvent,  // Timer ID
@@ -34,7 +33,6 @@ VOID CALLBACK TimerProc(
   t->trigger();
   DOUT("leave");
 }
-}} // unnamed detail
 
 WINTIMER_BEGIN_NAMESPACE
 
@@ -58,7 +56,7 @@ void WinTimerBase::start()
 {
   DOUT("enter: active =" << active << ", interval =" << interval);
   active = true;
-  ::SetTimer(parentWindow, reinterpret_cast<UINT_PTR>(this), interval, detail::TimerProc);
+  ::SetTimer(parentWindow, reinterpret_cast<UINT_PTR>(this), interval, WinTimerProc);
   DOUT("leave");
 }
 

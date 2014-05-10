@@ -151,9 +151,17 @@ class GrimoireController(QObject):
     GrimoireBean.instance.clear.emit()
 
   def pageBreak(self):
-    self.__d.append(GrimoireBean.instance.pageBreak.emit)
+    ss = settings.global_()
+    if (ss.isGrimoireTextVisible() or
+        ss.isGrimoireNameVisible() or
+        ss.isGrimoireTranslationVisible() or
+        ss.isGrimoireSubtitleVisible()):
+      self.__d.append(GrimoireBean.instance.pageBreak.emit)
 
   def showText(self, text, language, timestamp):
+    if not settings.global_().isGrimoireTextVisible():
+      return
+
     #if settings.global_().isMsimeCorrectionEnabled():
     #  text = msime.to_kanji(text) or text
     d = self.__d
@@ -174,6 +182,9 @@ class GrimoireController(QObject):
       d.nameMissing = True
 
   def showTranslation(self, text, language, provider, timestamp):
+    if not settings.global_().isGrimoireTranslationVisible():
+      return
+
     if self.__d.timestamp > timestamp:
       dprint("translation comes too late, ignored")
       return
@@ -182,11 +193,15 @@ class GrimoireController(QObject):
         text, language, provider, timestamp))
 
   def showComment(self, c):
-    if c.type == 'subtitle' and not c.disabled and not c.deleted:
+    if (settings.global_().isGrimoireSubtitleVisible() and
+        c.type == 'subtitle' and not c.disabled and not c.deleted):
       self.__d.append(partial(GrimoireBean.instance.showComment.emit,
           c))
 
   def showNameText(self, text, language):
+    if not settings.global_().isGrimoireNameVisible():
+      return
+
     closure = partial(GrimoireBean.instance.showNameText.emit,
         text, language)
     d = self.__d
@@ -202,6 +217,10 @@ class GrimoireController(QObject):
       d.flushTimer.start(800)
 
   def showNameTranslation(self, text, language, provider):
+    ss = settings.global_()
+    if not ss.isGrimoireNameVisible() or not ss.isGrimoireTranslationVisible():
+      return
+
     closure = partial(GrimoireBean.instance.showNameTranslation.emit,
         text, language, provider)
     d = self.__d
@@ -241,7 +260,8 @@ class GospelController:
   def hide(): GospelBean.instance.hide.emit()
   @staticmethod
   def showComment(c):
-    if c.type == 'popup' and not c.disabled and not c.deleted:
+    if (features.USER_COMMENT and settings.global_().isGrimoireCommentVisible() and
+        c.type == 'popup' and not c.disabled and not c.deleted):
       GospelBean.instance.showComment.emit(c)
 
 ## Gossip ##
@@ -269,7 +289,8 @@ class GossipController:
   def clear(): GossipBean.instance.clear.emit()
   @staticmethod
   def showComment(c):
-    if features.USER_COMMENT and c.type == 'comment' and not c.disabled and not c.deleted:
+    if (features.USER_COMMENT and settings.global_().isGrimoireCommentVisible() and
+        c.type == 'comment' and not c.disabled and not c.deleted):
       GossipBean.instance.showComment.emit(c)
 
 ## Omajinai ##
@@ -326,7 +347,8 @@ class OmajinaiController(QObject):
     OmajinaiBean.instance.clear.emit()
 
   def showComment(self, c):
-    if features.USER_COMMENT and c.type == 'danmaku' and not c.disabled and not c.deleted:
+    if (features.USER_COMMENT and settings.global_().isGrimoireDanmakuVisible() and
+        c.type == 'danmaku' and not c.disabled and not c.deleted):
       self.__d.append(c)
 
 ## Mirage ##

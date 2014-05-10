@@ -4725,6 +4725,16 @@ bool InsertMarineHeartHook()
 
 #if 0
 
+static HMODULE WaitForModuleReady(const char *name, int retryCount = 100, int sleepInterval = 100) // retry for 10 seconds
+{
+  for (int i = 0; i < retryCount; i++) {
+    if (HMODULE h = ::GetModuleHandleA(name))
+      return h;
+    ::Sleep(sleepInterval);
+  }
+  return nullptr;
+}
+
 /**
  *  jichi 4/21/2014: Mono (Unity3D)
  *  See (ok123): http://sakuradite.com/topic/214
@@ -4780,9 +4790,8 @@ bool InsertMonoHook()
 {
   enum { module = 0x64c40033 }; // hash of "mono.dll"
   DWORD base = Util::FindModuleBase(module);
-
-  // FIXME: Base is zero on the startup of the game orz
-  ITH_GROWL_DWORD(base);
+  if (!base && WaitForModuleReady("mono.dll"))
+    base = Util::FindModuleBase(module);
 
   if (!base) {
     ConsoleOutput("vnreng:Mono: module not found");

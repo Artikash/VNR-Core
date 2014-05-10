@@ -314,6 +314,12 @@ By default it is the same as the executable of the game process."""))
     layout.addWidget(self.ntleaButton)
     #layout.addWidget(self.localeSwitchButton)
 
+    #introLabel = QtWidgets.QLabel(my.tr(
+    #  "When embedding translation is enabled, if the game's encoding is SHIFT-JIS and your language is not SHIFT-JIS compatible, VNR will always launch the game using AppLocale"
+    # ))
+    #introLabel.setWordWrap(True)
+    #layout.addWidget(introLabel)
+
     ret = QtWidgets.QGroupBox(my.tr("Preferred game loader"))
     ret.setLayout(layout)
     return ret

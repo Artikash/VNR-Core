@@ -469,11 +469,11 @@ class Settings(QSettings):
 
   ## Plugin ##
 
-  def isPyPluginEnabled(self): return to_bool(self.value('PyPluginEnabled'))
-  def setPyPluginEnabled(self, value): self.setValue('PyPluginEnabled', value)
+  #def isPyPluginEnabled(self): return to_bool(self.value('PyPluginEnabled'))
+  #def setPyPluginEnabled(self, value): self.setValue('PyPluginEnabled', value)
 
-  def isJsPluginEnabled(self): return to_bool(self.value('JsPluginEnabled'))
-  def setJsPluginEnabled(self, value): self.setValue('JsPluginEnabled', value)
+  #def isJsPluginEnabled(self): return to_bool(self.value('JsPluginEnabled'))
+  #def setJsPluginEnabled(self, value): self.setValue('JsPluginEnabled', value)
 
   ## Features ##
 
@@ -669,7 +669,7 @@ class Settings(QSettings):
     return max(20,
         to_int(self.value('GameTextCapacity', config.SETTINGS_TEXT_CAPACITY)))
 
-  #  - Dictionaries -
+  ## Dictionaries ##
 
   meCabEnabledChanged = Signal(bool)
   def isMeCabEnabled(self): return bool(self.meCabDictionary())
@@ -879,22 +879,6 @@ class Settings(QSettings):
     return to_unicode(self.value('LecLocation'))
   def setLecLocation(self, path):
     self.setValue('LecLocation', path)
-
-  windowHookEnabledChanged = Signal(bool)
-  def isWindowHookEnabled(self):
-    return to_bool(self.value('WindowHookEnabled')) # disabled by default
-  #def setWindowHookEnabled(self, value):
-  #  if value != self.isWindowHookEnabled():
-  #    self.setValue('WindowHookEnabled', value)
-  #    self.windowHookEnabledChanged.emit(value)
-
-  windowTextVisibleChanged = Signal(bool)
-  def isWindowTextVisible(self):
-    return to_bool(self.value('WindowTextVisible', True))
-  #def setWindowTextVisible(self, value):
-  #  if value != self.isWindowTextVisible():
-  #    self.setValue('WindowTextVisible', value)
-  #    self.windowTextVisibleChanged.emit(value)
 
   infoseekEnabledChanged = Signal(bool)
   def isInfoseekEnabled(self):
@@ -1166,6 +1150,179 @@ class Settings(QSettings):
       self.setValue('DutchFont', value)
       self.dutchFontChanged.emit(value)
 
+  ## Game agent ##
+
+  # Whether allow disabling game launchers
+  def isGameAgentLauncherEnabled(self):
+    return to_bool(self.value('GameAgentLauncher', True))
+  def setGameAgentLauncherEnabled(self, value):
+    self.setValue('GameAgentLauncher', value)
+
+  def isGameAgentLauncherNeeded(self):
+    return self.isGameAgentEnabled() and (
+        self.isEmbeddedScenarioTranslationEnabled() or
+        self.isEmbeddedNameTranslationEnabled() or
+        self.isEmbeddedOtherTranslationEnabled())
+
+  # Whether use game agent over texthook
+  gameAgentEnabledChanged = Signal(bool)
+  def isGameAgentEnabled(self):
+    return to_bool(self.value('GameAgent', True))
+  def setGameAgentEnabled(self, value):
+    if value != self.isGameAgentEnabled():
+      self.setValue('GameAgent', value)
+      self.gameAgentEnabledChanged.emit(value)
+
+  embeddedTranslationWaitTimeChanged = Signal(int)
+  def embeddedTranslationWaitTime(self):
+    return to_int(self.value('EmbeddedTranslationWaitTime', 1000)) # 1 second by default
+  def setEmbeddedTranslationWaitTime(self, value):
+    if value != self.embeddedTranslationWaitTime():
+      self.setValue('EmbeddedTranslationWaitTime', value)
+      self.embeddedTranslationWaitTimeChanged.emit(value)
+
+  embeddedTextCancellableByControlChanged = Signal(bool)
+  def isEmbeddedTextCancellableByControl(self):
+    return to_bool(self.value('EmbeddedTextDetectsCtrl', True))
+  def setEmbeddedTextCancellableByControl(self, value):
+    if value != self.isEmbeddedTextCancellableByControl():
+      self.setValue('EmbeddedTextDetectsCtrl', value)
+      self.embeddedTextCancellableByControlChanged.emit(value)
+
+  # Whether translate window components
+  # This implies transcoding enabled
+  windowTranslationEnabledChanged = Signal(bool)
+  def isWindowTranslationEnabled(self):
+    return to_bool(self.value('WindowTranslation', False))
+  def setWindowTranslationEnabled(self, value):
+    if value != self.isWindowTranslationEnabled():
+      self.setValue('WindowTranslation', value)
+      self.windowTranslationEnabledChanged.emit(value)
+
+  # Whether display original text after the translation
+  # This implies translation enabled
+  windowTextVisibleChanged = Signal(bool)
+  def isWindowTextVisible(self):
+    return to_bool(self.value('WindowTextVisible', False))
+  def setWindowTextVisible(self, value):
+    if value != self.isWindowTextVisible():
+      self.setValue('WindowTextVisible', value)
+      self.windowTextVisibleChanged.emit(value)
+
+  # Whether fix window translation encoding
+  windowTranscodingEnabledChanged = Signal(bool)
+  def isWindowTranscodingEnabled(self):
+    return to_bool(self.value('WindowTranscoding', True))
+  def setWindowTranscodingEnabled(self, value):
+    if value != self.isWindowTranscodingEnabled():
+      self.setValue('WindowTranscoding', value)
+      self.windowTranscodingEnabledChanged.emit(value)
+
+  # Whether translate embedded scenario text
+  embeddedScenarioTranslationEnabledChanged = Signal(bool)
+  def isEmbeddedScenarioTranslationEnabled(self):
+    return to_bool(self.value('EmbeddedScenarioTranslation', True))
+  def setEmbeddedScenarioTranslationEnabled(self, value):
+    if value != self.isEmbeddedScenarioTranslationEnabled():
+      self.setValue('EmbeddedScenarioTranslation', value)
+      self.embeddedScenarioTranslationEnabledChanged.emit(value)
+
+  embeddedScenarioTranscodingEnabledChanged = Signal(bool)
+  def isEmbeddedScenarioTranscodingEnabled(self):
+    return to_bool(self.value('EmbeddedScenarioTranscoding', True))
+  def setEmbeddedScenarioTranscodingEnabled(self, value):
+    if value != self.isEmbeddedScenarioTranscodingEnabled():
+      self.setValue('EmbeddedScenarioTranscoding', value)
+      self.embeddedScenarioTranscodingEnabledChanged.emit(value)
+
+  # Whether delete scenario text
+  embeddedScenarioVisibleChanged = Signal(bool)
+  def isEmbeddedScenarioVisible(self):
+    return to_bool(self.value('EmbeddedScenarioVisible', True))
+  def setEmbeddedScenarioVisible(self, value):
+    if value != self.isEmbeddedScenarioVisible():
+      self.setValue('EmbeddedScenarioVisible', value)
+      self.embeddedScenarioVisibleChanged.emit(value)
+
+  embeddedNameTextVisibleChanged = Signal(bool)
+  def isEmbeddedNameTextVisible(self):
+    return to_bool(self.value('EmbeddedNameText', True))
+  def setEmbeddedNameTextVisible(self, value):
+    if value != self.isEmbeddedNameTextVisible():
+      self.setValue('EmbeddedNameText', value)
+      self.embeddedNameTextVisibleChanged.emit(value)
+
+  embeddedNameTranslationEnabledChanged = Signal(bool)
+  def isEmbeddedNameTranslationEnabled(self):
+    return to_bool(self.value('EmbeddedNameTranslation', True))
+  def setEmbeddedNameTranslationEnabled(self, value):
+    if value != self.isEmbeddedNameTranslationEnabled():
+      self.setValue('EmbeddedNameTranslation', value)
+      self.embeddedNameTranslationEnabledChanged.emit(value)
+
+  embeddedNameTranscodingEnabledChanged = Signal(bool)
+  def isEmbeddedNameTranscodingEnabled(self):
+    return to_bool(self.value('EmbeddedNameTranscoding', True))
+  def setEmbeddedNameTranscodingEnabled(self, value):
+    if value != self.isEmbeddedNameTranscodingEnabled():
+      self.setValue('EmbeddedNameTranscoding', value)
+      self.embeddedNameTranscodingEnabledChanged.emit(value)
+
+  embeddedNameVisibleChanged = Signal(bool)
+  def isEmbeddedNameVisible(self):
+    return to_bool(self.value('EmbeddedNameVisible', True))
+  def setEmbeddedNameVisible(self, value):
+    if value != self.isEmbeddedNameVisible():
+      self.setValue('EmbeddedNameVisible', value)
+      self.embeddedNameVisibleChanged.emit(value)
+
+  embeddedOtherTranslationEnabledChanged = Signal(bool)
+  def isEmbeddedOtherTranslationEnabled(self):
+    return to_bool(self.value('EmbeddedOtherTranslation', False))
+  def setEmbeddedOtherTranslationEnabled(self, value):
+    if value != self.isEmbeddedOtherTranslationEnabled():
+      self.setValue('EmbeddedOtherTranslation', value)
+      self.embeddedOtherTranslationEnabledChanged.emit(value)
+
+  embeddedOtherTranscodingEnabledChanged = Signal(bool)
+  def isEmbeddedOtherTranscodingEnabled(self):
+    return to_bool(self.value('EmbeddedOtherTranscoding', True))
+  def setEmbeddedOtherTranscodingEnabled(self, value):
+    if value != self.isEmbeddedOtherTranscodingEnabled():
+      self.setValue('EmbeddedOtherTranscoding', value)
+      self.embeddedOtherTranscodingEnabledChanged.emit(value)
+
+  # This method is not used, though
+  embeddedOtherVisibleChanged = Signal(bool)
+  def isEmbeddedOtherVisible(self):
+    return to_bool(self.value('EmbeddedOtherVisible', True))
+  def setEmbeddedOtherVisible(self, value):
+    if value != self.isEmbeddedOtherVisible():
+      self.setValue('EmbeddedOtherVisible', value)
+      self.embeddedOtherVisibleChanged.emit(value)
+
+  #windowHookEnabledChanged = Signal(bool)
+  #def isWindowHookEnabled(self):
+  #  return to_bool(self.value('WindowHookEnabled')) # disabled by default
+  #def setWindowHookEnabled(self, value):
+  #  if value != self.isWindowHookEnabled():
+  #    self.setValue('WindowHookEnabled', value)
+  #    self.windowHookEnabledChanged.emit(value)
+
+  # Kagami
+  def isGrimoireTextVisible(self):
+    return to_bool(self.value('GrimoireText', True))
+  def isGrimoireTranslationVisible(self):
+    return to_bool(self.value('GrimoireTranslation', True))
+  def isGrimoireSubtitleVisible(self):
+    return to_bool(self.value('GrimoireSubtitle', True))
+  def isGrimoireCommentVisible(self):
+    return to_bool(self.value('GrimoireComment', True))
+  def isGrimoireDanmakuVisible(self):
+    return to_bool(self.value('GrimoireDanmaku', True))
+  def isGrimoireNameVisible(self):
+    return to_bool(self.value('GrimoireName', True))
+
 @memoized
 def global_(): return Settings()
 
@@ -1251,8 +1408,8 @@ class SettingsProxy(QObject):
     self.termEnabledChanged.connect(g.termEnabledChanged)
     self.copiesGameTextChanged.connect(g.copiesGameTextChanged)
 
-    self.windowHookEnabledChanged.connect(g.windowHookEnabledChanged)
-    self.windowTextVisibleChanged.connect(g.windowTextVisibleChanged)
+    #self.windowHookEnabledChanged.connect(g.windowHookEnabledChanged)
+    #self.windowTextVisibleChanged.connect(g.windowTextVisibleChanged)
 
     self.gameTextCapacityChanged.connect(g.gameTextCapacityChanged)
 
@@ -1310,25 +1467,25 @@ class SettingsProxy(QObject):
       setTermEnabled,
       notify=termEnabledChanged)
 
-  def setWindowHookEnabled(self, value):
-    if value != self.windowHookEnabled:
-      global_().setValue('WindowHookEnabled', value)
-      self.windowHookEnabledChanged.emit(value)
-  windowHookEnabledChanged = Signal(bool)
-  windowHookEnabled = Property(bool,
-      lambda _: global_().isWindowHookEnabled(),
-      setWindowHookEnabled,
-      notify=windowHookEnabledChanged)
+  #def setWindowHookEnabled(self, value):
+  #  if value != self.windowHookEnabled:
+  #    global_().setValue('WindowHookEnabled', value)
+  #    self.windowHookEnabledChanged.emit(value)
+  #windowHookEnabledChanged = Signal(bool)
+  #windowHookEnabled = Property(bool,
+  #    lambda _: global_().isWindowHookEnabled(),
+  #    setWindowHookEnabled,
+  #    notify=windowHookEnabledChanged)
 
-  def setWindowTextVisible(self, value):
-    if value != self.windowTextVisible:
-      global_().setValue('WindowTextVisible', value)
-      self.windowTextVisibleChanged.emit(value)
-  windowTextVisibleChanged = Signal(bool)
-  windowTextVisible = Property(bool,
-      lambda _: global_().isWindowTextVisible(),
-      setWindowTextVisible,
-      notify=windowTextVisibleChanged)
+  #def setWindowTextVisible(self, value):
+  #  if value != self.windowTextVisible:
+  #    global_().setValue('WindowTextVisible', value)
+  #    self.windowTextVisibleChanged.emit(value)
+  #windowTextVisibleChanged = Signal(bool)
+  #windowTextVisible = Property(bool,
+  #    lambda _: global_().isWindowTextVisible(),
+  #    setWindowTextVisible,
+  #    notify=windowTextVisibleChanged)
 
   speaksGameTextChanged = Signal(bool)
   speaksGameText = Property(bool,

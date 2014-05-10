@@ -112,7 +112,9 @@ void MetaCallSocketFilter::writeSocket(const QMetaCallEvent *e)
   if (Q_LIKELY(ok)) {
     out.device()->seek(0);
     out << D::message_size_t(message.size());
-    d_->socket->write(message);
+    bool ok = d_->socket->write(message) == message.size();
+    if (ok)
+      d_->socket->waitForBytesWritten();
   }
   DOUT("leave: ok =" << ok);
 }
@@ -123,73 +125,78 @@ void MetaCallSocketFilter::readSocket()
     return;
   DOUT("enter");
 
-  QDataStream in(d_->socket);
-  if (!d_->messageSize) { // Save messageSize_ since none-blocking read is used
-    if (d_->socket->bytesAvailable() < int(sizeof(D::message_size_t))) {
+  while (qint64 bytesAvailable = d_->socket->bytesAvailable()) {
+    // Save messageSize_ since none-blocking read is used
+    if (!d_->messageSize && bytesAvailable < int(sizeof(D::message_size_t))) {
       DOUT("leave: insufficient messageSize");
       return;
     }
-    in >> d_->messageSize;
-  }
 
-  if (d_->socket->bytesAvailable() < int(d_->messageSize - sizeof(D::message_size_t))) {
-    DOUT("leave: insufficient messageSize");
-    return;
-  }
-  DOUT("messageSize =" << d_->messageSize);
-
-  d_->messageSize = 0;
-
-  int m_id;
-  in >> m_id;
-  DOUT("m_id =" << m_id);
-
-  int m_nargs;
-  in >> m_nargs;
-  DOUT("m_nargs =" << m_nargs);
-  Q_ASSERT(m_nargs > 0);
-  if (m_nargs <= 0) {
-    DOUT("leave: error, invalid m_nargs =" << m_nargs);
-    return;
-  }
-
-  int *m_types = new int[m_nargs];
-  std::unique_ptr<int> autorelease_types(m_types);
-
-  void **m_args = new void *[m_nargs];
-  std::unique_ptr<void *> autorelease_args(m_args);
-  m_args[0] = 0;
-
-  bool ok = true;
-  for (int i = 1; i < m_nargs && ok; i++) {
-    in >> m_types[i];
-    m_args[i] = QMetaType::construct(m_types[i]);
-
-    ok = QMetaType::load(in, m_types[i], m_args[i]) && ok;
-  }
-  if (Q_UNLIKELY(!ok))
-    DOUT("warning: unregisted metatype");
-
-  if (ok && d_->watched) {
-    if (d_->router) {
-      m_id = d_->router->convertReceiveMethodId(m_id);
-      DOUT("placeMetaCall: convert method id: new id =" << m_id);
+    QDataStream in(d_->socket);
+    if (!d_->messageSize) {
+      in >> d_->messageSize;
+      bytesAvailable -= sizeof(D::message_size_t);
     }
-    // See: QObject::event and QQMetaCallEvent implementation in in qobject.cpp
-    // Use macros is case QT_NO_EXCEPTIONS is defined
-    QT_TRY {
-      DOUT("placeMetaCall: method id =" << m_id << ", nargs =" << m_nargs);
-      QMetaObject::metacall(d_->watched, QMetaObject::InvokeMetaMethod, m_id, m_args);
-    } QT_CATCH(...) {
-      DOUT("exception ignored, destroy meta types");
-      for (int i = 0; i < m_nargs; i++)
-        if (m_types[i] && m_args[i])
-          QMetaType::destroy(m_types[i], m_args[i]);
-      // Ignore exception
-      //QT_RETHROW;
+
+    if (bytesAvailable < int(d_->messageSize - sizeof(D::message_size_t))) {
+      DOUT("leave: insufficient messageSize");
+      return;
+    }
+    DOUT("messageSize =" << d_->messageSize);
+
+    d_->messageSize = 0;
+
+    int m_id;
+    in >> m_id;
+    DOUT("m_id =" << m_id);
+
+    int m_nargs;
+    in >> m_nargs;
+    DOUT("m_nargs =" << m_nargs);
+    Q_ASSERT(m_nargs > 0);
+    if (m_nargs <= 0) {
+      DOUT("leave: error, invalid m_nargs =" << m_nargs);
+      return;
+    }
+
+    int *m_types = new int[m_nargs];
+    std::unique_ptr<int> autorelease_types(m_types);
+
+    void **m_args = new void *[m_nargs];
+    std::unique_ptr<void *> autorelease_args(m_args);
+    m_args[0] = 0;
+
+    bool ok = true;
+    for (int i = 1; i < m_nargs && ok; i++) {
+      in >> m_types[i];
+      m_args[i] = QMetaType::construct(m_types[i]);
+
+      ok = QMetaType::load(in, m_types[i], m_args[i]) && ok;
+    }
+    if (Q_UNLIKELY(!ok))
+      DOUT("warning: unregisted metatype");
+
+    if (ok && d_->watched) {
+      if (d_->router) {
+        m_id = d_->router->convertReceiveMethodId(m_id);
+        DOUT("placeMetaCall: convert method id: new id =" << m_id);
+      }
+      // See: QObject::event and QQMetaCallEvent implementation in in qobject.cpp
+      // Use macros is case QT_NO_EXCEPTIONS is defined
+      QT_TRY {
+        DOUT("placeMetaCall: method id =" << m_id << ", nargs =" << m_nargs);
+        QMetaObject::metacall(d_->watched, QMetaObject::InvokeMetaMethod, m_id, m_args);
+      } QT_CATCH(...) {
+        DOUT("exception ignored, destroy meta types");
+        for (int i = 0; i < m_nargs; i++)
+          if (m_types[i] && m_args[i])
+            QMetaType::destroy(m_types[i], m_args[i]);
+        // Ignore exception
+        //QT_RETHROW;
+      }
     }
   }
-  DOUT("leave: ok =" << ok);
+  DOUT("leave: ok = yes");
 }
 
 // EOF

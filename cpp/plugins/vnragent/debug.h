@@ -11,18 +11,26 @@
 # include <cstddef> // for wchar_t
 #endif
 
-void dprint(const char *message)
+inline void dmsg(const char *message)
 { ::MessageBoxA(nullptr, message, "VNR Message", MB_OK); }
 
-void dprint(const char *message)
-{ ::MessageBoxW(nullptr, message, "VNR Message", MB_OK); }
+inline void dmsg(char *message)
+{ ::MessageBoxA(nullptr, message, "VNR Message", MB_OK); }
+
+inline void dmsg(const wchar_t *message)
+{ ::MessageBoxW(nullptr, message, L"VNR Message", MB_OK); }
+
+inline void dmsg(wchar_t *message)
+{ ::MessageBoxW(nullptr, message, L"VNR Message", MB_OK); }
 
 #ifdef QT_CORE_LIB
-inline void dprint(const QString &message) { dprint(message.toStdWString().c_str()); }
 
-template <typename T> inline void dprint(T number) { dprint(QString::number(number)); }
+inline void dmsg(const QString &message) { dmsg(message.toStdWString().c_str()); }
+template <typename T> inline void dmsg(T number) { dmsg(QString::number(number)); }
+
 #endif //QT_CORE_LIB
 
-#define DPRINT(...) dprint(__VA_ARGS__)
+#define DMSG(...) dmsg(__VA_ARGS__)
+//#define DLOG(...) dlog(__VA_ARGS__)
 
 // EOF

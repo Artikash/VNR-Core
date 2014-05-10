@@ -7,6 +7,7 @@ if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
+import os
 from sakurakit.skdebug import dprint
 #from sakurakit.skclass import memoized
 
@@ -22,6 +23,15 @@ def engines():
   return ENGINES
 
 class Engine(object): # placeholder
+  NAME = ''
+  ENCODING = ''
+
+  def name(self): return self.NAME
+  def encoding(self): return self.ENCODING
+
+  def addHook(self, code, name=''): # str, str -> bool
+   from texthook import texthook
+   return texthook.global_().addHook(code, name=name or self.name())
 
   # Pure virtual functions
   def match(self, pid):
@@ -61,22 +71,37 @@ class Engine(object): # placeholder
     @param  pid  long
     @return  unicode or None
     """
-    import os
     path = self.getAppPath(pid)
     if path:
       return os.path.dirname(path)
 
-  def globAppDirectory(self, pid, pattern):
+  def globAppDirectory(self, pattern, pid):
     """
-    @param  pid  long
     @param  pattern  str
+    @param  pid  long
     @return  [unicode path] or None
     """
     path = self.getAppDirectory(pid)
     if path:
-      import os
       from glob import glob
       return glob(os.path.join(path, pattern))
+
+  def globAppDirectories(self, patterns, pid):
+    """Return all paths or None if failed
+    @param  pattern  [str]
+    @param  pid  long
+    @return  [unicode path] or None  if return list, it must have the same length as patterns
+    """
+    path = self.getAppDirectory(pid)
+    if path:
+      from glob import glob
+      ret = []
+      for pat in patterns:
+        r = glob(os.path.join(path, pat))
+        if not r:
+          return None
+        ret.append(r)
+      return ret
 
 #  jichi 4/21/2014: Mono (Unity3D)
 #  See (ok123): http://sakuradite.com/topic/214
@@ -129,11 +154,11 @@ class Engine(object): # placeholder
 #  1003b86f  |.^7e d5          \jle short mono.1003b846
 class MonoEngine(Engine):
 
-  NAME = "Mono" # str
+  NAME = "Mono" # str, override
+  ENCODING = "utf-16" # str, override
 
   def match(self, pid): # override
-    return bool(self.globAppDirectory(pid,
-        '*/Mono/mono.dll'))
+    return bool(self.globAppDirectory('*/Mono/mono.dll', pid))
 
   def inject(self, pid): # override
     from gamedebugger import GameDebugger
@@ -149,9 +174,7 @@ class MonoEngine(Engine):
       addr = dbg.search_module_memory("mono.dll", pattern)
       if addr > 0:
         code = "/HWN-8*0:3C@%x" % addr
-        from texthook import texthook
-        th = texthook.global_()
-        ret = th.addHook(code, name=self.NAME)
+        ret = self.addHook(code)
     dprint(ret)
     return ret
 

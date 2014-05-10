@@ -4,12 +4,12 @@ win32 {
 
 DEFINES += WITH_LIB_WINMAKER
 
-DEPENDPATH      += $$PWD
+#LIBS += -lkernel32 -luser32
+
+DEPENDPATH += $$PWD
 
 HEADERS += $$PWD/winmaker.h
 SOURCES += $$PWD/winmaker.cc
-
-#LIBS    += -lkernel32 -luser32
 }
 
 # EOF

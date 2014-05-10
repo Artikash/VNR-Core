@@ -30,6 +30,7 @@ APP_YAML_LOCATION = os.path.join(ROOT_LOCATION, "reader.yaml")
 BLACKLIST_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/blacklist.yaml")
 BRANDS_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/brands.yaml")
 ENGINES_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/engines.yaml")
+ZUNKO_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/zunko.yaml")
 
 ROOT_LOCATION_U = u(ROOT_LOCATION)
 
@@ -140,6 +141,12 @@ APP_UPDATE_COMMENTS_INTERVAL = parse_int(_APP['updateCommentsInterval'])
 APP_UPDATE_REFS_INTERVAL = parse_int(_APP['updateRefsInterval'])
 APP_UPDATE_TERMS_INTERVAL = parse_int(_APP['updateTermsInterval'])
 APP_UPDATE_DIGESTS_INTERVAL = parse_int(_APP['updateDigestsInterval'])
+
+APP_SOCKET_TYPE = _APP['socketType'] # str
+APP_SOCKET_NAME = _APP['socketName'] # str
+APP_SOCKET_PORT = parse_int(_APP['socketPort']) # int
+
+VNRAGENT_MEMORY_KEY = APP_YAML['vnragent']['memoryKey']
 
 REF_EXPIRE_TIME = parse_int(_APP['refExpireTime'])
 NAME_EXPIRE_TIME = parse_int(_APP['nameExpireTime'])
@@ -252,8 +259,6 @@ QT_STYLESHEETS = _QT['css'] # [str name]
 
 #QT_QUIT_TIMEOUT = parse_int(_QT['quitTimeout'])
 
-QT_METACALL_PORT = parse_int(_QT['metaCallPort'])
-
 _PY = APP_YAML['py']
 PY_SOCKET_TIMEOUT = parse_int(_PY['socketTimeout'])
 PY_RECURSION_LIMIT = parse_int(_PY['recursionLimit'])
@@ -336,6 +341,9 @@ KANJI_LANGUAGES = SHARE_YAML['languages']['kanji']  # [str lang]
 KANJI_LANGUAGE_SET = frozenset(KANJI_LANGUAGES)
 def is_kanji_language(lang): return lang in KANJI_LANGUAGE_SET
 
+SJIS_LANGUAGES = SHARE_YAML['languages']['sjis']  # [str lang]
+SJIS_LANGUAGE_SET = frozenset(SJIS_LANGUAGES)
+
 LANGUAGE_SET = frozenset(LANGUAGES)
 def is_valid_language(lang):
   return lang in LANGUAGE_SET
@@ -344,8 +352,13 @@ def check_valid_language(lang):
   if not is_valid_language(lang):
     raise ValueError("invalid language %s" % lang)
 
-def language2locale(lang):
+def language2locale(lang): # str -> str
   return LANGUAGE_LOCALES.get(lang) or ""
+
+def language2lcid(lang): # str -> long
+  loc = language2locale(lang)
+  from windefs import windefs
+  return windefs.locale2lcid(loc)
 
 LINGOES_LANGS = SHARE_YAML['lingoes'] # [str lang]
 JMDICT_LANGS = SHARE_YAML['jmdict'] # [str lang]

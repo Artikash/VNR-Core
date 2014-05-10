@@ -179,6 +179,7 @@ class sakurakit(QObject):
       self.tr("Site"),
       self.tr("Submit"),
       self.tr("Translate"),
+      self.tr("Transcode"),
       self.tr("Test"),
       self.tr("Type"),
       self.tr("Quit"),
@@ -351,6 +352,9 @@ class sakurakit(QObject):
       self.tr("Offline"), self.tr("offline"),
       self.tr("Read-only"), self.tr("read-only"),
       self.tr("Editable"), self.tr("editable"),
+
+      self.tr("Slow"),
+      self.tr("slow"),
 
       self.tr("Public"),
       self.tr("Private"),

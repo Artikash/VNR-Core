@@ -3,6 +3,9 @@
 
 DEFINES += WITH_LIB_METACALL
 
+#INCLUDEPATH += $$QT_SRC
+QT += core network
+
 DEPENDPATH += $$PWD
 
 HEADERS += \
@@ -13,12 +16,11 @@ HEADERS += \
   $$PWD/metacallrouter.h \
   $$PWD/qmetacallevent_p.h \
   $$PWD/qtmetacall.h
+  #$$PWD/metacallthread.h
+  #$$PWD/metacallthread_p.h
 SOURCES += \
   $$PWD/metacallfilter_p.cc \
   $$PWD/metacallpropagator.cc
-
-QT += core network
-
-#INCLUDEPATH += $$QT_SRC
+  #$$PWD/metacallthread.cc
 
 # EOF

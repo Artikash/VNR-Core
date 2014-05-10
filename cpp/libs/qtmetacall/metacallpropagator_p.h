@@ -15,13 +15,13 @@ QTMETACALL_BEGIN_NAMESPACE
 
 class MetaCallSocketFilter;
 class MetaCallSocketObserver;
-class MetaCallPropagator;
+//class MetaCallPropagator;
 class MetaCallPropagatorPrivate : public QObject
 {
   Q_OBJECT
   Q_DISABLE_COPY(MetaCallPropagatorPrivate)
   SK_EXTEND_CLASS(MetaCallPropagatorPrivate, QObject)
-  SK_DECLARE_PUBLIC(MetaCallPropagator)
+  //SK_DECLARE_PUBLIC(MetaCallPropagator)
 
 public:
   MetaCallSocketFilter *filter;
@@ -29,13 +29,14 @@ public:
   QTcpServer *server; // for receiver
   QTcpSocket *socket; // for both sender and receiver
 
-  explicit MetaCallPropagatorPrivate(Q *q);
+  explicit MetaCallPropagatorPrivate(QObject *parent = nullptr);
 
   void createFilter(QObject *watched);
 
   void connectSocketObserver();
+  void disconnectSocketObserver();
 public slots:
-  void dumpSocket() const; // for Debug only
+  void dumpSocketInfo() const; // for Debug only
   void serverAcceptsConnection();
 };
 

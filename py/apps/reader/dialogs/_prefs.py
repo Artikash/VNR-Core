@@ -672,10 +672,19 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     layout.addWidget(self.localeEmulatorButton)
     layout.addWidget(self.ntleaButton)
     #layout.addWidget(self.localeSwitchButton)
+    #layout.addWidget(self.launchInfoLabel)
     ret = QtWidgets.QGroupBox(my.tr("Preferred game loader"))
     ret.setLayout(layout)
     self._loadLauncher()
     return ret
+
+  #@memoizedproperty
+  #def launchInfoLabel(self):
+  #  ret = QtWidgets.QLabel(my.tr(
+  #    "When embedding translation is enabled, if the game's encoding is SHIFT-JIS and your language is not SHIFT-JIS compatible, VNR will always launch the game using AppLocale"
+  #   ))
+  #  ret.setWordWrap(True)
+  #  return ret
 
   @memoizedproperty
   def disableButton(self):
@@ -804,8 +813,9 @@ class _ShortcutsTab(object):
     _refresh()
     ss.ttsHotkeyChanged.connect(_refresh)
 
-    ret.clicked.connect(lambda:
-        self.ttsDialog.setValue(ss.ttsHotkey()) or self.ttsDialog.show())
+    ret.clicked.connect(lambda: (
+        self.ttsDialog.setValue(ss.ttsHotkey()),
+        self.ttsDialog.show()))
 
     ret.setEnabled(self.ttsCheckBox.isChecked())
     self.ttsCheckBox.toggled.connect(ret.setEnabled)
@@ -1034,7 +1044,7 @@ class _TtsTab(object):
     ret.setSingleStep(1)
     tm = ttsman.manager()
     ret.setValue(tm.getSapiSpeed(key))
-    ret.valueChanged.connect(partial(tm.setSapiSpeed, key))
+    ret.valueChanged[int].connect(partial(tm.setSapiSpeed, key))
     return ret
 
   @memoizedproperty
@@ -1116,9 +1126,9 @@ class _I18nTab(object):
     def _button(lang):
       ret = QtWidgets.QCheckBox(i18n.language_name(lang))
       ret.setChecked(lang in ss.blockedLanguages())
-      ret.toggled.connect(lambda value:
-          self._toggleLanguage(lang, value) or
-          ret.setChecked(not value))
+      ret.toggled.connect(lambda value: (
+          self._toggleLanguage(lang, value),
+          ret.setChecked(not value)))
       return ret
 
     layout = QtWidgets.QVBoxLayout()
@@ -4335,6 +4345,445 @@ class TtsLibraryTab(QtWidgets.QDialog):
 
   def load(self): self.__d.refresh()
   def save(self): pass #self.__d.save()
+  def refresh(self): pass
+
+# Embedded subtitle
+
+#@Q_Q
+class _EngineTab(object):
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.agentGroup)
+    layout.addWidget(self.textGroup)
+    layout.addWidget(self.optionGroup)
+    layout.addWidget(self.launchGroup)
+    layout.addWidget(self.infoEdit)
+    layout.addStretch()
+    q.setLayout(layout)
+
+    b = self.agentEnableButton
+    for w in self.textGroup, self.optionGroup:
+      w.setEnabled(b.isChecked())
+      b.toggled.connect(w.setEnabled)
+
+    ss = settings.global_()
+    for w in self.launchGroup, self.translationWaitTimeButton:
+      slot = partial(lambda w, value: w.setEnabled(ss.isGameAgentLauncherNeeded()), w)
+      slot(None)
+      ss.gameAgentEnabledChanged.connect(slot)
+      for key in 'Scenario', 'Name', 'Other':
+        sig = getattr(ss, 'embedded{0}TranslationEnabledChanged'.format(key))
+        sig.connect(slot)
+
+  @memoizedproperty
+  def infoEdit(self):
+    ret = QtWidgets.QTextBrowser()
+    skqss.class_(ret, 'texture')
+    #ret.setAlignment(Qt.AlignCenter)
+    ret.setReadOnly(True)
+    ret.setOpenExternalLinks(True)
+    #ret.setMaximumHeight(145)
+    ret.setHtml(info.renderGameAgentHelp())
+    return ret
+
+  ## Agent ##
+
+  @memoizedproperty
+  def agentGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.agentEnableButton)
+    layout.addWidget(self.agentInfoLabel)
+    ret = QtWidgets.QGroupBox(my.tr("Preferred game text extraction method"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def agentEnableButton(self):
+    ss = settings.global_()
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Use VNR's built-in hook instead of ITH if possible"
+    ))
+    ret.setChecked(ss.isGameAgentEnabled())
+    ret.toggled.connect(ss.setGameAgentEnabled)
+    return ret
+
+  @memoizedproperty
+  def agentInfoLabel(self):
+    ret = QtWidgets.QLabel(' '.join((
+      my.tr("Changing the text extraction method requires restarting the game."),
+      #my.tr("This feature is currently under development, and only supports a small portion of the games that ITH supports."),
+      my.tr('See <a href="#">Game Settings</a> for more details.'),
+    )))
+    skqss.class_(ret, 'text-error')
+    ret.setWordWrap(True)
+    #ret.setOpenExternalLinks(True)
+
+    import main
+    m = main.manager()
+    ret.linkActivated.connect(partial(m.openWiki, 'VNR/Game Settings'))
+    return ret
+
+  ## Launcher ##
+
+  @memoizedproperty
+  def launchGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.launchEnableButton)
+    layout.addWidget(self.launchInfoLabel)
+    ret = QtWidgets.QGroupBox(my.tr("Preferred game launch method"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def launchEnableButton(self):
+    ss = settings.global_()
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Use VNR's built-in game launcher instead of NTLEA/LocaleEmulator if have to"
+    ))
+    ret.setChecked(ss.isGameAgentLauncherEnabled())
+    ret.toggled.connect(ss.setGameAgentLauncherEnabled)
+    return ret
+
+  @memoizedproperty
+  def launchInfoLabel(self):
+    ret = QtWidgets.QLabel(' '.join((
+      my.tr("This is indispensable for SHIFT-JIS games when your language is NOT Latin-based."),
+      my.tr("It is only needed when embedding translation is enabled."),
+      my.tr("The current implementation is buggy. It is only guaranteed to work well on Japanese Windows."),
+    )))
+    ret.setWordWrap(True)
+    return ret
+
+  ## Options ##
+
+  @memoizedproperty
+  def optionGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+
+    # CTRL detection
+    layout.addWidget(self.ctrlButton)
+
+    # Translation wait time
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.translationWaitTimeButton)
+    row.addWidget(QtWidgets.QLabel("<= %s (%s)" % (
+        my.tr("Translation wait time"),
+        "1000 msec = 1 sec")))
+    row.addStretch()
+    layout.addLayout(row)
+
+    layout.addWidget(self.optionInfoLabel)
+    ret = QtWidgets.QGroupBox(my.tr("Embedding options"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def translationWaitTimeButton(self):
+    ret = QtWidgets.QSpinBox()
+    ret.setToolTip("%s: %s msec" % (tr_("Default"), 1000))
+    ret.setRange(100, 10000)
+    ret.setSingleStep(10)
+    ss = settings.global_()
+    ret.setValue(ss.embeddedTranslationWaitTime())
+    ret.valueChanged[int].connect(ss.setEmbeddedTranslationWaitTime)
+    return ret
+
+  @memoizedproperty
+  def optionInfoLabel(self):
+    ret = QtWidgets.QLabel("%s: %s" % (
+      tr_("Note"),
+      my.tr("A large wait time might also slow down the game when your machine translator is slow."),
+    ))
+    ret.setWordWrap(True)
+    return ret
+
+  @memoizedproperty
+  def ctrlButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Disable text extraction when Ctrl is pressed"))
+    ss = settings.global_()
+    ret.setChecked(ss.isEmbeddedTextCancellableByControl())
+    ret.toggled.connect(ss.setEmbeddedTextCancellableByControl)
+    return ret
+
+  ## Text ##
+
+  @memoizedproperty
+  def textGroup(self):
+    ret = QtWidgets.QGroupBox(my.tr("Preferred text to embed in the game"))
+    cols = QtWidgets.QVBoxLayout()
+
+    for key,label in (
+        ('scenario', mytr_("Dialog")),
+        ('name', tr_("Name")),
+        ('other', tr_("Other")),
+        ('window', tr_("Window")),
+      ):
+      row = QtWidgets.QHBoxLayout()
+      row.addWidget(QtWidgets.QLabel(label + ":"))
+      group = getattr(self, key + 'TextGroup')
+      group.setParent(ret)
+      l = group.buttons()
+      map(row.addWidget, l)
+      row.addStretch()
+      cols.addLayout(row)
+
+    #cols.addWidget(self.textInfoEdit)
+
+    ret.setLayout(cols)
+    return ret
+
+  # Scenario
+
+  @memoizedproperty
+  def scenarioTextGroup(self):
+    ret = QtWidgets.QButtonGroup()
+
+    self.scenarioDisableButton = QtWidgets.QRadioButton(tr_("Disable"))
+    ret.addButton(self.scenarioDisableButton)
+
+    self.scenarioTranscodeButton = QtWidgets.QRadioButton(tr_("Transcode"))
+    ret.addButton(self.scenarioTranscodeButton)
+
+    self.scenarioTranslateButton = QtWidgets.QRadioButton(tr_("Translate"))
+    ret.addButton(self.scenarioTranslateButton)
+
+    self.scenarioHideButton = QtWidgets.QRadioButton(tr_("Hide"))
+    ret.addButton(self.scenarioHideButton)
+
+    self._loadScenarioTextGroup()
+    ret.buttonClicked.connect(self._saveScenarioTextGroup)
+    return ret
+
+  def _loadScenarioTextGroup(self):
+    ss = settings.global_()
+    if not ss.isEmbeddedScenarioVisible():
+      self.scenarioHideButton.setChecked(True)
+    elif ss.isEmbeddedScenarioTranslationEnabled():
+      self.scenarioTranslateButton.setChecked(True)
+    elif ss.isEmbeddedScenarioTranscodingEnabled():
+      self.scenarioTranscodeButton.setChecked(True)
+    else:
+      self.scenarioDisableButton.setChecked(True)
+
+  def _saveScenarioTextGroup(self):
+    ss = settings.global_()
+    if self.scenarioTranslateButton.isChecked():
+      ss.setEmbeddedScenarioVisible(True)
+      ss.setEmbeddedScenarioTranscodingEnabled(True)
+      ss.setEmbeddedScenarioTranslationEnabled(True)
+    elif self.scenarioTranscodeButton.isChecked():
+      ss.setEmbeddedScenarioVisible(True)
+      ss.setEmbeddedScenarioTranscodingEnabled(True)
+      ss.setEmbeddedScenarioTranslationEnabled(False)
+    elif self.scenarioDisableButton.isChecked():
+      ss.setEmbeddedScenarioVisible(True)
+      ss.setEmbeddedScenarioTranscodingEnabled(False)
+      ss.setEmbeddedScenarioTranslationEnabled(False)
+    elif self.scenarioHideButton.isChecked():
+      ss.setEmbeddedScenarioVisible(False)
+      ss.setEmbeddedScenarioTranscodingEnabled(False)
+      ss.setEmbeddedScenarioTranslationEnabled(False)
+
+  # Name
+
+  @memoizedproperty
+  def nameTextGroup(self):
+    ret = QtWidgets.QButtonGroup()
+
+    self.nameDisableButton = QtWidgets.QRadioButton(tr_("Disable"))
+    ret.addButton(self.nameDisableButton)
+
+    self.nameTranscodeButton = QtWidgets.QRadioButton(tr_("Transcode"))
+    ret.addButton(self.nameTranscodeButton)
+
+    self.nameTranslateButton = QtWidgets.QRadioButton(tr_("Translate"))
+    ret.addButton(self.nameTranslateButton)
+
+    self.nameVisibleButton = QtWidgets.QRadioButton(tr_("Both"))
+    ret.addButton(self.nameVisibleButton)
+
+    self.nameHideButton = QtWidgets.QRadioButton(tr_("Hide"))
+    ret.addButton(self.nameHideButton)
+
+    self._loadNameTextGroup()
+    ret.buttonClicked.connect(self._saveNameTextGroup)
+    return ret
+
+  def _loadNameTextGroup(self):
+    ss = settings.global_()
+    if not ss.isEmbeddedNameVisible():
+      self.nameHideButton.setChecked(True)
+    elif ss.isEmbeddedNameTextVisible():
+      self.nameVisibleButton.setChecked(True)
+    elif ss.isEmbeddedNameTranslationEnabled():
+      self.nameTranslateButton.setChecked(True)
+    elif ss.isEmbeddedNameTranscodingEnabled():
+      self.nameTranscodeButton.setChecked(True)
+    else:
+      self.nameDisableButton.setChecked(True)
+
+  def _saveNameTextGroup(self):
+    ss = settings.global_()
+    if self.nameVisibleButton.isChecked():
+      ss.setEmbeddedNameVisible(True)
+      ss.setEmbeddedNameTranscodingEnabled(True)
+      ss.setEmbeddedNameTranslationEnabled(True)
+      ss.setEmbeddedNameTextVisible(True)
+    elif self.nameTranslateButton.isChecked():
+      ss.setEmbeddedNameVisible(True)
+      ss.setEmbeddedNameTranscodingEnabled(True)
+      ss.setEmbeddedNameTranslationEnabled(True)
+      ss.setEmbeddedNameTextVisible(False)
+    elif self.nameTranscodeButton.isChecked():
+      ss.setEmbeddedNameVisible(True)
+      ss.setEmbeddedNameTranscodingEnabled(True)
+      ss.setEmbeddedNameTranslationEnabled(False)
+      ss.setEmbeddedNameTextVisible(False)
+    elif self.nameDisableButton.isChecked():
+      ss.setEmbeddedNameVisible(True)
+      ss.setEmbeddedNameTranscodingEnabled(False)
+      ss.setEmbeddedNameTranslationEnabled(False)
+      ss.setEmbeddedNameTextVisible(False)
+    elif self.nameHideButton.isChecked():
+      ss.setEmbeddedNameVisible(False)
+      ss.setEmbeddedNameTranscodingEnabled(False)
+      ss.setEmbeddedNameTranslationEnabled(False)
+      ss.setEmbeddedNameTextVisible(False)
+
+  # Other
+
+  @memoizedproperty
+  def otherTextGroup(self):
+    ret = QtWidgets.QButtonGroup()
+
+    self.otherDisableButton = QtWidgets.QRadioButton(tr_("Disable"))
+    ret.addButton(self.otherDisableButton)
+
+    self.otherTranscodeButton = QtWidgets.QRadioButton(tr_("Transcode"))
+    ret.addButton(self.otherTranscodeButton)
+
+    self.otherTranslateButton = QtWidgets.QRadioButton(
+        "%s (%s)" % (tr_("Translate"), tr_("slow")))
+    ret.addButton(self.otherTranslateButton)
+
+    #self.otherHideButton = QtWidgets.QRadioButton(tr_("Hide"))
+    #ret.addButton(self.otherHideButton)
+
+    self._loadOtherTextGroup()
+    ret.buttonClicked.connect(self._saveOtherTextGroup)
+    return ret
+
+  def _loadOtherTextGroup(self):
+    ss = settings.global_()
+    #if not ss.isEmbeddedOtherVisible():
+    #  self.otherHideButton.setChecked(True)
+    if ss.isEmbeddedOtherTranslationEnabled():
+      self.otherTranslateButton.setChecked(True)
+    elif ss.isEmbeddedOtherTranscodingEnabled():
+      self.otherTranscodeButton.setChecked(True)
+    else:
+      self.otherDisableButton.setChecked(True)
+
+  def _saveOtherTextGroup(self):
+    ss = settings.global_()
+    if self.otherTranslateButton.isChecked():
+      ss.setEmbeddedOtherVisible(True)
+      ss.setEmbeddedOtherTranscodingEnabled(True)
+      ss.setEmbeddedOtherTranslationEnabled(True)
+    elif self.otherTranscodeButton.isChecked():
+      ss.setEmbeddedOtherVisible(True)
+      ss.setEmbeddedOtherTranscodingEnabled(True)
+      ss.setEmbeddedOtherTranslationEnabled(False)
+    elif self.otherDisableButton.isChecked():
+      ss.setEmbeddedOtherVisible(True)
+      ss.setEmbeddedOtherTranscodingEnabled(False)
+      ss.setEmbeddedOtherTranslationEnabled(False)
+    #elif self.otherHideButton.isChecked():
+    #  ss.setEmbeddedOtherVisible(False)
+    #  ss.setEmbeddedOtherTranscodingEnabled(False)
+    #  ss.setEmbeddedOtherTranslationEnabled(False)
+
+  # Window
+
+  @memoizedproperty
+  def windowTextGroup(self):
+    ret = QtWidgets.QButtonGroup()
+
+    self.windowDisableButton = QtWidgets.QRadioButton(tr_("Disable"))
+    ret.addButton(self.windowDisableButton)
+
+    self.windowTranscodeButton = QtWidgets.QRadioButton(tr_("Transcode"))
+    ret.addButton(self.windowTranscodeButton)
+
+    self.windowTranslateButton = QtWidgets.QRadioButton(
+        "%s (%s)" % (tr_("Translate"), tr_("slow")))
+    ret.addButton(self.windowTranslateButton)
+
+    self.windowVisibleButton = QtWidgets.QRadioButton(tr_("Both"))
+    ret.addButton(self.windowVisibleButton)
+
+    #self.windowHideButton = QtWidgets.QRadioButton(tr_("Hide"))
+    #ret.addButton(self.windowHideButton)
+
+    self._loadWindowTextGroup()
+    ret.buttonClicked.connect(self._saveWindowTextGroup)
+    return ret
+
+  def _loadWindowTextGroup(self):
+    ss = settings.global_()
+    #if not ss.isWindowVisible():
+    #  self.windowHideButton.setChecked(True)
+    if ss.isWindowTextVisible():
+      self.windowVisibleButton.setChecked(True)
+    elif ss.isWindowTranslationEnabled():
+      self.windowTranslateButton.setChecked(True)
+    elif ss.isWindowTranscodingEnabled():
+      self.windowTranscodeButton.setChecked(True)
+    else:
+      self.windowDisableButton.setChecked(True)
+
+  def _saveWindowTextGroup(self):
+    ss = settings.global_()
+    if self.windowVisibleButton.isChecked():
+      #ss.setWindowVisible(True)
+      ss.setWindowTranscodingEnabled(True)
+      ss.setWindowTranslationEnabled(True)
+      ss.setWindowTextVisible(True)
+    elif self.windowTranslateButton.isChecked():
+      #ss.setWindowVisible(True)
+      ss.setWindowTranscodingEnabled(True)
+      ss.setWindowTranslationEnabled(True)
+      ss.setWindowTextVisible(False)
+    elif self.windowTranscodeButton.isChecked():
+      #ss.setWindowVisible(True)
+      ss.setWindowTranscodingEnabled(True)
+      ss.setWindowTranslationEnabled(False)
+      ss.setWindowTextVisible(False)
+    elif self.windowDisableButton.isChecked():
+      #ss.setWindowVisible(True)
+      ss.setWindowTranscodingEnabled(False)
+      ss.setWindowTranslationEnabled(False)
+      ss.setWindowTextVisible(False)
+    #elif self.windowHideButton.isChecked():
+    #  ss.setWindowVisible(False)
+    #  ss.setWindowTranscodingEnabled(False)
+    #  ss.setWindowTranslationEnabled(False)
+    #  ss.setWindowTextVisible(False)
+
+class EngineTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(EngineTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _EngineTab(self)
+    #self.setChildrenCollapsible(False)
+    #self.setMinimumWidth(LIBRARY_MINIMUM_WIDTH)
+
+  def load(self): pass
+  def save(self): pass
   def refresh(self): pass
 
 # EOF
