@@ -42,6 +42,7 @@ public:
      , embeddedOtherVisible(false)
      , embeddedOtherTranslationEnabled(false)
      , embeddedOtherTranscodingEnabled(false)
+     , embeddedTextCancellableByControl(false)
      , embeddedTranslationWaitTime(1000) // 1 second
      , gameEncoding("shift-jis")
   {}
@@ -88,6 +89,8 @@ DEFINE_BOOL_PROPERTY(embeddedOtherVisible, isEmbeddedOtherVisible, setEmbeddedOt
 DEFINE_BOOL_PROPERTY(embeddedOtherTranslationEnabled, isEmbeddedOtherTranslationEnabled, setEmbeddedOtherTranslationEnabled)
 DEFINE_BOOL_PROPERTY(embeddedOtherTranscodingEnabled, isEmbeddedOtherTranscodingEnabled, setEmbeddedOtherTranscodingEnabled)
 
+DEFINE_BOOL_PROPERTY(embeddedTextCancellableByControl, isEmbeddedTextCancellableByControl, setEmbeddedTextCancellableByControl)
+
 DEFINE_INT_PROPERTY(embeddedTranslationWaitTime, embeddedTranslationWaitTime, setEmbeddedTranslationWaitTime)
 
 DEFINE_STRING_PROPERTY(gameEncoding, gameEncoding, setGameEncoding)
@@ -133,6 +136,7 @@ void Settings::load(const QString &json)
     H_debug = 6994359 // "debug"
     , H_gameEncoding = 156622791
     , H_embeddedTranslationWaitTime = 245002357
+    , H_embeddedTextCancellableByControl = 96153884
 
     , H_windowTranslationEnabled = 79059828
     , H_windowTranscodingEnabled = 219567700

@@ -9,6 +9,7 @@ class EngineSettings
 {
 public:
   bool enabled
+     , detectsControl
      , nameTextVisible
      , textVisible[Engine::RoleCount]
      , transcodingEnabled[Engine::RoleCount]
@@ -19,6 +20,7 @@ public:
   // Set all properties to false
   EngineSettings()
     : enabled(false)
+    , detectsCtrl(false)
     , nameTextVisible(false)
   {
     for (int role = 0; role < Engine::RoleCount; role++)

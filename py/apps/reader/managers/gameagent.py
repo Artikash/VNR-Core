@@ -113,11 +113,12 @@ class GameAgent(QObject):
   #def engine
 
 _SETTINGS_DICT = {
-  'embeddedTranslationWaitTime': 'embeddedTranslationWaitTime',
-
   'windowTranslationEnabled': 'isWindowTranslationEnabled',
   'windowTranscodingEnabled': 'isWindowTranscodingEnabled',
   'windowTextVisible': 'isWindowTextVisible',
+
+  'embeddedTranslationWaitTime': 'embeddedTranslationWaitTime',
+  'embeddedTextCancellableByControl': 'isEmbeddedTextCancellableByControl',
 
   'embeddedScenarioVisible': 'isEmbeddedScenarioVisible',
   'embeddedScenarioTranslationEnabled': 'isEmbeddedScenarioTranslationEnabled',

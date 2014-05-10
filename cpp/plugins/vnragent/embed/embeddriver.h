@@ -31,6 +31,7 @@ public slots:
 
   void setTranslationWaitTime(int v);
 
+  void setDetectsControl(bool t);
   void setScenarioVisible(bool t);
   void setScenarioExtractionEnabled(bool t);
   void setScenarioTranscodingEnabled(bool t);

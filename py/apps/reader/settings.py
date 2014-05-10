@@ -1181,6 +1181,14 @@ class Settings(QSettings):
       self.setValue('EmbeddedTranslationWaitTime', value)
       self.embeddedTranslationWaitTimeChanged.emit(value)
 
+  embeddedTextCancellableByControlChanged = Signal(bool)
+  def isEmbeddedTextCancellableByControl(self):
+    return to_bool(self.value('EmbeddedTextDetectsCtrl', True))
+  def setEmbeddedTextCancellableByControl(self, value):
+    if value != self.isEmbeddedTextCancellableByControl():
+      self.setValue('EmbeddedTextDetectsCtrl', value)
+      self.embeddedTextCancellableByControlChanged.emit(value)
+
   # Whether translate window components
   # This implies transcoding enabled
   windowTranslationEnabledChanged = Signal(bool)

@@ -43,6 +43,7 @@ EmbedDriver::~EmbedDriver()
 void EmbedDriver::setTranslationWaitTime(int v)  { d_->manager->setTranslationWaitTime(v); }
 
 void EmbedDriver::setEnabled(bool t)  { if (d_->engine) d_->engine->settings()->enabled = t; }
+void EmbedDriver::setDetectsControl(bool t) { if (d_->engine) d_->engine->settings()->detectsControl = t; }
 void EmbedDriver::setNameTextVisible(bool t) { if (d_->engine) d_->engine->settings()->nameTextVisible = t; }
 
 void EmbedDriver::setScenarioVisible(bool t) { if (d_->engine) d_->engine->settings()->textVisible[Engine::ScenarioRole] = t; }

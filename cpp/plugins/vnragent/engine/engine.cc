@@ -8,6 +8,7 @@
 #include "embed/embedmanager.h"
 #include "util/codepage.h"
 #include "util/textutil.h"
+#include "winkey/winkey.h"
 #include <qt_windows.h>
 #include <QtCore/QTextCodec>
 
@@ -91,8 +92,10 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool 
 
   auto p = EmbedManager::instance();
 
+  bool canceled = d_->settings->detectsControl && WinKey::isKeyControlPressed();
+
   qint64 hash = Engine::hashByteArray(data);
-  if (d_->settings->extractionEnabled[role] && !d_->settings->translationEnabled[role]) {
+  if (!canceled && d_->settings->extractionEnabled[role] && !d_->settings->translationEnabled[role]) {
     enum { NeedsTranslation = false };
     p->sendText(text, hash, role, NeedsTranslation);
   }
@@ -102,7 +105,8 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool 
 
   if (!d_->settings->translationEnabled[role])
     return d_->settings->transcodingEnabled[role] ? d_->encode(text) : data;
-  if (role == Engine::OtherRole && !Util::needsTranslation(text))
+  if (canceled ||
+      role == Engine::OtherRole && !Util::needsTranslation(text))
     return d_->encode(text);
 
   QString repl = p->findTranslation(hash, role);

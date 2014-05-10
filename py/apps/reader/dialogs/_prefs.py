@@ -4358,19 +4358,19 @@ class _EngineTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.agentGroup)
     layout.addWidget(self.textGroup)
-    layout.addWidget(self.launchGroup)
     layout.addWidget(self.optionGroup)
+    layout.addWidget(self.launchGroup)
     layout.addWidget(self.infoEdit)
     layout.addStretch()
     q.setLayout(layout)
 
     b = self.agentEnableButton
-    for w in self.textGroup,:
+    for w in self.textGroup, self.optionGroup:
       w.setEnabled(b.isChecked())
       b.toggled.connect(w.setEnabled)
 
     ss = settings.global_()
-    for w in self.launchGroup, self.optionGroup:
+    for w in self.launchGroup, self.translationWaitTimeButton:
       slot = partial(lambda w, value: w.setEnabled(ss.isGameAgentLauncherNeeded()), w)
       slot(None)
       for key in 'Scenario', 'Name', 'Other':
@@ -4460,22 +4460,29 @@ class _EngineTab(object):
 
   @memoizedproperty
   def optionGroup(self):
-    row = QtWidgets.QHBoxLayout()
-    row.addWidget(QtWidgets.QLabel(my.tr("Translation wait time") + ":"))
-    row.addWidget(self.translationWaitTimeButton)
-    row.addWidget(QtWidgets.QLabel("msec (1000 msec = 1 sec)"))
-    row.addStretch()
     layout = QtWidgets.QVBoxLayout()
+
+    # CTRL detection
+    layout.addWidget(self.ctrlButton)
+
+    # Translation wait time
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.translationWaitTimeButton)
+    row.addWidget(QtWidgets.QLabel("<= %s (%s)" % (
+        my.tr("Translation wait time"),
+        "1000 msec = 1 sec")))
+    row.addStretch()
     layout.addLayout(row)
+
     layout.addWidget(self.optionInfoLabel)
-    ret = QtWidgets.QGroupBox(my.tr("Translation options"))
+    ret = QtWidgets.QGroupBox(my.tr("Embedding options"))
     ret.setLayout(layout)
     return ret
 
   @memoizedproperty
   def translationWaitTimeButton(self):
     ret = QtWidgets.QSpinBox()
-    ret.setToolTip("%s: %s" % (tr_("Default"), 1000))
+    ret.setToolTip("%s: %s msec" % (tr_("Default"), 1000))
     ret.setRange(100, 10000)
     ret.setSingleStep(10)
     ss = settings.global_()
@@ -4487,9 +4494,17 @@ class _EngineTab(object):
   def optionInfoLabel(self):
     ret = QtWidgets.QLabel("%s: %s" % (
       tr_("Note"),
-      my.tr("A large wait time might also cause the game to block longer when your machine translator is slow."),
+      my.tr("A large wait time might also slow down the game when your machine translator is slow."),
     ))
     ret.setWordWrap(True)
+    return ret
+
+  @memoizedproperty
+  def ctrlButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Disable text extraction when Ctrl is pressed"))
+    ss = settings.global_()
+    ret.setChecked(ss.isEmbeddedTextCancellableByControl())
+    ret.toggled.connect(ss.setEmbeddedTextCancellableByControl)
     return ret
 
   ## Text ##

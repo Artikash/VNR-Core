@@ -121,6 +121,7 @@ void MainDriverPrivate::createEmbedDriver()
   connect(settings, SIGNAL(embeddedOtherTranscodingEnabledChanged(bool)), eng, SLOT(setOtherTranscodingEnabled(bool)));
   connect(settings, SIGNAL(embeddedOtherTranslationEnabledChanged(bool)), eng, SLOT(setOtherTranslationEnabled(bool)));
 
+  connect(settings, SIGNAL(embeddedTextCancellableByControl(bool)), eng, SLOT(setDetectsControl(bool)));
   connect(settings, SIGNAL(embeddedTranslationWaitTimeChanged(int)), eng, SLOT(setTranslationWaitTime(int)));
   eng->setTranslationWaitTime(settings->embeddedTranslationWaitTime());
 
