@@ -840,8 +840,10 @@ class GameManager(QtCore.QObject):
       return
 
     if g.wid and procutil.is_active_window(g.wid):
-      #self.windowChanged.emit(0)
-      dprint("ignore active window")
+      # Enforce window visible
+      self.windowChanged.emit(g.wid)
+      #self.minimizedChanged.emit(self.isMinimized())
+      dprint("active window")
       return
 
     #if not procutil.get_process_by_pid(g.pid):
@@ -852,7 +854,7 @@ class GameManager(QtCore.QObject):
       return
 
     wid = procutil.get_process_active_window(g.pid)
-    if not wid or wid == g.wid:
+    if not wid:
       growl.notify(my.tr("Cannot find game window"))
       self.windowChanged.emit(0)
       return
@@ -1105,6 +1107,10 @@ class GameManager(QtCore.QObject):
       self.windowChanged.emit(g.wid)
       self.hookChanged.emit(g.hook)
       self.languageChanged.emit(g.language)
+
+      # Enforce window visible
+      #for t in 500, 3000, 5000:
+      #  skevents.runlater(self.refreshWindow, t)
 
       commentCount = 0
       nm = netman.manager()

@@ -69,6 +69,10 @@ class _TextManager(object):
     t.setSingleShot(True)
     t.timeout.connect(self._flushAgentScenario)
 
+    #t = self._flushAgentNameTimer = QTimer(q)
+    #t.setSingleShot(True)
+    #t.timeout.connect(self._flushAgentName)
+
     t = self._speakTextTimer = QTimer(q)
     t.setSingleShot(True)
     t.timeout.connect(self._speakText)
@@ -96,6 +100,7 @@ class _TextManager(object):
 
   def reset(self):
     self.agentScenarioBuffer = [] # [unicode scenario text]
+    self.agentNameBuffer = '' # unicode
 
     self.ttsName = "" # unicode not None, character name
     self.ttsNameForSubtitle = "" # unicode, ttsName for subtitle
@@ -376,15 +381,33 @@ class _TextManager(object):
 
   def _flushAgentScenario(self):
     self._flushAgentScenarioTimer.stop()
-    if not self.agentScenarioBuffer:
-      return
-    text = ''.join(self.agentScenarioBuffer)
-    self.agentScenarioBuffer = []
-    self.showScenarioText(text=text, agent=True)
+
+    if self.agentNameBuffer:
+       self._flushAgentName()
+
+    if self.agentScenarioBuffer:
+      text = ''.join(self.agentScenarioBuffer)
+      self.agentScenarioBuffer = []
+      self.showScenarioText(text=text, agent=True)
 
   def _cancelAgentScenario(self):
     self._flushAgentScenarioTimer.stop()
+    self.agentNameBuffer = ''
     self.agentScenarioBuffer = []
+
+  def _flushAgentName(self):
+    #self._flushAgentNameTimer.stop()
+    if self.agentNameBuffer:
+      self.showNameText(text=self.agentNameBuffer, agent=True)
+      self.agentNameBuffer = ''
+
+  #def _cancelAgentName(self):
+  #  self._flushAgentNameTimer.stop()
+  #  self.agentNameBuffer = ''
+
+  def stopAgentScenarioTimer(self):
+    if self._flushAgentScenarioTimer.isActive():
+      self._flushAgentScenarioTimer.stop()
 
   def addAgentText(self, text, role, needsTranslation=False):
     """
@@ -393,16 +416,30 @@ class _TextManager(object):
     @param* needsTranslation  bool
     """
     if role == SCENARIO_THREAD_TYPE:
+      #if self.agentNameBuffer:
+      #  self._flushAgentName()
       self.agentScenarioBuffer.append(text)
       if sum(map(len, self.agentScenarioBuffer)) > self.gameTextCapacity:
         self._cancelAgentScenario()
       else:
-        self._flushAgentScenarioTimer.start(500 if needsTranslation else 50)
+        waitTime = 50 if not needsTranslation else settings.global_().embeddedTranslationWaitTime() / 4
+        self._flushAgentScenarioTimer.start(waitTime)
     else:
+      # I assumes the name will come before scenario
+      # This assumption might hold true for all games.
       if self.agentScenarioBuffer:
-        self._flushAgentText()
+        self._flushAgentScenario()
       if role == NAME_THREAD_TYPE:
-        self.showNameText(text=text, agent=True)
+        #self.showNameText(text=text, agent=True)
+        if len(text) > defs.MAX_NAME_LENGTH:
+          self.agentNameBuffer = ''
+        else:
+          self.agentNameBuffer = text
+        #if len(self.agentNameBuffer) > defs.MAX_NAME_LENGTH:
+        #  self._cancelAgentName()
+        #else:
+        #  waitTime = 50 if not needsTranslation else settings.global_().embeddedTranslationWaitTime() * 3 # must be the same as the scenario
+        #  self._flushAgentNameTimer.start(waitTime)
     #elif role == OTHER_THREAD_TYPE:
     #  pass
 
@@ -881,6 +918,8 @@ class TextManager(QObject):
       return
 
     if needsTranslation:
+      d.stopAgentScenarioTimer()
+
       sub = None
       if role == SCENARIO_THREAD_TYPE:
         hash = long(rawHash)
@@ -889,10 +928,10 @@ class TextManager(QObject):
         async = role == OTHER_THREAD_TYPE
         sub, lang, provider = trman.manager().translateOne(text, async=async, online=True)
       if sub:
-        # Enforce Chinese encoding
-        if self.language == 'zht' and lang.startswith('zh'):
+        # Enforce Traditional Chinese encoding
+        if d.language == 'zht' and lang.startswith('zh'):
           sub = zhs2zht(sub)
-        #elif self.language == 'zhs' and lang.startswith('zh'):
+        #elif d.language == 'zhs' and lang.startswith('zh'):
         #  sub = zht2zhs(sub)
         self.agentTranslationProcessed.emit(sub, rawHash, role)
 

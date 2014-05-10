@@ -26,7 +26,7 @@
 /**
  *  Log qDebug message and save to a file.
  */
-#define VNRAGENT_DEBUG          // Log debug message
+//#define VNRAGENT_DEBUG          // Log debug message
 #define VNRAGENT_DEBUG_FILE     "vnragent.log"
 
 /**
@@ -39,7 +39,7 @@
  *  Use bufferd socket to communicate with VNR.
  *  This might cause delay in transfering translation.
  */
-#define VNRAGENT_ENABLE_BUFFERED_SOCKET
+//#define VNRAGENT_ENABLE_BUFFERED_SOCKET
 
 /**
  *  Put QCoreApplication on another thread

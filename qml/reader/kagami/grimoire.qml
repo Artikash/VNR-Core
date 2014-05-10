@@ -1069,16 +1069,17 @@ Item { id: root_
   }
 
   function showText(text, lang, timestamp) {
-    if (!listModel_.count)
-      pageBreak()
+    //if (!listModel_.count)
+    //  pageBreak()
 
     _timestamp = timestamp
     addText(text, lang, 'text')
   }
 
   function showNameText(text, lang) {
-    if (!listModel_.count)
-      pageBreak()
+    //if (!listModel_.count)
+    //  pageBreak()
+
     text = "【" + text + "】"
     var item = createTextItem(text, lang, 'name')
     var index = _pageIndex + 1
@@ -1093,8 +1094,8 @@ Item { id: root_
   }
 
   function showTranslation(text, lang, provider, timestamp) {
-    if (!listModel_.count)
-      pageBreak()
+    //if (!listModel_.count)
+    //  pageBreak()
 
     //text = text.replace(/\n/g, "<br/>")
     var item = createTextItem(text, lang, 'tr', provider)
@@ -1108,8 +1109,8 @@ Item { id: root_
   }
 
   function showNameTranslation(text, lang, provider) {
-    if (!listModel_.count)
-      pageBreak()
+    //if (!listModel_.count)
+    //  pageBreak()
 
     text = "【" + text + "】"
     var item = createTextItem(text, lang, 'name.tr', provider)
@@ -1122,8 +1123,8 @@ Item { id: root_
   }
 
   function showComment(c) { // actually subtitle rather than comment
-    if (!listModel_.count)
-      pageBreak()
+    //if (!listModel_.count)
+    //  pageBreak()
 
     addText(c.text, c.language, 'comment', undefined, c)
   }

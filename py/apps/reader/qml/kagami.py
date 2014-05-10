@@ -290,7 +290,7 @@ class GossipController:
   @staticmethod
   def showComment(c):
     if (features.USER_COMMENT and settings.global_().isGrimoireCommentVisible() and
-        and c.type == 'comment' and not c.disabled and not c.deleted):
+        c.type == 'comment' and not c.disabled and not c.deleted):
       GossipBean.instance.showComment.emit(c)
 
 ## Omajinai ##

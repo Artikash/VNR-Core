@@ -53,7 +53,7 @@ QString WindowDriverPrivate::transformText(const QString &text, qint64 hash) con
     //if (repl.isEmpty()) {
     //  if (enabled)
     //    manager->requestTranslation(text, hash);
-    if (textVisible && !ret.isEmpty())
+    if (textVisible && !ret.isEmpty() && ret != text)
       ret.prepend('<')
          .prepend(text);
   }

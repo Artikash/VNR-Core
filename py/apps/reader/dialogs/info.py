@@ -75,9 +75,6 @@ More information could be found on the Wiki:
 <a href="http://sakuradite.com/wiki/en/VNR/Game_Settings">http://sakuradite.com/wiki/en/VNR/Game_Settings</a>
 </center>
 
-<h3>Knowing issues</h3>
-* Embedding online machine translation could make game slow.
-
 <h3>Language limitations</h3>
 For SHIFT-JIS games, if you want to enable displaying translations into the game,
 depending which language you are speaking, it could result in huge problems.

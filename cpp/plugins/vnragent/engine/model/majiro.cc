@@ -35,6 +35,7 @@ class MajiroEnginePrivate
    *  Game-specific arg1:
    *  - 暁の護衛 罪深き終末論: 32 = 0x20 = ' '
    *  - レミニセンス: 48 = 0x30 = '0'
+   *  - PotentialAbility: 0xa0
    */
   static Engine::TextRole roleOf(quint32 arg1, int arg2, int arg4, int arg5)
   {
@@ -42,7 +43,7 @@ class MajiroEnginePrivate
     Q_UNUSED(arg5)
     enum { ScenarioMask = 0xffff0000 };
     static int lastScenarioArg2_;
-    if (arg1 < 0x40) {
+    if (arg1 && !(arg1 & 0xf)) { // the lower 4 bits are zero
       lastScenarioArg2_ = arg2;
       return Engine::ScenarioRole;
     }

@@ -672,19 +672,19 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     layout.addWidget(self.localeEmulatorButton)
     layout.addWidget(self.ntleaButton)
     #layout.addWidget(self.localeSwitchButton)
-    layout.addWidget(self.launchInfoLabel)
+    #layout.addWidget(self.launchInfoLabel)
     ret = QtWidgets.QGroupBox(my.tr("Preferred game loader"))
     ret.setLayout(layout)
     self._loadLauncher()
     return ret
 
-  @memoizedproperty
-  def launchInfoLabel(self):
-    ret = QtWidgets.QLabel(my.tr(
-      "When embedding translation is enabled, if the game's encoding is SHIFT-JIS and your language is not SHIFT-JIS compatible, VNR will always launch the game using AppLocale"
-     ))
-    ret.setWordWrap(True)
-    return ret
+  #@memoizedproperty
+  #def launchInfoLabel(self):
+  #  ret = QtWidgets.QLabel(my.tr(
+  #    "When embedding translation is enabled, if the game's encoding is SHIFT-JIS and your language is not SHIFT-JIS compatible, VNR will always launch the game using AppLocale"
+  #   ))
+  #  ret.setWordWrap(True)
+  #  return ret
 
   @memoizedproperty
   def disableButton(self):
@@ -4373,6 +4373,7 @@ class _EngineTab(object):
     for w in self.launchGroup, self.translationWaitTimeButton:
       slot = partial(lambda w, value: w.setEnabled(ss.isGameAgentLauncherNeeded()), w)
       slot(None)
+      ss.gameAgentEnabledChanged.connect(slot)
       for key in 'Scenario', 'Name', 'Other':
         sig = getattr(ss, 'embedded{0}TranslationEnabledChanged'.format(key))
         sig.connect(slot)
@@ -4411,7 +4412,7 @@ class _EngineTab(object):
 
   @memoizedproperty
   def agentInfoLabel(self):
-    ret = QtWidgets.QLabel(''.join((
+    ret = QtWidgets.QLabel(' '.join((
       my.tr("Changing the text extraction method requires restarting the game."),
       #my.tr("This feature is currently under development, and only supports a small portion of the games that ITH supports."),
       my.tr('See <a href="#">Game Settings</a> for more details.'),
@@ -4448,10 +4449,10 @@ class _EngineTab(object):
 
   @memoizedproperty
   def launchInfoLabel(self):
-    ret = QtWidgets.QLabel(''.join((
+    ret = QtWidgets.QLabel(' '.join((
       my.tr("This is indispensable for SHIFT-JIS games when your language is NOT Latin-based."),
       my.tr("It is only needed when embedding translation is enabled."),
-      my.tr("The current implementation is buggy, though."),
+      my.tr("The current implementation is buggy. It is only guaranteed to work well on Japanese Windows."),
     )))
     ret.setWordWrap(True)
     return ret
