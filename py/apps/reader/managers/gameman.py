@@ -1028,8 +1028,8 @@ class GameManager(QtCore.QObject):
 
         if agentEnabled and agentEngine:
           dprint("attach using game agent")
+          growl.notify(my.tr("Use VNR's built-in hook instead of ITH"))
           attached = gameagent.global_().attachProcess(g.pid)
-
           if attached:
             dprint("disable h-code as game agent is used")
             hookEnabled = False

@@ -170,7 +170,7 @@ class _GameAgent(object):
     if self.textExtractionEnabled != t:
       self.textExtractionEnabled = t
       if self.connectedPid:
-        self.sendSettings('embeddedTextEnabled', t)
+        self.sendSetting('embeddedTextEnabled', t)
 
   def clear(self):
     self.injectedPid = 0 # long

@@ -420,10 +420,12 @@ class _TextManager(object):
 
     if text:
       # Calculate hash2
-      hashes2[1:CONTEXT_CAPACITY] = [
-          hashutil.hashtext(text, h) if h else 0
-            for h in self.hashes2[0:CONTEXT_CAPACITY-1]]
-      hashes2[0] = hashutil.hashtext(text)
+      hashes2 = [hashutil.hashtext(text)]
+      for h in self.hashes2:
+        if h:
+          hashes2.append(hashutil.hashtext(text, h))
+        else:
+          break
 
       # Hash2 as back up
       for h in self.hashes2:
@@ -446,10 +448,12 @@ class _TextManager(object):
           return cd.text
 
     if rawData:
-      hashes[1:CONTEXT_CAPACITY] = [
-          hashutil.strhash(rawData, h) if h else 0
-            for h in self.hashes[0:CONTEXT_CAPACITY-1]]
-      hashes[0] = hashutil.strhash(rawData)
+      hashes = [hashutil.strhash(rawData)]
+      for h in self.hashes:
+        if h:
+          hashes.append(hashutil.strhash(rawData, h))
+        else:
+          break
 
       for h in hashes:
         if not h: break
