@@ -113,8 +113,10 @@ SOURCES += \
 # Engine models
 HEADERS += \
   engine/model/majiro.h
+  #engine/model/kirikiri.h
 SOURCES += \
   engine/model/majiro.cc
+  #engine/model/kirikiri.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += vnragent.rc
