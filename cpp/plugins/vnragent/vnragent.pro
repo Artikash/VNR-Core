@@ -112,9 +112,11 @@ SOURCES += \
 
 # Engine models
 HEADERS += \
-  engine/model/majiro.h
+  engine/model/majiro.h \
+  engine/model/test.h
 SOURCES += \
-  engine/model/majiro.cc
+  engine/model/majiro.cc \
+  engine/model/test.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += vnragent.rc

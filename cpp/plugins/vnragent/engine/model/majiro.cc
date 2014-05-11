@@ -13,7 +13,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
 
-//#define DEBUG "majiro"
+#define DEBUG "majiro"
 #include "sakurakit/skdebug.h"
 
 /** Private class */
@@ -56,15 +56,12 @@ class MajiroEnginePrivate
    *  - レミニセンス: 48 = 0x30 = '0'
    *  - PotentialAbility: 0xa0
    */
-  static Engine::TextRole roleOf(BYTE arg1, LPSIZE arg2, LPVOID arg4, int arg5)
+  static Engine::TextRole roleOf(LPCSTR arg1, LPSIZE arg2)
   {
-    Q_UNUSED(arg4)
-    Q_UNUSED(arg5)
-    //static BYTE scenarioArg1_;
     static DWORD scenarioArg2_;
 
     enum { ScenarioMinWidth = 600, ScenarioMinHeight = 400 }; // always larger than 800, 800*3
-    if (arg1 && !(arg1 & 0xf) && // lower 4 bits are zero
+    if (arg1 && !(BYTE(arg1) & 0xf) && // lower 4 bits are zero
         arg2 && arg2->cx > ScenarioMinWidth && arg2->cy > ScenarioMinHeight) {
       scenarioArg2_ = (DWORD)arg2;
       return Engine::ScenarioRole;
@@ -80,11 +77,16 @@ public:
   /**
    *  Sample game: レミニセンス
    *  int __cdecl sub_41AF90(CHAR ch, int arg2, LPCSTR str, arg4, arg5);
-   *  - ch: static, different for different kinds of text (chara, dialogue, etc.), this might be type ID
-   *  - arg2: dynamic address, size of the text, different for different kinds of text
-   *  - str: static address, the real text
-   *  - arg4: dynamic, different for different scene (scenario, config, etc.), this might be an output value
-   *  - arg5: static, always 1
+   *    String          = byte ptr  4
+   *    arg_4           = dword ptr  8
+   *    lpString        = dword ptr  0Ch
+   *    arg_C           = dword ptr  10h
+   *    arg_10          = dword ptr  14h
+   *  - arg1: LPCSTR, font family name (MS Gothic)
+   *  - arg2: LPSIZE, size of the canvas to draw
+   *  - arg3: LPCSTR, starting address of the string to paint
+   *  - arg4: LPSTR, output string, could be zero (in 罪深き終末論)
+   *  - arg5: int, constant, always 1
    *  - return: width of the text, = 26 * text length
    *  Scenario text's ch seems to always be one.
    *
@@ -93,26 +95,28 @@ public:
    *  0x41f650 // Name
    */
   static DWORD hookAddress;
-  typedef int (__cdecl *hook_fun_t)(BYTE, LPSIZE, LPCSTR, LPVOID, int);
+  typedef int (__cdecl *hook_fun_t)(LPCSTR, LPSIZE, LPCSTR, LPCSTR, int);
   static hook_fun_t oldHook;
 
-  static int __cdecl newHook(BYTE arg1, LPSIZE arg2, LPCSTR str, LPVOID arg4, int arg5)
+  static int __cdecl newHook(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR output4, int const5)
   {
     //return oldHook(arg1, arg2, str, arg4, arg5);
     auto q = static_cast<Q *>(AbstractEngine::instance());
-    auto role = roleOf(arg1, arg2, arg4, arg5);
+    auto role = roleOf(fontName1, canvasSize2);
 #ifdef DEBUG
-    qDebug() << arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5 << ";"
-             << *((DWORD *)arg2) << "," << *((DWORD *)(arg2 + 1)) << ":" << *((DWORD *)arg4)
-             << "=" << role << "," << arg2->cx << "," << arg2->cy;
+    qDebug() << QString::fromLocal8Bit(fontName1) << ":"
+             << canvasSize2->cx << "," << canvasSize2->cy << ":"
+             << QString::fromLocal8Bit(text3) << ":"
+             << QString::fromLocal8Bit(output4 ? output4 : "(null)") << ":"
+             << const5;
 #endif // DEBUG
-    QByteArray data = q->dispatchTextA(str, role);
+    QByteArray data = q->dispatchTextA(text3, role);
     if (!data.isEmpty())
-      return oldHook(arg1, arg2, data, arg4, arg5);
+      return oldHook(fontName1, canvasSize2, data, output4, const5);
     else {
       // Estimated return result
       enum { FontWidth = 26 };
-      return FontWidth * ::strlen(str) * 2;
+      return FontWidth * ::strlen(text3) * 2;
     }
   }
 };

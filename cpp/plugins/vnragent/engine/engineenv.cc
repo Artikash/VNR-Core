@@ -31,6 +31,12 @@ bool Engine::glob(const QString &relPath, const QStringList &nameFilters)
   return dir.exists() && !dir.entryList(nameFilters).isEmpty();
 }
 
+bool Engine::exists(const QString &relPath)
+{
+  QString path = QCoreApplication::applicationDirPath() + "/" + relPath;
+  return QFileInfo(path).exists();
+}
+
 // - Process and threads -
 
 QString Engine::getNormalizedProcessName()

@@ -3,15 +3,19 @@
 // List of all engines
 
 #include "engine/engineloader.h"
-//#include "engine/model/cmvs.h"
 #include "engine/model/majiro.h"
+
+#define TEST
+#ifdef TEST
+# include "engine/model/test.h"
+#endif // TEST
 
 AbstractEngine *Engine::getEngine()
 {
-  //if (CMVSEngine::match())
-  //  return new CMVSEngine;
-  if (MajiroEngine::match())
-    return new MajiroEngine;
+#ifdef TEST
+  if (TestEngine::match()) return new TestEngine;
+#endif // TEST
+  if (MajiroEngine::match()) return new MajiroEngine;
   return nullptr;
 }
 
