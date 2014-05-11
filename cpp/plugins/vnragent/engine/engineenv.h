@@ -11,6 +11,9 @@ namespace Engine {
 bool glob(const QString &nameFilter);
 bool glob(const QStringList &nameFilters);
 
+bool glob(const QString &relPath, const QString &nameFilter);
+bool glob(const QString &relPath, const QStringList &nameFilters);
+
 // Thread and process
 
 QString getNormalizedProcessName();

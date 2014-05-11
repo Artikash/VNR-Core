@@ -3,15 +3,15 @@
 // List of all engines
 
 #include "engine/engineloader.h"
+//#include "engine/model/cmvs.h"
 #include "engine/model/majiro.h"
-//#include "engine/model/kirikiri.h"
 
 AbstractEngine *Engine::getEngine()
 {
+  //if (CMVSEngine::match())
+  //  return new CMVSEngine;
   if (MajiroEngine::match())
     return new MajiroEngine;
-  //if (KiriKiriEngine::match())
-  //  return new KiriKiriEngine;
   return nullptr;
 }
 

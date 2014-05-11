@@ -1,0 +1,25 @@
+# 5/10/2014
+
+# 5/10/2014 KiriKiri
+KiriKiri1 GetGlyphOutlineW: Hook point is a function, but called with different texts
+KiriKiri2 GetTextEstendPoint32W: Hook point is not a function
+
+# 5/10/2014 System32
+The thread is called with different text.
+This might not be the proper place to substitute.
+
+# 5/11/2010 CMVS
+Sample game: ハピメア
+Issue: The paint thread cannot be blocked. Have tried mutex.
+
+Callee:  int __stdcall sub_448FF0(HDC hdc, int, int, int)
+Stack:
+- tm = tagTEXTMETRICA ptr -68h <= jichi: hook here
+- gm = _GLYPHMETRICS ptr -30h
+
+Callers:
+- int __stdcall sub_44A350(LPCSTR lpString2)
+- int __stdcall sub_449360(LPCSTR lpString2)
+- int __stdcall sub_44B5C0(int, int, int, LPCSTR lpString2, int, int)
+
+# EOF
