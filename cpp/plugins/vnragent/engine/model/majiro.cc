@@ -49,24 +49,28 @@ class MajiroEnginePrivate
    *  - arg4 is not portable, but a contant for each run.
    *  - arg5 is aways 1.
    *  - Scenario always comes after name
+   *  - Scenario size always larger than (800,600), less than (1920,1080)
    *
    *  Game-specific arg1:
    *  - 暁の護衛 罪深き終末論: 32 = 0x20 = ' '
    *  - レミニセンス: 48 = 0x30 = '0'
    *  - PotentialAbility: 0xa0
    */
-  static Engine::TextRole roleOf(quint32 arg1, int arg2, int arg4, int arg5)
+  static Engine::TextRole roleOf(BYTE arg1, LPSIZE arg2, LPVOID arg4, int arg5)
   {
     Q_UNUSED(arg4)
     Q_UNUSED(arg5)
-    enum { ScenarioMask = 0xffff0000 };
-    static int lastScenarioArg2_;
-    if (arg1 && !(arg1 & 0xf) &&  // the lower 4 bits are zero
-       (!lastScenarioArg2_ || lastScenarioArg2_ >= arg2)) { // keep the smaller arg
-      lastScenarioArg2_ = arg2;
+    //static BYTE scenarioArg1_;
+    static DWORD scenarioArg2_;
+
+    enum { ScenarioMinWidth = 600, ScenarioMinHeight = 400 }; // always larger than 800, 800*3
+    if (arg1 && !(arg1 & 0xf) && // lower 4 bits are zero
+        arg2 && arg2->cx > ScenarioMinWidth && arg2->cy > ScenarioMinHeight) {
+      scenarioArg2_ = (DWORD)arg2;
       return Engine::ScenarioRole;
     }
-    if ((lastScenarioArg2_ & ScenarioMask) == (arg2 & ScenarioMask)) // the higher four bits of the scenario and the name are the same
+    enum { ScenarioMask = 0xffff0000 };
+    if ((scenarioArg2_ & ScenarioMask) == ((DWORD)arg2 & ScenarioMask)) // the higher four bits of the scenario and the name are the same
       return Engine::NameRole;
     return Engine::OtherRole;
   }
@@ -77,9 +81,9 @@ public:
    *  Sample game: レミニセンス:
    *  int __cdecl sub_41AF90(CHAR ch, int arg2, LPCSTR str, arg4, arg5);
    *  - ch: static, different for different kinds of text (chara, dialogue, etc.), this might be type ID
-   *  - arg2: dynamic, different for different kinds of text, this might be texture ID
-   *  - str: static, the real text
-   *  - arg4: dynamci, different for different scene (scenario, config, etc.), this might be deviceId
+   *  - arg2: dynamic address, size of the text, different for different kinds of text
+   *  - str: static address, the real text
+   *  - arg4: dynamic, different for different scene (scenario, config, etc.), this might be an output value
    *  - arg5: static, always 1
    *  - return: width of the text, = 26 * text length
    *  Scenario text's ch seems to always be one.
@@ -89,17 +93,19 @@ public:
    *  0x41f650 // Name
    */
   static DWORD hookAddress;
-  typedef int (* hook_fun_t)(char, int, const char *, int, int);
+  typedef int (* hook_fun_t)(BYTE, LPSIZE, LPCSTR, LPVOID, int);
   static hook_fun_t oldHook;
 
-  static int newHook(quint8 arg1, int arg2, const char *str, int arg4, int arg5)
+  static int newHook(BYTE arg1, LPSIZE arg2, LPCSTR str, LPVOID arg4, int arg5)
   {
-#ifdef DEBUG
-    qDebug() << arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5;
-#endif // DEBUG
     //return oldHook(arg1, arg2, str, arg4, arg5);
     auto q = static_cast<Q *>(AbstractEngine::instance());
     auto role = roleOf(arg1, arg2, arg4, arg5);
+#ifdef DEBUG
+    qDebug() << arg1 << ":" << arg2 << ":" << QString::fromLocal8Bit(str) << ":" << arg4 << ":" << arg5 << ";"
+             << *((DWORD *)arg2) << "," << *((DWORD *)(arg2 + 1)) << ":" << *((DWORD *)arg4)
+             << "=" << role << "," << arg2->cx << "," << arg2->cy;
+#endif // DEBUG
     QByteArray data = q->dispatchTextA(str, role);
     if (!data.isEmpty())
       return oldHook(arg1, arg2, data, arg4, arg5);
