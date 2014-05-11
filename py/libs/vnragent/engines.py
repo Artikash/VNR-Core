@@ -18,6 +18,7 @@ def engines():
   """
   if not ENINES:
     ENGINES = [
+      #CMVSEngine(),
       MajiroEngine(),
     ]
   return ENGINES
@@ -110,5 +111,13 @@ class MajiroEngine(Engine):
 
   def match(self, **kwargs): # override
     return bool(self.globAppDirectories(("data*.arc", "stream*.arc"), **kwargs))
+
+class CMVSEngine(Engine):
+
+  NAME = "CMVS" # str, override
+  ENCODING = "shift-jis" # str, override
+
+  def match(self, **kwargs): # override
+    return bool(self.globAppDirectory("data/pack/*.cpz", **kwargs))
 
 # EOF

@@ -78,7 +78,7 @@ class MajiroEnginePrivate
 public:
 
   /**
-   *  Sample game: レミニセンス:
+   *  Sample game: レミニセンス
    *  int __cdecl sub_41AF90(CHAR ch, int arg2, LPCSTR str, arg4, arg5);
    *  - ch: static, different for different kinds of text (chara, dialogue, etc.), this might be type ID
    *  - arg2: dynamic address, size of the text, different for different kinds of text
@@ -93,10 +93,10 @@ public:
    *  0x41f650 // Name
    */
   static DWORD hookAddress;
-  typedef int (* hook_fun_t)(BYTE, LPSIZE, LPCSTR, LPVOID, int);
+  typedef int (__cdecl *hook_fun_t)(BYTE, LPSIZE, LPCSTR, LPVOID, int);
   static hook_fun_t oldHook;
 
-  static int newHook(BYTE arg1, LPSIZE arg2, LPCSTR str, LPVOID arg4, int arg5)
+  static int __cdecl newHook(BYTE arg1, LPSIZE arg2, LPCSTR str, LPVOID arg4, int arg5)
   {
     //return oldHook(arg1, arg2, str, arg4, arg5);
     auto q = static_cast<Q *>(AbstractEngine::instance());
@@ -134,7 +134,7 @@ bool MajiroEngine::inject()
     return false;
   D::hookAddress = MemDbg::findCallerAddress(dwTextOutA, 0xec81, startAddress, stopAddress);
   // Note: ITH will mess up this value
-  //D::hookAddress = 0x41af90;
+  //D::hookAddress = 0x41af90; // レミニセンス function address
   if (!D::hookAddress)
     return false;
   D::oldHook = detours::replace<D::hook_fun_t>(D::hookAddress, D::newHook);
