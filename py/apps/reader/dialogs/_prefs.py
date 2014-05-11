@@ -2409,6 +2409,7 @@ class _DictionaryDownloadsTab(object):
       grid.addWidget(self.getMeCabButton(name), r, 0)
       grid.addWidget(self.getMeCabStatusLabel(name), r, 1)
       grid.addWidget(self.getMeCabIntroLabel(name), r, 2)
+      grid.addWidget(QtWidgets.QWidget(), r, 3) # stretch
       r += 1
 
     ret = QtWidgets.QGroupBox(my.tr("MeCab dictionaries for parsing Japanese"))
@@ -4722,7 +4723,8 @@ class _EngineTab(object):
         "%s (%s)" % (tr_("Translate"), tr_("slow")))
     ret.addButton(self.windowTranslateButton)
 
-    self.windowVisibleButton = QtWidgets.QRadioButton(tr_("Both"))
+    self.windowVisibleButton = QtWidgets.QRadioButton(
+        "%s (%s)" % (tr_("Both"), tr_("slow")))
     ret.addButton(self.windowVisibleButton)
 
     #self.windowHideButton = QtWidgets.QRadioButton(tr_("Hide"))
