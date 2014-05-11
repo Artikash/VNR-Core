@@ -1643,7 +1643,7 @@ bool InsertWhirlpoolHook()
   }
   entry = Util::FindCallOrJmpRel(entry-4,module_limit_-module_base_-0x10000,module_base_+0x10000,false);
   for (i = entry - 4; i > entry - 0x100; i--)
-    if (*(WORD *)i==0xC085) {
+    if (*(WORD *)i==0xc085) {
       t = *(WORD *)(i+2);
       if ((t&0xff) == 0x76) {
         t = 4;
@@ -1687,6 +1687,8 @@ bool InsertCotophaHook()
   return true;
 }
 
+// jichi 5/10/2014
+// See also: http://bbs.sumisora.org/read.php?tid=11044704&fpage=2
 bool InsertCatSystem2Hook()
 {
   //DWORD search=0x95EB60F;
