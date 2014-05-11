@@ -119,7 +119,7 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool 
   if (repl.isEmpty())
     repl = text;
   else if (role == Engine::NameRole && d_->settings->nameTextVisible && repl != text)
-    repl = QString("%1 (%2)").arg(text, repl);
+    repl = QString("%1(%2)").arg(text, repl);
 
   return d_->encode(repl);
 }

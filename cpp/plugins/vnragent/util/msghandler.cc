@@ -12,6 +12,13 @@
 #define DEBUG_FILE      VNRAGENT_DEBUG_FILE
 #define DEBUG_TIMESTAMP QDateTime::currentDateTime().toString("MM:dd: hh:mm:ss")
 
+// Helpers
+namespace { // unnamed
+
+bool debugMsgHandlerInsdtalled_;
+
+} // unnamed namespace
+
 QString Util::debugFileLocation()
 {
   static QString ret;
@@ -46,9 +53,8 @@ void Util::debugMsgHandler(QtMsgType type, const char *msg)
 
 void Util::installDebugMsgHandler()
 {
-  static bool installed = false; // only install once
-  if (!installed) {
-    installed = true;
+  if (!::debugMsgHandlerInsdtalled_) { // only install once
+    ::debugMsgHandlerInsdtalled_ = true;
     QFile file(debugFileLocation());
     if (file.open(QIODevice::Text|QIODevice::WriteOnly)) {
       QTextStream(&file) << "This log file is created by VNR hook for each game. For bug report, please also attach this file.\n";
@@ -58,6 +64,11 @@ void Util::installDebugMsgHandler()
 }
 
 void Util::uninstallDebugMsgHandler()
-{ qInstallMsgHandler(nullptr); }
+{
+  if (::debugMsgHandlerInsdtalled_) {
+    ::debugMsgHandlerInsdtalled_ = false;
+    qInstallMsgHandler(nullptr);
+  }
+}
 
 // EOF

@@ -4413,18 +4413,18 @@ class _EngineTab(object):
 
   @memoizedproperty
   def agentInfoLabel(self):
-    ret = QtWidgets.QLabel(' '.join((
+    ret = QtWidgets.QLabel('\n'.join((
       my.tr("Changing the text extraction method requires restarting the game."),
-      #my.tr("This feature is currently under development, and only supports a small portion of the games that ITH supports."),
-      my.tr('See <a href="#">Game Settings</a> for more details.'),
+      my.tr("This feature is currently under development, and only supports a small portion of the games that ITH supports."),
+      my.tr("The current supported game engines are: {0}").format("Majiro"),
     )))
     skqss.class_(ret, 'text-error')
     ret.setWordWrap(True)
     #ret.setOpenExternalLinks(True)
 
-    import main
-    m = main.manager()
-    ret.linkActivated.connect(partial(m.openWiki, 'VNR/Game Settings'))
+    #import main
+    #m = main.manager()
+    #ret.linkActivated.connect(partial(m.openWiki, 'VNR/Game Settings'))
     return ret
 
   ## Launcher ##
