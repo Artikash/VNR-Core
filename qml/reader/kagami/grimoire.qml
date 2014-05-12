@@ -1067,7 +1067,7 @@ Item { id: root_
 
   function addText(text, lang, type, provider, comment) {
     var item = createTextItem.apply(this, arguments)
-    listModel_.append(item)
+    listModel_.append(item) // I assume the text always comes before translation
     listView_.currentIndex = _pageIndex
   }
 
@@ -1076,16 +1076,20 @@ Item { id: root_
     //  pageBreak()
 
     _timestamp = timestamp
-    addText(text, lang, 'text')
+
+    if  (root_.textVisible)
+      addText(text, lang, 'text')
   }
 
   function showNameText(text, lang) {
     //if (!listModel_.count)
     //  pageBreak()
+    if  (!root_.nameVisible)
+      return
 
     text = "【" + text + "】"
     var item = createTextItem(text, lang, 'name')
-    var index = _pageIndex + 1
+    var index = _pageIndex + 1 // fix index
     if (index <= listModel_.count)
       listModel_.insert(index, item)
     else
@@ -1097,6 +1101,9 @@ Item { id: root_
   }
 
   function showTranslation(text, lang, provider, timestamp) {
+    if  (!root_.translationVisible)
+      return
+
     //if (!listModel_.count)
     //  pageBreak()
 
@@ -1112,6 +1119,8 @@ Item { id: root_
   }
 
   function showNameTranslation(text, lang, provider) {
+    if  (!root_.translationVisible || !root_.nameVisible)
+      return
     //if (!listModel_.count)
     //  pageBreak()
 

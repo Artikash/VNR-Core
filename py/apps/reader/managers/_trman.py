@@ -39,6 +39,7 @@ class TranslationCache:
     @param  shrinkSize  data to delete when oversize
     """
     self.maxSize = maxSize
+    self.shrinkSize = shrinkSize
     self.data = {} # {unicode text:[unicode sub, long timestamp]}
 
   def clear(self):
