@@ -3,7 +3,7 @@
 // List of all engines
 
 #include "engine/engineloader.h"
-#include "engine/model/bgi.h"
+//#include "engine/model/bgi.h"
 #include "engine/model/majiro.h"
 
 //#define TEST

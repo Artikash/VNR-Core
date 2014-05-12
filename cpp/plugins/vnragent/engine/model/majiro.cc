@@ -109,6 +109,9 @@ public:
              << QString::fromLocal8Bit(output4 ? output4 : "(null)") << ":"
              << const5;
 #endif // DEBUG
+    //const char *data = q->exchangeTextA(text3, role);
+    //if (!data)
+    //  return oldHook(fontName1, canvasSize2, data, output4, const5);
     QByteArray data = q->dispatchTextA(text3, role);
     if (!data.isEmpty())
       return oldHook(fontName1, canvasSize2, data, output4, const5);
