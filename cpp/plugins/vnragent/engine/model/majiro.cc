@@ -27,38 +27,6 @@ class MajiroEnginePrivate
   typedef MajiroEngine Q;
 
   /**
-   *  Observeations from レミニセンス:
-   *  - arg1 of the scenario is a fixed portable value.
-   *  - arg2 of the scenario is not portable, but a constant for each run.
-   *  - arg1 and arg2 2of both the name and other texts are random number.
-   *  - arg2's first 4 bytes of name and scenario texts are the same.
-   *  - arg4 is not portable, but a contant for each run.
-   *  - arg5 is aways 1.
-   *  - Scenario always comes after name
-   *  - Scenario size always larger than (800,600), less than (1920,1080)
-   *
-   *  Game-specific arg1:
-   *  - 暁の護衛 罪深き終末論: 32 = 0x20 = ' '
-   *  - レミニセンス: 48 = 0x30 = '0'
-   *  - PotentialAbility: 0xa0
-   */
-  static Engine::TextRole roleOf(LPCSTR arg1, LPSIZE arg2)
-  {
-    static DWORD scenarioArg2_;
-
-    enum { ScenarioMinWidth = 600, ScenarioMinHeight = 400 }; // always larger than 800, 800*3
-    if (arg1 && !(BYTE(arg1) & 0xf) && // lower 4 bits are zero
-        arg2 && arg2->cx > ScenarioMinWidth && arg2->cy > ScenarioMinHeight) {
-      scenarioArg2_ = (DWORD)arg2;
-      return Engine::ScenarioRole;
-    }
-    enum { ScenarioMask = 0xffff0000 };
-    if ((scenarioArg2_ & ScenarioMask) == ((DWORD)arg2 & ScenarioMask)) // the higher four bits of the scenario and the name are the same
-      return Engine::NameRole;
-    return Engine::OtherRole;
-  }
-
-  /**
    *  Compute ITH's split value from the first parameter of the hooked fuction.
    *  Let eax be arg1, the original logic in MajiroSpecialHook is:
    *      ([eax+0x28] & 0xff) | (([eax+0x48] >> 1) & 0xffffff00)
@@ -94,7 +62,7 @@ public:
 
   static int __cdecl newHook(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR output4, int const5)
   {
-    // Compute signature
+    // Compute ITH signature
     qint32 signature;
     {
       DWORD returnAddress = (DWORD)_ReturnAddress(),
@@ -103,7 +71,6 @@ public:
       signature = (returnAddress & 0xffff)  // context
                 | (split & 0xffff) << 16;   // subcontext
     }
-
 
     //return oldHook(arg1, arg2, str, arg4, arg5);
     auto q = static_cast<Q *>(AbstractEngine::instance());
@@ -182,3 +149,20 @@ void MajiroEngine::releaseContext(void *context)
   delete static_cast<D::Context *>(context);
 }
 */
+
+  /*
+   *  Observeations from レミニセンス:
+   *  - arg1 of the scenario is a fixed portable value.
+   *  - arg2 of the scenario is not portable, but a constant for each run.
+   *  - arg1 and arg2 2of both the name and other texts are random number.
+   *  - arg2's first 4 bytes of name and scenario texts are the same.
+   *  - arg4 is not portable, but a contant for each run.
+   *  - arg5 is aways 1.
+   *  - Scenario always comes after name
+   *  - Scenario size always larger than (800,600), less than (1920,1080)
+   *
+   *  Game-specific arg1:
+   *  - 暁の護衛 罪深き終末論: 32 = 0x20 = ' '
+   *  - レミニセンス: 48 = 0x30 = '0'
+   *  - PotentialAbility: 0xa0
+   */

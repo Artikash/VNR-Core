@@ -39,6 +39,12 @@ public:
   ulong responseKey() const;
   void setResponseKey(ulong role);
 
+  long requestSignature() const;
+  void setRequestSignature(long signature);
+
+  long responseSignature() const;
+  void setResponseSignature(long signature);
+
   int requestRole() const;
   void setRequestRole(int role);
 

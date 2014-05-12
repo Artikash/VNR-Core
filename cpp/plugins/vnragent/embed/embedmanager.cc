@@ -114,14 +114,14 @@ void EmbedManager::clearTranslation()
 //void EmbedManager::abortTranslation()
 //{ d_->unblock(); }
 
-void EmbedManager::sendText(const QString &text, qint64 hash, int role, bool needsTranslation)
+void EmbedManager::sendText(const QString &text, qint64 hash, long signature, int role, bool needsTranslation)
 {
   //if (role == Engine::OtherRole && !needsTranslation)
   //  return;
   //if (!needsTranslation && role != Engine::ScenarioRole)
   //  emit textReceivedDelayed(text, hash, role, needsTranslation);
   //else
-  emit textReceived(text, hash, role, needsTranslation);
+  emit textReceived(text, hash, signature, role, needsTranslation);
 }
 
 QString EmbedManager::findTranslation(qint64 hash, int role) const

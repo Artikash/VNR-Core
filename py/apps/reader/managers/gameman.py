@@ -1021,7 +1021,8 @@ class GameManager(QtCore.QObject):
           dwarn("leave: cannot find game process")
           return
 
-      if g.pid == gameagent.global_().connectedPid():
+      agentConnected = g.pid == gameagent.global_().connectedPid()
+      if agentConnected:
         skevents.runlater(gameagent.global_().sendSettings, 3000)
 
       # g.hasProcess() must be true here, i.e. processId is valid
@@ -1156,6 +1157,15 @@ class GameManager(QtCore.QObject):
 
       self.nameThreadChanged.emit(gameData.nameThreadSignature, gameData.nameThreadName)
       self.otherThreadsChanged.emit(gameData.otherThreads)
+
+      if agentConnected:
+        sig = gameData.threadSignature
+        skevents.runlater(partial(gameagent.global_().setScenarioSignature, sig),
+            2000) # smaller than sendSettings
+
+        sig = gameData.nameThreadSignature if gameData.nameThreadSignature and not gameData.nameThreadDisabled else 0
+        skevents.runlater(partial(gameagent.global_().setNameSignature, sig),
+            2000) # smaller than sendSettings
 
       task = partial(dataman.manager().loadGame, gameData)
       skevents.runlater(task, 200)

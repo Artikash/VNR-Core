@@ -11,6 +11,7 @@ public:
   struct Head {
     qint8 status;
     qint64 hash;
+    //qint32 signature;
     qint8 role;
     qint32 textSize;
     wchar_t text[1];
@@ -98,6 +99,20 @@ void VnrSharedMemory::setDataStatus(qint8 v)
   if (auto h = d_->head())
     h->status = v;
 }
+
+//qint32 VnrSharedMemory::dataSignature() const
+//{
+//  if (auto h = d_->constHead())
+//    return h->signature;
+//  else
+//    return 0;
+//}
+//
+//void VnrSharedMemory::setDataSignature(qint32 v)
+//{
+//  if (auto h = d_->head())
+//    h->signature = v;
+//}
 
 qint8 VnrSharedMemory::dataRole() const
 {

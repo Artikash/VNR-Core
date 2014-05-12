@@ -38,8 +38,8 @@ public:
   static int __cdecl newHook(DWORD arg1, DWORD arg2, LPCSTR arg3, DWORD arg4)
   {
     auto q = static_cast<Q *>(AbstractEngine::instance());
-    auto role = Engine::ScenarioRole; // TODO
-    const char *repl = q->exchangeTextA(arg3, role);
+    long sig = 0; // TODO
+    const char *repl = q->exchangeTextA(arg3, sig, Engine::ScenarioRole);
     // TODO: Investigate the return value
     return repl ? oldHook(arg1, arg2, repl, arg4) : 0;
   }

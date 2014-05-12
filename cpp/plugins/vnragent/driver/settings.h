@@ -45,6 +45,8 @@ public:
   int embeddedTranslationWaitTime() const;
 
   QString gameEncoding() const;
+  long scenarioSignature() const;
+  long nameSignature() const;
 
 public slots:
   void load(const QString &json);
@@ -70,6 +72,9 @@ public slots:
 
   void setGameEncoding(const QString &v);
 
+  void setScenarioSignature(long v);
+  void setNameSignature(long v);
+
 signals:
   void loadFinished(); // emit after load() is invoked
 
@@ -92,6 +97,8 @@ signals:
   void embeddedTranslationWaitTimeChanged(int v);
 
   void gameEncodingChanged(QString v);
+  void scenarioSignatureChanged(long v);
+  void nameSignatureChanged(long v);
 };
 
 // EOF

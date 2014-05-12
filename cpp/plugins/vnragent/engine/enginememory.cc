@@ -16,6 +16,8 @@ public:
                   responseStatus;
     ulong requestKey,
           responseKey;
+    long requestSignature,
+         responseSignature;
     int requestRole,
         responseRole;
     char requestText[DataTextCapacity],
@@ -44,6 +46,12 @@ void EngineSharedMemory::setRequestKey(ulong v) { d_->data.requestKey = v; }
 
 ulong EngineSharedMemory::responseKey() const { return d_->data.responseKey; }
 void EngineSharedMemory::setResponseKey(ulong v) { d_->data.responseKey = v; }
+
+long EngineSharedMemory::requestSignature() const { return d_->data.requestSignature; }
+void EngineSharedMemory::setRequestSignature(long v) { d_->data.requestSignature = v; }
+
+long EngineSharedMemory::responseSignature() const { return d_->data.responseSignature; }
+void EngineSharedMemory::setResponseSignature(long v) { d_->data.responseSignature = v; }
 
 int EngineSharedMemory::requestRole() const { return d_->data.requestRole; }
 void EngineSharedMemory::setRequestRole(int v) { d_->data.requestRole = v; }

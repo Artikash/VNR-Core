@@ -28,8 +28,7 @@ public:
 EmbedDriver::EmbedDriver(QObject *parent)
   : Base(parent), d_(new D(this))
 {
-  connect(d_->manager, SIGNAL(textReceived(QString,qint64,int,bool)), SIGNAL(textReceived(QString,qint64,int,bool)));
-  connect(d_->manager, SIGNAL(textReceivedDelayed(QString,qint64,int,bool)), SIGNAL(textReceivedDelayed(QString,qint64,int,bool)));
+  connect(d_->manager, SIGNAL(textReceived(QString,qint64,long,int,bool)), SIGNAL(textReceived(QString,qint64,long,int,bool)));
 }
 
 EmbedDriver::~EmbedDriver()
@@ -45,6 +44,9 @@ void EmbedDriver::setTranslationWaitTime(int v)  { d_->manager->setTranslationWa
 void EmbedDriver::setEnabled(bool t)  { if (d_->engine) d_->engine->settings()->enabled = t; }
 void EmbedDriver::setDetectsControl(bool t) { if (d_->engine) d_->engine->settings()->detectsControl = t; }
 void EmbedDriver::setNameTextVisible(bool t) { if (d_->engine) d_->engine->settings()->nameTextVisible = t; }
+
+void EmbedDriver::setScenarioSignature(long v) { if (d_->engine) d_->engine->settings()->scenarioSignature = v; }
+void EmbedDriver::setNameSignature(long v) { if (d_->engine) d_->engine->settings()->nameSignature = v; }
 
 void EmbedDriver::setScenarioVisible(bool t) { if (d_->engine) d_->engine->settings()->textVisible[Engine::ScenarioRole] = t; }
 void EmbedDriver::setScenarioExtractionEnabled(bool t) { if (d_->engine) d_->engine->settings()->extractionEnabled[Engine::ScenarioRole] = t; }
@@ -83,9 +85,7 @@ void EmbedDriver::clearTranslation()  { d_->manager->clearTranslation(); }
 //{ d_->manager->updateTranslation(text, hash, role); }
 
 void EmbedDriver::quit()
-{
-  d_->manager->quit();
-}
+{ d_->manager->quit(); }
 
 void EmbedDriver::unload()
 {

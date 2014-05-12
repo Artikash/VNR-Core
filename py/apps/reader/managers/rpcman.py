@@ -122,8 +122,7 @@ class RpcServer(QObject):
   agentDisconnected = Signal(long) # pid
   windowTextsReceived = Signal(dict) # {long hash:unicode text}
   engineReceived = Signal(str) # name
-  #engineTextReceived = Signal(unicode, c_longlong, int) # text, hash, role
-  engineTextReceived = Signal(unicode, str, int, bool) # text, hash, role, needsTranslation
+  engineTextReceived = Signal(unicode, str, long, int, bool) # text, hash, role, needsTranslation
 
   def isAgentConnected(self): return bool(self.__d.agentSocket)
   def closeAgent(self): self.__d.closeAgentSocket()
@@ -238,7 +237,7 @@ class _RpcServer(object):
       if params:
         self.q.engineReceived.emit(params[0])
     elif cmd == 'agent.engine.text':
-      if len(params) == 4:
+      if len(params) == 5:
         self._onEngineText(*params)
       else:
         dwarn("invalid parameter count:", params)
@@ -281,7 +280,7 @@ class _RpcServer(object):
       dwarn(e)
       #dwarn("error: malformed json: %s" % data)
 
-  def _onEngineText(self, text, hash, role, trans):
+  def _onEngineText(self, text, hash, sig, role, trans):
     """
     @param  text  unicode
     @param  hash  qint64
@@ -291,8 +290,9 @@ class _RpcServer(object):
     try:
       #hash = _unmarshalInteger(hash) # delay convert it to number
       role = _unmarshalInteger(role)
+      sig = _unmarshalInteger(sig)
       trans = _unmarshalBool(trans)
-      self.q.engineTextReceived.emit(text, hash, role, trans)
+      self.q.engineTextReceived.emit(text, hash, sig, role, trans)
       #if trans:
       #  print role, len(text)
       #  text = u'简体中文' + text

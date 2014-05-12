@@ -90,6 +90,24 @@ class GameAgent(QObject):
     if self.isConnected():
       self.__d.sendSettings()
 
+  def scenarioSignature(self): return self.__d.scenarioSignature
+
+  def setScenarioSignature(self, v):
+    d = self.__d
+    if v != d.scenarioSignature:
+      d.scenarioSignature = v
+      if d.connectedPid:
+        d.rpc.sendSetting('scenarioSignature', v)
+
+  def nameSignature(self): return self.__d.nameSignature
+
+  def setNameSignature(self, v):
+    d = self.__d
+    if v != d.nameSignature:
+      d.nameSignature = v
+      if d.connectedPid:
+        d.rpc.sendSetting('nameSignature', v)
+
   # Shared memory
 
   def sendEmbeddedTranslation(self, text, hash, role):
@@ -176,10 +194,9 @@ class _GameAgent(object):
     self.injectedPid = 0 # long
     self.engineName = '' # str
     self.gameEncoding = 'shift-jis' # placeholder
-    #self.gameLanguage = 'ja' # str
-    #self.gameEncoding = '' # str
-    #self.userLanguage = 'en' # str
-    #self.userEncoding = '' # str
+
+    self.scenarioSignature = 0
+    self.nameSignature = 0
 
   @property # read only
   def connectedPid(self): return self.rpc.agentProcessId()
@@ -212,6 +229,8 @@ class _GameAgent(object):
     data['debug'] = config.APP_DEBUG
     data['gameEncoding'] = self.gameEncoding
     data['embeddedTextEnabled'] = self.textExtractionEnabled
+    data['scenarioSignature'] = self.scenarioSignature
+    data['nameSignature'] = self.nameSignature
     self.rpc.setAgentSettings(data)
 
   def sendSetting(self, k, v):

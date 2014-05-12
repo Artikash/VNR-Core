@@ -409,12 +409,14 @@ class _TextManager(object):
     if self._flushAgentScenarioTimer.isActive():
       self._flushAgentScenarioTimer.stop()
 
-  def addAgentText(self, text, role, needsTranslation=False):
+  def addAgentText(self, text, sig, role, needsTranslation=False):
     """
     @param  text  unicode
+    @param  sig  long
     @param  role  int
     @param* needsTranslation  bool
     """
+    # TODO: Be aware of the signature
     if role == SCENARIO_THREAD_TYPE:
       #if self.agentNameBuffer:
       #  self._flushAgentName()

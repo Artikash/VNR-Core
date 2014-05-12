@@ -24,8 +24,7 @@ public:
 
   // Interface to RPC
 signals:
-  void textReceived(QString text, qint64 hash, int role, bool needsTranslation);
-  void textReceivedDelayed(QString text, qint64 hash, int role, bool needsTranslation);
+  void textReceived(QString text, qint64 hash, long signature, int role, bool needsTranslation);
 public:
   //void updateTranslation(const QString &text, qint64 hash, int role);
   void clearTranslation();
@@ -38,7 +37,7 @@ public:
   void setTranslationWaitTime(int msecs);
   QString waitForTranslation(qint64 hash, int role) const;
 
-  void sendText(const QString &text, qint64 hash, int role, bool needsTranslation);
+  void sendText(const QString &text, qint64 hash, long signature, int role, bool needsTranslation);
 };
 
 // EOF
