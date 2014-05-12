@@ -45,9 +45,6 @@ public:
   int responseRole() const;
   void setResponseRole(int role);
 
-  int responseRole() const;
-  void setResponseRole(int role);
-
   static int requestTextCapacity();
   const char *requestText() const;
   void setRequestText(const char *data);

@@ -39,8 +39,8 @@ void EngineSharedMemory::setRequestStatus(DataStatus v) { d_->data.requestStatus
 EngineSharedMemory::DataStatus EngineSharedMemory::responseStatus() const { return d_->data.responseStatus; }
 void EngineSharedMemory::setResponseStatus(DataStatus v) { d_->data.responseStatus = v; }
 
-int EngineSharedMemory::requestKey() const { return d_->data.requestKey; }
-void EngineSharedMemory::setRequestKey(int v) { d_->data.requestKey = v; }
+ulong EngineSharedMemory::requestKey() const { return d_->data.requestKey; }
+void EngineSharedMemory::setRequestKey(ulong v) { d_->data.requestKey = v; }
 
 ulong EngineSharedMemory::responseKey() const { return d_->data.responseKey; }
 void EngineSharedMemory::setResponseKey(ulong v) { d_->data.responseKey = v; }

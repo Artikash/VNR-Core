@@ -33,7 +33,7 @@ public:
   EngineSettings *settings() const;
 
   const char *name() const;
-  const char *encoding() const;
+  Encoding encoding() const;
 
   bool isTranscodingNeeded() const;
 

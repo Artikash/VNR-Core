@@ -1,5 +1,4 @@
-//
-engine.cc
+// engine.cc
 // 4/20/2014 jichi
 
 #include "engine/engine.h"
@@ -123,7 +122,7 @@ AbstractEngine::~AbstractEngine() { delete d_; }
 
 EngineSettings *AbstractEngine::settings() const { return d_->settings; }
 const char *AbstractEngine::name() const { return d_->name; }
-const char *AbstractEngine::encoding() const { return d_->encoding; }
+AbstractEngine::Encoding AbstractEngine::encoding() const { return d_->encoding; }
 
 bool AbstractEngine::isTranscodingNeeded() const
 { return d_->encoder != d_->decoder; }
@@ -135,7 +134,7 @@ bool AbstractEngine::load()
   bool ok = attach();
   if (ok)
     d_->finalize();
-  return ok
+  return ok;
 }
 
 bool AbstractEngine::unload()
@@ -213,7 +212,7 @@ const char *AbstractEngine::exchangeTextA(const char *data, int role)
   if (!d_mem || !data)
     return data;
 
-  ulong key = ::GetGetTickCount();
+  ulong key = ::GetTickCount();
   d_mem->setRequestStatus(EngineSharedMemory::BusyStatus);
   d_mem->setRequestKey(key);
   d_mem->setRequestRole(role);
