@@ -11,7 +11,6 @@
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 #include <QtCore/QStringList>
-#include <QtCore/QTextCodec>
 
 #define DEBUG "majiro"
 #include "sakurakit/skdebug.h"
@@ -128,7 +127,7 @@ MajiroEnginePrivate::hook_fun_t MajiroEnginePrivate::oldHook;
 bool MajiroEngine::match()
 { return Engine::glob(QStringList() << "data*.arc" << "stream*.arc"); }
 
-bool MajiroEngine::inject()
+bool MajiroEngine::attach()
 {
   DWORD dwTextOutA = Engine::getModuleFunction("gdi32.dll", "TextOutA");
   if (!dwTextOutA)
@@ -148,7 +147,7 @@ bool MajiroEngine::inject()
   return true;
 }
 
-bool MajiroEngine::unload()
+bool MajiroEngine::detach()
 {
   if (!D::hookAddress || !D::oldHook)
     return false;

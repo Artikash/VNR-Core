@@ -17,6 +17,7 @@ class AbstractEngine
 
 public:
   enum Encoding { UnknownEncoding = 0, Utf16Encoding, SjisEncoding };
+  static const char *encodingName(Encoding v);
 
   typedef ulong RequiredAttributes;
   enum RequiredAttribute {
@@ -36,18 +37,21 @@ public:
 
   bool isTranscodingNeeded() const;
 
-  virtual bool inject() = 0;
-  virtual bool unload() = 0;
+  bool load();
+  bool unload();
 
   //static bool isEnabled();
   //static void setEnabled(bool t);
 
-public: // only needed by descendants
+protected:
+  virtual bool attach() = 0;
+  virtual bool detach() = 0;
+
   QByteArray dispatchTextA(const QByteArray &data, int role) const;
   //QString dispatchTextW(const QString &text, int role, bool blocking = true) const;
 
   // This function is not thread-safe
-  const char *exchangeTextA(const char *data, int size, int role);
+  const char *exchangeTextA(const char *data, int role);
 };
 
 // EOF

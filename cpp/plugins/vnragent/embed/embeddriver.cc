@@ -67,10 +67,10 @@ QString EmbedDriver::engineName() const
 void EmbedDriver::sendEngineName()
 { emit engineNameChanged(engineName()); }
 
-bool EmbedDriver::inject()
+bool EmbedDriver::load()
 {
   if (d_->engine = AbstractEngine::instance())
-    if (!d_->engine->inject())
+    if (!d_->engine->load())
       d_->engine = nullptr;
 
   sendEngineName();

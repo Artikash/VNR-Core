@@ -11,6 +11,9 @@ import os
 from sakurakit.skdebug import dprint
 #from sakurakit.skclass import memoized
 
+UTF16_ENCODING = 'utf-16'
+SJIS_ENCODING = 'shift-jis'
+
 ENINES = []
 def engines():
   """
@@ -155,7 +158,7 @@ class Engine(object): # placeholder
 class MonoEngine(Engine):
 
   NAME = "Mono" # str, override
-  ENCODING = "utf-16" # str, override
+  ENCODING = UTF16_ENCODING # str, override
 
   def match(self, pid): # override
     return bool(self.globAppDirectory('*/Mono/mono.dll', pid))

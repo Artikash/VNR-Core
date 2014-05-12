@@ -13,11 +13,12 @@ class MajiroEngine : public AbstractEngine
   friend class MajiroEnginePrivate;
   typedef MajiroEnginePrivate D;
 public:
-  MajiroEngine() : Base("Majiro", "SHIFT-JIS", BlockingRequired) {}
+  MajiroEngine() : Base("Majiro", SjisEncoding, BlockingAttribute) {}
 
   static bool match();
-  bool inject() override;
-  bool unload() override;
+protected:
+  bool attach() override;
+  bool detach() override;
 };
 
 // EOF

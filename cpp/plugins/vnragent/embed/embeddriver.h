@@ -49,8 +49,7 @@ public slots:
   // Called by engine
 public:
   void quit();
-  bool inject();
-  //bool isEnabled() const;
+  bool load();
   void unload();
   QString engineName() const;
 };

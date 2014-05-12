@@ -13,7 +13,8 @@ class TestEngine : public AbstractEngine
   friend class TestEnginePrivate;
   typedef TestEnginePrivate D;
 public:
-  TestEngine() : Base("Test", "SHIFT-JIS", BlockingRequired|ExchangeRequired) {}
+  TestEngine() : Base("Test", SjisEncoding,
+      BlockingAttribute|ExchangeAttribute) {}
 
   static bool match();
   bool inject() override;

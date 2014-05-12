@@ -11,6 +11,9 @@ import os
 from sakurakit.skdebug import dprint
 #from sakurakit.skclass import memoized
 
+UTF16_ENCODING = 'utf-16'
+SJIS_ENCODING = 'shift-jis'
+
 ENINES = []
 def engines():
   """
@@ -18,10 +21,8 @@ def engines():
   """
   if not ENINES:
     ENGINES = [
-      #CMVSEngine(),
+      #BGIEngine(),
       MajiroEngine(),
-      #GXPEngine(),
-      #YurisEngine(),
     ]
   return ENGINES
 
@@ -149,38 +150,47 @@ class Engine(object): # placeholder
 class MajiroEngine(Engine):
 
   NAME = "Majiro" # str, override
-  ENCODING = "shift-jis" # str, override
+  ENCODING = SJIS_ENCODING # str, override
 
   def match(self, **kwargs): # override
     return bool(self.glob(("data*.arc", "stream*.arc"), **kwargs))
 
-# 5/10/2014 jichi
-class CMVSEngine(Engine):
-
-  NAME = "CMVS" # str, override
-  ENCODING = "shift-jis" # str, override
-
-  def match(self, **kwargs): # override
-    return bool(self.glob("data/pack/*.cpz", **kwargs))
-
 # 5/11/2014 jichi
-class YurisEngine(Engine):
+class BGIEngine(Engine):
 
-  NAME = "YU-RIS" # str, override
-  ENCODING = "shift-jis" # str, override
-
-  def match(self, **kwargs): # override
-    return bool(
-      self.glob("*.ypf", **kwargs) or self.glob("pac/*.ypf", **kwargs)
-    ) and not self.exists("noblesse.exe", **kwargs)
-
-# 5/11/2014 jichi
-class GXPEngine(Engine):
-
-  NAME = "GXP" # str, override
-  ENCODING = "shift-jis" # str, override
+  NAME = "BGI" # str, override
+  ENCODING = SJIS_ENCODING # str, override
 
   def match(self, **kwargs): # override
-    return bool(self.glob("*.gxp", **kwargs))
+    return bool(self.glob("BGI.*", **kwargs))
 
 # EOF
+
+## 5/10/2014 jichi
+#class CMVSEngine(Engine):
+#
+#  NAME = "CMVS" # str, override
+#  ENCODING = SJIS_ENCODING # str, override
+#
+#  def match(self, **kwargs): # override
+#    return bool(self.glob("data/pack/*.cpz", **kwargs))
+#
+## 5/11/2014 jichi
+#class YurisEngine(Engine):
+#
+#  NAME = "YU-RIS" # str, override
+#  ENCODING = SJIS_ENCODING # str, override
+#
+#  def match(self, **kwargs): # override
+#    return bool(
+#      self.glob("*.ypf", **kwargs) or self.glob("pac/*.ypf", **kwargs)
+#    ) and not self.exists("noblesse.exe", **kwargs)
+#
+## 5/11/2014 jichi
+#class GXPEngine(Engine):
+#
+#  NAME = "GXP" # str, override
+#  ENCODING = UTF16_ENCODING # str, override
+#
+#  def match(self, **kwargs): # override
+#    return bool(self.glob("*.gxp", **kwargs))
