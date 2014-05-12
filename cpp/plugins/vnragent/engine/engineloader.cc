@@ -16,7 +16,7 @@ AbstractEngine *Engine::getEngine()
 #ifdef TEST
   if (TestEngine::match()) return new TestEngine;
 #endif // TEST
-  if (BGIEngine::match()) return new BGIEngine;
+  //if (BGIEngine::match()) return new BGIEngine;
   if (MajiroEngine::match()) return new MajiroEngine;
   return nullptr;
 }

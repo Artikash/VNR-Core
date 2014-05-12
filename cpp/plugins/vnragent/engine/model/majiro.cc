@@ -12,8 +12,12 @@
 #include <qt_windows.h>
 #include <QtCore/QStringList>
 
-//#define DEBUG "majiro"
+#define DEBUG "majiro"
 #include "sakurakit/skdebug.h"
+
+// Used to get function's return address
+// http://stackoverflow.com/questions/8797943/finding-a-functions-address-in-c
+#pragma intrinsic(_ReturnAddress)
 
 /** Private class */
 
@@ -21,23 +25,6 @@
 class MajiroEnginePrivate
 {
   typedef MajiroEngine Q;
-
-  // Return the number of bits in the integer
-  // Brian-Kemighan's method
-  // http://stackoverflow.com/questions/109023/how-to-count-the-number-of-set-bits-in-a-32-bit-integer
-  //static int bitCount(quint8 value)
-  //{
-  //  int count = 0;
-  //  for (; value; count++)
-  //    value &= value -1;
-  //  return count;
-  //}
-  //static int bitCount(qint32 i)
-  //{
-  //  i = i - ((i >> 1) & 0x55555555);
-  //  i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
-  //  return (((i + (i >> 4)) & 0x0f0f0f0f) * 0x01010101) >> 24;
-  //}
 
   /**
    *  Observeations from レミニセンス:
@@ -69,10 +56,15 @@ class MajiroEnginePrivate
     if ((scenarioArg2_ & ScenarioMask) == ((DWORD)arg2 & ScenarioMask)) // the higher four bits of the scenario and the name are the same
       return Engine::NameRole;
     return Engine::OtherRole;
-
-        (t->GetThreadParameter()->retn & 0xffff) |   // context
-        (t->GetThreadParameter()->spl & 0xffff)<<16; // subcontext
   }
+
+  /**
+   *  Compute ITH's split value from the first parameter of the hooked fuction.
+   *  Let eax be arg1, the original logic in MajiroSpecialHook is:
+   *      ([eax+0x28] & 0xff) | (([eax+0x48] >> 1) & 0xffffff00)
+   */
+  static DWORD splitOf(DWORD *arg1)
+  { return (arg1[10] & 0xff) | ((arg1[18] >> 1) & 0xffffff00); }
 
 public:
 
@@ -102,32 +94,31 @@ public:
 
   static int __cdecl newHook(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR output4, int const5)
   {
-    DWORD returnAddress;
-    __asm mov stackAress, [esp]
+    // Compute signature
+    qint32 signature;
+    {
+      DWORD returnAddress = (DWORD)_ReturnAddress(),
+            split = splitOf((DWORD *)fontName1);
+      // The following logic is consistent with VNR's old texthook
+      signature = (returnAddress & 0xffff)  // context
+                | (split & 0xffff) << 16;   // subcontext
+    }
 
-    // The following logic is consistent with ITH's MajiroSpecialHook
-    DWORD *arg1Address = (DWORD *)fontName1;
-    // ([eax+0x28] & 0xff) | (([eax+0x48] >> 1) & 0xffffff00)
-    DWORD split = (arg1Address[10] & 0xff) | ((arg1Address[18] >> 1) & 0xffffff00);
-
-    // The following logic is consistent with VNR's old texthook
-    DWORD signature = (returnAddress & 0xffff)  // context
-                    | (split & 0xffff) << 16;   // subcontext
 
     //return oldHook(arg1, arg2, str, arg4, arg5);
     auto q = static_cast<Q *>(AbstractEngine::instance());
-    auto role = roleOf(fontName1, canvasSize2);
 #ifdef DEBUG
     qDebug() << QString::fromLocal8Bit(fontName1) << ":"
              << canvasSize2->cx << "," << canvasSize2->cy << ":"
              << QString::fromLocal8Bit(text3) << ":"
              << QString::fromLocal8Bit(output4 ? output4 : "(null)") << ":"
-             << const5;
+             << const5 << ";"
+             << " signature: " << QString::number(signature, 16);
 #endif // DEBUG
-    //const char *data = q->exchangeTextA(text3, role);
+    //const char *data = q->exchangeTextA(text3, signature);
     //if (!data)
     //  return oldHook(fontName1, canvasSize2, data, output4, const5);
-    QByteArray data = q->dispatchTextA(text3, role);
+    QByteArray data = q->dispatchTextA(text3, signature);
     if (!data.isEmpty())
       return oldHook(fontName1, canvasSize2, data, output4, const5);
     else {
