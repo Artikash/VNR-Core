@@ -54,8 +54,11 @@ int EngineSharedMemory::requestTextCapacity() { return D::DataTextCapacity; }
 const char *EngineSharedMemory::requestText() const { return d_->data.requestText; }
 void EngineSharedMemory::setRequestText(const char *v)
 {
-  //if (!v) return;
-  int size = qMin<int>(::strlen(v), D::DataTextCapacity);
+  if (!v) {
+    d_->data.requestText[0] = 0;
+    return;
+  }
+  auto size = qMin<size_t>(::strlen(v) + 1, D::DataTextCapacity);
   ::memcpy(d_->data.requestText, v, size);
 }
 
@@ -63,8 +66,11 @@ int EngineSharedMemory::responseTextCapacity() { return D::DataTextCapacity; }
 const char *EngineSharedMemory::responseText() const { return d_->data.responseText; }
 void EngineSharedMemory::setResponseText(const char *v)
 {
-  //if (!v) return;
-  int size = qMin<int>(::strlen(v) + 1, D::DataTextCapacity);
+  if (!v) {
+    d_->data.responseText[0] = 0;
+    return;
+  }
+  auto size = qMin<size_t>(::strlen(v) + 1, D::DataTextCapacity);
   ::memcpy(d_->data.responseText, v, size);
 }
 
