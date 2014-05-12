@@ -15,7 +15,6 @@ def match(**kwargs):
   @param* path  unicode  file executable
   @return  Engine or None
   """
-  return True
   from engines import engines
   for eng in engines():
     if eng.match(**kwargs):
