@@ -812,7 +812,7 @@ bool InsertCMVS1Hook()
  *  00448fef     cc             int3
  *  00448ff0  /$ 55             push ebp
  *  00448ff1  |. 8bec           mov ebp,esp
- *  00448ff3  |. 83ec 68        sub esp,0x68 ; jichi: hook here
+ *  00448ff3  |. 83ec 68        sub esp,0x68 ; jichi: hook here, it is actually  tagTEXTMETRICA
  *  00448ff6  |. 8b01           mov eax,dword ptr ds:[ecx]
  *  00448ff8  |. 56             push esi
  *  00448ff9  |. 33f6           xor esi,esi
@@ -859,7 +859,7 @@ bool InsertCMVS1Hook()
  *  0044905c  |. 52             push edx                                 ; |hDC
  *  0044905d  |. 8975 e8        mov dword ptr ss:[ebp-0x18],esi          ; |
  *  00449060  |. 8975 ec        mov dword ptr ss:[ebp-0x14],esi          ; |
- *  00449063  |. ff15 5cf05300  call dword ptr ds:[<&gdi32.getglyphoutli>; \GetGlyphOutlineA ; jichi 3/7/2014: Should I hook here?
+ *  00449063  |. ff15 5cf05300  call dword ptr ds:[<&gdi32.getglyphoutli>; \GetGlyphOutlineA
  *  00449069  |. 8b75 10        mov esi,dword ptr ss:[ebp+0x10]
  *  0044906c  |. 0faff6         imul esi,esi
  *  0044906f  |. 8bf8           mov edi,eax
@@ -1632,18 +1632,21 @@ bool InsertWhirlpoolHook()
   DWORD i,t;
   //IthBreak();
   DWORD entry = Util::FindCallAndEntryBoth((DWORD)TextOutA, module_limit_ - module_base_, module_base_, 0xec83);
+  //ITH_GROWL_DWORD(entry);
   if (!entry) {
     ConsoleOutput("vnreng:YU-RIS: function entry does not exist");
     return false;
   }
   entry = Util::FindCallAndEntryRel(entry - 4, module_limit_ - module_base_, module_base_, 0xec83);
+  //ITH_GROWL_DWORD(entry);
   if (!entry) {
     ConsoleOutput("vnreng:YU-RIS: function entry does not exist");
     return false;
   }
   entry = Util::FindCallOrJmpRel(entry-4,module_limit_-module_base_-0x10000,module_base_+0x10000,false);
+  //ITH_GROWL_DWORD(entry);
   for (i = entry - 4; i > entry - 0x100; i--)
-    if (*(WORD *)i==0xC085) {
+    if (*(WORD *)i == 0xc085) {
       t = *(WORD *)(i+2);
       if ((t&0xff) == 0x76) {
         t = 4;
@@ -1658,12 +1661,14 @@ bool InsertWhirlpoolHook()
     ConsoleOutput("vnreng:YU-RIS: pattern not exist");
     return false;
   }
+  //ITH_GROWL_DWORD2(i,t);
   HookParam hp = {};
   hp.addr = i+t;
   hp.off = -0x24;
   hp.split = -0x8;
   hp.type = USING_STRING|USING_SPLIT;
   ConsoleOutput("vnreng: INSERT YU-RIS");
+  //ITH_GROWL_DWORD(hp.addr);
   NewHook(hp, L"YU-RIS");
   //RegisterEngineType(ENGINE_WHIRLPOOL);
   return true;
@@ -1687,6 +1692,8 @@ bool InsertCotophaHook()
   return true;
 }
 
+// jichi 5/10/2014
+// See also: http://bbs.sumisora.org/read.php?tid=11044704&fpage=2
 bool InsertCatSystem2Hook()
 {
   //DWORD search=0x95EB60F;
@@ -3304,6 +3311,83 @@ void InsertRyokuchaHook()
   ConsoleOutput("vnreng: TRIGGER Ryokucha");
 }
 
+/**
+ *  jichi 5/11/2014: Hook to the beginning of a function
+ *
+ *  Here's an example of Demonion II (reladdr = 0x18c540):
+ *  The text is displayed character by character.
+ *  sub_58C540 proc near
+ *  arg_0 = dword ptr  8 // LPCSTR with 1 character
+ *
+ *  It's weird that I cannot find the caller of this function using OllyDbg.
+ *
+ *  0138C540  /$ 55             PUSH EBP
+ *  0138C541  |. 8BEC           MOV EBP,ESP
+ *  0138C543  |. 83E4 F8        AND ESP,0xFFFFFFF8
+ *  0138C546  |. 8B43 0C        MOV EAX,DWORD PTR DS:[EBX+0xC]
+ *  0138C549  |. 83EC 08        SUB ESP,0x8
+ *  0138C54C  |. 56             PUSH ESI
+ *  0138C54D  |. 57             PUSH EDI
+ *  0138C54E  |. 85C0           TEST EAX,EAX
+ *  0138C550  |. 75 04          JNZ SHORT demonion.0138C556
+ *  0138C552  |. 33F6           XOR ESI,ESI
+ *  0138C554  |. EB 18          JMP SHORT demonion.0138C56E
+ *  0138C556  |> 8B4B 14        MOV ECX,DWORD PTR DS:[EBX+0x14]
+ *  0138C559  |. 2BC8           SUB ECX,EAX
+ *  0138C55B  |. B8 93244992    MOV EAX,0x92492493
+ *  0138C560  |. F7E9           IMUL ECX
+ *  0138C562  |. 03D1           ADD EDX,ECX
+ *  0138C564  |. C1FA 04        SAR EDX,0x4
+ *  0138C567  |. 8BF2           MOV ESI,EDX
+ *  0138C569  |. C1EE 1F        SHR ESI,0x1F
+ *  0138C56C  |. 03F2           ADD ESI,EDX
+ *  0138C56E  |> 8B7B 10        MOV EDI,DWORD PTR DS:[EBX+0x10]
+ *  0138C571  |. 8BCF           MOV ECX,EDI
+ *  0138C573  |. 2B4B 0C        SUB ECX,DWORD PTR DS:[EBX+0xC]
+ *  0138C576  |. B8 93244992    MOV EAX,0x92492493
+ *  0138C57B  |. F7E9           IMUL ECX
+ *  0138C57D  |. 03D1           ADD EDX,ECX
+ *  0138C57F  |. C1FA 04        SAR EDX,0x4
+ *  0138C582  |. 8BC2           MOV EAX,EDX
+ *  0138C584  |. C1E8 1F        SHR EAX,0x1F
+ *  0138C587  |. 03C2           ADD EAX,EDX
+ *  0138C589  |. 3BC6           CMP EAX,ESI
+ *  0138C58B  |. 73 2F          JNB SHORT demonion.0138C5BC
+ *  0138C58D  |. C64424 08 00   MOV BYTE PTR SS:[ESP+0x8],0x0
+ *  0138C592  |. 8B4C24 08      MOV ECX,DWORD PTR SS:[ESP+0x8]
+ *  0138C596  |. 8B5424 08      MOV EDX,DWORD PTR SS:[ESP+0x8]
+ *  0138C59A  |. 51             PUSH ECX
+ *  0138C59B  |. 8B4D 08        MOV ECX,DWORD PTR SS:[EBP+0x8]
+ *  0138C59E  |. 52             PUSH EDX
+ *  0138C59F  |. B8 01000000    MOV EAX,0x1
+ *  0138C5A4  |. 8BD7           MOV EDX,EDI
+ *  0138C5A6  |. E8 F50E0000    CALL demonion.0138D4A0
+ *  0138C5AB  |. 83C4 08        ADD ESP,0x8
+ *  0138C5AE  |. 83C7 1C        ADD EDI,0x1C
+ *  0138C5B1  |. 897B 10        MOV DWORD PTR DS:[EBX+0x10],EDI
+ *  0138C5B4  |. 5F             POP EDI
+ *  0138C5B5  |. 5E             POP ESI
+ *  0138C5B6  |. 8BE5           MOV ESP,EBP
+ *  0138C5B8  |. 5D             POP EBP
+ *  0138C5B9  |. C2 0400        RETN 0x4
+ *  0138C5BC  |> 397B 0C        CMP DWORD PTR DS:[EBX+0xC],EDI
+ *  0138C5BF  |. 76 05          JBE SHORT demonion.0138C5C6
+ *  0138C5C1  |. E8 1B060D00    CALL demonion.0145CBE1
+ *  0138C5C6  |> 8B03           MOV EAX,DWORD PTR DS:[EBX]
+ *  0138C5C8  |. 57             PUSH EDI                                 ; /Arg4
+ *  0138C5C9  |. 50             PUSH EAX                                 ; |Arg3
+ *  0138C5CA  |. 8B45 08        MOV EAX,DWORD PTR SS:[EBP+0x8]           ; |
+ *  0138C5CD  |. 50             PUSH EAX                                 ; |Arg2
+ *  0138C5CE  |. 8D4C24 14      LEA ECX,DWORD PTR SS:[ESP+0x14]          ; |
+ *  0138C5D2  |. 51             PUSH ECX                                 ; |Arg1
+ *  0138C5D3  |. 8BC3           MOV EAX,EBX                              ; |
+ *  0138C5D5  |. E8 D6010000    CALL demonion.0138C7B0                   ; \demonion.0138C7B0
+ *  0138C5DA  |. 5F             POP EDI
+ *  0138C5DB  |. 5E             POP ESI
+ *  0138C5DC  |. 8BE5           MOV ESP,EBP
+ *  0138C5DE  |. 5D             POP EBP
+ *  0138C5DF  \. C2 0400        RETN 0x4
+ */
 bool InsertGXPHook()
 {
   union {
@@ -3345,6 +3429,13 @@ bool InsertGXPHook()
             hp.type = USING_UNICODE | DATA_INDIRECT;
             hp.length_offset = 1;
             hp.off = 4;
+
+            //ITH_GROWL_DWORD3(hp.addr, module_base_, hp.addr - module_base_);
+            //DWORD call = Util::FindCallAndEntryAbs(hp.addr, module_limit_ - module_base_, module_base_, 0xec81); // zero
+            //DWORD call = Util::FindCallAndEntryAbs(hp.addr, module_limit_ - module_base_, module_base_, 0xec83); // zero
+            //DWORD call = Util::FindCallAndEntryAbs(hp.addr, module_limit_ - module_base_, module_base_, 0xec8b55); // zero
+            //ITH_GROWL_DWORD3(call, module_base_, call - module_base_);
+
             ConsoleOutput("vnreng: INSERT GXP");
             NewHook(hp, L"GXP");
             return true;

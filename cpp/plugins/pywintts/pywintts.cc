@@ -29,7 +29,7 @@ bool WinTts::setVoice(const QString &registry)
 {
   bool ret = false;
   if (d_->voice != registry)
-    if (ret = ::wintts_set_voice(d_->tts, registry.toStdWString().c_str()))
+    if (ret = ::wintts_set_voice(d_->tts, (cosnt wchar_t *)registry.utf16()))
       d_->voice = ret;
   return ret;
 }
@@ -43,6 +43,6 @@ bool WinTts::purge(bool async) const
 { return ::wintts_speak(d_->tts, nullptr, WINTTS_PURGE | (async ? WINTTS_ASYNC : 0)); }
 
 bool WinTts::speak(const QString& text, bool async) const
-{ return ::wintts_speak(d_->tts, text.toStdWString().c_str(), async ? WINTTS_ASYNC : WINTTS_DEFAULT); }
+{ return ::wintts_speak(d_->tts, (const wchar_t *)text.utf16()), async ? WINTTS_ASYNC : WINTTS_DEFAULT); }
 
 // EOF

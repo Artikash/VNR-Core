@@ -18,7 +18,10 @@ def engines():
   """
   if not ENINES:
     ENGINES = [
+      #CMVSEngine(),
       MajiroEngine(),
+      #GXPEngine(),
+      #YurisEngine(),
     ]
   return ENGINES
 
@@ -103,12 +106,81 @@ class Engine(object): # placeholder
         ret.append(r)
       return ret
 
+  def glob(self, pattern, **kwargs):
+    if isinstance(pattern, list) or isinstance(pattern, tuple):
+      return self.globAppDirectories(pattern, **kwargs)
+    else:
+      return self.globAppDirectory(pattern, **kwargs)
+
+  def existsAppFile(self, relpath, pid=0, path=''):
+    """
+    @param  relpaths  unicode
+    @return  bool
+    """
+    if path:
+      path = os.path.dirname(path)
+    if not path and pid:
+      path = self.getAppDirectory(pid)
+    return bool(path) and os.path.exists(os.path.join(path, relpath))
+
+  def existsAppFiles(self, relpaths, pid=0, path=''):
+    """
+    @param  relpaths  [unicode]
+    @return  bool
+    """
+    if path:
+      path = os.path.dirname(path)
+    if not path and pid:
+      path = self.getAppDirectory(pid)
+    if not path or not relpaths:
+      return False
+    for it in relpaths:
+      if not os.path.exists(os.path.join(path, relpath)):
+        return False
+    return True
+
+  def exists(self, pattern, **kwargs):
+    if isinstance(pattern, list) or isinstance(pattern, tuple):
+      return self.existsAppFiles(pattern, **kwargs)
+    else:
+      return self.existsAppFile(pattern, **kwargs)
+
+# 4/20/2014 jichi
 class MajiroEngine(Engine):
 
   NAME = "Majiro" # str, override
   ENCODING = "shift-jis" # str, override
 
   def match(self, **kwargs): # override
-    return bool(self.globAppDirectories(("data*.arc", "stream*.arc"), **kwargs))
+    return bool(self.glob(("data*.arc", "stream*.arc"), **kwargs))
+
+# 5/10/2014 jichi
+class CMVSEngine(Engine):
+
+  NAME = "CMVS" # str, override
+  ENCODING = "shift-jis" # str, override
+
+  def match(self, **kwargs): # override
+    return bool(self.glob("data/pack/*.cpz", **kwargs))
+
+# 5/11/2014 jichi
+class YurisEngine(Engine):
+
+  NAME = "YU-RIS" # str, override
+  ENCODING = "shift-jis" # str, override
+
+  def match(self, **kwargs): # override
+    return bool(
+      self.glob("*.ypf", **kwargs) or self.glob("pac/*.ypf", **kwargs)
+    ) and not self.exists("noblesse.exe", **kwargs)
+
+# 5/11/2014 jichi
+class GXPEngine(Engine):
+
+  NAME = "GXP" # str, override
+  ENCODING = "shift-jis" # str, override
+
+  def match(self, **kwargs): # override
+    return bool(self.glob("*.gxp", **kwargs))
 
 # EOF

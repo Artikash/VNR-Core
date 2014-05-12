@@ -18,10 +18,23 @@ bool Engine::glob(const QString &nameFilter)
 
 bool Engine::glob(const QStringList &nameFilters)
 {
-  static QDir cwd;
-  if (cwd.path().isEmpty())
-    cwd = QCoreApplication::applicationDirPath();
-  return !cwd.entryList(nameFilters).isEmpty();
+  QDir dir = QCoreApplication::applicationDirPath();
+  return !dir.entryList(nameFilters).isEmpty();
+}
+
+bool Engine::glob(const QString &relPath, const QString &nameFilter)
+{ return glob(relPath, QStringList(nameFilter)); }
+
+bool Engine::glob(const QString &relPath, const QStringList &nameFilters)
+{
+  QDir dir = QCoreApplication::applicationDirPath() + "/" + relPath;
+  return dir.exists() && !dir.entryList(nameFilters).isEmpty();
+}
+
+bool Engine::exists(const QString &relPath)
+{
+  QString path = QCoreApplication::applicationDirPath() + "/" + relPath;
+  return QFileInfo(path).exists();
 }
 
 // - Process and threads -

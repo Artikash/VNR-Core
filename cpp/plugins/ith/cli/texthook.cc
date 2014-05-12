@@ -145,7 +145,7 @@ DWORD GetModuleBase(DWORD hash)
   __asm
   {
     mov eax,fs:[0x30]
-    mov eax,[eax+0xC]
+    mov eax,[eax+0xc]
     mov esi,[eax+0x14]
     mov edi,_wcslwr
 listfind:

@@ -34,7 +34,7 @@ BOOL WINAPI Engine::MyTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpStrin
   //return ::TextOutA(hdc, nXStart, nYStart, lpString, cchString);
   QString t = QTextCodec::codecForName("GB2312")->toUnicode(lpString, cchString);
   if (!t.isEmpty())
-    return ::TextOutW(hdc, nXStart, nYStart, t.toStdWString().c_str(), t.size());
+    return ::TextOutW(hdc, nXStart, nYStart, (LPCWSTR)t.utf16(), t.size());
   return ::TextOutA(hdc, nXStart, nYStart, lpString, cchString);
 }
 // TODO: Support extracting text from this function.

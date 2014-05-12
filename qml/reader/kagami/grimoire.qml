@@ -155,6 +155,8 @@ Item { id: root_
 
   //property int _FADE_DURATION: 400
 
+  property bool highlightVisible: false // disable highlight by default unless pagebreak
+
   property QtObject highlightMouseArea
 
   property int _BBCODE_TIMESTAMP: 1363922891
@@ -538,10 +540,11 @@ Item { id: root_
     highlightMoveDuration: 0
     highlightResizeDuration: 0
 
-    highlight: Rectangle {
+    highlight: Rectangle { //id: highlight_
       width: listView_.width
       radius: 5
       color: root_.shadowEnabled ? '#33000000' : 'transparent'
+      visible: root_.highlightVisible
 
       MouseArea { id: highlightMouseArea_ // drag area
         Component.onCompleted: root_.highlightMouseArea = highlightMouseArea_
@@ -1136,6 +1139,8 @@ Item { id: root_
       _pageIndex = listModel_.count
       addText()
       cls()
+      //highlight_.visible = true // no idea why this does not work
+      root_.highlightVisible = true
     }
   }
 
@@ -1165,6 +1170,8 @@ Item { id: root_
   function clear() {
     _pageIndex = 0
     listModel_.clear()
+    //highlight_.visible = false
+    root_.highlightVisible = false
     console.log("grimoire.qml:clear: pass")
   }
 

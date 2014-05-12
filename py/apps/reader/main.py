@@ -92,7 +92,8 @@ class _MainObject(object):
     ret.keepsSpaceChanged.connect(lambda t:
         t and growl.notify(my.tr("Preserve spaces in the game text")))
 
-    ret.processAttached.connect(self.topWindow.bringWindowToTop)
+    for sig in ret.processAttached, ret.processDetached:
+      sig.connect(self.topWindow.bringWindowToTop)
 
     #ret.setKeepsSpace(True)
 
@@ -283,6 +284,8 @@ class _MainObject(object):
     import gameagent
     ret = gameagent.global_()
     ret.setParent(self.q)
+    for sig in ret.processAttached, ret.processDetached:
+      sig.connect(self.topWindow.bringWindowToTop)
     return ret
 
   @memoizedproperty

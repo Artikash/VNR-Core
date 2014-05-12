@@ -4,14 +4,18 @@
 
 #include "engine/engineloader.h"
 #include "engine/model/majiro.h"
-//#include "engine/model/kirikiri.h"
+
+#define TEST
+#ifdef TEST
+# include "engine/model/test.h"
+#endif // TEST
 
 AbstractEngine *Engine::getEngine()
 {
-  if (MajiroEngine::match())
-    return new MajiroEngine;
-  //if (KiriKiriEngine::match())
-  //  return new KiriKiriEngine;
+#ifdef TEST
+  if (TestEngine::match()) return new TestEngine;
+#endif // TEST
+  if (MajiroEngine::match()) return new MajiroEngine;
   return nullptr;
 }
 
