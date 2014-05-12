@@ -16,9 +16,17 @@ class AbstractEngine
   SK_DISABLE_COPY(AbstractEngine)
 
 public:
+  enum Encoding { UnknownEncoding = 0, Utf16Encoding, SjisEncoding };
+
+  typedef ulong RequiredAttributes;
+  enum RequiredAttribute {
+    BlockingAttribute = 1           // non-blocking callback is not supported
+    , ExchangeAttribute = 1 << 1    // qt is not supported and it requires exchanging data
+  };
+
   static Self *instance(); // Needed to be explicitly deleted on exit
 
-  AbstractEngine(const char *name, const char *encoding);
+  AbstractEngine(const char *name, Encoding enc, RequiredAttributes flags = 0);
   virtual ~AbstractEngine();
 
   EngineSettings *settings() const;
@@ -35,8 +43,11 @@ public:
   //static void setEnabled(bool t);
 
 public: // only needed by descendants
-  QByteArray dispatchTextA(const QByteArray &data, int role, bool blocking = true) const;
+  QByteArray dispatchTextA(const QByteArray &data, int role) const;
   //QString dispatchTextW(const QString &text, int role, bool blocking = true) const;
+
+  // This function is not thread-safe
+  const char *exchangeTextA(const char *data, int size, int role);
 };
 
 // EOF

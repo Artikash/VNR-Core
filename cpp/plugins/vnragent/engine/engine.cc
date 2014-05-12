@@ -16,26 +16,36 @@
 
 class AbstractEnginePrivate
 {
-public:
-  const char *name,
-             *encoding;
+  typedef AbstractEngine Q;
 
-  const char *systemEncoding;
+  static const char *encodingName(Q::Encoding v)
+  {
+    switch (v) {
+    case Utf16Encoding: return ENC_UTF16;
+    case SjisEncoding: return ENC_SJIS;
+    default: return nullptr;
+    }
+  }
+
+public:
+  const char *name;
+  Q::Encoding encoding;
+  Q::RequiredAttributes attributes;
+
   QTextCodec *encoder,
              *decoder;
 
   EngineSettings *settings;
 
-  AbstractEnginePrivate(const char *name, const char *encoding)
-    :  name(name), encoding(encoding)
+  AbstractEnginePrivate(const char *name, Q::Encoding encoding, Q::RequiredAttributes attributes)
+    :  name(name), encoding(encoding), attributes(attributes)
     , settings(new EngineSettings)
   {
-    decoder = encoding ? QTextCodec::codecForName(encoding) : nullptr;
+    const char *engineEncoding = encodingName(encoding);
+    decoder = engineEncoding ? QTextCodec::codecForName(engineEncoding) : nullptr;
 
-    systemEncoding = Util::encodingForCodePage(::GetACP());
-    if (!systemEncoding)
-      systemEncoding = ENC_SJIS;
-    encoder = QTextCodec::codecForName(systemEncoding);
+    const char *systemEncoding = Util::encodingForCodePage(::GetACP());
+    encoder = QTextCodec::codecForName(systemEncoding ? systemEncoding : ENC_SJIS);
   }
 
   ~AbstractEnginePrivate() { delete settings; }
@@ -70,8 +80,8 @@ AbstractEngine *AbstractEngine::instance()
 
 // - Construction -
 
-AbstractEngine::AbstractEngine(const char *name, const char *encoding)
-  : d_(new D(name, encoding)) {}
+AbstractEngine::AbstractEngine(const char *name, Encoding encoding, RequiredAttributes attributes)
+  : d_(new D(name, encoding, attributes)) {}
 
 AbstractEngine::~AbstractEngine() { delete d_; }
 
@@ -84,7 +94,7 @@ bool AbstractEngine::isTranscodingNeeded() const
 
 // - Dispatch -
 
-QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool blocking) const
+QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role) const
 {
   QString text = d_->decode(data);
   if (text.isEmpty())
@@ -113,7 +123,7 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool 
   QString repl = p->findTranslation(hash, role);
   bool needsTranslation = repl.isEmpty();
   p->sendText(text, hash, role, needsTranslation);
-  if (needsTranslation && blocking)
+  if (needsTranslation && d_->attributes & BlockingRequired)
     repl = p->waitForTranslation(hash, role);
 
   if (repl.isEmpty())
@@ -140,5 +150,14 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool 
 //
 //  return repl;
 //}
+
+// - Exchange -
+
+const char *AbstractEngine::exchangeTextA(const char *data, int size, int role)
+{
+  if (!data || size <= 0)
+    return data;
+  return data;
+}
 
 // EOF

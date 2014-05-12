@@ -5,7 +5,7 @@
 #include "engine/engineloader.h"
 #include "engine/model/majiro.h"
 
-#define TEST
+//#define TEST
 #ifdef TEST
 # include "engine/model/test.h"
 #endif // TEST

@@ -13,7 +13,7 @@ class MajiroEngine : public AbstractEngine
   friend class MajiroEnginePrivate;
   typedef MajiroEnginePrivate D;
 public:
-  MajiroEngine() : Base("Majiro", "SHIFT-JIS") {}
+  MajiroEngine() : Base("Majiro", "SHIFT-JIS", BlockingRequired) {}
 
   static bool match();
   bool inject() override;
