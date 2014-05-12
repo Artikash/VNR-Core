@@ -18,8 +18,6 @@ class AbstractEnginePrivate : QObject
   SK_EXTEND_CLASS(AbstractEnginePrivate, QObject)
   SK_DECLARE_PUBLIC(AbstractEngine)
 
-  QTextCodec *encoder,
-             *decoder;
 public:
   enum { ExchangeInterval = 10 };
 
@@ -27,10 +25,15 @@ public:
   Q::Encoding encoding;
   Q::RequiredAttributes attributes;
 
-  EngineSettings *settings;
-  EngineSharedMemory *memory;
+  QTextCodec *encoder,
+             *decoder;
 
+  EngineSettings *settings;
+
+  EngineSharedMemory *exchangeMemory;
+private:
   QTimer *exchangeTimer;
+
 public:
   AbstractEnginePrivate(Q *q, const char *name, Q::Encoding encoding, Q::RequiredAttributes attributes);
   ~AbstractEnginePrivate();
@@ -40,8 +43,12 @@ public:
   QByteArray encode(const QString &text) const;
   QString decode(const QByteArray &data) const;
 
+  void finalize();
+private:
+  void startExchange();
+  void finalizeCodecs();
 private slots:
-  void exchangeMemory();
+  void exchange();
 };
 
 // EOF

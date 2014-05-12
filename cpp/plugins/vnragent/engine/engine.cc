@@ -20,57 +20,72 @@
 AbstractEnginePrivate::AbstractEnginePrivate(Q *q, const char *name, Q::Encoding encoding, Q::RequiredAttributes attributes)
   :  q_(q)
   , name(name), encoding(encoding), attributes(attributes)
-  , settings(new EngineSettings), memory(nullptr)
-  , exchangeTimer(nullptr)
+  , encoder(nullptr), decoder(nullptr)
+  , settings(new EngineSettings)
+  , exchangeMemory(nullptr), exchangeTimer(nullptr)
+{}
+
+AbstractEnginePrivate::~AbstractEnginePrivate()
+{
+  delete settings;
+  if (exchangeMemory)
+    delete exchangeMemory;
+}
+
+void AbstractEnginePrivate::finalize()
+{
+  finalizeCodecs();
+  if (attribute & Q::ExchangeAttribute)
+    startExchange();
+}
+
+void AbstractEnginePrivate::startExchange()
+{
+  //if (attributes & Q::ExchangeAttribute)
+  exchangeMemory = new EngineSharedMemory;
+
+  exchangeTimer = new QTimer(this);
+  exchangeTimer->setSingleShot(false);
+  exchangeTimer->setInterval(ExchangeInterval);
+  connect(exchangeTimer, SIGNAL(timeout()), SLOT(exchangeMemory()));
+
+  exchangeTimer->start();
+}
+
+void AbstractEnginePrivate::finalizeCodecs()
 {
   const char *engineEncoding = Q::encodingName(encoding);
   decoder = engineEncoding ? QTextCodec::codecForName(engineEncoding) : nullptr;
 
   const char *systemEncoding = Util::encodingForCodePage(::GetACP());
   encoder = QTextCodec::codecForName(systemEncoding ? systemEncoding : ENC_SJIS);
-
-  if (attributes & Q::ExchangeAttribute) {
-    memory = new EngineSharedMemory;
-
-    exchangeTimer = new QTimer(this);
-    exchangeTimer->setSingleShot(false);
-    exchangeTimer->setInterval(ExchangeInterval);
-    connect(exchangeTimer, SIGNAL(timeout()), SLOT(exchangeMemory()));
-  }
-}
-
-AbstractEnginePrivate::~AbstractEnginePrivate()
-{
-  delete settings;
-  if (memory)
-    delete memory;
 }
 
  // Encoding
 
- QByteArray AbstractEnginePrivate::encode(const QString &text) const
- { return encoder ? encoder->fromUnicode(text) : text.toLocal8Bit(); }
+QByteArray AbstractEnginePrivate::encode(const QString &text) const
+{ return encoder ? encoder->fromUnicode(text) : text.toLocal8Bit(); }
 
 QString AbstractEnginePrivate::decode(const QByteArray &data) const
 { return decoder ? decoder->toUnicode(data) : QString::fromLocal8Bit(data); }
 
 // Exchange
 
-void AbstractEnginePrivate::exchangeMemory()
+void AbstractEnginePrivate::exchange()
 {
-  if (!memory)
+  if (!exchangeMemory)
     return;
-  if (memory->requestStatus() == EngineSharedMemory::ReadyStatus) {
-    memory->setRequestStatus(EngineSharedMemory::EmptyStatus);
-    if (auto req = memory->requestText()) {
-      auto key = memory->requestKey();
-      auto role = memory->requestRole();
+  if (exchangeMemory->requestStatus() == EngineSharedMemory::ReadyStatus) {
+    exchangeMemory->setRequestStatus(EngineSharedMemory::EmptyStatus);
+    if (auto req = exchangeMemory->requestText()) {
+      auto key = exchangeMemory->requestKey();
+      auto role = exchangeMemory->requestRole();
       QByteArray resp = q_->dispatchTextA(req, role);
-      memory->setResponseStatus(EngineSharedMemory::BusyStatus);
-      memory->setResponseText(resp);
-      memory->setResponseRole(role);
-      memory->setResponseKey(key);
-      memory->setResponseStatus(EngineSharedMemory::ReadyStatus);
+      exchangeMemory->setResponseStatus(EngineSharedMemory::BusyStatus);
+      exchangeMemory->setResponseText(resp);
+      exchangeMemory->setResponseRole(role);
+      exchangeMemory->setResponseKey(key);
+      exchangeMemory->setResponseStatus(EngineSharedMemory::ReadyStatus);
     }
   }
 }
@@ -118,8 +133,8 @@ bool AbstractEngine::isTranscodingNeeded() const
 bool AbstractEngine::load()
 {
   bool ok = attach();
-  if (ok && d_->exchangeTimer)
-    d_->exchangeTimer->start();
+  if (ok)
+    d_->finalize();
   return ok
 }
 
@@ -195,10 +210,11 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role) const
 const char *AbstractEngine::exchangeTextA(const char *data, int role)
 {
   //Q_ASSERT(d_->attributes & ExchangeAttribute);
-  if (!data || !d_->memory)
+  auto d_mem = d_->exchangeMemory;
+  if (!d_mem || !data)
     return data;
+
   ulong key = ::GetGetTickCount();
-  auto d_mem = d_->memory;
   d_mem->setRequestStatus(EngineSharedMemory::BusyStatus);
   d_mem->setRequestKey(key);
   d_mem->setRequestRole(role);
@@ -212,7 +228,7 @@ const char *AbstractEngine::exchangeTextA(const char *data, int role)
       return data;
     ::Sleep(D::ExchangeInterval);
   }
-  return d_->memory->responseText();
+  return d_mem->responseText();
 }
 
 // EOF
