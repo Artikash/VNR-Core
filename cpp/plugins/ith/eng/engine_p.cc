@@ -711,8 +711,11 @@ MAJIRO hook:
   just do memory comparisons and get the value working for current release.
 
 ********************************************************************************************/
-static void SpecialHookMajiro(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  // jichi 5/12/2014
+  // See: http://stackoverflow.com/questions/14210614/bind-function-parameter-to-specific-register
+  // x86-64, the first 6 (integral) parameters are passed in the registers %rdi, %rsi, %rdx, %rcx, %r8, and %r9.
   __asm
   {
     mov edx,esp_base
