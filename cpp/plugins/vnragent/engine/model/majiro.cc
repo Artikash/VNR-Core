@@ -12,7 +12,7 @@
 #include <qt_windows.h>
 #include <QtCore/QStringList>
 
-#define DEBUG "majiro"
+//#define DEBUG "majiro"
 #include "sakurakit/skdebug.h"
 
 /** Private class */
