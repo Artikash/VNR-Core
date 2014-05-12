@@ -719,7 +719,7 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
   __asm
   {
     mov edx,esp_base
-    mov edi,[edx+0xc]
+    mov edi,[edx+0xc] ; jichi 5/11/2014: the third function parameter is LPCSTR text
     mov eax,data
     mov [eax],edi
     or ecx,0xffffffff
@@ -729,9 +729,9 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
     dec ecx
     mov eax,len
     mov [eax],ecx
-    mov eax,[edx+4]
-    mov edx,[eax+0x28]
-    mov eax,[eax+0x48]
+    mov eax,[edx+4]    ; jichi 5/11/2014: the first function parameter is LPCSTR font name (MS Gothic)
+    mov edx,[eax+0x28] ; 0x28 and 0x48 are in the caller of this fuction hook
+    mov eax,[eax+0x48] ; *split = ([eax+0x28] & 0xff) | (([eax+0x48] >> 1) & 0xffff00)
     sar eax,0x1f
     mov dh,al
     mov ecx,split

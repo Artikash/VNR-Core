@@ -69,6 +69,9 @@ class MajiroEnginePrivate
     if ((scenarioArg2_ & ScenarioMask) == ((DWORD)arg2 & ScenarioMask)) // the higher four bits of the scenario and the name are the same
       return Engine::NameRole;
     return Engine::OtherRole;
+
+        (t->GetThreadParameter()->retn & 0xffff) |   // context
+        (t->GetThreadParameter()->spl & 0xffff)<<16; // subcontext
   }
 
 public:
@@ -99,6 +102,18 @@ public:
 
   static int __cdecl newHook(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR output4, int const5)
   {
+    DWORD returnAddress;
+    __asm mov stackAress, [esp]
+
+    // The following logic is consistent with ITH's MajiroSpecialHook
+    DWORD *arg1Address = (DWORD *)fontName1;
+    // ([eax+0x28] & 0xff) | (([eax+0x48] >> 1) & 0xffffff00)
+    DWORD split = (arg1Address[10] & 0xff) | ((arg1Address[18] >> 1) & 0xffffff00);
+
+    // The following logic is consistent with VNR's old texthook
+    DWORD signature = (returnAddress & 0xffff)  // context
+                    | (split & 0xffff) << 16;   // subcontext
+
     //return oldHook(arg1, arg2, str, arg4, arg5);
     auto q = static_cast<Q *>(AbstractEngine::instance());
     auto role = roleOf(fontName1, canvasSize2);

@@ -228,7 +228,7 @@ private:
   {
     qint32 ret =
         (t->GetThreadParameter()->retn & 0xffff) |   // context
-        (t->GetThreadParameter()->spl & 0xffff)<<16; // subcontext
+        (t->GetThreadParameter()->spl & 0xffff) << 16; // subcontext
     return ret ? ret : t->Addr();
   }
 
