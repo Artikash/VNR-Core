@@ -25,7 +25,11 @@ inline void dmsg(wchar_t *message)
 
 #ifdef QT_CORE_LIB
 
-inline void dmsg(const QString &message) { dmsg(message.toStdWString().c_str()); }
+
+inline void dmsg(const ushort *message) { dmsg((LPCWSTR)message); }
+inline void dmsg(ushort *message){ dmsg((LPWSTR)message); }
+
+inline void dmsg(const QString &message) { dmsg(message.utf16()); }
 template <typename T> inline void dmsg(T number) { dmsg(QString::number(number)); }
 
 #endif //QT_CORE_LIB

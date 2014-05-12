@@ -137,8 +137,8 @@ bool WindowDriverPrivate::updateStandardWindow(HWND hWnd, LPWSTR buffer, int buf
   // https://groups.google.com/forum/?fromgroups#!topic/microsoft.public.platformsdk.mslayerforunicode/nWi3dlZeS60
   if (!repl.isEmpty() && h != Window::hashString(repl)) {
     if (repl.size() >= bufferSize)
-      //::SetWindowTextW(hWnd, repl.toStdWString().c_str());
-      ::DefWindowProcW(hWnd, WM_SETTEXT, 0, (LPARAM)repl.toStdWString().c_str());
+      //::SetWindowTextW(hWnd, repl.utf16());
+      ::DefWindowProcW(hWnd, WM_SETTEXT, 0, (LPARAM)repl.utf16());
     else { // faster
       buffer[repl.size()] = 0;
       repl.toWCharArray(buffer);
