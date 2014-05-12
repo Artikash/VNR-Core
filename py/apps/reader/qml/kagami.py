@@ -158,9 +158,10 @@ class GrimoireController(QObject):
         ss.isGrimoireSubtitleVisible()):
       self.__d.append(GrimoireBean.instance.pageBreak.emit)
 
+  # Always send text
   def showText(self, text, language, timestamp):
-    if not settings.global_().isGrimoireTextVisible():
-      return
+    #if not settings.global_().isGrimoireTextVisible():
+    #  return
 
     #if settings.global_().isMsimeCorrectionEnabled():
     #  text = msime.to_kanji(text) or text
@@ -198,9 +199,10 @@ class GrimoireController(QObject):
       self.__d.append(partial(GrimoireBean.instance.showComment.emit,
           c))
 
+  # Always send name text, this could help flush the text
   def showNameText(self, text, language):
-    if not settings.global_().isGrimoireNameVisible():
-      return
+    #if not settings.global_().isGrimoireNameVisible(): #and not ss.isGrimoireTextVisible():
+    #  return
 
     closure = partial(GrimoireBean.instance.showNameText.emit,
         text, language)
