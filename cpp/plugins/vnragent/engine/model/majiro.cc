@@ -12,8 +12,12 @@
 #include <qt_windows.h>
 #include <QtCore/QStringList>
 
-#define DEBUG "majiro"
+//#define DEBUG "majiro"
 #include "sakurakit/skdebug.h"
+
+// Used to get function's return address
+// http://stackoverflow.com/questions/8797943/finding-a-functions-address-in-c
+#pragma intrinsic(_ReturnAddress)
 
 /** Private class */
 
@@ -22,54 +26,13 @@ class MajiroEnginePrivate
 {
   typedef MajiroEngine Q;
 
-  // Return the number of bits in the integer
-  // Brian-Kemighan's method
-  // http://stackoverflow.com/questions/109023/how-to-count-the-number-of-set-bits-in-a-32-bit-integer
-  //static int bitCount(quint8 value)
-  //{
-  //  int count = 0;
-  //  for (; value; count++)
-  //    value &= value -1;
-  //  return count;
-  //}
-  //static int bitCount(qint32 i)
-  //{
-  //  i = i - ((i >> 1) & 0x55555555);
-  //  i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
-  //  return (((i + (i >> 4)) & 0x0f0f0f0f) * 0x01010101) >> 24;
-  //}
-
   /**
-   *  Observeations from レミニセンス:
-   *  - arg1 of the scenario is a fixed portable value.
-   *  - arg2 of the scenario is not portable, but a constant for each run.
-   *  - arg1 and arg2 2of both the name and other texts are random number.
-   *  - arg2's first 4 bytes of name and scenario texts are the same.
-   *  - arg4 is not portable, but a contant for each run.
-   *  - arg5 is aways 1.
-   *  - Scenario always comes after name
-   *  - Scenario size always larger than (800,600), less than (1920,1080)
-   *
-   *  Game-specific arg1:
-   *  - 暁の護衛 罪深き終末論: 32 = 0x20 = ' '
-   *  - レミニセンス: 48 = 0x30 = '0'
-   *  - PotentialAbility: 0xa0
+   *  Compute ITH's split value from the first parameter of the hooked fuction.
+   *  Let eax be arg1, the original logic in MajiroSpecialHook is:
+   *      ([eax+0x28] & 0xff) | (([eax+0x48] >> 1) & 0xffffff00)
    */
-  static Engine::TextRole roleOf(LPCSTR arg1, LPSIZE arg2)
-  {
-    static DWORD scenarioArg2_;
-
-    enum { ScenarioMinWidth = 600, ScenarioMinHeight = 400 }; // always larger than 800, 800*3
-    if (arg1 && !(BYTE(arg1) & 0xf) && // lower 4 bits are zero
-        arg2 && arg2->cx > ScenarioMinWidth && arg2->cy > ScenarioMinHeight) {
-      scenarioArg2_ = (DWORD)arg2;
-      return Engine::ScenarioRole;
-    }
-    enum { ScenarioMask = 0xffff0000 };
-    if ((scenarioArg2_ & ScenarioMask) == ((DWORD)arg2 & ScenarioMask)) // the higher four bits of the scenario and the name are the same
-      return Engine::NameRole;
-    return Engine::OtherRole;
-  }
+  static DWORD splitOf(DWORD *arg1)
+  { return (arg1[10] & 0xff) | ((arg1[18] >> 1) & 0xffffff00); }
 
 public:
 
@@ -99,17 +62,30 @@ public:
 
   static int __cdecl newHook(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR output4, int const5)
   {
+    // Compute ITH signature
+    qint32 signature;
+    {
+      DWORD returnAddress = (DWORD)_ReturnAddress(),
+            split = splitOf((DWORD *)fontName1);
+      // The following logic is consistent with VNR's old texthook
+      signature = (returnAddress & 0xffff)  // context
+                | (split & 0xffff) << 16;   // subcontext
+    }
+
     //return oldHook(arg1, arg2, str, arg4, arg5);
     auto q = static_cast<Q *>(AbstractEngine::instance());
-    auto role = roleOf(fontName1, canvasSize2);
 #ifdef DEBUG
     qDebug() << QString::fromLocal8Bit(fontName1) << ":"
              << canvasSize2->cx << "," << canvasSize2->cy << ":"
              << QString::fromLocal8Bit(text3) << ":"
              << QString::fromLocal8Bit(output4 ? output4 : "(null)") << ":"
-             << const5;
+             << const5 << ";"
+             << " signature: " << QString::number(signature, 16);
 #endif // DEBUG
-    QByteArray data = q->dispatchTextA(text3, role);
+    //const char *data = q->exchangeTextA(text3, signature);
+    //if (!data)
+    //  return oldHook(fontName1, canvasSize2, data, output4, const5);
+    QByteArray data = q->dispatchTextA(text3, signature);
     if (!data.isEmpty())
       return oldHook(fontName1, canvasSize2, data, output4, const5);
     else {
@@ -134,9 +110,10 @@ bool MajiroEngine::attach()
     return false;
   DWORD startAddress,
         stopAddress;
-  if (!Engine::getMemoryRange(nullptr, &startAddress, &stopAddress))
+  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
-  D::hookAddress = MemDbg::findCallerAddress(dwTextOutA, 0xec81, startAddress, stopAddress);
+  enum { CallerPattern = 0xec81 };
+  D::hookAddress = MemDbg::findCallerAddress(dwTextOutA, CallerPattern, startAddress, stopAddress);
   // Note: ITH will mess up this value
   //D::hookAddress = 0x41af90; // レミニセンス function address
   if (!D::hookAddress)
@@ -144,8 +121,7 @@ bool MajiroEngine::attach()
   D::oldHook = detours::replace<D::hook_fun_t>(D::hookAddress, D::newHook);
   //addr = 0x41f650; // 2
   //addr = 0x416ab0;
-  //D::oldtest = detours::replace<D::test_fun_t>(addr, D::newtest);
-  return true;
+  return D::oldHook;
 }
 
 bool MajiroEngine::detach()
@@ -173,3 +149,20 @@ void MajiroEngine::releaseContext(void *context)
   delete static_cast<D::Context *>(context);
 }
 */
+
+  /*
+   *  Observeations from レミニセンス:
+   *  - arg1 of the scenario is a fixed portable value.
+   *  - arg2 of the scenario is not portable, but a constant for each run.
+   *  - arg1 and arg2 2of both the name and other texts are random number.
+   *  - arg2's first 4 bytes of name and scenario texts are the same.
+   *  - arg4 is not portable, but a contant for each run.
+   *  - arg5 is aways 1.
+   *  - Scenario always comes after name
+   *  - Scenario size always larger than (800,600), less than (1920,1080)
+   *
+   *  Game-specific arg1:
+   *  - 暁の護衛 罪深き終末論: 32 = 0x20 = ' '
+   *  - レミニセンス: 48 = 0x30 = '0'
+   *  - PotentialAbility: 0xa0
+   */

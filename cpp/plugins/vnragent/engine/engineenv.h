@@ -22,6 +22,9 @@ QString getNormalizedProcessName();
 
 bool getMemoryRange(const wchar_t *moduleName, unsigned long *startAddress, unsigned long *stopAddress);
 
+inline bool getCurrentMemoryRange(unsigned long *startAddress, unsigned long *stopAddress)
+{ return getMemoryRange(nullptr, startAddress, stopAddress); }
+
 // This function might be cached and hence not thread-safe
 unsigned long getModuleFunction(const char *moduleName, const char *funcName);
 

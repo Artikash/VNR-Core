@@ -20,8 +20,7 @@ public:
   ~EmbedDriver();
 
 signals:
-  void textReceived(QString text, qint64 hash, int role, bool needsTranslation);
-  void textReceivedDelayed(QString text, qint64 hash, int role, bool needsTranslation);
+  void textReceived(QString text, qint64 hash, long signature, int role, bool needsTranslation);
   void engineNameChanged(QString name);
 public slots:
   void sendEngineName();
@@ -45,6 +44,9 @@ public slots:
   void setOtherExtractionEnabled(bool t);
   void setOtherTranscodingEnabled(bool t);
   void setOtherTranslationEnabled(bool t);
+
+  void setScenarioSignature(long v);
+  void setNameSignature(long v);
 
   // Called by engine
 public:

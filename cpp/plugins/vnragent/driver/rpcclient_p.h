@@ -102,22 +102,13 @@ public:
 
   void sendEngineName(const QString &name) { callServer("agent.engine.name", name); }
 
-  void sendEngineText(const QString &text, qint64 hash, int role, bool needsTranslation)
+  void sendEngineText(const QString &text, qint64 hash, long signature, int role, bool needsTranslation)
   {
     callServer(QStringList()
         << "agent.engine.text"
         << text
         << marshalInteger(hash)
-        << marshalInteger(role)
-        << marshalBool(needsTranslation));
-  }
-
-  void sendEngineTextLater(const QString &text, qint64 hash, int role, bool needsTranslation)
-  {
-    callServerLater(QStringList()
-        << "agent.engine.text"
-        << text
-        << marshalInteger(hash)
+        << marshalInteger(signature)
         << marshalInteger(role)
         << marshalBool(needsTranslation));
   }

@@ -242,7 +242,7 @@ int ProcessHook(DWORD dwDataBase, DWORD dwRetn, TextHook *hook) // Use SEH to en
 }
 #endif // 1
 
- // jichi 12/13/2013: return if the retn address is withi8n the filter dlls
+ // jichi 12/13/2013: return if the retn address is within the filter dlls
 inline bool HookFilter(DWORD retn)
 {
   for (DWORD i = 0; ::filter[i].lower; i++)
@@ -258,6 +258,10 @@ inline bool HookFilter(DWORD retn)
 // jichi 12/2/2013: This function mostly return 0.
 // It return the hook address only for auxiliary case.
 // However, because no known hooks are auxiliary, this function always return 0.
+//
+// jichi 5/11/2014:
+// - dwDataBase: the stack address
+// - dwRetn: the return address of the hook
 DWORD TextHook::Send(DWORD dwDataBase, DWORD dwRetn)
 {
   DWORD ret = 0;

@@ -33,7 +33,7 @@ public:
   EngineSettings *settings() const;
 
   const char *name() const;
-  const char *encoding() const;
+  Encoding encoding() const;
 
   bool isTranscodingNeeded() const;
 
@@ -47,11 +47,11 @@ protected:
   virtual bool attach() = 0;
   virtual bool detach() = 0;
 
-  QByteArray dispatchTextA(const QByteArray &data, int role) const;
-  //QString dispatchTextW(const QString &text, int role, bool blocking = true) const;
+  QByteArray dispatchTextA(const QByteArray &data, long signature, int role = 0);
+  //QString dispatchTextW(const QString &text, long signature, int role = 0);
 
   // This function is not thread-safe
-  const char *exchangeTextA(const char *data, int role);
+  const char *exchangeTextA(const char *data, long signature, int role = 0);
 };
 
 // EOF

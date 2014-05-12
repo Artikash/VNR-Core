@@ -38,6 +38,11 @@ public:
   AbstractEnginePrivate(Q *q, const char *name, Q::Encoding encoding, Q::RequiredAttributes attributes);
   ~AbstractEnginePrivate();
 
+  // Property helpers
+
+  bool testAttribute(Q::RequiredAttribute v) const { return attributes & v; }
+  bool testAttributes(Q::RequiredAttributes v) const { return attributes & v; }
+
   // Encoding
 
   QByteArray encode(const QString &text) const;

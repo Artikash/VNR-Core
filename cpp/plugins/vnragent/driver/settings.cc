@@ -32,6 +32,9 @@ public:
 
   QString gameEncoding;
 
+  long scenarioSignature,
+       nameSignature;
+
   SettingsPrivate()
      : windowTranslationEnabled(false)
      , windowTranscodingEnabled(false)
@@ -50,6 +53,8 @@ public:
      , embeddedTextCancellableByControl(false)
      , embeddedTranslationWaitTime(1000) // 1 second
      , gameEncoding("shift-jis")
+     , scenarioSignature(0)
+     , nameSignature(0)
   {}
 };
 
@@ -78,6 +83,7 @@ Settings::~Settings()
 
 #define DEFINE_BOOL_PROPERTY(property, getter, setter)      DEFINE_PROPERTY(property, getter, setter, bool, bool)
 #define DEFINE_INT_PROPERTY(property, getter, setter)       DEFINE_PROPERTY(property, getter, setter, int, int)
+#define DEFINE_LONG_PROPERTY(property, getter, setter)      DEFINE_PROPERTY(property, getter, setter, long, long)
 #define DEFINE_STRING_PROPERTY(property, getter, setter)    DEFINE_PROPERTY(property, getter, setter, QString, const QString &)
 
 DEFINE_BOOL_PROPERTY(windowTranslationEnabled, isWindowTranslationEnabled, setWindowTranslationEnabled)
@@ -100,6 +106,9 @@ DEFINE_BOOL_PROPERTY(embeddedTextCancellableByControl, isEmbeddedTextCancellable
 DEFINE_INT_PROPERTY(embeddedTranslationWaitTime, embeddedTranslationWaitTime, setEmbeddedTranslationWaitTime)
 
 DEFINE_STRING_PROPERTY(gameEncoding, gameEncoding, setGameEncoding)
+
+DEFINE_LONG_PROPERTY(scenarioSignature, scenarioSignature, setScenarioSignature)
+DEFINE_LONG_PROPERTY(nameSignature, nameSignature, setNameSignature)
 
 // Groupped settings
 
@@ -147,6 +156,8 @@ void Settings::load(const QString &json)
     , H_embeddedTranslationWaitTime = 245002357
     , H_embeddedTextEnabled = 261153908
     , H_embeddedTextCancellableByControl = 96153884
+    , H_scenarioSignature = 246832709
+    , H_nameSignature = 122678949
 
     , H_windowTranslationEnabled = 79059828
     , H_windowTranscodingEnabled = 219567700
@@ -192,6 +203,9 @@ void Settings::load(const QString &json)
     case H_embeddedTextCancellableByControl: setEmbeddedTextCancellableByControl(bValue); break;
 
     case H_embeddedTranslationWaitTime: setEmbeddedTranslationWaitTime(value.toInt()); break;
+
+    case H_scenarioSignature: setScenarioSignature(value.toLong()); break;
+    case H_nameSignature: setNameSignature(value.toLong()); break;
 
     case H_gameEncoding: setGameEncoding(value); break;
 

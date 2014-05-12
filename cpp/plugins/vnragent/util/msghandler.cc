@@ -60,7 +60,7 @@ void Util::installDebugMsgHandler()
     if (file.open(QIODevice::Text|QIODevice::WriteOnly)) {
       QTextStream(&file)
           << "This log file is created by VNR hook for each game. For bug report, please also attach this file.\n"
-             "Application path:" << QCoreApplication::applicationFilePath() << "\n";
+             "Application path: " << QCoreApplication::applicationFilePath() << "\n";
       qInstallMsgHandler(debugMsgHandler);
     }
   }

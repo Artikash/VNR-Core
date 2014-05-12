@@ -99,10 +99,10 @@ void MainDriverPrivate::createEmbedDriver()
   eng = new EmbedDriver(this);
 
   // Use queued connection to quarantine the engine thrread
-  connect(eng, SIGNAL(textReceived(QString,qint64,int,bool)), rpc, SLOT(sendEngineText(QString,qint64,int,bool)),
+  connect(eng, SIGNAL(textReceived(QString,qint64,long,int,bool)), rpc, SLOT(sendEngineText(QString,qint64,long,int,bool)),
       Qt::QueuedConnection);
-  connect(eng, SIGNAL(textReceivedDelayed(QString,qint64,int,bool)), rpc, SLOT(sendEngineTextLater(QString,qint64,int,bool)),
-      Qt::QueuedConnection);
+  //connect(eng, SIGNAL(textReceivedDelayed(QString,qint64,int,bool)), rpc, SLOT(sendEngineTextLater(QString,qint64,int,bool)),
+  //    Qt::QueuedConnection);
   connect(eng, SIGNAL(engineNameChanged(QString)), rpc, SLOT(sendEngineName(QString)));
   connect(rpc, SIGNAL(clearTranslationRequested()), eng, SLOT(clearTranslation()));
   //connect(rpc, SIGNAL(enableEngineRequested(bool)), eng, SLOT(setEnable(bool)));
@@ -124,6 +124,9 @@ void MainDriverPrivate::createEmbedDriver()
   connect(settings, SIGNAL(embeddedTextEnabledChanged(bool)), eng, SLOT(setEnabled(bool)));
   connect(settings, SIGNAL(embeddedTextCancellableByControlChanged(bool)), eng, SLOT(setDetectsControl(bool)));
 
+  connect(settings, SIGNAL(scenarioSignatureChanged(long)), eng, SLOT(setScenarioSignature(long)));
+  connect(settings, SIGNAL(nameSignatureChanged(long)), eng, SLOT(setNameSignature(long)));
+
   connect(settings, SIGNAL(embeddedTranslationWaitTimeChanged(int)), eng, SLOT(setTranslationWaitTime(int)));
   eng->setTranslationWaitTime(settings->embeddedTranslationWaitTime());
 
@@ -138,6 +141,9 @@ void MainDriverPrivate::createEmbedDriver()
     eng->setOtherVisible(settings->isEmbeddedOtherVisible());
     eng->setOtherTranscodingEnabled(settings->isEmbeddedOtherTranscodingEnabled());
     eng->setOtherTranslationEnabled(settings->isEmbeddedOtherTranslationEnabled());
+
+    eng->setScenarioSignature(settings->scenarioSignature());
+    eng->setNameSignature(settings->nameSignature());
 
     // Always enable text extraction
     eng->setScenarioExtractionEnabled(true);

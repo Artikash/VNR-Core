@@ -50,6 +50,9 @@ public:
   qint64 dataHash() const;
   void setDataHash(qint64 v);
 
+  //qint32 dataSignature() const;
+  //void setDataSignature(qint32 v);
+
   qint8 dataRole() const;
   void setDataRole(qint8 v);
 

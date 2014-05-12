@@ -35,19 +35,18 @@ AbstractEnginePrivate::~AbstractEnginePrivate()
 void AbstractEnginePrivate::finalize()
 {
   finalizeCodecs();
-  if (attribute & Q::ExchangeAttribute)
+  if (testAttribute(Q::ExchangeAttribute))
     startExchange();
 }
 
 void AbstractEnginePrivate::startExchange()
 {
-  //if (attributes & Q::ExchangeAttribute)
   exchangeMemory = new EngineSharedMemory;
 
   exchangeTimer = new QTimer(this);
   exchangeTimer->setSingleShot(false);
   exchangeTimer->setInterval(ExchangeInterval);
-  connect(exchangeTimer, SIGNAL(timeout()), SLOT(exchangeMemory()));
+  connect(exchangeTimer, SIGNAL(timeout()), SLOT(exchange()));
 
   exchangeTimer->start();
 }
@@ -80,7 +79,8 @@ void AbstractEnginePrivate::exchange()
     if (auto req = exchangeMemory->requestText()) {
       auto key = exchangeMemory->requestKey();
       auto role = exchangeMemory->requestRole();
-      QByteArray resp = q_->dispatchTextA(req, role);
+      auto sig = exchangeMemory->requestSignature();
+      QByteArray resp = q_->dispatchTextA(req, sig, role);
       exchangeMemory->setResponseStatus(EngineSharedMemory::BusyStatus);
       exchangeMemory->setResponseText(resp);
       exchangeMemory->setResponseRole(role);
@@ -123,7 +123,7 @@ AbstractEngine::~AbstractEngine() { delete d_; }
 
 EngineSettings *AbstractEngine::settings() const { return d_->settings; }
 const char *AbstractEngine::name() const { return d_->name; }
-const char *AbstractEngine::encoding() const { return d_->encoding; }
+AbstractEngine::Encoding AbstractEngine::encoding() const { return d_->encoding; }
 
 bool AbstractEngine::isTranscodingNeeded() const
 { return d_->encoder != d_->decoder; }
@@ -135,7 +135,7 @@ bool AbstractEngine::load()
   bool ok = attach();
   if (ok)
     d_->finalize();
-  return ok
+  return ok;
 }
 
 bool AbstractEngine::unload()
@@ -147,11 +147,14 @@ bool AbstractEngine::unload()
 
 // - Dispatch -
 
-QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role) const
+QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, long signature, int role)
 {
   QString text = d_->decode(data);
   if (text.isEmpty())
     return data;
+
+  if (!role)
+    role = d_->settings->textRoleOf(signature);
 
   auto p = EmbedManager::instance();
 
@@ -161,7 +164,7 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role) const
   qint64 hash = canceled ? 0 : Engine::hashByteArray(data);
   if (!canceled && d_->settings->extractionEnabled[role] && !d_->settings->translationEnabled[role]) {
     enum { NeedsTranslation = false };
-    p->sendText(text, hash, role, NeedsTranslation);
+    p->sendText(text, hash, signature, role, NeedsTranslation);
   }
 
   if (!d_->settings->textVisible[role])
@@ -175,8 +178,8 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role) const
 
   QString repl = p->findTranslation(hash, role);
   bool needsTranslation = repl.isEmpty();
-  p->sendText(text, hash, role, needsTranslation);
-  if (needsTranslation && d_->attributes & BlockingRequired)
+  p->sendText(text, hash, signature, role, needsTranslation);
+  if (needsTranslation && d_->testAttribute(BlockingAttribute))
     repl = p->waitForTranslation(hash, role);
 
   if (repl.isEmpty())
@@ -187,7 +190,7 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role) const
   return d_->encode(repl);
 }
 
-//QString AbstractEngine::dispatchTextW(const QString &text, int role, bool blocking) const
+//QString AbstractEngine::dispatchTextW(const QString &text, int role, bool blocking)
 //{
 //  if (text.isEmpty() || !d_->settings->textVisible[role])
 //    return QString();
@@ -207,16 +210,16 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role) const
 // - Exchange -
 
 // Qt is not allowed to appear in this function
-const char *AbstractEngine::exchangeTextA(const char *data, int role)
+const char *AbstractEngine::exchangeTextA(const char *data, long signature, int role)
 {
-  //Q_ASSERT(d_->attributes & ExchangeAttribute);
   auto d_mem = d_->exchangeMemory;
   if (!d_mem || !data)
     return data;
 
-  ulong key = ::GetGetTickCount();
+  ulong key = ::GetTickCount();
   d_mem->setRequestStatus(EngineSharedMemory::BusyStatus);
   d_mem->setRequestKey(key);
+  d_mem->setRequestSignature(signature);
   d_mem->setRequestRole(role);
   d_mem->setRequestText(data);
   d_mem->setRequestStatus(EngineSharedMemory::ReadyStatus);

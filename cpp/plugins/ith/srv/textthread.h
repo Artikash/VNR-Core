@@ -16,10 +16,10 @@ struct RepeatCountNode {
 };
 
 struct ThreadParameter {
-  DWORD pid;
+  DWORD pid; // jichi: 5/11/2014: The process ID
   DWORD hook;
-  DWORD retn;
-  DWORD spl;
+  DWORD retn; // jichi 5/11/2014: The return address of the hook
+  DWORD spl;  // jichi 5/11/2014: the processed split value of the hook parameter
 };
 
 #define CURRENT_SELECT 0x1000

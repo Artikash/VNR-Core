@@ -7,7 +7,7 @@
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 
-#define DEBUG "test"
+#define DEBUG "bgi"
 
 #include "sakurakit/skdebug.h"
 #ifdef DEBUG
@@ -38,8 +38,8 @@ public:
   static int __cdecl newHook(DWORD arg1, DWORD arg2, LPCSTR arg3, DWORD arg4)
   {
     auto q = static_cast<Q *>(AbstractEngine::instance());
-    auto role = Engine::TextRole; // TODO
-    const char *repl = q->exchangeTextA(arg3, role);
+    long sig = 0; // TODO
+    const char *repl = q->exchangeTextA(arg3, sig, Engine::ScenarioRole);
     // TODO: Investigate the return value
     return repl ? oldHook(arg1, arg2, repl, arg4) : 0;
   }
@@ -60,7 +60,7 @@ bool BGIEngine::attach()
   //detours::replace((detours::address_t)dwTextOutA, (detours::address_t)MyTextOutA);
   DWORD startAddress,
         stopAddress;
-  if (!Engine::getMemoryRange(nullptr, &startAddress, &stopAddress))
+  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
   //D::hookAddress = MemDbg::findCallerAddress(dwTextOutA, 0xec81, startAddress, stopAddress);
   DWORD reladdr = 0x31850; // 世界と世界の真ん中 体験版
@@ -68,7 +68,7 @@ bool BGIEngine::attach()
   if (!D::hookAddress)
     return false;
   D::oldHook = detours::replace<D::hook_fun_t>(D::hookAddress, D::newHook);
-  return true;
+  return D::oldHook;
 }
 
 bool BGIEngine::detach()

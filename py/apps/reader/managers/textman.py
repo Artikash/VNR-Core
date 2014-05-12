@@ -415,6 +415,7 @@ class _TextManager(object):
     @param  role  int
     @param* needsTranslation  bool
     """
+    # TODO: Be aware of the signature
     if role == SCENARIO_THREAD_TYPE:
       #if self.agentNameBuffer:
       #  self._flushAgentName()
@@ -906,10 +907,11 @@ class TextManager(QObject):
       d.showScenarioText(rawData=rawData, renderedData=renderedData, agent=False)
     #d.locked = False
 
-  def addAgentText(self, text, rawHash, role, needsTranslation):
+  def addAgentText(self, text, rawHash, sig, role, needsTranslation):
     """
     @param  text  unicode
     @param  rawHash  str
+    @param  sig  long  ITH signature, currently not used
     @param  role  int
     @param  needsTranslation  bool
     """
