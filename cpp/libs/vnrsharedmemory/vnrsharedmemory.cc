@@ -28,7 +28,7 @@ public:
   Head *head() { return reinterpret_cast<Head *>(memory->data()); }
   const Head *constHead() const { return reinterpret_cast<const Head *>(memory->constData()); }
 
-  int maxTextSize() const
+  int textCapacity() const
   { return (memory->size() - sizeof(Head)) / 2; }
 };
 
@@ -68,8 +68,8 @@ bool VnrSharedMemory::hasError() const { return d_->memory->error() != QSharedMe
 const char *VnrSharedMemory::constData() const
 { return reinterpret_cast<const char *>(d_->memory->constData()); }
 
-int VnrSharedMemory::dataTextMaximumSize() const
-{ return qMax(0, d_->maxTextSize()); }
+int VnrSharedMemory::dataTextCapacity() const
+{ return qMax(0, d_->textCapacity()); }
 
 qint64 VnrSharedMemory::dataHash() const
 {
@@ -116,7 +116,7 @@ void VnrSharedMemory::setDataRole(qint8 v)
 QString VnrSharedMemory::dataText() const
 {
   if (auto h = d_->constHead())
-    if (h->textSize > 0 && h->textSize <= d_->maxTextSize())
+    if (h->textSize > 0 && h->textSize <= d_->textCapacity())
       return QString::fromWCharArray(h->text, h->textSize);
   return QString();
 }
@@ -124,7 +124,7 @@ QString VnrSharedMemory::dataText() const
 void VnrSharedMemory::setDataText(const QString &v)
 {
   if (auto h = d_->head()) {
-    int limit = d_->maxTextSize();
+    int limit = d_->textCapacity();
     if (v.size() <= limit) {
       v.toWCharArray(h->text);
       h->textSize = v.size();

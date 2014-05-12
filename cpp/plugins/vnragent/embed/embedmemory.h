@@ -17,7 +17,12 @@ public:
 
   bool create();
 
-  enum { EmptyStatus = 0, ReadyStatus, BusyStatus, CancelStatus };
+  enum DataStatus {
+    EmptyStatus = 0 // There is no data
+    , ReadyStatus   // The data is ready to read
+    , BusyStatus    // The producer is busy writing the data
+    , CancelStatus  // The data requires is cancelled
+  };
 
   bool isDataEmpty() const { return dataStatus() == EmptyStatus; }
   bool isDataReady() const { return dataStatus() == ReadyStatus; }

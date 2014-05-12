@@ -205,6 +205,12 @@ CONFIG(pysideplugin) {
   INCLUDEPATH += $$QT_HOME/include/QtGui # needed by pyside qtcore
 
   # Ignore warnings from Shiboken and PySide
+  mac {
+    QMAKE_CXXFLAGS_WARN_ON += -Wno-header-guard
+    QMAKE_CXXFLAGS_WARN_ON += -Wno-mismatched-tags  # struct SbkObject was previously declared as a class
+    QMAKE_CXXFLAGS_WARN_ON += -Wno-missing-field-initializers
+    QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter
+  }
   win32 {
     # QMAKE_CXXFLAGS_WARN_ON does not work on windows
     #

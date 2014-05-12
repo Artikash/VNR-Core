@@ -2,56 +2,78 @@
 // 4/20/2014 jichi
 
 #include "engine/engine.h"
+#include "engine/engine_p.h"
 #include "engine/enginehash.h"
 #include "engine/engineloader.h"
+#include "engine/enginememory.h"
 #include "engine/enginesettings.h"
 #include "embed/embedmanager.h"
 #include "util/codepage.h"
 #include "util/textutil.h"
 #include "winkey/winkey.h"
 #include <qt_windows.h>
+#include <QtCore/QTimer>
 #include <QtCore/QTextCodec>
 
 /** Private class */
 
-class AbstractEnginePrivate
+AbstractEnginePrivate::AbstractEnginePrivate(Q *q, const char *name, Q::Encoding encoding, Q::RequiredAttributes attributes)
+  :  q_(q)
+  , name(name), encoding(encoding), attributes(attributes)
+  , settings(new EngineSettings), memory(nullptr)
+  , exchangeTimer(nullptr)
 {
-public:
-  const char *name,
-             *encoding;
+  const char *engineEncoding = Q::encodingName(encoding);
+  decoder = engineEncoding ? QTextCodec::codecForName(engineEncoding) : nullptr;
 
-  const char *systemEncoding;
-  QTextCodec *encoder,
-             *decoder;
+  const char *systemEncoding = Util::encodingForCodePage(::GetACP());
+  encoder = QTextCodec::codecForName(systemEncoding ? systemEncoding : ENC_SJIS);
 
-  EngineSettings *settings;
+  if (attributes & Q::ExchangeAttribute) {
+    memory = new EngineSharedMemory;
 
-  AbstractEnginePrivate(const char *name, const char *encoding)
-    :  name(name), encoding(encoding)
-    , settings(new EngineSettings)
-  {
-    decoder = encoding ? QTextCodec::codecForName(encoding) : nullptr;
-
-    systemEncoding = Util::encodingForCodePage(::GetACP());
-    if (!systemEncoding)
-      systemEncoding = ENC_SJIS;
-    encoder = QTextCodec::codecForName(systemEncoding);
+    exchangeTimer = new QTimer(this);
+    exchangeTimer->setSingleShot(false);
+    exchangeTimer->setInterval(ExchangeInterval);
+    connect(exchangeTimer, SIGNAL(timeout()), SLOT(exchangeMemory()));
   }
+}
 
-  ~AbstractEnginePrivate() { delete settings; }
+AbstractEnginePrivate::~AbstractEnginePrivate()
+{
+  delete settings;
+  if (memory)
+    delete memory;
+}
 
-  // Utilities
+ // Encoding
 
-  QByteArray encode(const QString &text) const
-  { return encoder ? encoder->fromUnicode(text) : text.toLocal8Bit(); }
+ QByteArray AbstractEnginePrivate::encode(const QString &text) const
+ { return encoder ? encoder->fromUnicode(text) : text.toLocal8Bit(); }
 
-  QString decode(const QByteArray &data) const
-  { return decoder ? decoder->toUnicode(data) : QString::fromLocal8Bit(data); }
+QString AbstractEnginePrivate::decode(const QByteArray &data) const
+{ return decoder ? decoder->toUnicode(data) : QString::fromLocal8Bit(data); }
 
-  //QByteArray transcode(const QByteArray &data) const
-  //{ return !encoder || !decoder || encoder == decoder ? data : encoder->fromUnicode(decoder->toUnicode(data)); }
+// Exchange
 
-};
+void AbstractEnginePrivate::exchangeMemory()
+{
+  if (!memory)
+    return;
+  if (memory->requestStatus() == EngineSharedMemory::ReadyStatus) {
+    memory->setRequestStatus(EngineSharedMemory::EmptyStatus);
+    if (auto req = memory->requestText()) {
+      auto key = memory->requestKey();
+      auto role = memory->requestRole();
+      QByteArray resp = q_->dispatchTextA(req, role);
+      memory->setResponseStatus(EngineSharedMemory::BusyStatus);
+      memory->setResponseText(resp);
+      memory->setResponseRole(role);
+      memory->setResponseKey(key);
+      memory->setResponseStatus(EngineSharedMemory::ReadyStatus);
+    }
+  }
+}
 
 /** Public class */
 
@@ -70,8 +92,17 @@ AbstractEngine *AbstractEngine::instance()
 
 // - Construction -
 
-AbstractEngine::AbstractEngine(const char *name, const char *encoding)
-  : d_(new D(name, encoding)) {}
+const char *AbstractEngine::encodingName(Encoding v)
+{
+  switch (v) {
+  case Utf16Encoding: return ENC_UTF16;
+  case SjisEncoding: return ENC_SJIS;
+  default: return nullptr;
+  }
+}
+
+AbstractEngine::AbstractEngine(const char *name, Encoding encoding, RequiredAttributes attributes)
+  : d_(new D(this, name, encoding, attributes)) {}
 
 AbstractEngine::~AbstractEngine() { delete d_; }
 
@@ -82,9 +113,26 @@ const char *AbstractEngine::encoding() const { return d_->encoding; }
 bool AbstractEngine::isTranscodingNeeded() const
 { return d_->encoder != d_->decoder; }
 
+// - Attach -
+
+bool AbstractEngine::load()
+{
+  bool ok = attach();
+  if (ok && d_->exchangeTimer)
+    d_->exchangeTimer->start();
+  return ok
+}
+
+bool AbstractEngine::unload()
+{
+  if ( d_->exchangeTimer)
+    d_->exchangeTimer->stop();
+  return detach();
+}
+
 // - Dispatch -
 
-QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool blocking) const
+QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role) const
 {
   QString text = d_->decode(data);
   if (text.isEmpty())
@@ -113,7 +161,7 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool 
   QString repl = p->findTranslation(hash, role);
   bool needsTranslation = repl.isEmpty();
   p->sendText(text, hash, role, needsTranslation);
-  if (needsTranslation && blocking)
+  if (needsTranslation && d_->attributes & BlockingRequired)
     repl = p->waitForTranslation(hash, role);
 
   if (repl.isEmpty())
@@ -140,5 +188,31 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role, bool 
 //
 //  return repl;
 //}
+
+// - Exchange -
+
+// Qt is not allowed to appear in this function
+const char *AbstractEngine::exchangeTextA(const char *data, int role)
+{
+  //Q_ASSERT(d_->attributes & ExchangeAttribute);
+  if (!data || !d_->memory)
+    return data;
+  ulong key = ::GetGetTickCount();
+  auto d_mem = d_->memory;
+  d_mem->setRequestStatus(EngineSharedMemory::BusyStatus);
+  d_mem->setRequestKey(key);
+  d_mem->setRequestRole(role);
+  d_mem->setRequestText(data);
+  d_mem->setRequestStatus(EngineSharedMemory::ReadyStatus);
+
+  // Spin lock
+  while (d_mem->responseKey() != key ||
+         d_mem->responseStatus() != EngineSharedMemory::ReadyStatus) {
+    if (d_mem->responseStatus() == EngineSharedMemory::CancelStatus)
+      return data;
+    ::Sleep(D::ExchangeInterval);
+  }
+  return d_->memory->responseText();
+}
 
 // EOF

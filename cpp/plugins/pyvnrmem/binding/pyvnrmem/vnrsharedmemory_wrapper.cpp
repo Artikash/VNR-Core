@@ -701,7 +701,7 @@ static PyObject* Sbk_VnrSharedMemoryFunc_dataText(PyObject* self)
     return pyResult;
 }
 
-static PyObject* Sbk_VnrSharedMemoryFunc_dataTextMaximumSize(PyObject* self)
+static PyObject* Sbk_VnrSharedMemoryFunc_dataTextCapacity(PyObject* self)
 {
     VnrSharedMemoryWrapper* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -714,9 +714,9 @@ static PyObject* Sbk_VnrSharedMemoryFunc_dataTextMaximumSize(PyObject* self)
     {
 
         if (!PyErr_Occurred()) {
-            // dataTextMaximumSize()const
+            // dataTextCapacity()const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            int cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->dataTextMaximumSize();
+            int cppResult = const_cast<const ::VnrSharedMemoryWrapper*>(cppSelf)->dataTextCapacity();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
         }
@@ -1181,7 +1181,7 @@ static PyMethodDef Sbk_VnrSharedMemory_methods[] = {
     {"dataRole", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataRole, METH_NOARGS},
     {"dataStatus", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataStatus, METH_NOARGS},
     {"dataText", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataText, METH_NOARGS},
-    {"dataTextMaximumSize", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataTextMaximumSize, METH_NOARGS},
+    {"dataTextCapacity", (PyCFunction)Sbk_VnrSharedMemoryFunc_dataTextCapacity, METH_NOARGS},
     {"detach_", (PyCFunction)Sbk_VnrSharedMemoryFunc_detach_, METH_NOARGS},
     {"errorString", (PyCFunction)Sbk_VnrSharedMemoryFunc_errorString, METH_NOARGS},
     {"hasError", (PyCFunction)Sbk_VnrSharedMemoryFunc_hasError, METH_NOARGS},

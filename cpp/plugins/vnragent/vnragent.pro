@@ -59,10 +59,12 @@ HEADERS += \
   embed/embedmanager.h \
   embed/embedmemory.h \
   engine/engine.h \
+  engine/engine_p.h \
   engine/enginedef.h \
   engine/engineenv.h \
   engine/enginehash.h \
   engine/engineloader.h \
+  engine/enginememory.h \
   engine/enginesettings.h \
   hijack/hijackdriver.h \
   hijack/hijackfuncs.h \
@@ -92,6 +94,7 @@ SOURCES += \
   engine/engine.cc \
   engine/engineenv.cc \
   engine/engineloader.cc \
+  engine/enginememory.cc \
   hijack/hijackdriver.cc \
   hijack/hijackfuncs.cc \
   hijack/hijackfuncs_gdi32.cc \
@@ -112,11 +115,13 @@ SOURCES += \
 
 # Engine models
 HEADERS += \
-  engine/model/majiro.h \
-  engine/model/test.h
+  engine/model/bgi.h \
+  engine/model/majiro.h
+  #engine/model/test.h
 SOURCES += \
-  engine/model/majiro.cc \
-  engine/model/test.cc
+  engine/model/bgi.cc \
+  engine/model/majiro.cc
+  #engine/model/test.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += vnragent.rc

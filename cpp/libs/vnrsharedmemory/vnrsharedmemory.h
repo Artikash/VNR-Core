@@ -55,7 +55,7 @@ public:
 
   QString dataText() const;
   void setDataText(const QString &v);
-  int dataTextMaximumSize() const;
+  int dataTextCapacity() const;
 };
 
 #endif // VNRSHAREDMEMORY_H
