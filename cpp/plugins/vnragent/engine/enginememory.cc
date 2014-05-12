@@ -1,6 +1,7 @@
 // enginememory.cc
 // 5/11/2014 jichi
 
+#include "config.h"
 #include "engine/enginememory.h"
 
 /** Private class */
@@ -9,7 +10,7 @@ class EngineSharedMemoryPrivate
 {
   typedef EngineSharedMemory Q;
 public:
-  enum { DataTextCapacity = 4096 };
+  enum { DataTextCapacity = VNRAGENT_MEMORY_SIZE }; // large enough to hold the decoded text and translation
   struct Data {
     Q::DataStatus requestStatus,
                   responseStatus;

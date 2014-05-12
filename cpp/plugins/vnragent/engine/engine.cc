@@ -1,4 +1,5 @@
-// engine.cc
+//
+engine.cc
 // 4/20/2014 jichi
 
 #include "engine/engine.h"
@@ -35,19 +36,18 @@ AbstractEnginePrivate::~AbstractEnginePrivate()
 void AbstractEnginePrivate::finalize()
 {
   finalizeCodecs();
-  if (attribute & Q::ExchangeAttribute)
+  if (testAttribute(Q::ExchangeAttribute))
     startExchange();
 }
 
 void AbstractEnginePrivate::startExchange()
 {
-  //if (attributes & Q::ExchangeAttribute)
   exchangeMemory = new EngineSharedMemory;
 
   exchangeTimer = new QTimer(this);
   exchangeTimer->setSingleShot(false);
   exchangeTimer->setInterval(ExchangeInterval);
-  connect(exchangeTimer, SIGNAL(timeout()), SLOT(exchangeMemory()));
+  connect(exchangeTimer, SIGNAL(timeout()), SLOT(exchange()));
 
   exchangeTimer->start();
 }
@@ -176,7 +176,7 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role) const
   QString repl = p->findTranslation(hash, role);
   bool needsTranslation = repl.isEmpty();
   p->sendText(text, hash, role, needsTranslation);
-  if (needsTranslation && d_->attributes & BlockingRequired)
+  if (needsTranslation && d_->testAttribute(BlockingAttribute))
     repl = p->waitForTranslation(hash, role);
 
   if (repl.isEmpty())
@@ -209,7 +209,6 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, int role) const
 // Qt is not allowed to appear in this function
 const char *AbstractEngine::exchangeTextA(const char *data, int role)
 {
-  //Q_ASSERT(d_->attributes & ExchangeAttribute);
   auto d_mem = d_->exchangeMemory;
   if (!d_mem || !data)
     return data;
