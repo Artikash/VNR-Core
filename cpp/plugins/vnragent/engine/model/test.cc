@@ -36,11 +36,11 @@ public:
   // 世界と世界の真ん中 体験版
   static int __cdecl newHook(DWORD arg1, DWORD arg2, LPCSTR arg3, DWORD arg4) //, DWORD arg4)
   {
-    win_mutex_lock<mutex_type> locker(mutex);
+    //win_mutex_lock<mutex_type> locker(mutex);
     //return oldHook(arg1, arg2, str, arg4, arg5);
-    auto q = static_cast<Q *>(AbstractEngine::instance());
-    auto role = Engine::ScenarioRole;
-    q->dispatchTextA(arg3, role);
+    //auto q = static_cast<Q *>(AbstractEngine::instance());
+    //auto role = Engine::ScenarioRole;
+    //q->dispatchTextA(arg3, role);
 #ifdef DEBUG
     //dmsg((LPCSTR)arg3);
     //qDebug() << arg1 << ":" << arg2 << ":" << arg3; //<< ":" << arg4;
