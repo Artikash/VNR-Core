@@ -134,9 +134,10 @@ bool MajiroEngine::attach()
     return false;
   DWORD startAddress,
         stopAddress;
-  if (!Engine::getMemoryRange(nullptr, &startAddress, &stopAddress))
+  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
-  D::hookAddress = MemDbg::findCallerAddress(dwTextOutA, 0xec81, startAddress, stopAddress);
+  enum { CallerPattern = 0xec81 };
+  D::hookAddress = MemDbg::findCallerAddress(dwTextOutA, CallerPattern, startAddress, stopAddress);
   // Note: ITH will mess up this value
   //D::hookAddress = 0x41af90; // レミニセンス function address
   if (!D::hookAddress)
@@ -144,8 +145,7 @@ bool MajiroEngine::attach()
   D::oldHook = detours::replace<D::hook_fun_t>(D::hookAddress, D::newHook);
   //addr = 0x41f650; // 2
   //addr = 0x416ab0;
-  //D::oldtest = detours::replace<D::test_fun_t>(addr, D::newtest);
-  return true;
+  return D::oldHook;
 }
 
 bool MajiroEngine::detach()

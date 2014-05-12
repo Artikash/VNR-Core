@@ -60,7 +60,7 @@ bool BGIEngine::attach()
   //detours::replace((detours::address_t)dwTextOutA, (detours::address_t)MyTextOutA);
   DWORD startAddress,
         stopAddress;
-  if (!Engine::getMemoryRange(nullptr, &startAddress, &stopAddress))
+  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
   //D::hookAddress = MemDbg::findCallerAddress(dwTextOutA, 0xec81, startAddress, stopAddress);
   DWORD reladdr = 0x31850; // 世界と世界の真ん中 体験版
@@ -68,7 +68,7 @@ bool BGIEngine::attach()
   if (!D::hookAddress)
     return false;
   D::oldHook = detours::replace<D::hook_fun_t>(D::hookAddress, D::newHook);
-  return true;
+  return D::oldHook;
 }
 
 bool BGIEngine::detach()

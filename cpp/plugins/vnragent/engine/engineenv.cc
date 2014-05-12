@@ -62,7 +62,8 @@ bool Engine::getMemoryRange(const wchar_t *moduleName, unsigned long *startAddre
     return true;
   }
 
-  DWORD start, stop;
+  DWORD start,
+        stop;
 
   wchar_t processName[MAX_PATH]; // cached
   if (!moduleName) {
