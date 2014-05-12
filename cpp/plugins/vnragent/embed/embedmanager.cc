@@ -15,6 +15,7 @@
 
 //#define ENGINE_SLEEP_EVENT "vnragent_engine_sleep"
 #define D_LOCK win_mutex_lock<D::mutex_type> d_lock(d_->mutex)
+//#define D_LOCK (void)0
 
 #define DEBUG "EmbedManager"
 #include "sakurakit/skdebug.h"

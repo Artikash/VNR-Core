@@ -30,23 +30,14 @@ class TestEnginePrivate
 public:
 
   static DWORD hookAddress;
-  typedef int(__cdecl *hook_fun_t)(DWORD, DWORD, LPCSTR, DWORD); //, DWORD);
+  typedef int (__cdecl *hook_fun_t)(DWORD, DWORD, LPCSTR, DWORD); // __stdcall will crash the game
   static hook_fun_t oldHook;
 
   // 世界と世界の真ん中 体験版
   static int __cdecl newHook(DWORD arg1, DWORD arg2, LPCSTR arg3, DWORD arg4) //, DWORD arg4)
   {
-    //win_mutex_lock<mutex_type> locker(mutex);
-    //return oldHook(arg1, arg2, str, arg4, arg5);
-    //auto q = static_cast<Q *>(AbstractEngine::instance());
-    //auto role = Engine::ScenarioRole;
-    //q->dispatchTextA(arg3, role);
-#ifdef DEBUG
-    //dmsg((LPCSTR)arg3);
-    //qDebug() << arg1 << ":" << arg2 << ":" << arg3; //<< ":" << arg4;
-    ::Sleep(200);
+    QByteArray data; // crash here
     arg3 = "hello";
-#endif // DEBUG
     return oldHook(arg1, arg2, arg3, arg4);
   }
 };
