@@ -164,7 +164,7 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, long signature,
   qint64 hash = canceled ? 0 : Engine::hashByteArray(data);
   if (!canceled && d_->settings->extractionEnabled[role] && !d_->settings->translationEnabled[role]) {
     enum { NeedsTranslation = false };
-    p->sendText(text, hash, role, NeedsTranslation);
+    p->sendText(text, hash, signature, role, NeedsTranslation);
   }
 
   if (!d_->settings->textVisible[role])

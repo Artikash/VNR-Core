@@ -409,10 +409,9 @@ class _TextManager(object):
     if self._flushAgentScenarioTimer.isActive():
       self._flushAgentScenarioTimer.stop()
 
-  def addAgentText(self, text, sig, role, needsTranslation=False):
+  def addAgentText(self, text, role, needsTranslation=False):
     """
     @param  text  unicode
-    @param  sig  long
     @param  role  int
     @param* needsTranslation  bool
     """
@@ -908,10 +907,11 @@ class TextManager(QObject):
       d.showScenarioText(rawData=rawData, renderedData=renderedData, agent=False)
     #d.locked = False
 
-  def addAgentText(self, text, rawHash, role, needsTranslation):
+  def addAgentText(self, text, rawHash, sig, role, needsTranslation):
     """
     @param  text  unicode
     @param  rawHash  str
+    @param  sig  long  ITH signature, currently not used
     @param  role  int
     @param  needsTranslation  bool
     """

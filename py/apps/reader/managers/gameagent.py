@@ -97,7 +97,7 @@ class GameAgent(QObject):
     if v != d.scenarioSignature:
       d.scenarioSignature = v
       if d.connectedPid:
-        d.rpc.sendSetting('scenarioSignature', v)
+        d.sendSetting('scenarioSignature', v)
 
   def nameSignature(self): return self.__d.nameSignature
 
@@ -106,7 +106,7 @@ class GameAgent(QObject):
     if v != d.nameSignature:
       d.nameSignature = v
       if d.connectedPid:
-        d.rpc.sendSetting('nameSignature', v)
+        d.sendSetting('nameSignature', v)
 
   # Shared memory
 

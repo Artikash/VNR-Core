@@ -227,8 +227,8 @@ void RpcClient::sendEngineName(const QString &name)
 void RpcClient::sendEngineText(const QString &text, qint64 hash, long signature, int role, bool needsTranslation)
 { d_->sendEngineText(text, hash, signature, role, needsTranslation); }
 
-void RpcClient::sendEngineTextLater(const QString &text, qint64 hash, int role, bool needsTranslation)
-{ d_->sendEngineTextLater(text, hash, role, needsTranslation); }
+//void RpcClient::sendEngineTextLater(const QString &text, qint64 hash, int role, bool needsTranslation)
+//{ d_->sendEngineTextLater(text, hash, role, needsTranslation); }
 
 void RpcClient::growlMessage(const QString &t) { d_->growlServer(t, D::GrowlMessage); }
 void RpcClient::growlWarning(const QString &t) { d_->growlServer(t, D::GrowlWarning); }

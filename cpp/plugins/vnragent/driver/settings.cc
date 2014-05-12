@@ -107,8 +107,8 @@ DEFINE_INT_PROPERTY(embeddedTranslationWaitTime, embeddedTranslationWaitTime, se
 
 DEFINE_STRING_PROPERTY(gameEncoding, gameEncoding, setGameEncoding)
 
-DEFINE_INT_PROPERTY(scenarioSignature, scenarioSignature, setScenarioSignature)
-DEFINE_INT_PROPERTY(nameSignature, nameSignature, setNameSignature)
+DEFINE_LONG_PROPERTY(scenarioSignature, scenarioSignature, setScenarioSignature)
+DEFINE_LONG_PROPERTY(nameSignature, nameSignature, setNameSignature)
 
 // Groupped settings
 

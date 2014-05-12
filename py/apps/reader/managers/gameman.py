@@ -1158,14 +1158,13 @@ class GameManager(QtCore.QObject):
       self.nameThreadChanged.emit(gameData.nameThreadSignature, gameData.nameThreadName)
       self.otherThreadsChanged.emit(gameData.otherThreads)
 
-      if agentConnected:
+      agentAttached = g.pid == gameagent.global_().attachedPid()
+      if agentAttached:
         sig = gameData.threadSignature
-        skevents.runlater(partial(gameagent.global_().setScenarioSignature, sig),
-            2000) # smaller than sendSettings
+        gameagent.global_().setScenarioSignature(sig)
 
         sig = gameData.nameThreadSignature if gameData.nameThreadSignature and not gameData.nameThreadDisabled else 0
-        skevents.runlater(partial(gameagent.global_().setNameSignature, sig),
-            2000) # smaller than sendSettings
+        gameagent.global_().setNameSignature(sig)
 
       task = partial(dataman.manager().loadGame, gameData)
       skevents.runlater(task, 200)
