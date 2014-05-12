@@ -7,7 +7,7 @@
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 
-#define DEBUG "test"
+#define DEBUG "bgi"
 
 #include "sakurakit/skdebug.h"
 #ifdef DEBUG
