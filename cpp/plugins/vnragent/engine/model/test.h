@@ -17,8 +17,9 @@ public:
       BlockingAttribute|ExchangeAttribute) {}
 
   static bool match();
-  bool inject() override;
-  bool unload() override;
+protected:
+  bool attach() override;
+  bool detach() override;
 };
 
 // EOF

@@ -33,11 +33,11 @@ class MajiroEnginePrivate
   //  return count;
   //}
   //static int bitCount(qint32 i)
-  //static {
-  //static   i = i - ((i >> 1) & 0x55555555);
-  //static   i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
-  //static   return (((i + (i >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
-  //static }
+  //{
+  //  i = i - ((i >> 1) & 0x55555555);
+  //  i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
+  //  return (((i + (i >> 4)) & 0x0f0f0f0f) * 0x01010101) >> 24;
+  //}
 
   /**
    *  Observeations from レミニセンス:
@@ -113,8 +113,8 @@ public:
     if (!data.isEmpty())
       return oldHook(fontName1, canvasSize2, data, output4, const5);
     else {
-      // Estimated return result
-      enum { FontWidth = 26 };
+      // Estimated painted text width
+      enum { FontWidth = 26 }; // double-width
       return FontWidth * ::strlen(text3) * 2;
     }
   }
@@ -132,7 +132,8 @@ bool MajiroEngine::attach()
   DWORD dwTextOutA = Engine::getModuleFunction("gdi32.dll", "TextOutA");
   if (!dwTextOutA)
     return false;
-  DWORD startAddress, stopAddress;
+  DWORD startAddress,
+        stopAddress;
   if (!Engine::getMemoryRange(nullptr, &startAddress, &stopAddress))
     return false;
   D::hookAddress = MemDbg::findCallerAddress(dwTextOutA, 0xec81, startAddress, stopAddress);

@@ -49,7 +49,9 @@ TestEnginePrivate::hook_fun_t TestEnginePrivate::oldHook;
 
 bool TestEngine::match() { return true; }
 
-bool TestEngine::inject()
+bool TestEngine::detach() { return false; }
+
+bool TestEngine::attach()
 {
   //DWORD dwTextOutA = Engine::getModuleFunction("gdi32.dll", "TextOutA");
   //if (!dwTextOutA)
@@ -67,15 +69,6 @@ bool TestEngine::inject()
     return false;
   D::oldHook = detours::replace<D::hook_fun_t>(D::hookAddress, D::newHook);
   return true;
-}
-
-bool TestEngine::unload()
-{
-  if (!D::hookAddress || !D::oldHook)
-    return false;
-  bool ok = detours::restore<D::hook_fun_t>(D::hookAddress, D::oldHook);
-  D::hookAddress = 0;
-  return ok;
 }
 
 // EOF
