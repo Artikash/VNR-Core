@@ -87,7 +87,7 @@ static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD arg4, DW
  *  This is the caller of the ITH BGI hook, which extract text by characters
  *  and cannot be used for substition.
  *
- *  Sample game: Fortune Arena
+ *  Sample game: FORTUNE ARTERIAL
  *
  *  004207e0  /$ 81ec 30090000  sub esp,0x930   ; jichi: function starts
  *  004207e6  |. 8b8424 5409000>mov eax,dword ptr ss:[esp+0x954]
@@ -156,9 +156,15 @@ static DWORD searchBGI1(DWORD startAddress, DWORD stopAddress)
 {
   // TODO: This function is incomplete
   const BYTE ins[] = {
-    0x00 // TODO
+    0x8a,0x45, 0x00,  // 00420822  |. 8a45 00        mov al,byte ptr ss:[ebp]
+    0x3c, 0x20,       // 00420825  |. 3c 20          cmp al,0x20
+    0x7d, 0x69,       // 00420827  |. 7d 69          jge short bgi.00420892
+    0x0f,0xbe,0xc0,   // 00420829  |. 0fbec0         movsx eax,al
+    0x83,0xc0, 0xfe,  // 0042082c  |. 83c0 fe        add eax,-0x2                             ;  switch (cases 2..8)
+    0x83,0xf8, 0x06,  // 0042082f  |. 83f8 06        cmp eax,0x6
+    0x77, 0x5e        // 00420832  |. 77 5e          ja short bgi.00420892
   };
-  enum { hook_offset = 0x34c80 - 0x34d31 }; // distance to the beginning of the function
+  enum { hook_offset = 0x4207e0 - 0x420822 }; // distance to the beginning of the function
   DWORD range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
   DWORD reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
   if (!reladdr)
@@ -166,8 +172,8 @@ static DWORD searchBGI1(DWORD startAddress, DWORD stopAddress)
     return 0;
 
   DWORD addr = startAddress + reladdr + hook_offset;
-  enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
-  if (*(BYTE *)addr != push_ebp)
+  enum : WORD { sub_esp = 0xec81 };  // 004207e0  /$ 81ec 30090000
+  if (*(WORD *)addr != sub_esp)
     //ConsoleOutput("vnreng:BGI2: pattern found but the function offset is invalid");
     return 0;
 
@@ -180,8 +186,8 @@ bool BGIEngine::attachBGIType1()
         stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
-  //ulong addr = ::searchBGI1(startAddress, stopAddress);
-  ulong addr = 0x4207e0; // FORTUNE ARTERIAL
+  ulong addr = ::searchBGI1(startAddress, stopAddress);
+  //ulong addr = 0x4207e0; // FORTUNE ARTERIAL
   if (!addr)
     return false;
   return ::BGI1_oldHookFun = detours::replace<hook_fun_t>(addr, newHookFun);
