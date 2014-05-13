@@ -8,6 +8,8 @@ DEPENDPATH += $$PWD
 
 QT += core network
 
+#INCLUDEPATH += $$QT_SRC
+
 HEADERS += \
   $$PWD/bufferedlocalsocketclient.h \
   $$PWD/bufferedtcpsocketclient.h \
@@ -17,6 +19,7 @@ HEADERS += \
   $$PWD/socketdef.h \
   $$PWD/socketio_p.h \
   $$PWD/socketpack.h \
+  $$PWD/socketpipe.h \
   $$PWD/tcpsocketclient.h
 
 SOURCES += \
@@ -29,9 +32,15 @@ SOURCES += \
   $$PWD/socketpack.cc \
   $$PWD/tcpsocketclient.cc
 
+win32 {
+  HEADERS += $$PWD/socketpipe_win.h
+  SOURCES += $$PWD/socketpipe_win.cc
+}
+
 OTHER_FILES += \
   $$PWD/qtlocalcli.pri \
   $$PWD/qtsocketpack.pri \
+  $$PWD/qtsocketpipe.pri \
   $$PWD/qttcpcli.pri
   #$$PWD/qtsocketsrv.pri
 

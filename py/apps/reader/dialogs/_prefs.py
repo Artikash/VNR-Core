@@ -1126,9 +1126,9 @@ class _I18nTab(object):
     def _button(lang):
       ret = QtWidgets.QCheckBox(i18n.language_name(lang))
       ret.setChecked(lang in ss.blockedLanguages())
-      ret.toggled.connect(lambda value: (
-          self._toggleLanguage(lang, value),
-          ret.setChecked(not value)))
+      ret.clicked[bool].connect(lambda value:
+          self._toggleLanguage(lang, value))
+          #ret.setChecked(not value)))
       return ret
 
     layout = QtWidgets.QVBoxLayout()

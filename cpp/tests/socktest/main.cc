@@ -4,7 +4,9 @@
 //#include "qtsocketsvc/socketclient.h"
 #include "qtsocketsvc/bufferedlocalsocketclient.h"
 #include "qtsocketsvc/socketpack.h"
+#include "qtsocketsvc/socketpipe.h"
 #include <QtCore>
+#include <QtNetwork>
 
 //#ifdef Q_OS_WIN
 //# define SERVER_PIPE_NAME "\\\\.\\pipe\\pipetest"
@@ -28,19 +30,31 @@ int main(int argc, char *argv[])
   qDebug() << l;
 
   QCoreApplication a(argc, argv);
-  BufferedLocalSocketClient cli;
+  LocalSocketClient cli;
+
+  //BufferedLocalSocketClient cli;
+
   cli.setServerName(SERVER_PIPE_NAME);
   cli.start();
   cli.waitForConnected();
   qDebug() << cli.isConnected();
   cli.dumpSocketInfo();
   const char *text = "hello";
-  cli.sendDataLater(text);
+  cli.sendData(text);
+  //cli.sendDataLater(text);
 
   //cli.waitForBytesWritten();
-  cli.sendDataLater(text);
+  //cli.sendDataLater(text);
 
   //cli.dumpSocketInfo();
+
+#ifdef Q_OS_WIN
+  if (HANDLE h = SocketService::findLocalSocketPipeHandle(&cli)) {
+    QStringList l = QStringList() << "hello" << "world";
+    QByteArray data = SocketService::packStringList(l);
+    SocketService::writePipe(h, data.constData(), data.size());
+  }
+#endif // Q_OS_WIN
 
   QObject::connect(&cli, SIGNAL(disconnected()), qApp, SLOT(quit()));
   return a.exec();

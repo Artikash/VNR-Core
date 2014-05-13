@@ -22,7 +22,7 @@
 /**
  *  世界と世界の真ん中 体験版, relative address: 0x31850;
  *
- *  TODO: Use split = -0x18 to distinguish name and choices`
+ *  TODO: Use split = -0x18 to distinguish name and choices
  *
  *  TODO: Figure the meaning of the parameters and the return value
  *  ? __cdecl sub_31850(DWORD arg1, DWORD arg2, LPCSTR arg3, DWORD arg4)
@@ -31,7 +31,7 @@
  *  - arg3: string
  *  - arg4: uknown
  */
-extern "C" { // C linkage is indispensible for BGI engine
+extern "C" { // C linkage is indispensable for BGI engine
 
 typedef int (__cdecl *hook_fun_t)(DWORD, DWORD, LPCSTR, DWORD); // __stdcall will crash the game
 /**
@@ -43,7 +43,6 @@ typedef int (__cdecl *hook_fun_t)(DWORD, DWORD, LPCSTR, DWORD); // __stdcall wil
 __declspec(noinline)
 static LPCSTR dispatchText(LPCSTR text, DWORD returnAddress);
 
-__declspec(noinline)
 static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD arg4)
 {
 #ifdef DEBUG
@@ -165,17 +164,16 @@ static DWORD searchBGI2(DWORD startAddress, DWORD stopAddress)
   enum { hook_offset = 0x34c80 - 0x34d31 }; // distance to the beginning of the function
   DWORD range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
   DWORD reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
-  //ITH_GROWL_DWORD(reladdr);
-  if (!reladdr) {
+  if (!reladdr)
     //ConsoleOutput("vnreng:BGI2: pattern not found");
     return 0;
-  }
+
   DWORD addr = startAddress + reladdr + hook_offset;
   enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
-  if (*(BYTE *)addr != push_ebp) {
+  if (*(BYTE *)addr != push_ebp)
     //ConsoleOutput("vnreng:BGI2: pattern found but the function offset is invalid");
     return 0;
-  }
+
   return addr;
 }
 

@@ -20,8 +20,9 @@ public:
 inline QGraphicsItemPrivate *d_qgraphicsitem(const QGraphicsItem *q)
 { return !q ? nullptr : static_cast<const DQGraphicsItem *>(q)->d(); }
 
-inline QGraphicsItemPrivate *d_q(const QGraphicsItem *q)
-{ return d_qgraphicsitem(q); }
+template <typename T>
+inline T d_q(const QGraphicsItem *q)
+{ return static_cast<T>(d_qgraphicsitem(q)); }
 
 } // namespace QtPrivate
 

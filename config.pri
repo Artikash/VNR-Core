@@ -240,7 +240,7 @@ CONFIG(pyplugin) {
 
 CONFIG(qt) {
   message(CONFIG qt)
-  INCLUDEPATH += $$QT_SRC # always allow access to Qt source code
+  INCLUDEPATH += $$QT_SRC $$QT_SRC/qt # always allow access to Qt source code
 
   # Clang: Disable warning while processing Qt library headers
   # http://stackoverflow.com/questions/17846909/how-can-i-stop-warnings-about-unused-private-fields

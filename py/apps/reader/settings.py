@@ -4,6 +4,7 @@
 
 from PySide.QtCore import Signal, Slot, Property, Qt, QObject, QSettings, QTimer, QSize
 from sakurakit.skclass import memoized, memoizedproperty
+from sakurakit.skdebug import dwarn
 #from sakurakit.skqml import QmlObject
 from sakurakit.sktypes import to_int, to_unicode #to_long
 import defs, config
@@ -186,7 +187,12 @@ class Settings(QSettings):
 
   blockedLanguagesChanged = Signal(set)
   def blockedLanguages(self):
-    return to_set(self.value('BlockedLanguages'))
+    # http://sakuradite.com/topic/231, prevent strange EOFError
+    try: return to_set(self.value('BlockedLanguages'))
+    except EOFError, e:
+      dwarn("EOFError")
+      self.setValue('BlockedLanguages', set())
+      return set()
   def setBlockedLanguages(self, value):
     if value != self.blockedLanguages():
       self.setValue('BlockedLanguages', value)

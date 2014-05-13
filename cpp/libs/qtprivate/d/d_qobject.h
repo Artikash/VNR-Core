@@ -14,14 +14,16 @@ class DQObject : public QObject
 {
   DQObject() {}
 public:
-  QObjectPrivate d() const { return d_ptr.data(); }
+  // QObjectPrivate inherits QObjectData
+  QObjectPrivate *d() const { return reinterpret_cast<QObjectPrivate *>(d_ptr.data()); }
 };
 
 inline QObjectPrivate *d_qobject(const QObject *q)
 { return !q ? nullptr : static_cast<const DQObject *>(q)->d(); }
 
-inline QObjectPrivate *d_q(const QObject *q)
-{ return d_qobject(q); }
+template <typename T>
+inline T d_q(const QObject *q)
+{ return static_cast<T>(d_qobject(q)); } // dynanmic_cast not used to avoid linking
 
 } // namespace QtPrivate
 

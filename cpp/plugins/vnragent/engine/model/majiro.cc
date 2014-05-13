@@ -24,7 +24,7 @@
 namespace { // unnamed
 
 /**
- *  Compute ITH's split value from the first parameter of the hooked fuction.
+ *  Compute ITH's split value from the first parameter of the hooked function.
  *  Let eax be arg1, the original logic in MajiroSpecialHook is:
  *      ([eax+0x28] & 0xff) | (([eax+0x48] >> 1) & 0xffffff00)
  */
@@ -79,9 +79,9 @@ int __cdecl newHookFun(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR
   if (!data.isEmpty())
     return oldHookFun(fontName1, canvasSize2, data, output4, const5);
   else {
-    // Estimated painted text width
-    enum { FontWidth = 26 }; // double-width
-    return FontWidth * ::strlen(text3) * 2;
+    // Estimated painted character width for MS Gothic, assume SJIS on average takes up two chars
+    enum { CharWidth = 13 };
+    return CharWidth * ::strlen(text3);
   }
 }
 
