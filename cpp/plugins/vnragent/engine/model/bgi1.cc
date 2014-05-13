@@ -22,7 +22,7 @@
 /**
  *  FORTUNE ARTERIAL, 0x4207E0
  *
- *  TODO: Figure the meaning of the return value
+ *  TODO: Figure out the meaning of the return value
  *  ? __cdecl sub_4207E0 proc near
  *  - arg1: address
  *  - arg2: address
@@ -38,7 +38,7 @@
  *  - arg12: 0x00ffffff
  *  - arg13: addr
  */
-extern "C" { // C linkage is indispensible for BGI engine
+extern "C" { // C linkage is indispensable for BGI engine
 
 typedef int (__cdecl *hook_fun_t)(DWORD, DWORD, LPCSTR, DWORD, DWORD, DWORD,
                                   DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD);
@@ -51,7 +51,6 @@ typedef int (__cdecl *hook_fun_t)(DWORD, DWORD, LPCSTR, DWORD, DWORD, DWORD,
 __declspec(noinline)
 static LPCSTR dispatchText(LPCSTR text, DWORD returnAddress, DWORD split);
 
-__declspec(noinline)
 static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD arg4, DWORD arg5, DWORD arg6,
                               DWORD arg7, DWORD split, DWORD arg9, DWORD arg10, DWORD arg11, DWORD arg12, DWORD arg13)
 
@@ -62,9 +61,9 @@ static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD arg4, DW
            << QString::fromLocal8Bit(str) << ":"
            << split;
 #endif // DEBUG
-  if (str) // '\0' could be passed to this function
+  if (str) // str could be nullptr
     str = dispatchText(str, (DWORD)_ReturnAddress(), split);
-  return !str ? 0 :
+  return !str ? 0 : // TODO: investigate the meaning of the return value
          BGI1_oldHookFun(arg1, arg2, str, arg4, arg5, arg6, arg7, split, arg9, arg10, arg11, arg12, arg13);
 }
 
@@ -73,8 +72,6 @@ static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD arg4, DW
 /**
  *  It is OK to declare a function as extern "C", but define it using C++ syntax.
  *  See: http://stackoverflow.com/questions/7281441/elegantly-call-c-from-c
- *
- *  TODO: The current split cannot distinguish name and choices
  */
 /*extern "C"*/ static LPCSTR dispatchText(LPCSTR text, DWORD returnAddress, DWORD split)
 {
@@ -157,23 +154,23 @@ static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD arg4, DW
  */
 static DWORD searchBGI1(DWORD startAddress, DWORD stopAddress)
 {
+  // TODO: This function is incomplete
   const BYTE ins[] = {
     0x00 // TODO
   };
   enum { hook_offset = 0x34c80 - 0x34d31 }; // distance to the beginning of the function
   DWORD range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
   DWORD reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
-  //ITH_GROWL_DWORD(reladdr);
-  if (!reladdr) {
+  if (!reladdr)
     //ConsoleOutput("vnreng:BGI2: pattern not found");
     return 0;
-  }
+
   DWORD addr = startAddress + reladdr + hook_offset;
   enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
-  if (*(BYTE *)addr != push_ebp) {
+  if (*(BYTE *)addr != push_ebp)
     //ConsoleOutput("vnreng:BGI2: pattern found but the function offset is invalid");
     return 0;
-  }
+
   return addr;
 }
 
