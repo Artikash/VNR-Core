@@ -59,12 +59,10 @@ HEADERS += \
   embed/embedmanager.h \
   embed/embedmemory.h \
   engine/engine.h \
-  engine/engine_p.h \
   engine/enginedef.h \
   engine/engineenv.h \
   engine/enginehash.h \
   engine/engineloader.h \
-  engine/enginememory.h \
   engine/enginesettings.h \
   hijack/hijackdriver.h \
   hijack/hijackfuncs.h \
@@ -94,7 +92,6 @@ SOURCES += \
   engine/engine.cc \
   engine/engineenv.cc \
   engine/engineloader.cc \
-  engine/enginememory.cc \
   hijack/hijackdriver.cc \
   hijack/hijackfuncs.cc \
   hijack/hijackfuncs_gdi32.cc \
@@ -120,6 +117,8 @@ HEADERS += \
   #engine/model/test.h
 SOURCES += \
   engine/model/bgi.cc \
+  engine/model/bgi1.cc \
+  engine/model/bgi2.cc \
   engine/model/majiro.cc
   #engine/model/test.cc
 

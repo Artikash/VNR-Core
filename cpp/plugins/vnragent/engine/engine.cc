@@ -2,10 +2,9 @@
 // 4/20/2014 jichi
 
 #include "engine/engine.h"
-#include "engine/engine_p.h"
 #include "engine/enginehash.h"
 #include "engine/engineloader.h"
-#include "engine/enginememory.h"
+//#include "engine/enginememory.h"
 #include "engine/enginesettings.h"
 #include "embed/embedmanager.h"
 #include "util/codepage.h"
@@ -17,78 +16,55 @@
 
 /** Private class */
 
-AbstractEnginePrivate::AbstractEnginePrivate(Q *q, const char *name, Q::Encoding encoding, Q::RequiredAttributes attributes)
-  :  q_(q)
-  , name(name), encoding(encoding), attributes(attributes)
-  , encoder(nullptr), decoder(nullptr)
-  , settings(new EngineSettings)
-  , exchangeMemory(nullptr), exchangeTimer(nullptr)
-{}
-
-AbstractEnginePrivate::~AbstractEnginePrivate()
+class AbstractEnginePrivate
 {
-  delete settings;
-  if (exchangeMemory)
-    delete exchangeMemory;
-}
+  typedef AbstractEngine Q;
+public:
+  enum { ExchangeInterval = 10 };
 
-void AbstractEnginePrivate::finalize()
-{
-  finalizeCodecs();
-  if (testAttribute(Q::ExchangeAttribute))
-    startExchange();
-}
+  const char *name;
+  Q::Encoding encoding;
+  Q::RequiredAttributes attributes;
 
-void AbstractEnginePrivate::startExchange()
-{
-  exchangeMemory = new EngineSharedMemory;
+  QTextCodec *encoder,
+             *decoder;
 
-  exchangeTimer = new QTimer(this);
-  exchangeTimer->setSingleShot(false);
-  exchangeTimer->setInterval(ExchangeInterval);
-  connect(exchangeTimer, SIGNAL(timeout()), SLOT(exchange()));
+  EngineSettings *settings;
 
-  exchangeTimer->start();
-}
+public:
+  AbstractEnginePrivate(const char *name, Q::Encoding encoding, Q::RequiredAttributes attributes)
+    : name(name), encoding(encoding), attributes(attributes)
+    , encoder(nullptr), decoder(nullptr)
+    , settings(new EngineSettings)
+  {}
 
-void AbstractEnginePrivate::finalizeCodecs()
-{
-  const char *engineEncoding = Q::encodingName(encoding);
-  decoder = engineEncoding ? QTextCodec::codecForName(engineEncoding) : nullptr;
+  ~AbstractEnginePrivate() { if (settings) delete settings; }
 
-  const char *systemEncoding = Util::encodingForCodePage(::GetACP());
-  encoder = QTextCodec::codecForName(systemEncoding ? systemEncoding : ENC_SJIS);
-}
+  void finalize() { finalizeCodecs(); }
 
- // Encoding
+  // Property helpers
 
-QByteArray AbstractEnginePrivate::encode(const QString &text) const
-{ return encoder ? encoder->fromUnicode(text) : text.toLocal8Bit(); }
+  bool testAttribute(Q::RequiredAttribute v) const { return attributes & v; }
+  bool testAttributes(Q::RequiredAttributes v) const { return attributes & v; }
 
-QString AbstractEnginePrivate::decode(const QByteArray &data) const
-{ return decoder ? decoder->toUnicode(data) : QString::fromLocal8Bit(data); }
+  // Encoding
 
-// Exchange
+  QByteArray encode(const QString &text) const
+  { return encoder ? encoder->fromUnicode(text) : text.toLocal8Bit(); }
 
-void AbstractEnginePrivate::exchange()
-{
-  if (!exchangeMemory)
-    return;
-  if (exchangeMemory->requestStatus() == EngineSharedMemory::ReadyStatus) {
-    exchangeMemory->setRequestStatus(EngineSharedMemory::EmptyStatus);
-    if (auto req = exchangeMemory->requestText()) {
-      auto key = exchangeMemory->requestKey();
-      auto role = exchangeMemory->requestRole();
-      auto sig = exchangeMemory->requestSignature();
-      QByteArray resp = q_->dispatchTextA(req, sig, role);
-      exchangeMemory->setResponseStatus(EngineSharedMemory::BusyStatus);
-      exchangeMemory->setResponseText(resp);
-      exchangeMemory->setResponseRole(role);
-      exchangeMemory->setResponseKey(key);
-      exchangeMemory->setResponseStatus(EngineSharedMemory::ReadyStatus);
-    }
+  QString decode(const QByteArray &data) const
+  { return decoder ? decoder->toUnicode(data) : QString::fromLocal8Bit(data); }
+
+private:
+  void finalizeCodecs()
+  {
+    const char *engineEncoding = Q::encodingName(encoding);
+    decoder = engineEncoding ? QTextCodec::codecForName(engineEncoding) : nullptr;
+
+    const char *systemEncoding = Util::encodingForCodePage(::GetACP());
+    encoder = QTextCodec::codecForName(systemEncoding ? systemEncoding : ENC_SJIS);
   }
-}
+};
 
 /** Public class */
 
@@ -117,7 +93,7 @@ const char *AbstractEngine::encodingName(Encoding v)
 }
 
 AbstractEngine::AbstractEngine(const char *name, Encoding encoding, RequiredAttributes attributes)
-  : d_(new D(this, name, encoding, attributes)) {}
+  : d_(new D(name, encoding, attributes)) {}
 
 AbstractEngine::~AbstractEngine() { delete d_; }
 
@@ -138,12 +114,7 @@ bool AbstractEngine::load()
   return ok;
 }
 
-bool AbstractEngine::unload()
-{
-  if ( d_->exchangeTimer)
-    d_->exchangeTimer->stop();
-  return detach();
-}
+bool AbstractEngine::unload() { return detach(); }
 
 // - Dispatch -
 
@@ -207,6 +178,9 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, long signature,
 //  return repl;
 //}
 
+// EOF
+
+/*
 // - Exchange -
 
 // Qt is not allowed to appear in this function
@@ -234,4 +208,23 @@ const char *AbstractEngine::exchangeTextA(const char *data, long signature, int 
   return d_mem->responseText();
 }
 
-// EOF
+void AbstractEnginePrivate::exchange()
+{
+  if (!exchangeMemory)
+    return;
+  if (exchangeMemory->requestStatus() == EngineSharedMemory::ReadyStatus) {
+    exchangeMemory->setRequestStatus(EngineSharedMemory::EmptyStatus);
+    if (auto req = exchangeMemory->requestText()) {
+      auto key = exchangeMemory->requestKey();
+      auto role = exchangeMemory->requestRole();
+      auto sig = exchangeMemory->requestSignature();
+      QByteArray resp = q_->dispatchTextA(req, sig, role);
+      exchangeMemory->setResponseStatus(EngineSharedMemory::BusyStatus);
+      exchangeMemory->setResponseText(resp);
+      exchangeMemory->setResponseRole(role);
+      exchangeMemory->setResponseKey(key);
+      exchangeMemory->setResponseStatus(EngineSharedMemory::ReadyStatus);
+    }
+  }
+}
+*/
