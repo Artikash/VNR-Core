@@ -817,16 +817,19 @@ class GameManager(QtCore.QObject):
 
   def attachTextHook(self):
     pid = self.currentGamePid()
-    if pid:
+    if not pid:
+      dwarn("game already closed")
       return
 
     agent = gameagent.global_()
     if agent.isConnected() and agent.hasEngine():
+      dwarn("vnragent already have an engine?")
       return
 
     th = texthook.global_()
     if pid != th.currentPid():
-      th.attachProcess(pid)
+      ok = th.attachProcess(pid)
+      dprint("inject ITH, ok = %s" % ok)
 
   def clear(self):
     self.__d.game = None
@@ -1001,7 +1004,7 @@ class GameManager(QtCore.QObject):
           # TODO: Restore get game encoding in the future
           # First, allow modify game encoding in game edit
           #if g.encoding and g.encoding != 'utf-16' or not g.encoding and agentEngine.encoding() != 'utf-16':
-          if agentEngine.encoding() != 'utf-16':
+          if not agentEngine.isRegionLocked() and agentEngine.encoding() != 'utf-16':
             import trman
             launchLanguage = trman.manager().guessTranslationLanguage()
             if launchLanguage in config.SJIS_LANGUAGE_SET:

@@ -25,6 +25,31 @@ enum { MaxCallerSize = 0x800 };
 
 dword_t findCallerAddress(dword_t funcAddr, dword_t funcInst, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaxCallerSize);
 
+/**
+ *  Return the address of the first mached pattern.
+ *  The same as ITH SearchPattern(). KMP is used.
+ *  Return 0 if failed. The return result is ambiguous if the pattern address is 0.
+ *
+ *  @param  startAddress  search start address
+ *  @param  range  search range
+ *  @param  pattern  array of bytes to match
+ *  @param  patternSize  size of the pattern array
+ *  @return
+ */
+dword_t searchPattern(dword_t startAddress, dword_t range, const void *pattern, dword_t patternSize);
+
+#if 0 // This function is undefined since it is never used
+/**
+ * jichi 2/5/2014: The same as SearchPattern except it uses 0xff to match everything
+ * According to @Andys, 0xff seldom appear in the source code: http://sakuradite.com/topic/124
+ */
+enum : BYTE { SP_ANY = 0xff };
+#define SP_ANY_2 SP_ANY,SP_ANY
+#define SP_ANY_3 SP_ANY,SP_ANY,SP_ANY
+#define SP_ANY_4 SP_ANY,SP_ANY,SP_ANY,SP_ANY
+dword_t searchPatternEx(dword_t startAddress, dword_t range, const void *pattern, dword_t patternSize, );
+#endif // 0
+
 MEMDBG_END_NAMESPACE
 
 #endif // _MEMDBG_MEMSEARCH_H

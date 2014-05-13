@@ -5,21 +5,20 @@
 
 #include "engine/engine.h"
 
-class BGIEnginePrivate;
 class BGIEngine : public AbstractEngine
 {
   SK_EXTEND_CLASS(BGIEngine, AbstractEngine)
   SK_DISABLE_COPY(BGIEngine)
-  friend class BGIEnginePrivate;
-  typedef BGIEnginePrivate D;
 public:
-  BGIEngine()
-    : Base("BGI", SjisEncoding, BlockingAttribute|ExchangeAttribute) {}
+  BGIEngine() : Base("BGI", SjisEncoding, BlockingAttribute) {}
 
   static bool match();
 protected:
   bool attach() override;
-  bool detach() override;
+
+private:
+  bool attachBGIType1(); // Modified ITH BGI
+  bool attachBGIType2(); // VNR BGI2 engine
 };
 
 // EOF

@@ -22,7 +22,7 @@ public:
   typedef ulong RequiredAttributes;
   enum RequiredAttribute {
     BlockingAttribute = 1           // non-blocking callback is not supported
-    , ExchangeAttribute = 1 << 1    // qt is not supported and it requires exchanging data
+    //, ExchangeAttribute = 1 << 1  // qt is not supported and it requires exchanging data
   };
 
   static Self *instance(); // Needed to be explicitly deleted on exit
@@ -45,13 +45,15 @@ public:
 
 protected:
   virtual bool attach() = 0;
-  virtual bool detach() = 0;
+  virtual bool detach() { return false; }
 
+  // Interface to descendent classes
+public:
   QByteArray dispatchTextA(const QByteArray &data, long signature, int role = 0);
   //QString dispatchTextW(const QString &text, long signature, int role = 0);
 
   // This function is not thread-safe
-  const char *exchangeTextA(const char *data, long signature, int role = 0);
+  //const char *exchangeTextA(const char *data, long signature, int role = 0);
 };
 
 // EOF

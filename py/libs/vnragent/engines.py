@@ -21,7 +21,7 @@ def engines():
   """
   if not ENINES:
     ENGINES = [
-      #BGIEngine(),
+      BGIEngine(),
       MajiroEngine(),
     ]
   return ENGINES
@@ -29,9 +29,11 @@ def engines():
 class Engine(object): # placeholder
   NAME = ''
   ENCODING = ''
+  REGION_LOCKED = False # if it is locked to Japanese and cannot be run in other locale
 
   def name(self): return self.NAME
   def encoding(self): return self.ENCODING
+  def isRegionLocked(self): return self.REGION_LOCKED
 
   # Pure virtual functions
   def match(self, pid):
@@ -151,6 +153,7 @@ class MajiroEngine(Engine):
 
   NAME = "Majiro" # str, override
   ENCODING = SJIS_ENCODING # str, override
+  REGION_LOCKED = False # it can be launched in Chinese/Korean locale
 
   def match(self, **kwargs): # override
     return bool(self.glob(("data*.arc", "stream*.arc"), **kwargs))
@@ -160,6 +163,7 @@ class BGIEngine(Engine):
 
   NAME = "BGI" # str, override
   ENCODING = SJIS_ENCODING # str, override
+  REGION_LOCKED = True # it cannot be launched using AppLocale in Chinese locale
 
   def match(self, **kwargs): # override
     return bool(self.glob("BGI.*", **kwargs))

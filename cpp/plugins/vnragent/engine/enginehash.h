@@ -28,6 +28,13 @@ inline qint64 hashWCharArray(const wchar_t *lp, size_t len)
 
 inline qint64 hashTextKey(qint64 hash, unsigned role) { return hash + (1 << role); }
 
+// This is consistent with textthread_p in texthook
+inline qint32 hashThreadSignature(ulong returnAddress, ulong split = 0)
+{
+  return (returnAddress & 0xffff)  // context
+       | (split & 0xffff) << 16;   // subcontext
+}
+
 } // namespace Engine
 
 // EOF

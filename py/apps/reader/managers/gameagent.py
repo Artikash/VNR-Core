@@ -222,6 +222,8 @@ class _GameAgent(object):
       self.mem.attachProcess(self.connectedPid)
 
       growl.notify("%s: %s" % (my.tr("Detect game engine"), name))
+    else:
+      growl.notify(my.tr("Unrecognized game engine. Fallback to ITH."))
 
   def sendSettings(self):
     ss = settings.global_()

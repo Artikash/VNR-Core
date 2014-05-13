@@ -273,6 +273,68 @@ bool InsertBGIDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 }
 #endif // 0
 
+/** jichi 5/12/2014
+ *  Sample game:  FORTUNE ARTERIAL, case 2 at 0x41ebd0
+ *
+ *  sub_41EBD0 proc near, seems to take 5 parameters
+ *
+ *  0041EBD0  /$ 83EC 28        SUB ESP,0x28 ; jichi: hook here, beginning of the function
+ *  0041EBD3  |. 55             PUSH EBP
+ *  0041EBD4  |. 8B6C24 38      MOV EBP,DWORD PTR SS:[ESP+0x38]
+ *  0041EBD8  |. 81FD 00FF0000  CMP EBP,0xFF00
+ *  0041EBDE  |. 0F82 E1000000  JB BGI.0041ECC5
+ *  0041EBE4  |. 81FD FFFF0000  CMP EBP,0xFFFF
+ *  0041EBEA  |. 0F87 D5000000  JA BGI.0041ECC5
+ *  0041EBF0  |. A1 54634900    MOV EAX,DWORD PTR DS:[0x496354]
+ *  0041EBF5  |. 8BD5           MOV EDX,EBP
+ *  0041EBF7  |. 81E2 FF000000  AND EDX,0xFF
+ *  0041EBFD  |. 53             PUSH EBX
+ *  0041EBFE  |. 4A             DEC EDX
+ *  0041EBFF  |. 33DB           XOR EBX,EBX
+ *  0041EC01  |. 3BD0           CMP EDX,EAX
+ *  0041EC03  |. 56             PUSH ESI
+ *  0041EC04  |. 0F8D 8A000000  JGE BGI.0041EC94
+ *  0041EC0A  |. 57             PUSH EDI
+ *  0041EC0B  |. B9 06000000    MOV ECX,0x6
+ *  0041EC10  |. BE 5C634900    MOV ESI,BGI.0049635C
+ *  0041EC15  |. 8D7C24 20      LEA EDI,DWORD PTR SS:[ESP+0x20]
+ *  0041EC19  |. F3:A5          REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS>
+ *  0041EC1B  |. 8B0D 58634900  MOV ECX,DWORD PTR DS:[0x496358]
+ *  0041EC21  |. 8B7424 3C      MOV ESI,DWORD PTR SS:[ESP+0x3C]
+ *  0041EC25  |. 8BC1           MOV EAX,ECX
+ *  0041EC27  |. 5F             POP EDI
+ *  0041EC28  |. 0FAFC2         IMUL EAX,EDX
+ *  0041EC2B  |. 8B56 08        MOV EDX,DWORD PTR DS:[ESI+0x8]
+ *  0041EC2E  |. 894424 0C      MOV DWORD PTR SS:[ESP+0xC],EAX
+ *  0041EC32  |. 3BCA           CMP ECX,EDX
+ *  0041EC34  |. 7E 02          JLE SHORT BGI.0041EC38
+ *  0041EC36  |. 8BCA           MOV ECX,EDX
+ *  0041EC38  |> 8D4401 FF      LEA EAX,DWORD PTR DS:[ECX+EAX-0x1]
+ *  0041EC3C  |. 8B4C24 28      MOV ECX,DWORD PTR SS:[ESP+0x28]
+ *  0041EC40  |. 894424 14      MOV DWORD PTR SS:[ESP+0x14],EAX
+ *  0041EC44  |. 8B46 0C        MOV EAX,DWORD PTR DS:[ESI+0xC]
+ *  0041EC47  |. 3BC8           CMP ECX,EAX
+ *  0041EC49  |. 895C24 10      MOV DWORD PTR SS:[ESP+0x10],EBX
+ *  0041EC4D  |. 77 02          JA SHORT BGI.0041EC51
+ *  0041EC4F  |. 8BC1           MOV EAX,ECX
+ *  0041EC51  |> 8D4C24 0C      LEA ECX,DWORD PTR SS:[ESP+0xC]
+ *  0041EC55  |. 8D5424 1C      LEA EDX,DWORD PTR SS:[ESP+0x1C]
+ *  0041EC59  |. 48             DEC EAX
+ *  0041EC5A  |. 51             PUSH ECX
+ *  0041EC5B  |. 52             PUSH EDX
+ *  0041EC5C  |. 894424 20      MOV DWORD PTR SS:[ESP+0x20],EAX
+ *  0041EC60  |. E8 7B62FEFF    CALL BGI.00404EE0
+ *  0041EC65  |. 8B4424 34      MOV EAX,DWORD PTR SS:[ESP+0x34]
+ *  0041EC69  |. 83C4 08        ADD ESP,0x8
+ *  0041EC6C  |. 83F8 03        CMP EAX,0x3
+ *  0041EC6F  |. 75 15          JNZ SHORT BGI.0041EC86
+ *  0041EC71  |. 8B4424 48      MOV EAX,DWORD PTR SS:[ESP+0x48]
+ *  0041EC75  |. 8D4C24 1C      LEA ECX,DWORD PTR SS:[ESP+0x1C]
+ *  0041EC79  |. 50             PUSH EAX
+ *  0041EC7A  |. 51             PUSH ECX
+ *  0041EC7B  |. 56             PUSH ESI
+ *  0041EC7C  |. E8 1FA0FEFF    CALL BGI.00408CA0
+ */
 bool InsertBGI1Hook()
 {
   union {
@@ -282,7 +344,7 @@ bool InsertBGI1Hook()
   };
   HookParam hp = {};
   for (i = module_base_ + 0x1000; i < module_limit_; i++) {
-    if (ib[0] == 0x3D) {
+    if (ib[0] == 0x3d) {
       i++;
       if (id[0] == 0xffff) { //cmp eax,0xffff
         hp.addr = SafeFindEntryAligned(i, 0x40);
@@ -326,80 +388,7 @@ bool InsertBGI1Hook()
 
 /**
  *  jichi 2/5/2014: Add an alternative BGI hook
- *
- *  Issue: This hook cannot extract character name for コトバの消えた日
- *
- *  See: http://tieba.baidu.com/p/2845113296
- *  世界と世界の真ん中で
- *  - /HSN4@349E0:sekachu.exe // Disabled BGI3, floating split char
- *  - /HS-1C:-4@68E56 // Not used, cannot detect character name
- *  - /HSC@34C80:sekachu.exe  // BGI2, extract both scenario and character names
- *
- *  [Lump of Sugar] 世界と世界の真ん中で
- *  /HSC@34C80:sekachu.exe
- *  - addr: 216192 = 0x34c80
- *  - module: 3599131534
- *  - off: 12 = 0xc
- *  - type: 65 = 0x41
- *
- *  base: 0x11a0000
- *  hook_addr = base + addr = 0x11d4c80
- *
- *  011d4c7e     cc             int3
- *  011d4c7f     cc             int3
- *  011d4c80  /$ 55             push ebp    ; jichi: hook here
- *  011d4c81  |. 8bec           mov ebp,esp
- *  011d4c83  |. 6a ff          push -0x1
- *  011d4c85  |. 68 e6592601    push sekachu.012659e6
- *  011d4c8a  |. 64:a1 00000000 mov eax,dword ptr fs:[0]
- *  011d4c90  |. 50             push eax
- *  011d4c91  |. 81ec 300d0000  sub esp,0xd30
- *  011d4c97  |. a1 d8c82801    mov eax,dword ptr ds:[0x128c8d8]
- *  011d4c9c  |. 33c5           xor eax,ebp
- *  011d4c9e  |. 8945 f0        mov dword ptr ss:[ebp-0x10],eax
- *  011d4ca1  |. 53             push ebx
- *  011d4ca2  |. 56             push esi
- *  011d4ca3  |. 57             push edi
- *  011d4ca4  |. 50             push eax
- *  011d4ca5  |. 8d45 f4        lea eax,dword ptr ss:[ebp-0xc]
- *  011d4ca8  |. 64:a3 00000000 mov dword ptr fs:[0],eax
- *  011d4cae  |. 8b4d 0c        mov ecx,dword ptr ss:[ebp+0xc]
- *  011d4cb1  |. 8b55 18        mov edx,dword ptr ss:[ebp+0x18]
- *  011d4cb4  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
- *  011d4cb7  |. 8b5d 10        mov ebx,dword ptr ss:[ebp+0x10]
- *  011d4cba  |. 8b7d 38        mov edi,dword ptr ss:[ebp+0x38]
- *  011d4cbd  |. 898d d8f3ffff  mov dword ptr ss:[ebp-0xc28],ecx
- *  011d4cc3  |. 8b4d 28        mov ecx,dword ptr ss:[ebp+0x28]
- *  011d4cc6  |. 8995 9cf3ffff  mov dword ptr ss:[ebp-0xc64],edx
- *  011d4ccc  |. 51             push ecx
- *  011d4ccd  |. 8b0d 305c2901  mov ecx,dword ptr ds:[0x1295c30]
- *  011d4cd3  |. 8985 e0f3ffff  mov dword ptr ss:[ebp-0xc20],eax
- *  011d4cd9  |. 8b45 1c        mov eax,dword ptr ss:[ebp+0x1c]
- *  011d4cdc  |. 8d95 4cf4ffff  lea edx,dword ptr ss:[ebp-0xbb4]
- *  011d4ce2  |. 52             push edx
- *  011d4ce3  |. 899d 40f4ffff  mov dword ptr ss:[ebp-0xbc0],ebx
- *  011d4ce9  |. 8985 1cf4ffff  mov dword ptr ss:[ebp-0xbe4],eax
- *  011d4cef  |. 89bd f0f3ffff  mov dword ptr ss:[ebp-0xc10],edi
- *  011d4cf5  |. e8 862efdff    call sekachu.011a7b80
- *  011d4cfa  |. 33c9           xor ecx,ecx
- *  011d4cfc  |. 8985 60f3ffff  mov dword ptr ss:[ebp-0xca0],eax
- *  011d4d02  |. 3bc1           cmp eax,ecx
- *  011d4d04  |. 0f84 0f1c0000  je sekachu.011d6919
- *  011d4d0a  |. e8 31f6ffff    call sekachu.011d4340
- *  011d4d0f  |. e8 6cf8ffff    call sekachu.011d4580
- *  011d4d14  |. 8985 64f3ffff  mov dword ptr ss:[ebp-0xc9c],eax
- *  011d4d1a  |. 8a03           mov al,byte ptr ds:[ebx]
- *  011d4d1c  |. 898d 90f3ffff  mov dword ptr ss:[ebp-0xc70],ecx
- *  011d4d22  |. 898d 14f4ffff  mov dword ptr ss:[ebp-0xbec],ecx
- *  011d4d28  |. 898d 38f4ffff  mov dword ptr ss:[ebp-0xbc8],ecx
- *  011d4d2e  |. 8d71 01        lea esi,dword ptr ds:[ecx+0x1]
- *  011d4d31  |. 3c 20          cmp al,0x20
- *  011d4d33  |. 7d 75          jge short sekachu.011d4daa
- *  011d4d35  |. 0fbec0         movsx eax,al
- *  011d4d38  |. 83c0 fe        add eax,-0x2                             ;  switch (cases 2..8)
- *  011d4d3b  |. 83f8 06        cmp eax,0x6
- *  011d4d3e  |. 77 6a          ja short sekachu.011d4daa
- *  011d4d40  |. ff2485 38691d0>jmp dword ptr ds:[eax*4+0x11d6938]
+ *  See: vnragent BGI2 engine
  */
 bool InsertBGI2Hook()
 {
@@ -427,6 +416,9 @@ bool InsertBGI2Hook()
   }
 
   HookParam hp = {};
+  // jichi 5/12/2014: Using split could distinguish name and choices. But the signature becames unstable
+  //hp.type = USING_STRING|USING_SPLIT;
+  //hp.split = -0x18;
   hp.type = USING_STRING;
   hp.off = 0xc;
   hp.addr = addr;
@@ -524,14 +516,12 @@ bool InsertBGI3Hook()
 #endif // 0
 } // unnamed
 
-// jichi 1/31/2014: Insert both hooks since I am not sure if BG1 games also have BG2 patterns
-// The BG1 hook is harmless to BG2 any way
+// jichi 5/12/2014: BGI1 and BGI2 game can co-exist, such as 世界と世界の真ん中で
+// BGI1 can exist in both old and new games
+// BGI2 only exist in new games
+// Insert BGI2 first.
 bool InsertBGIHook()
-{
-  bool b1 = InsertBGI1Hook(),
-       b2 = InsertBGI2Hook();
-  return b1 || b2; // prevent conditional shortcut
-}
+{ return InsertBGI2Hook() ||  InsertBGI1Hook(); }
 
 /********************************************************************************************
 Reallive hook:
