@@ -7,7 +7,7 @@ from functools import partial
 from PySide.QtCore import Qt, QTimer
 from PySide import QtCore, QtGui
 from Qt5 import QtWidgets
-from sakurakit import skevents, skpaths, skqss, skwidgets
+from sakurakit import skevents, skpaths, skqss, skstr, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_, notr_
@@ -3329,6 +3329,9 @@ class _TranslatorLibraryTab(object):
         libman.jbeijing().setLocation(path)
         self._refreshJBeijing()
 
+        if not skstr.isascii(path):
+          growl.warn(my.tr("You have non-ascii characters in the path which might work as expected"))
+
   def _refreshJBeijing(self):
     libman.jbeijing().refresh()
     ok = libman.jbeijing().exists()
@@ -3337,8 +3340,9 @@ class _TranslatorLibraryTab(object):
       if path:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
+
     #self.jbeijingLocationButton.setVisible(not ok)
-    skqss.class_(self.jbeijingLocationEdit, 'normal' if ok else 'error')
+    skqss.class_(self.jbeijingLocationEdit, 'normal' if ok and skstr.isascii(path) else 'error')
     self.jbeijingLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("JBeijing7")))
 
     url = libman.JBeijing.URL
@@ -3409,6 +3413,9 @@ JBeijing is <span style="color:purple">not free</span>, and you can purchase one
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
         libman.dreye().setLocation(path)
         self._refreshDreye()
+
+        if not skstr.isascii(path):
+          growl.warn(my.tr("You have non-ascii characters in the path which might work as expected"))
 
   def _refreshDreye(self):
     libman.dreye().refresh()
@@ -3483,6 +3490,9 @@ Dr.eye is <span color="purple">not free</span>, and you can purchase one here fr
         libman.eztrans().setLocation(path)
         self._refreshEzTrans()
 
+        if not skstr.isascii(path):
+          growl.warn(my.tr("You have non-ascii characters in the path which might work as expected"))
+
   def _refreshEzTrans(self):
     libman.eztrans().refresh()
     ok = libman.eztrans().exists()
@@ -3492,7 +3502,7 @@ Dr.eye is <span color="purple">not free</span>, and you can purchase one here fr
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
     #self.eztransLocationButton.setVisible(not ok)
-    skqss.class_(self.ezTransLocationEdit, 'normal' if ok else 'error')
+    skqss.class_(self.ezTransLocationEdit, 'normal' if ok and skstr.isascii(path) else 'error')
     self.ezTransLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("ezTrans XP")))
 
     url = libman.EzTrans.URL
@@ -3546,6 +3556,9 @@ ezTrans is <span style="color:purple">not free</span>, and you can purchase one 
         libman.atlas().setLocation(path)
         self._refreshAtlas()
 
+        if not skstr.isascii(path):
+          growl.warn(my.tr("You have non-ascii characters in the path which might work as expected"))
+
   @memoizedproperty
   def atlasInfoEdit(self):
     ret = QtWidgets.QTextBrowser()
@@ -3565,7 +3578,7 @@ ezTrans is <span style="color:purple">not free</span>, and you can purchase one 
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
     #self.atlasLocationButton.setVisible(not ok)
-    skqss.class_(self.atlasLocationEdit, 'normal' if ok else 'error')
+    skqss.class_(self.atlasLocationEdit, 'normal' if ok and skstr.isascii(path) else 'error')
     self.atlasLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("ATLAS")))
 
     url = libman.Atlas.URL
@@ -3619,6 +3632,9 @@ You can get a free version of Atlas here from Fujitsu:
         libman.lec().setLocation(path)
         self._refreshLec()
 
+        if not skstr.isascii(path):
+          growl.warn(my.tr("You have non-ascii characters in the path which might work as expected"))
+
   @memoizedproperty
   def lecInfoEdit(self):
     ret = QtWidgets.QTextBrowser()
@@ -3638,7 +3654,7 @@ You can get a free version of Atlas here from Fujitsu:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
     #self.lecLocationButton.setVisible(not ok)
-    skqss.class_(self.lecLocationEdit, 'normal' if ok else 'error')
+    skqss.class_(self.lecLocationEdit, 'normal' if ok and skstr.isascii(path) else 'error')
     self.lecLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("ATLAS")))
 
     url = libman.Lec.URL
