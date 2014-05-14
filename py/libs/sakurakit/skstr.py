@@ -2,6 +2,15 @@
 # sktr.py
 # 11/1/2012 jichi
 import re
+from sakurakit.skdebug import dwarn
+
+# http://stackoverflow.com/questions/196345/how-to-check-if-a-string-in-python-is-in-ascii
+def isascii(s):
+  try: s.decode('ascii'); return True
+  except UnicodeDecodeError: return False
+  except Exception, e:
+    dwarn(e)
+    return False
 
 def signed_ord(c):
   """Return signed char value of the character
