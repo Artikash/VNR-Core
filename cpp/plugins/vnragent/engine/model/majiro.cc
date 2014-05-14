@@ -101,8 +101,8 @@ bool MajiroEngine::attach()
         stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
-  enum { CallerPattern = 0xec81 };
-  ulong addr = MemDbg::findCallerAddress(dwTextOutA, CallerPattern, startAddress, stopAddress);
+  enum { sub_esp = 0xec81 }; // caller pattern: sub esp = 0x81,0xec
+  ulong addr = MemDbg::findCallerAddress(dwTextOutA, sub_esp, startAddress, stopAddress);
   // Note: ITH will mess up this value
   //addr = 0x41af90; // レミニセンス function address
   if (!addr)

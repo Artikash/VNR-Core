@@ -4,6 +4,12 @@
 
 __all__ = ['EmbeddedTextPrefsDialog']
 
+if __name__ == '__main__':
+  import sys
+  sys.path.append('..')
+  import debug
+  debug.initenv()
+
 import os
 from functools import partial
 from itertools import imap
@@ -15,9 +21,8 @@ from sakurakit.skclass import Q_Q, memoizedproperty, hasmemoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
 #from sakurakit.skunicode import u
-from texthook import texthook
 from mytr import my, mytr_
-import config, defs, growl, i18n, rc, textman, textutil
+import config, defs, gameagent,growl, i18n, rc, textman, textutil
 
 PREFS_TEXT_INDEX = 0
 PREFS_INFO_INDEX = 1
@@ -28,7 +33,7 @@ THREADLAYOUT_COLUMN_COUNT = 2
 
 SS_TEXTEDIT_SCENE = "QTextEdit{color:blue}" # btn-primary
 SS_TEXTEDIT_NAME = "QTextEdit{color:green}" # btn-success
-SS_TEXTEDIT_OTHER = "QTextEdit{color:steelblue}" # btn-info
+#SS_TEXTEDIT_OTHER = "QTextEdit{color:steelblue}" # btn-info
 #SS_TEXTEDIT_IGNORED = "QTextEdit{text-decoration:line-through}" # btn-danger
 SS_TEXTEDIT_IGNORED = "" # btn-danger
 SS_TEXTEDIT_HOOK = "QTextEdit{color:red}"
@@ -56,13 +61,12 @@ def _gameprofile():
 class _TextThreadView(object):
   SCENARIO_BUTTON_ROW = 0
   NAME_BUTTON_ROW = 1
-  OTHER_BUTTON_ROW = 2
+  #OTHER_BUTTON_ROW = 2
   IGNORE_BUTTON_ROW = 3
 
   def __init__(self, q, name, signature):
     self.name = name
     self.signature = signature
-    self.keepsThreads = False
     self._createUi(q)
     #self.updateStyleSheet()
 
@@ -107,12 +111,12 @@ class _TextThreadView(object):
         skqss.toggleclass(b, 'btn-success', value),
         b))
 
-    b = self.buttonRow.addButton(tr_("other"),
-        tip=my.tr("This is extra scenario"))   # other
-    skqss.class_(b, 'btn btn-default btn-sm')
-    b.toggled.connect(partial(lambda b, value:
-        skqss.toggleclass(b, 'btn-info', value),
-        b))
+    #b = self.buttonRow.addButton(tr_("other"),
+    #    tip=my.tr("This is extra scenario"))   # other
+    #skqss.class_(b, 'btn btn-default btn-sm')
+    #b.toggled.connect(partial(lambda b, value:
+    #    skqss.toggleclass(b, 'btn-info', value),
+    #    b))
 
     b = self.buttonRow.addButton(tr_("ignore"),
         tip=my.tr("Don't translate the text")) # ignored
@@ -150,14 +154,14 @@ class _TextThreadView(object):
   def updateStyleSheet(self):
     row = self.buttonRow.currentIndex()
     if self.name == defs.USER_DEFINED_THREAD_NAME:
-      if not self.keepsThreads and row == _TextThreadView.IGNORE_BUTTON_ROW:
+      if row == _TextThreadView.IGNORE_BUTTON_ROW:
         ss = SS_TEXTEDIT_HOOK_IGNORED
       else:
         ss = SS_TEXTEDIT_HOOK
     else:
       ss = (SS_TEXTEDIT_SCENE if row == _TextThreadView.SCENARIO_BUTTON_ROW else
             SS_TEXTEDIT_NAME if row == _TextThreadView.NAME_BUTTON_ROW else
-            SS_TEXTEDIT_OTHER if row == _TextThreadView.OTHER_BUTTON_ROW else
+            #SS_TEXTEDIT_OTHER if row == _TextThreadView.OTHER_BUTTON_ROW else
             SS_TEXTEDIT_IGNORED)
     self.textEdit.setStyleSheet(ss)
 
@@ -184,17 +188,13 @@ class TextThreadView(QtWidgets.QWidget):
   #def clearText(self):
   #  self.__d.textEdit.clear()
 
-  def setKeepsThreads(self, val):
-    self.__d.keepsThreads = val
-    self.__d.updateStyleSheet()
-
   threadTypeChanged = Signal(int, long) # type, signature
 
   def threadType(self):
     row = self.__d.buttonRow.currentIndex()
     return (textman.SCENARIO_THREAD_TYPE if row == _TextThreadView.SCENARIO_BUTTON_ROW else
             textman.NAME_THREAD_TYPE if row == _TextThreadView.NAME_BUTTON_ROW else
-            textman.OTHER_THREAD_TYPE if row == _TextThreadView.OTHER_BUTTON_ROW else
+            #textman.OTHER_THREAD_TYPE if row == _TextThreadView.OTHER_BUTTON_ROW else
             textman.IGNORED_THREAD_TYPE)
 
   def setThreadType(self, type):
@@ -205,7 +205,7 @@ class TextThreadView(QtWidgets.QWidget):
       self.__d.buttonRow.setCurrentIndex(
         _TextThreadView.SCENARIO_BUTTON_ROW if type == textman.SCENARIO_THREAD_TYPE else
         _TextThreadView.NAME_BUTTON_ROW if type == textman.NAME_THREAD_TYPE else
-        _TextThreadView.OTHER_BUTTON_ROW if type == textman.OTHER_THREAD_TYPE else
+        #_TextThreadView.OTHER_BUTTON_ROW if type == textman.OTHER_THREAD_TYPE else
         _TextThreadView.IGNORE_BUTTON_ROW
       )
       self.__d.updateStyleSheet()
@@ -215,8 +215,6 @@ class _TextTab(object):
 
   def __init__(self, q):
     self._active = False
-    self.currentIgnoresRepeat = False # backup
-    self.currentKeepsSpace = False # backup
     self._threadViews = {} # {long signature:TextThreadView}
     self._createUi(q)
 
@@ -232,11 +230,11 @@ class _TextTab(object):
     skqss.class_(helpButton, 'btn btn-success')
     helpButton.clicked.connect(lambda: self.helpDialog.show())
 
-    wikiButton = QtWidgets.QPushButton(tr_("Wiki"))
-    wikiButton.setToolTip(tr_("Wiki"))
-    skqss.class_(wikiButton, 'btn btn-default')
-    import main
-    wikiButton.clicked.connect(partial(main.manager().openWiki, 'VNR/Text Settings'))
+    #wikiButton = QtWidgets.QPushButton(tr_("Wiki"))
+    #wikiButton.setToolTip(tr_("Wiki"))
+    #skqss.class_(wikiButton, 'btn btn-default')
+    #import main
+    #wikiButton.clicked.connect(partial(main.manager().openWiki, 'VNR/Text Settings'))
 
     #cancelButton = QtWidgets.QPushButton(tr_("Cancel"))
     #cancelButton.clicked.connect(self.q.hide)
@@ -259,10 +257,6 @@ class _TextTab(object):
     row.addWidget(QtWidgets.QLabel(mytr_("Game language")+ ":"))
     row.addWidget(self.languageEdit)
     optionLayout.addLayout(row)
-    optionLayout.addWidget(self.keepsThreadsButton)
-    optionLayout.addWidget(self.removesRepeatButton)
-    optionLayout.addWidget(self.ignoresRepeatButton)
-    optionLayout.addWidget(self.keepsSpaceButton)
     option.setLayout(optionLayout)
 
     layout = QtWidgets.QVBoxLayout()
@@ -270,7 +264,7 @@ class _TextTab(object):
     row.addWidget(self.saveButton)
     row.addWidget(hookPrefsButton)
     row.addWidget(self.resetButton)
-    row.addWidget(wikiButton)
+    #row.addWidget(wikiButton)
     row.addWidget(helpButton)
     #row.addWidget(QtWidgets.QLabel(
     #  " <= " + my.tr("click help if you have questions")
@@ -285,7 +279,6 @@ class _TextTab(object):
 
     layout.addWidget(threadGroup)
 
-    #msg = QtWidgets.QLabel(my.tr("WARNING: PLEASE DO NOT TURN ON REPETITION FILTERS UNLESS THERE ARE REPETITIONS!"))
     msg = QtWidgets.QLabel(my.tr("Don't forget to maximize the text speed (see Help)."))
     skqss.class_(msg, "text-info")
     layout.addWidget(msg)
@@ -344,82 +337,6 @@ class _TextTab(object):
     ret.currentIndexChanged.connect(self._refreshLanguageEdit)
     return ret
 
-  @memoizedproperty
-  def keepsSpaceButton(self):
-    ret = QtWidgets.QCheckBox(
-        my.tr("Insert spaces between words") +
-        " (%s: %s)" % (tr_("for example"), "Howareyou! => How are you!"))
-    #skqss.class_(ret, 'text-error')
-    #ret.toggled.connect(lambda t:
-    #    skqss.class_(ret, 'error' if t else 'text-error'))
-    ret.setToolTip(my.tr("Preserve spaces between (English) words"))
-    ret.toggled.connect(lambda t:
-        t and self._confirmKeepSpace())
-    ret.toggled.connect(texthook.global_().setKeepsSpace) # this is after confirmation
-    return ret
-
-  @memoizedproperty
-  def removesRepeatButton(self):
-    ret = QtWidgets.QCheckBox(
-        my.tr("Eliminate finite repetition in the text") +
-        " (%s: %s)" % (tr_("for example"), "YYeess!!NoNo! => Yes!No!"))
-    skqss.class_(ret, 'text-error')
-    ret.toggled.connect(lambda t:
-        skqss.class_(ret, 'error' if t else 'text-error'))
-    ret.setToolTip(my.tr("Warning: Please do not turn on repetition filters unless there are repetitions!"))
-    ret.toggled.connect(lambda t:
-        t and self._confirmRemoveRepeat(ret))
-    return ret
-
-  @memoizedproperty
-  def ignoresRepeatButton(self):
-    ret = QtWidgets.QCheckBox(
-        my.tr("Ignore infinite cyclic repetition in the text") +
-        " (%s: %s)" % (tr_("for example"), "YesYesYes... => Yes"))
-    skqss.class_(ret, 'text-error')
-    ret.toggled.connect(lambda t:
-        skqss.class_(ret, 'error' if t else 'text-error'))
-    ret.setToolTip(my.tr("Warning: Please do not turn on repetition filters unless there are repetitions!"))
-    ret.toggled.connect(lambda t:
-        t and self._confirmRemoveRepeat(ret))
-    ret.toggled.connect(texthook.global_().setRemovesRepeat) # this is after confirmation
-    return ret
-
-  def _confirmRemoveRepeat(self, w):
-    """
-    @param  w  QAbstractButton
-    """
-    window = self.q.parentWidget()
-    if window and window.isVisible():
-      import prompt
-      if not prompt.confirmRemoveRepeat():
-        w.toggle()
-
-  def _confirmKeepSpace(self):
-    window = self.q.parentWidget()
-    if window and window.isVisible():
-      import prompt
-      if not prompt.confirmKeepSpace():
-        self.keepsSpaceButton.toggle()
-
-  def _confirmKeepThreads(self):
-    window = self.q.parentWidget()
-    if window and window.isVisible():
-      import prompt
-      if not prompt.confirmKeepThreads():
-        self.keepsThreadsButton.toggle()
-
-  @memoizedproperty
-  def keepsThreadsButton(self):
-    ret = QtWidgets.QCheckBox(
-        my.tr("Keep all threads from the selected dialog engine"))
-    ret.toggled.connect(lambda t:
-        skqss.class_(ret, 'error' if t else ''))
-    ret.toggled.connect(self._refresh)
-    ret.toggled.connect(lambda t:
-        t and self._confirmKeepThreads())
-    return ret
-
   #def _refreshKeepsHookButton(self):
   #  self.keepsHookButton.setEnabled(bool(texthook.global_().currentHookCode()))
 
@@ -436,7 +353,7 @@ class _TextTab(object):
         q.hookChanged.emit, ""))
 
     # Automatically hide me when game exit
-    texthook.global_().processDetached.connect(ret.hide)
+    gameagent.global_().processDetached.connect(ret.hide)
 
     h = self._deletedHookCode()
     ret.setDeletedHook(h)
@@ -470,46 +387,19 @@ class _TextTab(object):
 
   def setActive(self, active):
     if self._active != active:
-      th = texthook.global_()
-      if active:
-        th.dataReceived.connect(self._addText)
-        #th.hookCodeChanged.connect(self._refreshKeepsHookButton)
-        #self._refreshKeepsHookButton()
-      else:
-        th.dataReceived.disconnect(self._addText)
-        #th.hookCodeChanged.disconnect(self._refreshKeepsHookButton)
+      agent = gameagent.global_()
+      #if active:
+      #  agent.dataReceived.connect(self._addText)
+      #else:
+      #  agent.dataReceived.disconnect(self._addText)
       self._active = active
-
-  def _keepsSpace(self):
-    """
-    @return  bool
-    """
-    return self.keepsSpaceButton.isChecked()
-
-  def _removesRepeat(self):
-    """
-    @return  bool
-    """
-    return self.removesRepeatButton.isChecked()
-
-  def _ignoresRepeat(self):
-    """
-    @return  bool
-    """
-    return self.ignoresRepeatButton.isChecked()
-
-  def _keepsThreads(self):
-    """
-    @return  bool
-    """
-    return self.keepsThreadsButton.isChecked()
 
   def _transformText(self, text):
     """
     @param  text  unicode
     @return  unicode
     """
-    return textutil.remove_repeat_text(text) if self._removesRepeat() else text
+    return text
 
   def _canSave(self):
     g = _gameprofile()
@@ -566,40 +456,13 @@ class _TextTab(object):
             q.nameThreadChanged.emit,
             namesig, name))
 
-    sig_set = set(self._otherSignatures())
-    if sig_set != tm.otherSignatures():
-      dprint("other threads changed")
-      changed = True
-      skevents.runlater(partial(
-          q.otherThreadsChanged.emit,
-          {sig:threads[sig].name for sig in sig_set}))
-
-    if sig:
-      if self._removesRepeat() != tm.removesRepeatText():
-        changed = True
-        skevents.runlater(partial(
-            q.removesRepeatTextChanged.emit,
-            self._removesRepeat()))
-
-      if self._ignoresRepeat() != self.currentIgnoresRepeat:
-        self.currentIgnoresRepeat = self._ignoresRepeat()
-        changed = True
-        skevents.runlater(partial(
-            q.ignoresRepeatTextChanged.emit,
-            self.currentIgnoresRepeat))
-
-      if self._keepsSpace() != self.currentKeepsSpace:
-        self.currentKeepsSpace = self._keepsSpace()
-        changed = True
-        skevents.runlater(partial(
-            q.keepsSpaceChanged.emit,
-            self.currentKeepsSpace))
-
-      if self._keepsThreads() != tm.keepsThreads():
-        changed = True
-        skevents.runlater(partial(
-            q.keepsThreadsChanged.emit,
-            self._keepsThreads()))
+    #sig_set = set(self._otherSignatures())
+    #if sig_set != tm.otherSignatures():
+    #  dprint("other threads changed")
+    #  changed = True
+    #  skevents.runlater(partial(
+    #      q.otherThreadsChanged.emit,
+    #      {sig:threads[sig].name for sig in sig_set}))
 
     msg = (my.tr("Text settings are saved") if changed else
            my.tr("Text settings are not changed"))
@@ -620,20 +483,16 @@ class _TextTab(object):
     @param  ignoreType  bool
     """
     encoding = encoding or self._encoding()
-    keepsThreads = self._keepsThreads()
     try:
       view = self._threadViews[thread.signature]
       if not ignoreType:
         view.setThreadType(thread.type)
-      view.setKeepsThreads(keepsThreads)
     except KeyError:
       skevents.runlater(self.q.sizeChanged.emit)
       view = self._threadViews[thread.signature] = TextThreadView(
           name=thread.name, signature=thread.signature)
       if not ignoreType:
         view.setThreadType(thread.type)
-      if keepsThreads:
-        view.setKeepsThreads(keepsThreads)
       view.threadTypeChanged.connect(self._setThreadType)
       view.threadTypeChanged.connect(self._refreshSaveButton)
 
@@ -668,24 +527,10 @@ class _TextTab(object):
       skqss.addclass(self.languageEdit, 'warning')
 
   def unload(self):
-    texthook.global_().setRemovesRepeat(self.currentIgnoresRepeat)
-    texthook.global_().setKeepsSpace(self.currentKeepsSpace)
+    pass
 
   def load(self):
-    th = texthook.global_()
-
-    self.currentIgnoresRepeat = th.removesRepeat()
-    self.ignoresRepeatButton.setChecked(self.currentIgnoresRepeat)
-
-    self.currentKeepsSpace = th.keepsSpace()
-    self.keepsSpaceButton.setChecked(self.currentKeepsSpace)
-
     tm = textman.manager()
-    self.removesRepeatButton.setChecked(tm.removesRepeatText())
-
-    self.keepsThreadsButton.setChecked(tm.keepsThreads())
-    #self.keepsThreadsButton.setEnabled(bool(texthook.global_().currentHookCode()))
-
     lang = tm.gameLanguage()
     try: langIndex = config.LANGUAGES.index(lang)
     except ValueError: langIndex = 0
@@ -758,11 +603,11 @@ class _TextTab(object):
         return sig
     return 0
 
-  def _otherSignatures(self):
-    return [sig
-      for sig, view in self._threadViews.iteritems()
-      if view.threadType() == textman.OTHER_THREAD_TYPE
-    ]
+  #def _otherSignatures(self):
+  #  return [sig
+  #    for sig, view in self._threadViews.iteritems()
+  #    if view.threadType() == textman.OTHER_THREAD_TYPE
+  #  ]
 
   def _encoding(self):
     return self.encodingEdit.currentText().lower()
@@ -785,14 +630,10 @@ class TextTab(QtWidgets.QWidget):
   sizeChanged = Signal()
   hookChanged = Signal(str)
   languageChanged = Signal(unicode)
-  removesRepeatTextChanged = Signal(bool)
-  ignoresRepeatTextChanged = Signal(bool)
-  keepsSpaceChanged = Signal(bool)
-  keepsThreadsChanged = Signal(bool)
   scenarioThreadChanged = Signal(long, unicode, unicode) # signature, name, encoding
   nameThreadChanged = Signal(long, unicode) # signature, name
   nameThreadDisabled = Signal()
-  otherThreadsChanged = Signal(dict) # {long signature:str name}
+  #otherThreadsChanged = Signal(dict) # {long signature:str name}
 
   def clear(self): self.__d.clear()
   def load(self): self.__d.load()
@@ -861,11 +702,7 @@ class _EmbeddedTextPrefsDialog(object):
     ret.scenarioThreadChanged.connect(q.scenarioThreadChanged)
     ret.nameThreadChanged.connect(q.nameThreadChanged)
     ret.nameThreadDisabled.connect(q.nameThreadDisabled)
-    ret.otherThreadsChanged.connect(q.otherThreadsChanged)
-    ret.removesRepeatTextChanged.connect(q.removesRepeatTextChanged)
-    ret.ignoresRepeatTextChanged.connect(q.ignoresRepeatTextChanged)
-    ret.keepsSpaceChanged.connect(q.keepsSpaceChanged)
-    ret.keepsThreadsChanged.connect(q.keepsThreadsChanged)
+    #ret.otherThreadsChanged.connect(q.otherThreadsChanged)
     return ret
 
   #@memoizedproperty
@@ -923,11 +760,7 @@ class EmbeddedTextPrefsDialog(QtWidgets.QMainWindow):
   scenarioThreadChanged = Signal(long, unicode, unicode) # signature, name, encoding
   nameThreadChanged = Signal(long, unicode) # signature, name
   nameThreadDisabled = Signal()
-  otherThreadsChanged = Signal(dict) # {long signature:str name}
-  removesRepeatTextChanged = Signal(bool)
-  ignoresRepeatTextChanged = Signal(bool)
-  keepsSpaceChanged = Signal(bool)
-  keepsThreadsChanged = Signal(bool)
+  #otherThreadsChanged = Signal(dict) # {long signature:str name}
 
   def updateSize(self):
     sz = self.sizeHint()
@@ -959,7 +792,7 @@ class EmbeddedTextPrefsDialog(QtWidgets.QMainWindow):
       else:
         d.unload()
 
-    texthook.global_().setWhitelistEnabled(not visible)
+    #texthook.global_().setWhitelistEnabled(not visible)
 
     d.setActive(visible)
     super(EmbeddedTextPrefsDialog, self).setVisible(visible)
@@ -977,5 +810,11 @@ class EmbeddedTextPrefsDialog(QtWidgets.QMainWindow):
   def sizeHint(self):
     """@reimp @public"""
     return self.centralWidget().sizeHint()
+
+if __name__ == '__main__':
+  a = debug.app()
+  w = EmbeddedTextPrefsDialog()
+  w.show()
+  a.exec_()
 
 # EOF

@@ -21,6 +21,11 @@ enum { MaxCallerSize = 0x800 };
  *  @param  upperBound  the upper memory address to search
  *  @param* callerSearchSize  the maximum size of caller
  *  @return  the caller absolute address if succeed or 0 if fail
+ *
+ *  Example funcInst:
+ *  0x55: push ebp
+ *  0x81,0xec: sub esp XXOO (0xec81)
+ *  0x83,0xec: sub esp XXOO (0xec83)
  */
 
 dword_t findCallerAddress(dword_t funcAddr, dword_t funcInst, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaxCallerSize);
