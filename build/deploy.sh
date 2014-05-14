@@ -2,7 +2,7 @@
 # 9/19/2013
 cd `dirname "$0"`
 
-PYPLUGIN=pyreader
+PYPLUGIN=pyvnrmem
 FROM=../build/lib$PYPLUGIN.so
 TO=../bin/$PYPLUGIN.so
 rm -f "$TO"
