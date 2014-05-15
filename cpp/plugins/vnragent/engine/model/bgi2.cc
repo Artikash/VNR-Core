@@ -26,10 +26,10 @@
  *
  *  TODO: Figure the meaning of the parameters and the return value
  *  ? __cdecl sub_31850(DWORD arg1, DWORD arg2, LPCSTR arg3, DWORD arg4)
- *  - arg1: address
- *  - arg2: address
+ *  - arg1: address, could point to area of zero, seems to be the output of this function
+ *  - arg2: address, the same as arg1
  *  - arg3: string
- *  - arg4: uknown
+ *  - arg4: flags, choices: 0, character name & scenario: 1
  */
 extern "C" { // C linkage is indispensable for BGI engine
 
@@ -41,9 +41,9 @@ typedef int (__cdecl *hook_fun_t)(DWORD, DWORD, LPCSTR, DWORD); // __stdcall wil
 /*static*/ hook_fun_t BGI2_oldHookFun;
 
 __declspec(noinline)
-static LPCSTR dispatchText(LPCSTR text, DWORD returnAddress);
+static LPCSTR dispatchText(LPCSTR text, DWORD returnAddress, DWORD split);
 
-static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD arg4)
+static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD split)
 {
 #ifdef DEBUG
   qDebug() << arg1 << ":"
@@ -52,8 +52,8 @@ static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD arg4)
            << arg4;
 #endif // DEBUG
   DWORD returnAddress = (DWORD)_ReturnAddress();
-  str = dispatchText(str, returnAddress);
-  return str ? BGI2_oldHookFun(arg1, arg2, str, arg4) : 0; // TODO: investigate the return value
+  str = dispatchText(str, returnAddress, split);
+  return str ? BGI2_oldHookFun(arg1, arg2, str, split) : 0; // TODO: investigate the return value
 }
 
 } // extern "C"
@@ -64,11 +64,15 @@ static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD arg4)
  *
  *  TODO: The current split cannot distinguish name and choices
  */
-/*extern "C"*/ static LPCSTR dispatchText(LPCSTR text, DWORD returnAddress)
+/*extern "C"*/ static LPCSTR dispatchText(LPCSTR text, DWORD returnAddress, DWORD split)
 {
   static QByteArray ret; // persistent storage, which makes this function not thread-safe
+  // TODO
+  //auto sig = Engine::hashThreadSignature(returnAddress, split);
+  Q_UNUSED(split);
+  auto role = split ? Engine::UnknownRole : Engine::UnknownRole; // TODO: add choices
   auto sig = Engine::hashThreadSignature(returnAddress);
-  ret = AbstractEngine::instance()->dispatchTextA(text, sig);
+  ret = AbstractEngine::instance()->dispatchTextA(text, sig, role);
   return (LPCSTR)ret.constData();
 }
 
