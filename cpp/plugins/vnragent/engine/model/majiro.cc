@@ -94,15 +94,12 @@ bool MajiroEngine::match()
 
 bool MajiroEngine::attach()
 {
-  ulong dwTextOutA = Engine::getModuleFunction("gdi32.dll", "TextOutA");
-  if (!dwTextOutA)
-    return false;
-  ulong startAddress,
+  DWORD startAddress,
         stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
   enum { sub_esp = 0xec81 }; // caller pattern: sub esp = 0x81,0xec
-  ulong addr = MemDbg::findCallerAddress(dwTextOutA, sub_esp, startAddress, stopAddress);
+  DWORD addr = MemDbg::findCallerAddress((DWORD)::TextOutA, sub_esp, startAddress, stopAddress);
   // Note: ITH will mess up this value
   //addr = 0x41af90; // レミニセンス function address
   if (!addr)

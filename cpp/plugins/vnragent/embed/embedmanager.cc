@@ -1,10 +1,12 @@
 // embedmanager.cc
 // 4/26/2014 jichi
 
+#include "config.h"
 #include "embed/embedmanager.h"
 #include "embed/embedmemory.h"
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
+#include "driver/rpcclient.h"
 //#include "QxtCore/QxtJSON"
 //#include "qtjson/qtjson.h"
 #include "winevent/winevent.h"
@@ -116,11 +118,11 @@ void EmbedManager::clearTranslation()
 
 void EmbedManager::sendText(const QString &text, qint64 hash, long signature, int role, bool needsTranslation)
 {
-  //if (role == Engine::OtherRole && !needsTranslation)
-  //  return;
-  //if (!needsTranslation && role != Engine::ScenarioRole)
-  //  emit textReceivedDelayed(text, hash, role, needsTranslation);
-  //else
+#ifdef VNRAGENT_ENABLE_NATIVE_PIPE
+  if (needsTranslation)
+    RpcClient::instance()->directSendEngineText(text, hash, signature, role, needsTranslation);
+  else
+#endif // VNRAGENT_ENABLE_NATIVE_PIPE
   emit textReceived(text, hash, signature, role, needsTranslation);
 }
 

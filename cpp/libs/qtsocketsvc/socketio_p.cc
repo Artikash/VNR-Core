@@ -24,7 +24,7 @@ bool SocketService::writeSocket(QIODevice *socket, const QByteArray &data, bool 
 {
   Q_ASSERT(socket);
   if (pack) {
-    QByteArray packet = packData(data);
+    QByteArray packet = packPacket(data);
     return socket->write(packet) == packet.size();
   } else
     return socket->write(data) == data.size();

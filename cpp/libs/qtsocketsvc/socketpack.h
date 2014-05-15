@@ -18,6 +18,7 @@ enum { // number of bytes of an int32 number
   Int32Size = 4,
   UInt32Size = Int32Size
 };
+enum { PacketHeadSize = UInt32Size };
 
 inline QByteArray packUInt32(quint32 value)
 {
@@ -44,8 +45,11 @@ inline quint32 unpackUInt32(const QByteArray &data, int offset = 0)
 
 // Raw data
 
-inline QByteArray packData(const QByteArray &data)
+inline QByteArray packPacket(const QByteArray &data)
 { return packUInt32(data.size()) + data; }
+
+inline QByteArray unpackPacket(const QByteArray &data)
+{ return data.mid(PacketHeadSize); }
 
 // StingList
 

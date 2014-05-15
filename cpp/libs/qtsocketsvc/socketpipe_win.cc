@@ -33,6 +33,23 @@ HANDLE SocketService::findLocalSocketPipeHandle(const QObject *parent)
 //bool SocketService::writePipe(pipe_handle_t h, const QStringList &data, const bool *quit)
 //{ return !data.isEmpty() && writePipe(h, packStringList(data, quit)); }
 
+LPOVERLAPPED SocketService::newPipeOverlapped(const char *eventName)
+{
+  LPOVERLAPPED p = new OVERLAPPED;
+  ::memset(p, 0, sizeof(OVERLAPPED));
+  p->hEvent = ::CreateEventA(nullptr, TRUE, FALSE, eventName);
+  return p;
+}
+
+void SocketService::deletePipeOverlapped(LPOVERLAPPED p)
+{
+  if (p) {
+    if (p->hEvent)
+      ::CloseHandle(p->hEvent);
+    delete p;
+  }
+}
+
 // See: qt/src/corelib/qwindowspipewrite.cpp
 bool SocketService::writePipe(pipe_handle_t h, const void *data, size_t size, LPOVERLAPPED overlap, const bool *quit)
 {
@@ -43,17 +60,16 @@ bool SocketService::writePipe(pipe_handle_t h, const void *data, size_t size, LP
 
   // LocalSocket is opened with async IO
   bool deleteOverlapLater = !overlap;
-  if (!overlap) {
-    overlap = new OVERLAPPED;
-    ::memset(overlap, 0, sizeof(OVERLAPPED));
-    overlap->hEvent = ::CreateEvent(NULL, TRUE, FALSE, NULL);
-  }
+  if (!overlap)
+    overlap = newPipeOverlapped();
+  else
+    overlap->Offset = overlap->OffsetHigh = 0;
 
   ulong totalWritten = 0;
+  const char *pData = static_cast<const char *>(data);
   while ((!quit || !*quit) && totalWritten < size) {
     DWORD written = 0;
-    if (!::WriteFile(h, data + totalWritten, size - totalWritten, &written, overlap)) {
-
+    if (!::WriteFile(h, pData + totalWritten, size - totalWritten, &written, overlap)) {
       if (::GetLastError() == 0xe8/*NT_STATUS_INVALID_USER_BUFFER*/) {
         // give the os a rest
         ::Sleep(SleepInterval);
@@ -63,10 +79,8 @@ bool SocketService::writePipe(pipe_handle_t h, const void *data, size_t size, LP
     }
     totalWritten += written;
   }
-  if (deleteOverlapLater) {
-    ::CloseHandle(overlap->hEvent);
-    delete overlap;
-  }
+  if (deleteOverlapLater)
+    deletePipeOverlapped(overlap);
   return totalWritten == size;
 }
 

@@ -39,8 +39,8 @@ int main(int argc, char *argv[])
   cli.waitForConnected();
   qDebug() << cli.isConnected();
   cli.dumpSocketInfo();
-  const char *text = "hello";
-  cli.sendData(text);
+  //const char *text = "hello";
+  //cli.sendData(text);
   //cli.sendDataLater(text);
 
   //cli.waitForBytesWritten();
@@ -50,8 +50,14 @@ int main(int argc, char *argv[])
 
 #ifdef Q_OS_WIN
   if (HANDLE h = SocketService::findLocalSocketPipeHandle(&cli)) {
-    QStringList l = QStringList() << "hello" << "world";
-    QByteArray data = SocketService::packStringList(l);
+    //QStringList l = QStringList() << "hello" << "world";
+    //QByteArray data = SocketService::packStringList(l);
+    QByteArray data = "hello world";
+    data = SocketService::packPacket(data);
+    SocketService::writePipe(h, data.constData(), data.size());
+
+    data = "hello world again";
+    data = SocketService::packPacket(data);
     SocketService::writePipe(h, data.constData(), data.size());
   }
 #endif // Q_OS_WIN

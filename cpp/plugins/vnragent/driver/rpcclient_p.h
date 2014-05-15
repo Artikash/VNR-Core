@@ -7,6 +7,7 @@
 #include "sakurakit/skglobal.h"
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
+#include <qt_windows.h>
 
 #ifdef VNRAGENT_ENABLE_TCP_SOCKET
 # ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
@@ -42,8 +43,13 @@ class RpcClientPrivate : public QObject
   enum { WaitInterval = 5000 }; // wait for data sent
 public:
   explicit RpcClientPrivate(Q *q);
+  ~RpcClientPrivate();
+
+  bool appQuit; // the application has quit
 
   RpcSocketClient *client;
+  HANDLE clientPipe;
+  LPOVERLAPPED clientOverlapped;
 
 #ifdef VNRAGENT_ENABLE_RECONNECT
   QTimer *reconnectTimer;
@@ -60,10 +66,11 @@ private:
 
   void onCall(const QStringList &args); // called from server
 
+  void directCallServer(const QStringList &args); // call server
+  void directSendData(const QByteArray &data);
+
   void callServer(const QStringList &args); // call server
-  void callServerLater(const QStringList &args); // call server
   void sendData(const QByteArray &data);
-  void sendDataLater(const QByteArray &data);
 
   void callServer(const QString &arg0, const QString &arg1)
   { callServer(QStringList() << arg0 << arg1); }
@@ -105,6 +112,17 @@ public:
   void sendEngineText(const QString &text, qint64 hash, long signature, int role, bool needsTranslation)
   {
     callServer(QStringList()
+        << "agent.engine.text"
+        << text
+        << marshalInteger(hash)
+        << marshalInteger(signature)
+        << marshalInteger(role)
+        << marshalBool(needsTranslation));
+  }
+
+  void directSendEngineText(const QString &text, qint64 hash, long signature, int role, bool needsTranslation)
+  {
+    directCallServer(QStringList()
         << "agent.engine.text"
         << text
         << marshalInteger(hash)

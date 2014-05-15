@@ -4,22 +4,15 @@
 #include "driver/rpcclient.h"
 #include "driver/rpcclient_p.h"
 #include "qtsocketsvc/socketpack.h"
+#include "qtsocketsvc/socketpipe.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QHash>
 #include <QtCore/QTimer>
 
 #ifdef VNRAGENT_ENABLE_TCP_SOCKET
-# ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
-#  include "qtsocketsvc/queuedtcpsocketclient.h"
-# else
-#  include "qtsocketsvc/tcpsocketclient.h"
-# endif // VNRAGENT_ENABLE_BUFFERED_SOCKET
+# include "qtsocketsvc/tcpsocketclient.h"
 #else
-# ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
-#  include "qtsocketsvc/queuedlocalsocketclient.h"
-# else
-#  include "qtsocketsvc/localsocketclient.h"
-# endif // VNRAGENT_ENABLE_BUFFERED_SOCKET
+# include "qtsocketsvc/localsocketclient.h"
 #endif // VNRAGENT_ENABLE_TCP_SOCKET
 
 #define DEBUG "rpcclient"
@@ -28,8 +21,10 @@
 /** Private class */
 
 RpcClientPrivate::RpcClientPrivate(Q *q)
-  : Base(q), q_(q), client(new RpcSocketClient(this))
+  : Base(q), q_(q), appQuit(false), client(new RpcSocketClient(this)), clientPipe(nullptr)
 {
+  clientOverlapped = SocketService::newPipeOverlapped();
+
 #ifdef VNR_ENABLE_TCP_SOCKET
   client->setPort(VNRAGENT_SOCKET_PORT);
   client->setAddress(VNRAGENT_SOCKET_HOST);
@@ -55,6 +50,9 @@ RpcClientPrivate::RpcClientPrivate(Q *q)
 #endif // VNRAGENT_ENABLE_RECONNECT
 }
 
+RpcClientPrivate::~RpcClientPrivate()
+{ SocketService::deletePipeOverlapped(clientOverlapped); }
+
 void RpcClientPrivate::start()
 {
   //if (client->isConnected())
@@ -67,6 +65,7 @@ void RpcClientPrivate::start()
 
 void RpcClientPrivate::reconnect()
 {
+  //clientPipe = nullptr;
 #ifdef VNRAGENT_ENABLE_RECONNECT
   if (reconnectTimer->isActive())
     reconnectTimer->stop();
@@ -87,6 +86,7 @@ void RpcClientPrivate::reconnect()
 void RpcClientPrivate::onConnected()
 {
   DOUT("connected");
+  clientPipe = SocketService::findLocalSocketPipeHandle(client);
   pingServer();
 }
 
@@ -104,30 +104,23 @@ void RpcClientPrivate::callServer(const QStringList &args)
   }
 }
 
-void RpcClientPrivate::callServerLater(const QStringList &args)
+void RpcClientPrivate::directCallServer(const QStringList &args)
 {
   if (client->isConnected()) {
     QByteArray data = SocketService::packStringList(args);
-    sendDataLater(data);
+    directSendData(data);
   }
 }
 
 void RpcClientPrivate::sendData(const QByteArray &data)
-{
-#ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
-  client->sendDataNow(data, WaitInterval);
-#else
-  client->sendData(data, WaitInterval);
-#endif // VNRAGENT_ENABLE_BUFFERED_SOCKET
-}
+{ client->sendData(data, WaitInterval); }
 
-void RpcClientPrivate::sendDataLater(const QByteArray &data)
+void RpcClientPrivate::directSendData(const QByteArray &data)
 {
-#ifdef VNRAGENT_ENABLE_BUFFERED_SOCKET
-  client->sendDataLater(data);
-#else
-  sendData(data);
-#endif // VNRAGENT_ENABLE_BUFFERED_SOCKET
+  if (clientPipe) {
+    QByteArray packet = SocketService::packPacket(data);
+    SocketService::writePipe(clientPipe, packet.constData(), packet.size(), clientOverlapped, &appQuit);
+  }
 }
 
 void RpcClientPrivate::onDataReceived(const QByteArray &data)
@@ -217,6 +210,8 @@ RpcClient::~RpcClient() { ::instance_ = nullptr; }
 
 bool RpcClient::isActive() const { return d_->client->isConnected(); }
 
+void RpcClient::quit() { d_->appQuit = true; }
+
 // - Requests -
 
 void RpcClient::requestWindowTranslation(const QString &json) { d_->sendWindowTexts(json); }
@@ -226,6 +221,9 @@ void RpcClient::sendEngineName(const QString &name)
 
 void RpcClient::sendEngineText(const QString &text, qint64 hash, long signature, int role, bool needsTranslation)
 { d_->sendEngineText(text, hash, signature, role, needsTranslation); }
+
+void RpcClient::directSendEngineText(const QString &text, qint64 hash, long signature, int role, bool needsTranslation)
+{ d_->directSendEngineText(text, hash, signature, role, needsTranslation); }
 
 //void RpcClient::sendEngineTextLater(const QString &text, qint64 hash, int role, bool needsTranslation)
 //{ d_->sendEngineTextLater(text, hash, role, needsTranslation); }

@@ -36,12 +36,6 @@
 //#define VNRAGENT_ENABLE_TCP_SOCKET
 
 /**
- *  Use bufferd socket to communicate with VNR.
- *  This might cause delay in transfering translation.
- */
-//#define VNRAGENT_ENABLE_BUFFERED_SOCKET
-
-/**
  *  Put QCoreApplication on another thread
  *  This is not needed to translate UI text.
  *  But it is indispensible to hijack engine which require blocking the main thread.
@@ -73,5 +67,12 @@
 #ifdef VNRAGENT_ENABLE_APPRUNNER
 # define QT_EVENTLOOP_INTERVAL   10 // in ms
 #endif // VNRAGENT_ENABLE_APPRUNNER
+
+/**
+ *  Allow sending time-critical message using native Windows pipe bypassing Qt
+ *  Warning, communicate through native pipe will be fast but could contend with Qt messages
+ *  as they are using different POVERLAPPED.
+ */
+#define VNRAGENT_ENABLE_NATIVE_PIPE
 
 // EOF

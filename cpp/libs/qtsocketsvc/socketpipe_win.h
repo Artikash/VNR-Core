@@ -29,6 +29,10 @@ bool writePipe(pipe_handle_t h, const void *data, size_t size, LPOVERLAPPED over
 //bool writePipe(pipe_handle_t h, const QByteArray &data, LPOVERLAPPED async = nullptr, const bool *quit = nullptr);
 //bool writePipe(pipe_handle_t h, const QStringList &data, LPOVERLAPPED async = nullptr, const bool *quit = nullptr);
 
+///  Create an overlap for pipe with the given event name
+LPOVERLAPPED newPipeOverlapped(const char *eventName = nullptr);
+void deletePipeOverlapped(LPOVERLAPPED p);
+
 } // SocketService
 
 #endif // _SOCKETSVC_SOCKETPIPE_WIN_H
