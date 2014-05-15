@@ -16,7 +16,8 @@ TARGET  = vnrloc
 
 HEADERS += \
   config.h \
-  debug.h
+  debug.h \
+  settings.h
 
 SOURCES += \
   main.cc

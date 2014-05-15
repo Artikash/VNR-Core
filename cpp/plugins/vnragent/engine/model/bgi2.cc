@@ -1,5 +1,6 @@
 // bgi2.cc
 // 5/12/2014 jichi
+// See: http://i.watashi.me/archives/1.html
 // See: http://bbs.sumisora.org/read.php?tid=11042351
 #include "engine/model/bgi.h"
 #include "engine/enginedef.h"
