@@ -134,7 +134,8 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, long signature,
       d_->settings->detectsControl && WinKey::isKeyControlPressed();
 
   qint64 hash = canceled ? 0 : Engine::hashByteArray(data);
-  if (!canceled && d_->settings->extractionEnabled[role] && !d_->settings->translationEnabled[role]) {
+  if (!canceled && !d_->settings->translationEnabled[role] &&
+      (d_->settings->extractionEnabled[role] || d_->settings->extractsAllTexts)) {
     enum { NeedsTranslation = false };
     p->sendText(text, hash, signature, role, NeedsTranslation);
   }

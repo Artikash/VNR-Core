@@ -8,13 +8,14 @@
 class EngineSettings
 {
 public:
-  bool enabled
-     , detectsControl
-     , nameTextVisible
-     , textVisible[Engine::RoleCount]
-     , transcodingEnabled[Engine::RoleCount]
-     , translationEnabled[Engine::RoleCount]
-     , extractionEnabled[Engine::RoleCount]
+  bool enabled          // if vnragent is enabled
+     , detectsControl   // be aware if CTRL is pressed
+     , extractsAllTexts // send all texts unless not enabled
+     , nameTextVisible  // display both translation and the original text for names
+     , textVisible[Engine::RoleCount]           // if display/hide all texts
+     , transcodingEnabled[Engine::RoleCount]    // if fix the encoding
+     , translationEnabled[Engine::RoleCount]    // if display translation
+     , extractionEnabled[Engine::RoleCount]     // if send text
      ;
 
   long scenarioSignature,
@@ -24,6 +25,7 @@ public:
   EngineSettings()
     : enabled(false)
     , detectsControl(false)
+    , extractsAllTexts(false)
     , nameTextVisible(false)
     , scenarioSignature(0)
     , nameSignature(0)

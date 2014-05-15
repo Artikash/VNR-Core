@@ -108,6 +108,13 @@ class GameAgent(QObject):
       if d.connectedPid:
         d.sendSetting('nameSignature', v)
 
+  def setExtractsAllTexts(self, v):
+    d = self.__d
+    if v != d.extractsAllTexts:
+      d.extractsAllTexts = v
+      if d.connectedPid:
+        d.sendSetting('embeddedAllTextsExtracted', v)
+
   # Shared memory
 
   def sendEmbeddedTranslation(self, text, hash, role):
@@ -184,6 +191,9 @@ class _GameAgent(object):
     self.textExtractionEnabled = textman.manager().isEnabled()
     textman.manager().enabledChanged.connect(self._setTextExtractionEnabled)
 
+    # Got this value from embeddedprefs.py
+    self.extractsAllTexts = False
+
   def _setTextExtractionEnabled(self, t):
     if self.textExtractionEnabled != t:
       self.textExtractionEnabled = t
@@ -231,6 +241,7 @@ class _GameAgent(object):
     data['debug'] = config.APP_DEBUG
     data['gameEncoding'] = self.gameEncoding
     data['embeddedTextEnabled'] = self.textExtractionEnabled
+    data['embeddedAllTextsExtracted'] = self.extractsAllTexts
     data['scenarioSignature'] = self.scenarioSignature
     data['nameSignature'] = self.nameSignature
     self.rpc.setAgentSettings(data)
