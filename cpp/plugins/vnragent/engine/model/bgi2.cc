@@ -1,5 +1,6 @@
 // bgi2.cc
 // 5/12/2014 jichi
+// See: http://bbs.sumisora.org/read.php?tid=11042351
 #include "engine/model/bgi.h"
 #include "engine/enginedef.h"
 #include "engine/engineenv.h"
