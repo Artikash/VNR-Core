@@ -22,14 +22,12 @@
 /**
  *  世界と世界の真ん中 体験版, relative address: 0x31850;
  *
- *  TODO: Use split = -0x18 to distinguish name and choices
- *
- *  TODO: Figure the meaning of the parameters and the return value
  *  ? __cdecl sub_31850(DWORD arg1, DWORD arg2, LPCSTR arg3, DWORD arg4)
  *  - arg1: address, could point to area of zero, seems to be the output of this function
  *  - arg2: address, the same as arg1
  *  - arg3: string
  *  - arg4: flags, choices: 0, character name & scenario: 1
+ *  - return: unknown
  */
 extern "C" { // C linkage is indispensable for BGI engine
 
@@ -67,11 +65,13 @@ static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD split)
 /*extern "C"*/ static LPCSTR dispatchText(LPCSTR text, DWORD returnAddress, DWORD split)
 {
   static QByteArray ret; // persistent storage, which makes this function not thread-safe
-  // TODO
+
+  // The split is not used since the return address is sufficient to distinguish choices and names
   //auto sig = Engine::hashThreadSignature(returnAddress, split);
+  auto sig = Engine::hashThreadSignature(returnAddress);
+
   Q_UNUSED(split);
   auto role = split ? Engine::UnknownRole : Engine::UnknownRole; // TODO: add choices
-  auto sig = Engine::hashThreadSignature(returnAddress);
   ret = AbstractEngine::instance()->dispatchTextA(text, sig, role);
   return (LPCSTR)ret.constData();
 }
