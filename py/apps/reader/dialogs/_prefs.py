@@ -64,6 +64,7 @@ JMDICT_DICT_SIZES = {
 #  KEY_CTRL = "Ctrl"
 
 BROWSE_BTN_CLASS = 'btn btn-info'
+CLEAR_BTN_CLASS = 'btn'
 
 # Account
 
@@ -444,6 +445,12 @@ class _UiTab(object):
 
     row.addWidget(self.springBoardWallpaperButton)
 
+    #b = QtWidgets.QPushButton(tr_("Clear"))
+    #skqss.class_(b, CLEAR_BTN_CLASS)
+    #b.setToolTip(my.tr("Clear the location"))
+    #b.clicked.connect(self._clearSpringBoardLocation)
+    #row.addWidget(b)
+
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.springBoardSlidesButton)
     layout.addLayout(row)
@@ -497,6 +504,11 @@ my.tr("But Drag-and-Drop does not work when VNR has admin privilege T_T"),
       url = osutil.path_url(path)
       settings.global_().setSpringBoardWallpaperUrl(url)
       self._refreshSpringBoardWallpaper()
+
+  def _clearSpringBoardLocation(self):
+    url = ''
+    settings.global_().setSpringBoardWallpaperUrl(url)
+    self._refreshSpringBoardWallpaper()
 
   def _refreshSpringBoardWallpaper(self):
     url = settings.global_().springBoardWallpaperUrl()
@@ -3115,6 +3127,7 @@ Just don't forget to export LC_ALL=ja_JP.UTF8 before launching VNR."""))
     editRow = QtWidgets.QHBoxLayout()
     editRow.addWidget(self.localeEmulatorLocationEdit)
     editRow.addWidget(self.localeEmulatorLocationButton)
+    editRow.addWidget(self.localeEmulatorLocationClearButton)
     layout.addLayout(editRow)
     layout.addWidget(self.localeEmulatorInfoEdit)
     ret = QtWidgets.QGroupBox(notr_("Locale Emulator (2MB)"))
@@ -3134,6 +3147,14 @@ Just don't forget to export LC_ALL=ja_JP.UTF8 before launching VNR."""))
     skqss.class_(ret, BROWSE_BTN_CLASS)
     ret.setToolTip(my.tr("Select the location of {0}").format(notr_("Locale Emulator")))
     ret.clicked.connect(self._getLocaleEmulatorLocation)
+    return ret
+
+  @memoizedproperty
+  def localeEmulatorLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the location"))
+    ret.clicked.connect(self._clearLocaleEmulatorLocation)
     return ret
 
   @memoizedproperty
@@ -3159,6 +3180,11 @@ Just don't forget to export LC_ALL=ja_JP.UTF8 before launching VNR."""))
         libman.localeEmulator().setLocation(path)
         self._refreshLocaleEmulator()
 
+  def _clearLocaleEmulatorLocation(self):
+    path = ''
+    libman.localeEmulator().setLocation(path)
+    self._refreshLocaleEmulator()
+
   def _refreshLocaleEmulator(self):
     libman.localeEmulator().refresh()
     ok = libman.localeEmulator().exists()
@@ -3167,6 +3193,9 @@ Just don't forget to export LC_ALL=ja_JP.UTF8 before launching VNR."""))
       if path:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
+
+    self.localeEmulatorLocationClearButton.setVisible(ok)
+
     skqss.class_(self.localeEmulatorLocationEdit, 'normal' if ok else 'muted')
     self.localeEmulatorLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(notr_("Locale Emulator")))
 
