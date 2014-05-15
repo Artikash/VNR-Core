@@ -64,6 +64,7 @@ JMDICT_DICT_SIZES = {
 #  KEY_CTRL = "Ctrl"
 
 BROWSE_BTN_CLASS = 'btn btn-info'
+CLEAR_BTN_CLASS = 'btn btn-default' #'btn btn-inverse'
 
 # Account
 
@@ -480,7 +481,7 @@ my.tr("But Drag-and-Drop does not work when VNR has admin privilege T_T"),
   @memoizedproperty
   def springBoardWallpaperButton(self):
     ret = QtWidgets.QPushButton(tr_("Reset"))
-    skqss.class_(ret, 'btn btn-danger')
+    skqss.class_(ret, CLEAR_BTN_CLASS)
     ret.setToolTip(my.tr("Reset to the default wallpaper"))
     ret.clicked.connect(partial(
         settings.global_().setSpringBoardWallpaperUrl, ""))
@@ -497,6 +498,11 @@ my.tr("But Drag-and-Drop does not work when VNR has admin privilege T_T"),
       url = osutil.path_url(path)
       settings.global_().setSpringBoardWallpaperUrl(url)
       self._refreshSpringBoardWallpaper()
+
+  #def _clearSpringBoardLocation(self):
+  #  url = ''
+  #  settings.global_().setSpringBoardWallpaperUrl(url)
+  #  self._refreshSpringBoardWallpaper()
 
   def _refreshSpringBoardWallpaper(self):
     url = settings.global_().springBoardWallpaperUrl()
@@ -3115,6 +3121,7 @@ Just don't forget to export LC_ALL=ja_JP.UTF8 before launching VNR."""))
     editRow = QtWidgets.QHBoxLayout()
     editRow.addWidget(self.localeEmulatorLocationEdit)
     editRow.addWidget(self.localeEmulatorLocationButton)
+    editRow.addWidget(self.localeEmulatorLocationClearButton)
     layout.addLayout(editRow)
     layout.addWidget(self.localeEmulatorInfoEdit)
     ret = QtWidgets.QGroupBox(notr_("Locale Emulator (2MB)"))
@@ -3134,6 +3141,14 @@ Just don't forget to export LC_ALL=ja_JP.UTF8 before launching VNR."""))
     skqss.class_(ret, BROWSE_BTN_CLASS)
     ret.setToolTip(my.tr("Select the location of {0}").format(notr_("Locale Emulator")))
     ret.clicked.connect(self._getLocaleEmulatorLocation)
+    return ret
+
+  @memoizedproperty
+  def localeEmulatorLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the specified location"))
+    ret.clicked.connect(self._clearLocaleEmulatorLocation)
     return ret
 
   @memoizedproperty
@@ -3159,6 +3174,10 @@ Just don't forget to export LC_ALL=ja_JP.UTF8 before launching VNR."""))
         libman.localeEmulator().setLocation(path)
         self._refreshLocaleEmulator()
 
+  def _clearLocaleEmulatorLocation(self):
+    libman.localeEmulator().setLocation('')
+    self._refreshLocaleEmulator()
+
   def _refreshLocaleEmulator(self):
     libman.localeEmulator().refresh()
     ok = libman.localeEmulator().exists()
@@ -3167,6 +3186,9 @@ Just don't forget to export LC_ALL=ja_JP.UTF8 before launching VNR."""))
       if path:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
+
+    self.localeEmulatorLocationClearButton.setVisible(ok)
+
     skqss.class_(self.localeEmulatorLocationEdit, 'normal' if ok else 'muted')
     self.localeEmulatorLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(notr_("Locale Emulator")))
 
@@ -3285,6 +3307,7 @@ class _TranslatorLibraryTab(object):
     editRow = QtWidgets.QHBoxLayout()
     editRow.addWidget(self.jbeijingLocationEdit)
     editRow.addWidget(self.jbeijingLocationButton)
+    editRow.addWidget(self.jbeijingLocationClearButton)
     layout.addLayout(editRow)
     layout.addWidget(self.jbeijingInfoEdit)
     ret = QtWidgets.QGroupBox(notr_("Kodensha JBeijing") + u" (高電社・J北京, 517MB)")
@@ -3307,6 +3330,14 @@ class _TranslatorLibraryTab(object):
     return ret
 
   @memoizedproperty
+  def jbeijingLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the specified location"))
+    ret.clicked.connect(self._clearJBeijingLocation)
+    return ret
+
+  @memoizedproperty
   def jbeijingInfoEdit(self):
     ret = QtWidgets.QTextBrowser()
     skqss.class_(ret, 'texture')
@@ -3315,6 +3346,10 @@ class _TranslatorLibraryTab(object):
     ret.setReadOnly(True)
     ret.setOpenExternalLinks(True)
     return ret
+
+  def _clearJBeijingLocation(self):
+    libman.jbeijing().setLocation('')
+    self._refreshJBeijing()
 
   def _getJBeijingLocation(self):
     path = libman.jbeijing().location() or skpaths.HOME
@@ -3340,6 +3375,8 @@ class _TranslatorLibraryTab(object):
       if path:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
+
+    self.jbeijingLocationClearButton.setVisible(ok)
 
     #self.jbeijingLocationButton.setVisible(not ok)
     skqss.class_(self.jbeijingLocationEdit,
@@ -3373,6 +3410,7 @@ JBeijing is <span style="color:purple">not free</span>, and you can purchase one
     editRow = QtWidgets.QHBoxLayout()
     editRow.addWidget(self.dreyeLocationEdit)
     editRow.addWidget(self.dreyeLocationButton)
+    editRow.addWidget(self.dreyeLocationClearButton)
     layout.addLayout(editRow)
     layout.addWidget(self.dreyeInfoEdit)
     ret = QtWidgets.QGroupBox(notr_("Inventec Dr.eye") + u" (英業達・譯典通, 1.35GB)")
@@ -3392,6 +3430,14 @@ JBeijing is <span style="color:purple">not free</span>, and you can purchase one
     skqss.class_(ret, BROWSE_BTN_CLASS)
     ret.setToolTip(my.tr("Select the location of {0}").format(mytr_("Dr.eye")))
     ret.clicked.connect(self._getDreyeLocation)
+    return ret
+
+  @memoizedproperty
+  def dreyeLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the specified location"))
+    ret.clicked.connect(self._clearDreyeLocation)
     return ret
 
   @memoizedproperty
@@ -3420,6 +3466,10 @@ JBeijing is <span style="color:purple">not free</span>, and you can purchase one
         if not skstr.isascii(path):
           growl.warn(my.tr("You have non-ascii characters in the path which might work as expected"))
 
+  def _clearDreyeLocation(self):
+    libman.dreye().setLocation('')
+    self._refreshDreye()
+
   def _refreshDreye(self):
     libman.dreye().refresh()
     ok = libman.dreye().exists()
@@ -3428,6 +3478,7 @@ JBeijing is <span style="color:purple">not free</span>, and you can purchase one
       if path:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
+    self.dreyeLocationClearButton.setVisible(ok)
     #self.dreyeLocationButton.setVisible(not ok)
     skqss.class_(self.dreyeLocationEdit,
         'normal' if ok and skstr.isascii(path) else
@@ -3452,6 +3503,7 @@ Dr.eye is <span color="purple">not free</span>, and you can purchase one here fr
     editRow = QtWidgets.QHBoxLayout()
     editRow.addWidget(self.ezTransLocationEdit)
     editRow.addWidget(self.ezTransLocationButton)
+    editRow.addWidget(self.ezTransLocationClearButton)
     layout.addLayout(editRow)
     layout.addWidget(self.ezTransInfoEdit)
     ret = QtWidgets.QGroupBox(notr_("ChangShin Soft - ezTrans XP (218MB)"))
@@ -3471,6 +3523,14 @@ Dr.eye is <span color="purple">not free</span>, and you can purchase one here fr
     skqss.class_(ret, BROWSE_BTN_CLASS)
     ret.setToolTip(my.tr("Select the location of {0}").format(mytr_("ezTrans XP")))
     ret.clicked.connect(self._getEzTransLocation)
+    return ret
+
+  @memoizedproperty
+  def ezTransLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the specified location"))
+    ret.clicked.connect(self._clearEzTransLocation)
     return ret
 
   @memoizedproperty
@@ -3499,6 +3559,10 @@ Dr.eye is <span color="purple">not free</span>, and you can purchase one here fr
         if not skstr.isascii(path):
           growl.warn(my.tr("You have non-ascii characters in the path which might work as expected"))
 
+  def _clearEzTransLocation(self):
+    libman.eztrans().setLocation('')
+    self._refreshEzTrans()
+
   def _refreshEzTrans(self):
     libman.eztrans().refresh()
     ok = libman.eztrans().exists()
@@ -3507,6 +3571,7 @@ Dr.eye is <span color="purple">not free</span>, and you can purchase one here fr
       if path:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
+    self.ezTransLocationClearButton.setVisible(ok)
     #self.eztransLocationButton.setVisible(not ok)
     skqss.class_(self.ezTransLocationEdit,
         'normal' if ok and skstr.isascii(path) else
@@ -3531,6 +3596,7 @@ ezTrans is <span style="color:purple">not free</span>, and you can purchase one 
     editRow = QtWidgets.QHBoxLayout()
     editRow.addWidget(self.atlasLocationEdit)
     editRow.addWidget(self.atlasLocationButton)
+    editRow.addWidget(self.atlasLocationClearButton)
     layout.addLayout(editRow)
     layout.addWidget(self.atlasInfoEdit)
     ret = QtWidgets.QGroupBox(notr_("Fujitsu Atlas") + u" (富士通・ATLAS, 597MB)")
@@ -3551,6 +3617,18 @@ ezTrans is <span style="color:purple">not free</span>, and you can purchase one 
     ret.setToolTip(my.tr("Select the location of {0}").format(mytr_("ATLAS")))
     ret.clicked.connect(self._getAtlasLocation)
     return ret
+
+  @memoizedproperty
+  def atlasLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the specified location"))
+    ret.clicked.connect(self._clearAtlasLocation)
+    return ret
+
+  def _clearAtlasLocation(self):
+    libman.atlas().setLocation('')
+    self._refreshAtlas()
 
   def _getAtlasLocation(self):
     path = libman.atlas().location() or skpaths.HOME
@@ -3586,6 +3664,7 @@ ezTrans is <span style="color:purple">not free</span>, and you can purchase one 
       if path:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
+    self.atlasLocationClearButton.setVisible(ok)
     #self.atlasLocationButton.setVisible(not ok)
     skqss.class_(self.atlasLocationEdit,
         'normal' if ok and skstr.isascii(path) else
@@ -3610,6 +3689,7 @@ You can get a free version of Atlas here from Fujitsu:
     editRow = QtWidgets.QHBoxLayout()
     editRow.addWidget(self.lecLocationEdit)
     editRow.addWidget(self.lecLocationButton)
+    editRow.addWidget(self.lecLocationClearButton)
     layout.addLayout(editRow)
     layout.addWidget(self.lecInfoEdit)
     ret = QtWidgets.QGroupBox(notr_("LEC Power Translator (1.74GB)"))
@@ -3630,6 +3710,18 @@ You can get a free version of Atlas here from Fujitsu:
     ret.setToolTip(my.tr("Select the location of {0}").format(mytr_("LEC")))
     ret.clicked.connect(self._getLecLocation)
     return ret
+
+  @memoizedproperty
+  def lecLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the specified location"))
+    ret.clicked.connect(self._clearLecLocation)
+    return ret
+
+  def _clearLecLocation(self):
+    libman.lec().setLocation('')
+    self._refreshLec()
 
   def _getLecLocation(self):
     path = libman.lec().location() or skpaths.HOME
@@ -3665,6 +3757,7 @@ You can get a free version of Atlas here from Fujitsu:
       if path:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
+    self.lecLocationClearButton.setVisible(ok)
     #self.lecLocationButton.setVisible(not ok)
     skqss.class_(self.lecLocationEdit,
         'normal' if ok and skstr.isascii(path) else
@@ -3785,6 +3878,7 @@ And here's an article illustrating how to update its dictionaries:
     editRow = QtWidgets.QHBoxLayout()
     editRow.addWidget(self.kojienLocationEdit)
     editRow.addWidget(self.kojienLocationButton)
+    editRow.addWidget(self.kojienLocationClearButton)
     layout.addLayout(editRow)
     layout.addWidget(self.kojienInfoEdit)
     ret = QtWidgets.QGroupBox(notr_("Iwanami Kojien") + u" (岩波書店・広辞苑, 3.27GB)")
@@ -3807,6 +3901,14 @@ And here's an article illustrating how to update its dictionaries:
     return ret
 
   @memoizedproperty
+  def kojienLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the specified location"))
+    ret.clicked.connect(self._clearKojienLocation)
+    return ret
+
+  @memoizedproperty
   def kojienInfoEdit(self):
     ret = QtWidgets.QTextBrowser()
     skqss.class_(ret, 'texture')
@@ -3815,6 +3917,12 @@ And here's an article illustrating how to update its dictionaries:
     ret.setReadOnly(True)
     ret.setOpenExternalLinks(True)
     return ret
+
+  def _clearKojienLocation(self):
+    path = ''
+    ebdict.kojien().setLocation(path)
+    settings.global_().setKojienLocation(path)
+    self._refreshKojien()
 
   def _getKojienLocation(self):
     path = ebdict.kojien().location() or skpaths.HOME
@@ -3838,6 +3946,7 @@ And here's an article illustrating how to update its dictionaries:
       if path:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
+    self.kojienLocationClearButton.setVisible(ok)
     #self.kojienLocationButton.setVisible(not ok)
     skqss.class_(self.kojienLocationEdit, 'normal' if ok else 'muted')
     self.kojienLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("Kojien")))
@@ -3942,6 +4051,7 @@ Kojien is <span style="color:purple">not free</span>, and you can purchase one h
     editRow = QtWidgets.QHBoxLayout()
     editRow.addWidget(self.zhongriLocationEdit)
     editRow.addWidget(self.zhongriLocationButton)
+    editRow.addWidget(self.zhongriLocationClearButton)
     layout.addLayout(editRow)
     layout.addWidget(self.zhongriInfoEdit)
     ret = QtWidgets.QGroupBox(notr_("Shogakukan Zhongri") + u" (小学館・日中統合辞典, 30MB)")
@@ -3964,6 +4074,14 @@ Kojien is <span style="color:purple">not free</span>, and you can purchase one h
     return ret
 
   @memoizedproperty
+  def zhongriLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the specified location"))
+    ret.clicked.connect(self._clearZhongriLocation)
+    return ret
+
+  @memoizedproperty
   def zhongriInfoEdit(self):
     ret = QtWidgets.QTextBrowser()
     skqss.class_(ret, 'texture')
@@ -3972,6 +4090,12 @@ Kojien is <span style="color:purple">not free</span>, and you can purchase one h
     ret.setReadOnly(True)
     ret.setOpenExternalLinks(True)
     return ret
+
+  def _clearZhongriLocation(self):
+    path = ''
+    ebdict.zhongri().setLocation(path)
+    settings.global_().setZhongriLocation(path)
+    self._refreshZhongri()
 
   def _getZhongriLocation(self):
     path = ebdict.zhongri().location() or skpaths.HOME
@@ -3995,6 +4119,7 @@ Kojien is <span style="color:purple">not free</span>, and you can purchase one h
       if path:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
+    self.zhongriLocationClearButton.setVisible(ok)
     #self.zhongriLocationButton.setVisible(not ok)
     skqss.class_(self.zhongriLocationEdit, 'normal' if ok else 'muted')
     self.zhongriLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("Zhongri")))
@@ -4221,6 +4346,7 @@ Show is <span style="color:purple">not free</span>, and you can purchase one her
     editRow = QtWidgets.QHBoxLayout()
     editRow.addWidget(self.yukariLocationEdit)
     editRow.addWidget(self.yukariLocationButton)
+    editRow.addWidget(self.yukariLocationClearButton)
     layout.addLayout(editRow)
     layout.addWidget(self.yukariInfoEdit)
     ret = QtWidgets.QGroupBox(u"VOICEROID+ 結月ゆかり (♀, 336MB)")
@@ -4243,6 +4369,14 @@ Show is <span style="color:purple">not free</span>, and you can purchase one her
     return ret
 
   @memoizedproperty
+  def yukariLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the specified location"))
+    ret.clicked.connect(self._clearYukariLocation)
+    return ret
+
+  @memoizedproperty
   def yukariInfoEdit(self):
     ret = QtWidgets.QTextBrowser()
     skqss.class_(ret, 'texture')
@@ -4251,6 +4385,10 @@ Show is <span style="color:purple">not free</span>, and you can purchase one her
     ret.setReadOnly(True)
     ret.setOpenExternalLinks(True)
     return ret
+
+  def _clearYukariLocation(self):
+    settings.global_().setYukariLocation('')
+    self._refreshYukari()
 
   def _getYukariLocation(self):
     FILTERS = "%s (%s)" % (tr_("Executable"), "VOICEROID.exe")
@@ -4271,6 +4409,7 @@ Show is <span style="color:purple">not free</span>, and you can purchase one her
     if path:
       path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
     ok = bool(path) and os.path.exists(path)
+    self.yukariLocationClearButton.setVisible(ok)
     #self.yukariLocationButton.setVisible(not ok)
     skqss.class_(self.yukariLocationEdit, 'normal' if ok else 'muted')
     self.yukariLocationEdit.setText(path if path else my.tr("Not found, please specify the location of {0}").format('VOICEROID.exe'))
@@ -4294,6 +4433,7 @@ Yukari is <span style="color:purple">not free</span>, and you can purchase one h
     editRow = QtWidgets.QHBoxLayout()
     editRow.addWidget(self.zunkoLocationEdit)
     editRow.addWidget(self.zunkoLocationButton)
+    editRow.addWidget(self.zunkoLocationClearButton)
     layout.addLayout(editRow)
     layout.addWidget(self.zunkoInfoEdit)
     ret = QtWidgets.QGroupBox(u"VOICEROID+ 東北ずん子 (♀, 332MB)")
@@ -4316,6 +4456,14 @@ Yukari is <span style="color:purple">not free</span>, and you can purchase one h
     return ret
 
   @memoizedproperty
+  def zunkoLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the specified location"))
+    ret.clicked.connect(self._clearZunkoLocation)
+    return ret
+
+  @memoizedproperty
   def zunkoInfoEdit(self):
     ret = QtWidgets.QTextBrowser()
     skqss.class_(ret, 'texture')
@@ -4324,6 +4472,10 @@ Yukari is <span style="color:purple">not free</span>, and you can purchase one h
     ret.setReadOnly(True)
     ret.setOpenExternalLinks(True)
     return ret
+
+  def _clearZunkoLocation(self):
+    settings.global_().setZunkoLocation('')
+    self._refreshZunko()
 
   def _getZunkoLocation(self):
     FILTERS = "%s (%s)" % (tr_("Executable"), "VOICEROID.exe")
@@ -4344,6 +4496,7 @@ Yukari is <span style="color:purple">not free</span>, and you can purchase one h
     if path:
       path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
     ok = bool(path) and os.path.exists(path)
+    self.zunkoLocationClearButton.setVisible(ok)
     #self.zunkoLocationButton.setVisible(not ok)
     skqss.class_(self.zunkoLocationEdit, 'normal' if ok else 'muted')
     self.zunkoLocationEdit.setText(path if path else my.tr("Not found, please specify the location of {0}").format('VOICEROID.exe'))
