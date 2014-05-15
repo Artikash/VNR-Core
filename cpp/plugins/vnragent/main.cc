@@ -9,7 +9,7 @@
 #include "winquery/winquery.h"
 #include "wintimer/wintimer.h"
 #include "winiter/winitertl.h"
-#include "singleapp/singleapp.h"
+#include "winsinglemutex/winsinglemutex.h"
 #include "loader.h"
 #include "cc/ccmacro.h"
 
@@ -58,7 +58,7 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
   CC_UNUSED(lpvReserved);
   switch (fdwReason) {
   case DLL_PROCESS_ATTACH:
-    if (!::singleapp())
+    if (!WinSingleMutex::acquire("vnragent"))
       //growl::error("already injected");
       return FALSE;
 

@@ -4,6 +4,7 @@
 CONFIG += noqt dll
 include(../../../config.pri)
 include($$LIBDIR/windbg/windbg.pri)
+include($$LIBDIR/winsinglemutex/winsinglemutex.pri)
 
 #LIBS    += -lkernel32
 #LIBS    += -luser32 -lpsapi
