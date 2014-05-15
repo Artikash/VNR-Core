@@ -2113,7 +2113,7 @@ class _FeatureTab(object):
     layout.addWidget(self.featureGroup)
     layout.addWidget(self.internetGroup)
     layout.addWidget(self.proxyGroup)
-    layout.addWidget(self.fullScreenGroup)
+    #layout.addWidget(self.fullScreenGroup) # disabled as people seldom use it
     layout.addStretch()
     q.setLayout(layout)
 
@@ -3167,7 +3167,7 @@ Just don't forget to export LC_ALL=ja_JP.UTF8 before launching VNR."""))
       if path:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
-    skqss.class_(self.localeEmulatorLocationEdit, 'normal' if ok else 'error')
+    skqss.class_(self.localeEmulatorLocationEdit, 'normal' if ok else 'muted')
     self.localeEmulatorLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(notr_("Locale Emulator")))
 
     url = libman.LocaleEmulator.URL
@@ -3220,7 +3220,7 @@ Locale Emulator is <span style="color:purple">free</span> and open source. You c
 #    if ok:
 #      path = libman.apploc().location()
 #      path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
-#    skqss.class_(self.appLocaleLocationEdit, 'normal' if ok else 'error')
+#    skqss.class_(self.appLocaleLocationEdit, 'normal' if ok else 'muted')
 #    self.appLocaleLocationEdit.setText(path if ok else tr_("Not found"))
 #
 #    url = libman.AppLocale.URL
@@ -3342,7 +3342,10 @@ class _TranslatorLibraryTab(object):
       ok = bool(path) and os.path.exists(path)
 
     #self.jbeijingLocationButton.setVisible(not ok)
-    skqss.class_(self.jbeijingLocationEdit, 'normal' if ok and skstr.isascii(path) else 'error')
+    skqss.class_(self.jbeijingLocationEdit,
+        'normal' if ok and skstr.isascii(path) else
+        'error' if ok else
+        'muted')
     self.jbeijingLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("JBeijing7")))
 
     url = libman.JBeijing.URL
@@ -3426,7 +3429,10 @@ JBeijing is <span style="color:purple">not free</span>, and you can purchase one
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
     #self.dreyeLocationButton.setVisible(not ok)
-    skqss.class_(self.dreyeLocationEdit, 'normal' if ok else 'error')
+    skqss.class_(self.dreyeLocationEdit,
+        'normal' if ok and skstr.isascii(path) else
+        'error' if ok else
+        'muted')
     self.dreyeLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("Dr.eye")))
 
     url = libman.Dreye.URL
@@ -3502,7 +3508,10 @@ Dr.eye is <span color="purple">not free</span>, and you can purchase one here fr
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
     #self.eztransLocationButton.setVisible(not ok)
-    skqss.class_(self.ezTransLocationEdit, 'normal' if ok and skstr.isascii(path) else 'error')
+    skqss.class_(self.ezTransLocationEdit,
+        'normal' if ok and skstr.isascii(path) else
+        'error' if ok else
+        'muted')
     self.ezTransLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("ezTrans XP")))
 
     url = libman.EzTrans.URL
@@ -3578,7 +3587,10 @@ ezTrans is <span style="color:purple">not free</span>, and you can purchase one 
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
     #self.atlasLocationButton.setVisible(not ok)
-    skqss.class_(self.atlasLocationEdit, 'normal' if ok and skstr.isascii(path) else 'error')
+    skqss.class_(self.atlasLocationEdit,
+        'normal' if ok and skstr.isascii(path) else
+        'error' if ok else
+        'muted')
     self.atlasLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("ATLAS")))
 
     url = libman.Atlas.URL
@@ -3654,7 +3666,10 @@ You can get a free version of Atlas here from Fujitsu:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
     #self.lecLocationButton.setVisible(not ok)
-    skqss.class_(self.lecLocationEdit, 'normal' if ok and skstr.isascii(path) else 'error')
+    skqss.class_(self.lecLocationEdit,
+        'normal' if ok and skstr.isascii(path) else
+        'error' if ok else
+        'muted')
     self.lecLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("ATLAS")))
 
     url = libman.Lec.URL
@@ -3824,7 +3839,7 @@ And here's an article illustrating how to update its dictionaries:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
     #self.kojienLocationButton.setVisible(not ok)
-    skqss.class_(self.kojienLocationEdit, 'normal' if ok else 'error')
+    skqss.class_(self.kojienLocationEdit, 'normal' if ok else 'muted')
     self.kojienLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("Kojien")))
 
     epwing_url = "http://ja.wikipedia.org/wiki/EPWING"
@@ -3902,7 +3917,7 @@ Kojien is <span style="color:purple">not free</span>, and you can purchase one h
 #        path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
 #      ok = bool(path) and os.path.exists(path)
 #    #self.wadokuLocationButton.setVisible(not ok)
-#    skqss.class_(self.wadokuLocationEdit, 'normal' if ok else 'error')
+#    skqss.class_(self.wadokuLocationEdit, 'normal' if ok else 'muted')
 #    self.wadokuLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("Wadoku")))
 #
 #    epwing_url = "http://ja.wikipedia.org/wiki/EPWING"
@@ -3981,7 +3996,7 @@ Kojien is <span style="color:purple">not free</span>, and you can purchase one h
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
       ok = bool(path) and os.path.exists(path)
     #self.zhongriLocationButton.setVisible(not ok)
-    skqss.class_(self.zhongriLocationEdit, 'normal' if ok else 'error')
+    skqss.class_(self.zhongriLocationEdit, 'normal' if ok else 'muted')
     self.zhongriLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("Zhongri")))
 
     epwing_url = "http://ja.wikipedia.org/wiki/EPWING"
@@ -4071,7 +4086,7 @@ class _TtsLibraryTab(object):
     if ok:
       path = libman.quicktime().location()
       path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
-    skqss.class_(self.quickTimeLocationEdit, 'normal' if ok else 'error')
+    skqss.class_(self.quickTimeLocationEdit, 'normal' if ok else 'muted')
     self.quickTimeLocationEdit.setText(path if ok else tr_("Not found"))
 
     url = libman.QuickTime.URL
@@ -4094,7 +4109,7 @@ You can get a free version of QuickTime here from Apple:
     #)
     #self._quickTimeEnableButton.setVisible(not enabled or not ok)
 
-    #skqss.class_(self.quickTimeGroup, 'default' if ok else 'error')
+    #skqss.class_(self.quickTimeGroup, 'default' if ok else 'muted')
 
     #self.quickTimeGroup.setStyleSheet("" if ok else
     #  "QGroupBox { color:red }"
@@ -4137,7 +4152,7 @@ You can get a free version of QuickTime here from Apple:
     ok = bool(path) and os.path.exists(path)
     if ok:
       path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
-    skqss.class_(self.misakiLocationEdit, 'normal' if ok else 'error')
+    skqss.class_(self.misakiLocationEdit, 'normal' if ok else 'muted')
     self.misakiLocationEdit.setText(path if ok else tr_("Not found"))
 
     url = "http://www.hoyasv.com/"
@@ -4184,7 +4199,7 @@ Misaki is <span style="color:purple">not free</span>, and you can purchase one h
     ok = bool(path) and os.path.exists(path)
     if ok:
       path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
-    skqss.class_(self.showLocationEdit, 'normal' if ok else 'error')
+    skqss.class_(self.showLocationEdit, 'normal' if ok else 'muted')
     self.showLocationEdit.setText(path if ok else tr_("Not found"))
 
     url = "http://www.hoyasv.com/"
@@ -4257,7 +4272,7 @@ Show is <span style="color:purple">not free</span>, and you can purchase one her
       path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
     ok = bool(path) and os.path.exists(path)
     #self.yukariLocationButton.setVisible(not ok)
-    skqss.class_(self.yukariLocationEdit, 'normal' if ok else 'error')
+    skqss.class_(self.yukariLocationEdit, 'normal' if ok else 'muted')
     self.yukariLocationEdit.setText(path if path else my.tr("Not found, please specify the location of {0}").format('VOICEROID.exe'))
 
     url = "http://www.ah-soft.com/voiceroid/yukari"
@@ -4330,7 +4345,7 @@ Yukari is <span style="color:purple">not free</span>, and you can purchase one h
       path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
     ok = bool(path) and os.path.exists(path)
     #self.zunkoLocationButton.setVisible(not ok)
-    skqss.class_(self.zunkoLocationEdit, 'normal' if ok else 'error')
+    skqss.class_(self.zunkoLocationEdit, 'normal' if ok else 'muted')
     self.zunkoLocationEdit.setText(path if path else my.tr("Not found, please specify the location of {0}").format('VOICEROID.exe'))
 
     url = "http://www.ah-soft.com/voiceroid/zunko"
@@ -5116,12 +5131,12 @@ class EngineTab(QtWidgets.QDialog):
 #
 #    ok = bool(ttsman.voices_ja())
 #    self.engineGroup.setEnabled(ok)
-#    skqss.class_(self.engineGroup, 'default' if ok else 'error')
+#    skqss.class_(self.engineGroup, 'default' if ok else 'muted')
 #
 #
 #    ok = bool(ttsman.voices())
 #    self.genderGroup.setEnabled(ok)
-#    skqss.class_(self.genderGroup, 'default' if ok else 'error')
+#    skqss.class_(self.genderGroup, 'default' if ok else 'muted')
 #
 #    if enabled and ok:
 #      ok = bool(ttsman.voices_ja())
