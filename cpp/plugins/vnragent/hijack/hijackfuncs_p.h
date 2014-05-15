@@ -13,8 +13,9 @@
    { "kernel32.dll", "LoadLibraryExW", ::LoadLibraryExW, Hijack::myLoadLibraryExW }, \
    { "user32.dll", "TrackPopupMenu", ::TrackPopupMenu, Hijack::myTrackPopupMenu }, \
    { "user32.dll", "TrackPopupMenuEx", ::TrackPopupMenuEx, Hijack::myTrackPopupMenuEx }, \
-   { "gdi32.dll", "CreateFontIndirectA", ::CreateFontIndirectA, Hijack::myCreateFontIndirectA }
-   //{ "gdi32.dll", "CreateFontIndirectW", ::CreateFontIndirectW, Hijack::MyCreateFontIndirectW }
+   { "gdi32.dll", "CreateFontIndirectA", ::CreateFontIndirectA, Hijack::myCreateFontIndirectA }, \
+   { "gdi32.dll", "CreateFontIndirectW", ::CreateFontIndirectW, Hijack::myCreateFontIndirectW }
+   //{ "gdi32.dll", "TextOutA", ::TextOutA, Hijack::myTextOutA }
 
 namespace Hijack {
 
@@ -80,46 +81,42 @@ HFONT WINAPI myCreateFontIndirectA(
   _In_  const LOGFONTA *lplf
 );
 
+HFONT WINAPI myCreateFontIndirectW(
+  _In_  const LOGFONTW *lplf
+);
+
 } // namespace Hijack
 
 // EOF
 
-//   { "TextOutA", "gdi32.dll", MyTextOutA }
-//   { "GetDC", "gdi32.dll", MyGetDC }, \
-//   { "GetDCEx", "gdi32.dll", MyGetDCEx }
-// { "TextOutW", "gdi32.dll", MyTextOutW }
-// { "MessageBoxA", "user32.dll", MyMessageBoxA }
-// { "MessageBoxW", "user32.dll", MyMessageBoxW }
-// { "Direct3DCreate9", "d3d9.dll", MyDirect3DCreate9 }
-
-//int WINAPI MyMessageBoxA(
-//  _In_opt_ HWND hWnd,
-//  _In_opt_ LPCSTR lpText,
-//  _In_opt_ LPCSTR lpCaption,
-//  _In_ UINT uType
-//);
-//int WINAPI MyMessageBoxW(
-//  _In_ HWND hWnd,
-//  _In_ LPCWSTR lpText,
-//  _In_ LPCWSTR lpCaption,
-//  _In_ UINT uType
-//);
-
-/* // CHECKPOINT
-BOOL WINAPI MyTextOutA(
+/*
+BOOL WINAPI myTextOutA(
   _In_  HDC hdc,
   _In_  int nXStart,
   _In_  int nYStart,
   _In_  LPCSTR lpString,
   _In_  int cchString
 );
-//BOOL WINAPI MyTextOutW(
-//  _In_  HDC hdc,
-//  _In_  int nXStart,
-//  _In_  int nYStart,
-//  _In_  LPCWSTR lpString,
-//  _In_  int cchString
-//);
+BOOL WINAPI myTextOutW(
+  _In_  HDC hdc,
+  _In_  int nXStart,
+  _In_  int nYStart,
+  _In_  LPCWSTR lpString,
+  _In_  int cchString
+);
+
+int WINAPI MyMessageBoxA(
+  _In_opt_ HWND hWnd,
+  _In_opt_ LPCSTR lpText,
+  _In_opt_ LPCSTR lpCaption,
+  _In_ UINT uType
+);
+int WINAPI MyMessageBoxW(
+  _In_ HWND hWnd,
+  _In_ LPCWSTR lpText,
+  _In_ LPCWSTR lpCaption,
+  _In_ UINT uType
+);
 */
 
 // - DirectX -

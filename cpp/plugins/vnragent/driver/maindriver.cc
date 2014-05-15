@@ -56,6 +56,7 @@ void MainDriverPrivate::quit()
 {
   if (eng)
     eng->quit();
+  rpc->quit();
 }
 
 void MainDriverPrivate::createHijackDriver()

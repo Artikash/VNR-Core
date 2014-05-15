@@ -19,6 +19,7 @@ public:
   explicit RpcClient(QObject *parent = nullptr);
   ~RpcClient();
   bool isActive() const;
+  void quit();
 
   bool waitForDataReceived(int interval); // wait until after the server message is received and emit
 
@@ -53,6 +54,10 @@ public slots:
   void growlWarning(const QString &message);
   void growlError(const QString &message);
   void growlNotification(const QString &message);
+
+  // Direct IO bypassing Qt, blocking
+public:
+  void directSendEngineText(const QString &text, qint64 hash, long signature, int role, bool needsTranslation);
 };
 
 // EOF

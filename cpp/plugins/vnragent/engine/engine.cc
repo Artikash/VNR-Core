@@ -62,6 +62,7 @@ private:
     decoder = engineEncoding ? QTextCodec::codecForName(engineEncoding) : nullptr;
 
     const char *systemEncoding = Util::encodingForCodePage(::GetACP());
+    //systemEncoding = "gbk";
     encoder = QTextCodec::codecForName(systemEncoding ? systemEncoding : ENC_SJIS);
   }
 };

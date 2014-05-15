@@ -32,7 +32,7 @@ void QueuedTcpSocketClient::flushSendBuffer(int waitTime)
 
 void QueuedTcpSocketClient::sendDataLater(const QByteArray &data)
 {
-  d_->sendBuffer.append(SocketService::packData(data));
+  d_->sendBuffer.append(SocketService::packPacket(data));
 }
 
 void QueuedTcpSocketClient::sendDataNow(const QByteArray &data, int waitTime)

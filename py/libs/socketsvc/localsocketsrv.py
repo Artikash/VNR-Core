@@ -155,7 +155,7 @@ if __name__ == '__main__':
     print data, type(data), len(data)
     #t = '0' * 100
     #t = u'あ' * 1000
-    s.broadcastData(data)
+    #s.broadcastData(data)
     #s.waitForBytesWritten()
     #app.quit()
   s.dataReceived.connect(f)

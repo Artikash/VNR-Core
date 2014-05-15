@@ -42,7 +42,7 @@ void Hijack::overrideModules()
   LPCWSTR exeName = applicationNameW(),
           exePath = applicationPathW();
   if (!exeName || !exePath) {
-    //growl::debug("failed to get application name or path");
+    //dmsg("failed to get application name or path");
     return;
   }
 
@@ -73,7 +73,7 @@ void Hijack::overrideModuleFunctions(HMODULE hModule)
 {
   BOOST_FOREACH (const auto &fn, HIJACK_FUNCTIONS)
     if (PVOID ret = WinDbg::overrideFunctionA(hModule, fn.moduleName, fn.functionName, fn.newFunctionAddress)) {
-      //growl::debug(fn.functionName); // success
+      //dmsg(fn.functionName); // success
     }
 }
 

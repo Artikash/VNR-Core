@@ -25,18 +25,38 @@ HFONT WINAPI Hijack::myCreateFontIndirectA(const LOGFONTA *lplf)
   return ret;
 }
 
+HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
+{
+  HFONT ret = nullptr;
+  if (auto p = HijackHelper::instance())
+    if (auto charSet = p->systemCharSet())
+      if (p->isTranscodingNeeded() && lplf) {
+        LOGFONTW f(*lplf);
+        f.lfCharSet = charSet;
+        //:qstrcpy(f.lfFaceName, FONT_ZHS);
+        //f.lfCharSet = GB2312_CHARSET;
+        ret = ::CreateFontIndirectW(&f);
+      }
+  if (!ret)
+    ret = ::CreateFontIndirectW(lplf);
+  return ret;
+}
+
 // EOF
 
 /*
-BOOL WINAPI Engine::MyTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString)
+#include <QTextCodec>
+BOOL WINAPI Hijack::myTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cchString)
 {
   //qDebug() << QString::fromLocal8Bit(lpString, cchString);
   //return ::TextOutA(hdc, nXStart, nYStart, lpString, cchString);
-  QString t = QTextCodec::codecForName("GB2312")->toUnicode(lpString, cchString);
+  QString t = QTextCodec::codecForName("shift-jis")->toUnicode(lpString, cchString);
   if (!t.isEmpty())
     return ::TextOutW(hdc, nXStart, nYStart, (LPCWSTR)t.utf16(), t.size());
-  return ::TextOutA(hdc, nXStart, nYStart, lpString, cchString);
+  else
+    return ::TextOutA(hdc, nXStart, nYStart, lpString, cchString);
 }
+
 // TODO: Support extracting text from this function.
 int WINAPI Engine::MyMultiByteToWideChar(
   _In_       UINT CodePage,

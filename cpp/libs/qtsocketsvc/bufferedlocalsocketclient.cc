@@ -51,7 +51,7 @@ void BufferedLocalSocketClient::flushSendBuffer() { d_->flushSendBuffer(); }
 
 void BufferedLocalSocketClient::sendDataLater(const QByteArray &data, int interval, int waitTime)
 {
-  d_->sendBuffer.append(SocketService::packData(data));
+  d_->sendBuffer.append(SocketService::packPacket(data));
   d_->sendTimer->start(interval);
   d_->sendWaitTime = waitTime;
 }
