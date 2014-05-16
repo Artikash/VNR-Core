@@ -67,9 +67,9 @@ public slots:
   void setEmbeddedOtherTranslationEnabled(bool t);
   void setEmbeddedOtherTranscodingEnabled(bool t);
 
-  void setEmbeddedAllTextsExtracted(int v);
+  void setEmbeddedAllTextsExtracted(bool t);
   void setEmbeddedTextEnabled(bool t);
-  void setEmbeddedTextCancellableByControl(bool v);
+  void setEmbeddedTextCancellableByControl(bool t);
   void setEmbeddedTranslationWaitTime(int v);
 
   void setGameEncoding(const QString &v);
@@ -94,7 +94,7 @@ signals:
   void embeddedOtherTranslationEnabledChanged(bool t);
   void embeddedOtherTranscodingEnabledChanged(bool t);
 
-  void embeddedAllTextsExtracted(bool t);
+  void embeddedAllTextsExtractedChanged(bool t);
   void embeddedTextEnabledChanged(bool t);
   void embeddedTextCancellableByControlChanged(bool t);
   void embeddedTranslationWaitTimeChanged(int v);

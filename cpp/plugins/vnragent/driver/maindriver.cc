@@ -125,7 +125,7 @@ void MainDriverPrivate::createEmbedDriver()
   connect(settings, SIGNAL(embeddedTextEnabledChanged(bool)), eng, SLOT(setEnabled(bool)));
 
   connect(settings, SIGNAL(embeddedTextCancellableByControlChanged(bool)), eng, SLOT(setDetectsControl(bool)));
-  connect(settings, SIGNAL(embeddedAllTextsExtracted(bool)), eng, SLOT(setExtractsAllTexts(bool)));
+  connect(settings, SIGNAL(embeddedAllTextsExtractedChanged(bool)), eng, SLOT(setExtractsAllTexts(bool)));
 
   connect(settings, SIGNAL(scenarioSignatureChanged(long)), eng, SLOT(setScenarioSignature(long)));
   connect(settings, SIGNAL(nameSignatureChanged(long)), eng, SLOT(setNameSignature(long)));

@@ -26,6 +26,7 @@ public:
      , embeddedOtherTranscodingEnabled
      , embeddedTextEnabled
      , embeddedTextCancellableByControl
+     , embeddedAllTextsExtracted
      ;
 
   int embeddedTranslationWaitTime;
@@ -51,6 +52,7 @@ public:
      , embeddedOtherTranscodingEnabled(false)
      , embeddedTextEnabled(false)
      , embeddedTextCancellableByControl(false)
+     , embeddedAllTextsExtracted(false)
      , embeddedTranslationWaitTime(1000) // 1 second
      , gameEncoding("shift-jis")
      , scenarioSignature(0)
