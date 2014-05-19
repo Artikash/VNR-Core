@@ -276,8 +276,9 @@ class _TextTab(object):
 
     layout.addWidget(threadGroup)
 
-    msg = QtWidgets.QLabel(my.tr("Don't forget to maximize the text speed (see Help)."))
-    skqss.class_(msg, "text-info")
+    msg = QtWidgets.QLabel(
+        my.tr("/H code is not supported by embedded game engine"))
+    #skqss.class_(msg, "text-info")
     layout.addWidget(msg)
 
     #buttons = QtWidgets.QHBoxLayout()
