@@ -741,7 +741,10 @@ class TextPrefsDialog(QtWidgets.QMainWindow):
     WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
     super(TextPrefsDialog, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
-    self.setWindowTitle(mytr_("Text Settings"))
+    self.setWindowTitle("%s (%s)" % (
+      mytr_("Text Settings"),
+      my.tr("Engine: VNR"),
+    ))
     self.__d = _TextPrefsDialog(self)
     dprint("pass")
 
