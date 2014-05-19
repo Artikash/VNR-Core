@@ -23,6 +23,7 @@ win32: SUBDIRS += texthook pytexthook
 #win32: SUBDIRS += texthookxp pytexthookxp
 
 win32: SUBDIRS += vnragent
+win32: SUBDIRS += vnrlocale
 
 #win32: SUBDIRS += pyeffects
 win32: SUBDIRS += pymsime

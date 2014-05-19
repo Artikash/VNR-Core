@@ -1,6 +1,6 @@
 /*
- * vnragent.rc
- * 10/20/2011 jichi
+ * vnrlocale.rc
+ * 5/15/2014 jichi
  */
 #if defined(UNDER_CE)
 # include <winbase.h>
@@ -26,11 +26,11 @@ VS_VERSION_INFO VERSIONINFO
          BLOCK "040904B0"
          BEGIN
             VALUE "CompanyName", "Sakuradite\0"
-            VALUE "FileDescription", "VNR Agent\0"
+            VALUE "FileDescription", "VNR Locale\0"
             VALUE "FileVersion", "0.0.0.1\0"
-            VALUE "LegalCopyright", "Copyright (C) 2012.\0"
-            VALUE "OriginalFilename", "vnragegnt.dll\0"
-            VALUE "ProductName", "vnragent\0"
+            VALUE "LegalCopyright", "Copyright (C) 2014.\0"
+            VALUE "OriginalFilename", "vnrloc.dll\0"
+            VALUE "ProductName", "vnrlocale\0"
          END
       END
    END

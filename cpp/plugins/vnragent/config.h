@@ -72,7 +72,9 @@
  *  Allow sending time-critical message using native Windows pipe bypassing Qt
  *  Warning, communicate through native pipe will be fast but could contend with Qt messages
  *  as they are using different POVERLAPPED.
+ *
+ *  Enabling this will break CTRL detection.
  */
-#define VNRAGENT_ENABLE_NATIVE_PIPE
+//#define VNRAGENT_ENABLE_NATIVE_PIPE
 
 // EOF

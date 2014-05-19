@@ -31,6 +31,7 @@ public slots:
 
   void setEnabled(bool t);
   void setDetectsControl(bool t);
+  void setExtractsAllTexts(bool t);
   void setScenarioVisible(bool t);
   void setScenarioExtractionEnabled(bool t);
   void setScenarioTranscodingEnabled(bool t);
