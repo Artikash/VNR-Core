@@ -19,9 +19,6 @@ from texthook import texthook
 from mytr import my, mytr_
 import config, defs, growl, i18n, rc, textman, textutil
 
-PREFS_TEXT_INDEX = 0
-PREFS_INFO_INDEX = 1
-
 TEXTEDIT_MAX_HEIGHT = 80
 TEXTEDIT_MIN_WIDTH = 400
 THREADLAYOUT_COLUMN_COUNT = 2

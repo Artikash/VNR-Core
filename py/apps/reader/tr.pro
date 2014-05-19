@@ -5,6 +5,7 @@ CODECFORTR = UTF-8
 TRANSLATIONS = tr/zh_CN.ts tr/zh_TW.ts
 SOURCES = \
   dialogs/chart.py \
+  dialogs/embedprefs.py \
   dialogs/gameedit.py \
   dialogs/help.py \
   dialogs/hookprefs.py \
@@ -12,7 +13,7 @@ SOURCES = \
   dialogs/prompt.py \
   dialogs/info.py \
   dialogs/mttest.py \
-  dialogs//refinput.py \
+  dialogs/refinput.py \
   dialogs/subedit.py \
   dialogs/_prefs.py \
   dialogs/prefs.py \

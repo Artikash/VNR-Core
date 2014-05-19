@@ -900,6 +900,37 @@ class _MainObject(object):
     return ret
 
   @memoizedproperty
+  def embeddedTextPrefsDialog(self):
+    import embedprefs
+    ret = embedprefs.TextPrefsDialog(self.topWindow)
+    self.widgets.append(ret)
+
+    agent = self.gameAgent
+    agent.processDetached.connect(ret.hide)
+    ret.visibleChanged.connect(agent.setExtractsAllTexts)
+
+    gm = self.gameManager
+    ret.languageChanged.connect(gm.setLanguage)
+    #ret.removesRepeatTextChanged.connect(gm.setRemovesRepeat)
+    #ret.ignoresRepeatTextChanged.connect(gm.setIgnoresRepeat)
+    #ret.keepsSpaceChanged.connect(gm.setKeepsSpace)
+    #ret.keepsThreadsChanged.connect(gm.setThreadKept)
+    ret.scenarioThreadChanged.connect(gm.setCurrentThread)
+    #ret.hookChanged.connect(gm.setCurrentHook)
+    #ret.launchPathChanged.connect(gm.setLaunchPath)
+    #ret.loaderChanged.connect(gm.setLoader)
+
+    #gm.processChanged.connect(ret.updateEnabled)
+
+    ret.nameThreadChanged.connect(gm.setNameThread)
+    ret.nameThreadDisabled.connect(gm.disableNameThread)
+    #ret.otherThreadsChanged.connect(gm.setOtherThreads)
+
+    tm = self.textManager
+    tm.cleared.connect(ret.clear)
+    return ret
+
+  @memoizedproperty
   def springBoardDialog(self):
     import spring
     ret = spring.SpringBoard(self.normalWindow)
@@ -1499,8 +1530,10 @@ class MainObject(QObject):
   def showTextSettings(self):
     if self.__d.textHook.isAttached():
       _MainObject.showWindow(self.__d.textPrefsDialog)
-    else:
-      growl.notify(my.tr("I am sorry that this feature has not been implemented yet."))
+    elif self.__d.gameAgent.isAttached():
+      _MainObject.showWindow(self.__d.embeddedTextPrefsDialog)
+    #else:
+    #  growl.notify(my.tr("I am sorry that this feature has not been implemented yet."))
 
   def showGameBoard(self): _MainObject.showWindow(self.__d.gameBoardDialog)
   def showYouTubeInput(self): _MainObject.showWindow(self.__d.youTubeInputDialog)

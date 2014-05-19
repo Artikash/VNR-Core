@@ -2,7 +2,7 @@
 # embedprefs.py
 # 11/5/2012 jichi
 
-__all__ = ['EmbeddedTextPrefsDialog']
+__all__ = ['TextPrefsDialog']
 
 if __name__ == '__main__':
   import sys
@@ -23,9 +23,6 @@ from sakurakit.sktr import tr_
 #from sakurakit.skunicode import u
 from mytr import my, mytr_
 import config, defs, gameagent,growl, i18n, rc, textman, textutil
-
-PREFS_TEXT_INDEX = 0
-PREFS_INFO_INDEX = 1
 
 TEXTEDIT_MAX_HEIGHT = 80
 TEXTEDIT_MIN_WIDTH = 400
@@ -219,11 +216,11 @@ class _TextTab(object):
     self._createUi(q)
 
   def _createUi(self, q):
-    hookPrefsButton = QtWidgets.QPushButton(my.tr("Edit /H Hook Code"))
-    skqss.class_(hookPrefsButton, 'btn btn-info')
-    hookPrefsButton.setToolTip(my.tr("Modify the game-specific ITH hook code") + " (Alt+H)")
-    hookPrefsButton.setStatusTip(hookPrefsButton.toolTip())
-    hookPrefsButton.clicked.connect(self._showHookPrefs)
+    #hookPrefsButton = QtWidgets.QPushButton(my.tr("Edit /H Hook Code"))
+    #skqss.class_(hookPrefsButton, 'btn btn-info')
+    #hookPrefsButton.setToolTip(my.tr("Modify the game-specific ITH hook code") + " (Alt+H)")
+    #hookPrefsButton.setStatusTip(hookPrefsButton.toolTip())
+    #hookPrefsButton.clicked.connect(self._showHookPrefs)
 
     helpButton = QtWidgets.QPushButton(tr_("Help"))
     helpButton.setToolTip(tr_("Help"))
@@ -262,7 +259,7 @@ class _TextTab(object):
     layout = QtWidgets.QVBoxLayout()
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.saveButton)
-    row.addWidget(hookPrefsButton)
+    #row.addWidget(hookPrefsButton)
     row.addWidget(self.resetButton)
     #row.addWidget(wikiButton)
     row.addWidget(helpButton)
@@ -295,7 +292,7 @@ class _TextTab(object):
 
     q.setLayout(layout)
 
-    skwidgets.shortcut('alt+h', self._showHookPrefs, parent=q)
+    #skwidgets.shortcut('alt+h', self._showHookPrefs, parent=q)
 
   @memoizedproperty
   def saveButton(self):
@@ -343,42 +340,36 @@ class _TextTab(object):
   @memoizedproperty
   def threadLayout(self): return QtWidgets.QGridLayout()
 
-  @memoizedproperty
-  def hookPrefsDialog(self):
-    q = self.q
-    import hookprefs
-    ret = hookprefs.HookPrefsDialog(q)
-    ret.hookCodeEntered.connect(q.hookChanged)
-    ret.hookCodeDeleted.connect(partial(
-        q.hookChanged.emit, ""))
+  #@memoizedproperty
+  #def hookPrefsDialog(self):
+  #  q = self.q
+  #  import hookprefs
+  #  ret = hookprefs.HookPrefsDialog(q)
+  #  ret.hookCodeEntered.connect(q.hookChanged)
+  #  ret.hookCodeDeleted.connect(partial(
+  #      q.hookChanged.emit, ""))
 
-    # Automatically hide me when game exit
-    gameagent.global_().processDetached.connect(ret.hide)
+  #  # Automatically hide me when game exit
+  #  gameagent.global_().processDetached.connect(ret.hide)
 
-    h = self._deletedHookCode()
-    ret.setDeletedHook(h)
-    return ret
+  #  h = self._deletedHookCode()
+  #  ret.setDeletedHook(h)
+  #  return ret
 
-  def _showHookPrefs(self): self.hookPrefsDialog.show()
+  #def _showHookPrefs(self): self.hookPrefsDialog.show()
 
-  def _refreshHookDialog(self):
-    if hasmemoizedproperty(self, 'hookPrefsDialog'):
-      h = self._deletedHookCode()
-      self.hookPrefsDialog.setDeletedHook(h)
+  #def _refreshHookDialog(self):
+  #  if hasmemoizedproperty(self, 'hookPrefsDialog'):
+  #    h = self._deletedHookCode()
+  #    self.hookPrefsDialog.setDeletedHook(h)
 
-  @staticmethod
-  def _deletedHookCode():
-    """
-    @return  str not None
-    """
-    g = _gameprofile()
-    return g.deletedHook if g else ""
-    #if gp:
-    #  import dataman
-    #  g = dataman.manager().queryGame(md5=gp.md5)
-    #  if g:
-    #    return g.deletedHook
-    #return ''
+  #@staticmethod
+  #def _deletedHookCode():
+  #  """
+  #  @return  str not None
+  #  """
+  #  g = _gameprofile()
+  #  return g.deletedHook if g else ""
 
   @memoizedproperty
   def helpDialog(self):
@@ -544,7 +535,7 @@ class _TextTab(object):
 
     self._refreshSaveButton()
 
-    self._refreshHookDialog()
+    #self._refreshHookDialog()
 
   def _refreshSaveButton(self):
     self.saveButton.setEnabled(self._canSave())
@@ -628,7 +619,7 @@ class TextTab(QtWidgets.QWidget):
   message = Signal(unicode)
 
   sizeChanged = Signal()
-  hookChanged = Signal(str)
+  #hookChanged = Signal(str)
   languageChanged = Signal(unicode)
   scenarioThreadChanged = Signal(long, unicode, unicode) # signature, name, encoding
   nameThreadChanged = Signal(long, unicode) # signature, name
@@ -678,7 +669,7 @@ class TextTab(QtWidgets.QWidget):
 ## Main window ##
 
 @Q_Q
-class _EmbeddedTextPrefsDialog(object):
+class _TextPrefsDialog(object):
 
   def __init__(self, q):
     self._createUi(q)
@@ -697,7 +688,7 @@ class _EmbeddedTextPrefsDialog(object):
     ret.message.connect(self.showMessage)
     ret.warning.connect(self.showWarning)
     ret.sizeChanged.connect(q.updateSize)
-    ret.hookChanged.connect(q.hookChanged)
+    #ret.hookChanged.connect(q.hookChanged)
     ret.languageChanged.connect(q.languageChanged)
     ret.scenarioThreadChanged.connect(q.scenarioThreadChanged)
     ret.nameThreadChanged.connect(q.nameThreadChanged)
@@ -744,16 +735,18 @@ class _EmbeddedTextPrefsDialog(object):
     bar.showMessage(text)
 
 # Use main window for status bar
-class EmbeddedTextPrefsDialog(QtWidgets.QMainWindow):
+class TextPrefsDialog(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
-    super(EmbeddedTextPrefsDialog, self).__init__(parent, WINDOW_FLAGS)
+    super(TextPrefsDialog, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.setWindowTitle(mytr_("Text Settings"))
-    self.__d = _EmbeddedTextPrefsDialog(self)
+    self.__d = _TextPrefsDialog(self)
     dprint("pass")
 
-  hookChanged = Signal(str)
+  visibleChanged = Signal(bool)
+
+  #hookChanged = Signal(str)
   #launchPathChanged = Signal(unicode)
   #loaderChanged = Signal(unicode)
   languageChanged = Signal(unicode)
@@ -783,7 +776,8 @@ class EmbeddedTextPrefsDialog(QtWidgets.QMainWindow):
         title = "%s - %s" % (name, title)
       self.setWindowTitle(title)
 
-    if visible != self.isVisible():
+    update = visible != self.isVisible()
+    if update:
       if visible:
         d.clear()
         d.load()
@@ -791,15 +785,17 @@ class EmbeddedTextPrefsDialog(QtWidgets.QMainWindow):
         skevents.runlater(self.updateSize)
       else:
         d.unload()
-
     #texthook.global_().setWhitelistEnabled(not visible)
 
     d.setActive(visible)
-    super(EmbeddedTextPrefsDialog, self).setVisible(visible)
+    super(TextPrefsDialog, self).setVisible(visible)
 
-  def updateEnabled(self):
-    g = _gameprofile()
-    self.setEnabled(bool(g))
+    if update:
+      self.visibleChanged.emit(visible)
+
+  #def updateEnabled(self):
+  #  g = _gameprofile()
+  #  self.setEnabled(bool(g))
 
   def clear(self):
     if self.isVisible():
@@ -813,7 +809,7 @@ class EmbeddedTextPrefsDialog(QtWidgets.QMainWindow):
 
 if __name__ == '__main__':
   a = debug.app()
-  w = EmbeddedTextPrefsDialog()
+  w = TextPrefsDialog()
   w.show()
   a.exec_()
 
