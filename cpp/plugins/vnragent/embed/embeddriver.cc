@@ -41,6 +41,8 @@ EmbedDriver::~EmbedDriver()
 
 void EmbedDriver::setTranslationWaitTime(int v)  { d_->manager->setTranslationWaitTime(v); }
 
+void EmbedDriver::setEncoding(const QString &v)  { if (d_->engine) d_->engine->setEncoding(v); }
+
 void EmbedDriver::setEnabled(bool t)  { if (d_->engine) d_->engine->settings()->enabled = t; }
 void EmbedDriver::setDetectsControl(bool t) { if (d_->engine) d_->engine->settings()->detectsControl = t; }
 void EmbedDriver::setExtractsAllTexts(bool t) { if (d_->engine) d_->engine->settings()->extractsAllTexts = t; }

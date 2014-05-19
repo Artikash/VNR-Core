@@ -4,7 +4,9 @@
 // 4/20/2014 jichi
 
 #include "sakurakit/skglobal.h"
-#include <QtCore/QString>
+#include <QtCore/QByteArray>
+
+QT_FORWARD_DECLARE_CLASS(QString)
 
 class EngineSettings;
 class AbstractEnginePrivate;
@@ -16,9 +18,6 @@ class AbstractEngine
   SK_DISABLE_COPY(AbstractEngine)
 
 public:
-  enum Encoding { UnknownEncoding = 0, Utf16Encoding, SjisEncoding };
-  static const char *encodingName(Encoding v);
-
   typedef ulong RequiredAttributes;
   enum RequiredAttribute {
     BlockingAttribute = 1           // non-blocking callback is not supported
@@ -27,13 +26,17 @@ public:
 
   static Self *instance(); // Needed to be explicitly deleted on exit
 
-  AbstractEngine(const char *name, Encoding enc, RequiredAttributes flags = 0);
+  AbstractEngine(const char *name, uint codePage, RequiredAttributes flags = 0);
   virtual ~AbstractEngine();
 
   EngineSettings *settings() const;
 
   const char *name() const;
-  Encoding encoding() const;
+  const char *encoding() const;
+  uint codePage() const;
+
+  void setCodePage(uint cp);
+  void setEncoding(const QString &v);
 
   bool isTranscodingNeeded() const;
 

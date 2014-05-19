@@ -4,13 +4,14 @@
 // 5/11/2014 jichi
 
 #include "engine/engine.h"
+#include "util/codepage.h"
 
 class BGIEngine : public AbstractEngine
 {
   SK_EXTEND_CLASS(BGIEngine, AbstractEngine)
   SK_DISABLE_COPY(BGIEngine)
 public:
-  BGIEngine() : Base("BGI", SjisEncoding, BlockingAttribute) {}
+  BGIEngine() : Base("BGI", Util::SjisCodePage, BlockingAttribute) {}
 
   static bool match();
 protected:

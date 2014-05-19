@@ -14,6 +14,9 @@
 #include <QtCore/QTimer>
 #include <QtCore/QTextCodec>
 
+#define DEBUG "engine"
+#include "sakurakit/skdebug.h"
+
 /** Private class */
 
 class AbstractEnginePrivate
@@ -23,24 +26,32 @@ public:
   enum { ExchangeInterval = 10 };
 
   const char *name;
-  Q::Encoding encoding;
+  uint codePage;
   Q::RequiredAttributes attributes;
 
   QTextCodec *encoder,
              *decoder;
 
   EngineSettings *settings;
+  bool finalized;
 
 public:
-  AbstractEnginePrivate(const char *name, Q::Encoding encoding, Q::RequiredAttributes attributes)
-    : name(name), encoding(encoding), attributes(attributes)
+  AbstractEnginePrivate(const char *name, uint codePage, Q::RequiredAttributes attributes)
+    : name(name), codePage(codePage), attributes(attributes)
     , encoder(nullptr), decoder(nullptr)
     , settings(new EngineSettings)
+    , finalize(false)
   {}
 
   ~AbstractEnginePrivate() { if (settings) delete settings; }
 
-  void finalize() { finalizeCodecs(); }
+  void finalize()
+  {
+    if (!finalized) {
+      finalizeCodecs();
+      finalized = true;
+    }
+  }
 
   // Property helpers
 
@@ -58,12 +69,14 @@ public:
 private:
   void finalizeCodecs()
   {
-    const char *engineEncoding = Q::encodingName(encoding);
+    const char *engineEncoding = Util::encodingForCodePage(codePage);
     decoder = engineEncoding ? QTextCodec::codecForName(engineEncoding) : nullptr;
 
     const char *systemEncoding = Util::encodingForCodePage(::GetACP());
     //systemEncoding = "gbk";
     encoder = QTextCodec::codecForName(systemEncoding ? systemEncoding : ENC_SJIS);
+
+    DOUT("encoding =" << engineEncoding  << ", system =" << systemEncoding);
   }
 };
 
@@ -84,23 +97,31 @@ AbstractEngine *AbstractEngine::instance()
 
 // - Construction -
 
-const char *AbstractEngine::encodingName(Encoding v)
-{
-  switch (v) {
-  case Utf16Encoding: return ENC_UTF16;
-  case SjisEncoding: return ENC_SJIS;
-  default: return nullptr;
-  }
-}
-
-AbstractEngine::AbstractEngine(const char *name, Encoding encoding, RequiredAttributes attributes)
-  : d_(new D(name, encoding, attributes)) {}
+AbstractEngine::AbstractEngine(const char *name, uint cp, RequiredAttributes attributes)
+  : d_(new D(name, cp, attributes)) {}
 
 AbstractEngine::~AbstractEngine() { delete d_; }
 
 EngineSettings *AbstractEngine::settings() const { return d_->settings; }
 const char *AbstractEngine::name() const { return d_->name; }
-AbstractEngine::Encoding AbstractEngine::encoding() const { return d_->encoding; }
+
+const char *AbstractEngine::encoding() const
+{ return Util::encodingForCodePage(d_->codePage); }
+
+void AbstractEngine::setCodePage(uint v)
+{
+  if (v != d_->codePage) {
+    d_->codePage = v;
+
+    if (d_->finalized) {
+      const char *encoding = Util::encodingForCodePage(v);
+      d_->decoder = encoding ? QTextCodec::codecForName(encoding) : nullptr;
+    }
+  }
+}
+
+void AbstractEngine::setEncoding(const QString &v)
+{ setCodePage(Util::codePageForEncoding(v)); }
 
 bool AbstractEngine::isTranscodingNeeded() const
 { return d_->encoder != d_->decoder; }

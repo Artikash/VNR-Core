@@ -154,8 +154,7 @@ void WindowManager::setEncoding(const QString &v)
     d_->encoding = v;
     d_->encodingCodec = QTextCodec::codecForName(v.toAscii());
 
-    DOUT("encoding =" << d_->encoding  <<
-         ", system =" << d_->systemEncoding);
+    DOUT("encoding =" << d_->encoding  << ", system =" << d_->systemEncoding);
 
     d_->invalidateTexts();
   }
