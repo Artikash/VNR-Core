@@ -371,4 +371,51 @@ This will help VNR to get rid of H-code for that kind of games.""")
   #CHEATENGINE_HELP_URL_ZH, CHEATENGINE_HELP_URL_ZH,
 ))
 
+def renderEmbeddedTextSettingsHelp():
+  #ascii_url = "http://en.wikipedia.org/wiki/ASCII"
+  #help_url_zh = "http://tieba.baidu.com/f?kw=%DF%F7%B7%AD"
+  return my.tr(
+"""<h3>Introduction</h3>
+In Text Settings, you can identify which text threads to display and translate.
+If after synchronizing with the game, no texts appear in VNR,
+it is usually because your text settings for the game is inappropriate.
+<br/><br/>
+
+This is the Text Settings for VNR's experimental embedded text hook rather than ITH.
+VNR's text hook allows embedding translations into the game, but it supports much fewer games than ITH.
+Additionally, <span style="color:red">VNR's text hook does NOT support H-code</span>.
+You can adjust which text hook to use in Preferences/Embed.
+The game is needed to be restarted after the text hook is changed.
+
+<h3>Text Threads</h3>
+A game might have one or a couple of text threads.
+You might want to identify those EXACTLY THE SAME AS THE GAME TEXT.
+Two kinds of text threads are currently supported.
+<br/>
+* <span style="color:purple">Dialog</span>: This text thread is the scenario thread.
+<br/>
+* <span style="color:purple">Chara</span>: The contents are names of game characters.
+<br/>
+<span style="color:green">The game must have exact ONE dialogue text thread.</span>
+And it could have at most ONE character text thread.
+
+<h3>Game Engine</h3>
+Embedding translation might not work well for all games.
+Certain game engines might have their specific issues.
+More information could be found on the Wiki:
+<center>
+<a href="http://sakuradite.com/wiki/en/VNR/Game_Engine">http://sakuradite.com/wiki/en/VNR/Game_Engine</a>
+</center>
+
+<h3>Text Speed</h3>
+Different from ITH, the text speed of the game does NOT matter.
+It is OK if you adjust the text speed to slow.
+
+<h3>Hook Code</h3>
+Different from ITH, the H-code is NOT supported.
+
+<h3>Debug Output</h3>
+If VNR is launched from "Debug VNR.cmd", VNR's text hook will save the debug log into "vnragent.log" file in VNR's directory.
+If the game crashes because of VNR, you might be able to find the reason of the crash in that log file.""")
+
 # EOF

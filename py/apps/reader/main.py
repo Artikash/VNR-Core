@@ -1530,9 +1530,10 @@ class MainObject(QObject):
   def showTextSettings(self):
     if self.__d.textHook.isAttached():
       _MainObject.showWindow(self.__d.textPrefsDialog)
-    elif self.__d.gameAgent.isAttached():
+    elif self.__d.gameAgent.engine():
       _MainObject.showWindow(self.__d.embeddedTextPrefsDialog)
-    #else:
+    else:
+      growl.notify(my.tr("Unknown game engine"))
     #  growl.notify(my.tr("I am sorry that this feature has not been implemented yet."))
 
   def showGameBoard(self): _MainObject.showWindow(self.__d.gameBoardDialog)

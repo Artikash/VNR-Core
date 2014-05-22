@@ -8,7 +8,7 @@ EXIT_SUCCEED = 0 # os.EX_OK
 EXIT_FAILURE = 1
 EXIT_RESTART = -1
 
-#  Features
+# Features
 INTERNET_CONNECTION_AUTO = 'auto'
 INTERNET_CONNECTION_ON = 'on'
 INTERNET_CONNECTION_OFF = 'off'
@@ -18,6 +18,13 @@ INTERNET_CONNECTION_OFF = 'off'
 # Time to protect anonymous entries
 #PROTECTED_INTERVAL = 86400 * 15 # 15 days
 PROTECTED_INTERVAL = 86400 * 7 # 7 days
+
+# Game agent
+# These values must be consistent with vnragent.dll
+UNKNOWN_TEXT_ROLE = 0
+SCENARIO_TEXT_ROLE = 1
+NAME_TEXT_ROLE = 2
+OTHER_TEXT_ROLE = 3
 
 # Text constraints
 
