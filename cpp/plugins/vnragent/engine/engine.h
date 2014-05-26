@@ -53,7 +53,7 @@ protected:
   // Interface to descendent classes
 public:
   QByteArray dispatchTextA(const QByteArray &data, long signature, int role = 0);
-  //QString dispatchTextW(const QString &text, long signature, int role = 0);
+  QString dispatchTextW(const QString &text, long signature, int role = 0);
 
   // This function is not thread-safe
   //const char *exchangeTextA(const char *data, long signature, int role = 0);

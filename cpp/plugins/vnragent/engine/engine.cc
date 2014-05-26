@@ -184,22 +184,50 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, long signature,
   return d_->encode(repl);
 }
 
-//QString AbstractEngine::dispatchTextW(const QString &text, int role, bool blocking)
-//{
-//  if (text.isEmpty() || !d_->settings->textVisible[role])
-//    return QString();
-//
-//  qint64 hash = Engine::hashString(text);
-//  auto p = EmbedManager::instance();
-//  QString repl = p->findTranslation(hash, role);
-//  p->addText(text, hash, role, repl.isEmpty());
-//  if (blocking && repl.isEmpty())
-//    repl = p->waitForTranslation(hash, role);
-//  if (repl.isEmpty())
-//    repl = text;
-//
-//  return repl;
-//}
+QString AbstractEngine::dispatchTextW(const QString &text, long signature, int role)
+{
+  if (text.isEmpty())
+    return text;
+  if (!role)
+    role = d_->settings->textRoleOf(signature);
+
+  auto p = EmbedManager::instance();
+
+  bool canceled = !d_->settings->enabled ||
+      d_->settings->detectsControl && WinKey::isKeyControlPressed();
+
+  qint64 hash = canceled ? 0 : Engine::hashWString(text);
+  if (!canceled && !d_->settings->translationEnabled[role] &&
+      (d_->settings->extractionEnabled[role] || d_->settings->extractsAllTexts)) {
+    enum { NeedsTranslation = false };
+    p->sendText(text, hash, signature, role, NeedsTranslation);
+  }
+
+  if (!d_->settings->textVisible[role])
+    return QString();
+
+  if (!d_->settings->translationEnabled[role])
+    return text;
+    //return d_->settings->transcodingEnabled[role] ? d_->encode(data) : data;
+  if (canceled ||
+      role == Engine::OtherRole && !Util::needsTranslation(text))
+    return text;
+    //return d_->encode(data);
+
+  QString repl = p->findTranslation(hash, role);
+  bool needsTranslation = repl.isEmpty();
+  p->sendText(text, hash, signature, role, needsTranslation);
+  if (needsTranslation && d_->testAttribute(BlockingAttribute))
+    repl = p->waitForTranslation(hash, role);
+
+  if (repl.isEmpty())
+    repl = text;
+  else if (role == Engine::NameRole && d_->settings->nameTextVisible && repl != text)
+    repl = QString("%1(%2)").arg(text, repl);
+
+  return repl;
+  //return d_->encode(repl);
+}
 
 // EOF
 

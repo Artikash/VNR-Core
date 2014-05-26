@@ -24,7 +24,7 @@ def engines():
       BGIEngine(),
       MajiroEngine(),
       #RejetEngine(),
-      SiglusEngine(),
+      #SiglusEngine(),
     ]
   return ENGINES
 
