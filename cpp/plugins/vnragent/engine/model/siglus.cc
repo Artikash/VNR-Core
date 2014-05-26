@@ -43,7 +43,7 @@ namespace { // unnamed
  *    - 0x18: constant pointer
  *    ...
  */
-typedef int (__thiscall *hook_fun_t)(void *, DWORD, DWORD); // the first pointer parameter is this
+typedef int (__thiscall *hook_fun_t)(void *, DWORD, DWORD); // the first pointer is this
 // Use __fastcall to completely forward ecx and edx
 //typedef int (__fastcall *hook_fun_t)(void *, void *, DWORD, DWORD);
 hook_fun_t oldHookFun;
