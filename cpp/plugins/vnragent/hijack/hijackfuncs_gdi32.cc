@@ -4,12 +4,15 @@
 #include "hijack/hijackhelper.h"
 #include "util/codepage.h"
 
+#define DEBUG "hijackfuncs_gdi32"
+#include "sakurakit/skdebug.h"
+
 //#define FONT_ZHS "楷体_GB2312"
 //#define FONT_ZHS "KaiTi_GB2312"
 
-// This only works before starting the game
 HFONT WINAPI Hijack::myCreateFontIndirectA(const LOGFONTA *lplf)
 {
+  //DOUT("pass");
   HFONT ret = nullptr;
   if (auto p = HijackHelper::instance())
     if (auto charSet = p->systemCharSet())
@@ -27,6 +30,7 @@ HFONT WINAPI Hijack::myCreateFontIndirectA(const LOGFONTA *lplf)
 
 HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
 {
+  //DOUT("pass");
   HFONT ret = nullptr;
   if (auto p = HijackHelper::instance())
     if (auto charSet = p->systemCharSet())
@@ -40,6 +44,30 @@ HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
   if (!ret)
     ret = ::CreateFontIndirectW(lplf);
   return ret;
+}
+
+HFONT WINAPI Hijack::myCreateFontA(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCSTR lpszFace)
+{
+  DOUT("pass");
+  if (auto p = HijackHelper::instance())
+    if (auto charSet = p->systemCharSet())
+      if (p->isTranscodingNeeded()) {
+        fdwCharSet = charSet;
+        //:qstrcpy(lpszFace, FONT_ZHS);
+      }
+  return ::CreateFontA(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace);
+}
+
+HFONT WINAPI Hijack::myCreateFontW(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCWSTR lpszFace)
+{
+  DOUT("pass");
+  if (auto p = HijackHelper::instance())
+    if (auto charSet = p->systemCharSet())
+      if (p->isTranscodingNeeded()) {
+        fdwCharSet = charSet;
+        //:qstrcpy(lpszFace, FONT_ZHS);
+      }
+  return ::CreateFontW(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace);
 }
 
 // EOF

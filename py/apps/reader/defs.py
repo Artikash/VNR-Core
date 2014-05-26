@@ -75,6 +75,13 @@ def to_ith_engine_name(name): # str -> str
       'SiglusEngine2' if name == 'SiglusEngine' else
       name)
 
+# VNR agent supported engines
+VNRAGENT_ENGINES = (
+  'BGI2',
+  'SiglusEngine2',
+  'Majiro',
+)
+
 # Back up file suffix
 BACKUP_FILE_SUFFIX = '.bak'
 

@@ -23,8 +23,8 @@ def engines():
     ENGINES = [
       BGIEngine(),
       MajiroEngine(),
+      SiglusEngine(),
       #RejetEngine(),
-      #SiglusEngine(),
     ]
   return ENGINES
 
