@@ -67,7 +67,12 @@ FAST_GAME_ENGINES = 'MarineHeart',
 # The game engines that require the game to be hooked after loaded
 DELAY_ENGINES = 'Adobe AIR',
 
-# The game engines that require the game to have normal/slow text speed
+# Convert new game agent name to old ITH engine name
+def to_ith_engine_name(name): # str -> str
+  return (
+      'MAJIRO' if name == 'Majiro' else
+      'BGI2' if name == 'BGI' else
+      name)
 
 # Back up file suffix
 BACKUP_FILE_SUFFIX = '.bak'

@@ -6,7 +6,7 @@
 namespace Engine {
 
 // These values must be consistent with VNR's textman.py
-enum TextRole { UnknownRole = 0, ScenarioRole,  NameRole, OtherRole,
+enum TextRole { UnknownRole = 0, ScenarioRole,  NameRole, OtherRole, ChoiceRole = OtherRole, // TODO: Add support for choice
                 RoleCount };
 
 // Emperical maximum memory range of an application

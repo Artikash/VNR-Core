@@ -40,10 +40,10 @@ public:
     : name(name), codePage(codePage), attributes(attributes)
     , encoder(nullptr), decoder(nullptr)
     , settings(new EngineSettings)
-    , finalize(false)
+    , finalized(false)
   {}
 
-  ~AbstractEnginePrivate() { if (settings) delete settings; }
+  ~AbstractEnginePrivate() { delete settings; }
 
   void finalize()
   {

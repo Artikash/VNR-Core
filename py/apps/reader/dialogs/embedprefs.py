@@ -104,14 +104,14 @@ class _TextThreadView(object):
   SCENARIO_BUTTON_ROW = 0
   NAME_BUTTON_ROW = 1
   #OTHER_BUTTON_ROW = 2
-  IGNORE_BUTTON_ROW = 3
+  IGNORE_BUTTON_ROW = 2
 
   def __init__(self, q, signature):
     self.signature = signature
     self._createUi(q)
     #self.updateStyleSheet()
 
-  def _createUi(self, q, role):
+  def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
 
     #tt = defs.threadtype(self.name)
@@ -166,14 +166,13 @@ class _TextThreadView(object):
     b.toggled.connect(partial(lambda b, value:
         skqss.toggleclass(b, 'btn-danger', value),
         b))
-
     self.buttonRow.setCurrentIndex(_TextThreadView.IGNORE_BUTTON_ROW)
     self.buttonRow.currentIndexChanged.connect(self._onSelectedRoleChanged)
     self.buttonRow.currentIndexChanged.connect(self.updateStyleSheet)
 
     self.textEdit = QtWidgets.QPlainTextEdit()
     #self.textEdit.setToolTip(mytr_("Game text"))
-    self.textEdit.setToolTip(ttip)
+    #self.textEdit.setToolTip(ttip)
     self.textEdit.setReadOnly(True)
     self.textEdit.setMaximumHeight(TEXTEDIT_MAX_HEIGHT)
     self.textEdit.setMinimumWidth(TEXTEDIT_MIN_WIDTH)
@@ -251,8 +250,13 @@ class TextTab(QtWidgets.QWidget):
 class _TextTab(object):
 
   def __init__(self, q):
-    self._active = False
+    self._active = False # bool
     self._threadViews = {} # {long signature:TextThreadView}
+
+    self._lastEncoding = 'sjift-jis' # str
+    self._lastScenarioSignature = 0 # long
+    self._lastNameSignature = 0 # long
+
     self._createUi(q)
 
   def _createUi(self, q):
@@ -285,6 +289,15 @@ class _TextTab(object):
     threadGroup.setLayout(skwidgets.SkWidgetLayout(threadArea))
     #threadGroup.setLayout(self.threadLayout)
 
+    info = QtWidgets.QGroupBox(tr_("Information"))
+    infoLayout = QtWidgets.QVBoxLayout()
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(QtWidgets.QLabel(mytr_("Game engine") + ":"))
+    row.addWidget(self.engineLabel)
+    row.addStretch()
+    infoLayout.addLayout(row)
+    info.setLayout(infoLayout)
+
     option = QtWidgets.QGroupBox(tr_("Options"))
     optionLayout = QtWidgets.QVBoxLayout()
     row = QtWidgets.QHBoxLayout()
@@ -309,8 +322,11 @@ class _TextTab(object):
     row.addStretch()
     layout.addLayout(row)
 
+    col = QtWidgets.QVBoxLayout()
+    col.addWidget(info)
+    col.addWidget(option)
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(option)
+    row.addLayout(col)
     row.addStretch()
     layout.addLayout(row)
 
@@ -364,7 +380,7 @@ class _TextTab(object):
     ret.setStatusTip(tr_("Text encoding"))
     ret.addItems(map(str.upper, config.ENCODINGS))
     ret.setMaxVisibleItems(ret.count())
-    ret.currentIndexChanged.connect(self._refresh)
+    ret.currentIndexChanged.connect(self._onSelectedEncodingChanged)
     return ret
 
   @memoizedproperty
@@ -374,6 +390,12 @@ class _TextTab(object):
     ret.addItems(map(i18n.language_name2, config.LANGUAGES))
     ret.setMaxVisibleItems(ret.count())
     ret.currentIndexChanged.connect(self._refreshLanguageEdit)
+    return ret
+
+  @memoizedproperty
+  def engineLabel(self):
+    ret = QtWidgets.QLabel()
+    skqss.class_(ret, 'text-info')
     return ret
 
   #def _refreshKeepsHookButton(self):
@@ -459,8 +481,11 @@ class _TextTab(object):
     q = self.q
 
     tm = textman.manager()
+
     agent = gameagent.global_()
     engine = agent.engine()
+
+    engine = defs.to_ith_engine_name(engine)
 
     scenesig = self._scenarioSignature()
     namesig = self._nameSignature()
@@ -475,18 +500,23 @@ class _TextTab(object):
         skevents.runlater(partial(
             q.languageChanged.emit,
             lang))
-      # CHECKPOINT: encoding logic is wrong
-      if scenesig != agent.scenarioSignature() or enc != agent.encoding():
+      if scenesig != self._lastScenarioSignature or enc != self._lastEncoding:
         dprint("scenario thread changed")
         changed = True
+        self._lastScenarioSignature = scenesig
+        self._lastEncoding = enc
+        agent.setEncoding(enc)
+        agent.setScenarioSignature(scenesig)
         #name = threads[sig].name
         skevents.runlater(partial(
             q.scenarioThreadChanged.emit,
             scenesig, engine, enc))
 
-    if namesig != tm.nameSignature():
+    if namesig != self._lastNameSignature:
       dprint("name thread changed")
       changed = True
+      self._lastNameSignature = namesig
+      agent.setNameSignature(namesig)
       if not namesig:
         skevents.runlater(q.nameThreadDisabled.emit)
       else:
@@ -566,38 +596,57 @@ class _TextTab(object):
       skqss.addclass(self.languageEdit, 'warning')
 
   def unload(self):
-    pass
+    agent = gameagent.global_()
+    #if self._lastEncoding:
+    agent.setEncoding(self._lastEncoding)
+    if self._lastScenarioSignature:
+      agent.setScenarioSignature(self._lastScenarioSignature)
+    #if self._lastNameSignature:
+    agent.setNameSignature(self._lastNameSignature)
 
   def load(self):
-    agent = gameagent.global_()
     tm = textman.manager()
     lang = tm.gameLanguage()
     try: langIndex = config.LANGUAGES.index(lang)
     except ValueError: langIndex = 0
     self.languageEdit.setCurrentIndex(langIndex)
 
-    enc = agent.encoding()
+    enc = tm.encoding()
     self._setEncoding(enc)
 
-    # TODO: clear threads instead and restore default signatures and encoding
-    #for t in tm.threads():
-    #  self._updateThread(t, encoding=enc)
+    self._lastEncoding = enc
+    self._lastScenarioSignature = tm.scenarioThreadSignature()
+    self._lastNameSignature = tm.nameThreadSignature()
 
     self._refreshSaveButton()
+    self._refreshEngineLabel()
 
     #self._refreshHookDialog()
+
+    for role,sig in (
+        (defs.SCENARIO_TEXT_ROLE, self._lastScenarioSignature),
+        (defs.NAME_TEXT_ROLE, self._lastNameSignature),
+      ):
+      if sig and sig not in self._threadViews:
+        self._createView(signature=sig, role=role)
+
+  def _refreshEngineLabel(self):
+    engine = gameagent.global_().engine()
+    if not engine:
+      msg = tr_('Unknown') # This should never happen
+    else:
+      enc = config.guess_thread_encoding(engine)
+      if enc:
+        msg = "%s (%s)" % (engine, enc)
+      else:
+        msg = engine
+    self.engineLabel.setText(msg)
 
   def _refreshSaveButton(self):
     self.saveButton.setEnabled(self._canSave())
 
-  def _refresh(self):
-    # TODO: clear threads instead and restore default signatures and encoding
-
-    #enc = self._encoding()
-    #tm = textman.manager()
-    #for t in tm.threads():
-    #  self._updateThread(t, encoding=enc, ignoreType=True)
-
+  def _onSelectedEncodingChanged(self):
+    gameagent.global_().setEncoding(self._encoding())
     self._refreshSaveButton()
     self._refreshEncodingEdit()
 
@@ -610,14 +659,14 @@ class _TextTab(object):
     """
     #dprint("name = %s" % name)
     view = self._threadViews.get(signature) or self._createView(
-        signature=signature, text=text)
+        signature=signature, text=text, role=role)
 
     if view.hasText():
       view.appendText('\n' + text)
     else:
       view.setText(text)
 
-  def _createView(self, text, signature, role):
+  def _createView(self, signature, role, text=''):
     """
     @param  text  unicode
     @param  signature  long
@@ -638,7 +687,8 @@ class _TextTab(object):
     col = n % THREADLAYOUT_COLUMN_COUNT
     self.threadLayout.addWidget(view, row, col)
 
-    view.setText(text)
+    if text:
+      view.setText(text)
     return view
 
   def _scenarioSignature(self):

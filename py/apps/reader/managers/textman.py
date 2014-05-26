@@ -946,6 +946,9 @@ class TextManager(QObject):
       # Assume this is the only place to modify text encoding in texthook
       texthook.global_().setEncoding(encoding)
 
+  def scenarioThreadSignature(self): return self.__d.scenarioSignature
+  def nameThreadSignature(self): return self.__d.nameSignature
+
   def setScenarioThread(self, signature, name):
     """
     @param  signature  long  non-zero

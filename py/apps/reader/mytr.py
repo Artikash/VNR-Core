@@ -57,6 +57,8 @@ class reader(QObject):
 
       self.tr("FS"),
 
+      self.tr("Game engine"),
+
       self.tr("Matched text"),
       self.tr("Replaced text"),
 

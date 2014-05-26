@@ -696,22 +696,22 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>没有找到游戏进程。请在游戏开始后重试。</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1059"/>
+        <location filename="managers/gameman.py" line="1071"/>
         <source>Cannot sync with game. Try restarting the game or using Game Wizard to set up connection</source>
         <translation>无法与游戏同步。请重新启动游戏，或者使用游戏向导添加</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1069"/>
+        <location filename="managers/gameman.py" line="1081"/>
         <source>Cannot find game thread. Try using Game Wizard to set up connection</source>
         <translation>没有找到游戏文本。请使用游戏向导添加</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1084"/>
+        <location filename="managers/gameman.py" line="1096"/>
         <source>Failed to apply hook code</source>
         <translation>载入特殊码失败</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1086"/>
+        <location filename="managers/gameman.py" line="1098"/>
         <source>Try adjusting it in Text Settings</source>
         <translation>请在文本设定中调整</translation>
     </message>
@@ -721,12 +721,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>从Dashboard移除这个游戏吗？</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1490"/>
+        <location filename="managers/gameman.py" line="1502"/>
         <source>Game removed</source>
         <translation>游戏移除</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1500"/>
+        <location filename="managers/gameman.py" line="1512"/>
         <source>Location does not exist</source>
         <translation>位置不存在</translation>
     </message>
@@ -851,12 +851,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>忽略过长的游戏文本</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1065"/>
+        <location filename="managers/textman.py" line="1068"/>
         <source>Reload user-contributed comments</source>
         <translation>更新其他同学的评论</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1204"/>
+        <location filename="managers/textman.py" line="1207"/>
         <source>No game text received yet</source>
         <translation>还没有收到游戏文本</translation>
     </message>
@@ -996,27 +996,27 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>文件不存在：{0}</translation>
     </message>
     <message>
-        <location filename="main.py" line="1603"/>
+        <location filename="main.py" line="1604"/>
         <source>Update requires Internet access</source>
         <translation>更新需要网络连接</translation>
     </message>
     <message>
-        <location filename="main.py" line="1616"/>
+        <location filename="main.py" line="1617"/>
         <source>You are using the latest app</source>
         <translation>已经是最新的版本了呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="1621"/>
+        <location filename="main.py" line="1622"/>
         <source>Update released</source>
         <translation>发现软件更新</translation>
     </message>
     <message>
-        <location filename="main.py" line="1645"/>
+        <location filename="main.py" line="1646"/>
         <source>Critical update message</source>
         <translation>非常重要的更新信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1741"/>
+        <location filename="main.py" line="1742"/>
         <source>The dictionary is empty. Please refresh it when you are online.</source>
         <translation>辞书是空的。请在有网络连接时再更新吧。</translation>
     </message>
@@ -1113,7 +1113,7 @@ It might take a couple of seconds to complete.</source>
         <translation>{0}需要管理员权限。请以管理员身份重新启动VNR</translation>
     </message>
     <message>
-        <location filename="main.py" line="1760"/>
+        <location filename="main.py" line="1761"/>
         <source>There are no user-contributed subtitles</source>
         <translation>没有来自其他同学的字幕呢</translation>
     </message>
@@ -3325,12 +3325,12 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>VNR的游戏设定（%s）损坏了呢。恢复到过去备份的设定。</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1179"/>
+        <location filename="managers/gameman.py" line="1191"/>
         <source>This game requires the text speed to be either Normal or Slow instead of Fast to work</source>
         <translation>这个游戏要求文本速度必须是Normal或者是Slow而不能是Fast才可以工作</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1184"/>
+        <location filename="managers/gameman.py" line="1196"/>
         <source>This game requires opening VNR after starting/loading the game</source>
         <translation>这个游戏要求一定要在先载入游戏，再打开VNR</translation>
     </message>
@@ -3340,12 +3340,12 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>需要MeCab辞书</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1181"/>
+        <location filename="managers/gameman.py" line="1193"/>
         <source>This game requires the text speed to be Fast to work</source>
         <translation>这个游戏要求文本速度必须是Fast才可以工作</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1176"/>
+        <location filename="managers/gameman.py" line="1188"/>
         <source>This game might need turning on repetition elimination</source>
         <translation>这个游戏也许需要打开去除重复的选项</translation>
     </message>
@@ -3420,12 +3420,12 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>内嵌字幕</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="234"/>
+        <location filename="managers/gameagent.py" line="245"/>
         <source>Detect game engine</source>
         <translation>检测到游戏引擎</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1037"/>
+        <location filename="managers/gameman.py" line="1044"/>
         <source>Use VNR&apos;s built-in hook instead of ITH</source>
         <translation>用VNR自己的文本提取方法而不使用ITH</translation>
     </message>
@@ -3533,7 +3533,7 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation>当前支持的游戏引擎是：{0}</translation>
     </message>
     <message>
-        <location filename="managers/gameagent.py" line="236"/>
+        <location filename="managers/gameagent.py" line="247"/>
         <source>Unrecognized game engine. Fallback to ITH.</source>
         <translation>未知的游戏引擎。改为使用ITH提取文本。</translation>
     </message>
@@ -3543,7 +3543,7 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation>在路径中不可以有中文之类的非ASCII字符才好呢</translation>
     </message>
     <message>
-        <location filename="dialogs/embedprefs.py" line="747"/>
+        <location filename="dialogs/embedprefs.py" line="783"/>
         <source>Engine: VNR</source>
         <translation>文本提取：VNR</translation>
     </message>
@@ -3553,12 +3553,12 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation>清除选定的位置</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="915"/>
+        <location filename="dialogs/textprefs.py" line="950"/>
         <source>Engine: ITH</source>
         <translation>文本提取：ITH</translation>
     </message>
     <message>
-        <location filename="dialogs/embedprefs.py" line="281"/>
+        <location filename="dialogs/embedprefs.py" line="337"/>
         <source>H-code is not supported by VNR&apos;s embedded text hook</source>
         <translation>VNR的内嵌引擎不支持/H特殊码</translation>
     </message>
@@ -3647,6 +3647,11 @@ VNR的提取方法支持内嵌翻译到游戏中去，但是支持的游戏比IT
 &lt;h3&gt;Debug输出&lt;/h3&gt;
 当VNR是通过Debug VNR.cmd打开时，在VNR的文件夹下会自动生成vnragent.log的Debug输出。
 如果VNR会导致游戏崩溃，在那个文件中也许可以找到崩溃的原因。</translation>
+    </message>
+    <message>
+        <location filename="main.py" line="1536"/>
+        <source>Unknown game engine</source>
+        <translation>未知的游戏引擎</translation>
     </message>
 </context>
 </TS>
