@@ -636,7 +636,7 @@
     <message>
         <location filename="sktr.py" line="176"/>
         <source>Source</source>
-        <translation>Source</translation>
+        <translation>Nguồn</translation>
     </message>
     <message>
         <location filename="sktr.py" line="180"/>
