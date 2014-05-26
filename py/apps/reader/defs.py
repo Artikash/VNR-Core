@@ -72,6 +72,7 @@ def to_ith_engine_name(name): # str -> str
   return (
       'MAJIRO' if name == 'Majiro' else
       'BGI2' if name == 'BGI' else
+      'SiglusEngine2' if name == 'SiglusEngine' else
       name)
 
 # Back up file suffix

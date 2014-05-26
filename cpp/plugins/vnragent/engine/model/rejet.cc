@@ -26,7 +26,7 @@ namespace { // unnamed
  *  .text:0044D620 sub_44D620      proc near               ; CODE XREF: sub_438C30+96p
  *  .text:0044D620                                         ; sub_45A190+8Cp
  *  Observations from 剣が君:
- *  - arg1: Scenario text
+ *  - arg1: Scenario text containing HTML tags
  *  - arg2: role name
  *  - arg3: unknown string
  *  - arg4: role name
@@ -44,7 +44,7 @@ hook_fun_t oldHookFun;
 
 int __stdcall newHookFun(LPCSTR text1, LPCSTR text2, LPCSTR text3, LPCSTR text4, int size5)
 {
-  return 0;
+  //return 0;
   //return oldHookFun(text1, text2, text3, text4, size5);
   // Compute ITH signature
   //DWORD returnAddress = (DWORD)_ReturnAddress();

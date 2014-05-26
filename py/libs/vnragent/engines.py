@@ -24,6 +24,7 @@ def engines():
       BGIEngine(),
       MajiroEngine(),
       #RejetEngine(),
+      SiglusEngine(),
     ]
   return ENGINES
 
@@ -176,6 +177,15 @@ class RejetEngine(Engine):
 
   def match(self, **kwargs): # override
     return bool(self.exists(("gd.dat", "pf.dat", "sd.dat"), **kwargs))
+
+# 5/25/2014 jichi
+class SiglusEngine(Engine):
+
+  NAME = "SiglusEngine" # str, override
+  ENCODING = UTF16_ENCODING # str, override
+
+  def match(self, **kwargs): # override
+    return bool(self.exists("SiglusEngine.exe", **kwargs))
 
 # EOF
 
