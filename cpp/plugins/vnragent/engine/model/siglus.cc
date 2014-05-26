@@ -106,7 +106,7 @@ int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
   self->size = text.size();
   self->texts[0] = (LPCWSTR)text.utf16();
 
-  int ret = oldHookFun(self, arg1, arg2); // supposed to equal size * 2
+  int ret = oldHookFun(self, arg1, arg2); // ret = size * 2
 
   self->size = oldSize;
   self->texts[0] = oldText;
