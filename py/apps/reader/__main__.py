@@ -273,6 +273,9 @@ def main():
 
       from sakurakit import skfileio
 
+      if ss_version <= 1401107220:
+        ss.setValue('GameAgent', False) # disable game agent by default
+
       if ss_version <= 1394254407:
         location = rc.DIR_DICT_MECAB
         for it in 'unidic', 'unidic-mlj':
