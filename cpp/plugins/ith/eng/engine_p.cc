@@ -3998,7 +3998,7 @@ namespace { // unnamed Rejet
  *
  *    module_base_ = 10e0000 (variant)
  *    hook_addr = module_base_ + reladdr = 0xe55332
- *    01185311   . FFF0           PUSH EAX  ; beginning of a new functino
+ *    01185311   . FFF0           PUSH EAX  ; beginning of a new function
  *    01185313   . 0FC111         XADD DWORD PTR DS:[ECX],EDX
  *    01185316   . 4A             DEC EDX
  *    01185317   . 85D2           TEST EDX,EDX
@@ -4028,7 +4028,7 @@ namespace { // unnamed Rejet
  *
  *    module_base_: 0x12b0000
  *
- *    01357AD2   . FFF0           PUSH EAX ; beginning of a new functino
+ *    01357AD2   . FFF0           PUSH EAX ; beginning of a new function
  *    01357AD4   . 0FC111         XADD DWORD PTR DS:[ECX],EDX
  *    01357AD7   . 4A             DEC EDX
  *    01357AD8   . 85D2           TEST EDX,EDX
@@ -4062,7 +4062,7 @@ namespace { // unnamed Rejet
  *    module_base_: 0x12f0000
  *    There are two possible places to hook
  *
- *    0133CEA0   . FFF0           PUSH EAX ; beginning of a new functino
+ *    0133CEA0   . FFF0           PUSH EAX ; beginning of a new function
  *    0133CEA2   . 0FC111         XADD DWORD PTR DS:[ECX],EDX
  *    0133CEA5   . 4A             DEC EDX
  *    0133CEA6   . 85D2           TEST EDX,EDX
@@ -4112,7 +4112,7 @@ bool FindRejetHook(LPCVOID ins, DWORD ins_size, DWORD ins_off, DWORD hp_off, LPC
   // Offset to the function call from the beginning of the function
   //enum { hook_offset = 0x21 }; // Type1: hex(0x01185332-0x01185311)
   //const BYTE ins[] = {    // Type1: Function start
-  //  0xff,0xf0,      // 01185311   . fff0           push eax  ; beginning of a new functino
+  //  0xff,0xf0,      // 01185311   . fff0           push eax  ; beginning of a new function
   //  0x0f,0xc1,0x11, // 01185313   . 0fc111         xadd dword ptr ds:[ecx],edx
   //  0x4a,           // 01185316   . 4a             dec edx
   //  0x85,0xd2,      // 01185317   . 85d2           test edx,edx
@@ -4154,7 +4154,7 @@ bool FindRejetHook(LPCVOID ins, DWORD ins_size, DWORD ins_off, DWORD hp_off, LPC
 bool InsertRejetHook1() // This type of hook has varied hook address
 {
   const BYTE ins[] = {  // Type1: Function start
-    0xff,0xf0,          // 01185311   . fff0           push eax  ; beginning of a new functino
+    0xff,0xf0,          // 01185311   . fff0           push eax  ; beginning of a new function
     0x0f,0xc1,0x11,     // 01185313   . 0fc111         xadd dword ptr ds:[ecx],edx
     0x4a,               // 01185316   . 4a             dec edx
     0x85,0xd2,          // 01185317   . 85d2           test edx,edx
@@ -4230,6 +4230,8 @@ bool InsertRejetHook3() // jichi 12/28/2013: add for 剣が君
       break;
     }
   } //while(0xe8202474 != *(DWORD *)(addr - 3));
+
+  //ITH_GROWL_DWORD(addr - module_base_); // = 0xb3578 for 剣が君
 
   ConsoleOutput("vnreng: INSERT Rejet");
   // The same as type2
