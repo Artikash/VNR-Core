@@ -40,7 +40,7 @@ IdentifyEngineFun IdentifyEngine;
 InsertHookFun InsertHook;
 InsertDynamicHookFun InsertDynamicHook;
 
-bool hook_inserted=0;
+bool hook_inserted = false;
 
 // jichi 9/28/2013: protect pipe on wine
 // Put the definition in this file so that it might be inlined

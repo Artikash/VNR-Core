@@ -23,6 +23,8 @@ def engines():
     ENGINES = [
       BGIEngine(),
       MajiroEngine(),
+      SiglusEngine(),
+      #RejetEngine(),
     ]
   return ENGINES
 
@@ -138,7 +140,7 @@ class Engine(object): # placeholder
     if not path or not relpaths:
       return False
     for it in relpaths:
-      if not os.path.exists(os.path.join(path, relpath)):
+      if not os.path.exists(os.path.join(path, it)):
         return False
     return True
 
@@ -153,7 +155,6 @@ class MajiroEngine(Engine):
 
   NAME = "Majiro" # str, override
   ENCODING = SJIS_ENCODING # str, override
-  REGION_LOCKED = False # it can be launched in Chinese/Korean locale
 
   def match(self, **kwargs): # override
     return bool(self.glob(("data*.arc", "stream*.arc"), **kwargs))
@@ -167,6 +168,24 @@ class BGIEngine(Engine):
 
   def match(self, **kwargs): # override
     return bool(self.glob("BGI.*", **kwargs))
+
+# 5/25/2014 jichi
+class RejetEngine(Engine):
+
+  NAME = "Rejet" # str, override
+  ENCODING = SJIS_ENCODING # str, override
+
+  def match(self, **kwargs): # override
+    return bool(self.exists(("gd.dat", "pf.dat", "sd.dat"), **kwargs))
+
+# 5/25/2014 jichi
+class SiglusEngine(Engine):
+
+  NAME = "SiglusEngine" # str, override
+  ENCODING = UTF16_ENCODING # str, override
+
+  def match(self, **kwargs): # override
+    return bool(self.exists("SiglusEngine.exe", **kwargs))
 
 # EOF
 

@@ -1173,7 +1173,7 @@ class Settings(QSettings):
   # Whether use game agent over texthook
   gameAgentEnabledChanged = Signal(bool)
   def isGameAgentEnabled(self):
-    return to_bool(self.value('GameAgent', True))
+    return to_bool(self.value('GameAgent', False)) # disable game agent by default
   def setGameAgentEnabled(self, value):
     if value != self.isGameAgentEnabled():
       self.setValue('GameAgent', value)

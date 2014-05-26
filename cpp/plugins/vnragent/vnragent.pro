@@ -114,13 +114,17 @@ SOURCES += \
 # Engine models
 HEADERS += \
   engine/model/bgi.h \
-  engine/model/majiro.h
+  engine/model/majiro.h \
+  engine/model/siglus.h
+  #engine/model/rejet.h
   #engine/model/test.h
 SOURCES += \
   engine/model/bgi.cc \
   engine/model/bgi1.cc \
   engine/model/bgi2.cc \
-  engine/model/majiro.cc
+  engine/model/majiro.cc \
+  engine/model/siglus.cc
+  #engine/model/rejet.cc
   #engine/model/test.cc
 
 #!wince*: LIBS += -lshell32

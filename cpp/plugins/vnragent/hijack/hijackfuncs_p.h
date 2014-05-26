@@ -13,6 +13,8 @@
    { "kernel32.dll", "LoadLibraryExW", ::LoadLibraryExW, Hijack::myLoadLibraryExW }, \
    { "user32.dll", "TrackPopupMenu", ::TrackPopupMenu, Hijack::myTrackPopupMenu }, \
    { "user32.dll", "TrackPopupMenuEx", ::TrackPopupMenuEx, Hijack::myTrackPopupMenuEx }, \
+   { "gdi32.dll", "CreateFontA", ::CreateFontA, Hijack::myCreateFontA }, \
+   { "gdi32.dll", "CreateFontW", ::CreateFontW, Hijack::myCreateFontW }, \
    { "gdi32.dll", "CreateFontIndirectA", ::CreateFontIndirectA, Hijack::myCreateFontIndirectA }, \
    { "gdi32.dll", "CreateFontIndirectW", ::CreateFontIndirectW, Hijack::myCreateFontIndirectW }
    //{ "gdi32.dll", "TextOutA", ::TextOutA, Hijack::myTextOutA }
@@ -83,6 +85,41 @@ HFONT WINAPI myCreateFontIndirectA(
 
 HFONT WINAPI myCreateFontIndirectW(
   _In_  const LOGFONTW *lplf
+);
+
+
+HFONT WINAPI myCreateFontA(
+  _In_  int nHeight,
+  _In_  int nWidth,
+  _In_  int nEscapement,
+  _In_  int nOrientation,
+  _In_  int fnWeight,
+  _In_  DWORD fdwItalic,
+  _In_  DWORD fdwUnderline,
+  _In_  DWORD fdwStrikeOut,
+  _In_  DWORD fdwCharSet,
+  _In_  DWORD fdwOutputPrecision,
+  _In_  DWORD fdwClipPrecision,
+  _In_  DWORD fdwQuality,
+  _In_  DWORD fdwPitchAndFamily,
+  _In_  LPCSTR lpszFace
+);
+
+HFONT WINAPI myCreateFontW(
+  _In_  int nHeight,
+  _In_  int nWidth,
+  _In_  int nEscapement,
+  _In_  int nOrientation,
+  _In_  int fnWeight,
+  _In_  DWORD fdwItalic,
+  _In_  DWORD fdwUnderline,
+  _In_  DWORD fdwStrikeOut,
+  _In_  DWORD fdwCharSet,
+  _In_  DWORD fdwOutputPrecision,
+  _In_  DWORD fdwClipPrecision,
+  _In_  DWORD fdwQuality,
+  _In_  DWORD fdwPitchAndFamily,
+  _In_  LPCWSTR lpszFace
 );
 
 } // namespace Hijack

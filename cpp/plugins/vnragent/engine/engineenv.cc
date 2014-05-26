@@ -37,6 +37,15 @@ bool Engine::exists(const QString &relPath)
   return QFileInfo(path).exists();
 }
 
+bool Engine::exists(const QStringList &relPaths)
+{
+  QString base = QCoreApplication::applicationDirPath();
+  foreach (const QString &path, relPaths)
+    if (!QFileInfo(base + "/" + path).exists())
+      return false;
+  return true;
+}
+
 // - Process and threads -
 
 QString Engine::getNormalizedProcessName()
