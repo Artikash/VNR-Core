@@ -1039,7 +1039,7 @@ class GameManager(QtCore.QObject):
       elif not g.isAttached():
         attached = False
 
-        if agentEnabled and agentEngine:
+        if agentEngine:
           dprint("attach using game agent")
           growl.notify(my.tr("Use VNR's built-in hook instead of ITH"))
           attached = gameagent.global_().attachProcess(g.pid)
@@ -1112,6 +1112,12 @@ class GameManager(QtCore.QObject):
         g.launchPath = g.path[:-3] + "exe"
 
       d.game = g
+
+      if agentEngine and gameagent.global_().isAttached() and not texthook.global_().isAttached():
+        engine = gameagent.global_().engine() or agentEngine.name()
+        engineName = defs.to_ith_engine_name(engine)
+
+        g.threadName = g.nameThreadName = engineName
 
       self.processChanged.emit(g.pid, g.path)
       self.threadChanged.emit(g.threadSignature, g.threadName)

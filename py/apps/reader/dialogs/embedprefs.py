@@ -484,8 +484,7 @@ class _TextTab(object):
 
     agent = gameagent.global_()
     engine = agent.engine()
-
-    engine = defs.to_ith_engine_name(engine)
+    engineName = defs.to_ith_engine_name(engine)
 
     scenesig = self._scenarioSignature()
     namesig = self._nameSignature()
@@ -510,7 +509,7 @@ class _TextTab(object):
         #name = threads[sig].name
         skevents.runlater(partial(
             q.scenarioThreadChanged.emit,
-            scenesig, engine, enc))
+            scenesig, engineName, enc))
 
     if namesig != self._lastNameSignature:
       dprint("name thread changed")
@@ -523,7 +522,7 @@ class _TextTab(object):
         #name = threads[namesig].name
         skevents.runlater(partial(
             q.nameThreadChanged.emit,
-            namesig, engine))
+            namesig, engineName))
 
     #sig_set = set(self._otherSignatures())
     #if sig_set != tm.otherSignatures():
