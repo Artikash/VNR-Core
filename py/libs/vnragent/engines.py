@@ -23,6 +23,7 @@ def engines():
     ENGINES = [
       BGIEngine(),
       MajiroEngine(),
+      RejetEngine(),
     ]
   return ENGINES
 
@@ -153,7 +154,6 @@ class MajiroEngine(Engine):
 
   NAME = "Majiro" # str, override
   ENCODING = SJIS_ENCODING # str, override
-  REGION_LOCKED = False # it can be launched in Chinese/Korean locale
 
   def match(self, **kwargs): # override
     return bool(self.glob(("data*.arc", "stream*.arc"), **kwargs))
@@ -167,6 +167,15 @@ class BGIEngine(Engine):
 
   def match(self, **kwargs): # override
     return bool(self.glob("BGI.*", **kwargs))
+
+# 5/25/2014 jichi
+class RejetEngine(Engine):
+
+  NAME = "Rejet" # str, override
+  ENCODING = SJIS_ENCODING # str, override
+
+  def match(self, **kwargs): # override
+    return bool(self.exists(("gd.dat", "pf.dat", "sd.dat"), **kwargs))
 
 # EOF
 

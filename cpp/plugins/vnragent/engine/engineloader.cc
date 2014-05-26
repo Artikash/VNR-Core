@@ -5,6 +5,7 @@
 #include "engine/engineloader.h"
 #include "engine/model/bgi.h"
 #include "engine/model/majiro.h"
+#include "engine/model/rejet.h"
 
 //#define TEST
 #ifdef TEST
@@ -18,6 +19,7 @@ AbstractEngine *Engine::getEngine()
 #endif // TEST
   if (BGIEngine::match()) return new BGIEngine;
   if (MajiroEngine::match()) return new MajiroEngine;
+  if (RejetEngine::match()) return new RejetEngine;
   return nullptr;
 }
 

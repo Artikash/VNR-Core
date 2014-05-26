@@ -289,7 +289,10 @@ class _TextTab(object):
     threadGroup.setLayout(skwidgets.SkWidgetLayout(threadArea))
     #threadGroup.setLayout(self.threadLayout)
 
-    info = QtWidgets.QGroupBox(tr_("Information"))
+    info = QtWidgets.QGroupBox("%s (%s)" % (
+      tr_("Information"),
+      tr_("read-only"),
+    ))
     infoLayout = QtWidgets.QVBoxLayout()
     row = QtWidgets.QHBoxLayout()
     row.addWidget(QtWidgets.QLabel(mytr_("Game engine") + ":"))
