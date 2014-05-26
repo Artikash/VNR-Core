@@ -10,7 +10,7 @@
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 
-#define DEBUG "siglus"
+//#define DEBUG "siglus"
 #include "sakurakit/skdebug.h"
 
 // Used to get function's return address
@@ -43,7 +43,7 @@ namespace { // unnamed
  *    - 0x18: constant pointer
  *    ...
  */
-typedef int (__thiscall *hook_fun_t)(void *, DWORD, DWORD);
+typedef int (__thiscall *hook_fun_t)(void *, DWORD, DWORD); // the first pointer is this
 // Use __fastcall to completely forward ecx and edx
 //typedef int (__fastcall *hook_fun_t)(void *, void *, DWORD, DWORD);
 hook_fun_t oldHookFun;
@@ -106,7 +106,7 @@ int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
   self->size = text.size();
   self->texts[0] = (LPCWSTR)text.utf16();
 
-  int ret = oldHookFun(self, arg1, arg2); // supposed to equal size * 2
+  int ret = oldHookFun(self, arg1, arg2); // ret = size * 2
 
   self->size = oldSize;
   self->texts[0] = oldText;
