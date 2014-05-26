@@ -4600,7 +4600,7 @@ class _EngineTab(object):
     ret = QtWidgets.QLabel('\n'.join((
       my.tr("Changing the text extraction method requires restarting the game."),
       my.tr("This feature is currently under development, and only supports a small portion of the games that ITH supports."),
-      my.tr("The current supported game engines are: {0}").format(','.join(defs.VNRAGENT_ENGINES)),
+      my.tr("The current supported game engines are: {0}").format(', '.join(defs.VNRAGENT_ENGINES)),
     )))
     skqss.class_(ret, 'text-error')
     ret.setWordWrap(True)
