@@ -23,7 +23,7 @@ def engines():
     ENGINES = [
       BGIEngine(),
       MajiroEngine(),
-      RejetEngine(),
+      #RejetEngine(),
     ]
   return ENGINES
 
@@ -139,7 +139,7 @@ class Engine(object): # placeholder
     if not path or not relpaths:
       return False
     for it in relpaths:
-      if not os.path.exists(os.path.join(path, relpath)):
+      if not os.path.exists(os.path.join(path, it)):
         return False
     return True
 

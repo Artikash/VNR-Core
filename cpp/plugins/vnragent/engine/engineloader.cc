@@ -19,7 +19,7 @@ AbstractEngine *Engine::getEngine()
 #endif // TEST
   if (BGIEngine::match()) return new BGIEngine;
   if (MajiroEngine::match()) return new MajiroEngine;
-  if (RejetEngine::match()) return new RejetEngine;
+  //if (RejetEngine::match()) return new RejetEngine;
   return nullptr;
 }
 
