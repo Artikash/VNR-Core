@@ -28,13 +28,18 @@ namespace { // unnamed
  *
  *  Observations:
  *  - return: number of bytes = 2 * number of size
+ *  - arg1: unknown pointer, remains the same
+ *  - arg2: unknown, remains the same
  *  - this (ecx)
- *    - 0x0: UTF-16 text
- *    - 0x4: the same as 0x0
- *    - 0x8: unknown variate pointer
- *    - 0xc: unknown variate pointer, seems to be a function address
- *    - 0x10: size of the text
- *    - 0x14: unknown size
+ *    - union
+ *      - char x 3: if size < (3 * 2 - 1) &&
+ *      - pointer x 4
+ *        - 0x0: UTF-16 text
+ *        - 0x4: the same as 0x0
+ *        - 0x8: unknown variate pointer
+ *    - 0xc: wchar_t pointer to a flag, the pointed value is zero when union is used as a char
+ *    - 0x10: size of the text without null char
+ *    - 0x14: unknown size, always slightly larger than size
  *    - 0x18: constant pointer
  *    ...
  */
@@ -45,12 +50,13 @@ hook_fun_t oldHookFun;
 
 struct HookStruct
 {
-  LPCWSTR text1, // 0x0
-          text2; // 0x4
-  LPVOID unknownPointer3; // 0x8
-  LPDWORD object4; // 0xc
-  DWORD size5,            // 0x10
-        unknownSize6;     // 0x14
+  union {
+    LPCWSTR texts[3]; // 0x0
+    WCHAR text[6];  // 0x0
+  };
+  LPWORD *flag;     // 0xc
+  DWORD size;       // 0x10
+  //DWORD capacity; // 0x14
 };
 
 /**
@@ -61,42 +67,49 @@ struct HookStruct
 int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
 {
   Q_UNUSED(edx);
-  if (!*self->object4) {
-    qDebug() << QString::fromWCharArray((LPCWSTR)self);
-    return 0;
+  auto q = AbstractEngine::instance();
+
+  if (self->flag && !*self->flag) {
+#ifdef DEBUG
+    qDebug() << QString::fromWCharArray(self->text);
+#endif // DEBUG
+    QString text = QString::fromWCharArray(self->text, self->size);
+    text = q->dispatchTextW(text, signature, role);
+    if (text.isEmpty())
+      return 0;
+
+    // FIXME: replacement is not implemented
+    return oldHookFun(self, arg1, arg2);
   }
+
   //return oldHookFun(self, arg1, arg2);
   enum { role = Engine::ScenarioRole, signature = 1 }; // dummy signature
 #ifdef DEBUG
-  if (*self->object4)
-    qDebug() << QString::fromWCharArray(self->text1) << ":"
-             << (self->text1 == self->text2) << ":"
-             << self->size5 << ";"
+  if (self->flag && *self->flag)
+    qDebug() << QString::fromWCharArray(self->texts[0]) << ":"
+             << (self->text[0] == self->text[1]) << ":"
+             << (DWORD)(*self->flag) << ":"
+             << self->size << ";"
              << arg1 << ","
              << arg2 << ";"
              << " signature: " << QString::number(signature, 16);
 #endif // DEBUG
-  auto q = AbstractEngine::instance();
 
-  //QString text = QString::fromWCharArray(self->text1, self->size5);
-  QString text = "hell";
+  QString text = QString::fromWCharArray(self->text[0], self->size);
   text = q->dispatchTextW(text, signature, role);
   if (text.isEmpty())
     return 0;
     //return text.size() * 2;
 
-  auto oldSize = self->size5;
-  auto oldText = self->text1;
-  //auto oldObject = self->object4;
-  self->size5 = text.size();
-  self->text1 = (LPCWSTR)text.utf16();
-  //self->object4 = (LPDWORD)self->text1;
+  auto oldSize = self->size;
+  auto oldText = self->text[0];
+  self->size = text.size();
+  self->text[0] = (LPCWSTR)text.utf16();
 
   int ret = oldHookFun(self, arg1, arg2); // supposed to equal size * 2
 
-  self->size5 = oldSize;
-  self->text1 = oldText;
-  //self->object4 = oldObject;
+  self->size = oldSize;
+  self->text[0] = oldText;
   return ret;
 }
 
