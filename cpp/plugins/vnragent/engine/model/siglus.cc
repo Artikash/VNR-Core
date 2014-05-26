@@ -10,7 +10,7 @@
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 
-#define DEBUG "siglus"
+//#define DEBUG "siglus"
 #include "sakurakit/skdebug.h"
 
 // Used to get function's return address
