@@ -33,13 +33,15 @@ namespace { // unnamed
  *  - arg5: size or width, not sure
  *  - return: unknown
  *
- * 428cc6 - 428c30
- * 44a21c - 44a190 - 44a178 - 449ae2 - 449aa0
+ *  CHECKPOINT 5/25/2014: This is not the correct function to inject
+ *  This function is found using Cheat Engine
+ *  Two other places found accessing the memory address are:
+ *  - ntdll::memmove (modify), the caller of this might be the right function to hijact
+ *  - boost xml archive (read-only)
  */
 typedef int (__stdcall *hook_fun_t)(LPCSTR, LPCSTR, LPCSTR, LPCSTR, int);
 hook_fun_t oldHookFun;
 
-// CHECKPOINT 5/25/2014: This is not the correct function to inject
 int __stdcall newHookFun(LPCSTR text1, LPCSTR text2, LPCSTR text3, LPCSTR text4, int size5)
 {
   return 0;

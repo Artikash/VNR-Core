@@ -29,7 +29,7 @@
  *  - arg2: address, the same as arg1
  *  - arg3: string
  *  - arg4: flags, choices: 0, character name & scenario: 1
- *  - return: unknown
+ *  - return: not sure, seems always to be 0 when success
  */
 extern "C" { // C linkage is indispensable for BGI engine
 
@@ -53,7 +53,8 @@ static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD split)
 #endif // DEBUG
   DWORD returnAddress = (DWORD)_ReturnAddress();
   str = dispatchText(str, returnAddress, split);
-  return str ? BGI2_oldHookFun(arg1, arg2, str, split) : 0; // TODO: investigate the return value
+  enum { ret_ok = 0 };
+  return str ? BGI2_oldHookFun(arg1, arg2, str, split) : ret_ok;
 }
 
 } // extern "C"
