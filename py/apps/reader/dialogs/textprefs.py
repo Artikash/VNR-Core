@@ -19,9 +19,6 @@ from texthook import texthook
 from mytr import my, mytr_
 import config, defs, growl, i18n, rc, textman, textutil
 
-PREFS_TEXT_INDEX = 0
-PREFS_INFO_INDEX = 1
-
 TEXTEDIT_MAX_HEIGHT = 80
 TEXTEDIT_MIN_WIDTH = 400
 THREADLAYOUT_COLUMN_COUNT = 2
@@ -651,7 +648,7 @@ class _TextTab(object):
       if sig == signature:
         view.setThreadType(type_)
       else:
-        for t in (textman.SCENARIO_THREAD_TYPE, textman.NAME_THREAD_TYPE): # unique threads
+        for t in textman.SCENARIO_THREAD_TYPE, textman.NAME_THREAD_TYPE: # unique threads
           if type_ == t and type_ == view.threadType():
             view.setThreadType(textman.IGNORED_THREAD_TYPE)
 
@@ -722,14 +719,11 @@ class _TextTab(object):
     @param  name  str
     """
     #dprint("name = %s" % name)
-    try:
-      view = self._threadViews[signature]
-    except KeyError:
+    view = self._threadViews.get(signature)
+    if not view:
       tm = textman.manager()
-      try:
-        tt = textman.manager().threadsBySignature()[signature].type
-      except KeyError:
-        tt = textman.IGNORED_THREAD_TYPE
+      try: tt = textman.manager().threadsBySignature()[signature].type
+      except KeyError: tt = textman.IGNORED_THREAD_TYPE
 
       # If old scenario signature is different from current, ignore the old one
       if tt == textman.SCENARIO_THREAD_TYPE:
@@ -877,21 +871,24 @@ class _TextPrefsDialog(object):
   #  ret.loaderChanged.connect(self.q.loaderChanged)
   #  return ret
 
-  def itertabs(self):
-    yield self.textTab
-    #yield self.infoTab
+  #def itertabs(self):
+  #  yield self.textTab
+  #  yield self.infoTab
 
   def clear(self):
-    for t in self.itertabs():
-      t.clear()
+    self.textTab.clear()
+    #for t in self.itertabs():
+    #  t.clear()
 
   def load(self):
-    for t in self.itertabs():
-      t.load()
+    self.textTab.load()
+    #for t in self.itertabs():
+    #  t.load()
 
   def unload(self):
-    for t in self.itertabs():
-      t.unload()
+    self.textTab.unload()
+    #for t in self.itertabs():
+    #  t.unload()
 
   def setActive(self, value):
     self.textTab.setActive(value)
@@ -913,7 +910,10 @@ class TextPrefsDialog(QtWidgets.QMainWindow):
     WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
     super(TextPrefsDialog, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
-    self.setWindowTitle(mytr_("Text Settings"))
+    self.setWindowTitle("%s (%s)" % (
+      mytr_("Text Settings"),
+      my.tr("Engine: ITH"),
+    ))
     self.__d = _TextPrefsDialog(self)
     dprint("pass")
 
@@ -945,7 +945,11 @@ class TextPrefsDialog(QtWidgets.QMainWindow):
         icon = rc.icon('logo-reader')
       self.setWindowIcon(icon)
 
-      title = mytr_("Text Settings")
+      title = "%s (%s)" % (
+        mytr_("Text Settings"),
+        my.tr("Engine: ITH"),
+      )
+
       name = g.name() if g else None
       if name:
         title = "%s - %s" % (name, title)

@@ -2,7 +2,7 @@
 # embedprefs.py
 # 11/5/2012 jichi
 
-__all__ = ['EmbeddedTextPrefsDialog']
+__all__ = ['TextPrefsDialog']
 
 if __name__ == '__main__':
   import sys
@@ -24,9 +24,6 @@ from sakurakit.sktr import tr_
 from mytr import my, mytr_
 import config, defs, gameagent,growl, i18n, rc, textman, textutil
 
-PREFS_TEXT_INDEX = 0
-PREFS_INFO_INDEX = 1
-
 TEXTEDIT_MAX_HEIGHT = 80
 TEXTEDIT_MIN_WIDTH = 400
 THREADLAYOUT_COLUMN_COUNT = 2
@@ -40,13 +37,13 @@ SS_TEXTEDIT_HOOK = "QTextEdit{color:red}"
 SS_TEXTEDIT_HOOK_IGNORED = SS_TEXTEDIT_HOOK
 #SS_TEXTEDIT_HOOK_IGNORED = "QTextEdit{color:red;text-decoration:line-through}"
 
-SS_LABELS = {
-  defs.HOOK_THREAD_TYPE: "QLabel{color:red}",
-  defs.ENGINE_THREAD_TYPE: "QLabel{color:blue}",
-  defs.CUI_THREAD_TYPE: "QLabel{color:gray}",
-  defs.GUI_THREAD_TYPE: "",
-  defs.NULL_THREAD_TYPE: "",   # should never happen!
-}
+#SS_LABELS = {
+#  defs.HOOK_THREAD_TYPE: "QLabel{color:red}",
+#  defs.ENGINE_THREAD_TYPE: "QLabel{color:blue}",
+#  defs.CUI_THREAD_TYPE: "QLabel{color:gray}",
+#  defs.GUI_THREAD_TYPE: "",
+#  defs.NULL_THREAD_TYPE: "",   # should never happen!
+#}
 
 def _gameprofile():
   """
@@ -55,17 +52,61 @@ def _gameprofile():
   import gameman
   return gameman.manager().currentGame()
 
-## Text tab ##
+## Text thread view ##
+
+class TextThreadView(QtWidgets.QWidget):
+  """View of one thread"""
+  def __init__(self, signature, parent=None):
+    super(TextThreadView, self).__init__(parent)
+    self.__d = _TextThreadView(self, signature)
+
+  def setText(self, text):
+    e = self.__d.textEdit
+    e.setPlainText(text)
+    e.moveCursor(QtWidgets.QTextCursor.End)
+
+  def appendText(self, text):
+    e = self.__d.textEdit
+    e.appendPlainText(text)
+    e.moveCursor(QtWidgets.QTextCursor.End)
+
+  def hasText(self):
+    e = self.__d.textEdit
+    return bool(e.toPlainText())
+
+  #def clearText(self):
+  #  self.__d.textEdit.clear()
+
+  roleChanged = Signal(int, long) # type, signature
+
+  def role(self): # -> int
+    row = self.__d.buttonRow.currentIndex()
+    return (defs.SCENARIO_TEXT_ROLE if row == _TextThreadView.SCENARIO_BUTTON_ROW else
+            defs.NAME_TEXT_ROLE if row == _TextThreadView.NAME_BUTTON_ROW else
+            #defs.OTHER_TEXT_ROLE if row == _TextThreadView.OTHER_BUTTON_ROW else
+            defs.UNKNOWN_TEXT_ROLE)
+
+  def setRole(self, role):
+    """
+    @param  role  int
+    """
+    if role != self.role():
+      self.__d.buttonRow.setCurrentIndex(
+        _TextThreadView.SCENARIO_BUTTON_ROW if role == defs.SCENARIO_TEXT_ROLE else
+        _TextThreadView.NAME_BUTTON_ROW if role == defs.NAME_TEXT_ROLE else
+        #_TextThreadView.OTHER_BUTTON_ROW if role == defs.OTHER_TEXT_ROLE else
+        _TextThreadView.IGNORE_BUTTON_ROW
+      )
+      self.__d.updateStyleSheet()
 
 @Q_Q
 class _TextThreadView(object):
   SCENARIO_BUTTON_ROW = 0
   NAME_BUTTON_ROW = 1
   #OTHER_BUTTON_ROW = 2
-  IGNORE_BUTTON_ROW = 3
+  IGNORE_BUTTON_ROW = 2
 
-  def __init__(self, q, name, signature):
-    self.name = name
+  def __init__(self, q, signature):
     self.signature = signature
     self._createUi(q)
     #self.updateStyleSheet()
@@ -73,26 +114,27 @@ class _TextThreadView(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
 
-    tt = defs.threadtype(self.name)
-    ttip = i18n.threadtip(tt)
+    #tt = defs.threadtype(self.name)
+    #ttip = i18n.threadtip(tt)
 
-    if self.name == defs.USER_DEFINED_THREAD_NAME:
-      n = mytr_("H-code")
-    elif self.name in defs.CAONIMAGEBI_ENGINES:
-      n = self.name + '<span style="color:red">%s</span>' % defs.CAONIMAGEBI_USERNAME
-    elif self.name in defs.OK123_ENGINES:
-      n = self.name + '<span style="color:red">%s</span>' % defs.OK123_USERNAME
-    else:
-      n = self.name
+    #if self.name == defs.USER_DEFINED_THREAD_NAME:
+    #  n = mytr_("H-code")
+    #elif self.name in defs.CAONIMAGEBI_ENGINES:
+    #  n = self.name + '<span style="color:red">%s</span>' % defs.CAONIMAGEBI_USERNAME
+    #elif self.name in defs.OK123_ENGINES:
+    #  n = self.name + '<span style="color:red">%s</span>' % defs.OK123_USERNAME
+    #else:
+    #  n = self.name
 
-    title = """%s <span style="color:gray">%x</span>""" % (n, self.signature)
-    enc = config.guess_thread_encoding(self.name)
-    if enc:
-      title += """ <span style="color:#333">%s</span>""" % enc
+    title = """<span style="color:gray">%x</span>""" % self.signature
+    #title = """%s <span style="color:gray">%x</span>""" % (n, self.signature)
+    #enc = config.guess_thread_encoding(self.name)
+    #if enc:
+    #  title += """ <span style="color:#333">%s</span>""" % enc
 
     label = QtWidgets.QLabel(title)
-    label.setStyleSheet(SS_LABELS[tt])
-    label.setToolTip(ttip)
+    #label.setStyleSheet(SS_LABELS[tt])
+    #label.setToolTip(ttip)
 
     # Must be consist with button rows
     self.buttonRow = skwidgets.SkButtonRow()
@@ -124,20 +166,19 @@ class _TextThreadView(object):
     b.toggled.connect(partial(lambda b, value:
         skqss.toggleclass(b, 'btn-danger', value),
         b))
-
     self.buttonRow.setCurrentIndex(_TextThreadView.IGNORE_BUTTON_ROW)
-    self.buttonRow.currentIndexChanged.connect(self._emitThreadType)
+    self.buttonRow.currentIndexChanged.connect(self._onSelectedRoleChanged)
     self.buttonRow.currentIndexChanged.connect(self.updateStyleSheet)
 
     self.textEdit = QtWidgets.QPlainTextEdit()
     #self.textEdit.setToolTip(mytr_("Game text"))
-    self.textEdit.setToolTip(ttip)
+    #self.textEdit.setToolTip(ttip)
     self.textEdit.setReadOnly(True)
     self.textEdit.setMaximumHeight(TEXTEDIT_MAX_HEIGHT)
     self.textEdit.setMinimumWidth(TEXTEDIT_MIN_WIDTH)
-    self.textEdit.setStyleSheet(
-        SS_TEXTEDIT_HOOK_IGNORED if self.name == defs.USER_DEFINED_THREAD_NAME else
-        SS_TEXTEDIT_IGNORED)
+    #self.textEdit.setStyleSheet(
+    #    SS_TEXTEDIT_HOOK_IGNORED if self.name == defs.USER_DEFINED_THREAD_NAME else
+    #    SS_TEXTEDIT_IGNORED)
 
     header = QtWidgets.QHBoxLayout()
     header.addWidget(self.buttonRow)
@@ -147,83 +188,83 @@ class _TextThreadView(object):
     layout.addWidget(self.textEdit)
     q.setLayout(layout)
 
-  def _emitThreadType(self):
+  def _onSelectedRoleChanged(self):
     q = self.q
-    q.threadTypeChanged.emit(q.threadType(), self.signature)
+    q.roleChanged.emit(q.role(), self.signature)
 
   def updateStyleSheet(self):
     row = self.buttonRow.currentIndex()
-    if self.name == defs.USER_DEFINED_THREAD_NAME:
-      if row == _TextThreadView.IGNORE_BUTTON_ROW:
-        ss = SS_TEXTEDIT_HOOK_IGNORED
-      else:
-        ss = SS_TEXTEDIT_HOOK
-    else:
-      ss = (SS_TEXTEDIT_SCENE if row == _TextThreadView.SCENARIO_BUTTON_ROW else
-            SS_TEXTEDIT_NAME if row == _TextThreadView.NAME_BUTTON_ROW else
-            #SS_TEXTEDIT_OTHER if row == _TextThreadView.OTHER_BUTTON_ROW else
-            SS_TEXTEDIT_IGNORED)
+    #if self.name == defs.USER_DEFINED_THREAD_NAME:
+    #  if row == _TextThreadView.IGNORE_BUTTON_ROW:
+    #    ss = SS_TEXTEDIT_HOOK_IGNORED
+    #  else:
+    #    ss = SS_TEXTEDIT_HOOK
+    #else:
+    ss = (SS_TEXTEDIT_SCENE if row == _TextThreadView.SCENARIO_BUTTON_ROW else
+          SS_TEXTEDIT_NAME if row == _TextThreadView.NAME_BUTTON_ROW else
+          #SS_TEXTEDIT_OTHER if row == _TextThreadView.OTHER_BUTTON_ROW else
+          SS_TEXTEDIT_IGNORED)
     self.textEdit.setStyleSheet(ss)
 
-class TextThreadView(QtWidgets.QWidget):
-  """View of one thread"""
-  def __init__(self, name, signature, parent=None):
-    super(TextThreadView, self).__init__(parent)
-    self.__d = _TextThreadView(self, name=name, signature=signature)
+## Text tab ##
 
-  def setText(self, text):
-    e = self.__d.textEdit
-    e.setPlainText(text)
-    e.moveCursor(QtWidgets.QTextCursor.End)
+class TextTab(QtWidgets.QWidget):
+  def __init__(self, parent=None):
+    super(TextTab, self).__init__(parent)
+    self.__d = _TextTab(self)
 
-  def appendText(self, text):
-    e = self.__d.textEdit
-    e.appendPlainText(text)
-    e.moveCursor(QtWidgets.QTextCursor.End)
+  warning = Signal(unicode)
+  message = Signal(unicode)
 
-  def hasText(self):
-    e = self.__d.textEdit
-    return bool(e.toPlainText())
+  sizeChanged = Signal()
+  #hookChanged = Signal(str)
+  languageChanged = Signal(unicode)
+  scenarioThreadChanged = Signal(long, unicode, unicode) # signature, name, encoding
+  nameThreadChanged = Signal(long, unicode) # signature, name
+  nameThreadDisabled = Signal()
+  #otherThreadsChanged = Signal(dict) # {long signature:str name}
 
-  #def clearText(self):
-  #  self.__d.textEdit.clear()
+  def clear(self): self.__d.clear()
+  def load(self): self.__d.load()
+  def unload(self): self.__d.unload()
+  def setActive(self, value): self.__d.setActive(value)
 
-  threadTypeChanged = Signal(int, long) # type, signature
-
-  def threadType(self):
-    row = self.__d.buttonRow.currentIndex()
-    return (textman.SCENARIO_THREAD_TYPE if row == _TextThreadView.SCENARIO_BUTTON_ROW else
-            textman.NAME_THREAD_TYPE if row == _TextThreadView.NAME_BUTTON_ROW else
-            #textman.OTHER_THREAD_TYPE if row == _TextThreadView.OTHER_BUTTON_ROW else
-            textman.IGNORED_THREAD_TYPE)
-
-  def setThreadType(self, type):
-    """
-    @param  type  int
-    """
-    if type != self.threadType():
-      self.__d.buttonRow.setCurrentIndex(
-        _TextThreadView.SCENARIO_BUTTON_ROW if type == textman.SCENARIO_THREAD_TYPE else
-        _TextThreadView.NAME_BUTTON_ROW if type == textman.NAME_THREAD_TYPE else
-        #_TextThreadView.OTHER_BUTTON_ROW if type == textman.OTHER_THREAD_TYPE else
-        _TextThreadView.IGNORE_BUTTON_ROW
-      )
-      self.__d.updateStyleSheet()
+  def sizeHint(self):
+    """@reimp @public"""
+    n = self.__d.threadLayout.count()
+    #w = 500; h = 150
+    w = 500; h = 165
+    if n <= 0:
+      pass
+    elif n < THREADLAYOUT_COLUMN_COUNT:
+      h += 120 * 2
+    else:
+      row = 1 + (n - 1) / THREADLAYOUT_COLUMN_COUNT
+      h += 125 * (1 + min(row, 3.5)) # max row count is 3
+      w += -290 + 350 * THREADLAYOUT_COLUMN_COUNT
+      if row > 2:
+        w += 20
+    return QtCore.QSize(w, h)
 
 @Q_Q
 class _TextTab(object):
 
   def __init__(self, q):
-    self._active = False
+    self._active = False # bool
     self._threadViews = {} # {long signature:TextThreadView}
+
+    self._lastEncoding = 'sjift-jis' # str
+    self._lastScenarioSignature = 0 # long
+    self._lastNameSignature = 0 # long
+
     self._createUi(q)
 
   def _createUi(self, q):
-    hookPrefsButton = QtWidgets.QPushButton(my.tr("Edit /H Hook Code"))
-    skqss.class_(hookPrefsButton, 'btn btn-info')
-    hookPrefsButton.setToolTip(my.tr("Modify the game-specific ITH hook code") + " (Alt+H)")
-    hookPrefsButton.setStatusTip(hookPrefsButton.toolTip())
-    hookPrefsButton.clicked.connect(self._showHookPrefs)
+    #hookPrefsButton = QtWidgets.QPushButton(my.tr("Edit /H Hook Code"))
+    #skqss.class_(hookPrefsButton, 'btn btn-info')
+    #hookPrefsButton.setToolTip(my.tr("Modify the game-specific ITH hook code") + " (Alt+H)")
+    #hookPrefsButton.setStatusTip(hookPrefsButton.toolTip())
+    #hookPrefsButton.clicked.connect(self._showHookPrefs)
 
     helpButton = QtWidgets.QPushButton(tr_("Help"))
     helpButton.setToolTip(tr_("Help"))
@@ -248,6 +289,15 @@ class _TextTab(object):
     threadGroup.setLayout(skwidgets.SkWidgetLayout(threadArea))
     #threadGroup.setLayout(self.threadLayout)
 
+    info = QtWidgets.QGroupBox(tr_("Information"))
+    infoLayout = QtWidgets.QVBoxLayout()
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(QtWidgets.QLabel(mytr_("Game engine") + ":"))
+    row.addWidget(self.engineLabel)
+    row.addStretch()
+    infoLayout.addLayout(row)
+    info.setLayout(infoLayout)
+
     option = QtWidgets.QGroupBox(tr_("Options"))
     optionLayout = QtWidgets.QVBoxLayout()
     row = QtWidgets.QHBoxLayout()
@@ -262,7 +312,7 @@ class _TextTab(object):
     layout = QtWidgets.QVBoxLayout()
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.saveButton)
-    row.addWidget(hookPrefsButton)
+    #row.addWidget(hookPrefsButton)
     row.addWidget(self.resetButton)
     #row.addWidget(wikiButton)
     row.addWidget(helpButton)
@@ -272,15 +322,20 @@ class _TextTab(object):
     row.addStretch()
     layout.addLayout(row)
 
+    col = QtWidgets.QVBoxLayout()
+    col.addWidget(info)
+    col.addWidget(option)
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(option)
+    row.addLayout(col)
     row.addStretch()
     layout.addLayout(row)
 
     layout.addWidget(threadGroup)
 
-    msg = QtWidgets.QLabel(my.tr("Don't forget to maximize the text speed (see Help)."))
-    skqss.class_(msg, "text-info")
+    msg = QtWidgets.QLabel("%s: %s" % (
+        tr_("Note"),
+        my.tr("H-code is not supported by VNR's embedded text hook")))
+    #skqss.class_(msg, "text-info")
     layout.addWidget(msg)
 
     #buttons = QtWidgets.QHBoxLayout()
@@ -295,7 +350,7 @@ class _TextTab(object):
 
     q.setLayout(layout)
 
-    skwidgets.shortcut('alt+h', self._showHookPrefs, parent=q)
+    #skwidgets.shortcut('alt+h', self._showHookPrefs, parent=q)
 
   @memoizedproperty
   def saveButton(self):
@@ -325,7 +380,7 @@ class _TextTab(object):
     ret.setStatusTip(tr_("Text encoding"))
     ret.addItems(map(str.upper, config.ENCODINGS))
     ret.setMaxVisibleItems(ret.count())
-    ret.currentIndexChanged.connect(self._refresh)
+    ret.currentIndexChanged.connect(self._onSelectedEncodingChanged)
     return ret
 
   @memoizedproperty
@@ -337,73 +392,75 @@ class _TextTab(object):
     ret.currentIndexChanged.connect(self._refreshLanguageEdit)
     return ret
 
+  @memoizedproperty
+  def engineLabel(self):
+    ret = QtWidgets.QLabel()
+    skqss.class_(ret, 'text-info')
+    return ret
+
   #def _refreshKeepsHookButton(self):
   #  self.keepsHookButton.setEnabled(bool(texthook.global_().currentHookCode()))
 
   @memoizedproperty
   def threadLayout(self): return QtWidgets.QGridLayout()
 
-  @memoizedproperty
-  def hookPrefsDialog(self):
-    q = self.q
-    import hookprefs
-    ret = hookprefs.HookPrefsDialog(q)
-    ret.hookCodeEntered.connect(q.hookChanged)
-    ret.hookCodeDeleted.connect(partial(
-        q.hookChanged.emit, ""))
+  #@memoizedproperty
+  #def hookPrefsDialog(self):
+  #  q = self.q
+  #  import hookprefs
+  #  ret = hookprefs.HookPrefsDialog(q)
+  #  ret.hookCodeEntered.connect(q.hookChanged)
+  #  ret.hookCodeDeleted.connect(partial(
+  #      q.hookChanged.emit, ""))
 
-    # Automatically hide me when game exit
-    gameagent.global_().processDetached.connect(ret.hide)
+  #  # Automatically hide me when game exit
+  #  gameagent.global_().processDetached.connect(ret.hide)
 
-    h = self._deletedHookCode()
-    ret.setDeletedHook(h)
-    return ret
+  #  h = self._deletedHookCode()
+  #  ret.setDeletedHook(h)
+  #  return ret
 
-  def _showHookPrefs(self): self.hookPrefsDialog.show()
+  #def _showHookPrefs(self): self.hookPrefsDialog.show()
 
-  def _refreshHookDialog(self):
-    if hasmemoizedproperty(self, 'hookPrefsDialog'):
-      h = self._deletedHookCode()
-      self.hookPrefsDialog.setDeletedHook(h)
+  #def _refreshHookDialog(self):
+  #  if hasmemoizedproperty(self, 'hookPrefsDialog'):
+  #    h = self._deletedHookCode()
+  #    self.hookPrefsDialog.setDeletedHook(h)
 
-  @staticmethod
-  def _deletedHookCode():
-    """
-    @return  str not None
-    """
-    g = _gameprofile()
-    return g.deletedHook if g else ""
-    #if gp:
-    #  import dataman
-    #  g = dataman.manager().queryGame(md5=gp.md5)
-    #  if g:
-    #    return g.deletedHook
-    #return ''
+  #@staticmethod
+  #def _deletedHookCode():
+  #  """
+  #  @return  str not None
+  #  """
+  #  g = _gameprofile()
+  #  return g.deletedHook if g else ""
 
   @memoizedproperty
   def helpDialog(self):
     import help
-    return help.TextSettingsHelpDialog(self.q)
+    return help.EmbeddedTextSettingsHelpDialog(self.q)
 
   def setActive(self, active):
     if self._active != active:
-      agent = gameagent.global_()
-      #if active:
-      #  agent.dataReceived.connect(self._addText)
-      #else:
-      #  agent.dataReceived.disconnect(self._addText)
+      import rpcman
+      rpc = rpcman.manager()
+      if active:
+        rpc.engineTextReceived.connect(self._addText)
+      else:
+        rpc.engineTextReceived.disconnect(self._addText)
       self._active = active
 
-  def _transformText(self, text):
-    """
-    @param  text  unicode
-    @return  unicode
-    """
-    return text
+  #def _transformText(self, text):
+  #  """
+  #  @param  text  unicode
+  #  @return  unicode
+  #  """
+  #  return text
 
   def _canSave(self):
     g = _gameprofile()
-    if not g or not g.hasThread():
+    agent = gameagent.global_()
+    if not g or not g.hasThread() or not agent.isConnected() or not agent.engine():
       self.q.warning.emit(my.tr("No running game"))
       return False
     if not self._scenarioSignature():
@@ -414,7 +471,7 @@ class _TextTab(object):
     return True
 
   def _reset(self):
-    textman.manager().removeIgnoredThreads()
+    #textman.manager().removeIgnoredThreads()
     self.clear()
     self.load()
 
@@ -424,37 +481,49 @@ class _TextTab(object):
     q = self.q
 
     tm = textman.manager()
-    sig = self._scenarioSignature()
+
+    agent = gameagent.global_()
+    engine = agent.engine()
+
+    engine = defs.to_ith_engine_name(engine)
+
+    scenesig = self._scenarioSignature()
     namesig = self._nameSignature()
     enc = self._encoding()
     lang = self._language()
-    threads = tm.threadsBySignature()
+    #threads = tm.threadsBySignature()
     changed = False
-    if sig:
+    if scenesig:
       if lang != tm.gameLanguage():
         dprint("language changed")
         changed = True
         skevents.runlater(partial(
             q.languageChanged.emit,
             lang))
-      if sig != tm.scenarioSignature() or enc != tm.encoding():
+      if scenesig != self._lastScenarioSignature or enc != self._lastEncoding:
         dprint("scenario thread changed")
         changed = True
-        name = threads[sig].name
+        self._lastScenarioSignature = scenesig
+        self._lastEncoding = enc
+        agent.setEncoding(enc)
+        agent.setScenarioSignature(scenesig)
+        #name = threads[sig].name
         skevents.runlater(partial(
             q.scenarioThreadChanged.emit,
-            sig, name, enc))
+            scenesig, engine, enc))
 
-    if namesig != tm.nameSignature():
+    if namesig != self._lastNameSignature:
       dprint("name thread changed")
       changed = True
+      self._lastNameSignature = namesig
+      agent.setNameSignature(namesig)
       if not namesig:
         skevents.runlater(q.nameThreadDisabled.emit)
       else:
-        name = threads[namesig].name
+        #name = threads[namesig].name
         skevents.runlater(partial(
             q.nameThreadChanged.emit,
-            namesig, name))
+            namesig, engine))
 
     #sig_set = set(self._otherSignatures())
     #if sig_set != tm.otherSignatures():
@@ -477,42 +546,42 @@ class _TextTab(object):
       skwidgets.clear_layout(self.threadLayout, delwidget=True)
       #self.q.centralWidget().show()
 
-  def _updateThread(self, thread, encoding=None, ignoreType=False):
-    """
-    @param  thread  textman.TextThread
-    @param  ignoreType  bool
-    """
-    encoding = encoding or self._encoding()
-    try:
-      view = self._threadViews[thread.signature]
-      if not ignoreType:
-        view.setThreadType(thread.type)
-    except KeyError:
-      skevents.runlater(self.q.sizeChanged.emit)
-      view = self._threadViews[thread.signature] = TextThreadView(
-          name=thread.name, signature=thread.signature)
-      if not ignoreType:
-        view.setThreadType(thread.type)
-      view.threadTypeChanged.connect(self._setThreadType)
-      view.threadTypeChanged.connect(self._refreshSaveButton)
+  #def _updateThread(self, thread, encoding=None, ignoreType=False):
+  #  """
+  #  @param  thread  textman.TextThread
+  #  @param  ignoreType  bool
+  #  """
+  #  encoding = encoding or self._encoding()
+  #  try:
+  #    view = self._threadViews[thread.signature]
+  #    if not ignoreType:
+  #      view.setThreadType(thread.type)
+  #  except KeyError:
+  #    skevents.runlater(self.q.sizeChanged.emit)
+  #    view = self._threadViews[thread.signature] = TextThreadView(
+  #        name=thread.name, signature=thread.signature)
+  #    if not ignoreType:
+  #      view.setThreadType(thread.type)
+  #    view.threadTypeChanged.connect(self._setThreadType)
+  #    view.threadTypeChanged.connect(self._refreshSaveButton)
 
-      n = self.threadLayout.count()
-      row = n / THREADLAYOUT_COLUMN_COUNT
-      col = n % THREADLAYOUT_COLUMN_COUNT
-      self.threadLayout.addWidget(view, row, col)
+  #    n = self.threadLayout.count()
+  #    row = n / THREADLAYOUT_COLUMN_COUNT
+  #    col = n % THREADLAYOUT_COLUMN_COUNT
+  #    self.threadLayout.addWidget(view, row, col)
 
-    f = lambda it: self._transformText(textutil.to_unicode(it, encoding))
-    text = '\n\n'.join(imap(f, thread.data))
-    view.setText(text)
+  #  f = lambda it: self._transformText(textutil.to_unicode(it, encoding))
+  #  text = '\n\n'.join(imap(f, thread.data))
+  #  view.setText(text)
 
-  def _setThreadType(self, type_, signature):
+  def _setRole(self, role, signature):
     for sig, view in self._threadViews.iteritems():
       if sig == signature:
-        view.setThreadType(type_)
+        view.setRole(role)
       else:
-        for t in (textman.SCENARIO_THREAD_TYPE, textman.NAME_THREAD_TYPE): # unique threads
-          if type_ == t and type_ == view.threadType():
-            view.setThreadType(textman.IGNORED_THREAD_TYPE)
+        for t in defs.SCENARIO_TEXT_ROLE, defs.NAME_TEXT_ROLE: # unique threads
+          if role == t and role == view.role():
+            view.setRole(defs.UNKNOWN_TEXT_ROLE)
 
   def _refreshEncodingEdit(self):
     if self._encoding() in ('shift-jis', 'utf-16'):
@@ -527,7 +596,13 @@ class _TextTab(object):
       skqss.addclass(self.languageEdit, 'warning')
 
   def unload(self):
-    pass
+    agent = gameagent.global_()
+    #if self._lastEncoding:
+    agent.setEncoding(self._lastEncoding)
+    if self._lastScenarioSignature:
+      agent.setScenarioSignature(self._lastScenarioSignature)
+    #if self._lastNameSignature:
+    agent.setNameSignature(self._lastNameSignature)
 
   def load(self):
     tm = textman.manager()
@@ -539,67 +614,92 @@ class _TextTab(object):
     enc = tm.encoding()
     self._setEncoding(enc)
 
-    for t in tm.threads():
-      self._updateThread(t, encoding=enc)
+    self._lastEncoding = enc
+    self._lastScenarioSignature = tm.scenarioThreadSignature()
+    self._lastNameSignature = tm.nameThreadSignature()
 
     self._refreshSaveButton()
+    self._refreshEngineLabel()
 
-    self._refreshHookDialog()
+    #self._refreshHookDialog()
+
+    for role,sig in (
+        (defs.SCENARIO_TEXT_ROLE, self._lastScenarioSignature),
+        (defs.NAME_TEXT_ROLE, self._lastNameSignature),
+      ):
+      if sig and sig not in self._threadViews:
+        self._createView(signature=sig, role=role)
+
+  def _refreshEngineLabel(self):
+    engine = gameagent.global_().engine()
+    if not engine:
+      msg = tr_('Unknown') # This should never happen
+    else:
+      enc = config.guess_thread_encoding(engine)
+      if enc:
+        msg = "%s (%s)" % (engine, enc)
+      else:
+        msg = engine
+    self.engineLabel.setText(msg)
 
   def _refreshSaveButton(self):
     self.saveButton.setEnabled(self._canSave())
 
-  def _refresh(self):
-    enc = self._encoding()
-
-    tm = textman.manager()
-    for t in tm.threads():
-      self._updateThread(t, encoding=enc, ignoreType=True)
-
+  def _onSelectedEncodingChanged(self):
+    gameagent.global_().setEncoding(self._encoding())
     self._refreshSaveButton()
     self._refreshEncodingEdit()
 
-  def _addText(self, _, data, signature, name):
+  def _addText(self, text, _, signature, role): #, needsTranslation
     """
-    @param  _  bytearray  raw data
-    @param  data  bytearray  rendered data
+    @param  text  unicode
+    @param  _  str or int64  hash of the text
     @param  signature  long
-    @param  name  str
+    @param  role  int
     """
     #dprint("name = %s" % name)
-    try:
-      view = self._threadViews[signature]
-    except KeyError:
-      tm = textman.manager()
-      try:
-        tt = textman.manager().threadsBySignature()[signature].type
-      except KeyError:
-        tt = textman.IGNORED_THREAD_TYPE
+    view = self._threadViews.get(signature) or self._createView(
+        signature=signature, text=text, role=role)
 
-      # If old scenario signature is different from current, ignore the old one
-      if tt == textman.SCENARIO_THREAD_TYPE:
-        ss = self._scenarioSignature()
-        if ss and ss != signature:
-          tt = textman.IGNORED_THREAD_TYPE
-      self._updateThread(textman.TextThread(
-        name=name, signature=signature, data=[data], type=tt))
-      view = self._threadViews[signature]
-
-    text = self._transformText(textutil.to_unicode(data, self._encoding()))
     if view.hasText():
       view.appendText('\n' + text)
     else:
       view.setText(text)
 
+  def _createView(self, signature, role, text=''):
+    """
+    @param  text  unicode
+    @param  signature  long
+    @param  role  int
+    @return  TextThreadView
+    """
+    skevents.runlater(self.q.sizeChanged.emit)
+    view = self._threadViews[signature] = TextThreadView(signature=signature)
+    if role and role != defs.OTHER_TEXT_ROLE:
+      view.setRole(role)
+    #if not ignoreType:
+    #  view.setThreadType(thread.type)
+    view.roleChanged.connect(self._setRole)
+    view.roleChanged.connect(self._refreshSaveButton)
+
+    n = self.threadLayout.count()
+    row = n / THREADLAYOUT_COLUMN_COUNT
+    col = n % THREADLAYOUT_COLUMN_COUNT
+    self.threadLayout.addWidget(view, row, col)
+
+    if text:
+      view.setText(text)
+    return view
+
   def _scenarioSignature(self):
     for sig, view in self._threadViews.iteritems():
-      if view.threadType() == textman.SCENARIO_THREAD_TYPE:
+      if view.role() == defs.SCENARIO_TEXT_ROLE:
         return sig
     return 0
 
   def _nameSignature(self):
     for sig, view in self._threadViews.iteritems():
-      if view.threadType() == textman.NAME_THREAD_TYPE:
+      if view.role() == defs.NAME_TEXT_ROLE:
         return sig
     return 0
 
@@ -618,44 +718,6 @@ class _TextTab(object):
   def _setEncoding(self, value):
     self.encodingEdit.setCurrentIndex(
         self.encodingEdit.findText(value.upper()))
-
-class TextTab(QtWidgets.QWidget):
-  def __init__(self, parent=None):
-    super(TextTab, self).__init__(parent)
-    self.__d = _TextTab(self)
-
-  warning = Signal(unicode)
-  message = Signal(unicode)
-
-  sizeChanged = Signal()
-  hookChanged = Signal(str)
-  languageChanged = Signal(unicode)
-  scenarioThreadChanged = Signal(long, unicode, unicode) # signature, name, encoding
-  nameThreadChanged = Signal(long, unicode) # signature, name
-  nameThreadDisabled = Signal()
-  #otherThreadsChanged = Signal(dict) # {long signature:str name}
-
-  def clear(self): self.__d.clear()
-  def load(self): self.__d.load()
-  def unload(self): self.__d.unload()
-  def setActive(self, value): self.__d.setActive(value)
-
-  def sizeHint(self):
-    """@reimp @public"""
-    n = self.__d.threadLayout.count()
-    #w = 500; h = 150
-    w = 500; h = 165
-    if n <= 0:
-      pass
-    elif n < THREADLAYOUT_COLUMN_COUNT:
-      h += 120 * 2
-    else:
-      row = 1 + (n - 1) / THREADLAYOUT_COLUMN_COUNT
-      h += 125 * (1 + min(row, 3.5)) # max row count is 3
-      w += -290 + 350 * THREADLAYOUT_COLUMN_COUNT
-      if row > 2:
-        w += 20
-    return QtCore.QSize(w, h)
 
 ## Information tab ##
 
@@ -677,83 +739,22 @@ class TextTab(QtWidgets.QWidget):
 
 ## Main window ##
 
-@Q_Q
-class _EmbeddedTextPrefsDialog(object):
-
-  def __init__(self, q):
-    self._createUi(q)
-
-  def _createUi(self, q):
-    #q.addTab(self.textTab, tr_("Text"), rc.icon('pref-text'),
-    #         tip=my.tr("Text thread and hook"))
-    #q.addTab(self.infoTab, tr_("Properties"), rc.icon('pref-config'),
-    #         tip=my.tr("Game names and locations"))
-    q.setCentralWidget(self.textTab)
-
-  @memoizedproperty
-  def textTab(self):
-    q = self.q
-    ret = TextTab()
-    ret.message.connect(self.showMessage)
-    ret.warning.connect(self.showWarning)
-    ret.sizeChanged.connect(q.updateSize)
-    ret.hookChanged.connect(q.hookChanged)
-    ret.languageChanged.connect(q.languageChanged)
-    ret.scenarioThreadChanged.connect(q.scenarioThreadChanged)
-    ret.nameThreadChanged.connect(q.nameThreadChanged)
-    ret.nameThreadDisabled.connect(q.nameThreadDisabled)
-    #ret.otherThreadsChanged.connect(q.otherThreadsChanged)
-    return ret
-
-  #@memoizedproperty
-  #def infoTab(self):
-  #  ret = InfoTab()
-  #  ret.message.connect(self.showMessage)
-  #  ret.warning.connect(self.showWarning)
-  #  ret.launchPathChanged.connect(self.q.launchPathChanged)
-  #  ret.loaderChanged.connect(self.q.loaderChanged)
-  #  return ret
-
-  def itertabs(self):
-    yield self.textTab
-    #yield self.infoTab
-
-  def clear(self):
-    for t in self.itertabs():
-      t.clear()
-
-  def load(self):
-    for t in self.itertabs():
-      t.load()
-
-  def unload(self):
-    for t in self.itertabs():
-      t.unload()
-
-  def setActive(self, value):
-    self.textTab.setActive(value)
-
-  def showWarning(self, text):
-    bar = self.q.statusBar()
-    skqss.class_(bar, 'warning')
-    bar.showMessage(text)
-
-  def showMessage(self, text):
-    bar = self.q.statusBar()
-    skqss.class_(bar, 'message')
-    bar.showMessage(text)
-
 # Use main window for status bar
-class EmbeddedTextPrefsDialog(QtWidgets.QMainWindow):
+class TextPrefsDialog(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
-    super(EmbeddedTextPrefsDialog, self).__init__(parent, WINDOW_FLAGS)
+    super(TextPrefsDialog, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
-    self.setWindowTitle(mytr_("Text Settings"))
-    self.__d = _EmbeddedTextPrefsDialog(self)
+    self.setWindowTitle("%s (%s)" % (
+      mytr_("Text Settings"),
+      my.tr("Engine: VNR"),
+    ))
+    self.__d = _TextPrefsDialog(self)
     dprint("pass")
 
-  hookChanged = Signal(str)
+  visibleChanged = Signal(bool)
+
+  #hookChanged = Signal(str)
   #launchPathChanged = Signal(unicode)
   #loaderChanged = Signal(unicode)
   languageChanged = Signal(unicode)
@@ -777,29 +778,36 @@ class EmbeddedTextPrefsDialog(QtWidgets.QMainWindow):
         icon = rc.icon('logo-reader')
       self.setWindowIcon(icon)
 
-      title = mytr_("Text Settings")
+      title = "%s (%s)" % (
+        mytr_("Text Settings"),
+        my.tr("Engine: VNR"),
+      )
+
       name = g.name() if g else None
       if name:
         title = "%s - %s" % (name, title)
       self.setWindowTitle(title)
 
-    if visible != self.isVisible():
+    update = visible != self.isVisible()
+    if update:
       if visible:
         d.clear()
         d.load()
-        self.updateEnabled()
+        #self.updateEnabled()
         skevents.runlater(self.updateSize)
       else:
         d.unload()
-
     #texthook.global_().setWhitelistEnabled(not visible)
 
     d.setActive(visible)
-    super(EmbeddedTextPrefsDialog, self).setVisible(visible)
+    super(TextPrefsDialog, self).setVisible(visible)
 
-  def updateEnabled(self):
-    g = _gameprofile()
-    self.setEnabled(bool(g))
+    if update:
+      self.visibleChanged.emit(visible)
+
+  #def updateEnabled(self):
+  #  g = _gameprofile()
+  #  self.setEnabled(bool(g))
 
   def clear(self):
     if self.isVisible():
@@ -811,9 +819,78 @@ class EmbeddedTextPrefsDialog(QtWidgets.QMainWindow):
     """@reimp @public"""
     return self.centralWidget().sizeHint()
 
+@Q_Q
+class _TextPrefsDialog(object):
+
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    #q.addTab(self.textTab, tr_("Text"), rc.icon('pref-text'),
+    #         tip=my.tr("Text thread and hook"))
+    #q.addTab(self.infoTab, tr_("Properties"), rc.icon('pref-config'),
+    #         tip=my.tr("Game names and locations"))
+    q.setCentralWidget(self.textTab)
+
+  @memoizedproperty
+  def textTab(self):
+    q = self.q
+    ret = TextTab()
+    ret.message.connect(self.showMessage)
+    ret.warning.connect(self.showWarning)
+    ret.sizeChanged.connect(q.updateSize)
+    #ret.hookChanged.connect(q.hookChanged)
+    ret.languageChanged.connect(q.languageChanged)
+    ret.scenarioThreadChanged.connect(q.scenarioThreadChanged)
+    ret.nameThreadChanged.connect(q.nameThreadChanged)
+    ret.nameThreadDisabled.connect(q.nameThreadDisabled)
+    #ret.otherThreadsChanged.connect(q.otherThreadsChanged)
+    return ret
+
+  #@memoizedproperty
+  #def infoTab(self):
+  #  ret = InfoTab()
+  #  ret.message.connect(self.showMessage)
+  #  ret.warning.connect(self.showWarning)
+  #  ret.launchPathChanged.connect(self.q.launchPathChanged)
+  #  ret.loaderChanged.connect(self.q.loaderChanged)
+  #  return ret
+
+  #def itertabs(self):
+  #  yield self.textTab
+  #  #yield self.infoTab
+
+  def clear(self):
+    self.textTab.clear()
+    #for t in self.itertabs():
+    #  t.clear()
+
+  def load(self):
+    self.textTab.load()
+    #for t in self.itertabs():
+    #  t.load()
+
+  def unload(self):
+    self.textTab.unload()
+    #for t in self.itertabs():
+    #  t.unload()
+
+  def setActive(self, value):
+    self.textTab.setActive(value)
+
+  def showWarning(self, text):
+    bar = self.q.statusBar()
+    skqss.class_(bar, 'warning')
+    bar.showMessage(text)
+
+  def showMessage(self, text):
+    bar = self.q.statusBar()
+    skqss.class_(bar, 'message')
+    bar.showMessage(text)
+
 if __name__ == '__main__':
   a = debug.app()
-  w = EmbeddedTextPrefsDialog()
+  w = TextPrefsDialog()
   w.show()
   a.exec_()
 

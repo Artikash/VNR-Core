@@ -102,4 +102,14 @@ class TextSettingsHelpDialog(HelpDialog):
     self.resize(500, 400)
     dprint("pass")
 
+class EmbeddedTextSettingsHelpDialog(HelpDialog):
+
+  def __init__(self, parent=None):
+    super(EmbeddedTextSettingsHelpDialog, self).__init__(parent)
+    self.setWindowTitle("%s - %s" %
+        (tr_("Help"), mytr_("Text Settings")))
+    self.setHtml(info.renderEmbeddedTextSettingsHelp())
+    self.resize(500, 400)
+    dprint("pass")
+
 # EOF

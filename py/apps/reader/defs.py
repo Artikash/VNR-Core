@@ -8,7 +8,7 @@ EXIT_SUCCEED = 0 # os.EX_OK
 EXIT_FAILURE = 1
 EXIT_RESTART = -1
 
-#  Features
+# Features
 INTERNET_CONNECTION_AUTO = 'auto'
 INTERNET_CONNECTION_ON = 'on'
 INTERNET_CONNECTION_OFF = 'off'
@@ -18,6 +18,13 @@ INTERNET_CONNECTION_OFF = 'off'
 # Time to protect anonymous entries
 #PROTECTED_INTERVAL = 86400 * 15 # 15 days
 PROTECTED_INTERVAL = 86400 * 7 # 7 days
+
+# Game agent
+# These values must be consistent with vnragent.dll
+UNKNOWN_TEXT_ROLE = 0
+SCENARIO_TEXT_ROLE = 1
+NAME_TEXT_ROLE = 2
+OTHER_TEXT_ROLE = 3
 
 # Text constraints
 
@@ -60,7 +67,12 @@ FAST_GAME_ENGINES = 'MarineHeart',
 # The game engines that require the game to be hooked after loaded
 DELAY_ENGINES = 'Adobe AIR',
 
-# The game engines that require the game to have normal/slow text speed
+# Convert new game agent name to old ITH engine name
+def to_ith_engine_name(name): # str -> str
+  return (
+      'MAJIRO' if name == 'Majiro' else
+      'BGI2' if name == 'BGI' else
+      name)
 
 # Back up file suffix
 BACKUP_FILE_SUFFIX = '.bak'

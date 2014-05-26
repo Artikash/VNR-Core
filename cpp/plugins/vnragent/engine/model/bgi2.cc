@@ -68,13 +68,15 @@ static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD split)
 {
   static QByteArray ret; // persistent storage, which makes this function not thread-safe
 
-  // The split is not used since the return address is sufficient to distinguish choices and names
+  // FIXME: It is ridiculous that accessing split will break extern "C"
   //auto sig = Engine::hashThreadSignature(returnAddress, split);
   auto sig = Engine::hashThreadSignature(returnAddress);
-
   Q_UNUSED(split);
-  auto role = split ? Engine::UnknownRole : Engine::UnknownRole; // TODO: add choices
-  ret = AbstractEngine::instance()->dispatchTextA(text, sig, role);
+
+  // split: choices: 0, character name & scenario: 1
+  //auto role = split ? Engine::UnknownRole : Engine::ChoiceRole;
+
+  ret = AbstractEngine::instance()->dispatchTextA(text, sig);
   return (LPCSTR)ret.constData();
 }
 

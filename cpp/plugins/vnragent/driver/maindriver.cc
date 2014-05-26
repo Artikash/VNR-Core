@@ -133,7 +133,11 @@ void MainDriverPrivate::createEmbedDriver()
   connect(settings, SIGNAL(embeddedTranslationWaitTimeChanged(int)), eng, SLOT(setTranslationWaitTime(int)));
   eng->setTranslationWaitTime(settings->embeddedTranslationWaitTime());
 
+  connect(settings, SIGNAL(gameEncodingChanged(QString)), eng, SLOT(setEncoding(QString)));
+
   if (eng->load()) {
+    eng->setEncoding(settings->gameEncoding());
+
     eng->setScenarioVisible(settings->isEmbeddedScenarioVisible());
     eng->setScenarioTranscodingEnabled(settings->isEmbeddedScenarioTranscodingEnabled());
     eng->setScenarioTranslationEnabled(settings->isEmbeddedScenarioTranslationEnabled());

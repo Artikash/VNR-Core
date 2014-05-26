@@ -36,17 +36,18 @@ class GameAgent(QObject):
   def connectedPid(self): return self.__d.connectedPid # -> long not None
 
   def attachProcess(self, pid): # -> bool
-    if pid == self.__d.injectedPid:
+    d = self.__d
+    if pid == d.injectedPid:
       return True
     else:
-      if self.__d.connectedPid:
+      if d.connectedPid:
         self.detachProcess()
-      self.__d.clear()
+      d.clear()
       import inject
       ok = inject.inject_agent(pid)
       if ok:
-        self.__d.injectedPid = pid
-        self.__d.injectTimer.start()
+        d.injectedPid = pid
+        d.injectTimer.start()
       return ok
 
   def detachProcess(self):
@@ -58,6 +59,7 @@ class GameAgent(QObject):
     self.__d.clear()
 
   def hasEngine(self): return bool(self.__d.engineName)
+  def engine(self): return self.__d.engineName
 
   ## Query ##
 
@@ -89,6 +91,15 @@ class GameAgent(QObject):
   def sendSettings(self):
     if self.isConnected():
       self.__d.sendSettings()
+
+  def encoding(self): return self.__d.gameEncoding
+
+  def setEncoding(self, v):
+    d = self.__d
+    if v != d.gameEncoding:
+      d.gameEncoding = v
+      if d.connectedPid:
+        d.sendSetting('gameEncoding', v)
 
   def scenarioSignature(self): return self.__d.scenarioSignature
 

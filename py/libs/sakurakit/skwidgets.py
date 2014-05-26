@@ -60,11 +60,11 @@ def clear_layout(layout, delwidget=False):
         widget = item.widget()
         if widget:
           widget.hide() # FIXME: memory leak here
-          del widget
+          #del widget
         item_as_layout = item.layout() # cast item to layout
         if item_as_layout:
           clear_layout(item_as_layout, delwidget=delwidget)
-      del item
+      #del item
 
 ## Draggable ##
 

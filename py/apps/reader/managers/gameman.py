@@ -1004,7 +1004,7 @@ class GameManager(QtCore.QObject):
           # TODO: Restore get game encoding in the future
           # First, allow modify game encoding in game edit
           #if g.encoding and g.encoding != 'utf-16' or not g.encoding and agentEngine.encoding() != 'utf-16':
-          if not agentEngine.isRegionLocked() and agentEngine.encoding() != 'utf-16':
+          if not agentEngine.isRegionLocked() and agentEngine.encoding() != 'utf-16' and (not g.encoding or g.encoding != 'utf-16'):
             import trman
             launchLanguage = trman.manager().guessTranslationLanguage()
             if launchLanguage in config.SJIS_LANGUAGE_SET:
@@ -1028,6 +1028,13 @@ class GameManager(QtCore.QObject):
       if agentConnected:
         skevents.runlater(gameagent.global_().sendSettings, 3000)
 
+        dprint("disable h-code and repetition elimination as game agent is used")
+        hookEnabled = False
+        g.removesRepeat = False
+        g.ignoresRepeat = False
+        #g.keepsSpace = False
+        #g.threadKept = False
+
       # g.hasProcess() must be true here, i.e. processId is valid
       elif not g.isAttached():
         attached = False
@@ -1037,8 +1044,13 @@ class GameManager(QtCore.QObject):
           growl.notify(my.tr("Use VNR's built-in hook instead of ITH"))
           attached = gameagent.global_().attachProcess(g.pid)
           if attached:
-            dprint("disable h-code as game agent is used")
+            dprint("disable h-code and repetition elimination as game agent is used")
+
             hookEnabled = False
+            g.removesRepeat = False
+            g.ignoresRepeat = False
+            #g.keepsSpace = False
+            #g.threadKept = False
 
         if not attached: # Use VNR agent or ITH as fallback
           # Enable ITH hook here

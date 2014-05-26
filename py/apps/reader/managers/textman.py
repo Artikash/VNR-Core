@@ -34,10 +34,10 @@ FIX_OLD_SUBS = False # whether fix the hashes and contexts for old annotations
 
 ## Helpers ##
 
-IGNORED_THREAD_TYPE = 0
-SCENARIO_THREAD_TYPE = 1
-NAME_THREAD_TYPE = 2
-OTHER_THREAD_TYPE = 3
+IGNORED_THREAD_TYPE = defs.UNKNOWN_TEXT_ROLE
+SCENARIO_THREAD_TYPE = defs.SCENARIO_TEXT_ROLE
+NAME_THREAD_TYPE = defs.NAME_TEXT_ROLE
+OTHER_THREAD_TYPE = defs.OTHER_TEXT_ROLE
 
 class TextThread:
   MAX_DATA_COUNT = 5 # number of data to keep
@@ -945,6 +945,9 @@ class TextManager(QObject):
       self.__d.encoding = encoding
       # Assume this is the only place to modify text encoding in texthook
       texthook.global_().setEncoding(encoding)
+
+  def scenarioThreadSignature(self): return self.__d.scenarioSignature
+  def nameThreadSignature(self): return self.__d.nameSignature
 
   def setScenarioThread(self, signature, name):
     """
