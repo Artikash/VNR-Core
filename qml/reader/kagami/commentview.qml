@@ -62,7 +62,7 @@ Item { id: root_
              t
       //return bbcodePlugin_.parse(t)
     else
-      return ~t.indexOf('\\') ? tex_.toHtml(t) : t
+      return ~t.indexOf("\\") ? tex_.toHtml(t) : t
   }
 
   //visible: !!listModel_.count
