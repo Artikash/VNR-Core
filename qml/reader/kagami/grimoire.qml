@@ -188,7 +188,7 @@ Item { id: root_
              t
       //return bbcodePlugin_.parse(t)
     else
-      return ~t.indexOf('\\') ? tex_.toHtml(t) : t
+      return ~t.indexOf("\\") ? tex_.toHtml(t) : t
   }
 
   Plugin.GrimoireBean { id: bean_
@@ -1021,7 +1021,7 @@ Item { id: root_
           else if (model.text) {
             t = root_.nameVisible ? model.text : removeName(model.text)
             if (model.language === 'ja' && (model.type === 'text' || model.type === 'name')) {
-              if (root_.removesTextNewLine)
+              if (root_.removesTextNewLine && ~t.indexOf("\n"))
                 t = t.replace(/\n/g, '')
               if (root_.furiganaEnabled)
                 t = bean_.renderJapanese(

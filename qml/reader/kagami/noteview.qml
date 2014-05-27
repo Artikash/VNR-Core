@@ -201,7 +201,7 @@ Item { id: root_
              t
       //return bbcodePlugin_.parse(t)
     else
-      return ~t.indexOf('\\') ? tex_.toHtml(t) : t
+      return ~t.indexOf("\\") ? tex_.toHtml(t) : t
   }
 
   //Plugin.SubtitleEditorManagerProxy { id: subeditPlugin__ }
