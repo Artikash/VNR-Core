@@ -415,7 +415,6 @@ class _TextManager(object):
     @param  role  int
     @param* needsTranslation  bool
     """
-    # TODO: Be aware of the signature
     if role == SCENARIO_THREAD_TYPE:
       #if self.agentNameBuffer:
       #  self._flushAgentName()
@@ -466,7 +465,7 @@ class _TextManager(object):
           break
 
       # Hash2 as back up
-      for h in self.hashes2:
+      for h in hashes2:
         if not h: break
         for c in dm.queryComments(hash2=h):
           cd = c.d
