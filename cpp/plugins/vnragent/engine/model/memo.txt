@@ -4,12 +4,10 @@
 436a60 -- function definition: 436a5c
 405478 -- function definition: 405474
 4259d1 -- a function call, function definition: 424488, do not have any parameters
+probabily class method
 425951, 8 -- not function
 
 425959 -- not a function
-
-Issue: Blocking thread will crash the application.
-
 
 # 5/11/2010 CMVS2
 Sample game: ハピメア
@@ -25,7 +23,7 @@ Callers:
 - int __stdcall sub_449360(LPCSTR lpString2)
 - int __stdcall sub_44B5C0(int, int, int, LPCSTR lpString2, int, int)
 
-# 5/10/2014 System32
+# 5/10/2014 System43
 The thread is called with different text.
 This might not be the proper place to substitute.
 

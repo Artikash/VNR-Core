@@ -105,6 +105,8 @@ AbstractEngine::~AbstractEngine() { delete d_; }
 EngineSettings *AbstractEngine::settings() const { return d_->settings; }
 const char *AbstractEngine::name() const { return d_->name; }
 
+void AbstractEngine::setName(const char *v) { d_->name = v; }
+
 const char *AbstractEngine::encoding() const
 { return Util::encodingForCodePage(d_->codePage); }
 
