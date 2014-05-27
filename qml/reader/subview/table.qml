@@ -22,6 +22,9 @@ Item { id: root_
   property alias sortIndicatorDirection: table_.sortIndicatorDirection
   property alias sortIndicatorColumn: table_.sortColumn
 
+  function positionViewAtBeginning() { table_.positionViewAtBeginning() }
+  function positionViewAtEnd() { table_.positionViewAtEnd() }
+
   // - Private -
 
   property int _SUPER_USER_ID: 2

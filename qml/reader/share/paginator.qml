@@ -14,8 +14,8 @@ Item { id: root_
 
   // - Private -
 
-  implicitWidth: 135
-  implicitHeight: 40
+  implicitWidth: 130
+  implicitHeight: spin_.height
 
   //property int cellWidth: 20
   //property int cellHeight: 18
@@ -33,7 +33,7 @@ Item { id: root_
     //toolTip: Sk.tr("Previous")
     //font.bold: true
     //font.family: 'YouYuan'
-    //zoom: 0.8
+    zoom: 0.8
     width: height
 
     onClicked: spin_.intValue = spin_.minimumValue
@@ -51,7 +51,7 @@ Item { id: root_
     toolTip: Sk.tr("Previous")
     //font.bold: true
     //font.family: 'YouYuan'
-    //zoom: 0.8
+    zoom: 0.8
     width: height
 
     onClicked:
@@ -66,6 +66,7 @@ Item { id: root_
       right: nextPageButton_.left
       leftMargin: 2
     }
+    height: 20
     minimumValue: 1
   }
 
@@ -81,7 +82,7 @@ Item { id: root_
     toolTip: Sk.tr("Next")
     //font.bold: true
     //font.family: 'YouYuan'
-    //zoom: 0.8
+    zoom: 0.8
     width: height
 
     onClicked:
@@ -101,7 +102,7 @@ Item { id: root_
     //toolTip: Sk.tr("Previous")
     //font.bold: true
     //font.family: 'YouYuan'
-    //zoom: 0.8
+    zoom: 0.8
     width: height
 
     onClicked: spin_.intValue = spin_.maximumValue

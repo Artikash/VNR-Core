@@ -3581,6 +3581,9 @@ class _CommentModel(object):
     self.sortingReverse = False
     self.sortingColumn = 0
 
+    self.pageNumber = 1 # starts at 1
+    self.pageSize = 100 # read-only, number of items per page, smaller enough to speed up scrolling
+
     q.gameMd5Changed.connect(self._invalidate)
 
     for sig in q.filterTextChanged, q.sortingColumnChanged, q.sortingReverseChanged:
@@ -3594,6 +3597,8 @@ class _CommentModel(object):
     #dm.aboutToExportComments.connect(self._save)
 
     QCoreApplication.instance().aboutToQuit.connect(self._save)
+
+  def pageIndex(self): return self.pageSize * (self.pageNumber - 1) # -> int
 
   def _addComment(self, c):
     try:
@@ -3811,7 +3816,9 @@ class CommentModel(QAbstractListModel):
 
   def rowCount(self, parent=QModelIndex()):
     """@reimp @public"""
-    return len(self.__d.data)
+    d = self.__d
+    totalSize = len(d.data)
+    return min(self.__d.pageSize, max(totalSize - d.pageIndex(), 0))
 
   def data(self, index, role):
     """@reimp @public"""
@@ -3819,14 +3826,14 @@ class CommentModel(QAbstractListModel):
       row = index.row()
       if row >= 0 and row < self.rowCount():
         if role == COMMENT_NUM_ROLE:
-          return row +1
+          return self.__d.pageIndex() + row +1
         elif role == COMMENT_OBJECT_ROLE:
           return self.get(row)
 
   @Slot(int, result=QObject)
   def get(self, row):
-    # Revert the list
-    try: return self.__d.data[-row -1]
+    try: return self.__d.data[- # Revert the list
+        (self.__d.pageIndex() + row +1)]
     except IndexError: pass
 
   @Slot()
@@ -3905,6 +3912,22 @@ class CommentModel(QAbstractListModel):
       lambda self: self.__d.sortingReverse,
       setSortingReverse,
       notify=sortingReverseChanged)
+
+  def setPageNumber(self, value):
+    if value != self.__d.pageNumber:
+      self.__d.pageNumber = value
+      self.pageNumberChanged.emit(value)
+      super(CommentModel, self).reset()
+  pageNumberChanged = Signal(int)
+  pageNumber = Property(int,
+      lambda self: self.__d.pageNumber,
+      setPageNumber,
+      notify=pageNumberChanged)
+
+  pageSizeChanged = Signal(int)
+  pageSize = Property(int,
+      lambda self: self.__d.pageSize,
+      notify=pageSizeChanged)
 
 ## Reference  model ##
 

@@ -40,6 +40,11 @@ Share.View { id: root_
     gameMd5: game ? game.md5 : ""
     sortingColumn: table_.sortIndicatorColumn
     sortingReverse: table_.sortIndicatorDirection === 'up'
+
+    property int maximumPageNumber: Math.ceil(count / pageSize)
+    onPageNumberChanged:
+      if (paginator_.value != pageNumber)
+        paginator_.value = pageNumber
   }
 
   //Plugin.Settings { id: settings_ }
@@ -89,17 +94,42 @@ Share.View { id: root_
 
     property QtObject currentItem: model.get(currentIndex) // dataman.Comment
 
+    SubView.NavToolBar { //id: navToolBar_ // scroll buttons
+      anchors {
+        bottom: parent.bottom; right: parent.right
+        margins: 25
+      }
+
+      onScrollTop: table_.positionViewAtBeginning()
+      onScrollBottom: table_.positionViewAtEnd()
+    }
+
     Share.Blocker {
       anchors.fill: parent
       visible: model_.currentCount <= 0
     }
   }
 
+  Share.Paginator { id: paginator_
+    anchors {
+      left: parent.left
+      verticalCenter: searchBox_.verticalCenter
+      leftMargin: 2
+    }
+    maximumValue: model_.maximumPageNumber
+    onValueChanged:
+      if (value != model_.pageNumber)
+        model_.pageNumber = value
+  }
+
   Share.SearchBox { id: searchBox_
     anchors {
-      left: parent.left; right: parent.right
+      left: paginator_.right
+      //left: parent.left
+      right: parent.right
       bottom: inspector_.top
       bottomMargin: 5
+      leftMargin: 5
     }
     totalCount: model_.count
     currentCount: model_.currentCount
