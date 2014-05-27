@@ -26,11 +26,11 @@ SOURCES = \
   submaker/graffiti.qml \
   submaker/header.qml \
   submaker/subedit.qml \
-  subview/toolbar.qml \
+  subview/maintoolbar.qml \
   subview.qml \
+  termview/maintoolbar.qml \
   termview/navtoolbar.qml \
   termview/table.qml \
-  termview/toolbar.qml \
   termview.qml \
   textreader/mirage.qml \
   voiceview/footer.qml \

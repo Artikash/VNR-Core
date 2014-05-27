@@ -62,7 +62,7 @@ Share.View { id: root_
 
   // ToolBar at the top
 
-  SubView.ToolBar { id: toolBar_
+  SubView.MainToolBar { id: toolBar_
     anchors {
       left: parent.left; right: parent.right; top: parent.top
       topMargin: -1
