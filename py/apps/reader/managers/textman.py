@@ -342,6 +342,9 @@ class _TextManager(object):
       #nochange = len(text) == size
     if language:
       text = termman.manager().applyOriginTerms(text, language)
+      #from sakurakit.skprofiler import SkProfiler
+      #with SkProfiler():
+      #  text = termman.manager().applyOriginTerms(text, language)
     if self.removesRepeat and text: # and nochange:
       t = textutil.remove_repeat_text(text)
       delta = len(text) - len(t)
@@ -543,7 +546,8 @@ class _TextManager(object):
     #text = u"な～に、よろしくね～"
     if not text:
       return
-    text = self._repairText(text, self.language)
+    if not agent: # only repair text for ITH
+      text = self._repairText(text, self.language)
     if not text:
       #dprint("ignore text")
       return
@@ -682,9 +686,10 @@ class _TextManager(object):
     if sub:
       self.q.nameTranslationReceived.emit(sub, lang, provider)
 
-  def showOtherText(self, data):
+  def showOtherText(self, data, agent=True):
     """
     @param  data  bytearray
+    @param* agent  bool
     """
     dataSize = len(data)
     if dataSize > self.gameTextCapacity:
@@ -693,7 +698,7 @@ class _TextManager(object):
     q = self.q
 
     text = self._decodeText(data).strip()
-    if text:
+    if text: #and not agent: # always repair text for other text
       text = self._repairText(text, self.language)
     if not text:
       #dprint("no text")
@@ -901,7 +906,7 @@ class TextManager(QObject):
     if signature == d.nameSignature:
       d.showNameText(data=renderedData, agent=False)
     elif d.otherSignatures and signature in d.otherSignatures:
-      d.showOtherText(renderedData)
+      d.showOtherText(renderedData, agent=False)
     elif signature == d.scenarioSignature or d.keepsThreads and name == d.scenarioThreadName:
       d.showScenarioText(rawData=rawData, renderedData=renderedData, agent=False)
     #d.locked = False
