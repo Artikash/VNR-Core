@@ -197,7 +197,7 @@ bool BGIEngine::attachBGIType2()
   if (!addr)
     return false;
   ::BGI2_oldHookFun = detours::replace<hook_fun_t>(addr, newHookFun);
-  setName("BGI2"); // change engine name to BGI2
+  setName("BGI2"); // change engine name
   return true;
 }
 

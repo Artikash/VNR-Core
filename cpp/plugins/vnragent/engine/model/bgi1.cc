@@ -190,7 +190,9 @@ bool BGIEngine::attachBGIType1()
   //ulong addr = 0x4207e0; // FORTUNE ARTERIAL
   if (!addr)
     return false;
-  return ::BGI1_oldHookFun = detours::replace<hook_fun_t>(addr, newHookFun);
+  ::BGI1_oldHookFun = detours::replace<hook_fun_t>(addr, newHookFun);
+  setName("BGI1"); // change engine name
+  return true;
 }
 
 // EOF
