@@ -33,8 +33,10 @@ Item { id: root_
     var t = c.text
     if (convertsChinese && c.language === 'zhs')
       t = bean_.convertChinese(t)
-    //return ~t.indexOf('[') ? bbcodePlugin_.parse(t) : t
-    return bbcodePlugin_.parse(t)
+    return ~t.indexOf('[') ? bbcodePlugin_.parse(t) :
+           ~t.indexOf("\n") ? t.replace(/\n/g, '<br/>') :
+           t
+    //return bbcodePlugin_.parse(t)
   }
 
   //Component.onCompleted: console.log("omajinai.qml: pass")

@@ -57,8 +57,10 @@ Item { id: root_
       t = bean_.convertChinese(t)
 
     if (c.timestamp > _BBCODE_TIMESTAMP)
-      //return ~t.indexOf('[') ? bbcodePlugin_.parse(t) : t.replace(/\n/g, '<br/>')
-      return bbcodePlugin_.parse(t)
+      return ~t.indexOf('[') ? bbcodePlugin_.parse(t) :
+             ~t.indexOf("\n") ? t.replace(/\n/g, '<br/>') :
+             t
+      //return bbcodePlugin_.parse(t)
     else
       return ~t.indexOf('\\') ? tex_.toHtml(t) : t
   }
