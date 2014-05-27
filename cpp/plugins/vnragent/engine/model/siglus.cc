@@ -42,6 +42,29 @@ namespace { // unnamed
  *    - 0x14: unknown size, always slightly larger than size
  *    - 0x18: constant pointer
  *    ...
+ *
+ *  Sample stack:
+ *  0025edf0  a8 f3 13 0a a8 f3 13 0a  ｨ・.ｨ・.   ; jichi: ecx = 0025edf0
+ *            LPCWSTR     LPCWSTR
+ *  0025edf8  10 ee 25 00 d0 ee 37 01  ・.ﾐ・
+ *            LPCWSTR     LPCWSTR
+ *  0025ee00  13 00 00 00 17 00 00 00  ...…
+ *            SIZE_T      SIZE_T
+ *
+ *  0025ee08  18 0c f6 09 27 00 00 00  .・'... ; jichi: following three lines are constants
+ *  0025ee10  01 00 00 00 01 00 00 00  ......
+ *  0025ee18  d2 d9 5d 9f 1c a2 e7 09  ﾒﾙ]・｢・
+ *
+ *  0025ee20  40 8c 10 07 00 00 00 00  @・....
+ *  0025ee28  00 00 00 00 00 00 00 00  ........
+ *  0025ee30  b8 ee ce 0c b8 ee ce 0c  ｸ﨩.ｸ﨩.
+ *  0025ee38  b8 ee ce 0c 00 00 00 00  ｸ﨩.....
+ *  0025ee40  00 00 00 00 01 00 00 00  .......
+ *  0025ee48  00 00 00 00 00 00 00 00  ........
+ *  0025ee50  00 00 00 00 00 00 00 00  ........
+ *  0025ee58  00 00 00 00 00 00 00 00  ........
+ *
+ *  0025ee60  01 00 00 00 01 00 00 00  ......
  */
 typedef int (__thiscall *hook_fun_t)(void *, DWORD, DWORD); // the first pointer is this
 // Use __fastcall to completely forward ecx and edx
@@ -51,12 +74,18 @@ hook_fun_t oldHookFun;
 struct HookStruct
 {
   union {
-    LPCWSTR texts[3]; // 0x0
-    WCHAR text[6];    // 0x0
+    LPCWSTR texts[4]; // 0x0
+    WCHAR data[8];    // 0x0
   };
-  LPWORD flag;        // 0xc
-  DWORD size;         // 0x10
-  //DWORD capacity;   // 0x14
+  DWORD size,         // 0x10
+        capacity;     // 0x14
+
+  // According to the assembly code, this[0x14] should be larger than 8
+  // 004DACFA   mov     edx, [edi+14h] ; sub_4DAC70+130j ...
+  // 004DACFD   cmp     edx, 8
+  //            jb      short loc_4DAD06
+  LPCWSTR text() const
+  { return capacity < 8 ? data : texts[0]; }
 };
 
 /**
@@ -68,24 +97,9 @@ int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
 {
   Q_UNUSED(edx);
   enum { role = Engine::ScenarioRole, signature = role }; // dummy non-zero signature
-  auto q = AbstractEngine::instance();
-
-  if (self->flag && !*self->flag) {
-#ifdef DEBUG
-    qDebug() << QString::fromWCharArray(self->text);
-#endif // DEBUG
-    QString text = QString::fromWCharArray(self->text, self->size);
-    text = q->dispatchTextW(text, signature, role);
-    if (text.isEmpty())
-      return self->size * 2; // estimated painted bytes
-
-    // FIXME: replacement is not implemented for short text
-    return oldHookFun(self, arg1, arg2);
-  }
-
   //return oldHookFun(self, arg1, arg2);
 #ifdef DEBUG
-  if (self->flag && *self->flag)
+  if (self->size < 8)
     qDebug() << QString::fromWCharArray(self->texts[0]) << ":"
              << (self->text[0] == self->text[1]) << ":"
              << (DWORD)(*self->flag) << ":"
@@ -94,21 +108,25 @@ int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
              << arg2 << ";"
              << " signature: " << QString::number(signature, 16);
 #endif // DEBUG
+  auto q = AbstractEngine::instance();
 
-  QString text = QString::fromWCharArray(self->texts[0], self->size);
+  QString text = QString::fromWCharArray(self->text(), self->size);
   text = q->dispatchTextW(text, signature, role);
   if (text.isEmpty())
     return self->size * 2; // estimated painted bytes
 
+  auto oldText0 = self->texts[0];
   auto oldSize = self->size;
-  auto oldText = self->texts[0];
-  self->size = text.size();
+  auto oldCapacity = self->capacity;
   self->texts[0] = (LPCWSTR)text.utf16(); // lack trailing null character
+  self->size = text.size();
+  self->capacity = qMax(8, text.size()); // prevent using smaller size
 
   int ret = oldHookFun(self, arg1, arg2); // ret = size * 2
 
+  self->texts[0] = oldText0;
   self->size = oldSize;
-  self->texts[0] = oldText;
+  self->capacity = oldCapacity;
   return ret;
 }
 
@@ -187,6 +205,7 @@ bool SiglusEngine::attach()
     return false;
   ulong addr = ::searchSiglus2(startAddress, stopAddress);
   //DWORD addr = startAddress + 0xdb140; // 聖娼女
+  //DWORD addr = startAddress + 0xdaf32; // 聖娼女 体験版
   //dmsg(addr - startAddress);
   if (!addr)
     return false;
