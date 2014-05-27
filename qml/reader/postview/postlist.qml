@@ -4,7 +4,9 @@
 import QtQuick 1.1
 import '../../../js/npm/bbcode.min.js' as BBCode
 import '../../../js/ajax.min.js' as Ajax
+import '../../../js/linkify.min.js' as Linkify
 import '../../../js/sakurakit.min.js' as Sk
+import '../../../js/underscore.string.min.js' as S_
 import '../../../js/util.min.js' as Util
 import '../../ui' as Ui
 import '../share' as Share
@@ -53,6 +55,10 @@ Item { id: root_
   PostView.EditDialog { id: editDialog_ }
 
   clip: true
+
+  function parse(str) {
+    return BBCode.parse(Linkify.parse(S_.escapeHTML(str))).replace(/<li><\/li>/g, '<li>')
+  }
 
   function marshal(post) { // obj -> obj
     return {
@@ -218,7 +224,7 @@ Item { id: root_
         wrapMode: TextEdit.WordWrap
         textFormat: TextEdit.RichText
         color: model.color || 'black'
-        text: BBCode.parse(model.content)
+        text: root_.parse(model.content)
         readOnly: true
         selectByMouse: true // Use TextEdit instead of Text because of this
         onLinkActivated: Qt.openUrlExternally(link)
