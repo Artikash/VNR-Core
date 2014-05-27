@@ -14,7 +14,7 @@ Item { id: root_
 
   // - Private -
 
-  implicitWidth: 150
+  implicitWidth: 135
   implicitHeight: 40
 
   //property int cellWidth: 20
@@ -31,7 +31,7 @@ Item { id: root_
     styleClass: 'btn btn-default'
     text: "|<"
     //toolTip: Sk.tr("Previous")
-    font.bold: true
+    //font.bold: true
     //font.family: 'YouYuan'
     //zoom: 0.8
     width: height
@@ -49,7 +49,7 @@ Item { id: root_
     styleClass: 'btn btn-default'
     text: "<<"
     toolTip: Sk.tr("Previous")
-    font.bold: true
+    //font.bold: true
     //font.family: 'YouYuan'
     //zoom: 0.8
     width: height
@@ -79,7 +79,7 @@ Item { id: root_
     styleClass: 'btn btn-default'
     text: ">>"
     toolTip: Sk.tr("Next")
-    font.bold: true
+    //font.bold: true
     //font.family: 'YouYuan'
     //zoom: 0.8
     width: height
@@ -99,7 +99,7 @@ Item { id: root_
     styleClass: 'btn btn-default'
     text: ">|"
     //toolTip: Sk.tr("Previous")
-    font.bold: true
+    //font.bold: true
     //font.family: 'YouYuan'
     //zoom: 0.8
     width: height

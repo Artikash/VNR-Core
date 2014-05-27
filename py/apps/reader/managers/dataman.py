@@ -3347,7 +3347,7 @@ class _TermModel(object):
     self.sortingReverse = False
 
     self.pageNumber = 1 # starts at 1
-    self.pageSize = 20 # read-only, number of items per page, smaller enough to speed up scrolling
+    self.pageSize = 50 # read-only, number of items per page, smaller enough to speed up scrolling
 
   def pageIndex(self): return self.pageSize * (self.pageNumber - 1) # -> int
 
@@ -3465,8 +3465,9 @@ class TermModel(QAbstractListModel):
 
   def rowCount(self, parent=QModelIndex()):
     """@reimp @public"""
-    totalSize = len(self.__d.data)
-    return min(totalSize, self.__d.pageSize)
+    d = self.__d
+    totalSize = len(d.data)
+    return min(self.__d.pageSize, max(totalSize - d.pageIndex(), 0))
 
   def data(self, index, role):
     """@reimp @public"""
