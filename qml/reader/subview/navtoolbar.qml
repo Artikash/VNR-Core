@@ -49,39 +49,3 @@ Column { id: root_
 }
 
 // EOF
-
-  /*
-  Share.TextButton {
-    //language: 'ja'
-    width: parent.cellWidth; height: parent.cellHeight
-    //shadowWidth: width + 15; shadowHeight: height + 15
-    font.pixelSize: parent.pixelSize
-    //font.bold: true
-    //color: 'snow'
-    color: 'black'
-    //backgroundColor: hover ? '#333' : '#666'
-    backgroundColor: hover ? '#fff' : '#adadad'
-    font.family: 'MS Gothic'
-
-    text: '上'
-    toolTip: qsTr("Scroll to the top")
-
-    onClicked: root_.scrollTop()
-  }
-
-  Share.TextButton {
-    //language: 'ja'
-    width: parent.cellWidth; height: parent.cellHeight
-    //shadowWidth: width + 15; shadowHeight: height + 15
-    font.pixelSize: parent.pixelSize
-    //font.bold: true
-    color: 'black'
-    backgroundColor: hover ? '#fff' : '#adadad'
-    font.family: 'MS Gothic'
-
-    text: '下'
-    toolTip: qsTr("Scroll to the bottom")
-
-    onClicked: root_.scrollBottom()
-  }
-  */

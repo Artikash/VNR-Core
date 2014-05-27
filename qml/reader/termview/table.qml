@@ -18,6 +18,10 @@ Item { id: root_
   property alias currentCount: model_.currentCount
   property alias count: model_.count
 
+  property alias pageNumber: model_.pageNumber
+  //property alias pageSize: model_.pageSize
+  property int maximumPageNumber: Math.ceil(model_.count / model_.pageSize)
+
   function positionViewAtBeginning() { table_.positionViewAtBeginning() }
   function positionViewAtEnd() { table_.positionViewAtEnd() }
 

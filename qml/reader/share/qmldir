@@ -16,7 +16,9 @@ FadingRectangle fadingrectangle.qml
 FloatingRectangle floatingrectangle.qml
 InputBar        inputbar.qml
 InputBox        inputbox.qml
+IntSpinBox      intspinbox.qml
 LabeledSlider   labeledslider.qml
+Paginator       paginator.qml
 SearchBox       searchbox.qml
 Slider          slider.qml
 TextButton      textbutton.qml
