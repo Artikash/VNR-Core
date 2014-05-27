@@ -84,7 +84,7 @@ Item { id: root_
       text: (toolBar_.enabled ? Sk.tr("Empty") : Sk.tr("Disabled")) + "! ><"
     }
 
-    TermView.NavToolBar { //id: navToolBar_ // scroll button
+    TermView.NavToolBar { //id: navToolBar_ // scroll buttons
       anchors {
         bottom: parent.bottom; right: parent.right
         margins: 25
@@ -95,11 +95,21 @@ Item { id: root_
     }
   }
 
-  Share.SearchBox { id: searchBox_
+  TermView.Paginator { id: paginator_
     anchors {
       left: parent.left
+      verticalCenter: searchBox_.verticalCenter
+      leftMargin: 2
+    }
+  }
+
+  Share.SearchBox { id: searchBox_
+    anchors {
+      left: paginator_.right
+      //left: parent.left
       right: searchToolBar_.left
       bottom: inspector_.top
+      leftMargin: 5
       bottomMargin: 5
     }
     totalCount: table_.count
