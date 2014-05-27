@@ -28,7 +28,7 @@ inline void dmsg(wchar_t *message)
 //inline void dmsg(ushort *message){ dmsg((LPWSTR)message); }
 
 inline void dmsg(const QString &message) { dmsg(message.utf16()); }
-template <typename T> inline void dmsg(T number) { dmsg(QString::number(number)); }
+template <typename T> inline void dmsg(T number) { dmsg("0x" + QString::number(number, 16)); }
 
 #endif //QT_CORE_LIB
 

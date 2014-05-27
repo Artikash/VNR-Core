@@ -196,7 +196,9 @@ bool BGIEngine::attachBGIType2()
   //ulong addr = 0x31850; // 世界と世界の真ん中 体験版
   if (!addr)
     return false;
-  return ::BGI2_oldHookFun = detours::replace<hook_fun_t>(addr, newHookFun);
+  ::BGI2_oldHookFun = detours::replace<hook_fun_t>(addr, newHookFun);
+  setName("BGI2"); // change engine name
+  return true;
 }
 
 // EOF

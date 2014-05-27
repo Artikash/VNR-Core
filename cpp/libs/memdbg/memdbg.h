@@ -13,6 +13,7 @@
 
 MEMDBG_BEGIN_NAMESPACE
 
+typedef unsigned char byte_t;
 typedef unsigned long dword_t;
 
 //typedef void *address_t; // LPVOID

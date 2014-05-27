@@ -34,6 +34,7 @@ simple:
   - ApRicot
   - AUEngine # deprecated
   - BGI
+  - BGI1
   - BGI2
   - CIRCUS
   - CMVS
@@ -103,6 +104,7 @@ char:
   - Atelier KAGUYA
   - AUEngine # deprecated
   - BGI
+  - BGI1
   - C4
   - CaramelBox
   - CatSystem2

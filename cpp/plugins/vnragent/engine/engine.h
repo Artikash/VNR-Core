@@ -32,6 +32,8 @@ public:
   EngineSettings *settings() const;
 
   const char *name() const;
+  void setName(const char *v);
+
   const char *encoding() const;
   uint codePage() const;
 

@@ -126,7 +126,6 @@ finish:
   }
 }
 
-#if 0
 // jichi 2/5/2014: '?' = 0xff
 // See: http://sakuradite.com/topic/124
 DWORD searchPatternEx(DWORD base, DWORD base_length, LPCVOID search, DWORD search_length, BYTE wildcard) // KMP
@@ -211,8 +210,6 @@ finish:
     add esp,ecx
   }
 }
-
-#endif // 0
 
 MEMDBG_END_NAMESPACE
 

@@ -278,62 +278,62 @@ bool InsertBGIDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
  *
  *  sub_41EBD0 proc near, seems to take 5 parameters
  *
- *  0041EBD0  /$ 83EC 28        SUB ESP,0x28 ; jichi: hook here, beginning of the function
- *  0041EBD3  |. 55             PUSH EBP
- *  0041EBD4  |. 8B6C24 38      MOV EBP,DWORD PTR SS:[ESP+0x38]
- *  0041EBD8  |. 81FD 00FF0000  CMP EBP,0xFF00
- *  0041EBDE  |. 0F82 E1000000  JB BGI.0041ECC5
- *  0041EBE4  |. 81FD FFFF0000  CMP EBP,0xFFFF
- *  0041EBEA  |. 0F87 D5000000  JA BGI.0041ECC5
- *  0041EBF0  |. A1 54634900    MOV EAX,DWORD PTR DS:[0x496354]
- *  0041EBF5  |. 8BD5           MOV EDX,EBP
- *  0041EBF7  |. 81E2 FF000000  AND EDX,0xFF
- *  0041EBFD  |. 53             PUSH EBX
- *  0041EBFE  |. 4A             DEC EDX
- *  0041EBFF  |. 33DB           XOR EBX,EBX
- *  0041EC01  |. 3BD0           CMP EDX,EAX
- *  0041EC03  |. 56             PUSH ESI
- *  0041EC04  |. 0F8D 8A000000  JGE BGI.0041EC94
- *  0041EC0A  |. 57             PUSH EDI
- *  0041EC0B  |. B9 06000000    MOV ECX,0x6
- *  0041EC10  |. BE 5C634900    MOV ESI,BGI.0049635C
- *  0041EC15  |. 8D7C24 20      LEA EDI,DWORD PTR SS:[ESP+0x20]
- *  0041EC19  |. F3:A5          REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS>
- *  0041EC1B  |. 8B0D 58634900  MOV ECX,DWORD PTR DS:[0x496358]
- *  0041EC21  |. 8B7424 3C      MOV ESI,DWORD PTR SS:[ESP+0x3C]
- *  0041EC25  |. 8BC1           MOV EAX,ECX
- *  0041EC27  |. 5F             POP EDI
- *  0041EC28  |. 0FAFC2         IMUL EAX,EDX
- *  0041EC2B  |. 8B56 08        MOV EDX,DWORD PTR DS:[ESI+0x8]
- *  0041EC2E  |. 894424 0C      MOV DWORD PTR SS:[ESP+0xC],EAX
- *  0041EC32  |. 3BCA           CMP ECX,EDX
- *  0041EC34  |. 7E 02          JLE SHORT BGI.0041EC38
- *  0041EC36  |. 8BCA           MOV ECX,EDX
- *  0041EC38  |> 8D4401 FF      LEA EAX,DWORD PTR DS:[ECX+EAX-0x1]
- *  0041EC3C  |. 8B4C24 28      MOV ECX,DWORD PTR SS:[ESP+0x28]
- *  0041EC40  |. 894424 14      MOV DWORD PTR SS:[ESP+0x14],EAX
- *  0041EC44  |. 8B46 0C        MOV EAX,DWORD PTR DS:[ESI+0xC]
- *  0041EC47  |. 3BC8           CMP ECX,EAX
- *  0041EC49  |. 895C24 10      MOV DWORD PTR SS:[ESP+0x10],EBX
- *  0041EC4D  |. 77 02          JA SHORT BGI.0041EC51
- *  0041EC4F  |. 8BC1           MOV EAX,ECX
- *  0041EC51  |> 8D4C24 0C      LEA ECX,DWORD PTR SS:[ESP+0xC]
- *  0041EC55  |. 8D5424 1C      LEA EDX,DWORD PTR SS:[ESP+0x1C]
- *  0041EC59  |. 48             DEC EAX
- *  0041EC5A  |. 51             PUSH ECX
- *  0041EC5B  |. 52             PUSH EDX
- *  0041EC5C  |. 894424 20      MOV DWORD PTR SS:[ESP+0x20],EAX
- *  0041EC60  |. E8 7B62FEFF    CALL BGI.00404EE0
- *  0041EC65  |. 8B4424 34      MOV EAX,DWORD PTR SS:[ESP+0x34]
- *  0041EC69  |. 83C4 08        ADD ESP,0x8
- *  0041EC6C  |. 83F8 03        CMP EAX,0x3
- *  0041EC6F  |. 75 15          JNZ SHORT BGI.0041EC86
- *  0041EC71  |. 8B4424 48      MOV EAX,DWORD PTR SS:[ESP+0x48]
- *  0041EC75  |. 8D4C24 1C      LEA ECX,DWORD PTR SS:[ESP+0x1C]
- *  0041EC79  |. 50             PUSH EAX
- *  0041EC7A  |. 51             PUSH ECX
- *  0041EC7B  |. 56             PUSH ESI
- *  0041EC7C  |. E8 1FA0FEFF    CALL BGI.00408CA0
+ *  0041ebd0  /$ 83ec 28        sub esp,0x28 ; jichi: hook here, beginning of the function
+ *  0041ebd3  |. 55             push ebp
+ *  0041ebd4  |. 8b6c24 38      mov ebp,dword ptr ss:[esp+0x38]
+ *  0041ebd8  |. 81fd 00ff0000  cmp ebp,0xff00
+ *  0041ebde  |. 0f82 e1000000  jb bgi.0041ecc5
+ *  0041ebe4  |. 81fd ffff0000  cmp ebp,0xffff
+ *  0041ebea  |. 0f87 d5000000  ja bgi.0041ecc5
+ *  0041ebf0  |. a1 54634900    mov eax,dword ptr ds:[0x496354]
+ *  0041ebf5  |. 8bd5           mov edx,ebp
+ *  0041ebf7  |. 81e2 ff000000  and edx,0xff
+ *  0041ebfd  |. 53             push ebx
+ *  0041ebfe  |. 4a             dec edx
+ *  0041ebff  |. 33db           xor ebx,ebx
+ *  0041ec01  |. 3bd0           cmp edx,eax
+ *  0041ec03  |. 56             push esi
+ *  0041ec04  |. 0f8d 8a000000  jge bgi.0041ec94
+ *  0041ec0a  |. 57             push edi
+ *  0041ec0b  |. b9 06000000    mov ecx,0x6
+ *  0041ec10  |. be 5c634900    mov esi,bgi.0049635c
+ *  0041ec15  |. 8d7c24 20      lea edi,dword ptr ss:[esp+0x20]
+ *  0041ec19  |. f3:a5          rep movs dword ptr es:[edi],dword ptr ds>
+ *  0041ec1b  |. 8b0d 58634900  mov ecx,dword ptr ds:[0x496358]
+ *  0041ec21  |. 8b7424 3c      mov esi,dword ptr ss:[esp+0x3c]
+ *  0041ec25  |. 8bc1           mov eax,ecx
+ *  0041ec27  |. 5f             pop edi
+ *  0041ec28  |. 0fafc2         imul eax,edx
+ *  0041ec2b  |. 8b56 08        mov edx,dword ptr ds:[esi+0x8]
+ *  0041ec2e  |. 894424 0c      mov dword ptr ss:[esp+0xc],eax
+ *  0041ec32  |. 3bca           cmp ecx,edx
+ *  0041ec34  |. 7e 02          jle short bgi.0041ec38
+ *  0041ec36  |. 8bca           mov ecx,edx
+ *  0041ec38  |> 8d4401 ff      lea eax,dword ptr ds:[ecx+eax-0x1]
+ *  0041ec3c  |. 8b4c24 28      mov ecx,dword ptr ss:[esp+0x28]
+ *  0041ec40  |. 894424 14      mov dword ptr ss:[esp+0x14],eax
+ *  0041ec44  |. 8b46 0c        mov eax,dword ptr ds:[esi+0xc]
+ *  0041ec47  |. 3bc8           cmp ecx,eax
+ *  0041ec49  |. 895c24 10      mov dword ptr ss:[esp+0x10],ebx
+ *  0041ec4d  |. 77 02          ja short bgi.0041ec51
+ *  0041ec4f  |. 8bc1           mov eax,ecx
+ *  0041ec51  |> 8d4c24 0c      lea ecx,dword ptr ss:[esp+0xc]
+ *  0041ec55  |. 8d5424 1c      lea edx,dword ptr ss:[esp+0x1c]
+ *  0041ec59  |. 48             dec eax
+ *  0041ec5a  |. 51             push ecx
+ *  0041ec5b  |. 52             push edx
+ *  0041ec5c  |. 894424 20      mov dword ptr ss:[esp+0x20],eax
+ *  0041ec60  |. e8 7b62feff    call bgi.00404ee0
+ *  0041ec65  |. 8b4424 34      mov eax,dword ptr ss:[esp+0x34]
+ *  0041ec69  |. 83c4 08        add esp,0x8
+ *  0041ec6c  |. 83f8 03        cmp eax,0x3
+ *  0041ec6f  |. 75 15          jnz short bgi.0041ec86
+ *  0041ec71  |. 8b4424 48      mov eax,dword ptr ss:[esp+0x48]
+ *  0041ec75  |. 8d4c24 1c      lea ecx,dword ptr ss:[esp+0x1c]
+ *  0041ec79  |. 50             push eax
+ *  0041ec7a  |. 51             push ecx
+ *  0041ec7b  |. 56             push esi
+ *  0041ec7c  |. e8 1fa0feff    call bgi.00408ca0
  */
 bool InsertBGI1Hook()
 {

@@ -52,11 +52,11 @@ struct HookStruct
 {
   union {
     LPCWSTR texts[3]; // 0x0
-    WCHAR text[6];  // 0x0
+    WCHAR text[6];    // 0x0
   };
-  LPWORD flag;      // 0xc
-  DWORD size;       // 0x10
-  //DWORD capacity; // 0x14
+  LPWORD flag;        // 0xc
+  DWORD size;         // 0x10
+  //DWORD capacity;   // 0x14
 };
 
 /**
@@ -67,7 +67,7 @@ struct HookStruct
 int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
 {
   Q_UNUSED(edx);
-  enum { role = Engine::ScenarioRole, signature = 1 }; // dummy signature
+  enum { role = Engine::ScenarioRole, signature = role }; // dummy non-zero signature
   auto q = AbstractEngine::instance();
 
   if (self->flag && !*self->flag) {
@@ -77,7 +77,7 @@ int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
     QString text = QString::fromWCharArray(self->text, self->size);
     text = q->dispatchTextW(text, signature, role);
     if (text.isEmpty())
-      return 0;
+      return self->size * 2; // estimated painted bytes
 
     // FIXME: replacement is not implemented for short text
     return oldHookFun(self, arg1, arg2);
@@ -98,13 +98,12 @@ int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
   QString text = QString::fromWCharArray(self->texts[0], self->size);
   text = q->dispatchTextW(text, signature, role);
   if (text.isEmpty())
-    return 0;
-    //return text.size() * 2;
+    return self->size * 2; // estimated painted bytes
 
   auto oldSize = self->size;
   auto oldText = self->texts[0];
   self->size = text.size();
-  self->texts[0] = (LPCWSTR)text.utf16();
+  self->texts[0] = (LPCWSTR)text.utf16(); // lack trailing null character
 
   int ret = oldHookFun(self, arg1, arg2); // ret = size * 2
 
