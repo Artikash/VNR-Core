@@ -20,6 +20,8 @@ from mytr import my, mytr_
 import config, growl, mecabman, termman, textutil
 import trman
 
+#from sakurakit.skprofiler import SkProfiler
+
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()
 _NO_RE = re.compile('')
@@ -171,12 +173,14 @@ class MachineTranslator(Translator):
 
   def __init__(self, parent=None, abortSignal=None):
     super(MachineTranslator, self).__init__()
-    self._cache = TranslationCache() #
+    self.cache = TranslationCache()  # public overall translation cache
+    self._cache = TranslationCache() # private translation cache for internal translation
     self.parent = parent  # QObject
     self.abortSignal = abortSignal # QtCore.Signal abort translation
 
   def clearCache(self):
     """@reimp"""
+    self.cache.clear()
     self._cache.clear()
 
   def __cachedtr(self, text, async, tr, **kwargs):
@@ -278,6 +282,7 @@ class MachineTranslator(Translator):
     if emit and text != t:
       self.emitSourceText(text)
     t = text
+    #with SkProfiler():
     text = tm.prepareEscapeTerms(text, to)
     if emit and text != t:
       self.emitEscapedText(text)
@@ -298,6 +303,7 @@ class MachineTranslator(Translator):
       self.emitJointTranslation(text)
     #text = self.__google_repl_after(text)
     t = text
+    #with SkProfiler():
     text = tm.applyEscapeTerms(text, to)
     if emit and text != t:
       self.emitEscapedTranslation(text)
@@ -368,16 +374,21 @@ class AtlasTranslator(OfflineMachineTranslator):
       self.emitLanguages(fr='ja', to=to)
     if fr != 'ja':
       return None, None, None
-    text = self._escapeText(text, to=to, emit=emit)
-    if text:
+    if not emit:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    repl = self._escapeText(text, to=to, emit=emit)
+    if repl:
       try:
-        text = self._translate(emit, text, self.engine.translate, async=async)
-        if text:
+        repl = self._translate(emit, repl, self.engine.translate, async=async)
+        if repl:
           # ATLAS always try to append period at the end
-          text = wide2thin(text) #.replace(u". 。", ". ").replace(u"。", ". ").replace(u" 」", u"」").rstrip()
-          text = self._unescapeTranslation(text, to=to, emit=emit)
-          text = text.replace(u" 」", u"」") # remove the trailing space
-          return text, to, self.key
+          repl = wide2thin(repl) #.replace(u". 。", ". ").replace(u"。", ". ").replace(u" 」", u"」").rstrip()
+          repl = self._unescapeTranslation(repl, to=to, emit=emit)
+          repl = repl.replace(u" 」", u"」") # remove the trailing space
+          self.cache.update(text, repl)
+          return repl, to, self.key
       #except RuntimeError, e:
       except Exception, e:
         if not self._warned:
@@ -438,18 +449,19 @@ class LecTranslator(OfflineMachineTranslator):
       self.emitLanguages(fr='ja', to=to)
     if fr != 'ja':
       return None, None, None
-    text = self._escapeText(text, to=to, emit=emit)
-    if text:
+    if not emit:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    repl = self._escapeText(text, to=to, emit=emit)
+    if repl:
       try:
-        #y = cachedYaku if cached else yaku
-        #sub = y(text) if not async else skthreads.runsync(
-        #    partial(y, text),
-        #    parent=self.q)
-        text = self._translate(emit, text, self.engine.translate, async=async)
-        if text:
-          text = wide2thin(text) #.replace(u"。", ". ").replace(u" 」", u"」").rstrip()
-          text = self._unescapeTranslation(text, to=to, emit=emit)
-          return text, to, self.key
+        repl = self._translate(emit, repl, self.engine.translate, async=async)
+        if repl:
+          repl = wide2thin(repl) #.replace(u"。", ". ").replace(u" 」", u"」").rstrip()
+          repl = self._unescapeTranslation(repl, to=to, emit=emit)
+          self.cache.update(text, repl)
+          return repl, to, self.key
       #except RuntimeError, e:
       except Exception, e:
         if not self._warned:
@@ -506,13 +518,18 @@ class EzTranslator(OfflineMachineTranslator):
       self.emitLanguages(fr='ja', to=to)
     if fr != 'ja':
       return None, None, None
-    text = self._escapeText(text, to=to, emit=emit)
-    if text:
+    if not emit:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    repl = self._escapeText(text, to=to, emit=emit)
+    if repl:
       try:
-        text = self._translate(emit, text, self.engine.translate, async=async)
-        if text:
-          text = self._unescapeTranslation(text, to=to, emit=emit)
-          return text, to, self.key
+        repl = self._translate(emit, repl, self.engine.translate, async=async)
+        if repl:
+          repl = self._unescapeTranslation(repl, to=to, emit=emit)
+          self.cache.update(text, repl)
+          return repl, to, self.key
       #except RuntimeError, e:
       except Exception, e:
         if not self._warned:
@@ -601,15 +618,23 @@ class JBeijingTranslator(OfflineMachineTranslator):
       return None, None, None
     simplified = to == 'zhs'
     to = 'zhs' if simplified else 'zht'
-    text = self._escapeText(text, to=to, emit=emit)
-    if text:
-      text = text.replace('\n', ' ') # JBeijing cannot handle multiple lines
+    if not emit:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    #with SkProfiler():
+    repl = self._escapeText(text, to=to, emit=emit)
+    if repl:
+      repl = repl.replace('\n', ' ') # JBeijing cannot handle multiple lines
       try:
-        text = self._translate(emit, text, self.engine.translate, async=async, simplified=simplified)
-        if text:
-          text = wide2thin_digit(text) # convert wide digits to thin digits
-          text = self._unescapeTranslation(text, to=to, emit=emit)
-          return text, to, self.key
+        #with SkProfiler():
+        repl = self._translate(emit, repl, self.engine.translate, async=async, simplified=simplified)
+        if repl:
+          repl = wide2thin_digit(repl) # convert wide digits to thin digits
+          #with SkProfiler():
+          repl = self._unescapeTranslation(repl, to=to, emit=emit)
+          self.cache.update(text, repl)
+          return repl, to, self.key
       #except RuntimeError, e:
       except Exception, e:
         if self._warned:
@@ -687,18 +712,23 @@ class DreyeTranslator(OfflineMachineTranslator):
     engine = self.jcEngine if fr == 'ja' else self.ecEngine
     if emit:
       self.emitLanguages(fr=fr, to=to)
-    text = self._escapeText(text, to=to, emit=emit)
-    if text:
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    repl = self._escapeText(text, to=to, emit=emit)
+    if repl:
       try:
-        text = self._translate(emit, text, engine.translate, async=async, to=to, fr=fr)
-        if text:
+        repl = self._translate(emit, repl, engine.translate, async=async, to=to, fr=fr)
+        if repl:
           if to != 'zhs':
-            text = zhs2zht(text)
+            repl = zhs2zht(repl)
           #sub = self._applySentenceTransformation(sub)
           #sub = self.__dreye_repl_after(sub)
           #sub = sub.replace(']', u'】')
-          text = self._unescapeTranslation(text, to=to, emit=emit)
-          return text, to, self.key
+          repl = self._unescapeTranslation(repl, to=to, emit=emit)
+          self.cache.update(text, repl)
+          return repl, to, self.key
       #except RuntimeError, e:
       except Exception, e:
         if not self._warned:
@@ -730,13 +760,18 @@ class InfoseekTranslator(OnlineMachineTranslator):
     to = 'en' if to in ('ms', 'ru', 'nl', 'pl') else to
     if emit:
       self.emitLanguages(fr=fr, to=to)
-    text = self._escapeText(text, to=to, emit=emit)
-    if text:
-      text = self._translate(emit, text, self.engine.translate,
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    repl = self._escapeText(text, to=to, emit=emit)
+    if repl:
+      repl = self._translate(emit, repl, self.engine.translate,
           to=to, fr=fr, async=async)
-      if text:
-        text = self._unescapeTranslation(text, to=to, emit=emit)
-    return text, to, self.key
+      if repl:
+        repl = self._unescapeTranslation(repl, to=to, emit=emit)
+        self.cache.update(text, repl)
+    return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
     """
@@ -768,13 +803,18 @@ class ExciteTranslator(OnlineMachineTranslator):
     to = 'en' if to in ('ms', 'id', 'th', 'vi', 'nl', 'pl') else to
     if emit:
       self.emitLanguages(fr=fr, to=to)
-    text = self._escapeText(text, to=to, emit=emit)
-    if text:
-      text = self._translate(emit, text, self.engine.translate,
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    repl = self._escapeText(text, to=to, emit=emit)
+    if repl:
+      repl = self._translate(emit, repl, self.engine.translate,
           to=to, fr=fr, async=async)
-      if text:
-        text = self._unescapeTranslation(text, to=to, emit=emit)
-    return text, to, self.key
+      if repl:
+        repl = self._unescapeTranslation(repl, to=to, emit=emit)
+        self.cache.update(text, repl)
+    return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
     """
@@ -801,13 +841,18 @@ class LecOnlineTranslator(OnlineMachineTranslator):
     to = 'en' if to in ('ms', 'th', 'vi') else to
     if emit:
       self.emitLanguages(fr=fr, to=to)
-    text = self._escapeText(text, to=to, emit=emit)
-    if text:
-      text = self._translate(emit, text, self.engine.translate,
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    repl = self._escapeText(text, to=to, emit=emit)
+    if repl:
+      repl = self._translate(emit, repl, self.engine.translate,
           to=to, fr=fr, async=async)
-      if text:
-        text = self._unescapeTranslation(text, to=to, emit=emit)
-    return text, to, self.key
+      if repl:
+        repl = self._unescapeTranslation(repl, to=to, emit=emit)
+        self.cache.update(text, repl)
+    return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
     """
@@ -834,13 +879,18 @@ class TransruTranslator(OnlineMachineTranslator):
     to = 'en' if to not in ('ja', 'en', 'ru', 'it', 'fr', 'de', 'pt', 'es') else to
     if emit:
       self.emitLanguages(fr=fr, to=to)
-    text = self._escapeText(text, to=to, emit=emit)
-    if text:
-      text = self._translate(emit, text, self.engine.translate,
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    repl = self._escapeText(text, to=to, emit=emit)
+    if repl:
+      repl = self._translate(emit, repl, self.engine.translate,
           to=to, fr=fr, async=async)
-      if text:
-        text = self._unescapeTranslation(text, to=to, emit=emit)
-    return text, to, self.key
+      if repl:
+        repl = self._unescapeTranslation(repl, to=to, emit=emit)
+        self.cache.update(text, repl)
+    return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
     """
@@ -869,15 +919,20 @@ class GoogleTranslator(OnlineMachineTranslator):
     """@reimp"""
     if emit:
       self.emitLanguages(fr=fr, to=to)
-    text = self._escapeText(text, to=to, emit=emit)
-    if text:
-      text = self._translate(emit, text, self.engine.translate,
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    repl = self._escapeText(text, to=to, emit=emit)
+    if repl:
+      repl = self._translate(emit, repl, self.engine.translate,
           to=to, fr=fr, async=async)
-      if text:
-        text = self._unescapeTranslation(text, to=to, emit=emit)
+      if repl:
+        repl = self._unescapeTranslation(repl, to=to, emit=emit)
         if to.startswith('zh'):
-          text = text.replace("...", u'…')
-    return text, to, self.key
+          repl = repl.replace("...", u'…')
+        self.cache.update(text, repl)
+    return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
     """
@@ -911,13 +966,18 @@ class BingTranslator(OnlineMachineTranslator):
     #  return None, None, None
     if emit:
       self.emitLanguages(fr=fr, to=to)
-    text = self._escapeText(text, to=to, emit=emit)
-    if text:
-      text = self._translate(emit, text, self.engine.translate,
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    repl = self._escapeText(text, to=to, emit=emit)
+    if repl:
+      repl = self._translate(emit, repl, self.engine.translate,
           to=to, fr=fr, async=async)
-      if text:
-        text = self._unescapeTranslation(text, to=to, emit=emit)
-    return text, to, self.key
+      if repl:
+        repl = self._unescapeTranslation(repl, to=to, emit=emit)
+        self.cache.update(text, repl)
+    return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
     """
@@ -962,17 +1022,22 @@ class BaiduTranslator(OnlineMachineTranslator):
       self.emitLanguages(fr=fr, to=to)
     #if lang not in ('zhs', 'zht', 'ja', 'en'):
     #  return None, None, None
-    text = self._escapeText(text, to=to, emit=emit)
-    if text:
-      text = self.__baidu_repl_before(text)
-      text = self._translate(emit, text, self.engine.translate,
+    else:
+      repl = self.cache.get(text)
+      if repl:
+        return repl, to, self.key
+    repl = self._escapeText(text, to=to, emit=emit)
+    if repl:
+      repl = self.__baidu_repl_before(repl)
+      repl = self._translate(emit, repl, self.engine.translate,
           to=to, fr=fr, async=async)
-      if text:
+      if repl:
         if to == 'zht':
-          text = zhs2zht(text)
-        text = self.__baidu_repl_after(text)
-        text = self._unescapeTranslation(text, to=to, emit=emit)
-    return text, to, self.key
+          repl = zhs2zht(repl)
+        repl = self.__baidu_repl_after(repl)
+        repl = self._unescapeTranslation(repl, to=to, emit=emit)
+        self.cache.update(text, repl)
+    return repl, to, self.key
 
   def translateTest(self, text, to='en', fr='ja', async=False):
     """
