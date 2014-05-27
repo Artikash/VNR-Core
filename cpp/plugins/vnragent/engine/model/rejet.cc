@@ -22,22 +22,23 @@ namespace { // unnamed
 
 /**
  *  Sample game: 剣が君
- *  .text:0044D620 ; int __stdcall sub_44D620(int, void *, unsigned __int8 *, void *, int)
- *  .text:0044D620 sub_44D620      proc near               ; CODE XREF: sub_438C30+96p
- *  .text:0044D620                                         ; sub_45A190+8Cp
- *  Observations from 剣が君:
- *  - arg1: Scenario text containing HTML tags
- *  - arg2: role name
- *  - arg3: unknown string
- *  - arg4: role name
- *  - arg5: size or width, not sure
- *  - return: unknown
+ *  ITH hooked relative address: b3578
+ *  Function relative address: b3550
  *
- *  CHECKPOINT 5/25/2014: This is not the correct function to inject
- *  This function is found using Cheat Engine
- *  Two other places found accessing the memory address are:
- *  - ntdll::memmove (modify), the caller of this might be the right function to hijact
- *  - boost xml archive (read-only)
+ *  The address to the character is saved in ecx
+ *
+ *  base: 0x11c0000
+ *
+ *  Another recursive function found during debug: 51c60
+ *  It is called by sub 53c70.
+ *  53c70 must be invoked in spinning loop.
+ *  When there are texts, it will send the text to 51c60.
+ *  It keeps checking ecx[0x4] until it becomes 1.
+ *  Then, it will fetch and paint character by character.
+ *
+ *  Sample ecx:
+ *  - 04C51B08  AC 1E 6A 01 01 00 00 00  ｬj...
+ *  - 04C51B10  D2 22 22 6C 31 31 00 8C  ﾒ""l11.・
  */
 typedef int (__stdcall *hook_fun_t)(LPCSTR, LPCSTR, LPCSTR, LPCSTR, int);
 hook_fun_t oldHookFun;
@@ -83,11 +84,33 @@ bool RejetEngine::attach()
     return false;
   //enum { sub_esp = 0xec81 }; // caller pattern: sub esp = 0x81,0xec
   //DWORD addr = MemDbg::findCallerAddress((DWORD)::TextOutA, sub_esp, startAddress, stopAddress);
-  DWORD addr = startAddress + 0x4d620; // 剣が君
-  //DWORD addr = startAddress + 0x38c30
+  //DWORD addr = startAddress + 0x4d620; // 剣が君
+  //DWORD addr = startAddress + 0xb3578; // 剣が君
+  DWORD addr = startAddress + 0xb3550; // 剣が君
   if (!addr)
     return false;
   return ::oldHookFun = detours::replace<hook_fun_t>(addr, ::newHookFun);
 }
 
 // EOF
+
+/**
+ *  Sample game: 剣が君
+ *  .text:0044D620 ; int __stdcall sub_44D620(int, void *, unsigned __int8 *, void *, int)
+ *  .text:0044D620 sub_44D620      proc near               ; CODE XREF: sub_438C30+96p
+ *  .text:0044D620                                         ; sub_45A190+8Cp
+ *  Observations from 剣が君:
+ *  - arg1: Scenario text containing HTML tags
+ *  - arg2: role name
+ *  - arg3: unknown string
+ *  - arg4: role name
+ *  - arg5: size or width, not sure
+ *  - return: unknown
+ *
+ *  5/25/2014: This is not the correct function to inject
+ *  This function is found using Cheat Engine
+ *  Two other places found accessing the memory address are:
+ *  - ntdll::memmove (modify), the caller of this might be the right function to hijact
+ *  - boost xml archive (read-only)
+ *
+ */
