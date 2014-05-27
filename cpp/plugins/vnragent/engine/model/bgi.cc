@@ -5,11 +5,7 @@
 
 bool BGIEngine::match() { return Engine::glob("BGI.*"); }
 
-bool BGIEngine::attach()
-{
-  // New BGI game (BGI2) does not have old BGI pattern (BGI1)
-  //return attachBGIType2() || attachBGIType1();
-  return attachBGIType2(); // Temporarily disable BGI1
-}
+// BGI2 pattern also exists in BGI1
+bool BGIEngine::attach() { return attachBGIType2() || attachBGIType1(); }
 
 // EOF
