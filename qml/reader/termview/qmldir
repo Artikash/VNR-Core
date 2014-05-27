@@ -3,7 +3,6 @@
 Counter         counter.qml
 Inspector       inspector.qml
 NavToolBar      navtoolbar.qml
-Paginator       paginator.qml
 SearchToolBar   searchtoolbar.qml
 Table           table.qml
 ToolBar         toolbar.qml

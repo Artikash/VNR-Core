@@ -3346,6 +3346,11 @@ class _TermModel(object):
     self.sortingColumn = 0
     self.sortingReverse = False
 
+    self.pageNumber = 1 # starts at 1
+    self.pageSize = 20 # read-only, number of items per page, smaller enough to speed up scrolling
+
+  def pageIndex(self): return self.pageSize * (self.pageNumber - 1) # -> int
+
   @property
   def data(self):
     """
@@ -3460,7 +3465,8 @@ class TermModel(QAbstractListModel):
 
   def rowCount(self, parent=QModelIndex()):
     """@reimp @public"""
-    return len(self.__d.data)
+    totalSize = len(self.__d.data)
+    return min(totalSize, self.__d.pageSize)
 
   def data(self, index, role):
     """@reimp @public"""
@@ -3468,14 +3474,14 @@ class TermModel(QAbstractListModel):
       row = index.row()
       if row >= 0 and row < self.rowCount():
         if role == TERM_NUM_ROLE:
-          return row +1
+          return self.__d.pageIndex() + row +1
         elif role == TERM_OBJECT_ROLE:
           return self.get(row)
 
   @Slot(int, result=QObject)
   def get(self, row):
-    # Revert the list
-    try: return self.__d.data[-row -1]
+    try: return self.__d.data[- # Revert the list
+        (self.__d.pageIndex() + row +1)]
     except IndexError: pass
 
   countChanged = Signal(int)
@@ -3517,6 +3523,22 @@ class TermModel(QAbstractListModel):
       lambda self: self.__d.sortingReverse,
       setSortingReverse,
       notify=sortingReverseChanged)
+
+  def setPageNumber(self, value):
+    if value != self.__d.pageNumber:
+      self.__d.pageNumber = value
+      self.pageNumberChanged.emit(value)
+      super(TermModel, self).reset()
+  pageNumberChanged = Signal(int)
+  pageNumber = Property(int,
+      lambda self: self.__d.pageNumber,
+      setPageNumber,
+      notify=pageNumberChanged)
+
+  pageSizeChanged = Signal(int)
+  pageSize = Property(int,
+      lambda self: self.__d.pageSize,
+      notify=pageSizeChanged)
 
 ## Comment model ##
 

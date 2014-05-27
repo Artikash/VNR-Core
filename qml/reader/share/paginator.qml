@@ -1,12 +1,11 @@
-/** searchtoolbar.qml
- *  2/20/2013 jichi
+/** paginator.qml
+ *  5/25/2014 jichi
  */
 import QtQuick 1.1
 //import QtDesktop 0.1 as Desktop
 import '../../../js/sakurakit.min.js' as Sk
 import '../../bootstrap3' as Bootstrap
-import '../share' as Share
-//import '../share' as Share
+import '.' as Share
 
 Item { id: root_
 
@@ -15,8 +14,8 @@ Item { id: root_
 
   // - Private -
 
-  width: 140
-  height: 40
+  implicitWidth: 150
+  implicitHeight: 40
 
   //property int cellWidth: 20
   //property int cellHeight: 18

@@ -93,14 +93,22 @@ Item { id: root_
       onScrollTop: table_.positionViewAtBeginning()
       onScrollBottom: table_.positionViewAtEnd()
     }
+
+    onPageNumberChanged:
+      if (paginator_.value != pageNumber)
+        paginator_.value = pageNumber
   }
 
-  TermView.Paginator { id: paginator_
+  Share.Paginator { id: paginator_
     anchors {
       left: parent.left
       verticalCenter: searchBox_.verticalCenter
       leftMargin: 2
     }
+    maximumValue: table_.maximumPageNumber
+    onValueChanged:
+      if (value != table_.pageNumber)
+        table_.pageNumber = value
   }
 
   Share.SearchBox { id: searchBox_
