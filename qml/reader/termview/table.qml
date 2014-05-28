@@ -613,7 +613,7 @@ Item { id: root_
           visible: itemSelected && editable
           maximumLength: _MAX_TEXT_LENGTH
 
-          Component.onCompleted: text = itemValue.comment
+          text: itemValue.comment
 
           onTextChanged: save()
           onAccepted: save()
@@ -627,6 +627,14 @@ Item { id: root_
               }
             }
           }
+
+          //Component.onCompleted: itemValue.commentChanged.connect(setText)
+          //Component.onDestruction: itemValue.commentChanged.disconnect(setText)
+          //function setText(v) { // string ->
+          //  v = Util.trim(v)
+          //  if (text !== v)
+          //    text = v
+          //}
         }
       }
     }
