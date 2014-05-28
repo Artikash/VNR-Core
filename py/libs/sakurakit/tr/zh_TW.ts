@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="zh_TW">
+<!DOCTYPE TS>
+<TS version="2.0" language="zh_TW">
 <context>
     <name>sakurakit</name>
     <message>
@@ -2120,17 +2121,17 @@
     <message>
         <location filename="sktr.py" line="94"/>
         <source>Append</source>
-        <translation type="unfinished"></translation>
+        <translation>追加</translation>
     </message>
     <message>
         <location filename="sktr.py" line="152"/>
         <source>Overwrite</source>
-        <translation type="unfinished"></translation>
+        <translation>覆蓋</translation>
     </message>
     <message>
         <location filename="sktr.py" line="287"/>
         <source>Method</source>
-        <translation type="unfinished"></translation>
+        <translation>方法</translation>
     </message>
 </context>
 </TS>

@@ -917,6 +917,11 @@
         <source>Disable the selected entries</source>
         <translation>禁用选定的内容</translation>
     </message>
+    <message>
+        <location filename="../termview/selecttoolbar.qml" line="61"/>
+        <source>Edit comment for the selected entries</source>
+        <translation>编辑选定的内容</translation>
+    </message>
 </context>
 <context>
     <name>shiori</name>

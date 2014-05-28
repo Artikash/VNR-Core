@@ -9,7 +9,7 @@ Item { id: root_
   height: 40
 
   property int selectionCount
-  property QtObject model
+  property QtObject model // dataman.TermModel
 
   // - Private -
 
@@ -54,6 +54,13 @@ Item { id: root_
         tooltip: qsTr("Disable the selected entries")
         //visible: root_.canEdit
         onClicked: root_.model.disableSelection()
+      }
+
+      Desktop.ToolButton {
+        text: Sk.tr("Comment")
+        tooltip: qsTr("Edit comment for the selected entries")
+        //visible: root_.canEdit
+        onClicked: root_.model.commentSelection()
       }
     }
   }

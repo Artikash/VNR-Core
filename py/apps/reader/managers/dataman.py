@@ -3360,6 +3360,13 @@ class _TermModel(object):
 
     self.selectionCount = 0 # int, cached
 
+
+  @memoizedproperty
+  def commentDialog(self):
+    import commentinput, windows
+    parent = windows.top()
+    return commentinput.CommentInputDialog(parent)
+
   def pageIndex(self): return self.pageSize * (self.pageNumber - 1) # -> int
 
   @property
@@ -3596,6 +3603,18 @@ class TermModel(QAbstractListModel):
       comment = prompt.getDisableSelectionComment(d.selectionCount)
       if comment:
         manager().disableSelectedTerms(updateComment=comment)
+
+  @Slot()
+  def commentSelection(self): # delete selected entries
+    d = self.__d
+    if d.selectionCount and netman.manager().isOnline():
+      ok, comment, opt = d.commentDialog.get()
+      if ok and comment:
+        manager().commentSelectedTerms(
+          value=comment,
+          type=opt['type'],
+          append=opt['method'] == 'append',
+        )
 
 ## Comment model ##
 
@@ -7470,9 +7489,10 @@ class DataManager(QObject):
     d.invalidateTerms()
     d.touchTerms()
 
-  def deleteSelectedTerms(self, updateComment=''):
+  def deleteSelectedTerms(self, updateComment='', append=True):
     """
     @param* updateComment  unicode
+    @param* append  bool
     """
     d = self.__d
     userId = d.user.id
@@ -7480,6 +7500,8 @@ class DataManager(QObject):
       return
 
     userLevel = d.user.termLevel
+
+    count = 0
 
     for t in d.terms:
       td = t.d
@@ -7495,24 +7517,29 @@ class DataManager(QObject):
             tr_("Text") + ": " + td.text,
           )))
           continue
+        count += 1
         if updateComment:
-          t.updateComment = "%s // %s" % (updateComment, td.updateComment) if (
+          t.updateComment = "%s // %s" % (updateComment, td.updateComment) if (append and
             td.updateComment and td.updateComment != updateComment and not td.updateComment.startswith(updateComment + ' //')
           ) else updateComment
         t.deleted = True
         if t.parent():
           skevents.runlater(partial(t.setParent, None), 120000) # after 2 min
 
-    d.terms = [t for t in d.terms if not (t.d.selected and t.d.deleted)]
-    if d._sortedTerms:
-      d._sortedTerms = [t for t in d._sortedTerms if not (t.d.selected and t.d.deleted)]
+    if count:
+      d.terms = [t for t in d.terms if not (t.d.selected and t.d.deleted)]
+      if d._sortedTerms:
+        d._sortedTerms = [t for t in d._sortedTerms if not (t.d.selected and t.d.deleted)]
 
-    d.invalidateTerms()
-    d.touchTerms()
+      d.invalidateTerms()
+      d.touchTerms()
 
-  def disableSelectedTerms(self, updateComment=''):
+      growl.msg(my.tr("{0} items updated").format(count))
+
+  def disableSelectedTerms(self, updateComment='', append=True):
     """
     @param* updateComment  unicode
+    @param* append  bool
     """
     d = self.__d
     userId = d.user.id
@@ -7523,6 +7550,7 @@ class DataManager(QObject):
 
     now = skdatetime.current_unixtime()
 
+    count = 0
     for t in d.terms:
       td = t.d
       if td.selected and not td.disabled:
@@ -7537,13 +7565,84 @@ class DataManager(QObject):
             tr_("Text") + ": " + td.text,
           )))
           continue
+        count += 1
         t.updateUserId = userId
         t.updateTimestamp = now
         t.disabled = True
         if updateComment:
-          t.updateComment = "%s // %s" % (updateComment, td.updateComment) if (
+          t.updateComment = "%s // %s" % (updateComment, td.updateComment) if (append and
             td.updateComment and td.updateComment != updateComment and not td.updateComment.startswith(updateComment + ' //')
           ) else updateComment
+
+    if count:
+      growl.msg(my.tr("{0} items updated").format(count))
+
+    #d.terms = [t for t in d.terms if not (t.d.selected and t.d.deleted)]
+    #if d._sortedTerms:
+    #  d._sortedTerms = [t for t in d._sortedTerms if not (t.d.selected and t.d.updateTimestamp == now)]
+
+    #d.invalidateTerms()
+    #d.touchTerms()
+
+  def commentSelectedTerms(self, value, type='comment', append=True):
+    """
+    @param  value  unicode
+    @param* type  'comment' or 'updateComment'
+    @param* append  bool
+    """
+    d = self.__d
+    userId = d.user.id
+    if not d.terms or not userId:
+      return
+
+    userLevel = d.user.termLevel
+
+    now = skdatetime.current_unixtime()
+
+    count = 0
+
+    for t in d.terms:
+      td = t.d
+      if td.selected:
+        count += 1
+        if type == 'comment':
+          if not ( # the same as canImprove permission in qml
+            userId == ADMIN_USER_ID or
+            td.userId == userId and not t.protected or
+            td.userId == GUEST_USER_ID and userLevel > 0):
+            growl.warn('<br/>'.join((
+              my.tr("Editing other's entry is not allowed"),
+              tr_("User") + ": " + t.userName,
+              tr_("Pattern") + ": " + td.pattern,
+              tr_("Text") + ": " + td.text,
+            )))
+            continue
+          t.updateUserId = userId
+          t.updateTimestamp = now
+          t.comment = "%s // %s" % (value, td.comment) if (append and
+            td.comment and td.comment != value and not td.comment.startswith(value + ' //')
+          ) else value
+
+        elif type == 'updateComment':
+          if not ( # the same as canImprove permission in qml
+            userId != GUEST_USER_ID or
+            td.userId == userId and not t.protected or
+            td.userId == GUEST_USER_ID and userLevel > 0):
+            growl.warn('<br/>'.join((
+              my.tr("Editing other's entry is not allowed"),
+              tr_("User") + ": " + t.userName,
+              tr_("Pattern") + ": " + td.pattern,
+              tr_("Text") + ": " + td.text,
+            )))
+            continue
+          t.updateUserId = userId
+          t.updateTimestamp = now
+          t.updateComment = "%s // %s" % (value, td.updateComment) if (append and
+            td.updateComment and td.updateComment != value and not td.updateComment.startswith(value + ' //')
+          ) else value
+
+    if count:
+      growl.msg(my.tr("{0} items updated").format(count))
 
     #d.terms = [t for t in d.terms if not (t.d.selected and t.d.deleted)]
     #if d._sortedTerms:

@@ -22,7 +22,7 @@ class CommentInputDialog(QtWidgets.QDialog):
   def __init__(self, parent=None):
     super(CommentInputDialog, self).__init__(parent)
     skqss.class_(self, 'texture')
-    self.setWindowTitle(tr_("Comment"))
+    self.setWindowTitle(mytr_("Update reason"))
     #self.setWindowIcon(rc.icon('window-shortcuts'))
     self.__d = _CommentInputDialog(self)
     #self.resize(300, 250)
@@ -47,6 +47,20 @@ class CommentInputDialog(QtWidgets.QDialog):
         'overwrite' if self.__d.overwriteButton.isChecked() else
         '')
 
+  def get(self, default=""):
+    """
+    @param  parent  QWidget
+    @param  default  str
+    @return  bool ok, unicode comment, {type:str, append:bool}
+    """
+    if default:
+      self.setText(default)
+    r = self.exec_()
+    return bool(r), self.text(), {
+      'type': self.type(),
+      'method': self.method(),
+    }
+
   @classmethod
   def getComment(cls, parent=None, default=""):
     """
@@ -55,19 +69,10 @@ class CommentInputDialog(QtWidgets.QDialog):
     @return  bool ok, unicode comment, {type:str, append:bool}
     """
     w = cls(parent)
-    ok = True
-    if default:
-      self.setText(default)
-    comment = default
-    opt = {
-    }
-    r = w.exec_()
+    r = w.get(default)
     if parent:
       w.setParent(None)
-    return bool(r), w.text(), {
-      'type': w.type(),
-      'method': w.method(),
-    }
+    return r
 
 #@Q_Q
 class _CommentInputDialog(object):
@@ -115,7 +120,9 @@ class _CommentInputDialog(object):
     buttonBox.accepted.connect(q.accept)
     buttonBox.rejected.connect(q.reject)
 
-    #okButton = buttonBox.button(buttonBox.Ok)
+    okButton = buttonBox.button(buttonBox.Ok)
+    okButton.setDefault(True)
+    skqss.class_(okButton, 'btn btn-primary')
     #cancelButton = buttonBox.button(buttonBox.Cancel)
 
     q.setLayout(layout)
