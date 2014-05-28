@@ -187,6 +187,11 @@ Item { id: root_
           visibleTimer_.start()
       }
 
+      Component.onDestruction: {
+        hideAct_.triggered.disconnect(textItem_.hide)
+        autoHideAct_.triggered.disconnect(textItem_.autoHide)
+      }
+
       Timer { id: visibleTimer_
         interval: _VISIBLE_DURATION
         onTriggered: textItem_.removeMe()

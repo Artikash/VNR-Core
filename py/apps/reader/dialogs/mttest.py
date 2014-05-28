@@ -26,6 +26,10 @@ _LEFTARROW = u'<span style="color:blue">←</span>'
 _RIGHTARROW = u'<span style="color:blue">→</span>'
 _UPARROW = u'<span style="color:blue">↑</span>'
 _DOWNARROW = u'<span style="color:blue">↓</span>'
+
+_EQ_LABEL = u'<span style="color:blue">＝</span>'
+_NE_LABEL = u'<span style="color:red">≠</span>'
+
 _EMPTY_TEXT = "(%s)" % tr_("Not changed")
 _DISABLED_TEXT = "(%s)" % tr_("Disabled")
 _LANGUAGE_STAR = '<span style="color:green">+</span>' # plus
@@ -156,7 +160,7 @@ class _MTTester(object):
     grid.addLayout(cell, r, c)
 
     c += 1
-    grid.addWidget(QtWidgets.QLabel(), r, c)
+    grid.addWidget(self.equalLabel, r, c)
 
     c += 1
     cell = QtWidgets.QVBoxLayout()
@@ -280,6 +284,17 @@ class _MTTester(object):
         if t:
           self.finalTranslationEdit.setPlainText(t)
       dprint("leave")
+
+  @memoizedproperty
+  def equalLabel(self):
+    ret = QtWidgets.QLabel(_EQ_LABEL)
+    ret.setToolTip(my.tr("Equal"))
+    return ret
+
+  def _refreshEqualLabel(self):
+    eq = self.directTranslationEdit.toPlainText() == self.finalTranslationEdit.toPlainText()
+    self.equalLabel.setText(_EQ_LABEL if eq else _NE_LABEL)
+    self.equalLabel.setToolTip(my.tr("Equal") if eq else my.tr("Not equal"))
 
   @memoizedproperty
   def gameLabel(self):
@@ -487,7 +502,9 @@ class _MTTester(object):
     return self._createTextLabel(self.directTranslationEdit, my.tr("Direct translation"))
   @memoizedproperty
   def directTranslationEdit(self):
-    return self._createTextView(my.tr("Direct translation without modifications by VNR"))
+    ret = self._createTextView(my.tr("Direct translation without modifications by VNR"))
+    ret.textChanged.connect(self._refreshEqualLabel)
+    return ret
 
   @memoizedproperty
   def jointTranslationLabel(self):
@@ -501,7 +518,9 @@ class _MTTester(object):
     return self._createTextLabel(self.finalTranslationEdit, my.tr("Final translation"))
   @memoizedproperty
   def finalTranslationEdit(self):
-    return self._createTextView(my.tr("Actual translation used by VNR"))
+    ret = self._createTextView(my.tr("Actual translation used by VNR"))
+    ret.textChanged.connect(self._refreshEqualLabel)
+    return ret
 
   @memoizedproperty
   def normalizedTextLabel(self):

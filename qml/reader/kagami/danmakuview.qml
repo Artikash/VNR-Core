@@ -58,6 +58,9 @@ Item { id: root_
         start()
       }
 
+      Component.onDestruction:
+        model.comment.deletedChanged.disconnect(remove)
+
       //states: State { name: '*'
       //  PropertyChanges { target: danmaku_; x: root_.width }
       //}

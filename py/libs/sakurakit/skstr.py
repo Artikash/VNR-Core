@@ -2,7 +2,7 @@
 # sktr.py
 # 11/1/2012 jichi
 import re
-from sakurakit.skdebug import dwarn
+from skdebug import dwarn
 
 # http://stackoverflow.com/questions/196345/how-to-check-if-a-string-in-python-is-in-ascii
 def isascii(s):

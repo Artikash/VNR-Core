@@ -1,4 +1,4 @@
-/** toolbar.qml
+/** maintoolbar.qml
  *  2/21/2013 jichi
  */
 import QtQuick 1.1
@@ -10,15 +10,18 @@ import '../../../js/reader.min.js' as My
 Item { id: root_
   height: 40
 
-  property QtObject currentItem // dataman.Term
+  property QtObject model // gameman.CommentModel
+  property QtObject currentItem // dataman.Comment
   property int userId
   property int userLevel
-  property bool enabled: false
 
   // - Private -
 
-  property int _GUEST_USER_ID: 4
+  property bool notEmpty: !!model && model.count > 0
+
   property int _SUPER_USER_ID: 2
+  property int _GUEST_USER_ID: 4
+  //property string _SUPER_USER: ' '
 
   //gradient: Gradient {
   //  GradientStop { position: 0.0;  color: '#c8c9d0' }
@@ -29,6 +32,7 @@ Item { id: root_
 
   //Plugin.MainObjectProxy { id: mainPlugin_ }
   //Plugin.DataManagerProxy { id: datamanPlugin_ }
+  Plugin.SubtitleEditorManagerProxy { id: subedit_ }
   Plugin.GameViewManagerProxy { id: gameview_ }
   Plugin.UserViewManagerProxy { id: userview_ }
 
@@ -43,11 +47,17 @@ Item { id: root_
         left: parent.left; right: parent.right
       }
 
+      //Desktop.ToolButton {
+      //  text: Sk.tr("Add")
+      //  tooltip: qsTr("Add a new entry")
+      //  visible: root_.canSubmit
+      //  onClicked: root_.createComment()
+      //}
       Desktop.ToolButton {
-        text: Sk.tr("Add")
-        tooltip: qsTr("Add a new entry")
-        visible: root_.canSubmit
-        onClicked: root_.createTerm()
+        text: Sk.tr("Edit")
+        tooltip: qsTr("Edit the selected entry")
+        visible: root_.canEdit
+        onClicked: root_.editCurrentItem()
       }
       Desktop.ToolButton {
         text: Sk.tr("Remove")
@@ -70,7 +80,7 @@ Item { id: root_
       Desktop.ToolButton {
         text: Sk.tr("User")
         tooltip: Sk.tr("Show {0}").replace('{0}'), Sk.tr("user information")
-        visible: !!root_.currentItem //&& root_.currentItem.userId
+        visible: !!root_.currentItem
         onClicked: {
           var item = root_.currentItem
           if (item)
@@ -85,16 +95,6 @@ Item { id: root_
           if (root_.currentItem)
             gameview_.showGame(root_.currentItem.gameId)
       }
-      //Desktop.ToolButton {
-      //  text: currentItem && currentItem.disabled ? Sk.tr("Enable") : Sk.tr("Disable")
-      //  tooltip: qsTr("Enable or disable the selected entry")
-      //  visible: root_.canImprove
-      //  onClicked:
-      //    if (currentItem.disabled)
-      //      root_.enableCurrentItem()
-      //    else
-      //      root_.disableCurrentItem()
-      //}
     }
 
     Row {
@@ -107,90 +107,70 @@ Item { id: root_
       layoutDirection: Qt.RightToLeft
 
       Desktop.ToolButton {
-        text: root_.enabled ? Sk.tr("Disable") : Sk.tr("Enable")
-        tooltip: qsTr("Whether use user-defined terms to improve machine translation")
-        onClicked: root_.enabled = !root_.enabled
-      }
-
-      Desktop.ToolButton {
         text: Sk.tr("Help")
         tooltip: Sk.tr("Help")
-        onClicked: mainPlugin_.showTermHelp()
+        onClicked: mainPlugin_.showCommentHelp()
       }
 
       Desktop.ToolButton {
         text: Sk.tr("Wiki")
         tooltip: Sk.tr("Wiki")
-        onClicked: mainPlugin_.openWiki('VNR/Shared Dictionary')
+        onClicked: mainPlugin_.openWiki('VNR/Sharing Subtitles')
       }
-
-      //Desktop.ToolButton {
-      //  text: qsTr("Discuss")
-      //  tooltip: qsTr("Visit the discussion page online")
-      //  onClicked: Qt.openUrlExternally('http://sakuradite.com/subject/102')
-      //}
 
       Desktop.ToolButton {
         text: Sk.tr("Test")
-        visible: root_.enabled
-        tooltip: My.tr("Test machine translation")
-        onClicked: mainPlugin_.showMachineTranslationTester()
+        tooltip: My.tr("Test BBCode")
+        onClicked: mainPlugin_.showBBCodeTester()
       }
 
       Desktop.ToolButton {
         text: Sk.tr("Statistics")
-        visible: root_.enabled
+        visible: root_.notEmpty
         tooltip: qsTr("Plot statistics charts")
-        onClicked: mainPlugin_.showTermChart()
+        onClicked: root_.model.showChart()
       }
 
       Desktop.ToolButton {
         text: Sk.tr("Export")
-        visible: root_.enabled
+        visible: root_.notEmpty
         tooltip: qsTr("Save entries in Excel CSV format to the Desktop")
-        onClicked: datamanPlugin_.exportTerms()
+        onClicked: root_.model.export_()
       }
 
       Desktop.ToolButton {
         text: Sk.tr("Update")
-        visible: root_.enabled && !!root_.userId
+        visible: !!root_.userId
         tooltip: qsTr("Update entries online")
-        onClicked: datamanPlugin_.updateTerms()
+        onClicked: root_.model.update()
       }
     }
   }
 
-  property bool canSubmit: enabled && !!userId
-  property bool canImprove: canSubmit && (canEdit || userId !== _GUEST_USER_ID)
-  property bool canEdit: canSubmit && !!currentItem && (userId === _SUPER_USER_ID
+  property bool canSubmit: !!userId && !!currentItem
+  property bool canImprove: canSubmit && (canEdit ||
+      (userId !== _GUEST_USER_ID && !currentItem.locked))
+  property bool canEdit: canSubmit && (userId === _SUPER_USER_ID
       || currentItem.userId === userId && !currentItem.protected
       || currentItem.userId === _GUEST_USER_ID && userLevel > 0)
 
-  function createTerm() {
-    //datamanPlugin_.createTerm('target', My.tr("Matched text"), My.tr("Replaced text"))
-    mainPlugin_.showTermInput()
+  //function createComment() {
+  //  datamanPlugin_.createComment('target', My.tr("Matched text"), My.tr("Replaced text"))
+  //}
+  function editCurrentItem() {
+    if (currentItem)
+      subedit_.showComment(currentItem)
   }
   function deleteCurrentItem() {
     if (currentItem)
-      datamanPlugin_.deleteTerm(currentItem)
+      datamanPlugin_.deleteComment(currentItem)
   }
   function cloneCurrentItem() {
     if (currentItem)
-      datamanPlugin_.duplicateTerm(currentItem)
+      datamanPlugin_.duplicateComment(currentItem)
   }
   function improveCurrentItem() {
     if (currentItem)
-      datamanPlugin_.improveTerm(currentItem)
+      datamanPlugin_.improveComment(currentItem)
   }
-  //function enableCurrentItem() {
-  //  if (currentItem) {
-  //    currentItem.disabled = false
-  //    currentItem.updateUserId = userId
-  //    currentItem.updateTimestamp = Util.currentUnixTime()
-  //  }
-  //}
-  //function disableCurrentItem() {
-  //  if (currentItem)
-  //    datamanPlugin_.disableTerm(currentItem)
-  //}
 }

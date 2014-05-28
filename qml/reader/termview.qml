@@ -45,15 +45,15 @@ Item { id: root_
 
 
   //function loadSettings() {
-  //  toolBar_.enabled = settings_.termEnabled
+  //  mainToolBar_.enabled = settings_.termEnabled
   //}
   //function saveSettings() {
-  //  settings_.termEnabled = toolBar_.enabled
+  //  settings_.termEnabled = mainToolBar_.enabled
   //}
 
   // ToolBar at the top
 
-  TermView.ToolBar { id: toolBar_
+  TermView.MainToolBar { id: mainToolBar_
     anchors {
       left: parent.left; right: parent.right; top: parent.top
       topMargin: -1
@@ -73,15 +73,16 @@ Item { id: root_
   TermView.Table { id: table_
     anchors {
       left: parent.left; right: parent.right
-      top: toolBar_.bottom; bottom: searchBox_.top
+      top: mainToolBar_.bottom
+      bottom: selectToolBar_.visible ? selectToolBar_.top : searchBox_.top
     }
     userId: root_.userId
     userLevel: root_.userLevel
 
     Share.Blocker {
       anchors.fill: parent
-      visible: table_.currentCount <= 0 || !toolBar_.enabled
-      text: (toolBar_.enabled ? Sk.tr("Empty") : Sk.tr("Disabled")) + "! ><"
+      visible: table_.currentCount <= 0 || !mainToolBar_.enabled
+      text: (mainToolBar_.enabled ? Sk.tr("Empty") : Sk.tr("Disabled")) + "! ><"
     }
 
     TermView.NavToolBar { //id: navToolBar_ // scroll buttons
@@ -97,6 +98,19 @@ Item { id: root_
     onPageNumberChanged:
       if (paginator_.value != pageNumber)
         paginator_.value = pageNumber
+  }
+
+  TermView.SelectToolBar { id: selectToolBar_
+    anchors {
+      left: parent.left; right: parent.right
+      bottom: searchBox_.top
+    }
+
+    selectionCount: table_.selectionCount
+
+    visible: selectionCount > 0 && settings_.termEnabled && !!root_.userId
+
+    model: table_.model
   }
 
   Share.Paginator { id: paginator_
