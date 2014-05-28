@@ -7496,7 +7496,9 @@ class DataManager(QObject):
           )))
           continue
         if updateComment:
-          t.updateComment = "%s // %s" % (updateComment, td.updateComment) if td.updateComment and td.updateComment != updateComment else updateComment
+          t.updateComment = "%s // %s" % (updateComment, td.updateComment) if (
+            td.updateComment and td.updateComment != updateComment and not td.updateComment.startswith(updateComment + ' //')
+          ) else updateComment
         t.deleted = True
         if t.parent():
           skevents.runlater(partial(t.setParent, None), 120000) # after 2 min
@@ -7539,7 +7541,9 @@ class DataManager(QObject):
         t.updateTimestamp = now
         t.disabled = True
         if updateComment:
-          t.updateComment = "%s // %s" % (updateComment, td.updateComment) if td.updateComment and td.updateComment != updateComment else updateComment
+          t.updateComment = "%s // %s" % (updateComment, td.updateComment) if (
+            td.updateComment and td.updateComment != updateComment and not td.updateComment.startswith(updateComment + ' //')
+          ) else updateComment
 
     #d.terms = [t for t in d.terms if not (t.d.selected and t.d.deleted)]
     #if d._sortedTerms:
