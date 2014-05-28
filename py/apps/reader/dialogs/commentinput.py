@@ -12,7 +12,8 @@ if __name__ == '__main__':
 
 from Qt5 import QtWidgets
 from sakurakit import skqss
-from sakurakit.skdebug import dprint
+#from sakurakit.skclass import memoizedproperty
+#from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
 from mytr import mytr_
 
@@ -27,9 +28,24 @@ class CommentInputDialog(QtWidgets.QDialog):
     #self.resize(300, 250)
     #self.statusBar() # show status bar
 
-  def __del__(self):
-    """@reimp"""
-    dprint("pass")
+  #def __del__(self):
+  #  """@reimp"""
+  #  dprint("pass")
+
+  def text(self): return self.__d.edit.text()
+  def setText(self, v): self.__d.edit.setText(v)
+
+  def type(self): # -> str
+    return (
+        'updateComment' if self.__d.updateCommentButton.isChecked() else
+        'comment' if self.__d.commentButton.isChecked() else
+        '')
+
+  def method(self): # -> str
+    return (
+        'append' if self.__d.appendButton.isChecked() else
+        'overwrite' if self.__d.overwriteButton.isChecked() else
+        '')
 
   @classmethod
   def getComment(cls, parent=None, default=""):
@@ -40,16 +56,18 @@ class CommentInputDialog(QtWidgets.QDialog):
     """
     w = cls(parent)
     ok = True
+    if default:
+      self.setText(default)
     comment = default
     opt = {
-      'type': 'comment',
-      'append': True,
     }
     r = w.exec_()
     if parent:
       w.setParent(None)
-    ok = r == 0
-    return ok, comment, opt
+    return bool(r), w.text(), {
+      'type': w.type(),
+      'method': w.method(),
+    }
 
 #@Q_Q
 class _CommentInputDialog(object):
@@ -58,22 +76,30 @@ class _CommentInputDialog(object):
 
   def _createUi(self, q):
     self.edit = QtWidgets.QLineEdit()
-
-    self.okButton = QtWidgets.QPushButton(tr_("OK"))
-    self.cancelButton = QtWidgets.QPushButton(tr_("Cancel"))
+    skqss.class_(self.edit, 'normal')
 
     grid = QtWidgets.QGridLayout()
     r = 0
-    self.commentButton = QtWidgets.QRadioButton(tr_("Comment"))
-    grid.addWidget(self.commentButton, r, 0)
     self.updateCommentButton = QtWidgets.QRadioButton(mytr_("Update reason"))
-    grid.addWidget(self.updateCommentButton, r, 1)
+    self.updateCommentButton.setChecked(True)
+    self.commentButton = QtWidgets.QRadioButton(tr_("Comment"))
+    g = QtWidgets.QButtonGroup(q)
+    g.addButton(self.updateCommentButton)
+    g.addButton(self.commentButton)
+    grid.addWidget(QtWidgets.QLabel(tr_("Property") + ":"), r, 0)
+    for i,b in enumerate(g.buttons()):
+      grid.addWidget(b, r, i+1)
 
     r += 1
     self.appendButton = QtWidgets.QRadioButton(tr_("Append"))
-    grid.addWidget(self.appendButton, r, 0)
+    self.appendButton.setChecked(True)
     self.overwriteButton = QtWidgets.QRadioButton(tr_("Overwrite"))
-    grid.addWidget(self.overwriteButton, r, 1)
+    g = QtWidgets.QButtonGroup(q)
+    g.addButton(self.appendButton)
+    g.addButton(self.overwriteButton)
+    grid.addWidget(QtWidgets.QLabel(tr_("Method") + ":"), r, 0)
+    for i,b in enumerate(g.buttons()):
+      grid.addWidget(b, r, i+1)
 
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.edit)
@@ -86,9 +112,11 @@ class _CommentInputDialog(object):
         QtWidgets.QDialogButtonBox.Ok|
         QtWidgets.QDialogButtonBox.Cancel)
     layout.addWidget(buttonBox)
+    buttonBox.accepted.connect(q.accept)
+    buttonBox.rejected.connect(q.reject)
 
-    okButton = buttonBox.button(QtWidgets.QDialogButtonBox.Ok)
-    cancelButton = buttonBox.button(QtWidgets.QDialogButtonBox.Cancel)
+    #okButton = buttonBox.button(buttonBox.Ok)
+    #cancelButton = buttonBox.button(buttonBox.Cancel)
 
     q.setLayout(layout)
 
