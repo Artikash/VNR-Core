@@ -131,9 +131,9 @@ def trashfile(path):
   @param  path  str or unicode
   @return  bool  if succeed
   """
-  from sakurakit import skos
+  import skos
   if skos.WIN:
-    from sakurakit import skwin
+    import skwin
     # The send2trash is broken for windows. Use my own version instead
     return skwin.trash_file(path)
   else:

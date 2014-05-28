@@ -12,11 +12,15 @@ Item { id: root_
 
   property QtObject currentItem: model_.get(table_.currentIndex)
 
+  property alias model: table_.model
+
   property int userId
   property int userLevel
   property alias filterText: model_.filterText
   property alias currentCount: model_.currentCount
   property alias count: model_.count
+
+  property alias selectionCount: model_.selectionCount
 
   property alias pageNumber: model_.pageNumber
   //property alias pageSize: model_.pageSize
@@ -46,6 +50,10 @@ Item { id: root_
   function canImprove(term) {
     return !!term && (term.userId === userId && !term.protected
         || !!userId && userId !== _GUEST_USER_ID)
+  }
+
+  function canSelect(term) {
+    return canImprove(term)
   }
 
   function shouldHighlight(term) {
@@ -96,6 +104,32 @@ Item { id: root_
     property int cellHeight: 25
     property int cellSpacing: 5
 
+    sortColumn: 1 // the initial sorting column is the second one
+
+    // Column: Selected
+
+    Desktop.TableColumn {
+      role: 'object'; title: Sk.tr("Select")
+      width: 30
+      delegate: Item {
+        height: table_.cellHeight
+        Desktop.CheckBox {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          enabled: canSelect(itemValue)
+          checked: itemValue.selected
+          onCheckedChanged:
+            if (enabled && checked !== itemValue.selected) {
+              itemValue.selected = checked
+              model_.refreshSelection()
+            }
+
+          function setChecked(t) { checked = t }
+          Component.onCompleted: itemValue.selectedChanged.connect(setChecked)
+          Component.onDestruction: itemValue.selectedChanged.disconnect(setChecked)
+        }
+      }
+    }
+
     // Column: Row
     Desktop.TableColumn {
       role: 'number'; title: "#"
@@ -128,8 +162,12 @@ Item { id: root_
           onCheckedChanged:
             if (enabled && checked === itemValue.disabled) {
               datamanPlugin_.enableTerm(itemValue, checked)
-              checked = !itemValue.disabled
+              //checked = !itemValue.disabled
             }
+
+          function setNotChecked(t) { checked = !t }
+          Component.onCompleted: itemValue.disabledChanged.connect(setNotChecked)
+          Component.onDestruction: itemValue.disabledChanged.disconnect(setNotChecked)
         }
       }
     }
@@ -561,6 +599,10 @@ Item { id: root_
           color: itemSelected ? 'white' : commentColor(itemValue)
           //font.strikeout: !itemSelected && itemValue.disabled
           //font.bold: itemValue.regex
+
+          //function setText(v) { text = v }
+          //Component.onCompleted: itemValue.commentChanged.connect(setText)
+          //Component.onDestruction: itemValue.commentChanged.disconnect(setText)
         }
         TextInput {
           anchors { fill: parent; leftMargin: table_.cellSpacing; topMargin: 6 }

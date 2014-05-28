@@ -5,4 +5,5 @@ Inspector       inspector.qml
 MainToolBar     maintoolbar.qml
 NavToolBar      navtoolbar.qml
 SearchToolBar   searchtoolbar.qml
+SelectToolBar   selecttoolbar.qml
 Table           table.qml

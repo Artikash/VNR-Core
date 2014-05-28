@@ -6,7 +6,7 @@ from functools import partial
 from PySide.QtCore import QObject, Slot
 from Qt5.QtWidgets import QInputDialog, QLineEdit, QMessageBox
 from sakurakit import skevents
-from sakurakit.sktr import tr_
+from sakurakit.sktr import tr_, notr_
 #from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
 import config, growl, i18n, netman, settings #ttsman
@@ -55,6 +55,46 @@ For example, you can put in "typo", "inaccurate", or "scam".
 #  QMessageBox.about(_parent(),
 #      tr_("About {0}").format(mytr_("Visual Novel Reader")),
 #      msg)
+
+#def confirmDeleteSelection(count):
+#  """
+#  @param  count  int
+#  @return  bool
+#  """
+#  return Yes == QMessageBox.question(_parent(),
+#      my.tr("Confirm deletion"),
+#      my.tr("Do you want to permanently delete the selected {0} items?").format(count),
+#      Yes|No, No)
+
+def getDeleteSelectionComment(count, default=notr_("typo")):
+  """
+  @param  count  int
+  @return  bool
+  """
+  ret, ok = QInputDialog.getText(_parent(),
+      my.tr("Confirm deletion"),
+      "\n".join((
+        my.tr("Do you want to permanently delete the selected {0} items?").format(count),
+        my.tr('Please specify the REASON for the modification, such as "typo".'),
+      )),
+      QLineEdit.Normal,
+      default)
+  return ret.strip() if ok else ""
+
+def getDisableSelectionComment(count, default=notr_("typo")):
+  """
+  @param  count  int
+  @return  bool
+  """
+  ret, ok = QInputDialog.getText(_parent(),
+      my.tr("Update reason"),
+      "\n".join((
+        my.tr("Do you want to disable the selected {0} items?").format(count),
+        my.tr('Please specify the REASON for the modification, such as "typo".'),
+      )),
+      QLineEdit.Normal,
+      default)
+  return ret.strip() if ok else ""
 
 def confirmQuit():
   """

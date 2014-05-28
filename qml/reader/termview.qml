@@ -73,7 +73,8 @@ Item { id: root_
   TermView.Table { id: table_
     anchors {
       left: parent.left; right: parent.right
-      top: mainToolBar_.bottom; bottom: searchBox_.top
+      top: mainToolBar_.bottom
+      bottom: selectToolBar_.visible ? selectToolBar_.top : searchBox_.top
     }
     userId: root_.userId
     userLevel: root_.userLevel
@@ -97,6 +98,19 @@ Item { id: root_
     onPageNumberChanged:
       if (paginator_.value != pageNumber)
         paginator_.value = pageNumber
+  }
+
+  TermView.SelectToolBar { id: selectToolBar_
+    anchors {
+      left: parent.left; right: parent.right
+      bottom: searchBox_.top
+    }
+
+    selectionCount: table_.selectionCount
+
+    visible: selectionCount > 0 && settings_.termEnabled && !!root_.userId
+
+    model: table_.model
   }
 
   Share.Paginator { id: paginator_

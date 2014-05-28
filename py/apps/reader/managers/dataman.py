@@ -39,7 +39,7 @@ def _is_protected_data(d):
   @param  d  _Comment or _Term or _Reference
   @return  bool
   """
-  return d.userId == GUEST.id and d.timestamp < skdatetime.CURRENT_UNIXTIME - defs.PROTECTED_INTERVAL
+  return d.userId == GUEST_USER_ID and d.timestamp < skdatetime.CURRENT_UNIXTIME - defs.PROTECTED_INTERVAL
 
 ## Data types ##
 
@@ -82,7 +82,7 @@ class User:
       termLevel=self.termLevel,
     )
 
-  #def isGuest(self): return self.id == GUEST.id and self.name == GUEST.name
+  #def isGuest(self): return self.id == GUEST_USER_ID and self.name == GUEST.name
   def isGuest(self): return self.name == GUEST.name
 
   def isLoginable(self):
@@ -91,7 +91,9 @@ class User:
   def isMale(self): return self.gender == 'm'
   def isFemale(self): return self.gender == 'f'
 
-GUEST = User(id=4, name='guest', password='guest', language='en')
+ADMIN_USER_ID = 2
+GUEST_USER_ID = 4
+GUEST = User(id=GUEST_USER_ID, name='guest', password='guest', language='en')
 
 ## Game ##
 
@@ -1694,6 +1696,8 @@ class _Term(object):
     self.private = private      # bool
     self.hentai = hentai        # bool
 
+    self.selected = False # bool
+
     self.patternRe = None # compiled re or None
     #self.bbcodeText = None # unicode or None  cached BBCode
 
@@ -1855,8 +1859,10 @@ class Term(QObject):
   regex, regexChanged = __D.synthesize('regex', bool, sync=True)
   hentai, hentaiChanged = __D.synthesize('hentai', bool, sync=True)
 
+  selected, selectedChanged = __D.synthesize('selected', bool) # whether the item is selected in term table
+
   private_Changed = privateChanged
-  private_ = private
+  private_ = private # needed for javascript as private is a keyword
 
   #def setBBCode(self, value):
   #  if self.__d.bbcode != value:
@@ -3319,7 +3325,8 @@ TERM_ROLES = {
 }
 class _TermModel(object):
   COLUMNS = [ # MUST BE CONSISTENT WITH termtable.qml
-    'modifiedTimestamp', # row
+    'selected',
+    'modifiedTimestamp', # row, default
     'disabled',
     'private',
     'type',
@@ -3337,17 +3344,21 @@ class _TermModel(object):
     'updateTimestamp',
     'updateComment',
   ]
+  DEFAULT_SORTING_COLUMN = COLUMNS.index('modifiedTimestamp') # the second column
+
   def __init__(self):
     self._filterText = "" # unicode
     self._filterRe = None # compiled re
     self._filterData = None # [Term]
     self._sortedData = None
 
-    self.sortingColumn = 0
+    self.sortingColumn = self.DEFAULT_SORTING_COLUMN
     self.sortingReverse = False
 
     self.pageNumber = 1 # starts at 1
     self.pageSize = 50 # read-only, number of items per page, smaller enough to speed up scrolling
+
+    self.selectionCount = 0 # int, cached
 
   def pageIndex(self): return self.pageSize * (self.pageNumber - 1) # -> int
 
@@ -3356,7 +3367,7 @@ class _TermModel(object):
     """
     @return  [Term]
     """
-    return self.sortedData if self.sortingColumn or self.sortingReverse else self.filterData if self.filterText else self.sourceData
+    return self.sortedData if self.sortingColumn != self.DEFAULT_SORTING_COLUMN or self.sortingReverse else self.filterData if self.filterText else self.sourceData
 
   @staticproperty
   def sourceData(): return manager().terms()
@@ -3365,7 +3376,7 @@ class _TermModel(object):
   def sortedData(self):
     if self._sortedData is None:
       data = self.filterData if self.filterText else self.sourceData
-      if not self.sortingColumn:
+      if self.sortingColumn == self.DEFAULT_SORTING_COLUMN:
         if self.sortingReverse:
           self._sortedData = list(reversed(data))
         else:
@@ -3413,7 +3424,7 @@ class _TermModel(object):
     t = self.filterText
     if not t:
       return False
-    dm =manager()
+    dm = manager()
     td = term.d
     try:
       if len(t) > 1:
@@ -3462,6 +3473,7 @@ class TermModel(QAbstractListModel):
     super(TermModel, self).reset()
     self.countChanged.emit(self.count)
     self.currentCountChanged.emit(self.currentCount)
+    self.refreshSelection()
 
   def rowCount(self, parent=QModelIndex()):
     """@reimp @public"""
@@ -3540,6 +3552,50 @@ class TermModel(QAbstractListModel):
   pageSize = Property(int,
       lambda self: self.__d.pageSize,
       notify=pageSizeChanged)
+
+  selectionCountChanged = Signal(int)
+  selectionCount = Property(int,
+      lambda self: self.__d.selectionCount,
+      notify=selectionCountChanged)
+
+  @Slot()
+  def refreshSelection(self):
+    #self.__d.updateSelectionCount()
+
+    d = self.__d
+    count = 0
+    for t in d.sourceData:
+      if t.d.selected:
+        count += 1
+    if count != d.selectionCount:
+      d.selectionCount = count
+      self.selectionCountChanged.emit(count)
+
+  @Slot()
+  def clearSelection(self): # set selected = False
+    d = self.__d
+    if d.selectionCount:
+      for t in d.sourceData:
+        if t.d.selected:
+          t.selected = False
+      d.selectionCount = 0
+      self.selectionCountChanged.emit(0)
+
+  @Slot()
+  def deleteSelection(self): # delete selected entries
+    d = self.__d
+    if d.selectionCount and netman.manager().isOnline():
+      comment = prompt.getDeleteSelectionComment(d.selectionCount)
+      if comment:
+        manager().deleteSelectedTerms(updateComment=comment)
+
+  @Slot()
+  def disableSelection(self): # delete selected entries
+    d = self.__d
+    if d.selectionCount and netman.manager().isOnline():
+      comment = prompt.getDisableSelectionComment(d.selectionCount)
+      if comment:
+        manager().disableSelectedTerms(updateComment=comment)
 
 ## Comment model ##
 
@@ -6270,7 +6326,7 @@ class DataManager(QObject):
     d = self.__d
     if id and id == d.user.id:
       return d.user
-    elif id == GUEST.id:
+    elif id == GUEST_USER_ID:
       return GUEST
     else:
       return d.users.get(id)
@@ -7405,6 +7461,7 @@ class DataManager(QObject):
       dwarn("failed to remove term")
       return
 
+    #term.deleted = True
     try: d._sortedTerms.remove(term)
     except: pass
     if term.parent():
@@ -7412,6 +7469,84 @@ class DataManager(QObject):
 
     d.invalidateTerms()
     d.touchTerms()
+
+  def deleteSelectedTerms(self, updateComment=''):
+    """
+    @param* updateComment  unicode
+    """
+    d = self.__d
+    userId = d.user.id
+    if not d.terms or not userId:
+      return
+
+    userLevel = d.user.termLevel
+
+    for t in d.terms:
+      td = t.d
+      if td.selected and not td.deleted:
+        if not ( # the same as canEdit permission in qml
+          userId == ADMIN_USER_ID or
+          td.userId == userId and not t.protected or
+          td.userId == GUEST_USER_ID and userLevel > 0):
+          growl.warn('<br/>'.join((
+            my.tr("Editing other's entry is not allowed"),
+            tr_("User") + ": " + t.userName,
+            tr_("Pattern") + ": " + td.pattern,
+            tr_("Text") + ": " + td.text,
+          )))
+          continue
+        if updateComment:
+          t.updateComment = "%s // %s" % (updateComment, td.updateComment) if td.updateComment and td.updateComment != updateComment else updateComment
+        t.deleted = True
+        if t.parent():
+          skevents.runlater(partial(t.setParent, None), 120000) # after 2 min
+
+    d.terms = [t for t in d.terms if not (t.d.selected and t.d.deleted)]
+    if d._sortedTerms:
+      d._sortedTerms = [t for t in d._sortedTerms if not (t.d.selected and t.d.deleted)]
+
+    d.invalidateTerms()
+    d.touchTerms()
+
+  def disableSelectedTerms(self, updateComment=''):
+    """
+    @param* updateComment  unicode
+    """
+    d = self.__d
+    userId = d.user.id
+    if not d.terms or not userId:
+      return
+
+    userLevel = d.user.termLevel
+
+    now = skdatetime.current_unixtime()
+
+    for t in d.terms:
+      td = t.d
+      if td.selected and not td.disabled:
+        if not ( # the same as canImprove permission in qml
+          userId != GUEST_USER_ID or
+          td.userId == userId and not t.protected or
+          td.userId == GUEST_USER_ID and userLevel > 0):
+          growl.warn('<br/>'.join((
+            my.tr("Editing other's entry is not allowed"),
+            tr_("User") + ": " + t.userName,
+            tr_("Pattern") + ": " + td.pattern,
+            tr_("Text") + ": " + td.text,
+          )))
+          continue
+        t.updateUserId = userId
+        t.updateTimestamp = now
+        t.disabled = True
+        if updateComment:
+          t.updateComment = "%s // %s" % (updateComment, td.updateComment) if td.updateComment and td.updateComment != updateComment else updateComment
+
+    #d.terms = [t for t in d.terms if not (t.d.selected and t.d.deleted)]
+    #if d._sortedTerms:
+    #  d._sortedTerms = [t for t in d._sortedTerms if not (t.d.selected and t.d.updateTimestamp == now)]
+
+    #d.invalidateTerms()
+    #d.touchTerms()
 
   def removeCharacter(self, c):
     """

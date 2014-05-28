@@ -167,6 +167,7 @@ class sakurakit(QObject):
       self.tr("Resume"),
       self.tr("Save"), self.tr("save"),
       self.tr("Secondary"), self.tr("secondary"),
+      self.tr("Select"),
       self.tr("Select Word"),
       self.tr("Select All"),
       self.tr("Search"),

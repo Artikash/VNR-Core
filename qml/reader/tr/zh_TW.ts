@@ -901,6 +901,24 @@
     </message>
 </context>
 <context>
+    <name>selecttoolbar</name>
+    <message>
+        <location filename="../termview/selecttoolbar.qml" line="33"/>
+        <source>Cancel the selection</source>
+        <translation>取消選定</translation>
+    </message>
+    <message>
+        <location filename="../termview/selecttoolbar.qml" line="47"/>
+        <source>Remove the selected entries</source>
+        <translation>移除選定的內容</translation>
+    </message>
+    <message>
+        <location filename="../termview/selecttoolbar.qml" line="54"/>
+        <source>Disable the selected entries</source>
+        <translation>禁用選定的內容</translation>
+    </message>
+</context>
+<context>
     <name>shiori</name>
     <message>
         <location filename="../kagami/shiori.qml" line="92"/>
@@ -968,7 +986,7 @@
 <context>
     <name>table</name>
     <message>
-        <location filename="../termview/table.qml" line="173"/>
+        <location filename="../termview/table.qml" line="211"/>
         <source>Title</source>
         <translation>稱謂</translation>
     </message>
@@ -976,7 +994,7 @@
 <context>
     <name>termview</name>
     <message>
-        <location filename="../termview.qml" line="125"/>
+        <location filename="../termview.qml" line="139"/>
         <source>Type part of the pattern, text, user, language, etc, and press Enter to search</source>
         <translation>輸入需要查找的文本，翻譯，用戶名，語言等，然后按下回車搜索</translation>
     </message>

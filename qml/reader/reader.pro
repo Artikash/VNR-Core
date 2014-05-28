@@ -30,6 +30,7 @@ SOURCES = \
   subview.qml \
   termview/maintoolbar.qml \
   termview/navtoolbar.qml \
+  termview/selecttoolbar.qml \
   termview/table.qml \
   termview.qml \
   textreader/mirage.qml \
