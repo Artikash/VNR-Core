@@ -30,6 +30,14 @@ def _speak(t):
   #skevents.runlater(partial(
   #    ttsman.speak, t, verbose=False))
 
+def _defaultUpdateComment(): # -> unicode
+  ret = notr_("typo")
+  import dataman
+  user = dataman.manager().user()
+  if user.id:
+    ret = "@%s: %s" % (user.name, ret)
+  return ret
+
 def getUpdateComment(default=""):
   """
   @param  default  unicode
@@ -43,7 +51,7 @@ Please specify the REASON for modifying other's work.
 For example, you can put in "typo", "inaccurate", or "scam".
 """),
       QLineEdit.Normal,
-      default)
+      default or _defaultUpdateComment())
   return ret.strip() if ok else ""
 
 #def showAbout():
@@ -66,7 +74,7 @@ For example, you can put in "typo", "inaccurate", or "scam".
 #      my.tr("Do you want to permanently delete the selected {0} items?").format(count),
 #      Yes|No, No)
 
-def getDeleteSelectionComment(count, default=notr_("typo")):
+def getDeleteSelectionComment(count, default=''):
   """
   @param  count  int
   @return  bool
@@ -78,10 +86,10 @@ def getDeleteSelectionComment(count, default=notr_("typo")):
         my.tr('Please specify the REASON for the modification, such as "typo".'),
       )),
       QLineEdit.Normal,
-      default)
+      default or _defaultUpdateComment())
   return ret.strip() if ok else ""
 
-def getDisableSelectionComment(count, default=notr_("typo")):
+def getDisableSelectionComment(count, default=''):
   """
   @param  count  int
   @return  bool
@@ -93,7 +101,7 @@ def getDisableSelectionComment(count, default=notr_("typo")):
         my.tr('Please specify the REASON for the modification, such as "typo".'),
       )),
       QLineEdit.Normal,
-      default)
+      default or _defaultUpdateComment())
   return ret.strip() if ok else ""
 
 def confirmQuit():
