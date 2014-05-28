@@ -106,7 +106,7 @@ class _DictionaryTester(object):
     from sakurakit import skclip
     t = skclip.gettext().strip()
     if t:
-      self.textEdit.setPlainText(t)
+      self.inputEdit.setText(t)
 
   #def _clear(self):
   #  self.inputEdit.clear()
