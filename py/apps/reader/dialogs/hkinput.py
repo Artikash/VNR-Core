@@ -2,7 +2,7 @@
 # hkinput.py
 # 3/15/2014 jichi
 
-__all__ = ['HotkeyInput']
+__all__ = ['HotkeyInputDialog']
 
 if __name__ == '__main__':
   import sys
@@ -21,8 +21,29 @@ from mytr import mytr_
 import i18n, rc
 from hkman import packhotkey, unpackhotkey
 
+class HotkeyInputDialog(QtWidgets.QDialog):
+  valueChanged = Signal(str) # hotkey
+
+  def __init__(self, parent=None):
+    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    super(HotkeyInputDialog, self).__init__(parent, WINDOW_FLAGS)
+    skqss.class_(self, 'texture')
+    self.setWindowTitle(mytr_("Shortcuts"))
+    self.setWindowIcon(rc.icon('window-shortcuts'))
+    self.__d = _HotkeyInputDialog(self)
+    #self.resize(300, 250)
+    #self.statusBar() # show status bar
+
+  def setValue(self, v):
+    self.__d.defaultValue = v
+
+  def setVisible(self, t):
+    if t:
+      self.__d.refresh()
+    super(HotkeyInputDialog, self).setVisible(t)
+
 @Q_Q
-class _HotkeyInput(object):
+class _HotkeyInputDialog(object):
   def __init__(self, q):
     self.defaultValue = ''
     self.keyButtons = {
@@ -86,6 +107,12 @@ class _HotkeyInput(object):
     row.addWidget(self.cancelButton)
     row.addWidget(self.saveButton)
     layout.addLayout(row)
+
+    #buttonBox = QtWidgets.QDialogButtonBox()
+    #buttonBox.addButton(self.delButton, buttonBox.ResetRole)
+    #buttonBox.addButton(self.cancelButton, buttonBox.RejectRole)
+    #buttonBox.addButton(self.saveButton, buttonBox.AcceptRole)
+    #layout.addWidget(buttonBox)
 
     q.setLayout(layout)
 
@@ -176,30 +203,9 @@ class _HotkeyInput(object):
   def refresh(self):
     self.setCurrentValue(self.defaultValue)
 
-class HotkeyInput(QtWidgets.QDialog):
-  valueChanged = Signal(str) # hotkey
-
-  def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
-    super(HotkeyInput, self).__init__(parent, WINDOW_FLAGS)
-    skqss.class_(self, 'texture')
-    self.setWindowTitle(mytr_("Shortcuts"))
-    self.setWindowIcon(rc.icon('window-shortcuts'))
-    self.__d = _HotkeyInput(self)
-    #self.resize(300, 250)
-    #self.statusBar() # show status bar
-
-  def setValue(self, v):
-    self.__d.defaultValue = v
-
-  def setVisible(self, t):
-    if t:
-      self.__d.refresh()
-    super(HotkeyInput, self).setVisible(t)
-
 if __name__ == '__main__':
   a = debug.app()
-  w = HotkeyInput()
+  w = HotkeyInputDialog()
   w.show()
   a.exec_()
 

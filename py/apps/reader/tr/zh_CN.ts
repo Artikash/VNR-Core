@@ -86,12 +86,12 @@ By default it is the same as the executable of the game process.</source>
         <translation>启动程序文件不存在</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="143"/>
+        <location filename="dialogs/prompt.py" line="151"/>
         <source>Remove Game-specific Hook Code</source>
         <translation>删除游戏的特殊码</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="149"/>
+        <location filename="dialogs/prompt.py" line="157"/>
         <source>Do you want to delete the hook code for this game?
 It is recommended that you have the Internet access now, so that VNR will delete the hook code from the online database as well.
 
@@ -716,7 +716,7 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>请在文本设定中调整</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="131"/>
+        <location filename="dialogs/prompt.py" line="139"/>
         <source>Remove this game from the dashboard?</source>
         <translation>从Dashboard移除这个游戏吗？</translation>
     </message>
@@ -861,7 +861,7 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>还没有收到游戏文本</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="282"/>
+        <location filename="dialogs/prompt.py" line="290"/>
         <source>Update user-contributed comments</source>
         <translation>更新来自其他同学的评论</translation>
     </message>
@@ -876,92 +876,92 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>载入其他同学的自定义辞书</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="4664"/>
+        <location filename="managers/dataman.py" line="4683"/>
         <source>Sign in as &apos;{0}&apos;</source>
         <translation>登录为&apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="4665"/>
+        <location filename="managers/dataman.py" line="4684"/>
         <source>User language is &apos;{0}&apos;</source>
         <translation>语言是&apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="4670"/>
+        <location filename="managers/dataman.py" line="4689"/>
         <source>Sign in failed as &apos;{0}&apos;</source>
         <translation>登录&apos;{0}&apos;失败了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5449"/>
+        <location filename="managers/dataman.py" line="5468"/>
         <source>Fetching comments</source>
         <translation>更新评论中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5460"/>
+        <location filename="managers/dataman.py" line="5479"/>
         <source>Loading offline comments</source>
         <translation>载入离线评论</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5470"/>
+        <location filename="managers/dataman.py" line="5489"/>
         <source>Found {0} comments</source>
         <translation>找到{0}条评论</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5993"/>
+        <location filename="managers/dataman.py" line="6012"/>
         <source>Failed to save changes, will try later</source>
         <translation>这次保存变更没有成功呢，VNR等下会重试的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6621"/>
+        <location filename="managers/dataman.py" line="6640"/>
         <source>Updating dictionary terms online</source>
         <translation>更新共享词条中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6631"/>
+        <location filename="managers/dataman.py" line="6650"/>
         <source>Found {0} terms</source>
         <translation>找到{0}个词条</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6634"/>
+        <location filename="managers/dataman.py" line="6653"/>
         <source>Failed to download terms online</source>
         <translation>更新词条失败了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6635"/>
+        <location filename="managers/dataman.py" line="6654"/>
         <source>Something might be wrong with the Internet connection</source>
         <translation>也许网络连接不畅</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6947"/>
+        <location filename="managers/dataman.py" line="6966"/>
         <source>Failed to get game information</source>
         <translation>获取游戏信息失败了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7101"/>
+        <location filename="managers/dataman.py" line="7120"/>
         <source>The game does not exist. Did you delete it?</source>
         <translation>游戏并不存在。是不是已经被你删除了呢？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7599"/>
+        <location filename="managers/dataman.py" line="7702"/>
         <source>Please sign in to submit comment</source>
         <translation>请先登录再提交评论</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7616"/>
+        <location filename="managers/dataman.py" line="7719"/>
         <source>Cannot connect to the Internet</source>
         <translation>无法连接到网络</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="90"/>
+        <location filename="dialogs/prompt.py" line="98"/>
         <source>Update reason</source>
         <translation>修改的原因</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="218"/>
+        <location filename="dialogs/prompt.py" line="226"/>
         <source>Confirm deletion</source>
         <translation>确认删除</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="220"/>
+        <location filename="dialogs/prompt.py" line="228"/>
         <source>Do you want to permanently delete this entry?</source>
         <translation>你想要永久的移除这个条目吗？</translation>
     </message>
@@ -1021,17 +1021,17 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>辞书是空的。请在有网络连接时再更新吧。</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="106"/>
+        <location filename="dialogs/prompt.py" line="114"/>
         <source>Quit {0}?</source>
         <translation>要退出{0}吗？</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="117"/>
+        <location filename="dialogs/prompt.py" line="125"/>
         <source>Restart {0}?</source>
         <translation>要重新启动{0}吗？</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="119"/>
+        <location filename="dialogs/prompt.py" line="127"/>
         <source>If VNR is taking too much memory, restarting it might help reduce its memory usage.</source>
         <translation>如果VNR占用了很多内存，重新启动它可能会帮助释放多余的内存。</translation>
     </message>
@@ -1061,32 +1061,32 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>请选择图片的位置</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6556"/>
+        <location filename="managers/dataman.py" line="6575"/>
         <source>Updating game database online</source>
         <translation>更新在线游戏数据库中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6578"/>
+        <location filename="managers/dataman.py" line="6597"/>
         <source>Failed to update game database</source>
         <translation>更新游戏数据库没有成功</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6574"/>
+        <location filename="managers/dataman.py" line="6593"/>
         <source>Game database is updated</source>
         <translation>游戏数据库更新完成</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="316"/>
+        <location filename="dialogs/prompt.py" line="324"/>
         <source>Update online game database</source>
         <translation>更新在线游戏数据库</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="295"/>
+        <location filename="dialogs/prompt.py" line="303"/>
         <source>Update user-contributed dictionary</source>
         <translation>更新共享辞书</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="322"/>
+        <location filename="dialogs/prompt.py" line="330"/>
         <source>Do you want to update now?
 It might take a couple of seconds to complete.</source>
         <translation>你希望现在就更新吗？
@@ -1118,22 +1118,22 @@ It might take a couple of seconds to complete.</source>
         <translation>没有来自其他同学的字幕呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7657"/>
+        <location filename="managers/dataman.py" line="7760"/>
         <source>Shared dictionary is empty</source>
         <translation>共享辞书是空的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7654"/>
+        <location filename="managers/dataman.py" line="7757"/>
         <source>Dictionary entries are saved to the desktop</source>
         <translation>词条数据保存到了桌面</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7700"/>
+        <location filename="managers/dataman.py" line="7803"/>
         <source>There are no subtitles</source>
         <translation>这个游戏还没有人工字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7697"/>
+        <location filename="managers/dataman.py" line="7800"/>
         <source>Subtitles are saved to the desktop</source>
         <translation>字幕数据保存到了桌面</translation>
     </message>
@@ -1148,12 +1148,12 @@ It might take a couple of seconds to complete.</source>
         <translation>缺少语音合成需要的QuickTime</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7357"/>
+        <location filename="managers/dataman.py" line="7376"/>
         <source>Please start the game to submit comment</source>
         <translation>请在开始游戏后提交字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="3783"/>
+        <location filename="managers/dataman.py" line="3802"/>
         <source>No user-contributed subtitles found</source>
         <translation>没有来自其他同学的字幕呢</translation>
     </message>
@@ -1244,7 +1244,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>{0}的百分比</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6855"/>
+        <location filename="managers/dataman.py" line="6874"/>
         <source>Searching game information online</source>
         <translation>正在网上检索游戏信息</translation>
     </message>
@@ -1273,12 +1273,12 @@ Drag-drop does not work when VNR is launched with admin privileges.</source>
 拖曳的功能在以管理员身份运行VNR时是无效的。</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="333"/>
+        <location filename="dialogs/prompt.py" line="341"/>
         <source>Block user language</source>
         <translation>屏蔽用户语言</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="338"/>
+        <location filename="dialogs/prompt.py" line="346"/>
         <source>Are you sure to block {0}?
 It is the same as your current user language.
 If yes, VNR will block all settings for this language.</source>
@@ -1379,7 +1379,7 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>不要翻译这些文本</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="179"/>
+        <location filename="dialogs/prompt.py" line="187"/>
         <source>Do you want to permanently delete all entries?</source>
         <translation>你希望永久移除所有的条目吗？</translation>
     </message>
@@ -1389,7 +1389,7 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>百度中文翻译服务</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6137"/>
+        <location filename="managers/dataman.py" line="6156"/>
         <source>Your {0} is &apos;{1}&apos;</source>
         <translation>你的{0}是&apos;{1}&apos;</translation>
     </message>
@@ -1439,7 +1439,7 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>微软Bing的多国语言翻译服务</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="310"/>
+        <location filename="dialogs/prompt.py" line="318"/>
         <source>Cannot perform update when offline</source>
         <translation>离线时无法更新数据呢</translation>
     </message>
@@ -1449,12 +1449,12 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>&lt;span style=&quot;color:red&quot;&gt;注：EPWING辞书路径中不可以包含中文字符呢！&lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="346"/>
+        <location filename="dialogs/prompt.py" line="354"/>
         <source>Switch to full screen</source>
         <translation>切换到全屏状态</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="351"/>
+        <location filename="dialogs/prompt.py" line="359"/>
         <source>Do you want to stretch the game window to full screen?
 You can click the same button again to switch back.
 
@@ -1470,22 +1470,22 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>快捷方式指向的位置并不存在呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5172"/>
+        <location filename="managers/dataman.py" line="5191"/>
         <source>Remove bad user-defined hcode</source>
         <translation>自动移除错误的特殊码</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="4151"/>
+        <location filename="managers/dataman.py" line="4170"/>
         <source>Update game information</source>
         <translation>更新游戏信息</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="4159"/>
+        <location filename="managers/dataman.py" line="4178"/>
         <source>Found {0} references</source>
         <translation>找到{0}个游戏的引用</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="4161"/>
+        <location filename="managers/dataman.py" line="4180"/>
         <source>No game references found</source>
         <translation>没有找到游戏的信息</translation>
     </message>
@@ -1495,17 +1495,17 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>未知的游戏。请更新下游戏数据库。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7254"/>
+        <location filename="managers/dataman.py" line="7273"/>
         <source>Please sign in to submit reference</source>
         <translation>请先登录再提交信息</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="253"/>
+        <location filename="dialogs/prompt.py" line="261"/>
         <source>Update game references</source>
         <translation>更新游戏的信息</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="44"/>
+        <location filename="dialogs/prompt.py" line="52"/>
         <source>You are not the author of this entry.
 Please specify the REASON for modifying other&apos;s work.
 For example, you can put in &quot;typo&quot;, &quot;inaccurate&quot;, or &quot;scam&quot;.
@@ -1581,22 +1581,22 @@ If you enable this option, VNR will try providing alternative services.</source>
         <translation>你现在居住在中国大陆</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="243"/>
+        <location filename="dialogs/prompt.py" line="251"/>
         <source>Game references are updated on: {0}.</source>
         <translation>游戏的信息在{0}时已经更新过了。</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="271"/>
+        <location filename="dialogs/prompt.py" line="279"/>
         <source>VNR will automatically check for updates.</source>
         <translation>VNR会自动检查更新的。</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="279"/>
+        <location filename="dialogs/prompt.py" line="287"/>
         <source>Comments are updated on: {0}.</source>
         <translation>游戏的字幕在{0}时已经更新过了。</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="299"/>
+        <location filename="dialogs/prompt.py" line="307"/>
         <source>Dictionary terms are updated on: {0}.
 The dictionary might enhance machine translation quality.
 VNR will check for automatically updates.</source>
@@ -1605,7 +1605,7 @@ VNR will check for automatically updates.</source>
 VNR会自动检查更新的。</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="320"/>
+        <location filename="dialogs/prompt.py" line="328"/>
         <source>Game database is updated on: {0}.
 The database is used to detect new games.
 VNR will automatically check for updates.</source>
@@ -1669,7 +1669,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
 如果你有超能力，你也许可以在经过/未经其他同学允许的情况下，改进来自其他同学的贡献（比如字幕）。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="4405"/>
+        <location filename="managers/dataman.py" line="4424"/>
         <source>Reference already existed</source>
         <translation>游戏信息已经存在了</translation>
     </message>
@@ -1816,12 +1816,12 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
 2. 在游戏向导中手动添加游戏</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="359"/>
+        <location filename="dialogs/prompt.py" line="367"/>
         <source>Enable repetition filter</source>
         <translation>过滤文本中的重复</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="373"/>
+        <location filename="dialogs/prompt.py" line="381"/>
         <source>Are you sure to turn on repetition filter?
 You might NOT want to turn this on unless the game text is FULL OF repeats.
 Few games really need this option.
@@ -1860,12 +1860,12 @@ than turning on global repetition filters here.</source>
         <translation>Wine上不支持这个功能呢</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="381"/>
+        <location filename="dialogs/prompt.py" line="389"/>
         <source>Keep all text threads</source>
         <translation>保留全部对话文本</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="390"/>
+        <location filename="dialogs/prompt.py" line="398"/>
         <source>Are you sure to keep all scenario text threads?
 You might NOT want to enable this unless the ADDRESS OF TEXT
 (the gray the number) varies each time you launch the game!
@@ -1884,17 +1884,17 @@ This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source
 这样将会产生大量的垃圾文本，而这不会是你想要达到的！</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5387"/>
+        <location filename="managers/dataman.py" line="5406"/>
         <source>Searching for game character names</source>
         <translation>搜索游戏中人物的姓名</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5397"/>
+        <location filename="managers/dataman.py" line="5416"/>
         <source>Found {0} game characters</source>
         <translation>找到{0}个游戏人物</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5414"/>
+        <location filename="managers/dataman.py" line="5433"/>
         <source>Game character names not found</source>
         <translation>没有找到人物的姓名</translation>
     </message>
@@ -2017,12 +2017,12 @@ DMM上几乎可以找到近期发售的全部游戏，但是不缺少很老的�
         <translation>部分画像没有保存成功</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="421"/>
+        <location filename="dialogs/prompt.py" line="429"/>
         <source>Save game images</source>
         <translation>保存游戏的画像</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="422"/>
+        <location filename="dialogs/prompt.py" line="430"/>
         <source>Do you want to save all images to your Desktop?</source>
         <translation>你要保存全部画像到桌面吗？</translation>
     </message>
@@ -2037,12 +2037,12 @@ DMM上几乎可以找到近期发售的全部游戏，但是不缺少很老的�
         <translation>正在下载YouTube的动画</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="412"/>
+        <location filename="dialogs/prompt.py" line="420"/>
         <source>Download YouTube videos</source>
         <translation>下载YouTube的动画</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="413"/>
+        <location filename="dialogs/prompt.py" line="421"/>
         <source>Do you want to download all YouTube videos to your Desktop?</source>
         <translation>你真的要下载全部YouTube的动画到桌面吗？</translation>
     </message>
@@ -2057,12 +2057,12 @@ DMM上几乎可以找到近期发售的全部游戏，但是不缺少很老的�
         <translation>保留游戏文本中的空格</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="398"/>
+        <location filename="dialogs/prompt.py" line="406"/>
         <source>Insert spaces</source>
         <translation>插入空格</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="404"/>
+        <location filename="dialogs/prompt.py" line="412"/>
         <source>Are you sure to preserve spaces in the game text?
 This might be useful for English games.
 
@@ -2080,7 +2080,7 @@ This might result in redundant spaces for Japanese games.</source>
         <translation>保留（英文）单词之间的空格</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5202"/>
+        <location filename="managers/dataman.py" line="5221"/>
         <source>Remove non-existed game</source>
         <translation>移除不存在的游戏</translation>
     </message>
@@ -2503,12 +2503,12 @@ Just don&apos;t forget to export LC_ALL=ja_JP.UTF8 before launching VNR.</source
         <translation>找到{0}个YouTube动画</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5193"/>
+        <location filename="managers/dataman.py" line="5212"/>
         <source>Do not keep all scenario threads in text settings</source>
         <translation>不保留游戏的全部对话文本</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5184"/>
+        <location filename="managers/dataman.py" line="5203"/>
         <source>Ignore repetition filters in text settings</source>
         <translation>不过滤游戏文本中的重复</translation>
     </message>
@@ -2518,12 +2518,12 @@ Just don&apos;t forget to export LC_ALL=ja_JP.UTF8 before launching VNR.</source
         <translation>输入游戏的名字或游戏在网站上的ID或者URL</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="430"/>
+        <location filename="dialogs/prompt.py" line="438"/>
         <source>Export Excel CSV</source>
         <translation>导出为Excel CSV文件</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="431"/>
+        <location filename="dialogs/prompt.py" line="439"/>
         <source>Do you want to export the data into an Excel CSV file?</source>
         <translation>你要把这些数据导出到Excel CSV文件中码？</translation>
     </message>
@@ -2888,12 +2888,12 @@ This will help VNR to get rid of H-code for that kind of games.</source>
 这样的话以后VNR对类似的游戏就不再需要特殊码了呢。</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="462"/>
+        <location filename="dialogs/prompt.py" line="470"/>
         <source>Remove dictionary</source>
         <translation>移除辞书</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="476"/>
+        <location filename="dialogs/prompt.py" line="484"/>
         <source>Download dictionary</source>
         <translation>下载辞书</translation>
     </message>
@@ -2923,7 +2923,7 @@ You can select only the resources you need to download here.</source>
         <translation>{0}并不存在呢。请在使用偏好中重新下载</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="464"/>
+        <location filename="dialogs/prompt.py" line="472"/>
         <source>Do you want to remove the {0} dictionary?
 You can redownload it later if you have Internet access.</source>
         <translation>真的要删除{0}辞书吗？
@@ -2970,7 +2970,7 @@ You can redownload it later if you have Internet access.</source>
         <translation>创建词条</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="479"/>
+        <location filename="dialogs/prompt.py" line="487"/>
         <source>Do you want to download the {0} dictionary?
 It requires Internet access and might take a couple of minutes.
 The dictionary will be installed to {1}.</source>
@@ -2984,12 +2984,12 @@ The dictionary will be installed to {1}.</source>
         <translation>没有指定翻译。这样的话VNR会删掉匹配的文本。</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="489"/>
+        <location filename="dialogs/prompt.py" line="497"/>
         <source>Remove AppLocale</source>
         <translation>移除AppLocale</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="492"/>
+        <location filename="dialogs/prompt.py" line="500"/>
         <source>Do you want to remove AppLocale?
 It requires Internet access and might take a couple of minutes.
 You can reinstall it later if you have Internet access.</source>
@@ -2998,12 +2998,12 @@ You can reinstall it later if you have Internet access.</source>
 你在有网络连接的时候可以重新安装。</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="502"/>
+        <location filename="dialogs/prompt.py" line="510"/>
         <source>Install Microsoft AppLocale</source>
         <translation>安装Microsoft AppLocale</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="507"/>
+        <location filename="dialogs/prompt.py" line="515"/>
         <source>Do you want to install the @piaip version of Microsoft AppLocale?
 It requires Internet access and might take a couple of minutes.
 The program will be installed to {0}.
@@ -3086,7 +3086,7 @@ VNR可以自动从台湾大学下载并安装pAppLocale。
         <translation>查询日文词语解释的辞书</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="481"/>
+        <location filename="dialogs/prompt.py" line="489"/>
         <source>If EDICT is installed, VNR&apos;s Updater will also update EDICT monthly.</source>
         <translation>如果EDICT有装，VNR的更新程序每月都会去更新EDICT的。</translation>
     </message>
@@ -3320,7 +3320,7 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>VNR不仅支持日文TTS，还支持包括中文、英文等其他语言的SAPI TTS。当这里选择的TTS的语言和游戏语言不同时，VNR会转而读出翻译字幕，而不会出游戏文本。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5091"/>
+        <location filename="managers/dataman.py" line="5110"/>
         <source>VNR&apos;s game profile (%s) was corrupted. Recovered from backup.</source>
         <translation>VNR的游戏设定（%s）损坏了呢。恢复到过去备份的设定。</translation>
     </message>
@@ -3644,17 +3644,17 @@ VNR的提取方法支持内嵌翻译到游戏中去，但是支持的游戏比IT
         <translation>未知的游戏引擎</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="77"/>
+        <location filename="dialogs/prompt.py" line="85"/>
         <source>Do you want to permanently delete the selected {0} items?</source>
         <translation>你想要永久的移除{0}个选定的条目吗？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7532"/>
+        <location filename="managers/dataman.py" line="7632"/>
         <source>Editing other&apos;s entry is not allowed</source>
         <translation>不可以编辑其他人的条目的</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="93"/>
+        <location filename="dialogs/prompt.py" line="101"/>
         <source>Please specify the REASON for the modification, such as &quot;typo&quot;.</source>
         <translation>请给出修改条目的原因，比如：拼写错误。</translation>
     </message>
@@ -3669,9 +3669,14 @@ VNR的提取方法支持内嵌翻译到游戏中去，但是支持的游戏比IT
         <translation>不相等</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="92"/>
+        <location filename="dialogs/prompt.py" line="100"/>
         <source>Do you want to disable the selected {0} items?</source>
         <translation>你想要禁用{0}个选定的条目吗？</translation>
+    </message>
+    <message>
+        <location filename="managers/dataman.py" line="7645"/>
+        <source>{0} items updated</source>
+        <translation>修改了{0}个条目</translation>
     </message>
 </context>
 </TS>
