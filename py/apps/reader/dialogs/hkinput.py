@@ -108,6 +108,12 @@ class _HotkeyInputDialog(object):
     row.addWidget(self.saveButton)
     layout.addLayout(row)
 
+    #buttonBox = QtWidgets.QDialogButtonBox()
+    #buttonBox.addButton(self.delButton, buttonBox.ResetRole)
+    #buttonBox.addButton(self.cancelButton, buttonBox.RejectRole)
+    #buttonBox.addButton(self.saveButton, buttonBox.AcceptRole)
+    #layout.addWidget(buttonBox)
+
     q.setLayout(layout)
 
     shortcut('ctrl+s', self.save, parent=q)
