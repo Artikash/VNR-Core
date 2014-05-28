@@ -13,7 +13,7 @@ import 'termview' as TermView
 //Share.View { id: root_
 Item { id: root_
   //implicitWidth: 480; implicitHeight: 360
-  width: 800; height: 500
+  width: 900; height: 500
 
   // Window properties
   property string windowTitle: title() ///< window title
