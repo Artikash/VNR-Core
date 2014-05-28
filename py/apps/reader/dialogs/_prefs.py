@@ -838,7 +838,7 @@ class _ShortcutsTab(object):
   @memoizedproperty
   def ttsDialog(self):
     import hkinput
-    ret = hkinput.HotkeyInput(self.q)
+    ret = hkinput.HotkeyInputDialog(self.q)
     ret.setWindowTitle("%s - %s" % (
       ret.windowTitle(), mytr_("Text-to-speech")))
     ss = settings.global_()
