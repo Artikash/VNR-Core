@@ -1435,7 +1435,7 @@ class _Comment(object):
     self.updateTimestamp = updateTimestamp  # long
     self.updateUserId = updateUserId    # int
     self.text = text            # unicode
-    self.disabled = disabled        # bool
+    self.disabled = disabled    # bool
     self.deleted = deleted      # bool
     self.locked = locked        # bool
     #self.popup = popup          # bool
@@ -1444,6 +1444,8 @@ class _Comment(object):
     self.contextSize = contextSize # int
     self.comment = comment
     self.updateComment = updateComment
+
+    self.selected = False       # bool
 
     self.dirtyProperties = set() # set([str])
 
@@ -1587,6 +1589,8 @@ class Comment(QObject):
   locked, lockedChanged = __D.synthesize('locked', bool, sync=True)
   #popup, popupChanged = __D.synthesize('popup', bool, sync=True)
 
+  selected, selectedChanged = __D.synthesize('selected', bool) # whether the item is selected in term table
+
   def setDeleted(self, t): self.deleted = t
   def setDisabled(self, t): self.disabled = t
   def setLocked(self, t): self.locked = t
@@ -1696,7 +1700,7 @@ class _Term(object):
     self.private = private      # bool
     self.hentai = hentai        # bool
 
-    self.selected = False # bool
+    self.selected = False       # bool
 
     self.patternRe = None # compiled re or None
     #self.bbcodeText = None # unicode or None  cached BBCode
@@ -2908,7 +2912,7 @@ class _GameModel(object):
   def resetSourceData(self): self._sourceData = None
 
   @property
-  def sourceData(self):
+  def sourceData(self): # -> list not None
     if self._sourceData is None:
       #q = self.q
       #q.beginResetModel()
@@ -2940,7 +2944,7 @@ class _GameModel(object):
     return self.sortedData
 
   @property
-  def sortedData(self):
+  def sortedData(self): # -> list not None
     if self._sortedData is None:
       self._sortedData = self.filterData if self.filterText else self.sourceData
       #if not self.sortingColumn:
@@ -3154,10 +3158,10 @@ class _VoiceModel(object):
     return self.sortedData
 
   @staticproperty
-  def sourceData(): return manager().characters()
+  def sourceData(): return manager().characters() # -> list not None
 
   @property
-  def sortedData(self):
+  def sortedData(self): # -> list not None
     if self._sortedData is None:
       data = self.filterData if self.filterText else self.sourceData
       #if not self.sortingColumn:
@@ -3344,7 +3348,7 @@ class _TermModel(object):
     'updateTimestamp',
     'updateComment',
   ]
-  DEFAULT_SORTING_COLUMN = COLUMNS.index('modifiedTimestamp') # the second column
+  DEFAULT_SORTING_COLUMN = COLUMNS.index('modifiedTimestamp') # int = 1, the second column
 
   def __init__(self):
     self._filterText = "" # unicode
@@ -3359,7 +3363,6 @@ class _TermModel(object):
     self.pageSize = 50 # read-only, number of items per page, smaller enough to speed up scrolling
 
     self.selectionCount = 0 # int, cached
-
 
   @memoizedproperty
   def commentDialog(self):
@@ -3377,10 +3380,10 @@ class _TermModel(object):
     return self.sortedData if self.sortingColumn != self.DEFAULT_SORTING_COLUMN or self.sortingReverse else self.filterData if self.filterText else self.sourceData
 
   @staticproperty
-  def sourceData(): return manager().terms()
+  def sourceData(): return manager().terms() # -> list not None
 
   @property
-  def sortedData(self):
+  def sortedData(self): # -> list not None
     if self._sortedData is None:
       data = self.filterData if self.filterText else self.sourceData
       if self.sortingColumn == self.DEFAULT_SORTING_COLUMN:
@@ -3571,8 +3574,8 @@ class TermModel(QAbstractListModel):
 
     d = self.__d
     count = 0
-    for t in d.sourceData:
-      if t.d.selected:
+    for c in d.sourceData:
+      if c.d.selected:
         count += 1
     if count != d.selectionCount:
       d.selectionCount = count
@@ -3582,9 +3585,9 @@ class TermModel(QAbstractListModel):
   def clearSelection(self): # set selected = False
     d = self.__d
     if d.selectionCount:
-      for t in d.sourceData:
-        if t.d.selected:
-          t.selected = False
+      for c in d.sourceData:
+        if c.d.selected:
+          c.selected = False
       d.selectionCount = 0
       self.selectionCountChanged.emit(0)
 
@@ -3627,6 +3630,7 @@ COMMENT_ROLES = {
 @Q_Q
 class _CommentModel(object):
   COLUMNS = [ # MUST BE CONSISTENT WITH subtable.qml
+    'selected',
     'modifiedTimestamp', # row
     'disabled',
     'type',
@@ -3643,6 +3647,7 @@ class _CommentModel(object):
     'updateTimestamp',
     'updateComment',
   ]
+  DEFAULT_SORTING_COLUMN = COLUMNS.index('modifiedTimestamp') # int = 1, the second column
 
   def __init__(self, q):
     self._dirty = False  # bool
@@ -3654,10 +3659,12 @@ class _CommentModel(object):
     self.md5 = "" # str
     self._gameId = 0
     self.sortingReverse = False
-    self.sortingColumn = 0
+    self.sortingColumn = self.DEFAULT_SORTING_COLUMN
 
     self.pageNumber = 1 # starts at 1
     self.pageSize = 100 # read-only, number of items per page, smaller enough to speed up scrolling
+
+    self.selectionCount = 0 # int, cached
 
     q.gameMd5Changed.connect(self._invalidate)
 
@@ -3672,6 +3679,12 @@ class _CommentModel(object):
     #dm.aboutToExportComments.connect(self._save)
 
     QCoreApplication.instance().aboutToQuit.connect(self._save)
+
+  @memoizedproperty
+  def commentDialog(self):
+    import commentinput, windows
+    parent = windows.top()
+    return commentinput.CommentInputDialog(parent)
 
   def pageIndex(self): return self.pageSize * (self.pageNumber - 1) # -> int
 
@@ -3701,19 +3714,20 @@ class _CommentModel(object):
     q.reset()
     q.countChanged.emit(q.count)
     q.currentCountChanged.emit(q.currentCount)
+    q.refreshSelection()
 
   @property
   def data(self):
     """
     @return  [Comment]
     """
-    return self.sortedData if self.sortingColumn or self.sortingReverse else self.filterData if self.filterText else self.sourceData
+    return self.sortedData if self.sortingColumn != self.DEFAULT_SORTING_COLUMN or self.sortingReverse else self.filterData if self.filterText else self.sourceData
 
   @property
-  def sortedData(self):
+  def sortedData(self): # -> list not None
     if self._sortedData is None:
       data = self.filterData if self.filterText else self.sourceData
-      if not self.sortingColumn:
+      if not self.sortingColumn == self.DEFAULT_SORTING_COLUMN:
         if self.sortingReverse:
           self._sortedData = list(reversed(data))
         else:
@@ -3774,7 +3788,7 @@ class _CommentModel(object):
       self._dirty = False
 
   @property
-  def sourceData(self):
+  def sourceData(self): # -> list not None
     if self._sourceData is None:
       CommentModel.locked = True
       l = manager().queryComments(md5=self.md5)
@@ -3877,6 +3891,160 @@ class _CommentModel(object):
       #message = e.message or "%s" % e
       #growl.warn(message)
     return False
+
+  def deleteSelectedItems(self, updateComment='', append=True):
+    """
+    @param* updateComment  unicode
+    @param* append  bool
+    """
+    user = manager().user()
+    userId = user.id
+    if not userId:
+      return
+    data = self.sourceData
+    if not data:
+      return
+
+    userLevel = user.commentLevel
+
+    count = 0
+
+    for c in data:
+      cd = c.d
+      if cd.selected and not cd.deleted:
+        if not ( # the same as canEdit permission in qml
+          userId == ADMIN_USER_ID or
+          cd.userId == userId and not c.protected or
+          cd.userId == GUEST_USER_ID and userLevel > 0):
+          growl.warn('<br/>'.join((
+            my.tr("Editing other's entry is not allowed"),
+            tr_("User") + ": " + c.userName,
+            tr_("Text") + ": " + cd.text,
+          )))
+          continue
+        count += 1
+        if updateComment:
+          c.updateComment = "%s // %s" % (updateComment, cd.updateComment) if (append and
+            cd.updateComment and cd.updateComment != updateComment and not cd.updateComment.startswith(updateComment + ' //')
+          ) else updateComment
+        c.deleted = True
+        #if c.parent():
+        #  skevents.runlater(partial(c.setParent, None), 120000) # after 2 min
+
+    if count:
+      d.terms = [t for t in d.terms if not (c.d.selected and c.d.deleted)]
+      if d._sortedTerms:
+        d._sortedTerms = [t for t in d._sortedTerms if not (c.d.selected and c.d.deleted)]
+
+      d.invalidateTerms()
+      d.touchTerms()
+
+      growl.msg(my.tr("{0} items updated").format(count))
+
+  def disableSelectedItems(self, updateComment='', append=True):
+    """
+    @param* updateComment  unicode
+    @param* append  bool
+    """
+    user = manager().user()
+    userId = user.id
+    if not userId:
+      return
+    data = self.sourceData
+    if not data:
+      return
+
+    userLevel = user.termLevel
+
+    now = skdatetime.current_unixtime()
+
+    count = 0
+    for c in data:
+      cd = c.d
+      if cd.selected and not cd.disabled:
+        if not ( # the same as canImprove permission in qml
+          userId != GUEST_USER_ID and not cd.locked or
+          cd.userId == userId and not c.protected or
+          cd.userId == GUEST_USER_ID and userLevel > 0):
+          growl.warn('<br/>'.join((
+            my.tr("Editing other's entry is not allowed"),
+            tr_("User") + ": " + c.userName,
+            tr_("Text") + ": " + cd.text,
+          )))
+          continue
+        count += 1
+        c.updateUserId = userId
+        c.updateTimestamp = now
+        c.disabled = True
+        if updateComment:
+          c.updateComment = "%s // %s" % (updateComment, cd.updateComment) if (append and
+            cd.updateComment and cd.updateComment != updateComment and not cd.updateComment.startswith(updateComment + ' //')
+          ) else updateComment
+
+    if count:
+      growl.msg(my.tr("{0} items updated").format(count))
+
+  def commentSelectedItems(self, value, type='comment', append=True):
+    """
+    @param  value  unicode
+    @param* type  'comment' or 'updateComment'
+    @param* append  bool
+    """
+    user = manager().user()
+    userId = user.id
+    if not userId:
+      return
+    data = self.sourceData
+    if not data:
+      return
+
+    userLevel = user.termLevel
+
+    now = skdatetime.current_unixtime()
+
+    count = 0
+
+    for c in data:
+      cd = c.d
+      if cd.selected:
+        if type == 'comment':
+          if not ( # the same as canEdit permission in qml
+            userId == ADMIN_USER_ID or
+            cd.userId == userId and not c.protected or
+            cd.userId == GUEST_USER_ID and userLevel > 0):
+            growl.warn('<br/>'.join((
+              my.tr("Editing other's entry is not allowed"),
+              tr_("User") + ": " + c.userName,
+              tr_("Text") + ": " + cd.text,
+            )))
+            continue
+          count += 1
+          c.updateUserId = userId
+          c.updateTimestamp = now
+          c.comment = "%s // %s" % (value, cd.comment) if (append and
+            cd.comment and cd.comment != value and not cd.comment.startswith(value + ' //')
+          ) else value
+
+        elif type == 'updateComment':
+          if not ( # the same as canImprove permission in qml
+            userId != GUEST_USER_ID and not cd.locked or
+            cd.userId == userId and not c.protected or
+            cd.userId == GUEST_USER_ID and userLevel > 0):
+            growl.warn('<br/>'.join((
+              my.tr("Editing other's entry is not allowed"),
+              tr_("User") + ": " + c.userName,
+              tr_("Text") + ": " + cd.text,
+            )))
+            continue
+          count += 1
+          c.updateUserId = userId
+          c.updateTimestamp = now
+          c.updateComment = "%s // %s" % (value, cd.updateComment) if (append and
+            cd.updateComment and cd.updateComment != value and not cd.updateComment.startswith(value + ' //')
+          ) else value
+
+    if count:
+      growl.msg(my.tr("{0} items updated").format(count))
 
 #@QmlObject
 class CommentModel(QAbstractListModel):
@@ -4003,6 +4171,62 @@ class CommentModel(QAbstractListModel):
   pageSize = Property(int,
       lambda self: self.__d.pageSize,
       notify=pageSizeChanged)
+
+  selectionCountChanged = Signal(int)
+  selectionCount = Property(int,
+      lambda self: self.__d.selectionCount,
+      notify=selectionCountChanged)
+
+  @Slot()
+  def refreshSelection(self):
+    #self.__d.updateSelectionCount()
+
+    d = self.__d
+    count = 0
+    for t in d.sourceData:
+      if t.d.selected:
+        count += 1
+    if count != d.selectionCount:
+      d.selectionCount = count
+      self.selectionCountChanged.emit(count)
+
+  @Slot()
+  def clearSelection(self): # set selected = False
+    d = self.__d
+    if d.selectionCount:
+      for t in d.sourceData:
+        if t.d.selected:
+          t.selected = False
+      d.selectionCount = 0
+      self.selectionCountChanged.emit(0)
+
+  @Slot()
+  def deleteSelection(self): # delete selected entries
+    d = self.__d
+    if d.selectionCount and netman.manager().isOnline():
+      comment = prompt.getDeleteSelectionComment(d.selectionCount)
+      if comment:
+        d.deleteSelectedItems(updateComment=comment)
+
+  @Slot()
+  def disableSelection(self): # delete selected entries
+    d = self.__d
+    if d.selectionCount and netman.manager().isOnline():
+      comment = prompt.getDisableSelectionComment(d.selectionCount)
+      if comment:
+        d.disableSelectedItems(updateComment=comment)
+
+  @Slot()
+  def commentSelection(self): # delete selected entries
+    d = self.__d
+    if d.selectionCount and netman.manager().isOnline():
+      ok, comment, opt = d.commentDialog.get()
+      if ok and comment:
+        d.commentSelectedItems(
+          value=comment,
+          type=opt['type'],
+          append=opt['method'] == 'append',
+        )
 
 ## Reference  model ##
 
@@ -4150,7 +4374,7 @@ class _ReferenceModel(object):
     self._dirty = False
 
   @property
-  def sourceData(self):
+  def sourceData(self): # -> list not None
     if self._sourceData is None:
       #CommentModel.locked = True
       l = manager().queryReferences(gameId=self.gameId, online=False)
@@ -7604,9 +7828,8 @@ class DataManager(QObject):
     for t in d.terms:
       td = t.d
       if td.selected:
-        count += 1
         if type == 'comment':
-          if not ( # the same as canImprove permission in qml
+          if not ( # the same as canEdit permission in qml
             userId == ADMIN_USER_ID or
             td.userId == userId and not t.protected or
             td.userId == GUEST_USER_ID and userLevel > 0):
@@ -7617,6 +7840,7 @@ class DataManager(QObject):
               tr_("Text") + ": " + td.text,
             )))
             continue
+          count += 1
           t.updateUserId = userId
           t.updateTimestamp = now
           t.comment = "%s // %s" % (value, td.comment) if (append and
@@ -7635,6 +7859,7 @@ class DataManager(QObject):
               tr_("Text") + ": " + td.text,
             )))
             continue
+          count += 1
           t.updateUserId = userId
           t.updateTimestamp = now
           t.updateComment = "%s // %s" % (value, td.updateComment) if (append and
