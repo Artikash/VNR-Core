@@ -7604,7 +7604,6 @@ class DataManager(QObject):
     for t in d.terms:
       td = t.d
       if td.selected:
-        count += 1
         if type == 'comment':
           if not ( # the same as canImprove permission in qml
             userId == ADMIN_USER_ID or
@@ -7617,6 +7616,7 @@ class DataManager(QObject):
               tr_("Text") + ": " + td.text,
             )))
             continue
+          count += 1
           t.updateUserId = userId
           t.updateTimestamp = now
           t.comment = "%s // %s" % (value, td.comment) if (append and
@@ -7635,6 +7635,7 @@ class DataManager(QObject):
               tr_("Text") + ": " + td.text,
             )))
             continue
+          count += 1
           t.updateUserId = userId
           t.updateTimestamp = now
           t.updateComment = "%s // %s" % (value, td.updateComment) if (append and
