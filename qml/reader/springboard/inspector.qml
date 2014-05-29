@@ -26,8 +26,8 @@ Rectangle { id: root_
     openButton_.hover ||
     infoButton_.hover ||
     editButton_.hover ||
-    //subButton_.hover ||
-    discussButton_.hover ||
+    subButton_.hover ||
+    //discussButton_.hover ||
     browseButton_.hover ||
     removeButton_.hover
 
@@ -153,33 +153,33 @@ Rectangle { id: root_
       onClicked: if (game) gameedit_.showGame(game.md5)
     }
 
-    Bootstrap.Button { id: discussButton_
-      //styleClass: 'btn btn-default'
-      styleClass: 'btn btn-info'
-      width: parent.cellWidth
-      //text: Sk.tr("Browse")
-      text: qsTr("Discuss")
-      toolTip: qsTr("Visit the discussion page online")
-      onClicked:
-        if (game) {
-          var id = game.itemId
-          if (id)
-            Qt.openUrlExternally('http://sakuradite.com/game/' + id)
-          else
-            growlPlugin_.warn(My.tr("Unknown game"))
-        }
-    }
-
-    //Bootstrap.Button { id: subButton_
+    //Bootstrap.Button { id: discussButton_
+    //  //styleClass: 'btn btn-default'
     //  styleClass: 'btn btn-info'
     //  width: parent.cellWidth
-    //  text: My.tr("Sub")
-    //  toolTip: qsTr("Edit shared subtitles")
-    //  onClicked: if (game) mainPlugin_.showGameObjectSubtitles(game)
+    //  //text: Sk.tr("Browse")
+    //  text: qsTr("Discuss")
+    //  toolTip: qsTr("Visit the discussion page online")
+    //  onClicked:
+    //    if (game) {
+    //      var id = game.itemId
+    //      if (id)
+    //        Qt.openUrlExternally('http://sakuradite.com/game/' + id)
+    //      else
+    //        growlPlugin_.warn(My.tr("Unknown game"))
+    //    }
     //}
 
-    Bootstrap.Button { id: infoButton_
+    Bootstrap.Button { id: subButton_
       styleClass: 'btn btn-inverse'
+      width: parent.cellWidth
+      text: My.tr("Sub")
+      toolTip: qsTr("Edit shared subtitles")
+      onClicked: if (game) mainPlugin_.showGameObjectSubtitles(game)
+    }
+
+    Bootstrap.Button { id: infoButton_
+      styleClass: 'btn btn-info'
       width: parent.cellWidth
       text: My.tr("Info")
       toolTip: qsTr("Show game information")

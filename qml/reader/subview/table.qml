@@ -49,6 +49,10 @@ Item { id: root_
         || !!userId && userId !== _GUEST_USER_ID && !c.locked)
   }
 
+  function canSelect(c) {
+    return canImprove(c)
+  }
+
   function shouldHighlight(c) {
     return c.type === 'popup'
   }
@@ -90,6 +94,31 @@ Item { id: root_
     property int cellSpacing: 5
     contentWidth: width // Prevent recursive binding bug in QtDesktop
 
+    sortColumn: 1 // the initial sorting column is the second one
+
+    // Column: Selected
+    Desktop.TableColumn {
+      role: 'object'; title: Sk.tr("Select")
+      width: 30
+      delegate: Item {
+        height: table_.cellHeight
+        Desktop.CheckBox {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          enabled: canSelect(itemValue)
+          checked: itemValue.selected
+          onCheckedChanged:
+            if (enabled && checked !== itemValue.selected) {
+              itemValue.selected = checked
+              table_.model.refreshSelection()
+            }
+
+          function setChecked(t) { checked = t }
+          Component.onCompleted: itemValue.selectedChanged.connect(setChecked)
+          Component.onDestruction: itemValue.selectedChanged.disconnect(setChecked)
+        }
+      }
+    }
+
     // Column: Row
     Desktop.TableColumn {
       role: 'number'; title: "#"
@@ -109,7 +138,6 @@ Item { id: root_
     }
 
     // Column: Disabled
-
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Enable")
       width: 40
@@ -120,10 +148,13 @@ Item { id: root_
           enabled: canImprove(itemValue)
           checked: !itemValue.disabled
           onCheckedChanged:
-            if (enabled && checked === itemValue.disabled) {
+            if (enabled && checked === itemValue.disabled)
               datamanPlugin_.enableComment(itemValue, checked)
-              checked = !itemValue.disabled
-            }
+              //checked = !itemValue.disabled
+
+          function setNotChecked(t) { checked = !t }
+          Component.onCompleted: itemValue.disabledChanged.connect(setNotChecked)
+          Component.onDestruction: itemValue.disabledChanged.disconnect(setNotChecked)
         }
       }
     }
@@ -377,7 +408,7 @@ Item { id: root_
     // Column: Comment
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Comment")
-      width: 160
+      width: 120
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)
@@ -401,7 +432,7 @@ Item { id: root_
           visible: itemSelected && editable
           maximumLength: _MAX_TEXT_LENGTH
 
-          Component.onCompleted: text = itemValue.comment
+          text: itemValue.comment
 
           onTextChanged: save()
           onAccepted: save()

@@ -11,7 +11,7 @@ import 'subview' as SubView
 
 Share.View { id: root_
   //implicitWidth: 480; implicitHeight: 360
-  width: 700; height: 500
+  width: 800; height: 500
 
   // Window properties
   property string windowTitle: title() ///< window title
@@ -84,7 +84,9 @@ Share.View { id: root_
   SubView.Table { id: table_
     anchors {
       left: parent.left; right: parent.right
-      top: toolBar_.bottom; bottom: searchBox_.top
+      top: toolBar_.bottom
+      //bottom: searchBox_.top
+      bottom: selectToolBar_.visible ? selectToolBar_.top : searchBox_.top
     }
     model: model_
     userId: root_.userId
@@ -108,6 +110,19 @@ Share.View { id: root_
       anchors.fill: parent
       visible: model_.currentCount <= 0
     }
+  }
+
+  SubView.SelectToolBar { id: selectToolBar_
+    anchors {
+      left: parent.left; right: parent.right
+      bottom: searchBox_.top
+    }
+
+    selectionCount: model_.selectionCount
+
+    visible: selectionCount > 0 && !!root_.userId
+
+    model: model_
   }
 
   Share.Paginator { id: paginator_

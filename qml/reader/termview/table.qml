@@ -107,7 +107,6 @@ Item { id: root_
     sortColumn: 1 // the initial sorting column is the second one
 
     // Column: Selected
-
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Select")
       width: 30
@@ -149,7 +148,6 @@ Item { id: root_
     }
 
     // Column: Disabled
-
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Enable")
       width: 45
@@ -160,10 +158,9 @@ Item { id: root_
           enabled: canImprove(itemValue)
           checked: !itemValue.disabled
           onCheckedChanged:
-            if (enabled && checked === itemValue.disabled) {
+            if (enabled && checked === itemValue.disabled)
               datamanPlugin_.enableTerm(itemValue, checked)
               //checked = !itemValue.disabled
-            }
 
           function setNotChecked(t) { checked = !t }
           Component.onCompleted: itemValue.disabledChanged.connect(setNotChecked)
