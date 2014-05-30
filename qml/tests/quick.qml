@@ -12,7 +12,8 @@ Item {
 
   Share.IntSpinBox {
     anchors.centerIn: parent
-    width: 50
+    width: 100
+    postfix: '/50'
 
     minimumValue: 1
   }

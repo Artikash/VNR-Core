@@ -6,8 +6,8 @@
 // - i18n -
 
 var LANGUAGES = [
-  'en'
-  , 'ja'
+  'ja'
+  , 'en'
   , 'zht', 'zhs'
   , 'ko'
   , 'th', 'vi', 'ms', 'id'
@@ -22,8 +22,8 @@ function isKnownLanguage(lang) { return -1 !== LANGUAGES.indexOf(lang) }
  **/
 
 var LANGUAGE_NAME = {
- en: "English"
- , ja: "Japanese"
+ ja: "Japanese"
+ , en: "English"
  , zh: "Chinese"
  , zht: "Chinese"
  , zhs: "Simplified Chinese"
