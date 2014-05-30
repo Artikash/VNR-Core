@@ -7720,14 +7720,17 @@ class DataManager(QObject):
     """
     d = self.__d
     userId = d.user.id
-    if not d.terms or not userId:
+    if not userId:
+      return
+    data = d.terms
+    if not data:
       return
 
     userLevel = d.user.termLevel
 
     count = 0
 
-    for t in d.terms:
+    for t in data:
       td = t.d
       if td.selected and not td.deleted:
         if not ( # the same as canEdit permission in qml
@@ -7767,7 +7770,10 @@ class DataManager(QObject):
     """
     d = self.__d
     userId = d.user.id
-    if not d.terms or not userId:
+    if not userId:
+      return
+    data = d.terms
+    if not data:
       return
 
     userLevel = d.user.termLevel
@@ -7775,7 +7781,7 @@ class DataManager(QObject):
     now = skdatetime.current_unixtime()
 
     count = 0
-    for t in d.terms:
+    for t in data:
       td = t.d
       if td.selected and not td.disabled:
         if not ( # the same as canImprove permission in qml
@@ -7816,7 +7822,10 @@ class DataManager(QObject):
     """
     d = self.__d
     userId = d.user.id
-    if not d.terms or not userId:
+    if not userId:
+      return
+    data = d.terms
+    if not data:
       return
 
     userLevel = d.user.termLevel
@@ -7825,7 +7834,7 @@ class DataManager(QObject):
 
     count = 0
 
-    for t in d.terms:
+    for t in data:
       td = t.d
       if td.selected:
         if type == 'comment':

@@ -2824,7 +2824,7 @@ class _DictionaryDownloadsTab(object):
   def _removeJMDict(self, name):
     if prompt.confirmRemoveDictionary('JMDict (%s)' % name):
       dicts.jmdict(name).remove()
-      settings.global_().setJMDictDictionaryEnabled(name, False)
+      settings.global_().setJMDictEnabled(name, False)
       self.refreshJMDict(name)
 
   def refreshJMDict(self, name): # -> bool exists

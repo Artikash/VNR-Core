@@ -119,7 +119,7 @@ def removetree(path): # remove the whole directory recursively
   @return  bool
   """
   try:
-    if os.paths.exists(path):
+    if os.path.exists(path):
       dprint(path)
       import shutil
       shutil.rmtree(path)

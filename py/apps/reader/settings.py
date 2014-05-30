@@ -824,11 +824,11 @@ class Settings(QSettings):
       return self.isJMDictNlEnabled()
 
   def setJMDictEnabled(self, lang, v):
-    if name == 'fr':
+    if lang == 'fr':
       self.setJMDictFrEnabled(v)
-    elif name == 'ru':
+    elif lang == 'ru':
       self.setJMDictRuEnabled(v)
-    elif name == 'nl':
+    elif lang == 'nl':
       self.setJMDictNlEnabled(v)
 
   ## Machine translation ##

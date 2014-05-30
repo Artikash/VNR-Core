@@ -22,6 +22,7 @@ class Resource(object):
   def exists(self): # -> bool
     return os.path.exists(self.path)
   def locked(self): # -> bool
+    skfileio.removefile(self.lockpath)
     return os.path.exists(self.lockpath)
   def remove(self): # -> bool
     return skfileio.removefile(self.path)
