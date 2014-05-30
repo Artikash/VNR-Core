@@ -9,9 +9,13 @@ Desktop.SpinBox {
 
   // - Private -
 
-  onIntValueChanged:
-    value = intValue
+  onIntValueChanged: value = intValue
+
   onValueChanged:
-    if (parseInt(value) != intValue)
-      intValue = value
+    if (parseInt(value) !== intValue) {
+      if (isNaN(value))
+        intValue = value = minimumValue
+      else
+        intValue = value
+    }
 }
