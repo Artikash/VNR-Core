@@ -96,7 +96,7 @@ Share.View { id: root_
 
     property QtObject currentItem: model.get(currentIndex) // dataman.Comment
 
-    SubView.NavToolBar { //id: navToolBar_ // scroll buttons
+    Share.Navigator { //id: navToolBar_ // scroll buttons
       anchors {
         bottom: parent.bottom; right: parent.right
         margins: 25

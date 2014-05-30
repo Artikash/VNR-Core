@@ -3370,7 +3370,7 @@ class _TermModel(object):
     parent = windows.top()
     return commentinput.CommentInputDialog(parent)
 
-  def pageIndex(self): return self.pageSize * (self.pageNumber - 1) # -> int
+  def pageIndex(self): return max(0, self.pageSize * (self.pageNumber - 1)) # -> int
 
   @property
   def data(self):
@@ -3686,7 +3686,7 @@ class _CommentModel(object):
     parent = windows.top()
     return commentinput.CommentInputDialog(parent)
 
-  def pageIndex(self): return self.pageSize * (self.pageNumber - 1) # -> int
+  def pageIndex(self): return max(0, self.pageSize * (self.pageNumber - 1)) # -> int
 
   def _addComment(self, c):
     try:

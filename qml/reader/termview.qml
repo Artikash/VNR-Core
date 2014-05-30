@@ -85,7 +85,7 @@ Item { id: root_
       text: (mainToolBar_.enabled ? Sk.tr("Empty") : Sk.tr("Disabled")) + "! ><"
     }
 
-    TermView.NavToolBar { //id: navToolBar_ // scroll buttons
+    Share.Navigator { //id: navToolBar_ // scroll buttons
       anchors {
         bottom: parent.bottom; right: parent.right
         margins: 25

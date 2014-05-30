@@ -1,4 +1,4 @@
-/** navtoolbar.qml
+/** navigator.qml
  *  2/20/2013 jichi
  */
 import QtQuick 1.1
@@ -13,6 +13,10 @@ Column { id: root_
   signal scrollTop
   signal scrollBottom
 
+  //property string buttonStyle: 'btn btn-default'
+  property string buttonStyleClass: 'btn btn-inverse'
+  //property string buttonStyleClass: 'btn btn-success'
+
   // - Private -
 
   spacing: 2
@@ -24,7 +28,7 @@ Column { id: root_
   Bootstrap.Button {
     //width: parent.cellWidth
     //font.pixelSize: parent.pixelSize
-    styleClass: 'btn btn-default'
+    styleClass: root_.buttonStyleClass
     text: "↑" // うえ
     toolTip: qsTr("Scroll to the top")
     onClicked: root_.scrollTop()
@@ -37,7 +41,7 @@ Column { id: root_
   Bootstrap.Button {
     //width: parent.cellWidth
     //font.pixelSize: parent.pixelSize
-    styleClass: 'btn btn-default'
+    styleClass: root_.buttonStyleClass
     text: "↓" // した
     toolTip: qsTr("Scroll to the bottom")
     onClicked: root_.scrollBottom()
