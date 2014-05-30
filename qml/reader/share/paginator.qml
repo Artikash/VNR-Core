@@ -14,7 +14,7 @@ Item { id: root_
 
   // - Private -
 
-  implicitWidth: 130
+  implicitWidth: 150
   implicitHeight: spin_.height
 
   //property int cellWidth: 20
@@ -66,12 +66,12 @@ Item { id: root_
       right: nextPageButton_.left
       leftMargin: 2
     }
+
     height: 20
     minimumValue: 1
 
-    // Not supported
-    // Need to modify spinbox.qml to alias input.horizontalAlignment
-    //horizontalAlignment: Qt.AlignRight
+    postfix: '/' + maximumValue
+    topMargin: 4 // input is too high
   }
 
   Bootstrap.Button { id: nextPageButton_
