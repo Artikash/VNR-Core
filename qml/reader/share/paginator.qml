@@ -12,6 +12,10 @@ Item { id: root_
   property alias value: spin_.intValue
   property alias maximumValue: spin_.maximumValue
 
+  //property string buttonStyle: 'btn btn-default'
+  property string buttonStyleClass: 'btn btn-inverse'
+  //property string buttonStyleClass: 'btn btn-success'
+
   // - Private -
 
   implicitWidth: 150
@@ -28,7 +32,7 @@ Item { id: root_
     }
     //width: parent.cellWidth
     //font.pixelSize: parent.pixelSize
-    styleClass: 'btn btn-default'
+    styleClass: root_.buttonStyleClass
     text: "|<"
     //toolTip: Sk.tr("Previous")
     //font.bold: true
@@ -46,7 +50,7 @@ Item { id: root_
     }
     //width: parent.cellWidth
     //font.pixelSize: parent.pixelSize
-    styleClass: 'btn btn-default'
+    styleClass: root_.buttonStyleClass
     text: "<<"
     toolTip: Sk.tr("Previous")
     //font.bold: true
@@ -68,7 +72,7 @@ Item { id: root_
     }
 
     height: 20
-    minimumValue: 1
+    minimumValue: maximumValue > 0 ? 1 : 0
 
     postfix: '/' + maximumValue
     topMargin: 4 // input is too high
@@ -81,7 +85,7 @@ Item { id: root_
     }
     //width: parent.cellWidth
     //font.pixelSize: parent.pixelSize
-    styleClass: 'btn btn-default'
+    styleClass: root_.buttonStyleClass
     text: ">>"
     toolTip: Sk.tr("Next")
     //font.bold: true
@@ -101,7 +105,7 @@ Item { id: root_
     }
     //width: parent.cellWidth
     //font.pixelSize: parent.pixelSize
-    styleClass: 'btn btn-default'
+    styleClass: root_.buttonStyleClass
     text: ">|"
     //toolTip: Sk.tr("Previous")
     //font.bold: true

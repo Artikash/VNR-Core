@@ -16,6 +16,7 @@ SOURCES = \
   refview.qml \
   refview/inspector.qml \
   refview/toolbar.qml \
+  share/navigator.qml \
   springboard.qml \
   springboard/appmodel.qml \
   springboard/cometcounter.qml \
@@ -30,7 +31,6 @@ SOURCES = \
   subview/selecttoolbar.qml \
   subview.qml \
   termview/maintoolbar.qml \
-  termview/navtoolbar.qml \
   termview/selecttoolbar.qml \
   termview/table.qml \
   termview.qml \

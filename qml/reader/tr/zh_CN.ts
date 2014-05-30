@@ -859,14 +859,14 @@
     </message>
 </context>
 <context>
-    <name>navtoolbar</name>
+    <name>navigator</name>
     <message>
-        <location filename="../termview/navtoolbar.qml" line="29"/>
+        <location filename="../share/navigator.qml" line="29"/>
         <source>Scroll to the top</source>
         <translation>滚动到顶部</translation>
     </message>
     <message>
-        <location filename="../termview/navtoolbar.qml" line="42"/>
+        <location filename="../share/navigator.qml" line="42"/>
         <source>Scroll to the bottom</source>
         <translation>滚动到底部</translation>
     </message>
