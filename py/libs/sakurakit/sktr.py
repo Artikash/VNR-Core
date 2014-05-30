@@ -194,6 +194,8 @@ class sakurakit(QObject):
       self.tr("Picture"), self.tr("Pictures"),
       self.tr("Shortcuts"),
 
+      self.tr("All languages"),
+
       self.tr("Blue"),
       self.tr("Purple"),
 
@@ -237,7 +239,7 @@ class sakurakit(QObject):
       self.tr("Day"),
 
       self.tr("Account"),
-      self.tr("All"),
+      self.tr("All"), self.tr("all"),
       self.tr("Age"),
       self.tr("Aside"),
       self.tr("Author"),

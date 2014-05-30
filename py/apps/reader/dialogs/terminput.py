@@ -152,7 +152,13 @@ class _TermInput(object):
   def languageEdit(self):
     ret = QtWidgets.QComboBox()
     ret.setEditable(False)
-    ret.addItems(map(i18n.language_name2, config.LANGUAGES))
+
+    #items = map(i18n.language_name2, config.LANGUAGES)
+    items = [
+      tr_("All languages") if it == 'ja' else i18n.language_name2(it)
+      for it in config.LANGUAGES
+    ]
+    ret.addItems(items)
     ret.setMaxVisibleItems(ret.count())
     ret.setMaximumWidth(COMBOBOX_MAXWIDTH)
 
