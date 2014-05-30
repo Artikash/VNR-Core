@@ -68,6 +68,10 @@ Item { id: root_
     }
     height: 20
     minimumValue: 1
+
+    // Not supported
+    // Need to modify spinbox.qml to alias input.horizontalAlignment
+    //horizontalAlignment: Qt.AlignRight
   }
 
   Bootstrap.Button { id: nextPageButton_
