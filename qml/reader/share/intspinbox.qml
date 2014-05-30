@@ -10,6 +10,8 @@ Desktop.SpinBox {
   // - Private -
 
   onIntValueChanged: value = intValue
+  onMinimumValueChanged: if (intValue < minimumValue) intValue = minimumValue
+  onMaximumValueChanged: if (intValue > maximumValue) intValue = maximumValue
 
   onValueChanged:
     if (parseInt(value) !== intValue) {

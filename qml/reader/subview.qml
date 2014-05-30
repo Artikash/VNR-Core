@@ -41,7 +41,7 @@ Share.View { id: root_
     sortingColumn: table_.sortIndicatorColumn
     sortingReverse: table_.sortIndicatorDirection === 'up'
 
-    property int maximumPageNumber: Math.ceil(count / pageSize)
+    property int maximumPageNumber: Math.ceil(currentCount / pageSize)
     onPageNumberChanged:
       if (paginator_.value != pageNumber)
         paginator_.value = pageNumber
