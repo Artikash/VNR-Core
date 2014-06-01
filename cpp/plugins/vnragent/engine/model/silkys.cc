@@ -23,103 +23,52 @@
 
 /** Private data */
 
-//extern "C" { //
 namespace { // unnamed
 
 /**
- *  Sample game: 聖娼女 体験版
+ *  Type1: SEXティーチャー剛史 trial, reladdr = 0x2f0f0, 2 parameters
+ *  Type2: 愛姉妹4, reladdr = 0x2f9b0, 3 parameters
  *
- *  IDA:  sub_42F9B0 proc near ; Attributes: bp-based frame
- *  - var_8= dword ptr -8
- *  - var_4= byte ptr -4
- *  - var_3= word ptr -3
- *  - arg_0= dword ptr  8
- *  - arg_4= dword ptr  0Ch
- *  - arg_8= dword ptr  10h
- *
- *  - arg1: pointer
- *  - arg2: pointer, arg2+0xc is the text address
- *    - 0x0: 0
- *    - 0x4: int
- *    - 0x8: LPCWSTR
- *    - 0xc: LPCWSTR
- *  - arg3: int
- *  - return:  the same as [arg2 + 0xc]
- *
- *  Sample stack o arg2:
- *  002af6d8  00 00 00 00 03 02 00 00 ; arg2
- *  002af6e0  78 90 2d 01 60 9e 99 07 ; arg2 + 8
- *  002af6e8  83 68 82 c9 93 7c 82 ea
- *  002af6f0  82 b1 82 00 72 00 00 00
- *  002af6f8  9d 00 00 00 00 00 00 00
+ *  FIXME: No idea why it crashes the game
  */
-typedef LPCSTR (__cdecl *hook_fun_t)(DWORD, DWORD, DWORD);
+typedef LPCSTR (__cdecl *hook_fun_t)(DWORD);//, DWORD);
 hook_fun_t oldHookFun;
 
-__declspec(noinline)
-static LPCSTR dispatchText(LPCSTR text, DWORD returnAddress, DWORD split);
-
 /**
- *  Hooking thiscall using fastcall: http://tresp4sser.wordpress.com/2012/10/06/how-to-hook-thiscall-functions/
- *  - thiscall: this is in ecx and the first argument
- *  - fastcall: the first two parameters map to ecx and edx
+ *  Observations
+ *  - Return: text
  */
-LPCSTR __cdecl newHookFun(DWORD arg1, DWORD arg2, DWORD arg3)
+LPCSTR __cdecl newHookFun(DWORD arg1) //, DWORD arg2)
 {
-  enum { role = Engine::ScenarioRole, signature = role }; // dummy non-zero signature
-  //return oldHookFun(self, arg1, arg2);
-#ifdef DEBUG
-  qDebug() << (*(LPCSTR*)(arg2 + 0xc)) << ":"
-           << " signature: " << QString::number(signature, 16);
-#endif // DEBUG
-  //LPCSTR text = *(LPCSTR *)(arg2 + 0xc);
-  //dispatchText(text, 0, 0);
-  qDebug()<< 111111111;
-  qDebug()<< 222222222;
-  qDebug()<< 333333333;
-  LPCSTR ret = oldHookFun(arg1, arg2, arg3);
-  qDebug()<< 444444444;
-  qDebug()<< 555555555;
+  DWORD arg2_scene = arg1 + 4*5,
+        arg2_chara = arg1 + 4*10;
+  int role;
+  LPCSTR text = nullptr;
+  if (*(DWORD *)arg2_scene == 0) {
+    text = *(LPCSTR *)(arg2_scene + 0xc);
+    role = Engine::ScenarioRole;
+  } else if (*(DWORD *)arg2_chara == 0) {
+    text = LPCSTR(arg2_chara + 0xc);
+    role = Engine::NameRole;
+  }
+  if (text) {
+    QByteArray data = AbstractEngine::instance()->dispatchTextA(text, role, role);
+    if (data.isEmpty())
+      return text;
+    if (role == Engine::ScenarioRole) {
+      LPCSTR *p = (LPCSTR *)(arg2_scene + 0xc);
+      *p = data.constData();
+      oldHookFun(arg1);
+      *p = text;
+    } else
+      oldHookFun(arg1);
+    return text;
+  }
+  LPCSTR ret = oldHookFun(arg1);//, arg2);
   return ret;
-
-  //QString text = QString::fromWCharArray(self->text(), self->size);
-  //text = q->dispatchTextW(text, signature, role);
-  //if (text.isEmpty())
-  //  return self->size * 2; // estimated painted bytes
-
-  //auto oldText0 = self->texts[0];
-  //auto oldSize = self->size;
-  //auto oldCapacity = self->capacity;
-  //self->texts[0] = (LPCWSTR)text.utf16(); // lack trailing null character
-  //self->size = text.size();
-  //self->capacity = qMax(8, text.size()); // prevent using smaller size
-
-  //int ret = oldHookFun(self, arg1, arg2); // ret = size * 2
-
-  //self->texts[0] = oldText0;
-  //self->size = oldSize;
-  //self->capacity = oldCapacity;
-  //return ret;
 }
 
-} // extern "C"
-
-extern "C" static LPCSTR dispatchText(LPCSTR text, DWORD returnAddress, DWORD split)
-{
-  return text;
-  //static QByteArray ret; // persistent storage, which makes this function not thread-safe
-
-  // FIXME: It is ridiculous that accessing split will break extern "C"
-  //auto sig = Engine::hashThreadSignature(returnAddress, split);
-  //auto sig = Engine::hashThreadSignature(returnAddress);
-  //Q_UNUSED(split);
-
-  // split: choices: 0, character name & scenario: 1
-  //auto role = split ? Engine::UnknownRole : Engine::ChoiceRole;
-  enum { sig = 1, role = 1 };
-  //ret = AbstractEngine::instance()->dispatchTextA(text, sig, role);
-  //return (LPCSTR)ret.constData();
-}
+} // unnamed namespace
 
 /** Public class */
 
@@ -157,39 +106,35 @@ bool SilkysEngine::match()
  */
 static DWORD searchSilkys(DWORD startAddress, DWORD stopAddress)
 {
-  //const BYTE ins[] = { // size = 14
-  //  0x01,0x53, 0x58,                // 0153 58          add dword ptr ds:[ebx+58],edx
-  //  0x8b,0x95, 0x34,0xfd,0xff,0xff, // 8b95 34fdffff    mov edx,dword ptr ss:[ebp-2cc]
-  //  0x8b,0x43, 0x58,                // 8b43 58          mov eax,dword ptr ds:[ebx+58]
-  //  0x3b,0xd7                       // 3bd7             cmp edx,edi ; hook here
-  //};
-  //enum { cur_ins_size = 2 };
-  //enum { hook_offset = sizeof(ins) - cur_ins_size }; // = 14 - 2  = 12, current inst is the last one
-  const BYTE ins1[] = {
-    0x3b,0xd7, // 013baf32  |. 3bd7       |cmp edx,edi ; jichi: ITH hook here, char saved in edi
-    0x75,0x4b  // 013baf34  |. 75 4b      |jnz short siglusen.013baf81
+  const BYTE ins[] = {
+      //0x55,                             // 0093f9b0  /$ 55             push ebp  ; jichi: hook here
+      //0x8b,0xec,                        // 0093f9b1  |. 8bec           mov ebp,esp
+      //0x83,0xec, 0x08,                  // 0093f9b3  |. 83ec 08        sub esp,0x8
+      //0x83,0x7d, 0x10, 0x00,            // 0093f9b6  |. 837d 10 00     cmp dword ptr ss:[ebp+0x10],0x0
+      //0x53,                             // 0093f9ba  |. 53             push ebx
+      //0x8b,0x5d, 0x0c,                  // 0093f9bb  |. 8b5d 0c        mov ebx,dword ptr ss:[ebp+0xc]
+      //0x56,                             // 0093f9be  |. 56             push esi
+      //0x57,                             // 0093f9bf  |. 57             push edi
+      0x75, 0x0f,                       // 0093f9c0  |. 75 0f          jnz short silkys.0093f9d1
+      0x8b,0x45, 0x08,                  // 0093f9c2  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
+      0x8b,0x48, 0x04,                  // 0093f9c5  |. 8b48 04        mov ecx,dword ptr ds:[eax+0x4]
+      0x8b,0x91, 0x90,0x00,0x00,0x00    // 0093f9c8  |. 8b91 90000000  mov edx,dword ptr ds:[ecx+0x90]
   };
-  //enum { hook_offset = 0 };
-  DWORD range1 = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
-  DWORD reladdr = MemDbg::searchPattern(startAddress, range1, ins1, sizeof(ins1));
-
+  //enum { hook_offset = 0xc };
+  DWORD range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+  DWORD reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
+  //ITH_GROWL_DWORD(reladdr);
+  //reladdr = 0x2f9b0; // 愛姉妹4
+  //reladdr = 0x2f0f0; // SEXティーチャー剛史 trial
   if (!reladdr)
-    //ConsoleOutput("vnreng:Silkys2: pattern not found");
     return 0;
 
-  const BYTE ins2[] = {
-    0x55,      // 013bac70  /$ 55       push ebp ; jichi: function starts
-    0x8b,0xec, // 013bac71  |. 8bec     mov ebp,esp
-    0x6a,0xff  // 013bac73  |. 6a ff    push -0x1
-  };
-  enum { range2 = 0x300 }; // 0x013baf32  -0x013bac70 = 706 = 0x2c2
-  DWORD addr = startAddress + reladdr - range2;
-  reladdr = MemDbg::searchPattern(addr, range2, ins2, sizeof(ins2));
-  if (!reladdr)
-    //ConsoleOutput("vnreng:Silkys2: pattern not found");
-    return 0;
-  addr += reladdr;
-  return addr;
+  DWORD addr = startAddress + reladdr;
+  enum : BYTE { push_ebp = 0x55 };
+  for (int i = 0; i < 0x20; i++, addr--) // value of i is supposed to be 0xc or 0x10
+    if (*(BYTE *)addr == push_ebp) // beginning of the function
+      return addr;
+  return 0;
 }
 
 bool SilkysEngine::attach()
@@ -198,8 +143,9 @@ bool SilkysEngine::attach()
         stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
-  //ulong addr = ::searchSilkys(startAddress, stopAddress);
-  DWORD addr = startAddress + 0x2f9b0; // 愛姉妹4
+  ulong addr = ::searchSilkys(startAddress, stopAddress);
+  //DWORD addr = startAddress + 0x2f9b0; // 愛姉妹4
+  //DWORD addr = startAddress + 0x2f0f0; // SEXティーチャー剛史 trial
   dmsg(*(BYTE *)addr); // supposed to be 0x55
   //dmsg(addr - startAddress);
   if (!addr)
