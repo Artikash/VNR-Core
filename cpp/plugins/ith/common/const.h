@@ -46,6 +46,7 @@ enum pusha_off{
   , pusha_ebp_off = -0x18
   , pusha_esi_off = -0x1c
   , pusha_edi_off = -0x20
+  , pusha_off = -0x24 // pushad offset
 };
 
 #define HOOK_FUN_NAME_LIST \
