@@ -24,6 +24,7 @@ def engines():
       BGIEngine(),
       MajiroEngine(),
       SiglusEngine(),
+      #SilkysEngine(),
       #RejetEngine(),
     ]
   return ENGINES
@@ -117,6 +118,8 @@ class Engine(object): # placeholder
     else:
       return self.globAppDirectory(pattern, **kwargs)
 
+  def globs(self, *args, **kwargs): return bool(self.glob(*args, **kwargs))
+
   def existsAppFile(self, relpath, pid=0, path=''):
     """
     @param  relpaths  unicode
@@ -157,7 +160,7 @@ class MajiroEngine(Engine):
   ENCODING = SJIS_ENCODING # str, override
 
   def match(self, **kwargs): # override
-    return bool(self.glob(("data*.arc", "stream*.arc"), **kwargs))
+    return self.globs(("data*.arc", "stream*.arc"), **kwargs)
 
 # 5/11/2014 jichi
 class BGIEngine(Engine):
@@ -167,7 +170,7 @@ class BGIEngine(Engine):
   REGION_LOCKED = True # it cannot be launched using AppLocale in Chinese locale
 
   def match(self, **kwargs): # override
-    return bool(self.glob("BGI.*", **kwargs))
+    return self.globs("BGI.*", **kwargs)
 
 # 5/25/2014 jichi
 class RejetEngine(Engine):
@@ -176,7 +179,7 @@ class RejetEngine(Engine):
   ENCODING = SJIS_ENCODING # str, override
 
   def match(self, **kwargs): # override
-    return bool(self.exists(("gd.dat", "pf.dat", "sd.dat"), **kwargs))
+    return self.exists(("gd.dat", "pf.dat", "sd.dat"), **kwargs)
 
 # 5/25/2014 jichi
 class SiglusEngine(Engine):
@@ -185,7 +188,17 @@ class SiglusEngine(Engine):
   ENCODING = UTF16_ENCODING # str, override
 
   def match(self, **kwargs): # override
-    return bool(self.exists("SiglusEngine.exe", **kwargs))
+    return self.exists("SiglusEngine.exe", **kwargs)
+
+# 5/31/2014 jichi
+class SilkysEngine(Engine):
+
+  NAME = "Silkys" # str, override
+  ENCODING = SJIS_ENCODING # str, override
+
+  def match(self, **kwargs): # override
+    #return self.exists("Silkys.exe", **kwargs)
+    return self.exists(("data.arc", "effect.arc", "mes.arc"), **kwargs)
 
 # EOF
 

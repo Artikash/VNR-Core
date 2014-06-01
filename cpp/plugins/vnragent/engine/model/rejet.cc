@@ -39,6 +39,8 @@ namespace { // unnamed
  *  Sample ecx:
  *  - 04C51B08  AC 1E 6A 01 01 00 00 00  ｬj...
  *  - 04C51B10  D2 22 22 6C 31 31 00 8C  ﾒ""l11.・
+ *
+ *  jichi 5/31/2014: This might be a function in D3D DLLs.
  */
 typedef int (__stdcall *hook_fun_t)(LPCSTR, LPCSTR, LPCSTR, LPCSTR, int);
 hook_fun_t oldHookFun;

@@ -90,7 +90,7 @@ int __cdecl newHookFun(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR
 /** Public class */
 
 bool MajiroEngine::match()
-{ return Engine::glob(QStringList() << "data*.arc" << "stream*.arc"); }
+{ return Engine::globs(QStringList() << "data*.arc" << "stream*.arc"); }
 
 bool MajiroEngine::attach()
 {

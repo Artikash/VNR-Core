@@ -8,11 +8,11 @@
 namespace Engine {
 
 // File system
-bool glob(const QString &nameFilter);
-bool glob(const QStringList &nameFilters);
+bool globs(const QString &nameFilter);
+bool globs(const QStringList &nameFilters);
 
-bool glob(const QString &relPath, const QString &nameFilter);
-bool glob(const QString &relPath, const QStringList &nameFilters);
+bool globs(const QString &relPath, const QString &nameFilter);
+bool globs(const QString &relPath, const QStringList &nameFilters);
 
 bool exists(const QString &relPath);
 bool exists(const QStringList &relPaths);

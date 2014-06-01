@@ -11,37 +11,61 @@
 #include <unordered_map>
 #include <utility>
 
+namespace { // unnamed
+
+bool globsDir(const QDir &dir, const QString &filter)
+{ return !dir.entryList(QStringList(filter)).isEmpty(); }
+
+bool existsPath(const QString &path)
+{ return QFileInfo(path).exists(); }
+
+} // unnamed namespace
+
 // - File -
 
-bool Engine::glob(const QString &nameFilter)
-{ return glob(QStringList(nameFilter)); }
-
-bool Engine::glob(const QStringList &nameFilters)
+bool Engine::globs(const QString &nameFilter)
 {
   QDir dir = QCoreApplication::applicationDirPath();
-  return !dir.entryList(nameFilters).isEmpty();
+  return ::globsDir(dir, nameFilter);
 }
 
-bool Engine::glob(const QString &relPath, const QString &nameFilter)
-{ return glob(relPath, QStringList(nameFilter)); }
+bool Engine::globs(const QStringList &nameFilters)
+{
+  QDir dir = QCoreApplication::applicationDirPath();
+  foreach (const QString &filter, nameFilters)
+    if (!::globsDir(dir, filter))
+      return false;
+  return true;
+}
 
-bool Engine::glob(const QString &relPath, const QStringList &nameFilters)
+bool Engine::globs(const QString &relPath, const QString &nameFilter)
 {
   QDir dir = QCoreApplication::applicationDirPath() + "/" + relPath;
-  return dir.exists() && !dir.entryList(nameFilters).isEmpty();
+  return dir.exists() && ::globsDir(dir, nameFilter);
+}
+
+bool Engine::globs(const QString &relPath, const QStringList &nameFilters)
+{
+  QDir dir = QCoreApplication::applicationDirPath() + "/" + relPath;
+  if (!dir.exists())
+    return false;
+  foreach (const QString &filter, nameFilters)
+    if (!::globsDir(dir, filter))
+      return false;
+  return true;
 }
 
 bool Engine::exists(const QString &relPath)
 {
   QString path = QCoreApplication::applicationDirPath() + "/" + relPath;
-  return QFileInfo(path).exists();
+  return ::existsPath(path);
 }
 
 bool Engine::exists(const QStringList &relPaths)
 {
   QString base = QCoreApplication::applicationDirPath();
   foreach (const QString &path, relPaths)
-    if (!QFileInfo(base + "/" + path).exists())
+    if (!::existsPath(base + "/" + path))
       return false;
   return true;
 }
