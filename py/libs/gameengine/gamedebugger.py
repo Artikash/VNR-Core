@@ -100,6 +100,15 @@ class GameDebugger(object):
     if module:
       return module.modBaseAddr, module.modBaseAddr + module.modBaseSize
 
+  def hit_module(self, addr):
+    """Memory address hit test
+    @param  addr  long
+    @return  module  where the address falls in
+    """
+    for module in self.iterate_modules():
+      if addr >= module.modBaseAddr and addr < module.modBaseAddr + module.modBaseSize:
+        return module
+
   # Search
 
   def search_module_memory(self, moduleName, pattern):
@@ -209,13 +218,15 @@ if __name__ == '__main__':
   #pattern = 0x90ff503c83c4208b45ec
   pattern = 0x90, 0xff, 0x50, 0x3c, 0x83, 0xc4, 0x20, 0x8b, 0x45, 0xec
 
-  pid = 10944
-  dbg = GameDebugger(pid=pid)
-  if dbg.active():
-    #print dbg.searchbytes(pattern)
-    #pattern = ''.join(imap(chr, pattern))
-    #addr = dbg.searchstring(pattern)
-    addr = dbg.searchbytes(pattern)
-    print hex(addr)
+  pid = 8096
+  d = GameDebugger(pid=pid)
+  if d.active():
+    addr = 0x0120f9b0
+    m = d.hit_module(addr)
+    if m:
+      print m.szModule
+
+    #addr = d.searchbytes(pattern)
+    #print hex(addr)
 
 # EOF

@@ -3,7 +3,7 @@
 #include "engine/model/bgi.h"
 #include "engine/engineenv.h"
 
-bool BGIEngine::match() { return Engine::glob("BGI.*"); }
+bool BGIEngine::match() { return Engine::globs("BGI.*"); }
 
 // BGI2 pattern also exists in BGI1
 bool BGIEngine::attach() { return attachBGIType2() || attachBGIType1(); }
