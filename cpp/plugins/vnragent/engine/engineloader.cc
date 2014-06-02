@@ -6,7 +6,7 @@
 #include "engine/model/bgi.h"
 #include "engine/model/majiro.h"
 #include "engine/model/siglus.h"
-#include "engine/model/silkys.h"
+//#include "engine/model/silkys.h"
 //#include "engine/model/rejet.h"
 
 //#define TEST
