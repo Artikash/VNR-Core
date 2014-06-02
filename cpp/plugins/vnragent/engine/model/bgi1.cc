@@ -4,7 +4,6 @@
 #include "engine/enginedef.h"
 #include "engine/engineenv.h"
 #include "engine/enginehash.h"
-#include "detoursutil/detoursutil.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 
@@ -255,9 +254,10 @@ bool BGIEngine::attachBGIType1()
   //ulong addr = 0x4207e0; // FORTUNE ARTERIAL
   if (!addr)
     return false;
-  ::BGI1_oldHookFun = detours::replace<hook_fun_t>(addr, newHookFun);
-  setName("BGI1"); // change engine name
-  return true;
+  ::BGI1_oldHookFun = replaceFunction<hook_fun_t>(addr, newHookFun);
+  if (::BGI1_oldHookFun)
+    setName("BGI1"); // change engine name
+  return ::BGI1_oldHookFun;
 }
 
 // EOF

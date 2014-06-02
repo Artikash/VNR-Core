@@ -52,6 +52,21 @@ protected:
   virtual bool attach() = 0;
   virtual bool detach() { return false; }
 
+  // Hook
+  typedef void *address_type;
+  typedef const void *const_address_type;
+  static address_type replaceFunction(address_type old_addr, const_address_type new_addr);
+  static address_type restoreFunction(address_type restore_addr, const_address_type old_addr);
+
+  // Ignore type checking
+  template<typename Ret, typename Arg1, typename Arg2>
+  static inline Ret replaceFunction(Arg1 arg1, Arg2 arg2)
+  { return (Ret)replaceFunction((address_type)arg1, (const_address_type)arg2); }
+
+  template<typename Ret, typename Arg1, typename Arg2>
+  static inline Ret restoreFunction(Arg1 arg1, Arg2 arg2)
+  { return (Ret)restoreFunction((address_type)arg1, (const_address_type)arg2); }
+
   // Interface to descendent classes
 public:
   QByteArray dispatchTextA(const QByteArray &data, long signature, int role = 0);
