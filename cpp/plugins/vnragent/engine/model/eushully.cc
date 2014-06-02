@@ -8,7 +8,7 @@
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 
-//#include "debug.h"
+#include "debug.h"
 //#define DEBUG "Eushully"
 #include "sakurakit/skdebug.h"
 
@@ -34,48 +34,49 @@ hook_fun_t oldHookFun;
 // TODO: Generalize the naked function mechanism
 struct HookStack
 {
-  DWORD eflags; // pushaf
-  DWORD edi,    // pushad
+  DWORD eflags;  // pushaf
+  DWORD edi,     // pushad
         esi,
         ebp,
         esp,
         ebx,
         edx,
-        ecx,    // this
-        eax;    // 0x24
+        ecx,     // this
+        eax;     // 0x24
   DWORD retaddr; // 0x28
-  DWORD args[1]; // 0xc
+  DWORD args[1]; // 0x2c
 };
 
 __declspec(noinline)
-LPCSTR dispatchText(HookStack *stack)
+void dispatchText(HookStack *stack)
 {
+  enum { ArgText = 1 }; // text is the arg2
   // All threads including character names are linked together
   enum { role = Engine::ScenarioRole, signature = Engine::SingleThreadSignature };
   //DWORD returnAddress = esp[0]; // [esp + 0x0]
   //auto signature = Engine::hashThreadSignature(returnAddress);
-  LPCSTR text = (LPCSTR)stack->args[1]; // arg2
+  LPCSTR text = (LPCSTR)stack->args[ArgText];
   static QByteArray ret; // persistent storage, which makes this function not thread-safe
   // FIXME 6/1/2014: This will crash in Chinese locale
   ret = AbstractEngine::instance()->dispatchTextA(text, signature, role);
   //dmsg(QString::fromLocal8Bit(ret));
-  return (LPCSTR)ret.constData();
+  stack->args[ArgText] = DWORD(ret.isEmpty() ? "" : ret.constData());
 }
 
-__declspec(naked) // jichi 10/2/2013: No prolog and epilog
+__declspec(naked)
 int newHookFun()
 {
   //static DWORD lastArg2;
-  __asm
+  __asm // consistent with struct HookStack
   {
     pushad              // increase esp by 0x20 = 4 * 8, push ecx for thiscall is enough, though
     pushfd              // eflags
-    push esp
+    push esp            // arg1
     call dispatchText
     add esp,4           // pop esp
-    mov [esp+0x2c],eax  // modify arg2, 0x2c = 0x20(pushad) + 0x4(pushfd) + 0x8(arg2)
     popfd
     popad
+    // TODO: instead of jmp, allow modify the stack after calling the function
     jmp oldHookFun
   }
 }
