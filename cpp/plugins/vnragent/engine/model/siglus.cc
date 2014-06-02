@@ -95,7 +95,7 @@ struct HookStruct
 int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
 {
   Q_UNUSED(edx);
-  enum { role = Engine::ScenarioRole, signature = 0x10000 }; // signature is consistent with ITH
+  enum { role = Engine::ScenarioRole, signature = Engine::SingleThreadSignature };
   //return oldHookFun(self, arg1, arg2);
 #ifdef DEBUG
   if (self->size < 8)
@@ -119,7 +119,7 @@ int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
   auto oldCapacity = self->capacity;
   self->texts[0] = (LPCWSTR)text.utf16(); // lack trailing null character
   self->size = text.size();
-  self->capacity = qMax(8, text.size()); // prevent using smaller size
+  self->capacity = max(8, text.size()); // prevent using smaller size
 
   int ret = oldHookFun(self, arg1, arg2); // ret = size * 2
 

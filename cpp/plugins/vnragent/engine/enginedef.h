@@ -12,6 +12,9 @@ enum TextRole { UnknownRole = 0, ScenarioRole,  NameRole, OtherRole, ChoiceRole 
 // Emperical maximum memory range of an application
 enum { MaximumMemoryRange = 0x300000 };
 
+// Dummy fixed signature the same as ITH for single text thread
+enum { SingleThreadSignature = 0x10000 };
+
 } // namespace Engine
 
 // EOF

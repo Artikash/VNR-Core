@@ -209,7 +209,8 @@ int ProcessHook(DWORD dwDataBase, DWORD dwRetn, TextHook *hook) // Use SEH to en
 {
   //with_seh(hook->Send(dwDataBase, dwRetn));
   seh_push_(seh_exit, 0, eax, ebx) // jichi 12/13/2013: only eax and ebx are available. ecx and edx are used.
-  __asm {
+  __asm
+  {
     push esi
     push edx
     call TextHook::UnsafeSend
@@ -228,7 +229,8 @@ __declspec(naked) // jichi 10/2/2013: No prolog and epilog
 int ProcessHook(DWORD dwDataBase, DWORD dwRetn, TextHook *hook) // Use SEH to ensure normal execution even bad hook inserted.
 {
   // jichi 12/17/2013: The function parameters here are meaning leass. The parameters are in esi and edi
-  __asm {
+  __asm
+  {
     push esi
     push edx
     call TextHook::Send

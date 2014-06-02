@@ -22,10 +22,11 @@ def engines():
   if not ENINES:
     ENGINES = [
       BGIEngine(),
+      EushullyEngine(),
       MajiroEngine(),
       SiglusEngine(),
-      #SilkysEngine(),
       #RejetEngine(),
+      #SilkysEngine(),
     ]
   return ENGINES
 
@@ -199,6 +200,17 @@ class SilkysEngine(Engine):
   def match(self, **kwargs): # override
     #return self.exists("Silkys.exe", **kwargs)
     return self.exists(("data.arc", "effect.arc", "mes.arc"), **kwargs)
+
+# 6/1/2014 jichi
+class EushullyEngine(Engine):
+
+  NAME = "Eushully" # str, override
+  ENCODING = SJIS_ENCODING # str, override
+
+  REGION_LOCKED = True # text become ????, and it cannot translate name
+
+  def match(self, **kwargs): # override
+    return self.exists("AGERC.DLL", **kwargs)
 
 # EOF
 

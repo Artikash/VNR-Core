@@ -39,6 +39,7 @@ simple:
   - CIRCUS
   - CMVS
   - CMVS2
+  - Eushully
   - KiriKiri1
   - KiriKiri2
   - MAJIRO
@@ -59,6 +60,7 @@ simple:
   - WAFFLE
 
 single: # single thread
+  - Eushully
   - Rejet
   - SiglusEngine2
 
@@ -115,6 +117,7 @@ char:
   - CMVS
   - Debonosu
   - EmonEngine
+  - Eushully
   - Gesen18
   - Live
   - Lucifen

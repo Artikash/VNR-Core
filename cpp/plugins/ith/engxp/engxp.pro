@@ -7,6 +7,8 @@ include(../dllconfig.pri)
 include(../clixp/clixp.pri)
 include(../sys/sys.pri)
 include($$LIBDIR/disasm/disasm.pri)
+include($$LIBDIR/memdbg/memdbg.pri)
+include($$LIBDIR/ntinspect/ntinspect.pri)
 include($$LIBDIR/winseh/winseh_safe.pri)
 
 VPATH += ../eng

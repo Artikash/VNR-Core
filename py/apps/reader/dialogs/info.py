@@ -407,9 +407,11 @@ More information could be found on the Wiki:
 <a href="http://sakuradite.com/wiki/en/VNR/Game_Engine">http://sakuradite.com/wiki/en/VNR/Game_Engine</a>
 </center>
 
+<!--
 <h3>Text Speed</h3>
 Different from ITH, the text speed of the game does NOT matter.
 It is OK if you adjust the text speed to slow.
+-->
 
 <h3>Hook Code</h3>
 Different from ITH, the H-code is NOT supported.

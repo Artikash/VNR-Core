@@ -7,6 +7,9 @@
 
 namespace { // unnamed
 
+enum : BYTE { byte_int3 = 0xcc };
+enum : WORD { word_2int3 = 0xcccc };
+
 // jichi 4/19/2014: Return the integer that can mask the signature
 DWORD SigMask(DWORD sig)
 {
@@ -31,20 +34,22 @@ _mask:
 
 MEMDBG_BEGIN_NAMESPACE
 
-DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverse_length)
+DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength)
 {
-  DWORD  size = upperBound - lowerBound;
-  DWORD fun = (DWORD)funcAddr;
+  enum { Start = 0x1000 };
+  enum { PatternSize = 4 };
+  const DWORD size = upperBound - lowerBound - PatternSize;
+  const DWORD fun = (DWORD)funcAddr;
   //WCHAR str[0x40];
-  DWORD mask = SigMask(sig);
-  for (DWORD i = 0x1000; i < size - 4; i++)
+  const DWORD mask = SigMask(sig);
+  for (DWORD i = Start; i < size; i++)
     if (*(WORD *)(lowerBound + i) == 0x15ff) {
       DWORD t = *(DWORD *)(lowerBound + i + 2);
-      if (t >= lowerBound && t <= upperBound - 4) {
+      if (t >= lowerBound && t <= upperBound - PatternSize) {
         if (*(DWORD *)t == fun)
           //swprintf(str,L"CALL addr: 0x%.8X",lowerBound + i);
           //OutputConsole(str);
-          for (DWORD j = i ; j > i - reverse_length; j--)
+          for (DWORD j = i ; j > i - reverseLength; j--)
             if ((*(DWORD *)(lowerBound + j) & mask) == sig) // Fun entry 1.
               //swprintf(str,L"Entry: 0x%.8X",lowerBound + j);
               //OutputConsole(str);
@@ -55,6 +60,51 @@ DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upper
     }
   //OutputConsole(L"Find call and entry failed.");
   return 0;
+}
+
+DWORD findLastCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength)
+{
+  enum { Start = 0x1000 };
+  enum { PatternSize = 4 };
+  const DWORD size = upperBound - lowerBound - PatternSize;
+  const DWORD fun = (DWORD)funcAddr;
+  //WCHAR str[0x40];
+  DWORD ret = 0;
+  const DWORD mask = SigMask(sig);
+  for (DWORD i = Start; i < size; i++)
+    if (*(WORD *)(lowerBound + i) == 0x15ff) {
+      DWORD t = *(DWORD *)(lowerBound + i + 2);
+      if (t >= lowerBound && t <= upperBound - PatternSize) {
+        if (*(DWORD *)t == fun)
+          //swprintf(str,L"CALL addr: 0x%.8X",lowerBound + i);
+          //OutputConsole(str);
+          for (DWORD j = i ; j > i - reverseLength; j--)
+            if ((*(DWORD *)(lowerBound + j) & mask) == sig) // Fun entry 1.
+              //swprintf(str,L"Entry: 0x%.8X",lowerBound + j);
+              //OutputConsole(str);
+              ret = lowerBound + j;
+
+      } else
+        i += 6;
+    }
+  //OutputConsole(L"Find call and entry failed.");
+  return ret;
+}
+
+DWORD findCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize)
+{
+  DWORD addr = findCallerAddress(funcAddr, word_2int3, lowerBound, upperBound, callerSearchSize);
+  if (addr)
+    while (byte_int3 == *(BYTE *)++addr);
+  return addr;
+}
+
+DWORD findLastCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize)
+{
+  DWORD addr = findLastCallerAddress(funcAddr, word_2int3, lowerBound, upperBound, callerSearchSize);
+  if (addr)
+    while (byte_int3 == *(BYTE *)++addr);
+  return addr;
 }
 
 DWORD searchPattern(DWORD base, DWORD base_length, LPCVOID search, DWORD search_length) // KMP
@@ -98,6 +148,77 @@ write_table:
 matcher:
     mov al,byte ptr [edi+ecx]
     cmp al,byte ptr [esi+edx]
+    sete al
+    test ecx,ecx
+    jz match
+    test al,al
+    jnz match
+    mov ecx, [esp+ecx*4-4]
+    jmp matcher
+match:
+    test al,al
+    jz pre2
+    inc ecx
+    cmp ecx,search_length
+    je finish
+pre2:
+    inc edx
+    cmp edx,base_length // search_length
+    jb matcher
+    mov edx,search_length
+    dec edx
+finish:
+    mov ecx,search_length
+    sub edx,ecx
+    lea eax,[edx+1]
+    lea ecx,[ecx*4]
+    add esp,ecx
+  }
+}
+
+#if 0 // disabled
+
+DWORD reverseSearchPattern(DWORD base, DWORD base_length, LPCVOID search, DWORD search_length) // KMP
+{
+  __asm
+  {
+    mov eax,search_length
+alloc:
+    push 0
+    sub eax,1
+    jnz alloc
+
+    mov edi,search
+    mov edx,search_length
+    mov ecx,1
+    xor esi,esi
+build_table:
+    mov al,byte ptr [edi+esi]
+    cmp al,byte ptr [edi+ecx]
+    sete al
+    test esi,esi
+    jz pre
+    test al,al
+    jnz pre
+    mov esi,[esp+esi*4-4]
+    jmp build_table
+pre:
+    test al,al
+    jz write_table
+    inc esi
+write_table:
+    mov [esp+ecx*4],esi
+
+    inc ecx
+    cmp ecx,edx
+    jb build_table
+
+    mov esi,base
+    xor edx,edx
+    mov ecx,edx
+matcher:
+    mov al,byte ptr [edi+ecx]
+    cmp al,byte ptr [esi-edx] // jichi 6/1/2014: The only place that is modified
     sete al
     test ecx,ecx
     jz match
@@ -210,6 +331,8 @@ finish:
     add esp,ecx
   }
 }
+
+#endif // 0, disabled
 
 MEMDBG_END_NAMESPACE
 

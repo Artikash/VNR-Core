@@ -76,7 +76,7 @@ static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD split)
   // split: choices: 0, character name & scenario: 1
   //auto role = split ? Engine::UnknownRole : Engine::ChoiceRole;
 
-  ret = AbstractEngine::instance()->dispatchTextA(text, sig);
+  ret = AbstractEngine::instance()->dispatchTextA(text, sig, Engine::UnknownRole);
   return (LPCSTR)ret.constData();
 }
 
