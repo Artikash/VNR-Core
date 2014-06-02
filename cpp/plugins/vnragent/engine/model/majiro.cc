@@ -7,7 +7,6 @@
 #include "engine/model/majiro.h"
 #include "engine/engineenv.h"
 #include "engine/enginehash.h"
-#include "detoursutil/detoursutil.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 #include <QtCore/QStringList>
@@ -104,7 +103,7 @@ bool MajiroEngine::attach()
   //addr = 0x41af90; // レミニセンス function address
   if (!addr)
     return false;
-  return ::oldHookFun = detours::replace<hook_fun_t>(addr, ::newHookFun);
+  return ::oldHookFun = replaceFunction<hook_fun_t>(addr, ::newHookFun);
 }
 
 // EOF

@@ -6,7 +6,6 @@
 #include "engine/enginedef.h"
 #include "engine/engineenv.h"
 #include "engine/enginehash.h"
-#include "detoursutil/detoursutil.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 
@@ -196,9 +195,10 @@ bool BGIEngine::attachBGIType2()
   //ulong addr = 0x31850; // 世界と世界の真ん中 体験版
   if (!addr)
     return false;
-  ::BGI2_oldHookFun = detours::replace<hook_fun_t>(addr, newHookFun);
-  setName("BGI2"); // change engine name
-  return true;
+  ::BGI2_oldHookFun = replaceFunction<hook_fun_t>(addr, newHookFun);
+  if (::BGI2_oldHookFun)
+    setName("BGI2"); // change engine name
+  return ::BGI2_oldHookFun;
 }
 
 // EOF

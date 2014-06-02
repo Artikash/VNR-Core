@@ -48,6 +48,7 @@ simple:
   - Mono
   - Pensil
   - RealLive
+  - Rejet
   - ShinaRio
   - SiglusEngine2
   - Silkys
@@ -56,6 +57,10 @@ simple:
   - Taskforce2
   - Tenco
   - WAFFLE
+
+single: # single thread
+  - Rejet
+  - SiglusEngine2
 
 repeat:
   - Malie       # finite
@@ -69,7 +74,6 @@ norepeat:
   - QLIE
   - QLIE2
   - NEXTON
-  - Rejet
   - SiglusEngine
   - TanukiSoft # But this thread is floating
   - Unity # deprecated
@@ -83,7 +87,6 @@ nofloat:
 
 float:
   - Gesen18
-  #- Rejet # it depends
   - Unity # deprecated
 
 # Thin character, SHIFT-JIS or GBK

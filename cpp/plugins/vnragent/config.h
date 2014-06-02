@@ -77,4 +77,13 @@
  */
 //#define VNRAGENT_ENABLE_NATIVE_PIPE
 
+/**
+ *  Select the function hook method within detours, mhook, and minhook
+ *
+ *  mhook seems only work for system functions.
+ */
+#define VNRAGENT_ENABLE_DETOURS
+//#define VNRAGENT_ENABLE_MHOOK
+//#define VNRAGENT_ENABLE_MINHOOK
+
 // EOF

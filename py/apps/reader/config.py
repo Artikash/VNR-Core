@@ -99,6 +99,8 @@ HCODE_FILE_BLACKLIST = frozenset(BLACKLIST_YAML['hcodefile'])
 
 REPEAT_GAME_ENGINES = frozenset(ENGINES_YAML['repeat'])
 
+SINGLE_GAME_ENGINES = frozenset(ENGINES_YAML['single'])
+
 NOREPEAT_GAME_ENGINES = frozenset(ENGINES_YAML['simple'] + ENGINES_YAML['norepeat'])
 NOFLOAT_GAME_ENGINES = frozenset(
     ENGINES_YAML['simple'] + ENGINES_YAML['nofloat'] +

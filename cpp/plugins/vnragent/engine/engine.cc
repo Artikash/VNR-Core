@@ -1,16 +1,19 @@
 // engine.cc
 // 4/20/2014 jichi
 
+#include "config.h"
 #include "engine/engine.h"
 #include "engine/enginehash.h"
 #include "engine/engineloader.h"
 //#include "engine/enginememory.h"
 #include "engine/enginesettings.h"
 #include "embed/embedmanager.h"
+#include "detoursutil/detoursutil.h"
 #include "util/codepage.h"
 #include "util/textutil.h"
 #include "winkey/winkey.h"
 #include <qt_windows.h>
+//#include "mhook/mhook.h" // must after windows.h
 #include <QtCore/QTimer>
 #include <QtCore/QTextCodec>
 
@@ -139,6 +142,26 @@ bool AbstractEngine::load()
 }
 
 bool AbstractEngine::unload() { return detach(); }
+
+// - Detours -
+
+AbstractEngine::address_type AbstractEngine::replaceFunction(address_type old_addr, const_address_type new_addr)
+{
+#ifdef VNRAGENT_ENABLE_DETOURS
+  return detours::replace(old_addr, new_addr);
+#endif // VNRAGENT_ENABLE_DETOURS
+#ifdef VNRAGENT_ENABLE_MHOOK
+  DWORD addr = old_addr;
+  return Mhook_SetHook (&addr, new_addr) ? addr : 0;
+#endif // VNRAGENT_ENABLE_MHOOK
+}
+
+AbstractEngine::address_type AbstractEngine::restoreFunction(address_type restore_addr, const_address_type old_addr)
+{
+#ifdef VNRAGENT_ENABLE_DETOURS
+  return detours::restore(restore_addr, old_addr);
+#endif // VNRAGENT_ENABLE_DETOURS
+}
 
 // - Dispatch -
 

@@ -51,6 +51,8 @@ CAONIMAGEBI_ENGINES = frozenset((
   'SiglusEngine2',
 ))
 
+SINGLE_ENGINE_SIGNATURE = 0x10000 # this value is consistent with FIXED_SPLIT_VALUE in ITH
+
 OK123_USERNAME = '@ok123'
 OK123_ENGINES = frozenset((
   'Malie3',

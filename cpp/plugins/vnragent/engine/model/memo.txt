@@ -1,15 +1,22 @@
 # 5/10/2014
 
-# 5/11/2010 YU-RIS
-436a60 -- function definition: 436a5c
-405478 -- function definition: 405474
-4259d1 -- a function call, function definition: 424488, do not have any parameters
-probabily class method
-425951, 8 -- not function
+Failed engines are as follows.
 
-425959 -- not a function
+# 6/1/2014 Silkys
+Issue: The game will crash by invoking C++ code.
+Extern "C" won't fix the issue.
 
-# 5/11/2010 CMVS2
+# 5/11/2014 YU-RIS
+悪女装
+
+base = 400000
+TextOutA = 436a5c
+< 4054b1 = 405474
+< 4259d6 = 424488 this function is not called!
+There must be a loop
+also, it does not have any parameter, probabily class method
+
+# 5/11/2014 CMVS2
 Sample game: ハピメア
 Issue: The paint thread cannot be blocked. Have tried mutex.
 
