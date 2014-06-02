@@ -79,6 +79,7 @@ def to_ith_engine_name(name): # str -> str
 # VNR agent supported engines
 VNRAGENT_ENGINES = (
   'BGI',
+  'Eushully',
   'SiglusEngine2',
   'Majiro',
 )

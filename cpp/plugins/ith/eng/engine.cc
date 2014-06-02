@@ -52,6 +52,11 @@ DWORD DetermineEngineByFile1()
     InsertBGIHook();
     return yes;
   }
+
+  if (IthCheckFile(L"AGERC.DLL")) { // jichi 6/1/2014: Eushully, AGE.EXE
+    InsertEushullyHook();
+    return yes;
+  }
   if (IthFindFile(L"data*.arc") && IthFindFile(L"stream*.arc")) {
     InsertMajiroHook();
     return yes;
@@ -432,10 +437,10 @@ DWORD DetermineNoHookEngine()
     return yes;
   }
 
-  if (IthCheckFile(L"AGERC.DLL")) { // jichi 3/17/2014: Eushully, AGE.EXE
-    ConsoleOutput("vnreng: IGNORE Eushully");
-    return yes;
-  }
+  //if (IthCheckFile(L"AGERC.DLL")) { // jichi 3/17/2014: Eushully, AGE.EXE
+  //  ConsoleOutput("vnreng: IGNORE Eushully");
+  //  return yes;
+  //}
 
   if (IthCheckFile(L"EAGLS.dll")) { // jichi 3/24/2014: E.A.G.L.S
     ConsoleOutput("vnreng: IGNORE EAGLS");

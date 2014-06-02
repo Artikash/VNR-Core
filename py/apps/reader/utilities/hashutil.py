@@ -76,8 +76,14 @@ def _normalizetext(t):
   @param  t  unicode
   @return   unicode
   """
+
   # Remove unicode spaces
-  return _normalizetext_space.sub('', t)
+  t = _normalizetext_space.sub('', t)
+  if t:
+    i = t.find(u"「") # remove character name
+    if i > 0 and i < defs.MAX_NAME_LENGTH:
+      t = t[i:]
+  return t
 
 def hashtext(t, h=None):
   """Hash unicode text (hash2)

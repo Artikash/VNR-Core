@@ -11,6 +11,8 @@
 #include "ith/cli/cli.h"
 #include "ith/sys/sys.h"
 #include "ith/common/except.h"
+#include "memdbg/memsearch.h"
+#include "ntinspect/ntinspect.h"
 #include "disasm/disasm.h"
 #include "cc/ccmacro.h"
 
@@ -4943,6 +4945,35 @@ bool InsertSilkysHook()
   ConsoleOutput("vnreng:Silkys: function not found");
   return false;
 }
+
+/**
+ *  6/1/2014 jichi
+ *  Insert to the last GetTextExtentPoint32A
+ */
+bool InsertEushullyHook()
+{
+  DWORD startAddress,
+        stopAddress;
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurage stopAddress
+    ConsoleOutput("vnreng:Eushully: failed to get memory range");
+    return false;
+  }
+  DWORD addr = MemDbg::findLastCallerAddressAfterInt3((DWORD)::GetTextExtentPoint32A, startAddress, stopAddress);
+  //ITH_GROWL_DWORD(addr);
+  if (!addr) {
+    ConsoleOutput("vnreng:Eushully: failed");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr;
+  hp.type = USING_STRING|FIXING_SPLIT; // merging all threads
+  hp.off = 0x8; // arg2 = 0x4 * 2
+  ConsoleOutput("vnreng: INSERT Eushully");
+  NewHook(hp, L"Eushully");
+  return true;
+}
+
 
 #if 0
 

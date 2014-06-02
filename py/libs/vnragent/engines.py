@@ -22,7 +22,7 @@ def engines():
   if not ENINES:
     ENGINES = [
       BGIEngine(),
-      #EushullyEngine(),
+      EushullyEngine(),
       MajiroEngine(),
       SiglusEngine(),
       #RejetEngine(),
@@ -206,6 +206,8 @@ class EushullyEngine(Engine):
 
   NAME = "Eushully" # str, override
   ENCODING = SJIS_ENCODING # str, override
+
+  REGION_LOCKED = True # text become ????, and it cannot translate name
 
   def match(self, **kwargs): # override
     return self.exists("AGERC.DLL", **kwargs)

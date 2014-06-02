@@ -5411,7 +5411,7 @@ class _DataManager(object):
 
         if g.hook and g.threadName != defs.USER_DEFINED_THREAD_NAME:
           dwarn("ignore bad hook: id=%s, code=%s" % (g.id, g.hook))
-          growl.warn('<br/>'.join((
+          growl.notify('<br/>'.join((
             my.tr("Remove bad user-defined hcode"),
             g.hook,
             g.name,
@@ -5423,7 +5423,7 @@ class _DataManager(object):
         if g.threadName in config.SINGLE_GAME_ENGINES and g.threadSignature != defs.SINGLE_ENGINE_SIGNATURE:
           g.threadSignature = defs.SINGLE_ENGINE_SIGNATURE
           dwarn("correct signature for single game engine: %s" % g.threadName)
-          growl.warn('<br/>'.join((
+          growl.notify('<br/>'.join((
             my.tr("Automatically correct text settings"),
             "%s: %s" % (tr_("Engine"), g.threadName),
             "%s: %s" % (tr_("Game"), g.name),
@@ -5432,7 +5432,7 @@ class _DataManager(object):
         if (g.removesRepeat or g.ignoresRepeat) and g.threadName in config.NOREPEAT_GAME_ENGINES:
           g.removesRepeat = g.ignoresRepeat = None
           dwarn("ignore bad repetition: thread name = %s" % g.threadName)
-          growl.warn('<br/>'.join((
+          growl.notify('<br/>'.join((
             my.tr("Ignore repetition filters in text settings"),
             "%s: %s" % (tr_("Engine"), g.threadName),
             "%s: %s" % (tr_("Game"), g.name),
@@ -5441,7 +5441,7 @@ class _DataManager(object):
         if g.threadKept and g.threadName in config.NOFLOAT_GAME_ENGINES:
           g.threadKept = None
           dwarn("ignore non-floating engine: %s" % g.threadName)
-          growl.warn('<br/>'.join((
+          growl.notify('<br/>'.join((
             my.tr("Do not keep all scenario threads in text settings"),
             "%s: %s" % (tr_("Engine"), g.threadName),
             "%s: %s" % (tr_("Game"), g.name),
@@ -5450,7 +5450,7 @@ class _DataManager(object):
         if g.path and os.path.exists(g.path) or g.launchPath and os.path.exists(g.launchPath):
           self.games[g.md5] = g
         else:
-          growl.warn('<br/>'.join((
+          growl.notify('<br/>'.join((
             my.tr("Remove non-existed game"),
             g.name,
             g.path,

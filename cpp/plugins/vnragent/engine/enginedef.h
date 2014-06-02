@@ -13,7 +13,7 @@ enum TextRole { UnknownRole = 0, ScenarioRole,  NameRole, OtherRole, ChoiceRole 
 enum { MaximumMemoryRange = 0x300000 };
 
 // Dummy fixed signature the same as ITH for single text thread
-enum { SingleTextSignature = 0x10000 };
+enum { SingleThreadSignature = 0x10000 };
 
 } // namespace Engine
 

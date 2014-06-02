@@ -3553,92 +3553,6 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation>VNR的内嵌引擎不支持/H特殊码</translation>
     </message>
     <message>
-        <location filename="dialogs/info.py" line="422"/>
-        <source>&lt;h3&gt;Introduction&lt;/h3&gt;
-In Text Settings, you can identify which text threads to display and translate.
-If after synchronizing with the game, no texts appear in VNR,
-it is usually because your text settings for the game is inappropriate.
-&lt;br/&gt;&lt;br/&gt;
-
-This is the Text Settings for VNR&apos;s experimental embedded text hook rather than ITH.
-VNR&apos;s text hook allows embedding translations into the game, but it supports much fewer games than ITH.
-Additionally, &lt;span style=&quot;color:red&quot;&gt;VNR&apos;s text hook does NOT support H-code&lt;/span&gt;.
-You can adjust which text hook to use in Preferences/Embed.
-The game is needed to be restarted after the text hook is changed.
-
-&lt;h3&gt;Text Threads&lt;/h3&gt;
-A game might have one or a couple of text threads.
-You might want to identify those EXACTLY THE SAME AS THE GAME TEXT.
-Two kinds of text threads are currently supported.
-&lt;br/&gt;
-* &lt;span style=&quot;color:purple&quot;&gt;Dialog&lt;/span&gt;: This text thread is the scenario thread.
-&lt;br/&gt;
-* &lt;span style=&quot;color:purple&quot;&gt;Chara&lt;/span&gt;: The contents are names of game characters.
-&lt;br/&gt;
-&lt;span style=&quot;color:green&quot;&gt;The game must have exact ONE dialogue text thread.&lt;/span&gt;
-And it could have at most ONE character text thread.
-
-&lt;h3&gt;Game Engine&lt;/h3&gt;
-Embedding translation might not work well for all games.
-Certain game engines might have their specific issues.
-More information could be found on the Wiki:
-&lt;center&gt;
-&lt;a href=&quot;http://sakuradite.com/wiki/en/VNR/Game_Engine&quot;&gt;http://sakuradite.com/wiki/en/VNR/Game_Engine&lt;/a&gt;
-&lt;/center&gt;
-
-&lt;h3&gt;Text Speed&lt;/h3&gt;
-Different from ITH, the text speed of the game does NOT matter.
-It is OK if you adjust the text speed to slow.
-
-&lt;h3&gt;Hook Code&lt;/h3&gt;
-Different from ITH, the H-code is NOT supported.
-
-&lt;h3&gt;Debug Output&lt;/h3&gt;
-If VNR is launched from &quot;Debug VNR.cmd&quot;, VNR&apos;s text hook will save the debug log into &quot;vnragent.log&quot; file in VNR&apos;s directory.
-If the game crashes because of VNR, you might be able to find the reason of the crash in that log file.</source>
-        <translation>&lt;h3&gt;简介&lt;/h3&gt;
-在【文本设定】中，可以选择想要显示和翻译的游戏文本。
-如果在添加游戏后，没有游戏文本出现，这通常是因为你的文本设定并不正确。
-&lt;br/&gt;&lt;br/&gt;
-
-这个是VNR提取文本的文本设定，而不是ITH的文本设定。
-VNR的提取方法支持内嵌翻译到游戏中去，但是支持的游戏比ITH要少很多。
-另外，&lt;span style=&quot;color:red&quot;&gt;VNR的提取方法不支持特殊码。&lt;/span&gt;
-你可以在【使用偏好/内嵌翻译】中切换回ITH。
-改变文本提取方法需要重新启动下游戏。
-
-&lt;h3&gt;游戏文本&lt;/h3&gt;
-一个游戏有时会有一个或者几个不同的游戏文本。
-你需要找出那些和游戏中字符完全相同的文本。
-在VNR中，你可以将文本标记为两类：
-&lt;br/&gt;
-* &lt;span style=&quot;color:purple&quot;&gt;对白&lt;/span&gt;：这个是游戏的对话或剧情的文字。
-&lt;br/&gt;
-* &lt;span style=&quot;color:purple&quot;&gt;人物&lt;/span&gt;：这个是游戏中人物的姓名。
-&lt;br/&gt;
-&lt;span style=&quot;color:green&quot;&gt;每个游戏一定要有&lt;b&gt;一个&lt;/b&gt;【主要】文本来同步。&lt;/span&gt;
-此外，每个游戏至多可以指定一个人物文本。
-
-&lt;h3&gt;游戏引擎&lt;/h3&gt;
-现在，有些游戏还不能很好的支持嵌入翻译。
-这些问题通常是某些游戏引擎所特有的。
-具体的信息请参看Wiki：
-&lt;center&gt;
-&lt;a href=&quot;http://sakuradite.com/wiki/en/VNR/Game_Engine&quot;&gt;http://sakuradite.com/wiki/en/VNR/Game_Engine&lt;/a&gt;
-&lt;/center&gt;
-
-&lt;h3&gt;文本速度&lt;/h3&gt;
-和ITH不同，游戏文本的显示速度对VNR的内嵌文本提取无关紧要。
-你可以将文本速度设定得很慢。
-
-&lt;h3&gt;特殊码&lt;/h3&gt;
-和ITH不同，VNR的内嵌文本提取并不支持特殊码。
-
-&lt;h3&gt;Debug输出&lt;/h3&gt;
-当VNR是通过Debug VNR.cmd打开时，在VNR的文件夹下会自动生成vnragent.log的Debug输出。
-如果VNR会导致游戏崩溃，在那个文件中也许可以找到崩溃的原因。</translation>
-    </message>
-    <message>
         <location filename="main.py" line="1536"/>
         <source>Unknown game engine</source>
         <translation>未知的游戏引擎</translation>
@@ -3682,6 +3596,96 @@ VNR的提取方法支持内嵌翻译到游戏中去，但是支持的游戏比IT
         <location filename="managers/dataman.py" line="5427"/>
         <source>Automatically correct text settings</source>
         <translation>自动修正文本设定</translation>
+    </message>
+    <message>
+        <location filename="dialogs/info.py" line="424"/>
+        <source>&lt;h3&gt;Introduction&lt;/h3&gt;
+In Text Settings, you can identify which text threads to display and translate.
+If after synchronizing with the game, no texts appear in VNR,
+it is usually because your text settings for the game is inappropriate.
+&lt;br/&gt;&lt;br/&gt;
+
+This is the Text Settings for VNR&apos;s experimental embedded text hook rather than ITH.
+VNR&apos;s text hook allows embedding translations into the game, but it supports much fewer games than ITH.
+Additionally, &lt;span style=&quot;color:red&quot;&gt;VNR&apos;s text hook does NOT support H-code&lt;/span&gt;.
+You can adjust which text hook to use in Preferences/Embed.
+The game is needed to be restarted after the text hook is changed.
+
+&lt;h3&gt;Text Threads&lt;/h3&gt;
+A game might have one or a couple of text threads.
+You might want to identify those EXACTLY THE SAME AS THE GAME TEXT.
+Two kinds of text threads are currently supported.
+&lt;br/&gt;
+* &lt;span style=&quot;color:purple&quot;&gt;Dialog&lt;/span&gt;: This text thread is the scenario thread.
+&lt;br/&gt;
+* &lt;span style=&quot;color:purple&quot;&gt;Chara&lt;/span&gt;: The contents are names of game characters.
+&lt;br/&gt;
+&lt;span style=&quot;color:green&quot;&gt;The game must have exact ONE dialogue text thread.&lt;/span&gt;
+And it could have at most ONE character text thread.
+
+&lt;h3&gt;Game Engine&lt;/h3&gt;
+Embedding translation might not work well for all games.
+Certain game engines might have their specific issues.
+More information could be found on the Wiki:
+&lt;center&gt;
+&lt;a href=&quot;http://sakuradite.com/wiki/en/VNR/Game_Engine&quot;&gt;http://sakuradite.com/wiki/en/VNR/Game_Engine&lt;/a&gt;
+&lt;/center&gt;
+
+&lt;!--
+&lt;h3&gt;Text Speed&lt;/h3&gt;
+Different from ITH, the text speed of the game does NOT matter.
+It is OK if you adjust the text speed to slow.
+--&gt;
+
+&lt;h3&gt;Hook Code&lt;/h3&gt;
+Different from ITH, the H-code is NOT supported.
+
+&lt;h3&gt;Debug Output&lt;/h3&gt;
+If VNR is launched from &quot;Debug VNR.cmd&quot;, VNR&apos;s text hook will save the debug log into &quot;vnragent.log&quot; file in VNR&apos;s directory.
+If the game crashes because of VNR, you might be able to find the reason of the crash in that log file.</source>
+        <translation>&lt;h3&gt;简介&lt;/h3&gt;
+在【文本设定】中，可以选择想要显示和翻译的游戏文本。
+如果在添加游戏后，没有游戏文本出现，这通常是因为你的文本设定并不正确。
+&lt;br/&gt;&lt;br/&gt;
+
+这个是VNR提取文本的文本设定，而不是ITH的文本设定。
+VNR的提取方法支持内嵌翻译到游戏中去，但是支持的游戏比ITH要少很多。
+另外，&lt;span style=&quot;color:red&quot;&gt;VNR的提取方法不支持特殊码。&lt;/span&gt;
+你可以在【使用偏好/内嵌翻译】中切换回ITH。
+改变文本提取方法需要重新启动下游戏。
+
+&lt;h3&gt;游戏文本&lt;/h3&gt;
+一个游戏有时会有一个或者几个不同的游戏文本。
+你需要找出那些和游戏中字符完全相同的文本。
+在VNR中，你可以将文本标记为两类：
+&lt;br/&gt;
+* &lt;span style=&quot;color:purple&quot;&gt;对白&lt;/span&gt;：这个是游戏的对话或剧情的文字。
+&lt;br/&gt;
+* &lt;span style=&quot;color:purple&quot;&gt;人物&lt;/span&gt;：这个是游戏中人物的姓名。
+&lt;br/&gt;
+&lt;span style=&quot;color:green&quot;&gt;每个游戏一定要有&lt;b&gt;一个&lt;/b&gt;【主要】文本来同步。&lt;/span&gt;
+此外，每个游戏至多可以指定一个人物文本。
+
+&lt;h3&gt;游戏引擎&lt;/h3&gt;
+现在，有些游戏还不能很好的支持嵌入翻译。
+这些问题通常是某些游戏引擎所特有的。
+具体的信息请参看Wiki：
+&lt;center&gt;
+&lt;a href=&quot;http://sakuradite.com/wiki/en/VNR/Game_Engine&quot;&gt;http://sakuradite.com/wiki/en/VNR/Game_Engine&lt;/a&gt;
+&lt;/center&gt;
+
+&lt;!--
+&lt;h3&gt;文本速度&lt;/h3&gt;
+和ITH不同，游戏文本的显示速度对VNR的内嵌文本提取无关紧要。
+你可以将文本速度设定得很慢。
+--&gt;
+
+&lt;h3&gt;特殊码&lt;/h3&gt;
+和ITH不同，VNR的内嵌文本提取并不支持特殊码。
+
+&lt;h3&gt;Debug输出&lt;/h3&gt;
+当VNR是通过Debug VNR.cmd打开时，在VNR的文件夹下会自动生成vnragent.log的Debug输出。
+如果VNR会导致游戏崩溃，在那个文件中也许可以找到崩溃的原因。</translation>
     </message>
 </context>
 </TS>

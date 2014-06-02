@@ -36,6 +36,7 @@ bool InsertCMVSHook();          // CMVS: data/pack/*.cpz; do not support the lat
 bool InsertCotophaHook();       // Cotopha: *.noa
 bool InsertDebonosuHook();      // Debonosu: bmp.bak and dsetup.dll
 bool InsertEMEHook();           // EmonEngine: emecfg.ecf
+bool InsertEushullyHook();      // Eushully: AGERC.DLL
 bool InsertGesen18Hook();       // Gsen18: *.szs
 bool InsertGXPHook();           // GXP: *.gxp
 bool InsertLiveHook();          // Live: live.dll
