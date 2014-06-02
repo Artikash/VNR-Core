@@ -63,6 +63,11 @@ void dispatchText(HookStack *stack)
   stack->args[ArgText] = DWORD(ret.isEmpty() ? "" : ret.constData());
 }
 
+/**
+ *  Note for detours
+ *  - It simply replaces the code with jmp and int3. Jmp to newHookFun
+ *  - oldHookFun is the address to a code segment that jmp back to the original function
+ */
 __declspec(naked)
 int newHookFun()
 {
