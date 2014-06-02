@@ -21,7 +21,8 @@ public:
   typedef ulong RequiredAttributes;
   enum RequiredAttribute {
     BlockingAttribute = 1  // non-blocking callback is not supported
-    , HtmlAttribute = 1    // text contains HTML tags such as <br>
+    , HtmlAttribute = 2    // text contains HTML tags such as <br>
+    , SingleThreadAttribute = 3 // scenario thread only
   };
 
   static Self *instance(); // Needed to be explicitly deleted on exit

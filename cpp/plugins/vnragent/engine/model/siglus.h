@@ -11,7 +11,8 @@ class SiglusEngine : public AbstractEngine
   SK_EXTEND_CLASS(SiglusEngine, AbstractEngine)
   SK_DISABLE_COPY(SiglusEngine)
 public:
-  SiglusEngine() : Base("SiglusEngine", Util::Utf16CodePage, BlockingAttribute) {}
+  SiglusEngine() : Base("SiglusEngine", Util::Utf16CodePage,
+      BlockingAttribute|SingleThreadAttribute) {}
 
   static bool match();
 protected:
