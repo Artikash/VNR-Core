@@ -41,11 +41,16 @@ LPCSTR dispatchText(LPCSTR text)
   return (LPCSTR)ret.constData();
 }
 
+
+typedef void *malloc_fun_t(size_t size);
 LPCSTR test(LPCSTR text)
 {
   // CHECKPOINT: Cannot access heap?!
-  new char[1000];
+  //new char[1000];
   //malloc(1000);
+  HMODULE h = ::LoadLibraryA("msvcrt.dll");
+  auto f = (malloc_fun_t)::GetProcAddress(h, "malloc");
+  f(1000);
   return text;
 }
 
