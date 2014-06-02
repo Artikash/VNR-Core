@@ -4,6 +4,7 @@
 #include "window/windowdriver.h"
 #include "window/windowdriver_p.h"
 #include "window/windowmanager.h"
+#include "util/codepage.h"
 
 WindowDriver::WindowDriver(QObject *parent)
   : Base(parent), d_(new D(this))
@@ -33,6 +34,12 @@ void WindowDriver::setTranslationEnabled(bool t)
 }
 
 void WindowDriver::setTranscodingEnabled(bool t) { d_->manager->setEncodingEnabled(t); }
-void WindowDriver::setEncoding(const QString &v) { d_->manager->setEncoding(v); }
+void WindowDriver::setEncoding(const QString &v)
+{
+  if (v.toLower() == ENC_UTF16)
+    d_->manager->setEncoding(ENC_SJIS);
+  else
+    d_->manager->setEncoding(v);
+}
 
 // EOF

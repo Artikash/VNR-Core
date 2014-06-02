@@ -617,10 +617,10 @@ bool InsertSiglus2Hook()
   }
 
   HookParam hp = {};
-  hp.type = USING_UNICODE; //|NO_CONTEXT; // jichi 3/8/2014: Use no_context to prevent floating threads.
-  hp.length_offset = 1;
-  hp.off = -0x20;
   hp.addr = module_base_ + reladdr + hook_offset;
+  hp.off = -0x20;
+  hp.type = USING_UNICODE|FIXING_SPLIT; // jichi 6/1/2014: fixing the split value
+  hp.length_offset = 1;
 
   //index = SearchPattern(module_base_, size,ins, sizeof(ins));
   //ITH_GROWL_DWORD2(base, index);
@@ -4809,9 +4809,14 @@ bool InsertMarineHeartHook()
   return true;
 }
 
+/**
+ *  jichi 6/1/2014:
+ *  Observations from 愛姉妹4
+ *  - Scenario: arg1 + 4*5 is 0, arg1+0xc is address of the text
+ *  - Character: arg1 + 4*10 is 0, arg1+0xc is text
+ */
 static void SpecialHookSilkys(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(split);
   CC_UNUSED(hp);
   DWORD arg1 = *(DWORD *)(esp_base + 0x4);
   DWORD arg2_scene = arg1 + 4*5,
@@ -4829,7 +4834,6 @@ static void SpecialHookSilkys(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
   *data = text;
   *len = ::strlen((LPCSTR)text);
 }
-
 
 /**
  *  jichi 5/31/2014: Silky's

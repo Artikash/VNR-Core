@@ -294,6 +294,7 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
     else
       trigger = 0;
   }
+#if 0 // diasble HOOK_AUXILIARY
   // jichi 12/13/2013: None of known hooks are auxiliary
   if (dwType & HOOK_AUXILIARY) {
     //Clean hook when dynamic hook finished.
@@ -306,7 +307,8 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
     }
     return 0;
   }
-  dwDataIn = *(DWORD *)(dwDataBase + hp.off);
+#endif // 0
+  dwDataIn = *(DWORD *)(dwDataBase + hp.off); // default value
   if (dwType & EXTERN_HOOK)
     //DataFun fun=(DataFun)hp.extern_fun;
     //auto fun = hp.extern_fun;
@@ -314,10 +316,11 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
     //if (dwCount == 0 || dwCount > MAX_DATA_SIZE)
     //  return 0;
   else {
-    dwSplit = 0;
     if (dwDataIn == 0)
       return 0;
-    if (dwType & USING_SPLIT) {
+    if (dwType & FIXING_SPLIT)
+      dwSplit = 0x10001; // fuse all threads, and prevent floating
+    else if (dwType & USING_SPLIT) {
       dwSplit = *(DWORD *)(dwDataBase + hp.split);
       if (dwType & SPLIT_INDIRECT) {
         if (IthGetMemoryRange((LPVOID)(dwSplit + hp.split_ind), 0, 0))
@@ -338,6 +341,7 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
     }
     dwCount = GetLength(dwDataBase, dwDataIn);
   }
+
   // jichi 12/25/2013: validate data size
   if (dwCount == 0 || dwCount > MAX_DATA_SIZE)
     return 0;
@@ -362,7 +366,7 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
   else
     memcpy(pbData + HEADER_SIZE, (void *)dwDataIn, dwCount);
   *(DWORD *)pbData = dwAddr;
-  if (dwType & NO_CONTEXT)
+  if (dwType & (NO_CONTEXT | FIXING_SPLIT))
     dwRetn = 0;
   *((DWORD *)pbData + 1) = dwRetn;
   *((DWORD *)pbData + 2) = dwSplit;

@@ -49,6 +49,7 @@ simple:
   - Pensil
   - RealLive
   - ShinaRio
+  - SiglusEngine2
   - Silkys
   - SolfaSoft
   - System43
@@ -70,7 +71,6 @@ norepeat:
   - NEXTON
   - Rejet
   - SiglusEngine
-  - SiglusEngine2
   - TanukiSoft # But this thread is floating
   - Unity # deprecated
 
@@ -84,7 +84,6 @@ nofloat:
 float:
   - Gesen18
   #- Rejet # it depends
-  - SiglusEngine2
   - Unity # deprecated
 
 # Thin character, SHIFT-JIS or GBK

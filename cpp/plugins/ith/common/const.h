@@ -96,9 +96,12 @@ enum HookParamType : unsigned long {
   , STRING_LAST_CHAR  = 0x200
   , NO_CONTEXT        = 0x400
   , EXTERN_HOOK       = 0x800   // use external hook function
-  , HOOK_AUXILIARY    = 0x2000  // jichi 12/13/2013: None of known hooks are auxiliary
+  //, HOOK_AUXILIARY    = 0x2000  // jichi 12/13/2013: None of known hooks are auxiliary
   , HOOK_ENGINE       = 0x4000
   , HOOK_ADDITIONAL   = 0x8000
+
+  // jichi 6/1/2014: fix the split value to 0x10001
+  , FIXING_SPLIT      = 0x1000  // jichi 12/13/2013: None of known hooks are auxiliary
 };
 
 // jichi 12/18/2013:
