@@ -31,7 +31,7 @@ namespace { // unnamed
 typedef DWORD hook_fun_t;
 hook_fun_t oldHookFun;
 
-// jichi 6/1/2014: Structure of the esp for extern functions
+// TODO: Generalize the naked function mechanism
 struct HookStack
 {
   DWORD eflags; // pushaf
@@ -72,9 +72,9 @@ int newHookFun()
     pushfd              // eflags
     push esp
     call dispatchText
-    add esp,4           // pop 1
+    add esp,4           // pop esp
     mov [esp+0x2c],eax  // modify arg2, 0x2c = 0x20(pushad) + 0x4(pushfd) + 0x8(arg2)
-    pushfd
+    popfd
     popad
     jmp oldHookFun
   }
