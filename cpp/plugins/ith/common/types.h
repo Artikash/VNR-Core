@@ -35,6 +35,24 @@ struct HookParam { // size: 0x24
        recover_len; // ?
 };
 
+// jichi 6/1/2014: Structure of the esp for extern functions
+struct HookStack
+{
+  // pushad
+  DWORD edi, // -0x24
+        esi, // -0x20
+        ebp, // -0x1c
+        esp, // -0x18
+        ebx, // -0x14
+        edx, // -0x10
+        ecx, // -0xc
+        eax; // -0x8
+  // pushfd
+  DWORD eflags; // -0x4
+  DWORD retaddr; // 0
+  DWORD args[1]; // 0x4
+};
+
 struct SendParam {
   DWORD type;
   HookParam hp;
