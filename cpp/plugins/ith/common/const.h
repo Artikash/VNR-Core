@@ -101,8 +101,12 @@ enum HookParamType : unsigned long {
   , HOOK_ADDITIONAL   = 0x8000
 
   // jichi 6/1/2014: fix the split value to 0x10001
-  , FIXING_SPLIT      = 0x1000  // jichi 12/13/2013: None of known hooks are auxiliary
+  , FIXING_SPLIT      = 0x1000
 };
+
+// 6/1/2014: Fixed split value for hok parameter
+// Fuse all threads, and prevent floating
+enum { FIXED_SPLIT_VALUE = 0x10001 };
 
 // jichi 12/18/2013:
 // These dlls are used to guess the range for non-NO_CONTEXT hooks.

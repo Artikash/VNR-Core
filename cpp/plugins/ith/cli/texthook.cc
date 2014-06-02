@@ -319,7 +319,7 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
     if (dwDataIn == 0)
       return 0;
     if (dwType & FIXING_SPLIT)
-      dwSplit = 0x10001; // fuse all threads, and prevent floating
+      dwSplit = FIXED_SPLIT_VALUE; // fuse all threads, and prevent floating
     else if (dwType & USING_SPLIT) {
       dwSplit = *(DWORD *)(dwDataBase + hp.split);
       if (dwType & SPLIT_INDIRECT) {

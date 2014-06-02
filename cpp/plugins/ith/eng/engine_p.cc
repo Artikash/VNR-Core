@@ -2016,7 +2016,7 @@ void SpecialHookMalie3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split,
           stop = _Malie3RTrim(_Malie3GetEOL(start));
   *data = (DWORD)start;
   *len = max(0, stop - start) << 1;
-  *split = 0x10001; // fuse all threads, and prevent floating
+  *split = FIXED_SPLIT_VALUE;
   //ITH_GROWL_DWORD5((DWORD)start, (DWORD)stop, *len, (DWORD)*start, (DWORD)_Malie3GetEOL(start));
 }
 
@@ -4142,7 +4142,7 @@ bool FindRejetHook(LPCVOID ins, DWORD ins_size, DWORD ins_off, DWORD hp_off, LPC
   ConsoleOutput("vnreng: INSERT Rejet");
   HookParam hp = {};
   hp.addr = addr; //- 0xf;
-  hp.type = NO_CONTEXT|DATA_INDIRECT;
+  hp.type = NO_CONTEXT|DATA_INDIRECT|FIXING_SPLIT;
   hp.length_offset = 1;
   hp.off = hp_off;
   //hp.off = -0x8; // Type1
@@ -4237,7 +4237,7 @@ bool InsertRejetHook3() // jichi 12/28/2013: add for 剣が君
   // The same as type2
   HookParam hp = {};
   hp.addr = addr; //- 0xf;
-  hp.type = NO_CONTEXT|DATA_INDIRECT;
+  hp.type = NO_CONTEXT|DATA_INDIRECT|FIXING_SPLIT;
   hp.length_offset = 1;
   hp.off = hp_off;
   //hp.off = -0x8; // Type1
