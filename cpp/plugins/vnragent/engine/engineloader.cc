@@ -4,10 +4,11 @@
 
 #include "engine/engineloader.h"
 #include "engine/model/bgi.h"
+#include "engine/model/eushully.h"
 #include "engine/model/majiro.h"
 #include "engine/model/siglus.h"
-//#include "engine/model/silkys.h"
 //#include "engine/model/rejet.h"
+//#include "engine/model/silkys.h"
 
 //#define TEST
 #ifdef TEST
@@ -20,10 +21,11 @@ AbstractEngine *Engine::getEngine()
   if (TestEngine::match()) return new TestEngine;
 #endif // TEST
   if (BGIEngine::match()) return new BGIEngine;
+  if (EushullyEngine::match()) return new EushullyEngine;
   if (MajiroEngine::match()) return new MajiroEngine;
   if (SiglusEngine::match()) return new SiglusEngine;
-  //if (SilkysEngine::match()) return new SilkysEngine;
   //if (RejetEngine::match()) return new RejetEngine;
+  //if (SilkysEngine::match()) return new SilkysEngine;
   return nullptr;
 }
 

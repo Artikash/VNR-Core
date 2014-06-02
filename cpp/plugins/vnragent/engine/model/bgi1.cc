@@ -77,7 +77,7 @@ static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD arg4, DW
   static QByteArray ret; // persistent storage, which makes this function not thread-safe
   auto sig = Engine::hashThreadSignature(returnAddress, split);
   //ret = AbstractEngine::instance()->dispatchTextA(text, sig, Engine::ScenarioRole);
-  ret = AbstractEngine::instance()->dispatchTextA(text, sig);
+  ret = AbstractEngine::instance()->dispatchTextA(text, sig, Engine::UnknownRole);
   return (LPCSTR)ret.constData();
 }
 

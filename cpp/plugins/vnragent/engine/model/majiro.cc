@@ -5,6 +5,7 @@
 // See: http://bbs.sumisora.org/read.php?tid=10917044
 // See: http://bbs.sumisora.org/read.php?tid=225250
 #include "engine/model/majiro.h"
+#include "engine/enginedef.h"
 #include "engine/engineenv.h"
 #include "engine/enginehash.h"
 #include "memdbg/memsearch.h"
@@ -74,7 +75,7 @@ int __cdecl newHookFun(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR
            << " signature: " << QString::number(signature, 16);
 #endif // DEBUG
   auto q = AbstractEngine::instance();
-  QByteArray data = q->dispatchTextA(text3, signature);
+  QByteArray data = q->dispatchTextA(text3, signature, Engine::UnknownRole);
   if (!data.isEmpty())
     return oldHookFun(fontName1, canvasSize2, data, output4, const5);
   else {

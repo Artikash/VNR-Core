@@ -95,7 +95,7 @@ struct HookStruct
 int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
 {
   Q_UNUSED(edx);
-  enum { role = Engine::ScenarioRole, signature = 0x10000 }; // signature is consistent with ITH
+  enum { role = Engine::ScenarioRole, signature = Engine::SingleTextSignature };
   //return oldHookFun(self, arg1, arg2);
 #ifdef DEBUG
   if (self->size < 8)
