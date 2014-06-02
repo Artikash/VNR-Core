@@ -34,17 +34,17 @@ hook_fun_t oldHookFun;
 // TODO: Generalize the naked function mechanism
 struct HookStack
 {
-  DWORD eflags; // pushaf
-  DWORD edi,    // pushad
+  DWORD eflags;  // pushaf
+  DWORD edi,     // pushad
         esi,
         ebp,
         esp,
         ebx,
         edx,
-        ecx,    // this
-        eax;    // 0x24
+        ecx,     // this
+        eax;     // 0x24
   DWORD retaddr; // 0x28
-  DWORD args[1]; // 0xc
+  DWORD args[1]; // 0x2c
 };
 
 __declspec(noinline)
@@ -73,6 +73,7 @@ int newHookFun()
     push esp
     call dispatchText
     add esp,4           // pop esp
+    // TODO: Need to generalize the modification address as well
     mov [esp+0x2c],eax  // modify arg2, 0x2c = 0x20(pushad) + 0x4(pushfd) + 0x8(arg2)
     popfd
     popad
