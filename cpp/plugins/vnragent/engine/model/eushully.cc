@@ -31,14 +31,30 @@ namespace { // unnamed
 typedef DWORD hook_fun_t;
 hook_fun_t oldHookFun;
 
+// jichi 6/1/2014: Structure of the esp for extern functions
+struct HookStack
+{
+  DWORD eflags; // pushaf
+  DWORD edi,    // pushad
+        esi,
+        ebp,
+        esp,
+        ebx,
+        edx,
+        ecx,    // this
+        eax;    // 0x24
+  DWORD retaddr; // 0x28
+  DWORD args[1]; // 0xc
+};
+
 __declspec(noinline)
-LPCSTR dispatchText(DWORD *esp)
+LPCSTR dispatchText(HookStack *stack)
 {
   // All threads including character names are linked together
   enum { role = Engine::ScenarioRole, signature = Engine::SingleThreadSignature };
   //DWORD returnAddress = esp[0]; // [esp + 0x0]
   //auto signature = Engine::hashThreadSignature(returnAddress);
-  LPCSTR text = (LPCSTR)esp[2]; // [esp + 0x8], arg2
+  LPCSTR text = (LPCSTR)stack->args[1]; // arg2
   static QByteArray ret; // persistent storage, which makes this function not thread-safe
   // FIXME 6/1/2014: This will crash in Chinese locale
   ret = AbstractEngine::instance()->dispatchTextA(text, signature, role);
@@ -53,11 +69,12 @@ int newHookFun()
   __asm
   {
     pushad              // increase esp by 0x20 = 4 * 8, push ecx for thiscall is enough, though
-    lea eax,[esp+0x20]    // esp before pusha
-    push eax
+    pushfd              // eflags
+    push esp
     call dispatchText
     add esp,4           // pop 1
-    mov [esp+0x28],eax  // modify arg2
+    mov [esp+0x2c],eax  // modify arg2, 0x2c = 0x20(pushad) + 0x4(pushfd) + 0x8(arg2)
+    pushfd
     popad
     jmp oldHookFun
   }
