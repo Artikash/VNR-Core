@@ -1433,7 +1433,7 @@ class MainObject(QObject):
 
     dprint("leave")
 
-    self.showReferenceView(6830)
+    #self.showReferenceView()
     #  import jsonapi
     #  jsonapi.gameinfo()
     #  d.dump()
