@@ -81,6 +81,7 @@ VNRAGENT_ENGINES = (
   'BGI',
   'Eushully',
   'SiglusEngine2',
+  'Silkys',
   'Majiro',
 )
 

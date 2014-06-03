@@ -5,82 +5,8 @@
 #include "engine/model/bgi.h"
 #include "engine/enginedef.h"
 #include "engine/engineenv.h"
-#include "engine/enginehash.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
-
-#pragma intrinsic(_ReturnAddress)
-
-//#define DEBUG "bgi2"
-
-#include "sakurakit/skdebug.h"
-#ifdef DEBUG
-# include "debug.h"
-#endif // DEBUG
-
-/** Private data */
-
-/**
- *  世界と世界の真ん中 体験版, relative address: 0x31850;
- *
- *  ? __cdecl sub_31850(DWORD arg1, DWORD arg2, LPCSTR arg3, DWORD arg4)
- *  - arg1: address, could point to area of zero, seems to be the output of this function
- *  - arg2: address, the same as arg1
- *  - arg3: string
- *  - arg4: flags, choices: 0, character name & scenario: 1
- *  - return: not sure, seems always to be 0 when success
- */
-extern "C" { // C linkage is indispensable for BGI engine
-
-typedef int (__cdecl *hook_fun_t)(DWORD, DWORD, LPCSTR, DWORD); // __stdcall will crash the game
-/**
- *  Declaring this variable as static will break the extern "C" declaration.
- *  Calling it will have no effect in BGI game.
- */
-/*static*/ hook_fun_t BGI2_oldHookFun;
-
-__declspec(noinline)
-static LPCSTR dispatchText(LPCSTR text, DWORD returnAddress, DWORD split);
-
-static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD split)
-{
-#ifdef DEBUG
-  qDebug() << arg1 << ":"
-           << arg2 << ":"
-           << QString::fromLocal8Bit(str) << ":"
-           << arg4;
-#endif // DEBUG
-  DWORD returnAddress = (DWORD)_ReturnAddress();
-  str = dispatchText(str, returnAddress, split);
-  enum { ret_ok = 0 };
-  return str ? BGI2_oldHookFun(arg1, arg2, str, split) : ret_ok;
-}
-
-} // extern "C"
-
-/**
- *  It is OK to declare a function as extern "C", but define it using C++ syntax.
- *  See: http://stackoverflow.com/questions/7281441/elegantly-call-c-from-c
- *
- *  TODO: The current split cannot distinguish name and choices
- */
-/*extern "C"*/ static LPCSTR dispatchText(LPCSTR text, DWORD returnAddress, DWORD split)
-{
-  static QByteArray ret; // persistent storage, which makes this function not thread-safe
-
-  // FIXME: It is ridiculous that accessing split will break extern "C"
-  //auto sig = Engine::hashThreadSignature(returnAddress, split);
-  auto sig = Engine::hashThreadSignature(returnAddress);
-  Q_UNUSED(split);
-
-  // split: choices: 0, character name & scenario: 1
-  //auto role = split ? Engine::UnknownRole : Engine::ChoiceRole;
-
-  ret = AbstractEngine::instance()->dispatchTextA(text, sig, Engine::UnknownRole);
-  return (LPCSTR)ret.constData();
-}
-
-/** Public class */
 
 /**
  *  jichi 2/5/2014: Add an alternative BGI hook
@@ -159,7 +85,7 @@ static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD split)
  *  011d4d3e  |. 77 6a          ja short sekachu.011d4daa
  *  011d4d40  |. ff2485 38691d0>jmp dword ptr ds:[eax*4+0x11d6938]
  */
-static DWORD searchBGI2(DWORD startAddress, DWORD stopAddress)
+static ulong searchBGI2(ulong startAddress, ulong stopAddress)
 {
   const BYTE ins[] = {
     0x3c, 0x20,      // 011d4d31  |. 3c 20          cmp al,0x20
@@ -170,13 +96,13 @@ static DWORD searchBGI2(DWORD startAddress, DWORD stopAddress)
     0x77, 0x6a       // 011d4d3e  |. 77 6a          ja short sekachu.011d4daa
   };
   enum { hook_offset = 0x34c80 - 0x34d31 }; // distance to the beginning of the function
-  DWORD range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
-  DWORD reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
+  ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+  ulong reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
   if (!reladdr)
     //ConsoleOutput("vnreng:BGI2: pattern not found");
     return 0;
 
-  DWORD addr = startAddress + reladdr + hook_offset;
+  ulong addr = startAddress + reladdr + hook_offset;
   enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
   if (*(BYTE *)addr != push_ebp)
     //ConsoleOutput("vnreng:BGI2: pattern found but the function offset is invalid");
@@ -192,13 +118,11 @@ bool BGIEngine::attachBGIType2()
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
   ulong addr = ::searchBGI2(startAddress, stopAddress);
-  //ulong addr = 0x31850; // 世界と世界の真ん中 体験版
-  if (!addr)
-    return false;
-  ::BGI2_oldHookFun = replaceFunction<hook_fun_t>(addr, newHookFun);
-  if (::BGI2_oldHookFun)
+  //ulong addr = startAddress + 0x31850; // 世界と世界の真ん中 体験版
+  bool ok = addr && hookAddress(addr);
+  if (ok)
     setName("BGI2"); // change engine name
-  return ::BGI2_oldHookFun;
+  return ok;
 }
 
 // EOF

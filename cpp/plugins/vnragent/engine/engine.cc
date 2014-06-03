@@ -25,7 +25,11 @@
 class AbstractEnginePrivate
 {
   typedef AbstractEngine Q;
+
+  static Q::address_type globalOldHookFun;
+  static Q::hook_function globalDispatchFun;
 public:
+
   enum { ExchangeInterval = 10 };
 
   const char *name;
@@ -35,6 +39,9 @@ public:
   QTextCodec *encoder,
              *decoder;
 
+  Q::address_type oldHookFun;
+  Q::hook_function dispatchFun;
+
   EngineSettings *settings;
   bool finalized;
 
@@ -42,6 +49,7 @@ public:
   AbstractEnginePrivate(const char *name, uint codePage, Q::RequiredAttributes attributes)
     : name(name), codePage(codePage), attributes(attributes)
     , encoder(nullptr), decoder(nullptr)
+    , dispatchFun(0), oldHookFun(0)
     , settings(new EngineSettings)
     , finalized(false)
   {}
@@ -52,6 +60,10 @@ public:
   {
     if (!finalized) {
       finalizeCodecs();
+
+      globalOldHookFun = oldHookFun;
+      globalDispatchFun = dispatchFun;
+
       finalized = true;
     }
   }
@@ -81,7 +93,37 @@ private:
 
     DOUT("encoding =" << engineEncoding  << ", system =" << systemEncoding);
   }
+
+public:
 };
+
+AbstractEngine::address_type AbstractEnginePrivate::globalOldHookFun;
+AbstractEngine::hook_function AbstractEnginePrivate::globalDispatchFun;
+
+/**
+ *  The stack must be consistent with struct HookStack
+ *
+ *  Note for detours
+ *  - It simply replaces the code with jmp and int3. Jmp to newHookFun
+ *  - oldHookFun is the address to a code segment that jmp back to the original function
+ */
+
+__declspec(naked) static int newHookFun()
+{
+  //static DWORD lastArg2;
+  __asm // consistent with struct HookStack
+  {
+    pushad              // increase esp by 0x20 = 4 * 8, push ecx for thiscall is enough, though
+    pushfd              // eflags
+    push esp            // arg1
+    call AbstractEnginePrivate::globalDispatchFun
+    add esp,4           // pop esp
+    popfd
+    popad
+    // TODO: instead of jmp, allow modify the stack after calling the function
+    jmp AbstractEnginePrivate::globalOldHookFun
+  }
+}
 
 /** Public class */
 
@@ -131,6 +173,9 @@ void AbstractEngine::setEncoding(const QString &v)
 bool AbstractEngine::isTranscodingNeeded() const
 { return d_->encoder != d_->decoder; }
 
+void AbstractEngine::setHookCallback(hook_function v)
+{ d_->dispatchFun = v; }
+
 // - Attach -
 
 bool AbstractEngine::load()
@@ -156,12 +201,16 @@ AbstractEngine::address_type AbstractEngine::replaceFunction(address_type old_ad
 #endif // VNRAGENT_ENABLE_MHOOK
 }
 
-AbstractEngine::address_type AbstractEngine::restoreFunction(address_type restore_addr, const_address_type old_addr)
-{
-#ifdef VNRAGENT_ENABLE_DETOURS
-  return detours::restore(restore_addr, old_addr);
-#endif // VNRAGENT_ENABLE_DETOURS
-}
+// Not used
+//AbstractEngine::address_type AbstractEngine::restoreFunction(address_type restore_addr, const_address_type old_addr)
+//{
+//#ifdef VNRAGENT_ENABLE_DETOURS
+//  return detours::restore(restore_addr, old_addr);
+//#endif // VNRAGENT_ENABLE_DETOURS
+//}
+
+bool AbstractEngine::hookAddress(ulong addr)
+{ return d_->oldHookFun = !addr ? 0 : replaceFunction<address_type>(addr, ::newHookFun); }
 
 // - Dispatch -
 

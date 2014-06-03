@@ -2,10 +2,6 @@
 
 Failed engines are as follows.
 
-# 6/1/2014 Silkys
-Issue: The game will crash by invoking C++ code.
-Extern "C" won't fix the issue.
-
 # 5/11/2014 YU-RIS
 悪女装
 

@@ -12,29 +12,23 @@
 #include <qt_windows.h>
 #include <QtCore/QStringList>
 
+//#define DEBUG "majiro"
+#include "sakurakit/skdebug.h"
+
+// Used to get function's return address
+// http://stackoverflow.com/questions/8797943/finding-a-functions-address-in-c
+#pragma intrinsic(_ReturnAddress)
+
 /** Private data */
 
-bool MajiroEngine::match()
-{ return Engine::globs(QStringList() << "data*.arc" << "stream*.arc"); }
-
-bool MajiroEngine::attach()
-{
-  ulong startAddress,
-        stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return false;
-  enum { sub_esp = 0xec81 }; // caller pattern: sub esp = 0x81,0xec
-  ulong addr = MemDbg::findCallerAddress((ulong)::TextOutA, sub_esp, startAddress, stopAddress);
-  //addr = 0x41af90; // レミニセンス function address
-  return addr && hookAddress(addr);
-}
+namespace { // unnamed
 
 /**
  *  Compute ITH's split value from the first parameter of the hooked function.
  *  Let eax be arg1, the original logic in MajiroSpecialHook is:
  *      ([eax+0x28] & 0xff) | (([eax+0x48] >> 1) & 0xffffff00)
  */
-inline static DWORD splitOf(DWORD *arg1)
+inline DWORD splitOf(DWORD *arg1)
 { return (arg1[10] & 0xff) | ((arg1[18] >> 1) & 0xffffff00); }
 
 /**
@@ -59,38 +53,9 @@ inline static DWORD splitOf(DWORD *arg1)
  *  Callers:
  *  0x41aa10 @ 0x416ab0 // Scenario
  *  0x41f650 // Name
- *
- *  Guessed function signature:
- *  - typedef int (__cdecl *hook_fun_t)(LPCSTR, LPSIZE, LPCSTR, LPCSTR, int);
- *  - int __cdecl newHookFun(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR output4, int const5)
  */
-
-void MajiroEngine::hookFunction(HookStack *stack)
-{
-  static QByteArray data_; // persistent storage, which makes this function not thread-safe
-
-  LPDWORD arg1 = (LPDWORD)stack->args[0];
-  LPCSTR text3 = (LPCSTR)stack->args[2];
-
-  // Compute ITH signature
-  DWORD returnAddress = stack->retaddr,
-        split = splitOf(arg1);
-  // The following logic is consistent with VNR's old texthook
-  auto sig = Engine::hashThreadSignature(returnAddress, split);
-
-  data_ = instance()->dispatchTextA(text3, sig, Engine::UnknownRole);
-  //dmsg(QString::fromLocal8Bit(ret));
-  stack->args[2] = (DWORD)data_.constData(); // reset arg3
-}
-
-
-// EOF
-
-/*
-
-// Used to get function's return address
-// http://stackoverflow.com/questions/8797943/finding-a-functions-address-in-c
-#pragma intrinsic(_ReturnAddress)
+typedef int (__cdecl *hook_fun_t)(LPCSTR, LPSIZE, LPCSTR, LPCSTR, int);
+hook_fun_t oldHookFun;
 
 int __cdecl newHookFun(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR output4, int const5)
 {
@@ -119,6 +84,33 @@ int __cdecl newHookFun(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR
     return CharWidth * ::strlen(text3);
   }
 }
+
+} // unnamed namespace
+
+/** Public class */
+
+bool MajiroEngine::match()
+{ return Engine::globs(QStringList() << "data*.arc" << "stream*.arc"); }
+
+bool MajiroEngine::attach()
+{
+  DWORD startAddress,
+        stopAddress;
+  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+    return false;
+  enum { sub_esp = 0xec81 }; // caller pattern: sub esp = 0x81,0xec
+  DWORD addr = MemDbg::findCallerAddress((DWORD)::TextOutA, sub_esp, startAddress, stopAddress);
+  // Note: ITH will mess up this value
+  //addr = 0x41af90; // レミニセンス function address
+  if (!addr)
+    return false;
+  return ::oldHookFun = replaceFunction<hook_fun_t>(addr, ::newHookFun);
+}
+
+// EOF
+
+/*
+ *
 bool MajiroEngine::detach()
 {
   if (!::hookAddress || !::oldHookFun)
@@ -127,4 +119,34 @@ bool MajiroEngine::detach()
   ::hookAddress = 0;
   return ok;
 }
+
+void MajiroEngine::drawText(const QString &text, const void *context)
+{
+  Q_ASSERT(context);
+  auto params = static_cast<const detail::Context *>(context);
+  detail::olddraw(params->arg1, params->arg2, text.toLocal8Bit(), params->arg4, params->arg5);
+}
+
+void MajiroEngine::releaseContext(void *context)
+{
+  Q_ASSERT(context);
+  delete static_cast<detail::Context *>(context);
+}
 */
+
+  /*
+   *  Observeations from レミニセンス:
+   *  - arg1 of the scenario is a fixed portable value.
+   *  - arg2 of the scenario is not portable, but a constant for each run.
+   *  - arg1 and arg2 2of both the name and other texts are random number.
+   *  - arg2's first 4 bytes of name and scenario texts are the same.
+   *  - arg4 is not portable, but a contant for each run.
+   *  - arg5 is aways 1.
+   *  - Scenario always comes after name
+   *  - Scenario size always larger than (800,600), less than (1920,1080)
+   *
+   *  Game-specific arg1:
+   *  - 暁の護衛 罪深き終末論: 32 = 0x20 = ' '
+   *  - レミニセンス: 48 = 0x30 = '0'
+   *  - PotentialAbility: 0xa0
+   */

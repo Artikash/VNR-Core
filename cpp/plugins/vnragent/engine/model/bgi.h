@@ -10,8 +10,12 @@ class BGIEngine : public AbstractEngine
 {
   SK_EXTEND_CLASS(BGIEngine, AbstractEngine)
   SK_DISABLE_COPY(BGIEngine)
+
+  static void hookFunction(HookStack *stack);
 public:
-  BGIEngine() : Base("BGI", Util::SjisCodePage, BlockingAttribute) {}
+  BGIEngine()
+    : Base("BGI", Util::SjisCodePage, BlockingAttribute)
+  { setHookCallback(hookFunction); }
 
   static bool match();
 protected:

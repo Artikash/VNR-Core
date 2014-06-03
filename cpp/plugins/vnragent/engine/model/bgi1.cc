@@ -3,83 +3,8 @@
 #include "engine/model/bgi.h"
 #include "engine/enginedef.h"
 #include "engine/engineenv.h"
-#include "engine/enginehash.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
-
-#pragma intrinsic(_ReturnAddress)
-
-//#define DEBUG "bgi1"
-
-#include "sakurakit/skdebug.h"
-#ifdef DEBUG
-# include "debug.h"
-#endif // DEBUG
-
-/** Private data */
-
-/**
- *  FORTUNE ARTERIAL, 0x4207E0
- *
- *  TODO: Figure out the meaning of the return value
- *  ? __cdecl sub_4207E0 proc near
- *  - arg1: address
- *  - arg2: address
- *  - arg3: string, LPCSTR
- *  - arg4: 0
- *  - arg5: function address
- *  - arg6: address, pointed to 0
- *  - arg7: address, pointed to 0
- *  - arg8: 0x1c, 0x18, observation from FA: This value diff for scenario and name
- *  - arg9: 1
- *  - arg10: 0
- *  - arg11: 0 or 1, maybe, gender?
- *  - arg12: 0x00ffffff
- *  - arg13: addr
- */
-extern "C" { // C linkage is indispensable for BGI engine
-
-typedef int (__cdecl *hook_fun_t)(DWORD, DWORD, LPCSTR, DWORD, DWORD, DWORD,
-                                  DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD);
-/**
- *  Declaring this variable as static will break the extern "C" declaration.
- *  Calling it will have no effect in BGI game.
- */
-/*static*/ hook_fun_t BGI1_oldHookFun;
-
-__declspec(noinline)
-static LPCSTR dispatchText(LPCSTR text, DWORD returnAddress, DWORD split);
-
-static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD arg4, DWORD arg5, DWORD arg6,
-                              DWORD arg7, DWORD split, DWORD arg9, DWORD arg10, DWORD arg11, DWORD arg12, DWORD arg13)
-
-{
-#ifdef DEBUG
-  qDebug() << arg1 << ":"
-           << arg2 << ":"
-           << QString::fromLocal8Bit(str) << ":"
-           << split;
-#endif // DEBUG
-  if (str) // str could be nullptr
-    str = dispatchText(str, (DWORD)_ReturnAddress(), split);
-  return !str ? 0 : // TODO: investigate the meaning of the return value
-         BGI1_oldHookFun(arg1, arg2, str, arg4, arg5, arg6, arg7, split, arg9, arg10, arg11, arg12, arg13);
-}
-
-} // extern "C"
-
-/**
- *  It is OK to declare a function as extern "C", but define it using C++ syntax.
- *  See: http://stackoverflow.com/questions/7281441/elegantly-call-c-from-c
- */
-/*extern "C"*/ static LPCSTR dispatchText(LPCSTR text, DWORD returnAddress, DWORD split)
-{
-  static QByteArray ret; // persistent storage, which makes this function not thread-safe
-  auto sig = Engine::hashThreadSignature(returnAddress, split);
-  //ret = AbstractEngine::instance()->dispatchTextA(text, sig, Engine::ScenarioRole);
-  ret = AbstractEngine::instance()->dispatchTextA(text, sig, Engine::UnknownRole);
-  return (LPCSTR)ret.constData();
-}
 
 /**
  *  5/12/2014
@@ -122,6 +47,9 @@ static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD arg4, DW
  *  Sample game: FORTUNE ARTERIAL
  *  ITH hooked function: BGI#2 sub_41EBD0, called by 0x4207e0
  *
+ *  0041ebcd     90             nop
+ *  0041ebce     90             nop
+ *  0041ebcf     90             nop
  *  004207e0  /$ 81ec 30090000  sub esp,0x930   ; jichi: function starts
  *  004207e6  |. 8b8424 5409000>mov eax,dword ptr ss:[esp+0x954]
  *  004207ed  |. 56             push esi
@@ -185,7 +113,7 @@ static int __cdecl newHookFun(DWORD arg1, DWORD arg2, LPCSTR str, DWORD arg4, DW
  *  004208bc  |. 53             push ebx
  *  004208bd  |. e8 7e080000    call bgi.00421140
  */
-static DWORD searchBGI1(DWORD startAddress, DWORD stopAddress)
+static ulong searchBGI1(ulong startAddress, ulong stopAddress)
 {
   //const BYTE ins[] = {
   //  0x8a,0x45, 0x00,  // 00420822  |. 8a45 00        mov al,byte ptr ss:[ebp]
@@ -209,14 +137,14 @@ static DWORD searchBGI1(DWORD startAddress, DWORD stopAddress)
      0x85,0xff,        // 004208ef  |. 85ff           test edi,edi
   };
   //enum { hook_offset = 0x4207e0 - 0x4208de }; // distance to the beginning of the function
-  DWORD range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
-  DWORD reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
+  ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+  ulong reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
   if (!reladdr)
     //ConsoleOutput("vnreng:BGI2: pattern not found");
     return 0;
 
-  //DWORD addr = startAddress + reladdr + hook_offset;
-  DWORD addr = startAddress + reladdr;
+  //ulong addr = startAddress + reladdr + hook_offset;
+  ulong addr = startAddress + reladdr;
   enum : WORD {
     sub_esp = 0xec81   // 004207e0  /$ 81ec 30090000
     , push_ff = 0xff6a // 00427450  /$ 6a ff   push -0x1, seh handler
@@ -233,7 +161,7 @@ static DWORD searchBGI1(DWORD startAddress, DWORD stopAddress)
       // 00427465  |. 81ec d80c0000  sub esp,0xcd8
       //
       // 0x00427465 - 0x00427450 == 21
-      DWORD seh_addr = addr;
+      ulong seh_addr = addr;
       for (int j = 0; j < 40; j++, seh_addr--)
         if (*(WORD *)seh_addr == push_ff) // beginning of the function with seh
           return seh_addr;
@@ -249,15 +177,12 @@ bool BGIEngine::attachBGIType1()
         stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
-
   ulong addr = ::searchBGI1(startAddress, stopAddress);
   //ulong addr = 0x4207e0; // FORTUNE ARTERIAL
-  if (!addr)
-    return false;
-  ::BGI1_oldHookFun = replaceFunction<hook_fun_t>(addr, newHookFun);
-  if (::BGI1_oldHookFun)
+  bool ok = addr && hookAddress(addr);
+  if (ok)
     setName("BGI1"); // change engine name
-  return ::BGI1_oldHookFun;
+  return ok;
 }
 
 // EOF

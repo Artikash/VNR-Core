@@ -4,17 +4,34 @@
 #include "engine/model/eushully.h"
 #include "engine/enginedef.h"
 #include "engine/engineenv.h"
-//#include "engine/enginehash.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 
-#include "debug.h"
-//#define DEBUG "Eushully"
-#include "sakurakit/skdebug.h"
+/**
+ *  The process name is AGE.EXE.
+ *  It also contains AGERC.DLL in the game directory.
+ */
+bool EushullyEngine::match() { return Engine::exists("AGERC.DLL"); }
 
-/** Private data */
-
-namespace { // unnamed
+/**
+ *  Find the last function call of GetTextExtentPoint32A
+ *  The function call must after int3
+ */
+bool EushullyEngine::attach()
+{
+  ulong startAddress,
+        stopAddress;
+  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+    return false;
+  // Find the last function call of GetTextExtentPoint32A
+  // The function call must after int3
+  ulong addr = MemDbg::findLastCallerAddressAfterInt3((ulong)::GetTextExtentPoint32A, startAddress, stopAddress);
+  //ulong addr = ::searchEushully(startAddress, stopAddress);
+  //addr = 0x451170; // 姫狩りダンジョンマイスター体験版
+  //addr = 0x468fa0; // 天秤のLaDEA体験版
+  //dmsg(addr);
+  return addr && hookAddress(addr);
+}
 
 /**
  *  Sample game: 姫狩りダンジョンマイスター体験版
@@ -26,89 +43,21 @@ namespace { // unnamed
  *  - arg4: 0
  *  - arg5: LPVOID  to unknown
  *  - return: TRUE(1) if succeed
+ *
+ * FIXME 6/1/2014: This will crash in Chinese locale
  */
-//typedef int (__cdecl *hook_fun_t)(int, LPCSTR); //, int, int, LPVOID);
-typedef DWORD hook_fun_t;
-hook_fun_t oldHookFun;
-
-// TODO: Generalize the naked function mechanism
-struct HookStack
+void EushullyEngine::hookFunction(HookStack *stack)
 {
-  DWORD eflags;  // pushaf
-  DWORD edi,     // pushad
-        esi,
-        ebp,
-        esp,
-        ebx,
-        edx,
-        ecx,     // this
-        eax;     // 0x24
-  DWORD retaddr; // 0x28
-  DWORD args[1]; // 0x2c
-};
+  static QByteArray data_; // persistent storage, which makes this function not thread-safe
 
-__declspec(noinline)
-void dispatchText(HookStack *stack)
-{
-  enum { TextArgOffset = 1 }; // text is the arg2
   // All threads including character names are linked together
-  enum { role = Engine::ScenarioRole, signature = Engine::SingleThreadSignature };
-  //DWORD returnAddress = esp[0]; // [esp + 0x0]
-  //auto signature = Engine::hashThreadSignature(returnAddress);
-  LPCSTR text = (LPCSTR)stack->args[TextArgOffset];
-  static QByteArray ret; // persistent storage, which makes this function not thread-safe
-  // FIXME 6/1/2014: This will crash in Chinese locale
-  ret = AbstractEngine::instance()->dispatchTextA(text, signature, role);
+  enum { role = Engine::ScenarioRole, signature = Engine::ScenarioThreadSignature };
+
+  LPCSTR text2 = (LPCSTR)stack->args[1]; // arg2
+
+  data_ = instance()->dispatchTextA(text2, signature, role);
   //dmsg(QString::fromLocal8Bit(ret));
-  stack->args[TextArgOffset] = DWORD(ret.isEmpty() ? "" : ret.constData());
-}
-
-/**
- *  Note for detours
- *  - It simply replaces the code with jmp and int3. Jmp to newHookFun
- *  - oldHookFun is the address to a code segment that jmp back to the original function
- */
-__declspec(naked)
-int newHookFun()
-{
-  //static DWORD lastArg2;
-  __asm // consistent with struct HookStack
-  {
-    pushad              // increase esp by 0x20 = 4 * 8, push ecx for thiscall is enough, though
-    pushfd              // eflags
-    push esp            // arg1
-    call dispatchText
-    add esp,4           // pop esp
-    popfd
-    popad
-    // TODO: instead of jmp, allow modify the stack after calling the function
-    jmp oldHookFun
-  }
-}
-
-} // unnamed namespace
-
-/** Public class */
-
-bool EushullyEngine::match() { return Engine::exists("AGERC.DLL"); }
-
-bool EushullyEngine::attach()
-{
-  DWORD startAddress,
-        stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return false;
-  // Find the last function call of GetTextExtentPoint32A
-  // The function call must after int3
-  ulong addr = MemDbg::findLastCallerAddressAfterInt3((DWORD)::GetTextExtentPoint32A, startAddress, stopAddress);
-  //ulong addr = ::searchEushully(startAddress, stopAddress);
-  //addr = 0x451170; // 姫狩りダンジョンマイスター体験版
-  //addr = 0x468fa0; // 天秤のLaDEA体験版
-  //dmsg(addr);
-  if (!addr)
-    return false;
-  //dmsg(*(WORD *)addr); // supposed to be 0xff6a
-  return ::oldHookFun = replaceFunction<hook_fun_t>(addr, ::newHookFun);
+  stack->args[1] = (ulong)data_.constData(); // arg2
 }
 
 // EOF

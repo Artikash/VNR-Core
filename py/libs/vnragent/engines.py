@@ -25,8 +25,8 @@ def engines():
       EushullyEngine(),
       MajiroEngine(),
       SiglusEngine(),
+      SilkysEngine(),
       #RejetEngine(),
-      #SilkysEngine(),
     ]
   return ENGINES
 
@@ -196,6 +196,8 @@ class SilkysEngine(Engine):
 
   NAME = "Silkys" # str, override
   ENCODING = SJIS_ENCODING # str, override
+
+  REGION_LOCKED = True # It simply cannot display gbk, which become "?". Need hijack encoding or gdi functions
 
   def match(self, **kwargs): # override
     #return self.exists("Silkys.exe", **kwargs)
