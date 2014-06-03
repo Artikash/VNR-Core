@@ -11,7 +11,8 @@ class EushullyEngine : public AbstractEngine
   SK_EXTEND_CLASS(EushullyEngine, AbstractEngine)
   SK_DISABLE_COPY(EushullyEngine)
 public:
-  EushullyEngine() : Base("Eushully", Util::SjisCodePage, BlockingAttribute) {}
+  EushullyEngine() : Base("Eushully", Util::SjisCodePage,
+      BlockingAttribute|SingleThreadAttribute) {}
 
   static bool match();
 protected:

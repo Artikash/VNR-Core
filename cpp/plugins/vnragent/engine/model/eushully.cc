@@ -50,19 +50,24 @@ struct HookStack
 __declspec(noinline)
 void dispatchText(HookStack *stack)
 {
-  enum { ArgText = 1 }; // text is the arg2
+  enum { TextArgOffset = 1 }; // text is the arg2
   // All threads including character names are linked together
   enum { role = Engine::ScenarioRole, signature = Engine::SingleThreadSignature };
   //DWORD returnAddress = esp[0]; // [esp + 0x0]
   //auto signature = Engine::hashThreadSignature(returnAddress);
-  LPCSTR text = (LPCSTR)stack->args[ArgText];
+  LPCSTR text = (LPCSTR)stack->args[TextArgOffset];
   static QByteArray ret; // persistent storage, which makes this function not thread-safe
   // FIXME 6/1/2014: This will crash in Chinese locale
   ret = AbstractEngine::instance()->dispatchTextA(text, signature, role);
   //dmsg(QString::fromLocal8Bit(ret));
-  stack->args[ArgText] = DWORD(ret.isEmpty() ? "" : ret.constData());
+  stack->args[TextArgOffset] = DWORD(ret.isEmpty() ? "" : ret.constData());
 }
 
+/**
+ *  Note for detours
+ *  - It simply replaces the code with jmp and int3. Jmp to newHookFun
+ *  - oldHookFun is the address to a code segment that jmp back to the original function
+ */
 __declspec(naked)
 int newHookFun()
 {

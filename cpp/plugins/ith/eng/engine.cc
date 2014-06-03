@@ -424,6 +424,28 @@ DWORD DetermineEngineOther()
   return no;
 }
 
+// jichi 6/1/2014
+DWORD DetermineEngineGeneric()
+{
+  enum : DWORD { yes = 0, no = 1 }; // return value
+  DWORD ret = no;
+
+  if (IthCheckFile(L"AlterEgo.exe")) {
+    ConsoleOutput("vnreng: AlterEgo, INSERT WideChar hooks");
+    ret = yes;
+  }  else if (IthFindFile(L"data\\Sky\\*")) {
+    ConsoleOutput("vnreng: TEATIME, INSERT WideChar hooks");
+    ret = yes;
+  }
+  //}  else if (IthFindFile(L"image\\*.po2") || IthFindFile(L"image\\*.jo2")) {
+  //  ConsoleOutput("vnreng: HarukaKanata, INSERT WideChar hooks"); // はるかかなた
+  //  ret = yes;
+  //}
+  if (ret == yes)
+    InsertWcharHooks();
+  return ret;
+}
+
 DWORD DetermineNoHookEngine()
 {
   enum : DWORD { yes = 0, no = 1 }; // return value
@@ -527,6 +549,7 @@ bool UnsafeDetermineEngineType()
     && DetermineEngineByFile4()
     && DetermineEngineByProcessName()
     && DetermineEngineOther()
+    && DetermineEngineGeneric()
     && DetermineNoHookEngine()
   );
 }
@@ -537,7 +560,7 @@ DWORD DetermineEngineType()
   enum : DWORD { yes = 0, no = 1 };
   // jichi 9/27/2013: disable game engine for debugging use
 #ifdef ITH_DISABLE_ENGINE
-  InsertNonGuiHooks();
+  InsertLstrHooks();
   return no;
 #else
   DWORD ret = no;
@@ -549,7 +572,7 @@ DWORD DetermineEngineType()
       ret = UnsafeDetermineEngineType() ? yes : no);
 #endif // ITH_HAS_SEH
   if (ret == no)  // jichi 10/2/2013: Only enable it if no game engine is detected
-    InsertNonGuiHooks();
+    InsertLstrHooks();
   else
     ConsoleOutput("vnreng: found game engine, IGNORE non gui hooks");
   return ret;
