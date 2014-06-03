@@ -821,7 +821,7 @@ void IHFAPI InsertLstrHooks()
   ConsoleOutput("vnrcli:InsertLstrHooks: leave");
 }
 
-void IHFAPI InsertWcharHooks();
+void IHFAPI InsertWcharHooks()
 {
   ConsoleOutput("vnrcli:InsertWcharHooks: enter");
   // 12/1/2013 jichi:
@@ -862,6 +862,7 @@ void IHFAPI InsertWcharHooks();
 }
 
 // EOF
+
 //typedef void (*DataFun)(DWORD, const HookParam*, DWORD*, DWORD*, DWORD*);
 
 /*

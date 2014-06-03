@@ -424,19 +424,24 @@ DWORD DetermineEngineOther()
   return no;
 }
 
+// jichi 6/1/2014
 DWORD DetermineEngineGeneric()
 {
   enum : DWORD { yes = 0, no = 1 }; // return value
   DWORD ret = no;
 
   if (IthCheckFile(L"AlterEgo.exe")) {
-    ConsoleOutput("vnreng: AlterEgo");
+    ConsoleOutput("vnreng: AlterEgo, INSERT WideChar hooks");
     ret = yes;
-  }  else if (IthCheckFile(L"data\\upload.dat")) {
-    ConsoleOutput("vnreng: TEATIME");
+  }  else if (IthFindFile(L"data\\Sky\\*")) {
+    ConsoleOutput("vnreng: TEATIME, INSERT WideChar hooks");
     ret = yes;
   }
-  if (ret)
+  //}  else if (IthFindFile(L"image\\*.po2") || IthFindFile(L"image\\*.jo2")) {
+  //  ConsoleOutput("vnreng: HarukaKanata, INSERT WideChar hooks"); // はるかかなた
+  //  ret = yes;
+  //}
+  if (ret == yes)
     InsertWcharHooks();
   return ret;
 }
@@ -544,8 +549,8 @@ bool UnsafeDetermineEngineType()
     && DetermineEngineByFile4()
     && DetermineEngineByProcessName()
     && DetermineEngineOther()
-    && DetermineNoHookEngine()
     && DetermineEngineGeneric()
+    && DetermineNoHookEngine()
   );
 }
 } // unnamed
