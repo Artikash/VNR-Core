@@ -26,6 +26,10 @@ DWORD IHFAPI SwitchTrigger(DWORD on);
 DWORD IHFAPI GetFunctionAddr(const char *name, DWORD *addr, DWORD *base, DWORD *size, LPWSTR *base_name);
 } // extern "C"
 
-void IHFAPI InsertNonGuiHooks(); // including lstrlenA and lstrlenW
+// Keept only for backward compatiblity
+void IHFAPI InsertNonGuiHooks();
+
+void IHFAPI InsertLstrHooks();
+void IHFAPI InsertWcharHooks();
 
 // EOF

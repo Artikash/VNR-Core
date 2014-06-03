@@ -424,6 +424,23 @@ DWORD DetermineEngineOther()
   return no;
 }
 
+DWORD DetermineEngineGeneric()
+{
+  enum : DWORD { yes = 0, no = 1 }; // return value
+  DWORD ret = no;
+
+  if (IthCheckFile(L"AlterEgo.exe")) {
+    ConsoleOutput("vnreng: AlterEgo");
+    ret = yes;
+  }  else if (IthCheckFile(L"data\\upload.dat")) {
+    ConsoleOutput("vnreng: TEATIME");
+    ret = yes;
+  }
+  if (ret)
+    InsertWcharHooks();
+  return ret;
+}
+
 DWORD DetermineNoHookEngine()
 {
   enum : DWORD { yes = 0, no = 1 }; // return value
@@ -528,6 +545,7 @@ bool UnsafeDetermineEngineType()
     && DetermineEngineByProcessName()
     && DetermineEngineOther()
     && DetermineNoHookEngine()
+    && DetermineEngineGeneric()
   );
 }
 } // unnamed
@@ -537,7 +555,7 @@ DWORD DetermineEngineType()
   enum : DWORD { yes = 0, no = 1 };
   // jichi 9/27/2013: disable game engine for debugging use
 #ifdef ITH_DISABLE_ENGINE
-  InsertNonGuiHooks();
+  InsertLstrHooks();
   return no;
 #else
   DWORD ret = no;
@@ -549,7 +567,7 @@ DWORD DetermineEngineType()
       ret = UnsafeDetermineEngineType() ? yes : no);
 #endif // ITH_HAS_SEH
   if (ret == no)  // jichi 10/2/2013: Only enable it if no game engine is detected
-    InsertNonGuiHooks();
+    InsertLstrHooks();
   else
     ConsoleOutput("vnreng: found game engine, IGNORE non gui hooks");
   return ret;

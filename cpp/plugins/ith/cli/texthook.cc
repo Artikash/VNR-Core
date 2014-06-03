@@ -769,13 +769,9 @@ void InitDefaultHook()
 //#include <boost/lexical_cast.hpp>
 //#include <string>
 
-// jichi 10/2/2013
-// Note: All functions does not have NO_CONTEXT attribute and will be filtered.
-void IHFAPI InsertNonGuiHooks()
-{
-  ConsoleOutput("vnrcli:InsertNonGuiHooks: enter");
-  // int TextHook::InitHook(LPVOID addr, DWORD data, DWORD data_ind, DWORD split_off, DWORD split_ind, WORD type, DWORD len_off)
-#define _(_name, _addr, _data, _data_ind, _split_off, _split_ind, _type, _len_off) \
+void IHFAPI InsertNonGuiHooks() { InsertLstrHooks(); }
+
+#define ADD_HOOK(_name, _addr, _data, _data_ind, _split_off, _split_ind, _type, _len_off) \
   { \
     HookParam hp = {}; \
     hp.addr = (DWORD)_addr; \
@@ -788,12 +784,19 @@ void IHFAPI InsertNonGuiHooks()
     NewHook(hp, _name); \
   }
 
+// jichi 10/2/2013
+// Note: All functions does not have NO_CONTEXT attribute and will be filtered.
+void IHFAPI InsertLstrHooks()
+{
+  ConsoleOutput("vnrcli:InsertLstrHooks: enter");
+  // int TextHook::InitHook(LPVOID addr, DWORD data, DWORD data_ind, DWORD split_off, DWORD split_ind, WORD type, DWORD len_off)
+
   // http://msdn.microsoft.com/en-us/library/78zh94ax.aspx
   // int WINAPI lstrlen(LPCTSTR lpString);
   // Lstr functions usually extracts rubbish, and might crash certain games like 「Magical Marriage Lunatics!!」
   // Needed by Gift
-  _(L"lstrlenA", lstrlenA, 0x4,  0,4,0, USING_STRING,  0) // 9/8/2013 jichi: int WINAPI lstrlen(LPCTSTR lpString);
-  _(L"lstrlenW", lstrlenW, 0x4,  0,4,0, USING_UNICODE|USING_STRING, 0) // 9/8/2013 jichi: add lstrlen
+  ADD_HOOK(L"lstrlenA", lstrlenA, 0x4,  0,4,0, USING_STRING,  0) // 9/8/2013 jichi: int WINAPI lstrlen(LPCTSTR lpString);
+  ADD_HOOK(L"lstrlenW", lstrlenW, 0x4,  0,4,0, USING_UNICODE|USING_STRING, 0) // 9/8/2013 jichi: add lstrlen
 
   // size_t strlen(const char *str);
   // size_t strlen_l(const char *str, _locale_t locale);
@@ -815,7 +818,12 @@ void IHFAPI InsertNonGuiHooks()
   // unsigned char *_mbsinc_l(const unsigned char *current, _locale_t locale);
   //_(L"_strinc", _strinc, 0x4,  0,4,0, USING_STRING, 0) // 12/13/2013 jichi
   //_(L"_wcsinc", _wcsinc, 0x4,  0,4,0, USING_UNICODE|USING_STRING, 0)
+  ConsoleOutput("vnrcli:InsertLstrHooks: leave");
+}
 
+void IHFAPI InsertWcharHooks();
+{
+  ConsoleOutput("vnrcli:InsertWcharHooks: enter");
   // 12/1/2013 jichi:
   // AlterEgo
   // http://tieba.baidu.com/p/2736475133
@@ -848,11 +856,39 @@ void IHFAPI InsertNonGuiHooks()
 
   // 3/17/2014 jichi: Temporarily disabled
   // http://sakuradite.com/topic/159
-  //_(L"MultiByteToWideChar", MultiByteToWideChar, 0xc,  0,4,0, USING_STRING, 4)
-  //_(L"WideCharToMultiByte", WideCharToMultiByte, 0xc,  0,4,0, USING_UNICODE|USING_STRING, 4)
-#undef _
-  ConsoleOutput("vnrcli:InsertNonGuiHooks: leave");
+  ADD_HOOK(L"MultiByteToWideChar", MultiByteToWideChar, 0xc,  0,4,0, USING_STRING, 4)
+  ADD_HOOK(L"WideCharToMultiByte", WideCharToMultiByte, 0xc,  0,4,0, USING_UNICODE|USING_STRING, 4)
+  ConsoleOutput("vnrcli:InsertWcharHooks: leave");
 }
+
+// EOF
+//typedef void (*DataFun)(DWORD, const HookParam*, DWORD*, DWORD*, DWORD*);
+
+/*
+DWORD recv_esp, recv_addr;
+EXCEPTION_DISPOSITION ExceptHandler(EXCEPTION_RECORD *ExceptionRecord,
+    void *EstablisherFrame, CONTEXT *ContextRecord, void *DispatcherContext)
+{
+  //WCHAR str[0x40],
+  //      name[0x100];
+  //ConsoleOutput(L"Exception raised during hook processing.");
+  //swprintf(str, L"Exception code: 0x%.8X", ExceptionRecord->ExceptionCode);
+  //ConsoleOutput(str);
+  //MEMORY_BASIC_INFORMATION info;
+  //if (NT_SUCCESS(NtQueryVirtualMemory(NtCurrentProcess(),(PVOID)ContextRecord->Eip,
+  //    MemoryBasicInformation,&info,sizeof(info),0)) &&
+  //    NT_SUCCESS(NtQueryVirtualMemory(NtCurrentProcess(),(PVOID)ContextRecord->Eip,
+  //    MemorySectionName,name,0x200,0))) {
+  //  swprintf(str, L"Exception offset: 0x%.8X:%s",
+  //      ContextRecord->Eip-(DWORD)info.AllocationBase,
+  //      wcsrchr(name,L'\\')+1);
+  //  ConsoleOutput(str);
+  //}
+  ContextRecord->Esp = recv_esp;
+  ContextRecord->Eip = recv_addr;
+  return ExceptionContinueExecution;
+}
+
 
 // EOF
 //typedef void (*DataFun)(DWORD, const HookParam*, DWORD*, DWORD*, DWORD*);
