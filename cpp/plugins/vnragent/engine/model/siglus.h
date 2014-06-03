@@ -12,7 +12,8 @@ class SiglusEngine : public AbstractEngine
   SK_DISABLE_COPY(SiglusEngine)
 public:
   SiglusEngine() : Base("SiglusEngine", Util::Utf16CodePage,
-      BlockingAttribute|SingleThreadAttribute) {}
+      BlockingAttribute|SingleThreadAttribute|SpecialHookAttribute)
+  {} // Hook requires restoring the original text after dispatch
 
   static bool match();
 protected:

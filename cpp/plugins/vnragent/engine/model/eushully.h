@@ -10,9 +10,12 @@ class EushullyEngine : public AbstractEngine
 {
   SK_EXTEND_CLASS(EushullyEngine, AbstractEngine)
   SK_DISABLE_COPY(EushullyEngine)
+
+  static void hookFunction(HookStack *stack);
 public:
-  EushullyEngine() : Base("Eushully", Util::SjisCodePage,
-      BlockingAttribute|SingleThreadAttribute) {}
+  EushullyEngine()
+    : Base("Eushully", Util::SjisCodePage, BlockingAttribute|SingleThreadAttribute)
+  { setHookCallback(hookFunction); }
 
   static bool match();
 protected:

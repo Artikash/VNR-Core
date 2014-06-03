@@ -95,7 +95,7 @@ struct HookStruct
 int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
 {
   Q_UNUSED(edx);
-  enum { role = Engine::ScenarioRole, signature = Engine::SingleThreadSignature };
+  enum { role = Engine::ScenarioRole, signature = Engine::ScenarioThreadSignature };
   //return oldHookFun(self, arg1, arg2);
 #ifdef DEBUG
   if (self->size < 8)
@@ -123,6 +123,7 @@ int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
 
   int ret = oldHookFun(self, arg1, arg2); // ret = size * 2
 
+  // Restoring is indispensible, and as a result, the default hook does not work
   self->texts[0] = oldText0;
   self->size = oldSize;
   self->capacity = oldCapacity;
@@ -159,7 +160,7 @@ bool SiglusEngine::match() { return Engine::exists("SiglusEngine.exe"); }
  *  013baf32  |. 3bd7           |cmp edx,edi ; jichi: ITH hook here, char saved in edi
  *  013baf34  |. 75 4b          |jnz short siglusen.013baf81
  */
-static DWORD searchSiglus2(DWORD startAddress, DWORD stopAddress)
+static ulong searchSiglus2(ulong startAddress, ulong stopAddress)
 {
   //const BYTE ins[] = { // size = 14
   //  0x01,0x53, 0x58,                // 0153 58          add dword ptr ds:[ebx+58],edx
@@ -174,8 +175,8 @@ static DWORD searchSiglus2(DWORD startAddress, DWORD stopAddress)
     0x75,0x4b  // 013baf34  |. 75 4b      |jnz short siglusen.013baf81
   };
   //enum { hook_offset = 0 };
-  DWORD range1 = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
-  DWORD reladdr = MemDbg::searchPattern(startAddress, range1, ins1, sizeof(ins1));
+  ulong range1 = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+  ulong reladdr = MemDbg::searchPattern(startAddress, range1, ins1, sizeof(ins1));
 
   if (!reladdr)
     //ConsoleOutput("vnreng:Siglus2: pattern not found");
@@ -187,7 +188,7 @@ static DWORD searchSiglus2(DWORD startAddress, DWORD stopAddress)
     0x6a,0xff  // 013bac73  |. 6a ff    push -0x1
   };
   enum { range2 = 0x300 }; // 0x013baf32  -0x013bac70 = 706 = 0x2c2
-  DWORD addr = startAddress + reladdr - range2;
+  ulong addr = startAddress + reladdr - range2;
   reladdr = MemDbg::searchPattern(addr, range2, ins2, sizeof(ins2));
   if (!reladdr)
     //ConsoleOutput("vnreng:Siglus2: pattern not found");
@@ -198,13 +199,13 @@ static DWORD searchSiglus2(DWORD startAddress, DWORD stopAddress)
 
 bool SiglusEngine::attach()
 {
-  DWORD startAddress,
+  ulong startAddress,
         stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
   ulong addr = ::searchSiglus2(startAddress, stopAddress);
-  //DWORD addr = startAddress + 0xdb140; // 聖娼女
-  //DWORD addr = startAddress + 0xdaf32; // 聖娼女 体験版
+  //ulong addr = startAddress + 0xdb140; // 聖娼女
+  //ulong addr = startAddress + 0xdaf32; // 聖娼女 体験版
   //dmsg(addr - startAddress);
   if (!addr)
     return false;

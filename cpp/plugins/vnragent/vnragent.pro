@@ -118,9 +118,9 @@ HEADERS += \
   engine/model/bgi.h \
   engine/model/eushully.h \
   engine/model/majiro.h \
-  engine/model/siglus.h
+  engine/model/siglus.h \
+  engine/model/silkys.h
   #engine/model/rejet.h
-  #engine/model/silkys.h
   #engine/model/test.h
 SOURCES += \
   engine/model/bgi.cc \
@@ -128,9 +128,9 @@ SOURCES += \
   engine/model/bgi2.cc \
   engine/model/eushully.cc \
   engine/model/majiro.cc \
-  engine/model/siglus.cc
+  engine/model/siglus.cc \
+  engine/model/silkys.cc
   #engine/model/rejet.cc
-  #engine/model/silkys.cc
   #engine/model/test.cc
 
 #!wince*: LIBS += -lshell32

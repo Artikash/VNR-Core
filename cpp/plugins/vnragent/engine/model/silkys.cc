@@ -6,71 +6,66 @@
 #include "engine/model/silkys.h"
 #include "engine/enginedef.h"
 #include "engine/engineenv.h"
-#include "engine/enginehash.h"
-#include "detoursutil/detoursutil.h"
 #include "memdbg/memsearch.h"
-#include <QtCore/QStringList>
 #include <qt_windows.h>
-
-#include "debug.h"
-#include <QDebug>
-//#define DEBUG "siglus"
-#include "sakurakit/skdebug.h"
-
-// Used to get function's return address
-// http://stackoverflow.com/questions/8797943/finding-a-functions-address-in-c
-//#pragma intrinsic(_ReturnAddress)
-
-/** Private data */
+#include <QtCore/QStringList>
 
 namespace { // unnamed
+
+typedef LPCSTR (__thiscall *hook_fun_t)(void *, DWORD, DWORD, DWORD);
+// Use __fastcall to completely forward ecx and edx
+//typedef int (__fastcall *hook_fun_t)(void *, void *, DWORD, DWORD);
+hook_fun_t oldHookFun;
 
 /**
  *  Type1: SEXティーチャー剛史 trial, reladdr = 0x2f0f0, 2 parameters
  *  Type2: 愛姉妹4, reladdr = 0x2f9b0, 3 parameters
  *
- *  FIXME: No idea why it crashes the game
- */
-typedef LPCSTR (__cdecl *hook_fun_t)(DWORD);//, DWORD);
-hook_fun_t oldHookFun;
-
-/**
  *  Observations
  *  - Return: text
+ *  - Text is calculated from arg1
  */
-LPCSTR __cdecl newHookFun(DWORD arg1) //, DWORD arg2)
+LPCSTR __fastcall newHookFun(void *self, void *edx, DWORD arg1, DWORD arg2, DWORD arg3)
 {
-  DWORD arg2_scene = arg1 + 4*5,
+  Q_UNUSED(edx);
+  ulong arg2_scene = arg1 + 4*5,
         arg2_chara = arg1 + 4*10;
-  int role;
-  LPCSTR text = nullptr;
+  auto q = AbstractEngine::instance();
+
+  // Scenario
   if (*(DWORD *)arg2_scene == 0) {
-    text = *(LPCSTR *)(arg2_scene + 0xc);
-    role = Engine::ScenarioRole;
+    enum { role = Engine::ScenarioRole, signature = Engine::ScenarioThreadSignature };
+
+    // By debugging, this text is later released using heapFree
+    LPCSTR *p = (LPCSTR *)(arg2_scene + 0xc),
+           text = *p;
+    QByteArray data = q->dispatchTextA(text, signature, role);
+    *p = (LPCSTR)data.constData();
+    LPCSTR ret = oldHookFun(self, arg1, arg2, arg3);
+    *p = text; // restore old hook
+    return ret;
+
+  // Name
+  // FIXME: The name has to be truncated
   } else if (*(DWORD *)arg2_chara == 0) {
-    text = LPCSTR(arg2_chara + 0xc);
-    role = Engine::NameRole;
-  }
-  if (text) {
-    QByteArray data = AbstractEngine::instance()->dispatchTextA(text, role, role);
-    if (data.isEmpty())
-      return text;
-    if (role == Engine::ScenarioRole) {
-      LPCSTR *p = (LPCSTR *)(arg2_scene + 0xc);
-      *p = data.constData();
-      oldHookFun(arg1);
-      *p = text;
-    } else
-      oldHookFun(arg1);
-    return text;
-  }
-  LPCSTR ret = oldHookFun(arg1);//, arg2);
-  return ret;
+    enum { role = Engine::NameRole, signature = Engine::NameThreadSignature };
+
+    LPSTR srcText = LPSTR(arg2_chara + 0xc);
+    QByteArray srcData = srcText,
+               replData = q->dispatchTextA(srcData, signature, role);
+    if (!replData.isEmpty())
+      ::memcpy(srcText, replData.constData(), min(srcData.size(), replData.size()));
+    int left = srcData.size() - replData.size();
+    if (left > 0)
+      ::memset(srcText + srcData.size() - left, 0, left);
+    return oldHookFun(self, arg1, arg2, arg3);
+
+  // Warning: unknown game parameter
+  } else
+    return oldHookFun(self, arg1, arg2, arg3);
 }
 
 } // unnamed namespace
-
-/** Public class */
 
 bool SilkysEngine::match()
 {
@@ -103,8 +98,10 @@ bool SilkysEngine::match()
  *  ...
  *  013baf32  |. 3bd7           |cmp edx,edi ; jichi: ITH hook here, char saved in edi
  *  013baf34  |. 75 4b          |jnz short siglusen.013baf81
+ *
+ *  @param  stackSize  number of bytes on the stack of the function, which is the parameter of sub esp
  */
-static DWORD searchSilkys(DWORD startAddress, DWORD stopAddress)
+static ulong searchSilkys(ulong startAddress, ulong stopAddress, int *stackSize)
 {
   const BYTE ins[] = {
       //0x55,                             // 0093f9b0  /$ 55             push ebp  ; jichi: hook here
@@ -121,36 +118,69 @@ static DWORD searchSilkys(DWORD startAddress, DWORD stopAddress)
       0x8b,0x91, 0x90,0x00,0x00,0x00    // 0093f9c8  |. 8b91 90000000  mov edx,dword ptr ds:[ecx+0x90]
   };
   //enum { hook_offset = 0xc };
-  DWORD range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
-  DWORD reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
+  ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+  ulong reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
   //ITH_GROWL_DWORD(reladdr);
   //reladdr = 0x2f9b0; // 愛姉妹4
   //reladdr = 0x2f0f0; // SEXティーチャー剛史 trial
   if (!reladdr)
     return 0;
 
-  DWORD addr = startAddress + reladdr;
+  ulong addr = startAddress + reladdr;
   enum : BYTE { push_ebp = 0x55 };
   for (int i = 0; i < 0x20; i++, addr--) // value of i is supposed to be 0xc or 0x10
-    if (*(BYTE *)addr == push_ebp) // beginning of the function
+    if (*(BYTE *)addr == push_ebp) { // beginning of the function
+      // 012df0f0  /$ 55             push ebp   ; funtion starts
+      // 012df0f1  |. 8bec           mov ebp,esp
+      // 012df0f3  |. 83ec 10        sub esp,0x10
+      // 012df0f6  |. 837d 0c 00     cmp dword ptr ss:[ebp+0xc],0x0
+      *stackSize = ((BYTE *)addr)[5];
       return addr;
+    }
   return 0;
 }
 
 bool SilkysEngine::attach()
 {
-  DWORD startAddress,
+  ulong startAddress,
         stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
-  ulong addr = ::searchSilkys(startAddress, stopAddress);
+  int stackSize;
+  ulong addr = ::searchSilkys(startAddress, stopAddress, &stackSize);
   //DWORD addr = startAddress + 0x2f9b0; // 愛姉妹4
   //DWORD addr = startAddress + 0x2f0f0; // SEXティーチャー剛史 trial
-  dmsg(*(BYTE *)addr); // supposed to be 0x55
+  //dmsg(*(BYTE *)addr); // supposed to be 0x55
   //dmsg(addr - startAddress);
-  if (!addr)
+  //dmsg(stackSize);
+  // FIXME: It only supports 2 parameters. Dynamically determine parameter size
+  if (!addr || stackSize != 0x8)
     return false;
-  return ::oldHookFun = detours::replace<hook_fun_t>(addr, ::newHookFun);
+  return ::oldHookFun = replaceFunction<hook_fun_t>(addr, ::newHookFun);
 }
 
 // EOF
+
+/*
+void SilkysEngine::hookFunction(HookStack *stack)
+{
+  static QByteArray data_; // persistent storage, which makes this function not thread-safe
+
+  ulong arg1 = stack->args[0];
+  ulong arg2_scene = arg1 + 4*5,
+        arg2_chara = arg1 + 4*10;
+
+  if (*(DWORD *)arg2_scene == 0) {
+    // By debugging, this text is later released using heapFree
+    LPCSTR *p = (LPCSTR *)(arg2_scene + 0xc),
+           text = *p;
+    enum { role = Engine::ScenarioRole, signature = Engine::ScenarioThreadSignature };
+    data_ = instance()->dispatchTextA(text, signature, role);
+    *p = (LPCSTR)data_.constData();
+  } else if (*(DWORD *)arg2_chara == 0) {
+    LPCSTR text = LPCSTR(arg2_chara + 0xc);
+    enum { role = Engine::NameRole, signature = Engine::NameThreadSignature };
+    data_ = instance()->dispatchTextA(text, signature, role);
+  }
+}
+*/

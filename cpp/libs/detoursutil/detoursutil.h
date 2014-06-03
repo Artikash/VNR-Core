@@ -1,7 +1,13 @@
 #pragma once
 
-// detoursutil.h
-// 4/20/2014 jichi
+/**
+ *  detoursutil.h
+ *  4/20/2014 jichi
+ *
+ *  Note for detours
+ *  - It simply replaces the code with jmp and int3. Jmp to newHookFun
+ *  - oldHookFun is the address to a code segment that jmp back to the original function
+ */
 
 namespace detours {
 

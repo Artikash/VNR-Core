@@ -10,8 +10,12 @@ class MajiroEngine : public AbstractEngine
 {
   SK_EXTEND_CLASS(MajiroEngine, AbstractEngine)
   SK_DISABLE_COPY(MajiroEngine)
+
+  static void hookFunction(HookStack *stack);
 public:
-  MajiroEngine() : Base("Majiro", Util::SjisCodePage, BlockingAttribute) {}
+  MajiroEngine()
+    : Base("Majiro", Util::SjisCodePage, BlockingAttribute)
+  { setHookCallback(hookFunction); }
 
   static bool match();
 protected:
