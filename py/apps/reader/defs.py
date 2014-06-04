@@ -55,6 +55,7 @@ SINGLE_ENGINE_SIGNATURE = 0x10000 # this value is consistent with FIXED_SPLIT_VA
 
 OK123_USERNAME = '@ok123'
 OK123_ENGINES = frozenset((
+  'AMUSE CRAFT',
   'Malie3',
   'Mono',
   'Unity',
@@ -62,28 +63,12 @@ OK123_ENGINES = frozenset((
 
 CONTEXT_SEP = "||"
 
-# The game engines that require the game to have normal/slow text speed
-SLOW_GAME_ENGINES = frozenset(('EmonEngine', 'RunrunEngine', 'RunrunEngine Old'))
-FAST_GAME_ENGINES = 'MarineHeart',
-
-# The game engines that require the game to be hooked after loaded
-DELAY_ENGINES = 'Adobe AIR',
-
 # Convert new game agent name to old ITH engine name
 def to_ith_engine_name(name): # str -> str
   return (
       'MAJIRO' if name == 'Majiro' else
       'SiglusEngine2' if name == 'SiglusEngine' else
       name)
-
-# VNR agent supported engines
-VNRAGENT_ENGINES = (
-  'BGI',
-  'Eushully',
-  'SiglusEngine2',
-  'Silkys',
-  'Majiro',
-)
 
 # Back up file suffix
 BACKUP_FILE_SUFFIX = '.bak'

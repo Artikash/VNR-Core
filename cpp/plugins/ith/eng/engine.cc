@@ -110,6 +110,23 @@ DWORD DetermineEngineByFile1()
   // AlterEgo also has GameData/sound.pack but is not QLIE
   if (IthFindFile(L"GameData\\*.pack") && InsertQLIEHook())
     return yes;
+
+  if (IthFindFile(L"*.pac")) {
+    //if (IthCheckFile(L"Thumbnail.pac")) {
+    //  ConsoleOutput(L"GIGA");
+    //  return yes;
+    //}
+
+    // jichi 6/3/2014: AMUSE CRAFT and SOFTPAL
+    // Selectively insert, so that lstrlenA can still get correct text if failed
+    if (IthCheckFile("dll\\resource.dll") && IthCheckFile("dll\\pal.dll") && InsertAmuseCraftHook())
+      return yes;
+
+    if (Util::SearchResourceString(L"SOFTPAL")) {
+      ConsoleOutput("vnreng: IGNORE SoftPal UNiSONSHIFT");
+      return yes;
+    }
+  }
   // jichi 9/16/2013: Add Gesen18
   if (IthFindFile(L"*.szs") || IthFindFile(L"Data\\*.szs")) {
     InsertGesen18Hook();
@@ -482,17 +499,6 @@ DWORD DetermineNoHookEngine()
     ConsoleOutput("vnreng: IGNORE Bishop");
     return yes;
   }
-  if (IthFindFile(L"*.pac")) {
-    //if (IthCheckFile(L"Thumbnail.pac")) {
-    //  ConsoleOutput(L"GIGA");
-    //  return yes;
-    //}
-    if (Util::SearchResourceString(L"SOFTPAL")) {
-      ConsoleOutput("vnreng: IGNORE SoftPal UNiSONSHIFT");
-      return yes;
-    }
-  }
-
   if (wcsstr(process_name_, L"lcsebody") || !wcsncmp(process_name_, L"lcsebo~", 7)) { // jichi 3/19/2014: lcsebody.exe, GetGlyphOutlineA
     ConsoleOutput("vnreng: IGNORE lcsebody");
     return yes;

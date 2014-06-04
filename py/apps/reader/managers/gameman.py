@@ -1193,12 +1193,12 @@ class GameManager(QtCore.QObject):
       if g.threadName in config.REPEAT_GAME_ENGINES:
         growl.notify(my.tr("This game might need turning on repetition elimination"))
 
-      if g.threadName in defs.SLOW_GAME_ENGINES:
+      if g.threadName in config.SLOW_GAME_ENGINES:
         growl.notify(my.tr("This game requires the text speed to be either Normal or Slow instead of Fast to work"))
-      elif g.threadName in defs.FAST_GAME_ENGINES:
+      elif g.threadName in config.FAST_GAME_ENGINES:
         growl.notify(my.tr("This game requires the text speed to be Fast to work"))
 
-      if g.threadName in defs.DELAY_ENGINES:
+      if g.threadName in config.DELAY_GAME_ENGINES:
         growl.notify(my.tr("This game requires opening VNR after starting/loading the game"))
 
     finally:

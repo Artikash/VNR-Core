@@ -1,6 +1,14 @@
 # engines.yaml
 # 12/7/2013 jichi
 
+embed:
+  - AMUSE CRAFT
+  - BGI
+  - Eushully
+  - SiglusEngine2
+  - Silkys
+  - Majiro
+
 gui:
   - DrawTextA
   - DrawTextW
@@ -31,6 +39,7 @@ nongui:
 simple:
   - Adobe AIR
   - AOS
+  - AMUSE CRAFT
   - ApRicot
   - AUEngine # deprecated
   - BGI
@@ -91,8 +100,22 @@ float:
   - Gesen18
   - Unity # deprecated
 
+# The game engines that require the game to have normal/slow text speed
+slow:
+  - EmonEngine
+  - RunrunEngine
+  - RunrunEngine Old
+
+fast:
+  - MarineHeart
+
+# The game engines that require the game to be hooked after loaded
+delay:
+  - Adobe AIR
+
 # Thin character, SHIFT-JIS or GBK
 char:
+  # Generic
   - DrawTextA
   - DrawTextExA
   - ExtTextOutA
@@ -102,7 +125,9 @@ char:
   - TextOutA
   - lstrlenA
   - MultiByteToWideChar
+  # Engines
   - AbelSoftware
+  - AMUSE CRAFT
   - Anex86
   - AOS
   - Artemis

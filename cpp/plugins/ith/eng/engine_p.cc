@@ -4946,8 +4946,7 @@ bool InsertSilkysHook()
   return false;
 }
 
-/**
- *  6/1/2014 jichi
+/** jichi 6/1/2014 Eushully
  *  Insert to the last GetTextExtentPoint32A
  */
 bool InsertEushullyHook()
@@ -4974,6 +4973,58 @@ bool InsertEushullyHook()
   return true;
 }
 
+/** jichi 6/1/2014 AMUSE CRAFT
+ *  Related brands: http://erogetrailers.com/brand/2047
+ *  Sample game: 魔女こいにっき
+ *  See:  http://sakuradite.com/topic/223
+ *  Sample H-code:  /HBN-4*0:18@26159:MAJOKOI_try.exe (need remove context, though)
+ *
+ *  Sample games:
+ *  - 時計仕掛けのレイライン
+ *  - きみと僕との騎士の日々
+ *
+ *  /HBN-4*0:18@26159:MAJOKOI_TRY.EXE
+ *  - addr: 155993
+ *  - length_offset: 1
+ *  - module: 1044647455
+ *  - off: 4294967288
+ *  - split: 24 = 0x18
+ *  - type: 1112 = 0x458
+ *
+ *  Call graph (Type2):
+ *  - hook reladdr:  0x26159, fun reladdr: 26150
+ *  - chara fun reladdr: 0x26670
+ *  - scene fun reladdr: 0x26fd0
+ *    - arg1 and arg3 are pointers
+ *    - arg2 is the text
+ */
+bool InsertAmuseCraftHook()
+{
+  const BYTE ins[] = {
+      0x75, 0x0f,                       // 0093f9c0  |. 75 0f          jnz short silkys.0093f9d1
+      0x8b,0x45, 0x08,                  // 0093f9c2  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
+      0x8b,0x48, 0x04,                  // 0093f9c5  |. 8b48 04        mov ecx,dword ptr ds:[eax+0x4]
+      0x8b,0x91, 0x90,0x00,0x00,0x00    // 0093f9c8  |. 8b91 90000000  mov edx,dword ptr ds:[ecx+0x90]
+  };
+  enum { hook_offset = 0 };
+  ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
+  ULONG reladdr = SearchPattern(module_base_, range, ins, sizeof(ins));
+  //ITH_GROWL_DWORD(reladdr);
+  reladdr =  0x26159; // 魔女こいにっき trial
+  if (!reladdr) {
+    ConsoleOutput("vnreng:AMUSE CRAFT: pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = module_base_ + reladdr + hook_offset;
+  //hp.type = NO_CONTEXT|USING_SPLIT|DATA_INDIRECT; // 0x418
+  hp.type = USING_SPLIT|DATA_INDIRECT;  // 0x18
+  hp.off = -0x8; // eax
+  ConsoleOutput("vnreng: INSERT AMUSE CRAFT");
+  NewHook(hp, L"AMUSE CRAFT");
+  return false;
+}
 
 #if 0
 
