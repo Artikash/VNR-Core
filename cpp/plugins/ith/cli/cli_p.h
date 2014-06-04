@@ -22,6 +22,10 @@ extern WCHAR dll_mutex[];
 extern DWORD trigger;
 //extern DWORD current_process_id;
 
+// jichi 6/3/2014: Get memory range of the current module
+extern DWORD processStartAddress,
+             processStopAddress;
+
 template <class T, class D, class fComp, class fCopy, class fLength>
 class AVLTree;
 struct FunctionInfo {

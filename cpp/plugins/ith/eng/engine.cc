@@ -119,7 +119,7 @@ DWORD DetermineEngineByFile1()
 
     // jichi 6/3/2014: AMUSE CRAFT and SOFTPAL
     // Selectively insert, so that lstrlenA can still get correct text if failed
-    if (IthCheckFile("dll\\resource.dll") && IthCheckFile("dll\\pal.dll") && InsertAmuseCraftHook())
+    if (IthCheckFile(L"dll\\resource.dll") && IthCheckFile(L"dll\\pal.dll") && InsertAmuseCraftHook())
       return yes;
 
     if (Util::SearchResourceString(L"SOFTPAL")) {

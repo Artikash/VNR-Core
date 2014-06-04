@@ -2,12 +2,12 @@
 # 12/7/2013 jichi
 
 embed:
-  - AMUSE CRAFT
+  #- AMUSE CRAFT
   - BGI
   - Eushully
+  - Majiro
   - SiglusEngine2
   - Silkys
-  - Majiro
 
 gui:
   - DrawTextA

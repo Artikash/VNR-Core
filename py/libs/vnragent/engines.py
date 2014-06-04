@@ -21,7 +21,7 @@ def engines():
   """
   if not ENINES:
     ENGINES = [
-      AmuseCraftEngine(),
+      #AmuseCraftEngine(),
       BGIEngine(),
       EushullyEngine(),
       MajiroEngine(),

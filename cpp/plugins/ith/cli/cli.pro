@@ -7,6 +7,7 @@ CONFIG += eh eha # exception handler to catch all exceptions
 include(../dllconfig.pri)
 include(../sys/sys.pri)
 include($$LIBDIR/disasm/disasm.pri)
+#include($$LIBDIR/ntinspect/ntinspect.pri)
 #include($$LIBDIR/winseh/winseh_safe.pri)
 #include($$LIBDIR/winseh/winseh_unsafe.pri)
 

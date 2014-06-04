@@ -15,6 +15,7 @@
 #include "ith/common/except.h"
 //#include "ith/common/growl.h"
 #include "ith/sys/sys.h"
+//#include "ntinspect/ntinspect.h"
 //#include "winseh/winseh.h"
 //#include <boost/foreach.hpp>
 //#include "md5.h"
@@ -22,6 +23,28 @@
 //#include <ITH\ntdll.h>
 
 // Global variables
+
+// jichi 6/3/2014: memory range of the current module
+DWORD processStartAddress,
+      processStopAddress;
+
+namespace { // unnamed
+wchar_t processName[MAX_PATH];
+
+inline void GetProcessName(wchar_t *name)
+{
+  //assert(name);
+  PLDR_DATA_TABLE_ENTRY it;
+  __asm
+  {
+    mov eax,fs:[0x30]
+    mov eax,[eax+0xc]
+    mov eax,[eax+0xc]
+    mov it,eax
+  }
+  wcscpy(name, it->BaseDllName.Buffer);
+}
+} // unmaed namespace
 
 enum { HOOK_BUFFER_SIZE = MAX_HOOK * sizeof(TextHook) };
 //#define MAX_HOOK (HOOK_BUFFER_SIZE/sizeof(TextHook))
@@ -165,6 +188,10 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
           (LPVOID *)&::hookman, 0, hook_buff_len, 0, &hook_buff_len, ViewUnmap, 0,
           PAGE_EXECUTE_READWRITE);
           //PAGE_EXECUTE_READWRITE);
+
+      GetProcessName(::processName);
+      FillRange(::processName, &::processStartAddress, &::processStopAddress);
+      //NtInspect::getCurrentMemoryRange(&::processStartAddress, &::processStopAddress);
 
       //if (!::hookman) {
       //  ith_has_section = false;
