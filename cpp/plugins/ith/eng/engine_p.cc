@@ -4765,6 +4765,12 @@ bool InsertSolfaHook()
  */
 bool InsertMarineHeartHook()
 {
+  // FIXME: Why this does not work?!
+  // jichi 6/3/2014: CreateFontA is only called once in this function
+  //  0040d160  /$ 55                 push ebp    ; jichi: hook here
+  //  0040d161  |. 8bec               mov ebp,esp
+  //ULONG addr = Util::FindCallAndEntryAbs((DWORD)CreateFontA, module_limit_ - module_base_, module_base_, 0xec8b);
+
   const BYTE ins[] = {
     0x51,                       // 0040d1c6  |> 51                 push ecx                        ; /facename
     0x6a, 0x01,                 // 0040d1c7  |. 6a 01              push 0x1                        ; |pitchandfamily = fixed_pitch|ff_dontcare
@@ -4993,10 +4999,11 @@ bool InsertEushullyHook()
  *
  *  Call graph:
  *  - hook reladdr:  0x26159, fun reladdr: 26150
- *  - chara fun reladdr: 0x26670
  *  - scene fun reladdr: 0x26fd0
  *    - arg1 and arg3 are pointers
  *    - arg2 is the text
+ *  - scneairo only reladdr: 0x26670
+ *  Issue for implementing embeded engine: two functions are needed to be hijacked
  *
  *  013c614e     cc             int3
  *  013c614f     cc             int3
