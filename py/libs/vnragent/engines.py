@@ -21,6 +21,7 @@ def engines():
   """
   if not ENINES:
     ENGINES = [
+      #AmuseCraftEngine(),
       BGIEngine(),
       EushullyEngine(),
       MajiroEngine(),
@@ -213,6 +214,15 @@ class EushullyEngine(Engine):
 
   def match(self, **kwargs): # override
     return self.exists("AGERC.DLL", **kwargs)
+
+# 6/3/2014 jichi
+class AmuseCraftEngine(Engine):
+
+  NAME = "AMUSE CRAFT" # str, override
+  ENCODING = SJIS_ENCODING # str, override
+
+  def match(self, **kwargs): # override
+    return self.globs("*.pac", **kwargs) and self.exists(("dll/resource.dll", "dll/pal.dll"), **kwargs)
 
 # EOF
 

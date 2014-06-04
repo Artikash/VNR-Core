@@ -4946,8 +4946,7 @@ bool InsertSilkysHook()
   return false;
 }
 
-/**
- *  6/1/2014 jichi
+/** jichi 6/1/2014 Eushully
  *  Insert to the last GetTextExtentPoint32A
  */
 bool InsertEushullyHook()
@@ -4974,6 +4973,99 @@ bool InsertEushullyHook()
   return true;
 }
 
+/** jichi 6/1/2014 AMUSE CRAFT
+ *  Related brands: http://erogetrailers.com/brand/2047
+ *  Sample game: 魔女こいにっき
+ *  See:  http://sakuradite.com/topic/223
+ *  Sample H-code: /HBN-4*0:18@26159:MAJOKOI_try.exe (need remove context, though)
+ *
+ *  Sample games:
+ *  - 時計仕掛けのレイライン
+ *  - きみと僕との騎士の日々
+ *
+ *  /HBN-4*0:18@26159:MAJOKOI_TRY.EXE
+ *  - addr: 155993
+ *  - length_offset: 1
+ *  - module: 104464j455
+ *  - off: 4294967288 = 0xfffffff8
+ *  - split: 24 = 0x18
+ *  - type: 1112 = 0x458
+ *
+ *  Call graph:
+ *  - hook reladdr:  0x26159, fun reladdr: 26150
+ *  - chara fun reladdr: 0x26670
+ *  - scene fun reladdr: 0x26fd0
+ *    - arg1 and arg3 are pointers
+ *    - arg2 is the text
+ *
+ *  013c614e     cc             int3
+ *  013c614f     cc             int3
+ *  013c6150  /$ 55             push ebp ; jichi: function starts
+ *  013c6151  |. 8bec           mov ebp,esp
+ *  013c6153  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
+ *  013c6156  |. 0fb608         movzx ecx,byte ptr ds:[eax]
+ *  013c6159  |. 81f9 81000000  cmp ecx,0x81 ; jichi: hook here
+ *  013c615f  |. 7c 0d          jl short majokoi_.013c616e
+ *  013c6161  |. 8b55 08        mov edx,dword ptr ss:[ebp+0x8]
+ *  013c6164  |. 0fb602         movzx eax,byte ptr ds:[edx]
+ *  013c6167  |. 3d 9f000000    cmp eax,0x9f
+ *  013c616c  |. 7e 1c          jle short majokoi_.013c618a
+ *  013c616e  |> 8b4d 08        mov ecx,dword ptr ss:[ebp+0x8]
+ *  013c6171  |. 0fb611         movzx edx,byte ptr ds:[ecx]
+ *  013c6174  |. 81fa e0000000  cmp edx,0xe0
+ *  013c617a  |. 7c 30          jl short majokoi_.013c61ac
+ *  013c617c  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
+ *  013c617f  |. 0fb608         movzx ecx,byte ptr ds:[eax]
+ *  013c6182  |. 81f9 fc000000  cmp ecx,0xfc
+ *  013c6188  |. 7f 22          jg short majokoi_.013c61ac
+ *  013c618a  |> 8b55 08        mov edx,dword ptr ss:[ebp+0x8]
+ *  013c618d  |. 0fb642 01      movzx eax,byte ptr ds:[edx+0x1]
+ *  013c6191  |. 83f8 40        cmp eax,0x40
+ *  013c6194  |. 7c 16          jl short majokoi_.013c61ac
+ *  013c6196  |. 8b4d 08        mov ecx,dword ptr ss:[ebp+0x8]
+ *  013c6199  |. 0fb651 01      movzx edx,byte ptr ds:[ecx+0x1]
+ *  013c619d  |. 81fa fc000000  cmp edx,0xfc
+ *  013c61a3  |. 7f 07          jg short majokoi_.013c61ac
+ *  013c61a5  |. b8 01000000    mov eax,0x1
+ *  013c61aa  |. eb 02          jmp short majokoi_.013c61ae
+ *  013c61ac  |> 33c0           xor eax,eax
+ *  013c61ae  |> 5d             pop ebp
+ *  013c61af  \. c3             retn
+ */
+bool InsertAmuseCraftHook()
+{
+  const BYTE ins[] = {
+    0x55,                 // 013c6150  /$ 55             push ebp ; jichi: function starts
+    0x8b,0xec,            // 013c6151  |. 8bec           mov ebp,esp
+    0x8b,0x45, 0x08,      // 013c6153  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
+    0x0f,0xb6,0x08,       // 013c6156  |. 0fb608         movzx ecx,byte ptr ds:[eax]
+    0x81,0xf9 //81000000  // 013c6159  |. 81f9 81000000  cmp ecx,0x81 ; jichi: hook here
+  };
+  enum { hook_offset = sizeof(ins) - 2 };
+  ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
+  ULONG reladdr = SearchPattern(module_base_, range, ins, sizeof(ins));
+  //ITH_GROWL_DWORD(reladdr); // supposed to be 0x21650
+  //ITH_GROWL_DWORD(reladdr  + hook_offset);
+  //reladdr = 0x26159; // 魔女こいにっき trial
+  if (!reladdr) {
+    ConsoleOutput("vnreng:AMUSE CRAFT: pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = module_base_ + reladdr + hook_offset;
+  //hp.type = NO_CONTEXT|USING_SPLIT|DATA_INDIRECT; // 0x418
+  //hp.type = NO_CONTEXT|USING_SPLIT|DATA_INDIRECT|RELATIVE_SPLIT;  // Use relative address to prevent floating issue
+  hp.type = NO_CONTEXT|USING_SPLIT|DATA_INDIRECT;
+  hp.off = -0x8; // eax
+  //hp.split = 0x18;
+  //hp.split = 0x4; // This is supposed to be the return address
+  hp.split = 0x20; // arg6
+  hp.length_offset = 1;
+  ConsoleOutput("vnreng: INSERT AMUSE CRAFT");
+  NewHook(hp, L"AMUSE CRAFT");
+  return true;
+}
 
 #if 0
 

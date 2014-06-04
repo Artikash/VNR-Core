@@ -22,6 +22,7 @@ extern trigger_fun_t trigger_fun_;
 bool InsertAbelHook();          // Abel
 bool InsertAdobeAirHook();      // Adobe AIR
 bool InsertAliceHook();         // System40@AliceSoft; do not work for latest alice games
+bool InsertAmuseCraftHook();    // AMUSE CRAFT: *.pac
 bool InsertAnex86Hook();        // Anex86: anex86.exe
 bool InsertAOSHook();           // AOS: *.aos
 bool InsertApricotHook();       // Apricot: arc.a*

@@ -330,6 +330,8 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
         else
           return 0;
       }
+      if (dwSplit && (dwType & RELATIVE_SPLIT) && dwSplit > ::processStartAddress)
+        dwSplit -= ::processStartAddress;
     }
     if (dwType & DATA_INDIRECT) {
       if (IthGetMemoryRange((LPVOID)(dwDataIn + hp.ind), 0, 0))
@@ -370,6 +372,9 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
   *(DWORD *)pbData = dwAddr;
   if (dwType & (NO_CONTEXT | FIXING_SPLIT))
     dwRetn = 0;
+  else if (dwRetn && (dwType & RELATIVE_SPLIT))
+    dwRetn -= ::processStartAddress;
+
   *((DWORD *)pbData + 1) = dwRetn;
   *((DWORD *)pbData + 2) = dwSplit;
   if (dwCount) {
