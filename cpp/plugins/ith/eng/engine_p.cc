@@ -4765,6 +4765,12 @@ bool InsertSolfaHook()
  */
 bool InsertMarineHeartHook()
 {
+  // FIXME: Why this does not work?!
+  // jichi 6/3/2014: CreateFontA is only called once in this function
+  //  0040d160  /$ 55                 push ebp    ; jichi: hook here
+  //  0040d161  |. 8bec               mov ebp,esp
+  //ULONG addr = Util::FindCallAndEntryAbs((DWORD)CreateFontA, module_limit_ - module_base_, module_base_, 0xec8b);
+
   const BYTE ins[] = {
     0x51,                       // 0040d1c6  |> 51                 push ecx                        ; /facename
     0x6a, 0x01,                 // 0040d1c7  |. 6a 01              push 0x1                        ; |pitchandfamily = fixed_pitch|ff_dontcare
