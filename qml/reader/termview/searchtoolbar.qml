@@ -5,7 +5,7 @@ import QtQuick 1.1
 //import QtDesktop 0.1 as Desktop
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/util.min.js' as Util
-import '../share' as Share
+import '../../bootstrap3' as Bootstrap
 
 Row { id: root_ // Theme refers to Bootstrap.label
 
@@ -16,19 +16,10 @@ Row { id: root_ // Theme refers to Bootstrap.label
 
   property int cellWidth: 45
   property int cellHeight: 18
-  property int cellRadius: 3 // the same as Bootstrap.label
-  property int pixelSize: 12 // the same as Bootstrap.label
 
-  Share.TextButton {
-    //language: 'ja'
+  Bootstrap.Button {
     width: parent.cellWidth; height: parent.cellHeight
-    radius: parent.cellRadius
-    //shadowWidth: width + 15; shadowHeight: height + 15
-    font.pixelSize: parent.pixelSize
-    //font.bold: true
-    color: 'snow'
-    backgroundColor: hover ? '#333' : '#666'
-    //font.family: 'MS Gothic'
+    styleClass: 'btn btn-inverse'
 
     text: '@' + Sk.tr("user")
     toolTip: qsTr("Search your terms")
@@ -40,16 +31,9 @@ Row { id: root_ // Theme refers to Bootstrap.label
     }
   }
 
-  Share.TextButton {
-    //language: 'ja'
+  Bootstrap.Button {
     width: parent.cellWidth; height: parent.cellHeight
-    radius: parent.cellRadius
-    //shadowWidth: width + 15; shadowHeight: height + 15
-    font.pixelSize: parent.pixelSize
-    //font.bold: true
-    color: 'snow'
-    backgroundColor: hover ? '#333' : '#666'
-    //font.family: 'MS Gothic'
+    styleClass: 'btn btn-inverse'
 
     text: '#' + Sk.tr("game")
     toolTip: qsTr("Search terms specific to current game")
@@ -61,16 +45,9 @@ Row { id: root_ // Theme refers to Bootstrap.label
     }
   }
 
-  Share.TextButton {
-    //language: 'ja'
+  Bootstrap.Button {
     width: parent.cellWidth; height: parent.cellHeight
-    radius: parent.cellRadius
-    //shadowWidth: width + 15; shadowHeight: height + 15
-    font.pixelSize: parent.pixelSize
-    //font.bold: true
-    color: 'snow'
-    backgroundColor: hover ? '#333' : '#666'
-    //font.family: 'MS Gothic'
+    styleClass: 'btn btn-inverse'
 
     text: Sk.tr("language")
     toolTip: qsTr("Search terms in your language")
@@ -82,3 +59,27 @@ Row { id: root_ // Theme refers to Bootstrap.label
     }
   }
 }
+
+// EOF
+/*
+Share.TextButton {
+  //language: 'ja'
+  width: parent.cellWidth; height: parent.cellHeight
+  radius: parent.cellRadius
+  //shadowWidth: width + 15; shadowHeight: height + 15
+  font.pixelSize: parent.pixelSize
+  //font.bold: true
+  color: 'snow'
+  backgroundColor: hover ? '#333' : '#666'
+  //font.family: 'MS Gothic'
+
+  text: '@' + Sk.tr("user")
+  toolTip: qsTr("Search your terms")
+
+  onClicked: {
+    var name = datamanPlugin_.getCurrentUserName()
+    if (name)
+      root_.triggered('@' + name)
+  }
+}
+*/
