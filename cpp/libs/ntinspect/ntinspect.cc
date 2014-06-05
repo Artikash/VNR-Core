@@ -3,6 +3,10 @@
 #include "ntdll/ntdll.h"
 #include "ntinspect/ntinspect.h"
 
+#ifdef _MSC_VER
+# pragma warning(disable:4018) // C4018: signed/unsigned mismatch
+#endif // _MSC_VER
+
 NTINSPECT_BEGIN_NAMESPACE
 
 BOOL getCurrentProcessName(LPWSTR buffer, int bufferSize)
@@ -16,7 +20,15 @@ BOOL getCurrentProcessName(LPWSTR buffer, int bufferSize)
     mov eax,[eax+0xc]
     mov it,eax
   }
-  return 0 == wcscpy_s(buffer, bufferSize, it->BaseDllName.Buffer);
+  // jichi 6/4/2014: _s functions are not supported on Windows XP's msvcrt.dll
+  // http://sakuradite.com/topic/247
+  //return 0 == wcscpy_s(buffer, bufferSize, it->BaseDllName.Buffer);
+  //return 0 == wcscpy(buffer, wcslen(it->BaseDllName.Buffer));
+  LPCWSTR src = it->BaseDllName.Buffer;
+  int len = min(bufferSize, 1 + wcslen(src));
+  buffer[len] = 0;
+  memcpy(buffer, src, len * 2);
+  return true;
 }
 
 BOOL getModuleMemoryRange(LPCWSTR moduleName, DWORD *lowerBound, DWORD *upperBound)
