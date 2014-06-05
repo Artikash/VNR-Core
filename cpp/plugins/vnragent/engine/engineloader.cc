@@ -4,6 +4,7 @@
 
 #include "engine/engineloader.h"
 #include "engine/model/bgi.h"
+#include "engine/model/circus.h"
 #include "engine/model/eushully.h"
 #include "engine/model/majiro.h"
 #include "engine/model/siglus.h"
@@ -21,6 +22,7 @@ AbstractEngine *Engine::getEngine()
   if (TestEngine::match()) return new TestEngine;
 #endif // TEST
   if (BGIEngine::match()) return new BGIEngine;
+  if (CircusEngine::match()) return new CircusEngine;
   if (EushullyEngine::match()) return new EushullyEngine;
   if (MajiroEngine::match()) return new MajiroEngine;
   if (SiglusEngine::match()) return new SiglusEngine;

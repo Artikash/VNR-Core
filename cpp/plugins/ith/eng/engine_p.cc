@@ -1244,10 +1244,10 @@ CIRCUS hook:
 bool InsertCircusHook1() // jichi 10/2/2013: Change return type to bool
 {
   for (DWORD i = module_base_ + 0x1000; i < module_limit_ - 4; i++)
-    if (*(WORD *)i==0xA3C)  //cmp al, 0xA; je
+    if (*(WORD *)i == 0xa3c)  //cmp al, 0xA; je
       for (DWORD j = i; j < i + 0x100; j++) {
         BYTE c = *(BYTE *)j;
-        if (c == 0xC3)
+        if (c == 0xc3)
           break;
         if (c == 0xe8) {
           DWORD k = *(DWORD *)(j+1)+j+5;
@@ -1271,6 +1271,32 @@ bool InsertCircusHook1() // jichi 10/2/2013: Change return type to bool
   return false;
 }
 
+/**
+ *  jichi 6/5/2014: Sample function from DC3 at 0x4201d0
+ *  004201ce     cc             int3
+ *  004201cf     cc             int3
+ *  004201d0  /$ 8b4c24 08      mov ecx,dword ptr ss:[esp+0x8]
+ *  004201d4  |. 8a01           mov al,byte ptr ds:[ecx]
+ *  004201d6  |. 84c0           test al,al
+ *  004201d8  |. 74 1c          je short dc3.004201f6
+ *  004201da  |. 8b5424 04      mov edx,dword ptr ss:[esp+0x4]
+ *  004201de  |. 8bff           mov edi,edi
+ *  004201e0  |> 3c 24          /cmp al,0x24
+ *  004201e2  |. 75 05          |jnz short dc3.004201e9
+ *  004201e4  |. 83c1 02        |add ecx,0x2
+ *  004201e7  |. eb 04          |jmp short dc3.004201ed
+ *  004201e9  |> 8802           |mov byte ptr ds:[edx],al
+ *  004201eb  |. 42             |inc edx
+ *  004201ec  |. 41             |inc ecx
+ *  004201ed  |> 8a01           |mov al,byte ptr ds:[ecx]
+ *  004201ef  |. 84c0           |test al,al
+ *  004201f1  |.^75 ed          \jnz short dc3.004201e0
+ *  004201f3  |. 8802           mov byte ptr ds:[edx],al
+ *  004201f5  |. c3             retn
+ *  004201f6  |> 8b4424 04      mov eax,dword ptr ss:[esp+0x4]
+ *  004201fa  |. c600 00        mov byte ptr ds:[eax],0x0
+ *  004201fd  \. c3             retn
+ */
 bool InsertCircusHook2() // jichi 10/2/2013: Change return type to bool
 {
   for (DWORD i = module_base_ + 0x1000; i < module_limit_ -4; i++)
@@ -1281,6 +1307,7 @@ bool InsertCircusHook2() // jichi 10/2/2013: Change return type to bool
         hp.off = 0x8;
         hp.type = USING_STRING;
         ConsoleOutput("vnreng: INSERT CIRCUS#2");
+        //ITH_GROWL_DWORD(hp.addr); // jichi 6/5/2014: 0x4201d0 for DC3
         NewHook(hp, L"CIRCUS");
         //RegisterEngineType(ENGINE_CIRCUS);
         return true;

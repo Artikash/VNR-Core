@@ -15,7 +15,7 @@ class MajiroEngine : public AbstractEngine
 public:
   MajiroEngine()
     : Base("Majiro", Util::SjisCodePage, BlockingAttribute)
-  { setHookCallback(hookFunction); }
+  { setHookFunction(hookFunction); }
 
   static bool match();
 protected:

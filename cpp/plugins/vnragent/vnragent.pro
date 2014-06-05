@@ -116,6 +116,7 @@ SOURCES += \
 # Engine models
 HEADERS += \
   engine/model/bgi.h \
+  engine/model/circus.h \
   engine/model/eushully.h \
   engine/model/majiro.h \
   engine/model/siglus.h \
@@ -126,6 +127,7 @@ SOURCES += \
   engine/model/bgi.cc \
   engine/model/bgi1.cc \
   engine/model/bgi2.cc \
+  engine/model/circus.cc \
   engine/model/eushully.cc \
   engine/model/majiro.cc \
   engine/model/siglus.cc \

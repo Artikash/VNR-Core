@@ -15,7 +15,7 @@ class EushullyEngine : public AbstractEngine
 public:
   EushullyEngine()
     : Base("Eushully", Util::SjisCodePage, BlockingAttribute|SingleThreadAttribute)
-  { setHookCallback(hookFunction); }
+  { setHookFunction(hookFunction); }
 
   static bool match();
 protected:

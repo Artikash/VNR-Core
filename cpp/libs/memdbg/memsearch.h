@@ -9,7 +9,7 @@
 MEMDBG_BEGIN_NAMESPACE
 
 /// Estimated maximum size of the caller function
-enum { MaxCallerSize = 0x800 };
+enum { MaximumFunctionSize = 0x800 };
 
 /**
  *  Return the absolute address of the caller function
@@ -28,10 +28,24 @@ enum { MaxCallerSize = 0x800 };
  *  0x83,0xec: sub esp XXOO (0xec83)
  */
 
-dword_t findCallerAddress(dword_t funcAddr, dword_t funcInst, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaxCallerSize);
-dword_t findCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaxCallerSize);
-dword_t findLastCallerAddress(dword_t funcAddr, dword_t funcInst, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaxCallerSize);
-dword_t findLastCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaxCallerSize);;
+dword_t findCallerAddress(dword_t funcAddr, dword_t funcInst, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize);
+dword_t findCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize);
+dword_t findLastCallerAddress(dword_t funcAddr, dword_t funcInst, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize);
+dword_t findLastCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize);
+
+/**
+ *  Return the enclosing function address outside the given address.
+ *  The same as ITH FindEntryAligned().
+ *  "Aligned" here means the function must be after in3 (0xcc) or nop (0x90).
+ *
+ *  If the function does NOT exist, this function might raise without admin privilege.
+ *  It is safer to wrap this function within SEH.
+ *
+ *  @param  addr  address within th function
+ *  @param  searchSize  max backward search size
+ *  @return  beginning address of the function
+ */
+dword_t findEnclosingAlignedFunction(dword_t addr, dword_t searchSize = MaximumFunctionSize);
 
 /**
  *  Return the address of the first mached pattern.
