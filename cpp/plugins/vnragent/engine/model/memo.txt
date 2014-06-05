@@ -2,6 +2,58 @@
 
 Failed engines are as follows.
 
+# 6/5/2014 Rejet
+剣が君
+call graph
+
+ITH: b3578, at [ecx]
+= a34b0
+< 51d9d = 51c60
+< 51c18 = 51b30 < this is the right one!!!!
+sub_451b30, no parameter!
+
+There must be some text decomposed in sub_451b30
+
+push ebx
+push esi
+4ba44e0
+
+--------------------
+
+base: 1250000
+
+1261240
+< 12602db = 12602a0
+
+< 1263a7f = 1263a70
+< 126151f = 12614b0
+< 126148b = 1261480
+< 1263763 = 1263720
+< 1289140 = 1289120
+< 12866be = 12866a0 = sub_4366a0
+12866a0 might be the one?
+
+<1 127c6e9 = 127c6e0 = sub_42c6e0
+<1 1287c35 = 1287c00 = sub_437c00
+
+<2 1287c46 = 1287c00 = sub_437c00, no parameter
+<2 12a3a3c = 12a39d0 = sub_4a539d0, arg1
+
+
+# 6/5/2014 KiriKiri
+KiriKiri1 GetGlyphOutlineW: Hook point is a function, but called with different texts
+KiriKiri2 GetTextEstendPoint32W: Hook point is not a function
+
+Sample game: 淫辱選挙戦～白濁に染まる会長選～
+call graph
+GetGlyphOutlineA = 541a08
+54762c = 547598
+< 5498c9 (one of it) = 5498bc
+< 549a65 (one of it) = 549a60
+558a66 = 558ad0
+5678c0 = 567810
+437976 (dynamic) = 4378a0, the same type as rejet... this is a thread
+
 # 5/11/2014 YU-RIS
 悪女装
 
@@ -29,9 +81,5 @@ Callers:
 # 5/10/2014 System43
 The thread is called with different text.
 This might not be the proper place to substitute.
-
-# 5/10/2014 KiriKiri
-KiriKiri1 GetGlyphOutlineW: Hook point is a function, but called with different texts
-KiriKiri2 GetTextEstendPoint32W: Hook point is not a function
 
 # EOF
