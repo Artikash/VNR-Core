@@ -25,9 +25,10 @@ BOOL getCurrentProcessName(LPWSTR buffer, int bufferSize)
   //return 0 == wcscpy_s(buffer, bufferSize, it->BaseDllName.Buffer);
   //return 0 == wcscpy(buffer, wcslen(it->BaseDllName.Buffer));
   LPCWSTR src = it->BaseDllName.Buffer;
-  int len = min(bufferSize, 1 + wcslen(src));
+  int len = min(bufferSize - 1, wcslen(src));
   buffer[len] = 0;
-  memcpy(buffer, src, len * 2);
+  if (len)
+    memcpy(buffer, src, len * 2);
   return true;
 }
 
