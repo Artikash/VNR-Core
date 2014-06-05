@@ -75,7 +75,13 @@ protected:
   };
   ///  The callback of the dispatch address
   typedef void (* hook_function)(HookStack *);
-  void setHookCallback(hook_function v);
+  void setHookFunction(hook_function v);
+
+  // Filter functions
+
+  typedef QString (* filter_function)(const QString &text, int role);
+  void setTextFilter(filter_function v);
+  void setTranslationFilter(filter_function v);
 
   // Hook
 

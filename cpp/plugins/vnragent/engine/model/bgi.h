@@ -15,7 +15,7 @@ class BGIEngine : public AbstractEngine
 public:
   BGIEngine()
     : Base("BGI", Util::SjisCodePage, BlockingAttribute)
-  { setHookCallback(hookFunction); }
+  { setHookFunction(hookFunction); }
 
   static bool match();
 protected:

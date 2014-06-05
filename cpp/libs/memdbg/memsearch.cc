@@ -7,6 +7,7 @@
 
 namespace { // unnamed
 
+enum : BYTE { byte_nop = 0x90 };
 enum : BYTE { byte_int3 = 0xcc };
 enum : WORD { word_2int3 = 0xcccc };
 
@@ -105,6 +106,36 @@ DWORD findLastCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword
   if (addr)
     while (byte_int3 == *(BYTE *)++addr);
   return addr;
+}
+
+DWORD findEnclosingAlignedFunction(DWORD start, DWORD back_range)
+{
+  start &= ~0xf;
+  for (DWORD i = start, j = start - back_range; i > j; i-=0x10) {
+    DWORD k = *(DWORD *)(i-4);
+    if (k == 0xcccccccc
+      || k == 0x90909090
+      || k == 0xccccccc3
+      || k == 0x909090c3
+      )
+      return i;
+    DWORD t = k & 0xff0000ff;
+    if (t == 0xcc0000c2 || t == 0x900000c2)
+      return i;
+    k >>= 8;
+    if (k == 0xccccc3 || k == 0x9090c3)
+      return i;
+    t = k & 0xff;
+    if (t == 0xc2)
+      return i;
+    k >>= 8;
+    if (k == 0xccc3 || k == 0x90c3)
+      return i;
+    k >>= 8;
+    if (k == 0xc3)
+      return i;
+  }
+  return 0;
 }
 
 DWORD searchPattern(DWORD base, DWORD base_length, LPCVOID search, DWORD search_length) // KMP

@@ -23,6 +23,7 @@ def engines():
     ENGINES = [
       #AmuseCraftEngine(),
       BGIEngine(),
+      CircusEngine(),
       EushullyEngine(),
       MajiroEngine(),
       SiglusEngine(),
@@ -223,6 +224,17 @@ class AmuseCraftEngine(Engine):
 
   def match(self, **kwargs): # override
     return self.globs("*.pac", **kwargs) and self.exists(("dll/resource.dll", "dll/pal.dll"), **kwargs)
+
+# 6/5/2014 jichi
+class CircusEngine(Engine): # Type 2
+
+  NAME = "CIRCUS" # str, override
+  ENCODING = SJIS_ENCODING # str, override
+
+  REGION_LOCKED = True # It simply cannot display gbk, which become "?". Need hijack encoding or gdi functions
+
+  def match(self, **kwargs): # override
+    return self.exists("advdata/grp/names.dat", **kwargs)
 
 # EOF
 

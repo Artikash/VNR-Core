@@ -42,6 +42,9 @@ public:
   Q::address_type oldHookFun;
   Q::hook_function dispatchFun;
 
+  Q::filter_function textFilter,
+                     translationFilter;
+
   EngineSettings *settings;
   bool finalized;
 
@@ -50,6 +53,7 @@ public:
     : name(name), codePage(codePage), attributes(attributes)
     , encoder(nullptr), decoder(nullptr)
     , dispatchFun(0), oldHookFun(0)
+    , textFilter(nullptr), translationFilter(nullptr)
     , settings(new EngineSettings)
     , finalized(false)
   {}
@@ -173,8 +177,14 @@ void AbstractEngine::setEncoding(const QString &v)
 bool AbstractEngine::isTranscodingNeeded() const
 { return d_->encoder != d_->decoder; }
 
-void AbstractEngine::setHookCallback(hook_function v)
+void AbstractEngine::setHookFunction(hook_function v)
 { d_->dispatchFun = v; }
+
+void AbstractEngine::setTextFilter(filter_function v)
+{ d_->textFilter = v; }
+
+void AbstractEngine::setTranslationFilter(filter_function v)
+{ d_->translationFilter = v; }
 
 // - Attach -
 
@@ -232,7 +242,12 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, long signature,
   if (!canceled && !d_->settings->translationEnabled[role] &&
       (d_->settings->extractionEnabled[role] || d_->settings->extractsAllTexts)) {
     enum { NeedsTranslation = false };
-    p->sendText(text, hash, signature, role, NeedsTranslation);
+    if (d_->textFilter) {
+      QString t = d_->textFilter(text, role);
+      if (!t.isEmpty())
+        p->sendText(t, hash, signature, role, NeedsTranslation);
+    } else
+      p->sendText(text, hash, signature, role, NeedsTranslation);
   }
 
   if (!d_->settings->textVisible[role])
@@ -246,9 +261,20 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, long signature,
 
   QString repl = p->findTranslation(hash, role);
   bool needsTranslation = repl.isEmpty();
-  p->sendText(text, hash, signature, role, needsTranslation);
-  if (needsTranslation && d_->testAttribute(BlockingAttribute))
+  if (d_->textFilter) {
+    QString t = d_->textFilter(text, role);
+    if (!t.isEmpty())
+      p->sendText(t, hash, signature, role, needsTranslation);
+    else
+      return data;
+  } else
+    p->sendText(text, hash, signature, role, needsTranslation);
+
+  if (needsTranslation && d_->testAttribute(BlockingAttribute)) {
     repl = p->waitForTranslation(hash, role);
+    if (!repl.isEmpty() && d_->translationFilter)
+      repl = d_->translationFilter(repl, role);
+  }
 
   if (repl.isEmpty())
     repl = text;
@@ -274,7 +300,12 @@ QString AbstractEngine::dispatchTextW(const QString &text, long signature, int r
   if (!canceled && !d_->settings->translationEnabled[role] &&
       (d_->settings->extractionEnabled[role] || d_->settings->extractsAllTexts)) {
     enum { NeedsTranslation = false };
-    p->sendText(text, hash, signature, role, NeedsTranslation);
+    if (d_->textFilter) {
+      QString t = d_->textFilter(text, role);
+      if (!t.isEmpty())
+        p->sendText(t, hash, signature, role, NeedsTranslation);
+    } else
+      p->sendText(text, hash, signature, role, NeedsTranslation);
   }
 
   if (!d_->settings->textVisible[role])
@@ -290,9 +321,20 @@ QString AbstractEngine::dispatchTextW(const QString &text, long signature, int r
 
   QString repl = p->findTranslation(hash, role);
   bool needsTranslation = repl.isEmpty();
-  p->sendText(text, hash, signature, role, needsTranslation);
-  if (needsTranslation && d_->testAttribute(BlockingAttribute))
+  if (d_->textFilter) {
+    QString t = d_->textFilter(text, role);
+    if (!t.isEmpty())
+      p->sendText(t, hash, signature, role, needsTranslation);
+    else
+      return text;
+  } else
+    p->sendText(text, hash, signature, role, needsTranslation);
+
+  if (needsTranslation && d_->testAttribute(BlockingAttribute)) {
     repl = p->waitForTranslation(hash, role);
+    if (!repl.isEmpty() && d_->translationFilter)
+      repl = d_->translationFilter(repl, role);
+  }
 
   if (repl.isEmpty())
     repl = text;
