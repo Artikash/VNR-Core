@@ -36,7 +36,7 @@ junai:
   - Sphere
   - Sugar Pot
   - Sugar Pot+
-  - TEATIME
+  #- TEATIME
   - Studio e・go!
   - Twinkle
   - Whirlpool
@@ -100,5 +100,6 @@ nuki:
   - クレージュ
   - ディーゼルマイン
   - 汁ダク系虹組
+  - 牛乳戦車
 
 # EOF

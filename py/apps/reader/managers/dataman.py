@@ -4935,8 +4935,9 @@ class _DataManager(object):
     if self.gameFiles:
       for g in self.games.itervalues():
         if g.id:
-          try: g.itemId = self.gameFiles[g.id].itemId
-          except KeyError: pass
+          f = self.gameFiles.get(g.id)
+          if f:
+            g.itemId = f.itemId
       self.touchGames()
       dprint("pass")
 
@@ -6823,6 +6824,7 @@ class DataManager(QObject):
           dprint("digest count = %i" % len(d.gameFiles))
           d._gameFilesDirty = True
           d._saveGameFilesLater()
+
           growl.msg(my.tr("Game database is updated"))
         except Exception, e:
           dwarn(e)
