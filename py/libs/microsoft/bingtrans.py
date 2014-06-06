@@ -117,7 +117,7 @@ class BingTranslator(object):
         if r.ok and len(ret) > 20:
           i = ret.index('[')
           if i >= 0:
-            ret = ret[i:] # skip leading garbage
+            ret = ret[i:] # skip leading JSONP function name
             l = json.loads(ret)
             if len(l) == 1:
                ret = l[0]['TranslatedText']
@@ -136,8 +136,8 @@ class BingTranslator(object):
       #  dwarn("unicode decode error", e)
       #except (ValueError, KeyError, IndexError, TypeError), e:
       #  dwarn("json format error", e)
-      #except Exception, e:
-      #  derror(e)
+      except Exception, e:
+        derror(e)
       dwarn("failed")
       try: dwarn(r.url)
       except: pass
