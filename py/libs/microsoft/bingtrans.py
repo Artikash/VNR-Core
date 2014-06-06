@@ -2,7 +2,7 @@
 # BingTranslator.py
 # 8/21/2012 jichi
 #
-# See: http://www.forum-invaders.com.br/vb/showthread.php/42510-API-do-Bing-para-Traduzir-Textos
+# Old API, see: http://www.forum-invaders.com.br/vb/showthread.php/42510-API-do-Bing-para-Traduzir-Textos
 if __name__ == '__main__':
   import sys
   sys.path.append('..')
@@ -26,8 +26,27 @@ def _lcode(lang):
 
 class _BingTranslator:
 
-  TOKEN_RE = re.compile(r"Default.Constants.RTTAppID = '(.*?)';")
-  TOKEN_URL = "http://www.bing.com/translator/"
+  # The RTTAppId is found in LandingPage.js
+  # This is the same file containing "TranslateArray2" string
+  #
+  # Sample minimized js:
+  #   ,rttAppId:"TTW3CqZ9Xwce1fOTykYCtIDpQqQgUv-CHSMjp8EzMTTfn6B63_mUiA0QymMqKUpRs",
+  #
+  # CoffeeScript:
+  #   n.Configurations =
+  #     serviceName: "LP"
+  #     serviceURL: "http://api.microsofttranslator.com/v2/ajax.svc"
+  #     baseURL: "http://www.microsofttranslator.com:80/"
+  #     locale: j
+  #     referrer: b
+  #     appId: "TgKz3PgbCYkZ-EfOs_xE8m0y_mcnC9SCYAAYq0YHWAZ8*"
+  #     rttAppId: "TTW3CqZ9Xwce1fOTykYCtIDpQqQgUv-CHSMjp8EzMTTfn6B63_mUiA0QymMqKUpRs"
+  #     maxNumberOfChars: 5e3
+  #     translationLoggerUrl: "TranslationLogger.ashx"
+  #     rttEnabled: c
+  #     phraseAlignmentEnabled: c
+  TOKEN_RE = re.compile(r'rttAppId:"(.*?)"')
+  TOKEN_URL = "http://www.bing.com/translator/dynamic/js/LandingPage.js"
 
   TRANSLATE_URL = "http://api.microsofttranslator.com/v2/ajax.svc/TranslateArray2"
 
@@ -40,7 +59,6 @@ class _BingTranslator:
       self.resetToken()
     return self._token
 
-  # See: http://d.hatena.ne.jp/syonbori_tech/?of=5
   def resetToken(self):
     try:
       r = requests.get(_BingTranslator.TOKEN_URL, headers=GZIP_HEADERS)
@@ -79,6 +97,12 @@ class BingTranslator(object):
         # Example:
         # http://api.microsofttranslator.com/v2/ajax.svc/TranslateArray2?appId=%22TLxLo1mCVB0gJQETyvO96kBhkckrhqTQ0I6ciRT8M3f0r_QJ3gmiH4tWHK0YQybpK%22&texts=[%22hello%22]&from=%22ja%22&to=%22zh-chs%22
 
+        # 6/5/2014: Example logged by Firefox
+        # - Request URL: http://api.microsofttranslator.com/v2/ajax.svc/TranslateArray2?appId=%22TE3gDqQ53Hv5Rr1NzYVbTVjF0Ltz506ddiwMm7gHTA94EhKCSrchQ5ckGy2Po0NRa%22&texts=%5B%22%E6%86%8E%E3%81%97%E3%81%BF%E3%81%AF%E6%86%8E%E3%81%97%E3%81%BF%E3%81%97%E3%81%8B%E7%94%9F%E3%81%BE%E3%81%AA%E3%81%84%22%5D&from=%22%22&to=%22en%22&options=%7B%7D&oncomplete=onComplete_0&onerror=onError_0&_=1402033855022
+        # - Request Method: GET
+        # - Status Code: HTTP/1.1 200 OK
+        # - Response Body:
+        #   onComplete_0([{"Alignment":"0:2-19:24 4:6-5:10 7:8-0:3 9:12-12:17","From":"ja","OriginalTextSentenceLengths":[13],"TranslatedText":"Only hatred begets hatred","TranslatedTextSentenceLengths":[25]}]);
         r = requests.get(_BingTranslator.TRANSLATE_URL,
           #headers=GZIP_HEADERS,
           params={
@@ -125,11 +149,15 @@ if __name__ == "__main__":
   e = create_engine()
   t = e.translate(u'"こんにちは！"\nこん"fawe\\"にちは！', to='en', fr='ja')
   #t = e.translate(u'こんにちは！\nこんにちは！', to='vi', fr='ja')
-  import sys
-  from PySide.QtGui import *
-  a = QApplication(sys.argv)
-  w = QLabel(t)
-  w.show()
-  a.exec_()
+
+  print len(t)
+  print t
+
+  #import sys
+  #from PySide.QtGui import *
+  #a = QApplication(sys.argv)
+  #w = QLabel(t)
+  #w.show()
+  #a.exec_()
 
 # EOF
