@@ -2989,8 +2989,9 @@ bool InsertWolfHook()
           hp.addr = i;
           hp.off = -0xc;
           hp.split = -0x18;
-          hp.type = DATA_INDIRECT | USING_SPLIT;
+          hp.type = DATA_INDIRECT|USING_SPLIT;
           hp.length_offset = 1;
+          //ITH_GROWL_DWORD(hp.addr); // jichi 6/5/2014: 淫乱勇者セフィのRPG = 0x50a400
           ConsoleOutput("vnreng: INSERT WolfRPG");
           NewHook(hp, L"WolfRPG");
           return true;
