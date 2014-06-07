@@ -2,6 +2,23 @@
 
 Failed engines are as follows.
 
+# 6/6/2014 WolfRPG
+
+淫乱勇者セフィのRPG
+ITH: 0x50a400
+call graph
+0x50a400
+< = 0x50aec0
+<1 0x50f404 = 50f3d0, called multiple times
+<1 0x471322 = 46ccc0, called once
+
+<2 0x50f49c = 50f410
+<2 0x510298 = 5100b0, called multiple times
+<2 0x470dd5 = 46ccc0, called once
+
+46ccc0 must be the function to hijack
+; int __stdcall sub_46CCC0(char, double, double)
+
 # 6/5/2014 Rejet
 剣が君
 call graph

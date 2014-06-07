@@ -71,18 +71,48 @@ class _DictionaryManager:
           my.tr("Please double check its location in Preferences."))))
 
   @classmethod
-  def lookupEB(cls, text, limit=3): # Use less count to save memory
+  def lookupEB(cls, text, limit=3, complete=True): # Use less count to save memory
     """
     @param  text  unicode
-    @param  limit  int
+    @param* limit  int
+    @param* complete  bool  whether complete word
     @yield  unicode
     """
     for eb in cls._iterEB():
-      for i,v in enumerate(eb.render(text)):
-        if i < limit:
-          yield v
+      count = 0
+      for v in eb.render(text):
+        yield v
+        count += 1
+        if count >= limit:
+          break
+      if complete and not count:
+        t = cls._completeEB(text)
+        if t and t != text:
+          for i,v in enumerate(eb.render(t)):
+            if i < limit:
+              yield v
+            else:
+              break
+
+  _COMPLETE_TRIM_CHARS = u'ぁ', u'ぇ', u'ぃ', u'ぉ', u'ぅ', u'っ', u'ッ'
+  @classmethod
+  def _completeEB(cls, t):
+    """Trim half katagana/hiragana.
+    @param  t  unicode
+    @return  unicode
+    """
+    if t:
+      while len(t) > 1:
+        if t[-1] in cls._COMPLETE_TRIM_CHARS:
+          t = t[:-1]
         else:
           break
+      while len(t) > 1:
+        if t[0] in cls._COMPLETE_TRIM_CHARS:
+          t = t[1:]
+        else:
+          break
+    return t
 
   @staticmethod
   def _iterLD():
