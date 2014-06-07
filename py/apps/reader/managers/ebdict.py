@@ -224,10 +224,8 @@ class EBook(object):
     """
     @return  [eblib.EB_Hit] not None
     """
-    try:
-      d = self.__d
-      return d.eb.search_word(
-          text.encode(d.encoding, errors='ignore'))
+    try: return self.__d.eb.search_word(
+        text.encode(self.__d.encoding, errors='ignore'))
     #except UnicodeEncodeError:
     #  dwarn("failed to decode text")
     except TypeError: # eb is None

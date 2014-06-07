@@ -55,19 +55,48 @@ class LingoesDb(object):
     except Exception, e:
       dwarn(e)
 
-  def lookup(self, *args, **kwargs):
+  _COMPLETE_TRIM_CHARS = u'ぁ', u'ぇ', u'ぃ', u'ぉ', u'ぅ', u'っ', u'ッ'
+  def _complete(self, t):
+    """Trim half katagana/hiragana.
+    @param  t  unicode
+    @return  unicode
+    """
+    if t:
+      while len(t) > 1:
+        if t[-1] in self._COMPLETE_TRIM_CHARS:
+          t = t[:-1]
+        else:
+          break
+      while len(t) > 1:
+        if t[0] in self._COMPLETE_TRIM_CHARS:
+          t = t[1:]
+        else:
+          break
+    return t
+
+  def lookup(self, t, limit=0, complete=True):
     """Lookup dictionary while eliminate duplicate definitions
     @param  t  unicode
-    @Param  limit  int
+    @param* complete  bool  whether complete the word
+    @param* limit  int
     @yield  (unicode word, unicode xml)
     """
     lastxml = None
-    q = self._lookup(*args, **kwargs)
+    count = 0
+    q = self._lookup(t, limit=limit)
     if q:
       for key, xml in q:
         if lastxml != xml:
           yield key, xml
           lastxml = xml
+          count += 1
+      # Only complete when failed to match any thing
+      # For example, 「って」 should not search 「て」
+    if complete and not count:
+      s = self._complete(t)
+      if s and s != t:
+        for it in self.lookup(s, limit=limit):
+          yield it
 
 if __name__ == '__main__':
   import os
@@ -115,7 +144,8 @@ if __name__ == '__main__':
 
   with SkProfiler():
     print "lookup start"
-    t = u"かわいい"
+    #t = u"かわいい"
+    t = u"かわいいっ"
     #t = u"ちょっと"
     #t = u"だしゃれ"
     it = ld.lookup(t, limit=6)

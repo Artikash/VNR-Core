@@ -23,8 +23,8 @@ class NullEdict(object):
     self.location = location
   def valid(self): return True
   def lookup(self, text, **kwargs): return []
-  def complete(self, text): return
-  def translate(self, text, **kwargs): return
+  def complete(self, text): pass
+  def translate(self, text, **kwargs): pass
 
 class Edict(object):
 
@@ -58,10 +58,10 @@ class Edict(object):
     """
     return bool(self.d)
 
-  def lookup(self, text, retry=False, **kwargs):
+  def lookup(self, text, complete=False, **kwargs):
     """Return list of translations if exist, or list of reversed translations
     @param  text  unicode
-    @param* retry  bool  not enabled, since getFor can also search for translation
+    @param* complete  bool  not enabled by default, since getFor can also search for translation
     @param* limit  int  maximum account
     @yield  EntryTuple as an alias of sqlalchemy named table
 
@@ -73,9 +73,9 @@ class Edict(object):
     #if self.d:
     try:
       for it in self.d.getFor(text, **kwargs):
-        retry = False
+        complete = False
         yield it
-      if retry:
+      if complete:
         text = self.complete(text)
         if text:
           for it in self.lookup(text, **kwargs):
@@ -117,12 +117,26 @@ class Edict(object):
     #u'ん': u'ぬ', # 死ん => 死ぬ
     u'ん': u'む', # 移り住ん => 移り住む
   }
+  _complete_trim_chars = u'ぁ', u'ぇ', u'ぃ', u'ぉ', u'ぅ' #, u'っ', u'ッ'
   def complete(self, text):
     """
     @param  text  unicode
     @return  unicode or None
     """
     if text and len(text) > 1:
+      size = len(text)
+      while len(text) > 1:
+        if text[-1] in self._complete_trim_chars:
+          text = text[:-1]
+        else:
+          break
+      while len(text) > 1:
+        if text[0] in self._complete_trim_chars:
+          text = text[1:]
+        else:
+          break
+      if size != len(text):
+        return text
       last = text[-1]
       t = self._complete_dict0.get(last)
       if t:
@@ -141,11 +155,12 @@ class Edict(object):
     r'from which.*', # remove trailing clause
     r'[.]+$', # remove trailing dots
   )))
-  def translate(self, text, wc=5, limit=3):
+  def translate(self, text, wc=5, limit=3, complete=True):
     """Translate Japanese word to English
     @param  text  unicode
-    @param  wc  int  count of word -1
-    @param  limit  int  maximum tuples to look up
+    @param* wc  int  count of word -1
+    @param* limit  int  maximum tuples to look up
+    @param* complete  bool  enabled by default
     @return  unicode or None
 
     Return the first hitted word in the dictionary.
@@ -157,9 +172,10 @@ class Edict(object):
         ).strip()
         if ret and (not wc or ret.count(' ') <= wc):
           return ret
-      text = self.complete(text)
-      if text:
-        return self.translate(text, wc=wc, limit=limit)
+      if complete:
+        text = self.complete(text)
+        if text:
+          return self.translate(text, wc=wc, limit=limit)
 
 if __name__ == '__main__':
   t = u"殺す"
@@ -204,28 +220,28 @@ if __name__ == '__main__':
   t = u'動く'
   t = u'知って'
   t = u'言わ'
-  t = u'行き'
+  t = u'行きぁ'
   enamdictdb = '/Library/Application Support/cjklib/enamdict.db'
-  edictdb = '/Library/Application Support/cjklib/edict.db'
-  edictdb = 'S:/stream/Library/Dictionaries/edict.db'
-  edictdb = u'S:/中文/Library/Dictionaries/edict.db'
-  edictdb = '../../../../../Dictionaries/edict.db'
+  #edictdb = '/Library/Application Support/cjklib/edict.db'
+  #edictdb = 'S:/stream/Library/Dictionaries/edict.db'
+  #edictdb = u'S:/中文/Library/Dictionaries/edict.db'
+  edictdb = '../../../../../../Caches/Dictionaries/EDICT/edict.db'
   edict = Edict(edictdb)
-  enamdict = Edict(enamdictdb)
-  for index, it in enumerate(enamdict.lookup(t)):
-    print '#%i:' % index, it
-    print it.Headword
-    print it.Reading
-    print it.Translation
-  for index, it in enumerate(edict.lookup(t)):
+  #enamdict = Edict(enamdictdb)
+  #for index, it in enumerate(enamdict.lookup(t)):
+  #  print '#%i:' % index, it
+  #  print it.Headword
+  #  print it.Reading
+  #  print it.Translation
+  for index, it in enumerate(edict.lookup(t, complete=True)):
     #print '#%i:' % index, it
     #print it.Headword
     #print it.Reading
     print index
     print it.Headword
     print it.Translation
-  print "enam translation:"
-  print enamdict.translate(t)
+  #print "enam translation:"
+  #print enamdict.translate(t)
   print "edict translation:"
   print edict.translate(t)
 
