@@ -79,6 +79,8 @@ Item { id: root_
     userId: root_.userId
     userLevel: root_.userLevel
 
+    displaysDuplicateRows: searchToolBar_.displaysDuplicateRows
+
     Share.Blocker {
       anchors.fill: parent
       visible: table_.currentCount <= 0 || !mainToolBar_.enabled

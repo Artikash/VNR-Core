@@ -41,17 +41,30 @@ Share.View { id: root_
     sortingColumn: table_.sortIndicatorColumn
     sortingReverse: table_.sortIndicatorDirection === 'up'
 
-    property int maximumPageNumber: Math.ceil(currentCount / pageSize)
     onPageNumberChanged:
       if (paginator_.value != pageNumber)
         paginator_.value = pageNumber
+
+    duplicate: searchToolBar_.displaysDuplicateRows
+
+    // Not sure why this will cause loop binding error
+    //property int maximumPageNumber: Math.ceil(currentCount / pageSize)
+    property int maximumPageNumber
+    function updateMaximumPageNumber() {
+      maximumPageNumber = Math.ceil(currentCount / pageSize)
+    }
+    Component.onCompleted: {
+      updateMaximumPageNumber()
+      currentCountChanged.connect(updateMaximumPageNumber)
+      pageSizeChanged.connect(updateMaximumPageNumber)
+    }
   }
 
   //Plugin.Settings { id: settings_ }
 
-  Plugin.SystemStatus { id: status_ }
-  property int userId: status_.online ? status_.userId : 0
-  property alias userLevel: status_.userCommentLevel
+  Plugin.SystemStatus { id: statusPlugin_ }
+  property int userId: statusPlugin_.online ? statusPlugin_.userId : 0
+  property alias userLevel: statusPlugin_.userCommentLevel
 
   //function loadSettings() {
   //  toolBar_.enabled = settings_.termEnabled
@@ -141,7 +154,8 @@ Share.View { id: root_
     anchors {
       left: paginator_.right
       //left: parent.left
-      right: parent.right
+      //right: parent.right
+      right: searchToolBar_.left
       bottom: inspector_.top
       bottomMargin: 5
       leftMargin: 5
@@ -154,6 +168,19 @@ Share.View { id: root_
     placeholderText: Sk.tr("Search") + " ... (" + holder() + Sk.tr("regular expression") + ", " + Sk.tr("case-insensitive") + ")"
     function holder() {
       return '@' + Sk.tr('user') + ", " + '#' + Sk.tr("game") + ", " + '#' + Sk.tr("game") + "ID, "
+    }
+  }
+
+  SubView.SearchToolBar { id: searchToolBar_ // search buttons
+    anchors {
+      verticalCenter: searchBox_.verticalCenter
+      right: parent.right
+      rightMargin: 2
+    }
+
+    onTriggered: {
+      searchBox_.text = text
+      searchBox_.accepted()
     }
   }
 

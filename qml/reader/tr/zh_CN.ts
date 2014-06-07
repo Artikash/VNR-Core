@@ -648,6 +648,11 @@
         <translation>启动游戏，或者与正在运行中的游戏同步</translation>
     </message>
     <message>
+        <location filename="../springboard/inspector.qml" line="177"/>
+        <source>Edit shared subtitles</source>
+        <translation>编辑人工字幕</translation>
+    </message>
+    <message>
         <location filename="../springboard/inspector.qml" line="194"/>
         <source>Show the game folder</source>
         <translation>打开游戏的文件夹</translation>
@@ -668,14 +673,12 @@
         <translation>设定</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="161"/>
         <source>Discuss</source>
-        <translation>讨论</translation>
+        <translation type="obsolete">讨论</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="162"/>
         <source>Visit the discussion page online</source>
-        <translation>打开讨论的页面</translation>
+        <translation type="obsolete">打开讨论的页面</translation>
     </message>
     <message>
         <location filename="../springboard/inspector.qml" line="185"/>
@@ -861,12 +864,12 @@
 <context>
     <name>navigator</name>
     <message>
-        <location filename="../share/navigator.qml" line="29"/>
+        <location filename="../share/navigator.qml" line="33"/>
         <source>Scroll to the top</source>
         <translation>滚动到顶部</translation>
     </message>
     <message>
-        <location filename="../share/navigator.qml" line="42"/>
+        <location filename="../share/navigator.qml" line="46"/>
         <source>Scroll to the bottom</source>
         <translation>滚动到底部</translation>
     </message>
@@ -901,23 +904,59 @@
     </message>
 </context>
 <context>
+    <name>searchtoolbar</name>
+    <message>
+        <location filename="../subview/searchtoolbar.qml" line="26"/>
+        <location filename="../termview/searchtoolbar.qml" line="26"/>
+        <source>Search your editing</source>
+        <translation>搜索你的编辑</translation>
+    </message>
+    <message>
+        <location filename="../subview/searchtoolbar.qml" line="54"/>
+        <location filename="../termview/searchtoolbar.qml" line="54"/>
+        <source>Search your language</source>
+        <translation>搜索你的语言</translation>
+    </message>
+    <message>
+        <location filename="../subview/searchtoolbar.qml" line="67"/>
+        <location filename="../termview/searchtoolbar.qml" line="67"/>
+        <source>Dup</source>
+        <translation>重复</translation>
+    </message>
+    <message>
+        <location filename="../subview/searchtoolbar.qml" line="68"/>
+        <location filename="../termview/searchtoolbar.qml" line="68"/>
+        <source>Display duplicate rows which should be avoided</source>
+        <translation>显示不该出现的重复的行</translation>
+    </message>
+    <message>
+        <location filename="../termview/searchtoolbar.qml" line="40"/>
+        <source>Search current game</source>
+        <translation>搜索当前游戏</translation>
+    </message>
+</context>
+<context>
     <name>selecttoolbar</name>
     <message>
+        <location filename="../subview/selecttoolbar.qml" line="33"/>
         <location filename="../termview/selecttoolbar.qml" line="33"/>
         <source>Cancel the selection</source>
         <translation>取消选定</translation>
     </message>
     <message>
+        <location filename="../subview/selecttoolbar.qml" line="47"/>
         <location filename="../termview/selecttoolbar.qml" line="47"/>
         <source>Remove the selected entries</source>
         <translation>移除选定的内容</translation>
     </message>
     <message>
+        <location filename="../subview/selecttoolbar.qml" line="54"/>
         <location filename="../termview/selecttoolbar.qml" line="54"/>
         <source>Disable the selected entries</source>
         <translation>禁用选定的内容</translation>
     </message>
     <message>
+        <location filename="../subview/selecttoolbar.qml" line="61"/>
         <location filename="../termview/selecttoolbar.qml" line="61"/>
         <source>Edit comment for the selected entries</source>
         <translation>编辑选定的内容</translation>
@@ -983,7 +1022,7 @@
 <context>
     <name>subview</name>
     <message>
-        <location filename="../subview.qml" line="136"/>
+        <location filename="../subview.qml" line="165"/>
         <source>Type part of the text, context, user, language, etc, and press Enter to search</source>
         <translation>输入需要查找的文本，语境，用户名，语言等，然后按下回车搜索</translation>
     </message>
@@ -991,7 +1030,7 @@
 <context>
     <name>table</name>
     <message>
-        <location filename="../termview/table.qml" line="211"/>
+        <location filename="../termview/table.qml" line="210"/>
         <source>Title</source>
         <translation>称谓</translation>
     </message>
@@ -999,7 +1038,7 @@
 <context>
     <name>termview</name>
     <message>
-        <location filename="../termview.qml" line="139"/>
+        <location filename="../termview.qml" line="141"/>
         <source>Type part of the pattern, text, user, language, etc, and press Enter to search</source>
         <translation>输入需要查找的文本，翻译，用户名，语言等，然后按下回车搜索</translation>
     </message>

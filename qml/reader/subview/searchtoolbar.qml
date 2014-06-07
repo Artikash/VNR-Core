@@ -32,19 +32,19 @@ Row { id: root_ // Theme refers to Bootstrap.label
     }
   }
 
-  Bootstrap.Button {
-    width: parent.cellWidth; height: parent.cellHeight
-    styleClass: 'btn btn-inverse'
+  //Bootstrap.Button {
+  //  width: parent.cellWidth; height: parent.cellHeight
+  //  styleClass: 'btn btn-inverse'
 
-    text: '#' + Sk.tr("game")
-    toolTip: qsTr("Search current game")
+  //  text: '#' + Sk.tr("game")
+  //  toolTip: qsTr("Search rows specific to current game")
 
-    onClicked: {
-      var name = datamanPlugin_.getCurrentGameName()
-      if (name)
-        root_.triggered('#' + name)
-    }
-  }
+  //  onClicked: {
+  //    var name = datamanPlugin_.getCurrentGameName()
+  //    if (name)
+  //      root_.triggered('#' + name)
+  //  }
+  //}
 
   Bootstrap.Button {
     width: parent.cellWidth; height: parent.cellHeight

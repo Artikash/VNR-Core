@@ -28,9 +28,11 @@ SOURCES = \
   submaker/header.qml \
   submaker/subedit.qml \
   subview/maintoolbar.qml \
+  subview/searchtoolbar.qml \
   subview/selecttoolbar.qml \
   subview.qml \
   termview/maintoolbar.qml \
+  termview/searchtoolbar.qml \
   termview/selecttoolbar.qml \
   termview/table.qml \
   termview.qml \

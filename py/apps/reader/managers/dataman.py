@@ -1711,6 +1711,8 @@ class _Term(object):
 
     self.dirtyProperties = set() # set([str])
 
+    self._gameItemId = None # this value is cached
+
   def addDirtyProperty(self, name):
     if self.id:
       self.dirtyProperties.add(name)
@@ -1736,9 +1738,16 @@ class _Term(object):
     if not self._gameMd5 and self.gameId:
       self._gameMd5 = manager().queryGameMd5(self.gameId) or ""
     return self._gameMd5
-
   @gameMd5.setter
   def gameMd5(self, val): self._gameMd5 = val
+
+  @property
+  def gameItemId(self): # cached
+    if self._gameItemId is None:
+      self._gameItemId = (manager().queryGameItemId(self.gameId) or 0) if self.gameId else 0
+    return self._gameItemId
+  @gameItemId.setter
+  def gameItemId(self, val): self._gameItemId = val
 
   @staticmethod
   def synthesize(name, type, sync=False):
@@ -1899,11 +1908,15 @@ class Term(QObject):
   @gameMd5.setter
   def gameMd5(self, val): self.__d.gameMd5 = val
 
+  @property
+  def gameItemId(self): return self.__d.gameItemId
+
   def setGameId(self, value):
     d = self.__d
     if d.gameId != value:
       d.gameId = value
       d.gameMd5 = ""
+      d.gameItemId = None
       d.addDirtyProperty('gameId')
       self.gameIdChanged.emit(value)
       dprint("pass")
@@ -3354,13 +3367,16 @@ class _TermModel(object):
     self._filterText = "" # unicode
     self._filterRe = None # compiled re
     self._filterData = None # [Term]
-    self._sortedData = None
+    self._sortedData = None # [Term]
+    self._duplicateData = None # [Term]
 
     self.sortingColumn = self.DEFAULT_SORTING_COLUMN
     self.sortingReverse = False
 
     self.pageNumber = 1 # starts at 1
     self.pageSize = 50 # read-only, number of items per page, smaller enough to speed up scrolling
+
+    self.duplicate = False # bool
 
     self.selectionCount = 0 # int, cached
 
@@ -3377,16 +3393,73 @@ class _TermModel(object):
     """
     @return  [Term]
     """
-    return self.sortedData if self.sortingColumn != self.DEFAULT_SORTING_COLUMN or self.sortingReverse else self.filterData if self.filterText else self.sourceData
+    return self.sortedData if self.sortingReverse or self.sortingColumn != self.DEFAULT_SORTING_COLUMN else self.filterData if self.filterText else self.duplicateData if self.duplicate else self.sourceData
 
   @staticproperty
   def sourceData(): return manager().terms() # -> list not None
 
   @property
+  def duplicateData(self):
+    """
+    @return  [Term]
+    """
+    if self._duplicateData is None:
+      l = self.sourceData
+      if l:
+        l = (t for t in l if not t.d.disabled and not t.d.deleted) # filter
+        l = sorted(l, key=self._duplicateSortKey)
+        dups = []
+        lastTerm = None
+        dupCount = 0
+        for t in l:
+          if lastTerm is not None and self._equivalent(t, lastTerm):
+            if not dupCount:
+              dups.append(lastTerm)
+            dups.append(t)
+            dupCount += 1
+          else:
+            dupCount = 0
+          lastTerm = t
+        l = dups
+      self._duplicateData = l
+    return self._duplicateData
+  @duplicateData.setter
+  def duplicateData(self, value): self._duplicateData = value
+
+  @staticmethod
+  def _duplicateSortKey(t):
+    """Used only by duplicateData
+    @param  t  Term
+    @return  any tuple consistent with _equivalent()
+    """
+    td = t.d
+    return td.pattern, td.text, td.language[:2], td.type, td.regex, td.special, t.gameItemId
+
+  @staticmethod
+  def _equivalent(x, y):
+    """Used only by duplicateData
+    @param  x  Term
+    @param  y  Term
+    @return  bool  if they are duplicate
+    """
+    xd = x.d
+    yd = y.d
+    return (
+        xd.type == yd.type and
+        xd.regex == yd.regex and
+        xd.special == yd.special and
+        xd.language[:2] == yd.language[:2] and
+        xd.pattern == yd.pattern and
+        xd.text == yd.text and
+        (not xd.special or x.gameItemId == y.gameItemId))
+
+  @property
   def sortedData(self): # -> list not None
     if self._sortedData is None:
-      data = self.filterData if self.filterText else self.sourceData
-      if self.sortingColumn == self.DEFAULT_SORTING_COLUMN:
+      data = self.filterData if self.filterText else self.duplicateData if self.duplicate else self.sourceData
+      if not data:
+        self._sortedData = []
+      elif self.sortingColumn == self.DEFAULT_SORTING_COLUMN:
         if self.sortingReverse:
           self._sortedData = list(reversed(data))
         else:
@@ -3412,7 +3485,8 @@ class _TermModel(object):
   @property
   def filterData(self):
     if self._filterData is None:
-      self._filterData = filter(self._searchData, self.sourceData)
+      data = self.duplicateData if self.duplicate else self.sourceData
+      self._filterData = filter(self._searchData, data) if data else []
     return self._filterData
   @filterData.setter
   def filterData(self, value): self._filterData = value
@@ -3471,15 +3545,17 @@ class TermModel(QAbstractListModel):
     self.setRoleNames(TERM_ROLES)
     d = self.__d = _TermModel()
 
-    for sig in self.filterTextChanged, self.sortingColumnChanged, self.sortingReverseChanged:
+    for sig in self.filterTextChanged, self.sortingColumnChanged, self.sortingReverseChanged, self.pageSizeChanged, self.pageNumberChanged, self.duplicateChanged:
       sig.connect(self.reset)
 
     manager().termsChanged.connect(self.reset)
 
   #@Slot()
   def reset(self):
-    self.__d.filterData = None
-    self.__d.sortedData = None
+    d = self.__d
+    d.filterData = None
+    d.sortedData = None
+    d.duplicateData = None
     super(TermModel, self).reset()
     self.countChanged.emit(self.count)
     self.currentCountChanged.emit(self.currentCount)
@@ -3547,26 +3623,40 @@ class TermModel(QAbstractListModel):
       setSortingReverse,
       notify=sortingReverseChanged)
 
+  selectionCountChanged = Signal(int)
+  selectionCount = Property(int,
+      lambda self: self.__d.selectionCount,
+      notify=selectionCountChanged)
+
   def setPageNumber(self, value):
     if value != self.__d.pageNumber:
       self.__d.pageNumber = value
       self.pageNumberChanged.emit(value)
-      super(TermModel, self).reset()
   pageNumberChanged = Signal(int)
   pageNumber = Property(int,
       lambda self: self.__d.pageNumber,
       setPageNumber,
       notify=pageNumberChanged)
 
+  def setPageSize(self, value):
+    if value != self.__d.pageSizeumber:
+      self.__d.pageSize = value
+      self.pageSizeChanged.emit(value)
   pageSizeChanged = Signal(int)
   pageSize = Property(int,
       lambda self: self.__d.pageSize,
+      #setPageSize, # not used
       notify=pageSizeChanged)
 
-  selectionCountChanged = Signal(int)
-  selectionCount = Property(int,
-      lambda self: self.__d.selectionCount,
-      notify=selectionCountChanged)
+  def setDuplicate(self, value):
+    if value != self.__d.duplicate:
+      self.__d.duplicate = value
+      self.duplicateChanged.emit(value)
+  duplicateChanged = Signal(bool) # only display duplicate items
+  duplicate = Property(bool,
+      lambda self: self.__d.duplicate,
+      setDuplicate,
+      notify=duplicateChanged)
 
   @Slot()
   def refreshSelection(self):
@@ -3653,9 +3743,10 @@ class _CommentModel(object):
     self._dirty = False  # bool
     self._filterText = "" # unicode
     self._filterRe = None # compiled re
-    self._filterData = None # [Comment] or None
-    self._sourceData = None # [Comment] or None
-    self._sortedData = None
+    self._filterData = None # [Comment]
+    self._sourceData = None # [Comment]
+    self._sortedData = None # [Comment]
+    self._duplicateData = None # [Comment]
     self.md5 = "" # str
     self._gameId = 0
     self.sortingReverse = False
@@ -3666,9 +3757,11 @@ class _CommentModel(object):
 
     self.selectionCount = 0 # int, cached
 
+    self.duplicate = False # bool
+
     q.gameMd5Changed.connect(self._invalidate)
 
-    for sig in q.filterTextChanged, q.sortingColumnChanged, q.sortingReverseChanged:
+    for sig in q.filterTextChanged, q.sortingColumnChanged, q.sortingReverseChanged, q.pageSizeChanged, q.pageNumberChanged, q.duplicateChanged:
       sig.connect(self._refresh)
 
     dm = manager()
@@ -3710,6 +3803,7 @@ class _CommentModel(object):
   def _refresh(self):
     self._filterData = None
     self._sortedData = None
+    self._duplicateData = None
     q = self.q
     q.reset()
     q.countChanged.emit(q.count)
@@ -3721,13 +3815,67 @@ class _CommentModel(object):
     """
     @return  [Comment]
     """
-    return self.sortedData if self.sortingColumn != self.DEFAULT_SORTING_COLUMN or self.sortingReverse else self.filterData if self.filterText else self.sourceData
+    return self.sortedData if self.sortingColumn != self.DEFAULT_SORTING_COLUMN or self.sortingReverse else self.filterData if self.filterText else self.duplicateData if self.duplicate else self.sourceData
+
+  @property
+  def duplicateData(self):
+    """
+    @return  [Comment]
+    """
+    if self._duplicateData is None:
+      l = self.sourceData
+      if l:
+        l = (c for c in l if not c.d.disabled and not c.d.deleted) # filter
+        l = sorted(l, key=self._duplicateSortKey)
+        dups = []
+        lastComment = None
+        dupCount = 0
+        for c in l:
+          if lastComment is not None and self._equivalent(c, lastComment):
+            if not dupCount:
+              dups.append(lastComment)
+            dups.append(c)
+            dupCount += 1
+          else:
+            dupCount = 0
+          lastComment = c
+        l = dups
+      self._duplicateData = l
+    return self._duplicateData
+  @duplicateData.setter
+  def duplicateData(self, value): self._duplicateData = value
+
+  @staticmethod
+  def _duplicateSortKey(c):
+    """Used only by duplicateData
+    @param  t  Comment
+    @return  any tuple consistent with _equivalent()
+    """
+    cd = c.d
+    return cd.text, cd.hash, cd.language[:2], cd.type
+
+  @staticmethod
+  def _equivalent(x, y):
+    """Used only by duplicateData
+    @param  x  Comment
+    @param  y  Comment
+    @return  bool  if they are duplicate
+    """
+    xd = x.d
+    yd = y.d
+    return (
+        xd.hash == yd.hash and
+        xd.type == yd.type and
+        xd.language[:2] == yd.language[:2] and
+        xd.text == yd.text)
 
   @property
   def sortedData(self): # -> list not None
     if self._sortedData is None:
-      data = self.filterData if self.filterText else self.sourceData
-      if not self.sortingColumn == self.DEFAULT_SORTING_COLUMN:
+      data = self.filterData if self.filterText else self.duplicateData if self.duplicate else self.sourceData
+      if not data:
+        self._sortedData = []
+      elif not self.sortingColumn == self.DEFAULT_SORTING_COLUMN:
         if self.sortingReverse:
           self._sortedData = list(reversed(data))
         else:
@@ -3842,7 +3990,8 @@ class _CommentModel(object):
   @property
   def filterData(self):
     if self._filterData is None:
-      self._filterData = filter(self._searchData, self.sourceData)
+      data = self.duplicateData if self.duplicate else self.sourceData
+      self._filterData = filter(self._searchData, data) if data else []
     return self._filterData
   @filterData.setter
   def filterData(self, value): self._filterData = value
@@ -3901,7 +4050,7 @@ class _CommentModel(object):
     userId = user.id
     if not userId:
       return
-    data = self.sourceData
+    data = list(self.sourceData) # back up source data so that it won't change after deletion
     if not data:
       return
 
@@ -3932,12 +4081,12 @@ class _CommentModel(object):
         #  skevents.runlater(partial(c.setParent, None), 120000) # after 2 min
 
     if count:
-      d.terms = [t for t in d.terms if not (c.d.selected and c.d.deleted)]
-      if d._sortedTerms:
-        d._sortedTerms = [t for t in d._sortedTerms if not (c.d.selected and c.d.deleted)]
+      #d.terms = [t for t in d.terms if not (t.d.selected and t.d.deleted)]
+      #if d._sortedTerms:
+      #  d._sortedTerms = [t for t in d._sortedTerms if not (t.d.selected and t.d.deleted)]
 
-      d.invalidateTerms()
-      d.touchTerms()
+      #d.invalidateTerms()
+      #d.touchTerms()
 
       growl.msg(my.tr("{0} items updated").format(count))
 
@@ -3954,7 +4103,7 @@ class _CommentModel(object):
     if not data:
       return
 
-    userLevel = user.termLevel
+    userLevel = user.commentLevel
 
     now = skdatetime.current_unixtime()
 
@@ -3998,7 +4147,7 @@ class _CommentModel(object):
     if not data:
       return
 
-    userLevel = user.termLevel
+    userLevel = user.commentLevel
 
     now = skdatetime.current_unixtime()
 
@@ -4156,26 +4305,40 @@ class CommentModel(QAbstractListModel):
       setSortingReverse,
       notify=sortingReverseChanged)
 
+  selectionCountChanged = Signal(int)
+  selectionCount = Property(int,
+      lambda self: self.__d.selectionCount,
+      notify=selectionCountChanged)
+
   def setPageNumber(self, value):
     if value != self.__d.pageNumber:
       self.__d.pageNumber = value
       self.pageNumberChanged.emit(value)
-      super(CommentModel, self).reset()
   pageNumberChanged = Signal(int)
   pageNumber = Property(int,
       lambda self: self.__d.pageNumber,
       setPageNumber,
       notify=pageNumberChanged)
 
+  def setPageSize(self, value):
+    if value != self.__d.pageSize:
+      self.__d.pageSize = value
+      self.pageSizeChanged.emit(value)
   pageSizeChanged = Signal(int)
   pageSize = Property(int,
       lambda self: self.__d.pageSize,
+      #setPageSize, # not used
       notify=pageSizeChanged)
 
-  selectionCountChanged = Signal(int)
-  selectionCount = Property(int,
-      lambda self: self.__d.selectionCount,
-      notify=selectionCountChanged)
+  def setDuplicate(self, value):
+    if value != self.__d.duplicate:
+      self.__d.duplicate = value
+      self.duplicateChanged.emit(value)
+  duplicateChanged = Signal(bool) # only display duplicate items
+  duplicate = Property(bool,
+      lambda self: self.__d.duplicate,
+      setDuplicate,
+      notify=duplicateChanged)
 
   @Slot()
   def refreshSelection(self):
@@ -4816,9 +4979,9 @@ class _DataManager(object):
       if not self.terms:
         self._sortedTerms = []
       else:
-        filtered = (it for it in self.terms if not it.disabled and not it.deleted)
-        l = sorted(filtered, reverse=True, key=lambda it:
-              (len(it.pattern), it.private, it.special, it.id)) # it.regex  true is applied first
+        l = (it for it in self.terms if not it.d.disabled and not it.d.deleted) # filtered
+        l = sorted(l, reverse=True, key=lambda it:
+              (len(it.d.pattern), it.d.private, it.d.special, it.d.id)) # it.regex  true is applied first
         count = len(l)
         for index, it in enumerate(l):
           it.priority = count - index
@@ -8105,9 +8268,9 @@ class DataManagerProxy(QObject):
   @Slot(result=unicode)
   def getCurrentGameName(self): return manager().currentGameName()
 
-  @Slot(result=unicode)
-  def getCurrentUserName(self):
-    return manager().user().name
+  #@Slot(result=unicode)
+  #def getCurrentUserName(self):
+  #  return manager().user().name
 
   @Slot(QObject, bool)
   def enableComment(self, c, t):
