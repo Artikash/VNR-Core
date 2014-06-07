@@ -2,5 +2,6 @@
 # 2/20/2013 jichi
 Inspector       inspector.qml
 MainToolBar     maintoolbar.qml
+SearchToolBar   searchtoolbar.qml
 SelectToolBar   selecttoolbar.qml
 Table           table.qml

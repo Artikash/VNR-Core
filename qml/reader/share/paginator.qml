@@ -51,7 +51,7 @@ Item { id: root_
     //width: parent.cellWidth
     //font.pixelSize: parent.pixelSize
     styleClass: root_.buttonStyleClass
-    text: "<<"
+    text: "<"
     toolTip: Sk.tr("Previous")
     //font.bold: true
     //font.family: 'YouYuan'
@@ -86,7 +86,7 @@ Item { id: root_
     //width: parent.cellWidth
     //font.pixelSize: parent.pixelSize
     styleClass: root_.buttonStyleClass
-    text: ">>"
+    text: ">"
     toolTip: Sk.tr("Next")
     //font.bold: true
     //font.family: 'YouYuan'

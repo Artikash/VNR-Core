@@ -14,6 +14,8 @@ Item { id: root_
 
   property alias model: table_.model
 
+  property alias displaysDuplicateRows: model_.duplicate
+
   property int userId
   property int userLevel
   property alias filterText: model_.filterText
