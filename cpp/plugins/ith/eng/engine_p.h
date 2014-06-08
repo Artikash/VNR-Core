@@ -57,7 +57,7 @@ bool InsertRetouchHook();       // Retouch: resident.dll
 bool InsertRREHook();           // RunrunEngine: rrecfg.rcf
 bool InsertShinaHook();         // ShinaRio: Rio.ini
 bool InsertShinyDaysHook();     // ShinyDays
-bool InsertSilkysHook();        // Silky's: Silky.exe
+bool InsertElfHook();           // elf: Silky.exe
 bool InsertSystem43Hook();      // System43@AliceSoft: AliceStart.ini
 bool InsertSiglusHook();        // SiglusEngine: SiglusEngine.exe
 bool InsertTanukiHook();        // Tanuki: *.tak

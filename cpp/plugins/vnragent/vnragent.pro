@@ -117,10 +117,10 @@ SOURCES += \
 HEADERS += \
   engine/model/bgi.h \
   engine/model/circus.h \
+  engine/model/elf.h \
   engine/model/eushully.h \
   engine/model/majiro.h \
-  engine/model/siglus.h \
-  engine/model/silkys.h
+  engine/model/siglus.h
   #engine/model/rejet.h
   #engine/model/test.h
 SOURCES += \
@@ -128,10 +128,10 @@ SOURCES += \
   engine/model/bgi1.cc \
   engine/model/bgi2.cc \
   engine/model/circus.cc \
+  engine/model/elf.cc \
   engine/model/eushully.cc \
   engine/model/majiro.cc \
-  engine/model/siglus.cc \
-  engine/model/silkys.cc
+  engine/model/siglus.cc
   #engine/model/rejet.cc
   #engine/model/test.cc
 

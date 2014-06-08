@@ -5,10 +5,10 @@
 #include "engine/engineloader.h"
 #include "engine/model/bgi.h"
 #include "engine/model/circus.h"
+#include "engine/model/elf.h"
 #include "engine/model/eushully.h"
 #include "engine/model/majiro.h"
 #include "engine/model/siglus.h"
-#include "engine/model/silkys.h"
 //#include "engine/model/rejet.h"
 
 //#define TEST
@@ -23,10 +23,10 @@ AbstractEngine *Engine::getEngine()
 #endif // TEST
   if (BGIEngine::match()) return new BGIEngine;
   if (CircusEngine::match()) return new CircusEngine;
+  if (ElfEngine::match()) return new ElfEngine;
   if (EushullyEngine::match()) return new EushullyEngine;
   if (MajiroEngine::match()) return new MajiroEngine;
   if (SiglusEngine::match()) return new SiglusEngine;
-  if (SilkysEngine::match()) return new SilkysEngine;
   //if (RejetEngine::match()) return new RejetEngine;
   return nullptr;
 }

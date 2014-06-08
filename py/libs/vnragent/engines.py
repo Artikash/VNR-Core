@@ -24,10 +24,10 @@ def engines():
       #AmuseCraftEngine(),
       BGIEngine(),
       CircusEngine(),
+      ElfEngine(),
       EushullyEngine(),
       MajiroEngine(),
       SiglusEngine(),
-      SilkysEngine(),
       #RejetEngine(),
     ]
   return ENGINES
@@ -194,9 +194,9 @@ class SiglusEngine(Engine):
     return self.exists("SiglusEngine.exe", **kwargs)
 
 # 5/31/2014 jichi
-class SilkysEngine(Engine):
+class ElfEngine(Engine):
 
-  NAME = "Silkys" # str, override
+  NAME = "Elf" # str, override
   ENCODING = SJIS_ENCODING # str, override
 
   REGION_LOCKED = True # It simply cannot display gbk, which become "?". Need hijack encoding or gdi functions

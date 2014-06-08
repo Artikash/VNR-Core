@@ -65,7 +65,7 @@ DWORD DetermineEngineByFile1()
   if (//IthCheckFile(L"Silkys.exe") ||    // It might or might not have Silkys.exe
       // data, effect, layer, mes, music
       IthCheckFile(L"data.arc") && IthCheckFile(L"effect.arc") && IthCheckFile(L"mes.arc")) {
-    InsertSilkysHook();
+    InsertElfHook();
     return yes;
   }
   if (IthFindFile(L"data\\pack\\*.cpz")) {

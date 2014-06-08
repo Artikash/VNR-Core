@@ -4,11 +4,12 @@
 embed:
   #- AMUSE CRAFT
   - BGI
+  - Elf
   - CIRCUS
   - Eushully
   - Majiro
   - SiglusEngine2
-  - Silkys
+  - Silkys # obsolete
 
 gui:
   - DrawTextA
@@ -49,6 +50,7 @@ simple:
   - CIRCUS
   - CMVS
   - CMVS2
+  - Elf
   - Eushully
   - KiriKiri1
   - KiriKiri2
@@ -62,7 +64,7 @@ simple:
   - Rejet
   - ShinaRio
   - SiglusEngine2
-  - Silkys
+  - Silkys # obsolete
   - SolfaSoft
   - System43
   - Taskforce2
@@ -142,6 +144,7 @@ char:
   - CIRCUS
   - CMVS
   - Debonosu
+  - Elf
   - EmonEngine
   - Eushully
   - Gesen18
@@ -161,7 +164,7 @@ char:
   - RetouchSystem
   - rUGP
   - ShinaRio
-  - Silkys
+  - Silkys # obsolete
   - SolfaSoft
   - StudioRyokucha
   - StuffScriptEngine

@@ -1,9 +1,9 @@
-// silkys.cc
+// elf.cc
 // 5/31/2014 jichi
 // About MES and Silky's arc
 // See: http://www.dsl.gr.jp/~sage/mamitool/case/elf/aishimai.html
 // MES: http://tieba.baidu.com/p/2068362185
-#include "engine/model/silkys.h"
+#include "engine/model/elf.h"
 #include "engine/enginedef.h"
 #include "engine/engineenv.h"
 #include "memdbg/memsearch.h"
@@ -67,7 +67,7 @@ LPCSTR __fastcall newHookFun(void *self, void *edx, DWORD arg1, DWORD arg2, DWOR
 
 } // unnamed namespace
 
-bool SilkysEngine::match()
+bool ElfEngine::match()
 {
   //return Engine::exists("Silkys.exe"); // It might not might not have this file
   // All arc files in 愛姉妹4 are: data, effect, layer, mes, music
@@ -101,7 +101,7 @@ bool SilkysEngine::match()
  *
  *  @param  stackSize  number of bytes on the stack of the function, which is the parameter of sub esp
  */
-static ulong searchSilkys(ulong startAddress, ulong stopAddress, int *stackSize)
+static ulong searchElf(ulong startAddress, ulong stopAddress, int *stackSize)
 {
   const BYTE ins[] = {
       //0x55,                             // 0093f9b0  /$ 55             push ebp  ; jichi: hook here
@@ -140,14 +140,14 @@ static ulong searchSilkys(ulong startAddress, ulong stopAddress, int *stackSize)
   return 0;
 }
 
-bool SilkysEngine::attach()
+bool ElfEngine::attach()
 {
   ulong startAddress,
         stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
   int stackSize;
-  ulong addr = ::searchSilkys(startAddress, stopAddress, &stackSize);
+  ulong addr = ::searchElf(startAddress, stopAddress, &stackSize);
   //DWORD addr = startAddress + 0x2f9b0; // 愛姉妹4
   //DWORD addr = startAddress + 0x2f0f0; // SEXティーチャー剛史 trial
   //dmsg(*(BYTE *)addr); // supposed to be 0x55
@@ -162,7 +162,7 @@ bool SilkysEngine::attach()
 // EOF
 
 /*
-void SilkysEngine::hookFunction(HookStack *stack)
+void ElfEngine::hookFunction(HookStack *stack)
 {
   static QByteArray data_; // persistent storage, which makes this function not thread-safe
 
