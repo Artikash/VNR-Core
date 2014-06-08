@@ -26,12 +26,16 @@ Item { id: root_
 
   property alias pageNumber: model_.pageNumber
   //property alias pageSize: model_.pageSize
-  property int maximumPageNumber: Math.ceil(model_.currentCount / model_.pageSize)
 
   function positionViewAtBeginning() { table_.positionViewAtBeginning() }
   function positionViewAtEnd() { table_.positionViewAtEnd() }
 
+  // Not sure why this causes loop binding
+  property int maximumPageNumber //:Math.ceil(model_.currentCount / model_.pageSize)
   // - Private -
+  function updateMaximumPageNumber() {
+    root_.maximumPageNumber = Math.ceil(model_.currentCount / model_.pageSize)
+  }
 
   property int _GUEST_USER_ID: 4
   property int _SUPER_USER_ID: 2
@@ -93,6 +97,13 @@ Item { id: root_
   Plugin.TermModel { id: model_
     sortingReverse: table_.sortIndicatorDirection === 'up'
     sortingColumn: table_.sortColumn
+
+    // FIX the loop binding bug
+    Component.onCompleted: {
+      root_.updateMaximumPageNumber()
+      currentCountChanged.connect(root_.updateMaximumPageNumber)
+      pageSizeChanged.connect(root_.updateMaximumPageNumber)
+    }
   }
 
   Desktop.TableView { id: table_
