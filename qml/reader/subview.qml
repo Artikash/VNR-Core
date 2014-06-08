@@ -51,7 +51,7 @@ Share.View { id: root_
     //property int maximumPageNumber: Math.ceil(currentCount / pageSize)
     property int maximumPageNumber
     function updateMaximumPageNumber() {
-      maximumPageNumber = Math.ceil(currentCount / pageSize)
+      maximumPageNumber = Math.ceil(currentCount / pageSize) // assume pageSize != 0
     }
     Component.onCompleted: {
       updateMaximumPageNumber()

@@ -1,19 +1,19 @@
 #pragma once
 
-// silkys.h
+// elf.h
 // 5/31/2014 jichi
 
 #include "engine/engine.h"
 #include "util/codepage.h"
 
-class SilkysEngine : public AbstractEngine
+class ElfEngine : public AbstractEngine
 {
-  SK_EXTEND_CLASS(SilkysEngine, AbstractEngine)
-  SK_DISABLE_COPY(SilkysEngine)
+  SK_EXTEND_CLASS(ElfEngine, AbstractEngine)
+  SK_DISABLE_COPY(ElfEngine)
 
 public:
-  SilkysEngine()
-    : Base("Silkys", Util::SjisCodePage, BlockingAttribute|SpecialHookAttribute)
+  ElfEngine()
+    : Base("Elf", Util::SjisCodePage, BlockingAttribute|SpecialHookAttribute)
   {} // Need restore the old text to be freed using FreeHeap
 
   static bool match();

@@ -4851,7 +4851,7 @@ bool InsertMarineHeartHook()
  *  - Scenario: arg1 + 4*5 is 0, arg1+0xc is address of the text
  *  - Character: arg1 + 4*10 is 0, arg1+0xc is text
  */
-static void SpecialHookSilkys(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookElf(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(hp);
   DWORD arg1 = *(DWORD *)(esp_base + 0x4);
@@ -4872,7 +4872,7 @@ static void SpecialHookSilkys(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
 }
 
 /**
- *  jichi 5/31/2014: Silky's
+ *  jichi 5/31/2014: elf's
  *  Type1: SEXティーチャー剛史 trial, reladdr = 0x2f0f0, 2 parameters
  *  Type2: 愛姉妹4, reladdr = 0x2f9b0, 3 parameters
  *
@@ -4935,7 +4935,7 @@ static void SpecialHookSilkys(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
  *  - 0093f9e3  |. 83fa 10        |cmp edx,0x10
  *
  */
-bool InsertSilkysHook()
+bool InsertElfHook()
 {
   const BYTE ins[] = {
       //0x55,                             // 0093f9b0  /$ 55             push ebp  ; jichi: hook here
@@ -4958,7 +4958,7 @@ bool InsertSilkysHook()
   //reladdr = 0x2f9b0; // 愛姉妹4
   //reladdr = 0x2f0f0; // SEXティーチャー剛史 trial
   if (!reladdr) {
-    ConsoleOutput("vnreng:Silkys: pattern not found");
+    ConsoleOutput("vnreng:Elf: pattern not found");
     return false;
   }
 
@@ -4969,14 +4969,14 @@ bool InsertSilkysHook()
 
       HookParam hp = {};
       hp.addr = addr;
-      hp.extern_fun = SpecialHookSilkys;
+      hp.extern_fun = SpecialHookElf;
       hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // = 9
 
-      ConsoleOutput("vnreng: INSERT Silkys");
-      NewHook(hp, L"Silkys");
+      ConsoleOutput("vnreng: INSERT Elf");
+      NewHook(hp, L"Elf");
       return true;
     }
-  ConsoleOutput("vnreng:Silkys: function not found");
+  ConsoleOutput("vnreng:Elf: function not found");
   return false;
 }
 

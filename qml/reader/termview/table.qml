@@ -34,7 +34,7 @@ Item { id: root_
   property int maximumPageNumber //:Math.ceil(model_.currentCount / model_.pageSize)
   // - Private -
   function updateMaximumPageNumber() {
-    root_.maximumPageNumber = Math.ceil(model_.currentCount / model_.pageSize)
+    root_.maximumPageNumber = Math.ceil(model_.currentCount / model_.pageSize) // assume pageSize != 0
   }
 
   property int _GUEST_USER_ID: 4

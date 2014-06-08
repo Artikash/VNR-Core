@@ -5573,6 +5573,12 @@ class _DataManager(object):
           dwarn("change game loader from LocaleSwitch to AppLocale")
           g.loader = 'apploc'
 
+        # Change Silkys to Elf
+        if g.threadName == 'Silkys':
+          g.threadName = 'Elf'
+        if g.nameThreadName == 'Silkys':
+          g.nameThreadName = 'Elf'
+
         if g.hook and g.threadName != defs.USER_DEFINED_THREAD_NAME:
           dwarn("ignore bad hook: id=%s, code=%s" % (g.id, g.hook))
           growl.notify('<br/>'.join((
