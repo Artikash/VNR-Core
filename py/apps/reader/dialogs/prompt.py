@@ -38,11 +38,13 @@ def _defaultUpdateComment(): # -> unicode
     ret = "@%s: %s" % (user.name, ret)
   return ret
 
+_LAST_UPDATE_COMMENT = ''
 def getUpdateComment(default=""):
   """
   @param  default  unicode
   @return  unicode
   """
+  global _LAST_UPDATE_COMMENT
   ret, ok = QInputDialog.getText(_parent(),
       my.tr("Update reason"),
       my.tr(
@@ -51,8 +53,11 @@ Please specify the REASON for modifying other's work.
 For example, you can put in "typo", "inaccurate", or "scam".
 """),
       QLineEdit.Normal,
-      default or _defaultUpdateComment())
-  return ret.strip() if ok else ""
+      default or _LAST_UPDATE_COMMENT or _defaultUpdateComment())
+  t = ret.strip()
+  if t:
+    _LAST_UPDATE_COMMENT = t
+  return t if ok else ""
 
 #def showAbout():
 #  t = config.VERSION_TIMESTAMP
@@ -74,11 +79,13 @@ For example, you can put in "typo", "inaccurate", or "scam".
 #      my.tr("Do you want to permanently delete the selected {0} items?").format(count),
 #      Yes|No, No)
 
+_LAST_DELETE_SELECTION_COMMENT = ''
 def getDeleteSelectionComment(count, default=''):
   """
   @param  count  int
   @return  bool
   """
+  global _LAST_DELETE_SELECTION_COMMENT
   ret, ok = QInputDialog.getText(_parent(),
       my.tr("Confirm deletion"),
       "\n".join((
@@ -86,14 +93,19 @@ def getDeleteSelectionComment(count, default=''):
         my.tr('Please specify the REASON for the modification, such as "typo".'),
       )),
       QLineEdit.Normal,
-      default or _defaultUpdateComment())
-  return ret.strip() if ok else ""
+      default or _LAST_DELETE_SELECTION_COMMENT or _defaultUpdateComment())
+  t = ret.strip()
+  if t:
+    _LAST_DELETE_SELECTION_COMMENT = t
+  return t if ok else ""
 
+_LAST_DISABLE_SELECTION_COMMENT = ''
 def getDisableSelectionComment(count, default=''):
   """
   @param  count  int
   @return  bool
   """
+  global _LAST_DISABLE_SELECTION_COMMENT
   ret, ok = QInputDialog.getText(_parent(),
       my.tr("Update reason"),
       "\n".join((
@@ -101,8 +113,11 @@ def getDisableSelectionComment(count, default=''):
         my.tr('Please specify the REASON for the modification, such as "typo".'),
       )),
       QLineEdit.Normal,
-      default or _defaultUpdateComment())
-  return ret.strip() if ok else ""
+      default or _LAST_DISABLE_SELECTION_COMMENT or _defaultUpdateComment())
+  t = ret.strip()
+  if t:
+    _LAST_DISABLE_SELECTION_COMMENT = t
+  return t if ok else ""
 
 def confirmQuit():
   """
