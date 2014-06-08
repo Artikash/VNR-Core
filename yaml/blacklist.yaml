@@ -48,6 +48,8 @@ processes:
   - AutoHotkey.exe      # AutoHotKey
   - AutoIt3.exe         # AutoIt
   - AutoIt3_x64.exe     # AutoIt
+  - BaiduBrowser.exe    # Baidu
+  - baidubrowser.exe    # Baidu
   - BaiduPlayer.exe     # Baidu
   - BaiduYunGuanjia.exe # Baidu
   - baiduyunguanjia.exe # Baidu
