@@ -3410,15 +3410,15 @@ class _TermModel(object):
         l = sorted(l, key=self._duplicateSortKey)
         dups = []
         lastTerm = None
-        dupCount = 0
+        found = False
         for t in l:
           if lastTerm is not None and self._equivalent(t, lastTerm):
-            if not dupCount:
+            if not found:
               dups.append(lastTerm)
+              found = True
             dups.append(t)
-            dupCount += 1
-          else:
-            dupCount = 0
+          elif found:
+            found = False
           lastTerm = t
         l = dups
       self._duplicateData = l
@@ -3829,15 +3829,15 @@ class _CommentModel(object):
         l = sorted(l, key=self._duplicateSortKey)
         dups = []
         lastComment = None
-        dupCount = 0
+        found = False
         for c in l:
           if lastComment is not None and self._equivalent(c, lastComment):
-            if not dupCount:
+            if not found:
               dups.append(lastComment)
+              found = True
             dups.append(c)
-            dupCount += 1
-          else:
-            dupCount = 0
+          elif found:
+            found = False
           lastComment = c
         l = dups
       self._duplicateData = l
