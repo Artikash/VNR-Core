@@ -103,7 +103,7 @@ QString CircusEngine::translationFilter(const QString &text, int role)
 
   QString ret;
   int lineWidth = 0, // estimated line width
-      lineCount = 0; // number of character
+      lineCount = 0; // number of characters
   foreach (const QChar &c, text) {
     int w = c.unicode() <= 255 ? 1 : 2;
     if (lineWidth + w <= MaxLineWitdth) {

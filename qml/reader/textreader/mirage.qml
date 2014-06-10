@@ -334,7 +334,8 @@ Item { id: root_
     //opacity: 0.27 // #44
     opacity: root_.shadowOpacity
     z: -1
-    radius: 18
+    //radius: 18
+    radius: 8
 
     //Share.CloseButton {
     //  anchors { left: parent.left; top: parent.top; margins: 2 }
@@ -740,7 +741,7 @@ Item { id: root_
               //root_.msimeParserEnabled,
               root_.rubyType,
               root_.rubyDic,
-              Math.round(root_.width / (23 * zoomFactor)), // char per line
+              Math.round(root_.width / (20 * zoomFactor)), // char per line
               Math.round(10 * zoomFactor) + 'px', // ruby size of furigana
               toolTip_.containsMouse || textCursor_.containsMouse, // colorize
               root_.alignCenter
