@@ -511,7 +511,7 @@ Item { id: root_
           textFormat: Text.PlainText
           clip: true
           verticalAlignment: Text.AlignVCenter
-          visible: !itemSelected || !editable
+          visible: !itemSelected //|| !editable
           text: itemValue.pattern
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: !itemSelected && itemValue.disabled
@@ -523,7 +523,8 @@ Item { id: root_
           selectByMouse: true
           selectionColor: 'white'
           selectedTextColor: 'black'
-          visible: itemSelected && editable
+          visible: itemSelected //&& editable
+          readOnly: !editable
           maximumLength: _MAX_TEXT_LENGTH
           //font.bold: itemValue.regex
 
@@ -559,7 +560,7 @@ Item { id: root_
           textFormat: Text.PlainText
           clip: true
           verticalAlignment: Text.AlignVCenter
-          visible: !itemSelected || !editable
+          visible: !itemSelected //|| !editable
           text: itemValue.text
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: !itemSelected && itemValue.disabled
@@ -571,7 +572,8 @@ Item { id: root_
           selectByMouse: true
           selectionColor: 'white'
           selectedTextColor: 'black'
-          visible: itemSelected && editable
+          visible: itemSelected //&& editable
+          readOnly: !editable
           maximumLength: _MAX_TEXT_LENGTH
           //property bool valid: Util.trim(text).length >= _MIN_TEXT_LENGTH
           //font.bold: itemValue.regex
@@ -606,7 +608,7 @@ Item { id: root_
           textFormat: Text.PlainText
           clip: true
           verticalAlignment: Text.AlignVCenter
-          visible: !itemSelected || !editable
+          visible: !itemSelected //|| !editable
           text: itemValue.comment
           color: itemSelected ? 'white' : commentColor(itemValue)
           //font.strikeout: !itemSelected && itemValue.disabled
@@ -622,7 +624,8 @@ Item { id: root_
           selectByMouse: true
           selectionColor: 'white'
           selectedTextColor: 'black'
-          visible: itemSelected && editable
+          visible: itemSelected //&& editable
+          readOnly: !editable
           maximumLength: _MAX_TEXT_LENGTH
 
           text: itemValue.comment
@@ -732,7 +735,7 @@ Item { id: root_
           textFormat: Text.PlainText
           clip: true
           verticalAlignment: Text.AlignVCenter
-          visible: !itemSelected || !editable
+          visible: !itemSelected //|| !editable
           text: itemValue.updateComment
           color: itemSelected ? 'white' : updateCommentColor(itemValue)
           //font.strikeout: itemValue.disabled
@@ -744,7 +747,8 @@ Item { id: root_
           selectByMouse: true
           selectionColor: 'white'
           selectedTextColor: 'black'
-          visible: itemSelected && editable
+          visible: itemSelected //&& editable
+          readOnly: !editable
           maximumLength: _MAX_TEXT_LENGTH
 
           // The updateComment could be modified by dataman
