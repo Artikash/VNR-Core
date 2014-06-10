@@ -7,18 +7,29 @@ if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
+import os
+from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint
 
-def match(**kwargs):
+ENGINE_YAML = os.path.join(os.path.dirname(__file__), 'engines.yaml')
+
+@memoized
+def get_engine_data():
+  with open(ENGINE_YAML, 'r') as f:
+    import yaml
+    return yaml.load(f.read().decode('utf8'))
+
+def match(pid=0, path=''):
   """
   @param* pid  long
   @param* path  unicode  file executable
   @return  Engine or None
   """
-  from engines import engines
-  for eng in engines():
-    if eng.match(**kwargs):
-      return eng
-  return None
+  from engine import Engine, EngineFinder
+  finder = EngineFinder(pid=pid, exepath=path)
+  for eng in get_engine_data():
+    if finder.eval(eng['exist']):
+      dprint("engine = %s" % eng['name'])
+      return Engine(**eng)
 
 # EOF
