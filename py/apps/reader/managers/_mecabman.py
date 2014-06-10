@@ -200,81 +200,81 @@ class MeCabParser:
         surface = node.surface[:node.length];
         surface = surface.decode(mecabdef.DICT_ENCODING, errors='ignore')
         #surface = surface.encode('sjis')
+        if surface:
+          if len(surface) == 1 and surface in jpchars.set_punc:
+            char_type = mecabdef.TYPE_PUNCT
+          else:
+            char_type = node.char_type
 
-        if len(surface) == 1 and surface in jpchars.set_punc:
-          char_type = mecabdef.TYPE_PUNCT
-        else:
-          char_type = node.char_type
-
-        if reading:
-          yomigana = None
-          #if node.char_type in (mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN, mecabdef.TYPE_KATAGANA, mecabdef.TYPE_MODIFIER):
-          f = None
-          if feature:
-            f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
-          if not readingTypes or char_type in readingTypes or char_type == mecabdef.TYPE_KATAGANA and wordtrans: # always translate katagana
-            if wordtrans:
-              if termEnabled:
-                yomigana = tm.queryLatinWordTerms(surface)
-              if not yomigana:
-                yomigana = wordtrans(surface)
-            if not yomigana and not lougo:
-              if not feature:
-                f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
-              katagana = feature2katana(f)
-              if katagana:
-                furigana = tm.queryFuriTerms(surface) if termEnabled else None
-                if furigana:
-                  furigana = furitrans(furigana)
-                  if furigana != surface:
-                    yomigana = furigana
-                elif katagana == '*':
-                  # Use MSIME as fallback
-                  unknownYomi = True
-                  if HAS_MSIME and len(surface) < msime.IME_MAX_SIZE:
-                    if furiType == defs.FURI_HIRA:
-                      yomigana = msime.to_yomi_hira(surface)
-                    else:
-                      yomigana = msime.to_yomi_kata(surface)
-                      if yomigana:
-                        if furiType == defs.FURI_HIRA:
-                          pass
-                        elif furiType == defs.FURI_ROMAJI:
-                          yomigana = cconv.wide2thin(cconv.kata2romaji(yomigana))
-                          if yomigana == surface:
-                            yomigana = None
-                            unknownYomi = False
-                        elif furiType == defs.FURI_HANGUL:
-                          yomigana = cconv.kata2hangul(yomigana)
-                        elif furiType == defs.FURI_KANJI:
-                          yomigana = cconv.kata2kanji(yomigana)
-                  if not yomigana and unknownYomi and readingTypes:
-                    yomigana = '?'
-                else:
-                  #katagana = self._repairkatagana(katagana)
-                  yomigana = katatrans(katagana) if katatrans else katagana
-                  if yomigana == surface:
-                    yomigana = None
-          if not type and not feature:
-            yield surface, yomigana
-          elif type and not feature:
-            yield surface, char_type, yomigana
+          if reading:
+            yomigana = None
+            #if node.char_type in (mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN, mecabdef.TYPE_KATAGANA, mecabdef.TYPE_MODIFIER):
+            f = None
+            if feature:
+              f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
+            if not readingTypes or char_type in readingTypes or char_type == mecabdef.TYPE_KATAGANA and wordtrans: # always translate katagana
+              if wordtrans:
+                if termEnabled:
+                  yomigana = tm.queryLatinWordTerms(surface)
+                if not yomigana:
+                  yomigana = wordtrans(surface)
+              if not yomigana and not lougo:
+                if not feature:
+                  f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
+                katagana = feature2katana(f)
+                if katagana:
+                  furigana = tm.queryFuriTerms(surface) if termEnabled else None
+                  if furigana:
+                    furigana = furitrans(furigana)
+                    if furigana != surface:
+                      yomigana = furigana
+                  elif katagana == '*':
+                    # Use MSIME as fallback
+                    unknownYomi = True
+                    if HAS_MSIME and len(surface) < msime.IME_MAX_SIZE:
+                      if furiType == defs.FURI_HIRA:
+                        yomigana = msime.to_yomi_hira(surface)
+                      else:
+                        yomigana = msime.to_yomi_kata(surface)
+                        if yomigana:
+                          if furiType == defs.FURI_HIRA:
+                            pass
+                          elif furiType == defs.FURI_ROMAJI:
+                            yomigana = cconv.wide2thin(cconv.kata2romaji(yomigana))
+                            if yomigana == surface:
+                              yomigana = None
+                              unknownYomi = False
+                          elif furiType == defs.FURI_HANGUL:
+                            yomigana = cconv.kata2hangul(yomigana)
+                          elif furiType == defs.FURI_KANJI:
+                            yomigana = cconv.kata2kanji(yomigana)
+                    if not yomigana and unknownYomi and readingTypes:
+                      yomigana = '?'
+                  else:
+                    #katagana = self._repairkatagana(katagana)
+                    yomigana = katatrans(katagana) if katatrans else katagana
+                    if yomigana == surface:
+                      yomigana = None
+            if not type and not feature:
+              yield surface, yomigana
+            elif type and not feature:
+              yield surface, char_type, yomigana
+            elif not type and feature:
+              yield surface, yomigana, f, fmt
+            else: # render all
+              yield surface, char_type, yomigana, f, fmt
+          elif not type and not feature:
+            yield surface
+          elif type and not feature: # and type
+            yield surface, char_type
           elif not type and feature:
-            yield surface, yomigana, f, fmt
-          else: # render all
-            yield surface, char_type, yomigana, f, fmt
-        elif not type and not feature:
-          yield surface
-        elif type and not feature: # and type
-          yield surface, char_type
-        elif not type and feature:
-          f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
-          yield surface, f, fmt
-        elif type and feature:
-          f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
-          yield surface, char_type, f, fmt
-        #else:
-        #  assert False, "unreachable"
+            f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
+            yield surface, f, fmt
+          elif type and feature:
+            f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
+            yield surface, char_type, f, fmt
+          #else:
+          #  assert False, "unreachable"
 
       node = node.next
 
