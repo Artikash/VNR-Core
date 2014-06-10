@@ -1004,7 +1004,7 @@ class GameManager(QtCore.QObject):
           # TODO: Restore get game encoding in the future
           # First, allow modify game encoding in game edit
           #if g.encoding and g.encoding != 'utf-16' or not g.encoding and agentEngine.encoding() != 'utf-16':
-          if not agentEngine.isRegionLocked() and agentEngine.encoding() != 'utf-16' and (not g.encoding or g.encoding != 'utf-16'):
+          if not agentEngine.regionLocked and not agentEngine.wideChar and (not g.encoding or g.encoding != 'utf-16'):
             import trman
             launchLanguage = trman.manager().guessTranslationLanguage()
             if launchLanguage in config.SJIS_LANGUAGE_SET:
@@ -1114,7 +1114,7 @@ class GameManager(QtCore.QObject):
       d.game = g
 
       if agentEngine and gameagent.global_().isAttached() and not texthook.global_().isAttached():
-        engine = gameagent.global_().engine() or agentEngine.name()
+        engine = gameagent.global_().engine() or agentEngine.name
         engineName = defs.to_ith_engine_name(engine)
 
         g.threadName = g.nameThreadName = engineName

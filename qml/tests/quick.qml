@@ -10,11 +10,11 @@ Item {
 
   // - Private -
 
-  Share.IntSpinBox {
+  TextEdit {
     anchors.centerIn: parent
     width: 100
-    postfix: '/50'
-
-    minimumValue: 1
+    text: "hello"
+    selectByMouse: true
+    readOnly: true
   }
 }

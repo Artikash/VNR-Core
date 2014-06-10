@@ -8,6 +8,7 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 import os
+from glob import glob
 from sakurakit.skdebug import dprint
 #from sakurakit.skclass import memoized
 
@@ -86,7 +87,6 @@ class Engine(object): # placeholder
     """
     path = self.getAppDirectory(pid)
     if path:
-      from glob import glob
       return glob(os.path.join(path, pattern))
 
   def globAppDirectories(self, patterns, pid):
@@ -97,7 +97,6 @@ class Engine(object): # placeholder
     """
     path = self.getAppDirectory(pid)
     if path:
-      from glob import glob
       ret = []
       for pat in patterns:
         r = glob(os.path.join(path, pat))

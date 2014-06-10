@@ -25,12 +25,13 @@ class _GrimoireBean:
   def __init__(self):
     self.features = {} # {unicode text:(unicode feature, fmt)}, recent mecab features
 
-  def renderJapanese(self, text, feature, charPerLine, **kwargs):
-    return ''.join(self._renderLine(t, feature=feature, **kwargs)
-        for t in self._wrapText(text, charPerLine))
+  #def renderJapanese(self, text, feature, **kwargs):
+  #  return mecabman.rendertable(text, features=self.features if feature else None, **kwargs);
+    #return ''.join(self._renderLine(t, feature=feature, **kwargs)
+    #    for t in self._wrapText(text, charPerLine))
 
-  def _renderLine(self, text, feature, **kwargs):
-    return mecabman.rendertable(text, termEnabled=True, features=self.features if feature else None, **kwargs);
+  #def _renderLine(self, text, feature, **kwargs):
+  #  return mecabman.rendertable(text, termEnabled=True, features=self.features if feature else None, **kwargs);
     #if not msimeEnabled or len(text) > msime.IME_MAX_SIZE:
     #  mecab = True
     #elif not msime.ja_valid():
@@ -49,12 +50,12 @@ class _GrimoireBean:
     #    ret = mecabman.rendertable(text, termEnabled=True, features=self.features if feature else None, **kwargs);
     #return ret
 
-  @staticmethod
-  def _wrapText(text, charPerLine):
-    if charPerLine > 4 and charPerLine < len(text):
-      return textwrap.wrap(text, charPerLine)
-    else:
-      return [text]
+  #@staticmethod
+  #def _wrapText(text, charPerLine):
+  #  if charPerLine > 4 and charPerLine < len(text):
+  #    return textwrap.wrap(text, charPerLine)
+  #  else:
+  #    return [text]
 
 #@QmlObject
 class GrimoireBean(QObject):
@@ -82,12 +83,12 @@ class GrimoireBean(QObject):
     @return  unicode  html
     """
     d = self.__d
-    feature = colorize
+    feature = colorize # keep features when colorized
     if feature and d.features:
       d.features = {}
     fmt = mecabfmt.getfmt(meCabDic)
     return ''.join(
-        d.renderJapanese(t, feature=feature, # keep features when colorized
+        mecabman.rendertable(t, termEnabled=True, features=d.features if feature else None,
             fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
         for t in text.split('\n') if t)
 
@@ -357,14 +358,17 @@ class OmajinaiController(QObject):
 
 class _MirageBean:
 
-  @classmethod
-  def renderJapanese(cls, text, charPerLine, **kwargs):
-    return ''.join(cls._renderLine(t, **kwargs)
-        for t in cls._wrapText(text, charPerLine))
+  def __init__(self):
+    self.features = {} # {unicode text:(unicode feature, fmt)}, recent mecab features
 
-  @staticmethod
-  def _renderLine(text, **kwargs):
-    return mecabman.rendertable(text, **kwargs) # termEnabled = False
+  #def renderJapanese(self, text, feature, **kwargs):
+  #  return mecabman.rendertable(text, features=self.features if feature else None, **kwargs);
+    #return ''.join(cls._renderLine(t, **kwargs)
+    #    for t in cls._wrapText(text, charPerLine))
+
+  #@staticmethod
+  #def _renderLine(text, **kwargs):
+  #  return mecabman.rendertable(text, **kwargs) # termEnabled = False
     #if not msimeEnabled or len(text) > msime.IME_MAX_SIZE:
     #  jlp = mecabman
     #elif not msime.ja_valid():
@@ -380,12 +384,12 @@ class _MirageBean:
     #  ret = mecabman.rendertable(text, furiType=furiType, rubySize=rubySize, colorize=colorize, center=center);
     #return ret
 
-  @staticmethod
-  def _wrapText(text, charPerLine):
-    if charPerLine > 4 and charPerLine < len(text):
-      return textwrap.wrap(text, charPerLine)
-    else:
-      return [text]
+  #@staticmethod
+  #def _wrapText(text, charPerLine):
+  #  if charPerLine > 4 and charPerLine < len(text):
+  #    return textwrap.wrap(text, charPerLine)
+  #  else:
+  #    return [text]
 
 #@QmlObject
 class MirageBean(QObject):
@@ -394,6 +398,7 @@ class MirageBean(QObject):
 
   def __init__(self, parent=None):
     super(MirageBean, self).__init__(parent)
+    self.__d = _MirageBean()
     MirageBean.instance = self
     dprint("pass")
 
@@ -403,13 +408,18 @@ class MirageBean(QObject):
   showText = Signal(unicode, unicode, long)  # text, lang, timestamp
   showTranslation = Signal(unicode, unicode, unicode, long)  # text, lang, provider, timestamp
 
-  @Slot(unicode, unicode, int, unicode, bool, bool, result=unicode)
-  def renderJapanese(self, text, furiType, charPerLine, rubySize, colorize, center):
+  @Slot(unicode, unicode, unicode, int, unicode, bool, bool, result=unicode)
+  def renderJapanese(self, text, furiType, meCabDic, charPerLine, rubySize, colorize, center):
     """
     @return  unicode  html
     """
-    return ''.join(
-        _MirageBean.renderJapanese(t,
+    d = self.__d
+    feature = colorize
+    if feature and d.features:
+      d.features = {}
+    fmt = mecabfmt.getfmt(meCabDic)
+    return ''.join( # disable term by default
+        mecabman.rendertable(t, termEnabled=False, features=d.features if feature else None,
             furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
         for t in text.split('\n') if t) or text # return the original text if failed
 

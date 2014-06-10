@@ -100,17 +100,19 @@ def toromaji(text, **kwargs):
   """
   return toyomi(text, furiType=defs.FURI_ROMAJI, **kwargs)
 
-def rendertable(text, features=None, rubySize='10px', colorize=False, center=True, **kwargs):
+def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colorize=False, center=True, **kwargs):
   """
   @param  text  unicode
+  @param* charPerLine  int  maximum number of characters per line
   @param* rubySize  str
   @param* colorsize  bool
   @param* center  bool
   @param* features  {unicode surface:(unicode feature, fmt)} or None
-  @return  unicode  HTML table
+  @yield  unicode  HTML table
   """
-  l = []
   i = j = 0
+  line = []
+  lineCount = 0 # int  estimated line width, assume ruby has half width
   hasfeature = features is not None
   color = None
   for it in parse(text, type=True, feature=hasfeature, reading=True, **kwargs):
@@ -119,23 +121,42 @@ def rendertable(text, features=None, rubySize='10px', colorize=False, center=Tru
     else:
       surface, ch, yomi = it
     if colorize:
-      color = None
       if ch in (mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN, mecabdef.TYPE_KATAGANA):
-          i += 1
-          color = 'rgba(255,0,0,40)' if i % 2 else 'rgba(255,255,0,40)'   # red or yellow
+        i += 1
+        color = 'rgba(255,0,0,40)' if i % 2 else 'rgba(255,255,0,40)'   # red or yellow
       elif ch == mecabdef.TYPE_MODIFIER: # adj or adv
         j += 1
         #color = "rgba(0,255,0,40)" if j % 2 else "rgba(255,0,255,40)" # green or magenta
         color = "rgba(0,255,0,40)" if j % 2 else "rgba(0,0,255,40)" # green or blue
-    l.append((surface, yomi, color))
+      else:
+        color = None
     if hasfeature:
       features[surface] = f, fmt
-  return "" if not l else rc.jinja_template('html/furigana').render({
-    'tuples': l,
-    #'bgcolor': "rgba(0,0,0,5)",
-    'rubySize': rubySize,
-    'center': center,
-  })
+
+    width = max(len(surface) if surface else 0, len(yomi)*0.55 if yomi else 0)
+    if width + lineCount <= charPerLine:
+      pass
+    elif line:
+      yield rc.jinja_template('html/furigana').render({
+        'tuples': line,
+        #'bgcolor': "rgba(0,0,0,5)",
+        'rubySize': rubySize,
+        'center': center,
+      })
+      line = []
+      lineCount = 0
+    line.append((surface, yomi, color))
+    lineCount += width
+  if line:
+    yield rc.jinja_template('html/furigana').render({
+      'tuples': line,
+      #'bgcolor': "rgba(0,0,0,5)",
+      'rubySize': rubySize,
+      'center': center,
+    })
+
+def rendertable(*args, **kwargs):
+  return ''.join(_iterrendertable(*args, **kwargs))
 
 ## Render HTML ruby ##
 
