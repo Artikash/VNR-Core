@@ -88,7 +88,10 @@ Item { id: root_
     var n = datamanPlugin_.queryGameName(id)
     if (!n)
       return "(" + id + ")"
-    return n + " (" + id + ")"
+    var s = datamanPlugin_.queryGameSeries(id)
+    if (!s)
+      return n + " (" + id + ")"
+    return '[' + s + '] ' + n + " (" + id + ")"
   }
 
   property int _MIN_TEXT_LENGTH: 1
