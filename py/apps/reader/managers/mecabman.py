@@ -133,7 +133,7 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colo
     if hasfeature:
       features[surface] = f, fmt
 
-    width = max(len(surface) if surface else 0, len(yomi)*0.55 if yomi else 0)
+    width = max(len(surface), len(yomi)*0.55 if yomi else 0)
     if width + lineCount <= charPerLine:
       pass
     elif line:
