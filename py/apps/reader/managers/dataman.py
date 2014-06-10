@@ -6810,6 +6810,17 @@ class DataManager(QObject):
         return g.title
     return ""
 
+  def queryItemSeries(self, id):
+    """
+    @param* id  long
+    @return  unicode not None
+    """
+    if id:
+      g = self.__d.gameItems.get(id)
+      if g:
+        return g.series
+    return ""
+
   def _iterItemGameIds(self, id):
     """
     @param* id  long  itemId
@@ -6850,6 +6861,21 @@ class DataManager(QObject):
     for it in self.__d.games.itervalues():
       if it.itemId == id:
         return it
+
+  def queryGameSeries(self, id=None, md5=None, itemId=None):
+    """
+    @param* id  long
+    @param* md5  str
+    @param* itemId  long
+    @return  unicode or ''
+    """
+    if not itemId and (id or md5):
+      itemId = self.queryGameItemId(id=id, md5=md5)
+    if itemId:
+      dig = self.queryGameItem(itemId)
+      if dig:
+        return dig.series
+    return ''
 
   def queryGameName(self, id=None, md5=None):
     """
@@ -8450,8 +8476,16 @@ class DataManagerProxy(QObject):
     return manager().queryItemName(id=id)
 
   @Slot(long, result=unicode)
+  def queryItemSeries(self, id):
+    return manager().queryItemSeries(id=id)
+
+  @Slot(long, result=unicode)
   def queryGameName(self, id):
     return manager().queryGameName(id=id)
+
+  @Slot(long, result=unicode)
+  def queryGameSeries(self, id):
+    return manager().queryGameSeries(id=id)
 
   @Slot(long, result=unicode)
   def queryGameFileName(self, id):

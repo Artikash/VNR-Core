@@ -89,7 +89,7 @@ BOOL getCurrentMemoryRange(DWORD *lowerBound, DWORD *upperBound)
 {
   WCHAR procName[MAX_PATH]; // cached
   return getCurrentProcessName(procName, MAX_PATH)
-      && NtInspect::getModuleMemoryRange(procName, lowerBound, upperBound);
+      && getModuleMemoryRange(procName, lowerBound, upperBound);
 }
 
 NTINSPECT_END_NAMESPACE
