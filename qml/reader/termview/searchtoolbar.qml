@@ -40,7 +40,7 @@ Row { id: root_ // Theme refers to Bootstrap.label
     toolTip: qsTr("Search current game")
 
     onClicked: {
-      var name = datamanPlugin_.getCurrentGameName()
+      var name = datamanPlugin_.getCurrentGameSeries() || datamanPlugin_.getCurrentGameName()
       if (name)
         root_.triggered('#' + name)
     }

@@ -1911,6 +1911,12 @@ class Term(QObject):
   @property
   def gameItemId(self): return self.__d.gameItemId
 
+  @property
+  def gameSeries(self): return manager().queryItemSeries(self.__d.gameItemId)
+
+  @property
+  def gameName(self): return manager().queryGameName(id=self.__d.gameId)
+
   def setGameId(self, value):
     d = self.__d
     if d.gameId != value:
@@ -3433,7 +3439,7 @@ class _TermModel(object):
     @return  any tuple consistent with _equivalent()
     """
     td = t.d
-    return td.pattern, td.text, td.language[:2], td.type, td.regex, td.special, t.gameItemId
+    return td.pattern, td.text, td.language[:2], td.type, td.regex, td.special, t.gameSeries or td.gameItemId
 
   @staticmethod
   def _equivalent(x, y):
@@ -3451,7 +3457,7 @@ class _TermModel(object):
         xd.language[:2] == yd.language[:2] and
         xd.pattern == yd.pattern and
         xd.text == yd.text and
-        (not xd.special or x.gameItemId == y.gameItemId))
+        (not xd.special or xd.gameItemId == yd.gameItemId or x.gameSeries and x.gameSeries == y.gameSeries))
 
   @property
   def sortedData(self): # -> list not None
@@ -3524,10 +3530,10 @@ class _TermModel(object):
           if t == str(td.gameId):
             return True
           rx = re.compile(t, re.IGNORECASE)
-          it = dm.queryGameName(id=td.gameId)
+          it = term.gameSeries or term.gameName
           return bool(it and (t in it or rx.search(it))) # check t in it in case of escape
       rx = self.filterRe
-      for it in td.pattern, td.text, i18n.language_name(td.language), term.userName, term.updateUserName, Term.typeName(td.type), td.comment, td.updateComment, dm.queryGameName(id=td.gameId):
+      for it in td.pattern, td.text, i18n.language_name(td.language), term.userName, term.updateUserName, Term.typeName(td.type), td.comment, td.updateComment, term.gameSeries, term.gameName:
         if it and (t in it or rx.search(it)): # check t in it in case of escape
           return True
     except Exception, e:
@@ -6699,6 +6705,9 @@ class DataManager(QObject):
   def currentGameName(self):
     md5 = self.currentGameMd5()
     return self.queryGameName(md5=md5) if md5 else ''
+  def currentGameSeries(self):
+    itemId = self.currentGameItemId()
+    return self.queryItemSeries(itemId)
   def currentGameInfo(self):
     g = self.__d.currentGame
     if g:
@@ -8299,6 +8308,9 @@ class DataManagerProxy(QObject):
 
   @Slot(result=unicode)
   def getCurrentGameName(self): return manager().currentGameName()
+
+  @Slot(result=unicode)
+  def getCurrentGameSeries(self): return manager().currentGameSeries()
 
   #@Slot(result=unicode)
   #def getCurrentUserName(self):
