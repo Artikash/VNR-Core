@@ -10,12 +10,8 @@
 #include "engine/enginehash.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
-#include <QtCore/QStringList>
 
 /** Private data */
-
-bool MajiroEngine::match()
-{ return Engine::globs(QStringList() << "data*.arc" << "stream*.arc"); }
 
 bool MajiroEngine::attach()
 {
@@ -82,7 +78,6 @@ void MajiroEngine::hookFunction(HookStack *stack)
   //dmsg(QString::fromLocal8Bit(ret));
   stack->args[2] = (DWORD)data_.constData(); // reset arg3
 }
-
 
 // EOF
 

@@ -9,8 +9,6 @@
 
 /** Private data */
 
-bool CircusEngine::match() { return Engine::exists("advdata/grp/names.dat"); }
-
 /**
  *  jichi 6/5/2014: Sample function from DC3 at 0x4201d0
  *  004201ce     cc             int3

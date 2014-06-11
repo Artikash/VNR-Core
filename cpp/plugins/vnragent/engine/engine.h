@@ -4,9 +4,7 @@
 // 4/20/2014 jichi
 
 #include "sakurakit/skglobal.h"
-#include <QtCore/QByteArray>
-
-QT_FORWARD_DECLARE_CLASS(QString)
+#include <QtCore/QStringList>
 
 class EngineSettings;
 class AbstractEnginePrivate;
@@ -18,28 +16,16 @@ class AbstractEngine
   SK_DISABLE_COPY(AbstractEngine)
 
 public:
-  typedef ulong RequiredAttributes;
-  enum RequiredAttribute {
-    BlockingAttribute = 1               // non-blocking callback is not supported
-    , SingleThreadAttribute = 1 << 1    // scenario thread only
-    , SpecialHookAttribute = 1 << 2     // default hook functions are not used
-    //, HtmlAttribute = 1 << 3    // text contains HTML tags such as <br>
-  };
-
   static Self *instance(); // Needed to be explicitly deleted on exit
 
-  AbstractEngine(const char *name, uint codePage, RequiredAttributes flags = 0);
+  AbstractEngine();
   virtual ~AbstractEngine();
 
   EngineSettings *settings() const;
 
   const char *name() const;
-  void setName(const char *v);
 
   const char *encoding() const;
-  uint codePage() const;
-
-  void setCodePage(uint cp);
   void setEncoding(const QString &v);
 
   bool isTranscodingNeeded() const;
@@ -51,6 +37,11 @@ public:
   //static void setEnabled(bool t);
 
 protected:
+  void setName(const char *v);
+  void setWideChar(bool t);
+  uint codePage() const;
+  void setCodePage(uint cp);
+
   virtual bool attach() = 0; ///< Invoked by load
   virtual bool detach() { return false; } ///< Invoked by unload
 
@@ -101,6 +92,9 @@ protected:
   //template<typename Ret, typename Arg1, typename Arg2>
   //static inline Ret restoreFunction(Arg1 arg1, Arg2 arg2)
   //{ return (Ret)restoreFunction((address_type)arg1, (const_address_type)arg2); }
+
+  ///  Return whether all relpaths exists
+  static bool matchFiles(const QStringList &relpaths);
 
   // Interface to descendent classes
 public:

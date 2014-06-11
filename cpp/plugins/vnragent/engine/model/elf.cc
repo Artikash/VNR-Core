@@ -67,14 +67,6 @@ LPCSTR __fastcall newHookFun(void *self, void *edx, DWORD arg1, DWORD arg2, DWOR
 
 } // unnamed namespace
 
-bool ElfEngine::match()
-{
-  //return Engine::exists("Silkys.exe"); // It might not might not have this file
-  // All arc files in 愛姉妹4 are: data, effect, layer, mes, music
-  // mes.arc is the scenario
-  return Engine::exists(QStringList() << "data.arc" << "effect.arc" << "mes.arc");
-}
-
 /**
  *  jichi 8/16/2013: Insert new siglus hook
  *  See (CaoNiMaGeBi): http://tieba.baidu.com/p/2531786952

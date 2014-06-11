@@ -134,8 +134,6 @@ int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
 
 /** Public class */
 
-bool SiglusEngine::match() { return Engine::exists("SiglusEngine.exe"); }
-
 /**
  *  jichi 8/16/2013: Insert new siglus hook
  *  See (CaoNiMaGeBi): http://tieba.baidu.com/p/2531786952

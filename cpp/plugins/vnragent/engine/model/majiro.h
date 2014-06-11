@@ -13,11 +13,14 @@ class MajiroEngine : public AbstractEngine
 
   static void hookFunction(HookStack *stack);
 public:
+  static bool match() { return matchFiles(QStringList() << "data*.arc" << "stream*.arc"); }
   MajiroEngine()
-    : Base("Majiro", Util::SjisCodePage, BlockingAttribute)
-  { setHookFunction(hookFunction); }
+  {
+    setName("Majiro");
+    setWideChar(false);
+    setHookFunction(hookFunction);
+  }
 
-  static bool match();
 protected:
   bool attach() override;
   //bool detach() override;

@@ -13,11 +13,15 @@ class BGIEngine : public AbstractEngine
 
   static void hookFunction(HookStack *stack);
 public:
-  BGIEngine()
-    : Base("BGI", Util::SjisCodePage, BlockingAttribute)
-  { setHookFunction(hookFunction); }
+  static bool match() { return matchFiles("BGI.*"); }
 
-  static bool match();
+  BGIEngine()
+  {
+    //setName("BGI"); // runtime dependent
+    setWideChar(false);
+    setHookFunction(hookFunction);
+  }
+
 protected:
   bool attach() override;
 

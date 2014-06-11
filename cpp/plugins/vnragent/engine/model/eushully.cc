@@ -8,12 +8,6 @@
 #include <qt_windows.h>
 
 /**
- *  The process name is AGE.EXE.
- *  It also contains AGERC.DLL in the game directory.
- */
-bool EushullyEngine::match() { return Engine::exists("AGERC.DLL"); }
-
-/**
  *  Find the last function call of GetTextExtentPoint32A
  *  The function call must after int3
  */

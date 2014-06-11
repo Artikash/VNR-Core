@@ -16,15 +16,21 @@ class CircusEngine : public AbstractEngine
   static QString textFilter(const QString &text, int role); // remove "\n"
   static QString translationFilter(const QString &text, int role); // insert "\n"
 public:
+  static bool match() { return matchFiles("advdata/grp/names.dat"); }
+
   CircusEngine()
-    : Base("CIRCUS", Util::SjisCodePage, BlockingAttribute)
   {
+    setName("CIRCUS");
+    setWideChar(false);
+    //setMatchFiles("advdata/grp/names.dat");
+    //setReadAsm("[esp+8]");  // arg2
+    //setSplitAsm("[esp]"); // return address
+
     setHookFunction(hookFunction);
     setTextFilter(textFilter);
     setTranslationFilter(translationFilter);
   }
 
-  static bool match();
 protected:
   bool attach() override;
   //bool detach() override;

@@ -3,6 +3,7 @@
 
 #include "config.h"
 #include "engine/engine.h"
+#include "engine/engineenv.h"
 #include "engine/enginehash.h"
 #include "engine/engineloader.h"
 //#include "engine/enginememory.h"
@@ -34,7 +35,7 @@ public:
 
   const char *name;
   uint codePage;
-  Q::RequiredAttributes attributes;
+  //Q::RequiredAttributes attributes;
 
   QTextCodec *encoder,
              *decoder;
@@ -49,8 +50,8 @@ public:
   bool finalized;
 
 public:
-  AbstractEnginePrivate(const char *name, uint codePage, Q::RequiredAttributes attributes)
-    : name(name), codePage(codePage), attributes(attributes)
+  AbstractEnginePrivate()
+    : name(""), codePage(0)
     , encoder(nullptr), decoder(nullptr)
     , dispatchFun(0), oldHookFun(0)
     , textFilter(nullptr), translationFilter(nullptr)
@@ -146,8 +147,7 @@ AbstractEngine *AbstractEngine::instance()
 
 // - Construction -
 
-AbstractEngine::AbstractEngine(const char *name, uint cp, RequiredAttributes attributes)
-  : d_(new D(name, cp, attributes)) {}
+AbstractEngine::AbstractEngine() : d_(new D) {}
 
 AbstractEngine::~AbstractEngine() { delete d_; }
 
@@ -174,6 +174,9 @@ void AbstractEngine::setCodePage(uint v)
 void AbstractEngine::setEncoding(const QString &v)
 { setCodePage(Util::codePageForEncoding(v)); }
 
+void AbstractEngine::setWideChar(bool t)
+{ setEncoding(t ? ENC_UTF16 : ENC_SJIS); }
+
 bool AbstractEngine::isTranscodingNeeded() const
 { return d_->encoder != d_->decoder; }
 
@@ -197,6 +200,19 @@ bool AbstractEngine::load()
 }
 
 bool AbstractEngine::unload() { return detach(); }
+
+// - Exists -
+
+bool AbstractEngine::matchFiles(const QStringList &relpaths)
+{
+  if (relpaths.isEmpty())
+    return false;
+  foreach (const QString &path, relpaths)
+    if (path.contains('*') && !Engine::globs(path)
+        || !Engine::exists(path))
+      return false;
+  return true;
+}
 
 // - Detours -
 

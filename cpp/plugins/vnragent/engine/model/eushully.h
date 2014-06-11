@@ -13,11 +13,17 @@ class EushullyEngine : public AbstractEngine
 
   static void hookFunction(HookStack *stack);
 public:
-  EushullyEngine()
-    : Base("Eushully", Util::SjisCodePage, BlockingAttribute|SingleThreadAttribute)
-  { setHookFunction(hookFunction); }
+  EushullyEngine() //BlockingAttribute|SingleThreadAttribute)
+  {
+    setName("Eushully");
+    setWideChar(false);
+    setHookFunction(hookFunction);
+  }
 
-  static bool match();
+  // The process name is AGE.EXE.
+  // It also contains AGERC.DLL in the game directory.
+  static bool match() { return matchFiles("AGERC.DLL"); }
+
 protected:
   bool attach() override;
   //bool detach() override;

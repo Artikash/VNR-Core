@@ -11,11 +11,13 @@ class SiglusEngine : public AbstractEngine
   SK_EXTEND_CLASS(SiglusEngine, AbstractEngine)
   SK_DISABLE_COPY(SiglusEngine)
 public:
-  SiglusEngine() : Base("SiglusEngine", Util::Utf16CodePage,
-      BlockingAttribute|SingleThreadAttribute|SpecialHookAttribute)
-  {} // Hook requires restoring the original text after dispatch
+  static bool match() { return matchFiles("SiglusEngine.exe"); }
+  SiglusEngine()  //BlockingAttribute|SingleThreadAttribute|SpecialHookAttribute) // Hook requires restoring the original text after dispatch
+  {
+    setName("SiglusEngine");
+    setWideChar(true);
+  }
 
-  static bool match();
 protected:
   bool attach() override;
   //bool detach() override;
