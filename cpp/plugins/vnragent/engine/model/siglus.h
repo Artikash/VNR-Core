@@ -3,24 +3,22 @@
 // siglus.h
 // 5/25/2014 jichi
 
-#include "engine/engine.h"
-#include "util/codepage.h"
+#include "engine/enginemodel.h"
 
-class SiglusEngine : public AbstractEngine
+// Single thread
+struct SiglusEngine : EngineModel
 {
-  SK_EXTEND_CLASS(SiglusEngine, AbstractEngine)
-  SK_DISABLE_COPY(SiglusEngine)
-public:
-  static bool match() { return matchFiles("SiglusEngine.exe"); }
-  SiglusEngine()  //BlockingAttribute|SingleThreadAttribute|SpecialHookAttribute) // Hook requires restoring the original text after dispatch
-  {
-    setName("SiglusEngine");
-    setWideChar(true);
-  }
+  SiglusEngine()
+    : name("SiglusEngine")
+    , wideChar(true)
+    , matchFiles("SiglusEngine.exe")
+    , attachFunction(attach)
+    //, searchFunction(search) // not used
+  {}
 
-protected:
-  bool attach() override;
-  //bool detach() override;
+private:
+  static bool attach();
+  static ulong search(ulong startAddress, ulong stopAddress);
 };
 
 // EOF

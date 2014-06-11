@@ -6,8 +6,8 @@
 // See: http://bbs.sumisora.org/read.php?tid=225250
 #include "engine/model/majiro.h"
 #include "engine/enginedef.h"
-#include "engine/engineenv.h"
 #include "engine/enginehash.h"
+#include "engine/engineutil.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 #include <QtCore/QStringList>

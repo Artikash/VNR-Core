@@ -3,27 +3,20 @@
 // majiro.h
 // 4/20/2014 jichi
 
-#include "engine/engine.h"
-#include "util/codepage.h"
+#include "engine/enginemodel.h"
 
-class MajiroEngine : public AbstractEngine
+struct MajiroEngine : EngineModel
 {
-  SK_EXTEND_CLASS(MajiroEngine, AbstractEngine)
-  SK_DISABLE_COPY(MajiroEngine)
-
-  static void hookFunction(HookStack *stack);
-public:
-  static bool match() { return matchFiles(QStringList() << "data*.arc" << "stream*.arc"); }
   MajiroEngine()
-  {
-    setName("Majiro");
-    setWideChar(false);
-    setHookFunction(hookFunction);
-  }
+    : name("Majiro")
+    , matchFiles(QStringList() << "data*.arc" << "stream*.arc")
+    , searchFunction(search)
+    , hookFunction(hook)
+  {}
 
-protected:
-  bool attach() override;
-  //bool detach() override;
+private:
+  static ulong search(ulong startAddress, ulong stopAddress);
+  static void hook(HookStack *stack);
 };
 
 // EOF

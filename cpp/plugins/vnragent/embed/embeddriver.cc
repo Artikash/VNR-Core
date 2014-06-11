@@ -3,7 +3,8 @@
 
 #include "embed/embeddriver.h"
 #include "embed/embedmanager.h"
-#include "engine/engine.h"
+#include "engine/enginecontroller.h"
+#include "engine/enginefactory.h"
 #include "engine/enginesettings.h"
 
 /** Private class */
@@ -12,7 +13,7 @@ class EmbedDriverPrivate
 {
 public:
   EmbedManager *manager;
-  AbstractEngine *engine;
+  EngineController *engine;
 
   explicit EmbedDriverPrivate(QObject *parent)
     : manager(new EmbedManager(parent)), engine(nullptr) {}
@@ -74,10 +75,7 @@ void EmbedDriver::sendEngineName()
 
 bool EmbedDriver::load()
 {
-  if (d_->engine = AbstractEngine::instance())
-    if (!d_->engine->load())
-      d_->engine = nullptr;
-
+  d_->engine = EngineFactory::getEngine();
   sendEngineName();
   return d_->engine;
 }

@@ -2,7 +2,6 @@
 // 6/5/2014 jichi
 #include "engine/model/circus.h"
 #include "engine/enginedef.h"
-#include "engine/engineenv.h"
 #include "engine/enginehash.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
@@ -35,8 +34,9 @@
  *  004201fa  |. c600 00        mov byte ptr ds:[eax],0x0
  *  004201fd  \. c3             retn
  */
-static ulong searchCircus2(ulong startAddress, ulong stopAddress)
+ulong CircusEngine::search(ulong startAddress, ulong stopAddress)
 {
+  //return 0x4201d0; // DC3 function address
   for (ulong i = startAddress + 0x1000; i < stopAddress -4; i++)
     // *  004201e0  |> 3c 24          /cmp al,0x24
     // *  004201e2  |. 75 05          |jnz short dc3.004201e9
@@ -46,17 +46,6 @@ static ulong searchCircus2(ulong startAddress, ulong stopAddress)
         return j;
     }
   return 0;
-}
-
-bool CircusEngine::attach()
-{
-  ulong startAddress,
-        stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return false;
-  ulong addr = searchCircus2(startAddress, stopAddress);
-  //addr = 0x4201d0; // DC3 function address
-  return addr && hookAddress(addr);
 }
 
 /**
@@ -71,7 +60,7 @@ bool CircusEngine::attach()
  *  - arg2: LPCSTR, the actual text
  */
 
-void CircusEngine::hookFunction(HookStack *stack)
+void CircusEngine::hook(HookStack *stack)
 {
   static QByteArray data_; // persistent storage, which makes this function not thread-safe
 

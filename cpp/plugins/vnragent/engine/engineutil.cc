@@ -1,7 +1,8 @@
-// engineenv.cc
+// engineutil.cc
 // 4/26/2014 jichi
 
-#include "engine/engineenv.h"
+#include "engine/engineutil.h"
+#include "detoursutil/detoursutil.h"
 #include "ntinspect/ntinspect.h"
 #include <QtCore/QDir>
 #include <QtCore/QCoreApplication>
@@ -20,6 +21,27 @@ bool existsPath(const QString &path)
 { return QFileInfo(path).exists(); }
 
 } // unnamed namespace
+
+// - Detours -
+
+Engine::address_type Engine::replaceFunction(address_type old_addr, const_address_type new_addr)
+{
+#ifdef VNRAGENT_ENABLE_DETOURS
+  return detours::replace(old_addr, new_addr);
+#endif // VNRAGENT_ENABLE_DETOURS
+#ifdef VNRAGENT_ENABLE_MHOOK
+  DWORD addr = old_addr;
+  return Mhook_SetHook (&addr, new_addr) ? addr : 0;
+#endif // VNRAGENT_ENABLE_MHOOK
+}
+
+// Not used
+//Engine::address_type Engine::restoreFunction(address_type restore_addr, const_address_type old_addr)
+//{
+//#ifdef VNRAGENT_ENABLE_DETOURS
+//  return detours::restore(restore_addr, old_addr);
+//#endif // VNRAGENT_ENABLE_DETOURS
+//}
 
 // - File -
 

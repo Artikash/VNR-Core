@@ -5,24 +5,18 @@
 // See: http://bbs.sumisora.org/read.php?tid=10917044
 // See: http://bbs.sumisora.org/read.php?tid=225250
 #include "engine/model/majiro.h"
-#include "engine/enginedef.h"
-#include "engine/engineenv.h"
 #include "engine/enginehash.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 
 /** Private data */
 
-bool MajiroEngine::attach()
+ulong MajiroEngine::search(ulong startAddress, ulong stopAddress)
 {
-  ulong startAddress,
-        stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return false;
   enum { sub_esp = 0xec81 }; // caller pattern: sub esp = 0x81,0xec
-  ulong addr = MemDbg::findCallerAddress((ulong)::TextOutA, sub_esp, startAddress, stopAddress);
+  return MemDbg::findCallerAddress((ulong)::TextOutA, sub_esp, startAddress, stopAddress);
   //addr = 0x41af90; // レミニセンス function address
-  return addr && hookAddress(addr);
+  //return addr && hookAddress(addr);
 }
 
 /**
@@ -61,7 +55,7 @@ inline static DWORD splitOf(DWORD *arg1)
  *  - int __cdecl newHookFun(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR output4, int const5)
  */
 
-void MajiroEngine::hookFunction(HookStack *stack)
+void MajiroEngine::hook(HookStack *stack)
 {
   static QByteArray data_; // persistent storage, which makes this function not thread-safe
 
@@ -72,9 +66,10 @@ void MajiroEngine::hookFunction(HookStack *stack)
   DWORD returnAddress = stack->retaddr,
         split = splitOf(arg1);
   // The following logic is consistent with VNR's old texthook
+  //auto sig = Engine::hashThreadSignature(returnAddress, split, Engine::UnknownRole);
   auto sig = Engine::hashThreadSignature(returnAddress, split);
 
-  data_ = instance()->dispatchTextA(text3, sig, Engine::UnknownRole);
+  data_ = instance()->dispatchTextA(text3, sig);
   //dmsg(QString::fromLocal8Bit(ret));
   stack->args[2] = (DWORD)data_.constData(); // reset arg3
 }
@@ -104,7 +99,7 @@ int __cdecl newHookFun(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR
            << const5 << ";"
            << " signature: " << QString::number(signature, 16);
 #endif // DEBUG
-  auto q = AbstractEngine::instance();
+  auto q = EngineController::instance();
   QByteArray data = q->dispatchTextA(text3, signature, Engine::UnknownRole);
   if (!data.isEmpty())
     return oldHookFun(fontName1, canvasSize2, data, output4, const5);

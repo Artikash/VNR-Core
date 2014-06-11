@@ -3,30 +3,20 @@
 // eushully.h
 // 6/1/2014 jichi
 
-#include "engine/engine.h"
-#include "util/codepage.h"
+#include "engine/enginemodel.h"
 
-class EushullyEngine : public AbstractEngine
+struct EushullyEngine : EngineModel
 {
-  SK_EXTEND_CLASS(EushullyEngine, AbstractEngine)
-  SK_DISABLE_COPY(EushullyEngine)
-
-  static void hookFunction(HookStack *stack);
-public:
   EushullyEngine() //BlockingAttribute|SingleThreadAttribute)
-  {
-    setName("Eushully");
-    setWideChar(false);
-    setHookFunction(hookFunction);
-  }
+    : name("Eushully")
+    , matchFiles("AGERC.DLL") // the process name is AGE.EXE.
+    , searchFunction(search)
+    , hookFunction(hook)
+  {}
 
-  // The process name is AGE.EXE.
-  // It also contains AGERC.DLL in the game directory.
-  static bool match() { return matchFiles("AGERC.DLL"); }
-
-protected:
-  bool attach() override;
-  //bool detach() override;
+private:
+  static ulong search(ulong startAddress, ulong stopAddress);
+  static void hook(HookStack *stack);
 };
 
 // EOF

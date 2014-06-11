@@ -1,33 +1,23 @@
 #pragma once
 
-// test.h
+// bgi.h
 // 5/11/2014 jichi
 
-#include "engine/engine.h"
-#include "util/codepage.h"
+#include "engine/enginemodel.h"
 
-class BGIEngine : public AbstractEngine
+struct BGIEngine : EngineModel
 {
-  SK_EXTEND_CLASS(BGIEngine, AbstractEngine)
-  SK_DISABLE_COPY(BGIEngine)
-
-  static void hookFunction(HookStack *stack);
 public:
-  static bool match() { return matchFiles("BGI.*"); }
-
   BGIEngine()
-  {
-    //setName("BGI"); // runtime dependent
-    setWideChar(false);
-    setHookFunction(hookFunction);
-  }
-
-protected:
-  bool attach() override;
+    : name("BGI")
+    , matchFiles("BGI.*")
+    , searchFunction(search)
+    , hookFunction(hook)
+  {}
 
 private:
-  bool attachBGIType1(); // Modified ITH BGI
-  bool attachBGIType2(); // VNR BGI2 engine
+  ulong search(ulong startAddress, stopAddress);
+  void hook(HookStack *stack);
 };
 
 // EOF

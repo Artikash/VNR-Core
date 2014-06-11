@@ -3,28 +3,22 @@
 // elf.h
 // 5/31/2014 jichi
 
-#include "engine/engine.h"
-#include "util/codepage.h"
+#include "engine/enginemodel.h"
 
-class ElfEngine : public AbstractEngine
+struct ElfEngine : EngineModel
 {
-  SK_EXTEND_CLASS(ElfEngine, AbstractEngine)
-  SK_DISABLE_COPY(ElfEngine)
-
-public:
   ElfEngine() //: Base("Elf", Util::SjisCodePage, BlockingAttribute|SpecialHookAttribute) // Need restore the old text to be freed using FreeHeap
-  {
-    setName("Elf");
-    setWideChar(false);
-  }
+    : name("Elf")
+    // "Silkys.exe" or AI6WIN.exe might not exist
+    // All arc files in 愛姉妹4 are: data, effect, layer, mes, music
+    // mes.arc is the scenario
+    , matchFiles(QStringList() << "data.arc" << "effect.arc" << "mes.arc")
+    , attachFunction(attach)
+  {}
 
-  // "Silkys.exe" or AI6WIN.exe might not exist
-  // All arc files in 愛姉妹4 are: data, effect, layer, mes, music
-  // mes.arc is the scenario
-  static bool match() { return matchFiles(QStringList() << "data.arc" << "effect.arc" << "mes.arc"); }
-
-protected:
-  bool attach() override;
+private:
+  static bool attach();
+  //static ulong search(ulong startAddress, ulong stopAddress);
 };
 
 // EOF

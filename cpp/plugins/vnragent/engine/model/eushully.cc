@@ -3,7 +3,6 @@
 // See: http://bbs.sumisora.org/read.php?tid=11044256
 #include "engine/model/eushully.h"
 #include "engine/enginedef.h"
-#include "engine/engineenv.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 
@@ -11,20 +10,14 @@
  *  Find the last function call of GetTextExtentPoint32A
  *  The function call must after int3
  */
-bool EushullyEngine::attach()
+ulong EushullyEngine::search(ulong startAddress, ulong stopAddress)
 {
-  ulong startAddress,
-        stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return false;
   // Find the last function call of GetTextExtentPoint32A
   // The function call must after int3
-  ulong addr = MemDbg::findLastCallerAddressAfterInt3((ulong)::GetTextExtentPoint32A, startAddress, stopAddress);
-  //ulong addr = ::searchEushully(startAddress, stopAddress);
+  return MemDbg::findLastCallerAddressAfterInt3((ulong)::GetTextExtentPoint32A, startAddress, stopAddress);
   //addr = 0x451170; // 姫狩りダンジョンマイスター体験版
   //addr = 0x468fa0; // 天秤のLaDEA体験版
   //dmsg(addr);
-  return addr && hookAddress(addr);
 }
 
 /**
@@ -40,7 +33,7 @@ bool EushullyEngine::attach()
  *
  * FIXME 6/1/2014: This will crash in Chinese locale
  */
-void EushullyEngine::hookFunction(HookStack *stack)
+void EushullyEngine::hook(HookStack *stack)
 {
   static QByteArray data_; // persistent storage, which makes this function not thread-safe
 
