@@ -6,25 +6,28 @@
 #include "engine/enginemodel.h"
 
 // Currently, only CIRCUS Type#2 is implemented
-struct CircusEngine : EngineModel
+class CircusEngine : public EngineModel
 {
-  CircusEngine()
-    : name("CIRCUS")
-    , matchFiles("advdata/grp/names.dat")
-    //, textAsm("[esp+8]")  // arg2
-    //, sizeAsm(nullptr)  // none
-    //, splitAsm("[esp]") // return address
-    , searchFunction(search)
-    , hookFunction(hook)
-    , textFilterFunction(textFilter)
-    , translationFilterFunction(translationFilter)
-  {}
-
-private:
+  SK_EXTEND_CLASS(CircusEngine, EngineModel)
   static ulong search(ulong startAddress, ulong stopAddress);
   static void hook(HookStack *stack);
   static QString textFilter(const QString &text, int role); // remove "\n"
   static QString translationFilter(const QString &text, int role); // insert "\n"
+public:
+  CircusEngine()
+  {
+    name = "CIRCUS";
+    matchFiles << "advdata/grp/names.dat";
+    //textAsm("[esp+8]")  // arg2
+    //sizeAsm(nullptr)  // none
+    //splitAsm("[esp]") // return address
+    searchFunction = &Self::search;
+    hookFunction = &Self::hook;
+    textFilterFunction = &Self::textFilter;
+    translationFilterFunction = &Self::translationFilter;
+  }
+
+private:
 };
 
 // EOF

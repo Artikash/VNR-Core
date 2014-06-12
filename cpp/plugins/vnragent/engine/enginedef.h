@@ -16,6 +16,9 @@ enum {
   , NameThreadSignature = SingleThreadSignatureBase + NameRole
 };
 
+// Emperical maximum memory range of an application
+enum { MaximumMemoryRange = 0x300000 };
+
 } // namespace Engine
 
 // EOF

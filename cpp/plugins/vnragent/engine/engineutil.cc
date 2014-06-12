@@ -1,6 +1,7 @@
 // engineutil.cc
 // 4/26/2014 jichi
 
+#include "config.h"
 #include "engine/engineutil.h"
 #include "detoursutil/detoursutil.h"
 #include "ntinspect/ntinspect.h"

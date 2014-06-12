@@ -5,18 +5,19 @@
 
 #include "engine/enginemodel.h"
 
-struct EushullyEngine : EngineModel
+class EushullyEngine : public EngineModel
 {
-  EushullyEngine() //BlockingAttribute|SingleThreadAttribute)
-    : name("Eushully")
-    , matchFiles("AGERC.DLL") // the process name is AGE.EXE.
-    , searchFunction(search)
-    , hookFunction(hook)
-  {}
-
-private:
+  SK_EXTEND_CLASS(EushullyEngine, EngineModel)
   static ulong search(ulong startAddress, ulong stopAddress);
   static void hook(HookStack *stack);
+public:
+  EushullyEngine() //BlockingAttribute|SingleThreadAttribute)
+  {
+    name = "Eushully";
+    matchFiles << "AGERC.DLL"; // the process name is AGE.EXE.
+    searchFunction = &Self::search;
+    hookFunction = &Self::hook;
+  }
 };
 
 // EOF

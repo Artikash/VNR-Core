@@ -5,6 +5,7 @@
 // See: http://bbs.sumisora.org/read.php?tid=10917044
 // See: http://bbs.sumisora.org/read.php?tid=225250
 #include "engine/model/majiro.h"
+#include "engine/enginecontroller.h"
 #include "engine/enginehash.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
@@ -69,7 +70,7 @@ void MajiroEngine::hook(HookStack *stack)
   //auto sig = Engine::hashThreadSignature(returnAddress, split, Engine::UnknownRole);
   auto sig = Engine::hashThreadSignature(returnAddress, split);
 
-  data_ = instance()->dispatchTextA(text3, sig);
+  data_ = EngineController::instance()->dispatchTextA(text3, sig);
   //dmsg(QString::fromLocal8Bit(ret));
   stack->args[2] = (DWORD)data_.constData(); // reset arg3
 }

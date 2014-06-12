@@ -1,6 +1,7 @@
 // bgi.cc
 // 5/11/2014 jichi
 #include "engine/model/bgi.h"
+#include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "memdbg/memsearch.h"
@@ -56,7 +57,7 @@ void BGIEngine::hook(HookStack *stack)
 
   auto sig = Engine::hashThreadSignature(stack->retaddr, split);
 
-  data_ = instance()->dispatchTextA(text3, sig, Engine::UnknownRole);
+  data_ = EngineController::instance()->dispatchTextA(text3, sig, Engine::UnknownRole);
   stack->args[2] = (DWORD)data_.constData();
 }
 
@@ -331,7 +332,7 @@ static ulong searchBGI2(ulong startAddress, ulong stopAddress)
 }
 
 // BGI2 pattern also exists in BGI1
-ulong BGIEngine::search(ulong startAddress, stopAddress)
+ulong BGIEngine::search(ulong startAddress, ulong stopAddress)
 {
   ulong addr = ::searchBGI2(startAddress, stopAddress);
   if (!addr)

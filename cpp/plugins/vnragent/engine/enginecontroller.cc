@@ -200,7 +200,7 @@ bool EngineController::load()
   return ok;
 }
 
-bool EngineController::unload() { return detach(); }
+bool EngineController::unload() { return false; }
 
 // - Exists -
 

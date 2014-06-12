@@ -16,7 +16,7 @@
 // http://stackoverflow.com/questions/1883862/c-oop-list-of-classes-class-types-and-creating-instances-of-them
 EngineController *EngineFactory::createEngine()
 {
-  EngineModel *models[] = {
+  static EngineModel *models[] = {
    new BGIEngine
    , new CircusEngine
    , new ElfEngine
@@ -27,9 +27,8 @@ EngineController *EngineFactory::createEngine()
   BOOST_FOREACH (EngineModel *m, models) {
     auto p = new EngineController(m);
     if (p->match() && p->load())
-      return c; // Memory leak here as not all engines are deleted
+      return p;
     delete p;
-    delete m;
   }
   return nullptr;
 }

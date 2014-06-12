@@ -6,6 +6,7 @@
 class EngineController;
 class EngineFactory
 {
+public:
   static EngineController *createEngine();
 };
 

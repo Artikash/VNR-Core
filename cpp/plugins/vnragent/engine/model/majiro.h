@@ -5,18 +5,19 @@
 
 #include "engine/enginemodel.h"
 
-struct MajiroEngine : EngineModel
+class MajiroEngine : public EngineModel
 {
-  MajiroEngine()
-    : name("Majiro")
-    , matchFiles(QStringList() << "data*.arc" << "stream*.arc")
-    , searchFunction(search)
-    , hookFunction(hook)
-  {}
-
-private:
+  SK_EXTEND_CLASS(MajiroEngine, EngineModel)
   static ulong search(ulong startAddress, ulong stopAddress);
   static void hook(HookStack *stack);
+public:
+  MajiroEngine()
+  {
+    name = "Majiro";
+    matchFiles << "data*.arc" << "stream*.arc";
+    searchFunction = &Self::search;
+    hookFunction = &Self::hook;
+  }
 };
 
 // EOF

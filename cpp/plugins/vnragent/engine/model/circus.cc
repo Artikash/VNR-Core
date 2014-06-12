@@ -1,6 +1,7 @@
 // circus.cc
 // 6/5/2014 jichi
 #include "engine/model/circus.h"
+#include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
 #include "engine/enginehash.h"
 #include "memdbg/memsearch.h"
@@ -68,7 +69,7 @@ void CircusEngine::hook(HookStack *stack)
   auto sig = Engine::hashThreadSignature(returnAddress);
 
   LPCSTR text = (LPCSTR)stack->args[1]; // arg2
-  data_ = instance()->dispatchTextA(text, sig, Engine::UnknownRole);
+  data_ = EngineController::instance()->dispatchTextA(text, sig, Engine::UnknownRole);
   stack->args[1] = (DWORD)data_.constData(); // reset arg2
 }
 

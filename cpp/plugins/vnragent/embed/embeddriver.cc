@@ -75,7 +75,7 @@ void EmbedDriver::sendEngineName()
 
 bool EmbedDriver::load()
 {
-  d_->engine = EngineFactory::getEngine();
+  d_->engine = EngineFactory::createEngine();
   sendEngineName();
   return d_->engine;
 }

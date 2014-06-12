@@ -2,6 +2,7 @@
 // 6/1/2014 jichi
 // See: http://bbs.sumisora.org/read.php?tid=11044256
 #include "engine/model/eushully.h"
+#include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
@@ -42,7 +43,7 @@ void EushullyEngine::hook(HookStack *stack)
 
   LPCSTR text2 = (LPCSTR)stack->args[1]; // arg2
 
-  data_ = instance()->dispatchTextA(text2, signature, role);
+  data_ = EngineController::instance()->dispatchTextA(text2, signature, role);
   //dmsg(QString::fromLocal8Bit(ret));
   stack->args[1] = (ulong)data_.constData(); // arg2
 }

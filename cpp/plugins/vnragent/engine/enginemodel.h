@@ -3,10 +3,13 @@
 // enginemodel.h
 // 6/10/2014 jichi
 
+#include "sakurakit/skglobal.h"
 #include <QtCore/QStringList>
 
-struct EngineModel
+class EngineModel
 {
+  SK_CLASS(EngineModel)
+public:
   EngineModel()
     : name(nullptr)
     , wideChar(false)

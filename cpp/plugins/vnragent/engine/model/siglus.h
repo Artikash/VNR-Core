@@ -6,19 +6,20 @@
 #include "engine/enginemodel.h"
 
 // Single thread
-struct SiglusEngine : EngineModel
+class SiglusEngine : public EngineModel
 {
-  SiglusEngine()
-    : name("SiglusEngine")
-    , wideChar(true)
-    , matchFiles("SiglusEngine.exe")
-    , attachFunction(attach)
-    //, searchFunction(search) // not used
-  {}
-
-private:
+  SK_EXTEND_CLASS(SiglusEngine, EngineModel)
   static bool attach();
   static ulong search(ulong startAddress, ulong stopAddress);
+public:
+  SiglusEngine()
+  {
+    name = "SiglusEngine";
+    wideChar = true;
+    matchFiles << "SiglusEngine.exe";
+    attachFunction = &Self::attach;
+    searchFunction = &Self::search; // not used
+  }
 };
 
 // EOF
