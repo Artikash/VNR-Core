@@ -61,12 +61,13 @@ HEADERS += \
   embed/embeddriver.h \
   embed/embedmanager.h \
   embed/embedmemory.h \
-  engine/engine.h \
+  engine/enginecontroller.h \
   engine/enginedef.h \
-  engine/engineenv.h \
+  engine/enginefactory.h \
   engine/enginehash.h \
-  engine/engineloader.h \
+  engine/enginemodel.h \
   engine/enginesettings.h \
+  engine/engineutil.h \
   hijack/hijackdriver.h \
   hijack/hijackfuncs.h \
   hijack/hijackfuncs_p.h \
@@ -92,9 +93,9 @@ SOURCES += \
   embed/embeddriver.cc \
   embed/embedmanager.cc \
   embed/embedmemory.cc \
-  engine/engine.cc \
-  engine/engineenv.cc \
-  engine/engineloader.cc \
+  engine/enginecontroller.cc \
+  engine/enginefactory.cc \
+  engine/engineutil.cc \
   hijack/hijackdriver.cc \
   hijack/hijackfuncs.cc \
   hijack/hijackfuncs_gdi32.cc \
@@ -125,8 +126,6 @@ HEADERS += \
   #engine/model/test.h
 SOURCES += \
   engine/model/bgi.cc \
-  engine/model/bgi1.cc \
-  engine/model/bgi2.cc \
   engine/model/circus.cc \
   engine/model/elf.cc \
   engine/model/eushully.cc \

@@ -2,6 +2,7 @@
 
 // enginehash.h
 // 4/26/2014 jichi
+// Hashing algorithms are so important that I put them into a different file.
 
 #include "sakurakit/skhash.h"
 #include <QtCore/QString>

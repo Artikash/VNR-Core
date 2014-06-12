@@ -3,31 +3,31 @@
 // circus.h
 // 6/4/2014 jichi
 
-#include "engine/engine.h"
-#include "util/codepage.h"
+#include "engine/enginemodel.h"
 
 // Currently, only CIRCUS Type#2 is implemented
-class CircusEngine : public AbstractEngine
+class CircusEngine : public EngineModel
 {
-  SK_EXTEND_CLASS(CircusEngine, AbstractEngine)
-  SK_DISABLE_COPY(CircusEngine)
-
-  static void hookFunction(HookStack *stack);
+  SK_EXTEND_CLASS(CircusEngine, EngineModel)
+  static ulong search(ulong startAddress, ulong stopAddress);
+  static void hook(HookStack *stack);
   static QString textFilter(const QString &text, int role); // remove "\n"
   static QString translationFilter(const QString &text, int role); // insert "\n"
 public:
   CircusEngine()
-    : Base("CIRCUS", Util::SjisCodePage, BlockingAttribute)
   {
-    setHookFunction(hookFunction);
-    setTextFilter(textFilter);
-    setTranslationFilter(translationFilter);
+    name = "CIRCUS";
+    matchFiles << "advdata/grp/names.dat";
+    //textAsm("[esp+8]")  // arg2
+    //sizeAsm(nullptr)  // none
+    //splitAsm("[esp]") // return address
+    searchFunction = &Self::search;
+    hookFunction = &Self::hook;
+    textFilterFunction = &Self::textFilter;
+    translationFilterFunction = &Self::translationFilter;
   }
 
-  static bool match();
-protected:
-  bool attach() override;
-  //bool detach() override;
+private:
 };
 
 // EOF

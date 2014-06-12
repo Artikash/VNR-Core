@@ -1,29 +1,23 @@
 #pragma once
 
-// test.h
+// bgi.h
 // 5/11/2014 jichi
 
-#include "engine/engine.h"
-#include "util/codepage.h"
+#include "engine/enginemodel.h"
 
-class BGIEngine : public AbstractEngine
+class BGIEngine : public EngineModel
 {
-  SK_EXTEND_CLASS(BGIEngine, AbstractEngine)
-  SK_DISABLE_COPY(BGIEngine)
-
-  static void hookFunction(HookStack *stack);
+  SK_EXTEND_CLASS(BGIEngine, EngineModel)
+  static ulong search(ulong startAddress, ulong stopAddress);
+  static void hook(HookStack *stack);
 public:
   BGIEngine()
-    : Base("BGI", Util::SjisCodePage, BlockingAttribute)
-  { setHookFunction(hookFunction); }
-
-  static bool match();
-protected:
-  bool attach() override;
-
-private:
-  bool attachBGIType1(); // Modified ITH BGI
-  bool attachBGIType2(); // VNR BGI2 engine
+  {
+    name = "BGI";
+    matchFiles << "BGI.*";
+    searchFunction = &Self::search;
+    hookFunction = &Self::hook;
+  }
 };
 
 // EOF

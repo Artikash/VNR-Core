@@ -2,8 +2,8 @@
 // 5/25/2014 jichi
 #include "engine/model/rejet.h"
 #include "engine/enginedef.h"
-#include "engine/engineenv.h"
 #include "engine/enginehash.h"
+#include "engine/engineutil.h"
 #include "detoursutil/detoursutil.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>

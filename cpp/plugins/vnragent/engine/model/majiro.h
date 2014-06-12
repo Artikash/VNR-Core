@@ -3,24 +3,21 @@
 // majiro.h
 // 4/20/2014 jichi
 
-#include "engine/engine.h"
-#include "util/codepage.h"
+#include "engine/enginemodel.h"
 
-class MajiroEngine : public AbstractEngine
+class MajiroEngine : public EngineModel
 {
-  SK_EXTEND_CLASS(MajiroEngine, AbstractEngine)
-  SK_DISABLE_COPY(MajiroEngine)
-
-  static void hookFunction(HookStack *stack);
+  SK_EXTEND_CLASS(MajiroEngine, EngineModel)
+  static ulong search(ulong startAddress, ulong stopAddress);
+  static void hook(HookStack *stack);
 public:
   MajiroEngine()
-    : Base("Majiro", Util::SjisCodePage, BlockingAttribute)
-  { setHookFunction(hookFunction); }
-
-  static bool match();
-protected:
-  bool attach() override;
-  //bool detach() override;
+  {
+    name = "Majiro";
+    matchFiles << "data*.arc" << "stream*.arc";
+    searchFunction = &Self::search;
+    hookFunction = &Self::hook;
+  }
 };
 
 // EOF

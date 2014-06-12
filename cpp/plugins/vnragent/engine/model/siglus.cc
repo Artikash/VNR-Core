@@ -3,9 +3,10 @@
 //
 // Hooking thiscall: http://tresp4sser.wordpress.com/2012/10/06/how-to-hook-thiscall-functions/
 #include "engine/model/siglus.h"
+#include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
-#include "engine/engineenv.h"
 #include "engine/enginehash.h"
+#include "engine/engineutil.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 
@@ -107,7 +108,7 @@ int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
              << arg2 << ";"
              << " signature: " << QString::number(signature, 16);
 #endif // DEBUG
-  auto q = AbstractEngine::instance();
+  auto q = EngineController::instance();
 
   QString text = QString::fromWCharArray(self->text(), self->size);
   text = q->dispatchTextW(text, signature, role);
@@ -134,8 +135,6 @@ int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
 
 /** Public class */
 
-bool SiglusEngine::match() { return Engine::exists("SiglusEngine.exe"); }
-
 /**
  *  jichi 8/16/2013: Insert new siglus hook
  *  See (CaoNiMaGeBi): http://tieba.baidu.com/p/2531786952
@@ -160,7 +159,7 @@ bool SiglusEngine::match() { return Engine::exists("SiglusEngine.exe"); }
  *  013baf32  |. 3bd7           |cmp edx,edi ; jichi: ITH hook here, char saved in edi
  *  013baf34  |. 75 4b          |jnz short siglusen.013baf81
  */
-static ulong searchSiglus2(ulong startAddress, ulong stopAddress)
+ulong SiglusEngine::search(ulong startAddress, ulong stopAddress)
 {
   //const BYTE ins[] = { // size = 14
   //  0x01,0x53, 0x58,                // 0153 58          add dword ptr ds:[ebx+58],edx
@@ -203,13 +202,13 @@ bool SiglusEngine::attach()
         stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
-  ulong addr = ::searchSiglus2(startAddress, stopAddress);
+  ulong addr = search(startAddress, stopAddress);
   //ulong addr = startAddress + 0xdb140; // 聖娼女
   //ulong addr = startAddress + 0xdaf32; // 聖娼女 体験版
   //dmsg(addr - startAddress);
   if (!addr)
     return false;
-  return ::oldHookFun = replaceFunction<hook_fun_t>(addr, ::newHookFun);
+  return ::oldHookFun = Engine::replaceFunction<hook_fun_t>(addr, ::newHookFun);
 }
 
 // EOF

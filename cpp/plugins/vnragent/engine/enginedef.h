@@ -9,15 +9,15 @@ namespace Engine {
 enum TextRole { UnknownRole = 0, ScenarioRole,  NameRole, OtherRole, ChoiceRole = OtherRole, // TODO: Add support for choice
                 RoleCount };
 
-// Emperical maximum memory range of an application
-enum { MaximumMemoryRange = 0x300000 };
-
 // Dummy fixed signature the same as ITH for single text thread
 enum {
   SingleThreadSignatureBase = 0x10000
   , ScenarioThreadSignature = SingleThreadSignatureBase + ScenarioRole
   , NameThreadSignature = SingleThreadSignatureBase + NameRole
 };
+
+// Emperical maximum memory range of an application
+enum { MaximumMemoryRange = 0x300000 };
 
 } // namespace Engine
 

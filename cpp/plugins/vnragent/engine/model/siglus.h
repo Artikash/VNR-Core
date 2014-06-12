@@ -3,22 +3,23 @@
 // siglus.h
 // 5/25/2014 jichi
 
-#include "engine/engine.h"
-#include "util/codepage.h"
+#include "engine/enginemodel.h"
 
-class SiglusEngine : public AbstractEngine
+// Single thread
+class SiglusEngine : public EngineModel
 {
-  SK_EXTEND_CLASS(SiglusEngine, AbstractEngine)
-  SK_DISABLE_COPY(SiglusEngine)
+  SK_EXTEND_CLASS(SiglusEngine, EngineModel)
+  static bool attach();
+  static ulong search(ulong startAddress, ulong stopAddress);
 public:
-  SiglusEngine() : Base("SiglusEngine", Util::Utf16CodePage,
-      BlockingAttribute|SingleThreadAttribute|SpecialHookAttribute)
-  {} // Hook requires restoring the original text after dispatch
-
-  static bool match();
-protected:
-  bool attach() override;
-  //bool detach() override;
+  SiglusEngine()
+  {
+    name = "SiglusEngine";
+    wideChar = true;
+    matchFiles << "SiglusEngine.exe";
+    attachFunction = &Self::attach;
+    searchFunction = &Self::search; // not used
+  }
 };
 
 // EOF

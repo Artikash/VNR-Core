@@ -1,14 +1,14 @@
-// engine.cc
+// enginecontroller.cc
 // 4/20/2014 jichi
 
 #include "config.h"
-#include "engine/engine.h"
+#include "engine/enginecontroller.h"
 #include "engine/enginehash.h"
-#include "engine/engineloader.h"
+#include "engine/enginemodel.h"
+#include "engine/engineutil.h"
 //#include "engine/enginememory.h"
 #include "engine/enginesettings.h"
 #include "embed/embedmanager.h"
-#include "detoursutil/detoursutil.h"
 #include "util/codepage.h"
 #include "util/textutil.h"
 #include "winkey/winkey.h"
@@ -17,48 +17,47 @@
 #include <QtCore/QTimer>
 #include <QtCore/QTextCodec>
 
-#define DEBUG "engine"
+#define DEBUG "enginecontroller"
 #include "sakurakit/skdebug.h"
 
 /** Private class */
 
-class AbstractEnginePrivate
+class EngineControllerPrivate
 {
-  typedef AbstractEngine Q;
+  typedef EngineController Q;
 
-  static Q::address_type globalOldHookFun;
-  static Q::hook_function globalDispatchFun;
+  static Engine::address_type globalOldHookFun;
+  static EngineModel::hook_function globalDispatchFun;
 public:
+  static Q *globalInstance;
 
   enum { ExchangeInterval = 10 };
 
-  const char *name;
+  EngineModel *model;
+
   uint codePage;
-  Q::RequiredAttributes attributes;
+  //Q::RequiredAttributes attributes;
 
   QTextCodec *encoder,
              *decoder;
 
-  Q::address_type oldHookFun;
-  Q::hook_function dispatchFun;
-
-  Q::filter_function textFilter,
-                     translationFilter;
+  Engine::address_type oldHookFun;
+  EngineModel::hook_function dispatchFun;
 
   EngineSettings *settings;
   bool finalized;
 
 public:
-  AbstractEnginePrivate(const char *name, uint codePage, Q::RequiredAttributes attributes)
-    : name(name), codePage(codePage), attributes(attributes)
+  EngineControllerPrivate(EngineModel *model)
+    : model(model)
+    , codePage(0)
     , encoder(nullptr), decoder(nullptr)
     , dispatchFun(0), oldHookFun(0)
-    , textFilter(nullptr), translationFilter(nullptr)
     , settings(new EngineSettings)
     , finalized(false)
   {}
 
-  ~AbstractEnginePrivate() { delete settings; }
+  ~EngineControllerPrivate() { delete settings; }
 
   void finalize()
   {
@@ -74,8 +73,8 @@ public:
 
   // Property helpers
 
-  bool testAttribute(Q::RequiredAttribute v) const { return attributes & v; }
-  bool testAttributes(Q::RequiredAttributes v) const { return attributes & v; }
+  //bool testAttribute(Q::RequiredAttribute v) const { return attributes & v; }
+  //bool testAttributes(Q::RequiredAttributes v) const { return attributes & v; }
 
   // Encoding
 
@@ -101,8 +100,9 @@ private:
 public:
 };
 
-AbstractEngine::address_type AbstractEnginePrivate::globalOldHookFun;
-AbstractEngine::hook_function AbstractEnginePrivate::globalDispatchFun;
+EngineController *EngineControllerPrivate::globalInstance;
+Engine::address_type EngineControllerPrivate::globalOldHookFun;
+EngineModel::hook_function EngineControllerPrivate::globalDispatchFun;
 
 /**
  *  The stack must be consistent with struct HookStack
@@ -120,12 +120,12 @@ __declspec(naked) static int newHookFun()
     pushad              // increase esp by 0x20 = 4 * 8, push ecx for thiscall is enough, though
     pushfd              // eflags
     push esp            // arg1
-    call AbstractEnginePrivate::globalDispatchFun
+    call EngineControllerPrivate::globalDispatchFun
     add esp,4           // pop esp
     popfd
     popad
     // TODO: instead of jmp, allow modify the stack after calling the function
-    jmp AbstractEnginePrivate::globalOldHookFun
+    jmp EngineControllerPrivate::globalOldHookFun
   }
 }
 
@@ -133,33 +133,25 @@ __declspec(naked) static int newHookFun()
 
 // - Detection -
 
-#define INVALID_INSTANCE ((AbstractEngine *)-1)
-
-static AbstractEngine *instance_ = INVALID_INSTANCE;
-
-AbstractEngine *AbstractEngine::instance()
-{
-  if (::instance_ == INVALID_INSTANCE)
-    ::instance_ = Engine::getEngine();
-  return ::instance_;
-}
+EngineController *EngineController::instance() { return D::globalInstance; }
 
 // - Construction -
 
-AbstractEngine::AbstractEngine(const char *name, uint cp, RequiredAttributes attributes)
-  : d_(new D(name, cp, attributes)) {}
+EngineController::EngineController(EngineModel *model)
+  : d_(new D(model))
+{
+  setEncoding(model->wideChar ? ENC_UTF16 : ENC_SJIS);
+}
 
-AbstractEngine::~AbstractEngine() { delete d_; }
+EngineController::~EngineController() { delete d_; }
 
-EngineSettings *AbstractEngine::settings() const { return d_->settings; }
-const char *AbstractEngine::name() const { return d_->name; }
+EngineSettings *EngineController::settings() const { return d_->settings; }
+const char *EngineController::name() const { return d_->model->name; }
 
-void AbstractEngine::setName(const char *v) { d_->name = v; }
-
-const char *AbstractEngine::encoding() const
+const char *EngineController::encoding() const
 { return Util::encodingForCodePage(d_->codePage); }
 
-void AbstractEngine::setCodePage(uint v)
+void EngineController::setCodePage(uint v)
 {
   if (v != d_->codePage) {
     d_->codePage = v;
@@ -171,60 +163,68 @@ void AbstractEngine::setCodePage(uint v)
   }
 }
 
-void AbstractEngine::setEncoding(const QString &v)
+void EngineController::setEncoding(const QString &v)
 { setCodePage(Util::codePageForEncoding(v)); }
 
-bool AbstractEngine::isTranscodingNeeded() const
+bool EngineController::isTranscodingNeeded() const
 { return d_->encoder != d_->decoder; }
-
-void AbstractEngine::setHookFunction(hook_function v)
-{ d_->dispatchFun = v; }
-
-void AbstractEngine::setTextFilter(filter_function v)
-{ d_->textFilter = v; }
-
-void AbstractEngine::setTranslationFilter(filter_function v)
-{ d_->translationFilter = v; }
 
 // - Attach -
 
-bool AbstractEngine::load()
+bool EngineController::attach()
+{
+  if (d_->model->attachFunction)
+    return d_->model->attachFunction();
+  if (!d_->model->searchFunction)
+    return false;
+  ulong startAddress,
+        stopAddress;
+  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
+    return false;
+  ulong addr = d_->model->searchFunction(startAddress, stopAddress);
+  //ulong addr = startAddress + 0x31850; // 世界と世界の真ん中 体験版
+  if (addr) {
+    d_->oldHookFun = Engine::replaceFunction<Engine::address_type>(addr, ::newHookFun);
+    return true;
+  }
+  return false;
+}
+
+bool EngineController::load()
 {
   bool ok = attach();
-  if (ok)
+  if (ok) {
     d_->finalize();
+    D::globalInstance = this;
+  }
   return ok;
 }
 
-bool AbstractEngine::unload() { return detach(); }
+bool EngineController::unload() { return false; }
 
-// - Detours -
+// - Exists -
 
-AbstractEngine::address_type AbstractEngine::replaceFunction(address_type old_addr, const_address_type new_addr)
+bool EngineController::match()
 {
-#ifdef VNRAGENT_ENABLE_DETOURS
-  return detours::replace(old_addr, new_addr);
-#endif // VNRAGENT_ENABLE_DETOURS
-#ifdef VNRAGENT_ENABLE_MHOOK
-  DWORD addr = old_addr;
-  return Mhook_SetHook (&addr, new_addr) ? addr : 0;
-#endif // VNRAGENT_ENABLE_MHOOK
+  return d_->model->matchFunction ?
+      d_->model->matchFunction() :
+      matchFiles(d_->model->matchFiles);
 }
 
-// Not used
-//AbstractEngine::address_type AbstractEngine::restoreFunction(address_type restore_addr, const_address_type old_addr)
-//{
-//#ifdef VNRAGENT_ENABLE_DETOURS
-//  return detours::restore(restore_addr, old_addr);
-//#endif // VNRAGENT_ENABLE_DETOURS
-//}
-
-bool AbstractEngine::hookAddress(ulong addr)
-{ return d_->oldHookFun = !addr ? 0 : replaceFunction<address_type>(addr, ::newHookFun); }
+bool EngineController::matchFiles(const QStringList &relpaths)
+{
+  if (relpaths.isEmpty())
+    return false;
+  foreach (const QString &path, relpaths)
+    if (path.contains('*') && !Engine::globs(path)
+        || !Engine::exists(path))
+      return false;
+  return true;
+}
 
 // - Dispatch -
 
-QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, long signature, int role)
+QByteArray EngineController::dispatchTextA(const QByteArray &data, long signature, int role)
 {
   QString text = d_->decode(data);
   if (text.isEmpty())
@@ -242,8 +242,8 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, long signature,
   if (!canceled && !d_->settings->translationEnabled[role] &&
       (d_->settings->extractionEnabled[role] || d_->settings->extractsAllTexts)) {
     enum { NeedsTranslation = false };
-    if (d_->textFilter) {
-      QString t = d_->textFilter(text, role);
+    if (d_->model->textFilterFunction) {
+      QString t = d_->model->textFilterFunction(text, role);
       if (!t.isEmpty())
         p->sendText(t, hash, signature, role, NeedsTranslation);
     } else
@@ -261,8 +261,8 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, long signature,
 
   QString repl = p->findTranslation(hash, role);
   bool needsTranslation = repl.isEmpty();
-  if (d_->textFilter) {
-    QString t = d_->textFilter(text, role);
+  if (d_->model->textFilterFunction) {
+    QString t = d_->model->textFilterFunction(text, role);
     if (!t.isEmpty())
       p->sendText(t, hash, signature, role, needsTranslation);
     else
@@ -270,10 +270,10 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, long signature,
   } else
     p->sendText(text, hash, signature, role, needsTranslation);
 
-  if (needsTranslation && d_->testAttribute(BlockingAttribute)) {
+  if (needsTranslation) {
     repl = p->waitForTranslation(hash, role);
-    if (!repl.isEmpty() && d_->translationFilter)
-      repl = d_->translationFilter(repl, role);
+    if (!repl.isEmpty() && d_->model->translationFilterFunction)
+      repl = d_->model->translationFilterFunction(repl, role);
   }
 
   if (repl.isEmpty())
@@ -284,7 +284,7 @@ QByteArray AbstractEngine::dispatchTextA(const QByteArray &data, long signature,
   return d_->encode(repl);
 }
 
-QString AbstractEngine::dispatchTextW(const QString &text, long signature, int role)
+QString EngineController::dispatchTextW(const QString &text, long signature, int role)
 {
   if (text.isEmpty())
     return text;
@@ -300,8 +300,8 @@ QString AbstractEngine::dispatchTextW(const QString &text, long signature, int r
   if (!canceled && !d_->settings->translationEnabled[role] &&
       (d_->settings->extractionEnabled[role] || d_->settings->extractsAllTexts)) {
     enum { NeedsTranslation = false };
-    if (d_->textFilter) {
-      QString t = d_->textFilter(text, role);
+    if (d_->model->textFilterFunction) {
+      QString t = d_->model->textFilterFunction(text, role);
       if (!t.isEmpty())
         p->sendText(t, hash, signature, role, NeedsTranslation);
     } else
@@ -321,8 +321,8 @@ QString AbstractEngine::dispatchTextW(const QString &text, long signature, int r
 
   QString repl = p->findTranslation(hash, role);
   bool needsTranslation = repl.isEmpty();
-  if (d_->textFilter) {
-    QString t = d_->textFilter(text, role);
+  if (d_->model->textFilterFunction) {
+    QString t = d_->model->textFilterFunction(text, role);
     if (!t.isEmpty())
       p->sendText(t, hash, signature, role, needsTranslation);
     else
@@ -330,10 +330,10 @@ QString AbstractEngine::dispatchTextW(const QString &text, long signature, int r
   } else
     p->sendText(text, hash, signature, role, needsTranslation);
 
-  if (needsTranslation && d_->testAttribute(BlockingAttribute)) {
+  if (needsTranslation) {
     repl = p->waitForTranslation(hash, role);
-    if (!repl.isEmpty() && d_->translationFilter)
-      repl = d_->translationFilter(repl, role);
+    if (!repl.isEmpty() && d_->model->translationFilterFunction)
+      repl = d_->model->translationFilterFunction(repl, role);
   }
 
   if (repl.isEmpty())
@@ -351,7 +351,7 @@ QString AbstractEngine::dispatchTextW(const QString &text, long signature, int r
 // - Exchange -
 
 // Qt is not allowed to appear in this function
-const char *AbstractEngine::exchangeTextA(const char *data, long signature, int role)
+const char *EngineController::exchangeTextA(const char *data, long signature, int role)
 {
   auto d_mem = d_->exchangeMemory;
   if (!d_mem || !data)
@@ -375,7 +375,7 @@ const char *AbstractEngine::exchangeTextA(const char *data, long signature, int 
   return d_mem->responseText();
 }
 
-void AbstractEnginePrivate::exchange()
+void EngineControllerPrivate::exchange()
 {
   if (!exchangeMemory)
     return;

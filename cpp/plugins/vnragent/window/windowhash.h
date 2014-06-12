@@ -2,6 +2,7 @@
 
 // windowhash.h
 // 2/1/2013 jichi
+// Hashing algorithms are so important that I put them into a different file.
 
 #include "sakurakit/skhash.h"
 #include <QtCore/QString>

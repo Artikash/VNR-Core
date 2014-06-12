@@ -4,8 +4,9 @@
 // See: http://www.dsl.gr.jp/~sage/mamitool/case/elf/aishimai.html
 // MES: http://tieba.baidu.com/p/2068362185
 #include "engine/model/elf.h"
+#include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
-#include "engine/engineenv.h"
+#include "engine/engineutil.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 #include <QtCore/QStringList>
@@ -30,7 +31,7 @@ LPCSTR __fastcall newHookFun(void *self, void *edx, DWORD arg1, DWORD arg2, DWOR
   Q_UNUSED(edx);
   ulong arg2_scene = arg1 + 4*5,
         arg2_chara = arg1 + 4*10;
-  auto q = AbstractEngine::instance();
+  auto q = EngineController::instance();
 
   // Scenario
   if (*(DWORD *)arg2_scene == 0) {
@@ -66,14 +67,6 @@ LPCSTR __fastcall newHookFun(void *self, void *edx, DWORD arg1, DWORD arg2, DWOR
 }
 
 } // unnamed namespace
-
-bool ElfEngine::match()
-{
-  //return Engine::exists("Silkys.exe"); // It might not might not have this file
-  // All arc files in 愛姉妹4 are: data, effect, layer, mes, music
-  // mes.arc is the scenario
-  return Engine::exists(QStringList() << "data.arc" << "effect.arc" << "mes.arc");
-}
 
 /**
  *  jichi 8/16/2013: Insert new siglus hook
@@ -156,7 +149,7 @@ bool ElfEngine::attach()
   // FIXME: It only supports 2 parameters. Dynamically determine parameter size
   if (!addr || stackSize != 0x8)
     return false;
-  return ::oldHookFun = replaceFunction<hook_fun_t>(addr, ::newHookFun);
+  return ::oldHookFun = Engine::replaceFunction<hook_fun_t>(addr, ::newHookFun);
 }
 
 // EOF

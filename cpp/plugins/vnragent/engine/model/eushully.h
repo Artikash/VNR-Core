@@ -3,24 +3,21 @@
 // eushully.h
 // 6/1/2014 jichi
 
-#include "engine/engine.h"
-#include "util/codepage.h"
+#include "engine/enginemodel.h"
 
-class EushullyEngine : public AbstractEngine
+class EushullyEngine : public EngineModel
 {
-  SK_EXTEND_CLASS(EushullyEngine, AbstractEngine)
-  SK_DISABLE_COPY(EushullyEngine)
-
-  static void hookFunction(HookStack *stack);
+  SK_EXTEND_CLASS(EushullyEngine, EngineModel)
+  static ulong search(ulong startAddress, ulong stopAddress);
+  static void hook(HookStack *stack);
 public:
-  EushullyEngine()
-    : Base("Eushully", Util::SjisCodePage, BlockingAttribute|SingleThreadAttribute)
-  { setHookFunction(hookFunction); }
-
-  static bool match();
-protected:
-  bool attach() override;
-  //bool detach() override;
+  EushullyEngine() //BlockingAttribute|SingleThreadAttribute)
+  {
+    name = "Eushully";
+    matchFiles << "AGERC.DLL"; // the process name is AGE.EXE.
+    searchFunction = &Self::search;
+    hookFunction = &Self::hook;
+  }
 };
 
 // EOF

@@ -2,35 +2,23 @@
 // 6/1/2014 jichi
 // See: http://bbs.sumisora.org/read.php?tid=11044256
 #include "engine/model/eushully.h"
+#include "engine/enginecontroller.h"
 #include "engine/enginedef.h"
-#include "engine/engineenv.h"
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
-
-/**
- *  The process name is AGE.EXE.
- *  It also contains AGERC.DLL in the game directory.
- */
-bool EushullyEngine::match() { return Engine::exists("AGERC.DLL"); }
 
 /**
  *  Find the last function call of GetTextExtentPoint32A
  *  The function call must after int3
  */
-bool EushullyEngine::attach()
+ulong EushullyEngine::search(ulong startAddress, ulong stopAddress)
 {
-  ulong startAddress,
-        stopAddress;
-  if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
-    return false;
   // Find the last function call of GetTextExtentPoint32A
   // The function call must after int3
-  ulong addr = MemDbg::findLastCallerAddressAfterInt3((ulong)::GetTextExtentPoint32A, startAddress, stopAddress);
-  //ulong addr = ::searchEushully(startAddress, stopAddress);
+  return MemDbg::findLastCallerAddressAfterInt3((ulong)::GetTextExtentPoint32A, startAddress, stopAddress);
   //addr = 0x451170; // 姫狩りダンジョンマイスター体験版
   //addr = 0x468fa0; // 天秤のLaDEA体験版
   //dmsg(addr);
-  return addr && hookAddress(addr);
 }
 
 /**
@@ -46,7 +34,7 @@ bool EushullyEngine::attach()
  *
  * FIXME 6/1/2014: This will crash in Chinese locale
  */
-void EushullyEngine::hookFunction(HookStack *stack)
+void EushullyEngine::hook(HookStack *stack)
 {
   static QByteArray data_; // persistent storage, which makes this function not thread-safe
 
@@ -55,7 +43,7 @@ void EushullyEngine::hookFunction(HookStack *stack)
 
   LPCSTR text2 = (LPCSTR)stack->args[1]; // arg2
 
-  data_ = instance()->dispatchTextA(text2, signature, role);
+  data_ = EngineController::instance()->dispatchTextA(text2, signature, role);
   //dmsg(QString::fromLocal8Bit(ret));
   stack->args[1] = (ulong)data_.constData(); // arg2
 }
