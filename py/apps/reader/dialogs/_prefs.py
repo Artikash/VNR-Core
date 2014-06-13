@@ -1638,8 +1638,8 @@ class _HonyakuTab(object):
     layout.addWidget(self.hiraganaButton)
     layout.addWidget(self.kataganaButton)
     layout.addWidget(self.romajiButton)
-    if 'en' not in blans:
-      layout.addWidget(self.trButton)
+    #if 'en' not in blans:
+    layout.addWidget(self.trButton)
     if 'ko' not in blans:
       layout.addWidget(self.hangulButton)
     if 'th' not in blans:
@@ -1710,8 +1710,9 @@ class _HonyakuTab(object):
   @memoizedproperty
   def trButton(self):
     ret = QtWidgets.QRadioButton(
-      "%s, %s: %s" %
-      (tr_("English"), my.tr("like this"), u"可愛い（cute）"))
+      "%s, %s: %s (%s)" %
+      (tr_("English"), my.tr("like this"), u"可愛い（cute）",
+        my.tr("require EDICT")))
     ret.toggled.connect(self._saveFurigana)
     return ret
 
@@ -2087,6 +2088,8 @@ class _HonyakuTab(object):
       b = ss.isEdictEnabled() or dicts.edict().exists()
       self.edictButton.setEnabled(b)
       #self.trButton.setEnabled(b)
+
+    self.trButton.setEnabled(self.trButton.isChecked() or ss.isEdictEnabled() or dicts.edict().exists())
 
     # EPWING
     if 'ja' not in blans:
