@@ -100,7 +100,7 @@ def toromaji(text, **kwargs):
   """
   return toyomi(text, furiType=defs.FURI_ROMAJI, **kwargs)
 
-def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colorize=False, center=True, **kwargs):
+def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colorize=False, center=True, furiType=defs.FURI_HIRA, **kwargs):
   """
   @param  text  unicode
   @param* charPerLine  int  maximum number of characters per line
@@ -115,7 +115,13 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colo
   lineCount = 0 # int  estimated line width, assume ruby has half width
   hasfeature = features is not None
   color = None
-  for it in parse(text, type=True, feature=hasfeature, reading=True, **kwargs):
+
+  LATIN_YOMI_WIDTH = 0.33 # = 2/6
+  KANJI_YOMI_WIDTH = 0.55 # = 1/2
+  # yomi size / surface size
+  yomiWidth = LATIN_YOMI_WIDTH if furiType in (defs.FURI_ROMAJI, defs.FURI_THAI, defs.FURI_TR) else KANJI_YOMI_WIDTH
+
+  for it in parse(text, type=True, feature=hasfeature, reading=True, furiType=furiType, **kwargs):
     if hasfeature:
       surface, ch, yomi, f, fmt = it
     else:
@@ -133,7 +139,7 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colo
     if hasfeature:
       features[surface] = f, fmt
 
-    width = max(len(surface), len(yomi)*0.55 if yomi else 0)
+    width = max(len(surface), len(yomi)*yomiWidth if yomi else 0)
     if width + lineCount <= charPerLine:
       pass
     elif line:
