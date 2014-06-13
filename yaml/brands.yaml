@@ -53,6 +53,11 @@ junai:
   - 枕
   - 戯画
 
+  # Supposed to be nuki but junai at server side
+  #- Iris
+  - アリスソフト
+  - エウシュリー
+
 nuki:
   - 13cm
   - BLACK RAINBOW
@@ -85,7 +90,6 @@ nuki:
   - アクティブ
   - アトリエさくら
   - アイル
-  - アリスソフト
   - イリュージョン
   - ナイトホーク
   - クロックアップ

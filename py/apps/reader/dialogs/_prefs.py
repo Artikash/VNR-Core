@@ -962,8 +962,10 @@ class _TtsTab(object):
       r += 1
       grid.addWidget(b, r, 0)
       tb = self.createTestButton(k)
+      setattr(self, k + 'TestButton', tb)
       grid.addWidget(tb, r, 1)
       lb = self.createVoiceroidLaunchButton(k)
+      setattr(self, k + 'LaunchButton', lb)
       grid.addWidget(lb, r, 2)
 
     # SAPI
@@ -1093,10 +1095,14 @@ class _TtsTab(object):
       w.setEnabled(enabled)
 
     path = settings.global_().yukariLocation() or ttsman.manager().yukariLocation()
-    self.yukariButton.setEnabled(bool(path))
+    enabled = bool(path)
+    for w in self.yukariButton, self.yukariTestButton, self.yukariLaunchButton:
+      w.setEnabled(enabled)
 
     path = settings.global_().zunkoLocation() or ttsman.manager().zunkoLocation()
-    self.zunkoButton.setEnabled(bool(path))
+    enabled = bool(path)
+    for w in self.zunkoButton, self.zunkoTestButton, self.zunkoLaunchButton:
+      w.setEnabled(enabled)
 
 class TtsTab(QtWidgets.QDialog):
 
