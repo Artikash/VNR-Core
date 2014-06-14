@@ -193,12 +193,13 @@ class MeCabParser:
                      cconv.yomi2romaji)
       if furiType in (defs.FURI_ROMAJI, defs.FURI_HANGUL, defs.FURI_THAI, defs.FURI_KANJI):
         readingTypes = None
+    encoding = mecabdef.DICT_ENCODING
     feature2katana = fmt.getkata
-    node = tagger.parseToNode(text.encode(mecabdef.DICT_ENCODING))
+    node = tagger.parseToNode(text.encode(encoding))
     while node:
       if node.stat not in (MeCab.MECAB_BOS_NODE, MeCab.MECAB_EOS_NODE):
         surface = node.surface[:node.length];
-        surface = surface.decode(mecabdef.DICT_ENCODING, errors='ignore')
+        surface = surface.decode(encoding, errors='ignore')
         #surface = surface.encode('sjis')
         if surface:
           if len(surface) == 1 and surface in jpchars.set_punc:
@@ -211,7 +212,7 @@ class MeCabParser:
             #if node.char_type in (mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN, mecabdef.TYPE_KATAGANA, mecabdef.TYPE_MODIFIER):
             f = None
             if feature:
-              f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
+              f = node.feature.decode(encoding, errors='ignore')
             if not readingTypes or char_type in readingTypes or char_type == mecabdef.TYPE_KATAGANA and wordtrans: # always translate katagana
               if wordtrans:
                 if termEnabled:
@@ -220,7 +221,7 @@ class MeCabParser:
                   yomigana = wordtrans(surface)
               if not yomigana and not lougo:
                 if not feature:
-                  f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
+                  f = node.feature.decode(encoding, errors='ignore')
                 katagana = feature2katana(f)
                 if katagana:
                   furigana = tm.queryFuriTerms(surface) if termEnabled else None
@@ -268,10 +269,10 @@ class MeCabParser:
           elif type and not feature: # and type
             yield surface, char_type
           elif not type and feature:
-            f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
+            f = node.feature.decode(encoding, errors='ignore')
             yield surface, f, fmt
           elif type and feature:
-            f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
+            f = node.feature.decode(encoding, errors='ignore')
             yield surface, char_type, f, fmt
           #else:
           #  assert False, "unreachable"
