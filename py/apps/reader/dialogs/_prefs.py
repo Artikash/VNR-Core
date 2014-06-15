@@ -1600,9 +1600,9 @@ class _HonyakuTab(object):
     layout.addWidget(self.caboChaButton)
 
     infoLabel = QtWidgets.QLabel(my.tr(
-      "Changing the MeCab dictionary after it is used requires restarting VNR."
+      "Changing the MeCab dictionary after it is used might require restarting VNR (always needed on Windows XP)."
     ))
-    #infoLabel.setWordWrap(True)
+    infoLabel.setWordWrap(True)
     skqss.class_(infoLabel, 'text-error')
     layout.addWidget(infoLabel)
 
@@ -1654,7 +1654,10 @@ class _HonyakuTab(object):
 
   @memoizedproperty
   def caboChaButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Syntax highlighting Japanese using CaboCha"))
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+      my.tr("Syntax highlighting Japanese using CaboCha"),
+      my.tr("recommended for Japanese learners"),
+    ))
     ss = settings.global_()
     ret.setChecked(ss.isCaboChaEnabled())
     ret.toggled.connect(ss.setCaboChaEnabled)

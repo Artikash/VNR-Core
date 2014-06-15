@@ -77,8 +77,8 @@ class GrimoireBean(QObject):
   showNameText = Signal(unicode, unicode)  # text, lang
   showNameTranslation = Signal(unicode, unicode, unicode)  # text, lang, provider
 
-  @Slot(unicode, unicode, unicode, int, unicode, bool, bool, result=unicode)
-  def renderJapanese(self, text, furiType, meCabDic, charPerLine, rubySize, colorize, center):
+  @Slot(unicode, bool, unicode, unicode, int, unicode, bool, bool, result=unicode)
+  def renderJapanese(self, text, caboChaEnabled, furiType, meCabDic, charPerLine, rubySize, colorize, center):
     """
     @return  unicode  html
     """
@@ -87,7 +87,7 @@ class GrimoireBean(QObject):
     if feature and d.features:
       d.features = {}
     fmt = mecabfmt.getfmt(meCabDic)
-    render = cabochaman.rendertable if settings.global_().isCaboChaEnabled() else mecabman.rendertable
+    render = cabochaman.rendertable if caboChaEnabled else mecabman.rendertable
     return ''.join(
         render(t, termEnabled=True, features=d.features if feature else None,
             fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
@@ -409,8 +409,8 @@ class MirageBean(QObject):
   showText = Signal(unicode, unicode, long)  # text, lang, timestamp
   showTranslation = Signal(unicode, unicode, unicode, long)  # text, lang, provider, timestamp
 
-  @Slot(unicode, unicode, unicode, int, unicode, bool, bool, result=unicode)
-  def renderJapanese(self, text, furiType, meCabDic, charPerLine, rubySize, colorize, center):
+  @Slot(unicode, bool, unicode, unicode, int, unicode, bool, bool, result=unicode)
+  def renderJapanese(self, text, caboChaEnabled, furiType, meCabDic, charPerLine, rubySize, colorize, center):
     """
     @return  unicode  html
     """
@@ -418,9 +418,10 @@ class MirageBean(QObject):
     feature = colorize
     if feature and d.features:
       d.features = {}
+    render = cabochaman.rendertable if caboChaEnabled else mecabman.rendertable
     fmt = mecabfmt.getfmt(meCabDic)
     return ''.join( # disable term by default
-        mecabman.rendertable(t, termEnabled=False, features=d.features if feature else None,
+        render(t, termEnabled=False, features=d.features if feature else None,
             furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
         for t in text.split('\n') if t) or text # return the original text if failed
 

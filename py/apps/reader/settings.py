@@ -677,8 +677,12 @@ class Settings(QSettings):
 
   ## Dictionaries ##
 
+  caboChaEnabledChanged = Signal(bool)
   def isCaboChaEnabled(self): return to_bool(self.value('CaboChaEnabled')) # Disable cabocha by default as it need dictionary
-  def setCaboChaEnabled(self, v): self.setValue('CaboChaEnabled', v)
+  def setCaboChaEnabled(self, v):
+    if v != self.isCaboChaEnabled():
+      self.setValue('CaboChaEnabled', v)
+      self.caboChaEnabledChanged.emit(v)
 
   meCabEnabledChanged = Signal(bool)
   def isMeCabEnabled(self): return bool(self.meCabDictionary())
@@ -1409,6 +1413,7 @@ class SettingsProxy(QObject):
     #g.msimeParserEnabledChanged.connect(self.msimeParserEnabledChanged)
     #g.meCabEnabledChanged.connect(self.meCabEnabledChanged)
     g.meCabDictionaryChanged.connect(self.meCabDictionaryChanged)
+    g.caboChaEnabledChanged.connect(self.caboChaEnabledChanged)
 
     g.cometCounterVisibleChanged.connect(self.cometCounterVisibleChanged)
 
@@ -1562,6 +1567,9 @@ class SettingsProxy(QObject):
   #meCabEnabled = bool_property('MeCabEnabled', False, notify=meCabEnabledChanged)
   meCabDictionaryChanged = Signal(unicode)
   meCabDictionary = unicode_property('MeCabDictionary', '', notify=meCabDictionaryChanged)
+
+  caboChaEnabledChanged = Signal(bool)
+  caboChaEnabled = bool_property('CaboChaEnabled', '', notify=caboChaEnabledChanged)
 
   rubyTypeChanged = Signal(unicode)
   rubyType = unicode_property('FuriganaType', 'hiragana', notify=rubyTypeChanged)

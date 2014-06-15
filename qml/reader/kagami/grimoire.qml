@@ -126,6 +126,7 @@ Item { id: root_
 
   property string rubyType: 'hiragana'
   property string rubyDic
+  property bool caboChaEnabled
 
   property bool convertsChinese // convert Simplified Chinese to Chinese
 
@@ -1026,6 +1027,7 @@ Item { id: root_
               if (root_.furiganaEnabled)
                 t = bean_.renderJapanese(
                   t,
+                  root_.caboChaEnabled,
                   //root_.msimeParserEnabled,
                   root_.rubyType,
                   root_.rubyDic,
