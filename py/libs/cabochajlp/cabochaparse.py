@@ -41,8 +41,8 @@ import CaboCha
 import MeCab
 from sakurakit import skos, skstr
 from cconv import cconv
-from jptraits import jpchars
 from mecabjlp import mecabdef, mecabfmt
+import cabochadef
 
 if skos.WIN:
   from msime import msime
@@ -50,17 +50,18 @@ if skos.WIN:
 else:
   HAS_MSIME = False
 
-DEBUG = True
-#DEBUG = False
+#DEBUG = True
+DEBUG = False
 
 ## Parser ##
 
-def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, feature=False, lougo=False, ruby=mecabdef.RB_HIRA, readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)):
+def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, group=False, feature=False, lougo=False, ruby=mecabdef.RB_HIRA, readingTypes=(cabochadef.TYPE_KANJI,)):
   """
   @param  text  unicode
   @param  parser  CaboCha.Parser
   @param  fmt  mecabfmt
   @param* type  bool  whether return type
+  @param* group  bool   whether return group id
   @param* reading  bool   whether return yomigana
   @param* feature  bool   whether return feature
   @param* ruby  unicode
@@ -104,10 +105,7 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, fe
       group_surface += surface
     newgroup = True
 
-    if len(surface) == 1 and surface in jpchars.set_punc:
-      char_type = mecabdef.TYPE_PUNCT
-    else:
-      char_type = mecabdef.TYPE_VERB # TODO, the type of the character is missing!
+    char_type = cabochadef.surface_type(surface)
 
     if reading:
       yomigana = None
@@ -115,7 +113,7 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, fe
       f = None
       if feature:
         f = token.feature.decode(encoding, errors='ignore')
-      if not readingTypes or char_type in readingTypes or char_type == mecabdef.TYPE_KATAGANA and wordtrans: # always translate katagana
+      if not readingTypes or char_type in readingTypes or char_type == cabochadef.TYPE_RUBY and wordtrans: # always translate katagana
         if wordtrans:
           if not yomigana:
             yomigana = wordtrans(surface)
@@ -152,24 +150,46 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, fe
               yomigana = katatrans(katagana) if katatrans else katagana
               if yomigana == surface:
                 yomigana = None
+      if group:
+        if not type and not feature:
+          yield surface, yomigana, group_id
+        elif type and not feature:
+          yield surface, char_type, yomigana, group_id
+        elif not type and feature:
+          yield surface, yomigana, f, group_id
+        else: # render all
+          yield surface, char_type, yomigana, f, group_id
+      else:
+        if not type and not feature:
+          yield surface, yomigana
+        elif type and not feature:
+          yield surface, char_type, yomigana
+        elif not type and feature:
+          yield surface, yomigana, f
+        else: # render all
+          yield surface, char_type, yomigana, f
+    elif group:
       if not type and not feature:
-        yield surface, yomigana
-      elif type and not feature:
-        yield surface, char_type, yomigana
+        yield surface, group_id
+      elif type and not feature: # and type
+        yield surface, char_type, group_id
       elif not type and feature:
-        yield surface, yomigana, f
-      else: # render all
-        yield surface, char_type, yomigana, f
-    elif not type and not feature:
-      yield surface
-    elif type and not feature: # and type
-      yield surface, char_type
-    elif not type and feature:
-      f = token.feature.decode(encoding, errors='ignore')
-      yield surface, f
-    elif type and feature:
-      f = token.feature.decode(encoding, errors='ignore')
-      yield surface, char_type, f
+        f = token.feature.decode(encoding, errors='ignore')
+        yield surface, f, group_id
+      elif type and feature:
+        f = token.feature.decode(encoding, errors='ignore')
+        yield surface, char_type, f, group_id
+    else:
+      if not type and not feature:
+        yield surface
+      elif type and not feature: # and type
+        yield surface, char_type
+      elif not type and feature:
+        f = token.feature.decode(encoding, errors='ignore')
+        yield surface, f
+      elif type and feature:
+        f = token.feature.decode(encoding, errors='ignore')
+        yield surface, char_type, f
     #else:
     #  assert False, "unreachable"
 
@@ -180,8 +200,8 @@ if __name__ == '__main__':
   t = u"「どれだけ必死に働こうとも、所詮、安月給の臨時教師ですけどね」"
 
   if True:
-    for it in parse(t, parser=c, reading=True):
-      print it[0], it[1]
+    for it in parse(t, parser=c, reading=True, group=True):
+      print it[0], it[1], it[-1]
 
 
   if False:

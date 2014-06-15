@@ -1,5 +1,6 @@
 # coding: utf8
 # mecabdef.py
+# 11/9/2013 jichi
 
 TYPE_VERB = 2
 TYPE_NOUN = 8
