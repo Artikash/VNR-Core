@@ -4,6 +4,9 @@
 
 from jptraits import jpchars
 
+# ipadic encoding, either SHIFT-JIS or UTF-8
+DICT_ENCODING = 'utf8'
+
 # Reading type
 TYPE_KANJI = 1
 TYPE_RUBY = 2

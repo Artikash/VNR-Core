@@ -37,9 +37,8 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 #import re
-import CaboCha
 import MeCab
-from sakurakit import skos, skstr
+from sakurakit import skos
 from cconv import cconv
 from mecabjlp import mecabdef, mecabfmt
 import cabochadef
@@ -55,7 +54,7 @@ DEBUG = False
 
 ## Parser ##
 
-def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, group=False, feature=False, lougo=False, ruby=mecabdef.RB_HIRA, readingTypes=(cabochadef.TYPE_KANJI,)):
+def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, group=False, reading=False, feature=False, lougo=False, ruby=mecabdef.RB_HIRA, readingTypes=(cabochadef.TYPE_KANJI,)):
   """
   @param  text  unicode
   @param  parser  CaboCha.Parser
@@ -82,7 +81,7 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, gr
                  None)
     if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_HANGUL, mecabdef.RB_THAI, mecabdef.RB_KANJI):
       readingTypes = None
-  encoding = mecabdef.DICT_ENCODING
+  encoding = cabochadef.DICT_ENCODING
   feature2katana = fmt.getkata
 
   tree = parser.parse(text.encode(encoding))
@@ -91,7 +90,7 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, gr
   group_id = 0
   if DEBUG:
      group_surface = ''
-  for i in range(tree.token_size()):
+  for i in xrange(tree.token_size()):
     token = tree.token(i)
     surface = token.surface.decode(encoding, errors='ignore')
 
@@ -99,7 +98,7 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, gr
       group_id += 1
       if DEBUG:
         print "group surface %s:" % group_id, group_surface
-      group_surface = ''
+        group_surface = ''
       newgroup = False
     if DEBUG:
       group_surface += surface
@@ -179,6 +178,8 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, gr
       elif type and feature:
         f = token.feature.decode(encoding, errors='ignore')
         yield surface, char_type, f, group_id
+      #else:
+      #  assert False, "unreachable"
     else:
       if not type and not feature:
         yield surface
@@ -190,10 +191,11 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, gr
       elif type and feature:
         f = token.feature.decode(encoding, errors='ignore')
         yield surface, char_type, f
-    #else:
-    #  assert False, "unreachable"
+      #else:
+      #  assert False, "unreachable"
 
 if __name__ == '__main__':
+  import CaboCha
   c = CaboCha.Parser()
 
   #t = u"太郎はこの本を二郎を見た女性に渡した。"

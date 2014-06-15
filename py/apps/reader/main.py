@@ -138,6 +138,28 @@ class _MainObject(object):
     return ret
 
   @memoizedproperty
+  def caboChaManager(self):
+    dprint("create cabocha manager") # Move this upward before kagami
+    import cabochaman
+    ret = cabochaman.manager()
+
+    import settings
+    ss = settings.global_()
+
+    ret.setEnabled(ss.isMeCabEnabled())
+    ss.meCabEnabledChanged.connect(ret.setEnabled)
+
+    ret.setRubyType(ss.rubyType())
+    ss.rubyTypeChanged.connect(ret.setRubyType)
+
+    ret.setDictionaryName(ss.meCabDictionary())
+    ss.meCabDictionaryChanged.connect(ret.setDictionaryName)
+
+    #import _cabochaman
+    #_cabochaman.CaboChaParser().parser()
+    return ret
+
+  @memoizedproperty
   def proxyManager(self):
     dprint("create proxy manager")
     import proxy
@@ -1286,6 +1308,7 @@ class MainObject(QObject):
     d.translatorManager
     d.dictionaryManager
     d.meCabManager
+    d.caboChaManager
     d.nameManager
     d.referenceManager
     d.trailersManager

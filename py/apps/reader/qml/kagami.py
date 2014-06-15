@@ -16,7 +16,7 @@ from sakurakit.skdebug import dprint, dwarn
 #from sakurakit.sktr import tr_
 #from msime import msime
 from mytr import my
-import bbcode, config, dataman, ebdict, features, growl, mecabman, qmldialog, rc, settings
+import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, qmldialog, rc, settings
 
 ## Grimoire ##
 
@@ -87,8 +87,10 @@ class GrimoireBean(QObject):
     if feature and d.features:
       d.features = {}
     fmt = mecabfmt.getfmt(meCabDic)
+    #render = mecabman.rendertable
+    render = cabochaman.rendertable
     return ''.join(
-        mecabman.rendertable(t, termEnabled=True, features=d.features if feature else None,
+        render(t, termEnabled=True, features=d.features if feature else None,
             fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
         for t in text.split('\n') if t)
 

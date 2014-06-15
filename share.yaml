@@ -12,6 +12,7 @@ env:
   - $PWD/../Python
   - $PWD/../Qt/PySide
   - $PWD/../MeCab/bin
+  - $PWD/../CaboCha/bin
   #- $PWD/../EB/site-packages
 
   pythonpath:
@@ -20,6 +21,7 @@ env:
   - $PWD/../Qt
   - $PWD/../Qt/PySide   # for shiboken
   - $PWD/../MeCab/py
+  - $PWD/../CaboCha/py
   - $PWD/../EB/site-packages
   #- $PWD/../Qt/site-packages
 
@@ -459,7 +461,6 @@ avatars:
 #  #lingoes:          $APPDATA/org.sakuradite.reader/db/lingoes
 
 # Must be consistent with python scripts and dicts.py
-#mecab:
 mecab:
   dicdir:
     ipadic:         $PWD/../../../Caches/Dictionaries/IPAdic
@@ -469,6 +470,14 @@ mecab:
     ipadic:         $PWD/../../Dictionaries/mecabrc/ipadic.rc
     unidic:         $PWD/../../Dictionaries/mecabrc/unidic.rc
     unidic-mlj:     $PWD/../../Dictionaries/mecabrc/unidic-mlj.rc
+
+cabocha:
+  dicdir:
+    ipadic:         $PWD/../../../Caches/Dictionaries/CaboCha/ipadic
+    unidic:         $PWD/../../../Caches/Dictionaries/CaboCha/unidic
+  rcfile:
+    ipadic:         $PWD/../../Dictionaries/cabocharc/ipadic.rc
+    unidic:         $PWD/../../Dictionaries/cabocharc/unidic.rc
 
 lingoes: # language
   - zh

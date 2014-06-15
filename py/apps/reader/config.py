@@ -404,6 +404,12 @@ MECAB_DICS = {k: parse_path(v) # {str name:unicode relpath}
 MECAB_RCFILES = {k: parse_path(v) # {str name:unicode abspath}
     for k,v in SHARE_YAML['mecab']['rcfile'].iteritems()}
 
+CABOCHA_DICS = {k: parse_path(v) # {str name:unicode relpath}
+    for k,v in SHARE_YAML['cabocha']['dicdir'].iteritems()}
+
+CABOCHA_RCFILES = {k: parse_path(v) # {str name:unicode abspath}
+    for k,v in SHARE_YAML['cabocha']['rcfile'].iteritems()}
+
 GAIJI_LOCATIONS = {k: parse_path(v) # {str name:unicode abspath}
     for k,v in SHARE_YAML['gaiji'].iteritems()}
 

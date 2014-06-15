@@ -185,6 +185,13 @@ def mecab_rc_path(name):
   """
   return config.MECAB_RCFILES[name] if name else ''
 
+def cabocha_rc_path(name):
+  """
+  @param  str  name
+  @return  unicode  path
+  @throw  KeyError
+  """
+  return config.CABOCHA_RCFILES[name] if name else ''
 
 # CDN
 
