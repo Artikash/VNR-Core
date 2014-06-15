@@ -28,9 +28,10 @@ def get(): # return bool
   targetpath = TARGET_DIR + '/' + FILENAME
   tmppath = TMP_DIR + '/' + FILENAME
 
+  from sakurakit import skfileio
   for it in targetpath, tmppath:
     if os.path.exists(it):
-      os.remove(it)
+      skfileio.removefile(it)
 
   import sys
   #prefix = os.path.abspath(TMP_DIR) # relative path is OK for sqlitedb
@@ -40,7 +41,6 @@ def get(): # return bool
 
   ok = False
 
-  from sakurakit import skfileio
   #from cjklib.dictionary.install import CommandLineInstaller
   from cjklibinstall import CommandLineInstaller
   inst = CommandLineInstaller()
@@ -49,7 +49,7 @@ def get(): # return bool
       os.renames(tmppath, targetpath) # renames to create target directory
       ok = True
     elif os.path.exists(tmppath):
-      os.remove(tmppath)
+      skfileio.removefile(tmppath)
   dprint("leave: ok = %s" % ok)
   return ok
 

@@ -44,7 +44,7 @@ def get(): # return bool
     if sknetio.getfile(url, path, flush=False): # flush=false to use more memory to reduce disk access
       ok = skfileio.filesize(path) == size
   if not ok and os.path.exists(path):
-    os.remove(path)
+    skfileio.removefile(path)
   dprint("leave: ok = %s" % ok)
   return ok
 
@@ -57,14 +57,15 @@ def extract():
 
   import shutil
   from sakurakit import skfileio
-  ok = skfileio.extractzip(srcpath, tmppath)
+  with SkProfiler():
+    ok = skfileio.extractzip(srcpath, tmppath)
   if ok:
     if os.path.exists(targetpath):
       shutil.rmtree(targetpath)
     os.renames(tmppath, targetpath)
   if os.path.exists(tmppath):
     shutil.rmtree(tmppath)
-  os.remove(srcpath)
+  skfileio.removefile(srcpath)
 
   dprint("leave: ok = %s" % ok)
   return ok

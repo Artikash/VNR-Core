@@ -145,7 +145,6 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colo
     elif line:
       yield rc.jinja_template('html/furigana').render({
         'tuples': line,
-        #'bgcolor': "rgba(0,0,0,5)",
         'rubySize': rubySize,
         'center': center,
       })
@@ -156,7 +155,6 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colo
   if line:
     yield rc.jinja_template('html/furigana').render({
       'tuples': line,
-      #'bgcolor': "rgba(0,0,0,5)",
       'rubySize': rubySize,
       'center': center,
     })

@@ -14,7 +14,7 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 import os
-from sakurakit import skfileio
+from sakurakit.skdebug import dwarn
 
 MIN_CSV_SIZE = 10 # minimum CSV file size
 
@@ -24,10 +24,13 @@ def csv2dic(dic, csv, exe='mecab-dict-index', dicdir='', async=False):
   @param  csv  unicode
   @param* exe  unicode
   @param* dicdir  unicode
+  @param* async  bool
   @return  bool
   """
   # MeCab would crash for empty sized csv
+  from sakurakit import skfileio
   if skfileio.filesize(csv) < MIN_CSV_SIZE:
+    dwarn("insufficient input csv size", csv)
     return False
   args = [
     exe,

@@ -10,18 +10,22 @@ import os
 from sakurakit.skdebug import dwarn
 
 def maketaggerargs(**kwargs):
+  """
+  @param* kwargs  see cabocha --help
+  @return  str not unicode
+  """
   if not kwargs:
     return ''
   l = []
   for k,v in kwargs.iteritems():
-    if v:
-      #if k in ('dicdir', 'rcfile', 'userdic'):
-      #  v = normalizepath(v)
-      #if not v:
-      #  dwarn("skip path with spaces for %s" % k)
-      #else:
-      l.append('--%s %s' % (k, v))
-  return ''.join(l)
+    #if v:
+    #if k in ('dicdir', 'rcfile', 'userdic'):
+    #  v = normalizepath(v)
+    #if not v:
+    #  dwarn("skip path with spaces for %s" % k)
+    #else:
+    l.append('--%s %s' % (k, v))
+  return ''.join(l).encode('sjis', errors='ignore') # TODO: Use system default encoding instead of sjis
 
 def createparser(args=None):
   """

@@ -68,7 +68,7 @@ def getld(lang): # str -> bool
     if sknetio.getfile(url, path, flush=False): # flush=false to use more memory to reduce disk access
       ok = skfileio.filesize(path) == size
   if not ok and os.path.exists(path):
-    os.remove(path)
+    skfileio.removefile(path)
   dprint("leave: ok = %s" % ok)
   return ok
 
@@ -80,9 +80,10 @@ def makedb(lang): # str -> bool
   dbpath = DB_DIR + '/' + lang + DB_SUFFIX
   tmppath = TMP_DIR + '/' + lang + DB_SUFFIX
 
+  from sakurakit import skfileio
   for it in dbpath, tmppath:
     if os.path.exists(it):
-      os.remove(it)
+      skfileio.removefile(it)
 
   if not os.path.exists(ldpath):
     dwarn("leave: ld does not exist: %s" % ldpath)
@@ -95,10 +96,10 @@ def makedb(lang): # str -> bool
       os.renames(tmppath, dbpath) # renames to create DB_DIR
       ok = True
     elif os.path.exists(tmppath):
-      os.remove(tmppath)
+      skfileio.removefile(tmppath)
 
   if os.path.exists(ldpath):
-    os.remove(ldpath)
+    skfileio.removefile(ldpath)
   dprint("leave: ok = %s" % ok)
   return ok
 

@@ -87,8 +87,7 @@ class GrimoireBean(QObject):
     if feature and d.features:
       d.features = {}
     fmt = mecabfmt.getfmt(meCabDic)
-    #render = mecabman.rendertable
-    render = cabochaman.rendertable
+    render = cabochaman.rendertable if settings.global_().isCaboChaEnabled() else mecabman.rendertable
     return ''.join(
         render(t, termEnabled=True, features=d.features if feature else None,
             fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)

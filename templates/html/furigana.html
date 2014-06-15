@@ -1,9 +1,8 @@
 {# furigana.html 11/28/2012 jichi
  # @param  tuples  [unicode surface, unicode yomigana, str color, int groupId or None]
- # @param* bgcolor  str or None  background color
  # @param* rubySize  str  yomigana font size
  # @param* center  bool  align ment
- # @param* group  bool  group color
+ # @param* groupColor  str  group color
  #
  # Tuples will be iterated twice.
  # Tuple elements can be None.
@@ -15,20 +14,7 @@
 .ruby {
 	font-weight: bold;
 	font-size: {{rubySize or '10px'}};
-%if bgcolor
-	background-color: {{bgcolor}};
-%endif
 }
-%if group
-div[class*="group"] {
-	margin-left:-2px; padding-left:2px;
-	margin-right:-2px; padding-right:2px;
-}
-.group0{border-bottom:2px solid red}
-.group1{border-bottom:2px solid yellow}
-.group2{border-bottom:2px solid green}
-.group3{border-bottom:2px solid magenta}
-%endif
 		</style>
 	</head>
 	<body>
@@ -47,17 +33,12 @@ div[class*="group"] {
 				</tr>
 				<tr class="surface">
 %for surface, _, color, groupId in tuples
-%	if group and groupId
+%	if surface
 					<td align="center"
-%		if color or bgcolor
-						style="background-color:{{color or bgcolor}}"
-%		endif
-					>
-						<div class="group{{groupId%4}}">{{surface|e}}</div></td>
-%	elif surface
-					<td align="center"
-%		if color or bgcolor
-						style="background-color:{{color or bgcolor}}"
+%		if color
+						style="background-color:{{color}}"
+%		elif groupColor and groupId and groupId%2
+						style="color:{{groupColor}}"
 %		endif
 					>{{surface|e}}</td>
 %	else

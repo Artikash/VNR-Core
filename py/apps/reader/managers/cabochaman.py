@@ -38,6 +38,11 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colo
   lineCount = 0 # int  estimated line width, assume ruby has half width
   hasfeature = features is not None
   color = None
+  #groupColor = '#001' if color else '#ffa' # black if color else yellow
+  #groupColor = '#fefa4f' # yellow, the same as MacVim yellow
+  #groupColor = '#ffa' # yellow
+  #groupColor = '#fefa9f' # yellow
+  groupColor = '#ff8' # yellow
 
   LATIN_YOMI_WIDTH = 0.33 # = 2/6
   KANJI_YOMI_WIDTH = 0.55 # = 1/2
@@ -70,9 +75,9 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colo
     elif line:
       yield rc.jinja_template('html/furigana').render({
         'tuples': line,
-        #'bgcolor': "rgba(0,0,0,5)",
         'rubySize': rubySize,
         'center': center,
+        'groupColor': groupColor,
       })
       line = []
       lineCount = 0
@@ -81,10 +86,9 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colo
   if line:
     yield rc.jinja_template('html/furigana').render({
       'tuples': line,
-      #'bgcolor': "rgba(0,0,0,5)",
       'rubySize': rubySize,
       'center': center,
-      'group': True,
+      'groupColor': groupColor,
     })
 
 def rendertable(*args, **kwargs):
@@ -117,6 +121,7 @@ class CaboChaManager:
     if self.dicName != v:
       dprint(v)
       self.dicName = v
+      _CP.setdic(v)
       _CP.setfmt(mecabfmt.getfmt(v))
       #_CP.setuserdic('') # clear default user dic
       _CP.setrcfile(rc.cabocha_rc_path(v))

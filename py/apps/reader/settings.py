@@ -677,6 +677,9 @@ class Settings(QSettings):
 
   ## Dictionaries ##
 
+  def isCaboChaEnabled(self): return to_bool(self.value('CaboChaEnabled')) # Disable cabocha by default as it need dictionary
+  def setCaboChaEnabled(self, v): self.setValue('CaboChaEnabled', v)
+
   meCabEnabledChanged = Signal(bool)
   def isMeCabEnabled(self): return bool(self.meCabDictionary())
 

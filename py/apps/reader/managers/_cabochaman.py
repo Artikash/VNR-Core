@@ -33,6 +33,7 @@ class CaboChaParser(object):
 
   def __init__(self):
     self.enabled = False # bool
+    self.dic = '' # str
     self.rcfile = '' # unicode
     self.fmt = mecabfmt.DEFAULT
 
@@ -40,12 +41,14 @@ class CaboChaParser(object):
 
   def setenabled(self, v): self.enabled = v
 
+  def setdic(self, v):
+    if v != self.dic:
+      self.dic = v
+      self.tagger = None
+
   def setfmt(self, v): self.fmt = v
 
   def setrcfile(self, v):
-    #v = osutil.get_relpath(v) if v else '' # force relative path
-    #v = os.path.abspath(v) if v else ''
-    #v = v.replace('\\', '/')
     if v != self.rcfile:
       self.rcfile = v
       self.tagger = None
@@ -57,11 +60,13 @@ class CaboChaParser(object):
     """
     if not self.enabled:
       return None
-    if self.rcfile:
+    if self.dic and self.rcfile:
       if self.defparser:
         return self.defparser
       if os.path.exists(self.rcfile):
-        self.defparser = cabocharc.createparser()
+        # posset value in rcfile does not work on Windows
+        args = cabocharc.maketaggerargs(posset=self.dic)
+        self.defparser = cabocharc.createparser(args)
         if self.defparser:
           return self.defparser
       self.rcfile = ''
