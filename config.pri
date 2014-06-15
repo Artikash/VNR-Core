@@ -9,6 +9,7 @@ BUILDDIR = $$ROOTDIR/build
 SRCDIR  = $$ROOTDIR/cpp
 CONFDIR = $$SRCDIR/conf
 LIBDIR  = $$SRCDIR/libs
+COMDIR  = $$SRCDIR/coms
 PLUGINDIR = $$SRCDIR/plugins
 #SERVICEDIR = $$SRCDIR/services
 
@@ -23,6 +24,7 @@ mac:  LIBS      += -F$$DESTDIR
 INCLUDEPATH += \
   $$SRCDIR \
   $$LIBDIR \
+  $$COMDIR \
   $$PLUGINDIR \
   $$SERVICEDIR
 
