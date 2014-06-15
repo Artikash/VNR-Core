@@ -76,14 +76,8 @@ def _normalizetext(t):
   @param  t  unicode
   @return   unicode
   """
-
   # Remove unicode spaces
-  t = _normalizetext_space.sub('', t)
-  if t:
-    i = t.find(u"「") # remove character name
-    if i > 0 and i < defs.MAX_NAME_LENGTH:
-      t = t[i:]
-  return t
+  return _normalizetext_space.sub('', t)
 
 def hashtext(t, h=None):
   """Hash unicode text (hash2)
@@ -111,15 +105,26 @@ def hashcontext(t):
   @param  t  unicode
   @return   long
   """
-  #return hashtexts(t.split(defs.CONTEXT_SEP))
-  return hashtext(t.replace(defs.CONTEXT_SEP, ''))
+  if not t:
+    return 0
+  sep_pos = t.find(defs.CONTEXT_SEP)
+  i = t.find(u"「") # remove character name
+  if i > 0 and i < defs.MAX_NAME_LENGTH and (sep_pos == -1 or i < sep_pos):
+    t = t[i:]
+  if sep_pos != -1:
+    t = t.replace(defs.CONTEXT_SEP, '')
+  return hashtext(t)
 
 if __name__ == '__main__':
   print urlsum("http://www.amazon.co.jp")
   print urlsum("http://www.amazon.co.jp/")
 
   print hashcontext(u"1")
+  print hashcontext(u"111222")
   print hashcontext(u"111||222")
   print hashtext(u"111222\n\u3000")
+
+  print hashcontext(u"そして、そこで初めて、オレたちに近づいてくる男の姿を視認する。||「…………」")
+  print hashcontext(u"「…………」")
 
 # EOF

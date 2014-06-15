@@ -618,7 +618,7 @@ class _TextManager(object):
               self._updateTtsSubtitle(cd.text, cd.language)
 
       # Hash2 as back up
-      for h in self.hashes2:
+      for i,h in enumerate(self.hashes2):
         if not h: break
         for c in dm.queryComments(hash2=h):
           cd = c.d

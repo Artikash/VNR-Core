@@ -50,7 +50,7 @@ def get(): # -> bool
       if ok:
         os.rename(tmppath, targetpath)
   if not ok and os.path.exists(tmppath):
-    os.remove(tmppath)
+    skfileio.removefile(tmppath)
   dprint("leave: ok = %s" % ok)
   return ok
 

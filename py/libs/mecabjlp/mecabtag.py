@@ -7,7 +7,6 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 import os
-import MeCab
 from sakurakit.skdebug import dprint, dwarn
 
 # http://stackoverflow.com/questions/10299807/mecab-path-parameters-doesnot-accept-whitespace
@@ -46,8 +45,9 @@ def createtagger(args=None):
   @param  args  str not unicode
   @return  MeCab.Tagger or None
   """
+  import MeCab
   try:
-    ret = MeCab.Tagger(args) if args else MeCab.Tagger()
+    ret = MeCab.Tagger() if args is None else MeCab.Tagger(args)
     ret.parse("") # critical
     return ret
   except Exception, e:

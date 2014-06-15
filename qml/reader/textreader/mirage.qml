@@ -56,6 +56,7 @@ Item { id: root_
   property string rubyType: settings_.rubyType
   property string rubyDic: settings_.meCabDictionary
   property bool rubyEnabled: !!settings_.meCabDictionary
+  property bool caboChaEnabled: settings_.caboChaEnabled
 
   property bool convertsChinese: false // convert Simplified Chinese to Chinese
 
@@ -738,6 +739,7 @@ Item { id: root_
           root_.rubyEnabled && model.type === 'text' && model.language === 'ja' ?
             bean_.renderJapanese(
               model.text,
+              root_.caboChaEnabled,
               //root_.msimeParserEnabled,
               root_.rubyType,
               root_.rubyDic,

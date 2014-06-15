@@ -20,14 +20,26 @@ DOWNLOAD_REFRESH_INTERVAL = 3000 # 3 seconds
 
 MECAB_DICT_NAMES = {
   'unidic': my.tr("UniDic modern Japanese dictionary"),
-  'unidic-mlj': my.tr("UniDic classical/ancient Japanese dictionary"),
+  #'unidic-mlj': my.tr("UniDic classical/ancient Japanese dictionary"),
   'ipadic': my.tr("IPAdic Japanese dictionary"),
 }
 
 MECAB_DICT_SIZES = {
   'ipadic': '51MB',
   'unidic': '247MB',
-  'unidic-mlj': '458MB',
+  #'unidic-mlj': '458MB',
+}
+
+CABOCHA_DICT_NAMES = {
+  'unidic': my.tr("CaboCha model for {0} dictionary").format("UniDic"),
+  'ipadic': my.tr("CaboCha model for {0} dictionary").format("IPAdic"),
+  #'juman': my.tr("CaboCha model for {0} dictionary").format("JUMAN"),
+}
+
+CABOCHA_DICT_SIZES = {
+  'ipadic': '81MB',
+  'unidic': '75MB',
+  #'juman': '78MB',
 }
 
 LINGOES_DICT_NAMES = {
@@ -1582,8 +1594,18 @@ class _HonyakuTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.disableMeCabButton)
     layout.addWidget(self.unidicButton)
-    layout.addWidget(self.mljButton)
+    #layout.addWidget(self.mljButton)
     layout.addWidget(self.ipadicButton)
+
+    layout.addWidget(self.caboChaButton)
+
+    infoLabel = QtWidgets.QLabel(my.tr(
+      "Changing the MeCab dictionary after it is used might require restarting VNR (always needed on Windows XP)."
+    ))
+    infoLabel.setWordWrap(True)
+    skqss.class_(infoLabel, 'text-error')
+    layout.addWidget(infoLabel)
+
     ret = QtWidgets.QGroupBox(my.tr("Preferred MeCab dictionary for parsing Japanese"))
     ret.setLayout(layout)
     self._loadMeCab()
@@ -1617,7 +1639,7 @@ class _HonyakuTab(object):
     t = settings.global_().meCabDictionary()
     b = (self.ipadicButton if t == 'ipadic' else
          self.unidicButton if t == 'unidic' else
-         self.mljButton if t == 'unidic-mlj' else
+         #self.mljButton if t == 'unidic-mlj' else
          self.disableMeCabButton)
     if not b.isChecked():
       b.setChecked(True)
@@ -1625,9 +1647,28 @@ class _HonyakuTab(object):
   def _saveMeCab(self):
     t = ('ipadic' if self.ipadicButton.isChecked() else
          'unidic' if self.unidicButton.isChecked() else
-         'unidic-mlj' if self.mljButton.isChecked() else
+         #'unidic-mlj' if self.mljButton.isChecked() else
          '')
     settings.global_().setMeCabDictionary(t)
+    self.refreshCaboCha()
+
+  @memoizedproperty
+  def caboChaButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+      my.tr("Syntax highlighting Japanese using CaboCha"),
+      my.tr("recommended for Japanese learners"),
+    ))
+    ss = settings.global_()
+    ret.setChecked(ss.isCaboChaEnabled())
+    ret.toggled.connect(ss.setCaboChaEnabled)
+    return ret
+
+  def refreshCaboCha(self):
+    ss = settings.global_()
+    self.caboChaButton.setEnabled(ss.isMeCabEnabled() and (
+        ss.isCaboChaEnabled() or
+        ss.meCabDictionary() == 'unidic' and dicts.cabocha('unidic').exists() or
+        ss.meCabDictionary() == 'ipadic' and dicts.cabocha('ipadic').exists()))
 
   # Furigana
 
@@ -1638,8 +1679,8 @@ class _HonyakuTab(object):
     layout.addWidget(self.hiraganaButton)
     layout.addWidget(self.kataganaButton)
     layout.addWidget(self.romajiButton)
-    if 'en' not in blans:
-      layout.addWidget(self.trButton)
+    #if 'en' not in blans:
+    layout.addWidget(self.trButton)
     if 'ko' not in blans:
       layout.addWidget(self.hangulButton)
     if 'th' not in blans:
@@ -1710,8 +1751,9 @@ class _HonyakuTab(object):
   @memoizedproperty
   def trButton(self):
     ret = QtWidgets.QRadioButton(
-      "%s, %s: %s" %
-      (tr_("English"), my.tr("like this"), u"可愛い（cute）"))
+      "%s, %s: %s (%s)" %
+      (tr_("English"), my.tr("like this"), u"可愛い（cute）",
+        my.tr("require EDICT")))
     ret.toggled.connect(self._saveFurigana)
     return ret
 
@@ -2088,6 +2130,8 @@ class _HonyakuTab(object):
       self.edictButton.setEnabled(b)
       #self.trButton.setEnabled(b)
 
+    self.trButton.setEnabled(self.trButton.isChecked() or ss.isEdictEnabled() or dicts.edict().exists())
+
     # EPWING
     if 'ja' not in blans:
       self.kojienButton.setEnabled(ss.isKojienEnabled() or bool(ebdict.kojien().location()))
@@ -2099,7 +2143,9 @@ class _HonyakuTab(object):
     # MeCab
     self.ipadicButton.setEnabled(dicts.mecab('ipadic').exists())
     self.unidicButton.setEnabled(dicts.mecab('unidic').exists())
-    self.mljButton.setEnabled(dicts.mecab('unidic-mlj').exists())
+    #self.mljButton.setEnabled(dicts.mecab('unidic-mlj').exists())
+
+    self.refreshCaboCha()
 
 class HonyakuTab(QtWidgets.QDialog):
 
@@ -2377,6 +2423,10 @@ class _DictionaryDownloadsTab(object):
     self.meCabStatusLabels = {}
     self.meCabIntroLabels = {}
 
+    self.caboChaButtons = {}
+    self.caboChaStatusLabels = {}
+    self.caboChaIntroLabels = {}
+
     self.lingoesButtons = {}
     self.lingoesStatusLabels = {}
     self.lingoesIntroLabels = {}
@@ -2397,6 +2447,7 @@ class _DictionaryDownloadsTab(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.meCabGroup)
+    layout.addWidget(self.caboChaGroup)
 
     layout.addWidget(self.phraseGroup)
 
@@ -2417,7 +2468,8 @@ class _DictionaryDownloadsTab(object):
 
     r = 0
     #for lang in config.MECAB_DICS:
-    for name in 'unidic', 'unidic-mlj', 'ipadic':
+    #for name in 'unidic', 'unidic-mlj', 'ipadic':
+    for name in 'unidic', 'ipadic':
       grid.addWidget(self.getMeCabButton(name), r, 0)
       grid.addWidget(self.getMeCabStatusLabel(name), r, 1)
       grid.addWidget(self.getMeCabIntroLabel(name), r, 2)
@@ -2465,7 +2517,9 @@ class _DictionaryDownloadsTab(object):
       dic = dicts.mecab(name)
       if not dic.exists(): #and not dic.locked():
         dic.get()
-      refresh = partial(self.refreshMeCab, name)
+      refresh = partial(lambda name:
+          (self.refreshMeCab(name), self.refreshCaboCha(name)),
+          name)
       if not refresh():
         self.startRefresh(dic, refresh)
 
@@ -2501,6 +2555,99 @@ class _DictionaryDownloadsTab(object):
       skqss.class_(status, 'text-error')
       b.role = 'get'
       b.setEnabled(online)
+      b.setText(tr_("Install"))
+      skqss.class_(b, 'btn btn-primary')
+    return False
+
+  # - CaboCha dictionaries -
+
+  @memoizedproperty
+  def caboChaGroup(self): # CaboCha dictionaries
+    grid = QtWidgets.QGridLayout()
+
+    r = 0
+    for name in 'unidic', 'ipadic':
+      grid.addWidget(self.getCaboChaButton(name), r, 0)
+      grid.addWidget(self.getCaboChaStatusLabel(name), r, 1)
+      grid.addWidget(self.getCaboChaIntroLabel(name), r, 2)
+      grid.addWidget(QtWidgets.QWidget(), r, 3) # stretch
+      r += 1
+
+    ret = QtWidgets.QGroupBox(my.tr("CaboCha models for highlighting Japanese"))
+    ret.setLayout(grid)
+    return ret
+
+  def getCaboChaButton(self, name):
+    ret = self.caboChaButtons.get(name)
+    if not ret:
+      ret = self.caboChaButtons[name] = QtWidgets.QPushButton()
+      ret.role = ''
+      ret.clicked.connect(partial(lambda name:
+        self._getCaboCha(name) if ret.role == 'get' else
+        self._removeCaboCha(name) if ret.role == 'remove' else
+        None,
+      name))
+    return ret
+
+  def getCaboChaStatusLabel(self, name):
+    ret = self.caboChaStatusLabels.get(name)
+    if not ret:
+      ret = self.caboChaStatusLabels[name] = QtWidgets.QLabel()
+      dic = dicts.cabocha(name)
+      ret.linkActivated.connect(dic.open)
+      path = QtCore.QDir.toNativeSeparators(dic.path)
+      ret.setToolTip(path)
+    return ret
+
+  def getCaboChaIntroLabel(self, name):
+    ret = self.caboChaIntroLabels.get(name)
+    if not ret:
+      t = "%s (%s)" % (CABOCHA_DICT_NAMES[name], CABOCHA_DICT_SIZES[name])
+      ret = self.caboChaIntroLabels[name] = QtWidgets.QLabel(t)
+    return ret
+
+  def _getCaboCha(self, name):
+    if prompt.confirmDownloadDictionary('CaboCha (%s)' % name):
+      dic = dicts.cabocha(name)
+      if not dic.exists(): #and not dic.locked():
+        dic.get()
+      refresh = partial(self.refreshCaboCha, name)
+      if not refresh():
+        self.startRefresh(dic, refresh)
+
+  def _removeCaboCha(self, name):
+    if prompt.confirmRemoveDictionary('CaboCha (%s)' % name):
+      dicts.cabocha(name).remove()
+      #settings.global_().setCaboChaDictionaryEnabled(name, False)
+      self.refreshCaboCha(name)
+
+  def refreshCaboCha(self, name): # -> bool exists
+    b = self.getCaboChaButton(name)
+    status = self.getCaboChaStatusLabel(name)
+    dic = dicts.cabocha(name)
+    if dic.exists():
+      #status.setText(mytr_("Installed"))
+      status.setText('<a href="#" style="%s">%s</a>' % (INSTALLED_STATUS_STYLE, mytr_("Installed")))
+      skqss.class_(status, 'text-success')
+      b.role = 'remove'
+      b.setEnabled(True)
+      b.setText(tr_("Remove"))
+      skqss.class_(b, 'btn btn-default')
+      return True
+    elif dic.locked():
+      status.setText(mytr_("Installing"))
+      skqss.class_(status, 'text-info')
+      b.role = ''
+      b.setEnabled(False)
+      b.setText(tr_("Install"))
+      skqss.class_(b, 'btn btn-primary')
+    else:
+      online = netman.manager().isOnline()
+      status.setText(mytr_("Not installed"))
+      skqss.class_(status, 'text-error')
+      b.role = 'get'
+      mecabdic = dicts.mecab(name)
+      b.setEnabled(online and mecabdic.exists())
       b.setText(tr_("Install"))
       skqss.class_(b, 'btn btn-primary')
     return False
@@ -2868,7 +3015,7 @@ class _DictionaryDownloadsTab(object):
     self.refreshWadoku()
 
     map(self.refreshMeCab, config.MECAB_DICS)
-
+    map(self.refreshCaboCha, config.CABOCHA_DICS)
     map(self.refreshJMDict, config.JMDICT_LANGS)
 
     for lang in config.LINGOES_LANGS:

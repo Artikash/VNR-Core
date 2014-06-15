@@ -538,6 +538,7 @@ Item { id: root_
 
         rubyType: settings_.rubyType
         rubyDic: settings_.meCabDictionary
+        caboChaEnabled: settings_.caboChaEnabled
 
         removesTextNewLine: !dock_.splitsTextChecked
         splitsTranslation: dock_.splitsTranslationChecked

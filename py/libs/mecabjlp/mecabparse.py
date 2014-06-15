@@ -14,7 +14,7 @@ import MeCab
 from sakurakit import skos, skstr
 from cconv import cconv
 from jptraits import jpchars
-import mecabdef, mecabfmt, mecabtag
+import mecabdef, mecabfmt
 
 if skos.WIN:
   from msime import msime
@@ -49,6 +49,7 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, fe
   @yield  (unicode surface, int type, unicode yomigana or None, unicode feature or None)
   """
   if not tagger:
+    import mecabtag
     tagger = mecabtag.gettagger()
   if reading:
     wordtrans = _wordtrans if ruby == mecabdef.RB_TR else None
@@ -60,12 +61,13 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, fe
                  None)
     if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_HANGUL, mecabdef.RB_THAI, mecabdef.RB_KANJI):
       readingTypes = None
+  encoding = mecabdef.DICT_ENCODING
   feature2katana = fmt.getkata
-  node = tagger.parseToNode(text.encode(mecabdef.DICT_ENCODING))
+  node = tagger.parseToNode(text.encode(encoding))
   while node:
     if node.stat not in (MeCab.MECAB_BOS_NODE, MeCab.MECAB_EOS_NODE):
       surface = node.surface[:node.length];
-      surface = surface.decode(mecabdef.DICT_ENCODING, errors='ignore')
+      surface = surface.decode(encoding, errors='ignore')
       #surface = surface.encode('sjis')
 
       if len(surface) == 1 and surface in jpchars.set_punc:
@@ -78,15 +80,15 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, fe
         #if node.char_type in (mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN, mecabdef.TYPE_KATAGANA, mecabdef.TYPE_MODIFIER):
         f = None
         if feature:
-          f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
-        f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
+          f = node.feature.decode(encoding, errors='ignore')
+        #f = node.feature.decode(encoding, errors='ignore')
         if not readingTypes or char_type in readingTypes or char_type == mecabdef.TYPE_KATAGANA and wordtrans: # always translate katagana
           if wordtrans:
             if not yomigana:
               yomigana = wordtrans(surface)
           if not yomigana and not lougo:
             if not feature:
-              f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
+              f = node.feature.decode(encoding, errors='ignore')
             katagana = feature2katana(f)
             if katagana:
               furigana = None
@@ -130,10 +132,10 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, fe
       elif type and not feature: # and type
         yield surface, char_type
       elif not type and feature:
-        f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
+        f = node.feature.decode(encoding, errors='ignore')
         yield surface, f
       elif type and feature:
-        f = node.feature.decode(mecabdef.DICT_ENCODING, errors='ignore')
+        f = node.feature.decode(encoding, errors='ignore')
         yield surface, char_type, f
       #else:
       #  assert False, "unreachable"
@@ -196,6 +198,8 @@ if __name__ == '__main__':
 
   #rcfile = '/Users/jichi/stream/Library/Dictionaries/mecabrc/ipadic.rc'
   rcfile = '/Users/jichi/stream/Library/Dictionaries/mecabrc/unidic.rc'
+
+  import mecabtag
   mecabtag.setenvrc(rcfile)
   tagger = mecabtag.gettagger(dicdir=dicdir)
 

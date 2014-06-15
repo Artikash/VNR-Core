@@ -98,6 +98,8 @@ class Wadoku(Dict):
   def remove(self): # override
     return self.removetree()
 
+# MeCab
+
 class IPADIC(Dict):
   def __init__(self):
     super(IPADIC, self).__init__(
@@ -139,6 +141,35 @@ class UNIDICMLJ(Dict):
 
   def remove(self): # override
     return self.removetree()
+
+# CaboCha
+
+class CaboChaModel(Dict):
+  def __init__(self, dic):
+    self.dic = dic # str, one of ipadic, unidic, and juman
+    super(CaboChaModel, self).__init__(
+      path=os.path.join(rc.DIR_CACHE_DICT, "CaboCha/%s" % dic),
+      lockpath=os.path.join(rc.DIR_TMP, "cabocha.%s.lock" % dic),
+    )
+
+  def get(self): # override
+    from scripts import cabocha
+    return cabocha.get(self.dic)
+
+  def remove(self): # override
+    return self.removetree()
+
+class IPADICCaboChaModel(CaboChaModel):
+  def __init__(self,):
+    super(IPADICCaboChaModel, self).__init__('ipadic')
+
+class UNIDICCaboChaModel(CaboChaModel):
+  def __init__(self,):
+    super(UNIDICCaboChaModel, self).__init__('unidic')
+
+#class JUMANCaboChaModel(CaboChaModel):
+#  def __init__(self,):
+#    super(JUMANCaboChaModel, self).__init__('juman')
 
 # Global objects
 
@@ -184,6 +215,22 @@ def mecab(name):
   ret = MECAB.get(name)
   if not ret:
     MECAB[name] = ret = MECAB_CLASS[name]()
+  return ret
+
+CABOCHA_CLASS = {
+  'ipadic': IPADICCaboChaModel,
+  'unidic': UNIDICCaboChaModel,
+  #'juman': JUMANCaboChaModel,
+}
+CABOCHA = {} # {str name:Dict}
+def cabocha(name):
+  """
+  @param  name  str  such as 'ipadic'
+  @return  CaboChaModel
+  """
+  ret = CABOCHA.get(name)
+  if not ret:
+    CABOCHA[name] = ret = CABOCHA_CLASS[name]()
   return ret
 
 # EOF
