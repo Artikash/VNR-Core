@@ -121,12 +121,17 @@ _FIELDS = {
   'dmm_genre': __str,
   'dmm_genre_2': __str,
 
+  'digiket': __str, # such as: ITM0072787
+  'erogametokuten': __long,
+
   'shoukai': __str,    # homepage
 
   #'model': __str,      # platform
   #'comike': __long,
   #'tgfrontier': __long,
   #'gamemeter': __str,
+  #'galge': TODO,
+  #'elfics': TODO,
 }
 
 class Api(object):
@@ -238,11 +243,15 @@ if __name__ == '__main__':
   api = Api()
   t = 18942
   t = 17716
+  t = 2294
+  t = 15986
   q = api.query(t)
   #print q
   for it in q:
     print it['dmm']
     print it['furigana']
+    print it['digiket']
+    print it['erogametokuten']
     #print it['twitter_data_widget_id_before']
 
   #t = 9610

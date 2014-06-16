@@ -321,8 +321,8 @@ class GameInfo(object):
     @return  kw or None
     """
     r = self.trailers
-    if r and r.holysealUrl:
-      kw = refman.holyseal().query(r.holysealUrl)
+    if r and r.holyseal:
+      kw = refman.holyseal().query(r.holyseal)
       if kw:
         return HolysealItem(**kw)
 
@@ -536,11 +536,11 @@ class GameInfo(object):
     #    if v:
     #      yield v
 
-  @property
-  def holysealUrl(self): # str or None
-    r = self.trailers
-    if r:
-      return r.holysealUrl
+  #@property
+  #def holysealUrl(self): # str or None
+  #  r = self.trailers
+  #  if r:
+  #    return r.holysealUrl
 
   #@property
   #def gyuttoUrl(self): # str or None
@@ -564,10 +564,7 @@ class GameInfo(object):
     v = self.homepage
     if v:
       yield v, 'homepage'
-    v = self.holysealUrl
-    if v:
-      yield v, 'holyseal'
-    for r in self.scape, self.getchu, self.gyutto:
+    for r in self.scape, self.getchu, self.gyutto, r.holyseal:
       if r:
         yield r.url, r.type
     for r in self.amazon, self.dmm, self.dlsite:

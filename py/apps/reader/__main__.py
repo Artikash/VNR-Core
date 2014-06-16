@@ -274,17 +274,30 @@ def main():
 
       from sakurakit import skfileio
 
+      if ss_version <= 1402884913: # clear scape cache
+        path = rc.DIR_CACHE_SCAPE
+        if os.path.exists(path):
+          skfileio.removetree(path)
+          try: os.makedirs(path)
+          except OSError:
+            dwarn("warning: failed to create directory: %s" % path)
+
+      if ss_version <= 1402884913: # delete UniDic MLJ
+        path = rc.DIR_CACHE_DICT + '/UniDicMJL'
+        if os.path.exists(path):
+          skfileio.removetree(path)
+
       if ss_version <= 1401107220:
         ss.setValue('GameAgent', False) # disable game agent by default
 
       if ss_version <= 1394254407:
-        location = rc.DIR_DICT_MECAB
+        location = rc.DIR_DICT_MECAB # delete old unidic/unidic-mlj
         for it in 'unidic', 'unidic-mlj':
           path = location + '/' + it
           if os.path.exists(path):
             skfileio.removetree(path)
 
-      if ss_version <= 1393896804:
+      if ss_version <= 1393896804: # clearn china images
         if ss.isMainlandChina():
           path = rc.DIR_CACHE_IMAGE
           if os.path.exists(path):
@@ -294,10 +307,10 @@ def main():
               dwarn("warning: failed to create directory: %s" % path)
 
       if ss_version <= 1393493964:
-        if ss.value("LocaleSwitchEnabled"):
+        if ss.value("LocaleSwitchEnabled"): # disable locale switch
           ss.setValue("LocaleSwitchEnabled", False)
 
-      if ss_version <= 1393212106:
+      if ss_version <= 1393212106: # remove old mecab
         path = rc.DIR_DICT_MECAB
         if os.path.exists(path):
           skfileio.removetree(path)
@@ -305,10 +318,10 @@ def main():
           except OSError:
             dwarn("warning: failed to create directory: %s" % path)
 
-      if ss_version <= 1392183792:
+      if ss_version <= 1392183792: # disable lougo
         ss.setValue('LougoEnabled', False)
 
-      if ss_version <= 1391988443:
+      if ss_version <= 1391988443: # disable lingoes dictionary
         for k in 'EdictEnabled', 'LingoesJaZh', 'LingoesJaKo', 'LingoesJaVi':
           ss.setValue(k, False)
         for it in (
@@ -318,7 +331,7 @@ def main():
           if os.path.exists(it):
             skfileio.removetree(it)
 
-      if ss_version <= 1390024359:
+      if ss_version <= 1390024359: # delete old tmp directories
         for it in (
             rc.DIR_USER_CACHE + '/images',
             rc.DIR_USER_CACHE + '/mecab',
@@ -327,19 +340,17 @@ def main():
           if os.path.exists(it):
             skfileio.removetree(it)
 
-      if ss_version <= 1389682377:
+      if ss_version <= 1389682377: # enable baidu by default
         if lang.startswith('zh'):
           ss.setValue('BaiduEnabled', True)
 
-      if ss_version <= 1386141114:
-        dprint("remove old digests")
+      if ss_version <= 1386141114: # remove old digests
         for k in 'gameitems', 'gamefiles':
           f = rc.xml_path(k)
           if os.path.exists(f):
             skfileio.removefile(f)
 
-      if ss_version <= 1383376949:
-        dprint("clear old images")
+      if ss_version <= 1383376949: # clear old images
         try:
           for root, dirs, files in os.walk(rc.DIR_CACHE_IMAGE):
             for f in files:
@@ -367,16 +378,16 @@ def main():
                 skfileio.removefile(p)
         except Exception, e: dwarn(e)
 
-      if ss_version <= 1378612993:
+      if ss_version <= 1378612993: # disable timezone by default
         ss.setValue('TimeZoneEnabled', False)
 
-      if ss_version <= 1375218632:
+      if ss_version <= 1375218632: # reset text capacity
         ss.setValue('TextCapacity', config.SETTINGS_TEXT_CAPACITY) # TextHook data capacity
 
-      if ss_version <= 1375068568:
+      if ss_version <= 1375068568: # disable springbaord lauch by default
         ss.setValue('SpringBoardLaunch', False) # SpringBoard do not launch game by default
 
-      if ss_version <= 1374863216:
+      if ss_version <= 1374863216: # reset fonts
         #ss.setValue('GrimoireShadow', False)
 
         for lang in 'English', 'Chinese', 'Korean', 'Thai', 'Vietnamese', 'Indonesian', 'German', 'French', 'Italian', 'Spanish', 'Portuguese', 'Russian':
@@ -388,23 +399,20 @@ def main():
       #  v = ss.value('FemaleTTS')
       #  if v: ss.setValue('FemaleVoiceJa', v)
 
-      if ss_version <= 1372296306:
+      if ss_version <= 1372296306: # reset default grimoire settings
         ss.setValue('GrimoireZoomFactor', config.SETTINGS_ZOOM_FACTOR)
         ss.setValue('GrimoireWidthFactor', config.SETTINGS_WIDTH_FACTOR)
         ss.setValue('GrimoireShadowOpacity', config.SETTINGS_SHADOW_OPACITY)
         ss.setValue('GrimoireSubtitleColor', config.SETTINGS_SUBTITLE_COLOR)
         #ss.setValue('GrimoireTranslationColor', config.SETTINGS_TRANSLATION_COLOR)
 
-      if ss_version <= 1370408692:
+      if ss_version <= 1370408692: # disable window hook by default
         ss.setValue('WindowHookEnabled', False) # disable window text translation by default
 
-      if ss_version <= 1370738500:
-        ss.setValue('TimeZoneEnabled', True) # enable timezone
-
-      if ss_version <= 1365484274:
+      if ss_version <= 1365484274: # disable game detection by default
         ss.setValue('GameDetectionEnabled', True) # enable running game detection
 
-      if ss_version <= 1372227052 and ss.blockedLanguages():
+      if ss_version <= 1372227052 and ss.blockedLanguages(): # disable blocking Japanese
         try:
           l = ss.blockedLanguages()
           l.remove('ja')
@@ -415,10 +423,10 @@ def main():
       #  ss.setValue('GrimoireHoverEnabled', False) # disable mouse hover
       #  ss.setValue('GameBorderVisible', False) # disable outlining game window
 
-      if ss_version <= 1365691951:
+      if ss_version <= 1365691951: # enable user-defined hook by default
         ss.setValue('HookCodeEnabled', True) # enable user-defined hook code
 
-      if ss_version <= 1365674660:
+      if ss_version <= 1365674660: # clear old terms by default
         xmlfile = rc.xml_path('terms')
         if xmlfile and os.path.exists(xmlfile):
           skfileio.removefile(xmlfile)
