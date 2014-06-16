@@ -536,6 +536,18 @@ class GameInfo(object):
     #    if v:
     #      yield v
 
+  @property
+  def tokutenUrl(self): # str or None
+    r = self.scape
+    if r:
+      return r.tokutenUrl
+
+  @property
+  def digiketUrl(self): # str or None
+    r = self.scape
+    if r:
+      return r.digiketUrl
+
   #@property
   #def holysealUrl(self): # str or None
   #  r = self.trailers
@@ -567,6 +579,12 @@ class GameInfo(object):
     for r in self.scape, self.getchu, self.gyutto, r.holyseal:
       if r:
         yield r.url, r.type
+    v = self.tokutenUrl
+    if v:
+      yield v, 'tokuten'
+    v = self.digiketUrl
+    if v:
+      yield v, 'digiket'
     for r in self.amazon, self.dmm, self.dlsite:
       if r:
         yield r.url, r.type
@@ -2543,9 +2561,19 @@ class ScapeReference(Reference):
 
     self.trailers = kwargs.get('erogetrailers') or kwargs.get('trailers') or ''  # str
     self.gyutto = kwargs.get('gyutto_id') or ''
+    self.tokuten = kwargs.get('erogametokuten') or ''
+    self.digiket = kwargs.get('digiket') or '' # starts with ITM
 
     self.dlsite = kwargs.get('dlsite_id') or ''
     self.dlsiteDomain = kwargs.get('dlsite_domain') or ''
+
+  @property
+  def tokutenUrl(self):
+    return 'http://erogame-tokuten.com/title.php?title_id=%s' % self.tokuten if self.tokuten else ''
+
+  @property
+  def digiketUrl(self): # such as: http://www.digiket.com/work/show/_data/ID=ITM0097342/
+    return 'http://www.digiket.com/work/show/_data/ID=%s' % self.digiket if self.digiket else ''
 
   @property
   def dlsiteUrl(self):
