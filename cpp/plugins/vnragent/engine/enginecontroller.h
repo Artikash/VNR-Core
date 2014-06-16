@@ -53,7 +53,7 @@ protected:
   ///  Return whether relpaths exist
   static bool matchFiles(const QStringList &relpaths);
 
-  // Interface to descendent classes
+  // Interface to descendant classes, supposed to be protected
 public:
   ///  Send LPCSTR text to VNR
   QByteArray dispatchTextA(const QByteArray &data, long signature, int role = 0);
