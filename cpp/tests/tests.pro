@@ -13,6 +13,7 @@ SUBDIRS += \
   uitest
 
 win32: SUBDIRS += \
+  ceviotest \
   sehtest
 
 # EOF
