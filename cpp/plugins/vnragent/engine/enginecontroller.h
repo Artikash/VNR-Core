@@ -19,6 +19,7 @@ class EngineController
 public:
   // Successful engine controller
   // TODO: get rid of global instance
+  // Need to write my own ASM bytes to achieve C partial functions
   static Self *instance();
 
   ///  Model cannot be null. Engine does NOT take the ownership of the model.
