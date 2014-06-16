@@ -6,6 +6,31 @@
 // - COM: http://guide2.project-cevio.com/interface/com
 // - .NET: http://guide2.project-cevio.com/interface/dotnet
 
+#include <windows.h>
+
+#ifndef CEVIO_BEGIN_NAMESPACE
+# define CEVIO_BEGIN_NAMESPACE  namespace CeVIO {
+#endif
+#ifndef CEVIO_END_NAMESPACE
+# define CEVIO_END_NAMESPACE    } // namespace CeVIO
+#endif
+
+CEVIO_BEGIN_NAMESPACE
+
+// TODO: Missing definitions
+CLSID CLSID_ITalker;
+IID IID_ITalker;
+
+interface ITalker : IUnknown
+{
+  UINT Volume;
+};
+
+CEVIO_END_NAMESPACE
+
+// EOF
+
+/*
 #include <objbase.h>
 
 // 外部ソフトにトーク機能を提供します。
@@ -95,7 +120,7 @@ interface ITalker
   // 備考：
   //   出力形式はサンプリングレート48kHz, ビットレート16bit, モノラルです。
 
-}
+};
 
 // キャストの感情パラメータマップを表すオブジェクト。
 interface ITalkerComponentArray
@@ -123,7 +148,7 @@ interface ITalkerComponentArray
   // 戻り値：
   //   複製した配列のインスタンス。
 
-}
+};
 
 // 感情パラメータの単位オブジェクト。
 interface ITalkerComponent
@@ -138,7 +163,7 @@ interface ITalkerComponent
   uint Value { get; set; }
   // 感情の値（0～100）を取得または設定します。
 
-}
+};
 
 // 再生状態を表すオブジェクト。
 interface ISpeakingState
@@ -160,7 +185,7 @@ interface ISpeakingState
   // 引数：
   //   timeout - 最大待機時間。単位は秒。（0未満は無制限）
 
-}
+};
 
 // 音素データの配列を表すオブジェクト。
 interface IPhonemeDataArray
@@ -181,7 +206,7 @@ interface IPhonemeDataArray
   // 戻り値：
   //   複製した配列のインスタンス。
 
-}
+};
 
 // 音素データの単位オブジェクト。
 interface IPhonemeData
@@ -196,7 +221,7 @@ interface IPhonemeData
   double EndTime { get; }
   // 終了時間を取得します。単位は秒。
 
-}
+};
 
 // 文字列の配列を表すオブジェクト。
 interface IStringArray
@@ -217,6 +242,5 @@ interface IStringArray
   // 戻り値：
   //   複製した配列のインスタンス。
 
-}
-
-// EOF
+};
+*/
