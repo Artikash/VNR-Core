@@ -197,6 +197,7 @@ def main():
       rc.DIR_CACHE_GETCHU,
       rc.DIR_CACHE_GYUTTO,
       rc.DIR_CACHE_DLSITE,
+      rc.DIR_CACHE_HOLYSEAL,
       rc.DIR_CACHE_SCAPE,
       rc.DIR_CACHE_TRAILERS,
       rc.DIR_CACHE_WEB,

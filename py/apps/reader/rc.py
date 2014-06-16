@@ -54,6 +54,7 @@ DIR_CACHE_SCAPE = DIR_USER_CACHE + '/scape'     # $user/caches/scape
 DIR_CACHE_GETCHU = DIR_USER_CACHE + '/getchu'   # $user/caches/getchu
 DIR_CACHE_GYUTTO = DIR_USER_CACHE + '/gyutto'   # $user/caches/gyutto
 DIR_CACHE_DLSITE = DIR_USER_CACHE + '/dlsite'   # $user/caches/dlsite
+DIR_CACHE_HOLYSEAL = DIR_USER_CACHE + '/holyseal' # $user/caches/holyseal
 DIR_CACHE_DATA = DIR_USER_CACHE + '/data'       # $user/caches/data
 
 #DIR_CACHE_IMAGE = DIR_USER_CACHE + '/images'   # $user/caches/images
