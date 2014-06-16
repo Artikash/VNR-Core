@@ -12,7 +12,7 @@ class CircusEngine : public EngineModel
   static ulong search(ulong startAddress, ulong stopAddress);
   static void hook(HookStack *stack);
   static QString textFilter(const QString &text, int role); // remove "\n"
-  static QString translationFilter(const QString &text, int role); // insert "\n"
+  static QString translationFilter(const QString &text, int role); // insert "\n" to wrap long lines
 public:
   CircusEngine()
   {

@@ -15,7 +15,7 @@ public:
   SiglusEngine()
   {
     name = "SiglusEngine";
-    wideChar = true;
+    wideChar = true; // UTF-16
     matchFiles << "SiglusEngine.exe";
     attachFunction = &Self::attach;
     //searchFunction = &Self::search; // not used
