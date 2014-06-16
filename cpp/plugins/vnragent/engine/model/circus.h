@@ -18,6 +18,7 @@ public:
   {
     name = "CIRCUS";
     matchFiles << "advdata/grp/names.dat";
+    // TODO: Unify the text/size/split asm
     //textAsm("[esp+8]")  // arg2
     //sizeAsm(nullptr)  // none
     //splitAsm("[esp]") // return address
@@ -26,8 +27,6 @@ public:
     textFilterFunction = &Self::textFilter;
     translationFilterFunction = &Self::translationFilter;
   }
-
-private:
 };
 
 // EOF

@@ -18,7 +18,7 @@ public:
     wideChar = true;
     matchFiles << "SiglusEngine.exe";
     attachFunction = &Self::attach;
-    searchFunction = &Self::search; // not used
+    //searchFunction = &Self::search; // not used
   }
 };
 
