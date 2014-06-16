@@ -9,4 +9,6 @@ SUBDIRS += \
   tests
   #services
 
+win32: SUBDIRS += coms
+
 # EOF
