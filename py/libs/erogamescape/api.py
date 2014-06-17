@@ -126,10 +126,11 @@ _FIELDS = {
 
   'shoukai': __str,    # homepage
 
+  #'tgfrontier': __long, # such as: http://tg-frontier.jp/soft.aspx?s=6668
+  #'gamemeter': __str,   # such as: http://gamemeter.net/g/b5885fc65b
+
   #'model': __str,      # platform
   #'comike': __long,
-  #'tgfrontier': __long,
-  #'gamemeter': __str,
   #'galge': TODO,
   #'elfics': TODO,
 }
