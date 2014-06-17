@@ -616,6 +616,10 @@ dlls:
   - $PWD/../Qt/PySide/QtCore4.dll       # depends on msvcr, msvcp
   - $PWD/../Qt/PySide/QtNetwork4.dll    # depends on qtcore
   - $PWD/bin/vnragent.dll
+  vnrlocale: # TODO: Get rid of the dependence on msvc10
+  - $PWD/../Python/msvcr100.dll         # depends on kernel
+  - $PWD/../Python/msvcp100.dll         # depends on msvcr
+  - $PWD/bin/vnrloc.dll
 
 # EOF
 

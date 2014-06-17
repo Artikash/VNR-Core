@@ -157,25 +157,27 @@ def may_be_game_window(wid):
     return False
   return True
 
-def open_executable(path, lcid=0, params=None):
+def open_executable(path, lcid=0, params=None, vnrlocale=False):
   """
   @param  path  str  path to executable
-  @param  lcid  int  Microsoft lcid
-  @param  params  [unicode param] or None
+  @paramk lcid  int  Microsoft lcid
+  @param* params  [unicode param] or None
+  @param* vnrlocale  bool  whether inject vnrlocale on the startup
   @return  long  pid
   """
-  dprint("lcid = 0x%.4x, path = %s" % (lcid, path))
-  if lcid and applocale.exists():
-    return applocale.create_process(path, lcid, params=params)
-  else:
-    return skwin.create_process(path, params=params)
-    #return QDesktopServices.openUrl(QUrl.fromLocalFile(path))
+  dprint("lcid = 0x%.4x, vnrlocale = %s, path = %s" % (lcid, vnrlocale, path))
 
-    #from sakurakit import skwinsec
-    #with skwinsec.SkProcessCreator(path, params=params) as proc:
-    #  import vnragent
-    #  vnragent.inject_process(proc.processId)
-    #  return proc.processId
+  env = applocale.create_environ(lcid) if lcid and applocale.exists() else None
+
+  if not vnrlocale:
+    return skwin.create_process(path, params=params, environ=env)
+    #return QDesktopServices.openUrl(QUrl.fromLocalFile(path))
+  else:
+    from sakurakit import skwinsec
+    with skwinsec.SkProcessCreator(path, params=params, environ=env) as proc:
+      import inject
+      inject.inject_vnrlocale(handle=proc.processHandle)
+      return proc.processId
 
 def open_executable_with_ntlea(path, params=None):
   """

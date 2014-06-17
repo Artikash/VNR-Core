@@ -2,7 +2,40 @@
 # jpchars.py
 # 12/30/2012 jichi
 
-import re
+# UTF-8
+
+U8_HIRA_FIRST = 12353
+U8_HIRA_LAST = 12438
+
+U8_KATA_FIRST = 12449
+U8_KATA_LAST = 12534
+
+# TODO: Move these functions to other files
+def u8_any(text, first, last):
+  """
+  @param  text  unicode
+  @param  first  int
+  @param  last  int
+  @return  bool
+  """
+  for c in text:
+    u8 = ord(c)
+    if u8 >= first and u8 <= last:
+      return True
+  return False
+
+def u8_all(text, first, last):
+  """
+  @param  text  unicode
+  @param  first  int
+  @param  last  int
+  @return  bool
+  """
+  for c in text:
+    u8 = ord(c)
+    if u8 < first or u8 > last:
+      return False
+  return True
 
 ## Character traits ##
 
@@ -21,30 +54,21 @@ s_kata = u"\
 l_hira = list(s_hira)
 l_kata = list(s_kata)
 
-re_hira = re.compile(r"[%s]" % s_hira)
-re_kata = re.compile(r"[%s]" % s_kata)
+#re_hira = re.compile(r"[%s]" % s_hira)
+#re_kata = re.compile(r"[%s]" % s_kata)
 
-re_hira_all = re.compile(r"[%s]+" % s_hira)
-re_kata_all = re.compile(r"[%s]+" % s_kata)
+#re_hira_all = re.compile(r"[%s]+" % s_hira)
+#re_kata_all = re.compile(r"[%s]+" % s_kata)
 
-def _contains_u8(text, start, stop):
-  """
-  @param  text  unicode
-  @param  start  int
-  @param  stop  int
-  @return  bool
-  """
-  for c in text:
-    u8 = ord(c)
-    if u8 >= start and u8 <= stop:
-      return True
-  return False
-
-def containshira(text): return _contains_u8(text, 12353, 12438) #return bool(re_hira.search(text))
-def containskata(text): return _contains_u8(text, 12449, 12534) #return bool(re_kata.search(text))
+def anyhira(text): return u8_any(text, U8_HIRA_FIRST, U8_HIRA_LAST) #return bool(re_hira.search(text))
+def anykata(text): return u8_any(text, U8_KATA_FIRST, U8_KATA_LAST) #return bool(re_kata.search(text))
+def allhira(text): return u8_all(text, U8_HIRA_FIRST, U8_HIRA_LAST) #return bool(re_hira_all.match(text))
+def allkata(text): return u8_all(text, U8_KATA_FIRST, U8_KATA_LAST) #return bool(re_kata_all.match(text))
 
 #re_not_hira = re.compile(r"[^%s]" % s_hira)
 #re_not_kata = re.compile(r"[^%s]" % s_kata)
+
+import re
 
 s_punc = u"\
 、。？！…‥：・／\

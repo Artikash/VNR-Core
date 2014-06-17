@@ -42,7 +42,6 @@ public:
              *decoder;
 
   Engine::address_type oldHookFun;
-  EngineModel::hook_function dispatchFun;
 
   EngineSettings *settings;
   bool finalized;
@@ -52,7 +51,7 @@ public:
     : model(model)
     , codePage(0)
     , encoder(nullptr), decoder(nullptr)
-    , dispatchFun(0), oldHookFun(0)
+    , oldHookFun(0)
     , settings(new EngineSettings)
     , finalized(false)
   {}
@@ -65,7 +64,7 @@ public:
       finalizeCodecs();
 
       globalOldHookFun = oldHookFun;
-      globalDispatchFun = dispatchFun;
+      globalDispatchFun = model->hookFunction;
 
       finalized = true;
     }
@@ -183,7 +182,9 @@ bool EngineController::attach()
     return false;
   ulong addr = d_->model->searchFunction(startAddress, stopAddress);
   //ulong addr = startAddress + 0x31850; // 世界と世界の真ん中 体験版
+  //ulong addr = 0x41af90; // レミニセンス function address
   if (addr) {
+    DOUT("attached, engine =" << name() << ", absaddr =" << QString::number(addr, 16) << "reladdr =" << QString::number(addr - startAddress, 16));
     d_->oldHookFun = Engine::replaceFunction<Engine::address_type>(addr, ::newHookFun);
     return true;
   }
@@ -216,9 +217,11 @@ bool EngineController::matchFiles(const QStringList &relpaths)
   if (relpaths.isEmpty())
     return false;
   foreach (const QString &path, relpaths)
-    if (path.contains('*') && !Engine::globs(path)
-        || !Engine::exists(path))
+    if (!(path.contains('*') && Engine::globs(path)
+        || Engine::exists(path)))
       return false;
+
+  DOUT("ret = true, relpaths =" << relpaths);
   return true;
 }
 
@@ -394,4 +397,26 @@ void EngineControllerPrivate::exchange()
     }
   }
 }
+
+
+
+typedef int (WINAPI *MultiByteToWideCharFun)(UINT CodePage, DWORD dwFlags, LPCSTR lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar);
+typedef int (WINAPI *WideCharToMultiByteFun)(UINT CodePage, DWORD dwFlags, LPCWSTR lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCSTR lpDefaultChar, LPBOOL lpUsedDefaultChar);
+MultiByteToWideCharFun oldMultiByteToWideChar;
+WideCharToMultiByteFun oldWideCharToMultiByte;
+int WINAPI newMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCSTR lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar)
+{
+  if (CodePage == 932)
+    CodePage = 936;
+  return ::oldMultiByteToWideChar(CodePage, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
+}
+
+int WINAPI newWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCSTR lpDefaultChar, LPBOOL lpUsedDefaultChar)
+{
+  if (CodePage == 932)
+    CodePage = 936;
+  return ::oldWideCharToMultiByte(CodePage, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);
+}
+    ::oldMultiByteToWideChar = Engine::replaceFunction<MultiByteToWideCharFun>(addr, ::newMultiByteToWideChar);
+    ::oldWideCharToMultiByte = Engine::replaceFunction<WideCharToMultiByteFun>(addr, ::newWideCharToMultiByte);
 */

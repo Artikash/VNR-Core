@@ -96,7 +96,8 @@ if skos.WIN:
       if d.token:
         if d.privileges is not None:
           win32security.AdjustTokenPrivileges(d.token, 0, d.privileges)
-        win32api.CloseHandle(d.token)
+        try: win32api.CloseHandle(d.token)
+        except Exception, e: dwarn("windows error:", e)
         d.token = None
 
     def isElevated(self):
@@ -137,7 +138,9 @@ if skos.WIN:
     @return  bool
     """
     dprint("enter: pid = %s" % pid)
+    isLocalHandle = False # bool
     if not handle and pid:
+      isLocalHandle = True
       try:
         handle = win32api.OpenProcess(PROCESS_INJECT_ACCESS, 0, pid)
         if not handle:
@@ -180,7 +183,9 @@ if skos.WIN:
         skwinapi.VirtualFreeEx(hProcess, remoteData, dataSize, win32con.MEM_RELEASE)
     except Exception, e:
       dwarn("windows error:", e)
-    win32api.CloseHandle(hProcess)
+    if isLocalHandle: # only close the handle if I create it
+      try: win32api.CloseHandle(hProcess)
+      except Exception, e: dwarn("windows error:", e)
     dprint("exit: ret = ok")
     return ret
 

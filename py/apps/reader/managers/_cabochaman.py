@@ -7,6 +7,7 @@ __all__ = ['CaboChaParser']
 
 import os
 from cconv import cconv
+from jptraits import jpchars
 from cabochajlp import cabochadef, cabocharc
 from mecabjlp import mecabfmt
 import defs, dicts, termman
@@ -135,7 +136,7 @@ class CaboChaParser(object):
         f = None
         if feature:
           f = token.feature.decode(encoding, errors='ignore')
-        if not readingTypes or char_type in readingTypes or char_type == cabochadef.TYPE_RUBY and wordtrans: # always translate katagana
+        if not readingTypes or char_type in readingTypes or wordtrans and char_type == cabochadef.TYPE_RUBY and jpchars.allkata(surface): # always translate katagana or wordtrans
           if wordtrans:
             if termEnabled:
               yomigana = tm.queryLatinWordTerms(surface)

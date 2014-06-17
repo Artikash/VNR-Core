@@ -4,6 +4,7 @@
 CONFIG += noqt dll
 include(../../../config.pri)
 include($$LIBDIR/windbg/windbg.pri)
+#include($$LIBDIR/winiter/winiter.pri)
 include($$LIBDIR/winsinglemutex/winsinglemutex.pri)
 
 #LIBS    += -lkernel32
@@ -16,12 +17,12 @@ TEMPLATE = lib
 TARGET  = vnrloc
 
 HEADERS += \
-  config.h \
   debug.h \
-  settings.h
+  profile.h
 
 SOURCES += \
-  main.cc
+  main.cc \
+  profile_bgi.cc
 
 #!wince*: LIBS += -lshell32
 #RC_FILE += vnrlocale.rc

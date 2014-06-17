@@ -390,8 +390,8 @@ NTLEA_LOCATION = parse_path(SHARE_YAML['ntlea']['location']) # unicode abspath
 
 LSC_LOCATION = parse_path(SHARE_YAML['lsc']['location']) # unicode abspath
 
-#VNRAGENT_DLLS = [it.replace('$PWD', ROOT_LOCATION) for it in SHARE_YAML['dlls']['vnragent']] # str path
 VNRAGENT_DLLS = map(parse_path, SHARE_YAML['dlls']['vnragent']) # [unicode abspath]
+VNRLOCALE_DLLS = map(parse_path, SHARE_YAML['dlls']['vnrlocale']) # [unicode abspath]
 
 TEMPLATE_LOCATION = parse_path(SHARE_YAML['templates']['location']) # unicode abspath
 TEMPLATE_ENTRIES = SHARE_YAML['templates']['entries'] # {str name:unicode relpath}
