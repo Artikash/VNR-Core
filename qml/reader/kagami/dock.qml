@@ -618,6 +618,7 @@ Item { id: root_
         //property bool highlight: count > 1
 
         //visible: gameComet_.active
+        visible: statusPlugin_.online
 
         font.pixelSize: parent.pixelSize * 0.8
         //font.bold: true

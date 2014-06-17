@@ -13,8 +13,8 @@ import '../share' as Share
 
 Item { id: root_
   property bool ignoresFocus: false
-  property bool subtitleVisible: true
-  //property bool commentVisible: true
+  //property bool subtitleVisible: true
+  property bool commentVisible: true
 
   property color effectColor
   //property bool avatarVisible
@@ -27,7 +27,7 @@ Item { id: root_
 
   property int _BBCODE_TIMESTAMP: 1363922891
 
-  visible: subtitleVisible && listModel_.count > 0
+  visible: commentVisible && listModel_.count > 0
 
   property int _VISIBLE_DURATION: 12000
   property int _FADE_DURATION: 800
@@ -213,7 +213,7 @@ Item { id: root_
         listModel_.remove(model.index)
       }
 
-      visible: root_.subtitleVisible && !model.comment.disabled && !model.comment.deleted
+      visible: root_.commentVisible && !model.comment.disabled && !model.comment.deleted
 
       //opacity: 0
       NumberAnimation on opacity { // fade in
@@ -398,7 +398,7 @@ Item { id: root_
   //}
 
   function showComment(comment) {
-    if (!subtitleVisible)
+    if (!commentVisible)
       return
     addItem(comment)
   }

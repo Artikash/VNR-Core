@@ -417,8 +417,8 @@ Item { id: root_
         ignoresFocus: root_.ignoresFocus
         effectColor: settings_.grimoireCommentColor
 
-        subtitleVisible: dock_.subtitleChecked
-        //commentVisible: dock_.commentChecked
+        //subtitleVisible: dock_.subtitleChecked
+        commentVisible: dock_.commentChecked
       }
 
       Kagami.Grimoire { id: grimoire_
