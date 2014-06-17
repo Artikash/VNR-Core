@@ -15,6 +15,9 @@ LANGID __stdcall MyGetSystemDefaultLangID()
 }
 
 #include "windbg/hijack.h"
+#ifdef _MSC_VER
+# pragma warning(disable:4800) // C4800: forcing value to bool
+#endif // _MSC_VER
 bool hijack()
 {
   HMODULE hModule = ::GetModuleHandleA(nullptr);
