@@ -59,11 +59,13 @@ def gender_name(g): return GENDER_NAMES.get(g) or ''
 
 SITE_NAMES = {
   'amazon': "Amazon", #u"アマゾン",
+  'digiket': "DiGiket",
   'dmm': "DMM",
   'getchu': "Getchu", #u"げっちゅ屋",
   'gyutto': "Gyutto", #u"ギュット!",
   'dlsite': "DLsite",
   'trailers': "Trailers",
+  'tokuten': "特典", #u"エロゲーム特典",
   'scape': u"批評空間",
   'erogamescape': u"批評空間",
   'holyseal': u"聖封",

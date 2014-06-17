@@ -6,6 +6,7 @@
 #include "engine/engine.h"
 #include "util/codepage.h"
 
+// TODO: This class is not completed
 class RejetEngine : public AbstractEngine
 {
   SK_EXTEND_CLASS(RejetEngine, AbstractEngine)

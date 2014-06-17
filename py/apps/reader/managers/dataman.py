@@ -315,6 +315,17 @@ class GameInfo(object):
         if kw:
           return GyuttoItem(**kw)
 
+  @memoizedproperty
+  def holyseal(self):
+    """Online
+    @return  kw or None
+    """
+    r = self.trailers
+    if r and r.holyseal:
+      kw = refman.holyseal().query(r.holyseal)
+      if kw:
+        return HolysealItem(**kw)
+
   @property
   def characters(self):
     """Online
@@ -396,6 +407,12 @@ class GameInfo(object):
   #    if it:
   #      yield it
 
+  def _iterTrailersScapeHolysealGetchuDLsiteDmmAmazon(self):
+    for it in self.trailers, self.scape, self.holyseal, self.getchu, self.dlsite, self.dmm, self.amazon:
+      if it:
+        yield it
+
+
   def _iterTrailersScapeGetchuDLsiteDmmAmazon(self):
     for it in self.trailers, self.scape, self.getchu, self.dlsite, self.dmm, self.amazon:
       if it:
@@ -410,6 +427,11 @@ class GameInfo(object):
 
   def _iterTrailersDmmAmazonDLsite(self):
     for it in self.trailers, self.dmm, self.amazon, self.dlsite:
+      if it:
+        yield it
+
+  def _iterTrailersHolysealDmmAmazonDLsite(self):
+    for it in self.trailers, self.holyseal, self.dmm, self.amazon, self.dlsite:
       if it:
         yield it
 
@@ -469,7 +491,7 @@ class GameInfo(object):
     ret = self.title0
     if ret:
       return ret
-    for r in self._iterTrailersScapeGetchuDLsiteDmmAmazon():
+    for r in self._iterTrailersScapeHolysealGetchuDLsiteDmmAmazon():
       return r.title
     return ''
 
@@ -515,10 +537,22 @@ class GameInfo(object):
     #      yield v
 
   @property
-  def holysealUrl(self): # str or None
-    r = self.trailers
+  def tokutenUrl(self): # str or None
+    r = self.scape
     if r:
-      return r.holysealUrl
+      return r.tokutenUrl
+
+  @property
+  def digiketUrl(self): # str or None
+    r = self.scape
+    if r:
+      return r.digiketUrl
+
+  #@property
+  #def holysealUrl(self): # str or None
+  #  r = self.trailers
+  #  if r:
+  #    return r.holysealUrl
 
   #@property
   #def gyuttoUrl(self): # str or None
@@ -542,12 +576,18 @@ class GameInfo(object):
     v = self.homepage
     if v:
       yield v, 'homepage'
-    v = self.holysealUrl
-    if v:
-      yield v, 'holyseal'
-    for r in self.scape, self.getchu, self.gyutto:
+    for r in self.scape, self.holyseal:
       if r:
         yield r.url, r.type
+    v = self.tokutenUrl
+    if v:
+      yield v, 'tokuten'
+    for r in self.getchu, self.gyutto:
+      if r:
+        yield r.url, r.type
+    v = self.digiketUrl
+    if v:
+      yield v, 'digiket'
     for r in self.amazon, self.dmm, self.dlsite:
       if r:
         yield r.url, r.type
@@ -652,7 +692,7 @@ class GameInfo(object):
 
   @property
   def ecchi(self): # bool not None
-    for r in self._iterTrailersDmmAmazonDLsite(): # erogescape is not used
+    for r in self._iterTrailersHolysealDmmAmazonDLsite(): # erogescape is not used
       return r.ecchi
     return True
 
@@ -795,6 +835,9 @@ class GameInfo(object):
     r = self.trailersItem
     if r and r.banner:
       return True
+    r = self.holyseal
+    if r and r.banner:
+      return True
     # Getchu is disabled
     #r = self.getchu
     #if r and r.hasBannerImages():
@@ -803,7 +846,7 @@ class GameInfo(object):
 
   def iterBannerImageUrls(self): # str or None
     # Trailers banner is usually larger
-    trailersBanner = None
+    trailersBanner = scapeBanner = None
     r = self.trailersItem
     if r and r.banner:
       yield cacheman.cache_image_url(proxy.get_image_url(r.banner))
@@ -811,6 +854,10 @@ class GameInfo(object):
     r = self.scape
     if r and r.bannerUrl and not sknetio.urleq(r.bannerUrl, trailersBanner):
       yield cacheman.cache_image_url(proxy.get_image_url(r.bannerUrl))
+      scapeBanner = r.bannerUrl
+    r = self.holyseal
+    if r and r.banner and not sknetio.urleq(r.banner, trailersBanner) and not sknetio.urleq(r.banner, scapeBanner):
+      yield cacheman.cache_image_url(proxy.get_image_url(r.banner))
     #r = self.getchu
     #if r and r.hasBannerImages():
     #  for it in r.iterBannerImageUrls():
@@ -2517,9 +2564,19 @@ class ScapeReference(Reference):
 
     self.trailers = kwargs.get('erogetrailers') or kwargs.get('trailers') or ''  # str
     self.gyutto = kwargs.get('gyutto_id') or ''
+    self.tokuten = kwargs.get('erogametokuten') or ''
+    self.digiket = kwargs.get('digiket') or '' # starts with ITM
 
     self.dlsite = kwargs.get('dlsite_id') or ''
     self.dlsiteDomain = kwargs.get('dlsite_domain') or ''
+
+  @property
+  def tokutenUrl(self):
+    return 'http://erogame-tokuten.com/title.php?title_id=%s' % self.tokuten if self.tokuten else ''
+
+  @property
+  def digiketUrl(self): # such as: http://www.digiket.com/work/show/_data/ID=ITM0097342/
+    return 'http://www.digiket.com/work/show/_data/ID=%s' % self.digiket if self.digiket else ''
 
   @property
   def dlsiteUrl(self):
@@ -2751,7 +2808,7 @@ class GyuttoItem: #(object):
       title="", image="", theme='', review='',
       tags=[], sampleImages=[],
       **kwargs):
-    self.key = key # str URL
+    self.key = key # str but number
     self.url = url # str URL
     self.title = title # unicode
     self.image = image # unicode or None
@@ -2779,6 +2836,21 @@ class GyuttoItem: #(object):
     """
     for it in self.sampleImages:
       return cacheman.cache_image_url(it) if cache else it
+
+class HolysealItem: #(object):
+  type = 'holyseal'
+  def __init__(self, key=0, url='',
+      title="", genre="",
+      banner="", # image URL
+      ecchi=True,
+      #date='',
+      **kwargs):
+    self.key = key # long
+    self.url = url # str URL
+    self.title = title # unicode
+    self.banner = banner # unicode or None
+    self.slogan = genre # str
+    self.ecchi = ecchi  # bool
 
 class DmmItem: #(object):
   def __init__(self, url="",

@@ -12,12 +12,13 @@ class CircusEngine : public EngineModel
   static ulong search(ulong startAddress, ulong stopAddress);
   static void hook(HookStack *stack);
   static QString textFilter(const QString &text, int role); // remove "\n"
-  static QString translationFilter(const QString &text, int role); // insert "\n"
+  static QString translationFilter(const QString &text, int role); // insert "\n" to wrap long lines
 public:
   CircusEngine()
   {
     name = "CIRCUS";
     matchFiles << "advdata/grp/names.dat";
+    // TODO: Unify the text/size/split asm
     //textAsm("[esp+8]")  // arg2
     //sizeAsm(nullptr)  // none
     //splitAsm("[esp]") // return address
@@ -26,8 +27,6 @@ public:
     textFilterFunction = &Self::textFilter;
     translationFilterFunction = &Self::translationFilter;
   }
-
-private:
 };
 
 // EOF

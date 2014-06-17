@@ -29,6 +29,9 @@ def trailers(): return TrailersManager()
 def dmm(): return DmmManager()
 
 @memoized
+def holyseal(): return HolysealManager()
+
+@memoized
 def gyutto(): return GyuttoManager()
 
 @memoized
@@ -1316,6 +1319,67 @@ class GyuttoManager:
       for k in 'itemApi', 'reviewApi':
         if hasmemoizedproperty(d, k):
           getattr(d, k).online = v
+
+  #@memoized # cached
+  def query(self, id, async=True):
+    """
+    @param  id  int or str  ID
+    @return  {kw}
+    """
+    self.__d.warmup()
+    return skthreads.runsync(partial(
+        self.__d.query, id),
+        parent=self.parent) if async else self.__d.query(id)
+
+# Holyseal manager
+
+class _HolysealManager(object):
+
+  def __init__(self):
+    self.online = True
+    self._warmed = False
+
+  @memoizedproperty
+  def api(self): # Always caching
+    from holyseal.caching import CachingProductApi
+    return CachingProductApi(rc.DIR_CACHE_HOLYSEAL,
+        expiretime=config.REF_EXPIRE_TIME,
+        online=self.online)
+
+  def warmup(self):
+    if not self._warmed:
+      self.api
+      self._warmed = True
+
+  def query(self, id):
+    """
+    @param  id  int or str  ID
+    @return  {kw}
+    """
+    ret = self.api.query(id)
+    if ret:
+      ret['key'] = ret['id']
+      del ret['id']
+    return ret
+
+class HolysealManager:
+
+  def __init__(self, parent=None):
+    """
+    @param  parent  QObject
+    """
+    self.__d = _HolysealManager()
+    self.parent = parent
+
+  def setParent(self, v): self.parent = v
+
+  def isOnline(self): return self.__d.online
+  def setOnline(self, v):
+    d = self.__d
+    if d.online != v:
+      d.online = v
+      if hasmemoizedproperty(d, 'api'):
+        d.api.online = v
 
   #@memoized # cached
   def query(self, id, async=True):

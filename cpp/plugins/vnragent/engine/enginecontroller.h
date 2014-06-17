@@ -19,6 +19,7 @@ class EngineController
 public:
   // Successful engine controller
   // TODO: get rid of global instance
+  // Need to write my own ASM bytes to achieve C partial functions
   static Self *instance();
 
   ///  Model cannot be null. Engine does NOT take the ownership of the model.
@@ -53,7 +54,7 @@ protected:
   ///  Return whether relpaths exist
   static bool matchFiles(const QStringList &relpaths);
 
-  // Interface to descendent classes
+  // Interface to descendant classes, supposed to be protected
 public:
   ///  Send LPCSTR text to VNR
   QByteArray dispatchTextA(const QByteArray &data, long signature, int role = 0);
