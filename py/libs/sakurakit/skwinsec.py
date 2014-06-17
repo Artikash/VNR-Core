@@ -185,7 +185,7 @@ if skos.WIN:
     return ret
 
   # See: inject.cpp from translation aggregator
-  def injectdll(dllpath, pid=0, handle=None, timeout=3000):
+  def injectdll(dllpath, pid=0, handle=None, timeout=INJECT_TIMEOUT):
     """Either pid or the process handle should be specified
     @param  dllpath  unicode ABSOLUTE path to dll
     @param  pid  LONG
@@ -207,11 +207,11 @@ if skos.WIN:
       return False
     data = dllpath
     dataSize = len(dllpath) * 2 + 2 # L'\0'
-    ok = injectfunc1(LOADLIBRARYW, data, dataSize, pid=pid, handle=handle, timeout=INJECT_TIMEOUT)
+    ok = injectfunc1(LOADLIBRARYW, data, dataSize, pid=pid, handle=handle, timeout=timeout)
     dprint("exit: ret = ok")
     return ok
 
-  def unloaddll(dllhandle, pid=0, handle=None, timeout=3000):
+  def unloaddll(dllhandle, pid=0, handle=None, timeout=INJECT_TIMEOUT):
     """Either pid or the process handle should be specified
     @param  dllhandle  handle of the injected dll
     @param  pid  LONG
@@ -226,7 +226,7 @@ if skos.WIN:
       return False
     data = dllhandle
     dataSize = 4 # size of DWORD
-    ok = injectfunc1(LOADLIBRARYW, data, dataSize, pid=pid, handle=handle, timeout=INJECT_TIMEOUT)
+    ok = injectfunc1(LOADLIBRARYW, data, dataSize, pid=pid, handle=handle, timeout=timeout)
     dprint("exit: ret = ok")
     return 0
 

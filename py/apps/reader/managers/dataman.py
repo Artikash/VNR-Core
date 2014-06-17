@@ -576,12 +576,15 @@ class GameInfo(object):
     v = self.homepage
     if v:
       yield v, 'homepage'
-    for r in self.scape, self.getchu, self.gyutto, r.holyseal:
+    for r in self.scape, self.holyseal:
       if r:
         yield r.url, r.type
     v = self.tokutenUrl
     if v:
       yield v, 'tokuten'
+    for r in self.getchu, self.gyutto:
+      if r:
+        yield r.url, r.type
     v = self.digiketUrl
     if v:
       yield v, 'digiket'
