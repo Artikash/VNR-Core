@@ -309,6 +309,9 @@ class GameProfile(QtCore.QObject):
     # Game agent
     self.launchLanguage = launchLanguage # str
 
+    # Whether enable vnrlccale
+    self.vnrlocale = False # bool
+
   def lcid(self): # -> long not None
     if self.launchLanguage:
       return config.language2lcid(self.launchLanguage) or 0x0411 # ja by default
@@ -644,23 +647,28 @@ class GameProfile(QtCore.QObject):
               lcid = 0 if features.WINE else self.lcid() if self.usingApploc() else 0
               dprint("lcid = %s" % lcid)
               if not self.launchPath or not os.path.exists(self.launchPath):
-                if lcid:
+                if self.vnrlocale:
+                  growl.notify(my.tr("Launch the game with {0}").format(notr_("VNRLocale")))
+                elif lcid:
                   growl.notify(my.tr("Launch the game with {0}").format(notr_("AppLocale")))
                 elif not features.WINE:
                   growl.notify(my.tr("Launch the game in original Japanese locale"))
-                self.pid = procutil.open_executable(self.path, lcid=lcid)
+                self.pid = procutil.open_executable(self.path, lcid=lcid, vnrlocale=self.vnrlocale)
                 #vnragent.inject_process(self.pid)
                 #rpcman.manager().enableClient()
                 if not self.pid:
                   proc = procutil.get_process_by_path(self.path)
                 if self.pid or proc:
                   if updateLater(): return
-              else:
+              else: # launch the launcher instead of the original ame
                 if procutil.get_process_by_path(self.launchPath):
                   if updateLater(): return
 
+                #if self.vnrlocale:
+                #  growl.notify(my.tr("Launch the game with {0}").format(notr_("VNRLocale")))
+
                 params = [QtCore.QDir.toNativeSeparators(self.path)]
-                pid = procutil.open_executable(self.launchPath, lcid=lcid, params=params)
+                pid = procutil.open_executable(self.launchPath, lcid=lcid, params=params) #, vnrlocale=self.vnrlocale)
                 proc = procutil.get_process_by_path(self.path)
                 if pid or proc:
                   if updateLater(): return
@@ -1010,6 +1018,7 @@ class GameManager(QtCore.QObject):
             if launchLanguage in config.SJIS_LANGUAGE_SET:
               launchLanguage = ''
             g.launchLanguage = launchLanguage
+            g.vnrlocale = agentEngine.vnrlocale
 
       if not g.hasProcess():
         dprint("update process")

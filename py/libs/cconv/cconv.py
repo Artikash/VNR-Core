@@ -9,6 +9,7 @@ if __name__ == '__main__':
 import re
 from itertools import imap
 from jptraits import jpchars
+from unitraits import unichars
 from sakurakit.skclass import memoized
 
 ## Kanji lists ##
@@ -261,10 +262,10 @@ def transpose(text, *args):
     except UnicodeDecodeError: return text
   return ''.join(_itertranspose(text, *args)) # joining is much faster than appending
 
-def wide2thin(text): return transpose(text, -65248, 65281, 65374).replace(u'\u3000', u' ')
-def thin2wide(text): return transpose(text, 65248, 33, 126).replace(u' ', u'\u3000')
-def hira2kata(text): return transpose(text, 96, 12353, 12438)
-def kata2hira(text): return transpose(text, -96, 12449, 12534)
+def thin2wide(text): return transpose(text, unichars.DIST_THIN_WIDE, unichars.ORD_THIN_FIRST, unichars.ORD_THIN_LAST).replace(u' ', u'\u3000')
+def wide2thin(text): return transpose(text, -unichars.DIST_THIN_WIDE, unichars.ORD_WIDE_FIRST, unichars.ORD_WIDE_LAST).replace(u'\u3000', u' ')
+def hira2kata(text): return transpose(text, unichars.DIST_HIRA_KATA, unichars.ORD_HIRA_FIRST, unichars.ORD_HIRA_LAST)
+def kata2hira(text): return transpose(text, -unichars.DIST_HIRA_KATA, unichars.ORD_KATA_FIRST, unichars.ORD_KATA_LAST)
 
 # See: http://pypi.python.org/pypi/jTransliterate
 from jTransliterate import JapaneseTransliterator

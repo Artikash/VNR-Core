@@ -96,7 +96,8 @@ class _WebBrowser(object):
     dock.setAllowedAreas(Qt.TopDockWidgetArea)
     q.addDockWidget(Qt.TopDockWidgetArea, dock)
 
-    self._createShortcuts()
+    self._createShortcuts(q)
+    self._createGestures()
 
     from PySide.QtCore import QCoreApplication
     qApp = QCoreApplication.instance()
@@ -114,8 +115,7 @@ class _WebBrowser(object):
     self.saveClosedUrls()
     dprint("exit")
 
-  def _createShortcuts(self):
-    q = self.q
+  def _createShortcuts(self, q):
     shortcut(QtGui.QKeySequence.AddTab, self.newTabAfterCurrentWithBlankPage, parent=q)
 
     shortcut('ctrl+shift+t', self.undoCloseTab, parent=q)
@@ -133,12 +133,68 @@ class _WebBrowser(object):
       shortcut('ctrl+%i' % i, partial(self.focusTab, i-1), parent=q)
     #shortcut('ctrl+0', partial(self.focusTab, 10-9), parent=q) # ctrl+ 0 used by zoom reset
 
+  def _createGestures(self):
+    from qtgesture.gesture import MouseGesture as G
+    self._addGesture((G.NoMatch,), None, i18n.tr("No match"))
+    self._addGesture((G.Down, G.Right), self.closeCurrentTab, i18n.tr("Close tab"))
+    self._addGesture((G.Right, G.Left), self.newTabAfterCurrentWithBlankPage, i18n.tr("New tab"))
+    self._addGesture((G.Left, G.Right), self.undoCloseTab, i18n.tr("Undo close tab"))
+    self._addGesture((G.Up, G.Left), self.previousTab, i18n.tr("Previous tab"))
+    self._addGesture((G.Up, G.Right), self.nextTab, i18n.tr("Next bab"))
+    self._addGesture((G.Up, G.Down), self.refresh, i18n.tr("Refresh"))
+    self._addGesture((G.Left,), self.back, i18n.tr("Back"))
+    self._addGesture((G.Right,), self.forward, i18n.tr("Forward"))
+
+  def _addGesture(self, directions, callback, name):
+    """
+    @param  directions  [int gesture const]
+    @param  callback  function or None
+    @param  name  unicode
+    """
+    from qtgesture.gesture import MouseGesture
+    g = MouseGesture(directions=directions, parent=self.q)
+    g.name = name # unicode
+    if callback:
+      g.triggered.connect(callback)
+    g.triggered.connect(partial(self._showGesture, g))
+    self.gestureFilter.add(g)
+
+  def _showGesture(self, gesture):
+    """
+    @param  gesture  gesture.MouseGesture with name
+    """
+    msg = ''.join(map(self.gestureDirectionNames.get, gesture.directions))
+    msg += ' | ' + gesture.name
+    self.showMessage(msg)
+
+  @memoizedproperty
+  def gestureDirectionNames(self):
+    from qtgesture.gesture import MouseGesture
+    return {
+      MouseGesture.NoMatch: u"Φ", # ふぁい
+      MouseGesture.Up: u"↑", # うえ
+      MouseGesture.Down: u"↓", # した
+      MouseGesture.Left: u"←", # ひだり
+      MouseGesture.Right: u"→", # みぎ
+      MouseGesture.Horizontal: "-",
+      MouseGesture.Vertical: "|",
+    }
+
   ## Properties ##
 
   @memoizedproperty
   def networkAccessManager(self):
     ret = WbNetworkAccessManager(self.q)
     return ret
+
+  @memoizedproperty
+  def gestureFilter(self):
+    from qtgesture.gesturefilter import MouseGestureFilter
+    buttons = Qt.MiddleButton
+    if not skos.MAC:
+      buttons |= Qt.RightButton
+    #buttons |= Qt.LeftButton # for debugging only
+    return MouseGestureFilter(buttons=buttons, modifiers=Qt.NoModifier, parent=self.q)
 
   @memoizedproperty
   def tabWidget(self):
@@ -193,7 +249,7 @@ class _WebBrowser(object):
     skqss.class_(ret, 'webkit btn-tab-corner')
     ret.setText("+")
     #ret.setToolTip(tr_("New Tab"))
-    ret.setToolTip("%s (%s, %s)" % (i18n.tr("New Tab"), "Ctrl+T", tr_("Double-click")))
+    ret.setToolTip(u"%s (%s, %s, %s: →←)" % (i18n.tr("New Tab"), "Ctrl+T", tr_("Double-click"), i18n.tr("Gesture")))
     ret.clicked.connect(self.newTabAtLastWithBlankPage)
     return ret
 
@@ -205,21 +261,21 @@ class _WebBrowser(object):
 
     a = ret.addAction(u"\u25c0") # left triangle
     a.triggered.connect(self.back)
-    a.setToolTip(u"%s (Ctrl+[, Alt+←)" % tr_("Back"))
+    a.setToolTip(u"%s (Ctrl+[, Alt+←, %s: ←)" % (tr_("Back"), i18n.tr("Gesture")))
 
     a = ret.addAction(u"\u25B6") # right triangle
     a.triggered.connect(self.forward)
-    a.setToolTip(u"%s (Ctrl+], Alt+→)" % tr_("Forward"))
+    a.setToolTip(u"%s (Ctrl+], Alt+→, %s: →)" % (tr_("Forward"), i18n.tr("Gesture")))
 
     #a = ret.addAction(u'\u27f3') # circle
     a = ret.addAction(u"◯") # まる
     a.triggered.connect(self.refresh)
-    a.setToolTip("%s (Ctrl+R)" % tr_("Refresh"))
+    a.setToolTip(u"%s (Ctrl+R, %s: ↑↓)" % (tr_("Refresh"), i18n.tr("Gesture")))
 
     #a = ret.addAction(u"\u238c")
     a = ret.addAction(u"←") # ひだり
     a.triggered.connect(self.undoCloseTab)
-    a.setToolTip("%s (Ctrl+Shift+T)" % i18n.tr("Undo close tab"))
+    a.setToolTip(u"%s (Ctrl+Shift+T, %s: ←→)" % (i18n.tr("Undo close tab"), i18n.tr("Gesture")))
     return ret
 
   @memoizedproperty
@@ -538,6 +594,8 @@ class _WebBrowser(object):
         ref))
 
     ret.setInjectEnabled(self._injectEnabled)
+
+    ret.installEventFilter(self.gestureFilter)
 
     return ret
 

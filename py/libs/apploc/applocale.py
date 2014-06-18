@@ -9,6 +9,16 @@ import os
 ENV_LAYER = '__COMPAT_LAYER'
 ENV_LCID = 'AppLocaleID'
 
+def create_environ(lcid):
+  """
+  @param  lcid  int  ms lcid
+  @return  tuple
+  """
+  return (
+    (ENV_LAYER, '#APPLICATIONLOCALE'),
+    (ENV_LCID, '%.4x' % lcid),
+  )
+
 def create_process(path, lcid, params=None):
   """
   @param  path  str  path to executable
@@ -17,10 +27,7 @@ def create_process(path, lcid, params=None):
   @return  long  pid
   """
   dprint("enter: lcid = 0x%.4x, path = %s" % (lcid, path))
-  env = (
-    (ENV_LAYER, '#APPLICATIONLOCALE'),
-    (ENV_LCID, '%.4x' % lcid),
-  )
+  env = create_environ(lcid)
   pid = skwin.create_process(path, environ=env, params=params)
   dprint("leave: pid = %i" % pid)
   return pid

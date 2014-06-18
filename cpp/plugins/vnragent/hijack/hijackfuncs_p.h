@@ -18,6 +18,8 @@
    { "gdi32.dll", "CreateFontIndirectA", ::CreateFontIndirectA, Hijack::myCreateFontIndirectA }, \
    { "gdi32.dll", "CreateFontIndirectW", ::CreateFontIndirectW, Hijack::myCreateFontIndirectW }
    //{ "gdi32.dll", "TextOutA", ::TextOutA, Hijack::myTextOutA }
+   //{ "kernel32.dll", "MultiByteToWideChar", ::MultiByteToWideChar, Hijack::myMultiByteToWideChar },
+   //{ "kernel32.dll", "WideCharToMultiByte", ::WideCharToMultiByte, Hijack::myWideCharToMultiByte },
 
 namespace Hijack {
 
@@ -56,6 +58,26 @@ HMODULE WINAPI myLoadLibraryExW(
   __reserved HANDLE hFile,
   _In_ DWORD dwFlags
 );
+
+//int WINAPI myMultiByteToWideChar(
+//  _In_       UINT CodePage,
+//  _In_       DWORD dwFlags,
+//  _In_       LPCSTR lpMultiByteStr,
+//  _In_       int cbMultiByte,
+//  _Out_opt_  LPWSTR lpWideCharStr,
+//  _In_       int cchWideChar
+//);
+//
+//int WINAPI myWideCharToMultiByte(
+//  _In_       UINT CodePage,
+//  _In_       DWORD dwFlags,
+//  _In_       LPCWSTR lpWideCharStr,
+//  _In_       int cchWideChar,
+//  _Out_opt_  LPSTR lpMultiByteStr,
+//  _In_       int cbMultiByte,
+//  _In_opt_   LPCSTR lpDefaultChar,
+//  _Out_opt_  LPBOOL lpUsedDefaultChar
+//);
 
 // - USER32 -
 

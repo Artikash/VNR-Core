@@ -1,28 +1,10 @@
 // main.cc
 // 5/15/2014
 
-#include "config.h"
+#include "profile.h"
 #include "winsinglemutex/winsinglemutex.h"
 #include "cc/ccmacro.h"
 #include <windows.h>
-
-// - Hook functions -
-// TO BE REMOVE TO DIFF FILES
-
-LANGID __stdcall MyGetSystemDefaultLangID()
-{
-  return 0x411;
-}
-
-#include "windbg/hijack.h"
-#ifdef _MSC_VER
-# pragma warning(disable:4800) // C4800: forcing value to bool
-#endif // _MSC_VER
-bool hijack()
-{
-  HMODULE hModule = ::GetModuleHandleA(nullptr);
-  return WinDbg::overrideFunctionA(hModule, "kernel32.dll", "GetSystemDefaultLangID", MyGetSystemDefaultLangID);
-}
 
 // - Main -
 
@@ -37,7 +19,7 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD fdwReason, _In_ LPVOID 
 
     ::DisableThreadLibraryCalls(hInstance); // Disable DLL_THREAD_ATTACH and DLL_THREAD_DETACH notifications
 
-    hijack();
+    Profile::useBGI();
     break;
 
   case DLL_PROCESS_DETACH:

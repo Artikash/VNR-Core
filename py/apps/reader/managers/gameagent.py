@@ -44,7 +44,7 @@ class GameAgent(QObject):
         self.detachProcess()
       d.clear()
       import inject
-      ok = inject.inject_agent(pid)
+      ok = inject.inject_vnragent(pid=pid)
       if ok:
         d.injectedPid = pid
         d.injectTimer.start()

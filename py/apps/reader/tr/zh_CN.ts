@@ -641,77 +641,77 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>离开全屏状态</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="403"/>
+        <location filename="managers/gameman.py" line="406"/>
         <source>Skip user-defined hook as you wish</source>
         <translation>如你所愿，不使用自定义特殊码</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="555"/>
+        <location filename="managers/gameman.py" line="558"/>
         <source>Launch aborted. Wait for Locale Emulator.</source>
         <translation>取消启动。等待Locale Emulator关闭。</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="648"/>
+        <location filename="managers/gameman.py" line="653"/>
         <source>Launch the game with {0}</source>
         <translation>使用{0}打开游戏</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="650"/>
+        <location filename="managers/gameman.py" line="655"/>
         <source>Launch the game in original Japanese locale</source>
         <translation>直接运行日文游戏</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="854"/>
+        <location filename="managers/gameman.py" line="862"/>
         <source>Game closed</source>
         <translation>游戏关闭</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="861"/>
+        <location filename="managers/gameman.py" line="869"/>
         <source>Cannot find game window</source>
         <translation>没有找到游戏窗口</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="874"/>
+        <location filename="managers/gameman.py" line="882"/>
         <source>Screenshot saved to clipboard and desktop</source>
         <translation>截图保存到了桌面和剪贴板</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="876"/>
+        <location filename="managers/gameman.py" line="884"/>
         <source>Cannot save the screenshot</source>
         <translation>无法保存截图</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="930"/>
+        <location filename="managers/gameman.py" line="938"/>
         <source>Waiting for game to start</source>
         <translation>等待游戏开始</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="907"/>
+        <location filename="managers/gameman.py" line="915"/>
         <source>Could not found game online, and please manually add game by Game Wizard</source>
         <translation>没有在网络上找到文本设定，请手动在游戏向导中添加</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1022"/>
+        <location filename="managers/gameman.py" line="1031"/>
         <source>Cannot find game process. Please retry after game start.</source>
         <translation>没有找到游戏进程。请在游戏开始后重试。</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1071"/>
+        <location filename="managers/gameman.py" line="1080"/>
         <source>Cannot sync with game. Try restarting the game or using Game Wizard to set up connection</source>
         <translation>无法与游戏同步。请重新启动游戏，或者使用游戏向导添加</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1081"/>
+        <location filename="managers/gameman.py" line="1090"/>
         <source>Cannot find game thread. Try using Game Wizard to set up connection</source>
         <translation>没有找到游戏文本。请使用游戏向导添加</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1096"/>
+        <location filename="managers/gameman.py" line="1105"/>
         <source>Failed to apply hook code</source>
         <translation>载入特殊码失败</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1098"/>
+        <location filename="managers/gameman.py" line="1107"/>
         <source>Try adjusting it in Text Settings</source>
         <translation>请在文本设定中调整</translation>
     </message>
@@ -721,12 +721,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>从Dashboard移除这个游戏吗？</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1508"/>
+        <location filename="managers/gameman.py" line="1517"/>
         <source>Game removed</source>
         <translation>游戏移除</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1518"/>
+        <location filename="managers/gameman.py" line="1527"/>
         <source>Location does not exist</source>
         <translation>位置不存在</translation>
     </message>
@@ -751,7 +751,7 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>断开网络连接</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="638"/>
+        <location filename="managers/gameman.py" line="641"/>
         <source>Failed to launch the game with {0}</source>
         <translation>使用{0}打开游戏失败</translation>
     </message>
@@ -876,77 +876,77 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>载入其他同学的自定义辞书</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5076"/>
+        <location filename="managers/dataman.py" line="5148"/>
         <source>Sign in as &apos;{0}&apos;</source>
         <translation>登录为&apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5077"/>
+        <location filename="managers/dataman.py" line="5149"/>
         <source>User language is &apos;{0}&apos;</source>
         <translation>语言是&apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5082"/>
+        <location filename="managers/dataman.py" line="5154"/>
         <source>Sign in failed as &apos;{0}&apos;</source>
         <translation>登录&apos;{0}&apos;失败了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5877"/>
+        <location filename="managers/dataman.py" line="5949"/>
         <source>Fetching comments</source>
         <translation>更新评论中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5888"/>
+        <location filename="managers/dataman.py" line="5960"/>
         <source>Loading offline comments</source>
         <translation>载入离线评论</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5898"/>
+        <location filename="managers/dataman.py" line="5970"/>
         <source>Found {0} comments</source>
         <translation>找到{0}条评论</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6421"/>
+        <location filename="managers/dataman.py" line="6493"/>
         <source>Failed to save changes, will try later</source>
         <translation>这次保存变更没有成功呢，VNR等下会重试的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7079"/>
+        <location filename="managers/dataman.py" line="7151"/>
         <source>Updating dictionary terms online</source>
         <translation>更新共享词条中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7089"/>
+        <location filename="managers/dataman.py" line="7161"/>
         <source>Found {0} terms</source>
         <translation>找到{0}个词条</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7092"/>
+        <location filename="managers/dataman.py" line="7164"/>
         <source>Failed to download terms online</source>
         <translation>更新词条失败了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7093"/>
+        <location filename="managers/dataman.py" line="7165"/>
         <source>Something might be wrong with the Internet connection</source>
         <translation>也许网络连接不畅</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7405"/>
+        <location filename="managers/dataman.py" line="7477"/>
         <source>Failed to get game information</source>
         <translation>获取游戏信息失败了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7559"/>
+        <location filename="managers/dataman.py" line="7631"/>
         <source>The game does not exist. Did you delete it?</source>
         <translation>游戏并不存在。是不是已经被你删除了呢？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8151"/>
+        <location filename="managers/dataman.py" line="8223"/>
         <source>Please sign in to submit comment</source>
         <translation>请先登录再提交评论</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8168"/>
+        <location filename="managers/dataman.py" line="8240"/>
         <source>Cannot connect to the Internet</source>
         <translation>无法连接到网络</translation>
     </message>
@@ -971,52 +971,52 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>使用自定义特殊码</translation>
     </message>
     <message>
-        <location filename="main.py" line="1166"/>
+        <location filename="main.py" line="1177"/>
         <source>Please close the current game first before opening new games</source>
         <translation>打开新游戏前，请先关闭当前的游戏</translation>
     </message>
     <message>
-        <location filename="main.py" line="1403"/>
+        <location filename="main.py" line="1415"/>
         <source>Found running game</source>
         <translation>发现运行中的游戏</translation>
     </message>
     <message>
-        <location filename="main.py" line="1413"/>
+        <location filename="main.py" line="1425"/>
         <source>Found new game</source>
         <translation>发现新游戏</translation>
     </message>
     <message>
-        <location filename="main.py" line="1422"/>
+        <location filename="main.py" line="1434"/>
         <source>Because you are offline, please manually add game using Game Wizard</source>
         <translation>因为没有网络连接，请在游戏向导中手动添加游戏</translation>
     </message>
     <message>
-        <location filename="main.py" line="1254"/>
+        <location filename="main.py" line="1265"/>
         <source>File does not exist {0}</source>
         <translation>文件不存在：{0}</translation>
     </message>
     <message>
-        <location filename="main.py" line="1627"/>
+        <location filename="main.py" line="1639"/>
         <source>Update requires Internet access</source>
         <translation>更新需要网络连接</translation>
     </message>
     <message>
-        <location filename="main.py" line="1640"/>
+        <location filename="main.py" line="1652"/>
         <source>You are using the latest app</source>
         <translation>已经是最新的版本了呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="1645"/>
+        <location filename="main.py" line="1657"/>
         <source>Update released</source>
         <translation>发现软件更新</translation>
     </message>
     <message>
-        <location filename="main.py" line="1669"/>
+        <location filename="main.py" line="1681"/>
         <source>Critical update message</source>
         <translation>非常重要的更新信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1765"/>
+        <location filename="main.py" line="1777"/>
         <source>The dictionary is empty. Please refresh it when you are online.</source>
         <translation>辞书是空的。请在有网络连接时再更新吧。</translation>
     </message>
@@ -1036,7 +1036,7 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>如果VNR占用了很多内存，重新启动它可能会帮助释放多余的内存。</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="509"/>
+        <location filename="managers/gameman.py" line="512"/>
         <source>Waiting game starts</source>
         <translation>等待游戏启动</translation>
     </message>
@@ -1061,17 +1061,17 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>请选择图片的位置</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7013"/>
+        <location filename="managers/dataman.py" line="7085"/>
         <source>Updating game database online</source>
         <translation>更新在线游戏数据库中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7036"/>
+        <location filename="managers/dataman.py" line="7108"/>
         <source>Failed to update game database</source>
         <translation>更新游戏数据库没有成功</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7032"/>
+        <location filename="managers/dataman.py" line="7104"/>
         <source>Game database is updated</source>
         <translation>游戏数据库更新完成</translation>
     </message>
@@ -1108,32 +1108,32 @@ It might take a couple of seconds to complete.</source>
         <translation>需要管理员权限</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="538"/>
+        <location filename="managers/gameman.py" line="541"/>
         <source>{0} requires admin privileges. Please restart VNR as admin</source>
         <translation>{0}需要管理员权限。请以管理员身份重新启动VNR</translation>
     </message>
     <message>
-        <location filename="main.py" line="1784"/>
+        <location filename="main.py" line="1796"/>
         <source>There are no user-contributed subtitles</source>
         <translation>没有来自其他同学的字幕呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8209"/>
+        <location filename="managers/dataman.py" line="8281"/>
         <source>Shared dictionary is empty</source>
         <translation>共享辞书是空的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8206"/>
+        <location filename="managers/dataman.py" line="8278"/>
         <source>Dictionary entries are saved to the desktop</source>
         <translation>词条数据保存到了桌面</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8252"/>
+        <location filename="managers/dataman.py" line="8324"/>
         <source>There are no subtitles</source>
         <translation>这个游戏还没有人工字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8249"/>
+        <location filename="managers/dataman.py" line="8321"/>
         <source>Subtitles are saved to the desktop</source>
         <translation>字幕数据保存到了桌面</translation>
     </message>
@@ -1148,17 +1148,17 @@ It might take a couple of seconds to complete.</source>
         <translation>缺少语音合成需要的QuickTime</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7815"/>
+        <location filename="managers/dataman.py" line="7887"/>
         <source>Please start the game to submit comment</source>
         <translation>请在开始游戏后提交字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="3970"/>
+        <location filename="managers/dataman.py" line="4042"/>
         <source>No user-contributed subtitles found</source>
         <translation>没有来自其他同学的字幕呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="1502"/>
+        <location filename="main.py" line="1514"/>
         <source>Loading comment ... patient!</source>
         <translation>载入字幕中…请稍等片刻！</translation>
     </message>
@@ -1229,7 +1229,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>以日本时区启动游戏</translation>
     </message>
     <message>
-        <location filename="main.py" line="979"/>
+        <location filename="main.py" line="990"/>
         <source>Analyzing data ... patient!</source>
         <translation>分析数据中…请稍等片刻！</translation>
     </message>
@@ -1244,17 +1244,17 @@ Kojien is detected on your system at the above location.</source>
         <translation>{0}的百分比</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7313"/>
+        <location filename="managers/dataman.py" line="7385"/>
         <source>Searching game information online</source>
         <translation>正在网上检索游戏信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1265"/>
+        <location filename="main.py" line="1276"/>
         <source>It seems to be an unknown game. Please add it using Game Wizard</source>
         <translation>未知的游戏，请在游戏向导中手动添加</translation>
     </message>
     <message>
-        <location filename="main.py" line="1263"/>
+        <location filename="main.py" line="1274"/>
         <source>The game already exists</source>
         <translation>游戏已经存在了呢</translation>
     </message>
@@ -1389,7 +1389,7 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>百度中文翻译服务</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6565"/>
+        <location filename="managers/dataman.py" line="6637"/>
         <source>Your {0} is &apos;{1}&apos;</source>
         <translation>你的{0}是&apos;{1}&apos;</translation>
     </message>
@@ -1470,32 +1470,32 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>快捷方式指向的位置并不存在呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5591"/>
+        <location filename="managers/dataman.py" line="5663"/>
         <source>Remove bad user-defined hcode</source>
         <translation>自动移除错误的特殊码</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="4563"/>
+        <location filename="managers/dataman.py" line="4635"/>
         <source>Update game information</source>
         <translation>更新游戏信息</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="4571"/>
+        <location filename="managers/dataman.py" line="4643"/>
         <source>Found {0} references</source>
         <translation>找到{0}个游戏的引用</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="4573"/>
+        <location filename="managers/dataman.py" line="4645"/>
         <source>No game references found</source>
         <translation>没有找到游戏的信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1542"/>
+        <location filename="main.py" line="1554"/>
         <source>Unknown game. Please try updating the database.</source>
         <translation>未知的游戏。请更新下游戏数据库。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7712"/>
+        <location filename="managers/dataman.py" line="7784"/>
         <source>Please sign in to submit reference</source>
         <translation>请先登录再提交信息</translation>
     </message>
@@ -1669,7 +1669,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
 如果你有超能力，你也许可以在经过/未经其他同学允许的情况下，改进来自其他同学的贡献（比如字幕）。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="4817"/>
+        <location filename="managers/dataman.py" line="4889"/>
         <source>Reference already existed</source>
         <translation>游戏信息已经存在了</translation>
     </message>
@@ -1729,7 +1729,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>是否允许其他人修改</translation>
     </message>
     <message>
-        <location filename="main.py" line="1197"/>
+        <location filename="main.py" line="1208"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Drag game lnk/exe to Spring Board
@@ -1772,27 +1772,27 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>启动时不变更时区</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="544"/>
+        <location filename="managers/gameman.py" line="547"/>
         <source>Launch the game in Japan time as you wish</source>
         <translation>如你所愿以日本时间启动游戏</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="167"/>
+        <location filename="i18n.py" line="169"/>
         <source>Text thread from Windows Non-GUI function</source>
         <translation>文本来自非图形界面的函数</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="168"/>
+        <location filename="i18n.py" line="170"/>
         <source>Text thread from Windows GUI function</source>
         <translation>文本来自图形界面的函数</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="169"/>
+        <location filename="i18n.py" line="171"/>
         <source>Text thread from game-specific engine</source>
         <translation>文本来自游戏引擎</translation>
     </message>
     <message>
-        <location filename="i18n.py" line="166"/>
+        <location filename="i18n.py" line="168"/>
         <source>Text thread from user-defined H-code</source>
         <translation>文本来自自定义的特殊码</translation>
     </message>
@@ -1807,7 +1807,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>恢复到上次保存的设定</translation>
     </message>
     <message>
-        <location filename="main.py" line="1201"/>
+        <location filename="main.py" line="1212"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Add the game using Game Wizard</source>
@@ -1855,7 +1855,7 @@ than turning on global repetition filters here.</source>
         <translation>警告：请不要打开重复过滤的选项，除非文本中真的有重复！</translation>
     </message>
     <message>
-        <location filename="main.py" line="1473"/>
+        <location filename="main.py" line="1485"/>
         <source>The feature is not available on Wine</source>
         <translation>Wine上不支持这个功能呢</translation>
     </message>
@@ -1884,17 +1884,17 @@ This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source
 这样将会产生大量的垃圾文本，而这不会是你想要达到的！</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5815"/>
+        <location filename="managers/dataman.py" line="5887"/>
         <source>Searching for game character names</source>
         <translation>搜索游戏中人物的姓名</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5825"/>
+        <location filename="managers/dataman.py" line="5897"/>
         <source>Found {0} game characters</source>
         <translation>找到{0}个游戏人物</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5842"/>
+        <location filename="managers/dataman.py" line="5914"/>
         <source>Game character names not found</source>
         <translation>没有找到人物的姓名</translation>
     </message>
@@ -2080,7 +2080,7 @@ This might result in redundant spaces for Japanese games.</source>
         <translation>保留（英文）单词之间的空格</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5630"/>
+        <location filename="managers/dataman.py" line="5702"/>
         <source>Remove non-existed game</source>
         <translation>移除不存在的游戏</translation>
     </message>
@@ -2432,12 +2432,12 @@ Locale Emulator是&lt;span style=&quot;color:purple&quot;&gt;免费&lt;/span&gt;
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="utilities/procutil.py" line="206"/>
+        <location filename="utilities/procutil.py" line="208"/>
         <source>Cannot find Locale Emulator executable</source>
         <translation>没有找到Locale Emulator的程序</translation>
     </message>
     <message>
-        <location filename="utilities/procutil.py" line="207"/>
+        <location filename="utilities/procutil.py" line="209"/>
         <source>Please try adjusting the location in Preferences</source>
         <translation>请在使用偏好中指定程序的位置</translation>
     </message>
@@ -2503,12 +2503,12 @@ Just don&apos;t forget to export LC_ALL=ja_JP.UTF8 before launching VNR.</source
         <translation>找到{0}个YouTube动画</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5621"/>
+        <location filename="managers/dataman.py" line="5693"/>
         <source>Do not keep all scenario threads in text settings</source>
         <translation>不保留游戏的全部对话文本</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5612"/>
+        <location filename="managers/dataman.py" line="5684"/>
         <source>Ignore repetition filters in text settings</source>
         <translation>不过滤游戏文本中的重复</translation>
     </message>
@@ -2768,16 +2768,6 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
 请点击【编辑特殊码】按钮，并删掉有问题的特殊码。</translation>
     </message>
     <message>
-        <location filename="managers/netman.py" line="102"/>
-        <source>Disable Internet sensor as you wish</source>
-        <translation>如你所愿禁止检测网络状态</translation>
-    </message>
-    <message>
-        <location filename="managers/netman.py" line="98"/>
-        <source>Disable Internet access as you wish</source>
-        <translation>如你所愿禁止连接到网络</translation>
-    </message>
-    <message>
         <location filename="dialogs/_prefs.py" line="2272"/>
         <source>By default, VNR will automatically detect whether you have got Internet access. If the detection does not work well, you can force enabling/disabling the Internet here.</source>
         <translation>VNR会自动检测网卡是否有网络连接。如果检测不能正常工作，可以在这里强迫开启或者禁用网络连接。</translation>
@@ -2828,7 +2818,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
         <translation>请再检查下使用偏好中程序的位置。</translation>
     </message>
     <message>
-        <location filename="main.py" line="1532"/>
+        <location filename="main.py" line="1544"/>
         <source>Unknown game. Please try editing the game information.</source>
         <translation>未知的游戏。请尝试编辑下游戏情报。</translation>
     </message>
@@ -3098,7 +3088,7 @@ VNR可以自动从台湾大学下载并安装pAppLocale。
     <message>
         <location filename="dialogs/_prefs.py" line="23"/>
         <source>UniDic classical/ancient Japanese dictionary</source>
-        <translation type="obsolete">UniDic近代日本语辞书</translation>
+        <translation type="obsolete">IPAdic日本语辞书</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="24"/>
@@ -3151,7 +3141,7 @@ VNR可以自动从台湾大学下载并安装pAppLocale。
         <translation>在Spring Board上显示在线的同学数</translation>
     </message>
     <message>
-        <location filename="main.py" line="1484"/>
+        <location filename="main.py" line="1496"/>
         <source>Processing Shared Dictionary ... Please try later</source>
         <translation>正在处理共享辞书…请稍等一下下</translation>
     </message>
@@ -3320,17 +3310,17 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>VNR不仅支持日文TTS，还支持包括中文、英文等其他语言的SAPI TTS。当这里选择的TTS的语言和游戏语言不同时，VNR会转而读出翻译字幕，而不会出游戏文本。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5504"/>
+        <location filename="managers/dataman.py" line="5576"/>
         <source>VNR&apos;s game profile (%s) was corrupted. Recovered from backup.</source>
         <translation>VNR的游戏设定（%s）损坏了呢。恢复到过去备份的设定。</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1197"/>
+        <location filename="managers/gameman.py" line="1206"/>
         <source>This game requires the text speed to be either Normal or Slow instead of Fast to work</source>
         <translation>这个游戏要求文本速度必须是Normal或者是Slow而不能是Fast才可以工作</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1202"/>
+        <location filename="managers/gameman.py" line="1211"/>
         <source>This game requires opening VNR after starting/loading the game</source>
         <translation>这个游戏要求一定要在先载入游戏，再打开VNR</translation>
     </message>
@@ -3340,12 +3330,12 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>需要MeCab辞书</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1199"/>
+        <location filename="managers/gameman.py" line="1208"/>
         <source>This game requires the text speed to be Fast to work</source>
         <translation>这个游戏要求文本速度必须是Fast才可以工作</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1194"/>
+        <location filename="managers/gameman.py" line="1203"/>
         <source>This game might need turning on repetition elimination</source>
         <translation>这个游戏也许需要打开去除重复的选项</translation>
     </message>
@@ -3420,7 +3410,7 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>检测到游戏引擎</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1044"/>
+        <location filename="managers/gameman.py" line="1053"/>
         <source>Use VNR&apos;s built-in hook instead of ITH</source>
         <translation>用VNR自己的文本提取方法而不使用ITH</translation>
     </message>
@@ -3553,7 +3543,7 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation>VNR的内嵌引擎不支持/H特殊码</translation>
     </message>
     <message>
-        <location filename="main.py" line="1559"/>
+        <location filename="main.py" line="1571"/>
         <source>Unknown game engine</source>
         <translation>未知的游戏引擎</translation>
     </message>
@@ -3563,7 +3553,7 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation>你想要永久的移除{0}个选定的条目吗？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8080"/>
+        <location filename="managers/dataman.py" line="8152"/>
         <source>Editing other&apos;s entry is not allowed</source>
         <translation>不可以编辑其他人的条目的</translation>
     </message>
@@ -3588,12 +3578,12 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation>你想要禁用{0}个选定的条目吗？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8094"/>
+        <location filename="managers/dataman.py" line="8166"/>
         <source>{0} items updated</source>
         <translation>修改了{0}个条目</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5603"/>
+        <location filename="managers/dataman.py" line="5675"/>
         <source>Automatically correct text settings</source>
         <translation>自动修正文本设定</translation>
     </message>
@@ -3693,11 +3683,6 @@ VNR的提取方法支持内嵌翻译到游戏中去，但是支持的游戏比IT
         <translation>需要EDICT辞书</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1604"/>
-        <source>Changing the MeCab dictionary after it is used requires restarting VNR.</source>
-        <translation type="obsolete">在使用了MeCab辞书后修改它需要重新启动VNR。</translation>
-    </message>
-    <message>
         <location filename="dialogs/_prefs.py" line="35"/>
         <source>CaboCha model for {0} dictionary</source>
         <translation>{0}辞书的CaboCha模型</translation>
@@ -3716,6 +3701,16 @@ VNR的提取方法支持内嵌翻译到游戏中去，但是支持的游戏比IT
         <location filename="dialogs/_prefs.py" line="1604"/>
         <source>Changing the MeCab dictionary after it is used might require restarting VNR (always needed on Windows XP).</source>
         <translation>在使用了MeCab辞书后修改它也许需要重新启动VNR（在Windows XP上一定需要重新启动）。</translation>
+    </message>
+    <message>
+        <location filename="managers/netman.py" line="98"/>
+        <source>Always enable Internet access as you wish</source>
+        <translation>如你所愿总是连接到网络</translation>
+    </message>
+    <message>
+        <location filename="managers/netman.py" line="102"/>
+        <source>Always disable Internet access as you wish</source>
+        <translation>如你所愿禁止连接到网络</translation>
     </message>
 </context>
 </TS>

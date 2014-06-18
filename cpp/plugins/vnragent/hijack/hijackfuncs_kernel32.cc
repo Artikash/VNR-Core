@@ -6,7 +6,7 @@
 # pragma warning(disable:4800) // C4800: forcing value to bool
 #endif // _MSC_VER
 
-// - My Functions -
+// Libraries and processes
 
 HMODULE WINAPI Hijack::myLoadLibraryA(_In_ LPCSTR lpFileName)
 {
@@ -51,9 +51,24 @@ LPVOID WINAPI Hijack::myGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
   return ::GetProcAddress(hModule, lpProcName);
 }
 
+// Strings
+
 // EOF
 
 /*
+// Hijacking MultiByteToWideChar etc does not work
+int WINAPI Hijack::myMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCSTR lpMultiByteStr, int cbMultiByte, LPWSTR lpWideCharStr, int cchWideChar)
+{
+  //CodePage = 936;
+  return ::MultiByteToWideChar(CodePage, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
+}
+
+int WINAPI Hijack::myWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWSTR lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCSTR lpDefaultChar, LPBOOL lpUsedDefaultChar)
+{
+  //CodePage = 936;
+  return ::WideCharToMultiByte(CodePage, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);
+}
+
 #ifdef WITH_LIB_WINHOOK
 # include "winhook/funchook.h"
 

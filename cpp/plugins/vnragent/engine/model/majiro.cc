@@ -55,7 +55,6 @@ inline static DWORD splitOf(DWORD *arg1)
  *  - typedef int (__cdecl *hook_fun_t)(LPCSTR, LPSIZE, LPCSTR, LPCSTR, int);
  *  - int __cdecl newHookFun(LPCSTR fontName1, LPSIZE canvasSize2, LPCSTR text3, LPSTR output4, int const5)
  */
-
 void MajiroEngine::hook(HookStack *stack)
 {
   static QByteArray data_; // persistent storage, which makes this function not thread-safe

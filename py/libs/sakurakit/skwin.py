@@ -204,7 +204,7 @@ if skos.WIN:
         ctypes.pointer(si), # output
         ctypes.pointer(pi)) # output
       if complete:
-        return (pi.hProcess, hThread, dwProcessId, dwThreadId) if ok else (None, None, 0, 0)
+        return (pi.hProcess, pi.hThread, pi.dwProcessId, pi.dwThreadId) if ok else (None, None, 0, 0)
       else:
         return pi.dwProcessId if ok else 0
     #except pywintypes.error, e:

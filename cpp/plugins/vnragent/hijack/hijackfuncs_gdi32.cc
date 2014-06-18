@@ -8,21 +8,28 @@
 #include "sakurakit/skdebug.h"
 
 //#define FONT_ZHS "楷体_GB2312"
-//#define FONT_ZHS "KaiTi_GB2312"
+#define FONT_ZHS_A "KaiTi_GB2312"
+#define FONT_ZHS_W L"KaiTi_GB2312"
 
+#define HIJACK_GDI32 // only for debugging purpose
+
+// FIXME 6/16/2014: Why should I use 0x86 for charSet?
+// See: http://i.watashi.me/archives/1.html
 HFONT WINAPI Hijack::myCreateFontIndirectA(const LOGFONTA *lplf)
 {
   //DOUT("pass");
   HFONT ret = nullptr;
+#ifdef HIJACK_GDI32
   if (auto p = HijackHelper::instance())
     if (auto charSet = p->systemCharSet())
       if (p->isTranscodingNeeded() && lplf) {
         LOGFONTA f(*lplf);
         f.lfCharSet = charSet;
-        //:qstrcpy(f.lfFaceName, FONT_ZHS);
+        //::strcpy(f.lfFaceName, FONT_ZHS_A);
         //f.lfCharSet = GB2312_CHARSET;
         ret = ::CreateFontIndirectA(&f);
       }
+#endif // HIJACK_GDI32
   if (!ret)
     ret = ::CreateFontIndirectA(lplf);
   return ret;
@@ -32,15 +39,16 @@ HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
 {
   //DOUT("pass");
   HFONT ret = nullptr;
+#ifdef HIJACK_GDI32
   if (auto p = HijackHelper::instance())
     if (auto charSet = p->systemCharSet())
       if (p->isTranscodingNeeded() && lplf) {
         LOGFONTW f(*lplf);
         f.lfCharSet = charSet;
-        //:qstrcpy(f.lfFaceName, FONT_ZHS);
-        //f.lfCharSet = GB2312_CHARSET;
+        //::wcscpy(f.lfFaceName, FONT_ZHS_W);
         ret = ::CreateFontIndirectW(&f);
       }
+#endif // HIJACK_GDI32
   if (!ret)
     ret = ::CreateFontIndirectW(lplf);
   return ret;
@@ -48,25 +56,33 @@ HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
 
 HFONT WINAPI Hijack::myCreateFontA(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCSTR lpszFace)
 {
+#ifdef HIJACK_GDI32
   DOUT("pass");
   if (auto p = HijackHelper::instance())
     if (auto charSet = p->systemCharSet())
       if (p->isTranscodingNeeded()) {
         fdwCharSet = charSet;
-        //:qstrcpy(lpszFace, FONT_ZHS);
+
+        //static const char face[] = FONT_ZHS_A;
+        //lpszFace = face;
       }
+#endif // HIJACK_GDI32
   return ::CreateFontA(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace);
 }
 
 HFONT WINAPI Hijack::myCreateFontW(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCWSTR lpszFace)
 {
+#ifdef HIJACK_GDI32
   DOUT("pass");
   if (auto p = HijackHelper::instance())
     if (auto charSet = p->systemCharSet())
       if (p->isTranscodingNeeded()) {
         fdwCharSet = charSet;
-        //:qstrcpy(lpszFace, FONT_ZHS);
+
+        //static const wchar_t face[] = FONT_ZHS_W;
+        //lpszFace = face;
       }
+#endif // HIJACK_GDI32
   return ::CreateFontW(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpszFace);
 }
 
@@ -83,21 +99,5 @@ BOOL WINAPI Hijack::myTextOutA(HDC hdc, int nXStart, int nYStart, LPCSTR lpStrin
     return ::TextOutW(hdc, nXStart, nYStart, (LPCWSTR)t.utf16(), t.size());
   else
     return ::TextOutA(hdc, nXStart, nYStart, lpString, cchString);
-}
-
-// TODO: Support extracting text from this function.
-int WINAPI Engine::MyMultiByteToWideChar(
-  _In_       UINT CodePage,
-  _In_       DWORD dwFlags,
-  _In_       LPCSTR lpMultiByteStr,
-  _In_       int cbMultiByte,
-  _Out_opt_  LPWSTR lpWideCharStr,
-  _In_       int cchWideChar
-)
-{
-  int ret = ::MultiByteToWideChar(CodePage, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
-  //if (ret > 1)
-  //  qDebug() << QString::fromWCharArray(lpWideCharStr, ret);
-  return ret;
 }
 */

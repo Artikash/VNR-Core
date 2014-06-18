@@ -2,7 +2,7 @@
 # jpchars.py
 # 12/30/2012 jichi
 
-import re
+from unitraits import unichars
 
 ## Character traits ##
 
@@ -21,30 +21,21 @@ s_kata = u"\
 l_hira = list(s_hira)
 l_kata = list(s_kata)
 
-re_hira = re.compile(r"[%s]" % s_hira)
-re_kata = re.compile(r"[%s]" % s_kata)
+#re_hira = re.compile(r"[%s]" % s_hira)
+#re_kata = re.compile(r"[%s]" % s_kata)
 
-re_hira_all = re.compile(r"[%s]+" % s_hira)
-re_kata_all = re.compile(r"[%s]+" % s_kata)
+#re_hira_all = re.compile(r"[%s]+" % s_hira)
+#re_kata_all = re.compile(r"[%s]+" % s_kata)
 
-def _contains_u8(text, start, stop):
-  """
-  @param  text  unicode
-  @param  start  int
-  @param  stop  int
-  @return  bool
-  """
-  for c in text:
-    u8 = ord(c)
-    if u8 >= start and u8 <= stop:
-      return True
-  return False
-
-def containshira(text): return _contains_u8(text, 12353, 12438) #return bool(re_hira.search(text))
-def containskata(text): return _contains_u8(text, 12449, 12534) #return bool(re_kata.search(text))
+def anyhira(text): return unichars.ordany(text, unichars.ORD_HIRA_FIRST, unichars.ORD_HIRA_LAST) #return bool(re_hira.search(text))
+def anykata(text): return unichars.ordany(text, unichars.ORD_KATA_FIRST, unichars.ORD_KATA_LAST) #return bool(re_kata.search(text))
+def allhira(text): return unichars.ordall(text, unichars.ORD_HIRA_FIRST, unichars.ORD_HIRA_LAST) #return bool(re_hira_all.match(text))
+def allkata(text): return unichars.ordall(text, unichars.ORD_KATA_FIRST, unichars.ORD_KATA_LAST) #return bool(re_kata_all.match(text))
 
 #re_not_hira = re.compile(r"[^%s]" % s_hira)
 #re_not_kata = re.compile(r"[^%s]" % s_kata)
+
+import re
 
 s_punc = u"\
 、。？！…‥：・／\
