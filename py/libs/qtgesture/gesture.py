@@ -36,7 +36,7 @@ class MouseGesture(QObject): # QObject is needed for the triggered signal
   triggered = Signal()
 
   def trigger(self):
-    self.triggered().emit()
+    self.triggered.emit()
     #DOUT("enter: directions =" << directionsToString(directions_));
     #QString m = tr("mouse gesture") + ": " + directionsToString(directions_);
     #if (!description_.isEmpty())

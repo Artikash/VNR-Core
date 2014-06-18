@@ -10,6 +10,8 @@ from itertools import izip
 from PySide.QtCore import Qt, QObject, QEvent
 from sakurakit.skdebug import dprint
 
+from gesture import MouseGesture
+
 class MouseGestureFilter(QObject): # QObject is needed for the eventFilter
 
   def __init__(self, parent=None, buttons=Qt.RightButton, modifiers=Qt.NoModifier):
@@ -36,7 +38,7 @@ class MouseGestureFilter(QObject): # QObject is needed for the eventFilter
 
   # Protected:
 
-  def eventFilter(obj, ev): # override  QObject, QEvent -> bool
+  def eventFilter(self, obj, ev): # override  QObject, QEvent -> bool
     t = ev.type()
     if t == QEvent.MouseButtonPress:
       ret = self.mousePressEventFilter(ev)
@@ -52,7 +54,7 @@ class MouseGestureFilter(QObject): # QObject is needed for the eventFilter
       ret = False
     return ret or super(MouseGestureFilter, self).eventFilter(obj, ev)
 
-  def mousePressEventFilter(ev): # QMouseEvent -> bool
+  def mousePressEventFilter(self, ev): # QMouseEvent -> bool
     d = self.__d
     if (ev.button() & d.buttons) and ev.modifiers() == d.modifiers:
       d.beginGesture((ev.x(), ev.y()))
@@ -60,7 +62,7 @@ class MouseGestureFilter(QObject): # QObject is needed for the eventFilter
     else:
       return False
 
-  def mouseReleaseEventFilter(ev): # QMouseEvent -> bool
+  def mouseReleaseEventFilter(self, ev): # QMouseEvent -> bool
     d = self.__d
     if d.active and (ev.button() & d.buttons) and ev.modifiers() == d.modifiers:
       d.cancelContextMenu = d.endGesture((ev.x(), ev.y())) # cancel context menu if triggered
@@ -69,7 +71,7 @@ class MouseGestureFilter(QObject): # QObject is needed for the eventFilter
     else:
       return False
 
-  def mouseMoveEventFilter(ev): # QMouseEvent -> bool
+  def mouseMoveEventFilter(self, ev): # QMouseEvent -> bool
     d = self.__d
     if d.active:
       d.addPoint((ev.x(), ev.y()))
@@ -77,7 +79,7 @@ class MouseGestureFilter(QObject): # QObject is needed for the eventFilter
     else:
       return False
 
-  #def bool contextMenuEventFilter(event): # QContextMenuEvent -> bool
+  #def bool contextMenuEventFilter(self, ev): # QContextMenuEvent -> bool
   #  return True
 
 class _MouseGestureFilter:
@@ -91,51 +93,51 @@ class _MouseGestureFilter:
     self.active = False # bool
     self.cancelContextMenu = False # bool
 
-    self.positions = [] # [int x, int y]
+    self._positions = [] # [int x, int y]
 
   def abortGesture(self):
-    if self.positions:
-      self.positions = []
+    if self._positions:
+      self._positions = []
 
   def beginGesture(self, pos):
     """
     @param  (int x, int y)
     """
-    self.positions.append(pos)
+    self._positions.append(pos)
 
   def endGesture(self, pos):
     """
     @param  (int x, int y)
     """
     triggered = False
-    if self.positions and  pos != self.positions[-1]:
-      self.positions.append(pos)
-    if len(self.positions) > 1: # at least two positions to make a gesture
-      triggered = triggerGesture()
+    if self._positions and  pos != self._positions[-1]:
+      self._positions.append(pos)
+    if len(self._positions) > 1: # at least two positions to make a gesture
+      triggered = self.triggerGesture()
     else:
       triggered = False
-    self.positions = []
+    self._positions = []
     return triggered;
 
   def addPoint(self, pos):
     """
     @param  (int x, int y)
     """
-    if not self.positions:
+    if not self._positions:
       self.beginGesture(pos)
-    dx, dy = pos - self.positions[-1] # QPoint
+    dx, dy = _subtract(pos, self._positions[-1]) # QPoint
     if dx*dx + dy*dy >= self.MIN_MOVE2:
-      self.positions.append(pos)
+      self._positions.append(pos)
 
   # Complicated implementation of trigger gesture
 
   def triggerGesture(self):
-    directions = self._joinDirections(toDirections_(self.positions))
+    directions = self._joinDirections(self._toDirections(self._positions))
     minLength = self._directionLength(directions) * self.MIN_MATCH
 
     while directions and self._directionLength(directions) > minLength:
       for g in self.gestures:
-        if len(directions) == len(g.directions()):
+        if len(directions) == len(g.directions):
           match = True
           for gi, (px,py) in izip(g.directions, directions):
             if gi == MouseGesture.Up:
@@ -164,7 +166,7 @@ class _MouseGestureFilter:
       directions = self._joinDirections(directions)
 
     for g in self.gestures:
-      if len(g.directions()) == 1 and g.directions[0] == MouseGesture.NoMatch:
+      if len(g.directions) == 1 and g.directions[0] == MouseGesture.NoMatch:
         g.trigger()
         dprint("exit: ret = true, NoMatch")
         return False # triggered, but not matched
@@ -181,16 +183,16 @@ class _MouseGestureFilter:
     Notice! This function converts the list to a set of relative moves instead of a set of screen coordinates.
     """
     ret = []
-    last = 0,0
-    for i,pos in enumerate(positions):
+    last = lastY = 0
+    for i,(x,y) in enumerate(positions):
       if i: # skip the first one
-        dx, dy = pos - last
+        dx, dy = x - lastX, y - lastY
         if fabs(dx) > fabs(dy):
           dy = 0
         else:
           dx = 0
         ret.append((dx, dy))
-      last = pos
+      lastX, lastY = x, y
     return ret
 
   @staticmethod
@@ -253,5 +255,15 @@ class _MouseGestureFilter:
     Calculates the total length of the movements from a list of relative movements.
     """
     return sum(fabs(x)+fabs(y) for x,y in positions) # pos.manhattanLength()
+
+
+# Helpers
+
+def _subtract((x1,y1), (x2,y2)):
+  """
+  A replacement of numpy.subtract
+  See: http://stackoverflow.com/questions/17418108/elegant-way-to-perform-tuple-arithmetic
+  """
+  return x1 - x2, y1 - y2
 
 # EOF

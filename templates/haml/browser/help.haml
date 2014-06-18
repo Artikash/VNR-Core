@@ -49,6 +49,42 @@
     .container.portal
       %section.section.first
         %h4.section-head
+          #{tr('Mouse Gesture')}
+        %hr
+        .section-body
+          .group
+            %h5 #{tr('Tabs')}
+            .form-horizontal
+              .form-group
+                %label.control-label.col-xs-6 #{tr('New Tab')}:
+                .form-control-static.col-xs-6 →←
+              .form-group
+                %label.control-label.col-xs-6 #{tr('Close Tab')}:
+                .form-control-static.col-xs-6 ↓→
+              .form-group
+                %label.control-label.col-xs-6 #{tr('Undo Close Tab')}:
+                .form-control-static.col-xs-6 ←→
+              .form-group
+                %label.control-label.col-xs-6 #{tr('Previous Tab')}:
+                .form-control-static.col-xs-6 ↑←
+              .form-group
+                %label.control-label.col-xs-6 #{tr('Next Tab')}:
+                .form-control-static.col-xs-6 ↑→
+          .group
+            %h5 #{tr('Pages')}
+            .form-horizontal
+              .form-group
+                %label.control-label.col-xs-6 #{tr('Back')}:
+                .form-control-static.col-xs-6 ←
+              .form-group
+                %label.control-label.col-xs-6 #{tr('Forward')}:
+                .form-control-static.col-xs-6 →
+              .form-group
+                %label.control-label.col-xs-6 #{tr('Reload')}:
+                .form-control-static.col-xs-6 ↑↓
+
+      %section.section
+        %h4.section-head
           #{tr('Keyboard Shortcuts')}
         %hr
         .section-body

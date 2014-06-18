@@ -88,10 +88,10 @@ Item {
     //  text: Sk.tr("Credits")
     //  onTriggered: mainPlugin_.showCredits()
     //}
-    Desktop.MenuItem {
-      text: Sk.tr("Wiki")
-      onTriggered: mainPlugin_.openWiki('VNR')
-    }
+    //Desktop.MenuItem {
+    //  text: Sk.tr("Wiki")
+    //  onTriggered: mainPlugin_.openWiki('VNR')
+    //}
     Desktop.Separator {}
     Desktop.MenuItem {
       text: Sk.tr("Restart")
