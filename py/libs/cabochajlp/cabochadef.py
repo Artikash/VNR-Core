@@ -3,6 +3,7 @@
 # 6/13/2014 jichi
 
 from jptraits import jpchars
+from unitraits import unichars
 
 # ipadic encoding, either SHIFT-JIS or UTF-8
 DICT_ENCODING = 'utf8'
@@ -14,11 +15,13 @@ TYPE_PUNCT = 3
 TYPE_LATIN = 4
 #TYPE_NUM = 5
 
-def _surface_in_range2(text, start1, stop1, start2, stop2):
+def _ordall2(text, start1, stop1, start2, stop2):
   """
   @param  text  unicode
-  @param  start  int
-  @param  stop  int
+  @param  start1  int
+  @param  stop1  int
+  @param  start2  int
+  @param  stop2  int
   @return  bool
   """
   for c in text:
@@ -34,7 +37,7 @@ def is_ruby_surface(text):
   @param  stop  int
   @return  bool
   """
-  return _surface_in_range2(text, 12353, 12438, 12449, 12534)
+  return _ordall2(text, unichars.ORD_HIRA_FIRST, unichars.ORD_HIRA_LAST, unichars.ORD_KATA_FIRST, unichars.ORD_KATA_LAST)
 
 def is_latin_surface(text):
   """
@@ -43,7 +46,7 @@ def is_latin_surface(text):
   @param  stop  int
   @return  bool
   """
-  return _surface_in_range2(text, 32, 126, 65281, 65374) # 32 is space
+  return _ordall2(text, 32, unichars.ORD_THIN_LAST, unichars.ORD_WIDE_FIRST, unichars.ORD_WIDE_LAST) # 32 is space
 
 def surface_type(text):
   """

@@ -95,11 +95,11 @@ class _NetworkManager(object):
     if features.INTERNET_CONNECTION == defs.INTERNET_CONNECTION_ON:
       online = True
       dwarn("force enabling Internet CONNECTION")
-      growl.notify(my.tr("Disable Internet access as you wish"))
+      growl.notify(my.tr("Always enable Internet access as you wish"))
     elif features.INTERNET_CONNECTION == defs.INTERNET_CONNECTION_OFF:
       online = False
       dwarn("force disabling Internet access")
-      growl.notify(my.tr("Disable Internet sensor as you wish"))
+      growl.notify(my.tr("Always disable Internet access as you wish"))
     if self._online != online:
       self._online = online
       dprint("online = %s" % online)
