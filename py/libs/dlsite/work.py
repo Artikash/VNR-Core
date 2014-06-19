@@ -38,7 +38,7 @@ class WorkApi(object):
     h = self._fetch(url)
     if h:
       h = h.decode(self.ENCODING, errors='ignore')
-      if h:
+      if h: # and u'該当作品がありません' not in h:
         ret = self._parse(h)
         if ret and ret['title']: # return must have title
           return ret

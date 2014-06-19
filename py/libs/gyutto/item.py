@@ -51,7 +51,7 @@ class ItemApi(object):
     h = self._fetch(url)
     if h:
       h = h.decode(self.ENCODING, errors='ignore')
-      if h:
+      if h and u'エラーが発生しました。' not in h:
         ret = self._parse(h)
         if ret:
           ret['id'] = long(id)
