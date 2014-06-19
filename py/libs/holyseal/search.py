@@ -61,10 +61,10 @@ class SearchApi(object):
   # <p class="sellst1">･<a href="mlistview.cgi?prdcode=7158&amp;word=dive" target="_self"><span class="prd">BALDR SKY Dive1 “LostMemory”</span></a></p>
   # </div><br><div class="fr"><p class="idx"><strong>
 
-  _rx_first_title = re.compile(u'<p class="sellst3">･<strong>([^<]*?)</strong></p>')
-  _rx_first_id = re.compile(u'prdcode=([0-9]+?)">消す</a>')
-  _rx_year = re.compile(u'<strong>([0-9]{4}) 年</strong>')
-  _rx_product = re.compile('prdcode=([0-9]+)[^>]*?><span class="prd">([^<]*?)</span>')
+  _rx_first_title = re.compile(ur'<p class="sellst3">･<strong>([^<]*?)</strong></p>')
+  _rx_first_id = re.compile(ur'prdcode=([0-9]+?)">消す</a>')
+  _rx_year = re.compile(ur'<strong>([0-9]{4}) 年</strong>')
+  _rx_product = re.compile(r'prdcode=([0-9]+)[^>]*?><span class="prd">([^<]*?)</span>')
   def _iterparse(self, h):
     """
     @param  h  unicode

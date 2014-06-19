@@ -155,7 +155,7 @@ class ProductApi(object):
       return skstr.unescapehtml(m.group(1))
 
   # Such as: <a href="staffview.cgi?staffcode=2508&amp;refpc=9550">鈴田美夜子</a>
-  _rx_staff = re.compile(u">([^<]*?)</a>")
+  _rx_staff = re.compile(ur">([^<]*?)</a>")
 
   _rx_info_artists = __makeinforx(u"原画")
   def _iterparseartists(self, h):
