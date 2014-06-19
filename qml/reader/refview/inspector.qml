@@ -13,7 +13,7 @@ Item { id: root_
 
   // - Private -
 
-  height: 140 // should be large enough to cover all texts
+  height: 150 // should be large enough to cover all texts
   //color: '#ced0d6'
 
   Share.CachedAvatarImage { id: avatar_
