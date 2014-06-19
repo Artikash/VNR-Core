@@ -2589,7 +2589,7 @@ class ScapeReference(Reference):
 
   @property
   def digiketUrl(self): # such as: http://www.digiket.com/work/show/_data/ID=ITM0097342/
-    return 'http://www.digiket.com/work/show/_data/ID=%s' % self.digiket if self.digiket else ''
+    return 'http://www.digiket.com/work/show/_data/ID=%s/' % self.digiket if self.digiket else ''
 
   @property
   def dlsiteUrl(self):
