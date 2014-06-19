@@ -25,6 +25,7 @@ env:
   - $PWD/py/apps/browser/dialogs
   - $PWD/py/apps/browser/managers
   - $PWD/py/apps/browser/utilities
+  - $PWD/py/apps/browser/widgets
 
 qt:
   #metaCallPort: 6104    # IPC QMetaCall listening port (6100 + app.id)
