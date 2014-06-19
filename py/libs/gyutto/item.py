@@ -184,7 +184,7 @@ class ItemApi(object):
   # </dd>
   # </dl>
   #def __maketablerx(name):
-  #  return re.compile("<dl>%s</dl>.*?</dd>", re.DOTALL)
+  #  return re.compile(r"<dl>%s</dl>.*?</dd>", re.DOTALL)
 
 if __name__ == '__main__':
   api = ItemApi()
