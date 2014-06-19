@@ -144,6 +144,7 @@ class _WebBrowser(object):
     self._addGesture((G.Up, G.Down), self.refresh, i18n.tr("Refresh"))
     self._addGesture((G.Left,), self.back, i18n.tr("Back"))
     self._addGesture((G.Right,), self.forward, i18n.tr("Forward"))
+    self._addGesture((G.Down,), self.openHoveredLinkAfterCurrent, i18n.tr("Open link in background tab"))
 
   def _addGesture(self, directions, callback, name):
     """
@@ -474,10 +475,21 @@ class _WebBrowser(object):
   def openUrlAfterCurrent(self, url, focus=False): # string ->
     """
     @param  url  unicode
+    @param* focus  bool
     """
     self.addRecentUrl(url)
     v = self.newTabAfterCurrent(focus=focus)
     v.load(url)
+
+  def openHoveredLinkAfterCurrent(self, focus=False): # default to open at the background
+    """
+    @param* focus  bool
+    """
+    w = self.tabWidget.currentWidget()
+    if w:
+      url = w.page().hoveredLink()
+      if url:
+        self.openUrlAfterCurrent(url, focus=focus)
 
   def addRecentUrl(self, url): # string|QUrl ->
     text = _urltext(url)

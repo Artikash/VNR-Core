@@ -305,6 +305,26 @@ class GameInfo(object):
         return DLsiteReference(**kw)
 
   @memoizedproperty
+  def holyseal(self):
+    """Online
+    @return  kw or None
+    """
+    key = None
+    type = 'holyseal'
+    for it in self.referenceData:
+      if it.type == type:
+        key = it.key
+        break
+    if not key:
+      r = self.trailers
+      if r:
+        key = r.holyseal
+    if key:
+      kw = refman.manager().queryOne(key=key, type=type, async=self.async)
+      if kw:
+        return HolysealReference(**kw)
+
+  @memoizedproperty
   def gyutto(self):
     """Online
     @return  kw or None
@@ -314,17 +334,6 @@ class GameInfo(object):
         kw = refman.gyutto().query(r.gyutto)
         if kw:
           return GyuttoItem(**kw)
-
-  @memoizedproperty
-  def holyseal(self):
-    """Online
-    @return  kw or None
-    """
-    r = self.trailers
-    if r and r.holyseal:
-      kw = refman.holyseal().query(r.holyseal)
-      if kw:
-        return HolysealItem(**kw)
 
   @property
   def characters(self):
@@ -407,18 +416,17 @@ class GameInfo(object):
   #    if it:
   #      yield it
 
+  #def _iterTrailersScapeGetchuDLsiteDmmAmazon(self):
+  #  for it in self.trailers, self.scape, self.getchu, self.dlsite, self.dmm, self.amazon:
+  #    if it:
+  #      yield it
+
   def _iterTrailersScapeHolysealGetchuDLsiteDmmAmazon(self):
     for it in self.trailers, self.scape, self.holyseal, self.getchu, self.dlsite, self.dmm, self.amazon:
       if it:
         yield it
 
-
-  def _iterTrailersScapeGetchuDLsiteDmmAmazon(self):
-    for it in self.trailers, self.scape, self.getchu, self.dlsite, self.dmm, self.amazon:
-      if it:
-        yield it
-
-  _iterReferences = _iterTrailersScapeGetchuDLsiteDmmAmazon
+  _iterReferences = _iterTrailersScapeHolysealGetchuDLsiteDmmAmazon
 
   def _iterTrailersDmmAmazonGetchuDLsite(self):
     for it in self.trailers, self.dmm, self.amazon, self.getchu, self.dlsite:
@@ -898,9 +906,12 @@ class GameInfo(object):
             yield url, 'sample_%s_%i' % (rname, index+1)
 
     r = self.scape
-    if r:
-      if r.bannerUrl:
-        yield fn(r.bannerUrl), 'banner_scape'
+    if r and r.bannerUrl:
+      yield fn(r.bannerUrl), 'banner_scape'
+
+    r = self.holyseal
+    if r and r.banner:
+      yield fn(r.banner), 'banner_holyseal'
 
     r = self.trailersItem
     if r:
@@ -1005,7 +1016,7 @@ class GameInfo(object):
 
   @memoizedproperty
   def creators(self): # [kw] or None
-    for r in self.trailersItem, self.getchu:
+    for r in self.trailersItem, self.getchu, self.holyseal:
       if r and r.creators:
         return r.creators
     r = self.dmm
@@ -1014,7 +1025,7 @@ class GameInfo(object):
 
   @memoizedproperty
   def slogan(self): # str or None
-    for r in self.scape, self.getchu, self.gyutto:
+    for r in self.scape, self.holyseal, self.getchu, self.gyutto:
       if r and r.slogan:
         return cconv.wide2thin(r.slogan)
 
@@ -2317,8 +2328,8 @@ class _Reference(object):
     sig = Signal(type)
     return Property(type, getter, sync_setter if sync else setter, notify=sig), sig
 
-  TYPES = 'trailers', 'scape', 'getchu', 'amazon', 'dmm', 'dlsite'
-  TR_TYPES = 'Trailers', 'ErogameScape', 'Getchu', 'Amazon', 'DMM', 'DLsite'
+  TYPES = 'trailers', 'scape', 'holyseal', 'getchu', 'amazon', 'dmm', 'dlsite'
+  TR_TYPES = 'Trailers', 'ErogameScape', 'Holyseal', 'Getchu', 'Amazon', 'DMM', 'DLsite'
 
 class Reference(QObject):
   __D = _Reference
@@ -2365,6 +2376,8 @@ class Reference(QObject):
       cls = TrailersReference
     elif type == 'scape':
       cls = ScapeReference
+    elif type == 'holyseal':
+      cls = HolysealReference
     elif type == 'getchu':
       cls = GetchuReference
     elif type == 'amazon':
@@ -2837,20 +2850,28 @@ class GyuttoItem: #(object):
     for it in self.sampleImages:
       return cacheman.cache_image_url(it) if cache else it
 
-class HolysealItem: #(object):
-  type = 'holyseal'
-  def __init__(self, key=0, url='',
-      title="", genre="",
-      banner="", # image URL
+class HolysealReference(Reference): #(object):
+  def __init__(self, parent=None,
+      type='holyseal',
+      #writers[], artists=[],
+      otome=False,
       ecchi=True,
-      #date='',
+      banner='',
+      genre='',
       **kwargs):
-    self.key = key # long
-    self.url = url # str URL
-    self.title = title # unicode
+    super(HolysealReference, self).__init__(parent=parent,
+        type=type, **kwargs)
+    self.otome = otome # bool
+    self.ecchi = ecchi # bool
     self.banner = banner # unicode or None
-    self.slogan = genre # str
-    self.ecchi = ecchi  # bool
+    self.slogan = genre or '' # str
+
+    self.creators = []
+    for k in 'writers', 'artists':
+      v = kwargs.get(k)
+      if v:
+        for it in v:
+          self.creators.append({'name':it, 'roles':[k[:-1]]})
 
 class DmmItem: #(object):
   def __init__(self, url="",
@@ -4554,6 +4575,7 @@ class _ReferenceModel(object):
 
     q.trailersItemChanged.emit(q.trailersItem)
     q.scapeItemChanged.emit(q.scapeItem)
+    q.holysealItemChanged.emit(q.holysealItem)
     q.getchuItemChanged.emit(q.getchuItem)
     q.dmmItemChanged.emit(q.dmmItem)
     q.amazonItemChanged.emit(q.amazonItem)
@@ -4777,6 +4799,11 @@ class ReferenceModel(QAbstractListModel):
   getchuItem = Property(QObject,
       lambda self: self.__d.findItem(type='getchu'),
       notify=getchuItemChanged)
+
+  holysealItemChanged = Signal(QObject)
+  holysealItem = Property(QObject,
+      lambda self: self.__d.findItem(type='holyseal'),
+      notify=holysealItemChanged)
 
   amazonItemChanged = Signal(QObject)
   amazonItem = Property(QObject,

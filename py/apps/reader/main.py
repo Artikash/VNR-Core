@@ -411,16 +411,16 @@ class _MainObject(object):
     nm.onlineChanged.connect(ret.setOnline)
     return ret
 
-  @memoizedproperty
-  def holysealManager(self):
-    dprint("create holyseal manager")
-    import refman
-    ret = refman.holyseal()
-    ret.setParent(self.q)
-    nm = self.networkManager
-    ret.setOnline(nm.isOnline())
-    nm.onlineChanged.connect(ret.setOnline)
-    return ret
+  #@memoizedproperty
+  #def holysealManager(self):
+  #  dprint("create holyseal manager")
+  #  import refman
+  #  ret = refman.holyseal()
+  #  ret.setParent(self.q)
+  #  nm = self.networkManager
+  #  ret.setOnline(nm.isOnline())
+  #  nm.onlineChanged.connect(ret.setOnline)
+  #  return ret
 
   @memoizedproperty
   def gyuttoManager(self):
@@ -1326,7 +1326,7 @@ class MainObject(QObject):
     d.dmmManager
     d.getchuManager
     d.gyuttoManager
-    d.holysealManager
+    #d.holysealManager
     #d.scapeManager # does not exist
     d.cacheManager
     #d.cacheManager.updateAvatar("AQKI6jsmz")

@@ -13,7 +13,7 @@ Item { id: root_
 
   // - Private -
 
-  height: 140 // should be large enough to cover all texts
+  height: 150 // should be large enough to cover all texts
   //color: '#ced0d6'
 
   Share.CachedAvatarImage { id: avatar_
@@ -90,6 +90,10 @@ Item { id: root_
       ret += '<br/><span style="color:green">' + qsTr("Found 1 reference from {0}").replace('{0}', 'Getchu.com') + '</span>'
     else
       ret += '<br/><span style="color:red">' + qsTr("Missing references from {0}").replace('{0}', 'Getchu.com') + '</span>'
+    if (model.holysealItem)
+      ret += '<br/><span style="color:green">' + qsTr("Found 1 reference from {0}").replace('{0}', 'Holyseal.net') + '</span>'
+    else
+      ret += '<br/><span style="color:brown">' + qsTr("Missing references from {0}").replace('{0}', 'Holyseal.net') + '</span>'
     if (model.dmmItem)
       ret += '<br/><span style="color:green">' + qsTr("Found 1 reference from {0}").replace('{0}', 'DMM.co.jp') + '</span>'
     else

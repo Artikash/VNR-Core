@@ -28,8 +28,8 @@ def trailers(): return TrailersManager()
 @memoized
 def dmm(): return DmmManager()
 
-@memoized
-def holyseal(): return HolysealManager()
+#@memoized
+#def holyseal(): return HolysealManager()
 
 @memoized
 def gyutto(): return GyuttoManager()
@@ -292,6 +292,111 @@ class ScapeApi(object):
     item['date'] = skdatetime.date2timestamp(d) if d else 0
     item['title'] = item['gamename']
 
+## Holyseal API ##
+
+class HolysealApi(object):
+
+  def __init__(self, online=True):
+    """
+    @param* online  bool
+    """
+    self.online = online
+
+  def setOnline(self, v):
+    if self.online !=  v:
+      self.online = v
+      if hasmemoizedproperty(self, 'cachingProductApi'):
+        self.cachingProductApi.online = v
+
+  _rx_title = re.compile( _re_title)
+  @classmethod
+  def _beautifyTitle(cls, t):
+    """
+    @param  t  unicode
+    @return  unicode
+    """
+    return cls._rx_title.sub('', t).strip()
+
+  @memoizedproperty
+  def cachingProductApi(self):
+    from holyseal.caching import CachingProductApi
+    return CachingProductApi(
+        cachedir=rc.DIR_CACHE_HOLYSEAL,
+        expiretime=config.REF_EXPIRE_TIME,
+        online=self.online)
+
+  @memoizedproperty
+  def searchApi(self):
+    from holyseal.search import SearchApi
+    return SearchApi()
+
+  def _search(self, text=None, key=None, cache=True):
+    """
+    @param  cache  bool  not used
+    @yield  kw
+    """
+    dprint("key, text =", key, text)
+    if key:
+      kw = self.cachingProductApi.query(key)
+      if kw:
+        yield kw
+    elif text:
+      q = self.searchApi.query(text)
+      if q:
+        for it in q:
+          yield it
+
+  def cache(self, text=None, key=None):
+    if key:
+      dprint("enter")
+      self.cachingProductApi.cache(key)
+      dprint("leave")
+
+  @staticmethod
+  def _parsekey(url):
+    """
+    @param  url  unicode
+    @return  unicode or None
+    """
+    if url:
+      m = re.search(r"prdcode=([0-9]+)", url)
+      if m:
+        return m.group(1)
+
+  # See: https://affiliate.dmm.com/api/reference/r18/pcgame/
+  def query(self, key=None, text=None, **kwargs):
+    """
+    @return  iter not None
+    """
+    dprint("enter")
+    ret = []
+    if not key and text:
+      if text.isdigit():
+        key = text
+      elif text.startswith('http://') or text.startswith('holyseal.net'):
+        k = self._parsekey(text)
+        if k:
+          key = k
+    s = self._search(key=key, text=text, **kwargs)
+    try:
+      for item in s:
+        k = str(item['id'])
+        item['key'] = k
+        del item['id']
+
+        d = item.get('date') or 0 # int
+        if d:
+          try:
+            d = datetime.strptime(d, '%Y/%m/%d')
+            d = skdatetime.date2timestamp(d)
+          except: dwarn("failed to parse date")
+        item['date'] = d
+
+        ret.append(item)
+    except Exception, e: dwarn(e)
+    dprint("leave: count = %s" % len(ret))
+    return ret
+
 ## Getchu API ##
 
 class GetchuApi(object):
@@ -401,8 +506,10 @@ class GetchuApi(object):
 
         d = item['date'] or 0 # int
         if d:
-          d = datetime.strptime(d, '%Y/%m/%d')
-          d = skdatetime.date2timestamp(d)
+          try:
+            d = datetime.strptime(d, '%Y/%m/%d')
+            d = skdatetime.date2timestamp(d)
+          except: dwarn("failed to parse date")
         item['date'] = d
         item['image'] = item['img']
 
@@ -1060,7 +1167,8 @@ class AsyncApi:
 ## References ##
 
 class _ReferenceManager(object):
-  API_TYPES = frozenset(('trailers', 'scape', 'getchu', 'amazon', 'dmm', 'dlsite'))
+  # The same as dataman.Reference.TYPES
+  API_TYPES = frozenset(('trailers', 'scape', 'holyseal', 'getchu', 'amazon', 'dmm', 'dlsite'))
 
   def __init__(self, parent):
     self.parent = None
@@ -1081,6 +1189,9 @@ class _ReferenceManager(object):
 
   @memoizedproperty
   def dlsiteApi(self): return self._createApi(DLsiteApi)
+
+  @memoizedproperty
+  def holysealApi(self): return self._createApi(HolysealApi)
 
   @memoizedproperty
   def scapeApi(self): return self._createApi(ScapeApi)
@@ -1331,67 +1442,6 @@ class GyuttoManager:
         self.__d.query, id),
         parent=self.parent) if async else self.__d.query(id)
 
-# Holyseal manager
-
-class _HolysealManager(object):
-
-  def __init__(self):
-    self.online = True
-    self._warmed = False
-
-  @memoizedproperty
-  def api(self): # Always caching
-    from holyseal.caching import CachingProductApi
-    return CachingProductApi(rc.DIR_CACHE_HOLYSEAL,
-        expiretime=config.REF_EXPIRE_TIME,
-        online=self.online)
-
-  def warmup(self):
-    if not self._warmed:
-      self.api
-      self._warmed = True
-
-  def query(self, id):
-    """
-    @param  id  int or str  ID
-    @return  {kw}
-    """
-    ret = self.api.query(id)
-    if ret:
-      ret['key'] = ret['id']
-      del ret['id']
-    return ret
-
-class HolysealManager:
-
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
-    self.__d = _HolysealManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
-
-  def isOnline(self): return self.__d.online
-  def setOnline(self, v):
-    d = self.__d
-    if d.online != v:
-      d.online = v
-      if hasmemoizedproperty(d, 'api'):
-        d.api.online = v
-
-  #@memoized # cached
-  def query(self, id, async=True):
-    """
-    @param  id  int or str  ID
-    @return  {kw}
-    """
-    self.__d.warmup()
-    return skthreads.runsync(partial(
-        self.__d.query, id),
-        parent=self.parent) if async else self.__d.query(id)
-
 # Specific to DMM
 
 class _DmmManager(object):
@@ -1606,6 +1656,66 @@ if __name__ == '__main__':
   #test_trailers()
 
 # EOF
+
+## Specific to Holyseal
+#class _HolysealManager(object):
+#
+#  def __init__(self):
+#    self.online = True
+#    self._warmed = False
+#
+#  @memoizedproperty
+#  def api(self): # Always caching
+#    from holyseal.caching import CachingProductApi
+#    return CachingProductApi(rc.DIR_CACHE_HOLYSEAL,
+#        expiretime=config.REF_EXPIRE_TIME,
+#        online=self.online)
+#
+#  def warmup(self):
+#    if not self._warmed:
+#      self.api
+#      self._warmed = True
+#
+#  def query(self, id):
+#    """
+#    @param  id  int or str  ID
+#    @return  {kw}
+#    """
+#    ret = self.api.query(id)
+#    if ret:
+#      ret['key'] = ret['id']
+#      del ret['id']
+#    return ret
+#
+#class HolysealManager:
+#
+#  def __init__(self, parent=None):
+#    """
+#    @param  parent  QObject
+#    """
+#    self.__d = _HolysealManager()
+#    self.parent = parent
+#
+#  def setParent(self, v): self.parent = v
+#
+#  def isOnline(self): return self.__d.online
+#  def setOnline(self, v):
+#    d = self.__d
+#    if d.online != v:
+#      d.online = v
+#      if hasmemoizedproperty(d, 'api'):
+#        d.api.online = v
+#
+#  #@memoized # cached
+#  def query(self, id, async=True):
+#    """
+#    @param  id  int or str  ID
+#    @return  {kw}
+#    """
+#    self.__d.warmup()
+#    return skthreads.runsync(partial(
+#        self.__d.query, id),
+#        parent=self.parent) if async else self.__d.query(id)
 
 ## Specific to ScapeScape ##
 
