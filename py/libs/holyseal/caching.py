@@ -13,8 +13,8 @@ from product import ProductApi
 from search import SearchApi
 
 def _htmlcacher(cls):
-    from restful.offline import DataCacher
-      return DataCacher(cls, suffix='.html')
+  from restful.offline import DataCacher
+  return DataCacher(cls, suffix='.html')
 
 CachingProductApi = _htmlcacher(ProductApi)
 CachingSearchApi = _htmlcacher(SearchApi)
