@@ -64,6 +64,7 @@ class WorkApi(object):
         'image': self._parseimage(h), # unicode or None
         'price': self._parseprice(h) or 0, # int not None
         'date': self._parsedate(h), # datetime or None
+        'filesize': self._parsefilesize(h), # int not None
         'keywords': self._parsekeywords(h) or [], # [unicode]
         'tags': list(self._iterparsetags(h)), # [unicode]
         'sampleimages': list(self._iterparsesampleimages(h)), # [str]
@@ -183,17 +184,30 @@ class WorkApi(object):
   # Example:
   # <th>販売日&nbsp;:&nbsp;</th>
   # <td><a href="http://www.dlsite.com/soft/new/=/year/2013/mon/05/day/31/cyear/2013/cmon/05">2013年05月31日</a></td></tr>
-  _rx_date = re.compile(ur'[0-9]{4}年[0-9]{2}月[0-9]{2}日')
+  _rx_date = re.compile(ur'(\d{4})年(\d{2})月(\d{2})日')
   def _parsedate(self, h):
     """
     @param  h  unicode  html
-    @return  unicode or None
+    @return  datetime object or None
     """
     m = self._rx_date.search(h)
     if m:
-      t = m.group()
-      try: return datetime.strptime(t, u'%Y年%m月%d日')
-      except ValueError: pass
+      #datetime.strptime(t, u'%Y年%m月%d日')
+      try: return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+      except: pass
+
+  # Example: 12345Byte
+  _rx_filesize = re.compile(r'(\d+)Byte')
+  def _parsefilesize(self, h):
+    """
+    @param  h  unicode  html
+    @return  int not None
+    """
+    m = self._rx_filesize.search(h)
+    if m:
+      try: return long(m.group(1))
+      except: pass
+    return 0
 
   # Example:
   # <tr><th>ホームページ&nbsp;:&nbsp;</th>
@@ -330,6 +344,7 @@ if __name__ == '__main__':
   url = 'http://www.dlsite.com/soft/work/=/product_id/VJ007207.html'
   url = 'http://www.dlsite.com/maniax/work/=/product_id/RJ107332.html'
   url = 'http://www.dlsite.com/pro/work/=/product_id/VJ004288.html'
+  url = 'http://www.dlsite.com/girls/work/=/product_id/RJ091967.html'
   q = api.query(url)
   #print q['description']
   #print q['review'].encode('utf8')
@@ -343,6 +358,8 @@ if __name__ == '__main__':
   print q['sampleimages']
   print q['series']
   print q['rpg']
+  print q['filesize']
+  print q['date']
   for it in q['tags']:
     print it
 

@@ -610,6 +610,13 @@ class GameInfo(object):
     for url, type in self.iterUrlsWithType():
       yield url, i18n.site_name(type) or type
 
+  @property
+  def filesize(self): # long not None
+    r = self.dlsite
+    if r:
+      return r.filesize
+    return 0
+
   @memoizedproperty
   def date0(self): # long not None
     date = self.dateObject0
@@ -2608,7 +2615,7 @@ class DLsiteReference(Reference): #(object):
       type='dlsite',
       image='', price=0, ecchi=True, otome=False, homepage='',
       artist='', writer='', musician='',
-      description='', review='',
+      description='', review='', filesize=0,
       sampleImages=[], tags=[], rpg=False,
       **kwargs):
     super(DLsiteReference, self).__init__(parent=parent,
@@ -2622,6 +2629,7 @@ class DLsiteReference(Reference): #(object):
     self.review = review # unicode
     self.sampleImages = sampleImages # [str url]
     self.rpg = rpg # bool
+    self.filesize = filesize # int
 
     #self.genres = []
     #if rpg:
