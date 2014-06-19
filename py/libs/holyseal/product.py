@@ -61,19 +61,31 @@ class ProductApi(object):
     """
     return {
       'title': self._parsetitle(h),     # unicode
+      'brand': self._parsebrand(h),     # unicode
       'banner': self._parsebanner(h),   # str url or None
       'ecchi': self._parseecchi(h),     # bool
-      'date': self._parsedate(h),       # str or None  such as 2013/08/23
+      'otome': self._parseotome(h),     # bool
+      'date': self._parsedate(h),       # str or None  such as 2013/08/23, or 2014/夏
       'genre': self._parsegenre(h),     # unicode or None  slogan
+      'artists': list(self._iterparseartists(h)), # [unicode]
+      'writers': list(self._iterparsewriters(h)), # [unicode]
     }
 
-  # u"15 歳以上" or u"18 歳以上"
+  # u"td>15 歳以上" or u"td>18 歳以上"
   def _parseecchi(self, h):
     """
     @param  h  unicode  html
     @return  bool
     """
-    return u"15 歳以上" not in h
+    return u">15 歳以上" not in h
+    #return u">18 歳以上" in h
+
+  def _parseotome(self, h):
+    """
+    @param  h  unicode  html
+    @return  bool
+    """
+    return u"女性向</td>" in h
 
   # <title>[Holyseal ～聖封～] ミラー／転載 ≫ CUBE ≫ your diary</title>
   _rx_title = re.compile(ur'≫([^≫<]*?)</title>')
@@ -83,6 +95,17 @@ class ProductApi(object):
     @return  unicode or None
     """
     m = self._rx_title.search(h)
+    if m:
+      return skstr.unescapehtml(m.group(1)).strip() # there is a space in the beginning
+
+  # <title>[Holyseal ～聖封～] ミラー／転載 ≫ CUBE ≫ your diary</title>
+  _rx_brand = re.compile(ur' ≫ ([^≫<]*?) ≫ ')
+  def _parsebrand(self, h):
+    """
+    @param  h  unicode  html
+    @return  unicode or None
+    """
+    m = self._rx_brand.search(h)
     if m:
       return skstr.unescapehtml(m.group(1)).strip() # there is a space in the beginning
 
@@ -131,14 +154,47 @@ class ProductApi(object):
     if m:
       return skstr.unescapehtml(m.group(1))
 
+  # Such as: <a href="staffview.cgi?staffcode=2508&amp;refpc=9550">鈴田美夜子</a>
+  _rx_staff = re.compile(u">([^<]*?)</a>")
+
+  _rx_info_artists = __makeinforx(u"原画")
+  def _iterparseartists(self, h):
+    """
+    @param  h  unicode  html
+    @yield  unicode
+    """
+    m = self._rx_info_artists.search(h)
+    if m:
+      line = skstr.unescapehtml(m.group(1))
+      for m in self._rx_staff.finditer(line):
+        yield skstr.unescapehtml(m.group(1))
+
+  _rx_info_writers = __makeinforx(u"シナリオ")
+  def _iterparsewriters(self, h):
+    """
+    @param  h  unicode  html
+    @yield  unicode
+    """
+    m = self._rx_info_writers.search(h)
+    if m:
+      line = skstr.unescapehtml(m.group(1))
+      for m in self._rx_staff.finditer(line):
+        yield skstr.unescapehtml(m.group(1))
+
 if __name__ == '__main__':
   api = ProductApi()
+  k = 12517 # http://holyseal.net/cgi-bin/mlistview.cgi?prdcode=12517
   k = 9550 # http://holyseal.net/cgi-bin/mlistview.cgi?prdcode=9550
   q = api.query(k)
   print q['title']
+  print q['brand']
   print q['banner']
   print q['ecchi']
   print q['date']
   print q['genre']
+  print q['otome']
+  #print q['artists']
+  for it in q['artists']:
+    print it
 
 # EOF
