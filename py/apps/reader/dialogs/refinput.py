@@ -28,7 +28,7 @@ class _ReferenceModel:
   def textOf(kw):
 
     ts = kw.get('date')
-    date = i18n.timestamp2date(ts) if ts else tr_("unknown")
+    date = i18n.timestamp2date(ts) if ts else kw.get('year') or tr_("unknown")
 
     title = kw.get('title')
     brand = kw.get('brand') or tr_("unknown")
@@ -110,10 +110,11 @@ class _ReferenceInput(object):
 
     shortcut('alt+1', self.trailersButton.click, parent=q)
     shortcut('alt+2', self.scapeButton.click, parent=q)
-    shortcut('alt+3', self.getchuButton.click, parent=q)
-    shortcut('alt+4', self.dmmButton.click, parent=q)
-    shortcut('alt+5', self.amazonButton.click, parent=q)
-    shortcut('alt+6', self.dlsiteButton.click, parent=q)
+    shortcut('alt+3', self.holysealButton.click, parent=q)
+    shortcut('alt+4', self.getchuButton.click, parent=q)
+    shortcut('alt+5', self.dmmButton.click, parent=q)
+    shortcut('alt+6', self.amazonButton.click, parent=q)
+    shortcut('alt+7', self.dlsiteButton.click, parent=q)
 
   def _createUi(self, q, readonly):
 
@@ -131,6 +132,7 @@ class _ReferenceInput(object):
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.trailersButton)
     row.addWidget(self.scapeButton)
+    row.addWidget(self.holysealButton)
     row.addWidget(self.getchuButton)
     row.addWidget(self.dmmButton)
     row.addWidget(self.amazonButton)
@@ -175,30 +177,37 @@ class _ReferenceInput(object):
     return ret
 
   @memoizedproperty
+  def holysealButton(self):
+    ret = QtWidgets.QRadioButton("Holyseal")
+    ret.setToolTip("holyseal.net (Alt+3)")
+    ret.toggled.connect(self._searchLater)
+    return ret
+
+  @memoizedproperty
   def getchuButton(self):
     ret = QtWidgets.QRadioButton("Getchu")
-    ret.setToolTip("getchu.com (Alt+3)")
+    ret.setToolTip("getchu.com (Alt+4)")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def dmmButton(self):
     ret = QtWidgets.QRadioButton("DMM")
-    ret.setToolTip("dmm.co.jp (Alt+4)")
+    ret.setToolTip("dmm.co.jp (Alt+5)")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def amazonButton(self):
     ret = QtWidgets.QRadioButton("Amazon")
-    ret.setToolTip("amazon.co.jp (Alt+5)")
+    ret.setToolTip("amazon.co.jp (Alt+6)")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def dlsiteButton(self):
     ret = QtWidgets.QRadioButton("DLsite")
-    ret.setToolTip("dlsite.com (Alt+6)")
+    ret.setToolTip("dlsite.com (Alt+7)")
     ret.toggled.connect(self._searchLater)
     return ret
 
@@ -206,6 +215,7 @@ class _ReferenceInput(object):
     return (
         'trailers' if self.trailersButton.isChecked() else
         'scape' if self.scapeButton.isChecked() else
+        'holyseal' if self.holysealButton.isChecked() else
         'getchu' if self.getchuButton.isChecked() else
         'dmm' if self.dmmButton.isChecked() else
         'amazon' if self.amazonButton.isChecked() else
@@ -459,7 +469,7 @@ class _QmlRefrenceInput(object):
 
     elif r.type == 'trailers':
       rm = refman.manager()
-      for type in 'dmm', 'amazon', 'getchu', 'scape':
+      for type in 'dmm', 'amazon', 'getchu', 'holyseal', 'scape':
         pty = 'erogamescape' if type == 'scape' else type
         key = getattr(r, pty)
         if key:

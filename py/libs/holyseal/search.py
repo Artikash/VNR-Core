@@ -74,10 +74,10 @@ class SearchApi(object):
       start = h.find(u"検索結果（タイトル）") # int
       stop = h.find(u"ブランド別製品リスト") # int
       if start > 0 and stop > start:
-        h = h[start:stop]
+        hh = h[start:stop]
 
         years = [] # [int year, int start]
-        for m in self._rx_year.finditer(h):
+        for m in self._rx_year.finditer(hh):
           years.append((
             int(m.group(1)),
             m.start(),
@@ -89,25 +89,27 @@ class SearchApi(object):
         id0 = title0 = None
 
         # first, yield the matched game
-        m = self._rx_first_id.search(h)
+        m = self._rx_first_id.search(hh)
         if m:
           id0 = int(m.group(1))
           if id0:
-            m = self._rx_first_title.search(h)
+            m = self._rx_first_title.search(hh)
             if m:
               title0 = skstr.unescapehtml(m.group(1))
 
         if id0 and title0:
           year0 = years[0][0] if years else None
+          brand0 = self._parsebrand(h)
           yield {
             'id': id0,
             'title': title0,
+            'brand': brand0,
             'year': year0,
           }
 
           # then, parse index of years
           # iterparse and compare index against year index
-          for m in self._rx_product.finditer(h):
+          for m in self._rx_product.finditer(hh):
             id = int(m.group(1))
             title = skstr.unescapehtml(m.group(2))
             year = None
@@ -124,6 +126,17 @@ class SearchApi(object):
 
     except ValueError: # raised by int()
       dwarn("failed to convert to int")
+
+  # <title>[Holyseal ～聖封～] ミラー／転載 ≫ CUBE ≫ your diary</title>
+  _rx_brand = re.compile(ur' ≫ ([^≫<]*?) ≫ ')
+  def _parsebrand(self, h):
+    """
+    @param  h  unicode  html
+    @return  unicode or None
+    """
+    m = self._rx_brand.search(h)
+    if m:
+      return skstr.unescapehtml(m.group(1)).strip() # there is a space in the beginning
 
 if __name__ == '__main__':
   api = SearchApi()
