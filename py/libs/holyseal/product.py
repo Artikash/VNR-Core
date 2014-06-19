@@ -47,7 +47,7 @@ class ProductApi(object):
     h = self._fetch(url)
     if h:
       h = h.decode(self.ENCODING, errors='ignore')
-      if h:
+      if h and u'≫  ≫ </title>' not in h: # empty page
         ret = self._parse(h)
         if ret:
           ret['id'] = long(id)
@@ -184,7 +184,8 @@ class ProductApi(object):
 if __name__ == '__main__':
   api = ProductApi()
   k = 12517 # http://holyseal.net/cgi-bin/mlistview.cgi?prdcode=12517
-  k = 9550 # http://holyseal.net/cgi-bin/mlistview.cgi?prdcode=9550
+  k = 1234567 # wrong
+  k = 9550
   q = api.query(k)
   print q['title']
   print q['brand']
