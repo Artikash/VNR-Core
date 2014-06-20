@@ -536,6 +536,23 @@ class Settings(QSettings):
       self.setValue('TTSHotkey', value)
       self.ttsHotkeyChanged.emit(value)
 
+  # Hot key to enable/disable text extraction
+  textHotkeyEnabledChanged = Signal(bool)
+  def isTextHotkeyEnabled(self):
+    return to_bool(self.value('TextHotkeyEnabled', True))
+  def setTextHotkeyEnabled(self, value):
+    if value != self.isTextHotkeyEnabled():
+      self.setValue('TextHotkeyEnabled', value)
+      self.textHotkeyEnabledChanged.emit(value)
+
+  textHotkeyChanged = Signal(str)
+  def textHotkey(self):
+    return self.value('TextHotkey', 'mouse middle') # middle click by default
+  def setTextHotkey(self, value):
+    if value != self.textHotkey():
+      self.setValue('TextHotkey', value)
+      self.textHotkeyChanged.emit(value)
+
   ## TTS ##
 
   speaksGameTextChanged = Signal(bool)

@@ -610,6 +610,13 @@ class GameInfo(object):
     for url, type in self.iterUrlsWithType():
       yield url, i18n.site_name(type) or type
 
+  @property
+  def filesize(self): # long not None
+    r = self.dlsite
+    if r:
+      return r.filesize
+    return 0
+
   @memoizedproperty
   def date0(self): # long not None
     date = self.dateObject0
@@ -1278,6 +1285,14 @@ class Game(object):
     """
     return rc.file_icon(self.path) if self.path else None
 
+  #@property
+  def gameType(self): # str not None, '' or 'otome' or 'junai' or 'nuki'
+    if self.itemId:
+      g = manager().queryGameItem(self.itemId)
+      if g:
+        return 'otome' if g.otome else 'junai' if not g.okazu else 'nuki'
+    return ''
+
 class GameFile:
   def __init__(self, id=0, itemId=0, visitCount=0, commentCount=0, md5="", name=""):
     self.id = id        # long
@@ -1304,13 +1319,21 @@ class _GameObject(object):
     except AttributeError: return 0
 
   @memoizedproperty
-  def tags(self): # unicode or None
+  def gameType(self): # unicode or None
     info = self.info
     if info:
+      return 'otome' if info.otome0 else 'junai' if not info.okazu0 else 'nuki'
+    return ''
+
+  @memoizedproperty
+  def tags(self): # unicode or None
+    t = self.gameType
+    if t:
       return (
-          u"乙女" if info.otome0 else
-          u"抜き" if info.okazu0 else
-          u"純愛")
+          u"乙女" if t == 'otome' else
+          u"抜き" if t == 'nuki' else
+          u"純愛" if t == 'junai' else
+          None)
       #if info.doujin:  # no offline version ><
       #  return u"同人"
       #if l:
@@ -1419,6 +1442,11 @@ class GameObject(QObject):
   date = Property(long,
     lambda self: self.__d.date,
     notify=dateChanged)
+
+  #gameTypeChanged = Signal(unicode)
+  #gameType = Property(unicode,
+  #  lambda self: self.__d.gameType,
+  #  notify=gameTypeChanged)
 
   #@Slot(result=QIcon)
   def icon(self):
@@ -2608,7 +2636,7 @@ class DLsiteReference(Reference): #(object):
       type='dlsite',
       image='', price=0, ecchi=True, otome=False, homepage='',
       artist='', writer='', musician='',
-      description='', review='',
+      description='', review='', filesize=0,
       sampleImages=[], tags=[], rpg=False,
       **kwargs):
     super(DLsiteReference, self).__init__(parent=parent,
@@ -2622,6 +2650,7 @@ class DLsiteReference(Reference): #(object):
     self.review = review # unicode
     self.sampleImages = sampleImages # [str url]
     self.rpg = rpg # bool
+    self.filesize = filesize # int
 
     #self.genres = []
     #if rpg:
@@ -3010,6 +3039,8 @@ class _GameModel(object):
     #self.refresh()
     #q.destroyed.connect(self._onDestroyed)
 
+    self.filterGameType = '' # empty, 'otome', 'junai', or 'nuki'
+
     self._filterText = "" # unicode
     self._filterRe = None # compiled re
     self._filterData = None # [Character]
@@ -3035,6 +3066,7 @@ class _GameModel(object):
         'name': g.name,
         'path': QDir.fromNativeSeparators(g.path),
         'launchPath': QDir.fromNativeSeparators(g.launchPath) if g.launchPath else "",
+        'gameType': g.gameType(),
       } for g in manager().games()]
       #if g.path and (
       #  os.path.exists(g.path) or
@@ -3104,16 +3136,17 @@ class _GameModel(object):
     @param  entry  Character
     @return  bool
     """
-    try:
-      rx = self.filterRe
-      for it in entry['name'], entry['path'], entry['launchPath']:
-        if it and rx.search(it):
-          return True
-    except Exception, e:
-      dwarn(e)
-      #message = e.message or "%s" % e
-      #growl.warn(message)
-    return False
+    if not self.filterGameType or self.filterGameType == entry['gameType']:
+      try:
+        rx = self.filterRe
+        for it in entry['name'], entry['path'], entry['launchPath']:
+          if it and rx.search(it):
+            return True
+      except Exception, e:
+        dwarn(e)
+        #message = e.message or "%s" % e
+        #growl.warn(message)
+      return False
 
 #@QmlObject
 class GameModel(QAbstractListModel):
@@ -3123,14 +3156,12 @@ class GameModel(QAbstractListModel):
     self.setRoleNames(GAME_ROLES)
     self.__d = _GameModel(self)
 
-    #for sig in self.filterTextChanged, self.sortingColumnChanged, self.sortingReverseChanged:
-    #  sig.connect(self.reset)
-
     dm = manager()
     dm.gamesChanged.connect(self.__d.resetSourceData)
     dm.gamesChanged.connect(self.reset)
 
-    self.filterTextChanged.connect(self.reset)
+    for sig in self.filterTextChanged, self.filterGameTypeChanged: #self.sortingColumnChanged, self.sortingReverseChanged:
+      sig.connect(self.reset)
 
     #changed = manager().gamesChanged
     #changed.connect(self.__d.refresh)
@@ -3214,6 +3245,16 @@ class GameModel(QAbstractListModel):
       lambda self: self.__d.filterText,
       setFilterText,
       notify=filterTextChanged)
+
+  def setFilterGameType(self, value):
+    if value != self.__d.filterGameType:
+      self.__d.filterGameType = value
+      self.filterGameTypeChanged.emit(value)
+  filterGameTypeChanged = Signal(unicode)
+  filterGameType = Property(unicode,
+      lambda self: self.__d.filterGameType,
+      setFilterGameType,
+      notify=filterGameTypeChanged)
 
   #def setSortingColumn(self, value):
   #  if value != self.__d.sortingColumn:

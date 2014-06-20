@@ -74,11 +74,19 @@ class _HotkeyManager(object):
         'do': self._onTts, # function
         'on': ss.isTtsHotkeyEnabled(), # bool
         'key': ss.ttsHotkey(), # string
-      }
+      },
+      'text': { # string task name
+        'do': self._onText, # function
+        'on': ss.isTextHotkeyEnabled(), # bool
+        'key': ss.textHotkey(), # string
+      },
     }
 
     ss.ttsHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'tts'))
     ss.ttsHotkeyChanged.connect(partial(self.setMappingKey, 'tts'))
+
+    ss.textHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'text'))
+    ss.textHotkeyChanged.connect(partial(self.setMappingKey, 'text'))
 
     #from PySide import QtCore
     #qApp = QtCore.QCoreApplication.instance()
@@ -148,6 +156,13 @@ class _HotkeyManager(object):
   def _onTts():
     import textman
     textman.manager().speakCurrentText()
+    dprint("pass")
+
+  @staticmethod
+  def _onText():
+    import textman
+    tm = textman.manager()
+    tm.setEnabled(not tm.isEnabled())
     dprint("pass")
 
 #@QmlObject

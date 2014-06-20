@@ -213,7 +213,10 @@ Item { id: root_
   }
 
   Plugin.TextManagerProxy { id: textmanPlugin_
-    enabled: dock_.visibleChecked
+    //enabled: dock_.visibleChecked
+    onEnabledChanged:
+      if (dock_.visibleChecked !== enabled)
+        dock_.visibleChecked = enabled
   }
 
   Plugin.HotkeyManagerProxy { id: hotkeyPlugin_
@@ -788,13 +791,16 @@ Item { id: root_
 
         onResetTextPosRequested: grimoire_.resetPosition()
 
-        onVisibleCheckedChanged:
+        onVisibleCheckedChanged: {
+          if (textmanPlugin_.enabled !== visibleChecked)
+            textmanPlugin_.enabled = visibleChecked
           if (visibleChecked !== grimoire_.visible) {
             if (visibleChecked)
               grimoire_.show()
             else
               grimoire_.hide()
           }
+        }
 
         onStretchedCheckedChanged:
           if (root_.taskBarNeedsAutoHide)

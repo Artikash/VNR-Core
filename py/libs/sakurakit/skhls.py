@@ -4,7 +4,7 @@
 
 import re
 from PySide.QtCore import Qt, QRegExp
-from PySide.QtGui import QFont, QTextCharFormat
+from PySide.QtGui import QColor, QFont, QTextCharFormat
 from Qt5.QtWidgets import QSyntaxHighlighter
 
 class SkYouTubeHighlighter(QSyntaxHighlighter):
@@ -44,6 +44,7 @@ class SkYouTubeHighlighter(QSyntaxHighlighter):
           yield vid
 
 HLS_COMMENT_COLOR = Qt.darkGreen
+HLS_PRAGMA_COLOR = QColor('purple')
 HLS_LITERAL_COLOR = Qt.red
 HLS_KEYWORD_COLOR = Qt.darkBlue
 HLS_FUNCTION_COLOR = Qt.blue
@@ -146,6 +147,12 @@ class SkCppHighlighter(QSyntaxHighlighter):
     quotationFormat = QTextCharFormat()
     quotationFormat.setForeground(HLS_LITERAL_COLOR)
     self.highlightingRules.append((QRegExp(r'"[^"]*"'), quotationFormat))
+
+    # This must comes before the line comments since they conficts
+    pragmaFormat = QTextCharFormat()
+    pragmaFormat.setForeground(HLS_PRAGMA_COLOR)
+    self.highlightingRules.append((QRegExp(r"#[^\n]*"),
+        pragmaFormat))
 
     self.multiLineCommentFormat = QTextCharFormat()
     self.multiLineCommentFormat.setForeground(HLS_COMMENT_COLOR)

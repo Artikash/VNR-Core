@@ -808,6 +808,9 @@ class _ShortcutsTab(object):
     grid.addWidget(self.ttsCheckBox, r, 0)
     grid.addWidget(self.ttsButton, r, 1)
     r += 1
+    grid.addWidget(self.textCheckBox, r, 0)
+    grid.addWidget(self.textButton, r, 1)
+    r += 1
 
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)
@@ -817,6 +820,8 @@ class _ShortcutsTab(object):
     ret = QtWidgets.QGroupBox(my.tr("Global game shortcuts"))
     ret.setLayout(layout)
     return ret
+
+  # TTS
 
   @memoizedproperty
   def ttsButton(self):
@@ -855,6 +860,46 @@ class _ShortcutsTab(object):
       ret.windowTitle(), mytr_("Text-to-speech")))
     ss = settings.global_()
     ret.valueChanged.connect(ss.setTtsHotkey)
+    return ret
+
+  # Textbox visible toggler
+  @memoizedproperty
+  def textButton(self):
+    ret = QtWidgets.QPushButton()
+    ret.setToolTip(mytr_("Shortcuts"))
+    ss = settings.global_()
+
+    def _refresh():
+      t = ss.textHotkey()
+      ret.setText(i18n.combined_key_name(t) if t else tr_("Not specified"))
+      skqss.class_(ret, 'btn btn-default' if t else 'btn btn-danger')
+    _refresh()
+    ss.textHotkeyChanged.connect(_refresh)
+
+    ret.clicked.connect(lambda: (
+        self.textDialog.setValue(ss.textHotkey()),
+        self.textDialog.show()))
+
+    ret.setEnabled(self.textCheckBox.isChecked())
+    self.textCheckBox.toggled.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def textCheckBox(self):
+    ret = QtWidgets.QCheckBox(my.tr("Toggle visiblility of the text box"))
+    ss = settings.global_()
+    ret.setChecked(ss.isTextHotkeyEnabled())
+    ret.toggled.connect(ss.setTextHotkeyEnabled)
+    return ret
+
+  @memoizedproperty
+  def textDialog(self):
+    import hkinput
+    ret = hkinput.HotkeyInputDialog(self.q)
+    ret.setWindowTitle("%s - %s" % (
+      ret.windowTitle(), my.tr("Toggle text box")))
+    ss = settings.global_()
+    ret.valueChanged.connect(ss.setTextHotkey)
     return ret
 
 class ShortcutsTab(QtWidgets.QDialog):
