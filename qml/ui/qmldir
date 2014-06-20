@@ -1,14 +1,5 @@
 # ui/qmldir
 # 9/25/2012 jichi
-
-ScrollBar           scrollbar.qml
-SlideSwitch         slideswitch.qml
-WigglyText          wigglytext.qml
-
-# shader effects
-#CurtainEffect       curtaineffect.qml
-#DropShadowEffect    dropshadoweffect.qml
-#GrayscaleEffect     grayscaleeffect.qml
-#ImageMaskEffect     Imagemaskeffect.qml
-#RadialWaveEffect    radialwaveeffect.qml
-#WaterEffect.qml     watereffect.qml
+ScrollBar   scrollbar.qml
+SlideSwitch slideswitch.qml
+WigglyText  wigglytext.qml

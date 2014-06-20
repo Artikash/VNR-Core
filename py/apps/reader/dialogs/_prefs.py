@@ -805,11 +805,11 @@ class _ShortcutsTab(object):
     grid = QtWidgets.QGridLayout()
 
     r = 0
-    grid.addWidget(self.ttsCheckBox, r, 0)
-    grid.addWidget(self.ttsButton, r, 1)
-    r += 1
     grid.addWidget(self.textCheckBox, r, 0)
     grid.addWidget(self.textButton, r, 1)
+    r += 1
+    grid.addWidget(self.ttsCheckBox, r, 0)
+    grid.addWidget(self.ttsButton, r, 1)
     r += 1
 
     layout = QtWidgets.QVBoxLayout()
