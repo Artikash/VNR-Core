@@ -48,13 +48,13 @@ Item { id: root_
   //Plugin.DataManagerProxy { id: datamanPlugin_ }
 
   function canEdit(term) {
-    return !!term && (userId === _SUPER_USER_ID
+    return !!term && !!userId && (userId === _SUPER_USER_ID
         || term.userId === userId && !term.protected
         || term.userId === _GUEST_USER_ID && userLevel > 0)
   }
 
   function canImprove(term) {
-    return !!term && (term.userId === userId && !term.protected
+    return !!term && !!userId && (term.userId === userId && !term.protected
         || !!userId && userId !== _GUEST_USER_ID)
   }
 

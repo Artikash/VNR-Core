@@ -36,12 +36,12 @@ Item { id: root_
   //Plugin.Growl { id: growl_ }
 
   function canEdit(r) {
-    return !!r && (userId === _SUPER_USER_ID
+    return !!r && !!userId && (userId === _SUPER_USER_ID
         || r.userId === userId && !r.protected)
   }
 
   function canImprove(r) {
-    return !!r && (r.userId === userId && ! r.protected
+    return !!r && !!userId && (r.userId === userId && ! r.protected
         || !!userId && userId !== _GUEST_USER_ID)
   }
 

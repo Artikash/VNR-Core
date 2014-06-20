@@ -259,7 +259,8 @@ Item { id: root_
       property bool ownComment: hasComment && (
           root_.userId === comment.userId && !comment.protected
           || comment.userId === _GUEST_USER_ID && root_.userLevel > 0)
-      property bool canDisable: ownComment ||
+      property bool canEdit: !!root_.userId && ownComment
+      property bool canDisable: canEdit ||
           hasComment && !!root_.userId && !model.comment.locked && root_.userId !== 'guest'
 
       visible: {
@@ -405,7 +406,7 @@ Item { id: root_
 
         Desktop.TooltipArea { id: toolTip_
           anchors.fill: parent
-          text: (textItem_.ownComment ? Sk.tr("Editable") : Sk.tr("Read-only"))
+          text: (textItem_.canEdit ? Sk.tr("Editable") : Sk.tr("Read-only"))
                 + " " + root_.typeName(model.type)
         }
 
@@ -443,7 +444,7 @@ Item { id: root_
           if (text && textItem_.hasComment)
             root_.updateCommentText(model.comment, Util.trim(text))
 
-        readOnly: !textItem_.ownComment
+        readOnly: !textItem_.canEdit
 
         wrapMode: TextEdit.Wrap
         font.strikeout: textItem_.hasComment && model.comment.disabled
@@ -642,7 +643,7 @@ Item { id: root_
           font.pixelSize: _BUTTON_PIXEL_SIZE
           //font.bold: true
           //color: textItem_.highlight ? 'red' : 'silver'
-          enabled: textItem_.ownComment
+          enabled: textItem_.canEdit
           //backgroundColor: hover && enabled ? parent.hoverColor : 'transparent'
           visible: enabled && model.comment.disabled
 
@@ -659,7 +660,7 @@ Item { id: root_
           //color: !textItem_.highlight ? 'silver' :
           //       (textItem_.hasComment && model.comment.locked) ? 'green' :
           //       'blue'
-          enabled: textItem_.ownComment && root_.userId !== _GUEST_USER_ID
+          enabled: textItem_.canEdit && root_.userId !== _GUEST_USER_ID
           //backgroundColor: hover && enabled ? parent.hoverColor : 'transparent'
 
           text: !textItem_.hasComment ? "" :

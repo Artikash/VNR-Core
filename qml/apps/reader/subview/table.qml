@@ -39,14 +39,14 @@ Item { id: root_
   //Plugin.Growl { id: growl_ }
 
   function canEdit(c) {
-    return !!c && (userId === _SUPER_USER_ID
+    return !!c && !!userId && (userId === _SUPER_USER_ID
         || c.userId === userId && !c.protected
         || c.userId === _GUEST_USER_ID && userLevel > 0)
   }
 
   function canImprove(c) {
-    return !!c && (c.userId === userId && !c.protected
-        || !!userId && userId !== _GUEST_USER_ID && !c.locked)
+    return !!c && !!userId && (c.userId === userId && !c.protected
+        || userId !== _GUEST_USER_ID && !c.locked)
   }
 
   function canSelect(c) {
