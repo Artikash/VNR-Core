@@ -1288,9 +1288,9 @@ class Game(object):
   #@property
   def gameType(self): # str not None, '' or 'otome' or 'junai' or 'nuki'
     if self.itemId:
-      g = manager().queryGameItem(self, self.itemId)
+      g = manager().queryGameItem(self.itemId)
       if g:
-        return 'otome' if g.otome else 'junai' if not info.okazu else 'nuki'
+        return 'otome' if g.otome else 'junai' if not g.okazu else 'nuki'
     return ''
 
 class GameFile:

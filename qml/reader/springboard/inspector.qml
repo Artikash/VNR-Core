@@ -18,7 +18,8 @@ Rectangle { id: root_
   // - Private -
 
   //height: 30
-  height: 50
+  //height: 50
+  height: topRegion_.height + bottomRegion_.height
   color: '#ddced0d6' // opacity: 0xdd/0xff = 87%
 
   property bool containsMouse:
@@ -30,6 +31,7 @@ Rectangle { id: root_
     //discussButton_.hover ||
     browseButton_.hover ||
     removeButton_.hover
+    //allButton_.hover
 
   //Plugin.MainObjectProxy { id: mainPlugin_ }
   Plugin.GameManagerProxy { id: gameman_ }
@@ -63,145 +65,191 @@ Rectangle { id: root_
       }
   }
 
-  Image { id: gameIcon_
+  // Top region
+  Item { id: topRegion_
     anchors {
-      verticalCenter: parent.verticalCenter
-      left: parent.left
-      leftMargin: 9
+      left: parent.left; right: parent.right
+      top: parent.top
+      //bottom: parent.bottom
     }
-    //smooth: true
-    //property int size: containsMouse ? 48 : 24
-    //sourceSize.width: 24; sourceSize.height: 24
-    sourceSize.width: 48; sourceSize.height: 48
+    height: 50
 
-    source: game ? 'image://file/' + game.path : '' //'image://rc/game'
-  }
-
-  Text { id: nameLabel_
-    anchors {
-      verticalCenter: parent.verticalCenter
-      left: gameIcon_.right
-      right: toolbar_.left
-      leftMargin: 9; rightMargin: 4
-    }
-    font.pixelSize: 12
-    //font.family: 'MS HGothic'
-    //font.family: 'Meiryo'
-    //font.bold: root_.containsMouse
-    //color: root_.containsMouse ? 'snow' : 'black'
-    effect: Share.TextEffect {} // highlight: root_.containsMouse }
-    text: !game ? '' : renderGame(game)
-
-    wrapMode: Text.WordWrap
-    textFormat: Text.RichText
-    function renderGame(g) { // param game, return string
-      var ret = g.name
-      if (!g.known)
-        ret += " <span style='color:red'>(" + Sk.tr('Unknown') + ")</span>"
-      else {
-        var brand = g.brand
-        if (g.language && g.language !== 'ja')
-          ret += " <span style='color:crimson'>(" + Sk.tr(g.language) + ")</span>"
-        if (brand)
-          ret += " <span style='color:purple'>@" + brand.replace(/,/g, " @") + "</span>"
-        var tags = g.tags
-        if (tags)
-          ret += " <span style='color:darkblue'>" + tags + "</span>"
-        //  ret += " <span style='color:darkblue'>*" + tags.replace(/,/g, " *") + "</span>"
-        var ts = g.date
-        if (ts > 0) {
-          ts = Util.datestampToString(ts)
-          ret += " <span style='color:brown'>" + ts + "</span>"
-        }
+    Image { id: gameIcon_
+      anchors {
+        verticalCenter: parent.verticalCenter
+        left: parent.left
+        leftMargin: 9
       }
-      return ret
+      //smooth: true
+      //property int size: containsMouse ? 48 : 24
+      //sourceSize.width: 24; sourceSize.height: 24
+      sourceSize.width: 48; sourceSize.height: 48
+
+      source: game ? 'image://file/' + game.path : '' //'image://rc/game'
+    }
+
+    Text { id: nameLabel_
+      anchors {
+        verticalCenter: parent.verticalCenter
+        left: gameIcon_.right
+        right: toolbar_.left
+        leftMargin: 9; rightMargin: 4
+      }
+      font.pixelSize: 12
+      //font.family: 'MS HGothic'
+      //font.family: 'Meiryo'
+      //font.bold: root_.containsMouse
+      //color: root_.containsMouse ? 'snow' : 'black'
+      effect: Share.TextEffect {} // highlight: root_.containsMouse }
+      text: !game ? '' : renderGame(game)
+
+      wrapMode: Text.WordWrap
+      textFormat: Text.RichText
+      function renderGame(g) { // param game, return string
+        var ret = g.name
+        if (!g.known)
+          ret += " <span style='color:red'>(" + Sk.tr('Unknown') + ")</span>"
+        else {
+          var brand = g.brand
+          if (g.language && g.language !== 'ja')
+            ret += " <span style='color:crimson'>(" + Sk.tr(g.language) + ")</span>"
+          if (brand)
+            ret += " <span style='color:purple'>@" + brand.replace(/,/g, " @") + "</span>"
+          var tags = g.tags
+          if (tags)
+            ret += " <span style='color:darkblue'>" + tags + "</span>"
+          //  ret += " <span style='color:darkblue'>*" + tags.replace(/,/g, " *") + "</span>"
+          var ts = g.date
+          if (ts > 0) {
+            ts = Util.datestampToString(ts)
+            ret += " <span style='color:brown'>" + ts + "</span>"
+          }
+        }
+        return ret
+      }
+    }
+
+    // - Buttons -
+
+    Grid { id: toolbar_
+      anchors {
+        verticalCenter: parent.verticalCenter
+        right: parent.right
+        rightMargin: 2
+        //right: parent.right; top: parent.top
+        //topMargin: 4
+      }
+      //height: 30
+      rows: 2 //columns: 3
+      //spacing: 5
+      spacing: 1
+
+      property int cellWidth: 50
+
+      Bootstrap.Button { id: openButton_
+        styleClass: 'btn btn-primary'
+        width: parent.cellWidth
+        //text: Sk.tr("Launch")
+        text: qsTr("Launch")
+        toolTip: qsTr("Launch the game, or attach to the running game") + " (" + Sk.tr("Double-click") + ")"
+        onClicked: if (game) gameman_.open(game)
+      }
+
+      Bootstrap.Button { id: editButton_
+        styleClass: 'btn btn-success'
+        width: parent.cellWidth
+        //text: Sk.tr("Edit")
+        text: qsTr("Edit")
+        toolTip: qsTr("Edit game properties")
+        onClicked: if (game) gameedit_.showGame(game.md5)
+      }
+
+      //Bootstrap.Button { id: discussButton_
+      //  //styleClass: 'btn btn-default'
+      //  styleClass: 'btn btn-info'
+      //  width: parent.cellWidth
+      //  //text: Sk.tr("Browse")
+      //  text: qsTr("Discuss")
+      //  toolTip: qsTr("Visit the discussion page online")
+      //  onClicked:
+      //    if (game) {
+      //      var id = game.itemId
+      //      if (id)
+      //        Qt.openUrlExternally('http://sakuradite.com/game/' + id)
+      //      else
+      //        growlPlugin_.warn(My.tr("Unknown game"))
+      //    }
+      //}
+
+      Bootstrap.Button { id: subButton_
+        styleClass: 'btn btn-inverse'
+        width: parent.cellWidth
+        text: My.tr("Sub")
+        toolTip: qsTr("Edit shared subtitles")
+        onClicked: if (game) mainPlugin_.showGameObjectSubtitles(game)
+      }
+
+      Bootstrap.Button { id: infoButton_
+        styleClass: 'btn btn-info'
+        width: parent.cellWidth
+        text: My.tr("Info")
+        toolTip: qsTr("Show game information")
+        onClicked: if (game) gameview_.showGame(game.id)
+      }
+
+      Bootstrap.Button { id: browseButton_
+        styleClass: 'btn btn-default'
+        width: parent.cellWidth
+        //text: Sk.tr("Browse")
+        text: qsTr("Browse")
+        toolTip: qsTr("Show the game folder")
+        onClicked: if (game) gameman_.openDirectory(game)
+      }
+
+      Bootstrap.Button { id: removeButton_
+        styleClass: 'btn btn-danger'
+        width: parent.cellWidth
+        //text: Sk.tr("Remove")
+        text: qsTr("Remove")
+        toolTip: qsTr("Remove this game from the dashboard")
+        onClicked: if (game) gameman_.remove(game)
+      }
     }
   }
 
-  // - Buttons -
-
-  Grid { id: toolbar_
-    rows: 2 //columns: 3
-    //spacing: 5
-    spacing: 1
+  // Bottom region
+  Item { id: bottomRegion_
     anchors {
-      verticalCenter: parent.verticalCenter
-      right: parent.right
-      rightMargin: 2
-      //right: parent.right; top: parent.top
-      //topMargin: 4
+      left: parent.left; right: parent.right
+      //top: parent.top
+      bottom: parent.bottom
     }
-    //height: 30
+    height: 0
 
-    property int cellWidth: 50
+/*
+    Row { //id: typeSelector_
+      //spacing: 5
+      anchors {
+        verticalCenter: parent.verticalCenter
+        right: parent.right
+        rightMargin: 2
+        //right: parent.right; top: parent.top
+        //topMargin: 4
+      }
+      //height: 30
+      spacing: 1
 
-    Bootstrap.Button { id: openButton_
-      styleClass: 'btn btn-primary'
-      width: parent.cellWidth
-      //text: Sk.tr("Launch")
-      text: qsTr("Launch")
-      toolTip: qsTr("Launch the game, or attach to the running game") + " (" + Sk.tr("Double-click") + ")"
-      onClicked: if (game) gameman_.open(game)
+      property int cellWidth: 50
+
+      Bootstrap.Button { id: allButton_
+        styleClass: 'btn btn-default'
+        width: parent.cellWidth
+        //text: Sk.tr("Launch")
+        text: "全て"
+        toolTip: Sk.tr("All")
+        onClicked: if (game) gameman_.open(game)
+      }
     }
-
-    Bootstrap.Button { id: editButton_
-      styleClass: 'btn btn-success'
-      width: parent.cellWidth
-      //text: Sk.tr("Edit")
-      text: qsTr("Edit")
-      toolTip: qsTr("Edit game properties")
-      onClicked: if (game) gameedit_.showGame(game.md5)
-    }
-
-    //Bootstrap.Button { id: discussButton_
-    //  //styleClass: 'btn btn-default'
-    //  styleClass: 'btn btn-info'
-    //  width: parent.cellWidth
-    //  //text: Sk.tr("Browse")
-    //  text: qsTr("Discuss")
-    //  toolTip: qsTr("Visit the discussion page online")
-    //  onClicked:
-    //    if (game) {
-    //      var id = game.itemId
-    //      if (id)
-    //        Qt.openUrlExternally('http://sakuradite.com/game/' + id)
-    //      else
-    //        growlPlugin_.warn(My.tr("Unknown game"))
-    //    }
-    //}
-
-    Bootstrap.Button { id: subButton_
-      styleClass: 'btn btn-inverse'
-      width: parent.cellWidth
-      text: My.tr("Sub")
-      toolTip: qsTr("Edit shared subtitles")
-      onClicked: if (game) mainPlugin_.showGameObjectSubtitles(game)
-    }
-
-    Bootstrap.Button { id: infoButton_
-      styleClass: 'btn btn-info'
-      width: parent.cellWidth
-      text: My.tr("Info")
-      toolTip: qsTr("Show game information")
-      onClicked: if (game) gameview_.showGame(game.id)
-    }
-
-    Bootstrap.Button { id: browseButton_
-      styleClass: 'btn btn-default'
-      width: parent.cellWidth
-      //text: Sk.tr("Browse")
-      text: qsTr("Browse")
-      toolTip: qsTr("Show the game folder")
-      onClicked: if (game) gameman_.openDirectory(game)
-    }
-
-    Bootstrap.Button { id: removeButton_
-      styleClass: 'btn btn-danger'
-      width: parent.cellWidth
-      //text: Sk.tr("Remove")
-      text: qsTr("Remove")
-      toolTip: qsTr("Remove this game from the dashboard")
-      onClicked: if (game) gameman_.remove(game)
-    }
+*/
   }
 }
