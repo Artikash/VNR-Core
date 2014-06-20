@@ -507,14 +507,14 @@ apps:
   updater:          $PWD/../../../Update.exe
 
 qml:
-  springboard:      $PWD/qml/reader/springboard.qml
-  kagami:           $PWD/qml/reader/kagami.qml
-  submaker:         $PWD/qml/reader/submaker.qml
-  subview:          $PWD/qml/reader/subview.qml
-  refview:          $PWD/qml/reader/refview.qml
-  termview:         $PWD/qml/reader/termwindow.qml
-  voiceview:        $PWD/qml/reader/voiceview.qml
-  #omajinai:         $PWD/qml/applet/omajinai.qml
+  springboard:      $PWD/qml/apps/reader/springboard.qml
+  kagami:           $PWD/qml/apps/reader/kagami.qml
+  submaker:         $PWD/qml/apps/reader/submaker.qml
+  subview:          $PWD/qml/apps/reader/subview.qml
+  refview:          $PWD/qml/apps/reader/refview.qml
+  termview:         $PWD/qml/apps/reader/termwindow.qml
+  voiceview:        $PWD/qml/apps/reader/voiceview.qml
+  #omajinai:         $PWD/qml/applets/omajinai.qml
 
 qss:
   share:            $PWD/rb/compass/qt/css/share.min.css

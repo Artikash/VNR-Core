@@ -2,9 +2,9 @@
  *  5/27/2014 jichi
  */
 import QtQuick 1.1
-import '../../js/npm/bbcode.min.js' as BBCode
-import '../../js/linkify.min.js' as Linkify
-import '../../js/underscore.string.min.js' as S_
+import '../js/npm/bbcode.min.js' as BBCode
+import '../js/linkify.min.js' as Linkify
+import '../js/underscore.string.min.js' as S_
 
 Item {
   implicitWidth: 250; implicitHeight: 400

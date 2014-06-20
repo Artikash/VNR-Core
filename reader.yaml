@@ -103,7 +103,7 @@ tr:
   - $PWD/py/libs/sakurakit/tr
   - $PWD/py/apps/reader/mytr
   - $PWD/py/apps/reader/tr
-  - $PWD/qml/reader/tr
+  - $PWD/qml/apps/reader/tr
   #- $PWD/js/reader/tr
 
 # EOF

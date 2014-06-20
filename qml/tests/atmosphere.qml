@@ -2,9 +2,9 @@
  *  2/21/2014 jichi
  */
 import QtQuick 1.1
-//import '../../js/ajax.js' as Ajax
-import '../../js/atmosphere.js' as Atmosphere
-import '../../js/global.js' as Global
+//import '../js/ajax.js' as Ajax
+import '../js/atmosphere.js' as Atmosphere
+import '../js/global.js' as Global
 
 Item { id: root_
   implicitWidth: 250; implicitHeight: 400

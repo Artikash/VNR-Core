@@ -3,7 +3,7 @@
  */
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
-import '../ui/buttongroup' as ButtonGroup
+import '../components/buttongroup' as ButtonGroup
 
 Item {
   implicitWidth: 250; implicitHeight: 400

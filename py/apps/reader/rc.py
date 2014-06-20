@@ -33,13 +33,14 @@ DIR_USER = (config.USER_PROFILES[skos.name]
     .replace('$HOME', skpaths.HOME)
     .replace('$APPDATA', skpaths.APPDATA))
 
-DIR_USER_PY     = DIR_USER + '/py/1'   # $user/py/1, unicode, user py plugin
-DIR_USER_JS     = DIR_USER + '/js/1'   # $user/js/1, unicode, user javascript plugin
 DIR_USER_DATA   = DIR_USER + '/data/1' # $user/data/1, unicode, pickle format data
 DIR_USER_XML    = DIR_USER + '/xml/1'  # $user/xml/1, unicode, cached xml data
 
 DIR_XML_VOICE = DIR_USER_XML + '/voices'        # $user/xml/1/voices, unicode
 DIR_XML_REF = DIR_USER_XML + '/refs'            # $user/xml/1/refs, unicode
+
+#DIR_USER_PY     = DIR_USER + '/py/1'   # $user/py/1, unicode, user py plugin
+#DIR_USER_JS     = DIR_USER + '/js/1'   # $user/js/1, unicode, user javascript plugin
 
 #DIR_USER_DB = DIR_USER + '/db'                  # $user/db
 #DIR_DB_LINGOES = DIR_USER_DB + '/lingoes'       # $user/db/lingoes

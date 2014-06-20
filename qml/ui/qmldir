@@ -1,5 +1,0 @@
-# ui/qmldir
-# 9/25/2012 jichi
-ScrollBar   scrollbar.qml
-SlideSwitch slideswitch.qml
-WigglyText  wigglytext.qml

@@ -2,7 +2,7 @@
  *  3/2/2014 jichi
  */
 import QtQuick 1.1
-import '../reader/share' as Share
+import '../apps/reader/share' as Share
 
 Item {
   implicitWidth: 250; implicitHeight: 400
