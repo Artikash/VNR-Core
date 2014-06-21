@@ -13,7 +13,7 @@ Item { id: root_
 
   // - Private -
 
-  height: 150 // should be large enough to cover all texts
+  height: 70 // should be large enough to cover all texts
   //color: '#ced0d6'
 
   Share.CachedAvatarImage { id: avatar_
@@ -61,51 +61,82 @@ Item { id: root_
     return ret
   }
 
-  Text { id: footer_
+  Row { id: footer_
     anchors {
       left: parent.left; right: parent.right
       bottom: parent.bottom
       leftMargin: 9; rightMargin: 9
       bottomMargin: 5
     }
-    textFormat: Text.RichText
-    font.pixelSize: 12
 
-    wrapMode: Text.WordWrap
+    property int cellWidth: 80
+    property int pixelSize: 12
 
-    text: footer()
+    Text {
+      width: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      textFormat: Text.RichText
+      wrapMode: Text.NoWrap
+      onLinkActivated: Qt.openUrlExternally(link)
+      text: root_.formatText('ErogeTrailers', 'erogetrailers.com', model.trailersItem ? 'green' : 'red')
+    }
+
+    Text {
+      width: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      textFormat: Text.RichText
+      wrapMode: Text.NoWrap
+      onLinkActivated: Qt.openUrlExternally(link)
+      text: root_.formatText('ErogameScape', 'erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki', model.scapeItem ? 'green' : 'red')
+    }
+
+    Text {
+      width: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      textFormat: Text.RichText
+      wrapMode: Text.NoWrap
+      onLinkActivated: Qt.openUrlExternally(link)
+      text: root_.formatText('Holyseal', 'holyseal.net', model.holysealItem ? 'green' : 'brown')
+    }
+
+    Text {
+      width: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      textFormat: Text.RichText
+      wrapMode: Text.NoWrap
+      onLinkActivated: Qt.openUrlExternally(link)
+      text: root_.formatText('Getchu', 'getchu.com', model.getchuItem ? 'green' : 'brown')
+    }
+
+    Text {
+      width: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      textFormat: Text.RichText
+      wrapMode: Text.NoWrap
+      onLinkActivated: Qt.openUrlExternally(link)
+      text: root_.formatText('Amazon', 'amazon.co.jp', model.amazonItem ? 'green' : 'brown')
+    }
+
+    Text {
+      width: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      textFormat: Text.RichText
+      wrapMode: Text.NoWrap
+      onLinkActivated: Qt.openUrlExternally(link)
+      text: root_.formatText('DMM', 'dmm.co.jp', model.dmmItem ? 'green' : 'brown')
+    }
+
+    Text {
+      width: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      textFormat: Text.RichText
+      wrapMode: Text.NoWrap
+      onLinkActivated: Qt.openUrlExternally(link)
+      text: root_.formatText('DLsite', 'dlsite.co.jp', model.trailersItem ? 'green' : 'brown')
+    }
   }
 
-  function footer() {
-    var ret = ""
-    if (model.trailersItem)
-      ret += '<br/><span style="color:green">' + qsTr("Found 1 reference from {0}").replace('{0}', 'ErogeTrailers.com') + '</span>'
-    else
-      ret += '<br/><span style="color:red">' + qsTr("Missing references from {0}").replace('{0}', 'ErogeTrailers.com') + '</span>'
-    if (model.scapeItem)
-      ret += '<br/><span style="color:green">' + qsTr("Found 1 reference from {0}").replace('{0}', 'ErogameScape') + '</span>'
-    else
-      ret += '<br/><span style="color:red">' + qsTr("Missing references from {0}").replace('{0}', 'ErogameScape') + '</span>'
-    if (model.getchuItem)
-      ret += '<br/><span style="color:green">' + qsTr("Found 1 reference from {0}").replace('{0}', 'Getchu.com') + '</span>'
-    else
-      ret += '<br/><span style="color:red">' + qsTr("Missing references from {0}").replace('{0}', 'Getchu.com') + '</span>'
-    if (model.holysealItem)
-      ret += '<br/><span style="color:green">' + qsTr("Found 1 reference from {0}").replace('{0}', 'Holyseal.net') + '</span>'
-    else
-      ret += '<br/><span style="color:brown">' + qsTr("Missing references from {0}").replace('{0}', 'Holyseal.net') + '</span>'
-    if (model.dmmItem)
-      ret += '<br/><span style="color:green">' + qsTr("Found 1 reference from {0}").replace('{0}', 'DMM.co.jp') + '</span>'
-    else
-      ret += '<br/><span style="color:brown">' + qsTr("Missing references from {0}").replace('{0}', 'DMM.co.jp') + '</span>'
-    if (model.amazonItem)
-      ret += '<br/><span style="color:green">' + qsTr("Found 1 reference from {0}").replace('{0}', 'Amazon.co.jp') + '</span>'
-    else
-      ret += '<br/><span style="color:brown">' + qsTr("Missing references from {0}").replace('{0}', 'Amazon.co.jp') + '</span>'
-    if (model.dlsiteItem)
-      ret += '<br/><span style="color:green">' + qsTr("Found 1 reference from {0}").replace('{0}', 'DLsite.com') + '</span>'
-    else
-      ret += '<br/><span style="color:brown">' + qsTr("Missing references from {0}").replace('{0}', 'DLsite.com') + '</span>'
-    return ret
+  function formatText(name, url,color) { // string -> string
+    return '<a style="color:' + color + '" href="http://' + url + '">' + name + '</a>'
   }
 }
