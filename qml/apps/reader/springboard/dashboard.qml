@@ -42,6 +42,10 @@ Item { id: root_
     //KeyNavigation.down: listMenu
     //KeyNavigation.left: contextMenu
 
+    //onCountChanged:
+    //  if (currentIndex >= count)
+    //    currentIndex = count ? 1 : 0
+
     Keys.onPressed: {
       // ENTER || SHIFT+ENTER
       if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter) &&
