@@ -380,8 +380,8 @@ class HolysealApi(object):
     s = self._search(key=key, text=text, **kwargs)
     try:
       for item in s:
-        key = str(item['id'])
-        item['key'] = key
+        id = str(item['id'])
+        item['key'] = id
         del item['id']
 
         d = item.get('date') or 0 # int
@@ -392,7 +392,7 @@ class HolysealApi(object):
           except: dwarn("failed to parse date")
         item['date'] = d
 
-        item['url'] = "http://holyseal.net/cgi-bin/mlistview.cgi?prdcode=%s" % key
+        item['url'] = "http://holyseal.net/cgi-bin/mlistview.cgi?prdcode=%s" % id
 
         ret.append(item)
     except Exception, e: dwarn(e)
