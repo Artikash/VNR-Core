@@ -167,7 +167,7 @@ class WorkApi(object):
     """
     m = self._rx_brand.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1)).replace(" / ", ',')
+      return skstr.unescapehtml(m.group(1)).replace(" / ", ',').replace(u"／", ',')
 
   # Example: <strong class="price">1,890円</strong>
   _rx_price = re.compile(r'class="price">([0-9,]+)')
