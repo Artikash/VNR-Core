@@ -104,6 +104,18 @@
           -else
             %span.muted (#{tr('unknown')})
         %p
+          #{tr('File size')}:
+          -if game.fileSize
+            %b
+              -if game.fileSize < 1024
+                #{game.fileSize} B
+              -elif game.fileSize < 1048576
+                #{game.fileSize/1024} KB
+              -else
+                #{game.fileSize/1048576} MB
+          -else
+            %span.muted (#{tr('unknown')})
+        %p
           -if game.brand
             %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=公式HP　#{game.brand|e}",title="Google: 公式HP+#{game.brand|e}")
               #{tr('Brand')}:

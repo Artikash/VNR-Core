@@ -2,19 +2,24 @@
  *  5/25/2014 jichi
  */
 import QtQuick 1.1
-//import QtDesktop 0.1 as Desktop
-import '../reader/share' as Share
+import QtDesktop 0.1 as Desktop
+import '../components/buttongroup' as ButtonGroup
 
 Item {
   implicitWidth: 250; implicitHeight: 400
 
   // - Private -
 
-  TextEdit {
+  ButtonGroup.ButtonRow {
     anchors.centerIn: parent
-    width: 100
-    text: "hello"
-    selectByMouse: true
-    readOnly: true
+    //spacing: 2
+    Desktop.Button { text: "hello 1"; checkable: true }
+    Desktop.Button { text: "hello 2"; checkable: true }
+    Desktop.Button { text: "hello 3"; checkable: true }
+    Desktop.Button { text: "hello 4"; checkable: true }
+
+    exclusive: true
+    //onCheckedButtonChanged:
+    //  console.log(checkedButton)
   }
 }

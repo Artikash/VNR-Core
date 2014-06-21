@@ -3090,7 +3090,7 @@ class _GameModel(object):
   @property
   def sortedData(self): # -> list not None
     if self._sortedData is None:
-      self._sortedData = self.filterData if self.filterText else self.sourceData
+      self._sortedData = self.filterData if self.filterText or self.filterGameType else self.sourceData
       #if not self.sortingColumn:
       #  if self.sortingReverse:
       #    self._sortedData = list(reversed(data))
@@ -3137,16 +3137,19 @@ class _GameModel(object):
     @return  bool
     """
     if not self.filterGameType or self.filterGameType == entry['gameType']:
-      try:
-        rx = self.filterRe
-        for it in entry['name'], entry['path'], entry['launchPath']:
-          if it and rx.search(it):
-            return True
-      except Exception, e:
-        dwarn(e)
-        #message = e.message or "%s" % e
-        #growl.warn(message)
-      return False
+      if not self.filterText:
+        return True
+      else:
+        try:
+          rx = self.filterRe
+          for it in entry['name'], entry['path'], entry['launchPath']:
+            if it and rx.search(it):
+              return True
+        except Exception, e:
+          dwarn(e)
+          #message = e.message or "%s" % e
+          #growl.warn(message)
+    return False
 
 #@QmlObject
 class GameModel(QAbstractListModel):

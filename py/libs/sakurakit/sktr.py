@@ -265,6 +265,7 @@ class sakurakit(QObject):
       self.tr("Feature"),
       self.tr("Features"),
       self.tr("File"),
+      self.tr("File size"),
       self.tr("Game"), self.tr("game"),
       self.tr("Game Information"), self.tr("Game information"), self.tr("game information"),
       self.tr("Gender"),

@@ -2,7 +2,7 @@
  *  3/4/2014 jichi
  */
 import QtQuick 1.1
-import '../reader/comet' as Comet
+import '../apps/reader/comet' as Comet
 
 Item {
   implicitWidth: 250; implicitHeight: 400
