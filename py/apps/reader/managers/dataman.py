@@ -1443,10 +1443,10 @@ class GameObject(QObject):
     lambda self: self.__d.date,
     notify=dateChanged)
 
-  #gameTypeChanged = Signal(unicode)
-  #gameType = Property(unicode,
+  #styleHintChanged = Signal(unicode)
+  #styleHint = Property(unicode,
   #  lambda self: self.__d.gameType,
-  #  notify=gameTypeChanged)
+  #  notify=styleHintChanged)
 
   #@Slot(result=QIcon)
   def icon(self):
@@ -3023,6 +3023,7 @@ GAME_TOOLTIP_ROLE = Qt.ToolTipRole
 GAME_MD5_ROLE = Qt.UserRole
 GAME_QML_ROLE = Qt.UserRole +1
 GAME_SEARCHTEXT_ROLE = Qt.UserRole +2
+GAME_STYLEHINT_ROLE = Qt.UserRole +3
 GAME_ROLES = {
   GAME_ICON_ROLE: 'icon',
   GAME_NAME_ROLE: 'name',
@@ -3030,6 +3031,7 @@ GAME_ROLES = {
   GAME_MD5_ROLE: 'md5',
   GAME_QML_ROLE: 'qml',
   GAME_SEARCHTEXT_ROLE: 'searchText',
+  GAME_STYLEHINT_ROLE: 'styleHint',
 }
 
 @Q_Q
@@ -3206,6 +3208,9 @@ class GameModel(QAbstractListModel):
 
     if role == GAME_TOOLTIP_ROLE:
       return game['launchPath'] or game['path']
+
+    if role == GAME_STYLEHINT_ROLE:
+      return game['gameType']
 
     if role == GAME_QML_ROLE:
       return rc.jinja_template('qml/opengame').render({

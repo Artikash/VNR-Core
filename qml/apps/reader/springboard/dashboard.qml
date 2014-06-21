@@ -87,11 +87,19 @@ Item { id: root_
         // Outline
         Rectangle {
           anchors { fill: parent; margins: 2 }
-          color: '#91aa9d'
-          //color: 'red'
-          opacity: 0.5
+          opacity: 0.4
           radius: 8
           smooth: true
+
+          color: {
+            // http://www.tayloredmktg.com/rgb/
+            switch (model.styleHint) {
+            case 'junai': return '#3073b6'  // blue
+            case 'nuki': return '#9370db'   // median purple
+            case 'otome': return '#98fb98'  // pale green
+            default: return '#91aa9d'       // white
+            }
+          }
         }
         Image {
           anchors.centerIn: parent

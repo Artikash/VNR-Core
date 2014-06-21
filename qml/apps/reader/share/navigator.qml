@@ -32,7 +32,7 @@ Column { id: root_
     text: "↑" // うえ
     toolTip: qsTr("Scroll to the top")
     onClicked: root_.scrollTop()
-    font.bold: true
+    //font.bold: true
     font.family: 'YouYuan'
     zoom: 0.8
     width: height
@@ -45,7 +45,7 @@ Column { id: root_
     text: "↓" // した
     toolTip: qsTr("Scroll to the bottom")
     onClicked: root_.scrollBottom()
-    font.bold: true
+    //font.bold: true
     font.family: 'YouYuan'
     zoom: 0.8
     width: height
