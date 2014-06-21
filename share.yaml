@@ -44,7 +44,7 @@ env:
   - $PWD/../../Dictionaries/gaiji/KOJIEN.plist
   - $PWD/../../Fonts/msgothic.ttf
   #- $PWD/../../Dictionaries/lingoes/ja-zh.ld2
-  #- $PWD/../NTLEA/ntleac.exe # dot not work on Code Ultra
+  #- $PWD/../NTLEA/ntleac.exe # do not work on Code Ultra
 
 # CDN
 cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as qrc://
