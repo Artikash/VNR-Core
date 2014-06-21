@@ -380,8 +380,8 @@ class HolysealApi(object):
     s = self._search(key=key, text=text, **kwargs)
     try:
       for item in s:
-        k = str(item['id'])
-        item['key'] = k
+        key = str(item['id'])
+        item['key'] = key
         del item['id']
 
         d = item.get('date') or 0 # int
@@ -391,6 +391,8 @@ class HolysealApi(object):
             d = skdatetime.date2timestamp(d)
           except: dwarn("failed to parse date")
         item['date'] = d
+
+        item['url'] = "http://holyseal.net/cgi-bin/mlistview.cgi?prdcode=%s" % key
 
         ret.append(item)
     except Exception, e: dwarn(e)
