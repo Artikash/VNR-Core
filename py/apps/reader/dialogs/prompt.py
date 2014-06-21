@@ -99,13 +99,13 @@ def getDeleteSelectionComment(count, default=''):
     _LAST_DELETE_SELECTION_COMMENT = t
   return t if ok else ""
 
-_LAST_DISABLE_SELECTION_COMMENT = ''
+_LAST_UPDATE_SELECTION_COMMENT = ''
 def getDisableSelectionComment(count, default=''):
   """
   @param  count  int
   @return  bool
   """
-  global _LAST_DISABLE_SELECTION_COMMENT
+  global _LAST_UPDATE_SELECTION_COMMENT
   ret, ok = QInputDialog.getText(_parent(),
       my.tr("Update reason"),
       "\n".join((
@@ -113,10 +113,28 @@ def getDisableSelectionComment(count, default=''):
         my.tr('Please specify the REASON for the modification, such as "typo".'),
       )),
       QLineEdit.Normal,
-      default or _LAST_DISABLE_SELECTION_COMMENT or _defaultUpdateComment())
+      default or _LAST_UPDATE_SELECTION_COMMENT or _defaultUpdateComment())
   t = ret.strip()
   if t:
-    _LAST_DISABLE_SELECTION_COMMENT = t
+    _LAST_UPDATE_SELECTION_COMMENT = t
+  return t if ok else ""
+def getEnableSelectionComment(count, default=''):
+  """
+  @param  count  int
+  @return  bool
+  """
+  global _LAST_UPDATE_SELECTION_COMMENT
+  ret, ok = QInputDialog.getText(_parent(),
+      my.tr("Update reason"),
+      "\n".join((
+        my.tr("Do you want to enable the selected {0} items?").format(count),
+        my.tr('Please specify the REASON for the modification, such as "typo".'),
+      )),
+      QLineEdit.Normal,
+      default or _LAST_UPDATE_SELECTION_COMMENT or _defaultUpdateComment())
+  t = ret.strip()
+  if t:
+    _LAST_UPDATE_SELECTION_COMMENT = t
   return t if ok else ""
 
 def confirmQuit():

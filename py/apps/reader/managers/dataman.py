@@ -3838,12 +3838,20 @@ class TermModel(QAbstractListModel):
         manager().deleteSelectedTerms(updateComment=comment)
 
   @Slot()
+  def enableSelection(self): # delete selected entries
+    d = self.__d
+    if d.selectionCount and netman.manager().isOnline():
+      comment = prompt.getEnableSelectionComment(d.selectionCount)
+      if comment:
+        manager().updateSelectedTermsEnabled(True, updateComment=comment)
+
+  @Slot()
   def disableSelection(self): # delete selected entries
     d = self.__d
     if d.selectionCount and netman.manager().isOnline():
       comment = prompt.getDisableSelectionComment(d.selectionCount)
       if comment:
-        manager().disableSelectedTerms(updateComment=comment)
+        manager().updateSelectedTermsEnabled(False, updateComment=comment)
 
   @Slot()
   def commentSelection(self): # delete selected entries
@@ -4238,8 +4246,9 @@ class _CommentModel(object):
 
       growl.msg(my.tr("{0} items updated").format(count))
 
-  def disableSelectedItems(self, updateComment='', append=True):
+  def updateSelectedItemsEnabled(self, value, updateComment='', append=True):
     """
+    @param  value  bool
     @param* updateComment  unicode
     @param* append  bool
     """
@@ -4258,7 +4267,7 @@ class _CommentModel(object):
     count = 0
     for c in data:
       cd = c.d
-      if cd.selected and not cd.disabled:
+      if cd.selected and cd.disabled == value:
         if not ( # the same as canImprove permission in qml
           userId != GUEST_USER_ID and not cd.locked or
           cd.userId == userId and not c.protected or
@@ -4272,7 +4281,7 @@ class _CommentModel(object):
         count += 1
         c.updateUserId = userId
         c.updateTimestamp = now
-        c.disabled = True
+        c.disabled = not value
         if updateComment:
           c.updateComment = "%s // %s" % (updateComment, cd.updateComment) if (append and
             cd.updateComment and cd.updateComment != updateComment and not cd.updateComment.startswith(updateComment + ' //')
@@ -4520,12 +4529,20 @@ class CommentModel(QAbstractListModel):
         d.deleteSelectedItems(updateComment=comment)
 
   @Slot()
+  def enableSelection(self): # delete selected entries
+    d = self.__d
+    if d.selectionCount and netman.manager().isOnline():
+      comment = prompt.getEnableSelectionComment(d.selectionCount)
+      if comment:
+        d.updateSelectedItemsEnabled(True, updateComment=comment)
+
+  @Slot()
   def disableSelection(self): # delete selected entries
     d = self.__d
     if d.selectionCount and netman.manager().isOnline():
       comment = prompt.getDisableSelectionComment(d.selectionCount)
       if comment:
-        d.disableSelectedItems(updateComment=comment)
+        d.updateSelectedItemsEnabled(False, updateComment=comment)
 
   @Slot()
   def commentSelection(self): # delete selected entries
@@ -8126,8 +8143,9 @@ class DataManager(QObject):
 
       growl.msg(my.tr("{0} items updated").format(count))
 
-  def disableSelectedTerms(self, updateComment='', append=True):
+  def updateSelectedTermsEnabled(self, value, updateComment='', append=True):
     """
+    @param  value  bool
     @param* updateComment  unicode
     @param* append  bool
     """
@@ -8146,7 +8164,7 @@ class DataManager(QObject):
     count = 0
     for t in data:
       td = t.d
-      if td.selected and not td.disabled:
+      if td.selected and td.disabled == value:
         if not ( # the same as canImprove permission in qml
           userId != GUEST_USER_ID or
           td.userId == userId and not t.protected or
@@ -8161,7 +8179,7 @@ class DataManager(QObject):
         count += 1
         t.updateUserId = userId
         t.updateTimestamp = now
-        t.disabled = True
+        t.disabled = not value
         if updateComment:
           t.updateComment = "%s // %s" % (updateComment, td.updateComment) if (append and
             td.updateComment and td.updateComment != updateComment and not td.updateComment.startswith(updateComment + ' //')

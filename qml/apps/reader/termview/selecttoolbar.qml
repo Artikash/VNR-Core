@@ -57,6 +57,13 @@ Item { id: root_
       }
 
       Desktop.ToolButton {
+        text: Sk.tr("Enable")
+        tooltip: qsTr("Enable the selected entries")
+        //visible: root_.canEdit
+        onClicked: root_.model.enableSelection()
+      }
+
+      Desktop.ToolButton {
         text: Sk.tr("Comment")
         tooltip: qsTr("Edit comment for the selected entries")
         //visible: root_.canEdit
