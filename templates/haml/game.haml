@@ -106,13 +106,7 @@
         %p
           #{tr('File size')}:
           -if game.fileSize
-            %b
-              -if game.fileSize < 1024
-                #{game.fileSize} B
-              -elif game.fileSize < 1048576
-                #{game.fileSize/1024} KB
-              -else
-                #{game.fileSize/1048576} MB
+            %b: #{game.fileSizeString}
           -else
             %span.muted (#{tr('unknown')})
         %p
