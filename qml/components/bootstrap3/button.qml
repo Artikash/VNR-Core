@@ -1,4 +1,4 @@
-/** bootstrap/button.qml
+/** button.qml
  *  10/17/2012 jichi
  *  CSS: http://www.qtcentre.org/wiki/index.php?title=AeroButton
  */
@@ -12,6 +12,9 @@ MouseArea { id: root_
   property alias toolTip: toolTip_.text
   property alias font: text_.font
   //property alias color: text_.color
+
+  property bool checkable
+  property bool checked
 
   property string styleClass: 'btn btn-default'
   property variant styleObject: Js.style(styleClass)
@@ -31,6 +34,8 @@ MouseArea { id: root_
 
   // - Private -
 
+  onClicked: if (checkable) checked = !checked
+
   Rectangle { id: background_
     z: -1
     anchors.fill: parent
@@ -49,7 +54,7 @@ MouseArea { id: root_
 
     // TODO: Use native bootstrap 3 colors
     color: !root_.enabled ? '#e6e6e6' :
-           root_.pressed ? styleObject.activeColor :
+           (root_.pressed || root_.checked) ? styleObject.activeColor :
            root_.hover ? styleObject.hoverColor :
            styleObject.startColor
 

@@ -9,11 +9,18 @@ import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
 import '../../../js/util.min.js' as Util
 import '../../../components/bootstrap3' as Bootstrap
+import '../../../components/buttongroup' as ButtonGroup
 import '../share' as Share
 
 Rectangle { id: root_
 
   property QtObject game // dataman.GameObject
+
+  property string selectedGameType:
+      junaiButton_.checked ? 'junai' :
+      nukiButton_.checked ? 'nuki' :
+      otomeButton_.checked ? 'otome' :
+      ''
 
   // - Private -
 
@@ -24,14 +31,9 @@ Rectangle { id: root_
 
   property bool containsMouse:
     toolTip_.containsMouse ||
-    openButton_.hover ||
-    infoButton_.hover ||
-    editButton_.hover ||
-    subButton_.hover ||
-    //discussButton_.hover ||
-    browseButton_.hover ||
-    removeButton_.hover
-    //allButton_.hover
+    openButton_.hover || editButton_.hover || subButton_.hover ||
+    infoButton_.hover || browseButton_.hover || removeButton_.hover ||
+    allButton_.hover || junaiButton_.hover || nukiButton_.hover || otomeButton_.hover
 
   //Plugin.MainObjectProxy { id: mainPlugin_ }
   Plugin.GameManagerProxy { id: gameman_ }
@@ -224,32 +226,64 @@ Rectangle { id: root_
       //top: parent.top
       bottom: parent.bottom
     }
-    height: 0
+    height: 27
 
-/*
-    Row { //id: typeSelector_
+    ButtonGroup.ButtonRow { //id: typeSelector_
       //spacing: 5
       anchors {
         verticalCenter: parent.verticalCenter
         right: parent.right
         rightMargin: 2
+        verticalCenterOffset: -1
         //right: parent.right; top: parent.top
         //topMargin: 4
       }
-      //height: 30
       spacing: 1
 
-      property int cellWidth: 50
+      property int cellWidth: 25
+      property int cellHeight: 25
+      //property real zoom: 0.9
 
       Bootstrap.Button { id: allButton_
-        styleClass: 'btn btn-default'
+        styleClass: checked ? 'btn btn-inverse' : 'btn btn-default'
+        checkable: true
+        checked: true // select all button by default
+        //zoom: parent.zoom
         width: parent.cellWidth
-        //text: Sk.tr("Launch")
-        text: "全て"
-        toolTip: Sk.tr("All")
-        onClicked: if (game) gameman_.open(game)
+        height: parent.cellHeight
+        text: "全"
+        toolTip: "全て"
+      }
+
+      Bootstrap.Button { id: junaiButton_
+        styleClass: checked ? 'btn btn-primary' : 'btn btn-default'
+        checkable: true
+        //zoom: parent.zoom
+        width: parent.cellWidth
+        height: parent.cellHeight
+        text: "愛"
+        toolTip: "純愛作"
+      }
+
+      Bootstrap.Button { id: nukiButton_
+        styleClass: checked ? 'btn btn-info' : 'btn btn-default'
+        checkable: true
+        //zoom: parent.zoom
+        width: parent.cellWidth
+        height: parent.cellHeight
+        text: "抜"
+        toolTip: "抜き作"
+      }
+
+      Bootstrap.Button { id: otomeButton_
+        styleClass: checked ? 'btn btn-success' : 'btn btn-default'
+        checkable: true
+        //zoom: parent.zoom
+        width: parent.cellWidth
+        height: parent.cellHeight
+        text: "乙"
+        toolTip: "乙女向き"
       }
     }
-*/
   }
 }

@@ -121,6 +121,7 @@ Item { id: root_
         width: root_.width; height: root_.height
         model: Plugin.GameModel { id: gameModel_
           filterText: root_.searchText
+          filterGameType: inspector_.selectedGameType
         }
 
         property QtObject currentObject: model ? model.get(currentIndex) : undefined

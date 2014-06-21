@@ -2145,7 +2145,7 @@
     <message>
         <location filename="sktr.py" line="268"/>
         <source>File size</source>
-        <translation type="unfinished"></translation>
+        <translation>文件大小</translation>
     </message>
 </context>
 </TS>

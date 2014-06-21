@@ -63,12 +63,9 @@ Row { id: root_ // Theme refers to Bootstrap.label
   Bootstrap.Button { id: duplicateButton_
     width: parent.cellWidth; height: parent.cellHeight
     styleClass: checked ? 'btn btn-success' : 'btn btn-default'
-
+    checkable: true
     text: qsTr("Dup")
     toolTip: qsTr("Display duplicate rows which should be avoided")
-    property bool checked: false
-
-    onClicked: checked = !checked
   }
 }
 
