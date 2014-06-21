@@ -103,6 +103,7 @@ class SearchApi(object):
           yield {
             'id': id0,
             'title': title0,
+            'date': self._parsedate(h),
             'brand': brand0,
             'year': year0,
           }
@@ -127,6 +128,19 @@ class SearchApi(object):
     except ValueError: # raised by int()
       dwarn("failed to convert to int")
 
+  # Example:
+  # <tr class="minfo">
+  #  <th class="idx" width="55">発売日</th>
+  #  <td colspan="2" width="495">2013/08/23</td>
+  # </tr>
+  def __makeinforx(key):
+    pat = r'\s*'.join((
+      r'<tr class="minfo">',
+      r'<th [^>]*>%s</th>' % key,
+      r'<td [^>]*>(.*?)</td>',
+    ))
+    return re.compile(pat, re.DOTALL)
+
   # <title>[Holyseal ～聖封～] ミラー／転載 ≫ CUBE ≫ your diary</title>
   _rx_brand = re.compile(ur' ≫ ([^≫<]*?) ≫ ')
   def _parsebrand(self, h):
@@ -137,6 +151,16 @@ class SearchApi(object):
     m = self._rx_brand.search(h)
     if m:
       return skstr.unescapehtml(m.group(1)).strip() # there is a space in the beginning
+
+  _rx_info_date = __makeinforx(u"発売日")
+  def _parsedate(self, h):
+    """
+    @param  h  unicode  html
+    @return  unicode or None
+    """
+    m = self._rx_info_date.search(h)
+    if m:
+      return skstr.unescapehtml(m.group(1))
 
 if __name__ == '__main__':
   api = SearchApi()
