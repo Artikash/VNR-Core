@@ -26,7 +26,9 @@ Rectangle { id: root_
   property int textLeftMargin: 8
   property int textRightMargin: 8
 
-  radius: 12
+  radius: 10
+  //radius: 12
+  //radius: 4
 
   property color borderColor
   //property alias effectColor: effect_.color

@@ -42,6 +42,10 @@ Item { id: root_
     //KeyNavigation.down: listMenu
     //KeyNavigation.left: contextMenu
 
+    //onCountChanged:
+    //  if (currentIndex >= count)
+    //    currentIndex = count ? 1 : 0
+
     Keys.onPressed: {
       // ENTER || SHIFT+ENTER
       if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter) &&
@@ -81,7 +85,14 @@ Item { id: root_
         anchors.fill: parent; anchors.margins: 20; radius: 10
 
         // Outline
-        Rectangle { color: '#91aa9d'; opacity: 0.5; anchors.fill: parent; anchors.margins: 2; radius: 8; smooth: true }
+        Rectangle {
+          anchors { fill: parent; margins: 2 }
+          color: '#91aa9d'
+          //color: 'red'
+          opacity: 0.5
+          radius: 8
+          smooth: true
+        }
         Image {
           anchors.centerIn: parent
           smooth: true
