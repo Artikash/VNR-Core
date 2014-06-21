@@ -611,11 +611,23 @@ class GameInfo(object):
       yield url, i18n.site_name(type) or type
 
   @property
-  def filesize(self): # long not None
+  def fileSize(self): # long not None
     r = self.dlsite
     if r:
-      return r.filesize
+      return r.fileSize
     return 0
+
+  @memoizedproperty
+  def fileSizeString(self): # -> str
+    size = self.fileSize
+    if not size:
+      return '0 B'
+    elif size < 1024:
+      return "%s B" % size
+    elif size < 1024 * 1024:
+      return "%s KB" % (size / 1024)
+    else: #size < 1024 * 1024 * 1024
+      return "%s MB" % (size / (1024 * 1024))
 
   @memoizedproperty
   def date0(self): # long not None
@@ -2650,7 +2662,7 @@ class DLsiteReference(Reference): #(object):
     self.review = review # unicode
     self.sampleImages = sampleImages # [str url]
     self.rpg = rpg # bool
-    self.filesize = filesize # int
+    self.fileSize = filesize # int
 
     #self.genres = []
     #if rpg:
