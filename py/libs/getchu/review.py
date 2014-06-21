@@ -92,14 +92,36 @@ class ReviewApi(object):
     @param  h  unicode  HTML
     @return  unicode
     """
-    return self._replacelinks(self._rx_review_garbage.sub('', h))
+    ret = self._replacelinks(self._rx_review_garbage.sub('', h))
+    if ret:
+      ret = self._clean(ret)
+    return ret
+
+  @staticmethod
+  def _clean(h):
+    """
+    @param  h  unicode  HTML
+    @return  unicode  HTML
+    """
+    #START = u'<p class="Sanko">▲&nbsp;このレビューは参考になりましたか？'
+    START = '<p class="Sanko">'
+    STOP = '</p>'
+    start = h.find(START)
+    while start > 0:
+      stop = h.find(STOP, start)
+      if stop < 0:
+        break
+      h = h[:start] + h[stop+len(STOP):]
+      start = h.find(START)
+    return h
 
 if __name__ == '__main__':
   api = ReviewApi()
   #k = 7563960 # bad
   k = 756396
-  print '-' * 10
+  #print '-' * 10
   q = api.query(k)
+  #print type(q)
   print q
 
 # EOF
