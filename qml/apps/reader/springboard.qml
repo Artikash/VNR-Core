@@ -164,54 +164,6 @@ Item { id: root_
     Component.onCompleted: contentX = -50 // Why I have to manually do this?
   }
 
-  Share.InputBar { id: searchBar_
-    anchors {
-      left: parent.left
-      bottom: inspector_.visible ? inspector_.top : parent.bottom
-      //right: activeFocus ? parent.right : dock_.left
-      leftMargin: 8; bottomMargin: 12
-      //rightMargin: 22
-    }
-
-    property int _ACTIVE_WIDTH: root_.width * 0.4
-    property int _INACTIVE_WIDTH: root_.width * 0.2
-    width: _INACTIVE_WIDTH
-    states: [
-      State { // default
-        when: !searchBar_.activeFocus
-        PropertyChanges { target: searchBar_
-          width: _INACTIVE_WIDTH
-          placeholderText: Sk.tr("Search") + " ..."
-        }
-      }
-      , State { // active
-        when: searchBar_.activeFocus
-        PropertyChanges { target: searchBar_
-          width: _ACTIVE_WIDTH
-          placeholderText: Sk.tr("Search") + " ... (" + Sk.tr("regex") + ")"
-       }
-      }
-    ]
-    transitions: Transition {
-      SmoothedAnimation { property: 'width' }
-      //NumberAnimation { property: 'width' }
-      //SpringAnimation {
-      //  property: 'width'
-      //  spring: 1.5; damping: 0.1 // spring: strength; damping: speed
-      //}
-    }
-
-    toolTip: qsTr("You can type part of the game name or path here")
-    visible: gameModel_.count > 0
-    Share.ClearButton {
-      anchors {
-        right: parent.right
-        verticalCenter: parent.verticalCenter
-      }
-      onClicked: parent.text = ""
-    }
-  }
-
   SpringBoard.CometCounter { //id: counter_
     anchors {
       right: parent.right
@@ -230,6 +182,58 @@ Item { id: root_
 
     visible: !!game
     game: gameDashboard_.currentObject
+
+    Share.InputBar { id: searchBar_
+      anchors {
+        left: parent.left
+        //bottom: inspector_.visible ? inspector_.top : parent.bottom
+        bottom: parent.bottom
+
+        //right: activeFocus ? parent.right : dock_.left
+        //leftMargin: 8; bottomMargin: 12
+        leftMargin: 4; bottomMargin: 4
+      }
+      //radius: 10
+
+      property int _ACTIVE_WIDTH: root_.width * 0.4
+      property int _INACTIVE_WIDTH: root_.width * 0.2
+      width: _INACTIVE_WIDTH
+      states: [
+        State { // default
+          when: !searchBar_.activeFocus
+          PropertyChanges { target: searchBar_
+            width: _INACTIVE_WIDTH
+            placeholderText: Sk.tr("Search") + " ..."
+          }
+        }
+        , State { // active
+          when: searchBar_.activeFocus
+          PropertyChanges { target: searchBar_
+            width: _ACTIVE_WIDTH
+            placeholderText: Sk.tr("Search") + " ... (" + Sk.tr("regex") + ")"
+         }
+        }
+      ]
+      transitions: Transition {
+        SmoothedAnimation { property: 'width' }
+        //NumberAnimation { property: 'width' }
+        //SpringAnimation {
+        //  property: 'width'
+        //  spring: 1.5; damping: 0.1 // spring: strength; damping: speed
+        //}
+      }
+
+      toolTip: qsTr("You can type part of the game name or path here")
+      visible: gameModel_.count > 0
+      Share.ClearButton {
+        anchors {
+          right: parent.right
+          verticalCenter: parent.verticalCenter
+          rightMargin: 2
+        }
+        onClicked: parent.text = ""
+      }
+    }
   }
 
   //SpringBoard.Drawer { id: drawer_

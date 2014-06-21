@@ -18,6 +18,8 @@ Share.InputBar { id: root_
     return typeEdit_.model.get(typeEdit_.selectedIndex).value
   }
 
+  //radius: 12
+
   maximumLength: 255 // maximum number of characters allowed in comment
   //property color buttonColor: '#8b434343' // gray
 
