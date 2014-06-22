@@ -181,7 +181,7 @@ class ItemApi(object):
     """
     m = self._rx_brand.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1))
+      return skstr.unescapehtml(m.group(1)).replace(" / ", ',').replace(u"／", ',')
 
   # <tr>
   #   <td width="15%" bgcolor="#CCCCFF"><div align="right"><font size="2">登録日</font></div></td>
