@@ -349,7 +349,7 @@ class ItemApi(object):
             i = h.rfind(DIV)
             if i > 0:
               h = h[:i + len(DIV)].rstrip()
-              return self._cleanreview(h)
+              return self._replacelinks(self._cleanreview(h))
 
   @staticmethod
   def _cleanreview(h):
