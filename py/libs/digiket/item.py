@@ -15,7 +15,8 @@ from sakurakit.skdebug import dwarn
 import defs
 
 class ItemApi(object):
-  API = 'http://www.digiket.com/work/show/_data/ID=%s/'
+  HOST = "http://www.digiket.com"
+  API = HOST + '/work/show/_data/ID=%s/'
   ENCODING = 'sjis'
   COOKIES = {'adult_check':'1'}
 
@@ -253,14 +254,13 @@ class ItemApi(object):
     m = self._rx_image.search(h)
     if m:
       prefix = m.group()
-      base = "http://www.digiket.com"
       ret = {}
       ev = prefix + 'ev01.jpg'
       if ev in h:
-        ret['ev'] = base + ev
+        ret['ev'] = self.HOST + ev
       chara = prefix + 'c01.jpg'
       if chara in h:
-        ret['chara'] = base + chara
+        ret['chara'] = self.HOST + chara
       return ret
 
   _rx_link = re.compile('>([^<]+?)</a>', re.I)
@@ -380,6 +380,13 @@ class ItemApi(object):
       h = h[:start] + h[stop:]
     return h
 
+  def _replacelinks(self, h):
+    """
+    @param  h  unicode  HTML
+    @return  h  unicode
+    """
+    return h.replace('<img src="/', '<img src="%s/' % self.HOST)
+
   _rx_label = re.compile(ur"【([^】]+?)】</font>") # <td align="left"><strong><font color="#FF6600">【一人称が僕の女装っ娘】</font></strong><br>
   _rx_cv = re.compile(ur"CV：([^）]+?)）")
   _rx_chara = re.compile(ur"<strong>●([^<]+?)</strong>") # <strong>●羽馬 紫織（はば・しおり）</strong>
@@ -390,7 +397,6 @@ class ItemApi(object):
     """
     m = self._rx_image.search(h)
     if m:
-      base = "http://www.digiket.com"
       prefix = m.group()
       for i in xrange(1,100):
         img = "%sc%02d.jpg" % (prefix, i)
@@ -422,7 +428,7 @@ class ItemApi(object):
 
         yield {
           'id': i, # int
-          'img': base + img,
+          'img': self.HOST + img,
           'label': label,
           'name': name.strip(),
           'yomi': yomi.strip(),

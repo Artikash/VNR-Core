@@ -16,7 +16,8 @@ import defs
 
 class SearchApi(object):
   #API = 'http://www.digiket.com/%s/result/_data/A=%s/limit=30/sort=new'
-  API = 'http://www.digiket.com/%s/result/_data/A=%s/'
+  HOST = "http://www.digiket.com"
+  API = HOST + '/%s/result/_data/A=%s/'
   ENCODING = 'sjis'
   #COOKIES = {'adult_check':'1'}
 
@@ -61,7 +62,6 @@ class SearchApi(object):
     text = text.encode(self.ENCODING, errors='ignore')
     if text and path:
       url = self._makeurl(text=text, path=path, limit=limit, sort=sort)
-      url = 'http://www.digiket.com/b/result/_data/A=%89%AE%8D%AA%97%A0%82%CC%83%89%83O%81%5B%83%93/'
       h = self._fetch(url)
       if h:
         h = h.decode(self.ENCODING, errors='ignore')
