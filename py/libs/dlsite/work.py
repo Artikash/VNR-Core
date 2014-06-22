@@ -197,13 +197,18 @@ class WorkApi(object):
       except: pass
 
   # Example: 12345Byte
-  _rx_filesize = re.compile(r'(\d+)Byte')
+  _rx_filesize_gb = re.compile(r'nbsp;([0-9\.]+)GB') # 総計&nbsp;15.9GB<br />
+  _rx_filesize_b = re.compile(r'(\d+)Byte')
   def _parsefilesize(self, h):
     """
     @param  h  unicode  html
     @return  int not None
     """
-    m = self._rx_filesize.search(h)
+    m = self._rx_filesize_gb.search(h)
+    if m:
+      try: return long(float(m.group(1)) * 1024 * 1024 * 1024)
+      except: pass
+    m = self._rx_filesize_b.search(h)
     if m:
       try: return long(m.group(1))
       except: pass
@@ -345,6 +350,7 @@ if __name__ == '__main__':
   url = 'http://www.dlsite.com/maniax/work/=/product_id/RJ107332.html'
   url = 'http://www.dlsite.com/pro/work/=/product_id/VJ004288.html'
   url = 'http://www.dlsite.com/girls/work/=/product_id/RJ091967.html'
+  url = 'http://www.dlsite.com/pro/work/=/product_id/VJ006763.html'
   q = api.query(url)
   #print q['description']
   #print q['review'].encode('utf8')
