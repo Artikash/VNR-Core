@@ -43,7 +43,8 @@ Rectangle { id: root_
   Desktop.TooltipArea { id: toolTip_
     anchors.fill: parent
     //text: game ? (game.launchPath ? game.launchPath : game.path) : ""
-    text: qsTr("Click to copy the game information to the clipboard and read the text using TTS")
+    //text: qsTr("Click to copy the game information to the clipboard and read the text using TTS")
+    text: qsTr("Click to copy the game information to the clipboard")
   }
 
   // - Label -
@@ -62,7 +63,7 @@ Rectangle { id: root_
           //if (t) l.push(t)
           t = l.join("、")
           clipboardPlugin_.text = t
-          ttsPlugin_.speak(t, 'ja')
+          //ttsPlugin_.speak(t, 'ja')
         }
       }
   }
