@@ -56,7 +56,7 @@
 <context>
     <name>cometcounter</name>
     <message>
-        <location filename="../springboard/cometcounter.qml" line="37"/>
+        <location filename="../springboard/cometcounter.qml" line="43"/>
         <source>{0} people are online now</source>
         <translation>{0}个同学正在线上</translation>
     </message>
@@ -638,37 +638,41 @@
 <context>
     <name>inspector</name>
     <message>
-        <location filename="../springboard/inspector.qml" line="46"/>
         <source>Click to copy the game information to the clipboard and read the text using TTS</source>
-        <translation>单击来用TTS读出游戏信息，并复制文本到剪贴板</translation>
+        <translation type="obsolete">单击来用TTS读出游戏信息，并复制文本到剪贴板</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="156"/>
+        <location filename="../springboard/inspector.qml" line="160"/>
         <source>Launch the game, or attach to the running game</source>
         <translation>启动游戏，或者与正在运行中的游戏同步</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="190"/>
+        <location filename="../springboard/inspector.qml" line="194"/>
         <source>Edit shared subtitles</source>
         <translation>编辑人工字幕</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="207"/>
+        <location filename="../springboard/inspector.qml" line="211"/>
         <source>Show the game folder</source>
         <translation>打开游戏的文件夹</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="165"/>
+        <location filename="../springboard/inspector.qml" line="169"/>
         <source>Edit game properties</source>
         <translation>编辑游戏属性</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="155"/>
+        <location filename="../springboard/inspector.qml" line="47"/>
+        <source>Click to copy the game information to the clipboard</source>
+        <translation>单击会复制游戏信息到剪贴板</translation>
+    </message>
+    <message>
+        <location filename="../springboard/inspector.qml" line="159"/>
         <source>Launch</source>
         <translation>启动</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="164"/>
+        <location filename="../springboard/inspector.qml" line="168"/>
         <source>Edit</source>
         <translation>设定</translation>
     </message>
@@ -681,46 +685,32 @@
         <translation type="obsolete">打开讨论的页面</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="198"/>
+        <location filename="../springboard/inspector.qml" line="202"/>
         <source>Show game information</source>
         <translation>显示游戏情报</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="206"/>
+        <location filename="../springboard/inspector.qml" line="210"/>
         <source>Browse</source>
         <translation>浏览</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="215"/>
+        <location filename="../springboard/inspector.qml" line="219"/>
         <source>Remove</source>
         <translation>移除</translation>
     </message>
     <message>
-        <location filename="../springboard/inspector.qml" line="216"/>
+        <location filename="../springboard/inspector.qml" line="220"/>
         <source>Remove this game from the dashboard</source>
         <translation>从Dashboard中移除这个游戏</translation>
     </message>
     <message>
-        <location filename="../refview/inspector.qml" line="82"/>
-        <location filename="../refview/inspector.qml" line="86"/>
-        <location filename="../refview/inspector.qml" line="90"/>
-        <location filename="../refview/inspector.qml" line="94"/>
-        <location filename="../refview/inspector.qml" line="98"/>
-        <location filename="../refview/inspector.qml" line="102"/>
-        <location filename="../refview/inspector.qml" line="106"/>
         <source>Found 1 reference from {0}</source>
-        <translation>在{0}上找到一个链接</translation>
+        <translation type="obsolete">在{0}上找到一个链接</translation>
     </message>
     <message>
-        <location filename="../refview/inspector.qml" line="84"/>
-        <location filename="../refview/inspector.qml" line="88"/>
-        <location filename="../refview/inspector.qml" line="92"/>
-        <location filename="../refview/inspector.qml" line="96"/>
-        <location filename="../refview/inspector.qml" line="100"/>
-        <location filename="../refview/inspector.qml" line="104"/>
-        <location filename="../refview/inspector.qml" line="108"/>
         <source>Missing references from {0}</source>
-        <translation>缺少{0}上的链接</translation>
+        <translation type="obsolete">缺少{0}上的链接</translation>
     </message>
 </context>
 <context>
@@ -991,7 +981,7 @@
 <context>
     <name>springboard</name>
     <message>
-        <location filename="../springboard.qml" line="226"/>
+        <location filename="../springboard.qml" line="227"/>
         <source>You can type part of the game name or path here</source>
         <translation>你可以在这里输入游戏的名称或者路径中的部分文字</translation>
     </message>
