@@ -95,9 +95,9 @@ class ItemApi(object):
         'sampleImages': list(self._iterparsesampleimages(h)),
         'tags': list(self._iterparsetags(h)),
         #'genres': list(self._iterparseddlinks(u'ジャンル', h)),
-        'artists': list(self._iterparseddlinks(u'原画', h)),
+        'artists': list(self._iterparseddlinks(u'原画', h)) + list(self._iterparseddlinks(u'原画家', h)),
         'writers': list(self._iterparseddlinks(u'シナリオ', h)),
-        'musicians': list(self._iterparseddlinks(u'音楽', h)),
+        'musicians': list(self._iterparseddlinks(u'音楽', h)) + list(self._iterparseddlinks(u'音楽担当', h)),
         #'cv': list(self._iterparseddlinks(u'声優', h)),
       }
 
