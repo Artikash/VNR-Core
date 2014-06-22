@@ -1,40 +1,31 @@
 # coding: utf8
 # caching.py
-# 11/28/2013 jichi
+# 8/12/2013 jichi
 
-__all__ = ['CachingBuyApi', 'CachingItemApi', 'CachingReviewApi']
+__all__ = ['CachingItemApi']
 
 if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
-#from search import SearchApi
-from buy import BuyApi
 from item import ItemApi
-from review import ReviewApi
+#from search import SearchApi
 
 def _htmlcacher(cls):
   from restful.offline import DataCacher
   return DataCacher(cls, suffix='.html')
 
-#CachingSearchApi =_htmlcacher(SearchApi)
-CachingBuyApi = _htmlcacher(BuyApi)
 CachingItemApi = _htmlcacher(ItemApi)
-CachingReviewApi = _htmlcacher(ReviewApi)
+#CachingSearchApi = _htmlcacher(SearchApi)
 
 if __name__ == '__main__':
   cachedir = 'tmp'
   api = CachingItemApi(cachedir=cachedir, expiretime=86400)
-  k = 45242
-  k = 16775
+  k = 'ITM0080219'
   q = api.query(k)
   print q['title']
-  print q['image']
-  print q['brand']
+  print q['price']
   print q['date']
-  print q['filesize']
-  for it in q['tags']:
-    print it
   #for k,v in q.iteritems():
   #  print k, ':', v
 

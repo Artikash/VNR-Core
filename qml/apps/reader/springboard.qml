@@ -164,16 +164,6 @@ Item { id: root_
     Component.onCompleted: contentX = -50 // Why I have to manually do this?
   }
 
-  SpringBoard.CometCounter { //id: counter_
-    anchors {
-      right: parent.right
-      bottom: inspector_.top
-      margins: 10
-    }
-    count: gComet.connectionCount
-    visible: gComet.active && count > 1 && settingsPlugin_.cometCounterVisible
-  }
-
   SpringBoard.Inspector { id: inspector_
     anchors {
       left: parent.left; right: parent.right
@@ -182,6 +172,17 @@ Item { id: root_
 
     visible: !!game
     game: gameDashboard_.currentObject
+
+    SpringBoard.CometCounter { //id: counter_
+      anchors {
+        right: parent.right
+        bottom: parent.bottom
+        bottomMargin: 5
+        rightMargin: 120
+      }
+      count: gComet.connectionCount
+      visible: gComet.active && count > 1 && settingsPlugin_.cometCounterVisible
+    }
 
     Share.InputBar { id: searchBar_
       anchors {

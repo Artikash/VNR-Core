@@ -592,22 +592,27 @@ if __name__ == '__main__':
   k = 771638 # 相州戦神館學園 八命陣
   k = 789990 # 女王蜂の王房 めのう編
   k = 774400
+  k = 718587 # レミニセンス
   print '-' * 10
   q = api.query(k)
-  print q['price']
-  print q['otome']
-  print q['title']
-  print q['genre']
-  #print q['videos']
-  for it in q['categories']:
-    print it
-  for it in q['subgenres']:
-    print it
-  #for it in q['artists']:
+  for it in q['characters']:
+    for k,v in it.iteritems():
+      print k,':',v
+
+  #print q['price']
+  #print q['otome']
+  #print q['title']
+  #print q['genre']
+  ##print q['videos']
+  #for it in q['categories']:
   #  print it
-  for it in q['sdartists']:
-    print it
-  for it in q['musicians']:
-    print it
+  #for it in q['subgenres']:
+  #  print it
+  ##for it in q['artists']:
+  ##  print it
+  #for it in q['sdartists']:
+  #  print it
+  #for it in q['musicians']:
+  #  print it
 
 # EOF

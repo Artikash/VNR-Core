@@ -16,7 +16,7 @@ class ReviewApi(object):
   HOST = 'http://gyutto.com'
   API = HOST + '/item/item_review.php?id=%s'
   ENCODING = 'euc-jp'
-  #COOKIES = {'adult_check_flag':'1'} #, 'user_agent_flat':'1'}
+  #COOKIES = {'adult_check_flag':'1'} #, 'user_agent_flag':'1'}
 
   def _makereq(self, id):
     """
@@ -49,15 +49,8 @@ class ReviewApi(object):
     h = self._fetch(url)
     if h:
       h = h.decode(self.ENCODING, errors='ignore')
-      if self._nonempty(h):
+      if h and 'ReviewEach' in h: # <div class='ReviewEach'
         return self._parse(h)
-
-  def _nonempty(self, h):
-    """
-    @param  h  unicode  HTML
-    @return  bool
-    """
-    return 'ReviewEach' in h # <div class='ReviewEach'
 
   def _replacelinks(self, h):
     """

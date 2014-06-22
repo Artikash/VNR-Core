@@ -69,11 +69,13 @@ Item { id: root_
       bottomMargin: 5
     }
 
-    property int cellWidth: 80
+    spacing: 20
+
+    //property int cellWidth: 80
     property int pixelSize: 12
 
     Text {
-      width: parent.cellWidth
+      //width: parent.cellWidth
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
@@ -82,7 +84,7 @@ Item { id: root_
     }
 
     Text {
-      width: parent.cellWidth
+      //width: parent.cellWidth
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
@@ -91,7 +93,7 @@ Item { id: root_
     }
 
     Text {
-      width: parent.cellWidth
+      //width: parent.cellWidth
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
@@ -100,7 +102,7 @@ Item { id: root_
     }
 
     Text {
-      width: parent.cellWidth
+      //width: parent.cellWidth
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
@@ -109,7 +111,7 @@ Item { id: root_
     }
 
     Text {
-      width: parent.cellWidth
+      //width: parent.cellWidth
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
@@ -118,7 +120,7 @@ Item { id: root_
     }
 
     Text {
-      width: parent.cellWidth
+      //width: parent.cellWidth
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
@@ -127,12 +129,21 @@ Item { id: root_
     }
 
     Text {
-      width: parent.cellWidth
+      //width: parent.cellWidth
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
       onLinkActivated: Qt.openUrlExternally(link)
       text: root_.formatText('DLsite', 'dlsite.co.jp', model.trailersItem ? 'green' : 'brown')
+    }
+
+    Text {
+      //width: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      textFormat: Text.RichText
+      wrapMode: Text.NoWrap
+      onLinkActivated: Qt.openUrlExternally(link)
+      text: root_.formatText('DiGiket', 'www.digiket.com', model.digiketItem ? 'green' : 'brown')
     }
   }
 

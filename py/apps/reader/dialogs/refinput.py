@@ -115,6 +115,7 @@ class _ReferenceInput(object):
     shortcut('alt+5', self.dmmButton.click, parent=q)
     shortcut('alt+6', self.amazonButton.click, parent=q)
     shortcut('alt+7', self.dlsiteButton.click, parent=q)
+    shortcut('alt+8', self.digiketButton.click, parent=q)
 
   def _createUi(self, q, readonly):
 
@@ -129,15 +130,16 @@ class _ReferenceInput(object):
     layout.addLayout(row)
 
     # Site
-    row = QtWidgets.QHBoxLayout()
-    row.addWidget(self.trailersButton)
-    row.addWidget(self.scapeButton)
-    row.addWidget(self.holysealButton)
-    row.addWidget(self.getchuButton)
-    row.addWidget(self.dmmButton)
-    row.addWidget(self.amazonButton)
-    row.addWidget(self.dlsiteButton)
-    layout.addLayout(row)
+    grid = QtWidgets.QGridLayout()
+    grid.addWidget(self.trailersButton, 0, 0)
+    grid.addWidget(self.scapeButton, 0, 1)
+    grid.addWidget(self.holysealButton, 0, 2)
+    grid.addWidget(self.getchuButton, 0, 3)
+    grid.addWidget(self.dmmButton, 1, 0)
+    grid.addWidget(self.amazonButton, 1, 1)
+    grid.addWidget(self.dlsiteButton, 1, 2)
+    grid.addWidget(self.digiketButton, 1, 3)
+    layout.addLayout(grid)
 
     # Body
     layout.addWidget(self.modelView)
@@ -211,6 +213,13 @@ class _ReferenceInput(object):
     ret.toggled.connect(self._searchLater)
     return ret
 
+  @memoizedproperty
+  def digiketButton(self):
+    ret = QtWidgets.QRadioButton("DiGiket")
+    ret.setToolTip("digiket.com (Alt+8)")
+    ret.toggled.connect(self._searchLater)
+    return ret
+
   def _selectedType(self):
     return (
         'trailers' if self.trailersButton.isChecked() else
@@ -220,6 +229,7 @@ class _ReferenceInput(object):
         'dmm' if self.dmmButton.isChecked() else
         'amazon' if self.amazonButton.isChecked() else
         'dlsite' if self.dlsiteButton.isChecked() else
+        'digiket' if self.digiketButton.isChecked() else
         None) # This should never happen
 
   @memoizedproperty
@@ -464,6 +474,10 @@ class _QmlRefrenceInput(object):
           self._submitItem(kw, gameId=gameId)
       if r.dlsiteUrl:
         kw = rm.queryOne(type='dlsite', key=r.dlsiteUrl)
+        if kw:
+          self._submitItem(kw, gameId=gameId)
+      if r.digiket:
+        kw = rm.queryOne(type='digiket', key=r.digiket)
         if kw:
           self._submitItem(kw, gameId=gameId)
 

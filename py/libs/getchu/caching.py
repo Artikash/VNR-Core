@@ -2,13 +2,13 @@
 # caching.py
 # 8/12/2013 jichi
 
-__all__ = ['CachingSearchApi', 'CachingSoftApi']
+__all__ = ['CachingSoftApi', 'CachingReviewApi']
 
 if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
-from search import SearchApi
+#from search import SearchApi
 from soft import SoftApi
 from review import ReviewApi
 
@@ -16,7 +16,7 @@ def _htmlcacher(cls):
   from restful.offline import DataCacher
   return DataCacher(cls, suffix='.html')
 
-CachingSearchApi = _htmlcacher(SearchApi)
+#CachingSearchApi = _htmlcacher(SearchApi)
 CachingSoftApi = _htmlcacher(SoftApi)
 CachingReviewApi = _htmlcacher(ReviewApi)
 

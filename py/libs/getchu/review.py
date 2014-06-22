@@ -106,13 +106,14 @@ class ReviewApi(object):
     #START = u'<p class="Sanko">▲&nbsp;このレビューは参考になりましたか？'
     START = '<p class="Sanko">'
     STOP = '</p>'
-    start = h.find(START)
-    while start > 0:
+    while True:
+      start = h.find(START)
+      if start == -1:
+        break
       stop = h.find(STOP, start)
-      if stop < 0:
+      if stop == -1:
         break
       h = h[:start] + h[stop+len(STOP):]
-      start = h.find(START)
     return h
 
 if __name__ == '__main__':
