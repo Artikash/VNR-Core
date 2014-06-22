@@ -71,7 +71,7 @@ class ItemApi(object):
         'title': title,
         'image': self._parseimage(h),
         'filesize': self._parsefilesize(h),
-        'brand': self._parseddlink(u'ブランド', h),
+        'brand': self._parseddlink(u'ブランド', h).replace(" / ", ',').replace(u"／", ','),
         'series': self._parseddlink(u'シリーズ', h),
         'date': self._parsedate(h),
         'theme': self._parsedd(u'作品テーマ', h),
