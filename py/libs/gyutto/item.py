@@ -42,7 +42,7 @@ class ItemApi(object):
     @return  str
     """
     # Disable redirects for gyutto items
-    return sknetio.getdata(url, gzip=True, cookies=self.COOKIES, allow_redirects=False)
+    return sknetio.getdata(url, gzip=True, cookies=self.COOKIES, allow_redirects=True)
 
   def query(self, id):
     """
@@ -69,6 +69,8 @@ class ItemApi(object):
     if title:
       return {
         'title': title,
+        'otome': u'乙女ゲーム' in h,
+        'doujin': u'同人' in h,
         'image': self._parseimage(h),
         'filesize': self._parsefilesize(h),
         'brand': self._parseddlink(u'ブランド', h).replace(" / ", ',').replace(u"／", ','),
@@ -255,6 +257,7 @@ if __name__ == '__main__':
   api = ItemApi()
   k = 45242
   k = 16775 # AlterEgo, http://gyutto.com/i/item16775
+  k = 58699 # 英雄伝説 空の軌跡SC, http://gyutto.jp/i/item58699
 
   print '-' * 10
   q = api.query(k)
@@ -264,6 +267,7 @@ if __name__ == '__main__':
   #print q['price']
   for it in q['tags']:
     print it
+  print q['title']
   print q['theme']
   #print q['videos']
   print q['brand']

@@ -112,10 +112,11 @@ class _ReferenceInput(object):
     shortcut('alt+2', self.scapeButton.click, parent=q)
     shortcut('alt+3', self.holysealButton.click, parent=q)
     shortcut('alt+4', self.getchuButton.click, parent=q)
-    shortcut('alt+5', self.dmmButton.click, parent=q)
-    shortcut('alt+6', self.amazonButton.click, parent=q)
-    shortcut('alt+7', self.dlsiteButton.click, parent=q)
-    shortcut('alt+8', self.digiketButton.click, parent=q)
+    shortcut('alt+5', self.gyuttoButton.click, parent=q)
+    shortcut('alt+6', self.dmmButton.click, parent=q)
+    shortcut('alt+7', self.amazonButton.click, parent=q)
+    shortcut('alt+8', self.dlsiteButton.click, parent=q)
+    shortcut('alt+9', self.digiketButton.click, parent=q)
 
   def _createUi(self, q, readonly):
 
@@ -135,6 +136,7 @@ class _ReferenceInput(object):
     grid.addWidget(self.scapeButton, 0, 1)
     grid.addWidget(self.holysealButton, 0, 2)
     grid.addWidget(self.getchuButton, 0, 3)
+    grid.addWidget(self.gyuttoButton, 0, 4)
     grid.addWidget(self.dmmButton, 1, 0)
     grid.addWidget(self.amazonButton, 1, 1)
     grid.addWidget(self.dlsiteButton, 1, 2)
@@ -193,30 +195,37 @@ class _ReferenceInput(object):
     return ret
 
   @memoizedproperty
+  def gyuttoButton(self):
+    ret = QtWidgets.QRadioButton("Gyutto")
+    ret.setToolTip("gyutto.com (Alt+5)")
+    ret.toggled.connect(self._searchLater)
+    return ret
+
+  @memoizedproperty
   def dmmButton(self):
     ret = QtWidgets.QRadioButton("DMM")
-    ret.setToolTip("dmm.co.jp (Alt+5)")
+    ret.setToolTip("dmm.co.jp (Alt+6)")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def amazonButton(self):
     ret = QtWidgets.QRadioButton("Amazon")
-    ret.setToolTip("amazon.co.jp (Alt+6)")
+    ret.setToolTip("amazon.co.jp (Alt+7)")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def dlsiteButton(self):
     ret = QtWidgets.QRadioButton("DLsite")
-    ret.setToolTip("dlsite.com (Alt+7)")
+    ret.setToolTip("dlsite.com (Alt+8)")
     ret.toggled.connect(self._searchLater)
     return ret
 
   @memoizedproperty
   def digiketButton(self):
     ret = QtWidgets.QRadioButton("DiGiket")
-    ret.setToolTip("digiket.com (Alt+8)")
+    ret.setToolTip("digiket.com (Alt+9)")
     ret.toggled.connect(self._searchLater)
     return ret
 
@@ -226,6 +235,7 @@ class _ReferenceInput(object):
         'scape' if self.scapeButton.isChecked() else
         'holyseal' if self.holysealButton.isChecked() else
         'getchu' if self.getchuButton.isChecked() else
+        'gyutto' if self.gyuttoButton.isChecked() else
         'dmm' if self.dmmButton.isChecked() else
         'amazon' if self.amazonButton.isChecked() else
         'dlsite' if self.dlsiteButton.isChecked() else
@@ -468,22 +478,20 @@ class _QmlRefrenceInput(object):
       #  kw = rm.queryOne(type='trailers', key=r.trailers)
       #  if kw:
       #    self._submitItem(kw, gameId=gameId)
-      if r.dmm:
-        kw = rm.queryOne(type='dmm', key=r.dmm)
-        if kw:
-          self._submitItem(kw, gameId=gameId)
+      for type in 'dmm', 'digiket', 'gyutto':
+        key = getattr(r, type)
+        if key:
+          kw = rm.queryOne(type=type, key=key)
+          if kw:
+            self._submitItem(kw, gameId=gameId)
       if r.dlsiteUrl:
         kw = rm.queryOne(type='dlsite', key=r.dlsiteUrl)
-        if kw:
-          self._submitItem(kw, gameId=gameId)
-      if r.digiket:
-        kw = rm.queryOne(type='digiket', key=r.digiket)
         if kw:
           self._submitItem(kw, gameId=gameId)
 
     elif r.type == 'trailers':
       rm = refman.manager()
-      for type in 'dmm', 'amazon', 'getchu', 'holyseal', 'scape':
+      for type in 'dmm', 'amazon', 'getchu', 'gyutto', 'holyseal', 'scape':
         pty = 'erogamescape' if type == 'scape' else type
         key = getattr(r, pty)
         if key:

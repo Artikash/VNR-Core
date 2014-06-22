@@ -523,6 +523,112 @@ class GetchuApi(object):
     dprint("leave: count = %s" % len(ret))
     return ret
 
+## Gyutto API ##
+
+class GyuttoApi(object):
+
+  def __init__(self, online=True):
+    """
+    @param* online  bool
+    """
+    self.online = online
+
+    from gyutto.search import SearchApi
+    self.SEARCH_CATEGORIES = SearchApi.GAME_CATEGORIES # [int]
+
+  def setOnline(self, v):
+    if self.online !=  v:
+      self.online = v
+      if hasmemoizedproperty(self, 'cachingItemApi'):
+        self.cachingItemApi.online = v
+
+  #_rx_title = re.compile( _re_title)
+  #@classmethod
+  #def _beautifyTitle(cls, t):
+  #  """
+  #  @param  t  unicode
+  #  @return  unicode
+  #  """
+  #  return cls._rx_title.sub('', t).strip()
+
+  @memoizedproperty
+  def cachingItemApi(self):
+    from gyutto.caching import CachingItemApi
+    return CachingItemApi(
+        cachedir=rc.DIR_CACHE_GYUTTO,
+        expiretime=config.REF_EXPIRE_TIME,
+        online=self.online)
+
+  @memoizedproperty
+  def searchApi(self):
+    from gyutto.search import SearchApi
+    return SearchApi()
+
+  def _search(self, text=None, key=None, cache=True):
+    """
+    @param  cache  bool  not used
+    @yield  kw
+    """
+    dprint("key, text =", key, text)
+    if key:
+      kw = self.cachingItemApi.query(key)
+      if kw:
+        yield kw
+    elif text:
+      for cat in self.SEARCH_CATEGORIES:
+        q = self.searchApi.query(text, category_id=cat)
+        if q:
+          for it in q:
+            yield it
+
+  def cache(self, text=None, key=None):
+    if key:
+      dprint("enter")
+      self.cachingItemApi.cache(key)
+      dprint("leave")
+
+  @staticmethod
+  def _parsekey(url):
+    """
+    @param  url  unicode
+    @return  unicode or None
+    """
+    if url:
+      m = re.search(r"item([0-9]+)", url)
+      if m:
+        return m.group(1)
+
+  # See: https://affiliate.dmm.com/api/reference/r18/pcgame/
+  def query(self, key=None, text=None, **kwargs):
+    """
+    @return  iter not None
+    """
+    dprint("enter")
+    ret = []
+    if not key and text:
+      if text.isdigit():
+        key = text
+      elif text.startswith('http://') or text.startswith('www.') or 'item' in text:
+        k = self._parsekey(text)
+        if k:
+          key = k
+    s = self._search(key=key, text=text, **kwargs)
+    try:
+      for item in s:
+        k = str(item['id'])
+        item['key'] = k
+        del item['id']
+
+        d = item.get('date') or 0 # int
+        if d:
+          d = skdatetime.date2timestamp(d)
+        item['date'] = d
+
+        ret.append(item)
+    except Exception, e: dwarn(e)
+    dprint("leave: count = %s" % len(ret))
+    return ret
+
 ## DiGiket API ##
 
 class DiGiketApi(object):
@@ -1279,7 +1385,7 @@ class AsyncApi:
 
 class _ReferenceManager(object):
   # The same as dataman.Reference.TYPES
-  API_TYPES = frozenset(('trailers', 'scape', 'holyseal', 'getchu', 'amazon', 'dmm', 'dlsite', 'digiket'))
+  API_TYPES = frozenset(('trailers', 'scape', 'holyseal', 'getchu', 'gyutto', 'amazon', 'dmm', 'dlsite', 'digiket'))
 
   def __init__(self, parent):
     self.parent = None
@@ -1297,6 +1403,9 @@ class _ReferenceManager(object):
 
   @memoizedproperty
   def getchuApi(self): return self._createApi(GetchuApi)
+
+  @memoizedproperty
+  def gyuttoApi(self): return self._createApi(GyuttoApi)
 
   @memoizedproperty
   def digiketApi(self): return self._createApi(DiGiketApi)
@@ -1491,14 +1600,6 @@ class _GyuttoManager(object):
 
   def __init__(self):
     self.online = True
-    self._warmed = False
-
-  @memoizedproperty
-  def itemApi(self): # Always caching
-    from gyutto.caching import CachingItemApi
-    return CachingItemApi(rc.DIR_CACHE_GYUTTO,
-        expiretime=config.REF_EXPIRE_TIME,
-        online=self.online)
 
   @memoizedproperty
   def reviewApi(self): # Always caching
@@ -1506,24 +1607,6 @@ class _GyuttoManager(object):
     return CachingReviewApi(rc.DIR_CACHE_GYUTTO,
         expiretime=config.REF_EXPIRE_TIME,
         online=self.online)
-
-  def warmup(self):
-    if not self._warmed:
-      self.itemApi
-      self.reviewApi
-      self._warmed = True
-
-  def query(self, id):
-    """
-    @param  id  int or str  ID
-    @return  {kw}
-    """
-    ret = self.itemApi.query(id)
-    if ret:
-      ret['review'] = self.reviewApi.query(id) # unicode html or None
-      ret['key'] = ret['id']
-      del ret['id']
-    return ret
 
 class GyuttoManager:
 
@@ -1541,20 +1624,18 @@ class GyuttoManager:
     d = self.__d
     if d.online != v:
       d.online = v
-      for k in 'itemApi', 'reviewApi':
-        if hasmemoizedproperty(d, k):
-          getattr(d, k).online = v
+      if hasmemoizedproperty(d, 'reviewApi'):
+        d.reviewApi.online = v
 
   #@memoized # cached
-  def query(self, id, async=True):
+  def queryReview(self, id, async=True):
     """
     @param  id  int or str  ID
-    @return  {kw}
+    @return  unicode or None
     """
-    self.__d.warmup()
     return skthreads.runsync(partial(
-        self.__d.query, id),
-        parent=self.parent) if async else self.__d.query(id)
+        self.__d.reviewApi.query, id),
+        parent=self.parent) if async else self.__d.reviewApi.query(id)
 
 # Specific to DMM
 
