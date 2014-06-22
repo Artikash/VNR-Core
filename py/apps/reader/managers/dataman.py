@@ -624,12 +624,10 @@ class GameInfo(object):
     for url, type in self.iterUrlsWithType():
       yield url, i18n.site_name(type) or type
 
-  @property
+  @memoizedproperty
   def fileSize(self): # long not None
-    for r in self.gyutto, self.dlsite:
-      if r and r.fileSize:
-        return r.fileSize
-    return 0
+    try: return max(it.price for it in (self.digiket, self.gyutto, self.dlsite))
+    except ValueError: return 0
 
   @memoizedproperty
   def fileSizeString(self): # -> str

@@ -14,7 +14,7 @@ Share.TwinkleButton { //id: root_
 
   // - Private -
 
-  height: 21; width: 21
+  height: 22; width: 22
 
   //property int count: Math.max(1, globalComet_.connectionCount)
 
