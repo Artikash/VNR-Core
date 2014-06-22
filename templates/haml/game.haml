@@ -27,6 +27,8 @@
       %link(rel="stylesheet",href="#{rc.cdn_url('dlsite.css')}")
     -if game and game.dmmItem and game.dmmItem.review
       %link(rel="stylesheet",href="#{rc.cdn_url('dmm.css')}")
+    -if game and game.digiket and game.digiket.review
+      %link(rel="stylesheet",href="#{rc.cdn_url('digiket.css')}")
     :css
       body {
         margin: 18px 9px;
@@ -37,10 +39,10 @@
 
     -if mainland
       :javascript
-        MAINLAND = true;
+        window.MAINLAND = true;
     -else
       :javascript
-        MAINLAND = false;
+        window.MAINLAND = false;
 
   -if not game
     %body

@@ -127,6 +127,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   amazon.css: $PWD/rb/compass/web/css/amazon.min.css
   getchu.css: $PWD/rb/compass/web/css/getchu.min.css
   gyutto.css: $PWD/rb/compass/web/css/gyutto.min.css
+  digiket.css: $PWD/rb/compass/web/css/digiket.min.css
   dlsite.css: $PWD/rb/compass/web/css/dlsite.min.css
   dmm.css: $PWD/rb/compass/web/css/dmm.min.css
   dragdealer.css: $PWD/rb/compass/web/css/dragdealer.min.css
