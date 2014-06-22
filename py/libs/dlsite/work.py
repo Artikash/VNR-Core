@@ -198,6 +198,7 @@ class WorkApi(object):
 
   # Example: 12345Byte
   _rx_filesize_gb = re.compile(r'nbsp;([0-9\.]+)GB') # 総計&nbsp;15.9GB<br />
+  #_rx_filesize_mb = re.compile(r'nbsp;([0-9\.]+)MB')
   _rx_filesize_b = re.compile(r'(\d+)Byte')
   def _parsefilesize(self, h):
     """
@@ -208,6 +209,10 @@ class WorkApi(object):
     if m:
       try: return long(float(m.group(1)) * 1024 * 1024 * 1024)
       except: pass
+    #m = self._rx_filesize_mb.search(h)
+    #if m:
+    #  try: return long(float(m.group(1)) * 1024 * 1024)
+    #  except: pass
     m = self._rx_filesize_b.search(h)
     if m:
       try: return long(m.group(1))
