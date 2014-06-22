@@ -403,66 +403,10 @@ class GameInfo(object):
     g = self.gameItem
     return g.scapeMedian if g else 0
 
-  #@property
-  #def scapeMedian(self):
-  #  """Online
-  #  @return  int not None
-  #  """
-  #  kw = self.scape
-  #  if kw:
-  #    return kw['median'] or 0
-  #  return 0
-
-  #def _iterTrailersDmmAmazonDigests(self):
-  #  digs = self.referenceDigests
-  #  if digs:
-  #    for t in 'trailers', 'dmm', 'amazon':
-  #      for it in digs:
-  #        if it.type == t:
-  #          yield it
-  #          break
-
-  #def _iterTrailersAmazonDmmDigests(self):
-  #  digs = self.referenceDigests
-  #  if digs:
-  #    for t in 'trailers', 'amazon', 'dmm':
-  #      for it in digs:
-  #        if it.type == t:
-  #          yield it
-  #          break
-
-  #def _iterDmmAmazonDigests(self):
-  #  digs = self.referenceDigests
-  #  if digs:
-  #    for t in 'dmm', 'amazon':
-  #      for it in digs:
-  #        if it.type == t:
-  #          yield it
-  #          break
-
-  #def _iterAmazonDmmDigests(self):
-  #  digs = self.referenceDigests
-  #  if digs:
-  #    for t in 'amazon', 'dmm':
-  #      for it in digs:
-  #        if it.type == t:
-  #          yield it
-  #          break
-
   def _iterGetchuDLsiteAmazonDmmDigiket(self):
     for it in self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket:
       if it:
         yield it
-
-  #def _iterGetchuGyuttoDLsiteAmazonDmm(self):
-  #  for it in self.getchu, self.gyutto, self.dlsite, self.amazon, self.dmm:
-  #    if it:
-  #      yield it
-
-  #def _iterTrailersScapeGetchuDLsiteDmmAmazon(self):
-  #  for it in self.trailers, self.scape, self.getchu, self.dlsite, self.dmm, self.amazon:
-  #    if it:
-  #      yield it
 
   def _iterReferences(self):
     for it in self.trailers, self.scape, self.holyseal, self.digiket, self.getchu, self.gyutto, self.dlsite, self.dmm, self.amazon:
@@ -600,11 +544,11 @@ class GameInfo(object):
 
   @memoizedproperty
   def fileSize(self): # long not None
-    try: return max(it.price for it in (self.digiket, self.gyutto, self.dlsite))
+    try: return max(it.fileSize for it in (self.digiket, self.gyutto, self.dlsite) if it)
     except ValueError: return 0
 
   @memoizedproperty
-  def fileSizeString(self): # -> str
+  def fileSizeInfo(self): # -> str
     size = self.fileSize
     if not size:
       return '0 B'
@@ -1073,7 +1017,7 @@ class GameInfo(object):
   #@property
   def hasSampleImages(self): # bool
     for r in self._iterGetchuDLsiteAmazonDmmDigiket():
-      if r and r.hasSampleImages():
+      if r.hasSampleImages():
         return True
     return False
 
@@ -1332,6 +1276,12 @@ class _GameObject(object):
       return 'otome' if info.otome0 else 'junai' if not info.okazu0 else 'nuki'
     return ''
 
+  # Need file size 0
+  #@memoizedproperty
+  #def fileSizeInfo(self): # str
+  #  info = self.info
+  #  return info.fileSizeInfo if info and info.fileSize else ''
+
   @memoizedproperty
   def tags(self): # unicode or None
     t = self.gameType
@@ -1444,6 +1394,11 @@ class GameObject(QObject):
   tags = Property(unicode,
     lambda self: self.__d.tags,
     notify=tagsChanged)
+
+  #fileSizeInfoChanged = Signal(unicode)
+  #fileSizeInfo = Property(unicode,
+  #  lambda self: self.__d.fileSizeInfo,
+  #  notify=fileSizeInfoChanged)
 
   dateChanged = Signal(long)
   date = Property(long,
@@ -2831,6 +2786,7 @@ class DiGiketReference(Reference): #(object):
     self.slogan = genre or '' # str
     self.description = description # unicode
     self.review = review # unicode
+    self.fileSize = filesize # int
 
     self.tags = keywords or []
     if anime:

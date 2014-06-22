@@ -126,6 +126,9 @@ Rectangle { id: root_
             ts = Util.datestampToString(ts)
             ret += " <span style='color:brown'>" + ts + "</span>"
           }
+          //var sz = g.fileSizeInfo
+          //if (sz)
+          //  ret += ' ' + sz
         }
         return ret
       }
