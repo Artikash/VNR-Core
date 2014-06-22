@@ -301,6 +301,8 @@ class GameInfo(object):
           key = r.gyutto
           break
     if key:
+      if self.otome0:
+        key = 'http://gyutto.me/i/item%s' % key
       kw = refman.manager().queryOne(key=key, type=type, async=self.async)
       if kw:
         return GyuttoReference(**kw)
