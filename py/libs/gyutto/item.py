@@ -16,6 +16,7 @@ from sakurakit import sknetio, skstr
 from sakurakit.skdebug import dwarn
 
 class ItemApi(object):
+  #HOST = "http://gyutto.me"
   HOST = "http://gyutto.com"
   IMAGE_HOST = "http://image.gyutto.com"
   API = HOST + "/i/item%s"
@@ -44,21 +45,35 @@ class ItemApi(object):
     # Disable redirects for gyutto items
     return sknetio.getdata(url, gzip=True, cookies=self.COOKIES, allow_redirects=True)
 
-  def query(self, id):
+  def query(self, id=None, url=None):
     """
     @param  id  str or int  softId
     @return  {kw} or None
     """
-    url = self._makeurl(id)
-    h = self._fetch(url)
-    if h:
-      h = h.decode(self.ENCODING, errors='ignore')
-      if h and u'エラーが発生しました。' not in h:
-        ret = self._parse(h)
-        if ret:
-          ret['id'] = long(id)
-          ret['url'] = url
-          return ret
+    if not url and id:
+      url = self._makeurl(id)
+    if url:
+      if not id:
+        id = self._parseurlid(url)
+      h = self._fetch(url)
+      if h:
+        h = h.decode(self.ENCODING, errors='ignore')
+        if h and u'エラーが発生しました。' not in h:
+          ret = self._parse(h)
+          if ret:
+            ret['id'] = long(id)
+            ret['url'] = url
+            ret['otome'] = u'乙女ゲーム' in h or url.startswith('http://gyutto.me')
+            return ret
+
+  _rx_urlid = re.compile('item(\d+)')
+  def _parseurlid(self, url):
+    """
+    @param  url  str
+    @return  long
+    """
+    try: return long(self._rx_urlid.search(url).group(1))
+    except Exception, e: dwarn(e); return 0
 
   def _parse(self, h):
     """
@@ -69,7 +84,6 @@ class ItemApi(object):
     if title:
       return {
         'title': title,
-        'otome': u'乙女ゲーム' in h,
         'doujin': u'同人' in h,
         'image': self._parseimage(h),
         'filesize': self._parsefilesize(h),
