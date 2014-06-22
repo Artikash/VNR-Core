@@ -109,9 +109,9 @@
           #{tr('File size')}:
           -if game.fileSize
             -if game.fileSize > 1024*1024*1024
-              %b.text-error: #{game.fileSizeString}
+              %b.text-error: #{game.fileSizeInfo}
             -else
-              %b: #{game.fileSizeString}
+              %b: #{game.fileSizeInfo}
           -else
             %span.muted (#{tr('unknown')})
         %p
