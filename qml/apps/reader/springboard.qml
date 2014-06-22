@@ -177,7 +177,7 @@ Item { id: root_
       anchors {
         right: parent.right
         bottom: parent.bottom
-        bottomMargin: 5
+        bottomMargin: 3
         rightMargin: 120
       }
       count: gComet.connectionCount
