@@ -202,6 +202,8 @@ class sakurakit(QObject):
       self.tr("Score"),
       self.tr("Slogan"),
 
+      self.tr("Comiket"),
+
       self.tr("Machine Translation"),
 
       self.tr("Keyboard shortcuts"),
