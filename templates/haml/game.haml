@@ -403,7 +403,7 @@
             %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=Gyutto.com　#{game.title|e}",title="Google: Gyutto.com+#{game.title|e}") Gyutto:
           -if game.gyutto and game.gyutto.review
             .gyutto.review.ruby.article
-              #{jlp.toRuby(cache.html(game.gyutto.renderReview()), html=True)}
+              #{jlp.toRuby(cache.html(game.gyutto.review), html=True)}
           -else
             %span.muted (#{tr('unknown')})
         %p

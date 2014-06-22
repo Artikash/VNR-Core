@@ -116,6 +116,15 @@ Item { id: root_
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
       onLinkActivated: Qt.openUrlExternally(link)
+      text: root_.formatText('Gyutto', 'gyutto.com', model.gyuttoItem ? 'green' : 'brown')
+    }
+
+    Text {
+      //width: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      textFormat: Text.RichText
+      wrapMode: Text.NoWrap
+      onLinkActivated: Qt.openUrlExternally(link)
       text: root_.formatText('Amazon', 'amazon.co.jp', model.amazonItem ? 'green' : 'brown')
     }
 
