@@ -571,7 +571,10 @@ class GyuttoApi(object):
     """
     dprint("key, text =", key, text)
     if key:
-      kw = self.cachingItemApi.query(key)
+      if key.startswith('http://'):
+        kw = self.cachingItemApi.query(url=key)
+      else:
+        kw = self.cachingItemApi.query(key)
       if kw:
         yield kw
     elif text:
@@ -606,9 +609,11 @@ class GyuttoApi(object):
     dprint("enter")
     ret = []
     if not key and text:
-      if text.isdigit():
+      if text.isdigit() or text.startswith('http://'): # use URL as key
         key = text
-      elif text.startswith('http://') or text.startswith('www.') or 'item' in text:
+      elif text.startswith('gyutto.'): # gyutto.com or gyutto.me
+        key = 'http://' + text
+      elif text.startswith('www.') or 'item' in text:
         k = self._parsekey(text)
         if k:
           key = k
