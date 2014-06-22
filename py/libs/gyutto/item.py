@@ -124,7 +124,7 @@ class ItemApi(object):
   def _parsedd(self, key, h, flags=0):
     """
     @param  h  unicode  html
-    @return  str  URL or None
+    @return  unicode not None
     """
     #rx = re.compile(r'<dt>%s</dt>\r\n<dd>(.+?)</dd>' % key, flags)
     start = h.find('<dt>%s</dt>' % key)
@@ -134,6 +134,7 @@ class ItemApi(object):
         stop = h.find('</dd>', start)
         if stop > 0:
           return skstr.unescapehtml(h[start:stop])
+    return ''
 
   _rx_image = re.compile(r'/data/item_img/[0-9]+/([0-9]+)/\1\.jpg')
   def _parseimage(self, h):
@@ -202,13 +203,14 @@ class ItemApi(object):
   _rx_link = re.compile('<a [^>]+?>([^<]+?)</a>')
   def _parseddlink(self, *args, **kwargs):
     """
-    @return  unicode
+    @return  unicode not None
     """
     dd = self._parsedd(*args, **kwargs);
     if dd:
       m = self._rx_link.search(dd)
       if m:
         return skstr.unescapehtml(m.group(1))
+    return ''
 
   def _iterparseddlinks(self, *args, **kwargs):
     """
