@@ -97,6 +97,12 @@
           -else
             %span.muted (#{tr('unknown')})
         %p
+          #{tr('Comiket')}:
+          -if game.event
+            %b #{game.event}
+          -else
+            %span.muted (#{tr('unknown')})
+        %p
           #{tr('Price')}:
           -if game.price
             -if game.price < 4000

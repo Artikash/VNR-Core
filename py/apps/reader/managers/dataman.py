@@ -462,6 +462,12 @@ class GameInfo(object):
       if r and r.homepage:
         return r.homepage
 
+  @property
+  def event(self):
+    r = self.digiket
+    if r:
+      return r.event
+
   def hasTwitterWidgets(self):
     r = self.scape
     return bool(r and r.twitterWidgets)
@@ -2787,6 +2793,7 @@ class DiGiketReference(Reference): #(object):
     self.description = description # unicode
     self.review = review # unicode
     self.fileSize = filesize # int
+    self.event = event # unicode
 
     self.tags = keywords or []
     if anime:
