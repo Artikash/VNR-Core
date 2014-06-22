@@ -2,7 +2,7 @@
 # caching.py
 # 4/9/2014 jichi
 
-__all__ = ['CachingProductApi', 'CachingSearchApi']
+__all__ = ['CachingProductApi']
 
 if __name__ == '__main__': # DEBUG
   import sys
@@ -10,14 +10,14 @@ if __name__ == '__main__': # DEBUG
 
 from restful.offline import DataCacher
 from product import ProductApi
-from search import SearchApi
+#from search import SearchApi
 
 def _htmlcacher(cls):
   from restful.offline import DataCacher
   return DataCacher(cls, suffix='.html')
 
 CachingProductApi = _htmlcacher(ProductApi)
-CachingSearchApi = _htmlcacher(SearchApi)
+#CachingSearchApi = _htmlcacher(SearchApi)
 
 if __name__ == '__main__':
   api = CachingProductApi("s:/tmp/holyseal", expiretime=86400)

@@ -369,6 +369,10 @@
               .productDescriptionSource.ruby.article
                 -for it in game.amazon.iterDescriptions()
                   #{jlp.toRuby(cache.html(it), html=True)}
+          -elif game.digiket and game.digiket.description
+            %a(href="#{game.digiket.url}",title="#{game.digiket.url}") 紹介:
+            .digiket.description.ruby.article
+              #{jlp.toRuby(game.digiket.description, html=True)}
           -elif game.dlsite and game.dlsite.description
             %a(href="#{game.dlsite.url}",title="#{game.dlsite.url}") 紹介:
             .dlsite.description.ruby.article
@@ -418,6 +422,16 @@
           -if game.dlsite and game.dlsite.review
             .dlsite.review.ruby.article
               #{jlp.toRuby(game.dlsite.renderReview(), html=True)}
+          -else
+            %span.muted (#{tr('unknown')})
+        %p
+          -if game.digiket
+            %a(href="#{game.digiket.url}",title="#{game.digiket.url}") DiGiket:
+          -else
+            %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=DiGiket.com　#{game.title|e}",title="Google: DiGiket.com+#{game.title|e}") DiGiket:
+          -if game.digiket and game.digiket.review
+            .digiket.review.ruby.article
+              #{jlp.toRuby(game.digiket.review, html=True)}
           -else
             %span.muted (#{tr('unknown')})
         %p

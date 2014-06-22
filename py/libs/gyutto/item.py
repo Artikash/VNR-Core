@@ -1,6 +1,7 @@
 # coding: utf8
 # item.py
 # 11/28/2013 jichi
+# Note: the new line character is \r\n
 
 __all__ = ['ItemApi']
 
@@ -9,6 +10,7 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 import re
+from datetime import datetime
 from sakurakit import sknetio, skstr
 #from sakurakit.skcontainer import uniquelist
 from sakurakit.skdebug import dwarn
@@ -18,7 +20,7 @@ class ItemApi(object):
   IMAGE_HOST = "http://image.gyutto.com"
   API = HOST + "/i/item%s"
   ENCODING = 'sjis'
-  COOKIES = {'adult_check_flag':'1'} #, 'user_agent_flat':'1'}
+  COOKIES = {'adult_check_flag':'1'} #, 'user_agent_flag':'1'}
 
   def _makereq(self, id):
     """
@@ -68,10 +70,19 @@ class ItemApi(object):
       return {
         'title': title,
         'image': self._parseimage(h),
-        #'date': self._parsedate(h),
-        'theme': self._parsetheme(h),
-        'tags': list(self._iterparsetags(h)),
+        'filesize': self._parsefilesize(h),
+        'brand': self._parseddlink(u'ブランド', h),
+        'series': self._parseddlink(u'シリーズ', h),
+        'date': self._parsedate(h),
+        'theme': self._parsedd(u'作品テーマ', h),
+        #'price': self._parseprice(h), # price does not exist
         'sampleImages': list(self._iterparsesampleimages(h)),
+        'tags': list(self._iterparsetags(h)),
+        #'genres': list(self._iterparseddlinks(u'ジャンル', h)),
+        'artists': list(self._iterparseddlinks(u'原画', h)),
+        'writers': list(self._iterparseddlinks(u'シナリオ', h)),
+        'musicians': list(self._iterparseddlinks(u'音楽', h)),
+        #'cv': list(self._iterparseddlinks(u'声優', h)),
       }
 
   def __makemetarx(name):
@@ -108,20 +119,19 @@ class ItemApi(object):
     if t:
       return skstr.unescapehtml(t.partition(',')[0])
 
-  # Examplee:
-  # <dt>作品テーマ</dt>
-  # <dd>演劇de恋するアドベンチャー</dd>
-  # </dl>
-  _rx_theme = re.compile(ur'''<dt>作品テーマ</dt>
-<dd>(.+?)</dd>''')
-  def _parsetheme(self, h):
+  def _parsedd(self, key, h, flags=0):
     """
     @param  h  unicode  html
     @return  str  URL or None
     """
-    m = self._rx_theme.search(h)
-    if m:
-      return skstr.unescapehtml(m.group(1))
+    #rx = re.compile(r'<dt>%s</dt>\r\n<dd>(.+?)</dd>' % key, flags)
+    start = h.find('<dt>%s</dt>' % key)
+    if start >= 0:
+      start = h.find('<dd>', start)
+      if start > 0:
+        stop = h.find('</dd>', start)
+        if stop > 0:
+          return skstr.unescapehtml(h[start:stop])
 
   _rx_image = re.compile(r'/data/item_img/[0-9]+/([0-9]+)/\1\.jpg')
   def _parseimage(self, h):
@@ -133,6 +143,32 @@ class ItemApi(object):
     if m:
       return self.IMAGE_HOST + m.group()
 
+  _rx_filesize = re.compile(r'([0-9\.]+) ([GMK]?)B')
+  def _parsefilesize(self, h):
+    """
+    @param  h  unicode  html
+    @return  int not None
+    """
+    dd = self._parsedd(u'ファイルサイズ', h)
+    if dd:
+      m = self._rx_filesize.search(dd)
+      if m:
+        try:
+          num = float(m.group(1)) # throw
+          unit = m.group(2)
+          if not unit:
+            return int(num)
+          elif unit == 'K':
+            return int(num * 1024)
+          elif unit == 'M':
+            return int(num * 1024 * 1024)
+          elif unit == 'G':
+            return int(num * 1024 * 1024 * 1024)
+          else:
+            dwarn("unknown size unit: %s" % unit)
+        except: pass
+    return 0
+
   # Note: There are two kinds of date: http://gyutto.com/i/item16775
   # Example:
   #  1.
@@ -140,17 +176,46 @@ class ItemApi(object):
   # <dd>2007年05月25日</dd>
   # 2.
   # パッケージ販売開始日
-  _rx_date = re.compile(ur"<dt>配信開始日</dt>\n<dd>(\d+年\d\d月\d\d日)</dd>")
+  _rx_date = re.compile(ur'(\d{4})年(\d{2})月(\d{2})日')
   def _parsedate(self, h):
     """
     @param  h  unicode  html
-    @return  str  such as 2007/05/25
+    @return  datetime object  such as 2007/05/25  or Non4
     """
-    m = self._rx_date.search(h)
-    if m:
-      ret = m.group(1)
-      if ret:
-        return ret.replace(u"年", '/').replace(u"月", '/').replace(u"日", '/')
+    for k in u'パッケージ販売開始日', u'配信開始日':
+      dd = self._parsedd(k, h)
+      if dd:
+        m = self._rx_date.search(dd)
+        if m:
+          try: return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+          except: pass
+
+  # Example:
+  # <!-- * -->
+  # <dl class="BasicInfo clearfix">
+  # <dt>ブランド</dt>
+  # <dd><a href="http://gyutto.com/search/search_list.php?mode=search&brand_id=312&category_id=6&set_category_flag=1">KISS</a>
+  # </dd>
+  # </dl>
+  _rx_link = re.compile('<a [^>]+?>([^<]+?)</a>')
+  def _parseddlink(self, *args, **kwargs):
+    """
+    @return  unicode
+    """
+    dd = self._parsedd(*args, **kwargs);
+    if dd:
+      m = self._rx_link.search(dd)
+      if m:
+        return skstr.unescapehtml(m.group(1))
+
+  def _iterparseddlinks(self, *args, **kwargs):
+    """
+    @yield  unicode
+    """
+    dd = self._parsedd(*args, **kwargs);
+    if dd:
+      for m in self._rx_link.finditer(dd):
+        yield skstr.unescapehtml(m.group(1))
 
   _rx_sampleimage = re.compile(r'/data/item_img/[0-9]+/[0-9]+/[0-9]+_[0-9]+.jpg')
   def _iterparsesampleimages(self, h):
@@ -189,16 +254,19 @@ class ItemApi(object):
 if __name__ == '__main__':
   api = ItemApi()
   k = 45242
-  k = 16775
+  k = 16775 # AlterEgo, http://gyutto.com/i/item16775
 
   print '-' * 10
   q = api.query(k)
   #print q['title']
   #print q['image']
   #print q['sampleImages']
+  #print q['price']
   for it in q['tags']:
     print it
   print q['theme']
   #print q['videos']
+  print q['brand']
+  print q['date']
 
 # EOF

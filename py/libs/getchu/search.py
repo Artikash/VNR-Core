@@ -30,6 +30,9 @@ class SearchApi(object):
   ENCODING = 'euc-jp'
   #COOKIES = {'getchu_adalt_flag': 'getchu.com'}
 
+  #GENRES = 'all', 'pc_soft', 'doujin', 'all_lady'
+  PC_GAME_GENRES = 'pc_soft', 'doujin', 'all_lady'
+
   def _makereq(self, text, genre, sort, sort2):
     """
     @param  text  str

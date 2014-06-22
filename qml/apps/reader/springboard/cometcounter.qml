@@ -21,18 +21,24 @@ Share.TwinkleButton { //id: root_
   //property bool highlight: count > 1
 
   font.pixelSize: 12
-  //font.bold: true
-  radius: 7
+  font.bold: false
+  radius: 2
   //visible: !root_.ignoresFocus
   //visible: !statusPlugin_.wine
 
   //property bool checked
 
   //pauseColor: checked ? parent.buttonCheckedColor : parent.buttonColor
-  pauseColor: '#aa555555' // black
+
+  //pauseColor: '#aa555555' // black
+  color: 'black'
+  //pauseColor: 'snow'
+  border.color: '#33555555'  // gray
+  pauseColor: '#99ffffff'  // white
 
   //language: root_.language
-  font.family: 'DFGirl'
+  //font.family: 'DFGirl'
+
   //toolTip: qsTr("Read current Japanese game text using TTS")
   toolTip: qsTr("{0} people are online now").replace('{0}', count)
 

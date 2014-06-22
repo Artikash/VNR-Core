@@ -187,6 +187,7 @@ Item { id: root_
               case 'trailers': return "Trailers"
               case 'scape': return "ErogameScape"
               case 'getchu': return "Getchu"
+              case 'digiket': return "DiGiket"
               case 'holyseal': return "Holyseal"
               case 'dlsite': return "DLsite"
               case 'dmm': return "DMM"

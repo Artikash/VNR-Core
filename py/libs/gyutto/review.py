@@ -16,7 +16,7 @@ class ReviewApi(object):
   HOST = 'http://gyutto.com'
   API = HOST + '/item/item_review.php?id=%s'
   ENCODING = 'euc-jp'
-  #COOKIES = {'adult_check_flag':'1'} #, 'user_agent_flat':'1'}
+  #COOKIES = {'adult_check_flag':'1'} #, 'user_agent_flag':'1'}
 
   def _makereq(self, id):
     """
@@ -49,15 +49,8 @@ class ReviewApi(object):
     h = self._fetch(url)
     if h:
       h = h.decode(self.ENCODING, errors='ignore')
-      if self._nonempty(h):
+      if h and 'ReviewEach' in h: # <div class='ReviewEach'
         return self._parse(h)
-
-  def _nonempty(self, h):
-    """
-    @param  h  unicode  HTML
-    @return  bool
-    """
-    return 'ReviewEach' in h # <div class='ReviewEach'
 
   def _replacelinks(self, h):
     """
@@ -83,13 +76,35 @@ class ReviewApi(object):
     @param  h  unicode  HTML
     @return  unicode  HTML
     """
-    return self._replacelinks(self._rx_review_garbage.sub('', h))
+    ret = self._replacelinks(self._rx_review_garbage.sub('', h))
+    if ret:
+      ret = self._clean(ret)
+    return ret
+
+  @staticmethod
+  def _clean(h):
+    """
+    @param  h  unicode  HTML
+    @return  unicode  HTML
+    """
+    #START = u'<p class="Sanko">▲&nbsp;このレビューは参考になりましたか？'
+    START = '<p class="Sanko">'
+    STOP = '</p>'
+    start = h.find(START)
+    while start > 0:
+      stop = h.find(STOP, start)
+      if stop < 0:
+        break
+      h = h[:start] + h[stop+len(STOP):]
+      start = h.find(START)
+    return h
 
 if __name__ == '__main__':
   api = ReviewApi()
   #k = 4524 # bad
   k = 45242
-  print '-' * 10
+  k = 109393
+  #print '-' * 10
   q = api.query(k)
   print q
 
