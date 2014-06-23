@@ -15,7 +15,7 @@
 ;!!! 5
 %html(lang="ja")
   %head
-    -for it in 'bootstrap2.css', 'metro.css', 'font-awesome3.css', 'dragdealer.css', 'game.css'
+    -for it in 'bootstrap3.css', 'font-awesome4.css', 'dragdealer.css', 'game.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
     -if game.getchu and (game.getchu.hasDescriptions() or game.getchu.review)
       %link(rel="stylesheet",href="#{rc.cdn_url('getchu.css')}")
@@ -78,15 +78,15 @@
             %img.cover.pull-right.img-rounded(src="#{game.imageUrl}")
         -else
           %p.pull-right 表紙: (#{tr('unknown')})
-        %p.metro
+        %p
           #{tr('Save')}:
           -if game.itemId
-            %button.btn.btn-mini.btn-dl-img(title="画像"")
-              %i.icon-save
+            %button.btn.btn-default.btn-xs.btn-dl-img(title="画像"")
+              %i.fa.fa-save
               画像
             -if online and game.hasVideos()
-              %button.btn.btn-mini.btn-dl-yt(title="YouTube動画")
-                %i.icon-download-alt
+              %button.btn.btn-default.btn-xs.btn-dl-yt(title="YouTube動画")
+                %i.fa.fa-download
                 動画
           -else
             %span.muted (#{tr('none')})
@@ -148,40 +148,40 @@
         %p
           #{tr('Genre')}:
             -if game.doujin
-              %a.label.label-important(href="http://ja.wikipedia.org/wiki/同人",title="Wikipedia: 同人") 同人
+              %a.text-danger(href="http://ja.wikipedia.org/wiki/同人",title="Wikipedia: 同人") 同人
             -else
-              %a.label(href="http://ja.wikipedia.org/wiki/ADV",title="Wikipedia: ADV") ADV
+              %a(href="http://ja.wikipedia.org/wiki/ADV",title="Wikipedia: ADV") ADV
             -if game.genres
               -for it in game.genres
-                %a.label.label-important(href="http://ja.wikipedia.org/wiki/#{it|e}",title="Wikipedia: #{it|e}") #{it|e}
+                %a.text-danger(href="http://ja.wikipedia.org/wiki/#{it|e}",title="Wikipedia: #{it|e}") #{it|e}
         %p
           #{tr('Gender')}:
           -if game.otome
-            %span.label.label-important.yomi 女性向け
-            ;%a.label.label-important(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　女性向け",title="Google画像: エロゲ+女性向け") 女性向け
+            %span.text-danger.yomi 女性向け
+            ;%a.text-danger(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　女性向け",title="Google画像: エロゲ+女性向け") 女性向け
           -else
-            %span.yomi.label 男性向け
-            ;%a.label(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　男性向け",title="Google画像: エロゲ+男性向け") 男性向け
+            %span.yomi 男性向け
+            ;%a(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　男性向け",title="Google画像: エロゲ+男性向け") 男性向け
           -if game.ecchi
-            %span.yomi.label 18禁
-            ;%a.label(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　18禁",title="Google画像: エロゲ+18禁") 18禁
+            %span.yomi 18禁
+            ;%a(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　18禁",title="Google画像: エロゲ+18禁") 18禁
           -else
-            %span.yomi.label.label-important 一般作品
-            ;%a.label.label-important(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　一般作品",title="Google画像: エロゲ+一般作品") 一般作品
+            %span.yomi.text-danger 一般作品
+            ;%a.text-danger(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　一般作品",title="Google画像: エロゲ+一般作品") 一般作品
           -if game.okazu
-            %span.yomi.label.label-inverse 抜きゲー
-            ;%a.label.label-inverse(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　抜きゲー",title="Google画像: エロゲ+抜きゲー") 抜きゲー
+            %span.yomi.text-inverse 抜きゲー
+            ;%a.text-inverse(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　抜きゲー",title="Google画像: エロゲ+抜きゲー") 抜きゲー
           -else
-            %span.yomi.label.label-success 純愛系
-            ;%a.label.label-success(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　純愛系",title="Google画像: エロゲ+純愛系") 純愛系
+            %span.yomi.text-success 純愛系
+            ;%a.text-success(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　純愛系",title="Google画像: エロゲ+純愛系") 純愛系
         %p
           -if game.scape.trialUrl
             %a(href="#{game.scape.trialUrl}",title="#{game.scape.trialUrl}")
               体験版:
               -if game.scape.trialH
-                %span.label.label-important Hあり
+                %span.text-danger Hあり
               -else
-                %span.label H無し
+                %span H無し
           -else
             %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=#{game.title|e}　体験版　ダウンロード",title="Google: 体験版+ダウンロード+#{game.title|e}")
               体験版:
@@ -189,28 +189,28 @@
         %p
           #{tr('Links')}:
           -for url,type in game.iterUrlsWithName()
-            %a.label(href="#{url}",title="#{url}") #{type|e}
+            %a(href="#{url}",title="#{url}") #{type|e}
         %p
           #{tr('Keywords')}:
           -if game.tags
             -for it in game.tags.split(',')
               -if it == "イチオシ作品"
-                %span.yomi.label.label-important(title="#{i18n.tip(it) or jlp.toYomi(it)}") #{it}
-                ;%a.ja.label.label-important(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　#{it|e}",title="#{i18n.tip(it)|e}") #{it|e}
+                %span.yomi.text-danger(title="#{i18n.tip(it) or jlp.toYomi(it)}") #{it}
+                ;%a.ja.text-danger(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　#{it|e}",title="#{i18n.tip(it)|e}") #{it|e}
               -else
-                %span.yomi.label(title="#{i18n.tip(it) or jlp.toYomi(it)}") #{it}
-                ;%a.ja.label(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　#{it|e}",title="#{i18n.tip(it)|e}") #{it|e}
+                %span.yomi(title="#{i18n.tip(it) or jlp.toYomi(it)}") #{it}
+                ;%a.ja(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=エロゲ　#{it|e}",title="#{i18n.tip(it)|e}") #{it|e}
           -else
             %span.muted (#{tr('none')})
         %p.text-success
           #{tr('Visits')}:
           -if game.visitCount
-            %span.badge.badge-success: {{game.visitCount}}
+            %span.text-success: {{game.visitCount}}
           -else
             %span.muted (#{tr('unknown')})
           #{tr('Subtitles')}:
           -if game.commentCount
-            %span.badge.badge-success: {{game.commentCount}}
+            %span.text-success: {{game.commentCount}}
           -else
             %span.muted (#{tr('none')})
         %p
@@ -220,28 +220,28 @@
           -if not game.scape.median
             %span.muted (#{tr('unknown')})
           -else
-            %a.badge.badge-info(href="#{url}",title="得点×点数")
+            %a.text-info(href="#{url}",title="得点×点数")
               #{game.scape.median}×#{game.scape.medianCount}
             %a(href="#{url}",title="楽しい ÷ プレイ時間")
               時間:
             -if game.scape.funTime
-              %a.badge.badge-info(href="#{url}",title="楽しい ÷ プレイ時間")
+              %a.text-info(href="#{url}",title="楽しい ÷ プレイ時間")
                 #{game.scape.funTime}／#{game.scape.playTime}
             -else
               %span.muted (#{tr('unknown')})
         %p
           %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=#{game.title|e}",title="Google: #{game.title|e}") Google:
-          %a.label(href="#{proxy.google_search}?#hl=ja&safe=off&q=#{game.title|e}",title="Google: #{game.title|e}") Google
-          %a.label(href="#{proxy.google_search}?#hl=ja&safe=off&q=Wiki　アダルトゲーム　#{game.title|e}",title="Google: Wiki+アダルトゲーム+#{game.title|e}") Wiki
-          %a.label(href="#{proxy.google_search}?#hl=ja&tbm=vid&safe=off&q=YouTube　#{game.title|e}",title="Google動画: YouTube+#{game.title|e}") YouTube
-          %a.label(href="#{proxy.google_search}?#hl=ja&safe=off&q=redistribution.cc　#{game.title|e}",title="Google: redistribution.cc+#{game.title|e}") Redist
-          %a.label(href="#{proxy.google_search}?#hl=ja&safe=off&q=sagaoz.net　#{game.title|e}",title="Google: sagaoz.net+#{game.title|e}") SAGAO
-          %a.label(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=#{game.title|e}",title="Google画像: #{game.title|e}") 画像
-          %a.label(href="#{proxy.google_search}?#hl=ja&safe=off&q=アップデート　#{game.title|e}",title="Google: アップデート+#{game.title|e}") 更新
-          %a.label(href="#{proxy.google_search}?#hl=ja&safe=off&q=攻略　#{game.title|e}",title="Google: 攻略+#{game.title|e}") 攻略
+          %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=#{game.title|e}",title="Google: #{game.title|e}") Google
+          %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=Wiki　アダルトゲーム　#{game.title|e}",title="Google: Wiki+アダルトゲーム+#{game.title|e}") Wiki
+          %a(href="#{proxy.google_search}?#hl=ja&tbm=vid&safe=off&q=YouTube　#{game.title|e}",title="Google動画: YouTube+#{game.title|e}") YouTube
+          %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=redistribution.cc　#{game.title|e}",title="Google: redistribution.cc+#{game.title|e}") Redist
+          %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=sagaoz.net　#{game.title|e}",title="Google: sagaoz.net+#{game.title|e}") SAGAO
+          %a(href="#{proxy.google_search}?#hl=ja&tbm=isch&safe=off&q=#{game.title|e}",title="Google画像: #{game.title|e}") 画像
+          %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=アップデート　#{game.title|e}",title="Google: アップデート+#{game.title|e}") 更新
+          %a(href="#{proxy.google_search}?#hl=ja&safe=off&q=攻略　#{game.title|e}",title="Google: 攻略+#{game.title|e}") 攻略
         %p
           %a(href="#{proxy.twitter_search}?q=#{game.title|e}",title="Twitter: #{game.title|e}")
-            %i.icon-twitter
+            %i.fa.fa-twitter
             Twitter:
           -if game.brands or game.creators
             .section
@@ -250,18 +250,18 @@
               -if game.brands
                 -for it in game.brands
                   .brand
-                    .header: .yomi.label #{it.name}
-                    ;.header: %a.label.ja(href="#{proxy.twitter_search}?q=#{it.name|e}",title="Twitter: #{it.name|e}") #{'#' + it.name|e}
+                    .header: .yomi #{it.name}
+                    ;.header: %a.ja(href="#{proxy.twitter_search}?q=#{it.name|e}",title="Twitter: #{it.name|e}") #{'#' + it.name|e}
                     -set image = cache.image(it.img) if it.img else ""
                     -if image
                       .body: %a(href="#{image}",title="#{it.name} (ブランド)")
                         %img(src="#{image}")
-                    .footer: .yomi.badge.badge-info ブランド
+                    .footer: .yomi.text-info ブランド
               -if game.creators
                 -for it in game.creators
                   .creator
-                    .header: .yomi.label #{it.name|e}
-                    ;.header: %a.label.ja(href="#{proxy.twitter_search}?q=#{it.name|e}",title="Twitter: #{it.name|e}") @#{it.name|e}
+                    .header: .yomi #{it.name|e}
+                    ;.header: %a.ja(href="#{proxy.twitter_search}?q=#{it.name|e}",title="Twitter: #{it.name|e}") @#{it.name|e}
                     -if it.twimg or it.img
                       -set url = cache.image(proxy.twimg_pbs + '/profile_images/' + it.twimg if it.twimg else it.img)
                       .body: %a(href="#{url}",title="#{it.name|e}")
@@ -269,7 +269,7 @@
                     -if it.roles
                       .footer
                         -for role in it.roles
-                          .yomi.badge.badge-info #{i18n.tag(role)}
+                          .yomi.text-info #{i18n.tag(role)}
           -else
             %span.muted (#{tr('unknown')})
 
@@ -301,23 +301,23 @@
                 .chara
                   .header
                     -if it.label == "主人公" or it.label == "【主人公】"
-                      .yomi.label.label-important(title="#{it.yomi}") #{it.name|e}
+                      .yomi.text-danger(title="#{it.yomi}") #{it.name|e}
                     -else
-                      .yomi.label(title="#{it.yomi}") #{it.name|e}
+                      .yomi.text-default(title="#{it.yomi}") #{it.name|e}
                   -if it.img
                     -set url = cache.image(it.img)
                     .body: %a(href="#{url}",title="#{it.name|e} #{it.label|e}")
                       %img.img-rounded(src="#{url}")
                   .footer
                     -if it.cv
-                      .yomi.badge.badge-info #{it.cv}
+                      .yomi.text-info #{it.cv}
                     -else
                       %span.muted (CV無し)
           -else
             %span.muted (#{tr('unknown')})
         %p
           %a(href="#{proxy.google_search}?#hl=ja&tbm=vid&safe=off&q=YouTube　#{game.title|e}",title="Google動画: YouTube+#{game.title|e}")
-            %i.icon-youtube-play
+            %i.fa.fa-youtube-play
             YouTube:
           -if game.hasVideos()
             ;.masonry-container
@@ -325,16 +325,16 @@
               -for it in game.iterVideos()
                 .youtube(data-id="#{it.youtube}")
                   .header
-                    %a.label(href="javascript:;",title="#{it.date}")
+                    %a(href="javascript:;",title="#{it.date}")
                       #{it.title if py.len(it.title) <= 12 else it.title[:12] + '...'|e}
                     -if online
                       -if not mainland
                         %a.btn.btn-link.btn-play(href="javascript:;",title="#{tr('Play')}")
-                          %i.icon-play
+                          %i.fa.fa-play
                       %a.btn.btn-link(href="http://youtube.com/watch?v=#{it.youtube}",title="#{tr('Open')}")
-                        %i.icon-external-link
+                        %i.fa.fa-external-link
                       %a.btn.btn-link.btn-dl(href="javascript:;",title="#{tr('Download')}")
-                        %i.icon-download-alt
+                        %i.fa.fa-download
                   -set url = cache.image(proxy.ytimg_i + '/vi/' + it.youtube + '/maxresdefault.jpg')
                   -if online
                     %img.img-rounded(src="#{url}",title="#{it.title|e} #{it.date}")
@@ -457,15 +457,15 @@
             ; allowtransparency is only needed by IE
              %iframe.amazon(src="#{game.amazon.review}",width="480",height="360",frameborder="0",allowtransparency="true",seamless="true")
 
-      #toolbar.metro
+      #toolbar
         #zoomSlider.dragdealer.rounded.vertical
           .handle.red(title="#{tr('Zoom')}"): 拡大
-        .btn.btn-block.btn-mini.btn-refresh(title="#{tr('Refresh')}")
-          %i.icon-refresh
-        .btn.btn-block.btn-mini.btn-top(title="#{tr('Scroll to top')}")
-          %i.icon-chevron-up
-        .btn.btn-block.btn-mini.btn-bottom(title="#{tr('Scroll to bottom')}")
-          %i.icon-chevron-down
+        .btn.btn-default.btn-block.btn-xs.btn-refresh(title="#{tr('Refresh')}")
+          %i.fa.fa-refresh
+        .btn.btn-default.btn-block.btn-xs.btn-top(title="#{tr('Scroll to top')}")
+          %i.fa.fa-chevron-up
+        .btn.btn-default.btn-block.btn-xs.btn-bottom(title="#{tr('Scroll to bottom')}")
+          %i.fa.fa-chevron-down
 
       ; Scripts
       ;-for it in 'jquery', 'jquery.imagesloaded', 'masonry', 'game'

@@ -70,6 +70,7 @@ SITE_NAMES = {
   'erogamescape': u"批評空間",
   'holyseal': u"聖封",
   'homepage': u"公式HP",
+  'wiki': tr_("Wiki"), #u"ウィキ"
 }
 def site_name(t): return SITE_NAMES.get(t) or ''
 

@@ -327,7 +327,7 @@ class _NetworkManager(object):
             for el in item:
               tag = el.tag
               text = el.text
-              if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
+              if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'wiki', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
                 setattr(e, tag, text)
               elif tag in ('otome', 'okazu'):
                 setattr(e, tag, text == 'true')

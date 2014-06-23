@@ -81,8 +81,8 @@ dprint = ->
     """<iframe width="#{w}" height="#{h}" src="http://youtube.com/embed/#{id}" frameborder="0" allowfullscreen />"""
 
   # Bind this at first!
-  $('a.badge').click -> @classList.add 'badge-info' #; false
-  $('a.label,a .label').click -> @classList.add 'label-info' #; false
+  #$('a.badge').click -> @classList.add 'badge-info' #; false
+  #$('a.label,a .label').click -> @classList.add 'label-info' #; false
   #$('.label a').click -> $(@).parent().addclass 'label-info'
 
   ITEM_ID = $('body').data 'id'
@@ -111,7 +111,7 @@ dprint = ->
       $btn = $youtube.find '.btn-play'
       if $iframe.length # remove iframe
         $btn.prop 'title', '再生'
-            .find('.icon-stop').removeClass('icon-stop').addClass 'icon-play'
+            .find('.fa-stop').removeClass('fa-stop').addClass 'fa-play'
         $label.removeClass 'label-info'
               .removeClass 'label-success'
         $iframe.remove()
@@ -123,7 +123,7 @@ dprint = ->
         $img.show()
       else # add iframe
         $btn.prop 'title', '停止'
-            .find('.icon-play').removeClass('icon-play').addClass 'icon-stop'
+            .find('.fa-play').removeClass('fa-play').addClass 'fa-stop'
         $label.removeClass 'label-info'
               .addClass 'label-success' # .label.info
         $img.hide()

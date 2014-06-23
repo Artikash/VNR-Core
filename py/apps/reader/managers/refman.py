@@ -613,7 +613,9 @@ class GyuttoApi(object):
         key = text
       elif text.startswith('gyutto.'): # gyutto.com or gyutto.me
         key = 'http://' + text
-      elif text.startswith('www.') or 'item' in text:
+      elif text.startswith('www.gyutto.'): # gyutto.com or gyutto.me
+        key = 'http://' + text[4:]
+      elif 'item' in text:
         k = self._parsekey(text)
         if k:
           key = k
@@ -719,7 +721,7 @@ class DiGiketApi(object):
     if not key and text:
       if text.isdigit():
         key = text
-      elif text.startswith('http://') or text.startswith('www.') or 'ITM' in text:
+      elif 'ITM' in text:
         k = self._parsekey(text)
         if k:
           key = k

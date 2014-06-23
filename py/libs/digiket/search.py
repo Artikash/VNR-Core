@@ -121,6 +121,7 @@ class SearchApi(object):
         except: pass
         yield {
           'id': id,
+          'url': self.HOST + '/work/show/_data/ID=%s/' % key,
           'title': title,
           'img': img,
           'price': price,

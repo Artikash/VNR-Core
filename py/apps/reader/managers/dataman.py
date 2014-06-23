@@ -540,6 +540,9 @@ class GameInfo(object):
     v = self.trailersUrl
     if v:
       yield v, 'trailers'
+    v = self.wiki
+    if v:
+      yield v, 'wiki'
 
   def iterUrlsWithName(self):
     """
@@ -632,6 +635,11 @@ class GameInfo(object):
     for r in self.trailersItem, self.gyutto, self.dlsite, self.dmm:
       if r and r.series:
         return r.series
+
+  @property
+  def wiki(self): # str not None
+    g = self.gameItem
+    return g.wiki if g else ''
 
   @memoizedproperty
   def otome0(self): # bool not None
@@ -1135,7 +1143,7 @@ class GameInfo(object):
 
 class GameItem:
   def __init__(self, id=0,
-      title="", romajiTitle="", brand="", series="", image="",
+      title="", romajiTitle="", brand="", series="", image="", wiki="",
       timestamp=0, date=None, artists='', sdartists='', writers='', musicians='',
       otome=False, okazu=False, scapeMedian=0, scapeCount=0, tags=''):
     self.id = id # int
@@ -1144,6 +1152,7 @@ class GameItem:
     self.brand = brand # unicode
     self.series = series # unicode
     self.image = image # str
+    self.wiki = wiki # unicode
     self.timestamp = timestamp # long
     self.date = date # datetime or None
     self.otome = otome # bool
@@ -5555,7 +5564,7 @@ class _DataManager(object):
           if path == 3: # grimoire/references/reference
             tag = elem.tag
             text = elem.text
-            if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
+            if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'wiki', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
               setattr(e, tag, text)
             elif tag == 'keywords': # backward compatibility since 1386059148
               e.tags = text
