@@ -2151,7 +2151,7 @@
     <message>
         <location filename="sktr.py" line="205"/>
         <source>Comiket</source>
-        <translation>Comiket</translation>
+        <translation>漫展</translation>
     </message>
 </context>
 </TS>
