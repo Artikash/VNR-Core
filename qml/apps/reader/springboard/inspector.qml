@@ -246,13 +246,13 @@ Rectangle { id: root_
 
       property int cellWidth: 25
       property int cellHeight: 25
-      //property real zoom: 0.9
+      //property real scale: 0.9
 
       Bootstrap.Button { id: allButton_
         styleClass: checked ? 'btn btn-inverse' : 'btn btn-default'
         checkable: true
         checked: true // select all button by default
-        //zoom: parent.zoom
+        //scale: parent.scale
         width: parent.cellWidth
         height: parent.cellHeight
         text: "全"
@@ -262,7 +262,7 @@ Rectangle { id: root_
       Bootstrap.Button { id: junaiButton_
         styleClass: checked ? 'btn btn-primary' : 'btn btn-default'
         checkable: true
-        //zoom: parent.zoom
+        //scale: parent.scale
         width: parent.cellWidth
         height: parent.cellHeight
         text: "愛"
@@ -272,7 +272,7 @@ Rectangle { id: root_
       Bootstrap.Button { id: nukiButton_
         styleClass: checked ? 'btn btn-info' : 'btn btn-default'
         checkable: true
-        //zoom: parent.zoom
+        //scale: parent.scale
         width: parent.cellWidth
         height: parent.cellHeight
         text: "抜"
@@ -282,7 +282,7 @@ Rectangle { id: root_
       Bootstrap.Button { id: otomeButton_
         styleClass: checked ? 'btn btn-success' : 'btn btn-default'
         checkable: true
-        //zoom: parent.zoom
+        //scale: parent.scale
         width: parent.cellWidth
         height: parent.cellHeight
         text: "乙"

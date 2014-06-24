@@ -34,7 +34,7 @@ Column { id: root_
     onClicked: root_.scrollTop()
     //font.bold: true
     font.family: 'YouYuan'
-    zoom: 0.8
+    scale: 0.8
     width: height
   }
 
@@ -47,7 +47,7 @@ Column { id: root_
     onClicked: root_.scrollBottom()
     //font.bold: true
     font.family: 'YouYuan'
-    zoom: 0.8
+    scale: 0.8
     width: height
   }
 }

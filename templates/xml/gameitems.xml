@@ -59,6 +59,24 @@
 %	if it.scapeCount
 			<scapeCount>{{it.scapeCount}}</scapeCount>
 %	endif
+%	if it.overallScoreCount
+			<overallScoreCount>{{it.overallScoreCount}}</overallScoreCount>>
+%	endif
+%	if it.overallScoreSum
+			<overallScoreSum>{{it.overallScoreSum}}</overallScoreSum>>
+%	endif
+%	if it.ecchiScoreCount
+			<ecchiScoreCount>{{it.ecchiScoreCount}}</ecchiScoreCount>>
+%	endif
+%	if it.ecchiScoreSum
+			<ecchiScoreSum>{{it.ecchiScoreSum}}</ecchiScoreSum>>
+%	endif
+%	if it.easyScoreCount
+			<easyScoreCount>{{it.easyScoreCount}}</easyScoreCount>>
+%	endif
+%	if it.easyScoreSum
+			<easyScoreSum>{{it.easyScoreSum}}</easyScoreSum>>
+%	endif
 		</item>
 %endfor
 	</items>

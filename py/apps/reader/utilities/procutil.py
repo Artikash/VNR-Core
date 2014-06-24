@@ -233,9 +233,10 @@ def getyoutube(vids, path=''):
   @param* path  unicode
   """
   from scripts import youtube
-  if features.MAINLAND_CHINA:
-    youtube.getlist_sina(vids, path=path)
-  elif len(vids) == 1:
+  # Disable China youtube downloader
+  #if features.MAINLAND_CHINA:
+  #  youtube.getlist_sina(vids, path=path)
+  if len(vids) == 1:
     youtube.get(vids[0], path=path)
   else:
     youtube.getlist(vids, path=path)

@@ -71,7 +71,7 @@ class ItemApi(object):
     """
     ret = self._parsemetadesc(h)
     if ret:
-      ret['otome'] = u"女性向" in h # bool
+      ret['otome'] = u"成人女性向" in h # bool
       ret['ecchi'] = u"18歳未満" in h # bool
       ret['brand'] = self._parsebrand(h) # unicode or None
       ret['date'] = self._parsedate(h) # datetime object or None
