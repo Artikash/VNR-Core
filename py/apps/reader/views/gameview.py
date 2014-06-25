@@ -131,7 +131,7 @@ class _GameView(object):
     m = coffeebean.manager()
     return (
       ('bean', self._bean), # load at last
-      ('clipboardBean', m.clipboardBean),
+      ('clipBean', m.clipBean),
       ('shioriBean', m.shioriBean),
       ('ttsBean', m.ttsBean),
       ('yakuBean', m.yakuBean),

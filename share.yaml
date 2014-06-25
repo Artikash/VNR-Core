@@ -85,6 +85,13 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.1.0/imagesloaded.min.js
   jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.0.4/imagesloaded.pkgd.min.js
 
+  bootstrap.switch: $PWD/../AJAX/bootstrap-switch/3.0.1/bootstrap-switch.min.js
+  #bootstrap.switch: http://www.bootstrap-switch.org/dist/js/bootstrap-switch.min.js # 3.0.1, block user agent
+  #bootstrap.switch: http://cdn.jsdelivr.net/bootstrap.switch/3.0.0/js/bootstrap-switch.min.js
+  bootstrap.switch.css: $PWD/../AJAX/bootstrap-switch/3.0.1/bootstrap-switch.min.css
+  #bootstrap.switch.css: http://www.bootstrap-switch.org/dist/css/bootstrap3/bootstrap-switch.min.css # 3.0.1
+  #bootstrap.switch.css: http:'//cdn.jsdelivr.net/bootstrap.switch/3.0.0/css/bootstrap3/bootstrap-switch.min.css
+
   masonry: http://cdn.jsdelivr.net/masonry/3.1.5/masonry.min.js
 
   moment: http://cdn.jsdelivr.net/momentjs/2.6.0/moment.min.js
@@ -117,16 +124,23 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #haml: http://rawgithub.com/creationix/haml-js/master/lib/haml.js?0.4.3
   haml: $PWD/../AJAX/npm/haml.min.js
 
-  # Sass & coffeescript
-  choco: $PWD/coffee/reader/choco.min.js
+  # My own sass and coffeescript
+
+  choco: $PWD/coffee/libs/choco.min.js
+  ruby: $PWD/coffee/share/ruby.min.js
+
+  # Reader
+  widgets: $PWD/coffee/reader/widgets.min.js
+
   game: $PWD/coffee/reader/game.min.js
   game.css: $PWD/rb/compass/web/css/game.min.css
   gameboard: $PWD/coffee/reader/gameboard.min.js
   gameboard.css: $PWD/rb/compass/web/css/gameboard.min.css
-  widgets: $PWD/coffee/reader/widgets.min.js
+
   dragdealer.css: $PWD/rb/compass/web/css/dragdealer.min.css
   metro.css: $PWD/rb/compass/web/css/metro.min.css
   #iframe.css: $PWD/rb/compass/web/css/iframe.min.css
+
   amazon.css: $PWD/rb/compass/web/css/sites/amazon.min.css
   getchu.css: $PWD/rb/compass/web/css/sites/getchu.min.css
   gyutto.css: $PWD/rb/compass/web/css/sites/gyutto.min.css

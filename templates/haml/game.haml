@@ -16,7 +16,7 @@
 
 %html(lang="ja")
   %head
-    -for it in 'bootstrap3.css', 'font-awesome4.css', 'dragdealer.css', 'game.css'
+    -for it in 'bootstrap3.css', 'font-awesome4.css', 'bootstrap.switch.css', 'dragdealer.css', 'game.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
     -if game.getchu and (game.getchu.hasDescriptions() or game.getchu.review)
       %link(rel="stylesheet",href="#{rc.cdn_url('getchu.css')}")
@@ -224,6 +224,32 @@
                 -else
                   %a(href="#{GG_Q}#{title}",title="#{tr('Google')}")
                     %img(src="#{it}")
+
+          -if game.hasSampleImages()
+            %hr
+            %section.cg
+              .title
+                .title-content #{tr('Images')}
+                .switch-group
+                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+              .images
+          -if game.videos
+            %hr
+            %section.youtube
+              .title
+                .title-content YouTube
+                .switch-group
+                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+              .videos
+          -if game.twitters
+            %hr
+            %section.twitter
+              .title
+                .title-content Twitter
+                .switch-group
+                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+              %center.widgets
+
 ;          -if true
 ;            %hr
 ;            %section.stats
@@ -310,26 +336,10 @@
 ;                        %i.text-muted.text-xs #{' -- ' + tr('This h-code is definite correct and not allowed to change')}
 ;                    -else
 ;                      %span.text-muted #{tr('Not specified')}
-;          -if game.videos
-;            %hr
-;            %section.youtube
-;              .title
-;                .title-content YouTube
-;                .switch-group
-;                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
-;              .videos
-;          -if game.twitters
-;            %hr
-;            %section.twitter
-;              .title
-;                .title-content Twitter
-;                .switch-group
-;                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
-;              %center.widgets
 
       ; Scripts
       ;-for it in 'jquery', 'jquery.imagesloaded', 'masonry', 'game'
-      -for it in 'jquery', 'dragdealer', 'widgets', 'game'
+      -for it in 'jquery', 'bootstrap.switch', 'dragdealer', 'ruby', 'widgets', 'game'
         %script(src="#{rc.cdn_url(it)}")
 
       -if game and game.image

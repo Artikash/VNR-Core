@@ -184,91 +184,29 @@ initToolbar = ->
     move: slider.reloadOffset
   dprint 'bindToolbar: leave'
 
-## Yomigana ##
-
-class Scheduler
-  constructor: (@callback, @interval=50, @timerId=0) ->
-
-  active: => @timerId isnt 0
-
-  schedule: (@interval, @callback) =>
-    @timeId = setTimeout @trigger, @interval
-
-  trigger: =>
-    if @timerId
-      clearTimeout @timerId
-      @timerId = 0
-    @callback?()
+## Ruby Furigana ##
 
 initRuby = ->
   dprint 'bindRuby: enter'
-  s = new Scheduler
 
-  readEvent = (e, t, interval) -> # mouse event, unicode t, int interval
-    s.schedule interval, ->
-      clipboardBean.text = t
-      ttsBean.speak t
-
-  popupEvent = (e, t, interval) -> # mouse event, unicode t, int interval
-    $window = $ window
-    x = e.pageX - $window.scrollLeft() + viewBean.x()
-    y = e.pageY - $window.scrollTop() + viewBean.y()
-    s.schedule interval, ->
-      clipboardBean.text = t
-      shioriBean.popup t, x, y
-      ttsBean.speak t
-
-  CLICK_TIMEOUT = 150 # about half of double click interval on Windows (250 msecs)
-
-  #$('.ruby:not(.article)').each ->
-  #  @title = '音声合成（クリック）, 振仮名（ダブルクリック）'
-
-  $ '.ruby ruby'
-    .dblclick (e) ->
-      t = $.trim $(@).find('rb').text()
-      popupEvent e, t, 0 if t
-    .click ->
-      t = $.trim $(@).find('rb').text()
-      viewBean.rehighlight t
-
-  $ '.yomi'
-    .each ->
-      unless @title
-        t = $.trim $(@).text()
-        @title = "読: " + yomiBean.toYomi t
-    .dblclick (e) ->
-      t = $.trim $(@).text()
-      popupEvent e, t, 0 if t
-    .click (e) ->
-      t = $.trim $(@).text()
-      #viewBean.rehighlight t # disabled as highlighted bootstrap labels looks ugly
-      readEvent e, t, CLICK_TIMEOUT if t
-
-  $ '.ruby:not(.article),.ruby .sentence'
-    .click (e) ->
-      #h = @innerHTML
-      t = $.trim $(@).find('rb').text()
-      readEvent e, t, CLICK_TIMEOUT if t
-      #false
-    .hover ->
-      unless @title
-        $this = $ @
-        unless $this.hasClass 'pass'
-          $this.addClass 'pass'
-          t = $.trim $this.find('rb').text()
-          if t and yakuBean.enabled()
-            @title = "ちょっとまってて><"
-            t = yakuBean.yaku t
-            if t
-              @title = "訳: " + t
-              #$this.tooltip placement: 'bottom'
-              #$this.tooltip 'show'
-            else
-              @title = ""
-              $this.removeClass 'pass'
-            #tooltip $(@), t if t
+  $.fn.inject = -> # create inject plugin
+      @each -> window.injectruby @
+  $('.ruby').inject()
 
   dprint 'bindRuby: leave'
+
+
+## Bootstrap Switch ##
+
+initBootstrapSwitch = ->
+
+  $cg = $ 'section.cg'
+  $cg.find('input.switch').bootstrapSwitch()
+    .on 'switchChange.bootstrapSwitch', (event, checked) ->
+      if checked
+        # repaint cg
+      else
+        $cg.find('.images').fadeOut()
 
 ## Bootstrap ##
 
@@ -286,6 +224,8 @@ init = ->
 
     initToolbar()
 
+    initBootstrapSwitch()
+
     initRuby()
 
     #initBootstrap()
@@ -297,3 +237,93 @@ init = ->
 $ -> init()
 
 # EOF
+
+#class Scheduler
+#  constructor: (@callback, @interval=50, @timerId=0) ->
+#
+#  active: => @timerId isnt 0
+#
+#  schedule: (@interval, @callback) =>
+#    @timeId = setTimeout @trigger, @interval
+#
+#  trigger: =>
+#    if @timerId
+#      clearTimeout @timerId
+#      @timerId = 0
+#    @callback?()
+#
+#initRuby = ->
+#  dprint 'bindRuby: enter'
+#
+#  $.fn.inject = -> # create inject plugin
+#      @each -> window.injectruby @
+#  $('.ruby').inject()
+#
+#
+#  s = new Scheduler
+#
+#  readEvent = (e, t, interval) -> # mouse event, unicode t, int interval
+#    s.schedule interval, ->
+#      clipbean.text = t
+#      ttsBean.speak t
+#
+#  popupEvent = (e, t, interval) -> # mouse event, unicode t, int interval
+#    $window = $ window
+#    x = e.pageX - $window.scrollLeft() + viewBean.x()
+#    y = e.pageY - $window.scrollTop() + viewBean.y()
+#    s.schedule interval, ->
+#      clipbean.text = t
+#      shioriBean.popup t, x, y
+#      ttsBean.speak t
+#
+#  CLICK_TIMEOUT = 150 # about half of double click interval on Windows (250 msecs)
+#
+#  #$('.ruby:not(.article)').each ->
+#  #  @title = '音声合成（クリック）, 振仮名（ダブルクリック）'
+#
+#  $ '.ruby ruby'
+#    .dblclick (e) ->
+#      t = $.trim $(@).find('rb').text()
+#      popupEvent e, t, 0 if t
+#    .click ->
+#      t = $.trim $(@).find('rb').text()
+#      viewBean.rehighlight t
+#
+#  $ '.yomi'
+#    .each ->
+#      unless @title
+#        t = $.trim $(@).text()
+#        @title = "読: " + yomiBean.toYomi t
+#    .dblclick (e) ->
+#      t = $.trim $(@).text()
+#      popupEvent e, t, 0 if t
+#    .click (e) ->
+#      t = $.trim $(@).text()
+#      #viewBean.rehighlight t # disabled as highlighted bootstrap labels looks ugly
+#      readEvent e, t, CLICK_TIMEOUT if t
+#
+#  $ '.ruby:not(.article),.ruby .sentence'
+#    .click (e) ->
+#      #h = @innerHTML
+#      t = $.trim $(@).find('rb').text()
+#      readEvent e, t, CLICK_TIMEOUT if t
+#      #false
+#    .hover ->
+#      unless @title
+#        $this = $ @
+#        unless $this.hasClass 'pass'
+#          $this.addClass 'pass'
+#          t = $.trim $this.find('rb').text()
+#          if t and yakuBean.enabled()
+#            @title = "ちょっとまってて><"
+#            t = yakuBean.yaku t
+#            if t
+#              @title = "訳: " + t
+#              #$this.tooltip placement: 'bottom'
+#              #$this.tooltip 'show'
+#            else
+#              @title = ""
+#              $this.removeClass 'pass'
+#            #tooltip $(@), t if t
+#
+#  dprint 'bindRuby: leave'

@@ -276,6 +276,8 @@ class sakurakit(QObject):
       self.tr("Help"),
       self.tr("Homepage"),
       self.tr("Icon"),
+      self.tr("Image"),
+      self.tr("Images"),
       self.tr("Information"),
       self.tr("International"),
       self.tr("Internet status"),

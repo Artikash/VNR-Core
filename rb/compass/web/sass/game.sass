@@ -3,7 +3,7 @@
    See: http://isotope.metafizzy.co/css/style.css
 
 @import bootstrap/fa
-@import fixes/bootstrap
+//@import fixes/bootstrap
 @import main/blocker
 @import main/color
 @import main/cursor
@@ -13,16 +13,25 @@
 @import main/transition
 @import main/text
 @import sites/youtube
+@import widgets/ruby
 @import widgets/toolbar
 //@import main/zoom
+
+//@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700)
+//*
+//  font-family: 'Source Sans Pro', sans-serif
+
+.bootstrap-switch // bootstrap-switch bug
+  max-height: 30px
+  margin-top: 5px
 
 .game.portal
   //margin: 9px
   //padding: 9px
   //border-radius: 4px
   padding: 18px
-  background-color: rgba(255,255,255,0.95)
-  //background-color: rgba(255,255,255,0.9)
+  background-color: rgba(255,255,255,0.9)
+  //background-color: rgba(255,255,255,0.95)
   //max-width: 800px
   > .cover
     //float: right  // does not work well with bootstrap table

@@ -40,7 +40,7 @@ class CoffeeBeanManager(object):
   def setParent(self, v): self._parent = v
 
   @memoizedproperty
-  def clipboardBean(self):
+  def clipBean(self):
     from sakurakit import skwebkit
     return skwebkit.SkClipboardProxy(self.parent())
 

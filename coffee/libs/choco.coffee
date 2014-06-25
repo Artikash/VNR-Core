@@ -139,7 +139,7 @@ See: https://gitorious.org/qmlweb
         super
         @_slots = [] # [function]
       #slots: => @_slots
-      connect: (s) => @_slots.push(s) unless s in @_slots; @ # return this
+      connect: (s) => @_slots.push s unless s in @_slots; @ # return this
       disconnect: (s) => _List.removeFirst @_slots, s; @        # return this
       emit: => # any arguments
         for s in @_slots
@@ -225,6 +225,7 @@ See: https://gitorious.org/qmlweb
         else
           @_timeoutId = setTimeout @timeout.emit, @interval
       start: (interval) =>
+        @interval = interval if interval?
         @stop() if @active
         @_timeoutId = setTimeout @timeout.emit, @interval
         @active = true
