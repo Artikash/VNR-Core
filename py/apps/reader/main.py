@@ -116,6 +116,24 @@ class _MainObject(object):
     return ret
 
   @memoizedproperty
+  def jlpManager(self):
+    dprint("create jlp manager") # Move this upward before kagami
+    import jlpman
+    ret = jlpman.manager()
+
+    import settings
+    ss = settings.global_()
+    def refresh():
+      ret.setParserType(
+          '' if not ss.isMeCabEnabled()
+          'cabocha' if ss.isCaboChaEnabled()
+          else 'mecab')
+    refresh()
+    for sig in ss.meCabEnabledChanged, ss.caboChaEnabledChanged:
+      sig.connect(refresh)
+    return ret
+
+  @memoizedproperty
   def meCabManager(self):
     dprint("create mecab manager") # Move this upward before kagami
     import mecabman
@@ -1320,6 +1338,7 @@ class MainObject(QObject):
     d.dictionaryManager
     d.meCabManager
     d.caboChaManager
+    d.jlpManager
     d.nameManager
     d.referenceManager
     d.trailersManager
