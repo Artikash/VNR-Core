@@ -152,7 +152,9 @@ class ProductApi(object):
     """
     m = self._rx_info_date.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1))
+      ret = skstr.unescapehtml(m.group(1))
+      if ret != '----/--/--':
+        return ret
 
   # Such as: <a href="staffview.cgi?staffcode=2508&amp;refpc=9550">鈴田美夜子</a>
   _rx_staff = re.compile(ur">([^<]*?)</a>")

@@ -53,14 +53,20 @@ class SoftApi(DataParser):
     @param  h  unicode  html
     @return  {kw}
     """
-    return {
+    ret = {
       'banner': self._parsebanner(h),   # str url or None
       'otome': self._parseotome(h),     # bool
       'series': self._parseseries(h),   # str url or None
       'brands': list(self._iterparsebrands(h)), # kw
       'videos': list(self._iterparsevideos(h)), # kw
-      'creators': self._parsecreators(h), # [kw]
+      #'creators': self._parsecreators(h), # [kw]
     }
+
+    for role in 'writer', 'artist', 'sdartist':
+      rx = self._rx_creators[role]
+      ret[role + 's'] = list(self._iterparsemakers(h, rx))
+    ret['musicians'] = list(self._iterparsemakers(h, self._rx_creators['musician'])) + list(self._iterparsemakers(h, self._rx_creators['musician2']))
+    return ret
 
   # <div style="text-align: center; padding-top:10px;"><img src="http://www.noukano.com/koisen/banner/koisen-600x120-5.jpg" /></div>
   _rx_banner = re.compile(r'"><img src="(.+?)"')
@@ -136,46 +142,46 @@ class SoftApi(DataParser):
           }
     except Exception, e: dwarn(e)
 
-  def _parsecreators(self, h):
-    """
-    @param  h  unicode  html
-    @return  {kw}
-    """
-    ret = [] # [{maker}], preserve order
-    makers = {} # {name:maker}
-    for role,rx in self._rx_creators:
-      for it in self._iterparsemakers(h, rx):
-        name = it['name']
-        maker = makers.get(name)
-        if maker:
-          _mergedictwith(maker, it)
-          maker['roles'].append(role)
-        else:
-          it['roles'] = [role]
-          makers[name] = it
-          ret.append(it)
-    return ret
+  #def _parsecreators(self, h):
+  #  """
+  #  @param  h  unicode  html
+  #  @return  {kw}
+  #  """
+  #  ret = [] # [{maker}], preserve order
+  #  makers = {} # {name:maker}
+  #  for role,rx in self._rx_creators:
+  #    for it in self._iterparsemakers(h, rx):
+  #      name = it['name']
+  #      maker = makers.get(name)
+  #      if maker:
+  #        _mergedictwith(maker, it)
+  #        maker['roles'].append(role)
+  #      else:
+  #        it['roles'] = [role]
+  #        makers[name] = it
+  #        ret.append(it)
+  #  return ret
 
   def __makecreatorsrx(key):
     pat = r'<th>%s</th><td>(.*?)</td>' % key
     return re.compile(pat, re.IGNORECASE)
-  _rx_creators = (    # [(str role, rx))
-    ('director',    __makecreatorsrx(u"企画・監督")),
-    ('writer',      __makecreatorsrx(u"シナリオ")),
-    ('artist',      __makecreatorsrx(u"原画")),
-    ('sdartist',    __makecreatorsrx(u"ＳＤ原画")),
-    ('musician',    __makecreatorsrx(u"BGM")),
-    ('musician',    __makecreatorsrx(u"♫")),
-    ('singer',      __makecreatorsrx(u"歌唱")),
-    ('lyrics',      __makecreatorsrx(u"作詞")),
-    ('composer',    __makecreatorsrx(u"作曲")),
-    ('arranger',    __makecreatorsrx(u"編曲")),
-  )
+  _rx_creators = {    # [(str role, rx))
+    'director': __makecreatorsrx(u"企画・監督"),
+    'writer':   __makecreatorsrx(u"シナリオ"),
+    'artist':   __makecreatorsrx(u"原画"),
+    'sdartist': __makecreatorsrx(u"ＳＤ原画"),
+    'musician': __makecreatorsrx(u"BGM"),
+    'musician2':__makecreatorsrx(u"♫"),
+    'singer':   __makecreatorsrx(u"歌唱"),
+    'lyrics':   __makecreatorsrx(u"作詞"),
+    'composer': __makecreatorsrx(u"作曲"),
+    'arranger': __makecreatorsrx(u"編曲"),
+  }
 
   _rx_makers = re.compile(r'>([^<]+?)<') # anything between > and <
   _rx_makers_id = re.compile(r'http://erogetrailers\.com/hito/([0-9]+)')
-  _rx_makers_tw = re.compile(r"""\.twimg\.com/profile_images/(.+?)['"]""") # ends with "'"
-  _rx_makers_img = re.compile(r"<img src='(.*?)'") # ends with "'"
+  #_rx_makers_tw = re.compile(r"""\.twimg\.com/profile_images/(.+?)['"]""") # ends with "'"
+  #_rx_makers_img = re.compile(r"<img src='(.*?)'") # ends with "'"
   def _iterparsemakers(self, h, rx):
     """
     @param  h  unicode  html
@@ -201,17 +207,16 @@ class SoftApi(DataParser):
                 mmm = self._rx_makers_id.search(hhh)
                 hito = mmm.group(1) if mmm else ''
                 if hito:
-                  #hito = int(hito)
-                  hhh = hhh[mmm.end(0):]
-                  mmm = self._rx_makers_img.search(hhh)
-                  img = mmm.group(1) if mmm else ''
-                  mmm = self._rx_makers_tw.search(hhh)
-                  twimg = mmm.group(1).replace('_normal', '') if mmm else ''
+                  #hhh = hhh[mmm.end(0):]
+                  #mmm = self._rx_makers_img.search(hhh)
+                  #img = mmm.group(1) if mmm else ''
+                  #mmm = self._rx_makers_tw.search(hhh)
+                  #twimg = mmm.group(1).replace('_normal', '') if mmm else ''
                   yield {
                     'name': name,   # unicode
                     'id': int(hito),# int not 0, might throw
-                    'img': img,     # str url or ''
-                    'twimg': twimg, # str id or ''
+                    #'img': img,     # str url or ''
+                    #'twimg': twimg, # str id or ''
                   }
             hh = hh[mm.end(0):]
     except ValueError, e: dwarn(e)
@@ -222,5 +227,7 @@ if __name__ == '__main__':
   print '-' * 10
   q = api.query(k)
   print q['otome']
+  print q['artists']
+  print q['musicians']
 
 # EOF

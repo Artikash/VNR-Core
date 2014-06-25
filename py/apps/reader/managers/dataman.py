@@ -172,6 +172,14 @@ class GameInfo(object):
     return bool(self.date) and not self.upcoming and self.date > skdatetime.CURRENT_UNIXTIME - 86400*30 # a month
 
   #@memoizedproperty
+  #def type(self): # -> str
+  #  return 'otome' if self.otome else 'nuki' if self.okazu else 'junai'
+
+  #@memoizedproperty
+  #def typeName(self): # -> unicode
+  #  return u'乙女' if self.otome else u'抜き' if self.okazu else u'純愛'
+
+  #@memoizedproperty
   #def referenceDigests(self):
   #  """Offline
   #  @return  [ReferenceDigest] not None
@@ -982,13 +990,28 @@ class GameInfo(object):
     return r.musicians if r else ''
 
   @memoizedproperty
-  def creators(self): # [kw] or None
-    for r in self.trailersItem, self.digiket, self.getchu, self.gyutto, self.holyseal:
-      if r and r.creators:
-        return r.creators
-    r = self.dmm
-    if r and r.creators:
-      return [{'name':it} for it in r.creators]
+  def artists(self): # [kw] or None
+    for r in self.trailersItem, self.digiket, self.getchu, self.gyutto, self.holyseal, self.dmm:
+      if r and r.artists:
+        return r.artists
+
+  @memoizedproperty
+  def sdartists(self): # [kw] or None
+    for r in self.trailersItem, self.digiket, self.getchu, self.gyutto, self.holyseal: #, self.dmm:
+      if r and r.sdartists:
+        return r.sdartists
+
+  @memoizedproperty
+  def writers(self): # [kw] or None
+    for r in self.trailersItem, self.digiket, self.getchu, self.gyutto, self.holyseal: #, self.dmm:
+      if r and r.writers:
+        return r.writers
+
+  @memoizedproperty
+  def musicians(self): # [kw] or None
+    for r in self.trailersItem, self.digiket, self.getchu, self.gyutto, self.holyseal: #, self.dmm:
+      if r and r.musicians:
+        return r.musicians
 
   @memoizedproperty
   def slogan(self): # str or None
@@ -1265,7 +1288,7 @@ class Game(object):
     if self.itemId:
       g = manager().queryGameItem(self.itemId)
       if g:
-        return 'otome' if g.otome else 'junai' if not g.okazu else 'nuki'
+        return 'otome' if g.otome else 'nuki' if g.okazu else 'junai'
     return ''
 
 class GameFile:
@@ -2539,14 +2562,18 @@ class TrailersItem: #(object):
   def __init__(self,
       series="", banner="",
       otome=False,
-      brands=[], creators=[], videos=[],
+      brands=[], videos=[],
       **kwargs):
     self.series = series # unicode
     self.banner = banner # str url
     self.otome = otome   # bool
     self.brands = brands    # [kw]
-    self.creators = creators # [kw]
     self.videos = videos    # [kw]
+
+    for k in 'artists', 'sdartists', 'writers', 'musicians':
+      v = kwargs.get(k)
+      v = [it['name'] for it in v] if v else []
+      setattr(self, k, v)
 
   def iterVideoIdsWithImage(self, cache=True):
     """
@@ -2695,6 +2722,7 @@ class GetchuReference(Reference): #(object):
       descriptions=[],
       videos=[],
       sampleImages=[], comics=[], banners=[],
+      writers=[], artists=[], sdartists=[], musicians=[],
       **kwargs):
     super(GetchuReference, self).__init__(parent=parent,
         type=type, **kwargs)
@@ -2710,12 +2738,10 @@ class GetchuReference(Reference): #(object):
     self.bannerImages = banners # [str url]
     self.videos = videos    # [str]
 
-    self.creators = []
-    for k in 'writers', 'artists', 'sdartists', 'musicians':
-      v = kwargs.get(k)
-      if v:
-        for it in v:
-          self.creators.append({'name':it, 'roles':[k[:-1]]})
+    self.artists = artists # [unicode name]
+    self.sdartists = sdartists # [unicode name]
+    self.writers = writers # [unicode name]
+    self.musicians = musicians # [unicode name]
 
   def iterVideoIdsWithImage(self, cache=True):
     """
@@ -2800,6 +2826,7 @@ class DiGiketReference(Reference): #(object):
       characters=[],
       description='', review='', event='',
       screenshots=[], ev='',
+      artists=[], writers=[], musicians=[],
       **kwargs):
     super(DiGiketReference, self).__init__(parent=parent,
         type=type, **kwargs)
@@ -2825,12 +2852,9 @@ class DiGiketReference(Reference): #(object):
     if screenshots:
       self.sampleImages.extend(screenshots)
 
-    self.creators = []
-    for k in 'writers', 'artists', 'musicians':
-      v = kwargs.get(k)
-      if v:
-        for it in v:
-          self.creators.append({'name':it, 'roles':[k[:-1]]})
+    self.artists = artists # [unicode name]
+    self.writers = writers # [unicode name]
+    self.musicians = musicians # [unicode name]
 
   def hasSampleImages(self): return bool(self.sampleImages)
 
@@ -2918,6 +2942,7 @@ class GyuttoReference(Reference): #(object):
       theme='',
       doujin=False, otome=False,
       tags=[], sampleImages=[],
+      writers=[], artists=[], musicians=[],
       **kwargs):
     super(GyuttoReference, self).__init__(parent=parent,
         type=type, **kwargs)
@@ -2931,12 +2956,9 @@ class GyuttoReference(Reference): #(object):
     self.otome = otome
     self.doujin = doujin
 
-    self.creators = []
-    for k in 'writers', 'artists', 'musicians':
-      v = kwargs.get(k)
-      if v:
-        for it in v:
-          self.creators.append({'name':it, 'roles':[k[:-1]]})
+    self.artists = artists # [unicode name]
+    self.writers = writers # [unicode name]
+    self.musicians = musicians # [unicode name]
 
   @memoizedproperty
   def review(self):
@@ -2967,6 +2989,7 @@ class HolysealReference(Reference): #(object):
       ecchi=True,
       banner='',
       genre='',
+      writers=[], artists=[],
       **kwargs):
     super(HolysealReference, self).__init__(parent=parent,
         type=type, **kwargs)
@@ -2975,12 +2998,8 @@ class HolysealReference(Reference): #(object):
     self.banner = banner # unicode or None
     self.slogan = genre or '' # str
 
-    self.creators = []
-    for k in 'writers', 'artists':
-      v = kwargs.get(k)
-      if v:
-        for it in v:
-          self.creators.append({'name':it, 'roles':[k[:-1]]})
+    self.artists = artists # [unicode name]
+    self.writers = writers # [unicode name]
 
 class DmmItem: #(object):
   def __init__(self, url="",
@@ -2993,7 +3012,7 @@ class DmmReference(Reference):
   def __init__(self, parent=None,
       type='dmm', # dmm
       price=0, doujin=False, ecchi=True, otome=False,
-      series="", keywords=[], creators=[], #genres=[],
+      series="", keywords=[], authors=[], #genres=[],
       largeImage="", mediumImage="", smallImage="",
       sampleImages=[],
       **kwargs):
@@ -3006,7 +3025,7 @@ class DmmReference(Reference):
     self.otome = otome # bool
     #self.genres = genres # [str]
     self.tags = keywords  # [unicode] not None
-    self.creators = creators  # [unicode] not None
+    self.artists = authors  # [unicode] not None
     self.largeImage = largeImage # str url
     self.mediumImage = mediumImage # str url
     self.smallImage = smallImage # str url

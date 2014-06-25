@@ -14,7 +14,6 @@
 ; @param  cache  cacheman.Cacher
 ;!!! 5
 
-
 %html(lang="ja")
   %head
     -for it in 'bootstrap3.css', 'font-awesome4.css', 'dragdealer.css', 'game.css'
@@ -31,10 +30,9 @@
       %link(rel="stylesheet",href="#{rc.cdn_url('dmm.css')}")
     -if game and game.digiket and game.digiket.review
       %link(rel="stylesheet",href="#{rc.cdn_url('digiket.css')}")
+
     :css
       body {
-        margin: 18px 9px;
-        font-family: youyuan,geneva,arial,helvetica,clean,sans-serif;
         background-repeat: repeat;
         background-image: url("#{rc.image_url('background').toString()}");
       }
@@ -53,240 +51,7 @@
       .blocker: #{tr('Empty') + ' ><'}
   -else
     -set GG_Q = 'https://www.google.com/?#hl=ja&safe=off&q='
-    %body.game(data-id="#{game.itemId}")
-      .header
-        .title
-          %a.tts.cursor-pointer(title="#{tr('TTS')}" data-text="#{title.replace(/ /g,'、')}") %span.fa.fa-volume-down.icon-margin
-          %a(href="#{GG_Q}#{title}" title="#{tr('Google')}") #{title}
-        -if game.romajiTitle
-          .romaji
-            %a(href="#{GG_Q}#{game.romajiTitle}" title="#{tr('Google')}") #{game.romajiTitle}
-      %hr
-      .content
-        %section.info
-          .title
-            .title-content #{tr('Game Information')}
-          .body.form-horizontal
-            -if game.date
-              .row.date
-                %label.control-label.col-xs-2 #{tr('Release')}
-                .form-control-static.col-xs-10 #{i18n.timestamp2date(game.date)}
-            -if game.price
-              .row.price
-                %label.control-label.col-xs-2 #{tr('Price')}
-                .form-control-static.col-xs-10 ￥#{game.price}
-            -if game.series
-              .row.series
-                %label.control-label.col-xs-2 #{tr('Series')}
-                .form-control-static.col-xs-10
-                  #{game.series}
-                  %a.tts(title="#{tr('TTS')}" data-text="#{game.series}") %span.fa.fa-volume-down.icon-margin
-            -if game.brand
-              .row.brand
-                %label.control-label.col-xs-2 #{tr('Brand')}
-                .form-control-static.col-xs-10
-                  #{game.brand}
-                  %a.tts(title="#{tr('TTS')}" data-text="#{game.brand}") %span.fa.fa-volume-down.icon-margin
-            -if not game.ecchi
-              .row.genre
-                %label.control-label.col-xs-2 #{tr('Genre')}
-                .form-control-static.col-xs-10
-                  %span.text-danger(title="Hシーンはありません") 一般作品
-                  %a.tts(title="#{tr('TTS')}" data-text="一般作品、Hシーンはありません") %span.fa.fa-volume-down.icon-margin
-            -if game.fileSize
-              .row.fileSie
-                %label.control-label.col-xs-2 #{tr('File size')}
-                .form-control-static.col-xs-10 #{game.fileSize}
-            -if game.homepage
-              .row.homepage
-                %label.control-label.col-xs-2 #{tr('Homepage')}
-                .form-control-static.col-xs-10
-                  %a(href="#{game.homepage}" title="#{tr('Open in new window')}") #{game.homepage}
-            -if game.scape.trialUrl
-              .row.trial
-                %label.control-label.col-xs-2 #{tr('Trial')}
-                .form-control-static.col-xs-10
-                  %a(href="#{trial}" title="#{tr('Open in new window')}") #{game.scape.trialUrl}
-                  -if game.scape.trialH
-                    %span.text-danger(title="Hなシーンがあります") #{" (Hあり)"}
-                  -else
-                    %span.text-minor(title="Hなシーンがありません") #{" (H無し)"}
-            -if game.wiki
-              .row.wiki
-                %label.control-label.col-xs-2 #{tr('Wikipedia')}
-                .form-control-static.col-xs-10
-                  %a(href="http://ja.wikipedia.org/wiki/#{game.wiki}" title="#{tr('Open in new window')}") http://ja.wikipedia.org/wiki/#{game.wiki}
-            -if game.slogan
-              .row.slogan
-                %label.control-label.col-xs-2 #{tr('Slogan')}
-                .form-control-static.col-xs-10
-                  #{slogan}
-                  %a.tts(title="#{tr('TTS')}" data-text="#{game.slogan}") %span.fa.fa-volume-down.icon-margin
-            -if game.artists
-              .row.artist
-                %label.control-label.col-xs-2 #{tr('Artist')}
-                .form-control-static.col-xs-10
-                  #{' '.join(game.artists)}
-                  %a.tts(title="#{tr('TTS')}" data-text="#{'、'.join(game.artists)}") %span.fa.fa-volume-down.icon-margin
-            -if game.sdartists
-              .row.artist
-                %label.control-label.col-xs-2 SD #{tr('Artist')}
-                .form-control-static.col-xs-10
-                  #{' '.join(game.sdartists)}
-                  %a.tts(title="#{tr('TTS')}" data-text="#{'、'.join(game.sdartists)}") %span.fa.fa-volume-down.icon-margin
-            -if game.writers
-              .row.artist
-                %label.control-label.col-xs-2 #{tr('Scenario')}
-                .form-control-static.col-xs-10
-                  #{' '.join(game.writers)}
-                  %a.tts(title="#{tr('TTS')}" data-text="#{'、'.join(game.writers)}") %span.fa.fa-volume-down.icon-margin
-            -if game.musicians
-              .row.artist
-                %label.control-label.col-xs-2 #{tr('Music')}
-                .form-control-static.col-xs-10
-                  #{' '.join(game.musicians)}
-                  %a.tts(title="#{tr('TTS')}" data-text="#{'、'.join(game.musicians)}") %span.fa.fa-volume-down.icon-margin
-            .row.type
-              %label.control-label.col-xs-2 #{tr('Type')}
-              .form-control-static.col-xs-10
-                #{game.typeName}
-                %a.tts(title="#{tr('TTS')}" data-text="#{game.typeName}") %span.fa.fa-volume-down.icon-margin
-            -if game.links
-              .row.links
-                %label.control-label.col-xs-2 #{tr('Links')}
-                .form-control-static.col-xs-10
-                  -if game.links.getchu
-                    %a(href="//getchu.com/soft.phtml?id=#{links.getchu}" title="#{tr('Open in new window')}") Getchu
-                  -if game.links.gyutto
-                    -if game.otome
-                      %a(href="//gyutto.me/i/item#{game.links.gyutto}" title="#{tr('Open in new window')}") Gyutto
-                    -else
-                      %a(href="//gyutto.com/i/item#{game.links.gyutto}" title="#{tr('Open in new window')}") Gyutto
-                  -if game.links.digiket
-                    %a(href="//www.digiket.com/work/show/_data/ID=ITM#{'%07d' % game.links.digiket)}/" title="#{tr('Open in new window')}") DiGiket
-                  -if game.links.amazon
-                    %a(href="//amazon.co.jp/dp/#{game.links.amazon}" title="#{tr('Open in new window')}") Amazon
-                  -if game.links.trailers
-                    %a(href="//erogetrailers.com/soft/#{game.links.trailers}" title="#{tr('Open in new window')}") Trailers
-                  -if gmae.links.tokuten
-                    %a(href="//erogame-tokuten.com/title.php?title_id=#{game.links.tokuten}" title="#{tr('Open in new window')}") 特典
-                  -if gmae.links.holyseal
-                    %a(href="//holyseal.net/cgi-bin/mlistview.cgi?prdcode=#{game.links.holyseal}" title="#{tr('Open in new window')}") 聖封
-                  -if game.links.scape
-                    %a(href="//erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/game.php?game=#{game.links.scape}" title="#{tr('Open in new window')}") 批評空間
-        -if game.banners
-          %section.banner
-            -for it in game.banners
-              -if game.homepage
-                %a(href="#{homepage}" title="#{tr('Homepage')}")
-                  %img(src="#{it}")
-              -else
-                %a(href="#{GG_Q}#{title}" title="#{tr('Google')}")
-                  %img(src="#{it}")
-        -if true
-          %hr
-          %section.stats
-            .title
-              .title-content = tr('Rating')
-            .body.form-horizontal
-              .row.score-row(title="#{tr('Serious')}")
-                %label.control-label.col-xs-2 = tr('Serious')
-                .form-control-static.col-xs-10
-                  %span.rating.rating-overall
-                  %span.score-label(data-type="overall")
-              .row.score-row(title="#{tr('Ecchi')}")
-                %label.control-label.col-xs-2 = tr('Ecchi')
-                .form-control-static.col-xs-10
-                  %span.rating.rating-ecchi
-                  %span.score-label(data-type="ecchi")
-              .row.score-row(title="#{tr('Easy to understand for Japanese learners')}")
-                %label.control-label.col-xs-2 = tr('Easy')
-                .form-control-static.col-xs-10
-                  %span.rating.rating-easy
-                  %span.score-label(data-type="easy")
-              -if game.scapeScore and game.links and game.links.scape
-                .row
-                  %label.control-label.col-xs-2 批評空間
-                  .form-control-static.col-xs-10
-                    %a(href="//erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/game.php?game=#{links.scape}" title="#{tr('Open in new window')}")
-                      #{scapeScore}&times;#{scapeCount}
-              -if game.playCount
-                .row
-                  %label.control-label.col-xs-2 = tr('Play count')
-                  .form-control-static.col-xs-10
-                    %span.count #{game.playCount}
-              -if game.subtitleCount
-                .row
-                  %label.control-label.col-xs-2 = tr('Subtitle count')
-                  .form-control-static.col-xs-10
-                    %span.count #{game.subtitleCount}
-            %button.btn-review.btn.btn-primary.dropdown-toggle.btn-sm(type="button")
-              %span.fa.fa-star #{tr('Review')}
-        -if game.subs
-          %hr
-          %section.subtitle
-            .title
-              .title-content = tr('Subtitle Contributors')
-            .body
-              -for it in game.subs
-                .item
-                  -if it.userAvatar
-                    %a.user(href="/user/#{it.userName}" title="@#{it.userName}")
-                      %img.img-circle.avatar(src="//media.getchute.com/media/#{it.userAvatar}/128x128")
-                  .header
-                    %a.user(href="/user/#{it.userName}" target="_blank") @#{it.userName}
-                  .footer #{it.count} / #{it.lang[:2] or 'en'}
-        -if game.file
-          %hr
-          %section.file
-            .title
-              .title-content #{tr('Text Settings')}
-            .body.form-horizontal
-              -if game.file.encoding
-                .row.encoding
-                  %label.control-label.col-xs-2 #{tr('Encoding')}
-                  .form-control-static.col-xs-10 #{game.file.encoding.toUpperCase()}
-              -if game.file.threads
-                -if game.file.threads.scene
-                  .row.thread
-                    %label.control-label.col-xs-2 #{tr('Dialogue')}
-                    .form-control-static.col-xs-10
-                      = tr(file.threads.scene.name)
-                      = ' '
-                      = file.threads.scene.sig.toString(16)
-                -if game.file.threads.name
-                  .row.thread
-                    %label.control-label.col-xs-2 #{tr('Character')}
-                    .form-control-static.col-xs-10
-                      #{tr(game.file.threads.name.name)}
-                      #{game.file.threads.name.sig.toString(16)}
-              .row.hcode
-                %label.control-label.col-xs-2 = tr('H-code')
-                .form-control-static.col-xs-10
-                  -if game.file.hook
-                    #{file.hook.text}
-                    -if file.hook.locked
-                      %b.text-info #{' (' + tr('Locked') + ')'}
-                      %i.text-muted.text-xs #{' -- ' + tr('This h-code is definite correct and not allowed to change')}
-                  -else
-                    %span.text-muted #{tr('Not specified')}
-        -if game.videos
-          %hr
-          %section.youtube
-            .title
-              .title-content YouTube
-              .switch-group
-                %input.switch(type="checkbox" data-size="small" data-on-text="#{tr('Show')}" data-off-text="#{tr('Hide')}")
-            .videos
-        -if game.twitters
-          %hr
-          %section.twitter
-            .title
-              .title-content Twitter
-              .switch-group
-                %input.switch(type="checkbox" data-size="small" data-on-text="#{tr('Show')}" data-off-text="#{tr('Hide')}")
-            %center.widgets
-
+    %body
       #toolbar
         #zoomSlider.dragdealer.rounded.vertical
           .handle.red(title="#{tr('Zoom')}"): 拡大
@@ -297,10 +62,290 @@
         .btn.btn-default.btn-block.btn-xs.btn-bottom(title="#{tr('Scroll to bottom')}")
           %i.fa.fa-chevron-down
 
+      .game.portal(data-id="#{game.itemId}")
+        .cover
+          -if game.image
+            %a(href="#{game.imageUrl}",title="表紙")
+              %img.cover.img-rounded(src="#{game.imageUrl}")
+          -else
+            表紙: (#{tr('unknown')})
+        .header
+          .title
+            %a.tts.cursor-pointer(title="#{tr('TTS')}",data-text="#{game.title}")
+              %span.fa.fa-volume-down.icon-margin
+            %a(href="#{GG_Q}#{game.title}",title="#{tr('Google')}") #{game.title}
+          -if game.romajiTitle
+            .romaji
+              %a(href="#{GG_Q}#{game.romajiTitle}",title="#{tr('Google')}") #{game.romajiTitle}
+          -if game.itemId
+            %button.btn.btn-default.btn-xs.btn-dl-img(title="画像"")
+              %i.fa.fa-save
+              画像
+            -if online and game.hasVideos()
+              %button.btn.btn-default.btn-xs.btn-dl-yt(title="YouTube動画")
+                %i.fa.fa-download
+                動画
+        %hr
+        .content
+          %section.info
+            .title
+              .title-content #{tr('Game Information')}
+            .body.form-horizontal
+              -if game.date
+                .row.date
+                  %label.control-label.col-xs-2 #{tr('Release')}
+                  .form-control-static.col-xs-10 #{i18n.timestamp2date(game.date)}
+              -if game.event
+                .row.comike
+                  %label.control-label.col-xs-2 #{tr('Comiket')}
+                  .form-control-static.col-xs-10 #{game.event}
+              -if game.price
+                .row.price
+                  %label.control-label.col-xs-2 #{tr('Price')}
+                  .form-control-static.col-xs-10 ￥#{game.price}
+              .row.type
+                -set typeName = '乙女' if game.otome else '抜き' if game.okazu else '純愛'
+                %label.control-label.col-xs-2 #{tr('Type')}
+                .form-control-static.col-xs-10
+                  #{typeName}
+                  %a.tts(title="#{tr('TTS')}",data-text="#{typeName}")
+                    %span.fa.fa-volume-down.icon-margin
+              -if game.series
+                .row.series
+                  %label.control-label.col-xs-2 #{tr('Series')}
+                  .form-control-static.col-xs-10
+                    #{game.series}
+                    %a.tts(title="#{tr('TTS')}",data-text="#{game.series}")
+                      %span.fa.fa-volume-down.icon-margin
+              -if game.brand
+                .row.brand
+                  %label.control-label.col-xs-2 #{tr('Brand')}
+                  .form-control-static.col-xs-10
+                    #{game.brand}
+                    %a.tts(title="#{tr('TTS')}",data-text="#{game.brand}")
+                      %span.fa.fa-volume-down.icon-margin
+              -if not game.ecchi
+                .row.genre
+                  %label.control-label.col-xs-2 #{tr('Genre')}
+                  .form-control-static.col-xs-10
+                    %span.text-danger(title="Hシーンはありません") 一般作品
+                    %a.tts(title="#{tr('TTS')}",data-text="一般作品、Hシーンはありません")
+                      %span.fa.fa-volume-down.icon-margin
+              -if game.fileSize
+                .row.fileSie
+                  %label.control-label.col-xs-2 #{tr('File size')}
+                  .form-control-static.col-xs-10 #{game.fileSize}
+              -if game.slogan
+                .row.slogan
+                  %label.control-label.col-xs-2 #{tr('Slogan')}
+                  .form-control-static.col-xs-10
+                    #{game.slogan}
+                    %a.tts(title="#{tr('TTS')}",data-text="#{game.slogan}")
+                      %span.fa.fa-volume-down.icon-margin
+              -if game.artists
+                .row.artist
+                  %label.control-label.col-xs-2 原画
+                  .form-control-static.col-xs-10
+                    #{' '.join(game.artists)}
+                    %a.tts(title="#{tr('TTS')}",data-text="#{'、'.join(game.artists)}")
+                      %span.fa.fa-volume-down.icon-margin
+              -if game.sdartists
+                .row.artist
+                  %label.control-label.col-xs-2 SD原画
+                  .form-control-static.col-xs-10
+                    #{' '.join(game.sdartists)}
+                    %a.tts(title="#{tr('TTS')}",data-text="#{'、'.join(game.sdartists)}")
+                      %span.fa.fa-volume-down.icon-margin
+              -if game.writers
+                .row.artist
+                  %label.control-label.col-xs-2 シナリオ
+                  .form-control-static.col-xs-10
+                    #{' '.join(game.writers)}
+                    %a.tts(title="#{tr('TTS')}",data-text="#{'、'.join(game.writers)}")
+                      %span.fa.fa-volume-down.icon-margin
+              -if game.musicians
+                .row.artist
+                  %label.control-label.col-xs-2 音楽
+                  .form-control-static.col-xs-10
+                    #{' '.join(game.musicians)}
+                    %a.tts(title="#{tr('TTS')}",data-text="#{'、'.join(game.musicians)}")
+                      %span.fa.fa-volume-down.icon-margin
+              .row.links
+                %label.control-label.col-xs-2 #{tr('Links')}
+                .form-control-static.col-xs-10
+                  -if game.getchu
+                    %a(href="#{game.getchu.url}",title="#{game.getchu.url}") Getchu
+                  -if game.gyutto
+                    -set url = ('http://gyutto.me/i/item%s' if game.otome else 'http://gyutto.com/i/item%s') % game.gyutto.key
+                    %a(href="#{url}",title="#{url}") Gyutto
+                  -if game.digiket
+                    %a(href="#{game.digiket.url}",title="#{game.digiket.url}") DiGiket
+                  -if game.dlsite
+                    %a(href="#{game.dlsite.url}",title="#{game.dlsite.url}") DLsite
+                  -if game.dmm
+                    %a(href="#{game.dmm.url}",title="#{game.dmm.url}") DMM
+                  -if game.amazon
+                    %a(href="#{game.amazon.url}",title="#{game.amazon.url}") Amazon
+                  -if game.trailers
+                    %a(href="#{game.trailers.url}",title="#{game.trailers.url}") Trailers
+                  -if game.tokutenUrl
+                    %a(href="#{game.tokutenUrl}",title="#{game.tokutenUrl}") 特典
+                  -if game.holyseal
+                    %a(href="#{game.holyseal.url}",title="#{game.holyseal.url}") 聖封
+                  -if game.scape
+                    %a(href="#{game.scape.url}",title="#{game.scape.url}") 批評空間
+              -if game.homepage
+                .row.homepage
+                  %label.control-label.col-xs-2 #{tr('Homepage')}
+                  .form-control-static.col-xs-10
+                    %a(href="#{game.homepage}",title="#{game.homepage}") #{game.homepage}
+              -if game.scape.trialUrl
+                -set url = game.scape.trialUrl
+                .row.trial
+                  %label.control-label.col-xs-2 体験版
+                  .form-control-static.col-xs-10
+                    %a(href="#{url}",title="#{url}") #{url}
+                    -if game.scape.trialH
+                      %span.text-danger(title="Hなシーンがあります") #{" (Hあり)"}
+                    -else
+                      %span.text-minor(title="Hなシーンがありません") #{" (H無し)"}
+              -if game.wiki
+                -set url = 'http://ja.wikipedia.org/wiki/' + game.wiki
+                .row.wiki
+                  %label.control-label.col-xs-2 #{tr('Wikipedia')}
+                  .form-control-static.col-xs-10
+                    %a(href="#{url}",title="#{url}") #{url}
+          -if game.hasBannerImages()
+            %section.banner
+              -for it in game.iterBannerImageUrls()
+                -if game.homepage
+                  %a(href="#{homepage}",title="#{tr('Homepage')}")
+                    %img(src="#{it}")
+                -else
+                  %a(href="#{GG_Q}#{title}",title="#{tr('Google')}")
+                    %img(src="#{it}")
+;          -if true
+;            %hr
+;            %section.stats
+;              .title
+;                .title-content = tr('Rating')
+;              .body.form-horizontal
+;                .row.score-row(title="#{tr('Serious')}")
+;                  %label.control-label.col-xs-2 #{tr('Serious')}
+;                  .form-control-static.col-xs-10
+;                    %span.rating.rating-overall
+;                    %span.score-label(data-type="overall")
+;                .row.score-row(title="#{tr('Ecchi')}")
+;                  %label.control-label.col-xs-2 #{tr('Ecchi')}
+;                  .form-control-static.col-xs-10
+;                    %span.rating.rating-ecchi
+;                    %span.score-label(data-type="ecchi")
+;                .row.score-row(title="#{tr('Easy to understand for Japanese learners')}")
+;                  %label.control-label.col-xs-2 #{tr('Easy')}
+;                  .form-control-static.col-xs-10
+;                    %span.rating.rating-easy
+;                    %span.score-label(data-type="easy")
+;                -if game.scapeScore and game.links and game.links.scape
+;                  .row
+;                    %label.control-label.col-xs-2 批評空間
+;                    .form-control-static.col-xs-10
+;                      %a(href="#{game.scape.url}",title="#{game.scape.url}")
+;                        #{scapeScore}&times;#{scapeCount}
+;                -if game.playCount
+;                  .row
+;                    %label.control-label.col-xs-2 #{tr('Play count')}
+;                    .form-control-static.col-xs-10
+;                      %span.count #{game.playCount}
+;                -if game.subtitleCount
+;                  .row
+;                    %label.control-label.col-xs-2 #{tr('Subtitle count')}
+;                    .form-control-static.col-xs-10
+;                      %span.count #{game.subtitleCount}
+;              %button.btn-review.btn.btn-primary.dropdown-toggle.btn-sm(type="button")
+;                %span.fa.fa-star #{tr('Review')}
+;          -if game.subs
+;            %hr
+;            %section.subtitle
+;              .title
+;                .title-content = tr('Subtitle Contributors')
+;              .body
+;                -for it in game.subs
+;                  .item
+;                    -if it.userAvatar
+;                      %a.user(href="/user/#{it.userName}",title="@#{it.userName}")
+;                        %img.img-circle.avatar(src="//media.getchute.com/media/#{it.userAvatar}/128x128")
+;                    .header
+;                      %a.user(href="/user/#{it.userName}",target="_blank") @#{it.userName}
+;                    .footer #{it.count} / #{it.lang[:2] or 'en'}
+;          -if game.file
+;            %hr
+;            %section.file
+;              .title
+;                .title-content #{tr('Text Settings')}
+;              .body.form-horizontal
+;                -if game.file.encoding
+;                  .row.encoding
+;                    %label.control-label.col-xs-2 #{tr('Encoding')}
+;                    .form-control-static.col-xs-10 #{game.file.encoding.toUpperCase()}
+;                -if game.file.threads
+;                  -if game.file.threads.scene
+;                    .row.thread
+;                      %label.control-label.col-xs-2 #{tr('Dialogue')}
+;                      .form-control-static.col-xs-10
+;                        #{tr(file.threads.scene.name)}
+;                        #{file.threads.scene.sig.toString(16)}
+;                  -if game.file.threads.name
+;                    .row.thread
+;                      %label.control-label.col-xs-2 #{tr('Character')}
+;                      .form-control-static.col-xs-10
+;                        #{tr(game.file.threads.name.name)}
+;                        #{game.file.threads.name.sig.toString(16)}
+;                .row.hcode
+;                  %label.control-label.col-xs-2 #{tr('H-code')}
+;                  .form-control-static.col-xs-10
+;                    -if game.file.hook
+;                      #{file.hook.text}
+;                      -if file.hook.locked
+;                        %b.text-info #{' (' + tr('Locked') + ')'}
+;                        %i.text-muted.text-xs #{' -- ' + tr('This h-code is definite correct and not allowed to change')}
+;                    -else
+;                      %span.text-muted #{tr('Not specified')}
+;          -if game.videos
+;            %hr
+;            %section.youtube
+;              .title
+;                .title-content YouTube
+;                .switch-group
+;                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+;              .videos
+;          -if game.twitters
+;            %hr
+;            %section.twitter
+;              .title
+;                .title-content Twitter
+;                .switch-group
+;                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+;              %center.widgets
+
       ; Scripts
       ;-for it in 'jquery', 'jquery.imagesloaded', 'masonry', 'game'
       -for it in 'jquery', 'dragdealer', 'widgets', 'game'
         %script(src="#{rc.cdn_url(it)}")
+
+      -if game and game.image
+        :javascript
+          $(function() {
+            var url = "#{game.imageUrl}";
+            var img = new Image;
+            img.onload = function() {
+              document.body.style.backgroundImage = 'url("' + url + '")';
+              document.body.style.backgroundSize = 'cover';
+              document.body.style.backgroundAttachment = 'fixed';
+              // TODO: Bind onresize to change background image to half screen
+              //document.body.style.backgroundSize = '50%, auto';
+            }
+            img.src = url
+          });
 
       ; 9/21/2013: Masonry is fancy, but useless
       ;$('#cg-container').imagesLoaded(function (e){
@@ -311,6 +356,6 @@
           $(function () {
             bindAmazon();
             setTimeout(bindYoutube, 1000); // bind is defined in game.coffee. Delay initliazation for 1 second.
-          })
+          });
 
 ; EOF

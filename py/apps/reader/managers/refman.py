@@ -1316,7 +1316,7 @@ class DmmApi(object):
 
           authors = kw.get('authors')
           if authors:
-            kw['creators'] = authors
+            kw['authors'] = authors
 
           keywords = kw.get('keywords') or []
           if keywords:
