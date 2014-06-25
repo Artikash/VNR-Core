@@ -22,7 +22,7 @@
 //  font-family: 'Source Sans Pro', sans-serif
 
 .bootstrap-switch // bootstrap-switch bug
-  max-height: 30px
+  max-height: 30px // for min size
   margin-top: 5px
 
 .game.portal
@@ -69,6 +69,12 @@
           opacity: 0
         &:hover .tts
           opacity: 1
+      &.cg .images img
+        @extend .img-shadow
+        //@extend .img-zoom
+        vertical-align: top
+        width: 220px // 220 is consistent with zoom in game.coffee
+        margin: 5px 4px
       &.twitter .widgets
         margin-top: 20px
         > .timeline

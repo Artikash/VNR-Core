@@ -66,7 +66,7 @@
         .cover
           -if game.image
             %a(href="#{game.imageUrl}",title="表紙")
-              %img.cover.img-rounded(src="#{game.imageUrl}")
+              %img.cover.zoom.zoom-cover.img-rounded(src="#{game.imageUrl}")
           -else
             表紙: (#{tr('unknown')})
         .header
@@ -224,7 +224,6 @@
                 -else
                   %a(href="#{GG_Q}#{title}",title="#{tr('Google')}")
                     %img(src="#{it}")
-
           -if game.hasSampleImages()
             %hr
             %section.cg
@@ -232,7 +231,10 @@
                 .title-content #{tr('Images')}
                 .switch-group
                   %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
-              .images
+              .images.masonry
+                -for i,it in py.enumerate(game.iterSampleImageUrls())
+                  %a(href="#{it}",title="CG #{'#'}#{i+1}")
+                    %img.zoom.zoom-cg.img-rounded(src="#{it}")
           -if game.videos
             %hr
             %section.youtube
@@ -338,8 +340,8 @@
 ;                      %span.text-muted #{tr('Not specified')}
 
       ; Scripts
-      ;-for it in 'jquery', 'jquery.imagesloaded', 'masonry', 'game'
-      -for it in 'jquery', 'bootstrap.switch', 'dragdealer', 'ruby', 'widgets', 'game'
+      ;-for it in 'jquery', 'bootstrap.switch', 'dragdealer', 'ruby', 'widgets', 'game'
+      -for it in 'jquery', 'jquery.imagesloaded', 'masonry', 'bootstrap.switch', 'dragdealer', 'ruby', 'widgets', 'game'
         %script(src="#{rc.cdn_url(it)}")
 
       -if game and game.image
@@ -357,14 +359,20 @@
             img.src = url
           });
 
-      ; 9/21/2013: Masonry is fancy, but useless
-      ;$('#cg-container').imagesLoaded(function (e){
-      ;  $('#cg-container').masonry({itemSelector:'.cg'});
-      ;});
+      -if game and game.hasSampleImages
+        :javascript
+          $(function() {
+            // 9/21/2013: Masonry is fancy, but useless
+            var $container = $('section.cg .images');
+            $container.imagesLoaded(function (e){
+              $container.masonry({itemSelector:'img'});
+            });
+          });
+
       -if online
         :javascript
           $(function () {
-            bindAmazon();
+            bindAmazon(); // defined in game.coffee
             setTimeout(bindYoutube, 1000); // bind is defined in game.coffee. Delay initliazation for 1 second.
           });
 

@@ -158,9 +158,13 @@ class Zoomer
 
   zoom: (v) => # v float
     @ratio = v
-    $('.chara').width v * 100
-    $('.cg').width v * 220
-    $('.cover').width v * 230
+    $('img.zoom.zoom-cover').width v * 230
+    $('img.zoom.zoom-cg').width v * 220
+    #$('.chara').width v * 100 # TO BE RESTOERD
+
+    # Refresh masonry
+    $('section.cg .images').masonry()
+
     @zoomYoutube v
 
   youtubeWidth: (v) => Math.min((v ? @ratio) * 220, @maxWidth())
