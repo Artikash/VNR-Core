@@ -386,6 +386,15 @@ class GameInfo(object):
       if kw:
         return HolysealReference(**kw)
 
+  def hasCharacters(self):
+    """Online
+    @return  bool
+    """
+    for r in self.digiket, self.getchu:
+      if r and r.characters:
+        return True
+    return False
+
   @property
   def characters(self):
     """Online

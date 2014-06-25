@@ -224,25 +224,6 @@
                 -else
                   %a(href="#{GG_Q}#{title}",title="#{tr('Google')}")
                     %img(src="#{it}")
-          -if game.hasSampleImages()
-            %hr
-            %section.cg
-              .title
-                .title-content #{tr('Images')}
-                .switch-group
-                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
-              .images.masonry
-                -for i,it in py.enumerate(game.iterSampleImageUrls())
-                  %a(href="#{it}",title="CG #{'#'}#{i+1}")
-                    %img.zoom.zoom-cg.img-rounded(src="#{it}")
-          -if game.videos
-            %hr
-            %section.youtube
-              .title
-                .title-content YouTube
-                .switch-group
-                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
-              .videos
           -if game.twitters
             %hr
             %section.twitter
@@ -251,6 +232,33 @@
                 .switch-group
                   %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
               %center.widgets
+          -if game.videos
+            %hr
+            %section.youtube
+              .title
+                .title-content YouTube
+                .switch-group
+                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+              .videos
+          -if game.hasSampleImages()
+            %hr
+            %section.cg
+              .title
+                .title-content #{tr('Images')}
+                .switch-group
+                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+              .images
+                ;-for i,it in py.enumerate(game.iterSampleImageUrls())
+                ;  %a(href="#{it}",title="CG #{'#'}#{i+1}")
+                ;    %img.img-rounded(src="#{it}")
+          -if game.hasCharacters()
+            %hr
+            %section.cg
+              .title
+                .title-content #{tr('Images')}
+                .switch-group
+                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+              .characters
 
 ;          -if true
 ;            %hr
@@ -340,8 +348,11 @@
 ;                      %span.text-muted #{tr('Not specified')}
 
       ; Scripts
-      ;-for it in 'jquery', 'bootstrap.switch', 'dragdealer', 'ruby', 'widgets', 'game'
-      -for it in 'jquery', 'jquery.imagesloaded', 'masonry', 'bootstrap.switch', 'dragdealer', 'ruby', 'widgets', 'game'
+      -for it in \
+        'jquery', 'jquery.imagesloaded', \
+        'bootstrap.switch', 'dragdealer', \
+        'haml', 'masonry', \
+        'ruby', 'widgets', 'game'
         %script(src="#{rc.cdn_url(it)}")
 
       -if game and game.image
@@ -359,15 +370,15 @@
             img.src = url
           });
 
-      -if game and game.hasSampleImages
-        :javascript
-          $(function() {
-            // 9/21/2013: Masonry is fancy, but useless
-            var $container = $('section.cg .images');
-            $container.imagesLoaded(function (e){
-              $container.masonry({itemSelector:'img'});
-            });
-          });
+      //-if game and game.hasSampleImages
+      //  :javascript
+      //    $(function() {
+      //      // 9/21/2013: Masonry is fancy, but useless
+      //      var $container = $('section.cg .images');
+      //      $container.imagesLoaded(function (e){
+      //        $container.masonry({itemSelector:$container.data 'item-selector'});
+      //      });
+      //    });
 
       -if online
         :javascript

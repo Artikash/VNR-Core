@@ -10,6 +10,22 @@ dprint = ->
 
 #defer = (interval, fn) -> setTimeout fn, interval
 
+# HAML for sample images
+HAML_SAMPLE_IMAGE = Haml '''\
+%a(href="#{url}",title="#{url}")
+  %img.img-rounded(src="#{url}")
+'''
+
+## Render ##
+
+_renderSampleImage = (url) ->
+  HAML_SAMPLE_IMAGE url:url
+
+renderSampleImages = -> # -> string  html
+  gameBean.sampleImages.split(',').map(_renderSampleImage).join ''
+
+## Bindings ##
+
 @bindAmazon = ->
   dprint 'bindAmazon: enter'
   #setTimeout(iframe, 3000);
@@ -85,9 +101,9 @@ dprint = ->
   #$('a.label,a .label').click -> @classList.add 'label-info' #; false
   #$('.label a').click -> $(@).parent().addclass 'label-info'
 
-  ITEM_ID = $('body').data 'id'
-  $('.btn-dl-img').click -> bean.getimg ITEM_ID; false
-  $('.btn-dl-yt').click -> bean.getyt ITEM_ID; false
+  #ITEM_ID = $('body').data 'id'
+  $('.btn-dl-img').click -> gameBean.saveImages(); false
+  $('.btn-dl-yt').click -> gameBean.saveVideos(); false
 
   if MAINLAND # sina
     $('.youtube .btn-dl,.youtube .btn-play,.youtube .label,.youtube img').click ->
@@ -159,11 +175,14 @@ class Zoomer
   zoom: (v) => # v float
     @ratio = v
     $('img.zoom.zoom-cover').width v * 230
-    $('img.zoom.zoom-cg').width v * 220
+    #$('img.zoom.zoom-cg').width v * 220
     #$('.chara').width v * 100 # TO BE RESTOERD
 
     # Refresh masonry
-    $('section.cg .images').masonry()
+    $el = $ 'section.cg .images'
+    if $el.length
+      $el.children('img').width v * 220
+      $el.masonry()
 
     @zoomYoutube v
 
@@ -199,18 +218,25 @@ initRuby = ->
 
   dprint 'bindRuby: leave'
 
-
 ## Bootstrap Switch ##
 
 initBootstrapSwitch = ->
-
-  $cg = $ 'section.cg'
-  $cg.find('input.switch').bootstrapSwitch()
-    .on 'switchChange.bootstrapSwitch', (event, checked) ->
-      if checked
-        # repaint cg
-      else
-        $cg.find('.images').fadeOut()
+  do -> # CG switch
+    $sec = $ 'section.cg'
+    $sec.find('input.switch').bootstrapSwitch()
+      .on 'switchChange.bootstrapSwitch', (event, checked) ->
+        $el = $sec.find '.images'
+        unless checked
+          $el.fadeOut()
+        else if $container.hasClass 'loaded'
+          $el.fadeIn()
+        else
+          $el.hide()
+             .html renderSampleImages()
+             .addClass 'loaded'
+             .fadeIn()
+             .masonry itemSelector:'img'
+             .imagesLoaded -> $el.masonry() # refresh after images are loaded
 
 ## Bootstrap ##
 
@@ -220,7 +246,7 @@ initBootstrapSwitch = ->
 ## Main ##
 
 init = ->
-  unless @bean?
+  unless @gameBean?
     dprint 'init: wait'
     setTimeout init, 100 # Wait until bean is ready
   else
