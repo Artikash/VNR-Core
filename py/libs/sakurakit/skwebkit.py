@@ -49,12 +49,23 @@ class SkWebPage(QWebPage): # placeholder
 
   ## Network access manager ##
 
-  #@staticmethod  # not used so that this method could be overridden in the future
-  def onSslErrors(self, reply, errors): # QNetworkReply, [QSslError] ->
-    reply.ignoreSslErrors()
+  # Not used
+  ##@staticmethod  # not used so that this method could be overridden in the future
+  #def onSslErrors(self, reply, errors): # QNetworkReply, [QSslError] ->
+  #  reply.ignoreSslErrors()
 
-  def ignoreSslErrors(self):
-    self.networkAccessManager().sslErrors.connect(self.onSslErrors)
+  #def ignoreSslErrors(self):
+  #  self.networkAccessManager().sslErrors.connect(self.onSslErrors)
+
+  ## JavaScript ##
+
+  #def evaljs(self, js):
+  #  """
+  #  @param  js  unicode
+  #  @return  QObject or None
+  #  """
+  #  # See: http://qt-project.org/doc/qt-5.0/qtwebkitexamples/webkitwidgets-fancybrowser.html
+  #  return self.mainFrame().evaluateJavaScript(js)
 
 class SkWebView(QWebView):
   def __init__(self, parent=None, f=0, page=None): # QWidget, Qt.WindowFlags, QWebPage
@@ -99,6 +110,16 @@ class SkWebView(QWebView):
     # Mouse gestures
     for g in Qt.PanGesture, Qt.SwipeGesture, Qt.PinchGesture:
       self.grabGesture(g)
+
+  ## JavaScript ##
+
+  def evaljs(self, js):
+    """
+    @param  js  unicode
+    @return  QObject or None
+    """
+    # See: http://qt-project.org/doc/qt-5.0/qtwebkitexamples/webkitwidgets-fancybrowser.html
+    return self.page().mainFrame().evaluateJavaScript(js)
 
   ## Gesture ##
 

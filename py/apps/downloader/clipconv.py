@@ -107,7 +107,7 @@ class _YouTubeSolver(object):
   def evaljs(self, js):
     """
     @param  js  unicode
-    @return  QObject
+    @return  QObject or None
     """
     # See: http://qt-project.org/doc/qt-5.0/qtwebkitexamples/webkitwidgets-fancybrowser.html
     f = self.webView.page().mainFrame()

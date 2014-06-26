@@ -27,7 +27,6 @@ inject.min.js: inject.js
 	$(CLOSURE) --js $^ --js_output_file $@
 	echo null >> $@
 	dos2unix $@
-	rm -f $^
 
 clean:
 

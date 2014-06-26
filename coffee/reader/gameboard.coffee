@@ -471,11 +471,19 @@ init = ->
       height: 229   # height of slider + 3 * button + margin-bottom
       move: slider.reloadOffset
 
+    # Export window mamager so that external APIs such as window.search can access it
+    window.gameManager = gm
+
     #setTimeout gm.show, 200
     #setTimeout _.partial(quicksearch, styleClass, gf.refreshFilter),  2000
     dprint 'init: leave'
 
 $ -> init()
+
+# External APIs
+
+@search = (text) -> # str ->  set search text
+  gameManager.search text if window.gameManager
 
 # EOF
 #

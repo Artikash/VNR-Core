@@ -108,28 +108,25 @@
                 %label.control-label.col-xs-2 #{tr('Type')}
                 .form-control-static.col-xs-10
                   #{typeName}
-                  %a.tts(title="#{tr('TTS')}",data-text="#{typeName}")
-                    %span.fa.fa-volume-down.icon-margin
+                  -if not game.ecchi
+                    %span.text-danger(title="Hシーンはありません") 一般作品
               -if game.series
                 .row.series
                   %label.control-label.col-xs-2 #{tr('Series')}
                   .form-control-static.col-xs-10
-                    #{game.series}
+                    %a.search(title="#{tr('Search')}") #{game.series}
                     %a.tts(title="#{tr('TTS')}",data-text="#{game.series}")
                       %span.fa.fa-volume-down.icon-margin
               -if game.brand
                 .row.brand
                   %label.control-label.col-xs-2 #{tr('Brand')}
                   .form-control-static.col-xs-10
-                    #{game.brand}
-                    %a.tts(title="#{tr('TTS')}",data-text="#{game.brand}")
-                      %span.fa.fa-volume-down.icon-margin
-              -if not game.ecchi
-                .row.genre
-                  %label.control-label.col-xs-2 #{tr('Genre')}
-                  .form-control-static.col-xs-10
-                    %span.text-danger(title="Hシーンはありません") 一般作品
-                    %a.tts(title="#{tr('TTS')}",data-text="一般作品、Hシーンはありません")
+                    -for i,it in py.enumerate(game.brand.split(','))
+                      -if i%2
+                        %a.link.link-odd.search(title="#{tr('Search')}") #{it}
+                      -else
+                        %a.link.link-even.search(title="#{tr('Search')}") #{it}
+                    %a.tts(title="#{tr('TTS')}",data-text="#{game.brand.replace(',','、')}")
                       %span.fa.fa-volume-down.icon-margin
               -if game.fileSize
                 .row.fileSie
@@ -146,54 +143,68 @@
                 .row.artist
                   %label.control-label.col-xs-2 原画
                   .form-control-static.col-xs-10
-                    #{' '.join(game.artists)}
+                    -for i,it in py.enumerate(game.artists)
+                      -if i%2
+                        %a.link.link-odd.search(title="#{tr('Search')}") #{it}
+                      -else
+                        %a.link.link-even.search(title="#{tr('Search')}") #{it}
                     %a.tts(title="#{tr('TTS')}",data-text="#{'、'.join(game.artists)}")
                       %span.fa.fa-volume-down.icon-margin
               -if game.sdartists
                 .row.artist
                   %label.control-label.col-xs-2 SD原画
                   .form-control-static.col-xs-10
-                    #{' '.join(game.sdartists)}
+                    -for i,it in py.enumerate(game.sdartists)
+                      -if i%2
+                        %a.link.link-odd.search(title="#{tr('Search')}") #{it}
+                      -else
+                        %a.link.link-even.search(title="#{tr('Search')}") #{it}
                     %a.tts(title="#{tr('TTS')}",data-text="#{'、'.join(game.sdartists)}")
                       %span.fa.fa-volume-down.icon-margin
               -if game.writers
                 .row.artist
-                  %label.control-label.col-xs-2 シナリオ
+                  %label.control-label.col-xs-2 #{tr('Scenario')}
                   .form-control-static.col-xs-10
-                    #{' '.join(game.writers)}
+                    -for i,it in py.enumerate(game.writers)
+                      -if i%2
+                        %a.link.link-odd.search(title="#{tr('Search')}") #{it}
+                      -else
+                        %a.link.link-even.search(title="#{tr('Search')}") #{it}
                     %a.tts(title="#{tr('TTS')}",data-text="#{'、'.join(game.writers)}")
                       %span.fa.fa-volume-down.icon-margin
               -if game.musicians
                 .row.artist
-                  %label.control-label.col-xs-2 音楽
+                  %label.control-label.col-xs-2 #{tr('Music')}
                   .form-control-static.col-xs-10
-                    #{' '.join(game.musicians)}
+                    -for i,it in py.enumerate(game.musicians)
+                      -if i%2
+                        %a.link.link-odd.search(title="#{tr('Search')}") #{it}
+                      -else
+                        %a.link.link-even.search(title="#{tr('Search')}") #{it}
                     %a.tts(title="#{tr('TTS')}",data-text="#{'、'.join(game.musicians)}")
                       %span.fa.fa-volume-down.icon-margin
-              .row.links
-                %label.control-label.col-xs-2 #{tr('Links')}
-                .form-control-static.col-xs-10
-                  -if game.getchu
-                    %a(href="#{game.getchu.url}",title="#{game.getchu.url}") Getchu
-                  -if game.gyutto
-                    -set url = ('http://gyutto.me/i/item%s' if game.otome else 'http://gyutto.com/i/item%s') % game.gyutto.key
-                    %a(href="#{url}",title="#{url}") Gyutto
-                  -if game.digiket
-                    %a(href="#{game.digiket.url}",title="#{game.digiket.url}") DiGiket
-                  -if game.dlsite
-                    %a(href="#{game.dlsite.url}",title="#{game.dlsite.url}") DLsite
-                  -if game.dmm
-                    %a(href="#{game.dmm.url}",title="#{game.dmm.url}") DMM
-                  -if game.amazon
-                    %a(href="#{game.amazon.url}",title="#{game.amazon.url}") Amazon
-                  -if game.trailers
-                    %a(href="#{game.trailers.url}",title="#{game.trailers.url}") Trailers
-                  -if game.tokutenUrl
-                    %a(href="#{game.tokutenUrl}",title="#{game.tokutenUrl}") 特典
-                  -if game.holyseal
-                    %a(href="#{game.holyseal.url}",title="#{game.holyseal.url}") 聖封
-                  -if game.scape
-                    %a(href="#{game.scape.url}",title="#{game.scape.url}") 批評空間
+              -if game.tags0
+                .row.keywords
+                  %label.control-label.col-xs-2 #{tr('Keywords')}:
+                  .form-control-static.col-xs-10
+                    -for i,it in py.enumerate(game.tags0.split(','))
+                      -if i%2
+                        %a.link.link-odd.search(title="#{tr('Search')}") #{it}
+                      -else
+                        %a.link.link-even.search(title="#{tr('Search')}") #{it}
+                    %a.tts(title="#{tr('TTS')}",data-text="#{game.tags0.replace(',','、')}")
+                      %span.fa.fa-volume-down.icon-margin
+              -if game.hasLinks()
+                .row.links
+                  %label.control-label.col-xs-2 #{tr('Links')}
+                  .form-control-static.col-xs-10
+                    -for i,(url,site) in py.enumerate(game.iterLinks())
+                      -if i%2
+                        %a.link.link-odd(href="#{url}",title="#{url}")
+                          #{i18n.site_name(site)}
+                      -else
+                        %a.link.link-even(href="#{url}",title="#{url}")
+                          #{i18n.site_name(site)}
               -if game.homepage
                 .row.homepage
                   %label.control-label.col-xs-2 #{tr('Homepage')}

@@ -282,7 +282,7 @@ initTwitterSwitch = -> # CG switch
                   showReplies: true
                   #tweetLimit: 20 # the maximum is 20
 
-initBootstrapSwitch = ->
+initSwitches = ->
   initCGSwitch()
   initTwitterSwitch()
 
@@ -293,10 +293,15 @@ initBootstrapSwitch = ->
 
 ## TTS ##
 
-initTts = ->
+bindTts = ->
   $('.tts').click ->
     #tts.speak @getAttribute('data-text'), @getAttribute('data-lang')
     ttsBean.speak @dataset.text #, 'ja'
+
+bindSearch = ->
+  $('a.search').click ->
+    #tts.speak @getAttribute('data-text'), @getAttribute('data-lang')
+    gameBean.search $.trim @textContent
 
 ## Main ##
 
@@ -309,11 +314,12 @@ init = ->
 
     initToolbar()
 
-    initBootstrapSwitch()
-
-    initTts()
+    initSwitches()
 
     initRuby()
+
+    bindTts()
+    bindSearch()
 
     #initBootstrap()
 

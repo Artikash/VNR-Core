@@ -146,7 +146,8 @@ inject = (el) -> # DocumentElement ->
         #node.className += ' inject-src'
         #node.parentNode.insertBefore repl, node
 
-window.injectruby = inject
+# Export the inject function
+@injectruby = inject
 
 # EOF
 

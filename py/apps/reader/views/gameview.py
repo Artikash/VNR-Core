@@ -52,6 +52,9 @@ class GameCoffeeBean(QObject):
     super(GameCoffeeBean, self).__init__(parent)
     self.info = info # GameItemInfo or None
 
+
+  # Queries
+
   @Slot(result=unicode)
   def getSampleImages(self): # return list of urls using ',' as sep
     if self.info and self.info.hasSampleImages():
@@ -65,6 +68,8 @@ class GameCoffeeBean(QObject):
       return ','.join((str(id) for id in self.info.iterTwitterWidgets()))
     else:
       return ''
+
+  # Actions
 
   @Slot()
   def saveVideos(self): # prompt and save all youtube videos to the desktop
@@ -98,6 +103,14 @@ class GameCoffeeBean(QObject):
       except Exception, e:
         growl.warn(my.tr("Failed to save all images"))
         dwarn(e)
+
+  # Static actions
+
+  #@staticmethod
+  @Slot(unicode)
+  def search(self, text):
+    if text:
+      main.manager().searchGameBoard(text)
 
 @Q_Q
 class _GameView(object):

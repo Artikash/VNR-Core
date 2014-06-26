@@ -538,35 +538,63 @@ class GameInfo(object):
     if r:
       return r.erogetrailersUrl
 
-  def iterUrlsWithType(self):
-    """
-    @yield  (str url, str type)
-    """
-    v = self.homepage
-    if v:
-      yield v, 'homepage'
-    for r in self.scape, self.holyseal:
-      if r:
-        yield r.url, r.type
-    v = self.tokutenUrl
-    if v:
-      yield v, 'tokuten'
-    for r in self.getchu, self.gyutto, self.amazon, self.dmm, self.digiket, self.dlsite:
-      if r:
-        yield r.url, r.type
-    v = self.trailersUrl
-    if v:
-      yield v, 'trailers'
-    v = self.wiki
-    if v:
-      yield v, 'wiki'
+  #def iterUrlsWithType(self):
+  #  """
+  #  @yield  (str url, str type)
+  #  """
+  #  v = self.homepage
+  #  if v:
+  #    yield v, 'homepage'
+  #  for r in self.scape, self.holyseal:
+  #    if r:
+  #      yield r.url, r.type
+  #  v = self.tokutenUrl
+  #  if v:
+  #    yield v, 'tokuten'
+  #  for r in self.getchu, self.gyutto, self.amazon, self.dmm, self.digiket, self.dlsite:
+  #    if r:
+  #      yield r.url, r.type
+  #  v = self.trailersUrl
+  #  if v:
+  #    yield v, 'trailers'
+  #  v = self.wiki
+  #  if v:
+  #    yield v, 'wiki'
 
-  def iterUrlsWithName(self):
+  #def iterUrlsWithName(self):
+  #  """
+  #  @yield  (str url, str name)
+  #  """
+  #  for url, type in self.iterUrlsWithType():
+  #    yield url, i18n.site_name(type) or type
+
+  def hasLinks(self):
     """
-    @yield  (str url, str name)
+    @return  bool
     """
-    for url, type in self.iterUrlsWithType():
-      yield url, i18n.site_name(type) or type
+    return bool(self.getchu or self.gyutto or self.digiket or self.dlsite or self.dmm or self.amazon or self.trailers or self.holyseal or self.scape) #or self.tokutenUrl
+
+  def iterLinks(self):
+    """
+    @yield  {str url, str type}
+    """
+    if self.getchu:
+      yield self.getchu.url, 'getchu'
+
+    if self.gyutto:
+       url = ('http://gyutto.me/i/item%s' if self.otome else 'http://gyutto.com/i/item%s') % self.gyutto.key
+       yield url, 'gyutto'
+
+    for r in self.digiket, self.dlsite, self.dmm, self.amazon, self.trailers:
+      if r:
+        yield r.url, r.type
+
+    if self.tokutenUrl:
+      yield self.tokutenUrl, 'tokuten'
+
+    for r in self.holyseal, self.scape:
+      if r:
+        yield r.url, r.type
 
   @memoizedproperty
   def fileSize(self): # long not None

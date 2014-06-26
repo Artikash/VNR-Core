@@ -1590,6 +1590,13 @@ class MainObject(QObject):
       growl.notify(my.tr("Unknown game engine"))
     #  growl.notify(my.tr("I am sorry that this feature has not been implemented yet."))
 
+  def searchGameBoard(self, text):
+    """
+    @param  text  unicode
+    """
+    self.showGameBoard()
+    self.__d.gameBoardDialog.search(text)
+
   def showGameBoard(self): _MainObject.showWindow(self.__d.gameBoardDialog)
   def showYouTubeInput(self): _MainObject.showWindow(self.__d.youTubeInputDialog)
   def showDictionaryTester(self): _MainObject.showWindow(self.__d.dictionaryTesterDialog)

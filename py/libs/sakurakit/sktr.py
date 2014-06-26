@@ -204,6 +204,9 @@ class sakurakit(QObject):
 
       self.tr("Comiket"),
 
+      self.tr("Scenario"),
+      self.tr("Music"),
+
       self.tr("Machine Translation"),
 
       self.tr("Keyboard shortcuts"),

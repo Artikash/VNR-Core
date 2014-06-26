@@ -56,6 +56,34 @@ class GameBoardBean(SkWebViewBean):
     import gameview
     gameview.manager().showItem(itemId)
 
+class GameBoardDialog(SkWebView):
+  def __init__(self, parent=None):
+    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    super(GameBoardDialog, self).__init__(parent, WINDOW_FLAGS)
+    self.setWindowIcon(rc.icon('window-gameboard'))
+    self.setWindowTitle(mytr_("Game Board"))
+    self.__d = _GameBoardDialog(self)
+    self.resize(750, 660)
+
+    # Refresh only once
+    self.__d.refresh()
+    #from sakurakit import skevents
+    #skevents.runlater(self.__d.refresh)
+
+  def search(self, text):
+    """Set the search edit as text
+    @param  text  unicode
+    """
+    self.__d.setSearchText(text)
+
+  #def setVisible(self, value):
+  #  """@reimp @public"""
+  #  if value and not self.isVisible():
+  #    self.__d.refresh()
+  #  super(GameBoardDialog, self).setVisible(value)
+  #  if not value: # save memory
+  #    self.clear()
+
 @Q_Q
 class _GameBoardDialog(object):
 
@@ -74,6 +102,30 @@ class _GameBoardDialog(object):
     #q.page().setLinkDelegationPolicy(QWebPage.DelegateExternalLinks)
     #import osutil
     #q.linkClicked.connect(osutil.open_url)
+
+  def setSearchText(self, text):
+    """Set search edit text
+    @param  text  unicode
+    """
+    #js = 'search("%s");null' % text.replace('"', "'")
+    js = '''
+(function(text, timeout) {
+  if (window.searching)
+    return;
+  var f = function() {
+    if (window.gameManager) {
+      search(text);
+      window.searching = false;
+    } else {
+      setTimeout(f, timeout);
+      window.searching = true;
+    }
+  };
+  f();
+}("%s", 100));
+null
+''' % text.replace('"', "'")
+    self.q.evaljs(js)
 
   def _updateTitle(self):
     t = mytr_("Game Board")
@@ -104,27 +156,5 @@ class _GameBoardDialog(object):
     h.addToJavaScriptWindowObject('bean', self.bean)
     #from sakurakit import skevents
     #skevents.runlater((lambda: h.evaluateJavaScript('$(init)')), 3000)
-
-class GameBoardDialog(SkWebView):
-  def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
-    super(GameBoardDialog, self).__init__(parent, WINDOW_FLAGS)
-    self.setWindowIcon(rc.icon('window-gameboard'))
-    self.setWindowTitle(mytr_("Game Board"))
-    self.__d = _GameBoardDialog(self)
-    self.resize(750, 660)
-
-    # Refresh only once
-    self.__d.refresh()
-    #from sakurakit import skevents
-    #skevents.runlater(self.__d.refresh)
-
-  #def setVisible(self, value):
-  #  """@reimp @public"""
-  #  if value and not self.isVisible():
-  #    self.__d.refresh()
-  #  super(GameBoardDialog, self).setVisible(value)
-  #  if not value: # save memory
-  #    self.clear()
 
 # EOF
