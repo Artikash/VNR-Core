@@ -81,7 +81,6 @@ GAME_HAML = Haml '''\
 @shorten = (t, limit=11) ->
   if t.length <= limit then t else (t[0..limit-1] + '..')
   #if _strsize(t) <= limit then t else (t[0..limit-1] + '..')
-  #
 
 class GameManager
   id: 'games' # containerId
@@ -109,6 +108,7 @@ class GameManager
       itemSelector: @itemSelector
       isAnimated: false # disable animation
       transitionDuration: 0 # set to 0 to disable animation
+      isFitWidth: true
       #transitionDuration: 400
       #columnWidth: 160 # 10/8/2013: does not work?!
 

@@ -23,7 +23,7 @@
 
 .bootstrap-switch // bootstrap-switch bug
   max-height: 30px // for min size
-  margin-top: 2px
+  margin-top: -5px
 
 .game.portal
   margin: 6px
@@ -71,13 +71,14 @@
         &:hover .tts
           opacity: 1
       &.cg .images
-        margin: 0 auto // centerize mazonry
+        margin: 0 auto // isFitWidth: true
         img
           @extend .img-shadow
           //@extend .img-zoom
           //vertical-align: top
-          width: 220px // 220 is consistent with zoom in game.coffee
           margin: 5px 4px
+          width: 220px // 220 is consistent with zoom in game.coffee
+          max-width: 90%
       &.twitter .widgets
         margin-top: 20px
         > .timeline

@@ -194,7 +194,7 @@ class Zoomer
   youtubeWidth: (v) => Math.min((v ? @ratio) * DEFAULT_VIDEO_IMAGE_WIDTH, @maxWidth())
   zoomYoutube: (v) => # float
     $('.youtube:not(.iframe)').width @youtubeWidth * v
-uu
+
   youtubeFrameWidth: =>
     Math.min @ratio * 480, (Math.max 480, @maxWidth()) # at least 480px
   youtubeFrameHeight: =>
