@@ -23,16 +23,17 @@
 
 .bootstrap-switch // bootstrap-switch bug
   max-height: 30px // for min size
-  margin-top: 5px
+  margin-top: 2px
 
 .game.portal
-  //margin: 9px
-  //padding: 9px
-  //border-radius: 4px
-  padding: 18px
+  margin: 6px
+  padding: 12px
+  border-radius: 4px
+  //padding: 18px
   background-color: rgba(255,255,255,0.9)
   //background-color: rgba(255,255,255,0.95)
   //max-width: 800px
+
   > .cover
     //float: right  // does not work well with bootstrap table
     position: absolute
@@ -69,12 +70,14 @@
           opacity: 0
         &:hover .tts
           opacity: 1
-      &.cg .images img
-        @extend .img-shadow
-        //@extend .img-zoom
-        vertical-align: top
-        width: 220px // 220 is consistent with zoom in game.coffee
-        margin: 5px 4px
+      &.cg .images
+        margin: 0 auto // centerize mazonry
+        img
+          @extend .img-shadow
+          //@extend .img-zoom
+          //vertical-align: top
+          width: 220px // 220 is consistent with zoom in game.coffee
+          margin: 5px 4px
       &.twitter .widgets
         margin-top: 20px
         > .timeline

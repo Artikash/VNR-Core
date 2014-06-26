@@ -12,17 +12,21 @@ dprint = ->
 
 # HAML for sample images
 HAML_SAMPLE_IMAGE = Haml '''\
-%a(href="#{url}",title="#{url}")
-  %img.img-rounded(src="#{url}")
+%a(href="#{url}" title="#{url}")
+  %img.img-rounded.zoom.zoom-cg(src="#{url}")
 '''
 
 ## Render ##
+
+DEFAULT_COVER_IMAGE_WIDTH = 230
+DEFAULT_SAMPLE_IMAGE_WIDTH = 220
+DEFAULT_VIDEO_IMAGE_WIDTH = 220
 
 _renderSampleImage = (url) ->
   HAML_SAMPLE_IMAGE url:url
 
 renderSampleImages = -> # -> string  html
-  gameBean.sampleImages.split(',').map(_renderSampleImage).join ''
+  gameBean.getSampleImages().split(',').map(_renderSampleImage).join ''
 
 ## Bindings ##
 
@@ -159,6 +163,8 @@ renderSampleImages = -> # -> string  html
 
 # Must be consistent with game.sass
 
+ZOOM_FACTOR = 1
+
 class Zoomer
   constructor: (@viewBean) ->
     @ratio = 1.0 # float
@@ -173,23 +179,22 @@ class Zoomer
     $(window).resize => @zoomYoutube @ratio
 
   zoom: (v) => # v float
-    @ratio = v
-    $('img.zoom.zoom-cover').width v * 230
-    #$('img.zoom.zoom-cg').width v * 220
+    ZOOM_FACTOR = @ratio = v
+    $('img.zoom.zoom-cover').width DEFAULT_COVER_IMAGE_WIDTH * (v+1)/2
+    #$('img.zoom.zoom-cg').width v * DEFAULT_SAMPLE_IMAGE_WIDTH
     #$('.chara').width v * 100 # TO BE RESTOERD
 
-    # Refresh masonry
-    $el = $ 'section.cg .images'
-    if $el.length
-      $el.children('img').width v * 220
-      $el.masonry()
+    $cg = $('img.zoom.zoom-cg')
+    if $cg.length
+      $cg.width 220 * v
+      $('section.cg .images').masonry() #columnWidth: v * DEFAULT_SAMPLE_IMAGE_WIDTH
 
     @zoomYoutube v
 
-  youtubeWidth: (v) => Math.min((v ? @ratio) * 220, @maxWidth())
+  youtubeWidth: (v) => Math.min((v ? @ratio) * DEFAULT_VIDEO_IMAGE_WIDTH, @maxWidth())
   zoomYoutube: (v) => # float
-    $('.youtube:not(.iframe)').width @youtubeWidth v
-
+    $('.youtube:not(.iframe)').width @youtubeWidth * v
+uu
   youtubeFrameWidth: =>
     Math.min @ratio * 480, (Math.max 480, @maxWidth()) # at least 480px
   youtubeFrameHeight: =>
@@ -228,15 +233,19 @@ initBootstrapSwitch = ->
         $el = $sec.find '.images'
         unless checked
           $el.fadeOut()
-        else if $container.hasClass 'loaded'
+        else if $el.hasClass 'loaded'
           $el.fadeIn()
         else
           $el.hide()
              .html renderSampleImages()
              .addClass 'loaded'
              .fadeIn()
-             .masonry itemSelector:'img'
-             .imagesLoaded -> $el.masonry() # refresh after images are loaded
+             .masonry
+               itemSelector: 'img'
+               isFitWidth: true # centerize
+             .imagesLoaded ->
+               $el.find('img').width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
+               $el.masonry() # refresh after images are loaded
 
 ## Bootstrap ##
 

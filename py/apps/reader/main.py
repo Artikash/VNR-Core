@@ -125,9 +125,9 @@ class _MainObject(object):
     ss = settings.global_()
     def refresh():
       ret.setParserType(
-          '' if not ss.isMeCabEnabled()
-          'cabocha' if ss.isCaboChaEnabled()
-          else 'mecab')
+          '' if not ss.isMeCabEnabled() else
+          'cabocha' if ss.isCaboChaEnabled() else
+          'mecab')
     refresh()
     for sig in ss.meCabEnabledChanged, ss.caboChaEnabledChanged:
       sig.connect(refresh)

@@ -253,9 +253,9 @@
                 ;    %img.img-rounded(src="#{it}")
           -if game.hasCharacters()
             %hr
-            %section.cg
+            %section.chara
               .title
-                .title-content #{tr('Images')}
+                .title-content #{tr('Characters')}
                 .switch-group
                   %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
               .characters
@@ -369,16 +369,6 @@
             }
             img.src = url
           });
-
-      //-if game and game.hasSampleImages
-      //  :javascript
-      //    $(function() {
-      //      // 9/21/2013: Masonry is fancy, but useless
-      //      var $container = $('section.cg .images');
-      //      $container.imagesLoaded(function (e){
-      //        $container.masonry({itemSelector:$container.data 'item-selector'});
-      //      });
-      //    });
 
       -if online
         :javascript
