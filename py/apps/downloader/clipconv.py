@@ -147,7 +147,7 @@ class _YouTubeSolver(object):
         if title.startswith("Conversion:"):
           dprint("conversion")
         elif title == 'YouTube Video Converter and Download - ClipConverter.cc':
-          js = "$('#0').attr('checked', true);$('#converter').submit()"
+          js = "$('#0').attr('checked', true);$('#converter').submit(); null"
           self.evaljs(js)
         elif title.endswith(' - ClipConverter.cc'):
           name = title.replace(' - ClipConverter.cc', '')

@@ -1,6 +1,6 @@
 # browser.coffee
 # 3/28/2014 jichi
-# Invoked by QWebFrame::evaluateJavaScript
+# Invoked by inject.coffee
 # Beans:
 # - cdnBean
 # - clipBean

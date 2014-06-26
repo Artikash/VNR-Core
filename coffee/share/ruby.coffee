@@ -1,6 +1,5 @@
 # ruby.coffee
 # 3/28/2014 jichi
-# Invoked by QWebFrame::evaluateJavaScript
 # Beans:
 # - cdnBean
 # - clipBean
