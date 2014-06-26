@@ -47,6 +47,15 @@ class SkWebPage(QWebPage): # placeholder
     f = self.mainFrame()
     f.setScrollBarValue(Qt.Horizontal, f.scrollBarMaximum(Qt.Horizontal))
 
+  ## Network access manager ##
+
+  #@staticmethod  # not used so that this method could be overridden in the future
+  def onSslErrors(self, reply, errors): # QNetworkReply, [QSslError] ->
+    reply.ignoreSslErrors()
+
+  def ignoreSslErrors(self):
+    self.networkAccessManager().sslErrors.connect(self.onSslErrors)
+
 class SkWebView(QWebView):
   def __init__(self, parent=None, f=0, page=None): # QWidget, Qt.WindowFlags, QWebPage
     super(SkWebView, self).__init__(parent)
@@ -158,6 +167,15 @@ class SkWebView(QWebView):
     # Trigger action instead of directly calling reload
     a = self.page().action(QWebPage.Reload)
     a.trigger()
+
+  ## Page's network access manager ##
+
+  #@staticmethod  # not used so that this method could be overridden in the future
+  def onSslErrors(self, reply, errors): # QNetworkReply, [QSslError] ->
+    reply.ignoreSslErrors()
+
+  def ignoreSslErrors(self):
+    self.page().networkAccessManager().sslErrors.connect(self.onSslErrors)
 
   ## Highlight ##
 

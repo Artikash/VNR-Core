@@ -155,6 +155,7 @@ class _GameView(object):
     ret = SkWebView()
     #ret.titleChanged.connect(self.q.setWindowTitle)
     ret.enableHighlight() # highlight selected text
+    ret.ignoreSslErrors() # needed to access Twitter
 
     ret.pageAction(QWebPage.Reload).triggered.connect(
         self.updateAndRefresh, Qt.QueuedConnection)

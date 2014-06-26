@@ -254,14 +254,30 @@
                 ;-for i,it in py.enumerate(game.iterSampleImageUrls())
                 ;  %a(href="#{it}",title="CG #{'#'}#{i+1}")
                 ;    %img.img-rounded(src="#{it}")
-          -if game.hasCharacters()
-            %hr
-            %section.chara
-              .title
-                .title-content.col-xs-2 #{tr('Characters')}
-                .switch-group
-                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
-              .characters
+          ;-if game.hasCharacters()
+          ;  %hr
+          ;  %section.chara
+          ;    .title
+          ;      .title-content.col-xs-2 人物
+          ;      .switch-group
+          ;        %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+          ;    .characters
+          ;      -for it in game.characters
+          ;        .chara
+          ;          .header
+          ;            -if it.label == "主人公" or it.label == "【主人公】"
+          ;              .yomi.text-danger(title="#{it.yomi}") #{it.name|e}
+          ;            -else
+          ;              .yomi.text-default(title="#{it.yomi}") #{it.name|e}
+          ;          -if it.img
+          ;            -set url = cache.image(it.img)
+          ;            .body: %a(href="#{url}",title="#{it.name|e} #{it.label|e}")
+          ;              %img.img-rounded(src="#{url}")
+          ;          .footer
+          ;            -if it.cv
+          ;              .yomi.text-info #{it.cv}
+          ;            -else
+          ;              %span.muted (CV無し)
 
 ;          -if true
 ;            %hr
