@@ -59,6 +59,13 @@ class GameCoffeeBean(QObject):
     else:
       return ''
 
+  @Slot(result=unicode)
+  def getTwitterWidgets(self): # return list of long using ',' as sep
+    if self.info and self.info.hasTwitterWidgets():
+      return ','.join((str(id) for id in self.info.iterTwitterWidgets()))
+    else:
+      return ''
+
   @Slot()
   def saveVideos(self): # prompt and save all youtube videos to the desktop
     if not self.info or not self.info.hasVideos():

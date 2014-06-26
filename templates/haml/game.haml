@@ -37,12 +37,12 @@
         background-image: url("#{rc.image_url('background').toString()}");
       }
 
-    -if mainland
-      :javascript
-        window.MAINLAND = true;
-    -else
-      :javascript
-        window.MAINLAND = false;
+    ;-if mainland
+    ;  :javascript
+    ;    window.MAINLAND = true;
+    ;-else
+    ;  :javascript
+    ;    window.MAINLAND = false;
 
   -if not game
     %body
@@ -224,19 +224,22 @@
                 -else
                   %a(href="#{GG_Q}#{title}",title="#{tr('Google')}")
                     %img(src="#{it}")
-          -if game.twitters
+          -if game.hasTwitterWidgets()
             %hr
             %section.twitter
               .title
-                .title-content Twitter
+                .title-content.col-xs-2 Twitter
                 .switch-group
                   %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
               %center.widgets
+                ;-for it in game.iterTwitterWidgets()
+                ;  %a.twitter-timeline(height="400",href="https://twitter.com/twitterapi",data-widget-id="#{it}",data-chrome="nofooter noborders transparent")
+                ;%script(src="#{rc.cdn_url('twitter.widgets')}")
           -if game.videos
             %hr
             %section.youtube
               .title
-                .title-content YouTube
+                .title-content.col-xs-2 YouTube
                 .switch-group
                   %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
               .videos
@@ -244,7 +247,7 @@
             %hr
             %section.cg
               .title
-                .title-content #{tr('Images')}
+                .title-content.col-xs-2 #{tr('Images')}
                 .switch-group
                   %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
               .images
@@ -255,7 +258,7 @@
             %hr
             %section.chara
               .title
-                .title-content #{tr('Characters')}
+                .title-content.col-xs-2 #{tr('Characters')}
                 .switch-group
                   %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
               .characters
@@ -355,6 +358,9 @@
         'ruby', 'widgets', 'game'
         %script(src="#{rc.cdn_url(it)}")
 
+      -if not mainland and game and game.hasTwitterWidgets()
+        %script(src="#{rc.cdn_url('twitter.widgets')}")
+
       -if game and game.image
         :javascript
           $(function() {
@@ -368,13 +374,6 @@
               //document.body.style.backgroundSize = '50%, auto';
             }
             img.src = url
-          });
-
-      -if online
-        :javascript
-          $(function () {
-            bindAmazon(); // defined in game.coffee
-            setTimeout(bindYoutube, 1000); // bind is defined in game.coffee. Delay initliazation for 1 second.
           });
 
 ; EOF

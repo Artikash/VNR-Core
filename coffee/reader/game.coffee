@@ -28,10 +28,13 @@ _renderSampleImage = (url) ->
 renderSampleImages = -> # -> string  html
   gameBean.getSampleImages().split(',').map(_renderSampleImage).join ''
 
+createTwitterTimeline = (id:id, el:el, callback:callback, options:options) ->
+  twttr.widgets.createTimeline id, el, callback, options #if window.twttr
+
 ## Bindings ##
 
-@bindAmazon = ->
-  dprint 'bindAmazon: enter'
+@initAmazonReview = ->
+  dprint 'initAmazonReview: enter'
   #setTimeout(iframe, 3000);
   # Load function does not work on IE
   # See: http://stackoverflow.com/questions/4548984/detect-if-the-iframe-content-has-loaded-successfully
@@ -64,7 +67,7 @@ renderSampleImages = -> # -> string  html
     #$iframe.attr 'width', w
 
   $('iframe.amazon').error -> $(@).remove() # cannot detect 403 error, though
-  dprint 'bindAmazon: leave'
+  dprint 'initAmazonReview: leave'
 
 #@bindGetchu = ->
 #  dprint 'bindGetchu: enter'
@@ -109,14 +112,15 @@ renderSampleImages = -> # -> string  html
   $('.btn-dl-img').click -> gameBean.saveImages(); false
   $('.btn-dl-yt').click -> gameBean.saveVideos(); false
 
-  if MAINLAND # sina
-    $('.youtube .btn-dl,.youtube .btn-play,.youtube .label,.youtube img').click ->
-      vid = $(@).closest('.youtube').data 'id'
-      #dprint vid
-      youtubeBean.get vid
-      false
+  #if MAINLAND # sina
+  #  $('.youtube .btn-dl,.youtube .btn-play,.youtube .label,.youtube img').click ->
+  #    vid = $(@).closest('.youtube').data 'id'
+  #    #dprint vid
+  #    youtubeBean.get vid
+  #    false
 
-  else # not sina
+  #else # not sina
+  if true
     $('.youtube .btn-dl').click ->
       vid = $(@).closest('.youtube').data 'id'
       #dprint vid
@@ -225,32 +229,74 @@ initRuby = ->
 
 ## Bootstrap Switch ##
 
-initBootstrapSwitch = ->
-  do -> # CG switch
-    $sec = $ 'section.cg'
-    $sec.find('input.switch').bootstrapSwitch()
-      .on 'switchChange.bootstrapSwitch', (event, checked) ->
-        $el = $sec.find '.images'
+initCGSwitch = -> # CG switch
+  $section = $ 'section.cg'
+  $section.find('input.switch').bootstrapSwitch()
+    .on 'switchChange.bootstrapSwitch', (event, checked) ->
+      $container = $section.find '.images'
+      unless checked
+        $container.fadeOut()
+      else if $container.hasClass 'rendered'
+        $container.fadeIn()
+      else
+        $container.hide()
+           .html renderSampleImages()
+           .addClass 'rendered'
+           .fadeIn()
+           .masonry
+             itemSelector: 'img'
+             isFitWidth: true # centerize
+           .imagesLoaded ->
+             $container.find('img').width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
+             $container.masonry() # refresh after images are loaded
+
+initTwitterSwitch = -> # CG switch
+
+  $section = $ 'section.twitter'
+  $section.find('input.switch').bootstrapSwitch()
+    .on 'switchChange.bootstrapSwitch', (event, checked) ->
+      if window.twttr
+
+        $container = $section.find '.widgets'
         unless checked
-          $el.fadeOut()
-        else if $el.hasClass 'rendered'
-          $el.fadeIn()
+          $container.fadeOut()
+        else if $container.hasClass 'rendered'
+          $container.fadeIn()
         else
-          $el.hide()
-             .html renderSampleImages()
+          $container.show()
              .addClass 'rendered'
-             .fadeIn()
-             .masonry
-               itemSelector: 'img'
-               isFitWidth: true # centerize
-             .imagesLoaded ->
-               $el.find('img').width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
-               $el.masonry() # refresh after images are loaded
+          l = gameBean.getTwitterWidgets()
+          if l
+            for id in l.split(',')
+              el = document.createElement 'div'
+              el.className = 'timeline'
+              $container.append el
+              createTwitterTimeline
+                id: id
+                el: el
+                options:
+                  lang: 'ja' # TODO: dynamically get user language from document.language
+                  width: 300
+                  height: 500
+                  chrome: 'transparent noborders noheader' # nofooter noscrollbar
+                  showReplies: true
+                  #tweetLimit: 20 # the maximum is 20
+
+initBootstrapSwitch = ->
+  initCGSwitch()
+  initTwitterSwitch()
 
 ## Bootstrap ##
 
 #initBootstrap = ->
 #  $('[title]').tooltip()
+
+## TTS ##
+
+initTts = ->
+  $('.tts').click ->
+    #tts.speak @getAttribute('data-text'), @getAttribute('data-lang')
+    ttsBean.speak @dataset.text #, 'ja'
 
 ## Main ##
 
@@ -264,6 +310,8 @@ init = ->
     initToolbar()
 
     initBootstrapSwitch()
+
+    initTts()
 
     initRuby()
 

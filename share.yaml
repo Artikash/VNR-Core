@@ -60,7 +60,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   font-awesome3.css: $PWD/../AJAX/font-awesome/3.2.1/css/font-awesome.min.css
   font-awesome4.css: $PWD/../AJAX/font-awesome/4.0.3/css/font-awesome.min.css
 
-  twitter-widgets: http://platform.twitter.com/widgets.js
+  twitter.widgets: http://platform.twitter.com/widgets.js
 
   # Microsoft CDN: http://www.asp.net/ajaxlibrary/cdn.ashx#Third-Party_Files_on_the_CDN_21
   jquery: http://ajax.aspnetcdn.com/ajax/jquery/jquery-2.1.1.min.js
