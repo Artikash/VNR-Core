@@ -829,9 +829,10 @@ class GameInfo(object):
     r = self.holyseal
     if r and r.banner:
       return True
-    r = self.getchu
-    if r and r.hasBannerImages():
-      return True
+    # Disabled
+    #r = self.getchu
+    #if r and r.hasBannerImages():
+    #  return True
     return False
 
   def iterBannerImageUrls(self): # str or None
@@ -848,11 +849,11 @@ class GameInfo(object):
     r = self.holyseal
     if r and r.banner and not sknetio.urleq(r.banner, trailersBanner) and not sknetio.urleq(r.banner, scapeBanner):
       yield cacheman.cache_image_url(proxy.get_image_url(r.banner))
-    # Do getchu at last
-    r = self.getchu
-    if r and r.hasBannerImages():
-      for it in r.iterBannerImageUrls():
-        yield it
+    # Disabled
+    #r = self.getchu
+    #if r and r.hasBannerImages():
+    #  for it in r.iterBannerImageUrls():
+    #    yield it
 
   #@memoizedproperty
   #def banner(self): # str or None
@@ -1066,6 +1067,9 @@ class GameInfo(object):
     for r in self._iterGetchuDLsiteAmazonDmmDigiket():
       if r.hasSampleImages():
         return True
+    r = self.getchu
+    if r and r.hasBannerImages():
+      return True
     return False
 
   def iterSampleImageUrls(self): # yield str
@@ -1093,10 +1097,10 @@ class GameInfo(object):
     if r and r.hasSampleImages():
       for it in r.iterSampleImageUrls():
         yield it
-    #for r in self._iterDmmAmazonReferences():
-    #  if r.hasSampleImages():
-    #    for it in r.iterSampleImageUrls():
-    #      yield it
+    r = self.getchu # show gechu banner as sample images
+    if r and r.hasBannerImages():
+      for it in r.iterBannerImageUrls():
+        yield it
 
   @memoizedproperty
   def visitCount(self):
@@ -2764,15 +2768,15 @@ class GetchuReference(Reference): #(object):
         img = host + '/vi/' + vid + '/0.jpg'
         yield vid, cacheman.cache_image_url(img) if cache else img
 
-  #def hasBannerImages(self): return bool(self.bannerImages)
+  def hasBannerImages(self): return bool(self.bannerImages)
 
-  #def iterBannerImageUrls(self, cache=True):
-  #  """
-  #  @yield  str  url
-  #  """
-  #  #if self.hasSampleImages():
-  #  for it in self.bannerImages:
-  #    yield cacheman.cache_image_url(it) if cache else it
+  def iterBannerImageUrls(self, cache=True):
+    """
+    @yield  str  url
+    """
+    #if self.hasSampleImages():
+    for it in self.bannerImages:
+      yield cacheman.cache_image_url(it) if cache else it
 
   #def hasReview(self): return True # not implemented
   #@property
