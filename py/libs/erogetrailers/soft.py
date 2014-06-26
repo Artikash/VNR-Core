@@ -56,6 +56,7 @@ class SoftApi(DataParser):
     ret = {
       'banner': self._parsebanner(h),   # str url or None
       'otome': self._parseotome(h),     # bool
+      'taiken': self._parselink(h, self._rx_taiken), # str URL
       'series': self._parseseries(h),   # str url or None
       'brands': list(self._iterparsebrands(h)), # kw
       'videos': list(self._iterparsevideos(h)), # kw
@@ -162,6 +163,22 @@ class SoftApi(DataParser):
   #        ret.append(it)
   #  return ret
 
+  def __makelinkrx(key):
+    return re.compile('''["']([^"']+?)["']>%s''' % key)
+
+  # Example: <span class='yaku_composer'><a href='http://www.noctovision.jp/start/html/down.html'>体験</a></span>
+  _rx_taiken = __makelinkrx(u'体験')
+  def _parselink(self, h, rx):
+    """
+    @param  h  unicode  html
+    @param  rx  re
+    @return  str
+    """
+    m = rx.search(h)
+    if m:
+      return skstr.unescapehtml(m.group(1))
+    return ''
+
   def __makecreatorsrx(key):
     pat = r'<th>%s</th><td>(.*?)</td>' % key
     return re.compile(pat, re.IGNORECASE)
@@ -224,10 +241,12 @@ class SoftApi(DataParser):
 if __name__ == '__main__':
   api = SoftApi()
   k = 8710
+  k = 8680
   print '-' * 10
   q = api.query(k)
   print q['otome']
   print q['artists']
   print q['musicians']
+  print q['taiken']
 
 # EOF

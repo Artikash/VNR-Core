@@ -87,7 +87,7 @@ class ItemApi(object):
         'doujin': u'同人' in h,
         'image': self._parseimage(h),
         'filesize': self._parsefilesize(h),
-        'brand': self._parseddlink(u'ブランド', h).replace(" / ", ',').replace(u"／", ','),
+        'brand': self._parsebrand(h),
         'series': self._parseddlink(u'シリーズ', h),
         'date': self._parsedate(h),
         'theme': self._parsedd(u'作品テーマ', h),
@@ -159,6 +159,14 @@ class ItemApi(object):
     m = self._rx_image.search(h)
     if m:
       return self.IMAGE_HOST + m.group()
+
+  def _parsebrand(self, h):
+    """
+    @param  h  unicode  html
+    @return  unicode  URL or None
+    """
+    ret = self._parseddlink(u'ブランド', h) or self._parseddlink(u'サークル', h)
+    return ret.replace(" / ", ',').replace(u"／", ',') if ret else ''
 
   _rx_filesize = re.compile(r'([0-9\.]+) ([GMK]?)B')
   def _parsefilesize(self, h):
@@ -274,6 +282,8 @@ if __name__ == '__main__':
   k = 45242
   k = 16775 # AlterEgo, http://gyutto.com/i/item16775
   k = 58699 # 英雄伝説 空の軌跡SC, http://gyutto.jp/i/item58699
+  k = 108434
+  k = 2722
 
   print '-' * 10
   q = api.query(k)

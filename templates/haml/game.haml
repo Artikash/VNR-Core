@@ -47,7 +47,7 @@
   -if not game
     %body
       -if title
-        %center: %b.ja: #{'「' + title + '」'|e}
+        %center(style="margin-top:100px"): %b.ja: #{'「' + title + '」'|e}
       .blocker: #{tr('Empty') + ' ><'}
   -else
     -set GG_Q = 'https://www.google.com/?#hl=ja&safe=off&q='
@@ -68,7 +68,7 @@
             %a(href="#{game.imageUrl}",title="表紙")
               %img.cover.zoom.zoom-cover.img-rounded(src="#{game.imageUrl}")
           -else
-            表紙: (#{tr('unknown')})
+            .text-danger 表紙: (#{tr('unknown')})
         .header
           .title
             %a.tts.cursor-pointer(title="#{tr('TTS')}",data-text="#{game.title}")
@@ -134,7 +134,7 @@
               -if game.fileSize
                 .row.fileSie
                   %label.control-label.col-xs-2 #{tr('File size')}
-                  .form-control-static.col-xs-10 #{game.fileSize}
+                  .form-control-static.col-xs-10 #{game.fileSizeString}
               -if game.slogan
                 .row.slogan
                   %label.control-label.col-xs-2 #{tr('Slogan')}

@@ -108,7 +108,7 @@ class GameManager
       itemSelector: @itemSelector
       isAnimated: false # disable animation
       transitionDuration: 0 # set to 0 to disable animation
-      isFitWidth: true
+      #isFitWidth: true # align center
       #transitionDuration: 400
       #columnWidth: 160 # 10/8/2013: does not work?!
 

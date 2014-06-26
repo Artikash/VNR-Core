@@ -233,12 +233,12 @@ initBootstrapSwitch = ->
         $el = $sec.find '.images'
         unless checked
           $el.fadeOut()
-        else if $el.hasClass 'loaded'
+        else if $el.hasClass 'rendered'
           $el.fadeIn()
         else
           $el.hide()
              .html renderSampleImages()
-             .addClass 'loaded'
+             .addClass 'rendered'
              .fadeIn()
              .masonry
                itemSelector: 'img'

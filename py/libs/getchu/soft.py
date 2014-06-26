@@ -134,7 +134,7 @@ class SoftApi(object):
           #'imageCount': self._parseimagecount(h),
           'sampleImages': list(self._iterparsesampleimages(h)), # [kw]
           'descriptions': list(self._iterparsedescriptions(h)), # [kw]
-          'comics': list(self._iterparsecomics(h)),   # [kw]
+          #'comics': list(self._iterparsecomics(h)),   # [kw]
           'banners': list(self._iterparsebanners(h)), # [kw]
           'videos': uniquelist(self._iterparsevideos(h)),   # [kw]
         }

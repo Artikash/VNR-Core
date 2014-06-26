@@ -829,10 +829,9 @@ class GameInfo(object):
     r = self.holyseal
     if r and r.banner:
       return True
-    # Getchu is disabled
-    #r = self.getchu
-    #if r and r.hasBannerImages():
-    #  return True
+    r = self.getchu
+    if r and r.hasBannerImages():
+      return True
     return False
 
   def iterBannerImageUrls(self): # str or None
@@ -849,10 +848,11 @@ class GameInfo(object):
     r = self.holyseal
     if r and r.banner and not sknetio.urleq(r.banner, trailersBanner) and not sknetio.urleq(r.banner, scapeBanner):
       yield cacheman.cache_image_url(proxy.get_image_url(r.banner))
-    #r = self.getchu
-    #if r and r.hasBannerImages():
-    #  for it in r.iterBannerImageUrls():
-    #    yield it
+    # Do getchu at last
+    r = self.getchu
+    if r and r.hasBannerImages():
+      for it in r.iterBannerImageUrls():
+        yield it
 
   #@memoizedproperty
   #def banner(self): # str or None
@@ -969,6 +969,7 @@ class GameInfo(object):
     return bool(img) and (
         'getchu.com' in img or
         'dlsite.jp' in img or
+        'digiket.net' in img or
         self.otome0 and 'images-amazon.com' in img)
 
   @property
