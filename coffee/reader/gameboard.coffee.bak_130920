@@ -170,7 +170,7 @@ class GameFlow
     hx = Haml '''\
 .game(data-id="#{g.itemId}")
   .head
-    :each it in labels
+    :for it in labels
       %a.label(title="#{it}") = it
     :if g.series
       %a.label.label-info(title="#{g.series}シリーズ") = g.series

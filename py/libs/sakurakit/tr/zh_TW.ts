@@ -393,7 +393,7 @@
         <translation>標簽</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="414"/>
+        <location filename="sktr.py" line="416"/>
         <source>Text</source>
         <translation>文本</translation>
     </message>
@@ -413,7 +413,7 @@
         <translation>時間</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="413"/>
+        <location filename="sktr.py" line="415"/>
         <source>Translation</source>
         <translation>翻譯</translation>
     </message>
@@ -493,12 +493,12 @@
         <translation>可編輯</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="388"/>
+        <location filename="sktr.py" line="390"/>
         <source>Found</source>
         <translation>已找到</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="389"/>
+        <location filename="sktr.py" line="391"/>
         <source>Not found</source>
         <translation>未找到</translation>
     </message>
@@ -703,12 +703,12 @@
         <translation>縮放</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="407"/>
+        <location filename="sktr.py" line="409"/>
         <source>Subtitle</source>
         <translation>字幕</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="410"/>
+        <location filename="sktr.py" line="412"/>
         <source>Comment</source>
         <translation>評論</translation>
     </message>
@@ -818,17 +818,17 @@
         <translation>窗口名稱</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="390"/>
+        <location filename="sktr.py" line="392"/>
         <source>Not specified</source>
         <translation>未指定</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="396"/>
+        <location filename="sktr.py" line="398"/>
         <source>Administrator</source>
         <translation>管理員</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="397"/>
+        <location filename="sktr.py" line="399"/>
         <source>Not administrator</source>
         <translation>非管理員</translation>
     </message>
@@ -858,32 +858,32 @@
         <translation>正則表達</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="382"/>
+        <location filename="sktr.py" line="384"/>
         <source>Ignore Case</source>
         <translation>忽略大小寫</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="382"/>
+        <location filename="sktr.py" line="384"/>
         <source>Ignore case</source>
         <translation>忽略大小寫</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="381"/>
+        <location filename="sktr.py" line="383"/>
         <source>Case-insensitive</source>
         <translation>忽略大小寫</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="381"/>
+        <location filename="sktr.py" line="383"/>
         <source>case-insensitive</source>
         <translation>忽略大小寫</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="380"/>
+        <location filename="sktr.py" line="382"/>
         <source>Case-sensitive</source>
         <translation>區別大小寫</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="380"/>
+        <location filename="sktr.py" line="382"/>
         <source>case-sensitive</source>
         <translation>區別大小寫</translation>
     </message>
@@ -928,12 +928,12 @@
         <translation>重新啟動</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="399"/>
+        <location filename="sktr.py" line="401"/>
         <source>For example</source>
         <translation>例如</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="399"/>
+        <location filename="sktr.py" line="401"/>
         <source>for example</source>
         <translation>例如</translation>
     </message>
@@ -1043,7 +1043,7 @@
         <translation>國際化</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="401"/>
+        <location filename="sktr.py" line="403"/>
         <source>Check for updates</source>
         <translation>檢查更新</translation>
     </message>
@@ -1068,7 +1068,7 @@
         <translation>恢复</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="412"/>
+        <location filename="sktr.py" line="414"/>
         <source>Danmaku</source>
         <translation>彈幕</translation>
     </message>
@@ -1188,12 +1188,12 @@
         <translation>網絡狀態</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="408"/>
+        <location filename="sktr.py" line="410"/>
         <source>Subtitles</source>
         <translation>字幕</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="411"/>
+        <location filename="sktr.py" line="413"/>
         <source>Comments</source>
         <translation>評論</translation>
     </message>
@@ -1238,37 +1238,37 @@
         <translation>刪除</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="407"/>
+        <location filename="sktr.py" line="409"/>
         <source>subtitle</source>
         <translation>字幕</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="408"/>
+        <location filename="sktr.py" line="410"/>
         <source>subtitles</source>
         <translation>字幕</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="410"/>
+        <location filename="sktr.py" line="412"/>
         <source>comment</source>
         <translation>評論</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="411"/>
+        <location filename="sktr.py" line="413"/>
         <source>comments</source>
         <translation>評論</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="412"/>
+        <location filename="sktr.py" line="414"/>
         <source>danmaku</source>
         <translation>彈幕</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="413"/>
+        <location filename="sktr.py" line="415"/>
         <source>translation</source>
         <translation>翻譯</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="414"/>
+        <location filename="sktr.py" line="416"/>
         <source>text</source>
         <translation>文本</translation>
     </message>
@@ -1423,7 +1423,7 @@
         <translation>標題</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="390"/>
+        <location filename="sktr.py" line="392"/>
         <source>not specified</source>
         <translation>未指定</translation>
     </message>
@@ -1433,12 +1433,12 @@
         <translation>過濾</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="394"/>
+        <location filename="sktr.py" line="396"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="394"/>
+        <location filename="sktr.py" line="396"/>
         <source>unknown</source>
         <translation>未知</translation>
     </message>
@@ -1573,12 +1573,12 @@
         <translation>順序</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="409"/>
+        <location filename="sktr.py" line="411"/>
         <source>Subs</source>
         <translation>字幕</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="409"/>
+        <location filename="sktr.py" line="411"/>
         <source>subs</source>
         <translation>字幕</translation>
     </message>
@@ -1628,7 +1628,7 @@
         <translation>本地</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="392"/>
+        <location filename="sktr.py" line="394"/>
         <source>Press Enter to submit</source>
         <translation>按下回車提交</translation>
     </message>
@@ -1948,7 +1948,7 @@
         <translation>機器翻譯</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="378"/>
+        <location filename="sktr.py" line="380"/>
         <source>Not changed</source>
         <translation>未改變</translation>
     </message>
@@ -1993,12 +1993,12 @@
         <translation>諺文</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="375"/>
+        <location filename="sktr.py" line="377"/>
         <source>Public</source>
         <translation>公開</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="376"/>
+        <location filename="sktr.py" line="378"/>
         <source>Private</source>
         <translation>非公開</translation>
     </message>
@@ -2078,7 +2078,7 @@
         <translation>右</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="385"/>
+        <location filename="sktr.py" line="387"/>
         <source>Network Error</source>
         <translation>網絡錯誤</translation>
     </message>
@@ -2093,7 +2093,7 @@
         <translation>前進</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="372"/>
+        <location filename="sktr.py" line="374"/>
         <source>Slow</source>
         <translation>慢</translation>
     </message>
@@ -2103,7 +2103,7 @@
         <translation>轉碼</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="373"/>
+        <location filename="sktr.py" line="375"/>
         <source>slow</source>
         <translation>慢</translation>
     </message>
@@ -2175,6 +2175,11 @@
     <message>
         <location filename="sktr.py" line="208"/>
         <source>Music</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="372"/>
+        <source>Draggable</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -303,6 +303,11 @@ bindSearch = ->
     #tts.speak @getAttribute('data-text'), @getAttribute('data-lang')
     gameBean.search $.trim @textContent
 
+bindDraggable = ->
+  $('.draggable').draggable()
+  $('.draggable button.close').click ->
+    $(@).closest('.draggable').fadeOut()
+
 ## Main ##
 
 init = ->
@@ -320,6 +325,7 @@ init = ->
 
     bindTts()
     bindSearch()
+    bindDraggable()
 
     #initBootstrap()
 

@@ -63,10 +63,11 @@
           %i.fa.fa-chevron-down
 
       .game.portal(data-id="#{game.itemId}")
-        .cover
+        .cover.draggable
           -if game.image
-            %a(href="#{game.imageUrl}",title="表紙")
+            %a(href="#{game.imageUrl}",title="#{tr('Draggable')}")
               %img.cover.zoom.zoom-cover.img-rounded(src="#{game.imageUrl}")
+            %button.close(type="button" title="#{tr('Close')}") &times
           -else
             .text-danger 表紙: (#{tr('unknown')})
         .header
@@ -230,10 +231,10 @@
             %section.banner
               -for it in game.iterBannerImageUrls()
                 -if game.homepage
-                  %a(href="#{homepage}",title="#{tr('Homepage')}")
+                  %a(href="#{homepage}",title="#{it}")
                     %img(src="#{it}")
                 -else
-                  %a(href="#{GG_Q}#{title}",title="#{tr('Google')}")
+                  %a(href="#{GG_Q}#{game.title}",title="#{tr('Google')}: #{game.title}")
                     %img(src="#{it}")
           -if game.hasTwitterWidgets()
             %hr
@@ -379,7 +380,7 @@
 
       ; Scripts
       -for it in \
-        'jquery', 'jquery.imagesloaded', \
+        'jquery', 'jquery.ui', 'jquery.imagesloaded', \
         'bootstrap.switch', 'dragdealer', \
         'haml', 'masonry', \
         'ruby', 'widgets', 'game'

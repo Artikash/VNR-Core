@@ -31,7 +31,7 @@ GAME_HAML = Haml '''\
     :if g.series
       .label.label-success(title="#{g.series}シリーズ") = g.series
     :if g.brand
-      :each it in g.brand.split(',')
+      :for it in g.brand.split(',')
         .label.label-inverse(title="ブランド: #{it}") = it
     :if g.visitCount
       :if visitColor === ''
@@ -54,7 +54,7 @@ GAME_HAML = Haml '''\
       :if scoreColor === 'b'
         .badge.badge-inverse(title="得点×点数") #{g.scapeMedian}x#{g.scapeCount}
     :if g.tags
-      :each it in g.tags.split(',')
+      :for it in g.tags.split(',')
         .label(title="#{it}") = it
     :if g.date
       .label(data-text="#{g.moment.format('YYYYMM')}" title="発売日") = g.moment.format('M/D/YYYY')
@@ -63,16 +63,16 @@ GAME_HAML = Haml '''\
   %img.img-rounded(src="#{g.imageUrl}" title="#{tip}")
   .footer
     :if g.artists
-      :each it in g.artists.split(',')
+      :for it in g.artists.split(',')
         .label(data-text="#{it}" title="原画: #{it}") = '*' + it
     :if g.sdartists
-      :each it in g.sdartists.split(',')
+      :for it in g.sdartists.split(',')
         .label(data-text="#{it}" title="SD原画: #{it}") = '.' + it
     :if g.writers
-      :each it in g.writers.split(',')
+      :for it in g.writers.split(',')
         .label(data-text="#{it}" title="脚本: #{it}") = '+' + it
     :if g.musicians
-      :each it in g.musicians.split(',')
+      :for it in g.musicians.split(',')
         .label(data-text="#{it}" title="音楽: #{it}") = '♪' + it
 '''
 
