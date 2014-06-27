@@ -41,6 +41,7 @@ junai:
   - Twinkle
   - Whirlpool
   - φage
+  - あかべぇそふとつぅ
   - みなとそふと
   - でぼの巣製作所
   - ぱじゃまソフト
@@ -54,14 +55,16 @@ junai:
   - 戯画
 
   # Supposed to be nuki but junai at server side
+  #- Galette
   #- Iris
+  - ぷちぱるふぇ
   - アリスソフト
   - エウシュリー
+  - エスクード
 
 nuki:
   - 13cm
   - BLACK RAINBOW
-  - Galette
   - Cattleya
   - CODEPINK
   - Empress

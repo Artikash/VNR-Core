@@ -327,7 +327,7 @@ class _NetworkManager(object):
             for el in item:
               tag = el.tag
               text = el.text
-              if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
+              if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'wiki', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
                 setattr(e, tag, text)
               elif tag in ('otome', 'okazu'):
                 setattr(e, tag, text == 'true')
@@ -339,6 +339,13 @@ class _NetworkManager(object):
                 for it in el:
                   if it.tag in ('count', 'median'):
                     setattr(e, 'scape' + it.tag.capitalize(), int(it.text))
+              elif tag == 'scores':
+                for it in el:
+                  if it.tag == 'score':
+                    t = it.get('type')
+                    if t:
+                      setattr(e, t + 'ScoreCount', int(it.get('count')))
+                      setattr(e, t + 'ScoreSum', int(it.get('sum')))
             ret[e.id] = e
         dprint("game item count = %i" % len(ret))
         return ret

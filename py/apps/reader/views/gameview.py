@@ -4,8 +4,8 @@
 
 __all__ = ['GameViewManager', 'GameViewManagerProxy']
 
+import json, os
 from functools import partial
-import os
 from PySide.QtCore import Qt, Slot, QObject
 from Qt5 import QtWidgets
 from sakurakit import skdatetime, skevents, skthreads, skqss
@@ -47,48 +47,84 @@ def _getimages(l, path=None):
   if path:
     osutil.open_location(path)
 
-class GameViewBean(QObject):
-  def __init__(self, parent=None):
-    super(GameViewBean, self).__init__(parent)
+class GameCoffeeBean(QObject):
+  def __init__(self, parent=None, info=None):
+    super(GameCoffeeBean, self).__init__(parent)
+    self.info = info # GameItemInfo or None
 
-  @Slot(int)
-  def getyt(self, itemId):
-    if prompt.confirmDownloadGameVideos():
-      dm = dataman.manager()
-      info = dm.queryGameInfo(itemId=itemId, cache=False)
-      if not info or not info.hasVideos():
-        growl.warn(my.tr("Please try updating game database first"))
-      else:
-        growl.msg(my.tr("Downloading YouTube videos") + " ...")
-        from sakurakit import skfileio, skpaths
-        name = u"%s (動画)" % skfileio.escape(info.title)
-        path = os.path.join(skpaths.DESKTOP, name)
-        videos = list(info.iterVideoIds())
 
-        import procutil
-        procutil.getyoutube(videos, path=path)
+  # Queries
 
-  @Slot(int)
-  def getimg(self, itemId):
-    if prompt.confirmDownloadGameImages():
-      dm = dataman.manager()
-      info = dm.queryGameInfo(itemId=itemId, cache=False)
-      if not info:
-        growl.warn(my.tr("Please try updating game database first"))
-      else:
-        growl.msg(my.tr("Saving game images") + " ...")
-        from sakurakit import skfileio, skpaths
-        name = u"%s (画像)" % skfileio.escape(info.title)
-        path = os.path.join(skpaths.DESKTOP, name)
-        try:
-          if not os.path.exists(path):
-            os.makedirs(path) # recursively create dir
-          images = [(url, os.path.join(path, name + '.jpg'))
-              for url,name in info.iterImageUrlsWithName()]
-          skthreads.runasync(partial(_getimages, images, path=path))
-        except Exception, e:
-          growl.warn(my.tr("Failed to save all images"))
-          dwarn(e)
+  @Slot(result=unicode)
+  def getTwitterWidgets(self): # return list of long using ',' as sep
+    if self.info and self.info.hasTwitterWidgets():
+      return ','.join((str(id) for id in self.info.iterTwitterWidgets()))
+    else:
+      return ''
+
+  @Slot(result=unicode)
+  def getSampleImages(self): # return list of urls using ',' as sep
+    if self.info and self.info.hasSampleImages():
+      return ','.join(self.info.iterSampleImageUrls())
+    else:
+      return ''
+
+  @Slot(result=unicode)
+  def getVideos(self): # return list of urls using ',' as sep
+    if self.info and self.info.hasVideos():
+      return json.dumps(list(self.info.iterVideos()))
+    else:
+      return ''
+
+  # Actions
+
+  @Slot()
+  def saveVideos(self): # prompt and save all youtube videos to the desktop
+    if not self.info or not self.info.hasVideos():
+      growl.warn(my.tr("Please try updating game database first"))
+    elif prompt.confirmDownloadGameVideos():
+      growl.msg(my.tr("Downloading YouTube videos") + " ...")
+      from sakurakit import skfileio, skpaths
+      name = u"%s (動画)" % skfileio.escape(self.info.title)
+      path = os.path.join(skpaths.DESKTOP, name)
+      videos = list(self.info.iterVideoIds())
+
+      import procutil
+      procutil.getyoutube(videos, path=path)
+
+  @Slot()
+  def saveImages(self): # prompt and save all images to the desktop
+    if not self.info:
+      growl.warn(my.tr("Please try updating game database first"))
+    elif prompt.confirmDownloadGameImages():
+      growl.msg(my.tr("Saving game images") + " ...")
+      from sakurakit import skfileio, skpaths
+      name = u"%s (画像)" % skfileio.escape(self.info.title)
+      path = os.path.join(skpaths.DESKTOP, name)
+      try:
+        if not os.path.exists(path):
+          os.makedirs(path) # recursively create dir
+        images = [(url, os.path.join(path, name + '.jpg'))
+            for url,name in self.info.iterImageUrlsWithName()]
+        skthreads.runasync(partial(_getimages, images, path=path))
+      except Exception, e:
+        growl.warn(my.tr("Failed to save all images"))
+        dwarn(e)
+
+  # Static actions
+
+  #@staticmethod
+  @Slot(unicode)
+  def search(_, text):
+    if text:
+      main.manager().searchGameBoard(text)
+
+  @Slot(unicode, bool, result=unicode)
+  def getYouTubeImageUrl(_, vid, large): # -> url
+    ret = cacheman.cache_image_url(proxy.make_ytimg_url(vid, large=large))
+    if not ret and large:
+      ret = cacheman.cache_image_url(proxy.make_ytimg_url(vid, large=False))
+    return ret
 
 @Q_Q
 class _GameView(object):
@@ -97,7 +133,7 @@ class _GameView(object):
     self.clear()
     self._locked = False
 
-    self._bean = GameViewBean(q)
+    self._gameBean = GameCoffeeBean(parent=q)
     self._viewBean = SkWebViewBean(self.webView)
 
     self._createUi(q)
@@ -130,13 +166,14 @@ class _GameView(object):
     import coffeebean
     m = coffeebean.manager()
     return (
-      ('bean', self._bean), # load at last
-      ('clipboardBean', m.clipboardBean),
+      ('gameBean', self._gameBean),
+      ('clipBean', m.clipBean),
+      ('i18nBean', m.i18nBean),
       ('shioriBean', m.shioriBean),
       ('ttsBean', m.ttsBean),
       ('yakuBean', m.yakuBean),
       ('youtubeBean', m.youtubeBean),
-      ('viewBean', self._viewBean), # load at last
+      ('viewBean', self._viewBean),
       ('yomiBean', m.mecabBean),
     )
 
@@ -146,6 +183,7 @@ class _GameView(object):
     ret = SkWebView()
     #ret.titleChanged.connect(self.q.setWindowTitle)
     ret.enableHighlight() # highlight selected text
+    ret.ignoreSslErrors() # needed to access Twitter
 
     ret.pageAction(QWebPage.Reload).triggered.connect(
         self.updateAndRefresh, Qt.QueuedConnection)
@@ -185,6 +223,7 @@ class _GameView(object):
     q = self.q
     dm = dataman.manager()
     info = dm.queryGameInfo(itemId=self.itemId, id=self.gameId, cache=False)
+    self._gameBean.info = info
     if info:
       if not self.gameId:
         self.gameId = info.gameId

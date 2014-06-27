@@ -143,7 +143,7 @@ Item { id: root_
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
       onLinkActivated: Qt.openUrlExternally(link)
-      text: root_.formatText('Gyutto', 'gyutto.com', model.gyuttoItem ? 'green' : 'brown')
+      text: root_.formatText('DiGiket', 'www.digiket.com', model.digiketItem ? 'green' : 'brown')
     }
 
     Text {
@@ -152,7 +152,7 @@ Item { id: root_
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
       onLinkActivated: Qt.openUrlExternally(link)
-      text: root_.formatText('DiGiket', 'www.digiket.com', model.digiketItem ? 'green' : 'brown')
+      text: root_.formatText('Gyutto', 'gyutto.com', model.gyuttoItem ? 'green' : 'brown')
     }
   }
 

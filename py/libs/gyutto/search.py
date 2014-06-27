@@ -10,8 +10,8 @@ if __name__ == '__main__': # DEBUG
 
 import re
 from datetime import datetime
-from sakurakit import sknetio, skstr
-from sakurakit.skdebug import dwarn
+from sakurakit import sknetio
+from sakurakit.skstr import unescapehtml
 
 class SearchApi(object):
   # Example: http://gyutto.com/search/search_list.php?category_id=6&set_category_flag=1&search_keyword=%83%89%83%93%83X&action=display
@@ -134,7 +134,7 @@ class SearchApi(object):
       item = {
         'id': key,
         'url': "http://gyutto.com/i/item%s" % key,
-        'title': skstr.unescapehtml(m.group(2)),
+        'title': unescapehtml(m.group(2)),
       }
 
 

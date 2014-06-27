@@ -9,9 +9,10 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 import re
-from sakurakit import sknetio, skstr
+from sakurakit import sknetio
 from sakurakit.skcontainer import uniquelist
-from sakurakit.skdebug import dwarn
+from sakurakit.skstr import multireplacer, unescapehtml
+#from sakurakit.skdebug import dwarn
 
 DEFAULT_HOST = "http://www.getchu.com"
 _QUERY_PATH = "soft.phtml?id=%s"
@@ -134,7 +135,7 @@ class SoftApi(object):
           #'imageCount': self._parseimagecount(h),
           'sampleImages': list(self._iterparsesampleimages(h)), # [kw]
           'descriptions': list(self._iterparsedescriptions(h)), # [kw]
-          'comics': list(self._iterparsecomics(h)),   # [kw]
+          #'comics': list(self._iterparsecomics(h)),   # [kw]
           'banners': list(self._iterparsebanners(h)), # [kw]
           'videos': uniquelist(self._iterparsevideos(h)),   # [kw]
         }
@@ -172,7 +173,7 @@ class SoftApi(object):
     """
     m = self._rx_genre.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1))
+      return unescapehtml(m.group(1))
 
   # Example:
   # <TR><TD valign="top" align="right">カテゴリ：</TD><TD align="top">シミュレーションRPG、<a href='php/search.phtml?category[0]=C3_F003'>ポリゴン・3D</a>、<a href='php/search.phtml?category[0]=C3_F026'>バトル</a>、<a href='php/search.phtml?category[0]=C3_F004'>アニメーション</a> <a href="/pc/genre.html">[一覧]</a></TD></TR>
@@ -186,7 +187,7 @@ class SoftApi(object):
     """
     m = rx.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1))
+      return unescapehtml(m.group(1))
 
   _rx_td_musician = __maketdrx(u'音楽')
   #_rx_musician = re.compile(r'>([^><]+?)<')
@@ -259,7 +260,7 @@ class SoftApi(object):
     ret = {}
     desc = self._parsemeta(self._rx_meta_desc, h)
     if desc:
-      desc = skstr.unescapehtml(desc)
+      desc = unescapehtml(desc)
       for item in desc.split(','):
         l = item.split(u"：")
         if len(l) >= 2:
@@ -283,7 +284,7 @@ class SoftApi(object):
     """
     kw = self._parsemetakw(h)
     if kw:
-      return skstr.unescapehtml(kw[0])
+      return unescapehtml(kw[0])
 
   # Example: 価格：	￥7,140 (税抜￥6,800)
   #_rx_price = re.compile(ur'￥([0-9,]+?) \(税抜')
@@ -323,7 +324,7 @@ class SoftApi(object):
   #  # http://stackoverflow.com/questions/2802168/find-last-match-with-python-regular-expression
   #  m = self._rx_title.search(h)
   #  if m:
-  #    return skstr.unescapehtml(m.group(1).strip())
+  #    return unescapehtml(m.group(1).strip())
 
   #_rx_sample = re.compile(r'SAMPLE([0-9]+)')
   #def _parseimagecount(self, h):
@@ -386,7 +387,7 @@ class SoftApi(object):
   #  """
   #  m = rx.search(h)
   #  if m:
-  #    return skstr.unescapehtml(
+  #    return unescapehtml(
   #        self._removescripts(
   #          self._replacelinks(
   #            m.group())))
@@ -403,7 +404,7 @@ class SoftApi(object):
     @yield  unicode
     """
     for m in self._rx_desc.finditer(h):
-      yield skstr.unescapehtml(
+      yield unescapehtml(
           self._removescripts(
             self._replacelinks(
               m.group())))
@@ -449,7 +450,7 @@ class SoftApi(object):
         s.add(img)
         yield img
 
-  _repl_links = staticmethod(skstr.multireplacer({
+  _repl_links = staticmethod(multireplacer({
     r'<a href="./': r'<a href="#{h}', r'<A href="./': r'<a href="#{h}',
     r'<a href="/': r'<a href="#{h}', r'<A href="/': r'<a href="#{h}',
     r'<a href="': r'<a href="#{h}', r'<A href="': r'<a href="#{h}',
@@ -497,14 +498,14 @@ class SoftApi(object):
     for m in self._rx_characters.finditer(h):
       name = m.group(3)
       if name and name != BAD_NAME:
-        before = skstr.unescapehtml(m.group(2))
+        before = unescapehtml(m.group(2))
         mm = self._rx_characters_img.search(before)
         img = self.HOST + mm.group(1) if mm else ''
         #img = 'http://www.getchu.com/brandnew/%s/c%schara%s.jpg' % (id, id, it['id'])
         mm = self._rx_characters_label.search(before)
         label = mm.group(1) if mm else ''
         yomi = cv = ''
-        after = skstr.unescapehtml(m.group(4)).strip()
+        after = unescapehtml(m.group(4)).strip()
         if after:
           l = after.split("CV")
           if len(l) == 1:
@@ -517,10 +518,10 @@ class SoftApi(object):
         yield {
           'id': int(m.group(1)),  # int, character number, starting from 1
           'img': img, # twitter str key
-          'label': skstr.unescapehtml(label), # str
-          'name': skstr.unescapehtml(name).replace(u'　', ''), # unicode, \u3000
-          'yomi': skstr.unescapehtml(yomi).replace(u'　', '') if yomi else '', # unicode
-          'cv': skstr.unescapehtml(cv), # unicode
+          'label': unescapehtml(label), # str
+          'name': unescapehtml(name).replace(u'　', ''), # unicode, \u3000
+          'yomi': unescapehtml(yomi).replace(u'　', '') if yomi else '', # unicode
+          'cv': unescapehtml(cv), # unicode
         }
       #h = h[m.end(0):]
 
@@ -537,11 +538,11 @@ class SoftApi(object):
     """
     BAD_NAME = u"その他"
     for m in self._rx_characters2.finditer(h):
-      before = skstr.unescapehtml(m.group(2))
+      before = unescapehtml(m.group(2))
       mm = self._rx_characters_img.search(before)
       img = self.HOST + mm.group(1) if mm else ''
       #img = 'http://www.getchu.com/brandnew/%s/c%schara%s.jpg' % (id, id, it['id'])
-      after = skstr.unescapehtml(m.group(3)).strip()
+      after = unescapehtml(m.group(3)).strip()
       l = filter(bool, after.split('<br>'))
       if len(l) == 1:
         label = ''
@@ -572,10 +573,10 @@ class SoftApi(object):
         yield {
           'id': int(m.group(1)),  # character number, starting from 1
           'img': img, # twitter img key
-          'label': skstr.unescapehtml(label), # unicode
-          'name': skstr.unescapehtml(name).replace(u'　', ''), # unicode, \u3000
-          'yomi': skstr.unescapehtml(yomi).replace(u'　', '') if yomi else '', # unicode
-          'cv': skstr.unescapehtml(cv), # unicode
+          'label': unescapehtml(label), # unicode
+          'name': unescapehtml(name).replace(u'　', ''), # unicode, \u3000
+          'yomi': unescapehtml(yomi).replace(u'　', '') if yomi else '', # unicode
+          'cv': unescapehtml(cv), # unicode
         }
       #h = h[m.end(0):]
 

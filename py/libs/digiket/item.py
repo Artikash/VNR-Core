@@ -10,8 +10,9 @@ if __name__ == '__main__': # DEBUG
 
 import re
 from datetime import datetime
-from sakurakit import sknetio, skstr
-from sakurakit.skdebug import dwarn
+from sakurakit import sknetio
+#from sakurakit.skdebug import dwarn
+from sakurakit.skstr import unescapehtml
 import defs
 
 class ItemApi(object):
@@ -71,7 +72,7 @@ class ItemApi(object):
     """
     ret = self._parsemetadesc(h)
     if ret:
-      ret['otome'] = u"女性向" in h # bool
+      ret['otome'] = u"成人女性向" in h # bool
       ret['ecchi'] = u"18歳未満" in h # bool
       ret['brand'] = self._parsebrand(h) # unicode or None
       ret['date'] = self._parsedate(h) # datetime object or None
@@ -137,7 +138,7 @@ class ItemApi(object):
   #  """
   #  m = self._rx_titlebrand.search(h)
   #  if m:
-  #    return skstr.unescapehtml(m.group(1)).strip(), skstr.unescapehtml(m.group(2)).strip()
+  #    return unescapehtml(m.group(1)).strip(), unescapehtml(m.group(2)).strip()
 
   # <meta name="description" content="かいじゅう【屋根裏のラグーン】のダウンロード購入。デジケット特価:1,236 円。同人ソフト、美少年CG集、同人誌、乙女ゲー、ＢＬアニメがあります。">
   # <meta name="脳内彼女の『女装山脈』のダウンロード購入。デジケット特価:3,811 円。美少女ゲーム、アダルトゲーム、同人ソフト、萌えCG集、同人誌があります。">
@@ -156,11 +157,11 @@ class ItemApi(object):
       desc = m.group(1)
       m = self._rx_desc_title.search(desc)
       if m:
-        ret['title'] = skstr.unescapehtml(m.group(1))
+        ret['title'] = unescapehtml(m.group(1))
 
       #m = self._rx_desc_brand.search(desc)
       #if m:
-      #  brand = skstr.unescapehtml(m.group(1))
+      #  brand = unescapehtml(m.group(1))
       #  if brand[-1] == u'の':
       #    brand = brand[:-1]
       #  ret['brand'] = brand
@@ -182,7 +183,7 @@ class ItemApi(object):
     """
     m = self._rx_brand.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1)).replace(" / ", ',').replace(u"／", ',')
+      return unescapehtml(m.group(1)).replace(" / ", ',').replace(u"／", ',')
 
   # <tr>
   #   <td width="15%" bgcolor="#CCCCFF"><div align="right"><font size="2">登録日</font></div></td>
@@ -277,7 +278,7 @@ class ItemApi(object):
       if stop > 0:
         h = h[:stop]
         for m in self._rx_link.finditer(h):
-          yield skstr.unescapehtml(m.group(1).strip())
+          yield unescapehtml(m.group(1).strip())
 
   _rx_cell = re.compile('>([^<]+?)</font></div></td>', re.I)
   def _parsetablecell(self, key, h):
@@ -294,7 +295,7 @@ class ItemApi(object):
         h = h[:stop]
         m = self._rx_cell.search(h)
         if m:
-          return skstr.unescapehtml(m.group(1).strip())
+          return unescapehtml(m.group(1).strip())
 
   def _hastablecell(self, key, h):
     """
@@ -409,15 +410,15 @@ class ItemApi(object):
         desc = h[start:stop]
 
         m = self._rx_label.search(desc)
-        label = skstr.unescapehtml(m.group(1)) if m else ''
+        label = unescapehtml(m.group(1)) if m else ''
 
         m = self._rx_cv.search(desc)
-        cv = skstr.unescapehtml(m.group(1)) if m else ''
+        cv = unescapehtml(m.group(1)) if m else ''
 
         name = yomi = ''
         m = self._rx_chara.search(desc)
         if m:
-          name = skstr.unescapehtml(m.group(1)).replace(u'　', ' ') # u3000
+          name = unescapehtml(m.group(1)).replace(u'　', ' ') # u3000
           # ●羽馬 紫織（はば・しおり）
           beg = name.find(u'（')
           if beg > 0:

@@ -75,6 +75,8 @@ processes:
   - GoogleIMEJaRenderer.exe  # Google
   - gvim.exe            # GVIM
   - HaoZip.exe          # HaoYa
+  - HD-Agent.exe        # BlueStacks
+  - HD-Frontend.exe     # BlueStacks
   - hidfind.exe         # Dell
   - idaq.exe            # IDA
   - idea.exe            # Intelij IDEA

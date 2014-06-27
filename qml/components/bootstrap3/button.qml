@@ -23,12 +23,12 @@ MouseArea { id: root_
   //property alias pressed: mouse_.pressed
   property alias hover: toolTip_.containsMouse
 
-  property real zoom: 1.0
+  property real scale: 1.0
 
   //signal clicked(variant mouse)
 
-  width: text_.width + 24 * zoom   // bootstrap: 12px * 2 = 24
-  height: text_.height + 10 * zoom // bootstrap: 4px * 2 = 8
+  width: text_.width + 24 * scale   // bootstrap: 12px * 2 = 24
+  height: text_.height + 10 * scale // bootstrap: 4px * 2 = 8
 
   acceptedButtons: Qt.LeftButton
 
@@ -80,7 +80,7 @@ MouseArea { id: root_
   Text { id: text_
     anchors.centerIn: parent
     horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
-    font.pixelSize: 12 * root_.zoom // bootstrap: 14px
+    font.pixelSize: 12 * root_.scale // bootstrap: 14px
     //font.bold: true
     //font.family: root_.language ? Util.fontFamilyForLanguage(root_.language) : ""
     //font.family: 'MS Gothic'

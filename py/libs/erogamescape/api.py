@@ -24,7 +24,8 @@ if __name__ == '__main__': # DEBUG
 
 import re
 from datetime import datetime
-from sakurakit import sknetio, skstr
+from sakurakit import sknetio
+from sakurakit.skstr import unescapehtml
 
 DEFAULT_HOST = "http://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki"
 
@@ -36,14 +37,14 @@ def __unicode(t):
   @param  t  str
   @return  unicode or None
   """
-  return skstr.unescapehtml(t).decode('utf8', errors='ignore').strip() if t else None
+  return unescapehtml(t).decode('utf8', errors='ignore').strip() if t else None
 
 def __str(t):
   """
   @param  t  str
   @return  str or None
   """
-  return skstr.unescapehtml(t).strip() if t else None
+  return unescapehtml(t).strip() if t else None
 
 def __int(t):
   """

@@ -31,7 +31,7 @@ GAME_HAML = Haml '''\
     :if g.series
       .label.label-success(title="#{g.series}シリーズ") = g.series
     :if g.brand
-      :each it in g.brand.split(',')
+      :for it in g.brand.split(',')
         .label.label-inverse(title="ブランド: #{it}") = it
     :if g.visitCount
       :if visitColor === ''
@@ -54,7 +54,7 @@ GAME_HAML = Haml '''\
       :if scoreColor === 'b'
         .badge.badge-inverse(title="得点×点数") #{g.scapeMedian}x#{g.scapeCount}
     :if g.tags
-      :each it in g.tags.split(',')
+      :for it in g.tags.split(',')
         .label(title="#{it}") = it
     :if g.date
       .label(data-text="#{g.moment.format('YYYYMM')}" title="発売日") = g.moment.format('M/D/YYYY')
@@ -63,16 +63,16 @@ GAME_HAML = Haml '''\
   %img.img-rounded(src="#{g.imageUrl}" title="#{tip}")
   .footer
     :if g.artists
-      :each it in g.artists.split(',')
+      :for it in g.artists.split(',')
         .label(data-text="#{it}" title="原画: #{it}") = '*' + it
     :if g.sdartists
-      :each it in g.sdartists.split(',')
+      :for it in g.sdartists.split(',')
         .label(data-text="#{it}" title="SD原画: #{it}") = '.' + it
     :if g.writers
-      :each it in g.writers.split(',')
+      :for it in g.writers.split(',')
         .label(data-text="#{it}" title="脚本: #{it}") = '+' + it
     :if g.musicians
-      :each it in g.musicians.split(',')
+      :for it in g.musicians.split(',')
         .label(data-text="#{it}" title="音楽: #{it}") = '♪' + it
 '''
 
@@ -81,7 +81,6 @@ GAME_HAML = Haml '''\
 @shorten = (t, limit=11) ->
   if t.length <= limit then t else (t[0..limit-1] + '..')
   #if _strsize(t) <= limit then t else (t[0..limit-1] + '..')
-  #
 
 class GameManager
   id: 'games' # containerId
@@ -96,8 +95,7 @@ class GameManager
       sort: 'date'  # string, initial order
       reverse: true # bool
 
-    @spinner = new Spinner()
-    #@spinTimer = timer SPIN_DURATION, => @spinner.stop()
+    #@spinner = new Spinner()
 
     @$search = $ 'input#search'
     @searchText = ''
@@ -107,16 +105,36 @@ class GameManager
     #@filters = {} # key: jquery selector
     @$container.masonry
       itemSelector: @itemSelector
-      isAnimated: false # disable animation
-      transitionDuration: 0 # set to 0 to disable animation
+      #isAnimated: false # disable animation
+      #transitionDuration: 0 # set to 0 to disable animation
+
+      #isFitWidth: true # align center
       #transitionDuration: 400
       #columnWidth: 160 # 10/8/2013: does not work?!
+
+    @masonryLayoutTimer = timer 200, => @$container.masonry()
+    @masonryAnimateTimer = timer 600, @masonryStartAni # larger than 400
 
     @scrollTimer = timer 2000 # prevent from scrolling too fast
 
     #@resetPage()
     @bind()
     @refresh()
+
+  masonryLayoutLater: => @masonryLayoutTimer.start()
+
+  masonryStartAniLater: => @masonryAnimateTimer.start()
+
+  masonryStartAni: =>
+    @$container.masonry # enable anime
+      isAnimated: true # default = true, enable animation
+      transitionDuration: 400 # default = 400, set to 0 to disable animation
+
+  masonryStopAni: =>
+    @masonryAnimateTimer.stop()
+    @$container.masonry # enable anime
+      isAnimated: false # disable animation
+      transitionDuration: 0 # set to 0 to disable animation
 
   ## Zoom ##
 
@@ -125,7 +143,8 @@ class GameManager
     if @itemWidth isnt v
       @itemWidth = v
       $(@itemSelector).width v
-      @$container.masonry()
+      #@$container.masonry()
+      @masonryLayoutLater()
 
   zoom: (v) => # @param  v  float percentage
     @setItemWidth v * DEF_ITEM_WIDTH
@@ -262,6 +281,10 @@ class GameManager
     dprint 'refresh: enter'
     #@resetPage()
 
+    # Temporarily disable animation and scheduled refresh task
+    @masonryLayoutTimer.stop()
+    @masonryStopAni()
+
     # Clear first as it might take some time
     $items = $ @itemSelector
     if $items.length
@@ -272,24 +295,23 @@ class GameManager
     #setTimeout @repaint, 300 # surrender current event loop
     @repaint()
 
+    @masonryStartAniLater()
+
   showBlocker: -> $('.blocker:hidden').fadeIn()
   hideBlocker: -> $('.blocker:visible').fadeOut()
 
-  showSpinner: =>
-    #@spinTimer.stop()
-    $window = $ window
-    el = document.getElementById 'spinner'
-    el.style.left = "#{$window.scrollLeft() + @bean.width() / 2}px"
-    el.style.top = "#{$window.scrollTop() + @bean.height() / 2}px"
-    $('#spinner').fadeIn()
-    @spinner.spin el
+  #showSpinner: =>
+  #  #@spinTimer.stop()
+  #  $window = $ window
+  #  el = document.getElementById 'spinner'
+  #  el.style.left = "#{$window.scrollLeft() + @bean.width() / 2}px"
+  #  el.style.top = "#{$window.scrollTop() + @bean.height() / 2}px"
+  #  $('#spinner').fadeIn()
+  #  @spinner.spin el
 
-  hideSpinner: =>
-    $('#spinner').hide()
-    @spinner.stop()
-    #unless @spinTimer.active
-    #  @spinTimer.start()
-    #  $('#spinner').fadeOut SPIN_DURATION
+  #hideSpinner: =>
+  #  $('#spinner').hide()
+  #  @spinner.stop()
 
   repaint: =>
     dprint 'repaint: enter'
@@ -305,14 +327,22 @@ class GameManager
         @[it.itemId] = it for it in gamelist
         @
 
-      @showSpinner()
       $h = $ @render gamelist
-        .imagesLoaded =>
-          @hideSpinner()
-          @$container.append $h
-                     .masonry 'appended', $h
-                     .masonry()
-          @rebind()
+      @$container.append $h
+                 .masonry 'appended', $h
+                 #.masonry()
+      @rebind()
+      @masonryLayoutLater()
+      $h.find('img').load @masonryLayoutLater
+
+      #@showSpinner()
+      #$h = $ @render gamelist
+      #  .imagesLoaded =>
+      #    @hideSpinner()
+      #    @$container.append $h
+      #               .masonry 'appended', $h
+      #               .masonry()
+      #    @rebind()
     dprint 'repaint: leave'
 
   more: =>
@@ -324,13 +354,22 @@ class GameManager
       #@hideBlocker()
       @games[it.itemId] = it for it in gamelist
 
+
       $h = $ @render gamelist
-        .imagesLoaded =>
-          #@hideSpinner()
-          @$container.append $h
-                     .masonry 'appended', $h
-                     .masonry()
-          @rebind()
+      @$container.append $h
+                 .masonry 'appended', $h
+                 #.masonry()
+      @rebind()
+      @masonryLayoutLater()
+      $h.find('img').load @masonryLayoutLater
+
+      #$h = $ @render gamelist
+      #  .imagesLoaded =>
+      #    #@hideSpinner()
+      #    @$container.append $h
+      #               .masonry 'appended', $h
+      #               .masonry()
+      #    @rebind()
     dprint 'more: leave'
 
   rebind: =>
@@ -471,11 +510,20 @@ init = ->
       height: 229   # height of slider + 3 * button + margin-bottom
       move: slider.reloadOffset
 
+    # Export window mamager so that external APIs such as window.search can access it
+    # Delay assigning to gameManager until everything else is ready
+    @gameManager = gm
+
     #setTimeout gm.show, 200
     #setTimeout _.partial(quicksearch, styleClass, gf.refreshFilter),  2000
     dprint 'init: leave'
 
 $ -> init()
+
+# External APIs
+
+@search = (text) -> # str ->  set search text
+  gameManager.search text if window.gameManager
 
 # EOF
 #

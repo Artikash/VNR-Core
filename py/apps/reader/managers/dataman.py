@@ -172,6 +172,14 @@ class GameInfo(object):
     return bool(self.date) and not self.upcoming and self.date > skdatetime.CURRENT_UNIXTIME - 86400*30 # a month
 
   #@memoizedproperty
+  #def type(self): # -> str
+  #  return 'otome' if self.otome else 'nuki' if self.okazu else 'junai'
+
+  #@memoizedproperty
+  #def typeName(self): # -> unicode
+  #  return u'乙女' if self.otome else u'抜き' if self.okazu else u'純愛'
+
+  #@memoizedproperty
   #def referenceDigests(self):
   #  """Offline
   #  @return  [ReferenceDigest] not None
@@ -378,6 +386,15 @@ class GameInfo(object):
       if kw:
         return HolysealReference(**kw)
 
+  def hasCharacters(self):
+    """Online
+    @return  bool
+    """
+    for r in self.digiket, self.getchu:
+      if r and r.characters:
+        return True
+    return False
+
   @property
   def characters(self):
     """Online
@@ -521,32 +538,63 @@ class GameInfo(object):
     if r:
       return r.erogetrailersUrl
 
-  def iterUrlsWithType(self):
-    """
-    @yield  (str url, str type)
-    """
-    v = self.homepage
-    if v:
-      yield v, 'homepage'
-    for r in self.scape, self.holyseal:
-      if r:
-        yield r.url, r.type
-    v = self.tokutenUrl
-    if v:
-      yield v, 'tokuten'
-    for r in self.getchu, self.gyutto, self.amazon, self.dmm, self.digiket, self.dlsite:
-      if r:
-        yield r.url, r.type
-    v = self.trailersUrl
-    if v:
-      yield v, 'trailers'
+  #def iterUrlsWithType(self):
+  #  """
+  #  @yield  (str url, str type)
+  #  """
+  #  v = self.homepage
+  #  if v:
+  #    yield v, 'homepage'
+  #  for r in self.scape, self.holyseal:
+  #    if r:
+  #      yield r.url, r.type
+  #  v = self.tokutenUrl
+  #  if v:
+  #    yield v, 'tokuten'
+  #  for r in self.getchu, self.gyutto, self.amazon, self.dmm, self.digiket, self.dlsite:
+  #    if r:
+  #      yield r.url, r.type
+  #  v = self.trailersUrl
+  #  if v:
+  #    yield v, 'trailers'
+  #  v = self.wiki
+  #  if v:
+  #    yield v, 'wiki'
 
-  def iterUrlsWithName(self):
+  #def iterUrlsWithName(self):
+  #  """
+  #  @yield  (str url, str name)
+  #  """
+  #  for url, type in self.iterUrlsWithType():
+  #    yield url, i18n.site_name(type) or type
+
+  def hasLinks(self):
     """
-    @yield  (str url, str name)
+    @return  bool
     """
-    for url, type in self.iterUrlsWithType():
-      yield url, i18n.site_name(type) or type
+    return bool(self.getchu or self.gyutto or self.digiket or self.dlsite or self.dmm or self.amazon or self.trailers or self.holyseal or self.scape) #or self.tokutenUrl
+
+  def iterLinks(self):
+    """
+    @yield  {str url, str type}
+    """
+    if self.getchu:
+      yield self.getchu.url, 'getchu'
+
+    if self.gyutto:
+       url = ('http://gyutto.me/i/item%s' if self.otome else 'http://gyutto.com/i/item%s') % self.gyutto.key
+       yield url, 'gyutto'
+
+    for r in self.digiket, self.dlsite, self.dmm, self.amazon, self.trailers:
+      if r:
+        yield r.url, r.type
+
+    if self.tokutenUrl:
+      yield self.tokutenUrl, 'tokuten'
+
+    for r in self.holyseal, self.scape:
+      if r:
+        yield r.url, r.type
 
   @memoizedproperty
   def fileSize(self): # long not None
@@ -632,6 +680,11 @@ class GameInfo(object):
     for r in self.trailersItem, self.gyutto, self.dlsite, self.dmm:
       if r and r.series:
         return r.series
+
+  @property
+  def wiki(self): # str not None
+    g = self.gameItem
+    return g.wiki if g else ''
 
   @memoizedproperty
   def otome0(self): # bool not None
@@ -804,7 +857,7 @@ class GameInfo(object):
     r = self.holyseal
     if r and r.banner:
       return True
-    # Getchu is disabled
+    # Disabled
     #r = self.getchu
     #if r and r.hasBannerImages():
     #  return True
@@ -824,6 +877,7 @@ class GameInfo(object):
     r = self.holyseal
     if r and r.banner and not sknetio.urleq(r.banner, trailersBanner) and not sknetio.urleq(r.banner, scapeBanner):
       yield cacheman.cache_image_url(proxy.get_image_url(r.banner))
+    # Disabled
     #r = self.getchu
     #if r and r.hasBannerImages():
     #  for it in r.iterBannerImageUrls():
@@ -884,17 +938,28 @@ class GameInfo(object):
     if r:
       if r.bannerImages:
         for index,url in enumerate(r.bannerImages):
+          url = proxy.get_image_url(url)
           yield fn(url), 'banner_getchu_%i' % (index+1)
-      if r.comics:
-        for index,url in enumerate(r.comics):
-          yield fn(url), 'comics_getchu_%i' % (index+1)
+      #if r.comics:
+      #  for index,url in enumerate(r.comics):
+      #    yield fn(url), 'comics_getchu_%i' % (index+1)
       if r.characters:
         for it in r.characters:
-          if it['img']:
-            yield fn(it['img']), 'chara_getchu_%s' % it['id']
+          url = it['img']
+          if url:
+            url = proxy.get_getchu_url(url)
+            yield fn(url), 'chara_getchu_%s' % it['id']
       if r.videos:
         for vid,img in r.iterVideoIdsWithImage(cache=cache):
           yield img, 'youtube_%s' % vid
+
+    r = self.digiket
+    if r:
+      if r.characters:
+        for it in r.characters:
+          url = it['img']
+          if url:
+            yield fn(url), 'chara_digiket_%s' % it['id']
 
   @property
   def image0(self): # str or None
@@ -944,6 +1009,7 @@ class GameInfo(object):
     return bool(img) and (
         'getchu.com' in img or
         'dlsite.jp' in img or
+        'digiket.net' in img or
         self.otome0 and 'images-amazon.com' in img)
 
   @property
@@ -974,13 +1040,28 @@ class GameInfo(object):
     return r.musicians if r else ''
 
   @memoizedproperty
-  def creators(self): # [kw] or None
-    for r in self.trailersItem, self.digiket, self.getchu, self.gyutto, self.holyseal:
-      if r and r.creators:
-        return r.creators
-    r = self.dmm
-    if r and r.creators:
-      return [{'name':it} for it in r.creators]
+  def artists(self): # [kw] or None
+    for r in self.trailersItem, self.digiket, self.getchu, self.gyutto, self.holyseal, self.dmm:
+      if r and r.artists:
+        return r.artists
+
+  @memoizedproperty
+  def sdartists(self): # [kw] or None
+    for r in self.trailersItem, self.digiket, self.getchu, self.gyutto, self.holyseal: #, self.dmm:
+      if r and r.sdartists:
+        return r.sdartists
+
+  @memoizedproperty
+  def writers(self): # [kw] or None
+    for r in self.trailersItem, self.digiket, self.getchu, self.gyutto, self.holyseal: #, self.dmm:
+      if r and r.writers:
+        return r.writers
+
+  @memoizedproperty
+  def musicians(self): # [kw] or None
+    for r in self.trailersItem, self.digiket, self.getchu, self.gyutto, self.holyseal: #, self.dmm:
+      if r and r.musicians:
+        return r.musicians
 
   @memoizedproperty
   def slogan(self): # str or None
@@ -1025,6 +1106,9 @@ class GameInfo(object):
     for r in self._iterGetchuDLsiteAmazonDmmDigiket():
       if r.hasSampleImages():
         return True
+    r = self.getchu
+    if r and r.hasBannerImages():
+      return True
     return False
 
   def iterSampleImageUrls(self): # yield str
@@ -1052,10 +1136,10 @@ class GameInfo(object):
     if r and r.hasSampleImages():
       for it in r.iterSampleImageUrls():
         yield it
-    #for r in self._iterDmmAmazonReferences():
-    #  if r.hasSampleImages():
-    #    for it in r.iterSampleImageUrls():
-    #      yield it
+    r = self.getchu # show gechu banner as sample images
+    if r and r.hasBannerImages():
+      for it in r.iterBannerImageUrls():
+        yield it
 
   @memoizedproperty
   def visitCount(self):
@@ -1104,14 +1188,18 @@ class GameInfo(object):
       item = self.trailersItem
       if item:
         for it in item.videos:
-          vids.add(it['youtube'])
+          vid = it['vid']
+          vids.add(vid)
+          #it['img'] = proxy.make_ytimg_url(vid)
           yield it
     r = self.getchu
     if r and r.videos:
       for index,vid in enumerate(it for it in r.videos if it not in vids):
         yield {
-          'youtube': vid,
+          'vid': vid,
           'title': u"動画 #%s" % (index+1) if index else u"動画",
+          #'img': proxy.make_ytimg_url(vid),
+          #'date': '', # unknown
         }
 
   def iterVideoIds(self):
@@ -1124,7 +1212,7 @@ class GameInfo(object):
       item = self.trailersItem
       if item:
         for it in item.videos:
-          vid = it['youtube']
+          vid = it['vid']
           vids.add(vid)
           yield vid
     r = self.getchu
@@ -1135,15 +1223,18 @@ class GameInfo(object):
 
 class GameItem:
   def __init__(self, id=0,
-      title="", romajiTitle="", brand="", series="", image="",
+      title="", romajiTitle="", brand="", series="", image="", wiki="",
       timestamp=0, date=None, artists='', sdartists='', writers='', musicians='',
-      otome=False, okazu=False, scapeMedian=0, scapeCount=0, tags=''):
+      otome=False, okazu=False, scapeMedian=0, scapeCount=0, tags='',
+      overallScoreSum=0, overallScoreCount=0, ecchiScoreSum=0, ecchiScoreCount=0, easyScoreSum=0, easyScoreCount=0,
+      ):
     self.id = id # int
     self.title = title # unicode
     self.romajiTitle = romajiTitle # unicode
     self.brand = brand # unicode
     self.series = series # unicode
     self.image = image # str
+    self.wiki = wiki # unicode
     self.timestamp = timestamp # long
     self.date = date # datetime or None
     self.otome = otome # bool
@@ -1155,6 +1246,13 @@ class GameItem:
     self.sdartists = sdartists # unicode not None
     self.writers = writers # unicode not None
     self.musicians = musicians # unicode not None
+
+    self.overallScoreSum = overallScoreSum
+    self.overallScoreCount = overallScoreCount
+    self.ecchiScoreSum = ecchiScoreSum
+    self.ecchiScoreCount = ecchiScoreCount
+    self.easyScoreSum = easyScoreSum
+    self.easyScoreCount = easyScoreCount
 
 class Game(object):
   NAME_TYPES = 'window', 'file', 'link', 'folder', 'brand'
@@ -1247,7 +1345,7 @@ class Game(object):
     if self.itemId:
       g = manager().queryGameItem(self.itemId)
       if g:
-        return 'otome' if g.otome else 'junai' if not g.okazu else 'nuki'
+        return 'otome' if g.otome else 'nuki' if g.okazu else 'junai'
     return ''
 
 class GameFile:
@@ -2521,14 +2619,18 @@ class TrailersItem: #(object):
   def __init__(self,
       series="", banner="",
       otome=False,
-      brands=[], creators=[], videos=[],
+      brands=[], videos=[],
       **kwargs):
     self.series = series # unicode
     self.banner = banner # str url
     self.otome = otome   # bool
     self.brands = brands    # [kw]
-    self.creators = creators # [kw]
     self.videos = videos    # [kw]
+
+    for k in 'artists', 'sdartists', 'writers', 'musicians':
+      v = kwargs.get(k)
+      v = [it['name'] for it in v] if v else []
+      setattr(self, k, v)
 
   def iterVideoIdsWithImage(self, cache=True):
     """
@@ -2538,7 +2640,7 @@ class TrailersItem: #(object):
     if self.videos:
       host = proxy.manager().ytimg_i
       for it in self.videos:
-        vid = it['youtube']
+        vid = it['vid']
         img = host + '/vi/' + vid + '/maxresdefault.jpg' # http://stackoverflow.com/questions/2068344/how-do-i-get-a-youtube-video-thumbnail-from-the-youtube-api
         yield vid, cacheman.cache_image_url(img) if cache else img
 
@@ -2677,6 +2779,7 @@ class GetchuReference(Reference): #(object):
       descriptions=[],
       videos=[],
       sampleImages=[], comics=[], banners=[],
+      writers=[], artists=[], sdartists=[], musicians=[],
       **kwargs):
     super(GetchuReference, self).__init__(parent=parent,
         type=type, **kwargs)
@@ -2692,12 +2795,10 @@ class GetchuReference(Reference): #(object):
     self.bannerImages = banners # [str url]
     self.videos = videos    # [str]
 
-    self.creators = []
-    for k in 'writers', 'artists', 'sdartists', 'musicians':
-      v = kwargs.get(k)
-      if v:
-        for it in v:
-          self.creators.append({'name':it, 'roles':[k[:-1]]})
+    self.artists = artists # [unicode name]
+    self.sdartists = sdartists # [unicode name]
+    self.writers = writers # [unicode name]
+    self.musicians = musicians # [unicode name]
 
   def iterVideoIdsWithImage(self, cache=True):
     """
@@ -2710,15 +2811,17 @@ class GetchuReference(Reference): #(object):
         img = host + '/vi/' + vid + '/0.jpg'
         yield vid, cacheman.cache_image_url(img) if cache else img
 
-  #def hasBannerImages(self): return bool(self.bannerImages)
+  def hasBannerImages(self): return bool(self.bannerImages)
 
-  #def iterBannerImageUrls(self, cache=True):
-  #  """
-  #  @yield  str  url
-  #  """
-  #  #if self.hasSampleImages():
-  #  for it in self.bannerImages:
-  #    yield cacheman.cache_image_url(it) if cache else it
+  def iterBannerImageUrls(self, cache=True):
+    """
+    @yield  str  url
+    """
+    #if self.hasSampleImages():
+    for it in self.bannerImages:
+      it = proxy.get_image_url(it)
+      #it = proxy.get_getchu_url(it)
+      yield cacheman.cache_image_url(it) if cache else it
 
   #def hasReview(self): return True # not implemented
   #@property
@@ -2743,6 +2846,7 @@ class GetchuReference(Reference): #(object):
     """
     #if self.hasSampleImages():
     for it in self.sampleImages:
+      it = proxy.get_getchu_url(it)
       yield cacheman.cache_image_url(it) if cache else it
 
   def hasDescriptions(self):
@@ -2782,6 +2886,7 @@ class DiGiketReference(Reference): #(object):
       characters=[],
       description='', review='', event='',
       screenshots=[], ev='',
+      artists=[], writers=[], musicians=[],
       **kwargs):
     super(DiGiketReference, self).__init__(parent=parent,
         type=type, **kwargs)
@@ -2807,12 +2912,9 @@ class DiGiketReference(Reference): #(object):
     if screenshots:
       self.sampleImages.extend(screenshots)
 
-    self.creators = []
-    for k in 'writers', 'artists', 'musicians':
-      v = kwargs.get(k)
-      if v:
-        for it in v:
-          self.creators.append({'name':it, 'roles':[k[:-1]]})
+    self.artists = artists # [unicode name]
+    self.writers = writers # [unicode name]
+    self.musicians = musicians # [unicode name]
 
   def hasSampleImages(self): return bool(self.sampleImages)
 
@@ -2900,6 +3002,7 @@ class GyuttoReference(Reference): #(object):
       theme='',
       doujin=False, otome=False,
       tags=[], sampleImages=[],
+      writers=[], artists=[], musicians=[],
       **kwargs):
     super(GyuttoReference, self).__init__(parent=parent,
         type=type, **kwargs)
@@ -2913,12 +3016,9 @@ class GyuttoReference(Reference): #(object):
     self.otome = otome
     self.doujin = doujin
 
-    self.creators = []
-    for k in 'writers', 'artists', 'musicians':
-      v = kwargs.get(k)
-      if v:
-        for it in v:
-          self.creators.append({'name':it, 'roles':[k[:-1]]})
+    self.artists = artists # [unicode name]
+    self.writers = writers # [unicode name]
+    self.musicians = musicians # [unicode name]
 
   @memoizedproperty
   def review(self):
@@ -2949,6 +3049,7 @@ class HolysealReference(Reference): #(object):
       ecchi=True,
       banner='',
       genre='',
+      writers=[], artists=[],
       **kwargs):
     super(HolysealReference, self).__init__(parent=parent,
         type=type, **kwargs)
@@ -2957,12 +3058,8 @@ class HolysealReference(Reference): #(object):
     self.banner = banner # unicode or None
     self.slogan = genre or '' # str
 
-    self.creators = []
-    for k in 'writers', 'artists':
-      v = kwargs.get(k)
-      if v:
-        for it in v:
-          self.creators.append({'name':it, 'roles':[k[:-1]]})
+    self.artists = artists # [unicode name]
+    self.writers = writers # [unicode name]
 
 class DmmItem: #(object):
   def __init__(self, url="",
@@ -2975,7 +3072,7 @@ class DmmReference(Reference):
   def __init__(self, parent=None,
       type='dmm', # dmm
       price=0, doujin=False, ecchi=True, otome=False,
-      series="", keywords=[], creators=[], #genres=[],
+      series="", keywords=[], authors=[], #genres=[],
       largeImage="", mediumImage="", smallImage="",
       sampleImages=[],
       **kwargs):
@@ -2988,7 +3085,7 @@ class DmmReference(Reference):
     self.otome = otome # bool
     #self.genres = genres # [str]
     self.tags = keywords  # [unicode] not None
-    self.creators = creators  # [unicode] not None
+    self.artists = authors  # [unicode] not None
     self.largeImage = largeImage # str url
     self.mediumImage = mediumImage # str url
     self.smallImage = smallImage # str url
@@ -5555,13 +5652,13 @@ class _DataManager(object):
           if path == 3: # grimoire/references/reference
             tag = elem.tag
             text = elem.text
-            if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
+            if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'wiki', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
               setattr(e, tag, text)
             elif tag == 'keywords': # backward compatibility since 1386059148
               e.tags = text
             elif tag in ('otome', 'okazu'):
               setattr(e, tag, text == 'true')
-            elif tag in ('timestamp', 'scapeMedian', 'scapeCount'):
+            elif tag in ('timestamp', 'scapeMedian', 'scapeCount', 'overallScoreSum', 'overallScoreCount', 'ecchiScoreSum', 'ecchiScoreCount', 'easyScoreSum', 'easyScoreCount'):
               setattr(e, tag, int(text))
             elif tag == 'date':
               e.date = datetime.strptime(text, '%Y%m%d')
@@ -6975,18 +7072,20 @@ class DataManager(QObject):
       self.updateGameItems()
       #self.updateReferenceDigests()
       self.updateUsers()
-      self.updateGameImages()
+      # Disable caching images
+      #self.updateGameImages()
     else:
       growl.warn(my.tr("Cannot connect to the Internet"))
 
-  def updateGameImages(self):
-    dprint("enter")
-    for it in self.__d.gameInfo:
-      if it.image0:
-        it.imageUrl0
-      #if it.image:
-      #  it.imageUrl
-    dprint("leave")
+  # Cache game images
+  #def updateGameImages(self):
+  #  dprint("enter")
+  #  for it in self.__d.gameInfo:
+  #    if it.image0:
+  #      it.imageUrl0
+  #    #if it.image:
+  #    #  it.imageUrl
+  #  dprint("leave")
 
   def queryUser(self, id):
     """

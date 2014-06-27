@@ -116,6 +116,24 @@ class _MainObject(object):
     return ret
 
   @memoizedproperty
+  def jlpManager(self):
+    dprint("create jlp manager") # Move this upward before kagami
+    import jlpman
+    ret = jlpman.manager()
+
+    import settings
+    ss = settings.global_()
+    def refresh():
+      ret.setParserType(
+          '' if not ss.isMeCabEnabled() else
+          'cabocha' if ss.isCaboChaEnabled() else
+          'mecab')
+    refresh()
+    for sig in ss.meCabEnabledChanged, ss.caboChaEnabledChanged:
+      sig.connect(refresh)
+    return ret
+
+  @memoizedproperty
   def meCabManager(self):
     dprint("create mecab manager") # Move this upward before kagami
     import mecabman
@@ -1320,6 +1338,7 @@ class MainObject(QObject):
     d.dictionaryManager
     d.meCabManager
     d.caboChaManager
+    d.jlpManager
     d.nameManager
     d.referenceManager
     d.trailersManager
@@ -1570,6 +1589,13 @@ class MainObject(QObject):
     else:
       growl.notify(my.tr("Unknown game engine"))
     #  growl.notify(my.tr("I am sorry that this feature has not been implemented yet."))
+
+  def searchGameBoard(self, text):
+    """
+    @param  text  unicode
+    """
+    self.showGameBoard()
+    self.__d.gameBoardDialog.search(text)
 
   def showGameBoard(self): _MainObject.showWindow(self.__d.gameBoardDialog)
   def showYouTubeInput(self): _MainObject.showWindow(self.__d.youTubeInputDialog)

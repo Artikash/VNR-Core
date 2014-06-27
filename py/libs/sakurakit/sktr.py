@@ -2,7 +2,7 @@
 # sktr.py
 # 10/8/2012 jichi
 
-__all__ = ['tr_', 'notr_']
+__all__ = ['tr_', 'notr_', 'utr_']
 
 from PySide.QtCore import QObject
 from skclass import memoized
@@ -204,6 +204,9 @@ class sakurakit(QObject):
 
       self.tr("Comiket"),
 
+      self.tr("Scenario"),
+      self.tr("Music"),
+
       self.tr("Machine Translation"),
 
       self.tr("Keyboard shortcuts"),
@@ -276,6 +279,8 @@ class sakurakit(QObject):
       self.tr("Help"),
       self.tr("Homepage"),
       self.tr("Icon"),
+      self.tr("Image"),
+      self.tr("Images"),
       self.tr("Information"),
       self.tr("International"),
       self.tr("Internet status"),
@@ -350,6 +355,7 @@ class sakurakit(QObject):
       self.tr("Window"),
       self.tr("Window title"),
       self.tr("Wiki"),
+      self.tr("Wikipedia"),
       self.tr("Version"),
       self.tr("Zoom"),
 
@@ -362,6 +368,8 @@ class sakurakit(QObject):
       self.tr("Offline"), self.tr("offline"),
       self.tr("Read-only"), self.tr("read-only"),
       self.tr("Editable"), self.tr("editable"),
+
+      self.tr("Draggable"),
 
       self.tr("Slow"),
       self.tr("slow"),
@@ -411,7 +419,8 @@ class sakurakit(QObject):
 @memoized
 def manager(): return sakurakit()
 
-def tr_(text): return manager().tr(text)
-def notr_(text): return text
+def tr_(text): return manager().tr(text) # str -> unicode
+def notr_(text): return text     # any -> any
+def utr_(text): return tr_(text.encode('utf8', errors='ignore')) # unicode -> unicode
 
 # EOF

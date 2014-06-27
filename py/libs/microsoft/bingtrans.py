@@ -8,9 +8,9 @@ if __name__ == '__main__':
   sys.path.append('..')
 
 import json, re, requests
-from sakurakit import skstr
 from sakurakit.skdebug import dwarn, derror
 from sakurakit.sknetio import GZIP_HEADERS
+from sakurakit.skstr import unescapehtml
 
 # See: http://msdn.microsoft.com/en-us/library/hh456380.aspx
 MS_LCODE = {
@@ -123,7 +123,7 @@ class BingTranslator(object):
                ret = l[0]['TranslatedText']
             else:
               ret = '\n'.join(it['TranslatedText'] for it in l)
-            ret = skstr.unescapehtml(ret)
+            ret = unescapehtml(ret)
             return ret
 
       #except socket.error, e:

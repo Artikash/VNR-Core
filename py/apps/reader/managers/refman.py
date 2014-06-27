@@ -177,8 +177,7 @@ class TrailersApi(object):
     @param  kw
     @raise
     """
-    kw['key'] = str(kw['id'])
-    del kw['id']
+    kw['key'] = str(kw.pop('id'))
     #kw['title'] = cls._beautifyTitle(kw['title'])
     try:
       d = datetime.strptime(str(kw['releaseDayNumber']), '%Y%m%d')
@@ -197,10 +196,7 @@ class TrailersApi(object):
         kw['brand'] = kw['brand'].replace(u'（同人）', '')
     except: pass
 
-    #kw['adult'] = kw['ecchi']
-    #del kw['ecchi']
-    kw['homepage'] = kw['hp']
-    del kw['hp']
+    kw['homepage'] = kw.pop('hp')
 
 ## Scape API ##
 
@@ -286,9 +282,8 @@ class ScapeApi(object):
     @param  item  kw
     @raise
     """
-    item['key'] = str(item['id'])
-    del item['id']
-    d = item['sellday']
+    item['key'] = str(item.pop('id'))
+    d = item.pop('sellday')
     item['date'] = skdatetime.date2timestamp(d) if d else 0
     item['title'] = item['gamename']
 
@@ -380,9 +375,7 @@ class HolysealApi(object):
     s = self._search(key=key, text=text, **kwargs)
     try:
       for item in s:
-        id = str(item['id'])
-        item['key'] = id
-        del item['id']
+        id = item['key'] = str(item.pop('id'))
 
         d = item.get('date') or 0 # int
         if d:
@@ -492,14 +485,13 @@ class GetchuApi(object):
     s = self._search(key=key, text=text, **kwargs)
     try:
       for item in s:
-        k = str(item['id'])
+        k = str(item.pop('id'))
         if not key:
           if k in keys:
             continue
           else:
             keys.add(k)
         item['key'] = k
-        del item['id']
 
         media = item.get('media')
         if media and not media.endswith('ROM') and not media.endswith('ソフト'): # "UMDソフト", etc
@@ -613,16 +605,16 @@ class GyuttoApi(object):
         key = text
       elif text.startswith('gyutto.'): # gyutto.com or gyutto.me
         key = 'http://' + text
-      elif text.startswith('www.') or 'item' in text:
+      elif text.startswith('www.gyutto.'): # gyutto.com or gyutto.me
+        key = 'http://' + text[4:]
+      elif 'item' in text:
         k = self._parsekey(text)
         if k:
           key = k
     s = self._search(key=key, text=text, **kwargs)
     try:
       for item in s:
-        k = str(item['id'])
-        item['key'] = k
-        del item['id']
+        item['key'] = str(item.pop('id'))
 
         d = item.get('date') or 0 # int
         if d:
@@ -719,16 +711,14 @@ class DiGiketApi(object):
     if not key and text:
       if text.isdigit():
         key = text
-      elif text.startswith('http://') or text.startswith('www.') or 'ITM' in text:
+      elif 'ITM' in text:
         k = self._parsekey(text)
         if k:
           key = k
     s = self._search(key=key, text=text, **kwargs)
     try:
       for item in s:
-        k = str(item['id'])
-        item['key'] = k
-        del item['id']
+        item['key'] = str(item.pop('id'))
 
         d = item.get('date') or 0 # int
         if d:
@@ -1314,7 +1304,7 @@ class DmmApi(object):
 
           authors = kw.get('authors')
           if authors:
-            kw['creators'] = authors
+            kw['authors'] = authors
 
           keywords = kw.get('keywords') or []
           if keywords:
@@ -1527,6 +1517,13 @@ class _TrailersManager(object):
         expiretime=config.REF_EXPIRE_TIME,
         online=self.online)
 
+  def query(self, *args, **kwargs):
+    ret = self.api.query(*args, **kwargs)
+    if ret and ret['videos']:
+      for it in ret['videos']:
+        it['vid'] = it.pop('youtube') # rename youtube to vid
+    return ret
+
 class TrailersManager:
 
   def __init__(self, parent=None):
@@ -1553,8 +1550,8 @@ class TrailersManager:
     @return  {kw}
     """
     return skthreads.runsync(partial(
-        self.__d.api.query, id),
-        parent=self.parent) if async else self.__d.api.query(id)
+        self.__d.query, id),
+        parent=self.parent) if async else self.__d.query(id)
 
 ## Getchu manager ##
 

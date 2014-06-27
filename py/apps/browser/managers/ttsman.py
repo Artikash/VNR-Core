@@ -2,7 +2,7 @@
 # ttsman.py
 # 4/7/2013 jichi
 
-__all__ = ['TtsQmlProxy', 'TtsCoffeeProxy']
+__all__ = ['TtsQmlProxy']
 
 from functools import partial
 from PySide.QtCore import QObject, QTimer

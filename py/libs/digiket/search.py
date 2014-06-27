@@ -10,8 +10,8 @@ if __name__ == '__main__': # DEBUG
 
 import re
 #from datetime import datetime
-from sakurakit import sknetio, skstr
-#from sakurakit.skdebug import dwarn
+from sakurakit import sknetio
+from sakurakit.skstr import unescapehtml
 import defs
 
 class SearchApi(object):
@@ -105,7 +105,7 @@ class SearchApi(object):
       try: id = int(m.group(1).lstrip())
       except: pass
       if id:
-        title = skstr.unescapehtml(m.group(2))
+        title = unescapehtml(m.group(2))
 
         img = ''
         key = defs.toitemkey(id)
@@ -121,6 +121,7 @@ class SearchApi(object):
         except: pass
         yield {
           'id': id,
+          'url': self.HOST + '/work/show/_data/ID=%s/' % key,
           'title': title,
           'img': img,
           'price': price,

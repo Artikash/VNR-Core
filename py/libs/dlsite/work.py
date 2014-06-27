@@ -9,9 +9,10 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 import re
-from sakurakit import sknetio, skstr
-from sakurakit.skdebug import dwarn
 from datetime import datetime
+from sakurakit import sknetio
+#from sakurakit.skdebug import dwarn
+from sakurakit.skstr import unescapehtml
 
 class WorkApi(object):
   ENCODING = 'utf8'
@@ -121,7 +122,7 @@ class WorkApi(object):
     """
     return self._parsemeta(self._rx_meta_url, h)
     #if t:
-    #  return skstr.unescapehtml(t)
+    #  return unescapehtml(t)
 
   _rx_title = re.compile(r'\[.*')
   def _parsetitle(self, h):
@@ -131,7 +132,7 @@ class WorkApi(object):
     """
     t = self._parsemeta(self._rx_meta_title, h)
     if t:
-      return skstr.unescapehtml(self._rx_title.sub('', t)).strip()
+      return unescapehtml(self._rx_title.sub('', t)).strip()
 
   def _parsekeywords(self, h):
     """
@@ -140,7 +141,7 @@ class WorkApi(object):
     """
     t = self._parsemeta(self._rx_meta_keywords, h)
     if t:
-      return skstr.unescapehtml(t).split(',')
+      return unescapehtml(t).split(',')
 
   def _parsesampleimage(self, h):
     """
@@ -167,7 +168,7 @@ class WorkApi(object):
     """
     m = self._rx_brand.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1)).replace(" / ", ',').replace(u"／", ',')
+      return unescapehtml(m.group(1)).replace(" / ", ',').replace(u"／", ',')
 
   # Example: <strong class="price">1,890円</strong>
   _rx_price = re.compile(r'class="price">([0-9,]+)')
@@ -232,7 +233,7 @@ class WorkApi(object):
     if m:
       t = m.group(1)
       if t:
-        return skstr.unescapehtml(t)
+        return unescapehtml(t)
 
   # Exmaple:
   # http://www.dlsite.com/maniax/work/=/product_id/RJ107332.html
@@ -247,7 +248,7 @@ class WorkApi(object):
     if m:
       t = m.group(1)
       if t:
-        return skstr.unescapehtml(t)
+        return unescapehtml(t)
 
   def __makesectionrx(name):
     """
@@ -310,7 +311,7 @@ class WorkApi(object):
     if m:
       t = m.group(1)
       if t:
-        return skstr.unescapehtml(t)
+        return unescapehtml(t)
 
   # Tags, example:
   # <div class="main_genre"><a href="http://www.dlsite.com/soft/fsr/=/genre/281/from/work.genre">同級生/同僚</a>&nbsp;<a href="http://www.dlsite.com/soft/fsr/=/genre/016/from/work.genre">ファンタジー</a></div></td></tr>
@@ -334,7 +335,7 @@ class WorkApi(object):
     g = self._parsemaingenre(h)
     if g:
       for m in self._rx_tag.finditer(g):
-        for it in skstr.unescapehtml(m.group(1)).split('/'):
+        for it in unescapehtml(m.group(1)).split('/'):
           yield it
 
   # Emaple: http://www.dlsite.com/soft/work/=/product_id/VJ007727.html

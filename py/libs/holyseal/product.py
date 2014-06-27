@@ -9,8 +9,8 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 import re
-from sakurakit import sknetio, skstr
-from sakurakit.skdebug import dwarn
+from sakurakit import sknetio
+from sakurakit.skstr import unescapehtml
 
 class ProductApi(object):
 
@@ -96,7 +96,7 @@ class ProductApi(object):
     """
     m = self._rx_title.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1)).strip() # there is a space in the beginning
+      return unescapehtml(m.group(1)).strip() # there is a space in the beginning
 
   # <title>[Holyseal ～聖封～] ミラー／転載 ≫ CUBE ≫ your diary</title>
   _rx_brand = re.compile(ur' ≫ ([^≫<]*?) ≫ ')
@@ -107,7 +107,7 @@ class ProductApi(object):
     """
     m = self._rx_brand.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1)).strip() # there is a space in the beginning
+      return unescapehtml(m.group(1)).strip() # there is a space in the beginning
 
   # The height is always 550
   # <p align="center"><img src="http://www.cuffs-cube.jp/products/yourdiary_h/download/banner/bn_600x160_kanade.jpg" width="550" height="146" border="0" alt=""></p>
@@ -119,7 +119,7 @@ class ProductApi(object):
     """
     m = self._rx_banner.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1))
+      return unescapehtml(m.group(1))
 
   # Example:
   # <tr class="minfo">
@@ -142,7 +142,7 @@ class ProductApi(object):
     """
     m = self._rx_info_genre.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1))
+      return unescapehtml(m.group(1))
 
   _rx_info_date = __makeinforx(u"発売日")
   def _parsedate(self, h):
@@ -152,7 +152,9 @@ class ProductApi(object):
     """
     m = self._rx_info_date.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1))
+      ret = unescapehtml(m.group(1))
+      if ret != '----/--/--':
+        return ret
 
   # Such as: <a href="staffview.cgi?staffcode=2508&amp;refpc=9550">鈴田美夜子</a>
   _rx_staff = re.compile(ur">([^<]*?)</a>")
@@ -165,9 +167,9 @@ class ProductApi(object):
     """
     m = self._rx_info_artists.search(h)
     if m:
-      line = skstr.unescapehtml(m.group(1))
+      line = unescapehtml(m.group(1))
       for m in self._rx_staff.finditer(line):
-        yield skstr.unescapehtml(m.group(1))
+        yield unescapehtml(m.group(1))
 
   _rx_info_writers = __makeinforx(u"シナリオ")
   def _iterparsewriters(self, h):
@@ -177,9 +179,9 @@ class ProductApi(object):
     """
     m = self._rx_info_writers.search(h)
     if m:
-      line = skstr.unescapehtml(m.group(1))
+      line = unescapehtml(m.group(1))
       for m in self._rx_staff.finditer(line):
-        yield skstr.unescapehtml(m.group(1))
+        yield unescapehtml(m.group(1))
 
 if __name__ == '__main__':
   api = ProductApi()

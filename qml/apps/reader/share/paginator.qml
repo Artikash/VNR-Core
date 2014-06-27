@@ -37,7 +37,7 @@ Item { id: root_
     //toolTip: Sk.tr("Previous")
     //font.bold: true
     //font.family: 'YouYuan'
-    zoom: 0.8
+    scale: 0.8
     width: height
 
     onClicked: spin_.intValue = spin_.minimumValue
@@ -55,7 +55,7 @@ Item { id: root_
     toolTip: Sk.tr("Previous")
     //font.bold: true
     //font.family: 'YouYuan'
-    zoom: 0.8
+    scale: 0.8
     width: height
 
     onClicked:
@@ -90,7 +90,7 @@ Item { id: root_
     toolTip: Sk.tr("Next")
     //font.bold: true
     //font.family: 'YouYuan'
-    zoom: 0.8
+    scale: 0.8
     width: height
 
     onClicked:
@@ -110,7 +110,7 @@ Item { id: root_
     //toolTip: Sk.tr("Previous")
     //font.bold: true
     //font.family: 'YouYuan'
-    zoom: 0.8
+    scale: 0.8
     width: height
 
     onClicked: spin_.intValue = spin_.maximumValue

@@ -2,7 +2,7 @@
 # 8/8/2013 jichi
 
 # http://lackof.org/taggart/hacking/make-example/
-SUBDIRS = browser reader
+SUBDIRS = libs share browser reader
 
 .PHONY: all $(SUBDIRS)
 

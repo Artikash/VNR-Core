@@ -3,7 +3,7 @@
 # 12/14/2012 jichi
 
 from datetime import datetime
-from sakurakit.sktr import tr_
+from sakurakit.sktr import tr_, utr_
 from mytr import my
 import config, defs
 
@@ -44,7 +44,7 @@ def language_name2(lang):
   if isinstance(lang, str):
     return tr_(lang)
   if isinstance(lang, unicode):
-    return tr_(lang.encode('utf8', errors='ignore'))
+    return utr_(lang)
   return ''
 
 def font_family(lang):
@@ -70,6 +70,7 @@ SITE_NAMES = {
   'erogamescape': u"批評空間",
   'holyseal': u"聖封",
   'homepage': u"公式HP",
+  'wiki': tr_("Wiki"), #u"ウィキ"
 }
 def site_name(t): return SITE_NAMES.get(t) or ''
 
@@ -161,6 +162,13 @@ def timestamp2date(sec):
   @return  str
   """
   return unparsedate(datetime.fromtimestamp(sec))
+
+def timestamp2datetimeobj(sec):
+  """
+  @param  sec  long
+  @return  datetime
+  """
+  return datetime.fromtimestamp(sec)
 
 ## Threads ##
 

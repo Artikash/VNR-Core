@@ -11,9 +11,10 @@ if __name__ == '__main__': # DEBUG
 
 import re
 from datetime import datetime
-from sakurakit import sknetio, skstr
+from sakurakit import sknetio
 #from sakurakit.skcontainer import uniquelist
 from sakurakit.skdebug import dwarn
+from sakurakit.skstr import unescapehtml
 
 class ItemApi(object):
   #HOST = "http://gyutto.me"
@@ -87,7 +88,7 @@ class ItemApi(object):
         'doujin': u'同人' in h,
         'image': self._parseimage(h),
         'filesize': self._parsefilesize(h),
-        'brand': self._parseddlink(u'ブランド', h).replace(" / ", ',').replace(u"／", ','),
+        'brand': self._parsebrand(h),
         'series': self._parseddlink(u'シリーズ', h),
         'date': self._parsedate(h),
         'theme': self._parsedd(u'作品テーマ', h),
@@ -133,7 +134,7 @@ class ItemApi(object):
     """
     t = self._parsemetakeyword(h)
     if t:
-      return skstr.unescapehtml(t.partition(',')[0])
+      return unescapehtml(t.partition(',')[0])
 
   def _parsedd(self, key, h, flags=0):
     """
@@ -147,7 +148,7 @@ class ItemApi(object):
       if start > 0:
         stop = h.find('</dd>', start)
         if stop > 0:
-          return skstr.unescapehtml(h[start:stop])
+          return unescapehtml(h[start:stop])
     return ''
 
   _rx_image = re.compile(r'/data/item_img/[0-9]+/([0-9]+)/\1\.jpg')
@@ -159,6 +160,14 @@ class ItemApi(object):
     m = self._rx_image.search(h)
     if m:
       return self.IMAGE_HOST + m.group()
+
+  def _parsebrand(self, h):
+    """
+    @param  h  unicode  html
+    @return  unicode  URL or None
+    """
+    ret = self._parseddlink(u'ブランド', h) or self._parseddlink(u'サークル', h)
+    return ret.replace(" / ", ',').replace(u"／", ',') if ret else ''
 
   _rx_filesize = re.compile(r'([0-9\.]+) ([GMK]?)B')
   def _parsefilesize(self, h):
@@ -223,7 +232,7 @@ class ItemApi(object):
     if dd:
       m = self._rx_link.search(dd)
       if m:
-        return skstr.unescapehtml(m.group(1))
+        return unescapehtml(m.group(1))
     return ''
 
   def _iterparseddlinks(self, *args, **kwargs):
@@ -233,7 +242,7 @@ class ItemApi(object):
     dd = self._parsedd(*args, **kwargs);
     if dd:
       for m in self._rx_link.finditer(dd):
-        yield skstr.unescapehtml(m.group(1))
+        yield unescapehtml(m.group(1))
 
   _rx_sampleimage = re.compile(r'/data/item_img/[0-9]+/[0-9]+/[0-9]+_[0-9]+.jpg')
   def _iterparsesampleimages(self, h):
@@ -255,7 +264,7 @@ class ItemApi(object):
     """
     s = set()
     for m in self._rx_tag.finditer(h):
-      t = skstr.unescapehtml(m.group(1))
+      t = unescapehtml(m.group(1))
       if t not in s:
         s.add(t)
         for it in self._rx_tag_delims.split(t):
@@ -274,6 +283,8 @@ if __name__ == '__main__':
   k = 45242
   k = 16775 # AlterEgo, http://gyutto.com/i/item16775
   k = 58699 # 英雄伝説 空の軌跡SC, http://gyutto.jp/i/item58699
+  k = 108434
+  k = 2722
 
   print '-' * 10
   q = api.query(k)

@@ -223,7 +223,7 @@
             ;.label(title="両性具有, ふたなり") 両性具有
 
       ; Spinner
-      #spinner(style="display:none")
+      ;#spinner(style="display:none")
 
       ; Not sure why bootstrap .hidden does not work
       .blocker(style="display:none")
@@ -233,7 +233,7 @@
       ; http://masonry.desandro.com/
       ; http://codepen.io/desandro/pen/cojvD
       ;#games.js-masonry(data-masonry-options="{'itemSelector':'.game',transitionDuration:'0'}")
-      #games
+      #games.masonry
 
       #toolbar.metro
         #zoomSlider.dragdealer.rounded.vertical
@@ -246,10 +246,9 @@
           %i.icon-chevron-down
 
       ; Scripts
-      -for it in \
-          'jquery', 'jquery.imagesloaded', \
+      -for it in 'jquery', \
           'underscore', 'underscore.string', \
-          'spin', 'dragdealer', 'masonry', \
+          'dragdealer', 'masonry', \
           'haml', 'moment', \
           'choco', 'widgets', 'gameboard'
         %script(src="#{rc.cdn_url(it)}")

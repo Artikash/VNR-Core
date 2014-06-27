@@ -364,6 +364,13 @@ def check_valid_language(lang):
 def language2locale(lang): # str -> str
   return LANGUAGE_LOCALES.get(lang) or ""
 
+def language2htmllocale(lang): # str -> str
+  if lang == 'zhs':
+    return 'zh-CN'
+  if lang == 'zht':
+    return 'zh-TW'
+  return lang or ""
+
 def language2lcid(lang): # str -> long
   loc = language2locale(lang)
   from windefs import windefs
