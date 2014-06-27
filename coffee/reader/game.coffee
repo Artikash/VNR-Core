@@ -219,9 +219,17 @@ initCGSwitch = ->
            .masonry
              itemSelector: 'img'
              isFitWidth: true # centerize
-           .imagesLoaded ->
-             $container.find('img').width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
-             $container.masonry() # refresh after images are loaded
+           #.imagesLoaded ->
+           #  $container.find('img').width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
+           #  $container.masonry() # refresh after images are loaded
+        $container.find('img').load ->
+          # Saample bad DMM image: http://pics.dmm.com/mono/movie/n/now_printing/now_printing.jpg
+          if 'pics.dmm.' in @src and @naturalWidth is 90 and @naturalHeight is 122
+            #@parentNode.removeChild @ # remove this
+            $container.masonry 'remove', @ # remove this
+          else
+            @width = DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
+          $container.masonry() # refresh after images are loaded
 
 initTwitterSwitch = ->
 
@@ -327,9 +335,10 @@ bindSearch = ->
     gameBean.search text
 
 bindDraggable = ->
-  $('.draggable').draggable()
-  $('.draggable button.close').click ->
-    $(@).closest('.draggable').fadeOut()
+  $ '.draggable'
+    .draggable()
+    .find('button.close').click ->
+      $(@).closest('.draggable').fadeOut()
 
 ## Main ##
 

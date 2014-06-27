@@ -275,6 +275,14 @@ def main():
 
       from sakurakit import skfileio
 
+      if ss_version <= 1403847925: # remove existing images
+        path = rc.DIR_CACHE_IMAGE
+        if os.path.exists(path):
+          skfileio.removetree(path)
+          try: os.makedirs(path)
+          except OSError:
+            dwarn("warning: failed to create directory: %s" % path)
+
       if ss_version <= 1402884913: # clear scape cache
         path = rc.DIR_CACHE_SCAPE
         if os.path.exists(path):

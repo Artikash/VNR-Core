@@ -34,7 +34,7 @@ ltrim = (str, chars=WHITE_SPACES) ->
     while ++i < charLen
       if c is chars[i]
         found = true
-        start++
+        ++start
         break
 
   if start >= len then '' else str.substr(start, len)
@@ -54,7 +54,7 @@ rtrim = (str, chars=WHITE_SPACES) ->
     while ++i < charLen
       if c is chars[i]
         found = true
-        end--
+        --end
         break
 
   if end >= 0 then str.substring(0, end + 1) else ''

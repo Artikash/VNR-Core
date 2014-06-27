@@ -7072,18 +7072,20 @@ class DataManager(QObject):
       self.updateGameItems()
       #self.updateReferenceDigests()
       self.updateUsers()
-      self.updateGameImages()
+      # Disable caching images
+      #self.updateGameImages()
     else:
       growl.warn(my.tr("Cannot connect to the Internet"))
 
-  def updateGameImages(self):
-    dprint("enter")
-    for it in self.__d.gameInfo:
-      if it.image0:
-        it.imageUrl0
-      #if it.image:
-      #  it.imageUrl
-    dprint("leave")
+  # Cache game images
+  #def updateGameImages(self):
+  #  dprint("enter")
+  #  for it in self.__d.gameInfo:
+  #    if it.image0:
+  #      it.imageUrl0
+  #    #if it.image:
+  #    #  it.imageUrl
+  #  dprint("leave")
 
   def queryUser(self, id):
     """
