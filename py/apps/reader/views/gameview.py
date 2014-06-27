@@ -52,7 +52,6 @@ class GameCoffeeBean(QObject):
     super(GameCoffeeBean, self).__init__(parent)
     self.info = info # GameItemInfo or None
 
-
   # Queries
 
   @Slot(result=unicode)
@@ -75,6 +74,14 @@ class GameCoffeeBean(QObject):
       return json.dumps(list(self.info.iterVideos()))
     else:
       return ''
+
+  @Slot(unicode, result=unicode)
+  def getDescription(self, type): # return html for the reference type
+    if self.info:
+      for r in self.into.iterDescriptionReferences():
+        if r.type == type:
+          return '<br/>'.join(r.iterDescriptions())
+    return ''
 
   # Actions
 

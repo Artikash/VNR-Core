@@ -203,9 +203,9 @@ initRuby = ->
 
 initCGSwitch = ->
   $section = $ 'section.cg'
+  $container = $section.find '.images'
   $section.find('input.switch').bootstrapSwitch()
     .on 'switchChange.bootstrapSwitch', (event, checked) ->
-      $container = $section.find '.images'
       unless checked
         $container.fadeOut()
       else if $container.hasClass 'rendered'
@@ -234,11 +234,10 @@ initCGSwitch = ->
 initTwitterSwitch = ->
 
   $section = $ 'section.twitter'
+  $container = $section.find '.widgets'
   $section.find('input.switch').bootstrapSwitch()
     .on 'switchChange.bootstrapSwitch', (event, checked) ->
       if window.twttr
-
-        $container = $section.find '.widgets'
         unless checked
           $container.fadeOut()
         else if $container.hasClass 'rendered'
@@ -265,9 +264,9 @@ initTwitterSwitch = ->
 
 initYouTubeSwitch = ->
   $section = $ 'section.youtube'
+  $container = $section.find '.videos'
   $section.find('input.switch').bootstrapSwitch()
     .on 'switchChange.bootstrapSwitch', (event, checked) ->
-      $container = $section.find '.videos'
       unless checked
         $container.empty()
       else
@@ -312,6 +311,49 @@ initSwitches = ->
   initTwitterSwitch()
   initYouTubeSwitch()
 
+## Bootstrap Navigation Pills ##
+
+initDescPills = -> # Descriptions
+  $sec = $ 'section.desc'
+  $container = $sec.find '.contents'
+
+  $sec.find('.nav.nav-pills > li > a').click ->
+    $li = $(@).parent 'li'
+    unless $li.hasClass 'active'
+      oldtype = $li.parent('ul').children('li.active')
+          .removeClass 'active'
+          .data 'type'
+      $li.addClass 'active'
+      newtype = $li.data 'type'
+      if oldtype
+        $container.children('.' + oldtype).hide()
+      if newtype
+        $el = $container.children('.' + newtype)
+        if $el.length
+          $el.fadeIn()
+        else
+          h = gameBean.getDescription newtype
+          el = document.createElement 'div'
+          el.className = newtype
+          el.innerHTML = h
+          #$container.append el
+          $(el).hide().appendTo $container
+    false
+
+  $sec.find('.nav').bootstrapSwitch()
+    .on 'switchChange.bootstrapSwitch', (event, checked) ->
+      $container = $section.find '.videos'
+      unless checked
+        $container.empty()
+      else
+        $container.hide()
+           .html renderVideos()
+           .fadeIn()
+        bindYoutube()
+
+initPills = ->
+  initDescPills()
+
 ## Bootstrap ##
 
 #initBootstrap = ->
@@ -354,6 +396,7 @@ init = ->
     initToolbar()
 
     initSwitches()
+    initPills()
 
     initRuby()
 

@@ -844,6 +844,22 @@ class GameInfo(object):
     if r:
       return r.comics
 
+  def iterDescriptionReferences(self):
+    """
+    @yield  Reference
+    """
+    for r in self.getchu, self.digiket, self.amazon:
+      if r and r.hasDescriptions():
+        yield r
+
+  def hasDescriptions(self):
+    """
+    @return  bool
+    """
+    for r in self.iterDescriptions():
+      return True
+    return False
+
   def hasBannerImages(self):
     """
     @return  bool
@@ -2938,7 +2954,6 @@ class DiGiketReference(Reference): #(object):
     """
     if self.description:
       yield self.description
-
 
 class AmazonReference(Reference):
   def __init__(self, parent=None,

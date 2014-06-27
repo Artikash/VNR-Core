@@ -290,12 +290,27 @@
                 ;-for i,it in py.enumerate(game.iterSampleImageUrls())
                 ;  %a(href="#{it}",title="CG #{'#'}#{i+1}")
                 ;    %img.img-rounded(src="#{it}")
+          -if game.hasDescriptions()
+            %hr
+            %section.desc
+              .title
+                .col-xs-2
+                  .title-content ストーリー
+                %ul.nav.nav-pills.nav-clean.nav-sm
+                  %li.active(data-type='')
+                    %a #{tr('Hide')}
+                  %li.divider
+                  -for r in game.iterDescriptionReferences():
+                    %li(data-type="#{r.type}")
+                      %a #{i18n.size_name(r.type)}
+              .contents
+
           ;-if game.hasCharacters()
           ;  %hr
           ;  %section.chara
           ;    .title
           ;      .col-xs-2
-          ;        .title-content 人物
+          ;        .title-content 登場人物
           ;      .switch-group
           ;        %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
           ;    .characters
