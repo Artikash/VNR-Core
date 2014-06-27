@@ -68,7 +68,11 @@ class CacherBase(object):
     @return  str
     Calculate hash value for request based on URL.
     """
-    url = '&'.join('%s' % it for it in args) + '&'.join("%s=%s" % it for it in kwargs.iteritems())
+    url = ''
+    if args:
+      url += '&'.join('%s' % it for it in args)
+    if kwargs:
+      url += '&'.join("%s=%s" % it for it in sorted(kwargs.iteritems()))
     if expire and self.expiretime:
       now = int(time())
       url += '&__expire=' + str(now/self.expiretime)
