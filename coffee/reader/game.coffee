@@ -31,9 +31,9 @@ createTemplates = ->
 
   # HAML for youtube video
   # - param  vid
-  # - param  date
+  # - param  date  string or null
   # - param  title
-  # - param  image  url
+  # - param  img  string url
   @HAML_VIDEO = Haml """\
 .video(data-id="${vid}")
   .header
@@ -50,6 +50,29 @@ createTemplates = ->
     %img.img-rounded(src="${img}" title="${title} ${date}")
   .iframe
 """.replace /\$/g, '#'
+
+  # HAML for characters
+  # - param  name
+  # - param  yomi  string or null
+  # - param  label  string or null
+  # - param  cv  string or null
+  # - param  img  string url or null
+  @HAML_CHARA = Haml '''\
+.chara
+  .header
+    :if it.label == "主人公" || label == "【主人公】"
+      .text-danger(title="#{yomi}") #{name}
+    :else
+      .text-default(title="#{yomi}") #{name}
+  :if img
+    .body: %a(href="#{img}" title="#{it.name} #{label}")
+      %img.img-rounded(src="#{img}")
+  .footer
+    :if cv
+      .text-info #{cv}
+    :else
+      %span.muted (CV無し)
+'''
 
 ## Render ##
 
@@ -72,6 +95,13 @@ renderVideos = -> # -> string  html
 
 renderVideoIframe = (vid) -> # string -> string
   """<iframe width="480" height="360" src="http://youtube.com/embed/#{vid}" frameborder="0" allowfullscreen />"""
+
+_renderCharacter = (params) ->
+  # I might need some fixes here
+  HAML_CHARA params
+
+renderCharacters = (type) -> # string -> string
+  JSON.parse(gameBean.getCharacters type).map(_renderCharacter).join ''
 
 ## Bindings ##
 
@@ -314,7 +344,7 @@ initSwitches = ->
 ## Bootstrap Navigation Pills ##
 
 initDescPills = -> # Descriptions
-  $sec = $ 'section.desc'
+  $sec = $ 'section.descriptions'
   $container = $sec.find '.contents'
 
   $sec.find('.nav.nav-pills > li > a').click ->
@@ -340,18 +370,35 @@ initDescPills = -> # Descriptions
           $(el).hide().appendTo $container
     false
 
-  $sec.find('.nav').bootstrapSwitch()
-    .on 'switchChange.bootstrapSwitch', (event, checked) ->
-      $container = $section.find '.videos'
-      unless checked
-        $container.empty()
-      else
-        $container.hide()
-           .html renderVideos()
-           .fadeIn()
-        bindYoutube()
+initCharaPills = -> # Characters
+  $sec = $ 'section.characters'
+  $container = $sec.find '.contents'
+
+  $sec.find('.nav.nav-pills > li > a').click ->
+    $li = $(@).parent 'li'
+    unless $li.hasClass 'active'
+      oldtype = $li.parent('ul').children('li.active')
+          .removeClass 'active'
+          .data 'type'
+      $li.addClass 'active'
+      newtype = $li.data 'type'
+      if oldtype
+        $container.children('.' + oldtype).hide()
+      if newtype
+        $el = $container.children('.' + newtype)
+        if $el.length
+          $el.fadeIn()
+        else
+          data = renderCharacters newtype
+          el = document.createElement 'div'
+          el.className = newtype
+          el.innerHTML = h
+          #$container.append el
+          $(el).hide().appendTo $container
+    false
 
 initPills = ->
+  initCharaPills()
   initDescPills()
 
 ## Bootstrap ##

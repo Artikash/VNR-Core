@@ -386,23 +386,22 @@ class GameInfo(object):
       if kw:
         return HolysealReference(**kw)
 
+  @property
+  def iterCharacterReferences(self):
+    """Online
+    @yield  Reference
+    """
+    for r in self.getchu, self.digiket:
+      if r and r.characters:
+        return r
+
   def hasCharacters(self):
     """Online
     @return  bool
     """
-    for r in self.digiket, self.getchu:
-      if r and r.characters:
-        return True
+    for r in self.iterCharacterReferences():
+      return True
     return False
-
-  @property
-  def characters(self):
-    """Online
-    @return  [kw] or None
-    """
-    for r in self.digiket, self.getchu:
-      if r:
-        return r.characters
 
   @memoizedproperty
   def scapeCount0(self):

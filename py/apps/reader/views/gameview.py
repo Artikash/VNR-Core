@@ -80,7 +80,15 @@ class GameCoffeeBean(QObject):
     if self.info:
       for r in self.into.iterDescriptionReferences():
         if r.type == type:
-          return '<br/>'.join(r.iterDescriptions())
+          return ''.join(r.iterDescriptions())
+    return ''
+
+  @Slot(unicode, result=unicode)
+  def getCharacters(self, type): # return json for the reference type
+    if self.info and self.info.hasCharacters():
+      for r in self.into.iterCharacterReferences():
+        if r.type == type:
+          return json.dumps(r.characters)
     return ''
 
   # Actions
