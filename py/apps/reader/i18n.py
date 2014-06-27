@@ -163,6 +163,13 @@ def timestamp2date(sec):
   """
   return unparsedate(datetime.fromtimestamp(sec))
 
+def timestamp2datetimeobj(sec):
+  """
+  @param  sec  long
+  @return  datetime
+  """
+  return datetime.fromtimestamp(sec)
+
 ## Threads ##
 
 THREAD_TIPS = {

@@ -33,15 +33,16 @@ createTemplates = ->
     %span.fa.fa-volume-down
   .header
     %a.title.cursor-pointer(title="#{tr 'Play'}") ${title}
-    .date ${date}
+    :if date
+      .date ${date}
     .toolbar.pull-right
       %button.close(type="button" title="#{tr 'Close'}") &times
       %a.btn.btn-link.btn-xs(role="button" href="http://youtube.com/watch?v=${vid}" title="http://youtube.com/watch?v=${vid}")
         %span.fa.fa-external-link
   .image
-    %img.img-rounded(src="${img}" title="${title} (${date})")
+    %img.img-rounded(src="${img}" title="${title} ${date}")
   .iframe
-""".replace(/\$/, '#')
+""".replace /\$/g, '#'
 
 ## Render ##
 
@@ -200,6 +201,7 @@ initCGSwitch = ->
         $container.fadeOut()
       else if $container.hasClass 'rendered'
         $container.fadeIn()
+                  .masonry
       else
         $container.hide()
            .html renderSampleImages()
@@ -250,13 +252,10 @@ initYouTubeSwitch = ->
     .on 'switchChange.bootstrapSwitch', (event, checked) ->
       $container = $section.find '.videos'
       unless checked
-        $container.fadeOut()
-      else if $container.hasClass 'rendered'
-        $container.fadeIn()
+        $container.empty()
       else
         $container.hide()
            .html renderVideos()
-           .addClass 'rendered'
            .fadeIn()
         bindYoutube()
 
@@ -305,7 +304,8 @@ bindTts = ->
 bindSearch = ->
   $('a.search').click ->
     #tts.speak @getAttribute('data-text'), @getAttribute('data-lang')
-    gameBean.search $.trim @textContent
+    text = @dataset.text or $.trim @textContent
+    gameBean.search text
 
 bindDraggable = ->
   $('.draggable').draggable()

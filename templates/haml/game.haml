@@ -65,7 +65,7 @@
       .game.portal(data-id="#{game.itemId}")
         .cover.draggable
           -if game.image
-            %button.close(type="button",title="#{tr('Close')}") &times;
+            %button.close.pull-left(type="button",title="#{tr('Close')}") &times;
             %a(href="#{game.imageUrl}",title="#{tr('Draggable')}")
               %img.cover.zoom.zoom-cover.img-rounded(src="#{game.imageUrl}")
           -else
@@ -83,10 +83,15 @@
               %button.btn.btn-default.btn-xs.btn-dl-img(title="画像"")
                 %i.fa.fa-save
                 画像
-              -if online and game.hasVideos()
-                %button.btn.btn-default.btn-xs.btn-dl-yt(title="YouTube動画")
-                  %i.fa.fa-download
-                  動画
+              -if game.hasVideos()
+                -if online
+                  %button.btn.btn-default.btn-xs.btn-dl-yt(title="YouTube動画")
+                    %i.fa.fa-download
+                    動画
+                -else
+                  %button.btn.btn-default.btn-xs.disabled(title="YouTube動画")
+                    %i.fa.fa-download
+                    動画
         %hr
         .content
           %section.info
@@ -96,7 +101,10 @@
               -if game.date
                 .row.date
                   %label.control-label.col-xs-2 #{tr('Release')}
-                  .form-control-static.col-xs-10 #{i18n.timestamp2date(game.date)}
+                  .form-control-static.col-xs-10
+                    -set search = i18n.timestamp2datetimeobj(game.date).strftime('%Y%m')
+                    %a.search(title="#{tr('Search')}: #{search}",data-text="#{search}")
+                      #{i18n.timestamp2date(game.date)}
               -if game.event
                 .row.comike
                   %label.control-label.col-xs-2 #{tr('Comiket')}
@@ -253,26 +261,29 @@
             %hr
             %section.twitter
               .title
-                .title-content.col-xs-2 Twitter
+                .col-xs-2
+                  .title-content Twitter
                 .switch-group
                   %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
               %center.widgets
                 ;-for it in game.iterTwitterWidgets()
                 ;  %a.twitter-timeline(height="400",href="https://twitter.com/twitterapi",data-widget-id="#{it}",data-chrome="nofooter noborders transparent")
                 ;%script(src="#{rc.cdn_url('twitter.widgets')}")
-          -if game.videos
+          -if game.hasVideos()
             %hr
             %section.youtube
               .title
-                .title-content.col-xs-2 YouTube
+                .col-xs-2
+                  .title-content YouTube
                 .switch-group
                   %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
-              .videos
+              %center.videos
           -if game.hasSampleImages()
             %hr
             %section.cg
               .title
-                .title-content.col-xs-2 #{tr('Images')}
+                .col-xs-2
+                  .title-content #{tr('Images')}
                 .switch-group
                   %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
               .images
@@ -283,7 +294,8 @@
           ;  %hr
           ;  %section.chara
           ;    .title
-          ;      .title-content.col-xs-2 人物
+          ;      .col-xs-2
+          ;        .title-content 人物
           ;      .switch-group
           ;        %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
           ;    .characters

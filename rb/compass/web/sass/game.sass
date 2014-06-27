@@ -15,7 +15,6 @@
 @import sites/youtube
 @import widgets/ruby
 @import widgets/toolbar
-//@import main/zoom
 
 //@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700)
 //*
@@ -28,6 +27,9 @@
 // search button
 a.search
   @extend .cursor-pointer
+
+//$yt-img-scale: 0.5
+$yt-img-scale: 1.0
 
 .game.portal
   //margin: 6px
@@ -48,9 +50,9 @@ a.search
       width: 230px // getchu image width
       //margin: 0 0 4px 9px
       @extend .img-shadow
-    .close
-      float: left
-      z-index: 999+1
+    //.close
+    //  float: left
+    //  //z-index: 999+1
 
   > .header
     margin-top: 10px
@@ -60,11 +62,11 @@ a.search
     > .romaji a
       margin-left: 20px
       @extend .text-minor
-    > .bottoms
+    > .buttons
       margin-top: 10px
-      opacity: 0.5
-      &:hover
-        opacity: 1
+      //opacity: 0.5
+      //&:hover
+      //  opacity: 1
 
   > .content
     //> .stats
@@ -84,7 +86,7 @@ a.search
         &:hover .tts
           opacity: 1
       &.cg .images
-        margin: 0 auto // isFitWidth: true
+        margin: 0 auto // align center, isFitWidth: true
         img
           @extend .img-shadow
           //@extend .img-zoom
@@ -100,8 +102,12 @@ a.search
           margin: 20px
           //text-align: center
       &.youtube .video
-        width: $yt-img-width
-        margin: 15px auto
+        display: inline-block
+        &.play // iframe is displayed
+          display: block
+        width: $yt-img-width * $yt-img-scale
+        margin: 9px
+        //margin: 15px 4px
         //text-align: center
         //display: inline-block
         &.play .image
@@ -123,22 +129,22 @@ a.search
         // http://stackoverflow.com/questions/493296/css-display-an-image-resized-and-cropped
         > .image
           img
-            max-height: $yt-img-height + 50px
-            min-height: $yt-img-wide-height - 50px
+            max-height: ($yt-img-height + 50px) * $yt-img-scale
+            min-height: ($yt-img-wide-height - 50px) * $yt-img-scale
           &:not(.crop)
             img
               @extend .img-shadow
               @extend .cursor-pointer
-              width: $yt-img-width
+              width: $yt-img-width * $yt-img-scale
           &.crop
             @extend .img-shadow
             @extend .cursor-pointer
-            width: $yt-img-width
-            height: $yt-img-height - 2 * $yt-crop-height
+            width: $yt-img-width * $yt-img-scale
+            height: ($yt-img-height - 2 * $yt-crop-height) * $yt-img-scale
             overflow: hidden
             //margin: 0 auto
             img
-              margin: -$yt-crop-height auto
+              margin: -$yt-crop-height*$yt-img-scale auto
               width: 100%
       &.stats
         position: relative
@@ -163,13 +169,13 @@ a.search
       > .title
         //@extend .pill
         margin-left: 15px
-        > .title-content
+        .title-content
           display: inline
         > .switch-group
           display: inline
           margin-left: 20px
           opacity: 0.9
-      &:hover > .title > .title-content
+      &:hover > .title .title-content
         @extend .title-hl
         //@extend .text-hl
       > .body

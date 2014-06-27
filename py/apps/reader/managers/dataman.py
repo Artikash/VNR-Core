@@ -1199,6 +1199,7 @@ class GameInfo(object):
           'vid': vid,
           'img': proxy.make_ytimg_url(vid),
           'title': u"動画 #%s" % (index+1) if index else u"動画",
+          'date': '', # unknown
         }
 
   def iterVideoIds(self):
