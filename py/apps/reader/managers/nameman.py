@@ -94,8 +94,7 @@ class NameManager(object):
       dicdir = os.path.abspath(rc.mecab_dic_path(self.dicname))
       csvpath = rc.mecab_usercsv_path(itemId, self.dicname)
       dir = os.path.dirname(csvpath)
-      if not os.path.exists(dir):
-        os.makedirs(dir)
+      skfileio.makedirs(dir)
       names = self._iterMeCabNameYomi(names) # FIXME: check empty
       fmt = mecabfmt.getfmt(self.dicname)
       if mecabcsv.writecsv(names, csvpath, fmt=fmt):

@@ -117,8 +117,7 @@ class GameCoffeeBean(QObject):
       name = u"%s (画像)" % skfileio.escape(self.info.title)
       path = os.path.join(skpaths.DESKTOP, name)
       try:
-        if not os.path.exists(path):
-          os.makedirs(path) # recursively create dir
+        skfileio.makedirs(path)
         images = [(url, os.path.join(path, name + '.jpg'))
             for url,name in self.info.iterImageUrlsWithName()]
         skthreads.runasync(partial(_getimages, images, path=path))

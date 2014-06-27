@@ -183,30 +183,26 @@ def main():
   #dprint('init directories')
   #from PySide.QtCore import QDir
 
-  #for path in rc.DIR_USER, rc.DIR_USER_DATA, rc.DIR_USER_XML, rc.DIR_USER_XML_COMMENTS:
-  for it in (
-      rc.DIR_XML_COMMENT,
-      rc.DIR_XML_VOICE,
-      rc.DIR_XML_REF,
-      #rc.DIR_DICT_MECAB, # not needed to create
-      rc.DIR_CACHE_AVATAR,
-      rc.DIR_CACHE_AWS,
-      rc.DIR_CACHE_DATA,
-      rc.DIR_CACHE_IMAGE,
-      rc.DIR_CACHE_DMM,
-      rc.DIR_CACHE_GETCHU,
-      rc.DIR_CACHE_GYUTTO,
-      rc.DIR_CACHE_DIGIKET,
-      rc.DIR_CACHE_DLSITE,
-      rc.DIR_CACHE_HOLYSEAL,
-      rc.DIR_CACHE_SCAPE,
-      rc.DIR_CACHE_TRAILERS,
-      rc.DIR_CACHE_WEB,
-    ):
-    if not os.path.exists(it):
-      try: os.makedirs(it)
-      except OSError:
-        dwarn("warning: failed to create directory: %s" % it)
+  from sakurakit import skfileio
+  map(skfileio.makedirs, (
+    rc.DIR_XML_COMMENT,
+    rc.DIR_XML_VOICE,
+    rc.DIR_XML_REF,
+    #rc.DIR_DICT_MECAB, # not used
+    rc.DIR_CACHE_AVATAR,
+    rc.DIR_CACHE_AWS,
+    rc.DIR_CACHE_DATA,
+    rc.DIR_CACHE_IMAGE,
+    rc.DIR_CACHE_DMM,
+    rc.DIR_CACHE_GETCHU,
+    rc.DIR_CACHE_GYUTTO,
+    rc.DIR_CACHE_DIGIKET,
+    rc.DIR_CACHE_DLSITE,
+    rc.DIR_CACHE_HOLYSEAL,
+    rc.DIR_CACHE_SCAPE,
+    rc.DIR_CACHE_TRAILERS,
+    rc.DIR_CACHE_WEB,
+  ))
 
   if skos.WIN:
     from sakurakit import skwin
@@ -232,7 +228,6 @@ def main():
   dprint("remove broken caches")
   for it in rc.DIR_APP_TMP,:
     if os.path.exists(it):
-      from sakurakit import skfileio
       skfileio.removetree(it)
 
   if sys.getrecursionlimit() < config.PY_RECURSION_LIMIT:
@@ -348,8 +343,8 @@ def main():
 
 def migrate(ss_version): # long ->
   import os
-  from sakurakit import skdebug import dprint, dwarn
   from sakurakit import skfileio
+  from sakurakit import skdebug import dprint, dwarn
   import config, rc, settings
 
   dprint("enter")
@@ -359,6 +354,12 @@ def migrate(ss_version): # long ->
   try: # this try is in case I forgot certain rc directories for update
 
     if ss_version <= 1403890414: # remove existing references directory
+
+      path = rc.DIR_DICT_MECAB # delete old mecab
+      if os.path.exists(path):
+        skfileio.removetree(path)
+        skfileio.makedirs(path)
+
       for it in ( # delete all existing references
           rc.DIR_CACHE_DMM,
           rc.DIR_CACHE_GETCHU,
@@ -371,24 +372,12 @@ def migrate(ss_version): # long ->
         ):
         if os.path.exists(it):
           skfileio.removetree(it)
-          try: os.makedirs(it)
-          except OSError:
-            dwarn("warning: failed to create directory: %s" % it)
+          skfileio.makedirs(it)
 
       path = rc.DIR_CACHE_IMAGE
       if os.path.exists(path):
         skfileio.removetree(path)
-        try: os.makedirs(path)
-        except OSError:
-          dwarn("warning: failed to create directory: %s" % path)
-
-    if ss_version <= 1402884913: # clear scape cache
-      path = rc.DIR_CACHE_SCAPE
-      if os.path.exists(path):
-        skfileio.removetree(path)
-        try: os.makedirs(path)
-        except OSError:
-          dwarn("warning: failed to create directory: %s" % path)
+        skfileio.makedirs(path)
 
     if ss_version <= 1402884913: # delete UniDic MLJ
       path = rc.DIR_CACHE_DICT + '/UniDicMJL'
@@ -398,21 +387,12 @@ def migrate(ss_version): # long ->
     if ss_version <= 1401107220:
       ss.setValue('GameAgent', False) # disable game agent by default
 
-    if ss_version <= 1394254407:
-      location = rc.DIR_DICT_MECAB # delete old unidic/unidic-mlj
-      for it in 'unidic', 'unidic-mlj':
-        path = location + '/' + it
-        if os.path.exists(path):
-          skfileio.removetree(path)
-
     if ss_version <= 1393896804: # clearn china images
       if ss.isMainlandChina():
         path = rc.DIR_CACHE_IMAGE
         if os.path.exists(path):
           skfileio.removetree(path)
-          try: os.makedirs(path)
-          except OSError:
-            dwarn("warning: failed to create directory: %s" % path)
+          skfileio.makedirs(path)
 
     if ss_version <= 1393493964:
       if ss.value("LocaleSwitchEnabled"): # disable locale switch
@@ -422,9 +402,7 @@ def migrate(ss_version): # long ->
       path = rc.DIR_DICT_MECAB
       if os.path.exists(path):
         skfileio.removetree(path)
-        try: os.makedirs(path)
-        except OSError:
-          dwarn("warning: failed to create directory: %s" % path)
+        skfileio.makedirs(path)
 
     if ss_version <= 1392183792: # disable lougo
       ss.setValue('LougoEnabled', False)
@@ -457,15 +435,6 @@ def migrate(ss_version): # long ->
         f = rc.xml_path(k)
         if os.path.exists(f):
           skfileio.removefile(f)
-
-    if ss_version <= 1383376949: # clear old images
-      try:
-        for root, dirs, files in os.walk(rc.DIR_CACHE_IMAGE):
-          for f in files:
-            #if f.endswith('.jpg'):
-            p = os.path.join(root, f)
-            skfileio.removefile(p)
-      except Exception, e: dwarn(e)
 
     #if ss_version <= 1381812548:
     #  dprint("remove old digests")
