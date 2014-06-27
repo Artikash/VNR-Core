@@ -8,9 +8,9 @@ if __name__ == '__main__':
   sys.path.append('..')
 
 import re, requests
-from sakurakit import skstr
 from sakurakit.skdebug import dwarn, derror
 from sakurakit.sknetio import GZIP_HEADERS
+from sakurakit.skstr import unescapehtml
 
 EXCITE_API =  "http://www.excite.co.jp/world/"
 def api(to='en', fr='ja'):
@@ -73,7 +73,7 @@ def translate(text, to='en', fr='ja'):
       if m:
         ret = m.group(1)
         ret = ret.decode('utf8', errors='ignore')
-        ret = skstr.unescapehtml(ret)
+        ret = unescapehtml(ret)
       else:
         dwarn("content not matched: %s" % ret)
     return ret

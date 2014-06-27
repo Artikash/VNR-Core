@@ -9,8 +9,8 @@ if __name__ == '__main__':
   sys.path.append('..')
 
 import re, requests
-from sakurakit import skstr
 from sakurakit.skdebug import dwarn, derror
+from sakurakit.skstr import unescapehtml
 
 _LOCALES = {
   'zht': 'zh-TW',
@@ -57,7 +57,7 @@ def translate(t, to='auto', fr='auto'):
       if m:
         ret = m.group(1)
         if ret:
-          ret = skstr.unescapehtml(ret)
+          ret = unescapehtml(ret)
           return ret
 
   #except socket.error, e:

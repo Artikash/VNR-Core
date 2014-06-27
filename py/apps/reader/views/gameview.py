@@ -4,8 +4,8 @@
 
 __all__ = ['GameViewManager', 'GameViewManagerProxy']
 
+import json, os
 from functools import partial
-import os
 from PySide.QtCore import Qt, Slot, QObject
 from Qt5 import QtWidgets
 from sakurakit import skdatetime, skevents, skthreads, skqss
@@ -56,6 +56,13 @@ class GameCoffeeBean(QObject):
   # Queries
 
   @Slot(result=unicode)
+  def getTwitterWidgets(self): # return list of long using ',' as sep
+    if self.info and self.info.hasTwitterWidgets():
+      return ','.join((str(id) for id in self.info.iterTwitterWidgets()))
+    else:
+      return ''
+
+  @Slot(result=unicode)
   def getSampleImages(self): # return list of urls using ',' as sep
     if self.info and self.info.hasSampleImages():
       return ','.join(self.info.iterSampleImageUrls())
@@ -63,9 +70,12 @@ class GameCoffeeBean(QObject):
       return ''
 
   @Slot(result=unicode)
-  def getTwitterWidgets(self): # return list of long using ',' as sep
-    if self.info and self.info.hasTwitterWidgets():
-      return ','.join((str(id) for id in self.info.iterTwitterWidgets()))
+  def getVideos(self): # return list of urls using ',' as sep
+    if self.info and self.info.hasVideos():
+      data = list(self.info.iterVideos())
+      for it in data: # NOTE: This function modified the data within dataman!
+        it['img'] = cacheman.cache_image_url(it['img'])
+      return json.dumps(data)
     else:
       return ''
 
@@ -154,6 +164,7 @@ class _GameView(object):
     return (
       ('gameBean', self._gameBean),
       ('clipBean', m.clipBean),
+      ('i18nBean', m.i18nBean),
       ('shioriBean', m.shioriBean),
       ('ttsBean', m.ttsBean),
       ('yakuBean', m.yakuBean),

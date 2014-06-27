@@ -48,6 +48,9 @@ a.search
       width: 230px // getchu image width
       //margin: 0 0 4px 9px
       @extend .img-shadow
+    .close
+      float: left
+      z-index: 999+1
 
   > .header
     margin-top: 10px
@@ -57,6 +60,11 @@ a.search
     > .romaji a
       margin-left: 20px
       @extend .text-minor
+    > .bottoms
+      margin-top: 10px
+      opacity: 0.5
+      &:hover
+        opacity: 1
 
   > .content
     //> .stats
@@ -83,7 +91,8 @@ a.search
           //vertical-align: top
           margin: 5px 4px
           width: 220px // 220 is consistent with zoom in game.coffee
-          max-width: 90%
+          max-width: 95%
+          //min-height: 140px // = 220 * 2/3
       &.twitter .widgets
         margin-top: 20px
         > .timeline

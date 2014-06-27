@@ -472,7 +472,8 @@ init = ->
       move: slider.reloadOffset
 
     # Export window mamager so that external APIs such as window.search can access it
-    window.gameManager = gm
+    # Delay assigning to gameManager until everything else is ready
+    @gameManager = gm
 
     #setTimeout gm.show, 200
     #setTimeout _.partial(quicksearch, styleClass, gf.refreshFilter),  2000

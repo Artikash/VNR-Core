@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="zh_TW">
+<!DOCTYPE TS>
+<TS version="2.0" language="zh_TW">
 <context>
     <name>sakurakit</name>
     <message>
@@ -2170,17 +2171,17 @@
     <message>
         <location filename="sktr.py" line="207"/>
         <source>Scenario</source>
-        <translation type="unfinished"></translation>
+        <translation>腳本</translation>
     </message>
     <message>
         <location filename="sktr.py" line="208"/>
         <source>Music</source>
-        <translation type="unfinished"></translation>
+        <translation>音樂</translation>
     </message>
     <message>
         <location filename="sktr.py" line="372"/>
         <source>Draggable</source>
-        <translation type="unfinished"></translation>
+        <translation>可拖動</translation>
     </message>
 </context>
 </TS>

@@ -10,8 +10,8 @@ if __name__ == '__main__': # DEBUG
 
 import re
 from restful.online import DataParser
-from sakurakit import skstr
 from sakurakit.skdebug import dwarn
+from sakurakit.skstr import unescapehtml
 
 # http://stackoverflow.com/questions/38987/how-can-i-merge-union-two-python-dictionaries-in-a-single-expression
 def _mergedictwith(x, y):
@@ -78,7 +78,7 @@ class SoftApi(DataParser):
     """
     m = self._rx_banner.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1))
+      return unescapehtml(m.group(1))
 
   def _parseotome(self, h):
     """
@@ -97,7 +97,7 @@ class SoftApi(DataParser):
     """
     m = self._rx_series.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1))
+      return unescapehtml(m.group(1))
 
   _rx_videos = re.compile(r'.*?'.join((
     r'<section>',
@@ -114,7 +114,7 @@ class SoftApi(DataParser):
     for m in self._rx_videos.finditer(h):
       yield {
         'video': m.group(1),    # str video ID
-        'title': skstr.unescapehtml(m.group(2)),    # unicode
+        'title': unescapehtml(m.group(2)),    # unicode
         'date': m.group(3),     # str like 2010-01-15
         'youtube': m.group(4),  # str youtube ID
       }
@@ -134,7 +134,7 @@ class SoftApi(DataParser):
         line = m.group(1)
         for hh in line.split(u'、'):
           id = int(self._rx_brands_id.search(hh).group(1))
-          name = skstr.unescapehtml(self._rx_brands_name.search(hh).group(1))
+          name = unescapehtml(self._rx_brands_name.search(hh).group(1))
           yield {
             'id': id, # int
             'name': name, # unicode
@@ -176,7 +176,7 @@ class SoftApi(DataParser):
     """
     m = rx.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1))
+      return unescapehtml(m.group(1))
     return ''
 
   def __makecreatorsrx(key):
@@ -217,7 +217,7 @@ class SoftApi(DataParser):
               break
             t = mm.group(1).strip()
             if t and t not in (u"他", u"不明"):
-              name = skstr.unescapehtml(t)
+              name = unescapehtml(t)
               if name not in names:
                 names.add(name)
                 hhh = hh[:mm.start(0)]

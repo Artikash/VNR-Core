@@ -2,7 +2,7 @@
 # sktr.py
 # 10/8/2012 jichi
 
-__all__ = ['tr_', 'notr_']
+__all__ = ['tr_', 'notr_', 'utr_']
 
 from PySide.QtCore import QObject
 from skclass import memoized
@@ -419,7 +419,8 @@ class sakurakit(QObject):
 @memoized
 def manager(): return sakurakit()
 
-def tr_(text): return manager().tr(text)
-def notr_(text): return text
+def tr_(text): return manager().tr(text) # str -> unicode
+def notr_(text): return text     # any -> any
+def utr_(text): return tr_(text.encode('utf8', errors='ignore')) # unicode -> unicode
 
 # EOF

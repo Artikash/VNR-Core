@@ -9,8 +9,9 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 import re
-from sakurakit import sknetio, skstr
+from sakurakit import sknetio
 from sakurakit.skdebug import dwarn
+from sakurakit.skstr import unescapehtml
 
 class SearchApi(object):
 
@@ -95,7 +96,7 @@ class SearchApi(object):
           if id0:
             m = self._rx_first_title.search(hh)
             if m:
-              title0 = skstr.unescapehtml(m.group(1))
+              title0 = unescapehtml(m.group(1))
 
         if id0 and title0:
           year0 = years[0][0] if years else None
@@ -112,7 +113,7 @@ class SearchApi(object):
           # iterparse and compare index against year index
           for m in self._rx_product.finditer(hh):
             id = int(m.group(1))
-            title = skstr.unescapehtml(m.group(2))
+            title = unescapehtml(m.group(2))
             year = None
             if years:
               for y,start in years:
@@ -150,7 +151,7 @@ class SearchApi(object):
     """
     m = self._rx_brand.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1)).strip() # there is a space in the beginning
+      return unescapehtml(m.group(1)).strip() # there is a space in the beginning
 
   _rx_info_date = __makeinforx(u"発売日")
   def _parsedate(self, h):
@@ -160,7 +161,7 @@ class SearchApi(object):
     """
     m = self._rx_info_date.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1))
+      return unescapehtml(m.group(1))
 
 if __name__ == '__main__':
   api = SearchApi()

@@ -30,9 +30,9 @@ BT_AUTH_USERNAME = 'name'
 BT_AUTH_PASSWORD = AZURE_MARKET_ID
 
 import re, requests
-from sakurakit import skstr
 from sakurakit.skdebug import dwarn, error
 from sakurakit.sknetio import GZIP_HEADERS
+from sakurakit.skstr import unescapehtml
 
 # http://www.developer.nokia.com/Community/Discussion/showthread.php?211356-QNetworkRequest-Authentication
 # http://docs.python-requests.org/en/latest/user/advanced/#custom-authentication
@@ -99,8 +99,8 @@ def translate(text, to='en', fr='ja'):
       m = __re_search.search(ret)
       if m:
         ret = m.group(1)
-        ret = skstr.unescapehtml(ret)
-        ret = skstr.unescapehtml(ret) # has to escape twice...
+        ret = unescapehtml(ret)
+        ret = unescapehtml(ret) # has to escape twice...
       else:
         dwarn("content not matched: %s" % ret)
     return ret

@@ -3,7 +3,7 @@
 # 12/14/2012 jichi
 
 from datetime import datetime
-from sakurakit.sktr import tr_
+from sakurakit.sktr import tr_, utr_
 from mytr import my
 import config, defs
 
@@ -44,7 +44,7 @@ def language_name2(lang):
   if isinstance(lang, str):
     return tr_(lang)
   if isinstance(lang, unicode):
-    return tr_(lang.encode('utf8', errors='ignore'))
+    return utr_(lang)
   return ''
 
 def font_family(lang):

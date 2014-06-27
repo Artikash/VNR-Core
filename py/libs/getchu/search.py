@@ -9,8 +9,9 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 import re
-from sakurakit import sknetio, skstr
-from sakurakit.skdebug import dwarn
+from sakurakit import sknetio
+#from sakurakit.skdebug import dwarn
+from sakurakit.skstr import unescapehtml
 
 DEFAULT_HOST = "http://www.getchu.com"
 _QUERY_PATH = "/php/search.phtml"
@@ -108,12 +109,12 @@ class SearchApi(object):
           'id': key,
           'url': url,
           'img': img,
-          'title': skstr.unescapehtml(title),
+          'title': unescapehtml(title),
         }
 
         hh = m.group()
         mm = self._rx_media.search(hh)
-        item['media'] = skstr.unescapehtml(mm.group(1)).strip() if mm else '' # strip
+        item['media'] = unescapehtml(mm.group(1)).strip() if mm else '' # strip
 
         mm = self._rx_date.search(hh)
         item['date'] = mm.group(1) or ''
@@ -128,7 +129,7 @@ class SearchApi(object):
           mm = self._rx_brand2.search(brand)
           if mm:
             brand = mm.group(1)
-        item['brand'] = skstr.unescapehtml(brand).strip() if brand else '' # strip
+        item['brand'] = unescapehtml(brand).strip() if brand else '' # strip
         yield item
 
 if __name__ == '__main__':

@@ -10,11 +10,38 @@ dprint = ->
 
 #defer = (interval, fn) -> setTimeout fn, interval
 
-# HAML for sample images
-HAML_SAMPLE_IMAGE = Haml '''\
+# Global translation function
+@tr = (text) -> i18nBean.tr text # string ->
+
+# Delay template creation until i18nBean becomes available
+createTemplates = ->
+  # HAML for sample images
+  # - param  url
+  @HAML_SAMPLE_IMAGE = Haml '''\
 %a(href="#{url}" title="#{url}")
   %img.img-rounded.zoom.zoom-cg(src="#{url}")
 '''
+
+  # HAML for youtube video
+  # - param  vid
+  # - param  date
+  # - param  title
+  # - param  image  url
+  @HAML_VIDEO = Haml """\
+.video(data-id="${vid}")
+  %a.tts(role="button" data-text="${title}" title="TTS")
+    %span.fa.fa-volume-down
+  .header
+    %a.title.cursor-pointer(title="#{tr 'Play'}") ${title}
+    .date ${date}
+    .toolbar.pull-right
+      %button.close(type="button" title="#{tr 'Close'}") &times
+      %a.btn.btn-link.btn-xs(role="button" href="http://youtube.com/watch?v=${vid}" title="http://youtube.com/watch?v=${vid}")
+        %span.fa.fa-external-link
+  .image
+    %img.img-rounded(src="${img}" title="${title} (${date})")
+  .iframe
+""".replace(/\$/, '#')
 
 ## Render ##
 
@@ -22,14 +49,19 @@ DEFAULT_COVER_IMAGE_WIDTH = 230
 DEFAULT_SAMPLE_IMAGE_WIDTH = 220
 DEFAULT_VIDEO_IMAGE_WIDTH = 220
 
-_renderSampleImage = (url) ->
-  HAML_SAMPLE_IMAGE url:url
+createTwitterTimeline = (id:id, el:el, callback:callback, options:options) ->
+  twttr.widgets.createTimeline id, el, callback, options #if window.twttr
+
+_renderSampleImage = (url) -> HAML_SAMPLE_IMAGE url:url
 
 renderSampleImages = -> # -> string  html
   gameBean.getSampleImages().split(',').map(_renderSampleImage).join ''
 
-createTwitterTimeline = (id:id, el:el, callback:callback, options:options) ->
-  twttr.widgets.createTimeline id, el, callback, options #if window.twttr
+renderVideos = -> # -> string  html
+  JSON.parse(gameBean.getVideos()).map(HAML_VIDEO).join ''
+
+renderVideoIframe = (vid) -> # string -> string
+  """<iframe width="480" height="360" src="http://youtube.com/embed/#{vid}" frameborder="0" allowfullscreen />"""
 
 ## Bindings ##
 
@@ -92,76 +124,6 @@ createTwitterTimeline = (id:id, el:el, callback:callback, options:options) ->
 #
 #  $('iframe.gyutto').error -> $(@).remove() # on 404 error?
 #  dprint 'bindGyutto: leave'
-
-@bindYoutube = ->
-  dprint 'bindYoutube: enter'
-  # @param  id  str
-  render = (id) ->
-    # width/height = 16/9
-    #Haml.render " #%iframe(width="480" height="270" src="http://youtube.com/embed/#{id}" frameborder="0" allowfullscreen)"
-    w = Math.round zoomer.youtubeFrameWidth()  # 480 by default
-    h = Math.round zoomer.youtubeFrameHeight() # 270 by default
-    """<iframe width="#{w}" height="#{h}" src="http://youtube.com/embed/#{id}" frameborder="0" allowfullscreen />"""
-
-  # Bind this at first!
-  #$('a.badge').click -> @classList.add 'badge-info' #; false
-  #$('a.label,a .label').click -> @classList.add 'label-info' #; false
-  #$('.label a').click -> $(@).parent().addclass 'label-info'
-
-  #ITEM_ID = $('body').data 'id'
-  $('.btn-dl-img').click -> gameBean.saveImages(); false
-  $('.btn-dl-yt').click -> gameBean.saveVideos(); false
-
-  #if MAINLAND # sina
-  #  $('.youtube .btn-dl,.youtube .btn-play,.youtube .label,.youtube img').click ->
-  #    vid = $(@).closest('.youtube').data 'id'
-  #    #dprint vid
-  #    youtubeBean.get vid
-  #    false
-
-  #else # not sina
-  if true
-    $('.youtube .btn-dl').click ->
-      vid = $(@).closest('.youtube').data 'id'
-      #dprint vid
-      youtubeBean.get vid
-      false
-
-    $('.youtube .btn-play,.youtube .label,.youtube img').click -> # click play button, label, image
-      $youtube = $(@).closest '.youtube'
-      $label = $youtube.find '.label'
-      $img = $youtube.find 'img'
-      $iframe = $youtube.find 'iframe'
-      $btn = $youtube.find '.btn-play'
-      if $iframe.length # remove iframe
-        $btn.prop 'title', '再生'
-            .find('.fa-stop').removeClass('fa-stop').addClass 'fa-play'
-        $label.removeClass 'label-info'
-              .removeClass 'label-success'
-        $iframe.remove()
-        w = zoomer.youtubeWidth()
-        h = ''
-        $youtube.removeClass 'iframe'
-                .width w
-                .height h
-        $img.show()
-      else # add iframe
-        $btn.prop 'title', '停止'
-            .find('.fa-play').removeClass('fa-play').addClass 'fa-stop'
-        $label.removeClass 'label-info'
-              .addClass 'label-success' # .label.info
-        $img.hide()
-        w = '100%'
-        h = zoomer.youtubeFrameHeight() + 30
-        $youtube.addClass 'iframe'
-                .width w
-                .height h
-        id = $youtube.data 'id' # youtube id
-        h = render id
-        $youtube.append h
-      false
-
-  dprint 'bindYoutube: leave'
 
 ## Zoom ##
 
@@ -229,7 +191,7 @@ initRuby = ->
 
 ## Bootstrap Switch ##
 
-initCGSwitch = -> # CG switch
+initCGSwitch = ->
   $section = $ 'section.cg'
   $section.find('input.switch').bootstrapSwitch()
     .on 'switchChange.bootstrapSwitch', (event, checked) ->
@@ -250,7 +212,7 @@ initCGSwitch = -> # CG switch
              $container.find('img').width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
              $container.masonry() # refresh after images are loaded
 
-initTwitterSwitch = -> # CG switch
+initTwitterSwitch = ->
 
   $section = $ 'section.twitter'
   $section.find('input.switch').bootstrapSwitch()
@@ -275,23 +237,65 @@ initTwitterSwitch = -> # CG switch
                 id: id
                 el: el
                 options:
-                  lang: 'ja' # TODO: dynamically get user language from document.language
+                  lang: i18nBean.lang()
                   width: 300
                   height: 500
                   chrome: 'transparent noborders noheader' # nofooter noscrollbar
                   showReplies: true
                   #tweetLimit: 20 # the maximum is 20
 
+initYouTubeSwitch = ->
+  $section = $ 'section.youtube'
+  $section.find('input.switch').bootstrapSwitch()
+    .on 'switchChange.bootstrapSwitch', (event, checked) ->
+      $container = $section.find '.videos'
+      unless checked
+        $container.fadeOut()
+      else if $container.hasClass 'rendered'
+        $container.fadeIn()
+      else
+        $container.hide()
+           .html renderVideos()
+           .addClass 'rendered'
+           .fadeIn()
+        bindYoutube()
+
+bindYoutube = ->
+  $videos = $ 'section.youtube .video'
+  if $videos.length
+    # TTS
+    $videos.find('.tts').click ->
+      ttsBean.speak @dataset.text
+    # Iframe
+    $videos.find('a.title,img,button.close').click ->
+      $video = $(@).closest '.video'
+      $img = $video.find 'img'
+      $iframe = $video.find 'iframe'
+      if $iframe.length # remove iframe
+        $video.removeClass 'play'
+        $iframe.remove()
+      else # add iframe
+        $video.addClass 'play'
+        vid = $video.data 'id' # youtube id
+        h = renderVideoIframe vid
+        $video.find('.iframe').html h
+      false
+
 initSwitches = ->
   initCGSwitch()
   initTwitterSwitch()
+  initYouTubeSwitch()
 
 ## Bootstrap ##
 
 #initBootstrap = ->
 #  $('[title]').tooltip()
 
-## TTS ##
+## Bindings ##
+
+bindButtons = ->
+  $('.btn-dl-img').click -> gameBean.saveImages(); false
+  $('.btn-dl-yt').click -> gameBean.saveVideos(); false
 
 bindTts = ->
   $('.tts').click ->
@@ -317,12 +321,15 @@ init = ->
   else
     dprint 'init: enter'
 
+    createTemplates()
+
     initToolbar()
 
     initSwitches()
 
     initRuby()
 
+    bindButtons()
     bindTts()
     bindSearch()
     bindDraggable()
@@ -337,6 +344,76 @@ $ -> init()
 
 # EOF
 
+#@bindYoutube = ->
+#  dprint 'bindYoutube: enter'
+#  # @param  id  str
+#  render = (id) ->
+#    # width/height = 16/9
+#    #Haml.render " #%iframe(width="480" height="270" src="http://youtube.com/embed/#{id}" frameborder="0" allowfullscreen)"
+#    w = Math.round zoomer.youtubeFrameWidth()  # 480 by default
+#    h = Math.round zoomer.youtubeFrameHeight() # 270 by default
+#    """<iframe width="#{w}" height="#{h}" src="http://youtube.com/embed/#{id}" frameborder="0" allowfullscreen />"""
+#
+#  # Bind this at first!
+#  #$('a.badge').click -> @classList.add 'badge-info' #; false
+#  #$('a.label,a .label').click -> @classList.add 'label-info' #; false
+#  #$('.label a').click -> $(@).parent().addclass 'label-info'
+#
+#  #ITEM_ID = $('body').data 'id'
+#  $('.btn-dl-img').click -> gameBean.saveImages(); false
+#  $('.btn-dl-yt').click -> gameBean.saveVideos(); false
+#
+#  #if MAINLAND # sina
+#  #  $('.youtube .btn-dl,.youtube .btn-play,.youtube .label,.youtube img').click ->
+#  #    vid = $(@).closest('.youtube').data 'id'
+#  #    #dprint vid
+#  #    youtubeBean.get vid
+#  #    false
+#
+#  #else # not sina
+#  if true
+#    $('.youtube .btn-dl').click ->
+#      vid = $(@).closest('.youtube').data 'id'
+#      #dprint vid
+#      youtubeBean.get vid
+#      false
+#
+#    $('.youtube .btn-play,.youtube .label,.youtube img').click -> # click play button, label, image
+#      $youtube = $(@).closest '.youtube'
+#      $label = $youtube.find '.label'
+#      $img = $youtube.find 'img'
+#      $iframe = $youtube.find 'iframe'
+#      $btn = $youtube.find '.btn-play'
+#      if $iframe.length # remove iframe
+#        $btn.prop 'title', '再生'
+#            .find('.fa-stop').removeClass('fa-stop').addClass 'fa-play'
+#        $label.removeClass 'label-info'
+#              .removeClass 'label-success'
+#        $iframe.remove()
+#        w = zoomer.youtubeWidth()
+#        h = ''
+#        $youtube.removeClass 'iframe'
+#                .width w
+#                .height h
+#        $img.show()
+#      else # add iframe
+#        $btn.prop 'title', '停止'
+#            .find('.fa-play').removeClass('fa-play').addClass 'fa-stop'
+#        $label.removeClass 'label-info'
+#              .addClass 'label-success' # .label.info
+#        $img.hide()
+#        w = '100%'
+#        h = zoomer.youtubeFrameHeight() + 30
+#        $youtube.addClass 'iframe'
+#                .width w
+#                .height h
+#        id = $youtube.data 'id' # youtube id
+#        h = render id
+#        $youtube.append h
+#      false
+#
+#  dprint 'bindYoutube: leave'
+#
 #class Scheduler
 #  constructor: (@callback, @interval=50, @timerId=0) ->
 #

@@ -7,6 +7,7 @@ __all__ = ['YoutubeBean', 'CoffeeBeanManager']
 from PySide.QtCore import Slot, QObject
 from sakurakit.skclass import memoized, memoizedproperty
 from sakurakit.skdebug import dprint
+from sakurakit.sktr import utr_
 from mytr import my
 import growl
 
@@ -25,6 +26,23 @@ class YoutubeBean(QObject):
     import procutil
     procutil.getyoutube([vid])
     #return dl.get(vid)
+
+class I18nBean(QObject):
+  def __init__(self, parent=None):
+    super(I18nBean, self).__init__(parent)
+
+  @Slot(result=unicode)
+  def lang(self):
+    import config, dataman
+    lang = dataman.manager().user().language
+    return language2htmllocale(lang) or 'ja'
+
+  @Slot(unicode, result=unicode)
+  def tr(self, text):
+    """
+    @param  vid  str  youtube id
+    """
+    return utr_(text)
 
 @memoized
 def manager(): return CoffeeBeanManager()
@@ -46,6 +64,9 @@ class CoffeeBeanManager(object):
 
   @memoizedproperty
   def youtubeBean(self): return YoutubeBean(self.parent())
+
+  @memoizedproperty
+  def i18nBean(self): return I18nBean(self.parent())
 
   @memoizedproperty
   def yakuBean(self):

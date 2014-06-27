@@ -10,8 +10,9 @@ if __name__ == '__main__': # DEBUG
 
 import re
 from datetime import datetime
-from sakurakit import sknetio, skstr
-from sakurakit.skdebug import dwarn
+from sakurakit import sknetio
+#from sakurakit.skdebug import dwarn
+from sakurakit.skstr import unescapehtml
 
 DEFAULT_HOST = "http://www.dlsite.com"
 _QUERY_PATH = "/%s/fsr/=/keyword/%s"
@@ -113,10 +114,10 @@ class SearchApi(object):
       mm = self._rx_url_name.search(hh)
       if mm:
         url = mm.group(1)
-        name = skstr.unescapehtml(mm.group(2))
+        name = unescapehtml(mm.group(2))
 
         mm = self._rx_brand.search(hh)
-        brand = skstr.unescapehtml(mm.group(1)) if mm else None
+        brand = unescapehtml(mm.group(1)) if mm else None
 
         mm = self._rx_price.search(hh)
         try: price = int(mm.group(1))

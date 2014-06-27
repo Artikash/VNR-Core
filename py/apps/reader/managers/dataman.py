@@ -938,17 +938,28 @@ class GameInfo(object):
     if r:
       if r.bannerImages:
         for index,url in enumerate(r.bannerImages):
+          url = proxy.get_image_url(url)
           yield fn(url), 'banner_getchu_%i' % (index+1)
-      if r.comics:
-        for index,url in enumerate(r.comics):
-          yield fn(url), 'comics_getchu_%i' % (index+1)
+      #if r.comics:
+      #  for index,url in enumerate(r.comics):
+      #    yield fn(url), 'comics_getchu_%i' % (index+1)
       if r.characters:
         for it in r.characters:
-          if it['img']:
-            yield fn(it['img']), 'chara_getchu_%s' % it['id']
+          url = it['img']
+          if url:
+            url = proxy.get_getchu_url(url)
+            yield fn(url), 'chara_getchu_%s' % it['id']
       if r.videos:
         for vid,img in r.iterVideoIdsWithImage(cache=cache):
           yield img, 'youtube_%s' % vid
+
+    r = self.digiket
+    if r:
+      if r.characters:
+        for it in r.characters:
+          url = it['img']
+          if url:
+            yield fn(url), 'chara_digiket_%s' % it['id']
 
   @property
   def image0(self): # str or None
@@ -1168,7 +1179,7 @@ class GameInfo(object):
     return False
 
   def iterVideos(self):
-    """
+    """NOTE: This function will modify trailers video date by adding 'img' to them!
     @yield  {kw}
     """
     vids = set()
@@ -1177,13 +1188,16 @@ class GameInfo(object):
       item = self.trailersItem
       if item:
         for it in item.videos:
-          vids.add(it['youtube'])
+          vid = it['vid']
+          vids.add(vid)
+          it['img'] = proxy.make_ytimg_url(vid)
           yield it
     r = self.getchu
     if r and r.videos:
       for index,vid in enumerate(it for it in r.videos if it not in vids):
         yield {
-          'youtube': vid,
+          'vid': vid,
+          'img': proxy.make_ytimg_url(vid),
           'title': u"動画 #%s" % (index+1) if index else u"動画",
         }
 
@@ -1197,7 +1211,7 @@ class GameInfo(object):
       item = self.trailersItem
       if item:
         for it in item.videos:
-          vid = it['youtube']
+          vid = it['vid']
           vids.add(vid)
           yield vid
     r = self.getchu
@@ -2625,7 +2639,7 @@ class TrailersItem: #(object):
     if self.videos:
       host = proxy.manager().ytimg_i
       for it in self.videos:
-        vid = it['youtube']
+        vid = it['vid']
         img = host + '/vi/' + vid + '/maxresdefault.jpg' # http://stackoverflow.com/questions/2068344/how-do-i-get-a-youtube-video-thumbnail-from-the-youtube-api
         yield vid, cacheman.cache_image_url(img) if cache else img
 
@@ -2804,6 +2818,8 @@ class GetchuReference(Reference): #(object):
     """
     #if self.hasSampleImages():
     for it in self.bannerImages:
+      it = proxy.get_image_url(it)
+      #it = proxy.get_getchu_url(it)
       yield cacheman.cache_image_url(it) if cache else it
 
   #def hasReview(self): return True # not implemented
@@ -2829,6 +2845,7 @@ class GetchuReference(Reference): #(object):
     """
     #if self.hasSampleImages():
     for it in self.sampleImages:
+      it = proxy.get_getchu_url(it)
       yield cacheman.cache_image_url(it) if cache else it
 
   def hasDescriptions(self):

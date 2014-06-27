@@ -65,11 +65,11 @@
       .game.portal(data-id="#{game.itemId}")
         .cover.draggable
           -if game.image
+            %button.close(type="button",title="#{tr('Close')}") &times;
             %a(href="#{game.imageUrl}",title="#{tr('Draggable')}")
               %img.cover.zoom.zoom-cover.img-rounded(src="#{game.imageUrl}")
-            %button.close(type="button" title="#{tr('Close')}") &times
           -else
-            .text-danger 表紙: (#{tr('unknown')})
+            .text-danger #{tr('Cover')}: (#{tr('unknown')})
         .header
           .title
             %a.tts.cursor-pointer(title="#{tr('TTS')}",data-text="#{game.title}")
@@ -79,13 +79,14 @@
             .romaji
               %a(href="#{GG_Q}#{game.romajiTitle}",title="#{tr('Google')}") #{game.romajiTitle}
           -if game.itemId
-            %button.btn.btn-default.btn-xs.btn-dl-img(title="画像"")
-              %i.fa.fa-save
-              画像
-            -if online and game.hasVideos()
-              %button.btn.btn-default.btn-xs.btn-dl-yt(title="YouTube動画")
-                %i.fa.fa-download
-                動画
+            .buttons
+              %button.btn.btn-default.btn-xs.btn-dl-img(title="画像"")
+                %i.fa.fa-save
+                画像
+              -if online and game.hasVideos()
+                %button.btn.btn-default.btn-xs.btn-dl-yt(title="YouTube動画")
+                  %i.fa.fa-download
+                  動画
         %hr
         .content
           %section.info
@@ -111,6 +112,17 @@
                   #{typeName}
                   -if not game.ecchi
                     %span.text-danger(title="Hシーンはありません") 一般作品
+              -if game.fileSize
+                .row.fileSie
+                  %label.control-label.col-xs-2 #{tr('File size')}
+                  .form-control-static.col-xs-10 #{game.fileSizeString}
+              -if game.slogan
+                .row.slogan
+                  %label.control-label.col-xs-2 #{tr('Slogan')}
+                  .form-control-static.col-xs-10
+                    #{game.slogan}
+                    %a.tts(title="#{tr('TTS')}",data-text="#{game.slogan}")
+                      %span.fa.fa-volume-down.icon-margin
               -if game.series
                 .row.series
                   %label.control-label.col-xs-2 #{tr('Series')}
@@ -123,28 +135,21 @@
                   %label.control-label.col-xs-2 #{tr('Brand')}
                   .form-control-static.col-xs-10
                     -for i,it in py.enumerate(game.brand.split(','))
+                      -if i
+                        、
                       -if i%2
                         %a.link.link-odd.search(title="#{tr('Search')}") #{it}
                       -else
                         %a.link.link-even.search(title="#{tr('Search')}") #{it}
                     %a.tts(title="#{tr('TTS')}",data-text="#{game.brand.replace(',','、')}")
                       %span.fa.fa-volume-down.icon-margin
-              -if game.fileSize
-                .row.fileSie
-                  %label.control-label.col-xs-2 #{tr('File size')}
-                  .form-control-static.col-xs-10 #{game.fileSizeString}
-              -if game.slogan
-                .row.slogan
-                  %label.control-label.col-xs-2 #{tr('Slogan')}
-                  .form-control-static.col-xs-10
-                    #{game.slogan}
-                    %a.tts(title="#{tr('TTS')}",data-text="#{game.slogan}")
-                      %span.fa.fa-volume-down.icon-margin
               -if game.artists
                 .row.artist
                   %label.control-label.col-xs-2 原画
                   .form-control-static.col-xs-10
                     -for i,it in py.enumerate(game.artists)
+                      -if i
+                        、
                       -if i%2
                         %a.link.link-odd.search(title="#{tr('Search')}") #{it}
                       -else
@@ -156,6 +161,8 @@
                   %label.control-label.col-xs-2 SD原画
                   .form-control-static.col-xs-10
                     -for i,it in py.enumerate(game.sdartists)
+                      -if i
+                        、
                       -if i%2
                         %a.link.link-odd.search(title="#{tr('Search')}") #{it}
                       -else
@@ -167,6 +174,8 @@
                   %label.control-label.col-xs-2 #{tr('Scenario')}
                   .form-control-static.col-xs-10
                     -for i,it in py.enumerate(game.writers)
+                      -if i
+                        、
                       -if i%2
                         %a.link.link-odd.search(title="#{tr('Search')}") #{it}
                       -else
@@ -178,6 +187,8 @@
                   %label.control-label.col-xs-2 #{tr('Music')}
                   .form-control-static.col-xs-10
                     -for i,it in py.enumerate(game.musicians)
+                      -if i
+                        、
                       -if i%2
                         %a.link.link-odd.search(title="#{tr('Search')}") #{it}
                       -else
@@ -189,6 +200,8 @@
                   %label.control-label.col-xs-2 #{tr('Keywords')}:
                   .form-control-static.col-xs-10
                     -for i,it in py.enumerate(game.tags0.split(','))
+                      -if i
+                        、
                       -if i%2
                         %a.link.link-odd.search(title="#{tr('Search')}") #{it}
                       -else
