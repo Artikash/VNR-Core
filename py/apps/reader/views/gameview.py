@@ -72,10 +72,7 @@ class GameCoffeeBean(QObject):
   @Slot(result=unicode)
   def getVideos(self): # return list of urls using ',' as sep
     if self.info and self.info.hasVideos():
-      data = list(self.info.iterVideos())
-      for it in data: # NOTE: This function modified the data within dataman!
-        it['img'] = cacheman.cache_image_url(it['img'])
-      return json.dumps(data)
+      return json.dumps(list(self.info.iterVideos()))
     else:
       return ''
 
@@ -118,9 +115,16 @@ class GameCoffeeBean(QObject):
 
   #@staticmethod
   @Slot(unicode)
-  def search(self, text):
+  def search(_, text):
     if text:
       main.manager().searchGameBoard(text)
+
+  @Slot(unicode, bool, result=unicode)
+  def getYouTubeImageUrl(_, vid, large): # -> url
+    ret = cacheman.cache_image_url(proxy.make_ytimg_url(vid, large=large))
+    if not ret and large:
+      ret = cacheman.cache_image_url(proxy.make_ytimg_url(vid, large=False))
+    return ret
 
 @Q_Q
 class _GameView(object):

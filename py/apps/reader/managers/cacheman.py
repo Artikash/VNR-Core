@@ -204,7 +204,8 @@ class CacheManager(QObject):
     # Example dmm image: http://pics.dmm.co.jp/digital/game/d_057589/d_057589pt.jpg
     bad = image and (
         url.startswith("http://pics.dmm.co.jp/")  or
-        url.startswith("http://media.erogetrailers.com/img/"))
+        url.startswith("http://media.erogetrailers.com/img/") or
+        url.endswith("/maxresdefault.jpg"))
     if bad and os.path.exists(path + BAD_SUFFIX):
       #dwarn("cache BAD")
       return ''

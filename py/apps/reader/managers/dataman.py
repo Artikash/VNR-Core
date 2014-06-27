@@ -1179,7 +1179,7 @@ class GameInfo(object):
     return False
 
   def iterVideos(self):
-    """NOTE: This function will modify trailers video date by adding 'img' to them!
+    """
     @yield  {kw}
     """
     vids = set()
@@ -1190,16 +1190,16 @@ class GameInfo(object):
         for it in item.videos:
           vid = it['vid']
           vids.add(vid)
-          it['img'] = proxy.make_ytimg_url(vid)
+          #it['img'] = proxy.make_ytimg_url(vid)
           yield it
     r = self.getchu
     if r and r.videos:
       for index,vid in enumerate(it for it in r.videos if it not in vids):
         yield {
           'vid': vid,
-          'img': proxy.make_ytimg_url(vid),
           'title': u"動画 #%s" % (index+1) if index else u"動画",
-          'date': '', # unknown
+          #'img': proxy.make_ytimg_url(vid),
+          #'date': '', # unknown
         }
 
   def iterVideoIds(self):

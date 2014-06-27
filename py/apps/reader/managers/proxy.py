@@ -36,12 +36,12 @@ class ProxyManager:
       return self.isEnabled() and host == 'getchu.com' or host in config.PROXY_DOMAINS
     return False
 
-  def makeYouTubeImageUrl(self, vid):
+  def makeYouTubeImageUrl(self, vid, large=True):
     """
     @param  vid  str
     @return  str
     """
-    return "%s/vi/%s/maxresdefault.jpg" % (self.ytimg_i,  vid) # large, but not always available
+    return "%s/vi/%s/%s.jpg" % (self.ytimg_i, vid, 'maxresdefault' if large else '0') # large, but not always available
     #return "%s/vi/%s/0.jpg" % (self.ytimg_i,  vid)
 
   def getGetchuUrl(self, url):

@@ -35,7 +35,7 @@ class I18nBean(QObject):
   def lang(self):
     import config, dataman
     lang = dataman.manager().user().language
-    return language2htmllocale(lang) or 'ja'
+    return config.language2htmllocale(lang) or 'ja'
 
   @Slot(unicode, result=unicode)
   def tr(self, text):

@@ -12,7 +12,7 @@ import re
 from datetime import datetime
 from sakurakit import sknetio
 #from sakurakit.skdebug import dwarn
-from sakurakit.skstr import unescapehtml
+from sakurakit.skstr import unescapehtml, urlencode
 
 DEFAULT_HOST = "http://www.dlsite.com"
 _QUERY_PATH = "/%s/fsr/=/keyword/%s"
@@ -45,7 +45,7 @@ class SearchApi(object):
     @param  domain  str
     """
     text = text.encode(self.ENCODING, errors='ignores')
-    text = skstr.urlencode(text)
+    text = urlencode(text)
     return self.API % (domain, text)
 
   def _fetch(self, url):

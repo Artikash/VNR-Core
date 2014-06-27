@@ -9,6 +9,13 @@ dprint = ->
 #  #$('[title]').tooltip() # use bootstrap tooltip
 
 #defer = (interval, fn) -> setTimeout fn, interval
+#
+
+DEFAULT_COVER_IMAGE_WIDTH = 230
+DEFAULT_SAMPLE_IMAGE_WIDTH = 220
+DEFAULT_VIDEO_IMAGE_WIDTH = 220
+
+INVALID_YT_IMG_WIDTH = 120 # invalid youtube thumbnail image width
 
 # Global translation function
 @tr = (text) -> i18nBean.tr text # string ->
@@ -29,9 +36,9 @@ createTemplates = ->
   # - param  image  url
   @HAML_VIDEO = Haml """\
 .video(data-id="${vid}")
-  %a.tts(role="button" data-text="${title}" title="TTS")
-    %span.fa.fa-volume-down
   .header
+    %a.tts(role="button" data-text="${title}" title="TTS")
+      %span.fa.fa-volume-down
     %a.title.cursor-pointer(title="#{tr 'Play'}") ${title}
     :if date
       .date ${date}
@@ -46,20 +53,22 @@ createTemplates = ->
 
 ## Render ##
 
-DEFAULT_COVER_IMAGE_WIDTH = 230
-DEFAULT_SAMPLE_IMAGE_WIDTH = 220
-DEFAULT_VIDEO_IMAGE_WIDTH = 220
-
 createTwitterTimeline = (id:id, el:el, callback:callback, options:options) ->
   twttr.widgets.createTimeline id, el, callback, options #if window.twttr
 
-_renderSampleImage = (url) -> HAML_SAMPLE_IMAGE url:url
+_renderSampleImage = (url) ->
+  HAML_SAMPLE_IMAGE url:url
 
 renderSampleImages = -> # -> string  html
   gameBean.getSampleImages().split(',').map(_renderSampleImage).join ''
 
+_renderVideo = (params) ->
+  params.date = '' unless params.date? # fill in the missing date
+  params.img = gameBean.getYouTubeImageUrl params.vid, true # large = true
+  HAML_VIDEO params
+
 renderVideos = -> # -> string  html
-  JSON.parse(gameBean.getVideos()).map(HAML_VIDEO).join ''
+  JSON.parse(gameBean.getVideos()).map(_renderVideo).join ''
 
 renderVideoIframe = (vid) -> # string -> string
   """<iframe width="480" height="360" src="http://youtube.com/embed/#{vid}" frameborder="0" allowfullscreen />"""
@@ -262,6 +271,16 @@ initYouTubeSwitch = ->
 bindYoutube = ->
   $videos = $ 'section.youtube .video'
   if $videos.length
+    # Image
+    $videos.find('.image > img').load ->
+      width = @naturalWidth
+      if width is INVALID_YT_IMG_WIDTH
+        $this = $ @
+        vid = $this.closest('.video').data 'id'
+        url = gameBean.getYouTubeImageUrl vid, false # large = false
+        @src = url
+        #$this.parent('.image').addClass 'crop' # image is always not cropped
+
     # TTS
     $videos.find('.tts').click ->
       ttsBean.speak @dataset.text
