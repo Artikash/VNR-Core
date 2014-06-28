@@ -386,14 +386,13 @@ class GameInfo(object):
       if kw:
         return HolysealReference(**kw)
 
-  @property
   def iterCharacterReferences(self):
     """Online
     @yield  Reference
     """
     for r in self.getchu, self.digiket:
       if r and r.characters:
-        return r
+        yield r
 
   def hasCharacters(self):
     """Online
@@ -855,7 +854,7 @@ class GameInfo(object):
     """
     @return  bool
     """
-    for r in self.iterDescriptions():
+    for r in self.iterDescriptionReferences():
       return True
     return False
 
@@ -2876,7 +2875,7 @@ class GetchuReference(Reference): #(object):
     """
     return itertools.imap(self._renderDescription, self.descriptions)
 
-  _rx_desc_title = re.compile(r'<div class="tabletitle">.(.+?)</div>') # first dot to skip the leading space
+  _rx_desc_title = re.compile(r'<div class="tabletitle">.(.+?)</div>') # first dot to skip the leading space. not sure why \s does not work
   _rx_desc_size = re.compile(r'width="[0-9]+" height="[0-9]+"')  # remove image size, use large image
   @classmethod
   def _renderDescription(cls, t):

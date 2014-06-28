@@ -344,7 +344,7 @@ def main():
 def migrate(ss_version): # long ->
   import os
   from sakurakit import skfileio
-  from sakurakit import skdebug import dprint, dwarn
+  from sakurakit.skdebug import dprint, dwarn
   import config, rc, settings
 
   dprint("enter")

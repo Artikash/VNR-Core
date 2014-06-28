@@ -364,10 +364,15 @@ initDescPills = -> # Descriptions
         else
           h = gameBean.getDescription newtype
           el = document.createElement 'div'
-          el.className = newtype
+          el.className = newtype + ' description'
           el.innerHTML = h
           #$container.append el
-          $(el).hide().appendTo $container
+          $(el).hide()
+               .appendTo $container
+               .fadeIn()
+               # Improvement
+               .find('a:not([title])').each -> @setAttribute 'title', @href
+
     false
 
 initCharaPills = -> # Characters
@@ -389,12 +394,14 @@ initCharaPills = -> # Characters
         if $el.length
           $el.fadeIn()
         else
-          data = renderCharacters newtype
+          h = renderCharacters newtype
           el = document.createElement 'div'
           el.className = newtype
           el.innerHTML = h
           #$container.append el
-          $(el).hide().appendTo $container
+          $(el).hide()
+               .appendTo $container
+               .fadeIn()
     false
 
 initPills = ->

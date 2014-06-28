@@ -3,7 +3,7 @@
    See: http://isotope.metafizzy.co/css/style.css
 
 @import bootstrap/fa
-//@import fixes/bootstrap
+@import bootstrap/nav
 @import main/blocker
 @import main/color
 @import main/cursor
@@ -30,6 +30,15 @@ a.search
 
 //$yt-img-scale: 0.5
 $yt-img-scale: 1.0
+
+// Game descriptions
+.description
+  margin: 9px
+  &.amazon,
+  &.getchu
+    img
+      @extend .img-shadow
+      xmax-width: 95%
 
 .game.portal
   //margin: 6px
