@@ -31,9 +31,9 @@ createTemplates = ->
 
   # HAML for youtube video
   # - param  vid
-  # - param  date
+  # - param  date  string or null
   # - param  title
-  # - param  image  url
+  # - param  img  string url
   @HAML_VIDEO = Haml """\
 .video(data-id="${vid}")
   .header
@@ -50,6 +50,29 @@ createTemplates = ->
     %img.img-rounded(src="${img}" title="${title} ${date}")
   .iframe
 """.replace /\$/g, '#'
+
+  # HAML for characters
+  # - param  name
+  # - param  yomi  string or null
+  # - param  label  string or null
+  # - param  cv  string or null
+  # - param  img  string url or null
+  @HAML_CHARA = Haml '''\
+.chara
+  .header
+    :if it.label == "主人公" || label == "【主人公】"
+      .text-danger(title="#{yomi}") #{name}
+    :else
+      .text-default(title="#{yomi}") #{name}
+  :if img
+    .body: %a(href="#{img}" title="#{it.name} #{label}")
+      %img.img-rounded(src="#{img}")
+  .footer
+    :if cv
+      .text-info #{cv}
+    :else
+      %span.muted (CV無し)
+'''
 
 ## Render ##
 
@@ -72,6 +95,13 @@ renderVideos = -> # -> string  html
 
 renderVideoIframe = (vid) -> # string -> string
   """<iframe width="480" height="360" src="http://youtube.com/embed/#{vid}" frameborder="0" allowfullscreen />"""
+
+_renderCharacter = (params) ->
+  # I might need some fixes here
+  HAML_CHARA params
+
+renderCharacters = (type) -> # string -> string
+  JSON.parse(gameBean.getCharacters type).map(_renderCharacter).join ''
 
 ## Bindings ##
 
@@ -203,9 +233,9 @@ initRuby = ->
 
 initCGSwitch = ->
   $section = $ 'section.cg'
+  $container = $section.find '.images'
   $section.find('input.switch').bootstrapSwitch()
     .on 'switchChange.bootstrapSwitch', (event, checked) ->
-      $container = $section.find '.images'
       unless checked
         $container.fadeOut()
       else if $container.hasClass 'rendered'
@@ -234,11 +264,10 @@ initCGSwitch = ->
 initTwitterSwitch = ->
 
   $section = $ 'section.twitter'
+  $container = $section.find '.widgets'
   $section.find('input.switch').bootstrapSwitch()
     .on 'switchChange.bootstrapSwitch', (event, checked) ->
       if window.twttr
-
-        $container = $section.find '.widgets'
         unless checked
           $container.fadeOut()
         else if $container.hasClass 'rendered'
@@ -265,9 +294,9 @@ initTwitterSwitch = ->
 
 initYouTubeSwitch = ->
   $section = $ 'section.youtube'
+  $container = $section.find '.videos'
   $section.find('input.switch').bootstrapSwitch()
     .on 'switchChange.bootstrapSwitch', (event, checked) ->
-      $container = $section.find '.videos'
       unless checked
         $container.empty()
       else
@@ -312,6 +341,73 @@ initSwitches = ->
   initTwitterSwitch()
   initYouTubeSwitch()
 
+## Bootstrap Navigation Pills ##
+
+initDescPills = -> # Descriptions
+  $sec = $ 'section.descriptions'
+  $container = $sec.find '.contents'
+
+  $sec.find('.nav.nav-pills > li > a').click ->
+    $li = $(@).parent 'li'
+    unless $li.hasClass 'active'
+      oldtype = $li.parent('ul').children('li.active')
+          .removeClass 'active'
+          .data 'type'
+      $li.addClass 'active'
+      newtype = $li.data 'type'
+      if oldtype
+        $container.children('.' + oldtype).hide()
+      if newtype
+        $el = $container.children('.' + newtype)
+        if $el.length
+          $el.fadeIn()
+        else
+          h = gameBean.getDescription newtype
+          el = document.createElement 'div'
+          el.className = newtype + ' description'
+          el.innerHTML = h
+          #$container.append el
+          $(el).hide()
+               .appendTo $container
+               .fadeIn()
+               # Improvement
+               .find('a:not([title])').each -> @setAttribute 'title', @href
+
+    false
+
+initCharaPills = -> # Characters
+  $sec = $ 'section.characters'
+  $container = $sec.find '.contents'
+
+  $sec.find('.nav.nav-pills > li > a').click ->
+    $li = $(@).parent 'li'
+    unless $li.hasClass 'active'
+      oldtype = $li.parent('ul').children('li.active')
+          .removeClass 'active'
+          .data 'type'
+      $li.addClass 'active'
+      newtype = $li.data 'type'
+      if oldtype
+        $container.children('.' + oldtype).hide()
+      if newtype
+        $el = $container.children('.' + newtype)
+        if $el.length
+          $el.fadeIn()
+        else
+          h = renderCharacters newtype
+          el = document.createElement 'div'
+          el.className = newtype
+          el.innerHTML = h
+          #$container.append el
+          $(el).hide()
+               .appendTo $container
+               .fadeIn()
+    false
+
+initPills = ->
+  initCharaPills()
+  initDescPills()
+
 ## Bootstrap ##
 
 #initBootstrap = ->
@@ -354,6 +450,7 @@ init = ->
     initToolbar()
 
     initSwitches()
+    initPills()
 
     initRuby()
 

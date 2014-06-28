@@ -52,7 +52,6 @@ class GameCoffeeBean(QObject):
     super(GameCoffeeBean, self).__init__(parent)
     self.info = info # GameItemInfo or None
 
-
   # Queries
 
   @Slot(result=unicode)
@@ -75,6 +74,22 @@ class GameCoffeeBean(QObject):
       return json.dumps(list(self.info.iterVideos()))
     else:
       return ''
+
+  @Slot(unicode, result=unicode)
+  def getDescription(self, type): # return html for the reference type
+    if self.info:
+      for r in self.info.iterDescriptionReferences():
+        if r.type == type:
+          return ''.join(r.iterDescriptions())
+    return ''
+
+  @Slot(unicode, result=unicode)
+  def getCharacters(self, type): # return json for the reference type
+    if self.info and self.info.hasCharacters():
+      for r in self.info.iterCharacterReferences():
+        if r.type == type:
+          return json.dumps(r.characters)
+    return ''
 
   # Actions
 
@@ -102,8 +117,7 @@ class GameCoffeeBean(QObject):
       name = u"%s (画像)" % skfileio.escape(self.info.title)
       path = os.path.join(skpaths.DESKTOP, name)
       try:
-        if not os.path.exists(path):
-          os.makedirs(path) # recursively create dir
+        skfileio.makedirs(path)
         images = [(url, os.path.join(path, name + '.jpg'))
             for url,name in self.info.iterImageUrlsWithName()]
         skthreads.runasync(partial(_getimages, images, path=path))

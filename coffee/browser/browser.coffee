@@ -63,6 +63,16 @@ trim = (str, chars=WHITE_SPACES) ->
   str = toString str
   ltrim(rtrim(str, chars), chars)
 
+## Helpers
+
+# half-width/full-width letters, numbers, and some half-width punctuations
+isalnum = (ch) -> /[0-9a-zA-Z０-９ａ-ｚＡ-Ｚ]/.test ch # string ->bool
+
+# half-width punctuations
+#ispunct = (ch) -> /['"?!,\.]/.test ch # string -> bool
+
+isalnumpunct = (ch) -> /[0-9a-zA-Z０-９ａ-ｚＡ-Ｚ'"?!,\.]/.test ch # string ->bool
+
 ## Render
 
 # %span sentence
@@ -91,9 +101,19 @@ renderrepl = (text) -> # string -> node
       seg = document.createElement 'span'
       seg.className = 'inject-ruby'
       segtext = ''
-      for word in sentence
-        segtext += word[0]
-        #[surf, ruby, feature, className] = word
+      firstletter = lastletter = false
+      for word in sentence # word = [surf, ruby, feature, className]
+        surf = word[0]
+
+        firstletter = isalnum surf[0]
+        if firstletter and lastletter
+          segtext += ' ' # not needed, but there is no drawbacks
+          space = document.createTextNode ' '
+          #space.class = 'inject-space' # not needded
+          seg.appendChild space
+        lastletter = isalnumpunct surf.slice -1
+
+        segtext += surf
         ruby = renderruby.apply @, word
         seg.appendChild ruby
       if segtext

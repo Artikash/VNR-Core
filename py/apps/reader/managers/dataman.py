@@ -386,23 +386,21 @@ class GameInfo(object):
       if kw:
         return HolysealReference(**kw)
 
+  def iterCharacterReferences(self):
+    """Online
+    @yield  Reference
+    """
+    for r in self.getchu, self.digiket:
+      if r and r.characters:
+        yield r
+
   def hasCharacters(self):
     """Online
     @return  bool
     """
-    for r in self.digiket, self.getchu:
-      if r and r.characters:
-        return True
+    for r in self.iterCharacterReferences():
+      return True
     return False
-
-  @property
-  def characters(self):
-    """Online
-    @return  [kw] or None
-    """
-    for r in self.digiket, self.getchu:
-      if r:
-        return r.characters
 
   @memoizedproperty
   def scapeCount0(self):
@@ -843,6 +841,22 @@ class GameInfo(object):
     r = self.getchu
     if r:
       return r.comics
+
+  def iterDescriptionReferences(self):
+    """
+    @yield  Reference
+    """
+    for r in self.getchu, self.digiket, self.amazon:
+      if r and r.hasDescriptions():
+        yield r
+
+  def hasDescriptions(self):
+    """
+    @return  bool
+    """
+    for r in self.iterDescriptionReferences():
+      return True
+    return False
 
   def hasBannerImages(self):
     """
@@ -2861,7 +2875,7 @@ class GetchuReference(Reference): #(object):
     """
     return itertools.imap(self._renderDescription, self.descriptions)
 
-  _rx_desc_title = re.compile(r'<div class="tabletitle">.(.+?)</div>') # first dot to skip the leading space
+  _rx_desc_title = re.compile(r'<div class="tabletitle">.(.+?)</div>') # first dot to skip the leading space. not sure why \s does not work
   _rx_desc_size = re.compile(r'width="[0-9]+" height="[0-9]+"')  # remove image size, use large image
   @classmethod
   def _renderDescription(cls, t):
@@ -2938,7 +2952,6 @@ class DiGiketReference(Reference): #(object):
     """
     if self.description:
       yield self.description
-
 
 class AmazonReference(Reference):
   def __init__(self, parent=None,

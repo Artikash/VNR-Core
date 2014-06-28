@@ -113,6 +113,16 @@ def removefile(path):
   try: os.remove(path); return True
   except: return False
 
+def makedirs(path):
+  try:
+    if not os.path.exists(path):
+      os.makedirs(path)
+    return True
+  #except OSError:
+  except Exception:
+    dwarn("failed to create directory: %s" % path)
+    return False
+
 def removetree(path): # remove the whole directory recursively
   """
   @param  path  str

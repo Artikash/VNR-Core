@@ -18,18 +18,19 @@
   %head
     -for it in 'bootstrap3.css', 'font-awesome4.css', 'bootstrap.switch.css', 'dragdealer.css', 'game.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
-    -if game.getchu and (game.getchu.hasDescriptions() or game.getchu.review)
-      %link(rel="stylesheet",href="#{rc.cdn_url('getchu.css')}")
-    -elif game.amazon and game.amazon.hasDescriptions()
-      %link(rel="stylesheet",href="#{rc.cdn_url('amazon.css')}")
-    -if game and game.gyutto and game.gyutto.review
-      %link(rel="stylesheet",href="#{rc.cdn_url('gyutto.css')}")
-    -if game and game.dlsite and game.dlsite.review
-      %link(rel="stylesheet",href="#{rc.cdn_url('dlsite.css')}")
-    -if game and game.dmmItem and game.dmmItem.review
-      %link(rel="stylesheet",href="#{rc.cdn_url('dmm.css')}")
-    -if game and game.digiket and game.digiket.review
-      %link(rel="stylesheet",href="#{rc.cdn_url('digiket.css')}")
+    -if game
+      -if game.getchu and (game.getchu.hasDescriptions() or game.getchu.review)
+        %link(rel="stylesheet",href="#{rc.cdn_url('getchu.css')}")
+      -if game.digiket and (game.digiket.hasDescriptions() or game.digiket.review)
+        %link(rel="stylesheet",href="#{rc.cdn_url('digiket.css')}")
+      -if game.amazon and game.amazon.hasDescriptions()
+        %link(rel="stylesheet",href="#{rc.cdn_url('amazon.css')}")
+      -if game.gyutto and game.gyutto.review
+        %link(rel="stylesheet",href="#{rc.cdn_url('gyutto.css')}")
+      -if game.dlsite and game.dlsite.review
+        %link(rel="stylesheet",href="#{rc.cdn_url('dlsite.css')}")
+      -if game.dmmItem and game.dmmItem.review
+        %link(rel="stylesheet",href="#{rc.cdn_url('dmm.css')}")
 
     :css
       body {
@@ -292,29 +293,32 @@
                 ;    %img.img-rounded(src="#{it}")
           ;-if game.hasCharacters()
           ;  %hr
-          ;  %section.chara
+          ;  %section.characters
           ;    .title
           ;      .col-xs-2
           ;        .title-content 人物
-          ;      .switch-group
-          ;        %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
-          ;    .characters
-          ;      -for it in game.characters
-          ;        .chara
-          ;          .header
-          ;            -if it.label == "主人公" or it.label == "【主人公】"
-          ;              .yomi.text-danger(title="#{it.yomi}") #{it.name|e}
-          ;            -else
-          ;              .yomi.text-default(title="#{it.yomi}") #{it.name|e}
-          ;          -if it.img
-          ;            -set url = cache.image(it.img)
-          ;            .body: %a(href="#{url}",title="#{it.name|e} #{it.label|e}")
-          ;              %img.img-rounded(src="#{url}")
-          ;          .footer
-          ;            -if it.cv
-          ;              .yomi.text-info #{it.cv}
-          ;            -else
-          ;              %span.muted (CV無し)
+          ;      %ul.nav.nav-pills.nav-clean.nav-xs
+          ;        %li.active(data-type="")
+          ;          %a #{tr('Hide')}
+          ;        %li.divider
+          ;        -for r in game.iterCharacterReferences()
+          ;          %li(data-type="#{r.type}")
+          ;            %a #{i18n.site_name(r.type)}
+          ;    .contents
+          -if game.hasDescriptions()
+            %hr
+            %section.descriptions
+              .title
+                .col-xs-2
+                  .title-content 紹介
+                %ul.nav.nav-pills.nav-clean.nav-xs
+                  %li.active(data-type="")
+                    %a #{tr('Hide')}
+                  %li.divider
+                  -for r in game.iterDescriptionReferences()
+                    %li(data-type="#{r.type}")
+                      %a #{i18n.site_name(r.type)}
+              .contents
 
 ;          -if true
 ;            %hr
@@ -411,22 +415,24 @@
         'ruby', 'widgets', 'game'
         %script(src="#{rc.cdn_url(it)}")
 
-      -if not mainland and game and game.hasTwitterWidgets()
-        %script(src="#{rc.cdn_url('twitter.widgets')}")
+      -if game
 
-      -if game and game.image
-        :javascript
-          $(function() {
-            var url = "#{game.imageUrl}";
-            var img = new Image;
-            img.onload = function() {
-              document.body.style.backgroundImage = 'url("' + url + '")';
-              document.body.style.backgroundSize = 'cover';
-              document.body.style.backgroundAttachment = 'fixed';
-              // TODO: Bind onresize to change background image to half screen
-              //document.body.style.backgroundSize = '50%, auto';
-            }
-            img.src = url
-          });
+        -if not mainland and game.hasTwitterWidgets()
+          %script(src="#{rc.cdn_url('twitter.widgets')}")
+
+        -if game.image
+          :javascript
+            $(function() {
+              var url = "#{game.imageUrl}";
+              var img = new Image;
+              img.onload = function() {
+                document.body.style.backgroundImage = 'url("' + url + '")';
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundAttachment = 'fixed';
+                // TODO: Bind onresize to change background image to half screen
+                //document.body.style.backgroundSize = '50%, auto';
+              }
+              img.src = url
+            });
 
 ; EOF
