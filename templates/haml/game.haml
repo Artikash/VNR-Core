@@ -252,6 +252,23 @@
                   %label.control-label.col-xs-2 #{tr('Wikipedia')}
                   .form-control-static.col-xs-10
                     %a(href="#{url}",title="#{url}") #{url}
+              -if true
+                -if game.scapeCount and game.scape
+                  .row
+                    %label.control-label.col-xs-2 批評空間
+                    .form-control-static.col-xs-10
+                      %a(href="#{game.scape.url}",title="#{game.scape.url}")
+                        #{game.scapeMedian}&times;#{game.scapeCount}
+                -if game.visitCount
+                  .row
+                    %label.control-label.col-xs-2 #{tr('Play')}
+                    .form-control-static.col-xs-10
+                      %span.count #{game.visitCount}
+                -if game.commentCount
+                  .row
+                    %label.control-label.col-xs-2 #{tr('Subtitle')}
+                    .form-control-static.col-xs-10
+                      %span.count #{game.commentCount}
           -if game.hasBannerImages()
             %section.banner
               -for it in game.iterBannerImageUrls()
@@ -322,7 +339,6 @@
                     %li(data-type="#{r.type}")
                       %a #{i18n.site_name(r.type)}
               .contents
-
 ;          -if true
 ;            %hr
 ;            %section.stats
@@ -344,22 +360,22 @@
 ;                  .form-control-static.col-xs-10
 ;                    %span.rating.rating-easy
 ;                    %span.score-label(data-type="easy")
-;                -if game.scapeScore and game.links and game.links.scape
+;                -if game.scapeMedian and game.links and game.links.scape
 ;                  .row
 ;                    %label.control-label.col-xs-2 批評空間
 ;                    .form-control-static.col-xs-10
 ;                      %a(href="#{game.scape.url}",title="#{game.scape.url}")
-;                        #{scapeScore}&times;#{scapeCount}
-;                -if game.playCount
+;                        #{scapeMedian}&times;#{scapeCount}
+;                -if game.visitCount
 ;                  .row
 ;                    %label.control-label.col-xs-2 #{tr('Play count')}
 ;                    .form-control-static.col-xs-10
-;                      %span.count #{game.playCount}
-;                -if game.subtitleCount
+;                      %span.count #{game.visitCount}
+;                -if game.commentCount
 ;                  .row
 ;                    %label.control-label.col-xs-2 #{tr('Subtitle count')}
 ;                    .form-control-static.col-xs-10
-;                      %span.count #{game.subtitleCount}
+;                      %span.count #{game.commentCount}
 ;              %button.btn-review.btn.btn-primary.dropdown-toggle.btn-sm(type="button")
 ;                %span.fa.fa-star #{tr('Review')}
 ;          -if game.subs
