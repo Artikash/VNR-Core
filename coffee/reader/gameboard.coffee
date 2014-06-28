@@ -35,15 +35,35 @@ GAME_HAML = Haml '''\
         .label.label-inverse(title="ブランド: #{it}") = it
     :if g.visitCount
       :if visitColor === ''
-        .badge(title="訪問数") #{g.visitCount}
+        .badge(title="訪問数")
+          :if g.commentCount
+            #{g.commentCount}/#{g.visitCount}
+          :else
+            = g.visitCount
       :if visitColor === 'o'
-        .badge.badge-warning(title="訪問数") = g.visitCount
+        .badge.badge-warning(title="訪問数")
+          :if g.commentCount
+            #{g.commentCount}/#{g.visitCount}
+          :else
+            = g.visitCount
       :if visitColor === 'r'
-        .badge.badge-important(title="訪問数") = g.visitCount
+        .badge.badge-important(title="訪問数")
+          :if g.commentCount
+            #{g.commentCount}/#{g.visitCount}
+          :else
+            = g.visitCount
       :if visitColor === 'g'
-        .badge.badge-success(title="訪問数") = g.visitCount
+        .badge.badge-success(title="訪問数")
+          :if g.commentCount
+            #{g.commentCount}/#{g.visitCount}
+          :else
+            = g.visitCount
       :if visitColor === 'b'
-        .badge.badge-inverse(title="訪問数") = g.visitCount
+        .badge.badge-inverse(title="訪問数")
+          :if g.commentCount
+            #{g.commentCount}/#{g.visitCount}
+          :else
+            = g.visitCount
     :if scoreColor
       :if scoreColor === 'o'
         .badge.badge-warning(title="得点×点数") #{g.scapeMedian}x#{g.scapeCount}
