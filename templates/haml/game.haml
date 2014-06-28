@@ -70,7 +70,7 @@
             %a(href="#{game.imageUrl}",title="#{tr('Draggable')}")
               %img.cover.zoom.zoom-cover.img-rounded(src="#{game.imageUrl}")
           -else
-            .text-danger #{tr('Cover')}: (#{tr('unknown')})
+            .text-minor #{tr('Cover')}: (#{tr('unknown')})
         .header
           .title
             %a.tts.cursor-pointer(title="#{tr('TTS')}",data-text="#{game.title}")

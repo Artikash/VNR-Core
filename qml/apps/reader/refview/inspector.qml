@@ -80,7 +80,7 @@ Item { id: root_
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
       onLinkActivated: Qt.openUrlExternally(link)
-      text: root_.formatText('ErogeTrailers', 'erogetrailers.com', model.trailersItem ? 'green' : 'red')
+      text: root_.formatText('ErogeTrailers', 'erogetrailers.com', model.trailersItem)
     }
 
     Text {
@@ -89,7 +89,7 @@ Item { id: root_
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
       onLinkActivated: Qt.openUrlExternally(link)
-      text: root_.formatText('ErogameScape', 'erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki', model.scapeItem ? 'green' : 'red')
+      text: root_.formatText('ErogameScape', 'erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki', model.scapeItem)
     }
 
     Text {
@@ -98,7 +98,7 @@ Item { id: root_
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
       onLinkActivated: Qt.openUrlExternally(link)
-      text: root_.formatText('Holyseal', 'holyseal.net', model.holysealItem ? 'green' : 'brown')
+      text: root_.formatText('Holyseal', 'holyseal.net', model.holysealItem)
     }
 
     Text {
@@ -107,7 +107,7 @@ Item { id: root_
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
       onLinkActivated: Qt.openUrlExternally(link)
-      text: root_.formatText('Getchu', 'getchu.com', model.getchuItem ? 'green' : 'brown')
+      text: root_.formatText('Getchu', 'getchu.com', model.getchuItem)
     }
 
     Text {
@@ -116,7 +116,7 @@ Item { id: root_
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
       onLinkActivated: Qt.openUrlExternally(link)
-      text: root_.formatText('Amazon', 'amazon.co.jp', model.amazonItem ? 'green' : 'brown')
+      text: root_.formatText('Amazon', 'amazon.co.jp', model.amazonItem)
     }
 
     Text {
@@ -125,7 +125,7 @@ Item { id: root_
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
       onLinkActivated: Qt.openUrlExternally(link)
-      text: root_.formatText('DMM', 'dmm.co.jp', model.dmmItem ? 'green' : 'brown')
+      text: root_.formatText('DMM', 'dmm.co.jp', model.dmmItem)
     }
 
     Text {
@@ -134,7 +134,7 @@ Item { id: root_
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
       onLinkActivated: Qt.openUrlExternally(link)
-      text: root_.formatText('DLsite', 'dlsite.co.jp', model.dlsiteItem ? 'green' : 'brown')
+      text: root_.formatText('DLsite', 'dlsite.co.jp', model.dlsiteItem)
     }
 
     Text {
@@ -143,7 +143,7 @@ Item { id: root_
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
       onLinkActivated: Qt.openUrlExternally(link)
-      text: root_.formatText('DiGiket', 'www.digiket.com', model.digiketItem ? 'green' : 'brown')
+      text: root_.formatText('DiGiket', 'www.digiket.com', model.digiketItem)
     }
 
     Text {
@@ -152,11 +152,11 @@ Item { id: root_
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
       onLinkActivated: Qt.openUrlExternally(link)
-      text: root_.formatText('Gyutto', 'gyutto.com', model.gyuttoItem ? 'green' : 'brown')
+      text: root_.formatText('Gyutto', 'gyutto.com', model.gyuttoItem)
     }
   }
 
-  function formatText(name, url,color) { // string -> string
-    return '<a style="color:' + color + '" href="http://' + url + '">' + name + '</a>'
+  function formatText(name, url, item) { // string, string, Reference -> string
+    return '<a style="color:' + (item ? 'green' : 'brown') + '" href="http://' + (item ? item.url : url) + '">' + name + '</a>'
   }
 }
