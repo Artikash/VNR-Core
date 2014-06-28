@@ -109,7 +109,10 @@
               -if game.event
                 .row.comike
                   %label.control-label.col-xs-2 #{tr('Comiket')}
-                  .form-control-static.col-xs-10 #{game.event}
+                  .form-control-static.col-xs-10
+                    #{game.event}
+                    %a.tts(title="#{tr('TTS')}",data-text="#{game.event}")
+                      %span.fa.fa-volume-down.icon-margin
               -if game.price
                 .row.price
                   %label.control-label.col-xs-2 #{tr('Price')}
