@@ -95,8 +95,9 @@ class SoftApi(object):
         try: price = int(self._parseprice(h))
         except (ValueError, TypeError): price = 0
 
-        try: writers = meta[u"シナリオ"].replace(u"、他", '').split(u'、')
-        except KeyError: writers = []
+        # Use fillter.bool to remove empty scenario
+        try: writers = filter(bool, meta[u"シナリオ"].replace(u"、他", '').split(u'、'))
+        except Exception: writers = []
 
         artists = []
         sdartists = []
@@ -105,7 +106,7 @@ class SoftApi(object):
           sd1 = u"（SD原画）"
           sd2 = u"（アバター）"
           for it in t.split(u'、'):
-            if it != u"他":
+            if it and it != u"他":
               if it.endswith(sd1):
                 it = it.replace(sd1, '')
                 sdartists.append(it)
@@ -594,6 +595,7 @@ if __name__ == '__main__':
   k = 789990 # 女王蜂の王房 めのう編
   k = 774400
   k = 718587 # レミニセンス
+  k = 804521
   print '-' * 10
   q = api.query(k)
   for it in q['characters']:
