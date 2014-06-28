@@ -35,7 +35,7 @@ GAME_HAML = Haml '''\
         .label.label-inverse(title="ブランド: #{it}") = it
     :if g.visitCount
       :if visitColor === ''
-        .badge(title="訪問数")
+        .badge(title="字幕数/再生数")
           :if g.commentCount
             #{g.commentCount}/#{g.visitCount}
           :else
