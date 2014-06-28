@@ -41,25 +41,25 @@ GAME_HAML = Haml '''\
           :else
             = g.visitCount
       :if visitColor === 'o'
-        .badge.badge-warning(title="訪問数")
+        .badge.badge-warning(title="字幕数/再生数")
           :if g.commentCount
             #{g.commentCount}/#{g.visitCount}
           :else
             = g.visitCount
       :if visitColor === 'r'
-        .badge.badge-important(title="訪問数")
+        .badge.badge-important(title="字幕数/再生数")
           :if g.commentCount
             #{g.commentCount}/#{g.visitCount}
           :else
             = g.visitCount
       :if visitColor === 'g'
-        .badge.badge-success(title="訪問数")
+        .badge.badge-success(title="字幕数/再生数")
           :if g.commentCount
             #{g.commentCount}/#{g.visitCount}
           :else
             = g.visitCount
       :if visitColor === 'b'
-        .badge.badge-inverse(title="訪問数")
+        .badge.badge-inverse(title="字幕数/再生数")
           :if g.commentCount
             #{g.commentCount}/#{g.visitCount}
           :else
@@ -488,7 +488,10 @@ class GameManager
     )
 
     visitColor = (
-      if g.visitCount < 300 then '' # gray
+      if g.visitCount < 6000 and g.commentCount > 5000 then 'o' # orange
+      else if g.visitCount < 3000 and g.commentCount > 500 then 'r' # red
+
+      else if g.visitCount < 300 then '' # gray
       else if g.visitCount < 1000 then 'b' # black
       else if g.visitCount < 3000 then 'g' # green
       else if g.visitCount < 6000 then 'r' # red
