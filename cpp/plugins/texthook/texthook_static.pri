@@ -26,8 +26,8 @@ DEPENDPATH  += $$PWD
 #LIBS    += -L$$ITH_HOME/lib
 #LIBS    += -lITH_DLL #-lITH_SYS
 
-INCLUDEPATH += $$ITH_HOME/include
-LIBS        += -L$$ITH_HOME/lib -lihf
+#INCLUDEPATH += $$ITH_HOME/include
+#LIBS        += -L$$ITH_HOME/lib -lihf
 
 # Tell IHF not to override new operators, see: ith/mem.h
 DEFINES += DEFAULT_MM

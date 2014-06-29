@@ -14,6 +14,7 @@ SUBDIRS += \
 
 win32: SUBDIRS += \
   ceviotest \
-  sehtest
+  sehtest \
+  ttstest
 
 # EOF

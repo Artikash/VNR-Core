@@ -74,12 +74,14 @@ win32 {
 win32 {
   D3D_HOME      = "$$PROGRAMFILES/Microsoft DirectX SDK"
   DETOURS_HOME  = "$$PROGRAMFILES/Microsoft Research/Detours Express 3.0"
-  DEV_HOME      = c:/dev
+  #DEV_HOME      = c:/dev
+  DEV_HOME      = z:/local/windows/developer
   BOOST_HOME    = $$DEV_HOME/boost
-  ITH_HOME      = $$DEV_HOME/ith
+  #ITH_HOME      = $$DEV_HOME/ith
   MSIME_HOME    = $$DEV_HOME/msime
   #PYTHON_HOME  = $$ROOTDIR/../Python
-  PYTHON_HOME   = C:/Python
+  #PYTHON_HOME   = C:/Python
+  PYTHON_HOME   = Z:/Python
   PYSIDE_HOME   = $$PYTHON_HOME/Lib/site-packages/PySide
   QT_HOME       = c:/qt/4
   QT_SRC        = c:/qt
@@ -90,7 +92,7 @@ win32 {
 mac {
   MACPORTS_HOME = /opt/local
   BOOST_HOME    = $$MACPORTS_HOME
-  ITH_HOME      = ${HOME}/opt/ith
+  #ITH_HOME      = ${HOME}/opt/ith
   MSIME_HOME    = ${HOME}/opt/msime
   PYSIDE_HOME   = $$MACPORTS_HOME
   PYTHON_HOME   = $$MACPORTS_HOME/Library/Frameworks/Python.framework/Versions/Current
