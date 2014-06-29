@@ -372,7 +372,37 @@ initDescPills = -> # Descriptions
                .fadeIn()
                # Improvement
                .find('a:not([title])').each -> @setAttribute 'title', @href
+    false
 
+initCharaDescPills = -> # Descriptions
+  $sec = $ 'section.characters'
+  $container = $sec.find '.contents'
+
+  $sec.find('.nav.nav-pills > li > a').click ->
+    $li = $(@).parent 'li'
+    unless $li.hasClass 'active'
+      oldtype = $li.parent('ul').children('li.active')
+          .removeClass 'active'
+          .data 'type'
+      $li.addClass 'active'
+      newtype = $li.data 'type'
+      if oldtype
+        $container.children('.' + oldtype).hide()
+      if newtype
+        $el = $container.children('.' + newtype)
+        if $el.length
+          $el.fadeIn()
+        else
+          h = gameBean.getCharacterDescription newtype
+          el = document.createElement 'div'
+          el.className = newtype + ' character'
+          el.innerHTML = h
+          #$container.append el
+          $(el).hide()
+               .appendTo $container
+               .fadeIn()
+               # Improvement
+               .find('a:not([title])').each -> @setAttribute 'title', @href
     false
 
 initCGPills = -> # Sample images
@@ -485,6 +515,7 @@ initPills = ->
   initCGPills()
   #initCharaPills()
   initDescPills()
+  initCharaDescPills()
 
 ## Bootstrap ##
 

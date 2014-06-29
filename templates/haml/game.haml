@@ -18,19 +18,19 @@
   %head
     -for it in 'bootstrap3.css', 'font-awesome4.css', 'bootstrap.switch.css', 'dragdealer.css', 'game.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
-    -if game
-      -if game.getchu and (game.getchu.hasDescriptions() or game.getchu.review)
-        %link(rel="stylesheet",href="#{rc.cdn_url('getchu.css')}")
-      -if game.amazon and game.amazon.hasDescriptions()
-        %link(rel="stylesheet",href="#{rc.cdn_url('amazon.css')}")
-      -if game.digiket and (game.digiket.description or game.digiket.review)
-        %link(rel="stylesheet",href="#{rc.cdn_url('digiket.css')}")
-      -if game.dlsite and (game.dlsite.description or game.dlsite.review)
-        %link(rel="stylesheet",href="#{rc.cdn_url('dlsite.css')}")
-      -if game.dmm and (game.dmm.description or game.dmm.review)
-        %link(rel="stylesheet",href="#{rc.cdn_url('dmm.css')}")
-      -if game.gyutto and game.gyutto.review
-        %link(rel="stylesheet",href="#{rc.cdn_url('gyutto.css')}")
+    ;-if game
+    ;  -if game.getchu and (game.getchu.hasDescriptions() or game.characterDescription or game.getchu.review)
+    ;    %link(rel="stylesheet",href="#{rc.cdn_url('getchu.css')}")
+    ;  -if game.amazon and game.amazon.hasDescriptions()
+    ;    %link(rel="stylesheet",href="#{rc.cdn_url('amazon.css')}")
+    ;  -if game.digiket and (game.digiket.description or game.digiket.review)
+    ;    %link(rel="stylesheet",href="#{rc.cdn_url('digiket.css')}")
+    ;  -if game.dlsite and (game.dlsite.description or game.dlsite.review)
+    ;    %link(rel="stylesheet",href="#{rc.cdn_url('dlsite.css')}")
+    ;  -if game.dmm and (game.dmm.description or game.dmm.review)
+    ;    %link(rel="stylesheet",href="#{rc.cdn_url('dmm.css')}")
+    ;  -if game.gyutto and game.gyutto.review
+    ;    %link(rel="stylesheet",href="#{rc.cdn_url('gyutto.css')}")
 
     :css
       body {
@@ -127,7 +127,7 @@
               -if game.fileSize
                 .row.fileSie
                   %label.control-label.col-xs-2 #{tr('File size')}
-                  .form-control-static.col-xs-10 #{game.fileSizeInfo}
+                  .form-control-static.col-xs-10 #{game.fileSizeString}
               -if game.slogan
                 .row.slogan
                   %label.control-label.col-xs-2 #{tr('Slogan')}
@@ -329,6 +329,20 @@
                     %a #{tr('Hide')}
                   %li.divider
                   -for r in game.iterDescriptionReferences()
+                    %li(data-type="#{r.type}")
+                      %a #{i18n.site_name(r.type)}
+              .contents
+          -if game.hasCharacterDescriptions()
+            %hr
+            %section.characters
+              .title
+                .col-xs-2
+                  .title-content 人物
+                %ul.nav.nav-pills.nav-clean.nav-xs
+                  %li.active(data-type="")
+                    %a #{tr('Hide')}
+                  %li.divider
+                  -for r in game.iterCharacterDescriptionReferences()
                     %li(data-type="#{r.type}")
                       %a #{i18n.site_name(r.type)}
               .contents

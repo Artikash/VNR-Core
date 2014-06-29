@@ -16,6 +16,13 @@
 @import widgets/ruby
 @import widgets/toolbar
 
+@import sites/amazon
+@import sites/digiket
+@import sites/dlsite
+@import sites/dmm.css
+@import sites/getchu
+@import sites/gyutto
+
 //@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700)
 //*
 //  font-family: 'Source Sans Pro', sans-serif
@@ -32,13 +39,15 @@ a.search
 $yt-img-scale: 1.0
 
 // Game descriptions
-.description
+.description,
+.character
   margin: 9px
+  img
+    max-width: 95%
   &.amazon,
   &.getchu
     img
       @extend .img-shadow
-      xmax-width: 95%
 
 .game.portal
   //margin: 6px

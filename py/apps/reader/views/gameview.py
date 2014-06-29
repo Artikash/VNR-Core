@@ -76,6 +76,14 @@ class GameCoffeeBean(QObject):
           return ''.join(r.iterDescriptions())
     return ''
 
+  @Slot(unicode, result=unicode)
+  def getCharacterDescription(self, type): # return html for the reference type
+    if self.info:
+      for r in self.info.iterCharacterDescriptionReferences():
+        if r.type == type:
+          return r.renderCharacterDescription()
+    return ''
+
   #@Slot(result=unicode)
   #def getSampleImages(self): # return list of urls using ',' as sep
   #  if self.info and self.info.hasSampleImages():
