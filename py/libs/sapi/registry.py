@@ -9,6 +9,7 @@ if __name__ == '__main__': # debug
 from sakurakit import skstr
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint, dwarn
+from sakurakit.skunicode import u
 from windefs import windefs
 
 TTS_HKLM_PATH = r"SOFTWARE\Microsoft\Speech\Voices\Tokens"
@@ -63,17 +64,22 @@ def get():
                 gender = _winreg.QueryValueEx(attrkey, 'Gender')[0]
                 name = _winreg.QueryValueEx(attrkey, 'Name')[0]
                 vendor = _winreg.QueryValueEx(attrkey, 'Vendor')[0]
-                ret.append({
-                  'key': voicekeyname, #
-                  'clsid': clsid, # str
-                  'location': location, # str
-                  'age': age, # str
-                  'name': name,
-                  'vendor': vendor,
-                  'lcid': lcid, # long
-                  'language': _parselang(lcid), #
-                  'gender': _parsegender(gender), #
-                })
+                uk = u(voicekeyname) # convert to u8 using native encoding
+                if uk:
+                  ret.append({
+                    'key': uk,
+                    'clsid': clsid, # str
+                    'location': u(location), # unicode
+                    'age': age, # str
+                    #'name': u(name), # unicode
+                    'name': name, # use str instead
+                    'vendor': u(vendor), # unicode
+                    'lcid': lcid, # long
+                    'language': _parselang(lcid), #
+                    'gender': _parsegender(gender), #
+                  })
+                else:
+                  dwarn("failed to convert registry key to unicode: %s" % voicekeyname)
           except WindowsError, e:
             dwarn(e)
           except (ValueError, TypeError), e:  # failed to convert lcid to long
