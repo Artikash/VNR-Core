@@ -9,10 +9,13 @@ int main()
 {
   CoInitialize(nullptr);
 
-  cevio_t *service = cevioservice_create();
+  cevioservice_t *service = cevioservice_create();
+  Q_ASSERT(service);
+  qDebug() << service;
 
   ceviotts_t *tts = ceviotts_create();
   Q_ASSERT(tts);
+  qDebug() << tts;
 
   const char *text = "hello";
   //const wchar_t *text = L"hello";

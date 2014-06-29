@@ -1,9 +1,9 @@
-// Created by Microsoft (R) C/C++ Compiler Version 10.00.30319.01 (6b9415ac).
+// Created by Microsoft (R) C/C++ Compiler Version 10.00.30319.01 (f97952f2).
 //
-// c:\tmp\build-sakura-desktop-release\cpp\tests\ceviotest\release\CeVIO.Talk.RemoteService.tlh
+// c:\tmp\build-sakura-desktop-release\cpp\tests\ceviotest\release\cevio.talk.remoteservice.tlh
 //
-// C++ source equivalent of Win32 type library D3AEA482-B527-4818-8CEA-810AFFCB24B6
-// compiler-generated file created 06/29/14 at 01:11:37 - DO NOT EDIT!
+// C++ source equivalent of Win32 type library C:\Program Files\CeVIO\CeVIO Creative Studio\CeVIO.Talk.RemoteService.tlb
+// compiler-generated file created 06/29/14 at 03:20:57 - DO NOT EDIT!
 
 #pragma once
 #pragma pack(push, 8)
@@ -30,6 +30,9 @@ struct /* coclass */ StringArray;
 struct __declspec(uuid("50dea452-98d9-49b8-a103-13671bc43caf"))
 /* dual interface */ IPhonemeDataArray;
 struct /* coclass */ PhonemeDataArray;
+struct __declspec(uuid("8a791747-30bb-4b6a-bc91-bcc61dcdad85"))
+/* dual interface */ IServiceControl;
+struct /* coclass */ ServiceControl;
 struct __declspec(uuid("987319b8-6940-39c5-9d91-b33ac5ddbfab"))
 /* dual interface */ IPhonemeData;
 struct /* coclass */ PhonemeData;
@@ -47,6 +50,7 @@ struct /* coclass */ SpeakingState;
 _COM_SMARTPTR_TYPEDEF(ITalkerComponent, __uuidof(ITalkerComponent));
 _COM_SMARTPTR_TYPEDEF(ITalkerComponentArray, __uuidof(ITalkerComponentArray));
 _COM_SMARTPTR_TYPEDEF(IStringArray, __uuidof(IStringArray));
+_COM_SMARTPTR_TYPEDEF(IServiceControl, __uuidof(IServiceControl));
 _COM_SMARTPTR_TYPEDEF(IPhonemeData, __uuidof(IPhonemeData));
 _COM_SMARTPTR_TYPEDEF(IPhonemeDataArray, __uuidof(IPhonemeDataArray));
 _COM_SMARTPTR_TYPEDEF(ISpeakingState, __uuidof(ISpeakingState));
@@ -183,6 +187,44 @@ struct __declspec(uuid("42600733-2b77-43c9-9b91-536c00ea6d02"))
 PhonemeDataArray;
     // interface _Object
     // [ default ] interface IPhonemeDataArray
+
+struct __declspec(uuid("8a791747-30bb-4b6a-bc91-bcc61dcdad85"))
+IServiceControl : IDispatch
+{
+    //
+    // Property data
+    //
+
+    __declspec(property(get=GetIsHostStarted))
+    VARIANT_BOOL IsHostStarted;
+
+    //
+    // Wrapper methods for error-handling
+    //
+
+    VARIANT_BOOL GetIsHostStarted ( );
+    long StartHost (
+        VARIANT_BOOL noWait );
+    HRESULT CloseHost (
+        long mode );
+
+    //
+    // Raw methods provided by interface
+    //
+
+      virtual HRESULT __stdcall get_IsHostStarted (
+        /*[out,retval]*/ VARIANT_BOOL * pRetVal ) = 0;
+      virtual HRESULT __stdcall raw_StartHost (
+        /*[in]*/ VARIANT_BOOL noWait,
+        /*[out,retval]*/ long * pRetVal ) = 0;
+      virtual HRESULT __stdcall raw_CloseHost (
+        /*[in]*/ long mode ) = 0;
+};
+
+struct __declspec(uuid("c2dc23a5-a574-426e-9105-e6cfd0e1c69d"))
+ServiceControl;
+    // interface _Object
+    // [ default ] interface IServiceControl
 
 struct __declspec(uuid("987319b8-6940-39c5-9d91-b33ac5ddbfab"))
 IPhonemeData : IDispatch
@@ -419,6 +461,10 @@ extern "C" const GUID __declspec(selectany) CLSID_StringArray =
     {0x301bc7a9,0x6ce4,0x4979,{0xba,0x4b,0x3e,0x0b,0xee,0xe8,0x77,0xa2}};
 extern "C" const GUID __declspec(selectany) CLSID_PhonemeDataArray =
     {0x42600733,0x2b77,0x43c9,{0x9b,0x91,0x53,0x6c,0x00,0xea,0x6d,0x02}};
+extern "C" const GUID __declspec(selectany) IID_IServiceControl =
+    {0x8a791747,0x30bb,0x4b6a,{0xbc,0x91,0xbc,0xc6,0x1d,0xcd,0xad,0x85}};
+extern "C" const GUID __declspec(selectany) CLSID_ServiceControl =
+    {0xc2dc23a5,0xa574,0x426e,{0x91,0x05,0xe6,0xcf,0xd0,0xe1,0xc6,0x9d}};
 extern "C" const GUID __declspec(selectany) IID_IPhonemeData =
     {0x987319b8,0x6940,0x39c5,{0x9d,0x91,0xb3,0x3a,0xc5,0xdd,0xbf,0xab}};
 extern "C" const GUID __declspec(selectany) IID_IPhonemeDataArray =
@@ -438,6 +484,7 @@ extern "C" const GUID __declspec(selectany) CLSID_SpeakingState =
 // Wrapper method implementations
 //
 
+//#include "c:\tmp\build-sakura-desktop-release\cpp\tests\ceviotest\release\cevio.talk.remoteservice.tli"
 #include "cevio/CeVIO.Talk.RemoteService.tli"
 
 } // namespace CeVIO

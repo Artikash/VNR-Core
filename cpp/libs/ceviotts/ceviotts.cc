@@ -3,19 +3,19 @@
 // http://guide2.project-cevio.com/interface/com
 
 #include "ceviotts/ceviotts.h"
-#include "cevio/cevio.h"
+//#include "cevio/cevio.h"
 #include "cc/ccmacro.h"
 
+// For 2.2.5.1
 //#import "libid:D3AAEA482-B527-4818-8CEA-810AFFCB24B6" named_guids rename_namespace("CeVIO")
-//#import "C:\Program Files\CeVIO\CeVIO Creative Studio\CeVIO.Talk.RemoteService.tlb" named_guids rename_namespace("CeVIO")
+#import "C:\Program Files\CeVIO\CeVIO Creative Studio\CeVIO.Talk.RemoteService.tlb" named_guids rename_namespace("CeVIO")
 
-//#define CEVIO_SERVICE_CONTROL // TODO: missing service control
+#define CEVIO_SERVICE_CONTROL // TODO: missing service control
 
 // Service control
 
-cevioservice_t *cevioservice_create()
+cevioservice_t *cevioservice_create(bool launch)
 {
-#ifdef CEVIO_SERVICE_CONTROL
   CeVIO::IServiceControl *ret;
   HRESULT ok = ::CoCreateInstance(CeVIO::CLSID_ServiceControl,
     nullptr,
@@ -25,23 +25,17 @@ cevioservice_t *cevioservice_create()
   if (FAILED(ok))
     return nullptr;
 
-  ret->StartHost(false);
+  if (launch)
+    ret->StartHost(false);
   return ret;
-#else
-  return nullptr;
-#endif // CEVIO_SERVICE_CONTROL
 }
 
 void cevioservice_destroy(cevioservice_t *service)
 {
-#ifdef CEVIO_SERVICE_CONTROL
   if (CC_LIKELY(service)) {
       service->CloseHost(0);
     service->Release();
   }
-#else
-  CC_UNUSED(service);
-#endif // CEVIO_SERVICE_CONTROL
 }
 
 // Talker

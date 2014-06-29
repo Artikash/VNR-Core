@@ -27,7 +27,12 @@ typedef CeVIO::ISpeakingState ceviotask_t; // opaque handle
 
 // - Functions -
 
-cevioservice_t *cevioservice_create();
+/**
+ * Start the CeVIO service
+ * @param  launch  start CeVIO process if not exist
+ * @return  service handle
+ */
+cevioservice_t *cevioservice_create(bool launch = true);
 void cevioservice_destroy(cevioservice_t *service);
 
 ceviotts_t *ceviotts_create();
