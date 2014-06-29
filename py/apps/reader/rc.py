@@ -50,6 +50,7 @@ DIR_CACHE_AVATAR = DIR_USER_CACHE + '/avatars'  # $user/caches/avatars
 DIR_CACHE_WEB = DIR_USER_CACHE + '/webkit'      # $user/caches/webkit
 DIR_CACHE_AWS = DIR_USER_CACHE + '/amazon'      # $user/caches/amazon
 DIR_CACHE_DMM = DIR_USER_CACHE + '/dmm'         # $user/caches/dmm
+DIR_CACHE_TOKUTEN = DIR_USER_CACHE + '/tokuten' # $user/caches/tokuten
 DIR_CACHE_TRAILERS = DIR_USER_CACHE + '/trailers' # $user/caches/trailers
 DIR_CACHE_SCAPE = DIR_USER_CACHE + '/scape'     # $user/caches/scape
 DIR_CACHE_GETCHU = DIR_USER_CACHE + '/getchu'   # $user/caches/getchu

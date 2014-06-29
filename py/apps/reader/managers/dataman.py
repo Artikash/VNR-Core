@@ -242,9 +242,22 @@ class GameInfo(object):
           return TrailersItem(**kw)
 
   @memoizedproperty
+  def tokuten(self):
+    """Online
+    @return  TokutenItem
+    """
+    r = self.scape
+    if r:
+      key = r.tokuten
+      if key:
+        kw = refman.tokuten().query(key, async=self.async)
+        if kw:
+          return TokutenItem(**kw)
+
+  @memoizedproperty
   def scape(self):
     """Online
-    @return  kw or None
+    @return  ScapeReference
     """
     key = None
     type = 'scape'
@@ -264,7 +277,7 @@ class GameInfo(object):
   @memoizedproperty
   def getchu(self):
     """Online
-    @return  kw or None
+    @return  GetchuReference
     """
     key = None
     type = 'getchu'
@@ -406,11 +419,6 @@ class GameInfo(object):
     """
     g = self.gameItem
     return g.scapeMedian if g else 0
-
-  def _iterGetchuGyuttoDLsiteAmazonDmmDigiket(self):
-    for it in self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket:
-      if it:
-        yield it
 
   def _iterReferences(self):
     for it in self.trailers, self.scape, self.holyseal, self.digiket, self.getchu, self.gyutto, self.dlsite, self.dmm, self.amazon:
@@ -979,7 +987,7 @@ class GameInfo(object):
 
   @memoizedproperty
   def image(self): # str or None, amazon first as dmm has NOW PRINTING
-    for r in self._iterGetchuGyuttoDLsiteAmazonDmmDigiket():
+    for r in self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket:
       if r and r.image:
         return r.image
     return self.image0
@@ -1110,8 +1118,8 @@ class GameInfo(object):
     """
     @yield  Reference
     """
-    for r in self._iterGetchuGyuttoDLsiteAmazonDmmDigiket():
-      if r.hasSampleImages():
+    for r in self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket: #, self.tokuten:
+      if r and r.hasSampleImages():
         yield r
 
   def hasSampleImages(self): # bool
@@ -3085,6 +3093,22 @@ class HolysealReference(Reference): #(object):
 
     self.artists = artists # [unicode name]
     self.writers = writers # [unicode name]
+
+class TokutenItem: # erogame-tokuten webpage
+  type = 'tokuten'
+  def __init__(self, key="", url="", images=[], **kwargs):
+    self.key = key # str
+    self.url = url # str
+    self.images = images # [str]
+
+  def hasSampleImages(self): return bool(self.images)
+
+  def iterSampleImageUrls(self, cache=True):
+    """@reimp
+    @yield  str  url
+    """
+    for it in self.images:
+      return cacheman.cache_image_url(it) if cache else it
 
 class DmmPage: # DMM webpage
   def __init__(self, url="",

@@ -485,6 +485,17 @@ class _MainObject(object):
     return ret
 
   @memoizedproperty
+  def tokutenManager(self):
+    import refman
+    dprint("create tokuten manager")
+    ret = refman.tokuten()
+    ret.setParent(self.q)
+    nm = self.networkManager
+    ret.setOnline(nm.isOnline())
+    nm.onlineChanged.connect(ret.setOnline)
+    return ret
+
+  @memoizedproperty
   def termManager(self):
     dprint("create term manager")
     import termman
@@ -1343,6 +1354,7 @@ class MainObject(QObject):
     d.referenceManager
     d.trailersManager
     d.dmmManager
+    d.tokutenManager
     d.getchuManager
     d.gyuttoManager
     #d.holysealManager
