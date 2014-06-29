@@ -254,7 +254,7 @@ initCGSwitch = ->
            #  $container.masonry() # refresh after images are loaded
         $container.find('img').load ->
           # Saample bad DMM image: http://pics.dmm.com/mono/movie/n/now_printing/now_printing.jpg
-          if 'pics.dmm.' in @src and @naturalWidth is 90 and @naturalHeight is 122
+          if ~@src.indexOf('pics.dmm.') and @naturalWidth is 90 and @naturalHeight is 122
             #@parentNode.removeChild @ # remove this
             $container.masonry 'remove', @ # remove this
           else
