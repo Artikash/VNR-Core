@@ -89,6 +89,7 @@ class ItemApi(object):
       ret['keywords'] = list(self._iterparsetablelinks(u'キー', h))
 
       ret['description'] = self._parsedescription(h) # unicode or None
+      ret['characterDescription'] = self._parsecharadesc(h) # unicode or None
       ret['review'] = self._parsereview(h) # unicode or None
 
       #ret['characters'] = list(self._iterparsecharacters(h)) # [kw]
@@ -314,15 +315,29 @@ class ItemApi(object):
     """
     start = h.find(u"の説明</font></strong></div></td>")
     if start > 0:
-      h = h[start:]
-      stop = h.find(u"</font></div>")
+      stop = h.find(u"</font></div>", start)
       if stop > 0:
-        h = h[:stop].rstrip()
+        h = h[start:stop].rstrip()
         DIV = u'<font size="2">'
         i = h.find(DIV)
         if i > 0:
           h = h[i + len(DIV):].lstrip()
-          return h
+          return self._replacelinks(h)
+
+  def _parsecharadesc(self, h):
+    """
+    @param  h  unicode  html
+    @return  unicode or None
+    """
+    start = h.find(u"キャラクター紹介</strong></font></td>")
+    if start > 0:
+      TABLE = '<table width="800"'
+      start = h.find(TABLE, start)
+      if start > 0:
+        stop = h.find(TABLE, start + len(TABLE))
+        if stop > 0:
+          h = h[start:stop]
+          return self._replacelinks(h).replace('table width="800"', 'table') # remove table width
 
   def _parsereview(self, h):
     """
@@ -443,10 +458,10 @@ if __name__ == '__main__':
   k = 97794 # http://www.digiket.com/work/show/_data/ID=ITM0097794/
   k = 99455 # http://www.digiket.com/work/show/_data/ID=ITM0099455/
   k = 83422 # 女装海峡, http://www.digiket.com/work/show/_data/ID=ITM0083422/
-  k = 53791 # 女装山脈, http://www.digiket.com/work/show/_data/ID=ITM0053791/
   k = 99460 # 仮・想・侵・蝕, http://www.digiket.com/work/show/_data/ID=ITM0099460/
   k = 100413 # http://www.digiket.com/work/show/_data/ID=ITM0100413/
   k = 80219 # 屋根裏のラグーン, http://www.digiket.com/work/show/_data/ID=ITM0080219/
+  k = 53791 # 女装山脈, http://www.digiket.com/work/show/_data/ID=ITM0053791/
   #print '-' * 10
   q = api.query(k)
   #for k,v in q.iteritems():
@@ -457,9 +472,11 @@ if __name__ == '__main__':
   print q['brand']
   print q['keywords']
   print q['price']
+  print q['description']
+  print q['characterDescription']
 
-  for it in q['characters']:
-    for k,v in it.iteritems():
-      print k,':',v
-
+#  for it in q['characters']:
+#    for k,v in it.iteritems():
+#      print k,':',v
+#
 # EOF
