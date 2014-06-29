@@ -407,7 +407,7 @@ class GameInfo(object):
     g = self.gameItem
     return g.scapeMedian if g else 0
 
-  def _iterGetchuDLsiteAmazonDmmDigiket(self):
+  def _iterGetchuGyuttoDLsiteAmazonDmmDigiket(self):
     for it in self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket:
       if it:
         yield it
@@ -650,7 +650,8 @@ class GameInfo(object):
 
   @memoizedproperty
   def price(self): # long or None
-    try: return max(it.price for it in self._iterGetchuDLsiteAmazonDmmDigiket())
+    try: return max(it.price
+        for it in (self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket) if it)
     except ValueError: return 0
 
   @memoizedproperty
@@ -978,7 +979,7 @@ class GameInfo(object):
 
   @memoizedproperty
   def image(self): # str or None, amazon first as dmm has NOW PRINTING
-    for r in self._iterGetchuDLsiteAmazonDmmDigiket():
+    for r in self._iterGetchuGyuttoDLsiteAmazonDmmDigiket():
       if r and r.image:
         return r.image
     return self.image0
@@ -1011,6 +1012,7 @@ class GameInfo(object):
     img = self.image0
     return bool(img) and (
         'getchu.com' in img or
+        'gyutto.com' in img or
         'dlsite.jp' in img or
         'digiket.net' in img or
         self.otome0 and 'images-amazon.com' in img)
@@ -1106,7 +1108,7 @@ class GameInfo(object):
 
   #@property
   def hasSampleImages(self): # bool
-    for r in self._iterGetchuDLsiteAmazonDmmDigiket():
+    for r in self._iterGetchuGyuttoDLsiteAmazonDmmDigiket():
       if r.hasSampleImages():
         return True
     r = self.getchu
@@ -1121,11 +1123,18 @@ class GameInfo(object):
         yield it
 
     showdmm = True
+    showgyutto = True
     for r in self.getchu, : #self.gyutto: FIXME: gyutto image would crash webkit
       if r and r.hasSampleImages():
-        showdmm = False
+        showgyutto = showdmm = False
         for it in r.iterSampleImageUrls():
           yield it
+    if showgyutto:
+      for r in self.gyutto, : #self.gyutto: FIXME: gyutto image would crash webkit
+        if r and r.hasSampleImages():
+          showdmm = False
+          for it in r.iterSampleImageUrls():
+            yield it
     if showdmm: # do not display DMM CG if getchu exists
       r = self.dmm
       if r and r.hasSampleImages():
