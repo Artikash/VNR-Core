@@ -5,13 +5,15 @@
 import os, re
 from functools import partial
 from PySide.QtCore import QObject, QTimer
-from sakurakit import skfileio, sknetio, skthreads
+from sakurakit import skfileio, sknetio, skstr, skthreads
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint, dwarn
 import osutil, rc
 
 TMP_SUFFIX = '.tmp'
 BAD_SUFFIX = '.bad'
+
+IMAGE_SUFFICES = frozenset(('.jpg', '.jpeg', '.png', '.gif'))
 
 #def _avatarurl(token, size=128):
 def _avatarurl(token): # string -> string
@@ -235,27 +237,51 @@ class CacheManager(QObject):
   def cacheImagePath(self, url):
     return self.cachePath(url, image=True)
 
-  _rx_html_img = re.compile(r'''(?<=['"])(.+?(?:jpg|png))(?=['"])''', re.IGNORECASE)
-  def cacheHtmlText(self, text):
+  def cacheHtmlText(self, html):
     """
-    @param  text  unicode
+    @param  html  unicode
     @return  unicode
     """
-    def repl(m):
-      return self.cacheImageUrl(m.group(1))
-    if text:
-      text = self._rx_html_img.sub(repl, text)
-    return text
+    ret = skstr.replaceimgurls(skstr.replacelinks(
+        html, self._cacheHtmlImageUrl), self._cacheHtmlImageUrl)
+    return ret
+
+  def _cacheHtmlImageUrl(self, url):
+    """
+    @param  url  str
+    @return  str  url
+    """
+    return self.cacheImageUrl(url) if url.startswith('http') and self.isImageUrl(url) else url
+
+
+  def cacheAnyUrl(self, url):
+    """
+    @param  url  str
+    @return  str  url
+    """
+    return self.cacheImageUrl(url) if self.isImageUrl(url) else self.cacheUrl(url)
+
+  def isImageUrl(self, url):
+    """
+    @param  url  str
+    @return  bool
+    """
+    i = url.rfind('.')
+    if i != -1:
+      suf = url[i:].lower()
+      return suf in IMAGE_SUFFICES
+    return False
 
 @memoized
 def manager(): return CacheManager()
 
+def cache_any_url(url): return manager().cacheAnyUrl(url) # cache url
 def cache_url(url): return manager().cacheUrl(url) # cache url
 def cache_path(url): return manager().cachePath(url) # return cached path for url without caching it
 def cache_image_url(url): return manager().cacheImageUrl(url)
 def cache_image_path(url): return manager().cacheImagePath(url)
 
-def cache_html_text(text): return manager().cacheHtmlText(text)
+def cache_html(text): return manager().cacheHtmlText(text)
 
 class Cacher:
   @staticmethod
@@ -263,6 +289,6 @@ class Cacher:
   @staticmethod
   def image(url): return cache_image_url(url)
   @staticmethod
-  def html(text): return cache_html_text(text)
+  def html(text): return cache_html(text)
 
 # EOF
