@@ -2931,8 +2931,11 @@ class GetchuReference(Reference): #(object):
     t = self.characterDescription
     if t:
       t = self._rx_desc_title.sub('', t)
-      #t = self._rx_desc_size.sub('', t)
+      t = self._rx_desc_size.sub('', t)
       t = t.replace('_s.jpg', '.jpg')
+      t = t.replace('width="1%"', 'width="25%"') # <TD valign="middle" width="1%"> for img
+      t = t.replace('valign="middle"', 'valign="top"')
+      t = t.replace('vertical-align:middle', 'vertical-align:top')
     return t
 
 class DiGiketReference(Reference): #(object):
