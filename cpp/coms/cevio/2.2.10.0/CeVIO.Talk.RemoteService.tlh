@@ -485,7 +485,7 @@ extern "C" const GUID __declspec(selectany) CLSID_SpeakingState =
 //
 
 //#include "c:\tmp\build-sakura-desktop-release\cpp\tests\ceviotest\release\cevio.talk.remoteservice.tli"
-#include "cevio/CeVIO.Talk.RemoteService.tli"
+#include "CeVIO.Talk.RemoteService.tli"
 
 } // namespace CeVIO
 

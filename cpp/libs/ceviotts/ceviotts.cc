@@ -3,12 +3,12 @@
 // http://guide2.project-cevio.com/interface/com
 
 #include "ceviotts/ceviotts.h"
-//#include "cevio/cevio.h"
+#include "cevio/cevio.h"
 #include "cc/ccmacro.h"
 
 // For 2.2.5.1
 //#import "libid:D3AAEA482-B527-4818-8CEA-810AFFCB24B6" named_guids rename_namespace("CeVIO")
-#import "C:\Program Files\CeVIO\CeVIO Creative Studio\CeVIO.Talk.RemoteService.tlb" named_guids rename_namespace("CeVIO")
+//#import "C:\Program Files\CeVIO\CeVIO Creative Studio\CeVIO.Talk.RemoteService.tlb" named_guids rename_namespace("CeVIO")
 
 #define CEVIO_SERVICE_CONTROL // TODO: missing service control
 
@@ -52,12 +52,7 @@ ceviotts_t *ceviotts_create()
 }
 
 void ceviotts_destroy(ceviotts_t *talker)
-{
-  talker->Release();
-
-  //pServiceControl->CloseHost(0);
-  //pServiceControl->Release();
-}
+{ talker->Release(); }
 
 ceviotask_t *ceviotts_speak(ceviotts_t *talker, const char *text)
 { return talker->Speak(text); }

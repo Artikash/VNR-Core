@@ -220,17 +220,6 @@ class GameInfo(object):
           return DmmReference(**kw)
 
   @memoizedproperty
-  def dmmItem(self):
-    """Online
-    @return  {kw} or None
-    """
-    for it in self.referenceData:
-      if it.type == 'dmm':
-        kw = refman.dmm().query(it.url, async=self.async)
-        if kw:
-          return DmmItem(**kw)
-
-  @memoizedproperty
   def trailers(self):
     """Online
     @return  TrailersReference or None
@@ -583,7 +572,7 @@ class GameInfo(object):
        url = ('http://gyutto.me/i/item%s' if self.otome else 'http://gyutto.com/i/item%s') % self.gyutto.key
        yield url, 'gyutto'
 
-    for r in self.digiket, self.dlsite, self.dmm, self.amazon, self.trailers:
+    for r in self.amazon, self.digiket, self.dlsite, self.dmm, self.trailers:
       if r:
         yield r.url, r.type
 
@@ -846,7 +835,7 @@ class GameInfo(object):
     """
     @yield  Reference
     """
-    for r in self.getchu, self.digiket, self.amazon:
+    for r in self.getchu, self.amazon, self.digiket, self.dlsite, self.dmm:
       if r and r.hasDescriptions():
         yield r
 
@@ -2782,6 +2771,11 @@ class DLsiteReference(Reference): #(object):
       it = proxy.get_dlsite_url(it)
       yield cacheman.cache_image_url(it) if cache else it
 
+  def hasDescriptions(self): return bool(self.description)
+  def iterDescriptions(self):
+    if self.description:
+      yield self.description
+
 class GetchuReference(Reference): #(object):
   def __init__(self, parent=None,
       type='getchu',
@@ -3074,7 +3068,7 @@ class HolysealReference(Reference): #(object):
     self.artists = artists # [unicode name]
     self.writers = writers # [unicode name]
 
-class DmmItem: #(object):
+class DmmPage: # DMM webpage
   def __init__(self, url="",
       description="", review="",
       **kwargs):
@@ -3103,6 +3097,34 @@ class DmmReference(Reference):
     self.mediumImage = mediumImage # str url
     self.smallImage = smallImage # str url
     self.sampleImages = sampleImages # [str url] not None
+
+  @memoizedproperty
+  def page(self):
+    """Online
+    @return  {kw} or None
+    """
+    kw = refman.dmm().query(self.url)
+    if kw:
+      return DmmPage(**kw)
+
+  @property
+  def review(self):
+    page = self.page
+    return page.review if page else ''
+
+  @property
+  def description(self): # -> str
+    page = self.page
+    return page.description if page else ''
+
+  def hasDescriptions(self): # -> bool
+    page = self.page
+    return bool(page and page.description)
+
+  def iterDescriptions(self): # yield unicode
+    page = self.page
+    if page and page.description:
+      yield page.description
 
   @memoized
   def hasSampleImages(self):

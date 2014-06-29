@@ -7,6 +7,6 @@
 // - .NET: http://guide2.project-cevio.com/interface/dotnet
 
 // Generated from CeVIO.Talk.RemoteService.tlb
-#include "cevio/CeVIO.Talk.RemoteService.tlh"
+#include "CeVIO.Talk.RemoteService.tlh"
 
 // EOF

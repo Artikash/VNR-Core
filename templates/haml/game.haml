@@ -21,16 +21,16 @@
     -if game
       -if game.getchu and (game.getchu.hasDescriptions() or game.getchu.review)
         %link(rel="stylesheet",href="#{rc.cdn_url('getchu.css')}")
-      -if game.digiket and (game.digiket.hasDescriptions() or game.digiket.review)
-        %link(rel="stylesheet",href="#{rc.cdn_url('digiket.css')}")
       -if game.amazon and game.amazon.hasDescriptions()
         %link(rel="stylesheet",href="#{rc.cdn_url('amazon.css')}")
+      -if game.digiket and (game.digiket.description or game.digiket.review)
+        %link(rel="stylesheet",href="#{rc.cdn_url('digiket.css')}")
+      -if game.dlsite and (game.dlsite.description or game.dlsite.review)
+        %link(rel="stylesheet",href="#{rc.cdn_url('dlsite.css')}")
+      -if game.dmm and (game.dmm.description or game.dmm.review)
+        %link(rel="stylesheet",href="#{rc.cdn_url('dmm.css')}")
       -if game.gyutto and game.gyutto.review
         %link(rel="stylesheet",href="#{rc.cdn_url('gyutto.css')}")
-      -if game.dlsite and game.dlsite.review
-        %link(rel="stylesheet",href="#{rc.cdn_url('dlsite.css')}")
-      -if game.dmmItem and game.dmmItem.review
-        %link(rel="stylesheet",href="#{rc.cdn_url('dmm.css')}")
 
     :css
       body {
