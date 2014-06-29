@@ -4,6 +4,7 @@
 
 #dprint = -> console.log.apply console, arguments
 dprint = ->
+timer = -> new choco.Timer arguments ...
 
 #bind = ->
 #  #$('[title]').tooltip() # use bootstrap tooltip
@@ -405,6 +406,26 @@ initCharaDescPills = -> # Descriptions
                .find('a:not([title])').each -> @setAttribute 'title', @href
     false
 
+class MasonryAniPauser
+  constructor: (@$container, @paused=false) ->
+    @timer = timer 600, @pause # larger than 400
+
+  pause: =>
+    unless @paused
+      @paused = true
+      @$container.masonry
+        isAnimated: false # disable animation
+        transitionDuration: 0 # set to 0 to disable animation
+    @timer.start()
+
+  resume: =>
+    @timer.stop()
+    if @paused
+      @paused = false
+      @$container.masonry
+        isAnimated: true # default = true, enable animation
+        transitionDuration: 400 # default = 400, set to 0 to disable animation
+
 initCGPills = -> # Sample images
   $sec = $ 'section.cg'
   $container = $sec.find '.contents'
@@ -431,6 +452,7 @@ initCGPills = -> # Sample images
           el.innerHTML = h
           #$container.append el
           (($div) ->
+            pauser = null
             $div.hide()
                 .appendTo $container
                 .fadeIn()
@@ -443,6 +465,8 @@ initCGPills = -> # Sample images
                 .find('img').load ->
                   # Sample bad DMM image: http://pics.dmm.com/mono/movie/n/now_printing/now_printing.jpg
                   if ~@src.indexOf('pics.dmm.') and @naturalWidth is 90 and @naturalHeight is 122
+                    pauser = new MasonryAniPauser $div unless pauser?
+                    pauser.pause()
                     #@parentNode.removeChild @ # remove this
                     $div.masonry 'remove', @ # remove this
                   else
