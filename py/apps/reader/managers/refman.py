@@ -28,6 +28,9 @@ def trailers(): return TrailersManager()
 @memoized
 def dmm(): return DmmManager()
 
+@memoized
+def tokuten(): return TokutenManager()
+
 #@memoized
 #def holyseal(): return HolysealManager()
 
@@ -1681,6 +1684,63 @@ class DmmManager:
     return skthreads.runsync(partial(
         self.__d.api.query, url),
         parent=self.parent) if async else self.__d.api.query(url)
+
+  #def cache(self, url, async=True):
+  #  """
+  #  @param  id  int or str  Getchu soft ID
+  #  """
+  #  skthreads.runasync(partial(
+  #      self.__d.api.cache, id),
+  #      parent=self.parent) if async else self.__d.api.cache(id)
+
+# Erogame Tokuten
+
+class _TokutenManager(object):
+
+  def __init__(self):
+    self.online = True
+
+  @memoizedproperty
+  def api(self): # Always caching
+    from erogametokuten.caching import CachingTitleApi
+    return CachingTitleApi(rc.DIR_CACHE_TOKUTEN,
+        expiretime=config.REF_EXPIRE_TIME,
+        online=self.online)
+
+  def query(self, key):
+    kw = self.api.query(key)
+    if kw:
+      kw['key'] = kw.pop('id')
+    return kw
+
+class TokutenManager:
+
+  def __init__(self, parent=None):
+    """
+    @param  parent  QObject
+    """
+    self.__d = _TokutenManager()
+    self.parent = parent
+
+  def setParent(self, v): self.parent = v
+
+  def isOnline(self): return self.__d.online
+  def setOnline(self, v):
+    d = self.__d
+    if d.online != v:
+      d.online = v
+      if hasmemoizedproperty(d, 'api'):
+        d.api.online = v
+
+  #@memoized # cached
+  def query(self, key, async=True):
+    """
+    @param  key  long or str
+    @return  {kw}
+    """
+    return skthreads.runsync(partial(
+        self.__d.query, key),
+        parent=self.parent) if async else self.__d.query(key)
 
   #def cache(self, url, async=True):
   #  """

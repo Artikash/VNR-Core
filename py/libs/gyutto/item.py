@@ -285,6 +285,7 @@ if __name__ == '__main__':
   k = 58699 # 英雄伝説 空の軌跡SC, http://gyutto.jp/i/item58699
   k = 108434
   k = 2722
+  k = 45242
 
   print '-' * 10
   q = api.query(k)
@@ -299,5 +300,6 @@ if __name__ == '__main__':
   #print q['videos']
   print q['brand']
   print q['date']
+  print q['sampleImages']
 
 # EOF

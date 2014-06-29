@@ -194,6 +194,7 @@ def main():
     rc.DIR_CACHE_DATA,
     rc.DIR_CACHE_IMAGE,
     rc.DIR_CACHE_DMM,
+    rc.DIR_CACHE_TOKUTEN,
     rc.DIR_CACHE_GETCHU,
     rc.DIR_CACHE_GYUTTO,
     rc.DIR_CACHE_DIGIKET,
