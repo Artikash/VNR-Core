@@ -860,7 +860,7 @@ class GameInfo(object):
     """
     @yield  Reference
     """
-    for r in self.getchu,:
+    for r in self.getchu, self.digiket:
       if r and r.characterDescription:
         yield r
 
@@ -2948,7 +2948,7 @@ class DiGiketReference(Reference): #(object):
       filesize=0,
       anime=False,
       characters=[],
-      description='', review='', event='',
+      description='', characterDescription='', review='', event='',
       screenshots=[], ev='',
       artists=[], writers=[], musicians=[],
       **kwargs):
@@ -2960,6 +2960,7 @@ class DiGiketReference(Reference): #(object):
     self.characters = characters    # [kw]
     self.slogan = genre or '' # str
     self.description = description # unicode
+    self.characterDescription = characterDescription # unicode
     self.review = review # unicode
     self.fileSize = filesize # int
     self.event = event # unicode
@@ -3002,6 +3003,8 @@ class DiGiketReference(Reference): #(object):
     """
     if self.description:
       yield self.description
+
+  def renderCharacterDescription(self): return self.characterDescription
 
 class AmazonReference(Reference):
   def __init__(self, parent=None,

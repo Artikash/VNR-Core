@@ -27,6 +27,9 @@
 //*
 //  font-family: 'Source Sans Pro', sans-serif
 
+//.img-rounded // the same as bootstrap
+//  border-radius: 6px
+
 .bootstrap-switch // bootstrap-switch bug
   max-height: 30px // for min size
   margin-top: -5px
@@ -44,10 +47,9 @@ $yt-img-scale: 1.0
   margin: 9px
   img
     max-width: 95%
-  &.amazon,
-  &.getchu
-    img
-      @extend .img-shadow
+  a > img
+    @extend .img-shadow
+    //@extend .img-rounded
 
 .game.portal
   //margin: 6px
