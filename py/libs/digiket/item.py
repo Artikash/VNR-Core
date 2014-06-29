@@ -91,7 +91,8 @@ class ItemApi(object):
       ret['description'] = self._parsedescription(h) # unicode or None
       ret['review'] = self._parsereview(h) # unicode or None
 
-      ret['characters'] = list(self._iterparsecharacters(h)) # [kw]
+      #ret['characters'] = list(self._iterparsecharacters(h)) # [kw]
+      ret['characters'] = [] # disabled
 
       for it in list(self._iterparsetablelinks(u'イベント', h)):
         ret['event'] = it

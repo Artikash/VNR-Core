@@ -143,12 +143,12 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   metro.css: $PWD/rb/compass/web/css/metro.min.css
   #iframe.css: $PWD/rb/compass/web/css/iframe.min.css
 
-  amazon.css: $PWD/rb/compass/web/css/sites/amazon.min.css
-  getchu.css: $PWD/rb/compass/web/css/sites/getchu.min.css
-  gyutto.css: $PWD/rb/compass/web/css/sites/gyutto.min.css
-  digiket.css: $PWD/rb/compass/web/css/sites/digiket.min.css
-  dlsite.css: $PWD/rb/compass/web/css/sites/dlsite.min.css
-  dmm.css: $PWD/rb/compass/web/css/sites/dmm.min.css
+  #amazon.css: $PWD/rb/compass/web/css/sites/amazon.min.css
+  #getchu.css: $PWD/rb/compass/web/css/sites/getchu.min.css
+  #gyutto.css: $PWD/rb/compass/web/css/sites/gyutto.min.css
+  #digiket.css: $PWD/rb/compass/web/css/sites/digiket.min.css
+  #dlsite.css: $PWD/rb/compass/web/css/sites/dlsite.min.css
+  #dmm.css: $PWD/rb/compass/web/css/sites/dmm.min.css
 
   # Browser
   inject: $PWD/coffee/browser/inject.min.js

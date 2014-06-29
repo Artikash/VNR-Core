@@ -132,13 +132,17 @@ class SoftApi(object):
           'otome': u"乙女ゲー" in categories, # bool
           'price': price,                     # int
           'date': self._parsedate(h),         # str or None, such as 2013/10/25
-          'characters': list(self._iterparsecharacters(h)) or list(self._iterparsecharacters2(h)), # [kw]
           #'imageCount': self._parseimagecount(h),
           'sampleImages': list(self._iterparsesampleimages(h)), # [kw]
-          'descriptions': list(self._iterparsedescriptions(h)), # [kw]
+          'descriptions': list(self._iterparsedescriptions(h)), # [unicode]
+          'characterDescription': self._parsecharadesc(h), # unicode
           #'comics': list(self._iterparsecomics(h)),   # [kw]
           'banners': list(self._iterparsebanners(h)), # [kw]
           'videos': uniquelist(self._iterparsevideos(h)),   # [kw]
+
+          # Disabled
+          #'characters': list(self._iterparsecharacters(h)) or list(self._iterparsecharacters2(h)), # [kw]
+          'characters': [],
         }
 
   def _fixtitle(self, t):
@@ -394,10 +398,10 @@ class SoftApi(object):
   #            m.group())))
 
   _rx_desc = __maketablesrx((
-    u"商品紹介",
-    u"ストーリー",
-    u"美少女ゲーム大賞",
-    #r"Getchu\.com",
+    u"商品紹介", u"ストーリー",
+    u"美少女ゲーム大賞", #r"Getchu\.com",
+    #u"げっちゅ屋特典", u"キャンペーン", u"応援バナー",
+    #u"キャラクター",
   ))
   def _iterparsedescriptions(self, h):
     """
@@ -409,6 +413,22 @@ class SoftApi(object):
           self._removescripts(
             self._replacelinks(
               m.group())))
+
+  def _parsecharadesc(self, h):
+    """
+    @param  h  unicode  html
+    @return  unicode
+    """
+    START = u'<div class="tabletitle">&nbsp;キャラクター</div>'
+    STOP = u'<a name="sample" id="sample">'
+    start = h.find(START)
+    if start > 0:
+      stop = h.find(STOP)
+      if stop > start:
+        return unescapehtml(
+            self._removescripts(
+              self._replacelinks(
+                h[start:stop])))
 
   _rx_comics = __maketablesrx((
     u"コミックス",
@@ -594,13 +614,17 @@ if __name__ == '__main__':
   k = 771638 # 相州戦神館學園 八命陣
   k = 789990 # 女王蜂の王房 めのう編
   k = 774400
-  k = 718587 # レミニセンス
   k = 804521
+  k = 718587 # レミニセンス
   print '-' * 10
   q = api.query(k)
-  for it in q['characters']:
-    for k,v in it.iteritems():
-      print k,':',v
+  #for it in q['characters']:
+  #  for k,v in it.iteritems():
+  #    print k,':',v
+
+  #for it in q['descriptions']:
+  #  print it
+  print q['characterDescription']
 
   #print q['price']
   #print q['otome']

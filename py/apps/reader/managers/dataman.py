@@ -597,7 +597,7 @@ class GameInfo(object):
     except ValueError: return 0
 
   @memoizedproperty
-  def fileSizeInfo(self): # -> str
+  def fileSizeString(self): # -> str
     size = self.fileSize
     if not size:
       return '0 B'
@@ -853,6 +853,22 @@ class GameInfo(object):
     @return  bool
     """
     for r in self.iterDescriptionReferences():
+      return True
+    return False
+
+  def iterCharacterDescriptionReferences(self):
+    """
+    @yield  Reference
+    """
+    for r in self.getchu,:
+      if r and r.characterDescription:
+        yield r
+
+  def hasCharacterDescriptions(self):
+    """
+    @return  bool
+    """
+    for r in self.iterCharacterDescriptionReferences():
       return True
     return False
 
@@ -1409,9 +1425,9 @@ class _GameObject(object):
 
   # Need file size 0
   #@memoizedproperty
-  #def fileSizeInfo(self): # str
+  #def fileSizeString(self): # str
   #  info = self.info
-  #  return info.fileSizeInfo if info and info.fileSize else ''
+  #  return info.fileSizeString if info and info.fileSize else ''
 
   @memoizedproperty
   def tags(self): # unicode or None
@@ -1526,10 +1542,10 @@ class GameObject(QObject):
     lambda self: self.__d.tags,
     notify=tagsChanged)
 
-  #fileSizeInfoChanged = Signal(unicode)
-  #fileSizeInfo = Property(unicode,
-  #  lambda self: self.__d.fileSizeInfo,
-  #  notify=fileSizeInfoChanged)
+  #fileSizeStringChanged = Signal(unicode)
+  #fileSizeString = Property(unicode,
+  #  lambda self: self.__d.fileSizeString,
+  #  notify=fileSizeStringChanged)
 
   dateChanged = Signal(long)
   date = Property(long,
@@ -2808,7 +2824,7 @@ class GetchuReference(Reference): #(object):
       #writers[], artists=[], sdartists=[], musicians=[],
       otome=False, genre='', categories=[], subgenres=[],
       characters=[],
-      descriptions=[],
+      descriptions=[], characterDescription='',
       videos=[],
       sampleImages=[], comics=[], banners=[],
       writers=[], artists=[], sdartists=[], musicians=[],
@@ -2831,6 +2847,8 @@ class GetchuReference(Reference): #(object):
     self.sdartists = sdartists # [unicode name]
     self.writers = writers # [unicode name]
     self.musicians = musicians # [unicode name]
+
+    self.characterDescription = characterDescription # unicode
 
   def iterVideoIdsWithImage(self, cache=True):
     """
@@ -2906,6 +2924,15 @@ class GetchuReference(Reference): #(object):
     t = cls._rx_desc_title.sub(ur'<div class="tabletitle">【\1】</div>', t)
     t = cls._rx_desc_size.sub('', t)
     t = t.replace('_s.jpg', '.jpg')
+    return t
+
+
+  def renderCharacterDescription(self): # -> unicode
+    t = self.characterDescription
+    if t:
+      t = self._rx_desc_title.sub('', t)
+      #t = self._rx_desc_size.sub('', t)
+      t = t.replace('_s.jpg', '.jpg')
     return t
 
 class DiGiketReference(Reference): #(object):
