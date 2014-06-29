@@ -59,7 +59,7 @@ def get():
               with _winreg.OpenKey(voicekey, 'Attributes') as attrkey:
                 # ja: "411", en_US: "409:9"
                 language = _winreg.QueryValueEx(attrkey, 'Language')[0]
-                lcid = long(language.split(';', 1)[0], 16)
+                lcid = long(language.split(';', 1)[0], 16) # such as '411;9' where 411 => 0x411
                 age = _winreg.QueryValueEx(attrkey, 'Age')[0]
                 gender = _winreg.QueryValueEx(attrkey, 'Gender')[0]
                 name = _winreg.QueryValueEx(attrkey, 'Name')[0]

@@ -6,48 +6,92 @@
 #include "cevio/cevio.h"
 #include "cc/ccmacro.h"
 
-//#import "libid:D3AEA482-B527-4818-8CEA-810AFFCB24B6" named_guids rename_namespace("CeVIO")
+//#import "libid:D3AAEA482-B527-4818-8CEA-810AFFCB24B6" named_guids rename_namespace("CeVIO")
+//#import "C:\Program Files\CeVIO\CeVIO Creative Studio\CeVIO.Talk.RemoteService.tlb" named_guids rename_namespace("CeVIO")
+
+//#define CEVIO_SERVICE_CONTROL // TODO: missing service control
+
+// Service control
+
+cevioservice_t *cevioservice_create()
+{
+#ifdef CEVIO_SERVICE_CONTROL
+  CeVIO::IServiceControl *ret;
+  HRESULT ok = ::CoCreateInstance(CeVIO::CLSID_ServiceControl,
+    nullptr,
+    CLSCTX_INPROC_SERVER,
+    CeVIO::IID_IServiceControl,
+    reinterpret_cast<LPVOID *>(&ret));
+  if (FAILED(ok))
+    return nullptr;
+
+  ret->StartHost(false);
+  return ret;
+#else
+  return nullptr;
+#endif // CEVIO_SERVICE_CONTROL
+}
+
+void cevioservice_destroy(cevioservice_t *service)
+{
+#ifdef CEVIO_SERVICE_CONTROL
+  if (CC_LIKELY(service)) {
+      service->CloseHost(0);
+    service->Release();
+  }
+#else
+  CC_UNUSED(service);
+#endif // CEVIO_SERVICE_CONTROL
+}
+
+// Talker
 
 ceviotts_t *ceviotts_create()
 {
   CeVIO::ITalker *ret = nullptr;
-  ::CoCreateInstance(CeVIO::CLSID_ITalker, nullptr, CLSCTX_INPROC_SERVER, CeVIO::IID_ITalker,
-                     reinterpret_cast<LPVOID *>(&ret));
-  return ret;
+  HRESULT ok = ::CoCreateInstance(CeVIO::CLSID_Talker,
+      nullptr,
+      CLSCTX_INPROC_SERVER,
+      CeVIO::IID_ITalker,
+      reinterpret_cast<LPVOID *>(&ret));
+  return SUCCEEDED(ok) ? ret : nullptr;
 }
 
 void ceviotts_destroy(ceviotts_t *talker)
 {
-  // FIXME: voice's token is not destroyed?
-  if (CC_LIKELY(talker))
-    talker->Release();
+  talker->Release();
+
+  //pServiceControl->CloseHost(0);
+  //pServiceControl->Release();
 }
 
-bool ceviotts_speak(ceviotts_t *talker, const wchar_t *sentence, unsigned long flags)
-{
-  //return talker && SUCCEEDED(voice->Speak(sentence, flags, nullptr));
-  return false;
-}
+ceviotask_t *ceviotts_speak(ceviotts_t *talker, const char *text)
+{ return talker->Speak(text); }
+
+bool ceviotask_wait(ceviotask_t *state)
+{ return SUCCEEDED(state->Wait()); }
+
+bool ceviotask_wait(ceviotask_t *state, double seconds)
+{ return SUCCEEDED(state->Wait_2(seconds)); }
+
+// Properties
+
+void ceviotts_set_cast(ceviotts_t *talker, const char *value)
+{ talker->Cast = value; }
+
+void ceviotts_set_volume(ceviotts_t *talker, long value)
+{ talker->Volume = value; }
+
+void ceviotts_set_speed(ceviotts_t *talker, long value)
+{ talker->Speed = value; }
+
+void ceviotts_set_tone(ceviotts_t *talker, long value)
+{ talker->Tone = value; }
+
+void ceviotts_set_alpha(ceviotts_t *talker, long value)
+{ talker->Alpha = value; }
 
 // EOF
-
-//bool wintts_set_voice(wintts_t *voice, const wchar_t *reg)
-//{
-//  if (CC_UNLIKELY(!voice || !reg))
-//    return false;
-//
-//  enum { fCreateIfNotExist = FALSE };
-//  ISpObjectToken *token;
-//  if (SUCCEEDED(::CoCreateInstance(CLSID_SpObjectToken, nullptr, CLSCTX_ALL, IID_ISpObjectToken,
-//          reinterpret_cast<LPVOID *>(&token)))) {
-//    if (SUCCEEDED(token->SetId(nullptr, reg, fCreateIfNotExist))) {
-//      voice->SetVoice(token);
-//      return true;
-//    }
-//    token->Release();
-//  }
-//  return false;
-//}
 
 /*
 // タイプライブラリインポート

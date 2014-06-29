@@ -39,7 +39,7 @@ bool wintts_set_voice(wintts_t *voice, const wchar_t *reg)
   return false;
 }
 
-bool wintts_speak(wintts_t *voice, const wchar_t *sentence, unsigned long flags)
-{ return voice && SUCCEEDED(voice->Speak(sentence, flags, nullptr)); }
+bool wintts_speak(wintts_t *voice, const wchar_t *text, unsigned long flags)
+{ return voice && SUCCEEDED(voice->Speak(text, flags, nullptr)); }
 
 // EOF
