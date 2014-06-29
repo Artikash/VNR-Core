@@ -305,26 +305,19 @@
               .title
                 .col-xs-2
                   .title-content #{tr('Images')}
-                .switch-group
-                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
-              .images
+                %ul.nav.nav-pills.nav-clean.nav-xs
+                  %li.active(data-type="")
+                    %a #{tr('Hide')}
+                  %li.divider
+                  -for r in game.iterSampleImageReferences()
+                    %li(data-type="#{r.type}")
+                      %a #{i18n.site_name(r.type)}
+                ;.switch-group
+                ;  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+              .contents
                 ;-for i,it in py.enumerate(game.iterSampleImageUrls())
                 ;  %a(href="#{it}",title="CG #{'#'}#{i+1}")
                 ;    %img.img-rounded(src="#{it}")
-          ;-if game.hasCharacters()
-          ;  %hr
-          ;  %section.characters
-          ;    .title
-          ;      .col-xs-2
-          ;        .title-content 人物
-          ;      %ul.nav.nav-pills.nav-clean.nav-xs
-          ;        %li.active(data-type="")
-          ;          %a #{tr('Hide')}
-          ;        %li.divider
-          ;        -for r in game.iterCharacterReferences()
-          ;          %li(data-type="#{r.type}")
-          ;            %a #{i18n.site_name(r.type)}
-          ;    .contents
           -if game.hasDescriptions()
             %hr
             %section.descriptions
