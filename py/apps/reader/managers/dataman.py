@@ -1106,52 +1106,59 @@ class GameInfo(object):
     ret = ret.replace(u',アドベンチャー', '')
     return ret
 
-  #@property
-  def hasSampleImages(self): # bool
+  def iterSampleImageReferences(self):
+    """
+    @yield  Reference
+    """
     for r in self._iterGetchuGyuttoDLsiteAmazonDmmDigiket():
       if r.hasSampleImages():
-        return True
-    r = self.getchu
-    if r and r.hasBannerImages():
+        yield r
+
+  def hasSampleImages(self): # bool
+    for r in self.iterSampleImageReferences():
       return True
     return False
+    #r = self.getchu
+    #if r and r.hasBannerImages():
+    #  return True
+    #return False
 
-  def iterSampleImageUrls(self): # yield str
-    r = self.digiket # show digiket first as it has summary
-    if r and r.hasSampleImages():
-      for it in r.iterSampleImageUrls():
-        yield it
+  #def iterSampleImageUrls(self): # yield str
+  #  r = self.digiket # show digiket first as it has summary
+  #  if r and r.hasSampleImages():
+  #    for it in r.iterSampleImageUrls():
+  #      yield it
 
-    showdmm = True
-    showgyutto = True
-    for r in self.getchu, : #self.gyutto: FIXME: gyutto image would crash webkit
-      if r and r.hasSampleImages():
-        showgyutto = showdmm = False
-        for it in r.iterSampleImageUrls():
-          yield it
-    if showgyutto:
-      for r in self.gyutto, : #self.gyutto: FIXME: gyutto image would crash webkit
-        if r and r.hasSampleImages():
-          showdmm = False
-          for it in r.iterSampleImageUrls():
-            yield it
-    if showdmm: # do not display DMM CG if getchu exists
-      r = self.dmm
-      if r and r.hasSampleImages():
-        for it in r.iterSampleImageUrls():
-          yield it
-    r = self.dlsite
-    if r and r.hasSampleImages():
-      for it in r.iterSampleImageUrls():
-        yield it
-    r = self.amazon # always display amazon CG if exists
-    if r and r.hasSampleImages():
-      for it in r.iterSampleImageUrls():
-        yield it
-    r = self.getchu # show gechu banner as sample images
-    if r and r.hasBannerImages():
-      for it in r.iterBannerImageUrls():
-        yield it
+  #  showdmm = True
+  #  showgyutto = True
+  #  for r in self.getchu, : #self.gyutto: FIXME: gyutto image would crash webkit
+  #    if r and r.hasSampleImages():
+  #      showgyutto = showdmm = False
+  #      for it in r.iterSampleImageUrls():
+  #        yield it
+  #  if showgyutto:
+  #    for r in self.gyutto, : #self.gyutto: FIXME: gyutto image would crash webkit
+  #      if r and r.hasSampleImages():
+  #        showdmm = False
+  #        for it in r.iterSampleImageUrls():
+  #          yield it
+  #  if showdmm: # do not display DMM CG if getchu exists
+  #    r = self.dmm
+  #    if r and r.hasSampleImages():
+  #      for it in r.iterSampleImageUrls():
+  #        yield it
+  #  r = self.dlsite
+  #  if r and r.hasSampleImages():
+  #    for it in r.iterSampleImageUrls():
+  #      yield it
+  #  r = self.amazon # always display amazon CG if exists
+  #  if r and r.hasSampleImages():
+  #    for it in r.iterSampleImageUrls():
+  #      yield it
+  #  r = self.getchu # show gechu banner as sample images
+  #  if r and r.hasBannerImages():
+  #    for it in r.iterBannerImageUrls():
+  #      yield it
 
   @memoizedproperty
   def visitCount(self):
@@ -2855,16 +2862,18 @@ class GetchuReference(Reference): #(object):
     h = refman.getchu().queryReview(self.key)
     return skstr.unescapehtml(h) if h else ''
 
-  def hasSampleImages(self): return bool(self.sampleImages)
+  def hasSampleImages(self): return bool(self.sampleImages or self.bannerImages)
 
   def iterSampleImageUrls(self, cache=True):
     """
     @yield  str  url
     """
     #if self.hasSampleImages():
-    for it in self.sampleImages:
-      it = proxy.get_getchu_url(it)
-      yield cacheman.cache_image_url(it) if cache else it
+    for l in self.sampleImages, self.bannerImages:
+      if l:
+        for it in l:
+          it = proxy.get_getchu_url(it)
+          yield cacheman.cache_image_url(it) if cache else it
 
   def hasDescriptions(self):
     """

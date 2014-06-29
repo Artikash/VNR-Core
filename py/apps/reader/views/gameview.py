@@ -62,13 +62,6 @@ class GameCoffeeBean(QObject):
       return ''
 
   @Slot(result=unicode)
-  def getSampleImages(self): # return list of urls using ',' as sep
-    if self.info and self.info.hasSampleImages():
-      return ','.join(self.info.iterSampleImageUrls())
-    else:
-      return ''
-
-  @Slot(result=unicode)
   def getVideos(self): # return list of urls using ',' as sep
     if self.info and self.info.hasVideos():
       return json.dumps(list(self.info.iterVideos()))
@@ -83,13 +76,28 @@ class GameCoffeeBean(QObject):
           return ''.join(r.iterDescriptions())
     return ''
 
+  #@Slot(result=unicode)
+  #def getSampleImages(self): # return list of urls using ',' as sep
+  #  if self.info and self.info.hasSampleImages():
+  #    return ','.join(self.info.iterSampleImageUrls())
+  #  else:
+  #    return ''
+
   @Slot(unicode, result=unicode)
-  def getCharacters(self, type): # return json for the reference type
-    if self.info and self.info.hasCharacters():
-      for r in self.info.iterCharacterReferences():
+  def getSampleImages(self, type): # return urls for the reference type
+    if self.info:
+      for r in self.info.iterSampleImageReferences():
         if r.type == type:
-          return json.dumps(r.characters)
+          return ','.join(r.iterSampleImageUrls())
     return ''
+
+  #@Slot(unicode, result=unicode)
+  #def getCharacters(self, type): # return json for the reference type
+  #  if self.info and self.info.hasCharacters():
+  #    for r in self.info.iterCharacterReferences():
+  #      if r.type == type:
+  #        return json.dumps(r.characters)
+  #  return ''
 
   # Actions
 

@@ -82,8 +82,8 @@ createTwitterTimeline = (id:id, el:el, callback:callback, options:options) ->
 _renderSampleImage = (url) ->
   HAML_SAMPLE_IMAGE url:url
 
-renderSampleImages = -> # -> string  html
-  gameBean.getSampleImages().split(',').map(_renderSampleImage).join ''
+renderSampleImages = (type) -> # -> string  html
+  gameBean.getSampleImages(type).split(',').map(_renderSampleImage).join ''
 
 _renderVideo = (params) ->
   params.date = '' unless params.date? # fill in the missing date
@@ -193,7 +193,7 @@ class Zoomer
     $cg = $('img.zoom.zoom-cg')
     if $cg.length
       $cg.width 220 * v
-      $('section.cg .images').masonry() #columnWidth: v * DEFAULT_SAMPLE_IMAGE_WIDTH
+      $('section.cg .images:visible').masonry() #columnWidth: v * DEFAULT_SAMPLE_IMAGE_WIDTH
 
     @zoomYoutube v
 
@@ -231,35 +231,35 @@ initRuby = ->
 
 ## Bootstrap Switch ##
 
-initCGSwitch = ->
-  $section = $ 'section.cg'
-  $container = $section.find '.images'
-  $section.find('input.switch').bootstrapSwitch()
-    .on 'switchChange.bootstrapSwitch', (event, checked) ->
-      unless checked
-        $container.fadeOut()
-      else if $container.hasClass 'rendered'
-        $container.fadeIn()
-                  .masonry
-      else
-        $container.hide()
-           .html renderSampleImages()
-           .addClass 'rendered'
-           .fadeIn()
-           .masonry
-             itemSelector: 'img'
-             isFitWidth: true # centerize
-           #.imagesLoaded ->
-           #  $container.find('img').width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
-           #  $container.masonry() # refresh after images are loaded
-        $container.find('img').load ->
-          # Saample bad DMM image: http://pics.dmm.com/mono/movie/n/now_printing/now_printing.jpg
-          if ~@src.indexOf('pics.dmm.') and @naturalWidth is 90 and @naturalHeight is 122
-            #@parentNode.removeChild @ # remove this
-            $container.masonry 'remove', @ # remove this
-          else
-            @width = DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
-          $container.masonry() # refresh after images are loaded
+#initCGSwitch = ->
+#  $section = $ 'section.cg'
+#  $container = $section.find '.images'
+#  $section.find('input.switch').bootstrapSwitch()
+#    .on 'switchChange.bootstrapSwitch', (event, checked) ->
+#      unless checked
+#        $container.fadeOut()
+#      else if $container.hasClass 'rendered'
+#        $container.fadeIn()
+#                  .masonry
+#      else
+#        $container.hide()
+#           .html renderSampleImages()
+#           .addClass 'rendered'
+#           .fadeIn()
+#           .masonry
+#             itemSelector: 'img'
+#             isFitWidth: true # centerize
+#           #.imagesLoaded ->
+#           #  $container.find('img').width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
+#           #  $container.masonry() # refresh after images are loaded
+#        $container.find('img').load ->
+#          # Saample bad DMM image: http://pics.dmm.com/mono/movie/n/now_printing/now_printing.jpg
+#          if ~@src.indexOf('pics.dmm.') and @naturalWidth is 90 and @naturalHeight is 122
+#            #@parentNode.removeChild @ # remove this
+#            $container.masonry 'remove', @ # remove this
+#          else
+#            @width = DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
+#          $container.masonry() # refresh after images are loaded
 
 initTwitterSwitch = ->
 
@@ -337,7 +337,7 @@ bindYoutube = ->
       false
 
 initSwitches = ->
-  initCGSwitch()
+  #initCGSwitch()
   initTwitterSwitch()
   initYouTubeSwitch()
 
@@ -375,8 +375,8 @@ initDescPills = -> # Descriptions
 
     false
 
-initCharaPills = -> # Characters
-  $sec = $ 'section.characters'
+initCGPills = -> # Sample images
+  $sec = $ 'section.cg'
   $container = $sec.find '.contents'
 
   $sec.find('.nav.nav-pills > li > a').click ->
@@ -393,19 +393,97 @@ initCharaPills = -> # Characters
         $el = $container.children('.' + newtype)
         if $el.length
           $el.fadeIn()
+             .masonry()
         else
-          h = renderCharacters newtype
+          h = renderSampleImages newtype
           el = document.createElement 'div'
-          el.className = newtype
+          el.className = newtype + ' images'
           el.innerHTML = h
           #$container.append el
-          $(el).hide()
-               .appendTo $container
-               .fadeIn()
+          (($div) ->
+            $div.hide()
+                .appendTo $container
+                .fadeIn()
+                .masonry
+                  itemSelector: 'img'
+                  isFitWidth: true # centerize
+                #.imagesLoaded ->
+                #  $container.find('img').width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
+                #  $container.masonry() # refresh after images are loaded
+                .find('img').load ->
+                  # Sample bad DMM image: http://pics.dmm.com/mono/movie/n/now_printing/now_printing.jpg
+                  if ~@src.indexOf('pics.dmm.') and @naturalWidth is 90 and @naturalHeight is 122
+                    #@parentNode.removeChild @ # remove this
+                    $div.masonry 'remove', @ # remove this
+                  else
+                    @width = DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
+                  $div.masonry() # refresh after images are loaded
+         ) $ el
     false
 
+#initCGSwitch = ->
+#  $section = $ 'section.cg'
+#  $container = $section.find '.images'
+#  $section.find('input.switch').bootstrapSwitch()
+#    .on 'switchChange.bootstrapSwitch', (event, checked) ->
+#      unless checked
+#        $container.fadeOut()
+#      else if $container.hasClass 'rendered'
+#        $container.fadeIn()
+#                  .masonry
+#      else
+#        $container.hide()
+#           .html renderSampleImages()
+#           .addClass 'rendered'
+#           .fadeIn()
+#           .masonry
+#             itemSelector: 'img'
+#             isFitWidth: true # centerize
+#           #.imagesLoaded ->
+#           #  $container.find('img').width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
+#           #  $container.masonry() # refresh after images are loaded
+#        $container.find('img').load ->
+#          # Sample bad DMM image: http://pics.dmm.com/mono/movie/n/now_printing/now_printing.jpg
+#          if ~@src.indexOf('pics.dmm.') and @naturalWidth is 90 and @naturalHeight is 122
+#            #@parentNode.removeChild @ # remove this
+#            $container.masonry 'remove', @ # remove this
+#          else
+#            @width = DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
+#          $container.masonry() # refresh after images are loaded
+
+
+#initCharaPills = -> # Characters
+#  $sec = $ 'section.characters'
+#  $container = $sec.find '.contents'
+#
+#  $sec.find('.nav.nav-pills > li > a').click ->
+#    $li = $(@).parent 'li'
+#    unless $li.hasClass 'active'
+#      oldtype = $li.parent('ul').children('li.active')
+#          .removeClass 'active'
+#          .data 'type'
+#      $li.addClass 'active'
+#      newtype = $li.data 'type'
+#      if oldtype
+#        $container.children('.' + oldtype).hide()
+#      if newtype
+#        $el = $container.children('.' + newtype)
+#        if $el.length
+#          $el.fadeIn()
+#        else
+#          h = renderCharacters newtype
+#          el = document.createElement 'div'
+#          el.className = newtype
+#          el.innerHTML = h
+#          #$container.append el
+#          $(el).hide()
+#               .appendTo $container
+#               .fadeIn()
+#    false
+
 initPills = ->
-  initCharaPills()
+  initCGPills()
+  #initCharaPills()
   initDescPills()
 
 ## Bootstrap ##
