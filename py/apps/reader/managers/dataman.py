@@ -2814,7 +2814,7 @@ class DLsiteReference(Reference): #(object):
   def hasDescriptions(self): return bool(self.description)
   def iterDescriptions(self):
     if self.description:
-      yield self.description
+      yield cacheman.cache_html(self.description)
 
 class GetchuReference(Reference): #(object):
   def __init__(self, parent=None,
@@ -2924,8 +2924,7 @@ class GetchuReference(Reference): #(object):
     t = cls._rx_desc_title.sub(ur'<div class="tabletitle">【\1】</div>', t)
     t = cls._rx_desc_size.sub('', t)
     t = t.replace('_s.jpg', '.jpg')
-    return t
-
+    return cacheman.cache_html(t)
 
   def renderCharacterDescription(self): # -> unicode
     t = self.characterDescription
@@ -2936,7 +2935,7 @@ class GetchuReference(Reference): #(object):
       t = t.replace('width="1%"', 'width="25%"') # <TD valign="middle" width="1%"> for img
       t = t.replace('valign="middle"', 'valign="top"')
       t = t.replace('vertical-align:middle', 'vertical-align:top')
-    return t
+    return cacheman.cache_html(t)
 
 class DiGiketReference(Reference): #(object):
   def __init__(self, parent=None,
@@ -3002,7 +3001,7 @@ class DiGiketReference(Reference): #(object):
     @yield  unicode
     """
     if self.description:
-      yield self.description
+      yield cacheman.cache_html(self.description)
 
   def renderCharacterDescription(self): return self.characterDescription
 
@@ -3054,7 +3053,9 @@ class AmazonReference(Reference):
     @param  unicode
     @return  unicode
     """
-    return skstr.uniqbr(skstr.stripbr(t), repeat=3) if t else ''
+    if t:
+      return cacheman.cache_html(skstr.uniqbr(skstr.stripbr(t), repeat=3) )
+    return ''
 
 class GyuttoReference(Reference): #(object):
   def __init__(self, parent=None,
@@ -3199,7 +3200,7 @@ class DmmReference(Reference):
   def iterDescriptions(self): # yield unicode
     page = self.page
     if page and page.description:
-      yield page.description
+      yield cacheman.cache_html(page.description)
 
   @memoized
   def hasSampleImages(self):

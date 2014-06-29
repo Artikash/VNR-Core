@@ -113,12 +113,52 @@ def urldecode(text):
   """
   text = urllib.unquote(text) # from percentage encoding
 
+def replacefun1(rx, fun1, text):
+  """
+  @param  rx  re
+  @param  fun1  str->str
+  @param  text  unicode
+  @return  unicode
+  """
+  def replace1(m):
+    return text[m.start(0):m.start(1)] + fun1(m.group(1)) + text[m.end(1):m.end(0)]
+  return rx.sub(replace1, text)
+
+_rx_link = re.compile(r'''<a [^>]*href=['"]([^'"]+?)['"]''', re.I)
+def replacelinks(h, fun):
+  """
+  @param  h  unicode
+  @param  fun  str->str
+  @return  unicode
+  """
+  return replacefun1(_rx_link, fun, h)
+
+_rx_img = re.compile(r'''<img[^<>]* src=['"]([^'"]+?)['"]''', re.I)
+def replaceimgurls(h, fun):
+  """
+  @param  h  unicode
+  @param  fun  str->str
+  @return  unicode
+  """
+  return replacefun1(_rx_img, fun, h)
+
 if __name__ == '__main__':
-  print urlencode('hello world')
-  print multireplacer({
-      '1': 'a',
-      '123': 'b',
-      })('123')
+  #print urlencode('hello world')
+  #print multireplacer({
+  #    '1': 'a',
+  #    '123': 'b',
+  #    })('123')
+
+  #print replacelinks("<a href='http:/awef/' what", lambda it: "123")
+  #print replaceimgurls("<img src='http:/awef/'", lambda it: "123")
+
+  h = u'''
+<img src="http://www.getchu.com/brandnew/718587/c718587charab15.jpg">
+<img src="http://www.getchu.com/brandnew/718587/c718587charab15.jpg">
+<img src="http://www.getchu.com/brandnew/718587/c718587charab15.jpg">
+and
+'''
+  print replaceimgurls(h, lambda it: "123")
 
 # EOF
 
