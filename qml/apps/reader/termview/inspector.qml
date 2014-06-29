@@ -13,13 +13,15 @@ Item { id: root_
 
   // - Private -
 
-  height: 50
+  height: Math.max(50, text_.height + 10)
   //color: '#ced0d6'
 
   Share.CachedAvatarImage { id: avatar_
     anchors {
       left: parent.left
-      verticalCenter: parent.verticalCenter
+      top: parent.top
+      //verticalCenter: parent.verticalCenter
+      topMargin: 3
       leftMargin: 9
     }
     width: 40; height: 40
@@ -27,13 +29,13 @@ Item { id: root_
     userHash: currentItem ? currentItem.userHash : 0
   }
 
-  Text {
+  Text { id: text_
     anchors {
-      top: parent.top; bottom: parent.bottom
+      top: parent.top //; bottom: parent.bottom
       right: parent.right
       left: avatar_.visible ? avatar_.right : parent.left
       leftMargin: 9; rightMargin: 9
-      topMargin: 5
+      topMargin: 3
     }
     textFormat: Text.PlainText
     font.pixelSize: 12
