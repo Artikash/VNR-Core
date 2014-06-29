@@ -71,7 +71,7 @@ class GameApi(object):
     @param  h  unicode  html
     @return  unicode
     """
-    m = self._rx_desc.search(h)
+    m = self._rx_title.search(h)
     if m:
       return m.group()
 
@@ -93,19 +93,32 @@ class GameApi(object):
       'review': self._parsereview(h) if self._hasreview(h) else None, # unicode html or None
     }
 
-  _rx_desc = re.compile(
-    r'<div class="mg-b20 lh4">'
-    r'.+?'
-    r'</div>'
-  , re.DOTALL)
+  #_rx_desc = re.compile(
+  #  r'<div class="mg-b20 lh4">'
+  #  r'.+?'
+  #  r'</div>'
+  #, re.DOTALL)
   def _parsedesc(self, h):
     """
     @param  h  unicode  html
     @return  unicode
     """
-    m = self._rx_desc.search(h)
-    if m:
-      return self._replacelinks(m.group())
+    #m = self._rx_desc.search(h)
+    #if m:
+    #  return self._replacelinks(m.group())
+    START = '<div class="mg-b20 lh4">'
+    STOP1 = '</div>'
+    STOP2 = '<div id="sample-image'
+    start = h.find(START)
+    if start != -1:
+      stop = h.find(STOP2, start)
+      if stop == -1:
+        stop = h.find(STOP1, start)
+        if stop != -1:
+          stop += len(STOP1)
+      if stop != -1:
+        h = h[start:stop]
+        return self._replacelinks(h)
 
   # Example:
   # http://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_048634/
@@ -156,6 +169,7 @@ if __name__ == '__main__':
   url = "http://www.dmm.co.jp/top/-/error/area/"
   url = "http://www.dmm.co.jp/top/-/error/area/404"
   url = "http://www.dmm.co.jp/mono/pcgame/-/detail/=/cid=1326aw007/"
+  url = "http://www.dmm.co.jp/mono/pcgame/-/detail/=/cid=587apc10370/"
   q = api.query(url)
   print q['description']
 

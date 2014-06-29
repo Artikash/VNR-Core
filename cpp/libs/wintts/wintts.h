@@ -29,6 +29,6 @@ void wintts_destroy(wintts_t *voice);
 // Example reg: L"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Speech\\Voices\\Tokens\\VW Misaki"
 bool wintts_set_voice(wintts_t *voice, const wchar_t *reg);
 
-bool wintts_speak(wintts_t *voice, const wchar_t *sentence, unsigned long flags = 0);
+bool wintts_speak(wintts_t *voice, const wchar_t *text, unsigned long flags = 0);
 
 // EOF

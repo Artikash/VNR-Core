@@ -81,7 +81,7 @@ win32 {
   MSIME_HOME    = $$DEV_HOME/msime
   #PYTHON_HOME  = $$ROOTDIR/../Python
   #PYTHON_HOME   = C:/Python
-  PYTHON_HOME   = Z:/Python
+  PYTHON_HOME   = Z:/Local/Windows/Developer/Python
   PYSIDE_HOME   = $$PYTHON_HOME/Lib/site-packages/PySide
   QT_HOME       = c:/qt/4
   QT_SRC        = c:/qt
