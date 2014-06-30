@@ -34,7 +34,12 @@ def _tovoicekey(key):
   """
   @return  unicode
   """
-  return r"HKEY_LOCAL_MACHINE\%s\%s" % (registry.TTS_HKLM_PATH, key) if key else ""
+  if key:
+    for hk in 'HKEY_LOCAL_MACHINE', 'HKEY_CURRENT_USER':
+      path = registry.TTS_REG_PATH +  '\\' + key
+      if registry.exists(path, hk):
+        return hk + '\\' + path
+  return ''
 
 class SapiEngine(object):
 

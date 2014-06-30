@@ -12,7 +12,7 @@ from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skunicode import u
 from windefs import windefs
 
-TTS_HKLM_PATH = r"SOFTWARE\Microsoft\Speech\Voices\Tokens"
+TTS_REG_PATH = r"SOFTWARE\Microsoft\Speech\Voices\Tokens"
 
 def _parselang(lcid):
   """
@@ -32,6 +32,19 @@ def _parsegender(g):
   """
   return _GENDERS.get(g) or ''
 
+def exists(path, hk):
+  """
+  @param  hk  str
+  @param  path  str
+  @return  bool
+  """
+  import _winreg
+  try:
+    with _winreg.ConnectRegistry(None, getattr(_winreg, hk)) as reg: # None = computer_name
+      with _winreg.OpenKey(reg, path):
+        return True
+  except: return False
+
 @memoized
 def get():
   """
@@ -40,52 +53,53 @@ def get():
   #REG = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens"
 
   ret = []
-  try:
-    import _winreg
-    with _winreg.ConnectRegistry(None, _winreg.HKEY_LOCAL_MACHINE) as reg:# None = computer_name
-      with _winreg.OpenKey(reg, TTS_HKLM_PATH) as rootkey:
-        nsubkeys = _winreg.QueryInfoKey(rootkey)[0]
-        for i in xrange(nsubkeys):
-          try:
-            voicekeyname = _winreg.EnumKey(rootkey, i)
-            dprint("tts key: %s" % voicekeyname)
-            with _winreg.OpenKey(rootkey, voicekeyname) as voicekey:
-              clsid = _winreg.QueryValueEx(voicekey, 'CLSID')[0]
-              try: location = _winreg.QueryValueEx(voicekey, 'VoiceData')[0]
-              except WindowsError:
-                try: location = _winreg.QueryValueEx(voicekey, 'VoicePath')[0]
+  import _winreg
+  for hk in _winreg.HKEY_LOCAL_MACHINE, _winreg.HKEY_CURRENT_USER:
+    try:
+      with _winreg.ConnectRegistry(None, hk) as reg: # None = computer_name
+        with _winreg.OpenKey(reg, TTS_REG_PATH) as rootkey:
+          nsubkeys = _winreg.QueryInfoKey(rootkey)[0]
+          for i in xrange(nsubkeys):
+            try:
+              voicekeyname = _winreg.EnumKey(rootkey, i)
+              dprint("tts key: %s" % voicekeyname)
+              with _winreg.OpenKey(rootkey, voicekeyname) as voicekey:
+                clsid = _winreg.QueryValueEx(voicekey, 'CLSID')[0]
+                try: location = _winreg.QueryValueEx(voicekey, 'VoiceData')[0]
                 except WindowsError:
-                  location = ""
-              with _winreg.OpenKey(voicekey, 'Attributes') as attrkey:
-                # ja: "411", en_US: "409:9"
-                language = _winreg.QueryValueEx(attrkey, 'Language')[0]
-                lcid = long(language.split(';', 1)[0], 16) # such as '411;9' where 411 => 0x411
-                age = _winreg.QueryValueEx(attrkey, 'Age')[0]
-                gender = _winreg.QueryValueEx(attrkey, 'Gender')[0]
-                name = _winreg.QueryValueEx(attrkey, 'Name')[0]
-                vendor = _winreg.QueryValueEx(attrkey, 'Vendor')[0]
-                uk = u(voicekeyname) # convert to u8 using native encoding
-                if uk:
-                  ret.append({
-                    'key': uk,
-                    'clsid': clsid, # str
-                    'location': u(location), # unicode
-                    'age': age, # str
-                    #'name': u(name), # unicode
-                    'name': name, # use str instead
-                    'vendor': u(vendor), # unicode
-                    'lcid': lcid, # long
-                    'language': _parselang(lcid), #
-                    'gender': _parsegender(gender), #
-                  })
-                else:
-                  dwarn("failed to convert registry key to unicode: %s" % voicekeyname)
-          except WindowsError, e:
-            dwarn(e)
-          except (ValueError, TypeError), e:  # failed to convert lcid to long
-            dwarn(e)
-  except WindowsError, e:
-    dwarn(e)
+                  try: location = _winreg.QueryValueEx(voicekey, 'VoicePath')[0]
+                  except WindowsError:
+                    location = ""
+                with _winreg.OpenKey(voicekey, 'Attributes') as attrkey:
+                  # ja: "411", en_US: "409:9"
+                  language = _winreg.QueryValueEx(attrkey, 'Language')[0]
+                  lcid = long(language.split(';', 1)[0], 16) # such as '411;9' where 411 => 0x411
+                  age = _winreg.QueryValueEx(attrkey, 'Age')[0]
+                  gender = _winreg.QueryValueEx(attrkey, 'Gender')[0]
+                  name = _winreg.QueryValueEx(attrkey, 'Name')[0]
+                  vendor = _winreg.QueryValueEx(attrkey, 'Vendor')[0]
+                  uk = u(voicekeyname) # convert to u8 using native encoding
+                  if uk:
+                    ret.append({
+                      'key': uk,
+                      'clsid': clsid, # str
+                      'location': u(location), # unicode
+                      'age': age, # str
+                      #'name': u(name), # unicode
+                      'name': name, # use str instead
+                      'vendor': u(vendor), # unicode
+                      'lcid': lcid, # long
+                      'language': _parselang(lcid), #
+                      'gender': _parsegender(gender), #
+                    })
+                  else:
+                    dwarn("failed to convert registry key to unicode: %s" % voicekeyname)
+            except WindowsError, e:
+              dwarn(e)
+            except (ValueError, TypeError), e:  # failed to convert lcid to long
+              dwarn(e)
+    except WindowsError, e:
+      dprint(e)
   return ret
 
 def querylist(language=''):
