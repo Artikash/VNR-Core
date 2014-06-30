@@ -12,7 +12,8 @@ from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skunicode import u
 from windefs import windefs
 
-TTS_REG_PATH = r"SOFTWARE\Microsoft\Speech\Voices\Tokens"
+TTS_HKCU_PATH = r"SOFTWARE\Microsoft\Speech\Voices\TokenEnums"
+TTS_HKLM_PATH = r"SOFTWARE\Microsoft\Speech\Voices\Tokens"
 
 def _parselang(lcid):
   """
@@ -54,10 +55,13 @@ def get():
 
   ret = []
   import _winreg
-  for hk in _winreg.HKEY_LOCAL_MACHINE, _winreg.HKEY_CURRENT_USER:
+  for (hk,path) in (
+      (_winreg.HKEY_LOCAL_MACHINE, TTS_HKLM_PATH),
+      (_winreg.HKEY_CURRENT_USER, TTS_HKCU_PATH),
+    ):
     try:
       with _winreg.ConnectRegistry(None, hk) as reg: # None = computer_name
-        with _winreg.OpenKey(reg, TTS_REG_PATH) as rootkey:
+        with _winreg.OpenKey(reg, path) as rootkey:
           nsubkeys = _winreg.QueryInfoKey(rootkey)[0]
           for i in xrange(nsubkeys):
             try:
