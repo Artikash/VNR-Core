@@ -24,6 +24,7 @@ class reader(QObject):
       self.tr("Game Board"),
       self.tr("Subtitle Maker"), self.tr("Subtitle maker"),
       self.tr("Subtitle Editor"), self.tr("Subtitle editor"),
+      self.tr("Post Editor"), #self.tr("Post editor"),
       self.tr("Game Settings"),
       self.tr("Game Finder"),
       self.tr("Game References"),

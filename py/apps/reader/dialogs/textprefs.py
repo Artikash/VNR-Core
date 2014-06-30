@@ -7,8 +7,8 @@ __all__ = ['TextPrefsDialog']
 import os
 from functools import partial
 from itertools import imap
-from PySide.QtCore import Signal, Qt
-from PySide import QtCore, QtGui
+from PySide.QtCore import Signal, Qt, QSize
+from PySide.QtGui import QIcon
 from Qt5 import QtWidgets
 from sakurakit import skevents, skqss, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty, hasmemoizedproperty
@@ -975,7 +975,7 @@ class TextPrefsDialog(QtWidgets.QMainWindow):
 
   def clear(self):
     if self.isVisible():
-      self.setWindowIcon(QtGui.QIcon())
+      self.setWindowIcon(QIcon())
       self.setWindowTitle(mytr_("Text Settings"))
     self.__d.clear()
 

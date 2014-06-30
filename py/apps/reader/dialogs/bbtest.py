@@ -23,9 +23,9 @@ class _BBCodeTester:
     self._createUi(q)
 
   def _createUi(self, q):
-    textEdit = QtWidgets.QTextEdit()
+    textEdit = QtWidgets.QPlainTextEdit()
     textEdit.setToolTip("BBCode")
-    textEdit.setAcceptRichText(False)
+    #textEdit.setAcceptRichText(False)
     skqss.class_(textEdit, 'normal')
 
     textView = QtWidgets.QTextBrowser()

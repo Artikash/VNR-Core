@@ -4,8 +4,7 @@
 
 __all__ = ['SubtitleEditorManager', 'SubtitleEditorManagerProxy']
 
-from PySide.QtCore import Qt, Slot
-from PySide import QtCore
+from PySide.QtCore import Qt, Slot, QObject
 from Qt5 import QtWidgets
 from sakurakit import skqss
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
@@ -178,8 +177,10 @@ class _SubtitleEditor(object):
 
   @memoizedproperty
   def textEdit(self):
-    ret = QtWidgets.QTextEdit()
-    ret.setToolTip(mytr_("Context count"))
+    #ret = QtWidgets.QPlainTextEdit()
+    ret = QtWidgets.QTextEdit() # needed by spell checker
+    ret.setAcceptRichText(False)
+    ret.setToolTip(tr_("Text"))
     ret.setMinimumHeight(TEXTEDIT_MINIMUM_HEIGHT)
     ret.textChanged.connect(self._saveText)
     return ret
@@ -371,11 +372,11 @@ class SubtitleEditorManager:
 def manager(): return SubtitleEditorManager()
 
 #@QmlObject
-class SubtitleEditorManagerProxy(QtCore.QObject):
+class SubtitleEditorManagerProxy(QObject):
   def __init__(self, parent=None):
     super(SubtitleEditorManagerProxy, self).__init__(parent)
 
-  @Slot(QtCore.QObject) # dataman.Comment
+  @Slot(QObject) # dataman.Comment
   def showComment(self, c):
     manager().showComment(c)
 

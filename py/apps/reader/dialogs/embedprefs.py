@@ -13,8 +13,8 @@ if __name__ == '__main__':
 import os
 from functools import partial
 from itertools import imap
-from PySide.QtCore import Signal, Qt
-from PySide import QtCore, QtGui
+from PySide.QtCore import Signal, Qt, QSize
+from PySide.QtGui import QIcon
 from Qt5 import QtWidgets
 from sakurakit import skevents, skqss, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty, hasmemoizedproperty
@@ -244,7 +244,7 @@ class TextTab(QtWidgets.QWidget):
       w += -290 + 350 * THREADLAYOUT_COLUMN_COUNT
       if row > 2:
         w += 20
-    return QtCore.QSize(w, h)
+    return QSize(w, h)
 
 @Q_Q
 class _TextTab(object):
@@ -737,7 +737,7 @@ class _TextTab(object):
 #
 #  def sizeHint(self):
 #    """@reimp"""
-#    return QtCore.QSize(500, 380)
+#    return QSize(500, 380)
 
 ## Main window ##
 
@@ -813,7 +813,7 @@ class TextPrefsDialog(QtWidgets.QMainWindow):
 
   def clear(self):
     if self.isVisible():
-      self.setWindowIcon(QtGui.QIcon())
+      self.setWindowIcon(QIcon())
       self.setWindowTitle(mytr_("Text Settings"))
     self.__d.clear()
 
