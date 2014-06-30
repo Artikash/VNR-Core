@@ -516,6 +516,8 @@ jcuserdic: # The preferences will be from top to down
   #- $PWD/../../Dictionaries/JBeijing/@Goodboyye/JcUserdic/Jcuser
 
 gaiji:
+  plist/daijirin:   $PWD/../../Dictionaries/gaiji/DAIJIRIN.plist    # 三省堂 大辞林
+  plist/daijisen:   $PWD/../../Dictionaries/gaiji/DAIJISEN.plist    # 小学館 大辞泉 
   plist/kojien:     $PWD/../../Dictionaries/gaiji/KOJIEN.plist      # 岩波書店 広辞苑
   plist/zhong_ri:   $PWD/../../Dictionaries/gaiji/ZHONG_RI.plist    # 小学館 中日・日中辞書
   plist/wadoku:     $PWD/../../Dictionaries/gaiji/WADOKU.plist      # 和独辞書

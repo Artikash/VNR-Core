@@ -1853,6 +1853,7 @@ class _HonyakuTab(object):
       layout.addWidget(self.jmdictNlButton)
     layout.addWidget(QtWidgets.QLabel(my.tr("Manual installation required") + ":"))
     if 'ja' not in blans:
+      layout.addWidget(self.daijirinButton)
       layout.addWidget(self.kojienButton)
     if 'zh' not in blans:
       layout.addWidget(self.zhongriButton)
@@ -1872,10 +1873,17 @@ class _HonyakuTab(object):
     return ret
 
   @memoizedproperty
-  def kojienButton(self):
+  def daijirinButton(self):
     ret = QtWidgets.QCheckBox("%s (%s)" % (
-        my.tr("Kojien (広辞苑) Japanese-Japanese dictionary"),
+        my.tr("Daijirin (大辞林) Japanese-Japanese/English dictionary"),
         my.tr("recommended for Japanese learners")))
+    ret.setChecked(settings.global_().isDaijirinEnabled())
+    ret.toggled.connect(settings.global_().setDaijirinEnabled)
+    return ret
+
+  @memoizedproperty
+  def kojienButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Kojien (広辞苑) Japanese-Japanese dictionary"))
     ret.setChecked(settings.global_().isKojienEnabled())
     ret.toggled.connect(settings.global_().setKojienEnabled)
     return ret
@@ -2179,6 +2187,7 @@ class _HonyakuTab(object):
 
     # EPWING
     if 'ja' not in blans:
+      self.daijirinButton.setEnabled(ss.isDaijirinEnabled() or bool(ebdict.daijirin().location()))
       self.kojienButton.setEnabled(ss.isKojienEnabled() or bool(ebdict.kojien().location()))
     if 'zh' not in blans:
       self.zhongriButton.setEnabled(ss.isZhongriEnabled() or bool(ebdict.zhongri().location()))
@@ -4004,6 +4013,7 @@ class _DictionaryLibraryTab(object):
     layout.addWidget(self.msimeGroup)
     blans = settings.global_().blockedLanguages()
     #if 'ja' not in blans:
+    layout.addWidget(self.daijirinGroup)
     layout.addWidget(self.kojienGroup)
     if 'zh' not in blans:
       layout.addWidget(self.zhongriGroup)
@@ -4049,7 +4059,7 @@ class _DictionaryLibraryTab(object):
       if path:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
         self._MSIME_LOCATION = path
-    skqss.class_(self.msimeLocationEdit, 'normal' if ok else 'error')
+    skqss.class_(self.msimeLocationEdit, 'normal' if ok else 'muted')
     self.msimeLocationEdit.setText(path if path else tr_("Not found"))
 
     urls = (msime.JA_INSTALL_URL, msime.JA_INSTALL_URL,
@@ -4158,6 +4168,100 @@ Kojien is detected on your system at the above location.""")
 """Iwanami Kojien is needed by <span style="color:purple">offline Japanese</span> word translation.<br/>
 It is a ja-ja dictionary distributed in <a href="%s">EPWING</a> format DVD.<br/>
 Kojien is <span style="color:purple">not free</span>, and you can purchase one here from Iwanami:
+<center><a href="%s">%s</a></center>""") % (epwing_url, url, url)
++ "<br/>" +  my.tr('<span style="color:red">Note: EPWING path cannot contain non-English characters!</span>')
+)
+
+  ## Daijirin ##
+
+  @memoizedproperty
+  def daijirinGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    editRow = QtWidgets.QHBoxLayout()
+    editRow.addWidget(self.daijirinLocationEdit)
+    editRow.addWidget(self.daijirinLocationButton)
+    editRow.addWidget(self.daijirinLocationClearButton)
+    layout.addLayout(editRow)
+    layout.addWidget(self.daijirinInfoEdit)
+    ret = QtWidgets.QGroupBox(notr_("Sanseido Daijirin") + u" (三省堂・大辞林, 646MB)")
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def daijirinLocationEdit(self):
+    ret = QtWidgets.QLineEdit()
+    ret.setReadOnly(True)
+    ret.setToolTip(tr_("Location"))
+    return ret
+
+  @memoizedproperty
+  def daijirinLocationButton(self):
+    ret = QtWidgets.QPushButton(tr_("Browse"))
+    skqss.class_(ret, BROWSE_BTN_CLASS)
+    ret.setToolTip(my.tr("Select the location of {0}").format(mytr_("Daijirin")))
+    ret.clicked.connect(self._getDaijirinLocation)
+    return ret
+
+  @memoizedproperty
+  def daijirinLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the specified location"))
+    ret.clicked.connect(self._clearDaijirinLocation)
+    return ret
+
+  @memoizedproperty
+  def daijirinInfoEdit(self):
+    ret = QtWidgets.QTextBrowser()
+    skqss.class_(ret, 'texture')
+    ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
+    ret.setAlignment(Qt.AlignCenter)
+    ret.setReadOnly(True)
+    ret.setOpenExternalLinks(True)
+    return ret
+
+  def _clearDaijirinLocation(self):
+    path = ''
+    ebdict.daijirin().setLocation(path)
+    settings.global_().setDaijirinLocation(path)
+    self._refreshDaijirin()
+
+  def _getDaijirinLocation(self):
+    path = ebdict.daijirin().location() or skpaths.HOME
+    path = QtWidgets.QFileDialog.getExistingDirectory(self.q,
+        my.tr("Please select the folder containing {0}").format('"CATALOG(S)"'),
+        path, 0)
+    if path:
+      if not ebdict.DaijirinDic.verifyLocation(path):
+        growl.error(my.tr("Couldn't find {0} from the specified location").format(mytr_("Daijirin")))
+      else:
+        path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
+        ebdict.daijirin().setLocation(path)
+        if ebdict.daijirin().exists():
+          settings.global_().setDaijirinLocation(path)
+        self._refreshDaijirin()
+
+  def _refreshDaijirin(self):
+    ok = ebdict.daijirin().exists()
+    if ok:
+      path = ebdict.daijirin().location()
+      if path:
+        path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
+      ok = bool(path) and os.path.exists(path)
+    self.daijirinLocationClearButton.setVisible(ok)
+    #self.daijirinLocationButton.setVisible(not ok)
+    skqss.class_(self.daijirinLocationEdit, 'normal' if ok else 'muted')
+    self.daijirinLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("Daijirin")))
+
+    epwing_url = "http://ja.wikipedia.org/wiki/EPWING"
+    url = ebdict.DaijirinDic.URL
+    self.daijirinInfoEdit.setHtml(my.tr(
+"""Sanseido Daijirin dictionary is used by <span style="color:purple">offline Japanese and English</span> word translation.<br/>
+Daijirin is detected on your system at the above location.""")
+    if ok else my.tr(
+"""Sanseido Daijirin is needed by <span style="color:purple">offline Japanese and English</span> word translation.<br/>
+It is a ja-ja/ja-en dictionary distributed in <a href="%s">EPWING</a> format DVD.<br/>
+Daijirin is <span style="color:purple">not free</span>, and you can purchase one here from Sanseido:
 <center><a href="%s">%s</a></center>""") % (epwing_url, url, url)
 + "<br/>" +  my.tr('<span style="color:red">Note: EPWING path cannot contain non-English characters!</span>')
 )
@@ -4337,6 +4441,7 @@ Zhongri is <span style="color:purple">not free</span>, and you can purchase one 
 
   def refresh(self):
     self._refreshMsime()
+    self._refreshDaijirin()
     self._refreshKojien()
     self._refreshZhongri()
     #self._refreshWadoku()
