@@ -35,6 +35,6 @@ DOMAIN_COM = '153.121.54.194'
 DOMAIN_ORG = '153.121.52.138'
 
 DOWNLOAD_GOOGLE_URL = "http://goo.gl/t31MqY"
-DOWNLOAD_BAIDU_URL = "http://pan.baidu.com/s/1jGftD9W"
+DOWNLOAD_MAINLAND_URL = "https://mega.co.nz/#F!g00SQJZS!pm3bAcS6qHotPzJQUT596Q"
 
 # EOF

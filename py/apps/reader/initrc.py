@@ -58,7 +58,7 @@ Note that the paths and file names are CASE-SENSITIVE.
 I hope if you can turn off your antivirus soft and redownload VNR manually from one of the following:
 
     Google Drive: http://goo.gl/t31MqY
-    Baidu Disk: http://pan.baidu.com/s/1jGftD9W
+    Megashares: https://mega.co.nz/#F!g00SQJZS!pm3bAcS6qHotPzJQUT596Q
 
 If VNR is on a NTFS drive, the following post about file permissions might also be helpful:
 

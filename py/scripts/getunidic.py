@@ -98,7 +98,7 @@ def msg():
       #'http://osdn.dl.sourceforge.jp/unidic/58338/unidic-mecab-2.1.2_bin.zip',
       #'http://distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip',
       #'http://mse.uk.distfiles.macports.org/sites/distfiles.macports.org/mecab/unidic-mecab-2.1.2_bin.zip',
-      initdefs.DOWNLOAD_BAIDU_URL,
+      initdefs.DOWNLOAD_MAINLAND_URL,
       'http://sakuradite.org/pub/unidic/unidic-2.1.2.tar.xz',
     ]
   )
