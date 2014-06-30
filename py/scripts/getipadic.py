@@ -84,7 +84,7 @@ def msg():
     name="IPAdic",
     location="Caches/Dictionaries/IPAdic",
     size=IPADIC_FILESIZE,
-    urls=[initdefs.DOWNLOAD_BAIDU_URL],
+    urls=[initdefs.DOWNLOAD_MAINLAND_URL],
   )
   #"https://packages.macports.org/mecab-ipadic-utf8",
   #"https://sourceforge.net/projects/mecab/files/mecab-ipadic",
