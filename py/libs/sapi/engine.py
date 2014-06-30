@@ -35,8 +35,11 @@ def _tovoicekey(key):
   @return  unicode
   """
   if key:
-    for hk in 'HKEY_LOCAL_MACHINE', 'HKEY_CURRENT_USER':
-      path = registry.TTS_REG_PATH +  '\\' + key
+    for (hk,base) in (
+        ('HKEY_LOCAL_MACHINE', registry.TTS_HKLM_PATH),
+        ('HKEY_CURRENT_USER', registry.TTS_HKCU_PATH),
+      ):
+      path = base +  '\\' + key
       if registry.exists(path, hk):
         return hk + '\\' + path
   return ''
