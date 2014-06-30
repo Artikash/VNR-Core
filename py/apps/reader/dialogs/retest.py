@@ -29,7 +29,7 @@ class _RegExpTester(object):
   def _createUi(self, q):
     #url = "http://en.wikipedia.org/wiki/Regular_expression"
     url = "http://www.regular-expressions.info/lookaround.html"
-    self.textEdit.setHtml(
+    self.textEdit.appendHtml(
 """You can use this tester to play with the regular expression
 (<a href="%s">%s</a>) used in the Shared Dictionary.
 <br/><br/>
@@ -122,7 +122,7 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
 
   @memoizedproperty
   def textEdit(self):
-    ret = QtWidgets.QTextEdit()
+    ret = QtWidgets.QPlainTextEdit()
     skqss.class_(ret, 'normal')
     ret.setToolTip(tr_("Source"))
     return ret

@@ -7,7 +7,7 @@ __all__ = ['GameEditorManager', 'GameEditorManagerProxy']
 import os
 from functools import partial
 from PySide.QtCore import Qt, Slot
-from PySide import QtCore, QtGui
+from PySide import QtCore
 from Qt5 import QtWidgets
 from sakurakit import skqss, skwidgets
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty

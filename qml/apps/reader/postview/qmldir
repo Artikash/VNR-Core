@@ -1,6 +1,6 @@
 # postview/qmldir
 # 2/27/2014 jichi
-EditDialog  editdialog.qml
 InputEdit   inputedit.qml
+PostEditor  posteditor.qml
 PostList    postlist.qml
 SearchEdit  searchedit.qml

@@ -379,14 +379,14 @@
     </message>
 </context>
 <context>
-    <name>editdialog</name>
+    <name>posteditor</name>
     <message>
-        <location filename="../postview/editdialog.qml" line="69"/>
+        <location filename="../postview/posteditor.qml" line="69"/>
         <source>I am sorry that I am failed to save the changes</source>
         <translation>很抱歉保存變更失敗了呢</translation>
     </message>
     <message>
-        <location filename="../postview/editdialog.qml" line="71"/>
+        <location filename="../postview/posteditor.qml" line="71"/>
         <source>Something might be wrong with the Internet connection</source>
         <translation>也許鏈接不暢</translation>
     </message>

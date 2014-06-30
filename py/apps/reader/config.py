@@ -371,6 +371,13 @@ def language2htmllocale(lang): # str -> str
     return 'zh-TW'
   return lang or ""
 
+def htmllocale2language(lang): # str -> str
+  if lang == 'zh-CN':
+    return 'zhs'
+  if lang == 'zh-TW':
+    return 'zht'
+  return lang or ""
+
 def language2lcid(lang): # str -> long
   loc = language2locale(lang)
   from windefs import windefs

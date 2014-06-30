@@ -60,7 +60,8 @@ class _YouTubeInput(object):
   @memoizedproperty
   def textEdit(self):
     placeholder = "lmOZEAAEMK0" # http://youtube.com/watch?v=lmOZEAAEMK0
-    ret = QtWidgets.QTextEdit(placeholder)
+    #ret = QtWidgets.QPlainTextEdit(placeholder)
+    ret = QtWidgets.QTextEdit(placeholder) # QTextEdit is needed for syntax highlighter
     ret.setToolTip(my.tr("Text contains YouTube video IDs"))
     ret.setAcceptRichText(False)
     # Not enabled for performance reason

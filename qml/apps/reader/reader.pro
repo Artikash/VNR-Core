@@ -11,8 +11,8 @@ SOURCES = \
   kagami/menubutton.qml \
   kagami/shiori.qml \
   postview.qml \
-  postview/editdialog.qml \
   postview/inputedit.qml \
+  postview/posteditor.qml \
   refview.qml \
   refview/inspector.qml \
   refview/toolbar.qml \

@@ -89,6 +89,7 @@ class _DictionaryTester(object):
   @memoizedproperty
   def resultEdit(self):
     ret = QtWidgets.QTextEdit()
+    ret.setAcceptRichText(False)
     skqss.class_(ret, 'texture')
     #skqss.class_(ret, 'normal')
     #ret.setToolTip(tr_("Result"))

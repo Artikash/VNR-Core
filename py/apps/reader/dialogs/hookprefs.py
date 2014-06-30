@@ -2,8 +2,7 @@
 # hookprefs.py
 # 11/6/2012 jichi
 
-from PySide.QtCore import Qt
-from PySide import QtCore
+from PySide.QtCore import Qt, Signal
 from Qt5 import QtWidgets
 from texthook import texthook
 from sakurakit import skqss
@@ -24,8 +23,8 @@ class HookPrefsDialog(QtWidgets.QDialog):
     self.__d = _HookPrefsDialog(self)
     self.resize(450, 400)
 
-  hookCodeEntered = QtCore.Signal(unicode)
-  hookCodeDeleted = QtCore.Signal()
+  hookCodeEntered = Signal(unicode)
+  hookCodeDeleted = Signal()
 
   def setVisible(self, visible):
     """@reimp @public"""
