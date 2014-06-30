@@ -8,15 +8,19 @@ import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import '../../../js/ajax.min.js' as Ajax
 import '../../../js/define.min.js' as Define
+import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/util.min.js' as Util
 
 Desktop.Dialog { id: root_
-  width: 300; height: 200
+
+  width: 320; height: 240
 
   property variant post
 
   property string postUrl: Define.DOMAIN_COM + '/api/json/post/update'
   //property string postUrl: 'http://192.168.1.105:8080/api/json/post/update'
+
+  title: Sk.tr('Edit')
 
   function showPost(model) { // marshaled post
     post = model
@@ -25,21 +29,21 @@ Desktop.Dialog { id: root_
 
   // - Private -
 
-  Image {
-    anchors.fill: parent
-    fillMode: Image.Tile
-    source: 'image://rc/background'
-    z: -1
-  }
+  //Image {
+  //  anchors.fill: parent
+  //  fillMode: Image.Tile
+  //  source: 'image://rc/background'
+  //  z: -1
+  //}
 
-  TextEdit { id: textEdit_
+  Desktop.TextArea { id: textEdit_
     anchors.fill: parent
-    anchors.margins: 9
-    wrapMode: TextEdit.WordWrap
-    textFormat: TextEdit.PlainText
-    color: (!post ? '' : post.userColor) || 'black'
+    //anchors.margins: 9
+    //wrapMode: TextEdit.WordWrap
+    //textFormat: TextEdit.PlainText
+    //color: (!post ? '' : post.userColor) || 'black'
     text: !post ? '' : post.content
-    selectByMouse: true // Use TextEdit instead of Text because of this
+    //selectByMouse: true // Use TextEdit instead of Text because of this
   }
 
   onAccepted:
