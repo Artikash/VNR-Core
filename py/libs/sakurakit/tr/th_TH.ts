@@ -209,7 +209,7 @@
         <translation>แปลความ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="342"/>
+        <location filename="sktr.py" line="343"/>
         <source>Translator</source>
         <translation>นักแปล</translation>
     </message>
@@ -224,7 +224,7 @@
         <translation>ปรับปรุง</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="359"/>
+        <location filename="sktr.py" line="360"/>
         <source>Version</source>
         <translation>เวอร์ชัน</translation>
     </message>
@@ -384,122 +384,122 @@
         <translation>การตั้งค่า</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="329"/>
+        <location filename="sktr.py" line="330"/>
         <source>Status</source>
         <translation>สถานะ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="332"/>
+        <location filename="sktr.py" line="333"/>
         <source>Tab</source>
         <translation>แถบ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="416"/>
+        <location filename="sktr.py" line="417"/>
         <source>Text</source>
         <translation>ข้อความ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="336"/>
+        <location filename="sktr.py" line="337"/>
         <source>Theme</source>
         <translation>กระทู้</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="337"/>
+        <location filename="sktr.py" line="338"/>
         <source>Themes</source>
         <translation>ธีมส์</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="339"/>
+        <location filename="sktr.py" line="340"/>
         <source>Timestamp</source>
         <translation>การประทับเวลา</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="415"/>
+        <location filename="sktr.py" line="416"/>
         <source>Translation</source>
         <translation>การแปล</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="348"/>
+        <location filename="sktr.py" line="349"/>
         <source>User</source>
         <translation>ผู้ใช้</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="351"/>
+        <location filename="sktr.py" line="352"/>
         <source>Username</source>
         <translation>ชื่อผู้ใช้</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="352"/>
+        <location filename="sktr.py" line="353"/>
         <source>Wallpaper</source>
         <translation>วอลล์เปเปอร์</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="353"/>
+        <location filename="sktr.py" line="354"/>
         <source>Warning</source>
         <translation>การเตือน</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="355"/>
+        <location filename="sktr.py" line="356"/>
         <source>Window</source>
         <translation>หน้าต่าง</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="363"/>
+        <location filename="sktr.py" line="364"/>
         <source>Yes</source>
         <translation>ใช่</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="364"/>
+        <location filename="sktr.py" line="365"/>
         <source>yes</source>
         <translation>ใช่</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="365"/>
+        <location filename="sktr.py" line="366"/>
         <source>No</source>
         <translation>ไม่</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="366"/>
+        <location filename="sktr.py" line="367"/>
         <source>no</source>
         <translation>ไม่</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="367"/>
+        <location filename="sktr.py" line="368"/>
         <source>Online</source>
         <translation>ออนไลน์</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="368"/>
+        <location filename="sktr.py" line="369"/>
         <source>Offline</source>
         <translation>ออฟไลน์</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="369"/>
+        <location filename="sktr.py" line="370"/>
         <source>Read-only</source>
         <translation>อ่านอย่างเดียว</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="369"/>
+        <location filename="sktr.py" line="370"/>
         <source>read-only</source>
         <translation>อ่านอย่างเดียว</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="370"/>
+        <location filename="sktr.py" line="371"/>
         <source>Editable</source>
         <translation>ที่สามารถแก้ไขได้</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="370"/>
+        <location filename="sktr.py" line="371"/>
         <source>editable</source>
         <translation>ที่สามารถแก้ไขได้</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="390"/>
+        <location filename="sktr.py" line="391"/>
         <source>Found</source>
         <translation>พบ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="391"/>
+        <location filename="sktr.py" line="392"/>
         <source>Not found</source>
         <translation>ไม่พบ</translation>
     </message>
@@ -644,7 +644,7 @@
         <translation>เสนอ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="333"/>
+        <location filename="sktr.py" line="334"/>
         <source>Target</source>
         <translation>เป้า</translation>
     </message>
@@ -674,42 +674,42 @@
         <translation>หน้าจอ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="345"/>
+        <location filename="sktr.py" line="346"/>
         <source>Unlock</source>
         <translation>ปลดล็อค</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="345"/>
+        <location filename="sktr.py" line="346"/>
         <source>unlock</source>
         <translation>ปลดล็อค</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="346"/>
+        <location filename="sktr.py" line="347"/>
         <source>Unlocked</source>
         <translation>ปลดล็อค</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="346"/>
+        <location filename="sktr.py" line="347"/>
         <source>unlocked</source>
         <translation>ปลดล็อค</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="354"/>
+        <location filename="sktr.py" line="355"/>
         <source>Width</source>
         <translation>ความกว้าง</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="360"/>
+        <location filename="sktr.py" line="361"/>
         <source>Zoom</source>
         <translation>ซูม</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="409"/>
+        <location filename="sktr.py" line="410"/>
         <source>Subtitle</source>
         <translation>คำบรรยาย</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="412"/>
+        <location filename="sktr.py" line="413"/>
         <source>Comment</source>
         <translation>ความเห็น</translation>
     </message>
@@ -724,7 +724,7 @@
         <translation>การแจ้งเตือน</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="328"/>
+        <location filename="sktr.py" line="329"/>
         <source>Statistics</source>
         <translation>สถิติ</translation>
     </message>
@@ -779,57 +779,57 @@
         <translation>การตรวจสอบการสะกด</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="330"/>
+        <location filename="sktr.py" line="331"/>
         <source>Start</source>
         <translation>เริ่มต้น</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="330"/>
+        <location filename="sktr.py" line="331"/>
         <source>start</source>
         <translation>เริ่มต้น</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="330"/>
+        <location filename="sktr.py" line="331"/>
         <source>START</source>
         <translation>เริ่มต้น</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="331"/>
+        <location filename="sktr.py" line="332"/>
         <source>Stop</source>
         <translation>หยุด</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="331"/>
+        <location filename="sktr.py" line="332"/>
         <source>stop</source>
         <translation>หยุด</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="331"/>
+        <location filename="sktr.py" line="332"/>
         <source>STOP</source>
         <translation>STOP</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="335"/>
+        <location filename="sktr.py" line="336"/>
         <source>Text encoding</source>
         <translation>การเข้ารหัสข้อความ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="356"/>
+        <location filename="sktr.py" line="357"/>
         <source>Window title</source>
         <translation>ชื่อหน้าต่าง</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="392"/>
+        <location filename="sktr.py" line="393"/>
         <source>Not specified</source>
         <translation>ยังไม่ได้ระบุ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="398"/>
+        <location filename="sktr.py" line="399"/>
         <source>Administrator</source>
         <translation>ผู้บริหาร</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="399"/>
+        <location filename="sktr.py" line="400"/>
         <source>Not administrator</source>
         <translation>ไม่ใช่ผู้ดูแลระบบ</translation>
     </message>
@@ -859,32 +859,32 @@
         <translation>แสดงออกปกติ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="384"/>
+        <location filename="sktr.py" line="385"/>
         <source>Ignore Case</source>
         <translation>Ignore Case</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="384"/>
+        <location filename="sktr.py" line="385"/>
         <source>Ignore case</source>
         <translation>ไม่สนใจกรณี</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="383"/>
+        <location filename="sktr.py" line="384"/>
         <source>Case-insensitive</source>
         <translation>กรณีตาย</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="383"/>
+        <location filename="sktr.py" line="384"/>
         <source>case-insensitive</source>
         <translation>กรณีตาย</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="382"/>
+        <location filename="sktr.py" line="383"/>
         <source>Case-sensitive</source>
         <translation>กรณีที่มีความละเอียดอ่อน</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="382"/>
+        <location filename="sktr.py" line="383"/>
         <source>case-sensitive</source>
         <translation>กรณีที่มีความละเอียดอ่อน</translation>
     </message>
@@ -899,12 +899,12 @@
         <translation>เวลาที่สร้าง</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="347"/>
+        <location filename="sktr.py" line="348"/>
         <source>Update Time</source>
         <translation>ปรับปรุงเวลา</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="347"/>
+        <location filename="sktr.py" line="348"/>
         <source>Update time</source>
         <translation>ปรับปรุงครั้งที่</translation>
     </message>
@@ -929,12 +929,12 @@
         <translation>เริ่มต้นใหม่</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="401"/>
+        <location filename="sktr.py" line="402"/>
         <source>For example</source>
         <translation>เช่น</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="401"/>
+        <location filename="sktr.py" line="402"/>
         <source>for example</source>
         <translation>เช่น</translation>
     </message>
@@ -979,7 +979,7 @@
         <translation>พจนานุกรม</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="343"/>
+        <location filename="sktr.py" line="344"/>
         <source>Translators</source>
         <translation>นักแปล</translation>
     </message>
@@ -1044,7 +1044,7 @@
         <translation>i18n</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="403"/>
+        <location filename="sktr.py" line="404"/>
         <source>Check for updates</source>
         <translation>ตรวจหาการปรับปรุง</translation>
     </message>
@@ -1069,7 +1069,7 @@
         <translation>ประวัติย่อ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="414"/>
+        <location filename="sktr.py" line="415"/>
         <source>Danmaku</source>
         <translation>Danmaku</translation>
     </message>
@@ -1189,12 +1189,12 @@
         <translation>สถานะอินเทอร์เน็ต</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="410"/>
+        <location filename="sktr.py" line="411"/>
         <source>Subtitles</source>
         <translation>คำบรรยาย</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="413"/>
+        <location filename="sktr.py" line="414"/>
         <source>Comments</source>
         <translation>ความเห็น</translation>
     </message>
@@ -1239,37 +1239,37 @@
         <translation>เดล</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="409"/>
+        <location filename="sktr.py" line="410"/>
         <source>subtitle</source>
         <translation>คำบรรยาย</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="410"/>
+        <location filename="sktr.py" line="411"/>
         <source>subtitles</source>
         <translation>คำบรรยาย</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="412"/>
+        <location filename="sktr.py" line="413"/>
         <source>comment</source>
         <translation>ความเห็น</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="413"/>
+        <location filename="sktr.py" line="414"/>
         <source>comments</source>
         <translation>ความเห็น</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="414"/>
+        <location filename="sktr.py" line="415"/>
         <source>danmaku</source>
         <translation>danmaku</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="415"/>
+        <location filename="sktr.py" line="416"/>
         <source>translation</source>
         <translation>การแปล</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="416"/>
+        <location filename="sktr.py" line="417"/>
         <source>text</source>
         <translation>ข้อความ</translation>
     </message>
@@ -1279,7 +1279,7 @@
         <translation>ป๊อปอัพ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="340"/>
+        <location filename="sktr.py" line="341"/>
         <source>Time zone</source>
         <translation>โซนเวลา</translation>
     </message>
@@ -1294,17 +1294,17 @@
         <translation>ภาษา</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="348"/>
+        <location filename="sktr.py" line="349"/>
         <source>user</source>
         <translation>ผู้ใช้</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="350"/>
+        <location filename="sktr.py" line="351"/>
         <source>Users</source>
         <translation>ผู้ใช้</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="350"/>
+        <location filename="sktr.py" line="351"/>
         <source>users</source>
         <translation>ผู้ใช้</translation>
     </message>
@@ -1344,7 +1344,7 @@
         <translation>นอกเหนือ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="349"/>
+        <location filename="sktr.py" line="350"/>
         <source>User information</source>
         <translation>ข้อมูลของผู้ใช้</translation>
     </message>
@@ -1419,12 +1419,12 @@
         <translation>วันที่ออกข่าว</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="338"/>
+        <location filename="sktr.py" line="339"/>
         <source>Title</source>
         <translation>ชื่อเรื่อง</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="392"/>
+        <location filename="sktr.py" line="393"/>
         <source>not specified</source>
         <translation>ไม่ได้ระบุ</translation>
     </message>
@@ -1434,12 +1434,12 @@
         <translation>กรอง</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="396"/>
+        <location filename="sktr.py" line="397"/>
         <source>Unknown</source>
         <translation>ไม่ทราบ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="396"/>
+        <location filename="sktr.py" line="397"/>
         <source>unknown</source>
         <translation>ไม่ทราบ</translation>
     </message>
@@ -1489,7 +1489,7 @@
         <translation>ลิงค์</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="344"/>
+        <location filename="sktr.py" line="345"/>
         <source>UI</source>
         <translation>UI</translation>
     </message>
@@ -1574,12 +1574,12 @@
         <translation>คำสั่งซื้อ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="411"/>
+        <location filename="sktr.py" line="412"/>
         <source>Subs</source>
         <translation>ผู้ใต้บังคับบัญชา</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="411"/>
+        <location filename="sktr.py" line="412"/>
         <source>subs</source>
         <translation>ผู้ใต้บังคับบัญชา</translation>
     </message>
@@ -1629,7 +1629,7 @@
         <translation>ในประเทศ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="394"/>
+        <location filename="sktr.py" line="395"/>
         <source>Press Enter to submit</source>
         <translation>กด Enter เพื่อส่ง</translation>
     </message>
@@ -1649,7 +1649,7 @@
         <translation>ข้อมูลเกม</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="349"/>
+        <location filename="sktr.py" line="350"/>
         <source>user information</source>
         <translation>ข้อมูลของผู้ใช้</translation>
     </message>
@@ -1674,7 +1674,7 @@
         <translation>ชุด</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="338"/>
+        <location filename="sktr.py" line="339"/>
         <source>title</source>
         <translation>ชื่อเรื่อง</translation>
     </message>
@@ -1689,7 +1689,7 @@
         <translation>ข้อมูลเกม</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="349"/>
+        <location filename="sktr.py" line="350"/>
         <source>User Information</source>
         <translation>ข้อมูลผู้ใช้</translation>
     </message>
@@ -1929,12 +1929,12 @@
         <translation>Play</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="367"/>
+        <location filename="sktr.py" line="368"/>
         <source>online</source>
         <translation>ออนไลน์</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="368"/>
+        <location filename="sktr.py" line="369"/>
         <source>offline</source>
         <translation>ออฟไลน์</translation>
     </message>
@@ -1949,7 +1949,7 @@
         <translation>การแปลภาษาด้วยคอมพิวเตอร์</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="380"/>
+        <location filename="sktr.py" line="381"/>
         <source>Not changed</source>
         <translation>ไม่ได้เปลี่ยนแปลง</translation>
     </message>
@@ -1974,7 +1974,7 @@
         <translation>การขยายความ</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="357"/>
+        <location filename="sktr.py" line="358"/>
         <source>Wiki</source>
         <translation>วิกิพีเดีย</translation>
     </message>
@@ -1994,12 +1994,12 @@
         <translation>อังกูล</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="377"/>
+        <location filename="sktr.py" line="378"/>
         <source>Public</source>
         <translation>ของประชาชน</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="378"/>
+        <location filename="sktr.py" line="379"/>
         <source>Private</source>
         <translation>ส่วนตัว</translation>
     </message>
@@ -2079,7 +2079,7 @@
         <translation>ขวา</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="387"/>
+        <location filename="sktr.py" line="388"/>
         <source>Network Error</source>
         <translation>ข้อผิดพลาดของเครือข่าย</translation>
     </message>
@@ -2094,7 +2094,7 @@
         <translation>ข้างหน้า</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="374"/>
+        <location filename="sktr.py" line="375"/>
         <source>Slow</source>
         <translation>ช้า</translation>
     </message>
@@ -2104,7 +2104,7 @@
         <translation>แปลง</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="375"/>
+        <location filename="sktr.py" line="376"/>
         <source>slow</source>
         <translation>ช้า</translation>
     </message>
@@ -2154,7 +2154,7 @@
         <translation>Comiket</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="358"/>
+        <location filename="sktr.py" line="359"/>
         <source>Wikipedia</source>
         <translation>วิกิพีเดีย</translation>
     </message>
@@ -2179,9 +2179,14 @@
         <translation>เพลง</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="372"/>
+        <location filename="sktr.py" line="373"/>
         <source>Draggable</source>
         <translation>ลาก</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="328"/>
+        <source>Size</source>
+        <translation>ขนาด</translation>
     </message>
 </context>
 </TS>

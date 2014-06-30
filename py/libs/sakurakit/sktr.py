@@ -325,6 +325,7 @@ class sakurakit(QObject):
       self.tr("Scripts"),
       self.tr("Screenshot"),
       self.tr("Settings"),
+      self.tr("Size"),
       self.tr("Statistics"),
       self.tr("Status"),
       self.tr("Start"), self.tr("start"), self.tr("START"),
