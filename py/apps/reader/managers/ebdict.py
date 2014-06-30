@@ -250,6 +250,29 @@ class KojienDic(EBook):
   def __init__(self):
     super(KojienDic, self).__init__(
         eb=EBShiori,
+        encoding='euc_jp',
+        gaiji=rc.gaiji_dict(self.NAME))
+
+# 三省堂 スーパー大辞林第二版
+class DaijirinDic(EBook):
+  NAME = 'DAIJIRIN'   # must be consistent with gaiji
+  URL = "http://daijirin.dual-d.net"
+
+  def __init__(self):
+    super(DaijirinDic, self).__init__(
+        eb=EBShiori,
+        encoding='sjis',
+        gaiji=rc.gaiji_dict(self.NAME))
+
+# 小学館 大辞泉
+class DaijisenDic(EBook):
+  NAME = 'DAIJISEN'   # must be consistent with gaiji
+  URL = "http://www.daijisen.jp"
+
+  def __init__(self):
+    super(DaijisenDic, self).__init__(
+        eb=EBShiori,
+        encoding='sjis',
         gaiji=rc.gaiji_dict(self.NAME))
 
 # 小学館 日中統合辞書
@@ -284,6 +307,7 @@ class FreePWING(EBook): # Free EPWING
   def render(self, *args, **kwargs): # override
     if not self.exists():
       from mytr import my
+      import growl
       # Note: The following warning is not translated into Chinese
       growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format(self.name()))
     else:
