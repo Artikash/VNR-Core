@@ -725,6 +725,12 @@ class Settings(QSettings):
       self.setValue('KojienEnabled', v)
       self._updateDictionaryEnabled()
 
+  def isDaijirinEnabled(self): return to_bool(self.value('DaijirinEnabled'))
+  def setDaijirinEnabled(self, v):
+    if v != self.isDaijirinEnabled():
+      self.setValue('DaijirinEnabled', v)
+      self._updateDictionaryEnabled()
+
   def isWadokuEnabled(self): return to_bool(self.value('WadokuEnabled'))
   def setWadokuEnabled(self, v):
     if v != self.isWadokuEnabled():
@@ -743,6 +749,7 @@ class Settings(QSettings):
         self.isEdictEnabled() or
         self.isZhongriEnabled() or
         self.isKojienEnabled() or
+        self.isDaijirinEnabled() or
         self.isWadokuEnabled() or
         self.isJMDictFrEnabled() or
         self.isJMDictRuEnabled() or
@@ -757,6 +764,9 @@ class Settings(QSettings):
   def kojienLocation(self): return to_unicode(self.value('KojienLocation'))
   def setKojienLocation(self, v): self.setValue('KojienLocation', v)
 
+  def daijirinLocation(self): return to_unicode(self.value('DaijirinLocation'))
+  def setDaijirinLocation(self, v): self.setValue('DaijirinLocation', v)
+
   #def wadokuLocation(self): return to_unicode(self.value('WadokuLocation'))
   #def setWadokuLocation(self, v): self.setValue('WadokuLocation', v)
 
@@ -767,6 +777,12 @@ class Settings(QSettings):
   def setKojienEnabled(self, v):
     if v != self.isKojienEnabled():
       self.setValue('KojienEnabled', v)
+      self._updateDictionaryEnabled()
+
+  def isDaijirinEnabled(self): return to_bool(self.value('DaijirinEnabled'))
+  def setDaijirinEnabled(self, v):
+    if v != self.isDaijirinEnabled():
+      self.setValue('DaijirinEnabled', v)
       self._updateDictionaryEnabled()
 
   def isWadokuEnabled(self): return to_bool(self.value('WadokuEnabled'))

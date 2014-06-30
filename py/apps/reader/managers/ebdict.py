@@ -10,7 +10,7 @@ if __name__ == '__main__':
   import debug
   debug.initenv()
 
-import os
+import os, re
 import eblib
 from cconv.cconv import wide2thin, zhs2zht
 from sakurakit.skclass import memoized
@@ -237,9 +237,13 @@ class EBook(object):
     @yield  unicode
     """
     for hit in self.lookup(text):
-      yield wide2thin(hit.text().decode('utf8', errors='ignore'))
+      yield self.renderText(wide2thin(hit.text().decode('utf8', errors='ignore')))
       #try: yield hit.text().decode('utf8')
       #except UnicodeDecodeError: dwarn("failed to decode text")
+
+  ## Protected ##
+
+  def renderText(self, text): return text # unicode -> unicode
 
 # 岩波書店 広辞苑
 class KojienDic(EBook):
@@ -250,7 +254,7 @@ class KojienDic(EBook):
   def __init__(self):
     super(KojienDic, self).__init__(
         eb=EBShiori,
-        encoding='euc_jp',
+        #encoding='euc_jp',
         gaiji=rc.gaiji_dict(self.NAME))
 
 # 三省堂 スーパー大辞林第二版
@@ -261,8 +265,13 @@ class DaijirinDic(EBook):
   def __init__(self):
     super(DaijirinDic, self).__init__(
         eb=EBShiori,
-        encoding='sjis',
+        #encoding='euc_jp',
         gaiji=rc.gaiji_dict(self.NAME))
+
+  _rx_garbage = re.compile(ur'{?■.■}?') # Such as: "■一■ " or " {■二■}"
+  def renderText(self, text):
+    """@reimp"""
+    return self._rx_garbage.sub('', text) if text else ''
 
 # 小学館 大辞泉
 class DaijisenDic(EBook):
@@ -272,7 +281,7 @@ class DaijisenDic(EBook):
   def __init__(self):
     super(DaijisenDic, self).__init__(
         eb=EBShiori,
-        encoding='sjis',
+        #encoding='euc_jp',
         gaiji=rc.gaiji_dict(self.NAME))
 
 # 小学館 日中統合辞書
@@ -351,6 +360,26 @@ def kojien():
   return ret
 
 @memoized
+def daijirin():
+  """
+  @return  EBook
+  """
+  ret = DaijirinDic()
+  import settings
+  ret.setLocation(settings.global_().daijirinLocation())
+  return ret
+
+@memoized
+def daijisen():
+  """
+  @return  EBook
+  """
+  ret = DaijisenDic()
+  import settings
+  ret.setLocation(settings.global_().daijisenLocation())
+  return ret
+
+@memoized
 def zhongri():
   """
   @return  EBook
@@ -401,9 +430,10 @@ if __name__ == '__main__':
 
   #sys.exit(0)
 
-  DIC_ENC = 'euc_jp'
+  #DIC_ENC = 'euc_jp'
+  #DIC_ENC = 'sjis'
   #DIC_DEC = 'euc_jp'
-  DIC_DEC = 'utf8'
+  #DIC_DEC = 'utf8'
 
   #DIC_NAME = 'KOJIEN'
 
@@ -415,10 +445,11 @@ if __name__ == '__main__':
   #DIC_ENC = 'euc_jp'
   #DIC_DEC = 'euc_jp'
 
-  relpath = 'JMDict/fr.fpw'
-  dic_path = '../../../../../../Caches/Dictionaries/' + relpath
+  #relpath = 'JMDict/fr.fpw'
+  #dic_path = '../../../../../../Caches/Dictionaries/' + relpath
   #dic_path = os.path.abspath(dic_path)
-  print dic_path
+  #print dic_path
+  dic_path = '/Local/Windows/Applications/EB/DAIJIRIN'
 
   #dic_path = 'S:/Applications/EB/WADOKU/wadoku_epwing_jan2012'
   if len(sys.argv) == 2:
@@ -429,6 +460,7 @@ if __name__ == '__main__':
   gaiji = {}
   #eb = EBChineseShiori(dic_path, gaiji=gaiji)
   #eb = EBShiori(dic_path, gaiji=gaiji)
+  eb = EBShiori(dic_path, gaiji=gaiji)
   #eb.zht = True
   #eb = EBTest(dic_path)
   #for subbook in eb.subbook_list():
@@ -441,18 +473,19 @@ if __name__ == '__main__':
   print os.path.exists(dic_path)
   eb.setLocation(dic_path)
 
-  from PySide.QtGui import *
-  def show(t):
-    import sys
-    a = QApplication(sys.argv)
-    w = QLabel(t)
-    w.show()
-    a.exec_()
+  #from PySide.QtGui import *
+  #def show(t):
+  #  import sys
+  #  a = QApplication(sys.argv)
+  #  w = QLabel(t)
+  #  w.show()
+  #  a.exec_()
 
-  t = u'綺麗'
+  #t = u'綺麗'
+  t = u'万歳'
   hits = eb.render(t)
   for it in hits:
-    show(it)
+    print it
   #hits = eb.search_word(t.encode(DIC_ENC))
   #if hits:
   #  hit = hits[0]

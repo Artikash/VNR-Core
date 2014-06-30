@@ -105,6 +105,8 @@ class reader(QObject):
       #self.tr("Translate.Ru"),
       self.tr("ezTrans XP"),
       self.tr("Kojien"),
+      self.tr("Daijirin"),
+      self.tr("Daijisen"),
       self.tr("Wadoku"),
       self.tr("Zhongri"),
       self.tr("JBeijing"),

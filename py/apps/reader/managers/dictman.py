@@ -61,6 +61,15 @@ class _DictionaryManager:
             my.tr("Cannot load {0}").format("JMDict (%s)" % lang),
             my.tr("Please double check its location in Preferences."))))
 
+    if ss.isDaijirinEnabled():
+      eb = ebdict.daijirin()
+      if eb.exists():
+        yield eb
+      else:
+        growl.warn("<br/>".join((
+          my.tr("Cannot load {0}").format(u"DAIJIRIN (大辞林)"),
+          my.tr("Please double check its location in Preferences."))))
+
     if ss.isKojienEnabled():
       eb = ebdict.kojien()
       if eb.exists():
