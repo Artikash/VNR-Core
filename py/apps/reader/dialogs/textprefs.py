@@ -23,12 +23,12 @@ TEXTEDIT_MAX_HEIGHT = 80
 TEXTEDIT_MIN_WIDTH = 400
 THREADLAYOUT_COLUMN_COUNT = 2
 
-SS_TEXTEDIT_SCENE = "QTextEdit{color:blue}" # btn-primary
-SS_TEXTEDIT_NAME = "QTextEdit{color:green}" # btn-success
-SS_TEXTEDIT_OTHER = "QTextEdit{color:steelblue}" # btn-info
-#SS_TEXTEDIT_IGNORED = "QTextEdit{text-decoration:line-through}" # btn-danger
+SS_TEXTEDIT_SCENE = "QPlainTextEdit{color:blue}" # btn-primary
+SS_TEXTEDIT_NAME = "QPlainTextEdit{color:green}" # btn-success
+SS_TEXTEDIT_OTHER = "QPlainTextEdit{color:steelblue}" # btn-info
+#SS_TEXTEDIT_IGNORED = "QPlainTextEdit{text-decoration:line-through}" # btn-danger
 SS_TEXTEDIT_IGNORED = "" # btn-danger
-SS_TEXTEDIT_HOOK = "QTextEdit{color:red}"
+SS_TEXTEDIT_HOOK = "QPlainTextEdit{color:red}"
 SS_TEXTEDIT_HOOK_IGNORED = SS_TEXTEDIT_HOOK
 #SS_TEXTEDIT_HOOK_IGNORED = "QTextEdit{color:red;text-decoration:line-through}"
 
@@ -808,7 +808,7 @@ class TextTab(QtWidgets.QWidget):
       w += -290 + 350 * THREADLAYOUT_COLUMN_COUNT
       if row > 2:
         w += 20
-    return QtCore.QSize(w, h)
+    return QSize(w, h)
 
 ## Information tab ##
 
@@ -826,7 +826,7 @@ class TextTab(QtWidgets.QWidget):
 #
 #  def sizeHint(self):
 #    """@reimp"""
-#    return QtCore.QSize(500, 380)
+#    return QSize(500, 380)
 
 ## Main window ##
 

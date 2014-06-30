@@ -13,7 +13,7 @@ if __name__ == '__main__':
 import json
 from PySide.QtCore import Qt, Signal, Slot, QObject
 from Qt5 import QtWidgets
-from sakurakit import skqss
+from sakurakit import skqss, skwidgets
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
@@ -22,19 +22,18 @@ import config, i18n, rc
 
 TEXTEDIT_MINIMUM_HEIGHT = 50
 
-EDITABLE_FIELDS = 'lang', 'content'
-
 @Q_Q
 class _PostEditor(object):
   def __init__(self, q):
     self.postId = 0 # long
     self.userName = '' # unicode
     #self.userName = '' # unicode
-    for k in EDITABLE_FIELDS:
-      pty = 'post' + k.capitalize()
-      setattr(self, pty, '') # unicode
+    self.postLanguage = ''
+    self.postContent = ''
 
     self._createUi(q)
+
+    skwidgets.shortcut('ctrl+s', self._save, parent=q)
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
@@ -49,17 +48,18 @@ class _PostEditor(object):
 
     row = QtWidgets.QHBoxLayout()
     row.addStretch()
-    row.addWidget(self.cancelButton)
+    #row.addWidget(self.cancelButton)
     row.addWidget(self.saveButton)
     layout.addLayout(row)
 
+    layout.setContentsMargins(5, 5, 5, 5)
     q.setLayout(layout)
 
   @memoizedproperty
   def saveButton(self):
     ret = QtWidgets.QPushButton(tr_("Save"))
     skqss.class_(ret, 'btn btn-primary')
-    ret.setToolTip(tr_("Save"))
+    ret.setToolTip(tr_("Save") + " (Ctrl+S)")
     ret.setDefault(True)
     ret.clicked.connect(self._save)
     return ret
@@ -78,7 +78,7 @@ class _PostEditor(object):
     ret.setToolTip(tr_("Content"))
     ret.setAcceptRichText(False)
     ret.setMinimumHeight(TEXTEDIT_MINIMUM_HEIGHT)
-    ret.textChanged.connect(self._onEdit)
+    ret.textChanged.connect(self._onContentChanged)
     return ret
 
   @memoizedproperty
@@ -92,19 +92,23 @@ class _PostEditor(object):
     ret.setEditable(False)
     ret.addItems(map(i18n.language_name2, config.LANGUAGES))
     ret.setMaxVisibleItems(ret.count())
-    ret.currentIndexChanged.connect(self._onEdit)
+    ret.currentIndexChanged.connect(self._onLanguageChanged)
     return ret
 
-  def _getLang(self):
+  def _getLanguage(self):
     return config.language2htmllocale(config.LANGUAGES[self.languageEdit.currentIndex()])
   def _getContent(self):
     return self.contentEdit.toPlainText().strip()
 
   def _isChanged(self):
     t = self._getContent()
-    return bool(t) and t != self.postContent or self.postLang != self._getLang()
+    return bool(t) and t != self.postContent or self.postLanguage != self._getLanguage()
 
-  def _onEdit(self):
+  def _onContentChanged(self):
+    self.saveButton.setEnabled(self._isChanged())
+
+  def _onLanguageChanged(self):
+    self.spellHighlighter.setLanguage(self._getLanguage())
     self.saveButton.setEnabled(self._isChanged())
 
   def _save(self):
@@ -112,9 +116,9 @@ class _PostEditor(object):
     post = {}
     if v and v != self.postContent:
       post['content'] = self.postContent = v
-    v = self._getLang()
-    if v != self.postLang:
-      post['lang'] = self.postLang = v
+    v = self._getLanguage()
+    if v != self.postLanguage:
+      post['lang'] = self.postLanguage = v
     if post:
       post['id'] = self.postId
       post['userName'] = self.userName
@@ -124,9 +128,9 @@ class _PostEditor(object):
     self.saveButton.setEnabled(False)
 
     self.contentEdit.setPlainText(self.postContent)
-    self.spellHighlighter.setLanguage(self.postLang)
+    self.spellHighlighter.setLanguage(self.postLanguage)
 
-    try: langIndex = config.LANGUAGES.index(config.htmllocale2language(self.postLang))
+    try: langIndex = config.LANGUAGES.index(config.htmllocale2language(self.postLanguage))
     except ValueError: langIndex = 1 # 'en'
     self.languageEdit.setCurrentIndex(langIndex)
 
@@ -148,14 +152,13 @@ class PostEditor(QtWidgets.QDialog):
     import dataman
     dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
 
-  def setPost(self, id, userName='', **kwargs):
+  def setPost(self, id, userName='', language='', content='', **kwargs):
     d = self.__d
     d.postId = id
     d.userName = userName
+    d.postLanguage = language
+    d.postContent = content
 
-    for k in EDITABLE_FIELDS:
-      pty = 'post' + k.capitalize()
-      setattr(d, pty, kwargs.get(k))
     if self.isVisible():
       d.refresh()
 
@@ -174,7 +177,7 @@ class _PostEditorManager:
     import windows
     parent = windows.top()
     ret = PostEditor(parent)
-    ret.resize(400, 200)
+    ret.resize(300, 200)
     return ret
 
   def getDialog(self, q): # QObject -> QWidget

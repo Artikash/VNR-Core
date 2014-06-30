@@ -18,7 +18,7 @@ Item { id: root_
   property string postUrl //: Define.DOMAIN_COM + '/api/json/post/list'
   property variant postData // json object
 
-  property signal editPostRequested(string post) // passing post as json
+  signal editPostRequested(string post) // passing post as json
 
   function refresh() {
     Ajax.postJSON(postUrl, postData, function (obj) {
@@ -67,6 +67,7 @@ Item { id: root_
       , color: post.userColor
       , createTime: Util.timestampToString(post.createTime)
       , content: post.content
+      , language: post.lang
     }
   }
 

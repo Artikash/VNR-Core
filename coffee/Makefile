@@ -2,7 +2,10 @@
 # 8/8/2013 jichi
 
 # http://lackof.org/taggart/hacking/make-example/
-SUBDIRS = libs share browser reader
+SUBDIRS = \
+    libs \
+    share share/ajax \
+    browser reader
 
 .PHONY: all $(SUBDIRS)
 

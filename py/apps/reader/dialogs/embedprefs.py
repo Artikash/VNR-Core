@@ -28,14 +28,14 @@ TEXTEDIT_MAX_HEIGHT = 80
 TEXTEDIT_MIN_WIDTH = 400
 THREADLAYOUT_COLUMN_COUNT = 2
 
-SS_TEXTEDIT_SCENE = "QTextEdit{color:blue}" # btn-primary
-SS_TEXTEDIT_NAME = "QTextEdit{color:green}" # btn-success
-#SS_TEXTEDIT_OTHER = "QTextEdit{color:steelblue}" # btn-info
-#SS_TEXTEDIT_IGNORED = "QTextEdit{text-decoration:line-through}" # btn-danger
+SS_TEXTEDIT_SCENE = "QPlainTextEdit{color:blue}" # btn-primary
+SS_TEXTEDIT_NAME = "QPlainTextEdit{color:green}" # btn-success
+#SS_TEXTEDIT_OTHER = "QPlainTextEdit{color:steelblue}" # btn-info
+#SS_TEXTEDIT_IGNORED = "QPlainTextEdit{text-decoration:line-through}" # btn-danger
 SS_TEXTEDIT_IGNORED = "" # btn-danger
-SS_TEXTEDIT_HOOK = "QTextEdit{color:red}"
+SS_TEXTEDIT_HOOK = "QPlainTextEdit{color:red}"
 SS_TEXTEDIT_HOOK_IGNORED = SS_TEXTEDIT_HOOK
-#SS_TEXTEDIT_HOOK_IGNORED = "QTextEdit{color:red;text-decoration:line-through}"
+#SS_TEXTEDIT_HOOK_IGNORED = "QPlainTextEdit{color:red;text-decoration:line-through}"
 
 #SS_LABELS = {
 #  defs.HOOK_THREAD_TYPE: "QLabel{color:red}",

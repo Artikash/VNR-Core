@@ -102,7 +102,7 @@ import subedit
 qmlRegisterType(subedit.SubtitleEditorManagerProxy, QML_PLUGIN, 1, 0, 'SubtitleEditorManagerProxy')
 
 import postedit
-qmlRegisterType(subedit.PostEditorManagerProxy, QML_PLUGIN, 1, 0, 'PostEditorManagerProxy')
+qmlRegisterType(postedit.PostEditorManagerProxy, QML_PLUGIN, 1, 0, 'PostEditorManagerProxy')
 
 import gameedit
 qmlRegisterType(gameedit.GameEditorManagerProxy, QML_PLUGIN, 1, 0, 'GameEditorManagerProxy')
