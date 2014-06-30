@@ -287,8 +287,8 @@ initTwitterSwitch = ->
                 el: el
                 options:
                   lang: i18nBean.lang()
-                  width: 300
-                  height: 500
+                  width: 480 # the same as youtube width
+                  height: 500 # smaller than GameView's default height
                   chrome: 'transparent noborders noheader' # nofooter noscrollbar
                   showReplies: true
                   #tweetLimit: 20 # the maximum is 20
