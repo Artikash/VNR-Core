@@ -10,14 +10,15 @@ import '../../../js/underscore.string.min.js' as S_
 import '../../../js/util.min.js' as Util
 import '../../../components' as Components
 import '../share' as Share
-import '.' as PostView
 
 Item { id: root_
   implicitWidth: 200; implicitHeight: 300 // default
 
   property alias count: listModel_.count
-  property string postUrl
+  property string postUrl //: Define.DOMAIN_COM + '/api/json/post/list'
   property variant postData // json object
+
+  property signal editPostRequested(string post) // passing post as json
 
   function refresh() {
     Ajax.postJSON(postUrl, postData, function (obj) {
@@ -51,8 +52,6 @@ Item { id: root_
   }
 
   // - Private -
-
-  PostView.EditDialog { id: editDialog_ }
 
   clip: true
 
@@ -179,7 +178,7 @@ Item { id: root_
           text: '<a href="#" style="color:darkgreen;text-decoration:none">' + Sk.tr("Edit") + '</a>'
           textFormat: Text.RichText
 
-          onLinkActivated: editDialog_.showPost(model)
+          onLinkActivated: root_.editPostRequested(JSON.stringify(model))
         }
 
         //Share.TextButton { id: editButton_

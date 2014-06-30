@@ -28,6 +28,7 @@ EDITABLE_FIELDS = 'lang', 'content'
 class _PostEditor(object):
   def __init__(self, q):
     self.postId = 0 # long
+    self.userName = '' # unicode
     #self.userName = '' # unicode
     for k in EDITABLE_FIELDS:
       pty = 'post' + k.capitalize()
@@ -97,7 +98,7 @@ class _PostEditor(object):
   def _getLang(self):
     return config.language2htmllocale(config.LANGUAGES[self.languageEdit.currentIndex()])
   def _getContent(self):
-    return self.contentEdit.toPlainText()
+    return self.contentEdit.toPlainText().strip()
 
   def _isChanged(self):
     t = self._getContent()
@@ -116,6 +117,7 @@ class _PostEditor(object):
       post['lang'] = self.postLang = v
     if post:
       post['id'] = self.postId
+      post['userName'] = self.userName
       self.q.postChanged.emit(json.dumps(post))
 
   def refresh(self):
@@ -146,9 +148,11 @@ class PostEditor(QtWidgets.QDialog):
     import dataman
     dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
 
-  def setPost(self, id, **kwargs):
+  def setPost(self, id, userName='', **kwargs):
     d = self.__d
-    d.postId = id # long
+    d.postId = id
+    d.userName = userName
+
     for k in EDITABLE_FIELDS:
       pty = 'post' + k.capitalize()
       setattr(d, pty, kwargs.get(k))

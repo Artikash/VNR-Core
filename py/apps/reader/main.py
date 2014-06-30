@@ -620,6 +620,14 @@ class _MainObject(object):
     self.gameManager.processChanged.connect(ret.clear)
     return ret
 
+  @memoizedproperty
+  def postEditorManager(self):
+    dprint("create post editor manager")
+    import postedit
+    ret = postedit.manager()
+    ret.setParent(self.q)
+    return ret
+
   @property
   def gameEditorManager(self):
     import gameedit
@@ -1362,6 +1370,7 @@ class MainObject(QObject):
     d.cacheManager
     #d.cacheManager.updateAvatar("AQKI6jsmz")
     d.subtitleEditorManager
+    d.postEditorManager
     d.hotkeyManager
     d.ttsManager
 

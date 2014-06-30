@@ -35,6 +35,14 @@ Item { id: root_
     if (visible)
       postList_.refresh()
 
+  PostView.PostEditor { id: postEditor_
+    // Invisible item
+    width: 0; height: 0
+    visible: true
+
+    postUrl: root_.url + 'update'
+  }
+
   PostView.PostList { id: postList_
     anchors {
       left: parent.left
@@ -51,6 +59,8 @@ Item { id: root_
       , sort: 'updateTime'
       , asc: 'true'
     })
+
+    onEditPostRequested: postEditor_.editPost(post)
 
     Share.Blocker {
       anchors.fill: parent
