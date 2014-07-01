@@ -280,6 +280,18 @@ initRuby = ->
 
   dprint 'bindRuby: leave'
 
+## Spin ##
+
+
+initSpin = ->
+
+  $.fn.spin.presets.section = # preset for section
+    left: '-8px'
+    lines: 8
+    length: 4
+    width: 2
+    radius: 4
+
 ## Bootstrap Switch ##
 
 initSwitches = ->
@@ -290,6 +302,7 @@ initSwitches = ->
 initSettingsSwitch = ->
   $section = $ 'section.settings'
   $container = $section.find '.contents'
+  $spinner = $section.find '.spin'
   $section.find('input.switch').bootstrapSwitch()
     .on 'switchChange.bootstrapSwitch', (event, checked) ->
       unless checked
@@ -300,12 +313,15 @@ initSettingsSwitch = ->
         $container.show()
            .addClass 'rendered'
 
-        onError = -> $container.removeClass 'rendered'
+        onError = ->
+          $container.removeClass 'rendered'
+          $spinner.spin false
 
-        id = $('.game').data 'id'
+        $spinner.spin 'section'
+
         rest.forum.query 'game',
           data:
-            id: id
+            id: GAME_ID
             select: 'file'
             agent: 'vnr'
           error: onError
@@ -313,6 +329,7 @@ initSettingsSwitch = ->
             unless data.file
               onError()
             else
+              $spinner.spin false
               h = renderSettings data.file
               $container
                 .hide()
@@ -658,6 +675,10 @@ init = ->
     setTimeout init, 100 # Wait until bean is ready
   else
     dprint 'init: enter'
+
+    @GAME_ID = $('.game').data 'id' # global game item id
+
+    initSpin()
 
     createTemplates()
 

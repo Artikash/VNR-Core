@@ -274,13 +274,14 @@
             .title
               .col-xs-2
                 .title-content #{tr('Settings')}
+                .spin
               .switch-group
                 -if online
                   %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
                 -else
                   %input.switch(disabled="true",type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
                   %span.text-danger #{' (' + tr('Offline') + ')'}
-              .contents
+            .contents
           -if game.hasTwitterWidgets()
             %hr
             %section.twitter
@@ -407,10 +408,12 @@
       -if game
         -for it in \
             'jquery', 'jquery.ui', \
+            'spin', 'jquery.spin', \
             'bootstrap.switch', 'dragdealer', \
             'haml', 'masonry', \
             'rest', 'ruby', 'widgets', 'game'
           %script(src="#{rc.cdn_url(it)}")
+
 
         -if game.dmm and game.dmm.hasSampleImages()
           -for it in 'underscore', 'underscore.string', 'choco'

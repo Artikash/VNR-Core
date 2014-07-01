@@ -84,7 +84,6 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.1.4/imagesloaded.min.js
   #jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.1.0/imagesloaded.min.js
   jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.0.4/imagesloaded.pkgd.min.js
-
   jquery.ui: http://cdn.jsdelivr.net/jquery.ui/1.10.4/jquery-ui.min.js
 
   bootstrap.switch: $PWD/../AJAX/bootstrap-switch/3.0.1/bootstrap-switch.min.js
@@ -98,10 +97,12 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
 
   moment: http://cdn.jsdelivr.net/momentjs/2.6.0/moment.min.js
   #moment: http://cdn.jsdelivr.net/momentjs/2.5.1/moment-with-langs.min.js
-  #spin: http://cdn.jsdelivr.net/spinjs/1.3.0/spin.min.js
   #underscore: http://cdn.jsdelivr.net/underscorejs/1.6.0/underscore-min.js
   underscore: http://cdn.jsdelivr.net/lodash/2.4.1/lodash.min.js
   underscore.string: http://cdn.jsdelivr.net/underscore.string/2.3.3/underscore.string.min.js
+
+  spin: http://cdn.jsdelivr.net/spinjs/2.0.1/spin.min.js
+  jquery.spin: http://cdn.jsdelivr.net/spinjs/2.0.1/jquery.spin.min.js
 
   # CDNJS: http://cdnjs.com
 
