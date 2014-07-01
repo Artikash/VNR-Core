@@ -354,6 +354,12 @@ def migrate(ss_version): # long ->
 
   try: # this try is in case I forgot certain rc directories for update
 
+    if ss_version <= 1404193846: # clean data cache
+      path = rc.DIR_CACHE_DATA
+      if os.path.exists(path):
+        skfileio.removetree(path)
+        skfileio.makedirs(path)
+
     if ss_version <= 1403890414: # remove existing references directory
 
       path = rc.DIR_DICT_MECAB # delete old mecab
@@ -445,16 +451,6 @@ def migrate(ss_version): # long ->
     #      if os.path.exists(f):
     #        os.remove(f)
     #  except Exception, e: dwarn(e)
-
-    if ss_version <= 1379659275:
-      tmpdir = rc.DIR_CACHE_DATA
-      try:
-        for root, dirs, files in os.walk(tmpdir):
-          for f in files:
-            if f.endswith('.jpg'):
-              p = os.path.join(root, f)
-              skfileio.removefile(p)
-      except Exception, e: dwarn(e)
 
     if ss_version <= 1378612993: # disable timezone by default
       ss.setValue('TimeZoneEnabled', False)
