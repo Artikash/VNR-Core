@@ -129,6 +129,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   # My own sass and coffeescript
 
   choco: $PWD/coffee/libs/choco.min.js
+  rest: $PWD/coffee/share/rest.min.js
   ruby: $PWD/coffee/share/ruby.min.js
 
   # Reader

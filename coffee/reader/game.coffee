@@ -40,11 +40,11 @@ createTemplates = ->
   .header
     %a.tts(role="button" data-text="${title}" title="TTS")
       %span.fa.fa-volume-down
-    %a.title.cursor-pointer(title="#{tr 'Play'}") ${title}
+    %a.title.cursor-pointer(title="#{tr 'Play'}") = title
     :if date
-      .date ${date}
+      .date = date
     .toolbar.pull-right
-      %button.close(type="button" title="#{tr 'Close'}") &times
+      %button.close(type="button" title="#{tr 'Close'}") &times;
       %a.btn.btn-link.btn-xs(role="button" href="http://youtube.com/watch?v=${vid}" title="http://youtube.com/watch?v=${vid}")
         %span.fa.fa-external-link
   .image
@@ -62,17 +62,64 @@ createTemplates = ->
 .chara
   .header
     :if it.label == "主人公" || label == "【主人公】"
-      .text-danger(title="#{yomi}") #{name}
+      .text-danger(title="#{yomi}") = name
     :else
-      .text-default(title="#{yomi}") #{name}
+      .text-default(title="#{yomi}") = name
   :if img
     .body: %a(href="#{img}" title="#{it.name} #{label}")
       %img.img-rounded(src="#{img}")
   .footer
     :if cv
-      .text-info #{cv}
+      .text-info = cv
     :else
       %span.muted (CV無し)
+'''
+
+  # HAML for game.file
+  # - param file
+  #   - encoding
+  #   - hook
+  #   - threads
+  #     - name
+  #       - name
+  #       - sig
+  #     - scene
+  #       - name
+  #       - sig
+  #
+  @HAML_SETTINGS = Haml '''\
+.body.form-horizontal
+  :if file.encoding
+    .row.encoding
+      %label.control-label.col-xs-2 = tr('Encoding')
+      .form-control-static.col-xs-10 = file.encoding.toUpperCase()
+  :if file.threads
+    :if file.threads.scene
+      .row.thread
+        %label.control-label.col-xs-2 対話
+        .form-control-static.col-xs-10
+          = file.threads.scene.name
+          = ' '
+          = file.threads.scene.sig.toString(16)
+    :if file.threads.name
+      .row.thread
+        %label.control-label.col-xs-2 名前
+        .form-control-static.col-xs-10
+          = file.threads.name.name
+          = ' '
+          = file.threads.name.sig.toString(16)
+  .row.hcode
+    %label.control-label.col-xs-2 = tr('H-code')
+    .form-control-static.col-xs-10
+      :if file.hook
+        = file.hook.text
+        :if file.hook.locked
+          %b.text-info = ' (' + tr('Locked') + ')'
+          %i.text-muted.text-xs
+            = ' -- '
+            = tr('This h-code is definite correct and not allowed to change')
+      :else
+        %span.text-muted = tr('Not specified')
 '''
 
 ## Render ##
@@ -103,6 +150,9 @@ _renderCharacter = (params) ->
 
 renderCharacters = (type) -> # string -> string
   JSON.parse(gameBean.getCharacters type).map(_renderCharacter).join ''
+
+renderSettings = (file) -> # game.file
+  HAML_SETTINGS file:file
 
 ## Bindings ##
 
@@ -232,6 +282,43 @@ initRuby = ->
 
 ## Bootstrap Switch ##
 
+initSwitches = ->
+  initSettingsSwitch()
+  initTwitterSwitch()
+  initYouTubeSwitch()
+
+initSettingsSwitch = ->
+  $section = $ 'section.settings'
+  $container = $section.find '.contents'
+  $section.find('input.switch').bootstrapSwitch()
+    .on 'switchChange.bootstrapSwitch', (event, checked) ->
+      unless checked
+        $container.fadeOut()
+      else if $container.hasClass 'rendered'
+        $container.fadeIn()
+      else
+        $container.show()
+           .addClass 'rendered'
+
+        onError = -> $container.removeClass 'rendered'
+
+        id = $('.game').data 'id'
+        rest.forum.query 'game',
+          data:
+            id: id
+            select: 'file'
+            agent: 'vnr'
+          error: onError
+          success: (data) ->
+            unless data.file
+              onError()
+            else
+              h = renderSettings data.file
+              $container
+                .hide()
+                .html h
+                .fadeIn()
+
 #initCGSwitch = ->
 #  $section = $ 'section.cg'
 #  $container = $section.find '.images'
@@ -263,7 +350,6 @@ initRuby = ->
 #          $container.masonry() # refresh after images are loaded
 
 initTwitterSwitch = ->
-
   $section = $ 'section.twitter'
   $container = $section.find '.widgets'
   $section.find('input.switch').bootstrapSwitch()
@@ -337,12 +423,13 @@ bindYoutube = ->
         $video.find('.iframe').html h
       false
 
-initSwitches = ->
-  #initCGSwitch()
-  initTwitterSwitch()
-  initYouTubeSwitch()
-
 ## Bootstrap Navigation Pills ##
+
+initPills = ->
+  initCGPills()
+  #initCharaPills()
+  initDescPills()
+  initCharaDescPills()
 
 initDescPills = -> # Descriptions
   $sec = $ 'section.descriptions'
@@ -534,12 +621,6 @@ initCGPills = -> # Sample images
 #               .appendTo $container
 #               .fadeIn()
 #    false
-
-initPills = ->
-  initCGPills()
-  #initCharaPills()
-  initDescPills()
-  initCharaDescPills()
 
 ## Bootstrap ##
 

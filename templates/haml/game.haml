@@ -16,21 +16,9 @@
 
 %html(lang="ja")
   %head
+    ; Stylesheets
     -for it in 'bootstrap3.css', 'font-awesome4.css', 'bootstrap.switch.css', 'dragdealer.css', 'game.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
-    ;-if game
-    ;  -if game.getchu and (game.getchu.hasDescriptions() or game.characterDescription or game.getchu.review)
-    ;    %link(rel="stylesheet",href="#{rc.cdn_url('getchu.css')}")
-    ;  -if game.amazon and game.amazon.hasDescriptions()
-    ;    %link(rel="stylesheet",href="#{rc.cdn_url('amazon.css')}")
-    ;  -if game.digiket and (game.digiket.description or game.digiket.review)
-    ;    %link(rel="stylesheet",href="#{rc.cdn_url('digiket.css')}")
-    ;  -if game.dlsite and (game.dlsite.description or game.dlsite.review)
-    ;    %link(rel="stylesheet",href="#{rc.cdn_url('dlsite.css')}")
-    ;  -if game.dmm and (game.dmm.description or game.dmm.review)
-    ;    %link(rel="stylesheet",href="#{rc.cdn_url('dmm.css')}")
-    ;  -if game.gyutto and game.gyutto.review
-    ;    %link(rel="stylesheet",href="#{rc.cdn_url('gyutto.css')}")
 
     :css
       body {
@@ -48,7 +36,7 @@
   -if not game
     %body
       -if title
-        %center(style="margin-top:100px"): %b.ja: #{'「' + title + '」'|e}
+        %center(style="margin-top:100px;font-size:200%;"): %b.ja: #{'「' + title + '」'|e}
       .blocker: #{tr('Empty') + ' ><'}
   -else
     -set GG_Q = 'https://www.google.com/?#hl=ja&safe=off&q='
@@ -252,32 +240,39 @@
                   %label.control-label.col-xs-2 #{tr('Wikipedia')}
                   .form-control-static.col-xs-10
                     %a(href="#{url}",title="#{url}") #{url}
-              -if true
-                -if game.scapeCount and game.scape
-                  .row
-                    %label.control-label.col-xs-2 批評空間
-                    .form-control-static.col-xs-10
-                      %a(href="#{game.scape.url}",title="#{game.scape.url}")
-                        #{game.scapeMedian}&times;#{game.scapeCount}
-                -if game.visitCount
-                  .row
-                    %label.control-label.col-xs-2 #{tr('Play')}
-                    .form-control-static.col-xs-10
-                      %span.count #{game.visitCount}
-                -if game.commentCount
-                  .row
-                    %label.control-label.col-xs-2 #{tr('Subtitle')}
-                    .form-control-static.col-xs-10
-                      %span.count #{game.commentCount}
+              -if game.scapeCount and game.scape
+                .row
+                  %label.control-label.col-xs-2 批評空間
+                  .form-control-static.col-xs-10
+                    %a(href="#{game.scape.url}",title="#{game.scape.url}")
+                      #{game.scapeMedian}&times;#{game.scapeCount}
+              -if game.visitCount
+                .row
+                  %label.control-label.col-xs-2 #{tr('Play')}
+                  .form-control-static.col-xs-10
+                    %span.count #{game.visitCount}
+              -if game.commentCount
+                .row
+                  %label.control-label.col-xs-2 #{tr('Subtitle')}
+                  .form-control-static.col-xs-10
+                    %span.count #{game.commentCount}
           -if game.hasBannerImages()
             %section.banner
               -for it in game.iterBannerImageUrls()
                 -if game.homepage
-                  %a(href="#{homepage}",title="#{it}")
+                  %a(href="#{game.homepage}",title="#{game.homepage}")
                     %img(src="#{it}")
                 -else
                   %a(href="#{GG_Q}#{game.title}",title="#{tr('Google')}: #{game.title}")
                     %img(src="#{it}")
+          %hr
+          %section.settings
+            .title
+              .col-xs-2
+                .title-content #{tr('Settings')}
+              .switch-group
+                %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+              .contents
           -if game.hasTwitterWidgets()
             %hr
             %section.twitter
@@ -399,49 +394,16 @@
 ;                    .header
 ;                      %a.user(href="/user/#{it.userName}",target="_blank") @#{it.userName}
 ;                    .footer #{it.count} / #{it.lang[:2] or 'en'}
-;          -if game.file
-;            %hr
-;            %section.file
-;              .title
-;                .title-content #{tr('Text Settings')}
-;              .body.form-horizontal
-;                -if game.file.encoding
-;                  .row.encoding
-;                    %label.control-label.col-xs-2 #{tr('Encoding')}
-;                    .form-control-static.col-xs-10 #{game.file.encoding.toUpperCase()}
-;                -if game.file.threads
-;                  -if game.file.threads.scene
-;                    .row.thread
-;                      %label.control-label.col-xs-2 #{tr('Dialogue')}
-;                      .form-control-static.col-xs-10
-;                        #{tr(file.threads.scene.name)}
-;                        #{file.threads.scene.sig.toString(16)}
-;                  -if game.file.threads.name
-;                    .row.thread
-;                      %label.control-label.col-xs-2 #{tr('Character')}
-;                      .form-control-static.col-xs-10
-;                        #{tr(game.file.threads.name.name)}
-;                        #{game.file.threads.name.sig.toString(16)}
-;                .row.hcode
-;                  %label.control-label.col-xs-2 #{tr('H-code')}
-;                  .form-control-static.col-xs-10
-;                    -if game.file.hook
-;                      #{file.hook.text}
-;                      -if file.hook.locked
-;                        %b.text-info #{' (' + tr('Locked') + ')'}
-;                        %i.text-muted.text-xs #{' -- ' + tr('This h-code is definite correct and not allowed to change')}
-;                    -else
-;                      %span.text-muted #{tr('Not specified')}
 
       ; Scripts
-      -for it in \
-          'jquery', 'jquery.ui', \
-          'bootstrap.switch', 'dragdealer', \
-          'haml', 'masonry', \
-          'ruby', 'widgets', 'game'
-        %script(src="#{rc.cdn_url(it)}")
-
       -if game
+        -for it in \
+            'jquery', 'jquery.ui', \
+            'bootstrap.switch', 'dragdealer', \
+            'haml', 'masonry', \
+            'rest', 'ruby', 'widgets', 'game'
+          %script(src="#{rc.cdn_url(it)}")
+
         -if game.dmm and game.dmm.hasSampleImages()
           -for it in 'underscore', 'underscore.string', 'choco'
             %script(src="#{rc.cdn_url(it)}")
