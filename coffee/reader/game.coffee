@@ -6,6 +6,8 @@
 dprint = ->
 timer = -> new choco.Timer arguments ...
 
+HOST = 'http://sakuradite.com'
+
 #bind = ->
 #  #$('[title]').tooltip() # use bootstrap tooltip
 
@@ -23,6 +25,8 @@ INVALID_YT_IMG_WIDTH = 120 # invalid youtube thumbnail image width
 
 # Delay template creation until i18nBean becomes available
 createTemplates = ->
+  @HTML_EMPTY = Haml.render ".empty #{tr 'Empty'}"
+
   # HAML for sample images
   # - param  url
   @HAML_SAMPLE_IMAGE = Haml '''\
@@ -58,22 +62,22 @@ createTemplates = ->
   # - param  label  string or null
   # - param  cv  string or null
   # - param  img  string url or null
-  @HAML_CHARA = Haml '''\
-.chara
-  .header
-    :if it.label == "主人公" || label == "【主人公】"
-      .text-danger(title="#{yomi}") = name
-    :else
-      .text-default(title="#{yomi}") = name
-  :if img
-    .body: %a(href="#{img}" title="#{it.name} #{label}")
-      %img.img-rounded(src="#{img}")
-  .footer
-    :if cv
-      .text-info = cv
-    :else
-      %span.muted (CV無し)
-'''
+  #  @HAML_CHARA = Haml '''\
+  #.chara
+  #  .header
+  #    :if it.label == "主人公" || label == "【主人公】"
+  #      .text-danger(title="#{yomi}") = name
+  #    :else
+  #      .text-default(title="#{yomi}") = name
+  #  :if img
+  #    .body: %a(href="#{img}" title="#{it.name} #{label}")
+  #      %img.img-rounded(src="#{img}")
+  #  .footer
+  #    :if cv
+  #      .text-info = cv
+  #    :else
+  #      %span.muted (CV無し)
+  #'''
 
   # HAML for game.file
   # - param file
@@ -122,6 +126,25 @@ createTemplates = ->
         %span.text-muted = tr('Not specified')
 '''
 
+  # HAML for game.file
+  # - param users
+  #   [user]
+  #   - userAvatar
+  #   - userName
+  #   - lang
+  #   - count
+  #   - url
+  @HAML_USERS = Haml '''\
+:for it in users
+  .user
+    :if it.userAvatar
+      %a.user(href="#{it.url}" title="#{it.url}")
+        %img.img-circle.avatar(src="http://media.getchute.com/media/#{it.userAvatar}/128x128")
+    .header
+      %a.user(href="#{it.url}") @#{it.userName}
+    .footer #{it.count} / #{it.lang}
+'''
+
 ## Render ##
 
 createTwitterTimeline = (id:id, el:el, callback:callback, options:options) ->
@@ -154,6 +177,12 @@ renderCharacters = (type) -> # string -> string
 
 renderSettings = (file) -> # game.file
   HAML_SETTINGS file:file
+
+renderUsers = (users) -> # game.file
+  for it in users
+    it.url = "#{HOST}/user/#{it.userName}"
+    it.lang = it.lang?[..1] or '*'
+  HAML_USERS users:users
 
 ## Bindings ##
 
@@ -285,7 +314,6 @@ initRuby = ->
 
 
 initSpin = ->
-
   $.fn.spin.presets.section = # preset for section
     left: '-8px'
     lines: 8
@@ -297,6 +325,7 @@ initSpin = ->
 
 initSwitches = ->
   initSettingsSwitch()
+  initUsersSwitch()
   initTwitterSwitch()
   initYouTubeSwitch()
 
@@ -314,10 +343,6 @@ initSettingsSwitch = ->
         $container.show()
            .addClass 'rendered'
 
-        onError = ->
-          $container.removeClass 'rendered'
-          $spinner.spin false
-
         $spinner.spin 'section'
 
         rest.forum.query 'game',
@@ -325,17 +350,55 @@ initSettingsSwitch = ->
             id: GAME_ID
             select: 'file'
             agent: 'vnr'
-          error: onError
+          error: ->
+            $spinner.spin false
+            $container.removeClass 'rendered'
           success: (data) ->
-            unless data.file
-              onError()
-            else
-              $spinner.spin false
+            $spinner.spin false
+            if data.file
               h = renderSettings data.file
-              $container
-                .hide()
-                .html h
-                .fadeIn()
+            else
+              h = HTML_EMPTY
+            $container
+              .hide()
+              .html h
+              .fadeIn()
+
+initUsersSwitch = ->
+  $section = $ 'section.users'
+  $container = $section.find '.contents'
+  $spinner = $section.find '.spin'
+  $section.find('input.switch').bootstrapSwitch()
+    .on 'switchChange.bootstrapSwitch', (event, checked) ->
+      unless checked
+        $container.fadeOut()
+      else if $container.hasClass 'rendered'
+        $container.fadeIn()
+      else
+        $container.show()
+           .addClass 'rendered'
+
+        $spinner.spin 'section'
+
+        rest.forum.query 'game',
+          data:
+            id: GAME_ID
+            select: 'users'
+            agent: 'vnr'
+          error: ->
+            $spinner.spin false
+            $container.removeClass 'rendered'
+          success: (data) ->
+            $spinner.spin false
+            users = data.users or data.subs
+            if users
+              h = renderUsers users
+            else
+              h = HTML_EMPTY
+            $container
+              .hide()
+              .html h
+              .fadeIn()
 
 #initCGSwitch = ->
 #  $section = $ 'section.cg'

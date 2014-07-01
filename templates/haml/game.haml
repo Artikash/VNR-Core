@@ -282,6 +282,20 @@
                   %input.switch(disabled="true",type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
                   %span.text-danger #{' (' + tr('Offline') + ')'}
             .contents
+          -if game.commentCount
+            %hr
+            %section.users
+              .title
+                .col-xs-2
+                  .spin
+                  .title-content #{tr('Subtitles')}
+                .switch-group
+                  -if online
+                    %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+                  -else
+                    %input.switch(disabled="true",type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+                    %span.text-danger #{' (' + tr('Offline') + ')'}
+              .contents
           -if game.hasTwitterWidgets()
             %hr
             %section.twitter
@@ -390,21 +404,6 @@
 ;                      %span.count #{game.commentCount}
 ;              %button.btn-review.btn.btn-primary.dropdown-toggle.btn-sm(type="button")
 ;                %span.fa.fa-star #{tr('Review')}
-;          -if game.subs
-;            %hr
-;            %section.subtitle
-;              .title
-;                .title-content = tr('Subtitle Contributors')
-;              .body
-;                -for it in game.subs
-;                  .item
-;                    -if it.userAvatar
-;                      %a.user(href="/user/#{it.userName}",title="@#{it.userName}")
-;                        %img.img-circle.avatar(src="//media.getchute.com/media/#{it.userAvatar}/128x128")
-;                    .header
-;                      %a.user(href="/user/#{it.userName}",target="_blank") @#{it.userName}
-;                    .footer #{it.count} / #{it.lang[:2] or 'en'}
-
       ; Scripts
       -if game
         -for it in \
