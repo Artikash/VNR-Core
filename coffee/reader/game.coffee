@@ -130,8 +130,9 @@ createTwitterTimeline = (id:id, el:el, callback:callback, options:options) ->
 _renderSampleImage = (url) ->
   HAML_SAMPLE_IMAGE url:url
 
-renderSampleImages = (type) -> # -> string  html
-  gameBean.getSampleImages(type).split(',').map(_renderSampleImage).join ''
+renderSampleImages = (type) -> # -> int count, string html
+  l = gameBean.getSampleImages(type).split ','
+  [l.length, l.map(_renderSampleImage).join('')]
 
 _renderVideo = (params) ->
   params.date = '' unless params.date? # fill in the missing date
@@ -530,9 +531,27 @@ class MasonryAniPauser
         isAnimated: true # default = true, enable animation
         transitionDuration: 400 # default = 400, set to 0 to disable animation
 
+class SpinCounter
+  constructor: (@$el, @count=0, @preset='section') ->
+    @$el.spin 'section' if @count
+
+  inc: (value=1) =>
+    if value > 0
+      @$el.spin @preset if @count <= 0
+      @count += value
+
+  dec: (value=1) =>
+    if value > 0
+      @count -= value
+      @$el.spin false if @count <= 0
+
+
 initCGPills = -> # Sample images
   $sec = $ 'section.cg'
   $container = $sec.find '.contents'
+  $spin = $sec.find '.spin'
+
+  counter = new SpinCounter $spin
 
   $sec.find('.nav.nav-pills > li > a').click ->
     $li = $(@).parent 'li'
@@ -550,7 +569,8 @@ initCGPills = -> # Sample images
           $el.fadeIn()
              .masonry()
         else
-          h = renderSampleImages newtype
+          [count, h] = renderSampleImages newtype
+          counter.inc count
           el = document.createElement 'div'
           el.className = newtype + ' images'
           el.innerHTML = h
@@ -567,6 +587,7 @@ initCGPills = -> # Sample images
                 #  $container.find('img').width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
                 #  $container.masonry() # refresh after images are loaded
                 .find('img').load ->
+                  counter.dec()
                   # Sample bad DMM image: http://pics.dmm.com/mono/movie/n/now_printing/now_printing.jpg
                   if ~@src.indexOf('pics.dmm.') and @naturalWidth is 90 and @naturalHeight is 122
                     pauser = new MasonryAniPauser $div unless pauser?
@@ -576,7 +597,7 @@ initCGPills = -> # Sample images
                   else
                     @width = DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
                   $div.masonry() # refresh after images are loaded
-         ) $ el
+          ) $ el
     false
 
 #initCGSwitch = ->

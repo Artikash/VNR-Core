@@ -273,8 +273,8 @@
           %section.settings
             .title
               .col-xs-2
-                .title-content #{tr('Settings')}
                 .spin
+                .title-content #{tr('Settings')}
               .switch-group
                 -if online
                   %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
@@ -308,6 +308,7 @@
             %section.cg
               .title
                 .col-xs-2
+                  .spin
                   .title-content #{tr('Images')}
                 %ul.nav.nav-pills.nav-clean.nav-xs
                   %li.active(data-type="")
