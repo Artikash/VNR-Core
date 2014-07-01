@@ -64,6 +64,10 @@
             %a.tts.cursor-pointer(title="#{tr('TTS')}",data-text="#{game.title}")
               %span.fa.fa-volume-down.icon-margin
             %a(href="#{GG_Q}#{game.title}",title="#{tr('Google')}") #{game.title}
+            -if game.upcoming
+              %b.text-danger (未発売)
+            -elif game.recent
+              %b.text-danger (新作)
           -if game.romajiTitle
             .romaji
               %a(href="#{GG_Q}#{game.romajiTitle}",title="#{tr('Google')}") #{game.romajiTitle}
@@ -271,7 +275,11 @@
               .col-xs-2
                 .title-content #{tr('Settings')}
               .switch-group
-                %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+                -if online
+                  %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+                -else
+                  %input.switch(disabled="true",type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+                  %span.text-danger #{' (' + tr('Offline') + ')'}
               .contents
           -if game.hasTwitterWidgets()
             %hr
