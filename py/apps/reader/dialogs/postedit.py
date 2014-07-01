@@ -62,6 +62,7 @@ class _PostEditor(object):
     ret.setToolTip(tr_("Save") + " (Ctrl+S)")
     ret.setDefault(True)
     ret.clicked.connect(self._save)
+    ret.clicked.connect(self.q.hide) # save and hide
     return ret
 
   @memoizedproperty
