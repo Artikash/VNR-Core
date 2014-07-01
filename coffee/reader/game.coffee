@@ -25,7 +25,7 @@ INVALID_YT_IMG_WIDTH = 120 # invalid youtube thumbnail image width
 
 # Delay template creation until i18nBean becomes available
 createTemplates = ->
-  @HTML_EMPTY = Haml.render ".empty #{tr 'Empty'}"
+  @HTML_EMPTY = Haml.render ".empty #{'(' + tr('Empty') + ')'}"
 
   # HAML for sample images
   # - param  url

@@ -37,7 +37,7 @@
     %body
       -if title
         %center(style="margin-top:100px;font-size:200%;"): %b.ja: #{'「' + title + '」'|e}
-      .blocker: #{tr('Empty') + ' ><'}
+      .blocker #{tr('Empty') + ' ><'}
   -else
     -set GG_Q = 'https://www.google.com/?#hl=ja&safe=off&q='
     %body
