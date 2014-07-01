@@ -349,7 +349,6 @@ initSettingsSwitch = ->
           data:
             id: GAME_ID
             select: 'file'
-            agent: 'vnr'
           error: ->
             $spinner.spin false
             $container.removeClass 'rendered'
@@ -384,7 +383,6 @@ initUsersSwitch = ->
           data:
             id: GAME_ID
             select: 'users'
-            agent: 'vnr'
           error: ->
             $spinner.spin false
             $container.removeClass 'rendered'

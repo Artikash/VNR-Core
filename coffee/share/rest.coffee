@@ -7,7 +7,12 @@ rest.coffee
 
 # libs/ajax.coffee
 
+VERSION = 1404193846
+AGENT = 'vnr'
+
 postJSON = (data:data, url:url, success:success, error:error) ->
+  data.version = VERSION
+  data.agent = AGENT
   $.ajax
     type: 'POST'
     contentType: 'application/json;charset=utf-8'
