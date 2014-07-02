@@ -124,6 +124,8 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #dateformat: http://rawgithub.com/felixge/node-dateformat/master/lib/dateformat.js?1.2.3
   #dateformat: $PWD/../AJAX/npm/dateformat.min.js
 
+  jquery.raty: $PWD/../AJAX/raty/jquery.raty.min.js
+
   #haml: http://rawgithub.com/creationix/haml-js/master/lib/haml.js?0.4.3
   haml: $PWD/../AJAX/npm/haml.min.js
 
