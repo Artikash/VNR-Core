@@ -97,9 +97,9 @@ $yt-img-scale: 1.0
     //  width: 100px
     section
       margin: 10px 0
-      .contents .empty
-        @extend .text-minor
-        margin-left: 20px
+      //.contents .empty
+      //  @extend .text-minor
+      //  margin-left: 20px
       &.info
         .tts
           @extend .icon-margin-left
@@ -196,8 +196,11 @@ $yt-img-scale: 1.0
           display: inline
         > .switch-group
           display: inline
-          margin-left: 20px
+          margin-left: 10px
           opacity: 0.9
+          > .msg
+            @extend .text-minor
+            margin-left: 10px
       &:hover > .title .title-content
         @extend .title-hl
         //@extend .text-hl

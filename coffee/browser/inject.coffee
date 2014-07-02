@@ -2,8 +2,8 @@
 # 3/28/2014 jichi
 # Invoked by QWebFrame::evaluaeJavaScript
 # Beans:
-# - cdnBean
-# - settingsBean
+# - cdnBean: coffeebean.CdnBean
+# - settingsBean: coffeebean.SettingsBean
 
 getdataset = -> # -> string  the value of %body[data-inject[
   ret = if settingsBean.isJlpEnabled() then ['enabled'] else ['disabled']
