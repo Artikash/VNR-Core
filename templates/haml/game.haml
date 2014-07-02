@@ -250,16 +250,16 @@
                   .form-control-static.col-xs-10
                     %a(href="#{game.scape.url}",title="#{game.scape.url}")
                       #{game.scapeMedian}&times;#{game.scapeCount}
-              -if game.visitCount
-                .row
-                  %label.control-label.col-xs-2 #{tr('Play')}
-                  .form-control-static.col-xs-10
-                    %span.count #{game.visitCount}
-              -if game.commentCount
-                .row
-                  %label.control-label.col-xs-2 #{tr('Subtitle')}
-                  .form-control-static.col-xs-10
-                    %span.count #{game.commentCount}
+              ;-if game.visitCount
+              .row
+                %label.control-label.col-xs-2 #{tr('Play')}
+                .form-control-static.col-xs-10
+                  %span.count #{game.visitCount or 1}
+              ;-if game.commentCount
+              .row
+                %label.control-label.col-xs-2 #{tr('Subtitle')}
+                .form-control-static.col-xs-10
+                  %span.count #{game.commentCount or 0}
           -if game.hasBannerImages()
             %section.banner
               -for it in game.iterBannerImageUrls()
