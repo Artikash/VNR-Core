@@ -272,8 +272,6 @@ class _SubtitleEditor(object):
     self.lockedButton.setEnabled(bool(comment))
     self.lockedButton.setChecked(bool(comment and comment.locked))
 
-    self.spellHighlighter.setLanguage(comment.language)
-
     self.textEdit.setPlainText(comment.text if comment else tr_("empty"))
     self.textEdit.setReadOnly(not editable)
     skqss.class_(self.textEdit, 'normal' if editable else 'readonly')
@@ -294,6 +292,8 @@ class _SubtitleEditor(object):
     except ValueError: langIndex = 1 # 'en'
     self.languageEdit.setCurrentIndex(langIndex)
     self.languageEdit.setEnabled(editable)
+
+    self.spellHighlighter.setLanguage(comment.language) # must after lang
 
     if not comment or not comment.context:
       self.previousContextEdit.setPlainText(tr_("Empty"))

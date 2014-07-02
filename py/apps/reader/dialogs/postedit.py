@@ -129,11 +129,12 @@ class _PostEditor(object):
     self.saveButton.setEnabled(False)
 
     self.contentEdit.setPlainText(self.postContent)
-    self.spellHighlighter.setLanguage(self.postLanguage)
 
     try: langIndex = config.LANGUAGES.index(config.htmllocale2language(self.postLanguage))
     except ValueError: langIndex = 1 # 'en'
     self.languageEdit.setCurrentIndex(langIndex)
+
+    self.spellHighlighter.setLanguage(self.postLanguage) # must after lang
 
 class PostEditor(QtWidgets.QDialog):
 
