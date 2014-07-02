@@ -1,11 +1,8 @@
 # gameboard.coffee
 # 7/31/2013 jichi
 # Required by gameboard.haml
-# Bean: gameboard.GameBoardBean
-
-# CHECKPOINT: Calculate recent games
-# By subtracting current date
-#$('.game[data-local="'true']').addClass('local');
+# Beans:
+# - bean: gameboard.GameBoardBean
 
 #dprint = -> console.log.apply console,  arguments
 dprint = ->

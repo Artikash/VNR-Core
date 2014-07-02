@@ -1,6 +1,17 @@
 # game.coffee
 # 8/15/2013 jichi
 # Required by game.haml
+#
+# Beans:
+# - gameBean: gameview.GameBean
+# - clipBean: skwebkit.SkClipboardProxy
+# - i18nBean: coffeebean.I18nBean
+# - ttsBean: ttsman.TtsCoffeeProxy
+# - yakuBean: trman.YakuCoffeeBean
+# - youtubeBean: coffeebean.YouTubeBean
+# - viewBean: skwebkit.SkViewBean
+# - shioriBean: kagami.ShioriBean -- TODO: rename to dicBean
+# - yomiBean: mecab.MeCabCoffeeBean -- TODO: rename to jlpBean
 
 #dprint = -> console.log.apply console, arguments
 dprint = ->
@@ -25,7 +36,7 @@ INVALID_YT_IMG_WIDTH = 120 # invalid youtube thumbnail image width
 
 # Delay template creation until i18nBean becomes available
 createTemplates = ->
-  @HTML_EMPTY = Haml.render ".empty #{'(' + tr('Empty') + ')'}"
+  #@HTML_EMPTY = Haml.render ".empty #{'(' + tr('Empty') + ')'}"
 
   # HAML for sample images
   # - param  url
@@ -136,13 +147,14 @@ createTemplates = ->
   #   - url
   @HAML_USERS = Haml '''\
 :for it in users
-  .user
-    :if it.userAvatar
-      %a.user(href="#{it.url}" title="#{it.url}")
-        %img.img-circle.avatar(src="http://media.getchute.com/media/#{it.userAvatar}/128x128")
-    .header
-      %a.user(href="#{it.url}") @#{it.userName}
-    .footer #{it.count} / #{it.lang}
+  :if it.userName && it.count
+    .user
+      :if it.userAvatar
+        %a.user(href="#{it.url}" title="#{it.url}")
+          %img.img-circle.avatar(src="http://media.getchute.com/media/#{it.userAvatar}/128x128")
+      .header
+        %a.user(href="#{it.url}") @#{it.userName}
+      .footer #{it.count} / #{it.lang}
 '''
 
 ## Render ##
@@ -332,7 +344,8 @@ initSwitches = ->
 initSettingsSwitch = ->
   $section = $ 'section.settings'
   $container = $section.find '.contents'
-  $spinner = $section.find '.spin'
+  $spin = $section.find '.spin'
+  $msg = $section.find '.msg'
   $section.find('input.switch').bootstrapSwitch()
     .on 'switchChange.bootstrapSwitch', (event, checked) ->
       unless checked
@@ -343,30 +356,35 @@ initSettingsSwitch = ->
         $container.show()
            .addClass 'rendered'
 
-        $spinner.spin 'section'
+        $spin.spin 'section'
 
         rest.forum.query 'game',
           data:
             id: GAME_ID
             select: 'file'
           error: ->
-            $spinner.spin false
+            $spin.spin false
             $container.removeClass 'rendered'
+            $msg.addClass 'text-danger'
+                .text "(Internet #{tr 'error'})"
           success: (data) ->
-            $spinner.spin false
+            $spin.spin false
             if data.file
+              $msg.empty()
               h = renderSettings data.file
+              $container
+                .hide()
+                .html h
+                .fadeIn()
             else
-              h = HTML_EMPTY
-            $container
-              .hide()
-              .html h
-              .fadeIn()
+              $msg.removeClass 'text-danger'
+                  .text " (#{tr 'Empty'})"
 
 initUsersSwitch = ->
   $section = $ 'section.users'
   $container = $section.find '.contents'
-  $spinner = $section.find '.spin'
+  $spin = $section.find '.spin'
+  $msg = $section.find '.msg'
   $section.find('input.switch').bootstrapSwitch()
     .on 'switchChange.bootstrapSwitch', (event, checked) ->
       unless checked
@@ -377,26 +395,30 @@ initUsersSwitch = ->
         $container.show()
            .addClass 'rendered'
 
-        $spinner.spin 'section'
+        $spin.spin 'section'
 
         rest.forum.query 'game',
           data:
             id: GAME_ID
             select: 'users'
           error: ->
-            $spinner.spin false
+            $spin.spin false
             $container.removeClass 'rendered'
+            $msg.addClass 'text-danger'
+                .text "(Internet #{tr 'error'})"
           success: (data) ->
-            $spinner.spin false
+            $spin.spin false
             users = data.users or data.subs
             if users
+              $msg.empty()
               h = renderUsers users
+              $container
+                .hide()
+                .html h
+                .fadeIn()
             else
-              h = HTML_EMPTY
-            $container
-              .hide()
-              .html h
-              .fadeIn()
+              $msg.removeClass 'text-danger'
+                  .text " (#{tr 'Empty'})"
 
 #initCGSwitch = ->
 #  $section = $ 'section.cg'
@@ -799,7 +821,7 @@ $ -> init()
 #  # Bind this at first!
 #  #$('a.badge').click -> @classList.add 'badge-info' #; false
 #  #$('a.label,a .label').click -> @classList.add 'label-info' #; false
-#  #$('.label a').click -> $(@).parent().addclass 'label-info'
+#  #$('.label a').click -> $(@).parent().addClass 'label-info'
 #
 #  #ITEM_ID = $('body').data 'id'
 #  $('.btn-dl-img').click -> gameBean.saveImages(); false

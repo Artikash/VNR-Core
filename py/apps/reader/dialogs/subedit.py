@@ -231,6 +231,7 @@ class _SubtitleEditor(object):
       lang = config.LANGUAGES[self.languageEdit.currentIndex()]
       if lang != self.comment.language:
         self.comment.language = lang
+        self.spellHighlighter.setLanguage(lang)
 
   @memoizedproperty
   def currentContextEdit(self):

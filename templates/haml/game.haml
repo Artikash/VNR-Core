@@ -278,9 +278,10 @@
               .switch-group
                 -if online
                   %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+                  %span.msg
                 -else
                   %input.switch(disabled="true",type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
-                  %span.text-danger #{' (' + tr('Offline') + ')'}
+                  %span.msg #{'(' + tr('Offline') + ')'}
             .contents
           -if game.commentCount
             %hr
@@ -292,9 +293,10 @@
                 .switch-group
                   -if online
                     %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+                    %span.msg
                   -else
                     %input.switch(disabled="true",type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
-                    %span.text-danger #{' (' + tr('Offline') + ')'}
+                    %span.msg #{'(' + tr('Offline') + ')'}
               .contents
           -if game.hasTwitterWidgets()
             %hr

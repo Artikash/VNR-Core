@@ -2,10 +2,10 @@
 # 3/28/2014 jichi
 # Invoked by inject.coffee
 # Beans:
-# - cdnBean
-# - clipBean
-# - jlpBean
-# - ttsBean
+# - cdnBean: beans.CdnBean
+# - clipBean: skwebkit.SkClipboardProxy
+# - jlpBean: beans.JlpBean
+# - ttsBean: beans.TtsBean
 
 # Underscore
 
