@@ -408,20 +408,6 @@
                 ;-for i,it in py.enumerate(game.iterSampleImageUrls())
                 ;  %a(href="#{it}",title="CG #{'#'}#{i+1}")
                 ;    %img.img-rounded(src="#{it}")
-          -if game.hasDescriptions()
-            %hr
-            %section.descriptions
-              .title
-                .col-xs-2
-                  .title-content 紹介
-                %ul.nav.nav-pills.nav-clean.nav-xs
-                  %li.active(data-type="")
-                    %a #{tr('Hide')}
-                  %li.divider
-                  -for r in game.iterDescriptionReferences()
-                    %li(data-type="#{r.type}")
-                      %a #{i18n.site_name(r.type)}
-              .contents
           -if game.hasCharacterDescriptions()
             %hr
             %section.characters
@@ -433,6 +419,20 @@
                     %a #{tr('Hide')}
                   %li.divider
                   -for r in game.iterCharacterDescriptionReferences()
+                    %li(data-type="#{r.type}")
+                      %a #{i18n.site_name(r.type)}
+              .contents
+          -if game.hasDescriptions()
+            %hr
+            %section.descriptions
+              .title
+                .col-xs-2
+                  .title-content 紹介
+                %ul.nav.nav-pills.nav-clean.nav-xs
+                  %li.active(data-type="")
+                    %a #{tr('Hide')}
+                  %li.divider
+                  -for r in game.iterDescriptionReferences()
                     %li(data-type="#{r.type}")
                       %a #{i18n.site_name(r.type)}
               .contents

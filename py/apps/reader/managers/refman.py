@@ -219,16 +219,16 @@ class ScapeApi(object):
 
   @memoizedproperty
   def cachingApi(self):
-    from erogamescape.caching import CachingApi
-    return CachingApi(
+    from erogamescape.caching import CachingGameTableApi
+    return CachingGameTableApi(
         cachedir=rc.DIR_CACHE_SCAPE,
         expiretime=config.REF_EXPIRE_TIME,
         online=self.online)
 
   @memoizedproperty
   def api(self):
-    from erogamescape.api import Api
-    return Api()
+    from erogamescape.api import GameTableApi
+    return GameTableApi()
 
   @staticmethod
   def _parsekey(url):
@@ -566,7 +566,7 @@ class GyuttoApi(object):
     """
     dprint("key, text =", key, text)
     if key:
-      if key.startswith('http://'):
+      if (isinstance(key, str) or isinstance(key, unicode)) and key.startswith('http://'):
         kw = self.cachingItemApi.query(url=key)
       else:
         kw = self.cachingItemApi.query(key)
