@@ -36,7 +36,7 @@ class TableApi(object):
   def query(self, *args, **kwargs):
     """
     @param* id  int or str
-    @param* text  int or str
+    @param* offset  int
     @param* limit  int
     @return  [kw] or None
     """
@@ -62,15 +62,17 @@ class TableApi(object):
     """
     return {'SQL':self._makesql(*args, **kwargs)}
 
-  def _makesql(self, limit=30):
+  def _makesql(self, offset=0, limit=30):
     """
     @param* id  int or str
-    @param* text  int or str
+    @param* offset  int
     @param* limit  int
     @return  str
     """
     ret =  ','.join(sorted(self.TABLE)) # use sorted to enforce order
     ret += " from %s" % self.TABLE_NAME
+    if offset:
+      ret += " offset %s" % offset
     if limit:
       ret += " limit %s" % limit
     return ''
@@ -160,11 +162,12 @@ class ReviewTableApi(TableApi):
   TABLE_NAME = 'userreview'
   TABLE = table.userreview # override
 
-  def _makesql(self, game=None, order='timestamp', desc=True, limit=30):
+  def _makesql(self, game=None, order='timestamp', desc=True, offset=0, limit=30):
     """
     @param* game  int or str
     @param* order  str  column name
     @param* desc  bool
+    @param* offset  int
     @param* limit  int
     @return  str
     """
@@ -176,6 +179,8 @@ class ReviewTableApi(TableApi):
       ret += " order by %s" % order
     if desc:
       ret += " desc"
+    if offset:
+      ret += " offset %s" % offset
     if limit:
       ret += " limit %s" % limit
     return ret
@@ -196,13 +201,13 @@ if __name__ == '__main__':
     print it['gyutto_id']
     #print it['twitter_data_widget_id_before']
 
-  #api = ReviewTableApi()
-  #q = api.query(t)
-  #for it in q:
-  #  print '-' * 5
-  #  print it['uid']
-  #  print it['hitokoto']
-  #  print it['memo']
+  api = ReviewTableApi()
+  q = api.query(t, limit=3)
+  for it in q:
+    print '-' * 5
+    print it['uid']
+    print it['hitokoto']
+    print it['memo']
 
   #t = 9610
   #q = api.query(t, type=api.EROGETRAILERS_TYPE)
