@@ -354,6 +354,12 @@ def migrate(ss_version): # long ->
 
   try: # this try is in case I forgot certain rc directories for update
 
+    if ss_version <= 1404365364:
+      path = rc.DIR_CACHE_SCAPE
+      if os.path.exists(path):
+        skfileio.removetree(path)
+        skfileio.makedirs(path)
+
     if ss_version <= 1404193846: # clean data cache
       path = rc.DIR_CACHE_DATA
       if os.path.exists(path):
@@ -374,8 +380,8 @@ def migrate(ss_version): # long ->
           rc.DIR_CACHE_DIGIKET,
           rc.DIR_CACHE_DLSITE,
           rc.DIR_CACHE_HOLYSEAL,
-          rc.DIR_CACHE_SCAPE,
           rc.DIR_CACHE_TRAILERS,
+          #rc.DIR_CACHE_SCAPE,
         ):
         if os.path.exists(it):
           skfileio.removetree(it)
