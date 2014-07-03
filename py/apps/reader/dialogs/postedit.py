@@ -154,7 +154,7 @@ class PostEditor(QtWidgets.QDialog):
     import dataman
     dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
 
-  def setPost(self, id, userName='', language='', content='', **kwargs):
+  def setPost(self, id, userName='', language='', content='', **ignored):
     d = self.__d
     d.postId = id
     d.userName = userName

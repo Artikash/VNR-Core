@@ -336,6 +336,7 @@ initSpin = ->
 ## Bootstrap Switch ##
 
 initSwitches = ->
+  initReviewSwitch()
   initSettingsSwitch()
   initUsersSwitch()
   initTwitterSwitch()
@@ -382,6 +383,46 @@ initSettingsSwitch = ->
 
 initUsersSwitch = ->
   $section = $ 'section.users'
+  $container = $section.find '.contents'
+  $spin = $section.find '.spin'
+  $msg = $section.find '.msg'
+  $section.find('input.switch').bootstrapSwitch()
+    .on 'switchChange.bootstrapSwitch', (event, checked) ->
+      unless checked
+        $container.fadeOut()
+      else if $container.hasClass 'rendered'
+        $container.fadeIn()
+      else
+        $container.show()
+           .addClass 'rendered'
+
+        $spin.spin 'section'
+
+        rest.forum.query 'game',
+          data:
+            id: GAME_ID
+            select: 'users'
+          error: ->
+            $spin.spin false
+            $container.removeClass 'rendered'
+            $msg.addClass 'text-danger'
+                .text "(Internet #{tr 'error'})"
+          success: (data) ->
+            $spin.spin false
+            users = data.users or data.subs
+            if users
+              $msg.empty()
+              h = renderUsers users
+              $container
+                .hide()
+                .html h
+                .fadeIn()
+            else
+              $msg.removeClass 'text-danger'
+                  .text " (#{tr 'Empty'})"
+
+initReviewSwitch = ->
+  $section = $ 'section.stats'
   $container = $section.find '.contents'
   $spin = $section.find '.spin'
   $msg = $section.find '.msg'
@@ -743,6 +784,23 @@ initCGPills = -> # Sample images
 #               .fadeIn()
 #    false
 
+## Ratings ##
+
+initRatings = ->
+  $.fn.raty.defaults.path = JQUERY_RATY_PATH
+  $.fn.raty.defaults.hints = ['', '', '', '', ''] # empty
+  $.fn.raty.round =
+    down: .5
+    up: 1.0
+    full: 1.0
+
+  $('.raty').each ->
+    type = @dataset.type
+    $(@).raty
+      readOnly: true
+      half: true
+      #score: @topic.scores[$this.data 'type'] / 2
+
 ## Bootstrap ##
 
 #initBootstrap = ->
@@ -790,6 +848,7 @@ init = ->
 
     initSwitches()
     initPills()
+    initRatings()
 
     initRuby()
 
