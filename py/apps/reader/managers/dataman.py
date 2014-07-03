@@ -1270,7 +1270,7 @@ class GameItem:
       timestamp=0, date=None, artists='', sdartists='', writers='', musicians='',
       otome=False, okazu=False, scapeMedian=0, scapeCount=0, tags='',
       overallScoreSum=0, overallScoreCount=0, ecchiScoreSum=0, ecchiScoreCount=0, easyScoreSum=0, easyScoreCount=0,
-      ):
+    ):
     self.id = id # int
     self.title = title # unicode
     self.romajiTitle = romajiTitle # unicode

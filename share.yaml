@@ -48,6 +48,7 @@ env:
 
 # CDN
 cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as qrc://
+
   # Twitter
   # http://www.bootstrapcdn.com/#tab_fontawesome
   bootstrap2: http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js
@@ -124,6 +125,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #dateformat: http://rawgithub.com/felixge/node-dateformat/master/lib/dateformat.js?1.2.3
   #dateformat: $PWD/../AJAX/npm/dateformat.min.js
 
+  jquery.raty.path: $PWD/../AJAX/raty/images
   jquery.raty: $PWD/../AJAX/raty/jquery.raty.min.js
 
   #haml: http://rawgithub.com/creationix/haml-js/master/lib/haml.js?0.4.3
