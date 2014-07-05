@@ -189,10 +189,10 @@ createTemplates = ->
     %a.user(href="#{url}" title="#{url}") = '@' + user
     :if netabare
       %span.netabare.text-danger = '(ネタバレ)'
-    :if score
-      %span.score.text-danger  #{score}/100
     :if ecchiScore
-      %span.score.text-warning h:#{ecchiScore}/5
+      %span.score.text-info H:#{ecchiScore}/5
+    :if score
+      %span.score.text-danger #{score}/100
     :if date
       %span.date.text-success = date
   .body
@@ -253,7 +253,7 @@ _renderScapeReview = (review)-> # -> string
   try
     ecchiScore = 0
     if review.okazu_tokuten and review.okazu_tokuten < 0 and review.okazu_tokuten > -10
-      ecchiScore = review.okazu_tokuten + 5 # scores are negative, invalid score is -999
+      ecchiScore = -review.okazu_tokuten # scores are negative, invalid score is -999
 
     HAML_SCAPE_REVIEW
       count: SCAPE_REVIEW_COUNT
