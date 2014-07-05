@@ -40,8 +40,11 @@ def gyutto(): return GyuttoManager()
 @memoized
 def getchu(): return GetchuManager()
 
+@memoized
+def amazon(): return AmazonManager()
+
 #@memoized
-#def scape(): return ScapeManager()
+def scape(): return ScapeManager()
 
 _re_title = '|'.join((
   ur'\[同人PCソフト\]',
@@ -1556,7 +1559,7 @@ class TrailersManager:
         self.__d.query, id),
         parent=self.parent) if async else self.__d.query(id)
 
-## Getchu manager ##
+## Getchu review manager ##
 
 class _GetchuManager(object):
 
@@ -1599,7 +1602,51 @@ class GetchuManager:
         self.__d.reviewApi.query, id),
         parent=self.parent) if async else self.__d.reviewApi.query(id)
 
-## Gyutto manager ##
+## Amazon review manager ##
+
+class _AmazonManager(object):
+
+  def __init__(self):
+    self.online = True
+
+  @memoizedproperty
+  def reviewApi(self): # Always caching
+    from restful.online import DataParser
+    from restful.offline import DataCacher
+    cls = DataCacher(DataParser, suffix='.html')
+    cls.ENCODING = 'sjis'
+    return cls(rc.DIR_CACHE_AWS, online=self.online) #expiretime=0,
+
+class AmazonManager:
+
+  def __init__(self, parent=None):
+    """
+    @param  parent  QObject
+    """
+    self.__d = _AmazonManager()
+    self.parent = parent
+
+  def setParent(self, v): self.parent = v
+
+  def isOnline(self): return self.__d.online
+  def setOnline(self, v):
+    d = self.__d
+    if d.online != v:
+      d.online = v
+      if hasmemoizedproperty(d, 'reviewApi'):
+        d.reviewApi.online = v
+
+  #@memoized # cached
+  def queryReview(self, url, async=True):
+    """
+    @param  url  str
+    @return  unicode or None
+    """
+    return skthreads.runsync(partial(
+        self.__d.reviewApi.query, url),
+        parent=self.parent) if async else self.__d.reviewApi.query(url)
+
+## Gyutto review manager ##
 
 class _GyuttoManager(object):
 
@@ -1908,8 +1955,13 @@ if __name__ == '__main__':
     m = manager()
     q = m.query(key=9610, type='trailers', async=False)
 
+  def test_amazon_review():
+    url = 'http://www.amazon.co.jp/reviews/iframe?akid=AKIAJSUDXZVM3TXLJXPQ&alinkCode=xm2&asin=B00AT6K7OE&atag=sakuradite-20&exp=2014-07-05T22%3A25%3A10Z&v=2&sig=gELwW4RmIrkrZ9ImIsItypJGeirqOFHRuwQU2EtZRMw%3D'
+    print amazon().queryReview(url, async=False)
+
+  test_amazon_review()
   #test_amazon()
-  test_dmm()
+  #test_dmm()
   #test_trailers()
 
 # EOF
@@ -1974,48 +2026,57 @@ if __name__ == '__main__':
 #        self.__d.query, id),
 #        parent=self.parent) if async else self.__d.query(id)
 
-## Specific to ScapeScape ##
+## ErogameScape review ##
 
-#class _ScapeManager(object):
-#
-#  def __init__(self):
-#    self.online = True
-#
-#  @memoizedproperty
-#  def api(self): # Always caching
-#    from erogamescape.caching import CachingApi
-#    return CachingApi(rc.DIR_CACHE_SCAPE,
-#        expiretime=config.REF_EXPIRE_TIME,
-#        online=self.online)
-#
-#class ScapeManager:
-#
-#  def __init__(self, parent=None):
-#    """
-#    @param  parent  QObject
-#    """
-#    self.__d = _ScapeManager()
-#    self.parent = parent
-#
-#  def setParent(self, v): self.parent = v
-#
-#  def isOnline(self): return self.__d.online
-#  def setOnline(self, v):
-#    d = self.__d
-#    if d.online != v:
-#      d.online = v
-#      if hasmemoizedproperty(d, 'api'):
-#        d.api.online = v
-#
-#  #@memoized # cached
-#  def query(self, id, async=True):
-#    """
-#    @param  id  int or str  ID
-#    @return  {kw}
-#    """
-#    return skthreads.runsync(partial(
-#        self.__d.api.query, id),
-#        parent=self.parent) if async else self.__d.api.query(id)
+class _ScapeManager(object):
+
+  def __init__(self):
+    self.online = True
+
+  @memoizedproperty
+  def reviewApi(self): # Reviews are not cached
+    from erogamescape.api import ReviewTableApi
+    return ReviewTableApi()
+
+  #@memoizedproperty
+  #def cachedReviewApi(self): # Always caching
+  #  from erogamescape.caching import CachingReviewTableApi
+  #  return CachingReviewTableApi(rc.DIR_CACHE_SCAPE,
+  #      expiretime=config.REF_EXPIRE_TIME,
+  #      online=self.online)
+
+class ScapeManager:
+
+  def __init__(self, parent=None):
+    """
+    @param  parent  QObject
+    """
+    self.__d = _ScapeManager()
+    self.parent = parent
+
+  def setParent(self, v): self.parent = v
+
+  def isOnline(self): return self.__d.online
+  def setOnline(self, v): self.__d.online = v
+    #d = self.__d
+    #if d.online != v:
+    #  d.online = v
+    #  if hasmemoizedproperty(d, 'reviewApi'):
+    #    d.reviewApi.online = v
+
+  #@memoized # cached
+  def queryReviews(self, id, async=True, **kwargs):
+    """
+    @param  id  int or str  ID
+    @param* offset  int
+    @param* limit  int
+    @return  [kw]
+    """
+    if not self.__d.online:
+      return []
+    return skthreads.runsync(partial(
+        self.__d.reviewApi.query, id, **kwargs),
+        parent=self.parent) if async else self.__d.reviewApi.query(id, **kwargs)
 
   #def cache(self, id, async=True):
   #  """

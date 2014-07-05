@@ -51,6 +51,31 @@ $yt-img-scale: 1.0
     @extend .img-shadow
     //@extend .img-rounded
 
+// Game reviews
+.contents > .review
+  margin: 9px
+  *
+    border: 0 !important // disable all borders
+
+// ErogameScape reviews
+.scape.review .entry
+  font-size: 90%
+  margin: 9px
+  > .header
+    border-radius: 3px
+    padding: 5px
+    background-color: rgba(0,0,255,0.05) // blue
+    .user,
+    .date,
+    .netabare
+      display: inline
+    .date
+      float: right
+  //> .header
+  //> .body
+
+// Game portal
+
 .game.portal
   //margin: 6px
   //padding: 12px
@@ -97,9 +122,9 @@ $yt-img-scale: 1.0
     //  width: 100px
     section
       margin: 10px 0
-      //.contents .empty
-      //  @extend .text-minor
-      //  margin-left: 20px
+      .contents .empty
+        @extend .text-minor
+        margin-left: 20px
       &.info
         .tts
           @extend .icon-margin-left

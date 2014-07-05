@@ -530,7 +530,7 @@ class _TextManager(object):
     if FIX_OLD_SUBS:
       self.oldHashes[1:CONTEXT_CAPACITY] = [
           hashutil.strhash_old_vnr(rawData, h) if h else 0
-            for h in self.oldHashes[0:CONTEXT_CAPACITY-1]]
+            for h in self.oldHashes[:CONTEXT_CAPACITY-1]]
       self.oldHashes[0] = hashutil.strhash_old_vnr(rawData)
 
     if not text:
@@ -555,13 +555,13 @@ class _TextManager(object):
     # Calculate hash1
     self.hashes[1:CONTEXT_CAPACITY] = [
         hashutil.strhash(rawData, h) if h else 0
-          for h in self.hashes[0:CONTEXT_CAPACITY-1]]
+          for h in self.hashes[:CONTEXT_CAPACITY-1]]
     self.hashes[0] = hashutil.strhash(rawData)
 
     # Calculate hash2
     self.hashes2[1:CONTEXT_CAPACITY] = [
         hashutil.hashtext(text, h) if h else 0
-          for h in self.hashes2[0:CONTEXT_CAPACITY-1]]
+          for h in self.hashes2[:CONTEXT_CAPACITY-1]]
     self.hashes2[0] = hashutil.hashtext(text)
 
     self.texts.append(text)

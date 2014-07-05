@@ -31,12 +31,15 @@ DEFAULT_VIDEO_IMAGE_WIDTH = 220
 
 INVALID_YT_IMG_WIDTH = 120 # invalid youtube thumbnail image width
 
+SCAPE_REVIEW_INIT_SIZE = 10
+SCAPE_REVIEW_PAGE_SIZE = 20
+
 # Global translation function
 @tr = (text) -> i18nBean.tr text # string ->
 
 # Delay template creation until i18nBean becomes available
 createTemplates = ->
-  #@HTML_EMPTY = Haml.render ".empty #{'(' + tr('Empty') + ')'}"
+  @HTML_EMPTY = Haml.render ".empty #{'(' + tr('Empty') + ')'}"
 
   # HAML for sample images
   # - param  url
@@ -157,6 +160,40 @@ createTemplates = ->
       .footer #{it.count} / #{it.lang}
 '''
 
+  # Haml for scape container
+  # - entries  html
+  # - empty  bool
+  @HAML_SCAPE_REVIEWLIST = Haml """\
+.list = entries
+.footer
+  :if empty
+    .empty #{'(' + tr('No more') + ')'}
+  :else
+    %a.btn-more.btn.btn-link(role="button" title="#{tr 'More'}") #{tr 'More'}
+"""
+
+  # Haml for single scape review
+  # - user
+  # - url
+  # - date  nullable
+  # - title  nullable
+  # - memo  nullable
+  # - netabare  bool
+  @HAML_SCAPE_REVIEW = Haml '''\
+.entry
+  .header
+    %a.user(href="#{url}" title="{url}") = '@' + user
+    :if netabare
+      .netabare.text-danger = ' (ネタバレ)'
+    :if date
+      .date.text-success = date
+  .body
+    :if title
+      .title = title
+    :if content
+      .content = content
+'''
+
 ## Render ##
 
 createTwitterTimeline = (id:id, el:el, callback:callback, options:options) ->
@@ -196,43 +233,74 @@ renderUsers = (users) -> # game.file
     it.lang = it.lang?[..1] or '*'
   HAML_USERS users:users
 
+renderReview = (type) -> # string -> string
+  if type is 'scape'
+    renderScapeReviewList()
+  else
+    gameBean.getReview type
+
+_renderScapeReview = (review)-> # -> string
+  HAML_SCAPE_REVIEW
+    user: review.uid
+    url: "http://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/user_infomation.php?user=#{review.uid}"
+    date: review.timestamp
+    title: review.hitokoto
+    content: review.memo
+    netabare: review.netabare
+
+renderScapeReviews = (offset, limit) -> # int, int -> string, bool empty
+  data = gameBean.getScapeReviews offset, limit
+  unless data
+    ['', 0]
+  else
+    data = JSON.parse data
+    h = data.map(_renderScapeReview).join ''
+    [h, data.length]
+
+renderScapeReviewList = -> # -> string
+  [h, count] = renderScapeReviews 0, SCAPE_REVIEW_INIT_SIZE
+  if h
+    HAML_SCAPE_REVIEWLIST
+      entries: h
+      empty: count < SCAPE_REVIEW_INIT_SIZE
+
 ## Bindings ##
 
-@initAmazonReview = ->
-  dprint 'initAmazonReview: enter'
-  #setTimeout(iframe, 3000);
-  # Load function does not work on IE
-  # See: http://stackoverflow.com/questions/4548984/detect-if-the-iframe-content-has-loaded-successfully
-  $iframe = $ 'iframe.amazon'
-  $iframe.load ->
-    $this = $ @
-    $body = $this.contents().find 'body'
-    unless $body.html()
-      $this.remove() # in case of 403 error
-    else
-      $body.css 'background-color', 'transparent' # transparent background
-           .find('.crIFrame').css 'margin-left', '-0.8em' # remove left margin
-      $body.find('.crIFrameLogo,.crIframeHeaderTitle').remove() # remove amazon logo and titles
-      #$body.find('crIFrameReviewList').addClass 'ruby'
-
-    # http://stackoverflow.com/questions/217776/how-to-apply-css-to-iframe
-    #$head = $("iframe.amazon").contents().find 'head'
-    #url = "#{rc.cdn_url('iframe.css')}"
-    #$head.append($('<link/>',
-    #  {rel: 'stylesheet', type: 'text/css', href: url}
-    #));
-
-  $(window).on 'scroll resize', ->
-    # http://stackoverflow.com/questions/10083399/change-iframe-attribute-with-jquery
-    # http://stackoverflow.com/questions/14913784/change-iframe-width-and-height-using-jquery
-    #w = $window.width() # incorrect orz
-    w = @viewBean.width()
-    $iframe.width w - 74 # margin = 550 - 480 +4
-    #$iframe[0].setAttribute 'width', w
-    #$iframe.attr 'width', w
-
-  $('iframe.amazon').error -> $(@).remove() # cannot detect 403 error, though
-  dprint 'initAmazonReview: leave'
+#@initAmazonReview = ->
+#  dprint 'initAmazonReview: enter'
+#  #setTimeout(iframe, 3000);
+#  # Load function does not work on IE
+#  # See: http://stackoverflow.com/questions/4548984/detect-if-the-iframe-content-has-loaded-successfully
+#  $iframe = $ 'iframe.amazon'
+#  $iframe.load ->
+#    $this = $ @
+#    $body = $this.contents().find 'body'
+#    unless $body.html()
+#      $this.remove() # in case of 403 error
+#    else
+#      $body.css 'background-color', 'transparent' # transparent background
+#           .find('.crIFrame').css 'margin-left', '-0.8em' # remove left margin
+#      $body.find('.crIFrameLogo,.crIframeHeaderTitle').remove() # remove amazon logo and titles
+#      #$body.find('crIFrameReviewList').addClass 'ruby'
+#
+#    # http://stackoverflow.com/questions/217776/how-to-apply-css-to-iframe
+#    #$head = $("iframe.amazon").contents().find 'head'
+#    #url = "#{rc.cdn_url('iframe.css')}"
+#    #$head.append($('<link/>',
+#    #  {rel: 'stylesheet', type: 'text/css', href: url}
+#    #));
+#
+#  $(window).on 'scroll resize', ->
+#    # http://stackoverflow.com/questions/10083399/change-iframe-attribute-with-jquery
+#    # http://stackoverflow.com/questions/14913784/change-iframe-width-and-height-using-jquery
+#    #w = $window.width() # incorrect orz
+#    w = @viewBean.width()
+#    $iframe.width w - 74 # margin = 550 - 480 +4
+#    #$iframe[0].setAttribute 'width', w
+#    #$iframe.attr 'width', w
+#
+#  $('iframe.amazon').error -> $(@).remove() # cannot detect 403 error, though
+#  dprint 'initAmazonReview: leave'
 
 #@bindGetchu = ->
 #  dprint 'bindGetchu: enter'
@@ -245,18 +313,6 @@ renderUsers = (users) -> # game.file
 #
 #  $('iframe.getchu').error -> $(@).remove() # on 404 error?
 #  dprint 'bindGetchu: leave'
-
-#@bindGyutto = ->
-#  dprint 'bindGyutto: enter'
-#  $iframe = $ 'iframe.gyutto'
-#
-#  $(window).on 'scroll resize', ->
-#    #w = $window.width() # incorrect orz
-#    w = @viewBean.width()
-#    $iframe.width w - 74 # margin = 550 - 480 +4
-#
-#  $('iframe.gyutto').error -> $(@).remove() # on 404 error?
-#  dprint 'bindGyutto: leave'
 
 ## Zoom ##
 
@@ -570,8 +626,9 @@ bindYoutube = ->
 initPills = ->
   initCGPills()
   #initCharaPills()
-  initDescPills()
   initCharaDescPills()
+  initDescPills()
+  initReviewPills()
 
 initDescPills = -> # Descriptions
   $sec = $ 'section.descriptions'
@@ -633,6 +690,56 @@ initCharaDescPills = -> # Descriptions
                .fadeIn()
                # Improvement
                .find('a:not([title])').each -> @setAttribute 'title', @href
+    false
+
+initReviewPills = -> # Reviews
+  $sec = $ 'section.reviews'
+  $container = $sec.find '.contents'
+
+  # TODO: Add ajax spin indicator
+  $sec.find('.nav.nav-pills > li > a').click ->
+    $li = $(@).parent 'li'
+    unless $li.hasClass 'active'
+      oldtype = $li.parent('ul').children('li.active')
+          .removeClass 'active'
+          .data 'type'
+      $li.addClass 'active'
+      newtype = $li.data 'type'
+      if oldtype
+        $container.children('.' + oldtype).hide()
+      if newtype
+        $el = $container.children('.' + newtype)
+        if $el.length
+          $el.fadeIn()
+        else
+          h = renderReview newtype
+          el = document.createElement 'div'
+          el.className = newtype + ' review'
+          el.innerHTML = h or HTML_EMPTY
+          #$container.append el
+          $(el).hide()
+               .appendTo $container
+               .fadeIn()
+          if newtype is 'scape' and h
+            bindScapeReviewList()
+    false
+
+bindScapeReviewList = ->
+  $('.scape .btn-more').click ->
+    $this = $ @
+    $parent = $this.closest '.scape'
+    $container = $parent.find '.list'
+    size = $container.children('.entry').length
+    unless (size - SCAPE_REVIEW_INIT_SIZE) % SCAPE_REVIEW_PAGE_SIZE # FIXME: scape page size is not accurate
+      h = renderScapeReviews size, SCAPE_REVIEW_PAGE_SIZE
+      if h
+        $container.append h
+        #$(h).hide() # fadeIn does not work for a list
+        #    .appendTo $container
+        #    .fadeIn()
+        return false
+    # Empty
+    $this.replaceWith HTML_EMPTY
     false
 
 class MasonryAniPauser
