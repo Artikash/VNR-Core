@@ -36,7 +36,7 @@ class TableApi(object):
   def query(self, *args, **kwargs):
     """
     @param* id  int or str
-    @param* text  int or str
+    @param* offset  int
     @param* limit  int
     @return  [kw] or None
     """
@@ -62,15 +62,17 @@ class TableApi(object):
     """
     return {'SQL':self._makesql(*args, **kwargs)}
 
-  def _makesql(self, limit=30):
+  def _makesql(self, offset=0, limit=30):
     """
     @param* id  int or str
-    @param* text  int or str
+    @param* offset  int
     @param* limit  int
     @return  str
     """
     ret =  ','.join(sorted(self.TABLE)) # use sorted to enforce order
     ret += " from %s" % self.TABLE_NAME
+    if offset:
+      ret += " offset %s" % offset
     if limit:
       ret += " limit %s" % limit
     return ''
@@ -93,7 +95,6 @@ class TableApi(object):
     @param  h  unicode  html
     @return  kw or None
     """
-
     return [{k:v for k,v in zip(sorted(self.TABLE), self._iterparsetd(tr))}
         for index,tr in enumerate(self._iterparsetr(h)) if index > 0] # skip the first element which is the header
 
@@ -102,7 +103,7 @@ class TableApi(object):
     @param  name  str
     @return  re
     """
-    return re.compile(r"<%s>(.*?)</%s>" % (name, name), re.IGNORECASE)
+    return re.compile(r"<%s>(.*?)</%s>" % (name, name), re.IGNORECASE|re.DOTALL)
 
   _rx_td = __maketagrx('td')
   _rx_tr = __maketagrx('tr')
@@ -160,11 +161,12 @@ class ReviewTableApi(TableApi):
   TABLE_NAME = 'userreview'
   TABLE = table.userreview # override
 
-  def _makesql(self, game=None, order='timestamp', desc=True, limit=30):
+  def _makesql(self, game=None, order='timestamp', desc=True, offset=0, limit=30):
     """
     @param* game  int or str
     @param* order  str  column name
     @param* desc  bool
+    @param* offset  int
     @param* limit  int
     @return  str
     """
@@ -176,6 +178,8 @@ class ReviewTableApi(TableApi):
       ret += " order by %s" % order
     if desc:
       ret += " desc"
+    if offset:
+      ret += " offset %s" % offset
     if limit:
       ret += " limit %s" % limit
     return ret
@@ -186,27 +190,28 @@ if __name__ == '__main__':
   t = 17716
   t = 2294
   t = 15986
-  q = api.query(t)
-  #print q
-  for it in q:
-    print it['dmm']
-    print it['furigana']
-    print it['digiket']
-    print it['erogametokuten']
-    print it['gyutto_id']
-    #print it['twitter_data_widget_id_before']
+  def test_game():
+    q = api.query(t)
+    #print q
+    for it in q:
+      print it['dmm']
+      print it['furigana']
+      print it['digiket']
+      print it['erogametokuten']
+      print it['gyutto_id']
+      #print it['twitter_data_widget_id_before']
 
-  #api = ReviewTableApi()
-  #q = api.query(t)
-  #for it in q:
-  #  print '-' * 5
-  #  print it['uid']
-  #  print it['hitokoto']
-  #  print it['memo']
+  def test_review():
+    api = ReviewTableApi()
+    #q = api.query(t, limit=10)
+    q = api.query(t, limit=1)
+    for it in q:
+      print '-' * 5
+      print it['uid']
+      print it['hitokoto']
+      print it['memo']
+      print it['timestamp']
 
-  #t = 9610
-  #q = api.query(t, type=api.EROGETRAILERS_TYPE)
-  #for it in q:
-  #  print it['title']
+  test_review()
 
 # EOF

@@ -36,7 +36,7 @@ class PrefixCompares:
 
   def lt(self, other): # unicode, unicode -> bool
     """@reimp"""
-    return self.value < other[0:len(self.value)]
+    return self.value < other[:len(self.value)]
 
 if __name__ == '__main__':
   pairs = [

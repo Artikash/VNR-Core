@@ -23,6 +23,7 @@ if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
+from datetime import datetime
 from sakurakit import sknetio
 from sakurakit.skstr import unescapehtml
 

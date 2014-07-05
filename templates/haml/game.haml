@@ -436,6 +436,20 @@
                     %li(data-type="#{r.type}")
                       %a #{i18n.site_name(r.type)}
               .contents
+          -if not game.upcoming and game.hasReviews()
+            %hr
+            %section.reviews
+              .title
+                .col-xs-2
+                  .title-content 感想
+                %ul.nav.nav-pills.nav-clean.nav-xs
+                  %li.active(data-type="")
+                    %a #{tr('Hide')}
+                  %li.divider
+                  -for r in game.iterReviewReferences()
+                    %li(data-type="#{r.type}")
+                      %a #{i18n.site_name(r.type)}
+              .contents
 
       ; Scripts
       -if game

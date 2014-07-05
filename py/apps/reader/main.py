@@ -462,16 +462,27 @@ class _MainObject(object):
     nm.onlineChanged.connect(ret.setOnline)
     return ret
 
-  #@memoizedproperty
-  #def scapeManager(self):
-  #  dprint("create scape manager")
-  #  import refman
-  #  ret = refman.scape()
-  #  ret.setParent(self.q)
-  #  nm = self.networkManager
-  #  ret.setOnline(nm.isOnline())
-  #  nm.onlineChanged.connect(ret.setOnline)
-  #  return ret
+  @memoizedproperty
+  def amazonManager(self):
+    dprint("create amazon manager")
+    import refman
+    ret = refman.amazon()
+    ret.setParent(self.q)
+    nm = self.networkManager
+    ret.setOnline(nm.isOnline())
+    nm.onlineChanged.connect(ret.setOnline)
+    return ret
+
+  @memoizedproperty
+  def scapeManager(self):
+    dprint("create scape manager")
+    import refman
+    ret = refman.scape()
+    ret.setParent(self.q)
+    nm = self.networkManager
+    ret.setOnline(nm.isOnline())
+    nm.onlineChanged.connect(ret.setOnline)
+    return ret
 
   @memoizedproperty
   def dmmManager(self):
@@ -1363,11 +1374,12 @@ class MainObject(QObject):
     d.trailersManager
     d.dmmManager
     d.tokutenManager
+    d.amazonManager
     d.getchuManager
     d.gyuttoManager
-    #d.holysealManager
-    #d.scapeManager # does not exist
+    d.scapeManager
     d.cacheManager
+    #d.holysealManager
     #d.cacheManager.updateAvatar("AQKI6jsmz")
     d.subtitleEditorManager
     d.postEditorManager

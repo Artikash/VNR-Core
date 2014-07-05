@@ -229,4 +229,17 @@ def FileCacher(Prototype, Base=CacherBase, suffix=''):
 
   return Cacher
 
+if __name__ == '__main__':
+
+  from online import DataParser
+
+  cls = DataCacher(DataParser, suffix='.html')
+  cachedir = 'tmp'
+  api = cls(cachedir=cachedir, expiretime=0)
+
+  #url = 'http://ja.wikipedia.org/wiki/'
+  url = 'http://www.amazon.co.jp/reviews/iframe?akid=AKIAJSUDXZVM3TXLJXPQ&alinkCode=xm2&asin=B00AT6K7OE&atag=sakuradite-20&exp=2014-07-05T22%3A25%3A10Z&v=2&sig=gELwW4RmIrkrZ9ImIsItypJGeirqOFHRuwQU2EtZRMw%3D'
+  data = api.query(url)
+  print data
+
 # EOF

@@ -138,7 +138,8 @@ def unparsedatetime(d):
   return "%s/%s/%s %s %s:%s" % (
       d.month, d.day, d.year,
       WEEK_NAMES[d.weekday()],
-      d.hour, d.minute)
+      d.hour if d.hour >= 10 else '0%s' % d.hour,
+      d.minute if d.minute >= 10 else '0%s' % d.minute)
 
 def unparsedate(d):
   """

@@ -856,6 +856,22 @@ class GameInfo(object):
       return True
     return False
 
+  def iterReviewReferences(self):
+    """
+    @yield  Reference
+    """
+    for r in self.scape, self.getchu, self.amazon, self.gyutto, self.digiket, self.dlsite, self.dmm: #, self.amazon, self.scape
+      if r and r.hasReview():
+        yield r
+
+  def hasReviews(self):
+    """
+    @return  bool
+    """
+    for r in self.iterReviewReferences():
+      return True
+    return False
+
   def iterCharacterDescriptionReferences(self):
     """
     @yield  Reference
@@ -2752,6 +2768,17 @@ class ScapeReference(Reference):
   def erogetrailersUrl(self):
     return 'http://erogetrailers.com/soft/%s' % self.trailers if self.trailers else ''
 
+  def hasReview(self):
+    return bool(self.medianCount)
+
+  def queryReviews(self, **kwargs):
+    """
+    @param*  offset  int
+    @param*  limit  int
+    @return  [kw]
+    """
+    return refman.scape().queryReviews(self.key, **kwargs)
+
 class DLsiteReference(Reference): #(object):
   def __init__(self, parent=None,
       type='dlsite',
@@ -2788,6 +2815,8 @@ class DLsiteReference(Reference): #(object):
       self.creators.append({'name':writer, 'roles':['writer']})
     if musician:
       self.creators.append({'name':musician, 'roles':['musician']})
+
+  def hasReview(self): return bool(self.review)
 
   def renderReview(self):
     """
@@ -2887,6 +2916,9 @@ class GetchuReference(Reference): #(object):
     """
     h = refman.getchu().queryReview(self.key)
     return skstr.unescapehtml(h) if h else ''
+
+  def hasReview(self): return bool(self.review)
+  def renderReview(self): return self.review
 
   def hasSampleImages(self): return bool(self.sampleImages or self.bannerImages)
 
@@ -3005,6 +3037,9 @@ class DiGiketReference(Reference): #(object):
 
   def renderCharacterDescription(self): return self.characterDescription
 
+  def hasReview(self): return bool(self.review)
+  def renderReview(self): return self.review
+
 class AmazonReference(Reference):
   def __init__(self, parent=None,
       type='amazon',
@@ -3022,7 +3057,7 @@ class AmazonReference(Reference):
     self.mediumImage = mediumImage # str url
     self.smallImage = smallImage # str url
     self.sampleImages = sampleImages # [str url] not None
-    self.review = review # str url
+    self.reviewUrl = review # str url
     self.descriptions =  descriptions # [unicode] not None, contains HTML tags
 
   def hasDescriptions(self):
@@ -3037,6 +3072,40 @@ class AmazonReference(Reference):
     """
     for it in self.descriptions:
       yield self._renderDescription(it)
+
+  @memoizedproperty
+  def review(self):
+    """
+    @return  unicode  HTML not None
+    """
+    if self.reviewUrl:
+      h = refman.amazon().queryReview(self.reviewUrl)
+      if h:
+        # extract <body>
+        START = '<body>'
+        STOP = '</body>'
+        start = h.find(START)
+        if start != -1:
+          start += len(START)
+          stop = h.find(STOP, start)
+          if stop != -1:
+            h = h[start:stop]
+
+        # remove <script>
+        START = '<script'
+        STOP = '</script>'
+        start = h.find(START)
+        if start != -1:
+          stop = h.rfind(STOP)
+          if stop != -1:
+            h = h[:start] + h[stop+len(STOP):]
+        return h
+    return ''
+
+  def hasReview(self): return bool(self.reviewUrl)
+  def renderReview(self):
+    # TODO: Fetch data online
+    return self.review
 
   #_story_rx = re.compile(r"%s" % '|'.join([
   #  u"<b>■ストーリー</b>",
@@ -3094,6 +3163,9 @@ class GyuttoReference(Reference): #(object):
     """
     h = refman.getchu().queryReview(self.key)
     return skstr.unescapehtml(h) if h else ''
+
+  def hasReview(self): return bool(self.review)
+  def renderReview(self): return self.review
 
   #@property
   #def reviewUrl(self):
@@ -3183,10 +3255,9 @@ class DmmReference(Reference):
     if kw:
       return DmmPage(**kw)
 
-  @property
-  def review(self):
-    page = self.page
-    return page.review if page else ''
+  def hasReview(self): return bool(self.page and self.page.review)
+  def renderReview(self):
+    return self.page.review if self.page else ''
 
   @property
   def description(self): # -> str

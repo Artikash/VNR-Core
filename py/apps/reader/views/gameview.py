@@ -16,7 +16,7 @@ from sakurakit.skwebkit import SkWebView, SkWebViewBean
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
 #from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
-import cacheman, dataman, features, growl, i18n, main, mecabman, netman, osutil, prompt, proxy, py, rc
+import cacheman, dataman, features, growl, i18n, jsonutil, main, mecabman, netman, osutil, prompt, proxy, py, rc
 
 def _getimage(url, path):
   """
@@ -62,7 +62,7 @@ class GameCoffeeBean(QObject):
       return ''
 
   @Slot(result=unicode)
-  def getVideos(self): # return list of urls using ',' as sep
+  def getVideos(self): # return json list
     if self.info and self.info.hasVideos():
       return json.dumps(list(self.info.iterVideos()))
     else:
@@ -82,6 +82,22 @@ class GameCoffeeBean(QObject):
       for r in self.info.iterCharacterDescriptionReferences():
         if r.type == type:
           return r.renderCharacterDescription()
+    return ''
+
+  @Slot(unicode, result=unicode)
+  def getReview(self, type): # return html for the reference type
+    if type != 'scape' and self.info:
+      for r in self.info.iterReviewReferences():
+        if r.type == type:
+          return r.renderReview()
+    return ''
+
+  @Slot(int, int, result=unicode)
+  def getScapeReviews(self, offset, limit): # return json list
+    if self.info and self.info.scape:
+      l = self.info.scape.queryReviews(offset=offset, limit=limit)
+      if l:
+        return json.dumps(l, default=jsonutil.default_datetime)
     return ''
 
   #@Slot(result=unicode)

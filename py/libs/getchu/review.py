@@ -97,8 +97,8 @@ class ReviewApi(object):
       ret = self._clean(ret)
     return ret
 
-  @staticmethod
-  def _clean(h):
+  _rx_review_btn = re.compile(ur'<button .*?レビューを投稿する.*?</button>', re.DOTALL)
+  def _clean(self, h):
     """
     @param  h  unicode  HTML
     @return  unicode  HTML
@@ -114,6 +114,8 @@ class ReviewApi(object):
       if stop == -1:
         break
       h = h[:start] + h[stop+len(STOP):]
+
+    h = self._rx_review_btn.sub('', h)
     return h
 
 if __name__ == '__main__':

@@ -31,7 +31,10 @@ class DataParser(ParserBase):
     """
     @return  str
     """
-    return ''
+    if args:
+      return args[0]
+    if kwargs:
+      return kwargs.itervalues().next()
 
   def _fetch(self, url):
     """
