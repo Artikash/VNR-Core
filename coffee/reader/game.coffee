@@ -130,7 +130,7 @@ createTemplates = ->
     %label.control-label.col-xs-2 = tr('H-code')
     .form-control-static.col-xs-10
       :if file.hook
-        = file.hook.text
+        %span.text-danger = file.hook.text
         :if file.hook.locked
           %b.text-info = ' (' + tr('Locked') + ')'
           %i.text-muted.text-xs
@@ -179,19 +179,25 @@ createTemplates = ->
   # - title  nullable
   # - memo  nullable
   # - netabare  bool
+  # - score  int
+  # - ecchiScore  int
   @HAML_SCAPE_REVIEW = Haml '''\
 .entry
   .header
-    %a.user(href="#{url}" title="{url}") = '@' + user
+    %a.user(href="#{url}" title="#{url}") = '@' + user
     :if netabare
-      .netabare.text-danger = ' (ネタバレ)'
+      %span.netabare.text-danger = ' (ネタバレ)'
+    :if score
+      %span.score.text-danger  #{score}/100
+    :if ecchiScore
+      %span.score.text-warning h:#{ecchiScore}/5
     :if date
-      .date.text-success = date
+      %span.date.text-success = date
   .body
     :if title
-      .title = title
+      .title(title="一言コメント") = title
     :if content
-      .content = content
+      .content(title="メモ") = content
 '''
 
 ## Render ##
@@ -240,13 +246,23 @@ renderReview = (type) -> # string -> string
     gameBean.getReview type
 
 _renderScapeReview = (review)-> # -> string
-  HAML_SCAPE_REVIEW
-    user: review.uid
-    url: "http://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/user_infomation.php?user=#{review.uid}"
-    date: review.timestamp
-    title: review.hitokoto
-    content: review.memo
-    netabare: review.netabare
+  ecchiScore = 0
+  try
+    if review.okazu_tokuten and review.okazu_tokuten < 0 and review.okazu_tokuten > -10
+      ecchiScore = review.okazu_tokuten + 5 # scores are negative, invalid score is -999
+
+    HAML_SCAPE_REVIEW
+      user: review.uid
+      url: "http://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/user_infomation.php?user=#{review.uid}"
+      date: review.timestamp
+      title: review.hitokoto?.replace /\n/, '<br/>'
+      content: review.memo?.replace /\n/, '<br/>'
+      netabare: review.netabare
+      score:  review.tokuten or 0
+      ecchiScore: ecchiScore
+
+  catch # catch in case type error
+    '<div class="entry"/>'
 
 renderScapeReviews = (offset, limit) -> # int, int -> string, bool empty
   data = gameBean.getScapeReviews offset, limit

@@ -136,10 +136,11 @@ def unparsedatetime(d):
   #return d.strftime("%m/%d/%Y {0} %H:%M").format(
   #    WEEK_NAMES[d.weekday()]).lstrip('0')
   return "%s/%s/%s %s %s:%s" % (
-      d.month, d.day, d.year,
-      WEEK_NAMES[d.weekday()],
-      d.hour if d.hour >= 10 else '0%s' % d.hour,
-      d.minute if d.minute >= 10 else '0%s' % d.minute)
+    d.month, d.day, d.year,
+    WEEK_NAMES[d.weekday()],
+    d.hour, #d.hour if d.hour >= 10 else '0%s' % d.hour,
+    d.minute if d.minute >= 10 else '0%s' % d.minute, # pad leading zeros
+  )
 
 def unparsedate(d):
   """
