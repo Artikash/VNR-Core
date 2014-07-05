@@ -247,16 +247,16 @@ renderReview = (type) -> # string -> string
   else
     gameBean.getReview type
 
-_SCAPE_REVIEW_COUNT = 0
+SCAPE_REVIEW_COUNT = 0 # current count
 _renderScapeReview = (review)-> # -> string
-  ++_SCAPE_REVIEW_COUNT
+  ++SCAPE_REVIEW_COUNT
   try
     ecchiScore = 0
     if review.okazu_tokuten and review.okazu_tokuten < 0 and review.okazu_tokuten > -10
       ecchiScore = review.okazu_tokuten + 5 # scores are negative, invalid score is -999
 
     HAML_SCAPE_REVIEW
-      count: _SCAPE_REVIEW_COUNT
+      count: SCAPE_REVIEW_COUNT
       user: review.uid
       url: "http://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/user_infomation.php?user=#{review.uid}"
       date: review.timestamp
@@ -750,14 +750,15 @@ bindScapeReviewList = ->
     $this = $ @
     $parent = $this.closest '.scape'
     $container = $parent.find '.list'
-    size = $container.children('.entry').length
+    #size = $container.children('.entry').length
+    size = SCAPE_REVIEW_COUNT
     unless (size - SCAPE_REVIEW_INIT_SIZE) % SCAPE_REVIEW_PAGE_SIZE # FIXME: scape page size is not accurate
-      h = renderScapeReviews size, SCAPE_REVIEW_PAGE_SIZE
+      [h, count] = renderScapeReviews size, SCAPE_REVIEW_PAGE_SIZE
       if h
-        $container.append h
-        #$(h).hide() # fadeIn does not work for a list
-        #    .appendTo $container
-        #    .fadeIn()
+        #$container.append h
+        $(h).hide()
+            .appendTo $container
+            .fadeIn()
         return false
     # Empty
     $this.replaceWith HTML_EMPTY
