@@ -173,6 +173,7 @@ createTemplates = ->
 """
 
   # Haml for single scape review
+  # - count  int
   # - user
   # - url
   # - date  nullable
@@ -184,9 +185,10 @@ createTemplates = ->
   @HAML_SCAPE_REVIEW = Haml '''\
 .entry
   .header
+    %span.count = count
     %a.user(href="#{url}" title="#{url}") = '@' + user
     :if netabare
-      %span.netabare.text-danger = ' (ネタバレ)'
+      %span.netabare.text-danger = '(ネタバレ)'
     :if score
       %span.score.text-danger  #{score}/100
     :if ecchiScore
@@ -245,24 +247,27 @@ renderReview = (type) -> # string -> string
   else
     gameBean.getReview type
 
+_SCAPE_REVIEW_COUNT = 0
 _renderScapeReview = (review)-> # -> string
-  ecchiScore = 0
+  ++_SCAPE_REVIEW_COUNT
   try
+    ecchiScore = 0
     if review.okazu_tokuten and review.okazu_tokuten < 0 and review.okazu_tokuten > -10
       ecchiScore = review.okazu_tokuten + 5 # scores are negative, invalid score is -999
 
     HAML_SCAPE_REVIEW
+      count: _SCAPE_REVIEW_COUNT
       user: review.uid
       url: "http://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/user_infomation.php?user=#{review.uid}"
       date: review.timestamp
-      title: review.hitokoto?.replace /\n/, '<br/>'
-      content: review.memo?.replace /\n/, '<br/>'
+      title: review.hitokoto?.replace /\n/g, '<br/>'
+      content: review.memo?.replace /\n/g, '<br/>'
       netabare: review.netabare
       score:  review.tokuten or 0
       ecchiScore: ecchiScore
 
   catch # catch in case type error
-    '<div class="entry"/>'
+    '<div class="entry entry-empty"/>'
 
 renderScapeReviews = (offset, limit) -> # int, int -> string, bool empty
   data = gameBean.getScapeReviews offset, limit

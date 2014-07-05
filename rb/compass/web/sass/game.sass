@@ -65,12 +65,24 @@ $yt-img-scale: 1.0
     border-radius: 3px
     padding: 5px
     background-color: rgba(0,0,255,0.05) // blue
+    .count
+      @extend .text-minor
+    .user
+      margin-left: 5px
+    .netabare,
+    .score,
+    .date
+      margin-left: 9px
     .score,
     .date
       float: right
-      margin-left: 5px
-  >.body .title
-    font-weight: bold
+    .netabare
+      font-size: 90%
+  >.body
+    .title
+      font-weight: bold
+    .content
+      margin-top: 9px
 
 // Game portal
 
