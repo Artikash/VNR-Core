@@ -159,6 +159,6 @@ Item { id: root_
   }
 
   function formatText(name, url, item) { // string, string, Reference -> string
-    return '<a style="color:' + (item ? 'green' : 'brown') + '" href="http://' + (item ? item.url : url) + '">' + name + '</a>'
+    return '<a style="color:' + (item ? 'green' : 'brown') + '" href="' + (item ? item.url : url) + '">' + name + '</a>'
   }
 }

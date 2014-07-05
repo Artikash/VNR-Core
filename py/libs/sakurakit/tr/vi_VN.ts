@@ -2213,5 +2213,10 @@
         <source>No more</source>
         <translation>Không</translation>
     </message>
+    <message>
+        <location filename="sktr.py" line="271"/>
+        <source>error</source>
+        <translation>lôi</translation>
+    </message>
 </context>
 </TS>

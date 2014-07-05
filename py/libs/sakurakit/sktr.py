@@ -268,7 +268,7 @@ class sakurakit(QObject):
       self.tr("Default"), self.tr("default"),
       self.tr("Draft"),
       self.tr("Encoding"),
-      self.tr("Error"),
+      self.tr("Error"), self.tr("error"),
       self.tr("Engine"),
       self.tr("Feature"),
       self.tr("Features"),
