@@ -420,11 +420,14 @@ class SoftApi(object):
     @return  unicode
     """
     START = u'<div class="tabletitle">&nbsp;キャラクター</div>'
-    STOP = u'<a name="sample" id="sample">'
+    STOP1 = '<a name="sample" id="sample">'
+    STOP2 = '<!-- ▼recommend▼ -->'
     start = h.find(START)
     if start > 0:
-      stop = h.find(STOP)
-      if stop > start:
+      stop = h.find(STOP1, start)
+      if stop == -1:
+        stop = h.find(STOP2, start)
+      if stop != -1:
         return unescapehtml(
             self._removescripts(
               self._replacelinks(
@@ -616,6 +619,7 @@ if __name__ == '__main__':
   k = 774400
   k = 804521
   k = 718587 # レミニセンス
+  k = 798624
   print '-' * 10
   q = api.query(k)
   #for it in q['characters']:
