@@ -902,7 +902,7 @@ initCGPills = -> # Sample images
                     #@parentNode.removeChild @ # remove this
                     $div.masonry 'remove', @ # remove this
                   else
-                    @width = DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
+                    $(@).width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
                   $div.masonry() # refresh after images are loaded
           ) $ el
     false
