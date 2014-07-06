@@ -664,14 +664,21 @@ initTwitterSwitch = ->
 initYouTubeSwitch = ->
   $section = $ 'section.youtube'
   $container = $section.find '.videos'
+
+  $spin = $section.find '.spin'
+
   $section.find('input.switch').bootstrapSwitch()
     .on 'switchChange.bootstrapSwitch', (event, checked) ->
       unless checked
         $container.empty()
+        $spin.removeClass('spin-running').spin false if $spin.hasClass 'spin-running'
       else
+        $spin.addClass('spin-running').spin 'section'
         $container.hide()
            .html renderVideos()
            .fadeIn()
+           .imagesLoaded ->
+             $spin.removeClass('spin-running').spin false
         bindYoutube()
 
 bindYoutube = ->
@@ -868,8 +875,8 @@ bindScapeReviewList = ($spin) ->
 initCGPills = -> # Sample images
   $sec = $ 'section.cg'
   $container = $sec.find '.contents'
-  $spin = $sec.find '.spin'
 
+  $spin = $sec.find '.spin'
   counter = new SpinCounter $spin
 
   $sec.find('.nav.nav-pills > li > a').click ->
