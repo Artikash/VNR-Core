@@ -411,6 +411,7 @@
             %section.characters
               .title
                 .col-xs-2
+                  .spin
                   .title-content 人物
                 %ul.nav.nav-pills.nav-clean.nav-xs
                   %li.active(data-type="")
@@ -425,6 +426,7 @@
             %section.descriptions
               .title
                 .col-xs-2
+                  .spin
                   .title-content 紹介
                 %ul.nav.nav-pills.nav-clean.nav-xs
                   %li.active(data-type="")
@@ -456,7 +458,7 @@
           window.JQUERY_RATY_PATH = '#{rc.cdn_url('jquery.raty.path')}';
 
         -for it in \
-            'jquery', 'jquery.raty', 'jquery.ui', \
+            'jquery', 'jquery.imagesloaded', 'jquery.raty', 'jquery.ui', \
             'spin', 'jquery.spin', \
             'bootstrap.switch', 'dragdealer', \
             'haml', 'masonry', \
