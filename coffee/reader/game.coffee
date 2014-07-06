@@ -216,6 +216,106 @@ createTemplates = ->
         .content(title="メモ") = content
 """.replace /\$/g, '#'
 
+# Classes
+
+class SpinCounter
+  constructor: (@$el, @count=0, @preset='section') ->
+    @$el.spin 'section' if @count
+
+  inc: (value=1) =>
+    if value > 0
+      @$el.spin @preset if @count <= 0
+      @count += value
+
+  dec: (value=1) =>
+    if value > 0
+      @count -= value
+      @$el.spin false if @count <= 0
+
+class MasonryAniPauser
+  constructor: (@$container, @paused=false) ->
+    @timer = timer 600, @pause # larger than 400
+
+  pause: =>
+    unless @paused
+      @paused = true
+      @$container.masonry
+        isAnimated: false # disable animation
+        transitionDuration: 0 # set to 0 to disable animation
+    @timer.start()
+
+  resume: =>
+    @timer.stop()
+    if @paused
+      @paused = false
+      @$container.masonry
+        isAnimated: true # default = true, enable animation
+        transitionDuration: 400 # default = 400, set to 0 to disable animation
+
+## Zoom ##
+
+# Must be consistent with game.sass
+
+ZOOM_FACTOR = 1
+
+class Zoomer
+  constructor: (@viewBean) ->
+    @ratio = 1.0 # float
+    @bind()
+
+  # Properties
+  maxWidth: => Math.max 0, @viewBean.width() - 90
+
+  # Actions
+
+  bind: =>
+    $(window).resize => @zoomYoutube @ratio
+
+  zoom: (v) => # v float
+    ZOOM_FACTOR = @ratio = v
+    $('img.zoom.zoom-cover').width DEFAULT_COVER_IMAGE_WIDTH * (v+1)/2
+    #$('img.zoom.zoom-cg').width v * DEFAULT_SAMPLE_IMAGE_WIDTH
+    #$('.chara').width v * 100 # TO BE RESTOERD
+
+    $cg = $('img.zoom.zoom-cg')
+    if $cg.length
+      $cg.width 220 * v
+      $('section.cg .images:visible').masonry() #columnWidth: v * DEFAULT_SAMPLE_IMAGE_WIDTH
+
+    @zoomYoutube v
+
+  youtubeWidth: (v) => Math.min((v ? @ratio) * DEFAULT_VIDEO_IMAGE_WIDTH, @maxWidth())
+  zoomYoutube: (v) => # float
+    $('.youtube:not(.iframe)').width @youtubeWidth * v
+
+  youtubeFrameWidth: =>
+    Math.min @ratio * 480, (Math.max 480, @maxWidth()) # at least 480px
+  youtubeFrameHeight: =>
+    @youtubeFrameWidth() * 9 / 16.0 # at least 270px
+
+initToolbar = ->
+  dprint 'bindToolbar: enter'
+  @zoomer = new Zoomer @viewBean
+
+  slider = new ZoomSlider (y) => @zoomer.zoom 1 + y * 2
+
+  toolbar = new Toolbar @viewBean,
+    width: 60   # height of slider + margin-right
+    height: 229 + 15# height of slider + 3 * button + margin-bottom + slider height
+    move: slider.reloadOffset
+  dprint 'bindToolbar: leave'
+
+## Ruby Furigana ##
+
+initRuby = ->
+  dprint 'bindRuby: enter'
+
+  $.fn.inject = -> # create inject plugin
+      @each -> window.injectruby @
+  $('.ruby').inject()
+
+  dprint 'bindRuby: leave'
+
 ## Render ##
 
 createTwitterTimeline = (id:id, el:el, callback:callback, options:options) ->
@@ -358,70 +458,6 @@ renderScapeReviewList = -> # -> string
 #
 #  $('iframe.getchu').error -> $(@).remove() # on 404 error?
 #  dprint 'bindGetchu: leave'
-
-## Zoom ##
-
-# Must be consistent with game.sass
-
-ZOOM_FACTOR = 1
-
-class Zoomer
-  constructor: (@viewBean) ->
-    @ratio = 1.0 # float
-    @bind()
-
-  # Properties
-  maxWidth: => Math.max 0, @viewBean.width() - 90
-
-  # Actions
-
-  bind: =>
-    $(window).resize => @zoomYoutube @ratio
-
-  zoom: (v) => # v float
-    ZOOM_FACTOR = @ratio = v
-    $('img.zoom.zoom-cover').width DEFAULT_COVER_IMAGE_WIDTH * (v+1)/2
-    #$('img.zoom.zoom-cg').width v * DEFAULT_SAMPLE_IMAGE_WIDTH
-    #$('.chara').width v * 100 # TO BE RESTOERD
-
-    $cg = $('img.zoom.zoom-cg')
-    if $cg.length
-      $cg.width 220 * v
-      $('section.cg .images:visible').masonry() #columnWidth: v * DEFAULT_SAMPLE_IMAGE_WIDTH
-
-    @zoomYoutube v
-
-  youtubeWidth: (v) => Math.min((v ? @ratio) * DEFAULT_VIDEO_IMAGE_WIDTH, @maxWidth())
-  zoomYoutube: (v) => # float
-    $('.youtube:not(.iframe)').width @youtubeWidth * v
-
-  youtubeFrameWidth: =>
-    Math.min @ratio * 480, (Math.max 480, @maxWidth()) # at least 480px
-  youtubeFrameHeight: =>
-    @youtubeFrameWidth() * 9 / 16.0 # at least 270px
-
-initToolbar = ->
-  dprint 'bindToolbar: enter'
-  @zoomer = new Zoomer @viewBean
-
-  slider = new ZoomSlider (y) => @zoomer.zoom 1 + y * 2
-
-  toolbar = new Toolbar @viewBean,
-    width: 60   # height of slider + margin-right
-    height: 229 + 15# height of slider + 3 * button + margin-bottom + slider height
-    move: slider.reloadOffset
-  dprint 'bindToolbar: leave'
-
-## Ruby Furigana ##
-
-initRuby = ->
-  dprint 'bindRuby: enter'
-
-  $.fn.inject = -> # create inject plugin
-      @each -> window.injectruby @
-  $('.ruby').inject()
-
-  dprint 'bindRuby: leave'
 
 ## Spin ##
 
@@ -682,6 +718,9 @@ initDescPills = -> # Descriptions
   $sec = $ 'section.descriptions'
   $container = $sec.find '.contents'
 
+  $spin = $sec.find '.spin'
+  counter = new SpinCounter $spin
+
   $sec.find('.nav.nav-pills > li > a').click ->
     $li = $(@).parent 'li'
     unless $li.hasClass 'active'
@@ -697,6 +736,7 @@ initDescPills = -> # Descriptions
         if $el.length
           $el.fadeIn()
         else
+          counter.inc()
           h = gameBean.getDescription newtype
           el = document.createElement 'div'
           el.className = newtype + ' description'
@@ -705,6 +745,7 @@ initDescPills = -> # Descriptions
           $(el).hide()
                .appendTo $container
                .fadeIn()
+               .imagesLoaded -> counter.dec()
                # Improvement
                .find('a:not([title])').each -> @setAttribute 'title', @href
     false
@@ -712,6 +753,9 @@ initDescPills = -> # Descriptions
 initCharaDescPills = -> # Descriptions
   $sec = $ 'section.characters'
   $container = $sec.find '.contents'
+
+  $spin = $sec.find '.spin'
+  counter = new SpinCounter $spin
 
   $sec.find('.nav.nav-pills > li > a').click ->
     $li = $(@).parent 'li'
@@ -728,6 +772,7 @@ initCharaDescPills = -> # Descriptions
         if $el.length
           $el.fadeIn()
         else
+          counter.inc()
           h = gameBean.getCharacterDescription newtype
           el = document.createElement 'div'
           el.className = newtype + ' character'
@@ -736,6 +781,7 @@ initCharaDescPills = -> # Descriptions
           $(el).hide()
                .appendTo $container
                .fadeIn()
+               .imagesLoaded -> counter.dec()
                # Improvement
                .find('a:not([title])').each -> @setAttribute 'title', @href
     false
@@ -818,40 +864,6 @@ bindScapeReviewList = ($spin) ->
     # Empty
     $this.replaceWith HTML_EMPTY
     false
-
-class MasonryAniPauser
-  constructor: (@$container, @paused=false) ->
-    @timer = timer 600, @pause # larger than 400
-
-  pause: =>
-    unless @paused
-      @paused = true
-      @$container.masonry
-        isAnimated: false # disable animation
-        transitionDuration: 0 # set to 0 to disable animation
-    @timer.start()
-
-  resume: =>
-    @timer.stop()
-    if @paused
-      @paused = false
-      @$container.masonry
-        isAnimated: true # default = true, enable animation
-        transitionDuration: 400 # default = 400, set to 0 to disable animation
-
-class SpinCounter
-  constructor: (@$el, @count=0, @preset='section') ->
-    @$el.spin 'section' if @count
-
-  inc: (value=1) =>
-    if value > 0
-      @$el.spin @preset if @count <= 0
-      @count += value
-
-  dec: (value=1) =>
-    if value > 0
-      @count -= value
-      @$el.spin false if @count <= 0
 
 initCGPills = -> # Sample images
   $sec = $ 'section.cg'
