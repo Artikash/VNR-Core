@@ -4,9 +4,10 @@
 #
 # Beans:
 # - gameBean: gameview.GameBean
+# - cacheBean: cacheman.CacheCoffeeBean
 # - clipBean: skwebkit.SkClipboardProxy
 # - i18nBean: coffeebean.I18nBean
-# - ttsBean: ttsman.TtsCoffeeProxy
+# - ttsBean: ttsman.TtsCoffeeBean
 # - yakuBean: trman.YakuCoffeeBean
 # - youtubeBean: coffeebean.YouTubeBean
 # - viewBean: skwebkit.SkViewBean
@@ -33,9 +34,16 @@ INVALID_YT_IMG_WIDTH = 120 # invalid youtube thumbnail image width
 
 SCAPE_REVIEW_INIT_SIZE = 10
 SCAPE_REVIEW_PAGE_SIZE = 20
+SCAPE_REVIEW_MAX_LENGTH = 200 # max content length
+
+HIGHLIGHT_INTERVAL = 1000 # int msecs
 
 # Global translation function
-@tr = (text) -> i18nBean.tr text # string ->
+@tr = (text) -> i18nBean.tr text # string -> string
+getLangName = (lang) -> i18nBean.getLangShortName lang # string -> string
+
+cacheimg = (url) -> cacheBean.cacheImage url # string -> string
+cacheurl = (url) -> cacheBean.cacheUrl url # string -> string
 
 # Delay template creation until i18nBean becomes available
 createTemplates = ->
@@ -143,22 +151,21 @@ createTemplates = ->
   # HAML for game.file
   # - param users
   #   [user]
-  #   - userAvatar
+  #   - userAvatarUrl
   #   - userName
-  #   - lang
+  #   - langName
   #   - count
-  #   - url
-  @HAML_USERS = Haml '''\
+  @HAML_USERS = Haml """\
 :for it in users
   :if it.userName && it.count
-    .user
-      :if it.userAvatar
-        %a.user(href="#{it.url}" title="#{it.url}")
-          %img.img-circle.avatar(src="http://media.getchute.com/media/#{it.userAvatar}/128x128")
+    .user(data-name="${it.userName}")
+      :if it.userAvatarUrl
+        %a.user-link(title="#{tr 'Show'}")
+          %img.img-circle.avatar(src="${it.userAvatarUrl}")
       .header
-        %a.user(href="#{it.url}") @#{it.userName}
-      .footer #{it.count} / #{it.lang}
-'''
+        %a.user-link(title="#{tr 'Show'}") @${it.userName}
+      .footer ${it.count} / ${it.langName}
+""".replace /\$/g, '#'
 
   # Haml for scape container
   # - entries  html
@@ -169,38 +176,44 @@ createTemplates = ->
   :if empty
     .empty #{'(' + tr('No more') + ')'}
   :else
-    %a.btn-more.btn.btn-link(role="button" title="#{tr 'More'}") #{tr 'More'}
+    %button.btn-more.btn.btn-info(type="button" title="#{tr 'More'}") #{tr 'More'}
 """
 
   # Haml for single scape review
   # - count  int
   # - user
-  # - url
+  # - userUrl
   # - date  nullable
   # - title  nullable
-  # - memo  nullable
+  # - content  nullable
+  # - lessContent  nullable
   # - netabare  bool
   # - score  int
   # - ecchiScore  int
-  @HAML_SCAPE_REVIEW = Haml '''\
-.entry
+  @HAML_SCAPE_REVIEW = Haml """\
+.entry.entry-new
   .header
     %span.count = count
-    %a.user(href="#{url}" title="#{url}") = '@' + user
+    %a.user(href="${userUrl}" title="${userUrl}") @${user}
     :if netabare
       %span.netabare.text-danger = '(ネタバレ)'
     :if ecchiScore
-      %span.score.text-info H:#{ecchiScore}/5
+      %span.score.text-info H:${ecchiScore}/5
     :if score
-      %span.score.text-danger #{score}/100
+      %span.score.text-danger ${score}/100
     :if date
       %span.date.text-success = date
   .body
     :if title
       .title(title="一言コメント") = title
     :if content
-      .content(title="メモ") = content
-'''
+      :if lessContent
+        .content.content-more.inactive(title="メモ") = content
+        .content.content-less(title="メモ") = lessContent
+        %a.btn-more.btn.btn-link(role="button" title="#{tr 'More'}") #{tr 'More'}
+      :else
+        .content(title="メモ") = content
+""".replace /\$/g, '#'
 
 ## Render ##
 
@@ -237,8 +250,9 @@ renderSettings = (file) -> # game.file
 
 renderUsers = (users) -> # game.file
   for it in users
-    it.url = "#{HOST}/user/#{it.userName}"
-    it.lang = it.lang?[..1] or '*'
+    #it.url = "#{HOST}/user/#{it.userName}"
+    it.langName = getLangName(it.lang) or '*'
+    it.userAvatarUrl = cacheimg "http://media.getchute.com/media/#{it.userAvatar}/128x128"
   HAML_USERS users:users
 
 renderReview = (type) -> # string -> string
@@ -246,6 +260,8 @@ renderReview = (type) -> # string -> string
     renderScapeReviewList()
   else
     gameBean.getReview type
+
+_renderScapeContent = (t) -> t?.replace /\n/g, '<br/>' # string -> string
 
 SCAPE_REVIEW_COUNT = 0 # current count
 _renderScapeReview = (review)-> # -> string
@@ -255,16 +271,22 @@ _renderScapeReview = (review)-> # -> string
     if review.okazu_tokuten and review.okazu_tokuten < 0 and review.okazu_tokuten > -10
       ecchiScore = -review.okazu_tokuten # scores are negative, invalid score is -999
 
+    content = lessContent = ''
+    if review.memo
+      content = _renderScapeContent review.memo
+      lessContent = _renderScapeContent review.memo[..SCAPE_REVIEW_MAX_LENGTH] + " ……"
+
     HAML_SCAPE_REVIEW
       count: SCAPE_REVIEW_COUNT
       user: review.uid
-      url: "http://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/user_infomation.php?user=#{review.uid}"
+      userUrl: "http://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/user_infomation.php?user=#{review.uid}"
       date: review.timestamp
-      title: review.hitokoto?.replace /\n/g, '<br/>'
-      content: review.memo?.replace /\n/g, '<br/>'
       netabare: review.netabare
       score:  review.tokuten or 0
       ecchiScore: ecchiScore
+      title: _renderScapeContent review.hitokoto
+      content: content
+      lessContent: lessContent
 
   catch # catch in case type error
     '<div class="entry entry-empty"/>'
@@ -401,7 +423,6 @@ initRuby = ->
 
 ## Spin ##
 
-
 initSpin = ->
   $.fn.spin.presets.section = # preset for section
     left: '-8px'
@@ -494,6 +515,10 @@ initUsersSwitch = ->
                 .hide()
                 .html h
                 .fadeIn()
+                # bind click
+                .find('a.user-link').click ->
+                  name = $(@).closest('.user').data 'name'
+                  mainBean.showUser name
             else
               $msg.removeClass 'text-danger'
                   .text " (#{tr 'Empty'})"
@@ -716,6 +741,7 @@ initCharaDescPills = -> # Descriptions
 initReviewPills = -> # Reviews
   $sec = $ 'section.reviews'
   $container = $sec.find '.contents'
+  $spin = $sec.find '.spin'
 
   # TODO: Add ajax spin indicator
   $sec.find('.nav.nav-pills > li > a').click ->
@@ -733,6 +759,7 @@ initReviewPills = -> # Reviews
         if $el.length
           $el.fadeIn()
         else
+          $spin.spin 'section'
           h = renderReview newtype
           el = document.createElement 'div'
           el.className = newtype + ' review'
@@ -741,24 +768,49 @@ initReviewPills = -> # Reviews
           $(el).hide()
                .appendTo $container
                .fadeIn()
+          bindNewScapeReviews()
+          $spin.spin false
           if newtype is 'scape' and h
-            bindScapeReviewList()
+            bindScapeReviewList $spin
     false
 
-bindScapeReviewList = ->
-  $('.scape .btn-more').click ->
+bindNewScapeReviews = ->
+  $('.scape .entry.entry-new').each ->
+    $(@).removeClass 'entry-new'
+      .find('.btn-more').click ->
+        $this = $ @
+        $parent = $this.closest '.entry'
+        $more = $parent.find '.content.content-more'
+        $less = $parent.find '.content.content-less'
+
+        $more.toggleClass 'inactive'
+        $less.toggleClass 'inactive'
+
+        more = $more.hasClass 'inactive'
+        $this.text tr if more then 'More' else 'Less'
+
+        $parent.effect 'highlight', HIGHLIGHT_INTERVAL
+
+bindScapeReviewList = ($spin) ->
+  #$spinMore = $ '.scape .spin.spin-more' # difficult to position
+  $('.scape .footer .btn-more').click ->
     $this = $ @
     $parent = $this.closest '.scape'
     $container = $parent.find '.list'
     #size = $container.children('.entry').length
     size = SCAPE_REVIEW_COUNT
     unless (size - SCAPE_REVIEW_INIT_SIZE) % SCAPE_REVIEW_PAGE_SIZE # FIXME: scape page size is not accurate
+      $spin.spin 'section'
+      #$spinMore.spin 'tiny'
       [h, count] = renderScapeReviews size, SCAPE_REVIEW_PAGE_SIZE
+      $spin.spin false
+      #$spinMore.spin false
       if h
         #$container.append h
         $(h).hide()
             .appendTo $container
             .fadeIn()
+        bindNewScapeReviews()
         return false
     # Empty
     $this.replaceWith HTML_EMPTY
@@ -797,7 +849,6 @@ class SpinCounter
     if value > 0
       @count -= value
       @$el.spin false if @count <= 0
-
 
 initCGPills = -> # Sample images
   $sec = $ 'section.cg'

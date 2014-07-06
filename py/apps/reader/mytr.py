@@ -93,6 +93,10 @@ class reader(QObject):
       self.tr('Discussion'),
       self.tr('Game Discussion'),
 
+      self.tr('Serious'),
+      self.tr('Ecchi'),
+      self.tr('Easy'),
+
       self.tr("ATLAS"),
       self.tr("Baidu"),
       #self.tr("Youdao"),

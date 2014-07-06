@@ -2,7 +2,7 @@
 # ttsman.py
 # 4/7/2013 jichi
 
-__all__ = ['TtsQmlProxy', 'TtsCoffeeProxy']
+__all__ = ['TtsQmlBean', 'TtsCoffeeBean']
 
 from functools import partial
 from PySide.QtCore import QObject, Slot, QTimer
@@ -312,9 +312,9 @@ def stop(): manager().stop()
 ## Beans ##
 
 #@QmlObject
-class TtsQmlProxy(QObject):
+class TtsQmlBean(QObject):
   def __init__(self, parent=None):
-    super(TtsQmlProxy, self).__init__(parent)
+    super(TtsQmlBean, self).__init__(parent)
 
   @Slot(unicode, unicode)
   def speak(self, text, language):
@@ -329,9 +329,9 @@ class TtsQmlProxy(QObject):
     return ',' + ','.join(manager().availableEngines())
     #return ',google,yukari,zunko,VW Misaki'
 
-class TtsCoffeeProxy(QObject):
+class TtsCoffeeBean(QObject):
   def __init__(self, parent=None):
-    super(TtsCoffeeProxy, self).__init__(parent)
+    super(TtsCoffeeBean, self).__init__(parent)
 
   @Slot(unicode)
   def speak(self, text):

@@ -2,9 +2,11 @@
 # cacheman.py
 # 7/4/2012 jichi
 
+__all__ = ['CacheJinjaUtil', 'CacheCoffeeBean']
+
 import os, re
 from functools import partial
-from PySide.QtCore import QObject, QTimer
+from PySide.QtCore import QObject, QTimer, Slot
 from sakurakit import skfileio, sknetio, skstr, skthreads
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint, dwarn
@@ -283,12 +285,22 @@ def cache_image_path(url): return manager().cacheImagePath(url)
 
 def cache_html(text): return manager().cacheHtmlText(text)
 
-class Cacher:
+class CacheJinjaUtil:
   @staticmethod
   def url(url): return cache_url(url)
   @staticmethod
   def image(url): return cache_image_url(url)
   @staticmethod
   def html(text): return cache_html(text)
+
+class CacheCoffeeBean(QObject):
+
+  def __init__(self, parent=None):
+    super(CacheCoffeeBean, self).__init__(parent)
+
+  @Slot(unicode, result=unicode)
+  def cacheUrl(self, url): return cache_url(url)
+  @Slot(unicode, result=unicode)
+  def cacheImage(self, url): return cache_image_url(url)
 
 # EOF

@@ -41,14 +41,17 @@ class UserView(WebDialog):
     self.setWindowIcon(rc.icon('window-user'))
     self.userId = 0
     self.userHash = 0
+    self.userName = ''
 
   def onReload(self):
     """@reimp"""
     dm = dataman.manager()
-    user =  dm.queryUser(self.userId)
+    user =  dm.queryUser(id=self.userId, name=self.userName)
     if not user:
       growl.notify(my.tr("Unknown user. Please try updating the database."))
       return
+    self.userId = user.id
+    self.userName = user.name
     av = dm.queryUserAvatarUrl(self.userId, hash=self.userHash, cache=True)
     self.setHtml(rc.haml_template('haml/user').render({
       'user': user,
@@ -59,11 +62,11 @@ class UserView(WebDialog):
       'mytr': mytr_,
     }))
 
-  def refresh(self):
-    self.onReload()
+  def refresh(self): self.onReload()
 
-  def setUserId(self, id): self.userId = id
-  def setUserHash(self, h): self.userHash = h
+  def setUserId(self, v): self.userId = v
+  def setUserName(self, v): self.userName = v
+  def setUserHash(self, v): self.userHash = v
 
   def setVisible(self, value):
     """@reimp @public"""
@@ -103,12 +106,18 @@ class UserViewManager:
         if w.isVisible():
           w.hide()
 
-  def showUser(self, id, hash=0):
-    if not dataman.manager().queryUser(id):
+  def showUser(self, id=0, hash=0, name=''):
+    """
+    @param* id  long  user id
+    @param* hash  long  ip hash
+    @param* name  unicode  name  str
+    """
+    if not dataman.manager().queryUser(id=id, name=name):
       growl.notify(my.tr("Unknown user. Please try updating the database."))
     else:
       w = self.__d.getDialog()
       w.setUserId(id)
+      w.setUserName(name)
       w.setUserHash(hash)
       w.show()
 

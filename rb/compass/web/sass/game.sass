@@ -81,6 +81,8 @@ $yt-img-scale: 1.0
       font-weight: bold
     .content
       margin-top: 9px
+      &.inactive
+        display: none
 
 // Game portal
 
@@ -259,6 +261,8 @@ $yt-img-scale: 1.0
           img
             @extend .img-shadow
             max-width: 100%
+          a.user-link
+            @extend .cursor-pointer
       &.info
         .links a,
         .urls a

@@ -1607,6 +1607,14 @@ class MainObject(QObject):
     else:
       d.gameViewManager.showGame(gameId)
 
+  def showUserView(self, *args, **kwargs):
+    """
+    @param* id  long
+    @param* hash  IP hash
+    @param* name  unicode
+    """
+    self.__d.userViewManager.showUser(*args, **kwargs)
+
   def showTermInput(self, text=''):
     w = self.__d.termInputDialog
     if text:

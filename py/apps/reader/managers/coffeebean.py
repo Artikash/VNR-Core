@@ -11,6 +11,15 @@ from sakurakit.sktr import utr_
 from mytr import my
 import growl
 
+class MainBean(QObject):
+  def __init__(self, parent=None):
+    super(MainBean, self).__init__(parent)
+
+  @Slot(unicode)
+  def showUser(self, name): # unicode ->
+    import main
+    main.manager().showUserView(name=name)
+
 class YoutubeBean(QObject):
   def __init__(self, parent=None):
     super(YoutubeBean, self).__init__(parent)
@@ -33,6 +42,9 @@ class I18nBean(QObject):
 
   @Slot(result=unicode)
   def lang(self):
+    """
+    @return  user language in html format
+    """
     import config, dataman
     lang = dataman.manager().user().language
     return config.language2htmllocale(lang) or 'ja'
@@ -40,9 +52,19 @@ class I18nBean(QObject):
   @Slot(unicode, result=unicode)
   def tr(self, text):
     """
-    @param  vid  str  youtube id
+    @param  text  unicode  english
+    @return  unicode
     """
     return utr_(text)
+
+  @Slot(unicode, result=unicode)
+  def getLangShortName(self, lang):
+    """
+    @param  lang  unicode
+    @return  unicode
+    """
+    import config, i18n
+    return i18n.language_name2(config.htmllocale2language(lang)) if lang else ''
 
 @memoized
 def manager(): return CoffeeBeanManager()
@@ -58,30 +80,33 @@ class CoffeeBeanManager(object):
   def setParent(self, v): self._parent = v
 
   @memoizedproperty
-  def clipBean(self):
-    from sakurakit import skwebkit
-    return skwebkit.SkClipboardProxy(self.parent())
-
-  @memoizedproperty
-  def youtubeBean(self): return YoutubeBean(self.parent())
+  def mainBean(self): return MainBean(self.parent())
 
   @memoizedproperty
   def i18nBean(self): return I18nBean(self.parent())
 
   @memoizedproperty
-  def yakuBean(self):
-    import trman
-    return trman.YakuCoffeeBean(self.parent())
+  def youtubeBean(self): return YoutubeBean(self.parent())
 
   @memoizedproperty
-  def mecabBean(self):
-    import mecabman
-    return mecabman.MeCabCoffeeBean(self.parent())
+  def cacheBean(self):
+    import cacheman
+    return cacheman.CacheCoffeeBean(self.parent())
+
+  @memoizedproperty
+  def clipBean(self):
+    from sakurakit import skwebkit
+    return skwebkit.SkClipboardProxy(self.parent())
 
   @memoizedproperty
   def growlBean(self):
     import growl
     return growl.GrowlCoffeeProxy(self.parent())
+
+  @memoizedproperty
+  def mecabBean(self):
+    import mecabman
+    return mecabman.MeCabCoffeeBean(self.parent())
 
   @memoizedproperty
   def shioriBean(self):
@@ -91,6 +116,11 @@ class CoffeeBeanManager(object):
   @memoizedproperty
   def ttsBean(self):
     import ttsman
-    return ttsman.TtsCoffeeProxy(self.parent())
+    return ttsman.TtsCoffeeBean(self.parent())
+
+  @memoizedproperty
+  def yakuBean(self):
+    import trman
+    return trman.YakuCoffeeBean(self.parent())
 
 # EOF

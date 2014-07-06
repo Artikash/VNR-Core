@@ -7269,49 +7269,55 @@ class DataManager(QObject):
   #    #  it.imageUrl
   #  dprint("leave")
 
-  def queryUser(self, id):
+  def queryUser(self, id=0, name=''):
     """
-    @param id  int
+    @param* id  int
+    @param* name  unicode
     @return  User or None
     """
     d = self.__d
-    if id and id == d.user.id:
+    if id and id == d.user.id or name and name == d.user.name:
       return d.user
     elif id == GUEST_USER_ID:
       return GUEST
-    else:
+    elif id:
       return d.users.get(id)
+    elif name:
+      for it in d.users.itervalues():
+        if it.name == name:
+          return it
 
-  def queryUserColor(self, id):
+  def queryUserColor(self, *args, **kwargs):
     """
-    @param id  int
     @return  unicode not None
     """
-    u = self.queryUser(id)
+    u = self.queryUser(*args, **kwargs)
     return u.color if u else ""
 
-  def _queryUserAvatar(self, id, cache=False):
+  def _queryUserAvatar(self, id=0, name='', cache=False):
     """
-    @param  id  int
-    @param  cache  bool
+    @param* id  int
+    @param* name  unicode
+    @param* cache  bool
     @return  unicode not None
     """
-    u = self.queryUser(id)
+    u = self.queryUser(id=id, name=name)
     ret = u.avatar if u else ""
     if ret and cache:
       #skevents.runlater(partial(cacheman.manager().updateAvatar, ret))
       cacheman.manager().cacheAvatar(ret)
     return ret
 
-  def queryUserAvatarUrl(self, id, hash=0, cache=False):
+  def queryUserAvatarUrl(self, id=0, hash=0, name='', cache=False):
     """
-    @param  id  int
+    @param* id  int
     @param* hash  int
+    @param* name  unicode
     @param* size  str
     @param* cache  bool
     @return  unicode not None
     """
-    av = self._queryUserAvatar(id, cache=cache)
+    av = self._queryUserAvatar(id, name=name, cache=cache)
     if not av:
       path = rc.random_avatar_path(hash or id)
       return osutil.path_url(path)
