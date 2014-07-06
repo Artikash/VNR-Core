@@ -212,15 +212,18 @@ class _GameView(object):
     import coffeebean
     m = coffeebean.manager()
     return (
-      ('gameBean', self._gameBean),
+      ('cacheBean', m.cacheBean),
       ('clipBean', m.clipBean),
       ('i18nBean', m.i18nBean),
+      ('mainBean', m.mainBean),
       ('shioriBean', m.shioriBean),
       ('ttsBean', m.ttsBean),
+      ('viewBean', self._viewBean),
       ('yakuBean', m.yakuBean),
       ('youtubeBean', m.youtubeBean),
-      ('viewBean', self._viewBean),
       ('yomiBean', m.mecabBean),
+
+      ('gameBean', self._gameBean), # do it at last
     )
 
   @memoizedproperty
@@ -311,7 +314,7 @@ class _GameView(object):
     w.setHtml(rc.haml_template('haml/game').render({
       'title': title,
       'game': info,
-      'cache': cacheman.Cacher,
+      'cache': cacheman.CacheJinjaUtil,
       'rc': rc,
       'py': py,
       'tr': tr_,

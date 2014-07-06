@@ -4,7 +4,7 @@
 
 from datetime import datetime
 from sakurakit.sktr import tr_, utr_
-from mytr import my
+from mytr import my, mytr_
 import config, defs
 
 ## Names ##
@@ -73,6 +73,13 @@ SITE_NAMES = {
   'wiki': tr_("Wiki"), #u"ウィキ"
 }
 def site_name(t): return SITE_NAMES.get(t) or ''
+
+SCORE_NAMES = {
+  'overall': mytr_("Serious"),
+  'ecchi': mytr_("Ecchi"),
+  'easy': mytr_("Easy"),
+}
+def score_name(t): return SCORE_NAMES.get(t) or ''
 
 KEY_NAMES = {
   'mouse left': tr_("Left-click"),

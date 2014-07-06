@@ -9,11 +9,11 @@
 ;!!! 5
 %html
   %head
-    %title #{tr('User information')} - #{user.name|e}
+    %title #{tr('User information')} - #{user.name}
     %link(rel="stylesheet",href="#{rc.cdn_url('bootstrap3.css')}")
     :css
       body {
-        margin: 18px 9px;
+        margin: 15px;
         font-family: youyuan,geneva,arial,helvetica,clean,sans-serif;
         background-repeat: repeat;
         background-image: url("#{rc.image_url('background').toString()}");
@@ -32,12 +32,13 @@
         %span.muted (#{tr('Not specified')})
     %p
       #{tr('Name')}:
-      %a(href="http://sakuradite.com/user/#{user.name|e}")
-        @#{user.name|e}
+      -set url = "http://sakuradite.com/user/" + user.name
+      %a(href="#{url}",title="#{url}")
+        @#{user.name}
     %p
       #{tr('Homepage')}:
       -if user.homepage
-        %b: %a(href="#{user.homepage|e}",title="#{user.homepage|e}") #{user.homepage|e}
+        %b: %a(href="#{user.homepage}",title="#{user.homepage}") #{user.homepage}
       -else
         %span.muted (#{tr('Not specified')})
     %p

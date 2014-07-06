@@ -188,6 +188,7 @@ class sakurakit(QObject):
       self.tr("Quit"),
       self.tr("Update"),
 
+      self.tr("Less"),
       self.tr("More"),
       self.tr("No more"),
 

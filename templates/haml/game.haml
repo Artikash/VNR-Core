@@ -35,8 +35,6 @@
 
   -if not game
     %body
-      -if title
-        %center(style="margin-top:100px;font-size:200%;"): %b.ja: #{'「' + title + '」'|e}
       .blocker #{tr('Empty') + ' ><'}
   -else
     -set GG_Q = 'https://www.google.com/?#hl=ja&safe=off&q='
@@ -44,11 +42,11 @@
       #toolbar
         #zoomSlider.dragdealer.rounded.vertical
           .handle.red(title="#{tr('Zoom')}"): 拡大
-        .btn.btn-default.btn-block.btn-xs.btn-refresh(title="#{tr('Refresh')}")
+        %button.btn.btn-default.btn-block.btn-xs.btn-refresh(type="button",title="#{tr('Refresh')}")
           %i.fa.fa-refresh
-        .btn.btn-default.btn-block.btn-xs.btn-top(title="#{tr('Scroll to top')}")
+        %button.btn.btn-default.btn-block.btn-xs.btn-top(type="button",title="#{tr('Scroll to top')}")
           %i.fa.fa-chevron-up
-        .btn.btn-default.btn-block.btn-xs.btn-bottom(title="#{tr('Scroll to bottom')}")
+        %button.btn.btn-default.btn-block.btn-xs.btn-bottom(type="button",title="#{tr('Scroll to bottom')}")
           %i.fa.fa-chevron-down
 
       .game.portal(data-id="#{game.itemId}")
@@ -73,16 +71,16 @@
               %a(href="#{GG_Q}#{game.romajiTitle}",title="#{tr('Google')}") #{game.romajiTitle}
           -if game.itemId
             .buttons
-              %button.btn.btn-default.btn-xs.btn-dl-img(title="画像"")
+              %button.btn.btn-default.btn-xs.btn-dl-img(type="button",title="画像"")
                 %i.fa.fa-save
                 画像
               -if game.hasVideos()
                 -if online
-                  %button.btn.btn-default.btn-xs.btn-dl-yt(title="YouTube動画")
+                  %button.btn.btn-default.btn-xs.btn-dl-yt(type="button",title="YouTube動画")
                     %i.fa.fa-download
                     動画
                 -else
-                  %button.btn.btn-default.btn-xs.disabled(title="YouTube動画")
+                  %button.btn.btn-default.btn-xs.disabled(type="button",title="YouTube動画")
                     %i.fa.fa-download
                     動画
         %hr
@@ -291,8 +289,8 @@
                       %a(href="#{game.scape.url}",title="#{game.scape.url}")
                         #{game.scape.median}&times;#{game.scape.medianCount or 1}
                 -if game.gameItem
-                  .row.score-row(title="#{tr('Serious')}")
-                    %label.control-label.col-xs-2 #{tr('Serious')}
+                  .row.score-row
+                    %label.control-label.col-xs-2 #{i18n.score_name('overall')}
                     .form-control-static.col-xs-10
                       -if game.gameItem
                         -set sum = game.gameItem.overallScoreSum
@@ -302,8 +300,8 @@
                         -set count = 0
                       %span.raty.rating(data-type="overall",data-sum="#{sum}",data-count="#{count}")
                       %span.score-label
-                  .row.score-row(title="#{tr('Ecchi')}")
-                    %label.control-label.col-xs-2 #{tr('Ecchi')}
+                  .row.score-row
+                    %label.control-label.col-xs-2 #{i18n.score_name('ecchi')}
                     .form-control-static.col-xs-10
                       -if game.gameItem
                         -set sum = game.gameItem.ecchiScoreSum
@@ -313,8 +311,8 @@
                         -set count = 0
                       %span.raty.rating(data-type="ecchi",data-sum="#{sum}",data-count="#{count}")
                       %span.score-label
-                  .row.score-row(title="#{tr('Easy to understand for Japanese learners')}")
-                    %label.control-label.col-xs-2 #{tr('Easy')}
+                  .row.score-row
+                    %label.control-label.col-xs-2 #{i18n.score_name('easy')}
                     .form-control-static.col-xs-10
                       -if game.gameItem
                         -set sum = game.gameItem.easyScoreSum
@@ -441,6 +439,7 @@
             %section.reviews
               .title
                 .col-xs-2
+                  .spin
                   .title-content 感想
                 %ul.nav.nav-pills.nav-clean.nav-xs
                   %li.active(data-type="")
