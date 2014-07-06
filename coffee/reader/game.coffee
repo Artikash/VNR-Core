@@ -186,12 +186,13 @@ createTemplates = ->
   # - date  nullable
   # - title  nullable
   # - content  nullable
+  # - contentLength  int
   # - lessContent  nullable
   # - netabare  bool
   # - score  int
   # - ecchiScore  int
   @HAML_SCAPE_REVIEW = Haml """\
-.entry.entry-new
+.entry.entry-new(data-content-length="${contentLength}")
   .header
     %span.count = count
     %a.user(href="${userUrl}" title="${userUrl}") @${user}
@@ -210,7 +211,7 @@ createTemplates = ->
       :if lessContent
         .content.content-more.inactive(title="メモ") = content
         .content.content-less(title="メモ") = lessContent
-        %a.btn-more.btn.btn-link(role="button" title="#{tr 'More'}") #{tr 'More'}
+        %a.btn-more.btn.btn-link(role="button" title="#{tr 'More'}") = "#{tr 'More'} (" + contentLength + ")"
       :else
         .content(title="メモ") = content
 """.replace /\$/g, '#'
@@ -286,6 +287,7 @@ _renderScapeReview = (review)-> # -> string
       ecchiScore: ecchiScore
       title: _renderScapeContent review.hitokoto
       content: content
+      contentLength: review.memo?.length
       lessContent: lessContent
 
   catch # catch in case type error
@@ -786,8 +788,9 @@ bindNewScapeReviews = ->
         $more.toggleClass 'inactive'
         $less.toggleClass 'inactive'
 
+        contentLength = $parent.data 'content-length'
         more = $more.hasClass 'inactive'
-        $this.text tr if more then 'More' else 'Less'
+        $this.text "#{tr if more then 'More' else 'Less'} (#{contentLength})"
 
         $parent.effect 'highlight', HIGHLIGHT_INTERVAL
 
