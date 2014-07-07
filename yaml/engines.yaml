@@ -1,6 +1,11 @@
 # engines.yaml
 # 12/7/2013 jichi
 
+rename:
+  AUEngine: Tenco
+  Silkys: Elf
+  SolfaSoft: ScenarioPlayer
+
 embed:
   #- AMUSE CRAFT
   - BGI
@@ -9,7 +14,7 @@ embed:
   - Eushully
   - Majiro
   - SiglusEngine2
-  - Silkys # obsolete
+  - Silkys # obsolete, renamed to Elf
 
 gui:
   - DrawTextA
@@ -43,7 +48,7 @@ simple:
   - AOS
   - AMUSE CRAFT
   - ApRicot
-  - AUEngine # deprecated
+  - AUEngine # obsolete, renamed to Tenco
   - BGI
   - BGI1
   - BGI2
@@ -64,8 +69,9 @@ simple:
   - Rejet
   - ShinaRio
   - SiglusEngine2
-  - Silkys # obsolete
-  - SolfaSoft
+  - ScenarioPlayer
+  - Silkys # obsolete, renamed to Elf
+  - SolfaSoft # obsolete, renamed to ScenarioPlayer
   - System43
   - Taskforce2
   - Tenco
@@ -83,14 +89,14 @@ repeat:
 # No repetition int the game text
 norepeat:
   - Artemis
-  - BALDR # deprecated
+  - BALDR # removed
   - Gesen18
   - QLIE
   - QLIE2
   - NEXTON
   - SiglusEngine
   - TanukiSoft # But this thread is floating
-  - Unity # deprecated
+  - Unity # removed
 
 # Not floating address
 nofloat:
@@ -101,7 +107,7 @@ nofloat:
 
 float:
   - Gesen18
-  - Unity # deprecated
+  - Unity # removed
 
 # The game engines that require the game to have normal/slow text speed
 slow:
@@ -135,7 +141,7 @@ char:
   - AOS
   - Artemis
   - Atelier KAGUYA
-  - AUEngine # deprecated
+  - AUEngine # removed
   - BGI
   - BGI1
   - C4
@@ -163,9 +169,10 @@ char:
   - Rejet
   - RetouchSystem
   - rUGP
+  - ScenarioPlayer
   - ShinaRio
-  - Silkys # obsolete
-  - SolfaSoft
+  - Silkys # obsolete, renamed to Elf
+  - SolfaSoft # obsolete, renamed to ScenarioPlayer
   - StudioRyokucha
   - StuffScriptEngine
   - System40
@@ -194,7 +201,7 @@ wchar:
   - WideCharToMultiByte
   - Adobe AIR
   - ApRicot
-  - BALDR # deprecated
+  - BALDR # removed
   - Bruns
   - Cotopha
   - GXP
@@ -209,6 +216,6 @@ wchar:
   - SiglusEngine
   - SiglusEngine2
   - SoftHouseChara
-  - Unity # deprecated
+  - Unity # removed
 
 # EOF

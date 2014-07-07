@@ -4680,7 +4680,7 @@ bool InsertAdobeAirHook()
  *
  *  FIXME 4/15/2014: The pattern is incompleted and does not working for old games
  */
-bool InsertSolfaHook()
+bool InsertScenarioPlayerHook()
 {
   const BYTE ins[] = {
     0x53,                    // 00609c0e  |. 53             push ebx
@@ -4699,7 +4699,7 @@ bool InsertSolfaHook()
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG reladdr = SearchPattern(module_base_, range, ins, sizeof(ins));
   if (!reladdr) {
-    ConsoleOutput("vnreng:SolfaSoft: pattern not found");
+    ConsoleOutput("vnreng:ScenarioPlayer: pattern not found");
     return false;
   }
 
@@ -4707,7 +4707,7 @@ bool InsertSolfaHook()
   enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
   //ITH_GROWL(addr);
   if (*(BYTE *)addr != push_ebp) {
-    ConsoleOutput("vnreng:SolfaSoft: pattern found but the function offset is invalid");
+    ConsoleOutput("vnreng:ScenarioPlayer: pattern found but the function offset is invalid");
     return false;
   }
 
@@ -4720,8 +4720,8 @@ bool InsertSolfaHook()
   //hp.addr = 0x609bf0;
   //ITH_GROWL_DWORD(hp.addr);
 
-  ConsoleOutput("vnreng: INSERT SolfaSoft");
-  NewHook(hp, L"SolfaSoft");
+  ConsoleOutput("vnreng: INSERT ScenarioPlayer");
+  NewHook(hp, L"ScenarioPlayer");
   return true;
 }
 
