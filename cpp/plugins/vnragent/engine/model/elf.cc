@@ -28,13 +28,14 @@ hook_fun_t oldHookFun;
  */
 LPCSTR __fastcall newHookFun(void *self, void *edx, DWORD arg1, DWORD arg2, DWORD arg3)
 {
+#define deref(x) *(DWORD *)(x)
   Q_UNUSED(edx);
   ulong arg2_scene = arg1 + 4*5,
         arg2_chara = arg1 + 4*10;
   auto q = EngineController::instance();
 
   // Scenario
-  if (*(DWORD *)arg2_scene == 0) {
+  if (deref(arg2_scene) == 0) {
     enum { role = Engine::ScenarioRole, signature = Engine::ScenarioThreadSignature };
 
     // By debugging, this text is later released using heapFree
@@ -48,7 +49,7 @@ LPCSTR __fastcall newHookFun(void *self, void *edx, DWORD arg1, DWORD arg2, DWOR
 
   // Name
   // FIXME: The name has to be truncated
-  } else if (*(DWORD *)arg2_chara == 0) {
+  } else if (deref(arg2_chara) == 0) {
     enum { role = Engine::NameRole, signature = Engine::NameThreadSignature };
 
     LPSTR srcText = LPSTR(arg2_chara + 0xc);
@@ -64,33 +65,73 @@ LPCSTR __fastcall newHookFun(void *self, void *edx, DWORD arg1, DWORD arg2, DWOR
   // Warning: unknown game parameter
   } else
     return oldHookFun(self, arg1, arg2, arg3);
+#undef deref
 }
 
 } // unnamed namespace
 
 /**
- *  jichi 8/16/2013: Insert new siglus hook
- *  See (CaoNiMaGeBi): http://tieba.baidu.com/p/2531786952
+ *  jichi 5/31/2014: elf's
+ *  Type1: SEXティーチャー剛史 trial, reladdr = 0x2f0f0, 2 parameters
+ *  Type2: 愛姉妹4, reladdr = 0x2f9b0, 3 parameters
  *
- *  013bac6e     cc             int3
- *  013bac6f     cc             int3
- *  013bac70  /$ 55             push ebp ; jichi: function starts
- *  013bac71  |. 8bec           mov ebp,esp
- *  013bac73  |. 6a ff          push -0x1
- *  013bac75  |. 68 d8306201    push siglusen.016230d8
- *  013bac7a  |. 64:a1 00000000 mov eax,dword ptr fs:[0]
- *  013bac80  |. 50             push eax
- *  013bac81  |. 81ec dc020000  sub esp,0x2dc
- *  013bac87  |. a1 90f46b01    mov eax,dword ptr ds:[0x16bf490]
- *  013bac8c  |. 33c5           xor eax,ebp
- *  013bac8e  |. 8945 f0        mov dword ptr ss:[ebp-0x10],eax
- *  013bac91  |. 53             push ebx
- *  013bac92  |. 56             push esi
- *  013bac93  |. 57             push edi
- *  013bac94  |. 50             push eax
- *  ...
- *  013baf32  |. 3bd7           |cmp edx,edi ; jichi: ITH hook here, char saved in edi
- *  013baf34  |. 75 4b          |jnz short siglusen.013baf81
+ *  IDA: sub_42F9B0 proc near ; bp-based frame
+ *    var_8 = dword ptr -8
+ *    var_4 = byte ptr -4
+ *    var_3 = word ptr -3
+ *    arg_0 = dword ptr  8
+ *    arg_4 = dword ptr  0Ch
+ *    arg_8 = dword ptr  10h
+ *
+ *  Call graph (Type2):
+ *  0x2f9b0 ;  hook here
+ *  > 0x666a0 ; called multiple time
+ *  > TextOutA ; there are two TextOutA, the second is the right one
+ *
+ *  Function starts (Type1), pattern offset: 0xc
+ *  - 012ef0f0  /$ 55             push ebp ; jichi: hook
+ *  - 012ef0f1  |. 8bec           mov ebp,esp
+ *  - 012ef0f3  |. 83ec 10        sub esp,0x10
+ *  - 012ef0f6  |. 837d 0c 00     cmp dword ptr ss:[ebp+0xc],0x0
+ *  - 012ef0fa  |. 53             push ebx
+ *  - 012ef0fb  |. 56             push esi
+ *  - 012ef0fc  |. 75 0f          jnz short stt_tria.012ef10d ; jicchi: pattern starts
+ *  - 012ef0fe  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
+ *  - 012ef101  |. 8b48 04        mov ecx,dword ptr ds:[eax+0x4]
+ *  - 012ef104  |. 8b91 90000000  mov edx,dword ptr ds:[ecx+0x90] ; jichi: pattern stops
+ *  - 012ef10a  |. 8955 0c        mov dword ptr ss:[ebp+0xc],edx
+ *  - 012ef10d  |> 8b4d 08        mov ecx,dword ptr ss:[ebp+0x8]
+ *  - 012ef110  |. 8b51 04        mov edx,dword ptr ds:[ecx+0x4]
+ *  - 012ef113  |. 33c0           xor eax,eax
+ *  - 012ef115  |. c645 f8 00     mov byte ptr ss:[ebp-0x8],0x0
+ *  - 012ef119  |. 66:8945 f9     mov word ptr ss:[ebp-0x7],ax
+ *  - 012ef11d  |. 8b82 b0000000  mov eax,dword ptr ds:[edx+0xb0]
+ *  - 012ef123  |. 8945 f4        mov dword ptr ss:[ebp-0xc],eax
+ *  - 012ef126  |. 33db           xor ebx,ebx
+ *  - 012ef128  |> 8b4f 20        /mov ecx,dword ptr ds:[edi+0x20]
+ *  - 012ef12b  |. 83f9 10        |cmp ecx,0x10
+ *
+ *  Function starts (Type2), pattern offset: 0x10
+ *  - 0093f9b0  /$ 55             push ebp  ; jichi: hook here
+ *  - 0093f9b1  |. 8bec           mov ebp,esp
+ *  - 0093f9b3  |. 83ec 08        sub esp,0x8
+ *  - 0093f9b6  |. 837d 10 00     cmp dword ptr ss:[ebp+0x10],0x0
+ *  - 0093f9ba  |. 53             push ebx
+ *  - 0093f9bb  |. 8b5d 0c        mov ebx,dword ptr ss:[ebp+0xc]
+ *  - 0093f9be  |. 56             push esi
+ *  - 0093f9bf  |. 57             push edi
+ *  - 0093f9c0  |. 75 0f          jnz short silkys.0093f9d1 ; jichi: pattern starts
+ *  - 0093f9c2  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
+ *  - 0093f9c5  |. 8b48 04        mov ecx,dword ptr ds:[eax+0x4]
+ *  - 0093f9c8  |. 8b91 90000000  mov edx,dword ptr ds:[ecx+0x90] ; jichi: pattern stops
+ *  - 0093f9ce  |. 8955 10        mov dword ptr ss:[ebp+0x10],edx
+ *  - 0093f9d1  |> 33c0           xor eax,eax
+ *  - 0093f9d3  |. c645 fc 00     mov byte ptr ss:[ebp-0x4],0x0
+ *  - 0093f9d7  |. 66:8945 fd     mov word ptr ss:[ebp-0x3],ax
+ *  - 0093f9db  |. 33ff           xor edi,edi
+ *  - 0093f9dd  |> 8b53 20        /mov edx,dword ptr ds:[ebx+0x20]
+ *  - 0093f9e0  |. 8d4b 0c        |lea ecx,dword ptr ds:[ebx+0xc]
+ *  - 0093f9e3  |. 83fa 10        |cmp edx,0x10
  *
  *  @param  stackSize  number of bytes on the stack of the function, which is the parameter of sub esp
  */

@@ -49,7 +49,7 @@ public:
           edx,
           ecx,     // this
           eax;     // 0x24
-    ulong retaddr; // 0x28
+    ulong retaddr; // 0x28, &retaddr == esp
     ulong args[1]; // 0x2c
   };
   typedef void (* hook_function)(HookStack *);
