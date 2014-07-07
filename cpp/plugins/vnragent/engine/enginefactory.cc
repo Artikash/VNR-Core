@@ -9,6 +9,7 @@
 #include "engine/model/elf.h"
 #include "engine/model/eushully.h"
 #include "engine/model/majiro.h"
+//#include "engine/model/nexas.h"
 #include "engine/model/siglus.h"
 #include <boost/foreach.hpp>
 
@@ -25,6 +26,7 @@ EngineController *EngineFactory::createEngine()
    , new ElfEngine
    , new EushullyEngine
    , new MajiroEngine
+   , new NeXASEngine
    , new SiglusEngine
   };
   BOOST_FOREACH (EngineModel *m, models) {

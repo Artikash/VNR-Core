@@ -10,8 +10,6 @@
 #include "memdbg/memsearch.h"
 #include <qt_windows.h>
 
-/** Private data */
-
 ulong MajiroEngine::search(ulong startAddress, ulong stopAddress)
 {
   enum { sub_esp = 0xec81 }; // caller pattern: sub esp = 0x81,0xec

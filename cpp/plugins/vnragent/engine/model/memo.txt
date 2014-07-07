@@ -2,7 +2,7 @@
 
 Failed engines are as follows.
 
-# 7/6/2014 NeXAS for GIGA BSZ E
+# 7/6/2014 NeXAS for GIGA BALDRSKYZERO_EXTREME
 
 2 x GetGlyphOutlineA
 caller: 503620: [esi] -> eax
@@ -11,13 +11,9 @@ ushort char = [arg1 + 0x1a8]
 caller: 500039, 4ffff0
 arg1 = eax = [edi]
 edi = [esi+0x1a0] # stack size 4x3
+ecx is a linked list
 
 data structure: edi = (char *)[] # pointers of words
-
-CHECKPOINT: how to determine when EDI will stop
-
-0?
-
 
 # 7/6/2014 NScript for CAGE OPEN/CLOSE
 NScript reference

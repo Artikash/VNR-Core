@@ -57,7 +57,7 @@ HFONT WINAPI Hijack::myCreateFontIndirectW(const LOGFONTW *lplf)
 HFONT WINAPI Hijack::myCreateFontA(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCSTR lpszFace)
 {
 #ifdef HIJACK_GDI32
-  DOUT("pass");
+  //DOUT("pass");
   if (auto p = HijackHelper::instance())
     if (auto charSet = p->systemCharSet())
       if (p->isTranscodingNeeded()) {
@@ -73,7 +73,7 @@ HFONT WINAPI Hijack::myCreateFontA(int nHeight, int nWidth, int nEscapement, int
 HFONT WINAPI Hijack::myCreateFontW(int nHeight, int nWidth, int nEscapement, int nOrientation, int fnWeight, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut, DWORD fdwCharSet, DWORD fdwOutputPrecision, DWORD fdwClipPrecision, DWORD fdwQuality, DWORD fdwPitchAndFamily, LPCWSTR lpszFace)
 {
 #ifdef HIJACK_GDI32
-  DOUT("pass");
+  //DOUT("pass");
   if (auto p = HijackHelper::instance())
     if (auto charSet = p->systemCharSet())
       if (p->isTranscodingNeeded()) {

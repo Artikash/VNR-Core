@@ -55,3 +55,8 @@
 #  name: GCP # 5/11/2014
 #  wideChar: false
 #  exist: *.gxp
+#-
+#  name: NeXAS  # 7/6/2014
+#  regionLocked: true # not sure
+#  exist:
+#    - Thumbnail.pac
