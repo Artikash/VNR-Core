@@ -112,15 +112,16 @@ DWORD DetermineEngineByFile1()
     return yes;
 
   if (IthFindFile(L"*.pac")) {
-    if (IthCheckFile(L"Thumbnail.pac")) {
-      ConsoleOutput("vnreng: IGNORE NeXAS"); // jichi 7/6/2014: GIGA
-      return yes;
-    }
-
     // jichi 6/3/2014: AMUSE CRAFT and SOFTPAL
     // Selectively insert, so that lstrlenA can still get correct text if failed
     if (IthCheckFile(L"dll\\resource.dll") && IthCheckFile(L"dll\\pal.dll") && InsertAmuseCraftHook())
       return yes;
+
+    if (IthCheckFile(L"Thumbnail.pac")) {
+      ConsoleOutput("vnreng: IGNORE NeXAS");
+      //InsertNeXASEngine(); // jichi 7/6/2014: GIGA
+      return yes;
+    }
 
     if (Util::SearchResourceString(L"SOFTPAL")) {
       ConsoleOutput("vnreng: IGNORE SoftPal UNiSONSHIFT");
