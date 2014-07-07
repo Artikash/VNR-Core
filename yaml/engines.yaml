@@ -4,7 +4,7 @@
 rename:
   AUEngine: Tenco
   Silkys: Elf
-  SolfaSoft: ScenarioPlayer
+  SolfaSoft: ScenarioPlayerA
 
 embed:
   #- AMUSE CRAFT
@@ -69,7 +69,8 @@ simple:
   - Rejet
   - ShinaRio
   - SiglusEngine2
-  - ScenarioPlayer
+  - ScenarioPlayerA
+  - ScenarioPlayerW
   - Silkys # obsolete, renamed to Elf
   - SolfaSoft # obsolete, renamed to ScenarioPlayer
   - System43
@@ -169,7 +170,7 @@ char:
   - Rejet
   - RetouchSystem
   - rUGP
-  - ScenarioPlayer
+  - ScenarioPlayerA
   - ShinaRio
   - Silkys # obsolete, renamed to Elf
   - SolfaSoft # obsolete, renamed to ScenarioPlayer
@@ -212,6 +213,7 @@ wchar:
   - Malie2
   - Malie3
   - Mono
+  - ScenarioPlayerW
   - ShinyDays
   - SiglusEngine
   - SiglusEngine2

@@ -4647,8 +4647,9 @@ bool InsertAdobeAirHook()
  *  - off: 4
  *  - type: 4
  *
- *  Pattern 1:
+ *  ASCII: あやめ
  *  Function starts
+ *  00609bef  /> cc             int3
  *  00609bf0  /> 55             push ebp
  *  00609bf1  |. 8bec           mov ebp,esp
  *  00609bf3  |. 64:a1 00000000 mov eax,dword ptr fs:[0]
@@ -4678,24 +4679,69 @@ bool InsertAdobeAirHook()
  *  00609c38  |. c2 0400        retn 0x4
  *  Function stops
  *
- *  FIXME 4/15/2014: The pattern is incompleted and does not working for old games
+ *  WideChar: 『こいなか-小田舎で初恋x中出しセクシャルライフ-』
+ *  0040653a     cc             int3
+ *  0040653b     cc             int3
+ *  0040653c     cc             int3
+ *  0040653d     cc             int3
+ *  0040653e     cc             int3
+ *  0040653f     cc             int3
+ *  00406540   > 55             push ebp
+ *  00406541   . 8bec           mov ebp,esp
+ *  00406543   . 64:a1 00000000 mov eax,dword ptr fs:[0]
+ *  00406549   . 6a ff          push -0x1
+ *  0040654b   . 68 f1584300    push erondo01.004358f1
+ *  00406550   . 50             push eax
+ *  00406551   . 64:8925 000000>mov dword ptr fs:[0],esp
+ *  00406558   . 83ec 6c        sub esp,0x6c
+ *  0040655b   . 53             push ebx
+ *  0040655c   . 8bd9           mov ebx,ecx
+ *  0040655e   . 57             push edi
+ *  0040655f   . 8b03           mov eax,dword ptr ds:[ebx]
+ *  00406561   . 8b7d 08        mov edi,dword ptr ss:[ebp+0x8]
+ *  00406564   . 83f8 02        cmp eax,0x2
+ *  00406567   . 75 1f          jnz short erondo01.00406588
+ *  00406569   . 3b7b 3c        cmp edi,dword ptr ds:[ebx+0x3c]
+ *  0040656c   . 75 1a          jnz short erondo01.00406588
+ *  0040656e   . 837b 40 00     cmp dword ptr ds:[ebx+0x40],0x0
+ *  00406572   . 74 14          je short erondo01.00406588
+ *  00406574   . 5f             pop edi
+ *  00406575   . b0 01          mov al,0x1
+ *  00406577   . 5b             pop ebx
+ *  00406578   . 8b4d f4        mov ecx,dword ptr ss:[ebp-0xc]
+ *  0040657b   . 64:890d 000000>mov dword ptr fs:[0],ecx
+ *  00406582   . 8be5           mov esp,ebp
+ *  00406584   . 5d             pop ebp
+ *  00406585   . c2 0400        retn 0x4
  */
 bool InsertScenarioPlayerHook()
 {
+  //const BYTE ins[] = {
+  //  0x53,                    // 00609c0e  |. 53             push ebx
+  //  0x8b,0x5d,0x08,          // 00609c0f  |. 8b5d 08        mov ebx,dword ptr ss:[ebp+0x8]
+  //  0x57,                    // 00609c12  |. 57             push edi
+  //  0x8b,0xf9,               // 00609c13  |. 8bf9           mov edi,ecx
+  //  0x8b,0x07,               // 00609c15  |. 8b07           mov eax,dword ptr ds:[edi]
+  //  0x83,0xf8, 0x02,         // 00609c17  |. 83f8 02        cmp eax,0x2
+  //  0x75, 0x1f,              // 00609c1a  |. 75 1f          jnz short あやめ.00609c3b
+  //  0x3b,0x5f, 0x40,         // 00609c1c  |. 3b5f 40        cmp ebx,dword ptr ds:[edi+0x40]
+  //  0x75, 0x1a,              // 00609c1f  |. 75 1a          jnz short あやめ.00609c3b
+  //  0x83,0x7f, 0x44, 0x00,   // 00609c21  |. 837f 44 00     cmp dword ptr ds:[edi+0x44],0x0
+  //  0x74, 0x14,              // 00609c25  |. 74 14          je short あやめ.00609c3b
+  //};
+  //enum { hook_offset = 0x00609bf0 - 0x00609c0e }; // distance to the beginning of the function
+
   const BYTE ins[] = {
-    0x53,                    // 00609c0e  |. 53             push ebx
-    0x8b,0x5d,0x08,          // 00609c0f  |. 8b5d 08        mov ebx,dword ptr ss:[ebp+0x8]
-    0x57,                    // 00609c12  |. 57             push edi
-    0x8b,0xf9,               // 00609c13  |. 8bf9           mov edi,ecx
-    0x8b,0x07,               // 00609c15  |. 8b07           mov eax,dword ptr ds:[edi]
-    0x83,0xf8, 0x02,         // 00609c17  |. 83f8 02        cmp eax,0x2
-    0x75, 0x1f,              // 00609c1a  |. 75 1f          jnz short あやめ.00609c3b
-    0x3b,0x5f, 0x40,         // 00609c1c  |. 3b5f 40        cmp ebx,dword ptr ds:[edi+0x40]
-    0x75, 0x1a,              // 00609c1f  |. 75 1a          jnz short あやめ.00609c3b
-    0x83,0x7f, 0x44, 0x00,   // 00609c21  |. 837f 44 00     cmp dword ptr ds:[edi+0x44],0x0
-    0x74, 0x14,              // 00609c25  |. 74 14          je short あやめ.00609c3b
+    0x74, 0x14,     // 00609c25  |. 74 14          je short あやめ.00609c3b
+    0x5f,           // 00609c27  |. 5f             pop edi
+    0xb0, 0x01,     // 00609c28  |. b0 01          mov al,0x1
+    0x5b,           // 00609c2a  |. 5b             pop ebx
+    0x8b,0x4d, 0xf4 // 00609c2b  |. 8b4d f4        mov ecx,dword ptr ss:[ebp-0xc]
   };
-  enum { hook_offset = 0x00609bf0 - 0x00609c0e }; // distance to the beginning of the function
+  enum { // distance to the beginning of the function
+    hook_offset_A = 0x00609bf0 - 0x00609c25, // -53
+    hook_offset_W = 0x00406540 - 0x00406572  // -50
+  };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG reladdr = SearchPattern(module_base_, range, ins, sizeof(ins));
   if (!reladdr) {
@@ -4703,10 +4749,11 @@ bool InsertScenarioPlayerHook()
     return false;
   }
 
-  ULONG addr = module_base_ + reladdr + hook_offset;
+  ULONG current = module_base_ + reladdr;
+  ULONG addr = MemDbg::findEnclosingAlignedFunction(current, 80); // range is around 50, use 80
+
   enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
-  //ITH_GROWL(addr);
-  if (*(BYTE *)addr != push_ebp) {
+  if (!addr || *(BYTE *)addr != push_ebp) {
     ConsoleOutput("vnreng:ScenarioPlayer: pattern found but the function offset is invalid");
     return false;
   }
@@ -4715,13 +4762,15 @@ bool InsertScenarioPlayerHook()
   hp.addr = addr;
   hp.length_offset = 1;
   hp.off = 4;
-  hp.type = BIG_ENDIAN; // 4
-
-  //hp.addr = 0x609bf0;
-  //ITH_GROWL_DWORD(hp.addr);
-
-  ConsoleOutput("vnreng: INSERT ScenarioPlayer");
-  NewHook(hp, L"ScenarioPlayer");
+  if (addr - current == hook_offset_W) {
+    hp.type = USING_UNICODE;
+    ConsoleOutput("vnreng: INSERT ScenarioPlayerW");
+    NewHook(hp, L"ScenarioPlayerW");
+  } else {
+    hp.type = BIG_ENDIAN; // 4
+    ConsoleOutput("vnreng: INSERT ScenarioPlayerA");
+    NewHook(hp, L"ScenarioPlayerA");
+  }
   return true;
 }
 
