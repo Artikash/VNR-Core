@@ -97,27 +97,28 @@ HCODE_FILE_BLACKLIST = frozenset(BLACKLIST_YAML['hcodefile'])
 
 ## Game engine ##
 
-EMBEDDED_GAME_ENGINES = ENGINES_YAML['embed'] # list
+EMBEDDED_GAME_ENGINES = ENGINES_YAML['embed'] # [str name]
 
-CHAR_TEXT_THREADS = frozenset(ENGINES_YAML['char'])
-WCHAR_TEXT_THREADS = frozenset(ENGINES_YAML['wchar'])
+CHAR_TEXT_THREADS = frozenset(ENGINES_YAML['char']) # [str name]
+WCHAR_TEXT_THREADS = frozenset(ENGINES_YAML['wchar']) # [str name]
 
-GUI_TEXT_THREADS = frozenset(ENGINES_YAML['gui'])
-NON_GUI_TEXT_THREADS = frozenset(ENGINES_YAML['nongui'])
+GUI_TEXT_THREADS = frozenset(ENGINES_YAML['gui']) # [str name]
+NON_GUI_TEXT_THREADS = frozenset(ENGINES_YAML['nongui']) # [str name]
 
-SLOW_GAME_ENGINES = frozenset(ENGINES_YAML['slow'])
-FAST_GAME_ENGINES = frozenset(ENGINES_YAML['fast'])
-DELAY_GAME_ENGINES = frozenset(ENGINES_YAML['delay'])
+SLOW_GAME_ENGINES = frozenset(ENGINES_YAML['slow']) # [str name]
+FAST_GAME_ENGINES = frozenset(ENGINES_YAML['fast']) # [str name]
+DELAY_GAME_ENGINES = frozenset(ENGINES_YAML['delay']) # [str name]
 
-REPEAT_GAME_ENGINES = frozenset(ENGINES_YAML['repeat'])
+REPEAT_GAME_ENGINES = frozenset(ENGINES_YAML['repeat']) # [str name]
 
-SINGLE_GAME_ENGINES = frozenset(ENGINES_YAML['single'])
+SINGLE_GAME_ENGINES = frozenset(ENGINES_YAML['single']) # [str name]
 
-NOREPEAT_GAME_ENGINES = frozenset(ENGINES_YAML['simple'] + ENGINES_YAML['norepeat'])
+NOREPEAT_GAME_ENGINES = frozenset(ENGINES_YAML['simple'] + ENGINES_YAML['norepeat']) # [str name]
 NOFLOAT_GAME_ENGINES = frozenset(
     ENGINES_YAML['simple'] + ENGINES_YAML['nofloat'] +
-    ENGINES_YAML['gui'] + ENGINES_YAML['nongui'])
+    ENGINES_YAML['gui'] + ENGINES_YAML['nongui']) # [str name]
 
+RENAMED_GAME_ENGINES = ENGINES_YAML['rename']  # {str name:str name}
 
 def guess_thread_encoding(name): # str -> str or None
   if name in CHAR_TEXT_THREADS:

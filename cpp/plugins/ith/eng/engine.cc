@@ -112,10 +112,10 @@ DWORD DetermineEngineByFile1()
     return yes;
 
   if (IthFindFile(L"*.pac")) {
-    //if (IthCheckFile(L"Thumbnail.pac")) {
-    //  ConsoleOutput(L"GIGA");
-    //  return yes;
-    //}
+    if (IthCheckFile(L"Thumbnail.pac")) {
+      ConsoleOutput("vnreng: IGNORE NeXAS"); // jichi 7/6/2014: GIGA
+      return yes;
+    }
 
     // jichi 6/3/2014: AMUSE CRAFT and SOFTPAL
     // Selectively insert, so that lstrlenA can still get correct text if failed
@@ -289,8 +289,11 @@ DWORD DetermineEngineByFile4()
     InsertAOSHook();
     return yes;
   }
-  if (IthFindFile(L"*.iar") && InsertSolfaHook()) // jichi 4/18/2014: Other game engine could also have *.iar such as Ryokucha
+  // jichi 7/6/2014: named as ScenarioPlayer since resource string could be: scenario player program for xxx
+  if (IthFindFile(L"*.iar") && IthFindFile(L"*.sec5")) { // jichi 4/18/2014: Other game engine could also have *.iar such as Ryokucha
+    InsertScenarioPlayerHook();
     return yes;
+  }
   return no;
 }
 
