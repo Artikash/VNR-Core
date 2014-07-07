@@ -5162,6 +5162,7 @@ bool InsertAmuseCraftHook()
   return true;
 }
 
+#if 0
 
 // jichi 7/6/2014: char *text = [arg1+0x1a8]
 static void SpecialHookNeXAS(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
@@ -5426,6 +5427,8 @@ bool InsertNeXASHook()
   NewHook(hp, L"NeXAS");
   return true;
 }
+
+#endif // 0
 
 #if 0
 
