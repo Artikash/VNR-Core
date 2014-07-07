@@ -194,16 +194,16 @@ createTemplates = ->
   @HAML_SCAPE_REVIEW = Haml """\
 .entry.entry-new(data-content-length="${contentLength}")
   .header
-    %span.count = count
-    %a.user(href="${userUrl}" title="${userUrl}") @${user}
-    :if netabare
-      %span.netabare.text-danger = '(ネタバレ)'
-    :if ecchiScore
-      %span.score.text-info H:${ecchiScore}/5
-    :if score
-      %span.score.text-danger ${score}/100
+    %span.field.text-minor = count
     :if date
-      %span.date.text-success = date
+      %span.field.text-success = date
+    :if score
+      %span.field.text-danger ${score}/100
+    :if ecchiScore
+      %span.field.text-info H:${ecchiScore}/5
+    %a.user.pull-right(href="${userUrl}" title="${userUrl}") @${user}
+    :if netabare
+      %span.netabare.field.pull-right.text-danger = '(ネタバレ)'
   .body
     :if title
       .title(title="一言コメント") = title
@@ -375,7 +375,8 @@ _renderScapeReview = (review)-> # -> string
     content = lessContent = ''
     if review.memo
       content = _renderScapeContent review.memo
-      lessContent = _renderScapeContent review.memo[..SCAPE_REVIEW_MAX_LENGTH] + " ……"
+      if content.length > SCAPE_REVIEW_MAX_LENGTH
+        lessContent = _renderScapeContent content[..SCAPE_REVIEW_MAX_LENGTH] + " ……"
 
     HAML_SCAPE_REVIEW
       count: SCAPE_REVIEW_COUNT
