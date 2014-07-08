@@ -951,9 +951,11 @@ class GameInfo(object):
         (self.amazon, 'amazon'),
         (self.dmm, 'dmm'),
         (self.getchu, 'getchu'),
-        #(self.gyutto, 'gyutto'),   # crash
         (self.dlsite, 'dlsite'),
         (self.digiket, 'digiket'),
+
+        #(self.gyutto, 'gyutto'),   # crash Qt!
+        #(self.tokuten, 'tokuten'),   # crash Qt!
       ):
       if r:
         if r.image:
@@ -3126,7 +3128,7 @@ class AmazonReference(Reference):
       return cacheman.cache_html(skstr.uniqbr(skstr.stripbr(t), repeat=3) )
     return ''
 
-class GyuttoReference(Reference): #(object):
+class GyuttoReference(Reference): #(object), images will crash Python2
   def __init__(self, parent=None,
       type='gyutto',
       series="", brand="",
@@ -3200,12 +3202,13 @@ class HolysealReference(Reference): #(object):
     self.artists = artists # [unicode name]
     self.writers = writers # [unicode name]
 
-class TokutenItem: # erogame-tokuten webpage
+class TokutenItem: # erogame-tokuten webpage, images will crash Python2
   type = 'tokuten'
   def __init__(self, key="", url="", images=[], **kwargs):
     self.key = key # str
     self.url = url # str
     self.images = images # [str]
+    self.image = '' # placeholder, cover is not fetched
 
   def hasSampleImages(self): return bool(self.images)
 
