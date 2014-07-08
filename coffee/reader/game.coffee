@@ -353,7 +353,8 @@ renderUsers = (users) -> # game.file
   for it in users
     #it.url = "#{HOST}/user/#{it.userName}"
     it.langName = getLangName(it.lang) or '*'
-    it.userAvatarUrl = cacheimg "http://media.getchute.com/media/#{it.userAvatar}/128x128"
+    if it.userAvatar
+      it.userAvatarUrl = cacheimg "http://media.getchute.com/media/#{it.userAvatar}/128x128"
   HAML_USERS users:users
 
 renderReview = (type) -> # string -> string
