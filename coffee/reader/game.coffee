@@ -363,7 +363,7 @@ renderReview = (type) -> # string -> string
   else
     gameBean.getReview type
 
-_renderScapeContent = (t) -> t?.replace /\n/g, '<br/>' # string -> string
+_renderScapeReviewContent = (t) -> t?.replace /\n/g, '<br/>' # string -> string
 
 SCAPE_REVIEW_COUNT = 0 # current count
 _renderScapeReview = (review)-> # -> string
@@ -375,9 +375,9 @@ _renderScapeReview = (review)-> # -> string
 
     content = lessContent = ''
     if review.memo
-      content = _renderScapeContent review.memo
-      if content.length > SCAPE_REVIEW_MAX_LENGTH
-        lessContent = _renderScapeContent content[..SCAPE_REVIEW_MAX_LENGTH] + " ……"
+      content = _renderScapeReviewContent review.memo
+      if review.memo.length > SCAPE_REVIEW_MAX_LENGTH
+        lessContent = _renderScapeReviewContent review.memo[..SCAPE_REVIEW_MAX_LENGTH] + " ……"
 
     HAML_SCAPE_REVIEW
       count: SCAPE_REVIEW_COUNT
@@ -387,7 +387,7 @@ _renderScapeReview = (review)-> # -> string
       netabare: review.netabare
       score:  review.tokuten or 0
       ecchiScore: ecchiScore
-      title: _renderScapeContent review.hitokoto
+      title: _renderScapeReviewContent review.hitokoto
       content: content
       contentLength: review.memo?.length
       lessContent: lessContent
