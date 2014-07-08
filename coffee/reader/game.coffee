@@ -465,10 +465,12 @@ renderScapeReviewList = -> # -> string
 initSpin = ->
   $.fn.spin.presets.section = # preset for section
     left: '-8px'
-    lines: 8
     length: 4
-    width: 2
     radius: 4
+    lines: 12
+    width: 1
+    #lines: 8
+    #width: 2
 
 ## Bootstrap Switch ##
 
