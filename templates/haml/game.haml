@@ -247,7 +247,7 @@
                   %label.control-label.col-xs-2 批評空間
                   .form-control-static.col-xs-10
                     %a(href="#{game.scape.url}",title="#{game.scape.url}")
-                      #{game.scape.median}&times;#{game.scape.count or 1}
+                      #{game.scape.median}&times;#{game.scape.medianCount or 1}
               -if game.visitCount
               .row
                 %label.control-label.col-xs-2 #{tr('Play')}
