@@ -389,7 +389,7 @@ DWORD DetermineEngineByProcessName()
   str[len - 2] = L'i';
   str[len - 1] = L'n';
   str[len] = 0;
-  if (IthCheckFile(str)) {
+  if (IthCheckFile(str) || IthCheckFile(L"trial.bin")) { // jichi 7/8/2014: add trial.bin
     InsertCaramelBoxHook();
     return yes;
   }
