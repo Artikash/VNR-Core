@@ -742,7 +742,7 @@ bool InsertMajiroHook()
   // That function draws all texts.
   DWORD addr = Util::FindCallAndEntryAbs((DWORD)TextOutA, module_limit_ - module_base_, module_base_, 0xec81);
   if (!addr) {
-    ConsoleOutput("vnreng:MAJIRO: failed");
+    ConsoleOutput("vnreng:Majiro: failed");
     return false;
   }
 
@@ -754,8 +754,9 @@ bool InsertMajiroHook()
   hp.addr = addr;
   hp.type = EXTERN_HOOK;
   hp.extern_fun = SpecialHookMajiro;
-  ConsoleOutput("vnreng: INSERT MAJIRO");
-  NewHook(hp, L"MAJIRO");
+  ConsoleOutput("vnreng: INSERT Majiro");
+  //NewHook(hp, L"MAJIRO");
+  NewHook(hp, L"Majiro"); // jichi 7/8/2014: rename MAJIRO to Majiro
   //RegisterEngineType(ENGINE_MAJIRO);
   return true;
 }
@@ -2796,6 +2797,8 @@ static void SpecialHookSofthouse(DWORD esp_base, HookParam* hp, DWORD* data, DWO
 
   }
 }
+// jichi 7/8/2014: The engine name is supposed to be: AoiGameSystem Engine
+// See: http://capita.tistory.com/m/post/205
 bool InsertSofthouseDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 {
   if (addr != DrawTextExA && addr != DrawTextExW)
@@ -2843,28 +2846,24 @@ static void SpecialHookCaramelBox(DWORD esp_base, HookParam* hp, DWORD* data, DW
   BYTE* ptr = (BYTE*)reg_ecx;
   buffer_index = 0;
   while (ptr[0])
-  {
-    if (ptr[0] == 0x28) // Furigana format: (Kanji,Furi)
-    {
+    if (ptr[0] == 0x28) { // Furigana format: (Kanji,Furi)
       ptr++;
-      while (ptr[0]!=0x2C) //Copy Kanji
+      while (ptr[0]!=0x2c) //Copy Kanji
         text_buffer[buffer_index++] = *ptr++;
       while (ptr[0]!=0x29) // Skip Furi
         ptr++;
       ptr++;
-    }
-    else if (ptr[0] == 0x5C) ptr +=2;
-    else
-    {
+    } else if (ptr[0] == 0x5c)
+      ptr +=2;
+    else {
       text_buffer[buffer_index++] = ptr[0];
-      if (LeadByteTable[ptr[0]]==2)
-      {
+      if (LeadByteTable[ptr[0]] == 2) {
         ptr++;
         text_buffer[buffer_index++] = ptr[0];
       }
       ptr++;
     }
-  }
+
   *len = buffer_index;
   *data = (DWORD)text_buffer;
   *split = 0;
@@ -2899,24 +2898,21 @@ bool InsertCaramelBoxHook()
       for (DWORD j = i, k = i - 0x100; j > k; j--) {
         if ((*(DWORD *)j&0xffff00ff) == 0x1000b8) { //mov eax,10??
           HookParam hp = {};
-          hp.addr = j & ~0xF;
+          hp.addr = j & ~0xf;
           hp.extern_fun = SpecialHookCaramelBox;
           hp.type = USING_STRING | EXTERN_HOOK;
-          for (i &= ~0xFFFF; i < module_limit_ - 4; i++)
-          {
-            if (pb[0] == 0xE8)
-            {
+          for (i &= ~0xffff; i < module_limit_ - 4; i++)
+            if (pb[0] == 0xE8) {
               pb++;
-              if (pd[0] + i + 4 == hp.addr)
-              {
+              if (pd[0] + i + 4 == hp.addr) {
                 pb += 4;
-                if ((pd[0] & 0xFFFFFF) == 0x04C483)
+                if ((pd[0] & 0xffffff) == 0x04c483)
                   hp.off = 4;
-                else hp.off = -0xC;
+                else hp.off = -0xc;
                 break;
               }
             }
-          }
+
           if (hp.off == 0) {
             ConsoleOutput("vnreng:CaramelBox: failed, zero off");
             return false;

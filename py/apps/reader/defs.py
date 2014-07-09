@@ -66,7 +66,7 @@ CONTEXT_SEP = "||"
 # Convert new game agent name to old ITH engine name
 def to_ith_engine_name(name): # str -> str
   return (
-      'MAJIRO' if name == 'Majiro' else
+      #'MAJIRO' if name == 'Majiro' else
       'SiglusEngine2' if name == 'SiglusEngine' else
       name)
 
