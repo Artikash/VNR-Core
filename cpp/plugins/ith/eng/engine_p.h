@@ -42,7 +42,7 @@ bool InsertGesen18Hook();       // Gsen18: *.szs
 bool InsertGXPHook();           // GXP: *.gxp
 bool InsertLiveHook();          // Live: live.dll
 bool InsertMalieHook();         // Malie@light: malie.ini
-bool InsertMajiroHook();        // MAJIRO: *.arc
+bool InsertMajiroHook();        // Majiro: *.arc
 bool InsertMarineHeartHook();   // Marine Heart: SAISYS.exe
 bool InsertMEDHook();           // MED: *.med
 bool InsertMonoHook();          // Mono (Unity3D): */Mono/mono.dll
