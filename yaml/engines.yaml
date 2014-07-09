@@ -6,6 +6,7 @@ rename:
   MAJIRO: Majiro
   Silkys: Elf
   SolfaSoft: ScenarioPlayerA
+  SofthouseChara: SystemAoi
 
 embed:
   #- AMUSE CRAFT
@@ -15,7 +16,7 @@ embed:
   - Eushully
   - Majiro
   - SiglusEngine2
-  - Silkys # obsolete, renamed to Elf
+  - Silkys # renamed
 
 gui:
   - DrawTextA
@@ -49,7 +50,7 @@ simple:
   - AOS
   - AMUSE CRAFT
   - ApRicot
-  - AUEngine # obsolete, renamed to Tenco
+  - AUEngine # renamed
   - BGI
   - BGI1
   - BGI2
@@ -73,8 +74,8 @@ simple:
   - SiglusEngine2
   - ScenarioPlayerA
   - ScenarioPlayerW
-  - Silkys # obsolete, renamed to Elf
-  - SolfaSoft # obsolete, renamed to ScenarioPlayer
+  - Silkys # renamed
+  - SolfaSoft # renamed
   - System43
   - Taskforce2
   - Tenco
@@ -175,8 +176,8 @@ char:
   - rUGP
   - ScenarioPlayerA
   - ShinaRio
-  - Silkys # obsolete, renamed to Elf
-  - SolfaSoft # obsolete, renamed to ScenarioPlayer
+  - Silkys # renamed
+  - SolfaSoft # renamed
   - StudioRyokucha
   - StuffScriptEngine
   - System40
@@ -220,7 +221,8 @@ wchar:
   - ShinyDays
   - SiglusEngine
   - SiglusEngine2
-  - SoftHouseChara
+  - SofthouseChara # renamed
+  - SystemAoi
   - Unity # removed
 
 # EOF
