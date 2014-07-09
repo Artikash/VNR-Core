@@ -118,8 +118,8 @@ DWORD DetermineEngineByFile1()
       return yes;
 
     if (IthCheckFile(L"Thumbnail.pac")) {
-      ConsoleOutput("vnreng: IGNORE NeXAS");
-      //InsertNeXASHook(); // jichi 7/6/2014: GIGA
+      //ConsoleOutput("vnreng: IGNORE NeXAS");
+      InsertNeXASHook(); // jichi 7/6/2014: GIGA
       return yes;
     }
 

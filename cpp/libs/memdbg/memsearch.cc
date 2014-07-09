@@ -31,9 +31,32 @@ _mask:
   }
 }
 
+// Copied from ITH
+DWORD findCallOrJmpAbs(DWORD fun, DWORD size, DWORD pt, bool jmp)
+{
+  WORD sig = jmp ? 0x25ff : 0x15ff;
+  for (DWORD i = 0x1000; i < size - 4; i++)
+    if (sig == *(WORD *)(pt + i)) {
+      DWORD t = *(DWORD *)(pt + i + 2);
+      if (t > pt && t < pt + size) {
+        if (fun == *(DWORD *)t)
+          return pt + i;
+        else
+          i += 5;
+      }
+    }
+  return 0;
+}
+
 } // namespace unnamed
 
 MEMDBG_BEGIN_NAMESPACE
+
+DWORD findCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound)
+{ return findCallOrJmpAbs(funcAddr, upperBound - lowerBound, lowerBound, false); }
+
+DWORD findJumpAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound)
+{ return findCallOrJmpAbs(funcAddr, upperBound - lowerBound, lowerBound, true); }
 
 DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength)
 {

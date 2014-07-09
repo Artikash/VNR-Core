@@ -27,11 +27,24 @@ enum { MaximumFunctionSize = 0x800 };
  *  0x81,0xec: sub esp XXOO (0xec81)
  *  0x83,0xec: sub esp XXOO (0xec83)
  */
-
 dword_t findCallerAddress(dword_t funcAddr, dword_t funcInst, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize);
 dword_t findCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize);
 dword_t findLastCallerAddress(dword_t funcAddr, dword_t funcInst, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize);
 dword_t findLastCallerAddressAfterInt3(dword_t funcAddr, dword_t lowerBound, dword_t upperBound, dword_t callerSearchSize = MaximumFunctionSize);
+
+/**
+ *  Return the absolute address of the call instruction address.
+ *  The same as ITH FindCallOrJmpAbs(false).
+ *
+ *  @param  funcAddr  callee function address
+ *  @param  lowerBound  the lower memory address to search
+ *  @param  upperBound  the upper memory address to search
+ *  @return  the call instruction address if succeed or 0 if fail
+ */
+dword_t findCallAddress(dword_t funcAddr, dword_t lowerBound, dword_t upperBound);
+
+///  Similar to findCallAddress except return jmp address
+dword_t findJumpAddress(dword_t funcAddr, dword_t lowerBound, dword_t upperBound);
 
 /**
  *  Return the enclosing function address outside the given address.

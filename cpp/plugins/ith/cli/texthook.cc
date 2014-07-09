@@ -726,7 +726,7 @@ void InitDefaultHook()
   // int TextHook::InitHook(LPVOID addr, DWORD data, DWORD data_ind, DWORD split_off, DWORD split_ind, WORD type, DWORD len_off)
   //
   // jichi 9/8/2013: Guessed meaning
-  // - data: 4 * the n-th (base 1) parameter representing the data of the string
+  // - data(off): 4 * the n-th (base 1) parameter representing the data of the string
   // - len_off:
   //   - the n-th (base 1) parameter representing the length of the string
   //   - or 1 if is char

@@ -26,7 +26,7 @@ EngineController *EngineFactory::createEngine()
    , new ElfEngine
    , new EushullyEngine
    , new MajiroEngine
-   , new NeXASEngine
+   //, new NeXASEngine
    , new SiglusEngine
   };
   BOOST_FOREACH (EngineModel *m, models) {

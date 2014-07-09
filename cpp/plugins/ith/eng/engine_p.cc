@@ -1427,11 +1427,7 @@ bool InsertShinaHook()
     return true;
 
   } else if (ver > 40) // <= v2.47. Older games like あやかしびと does not require hcode
-    if (DWORD s = Util::FindCallAndEntryBoth(
-          (DWORD)GetTextExtentPoint32A,
-          module_limit_ - module_base_,
-          (DWORD)module_base_,
-          0xec81)) {
+    if (DWORD s = Util::FindCallAndEntryBoth((DWORD)GetTextExtentPoint32A, module_limit_ - module_base_, module_base_, 0xec81)) {
       HookParam hp = {};
       hp.addr = (DWORD)GetTextExtentPoint32A;
       hp.off = 0x8;
@@ -1621,8 +1617,8 @@ void InsertTinkerBellHook()
 // jichi 3/19/2014: Insert both hooks
 void InsertLuneHook()
 {
-  if (DWORD c = Util::FindCallOrJmpAbs((DWORD)ExtTextOutA, module_limit_ - module_base_, (DWORD)module_base_, true))
-    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, (DWORD)module_base_, 0xec8b55)) {
+  if (DWORD c = Util::FindCallOrJmpAbs((DWORD)ExtTextOutA, module_limit_ - module_base_, module_base_, true))
+    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, 0xec8b55)) {
       HookParam hp = {};
       hp.addr = addr;
       hp.off = 4;
@@ -1630,8 +1626,8 @@ void InsertLuneHook()
       ConsoleOutput("vnreng:INSERT MBL-Furigana");
       NewHook(hp, L"MBL-Furigana");
     }
-  if (DWORD c = Util::FindCallOrJmpAbs((DWORD)GetGlyphOutlineA, module_limit_ - module_base_, (DWORD)module_base_, true))
-    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, (DWORD)module_base_, 0xec8b55)) {
+  if (DWORD c = Util::FindCallOrJmpAbs((DWORD)GetGlyphOutlineA, module_limit_ - module_base_, module_base_, true))
+    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, 0xec8b55)) {
       HookParam hp = {};
       hp.addr = addr;
       hp.off = 4;
@@ -2121,7 +2117,7 @@ EMEHook hook: (Contributed by Freaka)
 ********************************************************************************************/
 bool InsertEMEHook()
 {
-  DWORD addr = Util::FindCallOrJmpAbs((DWORD)IsDBCSLeadByte,module_limit_-module_base_,(DWORD)module_base_,false);
+  DWORD addr = Util::FindCallOrJmpAbs((DWORD)IsDBCSLeadByte, module_limit_ - module_base_, module_base_, false);
   // no needed as first call to IsDBCSLeadByte is correct, but sig could be used for further verification
   //WORD sig = 0x51C3;
   //while (c && (*(WORD*)(c-2)!=sig))
@@ -2154,7 +2150,7 @@ void SpecialRunrunEngine(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* spli
 }
 bool InsertRREHook()
 {
-  DWORD addr = Util::FindCallOrJmpAbs((DWORD)IsDBCSLeadByte,module_limit_-module_base_,(DWORD)module_base_,false);
+  DWORD addr = Util::FindCallOrJmpAbs((DWORD)IsDBCSLeadByte, module_limit_ - module_base_, module_base_, false);
   if (!addr) {
     ConsoleOutput("vnreng:RRE: function call does not exist");
     return false;
@@ -5162,18 +5158,6 @@ bool InsertAmuseCraftHook()
   return true;
 }
 
-#if 0
-
-// jichi 7/6/2014: char *text = [arg1+0x1a8]
-static void SpecialHookNeXAS(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
-{
-  CC_UNUSED(hp);
-  DWORD arg1 = arg1of(esp_base);
-  *data = arg1 + 0x1a8; // CHECKPOINT: hardcode this value is bad. it does not work for all GIGA games
-  *len = ::strlen((char *)(*data));
-  *split = *(DWORD *)esp_base;
-}
-
 /** jichi 7/6/2014 NeXAS
  *  Sample game: BALDRSKYZERO EXTREME
  *
@@ -5410,25 +5394,24 @@ static void SpecialHookNeXAS(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *
  */
 bool InsertNeXASHook()
 {
-  // There are two GetGlyphOutlineA, both are in the same function
-  // 00503620  /$ 55             push ebp
-  // 00503621  |. 8bec           mov ebp,esp
-  enum : DWORD { fun_beg = 0xec8b55 };
-  DWORD addr = MemDbg::findCallerAddress((DWORD)GetGlyphOutlineA, fun_beg, module_base_, module_limit_);
+  // There are two GetGlyphOutlineA, both of which have the same text
+  DWORD addr = MemDbg::findCallAddress((DWORD)GetGlyphOutlineA, module_base_, module_limit_);
   if (!addr) {
     ConsoleOutput("vnreng:NexAS: failed");
     return false;
   }
   HookParam hp = {};
   hp.addr = addr;
-  hp.extern_fun = SpecialHookNeXAS;
-  hp.type = EXTERN_HOOK;
+  hp.off = 0x4; // arg2 before the function call, so it is: 0x4 * (2-1) = 4
+  hp.type = BIG_ENDIAN|NO_CONTEXT|USING_SPLIT;
+  hp.length_offset = 1; // determine string length at runtime
+  // EIther lpgm or lpmat2 are good choices
+  hp.split = 0xc; // using arg4 (lpgm in GetGlyphOutlineA)
+  //hp.split = 0x18; // using arg7 (lpmat2 in GetGlyphOutlineA)
   ConsoleOutput("vnreng: INSERT NeXAS");
   NewHook(hp, L"NeXAS");
   return true;
 }
-
-#endif // 0
 
 #if 0
 
