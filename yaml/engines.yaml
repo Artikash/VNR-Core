@@ -4,6 +4,7 @@
 rename:
   AUEngine: Tenco
   MAJIRO: Majiro
+  Pencil: Pensil
   Silkys: Elf
   SolfaSoft: ScenarioPlayerA
   SofthouseChara: SystemAoi
@@ -67,6 +68,7 @@ simple:
   - Malie3
   - Mono
   - NeXAS
+  - Pencil # renamed
   - Pensil
   - RealLive
   - Rejet
@@ -168,6 +170,7 @@ char:
   - NeXAS
   - NEXTON
   - NitroPlus
+  - Pencil # renamed
   - Pensil
   - QLIE
   - RealLive

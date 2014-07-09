@@ -184,7 +184,7 @@ DWORD DetermineEngineByFile2()
     InsertTinkerBellHook();
     return yes;
   }
-  if (IthFindFile(L"*.vfs")) {
+  if (IthFindFile(L"*.vfs")) { // jichi 7/6/2014: Better to test AoiLib.dll? ja.wikipedia.org/wiki/ソフトハウスキャラ
     InsertSoftHouseHook();
     return yes;
   }
