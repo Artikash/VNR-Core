@@ -368,13 +368,6 @@ DWORD DetermineEngineByProcessName()
 
   DWORD len = wcslen(str);
 
-  static WCHAR saveman[] = L"_checksum.exe";
-  wcscpy(str + len - 4, saveman);
-  if (IthCheckFile(str)) {
-    InsertRyokuchaHook();
-    return yes;
-  }
-
   // jichi 8/24/2013: Checking for Rio.ini or $procname.ini
   //wcscpy(str+len-4, L"_?.war");
   //if (IthFindFile(str)) {
@@ -393,6 +386,15 @@ DWORD DetermineEngineByProcessName()
     InsertCaramelBoxHook();
     return yes;
   }
+
+  // This must appear at last since str is modified
+  static WCHAR saveman[] = L"_checksum.exe";
+  wcscpy(str + len - 4, saveman);
+  if (IthCheckFile(str)) {
+    InsertRyokuchaHook();
+    return yes;
+  }
+
   return no;
 }
 
