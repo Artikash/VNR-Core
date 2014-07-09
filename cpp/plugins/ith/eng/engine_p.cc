@@ -2875,9 +2875,9 @@ bool InsertCaramelBoxHook()
   union { DWORD i; BYTE* pb; WORD* pw; DWORD* pd; };
   DWORD reg = -1;
   for (i = module_base_ + 0x1000; i < module_limit_ - 4; i++) {
-    if (*pd == 0x7ff3d) //cmp eax, 7ff
+    if (*pd == 0x7ff3d) // cmp eax, 7ff
       reg = 0;
-    else if ((*pd & 0xfffff8fc) == 0x07fff880) //cmp reg, 7ff
+    else if ((*pd & 0xfffff8fc) == 0x07fff880) // cmp reg, 7ff
       reg = pb[1] & 0x7;
 
     if (reg == -1)
@@ -2887,23 +2887,23 @@ bool InsertCaramelBoxHook()
     if (*(pb - 6) == 3) { //add reg, [ebp+$disp_32]
       if (*(pb - 5) == (0x85 | (reg << 3)))
         flag = 1;
-    } else if (*(pb - 3) == 3) { //add reg, [ebp+$disp_8]
+    } else if (*(pb - 3) == 3) { // add reg, [ebp+$disp_8]
       if (*(pb - 2) == (0x45 | (reg << 3)))
         flag = 1;
-    } else if (*(pb - 2) == 3) { //add reg, reg
+    } else if (*(pb - 2) == 3) { // add reg, reg
       if (((*(pb - 1) >> 3) & 7)== reg)
         flag = 1;
     }
     reg = -1;
     if (flag) {
       for (DWORD j = i, k = i - 0x100; j > k; j--) {
-        if ((*(DWORD *)j&0xffff00ff) == 0x1000b8) { //mov eax,10??
+        if ((*(DWORD *)j & 0xffff00ff) == 0x1000b8) { // mov eax,10??
           HookParam hp = {};
           hp.addr = j & ~0xf;
           hp.extern_fun = SpecialHookCaramelBox;
           hp.type = USING_STRING | EXTERN_HOOK;
           for (i &= ~0xffff; i < module_limit_ - 4; i++)
-            if (pb[0] == 0xE8) {
+            if (pb[0] == 0xe8) {
               pb++;
               if (pd[0] + i + 4 == hp.addr) {
                 pb += 4;
