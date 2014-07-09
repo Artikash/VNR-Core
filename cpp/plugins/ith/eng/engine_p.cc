@@ -2823,7 +2823,8 @@ bool InsertSofthouseDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
         else
           hp.addr=*(DWORD*)i;
         ConsoleOutput("vnreng: INSERT SofthouseChara");
-        NewHook(hp, L"SofthouseChara");
+        //NewHook(hp, L"SofthouseChara");
+        NewHook(hp, L"SystemAoi"); // jichi 7/8/2014: renamed, see: ja.wikipedia.org/wiki/ソフトハウスキャラ
         //RegisterEngineType(ENGINE_SOFTHOUSE);
         return true;
       }
