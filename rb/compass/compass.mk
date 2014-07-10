@@ -16,4 +16,8 @@ endif
 %.min.css: %.css
 	make .yui TYPE=css OUT=$@ IN=$^
 
+COMPASS_COMMANDS = compile watch clean
+
+.PHONY: all compress $(COMPASS_COMMANDS)
+
 # EOF

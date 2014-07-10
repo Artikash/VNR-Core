@@ -1,6 +1,5 @@
 # Makefile
 # 8/8/2013 jichi
-
 include ../coffee.mk
 
 all: Makefile compress

@@ -4,7 +4,7 @@
 # http://lackof.org/taggart/hacking/make-example/
 SUBDIRS = qt web
 
-.PHONY: all $(SUBDIRS)
+.PHONY: all clean $(SUBDIRS)
 
 all: $(SUBDIRS)
 
@@ -13,7 +13,7 @@ $(SUBDIRS):
 
 clean:
 	@for it in $(SUBDIRS); do \
-	$(MAKE) -C $$it $@; \
+	  $(MAKE) -C $$it $@; \
 	done
 
 # EOF

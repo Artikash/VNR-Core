@@ -2,6 +2,8 @@
 # 8/8/2013 jichi
 #include ../mk/env.mk
 
+.PHONY: all compile compress clean
+
 COFFEE = coffee
 ifeq ($(OS),Windows_NT)
   CLOSURE = closure.cmd
