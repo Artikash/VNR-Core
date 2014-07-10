@@ -98,6 +98,7 @@ processes:
   - ollydbg.exe         # OllyDbg
   - java.exe            # Java
   - javaw.exe           # Java
+  - JspVReader.exe      # 詠太2
   - jusched.exe         # Java
   - iCloudServices.exe  # Apple
   - KMPlayer.exe        # KMPlayer
