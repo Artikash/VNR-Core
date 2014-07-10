@@ -2,11 +2,10 @@
 # 8/8/2013 jichi
 #include ../mk/env.mk
 
+COFFEE = coffee
 ifeq ($(OS),Windows_NT)
-  COFFEE = coffee
   CLOSURE = closure.cmd
 else
-  COFFEE = coffee
   #CLOSURE = closure --compilation_level ADVANCED_OPTIMIZATIONS
   CLOSURE = closure
 endif
@@ -14,7 +13,11 @@ endif
 DOS2UNIX = dos2unix
 
 .coffee:
+ifdef OUTDIR
+	$(COFFEE) -c $(IN) -o $(OUTDIR)
+else
 	$(COFFEE) -c $(IN)
+endif
 
 .closure:
 	$(CLOSURE) --js_output_file $(OUT) --js $(IN)

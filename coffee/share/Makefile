@@ -4,8 +4,12 @@ include ../coffee.mk
 
 all: Makefile compress
 
-compress: $(wildcard *.min.js)
-compile: $(wildcard *.js)
+#SOURCE = $(shell find . -name '*.coffee')
+SOURCE = $(wildcard *.coffee)
+
+compress: $(SOURCE:.coffee=.min.js)
+compile: $(SOURCE:.coffee=.js)
 clean:
+	rm -f $(SOURCE:.coffee=.js)
 
 # EOF
