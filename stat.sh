@@ -55,6 +55,7 @@ echo -n CMD/Shell/Makefile:
 find . -type f \( \
   -name '*.cmd' \
   -o -name '*.sh' \
+  -o -name '*.mk' \
   -o -name Makefile \
   \) | xargs wc -l | tail -1 | sed 's/ total//'
 
