@@ -129,7 +129,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   jquery.raty: $PWD/../AJAX/raty/jquery.raty.min.js
 
   #haml: http://rawgithub.com/creationix/haml-js/master/lib/haml.js?0.4.3
-  haml: $PWD/../AJAX/npm/haml.min.js
+  haml: $PWD/../AJAX/haml/haml.min.js
 
   # My own sass and coffeescript
 
