@@ -11,7 +11,7 @@ else
 endif
 
 .yui:
-	$(YUI) --type $(TYPE) -o $(OUT) $(IN)
+	$(YUI) $(OPT) --type $(TYPE) -o $(OUT) $(IN)
 
 %.min.css: %.css
 	make .yui TYPE=css OUT=$@ IN=$^

@@ -16,13 +16,13 @@ DOS2UNIX = dos2unix
 
 .coffee:
 ifdef OUTDIR
-	$(COFFEE) -c $(IN) -o $(OUTDIR)
+	$(COFFEE) $(OPT) -c $(IN) -o $(OUTDIR)
 else
-	$(COFFEE) -c $(IN)
+	$(COFFEE) $(OPT) -c $(IN)
 endif
 
 .closure:
-	$(CLOSURE) --js_output_file $(OUT) --js $(IN)
+	$(CLOSURE) $(OPT) --js_output_file $(OUT) --js $(IN)
 
 .null:
 	echo null >> $(IN)

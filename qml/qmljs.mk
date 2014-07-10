@@ -14,24 +14,24 @@ else
 endif
 
 .wget:
-	$(WGET) -O $(OUT) $(IN)
+	$(WGET) $(OPT) -O $(OUT) $(IN)
 
 .yui:
 ifdef TYPE
-	$(YUI) --type $(TYPE) -o $(OUT) $(IN)
+	$(YUI) $(OPT) --type $(TYPE) -o $(OUT) $(IN)
 else
-	$(YUI) -o $(OUT) $(IN)
+	$(YUI) $(OPT) -o $(OUT) $(IN)
   endif
 
 .closure:
-	$(CLOSURE) --js_output_file $(OUT) --js $(IN)
+	$(CLOSURE) $(OPT) --js_output_file $(OUT) --js $(IN)
 
 .clean:
 	rm -f *.{1,2}
 
 .pragma:
 	> $(OUT).1 sed 's/^\.pragma .*//' $(IN)
-	make .closure IN=$(OUT).1 OUT=$(OUT).2
+	make .closure IN=$(OUT).1 OUT=$(OUT).2 OPT=$(OPT)
 	> $(OUT) echo '.pragma library'
 	>> $(OUT) cat $(OUT).2
 	dos2unix $(OUT)
