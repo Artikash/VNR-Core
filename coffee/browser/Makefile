@@ -12,8 +12,7 @@ clean:
 # Append null at the end for performance reason
 # http://stackoverflow.com/questions/1409522/qt4-how-to-call-javascript-functions-in-a-page-from-c-via-qtwebkit
 inject.min.js: inject.js
-	$(CLOSURE) --js $^ --js_output_file $@
-	echo null >> $@
-	dos2unix $@
+	make .closure IN=$^ OUT=$@
+	make .null IN=$@
 
 # EOF
