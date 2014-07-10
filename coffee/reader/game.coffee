@@ -851,18 +851,19 @@ bindNewScapeReviews = ->
 
         $parent.effect 'highlight', HIGHLIGHT_INTERVAL
 
+_noMoreScapeReviews = -> # -> bool
+  (SCAPE_REVIEW_COUNT - SCAPE_REVIEW_INIT_SIZE) % SCAPE_REVIEW_PAGE_SIZE
 bindScapeReviewList = ($spin) ->
   #$spinMore = $ '.scape .spin.spin-more' # difficult to position
   $('.scape .footer .btn-more').click ->
     $this = $ @
     $parent = $this.closest '.scape'
     $container = $parent.find '.list'
-    #size = $container.children('.entry').length
-    size = SCAPE_REVIEW_COUNT
-    unless (size - SCAPE_REVIEW_INIT_SIZE) % SCAPE_REVIEW_PAGE_SIZE # FIXME: scape page size is not accurate
+    empty = false # bool
+    unless _noMoreScapeReviews() # FIXME: scape page size is not accurate
       $spin.spin 'section'
       #$spinMore.spin 'tiny'
-      [h, count] = renderScapeReviews size, SCAPE_REVIEW_PAGE_SIZE
+      [h, count] = renderScapeReviews SCAPE_REVIEW_COUNT, SCAPE_REVIEW_PAGE_SIZE
       $spin.spin false
       #$spinMore.spin false
       if h
@@ -871,9 +872,9 @@ bindScapeReviewList = ($spin) ->
             .appendTo $container
             .fadeIn()
         bindNewScapeReviews()
-        return false
+        empty = _noMoreScapeReviews()
     # Empty
-    $this.replaceWith HTML_EMPTY
+    $this.replaceWith HTML_EMPTY if empty
     false
 
 initCGPills = -> # Sample images
