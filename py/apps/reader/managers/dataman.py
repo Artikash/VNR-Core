@@ -158,11 +158,25 @@ class GameInfo(object):
     return ret
 
   @memoizedproperty
+  def upcoming0(self):
+    """
+    @return  bool
+    """
+    return bool(self.date0) and self.date0 > skdatetime.CURRENT_UNIXTIME
+
+  @memoizedproperty
   def upcoming(self):
     """
     @return  bool
     """
     return bool(self.date) and self.date > skdatetime.CURRENT_UNIXTIME
+
+  @memoizedproperty
+  def recent0(self):
+    """
+    @return  bool
+    """
+    return bool(self.date0) and not self.upcoming0 and self.date0 > skdatetime.CURRENT_UNIXTIME - 86400*30 # a month
 
   @memoizedproperty
   def recent(self):
