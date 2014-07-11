@@ -93,8 +93,8 @@ def gameinfo(start=0, count=100, sort=None, reverse=None, filters=None):
           if otome is not None and otome != it.otome0: continue
           if okazu is not None and okazu != it.okazu0: continue
           if local is not None and local != it.local: continue
-          if upcoming and not it.upcoming: continue
-          if recent and not it.recent: continue
+          if upcoming and not it.upcoming0: continue
+          if recent and not it.recent0: continue
           if year or month:
             if not it.dateObject0: continue
             dt = it.dateObject0
