@@ -141,9 +141,10 @@ class GameApi(object):
     @param  h  unicode  html
     @return  unicode
     """
-    m = self._rx_review.search(h)
-    if m:
-      return self._replacelinks(m.group())
+    if u"この作品に最初のレビューを書いてみませんか" not in h:
+      m = self._rx_review.search(h)
+      if m:
+        return self._replacelinks(m.group())
 
   def _hasreview(self, h):
     """
@@ -170,7 +171,9 @@ if __name__ == '__main__':
   url = "http://www.dmm.co.jp/top/-/error/area/404"
   url = "http://www.dmm.co.jp/mono/pcgame/-/detail/=/cid=1326aw007/"
   url = "http://www.dmm.co.jp/mono/pcgame/-/detail/=/cid=587apc10370/"
+  url = "http://www.dmm.co.jp/dc/doujin/-/detail/=/cid=d_063678/"
   q = api.query(url)
   print q['description']
+  print q['review']
 
 # EOF
