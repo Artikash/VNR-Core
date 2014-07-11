@@ -8,11 +8,12 @@ if __name__ == '__main__':
   import debug
   debug.initenv()
 
+from functools import partial
 from PySide.QtCore import Qt, QObject, QTimer, Slot, Signal, Property, QRegExp, \
                           QAbstractListModel, QModelIndex
 from Qt5 import QtWidgets
 from Qt5.QtCore import QSortFilterProxyModel
-from sakurakit import skclip, skdatetime, skqss
+from sakurakit import skclip, skdatetime, skevents, skqss
 from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.skdebug import dprint
 #from sakurakit.skqml import QmlObject
@@ -355,10 +356,16 @@ class _ReferenceInput(object):
       dprint("key: %s, title: %s" % (item['key'], item['title']))
       type = item['type']
       if type in ('digiket', 'holyseal'):
-        kw = refman.manager().queryOne(type=type, key=item['key'])
-        if kw:
-          item = kw
-      self.q.itemSelected.emit(item)
+        skevents.runlater(partial(self._saveNew, item), 200) # runlater so that it won't block GUI
+      else:
+        self.q.itemSelected.emit(item)
+
+  def _saveNew(self, item):
+    """
+    @param  item  kw
+    """
+    kw = refman.manager().queryOne(type=item['type'], key=item['key'])
+    self.q.itemSelected.emit(kw or item)
 
   def _browse(self):
     item = self._currentItem()
