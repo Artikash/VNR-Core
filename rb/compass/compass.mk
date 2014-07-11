@@ -14,7 +14,7 @@ endif
 	$(YUI) $(OPT) --type $(TYPE) -o $(OUT) $(IN)
 
 %.min.css: %.css
-	make .yui TYPE=css OUT=$@ IN=$^
+	$(MAKE) .yui TYPE=css OUT=$@ IN=$^
 
 COMPASS_COMMANDS = compile watch clean
 

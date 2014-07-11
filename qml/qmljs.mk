@@ -31,7 +31,7 @@ else
 
 .pragma:
 	> $(OUT).1 sed 's/^\.pragma .*//' $(IN)
-	make .closure IN=$(OUT).1 OUT=$(OUT).2 OPT=$(OPT)
+	$(MAKE) .closure IN=$(OUT).1 OUT=$(OUT).2 OPT=$(OPT)
 	> $(OUT) echo '.pragma library'
 	>> $(OUT) cat $(OUT).2
 	dos2unix $(OUT)

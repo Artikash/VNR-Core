@@ -9,6 +9,6 @@ clean: .clean
 compress: $(wildcard *.min.js)
 
 %.min.js: %.js
-	make .pragma OUT=$@ IN=$^
+	$(MAKE) .pragma OUT=$@ IN=$^
 
 # EOF

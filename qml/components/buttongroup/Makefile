@@ -7,7 +7,7 @@ all: Makefile compress
 compress: $(wildcard *.min.js)
 
 %.min.js: %.js
-	make .closure OUT=$@ IN=$^
+	$(MAKE) .closure OUT=$@ IN=$^
 
 clean: .clean
 
