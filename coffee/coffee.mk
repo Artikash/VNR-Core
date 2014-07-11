@@ -2,11 +2,12 @@
 # 8/8/2013 jichi
 #include ../mk/env.mk
 
+.PHONY: all compile compress clean
+
+COFFEE = coffee
 ifeq ($(OS),Windows_NT)
-  COFFEE = coffee
   CLOSURE = closure.cmd
 else
-  COFFEE = coffee
   #CLOSURE = closure --compilation_level ADVANCED_OPTIMIZATIONS
   CLOSURE = closure
 endif
@@ -14,10 +15,14 @@ endif
 DOS2UNIX = dos2unix
 
 .coffee:
-	$(COFFEE) -c $(IN)
+ifdef OUTDIR
+	$(COFFEE) $(OPT) -c $(IN) -o $(OUTDIR)
+else
+	$(COFFEE) $(OPT) -c $(IN)
+endif
 
 .closure:
-	$(CLOSURE) --js_output_file $(OUT) --js $(IN)
+	$(CLOSURE) $(OPT) --js_output_file $(OUT) --js $(IN)
 
 .null:
 	echo null >> $(IN)

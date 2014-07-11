@@ -12,11 +12,15 @@ OBJ = $(BUILDDIR)/safeseh.obj
 ML = ml
 CFLAGS =
 
+.PHONY: all compile clean
+
 all: compile
 
 compile: $(OBJ)
 
 $(OBJ): safeseh.asm
 	$(ML) $(CFLAGS) -Fo $@ -c -safeseh $^
+
+clean:
 
 # EOF

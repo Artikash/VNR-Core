@@ -9,7 +9,7 @@ SUBDIRS = \
     components/buttongroup \
     js
 
-.PHONY: all $(SUBDIRS)
+.PHONY: all clean $(SUBDIRS)
 
 all: $(SUBDIRS)
 
@@ -18,7 +18,7 @@ $(SUBDIRS):
 
 clean:
 	@for it in $(SUBDIRS); do \
-	$(MAKE) -C $$it $@; \
+	  $(MAKE) -C $$it $@; \
 	done
 
 # EOF

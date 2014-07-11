@@ -1,6 +1,8 @@
 # Makefile
 # 8/8/2013 jichi
 
+.PHONY: all release clean
+
 all: Makefile release zh_TW.ts
 
 release: $(wildcard *.qm)
