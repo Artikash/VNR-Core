@@ -398,7 +398,7 @@ class SoftApi(object):
   #            m.group())))
 
   _rx_desc = __maketablesrx((
-    u"商品紹介", u"ストーリー",
+    u"商品紹介", u"ストーリー", u"システム紹介",
     u"美少女ゲーム大賞", #r"Getchu\.com",
     #u"げっちゅ屋特典", u"キャンペーン", u"応援バナー",
     #u"キャラクター",
