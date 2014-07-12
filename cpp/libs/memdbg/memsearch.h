@@ -61,7 +61,7 @@ dword_t findJumpAddress(dword_t funcAddr, dword_t lowerBound, dword_t upperBound
 dword_t findEnclosingAlignedFunction(dword_t addr, dword_t searchSize = MaximumFunctionSize);
 
 /**
- *  Return the address of the first mached pattern.
+ *  Return the address of the first matched pattern.
  *  The same as ITH SearchPattern(). KMP is used.
  *  Return 0 if failed. The return result is ambiguous if the pattern address is 0.
  *
@@ -83,7 +83,7 @@ dword_t reverseSearchPattern(dword_t stopAddress, dword_t range, const void *pat
 
 /**
  * jichi 2/5/2014: The same as SearchPattern except it uses 0xff to match everything
- * According to @Andys, 0xff seldom appear in the source code: http://sakuradite.com/topic/124
+ * According to @Andys, 0xff seldom appears in the source code: http://sakuradite.com/topic/124
  */
 enum : byte_t { SP_ANY = 0xff };
 //#define SP_ANY_2 SP_ANY,SP_ANY

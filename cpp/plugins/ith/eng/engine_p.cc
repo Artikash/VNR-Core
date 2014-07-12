@@ -17,7 +17,7 @@
 #include "cc/ccmacro.h"
 
 // jichi 7/6/2014: read esp_base
-//#define retof(esp_base)  *(DWORD *)(esp_base)
+//#define retof(esp_base)  *(DWORD *)(esp_base) // not used
 #define regof(name, esp_base)   *(DWORD *)((esp_base) + pusha_##name##_off - 4)
 #define argof(count, esp_base)  *(DWORD *)((esp_base) + 4 * (count)) // starts from 1 instead of 0
 #define arg1of(esp_base)    argof(1, esp_base)
@@ -5051,10 +5051,24 @@ bool InsertEushullyHook()
     return false;
   }
 
+  // BOOL GetTextExtentPoint32(
+  //   _In_   HDC hdc,
+  //   _In_   LPCTSTR lpString,
+  //   _In_   int c,
+  //   _Out_  LPSIZE lpSize
+  // );
+  enum stack { // current stack
+    retaddr = 0x0 // esp[0] is the return address since this is the beginning of the function
+    , arg1_hdc = 0x4,
+    , arg2_lpString = 0x8,
+    , arg3_lc = 0x8,
+    , arg4_lpSize = 0xc,
+  };
+
   HookParam hp = {};
   hp.addr = addr;
   hp.type = USING_STRING|FIXING_SPLIT; // merging all threads
-  hp.off = 0x8; // arg2 = 0x4 * 2
+  hp.off = arg2_lpString; // arg2 = 0x4 * 2
   ConsoleOutput("vnreng: INSERT Eushully");
   NewHook(hp, L"Eushully");
   return true;
@@ -5391,20 +5405,42 @@ bool InsertAmuseCraftHook()
  */
 bool InsertNeXASHook()
 {
-  // There are two GetGlyphOutlineA, both of which have the same text
+  // There are two GetGlyphOutlineA, both of which seem to have the same texts
   DWORD addr = MemDbg::findCallAddress((DWORD)GetGlyphOutlineA, module_base_, module_limit_);
   if (!addr) {
     ConsoleOutput("vnreng:NexAS: failed");
     return false;
   }
+
+  // DWORD GetGlyphOutline(
+  //   _In_   HDC hdc,
+  //   _In_   UINT uChar,
+  //   _In_   UINT uFormat,
+  //   _Out_  LPGLYPHMETRICS lpgm,
+  //   _In_   DWORD cbBuffer,
+  //   _Out_  LPVOID lpvBuffer,
+  //   _In_   const MAT2 *lpmat2
+  // );
+  enum stack { // current stack
+    arg1_hdc = 0x0, // Since there is invoked before function call, esp[0] is arg[0] instead of the return address.
+    , arg2_uChar = 0x4
+    , arg3_uFormat = 0x8
+    , arg4_lpgm = 0xc
+    , arg5_cbBuffer = 0x10
+    , arg6_lpvBuffer = 0x14
+    , arg7_lpmat2 = 0x18
+  };
+
   HookParam hp = {};
   hp.addr = addr;
-  hp.off = 0x4; // arg2 before the function call, so it is: 0x4 * (2-1) = 4
   hp.type = BIG_ENDIAN|NO_CONTEXT|USING_SPLIT;
   hp.length_offset = 1; // determine string length at runtime
+  hp.off = arg2_uChar; // = 0x4, arg2 before the function call, so it is: 0x4 * (2-1) = 4
+
   // EIther lpgm or lpmat2 are good choices
-  hp.split = 0xc; // using arg4 (lpgm in GetGlyphOutlineA)
-  //hp.split = 0x18; // using arg7 (lpmat2 in GetGlyphOutlineA)
+  hp.split = arg4_lpgm; // = 0xc, arg4
+  //hp.split = arg7_lpmat2; // = 0x18, arg7
+
   ConsoleOutput("vnreng: INSERT NeXAS");
   NewHook(hp, L"NeXAS");
   return true;
@@ -5426,6 +5462,8 @@ static HMODULE WaitForModuleReady(const char *name, int retryCount = 100, int sl
  *  jichi 4/21/2014: Mono (Unity3D)
  *  See (ok123): http://sakuradite.com/topic/214
  *  Pattern: 33DB66390175
+ *
+ *  FIXME: This approach won't work before mono is loaded into the memory.
  *
  *  Example: /HWN-8*0:3C@ mono.dll search 33DB66390175
  *  - length_offset: 1
