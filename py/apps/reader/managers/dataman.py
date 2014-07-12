@@ -2943,11 +2943,17 @@ class GetchuReference(Reference): #(object):
     @yield  str  url
     """
     #if self.hasSampleImages():
-    for l in self.sampleImages, self.bannerImages:
-      if l:
-        for it in l:
-          it = proxy.get_getchu_url(it)
-          yield cacheman.cache_image_url(it) if cache else it
+    l = self.sampleImages
+    if l:
+      for it in l:
+        it = proxy.get_getchu_url(it)
+        yield cacheman.cache_image_url(it) if cache else it
+    l = self.bannerImages
+    if l:
+      for it in l:
+        it = proxy.get_getchu_url(it)
+        it = proxy.get_image_url(it)
+        yield cacheman.cache_image_url(it) if cache else it
 
   def hasDescriptions(self):
     """
