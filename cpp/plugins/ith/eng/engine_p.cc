@@ -5574,7 +5574,7 @@ struct FunctionInfo
   , { L"sysclib_strlen", 1, USING_STRING, "Untested sysclib_strlen(" } \
   , { L"sysclib_strcat", 2, USING_STRING, "Untested sysclib_strcat(" }
 
-  // FIXME: The following two functions will raise because their is only one intermediate int3
+  // FIXME: The following two functions will raise because there is only one intermediate/leading int3
   //, { L"sysclib_strcmp", 2, USING_STRING, "Untested sysclib_strcmp(" }
   //, { L"sysclib_strcpy", 2, USING_STRING, "Untested sysclib_strcpy(" }
 
