@@ -388,11 +388,14 @@ class _MainObject(object):
     ret.setBlockedLanguages(ss.blockedLanguages())
     ss.blockedLanguagesChanged.connect(ret.setBlockedLanguages)
 
+    dm = self.dataManager
     for sig in (
         ss.machineTranslatorChanged,
         ss.termEnabledChanged,
         #ss.userLanguageChanged
-        self.dataManager.termsChanged,
+        dm.termsChanged,
+        #dm.gameFilesChanged, # duplicate with gameItemsChanged
+        dm.gameItemsChanged,
         #self.gameManager.processChanged,   # this would cause recursion
         ):
       sig.connect(ret.clearTranslationCache)
@@ -1765,23 +1768,24 @@ class MainObject(QObject):
   def checkDigests(self):
     if not self.isOnline():
       return
+    dprint("enter")
     d = self.__d
     ss = settings.global_()
     now = skdatetime.current_unixtime()
-    if now > ss.gameFilesTime() + config.APP_UPDATE_DIGESTS_INTERVAL:
-      d.dataManager.updateGameFiles()
-    #if now > ss.referenceDigestsTime() + config.APP_UPDATE_DIGESTS_INTERVAL:
-    #  d.dataManager.updateReferenceDigests()
-    if now > ss.userDigestsTime() + config.APP_UPDATE_DIGESTS_INTERVAL:
-      d.dataManager.updateUsers()
+    ts = min(ss.gameFilesTime(), ss.gameFilesTime(), ss.userDigestsTime())
+    if now > ts + config.APP_UPDATE_GAMES_INTERVAL:
+      d.dataManager.updateGameDatabase()
+    dprint("leave")
 
   def checkTerms(self):
+    dprint("enter")
     if not self.isOnline():
       return
     now = skdatetime.current_unixtime()
     if now < settings.global_().termsTime() + config.APP_UPDATE_TERMS_INTERVAL:
       return
     self.__d.dataManager.updateTerms()
+    dprint("leave")
 
   def checkGreeting(self):
     if not self.isOnline():

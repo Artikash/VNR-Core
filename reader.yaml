@@ -10,7 +10,7 @@ version:
   name: reader
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1405242660
+  timestamp: 1405280706
 
 app:
   #debug: true
@@ -18,7 +18,7 @@ app:
   saveSettingsInterval:     300         # every 5 minutes
   updateTermsInterval:      3600 * 8    # every 8 hours
   greetingInterval:         3600 * 10   # every 10 hours
-  updateDigestsInterval:    3600 * 18   # every 18 hours
+  updateGamesInterval:      3600 * 18   # every 18 hours
   updateInterval:           3600 * 24   # every 1 day
   updateCommentsInterval:   86400 * 1   # every 1 day
   updateRefsInterval:       86400 * 1   # every 1 day

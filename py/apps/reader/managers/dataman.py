@@ -5642,14 +5642,39 @@ class _DataManager(object):
   def containsGameInfo(self, itemId): return itemId in self.gameItems
 
   def repairGameItems(self):
-    if self.gameFiles:
-      for g in self.games.itervalues():
+    for g in self.games.itervalues():
+      if self.gameFilesByMd5:
+        if g.md5:
+          f = self.gameFilesByMd5.get(g.md5)
+          if f:
+            g.itemId = f.itemId
+            g.id = f.id
+      if self.gameFiles:
         if g.id:
           f = self.gameFiles.get(g.id)
           if f:
             g.itemId = f.itemId
-      self.touchGames()
-      dprint("pass")
+            #g.md5 = f.md5
+    self.touchGames()
+    dprint("pass")
+
+  def repairCurrentGame(self):
+    g = self.currentGame
+    if g:
+      if g.md5:
+        if self.gameFilesByMd5:
+          f = self.gamefiles.get(g.md5)
+          if f:
+            g.itemId = f.itemId
+            g.id = f.id
+      if g.id:
+        if self.gameFiles:
+          f = self.gamefiles.get(g.id)
+          if f:
+            g.itemId = f.itemId
+            #g.md5 = f.md5
+      d.currentGameObject = None
+      d.currentGameIds = self.q.querySeriesGameIds(itemId=g.itemId) if g.itemId else [g.id] if g.id else []
 
   def updateGame(self, game, deleteHook=False, online=True):
     """
@@ -5681,6 +5706,8 @@ class _DataManager(object):
     else:
       g = self.games[game.md5]
       g.visitCount += 1
+      g.md5 = game.md5 # enforce md5
+
       if game.id: g.id = game.id
       if game.encoding: g.encoding = game.encoding
       if game.language: g.language = game.language
@@ -6578,7 +6605,7 @@ class _DataManager(object):
     })
     ok = skfileio.writefile(xmlfile, data)
     if ok:
-      #settings.global_().setGameItemsTime(skdatetime.current_unixtime())
+      settings.global_().setGameItemsTime(skdatetime.current_unixtime())
       dprint("pass: xml = %s" % xmlfile)
     else:
       dwarn("failed: xml = %s" % xmlfile)
@@ -6878,6 +6905,11 @@ class _DataManager(object):
           g.itemId = itemId
           self.touchGames()
 
+    g = self.currentGame
+    if g:
+      self.currentGameIds = self.q.querySeriesGameIds(itemId=g.itemId) if g.itemId else [g.id] if g.id else []
+    # need to invalidate translation cache here
+
   def submitDirtyReferences(self):
     if (not self.user.isLoginable() or
         not self.dirtyReferences or
@@ -6902,7 +6934,7 @@ class _DataManager(object):
           t.clearDirtyProperties()
           gameId, itemId = ok
           if gameId:
-            self._updateGameItem(gameId, itemId)
+            self._updateGameItem(gameId=gameId, itemId=itemId)
         else:
           growl.warn('<br/>'.join((
             my.tr("Failed to save changes, will try later"),
@@ -7121,6 +7153,10 @@ class _DataManager(object):
             u.name, u.password, color=color))
 
 class DataManager(QObject):
+
+  termsChanged = Signal()
+  gameFilesChanged = Signal()
+  gameItemsChanged = Signal()
 
   ## Construction ##
 
@@ -7534,7 +7570,7 @@ class DataManager(QObject):
   def updateUsers(self):
     if netman.manager().isOnline():
       #growl.msg(my.tr("Updating user database online") + " ...")
-      dprint("update user digests")
+      dprint("enter")
       users = netman.manager().getUsers()
       d = self.__d
       if not users:
@@ -7560,9 +7596,11 @@ class DataManager(QObject):
           #  my.tr("Failed to update user database"),
           #  my.tr("Something might be wrong with the Internet connection"),
           #)))
+      dprint("leave")
 
   def updateGameFiles(self):
     if netman.manager().isOnline():
+      dprint("enter")
       growl.msg(my.tr("Updating game database online") + " ...")
       files = netman.manager().getGameFiles()
       d = self.__d
@@ -7581,17 +7619,19 @@ class DataManager(QObject):
           dprint("digest count = %i" % len(d.gameFiles))
           d._gameFilesDirty = True
           d._saveGameFilesLater()
-
-          growl.msg(my.tr("Game database is updated"))
+          self.gameFilesChanged.emit()
+          #growl.msg(my.tr("Game database is updated"))
         except Exception, e:
           dwarn(e)
           growl.warn('<br/>'.join((
             my.tr("Failed to update game database"),
             my.tr("Something might be wrong with the Internet connection"),
           )))
+      dprint("leave")
 
   def updateGameItems(self):
     if netman.manager().isOnline():
+      dprint("enter")
       #growl.msg(my.tr("Updating game database online") + " ...")
       items = netman.manager().getGameItems()
       d = self.__d
@@ -7599,7 +7639,11 @@ class DataManager(QObject):
         d.gameItems = items
         d._gameInfo = []
         dprint("digest count = %i" % len(d.gameItems))
+        d.repairCurrentGame()
         d.saveGameItems()
+        growl.msg(my.tr("Game database is updated"))
+        self.gameItemsChanged.emit()
+      dprint("leave")
 
   #def updateReferenceDigests(self):
   #  if netman.manager().isOnline():
@@ -7629,6 +7673,7 @@ class DataManager(QObject):
 
   def updateTerms(self):
     if netman.manager().isOnline():
+      dprint("enter")
       growl.msg(my.tr("Updating dictionary terms online") + " ...")
       d = self.__d
       l = netman.manager().getTerms(d.user.name, d.user.password)
@@ -7645,6 +7690,7 @@ class DataManager(QObject):
           my.tr("Failed to download terms online"),
           my.tr("Something might be wrong with the Internet connection"),
         )))
+      dprint("leave")
 
   def queryReferences(self, gameId=0, init=True, online=False, onlineLater=False):
     """
@@ -7907,7 +7953,7 @@ class DataManager(QObject):
 
     g = d.currentGame = d.games[game.md5]
     d.currentGameObject = None
-    d.currentGameIds = self.querySeriesGameIds(itemId=g.itemId) if g.itemId else [g.id]
+    d.currentGameIds = self.querySeriesGameIds(itemId=g.itemId) if g.itemId else [g.id] if g.id else []
 
     if not g.id:
       dwarn("missing game ID!")
@@ -8414,8 +8460,6 @@ class DataManager(QObject):
   ## Terminologies ##
 
   def hasTerms(self): return bool(self.__d.terms)
-
-  termsChanged = Signal()
 
   def terms(self):
     """

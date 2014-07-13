@@ -74,6 +74,9 @@ class Settings(QSettings):
   def setGameFilesTime(self, value): self.setValue('GameFilesTime', value)
   def gameFilesTime(self): return to_int(self.value('GameFilesTime'))
 
+  def setGameItemsTime(self, value): self.setValue('GameItemsTime', value)
+  def gameItemsTime(self): return to_int(self.value('GameItemsTime'))
+
   def setUserDigestsTime(self, value): self.setValue('UserDigestsTime', value)
   def userDigestsTime(self): return to_int(self.value('UserDigestsTime'))
 
