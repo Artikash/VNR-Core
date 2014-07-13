@@ -5594,8 +5594,8 @@ bool InsertPPSSPPHook()
     const auto &it = l[i];
     ULONG addr = MemDbg::findBytes(it.pattern, ::strlen(it.pattern), startAddress, stopAddress);
     if (addr = MemDbg::findPushAddress(addr, startAddress, stopAddress))
-      //if (addr = MemDbg::findEnclosingAlignedFunction(addr, 0x200)) {
-      if (addr = SafeFindEntryAligned(addr, 0x200)) { // this function might raise if failed
+      //if (addr = MemDbg::findEnclosingAlignedFunction(addr, 0x200)) { // this function might raise if failed
+      if (addr = SafeFindEntryAligned(addr, 0x200)) { // range = 0x200 is enough
         hp.addr = addr;
         hp.type = it.hookType;
         hp.off = 4 * it.argIndex;
