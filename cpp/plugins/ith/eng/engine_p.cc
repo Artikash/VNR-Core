@@ -5574,7 +5574,7 @@ struct FunctionInfo
   , { L"sysclib_strlen", 1, USING_STRING, "Untested sysclib_strlen(" } \
   , { L"sysclib_strcat", 2, USING_STRING, "Untested sysclib_strcat(" }
 
-  // FIXME: The following two functions will raise because their is only one intermediate int3
+  // FIXME: The following two functions will raise because there is only one intermediate/leading int3
   //, { L"sysclib_strcmp", 2, USING_STRING, "Untested sysclib_strcmp(" }
   //, { L"sysclib_strcpy", 2, USING_STRING, "Untested sysclib_strcpy(" }
 
@@ -5594,11 +5594,12 @@ bool InsertPPSSPPHook()
   hp.length_offset = 1; // determine string length at runtime
 
   const FunctionInfo l[] = { PPSSPP_FUNCTIONS_INITIALIZER };
-  for (size_t i = 0; i < sizeof(l)/sizeof(*l); i++) {
+  enum { FunctionInfoCount = sizeof(l)/sizeof(*l) };
+  for (size_t i = 0; i < FunctionInfoCount; i++) {
     const auto &it = l[i];
     ULONG addr = MemDbg::findBytes(it.pattern, ::strlen(it.pattern), startAddress, stopAddress);
     if (addr = MemDbg::findPushAddress(addr, startAddress, stopAddress))
-      if (addr = MemDbg::findEnclosingAlignedFunction(addr, 0x200)) { // range = 0x400
+      if (addr = MemDbg::findEnclosingAlignedFunction(addr, 0x200)) { // range = 0x200
         hp.addr = addr;
         hp.type = it.hookType;
         hp.off = 4 * it.argIndex;
