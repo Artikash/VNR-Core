@@ -4,7 +4,6 @@
 // 12/13/2013 jichi
 // See: http://code.metager.de/source/xref/WebKit/Source/WebCore/platform/win/makesafeseh.asm
 // See: http://jpassing.com/2008/05/20/fun-with-low-level-seh/
-// FIXME 12/15/2013: Does this work on x64?
 
 #ifdef _MSC_VER
 # pragma warning (disable:4733)   // C4733: Inline asm assigning to 'FS:0' : handler not registered as safe handler
@@ -53,10 +52,10 @@ extern seh_dword_t seh_handler; //extern PEXCEPTION_ROUTINE seh_handler;
  */
 #define seh_push_(_label, _eh, _r1, _r2) \
   { \
-    __asm mov _r1, _eh \
+    __asm mov _r1, _eh /* move new handler address */ \
     __asm mov _r2, seh_count /* get current seh counter */ \
     __asm mov dword ptr seh_eh[_r2*4], _r1 /* set recover exception hander */ \
-    __asm mov _r1, _label \
+    __asm mov _r1, _label /* move jump label address */ \
     __asm mov dword ptr seh_eip[_r2*4], _r1 /* set recover eip as the jump label */  \
     __asm push seh_handler /* push new safe seh handler */ \
     __asm push fs:[0] /* push old fs:0 */ \

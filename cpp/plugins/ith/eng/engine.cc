@@ -44,6 +44,11 @@ DWORD InsertDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 DWORD DetermineEngineByFile1()
 {
   enum : DWORD { yes = 0, no = 1 }; // return value
+  if (IthCheckFile(L"PPSSPPWindows.exe")) { // jichi 7/12/2014
+    InsertPPSSPPHook();
+    //InsertLstrHooks(); // always insert lstr functions for PPSSPP
+    return yes;
+  }
   if (IthFindFile(L"*.xp3") || Util::SearchResourceString(L"TVP(KIRIKIRI)")) {
     InsertKiriKiriHook();
     return yes;
@@ -52,7 +57,6 @@ DWORD DetermineEngineByFile1()
     InsertBGIHook();
     return yes;
   }
-
   if (IthCheckFile(L"AGERC.DLL")) { // jichi 6/1/2014: Eushully, AGE.EXE
     InsertEushullyHook();
     return yes;

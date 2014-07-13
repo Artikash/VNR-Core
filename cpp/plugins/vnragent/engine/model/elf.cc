@@ -137,7 +137,7 @@ LPCSTR __fastcall newHookFun(void *self, void *edx, DWORD arg1, DWORD arg2, DWOR
  */
 static ulong searchElf(ulong startAddress, ulong stopAddress, int *stackSize)
 {
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
       //0x55,                             // 0093f9b0  /$ 55             push ebp  ; jichi: hook here
       //0x8b,0xec,                        // 0093f9b1  |. 8bec           mov ebp,esp
       //0x83,0xec, 0x08,                  // 0093f9b3  |. 83ec 08        sub esp,0x8
@@ -152,15 +152,11 @@ static ulong searchElf(ulong startAddress, ulong stopAddress, int *stackSize)
       0x8b,0x91, 0x90,0x00,0x00,0x00    // 0093f9c8  |. 8b91 90000000  mov edx,dword ptr ds:[ecx+0x90]
   };
   //enum { hook_offset = 0xc };
-  ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
-  ulong reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
+  //ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
   //ITH_GROWL_DWORD(reladdr);
   //reladdr = 0x2f9b0; // 愛姉妹4
   //reladdr = 0x2f0f0; // SEXティーチャー剛史 trial
-  if (!reladdr)
-    return 0;
-
-  ulong addr = startAddress + reladdr;
   enum : BYTE { push_ebp = 0x55 };
   for (int i = 0; i < 0x20; i++, addr--) // value of i is supposed to be 0xc or 0x10
     if (*(BYTE *)addr == push_ebp) { // beginning of the function

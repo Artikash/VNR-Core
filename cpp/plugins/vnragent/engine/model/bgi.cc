@@ -171,7 +171,7 @@ void BGIEngine::hook(HookStack *stack)
 static ulong searchBGI1(ulong startAddress, ulong stopAddress)
 {
   //return 0x4207e0; // FORTUNE ARTERIAL
-  //const BYTE ins[] = {
+  //const BYTE bytes[] = {
   //  0x8a,0x45, 0x00,  // 00420822  |. 8a45 00        mov al,byte ptr ss:[ebp]
   //  0x3c, 0x20,       // 00420825  |. 3c 20          cmp al,0x20
   //  0x7d, 0x69,       // 00420827  |. 7d 69          jge short bgi.00420892
@@ -182,7 +182,7 @@ static ulong searchBGI1(ulong startAddress, ulong stopAddress)
   //};
   //enum { hook_offset = 0x4207e0 - 0x420822 }; // distance to the beginning of the function
 
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
      0x0f,0xaf,0xcb,   // 004208de  |. 0fafcb         imul ecx,ebx
      0xf7,0xe9,        // 004208e1  |. f7e9           imul ecx
      0xc1,0xfa, 0x05,  // 004208e3  |. c1fa 05        sar edx,0x5
@@ -193,14 +193,11 @@ static ulong searchBGI1(ulong startAddress, ulong stopAddress)
      0x85,0xff,        // 004208ef  |. 85ff           test edi,edi
   };
   //enum { hook_offset = 0x4207e0 - 0x4208de }; // distance to the beginning of the function
-  ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
-  ulong reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
-  if (!reladdr)
+  //ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr)
     //ConsoleOutput("vnreng:BGI2: pattern not found");
     return 0;
-
-  //ulong addr = startAddress + reladdr + hook_offset;
-  ulong addr = startAddress + reladdr;
   enum : WORD {
     sub_esp = 0xec81   // 004207e0  /$ 81ec 30090000
     , push_ff = 0xff6a // 00427450  /$ 6a ff   push -0x1, seh handler
@@ -307,7 +304,7 @@ static ulong searchBGI1(ulong startAddress, ulong stopAddress)
 static ulong searchBGI2(ulong startAddress, ulong stopAddress)
 {
   //return startAddress + 0x31850; // 世界と世界の真ん中 体験版
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
     0x3c, 0x20,      // 011d4d31  |. 3c 20          cmp al,0x20
     0x7d, 0x75,      // 011d4d33  |. 7d 75          jge short sekachu.011d4daa
     0x0f,0xbe,0xc0,  // 011d4d35  |. 0fbec0         movsx eax,al
@@ -316,13 +313,13 @@ static ulong searchBGI2(ulong startAddress, ulong stopAddress)
     0x77, 0x6a       // 011d4d3e  |. 77 6a          ja short sekachu.011d4daa
   };
   enum { hook_offset = 0x34c80 - 0x34d31 }; // distance to the beginning of the function
-  ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
-  ulong reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
-  if (!reladdr)
+  //ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+  ulong addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  if (!addr)
     //ConsoleOutput("vnreng:BGI2: pattern not found");
     return 0;
 
-  ulong addr = startAddress + reladdr + hook_offset;
+  addr += hook_offset;
   enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
   if (*(BYTE *)addr != push_ebp)
     //ConsoleOutput("vnreng:BGI2: pattern found but the function offset is invalid");
