@@ -6,20 +6,20 @@
 #include <windows.h>
 
 #define HIJACK_FUNCTIONS_INITIALIZER \
-   { "kernel32.dll", "GetProcAddress", ::GetProcAddress, Hijack::myGetProcAddress }, \
-   { "kernel32.dll", "LoadLibraryA", ::LoadLibraryA, Hijack::myLoadLibraryA }, \
-   { "kernel32.dll", "LoadLibraryW", ::LoadLibraryW, Hijack::myLoadLibraryW }, \
-   { "kernel32.dll", "LoadLibraryExA", ::LoadLibraryExA, Hijack::myLoadLibraryExA }, \
-   { "kernel32.dll", "LoadLibraryExW", ::LoadLibraryExW, Hijack::myLoadLibraryExW }, \
-   { "user32.dll", "TrackPopupMenu", ::TrackPopupMenu, Hijack::myTrackPopupMenu }, \
-   { "user32.dll", "TrackPopupMenuEx", ::TrackPopupMenuEx, Hijack::myTrackPopupMenuEx }, \
-   { "gdi32.dll", "CreateFontA", ::CreateFontA, Hijack::myCreateFontA }, \
-   { "gdi32.dll", "CreateFontW", ::CreateFontW, Hijack::myCreateFontW }, \
-   { "gdi32.dll", "CreateFontIndirectA", ::CreateFontIndirectA, Hijack::myCreateFontIndirectA }, \
-   { "gdi32.dll", "CreateFontIndirectW", ::CreateFontIndirectW, Hijack::myCreateFontIndirectW }
-   //{ "gdi32.dll", "TextOutA", ::TextOutA, Hijack::myTextOutA }
-   //{ "kernel32.dll", "MultiByteToWideChar", ::MultiByteToWideChar, Hijack::myMultiByteToWideChar },
-   //{ "kernel32.dll", "WideCharToMultiByte", ::WideCharToMultiByte, Hijack::myWideCharToMultiByte },
+    { "kernel32.dll", "GetProcAddress", ::GetProcAddress, Hijack::myGetProcAddress } \
+  , { "kernel32.dll", "LoadLibraryA", ::LoadLibraryA, Hijack::myLoadLibraryA } \
+  , { "kernel32.dll", "LoadLibraryW", ::LoadLibraryW, Hijack::myLoadLibraryW } \
+  , { "kernel32.dll", "LoadLibraryExA", ::LoadLibraryExA, Hijack::myLoadLibraryExA } \
+  , { "kernel32.dll", "LoadLibraryExW", ::LoadLibraryExW, Hijack::myLoadLibraryExW } \
+  , { "user32.dll", "TrackPopupMenu", ::TrackPopupMenu, Hijack::myTrackPopupMenu } \
+  , { "user32.dll", "TrackPopupMenuEx", ::TrackPopupMenuEx, Hijack::myTrackPopupMenuEx } \
+  , { "gdi32.dll", "CreateFontA", ::CreateFontA, Hijack::myCreateFontA } \
+  , { "gdi32.dll", "CreateFontW", ::CreateFontW, Hijack::myCreateFontW } \
+  , { "gdi32.dll", "CreateFontIndirectA", ::CreateFontIndirectA, Hijack::myCreateFontIndirectA } \
+  , { "gdi32.dll", "CreateFontIndirectW", ::CreateFontIndirectW, Hijack::myCreateFontIndirectW }
+  //{ "gdi32.dll", "TextOutA", ::TextOutA, Hijack::myTextOutA }
+  //{ "kernel32.dll", "MultiByteToWideChar", ::MultiByteToWideChar, Hijack::myMultiByteToWideChar }
+  //{ "kernel32.dll", "WideCharToMultiByte", ::WideCharToMultiByte, Hijack::myWideCharToMultiByte }
 
 namespace Hijack {
 

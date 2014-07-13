@@ -46,7 +46,7 @@ DWORD DetermineEngineByFile1()
   enum : DWORD { yes = 0, no = 1 }; // return value
   if (IthCheckFile(L"PPSSPPWindows.exe")) { // jichi 7/12/2014
     InsertPPSSPPHook();
-    InsertLstrHooks(); // always insert lstr functions for PPSSPP
+    //InsertLstrHooks(); // always insert lstr functions for PPSSPP
     return yes;
   }
   if (IthFindFile(L"*.xp3") || Util::SearchResourceString(L"TVP(KIRIKIRI)")) {

@@ -87,32 +87,18 @@ dword_t findEnclosingAlignedFunction(dword_t addr, dword_t searchSize = MaximumF
 
 /**
  *  Return the address of the first matched pattern.
- *  The same as ITH SearchPattern(). KMP is used.
- *  Return 0 if failed. The return result is ambiguous if the pattern address is 0.
- *
- *  @param  startAddress  search start address
- *  @param  range  search range
- *  @param  pattern  array of bytes to match
- *  @param  patternSize  size of the pattern array
- *  @return
- */
-dword_t searchPattern(dword_t startAddress, dword_t range, const void *pattern, dword_t patternSize);
-
-/**
- *  Return the address of the first matched pattern.
  *  Return 0 if failed. The return result is ambiguous if the pattern address is 0.
  *
  *  @param  pattern  array of bytes to match
  *  @param  patternSize  size of the pattern array
  *  @param  lowerBound  search start address
  *  @param  upperBound  search stop address
- *  @return
+ *  @return  absolute address
  */
-inline dword_t searchBytes(const void *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound)
-{ return searchPattern(lowerBound, upperBound - lowerBound, pattern, patternSize); }
+dword_t findBytes(const void *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound);
 
-//inline dword_t searchString(const char *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound);
-//{ return searchBytes(pattern, patternSize, lowerBound, upperBound); }
+//inline dword_t findString(const char *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound);
+//{ return findBytes(pattern, patternSize, lowerBound, upperBound); }
 
 #if 0 // not used
 

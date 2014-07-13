@@ -31,21 +31,101 @@ _mask:
   }
 }
 
+/**
+ *  Return the address of the first matched pattern.
+ *  The same as ITH SearchPattern(). KMP is used.
+ *  Return 0 if failed. The return result is ambiguous if the pattern address is 0.
+ *
+ *  @param  startAddress  search start address
+ *  @param  range  search range
+ *  @param  pattern  array of bytes to match
+ *  @param  patternSize  size of the pattern array
+ *  @return  relative offset from the startAddress
+ */
+DWORD searchPattern(DWORD base, DWORD base_length, LPCVOID search, DWORD search_length) // KMP
+{
+  __asm
+  {
+    mov eax,search_length
+alloc:
+    push 0
+    sub eax,1
+    jnz alloc
+
+    mov edi,search
+    mov edx,search_length
+    mov ecx,1
+    xor esi,esi
+build_table:
+    mov al,byte ptr [edi+esi]
+    cmp al,byte ptr [edi+ecx]
+    sete al
+    test esi,esi
+    jz pre
+    test al,al
+    jnz pre
+    mov esi,[esp+esi*4-4]
+    jmp build_table
+pre:
+    test al,al
+    jz write_table
+    inc esi
+write_table:
+    mov [esp+ecx*4],esi
+
+    inc ecx
+    cmp ecx,edx
+    jb build_table
+
+    mov esi,base
+    xor edx,edx
+    mov ecx,edx
+matcher:
+    mov al,byte ptr [edi+ecx]
+    cmp al,byte ptr [esi+edx]
+    sete al
+    test ecx,ecx
+    jz match
+    test al,al
+    jnz match
+    mov ecx, [esp+ecx*4-4]
+    jmp matcher
+match:
+    test al,al
+    jz pre2
+    inc ecx
+    cmp ecx,search_length
+    je finish
+pre2:
+    inc edx
+    cmp edx,base_length // search_length
+    jb matcher
+    mov edx,search_length
+    dec edx
+finish:
+    mov ecx,search_length
+    sub edx,ecx
+    lea eax,[edx+1]
+    lea ecx,[ecx*4]
+    add esp,ecx
+  }
+}
+
 // Modified from ITH findCallOrJmpAbs
 enum : WORD {
   word_jmp = 0x25ff
   , word_call = 0x15ff // far call
 };
 /***
- *  Return the absolute  address of op. Op takes 1 parameter.
+ *  Return the absolute address of op. Op takes 1 parameter.
  *
  *  @param  op  first half of the operator
- *  @param  arg1  the encoded operand
+ *  @param  arg1  the function address
  *  @param  start address
  *  @param  search range
  *  @return  absolute address or 0
  */
-DWORD findWordOp1(WORD op, DWORD arg1, DWORD start, DWORD size)
+DWORD findWordCall(WORD op, DWORD arg1, DWORD start, DWORD size)
 {
   typedef WORD optype;
   typedef DWORD argtype;
@@ -70,16 +150,17 @@ enum : BYTE {
   , byte_push_small = 0x6a // push byte operand
   , byte_push_large = 0x68 // push operand > 0xff
 };
+
 /***
- *  Return the absolute  address of op. Op takes 1 parameter.
+ *  Return the absolute address of op. Op takes 1 address parameter.
  *
  *  @param  op  first half of the operator
- *  @param  arg1  the encoded operand
+ *  @param  arg1  the function address
  *  @param  start address
  *  @param  search range
  *  @return  absolute address or 0
  */
-DWORD findByteOp1(BYTE op, DWORD arg1, DWORD start, DWORD size)
+DWORD findByteCall(BYTE op, DWORD arg1, DWORD start, DWORD size)
 {
   typedef BYTE optype;
   typedef DWORD argtype;
@@ -98,24 +179,59 @@ DWORD findByteOp1(BYTE op, DWORD arg1, DWORD start, DWORD size)
   return 0;
 }
 
+/***
+ *  Return the absolute address of op. Op takes 1 parameter.
+ *
+ *  @param  op  first half of the operator
+ *  @param  arg1  the first operand
+ *  @param  start address
+ *  @param  search range
+ *  @return  absolute address or 0
+ */
+//DWORD findByteOp1(BYTE op, DWORD arg1, DWORD start, DWORD size)
+//{
+//  typedef BYTE optype;
+//  typedef DWORD argtype;
+//
+//  enum { START = 0x1000 }; // leading size to skip
+//  for (DWORD i = START; i < size - sizeof(argtype); i++)
+//    if (op == *(optype *)(start + i)) {
+//      DWORD t = *(DWORD *)(start + i + sizeof(optype));
+//      if (t == arg1) {
+//        return start + i;
+//      else
+//        i += sizeof(optype) + sizeof(argtype) - 1; // == 4
+//      }
+//    }
+//  return 0;
+//}
+
 } // namespace unnamed
 
 MEMDBG_BEGIN_NAMESPACE
 
 DWORD findJumpAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound)
-{ return findWordOp1(word_jmp, funcAddr, lowerBound, upperBound - lowerBound); }
+{ return findWordCall(word_jmp, funcAddr, lowerBound, upperBound - lowerBound); }
 
 DWORD findFarCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound)
-{ return findWordOp1(word_call, funcAddr, lowerBound, upperBound - lowerBound); }
+{ return findWordCall(word_call, funcAddr, lowerBound, upperBound - lowerBound); }
 
 DWORD findNearCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound)
-{ return findByteOp1(byte_call, funcAddr, lowerBound, upperBound - lowerBound); }
+{ return findByteCall(byte_call, funcAddr, lowerBound, upperBound - lowerBound); }
 
 DWORD findPushDwordAddress(DWORD value, DWORD lowerBound, DWORD upperBound)
-{ return findByteOp1(byte_push_large, value, lowerBound, upperBound - lowerBound); }
+{
+  //value = _byteswap_ulong(value); // swap to bigendian
+  const BYTE *p = (BYTE *)&value;
+  const BYTE bytes[] = {byte_push_large, p[0], p[1], p[2], p[3]};
+  return findBytes(bytes, sizeof(bytes), lowerBound, upperBound);
+}
 
 DWORD findPushByteAddress(BYTE value, DWORD lowerBound, DWORD upperBound)
-{ return findByteOp1(byte_push_small, value, lowerBound, upperBound - lowerBound); }
+{
+  const BYTE bytes[] = {byte_push_small, value};
+  return findBytes(bytes, sizeof(bytes), lowerBound, upperBound);
+}
 
 DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength)
 {
@@ -220,73 +336,10 @@ DWORD findEnclosingAlignedFunction(DWORD start, DWORD back_range)
   return 0;
 }
 
-DWORD searchPattern(DWORD base, DWORD base_length, LPCVOID search, DWORD search_length) // KMP
+DWORD findBytes(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound)
 {
-  __asm
-  {
-    mov eax,search_length
-alloc:
-    push 0
-    sub eax,1
-    jnz alloc
-
-    mov edi,search
-    mov edx,search_length
-    mov ecx,1
-    xor esi,esi
-build_table:
-    mov al,byte ptr [edi+esi]
-    cmp al,byte ptr [edi+ecx]
-    sete al
-    test esi,esi
-    jz pre
-    test al,al
-    jnz pre
-    mov esi,[esp+esi*4-4]
-    jmp build_table
-pre:
-    test al,al
-    jz write_table
-    inc esi
-write_table:
-    mov [esp+ecx*4],esi
-
-    inc ecx
-    cmp ecx,edx
-    jb build_table
-
-    mov esi,base
-    xor edx,edx
-    mov ecx,edx
-matcher:
-    mov al,byte ptr [edi+ecx]
-    cmp al,byte ptr [esi+edx]
-    sete al
-    test ecx,ecx
-    jz match
-    test al,al
-    jnz match
-    mov ecx, [esp+ecx*4-4]
-    jmp matcher
-match:
-    test al,al
-    jz pre2
-    inc ecx
-    cmp ecx,search_length
-    je finish
-pre2:
-    inc edx
-    cmp edx,base_length // search_length
-    jb matcher
-    mov edx,search_length
-    dec edx
-finish:
-    mov ecx,search_length
-    sub edx,ecx
-    lea eax,[edx+1]
-    lea ecx,[ecx*4]
-    add esp,ecx
-  }
+  DWORD reladdr = searchPattern(lowerBound, upperBound - lowerBound, pattern, patternSize);
+  return reladdr ? lowerBound + reladdr : 0;
 }
 
 #if 0 // disabled
