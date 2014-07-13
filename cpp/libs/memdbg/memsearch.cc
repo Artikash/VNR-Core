@@ -12,7 +12,7 @@ enum : BYTE { byte_int3 = 0xcc };
 enum : WORD { word_2int3 = 0xcccc };
 
 // jichi 4/19/2014: Return the integer that can mask the signature
-DWORD SigMask(DWORD sig)
+DWORD sigMask(DWORD sig)
 {
   __asm
   {
@@ -84,6 +84,93 @@ matcher:
     mov al,byte ptr [edi+ecx]
     cmp al,byte ptr [esi+edx]
     sete al
+    test ecx,ecx
+    jz match
+    test al,al
+    jnz match
+    mov ecx, [esp+ecx*4-4]
+    jmp matcher
+match:
+    test al,al
+    jz pre2
+    inc ecx
+    cmp ecx,search_length
+    je finish
+pre2:
+    inc edx
+    cmp edx,base_length // search_length
+    jb matcher
+    mov edx,search_length
+    dec edx
+finish:
+    mov ecx,search_length
+    sub edx,ecx
+    lea eax,[edx+1]
+    lea ecx,[ecx*4]
+    add esp,ecx
+  }
+}
+
+/**
+ * jichi 2/5/2014: The same as SearchPattern except it uses 0xff to match everything
+ * According to @Andys, 0xff seldom appears in the source code: http://sakuradite.com/topic/124
+ */
+DWORD searchPatternEx(DWORD base, DWORD base_length, LPCVOID search, DWORD search_length, BYTE wildcard) // KMP
+{
+  __asm
+  {
+    // jichi 2/5/2014 BEGIN
+    mov bl,wildcard
+    // jichi 2/5/2014 END
+    mov eax,search_length
+alloc:
+    push 0
+    sub eax,1
+    jnz alloc // jichi 2/5/2014: this will also set %eax to zero
+
+    mov edi,search
+    mov edx,search_length
+    mov ecx,1
+    xor esi,esi
+build_table:
+    mov al,byte ptr [edi+esi]
+    cmp al,byte ptr [edi+ecx]
+    sete al
+    test esi,esi
+    jz pre
+    test al,al
+    jnz pre
+    mov esi,[esp+esi*4-4]
+    jmp build_table
+pre:
+    test al,al
+    jz write_table
+    inc esi
+write_table:
+    mov [esp+ecx*4],esi
+
+    inc ecx
+    cmp ecx,edx
+    jb build_table
+
+    mov esi,base
+    xor edx,edx
+    mov ecx,edx
+matcher:
+    mov al,byte ptr [edi+ecx] // search
+    // jichi 2/5/2014 BEGIN
+    mov bh,al // save loaded byte to reduce cache access. %ah is not used and always zero
+    cmp al,bl // %bl is the wildcard byte
+    sete al
+    test al,al
+    jnz wildcard_matched
+    mov al,bh // restore the loaded byte
+    // jichi 2/5/2014 END
+    cmp al,byte ptr [esi+edx] // base
+    sete al
+    // jichi 2/5/2014 BEGIN
+wildcard_matched:
+    // jichi 2/5/2014 END
     test ecx,ecx
     jz match
     test al,al
@@ -240,7 +327,7 @@ DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upper
   const DWORD size = upperBound - lowerBound - PatternSize;
   const DWORD fun = (DWORD)funcAddr;
   //WCHAR str[0x40];
-  const DWORD mask = SigMask(sig);
+  const DWORD mask = sigMask(sig);
   for (DWORD i = Start; i < size; i++)
     if (*(WORD *)(lowerBound + i) == 0x15ff) {
       DWORD t = *(DWORD *)(lowerBound + i + 2);
@@ -269,7 +356,7 @@ DWORD findLastCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD u
   const DWORD fun = (DWORD)funcAddr;
   //WCHAR str[0x40];
   DWORD ret = 0;
-  const DWORD mask = SigMask(sig);
+  const DWORD mask = sigMask(sig);
   for (DWORD i = Start; i < size; i++)
     if (*(WORD *)(lowerBound + i) == 0x15ff) {
       DWORD t = *(DWORD *)(lowerBound + i + 2);
@@ -342,8 +429,22 @@ DWORD findBytes(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD 
   return reladdr ? lowerBound + reladdr : 0;
 }
 
+DWORD findBytesWithWildcard(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, BYTE wildcard)
+{
+  DWORD reladdr = searchPatternEx(lowerBound, upperBound - lowerBound, pattern, patternSize, wildcard);
+  return reladdr ? lowerBound + reladdr : 0;
+}
+
+MEMDBG_END_NAMESPACE
+
+// EOF
+
 #if 0 // disabled
 
+/**
+ *  Search from stopAddres back to startAddress - range
+ *  This function is not well debugged
+ */
 DWORD reverseSearchPattern(DWORD base, DWORD base_length, LPCVOID search, DWORD search_length) // KMP
 {
   __asm
@@ -413,93 +514,5 @@ finish:
   }
 }
 
-// jichi 2/5/2014: '?' = 0xff
-// See: http://sakuradite.com/topic/124
-DWORD searchPatternEx(DWORD base, DWORD base_length, LPCVOID search, DWORD search_length, BYTE wildcard) // KMP
-{
-  __asm
-  {
-    // jichi 2/5/2014 BEGIN
-    mov bl,wildcard
-    // jichi 2/5/2014 END
-    mov eax,search_length
-alloc:
-    push 0
-    sub eax,1
-    jnz alloc // jichi 2/5/2014: this will also set %eax to zero
-
-    mov edi,search
-    mov edx,search_length
-    mov ecx,1
-    xor esi,esi
-build_table:
-    mov al,byte ptr [edi+esi]
-    cmp al,byte ptr [edi+ecx]
-    sete al
-    test esi,esi
-    jz pre
-    test al,al
-    jnz pre
-    mov esi,[esp+esi*4-4]
-    jmp build_table
-pre:
-    test al,al
-    jz write_table
-    inc esi
-write_table:
-    mov [esp+ecx*4],esi
-
-    inc ecx
-    cmp ecx,edx
-    jb build_table
-
-    mov esi,base
-    xor edx,edx
-    mov ecx,edx
-matcher:
-    mov al,byte ptr [edi+ecx] // search
-    // jichi 2/5/2014 BEGIN
-    mov bh,al // save loaded byte to reduce cache access. %ah is not used and always zero
-    cmp al,bl // %bl is the wildcard byte
-    sete al
-    test al,al
-    jnz wildcard_matched
-    mov al,bh // restore the loaded byte
-    // jichi 2/5/2014 END
-    cmp al,byte ptr [esi+edx] // base
-    sete al
-    // jichi 2/5/2014 BEGIN
-wildcard_matched:
-    // jichi 2/5/2014 END
-    test ecx,ecx
-    jz match
-    test al,al
-    jnz match
-    mov ecx, [esp+ecx*4-4]
-    jmp matcher
-match:
-    test al,al
-    jz pre2
-    inc ecx
-    cmp ecx,search_length
-    je finish
-pre2:
-    inc edx
-    cmp edx,base_length // search_length
-    jb matcher
-    mov edx,search_length
-    dec edx
-finish:
-    mov ecx,search_length
-    sub edx,ecx
-    lea eax,[edx+1]
-    lea ecx,[ecx*4]
-    add esp,ecx
-  }
-}
-
 #endif // 0, disabled
 
-MEMDBG_END_NAMESPACE
-
-// EOF
