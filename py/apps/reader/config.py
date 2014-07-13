@@ -150,7 +150,7 @@ APP_SAVE_SETTINGS_INTERVAL = parse_int(_APP['saveSettingsInterval'])
 APP_UPDATE_COMMENTS_INTERVAL = parse_int(_APP['updateCommentsInterval'])
 APP_UPDATE_REFS_INTERVAL = parse_int(_APP['updateRefsInterval'])
 APP_UPDATE_TERMS_INTERVAL = parse_int(_APP['updateTermsInterval'])
-APP_UPDATE_DIGESTS_INTERVAL = parse_int(_APP['updateDigestsInterval'])
+APP_UPDATE_GAMES_INTERVAL = parse_int(_APP['updateGamesInterval'])
 
 APP_SOCKET_TYPE = _APP['socketType'] # str
 APP_SOCKET_NAME = _APP['socketName'] # str
