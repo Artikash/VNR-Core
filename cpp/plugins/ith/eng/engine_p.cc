@@ -5540,9 +5540,9 @@ bool InsertNeXASHook()
  */
 namespace { // unnamed
 
-struct FunctionInfo
+struct PPSSPPFunction
 {
-  const wchar_t *hookName; // function name, for debug only
+  const wchar_t *hookName; // hook name
   size_t argIndex;      // argument index
   ULONG hookType;       // hook parameter type
   const char *pattern;  // debug string used within the function
@@ -5588,9 +5588,9 @@ bool InsertPPSSPPHook()
   HookParam hp = {};
   hp.length_offset = 1; // determine string length at runtime
 
-  const FunctionInfo l[] = { PPSSPP_FUNCTIONS_INITIALIZER };
-  enum { FunctionInfoCount = sizeof(l)/sizeof(*l) };
-  for (size_t i = 0; i < FunctionInfoCount; i++) {
+  const PPSSPPFunction l[] = { PPSSPP_FUNCTIONS_INITIALIZER };
+  enum { FunctionCount = sizeof(l)/sizeof(*l) };
+  for (size_t i = 0; i < FunctionCount; i++) {
     const auto &it = l[i];
     ULONG addr = MemDbg::findBytes(it.pattern, ::strlen(it.pattern), startAddress, stopAddress);
     if (addr = MemDbg::findPushAddress(addr, startAddress, stopAddress))
