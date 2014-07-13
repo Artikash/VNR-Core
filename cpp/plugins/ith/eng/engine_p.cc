@@ -5612,7 +5612,7 @@ bool InsertPPSSPPHook()
   return true;
 }
 
-#if 0 // jichi 7/14/2014: disabled as ITH is not allowd to inject to JIT code region?
+#if 0 // jichi 7/14/2014: disabled as ITH is not allowed to inject to JIT code region?
 
 static void SpecialHookShadePSP(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
