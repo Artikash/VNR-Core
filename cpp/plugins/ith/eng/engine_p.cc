@@ -740,7 +740,7 @@ bool InsertMajiroHook()
   // jichi 7/12/2014: Change to accurate memory ranges
   ULONG startAddress,
         stopAddress;
-  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurage stopAddress
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:Majiro: failed to get memory range");
     return false;
   }
@@ -784,7 +784,7 @@ bool InsertCMVS1Hook()
   // jichi 7/12/2014: Change to accurate memory ranges
   ULONG startAddress,
         stopAddress;
-  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurage stopAddress
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:CMVS1: failed to get memory range");
     return false;
   }
@@ -1725,7 +1725,7 @@ bool InsertCotophaHook()
   // jichi 7/12/2014: Change to accurate memory ranges
   ULONG startAddress,
         stopAddress;
-  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurage stopAddress
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:Cotopha: failed to get memory range");
     return false;
   }
@@ -1768,7 +1768,7 @@ bool InsertCatSystem2Hook()
   // jichi 7/12/2014: Change to accurate memory ranges
   ULONG startAddress,
         stopAddress;
-  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurage stopAddress
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:CatSystem2: failed to get memory range");
     return false;
   }
@@ -5081,7 +5081,7 @@ bool InsertEushullyHook()
 {
   ULONG startAddress,
         stopAddress;
-  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurage stopAddress
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:Eushully: failed to get memory range");
     return false;
   }
@@ -5585,7 +5585,7 @@ bool InsertPPSSPPHook()
   ConsoleOutput("vnreng: PPSSPP: enter");
   ULONG startAddress,
         stopAddress;
-  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurage stopAddress
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:PPSSPP: failed to get memory range");
     return false;
   }
