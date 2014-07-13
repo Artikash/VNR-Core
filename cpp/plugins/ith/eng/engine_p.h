@@ -19,6 +19,8 @@ extern trigger_fun_t trigger_fun_;
 
 // Engine-specific hooks
 
+bool InsertPPSSPPHook();        // PPSSPPWindows
+
 bool InsertAbelHook();          // Abel
 bool InsertAdobeAirHook();      // Adobe AIR
 bool InsertAliceHook();         // System40@AliceSoft; do not work for latest alice games

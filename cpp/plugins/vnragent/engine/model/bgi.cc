@@ -193,8 +193,8 @@ static ulong searchBGI1(ulong startAddress, ulong stopAddress)
      0x85,0xff,        // 004208ef  |. 85ff           test edi,edi
   };
   //enum { hook_offset = 0x4207e0 - 0x4208de }; // distance to the beginning of the function
-  ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
-  ulong reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
+  //ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+  ulong reladdr = MemDbg::searchBytes(ins, sizeof(ins), startAddress, stopAddress);
   if (!reladdr)
     //ConsoleOutput("vnreng:BGI2: pattern not found");
     return 0;
@@ -316,8 +316,8 @@ static ulong searchBGI2(ulong startAddress, ulong stopAddress)
     0x77, 0x6a       // 011d4d3e  |. 77 6a          ja short sekachu.011d4daa
   };
   enum { hook_offset = 0x34c80 - 0x34d31 }; // distance to the beginning of the function
-  ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
-  ulong reladdr = MemDbg::searchPattern(startAddress, range, ins, sizeof(ins));
+  //ulong range = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+  ulong reladdr = MemDbg::searchBytes(ins, sizeof(ins), startAddress, stopAddress);
   if (!reladdr)
     //ConsoleOutput("vnreng:BGI2: pattern not found");
     return 0;

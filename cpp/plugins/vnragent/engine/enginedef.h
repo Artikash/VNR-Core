@@ -17,7 +17,7 @@ enum {
 };
 
 // Emperical maximum memory range of an application
-enum { MaximumMemoryRange = 0x300000 };
+//enum { MaximumMemoryRange = 0x300000 };
 
 } // namespace Engine
 

@@ -5059,10 +5059,10 @@ bool InsertEushullyHook()
   // );
   enum stack { // current stack
     retaddr = 0x0 // esp[0] is the return address since this is the beginning of the function
-    , arg1_hdc = 0x4,
-    , arg2_lpString = 0x8,
-    , arg3_lc = 0x8,
-    , arg4_lpSize = 0xc,
+    , arg1_hdc = 0x4
+    , arg2_lpString = 0x8
+    , arg3_lc = 0x8
+    , arg4_lpSize = 0xc
   };
 
   HookParam hp = {};
@@ -5422,7 +5422,7 @@ bool InsertNeXASHook()
   //   _In_   const MAT2 *lpmat2
   // );
   enum stack { // current stack
-    arg1_hdc = 0x0, // Since there is invoked before function call, esp[0] is arg[0] instead of the return address.
+    arg1_hdc = 0x0 // Since there is invoked before function call, esp[0] is arg[0] instead of the return address.
     , arg2_uChar = 0x4
     , arg3_uFormat = 0x8
     , arg4_lpgm = 0xc
@@ -5445,6 +5445,63 @@ bool InsertNeXASHook()
   NewHook(hp, L"NeXAS");
   return true;
 }
+
+/** jichi 7/12/2014 PPSSPP
+ *  Tested with PPSSPP 0.9.8.
+ *
+ *  Core/HLE (High Level Emulator)
+ *  - sceCcc
+ *    #void sceCccSetTable(u32 jis2ucs, u32 ucs2jis)
+ *    int sceCccUTF8toUTF16(u32 dstAddr, u32 dstSize, u32 srcAddr)
+ *    int sceCccUTF8toSJIS(u32 dstAddr, u32 dstSize, u32 srcAddr)
+ *    int sceCccUTF16toUTF8(u32 dstAddr, u32 dstSize, u32 srcAddr)
+ *    int sceCccUTF16toSJIS(u32 dstAddr, u32 dstSize, u32 srcAddr)
+ *    int sceCccSJIStoUTF8(u32 dstAddr, u32 dstSize, u32 srcAddr)
+ *    int sceCccSJIStoUTF16(u32 dstAddr, u32 dstSize, u32 srcAddr)
+ *    int sceCccStrlenUTF8(u32 strAddr)
+ *    int sceCccStrlenUTF16(u32 strAddr)
+ *    int sceCccStrlenSJIS(u32 strAddr)
+ *    u32 sceCccEncodeUTF8(u32 dstAddrAddr, u32 ucs)
+ *    void sceCccEncodeUTF16(u32 dstAddrAddr, u32 ucs)
+ *    u32 sceCccEncodeSJIS(u32 dstAddrAddr, u32 jis)
+ *    u32 sceCccDecodeUTF8(u32 dstAddrAddr)
+ *    u32 sceCccDecodeUTF16(u32 dstAddrAddr)
+ *    u32 sceCccDecodeSJIS(u32 dstAddrAddr)
+ *    int sceCccIsValidUTF8(u32 c)
+ *    int sceCccIsValidUTF16(u32 c)
+ *    int sceCccIsValidSJIS(u32 c)
+ *    int sceCccIsValidUCS2(u32 c)
+ *    int sceCccIsValidUCS4(u32 c)
+ *    int sceCccIsValidJIS(u32 c)
+ *    int sceCccIsValidUnicode(u32 c)
+ *    #u32 sceCccSetErrorCharUTF8(u32 c)
+ *    #u32 sceCccSetErrorCharUTF16(u32 c)
+ *    #u32 sceCccSetErrorCharSJIS(u32 c)
+ *    u32 sceCccUCStoJIS(u32 c, u32 alt)
+ *    u32 sceCccJIStoUCS(u32 c, u32 alt)
+ *  - sceFont: search charCode
+ *    int sceFontGetCharInfo(u32 fontHandle, u32 charCode, u32 charInfoPtr)
+ *    int sceFontGetShadowInfo(u32 fontHandle, u32 charCode, u32 charInfoPtr)
+ *    int sceFontGetCharImageRect(u32 fontHandle, u32 charCode, u32 charRectPtr)
+ *    int sceFontGetShadowImageRect(u32 fontHandle, u32 charCode, u32 charRectPtr)
+ *    int sceFontGetCharGlyphImage(u32 fontHandle, u32 charCode, u32 glyphImagePtr)
+ *    int sceFontGetCharGlyphImage_Clip(u32 fontHandle, u32 charCode, u32 glyphImagePtr, int clipXPos, int clipYPos, int clipWidth, int clipHeight)
+ *    int sceFontSetAltCharacterCode(u32 fontLibHandle, u32 charCode)
+ *    int sceFontGetShadowGlyphImage(u32 fontHandle, u32 charCode, u32 glyphImagePtr)
+ *    int sceFontGetShadowGlyphImage_Clip(u32 fontHandle, u32 charCode, u32 glyphImagePtr, int clipXPos, int clipYPos, int clipWidth, int clipHeight)
+ *  - sceKernelInterrupt
+ *    u32 sysclib_strcat(u32 dst, u32 src)
+ *    int sysclib_strcmp(u32 dst, u32 src)
+ *    u32 sysclib_strcpy(u32 dst, u32 src)
+ *    u32 sysclib_strlen(u32 src)
+ */
+bool InsertPPSSPPHook()
+{
+  ConsoleOutput("vnreng: PPSSPP: enter");
+  ConsoleOutput("vnreng: PPSSPP: leave");
+  return true;
+}
+
 
 #if 0
 

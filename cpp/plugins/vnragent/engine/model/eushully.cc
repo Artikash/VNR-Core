@@ -303,8 +303,8 @@ static DWORD searchEushully(DWORD startAddress, DWORD stopAddress)
     0x75,0x4b  // 013baf34  |. 75 4b      |jnz short siglusen.013baf81
   };
   //enum { hook_offset = 0 };
-  DWORD range1 = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
-  DWORD reladdr = MemDbg::searchPattern(startAddress, range1, ins1, sizeof(ins1));
+  //DWORD range1 = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
+  DWORD reladdr = MemDbg::searchBytes(ins1, sizeof(ins1), startAddress, stopAddress);
 
   if (!reladdr)
     //ConsoleOutput("vnreng:Siglus2: pattern not found");
@@ -315,9 +315,9 @@ static DWORD searchEushully(DWORD startAddress, DWORD stopAddress)
     0x8b,0xec, // 013bac71  |. 8bec     mov ebp,esp
     0x6a,0xff  // 013bac73  |. 6a ff    push -0x1
   };
-  enum { range2 = 0x300 }; // 0x013baf32  -0x013bac70 = 706 = 0x2c2
-  DWORD addr = startAddress + reladdr - range2;
-  reladdr = MemDbg::searchPattern(addr, range2, ins2, sizeof(ins2));
+  enum { range = 0x300 }; // 0x013baf32  -0x013bac70 = 706 = 0x2c2
+  DWORD addr = startAddress + reladdr - range;
+  reladdr = MemDbg::searchBytes(ins2, sizeof(ins2), addr, addr + range);
   if (!reladdr)
     //ConsoleOutput("vnreng:Siglus2: pattern not found");
     return 0;

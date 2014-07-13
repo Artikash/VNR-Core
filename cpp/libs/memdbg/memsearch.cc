@@ -31,18 +31,68 @@ _mask:
   }
 }
 
-// Copied from ITH
-DWORD findCallOrJmpAbs(DWORD fun, DWORD size, DWORD pt, bool jmp)
+// Modified from ITH findCallOrJmpAbs
+enum : WORD {
+  word_jmp = 0x25ff
+  , word_call = 0x15ff // far call
+};
+/***
+ *  Return the absolute  address of op. Op takes 1 parameter.
+ *
+ *  @param  op  first half of the operator
+ *  @param  arg1  the encoded operand
+ *  @param  start address
+ *  @param  search range
+ *  @return  absolute address or 0
+ */
+DWORD findWordOp1(WORD op, DWORD arg1, DWORD start, DWORD size)
 {
-  WORD sig = jmp ? 0x25ff : 0x15ff;
-  for (DWORD i = 0x1000; i < size - 4; i++)
-    if (sig == *(WORD *)(pt + i)) {
-      DWORD t = *(DWORD *)(pt + i + 2);
-      if (t > pt && t < pt + size) {
-        if (fun == *(DWORD *)t)
-          return pt + i;
+  typedef WORD optype;
+  typedef DWORD argtype;
+
+  enum { START = 0x1000 }; // leading size to skip
+  for (DWORD i = START; i < size - sizeof(argtype); i++)
+    if (op == *(optype *)(start + i)) {
+      DWORD t = *(DWORD *)(start + i + sizeof(optype));
+      if (t > start && t < start + size) {
+        if (arg1 == *(argtype *)t)
+          return start + i;
         else
-          i += 5;
+          i += sizeof(optype) + sizeof(argtype) - 1; // == 5
+      }
+    }
+  return 0;
+}
+
+// Modified from ITH findCallOrJmpAbs
+enum : BYTE {
+  byte_call = 0xe8 // near call
+  , byte_push_small = 0x6a // push byte operand
+  , byte_push_large = 0x68 // push operand > 0xff
+};
+/***
+ *  Return the absolute  address of op. Op takes 1 parameter.
+ *
+ *  @param  op  first half of the operator
+ *  @param  arg1  the encoded operand
+ *  @param  start address
+ *  @param  search range
+ *  @return  absolute address or 0
+ */
+DWORD findByteOp1(BYTE op, DWORD arg1, DWORD start, DWORD size)
+{
+  typedef BYTE optype;
+  typedef DWORD argtype;
+
+  enum { START = 0x1000 }; // leading size to skip
+  for (DWORD i = START; i < size - sizeof(argtype); i++)
+    if (op == *(optype *)(start + i)) {
+      DWORD t = *(DWORD *)(start + i + sizeof(optype));
+      if (t > start && t < start + size) {
+        if (arg1 == *(argtype *)t)
+          return start + i;
+        else
+          i += sizeof(optype) + sizeof(argtype) - 1; // == 4
       }
     }
   return 0;
@@ -52,11 +102,20 @@ DWORD findCallOrJmpAbs(DWORD fun, DWORD size, DWORD pt, bool jmp)
 
 MEMDBG_BEGIN_NAMESPACE
 
-DWORD findCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound)
-{ return findCallOrJmpAbs(funcAddr, upperBound - lowerBound, lowerBound, false); }
-
 DWORD findJumpAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound)
-{ return findCallOrJmpAbs(funcAddr, upperBound - lowerBound, lowerBound, true); }
+{ return findWordOp1(word_jmp, funcAddr, lowerBound, upperBound - lowerBound); }
+
+DWORD findFarCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound)
+{ return findWordOp1(word_call, funcAddr, lowerBound, upperBound - lowerBound); }
+
+DWORD findNearCallAddress(DWORD funcAddr, DWORD lowerBound, DWORD upperBound)
+{ return findByteOp1(byte_call, funcAddr, lowerBound, upperBound - lowerBound); }
+
+DWORD findPushDwordAddress(DWORD value, DWORD lowerBound, DWORD upperBound)
+{ return findByteOp1(byte_push_large, value, lowerBound, upperBound - lowerBound); }
+
+DWORD findPushByteAddress(BYTE value, DWORD lowerBound, DWORD upperBound)
+{ return findByteOp1(byte_push_small, value, lowerBound, upperBound - lowerBound); }
 
 DWORD findCallerAddress(DWORD funcAddr, DWORD sig, DWORD lowerBound, DWORD upperBound, DWORD reverseLength)
 {
