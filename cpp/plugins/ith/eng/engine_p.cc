@@ -400,7 +400,7 @@ bool InsertBGI1Hook()
  */
 bool InsertBGI2Hook()
 {
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
     0x3c, 0x20,      // 011d4d31  |. 3c 20          cmp al,0x20
     0x7d, 0x75,      // 011d4d33  |. 7d 75          jge short sekachu.011d4daa
     0x0f,0xbe,0xc0,  // 011d4d35  |. 0fbec0         movsx eax,al
@@ -410,7 +410,7 @@ bool InsertBGI2Hook()
   };
   enum { hook_offset = 0x34c80 - 0x34d31 }; // distance to the beginning of the function
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD(reladdr);
   if (!addr) {
     ConsoleOutput("vnreng:BGI2: pattern not found");
@@ -484,7 +484,7 @@ bool InsertBGI2Hook()
  */
 bool InsertBGI3Hook()
 {
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
     0x83,0xc4, 0x08,// 00e88e56  |. 83c4 08        add esp,0x8 ; hook here
     0x2b,0xc6,      // 00e88e59  |. 2bc6           sub eax,esi
     0xeb, 0x03,     // 00e88e5b  |. eb 03          jmp short bgi.00e88e60
@@ -502,7 +502,7 @@ bool InsertBGI3Hook()
   };
   //enum { hook_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //reladdr = 0x68e56;
   if (!addr) {
     ConsoleOutput("vnreng:BGI3: pattern not found");
@@ -603,21 +603,21 @@ void InsertRealliveHook()
  */
 bool InsertSiglus2Hook()
 {
-  //const BYTE ins[] = { // size = 14
+  //const BYTE bytes[] = { // size = 14
   //  0x01,0x53, 0x58,                // 0153 58          add dword ptr ds:[ebx+58],edx
   //  0x8b,0x95, 0x34,0xfd,0xff,0xff, // 8b95 34fdffff    mov edx,dword ptr ss:[ebp-2cc]
   //  0x8b,0x43, 0x58,                // 8b43 58          mov eax,dword ptr ds:[ebx+58]
   //  0x3b,0xd7                       // 3bd7             cmp edx,edi ; hook here
   //};
   //enum { cur_ins_size = 2 };
-  //enum { hook_offset = sizeof(ins) - cur_ins_size }; // = 14 - 2  = 12, current inst is the last one
-  const BYTE ins[] = {
+  //enum { hook_offset = sizeof(bytes) - cur_ins_size }; // = 14 - 2  = 12, current inst is the last one
+  const BYTE bytes[] = {
     0x3b,0xd7,  // cmp edx,edi ; hook here
     0x75,0x4b   // jnz short
   };
   //enum { hook_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   if (!addr) {
     ConsoleOutput("vnreng:Siglus2: pattern not found");
     //ConsoleOutput("Not SiglusEngine2");
@@ -629,9 +629,6 @@ bool InsertSiglus2Hook()
   hp.off = -0x20;
   hp.type = USING_UNICODE|FIXING_SPLIT; // jichi 6/1/2014: fixing the split value
   hp.length_offset = 1;
-
-  //index = SearchPattern(module_base_, size,ins, sizeof(ins));
-  //ITH_GROWL_DWORD2(base, index);
 
   ConsoleOutput("vnreng: INSERT Siglus2");
   NewHook(hp, L"SiglusEngine2");
@@ -660,10 +657,9 @@ static void SpecialHookSiglus(DWORD esp_base, HookParam* hp, DWORD* data, DWORD*
 // jichi: 8/17/2013: Change return type to bool
 bool InsertSiglus1Hook()
 {
-  //const BYTE ins[8]={0x33,0xC0,0x8B,0xF9,0x89,0x7C,0x24}; // jichi 8/18/2013: wrong count?
-  const BYTE ins[]={0x33,0xc0,0x8b,0xf9,0x89,0x7c,0x24};
+  const BYTE bytes[]={0x33,0xc0,0x8b,0xf9,0x89,0x7c,0x24};
   ULONG range = max(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   if (!addr) { // jichi 8/17/2013: Add "== 0" check to prevent breaking new games
     //ConsoleOutput("Unknown SiglusEngine");
     ConsoleOutput("vnreng:Siglus: pattern not found");
@@ -895,7 +891,7 @@ bool InsertCMVS2Hook()
 {
   // There are multiple functions satisfy the pattern below.
   // Hook to any one of them is OK.
-  const BYTE ins[] = {  // function begin
+  const BYTE bytes[] = {  // function begin
     0x55,               // 00448ff0  /$ 55             push ebp
     0x8b,0xec,          // 00448ff1  |. 8bec           mov ebp,esp
     0x83,0xec, 0x68,    // 00448ff3  |. 83ec 68        sub esp,0x68 ; jichi: hook here
@@ -910,7 +906,7 @@ bool InsertCMVS2Hook()
   };
   enum { hook_offset = 3 }; // offset from the beginning of the function
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   if (!addr) {
     ConsoleOutput("vnreng:CMVS2: pattern not found");
     return false;
@@ -1772,8 +1768,8 @@ bool InsertCatSystem2Hook()
     ConsoleOutput("vnreng:CatSystem2: failed to get memory range");
     return false;
   }
-  enum { ins = 0xff6acccc }; // jichi 7/12/2014: beginning of the function
-  ULONG addr = MemDbg::findCallerAddress((ULONG)::GetTextMetricsA, ins, startAddress, stopAddress);
+  enum { beg = 0xff6acccc }; // jichi 7/12/2014: beginning of the function
+  ULONG addr = MemDbg::findCallerAddress((ULONG)::GetTextMetricsA, beg, startAddress, stopAddress);
   if (!addr) {
     ConsoleOutput("vnreng:CatSystem2: pattern not exist");
     return false;
@@ -1792,20 +1788,19 @@ bool InsertCatSystem2Hook()
 
 bool InsertNitroPlusHook()
 {
-  // jichi 12/24/2013: The first byte could be changed
-  /*const*/ BYTE ins[] = {0xb0, 0x74, 0x53};
-  DWORD addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_limit_);
+  const BYTE bytes[] = {0xb0, 0x74, 0x53};
+  DWORD addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   if (!addr) {
     ConsoleOutput("vnreng:NitroPlus: pattern not exist");
     return false;
   }
   enum : WORD { sub_esp = 0xec83 }; // caller pattern: sub esp = 0x83,0xec
-  ins[0] = *(BYTE *)(addr+3)&3;
+  BYTE b = *(BYTE *)(addr + 3) & 3;
   while (*(WORD *)addr != sub_esp)
     addr--;
   HookParam hp = {};
   hp.addr = addr;
-  hp.off = -0x14+ (ins[0] << 2);
+  hp.off = -0x14+ (b << 2);
   hp.length_offset = 1;
   hp.type |= BIG_ENDIAN;
   ConsoleOutput("vnreng: INSERT NitroPlus");
@@ -1896,8 +1891,8 @@ void SpecialHookMalie(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, 
 
 bool InsertMalieHook2() // jichi 8/20/2013: Change return type to boolean
 {
-  const BYTE ins[] = {0x66,0x3d,0x1,0x0};
-  DWORD start = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_limit_);
+  const BYTE bytes[] = {0x66,0x3d,0x1,0x0};
+  DWORD start = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   if (!start) {
     ConsoleOutput("vnreng:MalieHook2: pattern not exist");
     return false;
@@ -1977,14 +1972,14 @@ bool InsertMalie2Hook()
   // 001a3df6    50              push eax
   // 001a3df7    0069 00         add byte ptr ds:[ecx],ch
   // 001a3dfa    0000            add byte ptr ds:[eax],al
-  const BYTE ins1[] = {
+  const BYTE bytes1[] = {
     0x40,            // inc eax
     0x89,0x56, 0x08, // mov dword ptr ds:[esi+0x8],edx
     0x33,0xd2,       // xor edx,edx
     0x89,0x46, 0x04  // mov dword ptr ds:[esi+0x4],eax
   };
   ULONG range1 = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins1, sizeof(ins1), module_base_, module_base_ + range1);
+  ULONG addr = MemDbg::findBytes(bytes1, sizeof(bytes1), module_base_, module_base_ + range1);
   //reladdr = 0x1a3df4;
   if (!addr) {
     //ITH_MSG(0, "Wrong1", "t", 0);
@@ -1993,11 +1988,11 @@ bool InsertMalie2Hook()
     return false;
   }
 
-  addr += sizeof(ins1); // skip ins1
-  //const BYTE ins2[] = { 0x85, 0xc0 }; // test eax,eax
-  const WORD ins2 = 0xc085; // test eax,eax
+  addr += sizeof(bytes1); // skip bytes1
+  //const BYTE bytes2[] = { 0x85, 0xc0 }; // test eax,eax
+  const WORD bytes2 = 0xc085; // test eax,eax
   enum { range2 = 0x200 };
-  addr = MemDbg::findBytes(&ins2, sizeof(ins2), addr, addr + range2);
+  addr = MemDbg::findBytes(&bytes2, sizeof(bytes2), addr, addr + range2);
   if (!addr) {
     //ConsoleOutput("Not malie2 engine");
     ConsoleOutput("vnreng:Malie2Hook: pattern q not exist");
@@ -2097,7 +2092,7 @@ void SpecialHookMalie3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split,
  */
 bool InsertMalie3Hook()
 {
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
     // 0x90 nop
     0x8b,0x44,0x24, 0x04,   // 5b51e0  mov eax,dword ptr ss:[esp+0x4]
     0x56,                   // 5b51e4  push esi
@@ -2109,7 +2104,7 @@ bool InsertMalie3Hook()
     0x42                    // 5b51f1  inc edx
   };
   enum {hook_offset = 0x5b51ed - 0x5b51e0};
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_limit_);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   if (!addr) {
     ConsoleOutput("vnreng:Malie3: pattern not found");
     return false;
@@ -2424,7 +2419,7 @@ namespace { // unnamed QLIE
  */
 bool InsertQLIE2Hook()
 {
-  const BYTE ins[] = { // size = 7
+  const BYTE bytes[] = { // size = 7
     0x55,           // 55       push ebp    ; hook here
     0x8b,0xec,      // 8bec     mov ebp, esp
     0x53,           // 53       push ebx
@@ -2432,7 +2427,7 @@ bool InsertQLIE2Hook()
   };
   //enum { hook_offset = 0 }; // current instruction is the first one
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   if (!addr) {
     ConsoleOutput("vnreng:QLIE2: pattern not found");
     //ConsoleOutput("Not QLIE2");
@@ -3219,9 +3214,9 @@ C4 hook: (Contributed by Stomp)
 ********************************************************************************************/
 bool InsertC4Hook()
 {
-  const BYTE ins[]={0x8a, 0x10, 0x40, 0x80, 0xfa, 0x5f, 0x88, 0x15};
+  const BYTE bytes[]={0x8a, 0x10, 0x40, 0x80, 0xfa, 0x5f, 0x88, 0x15};
   //enum { hook_offset = 0 };
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_limit_);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   if (!addr) {
     ConsoleOutput("vnreng:C4: pattern not found");
     return false;
@@ -3599,10 +3594,10 @@ _fin:
 } // unnamed namespace
 bool InsertAnex86Hook()
 {
-  const DWORD inst[] = {0x618ac033,0x0d418a0c}; // jichi 12/25/2013: Remove static keyword
+  const DWORD dwords[] = {0x618ac033,0x0d418a0c}; // jichi 12/25/2013: Remove static keyword
   for (DWORD i = module_base_ + 0x1000; i < module_limit_ - 8; i++)
-    if (*(DWORD *)i == inst[0])
-      if (*(DWORD *)(i + 4) == inst[1]) {
+    if (*(DWORD *)i == dwords[0])
+      if (*(DWORD *)(i + 4) == dwords[1]) {
         HookParam hp = {};
         hp.addr = i;
         hp.extern_fun = SpecialHookAnex86;
@@ -3654,12 +3649,12 @@ _no_text:
 }
 bool InsertShinyDaysHook()
 {
-  const BYTE ins[0x10] = {
+  const BYTE bytes[] = {
     0xff,0x83,0x70,0x03,0x00,0x00,0x33,0xf6,
     0xc6,0x84,0x24,0x90,0x02,0x00,0x00,0x02
   };
   LPVOID addr = (LPVOID)0x42ad94;
-  if (::memcmp(addr, ins, 0x10) != 0) {
+  if (::memcmp(addr, bytes, sizeof(bytes)) != 0) {
     ConsoleOutput("vnreng:ShinyDays: only work for 1.00");
     return false;
   }
@@ -3705,18 +3700,18 @@ bool InsertShinyDaysHook()
 bool InsertNextonHook()
 {
   // 0x8944241885c00f84
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
     //0xe8 //??,??,??,??,      00804147   e8 24d90100      call imoutoba.00821a70
     0x89,0x44,0x24, 0x18,   // 0080414c   894424 18        mov dword ptr ss:[esp+0x18],eax; hook here
     0x85,0xc0,              // 00804150   85c0             test eax,eax
     0x0f,0x84               // 00804152  ^0f84 c0feffff    je imoutoba.00804018
   };
   //enum { hook_offset = 0 };
-  ULONG addr = module_base_; //- sizeof(ins);
+  ULONG addr = module_base_; //- sizeof(bytes);
   do {
-    addr += sizeof(ins); // ++ so that each time return diff address
+    addr += sizeof(bytes); // ++ so that each time return diff address
     ULONG range = min(module_limit_ - addr, MAX_REL_ADDR);
-    addr = MemDbg::findBytes(ins, sizeof(ins), addr, addr + range);
+    addr = MemDbg::findBytes(bytes, sizeof(bytes), addr, addr + range);
     if (!addr) {
       ConsoleOutput("vnreng:NEXTON: pattern not exist");
       return false;
@@ -3777,13 +3772,13 @@ bool InsertNextonHook()
  */
 bool InsertGesen18Hook()
 {
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
     0x2b,0xce,  // sub ecx,esi ; hook here
     0x8b,0xf8   // mov eds,eax
   };
   //enum { hook_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   if (!addr) {
     ConsoleOutput("vnreng:Gesen18: pattern not exist");
     return false;
@@ -3864,7 +3859,7 @@ bool InsertGesen18Hook()
  */
 bool InsertArtemisHook()
 {
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
     0x83,0xc4, 0x0c, // add esp,0xc ; hook here
     0x0f,0xb6,0xc0,  // movzx eax,al
     0x85,0xc0,       // test eax,eax
@@ -3872,7 +3867,7 @@ bool InsertArtemisHook()
   };
   //enum { hook_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD3(reladdr, module_base_, range);
   if (!addr) {
     ConsoleOutput("vnreng:Artemis: pattern not exist");
@@ -4025,7 +4020,7 @@ bool InsertArtemisHook()
  */
 bool InsertTaskforce2Hook()
 {
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
     0x88,0x02,  // 005948de  |. 8802           |mov byte ptr ds:[edx],al
     0x42,       // 005948e0  |. 42             |inc edx
     0x46,       // 005948e1  |. 46             |inc esi
@@ -4035,9 +4030,9 @@ bool InsertTaskforce2Hook()
     0x75, 0xf3, // 005948e7  |.^75 f3          \jnz short taskforc.005948dc
     0x3b,0xfb   // 005948e9  |> 3bfb           cmp edi,ebx ; jichi: hook here
   };
-  enum { hook_offset = sizeof(ins) - 2 };
+  enum { hook_offset = sizeof(bytes) - 2 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD3(reladdr, module_base_, range);
   if (!addr) {
     ConsoleOutput("vnreng:Taskforce2: pattern not exist");
@@ -4184,11 +4179,11 @@ namespace { // unnamed Rejet
  *    01113578     68 dc6a5401    push kengakim.01546adc
  *    0111357d     e8 3eaff6ff    call kengakim.0107e4c0    ; hook here
  */
-bool FindRejetHook(LPCVOID ins, DWORD ins_size, DWORD ins_off, DWORD hp_off, LPCWSTR hp_name = L"Rejet")
+bool FindRejetHook(LPCVOID pattern, DWORD pattern_size, DWORD hook_off, DWORD hp_off, LPCWSTR hp_name = L"Rejet")
 {
   // Offset to the function call from the beginning of the function
   //enum { hook_offset = 0x21 }; // Type1: hex(0x01185332-0x01185311)
-  //const BYTE ins[] = {    // Type1: Function start
+  //const BYTE pattern[] = {    // Type1: Function start
   //  0xff,0xf0,      // 01185311   . fff0           push eax  ; beginning of a new function
   //  0x0f,0xc1,0x11, // 01185313   . 0fc111         xadd dword ptr ds:[ecx],edx
   //  0x4a,           // 01185316   . 4a             dec edx
@@ -4196,18 +4191,18 @@ bool FindRejetHook(LPCVOID ins, DWORD ins_size, DWORD ins_off, DWORD hp_off, LPC
   //  0x0f,0x8f       // 01185319   . 0f8f 45020000  jg DotKares.01185564
   //};
   //ITH_GROWL_DWORD(module_base_);
-  ULONG addr = module_base_; //- sizeof(ins);
+  ULONG addr = module_base_; //- sizeof(pattern);
   do {
-    //addr += sizeof(ins_size); // ++ so that each time return diff address
+    //addr += sizeof(pattern); // ++ so that each time return diff address
     ULONG range = min(module_limit_ - addr, MAX_REL_ADDR);
-    addr = MemDbg::findBytes(ins, ins_size, addr, addr + range);
+    addr = MemDbg::findBytes(pattern, pattern_size, addr, addr + range);
     if (!addr) {
       //ITH_MSG(L"failed");
       ConsoleOutput("vnreng:Rejet: pattern not found");
       return false;
     }
 
-    addr += ins_off;
+    addr += hook_off;
     //ITH_GROWL_DWORD(addr);
     //ITH_GROWL_DWORD(*(DWORD *)(addr-3));
     //const BYTE hook_ins[] = {
@@ -4230,7 +4225,7 @@ bool FindRejetHook(LPCVOID ins, DWORD ins_size, DWORD ins_off, DWORD hp_off, LPC
 }
 bool InsertRejetHook1() // This type of hook has varied hook address
 {
-  const BYTE ins[] = {  // Type1: Function start
+  const BYTE bytes[] = {  // Type1: Function start
     0xff,0xf0,          // 01185311   . fff0           push eax  ; beginning of a new function
     0x0f,0xc1,0x11,     // 01185313   . 0fc111         xadd dword ptr ds:[ecx],edx
     0x4a,               // 01185316   . 4a             dec edx
@@ -4238,13 +4233,13 @@ bool InsertRejetHook1() // This type of hook has varied hook address
     0x0f,0x8f           // 01185319   . 0f8f 45020000  jg DotKares.01185564
   };
   // Offset to the function call from the beginning of the function
-  enum { ins_offset = 0x21 }; // Type1: hex(0x01185332-0x01185311)
+  enum { hook_offset = 0x21 }; // Type1: hex(0x01185332-0x01185311)
   enum { hp_off = -0x8 }; // hook parameter
-  return FindRejetHook(ins, sizeof(ins), ins_offset, hp_off);
+  return FindRejetHook(bytes, sizeof(bytes), hook_offset, hp_off);
 }
 bool InsertRejetHook2() // This type of hook has static hook address
 {
-  const BYTE ins[] = {   // Type2 Function start
+  const BYTE bytes[] = {   // Type2 Function start
     0xff,0xf0,           //   01357ad2   fff0           push eax
     0x0f,0xc1,0x11,      //   01357ad4   0fc111         xadd dword ptr ds:[ecx],edx
     0x4a,                //   01357ad7   4a             dec edx
@@ -4258,14 +4253,14 @@ bool InsertRejetHook2() // This type of hook has static hook address
     0x8b,0x4c,0x24, 0x14 //   01357ae6   8b4c24 14      mov ecx,dword ptr ss:[esp+0x14]
   };
   // Offset to the function call from the beginning of the function
-  enum { ins_offset = 0x27 }; // Type2: hex(0x0133CEC7-0x0133CEA0) = hex(0x01357af9-0x1357ad2)
+  enum { hook_offset = 0x27 }; // Type2: hex(0x0133CEC7-0x0133CEA0) = hex(0x01357af9-0x1357ad2)
   enum { hp_off = -0xc }; // hook parameter
-  return FindRejetHook(ins, sizeof(ins), ins_offset, hp_off);
+  return FindRejetHook(bytes, sizeof(bytes), hook_offset, hp_off);
 }
 bool InsertRejetHook3() // jichi 12/28/2013: add for 剣が君
 {
   // The following pattern is the same as type2
-  const BYTE ins[] = {   // Type2 Function start
+  const BYTE bytes[] = {   // Type2 Function start
     0xff,0xf0,           //   01357ad2   fff0           push eax
     0x0f,0xc1,0x11,      //   01357ad4   0fc111         xadd dword ptr ds:[ecx],edx
     0x4a,                //   01357ad7   4a             dec edx
@@ -4281,17 +4276,17 @@ bool InsertRejetHook3() // jichi 12/28/2013: add for 剣が君
   // Offset to the function call from the beginning of the function
   //enum { hook_offset = 0x27 }; // Type2: hex(0x0133CEC7-0x0133CEA0) = hex(0x01357af9-0x1357ad2)
   enum { hp_off = -0xc }; // hook parameter
-  ULONG addr = module_base_; //- sizeof(ins);
+  ULONG addr = module_base_; //- sizeof(bytes);
   while (true) {
-    //addr += sizeof(ins_size); // ++ so that each time return diff address
+    //addr += sizeof(bytes); // ++ so that each time return diff address
     ULONG range = min(module_limit_ - addr, MAX_REL_ADDR);
-    addr = MemDbg::findBytes(ins, sizeof(ins), addr, addr + range);
+    addr = MemDbg::findBytes(bytes, sizeof(bytes), addr, addr + range);
     if (!addr) {
       //ITH_MSG(L"failed");
       ConsoleOutput("vnreng:Rejet: pattern not found");
       return false;
     }
-    addr += sizeof(ins);
+    addr += sizeof(bytes);
     // Push and call at once, i.e. push (0x68) and call (0xe8)
     // 01185345     52             push edx
     // 01185346   . 68 e4fe5501    push dotkares.0155fee4                   ; |arg1 = 0155fee4
@@ -4396,16 +4391,16 @@ bool InsertRejetHook()
  */
 bool InsertTencoHook()
 {
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
     0x6a, 0x00,                     // 004ad7f8  |> 6a 00          |push 0x0
     0x8d,0x8f, 0xb0,0x00,0x00,0x00, // 004ad7fa  |. 8d8f b0000000  |lea ecx,dword ptr ds:[edi+0xb0]
     0x83,0xc8, 0xff,                // 004ad800  |. 83c8 ff        |or eax,0xffffffff
     0x8d,0x5c,0x24, 0x24,           // 004ad803  |. 8d5c24 24      |lea ebx,dword ptr ss:[esp+0x24]
     0xe8 //740cf6ff                 // 004ad807  |. e8 740cf6ff    |call 英雄＊戦.0040e480     ; jichi: hook here
   };
-  enum { hook_offset = sizeof(ins) - 1 };
+  enum { hook_offset = sizeof(bytes) - 1 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //reladdr = 0x4ad807;
   if (!addr) {
     ConsoleOutput("vnreng:Tenco: pattern not found");
@@ -4488,7 +4483,7 @@ bool InsertAOSHook()
   // jichi 4/2/2014: The starting of this function is different from ツクモノツキ
   // So, use a pattern in the middle of the function instead.
   //
-  //const BYTE ins[] = {
+  //const BYTE bytes[] = {
   //  0x51,                                 // 00e3c2f0  /$ 51              push ecx    ; jichi: hook here, function begins
   //  0xa1, 0x0c,0x64,0xeb,0x00,            // 00e3c2f1  |. a1 0c64eb00     mov eax,dword ptr ds:[0xeb640c]
   //  0x8b,0x0d, 0x78,0x46,0xeb,0x00,       // 00e3c2f6  |. 8b0d 7846eb00   mov ecx,dword ptr ds:[0xeb4678]
@@ -4503,7 +4498,7 @@ bool InsertAOSHook()
   //};
   //enum { hook_offset = 0 };
 
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
     0x0f,0xbf,0x55, 0x1c,   // 00e3c33c  |> 0fbf55 1c                  movsx edx,word ptr ss:[ebp+0x1c]
     0x0f,0xbf,0x45, 0x0a,   // 00e3c340  |. 0fbf45 0a                  movsx eax,word ptr ss:[ebp+0xa]
     0x0f,0xbf,0x75, 0x1a,   // 00e3c344  |. 0fbf75 1a                  movsx esi,word ptr ss:[ebp+0x1a]
@@ -4516,7 +4511,7 @@ bool InsertAOSHook()
   };
   enum { hook_offset = 0x00e3c2f0 - 0x00e3c33c }; // distance to the beginning of the function, which is 0x51 (push ecx)
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL(reladdr);
   if (!addr) {
     ConsoleOutput("vnreng:AOS: pattern not found");
@@ -4613,7 +4608,7 @@ bool InsertAdobeAirHook()
     return false;
   }
 
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
     0x0f,0xb7,0x0a,  // 0f8f04b2  |> 0fb70a        /movzx ecx,word ptr ds:[edx]
     0x8b,0xd8,       // 0f8f04b5  |. 8bd8          |mov ebx,eax ; jichi: hook here
     0x4f,            // 0f8f04b7  |. 4f            |dec edi
@@ -4624,7 +4619,7 @@ bool InsertAdobeAirHook()
   };
   enum { hook_offset = 0x0f8f04b5 - 0x0f8f04b2 }; // = 3. 0 also works.
   enum { range = 0x600000 }; // larger than relative addresses
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), base, base + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), base, base + range);
   //ITH_GROWL(reladdr);
   if (!addr) {
     ConsoleOutput("vnreng:Adobe AIR: pattern not found");
@@ -4763,7 +4758,7 @@ bool InsertAdobeAirHook()
  */
 bool InsertScenarioPlayerHook()
 {
-  //const BYTE ins[] = {
+  //const BYTE bytes[] = {
   //  0x53,                    // 00609c0e  |. 53             push ebx
   //  0x8b,0x5d,0x08,          // 00609c0f  |. 8b5d 08        mov ebx,dword ptr ss:[ebp+0x8]
   //  0x57,                    // 00609c12  |. 57             push edi
@@ -4778,7 +4773,7 @@ bool InsertScenarioPlayerHook()
   //};
   //enum { hook_offset = 0x00609bf0 - 0x00609c0e }; // distance to the beginning of the function
 
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
     0x74, 0x14,     // 00609c25  |. 74 14          je short あやめ.00609c3b
     0x5f,           // 00609c27  |. 5f             pop edi
     0xb0, 0x01,     // 00609c28  |. b0 01          mov al,0x1
@@ -4790,7 +4785,7 @@ bool InsertScenarioPlayerHook()
     hook_offset_W = 0x00406540 - 0x00406572  // -50
   };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG start = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG start = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   if (!start) {
     ConsoleOutput("vnreng:ScenarioPlayer: pattern not found");
     return false;
@@ -4894,7 +4889,7 @@ bool InsertMarineHeartHook()
   //  0040d161  |. 8bec               mov ebp,esp
   //ULONG addr = Util::FindCallAndEntryAbs((DWORD)CreateFontA, module_limit_ - module_base_, module_base_, 0xec8b);
 
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
     0x51,                       // 0040d1c6  |> 51                 push ecx                        ; /facename
     0x6a, 0x01,                 // 0040d1c7  |. 6a 01              push 0x1                        ; |pitchandfamily = fixed_pitch|ff_dontcare
     0x6a, 0x03,                 // 0040d1c9  |. 6a 03              push 0x3                        ; |quality = 3.
@@ -4914,7 +4909,7 @@ bool InsertMarineHeartHook()
   };
   enum { hook_offset = 0x0040d160 - 0x0040d1c6 }; // distance to the beginning of the function
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD(reladdr);
   if (!addr) {
     ConsoleOutput("vnreng:MarineHeart: pattern not found");
@@ -5032,7 +5027,7 @@ static void SpecialHookElf(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *sp
  */
 bool InsertElfHook()
 {
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
       //0x55,                             // 0093f9b0  /$ 55             push ebp  ; jichi: hook here
       //0x8b,0xec,                        // 0093f9b1  |. 8bec           mov ebp,esp
       //0x83,0xec, 0x08,                  // 0093f9b3  |. 83ec 08        sub esp,0x8
@@ -5048,7 +5043,7 @@ bool InsertElfHook()
   };
   //enum { hook_offset = 0xc };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD(reladdr);
   //reladdr = 0x2f9b0; // 愛姉妹4
   //reladdr = 0x2f0f0; // SEXティーチャー剛史 trial
@@ -5177,16 +5172,16 @@ bool InsertEushullyHook()
  */
 bool InsertAmuseCraftHook()
 {
-  const BYTE ins[] = {
+  const BYTE bytes[] = {
     0x55,                 // 013c6150  /$ 55             push ebp ; jichi: function starts
     0x8b,0xec,            // 013c6151  |. 8bec           mov ebp,esp
     0x8b,0x45, 0x08,      // 013c6153  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
     0x0f,0xb6,0x08,       // 013c6156  |. 0fb608         movzx ecx,byte ptr ds:[eax]
     0x81,0xf9 //81000000  // 013c6159  |. 81f9 81000000  cmp ecx,0x81 ; jichi: hook here
   };
-  enum { hook_offset = sizeof(ins) - 2 };
+  enum { hook_offset = sizeof(bytes) - 2 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(ins, sizeof(ins), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD(reladdr); // supposed to be 0x21650
   //ITH_GROWL_DWORD(reladdr  + hook_offset);
   //reladdr = 0x26159; // 魔女こいにっき trial
