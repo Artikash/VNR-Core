@@ -100,25 +100,13 @@ dword_t findBytes(const void *pattern, dword_t patternSize, dword_t lowerBound, 
 //inline dword_t findString(const char *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound);
 //{ return findBytes(pattern, patternSize, lowerBound, upperBound); }
 
-#if 0 // not used
-
-/**
- *  Search from stopAddres back to startAddress - range
- *  This function is not well debugged
- */
-dword_t reverseSearchPattern(dword_t stopAddress, dword_t range, const void *pattern, dword_t patternSize);
-
 /**
  * jichi 2/5/2014: The same as SearchPattern except it uses 0xff to match everything
  * According to @Andys, 0xff seldom appears in the source code: http://sakuradite.com/topic/124
  */
-enum : byte_t { SP_ANY = 0xff };
-//#define SP_ANY_2 SP_ANY,SP_ANY
-//#define SP_ANY_3 SP_ANY,SP_ANY,SP_ANY
-//#define SP_ANY_4 SP_ANY,SP_ANY,SP_ANY,SP_ANY
-dword_t searchPatternEx(dword_t startAddress, dword_t range, const void *pattern, dword_t patternSize, byte_t wildcard = SP_ANY);
-
-#endif // 0
+enum : byte_t { WidecardByte = 0xff };
+//enum : WORD { WidecardWord = 0xffff };
+dword_t findBytesWithWildcard(const void *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound, byte_t wildcard = WidecardByte);
 
 MEMDBG_END_NAMESPACE
 

@@ -20,6 +20,8 @@ extern trigger_fun_t trigger_fun_;
 // Engine-specific hooks
 
 bool InsertPPSSPPHook();        // PPSSPPWindows
+bool InsertAlchemistPSPHook();  // PSP Alchemist-net.co.jp
+bool InsertShadePSPHook();      // PSP SHADE.co.jp
 
 bool InsertAbelHook();          // Abel
 bool InsertAdobeAirHook();      // Adobe AIR

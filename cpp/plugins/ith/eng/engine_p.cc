@@ -672,7 +672,7 @@ bool InsertSiglus1Hook()
       HookParam hp = {};
       hp.addr = addr;
       hp.extern_fun = SpecialHookSiglus;
-      hp.type= EXTERN_HOOK|USING_UNICODE;
+      hp.type = EXTERN_HOOK|USING_UNICODE;
       ConsoleOutput("vnreng: INSERT Siglus");
       NewHook(hp, L"SiglusEngine");
       //RegisterEngineType(ENGINE_SIGLUS);
@@ -1758,7 +1758,7 @@ bool InsertCatSystem2Hook()
   //hp.ind=4;
   //hp.split=4;
   //hp.split_ind=0x18;
-  //hp.type=BIG_ENDIAN|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
+  //hp.type =BIG_ENDIAN|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
   //hp.length_offset=1;
 
   // jichi 7/12/2014: Change to accurate memory ranges
@@ -5607,11 +5607,155 @@ bool InsertPPSSPPHook()
       ConsoleOutput("vnreng: PPSSPP: not found pattern");
     ConsoleOutput(it.pattern);
   }
+  //InsertShadePSPHook();
   ConsoleOutput("vnreng: PPSSPP: leave");
   return true;
 }
 
-#if 0
+#if 0 // jichi 7/14/2014: disabled as ITH is not allowd to inject to JIT code region?
+
+static void SpecialHookShadePSP(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  CC_UNUSED(split);
+  DWORD membase = *(DWORD *)(hp->addr + 3); // get operand: 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
+  DWORD eax = regof(eax, esp_base);
+
+  LPCSTR text = (LPCSTR)(eax + membase);
+  if (*text) {
+    *data = (DWORD)text;
+    *len = ::strlen(text);
+  }
+}
+
+/** 7/13/2014 jichi SHADE.co.jp PSP engine
+ *  Sample game: とある科学の超電磁砲 (b-railgun.iso)
+ *
+ *  CheatEngine/Ollydbg shew there are 4 memory hits to full text in SHIFT-JIS.
+ *  CheatEngine is not able to trace JIT instructions.
+ *  Ollydbg can track the latter two memory accesses > 0x1ffffffff
+ *
+ *  The third access is 12ab3d64. There is one write access and 3 read accesses.
+ *  But all the accesses are in a loop.
+ *  So, the extracted text would suffer from infinite loop problem.
+ *
+ *  Memory range: 0x0400000 - 139f000
+ *
+ *  13400e10   90               nop
+ *  13400e11   cc               int3
+ *  13400e12   cc               int3
+ *  13400e13   cc               int3
+ *  13400e14   77 0f            ja short 13400e25
+ *  13400e16   c705 a8aa1001 08>mov dword ptr ds:[0x110aaa8],0x88c1308
+ *  13400e20  -e9 dff161f3      jmp 06a20004
+ *  13400e25   8b35 78a71001    mov esi,dword ptr ds:[0x110a778]
+ *  13400e2b   81c6 01000000    add esi,0x1
+ *  13400e31   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+ *  13400e37   81e0 ffffff3f    and eax,0x3fffffff
+ *  13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000] ; jichi: the data is in [eax+0x7400000]
+ *  13400e44   8b2d 78a71001    mov ebp,dword ptr ds:[0x110a778]
+ *  13400e4a   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+ *  13400e4d   81ff 00000000    cmp edi,0x0
+ *  13400e53   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+ *  13400e59   893d 74a71001    mov dword ptr ds:[0x110a774],edi
+ *  13400e5f   892d 78a71001    mov dword ptr ds:[0x110a778],ebp
+ *  13400e65   0f84 16000000    je 13400e81
+ *  13400e6b   832d c4aa1001 04 sub dword ptr ds:[0x110aac4],0x4
+ *  13400e72   e9 21000000      jmp 13400e98
+ *  13400e77   010c13           add dword ptr ds:[ebx+edx],ecx
+ *  13400e7a   8c08             mov word ptr ds:[eax],cs
+ *  13400e7c  -e9 a2f161f3      jmp 06a20023
+ *  13400e81   832d c4aa1001 04 sub dword ptr ds:[0x110aac4],0x4
+ *  13400e88   e9 7f000000      jmp 13400f0c
+ *  13400e8d   0118             add dword ptr ds:[eax],ebx
+ *  13400e8f   138c08 e98cf161  adc ecx,dword ptr ds:[eax+ecx+0x61f18ce9>
+ *  13400e96   f3:              prefix rep:                              ; superfluous prefix
+ *  13400e97   90               nop
+ *  13400e98   77 0f            ja short 13400ea9
+ *  13400e9a   c705 a8aa1001 0c>mov dword ptr ds:[0x110aaa8],0x88c130c
+ *  13400ea4  -e9 5bf161f3      jmp 06a20004
+ *  13400ea9   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+ *  13400eaf   81e0 ffffff3f    and eax,0x3fffffff
+ *  13400eb5   0fb6b0 00004007  movzx esi,byte ptr ds:[eax+0x7400000]
+ *  13400ebc   8b3d 78a71001    mov edi,dword ptr ds:[0x110a778]
+ *  13400ec2   8d7f 01          lea edi,dword ptr ds:[edi+0x1]
+ *  13400ec5   81fe 00000000    cmp esi,0x0
+ *  13400ecb   8935 74a71001    mov dword ptr ds:[0x110a774],esi
+ *  13400ed1   893d 78a71001    mov dword ptr ds:[0x110a778],edi
+ *  13400ed7   0f84 16000000    je 13400ef3
+ *  13400edd   832d c4aa1001 03 sub dword ptr ds:[0x110aac4],0x3
+ *  13400ee4  ^e9 afffffff      jmp 13400e98
+ *  13400ee9   010c13           add dword ptr ds:[ebx+edx],ecx
+ *  13400eec   8c08             mov word ptr ds:[eax],cs
+ *  13400eee  -e9 30f161f3      jmp 06a20023
+ *  13400ef3   832d c4aa1001 03 sub dword ptr ds:[0x110aac4],0x3
+ *  13400efa   e9 0d000000      jmp 13400f0c
+ *  13400eff   0118             add dword ptr ds:[eax],ebx
+ *  13400f01   138c08 e91af161  adc ecx,dword ptr ds:[eax+ecx+0x61f11ae9>
+ *  13400f08   f3:              prefix rep:                              ; superfluous prefix
+ *  13400f09   90               nop
+ *  13400f0a   cc               int3
+ *  13400f0b   cc               int3
+ */
+bool InsertShadePSPHook()
+{
+  ConsoleOutput("vnreng: Shade PSP: enter");
+  // TODO: Query MEM_Mapped at runtime
+  // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
+  enum : DWORD { StartAdress = 0x13390000, StopAdress = 0x13490000 };
+  enum : BYTE { XX = MemDbg::WidecardByte };
+#define XX4 XX,XX,XX,XX             // DWORD
+#define XX8 XX,XX,XX,XX,XX,XX,XX,XX // QWORD
+
+  const BYTE bytes[] =  {
+    0xcc,                           // 13400e12   cc               int3
+    0xcc,                           // 13400e13   cc               int3
+    0x77, 0x0f,                     // 13400e14   77 0f            ja short 13400e25
+    0xc7,0x05, XX8,                 // 13400e16   c705 a8aa1001 08>mov dword ptr ds:[0x110aaa8],0x88c1308
+    0xe9, XX4,                      // 13400e20  -e9 dff161f3      jmp 06a20004
+    0x8b,0x35, XX4,                 // 13400e25   8b35 78a71001    mov esi,dword ptr ds:[0x110a778]
+    0x81,0xc6, 0x01,0x00,0x00,0x00, // 13400e2b   81c6 01000000    add esi,0x1
+    0x8b,0x05, XX4,                 // 13400e31   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13400e37   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb6,0xb8, XX4,            // 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000] ; jichi: the data is in [eax+0x7400000]
+    0x8b,0x2d, XX4,                 // 13400e44   8b2d 78a71001    mov ebp,dword ptr ds:[0x110a778]
+    0x8d,0x6d, 0x01,                // 13400e4a   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+    0x81,0xff, 0x00,0x00,0x00,0x00  // 13400e4d   81ff 00000000    cmp edi,0x0
+  };
+  enum { hook_offset = 0x13400e3d - 0x13400e12 };
+
+  DWORD addr = 0;
+  // This process might raise before the PSP ISO is loaded
+  // TODO: Create a timer thread to periodially try different PSP engines
+  ITH_WITH_SEH( addr = MemDbg::findBytesWithWildcard(bytes, sizeof(bytes), StartAdress, StopAdress, XX) );
+  if (!addr)
+    ConsoleOutput("vnreng: Shade PSP: failed");
+  else {
+    addr += hook_offset;
+    //ITH_GROWL_DWORD(addr);
+    //DWORD membase = *(DWORD *)(addr + 3); // get operand: 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
+    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
+    HookParam hp = {};
+    hp.addr = addr;
+    hp.extern_fun = SpecialHookShadePSP;
+    hp.type = EXTERN_HOOK|USING_STRING;
+    ConsoleOutput("vnreng: Shade PSP: INSERT");
+
+    // CHECKPOINT 7/14/2014: This would crash vnrcli
+    // I do not have permission to modify the JIT code region?
+    NewHook(hp, L"Shade");
+  }
+
+  //DWORD peek = 0x13400e14;
+  //ITH_GROWL_DWORD(*(BYTE *)peek); // supposed to be 0x77 ja
+  ConsoleOutput("vnreng: Shade PSP: leave");
+  return addr;
+#undef XX4
+#undef XX8
+}
+
+#endif // 0
+
+#if 0 // jichi 4/21/2014: Disabled as this does not work before mono.dll is loaded
 
 static HMODULE WaitForModuleReady(const char *name, int retryCount = 100, int sleepInterval = 100) // retry for 10 seconds
 {
