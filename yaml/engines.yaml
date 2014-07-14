@@ -9,6 +9,9 @@ rename:
   SolfaSoft: ScenarioPlayerA
   SofthouseChara: SystemAoi
 
+psp:
+  - Alchemist PSP
+
 embed:
   #- AMUSE CRAFT
   - BGI
@@ -48,8 +51,9 @@ nongui:
 # no repeat & no float
 simple:
   - Adobe AIR
-  - AOS
+  - Alchemist PSP
   - AMUSE CRAFT
+  - AOS
   - ApRicot
   - AUEngine # renamed
   - BGI
@@ -144,6 +148,7 @@ char:
   - MultiByteToWideChar
   # Engines
   - AbelSoftware
+  - Alchemist PSP
   - AMUSE CRAFT
   - Anex86
   - AOS
