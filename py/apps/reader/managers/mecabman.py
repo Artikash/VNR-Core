@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
 import os, re, weakref
 #from itertools import ifilter
-from PySide.QtCore import Signal, Slot, Property, Qt, QObject
+from PySide.QtCore import Signal, Property, Qt, QObject
 from PySide.QtGui import QColor, QTextCharFormat
 from Qt5.QtWidgets import QSyntaxHighlighter
 from sakurakit import skstr
@@ -281,6 +281,9 @@ class MeCabManager:
   def isEnabled(self):
     return _MP.enabled #and os.path.exists(_MP.dicdir)
 
+  def meCabTagger(self): return _MP.tagger() # MeCab.Tagger
+  def meCabFormat(self): return _MP.fmt # mecabfmt
+
   def supportsUserDic(self): # -> bool
     import nameman
     return self.dicName in nameman.SUPPORTED_DICS
@@ -342,26 +345,26 @@ class MeCabManager:
 @memoized
 def manager(): return MeCabManager()
 
-class MeCabCoffeeBean(QObject):
-  def __init__(self, parent=None):
-    super(MeCabCoffeeBean, self).__init__(parent)
-
-  @Slot(unicode, bool, result=unicode)
-  def toRuby(self, text, html):
-    """
-    @param  text  unicode  HTML
-    @param  html  bool  whether input text contains html tags
-    @return  unicode  HTML
-    """
-    return manager.toRuby(text, html)
-
-  @Slot(unicode, result=unicode)
-  def toYomi(self, text):
-    """
-    @param  text  unicode  plain text
-    @return  unicode  plain text
-    """
-    return manager().toYomi(text)
+#class MeCabCoffeeBean(QObject):
+#  def __init__(self, parent=None):
+#    super(MeCabCoffeeBean, self).__init__(parent)
+#
+#  @Slot(unicode, bool, result=unicode)
+#  def toRuby(self, text, html):
+#    """
+#    @param  text  unicode  HTML
+#    @param  html  bool  whether input text contains html tags
+#    @return  unicode  HTML
+#    """
+#    return manager.toRuby(text, html)
+#
+#  @Slot(unicode, result=unicode)
+#  def toYomi(self, text):
+#    """
+#    @param  text  unicode  plain text
+#    @return  unicode  plain text
+#    """
+#    return manager().toYomi(text)
 
 ## Highlighter ##
 

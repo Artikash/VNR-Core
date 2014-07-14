@@ -108,6 +108,9 @@ class CaboChaManager:
   def setEnabled(self, t): # bool
     _CP.setenabled(t)
 
+  def caboChaParser(self): return _CP.parser() # CaboCha.Parser
+  def meCabFormat(self): return _CP.fmt # mecabfmt
+
   def setRubyType(self, v):
     """
     @param  name  str

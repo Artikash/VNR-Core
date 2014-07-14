@@ -7,12 +7,10 @@
 # - cacheBean: cacheman.CacheCoffeeBean
 # - clipBean: skwebkit.SkClipboardProxy
 # - i18nBean: coffeebean.I18nBean
+# - jlpBean: coffeebean.JlpBean
 # - ttsBean: ttsman.TtsCoffeeBean
-# - yakuBean: trman.YakuCoffeeBean
 # - youtubeBean: coffeebean.YouTubeBean
 # - viewBean: skwebkit.SkViewBean
-# - shioriBean: kagami.ShioriBean -- TODO: rename to dicBean
-# - yomiBean: mecab.MeCabCoffeeBean -- TODO: rename to jlpBean
 
 #dprint = -> console.log.apply console, arguments
 dprint = ->
