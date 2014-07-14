@@ -69,7 +69,7 @@
           %li: %a.selected(href="#",title="#{tr('All')}")
             年
           -for year in py.range(2014,1998,-1)
-            %li: %a(href="#",data-option-value="#{year}",title="#{year}")
+            %li: %a(href="#",data-option-value="#{year}",title="#{year}年")
               -if year >= 2013
                 #{year}
               -elif year >= 2010
@@ -104,7 +104,7 @@
           %li: %a.selected(href="#",title="#{tr('All')}")
             月
           -for month in py.range(1, 13)
-           %li: %a(href="#",data-option-value="#{month}",title="#{month}")
+           %li: %a(href="#",data-option-value="#{month}",title="#{month}月")
               #{month}
 
       ;%section#keyword.metro

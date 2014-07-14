@@ -93,17 +93,37 @@ DWORD buffer_index,
 
 BOOL SafeFillRange(LPCWSTR dll, DWORD *lower, DWORD *upper)
 {
-  BOOL ret = FALSE;
-  ITH_WITH_SEH(ret = FillRange(dll, lower, upper));
-  return ret;
+  BOOL r = FALSE;
+  ITH_WITH_SEH(r = FillRange(dll, lower, upper));
+  return r;
+}
+
+DWORD safeFindEnclosingAlignedFunction(DWORD addr, DWORD range)
+{
+  DWORD r = 0;
+  ITH_WITH_SEH(r = MemDbg::findEnclosingAlignedFunction(addr, range)); // this function might raise if failed
+  return r;
+}
+
+DWORD safeFindBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound)
+{
+  DWORD r = 0;
+  ITH_WITH_SEH(r = MemDbg::findBytes(pattern, patternSize, lowerBound, upperBound));
+  return r;
+}
+DWORD safeFindBytesWithWildcard(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, BYTE wildcard)
+{
+  DWORD r = 0;
+  ITH_WITH_SEH(r = MemDbg::findBytesWithWildcard(pattern, patternSize, lowerBound, upperBound, wildcard));
+  return r;
 }
 
 // jichi 3/11/2014: The original FindEntryAligned function could raise exceptions without admin priv
 DWORD SafeFindEntryAligned(DWORD start, DWORD back_range)
 {
-  DWORD ret = 0;
-  ITH_WITH_SEH(ret = Util::FindEntryAligned(start, back_range));
-  return ret;
+  DWORD r = 0;
+  ITH_WITH_SEH(r = Util::FindEntryAligned(start, back_range));
+  return r;
 }
 
 } // unnamed namespace
@@ -5565,11 +5585,11 @@ struct PPSSPPFunction
   , { L"sceFontGetCharGlyphImage", 2, USING_UNICODE, "sceFontGetCharGlyphImage(" } \
   , { L"sceFontGetCharGlyphImage_Clip", 2, USING_UNICODE, "sceFontGetCharGlyphImage_Clip(" } \
   , { L"sceFontGetShadowGlyphImage", 2, USING_UNICODE, "sceFontGetShadowGlyphImage(" } \
-  , { L"sceFontGetShadowGlyphImage_Clip", 2, USING_UNICODE, "sceFontGetShadowGlyphImage_Clip(" } \
-  , { L"sysclib_strlen", 1, USING_STRING, "Untested sysclib_strlen(" } \
-  , { L"sysclib_strcat", 2, USING_STRING, "Untested sysclib_strcat(" }
+  , { L"sceFontGetShadowGlyphImage_Clip", 2, USING_UNICODE, "sceFontGetShadowGlyphImage_Clip(" }
 
-  // FIXME: The following two functions will raise because there is only one intermediate/leading int3
+  // Disabled as there are too many hooks
+  //, { L"sysclib_strlen", 1, USING_STRING, "Untested sysclib_strlen(" }
+  //, { L"sysclib_strcat", 2, USING_STRING, "Untested sysclib_strcat(" }
   //, { L"sysclib_strcmp", 2, USING_STRING, "Untested sysclib_strcmp(" }
   //, { L"sysclib_strcpy", 2, USING_STRING, "Untested sysclib_strcpy(" }
 
@@ -5594,8 +5614,7 @@ bool InsertPPSSPPHook()
     const auto &it = l[i];
     ULONG addr = MemDbg::findBytes(it.pattern, ::strlen(it.pattern), startAddress, stopAddress);
     if (addr = MemDbg::findPushAddress(addr, startAddress, stopAddress))
-      //if (addr = MemDbg::findEnclosingAlignedFunction(addr, 0x200)) { // this function might raise if failed
-      if (addr = SafeFindEntryAligned(addr, 0x200)) { // range = 0x200 is enough
+      if (addr = safeFindEnclosingAlignedFunction(addr, 0x200)) { // this function might raise if failed
         hp.addr = addr;
         hp.type = it.hookType;
         hp.off = 4 * it.argIndex;
@@ -5607,14 +5626,139 @@ bool InsertPPSSPPHook()
       ConsoleOutput("vnreng: PPSSPP: not found pattern");
     ConsoleOutput(it.pattern);
   }
+  InsertAlchemistPSPHook();
   //InsertShadePSPHook();
   ConsoleOutput("vnreng: PPSSPP: leave");
   return true;
 }
 
-#if 0 // jichi 7/14/2014: disabled as ITH is not allowd to inject to JIT code region?
+static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
+  //ITH_GROWL_DWORD(base);
+  //enum { base = 0x7400000 };
+  DWORD base = hp->module;
+  DWORD eax = regof(eax, esp_base),
+        ecx = regof(ecx, esp_base);
 
-static void SpecialHookShadePSP(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+  LPCSTR text = (LPCSTR)(eax + base);
+  if (*text) {
+    *data = (DWORD)text;
+    *len = ::strlen(text);
+    *split = ecx; // use this as split value
+  }
+}
+
+/** 7/13/2014 jichi alchemist-net.co.jp PSP engine
+ *  Sample game: your diary+ (moe-ydp.iso)
+ *
+ *  134076f2   cc               int3
+ *  134076f3   cc               int3
+ *  134076f4   77 0f            ja short 13407705
+ *  134076f6   c705 a8aa1001 40>mov dword ptr ds:[0x110aaa8],0x8931040
+ *  13407700  -e9 ff88f2f3      jmp 07330004
+ *  13407705   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+ *  1340770b   81e0 ffffff3f    and eax,0x3fffffff
+ *  13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
+ *  13407718   8b3d 78a71001    mov edi,dword ptr ds:[0x110a778]
+ *  1340771e   8b2d 7ca71001    mov ebp,dword ptr ds:[0x110a77c]
+ *  13407724   81c5 01000000    add ebp,0x1
+ *  1340772a   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+ *  13407730   81e0 ffffff3f    and eax,0x3fffffff
+ *  13407736   8bd6             mov edx,esi
+ *  13407738   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl      // jichi: hook here
+ *  1340773e   8b15 78a71001    mov edx,dword ptr ds:[0x110a778]
+ *  13407744   81c2 01000000    add edx,0x1
+ *  1340774a   8bcd             mov ecx,ebp
+ *  1340774c   8935 88a71001    mov dword ptr ds:[0x110a788],esi
+ *  13407752   8bf2             mov esi,edx
+ *  13407754   813d 88a71001 00>cmp dword ptr ds:[0x110a788],0x0
+ *  1340775e   893d 70a71001    mov dword ptr ds:[0x110a770],edi
+ *  13407764   8935 78a71001    mov dword ptr ds:[0x110a778],esi
+ *  1340776a   890d 7ca71001    mov dword ptr ds:[0x110a77c],ecx
+ *  13407770   8915 80a71001    mov dword ptr ds:[0x110a780],edx
+ *  13407776   892d 84a71001    mov dword ptr ds:[0x110a784],ebp
+ *  1340777c   0f85 16000000    jnz 13407798
+ *  13407782   832d c4aa1001 08 sub dword ptr ds:[0x110aac4],0x8
+ *  13407789   e9 ce000000      jmp 1340785c
+ *  1340778e   017c10 93        add dword ptr ds:[eax+edx-0x6d],edi
+ *  13407792   08e9             or cl,ch
+ *  13407794   8b88 f2f3832d    mov ecx,dword ptr ds:[eax+0x2d83f3f2]
+ *  1340779a   c4aa 100108e9    les ebp,fword ptr ds:[edx+0xe9080110]    ; modification of segment register
+ *  134077a0   0c 00            or al,0x0
+ *  134077a2   0000             add byte ptr ds:[eax],al
+ *  134077a4   0160 10          add dword ptr ds:[eax+0x10],esp
+ *  134077a7   93               xchg eax,ebx
+ *  134077a8   08e9             or cl,ch
+ *  134077aa  ^75 88            jnz short 13407734
+ *  134077ac   f2:              prefix repne:                            ; superfluous prefix
+ *  134077ad   f3:              prefix rep:                              ; superfluous prefix
+ *  134077ae   90               nop
+ *  134077af   cc               int3
+ */
+bool InsertAlchemistPSPHook()
+{
+  ConsoleOutput("vnreng: Alchemist PSP: enter");
+  // TODO: Query MEM_Mapped at runtime
+  // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
+  enum : DWORD { StartAdress = 0x13390000, StopAdress = 0x13490000 };
+  //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
+  enum : BYTE { XX = 0x11 };
+#define XX4 XX,XX,XX,XX  // DWORD
+
+  const BYTE bytes[] =  {
+     0xcc,                           // 134076f2   cc               int3
+     0xcc,                           // 134076f3   cc               int3
+     0x77, 0x0f,                     // 134076f4   77 0f            ja short 13407705
+     0xc7,0x05, XX4, XX4,            // 134076f6   c705 a8aa1001 40>mov dword ptr ds:[0x110aaa8],0x8931040
+     0xe9, XX4,                      // 13407700  -e9 ff88f2f3      jmp 07330004
+     0x8b,0x05, XX4,                 // 13407705   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1340770b   81e0 ffffff3f    and eax,0x3fffffff
+     0x0f,0xbe,0xb0, XX4,            // 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
+     0x8b,0x3d, XX4,                 // 13407718   8b3d 78a71001    mov edi,dword ptr ds:[0x110a778]
+     0x8b,0x2d, XX4,                 // 1340771e   8b2d 7ca71001    mov ebp,dword ptr ds:[0x110a77c]
+     0x81,0xc5, 0x01,0x00,0x00,0x00, // 13407724   81c5 01000000    add ebp,0x1
+     0x8b,0x05, XX4,                 // 1340772a   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13407730   81e0 ffffff3f    and eax,0x3fffffff
+     0x8b,0xd6,                      // 13407736   8bd6             mov edx,esi
+     0x88,0x90, XX4                  // 13407738   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl      // jichi: hook here
+  };
+  enum { hook_offset = 0x13407711 - 0x134076f2 };
+
+  DWORD addr = 0;
+  // This process might raise before the PSP ISO is loaded
+  // TODO: Create a timer thread to periodially try different PSP engines
+  ITH_WITH_SEH( addr = MemDbg::findBytesWithWildcard(bytes, sizeof(bytes), StartAdress, StopAdress, XX) );
+  //ITH_GROWL_DWORD(addr);
+  //addr = 0x134076f2; // your diary+
+  //ITH_GROWL_DWORD(addr);
+  //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
+  if (!addr)
+    ConsoleOutput("vnreng: Alchemist PSP: failed");
+  else {
+    addr += hook_offset;
+    //ITH_GROWL_DWORD(addr);
+
+    DWORD membase = *(DWORD *)(addr + 3); // get operand: 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
+    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
+
+    HookParam hp = {};
+    hp.addr = addr;
+    hp.extern_fun = SpecialPSPHookAlchemist;
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of retaddr
+    hp.module = membase; // use module to pass membase
+    ConsoleOutput("vnreng: Alchemist PSP: INSERT");
+    NewHook(hp, L"Alchemist PSP");
+  }
+
+  ConsoleOutput("vnreng: Alchemist PSP: leave");
+  return addr;
+#undef XX4
+}
+
+#if 0 // jichi 7/14/2014: disabled as ITH is not allowed to inject to JIT code region?
+
+static void SpecialPSPHookShade(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(split);
   DWORD membase = *(DWORD *)(hp->addr + 3); // get operand: 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
@@ -5723,10 +5867,9 @@ bool InsertShadePSPHook()
   };
   enum { hook_offset = 0x13400e3d - 0x13400e12 };
 
-  DWORD addr = 0;
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodially try different PSP engines
-  ITH_WITH_SEH( addr = MemDbg::findBytesWithWildcard(bytes, sizeof(bytes), StartAdress, StopAdress, XX) );
+  ULONG addr = safeFindBytesWithWildcard(bytes, sizeof(bytes), StartAdress, StopAdress, XX);
   if (!addr)
     ConsoleOutput("vnreng: Shade PSP: failed");
   else {
@@ -5736,13 +5879,13 @@ bool InsertShadePSPHook()
     //ITH_GROWL_DWORD(membase); // supposed tobe 740000
     HookParam hp = {};
     hp.addr = addr;
-    hp.extern_fun = SpecialHookShadePSP;
+    hp.extern_fun = SpecialPSPHookShade;
     hp.type = EXTERN_HOOK|USING_STRING;
     ConsoleOutput("vnreng: Shade PSP: INSERT");
 
     // CHECKPOINT 7/14/2014: This would crash vnrcli
     // I do not have permission to modify the JIT code region?
-    NewHook(hp, L"Shade");
+    NewHook(hp, L"Shade PSP");
   }
 
   //DWORD peek = 0x13400e14;
