@@ -48,23 +48,21 @@ class MeCabParser:
 
   def __init__(self):
     self.enabled = False # bool
-    self.userdic = '' # unicode
     self.rcfile = '' # unicode
     self.fmt = mecabfmt.DEFAULT
+    #self.userdic = '' # unicode
 
-    self.deftagger = None # cached tagger without user dic
-    self.usertagger = None # cached tagger with user dic
+    self.taggers = {} # {unicode path, MeCab.Tagger}
 
   def setenabled(self, v): self.enabled = v
 
   def setfmt(self, v): self.fmt = v
 
-  def setuserdic(self, v):
-    v = osutil.get_relpath(v) if v else '' # force relative path
-    #v = os.path.abspath(v) if v else ''
-    if v != self.userdic:
-      self.userdic = v
-      self.usertagger = None
+  #def setuserdic(self, v):
+  #  v = osutil.get_relpath(v) if v else '' # force relative path
+  #  if v != self.userdic:
+  #    self.userdic = v
+  #    self.usertagger = None
 
   def setrcfile(self, v):
     #v = osutil.get_relpath(v) if v else '' # force relative path
@@ -72,34 +70,30 @@ class MeCabParser:
     #v = v.replace('\\', '/')
     if v != self.rcfile:
       self.rcfile = v
-      self.deftagger = None
-      self.usertagger = None
       mecabtag.setenvrc(v) if v else mecabtag.delenvrc()
 
   def tagger(self):
     """
     @return  MeCab.Tagger or None
     """
-    if not self.enabled:
-      return None
-    if self.userdic and self.rcfile:
-      if self.usertagger:
-        return self.usertagger
-      if os.path.exists(self.userdic):
-        args = mecabtag.maketaggerargs(userdic=self.userdic)
-        self.usertagger = mecabtag.createtagger(args)
-        if self.usertagger:
-          return self.usertagger
-      self.userdic = ''
-    if self.rcfile:
-      if self.deftagger:
-        return self.deftagger
-      if os.path.exists(self.rcfile):
+    if self.enabled and self.rcfile:
+      ret = self.taggers.get(self.rcfile)
+      if not ret and os.path.exists(self.rcfile):
         args = mecabtag.maketaggerargs()
-        self.deftagger = mecabtag.createtagger(args)
-        if self.deftagger:
-          return self.deftagger
-      self.rcfile = ''
+        ret = self.taggers[self.rcfile] = mecabtag.createtagger(args)
+        if not ret:
+          self.rcfile = ''
+      return ret
+
+    #if self.userdic and self.rcfile:
+    #  if self.usertagger:
+    #    return self.usertagger
+    #  if os.path.exists(self.userdic):
+    #    args = mecabtag.maketaggerargs(userdic=self.userdic)
+    #    self.usertagger = mecabtag.createtagger(args)
+    #    if self.usertagger:
+    #      return self.usertagger
+    #  self.userdic = ''
 
   #_rx_cypher = re.compile(ur"(?<=["
   #  u"ルユュムフブプヌツヅスク"

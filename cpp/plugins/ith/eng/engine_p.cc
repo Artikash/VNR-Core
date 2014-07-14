@@ -5568,8 +5568,7 @@ struct PPSSPPFunction
   const char *pattern;  // debug string used within the function
 };
 
-// FIXME jichi 7/14/2014: Does it requires BIG_ENDIAN for USING_STRING?
-// Also, missing UTF-8 support.
+// jichi 7/14/2014: Missing UTF-8 support.
 #define PPSSPP_FUNCTIONS_INITIALIZER \
     { L"sceCccStrlenSJIS", 1, USING_STRING, "sceCccStrlenSJIS(" } \
   , { L"sceCccStrlenUTF16", 1, USING_UNICODE, "sceCccStrlenUTF16(" } \
@@ -5733,18 +5732,19 @@ bool InsertAlchemistPSPHook()
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
   if (!addr)
-    ConsoleOutput("vnreng: Alchemist PSP: failed");
+    ConsoleOutput("vnreng: Alchemist PSP: pattern not found");
   else {
     addr += hook_offset;
     //ITH_GROWL_DWORD(addr);
 
+    // Get this value at runtime in case it is runtime-dependent
     DWORD membase = *(DWORD *)(addr + 3); // get operand: 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
     //ITH_GROWL_DWORD(membase); // supposed tobe 740000
 
     HookParam hp = {};
     hp.addr = addr;
     hp.extern_fun = SpecialPSPHookAlchemist;
-    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of retaddr
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     hp.module = membase; // use module to pass membase
     ConsoleOutput("vnreng: Alchemist PSP: INSERT");
     NewHook(hp, L"Alchemist PSP");

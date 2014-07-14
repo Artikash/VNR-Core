@@ -9,7 +9,7 @@ if __name__ == '__main__': # DEBUG
 import os
 from sakurakit.skdebug import dwarn
 
-def maketaggerargs(**kwargs):
+def makeparserargs(**kwargs):
   """
   @param* kwargs  see cabocha --help
   @return  str not unicode
@@ -43,7 +43,7 @@ def getparser(**kwargs):
   @param* userdic  unicode  path
   @return  MeCab.Tagger or None
   """
-  args = maketaggerargs(**kwargs)
+  args = makeparserargs(**kwargs)
   ret = PARSERS.get(args)
   if not ret:
     ret = PARSERS[args] = createparser(args)

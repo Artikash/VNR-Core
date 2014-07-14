@@ -38,39 +38,34 @@ class CaboChaParser(object):
     self.rcfile = '' # unicode
     self.fmt = mecabfmt.DEFAULT
 
-    self.defparser = None # cached parser
+    self.parsers = {} # {unicode dicfile:CaboCha.Parser}
 
   def setenabled(self, v): self.enabled = v
 
   def setdic(self, v):
     if v != self.dic:
       self.dic = v
-      self.tagger = None
 
   def setfmt(self, v): self.fmt = v
 
   def setrcfile(self, v):
     if v != self.rcfile:
       self.rcfile = v
-      self.tagger = None
       cabocharc.setenvrc(v) if v else cabocharc.delenvrc()
 
   def parser(self):
     """
     @return  CaboCha.Parser or None
     """
-    if not self.enabled:
-      return None
-    if self.dic and self.rcfile:
-      if self.defparser:
-        return self.defparser
-      if os.path.exists(self.rcfile):
+    if self.enabled and self.dic and self.rcfile:
+      ret = self.parsers.get(self.rcfile)
+      if not ret and os.path.exists(self.rcfile):
         # posset value in rcfile does not work on Windows
-        args = cabocharc.maketaggerargs(posset=self.dic)
-        self.defparser = cabocharc.createparser(args)
-        if self.defparser:
-          return self.defparser
-      self.rcfile = ''
+        args = cabocharc.makeparserargs(posset=self.dic)
+        ret = self.parsers[self.rcfile] = cabocharc.createparser(args)
+        if ret:
+          self.rcfile = ''
+      return ret
 
   def parse(self, text, termEnabled=False, type=False, fmt=None, group=False, reading=False, feature=False, furiType=defs.FURI_HIRA, readingTypes=(cabochadef.TYPE_KANJI,)):
     """
