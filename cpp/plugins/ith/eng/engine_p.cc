@@ -5637,7 +5637,7 @@ static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, 
   //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
   //ITH_GROWL_DWORD(base);
   //enum { base = 0x7400000 };
-  DWORD base = hp->module;
+  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base),
         ecx = regof(ecx, esp_base);
 
@@ -5703,7 +5703,7 @@ bool InsertAlchemistPSPHook()
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
   enum : DWORD { StartAdress = 0x13390000, StopAdress = 0x13490000 };
   //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
-  enum : BYTE { XX = 0x11 };
+  enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
 #define XX4 XX,XX,XX,XX  // DWORD
 
   const BYTE bytes[] =  {
@@ -5725,10 +5725,9 @@ bool InsertAlchemistPSPHook()
   };
   enum { hook_offset = 0x13407711 - 0x134076f2 };
 
-  DWORD addr = 0;
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodially try different PSP engines
-  ITH_WITH_SEH( addr = MemDbg::findBytesWithWildcard(bytes, sizeof(bytes), StartAdress, StopAdress, XX) );
+  // TODO: Create a timer thread to periodically try different PSP engines
+  DWORD addr = safeFindBytesWithWildcard(bytes, sizeof(bytes), StartAdress, StopAdress, XX);
   //ITH_GROWL_DWORD(addr);
   //addr = 0x134076f2; // your diary+
   //ITH_GROWL_DWORD(addr);
