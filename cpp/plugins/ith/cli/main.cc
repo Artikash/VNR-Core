@@ -273,9 +273,11 @@ DWORD IHFAPI NewHook(const HookParam &hp, LPCWSTR name, DWORD flag)
       //  swprintf(name,L"UserHook%d",user_hook_count++);
       //}
 
-    ConsoleOutput("vnrcli:NewHook: try inserting hook.");
+    ConsoleOutput("vnrcli:NewHook: try inserting hook");
 
+    // jichi 7/13/2014: This function would raise when too many hooks added
     ::hookman[current].InitHook(hp, name, flag & 0xffff);
+
     if (::hookman[current].InsertHook() == 0) {
       ConsoleOutput("vnrcli:NewHook: hook inserted");
       //ConsoleOutputW(name);
@@ -283,10 +285,6 @@ DWORD IHFAPI NewHook(const HookParam &hp, LPCWSTR name, DWORD flag)
       RequestRefreshProfile();
     } else
       ConsoleOutput("vnrcli:NewHook:WARNING: failed to insert hook");
-
-
-    //else
-    //  ConsoleOutput(L"Unable to insert hook.");
   }
   return 0;
 }
