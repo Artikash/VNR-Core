@@ -5568,8 +5568,7 @@ struct PPSSPPFunction
   const char *pattern;  // debug string used within the function
 };
 
-// FIXME jichi 7/14/2014: Does it requires BIG_ENDIAN for USING_STRING?
-// Also, missing UTF-8 support.
+// jichi 7/14/2014: Missing UTF-8 support.
 #define PPSSPP_FUNCTIONS_INITIALIZER \
     { L"sceCccStrlenSJIS", 1, USING_STRING, "sceCccStrlenSJIS(" } \
   , { L"sceCccStrlenUTF16", 1, USING_UNICODE, "sceCccStrlenUTF16(" } \
@@ -5626,12 +5625,21 @@ bool InsertPPSSPPHook()
       ConsoleOutput("vnreng: PPSSPP: not found pattern");
     ConsoleOutput(it.pattern);
   }
-  InsertAlchemistPSPHook();
+
+  // Estimated PPSSPP JIT memory range
+  // TODO: Query MEM_Mapped at runtime
+  // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
+  enum : DWORD { PSPStartAddress = 0x12000000, PSPStopAddress = 0x14000000 };
+  Insert5pbPSPHook(PSPStartAddress, PSPStopAddress)
+  || InsertAlchemistPSPHook(PSPStartAddress, PSPStopAddress)
+  ;
+
   //InsertShadePSPHook();
   ConsoleOutput("vnreng: PPSSPP: leave");
   return true;
 }
 
+// Get text from [eax + 0x740000]
 static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
@@ -5651,6 +5659,9 @@ static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, 
 
 /** 7/13/2014 jichi alchemist-net.co.jp PSP engine
  *  Sample game: your diary+ (moe-ydp.iso)
+ *  The memory address is fixed.
+ *
+ *  Debug method: simply add hardware break points to the matched memory
  *
  *  134076f2   cc               int3
  *  134076f3   cc               int3
@@ -5666,7 +5677,7 @@ static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, 
  *  1340772a   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
  *  13407730   81e0 ffffff3f    and eax,0x3fffffff
  *  13407736   8bd6             mov edx,esi
- *  13407738   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl      // jichi: hook here
+ *  13407738   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl      // jichi: alternatively hook here
  *  1340773e   8b15 78a71001    mov edx,dword ptr ds:[0x110a778]
  *  13407744   81c2 01000000    add edx,0x1
  *  1340774a   8bcd             mov ecx,ebp
@@ -5696,19 +5707,16 @@ static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, 
  *  134077ae   90               nop
  *  134077af   cc               int3
  */
-bool InsertAlchemistPSPHook()
+bool InsertAlchemistPSPHook(DWORD startAddress, DWORD stopAddress)
 {
   ConsoleOutput("vnreng: Alchemist PSP: enter");
-  // TODO: Query MEM_Mapped at runtime
-  // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
-  enum : DWORD { StartAdress = 0x13390000, StopAdress = 0x13490000 };
   //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
   enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
 #define XX4 XX,XX,XX,XX  // DWORD
 
   const BYTE bytes[] =  {
-     0xcc,                           // 134076f2   cc               int3
-     0xcc,                           // 134076f3   cc               int3
+     //0xcc,                           // 134076f2   cc               int3
+     //0xcc,                           // 134076f3   cc               int3
      0x77, 0x0f,                     // 134076f4   77 0f            ja short 13407705
      0xc7,0x05, XX4, XX4,            // 134076f6   c705 a8aa1001 40>mov dword ptr ds:[0x110aaa8],0x8931040
      0xe9, XX4,                      // 13407700  -e9 ff88f2f3      jmp 07330004
@@ -5721,36 +5729,272 @@ bool InsertAlchemistPSPHook()
      0x8b,0x05, XX4,                 // 1340772a   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
      0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13407730   81e0 ffffff3f    and eax,0x3fffffff
      0x8b,0xd6,                      // 13407736   8bd6             mov edx,esi
-     0x88,0x90, XX4                  // 13407738   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl      // jichi: hook here
+     0x88,0x90 //, XX4               // 13407738   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl      // jichi: alternatively hook here
   };
-  enum { hook_offset = 0x13407711 - 0x134076f2 };
+  enum { hook_offset = 0x13407711 - 0x134076f4 };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = safeFindBytesWithWildcard(bytes, sizeof(bytes), StartAdress, StopAdress, XX);
+  DWORD addr = safeFindBytesWithWildcard(bytes, sizeof(bytes), startAddress, stopAddress, XX);
   //ITH_GROWL_DWORD(addr);
   //addr = 0x134076f2; // your diary+
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
   if (!addr)
-    ConsoleOutput("vnreng: Alchemist PSP: failed");
+    ConsoleOutput("vnreng: Alchemist PSP: pattern not found");
   else {
     addr += hook_offset;
     //ITH_GROWL_DWORD(addr);
 
+    // Get this value at runtime in case it is runtime-dependent
     DWORD membase = *(DWORD *)(addr + 3); // get operand: 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
     //ITH_GROWL_DWORD(membase); // supposed tobe 740000
 
     HookParam hp = {};
     hp.addr = addr;
     hp.extern_fun = SpecialPSPHookAlchemist;
-    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of retaddr
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     hp.module = membase; // use module to pass membase
     ConsoleOutput("vnreng: Alchemist PSP: INSERT");
     NewHook(hp, L"Alchemist PSP");
   }
 
   ConsoleOutput("vnreng: Alchemist PSP: leave");
+  return addr;
+#undef XX4
+}
+
+// Trim the trailing garbage characters
+// Sample input text: ちょっと黙れ、のゼスチャー。%K%P
+static size_t _5pbstrlen(LPCSTR text)
+{
+  size_t len = ::strlen(text);
+  while (len > 2 && text[len - 2] == '%')
+    len -= 2;
+  return len;
+}
+
+// Get text from [eax + 0x740000]
+static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
+  //ITH_GROWL_DWORD(base);
+  //enum { base = 0x7400000 };
+  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
+  DWORD eax = regof(eax, esp_base);
+
+  LPCSTR text = (LPCSTR)(eax + base);
+  if (*text) {
+    *data = (DWORD)text;
+    *len = _5pbstrlen(text);
+    *split = FIXED_SPLIT_VALUE; // there is only one thread, no split used
+  }
+}
+
+/** 7/13/2014 jichi 5pb.jp PSP engine
+ *  Sample game: STEINS;GATE
+ *  The memory address is NOT fixed.
+ *
+ *  Float memory addresses:
+ *  - 0ff40a03 -- hook here
+ *  - 09ff0a03
+ *
+ *  Debug method: precompute memory address and set break points, then navigate to that scene
+ *
+ *  135752c7   90               nop
+ *  135752c8   77 0f            ja short 135752d9
+ *  135752ca   c705 a8aa1001 d4>mov dword ptr ds:[0x110aaa8],0x8888ed4
+ *  135752d4  -e9 2badf3ef      jmp 034b0004
+ *  135752d9   8b35 dca71001    mov esi,dword ptr ds:[0x110a7dc]
+ *  135752df   8d76 a0          lea esi,dword ptr ds:[esi-0x60]
+ *  135752e2   8b3d e4a71001    mov edi,dword ptr ds:[0x110a7e4]
+ *  135752e8   8bc6             mov eax,esi
+ *  135752ea   81e0 ffffff3f    and eax,0x3fffffff
+ *  135752f0   89b8 1c004007    mov dword ptr ds:[eax+0x740001c],edi
+ *  135752f6   8b2d bca71001    mov ebp,dword ptr ds:[0x110a7bc]
+ *  135752fc   8bc6             mov eax,esi
+ *  135752fe   81e0 ffffff3f    and eax,0x3fffffff
+ *  13575304   89a8 18004007    mov dword ptr ds:[eax+0x7400018],ebp
+ *  1357530a   8b15 b8a71001    mov edx,dword ptr ds:[0x110a7b8]
+ *  13575310   8bc6             mov eax,esi
+ *  13575312   81e0 ffffff3f    and eax,0x3fffffff
+ *  13575318   8990 14004007    mov dword ptr ds:[eax+0x7400014],edx
+ *  1357531e   8b0d b4a71001    mov ecx,dword ptr ds:[0x110a7b4]
+ *  13575324   8bc6             mov eax,esi
+ *  13575326   81e0 ffffff3f    and eax,0x3fffffff
+ *  1357532c   8988 10004007    mov dword ptr ds:[eax+0x7400010],ecx
+ *  13575332   8b3d b0a71001    mov edi,dword ptr ds:[0x110a7b0]
+ *  13575338   8bc6             mov eax,esi
+ *  1357533a   81e0 ffffff3f    and eax,0x3fffffff
+ *  13575340   89b8 0c004007    mov dword ptr ds:[eax+0x740000c],edi
+ *  13575346   8b3d aca71001    mov edi,dword ptr ds:[0x110a7ac]
+ *  1357534c   8bc6             mov eax,esi
+ *  1357534e   81e0 ffffff3f    and eax,0x3fffffff
+ *  13575354   89b8 08004007    mov dword ptr ds:[eax+0x7400008],edi
+ *  1357535a   8b3d a8a71001    mov edi,dword ptr ds:[0x110a7a8]
+ *  13575360   8bc6             mov eax,esi
+ *  13575362   81e0 ffffff3f    and eax,0x3fffffff
+ *  13575368   89b8 04004007    mov dword ptr ds:[eax+0x7400004],edi
+ *  1357536e   8b15 78a71001    mov edx,dword ptr ds:[0x110a778]
+ *  13575374   8935 dca71001    mov dword ptr ds:[0x110a7dc],esi
+ *  1357537a   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+ *  13575380   81e0 ffffff3f    and eax,0x3fffffff
+ *  13575386   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+ *  1357538d   8935 78a71001    mov dword ptr ds:[0x110a778],esi
+ *  13575393   8b35 80a71001    mov esi,dword ptr ds:[0x110a780]
+ *  13575399   8935 b0a71001    mov dword ptr ds:[0x110a7b0],esi
+ *  1357539f   8b35 84a71001    mov esi,dword ptr ds:[0x110a784]
+ *  135753a5   8b0d 7ca71001    mov ecx,dword ptr ds:[0x110a77c]
+ *  135753ab   813d 78a71001 00>cmp dword ptr ds:[0x110a778],0x0
+ *  135753b5   c705 a8a71001 00>mov dword ptr ds:[0x110a7a8],0x0
+ *  135753bf   8935 aca71001    mov dword ptr ds:[0x110a7ac],esi
+ *  135753c5   890d b4a71001    mov dword ptr ds:[0x110a7b4],ecx
+ *  135753cb   8915 b8a71001    mov dword ptr ds:[0x110a7b8],edx
+ *  135753d1   0f85 16000000    jnz 135753ed
+ *  135753d7   832d c4aa1001 0f sub dword ptr ds:[0x110aac4],0xf
+ *  135753de   e9 e5010000      jmp 135755c8
+ *  135753e3   01f0             add eax,esi
+ *  135753e5   90               nop
+ *  135753e6   8808             mov byte ptr ds:[eax],cl
+ *  135753e8  -e9 36acf3ef      jmp 034b0023
+ *  135753ed   832d c4aa1001 0f sub dword ptr ds:[0x110aac4],0xf
+ *  135753f4   e9 0b000000      jmp 13575404
+ *  135753f9   0110             add dword ptr ds:[eax],edx
+ *  135753fb   8f               ???                                      ; unknown command
+ *  135753fc   8808             mov byte ptr ds:[eax],cl
+ *  135753fe  -e9 20acf3ef      jmp 034b0023
+ *  13575403   90               nop
+ *  13575404   77 0f            ja short 13575415
+ *  13575406   c705 a8aa1001 10>mov dword ptr ds:[0x110aaa8],0x8888f10
+ *  13575410  -e9 efabf3ef      jmp 034b0004
+ *  13575415   8b35 a8a71001    mov esi,dword ptr ds:[0x110a7a8]
+ *  1357541b   33c0             xor eax,eax
+ *  1357541d   3b35 b0a71001    cmp esi,dword ptr ds:[0x110a7b0]
+ *  13575423   0f9cc0           setl al
+ *  13575426   8bf8             mov edi,eax
+ *  13575428   81ff 00000000    cmp edi,0x0
+ *  1357542e   893d 74a71001    mov dword ptr ds:[0x110a774],edi
+ *  13575434   0f84 22000000    je 1357545c
+ *  1357543a   8b35 b4a71001    mov esi,dword ptr ds:[0x110a7b4]
+ *  13575440   8935 78a71001    mov dword ptr ds:[0x110a778],esi
+ *  13575446   832d c4aa1001 03 sub dword ptr ds:[0x110aac4],0x3
+ *  1357544d   c705 a8aa1001 2c>mov dword ptr ds:[0x110aaa8],0x8888f2c
+ *  13575457  -e9 c7abf3ef      jmp 034b0023
+ *  1357545c   832d c4aa1001 03 sub dword ptr ds:[0x110aac4],0x3
+ *  13575463   e9 0c000000      jmp 13575474
+ *  13575468   011c8f           add dword ptr ds:[edi+ecx*4],ebx
+ *  1357546b   8808             mov byte ptr ds:[eax],cl
+ *  1357546d  -e9 b1abf3ef      jmp 034b0023
+ *  13575472   90               nop
+ *  13575473   cc               int3
+ *  13575474   77 0f            ja short 13575485
+ *  13575476   c705 a8aa1001 1c>mov dword ptr ds:[0x110aaa8],0x8888f1c
+ *  13575480  -e9 7fabf3ef      jmp 034b0004
+ *  13575485   8b35 78a71001    mov esi,dword ptr ds:[0x110a778]
+ *  1357548b   8b05 b8a71001    mov eax,dword ptr ds:[0x110a7b8]
+ *  13575491   81e0 ffffff3f    and eax,0x3fffffff
+ *  13575497   8bd6             mov edx,esi
+ *  13575499   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl
+ *  1357549f   8b3d b4a71001    mov edi,dword ptr ds:[0x110a7b4]
+ *  135754a5   8d7f 01          lea edi,dword ptr ds:[edi+0x1]
+ *  135754a8   8b2d b8a71001    mov ebp,dword ptr ds:[0x110a7b8]
+ *  135754ae   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+ *  135754b1   813d 68a71001 00>cmp dword ptr ds:[0x110a768],0x0
+ *  135754bb   893d b4a71001    mov dword ptr ds:[0x110a7b4],edi
+ *  135754c1   892d b8a71001    mov dword ptr ds:[0x110a7b8],ebp
+ *  135754c7   0f85 16000000    jnz 135754e3
+ *  135754cd   832d c4aa1001 04 sub dword ptr ds:[0x110aac4],0x4
+ *  135754d4   e9 23000000      jmp 135754fc
+ *  135754d9   01e4             add esp,esp
+ *  135754db   90               nop
+ *  135754dc   8808             mov byte ptr ds:[eax],cl
+ *  135754de  -e9 40abf3ef      jmp 034b0023
+ *  135754e3   832d c4aa1001 04 sub dword ptr ds:[0x110aac4],0x4
+ *  135754ea   c705 a8aa1001 2c>mov dword ptr ds:[0x110aaa8],0x8888f2c
+ *  135754f4  -e9 2aabf3ef      jmp 034b0023
+ *  135754f9   90               nop
+ *  135754fa   cc               int3
+ *  135754fb   cc               int3
+ */
+bool Insert5pbPSPHook(DWORD startAddress, DWORD stopAddress)
+{
+  ConsoleOutput("vnreng: 5pb PSP: enter");
+  //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
+  enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
+#define XX4 XX,XX,XX,XX  // DWORD
+
+  const BYTE bytes[] =  {
+    //0x90,                         // 135752c7   90               nop
+    0x77, 0x0f,                     // 135752c8   77 0f            ja short 135752d9
+    0xc7,0x05, XX4,XX4,             // 135752ca   c705 a8aa1001 d4>mov dword ptr ds:[0x110aaa8],0x8888ed4
+    0xe9, XX4,                      // 135752d4  -e9 2badf3ef      jmp 034b0004
+    0x8b,0x35, XX4,                 // 135752d9   8b35 dca71001    mov esi,dword ptr ds:[0x110a7dc]
+    0x8d,0x76, 0xa0,                // 135752df   8d76 a0          lea esi,dword ptr ds:[esi-0x60]
+    0x8b,0x3d, XX4,                 // 135752e2   8b3d e4a71001    mov edi,dword ptr ds:[0x110a7e4]
+    0x8b,0xc6,                      // 135752e8   8bc6             mov eax,esi
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 135752ea   81e0 ffffff3f    and eax,0x3fffffff
+    0x89,0xb8, XX4,                 // 135752f0   89b8 1c004007    mov dword ptr ds:[eax+0x740001c],edi
+    0x8b,0x2d, XX4,                 // 135752f6   8b2d bca71001    mov ebp,dword ptr ds:[0x110a7bc]
+    0x8b,0xc6,                      // 135752fc   8bc6             mov eax,esi
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 135752fe   81e0 ffffff3f    and eax,0x3fffffff
+    0x89,0xa8, XX4,                 // 13575304   89a8 18004007    mov dword ptr ds:[eax+0x7400018],ebp
+    0x8b,0x15, XX4,                 // 1357530a   8b15 b8a71001    mov edx,dword ptr ds:[0x110a7b8]
+    0x8b,0xc6,                      // 13575310   8bc6             mov eax,esi
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13575312   81e0 ffffff3f    and eax,0x3fffffff
+    0x89,0x90, XX4,                 // 13575318   8990 14004007    mov dword ptr ds:[eax+0x7400014],edx
+    0x8b,0x0d, XX4,                 // 1357531e   8b0d b4a71001    mov ecx,dword ptr ds:[0x110a7b4]
+    0x8b,0xc6,                      // 13575324   8bc6             mov eax,esi
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13575326   81e0 ffffff3f    and eax,0x3fffffff
+    0x89,0x88, XX4,                 // 1357532c   8988 10004007    mov dword ptr ds:[eax+0x7400010],ecx
+    0x8b,0x3d, XX4,                 // 13575332   8b3d b0a71001    mov edi,dword ptr ds:[0x110a7b0]
+    0x8b,0xc6,                      // 13575338   8bc6             mov eax,esi
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1357533a   81e0 ffffff3f    and eax,0x3fffffff
+    0x89,0xb8, XX4,                 // 13575340   89b8 0c004007    mov dword ptr ds:[eax+0x740000c],edi
+    0x8b,0x3d, XX4,                 // 13575346   8b3d aca71001    mov edi,dword ptr ds:[0x110a7ac]
+    0x8b,0xc6,                      // 1357534c   8bc6             mov eax,esi
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1357534e   81e0 ffffff3f    and eax,0x3fffffff
+    0x89,0xb8, XX4,                 // 13575354   89b8 08004007    mov dword ptr ds:[eax+0x7400008],edi
+    0x8b,0x3d, XX4,                 // 1357535a   8b3d a8a71001    mov edi,dword ptr ds:[0x110a7a8]
+    0x8b,0xc6,                      // 13575360   8bc6             mov eax,esi
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13575362   81e0 ffffff3f    and eax,0x3fffffff
+    0x89,0xb8, XX4,                 // 13575368   89b8 04004007    mov dword ptr ds:[eax+0x7400004],edi
+    0x8b,0x15, XX4,                 // 1357536e   8b15 78a71001    mov edx,dword ptr ds:[0x110a778]
+    0x89,0x35, XX4,                 // 13575374   8935 dca71001    mov dword ptr ds:[0x110a7dc],esi
+    0x8b,0x05, XX4,                 // 1357537a   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13575380   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xbe,0xb0 //, XX4          // 13575386   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+  };
+  enum { hook_offset = sizeof(bytes) - 3 };
+
+  // This process might raise before the PSP ISO is loaded
+  // TODO: Create a timer thread to periodically try different PSP engines
+  DWORD addr = safeFindBytesWithWildcard(bytes, sizeof(bytes), startAddress, stopAddress, XX);
+  //ITH_GROWL_DWORD(addr);
+  //addr = 0x13574a18;
+  //ITH_GROWL_DWORD(addr);
+  //addr = 0x134076f2; // your diary+
+  //ITH_GROWL_DWORD(addr);
+  //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
+  if (!addr)
+    ConsoleOutput("vnreng: 5pb PSP: pattern not found");
+  else {
+    addr += hook_offset;
+    //ITH_GROWL_DWORD(addr);
+
+    // Get this value at runtime in case it is runtime-dependent
+    DWORD membase = *(DWORD *)(addr + 3); // get operand: 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
+    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
+
+    HookParam hp = {};
+    hp.addr = addr;
+    hp.extern_fun = SpecialPSPHook5pb;
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
+    hp.module = membase; // use module to pass membase
+    ConsoleOutput("vnreng: 5pb PSP: INSERT");
+    NewHook(hp, L"5pb PSP");
+  }
+
+  ConsoleOutput("vnreng: 5pb PSP: leave");
   return addr;
 #undef XX4
 }
@@ -5844,7 +6088,7 @@ bool InsertShadePSPHook()
   ConsoleOutput("vnreng: Shade PSP: enter");
   // TODO: Query MEM_Mapped at runtime
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
-  enum : DWORD { StartAdress = 0x13390000, StopAdress = 0x13490000 };
+  enum : DWORD { StartAddress = 0x13390000, StopAddress = 0x13490000 };
   enum : BYTE { XX = MemDbg::WidecardByte };
 #define XX4 XX,XX,XX,XX             // DWORD
 #define XX8 XX,XX,XX,XX,XX,XX,XX,XX // QWORD
@@ -5868,7 +6112,7 @@ bool InsertShadePSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodially try different PSP engines
-  ULONG addr = safeFindBytesWithWildcard(bytes, sizeof(bytes), StartAdress, StopAdress, XX);
+  ULONG addr = safeFindBytesWithWildcard(bytes, sizeof(bytes), StartAddress, StopdAdress, XX);
   if (!addr)
     ConsoleOutput("vnreng: Shade PSP: failed");
   else {

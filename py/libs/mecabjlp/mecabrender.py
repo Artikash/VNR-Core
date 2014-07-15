@@ -17,27 +17,30 @@ import mecabdef, mecabfmt, mecabparse
 
 _PARAGRAPH_DELIM = frozenset(u"\n。!！?？♪…【】■") # missing "?", which would cause trouble when it comes to "(?)"
 _PARAGRAPH_CLASSES = 'word2', 'word1', 'word4', 'word3'
-def parseparagraph(text, fmt=mecabfmt.DEFAULT, **kwargs):
+def parseparagraph(text, fmt=mecabfmt.DEFAULT, parse=None, **kwargs):
   """
-  @param  the same as parse
+  @param* parse  override parsing method
+  @param  kwargs  the same as parse
   @yield  [(unicode surface, unicode ruby, str className, unicode feature)]
   """
   ret = []
   i = j = 0
   className = ''
-  for surf, ch, yomi, feature in mecabparse.parse(text, type=True, reading=True, feature=True, **kwargs):
-    feature = renderfeature(feature, fmt) if feature else ''
-    if ch in (mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN, mecabdef.TYPE_KATAGANA):
-      i += 1
-      className = _PARAGRAPH_CLASSES[i % 2]
-    elif ch == mecabdef.TYPE_MODIFIER: # adj or adv
-      j += 1
-      className = _PARAGRAPH_CLASSES[2 + j % 2]
-    entry = surf, (yomi or ''), feature, className
-    ret.append(entry)
-    if len(surf) == 1 and surf in _PARAGRAPH_DELIM:
-      yield ret
-      ret = []
+  l = parse(text, **kwargs) if parse else mecabparse.parse(text, type=True, reading=True, feature=True, **kwargs)
+  if l:
+    for surf, ch, yomi, feature in l:
+      feature = renderfeature(feature, fmt) if feature else ''
+      if ch in (mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN, mecabdef.TYPE_KATAGANA):
+        i += 1
+        className = _PARAGRAPH_CLASSES[i % 2]
+      elif ch == mecabdef.TYPE_MODIFIER: # adj or adv
+        j += 1
+        className = _PARAGRAPH_CLASSES[2 + j % 2]
+      entry = surf, (yomi or ''), feature, className
+      ret.append(entry)
+      if len(surf) == 1 and surf in _PARAGRAPH_DELIM:
+        yield ret
+        ret = []
   if ret:
     yield ret
 

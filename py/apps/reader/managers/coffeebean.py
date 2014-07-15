@@ -66,6 +66,17 @@ class I18nBean(QObject):
     import config, i18n
     return i18n.language_name2(config.htmllocale2language(lang)) if lang else ''
 
+class JlpBean(QObject):
+  def __init__(self, parent):
+    super(JlpBean, self).__init__(parent)
+
+  @Slot(unicode, result=unicode)
+  def parse(self, text):
+    import json
+    import jlpman
+    ret = jlpman.manager().parseToRuby(text)
+    return json.dumps(ret) if ret else ''
+
 @memoized
 def manager(): return CoffeeBeanManager()
 
@@ -104,9 +115,8 @@ class CoffeeBeanManager(object):
     return growl.GrowlCoffeeProxy(self.parent())
 
   @memoizedproperty
-  def mecabBean(self):
-    import mecabman
-    return mecabman.MeCabCoffeeBean(self.parent())
+  def jlpBean(self):
+    return JlpBean(self.parent())
 
   @memoizedproperty
   def shioriBean(self):

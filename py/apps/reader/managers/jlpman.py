@@ -19,8 +19,33 @@ class JlpManager:
   def parseToRuby(self, text):
     """
     @param  text  unicode
-    @return  unicode
+    @return  [unicode] or None
     """
-    return text
+    from mecabjlp import mecabrender
+    return list(mecabrender.parseparagraph(text, self._parse))
+
+  def _parse(self, text, **kwargs):
+    """
+    @param  text  unicode
+    @return  iter or None
+    """
+    if self._parserType == 'mecab':
+      from mecabjlp import mecabparse
+      import mecabman
+      m = mecabman.manager()
+      return mecabparse.parse(text,
+          type=True, reading=True, feature=True,
+          fmt=m.meCabFormat(), ruby=m.rubyType,
+          tagger=m.meCabTagger(),
+          **kwargs)
+    if self._parserType == 'cabocha':
+      from cabochajlp import cabochaparse
+      import cabochaman
+      m = cabochaman.manager()
+      return cabochaparse.parse(text,
+          type=True, reading=True, feature=True,
+          fmt=m.meCabFormat(), ruby=m.rubyType,
+          parser=m.caboChaParser(),
+          **kwargs)
 
 # EOF
