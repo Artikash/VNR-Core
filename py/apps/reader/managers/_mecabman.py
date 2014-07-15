@@ -10,7 +10,7 @@ __all__ = ['MeCabParser']
 import os
 import MeCab
 from sakurakit import skstr
-from sakurakit.skdebug import dwarn
+from sakurakit.skdebug import dprint, dwarn
 from cconv import cconv
 from jptraits import jpchars
 from mecabjlp import mecabdef, mecabfmt, mecabtag
@@ -79,10 +79,11 @@ class MeCabParser:
     if self.enabled and self.rcfile:
       ret = self.taggers.get(self.rcfile)
       if not ret and os.path.exists(self.rcfile):
+        dprint("create new tagger: rcfile =", self.rcfile)
         args = mecabtag.maketaggerargs()
         ret = self.taggers[self.rcfile] = mecabtag.createtagger(args)
         if not ret:
-          self.rcfile = ''
+          dwarn("failed to create mecab tagger")
       return ret
 
     #if self.userdic and self.rcfile:

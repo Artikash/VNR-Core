@@ -6,6 +6,7 @@
 __all__ = ['CaboChaParser']
 
 import os
+from sakurakit.skdebug import dprint, dwarn
 from cconv import cconv
 from jptraits import jpchars
 from cabochajlp import cabochadef, cabocharc
@@ -60,11 +61,12 @@ class CaboChaParser(object):
     if self.enabled and self.dic and self.rcfile:
       ret = self.parsers.get(self.rcfile)
       if not ret and os.path.exists(self.rcfile):
+        dprint("create new parser: dic = %s" % self.dic, self.rcfile)
         # posset value in rcfile does not work on Windows
         args = cabocharc.makeparserargs(posset=self.dic)
         ret = self.parsers[self.rcfile] = cabocharc.createparser(args)
-        if ret:
-          self.rcfile = ''
+        if not ret:
+          dwarn("failed to create cabocha parser")
       return ret
 
   def parse(self, text, termEnabled=False, type=False, fmt=None, group=False, reading=False, feature=False, furiType=defs.FURI_HIRA, readingTypes=(cabochadef.TYPE_KANJI,)):
