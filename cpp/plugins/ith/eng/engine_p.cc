@@ -2688,7 +2688,7 @@ bool InsertApricotHook()
           hp.addr = j + 3;
           hp.extern_fun = SpecialHookApricot;
           hp.type = EXTERN_HOOK|USING_STRING|USING_UNICODE|NO_CONTEXT;
-          ConsoleOutput("vnreng: INERT Apricot");
+          ConsoleOutput("vnreng: INSERT Apricot");
           NewHook(hp, L"ApRicot");
           //RegisterEngineType(ENGINE_APRICOT);
           return true;
@@ -2710,7 +2710,7 @@ void InsertStuffScriptHook()
   hp.off = 0x8; // arg2 lpString
   hp.split = -0x18; // jichi 8/12/2014: = -4 - pusha_esp_off
   hp.type = USING_STRING | USING_SPLIT;
-  ConsoleOutput("vnreng: INERT StuffScriptEngine");
+  ConsoleOutput("vnreng: INSERT StuffScriptEngine");
   NewHook(hp, L"StuffScriptEngine");
   //RegisterEngine(ENGINE_STUFFSCRIPT);
 }
@@ -5504,6 +5504,129 @@ bool InsertNeXASHook()
   return true;
 }
 
+/** jichi 7/6/2014 YukaSystem2
+ *  Sample game: セミラミスの天秤
+ *
+ *  Observations from Debug:
+ *  - Ollydbg got UTF8 text memory address
+ *  - Hardware break points have loops on 0x4010ED
+ *  - The hooked function seems to take 3 parameters, and arg3 is the right text
+ *
+ *  Runtime stack:
+ *  - return address
+ *  - arg1 pointer's pointer
+ *  - arg2 text
+ *  - arg3 pointer's pointer
+ *  - code address or -1, maybe a handle
+ *  - unknown pointer
+ *  - return address
+ *  - usually zero
+ *
+ *  0040109d     cc             int3
+ *  0040109e     cc             int3
+ *  0040109f     cc             int3
+ *  004010a0  /$ 55             push ebp
+ *  004010a1  |. 8bec           mov ebp,esp
+ *  004010a3  |. 8b45 14        mov eax,dword ptr ss:[ebp+0x14]
+ *  004010a6  |. 50             push eax                                 ; /arg4
+ *  004010a7  |. 8b4d 10        mov ecx,dword ptr ss:[ebp+0x10]          ; |
+ *  004010aa  |. 51             push ecx                                 ; |arg3
+ *  004010ab  |. 8b55 0c        mov edx,dword ptr ss:[ebp+0xc]           ; |
+ *  004010ae  |. 52             push edx                                 ; |arg2
+ *  004010af  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]           ; |
+ *  004010b2  |. 50             push eax                                 ; |arg1
+ *  004010b3  |. e8 48ffffff    call semirami.00401000                   ; \semirami.00401000
+ *  004010b8  |. 83c4 10        add esp,0x10
+ *  004010bb  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
+ *  004010be  |. 5d             pop ebp
+ *  004010bf  \. c3             retn
+ *  004010c0  /$ 55             push ebp
+ *  004010c1  |. 8bec           mov ebp,esp
+ *  004010c3  |. 8b45 14        mov eax,dword ptr ss:[ebp+0x14]
+ *  004010c6  |. 50             push eax                                 ; /arg4
+ *  004010c7  |. 8b4d 10        mov ecx,dword ptr ss:[ebp+0x10]          ; |
+ *  004010ca  |. 51             push ecx                                 ; |arg3
+ *  004010cb  |. 8b55 0c        mov edx,dword ptr ss:[ebp+0xc]           ; |
+ *  004010ce  |. 52             push edx                                 ; |arg2
+ *  004010cf  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]           ; |
+ *  004010d2  |. 50             push eax                                 ; |arg1
+ *  004010d3  |. e8 58ffffff    call semirami.00401030                   ; \semirami.00401030
+ *  004010d8  |. 83c4 10        add esp,0x10
+ *  004010db  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
+ *  004010de  |. 5d             pop ebp
+ *  004010df  \. c3             retn
+ *  004010e0  /$ 55             push ebp ; jichi: function begin, hook here, bp-based frame, arg2 is the text
+ *  004010e1  |. 8bec           mov ebp,esp
+ *  004010e3  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8] ; jichi: ebp+0x8 = arg2
+ *  004010e6  |. 8b4d 0c        mov ecx,dword ptr ss:[ebp+0xc] ; jichi: arg3 is also a pointer of pointer
+ *  004010e9  |. 8a11           mov dl,byte ptr ds:[ecx]
+ *  004010eb  |. 8810           mov byte ptr ds:[eax],dl    ; jichi: eax is the data
+ *  004010ed  |. 5d             pop ebp
+ *  004010ee  \. c3             retn
+ *  004010ef     cc             int3
+ */
+
+// Ignore image and music file names
+// Sample text:
+// "Voice\tou00012.ogg""運命論って云うのかなあ……神さまを信じてる人が多かったからだろうね、何があっても、それは神さまが自分たちに与えられた試練なんだって、そう思ってたみたい。勿論、今でもそう考えている人はいっぱいいるんだけど。"
+static bool _yk2ignore(const char *p)
+{
+  while (char ch = *p++) {
+    if (ch >= '0' && ch <= '9' ||
+        ch >= 'a' && ch <= 'z' ||
+        ch >= 'A' && ch <= 'z' ||
+        ch == '"' || ch == '.' || ch == '\\' || ch == '-' || ch == '#')
+      continue;
+    return false;
+  }
+  return true;
+}
+
+// Get text from arg2
+static void SpecialHookYukaSystem2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  DWORD arg2 = argof(2, esp_base), // [esp+0x8]
+        arg3 = argof(3, esp_base); // [esp+0xc]
+        //arg4 = argof(4, esp_base); // there is no arg4. arg4 is properlly a function pointer
+  LPCSTR text = (LPCSTR)arg2;
+  if (*text && !_yk2ignore(text)) { // I am sure this could be null
+    *data = (DWORD)text;
+    *len = ::strlen(text); // UTF-8 is null-terminated
+    if (arg3)
+      *split = *(DWORD *)arg3;
+  }
+}
+
+bool InsertYukaSystem2Hook()
+{
+  const BYTE bytes[] = {
+    0x55,            // 004010e0  /$ 55             push ebp
+    0x8b,0xec,       // 004010e1  |. 8bec           mov ebp,esp
+    0x8b,0x45, 0x08, // 004010e3  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8] ; jichi: ebp+0x8 = arg2
+    0x8b,0x4d, 0x0c, // 004010e6  |. 8b4d 0c        mov ecx,dword ptr ss:[ebp+0xc]
+    0x8a,0x11,       // 004010e9  |. 8a11           mov dl,byte ptr ds:[ecx]
+    0x88,0x10,       // 004010eb  |. 8810           mov byte ptr ds:[eax],dl    ; jichi: eax is the address to text
+    0x5d,            // 004010ed  |. 5d             pop ebp
+    0xc3             // 004010ee  \. c3             retn
+  };
+  //enum { hook_offset = 0 };
+  ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
+  //ITH_GROWL_DWORD(addr); // supposed to be 0x4010e0
+  if (!addr) {
+    ConsoleOutput("vnreng:YukaSystem2: pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr;
+  hp.type = EXTERN_HOOK|NO_CONTEXT|USING_STRING; // UTF-8, though
+  hp.extern_fun = SpecialHookYukaSystem2;
+  ConsoleOutput("vnreng: INSERT YukaSystem2");
+  NewHook(hp, L"YukaSystem2");
+  return true;
+}
+
 /** jichi 7/12/2014 PPSSPP
  *  Tested with PPSSPP 0.9.8.
  *
@@ -6060,10 +6183,10 @@ static void SpecialPSPHookImageepoch(DWORD esp_base, HookParam *hp, DWORD *data,
   // Prevent reading the same address multiple times
   static DWORD lastText;
   DWORD text = eax + base;
-  if (text != lastText) {
+  if (text != lastText && *(LPCSTR)text) {
     lastText = text;
     *data = text;
-    *len = ::strlen((LPCSTR)text); // supposed for UTF-8 string
+    *len = ::strlen((LPCSTR)text); // UTF-8 is null-terminated
     *split = ecx; // according to the source code, edi is used somewhere
   }
 }

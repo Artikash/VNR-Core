@@ -653,7 +653,7 @@ class _TextTab(object):
             view.setThreadType(textman.IGNORED_THREAD_TYPE)
 
   def _refreshEncodingEdit(self):
-    if self._encoding() in ('shift-jis', 'utf-16'):
+    if self._encoding() in ('shift-jis', 'utf-16', 'utf-8'):
       skqss.removeclass(self.encodingEdit, 'warning')
     else:
       skqss.addclass(self.encodingEdit, 'warning')
