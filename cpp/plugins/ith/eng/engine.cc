@@ -299,6 +299,11 @@ DWORD DetermineEngineByFile4()
     InsertScenarioPlayerHook();
     return yes;
   }
+  if (IthFindFile(L"*.ykc")) { // jichi 7/15/2014: YukaSystem1 is not supported, though
+    //ConsoleOutput("vnreng: IGNORE YKC:Feng/HookSoft(SMEE)");
+    InsertYukaSystem2Hook();
+    return yes;
+  }
   return no;
 }
 
@@ -498,11 +503,6 @@ DWORD DetermineNoHookEngine()
 
   if (IthCheckFile(L"game_sys.exe")) {
     ConsoleOutput("vnreng: IGNORE Atelier Kaguya BY/TH");
-    return yes;
-  }
-
-  if (IthFindFile(L"*.ykc")) {
-    ConsoleOutput("vnreng: IGNORE YKC:Feng/HookSoft(SMEE)");
     return yes;
   }
   if (IthFindFile(L"*.bsa")) {

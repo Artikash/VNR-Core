@@ -92,6 +92,7 @@ simple:
   - Taskforce2
   - Tenco
   - WAFFLE
+  - YukaSystem2
 
 single: # single thread
   - Eushully
@@ -240,8 +241,9 @@ wchar:
   - SystemAoi
   - Unity # removed
 
-# PSP
+# UTF-8
 utf8:
   - Imageepoch PSP
+  - YukaSystem2
 
 # EOF
