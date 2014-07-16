@@ -47,8 +47,9 @@ class MouseGestureFilter(QObject): # QObject is needed for the eventFilter
     elif t == QEvent.MouseMove:
       ret = self.mouseMoveEventFilter(ev)
     elif t == QEvent.ContextMenu:
-      ret = self.__d.cancelContextMenu and bool(d.buttons & Qt.RightButton)
-      self.__d.cancelContextMenu = False
+      d = self.__d
+      ret = d.cancelContextMenu and bool(d.buttons & Qt.RightButton)
+      d.cancelContextMenu = False
       dprint("contextMenu: ret = %s" % ret)
     else:
       ret = False
