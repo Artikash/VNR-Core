@@ -5600,7 +5600,7 @@ static void SpecialHookYukaSystem2(DWORD esp_base, HookParam *hp, DWORD *data, D
 bool InsertYukaSystem2Hook()
 {
   const BYTE bytes[] = {
-    0x55,            // 004010e0  /$ 55             push ebp
+    0x55,            // 004010e0  /$ 55             push ebp ; jichi; hook here
     0x8b,0xec,       // 004010e1  |. 8bec           mov ebp,esp
     0x8b,0x45, 0x08, // 004010e3  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8] ; jichi: ebp+0x8 = arg2
     0x8b,0x4d, 0x0c, // 004010e6  |. 8b4d 0c        mov ecx,dword ptr ss:[ebp+0xc]
