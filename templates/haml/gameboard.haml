@@ -238,12 +238,12 @@
       #toolbar.metro
         #zoomSlider.dragdealer.rounded.vertical
           .handle.red(title="#{tr('Zoom')}"): 拡大
-        .btn.btn-block.btn-mini.btn-refresh(title="#{tr('Refresh')}")
-          %i.icon-refresh
         .btn.btn-block.btn-mini.btn-top(title="#{tr('Scroll to top')}")
           %i.icon-chevron-up
         .btn.btn-block.btn-mini.btn-bottom(title="#{tr('Scroll to bottom')}")
           %i.icon-chevron-down
+        .btn.btn-block.btn-mini.btn-refresh(title="#{tr('Refresh')}")
+          %i.icon-undo
 
       ; Scripts
       -for it in 'jquery', \

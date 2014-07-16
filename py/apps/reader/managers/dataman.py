@@ -5663,18 +5663,18 @@ class _DataManager(object):
     if g:
       if g.md5:
         if self.gameFilesByMd5:
-          f = self.gamefiles.get(g.md5)
+          f = self.gameFilesByMd5.get(g.md5)
           if f:
             g.itemId = f.itemId
             g.id = f.id
       if g.id:
         if self.gameFiles:
-          f = self.gamefiles.get(g.id)
+          f = self.gameFiles.get(g.id)
           if f:
             g.itemId = f.itemId
             #g.md5 = f.md5
-      d.currentGameObject = None
-      d.currentGameIds = self.q.querySeriesGameIds(itemId=g.itemId) if g.itemId else [g.id] if g.id else []
+      self.currentGameObject = None
+      self.currentGameIds = self.q.querySeriesGameIds(itemId=g.itemId) if g.itemId else [g.id] if g.id else []
 
   def updateGame(self, game, deleteHook=False, online=True):
     """

@@ -5576,7 +5576,6 @@ struct PPSSPPFunction
   , { L"sceCccSJIStoUTF16", 3, USING_STRING, "sceCccSJIStoUTF16(" } \
   , { L"sceCccUTF16toSJIS", 3, USING_UNICODE, "sceCccUTF16toSJIS(" } \
   , { L"sceCccUTF16toUTF8", 3, USING_UNICODE, "sceCccUTF16toUTF8(" } \
-  , { L"sceCccEncodeSJIS", 2, USING_STRING, "sceCccEncodeSJIS(" } \
   , { L"sceFontGetCharInfo", 2, USING_UNICODE, "sceFontGetCharInfo(" } \
   , { L"sceFontGetShadowInfo", 2, USING_UNICODE, "sceFontGetShadowInfo("} \
   , { L"sceFontGetCharImageRect", 2, USING_UNICODE, "sceFontGetCharImageRect(" } \
@@ -5587,6 +5586,7 @@ struct PPSSPPFunction
   , { L"sceFontGetShadowGlyphImage_Clip", 2, USING_UNICODE, "sceFontGetShadowGlyphImage_Clip(" }
 
   // Disabled as there are too many hooks
+  //, { L"sceCccEncodeSJIS", 2, USING_STRING, "sceCccEncodeSJIS(" }
   //, { L"sysclib_strlen", 1, USING_STRING, "Untested sysclib_strlen(" }
   //, { L"sysclib_strcat", 2, USING_STRING, "Untested sysclib_strcat(" }
   //, { L"sysclib_strcmp", 2, USING_STRING, "Untested sysclib_strcmp(" }
@@ -5630,31 +5630,13 @@ bool InsertPPSSPPHook()
   // TODO: Query MEM_Mapped at runtime
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
   enum : DWORD { PSPStartAddress = 0x12000000, PSPStopAddress = 0x14000000 };
-  Insert5pbPSPHook(PSPStartAddress, PSPStopAddress)
-  || InsertAlchemistPSPHook(PSPStartAddress, PSPStopAddress)
-  ;
+  Insert5pbPSPHook(PSPStartAddress, PSPStopAddress);
+  InsertImageepochPSPHook(PSPStartAddress, PSPStopAddress);
+  InsertAlchemistPSPHook(PSPStartAddress, PSPStopAddress);
 
   //InsertShadePSPHook();
   ConsoleOutput("vnreng: PPSSPP: leave");
   return true;
-}
-
-// Get text from [eax + 0x740000]
-static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
-{
-  //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
-  //ITH_GROWL_DWORD(base);
-  //enum { base = 0x7400000 };
-  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
-  DWORD eax = regof(eax, esp_base),
-        ecx = regof(ecx, esp_base);
-
-  LPCSTR text = (LPCSTR)(eax + base);
-  if (*text) {
-    *data = (DWORD)text;
-    *len = ::strlen(text);
-    *split = ecx; // use this as split value
-  }
 }
 
 /** 7/13/2014 jichi alchemist-net.co.jp PSP engine
@@ -5707,6 +5689,24 @@ static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, 
  *  134077ae   90               nop
  *  134077af   cc               int3
  */
+// Get text from [eax + 0x740000]
+static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
+  //ITH_GROWL_DWORD(base);
+  //enum { base = 0x7400000 };
+  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
+  DWORD eax = regof(eax, esp_base),
+        ecx = regof(ebx, esp_base);
+
+  LPCSTR text = (LPCSTR)(eax + base);
+  if (*text) {
+    *data = (DWORD)text;
+    *len = ::strlen(text);
+    *split = ecx; // use "this" as split value?
+  }
+}
+
 bool InsertAlchemistPSPHook(DWORD startAddress, DWORD stopAddress)
 {
   ConsoleOutput("vnreng: Alchemist PSP: enter");
@@ -5764,40 +5764,11 @@ bool InsertAlchemistPSPHook(DWORD startAddress, DWORD stopAddress)
 #undef XX4
 }
 
-// Trim the trailing garbage characters
-// Sample input text: ちょっと黙れ、のゼスチャー。%K%P
-static size_t _5pbstrlen(LPCSTR text)
-{
-  size_t len = ::strlen(text);
-  while (len > 2 && text[len - 2] == '%')
-    len -= 2;
-  return len;
-}
-
-// Get text from [eax + 0x740000]
-static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
-{
-  //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
-  //ITH_GROWL_DWORD(base);
-  //enum { base = 0x7400000 };
-  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
-  DWORD eax = regof(eax, esp_base);
-
-  LPCSTR text = (LPCSTR)(eax + base);
-  if (*text) {
-    *data = (DWORD)text;
-    *len = _5pbstrlen(text);
-    *split = FIXED_SPLIT_VALUE; // there is only one thread, no split used
-  }
-}
-
 /** 7/13/2014 jichi 5pb.jp PSP engine
  *  Sample game: STEINS;GATE
  *  The memory address is NOT fixed.
  *
- *  Float memory addresses:
- *  - 0ff40a03 -- hook here
- *  - 09ff0a03
+ *  Float memory addresses: two matches
  *
  *  Debug method: precompute memory address and set break points, then navigate to that scene
  *
@@ -5916,6 +5887,33 @@ static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
  *  135754fa   cc               int3
  *  135754fb   cc               int3
  */
+// Trim the trailing garbage characters
+// Sample input text: ちょっと黙れ、のゼスチャー。%K%P
+static size_t _5pbstrlen(LPCSTR text)
+{
+  size_t len = ::strlen(text);
+  while (len > 2 && text[len - 2] == '%')
+    len -= 2;
+  return len;
+}
+
+// Get text from [eax + 0x740000]
+static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
+  //ITH_GROWL_DWORD(base);
+  //enum { base = 0x7400000 };
+  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
+  DWORD eax = regof(eax, esp_base);
+
+  LPCSTR text = (LPCSTR)(eax + base);
+  if (*text) {
+    *data = (DWORD)text;
+    *len = _5pbstrlen(text);
+    *split = FIXED_SPLIT_VALUE; // there is only one thread, no split used
+  }
+}
+
 bool Insert5pbPSPHook(DWORD startAddress, DWORD stopAddress)
 {
   ConsoleOutput("vnreng: 5pb PSP: enter");
@@ -5999,20 +5997,130 @@ bool Insert5pbPSPHook(DWORD startAddress, DWORD stopAddress)
 #undef XX4
 }
 
-#if 0 // jichi 7/14/2014: disabled as ITH is not allowed to inject to JIT code region?
-
-static void SpecialPSPHookShade(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+/** 7/13/2014 jichi imageepoch.co.jp PSP engine
+ *  Sample game: BLACK☆ROCK SHOOTER
+ *  The memory address is NOT fixed.
+ *
+ *  Float memory addresses: two matches
+ *
+ *  Debug method: find current sentence, then find next sentence in the memory
+ *  and add break-points
+ *
+ *  1346d34b   f0:90            lock nop                                 ; lock prefix is not allowed
+ *  1346d34d   cc               int3
+ *  1346d34e   cc               int3
+ *  1346d34f   cc               int3
+ *  1346d350   77 0f            ja short 1346d361
+ *  1346d352   c705 a8aa1001 e4>mov dword ptr ds:[0x110aaa8],0x89609e4
+ *  1346d35c  -e9 a32c27f0      jmp 036e0004
+ *  1346d361   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+ *  1346d367   81e0 ffffff3f    and eax,0x3fffffff
+ *  1346d36d   8bb0 00004007    mov esi,dword ptr ds:[eax+0x7400000] ; jichi: or hook here
+ *  1346d373   8b3d 78a71001    mov edi,dword ptr ds:[0x110a778]
+ *  1346d379   8bc6             mov eax,esi
+ *  1346d37b   81e0 ffffff3f    and eax,0x3fffffff
+ *  1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+ *  1346d388   8d56 01          lea edx,dword ptr ds:[esi+0x1]
+ *  1346d38b   8bc5             mov eax,ebp
+ *  1346d38d   0fbec8           movsx ecx,al
+ *  1346d390   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+ *  1346d396   8bf5             mov esi,ebp
+ *  1346d398   81f9 00000000    cmp ecx,0x0
+ *  1346d39e   892d 74a71001    mov dword ptr ds:[0x110a774],ebp
+ *  1346d3a4   8935 78a71001    mov dword ptr ds:[0x110a778],esi
+ *  1346d3aa   8915 7ca71001    mov dword ptr ds:[0x110a77c],edx
+ *  1346d3b0   890d 80a71001    mov dword ptr ds:[0x110a780],ecx
+ *  1346d3b6   893d 84a71001    mov dword ptr ds:[0x110a784],edi
+ *  1346d3bc   0f8d 16000000    jge 1346d3d8
+ *  1346d3c2   832d c4aa1001 07 sub dword ptr ds:[0x110aac4],0x7
+ *  1346d3c9   e9 22000000      jmp 1346d3f0
+ *  1346d3ce   010c0a           add dword ptr ds:[edx+ecx],ecx
+ *  1346d3d1   96               xchg eax,esi
+ *  1346d3d2   08e9             or cl,ch
+ *  1346d3d4   4b               dec ebx
+ *  1346d3d5   2c 27            sub al,0x27
+ *  1346d3d7   f0:832d c4aa1001>lock sub dword ptr ds:[0x110aac4],0x7    ; lock prefix
+ *  1346d3df   e9 bc380000      jmp 13470ca0
+ *  1346d3e4   0100             add dword ptr ds:[eax],eax
+ *  1346d3e6   0a96 08e9352c    or dl,byte ptr ds:[esi+0x2c35e908]
+ *  1346d3ec   27               daa
+ *  1346d3ed   f0:90            lock nop                                 ; lock prefix is not allowed
+ *  1346d3ef   cc               int3
+ */
+// Get text from [eax + 0x740000]
+static void SpecialPSPHookImageepoch(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(split);
-  DWORD membase = *(DWORD *)(hp->addr + 3); // get operand: 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
-  DWORD eax = regof(eax, esp_base);
+  //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
+  //ITH_GROWL_DWORD(base);
+  //enum { base = 0x7400000 };
+  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
+  DWORD eax = regof(eax, esp_base),
+        ecx = regof(ecx, esp_base);
 
-  LPCSTR text = (LPCSTR)(eax + membase);
-  if (*text) {
-    *data = (DWORD)text;
-    *len = ::strlen(text);
+  // Prevent reading the same address multiple times
+  static DWORD lastText;
+  DWORD text = eax + base;
+  if (text != lastText) {
+    lastText = text;
+    *data = text;
+    *len = ::strlen((LPCSTR)text); // supposed for UTF-8 string
+    *split = ecx; // according to the source code, edi is used somewhere
   }
 }
+
+bool InsertImageepochPSPHook(DWORD startAddress, DWORD stopAddress)
+{
+  ConsoleOutput("vnreng: Imageepoch PSP: enter");
+  //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
+  enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
+#define XX4 XX,XX,XX,XX  // DWORD
+
+  const BYTE bytes[] =  {
+    //0xcc,                         // 1346d34f   cc               int3
+    0x77, 0x0f,                     // 1346d350   77 0f            ja short 1346d361
+    0xc7,0x05, XX4, XX4,            // 1346d352   c705 a8aa1001 e4>mov dword ptr ds:[0x110aaa8],0x89609e4
+    0xe9, XX4,                      // 1346d35c  -e9 a32c27f0      jmp 036e0004
+    0x8b,0x05, XX4,                 // 1346d361   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1346d367   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xb0, XX4,                 // 1346d36d   8bb0 00004007    mov esi,dword ptr ds:[eax+0x7400000] ; jichi: or hook here
+    0x8b,0x3d, XX4,                 // 1346d373   8b3d 78a71001    mov edi,dword ptr ds:[0x110a778]
+    0x8b,0xc6,                      // 1346d379   8bc6             mov eax,esi
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1346d37b   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb6,0xa8 //, XX4          // 1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+  };
+  //enum { hook_offset = 0x1346d36d - 0x1346d350 };
+  enum { hook_offset = sizeof(bytes) - 3 };
+
+  // This process might raise before the PSP ISO is loaded
+  // TODO: Create a timer thread to periodically try different PSP engines
+  DWORD addr = safeFindBytesWithWildcard(bytes, sizeof(bytes), startAddress, stopAddress, XX);
+  //ITH_GROWL_DWORD(addr);
+  //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
+  if (!addr)
+    ConsoleOutput("vnreng: Imageepoch PSP: pattern not found");
+  else {
+    addr += hook_offset;
+    //ITH_GROWL_DWORD(addr);
+
+    // Get this value at runtime in case it is runtime-dependent
+    DWORD membase = *(DWORD *)(addr + 3); // 1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
+
+    HookParam hp = {};
+    hp.addr = addr;
+    hp.extern_fun = SpecialPSPHookImageepoch;
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
+    hp.module = membase; // use module to pass membase
+    ConsoleOutput("vnreng: Imageepoch PSP: INSERT");
+    NewHook(hp, L"Imageepoch PSP");
+  }
+
+  ConsoleOutput("vnreng: Imageepoch PSP: leave");
+  return addr;
+#undef XX4
+}
+
+#if 0 // jichi 7/14/2014: disabled as ITH is not allowed to inject to JIT code region?
 
 /** 7/13/2014 jichi SHADE.co.jp PSP engine
  *  Sample game: とある科学の超電磁砲 (b-railgun.iso)
@@ -6083,6 +6191,19 @@ static void SpecialPSPHookShade(DWORD esp_base, HookParam *hp, DWORD *data, DWOR
  *  13400f0a   cc               int3
  *  13400f0b   cc               int3
  */
+static void SpecialPSPHookShade(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  CC_UNUSED(split);
+  DWORD membase = *(DWORD *)(hp->addr + 3); // get operand: 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
+  DWORD eax = regof(eax, esp_base);
+
+  LPCSTR text = (LPCSTR)(eax + membase);
+  if (*text) {
+    *data = (DWORD)text;
+    *len = ::strlen(text);
+  }
+}
+
 bool InsertShadePSPHook()
 {
   ConsoleOutput("vnreng: Shade PSP: enter");

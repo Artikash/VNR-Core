@@ -204,14 +204,14 @@ createTemplates = ->
       %span.netabare.field.pull-right.text-danger = '(ネタバレ)'
   .body
     :if title
-      .title(title="一言コメント") = title
+      .title.annot(title="一言コメント") = title
     :if content
       :if lessContent
-        .content.content-more.inactive(title="メモ") = content
-        .content.content-less(title="メモ") = lessContent
+        .content.annot.content-more.inactive(title="メモ") = content
+        .content.annot.content-less(title="メモ") = lessContent
         %a.btn-more.btn.btn-link(role="button" title="#{tr 'More'}") = "#{tr 'More'} (" + contentLength + ")"
       :else
-        .content(title="メモ") = content
+        .content.annot(title="メモ") = content
 """.replace /\$/g, '#'
 
 # Classes
@@ -299,20 +299,72 @@ initToolbar = ->
 
   toolbar = new Toolbar @viewBean,
     width: 60   # height of slider + margin-right
-    height: 229 + 15# height of slider + 3 * button + margin-bottom + slider height
+    #height: 229 + 15 # height of slider + 3 * button + margin-bottom + slider height
+    height: 229 + 50 # height of slider + 5 * button + margin-bottom + slider height
     move: slider.reloadOffset
+
+  # Bind toolbar annot buttons
+  $rubyButton = $ '#toolbar .btn.btn-ruby'
+  $ttsButton = $ '#toolbar .btn.btn-tts'
+
+  $rubyButton.prop 'disabled', true unless jlpBean.isEnabled()
+  $rubyButton.click ->
+    $(@).toggleClass 'btn-default'
+        .toggleClass 'btn-success'
+    toggleAnnotRuby()
+    disabled = $(@).hasClass 'btn-default'
+    if disabled
+      $ttsButton.prop 'disabled', true
+    else if ttsBean.isEnabled()
+      $ttsButton.prop 'disabled', false
+
+  $ttsButton.prop 'disabled', true # disable by default
+  $ttsButton.click ->
+    $(@).toggleClass 'btn-default'
+        .toggleClass 'btn-success'
+    toggleAnnotTts()
+
   dprint 'bindToolbar: leave'
 
-## Ruby Furigana ##
+## Ruby furigana and TTS injection ##
 
-initRuby = ->
-  dprint 'bindRuby: enter'
+initAnnot = ->
+  document.body.dataset.annot = 'disabled' # disable by default
+  $.fn.annotate = -> # create inject plugin
+    @each -> window.annotate @ # inject using the annot plugin
+    @
 
-  $.fn.inject = -> # create inject plugin
-      @each -> window.injectruby @
-  $('.ruby').inject()
+renderNewAnnot = ->
+  annot = document.body.dataset.annot
+  $('.annot:not(.annot-root)').annotate() if ~annot.indexOf 'enable'
 
-  dprint 'bindRuby: leave'
+toggleAnnotTts = ->
+  v = document.body.dataset.annot
+  if ~v.indexOf 'tts'
+    v = v.replace 'tts', ''
+  else
+    v += 'tts'
+  document.body.dataset.annot = v
+  refreshDocumentClass()
+
+toggleAnnotRuby = ->
+  v = document.body.dataset.annot
+  if ~v.indexOf 'enable'
+    v = v.replace 'enable', 'disable'
+  else
+    v = v.replace 'disable', 'enable'
+  document.body.dataset.annot = v
+  refreshDocumentClass()
+  renderNewAnnot()
+
+# http://stackoverflow.com/questions/3485365/how-can-i-force-webkit-to-redraw-repaint-to-propagate-style-changes
+refreshDocumentClass = -> # ->
+  v = document.body.className
+  document.body.className += ' refresh-dummy'
+  document.body.className = v
+  #if @$
+  #  $('body').addClass('inject-dummy').removeClass('inject-dummy')
+  #  $('body').addClass('inject-dummy').delay(0).removeClass('inject-dummy')
 
 ## Render ##
 
@@ -748,7 +800,7 @@ initDescPills = -> # Descriptions
           counter.inc()
           h = gameBean.getDescription newtype
           el = document.createElement 'div'
-          el.className = newtype + ' description'
+          el.className = newtype + ' description annot'
           el.innerHTML = h
           #$container.append el
           $(el).hide()
@@ -757,6 +809,7 @@ initDescPills = -> # Descriptions
                .imagesLoaded -> counter.dec()
                # Improvement
                .find('a:not([title])').each -> @setAttribute 'title', @href
+          renderNewAnnot()
     false
 
 initCharaDescPills = -> # Descriptions
@@ -784,7 +837,7 @@ initCharaDescPills = -> # Descriptions
           counter.inc()
           h = gameBean.getCharacterDescription newtype
           el = document.createElement 'div'
-          el.className = newtype + ' character'
+          el.className = newtype + ' character annot'
           el.innerHTML = h
           #$container.append el
           $(el).hide()
@@ -793,6 +846,7 @@ initCharaDescPills = -> # Descriptions
                .imagesLoaded -> counter.dec()
                # Improvement
                .find('a:not([title])').each -> @setAttribute 'title', @href
+          renderNewAnnot()
     false
 
 initReviewPills = -> # Reviews
@@ -819,7 +873,11 @@ initReviewPills = -> # Reviews
           $spin.spin 'section'
           h = renderReview newtype
           el = document.createElement 'div'
-          el.className = newtype + ' review'
+
+          c = newtype + ' review'
+          c += ' annot' if newtype isnt 'scape'
+          el.className = c
+
           el.innerHTML = h or HTML_EMPTY
           #$container.append el
           $(el).hide()
@@ -829,6 +887,7 @@ initReviewPills = -> # Reviews
           $spin.spin false
           if newtype is 'scape' and h
             bindScapeReviewList $spin
+          renderNewAnnot()
     false
 
 bindNewScapeReviews = ->
@@ -870,6 +929,7 @@ bindScapeReviewList = ($spin) ->
             .appendTo $container
             .fadeIn()
         bindNewScapeReviews()
+        renderNewAnnot()
         empty = _noMoreScapeReviews()
     # Empty
     $this.replaceWith HTML_EMPTY if empty
@@ -1055,7 +1115,7 @@ init = ->
     initPills()
     initRatings()
 
-    initRuby()
+    initAnnot()
 
     bindButtons()
     bindTts()

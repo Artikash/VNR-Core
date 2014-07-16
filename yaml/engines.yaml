@@ -10,7 +10,9 @@ rename:
   SofthouseChara: SystemAoi
 
 psp:
+  - 5pb PSP
   - Alchemist PSP
+  - Imageepoch PSP
 
 embed:
   #- AMUSE CRAFT
@@ -50,6 +52,7 @@ nongui:
 
 # no repeat & no float
 simple:
+  - 5pb PSP
   - Adobe AIR
   - Alchemist PSP
   - AMUSE CRAFT
@@ -64,6 +67,7 @@ simple:
   - CMVS2
   - Elf
   - Eushully
+  - Imageepoch PSP
   - KiriKiri1
   - KiriKiri2
   - MAJIRO # renamed
@@ -147,6 +151,7 @@ char:
   - lstrlenA
   - MultiByteToWideChar
   # Engines
+  - 5pb PSP
   - AbelSoftware
   - Alchemist PSP
   - AMUSE CRAFT
@@ -234,5 +239,9 @@ wchar:
   - SofthouseChara # renamed
   - SystemAoi
   - Unity # removed
+
+# PSP
+utf8:
+  - Imageepoch PSP
 
 # EOF

@@ -101,6 +101,7 @@ EMBEDDED_GAME_ENGINES = ENGINES_YAML['embed'] # [str name]
 
 CHAR_TEXT_THREADS = frozenset(ENGINES_YAML['char']) # [str name]
 WCHAR_TEXT_THREADS = frozenset(ENGINES_YAML['wchar']) # [str name]
+UTF8_TEXT_THREADS = frozenset(ENGINES_YAML['utf8']) # [str name]
 
 GUI_TEXT_THREADS = frozenset(ENGINES_YAML['gui']) # [str name]
 NON_GUI_TEXT_THREADS = frozenset(ENGINES_YAML['nongui']) # [str name]
@@ -125,6 +126,8 @@ def guess_thread_encoding(name): # str -> str or None
     return 'SHIFT-JIS'
   if name in WCHAR_TEXT_THREADS:
     return 'UTF-16'
+  if name in UTF8_TEXT_THREADS:
+    return 'UTF-8'
 
 ## Game info ##
 

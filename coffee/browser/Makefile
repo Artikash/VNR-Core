@@ -18,4 +18,8 @@ inject.min.js: inject.js
 	$(MAKE) .closure IN=$^ OUT=$@
 	$(MAKE) .null IN=$@
 
+
+browser.js: ../share/annot.coffee browser.coffee
+	$(COFFEE) -c -j $@ $^
+
 # EOF
