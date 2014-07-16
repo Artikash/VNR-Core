@@ -28,7 +28,7 @@
 
 #ifdef DEBUG
 # include "ith/common/growl.h"
-namespace { // anonymous
+namespace { // unnamed debug functions
 // jichi 12/17/2013: Copied from int TextHook::GetLength(DWORD base, DWORD in)
 int GetHookDataLength(const HookParam &hp, DWORD base, DWORD in)
 {
@@ -791,7 +791,7 @@ CMVS hook:
   Font caching issue. Find call to GetGlyphOutlineA and the function entry.
 ********************************************************************************************/
 
-namespace { // anonymous
+namespace { // unnamed
 
 // jichi 3/6/2014: This is the original CMVS hook in ITH
 // It does not work for パープルソフトウェア games after しあわせ家族部 (2012)
@@ -945,7 +945,7 @@ bool InsertCMVS2Hook()
   return true;
 }
 
-} // anonymous namespace
+} // unnamed namespace
 
 // jichi 3/7/2014: Insert the old hook first since GetGlyphOutlineA can NOT be found in new games
 bool InsertCMVSHook()
@@ -5511,6 +5511,7 @@ bool InsertNeXASHook()
  *  - Ollydbg got UTF8 text memory address
  *  - Hardware break points have loops on 0x4010ED
  *  - The hooked function seems to take 3 parameters, and arg3 is the right text
+ *  - The text appears character by character
  *
  *  Runtime stack:
  *  - return address
@@ -5567,15 +5568,15 @@ bool InsertNeXASHook()
  */
 
 // Ignore image and music file names
-// Sample text:
-// "Voice\tou00012.ogg""運命論って云うのかなあ……神さまを信じてる人が多かったからだろうね、何があっても、それは神さまが自分たちに与えられた試練なんだって、そう思ってたみたい。勿論、今でもそう考えている人はいっぱいいるんだけど。"
+// Sample text: "Voice\tou00012.ogg""運命論って云うのかなあ……神さまを信じてる人が多かったからだろうね、何があっても、それは神さまが自分たちに与えられた試練なんだって、そう思ってたみたい。勿論、今でもそう考えている人はいっぱいいるんだけど。"
+// Though the input string is UTF-8, it should be ASCII compatible.
 static bool _yk2ignore(const char *p)
 {
+  //Q_ASSERT(p);
   while (char ch = *p++) {
     if (ch >= '0' && ch <= '9' ||
-        ch >= 'a' && ch <= 'z' ||
-        ch >= 'A' && ch <= 'z' ||
-        ch == '"' || ch == '.' || ch == '\\' || ch == '-' || ch == '#')
+        ch >= 'A' && ch <= 'z' || // also ignore ASCII 91-96: [ \ ] ^ _ `
+        ch == '"' || ch == '.' || ch == '-' || ch == '#')
       continue;
     return false;
   }
@@ -5765,6 +5766,7 @@ bool InsertPPSSPPHook()
 /** 7/13/2014 jichi alchemist-net.co.jp PSP engine
  *  Sample game: your diary+ (moe-ydp.iso)
  *  The memory address is fixed.
+ *  Note: This pattern seems to be common that not only exists in Alchemist games.
  *
  *  Debug method: simply add hardware break points to the matched memory
  *
@@ -6014,6 +6016,7 @@ bool InsertAlchemistPSPHook(DWORD startAddress, DWORD stopAddress)
 // Sample input text: ちょっと黙れ、のゼスチャー。%K%P
 static size_t _5pbstrlen(LPCSTR text)
 {
+  //Q_ASSERT(text);
   size_t len = ::strlen(text);
   while (len > 2 && text[len - 2] == '%')
     len -= 2;
@@ -6173,8 +6176,6 @@ bool Insert5pbPSPHook(DWORD startAddress, DWORD stopAddress)
 // Get text from [eax + 0x740000]
 static void SpecialPSPHookImageepoch(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
-  //ITH_GROWL_DWORD(base);
   //enum { base = 0x7400000 };
   DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base),
@@ -6187,7 +6188,7 @@ static void SpecialPSPHookImageepoch(DWORD esp_base, HookParam *hp, DWORD *data,
     lastText = text;
     *data = text;
     *len = ::strlen((LPCSTR)text); // UTF-8 is null-terminated
-    *split = ecx; // according to the source code, edi is used somewhere
+    *split = ecx; // use "this" to split?
   }
 }
 
@@ -6243,7 +6244,7 @@ bool InsertImageepochPSPHook(DWORD startAddress, DWORD stopAddress)
 #undef XX4
 }
 
-#if 0 // jichi 7/14/2014: disabled as ITH is not allowed to inject to JIT code region?
+#if 0 // jichi 7/14/2014: TODO there is text duplication issue?
 
 /** 7/13/2014 jichi SHADE.co.jp PSP engine
  *  Sample game: とある科学の超電磁砲 (b-railgun.iso)

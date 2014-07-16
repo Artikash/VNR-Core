@@ -585,6 +585,7 @@ icons:
   window-submaker:  $PWD/images/dock/edit.png
   window-subview:   $PWD/images/dock/edit.png
   window-textedit:  $PWD/images/dock/edit.png
+  window-topicview: $PWD/images/dock/reader.png # TODO: Change to a different image
   window-hookprefs: $PWD/images/dock/edit.png
   window-user:      $PWD/images/contact.png
   window-voice:     $PWD/images/sound.png
