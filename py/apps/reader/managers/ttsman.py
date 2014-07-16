@@ -333,9 +333,9 @@ class TtsCoffeeBean(QObject):
   def __init__(self, parent=None):
     super(TtsCoffeeBean, self).__init__(parent)
 
-  #@Slot(result=bool)
-  #def isEnabled(self):
-  #  return manager().isEnabled()
+  @Slot(result=bool)
+  def isEnabled(self):
+    return bool(manager().defaultEngine())
 
   @Slot(unicode)
   def speak(self, text):

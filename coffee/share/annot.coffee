@@ -1,10 +1,16 @@
-# ruby.coffee
+# annot.coffee
 # 3/28/2014 jichi
-# Beans:
-# - cdnBean
-# - clipBean
+# Needed beans:
 # - jlpBean
+#   - parse: string -> string
 # - ttsBean
+#   - speak: string ->
+# Export functions
+# - annotate: (el)->
+# Style classes after injection
+# - annot-root
+#   - annot-src
+#   - annot-ruby
 
 # Underscore
 
@@ -89,7 +95,8 @@ renderruby = (text, ruby, feature, className) -> # must be consistent with parse
   ret.appendChild rb
   ret.appendChild rt
   ret.ondblclick = ->
-    ttsBean.speak text if text and ttsBean.isEnabled()
+    annot = document.body.dataset.annot
+    ttsBean.speak text if text and (not annot or ~annot.indexOf 'tts')
   ret
 
 renderrepl = (text) -> # string -> node
@@ -98,7 +105,7 @@ renderrepl = (text) -> # string -> node
     ret = document.createDocumentFragment()
     for sentence in JSON.parse data
       seg = document.createElement 'span'
-      seg.className = 'inject-ruby'
+      seg.className = 'annot-ruby'
       segtext = ''
       firstletter = lastletter = false
       for word in sentence # word = [surf, ruby, feature, className]
@@ -108,7 +115,7 @@ renderrepl = (text) -> # string -> node
         if firstletter and lastletter
           segtext += ' ' # not needed, but there is no drawbacks
           space = document.createTextNode ' '
-          #space.class = 'inject-space' # not needded
+          #space.class = 'annot-space' # not needded
           seg.appendChild space
         lastletter = isalnumpunct surf.slice -1
 
@@ -124,7 +131,7 @@ renderrepl = (text) -> # string -> node
 rendersrc = (el) -> # node -> node
   if el.nodeName is '#text'
     ret = document.createElement 'span'
-    ret.className = 'inject-src'
+    ret.className = 'annot-src'
     ret.textContent = el.textContent
     ret
   else
@@ -153,6 +160,7 @@ collecttextnodes = (node, ret) -> # DocumentElement, [] ->
     node = node.nextSibling
 
 inject = (el) -> # DocumentElement ->
+  el.className += ' annot-root' # root class for all elements
   nodes = []
   collecttextnodes el, nodes
   for node in nodes
@@ -163,11 +171,11 @@ inject = (el) -> # DocumentElement ->
         src = rendersrc node
         repl.appendChild src
         node.parentNode.replaceChild repl, node
-        #node.className += ' inject-src'
+        #node.className += ' annot-src'
         #node.parentNode.insertBefore repl, node
 
 # Export the inject function
-@injectruby = inject
+@annotate = inject
 
 # EOF
 

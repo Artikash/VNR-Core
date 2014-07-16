@@ -3,9 +3,25 @@
 # 3/28/2014 jichi
 
 from sakurakit.skclass import memoized
+from mecabjlp import mecabdef
+import defs
 
 @memoized
 def manager(): return JlpManager()
+
+# Convert reader ruby to mecabdefs ruby
+
+_MECABRUBY = {
+  defs.FURI_KATA: mecabdef.RB_KATA,
+  defs.FURI_HIRA: mecabdef.RB_HIRA,
+  defs.FURI_ROMAJI: mecabdef.RB_ROMAJI,
+  defs.FURI_KANJI: mecabdef.RB_KANJI,
+  defs.FURI_HANGUL: mecabdef.RB_HANGUL,
+  defs.FURI_THAI: mecabdef.RB_THAI,
+  defs.FURI_TR: mecabdef.RB_TR,
+}
+def _tomecabruby(t): # str -> str
+  return _MECABRUBY.get(t) or mecabdef.RB_HIRA
 
 class JlpManager:
 
@@ -22,7 +38,14 @@ class JlpManager:
     @return  [unicode] or None
     """
     from mecabjlp import mecabrender
-    return list(mecabrender.parseparagraph(text, self._parse))
+    import mecabman
+    m = mecabman.manager()
+    return list(mecabrender.parseparagraph(text,
+      parse=self._parse,
+      type=True, reading=True, feature=True,
+      fmt=m.meCabFormat(),
+      ruby=_tomecabruby(m.rubyType),
+    ))
 
   def _parse(self, text, **kwargs):
     """
@@ -34,8 +57,6 @@ class JlpManager:
       import mecabman
       m = mecabman.manager()
       return mecabparse.parse(text,
-          type=True, reading=True, feature=True,
-          fmt=m.meCabFormat(), ruby=m.rubyType,
           tagger=m.meCabTagger(),
           **kwargs)
     if self._parserType == 'cabocha':
@@ -43,8 +64,6 @@ class JlpManager:
       import cabochaman
       m = cabochaman.manager()
       return cabochaparse.parse(text,
-          type=True, reading=True, feature=True,
-          fmt=m.meCabFormat(), ruby=m.rubyType,
           parser=m.caboChaParser(),
           **kwargs)
 

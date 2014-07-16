@@ -42,12 +42,16 @@
       #toolbar
         #zoomSlider.dragdealer.rounded.vertical
           .handle.red(title="#{tr('Zoom')}"): 拡大
-        %button.btn.btn-default.btn-block.btn-xs.btn-refresh(type="button",title="#{tr('Refresh')}")
-          %i.fa.fa-refresh
+        %button.btn.btn-default.btn-block.btn-xs.btn-ruby(type="button",title="振仮名")
+          %span.fa.fa-font
+        %button.btn.btn-default.btn-block.btn-xs.btn-tts(type="button",title="#{tr('TTS')}")
+          %span.fa.fa-music
         %button.btn.btn-default.btn-block.btn-xs.btn-top(type="button",title="#{tr('Scroll to top')}")
-          %i.fa.fa-chevron-up
+          %span.fa.fa-chevron-up
         %button.btn.btn-default.btn-block.btn-xs.btn-bottom(type="button",title="#{tr('Scroll to bottom')}")
-          %i.fa.fa-chevron-down
+          %span.fa.fa-chevron-down
+        %button.btn.btn-default.btn-block.btn-xs.btn-refresh(type="button",title="#{tr('Refresh')}")
+          %span.fa.fa-undo
 
       .game.portal(data-id="#{game.itemId}")
         .cover.draggable
@@ -463,7 +467,7 @@
             'spin', 'jquery.spin', \
             'bootstrap.switch', 'dragdealer', \
             'haml', 'masonry', \
-            'rest', 'ruby', 'widgets', 'game'
+            'annot', 'rest', 'widgets', 'game'
           %script(src="#{rc.cdn_url(it)}")
 
         -if game.dmm and game.dmm.hasSampleImages()

@@ -19,7 +19,7 @@ repaint = -> # ->
   #  $('body').addClass('inject-dummy').removeClass('inject-dummy')
   #  $('body').addClass('inject-dummy').delay(0).removeClass('inject-dummy')
 
-document.body.dataset.inject = getdataset()
+document.body.dataset.annot = getdataset()
 
 # Make sure this script is only evaluated once
 if @injected

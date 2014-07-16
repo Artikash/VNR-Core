@@ -134,8 +134,8 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   # My own sass and coffeescript
 
   choco: $PWD/coffee/libs/choco.min.js
+  annot: $PWD/coffee/share/annot.min.js
   rest: $PWD/coffee/share/rest.min.js
-  ruby: $PWD/coffee/share/ruby.min.js
 
   # Reader
   widgets: $PWD/coffee/reader/widgets.min.js
@@ -276,6 +276,7 @@ dmm: # DMM
 encodings:
  - shift-jis
  - utf-16
+ - utf-8
  - gbk
  - big5
 

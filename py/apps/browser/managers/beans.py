@@ -51,6 +51,12 @@ class JlpBean(QObject):
   def __init__(self, parent):
     super(JlpBean, self).__init__(parent)
 
+  # Not used
+  #@Slot(result=bool)
+  #def isEnabled(self):
+  #  import jlpman
+  #  return jlpman.manager().isAvailable()
+
   @Slot(unicode, result=unicode)
   def parse(self, text):
     import json

@@ -1,6 +1,7 @@
 ###
 rest.coffee
 1/5/2014 jichi
+This file is stand-alone
 ###
 
 #define 'jquery'
