@@ -40,12 +40,12 @@ def update_web_settings(settings=None):
 
   #ws.setDefaultTextEncoding("SHIFT-JIS")
 
-  cachedir = rc.DIR_CACHE_WEB
-  ws.setLocalStoragePath(cachedir)
+  cachedir = rc.DIR_CACHE_WEB # Qt will automaticaly create this folder if not exist
 
-  QWebSettings.setIconDatabasePath(cachedir)
-  QWebSettings.setOfflineStoragePath(cachedir)
-  QWebSettings.setOfflineWebApplicationCachePath(cachedir)
+  ws.setLocalStoragePath(cachedir)
+  ws.setIconDatabasePath(cachedir)
+  ws.setOfflineStoragePath(cachedir)
+  ws.setOfflineWebApplicationCachePath(cachedir)
 
   # See: http://webkit.org/blog/427/webkit-page-cache-i-the-basics/
   #QWebSettings.setMaximumPagesInCache(30) # default is 0

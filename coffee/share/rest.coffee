@@ -35,7 +35,7 @@ HOST = 'http://153.121.54.194'
   forum: # ajax/forum.coffee
     list: (type, data:data, success:success, error:error) ->
       postJSON
-        url: "#{HOST}/json/#{type}/list"
+        url: "#{HOST}/api/json/#{type}/list"
         data: data
         success: (res) ->
           if res.status is 0 and res.data
@@ -53,7 +53,7 @@ HOST = 'http://153.121.54.194'
 
     query: (type, data:data, success:success, error:error) ->
       postJSON
-        url: "#{HOST}/json/#{type}/query"
+        url: "#{HOST}/api/json/#{type}/query"
         data: data
         success: (res) ->
           if res.status is 0 and res.data?.id
@@ -70,7 +70,7 @@ HOST = 'http://153.121.54.194'
 
     create: (type, data:data, success:success, error:error) ->
       postJSON
-        url: "#{HOST}/json/#{type}/create"
+        url: "#{HOST}/api/json/#{type}/create"
         data: data
         success: (res) ->
           if res.status is 0 and res.data?.id
@@ -90,7 +90,7 @@ HOST = 'http://153.121.54.194'
 
     update: (type, data:data, success:success, error:error) ->
       postJSON
-        url: "#{HOST}/json/#{type}/update"
+        url: "#{HOST}/api/json/#{type}/update"
         data: data
         success: (res) ->
           if res.status is 0 and res.data?.id

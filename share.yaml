@@ -85,7 +85,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.1.4/imagesloaded.min.js
   #jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.1.0/imagesloaded.min.js
   jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.0.4/imagesloaded.pkgd.min.js
-  jquery.ui: http://cdn.jsdelivr.net/jquery.ui/1.10.4/jquery-ui.min.js
+  jquery.ui: http://cdn.jsdelivr.net/jquery.ui/1.11.0/jquery-ui.min.js
 
   bootstrap.switch: $PWD/../AJAX/bootstrap-switch/3.0.1/bootstrap-switch.min.js
   #bootstrap.switch: http://www.bootstrap-switch.org/dist/js/bootstrap-switch.min.js # 3.0.1, block user agent
@@ -585,6 +585,7 @@ icons:
   window-submaker:  $PWD/images/dock/edit.png
   window-subview:   $PWD/images/dock/edit.png
   window-textedit:  $PWD/images/dock/edit.png
+  window-topicview: $PWD/images/dock/reader.png # TODO: Change to a different image
   window-hookprefs: $PWD/images/dock/edit.png
   window-user:      $PWD/images/contact.png
   window-voice:     $PWD/images/sound.png

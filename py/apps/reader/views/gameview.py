@@ -450,7 +450,6 @@ class GameView(QtWidgets.QMainWindow):
     if not value:
       d.webView.clear()
 
-
 class _GameViewManager:
   def __init__(self):
     self.dialogs = []
@@ -464,8 +463,8 @@ class _GameViewManager:
 
   def getDialog(self, gameId=0, itemId=0):
     """
-    @param  itemId  long
-    @param  gameId  long
+    @param* itemId  long
+    @param* gameId  long
     """
     if gameId or itemId:
       for w in self.dialogs:
