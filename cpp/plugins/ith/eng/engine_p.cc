@@ -6030,13 +6030,15 @@ static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
   //ITH_GROWL_DWORD(base);
   //enum { base = 0x7400000 };
   DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
-  DWORD eax = regof(eax, esp_base);
+  DWORD eax = regof(eax, esp_base),
+        ecx = regof(ecx, esp_base);
 
   LPCSTR text = (LPCSTR)(eax + base);
   if (*text) {
     *data = (DWORD)text;
     *len = _5pbstrlen(text);
-    *split = FIXED_SPLIT_VALUE; // there is only one thread, no split used
+    *split = ecx;
+    //*split = FIXED_SPLIT_VALUE; // there is only one thread, no split used
   }
 }
 
