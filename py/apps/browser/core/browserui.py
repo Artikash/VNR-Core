@@ -9,7 +9,7 @@ from functools import partial
 from PySide.QtCore import Qt, Signal, QUrl
 from PySide import QtGui
 from Qt5 import QtWidgets
-from sakurakit import skfileio, skqss, skos
+from sakurakit import skevents, skfileio, skqss, skos
 from sakurakit.skclass import memoizedproperty, Q_Q
 from sakurakit.skdebug import dprint
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkDraggableMainWindow, shortcut
@@ -118,9 +118,10 @@ class _WebBrowser(object):
   def _createShortcuts(self, q):
     shortcut(QtGui.QKeySequence.AddTab, self.newTabAfterCurrentWithBlankPage, parent=q)
 
+    shortcut('ctrl+w', self.closeCurrentTab, parent=q)
+
     shortcut('ctrl+shift+t', self.undoCloseTab, parent=q)
 
-    shortcut('ctrl+w', self.closeCurrentTab, parent=q)
     for k in 'ctrl+l', 'alt+d':
       shortcut(k, self.addressEdit.focus, parent=q)
 
@@ -136,7 +137,11 @@ class _WebBrowser(object):
   def _createGestures(self):
     from qtgesture.gesture import MouseGesture as G
     self._addGesture((G.NoMatch,), None, i18n.tr("No match"))
-    self._addGesture((G.Down, G.Right), self.closeCurrentTab, i18n.tr("Close tab"))
+
+    self._addGesture((G.Down, G.Right),
+        partial(skevents.runlater, self.closeCurrentTab), # close after existing the event loop
+        i18n.tr("Close tab"))
+
     self._addGesture((G.Right, G.Left), self.newTabAfterCurrentWithBlankPage, i18n.tr("New tab"))
     self._addGesture((G.Left, G.Right), self.undoCloseTab, i18n.tr("Undo close tab"))
     self._addGesture((G.Up, G.Left), self.previousTab, i18n.tr("Previous tab"))
