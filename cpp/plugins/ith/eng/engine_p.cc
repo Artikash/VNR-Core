@@ -5822,7 +5822,7 @@ static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, 
   //enum { base = 0x7400000 };
   DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base),
-        ecx = regof(ebx, esp_base);
+        ecx = regof(ecx, esp_base);
 
   LPCSTR text = (LPCSTR)(eax + base);
   if (*text) {
