@@ -386,6 +386,29 @@ IHFSERVICE DWORD IHFAPI IHF_InjectByPID(DWORD pid, LPCWSTR engine)
   return module;
 }
 
+// jichi 7/16/2014: Test if process is valid before creating remote threads
+// See: http://msdn.microsoft.com/en-us/library/ms687032.aspx
+static bool isProcessTerminated(HANDLE hProc)
+{ return WAIT_OBJECT_0 == ::WaitForSingleObject(hProc, 0); }
+//static bool isProcessRunning(HANDLE hProc)
+//{ return WAIT_TIMEOUT == ::WaitForSingleObject(hProc, 0); }
+
+// jichi 7/16/2014: Test if process is valid before creating remote threads
+//static bool isProcessRunning(DWORD pid)
+//{
+//  bool ret = false;
+//  HANDLE hProc = ::OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
+//  if (hProc) {
+//   DWORD status;
+//   if (::GetExitCodeProcess(hProc, &status)) {
+//     ret = status == STILL_ACTIVE;
+//     ::CloseHandle(hProc);
+//   } else
+//     ret = true;
+//  }
+//  return ret;
+//}
+
 IHFSERVICE DWORD IHFAPI IHF_ActiveDetachProcess(DWORD pid)
 {
   ITH_SYNC_HOOK;
@@ -400,12 +423,20 @@ IHFSERVICE DWORD IHFAPI IHF_ActiveDetachProcess(DWORD pid)
     return FALSE;
   //hProc = pr->process_handle; //This handle may be closed(thus invalid) during the detach process.
   NtDuplicateObject(NtCurrentProcess(), pr->process_handle,
-      NtCurrentProcess(), &hProc, 0, 0, DUPLICATE_SAME_ACCESS); //Make a copy of the process handle.
+      NtCurrentProcess(), &hProc, 0, 0, DUPLICATE_SAME_ACCESS); // Make a copy of the process handle.
   module = pr->module_register;
   if (module == 0)
     return FALSE;
+
+  // jichi 7/15/2014: Process already closed
+  if (isProcessTerminated(hProc)) {
+    ConsoleOutput("vnrsrv::activeDetach: process has terminated");
+    return FALSE;
+  }
+
   engine = pr->engine_register;
   engine &= ~0xff;
+
   SendParam sp = {};
   sp.type = 4;
 
@@ -427,6 +458,13 @@ IHFSERVICE DWORD IHFAPI IHF_ActiveDetachProcess(DWORD pid)
   //NtWaitForSingleObject(hThread, 0, (PLARGE_INTEGER)&timeout);
   NtWaitForSingleObject(hThread, 0, nullptr);
   NtClose(hThread);
+
+  // jichi 7/15/2014: Process already closed
+  if (isProcessTerminated(hProc)) {
+    ConsoleOutput("vnrsrv::activeDetach: process has terminated");
+    return FALSE;
+  }
+
   //IthCoolDown();
 //#ifdef ITH_WINE // Nt series crash on wine
 //  hThread = IthCreateThread(FreeLibrary, engine, hProc);
