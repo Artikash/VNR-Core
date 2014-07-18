@@ -29,6 +29,7 @@ def parseparagraph(text, fmt=mecabfmt.DEFAULT, parse=None, **kwargs):
   l = parse(text, **kwargs) if parse else mecabparse.parse(text, type=True, reading=True, feature=True, **kwargs)
   if l:
     for surf, ch, yomi, feature in l:
+      # Note: For cabocha, the coloring theme is needed to be changed
       feature = renderfeature(feature, fmt) if feature else ''
       if ch in (mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN, mecabdef.TYPE_KATAGANA):
         i += 1
