@@ -26,8 +26,12 @@ DWORD IHFAPI SwitchTrigger(DWORD on);
 DWORD IHFAPI GetFunctionAddr(const char *name, DWORD *addr, DWORD *base, DWORD *size, LPWSTR *base_name);
 } // extern "C"
 
-// Keept only for backward compatiblity
+// jichi 7/17/2014: Keept only for backward compatiblity
+// This function should be deleted after removing MultiByte functions
 void IHFAPI InsertNonGuiHooks();
+
+// jichi 7/17/2014: Inesrt functions in gdi32.dll and user32.dll
+void IHFAPI InsertGdiHooks();
 
 void IHFAPI InsertLstrHooks();
 void IHFAPI InsertWcharHooks();

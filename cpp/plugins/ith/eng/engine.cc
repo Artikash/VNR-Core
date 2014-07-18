@@ -36,19 +36,28 @@ trigger_fun_t trigger_fun_;
 
 // - Methods -
 
-namespace Engine {
+namespace Engine { namespace { // unnamed
 
 DWORD InsertDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 { return !trigger_fun_(addr,frame,stack); }
 
-DWORD DetermineEngineByFile1()
+// jichi 7/17/2014: Disable GDI hooks for PPSSPP
+DWORD DeterminePCEngine()
 {
   enum : DWORD { yes = 0, no = 1 }; // return value
   if (IthCheckFile(L"PPSSPPWindows.exe")) { // jichi 7/12/2014
     InsertPPSSPPHook();
-    //InsertLstrHooks(); // always insert lstr functions for PPSSPP
     return yes;
   }
+
+  // PC games
+  InsertGdiHooks();
+  return no;
+}
+
+DWORD DetermineEngineByFile1()
+{
+  enum : DWORD { yes = 0, no = 1 }; // return value
   if (IthFindFile(L"*.xp3") || Util::SearchResourceString(L"TVP(KIRIKIRI)")) {
     InsertKiriKiriHook();
     return yes;
@@ -530,8 +539,6 @@ DWORD DetermineNoHookEngine()
   return no;
 }
 
-namespace { // unnamed
-
 // 12/13/2013: Declare it in a way compatible to EXCEPTION_PROCEDURE
 EXCEPTION_DISPOSITION ExceptHandler(PEXCEPTION_RECORD ExceptionRecord, LPVOID, PCONTEXT, LPVOID)
 {
@@ -559,7 +566,8 @@ EXCEPTION_DISPOSITION ExceptHandler(PEXCEPTION_RECORD ExceptionRecord, LPVOID, P
 bool UnsafeDetermineEngineType()
 {
   return !(
-    DetermineEngineByFile1()
+    DeterminePCEngine()
+    && DetermineEngineByFile1()
     && DetermineEngineByFile2()
     && DetermineEngineByFile3()
     && DetermineEngineByFile4()
@@ -569,7 +577,6 @@ bool UnsafeDetermineEngineType()
     && DetermineNoHookEngine()
   );
 }
-} // unnamed
 
 DWORD DetermineEngineType()
 {
@@ -629,7 +636,7 @@ DWORD IdentifyEngine()
 //    ConsoleOutput("Initialized successfully.");
 //}
 
-} // namespace Engine
+}} // namespace Engine unnamed
 
 // - Initialization -
 

@@ -25,10 +25,12 @@ embed:
   - Silkys # renamed
 
 gui:
+  # User32
   - DrawTextA
   - DrawTextW
   - DrawTextExA
   - DrawTextExW
+  # GDI32
   - ExtTextOutA
   - ExtTextOutW
   - GetCharABCWidthsA
@@ -39,8 +41,18 @@ gui:
   - GetTextExtentPoint32W
   - TextOutA
   - TextOutW
+  # PSP
+  - sceFontGetCharInfo
+  - sceFontGetShadowInfo
+  - sceFontGetCharImageRect
+  - sceFontGetShadowImageRect
+  - sceFontGetCharGlyphImage
+  - sceFontGetCharGlyphImage_Clip
+  - sceFontGetShadowGlyphImage
+  - sceFontGetShadowGlyphImage_Clip
 
 nongui:
+  # PC
   - lstrlenA
   - lstrlenW
   - MultiByteToWideChar
@@ -49,6 +61,19 @@ nongui:
   - _wcsinc
   - _mbsinc
   - _mbsinc_l
+  # PSP
+  - sceCccStrlenSJIS
+  - sceCccStrlenUTF8
+  - sceCccStrlenUTF16
+  - sceCccSJIStoUTF8
+  - sceCccSJIStoUTF16
+  - sceCccUTF8toSJIS
+  - sceCccUTF8toUTF16
+  - sceCccUTF16toSJIS
+  - sceCccUTF16toUTF8
+  - sysclib_strcat
+  - sysclib_strcpy
+  - sysclib_strlen
 
 # no repeat & no float
 simple:
@@ -141,7 +166,7 @@ delay:
 
 # Thin character, SHIFT-JIS or GBK
 char:
-  # Generic
+  # PC
   - DrawTextA
   - DrawTextExA
   - ExtTextOutA
@@ -151,6 +176,13 @@ char:
   - TextOutA
   - lstrlenA
   - MultiByteToWideChar
+  # PSP
+  - sysclib_strcat
+  - sysclib_strcpy
+  - sysclib_strlen
+  - sceCccStrlenSJIS
+  - sceCccSJIStoUTF8
+  - sceCccSJIStoUTF16
   # Engines
   - 5pb PSP
   - AbelSoftware
@@ -211,6 +243,7 @@ char:
 
 # Wide character, UTF-16
 wchar:
+  # PC
   - DrawTextW
   - DrawTextExW
   - ExtTextOutW
@@ -220,6 +253,19 @@ wchar:
   - TextOutW
   - lstrlenW
   - WideCharToMultiByte
+  # PSP
+  - sceCccStrlenUTF16
+  - sceCccUTF16toSJIS
+  - sceCccUTF16toUTF8
+  - sceFontGetCharInfo
+  - sceFontGetShadowInfo
+  - sceFontGetCharImageRect
+  - sceFontGetShadowImageRect
+  - sceFontGetCharGlyphImage
+  - sceFontGetCharGlyphImage_Clip
+  - sceFontGetShadowGlyphImage
+  - sceFontGetShadowGlyphImage_Clip
+  # Engines
   - Adobe AIR
   - ApRicot
   - BALDR # removed
@@ -243,6 +289,11 @@ wchar:
 
 # UTF-8
 utf8:
+  # PSP
+  - sceCccStrlenUTF8
+  - sceCccUTF8toSJIS
+  - sceCccUTF8toUTF16
+  # Engine
   - Imageepoch PSP
   - YukaSystem2
 

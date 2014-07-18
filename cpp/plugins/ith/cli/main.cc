@@ -220,7 +220,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
       ::tree = new AVLTree<char, FunctionInfo, SCMP, SCPY, SLEN>;
       GetFunctionNames();
       InitFilterTable();
-      InitDefaultHook();
+      //InitDefaultHook(); // jichi 7/17/2014: Disabled by default
       hSendThread = IthCreateThread(WaitForPipe, 0);
       hCmdThread = IthCreateThread(CommandPipe, 0);
     } break;
