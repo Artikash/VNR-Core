@@ -98,32 +98,44 @@ BOOL SafeFillRange(LPCWSTR dll, DWORD *lower, DWORD *upper)
   return r;
 }
 
-DWORD safeFindEnclosingAlignedFunction(DWORD addr, DWORD range)
-{
-  DWORD r = 0;
-  ITH_WITH_SEH(r = MemDbg::findEnclosingAlignedFunction(addr, range)); // this function might raise if failed
-  return r;
-}
-
-DWORD safeFindBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound)
-{
-  DWORD r = 0;
-  ITH_WITH_SEH(r = MemDbg::findBytes(pattern, patternSize, lowerBound, upperBound));
-  return r;
-}
-DWORD safeFindBytesWithWildcard(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, BYTE wildcard)
-{
-  DWORD r = 0;
-  ITH_WITH_SEH(r = MemDbg::findBytesWithWildcard(pattern, patternSize, lowerBound, upperBound, wildcard));
-  return r;
-}
-
 // jichi 3/11/2014: The original FindEntryAligned function could raise exceptions without admin priv
 DWORD SafeFindEntryAligned(DWORD start, DWORD back_range)
 {
   DWORD r = 0;
   ITH_WITH_SEH(r = Util::FindEntryAligned(start, back_range));
   return r;
+}
+
+ULONG SafeFindEnclosingAlignedFunction(DWORD addr, DWORD range)
+{
+  ULONG r = 0;
+  ITH_WITH_SEH(r = MemDbg::findEnclosingAlignedFunction(addr, range)); // this function might raise if failed
+  return r;
+}
+
+ULONG SafeFindBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound)
+{
+  ULONG r = 0;
+  ITH_WITH_SEH(r = MemDbg::findBytes(pattern, patternSize, lowerBound, upperBound));
+  return r;
+}
+
+ULONG SafeFindBytesWithWildcard(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, BYTE wildcard)
+{
+  ULONG r = 0;
+  ITH_WITH_SEH(r = MemDbg::findBytesWithWildcard(pattern, patternSize, lowerBound, upperBound, wildcard));
+  return r;
+}
+
+// jichi 7/17/2014: Use SEH to avoid illegal memory accesses
+// FIXME: Need a way to query MEM_MAPPED at runtime like Ollydbg and Cheat Engine
+ULONG PspFindBytesWithWildcard(LPCVOID pattern, DWORD patternSize, BYTE wildcard)
+{
+  enum : ULONG { PspStart = 0x0a000000, PspStop = 0x14000000, PspStep = 0x01000000 };
+  for (ULONG i = PspStart; i < PspStop; i += PspStep) // 0x2000 is to cover the overlappd region
+    if (ULONG r = SafeFindBytesWithWildcard(pattern, patternSize, i, i + PspStep + 0x2000, wildcard))
+      return r;
+  return 0;
 }
 
 } // unnamed namespace
@@ -5738,6 +5750,9 @@ bool InsertPPSSPPHook()
     return false;
   }
 
+  // 0x400000 - 0x139f000
+  //ITH_GROWL_DWORD2(startAddress, stopAddress);
+
   HookParam hp = {};
   hp.length_offset = 1; // determine string length at runtime
 
@@ -5747,7 +5762,7 @@ bool InsertPPSSPPHook()
     const auto &it = l[i];
     ULONG addr = MemDbg::findBytes(it.pattern, ::strlen(it.pattern), startAddress, stopAddress);
     if (addr = MemDbg::findPushAddress(addr, startAddress, stopAddress))
-      if (addr = safeFindEnclosingAlignedFunction(addr, 0x200)) { // this function might raise if failed
+      if (addr = SafeFindEnclosingAlignedFunction(addr, 0x200)) { // this function might raise if failed
         hp.addr = addr;
         hp.type = it.hookType;
         hp.off = 4 * it.argIndex;
@@ -5763,10 +5778,10 @@ bool InsertPPSSPPHook()
   // Estimated PPSSPP JIT memory range
   // TODO: Query MEM_Mapped at runtime
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
-  enum : DWORD { PSPStartAddress = 0x12000000, PSPStopAddress = 0x14000000 };
-  Insert5pbPSPHook(PSPStartAddress, PSPStopAddress);
-  InsertImageepochPSPHook(PSPStartAddress, PSPStopAddress);
-  InsertAlchemistPSPHook(PSPStartAddress, PSPStopAddress);
+  //enum : DWORD { PSPStartAddress = 0x12000000, PSPStopAddress = 0x14000000 };
+  Insert5pbPSPHook();
+  InsertImageepochPSPHook();
+  InsertAlchemistPSPHook();
 
   //InsertShadePSPHook();
   ConsoleOutput("vnreng: PPSSPP: leave");
@@ -5842,7 +5857,7 @@ static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, 
   }
 }
 
-bool InsertAlchemistPSPHook(DWORD startAddress, DWORD stopAddress)
+bool InsertAlchemistPSPHook()
 {
   ConsoleOutput("vnreng: Alchemist PSP: enter");
   //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
@@ -5870,7 +5885,7 @@ bool InsertAlchemistPSPHook(DWORD startAddress, DWORD stopAddress)
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = safeFindBytesWithWildcard(bytes, sizeof(bytes), startAddress, stopAddress, XX);
+  DWORD addr = PspFindBytesWithWildcard(bytes, sizeof(bytes), XX);
   //ITH_GROWL_DWORD(addr);
   //addr = 0x134076f2; // your diary+
   //ITH_GROWL_DWORD(addr);
@@ -6052,7 +6067,7 @@ static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
   }
 }
 
-bool Insert5pbPSPHook(DWORD startAddress, DWORD stopAddress)
+bool Insert5pbPSPHook()
 {
   ConsoleOutput("vnreng: 5pb PSP: enter");
   //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
@@ -6104,7 +6119,7 @@ bool Insert5pbPSPHook(DWORD startAddress, DWORD stopAddress)
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = safeFindBytesWithWildcard(bytes, sizeof(bytes), startAddress, stopAddress, XX);
+  DWORD addr = PspFindBytesWithWildcard(bytes, sizeof(bytes), XX);
   //ITH_GROWL_DWORD(addr);
   //addr = 0x13574a18;
   //ITH_GROWL_DWORD(addr);
@@ -6204,7 +6219,7 @@ static void SpecialPSPHookImageepoch(DWORD esp_base, HookParam *hp, DWORD *data,
   }
 }
 
-bool InsertImageepochPSPHook(DWORD startAddress, DWORD stopAddress)
+bool InsertImageepochPSPHook()
 {
   ConsoleOutput("vnreng: Imageepoch PSP: enter");
   //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
@@ -6229,7 +6244,7 @@ bool InsertImageepochPSPHook(DWORD startAddress, DWORD stopAddress)
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = safeFindBytesWithWildcard(bytes, sizeof(bytes), startAddress, stopAddress, XX);
+  DWORD addr = PspFindBytesWithWildcard(bytes, sizeof(bytes), XX);
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
   if (!addr)
@@ -6369,7 +6384,7 @@ bool InsertShadePSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodially try different PSP engines
-  ULONG addr = safeFindBytesWithWildcard(bytes, sizeof(bytes), StartAddress, StopdAdress, XX);
+  ULONG addr = PspFindBytesWithWildcard(bytes, sizeof(bytes), XX);
   if (!addr)
     ConsoleOutput("vnreng: Shade PSP: failed");
   else {
