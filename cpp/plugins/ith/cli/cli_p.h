@@ -66,7 +66,7 @@ public:
 extern TextHook *hookman,
                 *current_available;
 
-void InitDefaultHook();
+//void InitDefaultHook();
 
 struct FilterRange { DWORD lower, upper; };
 extern FilterRange *filter;

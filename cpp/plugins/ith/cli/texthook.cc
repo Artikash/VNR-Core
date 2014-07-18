@@ -721,8 +721,34 @@ int TextHook::GetLength(DWORD base, DWORD in)
 //#define SPLIT_SWITCH 0
 //#endif
 
-void InitDefaultHook()
+//#include <tchar.h> // for _tcsinc
+//#include <mbstring.h> // for _mbsinc
+//#include <boost/lexical_cast.hpp>
+//#include <string>
+
+void IHFAPI InsertNonGuiHooks() { InsertLstrHooks(); }
+
+// Use LPASTE to convert to wchar_t
+// http://bytes.com/topic/c/answers/135834-defining-wide-character-strings-macros
+#define LPASTE(s) L##s
+#define L(s) LPASTE(s)
+#define ADD_HOOK(_fun, _data, _data_ind, _split_off, _split_ind, _type, _len_off) \
+  { \
+    HookParam hp = {}; \
+    hp.addr = (DWORD)_fun; \
+    hp.off = _data; \
+    hp.ind = _data_ind; \
+    hp.split = _split_off; \
+    hp.split_ind = _split_ind; \
+    hp.type = _type; \
+    hp.length_offset = _len_off; \
+    NewHook(hp, L(#_fun)); \
+  }
+
+// jichi 7/17/2014: Renamed from InitDefaultHook
+void IHFAPI InsertGdiHooks()
 {
+  ConsoleOutput("vnrcli:InsertGdiHooks: enter");
   // int TextHook::InitHook(LPVOID addr, DWORD data, DWORD data_ind, DWORD split_off, DWORD split_ind, WORD type, DWORD len_off)
   //
   // jichi 9/8/2013: Guessed meaning
@@ -755,49 +781,31 @@ void InitDefaultHook()
     , s_arg6 = 0x4 * 6 // 0x18
   };
 
-  LPCWSTR names[] = {HOOK_FUN_NAME_LIST};
-#define _(Name, ...) \
-  hookman[HF_##Name].InitHook(Name, __VA_ARGS__); \
-  hookman[HF_##Name].SetHookName(names[HF_##Name]);
+//#define _(Name, ...) \
+//  hookman[HF_##Name].InitHook(Name, __VA_ARGS__); \
+//  hookman[HF_##Name].SetHookName(names[HF_##Name]);
 
-  _(GetTextExtentPoint32A,  s_arg2, 0,4,0, USING_STRING,  3) // BOOL GetTextExtentPoint32(HDC hdc, LPCTSTR lpString, int c, LPSIZE lpSize);
-  _(GetGlyphOutlineA,       s_arg2, 0,4,0, BIG_ENDIAN,    1) // DWORD GetGlyphOutline(HDC hdc,  UINT uChar,  UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2);
-  _(ExtTextOutA,            s_arg6, 0,4,0, USING_STRING,  7) // BOOL ExtTextOut(HDC hdc, int X, int Y, UINT fuOptions, const RECT *lprc, LPCTSTR lpString, UINT cbCount, const INT *lpDx);
-  _(TextOutA,               s_arg4, 0,4,0, USING_STRING,  5) // BOOL TextOut(HDC hdc, int nXStart, int nYStart, LPCTSTR lpString, int cchString);
-  _(GetCharABCWidthsA,      s_arg2, 0,4,0, BIG_ENDIAN,    1) // BOOL GetCharABCWidths(HDC hdc, UINT uFirstChar, UINT uLastChar,  LPABC lpabc);
-  _(DrawTextA,              s_arg2, 0,4,0, USING_STRING,  3) // int DrawText(HDC hDC, LPCTSTR lpchText, int nCount, LPRECT lpRect, UINT uFormat);
-  _(DrawTextExA,            s_arg2, 0,4,0, USING_STRING,  3) // int DrawTextEx(HDC hdc, LPTSTR lpchText,int cchText, LPRECT lprc, UINT dwDTFormat, LPDRAWTEXTPARAMS lpDTParams);
-  //_(lstrlenA,             s_arg1, 0,4,0, USING_STRING,  0) // int WINAPI lstrlen(LPCTSTR lpString);
-  _(GetTextExtentPoint32W,  s_arg2, 0,4,0, USING_UNICODE|USING_STRING, 3)
-  _(GetGlyphOutlineW,       s_arg2, 0,4,0, USING_UNICODE, 1)
-  _(ExtTextOutW,            s_arg6, 0,4,0, USING_UNICODE|USING_STRING, 7)
-  _(TextOutW,               s_arg4, 0,4,0, USING_UNICODE|USING_STRING, 5)
-  _(GetCharABCWidthsW,      s_arg2, 0,4,0, USING_UNICODE, 1)
-  _(DrawTextW,              s_arg2, 0,4,0, USING_UNICODE|USING_STRING, 3)
-  _(DrawTextExW,            s_arg2, 0,4,0, USING_UNICODE|USING_STRING, 3)
-  //_(lstrlenW,             s_arg1, 0,4,0, USING_UNICODE|USING_STRING, 0) // 9/8/2013 jichi: add lstrlen
-#undef _
+  // gdi32.dll
+  ADD_HOOK(GetTextExtentPoint32A, s_arg2, 0,4,0, USING_STRING,  3) // BOOL GetTextExtentPoint32(HDC hdc, LPCTSTR lpString, int c, LPSIZE lpSize);
+  ADD_HOOK(GetGlyphOutlineA,      s_arg2, 0,4,0, BIG_ENDIAN,    1) // DWORD GetGlyphOutline(HDC hdc,  UINT uChar,  UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2);
+  ADD_HOOK(ExtTextOutA,           s_arg6, 0,4,0, USING_STRING,  7) // BOOL ExtTextOut(HDC hdc, int X, int Y, UINT fuOptions, const RECT *lprc, LPCTSTR lpString, UINT cbCount, const INT *lpDx);
+  ADD_HOOK(TextOutA,              s_arg4, 0,4,0, USING_STRING,  5) // BOOL TextOut(HDC hdc, int nXStart, int nYStart, LPCTSTR lpString, int cchString);
+  ADD_HOOK(GetCharABCWidthsA,     s_arg2, 0,4,0, BIG_ENDIAN,    1) // BOOL GetCharABCWidths(HDC hdc, UINT uFirstChar, UINT uLastChar,  LPABC lpabc);
+  ADD_HOOK(GetTextExtentPoint32W, s_arg2, 0,4,0, USING_UNICODE|USING_STRING, 3)
+  ADD_HOOK(GetGlyphOutlineW,      s_arg2, 0,4,0, USING_UNICODE, 1)
+  ADD_HOOK(ExtTextOutW,           s_arg6, 0,4,0, USING_UNICODE|USING_STRING, 7)
+  ADD_HOOK(TextOutW,              s_arg4, 0,4,0, USING_UNICODE|USING_STRING, 5)
+  ADD_HOOK(GetCharABCWidthsW,     s_arg2, 0,4,0, USING_UNICODE, 1)
+
+  // user32.dll
+  ADD_HOOK(DrawTextA,             s_arg2, 0,4,0, USING_STRING,  3) // int DrawText(HDC hDC, LPCTSTR lpchText, int nCount, LPRECT lpRect, UINT uFormat);
+  ADD_HOOK(DrawTextExA,           s_arg2, 0,4,0, USING_STRING,  3) // int DrawTextEx(HDC hdc, LPTSTR lpchText,int cchText, LPRECT lprc, UINT dwDTFormat, LPDRAWTEXTPARAMS lpDTParams);
+  ADD_HOOK(DrawTextW,             s_arg2, 0,4,0, USING_UNICODE|USING_STRING, 3)
+  ADD_HOOK(DrawTextExW,           s_arg2, 0,4,0, USING_UNICODE|USING_STRING, 3)
+//#undef _
+  ConsoleOutput("vnrcli:InsertGdiHooks: leave");
 }
 
-//#include <tchar.h> // for _tcsinc
-//#include <mbstring.h> // for _mbsinc
-//#include <boost/lexical_cast.hpp>
-//#include <string>
-
-void IHFAPI InsertNonGuiHooks() { InsertLstrHooks(); }
-
-#define ADD_HOOK(_name, _addr, _data, _data_ind, _split_off, _split_ind, _type, _len_off) \
-  { \
-    HookParam hp = {}; \
-    hp.addr = (DWORD)_addr; \
-    hp.off = _data; \
-    hp.ind = _data_ind; \
-    hp.split = _split_off; \
-    hp.split_ind = _split_ind; \
-    hp.type = _type; \
-    hp.length_offset = _len_off; \
-    NewHook(hp, _name); \
-  }
 
 // jichi 10/2/2013
 // Note: All functions does not have NO_CONTEXT attribute and will be filtered.
@@ -820,8 +828,8 @@ void IHFAPI InsertLstrHooks()
   // int WINAPI lstrlen(LPCTSTR lpString);
   // Lstr functions usually extracts rubbish, and might crash certain games like 「Magical Marriage Lunatics!!」
   // Needed by Gift
-  ADD_HOOK(L"lstrlenA", lstrlenA, s_arg1,   0,4,0, USING_STRING,  0) // 9/8/2013 jichi: int WINAPI lstrlen(LPCTSTR lpString);
-  ADD_HOOK(L"lstrlenW", lstrlenW, s_arg1,   0,4,0, USING_UNICODE|USING_STRING, 0) // 9/8/2013 jichi: add lstrlen
+  ADD_HOOK(lstrlenA, s_arg1, 0,4,0, USING_STRING, 0) // 9/8/2013 jichi: int WINAPI lstrlen(LPCTSTR lpString);
+  ADD_HOOK(lstrlenW, s_arg1, 0,4,0, USING_UNICODE|USING_STRING, 0) // 9/8/2013 jichi: add lstrlen
 
   // size_t strlen(const char *str);
   // size_t strlen_l(const char *str, _locale_t locale);
@@ -891,8 +899,8 @@ void IHFAPI InsertWcharHooks()
 
   // 3/17/2014 jichi: Temporarily disabled
   // http://sakuradite.com/topic/159
-  ADD_HOOK(L"MultiByteToWideChar", MultiByteToWideChar, s_arg3,  0,4,0, USING_STRING, 4)
-  ADD_HOOK(L"WideCharToMultiByte", WideCharToMultiByte, s_arg3,  0,4,0, USING_UNICODE|USING_STRING, 4)
+  ADD_HOOK(MultiByteToWideChar, s_arg3, 0,4,0, USING_STRING, 4)
+  ADD_HOOK(WideCharToMultiByte, s_arg3, 0,4,0, USING_UNICODE|USING_STRING, 4)
   ConsoleOutput("vnrcli:InsertWcharHooks: leave");
 }
 

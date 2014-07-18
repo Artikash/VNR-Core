@@ -49,24 +49,6 @@ enum pusha_off{
   , pusha_off = -0x24 // pushad offset
 };
 
-#define HOOK_FUN_NAME_LIST \
-  L"GetTextExtentPoint32A" \
-  , L"GetGlyphOutlineA" \
-  , L"ExtTextOutA" \
-  , L"TextOutA" \
-  , L"GetCharABCWidthsA" \
-  , L"DrawTextA" \
-  , L"DrawTextExA" \
-  , L"GetTextExtentPoint32W" \
-  , L"GetGlyphOutlineW" \
-  , L"ExtTextOutW" \
-  , L"TextOutW" \
-  , L"GetCharABCWidthsW" \
-  , L"DrawTextW" \
-  , L"DrawTextExW"
-  //, L"lstrlenA"
-  //, L"lstrlenW"
-
 enum IhfCommandType {
   IHF_COMMAND = -1 // null type
   , IHF_COMMAND_NEW_HOOK = 0

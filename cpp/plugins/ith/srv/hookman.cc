@@ -26,7 +26,7 @@ enum { MAX_ENTRY = 0x40 };
 
 // jichi 9/28/2013: Remove ConsoleOutput from available hooks
 //LPWSTR HookNameInitTable[]={ L"ConsoleOutput" , HOOK_FUN_NAME_LIST };
-LPCWSTR HookNameInitTable[] = {HOOK_FUN_NAME_LIST};
+//LPCWSTR HookNameInitTable[] = {HOOK_FUN_NAME_LIST};
 //LPVOID DefaultHookAddr[HOOK_FUN_COUNT];
 
 //BYTE null_buffer[4]={0,0,0,0};
