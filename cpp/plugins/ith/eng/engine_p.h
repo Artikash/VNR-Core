@@ -20,9 +20,9 @@ extern trigger_fun_t trigger_fun_;
 // Engine-specific hooks
 
 bool InsertPPSSPPHook();        // PPSSPPWindows
-bool Insert5pbPSPHook(DWORD startAddress, DWORD stopAddress);        // PSP 5pb.jp
-bool InsertAlchemistPSPHook(DWORD startAddress, DWORD stopAddress);  // PSP Alchemist-net.co.jp
-bool InsertImageepochPSPHook(DWORD startAddress, DWORD stopAddress); // PSP Imageepoch.co.jp
+bool Insert5pbPSPHook();        // PSP 5pb.jp
+bool InsertAlchemistPSPHook();  // PSP Alchemist-net.co.jp
+bool InsertImageepochPSPHook(); // PSP Imageepoch.co.jp
 //bool InsertShadePSPHook();    // PSP SHADE.co.jp
 
 bool InsertAbelHook();          // Abel
