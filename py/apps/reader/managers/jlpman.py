@@ -30,7 +30,9 @@ class JlpManager:
 
   def isEnabled(self): return bool(self._parserType) # -> bool
 
-  def setParserType(self, v): self._parserType = v # str ->
+  def setParserType(self, v):
+    pass # Always use 'mecab'
+    #self._parserType = v # str ->
 
   def parseToRuby(self, text):
     """

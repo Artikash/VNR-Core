@@ -80,6 +80,10 @@ isalnumpunct = (ch) -> /[0-9a-zA-Z０-９ａ-ｚＡ-Ｚ'"?!,\.]/.test ch # strin
 
 ## Render
 
+ttsenabled = -> # -> bool
+  annot = document.body.dataset.annot
+  (not annot or ~annot.indexOf 'tts')
+
 # %span sentence
 #   %ruby(class=word#{number})
 #     %rb text
@@ -96,7 +100,7 @@ renderruby = (text, ruby, feature, className) -> # must be consistent with parse
   ret.appendChild rt
   ret.ondblclick = ->
     annot = document.body.dataset.annot
-    ttsBean.speak text if text and (not annot or ~annot.indexOf 'tts')
+    ttsBean.speak text if text and ttsenabled()
   ret
 
 renderrepl = (text) -> # string -> node
@@ -124,7 +128,7 @@ renderrepl = (text) -> # string -> node
         seg.appendChild ruby
       if segtext
         seg.onclick = do (segtext) ->-> # bind segtext
-          ttsBean.speak segtext if ttsBean.isEnabled()
+          ttsBean.speak segtext if ttsenabled()
       ret.appendChild seg
     ret
 
