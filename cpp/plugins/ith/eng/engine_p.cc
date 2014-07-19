@@ -5704,42 +5704,47 @@ struct PPSSPPFunction
   const wchar_t *hookName; // hook name
   size_t argIndex;      // argument index
   ULONG hookType;       // hook parameter type
+  ULONG hookSplit;      // hook parameter split, positive: stack, negative: registers
   const char *pattern;  // debug string used within the function
 };
 
 // jichi 7/14/2014: UTF-8 is treated as STRING
 // http://867258173.diandian.com/post/2014-06-26/40062099618
 // sceFontGetCharGlyphImage_Clip
+// Sample game: [KID] Monochrome: sceFontGetCharInfo, sceFontGetCharGlyphImage_Clip
+//
+// Example: { L"sceFontGetCharInfo", 2, USING_UNICODE, 4, "sceFontGetCharInfo(" }
+// Text is at arg2, using arg1 as split
 #define PPSSPP_FUNCTIONS_INITIALIZER \
-    { L"sceCccStrlenSJIS",  1, USING_STRING,  "sceCccStrlenSJIS(" } \
-  , { L"sceCccStrlenUTF8",  1, USING_STRING,  "sceCccStrlenUTF8(" } \
-  , { L"sceCccStrlenUTF16", 1, USING_UNICODE, "sceCccStrlenUTF16(" } \
+    { L"sceCccStrlenSJIS",  1, USING_STRING,  0, "sceCccStrlenSJIS(" } \
+  , { L"sceCccStrlenUTF8",  1, USING_STRING,  0, "sceCccStrlenUTF8(" } \
+  , { L"sceCccStrlenUTF16", 1, USING_UNICODE, 0, "sceCccStrlenUTF16(" } \
 \
-  , { L"sceCccSJIStoUTF8",  3, USING_STRING,  "sceCccSJIStoUTF8(" } \
-  , { L"sceCccSJIStoUTF16", 3, USING_STRING,  "sceCccSJIStoUTF16(" } \
-  , { L"sceCccUTF8toSJIS",  3, USING_STRING,  "sceCccUTF8toSJIS(" } \
-  , { L"sceCccUTF8toUTF16", 3, USING_STRING,  "sceCccUTF8toUTF16(" } \
-  , { L"sceCccUTF16toSJIS", 3, USING_UNICODE, "sceCccUTF16toSJIS(" } \
-  , { L"sceCccUTF16toUTF8", 3, USING_UNICODE, "sceCccUTF16toUTF8(" } \
+  , { L"sceCccSJIStoUTF8",  3, USING_STRING,  0, "sceCccSJIStoUTF8(" } \
+  , { L"sceCccSJIStoUTF16", 3, USING_STRING,  0, "sceCccSJIStoUTF16(" } \
+  , { L"sceCccUTF8toSJIS",  3, USING_STRING,  0, "sceCccUTF8toSJIS(" } \
+  , { L"sceCccUTF8toUTF16", 3, USING_STRING,  0, "sceCccUTF8toUTF16(" } \
+  , { L"sceCccUTF16toSJIS", 3, USING_UNICODE, 0, "sceCccUTF16toSJIS(" } \
+  , { L"sceCccUTF16toUTF8", 3, USING_UNICODE, 0, "sceCccUTF16toUTF8(" } \
 \
-  , { L"sceFontGetCharInfo",              2, USING_UNICODE, "sceFontGetCharInfo(" } \
-  , { L"sceFontGetShadowInfo",            2, USING_UNICODE, "sceFontGetShadowInfo("} \
-  , { L"sceFontGetCharImageRect",         2, USING_UNICODE, "sceFontGetCharImageRect(" } \
-  , { L"sceFontGetShadowImageRect",       2, USING_UNICODE, "sceFontGetShadowImageRect(" } \
-  , { L"sceFontGetCharGlyphImage",        2, USING_UNICODE, "sceFontGetCharGlyphImage(" } \
-  , { L"sceFontGetCharGlyphImage_Clip",   2, USING_UNICODE, "sceFontGetCharGlyphImage_Clip(" } \
-  , { L"sceFontGetShadowGlyphImage",      2, USING_UNICODE, "sceFontGetShadowGlyphImage(" } \
-  , { L"sceFontGetShadowGlyphImage_Clip", 2, USING_UNICODE, "sceFontGetShadowGlyphImage_Clip(" } \
+  , { L"sceFontGetCharInfo",              2, USING_UNICODE, 4, "sceFontGetCharInfo(" } \
+  , { L"sceFontGetShadowInfo",            2, USING_UNICODE, 4, "sceFontGetShadowInfo("} \
+  , { L"sceFontGetCharImageRect",         2, USING_UNICODE, 4, "sceFontGetCharImageRect(" } \
+  , { L"sceFontGetShadowImageRect",       2, USING_UNICODE, 4, "sceFontGetShadowImageRect(" } \
+  , { L"sceFontGetCharGlyphImage",        2, USING_UNICODE, 4, "sceFontGetCharGlyphImage(" } \
+  , { L"sceFontGetCharGlyphImage_Clip",   2, USING_UNICODE, 4, "sceFontGetCharGlyphImage_Clip(" } \
+  , { L"sceFontGetShadowGlyphImage",      2, USING_UNICODE, 4, "sceFontGetShadowGlyphImage(" } \
+  , { L"sceFontGetShadowGlyphImage_Clip", 2, USING_UNICODE, 4, "sceFontGetShadowGlyphImage_Clip(" } \
 \
-  , { L"sysclib_strcat", 2, USING_STRING, "Untested sysclib_strcat(" } \
-  , { L"sysclib_strcpy", 2, USING_STRING, "Untested sysclib_strcpy(" } \
-  , { L"sysclib_strlen", 1, USING_STRING, "Untested sysclib_strlen(" }
+  , { L"sysclib_strcat", 2, USING_STRING, 0, "Untested sysclib_strcat(" } \
+  , { L"sysclib_strcpy", 2, USING_STRING, 0, "Untested sysclib_strcpy(" } \
+  , { L"sysclib_strlen", 1, USING_STRING, 0, "Untested sysclib_strlen(" }
 
   // Disabled as I am not sure how to deal with the source string
-  //, { L"sceCccEncodeSJIS", 2, USING_STRING, "sceCccEncodeSJIS(" }
-  //, { L"sceCccEncodeUTF8", 2, USING_STRING, "sceCccEncodeUTF8(" }
-  //, { L"sceCccEncodeUTF16", 2, USING_UNICODE, "sceCccEncodeUTF16(" }
-  //, { L"sysclib_strcmp", 2, USING_STRING, "Untested sysclib_strcmp(" }
+  //, { L"sceCccEncodeSJIS", 2, USING_STRING, 0, "sceCccEncodeSJIS(" }
+  //, { L"sceCccEncodeUTF8", 2, USING_STRING, 0, "sceCccEncodeUTF8(" }
+  //, { L"sceCccEncodeUTF16", 2, USING_UNICODE, 0, "sceCccEncodeUTF16(" }
+  //, { L"sysclib_strcmp", 2, USING_STRING, 0, "Untested sysclib_strcmp(" }
 
 } // unnamed namespace
 
@@ -5769,6 +5774,9 @@ bool InsertPPSSPPHook()
         hp.addr = addr;
         hp.type = it.hookType;
         hp.off = 4 * it.argIndex;
+        hp.split = it.hookSplit;
+        if (hp.split)
+          hp.type |= USING_SPLIT;
         NewHook(hp, it.hookName);
       }
     if (addr)
