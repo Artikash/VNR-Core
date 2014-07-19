@@ -5782,9 +5782,9 @@ bool InsertPPSSPPHook()
   // TODO: Query MEM_Mapped at runtime
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
   //enum : DWORD { PSPStartAddress = 0x12000000, PSPStopAddress = 0x14000000 };
-  //Insert5pbPSPHook();
+  Insert5pbPSPHook();
   InsertImageepochPSPHook();
-  //InsertAlchemistPSPHook();
+  InsertAlchemistPSPHook();
 
   //InsertShadePSPHook();
   ConsoleOutput("vnreng: PPSSPP: leave");
