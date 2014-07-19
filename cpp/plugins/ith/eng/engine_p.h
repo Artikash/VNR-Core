@@ -22,6 +22,7 @@ extern trigger_fun_t trigger_fun_;
 bool InsertPPSSPPHook();        // PPSSPPWindows
 bool Insert5pbPSPHook();        // PSP 5pb.jp
 bool InsertAlchemistPSPHook();  // PSP Alchemist-net.co.jp
+bool InsertCyberfrontPSPHook(); // PSP CYBERFRONT (closed)
 bool InsertImageepochPSPHook(); // PSP Imageepoch.co.jp
 bool InsertKidPSPHook();        // PSP Kid-game.co.jp
 bool InsertYetiPSPHook();       // PSP Yetigame.jp

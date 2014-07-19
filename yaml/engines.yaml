@@ -14,6 +14,7 @@ psp:
   - Alchemist PSP
   - Imageepoch PSP
   - KID PSP
+  - CYBERFRONT PSP
   - Yeti PSP
 
 embed:
@@ -92,6 +93,7 @@ simple:
   - CIRCUS
   - CMVS
   - CMVS2
+  - CYBERFRONT PSP
   - Elf
   - Eushully
   - KID PSP
@@ -126,6 +128,8 @@ single: # single thread
   - Eushully
   - Rejet
   - SiglusEngine2
+  - 5pb PSP
+  - CYBERFRONT PSP
 
 repeat:
   - Malie       # finite
@@ -189,6 +193,7 @@ char:
   - sceCccSJIStoUTF16
   # Engines
   - 5pb PSP
+  - CYBERFRONT PSP
   - AbelSoftware
   - Alchemist PSP
   - AMUSE CRAFT

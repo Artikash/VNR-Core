@@ -26,6 +26,11 @@
 
 //#define DEBUG "engine_p.h"
 
+enum : BYTE { XX = MemDbg::WidecardByte };
+#define XX2 XX,XX       // WORD
+#define XX4 XX2,XX2     // DWORD
+#define XX8 XX4,XX4,    // QWORD
+
 #ifdef DEBUG
 # include "ith/common/growl.h"
 namespace { // unnamed debug functions
@@ -120,7 +125,7 @@ ULONG SafeFindBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD 
   return r;
 }
 
-ULONG SafeMatchBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, BYTE wildcard)
+ULONG SafeMatchBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, BYTE wildcard = XX)
 {
   ULONG r = 0;
   ITH_WITH_SEH(r = MemDbg::matchBytes(pattern, patternSize, lowerBound, upperBound, wildcard));
@@ -128,7 +133,7 @@ ULONG SafeMatchBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD
 }
 
 // jichi 7/17/2014: Search mapped memory for emulators
-ULONG SafeMatchBytesInMappedMemory(LPCVOID pattern, DWORD patternSize, BYTE wildcard)
+ULONG SafeMatchBytesInMappedMemory(LPCVOID pattern, DWORD patternSize, BYTE wildcard = XX)
 {
   enum : ULONG {
     start = MemDbg::MappedMemoryStartAddress, // 0x01000000
@@ -5792,7 +5797,8 @@ bool InsertPPSSPPHook()
   //enum : DWORD { PSPStartAddress = 0x12000000, PSPStopAddress = 0x14000000 };
   if (!Insert5pbPSPHook()) {
     InsertYetiPSPHook();
-    InsertKidPSPHook();
+    InsertKidPSPHook(); // this might conflict with Imageepoch
+    InsertCyberfrontPSPHook();
 
     InsertAlchemistPSPHook();
     InsertImageepochPSPHook(); // could have duplication issue
@@ -5875,9 +5881,6 @@ static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, 
 bool InsertAlchemistPSPHook()
 {
   ConsoleOutput("vnreng: Alchemist PSP: enter");
-  enum : BYTE { XX = MemDbg::WidecardByte };
-#define XX4 XX,XX,XX,XX  // DWORD
-
   const BYTE bytes[] =  {
      //0xcc,                           // 134076f2   cc               int3
      //0xcc,                           // 134076f3   cc               int3
@@ -5899,7 +5902,7 @@ bool InsertAlchemistPSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //addr = 0x134076f2; // your diary+
   //ITH_GROWL_DWORD(addr);
@@ -5925,7 +5928,6 @@ bool InsertAlchemistPSPHook()
 
   ConsoleOutput("vnreng: Alchemist PSP: leave");
   return addr;
-#undef XX4
 }
 
 /** 7/13/2014 jichi 5pb.jp PSP engine
@@ -6108,7 +6110,6 @@ bool Insert5pbPSPHook()
 {
   ConsoleOutput("vnreng: 5pb PSP: enter");
   enum : BYTE { XX = MemDbg::WidecardByte };
-#define XX4 XX,XX,XX,XX  // DWORD
 
   const BYTE bytes[] =  {
     //0x90,                         // 135752c7   90               nop
@@ -6155,7 +6156,7 @@ bool Insert5pbPSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //addr = 0x13574a18;
   //ITH_GROWL_DWORD(addr);
@@ -6183,7 +6184,6 @@ bool Insert5pbPSPHook()
 
   ConsoleOutput("vnreng: 5pb PSP: leave");
   return addr;
-#undef XX4
 }
 
 /** 7/13/2014 jichi imageepoch.co.jp PSP engine
@@ -6257,7 +6257,6 @@ bool InsertImageepochPSPHook()
 {
   ConsoleOutput("vnreng: Imageepoch PSP: enter");
   enum : BYTE { XX = MemDbg::WidecardByte };
-#define XX4 XX,XX,XX,XX  // DWORD
 
   const BYTE bytes[] =  {
     //0xcc,                         // 1346d34f   cc               int3
@@ -6277,7 +6276,7 @@ bool InsertImageepochPSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
   if (!addr)
@@ -6301,7 +6300,6 @@ bool InsertImageepochPSPHook()
 
   ConsoleOutput("vnreng: Imageepoch PSP: leave");
   return addr;
-#undef XX4
 }
 
 /** 7/19/2014 jichi yetigame.jp PSP engine
@@ -6790,7 +6788,6 @@ bool InsertYetiPSPHook()
 {
   ConsoleOutput("vnreng: Yeti PSP: enter");
   enum : BYTE { XX = MemDbg::WidecardByte };
-#define XX4 XX,XX,XX,XX  // DWORD
 
 #if 0 // the first function I got
   const BYTE bytes[] =  {
@@ -6848,7 +6845,7 @@ bool InsertYetiPSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
   if (!addr)
@@ -6872,7 +6869,6 @@ bool InsertYetiPSPHook()
 
   ConsoleOutput("vnreng: Yeti PSP: leave");
   return addr;
-#undef XX4
 }
 
 /** 7/19/2014 jichi kid-game.co.jp PSP engine
@@ -6987,7 +6983,6 @@ bool InsertKidPSPHook()
 {
   ConsoleOutput("vnreng: KID PSP: enter");
   enum : BYTE { XX = MemDbg::WidecardByte };
-#define XX4 XX,XX,XX,XX  // DWORD
 
   const BYTE bytes[] =  {
     //0x90,                           // 13973a7b   90               nop
@@ -7007,7 +7002,7 @@ bool InsertKidPSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
   if (!addr)
@@ -7031,7 +7026,117 @@ bool InsertKidPSPHook()
 
   ConsoleOutput("vnreng: KID PSP: leave");
   return addr;
-#undef XX4
+}
+
+/** 7/19/2014 jichi CYBERFRONT PSP engine
+ *  Sample game: 想いのかけら クローストゥ
+ *
+ *  Debug method: breakpoint the memory address
+ *  There are two matched memory address to the current text
+ *
+ *  13909a02   cc               int3
+ *  13909a03   cc               int3
+ *  13909a04   77 0f            ja short 13909a15
+ *  13909a06   c705 a8aa1001 64>mov dword ptr ds:[0x110aaa8],0x8815864
+ *  13909a10  -e9 ef65d1ef      jmp 03620004
+ *  13909a15   c705 e4a71001 6c>mov dword ptr ds:[0x110a7e4],0x881586c
+ *  13909a1f   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
+ *  13909a26  ^e9 5572ffff      jmp 13900c80
+ *  13909a2b   90               nop
+ *  13909a2c   77 0f            ja short 13909a3d
+ *  13909a2e   c705 a8aa1001 04>mov dword ptr ds:[0x110aaa8],0x8815304
+ *  13909a38  -e9 c765d1ef      jmp 03620004
+ *  13909a3d   c7c6 00000000    mov esi,0x0
+ *  13909a43   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
+ *  13909a49   81e0 ffffff3f    and eax,0x3fffffff
+ *  13909a4f   8bd6             mov edx,esi
+ *  13909a51   8890 00008007    mov byte ptr ds:[eax+0x7800000],dl ; jichi: hook here
+ *  13909a57   8b3d aca71001    mov edi,dword ptr ds:[0x110a7ac]
+ *  13909a5d   81c7 02000000    add edi,0x2
+ *  13909a63   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
+ *  13909a69   81e0 ffffff3f    and eax,0x3fffffff
+ *  13909a6f   8bd6             mov edx,esi
+ *  13909a71   8890 01008007    mov byte ptr ds:[eax+0x7800001],dl
+ *  13909a77   8b05 bca71001    mov eax,dword ptr ds:[0x110a7bc]
+ *  13909a7d   81e0 ffffff3f    and eax,0x3fffffff
+ *  13909a83   8ba8 b4ce7f07    mov ebp,dword ptr ds:[eax+0x77fceb4]
+ *  13909a89   8bc5             mov eax,ebp
+ *  13909a8b   81e0 ffffff3f    and eax,0x3fffffff
+ *  13909a91   89b8 a8128007    mov dword ptr ds:[eax+0x78012a8],edi
+ *  13909a97   892d 70a71001    mov dword ptr ds:[0x110a770],ebp
+ *  13909a9d   893d 74a71001    mov dword ptr ds:[0x110a774],edi
+ *  13909aa3   c705 78a71001 00>mov dword ptr ds:[0x110a778],0x0
+ *  13909aad   c705 e4a71001 20>mov dword ptr ds:[0x110a7e4],0x8815320
+ *  13909ab7   832d c4aa1001 07 sub dword ptr ds:[0x110aac4],0x7
+ *  13909abe  ^e9 5521f8ff      jmp 1388bc18
+ *  13909ac3   90               nop
+ */
+// Get text from [eax + 0x740000]
+static void SpecialPSPHookCyberfront(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  //enum { base = 0x7400000 };
+  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
+  DWORD eax = regof(eax, esp_base);
+
+  LPCSTR text = (LPCSTR)(eax + base);
+  if (*text) {
+    *data = (DWORD)text;
+    *len = ::strlen(text);
+    *split = regof(ecx, esp_base);
+  }
+}
+
+bool InsertCyberfrontPSPHook()
+{
+  ConsoleOutput("vnreng: CYBERFRONT PSP: enter");
+  enum : BYTE { XX = MemDbg::WidecardByte };
+
+  const BYTE bytes[] =  {
+    //0x90,                         // 13909a2b   90               nop
+    0x77, 0x0f,                     // 13909a2c   77 0f            ja short 13909a3d
+    0xc7,0x05, XX4, XX4,            // 13909a2e   c705 a8aa1001 04>mov dword ptr ds:[0x110aaa8],0x8815304
+    0xe9, XX4,                      // 13909a38  -e9 c765d1ef      jmp 03620004
+    0xc7,0xc6, 0x00,0x00,0x00,0x00, // 13909a3d   c7c6 00000000    mov esi,0x0
+    0x8b,0x05, XX4,                 // 13909a43   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13909a49   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xd6,                      // 13909a4f   8bd6             mov edx,esi
+    0x88,0x90, XX4,                 // 13909a51   8890 00008007    mov byte ptr ds:[eax+0x7800000],dl ; jichi: hook here
+    0x8b,0x3d, XX4,                 // 13909a57   8b3d aca71001    mov edi,dword ptr ds:[0x110a7ac]
+    0x81,0xc7, 0x02,0x00,0x00,0x00, // 13909a5d   81c7 02000000    add edi,0x2
+    0x8b,0x05, XX4,                 // 13909a63   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13909a69   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xd6,                      // 13909a6f   8bd6             mov edx,esi
+    0x88,0x90 //, XX4,              // 13909a71   8890 01008007    mov byte ptr ds:[eax+0x7800001],dl
+  };
+  enum { hook_offset = 0x13909a51 - 0x13909a2c };
+  //enum { hook_offset = sizeof(bytes) - 3 };
+
+  // This process might raise before the PSP ISO is loaded
+  // TODO: Create a timer thread to periodically try different PSP engines
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //ITH_GROWL_DWORD(addr);
+  //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
+  if (!addr)
+    ConsoleOutput("vnreng: CYBERFRONT PSP: pattern not found");
+  else {
+    addr += hook_offset;
+    //ITH_GROWL_DWORD(addr);
+
+    // Get this value at runtime in case it is runtime-dependent
+    DWORD membase = *(DWORD *)(addr + 2);
+    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
+
+    HookParam hp = {};
+    hp.addr = addr;
+    hp.extern_fun = SpecialPSPHookCyberfront;
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
+    hp.module = membase; // use module to pass membase
+    ConsoleOutput("vnreng: CYBERFRONT PSP: INSERT");
+    NewHook(hp, L"CYBERFRONT PSP");
+  }
+
+  ConsoleOutput("vnreng: CYBERFRONT PSP: leave");
+  return addr;
 }
 
 } // namespace Engine
@@ -7129,8 +7234,6 @@ bool InsertShadePSPHook()
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
   enum : DWORD { StartAddress = 0x13390000, StopAddress = 0x13490000 };
   enum : BYTE { XX = MemDbg::WidecardByte };
-#define XX4 XX,XX,XX,XX             // DWORD
-#define XX8 XX,XX,XX,XX,XX,XX,XX,XX // QWORD
 
   const BYTE bytes[] =  {
     0xcc,                           // 13400e12   cc               int3
@@ -7151,7 +7254,7 @@ bool InsertShadePSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodially try different PSP engines
-  ULONG addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
+  ULONG addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Shade PSP: failed");
   else {
@@ -7174,8 +7277,6 @@ bool InsertShadePSPHook()
   //ITH_GROWL_DWORD(*(BYTE *)peek); // supposed to be 0x77 ja
   ConsoleOutput("vnreng: Shade PSP: leave");
   return addr;
-#undef XX4
-#undef XX8
 }
 
 #endif // 0
@@ -7267,7 +7368,6 @@ bool InsertAlchemist2PSPHook()
   //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
   //enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
   enum : BYTE { XX = MemDbg::WidecardByte };
-#define XX4 XX,XX,XX,XX  // DWORD
 
   const BYTE bytes[] =  {
     //0xcc,                         // 13400e12   cc               int3
@@ -7288,7 +7388,7 @@ bool InsertAlchemist2PSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //addr = 0x134076f2; // your diary+
   //ITH_GROWL_DWORD(addr);
@@ -7314,7 +7414,6 @@ bool InsertAlchemist2PSPHook()
 
   ConsoleOutput("vnreng: Alchemist2 PSP: leave");
   return addr;
-#undef XX4
 }
 #endif // 0
 
