@@ -435,6 +435,7 @@ DWORD matchBytes(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD
   return reladdr ? lowerBound + reladdr : 0;
 }
 
+#if 0 // not used
 DWORD findBytesInPages(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, SearchType search)
 {
   //enum { MinPageSize = 4 * 1024 }; // 4k
@@ -502,6 +503,8 @@ DWORD matchBytesInPages(const void *pattern, DWORD patternSize, DWORD lowerBound
     ret = matchBytes(pattern, patternSize, start, min(upperBound, stop), wildcard);
   return ret;
 }
+
+#endif // 0
 
 MEMDBG_END_NAMESPACE
 

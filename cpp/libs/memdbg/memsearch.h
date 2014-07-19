@@ -119,13 +119,12 @@ enum : byte_t { WidecardByte = 0x11 }; // jichi 7/17/2014: 0x11 seldom appear in
 dword_t matchBytes(const void *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound,
                    byte_t wildcard = WidecardByte);
 
-enum SearchType : byte_t { SearchAll = 0 , SearchFirst };
-
 // 2GB: 0 - 0x7fffffff
 // http://codesequoia.wordpress.com/2008/11/28/understand-process-address-space-usage/
 enum MemoryRange : dword_t { MemoryStartAddress = 0 , MemoryStopAddress = 0x7fffffff };
 enum : dword_t { MappedMemoryStartAddress = 0x01000000};
 
+#if 0 // not used
 /**
  *  Traverse memory continues pages and return the address of the first matched pattern.
  *
@@ -136,12 +135,16 @@ enum : dword_t { MappedMemoryStartAddress = 0x01000000};
  *  @param* search  search all pages (SearchAll) or stop on first illegal access (SearchFirst)
  *  @return  absolute address
  */
+enum SearchType : byte_t { SearchAll = 0 , SearchFirst };
+
 dword_t findBytesInPages(const void *pattern, dword_t patternSize,
     dword_t lowerBound = MemoryStartAddress, dword_t upperBound = MemoryStopAddress,
     SearchType search = SearchAll);
 dword_t matchBytesInPages(const void *pattern, dword_t patternSize,
     dword_t lowerBound = MemoryStartAddress, dword_t upperBound = MemoryStopAddress,
     byte_t wildcard = WidecardByte, SearchType search = SearchAll);
+
+#endif // 0
 
 MEMDBG_END_NAMESPACE
 

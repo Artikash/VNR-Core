@@ -131,12 +131,12 @@ ULONG SafeMatchBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD
 ULONG SafeMatchBytesInMappedMemory(LPCVOID pattern, DWORD patternSize, BYTE wildcard)
 {
   enum : ULONG {
-    PspStart = MemDbg::MappedMemoryStartAddress,
-    PspStop = MemDbg::MemoryStopAddress,
-    PspStep = 0x01000000
+    start = MemDbg::MappedMemoryStartAddress, // 0x01000000
+    stop = MemDbg::MemoryStopAddress, // 0x7fffffff
+    step = 0x01000000
   };
-  for (ULONG i = PspStart; i < PspStop; i += PspStep) // + patternSize to avoid overlap
-    if (ULONG r = SafeMatchBytes(pattern, patternSize, i, i + PspStep + patternSize + 1, wildcard))
+  for (ULONG i = start; i < stop; i += step) // + patternSize to avoid overlap
+    if (ULONG r = SafeMatchBytes(pattern, patternSize, i, i + step + patternSize + 1, wildcard))
       return r;
   return 0;
 }
@@ -5585,7 +5585,7 @@ bool InsertNeXASHook()
 // Ignore image and music file names
 // Sample text: "Voice\tou00012.ogg""運命論って云うのかなあ……神さまを信じてる人が多かったからだろうね、何があっても、それは神さまが自分たちに与えられた試練なんだって、そう思ってたみたい。勿論、今でもそう考えている人はいっぱいいるんだけど。"
 // Though the input string is UTF-8, it should be ASCII compatible.
-static bool _yk2ignore(const char *p)
+static bool _yk2garbage(const char *p)
 {
   //Q_ASSERT(p);
   while (char ch = *p++) {
@@ -5605,7 +5605,7 @@ static void SpecialHookYukaSystem2(DWORD esp_base, HookParam *hp, DWORD *data, D
         arg3 = argof(3, esp_base); // [esp+0xc]
         //arg4 = argof(4, esp_base); // there is no arg4. arg4 is properlly a function pointer
   LPCSTR text = (LPCSTR)arg2;
-  if (*text && !_yk2ignore(text)) { // I am sure this could be null
+  if (*text && !_yk2garbage(text)) { // I am sure this could be null
     *data = (DWORD)text;
     *len = ::strlen(text); // UTF-8 is null-terminated
     if (arg3)
@@ -6039,16 +6039,39 @@ bool InsertAlchemistPSPHook()
  *  135754fa   cc               int3
  *  135754fb   cc               int3
  */
-// Trim the trailing garbage characters
-// Sample input text: ちょっと黙れ、のゼスチャー。%K%P
-static size_t _5pbstrlen(LPCSTR text)
+namespace { // unnamed
+
+// Characters to ignore: [%0-9A-Z]
+inline bool _5pbgarbage(char c)
+{ return c == '%' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9'; }
+
+enum { _5pb_MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+// Trim leading garbage
+LPCSTR _5pbltrim(LPCSTR p)
 {
-  //Q_ASSERT(text);
-  size_t len = ::strlen(text);
-  while (len > 2 && text[len - 2] == '%')
-    len -= 2;
-  return len;
+  if (p)
+    for (int count = 0; (*p) && count < _5pb_MAX_LENGTH; count++, p++)
+      if (!_5pbgarbage(*p))
+        return p;
+  return nullptr;
 }
+
+// Trim trailing garbage
+size_t _5pbstrlen(LPCSTR text)
+{
+  if (!text)
+    return 0;
+  size_t len = ::strlen(text);
+  size_t ret = len;
+  while (len && _5pbgarbage(text[len - 1])) {
+    len--;
+    if (text[len] == '%') // in case trim UTF-8 trailing bytes
+      ret = len;
+  }
+  return ret;
+}
+
+} // unnamed namespace
 
 // Get text from [eax + 0x740000]
 static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
@@ -6062,6 +6085,7 @@ static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
 
   LPCSTR text = (LPCSTR)(eax + base);
   if (*text) {
+    text = _5pbltrim(text);
     *data = (DWORD)text;
     *len = _5pbstrlen(text);
     *split = ecx;
