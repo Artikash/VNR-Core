@@ -120,20 +120,23 @@ ULONG SafeFindBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD 
   return r;
 }
 
-ULONG SafeFindBytesWithWildcard(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, BYTE wildcard)
+ULONG SafeMatchBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, BYTE wildcard)
 {
   ULONG r = 0;
-  ITH_WITH_SEH(r = MemDbg::findBytesWithWildcard(pattern, patternSize, lowerBound, upperBound, wildcard));
+  ITH_WITH_SEH(r = MemDbg::matchBytes(pattern, patternSize, lowerBound, upperBound, wildcard));
   return r;
 }
 
-// jichi 7/17/2014: Use SEH to avoid illegal memory accesses
-// FIXME: Need a way to query MEM_MAPPED at runtime like Ollydbg and Cheat Engine
-ULONG PspFindBytesWithWildcard(LPCVOID pattern, DWORD patternSize, BYTE wildcard)
+// jichi 7/17/2014: Search mapped memory for emulators
+ULONG SafeMatchBytesInMappedMemory(LPCVOID pattern, DWORD patternSize, BYTE wildcard)
 {
-  enum : ULONG { PspStart = 0x0a000000, PspStop = 0x14000000, PspStep = 0x01000000 };
-  for (ULONG i = PspStart; i < PspStop; i += PspStep) // 0x2000 is to cover the overlappd region
-    if (ULONG r = SafeFindBytesWithWildcard(pattern, patternSize, i, i + PspStep + 0x2000, wildcard))
+  enum : ULONG {
+    PspStart = MemDbg::MappedMemoryStartAddress,
+    PspStop = MemDbg::MemoryStopAddress,
+    PspStep = 0x01000000
+  };
+  for (ULONG i = PspStart; i < PspStop; i += PspStep) // + patternSize to avoid overlap
+    if (ULONG r = SafeMatchBytes(pattern, patternSize, i, i + PspStep + patternSize + 1, wildcard))
       return r;
   return 0;
 }
@@ -5779,10 +5782,9 @@ bool InsertPPSSPPHook()
   // TODO: Query MEM_Mapped at runtime
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
   //enum : DWORD { PSPStartAddress = 0x12000000, PSPStopAddress = 0x14000000 };
-  Insert5pbPSPHook();
+  //Insert5pbPSPHook();
   InsertImageepochPSPHook();
-  InsertAlchemistPSPHook();
-  //InsertAlchemist2PSPHook();
+  //InsertAlchemistPSPHook();
 
   //InsertShadePSPHook();
   ConsoleOutput("vnreng: PPSSPP: leave");
@@ -5861,8 +5863,7 @@ static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, 
 bool InsertAlchemistPSPHook()
 {
   ConsoleOutput("vnreng: Alchemist PSP: enter");
-  //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
-  enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
+  enum : BYTE { XX = MemDbg::WidecardByte };
 #define XX4 XX,XX,XX,XX  // DWORD
 
   const BYTE bytes[] =  {
@@ -5886,7 +5887,7 @@ bool InsertAlchemistPSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = PspFindBytesWithWildcard(bytes, sizeof(bytes), XX);
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
   //ITH_GROWL_DWORD(addr);
   //addr = 0x134076f2; // your diary+
   //ITH_GROWL_DWORD(addr);
@@ -6071,8 +6072,7 @@ static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
 bool Insert5pbPSPHook()
 {
   ConsoleOutput("vnreng: 5pb PSP: enter");
-  //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
-  enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
+  enum : BYTE { XX = MemDbg::WidecardByte };
 #define XX4 XX,XX,XX,XX  // DWORD
 
   const BYTE bytes[] =  {
@@ -6120,7 +6120,7 @@ bool Insert5pbPSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = PspFindBytesWithWildcard(bytes, sizeof(bytes), XX);
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
   //ITH_GROWL_DWORD(addr);
   //addr = 0x13574a18;
   //ITH_GROWL_DWORD(addr);
@@ -6221,8 +6221,7 @@ static void SpecialPSPHookImageepoch(DWORD esp_base, HookParam *hp, DWORD *data,
 bool InsertImageepochPSPHook()
 {
   ConsoleOutput("vnreng: Imageepoch PSP: enter");
-  //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
-  enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
+  enum : BYTE { XX = MemDbg::WidecardByte };
 #define XX4 XX,XX,XX,XX  // DWORD
 
   const BYTE bytes[] =  {
@@ -6243,7 +6242,7 @@ bool InsertImageepochPSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = PspFindBytesWithWildcard(bytes, sizeof(bytes), XX);
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
   if (!addr)
@@ -6387,7 +6386,7 @@ bool InsertShadePSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodially try different PSP engines
-  ULONG addr = PspFindBytesWithWildcard(bytes, sizeof(bytes), XX);
+  ULONG addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
   if (!addr)
     ConsoleOutput("vnreng: Shade PSP: failed");
   else {
@@ -6501,7 +6500,8 @@ bool InsertAlchemist2PSPHook()
 {
   ConsoleOutput("vnreng: Alchemist2 PSP: enter");
   //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
-  enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
+  //enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
+  enum : BYTE { XX = MemDbg::WidecardByte };
 #define XX4 XX,XX,XX,XX  // DWORD
 
   const BYTE bytes[] =  {
@@ -6523,7 +6523,7 @@ bool InsertAlchemist2PSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = PspFindBytesWithWildcard(bytes, sizeof(bytes), XX);
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
   //ITH_GROWL_DWORD(addr);
   //addr = 0x134076f2; // your diary+
   //ITH_GROWL_DWORD(addr);
