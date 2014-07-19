@@ -5782,9 +5782,11 @@ bool InsertPPSSPPHook()
   // TODO: Query MEM_Mapped at runtime
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
   //enum : DWORD { PSPStartAddress = 0x12000000, PSPStopAddress = 0x14000000 };
-  Insert5pbPSPHook();
-  InsertImageepochPSPHook();
-  InsertAlchemistPSPHook();
+  if (!Insert5pbPSPHook()) {
+    InsertRegistaPSPHook();
+    InsertAlchemistPSPHook();
+    InsertImageepochPSPHook(); // could have duplication issue
+  }
 
   //InsertShadePSPHook();
   ConsoleOutput("vnreng: PPSSPP: leave");
@@ -6289,6 +6291,518 @@ bool InsertImageepochPSPHook()
   }
 
   ConsoleOutput("vnreng: Imageepoch PSP: leave");
+  return addr;
+#undef XX4
+}
+
+/** 7/19/2014 jichi regista.co.jp PSP engine
+ *  Sample game: Secret Game Portable
+ *
+ *  The memory address is NOT fixed.
+ *  Float memory addresses: two matches
+ *
+ *  Debug method: find current sentence, then find next sentence in the memory
+ *  and add break-points. Need to patch 1 leading \u3000 space.
+ *
+ *  There are a couple of good break-points, as follows.
+ *  Only the second function is hooked.
+ *
+ *  138cf7a2   cc               int3
+ *  138cf7a3   cc               int3
+ *  138cf7a4   77 0f            ja short 138cf7b5
+ *  138cf7a6   c705 a8aa1001 90>mov dword ptr ds:[0x110aaa8],0x885ff90
+ *  138cf7b0  -e9 4f08a9f3      jmp 07360004
+ *  138cf7b5   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
+ *  138cf7bb   81e0 ffffff3f    and eax,0x3fffffff
+ *  138cf7c1   8bb0 14de7f07    mov esi,dword ptr ds:[eax+0x77fde14]
+ *  138cf7c7   8935 78a71001    mov dword ptr ds:[0x110a778],esi
+ *  138cf7cd   c705 e4a71001 98>mov dword ptr ds:[0x110a7e4],0x885ff98
+ *  138cf7d7   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
+ *  138cf7de   e9 0d000000      jmp 138cf7f0
+ *  138cf7e3   015c48 85        add dword ptr ds:[eax+ecx*2-0x7b],ebx
+ *  138cf7e7   08e9             or cl,ch
+ *  138cf7e9   36:08a9 f390cccc or byte ptr ss:[ecx+0xcccc90f3],ch
+ *  138cf7f0   77 0f            ja short 138cf801
+ *  138cf7f2   c705 a8aa1001 5c>mov dword ptr ds:[0x110aaa8],0x885485c
+ *  138cf7fc  -e9 0308a9f3      jmp 07360004
+ *  138cf801   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+ *  138cf807   81e0 ffffff3f    and eax,0x3fffffff
+ *  138cf80d   0fb6b0 00008007  movzx esi,byte ptr ds:[eax+0x7800000] ; jichi: hook here
+ *  138cf814   81fe 00000000    cmp esi,0x0
+ *  138cf81a   8935 74a71001    mov dword ptr ds:[0x110a774],esi
+ *  138cf820   c705 80a71001 00>mov dword ptr ds:[0x110a780],0x0
+ *  138cf82a   c705 84a71001 25>mov dword ptr ds:[0x110a784],0x25
+ *  138cf834   c705 88a71001 4e>mov dword ptr ds:[0x110a788],0x4e
+ *  138cf83e   c705 8ca71001 6e>mov dword ptr ds:[0x110a78c],0x6e
+ *  138cf848   0f85 16000000    jnz 138cf864
+ *  138cf84e   832d c4aa1001 06 sub dword ptr ds:[0x110aac4],0x6
+ *  138cf855   e9 b6010000      jmp 138cfa10
+ *  138cf85a   01bc48 8508e9bf  add dword ptr ds:[eax+ecx*2+0xbfe90885],>
+ *  138cf861   07               pop es                                   ; modification of segment register
+ *  138cf862   a9 f3832dc4      test eax,0xc42d83f3
+ *  138cf867   aa               stos byte ptr es:[edi]
+ *  138cf868   1001             adc byte ptr ds:[ecx],al
+ *  138cf86a   06               push es
+ *  138cf86b   e9 0c000000      jmp 138cf87c
+ *  138cf870   017448 85        add dword ptr ds:[eax+ecx*2-0x7b],esi
+ *  138cf874   08e9             or cl,ch
+ *  138cf876   a9 07a9f390      test eax,0x90f3a907
+ *  138cf87b   cc               int3
+ *
+ *  This function is used.
+ *  138cfa46   cc               int3
+ *  138cfa47   cc               int3
+ *  138cfa48   77 0f            ja short 138cfa59
+ *  138cfa4a   c705 a8aa1001 98>mov dword ptr ds:[0x110aaa8],0x885ff98
+ *  138cfa54  -e9 ab05a9f3      jmp 07360004
+ *  138cfa59   8b35 70a71001    mov esi,dword ptr ds:[0x110a770]
+ *  138cfa5f   c1ee 1f          shr esi,0x1f
+ *  138cfa62   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
+ *  138cfa68   81e0 ffffff3f    and eax,0x3fffffff
+ *  138cfa6e   8bb8 14de7f07    mov edi,dword ptr ds:[eax+0x77fde14]
+ *  138cfa74   0335 70a71001    add esi,dword ptr ds:[0x110a770]
+ *  138cfa7a   d1fe             sar esi,1
+ *  138cfa7c   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
+ *  138cfa82   81e0 ffffff3f    and eax,0x3fffffff
+ *  138cfa88   89b8 00008007    mov dword ptr ds:[eax+0x7800000],edi
+ *  138cfa8e   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
+ *  138cfa94   81e0 ffffff3f    and eax,0x3fffffff
+ *  138cfa9a   89b0 30008007    mov dword ptr ds:[eax+0x7800030],esi
+ *  138cfaa0   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
+ *  138cfaa6   81e0 ffffff3f    and eax,0x3fffffff
+ *  138cfaac   8ba8 14de7f07    mov ebp,dword ptr ds:[eax+0x77fde14]
+ *  138cfab2   8bc5             mov eax,ebp
+ *  138cfab4   81e0 ffffff3f    and eax,0x3fffffff
+ *  138cfaba   0fb6b0 00008007  movzx esi,byte ptr ds:[eax+0x7800000] ; jichi: hook here
+ *  138cfac1   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+ *  138cfac4   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
+ *  138cfaca   81e0 ffffff3f    and eax,0x3fffffff
+ *  138cfad0   89a8 14de7f07    mov dword ptr ds:[eax+0x77fde14],ebp
+ *  138cfad6   81fe 00000000    cmp esi,0x0
+ *  138cfadc   892d 70a71001    mov dword ptr ds:[0x110a770],ebp
+ *  138cfae2   8935 74a71001    mov dword ptr ds:[0x110a774],esi
+ *  138cfae8   893d aca71001    mov dword ptr ds:[0x110a7ac],edi
+ *  138cfaee   0f84 16000000    je 138cfb0a
+ *  138cfaf4   832d c4aa1001 0b sub dword ptr ds:[0x110aac4],0xb
+ *  138cfafb   e9 24000000      jmp 138cfb24
+ *  138cfb00   01b0 ff8508e9    add dword ptr ds:[eax+0xe90885ff],esi
+ *  138cfb06   1905 a9f3832d    sbb dword ptr ds:[0x2d83f3a9],eax
+ *  138cfb0c   c4aa 10010be9    les ebp,fword ptr ds:[edx+0xe90b0110]    ; modification of segment register
+ *  138cfb12   9a 00000001 c4ff call far ffc4:01000000                   ; far call
+ *  138cfb19   8508             test dword ptr ds:[eax],ecx
+ *  138cfb1b  -e9 0305a9f3      jmp 07360023
+ *  138cfb20   90               nop
+ *  138cfb21   cc               int3
+ *  138cfb22   cc               int3
+ *
+ *  138cfb22   cc               int3
+ *  138cfb23   cc               int3
+ *  138cfb24   77 0f            ja short 138cfb35
+ *  138cfb26   c705 a8aa1001 b0>mov dword ptr ds:[0x110aaa8],0x885ffb0
+ *  138cfb30  -e9 cf04a9f3      jmp 07360004
+ *  138cfb35   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
+ *  138cfb3b   81e0 ffffff3f    and eax,0x3fffffff
+ *  138cfb41   8bb0 14de7f07    mov esi,dword ptr ds:[eax+0x77fde14]
+ *  138cfb47   8bc6             mov eax,esi
+ *  138cfb49   81e0 ffffff3f    and eax,0x3fffffff
+ *  138cfb4f   0fb6b8 00008007  movzx edi,byte ptr ds:[eax+0x7800000]	; jichi: hook here
+ *  138cfb56   8d76 01          lea esi,dword ptr ds:[esi+0x1]
+ *  138cfb59   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
+ *  138cfb5f   81e0 ffffff3f    and eax,0x3fffffff
+ *  138cfb65   89b0 14de7f07    mov dword ptr ds:[eax+0x77fde14],esi
+ *  138cfb6b   81ff 00000000    cmp edi,0x0
+ *  138cfb71   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+ *  138cfb77   893d 74a71001    mov dword ptr ds:[0x110a774],edi
+ *  138cfb7d   0f84 16000000    je 138cfb99
+ *  138cfb83   832d c4aa1001 05 sub dword ptr ds:[0x110aac4],0x5
+ *  138cfb8a  ^e9 95ffffff      jmp 138cfb24
+ *  138cfb8f   01b0 ff8508e9    add dword ptr ds:[eax+0xe90885ff],esi
+ *  138cfb95   8a04a9           mov al,byte ptr ds:[ecx+ebp*4]
+ *  138cfb98   f3:              prefix rep:                              ; superfluous prefix
+ *  138cfb99   832d c4aa1001 05 sub dword ptr ds:[0x110aac4],0x5
+ *  138cfba0   e9 0b000000      jmp 138cfbb0
+ *  138cfba5   01c4             add esp,eax
+ *  138cfba7   ff85 08e97404    inc dword ptr ss:[ebp+0x474e908]
+ *  138cfbad   a9 f390770f      test eax,0xf7790f3
+ *  138cfbb2   c705 a8aa1001 c4>mov dword ptr ds:[0x110aaa8],0x885ffc4
+ *  138cfbbc  -e9 4304a9f3      jmp 07360004
+ *  138cfbc1   f3:0f1015 6c1609>movss xmm2,dword ptr ds:[0x1009166c]
+ *  138cfbc9   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
+ *  138cfbcf   81e0 ffffff3f    and eax,0x3fffffff
+ *  138cfbd5   8bb0 00008007    mov esi,dword ptr ds:[eax+0x7800000]
+ *  138cfbdb   f3:0f101d 641609>movss xmm3,dword ptr ds:[0x10091664]
+ *  138cfbe3   c7c7 00000000    mov edi,0x0
+ *  138cfbe9   893d f4b12b11    mov dword ptr ds:[0x112bb1f4],edi
+ *  138cfbef   8bc6             mov eax,esi
+ *  138cfbf1   81e0 ffffff3f    and eax,0x3fffffff
+ *  138cfbf7   0fb6a8 00008007  movzx ebp,byte ptr ds:[eax+0x7800000] 	; jichi: hook here
+ *  138cfbfe   81fd 00000000    cmp ebp,0x0
+ *  138cfc04   c705 70a71001 00>mov dword ptr ds:[0x110a770],0x9ac0000
+ *  138cfc0e   c705 74a71001 00>mov dword ptr ds:[0x110a774],0x8890000
+ *  138cfc18   892d a8a71001    mov dword ptr ds:[0x110a7a8],ebp
+ *  138cfc1e   8935 aca71001    mov dword ptr ds:[0x110a7ac],esi
+ *  138cfc24   c705 b4a71001 00>mov dword ptr ds:[0x110a7b4],0x8890000
+ *  138cfc2e   c705 b8a71001 80>mov dword ptr ds:[0x110a7b8],0x80
+ *  138cfc38   c705 bca71001 00>mov dword ptr ds:[0x110a7bc],0x0
+ *  138cfc42   c705 e0a71001 00>mov dword ptr ds:[0x110a7e0],0x0
+ *  138cfc4c   f3:0f111d 3ca810>movss dword ptr ds:[0x110a83c],xmm3
+ *  138cfc54   f3:0f1115 40a810>movss dword ptr ds:[0x110a840],xmm2
+ *  138cfc5c   0f85 16000000    jnz 138cfc78
+ *  138cfc62   832d c4aa1001 0d sub dword ptr ds:[0x110aac4],0xd
+ *  138cfc69   e9 32270000      jmp 138d23a0
+ *  138cfc6e   0158 00          add dword ptr ds:[eax],ebx
+ *  138cfc71   8608             xchg byte ptr ds:[eax],cl
+ *  138cfc73  -e9 ab03a9f3      jmp 07360023
+ *  138cfc78   832d c4aa1001 0d sub dword ptr ds:[0x110aac4],0xd
+ *  138cfc7f   e9 0c000000      jmp 138cfc90
+ *  138cfc84   01f8             add eax,edi
+ *  138cfc86   ff85 08e99503    inc dword ptr ss:[ebp+0x395e908]
+ *  138cfc8c   a9 f390cc77      test eax,0x77cc90f3
+ *  138cfc91   0fc7             ???                                      ; unknown command
+ *  138cfc93   05 a8aa1001      add eax,0x110aaa8
+ *  138cfc98   f8               clc
+ *  138cfc99   ff85 08e96303    inc dword ptr ss:[ebp+0x363e908]
+ *  138cfc9f   a9 f38b35ac      test eax,0xac358bf3
+ *  138cfca4   a7               cmps dword ptr ds:[esi],dword ptr es:[ed>
+ *  138cfca5   1001             adc byte ptr ds:[ecx],al
+ *  138cfca7   8b3d b4a71001    mov edi,dword ptr ds:[0x110a7b4]
+ *  138cfcad   81c7 48d6ffff    add edi,-0x29b8
+ *  138cfcb3   8935 78a71001    mov dword ptr ds:[0x110a778],esi
+ *  138cfcb9   893d 7ca71001    mov dword ptr ds:[0x110a77c],edi
+ *  138cfcbf   c705 80a71001 02>mov dword ptr ds:[0x110a780],0x2
+ *  138cfcc9   c705 e4a71001 08>mov dword ptr ds:[0x110a7e4],0x8860008
+ *  138cfcd3   832d c4aa1001 04 sub dword ptr ds:[0x110aac4],0x4
+ *  138cfcda  ^e9 4914f4ff      jmp 13811128
+ *  138cfcdf   90               nop
+ *  138cfce0   77 0f            ja short 138cfcf1
+ *  138cfce2   c705 a8aa1001 74>mov dword ptr ds:[0x110aaa8],0x8844574
+ *  138cfcec  -e9 1303a9f3      jmp 07360004
+ *  138cfcf1   8b35 84a71001    mov esi,dword ptr ds:[0x110a784]
+ *  138cfcf7   81c6 ffffffff    add esi,-0x1
+ *  138cfcfd   813d 84a71001 00>cmp dword ptr ds:[0x110a784],0x0
+ *  138cfd07   8935 8ca71001    mov dword ptr ds:[0x110a78c],esi
+ *  138cfd0d   0f85 16000000    jnz 138cfd29
+ *  138cfd13   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
+ *  138cfd1a   c705 a8aa1001 e0>mov dword ptr ds:[0x110aaa8],0x88445e0
+ *  138cfd24  -e9 fa02a9f3      jmp 07360023
+ *  138cfd29   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
+ *  138cfd30  ^e9 ab15f4ff      jmp 138112e0
+ *  138cfd35   90               nop
+ *  138cfd36   cc               int3
+ *  138cfd37   cc               int3
+ *
+ *  13811266   cc               int3
+ *  13811267   cc               int3
+ *  13811268   77 0f            ja short 13811279
+ *  1381126a   c705 a8aa1001 b0>mov dword ptr ds:[0x110aaa8],0x88445b0
+ *  13811274  -e9 8bedb4f3      jmp 07360004
+ *  13811279   8b35 8ca71001    mov esi,dword ptr ds:[0x110a78c]
+ *  1381127f   8b3d 88a71001    mov edi,dword ptr ds:[0x110a788]
+ *  13811285   8b2d 84a71001    mov ebp,dword ptr ds:[0x110a784]
+ *  1381128b   81c5 ffffffff    add ebp,-0x1
+ *  13811291   813d 84a71001 00>cmp dword ptr ds:[0x110a784],0x0
+ *  1381129b   8935 78a71001    mov dword ptr ds:[0x110a778],esi
+ *  138112a1   893d 7ca71001    mov dword ptr ds:[0x110a77c],edi
+ *  138112a7   892d 8ca71001    mov dword ptr ds:[0x110a78c],ebp
+ *  138112ad   0f84 16000000    je 138112c9
+ *  138112b3   832d c4aa1001 04 sub dword ptr ds:[0x110aac4],0x4
+ *  138112ba   e9 21000000      jmp 138112e0
+ *  138112bf   017c45 84        add dword ptr ss:[ebp+eax*2-0x7c],edi
+ *  138112c3   08e9             or cl,ch
+ *  138112c5   5a               pop edx
+ *  138112c6   ed               in eax,dx                                ; i/o command
+ *  138112c7   b4 f3            mov ah,0xf3
+ *  138112c9   832d c4aa1001 04 sub dword ptr ds:[0x110aac4],0x4
+ *  138112d0   c705 a8aa1001 c0>mov dword ptr ds:[0x110aaa8],0x88445c0
+ *  138112da  -e9 44edb4f3      jmp 07360023
+ *  138112df   90               nop
+ *  138112e0   77 0f            ja short 138112f1
+ *  138112e2   c705 a8aa1001 7c>mov dword ptr ds:[0x110aaa8],0x884457c
+ *  138112ec  -e9 13edb4f3      jmp 07360004
+ *  138112f1   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+ *  138112f7   81e0 ffffff3f    and eax,0x3fffffff
+ *  138112fd   0fb6b0 00008007  movzx esi,byte ptr ds:[eax+0x7800000] ; jichi: hook here
+ *  13811304   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+ *  1381130a   81e0 ffffff3f    and eax,0x3fffffff
+ *  13811310   0fbeb8 00008007  movsx edi,byte ptr ds:[eax+0x7800000]	; jichi: hook here
+ *  13811317   8bc6             mov eax,esi
+ *  13811319   0fbee8           movsx ebp,al
+ *  1381131c   3bef             cmp ebp,edi
+ *  1381131e   893d 70a71001    mov dword ptr ds:[0x110a770],edi
+ *  13811324   892d 74a71001    mov dword ptr ds:[0x110a774],ebp
+ *  1381132a   8935 80a71001    mov dword ptr ds:[0x110a780],esi
+ *  13811330   0f85 16000000    jnz 1381134c
+ *  13811336   832d c4aa1001 05 sub dword ptr ds:[0x110aac4],0x5
+ *  1381133d   e9 56110000      jmp 13812498
+ *  13811342   01c8             add eax,ecx
+ *  13811344   45               inc ebp
+ *  13811345   8408             test byte ptr ds:[eax],cl
+ *  13811347  -e9 d7ecb4f3      jmp 07360023
+ *  1381134c   832d c4aa1001 05 sub dword ptr ds:[0x110aac4],0x5
+ *  13811353   e9 0c000000      jmp 13811364
+ *  13811358   0190 458408e9    add dword ptr ds:[eax+0xe9088445],edx
+ *  1381135e   c1ec b4          shr esp,0xb4                             ; shift constant out of range 1..31
+ *  13811361   f3:              prefix rep:                              ; superfluous prefix
+ *  13811362   90               nop
+ *  13811363   cc               int3
+ *
+ *  13811362   90               nop
+ *  13811363   cc               int3
+ *  13811364   77 0f            ja short 13811375
+ *  13811366   c705 a8aa1001 90>mov dword ptr ds:[0x110aaa8],0x8844590
+ *  13811370  -e9 8fecb4f3      jmp 07360004
+ *  13811375   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+ *  1381137b   81e0 ffffff3f    and eax,0x3fffffff
+ *  13811381   0fb6b0 00008007  movzx esi,byte ptr ds:[eax+0x7800000]	; jichi: hook here
+ *  13811388   81e6 ff000000    and esi,0xff
+ *  1381138e   8b3d 80a71001    mov edi,dword ptr ds:[0x110a780]
+ *  13811394   81e7 ff000000    and edi,0xff
+ *  1381139a   8bc7             mov eax,edi
+ *  1381139c   8bfe             mov edi,esi
+ *  1381139e   2bf8             sub edi,eax
+ *  138113a0   8b05 e4a71001    mov eax,dword ptr ds:[0x110a7e4]
+ *  138113a6   893d 70a71001    mov dword ptr ds:[0x110a770],edi
+ *  138113ac   8935 74a71001    mov dword ptr ds:[0x110a774],esi
+ *  138113b2   8905 a8aa1001    mov dword ptr ds:[0x110aaa8],eax
+ *  138113b8   832d c4aa1001 05 sub dword ptr ds:[0x110aac4],0x5
+ *  138113bf  -e9 5fecb4f3      jmp 07360023
+ *  138113c4   90               nop
+ *  138113c5   cc               int3
+ *  138113c6   cc               int3
+ *  138113c7   cc               int3
+ *
+ *  138124f2   cc               int3
+ *  138124f3   cc               int3
+ *  138124f4   77 0f            ja short 13812505
+ *  138124f6   c705 a8aa1001 d0>mov dword ptr ds:[0x110aaa8],0x88445d0
+ *  13812500  -e9 ffdab4f3      jmp 07360004
+ *  13812505   813d 74a71001 00>cmp dword ptr ds:[0x110a774],0x0
+ *  1381250f   c705 90a71001 00>mov dword ptr ds:[0x110a790],0x0
+ *  13812519   0f84 16000000    je 13812535
+ *  1381251f   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
+ *  13812526   e9 21000000      jmp 1381254c
+ *  1381252b   018446 8408e9ee  add dword ptr ds:[esi+eax*2+0xeee90884],>
+ *  13812532   dab4f3 832dc4aa  fidiv dword ptr ds:[ebx+esi*8+0xaac42d83>
+ *  13812539   1001             adc byte ptr ds:[ecx],al
+ *  1381253b   02e9             add ch,cl
+ *  1381253d   3302             xor eax,dword ptr ds:[edx]
+ *  1381253f   0000             add byte ptr ds:[eax],al
+ *  13812541   01d8             add eax,ebx
+ *  13812543   45               inc ebp
+ *  13812544   8408             test byte ptr ds:[eax],cl
+ *  13812546  -e9 d8dab4f3      jmp 07360023
+ *  1381254b   90               nop
+ *  1381254c   77 0f            ja short 1381255d
+ *  1381254e   c705 a8aa1001 84>mov dword ptr ds:[0x110aaa8],0x8844684
+ *  13812558  -e9 a7dab4f3      jmp 07360004
+ *  1381255d   8b35 78a71001    mov esi,dword ptr ds:[0x110a778]
+ *  13812563   0335 8ca71001    add esi,dword ptr ds:[0x110a78c]
+ *  13812569   8b3d 88a71001    mov edi,dword ptr ds:[0x110a788]
+ *  1381256f   8d7f 01          lea edi,dword ptr ds:[edi+0x1]
+ *  13812572   8b2d 7ca71001    mov ebp,dword ptr ds:[0x110a77c]
+ *  13812578   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+ *  1381257b   8b15 90a71001    mov edx,dword ptr ds:[0x110a790]
+ *  13812581   3b15 8ca71001    cmp edx,dword ptr ds:[0x110a78c]
+ *  13812587   892d 7ca71001    mov dword ptr ds:[0x110a77c],ebp
+ *  1381258d   893d 88a71001    mov dword ptr ds:[0x110a788],edi
+ *  13812593   8935 94a71001    mov dword ptr ds:[0x110a794],esi
+ *  13812599   0f85 16000000    jnz 138125b5
+ *  1381259f   832d c4aa1001 04 sub dword ptr ds:[0x110aac4],0x4
+ *  138125a6   c705 a8aa1001 c4>mov dword ptr ds:[0x110aaa8],0x88446c4
+ *  138125b0  -e9 6edab4f3      jmp 07360023
+ *  138125b5   832d c4aa1001 04 sub dword ptr ds:[0x110aac4],0x4
+ *  138125bc   e9 0b000000      jmp 138125cc
+ *  138125c1   019446 8408e958  add dword ptr ds:[esi+eax*2+0x58e90884],>
+ *  138125c8   dab4f3 90770fc7  fidiv dword ptr ds:[ebx+esi*8+0xc70f7790>
+ *  138125cf   05 a8aa1001      add eax,0x110aaa8
+ *  138125d4   94               xchg eax,esp
+ *  138125d5   46               inc esi
+ *  138125d6   8408             test byte ptr ds:[eax],cl
+ *  138125d8  -e9 27dab4f3      jmp 07360004
+ *  138125dd   8b05 88a71001    mov eax,dword ptr ds:[0x110a788]
+ *  138125e3   81e0 ffffff3f    and eax,0x3fffffff
+ *  138125e9   0fb6b0 00008007  movzx esi,byte ptr ds:[eax+0x7800000]	; jichi: hook here
+ *  138125f0   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+ *  138125f6   81e0 ffffff3f    and eax,0x3fffffff
+ *  138125fc   0fb6b8 00008007  movzx edi,byte ptr ds:[eax+0x7800000]
+ *  13812603   8bc6             mov eax,esi
+ *  13812605   0fbee8           movsx ebp,al
+ *  13812608   8bc7             mov eax,edi
+ *  1381260a   0fbed0           movsx edx,al
+ *  1381260d   8b0d 90a71001    mov ecx,dword ptr ds:[0x110a790]
+ *  13812613   8d49 01          lea ecx,dword ptr ds:[ecx+0x1]
+ *  13812616   3bd5             cmp edx,ebp
+ *  13812618   892d 70a71001    mov dword ptr ds:[0x110a770],ebp
+ *  1381261e   8935 74a71001    mov dword ptr ds:[0x110a774],esi
+ *  13812624   893d 80a71001    mov dword ptr ds:[0x110a780],edi
+ *  1381262a   8915 84a71001    mov dword ptr ds:[0x110a784],edx
+ *  13812630   890d 90a71001    mov dword ptr ds:[0x110a790],ecx
+ *  13812636   0f84 16000000    je 13812652
+ *  1381263c   832d c4aa1001 06 sub dword ptr ds:[0x110aac4],0x6
+ *  13812643   e9 98d70b00      jmp 138cfde0
+ *  13812648   019445 8408e9d1  add dword ptr ss:[ebp+eax*2+0xd1e90884],>
+ *  1381264f   d9b4f3 832dc4aa  fstenv (28-byte) ptr ds:[ebx+esi*8+0xaac>
+ *  13812656   1001             adc byte ptr ds:[ecx],al
+ *  13812658   06               push es
+ *  13812659   e9 0e000000      jmp 1381266c
+ *  1381265e   01ac46 8408e9bb  add dword ptr ds:[esi+eax*2+0xbbe90884],>
+ *  13812665   d9b4f3 90cccccc  fstenv (28-byte) ptr ds:[ebx+esi*8+0xccc>
+ *  1381266c   77 0f            ja short 1381267d
+ *  1381266e   c705 a8aa1001 ac>mov dword ptr ds:[0x110aaa8],0x88446ac
+ *  13812678  -e9 87d9b4f3      jmp 07360004
+ *  1381267d   8b35 88a71001    mov esi,dword ptr ds:[0x110a788]
+ *  13812683   3b35 94a71001    cmp esi,dword ptr ds:[0x110a794]
+ *  13812689   0f85 16000000    jnz 138126a5
+ *  1381268f   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
+ *  13812696   e9 d9000000      jmp 13812774
+ *  1381269b   01d8             add eax,ebx
+ *  1381269d   45               inc ebp
+ *  1381269e   8408             test byte ptr ds:[eax],cl
+ *  138126a0  -e9 7ed9b4f3      jmp 07360023
+ *  138126a5   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
+ *  138126ac   e9 0b000000      jmp 138126bc
+ *  138126b1   01b446 8408e968  add dword ptr ds:[esi+eax*2+0x68e90884],>
+ *  138126b8   d9b4f3 90770fc7  fstenv (28-byte) ptr ds:[ebx+esi*8+0xc70>
+ *  138126bf   05 a8aa1001      add eax,0x110aaa8
+ *  138126c4   b4 46            mov ah,0x46
+ *  138126c6   8408             test byte ptr ds:[eax],cl
+ *  138126c8  -e9 37d9b4f3      jmp 07360004
+ *  138126cd   8b35 88a71001    mov esi,dword ptr ds:[0x110a788]
+ *  138126d3   8d76 01          lea esi,dword ptr ds:[esi+0x1]
+ *  138126d6   813d 84a71001 00>cmp dword ptr ds:[0x110a784],0x0
+ *  138126e0   8935 88a71001    mov dword ptr ds:[0x110a788],esi
+ *  138126e6   0f84 16000000    je 13812702
+ *  138126ec   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
+ *  138126f3   e9 24000000      jmp 1381271c
+ *  138126f8   018c46 8408e921  add dword ptr ds:[esi+eax*2+0x21e90884],>
+ *  138126ff   d9b4f3 832dc4aa  fstenv (28-byte) ptr ds:[ebx+esi*8+0xaac>
+ *  13812706   1001             adc byte ptr ds:[ecx],al
+ *  13812708   02c7             add al,bh
+ *  1381270a   05 a8aa1001      add eax,0x110aaa8
+ *  1381270f   bc 468408e9      mov esp,0xe9088446
+ *  13812714   0bd9             or ebx,ecx
+ *  13812716   b4 f3            mov ah,0xf3
+ *  13812718   90               nop
+ *  13812719   cc               int3
+ *  1381271a   cc               int3
+ *  1381271b   cc               int3
+ *
+ *  This function is very similar to Imageepoch, and can have duplicate text
+ *  138d1486   cc               int3
+ *  138d1487   cc               int3
+ *  138d1488   77 0f            ja short 138d1499
+ *  138d148a   c705 a8aa1001 2c>mov dword ptr ds:[0x110aaa8],0x884452c
+ *  138d1494  -e9 6beba8f3      jmp 07360004
+ *  138d1499   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+ *  138d149f   81e0 ffffff3f    and eax,0x3fffffff
+ *  138d14a5   0fbeb0 00008007  movsx esi,byte ptr ds:[eax+0x7800000] ; jichi: hook here
+ *  138d14ac   8b3d 7ca71001    mov edi,dword ptr ds:[0x110a77c]
+ *  138d14b2   8d7f 01          lea edi,dword ptr ds:[edi+0x1]
+ *  138d14b5   8b05 74a71001    mov eax,dword ptr ds:[0x110a774]
+ *  138d14bb   81e0 ffffff3f    and eax,0x3fffffff
+ *  138d14c1   8bd6             mov edx,esi
+ *  138d14c3   8890 00008007    mov byte ptr ds:[eax+0x7800000],dl
+ *  138d14c9   8b2d 74a71001    mov ebp,dword ptr ds:[0x110a774]
+ *  138d14cf   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+ *  138d14d2   81fe 00000000    cmp esi,0x0
+ *  138d14d8   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+ *  138d14de   892d 74a71001    mov dword ptr ds:[0x110a774],ebp
+ *  138d14e4   893d 7ca71001    mov dword ptr ds:[0x110a77c],edi
+ *  138d14ea   0f85 16000000    jnz 138d1506
+ *  138d14f0   832d c4aa1001 05 sub dword ptr ds:[0x110aac4],0x5
+ *  138d14f7   e9 e8000000      jmp 138d15e4
+ *  138d14fc   015445 84        add dword ptr ss:[ebp+eax*2-0x7c],edx
+ *  138d1500   08e9             or cl,ch
+ *  138d1502   1d eba8f383      sbb eax,0x83f3a8eb
+ *  138d1507   2d c4aa1001      sub eax,0x110aac4
+ *  138d150c   05 e90e0000      add eax,0xee9
+ *  138d1511   0001             add byte ptr ds:[ecx],al
+ *  138d1513   40               inc eax
+ *  138d1514   45               inc ebp
+ *  138d1515   8408             test byte ptr ds:[eax],cl
+ *  138d1517  -e9 07eba8f3      jmp 07360023
+ *  138d151c   90               nop
+ *  138d151d   cc               int3
+ *  138d151e   cc               int3
+ *  138d151f   cc               int3
+ */
+// Get text from [eax + 0x740000]
+static void SpecialPSPHookRegista(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  //enum { base = 0x7400000 };
+  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
+  DWORD eax = regof(eax, esp_base);
+
+  //static DWORD lastText; // Prevent reading the same address multiple times
+  DWORD text = eax + base;
+  if (*(LPCSTR)text) {
+    *data = text;
+    *len = ::strlen((LPCSTR)text); // SHIFT-JIS
+    //*split = regof(ecx, esp_base); // ecx is bad that will split text threads
+    //*split = FIXED_SPLIT_VALUE; // Similar to 5pb, it only has one thread?
+    *split = regof(ebx, esp_base);
+  }
+}
+
+bool InsertRegistaPSPHook()
+{
+  ConsoleOutput("vnreng: Regista PSP: enter");
+  enum : BYTE { XX = MemDbg::WidecardByte };
+#define XX4 XX,XX,XX,XX  // DWORD
+
+  const BYTE bytes[] =  {
+    //0xcc,                         // 138cfa47   cc               int3
+    0x77, 0x0f,                     // 138cfa48   77 0f            ja short 138cfa59
+    0xc7,0x05, XX4, XX4,            // 138cfa4a   c705 a8aa1001 98>mov dword ptr ds:[0x110aaa8],0x885ff98
+    0xe9, XX4,                      // 138cfa54  -e9 ab05a9f3      jmp 07360004
+    0x8b,0x35, XX4,                 // 138cfa59   8b35 70a71001    mov esi,dword ptr ds:[0x110a770]
+    0xc1,0xee, 0x1f,                // 138cfa5f   c1ee 1f          shr esi,0x1f
+    0x8b,0x05, XX4,                 // 138cfa62   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 138cfa68   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xb8, XX4,                 // 138cfa6e   8bb8 14de7f07    mov edi,dword ptr ds:[eax+0x77fde14]
+    0x03,0x35, XX4,                 // 138cfa74   0335 70a71001    add esi,dword ptr ds:[0x110a770]
+    0xd1,0xfe,                      // 138cfa7a   d1fe             sar esi,1
+    0x8b,0x05, XX4,                 // 138cfa7c   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 138cfa82   81e0 ffffff3f    and eax,0x3fffffff
+    0x89,0xb8, XX4,                 // 138cfa88   89b8 00008007    mov dword ptr ds:[eax+0x7800000],edi
+    0x8b,0x05, XX4,                 // 138cfa8e   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 138cfa94   81e0 ffffff3f    and eax,0x3fffffff
+    0x89,0xb0, XX4,                 // 138cfa9a   89b0 30008007    mov dword ptr ds:[eax+0x7800030],esi
+    0x8b,0x05, XX4,                 // 138cfaa0   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 138cfaa6   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xa8, XX4,                 // 138cfaac   8ba8 14de7f07    mov ebp,dword ptr ds:[eax+0x77fde14]
+    0x8b,0xc5,                      // 138cfab2   8bc5             mov eax,ebp
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 138cfab4   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb6,0xb0 //, XX4          // 138cfaba   0fb6b0 00008007  movzx esi,byte ptr ds:[eax+0x7800000] ; jichi: hook here
+  };
+  //enum { hook_offset = 0x1346d36d - 0x1346d350 };
+  enum { hook_offset = 0x138cfaba - 0x138cfa48 };
+
+  // This process might raise before the PSP ISO is loaded
+  // TODO: Create a timer thread to periodically try different PSP engines
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
+  //ITH_GROWL_DWORD(addr);
+  //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
+  if (!addr)
+    ConsoleOutput("vnreng: Regista PSP: pattern not found");
+  else {
+    addr += hook_offset;
+    //ITH_GROWL_DWORD(addr);
+
+    // Get this value at runtime in case it is runtime-dependent
+    DWORD membase = *(DWORD *)(addr + 3); // 1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
+
+    HookParam hp = {};
+    hp.addr = addr;
+    hp.extern_fun = SpecialPSPHookRegista;
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
+    hp.module = membase; // use module to pass membase
+    ConsoleOutput("vnreng: Regista PSP: INSERT");
+    NewHook(hp, L"Regista PSP");
+  }
+
+  ConsoleOutput("vnreng: Regista PSP: leave");
   return addr;
 #undef XX4
 }
