@@ -5783,7 +5783,8 @@ bool InsertPPSSPPHook()
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
   //enum : DWORD { PSPStartAddress = 0x12000000, PSPStopAddress = 0x14000000 };
   if (!Insert5pbPSPHook()) {
-    InsertRegistaPSPHook();
+    InsertYetiPSPHook();
+
     InsertAlchemistPSPHook();
     InsertImageepochPSPHook(); // could have duplication issue
   }
@@ -6295,7 +6296,7 @@ bool InsertImageepochPSPHook()
 #undef XX4
 }
 
-/** 7/19/2014 jichi regista.co.jp PSP engine
+/** 7/19/2014 jichi yetigame.jp PSP engine
  *  Sample game: Secret Game Portable
  *
  *  The memory address is NOT fixed.
@@ -6304,6 +6305,38 @@ bool InsertImageepochPSPHook()
  *  Debug method: find current sentence, then find next sentence in the memory
  *  and add break-points. Need to patch 1 leading \u3000 space.
  *
+ *  It seems that each time I ran the game, the instruction pattern would change?!
+ *  == The second time I ran the game ==
+ *
+ *  14e49ed9   90               nop
+ *  14e49eda   cc               int3
+ *  14e49edb   cc               int3
+ *  14e49edc   77 0f            ja short 14e49eed
+ *  14e49ede   c705 a8aa1001 98>mov dword ptr ds:[0x110aaa8],0x885ff98
+ *  14e49ee8  -e9 17619eee      jmp 03830004
+ *  14e49eed   8b35 70a71001    mov esi,dword ptr ds:[0x110a770]
+ *  14e49ef3   c1ee 1f          shr esi,0x1f
+ *  14e49ef6   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
+ *  14e49efc   81e0 ffffff3f    and eax,0x3fffffff
+ *  14e49f02   8bb8 14deff07    mov edi,dword ptr ds:[eax+0x7ffde14]
+ *  14e49f08   0335 70a71001    add esi,dword ptr ds:[0x110a770]
+ *  14e49f0e   d1fe             sar esi,1
+ *  14e49f10   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
+ *  14e49f16   81e0 ffffff3f    and eax,0x3fffffff
+ *  14e49f1c   89b8 00000008    mov dword ptr ds:[eax+0x8000000],edi
+ *  14e49f22   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
+ *  14e49f28   81e0 ffffff3f    and eax,0x3fffffff
+ *  14e49f2e   89b0 30000008    mov dword ptr ds:[eax+0x8000030],esi
+ *  14e49f34   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
+ *  14e49f3a   81e0 ffffff3f    and eax,0x3fffffff
+ *  14e49f40   8ba8 14deff07    mov ebp,dword ptr ds:[eax+0x7ffde14]
+ *  14e49f46   8bc5             mov eax,ebp
+ *  14e49f48   81e0 ffffff3f    and eax,0x3fffffff
+ *  14e49f4e   0fb6b0 00000008  movzx esi,byte ptr ds:[eax+0x8000000] ; jichi: hook here
+ *  14e49f55   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+ *  14e49f58   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
+ *
+ *  == The first time I ran the game ==
  *  There are a couple of good break-points, as follows.
  *  Only the second function is hooked.
  *
@@ -6405,7 +6438,7 @@ bool InsertImageepochPSPHook()
  *  138cfb41   8bb0 14de7f07    mov esi,dword ptr ds:[eax+0x77fde14]
  *  138cfb47   8bc6             mov eax,esi
  *  138cfb49   81e0 ffffff3f    and eax,0x3fffffff
- *  138cfb4f   0fb6b8 00008007  movzx edi,byte ptr ds:[eax+0x7800000]	; jichi: hook here
+ *  138cfb4f   0fb6b8 00008007  movzx edi,byte ptr ds:[eax+0x7800000] ; jichi: hook here
  *  138cfb56   8d76 01          lea esi,dword ptr ds:[esi+0x1]
  *  138cfb59   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
  *  138cfb5f   81e0 ffffff3f    and eax,0x3fffffff
@@ -6727,7 +6760,7 @@ bool InsertImageepochPSPHook()
  *  138d151f   cc               int3
  */
 // Get text from [eax + 0x740000]
-static void SpecialPSPHookRegista(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookYeti(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   //enum { base = 0x7400000 };
   DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
@@ -6740,16 +6773,18 @@ static void SpecialPSPHookRegista(DWORD esp_base, HookParam *hp, DWORD *data, DW
     *len = ::strlen((LPCSTR)text); // SHIFT-JIS
     //*split = regof(ecx, esp_base); // ecx is bad that will split text threads
     //*split = FIXED_SPLIT_VALUE; // Similar to 5pb, it only has one thread?
-    *split = regof(ebx, esp_base);
+    //*split = regof(ebx, esp_base); // value of ebx is splitting
+    *split = FIXED_SPLIT_VALUE << 1; // * 2 to make it unique
   }
 }
 
-bool InsertRegistaPSPHook()
+bool InsertYetiPSPHook()
 {
-  ConsoleOutput("vnreng: Regista PSP: enter");
+  ConsoleOutput("vnreng: Yeti PSP: enter");
   enum : BYTE { XX = MemDbg::WidecardByte };
 #define XX4 XX,XX,XX,XX  // DWORD
 
+#if 0 // the first function I got
   const BYTE bytes[] =  {
     //0xcc,                         // 138cfa47   cc               int3
     0x77, 0x0f,                     // 138cfa48   77 0f            ja short 138cfa59
@@ -6775,8 +6810,33 @@ bool InsertRegistaPSPHook()
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 138cfab4   81e0 ffffff3f    and eax,0x3fffffff
     0x0f,0xb6,0xb0 //, XX4          // 138cfaba   0fb6b0 00008007  movzx esi,byte ptr ds:[eax+0x7800000] ; jichi: hook here
   };
-  //enum { hook_offset = 0x1346d36d - 0x1346d350 };
-  enum { hook_offset = 0x138cfaba - 0x138cfa48 };
+#endif
+  const BYTE bytes[] =  {
+    //0xcc,                         // 14e49edb   cc               int3
+    0x77, 0x0f,                     // 14e49edc   77 0f            ja short 14e49eed
+    0xc7,0x05, XX4, XX4,            // 14e49ede   c705 a8aa1001 98>mov dword ptr ds:[0x110aaa8],0x885ff98
+    0xe9, XX4,                      // 14e49ee8  -e9 17619eee      jmp 03830004
+    0x8b,0x35, XX4,                 // 14e49eed   8b35 70a71001    mov esi,dword ptr ds:[0x110a770]
+    0xc1,0xee, 0x1f,                // 14e49ef3   c1ee 1f          shr esi,0x1f
+    0x8b,0x05, XX4,                 // 14e49ef6   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 14e49efc   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xb8, XX4,                 // 14e49f02   8bb8 14deff07    mov edi,dword ptr ds:[eax+0x7ffde14]
+    0x03,0x35, XX4,                 // 14e49f08   0335 70a71001    add esi,dword ptr ds:[0x110a770]
+    0xd1,0xfe,                      // 14e49f0e   d1fe             sar esi,1
+    0x8b,0x05, XX4,                 // 14e49f10   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 14e49f16   81e0 ffffff3f    and eax,0x3fffffff
+    0x89,0xb8, XX4,                 // 14e49f1c   89b8 00000008    mov dword ptr ds:[eax+0x8000000],edi
+    0x8b,0x05, XX4,                 // 14e49f22   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 14e49f28   81e0 ffffff3f    and eax,0x3fffffff
+    0x89,0xb0, XX4,                 // 14e49f2e   89b0 30000008    mov dword ptr ds:[eax+0x8000030],esi
+    0x8b,0x05, XX4,                 // 14e49f34   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 14e49f3a   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xa8, XX4,                 // 14e49f40   8ba8 14deff07    mov ebp,dword ptr ds:[eax+0x7ffde14]
+    0x8b,0xc5,                      // 14e49f46   8bc5             mov eax,ebp
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 14e49f48   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb6,0xb0 //, XX4,         // 14e49f4e   0fb6b0 00000008  movzx esi,byte ptr ds:[eax+0x8000000]	; jichi: hook here
+  };
+  enum { hook_offset = sizeof(bytes) - 3 };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -6784,7 +6844,7 @@ bool InsertRegistaPSPHook()
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
   if (!addr)
-    ConsoleOutput("vnreng: Regista PSP: pattern not found");
+    ConsoleOutput("vnreng: Yeti PSP: pattern not found");
   else {
     addr += hook_offset;
     //ITH_GROWL_DWORD(addr);
@@ -6795,14 +6855,14 @@ bool InsertRegistaPSPHook()
 
     HookParam hp = {};
     hp.addr = addr;
-    hp.extern_fun = SpecialPSPHookRegista;
+    hp.extern_fun = SpecialPSPHookYeti;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     hp.module = membase; // use module to pass membase
-    ConsoleOutput("vnreng: Regista PSP: INSERT");
-    NewHook(hp, L"Regista PSP");
+    ConsoleOutput("vnreng: Yeti PSP: INSERT");
+    NewHook(hp, L"Yeti PSP");
   }
 
-  ConsoleOutput("vnreng: Regista PSP: leave");
+  ConsoleOutput("vnreng: Yeti PSP: leave");
   return addr;
 #undef XX4
 }
