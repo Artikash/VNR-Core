@@ -13,7 +13,7 @@ psp:
   - 5pb PSP
   - Alchemist PSP
   - Imageepoch PSP
-  - Regista PSP
+  - Yeti PSP
 
 embed:
   #- AMUSE CRAFT
@@ -105,7 +105,7 @@ simple:
   - Pensil
   - RealLive
   - Rejet
-  - Regista PSP
+  - Yeti PSP
   - ShinaRio
   - SiglusEngine2
   - ScenarioPlayerA
@@ -222,7 +222,7 @@ char:
   - QLIE
   - RealLive
   - Rejet
-  - Regista PSP
+  - Yeti PSP
   - RetouchSystem
   - rUGP
   - ScenarioPlayerA
