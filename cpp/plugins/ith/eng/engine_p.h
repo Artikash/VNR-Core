@@ -23,6 +23,7 @@ bool InsertPPSSPPHook();        // PPSSPPWindows
 bool Insert5pbPSPHook();        // PSP 5pb.jp
 bool InsertAlchemistPSPHook();  // PSP Alchemist-net.co.jp
 bool InsertImageepochPSPHook(); // PSP Imageepoch.co.jp
+bool InsertKidPSPHook();        // PSP Kid-game.co.jp
 bool InsertYetiPSPHook();       // PSP Yetigame.jp
 //bool InsertShadePSPHook();    // PSP SHADE.co.jp
 

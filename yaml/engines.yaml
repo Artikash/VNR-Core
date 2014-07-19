@@ -13,6 +13,7 @@ psp:
   - 5pb PSP
   - Alchemist PSP
   - Imageepoch PSP
+  - KID PSP
   - Yeti PSP
 
 embed:
@@ -93,6 +94,7 @@ simple:
   - CMVS2
   - Elf
   - Eushully
+  - KID PSP
   - KiriKiri1
   - KiriKiri2
   - MAJIRO # renamed
@@ -207,6 +209,7 @@ char:
   - EmonEngine
   - Eushully
   - Gesen18
+  - KID PSP
   - Live
   - Lucifen
   - MAJIRO # renamed
