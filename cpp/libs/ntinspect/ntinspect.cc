@@ -61,17 +61,18 @@ BOOL getModuleMemoryRange(LPCWSTR moduleName, DWORD *lowerBound, DWORD *upperBou
 
       if (upperBound) {
         DWORD upper = lower;
-        MEMORY_BASIC_INFORMATION info = {};
+        MEMORY_BASIC_INFORMATION mbi = {};
         DWORD size = 0;
         do {
           DWORD len;
-          NtQueryVirtualMemory(NtCurrentProcess(), (LPVOID)upper, MemoryBasicInformation, &info, sizeof(info), &len);
-          if (info.Protect & PAGE_NOACCESS) {
+          // Nt function is needed instead of VirtualQuery, which only works for the current process
+          ::NtQueryVirtualMemory(NtCurrentProcess(), (LPVOID)upper, MemoryBasicInformation, &mbi, sizeof(mbi), &len);
+          if (mbi.Protect & PAGE_NOACCESS) {
             it->SizeOfImage = size;
             break;
           }
-          size += info.RegionSize;
-          upper += info.RegionSize;
+          size += mbi.RegionSize;
+          upper += mbi.RegionSize;
         } while (size < it->SizeOfImage);
 
         *upperBound = upper;

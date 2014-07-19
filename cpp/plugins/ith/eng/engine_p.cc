@@ -120,20 +120,23 @@ ULONG SafeFindBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD 
   return r;
 }
 
-ULONG SafeFindBytesWithWildcard(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, BYTE wildcard)
+ULONG SafeMatchBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, BYTE wildcard)
 {
   ULONG r = 0;
-  ITH_WITH_SEH(r = MemDbg::findBytesWithWildcard(pattern, patternSize, lowerBound, upperBound, wildcard));
+  ITH_WITH_SEH(r = MemDbg::matchBytes(pattern, patternSize, lowerBound, upperBound, wildcard));
   return r;
 }
 
-// jichi 7/17/2014: Use SEH to avoid illegal memory accesses
-// FIXME: Need a way to query MEM_MAPPED at runtime like Ollydbg and Cheat Engine
-ULONG PspFindBytesWithWildcard(LPCVOID pattern, DWORD patternSize, BYTE wildcard)
+// jichi 7/17/2014: Search mapped memory for emulators
+ULONG SafeMatchBytesInMappedMemory(LPCVOID pattern, DWORD patternSize, BYTE wildcard)
 {
-  enum : ULONG { PspStart = 0x0a000000, PspStop = 0x14000000, PspStep = 0x01000000 };
-  for (ULONG i = PspStart; i < PspStop; i += PspStep) // 0x2000 is to cover the overlappd region
-    if (ULONG r = SafeFindBytesWithWildcard(pattern, patternSize, i, i + PspStep + 0x2000, wildcard))
+  enum : ULONG {
+    PspStart = MemDbg::MappedMemoryStartAddress,
+    PspStop = MemDbg::MemoryStopAddress,
+    PspStep = 0x01000000
+  };
+  for (ULONG i = PspStart; i < PspStop; i += PspStep) // + patternSize to avoid overlap
+    if (ULONG r = SafeMatchBytes(pattern, patternSize, i, i + PspStep + patternSize + 1, wildcard))
       return r;
   return 0;
 }
@@ -5779,9 +5782,9 @@ bool InsertPPSSPPHook()
   // TODO: Query MEM_Mapped at runtime
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
   //enum : DWORD { PSPStartAddress = 0x12000000, PSPStopAddress = 0x14000000 };
-  Insert5pbPSPHook();
+  //Insert5pbPSPHook();
   InsertImageepochPSPHook();
-  InsertAlchemistPSPHook();
+  //InsertAlchemistPSPHook();
 
   //InsertShadePSPHook();
   ConsoleOutput("vnreng: PPSSPP: leave");
@@ -5860,8 +5863,7 @@ static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, 
 bool InsertAlchemistPSPHook()
 {
   ConsoleOutput("vnreng: Alchemist PSP: enter");
-  //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
-  enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
+  enum : BYTE { XX = MemDbg::WidecardByte };
 #define XX4 XX,XX,XX,XX  // DWORD
 
   const BYTE bytes[] =  {
@@ -5885,7 +5887,7 @@ bool InsertAlchemistPSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = PspFindBytesWithWildcard(bytes, sizeof(bytes), XX);
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
   //ITH_GROWL_DWORD(addr);
   //addr = 0x134076f2; // your diary+
   //ITH_GROWL_DWORD(addr);
@@ -6070,8 +6072,7 @@ static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
 bool Insert5pbPSPHook()
 {
   ConsoleOutput("vnreng: 5pb PSP: enter");
-  //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
-  enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
+  enum : BYTE { XX = MemDbg::WidecardByte };
 #define XX4 XX,XX,XX,XX  // DWORD
 
   const BYTE bytes[] =  {
@@ -6119,7 +6120,7 @@ bool Insert5pbPSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = PspFindBytesWithWildcard(bytes, sizeof(bytes), XX);
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
   //ITH_GROWL_DWORD(addr);
   //addr = 0x13574a18;
   //ITH_GROWL_DWORD(addr);
@@ -6205,25 +6206,22 @@ static void SpecialPSPHookImageepoch(DWORD esp_base, HookParam *hp, DWORD *data,
 {
   //enum { base = 0x7400000 };
   DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
-  DWORD eax = regof(eax, esp_base),
-        ecx = regof(ecx, esp_base);
+  DWORD eax = regof(eax, esp_base);
 
   // Prevent reading the same address multiple times
   static DWORD lastText;
   DWORD text = eax + base;
   if (text != lastText && *(LPCSTR)text) {
-    lastText = text;
-    *data = text;
+    *data = lastText = text;
     *len = ::strlen((LPCSTR)text); // UTF-8 is null-terminated
-    *split = ecx; // use "this" to split?
+    *split = regof(ecx, esp_base); // use ecx = "this" to split?
   }
 }
 
 bool InsertImageepochPSPHook()
 {
   ConsoleOutput("vnreng: Imageepoch PSP: enter");
-  //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
-  enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
+  enum : BYTE { XX = MemDbg::WidecardByte };
 #define XX4 XX,XX,XX,XX  // DWORD
 
   const BYTE bytes[] =  {
@@ -6244,7 +6242,7 @@ bool InsertImageepochPSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
-  DWORD addr = PspFindBytesWithWildcard(bytes, sizeof(bytes), XX);
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
   if (!addr)
@@ -6270,6 +6268,10 @@ bool InsertImageepochPSPHook()
   return addr;
 #undef XX4
 }
+
+} // namespace Engine
+
+// EOF
 
 #if 0 // jichi 7/14/2014: TODO there is text duplication issue?
 
@@ -6384,7 +6386,7 @@ bool InsertShadePSPHook()
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodially try different PSP engines
-  ULONG addr = PspFindBytesWithWildcard(bytes, sizeof(bytes), XX);
+  ULONG addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
   if (!addr)
     ConsoleOutput("vnreng: Shade PSP: failed");
   else {
@@ -6412,6 +6414,145 @@ bool InsertShadePSPHook()
 }
 
 #endif // 0
+
+#if 0 // jichi 7/17/2014: Disabled as there are so many text threads
+/** jichi 7/17/2014 alternative Alchemist hook
+ *
+ *  Sample game: your diary+ (moe-ydp.iso)
+ *  The debugging method is the same as Alchemist1.
+ *
+ *  It seems that hooks found in Alchemist games
+ *  also exist in other games.
+ *
+ *  This function is executed in a looped.
+ *
+ *  13400e12   cc               int3
+ *  13400e13   cc               int3
+ *  13400e14   77 0f            ja short 13400e25
+ *  13400e16   c705 a8aa1001 84>mov dword ptr ds:[0x110aaa8],0x8931084
+ *  13400e20  -e9 dff148f0      jmp 03890004
+ *  13400e25   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+ *  13400e2b   81e0 ffffff3f    and eax,0x3fffffff
+ *  13400e31   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+ *  13400e38   8b3d 78a71001    mov edi,dword ptr ds:[0x110a778]
+ *  13400e3e   81fe 00000000    cmp esi,0x0
+ *  13400e44   893d 7ca71001    mov dword ptr ds:[0x110a77c],edi
+ *  13400e4a   8935 80a71001    mov dword ptr ds:[0x110a780],esi
+ *  13400e50   0f85 16000000    jnz 13400e6c
+ *  13400e56   832d c4aa1001 03 sub dword ptr ds:[0x110aac4],0x3
+ *  13400e5d   e9 16010000      jmp 13400f78
+ *  13400e62   01a0 109308e9    add dword ptr ds:[eax+0xe9089310],esp
+ *  13400e68   b7 f1            mov bh,0xf1
+ *  13400e6a   48               dec eax
+ *  13400e6b   f0:832d c4aa1001>lock sub dword ptr ds:[0x110aac4],0x3    ; lock prefix
+ *  13400e73   e9 0c000000      jmp 13400e84
+ *  13400e78   0190 109308e9    add dword ptr ds:[eax+0xe9089310],edx
+ *  13400e7e   a1 f148f090      mov eax,dword ptr ds:[0x90f048f1]
+ *  13400e83   cc               int3
+ *  13400e84   77 0f            ja short 13400e95
+ *  13400e86   c705 a8aa1001 90>mov dword ptr ds:[0x110aaa8],0x8931090
+ *  13400e90  -e9 6ff148f0      jmp 03890004
+ *  13400e95   8b35 78a71001    mov esi,dword ptr ds:[0x110a778]
+ *  13400e9b   8d76 01          lea esi,dword ptr ds:[esi+0x1]
+ *  13400e9e   8bc6             mov eax,esi
+ *  13400ea0   81e0 ffffff3f    and eax,0x3fffffff
+ *  13400ea6   0fbeb8 00004007  movsx edi,byte ptr ds:[eax+0x7400000]
+ *  13400ead   81ff 00000000    cmp edi,0x0
+ *  13400eb3   8935 78a71001    mov dword ptr ds:[0x110a778],esi
+ *  13400eb9   893d 80a71001    mov dword ptr ds:[0x110a780],edi
+ *  13400ebf   0f84 25000000    je 13400eea
+ *  13400ec5   8b35 78a71001    mov esi,dword ptr ds:[0x110a778]
+ *  13400ecb   8d76 01          lea esi,dword ptr ds:[esi+0x1]
+ *  13400ece   8935 78a71001    mov dword ptr ds:[0x110a778],esi
+ *  13400ed4   832d c4aa1001 04 sub dword ptr ds:[0x110aac4],0x4
+ *  13400edb   e9 24000000      jmp 13400f04
+ *  13400ee0   019410 9308e939  add dword ptr ds:[eax+edx+0x39e90893],ed>
+ *  13400ee7   f1               int1
+ *  13400ee8   48               dec eax
+ *  13400ee9   f0:832d c4aa1001>lock sub dword ptr ds:[0x110aac4],0x4    ; lock prefix
+ *  13400ef1   e9 82000000      jmp 13400f78
+ *  13400ef6   01a0 109308e9    add dword ptr ds:[eax+0xe9089310],esp
+ *  13400efc   23f1             and esi,ecx
+ *  13400efe   48               dec eax
+ *  13400eff   f0:90            lock nop                                 ; lock prefix is not allowed
+ *  13400f01   cc               int3
+ *  13400f02   cc               int3
+ */
+// Get text from [eax + 0x740000]
+// jichi 7/17/2014: Why this function is exactly the same as SpecialPSPHookImageepoch?
+static void SpecialPSPHookAlchemist2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
+  //ITH_GROWL_DWORD(base);
+  //enum { base = 0x7400000 };
+  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
+  DWORD eax = regof(eax, esp_base);
+
+  static DWORD lastText;
+  DWORD text = eax + base;
+  if (text != lastText && *(LPCSTR)text) {
+    *data = lastText = text;
+    *len = ::strlen((LPCSTR)text);
+    *split = regof(ecx, esp_base); // use ecx "this" as split value?
+  }
+}
+bool InsertAlchemist2PSPHook()
+{
+  ConsoleOutput("vnreng: Alchemist2 PSP: enter");
+  //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
+  //enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
+  enum : BYTE { XX = MemDbg::WidecardByte };
+#define XX4 XX,XX,XX,XX  // DWORD
+
+  const BYTE bytes[] =  {
+    //0xcc,                         // 13400e12   cc               int3
+    //0xcc,                         // 13400e13   cc               int3
+    0x77, 0x0f,                     // 13400e14   77 0f            ja short 13400e25
+    0xc7,0x05, XX4, XX4,            // 13400e16   c705 a8aa1001 84>mov dword ptr ds:[0x110aaa8],0x8931084
+    0xe9, XX4,                      // 13400e20  -e9 dff148f0      jmp 03890004
+    0x8b,0x05, XX4,                 // 13400e25   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13400e2b   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xbe,0xb0, XX4,            // 13400e31   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+    0x8b,0x3d, XX4,                 // 13400e38   8b3d 78a71001    mov edi,dword ptr ds:[0x110a778]
+    0x81,0xfe, 0x00,0x00,0x00,0x00, // 13400e3e   81fe 00000000    cmp esi,0x0
+    0x89,0x3d, XX4,                 // 13400e44   893d 7ca71001    mov dword ptr ds:[0x110a77c],edi
+    0x89,0x35, XX4,                 // 13400e4a   8935 80a71001    mov dword ptr ds:[0x110a780],esi
+    0x0f,0x85 //, 16000000          // 13400e50   0f85 16000000    jnz 13400e6c
+  };
+  enum { hook_offset = 0x13407711 - 0x134076f4 };
+
+  // This process might raise before the PSP ISO is loaded
+  // TODO: Create a timer thread to periodically try different PSP engines
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes), XX);
+  //ITH_GROWL_DWORD(addr);
+  //addr = 0x134076f2; // your diary+
+  //ITH_GROWL_DWORD(addr);
+  //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
+  if (!addr)
+    ConsoleOutput("vnreng: Alchemist2 PSP: pattern not found");
+  else {
+    addr += hook_offset;
+    //ITH_GROWL_DWORD(addr);
+
+    // Get this value at runtime in case it is runtime-dependent
+    DWORD membase = *(DWORD *)(addr + 3); // get operand: 13400e31   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
+
+    HookParam hp = {};
+    hp.addr = addr;
+    hp.extern_fun = SpecialPSPHookAlchemist2;
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
+    hp.module = membase; // use module to pass membase
+    ConsoleOutput("vnreng: Alchemist2 PSP: INSERT");
+    NewHook(hp, L"Alchemist2 PSP");
+  }
+
+  ConsoleOutput("vnreng: Alchemist2 PSP: leave");
+  return addr;
+#undef XX4
+}
+#endif // 0
+
 
 #if 0 // jichi 4/21/2014: Disabled as this does not work before mono.dll is loaded
 
@@ -6520,7 +6661,3 @@ bool InsertMonoHook()
   return true;
 }
 #endif // 0
-
-} // namespace Engine
-
-// EOF

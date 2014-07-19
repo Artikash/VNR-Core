@@ -82,31 +82,66 @@ inline dword_t findPushAddress(dword_t value, dword_t lowerBound, dword_t upperB
  *  @param  addr  address within th function
  *  @param  searchSize  max backward search size
  *  @return  beginning address of the function
+ *  @exception  illegal memory access
  */
 dword_t findEnclosingAlignedFunction(dword_t addr, dword_t searchSize = MaximumFunctionSize);
 
 /**
  *  Return the address of the first matched pattern.
  *  Return 0 if failed. The return result is ambiguous if the pattern address is 0.
+ *  This function simpily traverse all bytes in memory range and would raise
+ *  if no access to the region.
  *
  *  @param  pattern  array of bytes to match
  *  @param  patternSize  size of the pattern array
  *  @param  lowerBound  search start address
  *  @param  upperBound  search stop address
  *  @return  absolute address
+ *  @exception  illegal memory access
  */
 dword_t findBytes(const void *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound);
 
-//inline dword_t findString(const char *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound);
-//{ return findBytes(pattern, patternSize, lowerBound, upperBound); }
+/**
+ *  jichi 2/5/2014: The same as findBytes except it uses widecard to match everything.
+ *  The widecard should use the byte seldom appears in the pattern.
+ *  See: http://sakuradite.com/topic/124
+ *
+ *  @param  pattern  array of bytes to match
+ *  @param  patternSize  size of the pattern array
+ *  @param  lowerBound  search start address
+ *  @param  upperBound  search stop address
+ *  @param* widecard  the character to match everything
+ *  @return  absolute address
+ *  @exception  illegal memory access
+ */
+enum : byte_t { WidecardByte = 0x11 }; // jichi 7/17/2014: 0x11 seldom appear in PSP code pattern
+//enum : WORD { WidecardWord = 0xffff };
+dword_t matchBytes(const void *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound,
+                   byte_t wildcard = WidecardByte);
+
+enum SearchType : byte_t { SearchAll = 0 , SearchFirst };
+
+// 2GB: 0 - 0x7fffffff
+// http://codesequoia.wordpress.com/2008/11/28/understand-process-address-space-usage/
+enum MemoryRange : dword_t { MemoryStartAddress = 0 , MemoryStopAddress = 0x7fffffff };
+enum : dword_t { MappedMemoryStartAddress = 0x01000000};
 
 /**
- * jichi 2/5/2014: The same as SearchPattern except it uses 0xff to match everything
- * According to @Andys, 0xff seldom appears in the source code: http://sakuradite.com/topic/124
+ *  Traverse memory continues pages and return the address of the first matched pattern.
+ *
+ *  @param  pattern  array of bytes to match
+ *  @param  patternSize  size of the pattern array
+ *  @param  lowerBound  search start address
+ *  @param  upperBound  search stop address
+ *  @param* search  search all pages (SearchAll) or stop on first illegal access (SearchFirst)
+ *  @return  absolute address
  */
-enum : byte_t { WidecardByte = 0xff };
-//enum : WORD { WidecardWord = 0xffff };
-dword_t findBytesWithWildcard(const void *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound, byte_t wildcard = WidecardByte);
+dword_t findBytesInPages(const void *pattern, dword_t patternSize,
+    dword_t lowerBound = MemoryStartAddress, dword_t upperBound = MemoryStopAddress,
+    SearchType search = SearchAll);
+dword_t matchBytesInPages(const void *pattern, dword_t patternSize,
+    dword_t lowerBound = MemoryStartAddress, dword_t upperBound = MemoryStopAddress,
+    byte_t wildcard = WidecardByte, SearchType search = SearchAll);
 
 MEMDBG_END_NAMESPACE
 

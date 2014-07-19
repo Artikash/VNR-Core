@@ -429,10 +429,78 @@ DWORD findBytes(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD 
   return reladdr ? lowerBound + reladdr : 0;
 }
 
-DWORD findBytesWithWildcard(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, BYTE wildcard)
+DWORD matchBytes(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, BYTE wildcard)
 {
   DWORD reladdr = searchPatternEx(lowerBound, upperBound - lowerBound, pattern, patternSize, wildcard);
   return reladdr ? lowerBound + reladdr : 0;
+}
+
+DWORD findBytesInPages(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, SearchType search)
+{
+  //enum { MinPageSize = 4 * 1024 }; // 4k
+  DWORD ret = 0;
+  DWORD start = lowerBound,
+        stop = start;
+  MEMORY_BASIC_INFORMATION mbi = {};
+
+  //lowerBound = 0x10000000;
+  //upperBound = 0x14000000;
+  //SIZE_T ok = ::VirtualQuery((LPCVOID)lowerBound, &mbi, sizeof(mbi));
+  //ITH_GROWL_DWORD7(1, start, stop, mbi.RegionSize, mbi.Protect, mbi.Type, mbi.State);
+  //return matchBytes(pattern, patternSize, lowerBound, upperBound, wildcard);
+  while (stop < upperBound) {
+    SIZE_T ok = ::VirtualQuery((LPCVOID)start, &mbi, sizeof(mbi));
+    if (!mbi.RegionSize)
+      break;
+    // Only visit readable and committed region
+    // Protect could be zero if not allowed to query
+    if (!ok || !mbi.Protect || mbi.Protect&PAGE_NOACCESS) {
+      if (stop > start && (ret = findBytes(pattern, patternSize, lowerBound, upperBound)))
+        return ret;
+      if (search != SearchAll)
+        return 0;
+      stop += mbi.RegionSize;
+      start = stop;
+    } else
+      stop += mbi.RegionSize;
+  }
+  if (stop > start)
+    ret = findBytes(pattern, patternSize, start, min(upperBound, stop));
+  return ret;
+}
+
+DWORD matchBytesInPages(const void *pattern, DWORD patternSize, DWORD lowerBound, DWORD upperBound, BYTE wildcard, SearchType search)
+{
+  //enum { MinPageSize = 4 * 1024 }; // 4k
+  DWORD ret = 0;
+  DWORD start = lowerBound,
+        stop = start;
+  MEMORY_BASIC_INFORMATION mbi = {};
+
+  //lowerBound = 0x10000000;
+  //upperBound = 0x14000000;
+  //SIZE_T ok = ::VirtualQuery((LPCVOID)lowerBound, &mbi, sizeof(mbi));
+  //ITH_GROWL_DWORD7(1, start, stop, mbi.RegionSize, mbi.Protect, mbi.Type, mbi.State);
+  //return matchBytes(pattern, patternSize, lowerBound, upperBound, wildcard);
+  while (stop < upperBound) {
+    SIZE_T ok = ::VirtualQuery((LPCVOID)start, &mbi, sizeof(mbi));
+    if (!mbi.RegionSize)
+      break;
+    // Only visit readable and committed region
+    // Protect could be zero if not allowed to query
+    if (!ok || !mbi.Protect || mbi.Protect&PAGE_NOACCESS) {
+      if (stop > start && (ret = matchBytes(pattern, patternSize, lowerBound, upperBound, wildcard)))
+        return ret;
+      if (search != SearchAll)
+        return 0;
+      stop += mbi.RegionSize;
+      start = stop;
+    } else
+      stop += mbi.RegionSize;
+  }
+  if (stop > start)
+    ret = matchBytes(pattern, patternSize, start, min(upperBound, stop), wildcard);
+  return ret;
 }
 
 MEMDBG_END_NAMESPACE
