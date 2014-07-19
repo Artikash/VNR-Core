@@ -92,7 +92,6 @@ simple:
   - CMVS2
   - Elf
   - Eushully
-  - Imageepoch PSP
   - KiriKiri1
   - KiriKiri2
   - MAJIRO # renamed
@@ -146,6 +145,7 @@ nofloat:
   - Bruns2
   - Malie
   - MarineHeart # sometimes has limited repetition
+  - Imageepoch PSP # could have repetitions
 
 float:
   - Gesen18
