@@ -173,6 +173,7 @@ KiriKiri hook:
 #if 0 // jichi 11/12/2013: not used
 static void SpecialHookKiriKiri(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  CC_UNUSED(hp);
   DWORD p1 =  *(DWORD *)(esp_base - 0x14),
         p2 =  *(DWORD *)(esp_base - 0x18);
   if ((p1>>16) == (p2>>16)) {
@@ -5783,6 +5784,7 @@ bool _vanillawaregarbage(LPCSTR p)
 // Get text from [eax + 0x740000]
 static void SpecialGCHookVanillaware(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  CC_UNUSED(hp);
   //enum { base = 0x7400000 };
   DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base);
@@ -6064,6 +6066,7 @@ bool InsertPPSSPPHooks()
 // Get text from [eax + 0x740000]
 static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  CC_UNUSED(hp);
   //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
   //ITH_GROWL_DWORD(base);
   //enum { base = 0x7400000 };
@@ -6290,6 +6293,7 @@ size_t _5pbstrlen(LPCSTR text)
 // Get text from [eax + 0x740000]
 static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  CC_UNUSED(hp);
   //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
   //ITH_GROWL_DWORD(base);
   //enum { base = 0x7400000 };
@@ -6437,6 +6441,7 @@ bool Insert5pbPSPHook()
 // Get text from [eax + 0x740000]
 static void SpecialPSPHookImageepoch(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  CC_UNUSED(hp);
   //enum { base = 0x7400000 };
   DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base);
@@ -6964,6 +6969,7 @@ bool InsertImageepochPSPHook()
 // Get text from [eax + 0x740000]
 static void SpecialPSPHookYeti(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  CC_UNUSED(hp);
   //enum { base = 0x7400000 };
   DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base);
@@ -7159,6 +7165,7 @@ bool InsertYetiPSPHook()
 // Get text from [eax + 0x740000]
 static void SpecialPSPHookKid(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  CC_UNUSED(hp);
   //enum { base = 0x7400000 };
   DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base);
@@ -7268,6 +7275,7 @@ bool InsertKidPSPHook()
 // Get text from [eax + 0x740000]
 static void SpecialPSPHookCyberfront(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  CC_UNUSED(hp);
   //enum { base = 0x7400000 };
   DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base);
@@ -7516,6 +7524,7 @@ bool InsertTypeMoonPS2Hook()
  */
 static void SpecialPSPHookShade(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  CC_UNUSED(hp);
   CC_UNUSED(split);
   DWORD membase = *(DWORD *)(hp->addr + 3); // get operand: 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
   DWORD eax = regof(eax, esp_base);
@@ -7647,6 +7656,7 @@ bool InsertShadePSPHook()
 // jichi 7/17/2014: Why this function is exactly the same as SpecialPSPHookImageepoch?
 static void SpecialPSPHookAlchemist2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  CC_UNUSED(hp);
   //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
   //ITH_GROWL_DWORD(base);
   //enum { base = 0x7400000 };
