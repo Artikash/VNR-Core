@@ -5830,7 +5830,7 @@ bool insertVanillawareGCHook()
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x0f movzx
   if (!addr)
-    ConsoleOutput("vnreng: Vanillaware PSP: pattern not found");
+    ConsoleOutput("vnreng: Vanillaware GC: pattern not found");
   else {
     addr += hook_offset;
     //ITH_GROWL_DWORD(addr);
