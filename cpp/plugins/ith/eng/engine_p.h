@@ -17,9 +17,14 @@ extern DWORD module_base_,
 typedef bool (* trigger_fun_t)(LPVOID addr, DWORD frame, DWORD stack);
 extern trigger_fun_t trigger_fun_;
 
+// Wii engines
+
+bool InsertGCHooks(); // Dolphin
+bool insertVanillawareGCHook();
+
 // PS2 engines
 
-bool InsertPCSX2Hooks();         // PCSX2
+bool InsertPCSX2Hooks(); // PCSX2
 //bool InsertNamcoPS2Hook();
 //bool InsertTypeMoonPS2Hook();
 

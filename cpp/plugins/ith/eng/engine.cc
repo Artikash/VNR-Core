@@ -60,6 +60,17 @@ DWORD DeterminePCEngine()
     return yes;
   }
 
+  if (IthFindFile(L"Dolphin.exe")) { // jichi 7/20/2014
+    if (!InsertGCHooks()) {
+      // Always insert PC hooks so that user could add PCSX2 to VNR.
+      // TO BE REMOVED after more PS2 engines are added.
+      InsertGdiHooks();
+      InsertLstrHooks();
+    }
+
+    return yes;
+  }
+
   // PC games
   InsertGdiHooks();
   return no;
