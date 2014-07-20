@@ -17,6 +17,9 @@ psp:
   - CYBERFRONT PSP
   - Yeti PSP
 
+gc:
+  - Vanillaware GC
+
 embed:
   #- AMUSE CRAFT
   - BGI
@@ -154,6 +157,7 @@ nofloat:
   - Malie
   - MarineHeart # sometimes has limited repetition
   - Imageepoch PSP # could have repetitions
+  - Vanillaware GC # could have repetitions
 
 float:
   - Gesen18
@@ -247,6 +251,7 @@ char:
   - Tenco
   - TinkerBell
   - Triangle
+  - Vanillaware GC
   - WAFFLE
   - WillPlus
   - WolfRPG
