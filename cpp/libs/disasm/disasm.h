@@ -20,7 +20,7 @@
 #endif
 
 DISASM_BEGIN_NAMESPACE
-int disasm(const BYTE *opcode0); // return: length if success, 0 if error
+int disasm(const BYTE *opcode0); // return: op length if success, 0 if error
 DISASM_END_NAMESPACE
 
 // EOF

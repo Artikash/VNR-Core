@@ -7960,8 +7960,11 @@ class DataManager(QObject):
 
     t = g.refsUpdateTime
     if t + config.APP_UPDATE_REFS_INTERVAL < skdatetime.current_unixtime():
-      dprint("schedule to update game refs")
-      skevents.runlater(self.updateReferences, 5000)
+      if g.itemId and g.itemId < defs.MIN_NORMAL_GAME_ITEM_ID:
+        dprint("found non-normal game, ignore refs")
+      else:
+        dprint("schedule to update game refs")
+        skevents.runlater(self.updateReferences, 5000)
 
     commentCount = g.commentCount
 

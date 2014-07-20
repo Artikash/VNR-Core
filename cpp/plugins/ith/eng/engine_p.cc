@@ -3284,7 +3284,7 @@ static void SpecialHookWillPlus(DWORD esp_base, HookParam* hp, DWORD* data, DWOR
   retn = *(DWORD*)esp_base;
   i = 0;
   while (*pw != 0xc483) { //add esp, $
-    l = disasm(pb);
+    l = ::disasm(pb);
     if (++i == 5)
       //ConsoleOutput("Fail to detect offset.");
       break;
@@ -5648,6 +5648,208 @@ bool InsertYukaSystem2Hook()
   return true;
 }
 
+/** jichi 7/20/2014 Dolphin
+ *  Tested with Dolphin 4.0
+ */
+bool InsertGCHooks()
+{
+  // TODO: Add generic hooks
+  return insertVanillawareGCHook();
+  //return false;
+}
+
+/** jichi 7/20/2014 Vanillaware
+ *  Tested game: 朧村正
+ *
+ *  Debugging method: grep the saving message
+ *
+ *  1609415e   cc               int3
+ *  1609415f   cc               int3
+ *  16094160   77 0f            ja short 16094171
+ *  16094162   c705 00fb6701 80>mov dword ptr ds:[0x167fb00],0x80216b80
+ *  1609416c  -e9 f9be06f1      jmp 0710006a
+ *  16094171   8b35 8cf86701    mov esi,dword ptr ds:[0x167f88c]
+ *  16094177   81c6 ffffffff    add esi,-0x1
+ *  1609417d   8bce             mov ecx,esi
+ *  1609417f   81c1 01000000    add ecx,0x1
+ *  16094185   f7c1 0000000c    test ecx,0xc000000
+ *  1609418b   74 0b            je short 16094198
+ *  1609418d   51               push ecx
+ *  1609418e   e8 36bff9f2      call 090300c9
+ *  16094193   83c4 04          add esp,0x4
+ *  16094196   eb 11            jmp short 160941a9
+ *  16094198   8bc1             mov eax,ecx
+ *  1609419a   81e0 ffffff3f    and eax,0x3fffffff
+ *  160941a0   0fb680 00000810  movzx eax,byte ptr ds:[eax+0x10080000] ; jichi: hook here
+ *  160941a7   66:90            nop
+ *  160941a9   81c6 01000000    add esi,0x1
+ *  160941af   8905 80f86701    mov dword ptr ds:[0x167f880],eax
+ *  160941b5   813d 80f86701 00>cmp dword ptr ds:[0x167f880],0x0
+ *  160941bf   c705 8cf86701 00>mov dword ptr ds:[0x167f88c],0x0
+ *  160941c9   8935 90f86701    mov dword ptr ds:[0x167f890],esi
+ *  160941cf   7c 14            jl short 160941e5
+ *  160941d1   7f 09            jg short 160941dc
+ *  160941d3   c605 0cfb6701 02 mov byte ptr ds:[0x167fb0c],0x2
+ *  160941da   eb 26            jmp short 16094202
+ *  160941dc   c605 0cfb6701 04 mov byte ptr ds:[0x167fb0c],0x4
+ *  160941e3   eb 07            jmp short 160941ec
+ *  160941e5   c605 0cfb6701 08 mov byte ptr ds:[0x167fb0c],0x8
+ *  160941ec   832d 7c4cb101 06 sub dword ptr ds:[0x1b14c7c],0x6
+ *  160941f3   e9 20000000      jmp 16094218
+ *  160941f8   0188 6b2180e9    add dword ptr ds:[eax+0xe980216b],ecx
+ *  160941fe   0e               push cs
+ *  160941ff   be 06f1832d      mov esi,0x2d83f106
+ *  16094204   7c 4c            jl short 16094252
+ *  16094206   b1 01            mov cl,0x1
+ *  16094208   06               push es
+ *  16094209   e9 c2000000      jmp 160942d0
+ *  1609420e   0198 6b2180e9    add dword ptr ds:[eax+0xe980216b],ebx
+ *  16094214   f8               clc
+ *  16094215   bd 06f1770f      mov ebp,0xf77f106
+ *  1609421a   c705 00fb6701 88>mov dword ptr ds:[0x167fb00],0x80216b88
+ *  16094224  -e9 41be06f1      jmp 0710006a
+ *  16094229   8b0d 90f86701    mov ecx,dword ptr ds:[0x167f890]
+ *  1609422f   81c1 01000000    add ecx,0x1
+ *  16094235   f7c1 0000000c    test ecx,0xc000000
+ *  1609423b   74 0b            je short 16094248
+ *  1609423d   51               push ecx
+ *  1609423e   e8 86bef9f2      call 090300c9
+ *  16094243   83c4 04          add esp,0x4
+ *  16094246   eb 11            jmp short 16094259
+ *  16094248   8bc1             mov eax,ecx
+ *  1609424a   81e0 ffffff3f    and eax,0x3fffffff
+ *  16094250   0fb680 00000810  movzx eax,byte ptr ds:[eax+0x10080000]
+ *  16094257   66:90            nop
+ *  16094259   8b35 90f86701    mov esi,dword ptr ds:[0x167f890]
+ *  1609425f   81c6 01000000    add esi,0x1
+ *  16094265   8905 80f86701    mov dword ptr ds:[0x167f880],eax
+ *  1609426b   8105 8cf86701 01>add dword ptr ds:[0x167f88c],0x1
+ *  16094275   813d 80f86701 00>cmp dword ptr ds:[0x167f880],0x0
+ *  1609427f   8935 90f86701    mov dword ptr ds:[0x167f890],esi
+ *  16094285   7c 14            jl short 1609429b
+ *  16094287   7f 09            jg short 16094292
+ *  16094289   c605 0cfb6701 02 mov byte ptr ds:[0x167fb0c],0x2
+ *  16094290   eb 26            jmp short 160942b8
+ *  16094292   c605 0cfb6701 04 mov byte ptr ds:[0x167fb0c],0x4
+ *  16094299   eb 07            jmp short 160942a2
+ *  1609429b   c605 0cfb6701 08 mov byte ptr ds:[0x167fb0c],0x8
+ *  160942a2   832d 7c4cb101 04 sub dword ptr ds:[0x1b14c7c],0x4
+ *  160942a9  ^e9 6affffff      jmp 16094218
+ *  160942ae   0188 6b2180e9    add dword ptr ds:[eax+0xe980216b],ecx
+ *  160942b4   58               pop eax
+ *  160942b5   bd 06f1832d      mov ebp,0x2d83f106
+ *  160942ba   7c 4c            jl short 16094308
+ *  160942bc   b1 01            mov cl,0x1
+ *  160942be   04 e9            add al,0xe9
+ *  160942c0   0c 00            or al,0x0
+ *  160942c2   0000             add byte ptr ds:[eax],al
+ *  160942c4   0198 6b2180e9    add dword ptr ds:[eax+0xe980216b],ebx
+ *  160942ca   42               inc edx
+ *  160942cb   bd 06f1cccc      mov ebp,0xccccf106
+ *  160942d0   77 0f            ja short 160942e1
+ *  160942d2   c705 00fb6701 98>mov dword ptr ds:[0x167fb00],0x80216b98
+ *  160942dc  -e9 89bd06f1      jmp 0710006a
+ *  160942e1   8b05 84fb6701    mov eax,dword ptr ds:[0x167fb84]
+ *  160942e7   81e0 fcffffff    and eax,0xfffffffc
+ *  160942ed   8905 00fb6701    mov dword ptr ds:[0x167fb00],eax
+ *  160942f3   832d 7c4cb101 01 sub dword ptr ds:[0x1b14c7c],0x1
+ *  160942fa  -e9 11bd06f1      jmp 07100010
+ *  160942ff   832d 7c4cb101 01 sub dword ptr ds:[0x1b14c7c],0x1
+ *  16094306  ^e9 91f8ffff      jmp 16093b9c
+ *  1609430b   cc               int3
+ */
+namespace { // unnamed
+
+// Return true if the text is a garbage character
+inline bool _vanillawaregarbage_ch(char c)
+{
+  return c == ' ' || c == '.' || c == '/'
+      || c >= '0' && c <= '9'
+      || c >= 'A' && c <= 'z' // also ignore ASCII 91-96: [ \ ] ^ _ `
+  ;
+}
+
+// Return true if the text is full of garbage characters
+bool _vanillawaregarbage(LPCSTR p)
+{
+  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
+    if (!_vanillawaregarbage_ch(*p))
+      return false;
+  return true;
+}
+} // unnamed namespace
+
+// Get text from [eax + 0x740000]
+static void SpecialGCHookVanillaware(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  //enum { base = 0x7400000 };
+  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
+  DWORD eax = regof(eax, esp_base);
+
+  static LPCSTR lastText;
+  LPCSTR text = LPCSTR(eax + base);
+  if (lastText != text && *text && !_vanillawaregarbage(text)) {
+    lastText = text;
+    *data = (DWORD)text;
+    *len = ::strlen(text); // SHIFT-JIS
+    *split = regof(ecx, esp_base);
+    //*split = FIXED_SPLIT_VALUE;
+  }
+}
+
+bool insertVanillawareGCHook()
+{
+  ConsoleOutput("vnreng: Vanillaware GC: enter");
+
+  const BYTE bytes[] =  {
+    0x83,0xc4, 0x04,                // 16094193   83c4 04          add esp,0x4
+    0xeb, 0x11,                     // 16094196   eb 11            jmp short 160941a9
+    0x8b,0xc1,                      // 16094198   8bc1             mov eax,ecx
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1609419a   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb6,0x80, XX4,            // 160941a0   0fb680 00000810  movzx eax,byte ptr ds:[eax+0x10080000] ; jichi: hook here
+    0x66,0x90,                      // 160941a7   66:90            nop
+    0x81,0xc6, 0x01,0x00,0x00,0x00  // 160941a9   81c6 01000000    add esi,0x1
+    //0x89,05 80f86701      // 160941af   8905 80f86701    mov dword ptr ds:[0x167f880],eax
+    //0x81,3d 80f86701 00   // 160941b5   813d 80f86701 00>cmp dword ptr ds:[0x167f880],0x0
+    //0xc7,05 8cf86701 00   // 160941bf   c705 8cf86701 00>mov dword ptr ds:[0x167f88c],0x0
+    //0x89,35 90f86701      // 160941c9   8935 90f86701    mov dword ptr ds:[0x167f890],esi
+    //0x7c, 14              // 160941cf   7c 14            jl short 160941e5
+    //0x7f, 09              // 160941d1   7f 09            jg short 160941dc
+    //0xc6,05 0cfb6701 02   // 160941d3   c605 0cfb6701 02 mov byte ptr ds:[0x167fb0c],0x2
+    //0xeb, 26              // 160941da   eb 26            jmp short 16094202
+  };
+  enum { hook_offset = 0x160941a0 - 0x16094193 };
+
+  // This process might raise before the PSP ISO is loaded
+  // TODO: Create a timer thread to periodically try different PSP engines
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //DWORD addr = 0x160941a0;
+  //ITH_GROWL_DWORD(addr);
+  //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x0f movzx
+  if (!addr)
+    ConsoleOutput("vnreng: Vanillaware PSP: pattern not found");
+  else {
+    addr += hook_offset;
+    //ITH_GROWL_DWORD(addr);
+
+    // Get this value at runtime in case it is runtime-dependent
+    DWORD membase = *(DWORD *)(addr + 3);
+    //ITH_GROWL_DWORD(membase);
+
+    HookParam hp = {};
+    hp.addr = addr;
+    hp.extern_fun = SpecialGCHookVanillaware;
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
+    hp.module = membase; // use module to pass membase
+    ConsoleOutput("vnreng: Vanillaware GC: INSERT");
+    NewHook(hp, L"Vanillaware GC");
+  }
+
+  ConsoleOutput("vnreng: Vanillaware GC: leave");
+  return addr;
+}
+
 /** jichi 7/12/2014 PPSSPP
  *  Tested with PPSSPP 0.9.8.
  *
@@ -5753,7 +5955,7 @@ struct PPSSPPFunction
 
 } // unnamed namespace
 
-bool InsertPPSSPPHook()
+bool InsertPPSSPPHooks()
 {
   ConsoleOutput("vnreng: PPSSPP: enter");
   ULONG startAddress,
@@ -5804,7 +6006,6 @@ bool InsertPPSSPPHook()
     InsertImageepochPSPHook(); // could have duplication issue
   }
 
-  //InsertShadePSPHook();
   ConsoleOutput("vnreng: PPSSPP: leave");
   return true;
 }
@@ -5932,7 +6133,6 @@ bool InsertAlchemistPSPHook()
 
 /** 7/13/2014 jichi 5pb.jp PSP engine
  *  Sample game: STEINS;GATE
- *  The memory address is NOT fixed.
  *
  *  Float memory addresses: two matches
  *
@@ -6059,12 +6259,12 @@ namespace { // unnamed
 inline bool _5pbgarbage(char c)
 { return c == '%' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9'; }
 
-enum { _5pb_MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
 // Trim leading garbage
 LPCSTR _5pbltrim(LPCSTR p)
 {
+  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
   if (p)
-    for (int count = 0; (*p) && count < _5pb_MAX_LENGTH; count++, p++)
+    for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
       if (!_5pbgarbage(*p))
         return p;
   return nullptr;
@@ -6109,7 +6309,6 @@ static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
 bool Insert5pbPSPHook()
 {
   ConsoleOutput("vnreng: 5pb PSP: enter");
-  enum : BYTE { XX = MemDbg::WidecardByte };
 
   const BYTE bytes[] =  {
     //0x90,                         // 135752c7   90               nop
@@ -6188,7 +6387,6 @@ bool Insert5pbPSPHook()
 
 /** 7/13/2014 jichi imageepoch.co.jp PSP engine
  *  Sample game: BLACK☆ROCK SHOOTER
- *  The memory address is NOT fixed.
  *
  *  Float memory addresses: two matches
  *
@@ -6256,7 +6454,6 @@ static void SpecialPSPHookImageepoch(DWORD esp_base, HookParam *hp, DWORD *data,
 bool InsertImageepochPSPHook()
 {
   ConsoleOutput("vnreng: Imageepoch PSP: enter");
-  enum : BYTE { XX = MemDbg::WidecardByte };
 
   const BYTE bytes[] =  {
     //0xcc,                         // 1346d34f   cc               int3
@@ -6305,7 +6502,6 @@ bool InsertImageepochPSPHook()
 /** 7/19/2014 jichi yetigame.jp PSP engine
  *  Sample game: Secret Game Portable
  *
- *  The memory address is NOT fixed.
  *  Float memory addresses: two matches
  *
  *  Debug method: find current sentence, then find next sentence in the memory
@@ -6787,7 +6983,6 @@ static void SpecialPSPHookYeti(DWORD esp_base, HookParam *hp, DWORD *data, DWORD
 bool InsertYetiPSPHook()
 {
   ConsoleOutput("vnreng: Yeti PSP: enter");
-  enum : BYTE { XX = MemDbg::WidecardByte };
 
 #if 0 // the first function I got
   const BYTE bytes[] =  {
@@ -6982,7 +7177,6 @@ static void SpecialPSPHookKid(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
 bool InsertKidPSPHook()
 {
   ConsoleOutput("vnreng: KID PSP: enter");
-  enum : BYTE { XX = MemDbg::WidecardByte };
 
   const BYTE bytes[] =  {
     //0x90,                           // 13973a7b   90               nop
@@ -7089,7 +7283,6 @@ static void SpecialPSPHookCyberfront(DWORD esp_base, HookParam *hp, DWORD *data,
 bool InsertCyberfrontPSPHook()
 {
   ConsoleOutput("vnreng: CYBERFRONT PSP: enter");
-  enum : BYTE { XX = MemDbg::WidecardByte };
 
   const BYTE bytes[] =  {
     //0x90,                         // 13909a2b   90               nop
@@ -7138,6 +7331,113 @@ bool InsertCyberfrontPSPHook()
   ConsoleOutput("vnreng: CYBERFRONT PSP: leave");
   return addr;
 }
+
+/** jichi 7/19/2014 PCSX2
+ *  Tested wit  pcsx2-v1.2.1-328-gef0e3fe-windows-x86, built at http://buildbot.orphis.net/pcsx2
+ */
+bool InsertPCSX2Hooks()
+{
+  // TODO: Add generic hooks
+  //return InsertNamcoPS2Hook();
+  return false;
+}
+
+#if 0 // jichi 7/19/2014: duplication text
+
+/** 7/19/2014 jichi
+ *  Tested game: .hack//G.U. Vol.1
+ *
+ *  Text address is FIXED.
+ *  The are a cuple of accesss to the text.
+ */
+bool InsertNamcoPS2Hook()
+{
+  ConsoleOutput("vnreng: Namco PS2: enter");
+  const BYTE bytes[1] =  {
+  };
+  enum { hook_offset = 0 };
+
+  //DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //DWORD addr = 0x303baf26;
+  DWORD addr = 0x303C4B72;
+  if (!addr)
+    ConsoleOutput("vnreng: Namco PS2: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.type = USING_STRING|USING_SPLIT; // no context to get rid of return address
+    hp.off = pusha_ecx_off - 4; // ecx
+    hp.split = hp.off; // use ecx address to split
+    ConsoleOutput("vnreng: Namco PS2: INSERT");
+    //ITH_GROWL_DWORD(hp.addr);
+    NewHook(hp, L"Namco PS2");
+  }
+
+  ConsoleOutput("vnreng: Namco PS2: leave");
+  return addr;
+}
+#endif // 0
+
+#if 0 // Issue: variate code pattern
+/** 7/19/2014 jichi
+ *  Tested game: Fate/Stay Night [Realta Nua]
+ *
+ *  Text address is FIXED.
+ *  The are a cuple of accesss to the text.
+ *
+ */
+bool InsertTypeMoonPS2Hook()
+{
+  ConsoleOutput("vnreng: TypeMoon PS2: enter");
+  const BYTE bytes[] =  {
+    //0x01,0xc1,              // 3040395f   01c1             add ecx,eax
+    0x0f,0x88, XX4,         // 30403961  -0f88 d9d7ced2    js pcsx2.030f1140
+    0x0f,0xbe,0x01,         // 30403967   0fbe01           movsx eax,byte ptr ds:[ecx]
+    0x99,                   // 3040396a   99               cdq
+    0xa3, XX4,              // 3040396b   a3 d0ab7301      mov dword ptr ds:[0x173abd0],eax
+    0x89,0x15, XX4,         // 30403970   8915 d4ab7301    mov dword ptr ds:[0x173abd4],edx
+    0xc7,0x05, XX4, 0x90,   // 30403976   c705 a8ad7301 90>mov dword ptr ds:[0x173ada8],0x109590
+    0xa1, XX4,              // 30403980   a1 c0ae7301      mov eax,dword ptr ds:[0x173aec0]
+    0x83,0xc0, 0x03,        // 30403985   83c0 03          add eax,0x3
+    0xa3, XX4,              // 30403988   a3 c0ae7301      mov dword ptr ds:[0x173aec0],eax
+    0x2b,0x05, XX4,         // 3040398d   2b05 809e7201    sub eax,dword ptr ds:[0x1729e80]
+    0x0f,0x88 //, XX4       // 30403993  ^0f88 51fdffff    js 304036ea
+  };
+  enum { hook_offset = 0x30403967 - 0x30403961 };
+
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //addr = 0x30403967;
+  if (!addr)
+    ConsoleOutput("vnreng: TypeMoon PS2: pattern not found");
+  else {
+    // Runtime context
+    // eax: value such as 0x20000000
+    // ebx: mapped address code region
+    // ecx: text address
+    // edx: code address
+    // ebp = esp, bp-frame
+    // esi: illegal memory address, probabiliy relative memory address
+    // edi: -4
+    // esp[0]: -1
+    // esp[4]: code address
+    // esp[8]: memory address
+    // esp[c]: code address
+    // esp[10]: code address
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.type = USING_STRING|USING_SPLIT; // no context to get rid of return address
+    hp.off = pusha_ecx_off - 4; // ecx
+    hp.split = hp.off; // use ecx address to split
+    ConsoleOutput("vnreng: TypeMoon PS2: INSERT");
+    //ITH_GROWL_DWORD(hp.addr);
+    NewHook(hp, L"TypeMoon PS2");
+  }
+
+  ConsoleOutput("vnreng: TypeMoon PS2: leave");
+  return addr;
+}
+#endif // 0
+
 
 } // namespace Engine
 
@@ -7233,7 +7533,6 @@ bool InsertShadePSPHook()
   // TODO: Query MEM_Mapped at runtime
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa366902%28v=vs.85%29.aspx
   enum : DWORD { StartAddress = 0x13390000, StopAddress = 0x13490000 };
-  enum : BYTE { XX = MemDbg::WidecardByte };
 
   const BYTE bytes[] =  {
     0xcc,                           // 13400e12   cc               int3
@@ -7365,10 +7664,6 @@ static void SpecialPSPHookAlchemist2(DWORD esp_base, HookParam *hp, DWORD *data,
 bool InsertAlchemist2PSPHook()
 {
   ConsoleOutput("vnreng: Alchemist2 PSP: enter");
-  //enum : BYTE { XX = MemDbg::WidecardByte }; // default wildcard 0xff appears a lot in the code
-  //enum : BYTE { XX = 0x11 }; // wildcard, 0x11 seems seldom appears in the pattern
-  enum : BYTE { XX = MemDbg::WidecardByte };
-
   const BYTE bytes[] =  {
     //0xcc,                         // 13400e12   cc               int3
     //0xcc,                         // 13400e13   cc               int3
