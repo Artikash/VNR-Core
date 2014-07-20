@@ -6004,6 +6004,7 @@ bool InsertPPSSPPHooks()
     InsertKidPSPHook(); // this might conflict with Imageepoch
     InsertCyberfrontPSPHook();
 
+    // Generic hook
     InsertAlchemistPSPHook();
     InsertImageepochPSPHook(); // could have duplication issue
   }
@@ -6063,6 +6064,65 @@ bool InsertPPSSPPHooks()
  *  134077ae   90               nop
  *  134077af   cc               int3
  */
+
+namespace { // unnamed
+
+// Return true if the text is a garbage character
+inline bool _alchemistgarbage_ch(char c)
+{
+  return c == '.' || c == '/'
+      || c >= '0' && c <= '9'
+      || c >= 'A' && c <= 'z' // also ignore ASCII 91-96: [ \ ] ^ _ `
+  ;
+}
+
+// Return true if the text is full of garbage characters
+bool _alchemistgarbage(LPCSTR p)
+{
+  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
+    if (!_alchemistgarbage_ch(*p))
+      return false;
+  return true;
+}
+
+// 7/20/2014 jichi: Trim Rejet garbage. Sample game: 月華繚乱ROMANCE
+// Such as: #Pos[1,2]
+inline bool _rejetgarbage(char c)
+{
+  return c == '#' || c == '[' || c == ']' || c == ','
+      || c >= 'A' && c <= 'z' // also ignore ASCII 91-96: [ \ ] ^ _ `
+      || c >= '0' && c <= '9';
+}
+
+// Trim leading garbage
+LPCSTR _rejetltrim(LPCSTR p)
+{
+  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  if (p)
+    for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
+      if (!_rejetgarbage(*p))
+        return p;
+  return nullptr;
+}
+
+// Trim trailing garbage
+size_t _rejetstrlen(LPCSTR text)
+{
+  if (!text)
+    return 0;
+  size_t len = ::strlen(text);
+  size_t ret = len;
+  while (len && _rejetgarbage(text[len - 1])) {
+    len--;
+    if (text[len] == '#') // in case trim UTF-8 trailing bytes
+      ret = len;
+  }
+  return ret;
+}
+
+} // unnamed namespace
+
 // Get text from [eax + 0x740000]
 static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
@@ -6075,9 +6135,10 @@ static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, 
         ecx = regof(ecx, esp_base);
 
   LPCSTR text = LPCSTR(eax + base);
-  if (*text) {
+  if (*text && !_alchemistgarbage(text)) {
+    text = _rejetltrim(text);
     *data = (DWORD)text;
-    *len = ::strlen(text);
+    *len = _rejetstrlen(text);
     *split = ecx; // use "this" as split value?
   }
 }
