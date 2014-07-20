@@ -3284,7 +3284,7 @@ static void SpecialHookWillPlus(DWORD esp_base, HookParam* hp, DWORD* data, DWOR
   retn = *(DWORD*)esp_base;
   i = 0;
   while (*pw != 0xc483) { //add esp, $
-    l = disasm(pb);
+    l = ::disasm(pb);
     if (++i == 5)
       //ConsoleOutput("Fail to detect offset.");
       break;
@@ -5648,6 +5648,112 @@ bool InsertYukaSystem2Hook()
   return true;
 }
 
+/** jichi 7/19/2014 PCSX2
+ *  Tested with  pcsx2-v1.2.1-328-gef0e3fe-windows-x86, built at http://buildbot.orphis.net/pcsx2
+ */
+bool InsertPCSX2Hooks()
+{
+  // TODO: Add generic hooks
+  //return InsertNamcoPS2Hook();
+  return false;
+}
+
+#if 0 // jichi 7/19/2014: duplication text
+
+/** 7/19/2014 jichi
+ *  Tested game: .hack//G.U. Vol.1
+ *
+ *  Text address is FIXED.
+ *  The are a cuple of accesss to the text.
+ */
+bool InsertNamcoPS2Hook()
+{
+  ConsoleOutput("vnreng: Namco PS2: enter");
+  const BYTE bytes[1] =  {
+  };
+  enum { hook_offset = 0 };
+
+  //DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //DWORD addr = 0x303baf26;
+  DWORD addr = 0x303C4B72;
+  if (!addr)
+    ConsoleOutput("vnreng: Namco PS2: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.type = USING_STRING|USING_SPLIT; // no context to get rid of return address
+    hp.off = pusha_ecx_off - 4; // ecx
+    hp.split = hp.off; // use ecx address to split
+    ConsoleOutput("vnreng: Namco PS2: INSERT");
+    //ITH_GROWL_DWORD(hp.addr);
+    NewHook(hp, L"Namco PS2");
+  }
+
+  ConsoleOutput("vnreng: Namco PS2: leave");
+  return addr;
+}
+#endif // 0
+
+#if 0 // Issue: variate code pattern
+/** 7/19/2014 jichi
+ *  Tested game: Fate/Stay Night [Realta Nua]
+ *
+ *  Text address is FIXED.
+ *  The are a cuple of accesss to the text.
+ *
+ */
+bool InsertTypeMoonPS2Hook()
+{
+  ConsoleOutput("vnreng: TypeMoon PS2: enter");
+  const BYTE bytes[] =  {
+    //0x01,0xc1,              // 3040395f   01c1             add ecx,eax
+    0x0f,0x88, XX4,         // 30403961  -0f88 d9d7ced2    js pcsx2.030f1140
+    0x0f,0xbe,0x01,         // 30403967   0fbe01           movsx eax,byte ptr ds:[ecx]
+    0x99,                   // 3040396a   99               cdq
+    0xa3, XX4,              // 3040396b   a3 d0ab7301      mov dword ptr ds:[0x173abd0],eax
+    0x89,0x15, XX4,         // 30403970   8915 d4ab7301    mov dword ptr ds:[0x173abd4],edx
+    0xc7,0x05, XX4, 0x90,   // 30403976   c705 a8ad7301 90>mov dword ptr ds:[0x173ada8],0x109590
+    0xa1, XX4,              // 30403980   a1 c0ae7301      mov eax,dword ptr ds:[0x173aec0]
+    0x83,0xc0, 0x03,        // 30403985   83c0 03          add eax,0x3
+    0xa3, XX4,              // 30403988   a3 c0ae7301      mov dword ptr ds:[0x173aec0],eax
+    0x2b,0x05, XX4,         // 3040398d   2b05 809e7201    sub eax,dword ptr ds:[0x1729e80]
+    0x0f,0x88 //, XX4       // 30403993  ^0f88 51fdffff    js 304036ea
+  };
+  enum { hook_offset = 0x30403967 - 0x30403961 };
+
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //addr = 0x30403967;
+  if (!addr)
+    ConsoleOutput("vnreng: TypeMoon PS2: pattern not found");
+  else {
+    // Runtime context
+    // eax: value such as 0x20000000
+    // ebx: mapped address code region
+    // ecx: text address
+    // edx: code address
+    // ebp = esp, bp-frame
+    // esi: illegal memory address, probabiliy relative memory address
+    // edi: -4
+    // esp[0]: -1
+    // esp[4]: code address
+    // esp[8]: memory address
+    // esp[c]: code address
+    // esp[10]: code address
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.type = USING_STRING|USING_SPLIT; // no context to get rid of return address
+    hp.off = pusha_ecx_off - 4; // ecx
+    hp.split = hp.off; // use ecx address to split
+    ConsoleOutput("vnreng: TypeMoon PS2: INSERT");
+    //ITH_GROWL_DWORD(hp.addr);
+    NewHook(hp, L"TypeMoon PS2");
+  }
+
+  ConsoleOutput("vnreng: TypeMoon PS2: leave");
+  return addr;
+}
+#endif // 0
+
 /** jichi 7/12/2014 PPSSPP
  *  Tested with PPSSPP 0.9.8.
  *
@@ -5753,7 +5859,7 @@ struct PPSSPPFunction
 
 } // unnamed namespace
 
-bool InsertPPSSPPHook()
+bool InsertPPSSPPHooks()
 {
   ConsoleOutput("vnreng: PPSSPP: enter");
   ULONG startAddress,
@@ -5804,7 +5910,6 @@ bool InsertPPSSPPHook()
     InsertImageepochPSPHook(); // could have duplication issue
   }
 
-  //InsertShadePSPHook();
   ConsoleOutput("vnreng: PPSSPP: leave");
   return true;
 }
@@ -5932,7 +6037,6 @@ bool InsertAlchemistPSPHook()
 
 /** 7/13/2014 jichi 5pb.jp PSP engine
  *  Sample game: STEINS;GATE
- *  The memory address is NOT fixed.
  *
  *  Float memory addresses: two matches
  *
@@ -6188,7 +6292,6 @@ bool Insert5pbPSPHook()
 
 /** 7/13/2014 jichi imageepoch.co.jp PSP engine
  *  Sample game: BLACK☆ROCK SHOOTER
- *  The memory address is NOT fixed.
  *
  *  Float memory addresses: two matches
  *
@@ -6305,7 +6408,6 @@ bool InsertImageepochPSPHook()
 /** 7/19/2014 jichi yetigame.jp PSP engine
  *  Sample game: Secret Game Portable
  *
- *  The memory address is NOT fixed.
  *  Float memory addresses: two matches
  *
  *  Debug method: find current sentence, then find next sentence in the memory

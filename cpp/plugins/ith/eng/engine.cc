@@ -14,7 +14,6 @@
 #include "ith/sys/sys.h"
 #include "ith/common/except.h"
 //#include "ith/common/growl.h"
-#include "disasm/disasm.h"
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 
@@ -46,7 +45,18 @@ DWORD DeterminePCEngine()
 {
   enum : DWORD { yes = 0, no = 1 }; // return value
   if (IthCheckFile(L"PPSSPPWindows.exe")) { // jichi 7/12/2014
-    InsertPPSSPPHook();
+    InsertPPSSPPHooks();
+    return yes;
+  }
+
+  if (IthFindFile(L"pcsx2*.exe")) { // jichi 7/19/2014
+    if (!InsertPCSX2Hooks()) { // don't forget to rebuild vnrcli to inject SSE
+      // Always insert PC hooks so that user could add PCSX2 to VNR.
+      // TO BE REMOVED after more PS2 engines are added.
+      InsertGdiHooks();
+      InsertLstrHooks();
+    }
+
     return yes;
   }
 

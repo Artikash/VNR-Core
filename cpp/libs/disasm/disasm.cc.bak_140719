@@ -1,12 +1,6 @@
 // disasm.cc
 // 1/27/2013 jichi
 // Original source: http://hack-expo.void.ru/groups/blt/text/disasm.txt
-//
-// 7/19/2014 jichi: Need to add SSE instruction support for PCSX2
-// Sample problematic input from Fate/Stay night PS2:
-//     3024b80c  -0f88 ae58dbd2    js pcsx2.030010c0
-//     3024b812   0f1201           movlps xmm0,qword ptr ds:[ecx] ; jichi: hook here
-//     3024b815   0f1302           movlps qword ptr ds:[edx],xmm0
 
 #include "disasm.h"
 
@@ -32,7 +26,7 @@ namespace { // unnamed
 BYTE  disasm_seg,       // CS DS ES SS FS GS
       disasm_rep,       // REPZ/REPNZ
       disasm_opcode,    // opcode
-      disasm_opcode2,   // used when opcode==0f
+      disasm_opcode2,   // used when opcode==0F
       disasm_modrm,     // modxxxrm
       disasm_sib,       // scale-index-base
       disasm_mem[8],    // mem addr value
@@ -56,9 +50,6 @@ retry:
   disasm_opcode = *opcode++;
 
   switch (disasm_opcode) {
-    case 0x99: // 7/20/2014 jichi: CDQ, size = 1
-      break;
-
     case 0x00: case 0x01: case 0x02: case 0x03:
     case 0x08: case 0x09: case 0x0a: case 0x0b:
     case 0x10: case 0x11: case 0x12: case 0x13:
@@ -172,8 +163,6 @@ retry:
     case 0xf1:
                return 0;
     case 0x0f:
-      // 7/19/2014 jichi: 0x0f1201 = movlps xmm0,qword ptr ds:[ecx]
-      // Given 0x0f1201, 0x0f will be strip off here and left 0x1201
       disasm_flag |= C_OPCODE2;
       disasm_opcode2 = *opcode++;
       switch (disasm_opcode2) {
@@ -193,12 +182,6 @@ retry:
         case 0xbc: case 0xbd: case 0xbe: case 0xbf:
         case 0xc0:
         case 0xc1:
-        // 7/19/2014 jichi: Add more cases for SSE instructions
-        // Sample instructions I need to consider
-        //     0f1201           movlps xmm0,qword ptr ds:[ecx] ; jichi: hook here
-        //     0f1302           movlps qword ptr ds:[edx],xmm0
-        case 0x12:
-        case 0x13:
                    disasm_flag |= C_MODRM;
                    break;
         case 0x06:
@@ -218,7 +201,11 @@ retry:
         case 0xa4:
         case 0xac:
         case 0xba:
-        default: return 0; // 7/19/2014 jichi: error
+                   disasm_datasize++;
+                   disasm_flag |= C_MODRM;
+                   break;
+        default:
+                   return 0;
       } // 0F-switch
       break;
 

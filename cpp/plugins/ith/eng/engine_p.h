@@ -17,9 +17,15 @@ extern DWORD module_base_,
 typedef bool (* trigger_fun_t)(LPVOID addr, DWORD frame, DWORD stack);
 extern trigger_fun_t trigger_fun_;
 
-// Engine-specific hooks
+// PS2 engines
 
-bool InsertPPSSPPHook();        // PPSSPPWindows
+bool InsertPCSX2Hooks();         // PCSX2
+//bool InsertNamcoPS2Hook();
+//bool InsertTypeMoonPS2Hook();
+
+// PSP engines
+
+bool InsertPPSSPPHooks();        // PPSSPPWindows
 bool Insert5pbPSPHook();        // PSP 5pb.jp
 bool InsertAlchemistPSPHook();  // PSP Alchemist-net.co.jp
 bool InsertCyberfrontPSPHook(); // PSP CYBERFRONT (closed)
@@ -27,6 +33,8 @@ bool InsertImageepochPSPHook(); // PSP Imageepoch.co.jp
 bool InsertKidPSPHook();        // PSP Kid-game.co.jp
 bool InsertYetiPSPHook();       // PSP Yetigame.jp
 //bool InsertShadePSPHook();    // PSP SHADE.co.jp
+
+// PC engines
 
 bool InsertAbelHook();          // Abel
 bool InsertAdobeAirHook();      // Adobe AIR

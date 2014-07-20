@@ -60,17 +60,29 @@ const BYTE common_hook[] = {
   0x9d  // popfd
 };
 
+/**
+ *  jichi 7/19/2014
+ *
+ *  @param  original_addr
+ *  @param  new_addr
+ *  @param  hook_len
+ *  @param  original_len
+ *  @return  -1 if failed, else 0 if ?, else ?
+ */
 int MapInstruction(DWORD original_addr, DWORD new_addr, BYTE &hook_len, BYTE &original_len)
 {
   int flag = 0;
   DWORD l = 0;
-  BYTE *r = (BYTE*)original_addr,
-       *c = (BYTE*)new_addr;
+  const BYTE *r = (const BYTE *)original_addr;  // 7/19/2014 jichi: original address is not modified
+  BYTE *c = (BYTE *)new_addr;                   // 7/19/2014 jichi: but new address might be modified
   while((r - (BYTE *) original_addr) < 5) {
     l = ::disasm(r);
-    if (l == 0)
+    if (l == 0) {
+      ConsoleOutput("vnrcli:MapInstruction: FAILED: failed to disasm");
       return -1;
-    memcpy(c, r, l);
+    }
+
+    ::memcpy(c, r, l);
     if (*r >= 0x70 && *r < 0x80) {
       c[0] = 0xf;
       c[1] = *r + 0x10;
@@ -98,9 +110,10 @@ int MapInstruction(DWORD original_addr, DWORD new_addr, BYTE &hook_len, BYTE &or
         sub edx,eax
         mov [eax-4],edx
       }
-      if (r- (BYTE *)original_addr < 5 - l)
-        return -1; // Not safe to move intruction right after short jmp.
-      else
+      if (r - (BYTE *)original_addr < 5 - l) {
+        ConsoleOutput("vnrcli:MapInstruction: not safe to move instruction right after short jmp");
+        return -1; // Not safe to move instruction right after short jmp.
+      } else
         flag = 1;
     } else if (*r == 0xe8 || *r == 0xe9) {
       c[0]=*r;
@@ -133,7 +146,7 @@ int MapInstruction(DWORD original_addr, DWORD new_addr, BYTE &hook_len, BYTE &or
       c += l;
     r += l;
   }
-  original_len = r - (BYTE *) original_addr;
+  original_len = r - (BYTE *)original_addr;
   hook_len = c - (BYTE *)new_addr;
   return flag;
 }

@@ -16,7 +16,7 @@ from sakurakit.skwebkit import SkWebView, SkWebViewBean
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
 #from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
-import cacheman, dataman, features, growl, i18n, jsonutil, main, mecabman, netman, osutil, prompt, proxy, py, rc
+import cacheman, dataman, defs, features, growl, i18n, jsonutil, main, mecabman, netman, osutil, prompt, proxy, py, rc
 
 def _getimage(url, path):
   """
@@ -251,18 +251,22 @@ class _GameView(object):
     if not gameId:
       #growl.notify(my.tr("Unknown game. Please try updating the database."))
       return
-    self._locked = True
 
     if netman.manager().isOnline():
-      #growl.msg(my.tr("Updating game information"))
-      ok = dataman.manager().updateReferences(gameId)
-      #dm.touchGames()
-      if not ok:
-        growl.notify(my.tr("The game title it not specified. You can click the Edit button to add one."))
-      #else:
-        #growl.msg(my.tr("Found game information"))
+      if self.itemId and self.itemId < defs.MIN_NORMAL_GAME_ITEM_ID:
+        dprint("found non-normal game, ignore refs")
+      else:
+        self._locked = True # lock before online access
+        #growl.msg(my.tr("Updating game information"))
+        ok = dataman.manager().updateReferences(gameId)
+        #dm.touchGames()
+        if not ok:
+          growl.notify(my.tr("The game title it not specified. You can click the Edit button to add one."))
+        #else:
+          #growl.msg(my.tr("Found game information"))
 
-    self._locked = False
+    self._locked = False # always unlock no matter what happened
+
     self.refresh()
     #skevents.runlater(partial(
     #    dm.updateReferences, g.id),
