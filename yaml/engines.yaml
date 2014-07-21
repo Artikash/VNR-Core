@@ -12,6 +12,7 @@ rename:
 psp:
   - 5pb PSP
   - Alchemist PSP
+  - Alchemist2 PSP
   - Imageepoch PSP
   - KID PSP
   - CYBERFRONT PSP
@@ -86,6 +87,7 @@ simple:
   - 5pb PSP
   - Adobe AIR
   - Alchemist PSP
+  - Alchemist2 PSP
   - AMUSE CRAFT
   - AOS
   - ApRicot
@@ -200,6 +202,7 @@ char:
   - CYBERFRONT PSP
   - AbelSoftware
   - Alchemist PSP
+  - Alchemist2 PSP
   - AMUSE CRAFT
   - Anex86
   - AOS
