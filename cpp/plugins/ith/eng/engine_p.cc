@@ -6090,7 +6090,7 @@ bool _alchemistgarbage(LPCSTR p)
 // Such as: #Pos[1,2]
 inline bool _rejetgarbage(char c)
 {
-  return c == '#' || c == '[' || c == ']' || c == ','
+  return c == '#' || c == ' ' || c == '[' || c == ']' || c == ','
       || c >= 'A' && c <= 'z' // also ignore ASCII 91-96: [ \ ] ^ _ `
       || c >= '0' && c <= '9';
 }
