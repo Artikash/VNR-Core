@@ -33,6 +33,10 @@ struct HookParam { // size: 0x24
   WORD length_offset; // index of the string length
   BYTE hook_len, // ?
        recover_len; // ?
+
+  // 7/20/2014: jichi additional parameters for PSP games
+  DWORD userFlags,
+        userValue;
 };
 
 // jichi 6/1/2014: Structure of the esp for extern functions
