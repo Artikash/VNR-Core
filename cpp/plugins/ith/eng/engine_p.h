@@ -31,8 +31,10 @@ bool InsertPCSX2Hooks(); // PCSX2
 // PSP engines
 
 bool InsertPPSSPPHooks();        // PPSSPPWindows
+bool InsertPPSSPPHLEHooks();
 bool Insert5pbPSPHook();        // PSP 5pb.jp
 bool InsertAlchemistPSPHook();  // PSP Alchemist-net.co.jp
+bool InsertAlchemist2PSPHook();  // PSP Alchemist-net.co.jp
 bool InsertCyberfrontPSPHook(); // PSP CYBERFRONT (closed)
 bool InsertImageepochPSPHook(); // PSP Imageepoch.co.jp
 bool InsertKidPSPHook();        // PSP Kid-game.co.jp
