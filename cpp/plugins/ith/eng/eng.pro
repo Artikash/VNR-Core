@@ -29,6 +29,7 @@ HEADERS += \
   config.h \
   engine.h \
   engine_p.h \
+  hookdefs.h \
   util.h
 
 SOURCES += \

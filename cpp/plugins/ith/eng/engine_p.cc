@@ -7,6 +7,7 @@
 #endif // _MSC_VER
 
 #include "engine_p.h"
+#include "hookdefs.h"
 #include "util.h"
 #include "ith/cli/cli.h"
 #include "ith/sys/sys.h"
@@ -5781,7 +5782,6 @@ bool _vanillawaregarbage(LPCSTR p)
 }
 } // unnamed namespace
 
-// Get text from [eax + 0x740000]
 static void SpecialGCHookVanillaware(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
@@ -5818,6 +5818,7 @@ bool insertVanillawareGCHook()
     //0xeb, 26              // 160941da   eb 26            jmp short 16094202
   };
   enum { hook_offset = 0x160941a0 - 0x16094193 };
+  enum { memory_offset = 3 }; // 160941a0   0fb680 00000810  movzx eax,byte ptr ds:[eax+0x10080000]
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -5828,18 +5829,11 @@ bool insertVanillawareGCHook()
   if (!addr)
     ConsoleOutput("vnreng: Vanillaware GC: pattern not found");
   else {
-    addr += hook_offset;
-    //ITH_GROWL_DWORD(addr);
-
-    // Get this value at runtime in case it is runtime-dependent
-    DWORD membase = *(DWORD *)(addr + 3);
-    //ITH_GROWL_DWORD(membase);
-
     HookParam hp = {};
-    hp.addr = addr;
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.extern_fun = SpecialGCHookVanillaware;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.userValue = membase;
     ConsoleOutput("vnreng: Vanillaware GC: INSERT");
     NewHook(hp, L"Vanillaware GC");
   }
@@ -5902,6 +5896,28 @@ bool insertVanillawareGCHook()
  *  Corresponding source code in sceCcc:
  *      ERROR_LOG(HLE, "sceCccEncodeSJIS(%08x, U+%04x): invalid pointer", dstAddrAddr, jis);
  */
+void SpecialPSPHook(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  DWORD offset = *(DWORD *)(esp_base + hp->off);
+  LPCSTR text = (LPCSTR)(offset + hp->userValue);
+  static LPCSTR lastText;
+  if (*text) {
+    if (hp->userFlags & HPF_IgnoreSameText) {
+      if (text == lastText)
+        return;
+      lastText = text;
+    }
+    *data = (DWORD)text;
+    *len = ::strlen(text); // should only be applied to hp->type|USING_STRING
+    if (hp->type & USING_SPLIT) {
+      if (hp->type & FIXING_SPLIT)
+        *split = FIXED_SPLIT_VALUE;
+      else
+        *split = *(DWORD *)(esp_base + hp->split);
+    }
+  }
+}
+
 namespace { // unnamed
 
 struct PPSSPPFunction
@@ -6126,7 +6142,6 @@ size_t _rejetstrlen(LPCSTR text)
 
 } // unnamed namespace
 
-// Get text from [eax + 0x740000]
 static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
@@ -6160,6 +6175,7 @@ bool InsertAlchemistPSPHook()
      0x88,0x90 //, XX4               // 13407738   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl      // jichi: alternatively hook here
   };
   enum { hook_offset = 0x13407711 - 0x134076f4 };
+  enum { memory_offset = 3 }; // 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -6171,18 +6187,11 @@ bool InsertAlchemistPSPHook()
   if (!addr)
     ConsoleOutput("vnreng: Alchemist PSP: pattern not found");
   else {
-    addr += hook_offset;
-    //ITH_GROWL_DWORD(addr);
-
-    // Get this value at runtime in case it is runtime-dependent
-    DWORD membase = *(DWORD *)(addr + 3); // get operand: 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
-    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
-
     HookParam hp = {};
-    hp.addr = addr;
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.extern_fun = SpecialPSPHookAlchemist;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.userValue = membase;
     ConsoleOutput("vnreng: Alchemist PSP: INSERT");
     NewHook(hp, L"Alchemist PSP");
   }
@@ -6236,7 +6245,6 @@ bool InsertAlchemistPSPHook()
  *  13400f8f   90               nop
  */
 
-// Get text from [eax + 0x740000]
 static void SpecialPSPHookAlchemist2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
@@ -6258,7 +6266,7 @@ bool InsertAlchemist2PSPHook()
     0x8b,0x35, XX4,                 // 13400f05   8b35 78a71001    mov esi,dword ptr ds:[0x110a778]
     0x8b,0xc6,                      // 13400f0b   8bc6             mov eax,esi
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13400f0d   81e0 ffffff3f    and eax,0x3fffffff
-    0x8b,0xb8, XX4,                 // 13400f13   8bb8 00004007    mov edi,dword ptr ds:[eax+0x7400000] ; jichi
+    0x8b,0xb8, XX4,                 // 13400f13   8bb8 00004007    mov edi,dword ptr ds:[eax+0x7400000] ; jichi: hook here
     0x8b,0xef,                      // 13400f19   8bef             mov ebp,edi
     0x81,0xed, 0x01,0x01,0x01,0x01, // 13400f1b   81ed 01010101    sub ebp,0x1010101
     0xf7,0xd7,                      // 13400f21   f7d7             not edi
@@ -6267,6 +6275,7 @@ bool InsertAlchemist2PSPHook()
     0x81,0xfd, 0x00,0x00,0x00,0x00  // 13400f2b   81fd 00000000    cmp ebp,0x0
   };
   enum { hook_offset = 0x13400f13 - 0x13400ef4 };
+  enum { memory_offset = 2 }; // 13400f13   8bb8 00004007    mov edi,dword ptr ds:[eax+0x7400000]
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -6278,18 +6287,11 @@ bool InsertAlchemist2PSPHook()
   if (!addr)
     ConsoleOutput("vnreng: Alchemist2 PSP: pattern not found");
   else {
-    addr += hook_offset;
-    //ITH_GROWL_DWORD(addr);
-
-    // Get this value at runtime in case it is runtime-dependent
-    DWORD membase = *(DWORD *)(addr + 2);
-    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
-
     HookParam hp = {};
-    hp.addr = addr;
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.extern_fun = SpecialPSPHookAlchemist2;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.userValue = membase; // use module to pass membase
     ConsoleOutput("vnreng: Alchemist2 PSP: INSERT");
     NewHook(hp, L"Alchemist2 PSP");
   }
@@ -6454,7 +6456,6 @@ size_t _5pbstrlen(LPCSTR text)
 
 } // unnamed namespace
 
-// Get text from [eax + 0x740000]
 static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
@@ -6514,6 +6515,7 @@ bool Insert5pbPSPHook()
     0x0f,0xbe,0xb0 //, XX4          // 13575386   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
   };
   enum { hook_offset = sizeof(bytes) - 3 };
+  enum { memory_offset = 3 }; // 13575386   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -6527,18 +6529,11 @@ bool Insert5pbPSPHook()
   if (!addr)
     ConsoleOutput("vnreng: 5pb PSP: pattern not found");
   else {
-    addr += hook_offset;
-    //ITH_GROWL_DWORD(addr);
-
-    // Get this value at runtime in case it is runtime-dependent
-    DWORD membase = *(DWORD *)(addr + 3); // get operand: 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
-    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
-
     HookParam hp = {};
-    hp.addr = addr;
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.extern_fun = SpecialPSPHook5pb;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.userValue = membase;
     ConsoleOutput("vnreng: 5pb PSP: INSERT");
     NewHook(hp, L"5pb PSP");
   }
@@ -6596,11 +6591,8 @@ bool Insert5pbPSPHook()
  *  1346d3ed   f0:90            lock nop                                 ; lock prefix is not allowed
  *  1346d3ef   cc               int3
  */
-// Get text from [eax + 0x740000]
 static void SpecialPSPHookImageepoch(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
-  //enum { base = 0x7400000 };
   DWORD eax = regof(eax, esp_base);
   DWORD text = eax + hp->userValue;
   static DWORD lastText; // Prevent reading the same address multiple times
@@ -6630,6 +6622,7 @@ bool InsertImageepochPSPHook()
   };
   //enum { hook_offset = 0x1346d36d - 0x1346d350 };
   enum { hook_offset = sizeof(bytes) - 3 };
+  enum { memory_offset = 3 }; // 1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000]
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -6639,18 +6632,15 @@ bool InsertImageepochPSPHook()
   if (!addr)
     ConsoleOutput("vnreng: Imageepoch PSP: pattern not found");
   else {
-    addr += hook_offset;
-    //ITH_GROWL_DWORD(addr);
-
-    // Get this value at runtime in case it is runtime-dependent
-    DWORD membase = *(DWORD *)(addr + 3); // 1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000] ; jichi: hook here
-    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
-
     HookParam hp = {};
-    hp.addr = addr;
-    hp.extern_fun = SpecialPSPHookImageepoch;
-    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.userValue = membase; // use module to pass membase
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT; // UTF-8, though
+    hp.off = pusha_eax_off - 4;
+    hp.split = pusha_ecx_off - 4;
+    hp.userFlags = HPF_IgnoreSameText;
+    //hp.extern_fun = SpecialPSPHook;
+    hp.extern_fun = SpecialPSPHookImageepoch; // since this function is common, use its own static lastText for HPF_IgnoreSameText
     ConsoleOutput("vnreng: Imageepoch PSP: INSERT");
     NewHook(hp, L"Imageepoch PSP");
   }
@@ -7121,54 +7111,24 @@ bool InsertImageepochPSPHook()
  *  138d151e   cc               int3
  *  138d151f   cc               int3
  */
-// Get text from [eax + 0x740000]
-static void SpecialPSPHookYeti(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
-{
-  CC_UNUSED(hp);
-  //enum { base = 0x7400000 };
-  DWORD eax = regof(eax, esp_base);
-  LPCSTR text = LPCSTR(eax + hp->userValue);
-  if (*text) {
-    *data = (DWORD)text;
-    *len = ::strlen(text); // SHIFT-JIS
-    //*split = regof(ecx, esp_base); // ecx is bad that will split text threads
-    //*split = FIXED_SPLIT_VALUE; // Similar to 5pb, it only has one thread?
-    //*split = regof(ebx, esp_base); // value of ebx is splitting
-    *split = FIXED_SPLIT_VALUE << 1; // * 2 to make it unique
-  }
-}
+//static void SpecialPSPHookYeti(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+//{
+//  //enum { base = 0x7400000 };
+//  DWORD eax = regof(eax, esp_base);
+//  LPCSTR text = LPCSTR(eax + hp->userValue);
+//  if (*text) {
+//    *data = (DWORD)text;
+//    *len = ::strlen(text); // SHIFT-JIS
+//    //*split = regof(ecx, esp_base); // ecx is bad that will split text threads
+//    //*split = FIXED_SPLIT_VALUE; // Similar to 5pb, it only has one thread?
+//    //*split = regof(ebx, esp_base); // value of ebx is splitting
+//    *split = FIXED_SPLIT_VALUE << 1; // * 2 to make it unique
+//  }
+//}
 
 bool InsertYetiPSPHook()
 {
   ConsoleOutput("vnreng: Yeti PSP: enter");
-
-#if 0 // the first function I got
-  const BYTE bytes[] =  {
-    //0xcc,                         // 138cfa47   cc               int3
-    0x77, 0x0f,                     // 138cfa48   77 0f            ja short 138cfa59
-    0xc7,0x05, XX4, XX4,            // 138cfa4a   c705 a8aa1001 98>mov dword ptr ds:[0x110aaa8],0x885ff98
-    0xe9, XX4,                      // 138cfa54  -e9 ab05a9f3      jmp 07360004
-    0x8b,0x35, XX4,                 // 138cfa59   8b35 70a71001    mov esi,dword ptr ds:[0x110a770]
-    0xc1,0xee, 0x1f,                // 138cfa5f   c1ee 1f          shr esi,0x1f
-    0x8b,0x05, XX4,                 // 138cfa62   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
-    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 138cfa68   81e0 ffffff3f    and eax,0x3fffffff
-    0x8b,0xb8, XX4,                 // 138cfa6e   8bb8 14de7f07    mov edi,dword ptr ds:[eax+0x77fde14]
-    0x03,0x35, XX4,                 // 138cfa74   0335 70a71001    add esi,dword ptr ds:[0x110a770]
-    0xd1,0xfe,                      // 138cfa7a   d1fe             sar esi,1
-    0x8b,0x05, XX4,                 // 138cfa7c   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
-    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 138cfa82   81e0 ffffff3f    and eax,0x3fffffff
-    0x89,0xb8, XX4,                 // 138cfa88   89b8 00008007    mov dword ptr ds:[eax+0x7800000],edi
-    0x8b,0x05, XX4,                 // 138cfa8e   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
-    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 138cfa94   81e0 ffffff3f    and eax,0x3fffffff
-    0x89,0xb0, XX4,                 // 138cfa9a   89b0 30008007    mov dword ptr ds:[eax+0x7800030],esi
-    0x8b,0x05, XX4,                 // 138cfaa0   8b05 b4a71001    mov eax,dword ptr ds:[0x110a7b4]
-    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 138cfaa6   81e0 ffffff3f    and eax,0x3fffffff
-    0x8b,0xa8, XX4,                 // 138cfaac   8ba8 14de7f07    mov ebp,dword ptr ds:[eax+0x77fde14]
-    0x8b,0xc5,                      // 138cfab2   8bc5             mov eax,ebp
-    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 138cfab4   81e0 ffffff3f    and eax,0x3fffffff
-    0x0f,0xb6,0xb0 //, XX4          // 138cfaba   0fb6b0 00008007  movzx esi,byte ptr ds:[eax+0x7800000] ; jichi: hook here
-  };
-#endif
   const BYTE bytes[] =  {
     //0xcc,                         // 14e49edb   cc               int3
     0x77, 0x0f,                     // 14e49edc   77 0f            ja short 14e49eed
@@ -7195,6 +7155,7 @@ bool InsertYetiPSPHook()
     0x0f,0xb6,0xb0 //, XX4,         // 14e49f4e   0fb6b0 00000008  movzx esi,byte ptr ds:[eax+0x8000000]	; jichi: hook here
   };
   enum { hook_offset = sizeof(bytes) - 3 };
+  enum { memory_offset = 3 }; // 14e49f4e   0fb6b0 00000008  movzx esi,byte ptr ds:[eax+0x8000000]
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -7204,18 +7165,12 @@ bool InsertYetiPSPHook()
   if (!addr)
     ConsoleOutput("vnreng: Yeti PSP: pattern not found");
   else {
-    addr += hook_offset;
-    //ITH_GROWL_DWORD(addr);
-
-    // Get this value at runtime in case it is runtime-dependent
-    DWORD membase = *(DWORD *)(addr + 3);
-    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
-
     HookParam hp = {};
-    hp.addr = addr;
-    hp.extern_fun = SpecialPSPHookYeti;
-    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.userValue = membase; // use module to pass membase
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|FIXING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
+    hp.extern_fun = SpecialPSPHook;
+    hp.off = pusha_eax_off - 4;
     ConsoleOutput("vnreng: Yeti PSP: INSERT");
     NewHook(hp, L"Yeti PSP");
   }
@@ -7314,11 +7269,8 @@ bool InsertYetiPSPHook()
  *  10873a5a   cc               int3
  *  10873a5b   cc               int3
  */
-// Get text from [eax + 0x740000]
 static void SpecialPSPHookKid(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
-  //enum { base = 0x7400000 };
   DWORD eax = regof(eax, esp_base);
   LPCSTR text = (LPCSTR)(eax + hp->userValue);
   static LPCSTR lastText; // Prevent reading the same address multiple times
@@ -7350,6 +7302,7 @@ bool InsertKidPSPHook()
   };
   enum { hook_offset = 0x13973aac - 0x13973a7c };
   //enum { hook_offset = sizeof(bytes) - 3 };
+  enum { memory_offset = 3 }; // 13973aac   0fb6b8 00008007  movzx edi,byte ptr ds:[eax+0x7800000]
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -7359,18 +7312,20 @@ bool InsertKidPSPHook()
   if (!addr)
     ConsoleOutput("vnreng: KID PSP: pattern not found");
   else {
-    addr += hook_offset;
-    //ITH_GROWL_DWORD(addr);
-
-    // Get this value at runtime in case it is runtime-dependent
-    DWORD membase = *(DWORD *)(addr + 3);
-    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
-
     HookParam hp = {};
-    hp.addr = addr;
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.extern_fun = SpecialPSPHookKid;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.userValue = membase;
+
+    //HookParam hp = {};
+    //hp.addr = addr + hook_offset;
+    //hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    //hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
+    //hp.off = pusha_eax_off - 4;
+    //hp.split = pusha_ecx_off - 4;
+    //hp.extern_fun = SpecialPSPHook;
+
     ConsoleOutput("vnreng: KID PSP: INSERT");
     NewHook(hp, L"KID PSP");
   }
@@ -7422,19 +7377,16 @@ bool InsertKidPSPHook()
  *  13909abe  ^e9 5521f8ff      jmp 1388bc18
  *  13909ac3   90               nop
  */
-// Get text from [eax + 0x740000]
-static void SpecialPSPHookCyberfront(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
-{
-  CC_UNUSED(hp);
-  //enum { base = 0x7400000 };
-  DWORD eax = regof(eax, esp_base);
-  LPCSTR text = (LPCSTR)(eax + hp->userValue);
-  if (*text) {
-    *data = (DWORD)text;
-    *len = ::strlen(text);
-    *split = regof(ecx, esp_base);
-  }
-}
+//static void SpecialPSPHookCyberfront(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+//{
+//  DWORD eax = regof(eax, esp_base);
+//  LPCSTR text = (LPCSTR)(eax + hp->userValue);
+//  if (*text) {
+//    *data = (DWORD)text;
+//    *len = ::strlen(text);
+//    *split = regof(ecx, esp_base);
+//  }
+//}
 
 bool InsertCyberfrontPSPHook()
 {
@@ -7459,6 +7411,7 @@ bool InsertCyberfrontPSPHook()
   };
   enum { hook_offset = 0x13909a51 - 0x13909a2c };
   //enum { hook_offset = sizeof(bytes) - 3 };
+  enum { memory_offset = 2 }; // 13909a51   8890 00008007    mov byte ptr ds:[eax+0x7800000],dl
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -7468,18 +7421,13 @@ bool InsertCyberfrontPSPHook()
   if (!addr)
     ConsoleOutput("vnreng: CYBERFRONT PSP: pattern not found");
   else {
-    addr += hook_offset;
-    //ITH_GROWL_DWORD(addr);
-
-    // Get this value at runtime in case it is runtime-dependent
-    DWORD membase = *(DWORD *)(addr + 2);
-    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
-
     HookParam hp = {};
-    hp.addr = addr;
-    hp.extern_fun = SpecialPSPHookCyberfront;
-    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.userValue = membase; // use module to pass membase
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
+    hp.off = pusha_eax_off - 4;
+    hp.split = pusha_ecx_off - 4;
+    hp.extern_fun = SpecialPSPHook;
     ConsoleOutput("vnreng: CYBERFRONT PSP: INSERT");
     NewHook(hp, L"CYBERFRONT PSP");
   }
@@ -7703,6 +7651,7 @@ bool InsertShadePSPHook()
     0x81,0xff, 0x00,0x00,0x00,0x00  // 13400e4d   81ff 00000000    cmp edi,0x0
   };
   enum { hook_offset = 0x13400e3d - 0x13400e12 };
+  enum{ memory_offset = 3 };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodially try different PSP engines
@@ -7710,12 +7659,9 @@ bool InsertShadePSPHook()
   if (!addr)
     ConsoleOutput("vnreng: Shade PSP: failed");
   else {
-    addr += hook_offset;
-    //ITH_GROWL_DWORD(addr);
-    //DWORD membase = *(DWORD *)(addr + 3); // get operand: 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
-    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
     HookParam hp = {};
-    hp.addr = addr;
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.extern_fun = SpecialPSPHookShade;
     hp.type = EXTERN_HOOK|USING_STRING;
     ConsoleOutput("vnreng: Shade PSP: INSERT");
@@ -7796,7 +7742,6 @@ bool InsertShadePSPHook()
  *  13400f01   cc               int3
  *  13400f02   cc               int3
  */
-// Get text from [eax + 0x740000]
 // jichi 7/17/2014: Why this function is exactly the same as SpecialPSPHookImageepoch?
 static void SpecialPSPHookAlchemist3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
@@ -7828,6 +7773,7 @@ bool InsertAlchemist3PSPHook()
     0x0f,0x85 //, 16000000          // 13400e50   0f85 16000000    jnz 13400e6c
   };
   enum { hook_offset = 0x13407711 - 0x134076f4 };
+  enum { memory_offset = 3 };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -7839,18 +7785,11 @@ bool InsertAlchemist3PSPHook()
   if (!addr)
     ConsoleOutput("vnreng: Alchemist3 PSP: pattern not found");
   else {
-    addr += hook_offset;
-    //ITH_GROWL_DWORD(addr);
-
-    // Get this value at runtime in case it is runtime-dependent
-    DWORD membase = *(DWORD *)(addr + 3); // get operand: 13400e31   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
-    //ITH_GROWL_DWORD(membase); // supposed tobe 740000
-
     HookParam hp = {};
-    hp.addr = addr;
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset); // use module to pass membase
     hp.extern_fun = SpecialPSPHookAlchemist3;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.userValue = membase; // use module to pass membase
     ConsoleOutput("vnreng: Alchemist3 PSP: INSERT");
     NewHook(hp, L"Alchemist3 PSP");
   }
