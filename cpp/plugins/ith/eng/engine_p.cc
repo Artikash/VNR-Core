@@ -5784,13 +5784,9 @@ bool _vanillawaregarbage(LPCSTR p)
 // Get text from [eax + 0x740000]
 static void SpecialGCHookVanillaware(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
-  //enum { base = 0x7400000 };
-  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base);
-
+  LPCSTR text = LPCSTR(eax + hp->userValue);
   static LPCSTR lastText;
-  LPCSTR text = LPCSTR(eax + base);
   if (lastText != text && *text && !_vanillawaregarbage(text)) {
     lastText = text;
     *data = (DWORD)text;
@@ -5843,7 +5839,7 @@ bool insertVanillawareGCHook()
     hp.addr = addr;
     hp.extern_fun = SpecialGCHookVanillaware;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.module = membase; // use module to pass membase
+    hp.userValue = membase;
     ConsoleOutput("vnreng: Vanillaware GC: INSERT");
     NewHook(hp, L"Vanillaware GC");
   }
@@ -6133,14 +6129,8 @@ size_t _rejetstrlen(LPCSTR text)
 // Get text from [eax + 0x740000]
 static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
-  //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
-  //ITH_GROWL_DWORD(base);
-  //enum { base = 0x7400000 };
-  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base);
-
-  LPCSTR text = LPCSTR(eax + base);
+  LPCSTR text = LPCSTR(eax + hp->userValue);
   if (*text && !_alchemistgarbage(text)) {
     text = _rejetltrim(text);
     *data = (DWORD)text;
@@ -6192,7 +6182,7 @@ bool InsertAlchemistPSPHook()
     hp.addr = addr;
     hp.extern_fun = SpecialPSPHookAlchemist;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.module = membase; // use module to pass membase
+    hp.userValue = membase;
     ConsoleOutput("vnreng: Alchemist PSP: INSERT");
     NewHook(hp, L"Alchemist PSP");
   }
@@ -6249,14 +6239,8 @@ bool InsertAlchemistPSPHook()
 // Get text from [eax + 0x740000]
 static void SpecialPSPHookAlchemist2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
-  //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
-  //ITH_GROWL_DWORD(base);
-  //enum { base = 0x7400000 };
-  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base);
-
-  LPCSTR text = LPCSTR(eax + base);
+  LPCSTR text = LPCSTR(eax + hp->userValue);
   if (*text && !_alchemistgarbage(text)) {
     *data = (DWORD)text;
     *len = ::strlen(text);
@@ -6305,7 +6289,7 @@ bool InsertAlchemist2PSPHook()
     hp.addr = addr;
     hp.extern_fun = SpecialPSPHookAlchemist2;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.module = membase; // use module to pass membase
+    hp.userValue = membase; // use module to pass membase
     ConsoleOutput("vnreng: Alchemist2 PSP: INSERT");
     NewHook(hp, L"Alchemist2 PSP");
   }
@@ -6473,14 +6457,8 @@ size_t _5pbstrlen(LPCSTR text)
 // Get text from [eax + 0x740000]
 static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
-  //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
-  //ITH_GROWL_DWORD(base);
-  //enum { base = 0x7400000 };
-  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base);
-
-  LPCSTR text = (LPCSTR)(eax + base);
+  LPCSTR text = (LPCSTR)(eax + hp->userValue);
   if (*text) {
     text = _5pbltrim(text);
     *data = (DWORD)text;
@@ -6560,7 +6538,7 @@ bool Insert5pbPSPHook()
     hp.addr = addr;
     hp.extern_fun = SpecialPSPHook5pb;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.module = membase; // use module to pass membase
+    hp.userValue = membase;
     ConsoleOutput("vnreng: 5pb PSP: INSERT");
     NewHook(hp, L"5pb PSP");
   }
@@ -6623,12 +6601,9 @@ static void SpecialPSPHookImageepoch(DWORD esp_base, HookParam *hp, DWORD *data,
 {
   CC_UNUSED(hp);
   //enum { base = 0x7400000 };
-  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base);
-
-  // Prevent reading the same address multiple times
-  static DWORD lastText;
-  DWORD text = eax + base;
+  DWORD text = eax + hp->userValue;
+  static DWORD lastText; // Prevent reading the same address multiple times
   if (text != lastText && *(LPCSTR)text) {
     *data = lastText = text;
     *len = ::strlen((LPCSTR)text); // UTF-8 is null-terminated
@@ -6675,7 +6650,7 @@ bool InsertImageepochPSPHook()
     hp.addr = addr;
     hp.extern_fun = SpecialPSPHookImageepoch;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.module = membase; // use module to pass membase
+    hp.userValue = membase; // use module to pass membase
     ConsoleOutput("vnreng: Imageepoch PSP: INSERT");
     NewHook(hp, L"Imageepoch PSP");
   }
@@ -7151,14 +7126,11 @@ static void SpecialPSPHookYeti(DWORD esp_base, HookParam *hp, DWORD *data, DWORD
 {
   CC_UNUSED(hp);
   //enum { base = 0x7400000 };
-  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base);
-
-  //static DWORD lastText; // Prevent reading the same address multiple times
-  DWORD text = eax + base;
-  if (*(LPCSTR)text) {
-    *data = text;
-    *len = ::strlen((LPCSTR)text); // SHIFT-JIS
+  LPCSTR text = LPCSTR(eax + hp->userValue);
+  if (*text) {
+    *data = (DWORD)text;
+    *len = ::strlen(text); // SHIFT-JIS
     //*split = regof(ecx, esp_base); // ecx is bad that will split text threads
     //*split = FIXED_SPLIT_VALUE; // Similar to 5pb, it only has one thread?
     //*split = regof(ebx, esp_base); // value of ebx is splitting
@@ -7243,7 +7215,7 @@ bool InsertYetiPSPHook()
     hp.addr = addr;
     hp.extern_fun = SpecialPSPHookYeti;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.module = membase; // use module to pass membase
+    hp.userValue = membase; // use module to pass membase
     ConsoleOutput("vnreng: Yeti PSP: INSERT");
     NewHook(hp, L"Yeti PSP");
   }
@@ -7347,11 +7319,9 @@ static void SpecialPSPHookKid(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
 {
   CC_UNUSED(hp);
   //enum { base = 0x7400000 };
-  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base);
-
+  LPCSTR text = (LPCSTR)(eax + hp->userValue);
   static LPCSTR lastText; // Prevent reading the same address multiple times
-  LPCSTR text = (LPCSTR)(eax + base);
   if (text != lastText && *text) {
     lastText = text;
     text = _5pbltrim(text);
@@ -7400,7 +7370,7 @@ bool InsertKidPSPHook()
     hp.addr = addr;
     hp.extern_fun = SpecialPSPHookKid;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.module = membase; // use module to pass membase
+    hp.userValue = membase;
     ConsoleOutput("vnreng: KID PSP: INSERT");
     NewHook(hp, L"KID PSP");
   }
@@ -7457,10 +7427,8 @@ static void SpecialPSPHookCyberfront(DWORD esp_base, HookParam *hp, DWORD *data,
 {
   CC_UNUSED(hp);
   //enum { base = 0x7400000 };
-  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base);
-
-  LPCSTR text = (LPCSTR)(eax + base);
+  LPCSTR text = (LPCSTR)(eax + hp->userValue);
   if (*text) {
     *data = (DWORD)text;
     *len = ::strlen(text);
@@ -7511,7 +7479,7 @@ bool InsertCyberfrontPSPHook()
     hp.addr = addr;
     hp.extern_fun = SpecialPSPHookCyberfront;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.module = membase; // use module to pass membase
+    hp.userValue = membase; // use module to pass membase
     ConsoleOutput("vnreng: CYBERFRONT PSP: INSERT");
     NewHook(hp, L"CYBERFRONT PSP");
   }
@@ -7704,12 +7672,8 @@ bool InsertTypeMoonPS2Hook()
  */
 static void SpecialPSPHookShade(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
-  CC_UNUSED(split);
-  DWORD membase = *(DWORD *)(hp->addr + 3); // get operand: 13400e3d   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
   DWORD eax = regof(eax, esp_base);
-
-  LPCSTR text = LPCSTR(eax + membase);
+  LPCSTR text = LPCSTR(eax + hp->userValue);
   if (*text) {
     *data = (DWORD)text;
     *len = ::strlen(text);
@@ -7836,15 +7800,9 @@ bool InsertShadePSPHook()
 // jichi 7/17/2014: Why this function is exactly the same as SpecialPSPHookImageepoch?
 static void SpecialPSPHookAlchemist3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
-  //DWORD base = *(DWORD *)(hp->addr); // get operand: 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]   // jichi: hook here
-  //ITH_GROWL_DWORD(base);
-  //enum { base = 0x7400000 };
-  DWORD base = hp->module; // this is the membase, supposed to be 0x7400000 on x86
   DWORD eax = regof(eax, esp_base);
-
+  DWORD text = eax + hp->userValue;
   static DWORD lastText;
-  DWORD text = eax + base;
   if (text != lastText && *(LPCSTR)text) {
     *data = lastText = text;
     *len = ::strlen((LPCSTR)text);
@@ -7892,7 +7850,7 @@ bool InsertAlchemist3PSPHook()
     hp.addr = addr;
     hp.extern_fun = SpecialPSPHookAlchemist3;
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
-    hp.module = membase; // use module to pass membase
+    hp.userValue = membase; // use module to pass membase
     ConsoleOutput("vnreng: Alchemist3 PSP: INSERT");
     NewHook(hp, L"Alchemist3 PSP");
   }
