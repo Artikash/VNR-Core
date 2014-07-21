@@ -6,6 +6,8 @@
 
 #include "config.h"
 
+struct HookParam; // defined in ith types.h
+
 namespace Engine {
 
 // Global variables
@@ -29,6 +31,8 @@ bool InsertPCSX2Hooks(); // PCSX2
 //bool InsertTypeMoonPS2Hook();
 
 // PSP engines
+
+void SpecialPSPHook(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len); // General PSP extern hook
 
 bool InsertPPSSPPHooks();        // PPSSPPWindows
 bool InsertPPSSPPHLEHooks();
