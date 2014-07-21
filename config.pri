@@ -101,7 +101,7 @@ mac {
   QT_SRC        = ${HOME}/src
 }
 
-INCLUDEPATH     += $$BOOST_HOME/include
+INCLUDEPATH     += $$BOOST_HOME $$BOOST_HOME/include
 LIBS            += -L$$BOOST_HOME/lib
 
 ## Config
