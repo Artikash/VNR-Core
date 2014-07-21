@@ -24,7 +24,7 @@
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 
-#define DEBUG "engine_p.h"
+//#define DEBUG "engine_p.h"
 
 enum : BYTE { XX = MemDbg::WidecardByte };
 #define XX2 XX,XX       // WORD
