@@ -6016,19 +6016,19 @@ bool InsertPPSSPPHooks()
   ConsoleOutput("vnreng: PPSSPP: enter");
   bool engineFound = Insert5pbPSPHook();
   if (!engineFound) {
+    InsertBrocolliPSPHook();
+    InsertCyberfrontPSPHook();
     InsertKidPSPHook(); // KID could lose text
     InsertYetiPSPHook();
-    InsertCyberfrontPSPHook();
-
-    bool bandaiFound = InsertBandaiPSPHook();  // Imagepepoch could crash vnrcli for School Rumble PSP
-    InsertBandaiNamePSPHook();
 
     // Generic hook
+
     InsertAlchemistPSPHook();
     InsertAlchemist2PSPHook();
 
-    if (!bandaiFound)
-      InsertImageepochPSPHook(); // could have duplication issue
+    InsertBandaiNamePSPHook();
+    InsertBandaiPSPHook()  // Imagepepoch could crash vnrcli for School Rumble PSP
+    || InsertImageepochPSPHook();
 
     InsertPPSSPPHLEHooks();
   }
@@ -7645,6 +7645,8 @@ static void SpecialPSPHookBandai(DWORD esp_base, HookParam *hp, DWORD *data, DWO
   }
 }
 
+// 7/22/2014 jichi: This engine works for multiple game?
+// It is also observed in Brocolli game うたの☆プリンスさまっ.
 bool InsertBandaiPSPHook()
 {
   ConsoleOutput("vnreng: BANDAI PSP: enter");
@@ -7688,6 +7690,93 @@ bool InsertBandaiPSPHook()
   return addr;
 }
 
+/** 7/22/2014 jichi Brocolli PSP engine
+ *  Sample game: うたの☆プリンスさまっ♪
+ *
+ *  Memory address is FIXED.
+ *  Debug method: breakpoint the precomputed address
+ *
+ *  The data is in (WORD)bp instead of eax.
+ *  bp contains SHIFT-JIS BIG_ENDIAN data.
+ *
+ *  There is only one text thread.
+ *
+ *  134e0553   cc               int3
+ *  134e0554   77 0f            ja short 134e0565
+ *  134e0556   c705 a8aa1001 34>mov dword ptr ds:[0x110aaa8],0x8853a34
+ *  134e0560  -e9 9ffa03f0      jmp 03520004
+ *  134e0565   8b35 74a71001    mov esi,dword ptr ds:[0x110a774]
+ *  134e056b   d1e6             shl esi,1
+ *  134e056d   c7c7 987db708    mov edi,0x8b77d98
+ *  134e0573   03fe             add edi,esi
+ *  134e0575   8b2d 78a71001    mov ebp,dword ptr ds:[0x110a778]
+ *  134e057b   8bc7             mov eax,edi
+ *  134e057d   81e0 ffffff3f    and eax,0x3fffffff
+ *  134e0583   66:89a8 00004007 mov word ptr ds:[eax+0x7400000],bp ; jichi: hook here
+ *  134e058a   8b2d 8c7df70f    mov ebp,dword ptr ds:[0xff77d8c]
+ *  134e0590   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+ *  134e0593   892d 8c7df70f    mov dword ptr ds:[0xff77d8c],ebp
+ *  134e0599   8b05 e4a71001    mov eax,dword ptr ds:[0x110a7e4]
+ *  134e059f   c705 74a71001 00>mov dword ptr ds:[0x110a774],0x8b70000
+ *  134e05a9   892d 78a71001    mov dword ptr ds:[0x110a778],ebp
+ *  134e05af   8935 7ca71001    mov dword ptr ds:[0x110a77c],esi
+ *  134e05b5   8905 a8aa1001    mov dword ptr ds:[0x110aaa8],eax
+ *  134e05bb   832d c4aa1001 0c sub dword ptr ds:[0x110aac4],0xc
+ *  134e05c2  -e9 5cfa03f0      jmp 03520023
+ */
+// Read text from bp
+static void SpecialPSPHookBrocolli(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  LPCSTR text = LPCSTR(esp_base + pusha_ebp_off - 4); // ebp address
+  if (*text) {
+    *data = (DWORD)text;
+    *len = !text[0] ? 0 : !text[1] ? 1 : 2;
+    *split = regof(ecx, esp_base); // Split text issue in: My Merry May with be
+  }
+}
+
+bool InsertBrocolliPSPHook()
+{
+  ConsoleOutput("vnreng: Brocolli PSP: enter");
+
+  const BYTE bytes[] =  {
+    //0xcc,                         // 134e0553   cc               int3
+    0x77, 0x0f,                     // 134e0554   77 0f            ja short 134e0565
+    0xc7,0x05, XX4, XX4,            // 134e0556   c705 a8aa1001 34>mov dword ptr ds:[0x110aaa8],0x8853a34
+    0xe9, XX4,                      // 134e0560  -e9 9ffa03f0      jmp 03520004
+    0x8b,0x35, XX4,                 // 134e0565   8b35 74a71001    mov esi,dword ptr ds:[0x110a774]
+    0xd1,0xe6,                      // 134e056b   d1e6             shl esi,1
+    0xc7,0xc7, XX4,                 // 134e056d   c7c7 987db708    mov edi,0x8b77d98
+    0x03,0xfe,                      // 134e0573   03fe             add edi,esi
+    0x8b,0x2d, XX4,                 // 134e0575   8b2d 78a71001    mov ebp,dword ptr ds:[0x110a778]
+    0x8b,0xc7,                      // 134e057b   8bc7             mov eax,edi
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 134e057d   81e0 ffffff3f    and eax,0x3fffffff
+    0x66,0x89,0xa8, XX4,            // 134e0583   66:89a8 00004007 mov word ptr ds:[eax+0x7400000],bp ; jichi: hook here
+    0x8b,0x2d, XX4,                 // 134e058a   8b2d 8c7df70f    mov ebp,dword ptr ds:[0xff77d8c]
+    0x8d,0x6d, 0x01                 // 134e0590   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+  };
+  enum { hook_offset = 0x134e0583 - 0x134e0554 };
+  enum { memory_offset = 3 };
+
+  // This process might raise before the PSP ISO is loaded
+  // TODO: Create a timer thread to periodically try different PSP engines
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //ITH_GROWL_DWORD(addr);
+  //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
+  if (!addr)
+    ConsoleOutput("vnreng: Brocolli PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT;
+    hp.extern_fun = SpecialPSPHookBrocolli;
+    ConsoleOutput("vnreng: Brocolli PSP: INSERT");
+    NewHook(hp, L"Brocolli PSP");
+  }
+
+  ConsoleOutput("vnreng: Brocolli PSP: leave");
+  return addr;
+}
 
 /** jichi 7/19/2014 PCSX2
  *  Tested wit  pcsx2-v1.2.1-328-gef0e3fe-windows-x86, built at http://buildbot.orphis.net/pcsx2

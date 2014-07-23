@@ -13,6 +13,7 @@ psp:
   - 5pb PSP
   - Alchemist PSP
   - Alchemist2 PSP
+  - Brocolli PSP
   - BANDAI PSP
   - BANDAI Name PSP
   - Imageepoch PSP
@@ -99,6 +100,7 @@ simple:
   - BGI
   - BGI1
   - BGI2
+  - Brocolli PSP
   - CIRCUS
   - CMVS
   - CMVS2
@@ -203,7 +205,6 @@ char:
   - sceCccSJIStoUTF16
   # Engines
   - 5pb PSP
-  - CYBERFRONT PSP
   - AbelSoftware
   - Alchemist PSP
   - Alchemist2 PSP
@@ -217,11 +218,13 @@ char:
   - BANDAI Name PSP
   - BGI
   - BGI1
+  - Brocolli PSP
   - C4
   - CaramelBox
   - CatSystem2
   - CIRCUS
   - CMVS
+  - CYBERFRONT PSP
   - Debonosu
   - Elf
   - EmonEngine
