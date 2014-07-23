@@ -44,32 +44,25 @@ class _TranslatorManager(object):
   normalizeText = staticmethod(textutil.normalize_punct)
 
   @memoizedproperty
-  def lougoTranslator(self):
-    return _trman.LougoTranslator()
-  @memoizedproperty
-
-  def hanVietTranslator(self):
-    return _trman.HanVietTranslator(parent=self.q)
+  def lougoTranslator(self): return _trman.LougoTranslator()
 
   @memoizedproperty
-  def atlasTranslator(self):
-    return _trman.AtlasTranslator(parent=self.q)
+  def hanVietTranslator(self): return _trman.HanVietTranslator()
 
   @memoizedproperty
-  def lecTranslator(self):
-    return _trman.LecTranslator(parent=self.q)
+  def atlasTranslator(self): return _trman.AtlasTranslator(parent=self.q)
 
   @memoizedproperty
-  def ezTranslator(self):
-    return _trman.EzTranslator(parent=self.q)
+  def lecTranslator(self): return _trman.LecTranslator(parent=self.q)
 
   @memoizedproperty
-  def dreyeTranslator(self):
-    return _trman.DreyeTranslator(parent=self.q)
+  def ezTranslator(self): return _trman.EzTranslator(parent=self.q)
 
   @memoizedproperty
-  def jbeijingTranslator(self):
-    return _trman.JBeijingTranslator(parent=self.q)
+  def dreyeTranslator(self): return _trman.DreyeTranslator(parent=self.q)
+
+  @memoizedproperty
+  def jbeijingTranslator(self): return _trman.JBeijingTranslator(parent=self.q)
 
   @memoizedproperty
   def baiduTranslator(self):
@@ -121,6 +114,8 @@ class _TranslatorManager(object):
       return self.lecOnlineTranslator
     if key == 'transru':
       return self.transruTranslator
+    if key == 'hanviet':
+      return self.hanVietTranslator
     if key == 'lou':
       return self.lougoTranslator
     try: return getattr(self, key + 'Translator')

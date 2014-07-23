@@ -15,9 +15,9 @@ TRAITS = [ # [TranslatorTraits]
   {'key':'jbeijing','online':False, 'name':mytr_("JBeijing")},
   {'key':'dreye',   'online':False, 'name':mytr_("Dr.eye")},
   {'key':'eztrans', 'online':False, 'name':mytr_("ezTrans XP")},
+  {'key':'hanviet', 'online':False, 'name':u"Hán Việt"},
   {'key':'atlas',   'online':False, 'name':mytr_("ATLAS")},
   {'key':'lec',     'online':False, 'name':mytr_("LEC")},
-  {'key':'hanviet', 'online':False, 'name':u"Hán Việt"},
   #{'key':'lou',     'online':False, 'name':u"ルー語"},
 ]
 

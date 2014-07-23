@@ -164,8 +164,8 @@ class HanVietTranslator(Translator):
     """
     if emit:
       self.emitLanguages(fr=fr, to='vi')
-    if not fr.startswith('zh'):
-      return None, None, None
+    #if not fr.startswith('zh'):
+    #  return None, None, None
     if fr == 'zht':
       text = zht2zhs(text)
     tm = termman.manager()
@@ -177,7 +177,7 @@ class HanVietTranslator(Translator):
     sub = han2viet(text)
     if sub:
       if emit:
-        self.emitJointTranslation(text)
+        self.emitJointTranslation(sub)
       sub = textutil.beautify_subtitle(sub)
     return sub, 'vi', self.key
 
