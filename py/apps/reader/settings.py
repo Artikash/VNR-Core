@@ -431,6 +431,15 @@ class Settings(QSettings):
       self.setValue('TransruColor', value)
       self.transruColorChanged.emit(value)
 
+  hanVietColorChanged = Signal(str)
+  def hanVietColor(self):
+    return self.value('HanVietColor', config.SETTINGS_HANVIET_COLOR)
+  def setHanVietColor(self, value):
+    value = value or config.SETTINGS_HANVIET_COLOR
+    if value != self.hanVietColor():
+      self.setValue('HanVietColor', value)
+      self.hanVietColorChanged.emit(value)
+
   jbeijingColorChanged = Signal(str)
   def jbeijingColor(self):
     return self.value('JBeijingColor', config.SETTINGS_JBEIJING_COLOR)
@@ -996,6 +1005,15 @@ class Settings(QSettings):
 
   machineTranslatorChanged = Signal()
 
+  hanVietEnabledChanged = Signal(bool)
+  def isHanVietEnabled(self):
+    return to_bool(self.value('HanVietEnabled'))
+  def setHanVietEnabled(self, value):
+    if value != self.isHanVietEnabled():
+      self.setValue('HanVietEnabled', value)
+      self.hanVietEnabledChanged.emit(value)
+      self.machineTranslatorChanged.emit()
+
   atlasEnabledChanged = Signal(bool)
   def isAtlasEnabled(self):
     return to_bool(self.value('AtlasEnabled'))
@@ -1437,6 +1455,7 @@ class SettingsProxy(QObject):
     g.lecOnlineColorChanged.connect(self.lecOnlineColorChanged)
     g.transruColorChanged.connect(self.transruColorChanged)
     g.lougoColorChanged.connect(self.lougoColorChanged)
+    g.hanVietColorChanged.connect(self.hanVietColorChanged)
     g.jbeijingColorChanged.connect(self.jbeijingColorChanged)
     g.dreyeColorChanged.connect(self.dreyeColorChanged)
     g.ezTransColorChanged.connect(self.ezTransColorChanged)
@@ -1672,6 +1691,8 @@ class SettingsProxy(QObject):
   transruColor = unicode_property('TransruColor', config.SETTINGS_TRANSRU_COLOR, notify=transruColorChanged)
   lougoColorChanged = Signal(unicode)
   lougoColor = unicode_property('LougoColor', config.SETTINGS_LOUGO_COLOR, notify=lougoColorChanged)
+  hanVietColorChanged = Signal(unicode)
+  hanVietColor = unicode_property('HanVietColor', config.SETTINGS_HANVIET_COLOR, notify=hanVietColorChanged)
   jbeijingColorChanged = Signal(unicode)
   jbeijingColor = unicode_property('JBeijingColor', config.SETTINGS_JBEIJING_COLOR, notify=jbeijingColorChanged)
   dreyeColorChanged = Signal(unicode)

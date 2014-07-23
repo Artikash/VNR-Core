@@ -117,6 +117,7 @@ class reader(QObject):
       self.tr("JBeijing"),
       self.tr("JBeijing7"),
       self.tr("Dr.eye"),
+      #self.tr("Han Viet"),
 
       self.tr("Built-in"),
       self.tr("built-in"),

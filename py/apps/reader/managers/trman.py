@@ -33,6 +33,7 @@ class _TranslatorManager(object):
     self.lecOnlineEnabled = \
     self.transruEnabled = \
     self.lougoEnabled = \
+    self.hanVietEnabled = \
     self.jbeijingEnabled = \
     self.dreyeEnabled = \
     self.ezTransEnabled = \
@@ -45,6 +46,10 @@ class _TranslatorManager(object):
   @memoizedproperty
   def lougoTranslator(self):
     return _trman.LougoTranslator()
+  @memoizedproperty
+
+  def hanVietTranslator(self):
+    return _trman.HanVietTranslator(parent=self.q)
 
   @memoizedproperty
   def atlasTranslator(self):
@@ -129,6 +134,7 @@ class _TranslatorManager(object):
     if self.jbeijingEnabled: yield self.jbeijingTranslator
     if self.dreyeEnabled: yield self.dreyeTranslator
     if self.ezTransEnabled: yield self.ezTranslator
+    if self.hanVietEnabled: yield self.hanVietTranslator
     if self.lecEnabled: yield self.lecTranslator
     if self.atlasEnabled: yield self.atlasTranslator
 
@@ -222,6 +228,9 @@ class TranslatorManager(QObject):
   def isLougoEnabled(self): return self.__d.lougoEnabled
   def setLougoEnabled(self, value): self.__d.lougoEnabled = value
 
+  def isHanVietEnabled(self): return self.__d.hanVietEnabled
+  def setHanVietEnabled(self, value): self.__d.hanVietEnabled = value
+
   def isJBeijingEnabled(self): return self.__d.jbeijingEnabled
   def setJBeijingEnabled(self, value): self.__d.jbeijingEnabled = value
 
@@ -267,6 +276,7 @@ class TranslatorManager(QObject):
     d = self.__d
     return any((
       #d.lougoEnabled,
+      d.hanVietEnabled,
       d.jbeijingEnabled,
       d.dreyeEnabled,
       d.ezTransEnabled,
@@ -292,6 +302,8 @@ class TranslatorManager(QObject):
     d = self.__d
     if d.ezTransEnabled:
       return 'ko'
+    if d.hanVietEnabled:
+      return 'vi'
     if d.jbeijingEnabled or d.baiduEnabled or d.dreyeEnabled:
       return 'zhs' if d.language == 'zhs' else 'zht'
     if (d.atlasEnabled or d.lecEnabled) and not any((

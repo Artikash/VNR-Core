@@ -120,15 +120,6 @@ class Translator(object):
 class LougoTranslator(Translator):
   key = 'lou' # override
 
-  def translateTest(self, text, to='en', fr='ja', async=False):
-    """
-    @param  text  unicode
-    @param* fr  unicode
-    @param* async  bool  ignored, always sync
-    @return  unicode sub, unicode lang, unicode provider
-    """
-    return mecabman.tolou(text)
-
   def translate(self, text, to='en', fr='ja', async=False, emit=False):
     """
     @param  text  unicode
@@ -160,6 +151,45 @@ class LougoTranslator(Translator):
     @return  unicode sub, unicode lang, unicode provider
     """
     return mecabman.tolou(text)
+
+class HanVietTranslator(Translator):
+  key = 'hanviet' # override
+
+  def translate(self, text, to='vi', fr='zhs', async=False, emit=False):
+    """
+    @param  text  unicode
+    @param* fr  unicode
+    @param* async  bool  ignored, always sync
+    @return  unicode sub, unicode lang, unicode provider
+    """
+    if emit:
+      self.emitLanguages(fr=fr, to='vi')
+    if not fr.startswith('zh'):
+      return None, None, None
+    if fr == 'zht':
+      text = zht2zhs(text)
+    tm = termman.manager()
+    t = text
+    text = tm.applySourceTerms(text, 'zhs')
+    if emit and text != t:
+      self.emitSourceText(text)
+    from hanviet.hanviet import han2viet
+    sub = han2viet(text)
+    if sub:
+      if emit:
+        self.emitJointTranslation(text)
+      sub = textutil.beautify_subtitle(sub)
+    return sub, 'vi', self.key
+
+  def translateTest(self, text, to='vi', fr='zhs', async=False):
+    """
+    @param  text  unicode
+    @param* fr  unicode
+    @param* async  bool  ignored, always sync
+    @return  unicode sub, unicode lang, unicode provider
+    """
+    from hanviet.hanviet import han2viet
+    return han2viet(text)
 
 # Machine translators
 

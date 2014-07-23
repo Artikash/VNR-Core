@@ -564,6 +564,7 @@ Item { id: root_
         googleColor: settings_.googleColor
         baiduColor: settings_.baiduColor
         lougoColor: settings_.lougoColor
+        hanVietColor: settings_.hanVietColor
         jbeijingColor: settings_.jbeijingColor
         dreyeColor: settings_.dreyeColor
         ezTransColor: settings_.ezTransColor

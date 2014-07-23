@@ -150,6 +150,7 @@ var TRANSLATOR_NAME = {
   , lec: "LEC"
   , lecol: "LEC Online"
   , transru: "Translate.Ru"
+  , hanviet: "Hán Việt"
   , lou: "ルー語"
 }
 function translatorName(tr) { return TRANSLATOR_NAME[tr] }

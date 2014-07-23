@@ -31,6 +31,8 @@ def hanviet(t): # unicode -> unicode
       l.append(c)
   return ''.join(l)
 
+han2viet = hanviet # backward compatibility
+
 if __name__ == '__main__':
   print hanviet(u"你好 123 english")
 
