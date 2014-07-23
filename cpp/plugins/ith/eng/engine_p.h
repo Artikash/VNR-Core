@@ -41,10 +41,11 @@ bool InsertAlchemistPSPHook();  // PSP Alchemist-net.co.jp
 bool InsertAlchemist2PSPHook(); // PSP Alchemist-net.co.jp
 bool InsertBandaiNamePSPHook(); // PSP Bandai.co.jp
 bool InsertBandaiPSPHook();     // PSP Bandai.co.jp
-bool InsertBrocolliPSPHook();   // PSP Brocolli.co.jp
 bool InsertCyberfrontPSPHook(); // PSP CYBERFRONT (closed)
 bool InsertImageepochPSPHook(); // PSP Imageepoch.co.jp
 bool InsertKidPSPHook();        // PSP Kid-game.co.jp
+bool InsertNippon1PSPHook();    // PSP Nippon1.jp
+bool InsertTecmoPSPHook();      // PSP KoeiTecmo.co.jp
 bool InsertYetiPSPHook();       // PSP Yetigame.jp
 //bool InsertShadePSPHook();    // PSP SHADE.co.jp
 

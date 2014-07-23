@@ -6016,9 +6016,10 @@ bool InsertPPSSPPHooks()
   ConsoleOutput("vnreng: PPSSPP: enter");
   bool engineFound = Insert5pbPSPHook();
   if (!engineFound) {
-    InsertBrocolliPSPHook();
     InsertCyberfrontPSPHook();
     InsertKidPSPHook(); // KID could lose text
+    InsertNippon1PSPHook();
+    //InsertTecmoPSPHook();
     InsertYetiPSPHook();
 
     // Generic hook
@@ -7690,7 +7691,7 @@ bool InsertBandaiPSPHook()
   return addr;
 }
 
-/** 7/22/2014 jichi Brocolli PSP engine
+/** 7/22/2014 jichi Nippon1 PSP engine
  *  Sample game: うたの☆プリンスさまっ♪
  *
  *  Memory address is FIXED.
@@ -7725,7 +7726,7 @@ bool InsertBandaiPSPHook()
  *  134e05c2  -e9 5cfa03f0      jmp 03520023
  */
 // Read text from bp
-static void SpecialPSPHookBrocolli(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookNippon1(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   LPCSTR text = LPCSTR(esp_base + pusha_ebp_off - 4); // ebp address
   if (*text) {
@@ -7735,9 +7736,9 @@ static void SpecialPSPHookBrocolli(DWORD esp_base, HookParam *hp, DWORD *data, D
   }
 }
 
-bool InsertBrocolliPSPHook()
+bool InsertNippon1PSPHook()
 {
-  ConsoleOutput("vnreng: Brocolli PSP: enter");
+  ConsoleOutput("vnreng: Nippon1 PSP: enter");
 
   const BYTE bytes[] =  {
     //0xcc,                         // 134e0553   cc               int3
@@ -7764,19 +7765,103 @@ bool InsertBrocolliPSPHook()
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
   if (!addr)
-    ConsoleOutput("vnreng: Brocolli PSP: pattern not found");
+    ConsoleOutput("vnreng: Nippon1 PSP: pattern not found");
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT;
-    hp.extern_fun = SpecialPSPHookBrocolli;
-    ConsoleOutput("vnreng: Brocolli PSP: INSERT");
-    NewHook(hp, L"Brocolli PSP");
+    hp.extern_fun = SpecialPSPHookNippon1;
+    ConsoleOutput("vnreng: Nippon1 PSP: INSERT");
+    NewHook(hp, L"Nippon1 PSP");
   }
 
-  ConsoleOutput("vnreng: Brocolli PSP: leave");
+  ConsoleOutput("vnreng: Nippon1 PSP: leave");
   return addr;
 }
+
+#if 0 // CHECKPOINT
+/** 7/22/2014 jichi: KOEI TECMO PSP
+ *  Sample game: 金色のコルダ3
+ *
+ *  134598e2   cc               int3
+ *  134598e3   cc               int3
+ *  134598e4   77 0f            ja short 134598f5
+ *  134598e6   c705 a8aa1001 8c>mov dword ptr ds:[0x110aaa8],0x880f08c
+ *  134598f0  -e9 0f67fbef      jmp 03410004
+ *  134598f5   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+ *  134598fb   81e0 ffffff3f    and eax,0x3fffffff
+ *  13459901   8bb0 00004007    mov esi,dword ptr ds:[eax+0x7400000]	; jichi: hook here
+ *  13459907   8b3d 7ca71001    mov edi,dword ptr ds:[0x110a77c]
+ *  1345990d   8d7f 04          lea edi,dword ptr ds:[edi+0x4]
+ *  13459910   8b05 84a71001    mov eax,dword ptr ds:[0x110a784]
+ *  13459916   81e0 ffffff3f    and eax,0x3fffffff
+ *  1345991c   89b0 00004007    mov dword ptr ds:[eax+0x7400000],esi
+ *  13459922   8b2d 84a71001    mov ebp,dword ptr ds:[0x110a784]
+ *  13459928   8d6d 04          lea ebp,dword ptr ss:[ebp+0x4]
+ *  1345992b   8b15 78a71001    mov edx,dword ptr ds:[0x110a778]
+ *  13459931   81fa 01000000    cmp edx,0x1
+ *  13459937   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+ *  1345993d   893d 7ca71001    mov dword ptr ds:[0x110a77c],edi
+ *  13459943   892d 84a71001    mov dword ptr ds:[0x110a784],ebp
+ *  13459949   c705 88a71001 01>mov dword ptr ds:[0x110a788],0x1
+ *  13459953   0f84 16000000    je 1345996f
+ *  13459959   832d c4aa1001 09 sub dword ptr ds:[0x110aac4],0x9
+ *  13459960   e9 17000000      jmp 1345997c
+ *  13459965   0190 f08008e9    add dword ptr ds:[eax+0xe90880f0],edx
+ *  1345996b   b4 66            mov ah,0x66
+ *  1345996d   fb               sti
+ *  1345996e   ef               out dx,eax                               ; i/o command
+ *  1345996f   832d c4aa1001 09 sub dword ptr ds:[0x110aac4],0x9
+ *  13459976  ^e9 ddc1ffff      jmp 13455b58
+ *  1345997b   90               nop
+ */
+bool InsertTecmoPSPHook()
+{
+  ConsoleOutput("vnreng: Tecmo PSP: enter");
+
+  const BYTE bytes[] =  {
+    0x77, 0x0f,                     // 134598e4   77 0f            ja short 134598f5
+    0xc7,0x05, XX4, XX4,            // 134598e6   c705 a8aa1001 8c>mov dword ptr ds:[0x110aaa8],0x880f08c
+    0xe9, XX4,                      // 134598f0  -e9 0f67fbef      jmp 03410004
+    0x8b,0x05, XX4,                 // 134598f5   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 134598fb   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xb0, XX4,                 // 13459901   8bb0 00004007    mov esi,dword ptr ds:[eax+0x7400000]	; jichi: hook here
+    0x8b,0x3d, XX4,                 // 13459907   8b3d 7ca71001    mov edi,dword ptr ds:[0x110a77c]
+    0x8d,0x7f, 0x04,                // 1345990d   8d7f 04          lea edi,dword ptr ds:[edi+0x4]
+    0x8b,0x05, XX4,                 // 13459910   8b05 84a71001    mov eax,dword ptr ds:[0x110a784]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13459916   81e0 ffffff3f    and eax,0x3fffffff
+    0x89,0xb0 //, XX4,                 // 1345991c   89b0 00004007    mov dword ptr ds:[eax+0x7400000],esi
+    //0x8b,0x2d, XX4,                 // 13459922   8b2d 84a71001    mov ebp,dword ptr ds:[0x110a784]
+    //0x8d,0x6d, 0x04,                // 13459928   8d6d 04          lea ebp,dword ptr ss:[ebp+0x4]
+    //0x8b,0x15, XX4,                 // 1345992b   8b15 78a71001    mov edx,dword ptr ds:[0x110a778]
+    //0x81,0xfa, 0x01,0x00,0x00,0x00  // 13459931   81fa 01000000    cmp edx,0x1
+  };
+  enum { hook_offset = 0x13459901 - 0x134598e4 };
+  enum { memory_offset = 2 };
+
+  // This process might raise before the PSP ISO is loaded
+  // TODO: Create a timer thread to periodically try different PSP engines
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //ITH_GROWL_DWORD(addr);
+  //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
+  if (!addr)
+    ConsoleOutput("vnreng: Tecmo PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT;
+    hp.off = pusha_eax_off - 4;
+    hp.split = pusha_ecx_off - 4;
+    hp.extern_fun = SpecialPSPHook;
+    ConsoleOutput("vnreng: Tecmo PSP: INSERT");
+    NewHook(hp, L"Tecmo PSP");
+  }
+
+  ConsoleOutput("vnreng: Tecmo PSP: leave");
+  return addr;
+}
+#endif // 0
 
 /** jichi 7/19/2014 PCSX2
  *  Tested wit  pcsx2-v1.2.1-328-gef0e3fe-windows-x86, built at http://buildbot.orphis.net/pcsx2
