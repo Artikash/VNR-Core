@@ -1468,6 +1468,7 @@ class _TextTab(object):
       ('JBeijing', None,  mytr_("JBeijing"), 'zh'),
       ('Dreye', None,  mytr_("Dr.eye"), 'zh'),
       ('EzTrans', 'ezTrans',  mytr_("ezTrans"), 'ko'),
+      ('HanViet', 'hanViet',  u"Hán Việt", 'vi'),
       ('Atlas', None,  mytr_("ATLAS"), 'en'),
       ('Lec', None,  mytr_("LEC"), 'en'),
     )
@@ -1520,7 +1521,7 @@ class _TextTab(object):
 
     for Name in ('Font', 'Shadow', 'Text', 'Subtitle', 'Comment', 'Danmaku',
                  #'Lougo',
-                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Baidu', 'JBeijing', 'Dreye', 'EzTrans', 'Atlas', 'Lec'):
+                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Baidu', 'JBeijing', 'Dreye', 'EzTrans', 'HanViet', 'Atlas', 'Lec'):
       try: getattr(self, '_load{0}Color'.format(Name))(self)
       except AttributeError: pass
 
@@ -1979,6 +1980,8 @@ class _HonyakuTab(object):
       layout.addWidget(self.dreyeButton)
     if 'ko' not in blans:
       layout.addWidget(self.ezTransButton)
+    if 'vi' not in blans:
+      layout.addWidget(self.hanVietButton)
     if 'en' not in blans:
       layout.addWidget(self.atlasButton)
       layout.addWidget(self.lecButton)
@@ -2108,6 +2111,13 @@ class _HonyakuTab(object):
     ret = QtWidgets.QCheckBox(my.tr("ezTrans XP Korean translator"))
     ret.setChecked(settings.global_().isEzTransEnabled())
     ret.toggled.connect(settings.global_().setEzTransEnabled)
+    return ret
+
+  @memoizedproperty
+  def hanVietButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Han Viet Chinese-Vietnamese translator"))
+    ret.setChecked(settings.global_().isHanVietEnabled())
+    ret.toggled.connect(settings.global_().setHanVietEnabled)
     return ret
 
   @memoizedproperty

@@ -572,6 +572,9 @@ class _MainObject(object):
     #ret.setYoudaoEnabled(ss.isYoudaoEnabled())
     #ss.youdaoEnabledChanged.connect(ret.setYoudaoEnabled)
 
+    ret.setHanVietEnabled(ss.isHanVietEnabled())
+    ss.hanVietEnabledChanged.connect(ret.setHanVietEnabled)
+
     ret.setJBeijingEnabled(ss.isJBeijingEnabled())
     ss.jbeijingEnabledChanged.connect(ret.setJBeijingEnabled)
 

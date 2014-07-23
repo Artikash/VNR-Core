@@ -10,7 +10,7 @@ version:
   name: reader
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1406088757
+  timestamp: 1406156022
 
 app:
   #debug: true
@@ -89,6 +89,7 @@ settings:
   atlasColor: '#555500' # yellow
   lecColor: '#0055ff'   # blue
   lecOnlineColor: '#000000' # black
+  hanVietColor: '#0055ff' # blue
   lougoColor: '#000000' # black
 
 # User profile

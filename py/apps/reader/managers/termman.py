@@ -9,7 +9,7 @@
 # - comment: user's subtitle or comment
 
 from functools import partial
-from cconv.cconv import zhs2zht
+from zhszht.zhszht import zhs2zht
 from sakurakit import skthreads
 from sakurakit.skclass import memoized, staticproperty
 from sakurakit.skdebug import dprint, dwarn

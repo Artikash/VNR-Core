@@ -56,6 +56,7 @@ Item { id: root_
   property color exciteColor
   property color baiduColor
   property color lougoColor
+  property color hanVietColor
   property color jbeijingColor
   property color dreyeColor
   property color ezTransColor
@@ -833,6 +834,7 @@ Item { id: root_
         case 'tr':
         case 'name.tr':
           switch(model.provider) {
+          case 'hanviet': return root_.hanVietColor
           case 'jbeijing': return root_.jbeijingColor
           case 'dreye': return root_.dreyeColor
           case 'eztrans': return root_.ezTransColor
