@@ -12,7 +12,8 @@ import os, re
 from functools import partial
 from itertools import ifilter, imap
 from time import time
-from cconv.cconv import zhs2zht, zht2zhs, wide2thin, wide2thin_digit
+from cconv.cconv import wide2thin, wide2thin_digit
+from zhszht.zhszht import zhs2zht, zht2zhs
 from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn

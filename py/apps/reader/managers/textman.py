@@ -17,7 +17,7 @@ from sakurakit.skdebug import dwarn
 #from sakurakit.skqml import QmlObject
 #from sakurakit.skunicode import u
 from memcache.container import SizeLimitedList
-from cconv.cconv import zhs2zht #, zht2zhs
+from zhszht.zhszht import zhs2zht
 from mytr import my
 from texthook import texthook
 import config, dataman, defs, features, growl, hashutil, i18n, settings, termman, textutil, trman, ttsman

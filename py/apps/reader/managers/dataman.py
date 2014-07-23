@@ -19,6 +19,7 @@ from sakurakit.skdebug import dprint, dwarn, derror
 #from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_
 from sakurakit.skunicode import sjis_encodable
+from zhszht.zhszht import zhs2zht
 from cconv import cconv
 from mytr import my, mytr_
 import cacheman, config, csvutil, defs, growl, hashutil, i18n, main, mecabman, nameman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
@@ -2294,7 +2295,7 @@ class Term(QObject):
       #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
       h = self.priority or d.id or id(self)
       if self.convertsChinese():
-        table = {esc%(h,i) : cconv.zhs2zht(d.text) + titles[k] for i,k in enumerate(l)}
+        table = {esc%(h,i) : zhs2zht(d.text) + titles[k] for i,k in enumerate(l)}
       else:
         table = {esc%(h,i) : d.text + titles[k] for i,k in enumerate(l)}
       d.applyReplace = skstr.multireplacer(table) #escape=False
