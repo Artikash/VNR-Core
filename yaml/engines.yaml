@@ -13,12 +13,13 @@ psp:
   - 5pb PSP
   - Alchemist PSP
   - Alchemist2 PSP
-  - Brocolli PSP
   - BANDAI PSP
   - BANDAI Name PSP
+  - CYBERFRONT PSP
   - Imageepoch PSP
   - KID PSP
-  - CYBERFRONT PSP
+  - Nippon1 PSP
+  - Tecmo PSP
   - Yeti PSP
 
 gc:
@@ -100,7 +101,6 @@ simple:
   - BGI
   - BGI1
   - BGI2
-  - Brocolli PSP
   - CIRCUS
   - CMVS
   - CMVS2
@@ -116,6 +116,7 @@ simple:
   - Malie3
   - Mono
   - NeXAS
+  - Nippon1 PSP
   - Pencil # renamed
   - Pensil
   - RealLive
@@ -131,6 +132,7 @@ simple:
   - System43
   - SystemAoi
   - Taskforce2
+  - Tecmo PSP
   - Tenco
   - WAFFLE
   - YukaSystem2
@@ -218,7 +220,6 @@ char:
   - BANDAI Name PSP
   - BGI
   - BGI1
-  - Brocolli PSP
   - C4
   - CaramelBox
   - CatSystem2
@@ -240,13 +241,13 @@ char:
   - MED
   - NeXAS
   - NEXTON
+  - Nippon1 PSP
   - NitroPlus
   - Pencil # renamed
   - Pensil
   - QLIE
   - RealLive
   - Rejet
-  - Yeti PSP
   - RetouchSystem
   - rUGP
   - ScenarioPlayerA
@@ -260,6 +261,7 @@ char:
   - SystemC
   - TanukiSoft
   - Taskforce2
+  - Tecmo PSP
   - Tenco
   - TinkerBell
   - Triangle
@@ -267,6 +269,7 @@ char:
   - WAFFLE
   - WillPlus
   - WolfRPG
+  - Yeti PSP
   - YU-RIS
 
 # Wide character, UTF-16
