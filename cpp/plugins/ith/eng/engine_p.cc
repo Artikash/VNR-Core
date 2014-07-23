@@ -1607,7 +1607,7 @@ void InsertWaffleHook()
   //ConsoleOutput("Probably Waffle. Wait for text.");
   trigger_fun_ = InsertWaffleDynamicHook;
   SwitchTrigger(true);
-  ConsoleOutput("vnreng:WAFFLE: failed");
+  //ConsoleOutput("vnreng:WAFFLE: failed");
 }
 
 void InsertTinkerBellHook()
@@ -3407,6 +3407,7 @@ bool InsertRyokuchaDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
     hp.type = BIG_ENDIAN | EXTERN_HOOK;
     ConsoleOutput("vnreng: INSERT StudioRyokucha");
     NewHook(hp, L"StudioRyokucha");
+    return true;
   }
   //else ConsoleOutput("Unknown Ryokucha engine.");
   ConsoleOutput("vnreng:StudioRyokucha: failed");

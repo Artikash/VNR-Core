@@ -324,14 +324,20 @@ DWORD DetermineEngineByFile4()
     InsertAOSHook();
     return yes;
   }
-  // jichi 7/6/2014: named as ScenarioPlayer since resource string could be: scenario player program for xxx
-  if (IthFindFile(L"*.iar") && IthFindFile(L"*.sec5")) { // jichi 4/18/2014: Other game engine could also have *.iar such as Ryokucha
-    InsertScenarioPlayerHook();
-    return yes;
-  }
   if (IthFindFile(L"*.ykc")) { // jichi 7/15/2014: YukaSystem1 is not supported, though
     //ConsoleOutput("vnreng: IGNORE YKC:Feng/HookSoft(SMEE)");
     InsertYukaSystem2Hook();
+    return yes;
+  }
+  return no;
+}
+DWORD DetermineEngineByFile5()
+{
+  enum : DWORD { yes = 0, no = 1 }; // return value
+  // jichi 7/6/2014: named as ScenarioPlayer since resource string could be: scenario player program for xxx
+  // Do this at last as it is common
+  if (IthFindFile(L"*.iar") && IthFindFile(L"*.sec5")) { // jichi 4/18/2014: Other game engine could also have *.iar such as Ryokucha
+    InsertScenarioPlayerHook();
     return yes;
   }
   return no;
@@ -427,8 +433,7 @@ DWORD DetermineEngineByProcessName()
   }
 
   // This must appear at last since str is modified
-  static WCHAR saveman[] = L"_checksum.exe";
-  wcscpy(str + len - 4, saveman);
+  wcscpy(str + len - 4, L"_checksum.exe");
   if (IthCheckFile(str)) {
     InsertRyokuchaHook();
     return yes;
@@ -593,6 +598,7 @@ bool UnsafeDetermineEngineType()
     && DetermineEngineByFile3()
     && DetermineEngineByFile4()
     && DetermineEngineByProcessName()
+    && DetermineEngineByFile5()
     && DetermineEngineOther()
     && DetermineEngineGeneric()
     && DetermineNoHookEngine()
