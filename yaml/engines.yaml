@@ -13,6 +13,8 @@ psp:
   - 5pb PSP
   - Alchemist PSP
   - Alchemist2 PSP
+  - BANDAI PSP
+  - BANDAI Name PSP
   - Imageepoch PSP
   - KID PSP
   - CYBERFRONT PSP
@@ -92,6 +94,8 @@ simple:
   - AOS
   - ApRicot
   - AUEngine # renamed
+  - BANDAI PSP
+  - BANDAI Name PSP
   - BGI
   - BGI1
   - BGI2
@@ -209,6 +213,8 @@ char:
   - Artemis
   - Atelier KAGUYA
   - AUEngine # removed
+  - BANDAI PSP
+  - BANDAI Name PSP
   - BGI
   - BGI1
   - C4
