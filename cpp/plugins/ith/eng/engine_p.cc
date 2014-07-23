@@ -6020,10 +6020,15 @@ bool InsertPPSSPPHooks()
     InsertYetiPSPHook();
     InsertCyberfrontPSPHook();
 
+    bool bandaiFound = InsertBandaiPSPHook();  // Imagepepoch could crash vnrcli for School Rumble PSP
+    InsertBandaiNamePSPHook();
+
     // Generic hook
     InsertAlchemistPSPHook();
     InsertAlchemist2PSPHook();
-    InsertImageepochPSPHook(); // could have duplication issue
+
+    if (!bandaiFound)
+      InsertImageepochPSPHook(); // could have duplication issue
 
     InsertPPSSPPHLEHooks();
   }
@@ -7425,7 +7430,7 @@ bool InsertCyberfrontPSPHook()
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
-    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
+    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT;
     hp.off = pusha_eax_off - 4;
     hp.split = pusha_ecx_off - 4;
     hp.extern_fun = SpecialPSPHook;
@@ -7436,6 +7441,253 @@ bool InsertCyberfrontPSPHook()
   ConsoleOutput("vnreng: CYBERFRONT PSP: leave");
   return addr;
 }
+
+/** 7/22/2014 jichi BANDAI PSP engine
+ *  Sample game: School Rumble PSP
+ *  See: http://sakuradite.com/topic/333
+ *
+ *  Debug method: breakpoint the memory address
+ *  There are two matched memory address to the current text
+ *
+ *  Only one function is accessing the text address.
+ *
+ *  Character name:
+ *
+ *  1346c122   cc               int3
+ *  1346c123   cc               int3
+ *  1346c124   77 0f            ja short 1346c135
+ *  1346c126   c705 a8aa1001 a4>mov dword ptr ds:[0x110aaa8],0x882f2a4
+ *  1346c130  -e9 cf3e2cf0      jmp 03730004
+ *  1346c135   8b05 a8a71001    mov eax,dword ptr ds:[0x110a7a8]
+ *  1346c13b   81e0 ffffff3f    and eax,0x3fffffff
+ *  1346c141   8bb0 14004007    mov esi,dword ptr ds:[eax+0x7400014]
+ *  1346c147   8b3d 70a71001    mov edi,dword ptr ds:[0x110a770]
+ *  1346c14d   c1e7 02          shl edi,0x2
+ *  1346c150   8b05 a8a71001    mov eax,dword ptr ds:[0x110a7a8]
+ *  1346c156   81e0 ffffff3f    and eax,0x3fffffff
+ *  1346c15c   8ba8 18004007    mov ebp,dword ptr ds:[eax+0x7400018]
+ *  1346c162   03fe             add edi,esi
+ *  1346c164   8bc7             mov eax,edi
+ *  1346c166   81e0 ffffff3f    and eax,0x3fffffff
+ *  1346c16c   0fb790 02004007  movzx edx,word ptr ds:[eax+0x7400002]
+ *  1346c173   8bc2             mov eax,edx
+ *  1346c175   8bd5             mov edx,ebp
+ *  1346c177   03d0             add edx,eax
+ *  1346c179   8bc2             mov eax,edx
+ *  1346c17b   81e0 ffffff3f    and eax,0x3fffffff
+ *  1346c181   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+ *  1346c188   8bcf             mov ecx,edi
+ *  1346c18a   81e7 ff000000    and edi,0xff
+ *  1346c190   8935 74a71001    mov dword ptr ds:[0x110a774],esi
+ *  1346c196   8b35 b8a71001    mov esi,dword ptr ds:[0x110a7b8]
+ *  1346c19c   81c6 bc82ffff    add esi,0xffff82bc
+ *  1346c1a2   81ff 00000000    cmp edi,0x0
+ *  1346c1a8   893d 70a71001    mov dword ptr ds:[0x110a770],edi
+ *  1346c1ae   8915 78a71001    mov dword ptr ds:[0x110a778],edx
+ *  1346c1b4   892d 7ca71001    mov dword ptr ds:[0x110a77c],ebp
+ *  1346c1ba   890d 80a71001    mov dword ptr ds:[0x110a780],ecx
+ *  1346c1c0   8935 84a71001    mov dword ptr ds:[0x110a784],esi
+ *  1346c1c6   0f85 16000000    jnz 1346c1e2
+ *  1346c1cc   832d c4aa1001 0b sub dword ptr ds:[0x110aac4],0xb
+ *  1346c1d3   e9 3c050000      jmp 1346c714
+ *  1346c1d8   014cf3 82        add dword ptr ds:[ebx+esi*8-0x7e],ecx
+ *  1346c1dc   08e9             or cl,ch
+ *  1346c1de   41               inc ecx
+ *  1346c1df   3e:2c f0         sub al,0xf0                              ; superfluous prefix
+ *  1346c1e2   832d c4aa1001 0b sub dword ptr ds:[0x110aac4],0xb
+ *  1346c1e9   e9 0e000000      jmp 1346c1fc
+ *  1346c1ee   01d0             add eax,edx
+ *  1346c1f0   f2:              prefix repne:                            ; superfluous prefix
+ *  1346c1f1   8208 e9          or byte ptr ds:[eax],0xffffffe9
+ *  1346c1f4   2b3e             sub edi,dword ptr ds:[esi]
+ *  1346c1f6   2c f0            sub al,0xf0
+ *  1346c1f8   90               nop
+ *  1346c1f9   cc               int3
+ *  1346c1fa   cc               int3
+ *  1346c1fb   cc               int3
+ *
+ *  Scenario:
+ *
+ *  1340055d   cc               int3
+ *  1340055e   cc               int3
+ *  1340055f   cc               int3
+ *  13400560   77 0f            ja short 13400571
+ *  13400562   c705 a8aa1001 cc>mov dword ptr ds:[0x110aaa8],0x883decc
+ *  1340056c  -e9 93fa54f0      jmp 03950004
+ *  13400571   8b35 78a71001    mov esi,dword ptr ds:[0x110a778]
+ *  13400577   81c6 01000000    add esi,0x1
+ *  1340057d   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+ *  13400583   81e0 ffffff3f    and eax,0x3fffffff
+ *  13400589   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+ *  13400590   8b2d 78a71001    mov ebp,dword ptr ds:[0x110a778]
+ *  13400596   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+ *  13400599   81ff 00000000    cmp edi,0x0
+ *  1340059f   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+ *  134005a5   893d 74a71001    mov dword ptr ds:[0x110a774],edi
+ *  134005ab   892d 78a71001    mov dword ptr ds:[0x110a778],ebp
+ *  134005b1   0f84 16000000    je 134005cd
+ *  134005b7   832d c4aa1001 04 sub dword ptr ds:[0x110aac4],0x4
+ *  134005be   e9 21000000      jmp 134005e4
+ *  134005c3   01d0             add eax,edx
+ *  134005c5   de83 08e956fa    fiadd word ptr ds:[ebx+0xfa56e908]
+ *  134005cb   54               push esp
+ *  134005cc   f0:832d c4aa1001>lock sub dword ptr ds:[0x110aac4],0x4    ; lock prefix
+ *  134005d4   e9 7f000000      jmp 13400658
+ *  134005d9   01dc             add esp,ebx
+ *  134005db   de83 08e940fa    fiadd word ptr ds:[ebx+0xfa40e908]
+ *  134005e1   54               push esp
+ *  134005e2   f0:90            lock nop                                 ; lock prefix is not allowed
+ *  134005e4   77 0f            ja short 134005f5
+ *  134005e6   c705 a8aa1001 d0>mov dword ptr ds:[0x110aaa8],0x883ded0
+ *  134005f0  -e9 0ffa54f0      jmp 03950004
+ *  134005f5   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+ *  134005fb   81e0 ffffff3f    and eax,0x3fffffff
+ *  13400601   0fb6b0 00004007  movzx esi,byte ptr ds:[eax+0x7400000]
+ *  13400608   8b3d 78a71001    mov edi,dword ptr ds:[0x110a778]
+ *  1340060e   8d7f 01          lea edi,dword ptr ds:[edi+0x1]
+ *  13400611   81fe 00000000    cmp esi,0x0
+ *  13400617   8935 74a71001    mov dword ptr ds:[0x110a774],esi
+ *  1340061d   893d 78a71001    mov dword ptr ds:[0x110a778],edi
+ *  13400623   0f84 16000000    je 1340063f
+ *  13400629   832d c4aa1001 03 sub dword ptr ds:[0x110aac4],0x3
+ *  13400630  ^e9 afffffff      jmp 134005e4
+ *  13400635   01d0             add eax,edx
+ *  13400637   de83 08e9e4f9    fiadd word ptr ds:[ebx+0xf9e4e908]
+ *  1340063d   54               push esp
+ *  1340063e   f0:832d c4aa1001>lock sub dword ptr ds:[0x110aac4],0x3    ; lock prefix
+ *  13400646   e9 0d000000      jmp 13400658
+ *  1340064b   01dc             add esp,ebx
+ *  1340064d   de83 08e9cef9    fiadd word ptr ds:[ebx+0xf9cee908]
+ *  13400653   54               push esp
+ *  13400654   f0:90            lock nop                                 ; lock prefix is not allowed
+ *  13400656   cc               int3
+ *  13400657   cc               int3
+ */
+bool InsertBandaiNamePSPHook()
+{
+  ConsoleOutput("vnreng: BANDAI Name PSP: enter");
+
+  const BYTE bytes[] =  {
+    //0xcc,                         // 1346c122   cc               int3
+    //0xcc,                         // 1346c123   cc               int3
+    0x77, 0x0f,                     // 1346c124   77 0f            ja short 1346c135
+    0xc7,0x05, XX4, XX4,            // 1346c126   c705 a8aa1001 a4>mov dword ptr ds:[0x110aaa8],0x882f2a4
+    0xe9, XX4,                      // 1346c130  -e9 cf3e2cf0      jmp 03730004
+    0x8b,0x05, XX4,                 // 1346c135   8b05 a8a71001    mov eax,dword ptr ds:[0x110a7a8]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1346c13b   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xb0, XX4,                 // 1346c141   8bb0 14004007    mov esi,dword ptr ds:[eax+0x7400014]
+    0x8b,0x3d, XX4,                 // 1346c147   8b3d 70a71001    mov edi,dword ptr ds:[0x110a770]
+    0xc1,0xe7, 0x02,                // 1346c14d   c1e7 02          shl edi,0x2
+    0x8b,0x05, XX4,                 // 1346c150   8b05 a8a71001    mov eax,dword ptr ds:[0x110a7a8]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1346c156   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xa8, XX4,                 // 1346c15c   8ba8 18004007    mov ebp,dword ptr ds:[eax+0x7400018]
+    0x03,0xfe,                      // 1346c162   03fe             add edi,esi
+    0x8b,0xc7,                      // 1346c164   8bc7             mov eax,edi
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1346c166   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb7,0x90, XX4,            // 1346c16c   0fb790 02004007  movzx edx,word ptr ds:[eax+0x7400002]
+    0x8b,0xc2,                      // 1346c173   8bc2             mov eax,edx
+    0x8b,0xd5,                      // 1346c175   8bd5             mov edx,ebp
+    0x03,0xd0,                      // 1346c177   03d0             add edx,eax
+    0x8b,0xc2,                      // 1346c179   8bc2             mov eax,edx
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1346c17b   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb6,0xb8 //, XX4          // 1346c181   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+  };
+  enum { hook_offset = sizeof(bytes) - 3 };
+  enum { memory_offset = 3 };  // 1346c181   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
+
+  // This process might raise before the PSP ISO is loaded
+  // TODO: Create a timer thread to periodically try different PSP engines
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //ITH_GROWL_DWORD(addr);
+  //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
+  if (!addr)
+    ConsoleOutput("vnreng: BANDAI Name PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT;
+    hp.off = pusha_eax_off - 4;
+    hp.split = pusha_ebx_off - 4;
+    hp.extern_fun = SpecialPSPHook;
+    ConsoleOutput("vnreng: BANDAI Name PSP: INSERT");
+    NewHook(hp, L"BANDAI Name PSP");
+  }
+
+  ConsoleOutput("vnreng: BANDAI Name PSP: leave");
+  return addr;
+}
+
+namespace { // unnamed
+
+inline bool _bandaigarbage(char c)
+{ return c == '/' || c >= 'A' && c <= 'Z'; }
+
+// Remove trailing /L/P garbage
+size_t _bandaistrlen(LPCSTR text)
+{
+  size_t len = ::strlen(text);
+  while (len && _bandaigarbage(text[len-1]))
+    len--;
+  return len;
+}
+
+} // unnamed namespae
+
+static void SpecialPSPHookBandai(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  DWORD eax = regof(eax, esp_base);
+  LPCSTR text = (LPCSTR)(eax + hp->userValue);
+  if (*text) {
+    *data = (DWORD)text;
+    *len = _bandaistrlen(text);
+    *split = regof(ecx, esp_base); // Split text issue in: My Merry May with be
+  }
+}
+
+bool InsertBandaiPSPHook()
+{
+  ConsoleOutput("vnreng: BANDAI PSP: enter");
+
+  const BYTE bytes[] =  {
+    0x77, 0x0f,                     // 13400560   77 0f            ja short 13400571
+    0xc7,0x05, XX4, XX4,            // 13400562   c705 a8aa1001 cc>mov dword ptr ds:[0x110aaa8],0x883decc
+    0xe9, XX4,                      // 1340056c  -e9 93fa54f0      jmp 03950004
+    0x8b,0x35, XX4,                 // 13400571   8b35 78a71001    mov esi,dword ptr ds:[0x110a778]
+    0x81,0xc6, 0x01,0x00,0x00,0x00, // 13400577   81c6 01000000    add esi,0x1
+    0x8b,0x05, XX4,                 // 1340057d   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13400583   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb6,0xb8, XX4,            // 13400589   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+    0x8b,0x2d, XX4,                 // 13400590   8b2d 78a71001    mov ebp,dword ptr ds:[0x110a778]
+    0x8d,0x6d, 0x01,                // 13400596   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+    0x81,0xff, 0x00,0x00,0x00,0x00  // 13400599   81ff 00000000    cmp edi,0x0
+  };
+  enum { hook_offset = 0x13400589 - 0x13400560 };
+  enum { memory_offset = 3 };  // 13400589   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
+
+  // This process might raise before the PSP ISO is loaded
+  // TODO: Create a timer thread to periodically try different PSP engines
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //ITH_GROWL_DWORD(addr);
+  //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
+  if (!addr)
+    ConsoleOutput("vnreng: BANDAI PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT;
+    //hp.off = pusha_eax_off - 4;
+    //hp.split = pusha_ecx_off - 4;
+    hp.extern_fun = SpecialPSPHookBandai;
+    ConsoleOutput("vnreng: BANDAI PSP: INSERT");
+    NewHook(hp, L"BANDAI PSP");
+  }
+
+  ConsoleOutput("vnreng: BANDAI PSP: leave");
+  return addr;
+}
+
 
 /** jichi 7/19/2014 PCSX2
  *  Tested wit  pcsx2-v1.2.1-328-gef0e3fe-windows-x86, built at http://buildbot.orphis.net/pcsx2
