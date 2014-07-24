@@ -5818,8 +5818,8 @@ bool insertVanillawareGCHook()
     //0xc6,05 0cfb6701 02   // 160941d3   c605 0cfb6701 02 mov byte ptr ds:[0x167fb0c],0x2
     //0xeb, 26              // 160941da   eb 26            jmp short 16094202
   };
-  enum { hook_offset = 0x160941a0 - 0x16094193 };
   enum { memory_offset = 3 }; // 160941a0   0fb680 00000810  movzx eax,byte ptr ds:[eax+0x10080000]
+  enum { hook_offset = 0x160941a0 - 0x16094193 };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -6181,8 +6181,8 @@ bool InsertAlchemistPSPHook()
      0x8b,0xd6,                      // 13407736   8bd6             mov edx,esi
      0x88,0x90 //, XX4               // 13407738   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl      // jichi: alternatively hook here
   };
-  enum { hook_offset = 0x13407711 - 0x134076f4 };
   enum { memory_offset = 3 }; // 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]
+  enum { hook_offset = 0x13407711 - 0x134076f4 };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -6281,8 +6281,8 @@ bool InsertAlchemist2PSPHook()
     0x81,0xe5, 0x80,0x80,0x80,0x80, // 13400f25   81e5 80808080    and ebp,0x80808080
     0x81,0xfd, 0x00,0x00,0x00,0x00  // 13400f2b   81fd 00000000    cmp ebp,0x0
   };
-  enum { hook_offset = 0x13400f13 - 0x13400ef4 };
   enum { memory_offset = 2 }; // 13400f13   8bb8 00004007    mov edi,dword ptr ds:[eax+0x7400000]
+  enum { hook_offset = 0x13400f13 - 0x13400ef4 };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -6521,8 +6521,8 @@ bool Insert5pbPSPHook()
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13575380   81e0 ffffff3f    and eax,0x3fffffff
     0x0f,0xbe,0xb0 //, XX4          // 13575386   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
   };
-  enum { hook_offset = sizeof(bytes) - 3 };
   enum { memory_offset = 3 }; // 13575386   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]
+  enum { hook_offset = sizeof(bytes) - memory_offset };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -6628,8 +6628,8 @@ bool InsertImageepochPSPHook()
     0x0f,0xb6,0xa8 //, XX4          // 1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000] ; jichi: hook here
   };
   //enum { hook_offset = 0x1346d36d - 0x1346d350 };
-  enum { hook_offset = sizeof(bytes) - 3 };
   enum { memory_offset = 3 }; // 1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000]
+  enum { hook_offset = sizeof(bytes) - memory_offset };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -7161,8 +7161,8 @@ bool InsertYetiPSPHook()
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 14e49f48   81e0 ffffff3f    and eax,0x3fffffff
     0x0f,0xb6,0xb0 //, XX4,         // 14e49f4e   0fb6b0 00000008  movzx esi,byte ptr ds:[eax+0x8000000]	; jichi: hook here
   };
-  enum { hook_offset = sizeof(bytes) - 3 };
   enum { memory_offset = 3 }; // 14e49f4e   0fb6b0 00000008  movzx esi,byte ptr ds:[eax+0x8000000]
+  enum { hook_offset = sizeof(bytes) - memory_offset };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -7307,9 +7307,9 @@ bool InsertKidPSPHook()
     0x0f,0xb6,0xb8, XX4,            // 13973aac   0fb6b8 00008007  movzx edi,byte ptr ds:[eax+0x7800000] ; jichi: hook here
     0x81,0xfe, 0x00,0x00,0x00,0x00  // 13973ab3   81fe 00000000    cmp esi,0x0
   };
+  enum { memory_offset = 3 }; // 13973aac   0fb6b8 00008007  movzx edi,byte ptr ds:[eax+0x7800000]
   enum { hook_offset = 0x13973aac - 0x13973a7c };
   //enum { hook_offset = sizeof(bytes) - 3 };
-  enum { memory_offset = 3 }; // 13973aac   0fb6b8 00008007  movzx edi,byte ptr ds:[eax+0x7800000]
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -7416,9 +7416,9 @@ bool InsertCyberfrontPSPHook()
     0x8b,0xd6,                      // 13909a6f   8bd6             mov edx,esi
     0x88,0x90 //, XX4,              // 13909a71   8890 01008007    mov byte ptr ds:[eax+0x7800001],dl
   };
+  enum { memory_offset = 2 }; // 13909a51   8890 00008007    mov byte ptr ds:[eax+0x7800000],dl
   enum { hook_offset = 0x13909a51 - 0x13909a2c };
   //enum { hook_offset = sizeof(bytes) - 3 };
-  enum { memory_offset = 2 }; // 13909a51   8890 00008007    mov byte ptr ds:[eax+0x7800000],dl
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -7593,8 +7593,8 @@ bool InsertBandaiNamePSPHook()
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1346c17b   81e0 ffffff3f    and eax,0x3fffffff
     0x0f,0xb6,0xb8 //, XX4          // 1346c181   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
   };
-  enum { hook_offset = sizeof(bytes) - 3 };
   enum { memory_offset = 3 };  // 1346c181   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
+  enum { hook_offset = sizeof(bytes) - memory_offset };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -7665,8 +7665,8 @@ bool InsertBandaiPSPHook()
     0x8d,0x6d, 0x01,                // 13400596   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
     0x81,0xff, 0x00,0x00,0x00,0x00  // 13400599   81ff 00000000    cmp edi,0x0
   };
-  enum { hook_offset = 0x13400589 - 0x13400560 };
   enum { memory_offset = 3 };  // 13400589   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
+  enum { hook_offset = 0x13400589 - 0x13400560 };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -7756,8 +7756,8 @@ bool InsertNippon1PSPHook()
     0x8b,0x2d, XX4,                 // 134e058a   8b2d 8c7df70f    mov ebp,dword ptr ds:[0xff77d8c]
     0x8d,0x6d, 0x01                 // 134e0590   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
   };
-  enum { hook_offset = 0x134e0583 - 0x134e0554 };
   enum { memory_offset = 3 };
+  enum { hook_offset = 0x134e0583 - 0x134e0554 };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -7836,8 +7836,8 @@ bool InsertTecmoPSPHook()
     //0x8b,0x15, XX4,                 // 1345992b   8b15 78a71001    mov edx,dword ptr ds:[0x110a778]
     //0x81,0xfa, 0x01,0x00,0x00,0x00  // 13459931   81fa 01000000    cmp edx,0x1
   };
-  enum { hook_offset = 0x13459901 - 0x134598e4 };
   enum { memory_offset = 2 };
+  enum { hook_offset = 0x13459901 - 0x134598e4 };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
@@ -8077,8 +8077,8 @@ bool InsertShadePSPHook()
     0x8d,0x6d, 0x01,                // 13400e4a   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
     0x81,0xff, 0x00,0x00,0x00,0x00  // 13400e4d   81ff 00000000    cmp edi,0x0
   };
-  enum { hook_offset = 0x13400e3d - 0x13400e12 };
   enum{ memory_offset = 3 };
+  enum { hook_offset = 0x13400e3d - 0x13400e12 };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodially try different PSP engines
@@ -8199,8 +8199,8 @@ bool InsertAlchemist3PSPHook()
     0x89,0x35, XX4,                 // 13400e4a   8935 80a71001    mov dword ptr ds:[0x110a780],esi
     0x0f,0x85 //, 16000000          // 13400e50   0f85 16000000    jnz 13400e6c
   };
-  enum { hook_offset = 0x13407711 - 0x134076f4 };
   enum { memory_offset = 3 };
+  enum { hook_offset = 0x13407711 - 0x134076f4 };
 
   // This process might raise before the PSP ISO is loaded
   // TODO: Create a timer thread to periodically try different PSP engines
