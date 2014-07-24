@@ -27,11 +27,6 @@
 
 //#define DEBUG "engine_p.h"
 
-enum : BYTE { XX = MemDbg::WidecardByte };
-#define XX2 XX,XX       // WORD
-#define XX4 XX2,XX2     // DWORD
-#define XX8 XX4,XX4,    // QWORD
-
 #ifdef DEBUG
 # include "ith/common/growl.h"
 namespace { // unnamed debug functions
@@ -77,11 +72,16 @@ int GetHookDataLength(const HookParam &hp, DWORD base, DWORD in)
 
 namespace { // unnamed helpers
 
+enum : BYTE { XX = MemDbg::WidecardByte };
+#define XX2 XX,XX       // WORD
+#define XX4 XX2,XX2     // DWORD
+#define XX8 XX4,XX4,    // QWORD
+
 // jichi 8/18/2013: Original maximum relative address in ITH
 //enum { MAX_REL_ADDR = 0x200000 };
 
 // jichi 10/1/2013: Increase relative address limit. Certain game engine like Artemis has larger code region
-enum { MAX_REL_ADDR = 0x300000 };
+enum : DWORD { MAX_REL_ADDR = 0x00300000 };
 
 static union {
   char text_buffer[0x1000];
