@@ -354,6 +354,12 @@ def migrate(ss_version): # long ->
 
   try: # this try is in case I forgot certain rc directories for update
 
+    if ss_version <= 1406156022:
+      # http://sakuradite.com/topic/337
+      # Disable UniDicMJL
+      if ss.value('MeCabDictionary') == 'unidic-mlj':
+        ss.setValue('MeCabDictionary', '')
+
     if ss_version <= 1404365364:
       path = rc.DIR_CACHE_SCAPE
       if os.path.exists(path):
