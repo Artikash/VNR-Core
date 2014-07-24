@@ -118,11 +118,12 @@ if __name__ == "__main__":
   t = translate(u"こんにちは！", to='zhs', fr='ja')
   #t = translate(u"Hello World!", to='zhs', fr='en')
   #t = translate("Hello World!", to='zhs', fr='ja')
-  from PySide.QtGui import *
-  a = QApplication(sys.argv)
-  w = QLabel(t)
-  w.show()
-  a.exec_()
+  print t
+  #from PySide.QtGui import *
+  #a = QApplication(sys.argv)
+  #w = QLabel(t)
+  #w.show()
+  #a.exec_()
 
 # EOF
 
