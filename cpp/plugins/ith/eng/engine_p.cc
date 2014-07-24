@@ -81,7 +81,7 @@ namespace { // unnamed helpers
 //enum { MAX_REL_ADDR = 0x200000 };
 
 // jichi 10/1/2013: Increase relative address limit. Certain game engine like Artemis has larger code region
-enum { MAX_REL_ADDR = 0x300000 };
+enum : DWORD { MAX_REL_ADDR = 0x00300000 };
 
 static union {
   char text_buffer[0x1000];
