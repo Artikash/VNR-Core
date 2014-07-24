@@ -72,7 +72,7 @@ int GetHookDataLength(const HookParam &hp, DWORD base, DWORD in)
 
 namespace { // unnamed helpers
 
-enum : BYTE { XX = MemDbg::WidecardByte };
+enum : BYTE { XX = MemDbg::WidecardByte }; // 0x11
 #define XX2 XX,XX       // WORD
 #define XX4 XX2,XX2     // DWORD
 #define XX8 XX4,XX4,    // QWORD
@@ -5822,7 +5822,6 @@ bool insertVanillawareGCHook()
   enum { hook_offset = 0x160941a0 - 0x16094193 };
 
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodically try different PSP engines
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //DWORD addr = 0x160941a0;
   //ITH_GROWL_DWORD(addr);
@@ -6185,7 +6184,6 @@ bool InsertAlchemistPSPHook()
   enum { hook_offset = 0x13407711 - 0x134076f4 };
 
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodically try different PSP engines
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //addr = 0x134076f2; // your diary+
@@ -6285,7 +6283,6 @@ bool InsertAlchemist2PSPHook()
   enum { hook_offset = 0x13400f13 - 0x13400ef4 };
 
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodically try different PSP engines
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //addr = 0x134076f2; // your diary+
@@ -6525,7 +6522,6 @@ bool Insert5pbPSPHook()
   enum { hook_offset = sizeof(bytes) - memory_offset };
 
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodically try different PSP engines
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //addr = 0x13574a18;
@@ -6632,7 +6628,6 @@ bool InsertImageepochPSPHook()
   enum { hook_offset = sizeof(bytes) - memory_offset };
 
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodically try different PSP engines
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
@@ -7165,7 +7160,6 @@ bool InsertYetiPSPHook()
   enum { hook_offset = sizeof(bytes) - memory_offset };
 
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodically try different PSP engines
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
@@ -7286,7 +7280,7 @@ static void SpecialPSPHookKid(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
     text = _5pbltrim(text);
     *data = (DWORD)text;
     *len = _5pbstrlen(text);
-    *split = regof(ecx, esp_base); // Split text issue in: My Merry May with be
+    *split = regof(ecx, esp_base);
   }
 }
 
@@ -7312,7 +7306,6 @@ bool InsertKidPSPHook()
   //enum { hook_offset = sizeof(bytes) - 3 };
 
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodically try different PSP engines
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
@@ -7421,7 +7414,6 @@ bool InsertCyberfrontPSPHook()
   //enum { hook_offset = sizeof(bytes) - 3 };
 
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodically try different PSP engines
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
@@ -7597,7 +7589,6 @@ bool InsertBandaiNamePSPHook()
   enum { hook_offset = sizeof(bytes) - memory_offset };
 
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodically try different PSP engines
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
@@ -7642,7 +7633,7 @@ static void SpecialPSPHookBandai(DWORD esp_base, HookParam *hp, DWORD *data, DWO
   if (*text) {
     *data = (DWORD)text;
     *len = _bandaistrlen(text);
-    *split = regof(ecx, esp_base); // Split text issue in: My Merry May with be
+    *split = regof(ecx, esp_base);
   }
 }
 
@@ -7669,7 +7660,6 @@ bool InsertBandaiPSPHook()
   enum { hook_offset = 0x13400589 - 0x13400560 };
 
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodically try different PSP engines
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
@@ -7731,8 +7721,8 @@ static void SpecialPSPHookNippon1(DWORD esp_base, HookParam *hp, DWORD *data, DW
   LPCSTR text = LPCSTR(esp_base + pusha_ebp_off - 4); // ebp address
   if (*text) {
     *data = (DWORD)text;
-    *len = !text[0] ? 0 : !text[1] ? 1 : 2;
-    *split = regof(ecx, esp_base); // Split text issue in: My Merry May with be
+    *len = !text[0] ? 0 : !text[1] ? 1 : 2; // bp has at most two bytes
+    *split = regof(ecx, esp_base);
   }
 }
 
@@ -7760,7 +7750,6 @@ bool InsertNippon1PSPHook()
   enum { hook_offset = 0x134e0583 - 0x134e0554 };
 
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodically try different PSP engines
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
@@ -7840,7 +7829,6 @@ bool InsertTecmoPSPHook()
   enum { hook_offset = 0x13459901 - 0x134598e4 };
 
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodically try different PSP engines
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //ITH_GROWL_DWORD(*(BYTE *)addr); // supposed to be 0x77 ja
@@ -7877,9 +7865,6 @@ bool InsertPCSX2Hooks()
 
 /** 7/19/2014 jichi
  *  Tested game: .hack//G.U. Vol.1
- *
- *  Text address is FIXED.
- *  The are a cuple of accesss to the text.
  */
 bool InsertNamcoPS2Hook()
 {
@@ -7912,10 +7897,6 @@ bool InsertNamcoPS2Hook()
 #if 0 // Issue: variate code pattern
 /** 7/19/2014 jichi
  *  Tested game: Fate/Stay Night [Realta Nua]
- *
- *  Text address is FIXED.
- *  The are a cuple of accesss to the text.
- *
  */
 bool InsertTypeMoonPS2Hook()
 {
@@ -8081,7 +8062,6 @@ bool InsertShadePSPHook()
   enum { hook_offset = 0x13400e3d - 0x13400e12 };
 
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodially try different PSP engines
   ULONG addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Shade PSP: failed");
@@ -8203,7 +8183,6 @@ bool InsertAlchemist3PSPHook()
   enum { hook_offset = 0x13407711 - 0x134076f4 };
 
   // This process might raise before the PSP ISO is loaded
-  // TODO: Create a timer thread to periodically try different PSP engines
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   //addr = 0x134076f2; // your diary+
