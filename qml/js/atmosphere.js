@@ -159,7 +159,7 @@ var Comet = (function() {
   REQ_PARAMS_DISCONNECT[REQ_KEY_TRANSPORT] = TRANSPORT_CLOSE;
 
   var REQ_HEADERS_CONNECT = {
-    'Connection': 'keep-alive'
+    Connection: 'keep-alive'
     , 'Content-Type': 'application/json'
     //User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:27.0) Gecko/20100101 Firefox/27.0
     //Referer: http://localhost:8080/topic
@@ -173,8 +173,8 @@ var Comet = (function() {
 
   var REQ_HEADERS_PUSH = {
     'X-Requested-With': 'XMLHttpRequest'
-    , 'Connection': 'keep-alive'
-    , 'Pragma': 'no-cache'
+    , Connection: 'keep-alive'
+    , Pragma: 'no-cache'
     , 'Cache-Control': 'no-cache'
     //User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:27.0) Gecko/20100101 Firefox/27.0
     //Referer: http://localhost:8080/topic/139
@@ -188,7 +188,7 @@ var Comet = (function() {
 
   var REQ_HEADERS_DISCONNECT = {
     'X-Requested-With': 'XMLHttpRequest'
-    , 'Connection': 'keep-alive'
+    , Connection: 'keep-alive'
     //User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:27.0) Gecko/20100101 Firefox/27.0
     //Referer: http://localhost:8080/game
     //Host: localhost:8080
