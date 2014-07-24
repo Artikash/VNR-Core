@@ -27,11 +27,6 @@
 
 //#define DEBUG "engine_p.h"
 
-enum : BYTE { XX = MemDbg::WidecardByte };
-#define XX2 XX,XX       // WORD
-#define XX4 XX2,XX2     // DWORD
-#define XX8 XX4,XX4,    // QWORD
-
 #ifdef DEBUG
 # include "ith/common/growl.h"
 namespace { // unnamed debug functions
@@ -76,6 +71,11 @@ int GetHookDataLength(const HookParam &hp, DWORD base, DWORD in)
 #endif // DEBUG
 
 namespace { // unnamed helpers
+
+enum : BYTE { XX = MemDbg::WidecardByte };
+#define XX2 XX,XX       // WORD
+#define XX4 XX2,XX2     // DWORD
+#define XX8 XX4,XX4,    // QWORD
 
 // jichi 8/18/2013: Original maximum relative address in ITH
 //enum { MAX_REL_ADDR = 0x200000 };
