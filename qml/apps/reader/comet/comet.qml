@@ -23,6 +23,7 @@ QtObject { id: root_
   // - Private -
 
   property string url: Define.DOMAIN_COM + '/push/vnr/' + path
+  //property string url: 'http://localhost:8080/push/vnr/' + path
 
   property QtObject reconnectTimer: Timer {
     interval: 5000 // 5 seconds
