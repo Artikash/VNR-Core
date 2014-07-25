@@ -39,7 +39,7 @@ FANYI_API = "http://fanyi.baidu.com/transapi"
 #}
 
 _LANG = {
-  #'ar': 'ara',
+  'ar': 'ara',
   'en': 'en',
   'ja': 'jp',
   'zhs': 'zh',
@@ -116,8 +116,9 @@ def translate(text, to='zhs', fr='ja'):
 
 if __name__ == "__main__":
   t = translate(u"こんにちは！", to='zhs', fr='ja')
+  #t = translate(u"こんにちは！", to='ar', fr='ja')
   #t = translate(u"Hello World!", to='zhs', fr='en')
-  #t = translate("Hello World!", to='zhs', fr='ja')
+  #t = translate(u"神马", to='ar', fr='zhs')
   print t
   #from PySide.QtGui import *
   #a = QApplication(sys.argv)

@@ -1178,7 +1178,7 @@ class TtsTab(QtWidgets.QDialog):
 #@Q_Q
 class _I18nTab(object):
 
-  LANGUAGES = 'en', 'zh', 'ko', 'th', 'vi', 'ms', 'id', 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru'
+  LANGUAGES = 'en', 'zh', 'ko', 'th', 'vi', 'ms', 'id', 'ar', 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru'
 
   def __init__(self, q):
     self._createUi(q)
@@ -1290,8 +1290,8 @@ class _TextTab(object):
       ret.currentFontChanged.connect(sig)
     return ret
 
-  LANGUAGES = "Japanese", "English", "Chinese", "Korean", "Thai", "Vietnamese", "Malaysian", "Indonesian", "German", "Spanish", "French", "Italian",  "Dutch", "Polish", "Portuguese", "Russian"
-  LANGS =     'ja',       'en',      'zht',     'ko',     'th',   'vi',         'ms',     'id',         'de',     'es',      'fr',     'it',       'nl',    'pl',     'pt',         'ru'
+  LANGUAGES = "Japanese", "English", "Chinese", "Korean", "Thai", "Vietnamese", "Malaysian", "Indonesian", "Arabic", "German", "Spanish", "French", "Italian",  "Dutch", "Polish", "Portuguese", "Russian"
+  LANGS =     'ja',       'en',      'zht',     'ko',     'th',   'vi',         'ms',        'id',         'ar',     'de',     'es',      'fr',     'it',       'nl',    'pl',     'pt',         'ru'
   assert len(LANGUAGES) == len(LANGS)
 
   def _synthesizeLoadSaveFont(self, Lang):
@@ -2009,6 +2009,7 @@ class _HonyakuTab(object):
         my.tr("Infoseek.ne.jp multilingual translation service"),
         my.tr("excluding {0}").format(', '.join((
             tr_("ms"),
+            tr_("ar"),
             tr_("nl"),
             tr_("pl"),
             tr_("ru"),
@@ -2026,6 +2027,7 @@ class _HonyakuTab(object):
             tr_("th"),
             tr_("vi"),
             tr_("id"),
+            tr_("ar"),
             tr_("nl"),
             tr_("pl"),
             )))))

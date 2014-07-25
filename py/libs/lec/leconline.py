@@ -101,7 +101,7 @@ def translate(text, to='en', fr='ja'):
 if __name__ == '__main__':
   #t = u"あのね  すもももももももものうち><" # Fixme: illegal html characters does not work
   t = u"あのね  すもももももももものうち"
-  print translate(t)
+  print translate(t, fr='ja', to='ar')
 
   #print translate(t, 'ko')
 

@@ -1153,6 +1153,14 @@ class Settings(QSettings):
       self.setValue('IndonesianFont', value)
       self.indonesianFontChanged.emit(value)
 
+  arabicFontChanged = Signal(unicode)
+  def arabicFont(self):
+    return self.value('ArabicFont', config.FONT_AR)
+  def setArabicFont(self, value):
+    if value != self.arabicFont():
+      self.setValue('ArabicFont', value)
+      self.arabicFontChanged.emit(value)
+
   germanFontChanged = Signal(unicode)
   def germanFont(self):
     return self.value('GermanFont', config.FONT_DE)
@@ -1494,6 +1502,7 @@ class SettingsProxy(QObject):
     g.vietnameseFontChanged.connect(self.vietnameseFontChanged)
     g.malaysianFontChanged.connect(self.malaysianFontChanged)
     g.indonesianFontChanged.connect(self.indonesianFontChanged)
+    g.arabicFontChanged.connect(self.arabicFontChanged)
     g.germanFontChanged.connect(self.germanFontChanged)
     g.frenchFontChanged.connect(self.frenchFontChanged)
     g.italianFontChanged.connect(self.italianFontChanged)
@@ -1585,9 +1594,11 @@ class SettingsProxy(QObject):
   vietnameseFontChanged = Signal(unicode)
   vietnameseFont = unicode_property('VietnameseFont', config.FONT_VI, notify=vietnameseFontChanged)
   malaysianFontChanged = Signal(unicode)
-  malaysianFont = unicode_property('MalaysianFont', config.FONT_ID, notify=malaysianFontChanged)
+  malaysianFont = unicode_property('MalaysianFont', config.FONT_MS, notify=malaysianFontChanged)
   indonesianFontChanged = Signal(unicode)
   indonesianFont = unicode_property('IndonesianFont', config.FONT_ID, notify=indonesianFontChanged)
+  arabicFontChanged = Signal(unicode)
+  arabicFont = unicode_property('ArabicFont', config.FONT_AR, notify=arabicFontChanged)
   germanFontChanged = Signal(unicode)
   germanFont = unicode_property('GermanFont', config.FONT_DE, notify=germanFontChanged)
   frenchFontChanged = Signal(unicode)
@@ -1601,7 +1612,7 @@ class SettingsProxy(QObject):
   russianFontChanged = Signal(unicode)
   russianFont = unicode_property('RussianFont', config.FONT_RU, notify=russianFontChanged)
   polishFontChanged = Signal(unicode)
-  polishFont = unicode_property('PolishFont', config.FONT_RU, notify=polishFontChanged)
+  polishFont = unicode_property('PolishFont', config.FONT_PL, notify=polishFontChanged)
   dutchFontChanged = Signal(unicode)
   dutchFont = unicode_property('DutchFont', config.FONT_NL, notify=dutchFontChanged)
 

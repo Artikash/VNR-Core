@@ -143,6 +143,7 @@ Item { id: root_
   property string vietnameseFont: settings_.vietnameseFont
   property string malaysianFont: settings_.malaysianFont
   property string indonesianFont: settings_.indonesianFont
+  property string arabicFont: settings_.arabicFont
   property string germanFont: settings_.germanFont
   property string frenchFont: settings_.frenchFont
   property string italianFont: settings_.italianFont
@@ -201,6 +202,7 @@ Item { id: root_
     case 'vi': return vietnameseFont
     case 'ms': return malaysianFont
     case 'id': return indonesianFont
+    case 'ar': return arabicFont
     case 'de': return germanFont
     case 'es': return spanishFont
     case 'fr': return frenchFont

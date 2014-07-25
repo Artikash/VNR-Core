@@ -11,6 +11,7 @@ LOCALES = \
 	vi_VN \
 	ms_MS \
 	id_ID \
+	ar_AR \
 	de_DE \
 	fr_FR \
 	es_ES \

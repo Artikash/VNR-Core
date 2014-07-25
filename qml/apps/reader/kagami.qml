@@ -451,6 +451,7 @@ Item { id: root_
         vietnameseFont: settings_.vietnameseFont
         malaysianFont: settings_.malaysianFont
         indonesianFont: settings_.indonesianFont
+        arabicFont: settings_.arabicFont
         germanFont: settings_.germanFont
         frenchFont: settings_.frenchFont
         italianFont: settings_.italianFont

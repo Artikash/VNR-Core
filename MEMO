@@ -29,7 +29,10 @@ client:
 - _trman.py: 'id'
 - baidufanyi.py: 'id'
 
-- Changes
+Info
+- Read Me.txt
+- wiki VNR
+- Google Code
 
 # Translator related files
 util.js: jbeijing: & make
