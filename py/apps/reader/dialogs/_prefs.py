@@ -2237,7 +2237,7 @@ class _FeatureTab(object):
     layout.addWidget(self.featureGroup)
     layout.addWidget(self.internetGroup)
     layout.addWidget(self.proxyGroup)
-    #layout.addWidget(self.fullScreenGroup) # disabled as people seldom use it
+    layout.addWidget(self.fullScreenGroup) # disabled as people seldom use it
     layout.addStretch()
     q.setLayout(layout)
 
@@ -2294,22 +2294,16 @@ If you enable this option, VNR will try providing alternative services."""
   @memoizedproperty
   def kagamiFocusLabel(self):
     ret = QtWidgets.QLabel(my.tr(
-"""When disabled, if the game is switched to full screen mode,
-VNR will restrict itself from using Windows native
-UI components, including context menu, buttons and windows,
-which might cause the game to exit full screen state.
-
-It is highly recommended that you DO NOT ENABLE THIS OPTION
-unless you have been familiar with VNR."""
+      "Since context menu would break full screen in most games, you normally don't want to enable this unless you have a very small screen size."
     ))
-    #ret.setWordWrap(True)
+    ret.setWordWrap(True)
     skqss.class_(ret, 'error')
     return ret
 
   @memoizedproperty
   def kagamiFocusButton(self):
     ret = QtWidgets.QCheckBox(my.tr(
-      "Allow VNR to use Windows UI components in full screen"
+      "Force enabling context menu in full screen"
     ))
     ss = settings.global_()
     ret.setChecked(ss.isKagamiFocusEnabled())
