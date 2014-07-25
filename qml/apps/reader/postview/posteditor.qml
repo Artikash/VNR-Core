@@ -22,8 +22,8 @@ Item { id: root_
     Component.onCompleted: postChanged.connect(root_.submit)
   }
 
-  function submit(post) {
-    post = JSON.parse(post)
+  function submit(postString) {
+    var post = JSON.parse(postString)
     var user = statusPlugin_.userName
     var pass = statusPlugin_.userPassword
     if (user && pass && user === post.userName) { // double check user

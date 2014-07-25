@@ -13,7 +13,12 @@ Comet.Comet { id: root_
   // - Private -
 
   onMessage: {
-    var obj = JSON.parse(data) // may throw
+    var obj
+    try { obj = JSON.parse(data) } // may throw if server return wrong string
+    catch (e) {
+      console.log("postcomet.qml: JSON error", data)
+      return
+    }
     // No idea why switch-case does not work here ...
     if (obj.type === 'count')
       root_.connectionCount = Number(obj.data) // may becomes NaN
