@@ -1216,6 +1216,7 @@ bool InsertAliceHook()
  */
 bool InsertSystem43Hook()
 {
+  // 9/25/2014 TODO: I should use matchBytes and replace the part after e8 with XX4
   const BYTE ins[] = {  //   005506a9  |. e8 f2fb1600    call rance01.006c02a0 ; hook here
     0x83,0xc4, 0x0c,    //   005506ae  |. 83c4 0c        add esp,0xc
     0x5f,               //   005506b1  |. 5f             pop edi
@@ -1278,7 +1279,7 @@ bool InsertAtelierHook()
   }
   if (i < module_limit_ - 4)
     for (DWORD j=i-0x200; i>j; i--)
-      if (*(DWORD *)i == 0xff6acccc) { //find the function entry
+      if (*(DWORD *)i == 0xff6acccc) { // find the function entry
         HookParam hp = {};
         hp.addr = i+2;
         hp.off = 8;
@@ -5990,20 +5991,23 @@ bool InsertPPSSPPHLEHooks()
   for (size_t i = 0; i < FunctionCount; i++) {
     const auto &it = l[i];
     ULONG addr = MemDbg::findBytes(it.pattern, ::strlen(it.pattern), startAddress, stopAddress);
-    if (addr = MemDbg::findPushAddress(addr, startAddress, stopAddress))
-      if (addr = SafeFindEnclosingAlignedFunction(addr, 0x200)) { // this function might raise if failed
-        hp.addr = addr;
-        hp.type = it.hookType;
-        hp.off = 4 * it.argIndex;
-        hp.split = it.hookSplit;
-        if (hp.split)
-          hp.type |= USING_SPLIT;
-        NewHook(hp, it.hookName);
-      }
+    if (addr
+        && (addr = MemDbg::findPushAddress(addr, startAddress, stopAddress))
+        && (addr = SafeFindEnclosingAlignedFunction(addr, 0x200)) // range = 0x200, use the safe version or it might raise
+       ) {
+       hp.addr = addr;
+       hp.type = it.hookType;
+       hp.off = 4 * it.argIndex;
+       hp.split = it.hookSplit;
+       if (hp.split)
+         hp.type |= USING_SPLIT;
+       NewHook(hp, it.hookName);
+    }
     if (addr)
       ConsoleOutput("vnreng: PPSSPP HLE: found pattern");
     else
       ConsoleOutput("vnreng: PPSSPP HLE: not found pattern");
+    //ConsoleOutput(it.hookName); // wchar_t not supported
     ConsoleOutput(it.pattern);
   }
   ConsoleOutput("vnreng: PPSSPP HLE: leave");
@@ -6156,7 +6160,7 @@ static void SpecialPSPHookAlchemist(DWORD esp_base, HookParam *hp, DWORD *data, 
     text = _rejetltrim(text);
     *data = (DWORD)text;
     *len = _rejetstrlen(text);
-    *split = regof(ecx, esp_base); // use "this" as split value?
+    *split = regof(ecx, esp_base);
   }
 }
 
@@ -6164,8 +6168,8 @@ bool InsertAlchemistPSPHook()
 {
   ConsoleOutput("vnreng: Alchemist PSP: enter");
   const BYTE bytes[] =  {
-     //0xcc,                           // 134076f2   cc               int3
-     //0xcc,                           // 134076f3   cc               int3
+     //0xcc,                         // 134076f2   cc               int3
+     //0xcc,                         // 134076f3   cc               int3
      0x77, 0x0f,                     // 134076f4   77 0f            ja short 13407705
      0xc7,0x05, XX4, XX4,            // 134076f6   c705 a8aa1001 40>mov dword ptr ds:[0x110aaa8],0x8931040
      0xe9, XX4,                      // 13407700  -e9 ff88f2f3      jmp 07330004
