@@ -291,6 +291,7 @@ languages:
   - vi
   - ms
   - id
+  - ar
   - de
   - es
   - fr
@@ -319,6 +320,7 @@ languages:
   - zhs
   - ko
   - th
+  - ar
   kanji:
   - ja
   - zht
@@ -340,6 +342,7 @@ languages:
   - ms
   # Not supported
   - th
+  - ar
 
 languageNames:
   ja: 日本語
@@ -373,6 +376,7 @@ locales:
   vi: vi_VN
   ms: ms_MS
   id: id_ID
+  ar: ar_AR
   de: de_DE
   es: es_ES
   fr: fr_FR
@@ -405,6 +409,7 @@ fonts:
   vi: DFGirl    #Tahoma
   ms: DFGirl    #Helvetica
   id: DFGirl    #Helvetica
+  ar: DFGirl    #Helvetica
   de: DFGirl    #Helvetica
   es: DFGirl    #Helvetica
   fr: DFGirl    #Helvetica

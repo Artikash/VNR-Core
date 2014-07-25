@@ -46,6 +46,7 @@ class sakurakit(QObject):
       self.tr("Vietnamese"),
       self.tr("Malaysian"),
       self.tr("Indonesian"),
+      self.tr("Arabic"),
 
       self.tr("Simplified Chinese"),
 
@@ -59,6 +60,7 @@ class sakurakit(QObject):
       self.tr("vi"),
       self.tr("ms"),
       self.tr("id"),
+      self.tr("ar"),
       self.tr("de"),
       self.tr("fr"),
       self.tr("it"),

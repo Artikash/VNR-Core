@@ -41,6 +41,7 @@ ESCAPE = frozenset((
   'th',
   'ms',
   'id',
+  'ar',
   'de',
   'es',
   'fr',

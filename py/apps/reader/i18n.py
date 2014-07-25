@@ -20,6 +20,7 @@ LANGUAGE_NAMES = {
   'vi': tr_("Vietnamese"),
   'ms': tr_("Malaysian"),
   'id': tr_("Indonesian"),
+  'ar': tr_("Arabic"),
   'de': tr_("German"),
   'fr': tr_("French"),
   'it': tr_("Italian"),
