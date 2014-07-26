@@ -6061,7 +6061,7 @@ bool InsertPPSSPPHooks()
   ConsoleOutput("vnreng: PPSSPP: enter");
   bool engineFound = Insert5pbPSPHook();
   if (!engineFound) {
-    InsertBrocolliPSPHook();
+    InsertBroccoliPSPHook();
     InsertCyberfrontPSPHook();
     InsertKidPSPHook(); // KID could lose text
     InsertNippon1PSPHook();
@@ -7642,14 +7642,14 @@ inline bool _bandaigarbage(char c)
       || c >= 'A' && c <= 'z'; // also ignore ASCII 91-96: [ \ ] ^ _ `
 }
 
-// Remove trailing /L/P garbage
+// Remove trailing /L/P or #n garbage
 size_t _bandaistrlen(LPCSTR text)
 {
   size_t len = ::strlen(text);
   size_t ret = len;
   while (len && _bandaigarbage(text[len - 1])) {
     len--;
-    if (text[len] == '/') // in case trim UTF-8 trailing bytes
+    if (text[len] == '/' || text[len] == '#') // in case trim UTF-8 trailing bytes
       ret = len;
   }
   return ret;
@@ -7685,7 +7685,7 @@ static void SpecialPSPHookBandai(DWORD esp_base, HookParam *hp, DWORD *data, DWO
 }
 
 // 7/22/2014 jichi: This engine works for multiple game?
-// It is also observed in Brocolli game うたの☆プリンスさまっ.
+// It is also observed in Broccoli game うたの☆プリンスさまっ.
 bool InsertBandaiPSPHook()
 {
   ConsoleOutput("vnreng: BANDAI PSP: enter");
@@ -7810,7 +7810,7 @@ bool InsertNippon1PSPHook()
   return addr;
 }
 
-/** 7/26/2014 jichi Brocolli PSP engine
+/** 7/26/2014 jichi Broccoli PSP engine
  *  Sample game: 明治東亰恋伽
  *
  *  Memory address is FIXED.
@@ -7894,25 +7894,25 @@ bool InsertNippon1PSPHook()
  *  13d26de1   cc               int3
  */
 
-// New line character for Brocolli games is '^'
-static inline bool _brocolligarbage(char c) { return c == '^'; }
+// New line character for Broccoli games is '^'
+static inline bool _Broccoligarbage(char c) { return c == '^'; }
 
 // Read text from dl
-static void SpecialPSPHookBrocolli(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookBroccoli(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(hp);
   DWORD text = esp_base + pusha_edx_off - 4; // edx address
   char c = *(LPCSTR)text;
-  if (c && !_brocolligarbage(c)) {
+  if (c && !_Broccoligarbage(c)) {
     *data = text;
     *len = 1;
     *split = regof(ecx, esp_base);
   }
 }
 
-bool InsertBrocolliPSPHook()
+bool InsertBroccoliPSPHook()
 {
-  ConsoleOutput("vnreng: Brocolli PSP: enter");
+  ConsoleOutput("vnreng: Broccoli PSP: enter");
 
   const BYTE bytes[] =  {
     0x0f,0xc7,                      // 13d26d4d   0fc7             ???                                      ; unknown command
@@ -7939,18 +7939,18 @@ bool InsertBrocolliPSPHook()
 
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   if (!addr)
-    ConsoleOutput("vnreng: Brocolli PSP: pattern not found");
+    ConsoleOutput("vnreng: Broccoli PSP: pattern not found");
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT;
-    hp.extern_fun = SpecialPSPHookBrocolli;
+    hp.extern_fun = SpecialPSPHookBroccoli;
     //ITH_GROWL_DWORD(hp.addr);
-    ConsoleOutput("vnreng: Brocolli PSP: INSERT");
-    NewHook(hp, L"Brocolli PSP");
+    ConsoleOutput("vnreng: Broccoli PSP: INSERT");
+    NewHook(hp, L"Broccoli PSP");
   }
 
-  ConsoleOutput("vnreng: Brocolli PSP: leave");
+  ConsoleOutput("vnreng: Broccoli PSP: leave");
   return addr;
 }
 
