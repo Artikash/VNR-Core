@@ -113,7 +113,6 @@ class CometConnection(object):
       if ok:
         # The response body is patched with leading spaces
         data = r.content.lstrip()
-        print data
         # Example: 551f1b35-8067-4b02-9c4e-e2588934de5a|1392761214993
         trackingId, _, timestamp = data.partition('|')
         if trackingId:
@@ -184,15 +183,20 @@ if __name__ == '__main__':
   #from Queue import Queue
   #q = Queue()
 
-  #url = 'http://localhost:8080/meteor/topic'
-  #url = 'http://localhost:8080/push/topic'
-  url = 'http://localhost:8080/push/vnr/topic/term'
-  #url = 'http://sakuradite.com/push/vnr/topic/term'
+  import sys
+  url = sys.argv[-1]
+  if not url or not url.startswith('http://'):
+    #url = 'http://localhost:8080/meteor/topic'
+    #url = 'http://localhost:8080/push/topic'
+    #url = 'http://localhost:8080/push/vnr/topic/term'
+    #url = 'http://sakuradite.com/push/vnr/topic/term'
+    url = 'http://sakuradite.com/push/vnr/global'
 
   conn = CometConnection(url)
   conn.onError = onError
   conn.onMessage = onMessage
 
+  print "url:", url
   ok = conn.connect()
   print "connect:", ok
   if ok:

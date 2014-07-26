@@ -237,7 +237,7 @@ void TextThread::RemoveCyclicRepeat(BYTE* &con, int &len)
   DWORD currnet_time = GetTickCount();
   if (status & REPEAT_SUPPRESS) {
     if (currnet_time - last_time < (unsigned)settings->splittingInterval &&
-        memcmp(storage + last_sentence + repeat_index, con, len) == 0) {
+        ::memcmp(storage + last_sentence + repeat_index, con, len) == 0) {
       repeat_index += len;
       if (repeat_index>=sentence_length)
         repeat_index -= sentence_length;
@@ -247,10 +247,9 @@ void TextThread::RemoveCyclicRepeat(BYTE* &con, int &len)
       status &= ~REPEAT_SUPPRESS;
     }
   } else if (status & REPEAT_DETECT) {
-    if (memcmp(storage+last_sentence+repeat_index,con,len)==0) {
+    if (::memcmp(storage + last_sentence + repeat_index, con, len) == 0) {
       int half_length=repeat_index+len;
-      if (memcmp(storage+last_sentence,storage+last_sentence+half_length,repeat_index)==0)
-      {
+      if (::memcmp(storage + last_sentence, storage + last_sentence + half_length, repeat_index) == 0) {
         len=0;
         sentence_length=half_length;
         status&=~REPEAT_DETECT;
