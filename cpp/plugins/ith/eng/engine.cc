@@ -223,7 +223,7 @@ DWORD DetermineEngineByFile2()
     return yes;
   }
   if (IthFindFile(L"*.mbl")) {
-    InsertLuneHook();
+    InsertMBLHook();
     return yes;
   }
   if (IthFindFile(L"pac\\*.ypf") || IthFindFile(L"*.ypf")) {
@@ -327,6 +327,11 @@ DWORD DetermineEngineByFile4()
   if (IthFindFile(L"*.ykc")) { // jichi 7/15/2014: YukaSystem1 is not supported, though
     //ConsoleOutput("vnreng: IGNORE YKC:Feng/HookSoft(SMEE)");
     InsertYukaSystem2Hook();
+    return yes;
+  }
+  if (IthCheckFile(L"EAGLS.dll")) { // jichi 3/24/2014: E.A.G.L.S
+    //ConsoleOutput("vnreng: IGNORE EAGLS");
+    InsertEaglsHook();
     return yes;
   }
   return no;
@@ -530,11 +535,6 @@ DWORD DetermineNoHookEngine()
   //  ConsoleOutput("vnreng: IGNORE Eushully");
   //  return yes;
   //}
-
-  if (IthCheckFile(L"EAGLS.dll")) { // jichi 3/24/2014: E.A.G.L.S
-    ConsoleOutput("vnreng: IGNORE EAGLS");
-    return yes;
-  }
 
   if (IthCheckFile(L"game_sys.exe")) {
     ConsoleOutput("vnreng: IGNORE Atelier Kaguya BY/TH");

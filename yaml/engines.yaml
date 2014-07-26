@@ -105,6 +105,7 @@ simple:
   - CMVS
   - CMVS2
   - CYBERFRONT PSP
+  - EAGLS
   - Elf
   - Eushully
   - KID PSP
@@ -228,6 +229,7 @@ char:
   - CMVS
   - CYBERFRONT PSP
   - Debonosu
+  - EAGLS
   - Elf
   - EmonEngine
   - Eushully

@@ -591,7 +591,7 @@ bool InsertRealliveDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
   if (DWORD i = frame) {
     i = *(DWORD *)(i + 4);
     for (DWORD j = i; j > i - 0x100; j--)
-      if (*(WORD *)j == 0xec83) {
+      if (*(WORD *)j == 0xec83) { // jichi 7/26/2014: function starts
         HookParam hp = {};
         hp.addr = j;
         hp.off = 0x14;
@@ -1680,8 +1680,10 @@ void InsertTinkerBellHook()
   //RegisterEngineType(ENGINE_TINKER);
 
 // jichi 3/19/2014: Insert both hooks
-void InsertLuneHook()
+//void InsertLuneHook()
+bool InsertMBLHook()
 {
+  bool ret = false;
   if (DWORD c = Util::FindCallOrJmpAbs((DWORD)::ExtTextOutA, module_limit_ - module_base_, module_base_, true))
     if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, 0xec8b55)) {
       HookParam hp = {};
@@ -1690,6 +1692,7 @@ void InsertLuneHook()
       hp.type = USING_STRING;
       ConsoleOutput("vnreng:INSERT MBL-Furigana");
       NewHook(hp, L"MBL-Furigana");
+      ret = true;
     }
   if (DWORD c = Util::FindCallOrJmpAbs((DWORD)::GetGlyphOutlineA, module_limit_ - module_base_, module_base_, true))
     if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, 0xec8b55)) {
@@ -1701,8 +1704,50 @@ void InsertLuneHook()
       hp.type = BIG_ENDIAN|USING_SPLIT;
       ConsoleOutput("vnreng:INSERT MBL");
       NewHook(hp, L"MBL");
+      ret = true;
     }
+  if (!ret)
+    ConsoleOutput("vnreng:MBL: failed");
+  return ret;
 }
+
+/** jichi 7/26/2014: E.A.G.L.S engine for TechArts games (SQUEEZ, May-Be Soft)
+ *  Sample games: [May-Be Soft] ちぇ～んじ！
+ *  Should also work for SQUEEZE's 孕ませシリーズ
+ *
+ *  Two functions  calls to GetGlyphOutlineA are responsible for painting.
+ *  - 0x4094ef
+ *  - 0x409e35
+ *  However, by default, one of the thread is like: scenario namename scenario
+ *  The other thread have infinite loop.
+ */
+bool InsertEaglsHook()
+{
+  // DWORD GetGlyphOutline(HDC hdc,  UINT uChar,  UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2);
+  enum stack { // current stack
+    //s_retaddr = 0x0
+    arg1_hdc = 4 * 1
+    , arg2_uChar = 4 * 2
+    , arg3_uFormat = 4 * 3
+    , arg4_lpgm = 4 * 4
+    , arg5_cbBuffer = 4 * 5
+    , arg6_lpvBuffer = 4 * 6
+    , arg7_lpmat2 = 4 * 7
+  };
+
+  // Modify the split for GetGlyphOutlineA
+  HookParam hp = {};
+  hp.addr = (DWORD)::GetGlyphOutlineA;
+  hp.type = BIG_ENDIAN|USING_SPLIT; // the only difference is the split value
+  hp.off = arg2_uChar;
+  hp.split = arg4_lpgm;
+  //hp.split = arg4_lpmag2;
+  hp.length_offset = 1;
+  ConsoleOutput("vnreng:INSERT EAGLS");
+  NewHook(hp, L"EAGLS");
+  return true;
+}
+
 /********************************************************************************************
 YU-RIS hook:
   Becomes common recently. I first encounter this game in Whirlpool games.
@@ -6019,7 +6064,6 @@ bool InsertPPSSPPHooks()
     InsertCyberfrontPSPHook();
     InsertKidPSPHook(); // KID could lose text
     InsertNippon1PSPHook();
-    //InsertTecmoPSPHook();
     InsertYetiPSPHook();
 
     // Generic hook
@@ -6027,7 +6071,7 @@ bool InsertPPSSPPHooks()
     InsertAlchemistPSPHook();
     InsertAlchemist2PSPHook();
 
-    //bool segaFound = InsertSegaPSPHook();
+    //InsertTecmoPSPHook();
 
     InsertBandaiNamePSPHook();
 
@@ -7765,105 +7809,7 @@ bool InsertNippon1PSPHook()
   return addr;
 }
 
-#if 0 // SEGA: loop text. BANDAI and Imageepoch should be sufficient
-/** 7/25/2014 jichi sega.jp PSP engine
- *  Sample game: Shining Hearts
- *  Encoding: UTF-8
- *
- *  Debug method: simply add hardware break points to the matched memory
- *  All texts are in the memory.
- *  There are two memory addresses, but only one function addresses them.
- *
- *  This function seems to be the same as Tecmo?
- *
- *  13513476   f0:90            lock nop                                 ; lock prefix is not allowed
- *  13513478   77 0f            ja short 13513489
- *  1351347a   c705 a8aa1001 38>mov dword ptr ds:[0x110aaa8],0x89cae38
- *  13513484  -e9 7bcb4ff0      jmp 03a10004
- *  13513489   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
- *  1351348f   81e0 ffffff3f    and eax,0x3fffffff
- *  13513495   8bb0 00004007    mov esi,dword ptr ds:[eax+0x7400000]	; jichi: there are too many garbage here
- *  1351349b   8b3d 7ca71001    mov edi,dword ptr ds:[0x110a77c]
- *  135134a1   8d7f 04          lea edi,dword ptr ds:[edi+0x4]
- *  135134a4   8b05 84a71001    mov eax,dword ptr ds:[0x110a784]
- *  135134aa   81e0 ffffff3f    and eax,0x3fffffff
- *  135134b0   89b0 00004007    mov dword ptr ds:[eax+0x7400000],esi ; extract from esi
- *  135134b6   8b2d 84a71001    mov ebp,dword ptr ds:[0x110a784]
- *  135134bc   8d6d 04          lea ebp,dword ptr ss:[ebp+0x4]
- *  135134bf   8b15 78a71001    mov edx,dword ptr ds:[0x110a778]
- *  135134c5   81fa 01000000    cmp edx,0x1
- *  135134cb   8935 70a71001    mov dword ptr ds:[0x110a770],esi
- *  135134d1   893d 7ca71001    mov dword ptr ds:[0x110a77c],edi
- *  135134d7   892d 84a71001    mov dword ptr ds:[0x110a784],ebp
- *  135134dd   c705 88a71001 01>mov dword ptr ds:[0x110a788],0x1
- *  135134e7   0f84 16000000    je 13513503
- *  135134ed   832d c4aa1001 09 sub dword ptr ds:[0x110aac4],0x9
- *  135134f4   e9 23000000      jmp 1351351c
- *  135134f9   013cae           add dword ptr ds:[esi+ebp*4],edi
- *  135134fc   9c               pushfd
- *  135134fd   08e9             or cl,ch
- *  135134ff   20cb             and bl,cl
- *  13513501   4f               dec edi
- *  13513502   f0:832d c4aa1001>lock sub dword ptr ds:[0x110aac4],0x9    ; lock prefix
- *  1351350a   e9 b1000000      jmp 135135c0
- *  1351350f   015cae 9c        add dword ptr ds:[esi+ebp*4-0x64],ebx
- *  13513513   08e9             or cl,ch
- *  13513515   0acb             or cl,bl
- *  13513517   4f               dec edi
- *  13513518   f0:90            lock nop                                 ; lock prefix is not allowed
- *  1351351a   cc               int3
- *  1351351b   cc               int3
- */
-// Read text from esi
-static void SpecialPSPHookSega(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
-{
-  CC_UNUSED(hp);
-  LPCSTR text = LPCSTR(esp_base + pusha_esi_off - 4); // esi address
-  if (*text) {
-    *data = (DWORD)text;
-    *len = !text[0] ? 0 : !text[1] ? 1 : text[2] ? 2 : text[3] ? 3 : 4;
-    *split = regof(ebx, esp_base);
-  }
-}
-
-bool InsertSegaPSPHook()
-{
-  ConsoleOutput("vnreng: SEGA PSP: enter");
-  const BYTE bytes[] =  {
-    0x77, 0x0f,                     // 13513478   77 0f            ja short 13513489
-    0xc7,0x05, XX4, XX4,            // 1351347a   c705 a8aa1001 38>mov dword ptr ds:[0x110aaa8],0x89cae38
-    0xe9, XX4,                      // 13513484  -e9 7bcb4ff0      jmp 03a10004
-    0x8b,0x05, XX4,                 // 13513489   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
-    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1351348f   81e0 ffffff3f    and eax,0x3fffffff
-    0x8b,0xb0, XX4,                 // 13513495   8bb0 00004007    mov esi,dword ptr ds:[eax+0x7400000] ; jichi: here are too many garbage
-    0x8b,0x3d, XX4,                 // 1351349b   8b3d 7ca71001    mov edi,dword ptr ds:[0x110a77c]
-    0x8d,0x7f, 0x04,                // 135134a1   8d7f 04          lea edi,dword ptr ds:[edi+0x4]
-    0x8b,0x05, XX4,                 // 135134a4   8b05 84a71001    mov eax,dword ptr ds:[0x110a784]
-    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 135134aa   81e0 ffffff3f    and eax,0x3fffffff
-    0x89,0xb0   //, XX4,            // 135134b0   89b0 00004007    mov dword ptr ds:[eax+0x7400000],esi	; jichi: hook here, get text in esi
-  };
-  enum { memory_offset = 2 };
-  enum { hook_offset = sizeof(bytes) - memory_offset };
-  //enum { hook_offset = 0x13513495 - 0x13513478 };
-
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
-  if (!addr)
-    ConsoleOutput("vnreng: SEGA PSP: pattern not found");
-  else {
-    HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // UTF-8
-    hp.extern_fun = SpecialPSPHookSega;
-    ConsoleOutput("vnreng: SEGA PSP: INSERT");
-    NewHook(hp, L"SEGA PSP");
-  }
-
-  ConsoleOutput("vnreng: SEGA PSP: leave");
-  return addr;
-}
-#endif // 0
-
-#if 0 // CHECKPOINT
+#if 0 // 7/25/2014: This function is not invoked? Why?
 /** 7/22/2014 jichi: KOEI TECMO PSP
  *  Sample game: 金色のコルダ3
  *
@@ -8046,6 +7992,105 @@ bool InsertTypeMoonPS2Hook()
 } // namespace Engine
 
 // EOF
+
+#if 0 // SEGA: loop text. BANDAI and Imageepoch should be sufficient
+/** 7/25/2014 jichi sega.jp PSP engine
+ *  Sample game: Shining Hearts
+ *  Encoding: UTF-8
+ *
+ *  Debug method: simply add hardware break points to the matched memory
+ *  All texts are in the memory.
+ *  There are two memory addresses, but only one function addresses them.
+ *
+ *  This function seems to be the same as Tecmo?
+ *
+ *  13513476   f0:90            lock nop                                 ; lock prefix is not allowed
+ *  13513478   77 0f            ja short 13513489
+ *  1351347a   c705 a8aa1001 38>mov dword ptr ds:[0x110aaa8],0x89cae38
+ *  13513484  -e9 7bcb4ff0      jmp 03a10004
+ *  13513489   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+ *  1351348f   81e0 ffffff3f    and eax,0x3fffffff
+ *  13513495   8bb0 00004007    mov esi,dword ptr ds:[eax+0x7400000]	; jichi: there are too many garbage here
+ *  1351349b   8b3d 7ca71001    mov edi,dword ptr ds:[0x110a77c]
+ *  135134a1   8d7f 04          lea edi,dword ptr ds:[edi+0x4]
+ *  135134a4   8b05 84a71001    mov eax,dword ptr ds:[0x110a784]
+ *  135134aa   81e0 ffffff3f    and eax,0x3fffffff
+ *  135134b0   89b0 00004007    mov dword ptr ds:[eax+0x7400000],esi ; extract from esi
+ *  135134b6   8b2d 84a71001    mov ebp,dword ptr ds:[0x110a784]
+ *  135134bc   8d6d 04          lea ebp,dword ptr ss:[ebp+0x4]
+ *  135134bf   8b15 78a71001    mov edx,dword ptr ds:[0x110a778]
+ *  135134c5   81fa 01000000    cmp edx,0x1
+ *  135134cb   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+ *  135134d1   893d 7ca71001    mov dword ptr ds:[0x110a77c],edi
+ *  135134d7   892d 84a71001    mov dword ptr ds:[0x110a784],ebp
+ *  135134dd   c705 88a71001 01>mov dword ptr ds:[0x110a788],0x1
+ *  135134e7   0f84 16000000    je 13513503
+ *  135134ed   832d c4aa1001 09 sub dword ptr ds:[0x110aac4],0x9
+ *  135134f4   e9 23000000      jmp 1351351c
+ *  135134f9   013cae           add dword ptr ds:[esi+ebp*4],edi
+ *  135134fc   9c               pushfd
+ *  135134fd   08e9             or cl,ch
+ *  135134ff   20cb             and bl,cl
+ *  13513501   4f               dec edi
+ *  13513502   f0:832d c4aa1001>lock sub dword ptr ds:[0x110aac4],0x9    ; lock prefix
+ *  1351350a   e9 b1000000      jmp 135135c0
+ *  1351350f   015cae 9c        add dword ptr ds:[esi+ebp*4-0x64],ebx
+ *  13513513   08e9             or cl,ch
+ *  13513515   0acb             or cl,bl
+ *  13513517   4f               dec edi
+ *  13513518   f0:90            lock nop                                 ; lock prefix is not allowed
+ *  1351351a   cc               int3
+ *  1351351b   cc               int3
+ */
+// Read text from esi
+static void SpecialPSPHookSega(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  CC_UNUSED(hp);
+  LPCSTR text = LPCSTR(esp_base + pusha_esi_off - 4); // esi address
+  if (*text) {
+    *data = (DWORD)text;
+    *len = !text[0] ? 0 : !text[1] ? 1 : text[2] ? 2 : text[3] ? 3 : 4;
+    *split = regof(ebx, esp_base);
+  }
+}
+
+bool InsertSegaPSPHook()
+{
+  ConsoleOutput("vnreng: SEGA PSP: enter");
+  const BYTE bytes[] =  {
+    0x77, 0x0f,                     // 13513478   77 0f            ja short 13513489
+    0xc7,0x05, XX4, XX4,            // 1351347a   c705 a8aa1001 38>mov dword ptr ds:[0x110aaa8],0x89cae38
+    0xe9, XX4,                      // 13513484  -e9 7bcb4ff0      jmp 03a10004
+    0x8b,0x05, XX4,                 // 13513489   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1351348f   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xb0, XX4,                 // 13513495   8bb0 00004007    mov esi,dword ptr ds:[eax+0x7400000] ; jichi: here are too many garbage
+    0x8b,0x3d, XX4,                 // 1351349b   8b3d 7ca71001    mov edi,dword ptr ds:[0x110a77c]
+    0x8d,0x7f, 0x04,                // 135134a1   8d7f 04          lea edi,dword ptr ds:[edi+0x4]
+    0x8b,0x05, XX4,                 // 135134a4   8b05 84a71001    mov eax,dword ptr ds:[0x110a784]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 135134aa   81e0 ffffff3f    and eax,0x3fffffff
+    0x89,0xb0   //, XX4,            // 135134b0   89b0 00004007    mov dword ptr ds:[eax+0x7400000],esi	; jichi: hook here, get text in esi
+  };
+  enum { memory_offset = 2 };
+  enum { hook_offset = sizeof(bytes) - memory_offset };
+  //enum { hook_offset = 0x13513495 - 0x13513478 };
+
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  if (!addr)
+    ConsoleOutput("vnreng: SEGA PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT; // UTF-8
+    hp.extern_fun = SpecialPSPHookSega;
+    ConsoleOutput("vnreng: SEGA PSP: INSERT");
+    NewHook(hp, L"SEGA PSP");
+  }
+
+  ConsoleOutput("vnreng: SEGA PSP: leave");
+  return addr;
+}
+#endif // 0
+
 
 #if 0 // jichi 7/14/2014: TODO there is text duplication issue?
 

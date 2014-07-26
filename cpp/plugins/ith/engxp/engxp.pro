@@ -34,12 +34,14 @@ HEADERS += \
   engine.h \
   engine_p.h \
   hookdefs.h \
+  uniquemap.h \
   util.h
 
 SOURCES += \
   engine.cc \
   engine_p.cc \
   main.cc \
+  uniquemap.cc \
   util.cc
 
 #RC_FILE += engine.rc
