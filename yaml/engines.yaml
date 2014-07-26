@@ -19,6 +19,7 @@ psp:
   - Imageepoch PSP
   - KID PSP
   - Nippon1 PSP
+  - Nippon1 PSP
   - Tecmo PSP
   - Yeti PSP
 
@@ -96,7 +97,6 @@ simple:
   - AOS
   - ApRicot
   - AUEngine # renamed
-  - BANDAI PSP
   - BANDAI Name PSP
   - BGI
   - BGI1
@@ -162,6 +162,7 @@ norepeat:
 
 # Not floating address
 nofloat:
+  - BANDAI PSP # could have repetitions
   - Bruns
   - Bruns2
   - Malie
@@ -216,7 +217,7 @@ char:
   - Artemis
   - Atelier KAGUYA
   - AUEngine # removed
-  - BANDAI PSP
+  #- BANDAI PSP # BANDAI engine could be either UTF-8 or SHIFT-JIS
   - BANDAI Name PSP
   - BGI
   - BGI1

@@ -304,7 +304,7 @@ public:
       flag = 0;
       if (NT_SUCCESS(NtOpenProcess(&hProc,PROCESS_VM_OPERATION|PROCESS_VM_READ,&oa,&id))) {
         if (NT_SUCCESS(NtReadVirtualMemory(hProc,(PVOID)addr,buffer,8,&len)))
-          if (memcmp(buffer, normal_routine, 4) == 0)
+          if (::memcmp(buffer, normal_routine, 4) == 0)
             flag = 1;
         NtClose(hProc);
       }
@@ -730,7 +730,7 @@ BOOL IthInitSystemService()
     DWORD end = base + info.RegionSize - 0x40;
     static WCHAR system32[] = L"system32";
     for (;base < end; base += 2)
-      if (memcmp((PVOID)base, system32, 0x10) == 0) {
+      if (::memcmp((PVOID)base, system32, 0x10) == 0) {
         t = (LPWSTR)base;
         while (*t-- != L':');
         obj = (LPWSTR)base;
