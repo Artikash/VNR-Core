@@ -7642,14 +7642,14 @@ inline bool _bandaigarbage(char c)
       || c >= 'A' && c <= 'z'; // also ignore ASCII 91-96: [ \ ] ^ _ `
 }
 
-// Remove trailing /L/P garbage
+// Remove trailing /L/P or #n garbage
 size_t _bandaistrlen(LPCSTR text)
 {
   size_t len = ::strlen(text);
   size_t ret = len;
   while (len && _bandaigarbage(text[len - 1])) {
     len--;
-    if (text[len] == '/') // in case trim UTF-8 trailing bytes
+    if (text[len] == '/' || text[len] == '#') // in case trim UTF-8 trailing bytes
       ret = len;
   }
   return ret;
