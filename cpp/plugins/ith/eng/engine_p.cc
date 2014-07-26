@@ -1713,7 +1713,7 @@ bool InsertMBLHook()
 
 /** jichi 7/26/2014: E.A.G.L.S engine for TechArts games (SQUEEZ, May-Be Soft)
  *  Sample games: [May-Be Soft] ちぇ～んじ！
- *  Should also work for SQUEEZE's 孕ませシリーズ
+ *  Should also work for SQUEEZ's 孕ませシリーズ
  *
  *  Two functions  calls to GetGlyphOutlineA are responsible for painting.
  *  - 0x4094ef
