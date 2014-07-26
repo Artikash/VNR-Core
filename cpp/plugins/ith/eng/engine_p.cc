@@ -5951,7 +5951,13 @@ void SpecialPSPHook(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DW
       lastText = text;
     }
     *data = (DWORD)text;
-    *len = ::strlen(text); // should only be applied to hp->type|USING_STRING
+    // I only considered SHIFT-JIS/UTF-8 case
+    if (hp->length_offset == 1)
+      *len = 1; // only read 1 byte
+    else if (hp->length_offset)
+      *len = *(DWORD *)(esp_base + hp->length_offset);
+    else
+      *len = ::strlen(text); // should only be applied to hp->type|USING_STRING
     if (hp->type & USING_SPLIT) {
       if (hp->type & FIXING_SPLIT)
         *split = FIXED_SPLIT_VALUE;
@@ -6063,8 +6069,9 @@ bool InsertPPSSPPHooks()
   if (!engineFound) {
     InsertBroccoliPSPHook();
     InsertCyberfrontPSPHook();
-    InsertKidPSPHook(); // KID could lose text
+    InsertKidPSPHook(); // KID could lose text, could exist in multiple game
     InsertNippon1PSPHook();
+    InsertSanctuaryPSPHook();
     InsertYetiPSPHook();
 
     // Generic hook
@@ -7951,6 +7958,97 @@ bool InsertBroccoliPSPHook()
   }
 
   ConsoleOutput("vnreng: Broccoli PSP: leave");
+  return addr;
+}
+
+/** 7/26/2014 jichi Sanctuary PSP engine
+ *  Sample game: クロノスタシア
+ *
+ *  Memory address is FIXED.
+ *  Debug method: breakpoint the memory address
+ *
+ *  13c00fe1   cc               int3
+ *  13c00fe2   cc               int3
+ *  13c00fe3   cc               int3
+ *  13c00fe4   77 0f            ja short 13c00ff5
+ *  13c00fe6   c705 a8aa1001 30>mov dword ptr ds:[0x110aaa8],0x884b330
+ *  13c00ff0  -e9 0ff0edf2      jmp 06ae0004
+ *  13c00ff5   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+ *  13c00ffb   81e0 ffffff3f    and eax,0x3fffffff
+ *  13c01001   0fbeb0 0000c007  movsx esi,byte ptr ds:[eax+0x7c00000] ; jichi: hook here
+ *  13c01008   81fe 00000000    cmp esi,0x0 ; jichi: hook here, get the esi value
+ *  13c0100e   8935 80a71001    mov dword ptr ds:[0x110a780],esi
+ *  13c01014   0f84 25000000    je 13c0103f
+ *  13c0101a   8b35 78a71001    mov esi,dword ptr ds:[0x110a778]
+ *  13c01020   8d76 01          lea esi,dword ptr ds:[esi+0x1]
+ *  13c01023   8935 78a71001    mov dword ptr ds:[0x110a778],esi
+ *  13c01029   832d c4aa1001 03 sub dword ptr ds:[0x110aac4],0x3
+ *  13c01030  ^e9 afffffff      jmp 13c00fe4
+ *  13c01035   0130             add dword ptr ds:[eax],esi
+ *  13c01037   b3 84            mov bl,0x84
+ *  13c01039   08e9             or cl,ch
+ *  13c0103b   e4 ef            in al,0xef                               ; i/o command
+ *  13c0103d   ed               in eax,dx                                ; i/o command
+ *  13c0103e   f2:              prefix repne:                            ; superfluous prefix
+ *  13c0103f   832d c4aa1001 03 sub dword ptr ds:[0x110aac4],0x3
+ *  13c01046   e9 0d000000      jmp 13c01058
+ *  13c0104b   013cb3           add dword ptr ds:[ebx+esi*4],edi
+ *  13c0104e   8408             test byte ptr ds:[eax],cl
+ *  13c01050  -e9 ceefedf2      jmp 06ae0023
+ *  13c01055   90               nop
+ *  13c01056   cc               int3
+ *  13c01057   cc               int3
+ */
+// Read text from esi
+static void SpecialPSPHookSanctuary(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  DWORD eax = regof(eax, esp_base);
+  DWORD text = eax + hp->userValue - 2; // -2 to read 1 word more from previous location
+
+  if (*(LPCSTR)text) {
+    *data = text;
+    size_t sz = ::strlen((LPCSTR)text);
+    *len = sz == 3 ? 3 : 1; // handling the last two bytes
+    //*split = regof(ecx, esp_base); // this would cause lots of texts
+    *split = regof(ecx, esp_base) & 0xff00; // only use higher bits
+  }
+}
+bool InsertSanctuaryPSPHook()
+{
+  ConsoleOutput("vnreng: Sanctuary PSP: enter");
+  const BYTE bytes[] =  {
+    0x77, 0x0f,                     // 13c00fe4   77 0f            ja short 13c00ff5
+    0xc7,0x05, XX4, XX4,            // 13c00fe6   c705 a8aa1001 30>mov dword ptr ds:[0x110aaa8],0x884b330
+    0xe9, XX4,                      // 13c00ff0  -e9 0ff0edf2      jmp 06ae0004
+    0x8b,0x05, XX4,                 // 13c00ff5   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13c00ffb   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xbe,0xb0, XX4,            // 13c01001   0fbeb0 0000c007  movsx esi,byte ptr ds:[eax+0x7c00000] ; jichi: hook here
+    0x81,0xfe, 0x00,0x00,0x00,0x00, // 13c01008   81fe 00000000    cmp esi,0x0
+    0x89,0x35, XX4,                 // 13c0100e   8935 80a71001    mov dword ptr ds:[0x110a780],esi
+    0x0f,0x84, 0x25,0x00,0x00,0x00, // 13c01014   0f84 25000000    je 13c0103f
+    0x8b,0x35, XX4,                 // 13c0101a   8b35 78a71001    mov esi,dword ptr ds:[0x110a778]
+    0x8d,0x76, 0x01,                // 13c01020   8d76 01          lea esi,dword ptr ds:[esi+0x1]
+    0x89,0x35, XX4,                 // 13c01023   8935 78a71001    mov dword ptr ds:[0x110a778],esi
+    0x83,0x2d, XX4, 0x03            // 13c01029   832d c4aa1001 03 sub dword ptr ds:[0x110aac4],0x3
+  };
+  enum { memory_offset = 3 };
+  //enum { hook_offset = 0x13c01008 - 0x13c00fe4 };
+  enum { hook_offset = 0x13c01001- 0x13c00fe4 };
+
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  if (!addr)
+    ConsoleOutput("vnreng: Sanctuary PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
+    hp.extern_fun = SpecialPSPHookSanctuary;
+    ConsoleOutput("vnreng: Sanctuary PSP: INSERT");
+    NewHook(hp, L"Sanctuary PSP");
+  }
+
+  ConsoleOutput("vnreng: Sanctuary PSP: leave");
   return addr;
 }
 

@@ -21,6 +21,7 @@ psp:
   - KID PSP
   - Nippon1 PSP
   - Nippon1 PSP
+  - Sanctuary PSP
   - Tecmo PSP
   - Yeti PSP
 
@@ -125,6 +126,7 @@ simple:
   - RealLive
   - Rejet
   - Yeti PSP
+  - Sanctuary PSP
   - ShinaRio
   - SiglusEngine2
   - ScenarioPlayerA
@@ -256,6 +258,7 @@ char:
   - Rejet
   - RetouchSystem
   - rUGP
+  - Sanctuary PSP
   - ScenarioPlayerA
   - ShinaRio
   - Silkys # renamed
