@@ -6019,7 +6019,6 @@ bool InsertPPSSPPHooks()
     InsertCyberfrontPSPHook();
     InsertKidPSPHook(); // KID could lose text
     InsertNippon1PSPHook();
-    //InsertTecmoPSPHook();
     InsertYetiPSPHook();
 
     // Generic hook
@@ -6028,6 +6027,7 @@ bool InsertPPSSPPHooks()
     InsertAlchemist2PSPHook();
 
     //bool segaFound = InsertSegaPSPHook();
+    //InsertTecmoPSPHook();
 
     InsertBandaiNamePSPHook();
 

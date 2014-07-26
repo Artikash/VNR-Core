@@ -46,7 +46,7 @@ bool InsertImageepochPSPHook(); // PSP Imageepoch.co.jp
 bool InsertKidPSPHook();        // PSP Kid-game.co.jp
 bool InsertNippon1PSPHook();    // PSP Nippon1.jp
 //bool InsertSegaPSPHook();       // PSP Sega.jp
-bool InsertTecmoPSPHook();      // PSP KoeiTecmo.co.jp
+//bool InsertTecmoPSPHook();      // PSP KoeiTecmo.co.jp
 bool InsertYetiPSPHook();       // PSP Yetigame.jp
 //bool InsertShadePSPHook();    // PSP SHADE.co.jp
 
