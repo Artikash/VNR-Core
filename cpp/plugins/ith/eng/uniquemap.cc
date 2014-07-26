@@ -12,7 +12,7 @@ uniquemap::uniquemap()
 
 bool uniquemap::update(key_type key, value_type value)
 {
-  int next = next_; // backup next to avoid overflow when invoked by multiple threads
+  int next = next_; // backup next to avoid contention when invoked by multiple threads
   bool ret = true;
   for (int i = 0; i < capacity; i++)
     if (keys_[i] == key) {
