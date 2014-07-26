@@ -6061,6 +6061,7 @@ bool InsertPPSSPPHooks()
   ConsoleOutput("vnreng: PPSSPP: enter");
   bool engineFound = Insert5pbPSPHook();
   if (!engineFound) {
+    InsertBrocolliPSPHook();
     InsertCyberfrontPSPHook();
     InsertKidPSPHook(); // KID could lose text
     InsertNippon1PSPHook();
@@ -7806,6 +7807,150 @@ bool InsertNippon1PSPHook()
   }
 
   ConsoleOutput("vnreng: Nippon1 PSP: leave");
+  return addr;
+}
+
+/** 7/26/2014 jichi Brocolli PSP engine
+ *  Sample game: 明治東亰恋伽
+ *
+ *  Memory address is FIXED.
+ *  Debug method: breakpoint the memory address
+ *
+ *  The data is in (WORD)dl in bytes.
+ *
+ *  There are two text threads.
+ *  Only one is correct.
+ *
+ *  13d26cab   cc               int3
+ *  13d26cac   77 0f            ja short 13d26cbd
+ *  13d26cae   c705 a8aa1001 24>mov dword ptr ds:[0x110aaa8],0x886a724
+ *  13d26cb8  -e9 4793ccef      jmp 039f0004
+ *  13d26cbd   8b35 dca71001    mov esi,dword ptr ds:[0x110a7dc]
+ *  13d26cc3   8db6 60feffff    lea esi,dword ptr ds:[esi-0x1a0]
+ *  13d26cc9   8b3d e4a71001    mov edi,dword ptr ds:[0x110a7e4]
+ *  13d26ccf   8bc6             mov eax,esi
+ *  13d26cd1   81e0 ffffff3f    and eax,0x3fffffff
+ *  13d26cd7   89b8 9001c007    mov dword ptr ds:[eax+0x7c00190],edi
+ *  13d26cdd   8b2d 80a71001    mov ebp,dword ptr ds:[0x110a780]
+ *  13d26ce3   0fbfed           movsx ebp,bp
+ *  13d26ce6   8bd6             mov edx,esi
+ *  13d26ce8   8bce             mov ecx,esi
+ *  13d26cea   03cd             add ecx,ebp
+ *  13d26cec   8935 dca71001    mov dword ptr ds:[0x110a7dc],esi
+ *  13d26cf2   33c0             xor eax,eax
+ *  13d26cf4   3bd1             cmp edx,ecx
+ *  13d26cf6   0f92c0           setb al
+ *  13d26cf9   8bf0             mov esi,eax
+ *  13d26cfb   81fe 00000000    cmp esi,0x0
+ *  13d26d01   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+ *  13d26d07   890d 74a71001    mov dword ptr ds:[0x110a774],ecx
+ *  13d26d0d   892d 80a71001    mov dword ptr ds:[0x110a780],ebp
+ *  13d26d13   8915 8ca71001    mov dword ptr ds:[0x110a78c],edx
+ *  13d26d19   0f85 16000000    jnz 13d26d35
+ *  13d26d1f   832d c4aa1001 08 sub dword ptr ds:[0x110aac4],0x8
+ *  13d26d26   e9 b9000000      jmp 13d26de4
+ *  13d26d2b   0158 a7          add dword ptr ds:[eax-0x59],ebx
+ *  13d26d2e   8608             xchg byte ptr ds:[eax],cl
+ *  13d26d30  -e9 ee92ccef      jmp 039f0023
+ *  13d26d35   832d c4aa1001 08 sub dword ptr ds:[0x110aac4],0x8
+ *  13d26d3c   e9 0b000000      jmp 13d26d4c
+ *  13d26d41   0144a7 86        add dword ptr ds:[edi-0x7a],eax
+ *  13d26d45   08e9             or cl,ch
+ *  13d26d47   d892 ccef9077    fcom dword ptr ds:[edx+0x7790efcc]
+ *  13d26d4d   0fc7             ???                                      ; unknown command
+ *  13d26d4f   05 a8aa1001      add eax,0x110aaa8
+ *  13d26d54   44               inc esp
+ *  13d26d55   a7               cmps dword ptr ds:[esi],dword ptr es:[ed>
+ *  13d26d56   8608             xchg byte ptr ds:[eax],cl
+ *  13d26d58  -e9 a792ccef      jmp 039f0004
+ *  13d26d5d   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+ *  13d26d63   81e0 ffffff3f    and eax,0x3fffffff
+ *  13d26d69   0fb6b0 0000c007  movzx esi,byte ptr ds:[eax+0x7c00000]
+ *  13d26d70   8b3d 7ca71001    mov edi,dword ptr ds:[0x110a77c]
+ *  13d26d76   8d7f 01          lea edi,dword ptr ds:[edi+0x1]
+ *  13d26d79   8b05 8ca71001    mov eax,dword ptr ds:[0x110a78c]
+ *  13d26d7f   81e0 ffffff3f    and eax,0x3fffffff
+ *  13d26d85   8bd6             mov edx,esi
+ *  13d26d87   8890 0000c007    mov byte ptr ds:[eax+0x7c00000],dl ; jichi: hook here, get byte from dl
+ *  13d26d8d   8b2d 8ca71001    mov ebp,dword ptr ds:[0x110a78c]
+ *  13d26d93   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+ *  13d26d96   81fe 00000000    cmp esi,0x0
+ *  13d26d9c   893d 7ca71001    mov dword ptr ds:[0x110a77c],edi
+ *  13d26da2   8935 88a71001    mov dword ptr ds:[0x110a788],esi
+ *  13d26da8   892d 8ca71001    mov dword ptr ds:[0x110a78c],ebp
+ *  13d26dae   0f84 16000000    je 13d26dca
+ *  13d26db4   832d c4aa1001 05 sub dword ptr ds:[0x110aac4],0x5
+ *  13d26dbb   e9 f48b0100      jmp 13d3f9b4
+ *  13d26dc0   0138             add dword ptr ds:[eax],edi
+ *  13d26dc2   a7               cmps dword ptr ds:[esi],dword ptr es:[ed>
+ *  13d26dc3   8608             xchg byte ptr ds:[eax],cl
+ *  13d26dc5  -e9 5992ccef      jmp 039f0023
+ *  13d26dca   832d c4aa1001 05 sub dword ptr ds:[0x110aac4],0x5
+ *  13d26dd1   e9 0e000000      jmp 13d26de4
+ *  13d26dd6   0158 a7          add dword ptr ds:[eax-0x59],ebx
+ *  13d26dd9   8608             xchg byte ptr ds:[eax],cl
+ *  13d26ddb  -e9 4392ccef      jmp 039f0023
+ *  13d26de0   90               nop
+ *  13d26de1   cc               int3
+ */
+
+// New line character for Brocolli games is '^'
+static inline bool _brocolligarbage(char c) { return c == '^'; }
+
+// Read text from dl
+static void SpecialPSPHookBrocolli(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  CC_UNUSED(hp);
+  DWORD text = esp_base + pusha_edx_off - 4; // edx address
+  char c = *(LPCSTR)text;
+  if (c && !_brocolligarbage(c)) {
+    *data = text;
+    *len = 1;
+    *split = regof(ecx, esp_base);
+  }
+}
+
+bool InsertBrocolliPSPHook()
+{
+  ConsoleOutput("vnreng: Brocolli PSP: enter");
+
+  const BYTE bytes[] =  {
+    0x0f,0xc7,                      // 13d26d4d   0fc7             ???                                      ; unknown command
+    0x05, XX4,                      // 13d26d4f   05 a8aa1001      add eax,0x110aaa8
+    0x44,                           // 13d26d54   44               inc esp
+    0xa7,                           // 13d26d55   a7               cmps dword ptr ds:[esi],dword ptr es:[ed>
+    0x86,0x08,                      // 13d26d56   8608             xchg byte ptr ds:[eax],cl
+    0xe9, XX4,                      // 13d26d58  -e9 a792ccef      jmp 039f0004
+    0x8b,0x05, XX4,                 // 13d26d5d   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+    // Following pattern is not sufficient
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13d26d63   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb6,0xb0, XX4,            // 13d26d69   0fb6b0 0000c007  movzx esi,byte ptr ds:[eax+0x7c00000]
+    0x8b,0x3d, XX4,                 // 13d26d70   8b3d 7ca71001    mov edi,dword ptr ds:[0x110a77c]
+    0x8d,0x7f, 0x01,                // 13d26d76   8d7f 01          lea edi,dword ptr ds:[edi+0x1]
+    0x8b,0x05, XX4,                 // 13d26d79   8b05 8ca71001    mov eax,dword ptr ds:[0x110a78c]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13d26d7f   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xd6,                      // 13d26d85   8bd6             mov edx,esi
+    0x88,0x90, XX4,                 // 13d26d87   8890 0000c007    mov byte ptr ds:[eax+0x7c00000],dl ; jichi: hook here, get byte from dl
+    0x8b,0x2d, XX4,                 // 13d26d8d   8b2d 8ca71001    mov ebp,dword ptr ds:[0x110a78c]
+    0x8d,0x6d, 0x01,                // 13d26d93   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+    0x81,0xfe, 0x00,0x00,0x00,0x00  // 13d26d96   81fe 00000000    cmp esi,0x0
+  };
+  enum { hook_offset = 0x13d26d87 - 0x13d26d4d };
+
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  if (!addr)
+    ConsoleOutput("vnreng: Brocolli PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT;
+    hp.extern_fun = SpecialPSPHookBrocolli;
+    //ITH_GROWL_DWORD(hp.addr);
+    ConsoleOutput("vnreng: Brocolli PSP: INSERT");
+    NewHook(hp, L"Brocolli PSP");
+  }
+
+  ConsoleOutput("vnreng: Brocolli PSP: leave");
   return addr;
 }
 
