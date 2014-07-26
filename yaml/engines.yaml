@@ -15,6 +15,7 @@ psp:
   - Alchemist2 PSP
   - BANDAI PSP
   - BANDAI Name PSP
+  - Brocolli PSP
   - CYBERFRONT PSP
   - Imageepoch PSP
   - KID PSP
@@ -101,6 +102,7 @@ simple:
   - BGI
   - BGI1
   - BGI2
+  - Brocolli PSP
   - CIRCUS
   - CMVS
   - CMVS2
@@ -222,6 +224,7 @@ char:
   - BANDAI Name PSP
   - BGI
   - BGI1
+  - Brocolli PSP
   - C4
   - CaramelBox
   - CatSystem2
