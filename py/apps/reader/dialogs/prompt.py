@@ -445,6 +445,15 @@ WARNING:
 This might result in redundant spaces for Japanese games."""),
       Yes|No, No)
 
+def confirmDownloadGameVideo():
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Download YouTube video"),
+      my.tr("Do you want to download the selected video to your Desktop?"),
+      Yes|No, No)
+
 def confirmDownloadGameVideos():
   """
   @return  bool

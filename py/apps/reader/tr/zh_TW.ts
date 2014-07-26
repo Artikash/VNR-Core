@@ -2017,17 +2017,17 @@ DMM上幾乎可以找到近期發售的全部遊戲，但是不缺少很老的�
         <translation>部分畫像沒有保存成功</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="462"/>
+        <location filename="dialogs/prompt.py" line="471"/>
         <source>Save game images</source>
         <translation>保存遊戲的畫像</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="463"/>
+        <location filename="dialogs/prompt.py" line="472"/>
         <source>Do you want to save all images to your Desktop?</source>
         <translation>你要保存全部畫像到桌面嗎？</translation>
     </message>
     <message>
-        <location filename="managers/coffeebean.py" line="34"/>
+        <location filename="managers/coffeebean.py" line="36"/>
         <source>Downloading YouTube video to Desktop</source>
         <translation>正在下載YouTube的動畫到桌面</translation>
     </message>
@@ -2037,12 +2037,12 @@ DMM上幾乎可以找到近期發售的全部遊戲，但是不缺少很老的�
         <translation>正在下載YouTube的動畫</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="453"/>
+        <location filename="dialogs/prompt.py" line="462"/>
         <source>Download YouTube videos</source>
         <translation>下載YouTube的動畫</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="454"/>
+        <location filename="dialogs/prompt.py" line="463"/>
         <source>Do you want to download all YouTube videos to your Desktop?</source>
         <translation>你真的要下載全部YouTube的動畫到桌面嗎？</translation>
     </message>
@@ -2518,12 +2518,12 @@ Just don&apos;t forget to export LC_ALL=ja_JP.UTF8 before launching VNR.</source
         <translation>輸入遊戲的名字或遊戲在網站上的ID或者URL</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="471"/>
+        <location filename="dialogs/prompt.py" line="480"/>
         <source>Export Excel CSV</source>
         <translation>導出為Excel CSV文件</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="472"/>
+        <location filename="dialogs/prompt.py" line="481"/>
         <source>Do you want to export the data into an Excel CSV file?</source>
         <translation>你要把這些數據導出到Excel CSV文件中碼？</translation>
     </message>
@@ -2878,12 +2878,12 @@ This will help VNR to get rid of H-code for that kind of games.</source>
 這樣的話以后VNR對類似的遊戲就不再需要特殊碼了呢。</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="503"/>
+        <location filename="dialogs/prompt.py" line="512"/>
         <source>Remove dictionary</source>
         <translation>移除辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="517"/>
+        <location filename="dialogs/prompt.py" line="526"/>
         <source>Download dictionary</source>
         <translation>下載辭書</translation>
     </message>
@@ -2913,7 +2913,7 @@ You can select only the resources you need to download here.</source>
         <translation>{0}並不存在呢。請在使用偏好中重新下載</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="505"/>
+        <location filename="dialogs/prompt.py" line="514"/>
         <source>Do you want to remove the {0} dictionary?
 You can redownload it later if you have Internet access.</source>
         <translation>真的要刪除{0}辭書嗎？
@@ -2960,7 +2960,7 @@ You can redownload it later if you have Internet access.</source>
         <translation>創建詞條</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="520"/>
+        <location filename="dialogs/prompt.py" line="529"/>
         <source>Do you want to download the {0} dictionary?
 It requires Internet access and might take a couple of minutes.
 The dictionary will be installed to {1}.</source>
@@ -2974,12 +2974,12 @@ The dictionary will be installed to {1}.</source>
         <translation>沒有指定翻譯。這樣的話VNR會刪掉匹配的文本。</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="530"/>
+        <location filename="dialogs/prompt.py" line="539"/>
         <source>Remove AppLocale</source>
         <translation>移除AppLocale</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="533"/>
+        <location filename="dialogs/prompt.py" line="542"/>
         <source>Do you want to remove AppLocale?
 It requires Internet access and might take a couple of minutes.
 You can reinstall it later if you have Internet access.</source>
@@ -2988,12 +2988,12 @@ You can reinstall it later if you have Internet access.</source>
 你在有網絡連接的時候可以重新安裝。</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="543"/>
+        <location filename="dialogs/prompt.py" line="552"/>
         <source>Install Microsoft AppLocale</source>
         <translation>安裝Microsoft AppLocale</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="548"/>
+        <location filename="dialogs/prompt.py" line="557"/>
         <source>Do you want to install the @piaip version of Microsoft AppLocale?
 It requires Internet access and might take a couple of minutes.
 The program will be installed to {0}.
@@ -3076,7 +3076,7 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>查詢日文詞語解釋的辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/prompt.py" line="522"/>
+        <location filename="dialogs/prompt.py" line="531"/>
         <source>If EDICT is installed, VNR&apos;s Updater will also update EDICT monthly.</source>
         <translation>如果EDICT有裝，VNR的更新程序每月都會去更新EDICT的。</translation>
     </message>
@@ -3764,6 +3764,16 @@ Daijirin is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, an
         <location filename="dialogs/_prefs.py" line="2307"/>
         <source>Force enabling context menu in full screen</source>
         <translation>在遊戲全屏后，強行開啟右鍵菜單</translation>
+    </message>
+    <message>
+        <location filename="dialogs/prompt.py" line="454"/>
+        <source>Do you want to download the selected video to your Desktop?</source>
+        <translation>你真的要下載選定的動畫到桌面嗎？</translation>
+    </message>
+    <message>
+        <location filename="dialogs/prompt.py" line="453"/>
+        <source>Download YouTube video</source>
+        <translation>下載YouTube的動畫</translation>
     </message>
 </context>
 </TS>

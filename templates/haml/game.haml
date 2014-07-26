@@ -76,16 +76,16 @@
           -if game.itemId
             .buttons
               %button.btn.btn-default.btn-xs.btn-dl-img(type="button",title="画像"")
-                %i.fa.fa-save
+                %span.fa.fa-save
                 画像
               -if game.hasVideos()
                 -if online
                   %button.btn.btn-default.btn-xs.btn-dl-yt(type="button",title="YouTube動画")
-                    %i.fa.fa-download
+                    %span.fa.fa-download
                     動画
                 -else
                   %button.btn.btn-default.btn-xs.disabled(type="button",title="YouTube動画")
-                    %i.fa.fa-download
+                    %span.fa.fa-download
                     動画
         %hr
         .content

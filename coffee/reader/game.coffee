@@ -69,6 +69,8 @@ createTemplates = ->
       .date = date
     .toolbar.pull-right
       %button.close(type="button" title="#{tr 'Close'}") &times;
+      %button.btn.btn-dl.btn-link.btn-xs(type="button" title="#{tr 'Download'}")
+        %span.fa.fa-download
       %a.btn.btn-link.btn-xs(role="button" href="http://youtube.com/watch?v=${vid}" title="http://youtube.com/watch?v=${vid}")
         %span.fa.fa-external-link
   .image
@@ -747,6 +749,13 @@ bindYoutube = ->
         url = gameBean.getYouTubeImageUrl vid, false # large = false
         @src = url
         #$this.parent('.image').addClass 'crop' # image is always not cropped
+
+    # Download
+    $videos.find('.btn-dl').click ->
+      vid = $(@).closest('.video').data 'id'
+      #dprint vid
+      youtubeBean.get vid
+      false
 
     # TTS
     $videos.find('.tts').click ->

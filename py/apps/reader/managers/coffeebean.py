@@ -30,11 +30,13 @@ class YoutubeBean(QObject):
     @param  vid  str  youtube id
     """
     dprint(vid)
-    #growl.msg("%s YouTube(%s) ..." % (my.tr("Downloading to Desktop"), vid))
-    growl.msg(my.tr("Downloading YouTube video to Desktop") + " ...")
-    import procutil
-    procutil.getyoutube([vid])
-    #return dl.get(vid)
+    import prompt
+    if prompt.confirmDownloadGameVideo():
+      #growl.msg("%s YouTube(%s) ..." % (my.tr("Downloading to Desktop"), vid))
+      growl.msg(my.tr("Downloading YouTube video to Desktop") + " ...")
+      import procutil
+      procutil.getyoutube([vid])
+      #return dl.get(vid)
 
 class I18nBean(QObject):
   def __init__(self, parent=None):
