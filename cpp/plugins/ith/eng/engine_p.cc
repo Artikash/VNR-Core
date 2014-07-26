@@ -591,7 +591,7 @@ bool InsertRealliveDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
   if (DWORD i = frame) {
     i = *(DWORD *)(i + 4);
     for (DWORD j = i; j > i - 0x100; j--)
-      if (*(WORD *)j == 0xec83) {
+      if (*(WORD *)j == 0xec83) { // jichi 7/26/2014: function starts
         HookParam hp = {};
         hp.addr = j;
         hp.off = 0x14;
@@ -1680,8 +1680,10 @@ void InsertTinkerBellHook()
   //RegisterEngineType(ENGINE_TINKER);
 
 // jichi 3/19/2014: Insert both hooks
-void InsertLuneHook()
+//void InsertLuneHook()
+bool InsertMBLHook()
 {
+  bool ret = false;
   if (DWORD c = Util::FindCallOrJmpAbs((DWORD)::ExtTextOutA, module_limit_ - module_base_, module_base_, true))
     if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, 0xec8b55)) {
       HookParam hp = {};
@@ -1690,6 +1692,7 @@ void InsertLuneHook()
       hp.type = USING_STRING;
       ConsoleOutput("vnreng:INSERT MBL-Furigana");
       NewHook(hp, L"MBL-Furigana");
+      ret = true;
     }
   if (DWORD c = Util::FindCallOrJmpAbs((DWORD)::GetGlyphOutlineA, module_limit_ - module_base_, module_base_, true))
     if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, 0xec8b55)) {
@@ -1701,8 +1704,50 @@ void InsertLuneHook()
       hp.type = BIG_ENDIAN|USING_SPLIT;
       ConsoleOutput("vnreng:INSERT MBL");
       NewHook(hp, L"MBL");
+      ret = true;
     }
+  if (!ret)
+    ConsoleOutput("vnreng:MBL: failed");
+  return ret;
 }
+
+/** jichi 7/26/2014: E.A.G.L.S engine for TechArts games (SQUEEZ, May-Be Soft)
+ *  Sample games: [May-Be Soft] ちぇ～んじ！
+ *  Should also work for SQUEEZE's 孕ませシリーズ
+ *
+ *  Two functions  calls to GetGlyphOutlineA are responsible for painting.
+ *  - 0x4094ef
+ *  - 0x409e35
+ *  However, by default, one of the thread is like: scenario namename scenario
+ *  The other thread have infinite loop.
+ */
+bool InsertEaglsHook()
+{
+  // DWORD GetGlyphOutline(HDC hdc,  UINT uChar,  UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2);
+  enum stack { // current stack
+    //s_retaddr = 0x0
+    arg1_hdc = 4 * 1
+    , arg2_uChar = 4 * 2
+    , arg3_uFormat = 4 * 3
+    , arg4_lpgm = 4 * 4
+    , arg5_cbBuffer = 4 * 5
+    , arg6_lpvBuffer = 4 * 6
+    , arg7_lpmat2 = 4 * 7
+  };
+
+  // Modify the split for GetGlyphOutlineA
+  HookParam hp = {};
+  hp.addr = (DWORD)::GetGlyphOutlineA;
+  hp.type = BIG_ENDIAN|USING_SPLIT; // the only difference is the split value
+  hp.off = arg2_uChar;
+  hp.split = arg4_lpgm;
+  //hp.split = arg4_lpmag2;
+  hp.length_offset = 1;
+  ConsoleOutput("vnreng:INSERT EAGLS");
+  NewHook(hp, L"EAGLS");
+  return true;
+}
+
 /********************************************************************************************
 YU-RIS hook:
   Becomes common recently. I first encounter this game in Whirlpool games.

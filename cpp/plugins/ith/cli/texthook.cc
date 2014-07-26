@@ -798,23 +798,26 @@ void IHFAPI InsertGdiHooks()
 //  hookman[HF_##Name].InitHook(Name, __VA_ARGS__); \
 //  hookman[HF_##Name].SetHookName(names[HF_##Name]);
 
+  // Always use s_arg1 = hDC as split_off
+  // 7/26/2014 jichi: Why there is no USING_SPLIT type?
+
   // gdi32.dll
-  ADD_HOOK(GetTextExtentPoint32A, s_arg2, 0,4,0, USING_STRING,  3) // BOOL GetTextExtentPoint32(HDC hdc, LPCTSTR lpString, int c, LPSIZE lpSize);
-  ADD_HOOK(GetGlyphOutlineA,      s_arg2, 0,4,0, BIG_ENDIAN,    1) // DWORD GetGlyphOutline(HDC hdc,  UINT uChar,  UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2);
-  ADD_HOOK(ExtTextOutA,           s_arg6, 0,4,0, USING_STRING,  7) // BOOL ExtTextOut(HDC hdc, int X, int Y, UINT fuOptions, const RECT *lprc, LPCTSTR lpString, UINT cbCount, const INT *lpDx);
-  ADD_HOOK(TextOutA,              s_arg4, 0,4,0, USING_STRING,  5) // BOOL TextOut(HDC hdc, int nXStart, int nYStart, LPCTSTR lpString, int cchString);
-  ADD_HOOK(GetCharABCWidthsA,     s_arg2, 0,4,0, BIG_ENDIAN,    1) // BOOL GetCharABCWidths(HDC hdc, UINT uFirstChar, UINT uLastChar,  LPABC lpabc);
-  ADD_HOOK(GetTextExtentPoint32W, s_arg2, 0,4,0, USING_UNICODE|USING_STRING, 3)
-  ADD_HOOK(GetGlyphOutlineW,      s_arg2, 0,4,0, USING_UNICODE, 1)
-  ADD_HOOK(ExtTextOutW,           s_arg6, 0,4,0, USING_UNICODE|USING_STRING, 7)
-  ADD_HOOK(TextOutW,              s_arg4, 0,4,0, USING_UNICODE|USING_STRING, 5)
-  ADD_HOOK(GetCharABCWidthsW,     s_arg2, 0,4,0, USING_UNICODE, 1)
+  ADD_HOOK(GetTextExtentPoint32A, s_arg2, 0,s_arg1,0, USING_STRING,  3) // BOOL GetTextExtentPoint32(HDC hdc, LPCTSTR lpString, int c, LPSIZE lpSize);
+  ADD_HOOK(GetGlyphOutlineA,      s_arg2, 0,s_arg1,0, BIG_ENDIAN,    1) // DWORD GetGlyphOutline(HDC hdc,  UINT uChar,  UINT uFormat, LPGLYPHMETRICS lpgm, DWORD cbBuffer, LPVOID lpvBuffer, const MAT2 *lpmat2);
+  ADD_HOOK(ExtTextOutA,           s_arg6, 0,s_arg1,0, USING_STRING,  7) // BOOL ExtTextOut(HDC hdc, int X, int Y, UINT fuOptions, const RECT *lprc, LPCTSTR lpString, UINT cbCount, const INT *lpDx);
+  ADD_HOOK(TextOutA,              s_arg4, 0,s_arg1,0, USING_STRING,  5) // BOOL TextOut(HDC hdc, int nXStart, int nYStart, LPCTSTR lpString, int cchString);
+  ADD_HOOK(GetCharABCWidthsA,     s_arg2, 0,s_arg1,0, BIG_ENDIAN,    1) // BOOL GetCharABCWidths(HDC hdc, UINT uFirstChar, UINT uLastChar,  LPABC lpabc);
+  ADD_HOOK(GetTextExtentPoint32W, s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
+  ADD_HOOK(GetGlyphOutlineW,      s_arg2, 0,s_arg1,0, USING_UNICODE, 1)
+  ADD_HOOK(ExtTextOutW,           s_arg6, 0,s_arg1,0, USING_UNICODE|USING_STRING, 7)
+  ADD_HOOK(TextOutW,              s_arg4, 0,s_arg1,0, USING_UNICODE|USING_STRING, 5)
+  ADD_HOOK(GetCharABCWidthsW,     s_arg2, 0,s_arg1,0, USING_UNICODE, 1)
 
   // user32.dll
-  ADD_HOOK(DrawTextA,             s_arg2, 0,4,0, USING_STRING,  3) // int DrawText(HDC hDC, LPCTSTR lpchText, int nCount, LPRECT lpRect, UINT uFormat);
-  ADD_HOOK(DrawTextExA,           s_arg2, 0,4,0, USING_STRING,  3) // int DrawTextEx(HDC hdc, LPTSTR lpchText,int cchText, LPRECT lprc, UINT dwDTFormat, LPDRAWTEXTPARAMS lpDTParams);
-  ADD_HOOK(DrawTextW,             s_arg2, 0,4,0, USING_UNICODE|USING_STRING, 3)
-  ADD_HOOK(DrawTextExW,           s_arg2, 0,4,0, USING_UNICODE|USING_STRING, 3)
+  ADD_HOOK(DrawTextA,             s_arg2, 0,s_arg1,0, USING_STRING,  3) // int DrawText(HDC hDC, LPCTSTR lpchText, int nCount, LPRECT lpRect, UINT uFormat);
+  ADD_HOOK(DrawTextExA,           s_arg2, 0,s_arg1,0, USING_STRING,  3) // int DrawTextEx(HDC hdc, LPTSTR lpchText,int cchText, LPRECT lprc, UINT dwDTFormat, LPDRAWTEXTPARAMS lpDTParams);
+  ADD_HOOK(DrawTextW,             s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
+  ADD_HOOK(DrawTextExW,           s_arg2, 0,s_arg1,0, USING_UNICODE|USING_STRING, 3)
 //#undef _
   ConsoleOutput("vnrcli:InsertGdiHooks: leave");
 }
@@ -841,8 +844,9 @@ void IHFAPI InsertLstrHooks()
   // int WINAPI lstrlen(LPCTSTR lpString);
   // Lstr functions usually extracts rubbish, and might crash certain games like 「Magical Marriage Lunatics!!」
   // Needed by Gift
-  ADD_HOOK(lstrlenA, s_arg1, 0,4,0, USING_STRING, 0) // 9/8/2013 jichi: int WINAPI lstrlen(LPCTSTR lpString);
-  ADD_HOOK(lstrlenW, s_arg1, 0,4,0, USING_UNICODE|USING_STRING, 0) // 9/8/2013 jichi: add lstrlen
+  // Use arg1 address for both split and data
+  ADD_HOOK(lstrlenA, s_arg1, 0,s_arg1,0, USING_STRING, 0) // 9/8/2013 jichi: int WINAPI lstrlen(LPCTSTR lpString);
+  ADD_HOOK(lstrlenW, s_arg1, 0,s_arg1,0, USING_UNICODE|USING_STRING, 0) // 9/8/2013 jichi: add lstrlen
 
   // size_t strlen(const char *str);
   // size_t strlen_l(const char *str, _locale_t locale);

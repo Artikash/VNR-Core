@@ -68,6 +68,7 @@ bool InsertCatSystem2Hook();    // CatSystem2: *.int
 bool InsertCMVSHook();          // CMVS: data/pack/*.cpz; do not support the latest cmvs32.exe and cmvs64.exe
 bool InsertCotophaHook();       // Cotopha: *.noa
 bool InsertDebonosuHook();      // Debonosu: bmp.bak and dsetup.dll
+bool InsertEaglsHook();         // E.A.G.L.S: EAGLES.dll
 bool InsertEMEHook();           // EmonEngine: emecfg.ecf
 bool InsertEushullyHook();      // Eushully: AGERC.DLL
 bool InsertGesen18Hook();       // Gsen18: *.szs
@@ -76,6 +77,7 @@ bool InsertLiveHook();          // Live: live.dll
 bool InsertMalieHook();         // Malie@light: malie.ini
 bool InsertMajiroHook();        // Majiro: *.arc
 bool InsertMarineHeartHook();   // Marine Heart: SAISYS.exe
+bool InsertMBLHook();           // MBL: *.mbl
 bool InsertMEDHook();           // MED: *.med
 bool InsertMonoHook();          // Mono (Unity3D): */Mono/mono.dll
 bool InsertNeXASHook();         // NeXAS: Thumbnail.pac
@@ -105,7 +107,6 @@ bool InsertWolfHook();          // Wolf: Data.wolf
 
 void InsertAB2TryHook();        // Yane@AkabeiSoft2Try: YaneSDK.dll.
 void InsertBrunsHook();         // Bruns: bruns.exe
-void InsertLuneHook();          // Lune: *.mbl
 void InsertKiriKiriHook();      // KiriKiri: *.xp3, resource string
 void InsertIronGameSystemHook();// IroneGameSystem: igs_sample.exe
 void InsertLucifenHook();       // Lucifen@Navel: *.lpk
