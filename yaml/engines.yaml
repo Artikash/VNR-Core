@@ -20,7 +20,7 @@ psp:
   - Imageepoch PSP
   - KID PSP
   - Nippon1 PSP
-  - Nippon1 PSP
+  - Nippon2 PSP
   - Sanctuary PSP
   - Tecmo PSP
   - Yeti PSP
@@ -121,6 +121,7 @@ simple:
   - Mono
   - NeXAS
   - Nippon1 PSP
+  - Nippon2 PSP
   - Pencil # renamed
   - Pensil
   - RealLive
@@ -250,6 +251,7 @@ char:
   - NeXAS
   - NEXTON
   - Nippon1 PSP
+  - Nippon2 PSP
   - NitroPlus
   - Pencil # renamed
   - Pensil
