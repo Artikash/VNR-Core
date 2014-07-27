@@ -6068,24 +6068,32 @@ bool InsertPPSSPPHooks()
   bool engineFound = Insert5pbPSPHook();
   if (!engineFound) {
     InsertBroccoliPSPHook();
-    InsertCyberfrontPSPHook();
-    InsertKidPSPHook(); // KID could lose text, could exist in multiple game
     InsertNippon1PSPHook();
     InsertNippon2PSPHook();
-    InsertOtomatePSPHook();
-    InsertYetiPSPHook();
 
     //InsertTecmoPSPHook();
 
     // Generic hooks
 
+    bool bandaiFound = InsertBandaiPSPHook();
+    InsertBandaiNamePSPHook();
+
+    InsertOtomatePSPHook();
+
+    // Hooks whose pattern is not generic enouph
+
+    InsertCyberfrontPSPHook();
+    InsertYetiPSPHook();
+
     InsertAlchemistPSPHook();
     InsertAlchemist2PSPHook();
 
-    InsertBandaiNamePSPHook();
+    if (!bandaiFound) {
+      // KID pattern is a subset of BANDAI, and hence MUST NOT be together with BANDAI
+      InsertKidPSPHook(); // KID could lose text, could exist in multiple game
 
-    InsertBandaiPSPHook()
-    || InsertImageepochPSPHook();  // Imageepoch could crash vnrcli for School Rumble PSP
+      InsertImageepochPSPHook();  // Imageepoch could crash vnrcli for School Rumble PSP
+    }
 
     InsertPPSSPPHLEHooks();
   }
