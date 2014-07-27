@@ -18,6 +18,7 @@ psp:
   - Broccoli PSP
   - CYBERFRONT PSP
   - Imageepoch PSP
+  - Intense PSP
   - KID PSP
   - Nippon1 PSP
   - Nippon2 PSP
@@ -112,6 +113,7 @@ simple:
   - EAGLS
   - Elf
   - Eushully
+  - Intense PSP
   - KID PSP
   - KiriKiri1
   - KiriKiri2
@@ -151,6 +153,7 @@ single: # single thread
   - SiglusEngine2
   - 5pb PSP
   - CYBERFRONT PSP
+  - Intense PSP
 
 repeat:
   - Malie       # finite
@@ -242,6 +245,7 @@ char:
   - EmonEngine
   - Eushully
   - Gesen18
+  - Intense PSP
   - KID PSP
   - Live
   - Lucifen
