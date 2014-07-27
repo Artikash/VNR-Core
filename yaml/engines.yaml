@@ -153,6 +153,7 @@ single: # single thread
   - SiglusEngine2
   - 5pb PSP
   - CYBERFRONT PSP
+  - Intense PSP
 
 repeat:
   - Malie       # finite

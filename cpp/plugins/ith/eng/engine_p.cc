@@ -8429,7 +8429,9 @@ static void SpecialPSPHookIntense(DWORD esp_base, HookParam *hp, DWORD *data, DW
     *len = ::LeadByteTable[c]; // 1 or 2
     //*split = regof(ecx, esp_base); // cause scenario text to split
     //*split = regof(edx, esp_base); // cause scenario text to split
-    *split = regof(ebx, esp_base); // floating value
+
+    //*split = regof(ebx, esp_base); // works, but floating value
+    *split = FIXED_SPLIT_VALUE << 3;
   }
 }
 bool InsertIntensePSPHook()
