@@ -6083,9 +6083,9 @@ bool InsertPPSSPPHooks()
     // Hooks whose pattern is not generic enouph
 
     InsertCyberfrontPSPHook();
-    InsertCyberfront2PSPHook();
 
     InsertYetiPSPHook();
+    InsertYeti2PSPHook();
 
     InsertAlchemistPSPHook();
     InsertAlchemist2PSPHook();
@@ -7462,8 +7462,9 @@ bool InsertCyberfrontPSPHook()
   return addr;
 }
 
-/** 7/19/2014 jichi Alternative CYBERFRONT PSP engine
+/** 7/19/2014 jichi Alternative Yeti PSP engine
  *  Sample game: Never 7
+ *  Sample game: ひまわり
  *
  *  Memory address is FIXED.
  *  Debug method: breakpoint the memory address
@@ -7601,7 +7602,7 @@ bool InsertCyberfrontPSPHook()
 //{
 //  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
 //}
-static void SpecialPSPHookCyberfront2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookYeti2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
   LPCSTR text = (LPCSTR)(eax + hp->userValue);
@@ -7614,9 +7615,9 @@ static void SpecialPSPHookCyberfront2(DWORD esp_base, HookParam *hp, DWORD *data
     //*split = ecx ? (FIXED_SPLIT_VALUE << 1) : 0; // << 1 to be unique, non-zero ecx is what I want
   }
 }
-bool InsertCyberfront2PSPHook()
+bool InsertYeti2PSPHook()
 {
-  ConsoleOutput("vnreng: CYBERFRONT2 PSP: enter");
+  ConsoleOutput("vnreng: Yeti2 PSP: enter");
 
   const BYTE bytes[] =  {
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 14289827   81e0 ffffff3f    and eax,0x3fffffff
@@ -7640,7 +7641,7 @@ bool InsertCyberfront2PSPHook()
 
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   if (!addr)
-    ConsoleOutput("vnreng: CYBERFRONT2 PSP: pattern not found");
+    ConsoleOutput("vnreng: Yeti2 PSP: pattern not found");
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
@@ -7649,12 +7650,12 @@ bool InsertCyberfront2PSPHook()
     //hp.off = pusha_eax_off - 4;
     //hp.split = pusha_ecx_off - 4; // this would split scenario thread
     //hp.split = hp.off; // directly use text address to split
-    hp.extern_fun = SpecialPSPHookCyberfront2;
-    ConsoleOutput("vnreng: CYBERFRONT2 PSP: INSERT");
-    NewHook(hp, L"CYBERFRONT2 PSP");
+    hp.extern_fun = SpecialPSPHookYeti2;
+    ConsoleOutput("vnreng: Yeti2 PSP: INSERT");
+    NewHook(hp, L"Yeti2 PSP");
   }
 
-  ConsoleOutput("vnreng: CYBERFRONT2 PSP: leave");
+  ConsoleOutput("vnreng: Yeti2 PSP: leave");
   return addr;
 }
 
