@@ -5834,9 +5834,9 @@ static void SpecialGCHookVanillaware(DWORD esp_base, HookParam *hp, DWORD *data,
 {
   DWORD eax = regof(eax, esp_base);
   LPCSTR text = LPCSTR(eax + hp->userValue);
-  static LPCSTR lastText;
-  if (lastText != text && *text && !_vanillawaregarbage(text)) {
-    lastText = text;
+  static LPCSTR lasttext;
+  if (lasttext != text && *text && !_vanillawaregarbage(text)) {
+    lasttext = text;
     *data = (DWORD)text;
     *len = ::strlen(text); // SHIFT-JIS
     *split = regof(ecx, esp_base);
@@ -5943,12 +5943,12 @@ void SpecialPSPHook(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DW
 {
   DWORD offset = *(DWORD *)(esp_base + hp->off);
   LPCSTR text = (LPCSTR)(offset + hp->userValue);
-  static LPCSTR lastText;
+  static LPCSTR lasttext;
   if (*text) {
     if (hp->userFlags & HPF_IgnoreSameText) {
-      if (text == lastText)
+      if (text == lasttext)
         return;
-      lastText = text;
+      lasttext = text;
     }
     *data = (DWORD)text;
     // I only considered SHIFT-JIS/UTF-8 case
@@ -6068,6 +6068,7 @@ bool InsertPPSSPPHooks()
   bool engineFound = Insert5pbPSPHook();
   if (!engineFound) {
     InsertBroccoliPSPHook();
+    InsertIntensePSPHook();
     InsertNippon1PSPHook();
     InsertNippon2PSPHook();
 
@@ -6650,9 +6651,9 @@ static void SpecialPSPHookImageepoch(DWORD esp_base, HookParam *hp, DWORD *data,
   // 7/25/2014: I tried using uniquemap to eliminate duplication, which does not work
   DWORD eax = regof(eax, esp_base);
   DWORD text = eax + hp->userValue;
-  static DWORD lastText; // Prevent reading the same address multiple times
-  if (text != lastText && *(LPCSTR)text) {
-    *data = lastText = text;
+  static DWORD lasttext; // Prevent reading the same address multiple times
+  if (text != lasttext && *(LPCSTR)text) {
+    *data = lasttext = text;
     *len = ::strlen((LPCSTR)text); // UTF-8 is null-terminated
     *split = regof(ecx, esp_base); // use ecx = "this" to split?
   }
@@ -6691,7 +6692,7 @@ bool InsertImageepochPSPHook()
     hp.split = pusha_ecx_off - 4;
     hp.userFlags = HPF_IgnoreSameText;
     //hp.extern_fun = SpecialPSPHook;
-    hp.extern_fun = SpecialPSPHookImageepoch; // since this function is common, use its own static lastText for HPF_IgnoreSameText
+    hp.extern_fun = SpecialPSPHookImageepoch; // since this function is common, use its own static lasttext for HPF_IgnoreSameText
     ConsoleOutput("vnreng: Imageepoch PSP: INSERT");
     NewHook(hp, L"Imageepoch PSP");
   }
@@ -7320,9 +7321,9 @@ static void SpecialPSPHookKid(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
 {
   DWORD eax = regof(eax, esp_base);
   LPCSTR text = (LPCSTR)(eax + hp->userValue);
-  static LPCSTR lastText; // Prevent reading the same address multiple times
-  if (text != lastText && *text) {
-    lastText = text;
+  static LPCSTR lasttext; // Prevent reading the same address multiple times
+  if (text != lasttext && *text) {
+    lasttext = text;
     text = _5pbltrim(text);
     *data = (DWORD)text;
     *len = _5pbstrlen(text);
@@ -7606,9 +7607,10 @@ static void SpecialPSPHookYeti2(DWORD esp_base, HookParam *hp, DWORD *data, DWOR
 {
   DWORD eax = regof(eax, esp_base);
   LPCSTR text = (LPCSTR)(eax + hp->userValue);
-  if (*text) {
+  if (BYTE c = *(BYTE *)text) {
     *data = (DWORD)text;
-    *len = text[1] ? 2 : 1;
+    //*len = text[1] ? 2 : 1;
+    *len = ::LeadByteTable[c];
 
     *split = regof(edx, esp_base);
     //DWORD ecx = regof(ecx, esp_base);
@@ -7872,19 +7874,18 @@ LPCSTR _bandailtrim(LPCSTR p)
 
 static void SpecialPSPHookBandai(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  // Issue: The split value will create lots of threads for Shining Hearts
-  //DWORD splitvalue = regof(ecx, esp_base); // works for Shool Rumble, but mix character name for Shining Hearts
-  DWORD splitvalue = regof(edi, esp_base); // works for Shining Hearts to split character name
-
   DWORD eax = regof(eax, esp_base);
   LPCSTR text = (LPCSTR)(eax + hp->userValue);
 
-  static uniquemap uniq;
-  if (*text && uniq.update(splitvalue, (DWORD)text)) {
+  if (*text) {
+    //lasttext = text;
     text = _bandailtrim(text);
     *data = (DWORD)text;
     *len = _bandaistrlen(text);
-    *split = splitvalue;
+
+    // Issue: The split value will create lots of threads for Shining Hearts
+    //*split = regof(ecx, esp_base); // works for Shool Rumble, but mix character name for Shining Hearts
+    *split = regof(edi, esp_base); // works for Shining Hearts to split character name
   }
 }
 
@@ -7964,6 +7965,7 @@ bool InsertBandaiPSPHook()
  *  134e05c2  -e9 5cfa03f0      jmp 03520023
  */
 // Read text from bp
+// TODO: This should be expressed as general hook without extern fun
 static void SpecialPSPHookNippon1(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(hp);
@@ -7971,6 +7973,7 @@ static void SpecialPSPHookNippon1(DWORD esp_base, HookParam *hp, DWORD *data, DW
   if (*text) {
     *data = (DWORD)text;
     *len = !text[0] ? 0 : !text[1] ? 1 : 2; // bp has at most two bytes
+    //*len = ::LeadByteTable[*(BYTE *)text] // TODO: Test leadbytetable
     *split = regof(ecx, esp_base);
   }
 }
@@ -8066,6 +8069,7 @@ bool InsertNippon1PSPHook()
  *  13d13f67   90               nop
  */
 // Read text from si
+// TODO: This should be expressed as general hook without extern fun
 static void SpecialPSPHookNippon2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(hp);
@@ -8073,6 +8077,7 @@ static void SpecialPSPHookNippon2(DWORD esp_base, HookParam *hp, DWORD *data, DW
   if (*text) {
     *data = (DWORD)text;
     *len = !text[0] ? 0 : !text[1] ? 1 : 2; // bp has at most two bytes
+    //*len = ::LeadByteTable[*(BYTE *)text] // TODO: Test leadbytetable
     *split = regof(ecx, esp_base);
   }
 }
@@ -8348,6 +8353,121 @@ bool InsertOtomatePSPHook()
   }
 
   ConsoleOutput("vnreng: Otomate PSP: leave");
+  return addr;
+}
+
+/** 7/27/2014 jichi Intense.jp PSP engine
+ *  Sample game: 密室のサクリファイス
+ *  This hook is only for intro graphic painting
+ *
+ *  Memory address is FIXED.
+ *  Debug method: predict and breakpoint the memory address
+ *
+ *  There are two matches in the memory, and only one function accessing them.
+ *  The memory is accessed by words.
+ *
+ *  The memory and hooked function is as follows.
+ *
+ *  09dfee77  88 c3 82 a2 95 a3 82 cc 89 9c 92 ea 82 c5 81 41  暗い淵の奥底で、
+ *  09dfee87  92 e1 82 ad 81 41 8f ac 82 b3 82 ad 81 41 8b bf  低く、小さく、響
+ *  09dfee97  82 ad 81 42 2a 70 0a 82 b1 82 ea 82 cd 81 41 8c  く。*p.これは、・
+ *  09dfeea7  db 93 ae 81 63 81 48 2a 70 0a 82 c6 82 e0 82 b7  ﾛ動…？*p.ともす
+ *  09dfeeb7  82 ea 82 ce 95 b7 82 ab 93 a6 82 b5 82 c4 82 b5  れば聞き逃してし
+ *  09dfeec7  82 dc 82 a2 82 bb 82 a4 82 c8 81 41 2a 70 0a 8f  まいそうな、*p.・
+ *  09dfeed7  ac 82 b3 82 ad 81 41 8e e3 81 58 82 b5 82 ad 81  ｬさく、弱々しく・
+ *  09dfeee7  41 95 73 8a 6d 82 a9 82 c8 89 b9 81 42 00 00 00  a不確かな音。...
+ *  09dfeef7  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ *  09dfee07  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ *
+ *  13472227   90               nop
+ *  13472228   77 0f            ja short 13472239
+ *  1347222a   c705 a8aa1001 20>mov dword ptr ds:[0x110aaa8],0x884ce20
+ *  13472234  -e9 cbdd16f0      jmp 035e0004
+ *  13472239   8b05 a8a71001    mov eax,dword ptr ds:[0x110a7a8]
+ *  1347223f   81e0 ffffff3f    and eax,0x3fffffff
+ *  13472245   8bb0 30004007    mov esi,dword ptr ds:[eax+0x7400030]
+ *  1347224b   8b3d 84a71001    mov edi,dword ptr ds:[0x110a784]
+ *  13472251   81c7 01000000    add edi,0x1
+ *  13472257   8bee             mov ebp,esi
+ *  13472259   032d 84a71001    add ebp,dword ptr ds:[0x110a784]
+ *  1347225f   8bc5             mov eax,ebp
+ *  13472261   81e0 ffffff3f    and eax,0x3fffffff
+ *  13472267   0fbe90 00004007  movsx edx,byte ptr ds:[eax+0x7400000]   ; jichi: hook here
+ *  1347226e   8b05 a8a71001    mov eax,dword ptr ds:[0x110a7a8]
+ *  13472274   81e0 ffffff3f    and eax,0x3fffffff
+ *  1347227a   89b8 38004007    mov dword ptr ds:[eax+0x7400038],edi
+ *  13472280   8bea             mov ebp,edx
+ *  13472282   81e5 ff000000    and ebp,0xff
+ *  13472288   81fa 0a000000    cmp edx,0xa
+ *  1347228e   c705 70a71001 0a>mov dword ptr ds:[0x110a770],0xa
+ *  13472298   8915 74a71001    mov dword ptr ds:[0x110a774],edx
+ *  1347229e   893d 78a71001    mov dword ptr ds:[0x110a778],edi
+ *  134722a4   892d 7ca71001    mov dword ptr ds:[0x110a77c],ebp
+ *  134722aa   8935 80a71001    mov dword ptr ds:[0x110a780],esi
+ *  134722b0   0f85 16000000    jnz 134722cc
+ *  134722b6   832d c4aa1001 08 sub dword ptr ds:[0x110aac4],0x8
+ *  134722bd   e9 02680000      jmp 13478ac4
+ *  134722c2   01ec             add esp,ebp
+ *  134722c4   ce               into
+ *  134722c5   8408             test byte ptr ds:[eax],cl
+ *  134722c7  -e9 57dd16f0      jmp 035e0023
+ *  134722cc   832d c4aa1001 08 sub dword ptr ds:[0x110aac4],0x8
+ *  134722d3   e9 0c000000      jmp 134722e4
+ *  134722d8   0140 ce          add dword ptr ds:[eax-0x32],eax
+ *  134722db   8408             test byte ptr ds:[eax],cl
+ *  134722dd  -e9 41dd16f0      jmp 035e0023
+ *  134722e2   90               nop
+ *  134722e3   cc               int3
+ */
+// Read text from esi
+static void SpecialPSPHookIntense(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  DWORD eax = regof(eax, esp_base);
+  LPCSTR text = LPCSTR(eax + hp->userValue);
+  if (BYTE c = *(BYTE *)text) { // unsigned char
+    *data = (DWORD)text;
+    *len = ::LeadByteTable[c]; // 1 or 2
+    //*split = regof(ecx, esp_base); // cause scenario text to split
+   *split = regof(ebx, esp_base);
+  }
+}
+bool InsertIntensePSPHook()
+{
+  ConsoleOutput("vnreng: Intense PSP: enter");
+  const BYTE bytes[] =  {
+    0x77, 0x0f,                     // 13472228   77 0f            ja short 13472239
+    0xc7,0x05, XX4, XX4,            // 1347222a   c705 a8aa1001 20>mov dword ptr ds:[0x110aaa8],0x884ce20
+    0xe9, XX4,                      // 13472234  -e9 cbdd16f0      jmp 035e0004
+    0x8b,0x05, XX4,                 // 13472239   8b05 a8a71001    mov eax,dword ptr ds:[0x110a7a8]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1347223f   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xb0, XX4,                 // 13472245   8bb0 30004007    mov esi,dword ptr ds:[eax+0x7400030]
+    0x8b,0x3d, XX4,                 // 1347224b   8b3d 84a71001    mov edi,dword ptr ds:[0x110a784]
+    0x81,0xc7, 0x01,0x00,0x00,0x00, // 13472251   81c7 01000000    add edi,0x1
+    0x8b,0xee,                      // 13472257   8bee             mov ebp,esi
+    0x03,0x2d, XX4,                 // 13472259   032d 84a71001    add ebp,dword ptr ds:[0x110a784]
+    0x8b,0xc5,                      // 1347225f   8bc5             mov eax,ebp
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13472261   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xbe,0x90, XX4,            // 13472267   0fbe90 00004007  movsx edx,byte ptr ds:[eax+0x7400000]   ; jichi: hook here
+    0x8b,0x05, XX4,                 // 1347226e   8b05 a8a71001    mov eax,dword ptr ds:[0x110a7a8]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f  // 13472274   81e0 ffffff3f    and eax,0x3fffffff
+  };
+  enum { memory_offset = 3 };
+  enum { hook_offset = 0x13472267 - 0x13472228 };
+
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  if (!addr)
+    ConsoleOutput("vnreng: Intense PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
+    hp.extern_fun = SpecialPSPHookIntense;
+    ConsoleOutput("vnreng: Intense PSP: INSERT");
+    NewHook(hp, L"Intense PSP");
+  }
+
+  ConsoleOutput("vnreng: Intense PSP: leave");
   return addr;
 }
 
@@ -8832,9 +8952,9 @@ static void SpecialPSPHookAlchemist3(DWORD esp_base, HookParam *hp, DWORD *data,
 {
   DWORD eax = regof(eax, esp_base);
   DWORD text = eax + hp->userValue;
-  static DWORD lastText;
-  if (text != lastText && *(LPCSTR)text) {
-    *data = lastText = text;
+  static DWORD lasttext;
+  if (text != lasttext && *(LPCSTR)text) {
+    *data = lasttext = text;
     *len = ::strlen((LPCSTR)text);
     *split = regof(ecx, esp_base); // use ecx "this" as split value?
   }
