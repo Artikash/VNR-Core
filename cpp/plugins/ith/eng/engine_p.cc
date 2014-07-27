@@ -6072,7 +6072,7 @@ bool InsertPPSSPPHooks()
     InsertKidPSPHook(); // KID could lose text, could exist in multiple game
     InsertNippon1PSPHook();
     InsertNippon2PSPHook();
-    InsertSanctuaryPSPHook();
+    InsertOtomatePSPHook();
     InsertYetiPSPHook();
 
     // Generic hook
@@ -8062,7 +8062,7 @@ bool InsertBroccoliPSPHook()
   return addr;
 }
 
-/** 7/26/2014 jichi Sanctuary PSP engine
+/** 7/26/2014 jichi Otomate PSP engine
  *  Sample game: クロノスタシア
  *
  *  Memory address is FIXED.
@@ -8103,7 +8103,7 @@ bool InsertBroccoliPSPHook()
  *  13c01057   cc               int3
  */
 // Read text from esi
-static void SpecialPSPHookSanctuary(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialPSPHookOtomate(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
   DWORD text = eax + hp->userValue - 2; // -2 to read 1 word more from previous location
@@ -8116,9 +8116,9 @@ static void SpecialPSPHookSanctuary(DWORD esp_base, HookParam *hp, DWORD *data, 
     *split = regof(ecx, esp_base) & 0xff00; // only use higher bits
   }
 }
-bool InsertSanctuaryPSPHook()
+bool InsertOtomatePSPHook()
 {
-  ConsoleOutput("vnreng: Sanctuary PSP: enter");
+  ConsoleOutput("vnreng: Otomate PSP: enter");
   const BYTE bytes[] =  {
     0x77, 0x0f,                     // 13c00fe4   77 0f            ja short 13c00ff5
     0xc7,0x05, XX4, XX4,            // 13c00fe6   c705 a8aa1001 30>mov dword ptr ds:[0x110aaa8],0x884b330
@@ -8140,18 +8140,18 @@ bool InsertSanctuaryPSPHook()
 
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   if (!addr)
-    ConsoleOutput("vnreng: Sanctuary PSP: pattern not found");
+    ConsoleOutput("vnreng: Otomate PSP: pattern not found");
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
-    hp.extern_fun = SpecialPSPHookSanctuary;
-    ConsoleOutput("vnreng: Sanctuary PSP: INSERT");
-    NewHook(hp, L"Sanctuary PSP");
+    hp.extern_fun = SpecialPSPHookOtomate;
+    ConsoleOutput("vnreng: Otomate PSP: INSERT");
+    NewHook(hp, L"Otomate PSP");
   }
 
-  ConsoleOutput("vnreng: Sanctuary PSP: leave");
+  ConsoleOutput("vnreng: Otomate PSP: leave");
   return addr;
 }
 

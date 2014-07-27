@@ -21,7 +21,7 @@ psp:
   - KID PSP
   - Nippon1 PSP
   - Nippon2 PSP
-  - Sanctuary PSP
+  - Otomate PSP
   - Tecmo PSP
   - Yeti PSP
 
@@ -122,12 +122,11 @@ simple:
   - NeXAS
   - Nippon1 PSP
   - Nippon2 PSP
+  - Otomate PSP
   - Pencil # renamed
   - Pensil
   - RealLive
   - Rejet
-  - Yeti PSP
-  - Sanctuary PSP
   - ShinaRio
   - SiglusEngine2
   - ScenarioPlayerA
@@ -141,6 +140,7 @@ simple:
   - Tecmo PSP
   - Tenco
   - WAFFLE
+  - Yeti PSP
   - YukaSystem2
 
 single: # single thread
@@ -253,6 +253,7 @@ char:
   - Nippon1 PSP
   - Nippon2 PSP
   - NitroPlus
+  - Otomate PSP
   - Pencil # renamed
   - Pensil
   - QLIE
@@ -260,7 +261,6 @@ char:
   - Rejet
   - RetouchSystem
   - rUGP
-  - Sanctuary PSP
   - ScenarioPlayerA
   - ShinaRio
   - Silkys # renamed
