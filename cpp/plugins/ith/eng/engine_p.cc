@@ -7968,11 +7968,11 @@ bool InsertBandaiPSPHook()
 // TODO: This should be expressed as general hook without extern fun
 static void SpecialPSPHookNippon1(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
-  LPCSTR text = LPCSTR(esp_base + pusha_ebp_off - 4); // ebp address
+  //LPCSTR text = LPCSTR(esp_base + pusha_ebp_off - 4); // ebp address
+  LPCSTR text = LPCSTR(esp_base + hp->off); // dynamic offset, ebp or esi
   if (*text) {
     *data = (DWORD)text;
-    *len = !text[0] ? 0 : !text[1] ? 1 : 2; // bp has at most two bytes
+    *len = !text[0] ? 0 : !text[1] ? 1 : 2; // bp or si has at most two bytes
     //*len = ::LeadByteTable[*(BYTE *)text] // TODO: Test leadbytetable
     *split = regof(ecx, esp_base);
   }
@@ -8007,6 +8007,7 @@ bool InsertNippon1PSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
+    hp.off = pusha_ebp_off - 4; // ebp
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
     hp.extern_fun = SpecialPSPHookNippon1;
     ConsoleOutput("vnreng: Nippon1 PSP: INSERT");
@@ -8068,19 +8069,17 @@ bool InsertNippon1PSPHook()
  *  13d13f62  -e9 bcc0a3ef      jmp 03750023
  *  13d13f67   90               nop
  */
-// Read text from si
-// TODO: This should be expressed as general hook without extern fun
-static void SpecialPSPHookNippon2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
-{
-  CC_UNUSED(hp);
-  LPCSTR text = LPCSTR(esp_base + pusha_esi_off - 4); // esi address
-  if (*text) {
-    *data = (DWORD)text;
-    *len = !text[0] ? 0 : !text[1] ? 1 : 2; // bp has at most two bytes
-    //*len = ::LeadByteTable[*(BYTE *)text] // TODO: Test leadbytetable
-    *split = regof(ecx, esp_base);
-  }
-}
+//static void SpecialPSPHookNippon2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+//{
+//  CC_UNUSED(hp);
+//  LPCSTR text = LPCSTR(esp_base + pusha_esi_off - 4); // esi address
+//  if (*text) {
+//    *data = (DWORD)text;
+//    *len = !text[0] ? 0 : !text[1] ? 1 : 2; // bp has at most two bytes
+//    //*len = ::LeadByteTable[*(BYTE *)text] // TODO: Test leadbytetable
+//    *split = regof(ecx, esp_base);
+//  }
+//}
 
 bool InsertNippon2PSPHook()
 {
@@ -8108,8 +8107,9 @@ bool InsertNippon2PSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
+    hp.off = pusha_esi_off - 4; // esi
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
-    hp.extern_fun = SpecialPSPHookNippon2;
+    hp.extern_fun = SpecialPSPHookNippon1;
     ConsoleOutput("vnreng: Nippon2 PSP: INSERT");
     NewHook(hp, L"Nippon2 PSP");
   }
