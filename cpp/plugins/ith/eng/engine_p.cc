@@ -7676,6 +7676,7 @@ LPCSTR _bandailtrim(LPCSTR p)
 
 static void SpecialPSPHookBandai(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  // Issue: The split value will create lots of threads for Shining Hearts
   //DWORD splitValue = regof(ecx, esp_base); // works for Shool Rumble, but mix character name for Shining Hearts
   DWORD splitValue = regof(edi, esp_base); // works for Shining Hearts to split character name
 
@@ -7966,6 +7967,8 @@ bool InsertBroccoliPSPHook()
  *
  *  Memory address is FIXED.
  *  Debug method: breakpoint the memory address
+ *
+ *  The memory access of the function below is weird that the accessed value is 2 bytes after the real text.
  *
  *  13c00fe1   cc               int3
  *  13c00fe2   cc               int3
