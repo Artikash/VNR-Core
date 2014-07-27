@@ -6075,12 +6075,12 @@ bool InsertPPSSPPHooks()
     InsertOtomatePSPHook();
     InsertYetiPSPHook();
 
-    // Generic hook
+    //InsertTecmoPSPHook();
+
+    // Generic hooks
 
     InsertAlchemistPSPHook();
     InsertAlchemist2PSPHook();
-
-    //InsertTecmoPSPHook();
 
     InsertBandaiNamePSPHook();
 
