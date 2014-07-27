@@ -6071,6 +6071,7 @@ bool InsertPPSSPPHooks()
     InsertCyberfrontPSPHook();
     InsertKidPSPHook(); // KID could lose text, could exist in multiple game
     InsertNippon1PSPHook();
+    InsertNippon2PSPHook();
     InsertSanctuaryPSPHook();
     InsertYetiPSPHook();
 
@@ -7676,6 +7677,7 @@ LPCSTR _bandailtrim(LPCSTR p)
 
 static void SpecialPSPHookBandai(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  // Issue: The split value will create lots of threads for Shining Hearts
   //DWORD splitValue = regof(ecx, esp_base); // works for Shool Rumble, but mix character name for Shining Hearts
   DWORD splitValue = regof(edi, esp_base); // works for Shining Hearts to split character name
 
@@ -7732,7 +7734,7 @@ bool InsertBandaiPSPHook()
   return addr;
 }
 
-/** 7/22/2014 jichi Nippon1 PSP engine
+/** 7/22/2014 jichi: Nippon1 PSP engine
  *  Sample game: うたの☆プリンスさまっ♪
  *
  *  Memory address is FIXED.
@@ -7807,13 +7809,112 @@ bool InsertNippon1PSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT;
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
     hp.extern_fun = SpecialPSPHookNippon1;
     ConsoleOutput("vnreng: Nippon1 PSP: INSERT");
     NewHook(hp, L"Nippon1 PSP");
   }
 
   ConsoleOutput("vnreng: Nippon1 PSP: leave");
+  return addr;
+}
+
+/** 7/26/2014 jichi: Alternative Nippon1 PSP engine
+ *  Sample game: 神々の悪戯
+ *  Issue: character name cannot be extracted
+ *
+ *  Memory address is FIXED.
+ *  Debug method: breakpoint the precomputed address
+ *
+ *  This function is the one that write the text into the memory.
+ *
+ *  13d13e8b   0f92c0           setb al
+ *  13d13e8e   8bf8             mov edi,eax
+ *  13d13e90   81ff 00000000    cmp edi,0x0
+ *  13d13e96   893d 78a71001    mov dword ptr ds:[0x110a778],edi
+ *  13d13e9c   8935 dca71001    mov dword ptr ds:[0x110a7dc],esi
+ *  13d13ea2   0f85 16000000    jnz 13d13ebe
+ *  13d13ea8   832d c4aa1001 0a sub dword ptr ds:[0x110aac4],0xa
+ *  13d13eaf   c705 a8aa1001 cc>mov dword ptr ds:[0x110aaa8],0x887c2cc
+ *  13d13eb9  -e9 65c1a3ef      jmp 03750023
+ *  13d13ebe   832d c4aa1001 0a sub dword ptr ds:[0x110aac4],0xa
+ *  13d13ec5   e9 0e000000      jmp 13d13ed8
+ *  13d13eca   01a8 c28708e9    add dword ptr ds:[eax+0xe90887c2],ebp
+ *  13d13ed0   4f               dec edi
+ *  13d13ed1   c1a3 ef90cccc cc shl dword ptr ds:[ebx+0xcccc90ef],0xcc   ; shift constant out of range 1..31
+ *  13d13ed8   77 0f            ja short 13d13ee9
+ *  13d13eda   c705 a8aa1001 a8>mov dword ptr ds:[0x110aaa8],0x887c2a8
+ *  13d13ee4  -e9 1bc1a3ef      jmp 03750004
+ *  13d13ee9   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
+ *  13d13eef   81e0 ffffff3f    and eax,0x3fffffff
+ *  13d13ef5   0fb7b0 0000c007  movzx esi,word ptr ds:[eax+0x7c00000]
+ *  13d13efc   8b3d fccd5a10    mov edi,dword ptr ds:[0x105acdfc]
+ *  13d13f02   8bef             mov ebp,edi
+ *  13d13f04   d1e5             shl ebp,1
+ *  13d13f06   81c5 e8cd9a08    add ebp,0x89acde8
+ *  13d13f0c   8bc5             mov eax,ebp
+ *  13d13f0e   81e0 ffffff3f    and eax,0x3fffffff
+ *  13d13f14   66:89b0 2000c007 mov word ptr ds:[eax+0x7c00020],si	; jichi: hook here
+ *  13d13f1b   8d7f 01          lea edi,dword ptr ds:[edi+0x1]
+ *  13d13f1e   893d fccd5a10    mov dword ptr ds:[0x105acdfc],edi
+ *  13d13f24   8b15 dca71001    mov edx,dword ptr ds:[0x110a7dc]
+ *  13d13f2a   8d52 10          lea edx,dword ptr ds:[edx+0x10]
+ *  13d13f2d   8b05 e4a71001    mov eax,dword ptr ds:[0x110a7e4]
+ *  13d13f33   893d 78a71001    mov dword ptr ds:[0x110a778],edi
+ *  13d13f39   c705 7ca71001 e8>mov dword ptr ds:[0x110a77c],0x89acde8
+ *  13d13f43   8935 80a71001    mov dword ptr ds:[0x110a780],esi
+ *  13d13f49   892d 84a71001    mov dword ptr ds:[0x110a784],ebp
+ *  13d13f4f   8915 dca71001    mov dword ptr ds:[0x110a7dc],edx
+ *  13d13f55   8905 a8aa1001    mov dword ptr ds:[0x110aaa8],eax
+ *  13d13f5b   832d c4aa1001 0b sub dword ptr ds:[0x110aac4],0xb
+ *  13d13f62  -e9 bcc0a3ef      jmp 03750023
+ *  13d13f67   90               nop
+ */
+// Read text from si
+static void SpecialPSPHookNippon2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  CC_UNUSED(hp);
+  LPCSTR text = LPCSTR(esp_base + pusha_esi_off - 4); // esi address
+  if (*text) {
+    *data = (DWORD)text;
+    *len = !text[0] ? 0 : !text[1] ? 1 : 2; // bp has at most two bytes
+    *split = regof(ecx, esp_base);
+  }
+}
+
+bool InsertNippon2PSPHook()
+{
+  ConsoleOutput("vnreng: Nippon2 PSP: enter");
+
+  const BYTE bytes[] =  {
+    0xe9, XX4,                      // 13d13ee4  -e9 1bc1a3ef      jmp 03750004
+    0x8b,0x05, XX4,                 // 13d13ee9   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13d13eef   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb7,0xb0, XX4,            // 13d13ef5   0fb7b0 0000c007  movzx esi,word ptr ds:[eax+0x7c00000]
+    0x8b,0x3d, XX4,                 // 13d13efc   8b3d fccd5a10    mov edi,dword ptr ds:[0x105acdfc]
+    0x8b,0xef,                      // 13d13f02   8bef             mov ebp,edi
+    0xd1,0xe5,                      // 13d13f04   d1e5             shl ebp,1
+    0x81,0xc5, XX4,                 // 13d13f06   81c5 e8cd9a08    add ebp,0x89acde8
+    0x8b,0xc5,                      // 13d13f0c   8bc5             mov eax,ebp
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13d13f0e   81e0 ffffff3f    and eax,0x3fffffff
+    0x66,0x89,0xb0 //, XX4          // 13d13f14   66:89b0 2000c007 mov word ptr ds:[eax+0x7c00020],si	; jichi: hook here
+  };
+  enum { memory_offset = 3 };
+  enum { hook_offset = sizeof(bytes) - memory_offset };
+
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  if (!addr)
+    ConsoleOutput("vnreng: Nippon2 PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
+    hp.extern_fun = SpecialPSPHookNippon2;
+    ConsoleOutput("vnreng: Nippon2 PSP: INSERT");
+    NewHook(hp, L"Nippon2 PSP");
+  }
+
+  ConsoleOutput("vnreng: Nippon2 PSP: leave");
   return addr;
 }
 
@@ -7966,6 +8067,8 @@ bool InsertBroccoliPSPHook()
  *
  *  Memory address is FIXED.
  *  Debug method: breakpoint the memory address
+ *
+ *  The memory access of the function below is weird that the accessed value is 2 bytes after the real text.
  *
  *  13c00fe1   cc               int3
  *  13c00fe2   cc               int3
