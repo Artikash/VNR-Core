@@ -17,6 +17,7 @@ psp:
   - BANDAI Name PSP
   - Broccoli PSP
   - CYBERFRONT PSP
+  - CYBERFRONT2 PSP
   - Imageepoch PSP
   - KID PSP
   - Nippon1 PSP
@@ -108,6 +109,7 @@ simple:
   - CMVS
   - CMVS2
   - CYBERFRONT PSP
+  - CYBERFRONT2 PSP
   - EAGLS
   - Elf
   - Eushully
@@ -234,6 +236,7 @@ char:
   - CIRCUS
   - CMVS
   - CYBERFRONT PSP
+  - CYBERFRONT2 PSP
   - Debonosu
   - EAGLS
   - Elf

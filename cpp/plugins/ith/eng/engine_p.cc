@@ -6083,6 +6083,8 @@ bool InsertPPSSPPHooks()
     // Hooks whose pattern is not generic enouph
 
     InsertCyberfrontPSPHook();
+    InsertCyberfront2PSPHook();
+
     InsertYetiPSPHook();
 
     InsertAlchemistPSPHook();
@@ -6090,6 +6092,7 @@ bool InsertPPSSPPHooks()
 
     if (!bandaiFound) {
       // KID pattern is a subset of BANDAI, and hence MUST NOT be together with BANDAI
+      // Sample BANDAI game that could be broken by KID: 密室のサクリファイス
       InsertKidPSPHook(); // KID could lose text, could exist in multiple game
 
       InsertImageepochPSPHook();  // Imageepoch could crash vnrcli for School Rumble PSP
@@ -7346,7 +7349,6 @@ bool InsertKidPSPHook()
   };
   enum { memory_offset = 3 }; // 13973aac   0fb6b8 00008007  movzx edi,byte ptr ds:[eax+0x7800000]
   enum { hook_offset = 0x13973aac - 0x13973a7c };
-  //enum { hook_offset = sizeof(bytes) - 3 };
 
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   if (!addr)
@@ -7417,17 +7419,6 @@ bool InsertKidPSPHook()
  *  13909abe  ^e9 5521f8ff      jmp 1388bc18
  *  13909ac3   90               nop
  */
-//static void SpecialPSPHookCyberfront(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
-//{
-//  DWORD eax = regof(eax, esp_base);
-//  LPCSTR text = (LPCSTR)(eax + hp->userValue);
-//  if (*text) {
-//    *data = (DWORD)text;
-//    *len = ::strlen(text);
-//    *split = regof(ecx, esp_base);
-//  }
-//}
-
 bool InsertCyberfrontPSPHook()
 {
   ConsoleOutput("vnreng: CYBERFRONT PSP: enter");
@@ -7451,7 +7442,6 @@ bool InsertCyberfrontPSPHook()
   };
   enum { memory_offset = 2 }; // 13909a51   8890 00008007    mov byte ptr ds:[eax+0x7800000],dl
   enum { hook_offset = 0x13909a51 - 0x13909a2c };
-  //enum { hook_offset = sizeof(bytes) - 3 };
 
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   if (!addr)
@@ -7469,6 +7459,202 @@ bool InsertCyberfrontPSPHook()
   }
 
   ConsoleOutput("vnreng: CYBERFRONT PSP: leave");
+  return addr;
+}
+
+/** 7/19/2014 jichi Alternative CYBERFRONT PSP engine
+ *  Sample game: Never 7
+ *
+ *  Memory address is FIXED.
+ *  Debug method: breakpoint the memory address
+ *  There are two matched memory address to the current text
+ *
+ *  There are several functions. The first one is used.
+ *
+ *  The text also has 5pb-like garbage, but it is difficult to trim.
+ *
+ *  14289802   cc               int3
+ *  14289803   cc               int3
+ *  14289804   77 0f            ja short 14289815
+ *  14289806   c705 a8aa1001 58>mov dword ptr ds:[0x110aaa8],0x881ab58
+ *  14289810  -e9 ef6767ef      jmp 03900004
+ *  14289815   8b35 74a71001    mov esi,dword ptr ds:[0x110a774]
+ *  1428981b   0335 78a71001    add esi,dword ptr ds:[0x110a778]
+ *  14289821   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
+ *  14289827   81e0 ffffff3f    and eax,0x3fffffff
+ *  1428982d   8bb8 28004007    mov edi,dword ptr ds:[eax+0x7400028]
+ *  14289833   8bc6             mov eax,esi
+ *  14289835   81e0 ffffff3f    and eax,0x3fffffff
+ *  1428983b   8bd7             mov edx,edi
+ *  1428983d   8890 10044007    mov byte ptr ds:[eax+0x7400410],dl
+ *  14289843   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
+ *  14289849   81e0 ffffff3f    and eax,0x3fffffff
+ *  1428984f   8bb8 84004007    mov edi,dword ptr ds:[eax+0x7400084]
+ *  14289855   8b05 aca71001    mov eax,dword ptr ds:[0x110a7ac]
+ *  1428985b   81e0 ffffff3f    and eax,0x3fffffff
+ *  14289861   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000]	; jichi: hook here
+ *  14289868   81ff 00000000    cmp edi,0x0
+ *  1428986e   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+ *  14289874   893d 74a71001    mov dword ptr ds:[0x110a774],edi
+ *  1428987a   892d 78a71001    mov dword ptr ds:[0x110a778],ebp
+ *  14289880   0f85 16000000    jnz 1428989c
+ *  14289886   832d c4aa1001 06 sub dword ptr ds:[0x110aac4],0x6
+ *  1428988d   c705 a8aa1001 ac>mov dword ptr ds:[0x110aaa8],0x881aeac
+ *  14289897  -e9 876767ef      jmp 03900023
+ *  1428989c   832d c4aa1001 06 sub dword ptr ds:[0x110aac4],0x6
+ *  142898a3   e9 0c000000      jmp 142898b4
+ *  142898a8   0170 ab          add dword ptr ds:[eax-0x55],esi
+ *  142898ab   8108 e9716767    or dword ptr ds:[eax],0x676771e9
+ *  142898b1   ef               out dx,eax                               ; i/o command
+ *  142898b2   90               nop
+ *
+ *  142878ed   cc               int3
+ *  142878ee   cc               int3
+ *  142878ef   cc               int3
+ *  142878f0   77 0f            ja short 14287901
+ *  142878f2   c705 a8aa1001 44>mov dword ptr ds:[0x110aaa8],0x8811e44
+ *  142878fc  -e9 038767ef      jmp 03900004
+ *  14287901   8b35 70a71001    mov esi,dword ptr ds:[0x110a770]
+ *  14287907   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
+ *  1428790d   81e0 ffffff3f    and eax,0x3fffffff
+ *  14287913   8bd6             mov edx,esi
+ *  14287915   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl	; jichi: hook here
+ *  1428791b   8b05 a8a71001    mov eax,dword ptr ds:[0x110a7a8]
+ *  14287921   81e0 ffffff3f    and eax,0x3fffffff
+ *  14287927   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
+ *  1428792e   8b2d aca71001    mov ebp,dword ptr ds:[0x110a7ac]
+ *  14287934   81c5 02000000    add ebp,0x2
+ *  1428793a   8bd5             mov edx,ebp
+ *  1428793c   8915 aca71001    mov dword ptr ds:[0x110a7ac],edx
+ *  14287942   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
+ *  14287948   81e0 ffffff3f    and eax,0x3fffffff
+ *  1428794e   8bd7             mov edx,edi
+ *  14287950   8890 01004007    mov byte ptr ds:[eax+0x7400001],dl
+ *  14287956   8b15 b0a71001    mov edx,dword ptr ds:[0x110a7b0]
+ *  1428795c   8d52 02          lea edx,dword ptr ds:[edx+0x2]
+ *  1428795f   893d 74a71001    mov dword ptr ds:[0x110a774],edi
+ *  14287965   892d a8a71001    mov dword ptr ds:[0x110a7a8],ebp
+ *  1428796b   8915 b0a71001    mov dword ptr ds:[0x110a7b0],edx
+ *  14287971   832d c4aa1001 07 sub dword ptr ds:[0x110aac4],0x7
+ *  14287978   e9 0b000000      jmp 14287988
+ *  1428797d   01a8 1d8108e9    add dword ptr ds:[eax+0xe908811d],ebp
+ *  14287983   9c               pushfd
+ *  14287984   8667 ef          xchg byte ptr ds:[edi-0x11],ah
+ *  14287987   90               nop
+ *
+ *  14289a2a   90               nop
+ *  14289a2b   cc               int3
+ *  14289a2c   77 0f            ja short 14289a3d
+ *  14289a2e   c705 a8aa1001 b4>mov dword ptr ds:[0x110aaa8],0x881abb4
+ *  14289a38  -e9 c76567ef      jmp 03900004
+ *  14289a3d   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
+ *  14289a43   81e0 ffffff3f    and eax,0x3fffffff
+ *  14289a49   8bb0 18004007    mov esi,dword ptr ds:[eax+0x7400018]
+ *  14289a4f   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
+ *  14289a55   81e0 ffffff3f    and eax,0x3fffffff
+ *  14289a5b   8bb8 24004007    mov edi,dword ptr ds:[eax+0x7400024]
+ *  14289a61   8b2d 70a71001    mov ebp,dword ptr ds:[0x110a770]
+ *  14289a67   03ee             add ebp,esi
+ *  14289a69   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
+ *  14289a6f   81e0 ffffff3f    and eax,0x3fffffff
+ *  14289a75   8bb0 20004007    mov esi,dword ptr ds:[eax+0x7400020]
+ *  14289a7b   8bc5             mov eax,ebp
+ *  14289a7d   81e0 ffffff3f    and eax,0x3fffffff
+ *  14289a83   66:89b8 c2034007 mov word ptr ds:[eax+0x74003c2],di
+ *  14289a8a   8bc5             mov eax,ebp
+ *  14289a8c   81e0 ffffff3f    and eax,0x3fffffff
+ *  14289a92   66:89b0 c0034007 mov word ptr ds:[eax+0x74003c0],si
+ *  14289a99   8b05 aca71001    mov eax,dword ptr ds:[0x110a7ac]
+ *  14289a9f   81e0 ffffff3f    and eax,0x3fffffff
+ *  14289aa5   0fb6b0 00004007  movzx esi,byte ptr ds:[eax+0x7400000]	; jichi: hook here
+ *  14289aac   81e6 ff000000    and esi,0xff
+ *  14289ab2   892d 70a71001    mov dword ptr ds:[0x110a770],ebp
+ *  14289ab8   893d 74a71001    mov dword ptr ds:[0x110a774],edi
+ *  14289abe   8935 78a71001    mov dword ptr ds:[0x110a778],esi
+ *  14289ac4   c705 e4a71001 d8>mov dword ptr ds:[0x110a7e4],0x881abd8
+ *  14289ace   832d c4aa1001 09 sub dword ptr ds:[0x110aac4],0x9
+ *  14289ad5  ^e9 d6c6f8ff      jmp 142161b0
+ *  14289ada   90               nop
+ *
+ *  14289adb   cc               int3
+ *  14289adc   77 0f            ja short 14289aed
+ *  14289ade   c705 a8aa1001 d8>mov dword ptr ds:[0x110aaa8],0x881abd8
+ *  14289ae8  -e9 176567ef      jmp 03900004
+ *  14289aed   813d 70a71001 00>cmp dword ptr ds:[0x110a770],0x0
+ *  14289af7   0f85 2f000000    jnz 14289b2c
+ *  14289afd   8b05 aca71001    mov eax,dword ptr ds:[0x110a7ac]
+ *  14289b03   81e0 ffffff3f    and eax,0x3fffffff
+ *  14289b09   0fb6b0 00004007  movzx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+ *  14289b10   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+ *  14289b16   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
+ *  14289b1d   e9 22000000      jmp 14289b44
+ *  14289b22   0110             add dword ptr ds:[eax],edx
+ *  14289b24   af               scas dword ptr es:[edi]
+ *  14289b25   8108 e9f76467    or dword ptr ds:[eax],0x6764f7e9
+ *  14289b2b   ef               out dx,eax                               ; i/o command
+ *  14289b2c   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
+ *  14289b33   c705 a8aa1001 e0>mov dword ptr ds:[0x110aaa8],0x881abe0
+ *  14289b3d  -e9 e16467ef      jmp 03900023
+ */
+// Return revert address
+//static size_t _reverse_strlen(LPCSTR s)
+//{
+//  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+//}
+static void SpecialPSPHookCyberfront2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  DWORD eax = regof(eax, esp_base);
+  LPCSTR text = (LPCSTR)(eax + hp->userValue);
+  if (*text) {
+    *data = (DWORD)text;
+    *len = text[1] ? 2 : 1;
+
+    *split = regof(edx, esp_base);
+    //DWORD ecx = regof(ecx, esp_base);
+    //*split = ecx ? (FIXED_SPLIT_VALUE << 1) : 0; // << 1 to be unique, non-zero ecx is what I want
+  }
+}
+bool InsertCyberfront2PSPHook()
+{
+  ConsoleOutput("vnreng: CYBERFRONT2 PSP: enter");
+
+  const BYTE bytes[] =  {
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 14289827   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xb8, XX4,                 // 1428982d   8bb8 28004007    mov edi,dword ptr ds:[eax+0x7400028]
+    0x8b,0xc6,                      // 14289833   8bc6             mov eax,esi
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 14289835   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xd7,                      // 1428983b   8bd7             mov edx,edi
+    0x88,0x90, XX4,                 // 1428983d   8890 10044007    mov byte ptr ds:[eax+0x7400410],dl
+    0x8b,0x05, XX4,                 // 14289843   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 14289849   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xb8, XX4,                 // 1428984f   8bb8 84004007    mov edi,dword ptr ds:[eax+0x7400084]
+    0x8b,0x05, XX4,                 // 14289855   8b05 aca71001    mov eax,dword ptr ds:[0x110a7ac]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1428985b   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb6,0xa8 //, XX4          // 14289861   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000]	; jichi: hook here
+                                    // 14289b10   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+                                    // 14289b16   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
+  };
+  enum { memory_offset = 3 };
+  enum { hook_offset = sizeof(bytes) - memory_offset };
+  //enum { hook_offset = sizeof(bytes) + 4 }; // point to next statement after ebp is assigned
+
+  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  if (!addr)
+    ConsoleOutput("vnreng: CYBERFRONT2 PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
+    //hp.off = pusha_eax_off - 4;
+    //hp.split = pusha_ecx_off - 4; // this would split scenario thread
+    //hp.split = hp.off; // directly use text address to split
+    hp.extern_fun = SpecialPSPHookCyberfront2;
+    ConsoleOutput("vnreng: CYBERFRONT2 PSP: INSERT");
+    NewHook(hp, L"CYBERFRONT2 PSP");
+  }
+
+  ConsoleOutput("vnreng: CYBERFRONT2 PSP: leave");
   return addr;
 }
 
@@ -7653,7 +7839,7 @@ namespace { // unnamed
 
 inline bool _bandaigarbage(char c)
 {
-  return c == ' ' || c == '/' || c == '#' || c == '.'
+  return c == ' ' || c == '/' || c == '#' || c == '.' || c == ':'
       || c >= '0' && c <= '9'
       || c >= 'A' && c <= 'z'; // also ignore ASCII 91-96: [ \ ] ^ _ `
 }
