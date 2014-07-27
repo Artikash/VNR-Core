@@ -5942,10 +5942,10 @@ bool insertVanillawareGCHook()
 void SpecialPSPHook(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD offset = *(DWORD *)(esp_base + hp->off);
-  LPCSTR text = (LPCSTR)(offset + hp->userValue);
+  LPCSTR text = LPCSTR(offset + hp->userValue);
   static LPCSTR lasttext;
   if (*text) {
-    if (hp->userFlags & HPF_IgnoreSameText) {
+    if (hp->userFlags & HPF_IgnoreSameAddress) {
       if (text == lasttext)
         return;
       lasttext = text;
@@ -6522,7 +6522,7 @@ size_t _5pbstrlen(LPCSTR text)
 static void SpecialPSPHook5pb(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = (LPCSTR)(eax + hp->userValue);
+  LPCSTR text = LPCSTR(eax + hp->userValue);
   if (*text) {
     text = _5pbltrim(text);
     *data = (DWORD)text;
@@ -6690,9 +6690,9 @@ bool InsertImageepochPSPHook()
     hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT; // UTF-8, though
     hp.off = pusha_eax_off - 4;
     hp.split = pusha_ecx_off - 4;
-    hp.userFlags = HPF_IgnoreSameText;
+    hp.userFlags = HPF_IgnoreSameAddress;
     //hp.extern_fun = SpecialPSPHook;
-    hp.extern_fun = SpecialPSPHookImageepoch; // since this function is common, use its own static lasttext for HPF_IgnoreSameText
+    hp.extern_fun = SpecialPSPHookImageepoch; // since this function is common, use its own static lasttext for HPF_IgnoreSameAddress
     ConsoleOutput("vnreng: Imageepoch PSP: INSERT");
     NewHook(hp, L"Imageepoch PSP");
   }
@@ -7320,7 +7320,7 @@ bool InsertYetiPSPHook()
 static void SpecialPSPHookKid(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = (LPCSTR)(eax + hp->userValue);
+  LPCSTR text = LPCSTR(eax + hp->userValue);
   static LPCSTR lasttext; // Prevent reading the same address multiple times
   if (text != lasttext && *text) {
     lasttext = text;
@@ -7467,6 +7467,9 @@ bool InsertCyberfrontPSPHook()
  *  Sample game: Never 7
  *  Sample game: ひまわり
  *
+ *  This hook does not work for 12River.
+ *  However, sceFont functions work.
+ *
  *  Memory address is FIXED.
  *  Debug method: breakpoint the memory address
  *  There are two matched memory address to the current text
@@ -7606,7 +7609,7 @@ bool InsertCyberfrontPSPHook()
 static void SpecialPSPHookYeti2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = (LPCSTR)(eax + hp->userValue);
+  LPCSTR text = LPCSTR(eax + hp->userValue);
   if (BYTE c = *(BYTE *)text) {
     *data = (DWORD)text;
     //*len = text[1] ? 2 : 1;
@@ -7875,7 +7878,7 @@ LPCSTR _bandailtrim(LPCSTR p)
 static void SpecialPSPHookBandai(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = (LPCSTR)(eax + hp->userValue);
+  LPCSTR text = LPCSTR(eax + hp->userValue);
 
   if (*text) {
     //lasttext = text;
@@ -7968,11 +7971,11 @@ bool InsertBandaiPSPHook()
 // TODO: This should be expressed as general hook without extern fun
 static void SpecialPSPHookNippon1(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  CC_UNUSED(hp);
-  LPCSTR text = LPCSTR(esp_base + pusha_ebp_off - 4); // ebp address
+  //LPCSTR text = LPCSTR(esp_base + pusha_ebp_off - 4); // ebp address
+  LPCSTR text = LPCSTR(esp_base + hp->off); // dynamic offset, ebp or esi
   if (*text) {
     *data = (DWORD)text;
-    *len = !text[0] ? 0 : !text[1] ? 1 : 2; // bp has at most two bytes
+    *len = !text[0] ? 0 : !text[1] ? 1 : 2; // bp or si has at most two bytes
     //*len = ::LeadByteTable[*(BYTE *)text] // TODO: Test leadbytetable
     *split = regof(ecx, esp_base);
   }
@@ -8007,6 +8010,7 @@ bool InsertNippon1PSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
+    hp.off = pusha_ebp_off - 4; // ebp
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
     hp.extern_fun = SpecialPSPHookNippon1;
     ConsoleOutput("vnreng: Nippon1 PSP: INSERT");
@@ -8068,19 +8072,17 @@ bool InsertNippon1PSPHook()
  *  13d13f62  -e9 bcc0a3ef      jmp 03750023
  *  13d13f67   90               nop
  */
-// Read text from si
-// TODO: This should be expressed as general hook without extern fun
-static void SpecialPSPHookNippon2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
-{
-  CC_UNUSED(hp);
-  LPCSTR text = LPCSTR(esp_base + pusha_esi_off - 4); // esi address
-  if (*text) {
-    *data = (DWORD)text;
-    *len = !text[0] ? 0 : !text[1] ? 1 : 2; // bp has at most two bytes
-    //*len = ::LeadByteTable[*(BYTE *)text] // TODO: Test leadbytetable
-    *split = regof(ecx, esp_base);
-  }
-}
+//static void SpecialPSPHookNippon2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+//{
+//  CC_UNUSED(hp);
+//  LPCSTR text = LPCSTR(esp_base + pusha_esi_off - 4); // esi address
+//  if (*text) {
+//    *data = (DWORD)text;
+//    *len = !text[0] ? 0 : !text[1] ? 1 : 2; // bp has at most two bytes
+//    //*len = ::LeadByteTable[*(BYTE *)text] // TODO: Test leadbytetable
+//    *split = regof(ecx, esp_base);
+//  }
+//}
 
 bool InsertNippon2PSPHook()
 {
@@ -8108,8 +8110,9 @@ bool InsertNippon2PSPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
+    hp.off = pusha_esi_off - 4; // esi
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
-    hp.extern_fun = SpecialPSPHookNippon2;
+    hp.extern_fun = SpecialPSPHookNippon1;
     ConsoleOutput("vnreng: Nippon2 PSP: INSERT");
     NewHook(hp, L"Nippon2 PSP");
   }
