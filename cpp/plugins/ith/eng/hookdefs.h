@@ -8,7 +8,7 @@
 // For HookParam user flags
 enum HookParamFlag : unsigned long {
   HPF_Null             = 0      // never used
-  , HPF_IgnoreSameText = 1      // ignore the last same text address
+  , HPF_IgnoreSameAddress = 1   // ignore the last same text address
 };
 
 // EOF
