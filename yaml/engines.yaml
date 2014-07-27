@@ -17,7 +17,6 @@ psp:
   - BANDAI Name PSP
   - Broccoli PSP
   - CYBERFRONT PSP
-  - CYBERFRONT2 PSP
   - Imageepoch PSP
   - KID PSP
   - Nippon1 PSP
@@ -25,6 +24,7 @@ psp:
   - Otomate PSP
   - Tecmo PSP
   - Yeti PSP
+  - Yeti2 PSP
 
 gc:
   - Vanillaware GC
@@ -109,7 +109,6 @@ simple:
   - CMVS
   - CMVS2
   - CYBERFRONT PSP
-  - CYBERFRONT2 PSP
   - EAGLS
   - Elf
   - Eushully
@@ -143,6 +142,7 @@ simple:
   - Tenco
   - WAFFLE
   - Yeti PSP
+  - Yeti2 PSP
   - YukaSystem2
 
 single: # single thread
@@ -236,7 +236,6 @@ char:
   - CIRCUS
   - CMVS
   - CYBERFRONT PSP
-  - CYBERFRONT2 PSP
   - Debonosu
   - EAGLS
   - Elf
@@ -284,6 +283,7 @@ char:
   - WillPlus
   - WolfRPG
   - Yeti PSP
+  - Yeti2 PSP
   - YU-RIS
 
 # Wide character, UTF-16
