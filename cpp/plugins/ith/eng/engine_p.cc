@@ -6075,12 +6075,12 @@ bool InsertPPSSPPHooks()
     InsertOtomatePSPHook();
     InsertYetiPSPHook();
 
-    // Generic hook
+    //InsertTecmoPSPHook();
+
+    // Generic hooks
 
     InsertAlchemistPSPHook();
     InsertAlchemist2PSPHook();
-
-    //InsertTecmoPSPHook();
 
     InsertBandaiNamePSPHook();
 
@@ -7678,18 +7678,18 @@ LPCSTR _bandailtrim(LPCSTR p)
 static void SpecialPSPHookBandai(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   // Issue: The split value will create lots of threads for Shining Hearts
-  //DWORD splitValue = regof(ecx, esp_base); // works for Shool Rumble, but mix character name for Shining Hearts
-  DWORD splitValue = regof(edi, esp_base); // works for Shining Hearts to split character name
+  //DWORD splitvalue = regof(ecx, esp_base); // works for Shool Rumble, but mix character name for Shining Hearts
+  DWORD splitvalue = regof(edi, esp_base); // works for Shining Hearts to split character name
 
   DWORD eax = regof(eax, esp_base);
   LPCSTR text = (LPCSTR)(eax + hp->userValue);
 
   static uniquemap uniq;
-  if (*text && uniq.update(splitValue, (DWORD)text)) {
+  if (*text && uniq.update(splitvalue, (DWORD)text)) {
     text = _bandailtrim(text);
     *data = (DWORD)text;
     *len = _bandaistrlen(text);
-    *split = splitValue;
+    *split = splitvalue;
   }
 }
 
@@ -8064,6 +8064,7 @@ bool InsertBroccoliPSPHook()
 
 /** 7/26/2014 jichi Otomate PSP engine
  *  Sample game: クロノスタシア
+ *  Sample game: フォトカノ (repetition)
  *
  *  Memory address is FIXED.
  *  Debug method: breakpoint the memory address
@@ -8105,15 +8106,15 @@ bool InsertBroccoliPSPHook()
 // Read text from esi
 static void SpecialPSPHookOtomate(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  //static uniquemap uniq;
   DWORD eax = regof(eax, esp_base);
-  DWORD text = eax + hp->userValue - 2; // -2 to read 1 word more from previous location
-
-  if (*(LPCSTR)text) {
-    *data = text;
-    size_t sz = ::strlen((LPCSTR)text);
+  LPCSTR text = LPCSTR(eax + hp->userValue - 2); // -2 to read 1 word more from previous location
+  if (*text) {
+    *split = regof(ecx, esp_base); // this would cause lots of texts, but it works for all games
+    //*split = regof(ecx, esp_base) & 0xff00; // only use higher bits
+    *data = (DWORD)text;
+    size_t sz = ::strlen(text);
     *len = sz == 3 ? 3 : 1; // handling the last two bytes
-    //*split = regof(ecx, esp_base); // this would cause lots of texts
-    *split = regof(ecx, esp_base) & 0xff00; // only use higher bits
   }
 }
 bool InsertOtomatePSPHook()
