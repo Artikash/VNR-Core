@@ -1726,10 +1726,12 @@ class NetworkManager(QObject):
 
   ## Terms ##
 
-  def getTerms(self, userName='', password=''):
+  def getTerms(self, userName='', password='', init=True, parent=None):
     """
     @param* userName  str
     @param* password  str
+    @param* init  bool  whether initialize QObject
+    @param* parent  QObject  to init
     @return  [dataman.Term] or None
     """
     if self.isOnline():
@@ -1737,8 +1739,10 @@ class NetworkManager(QObject):
           self.__d.getTerms, userName, password, init=False),
           parent=self)
       if ret:
-        #map(dataman.Term.init, ret) # for is faster
-        for it in ret: it.init()
+        if init:
+          #map(dataman.Term.init, ret) # for is faster
+          for it in ret:
+            it.init(parent)
         ret.sort(key=operator.attrgetter('modifiedTimestamp'))
       return ret
 
