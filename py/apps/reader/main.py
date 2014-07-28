@@ -845,6 +845,8 @@ class _MainObject(object):
     #ret.visibleChanged.connect(self.cometManager.subscribeTermTopic)
     self.widgets.append(ret)
     assert ret.rootObject(), "unless fail to load termview.qml"
+
+    ret.visibleChanged.connect(self.dataManager.setTermsEditable)
     return ret
 
   @memoizedproperty
@@ -1224,6 +1226,8 @@ class MainObject(QObject):
 
   hideWindowRequested = Signal()
 
+  #termViewVisibleChanged = Signal(bool)
+
   def topWindow(self): return self.__d.topWindow
   def normalWindow(self): return self.__d.normalWindow
 
@@ -1558,6 +1562,7 @@ class MainObject(QObject):
     if d.termManager.isLocked():
       growl.msg(my.tr("Processing Shared Dictionary ... Please try later"));
     else:
+      d.dataManager.setTermsEditable(True)
       skevents.runlater(partial(_MainObject.showQmlWindow, d.termView))
 
   def showSpringBoard(self):

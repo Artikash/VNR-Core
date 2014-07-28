@@ -1876,7 +1876,7 @@ class Comment(QObject):
     """
     @return  long  used for sorting
     """
-    return max(self.timestamp, self.updateTimestamp)
+    return max(self.__d.timestamp, self.__d.updateTimestamp)
 
   # Not used
   #def hashObject(self):
@@ -2321,7 +2321,7 @@ class Term(QObject):
     """
     @return  long  used for sorting
     """
-    return max(self.timestamp, self.updateTimestamp)
+    return max(self.__d.timestamp, self.__d.updateTimestamp)
 
 ## Name ##
 
@@ -2664,7 +2664,7 @@ class Reference(QObject):
     """
     @return  long  used for sorting
     """
-    return max(self.timestamp, self.updateTimestamp)
+    return max(self.__d.timestamp, self.__d.updateTimestamp)
 
   @property
   def image(self):
@@ -5438,6 +5438,9 @@ class _DataManager(object):
     self.dirtyTerms = set()         # set(Term)
     self.dirtyTermsLocked = False   # bool
 
+    self.termsEditable = False # disable editable by default
+    self.termsInitialized = False # if the terms has initialized
+
     self._termTitles = None  # {unicode from:unicode to} or None
 
     # References to modify
@@ -7035,6 +7038,7 @@ class _DataManager(object):
     try:
       #tree = etree.parse(xmlfile)
       #root = tree.getroot()
+      init = self.termsEditable # bool
 
       context = etree.iterparse(xmlfile, events=('start','end'))
 
@@ -7078,11 +7082,13 @@ class _DataManager(object):
             #if not kw.get('userHash'):
             #  kw['userHash'] = kw['userId']
             terms.append(Term(
+                init=init,
                 parent=self.q, # FIXME: increase PySide reference count
                 **kw))
 
       if terms:
         self.terms = terms
+        self.termsInitialized = init
         #self.sortedTerms = None    # already cleared by clearTerms
 
         self.invalidateTerms()
@@ -7672,16 +7678,35 @@ class DataManager(QObject):
   #        #  my.tr("Something might be wrong with the Internet connection"),
   #        #)))
 
+  def setTermsEditable(self, t):
+    d = self.__d
+    if d.termsEditable != t:
+      d.termsEditable = t
+      if t and d.terms and not d.termsInitialized:
+        dprint("initialize terms")
+        d.termsInitialized = True
+        for it in d.terms:
+          it.init(self)
+
   def updateTerms(self):
     if netman.manager().isOnline():
       dprint("enter")
       growl.msg(my.tr("Updating dictionary terms online") + " ...")
       d = self.__d
-      l = netman.manager().getTerms(d.user.name, d.user.password)
+
+      editable = d.termsEditable
+      l = netman.manager().getTerms(d.user.name, d.user.password,
+          init=editable, parent=self)
       if l:
-        for it in l: it.setParent(self)
+        if not editable and editable != d.termsEditable:
+          for it in l:
+            it.init(self)
+
         d.clearTerms()
+
         d.terms = l
+        d.termsInitialized = d.termsEditable
+
         dprint("term count = %i" % len(d.terms))
         d.touchTerms()
         d.invalidateTerms()
