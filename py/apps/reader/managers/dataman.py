@@ -1903,6 +1903,8 @@ class Comment(QObject):
 
 @Q_Q
 class _Term(object):
+  #def __del__(self):  dprint("_Term deleted")
+
   def __init__(self, q,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai):
     self.id = id                # long
@@ -2020,6 +2022,9 @@ class Term(QObject):
 
   @property
   def d(self): return self.__d
+
+  # FIXME: Term is not deleted when QObject is initialized
+  #def __del__(self):  dprint("Term deleted")
 
   def __init__(self, init=True, parent=None,
       id=0, gameId=0, gameMd5="", userId=0, userHash=0,
@@ -4061,7 +4066,10 @@ class TermModel(QAbstractListModel):
     for sig in self.filterTextChanged, self.sortingColumnChanged, self.sortingReverseChanged, self.pageSizeChanged, self.pageNumberChanged, self.duplicateChanged:
       sig.connect(self.reset)
 
-    manager().termsChanged.connect(self.reset)
+    manager().termsChanged.connect(lambda:
+        manager().isTermsEditable() and self.reset())
+    manager().termsEditableChanged.connect(lambda t:
+        t and self.reset())
 
   #@Slot()
   def reset(self):
@@ -7163,6 +7171,7 @@ class _DataManager(object):
 class DataManager(QObject):
 
   termsChanged = Signal()
+  termsEditableChanged = Signal(bool)
   gameFilesChanged = Signal()
   gameItemsChanged = Signal()
 
@@ -7679,6 +7688,8 @@ class DataManager(QObject):
   #        #  my.tr("Something might be wrong with the Internet connection"),
   #        #)))
 
+  def isTermsEditable(self): return self.__d.termsEditable
+
   def setTermsEditable(self, t):
     d = self.__d
     if d.termsEditable != t:
@@ -7688,6 +7699,7 @@ class DataManager(QObject):
         d.termsInitialized = True
         for it in d.terms:
           it.init(self)
+      self.termsEditableChanged.emit(t)
 
   def updateTerms(self):
     if netman.manager().isOnline():
