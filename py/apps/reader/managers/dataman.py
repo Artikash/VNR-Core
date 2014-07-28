@@ -5509,9 +5509,10 @@ class _DataManager(object):
 
   def clearTerms(self):
     if self.terms:
-      for t in self.terms:
-        if t.parent():
-          t.setParent(None)
+      if self.termsInitialized:
+        for t in self.terms:
+          if t.parent():
+            t.setParent(None)
       self.terms = []                 # [Term], not None
       self.sortedTerms = None
 
