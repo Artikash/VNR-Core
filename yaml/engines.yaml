@@ -131,6 +131,7 @@ simple:
   - RealLive
   - Rejet
   - ShinaRio
+  - SiglusEngine
   - SiglusEngine2
   - ScenarioPlayerA
   - ScenarioPlayerW
@@ -167,7 +168,6 @@ norepeat:
   - QLIE
   - QLIE2
   - NEXTON
-  - SiglusEngine
   - TanukiSoft # But this thread is floating
   - Unity # removed
 
