@@ -6106,7 +6106,7 @@ bool InsertPPSSPPHooks()
   return true;
 }
 
-/** 7/13/2014 jichi alchemist-net.co.jp PSP engine
+/** 7/13/2014 jichi alchemist-net.co.jp PSP engine, 0.9.8
  *  Sample game: your diary+ (moe-ydp.iso)
  *  The memory address is fixed.
  *  Note: This pattern seems to be common that not only exists in Alchemist games.
@@ -6269,7 +6269,7 @@ bool InsertAlchemistPSPHook()
   return addr;
 }
 
-/** 7/20/2014 jichi alchemist-net.co.jp PSP engine
+/** 7/20/2014 jichi alchemist-net.co.jp PSP engine, 0.9.8
  *  An alternative alchemist hook for old alchemist games.
  *  Sample game: のーふぇいと (No Fate)
  *  The memory address is fixed.
@@ -6363,7 +6363,7 @@ bool InsertAlchemist2PSPHook()
   return addr;
 }
 
-/** 7/13/2014 jichi 5pb.jp PSP engine
+/** 7/13/2014 jichi 5pb.jp PSP engine, 0.9.8
  *  Sample game: STEINS;GATE
  *
  *  Float memory addresses: two matches
@@ -6597,7 +6597,7 @@ bool Insert5pbPSPHook()
   return addr;
 }
 
-/** 7/13/2014 jichi imageepoch.co.jp PSP engine
+/** 7/13/2014 jichi imageepoch.co.jp PSP engine, 0.9.8
  *  Sample game: BLACK☆ROCK SHOOTER
  *
  *  Float memory addresses: two matches
@@ -6701,7 +6701,7 @@ bool InsertImageepochPSPHook()
   return addr;
 }
 
-/** 7/19/2014 jichi yetigame.jp PSP engine
+/** 7/19/2014 jichi yetigame.jp PSP engine, 0.9.8
  *  Sample game: Secret Game Portable
  *
  *  Float memory addresses: two matches
@@ -7227,7 +7227,7 @@ bool InsertYetiPSPHook()
   return addr;
 }
 
-/** 7/19/2014 jichi kid-game.co.jp PSP engine
+/** 7/19/2014 jichi kid-game.co.jp PSP engine, 0,9.8
  *  Sample game: Monochrome
  *
  *  Note: sceFontGetCharInfo, sceFontGetCharGlyphImage_Clip also works
@@ -7377,7 +7377,7 @@ bool InsertKidPSPHook()
   return addr;
 }
 
-/** 7/19/2014 jichi CYBERFRONT PSP engine
+/** 7/19/2014 jichi CYBERFRONT PSP engine, 0,9.8
  *  Sample game: 想いのかけら クローストゥ
  *
  *  Debug method: breakpoint the memory address
@@ -7463,9 +7463,10 @@ bool InsertCyberfrontPSPHook()
   return addr;
 }
 
-/** 7/19/2014 jichi Alternative Yeti PSP engine
- *  Sample game: Never 7
+/** 7/19/2014 jichi Alternative Yeti PSP engine, 0.9.8, 0.9.9
+ *  Sample game: Never 7, 0.9.8, 0.9.9 (7/27/2014)
  *  Sample game: ひまわり
+ *
  *
  *  This hook does not work for 12River.
  *  However, sceFont functions work.
@@ -7477,6 +7478,8 @@ bool InsertCyberfrontPSPHook()
  *  There are several functions. The first one is used.
  *
  *  The text also has 5pb-like garbage, but it is difficult to trim.
+ *
+ *  PPSSPP 0.9.8:
  *
  *  14289802   cc               int3
  *  14289803   cc               int3
@@ -7600,6 +7603,43 @@ bool InsertCyberfrontPSPHook()
  *  14289b2c   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
  *  14289b33   c705 a8aa1001 e0>mov dword ptr ds:[0x110aaa8],0x881abe0
  *  14289b3d  -e9 e16467ef      jmp 03900023
+ *
+ *  PPSSPP 0.9.9 (7/27/2014)
+ *
+ *  0ed85942   cc               int3
+ *  0ed85943   cc               int3
+ *  0ed85944   77 0f            ja short 0ed85955
+ *  0ed85946   c705 c84c1301 58>mov dword ptr ds:[0x1134cc8],0x881ab58
+ *  0ed85950  -e9 afa6aef4      jmp 03870004
+ *  0ed85955   8b35 94491301    mov esi,dword ptr ds:[0x1134994]
+ *  0ed8595b   0335 98491301    add esi,dword ptr ds:[0x1134998]
+ *  0ed85961   8b05 fc491301    mov eax,dword ptr ds:[0x11349fc]
+ *  0ed85967   81e0 ffffff3f    and eax,0x3fffffff
+ *  0ed8596d   8bb8 28008009    mov edi,dword ptr ds:[eax+0x9800028]
+ *  0ed85973   8bc6             mov eax,esi
+ *  0ed85975   81e0 ffffff3f    and eax,0x3fffffff
+ *  0ed8597b   8bd7             mov edx,edi
+ *  0ed8597d   8890 10048009    mov byte ptr ds:[eax+0x9800410],dl
+ *  0ed85983   8b05 d0491301    mov eax,dword ptr ds:[0x11349d0]
+ *  0ed85989   81e0 ffffff3f    and eax,0x3fffffff
+ *  0ed8598f   8bb8 84008009    mov edi,dword ptr ds:[eax+0x9800084]
+ *  0ed85995   8b05 cc491301    mov eax,dword ptr ds:[0x11349cc]
+ *  0ed8599b   81e0 ffffff3f    and eax,0x3fffffff
+ *  0ed859a1   0fb6a8 00008009  movzx ebp,byte ptr ds:[eax+0x9800000] ; jichi: hook here
+ *  0ed859a8   81ff 00000000    cmp edi,0x0
+ *  0ed859ae   8935 90491301    mov dword ptr ds:[0x1134990],esi
+ *  0ed859b4   893d 94491301    mov dword ptr ds:[0x1134994],edi
+ *  0ed859ba   892d 98491301    mov dword ptr ds:[0x1134998],ebp
+ *  0ed859c0   0f85 16000000    jnz 0ed859dc
+ *  0ed859c6   832d e44c1301 06 sub dword ptr ds:[0x1134ce4],0x6
+ *  0ed859cd   c705 c84c1301 ac>mov dword ptr ds:[0x1134cc8],0x881aeac
+ *  0ed859d7  -e9 47a6aef4      jmp 03870023
+ *  0ed859dc   832d e44c1301 06 sub dword ptr ds:[0x1134ce4],0x6
+ *  0ed859e3   e9 0c000000      jmp 0ed859f4
+ *  0ed859e8   0170 ab          add dword ptr ds:[eax-0x55],esi
+ *  0ed859eb   8108 e931a6ae    or dword ptr ds:[eax],0xaea631e9
+ *  0ed859f1   f4               hlt                                      ; privileged command
+ *  0ed859f2   90               nop
  */
 // Return revert address
 //static size_t _reverse_strlen(LPCSTR s)
@@ -7620,6 +7660,7 @@ static void SpecialPSPHookYeti2(DWORD esp_base, HookParam *hp, DWORD *data, DWOR
     //*split = ecx ? (FIXED_SPLIT_VALUE << 1) : 0; // << 1 to be unique, non-zero ecx is what I want
   }
 }
+
 bool InsertYeti2PSPHook()
 {
   ConsoleOutput("vnreng: Yeti2 PSP: enter");
@@ -7664,7 +7705,7 @@ bool InsertYeti2PSPHook()
   return addr;
 }
 
-/** 7/22/2014 jichi BANDAI PSP engine
+/** 7/22/2014 jichi BANDAI PSP engine, 0.9.8
  *  Sample game: School Rumble PSP (SHIFT-JIS)
  *  See: http://sakuradite.com/topic/333
  *
@@ -7933,7 +7974,7 @@ bool InsertBandaiPSPHook()
   return addr;
 }
 
-/** 7/22/2014 jichi: Nippon1 PSP engine
+/** 7/22/2014 jichi: Nippon1 PSP engine, 0.9.8
  *  Sample game: うたの☆プリンスさまっ♪
  *
  *  Memory address is FIXED.
@@ -8021,7 +8062,7 @@ bool InsertNippon1PSPHook()
   return addr;
 }
 
-/** 7/26/2014 jichi: Alternative Nippon1 PSP engine
+/** 7/26/2014 jichi: Alternative Nippon1 PSP engine, 0.9.8
  *  Sample game: 神々の悪戯
  *  Issue: character name cannot be extracted
  *
@@ -8121,7 +8162,7 @@ bool InsertNippon2PSPHook()
   return addr;
 }
 
-/** 7/26/2014 jichi Broccoli PSP engine
+/** 7/26/2014 jichi Broccoli PSP engine, 0.9.8
  *  Sample game: 明治東亰恋伽
  *
  *  Memory address is FIXED.
@@ -8265,7 +8306,7 @@ bool InsertBroccoliPSPHook()
   return addr;
 }
 
-/** 7/26/2014 jichi Otomate PSP engine
+/** 7/26/2014 jichi Otomate PSP engine, 0.9.8
  *  Sample game: クロノスタシア
  *  Sample game: フォトカノ (repetition)
  *
@@ -8359,7 +8400,7 @@ bool InsertOtomatePSPHook()
   return addr;
 }
 
-/** 7/27/2014 jichi Intense.jp PSP engine
+/** 7/27/2014 jichi Intense.jp PSP engine, 0.9.8
  *  Sample game: 密室のサクリファイス
  *  This hook is only for intro graphic painting
  *
@@ -8478,7 +8519,7 @@ bool InsertIntensePSPHook()
 }
 
 #if 0 // 7/25/2014: This function is not invoked? Why?
-/** 7/22/2014 jichi: KOEI TECMO PSP
+/** 7/22/2014 jichi: KOEI TECMO PSP, 0.9.8
  *  Sample game: 金色のコルダ3
  *
  *  134598e2   cc               int3
