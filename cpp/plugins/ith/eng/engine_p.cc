@@ -6635,10 +6635,12 @@ bool Insert5pbPSPHook()
   return addr;
 }
 
-/** 7/13/2014 jichi imageepoch.co.jp PSP engine, 0.9.8
+/** 7/13/2014 jichi imageepoch.co.jp PSP engine, 0.9.8, 0.9.9
  *  Sample game: BLACK☆ROCK SHOOTER
  *
  *  Float memory addresses: two matches
+ *
+ *  7/29/2014: seems to work on 0.9.9
  *
  *  Debug method: find current sentence, then find next sentence in the memory
  *  and add break-points
@@ -7265,8 +7267,10 @@ bool InsertYetiPSPHook()
   return addr;
 }
 
-/** 7/19/2014 jichi kid-game.co.jp PSP engine, 0,9.8
+/** 7/19/2014 jichi kid-game.co.jp PSP engine, 0,9.8, 0.9.9
  *  Sample game: Monochrome
+ *
+ *  7/29/2014: seems to work on 0.9.9
  *
  *  Note: sceFontGetCharInfo, sceFontGetCharGlyphImage_Clip also works
  *
@@ -7741,7 +7745,8 @@ bool InsertYeti2PSPHook()
 }
 
 /** 7/22/2014 jichi BANDAI PSP engine, 0.9.8 only
- *
+ *  Replaced by Otomate PPSSPP on 0.9.9.
+
  *  Sample game: 密室のサクリファイス work on 0.9.8, not 0.9.9
  *
  *  Sample game: School Rumble PSP (SHIFT-JIS)
@@ -8345,6 +8350,8 @@ bool InsertBroccoliPSPHook()
 }
 
 /** 7/26/2014 jichi Otomate PSP engine, 0.9.8 only, 0.9.9 not work
+ *  Replaced by Otomate PPSSPP on 0.9.9.
+ *
  *  Sample game: クロノスタシア
  *  Sample game: フォトカノ (repetition)
  *
@@ -8537,6 +8544,9 @@ bool InsertOtomatePPSSPPHook()
 }
 
 /** 7/27/2014 jichi Intense.jp PSP engine, 0.9.8 only,
+ *  Missing in PPSSPP 0.9.9.
+ *  Though Otomate can work, it cannot work line by line.
+ *
  *  Sample game: 密室のサクリファイス work on 0.9.8, not 0.9.9
  *  This hook is only for intro graphic painting
  *
