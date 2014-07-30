@@ -11,6 +11,7 @@ rename:
 
 psp:
   all:
+    - CYBERFRONT PSP
     - Yeti2 PSP
   0.9.9:
     - Otomate PPSSPP
@@ -21,7 +22,6 @@ psp:
     - BANDAI PSP
     - BANDAI Name PSP
     - Broccoli PSP
-    - CYBERFRONT PSP
     - Imageepoch PSP
     - Intense PSP
     - KID PSP
