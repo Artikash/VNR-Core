@@ -10,23 +10,26 @@ rename:
   SofthouseChara: SystemAoi
 
 psp:
-  - 5pb PSP
-  - Alchemist PSP
-  - Alchemist2 PSP
-  - BANDAI PSP
-  - BANDAI Name PSP
-  - Broccoli PSP
-  - CYBERFRONT PSP
-  - Imageepoch PSP
-  - Intense PSP
-  - KID PSP
-  - Nippon1 PSP
-  - Nippon2 PSP
-  - Otomate PSP
-  - Otomate PPSSPP
-  - Tecmo PSP
-  - Yeti PSP
-  - Yeti2 PSP
+  all:
+    - Yeti2 PSP
+  0.9.9:
+    - Otomate PPSSPP
+  0.9.8:
+    - 5pb PSP
+    - Alchemist PSP
+    - Alchemist2 PSP
+    - BANDAI PSP
+    - BANDAI Name PSP
+    - Broccoli PSP
+    - CYBERFRONT PSP
+    - Imageepoch PSP
+    - Intense PSP
+    - KID PSP
+    - Nippon1 PSP
+    - Nippon2 PSP
+    - Otomate PSP
+    - Tecmo PSP
+    - Yeti PSP
 
 gc:
   - Vanillaware GC

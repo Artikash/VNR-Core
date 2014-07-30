@@ -103,7 +103,10 @@ CHAR_TEXT_THREADS = frozenset(ENGINES_YAML['char']) # [str name]
 WCHAR_TEXT_THREADS = frozenset(ENGINES_YAML['wchar']) # [str name]
 UTF8_TEXT_THREADS = frozenset(ENGINES_YAML['utf8']) # [str name]
 
-#PSP_TEXT_THREADS = frozenset(ENGINES_YAML['psp']) # [str name]
+PSP_ALL_TEXT_THREADS = frozenset(ENGINES_YAML['psp']['all']) # [str name]
+PSP_098_TEXT_THREADS = frozenset(ENGINES_YAML['psp']['0.9.8']) # [str name]
+PSP_099_TEXT_THREADS = frozenset(ENGINES_YAML['psp']['0.9.9']) # [str name]
+
 GUI_TEXT_THREADS = frozenset(ENGINES_YAML['gui']) # [str name]
 NON_GUI_TEXT_THREADS = frozenset(ENGINES_YAML['nongui']) # [str name]
 

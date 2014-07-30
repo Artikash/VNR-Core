@@ -75,6 +75,12 @@ class _TextThreadView(object):
       n = self.name + '<span style="color:red">%s</span>' % defs.CAONIMAGEBI_USERNAME
     elif self.name in defs.OK123_ENGINES:
       n = self.name + '<span style="color:red">%s</span>' % defs.OK123_USERNAME
+    elif self.name.startswith('sce') or self.name in config.PSP_ALL_TEXT_THREADS:
+      n = self.name + '<span style="color:gray">=0.9.x</span>'
+    elif self.name in config.PSP_099_TEXT_THREADS:
+      n = self.name + '<span style="color:red">=0.9.9</span>'
+    elif self.name in config.PSP_098_TEXT_THREADS:
+      n = self.name + '<span style="color:red">=0.9.8</span>'
     else:
       n = self.name
 
