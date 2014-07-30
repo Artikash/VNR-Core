@@ -80,7 +80,7 @@ class _TextThreadView(object):
     elif self.name in config.PSP_099_TEXT_THREADS:
       n = self.name + '<span style="color:red">=0.9.9</span>'
     elif self.name in config.PSP_098_TEXT_THREADS:
-      n = self.name + '<span style="color:red">=0.9.8</span>'
+      n = self.name + '<span style="color:purple">=0.9.8</span>'
     else:
       n = self.name
 
