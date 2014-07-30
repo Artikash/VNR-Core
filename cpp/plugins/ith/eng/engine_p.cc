@@ -148,6 +148,29 @@ ULONG SafeMatchBytesInMappedMemory(LPCVOID pattern, DWORD patternSize, BYTE wild
   return 0;
 }
 
+// 7/29/2014 jichi: I should move these functions to different files
+// String utilities
+// Return the address of the first non-zero address
+LPCSTR reverse_search_begin(const char * s)
+{
+  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  if (*s)
+    for (size_t i = 0; i < MAX_LENGTH; i++, s--)
+      if (!*s)
+        return s + 1;
+  return nullptr;
+}
+
+bool all_ascii(const char *s)
+{
+  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  if (s)
+    for (size_t i = 0; i < MAX_LENGTH && *s; i++, s--)
+      if (*s < 0) // signed char
+        return false;
+  return true;
+}
+
 } // unnamed namespace
 
 namespace Engine {
@@ -6113,6 +6136,8 @@ bool InsertPPSSPPHooks()
  *  The memory address is fixed.
  *  Note: This pattern seems to be common that not only exists in Alchemist games.
  *
+ *  Not work on 0.9.9: Amnesia Crowd
+ *
  *  Debug method: simply add hardware break points to the matched memory
  *
  *  PPSSPP 0.9.8, your diary+
@@ -6185,11 +6210,20 @@ bool _alchemistgarbage(LPCSTR p)
 
 // 7/20/2014 jichi: Trim Rejet garbage. Sample game: 月華繚乱ROMANCE
 // Such as: #Pos[1,2]
-inline bool _rejetgarbage(char c)
+inline bool _rejetgarbage_ch(char c)
 {
   return c == '#' || c == ' ' || c == '[' || c == ']' || c == ','
       || c >= 'A' && c <= 'z' // also ignore ASCII 91-96: [ \ ] ^ _ `
       || c >= '0' && c <= '9';
+}
+
+bool _rejetgarbage(LPCSTR p)
+{
+  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
+    if (!_rejetgarbage_ch(*p))
+      return false;
+  return true;
 }
 
 // Trim leading garbage
@@ -6198,7 +6232,7 @@ LPCSTR _rejetltrim(LPCSTR p)
   enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
   if (p)
     for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
-      if (!_rejetgarbage(*p))
+      if (!_rejetgarbage_ch(*p))
         return p;
   return nullptr;
 }
@@ -6210,7 +6244,7 @@ size_t _rejetstrlen(LPCSTR text)
     return 0;
   size_t len = ::strlen(text),
          ret = len;
-  while (len && _rejetgarbage(text[len - 1])) {
+  while (len && _rejetgarbage_ch(text[len - 1])) {
     len--;
     if (text[len] == '#') // in case trim UTF-8 trailing bytes
       ret = len;
@@ -6492,7 +6526,7 @@ bool InsertAlchemist2PSPHook()
 namespace { // unnamed
 
 // Characters to ignore: [%0-9A-Z]
-inline bool _5pbgarbage(char c)
+inline bool _5pbgarbage_ch(char c)
 { return c == '%' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9'; }
 
 // Trim leading garbage
@@ -6501,7 +6535,7 @@ LPCSTR _5pbltrim(LPCSTR p)
   enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
   if (p)
     for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
-      if (!_5pbgarbage(*p))
+      if (!_5pbgarbage_ch(*p))
         return p;
   return nullptr;
 }
@@ -6513,7 +6547,7 @@ size_t _5pbstrlen(LPCSTR text)
     return 0;
   size_t len = ::strlen(text),
          ret = len;
-  while (len && _5pbgarbage(text[len - 1])) {
+  while (len && _5pbgarbage_ch(text[len - 1])) {
     len--;
     if (text[len] == '%') // in case trim UTF-8 trailing bytes
       ret = len;
@@ -7705,7 +7739,10 @@ bool InsertYeti2PSPHook()
   return addr;
 }
 
-/** 7/22/2014 jichi BANDAI PSP engine, 0.9.8
+/** 7/22/2014 jichi BANDAI PSP engine, 0.9.8 only
+ *
+ *  Sample game: 密室のサクリファイス work on 0.9.8, not 0.9.9
+ *
  *  Sample game: School Rumble PSP (SHIFT-JIS)
  *  See: http://sakuradite.com/topic/333
  *
@@ -7884,7 +7921,7 @@ bool InsertBandaiNamePSPHook()
 
 namespace { // unnamed
 
-inline bool _bandaigarbage(char c)
+inline bool _bandaigarbage_ch(char c)
 {
   return c == ' ' || c == '/' || c == '#' || c == '.' || c == ':'
       || c >= '0' && c <= '9'
@@ -7896,7 +7933,7 @@ size_t _bandaistrlen(LPCSTR text)
 {
   size_t len = ::strlen(text);
   size_t ret = len;
-  while (len && _bandaigarbage(text[len - 1])) {
+  while (len && _bandaigarbage_ch(text[len - 1])) {
     len--;
     if (text[len] == '/' || text[len] == '#') // in case trim UTF-8 trailing bytes
       ret = len;
@@ -7910,7 +7947,7 @@ LPCSTR _bandailtrim(LPCSTR p)
   enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
   if (p)
     for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
-      if (!_bandaigarbage(*p))
+      if (!_bandaigarbage_ch(*p))
         return p;
   return nullptr;
 }
@@ -8247,7 +8284,7 @@ bool InsertNippon2PSPHook()
  */
 
 // New line character for Broccoli games is '^'
-static inline bool _Broccoligarbage(char c) { return c == '^'; }
+static inline bool _broccoligarbage_ch(char c) { return c == '^'; }
 
 // Read text from dl
 static void SpecialPSPHookBroccoli(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
@@ -8255,7 +8292,7 @@ static void SpecialPSPHookBroccoli(DWORD esp_base, HookParam *hp, DWORD *data, D
   CC_UNUSED(hp);
   DWORD text = esp_base + pusha_edx_off - 4; // edx address
   char c = *(LPCSTR)text;
-  if (c && !_Broccoligarbage(c)) {
+  if (c && !_broccoligarbage_ch(c)) {
     *data = text;
     *len = 1;
     *split = regof(ecx, esp_base);
@@ -8309,6 +8346,8 @@ bool InsertBroccoliPSPHook()
 /** 7/26/2014 jichi Otomate PSP engine, 0.9.8 only, 0.9.9 not work
  *  Sample game: クロノスタシア
  *  Sample game: フォトカノ (repetition)
+ *
+ *  Not work on 0.9.9: Amnesia Crowd
  *
  *  The instruction pattern also exist in 0.9.9. But the function is not called.
  *
@@ -8426,25 +8465,14 @@ bool InsertOtomatePSPHook()
  *  006db4dc   c3               retn
  *  006db4dd   cc               int3
  */
-// Return the address of the first non-zero address
-//static LPCSTR _reverse_search_begin(LPCSTR s)
-//{
-//  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
-//  if (*s)
-//    for (int i = 0; i < MAX_LENGTH; i++, s--)
-//      if (!*s)
-//        return s + 1;
-//  return nullptr;
-//}
 static void SpecialPPSSPPHookOtomate(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
   LPCSTR text = LPCSTR(eax);
-  //LPCSTR start = _reverse_search_begin(text);
-  //if (start) {
-  if (*text) {
+  LPCSTR start = reverse_search_begin(text);
+  if (start && !all_ascii(start)) {
     //*split = regof(ecx, esp_base); // this would split the entire scenario character by character
-    *split = regof(ecx, esp_base) & 0xffff00; // skip cl which is used
+    *split = regof(ecx, esp_base) & 0xffffff00; // skip cl which is used
 
     //*data = (DWORD)start;
     //*len = ::strlen(start);
@@ -8496,8 +8524,8 @@ bool InsertOtomatePPSSPPHook()
   return addr;
 }
 
-/** 7/27/2014 jichi Intense.jp PSP engine, 0.9.8
- *  Sample game: 密室のサクリファイス
+/** 7/27/2014 jichi Intense.jp PSP engine, 0.9.8 only,
+ *  Sample game: 密室のサクリファイス work on 0.9.8, not 0.9.9
  *  This hook is only for intro graphic painting
  *
  *  Memory address is FIXED.
