@@ -127,7 +127,6 @@ simple:
   - Nippon1 PSP
   - Nippon2 PSP
   - Otomate PSP
-  - Otomate PPSSPP
   - Pencil # renamed
   - Pensil
   - RealLive
@@ -180,6 +179,7 @@ nofloat:
   - Bruns2
   - Malie
   - MarineHeart # sometimes has limited repetition
+  - Otomate PPSSPP # could have repetitions
   - Imageepoch PSP # could have repetitions
   - Vanillaware GC # could have repetitions
 
