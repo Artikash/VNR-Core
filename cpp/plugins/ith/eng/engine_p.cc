@@ -7415,8 +7415,9 @@ bool InsertKidPSPHook()
   return addr;
 }
 
-/** 7/19/2014 jichi CYBERFRONT PSP engine, 0,9.8
- *  Sample game: 想いのかけら クローストゥ
+/** 7/19/2014 jichi CYBERFRONT PSP engine, 0,9.8, 0.9.9
+ *  Sample game: 想いのかけら クローストゥ (0.9.8)
+ *  Sample game: Never17 (0.9.9)
  *
  *  Debug method: breakpoint the memory address
  *  There are two matched memory address to the current text
