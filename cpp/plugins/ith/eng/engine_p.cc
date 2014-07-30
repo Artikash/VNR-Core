@@ -8467,17 +8467,26 @@ bool InsertOtomatePSPHook()
  */
 static void SpecialPPSSPPHookOtomate(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  DWORD eax = regof(eax, esp_base);
-  LPCSTR text = LPCSTR(eax);
-  LPCSTR start = reverse_search_begin(text);
-  if (start && !all_ascii(start)) {
-    //*split = regof(ecx, esp_base); // this would split the entire scenario character by character
-    *split = regof(ecx, esp_base) & 0xffffff00; // skip cl which is used
+  // 006db4b7   8b42 10          mov eax,dword ptr ds:[edx+0x10] ; jichi: hook here
+  // 006db4ba   25 ffffff3f      and eax,0x3fffffff
+  // 006db4bf   0305 94411301    add eax,dword ptr ds:[0x1134194]; jichi: ds offset
+  // 006db4c5   8d70 01          lea esi,dword ptr ds:[eax+0x1]
+  DWORD edx = regof(edx, esp_base);
+  DWORD eax = *(DWORD *)(edx + 0x10);
+  eax &= 0x3fffffff;
+  eax += *(DWORD *)hp->userValue;
 
-    //*data = (DWORD)start;
-    //*len = ::strlen(start);
+  //DWORD eax = regof(eax, esp_base);
+  LPCSTR text = LPCSTR(eax);
+  if (*text) {
+    text = _bandailtrim(text); // the same as bandai PSP
     *data = (DWORD)text;
-    *len = 1;
+    *len = _bandaistrlen(text);
+
+    *split = regof(ecx, esp_base); // the same as Otomate PSP hook
+    //DWORD ecx = regof(ecx, esp_base); // the same as Otomate PSP hook
+    //*split = ecx ? ecx : (FIXED_SPLIT_VALUE << 2);
+    //*split = ecx & 0xffffff00; // skip cl which is used
   }
 }
 bool InsertOtomatePPSSPPHook()
@@ -8491,9 +8500,9 @@ bool InsertOtomatePPSSPPHook()
   const BYTE bytes[] =  {
     0x8b,0x15, XX4,             // 006db4b0   8b15 b8ebaf00    mov edx,dword ptr ds:[0xafebb8]          ; ppssppwi.01134988
     0x56,                       // 006db4b6   56               push esi
-    0x8b,0x42, 0x10,            // 006db4b7   8b42 10          mov eax,dword ptr ds:[edx+0x10]
+    0x8b,0x42, 0x10,            // 006db4b7   8b42 10          mov eax,dword ptr ds:[edx+0x10] ; jichi: hook here
     0x25, 0xff,0xff,0xff,0x3f,  // 006db4ba   25 ffffff3f      and eax,0x3fffffff
-    0x03,0x05, XX4,             // 006db4bf   0305 94411301    add eax,dword ptr ds:[0x1134194]
+    0x03,0x05, XX4,             // 006db4bf   0305 94411301    add eax,dword ptr ds:[0x1134194]; jichi: ds offset
     0x8d,0x70, 0x01,            // 006db4c5   8d70 01          lea esi,dword ptr ds:[eax+0x1]
     0x8a,0x08,                  // 006db4c8   8a08             mov cl,byte ptr ds:[eax] ; jichi: hook here
     0x40,                       // 006db4ca   40               inc eax
@@ -8504,7 +8513,9 @@ bool InsertOtomatePPSSPPHook()
     0x5e,                       // 006db4d4   5e               pop esi
     0x8d,0x04,0x85, 0x07,0x00,0x00,0x00  // 006db4d5   8d0485 07000000  lea eax,dword ptr ds:[eax*4+0x7]
   };
-  enum { hook_offset = 0x006db4c8 - 0x006db4b0 };
+  //enum { hook_offset = 0x006db4c8 - 0x006db4b0 };
+  enum { hook_offset = 0x006db4b7 - 0x006db4b0 };
+  enum { ds_offset = 0x006db4bf - 0x006db4b0 + 2 };
 
   DWORD addr = SafeMatchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
   //ITH_GROWL_DWORD(addr);
@@ -8513,7 +8524,7 @@ bool InsertOtomatePPSSPPHook()
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
-    //hp.userValue = *(DWORD *)(hp.addr + memory_offset); // this is the address after ds:[]
+    hp.userValue = *(DWORD *)(addr + ds_offset); // this is the address after ds:[]
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
     hp.extern_fun = SpecialPPSSPPHookOtomate;
     ConsoleOutput("vnreng: Otomate PPSSPP 0.9.9: INSERT");
