@@ -35,9 +35,14 @@ bool InsertPCSX2Hooks(); // PCSX2
 void SpecialPSPHook(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len); // General PSP extern hook
 
 bool InsertPPSSPPHooks();        // PPSSPPWindows
+
 bool InsertPPSSPPHLEHooks();
+
+bool InsertPPSSPPUnknownHooks();
+bool InsertOtomatePPSSPPHook(); // PSP otomate.jp, 0.9.9 only
+
 bool Insert5pbPSPHook();        // PSP 5pb.jp
-bool InsertAlchemistPSPHook();  // PSP Alchemist-net.co.jp
+bool InsertAlchemistPSPHook();  // PSP Alchemist-net.co.jp, 0.9.8 only
 bool InsertAlchemist2PSPHook(); // PSP Alchemist-net.co.jp
 bool InsertBandaiNamePSPHook(); // PSP Bandai.co.jp
 bool InsertBandaiPSPHook();     // PSP Bandai.co.jp
@@ -46,7 +51,8 @@ bool InsertBroccoliPSPHook();   // PSP Broccoli.co.jp
 bool InsertCyberfrontPSPHook(); // PSP CYBERFRONT (closed)
 bool InsertImageepochPSPHook(); // PSP Imageepoch.co.jp
 bool InsertTecmoPSPHook();      // PSP Koeitecmo.co.jp
-bool InsertOtomatePSPHook();    // PSP otomate.jp
+
+bool InsertOtomatePSPHook();    // PSP otomate.jp, 0.9.8 only
 
 bool InsertIntensePSPHook();    // PSP Intense.jp
 bool InsertKidPSPHook();        // PSP Kid-game.co.jp

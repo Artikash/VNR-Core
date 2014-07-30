@@ -19,7 +19,7 @@
 # else
 #   include <iostream>
 #   include <cstdio>
-#   define DPRINT(...)    fprintf(stdcerr, DEBUG ":" __FUNCTION__ ": " __VA_ARGS__)
+#   define DPRINT(...)    fprintf(stderr, DEBUG ":" __FUNCTION__ ": " __VA_ARGS__)
 #   define DOUT(_msg)     std::cout << DEBUG << ":" << __FUNCTION__ << ": " << _msg << std::endl
 #   define DERR(_msg)     std::cerr << DEBUG << ":" << __FUNCTION__ << ": " << _msg << std::endl
 # endif // QT_CORE_LIB
