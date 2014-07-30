@@ -23,6 +23,7 @@ psp:
   - Nippon1 PSP
   - Nippon2 PSP
   - Otomate PSP
+  - Otomate PPSSPP
   - Tecmo PSP
   - Yeti PSP
   - Yeti2 PSP
@@ -126,6 +127,7 @@ simple:
   - Nippon1 PSP
   - Nippon2 PSP
   - Otomate PSP
+  - Otomate PPSSPP
   - Pencil # renamed
   - Pensil
   - RealLive
@@ -260,6 +262,7 @@ char:
   - Nippon2 PSP
   - NitroPlus
   - Otomate PSP
+  - Otomate PPSSPP
   - Pencil # renamed
   - Pensil
   - QLIE

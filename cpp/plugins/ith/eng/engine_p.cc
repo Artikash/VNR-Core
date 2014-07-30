@@ -777,8 +777,7 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
 bool InsertMajiroHook()
 {
   // jichi 7/12/2014: Change to accurate memory ranges
-  ULONG startAddress,
-        stopAddress;
+  ULONG startAddress, stopAddress;
   if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:Majiro: failed to get memory range");
     return false;
@@ -821,8 +820,7 @@ namespace { // unnamed
 bool InsertCMVS1Hook()
 {
   // jichi 7/12/2014: Change to accurate memory ranges
-  ULONG startAddress,
-        stopAddress;
+  ULONG startAddress, stopAddress;
   if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:CMVS1: failed to get memory range");
     return false;
@@ -1808,8 +1806,7 @@ bool InsertWhirlpoolHook()
 bool InsertCotophaHook()
 {
   // jichi 7/12/2014: Change to accurate memory ranges
-  ULONG startAddress,
-        stopAddress;
+  ULONG startAddress, stopAddress;
   if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:Cotopha: failed to get memory range");
     return false;
@@ -1851,8 +1848,7 @@ bool InsertCatSystem2Hook()
   //hp.length_offset=1;
 
   // jichi 7/12/2014: Change to accurate memory ranges
-  ULONG startAddress,
-        stopAddress;
+  ULONG startAddress, stopAddress;
   if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:CatSystem2: failed to get memory range");
     return false;
@@ -5164,8 +5160,7 @@ bool InsertElfHook()
  */
 bool InsertEushullyHook()
 {
-  ULONG startAddress,
-        stopAddress;
+  ULONG startAddress, stopAddress;
   if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:Eushully: failed to get memory range");
     return false;
@@ -6018,11 +6013,15 @@ struct PPSSPPFunction
 
 } // unnamed namespace
 
+bool InsertPPSSPPUnknownHLEHooks()
+{
+  return InsertOtomatePPSSPPHook();
+}
+
 bool InsertPPSSPPHLEHooks()
 {
   ConsoleOutput("vnreng: PPSSPP HLE: enter");
-  ULONG startAddress,
-        stopAddress;
+  ULONG startAddress, stopAddress;
   if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
     ConsoleOutput("vnreng:PPSSPP HLE: failed to get memory range");
     return false;
@@ -6065,6 +6064,9 @@ bool InsertPPSSPPHLEHooks()
 bool InsertPPSSPPHooks()
 {
   ConsoleOutput("vnreng: PPSSPP: enter");
+
+  InsertPPSSPPUnknownHLEHooks();
+
   bool engineFound = Insert5pbPSPHook();
   if (!engineFound) {
     InsertBroccoliPSPHook();
@@ -6079,8 +6081,6 @@ bool InsertPPSSPPHooks()
     bool bandaiFound = InsertBandaiPSPHook();
     InsertBandaiNamePSPHook();
 
-    InsertOtomatePSPHook();
-
     // Hooks whose pattern is not generic enouph
 
     InsertCyberfrontPSPHook();
@@ -6090,6 +6090,8 @@ bool InsertPPSSPPHooks()
 
     InsertAlchemistPSPHook();
     InsertAlchemist2PSPHook();
+
+    InsertOtomatePSPHook();
 
     if (!bandaiFound) {
       // KID pattern is a subset of BANDAI, and hence MUST NOT be together with BANDAI
@@ -6106,13 +6108,14 @@ bool InsertPPSSPPHooks()
   return true;
 }
 
-/** 7/13/2014 jichi alchemist-net.co.jp PSP engine, 0.9.8
+/** 7/13/2014 jichi alchemist-net.co.jp PSP engine, 0.9.8 only, not work on 0.9.9
  *  Sample game: your diary+ (moe-ydp.iso)
  *  The memory address is fixed.
  *  Note: This pattern seems to be common that not only exists in Alchemist games.
  *
  *  Debug method: simply add hardware break points to the matched memory
  *
+ *  PPSSPP 0.9.8, your diary+
  *  134076f2   cc               int3
  *  134076f3   cc               int3
  *  134076f4   77 0f            ja short 13407705
@@ -6253,6 +6256,7 @@ bool InsertAlchemistPSPHook()
   enum { hook_offset = 0x13407711 - 0x134076f4 };
 
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //ITH_GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: Alchemist PSP: pattern not found");
   else {
@@ -7641,11 +7645,7 @@ bool InsertCyberfrontPSPHook()
  *  0ed859f1   f4               hlt                                      ; privileged command
  *  0ed859f2   90               nop
  */
-// Return revert address
-//static size_t _reverse_strlen(LPCSTR s)
-//{
-//  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
-//}
+// TODO: Is reverse_strlen a better choice?
 static void SpecialPSPHookYeti2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
@@ -8306,15 +8306,18 @@ bool InsertBroccoliPSPHook()
   return addr;
 }
 
-/** 7/26/2014 jichi Otomate PSP engine, 0.9.8
+/** 7/26/2014 jichi Otomate PSP engine, 0.9.8 only, 0.9.9 not work
  *  Sample game: クロノスタシア
  *  Sample game: フォトカノ (repetition)
+ *
+ *  The instruction pattern also exist in 0.9.9. But the function is not called.
  *
  *  Memory address is FIXED.
  *  Debug method: breakpoint the memory address
  *
  *  The memory access of the function below is weird that the accessed value is 2 bytes after the real text.
  *
+ *  PPSSPP 0.9.8, クロノスタシア
  *  13c00fe1   cc               int3
  *  13c00fe2   cc               int3
  *  13c00fe3   cc               int3
@@ -8347,6 +8350,7 @@ bool InsertBroccoliPSPHook()
  *  13c01056   cc               int3
  *  13c01057   cc               int3
  */
+// TODO: is reverse_strlen a better choice?
 // Read text from esi
 static void SpecialPSPHookOtomate(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
@@ -8361,9 +8365,10 @@ static void SpecialPSPHookOtomate(DWORD esp_base, HookParam *hp, DWORD *data, DW
     *len = sz == 3 ? 3 : 1; // handling the last two bytes
   }
 }
+
 bool InsertOtomatePSPHook()
 {
-  ConsoleOutput("vnreng: Otomate PSP: enter");
+  ConsoleOutput("vnreng: Otomate PSP 0.9.8: enter");
   const BYTE bytes[] =  {
     0x77, 0x0f,                     // 13c00fe4   77 0f            ja short 13c00ff5
     0xc7,0x05, XX4, XX4,            // 13c00fe6   c705 a8aa1001 30>mov dword ptr ds:[0x110aaa8],0x884b330
@@ -8384,19 +8389,110 @@ bool InsertOtomatePSPHook()
   enum { hook_offset = 0x13c01001- 0x13c00fe4 };
 
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //ITH_GROWL_DWORD(addr);
   if (!addr)
-    ConsoleOutput("vnreng: Otomate PSP: pattern not found");
+    ConsoleOutput("vnreng: Otomate PSP 0.9.8: pattern not found");
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
     hp.extern_fun = SpecialPSPHookOtomate;
-    ConsoleOutput("vnreng: Otomate PSP: INSERT");
+    ConsoleOutput("vnreng: Otomate PSP 0.9.8: INSERT");
     NewHook(hp, L"Otomate PSP");
   }
 
-  ConsoleOutput("vnreng: Otomate PSP: leave");
+  ConsoleOutput("vnreng: Otomate PSP 0.9.8: leave");
+  return addr;
+}
+
+/** 7/29/2014 jichi Otomate PPSSPP 0.9.9
+ *  Sample game: Amnesia Crowd
+ *  006db4af   cc               int3
+ *  006db4b0   8b15 b8ebaf00    mov edx,dword ptr ds:[0xafebb8]          ; ppssppwi.01134988
+ *  006db4b6   56               push esi
+ *  006db4b7   8b42 10          mov eax,dword ptr ds:[edx+0x10]
+ *  006db4ba   25 ffffff3f      and eax,0x3fffffff
+ *  006db4bf   0305 94411301    add eax,dword ptr ds:[0x1134194]
+ *  006db4c5   8d70 01          lea esi,dword ptr ds:[eax+0x1]
+ *  006db4c8   8a08             mov cl,byte ptr ds:[eax] ; jichi: hook here, get text in [eax]
+ *  006db4ca   40               inc eax
+ *  006db4cb   84c9             test cl,cl
+ *  006db4cd  ^75 f9            jnz short ppssppwi.006db4c8
+ *  006db4cf   2bc6             sub eax,esi
+ *  006db4d1   8942 08          mov dword ptr ds:[edx+0x8],eax
+ *  006db4d4   5e               pop esi
+ *  006db4d5   8d0485 07000000  lea eax,dword ptr ds:[eax*4+0x7]
+ *  006db4dc   c3               retn
+ *  006db4dd   cc               int3
+ */
+// Return the address of the first non-zero address
+//static LPCSTR _reverse_search_begin(LPCSTR s)
+//{
+//  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+//  if (*s)
+//    for (int i = 0; i < MAX_LENGTH; i++, s--)
+//      if (!*s)
+//        return s + 1;
+//  return nullptr;
+//}
+static void SpecialPPSSPPHookOtomate(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  DWORD eax = regof(eax, esp_base);
+  LPCSTR text = LPCSTR(eax);
+  //LPCSTR start = _reverse_search_begin(text);
+  //if (start) {
+  if (*text) {
+    //*split = regof(ecx, esp_base); // this would split the entire scenario character by character
+    *split = regof(ecx, esp_base) & 0xffff00; // skip cl which is used
+
+    //*data = (DWORD)start;
+    //*len = ::strlen(start);
+    *data = (DWORD)text;
+    *len = 1;
+  }
+}
+bool InsertOtomatePPSSPPHook()
+{
+  ULONG startAddress, stopAddress;
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+    ConsoleOutput("vnreng: Otomate PPSSPP 0.9.9: failed to get memory range");
+    return false;
+  }
+  ConsoleOutput("vnreng: Otomate PPSSPP 0.9.9: enter");
+  const BYTE bytes[] =  {
+    0x8b,0x15, XX4,             // 006db4b0   8b15 b8ebaf00    mov edx,dword ptr ds:[0xafebb8]          ; ppssppwi.01134988
+    0x56,                       // 006db4b6   56               push esi
+    0x8b,0x42, 0x10,            // 006db4b7   8b42 10          mov eax,dword ptr ds:[edx+0x10]
+    0x25, 0xff,0xff,0xff,0x3f,  // 006db4ba   25 ffffff3f      and eax,0x3fffffff
+    0x03,0x05, XX4,             // 006db4bf   0305 94411301    add eax,dword ptr ds:[0x1134194]
+    0x8d,0x70, 0x01,            // 006db4c5   8d70 01          lea esi,dword ptr ds:[eax+0x1]
+    0x8a,0x08,                  // 006db4c8   8a08             mov cl,byte ptr ds:[eax] ; jichi: hook here
+    0x40,                       // 006db4ca   40               inc eax
+    0x84,0xc9,                  // 006db4cb   84c9             test cl,cl
+    0x75, 0xf9,                 // 006db4cd  ^75 f9            jnz short ppssppwi.006db4c8
+    0x2b,0xc6,                  // 006db4cf   2bc6             sub eax,esi
+    0x89,0x42, 0x08,            // 006db4d1   8942 08          mov dword ptr ds:[edx+0x8],eax
+    0x5e,                       // 006db4d4   5e               pop esi
+    0x8d,0x04,0x85, 0x07,0x00,0x00,0x00  // 006db4d5   8d0485 07000000  lea eax,dword ptr ds:[eax*4+0x7]
+  };
+  enum { hook_offset = 0x006db4c8 - 0x006db4b0 };
+
+  DWORD addr = SafeMatchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  //ITH_GROWL_DWORD(addr);
+  if (!addr)
+    ConsoleOutput("vnreng: Otomate PPSSPP 0.9.9: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    //hp.userValue = *(DWORD *)(hp.addr + memory_offset); // this is the address after ds:[]
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
+    hp.extern_fun = SpecialPPSSPPHookOtomate;
+    ConsoleOutput("vnreng: Otomate PPSSPP 0.9.9: INSERT");
+    NewHook(hp, L"Otomate PPSSPP");
+  }
+
+  ConsoleOutput("vnreng: Otomate PPSSPP 0.9.9: leave");
   return addr;
 }
 
