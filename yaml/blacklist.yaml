@@ -124,6 +124,7 @@ processes:
   - PotPlayerMini.exe   # Pot Player
   - QQ.exe              # Tencent
   - QQBrowser.exe       # Tencent
+  - QQDownload          # Tencent
   - QQPlayer.exe        # Tencent
   - qtcreator.exe       # Qt
   - QuickTime.exe       # Apple
