@@ -6318,6 +6318,8 @@ bool InsertAlchemistPSPHook()
  *
  *  Two candidate functions are seems OK.
  *
+ *  Instruction pattern: 81e580808080    // and ebp,0x80808080
+ *
  *  0.9.8 のーふぇいと
  *  13400ef3   90               nop
  *  13400ef4   77 0f            ja short 13400f05
@@ -7509,9 +7511,11 @@ bool InsertCyberfrontPSPHook()
   return addr;
 }
 
-/** 7/19/2014 jichi Alternative Yeti PSP engine, 0.9.8, 0.9.9
- *  Sample game: Never 7, 0.9.8, 0.9.9 (7/27/2014)
+/** 7/19/2014 jichi Alternative Yeti PSP engine, 0.9.8 only
+ *  Sample game: Never 7, 0.9.8
  *  Sample game: ひまわり
+ *
+ *  Do not work on 0.9.9 Ever17 (7/27/2014)
  *
  *
  *  This hook does not work for 12River.
