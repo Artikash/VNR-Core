@@ -72,10 +72,20 @@ if __name__ == '__main__':
   if os.name == 'nt':
     location = 'C:' + location
 
-  dic = 'New Japanese-Chinese Dictionary.ld2'
+  dic = 'GBK Japanese-Chinese Dictionary.ld2'
   with SkProfiler():
-    ld = LingoesDict(location + dic, 'utf16')
+    ld = LingoesDict(location + dic, 'utf8')
   print '-' * 4
+
+  #dic = 'Monash Romanized Japanese-English Dictionary.ld2'
+  #with SkProfiler():
+  #  ld = LingoesDict(location + dic, 'utf8')
+  #print '-' * 4
+
+  #dic = 'New Japanese-Chinese Dictionary.ld2'
+  #with SkProfiler():
+  #  ld = LingoesDict(location + dic, 'utf16')
+  #print '-' * 4
 
   #dic = 'Naver Japanese-Korean Dictionary.ld2'
   #ld = LingoesDict(location + dic, 'utf8')
@@ -91,17 +101,21 @@ if __name__ == '__main__':
 
   with SkProfiler():
     print "lookup start"
-    t = u"かわいい"
+    #t = u"セリフ"
+    t = u"名前"
+    #t = u"神風"
+    #t = u"かわいい"
     it = ld.lookup(t)
     if it:
       for key, xmls in it:
         print key
-        #print xmls[0]
+        print len(xmls)
+        print xmls[0]
     print "lookup finish"
 
   # 175 MB
   # 57 MB
-  import time
-  time.sleep(10)
+  #import time
+  #time.sleep(10)
 
 # EOF
