@@ -59,13 +59,13 @@ class LingoesDict(object):
     #  self.trie = Trie(**d)
     dprint("leave")
 
-  def lookupprefix(self, t): # unicode -> yield or return None
+  def search(self, t): # unicode -> yield or return None
     #if self.trie:
     #  return self.trie.iteritems(t)
     if t:
       return searchutil.lookupprefix(t, self.data)
 
-  lookup = lookupprefix
+  lookup = search # for backward compatibility
 
   def get(self, t): # unicode key -> unicode content  exact match
     # [1] to get xmls, [0] to get the first xml

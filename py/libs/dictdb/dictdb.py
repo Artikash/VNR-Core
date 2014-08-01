@@ -14,7 +14,10 @@ from sakurakit.skdebug import dwarn
 def queryentry(cur, word='', wordlike='', limit=0): # cursor, string -> entry; raise
   params = []
   sql = "SELECT word,content FROM entry"
-  if wordlike:
+  if word:
+    sql += ' where word = ?'
+    params.append(word)
+  elif wordlike:
     sql += ' where word like ?'
     params.append(wordlike)
   if limit:
