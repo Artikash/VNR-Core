@@ -26,6 +26,20 @@ import config, defs, features, growl, libman, prompt, qmldialog, rc, settings, w
 
 EXITED = False # whether the application is existing
 
+def _parserargs(args):
+  """Parse command line arguments
+  @param  args  [str]
+  @return  kw not None
+  """
+  ret = {}
+  try:
+    for i, it in enumerate(args):
+      if it == '--pid':
+        ret['pid'] = long(args[i+1])
+  except Exception, e:
+    dwarn("failed to parse command line option", e)
+  return ret
+
 # MainObject private data
 @Q_Q
 class _MainObject(object):
@@ -1478,24 +1492,30 @@ class MainObject(QObject):
 
     #self.showTermChart()
 
+    dprint("parse command line arguments")
+    kwargs = _parserargs(args)
+    dprint("args =", kwargs)
+    argumentPid = kwargs.get('pid') or 0
+
     dprint("search for running game")
-    g = gm.findRunningGame()
+    g = gm.findRunningGame(pid=argumentPid)
     if g:
+      foundGame = True
       dprint("find running game")
       growl.msg(my.tr("Found running game") + ":" "<br/>" + g.name)
       skevents.runlater(partial(
-          gm.openGame, game=g),
+          gm.openGame, game=g, pid=argumentPid),
           500)
     else:
       path = None
       if dm.hasGameFiles() and settings.global_().isGameDetectionEnabled():
-        path = gm.findRunningGamePathByMd5()
+        path = gm.findRunningGamePathByMd5(pid=argumentPid)
       if path:
         dprint("find running new game")
         growl.msg(my.tr("Found new game") + ":" "<br/>" + path)
         if online:
           skevents.runlater(partial(
-              gm.openNewGame, path=path),
+              gm.openNewGame, path=path, pid=argumentPid),
               500)
         else:
           d.springBoardDialog
