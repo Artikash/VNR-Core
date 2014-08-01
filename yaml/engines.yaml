@@ -14,7 +14,6 @@ psp:
     - CYBERFRONT PSP
     - Imageepoch PSP
     - KID PSP
-    - Yeti2 PSP
   0.9.9:
     - Otomate PPSSPP
   0.9.8:
@@ -30,6 +29,7 @@ psp:
     - Otomate PSP
     - Tecmo PSP
     - Yeti PSP
+    - Yeti2 PSP
 
 gc:
   - Vanillaware GC

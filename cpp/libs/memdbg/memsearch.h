@@ -119,10 +119,20 @@ enum : byte_t { WidecardByte = 0x11 }; // jichi 7/17/2014: 0x11 seldom appear in
 dword_t matchBytes(const void *pattern, dword_t patternSize, dword_t lowerBound, dword_t upperBound,
                    byte_t wildcard = WidecardByte);
 
-// 2GB: 0 - 0x7fffffff
+// User space: 0 - 2G (0 - 0x7ffeffff)
+// Kernel space: 2G - 4G  (0x80000000 - 0xffffffff)
+//
+// http://msdn.microsoft.com/en-us/library/windows/hardware/ff560042%28v=vs.85%29.aspx
 // http://codesequoia.wordpress.com/2008/11/28/understand-process-address-space-usage/
-enum MemoryRange : dword_t { MemoryStartAddress = 0 , MemoryStopAddress = 0x7fffffff };
-enum : dword_t { MappedMemoryStartAddress = 0x01000000};
+// http://stackoverflow.com/questions/17244912/open-process-with-debug-privileges-and-read-write-memory
+enum MemoryRange : dword_t {
+  UserMemoryStartAddress = 0, UserMemoryStopAddress = 0x7ffeffff
+  , KernelMemoryStartAddress = 0x80000000, KernelMemoryStopAddress = 0xffffffff
+  , KernelMemoryStartAddress = 0x80000000, KernelMemoryStopAddress = 0xffffffff
+  , MappedMemoryStartAddress = 0x01000000
+
+  , MemoryStartAddress = UserMemoryStartAddress , MemoryStopAddress = UserMemoryStopAddress
+};
 
 #if 0 // not used
 /**

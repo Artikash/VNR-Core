@@ -8,7 +8,6 @@
 
 #include "engine_p.h"
 #include "hookdefs.h"
-#include "uniquemap.h"
 #include "util.h"
 #include "ith/cli/cli.h"
 #include "ith/sys/sys.h"
@@ -29,6 +28,7 @@
 //#define DEBUG "engine_p.h"
 
 #ifdef DEBUG
+# include "uniquemap.h"
 # include "ith/common/growl.h"
 namespace { // unnamed debug functions
 // jichi 12/17/2013: Copied from int TextHook::GetLength(DWORD base, DWORD in)
@@ -6307,16 +6307,20 @@ bool InsertAlchemistPSPHook()
   return addr;
 }
 
-/** 7/20/2014 jichi alchemist-net.co.jp PSP engine, 0.9.8
+/** 7/20/2014 jichi alchemist-net.co.jp PSP engine, 0.9.8 only
  *  An alternative alchemist hook for old alchemist games.
  *  Sample game: のーふぇいと (No Fate)
  *  The memory address is fixed.
+ *
+ *  Does not work on
  *
  *  Debug method: simply add hardware break points to the matched memory
  *
  *  Two candidate functions are seems OK.
  *
- *  Alchemist2:
+ *  Instruction pattern: 81e580808080    // and ebp,0x80808080
+ *
+ *  0.9.8 のーふぇいと
  *  13400ef3   90               nop
  *  13400ef4   77 0f            ja short 13400f05
  *  13400ef6   c705 a8aa1001 d0>mov dword ptr ds:[0x110aaa8],0x889aad0
@@ -6385,6 +6389,7 @@ bool InsertAlchemist2PSPHook()
   enum { hook_offset = 0x13400f13 - 0x13400ef4 };
 
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //ITH_GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: Alchemist2 PSP: pattern not found");
   else {
@@ -7506,9 +7511,11 @@ bool InsertCyberfrontPSPHook()
   return addr;
 }
 
-/** 7/19/2014 jichi Alternative Yeti PSP engine, 0.9.8, 0.9.9
- *  Sample game: Never 7, 0.9.8, 0.9.9 (7/27/2014)
+/** 7/19/2014 jichi Alternative Yeti PSP engine, 0.9.8 only
+ *  Sample game: Never 7, 0.9.8
  *  Sample game: ひまわり
+ *
+ *  Do not work on 0.9.9 Ever17 (7/27/2014)
  *
  *
  *  This hook does not work for 12River.
