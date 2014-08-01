@@ -80,6 +80,7 @@ Item { id: root_
   property alias speaksTextChecked: speakButton_.checked
 
   property alias copiesTextChecked: copyTextButton_.checked
+  property alias copiesSubtitleChecked: copySubtitleButton_.checked
 
   //property alias voiceChecked: voiceButton_.checked
   //property alias subtitleVoiceChecked: subtitleVoiceButton_.checked
@@ -677,6 +678,7 @@ Item { id: root_
                          //windowTextButton_.hover ||
                          //speakTextButton_.hover ||
                          copyTextButton_.hover ||
+                         copySubtitleButton_.hover ||
                          //voiceButton_.hover ||
                          //subtitleVoiceButton_.hover ||
                          shioriZoomSlider_.hover ||
@@ -847,6 +849,26 @@ Item { id: root_
 
       // - Group#2: text options -
 
+      Share.CheckBox { id: copyTextButton_
+        width: parent.cellWidth; height: parent.cellHeight
+        text: qsTr("Text to clipboard")
+        font.pixelSize: parent.pixelSize
+        font.bold: true
+        font.family: parent.cellFont
+        toolTip: qsTr("Automatically copy Japanese game text to the clipboard")
+        //language: root_.language
+      }
+
+      Share.CheckBox { id: copySubtitleButton_
+        width: parent.cellWidth; height: parent.cellHeight
+        text: qsTr("Sub to clipboard")
+        font.pixelSize: parent.pixelSize
+        font.bold: true
+        font.family: parent.cellFont
+        toolTip: qsTr("Automatically copy machine or user-contributed translation to the clipboard")
+        //language: root_.language
+      }
+
       Share.CheckBox { id: shadowButton_
         width: parent.cellWidth; height: parent.cellHeight
         text: qsTr("Shadow behind text")
@@ -918,19 +940,9 @@ Item { id: root_
         //language: root_.language
       }
 
-      Share.CheckBox { id: copyTextButton_
-        width: parent.cellWidth; height: parent.cellHeight
-        text: qsTr("Text to clipboard")
-        font.pixelSize: parent.pixelSize
-        font.bold: true
-        font.family: parent.cellFont
-        toolTip: qsTr("Automatically copy Japanese game text to the clipboard")
-        //language: root_.language
-      }
-
       Share.CheckBox { id: hentaiButton_
         width: parent.cellWidth; height: parent.cellHeight
-        text: qsTr("Enable hentai terms")
+        text: qsTr("Enable hentai term")
         font.pixelSize: parent.pixelSize
         font.bold: true
         font.family: parent.cellFont
@@ -942,6 +954,23 @@ Item { id: root_
               qsTr("Leave hentai mode"))
       }
 
+      Share.CheckBox { id: growlButton_
+        width: parent.cellWidth; height: parent.cellHeight
+        text: qsTr("Show notification")
+        font.pixelSize: parent.pixelSize
+        font.bold: true
+        font.family: parent.cellFont
+        toolTip: qsTr("Show notification at the corner of the screen")
+
+        checked: true
+        onCheckedChanged: {
+          if (appMenu_.growlChecked != checked)
+            appMenu_.growlChecked = checked
+          if (checked)
+            growl_.show()
+        }
+      }
+
       Share.CheckBox { id: clockButton_
         width: parent.cellWidth; height: parent.cellHeight
         text: qsTr("Show current time")
@@ -950,8 +979,6 @@ Item { id: root_
         font.family: parent.cellFont
         toolTip: qsTr("Show current time")
       }
-
-      //Item { width: 1; height: 1 }
 
       //Share.CheckBox { id: copyButton_
       //  width: parent.cellWidth; height: parent.cellHeight
@@ -971,8 +998,6 @@ Item { id: root_
       //  toolTip: qsTr("Display a red border outside the game window")
       //  language: root_.language
       //}
-
-      //Item { width: 1; height: 1 }
 
       //Share.CheckBox { id: revertsColorButton_
       //  width: parent.cellWidth; height: parent.cellHeight
@@ -1017,8 +1042,6 @@ Item { id: root_
       //  //language: root_.language
       //}
 
-      //Item { width: 1; height: 1 }
-
       //Share.CheckBox { id: voiceButton_
       //  width: parent.cellWidth; height: parent.cellHeight
       //  text: qsTr("Dub voices")
@@ -1029,8 +1052,6 @@ Item { id: root_
       //  toolTip: qsTr("Add voice for selected characters instead of reading all game texts")
       //  //language: root_.language
       //}
-
-      //Item { width: 1; height: 1 }
 
       //Share.CheckBox { id: subtitleVoiceButton_
       //  width: parent.cellWidth; height: parent.cellHeight
@@ -1044,23 +1065,6 @@ Item { id: root_
       //}
 
       // - Group #4: Sliders
-
-      Share.CheckBox { id: growlButton_
-        width: parent.cellWidth; height: parent.cellHeight
-        text: qsTr("Show notification")
-        font.pixelSize: parent.pixelSize
-        font.bold: true
-        font.family: parent.cellFont
-        toolTip: qsTr("Show notification at the corner of the screen")
-
-        checked: true
-        onCheckedChanged: {
-          if (appMenu_.growlChecked != checked)
-            appMenu_.growlChecked = checked
-          if (checked)
-            growl_.show()
-        }
-      }
 
       Share.LabeledSlider { id: textSlider_
         height: parent.cellHeight
@@ -1079,6 +1083,8 @@ Item { id: root_
         font.family: parent.cellFont
         //language: root_.language
       }
+
+      Item { width: 1; height: 1 }
 
       Share.LabeledSlider { id: grimoireZoomSlider_
         height: parent.cellHeight

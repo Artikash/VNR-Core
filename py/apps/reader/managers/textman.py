@@ -376,8 +376,17 @@ class _TextManager(object):
     """
     #sub = userplugin.revise_translation(sub, language)
     if sub:
+      self._onGameSubtitle(sub, language)
       self.q.translationReceived.emit(sub, language, provider, time)
       self._updateTtsSubtitle(sub, language)
+
+  def _onGameSubtitle(self, sub, language=''):
+    """
+    @param  sub  unicode
+    @param* language  str
+    """
+    if settings.global_().copiesGameSubtitle():
+      skclip.settext(sub)
 
   #def _maximumDataSize(self):
   #  return defs.MAX_REPEAT_DATA_LENGTH if self.removesRepeat else defs.MAX_DATA_LENGTH
@@ -615,6 +624,7 @@ class _TextManager(object):
             self._showComment(c)
             hitCommentIds.add(cd.id)
             if cd.type == 'subtitle':
+              self._onGameSubtitle(cd.text, cd.language)
               self._updateTtsSubtitle(cd.text, cd.language)
 
       # Hash2 as back up
@@ -626,6 +636,7 @@ class _TextManager(object):
             self._showComment(c)
             hitCommentIds.add(cd.id)
             if cd.type == 'subtitle':
+              self._onGameSubtitle(cd.text, cd.language)
               self._updateTtsSubtitle(cd.text, cd.language)
 
       if FIX_OLD_SUBS:

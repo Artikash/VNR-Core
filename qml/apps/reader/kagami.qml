@@ -86,6 +86,7 @@ Item { id: root_
     //dock_.windowTextChecked = settings_.windowTextVisible
     dock_.speaksTextChecked = settings_.speaksGameText
     dock_.copiesTextChecked = settings_.copiesGameText
+    dock_.copiesSubtitleChecked = settings_.copiesGameSubtitle
     //dock_.voiceChecked = settings_.voiceCharacterEnabled
     //dock_.subtitleVoiceChecked = settings_.subtitleVoiceEnabled
 
@@ -737,6 +738,7 @@ Item { id: root_
             clock_.visible = clockChecked
 
         onCopiesTextCheckedChanged: settings_.copiesGameText = copiesTextChecked
+        onCopiesSubtitleCheckedChanged: settings_.copiesGameSubtitle = copiesSubtitleChecked
 
         onHentaiCheckedChanged: settings_.hentai = hentaiChecked
 
