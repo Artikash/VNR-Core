@@ -108,9 +108,9 @@ if __name__ == '__main__':
     #t = u"名前"
     #t = u"セリフ"
     #t = u"名前"
-    #t = u"神風"
+    t = u"神風"
     #t = u"かわいい"
-    t = u'イギリス'
+    #t = u'イギリス'
     it = ld.lookup(t)
     if it:
       for key, xmls in it:
