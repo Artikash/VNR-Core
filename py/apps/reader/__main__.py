@@ -11,7 +11,8 @@ def print_help():
 usage: python . [options]
 
 Launch the app.
-See: http://sakuradite.com/wiki/en/VNR/Command_Line
+See (en): http://sakuradite.com/wiki/en/VNR/Command_Line
+See (zh): http://sakuradite.com/wiki/zh/VNR/Command_Line
 
 options:
   --debug       Print debug output
