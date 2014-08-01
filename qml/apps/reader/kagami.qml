@@ -294,7 +294,7 @@ Item { id: root_
       }
 
       // 4 paddings surrounding the center
-      property int paddingMargin: -center_.borderWidth - (dock_.displayStretchedChecked ? 2 : 0)
+      property int paddingMargin: -center_.borderWidth - 5 //(dock_.displayStretchedChecked ? 2 : 0)
       property int paddingTopMargin: -center_.titleBarHeight - (dock_.displayStretchedChecked ? 2 : 0)
       //property int paddingBottomMargin: -center_.borderWidth - (dock_.displayStretchedChecked ? 4 : 0)
 
