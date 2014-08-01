@@ -11,11 +11,13 @@ rename:
 
 psp:
   all:
+    - 5pb PSP
     - Alchemist2 PSP
     - CYBERFRONT PSP
     - Intense PSP
     - Imageepoch PSP
     - Otomate PSP
+    - Yeti PSP
     - Yeti2 PSP
   0.9.9:
     - Otomate PPSSPP
@@ -24,13 +26,11 @@ psp:
     - BANDAI PSP
     - BANDAI Name PSP
     # Following are not sure
-    - 5pb PSP
     - Broccoli PSP
     - KID PSP
     - Nippon1 PSP
     - Nippon2 PSP
     - Tecmo PSP
-    - Yeti PSP
 
 gc:
   - Vanillaware GC
