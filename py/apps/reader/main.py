@@ -1024,8 +1024,10 @@ class _MainObject(object):
     tm.cleared.connect(ret.clear)
     return ret
 
+  # This function could take lots of time depending on how many games you have
   @memoizedproperty
   def springBoardDialog(self):
+    dprint("enter")
     import spring
     ret = spring.SpringBoard(self.normalWindow)
     self.widgets.append(ret)
@@ -1036,6 +1038,7 @@ class _MainObject(object):
     gm.processChanged.connect(ret.hide)
     gm.openingGame.connect(ret.hide)
     gm.openGameFailed.connect(ret.show)
+    dprint("leave")
     return ret
 
   #@memoizedproperty
