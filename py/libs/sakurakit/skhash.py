@@ -187,13 +187,17 @@ def md5sumpath(path):
   @return  str  md5 in lowercase hex string
   """
   try:
+    # Change to UNC path: http://stackoverflow.com/questions/7169845/using-python-how-can-i-access-a-shared-folder-on-windows-network
+    if path.startswith('/') and not path.startswith('//'):
+      path = '/' + path
     md5 = hashlib.md5()
     with open(path,'rb') as f:
       chunk_size =128 * md5.block_size
       for chunk in iter(lambda: f.read(chunk_size), b''):
         md5.update(chunk)
     return md5.hexdigest()
-  except IOError: return ""
+  #except IOError: return ""
+  except: return ""
 
 def md5sumdata(data):
   """Return the MD5 digest of the data
