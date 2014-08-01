@@ -138,13 +138,15 @@ ULONG SafeMatchBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD
 ULONG SafeMatchBytesInMappedMemory(LPCVOID pattern, DWORD patternSize, BYTE wildcard = XX)
 {
   enum : ULONG {
-    start = MemDbg::MappedMemoryStartAddress, // 0x01000000
-    stop = MemDbg::MemoryStopAddress, // 0x7fffffff
-    step = 0x00050000 // in order to work on PPSSPP 0.9.9
-    //step = 0x00010000 // crash otoboku PSP on 0.9.9 since 5pb is wrongly inserted
-    //step = 0x01000000 // only works for PPSSPP 0.9.8
-    //step = 0x00100000 // in order to work for 0.9.9
-    //step = 0x1000 // this value must be atleast 0x1000 (offset in SearchPattern)
+    //start = MemDbg::MappedMemoryStartAddress, // 0x01000000
+    //stop = MemDbg::MemoryStopAddress, // 0x7fffffff
+    start = 0x01000000
+    , stop = 0x15000000 // hooking to code after this might crash VNR
+    , step = 0x00050000 // in order to work on PPSSPP 0.9.9
+    //, step = 0x00010000 // crash otoboku PSP on 0.9.9 since 5pb is wrongly inserted
+    //, step = 0x01000000 // only works for PPSSPP 0.9.8
+    //, step = 0x00100000 // in order to work for 0.9.9
+    //, step = 0x1000 // step  must be at least 0x1000 (offset in SearchPattern)
   };
   for (ULONG i = start; i < stop; i += step) // + patternSize to avoid overlap
     if (ULONG r = SafeMatchBytes(pattern, patternSize, i, i + step + patternSize + 1, wildcard))
@@ -6094,41 +6096,39 @@ bool InsertPPSSPPHooks()
 
   InsertPPSSPPUnknownHLEHooks();
 
-  bool engineFound = Insert5pbPSPHook();
-  if (!engineFound) {
-    InsertPPSSPPHLEHooks();
+  InsertPPSSPPHLEHooks();
 
-    InsertBroccoliPSPHook();
-    InsertIntensePSPHook();
-    InsertNippon1PSPHook();
-    InsertNippon2PSPHook();
+  Insert5pbPSPHook();
+  InsertBroccoliPSPHook();
+  InsertIntensePSPHook();
+  InsertNippon1PSPHook();
+  InsertNippon2PSPHook();
 
-    //InsertTecmoPSPHook();
+  //InsertTecmoPSPHook();
 
-    // Generic hooks
+  // Generic hooks
 
-    bool bandaiFound = InsertBandaiPSPHook();
-    InsertBandaiNamePSPHook();
+  bool bandaiFound = InsertBandaiPSPHook();
+  InsertBandaiNamePSPHook();
 
-    // Hooks whose pattern is not generic enouph
+  // Hooks whose pattern is not generic enouph
 
-    InsertCyberfrontPSPHook();
+  InsertCyberfrontPSPHook();
 
-    InsertYetiPSPHook();
-    InsertYeti2PSPHook();
+  InsertYetiPSPHook();
+  InsertYeti2PSPHook();
 
-    InsertAlchemistPSPHook();
-    InsertAlchemist2PSPHook();
+  InsertAlchemistPSPHook();
+  InsertAlchemist2PSPHook();
 
-    InsertOtomatePSPHook();
+  InsertOtomatePSPHook();
 
-    if (!bandaiFound) {
-      // KID pattern is a subset of BANDAI, and hence MUST NOT be together with BANDAI
-      // Sample BANDAI game that could be broken by KID: 密室のサクリファイス
-      InsertKidPSPHook(); // KID could lose text, could exist in multiple game
+  if (!bandaiFound) {
+    // KID pattern is a subset of BANDAI, and hence MUST NOT be together with BANDAI
+    // Sample BANDAI game that could be broken by KID: 密室のサクリファイス
+    InsertKidPSPHook(); // KID could lose text, could exist in multiple game
 
-      InsertImageepochPSPHook();  // Imageepoch could crash vnrcli for School Rumble PSP
-    }
+    InsertImageepochPSPHook();  // Imageepoch could crash vnrcli for School Rumble PSP
   }
 
   ConsoleOutput("vnreng: PPSSPP: leave");
@@ -6410,8 +6410,11 @@ bool InsertAlchemist2PSPHook()
   return addr;
 }
 
-/** 7/13/2014 jichi 5pb.jp PSP engine, 0.9.8
+/** 7/13/2014 jichi 5pb.jp PSP engine, 0.9.8, 0.9.9
  *  Sample game: STEINS;GATE
+ *
+ *  Note: searching after 0x15000000 would found a wrong address on 0.9.9.
+ *  Hooking to it would crash PPSSPP.
  *
  *  Float memory addresses: two matches
  *
@@ -6628,6 +6631,7 @@ bool Insert5pbPSPHook()
   enum { hook_offset = sizeof(bytes) - memory_offset };
 
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //ITH_GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: 5pb PSP: pattern not found");
   else {
@@ -6750,8 +6754,8 @@ bool InsertImageepochPSPHook()
   return addr;
 }
 
-/** 7/19/2014 jichi yetigame.jp PSP engine, 0.9.8
- *  Sample game: Secret Game Portable
+/** 7/19/2014 jichi yetigame.jp PSP engine, 0.9.8, 0.9.9
+ *  Sample game: Secret Game Portable 0.9.8/0.9.9
  *
  *  Float memory addresses: two matches
  *
@@ -8426,7 +8430,7 @@ static void SpecialPSPHookOtomate(DWORD esp_base, HookParam *hp, DWORD *data, DW
 
 bool InsertOtomatePSPHook()
 {
-  ConsoleOutput("vnreng: Otomate PSP 0.9.8: enter");
+  ConsoleOutput("vnreng: Otomate PSP: enter");
   const BYTE bytes[] =  {
     0x77, 0x0f,                     // 13c00fe4   77 0f            ja short 13c00ff5
     0xc7,0x05, XX4, XX4,            // 13c00fe6   c705 a8aa1001 30>mov dword ptr ds:[0x110aaa8],0x884b330
@@ -8449,18 +8453,18 @@ bool InsertOtomatePSPHook()
   DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   if (!addr)
-    ConsoleOutput("vnreng: Otomate PSP 0.9.8: pattern not found");
+    ConsoleOutput("vnreng: Otomate PSP: pattern not found");
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
     hp.extern_fun = SpecialPSPHookOtomate;
-    ConsoleOutput("vnreng: Otomate PSP 0.9.8: INSERT");
+    ConsoleOutput("vnreng: Otomate PSP: INSERT");
     NewHook(hp, L"Otomate PSP");
   }
 
-  ConsoleOutput("vnreng: Otomate PSP 0.9.8: leave");
+  ConsoleOutput("vnreng: Otomate PSP: leave");
   return addr;
 }
 
@@ -8512,10 +8516,10 @@ bool InsertOtomatePPSSPPHook()
 {
   ULONG startAddress, stopAddress;
   if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
-    ConsoleOutput("vnreng: Otomate PPSSPP 0.9.9: failed to get memory range");
+    ConsoleOutput("vnreng: Otomate PPSSPP: failed to get memory range");
     return false;
   }
-  ConsoleOutput("vnreng: Otomate PPSSPP 0.9.9: enter");
+  ConsoleOutput("vnreng: Otomate PPSSPP: enter");
   const BYTE bytes[] =  {
     0x8b,0x15, XX4,             // 006db4b0   8b15 b8ebaf00    mov edx,dword ptr ds:[0xafebb8]          ; ppssppwi.01134988
     0x56,                       // 006db4b6   56               push esi
@@ -8539,18 +8543,18 @@ bool InsertOtomatePPSSPPHook()
   DWORD addr = SafeMatchBytes(bytes, sizeof(bytes), startAddress, stopAddress);
   //ITH_GROWL_DWORD(addr);
   if (!addr)
-    ConsoleOutput("vnreng: Otomate PPSSPP 0.9.9: pattern not found");
+    ConsoleOutput("vnreng: Otomate PPSSPP: pattern not found");
   else {
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(addr + ds_offset); // this is the address after ds:[]
     hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
     hp.extern_fun = SpecialPPSSPPHookOtomate;
-    ConsoleOutput("vnreng: Otomate PPSSPP 0.9.9: INSERT");
+    ConsoleOutput("vnreng: Otomate PPSSPP: INSERT");
     NewHook(hp, L"Otomate PPSSPP");
   }
 
-  ConsoleOutput("vnreng: Otomate PPSSPP 0.9.9: leave");
+  ConsoleOutput("vnreng: Otomate PPSSPP: leave");
   return addr;
 }
 
