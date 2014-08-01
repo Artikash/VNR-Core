@@ -27,6 +27,7 @@ processes:
   - install.exe
   - Unnstall.exe
   - uninstall.exe
+  - 1ClickDownloader    # Download
   - 360Chrome.exe       # 360
   - 360chrome.exe       # 360
   - 360Desktop.exe      # 360
@@ -56,7 +57,9 @@ processes:
   - BingDesktop.exe     # Microsoft
   - BitComet.exe        # BitComet
   - Bootcamp.exe        # Apple
+  - chromeplus.exe      # Google?
   - chrome.exe          # Google
+  - CHROME.EXE          # Google
   - DTLite.exe          # Daemon Tools
   - Dwm.exe             # Windows
   - dwm.exe             # Windows
