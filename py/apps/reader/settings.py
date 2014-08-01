@@ -1071,6 +1071,9 @@ class Settings(QSettings):
   copiesGameTextChanged = Signal(bool)
   def copiesGameText(self): return to_bool(self.value('CopyGameText'))
 
+  copiesGameSubtitleChanged = Signal(bool)
+  def copiesGameSubtitle(self): return to_bool(self.value('CopyGameSubtitle'))
+
   convertsChineseChanged = Signal(bool)
   def convertsChinese(self):
     return to_bool(self.value('ConvertsChinese'))
@@ -1484,6 +1487,7 @@ class SettingsProxy(QObject):
 
     self.termEnabledChanged.connect(g.termEnabledChanged)
     self.copiesGameTextChanged.connect(g.copiesGameTextChanged)
+    self.copiesGameSubtitleChanged.connect(g.copiesGameSubtitleChanged)
 
     #self.windowHookEnabledChanged.connect(g.windowHookEnabledChanged)
     #self.windowTextVisibleChanged.connect(g.windowTextVisibleChanged)
@@ -1761,6 +1765,9 @@ class SettingsProxy(QObject):
 
   copiesGameTextChanged = Signal(bool)
   copiesGameText = bool_property('CopyGameText', False, notify=copiesGameTextChanged)
+
+  copiesGameSubtitleChanged = Signal(bool)
+  copiesGameSubtitle = bool_property('CopyGameSubtitle', False, notify=copiesGameSubtitleChanged)
 
   kagamiFocusEnabledChanged = Signal(bool)
   kagamiFocusEnabled = bool_property('KagamiFocusEnabled', False, notify=kagamiFocusEnabledChanged)
