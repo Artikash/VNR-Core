@@ -140,7 +140,11 @@ ULONG SafeMatchBytesInMappedMemory(LPCVOID pattern, DWORD patternSize, BYTE wild
   enum : ULONG {
     start = MemDbg::MappedMemoryStartAddress, // 0x01000000
     stop = MemDbg::MemoryStopAddress, // 0x7fffffff
-    step = 0x01000000
+    step = 0x00050000 // in order to work on PPSSPP 0.9.9
+    //step = 0x00010000 // crash otoboku PSP on 0.9.9 since 5pb is wrongly inserted
+    //step = 0x01000000 // only works for PPSSPP 0.9.8
+    //step = 0x00100000 // in order to work for 0.9.9
+    //step = 0x1000 // this value must be atleast 0x1000 (offset in SearchPattern)
   };
   for (ULONG i = start; i < stop; i += step) // + patternSize to avoid overlap
     if (ULONG r = SafeMatchBytes(pattern, patternSize, i, i + step + patternSize + 1, wildcard))
@@ -6092,6 +6096,8 @@ bool InsertPPSSPPHooks()
 
   bool engineFound = Insert5pbPSPHook();
   if (!engineFound) {
+    InsertPPSSPPHLEHooks();
+
     InsertBroccoliPSPHook();
     InsertIntensePSPHook();
     InsertNippon1PSPHook();
@@ -6123,8 +6129,6 @@ bool InsertPPSSPPHooks()
 
       InsertImageepochPSPHook();  // Imageepoch could crash vnrcli for School Rumble PSP
     }
-
-    InsertPPSSPPHLEHooks();
   }
 
   ConsoleOutput("vnreng: PPSSPP: leave");
@@ -6307,12 +6311,12 @@ bool InsertAlchemistPSPHook()
   return addr;
 }
 
-/** 7/20/2014 jichi alchemist-net.co.jp PSP engine, 0.9.8 only
+/** 7/20/2014 jichi alchemist-net.co.jp PSP engine, 0.9.8, 0.9.9
  *  An alternative alchemist hook for old alchemist games.
  *  Sample game: のーふぇいと (No Fate)
  *  The memory address is fixed.
  *
- *  Does not work on
+ *  Also work on 0.9.9 Otoboku PSP
  *
  *  Debug method: simply add hardware break points to the matched memory
  *
@@ -7511,8 +7515,8 @@ bool InsertCyberfrontPSPHook()
   return addr;
 }
 
-/** 7/19/2014 jichi Alternative Yeti PSP engine, 0.9.8 only
- *  Sample game: Never 7, 0.9.8
+/** 7/19/2014 jichi Alternative Yeti PSP engine, 0.9.8, 0.9.9
+ *  Sample game: Never 7, 0.9.8 & 0.9.9
  *  Sample game: ひまわり
  *
  *  Do not work on 0.9.9 Ever17 (7/27/2014)
@@ -8550,11 +8554,11 @@ bool InsertOtomatePPSSPPHook()
   return addr;
 }
 
-/** 7/27/2014 jichi Intense.jp PSP engine, 0.9.8 only,
+/** 7/27/2014 jichi Intense.jp PSP engine, 0.9.8, 0.9.9,
  *  Missing in PPSSPP 0.9.9.
  *  Though Otomate can work, it cannot work line by line.
  *
- *  Sample game: 密室のサクリファイス work on 0.9.8, not 0.9.9
+ *  Sample game: 密室のサクリファイス work on 0.9.8 & 0.9.9
  *  This hook is only for intro graphic painting
  *
  *  Memory address is FIXED.
