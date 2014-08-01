@@ -13,8 +13,9 @@ usage: python . [options]
 Launch the app.
 
 options:
-  --debug   Print debug output
-  --help    Print help"""
+  --debug       Print debug output
+  --help        Print help
+  --pid PID     Attach to the process with PID"""
 
 def main():
   """

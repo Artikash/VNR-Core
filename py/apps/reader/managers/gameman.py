@@ -1459,13 +1459,16 @@ class GameManager(QtCore.QObject):
   #  dprint("leave")
 
   @staticmethod
-  def findRunningGame():
+  def findRunningGame(pid=0):
     """
+    @param* pid  long  filter pid
     @return  dataman.Game or None
     """
     dm = dataman.manager()
     if dm.hasGames():
       for p in procutil.iterprocess():
+        if pid and p.pid != pid:
+          continue
         if p.path:
           fileName = os.path.basename(p.path)
           for g in dm.games():
@@ -1477,13 +1480,16 @@ class GameManager(QtCore.QObject):
                   return g
 
   @staticmethod
-  def findRunningGamePathByMd5():
+  def findRunningGamePathByMd5(pid=0):
     """
+    @param* pid  long  filter pid
     @return  unicode or None
     """
     dm = dataman.manager()
     if dm.hasGames() or dm.hasGameFiles():
       for p in procutil.iterprocess():
+        if pid and p.pid != pid:
+          continue
         if p.path:
           np = osutil.normalize_path(p.path)
           md5 = hashutil.md5sum(np)
