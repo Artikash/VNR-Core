@@ -30,6 +30,7 @@ HEADERS += \
   engine.h \
   engine_p.h \
   hookdefs.h \
+  pchooks.h \
   uniquemap.h \
   util.h
 
@@ -37,6 +38,7 @@ SOURCES += \
   engine.cc \
   engine_p.cc \
   main.cc \
+  pchooks.cc \
   uniquemap.cc \
   util.cc
 

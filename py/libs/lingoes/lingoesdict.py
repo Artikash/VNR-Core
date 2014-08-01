@@ -102,9 +102,15 @@ if __name__ == '__main__':
   with SkProfiler():
     print "lookup start"
     #t = u"セリフ"
-    t = u"名前"
+    #t = u'新しい'
+    #t = u'記事'
+    #t = u'統領'
+    #t = u"名前"
+    #t = u"セリフ"
+    #t = u"名前"
     #t = u"神風"
     #t = u"かわいい"
+    t = u'イギリス'
     it = ld.lookup(t)
     if it:
       for key, xmls in it:
