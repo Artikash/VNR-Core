@@ -59,11 +59,18 @@ class LingoesDict(object):
     #  self.trie = Trie(**d)
     dprint("leave")
 
-  def lookup(self, t): # unicode -> yield or return None
+  def lookupprefix(self, t): # unicode -> yield or return None
     #if self.trie:
     #  return self.trie.iteritems(t)
     if t:
       return searchutil.lookupprefix(t, self.data)
+
+  lookup = lookupprefix
+
+  def get(self, t): # unicode key -> unicode content  exact match
+    # [1] to get xmls, [0] to get the first xml
+    try: return searchutil.lookup(t, self.data)[1][0]
+    except: pass
 
 if __name__ == '__main__':
   import os
@@ -99,18 +106,18 @@ if __name__ == '__main__':
   #ld = LingoesDict(location + dic, 'utf16', 'utf8')
   #print '-' * 4
 
+  #t = u"セリフ"
+  #t = u'新しい'
+  #t = u'記事'
+  #t = u'統領'
+  #t = u"名前"
+  #t = u"セリフ"
+  #t = u"名前"
+  #t = u"神風"
+  #t = u"かわいい"
+  t = u'イギリス'
   with SkProfiler():
     print "lookup start"
-    #t = u"セリフ"
-    #t = u'新しい'
-    #t = u'記事'
-    #t = u'統領'
-    #t = u"名前"
-    #t = u"セリフ"
-    #t = u"名前"
-    t = u"神風"
-    #t = u"かわいい"
-    #t = u'イギリス'
     it = ld.lookup(t)
     if it:
       for key, xmls in it:
@@ -118,6 +125,11 @@ if __name__ == '__main__':
         print len(xmls)
         print xmls[0]
     print "lookup finish"
+
+  with SkProfiler():
+    print "get start"
+    print ld.get(t)
+    print "get finish"
 
   # 175 MB
   # 57 MB

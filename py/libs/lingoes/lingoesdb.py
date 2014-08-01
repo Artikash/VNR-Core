@@ -38,7 +38,7 @@ class LingoesDb(object):
       dwarn(e)
     return False
 
-  def _lookup(self, t, limit=0):
+  def _lookupprefix(self, t, limit=0):
     """
     @param  t  unicode
     @Param  limit  int
@@ -74,7 +74,7 @@ class LingoesDb(object):
           break
     return t
 
-  def lookup(self, t, limit=0, complete=True):
+  def lookupprefix(self, t, limit=0, complete=True):
     """Lookup dictionary while eliminate duplicate definitions
     @param  t  unicode
     @param* complete  bool  whether complete the word
@@ -83,7 +83,7 @@ class LingoesDb(object):
     """
     lastxml = None
     count = 0
-    q = self._lookup(t, limit=limit)
+    q = self._lookupprefix(t, limit=limit)
     if q:
       for key, xml in q:
         if lastxml != xml:
@@ -95,8 +95,10 @@ class LingoesDb(object):
     if complete and not count:
       s = self._complete(t)
       if s and s != t:
-        for it in self.lookup(s, limit=limit):
+        for it in self.lookupprefix(s, limit=limit):
           yield it
+
+  lookup = lookupprefix
 
 if __name__ == '__main__':
   import os
