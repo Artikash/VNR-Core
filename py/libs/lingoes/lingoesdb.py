@@ -157,7 +157,8 @@ if __name__ == '__main__':
   #  APPDATA = os.path.join(os., '.wine/drive_c/users/' + USER + '/Application Data')
   PWD = os.getcwd()
   dbpath = os.path.join(PWD, '../../../../../../Caches/Dictionaries/Lingoes')
-  dbpath = os.path.join(dbpath, 'ja-zh.db')
+  #dbpath = os.path.join(dbpath, 'ja-zh.db')
+  dbpath = os.path.join(dbpath, 'ja-zh-gbk.db')
   #dbpath += 'ja-ko.db'
   #dbpath += 'ja-vi.db'
 

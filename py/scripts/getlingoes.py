@@ -31,6 +31,11 @@ DICS = {
   # OVDP Japanese-Vietnamese Dictionary.ld2
   # http://www.lingoes.net/en/dictionary/dict_down.php?id=D2B4817958C3E644B3B2B6788B9B9E1C
   'ja-vi': {'inenc':'utf16', 'outenc':'utf8', 'size':20358360},
+
+  # GBK和汉字典
+  # zh: GBK Japanese-Chinese Dictionary.ld2
+  # http://www.lingoes.net/en/dictionary/dict_down.php?id=212A6B5BC3D5634FB00E9BCC30F08C62
+  'ja-zh-gbk': {'inenc':'utf8', 'outenc':'utf8', 'size':412280, 'url':'http://www.lingoes.cn/download/dict/GBK%20Japanese-Chinese%20Dictionary.ld2'},
 }
 
 LANGS = frozenset(DICS.iterkeys())
@@ -51,9 +56,9 @@ def init(): # raise
       os.makedirs(it)
 
 def getld(lang): # str -> bool
-  url = "http://%s/pub/lingoes/%s.ld2" % (initdefs.DOMAIN_ORG, lang)
-  path = LD_DIR + '/' + lang + LD_SUFFIX
+  url = DICS[lang].get('url') or "http://%s/pub/lingoes/%s.ld2" % (initdefs.DOMAIN_ORG, lang)
   size = DICS[lang]['size']
+  path = LD_DIR + '/' + lang + LD_SUFFIX
 
   dprint("enter: lang = %s, size = %s" % (lang, size))
 
