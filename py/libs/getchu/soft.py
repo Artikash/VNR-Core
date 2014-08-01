@@ -352,7 +352,7 @@ class SoftApi(object):
       vid = m.group()
       yield vid
 
-  _rx_sampleimage = re.compile(r'brandnew/.*?sample([0-9]+).jpg')
+  _rx_sampleimage = re.compile(r'brandnew/[^"]*?sample([0-9]+).jpg')
   def _iterparsesampleimages(self, h):
     """
     @param  h  unicode  html
@@ -620,6 +620,7 @@ if __name__ == '__main__':
   k = 804521
   k = 718587 # レミニセンス
   k = 798624
+  k = 809466 # ちぇ～んじ！
   print '-' * 10
   q = api.query(k)
   #for it in q['characters']:
@@ -628,7 +629,9 @@ if __name__ == '__main__':
 
   #for it in q['descriptions']:
   #  print it
-  print q['characterDescription']
+  #print q['characterDescription']
+  for it in q['sampleImages']:
+    print it
 
   #print q['price']
   #print q['otome']
