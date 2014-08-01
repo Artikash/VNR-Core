@@ -128,10 +128,9 @@ dword_t matchBytes(const void *pattern, dword_t patternSize, dword_t lowerBound,
 enum MemoryRange : dword_t {
   UserMemoryStartAddress = 0, UserMemoryStopAddress = 0x7ffeffff
   , KernelMemoryStartAddress = 0x80000000, KernelMemoryStopAddress = 0xffffffff
-  , KernelMemoryStartAddress = 0x80000000, KernelMemoryStopAddress = 0xffffffff
   , MappedMemoryStartAddress = 0x01000000
 
-  , MemoryStartAddress = UserMemoryStartAddress , MemoryStopAddress = UserMemoryStopAddress
+  , MemoryStartAddress = UserMemoryStartAddress, MemoryStopAddress = UserMemoryStopAddress
 };
 
 #if 0 // not used

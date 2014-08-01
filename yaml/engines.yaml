@@ -11,25 +11,26 @@ rename:
 
 psp:
   all:
+    - Alchemist2 PSP
     - CYBERFRONT PSP
+    - Intense PSP
     - Imageepoch PSP
-    - KID PSP
+    - Otomate PSP
+    - Yeti2 PSP
   0.9.9:
     - Otomate PPSSPP
   0.9.8:
-    - 5pb PSP
     - Alchemist PSP
-    - Alchemist2 PSP
     - BANDAI PSP
     - BANDAI Name PSP
+    # Following are not sure
+    - 5pb PSP
     - Broccoli PSP
-    - Intense PSP
+    - KID PSP
     - Nippon1 PSP
     - Nippon2 PSP
-    - Otomate PSP
     - Tecmo PSP
     - Yeti PSP
-    - Yeti2 PSP
 
 gc:
   - Vanillaware GC
