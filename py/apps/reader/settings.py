@@ -767,6 +767,7 @@ class Settings(QSettings):
         self.isJMDictRuEnabled() or
         self.isJMDictNlEnabled() or
         self.isLingoesJaZhEnabled() or
+        self.isLingoesJaZhGbkEnabled() or
         self.isLingoesJaKoEnabled() or
         self.isLingoesJaViEnabled() or
         self.isLingoesJaEnEnabled())
@@ -809,6 +810,12 @@ class Settings(QSettings):
       self.setValue('LingoesJaZh', v)
       self._updateDictionaryEnabled()
 
+  def isLingoesJaZhGbkEnabled(self): return to_bool(self.value('LingoesJaZhGbk'))
+  def setLingoesJaZhGbkEnabled(self, v):
+    if v != self.isLingoesJaZhGbkEnabled():
+      self.setValue('LingoesJaZhGbk', v)
+      self._updateDictionaryEnabled()
+
   def isLingoesJaKoEnabled(self): return to_bool(self.value('LingoesJaKo'))
   def setLingoesJaKoEnabled(self, v):
     if v != self.isLingoesJaKoEnabled():
@@ -830,6 +837,8 @@ class Settings(QSettings):
   def isLingoesDictionaryEnabled(self, name):
     if name == 'ja-zh':
       return self.isLingoesJaZhEnabled()
+    elif name == 'ja-zh-gbk':
+      return self.isLingoesJaZhGbkEnabled()
     elif name == 'ja-ko':
       return self.isLingoesJaKoEnabled()
     elif name == 'ja-vi':
@@ -840,6 +849,8 @@ class Settings(QSettings):
   def setLingoesDictionaryEnabled(self, name, v):
     if name == 'ja-zh':
       self.setLingoesJaZhEnabled(v)
+    elif name == 'ja-zh-gbk':
+      self.setLingoesJaZhGbkEnabled(v)
     elif name == 'ja-ko':
       self.setLingoesJaKoEnabled(v)
     elif name == 'ja-vi':

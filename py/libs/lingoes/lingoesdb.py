@@ -38,10 +38,23 @@ class LingoesDb(object):
       dwarn(e)
     return False
 
-  def _lookup(self, t, limit=0):
+  def _get(self, t):
     """
     @param  t  unicode
-    @Param  limit  int
+    @return  (unicode word, unicode xml) or None
+    """
+    try:
+      with sqlite3.connect(self.dbpath) as conn:
+        cur = conn.cursor()
+        return dictdb.queryentry(cur, limit=1, word=t)
+      return
+    except Exception, e:
+      dwarn(e)
+
+  def _search(self, t, limit=0):
+    """
+    @param  t  unicode
+    @param  limit  int
     @return  iter(unicode word, unicode xml) or None
     """
     #if self.trie:
@@ -54,6 +67,7 @@ class LingoesDb(object):
       return
     except Exception, e:
       dwarn(e)
+
 
   _COMPLETE_TRIM_CHARS = u'ぁ', u'ぇ', u'ぃ', u'ぉ', u'ぅ', u'っ', u'ッ'
   def _complete(self, t):
@@ -74,8 +88,8 @@ class LingoesDb(object):
           break
     return t
 
-  def lookup(self, t, limit=0, complete=True):
-    """Lookup dictionary while eliminate duplicate definitions
+  def search(self, t, limit=0, complete=True):
+    """Lookup dictionary prefix while eliminate duplicate definitions
     @param  t  unicode
     @param* complete  bool  whether complete the word
     @param* limit  int
@@ -83,7 +97,7 @@ class LingoesDb(object):
     """
     lastxml = None
     count = 0
-    q = self._lookup(t, limit=limit)
+    q = self._search(t, limit=limit)
     if q:
       for key, xml in q:
         if lastxml != xml:
@@ -95,8 +109,24 @@ class LingoesDb(object):
     if complete and not count:
       s = self._complete(t)
       if s and s != t:
-        for it in self.lookup(s, limit=limit):
+        for it in self.search(s, limit=limit):
           yield it
+
+  lookup = search # for backward compatibility
+
+  def get(self, t, complete=False):
+    """Lookup dictionary for exact match
+    @param  t  unicode
+    @param* complete  bool  whether complete the word
+    @return  unicode  XML
+    """
+    q = self._get(t)
+    if q:
+      return q[1]
+    if complete:
+      s = self._complete(t)
+      if s and s != t:
+        return self.get(s)
 
 if __name__ == '__main__':
   import os
@@ -127,7 +157,8 @@ if __name__ == '__main__':
   #  APPDATA = os.path.join(os., '.wine/drive_c/users/' + USER + '/Application Data')
   PWD = os.getcwd()
   dbpath = os.path.join(PWD, '../../../../../../Caches/Dictionaries/Lingoes')
-  dbpath = os.path.join(dbpath, 'ja-zh.db')
+  #dbpath = os.path.join(dbpath, 'ja-zh.db')
+  dbpath = os.path.join(dbpath, 'ja-zh-gbk.db')
   #dbpath += 'ja-ko.db'
   #dbpath += 'ja-vi.db'
 
@@ -142,12 +173,15 @@ if __name__ == '__main__':
 
   print '-' * 4
 
+  #t = u"風"
+  #t = u'万歳'
+  t = u'布団'
+  #t = u"かわいい"
+  #t = u"かわいいっ"
+  #t = u"ちょっと"
+  #t = u"だしゃれ"
   with SkProfiler():
     print "lookup start"
-    #t = u"かわいい"
-    t = u"かわいいっ"
-    #t = u"ちょっと"
-    #t = u"だしゃれ"
     it = ld.lookup(t, limit=6)
     if it:
       for key, xml in it:
@@ -155,6 +189,11 @@ if __name__ == '__main__':
         print xml
         #print xmls[0]
     print "lookup finish"
+
+  with SkProfiler():
+    print "get start"
+    print ld.get(t)
+    print "get finish"
 
   # 175 MB
   # 57 MB

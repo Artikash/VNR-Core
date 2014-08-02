@@ -523,7 +523,7 @@ init = ->
     #gm = new GameManager @bean
     gm = new GameManager @bean
 
-    slider = new ZoomSlider (y) -> gm.zoom 1 + y #* 2
+    slider = new ZoomSlider (y) -> gm.zoom 1 + y * 1.1
 
     toolbar = new Toolbar @bean,
       width: 60     # height of slider + margin-right

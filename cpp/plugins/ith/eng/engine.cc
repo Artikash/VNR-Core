@@ -9,6 +9,7 @@
 
 #include "engine.h"
 #include "engine_p.h"
+#include "pchooks.h"
 #include "util.h"
 #include "ith/cli/cli.h"
 #include "ith/sys/sys.h"
@@ -53,8 +54,8 @@ DWORD DeterminePCEngine()
     if (!InsertPCSX2Hooks()) { // don't forget to rebuild vnrcli to inject SSE
       // Always insert PC hooks so that user could add PCSX2 to VNR.
       // TO BE REMOVED after more PS2 engines are added.
-      InsertGdiHooks();
-      InsertLstrHooks();
+      PcHooks::hookGDIFunctions();
+      PcHooks::hookLstrFunctions();
     }
 
     return yes;
@@ -64,15 +65,15 @@ DWORD DeterminePCEngine()
     if (!InsertGCHooks()) {
       // Always insert PC hooks so that user could add PCSX2 to VNR.
       // TO BE REMOVED after more PS2 engines are added.
-      InsertGdiHooks();
-      InsertLstrHooks();
+      PcHooks::hookGDIFunctions();
+      PcHooks::hookLstrFunctions();
     }
 
     return yes;
   }
 
   // PC games
-  InsertGdiHooks();
+  PcHooks::hookGDIFunctions();
   return no;
 }
 
@@ -226,6 +227,7 @@ DWORD DetermineEngineByFile2()
     InsertMBLHook();
     return yes;
   }
+  // jichi 8/1/2014: YU-RIS engine, lots of clockup game also has this pattern
   if (IthFindFile(L"pac\\*.ypf") || IthFindFile(L"*.ypf")) {
     // jichi 8/14/2013: CLOCLUP: "ノーブレスオブリージュ" would crash the game.
     if (!IthCheckFile(L"noblesse.exe"))
@@ -514,7 +516,7 @@ DWORD DetermineEngineGeneric()
   //  ret = yes;
   //}
   if (ret == yes)
-    InsertWcharHooks();
+    PcHooks::hookWcharFunctions();
   return ret;
 }
 
@@ -610,7 +612,7 @@ DWORD DetermineEngineType()
   enum : DWORD { yes = 0, no = 1 };
   // jichi 9/27/2013: disable game engine for debugging use
 #ifdef ITH_DISABLE_ENGINE
-  InsertLstrHooks();
+  PcHooks::hookLstrFunctions();
   return no;
 #else
   DWORD ret = no;
@@ -622,7 +624,7 @@ DWORD DetermineEngineType()
       ret = UnsafeDetermineEngineType() ? yes : no);
 #endif // ITH_HAS_SEH
   if (ret == no)  // jichi 10/2/2013: Only enable it if no game engine is detected
-    InsertLstrHooks();
+    PcHooks::hookLstrFunctions();
   else
     ConsoleOutput("vnreng: found game engine, IGNORE non gui hooks");
   return ret;

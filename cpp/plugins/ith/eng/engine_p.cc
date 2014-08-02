@@ -7283,8 +7283,6 @@ bool InsertYetiPSPHook()
 /** 7/19/2014 jichi kid-game.co.jp PSP engine, 0,9.8, 0.9.9
  *  Sample game: Monochrome
  *
- *  7/29/2014: seems to work on 0.9.9
- *
  *  Note: sceFontGetCharInfo, sceFontGetCharGlyphImage_Clip also works
  *
  *  Debug method: breakpoint the memory address

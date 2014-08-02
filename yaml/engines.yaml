@@ -16,6 +16,7 @@ psp:
     - CYBERFRONT PSP
     - Intense PSP
     - Imageepoch PSP
+    - KID PSP
     - Otomate PSP
     - Yeti PSP
     - Yeti2 PSP
@@ -27,7 +28,6 @@ psp:
     - BANDAI Name PSP
     # Following are not sure
     - Broccoli PSP
-    - KID PSP
     - Nippon1 PSP
     - Nippon2 PSP
     - Tecmo PSP

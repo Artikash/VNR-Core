@@ -59,11 +59,18 @@ class LingoesDict(object):
     #  self.trie = Trie(**d)
     dprint("leave")
 
-  def lookup(self, t): # unicode -> yield or return None
+  def search(self, t): # unicode -> yield or return None
     #if self.trie:
     #  return self.trie.iteritems(t)
     if t:
       return searchutil.lookupprefix(t, self.data)
+
+  lookup = search # for backward compatibility
+
+  def get(self, t): # unicode key -> unicode content  exact match
+    # [1] to get xmls, [0] to get the first xml
+    try: return searchutil.lookup(t, self.data)[1][0]
+    except: pass
 
 if __name__ == '__main__':
   import os
@@ -72,10 +79,20 @@ if __name__ == '__main__':
   if os.name == 'nt':
     location = 'C:' + location
 
-  dic = 'New Japanese-Chinese Dictionary.ld2'
+  dic = 'GBK Japanese-Chinese Dictionary.ld2'
   with SkProfiler():
-    ld = LingoesDict(location + dic, 'utf16')
+    ld = LingoesDict(location + dic, 'utf8')
   print '-' * 4
+
+  #dic = 'Monash Romanized Japanese-English Dictionary.ld2'
+  #with SkProfiler():
+  #  ld = LingoesDict(location + dic, 'utf8')
+  #print '-' * 4
+
+  #dic = 'New Japanese-Chinese Dictionary.ld2'
+  #with SkProfiler():
+  #  ld = LingoesDict(location + dic, 'utf16')
+  #print '-' * 4
 
   #dic = 'Naver Japanese-Korean Dictionary.ld2'
   #ld = LingoesDict(location + dic, 'utf8')
@@ -89,19 +106,36 @@ if __name__ == '__main__':
   #ld = LingoesDict(location + dic, 'utf16', 'utf8')
   #print '-' * 4
 
+  #t = u"セリフ"
+  #t = u'新しい'
+  #t = u'記事'
+  #t = u'統領'
+  #t = u"名前"
+  #t = u"セリフ"
+  #t = u"名前"
+  #t = u"神風"
+  #t = u"かわいい"
+  #t = u'イギリス'
+  #t = u'布団'
+  t = u'万歳'
   with SkProfiler():
     print "lookup start"
-    t = u"かわいい"
     it = ld.lookup(t)
     if it:
       for key, xmls in it:
         print key
-        #print xmls[0]
+        print len(xmls)
+        print xmls[0]
     print "lookup finish"
+
+  with SkProfiler():
+    print "get start"
+    print ld.get(t)
+    print "get finish"
 
   # 175 MB
   # 57 MB
-  import time
-  time.sleep(10)
+  #import time
+  #time.sleep(10)
 
 # EOF
