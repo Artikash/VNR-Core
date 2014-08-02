@@ -22,7 +22,7 @@ from sakurakit.skunicode import sjis_encodable
 from zhszht.zhszht import zhs2zht
 from cconv import cconv
 from mytr import my, mytr_
-import cacheman, config, csvutil, defs, features, growl, hashutil, i18n, main, mecabman, nameman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
+import cacheman, config, csvutil, defs, growl, hashutil, i18n, main, mecabman, nameman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
 
 SUBMIT_INTERVAL = 5000 # 5 seconds
 REF_SUBMIT_INTERVAL = 1000 # 1 second
@@ -1026,9 +1026,10 @@ class GameInfo(object):
   def image0(self): # str or None
     g = self.gameItem
     if g:
-      ret = g.image
-      if ret and not (features.MAINLAND_CHINA and 'dlsite' in ret):
-        return ret
+      return g.image
+      #ret = g.image
+      #if ret and not (features.MAINLAND_CHINA and 'dlsite' in ret):
+      #  return ret
     # amazon first as dmm has NOW PRINTING
     #for r in itertools.chain(
     #    self._iterAmazonDmmDigests(), self._iterAmazonDmmReferences()):
@@ -1038,10 +1039,10 @@ class GameInfo(object):
 
   @memoizedproperty
   def image(self): # str or None, amazon first as dmm has NOW PRINTING
-    l = [self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket]
-    if features.MAINLAND_CHINA: # disable dlsite in MAINLAND_CHINA
-      l.remove(self.dlsite)
-    for r in l:
+    #l = [self.getchu, self.dlsite, self.amazon, self.dmm, self.digiket]
+    #if features.MAINLAND_CHINA: # disable dlsite in MAINLAND_CHINA
+    #  l.remove(self.dlsite)
+    for r in self.getchu, self.amazon, self.dmm, self.dlsite, self.digiket:
       if r and r.image:
         return r.image
     return self.image0
