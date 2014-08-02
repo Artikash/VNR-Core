@@ -227,6 +227,7 @@ DWORD DetermineEngineByFile2()
     InsertMBLHook();
     return yes;
   }
+  // jichi 8/1/2014: YU-RIS engine, lots of clockup game also has this pattern
   if (IthFindFile(L"pac\\*.ypf") || IthFindFile(L"*.ypf")) {
     // jichi 8/14/2013: CLOCLUP: "ノーブレスオブリージュ" would crash the game.
     if (!IthCheckFile(L"noblesse.exe"))

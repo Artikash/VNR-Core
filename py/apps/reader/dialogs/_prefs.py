@@ -44,6 +44,7 @@ CABOCHA_DICT_SIZES = {
 
 LINGOES_DICT_NAMES = {
   'ja-zh': my.tr("New Japanese-Chinese dictionary"),
+  'ja-zh-gbk': my.tr("GBK Japanese-Chinese dictionary"),
   'ja-en': my.tr("Vicon Japanese-English dictionary"),
   'ja-ko': my.tr("Naver Japanese-Korean dictionary"),
   'ja-vi': my.tr("OVDP Japanese-Vietnamese dictionary"),
@@ -51,6 +52,7 @@ LINGOES_DICT_NAMES = {
 
 LINGOES_DICT_SIZES = {
   'ja-zh': '129MB',
+  'ja-zh-gbk': '2MB',
   'ja-ko': '206MB',
   'ja-vi': '945MB',
   'ja-en': '248MB',
@@ -1836,6 +1838,7 @@ class _HonyakuTab(object):
     layout.addWidget(QtWidgets.QLabel(my.tr("Download required") + ":"))
     if 'zh' not in blans:
       layout.addWidget(self.lingoesJaZhButton)
+      layout.addWidget(self.lingoesJaZhGbkButton)
     if 'ko' not in blans:
       layout.addWidget(self.lingoesJaKoButton)
     if 'vi' not in blans:
@@ -1934,6 +1937,13 @@ class _HonyakuTab(object):
     return ret
 
   @memoizedproperty
+  def lingoesJaZhGbkButton(self):
+    ret = QtWidgets.QCheckBox(LINGOES_DICT_NAMES['ja-zh-gbk'])
+    ret.setChecked(settings.global_().isLingoesJaZhGbkEnabled())
+    ret.toggled.connect(settings.global_().setLingoesJaZhGbkEnabled)
+    return ret
+
+  @memoizedproperty
   def lingoesJaKoButton(self):
     ret = QtWidgets.QCheckBox(LINGOES_DICT_NAMES['ja-ko'])
     ret.setChecked(settings.global_().isLingoesJaKoEnabled())
@@ -1980,7 +1990,7 @@ class _HonyakuTab(object):
       layout.addWidget(self.dreyeButton)
     if 'ko' not in blans:
       layout.addWidget(self.ezTransButton)
-    if 'vi' not in blans:
+    if 'vi' not in blans: #and 'zh' not in blans:
       layout.addWidget(self.hanVietButton)
     if 'en' not in blans:
       layout.addWidget(self.atlasButton)
@@ -2160,6 +2170,11 @@ class _HonyakuTab(object):
       name = 'ja-zh'
       b = self.lingoesJaZhButton
       b.setEnabled(ss.isLingoesDictionaryEnabled(name) or dicts.lingoes(name).exists())
+
+      name = 'ja-zh-gbk'
+      b = self.lingoesJaZhGbkButton
+      b.setEnabled(ss.isLingoesDictionaryEnabled(name) or dicts.lingoes(name).exists())
+
     if 'ko' not in blans:
       name = 'ja-ko'
       b = self.lingoesJaKoButton
@@ -2730,7 +2745,7 @@ class _DictionaryDownloadsTab(object):
     blans = settings.global_().blockedLanguages()
 
     for lang in config.LINGOES_LANGS:
-      if lang not in blans:
+      if lang[:2] not in blans:
         name = 'ja-' + lang
         grid.addWidget(self.getLingoesButton(name), r, 0)
         grid.addWidget(self.getLingoesStatusLabel(name), r, 1)
@@ -2940,7 +2955,7 @@ class _DictionaryDownloadsTab(object):
   def getLingoesIntroLabel(self, name):
     ret = self.lingoesIntroLabels.get(name)
     if not ret:
-      if name == 'ja-zh':
+      if name.startswith('ja-zh'):
         t = "%s (%s, %s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name], my.tr("recommended for Chinese"))
       elif name == 'ja-en':
         t = "%s (%s, %s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name], my.tr("recommended for English"))

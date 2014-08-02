@@ -129,6 +129,8 @@ class _DictionaryManager:
     @yield  LingoesDic
     """
     ss = settings.global_()
+    if ss.isLingoesJaZhGbkEnabled():
+      yield dicts.lingoes('ja-zh-gbk'), 'zh'
     if ss.isLingoesJaZhEnabled():
       yield dicts.lingoes('ja-zh'), 'zh'
     if ss.isLingoesJaKoEnabled():

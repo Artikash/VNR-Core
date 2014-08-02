@@ -1819,6 +1819,7 @@ class MainObject(QObject):
       return
     now = skdatetime.current_unixtime()
     if now < settings.global_().termsTime() + config.APP_UPDATE_TERMS_INTERVAL:
+      dprint("leave: ignore")
       return
     self.__d.dataManager.updateTerms()
     dprint("leave")

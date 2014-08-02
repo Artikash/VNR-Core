@@ -116,7 +116,8 @@ if __name__ == '__main__':
   #t = u"神風"
   #t = u"かわいい"
   #t = u'イギリス'
-  t = u'布団'
+  #t = u'布団'
+  t = u'万歳'
   with SkProfiler():
     print "lookup start"
     it = ld.lookup(t)

@@ -513,6 +513,7 @@ cabocha:
 
 lingoes: # language
   - zh
+  - zh-gbk # not really a language, though
   - ko
   - vi
   - en
