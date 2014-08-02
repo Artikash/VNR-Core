@@ -34,8 +34,8 @@ _PROXY_SITES = {
 _DLSITE_PROXY_SITES = {
   _normalize_host(host):key
   for host,key in (
-    ('www.dlsite.com', '/dl/www'),
-    ('img.dlsite.jp', '/dl/img'),
+    ('www.dlsite.com', '/dlsite/www'),
+    ('img.dlsite.jp', '/dlsite/img'),
   )
 } # {string host: string key}
 
@@ -85,10 +85,10 @@ def fromproxyurl(url): # QUrl -> QUrl or None
           #  host = None
           #  path = m.group(2) or '/'
           #  if path.startswith('/www'):
-          #    host = _DLSITE_PROXY_SITES['/dl/www']
+          #    host = _DLSITE_PROXY_SITES['/dlsite/www']
           #    path = path[4:] or '/'
           #  elif path.startswith('/img'):
-          #    host = _DLSITE_PROXY_SITES['/dl/img']
+          #    host = _DLSITE_PROXY_SITES['/dlsite/img']
           #    path = path[4:] or '/'
           #  if host:
           #    url = QUrl(url)

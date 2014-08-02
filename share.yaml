@@ -198,8 +198,8 @@ proxies:
     pbs:        http://153.121.52.138/proxy/twimg/pbs
   erogamescape: http://153.121.52.138/proxy/scape/~ap2/ero/toukei_kaiseki
   dmm:          http://153.121.52.138/proxy/dmm
-  dlsite:       http://153.121.52.138/proxy/dl/www
-  dlsite_img:   http://153.121.52.138/proxy/dl/img
+  dlsite:       http://153.121.52.138/proxy/dlsite/www
+  dlsite_img:   http://153.121.52.138/proxy/dlsite/img
 
   # http://sakuradite.com/topic/140
   # http://9gal.com/read.php?tid=417812&page=e
