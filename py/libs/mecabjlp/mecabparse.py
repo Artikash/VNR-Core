@@ -35,11 +35,12 @@ else:
 #  """
 #  return _rx_cypher.sub(u'ウ', text)
 
-def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, feature=False, lougo=False, ruby=mecabdef.RB_HIRA, readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)):
+def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wordtr=None, feature=False, lougo=False, ruby=mecabdef.RB_HIRA, readingTypes=(mecabdef.TYPE_VERB, mecabdef.TYPE_NOUN)):
   """
   @param  text  unicode
   @param  tagger  MeCabTagger
   @param  fmt  mecabfmt
+  @param* wordtr  (unicode)->unicode
   @param* type  bool  whether return type
   @param* reading  bool   whether return yomigana
   @param* feature  bool   whether return feature
@@ -52,7 +53,7 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, fe
     import mecabtag
     tagger = mecabtag.gettagger()
   if reading:
-    wordtrans = _wordtrans if ruby == mecabdef.RB_TR else None
+    #wordtr = _wordtr if ruby == mecabdef.RB_TR else None
     katatrans = (cconv.kata2hira if ruby == mecabdef.RB_HIRA else
                  cconv.kata2hangul if ruby == mecabdef.RB_HANGUL else
                  cconv.kata2thai if ruby == mecabdef.RB_THAI else
@@ -82,10 +83,10 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, fe
         if feature:
           f = node.feature.decode(encoding, errors='ignore')
         #f = node.feature.decode(encoding, errors='ignore')
-        if not readingTypes or char_type in readingTypes or char_type == mecabdef.TYPE_KATAGANA and wordtrans: # always translate katagana
-          if wordtrans:
+        if not readingTypes or char_type in readingTypes or char_type == mecabdef.TYPE_KATAGANA and wordtr: # always translate katagana
+          if wordtr:
             if not yomigana:
-              yomigana = wordtrans(surface)
+              yomigana = wordtr(surface)
           if not yomigana and not lougo:
             if not feature:
               f = node.feature.decode(encoding, errors='ignore')

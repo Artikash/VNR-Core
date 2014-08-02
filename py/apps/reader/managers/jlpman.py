@@ -57,16 +57,20 @@ class JlpManager:
     if self._parserType == 'mecab':
       from mecabjlp import mecabparse
       import mecabman
+      import _mecabman # TO BE REMOVED
       m = mecabman.manager()
       return mecabparse.parse(text,
           tagger=m.meCabTagger(),
+          wordtr=_mecabman._wordtrans,
           **kwargs)
     if self._parserType == 'cabocha':
       from cabochajlp import cabochaparse
       import cabochaman
+      import _cabochaman # TO BE REMOVED
       m = cabochaman.manager()
       return cabochaparse.parse(text,
           parser=m.caboChaParser(),
+          wordtr=_cabochaman._wordtrans,
           **kwargs)
 
 # EOF

@@ -54,11 +54,12 @@ DEBUG = False
 
 ## Parser ##
 
-def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, group=False, reading=False, feature=False, lougo=False, ruby=mecabdef.RB_HIRA, readingTypes=(cabochadef.TYPE_KANJI,)):
+def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, wordtr=None, group=False, reading=False, feature=False, lougo=False, ruby=mecabdef.RB_HIRA, readingTypes=(cabochadef.TYPE_KANJI,)):
   """
   @param  text  unicode
   @param  parser  CaboCha.Parser
   @param  fmt  mecabfmt
+  @param* wordtr  (unicode)->unicode
   @param* type  bool  whether return type
   @param* group  bool   whether return group id
   @param* reading  bool   whether return yomigana
@@ -72,7 +73,6 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, group=False, read
     import cabocharc
     parser = cabocharc.parser()
   if reading:
-    wordtrans = _wordtrans if ruby == mecabdef.RB_TR else None
     katatrans = (cconv.kata2hira if ruby == mecabdef.RB_HIRA else
                  cconv.kata2hangul if ruby == mecabdef.RB_HANGUL else
                  cconv.kata2thai if ruby == mecabdef.RB_THAI else
@@ -112,10 +112,10 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, group=False, read
       f = None
       if feature:
         f = token.feature.decode(encoding, errors='ignore')
-      if not readingTypes or char_type in readingTypes or char_type == cabochadef.TYPE_RUBY and wordtrans: # always translate katagana
-        if wordtrans:
+      if not readingTypes or char_type in readingTypes or char_type == cabochadef.TYPE_RUBY and wordtr: # always translate katagana
+        if wordtr:
           if not yomigana:
-            yomigana = wordtrans(surface)
+            yomigana = wordtr(surface)
         if not yomigana and not lougo:
           if not feature:
             f = token.feature.decode(encoding, errors='ignore')
