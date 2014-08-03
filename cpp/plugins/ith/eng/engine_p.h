@@ -108,6 +108,7 @@ bool InsertShinyDaysHook();     // ShinyDays
 bool InsertElfHook();           // elf: Silky.exe
 bool InsertSystem43Hook();      // System43@AliceSoft: AliceStart.ini
 bool InsertSiglusHook();        // SiglusEngine: SiglusEngine.exe
+bool InsertSideBHook();         // SideB: Copyright side-B
 bool InsertTanukiHook();        // Tanuki: *.tak
 bool InsertTaskforce2Hook();    // Taskforce2.exe
 bool InsertTencoHook();         // Tenco: Check.mdx

@@ -137,6 +137,7 @@ simple:
   - RealLive
   - Rejet
   - ShinaRio
+  - SideB
   - SiglusEngine
   - SiglusEngine2
   - ScenarioPlayerA
@@ -278,6 +279,7 @@ char:
   - rUGP
   - ScenarioPlayerA
   - ShinaRio
+  - SideB
   - Silkys # renamed
   - SolfaSoft # renamed
   - StudioRyokucha

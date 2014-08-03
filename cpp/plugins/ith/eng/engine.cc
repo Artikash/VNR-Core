@@ -84,16 +84,22 @@ DWORD DetermineEngineByFile1()
     InsertKiriKiriHook();
     return yes;
   }
-  // Game name shown as 2RM - Adventure Engine
+  // 8/2/2014 jichi: Game name shown as 2RM - Adventure Engine
   if (Util::SearchResourceString(L"2RM") && Util::SearchResourceString(L"Adventure Engine")) {
     Insert2RMHook();
+    return yes;
+  }
+  // 8/2/2014 jichi: Copyright is side-B, a conf.dat will be generated after the game is launched
+  // It also contains lua5.1.dll and lua5.dll
+  if (Util::SearchResourceString(L"side-B")) {
+    InsertSideBHook();
     return yes;
   }
   if (IthFindFile(L"bgi.*")) {
     InsertBGIHook();
     return yes;
   }
-  if (IthCheckFile(L"AGERC.DLL")) { // jichi 6/1/2014: Eushully, AGE.EXE
+  if (IthCheckFile(L"AGERC.DLL")) { // 6/1/2014 jichi: Eushully, AGE.EXE
     InsertEushullyHook();
     return yes;
   }
