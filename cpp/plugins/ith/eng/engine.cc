@@ -84,6 +84,11 @@ DWORD DetermineEngineByFile1()
     InsertKiriKiriHook();
     return yes;
   }
+  // Game name shown as 2RM - Adventure Engine
+  if (Util::SearchResourceString(L"2RM") && Util::SearchResourceString(L"Adventure Engine")) {
+    Insert2RMHook();
+    return yes;
+  }
   if (IthFindFile(L"bgi.*")) {
     InsertBGIHook();
     return yes;

@@ -98,6 +98,7 @@ nongui:
 
 # no repeat & no float
 simple:
+  - 2RM
   - 5pb PSP
   - Adobe AIR
   - Alchemist PSP
@@ -224,6 +225,7 @@ char:
   - sceCccSJIStoUTF8
   - sceCccSJIStoUTF16
   # Engines
+  - 2RM
   - 5pb PSP
   - AbelSoftware
   - Alchemist PSP

@@ -5722,6 +5722,174 @@ bool InsertYukaSystem2Hook()
   return true;
 }
 
+/** jichi 8/2/2014 2RM
+ *  Sample games:
+ *  - [エロイット] 父娘愛 ～いけない子作り2～ - /HBN-20*0@54925:oyakoai.exe
+ *  - [エロイット] いけない子作り ～親友のお母さんに種付けしまくる1週間～ -- /HS-1C@46FC9D (not used)
+ *
+ *  Observations from Debug of 父娘愛:
+ *  - The executable shows product name as 2RM - Adventure Engine
+ *  - It uses LUA5 for scripting
+ *  - 2 calls to GetGlyphOutlineA with incompleted game
+ *  - Memory location of the text is fixed
+ *  - The LAST place accessing the text is hooked
+ *  - The actual text has pattern like this {surface,ruby} and hence not hooked
+ *
+ *  /HBN-20*0@54925:oyakoai.exe
+ *  - addr: 346405 = 0x54925
+ *  - length_offset: 1
+ *  - module: 3918223605
+ *  - off: 4294967260 = 0xffffffdc = -0x24 -- 0x24 comes from  mov ebp,dword ptr ss:[esp+0x24]
+ *  - type: 1096 = 0x448
+ *
+ *  This is a very long function
+ *  父娘愛:
+ *  - 004548e1  |. 84db           test bl,bl
+ *  - 004548e3  |. 8b7424 20      mov esi,dword ptr ss:[esp+0x20]
+ *  - 004548e7  |. 74 08          je short oyakoai.004548f1
+ *  - 004548e9  |. c74424 24 0000>mov dword ptr ss:[esp+0x24],0x0
+ *  - 004548f1  |> 8b6c24 3c      mov ebp,dword ptr ss:[esp+0x3c]
+ *  - 004548f5  |. 837d 5c 00     cmp dword ptr ss:[ebp+0x5c],0x0
+ *  - 004548f9  |. c74424 18 0000>mov dword ptr ss:[esp+0x18],0x0
+ *  - 00454901  |. 0f8e da000000  jle oyakoai.004549e1
+ *  - 00454907  |. 8b6c24 24      mov ebp,dword ptr ss:[esp+0x24]
+ *  - 0045490b  |. eb 0f          jmp short oyakoai.0045491c
+ *  - 0045490d  |  8d49 00        lea ecx,dword ptr ds:[ecx]
+ *  - 00454910  |> 8b15 50bd6c00  mov edx,dword ptr ds:[0x6cbd50]
+ *  - 00454916  |. 8b0d 94bd6c00  mov ecx,dword ptr ds:[0x6cbd94]
+ *  - 0045491c  |> 803f 00        cmp byte ptr ds:[edi],0x0
+ *  - 0045491f  |. 0f84 db000000  je oyakoai.00454a00
+ *  - 00454925  |. 0fb717         movzx edx,word ptr ds:[edi]   ; jichi: hook here
+ *  - 00454928  |. 8b4c24 10      mov ecx,dword ptr ss:[esp+0x10]
+ *  - 0045492c  |. 52             push edx
+ *  - 0045492d  |. 894c24 2c      mov dword ptr ss:[esp+0x2c],ecx
+ *  - 00454931  |. e8 9a980100    call oyakoai.0046e1d0
+ *  - 00454936  |. 83c4 04        add esp,0x4
+ *  - 00454939  |. 85c0           test eax,eax
+ *  - 0045493b  |. 74 50          je short oyakoai.0045498d
+ *  - 0045493d  |. 0335 50bd6c00  add esi,dword ptr ds:[0x6cbd50]
+ *  - 00454943  |. 84db           test bl,bl
+ *  - 00454945  |. 74 03          je short oyakoai.0045494a
+ *  - 00454947  |. 83c5 02        add ebp,0x2
+ *  - 0045494a  |> 3b7424 1c      cmp esi,dword ptr ss:[esp+0x1c]
+ *  - 0045494e  |. a1 54bd6c00    mov eax,dword ptr ds:[0x6cbd54]
+ *  - 00454953  |. 7f 12          jg short oyakoai.00454967
+ *  - 00454955  |. 84db           test bl,bl
+ *  - 00454957  |. 0f84 ea000000  je oyakoai.00454a47
+ *  - 0045495d  |. 3b6c24 40      cmp ebp,dword ptr ss:[esp+0x40]
+ *  - 00454961  |. 0f85 e0000000  jnz oyakoai.00454a47
+ *  - 00454967  |> 014424 10      add dword ptr ss:[esp+0x10],eax
+ *  - 0045496b  |. 84db           test bl,bl
+ *  - 0045496d  |. 8b7424 20      mov esi,dword ptr ss:[esp+0x20]
+ *  - 00454971  |. 0f84 d0000000  je oyakoai.00454a47
+ *  - 00454977  |. 3b6c24 40      cmp ebp,dword ptr ss:[esp+0x40]
+ *  - 0045497b  |. 0f85 c6000000  jnz oyakoai.00454a47
+ *  - 00454981  |. 33ed           xor ebp,ebp
+ *  - 00454983  |. 83c7 02        add edi,0x2
+ *  - 00454986  |. 834424 18 01   add dword ptr ss:[esp+0x18],0x1
+ *  - 0045498b  |. eb 3c          jmp short oyakoai.004549c9
+ *  - 0045498d  |> a1 50bd6c00    mov eax,dword ptr ds:[0x6cbd50]
+ *  - 00454992  |. d1e8           shr eax,1
+ *  - 00454994  |. 03f0           add esi,eax
+ *  - 00454996  |. 84db           test bl,bl
+ *  - 00454998  |. 74 03          je short oyakoai.0045499d
+ *  - 0045499a  |. 83c5 01        add ebp,0x1
+ *  - 0045499d  |> 3b7424 1c      cmp esi,dword ptr ss:[esp+0x1c]
+ *  - 004549a1  |. a1 54bd6c00    mov eax,dword ptr ds:[0x6cbd54]
+ *  - 004549a6  |. 7f 0a          jg short oyakoai.004549b2
+ *  - 004549a8  |. 84db           test bl,bl
+ *
+ *  いけない子作り:
+ *  00454237   c74424 24 020000>mov dword ptr ss:[esp+0x24],0x2
+ *  0045423f   3bf5             cmp esi,ebp
+ *  00454241   7f 0e            jg short .00454251
+ *  00454243   84db             test bl,bl
+ *  00454245   74 1e            je short .00454265
+ *  00454247   8b6c24 24        mov ebp,dword ptr ss:[esp+0x24]
+ *  0045424b   3b6c24 40        cmp ebp,dword ptr ss:[esp+0x40]
+ *  0045424f   75 14            jnz short .00454265
+ *  00454251   014424 10        add dword ptr ss:[esp+0x10],eax
+ *  00454255   84db             test bl,bl
+ *  00454257   8b7424 20        mov esi,dword ptr ss:[esp+0x20]
+ *  0045425b   74 08            je short .00454265
+ *  0045425d   c74424 24 000000>mov dword ptr ss:[esp+0x24],0x0
+ *  00454265   8b6c24 3c        mov ebp,dword ptr ss:[esp+0x3c]
+ *  00454269   837d 5c 00       cmp dword ptr ss:[ebp+0x5c],0x0
+ *  0045426d   c74424 18 000000>mov dword ptr ss:[esp+0x18],0x0
+ *  00454275   0f8e d7000000    jle .00454352
+ *  0045427b   8b6c24 24        mov ebp,dword ptr ss:[esp+0x24]
+ *  0045427f   eb 0c            jmp short .0045428d
+ *  00454281   8b15 18ad6c00    mov edx,dword ptr ds:[0x6cad18]
+ *  00454287   8b0d 5cad6c00    mov ecx,dword ptr ds:[0x6cad5c]
+ *  0045428d   803f 00          cmp byte ptr ds:[edi],0x0
+ *  00454290   0f84 db000000    je .00454371
+ *  00454296   0fb717           movzx edx,word ptr ds:[edi] ; jichi: hook here
+ *  00454299   8b4c24 10        mov ecx,dword ptr ss:[esp+0x10]
+ *  0045429d   52               push edx
+ *  0045429e   894c24 2c        mov dword ptr ss:[esp+0x2c],ecx
+ *  004542a2   e8 498a0100      call .0046ccf0
+ *  004542a7   83c4 04          add esp,0x4
+ *  004542aa   85c0             test eax,eax
+ *  004542ac   74 50            je short .004542fe
+ *  004542ae   0335 18ad6c00    add esi,dword ptr ds:[0x6cad18]
+ *  004542b4   84db             test bl,bl
+ *  004542b6   74 03            je short .004542bb
+ *  004542b8   83c5 02          add ebp,0x2
+ *  004542bb   3b7424 1c        cmp esi,dword ptr ss:[esp+0x1c]
+ *  004542bf   a1 1cad6c00      mov eax,dword ptr ds:[0x6cad1c]
+ *  004542c4   7f 12            jg short .004542d8
+ *  004542c6   84db             test bl,bl
+ *  004542c8   0f84 ea000000    je .004543b8
+ *  004542ce   3b6c24 40        cmp ebp,dword ptr ss:[esp+0x40]
+ *  004542d2   0f85 e0000000    jnz .004543b8
+ *  004542d8   014424 10        add dword ptr ss:[esp+0x10],eax
+ *  004542dc   84db             test bl,bl
+ *  004542de   8b7424 20        mov esi,dword ptr ss:[esp+0x20]
+ *  004542e2   0f84 d0000000    je .004543b8
+ *  004542e8   3b6c24 40        cmp ebp,dword ptr ss:[esp+0x40]
+ *  004542ec   0f85 c6000000    jnz .004543b8
+ *  004542f2   33ed             xor ebp,ebp
+ *  004542f4   83c7 02          add edi,0x2
+ *  004542f7   834424 18 01     add dword ptr ss:[esp+0x18],0x1
+ *  004542fc   eb 3c            jmp short .0045433a
+ *  004542fe   a1 18ad6c00      mov eax,dword ptr ds:[0x6cad18]
+ *  00454303   d1e8             shr eax,1
+ *  00454305   03f0             add esi,eax
+ *  00454307   84db             test bl,bl
+ *  00454309   74 03            je short .0045430e
+ *  0045430b   83c5 01          add ebp,0x1
+ */
+bool Insert2RMHook()
+{
+  // This pattern is large enough to cover 0x24
+  const BYTE bytes[] = {
+    0x80,0x3f, 0x00,                // 0045428d   803f 00          cmp byte ptr ds:[edi],0x0
+    0x0f,0x84, 0xdb,0x00,0x00,0x00, // 00454290   0f84 db000000    je .00454371
+    0x0f,0xb7,0x17,                 // 00454296   0fb717           movzx edx,word ptr ds:[edi] ; jichi: hook here
+    0x8b,0x4c,0x24, 0x10,           // 00454299   8b4c24 10        mov ecx,dword ptr ss:[esp+0x10]
+    0x52,                           // 0045429d   52               push edx
+    0x89,0x4c,0x24, 0x2c,           // 0045429e   894c24 2c        mov dword ptr ss:[esp+0x2c],ecx
+    0xe8 //, 498a0100               // 004542a2   e8 498a0100      call .0046ccf0
+  };
+  enum { hook_offset = 0x00454296 - 0x0045428d };
+  ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
+  //ITH_GROWL_DWORD(addr); // supposed to be 0x4010e0
+  if (!addr) {
+    ConsoleOutput("vnreng:2RM: pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr + hook_offset;
+  hp.length_offset = 1;
+  hp.off = -0x24;
+  hp.type = NO_CONTEXT|DATA_INDIRECT;
+  ConsoleOutput("vnreng: INSERT 2RM");
+  NewHook(hp, L"2RM");
+  return true;
+}
+
 /** jichi 7/20/2014 Dolphin
  *  Tested with Dolphin 4.0
  */
