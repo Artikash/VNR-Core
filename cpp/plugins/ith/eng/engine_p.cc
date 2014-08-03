@@ -6009,15 +6009,21 @@ bool InsertSideBHook()
     ConsoleOutput("vnreng:SideB: pattern not found");
     return false;
   }
+  addr += hook_offset;
+  enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
+  if (*(BYTE *)addr != push_ebp) {
+    ConsoleOutput("vnreng:SideB: pattern found but the function offset is invalid");
+    return false;
+  }
+  //ITH_GROWL_DWORD(addr);
 
   HookParam hp = {};
-  hp.addr = addr + hook_offset;
+  hp.addr = addr;
   //hp.length_offset = 1;
   hp.off = 4; // [esp+4] == arg1
   hp.type = USING_STRING|NO_CONTEXT|USING_SPLIT|RELATIVE_SPLIT; // NO_CONTEXT && RELATIVE_SPLIT to get rid of floating return address
   //hp.split = 0; // use retaddr as split
   ConsoleOutput("vnreng: INSERT SideB");
-  //ITH_GROWL_DWORD(hp.addr);
   NewHook(hp, L"SideB");
   return true;
 }
