@@ -121,6 +121,7 @@ HEADERS += \
   engine/model/elf.h \
   engine/model/eushully.h \
   engine/model/majiro.h \
+  engine/model/sideb.h \
   engine/model/siglus.h
   #engine/model/nexas.h
   #engine/model/rejet.h
@@ -131,6 +132,7 @@ SOURCES += \
   engine/model/elf.cc \
   engine/model/eushully.cc \
   engine/model/majiro.cc \
+  engine/model/sideb.cc \
   engine/model/siglus.cc
   #engine/model/nexas.cc
   #engine/model/rejet.cc
