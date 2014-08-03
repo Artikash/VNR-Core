@@ -32,6 +32,12 @@
     - data*.arc
     - stream*.arc
 -
+  name: SideB # 8/2/2014
+  regionLocked: false # with minor issue
+  exist:
+    - lua5.1.dll
+    - dat/0001.dat
+-
   name: SiglusEngine # 5/25/2014, supposed to be SiglusEngine2
   wideChar: true
   regionLocked: false # with minor issue
