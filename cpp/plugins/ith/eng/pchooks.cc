@@ -5,7 +5,7 @@
 #include "ith/cli/cli.h"
 
 #define DEBUG "vnrcli"
-#define DPRINT(cstr) ConsoleOutput(DEBUG ":" __FUNCTION__ ":" (cstr)) // defined in vnrcli
+#define DPRINT(cstr) ConsoleOutput(DEBUG ":" __FUNCTION__ ":" cstr) // defined in vnrcli
 
 // 8/1/2014 jichi: Split is not used.
 // Although split is specified, USING_SPLIT is not assigned.
@@ -28,7 +28,7 @@
   }
 
 // jichi 7/17/2014: Renamed from InitDefaultHook
-PcHooks::hookGDIFunctions()
+void PcHooks::hookGDIFunctions()
 {
   DPRINT("enter");
   // int TextHook::InitHook(LPVOID addr, DWORD data, DWORD data_ind, DWORD split_off, DWORD split_ind, WORD type, DWORD len_off)
@@ -93,7 +93,7 @@ PcHooks::hookGDIFunctions()
 
 // jichi 10/2/2013
 // Note: All functions does not have NO_CONTEXT attribute and will be filtered.
-PcHooks::hookLstrFunctions()
+void PcHooks::hookLstrFunctions()
 {
   DPRINT("enter");
   // int TextHook::InitHook(LPVOID addr, DWORD data, DWORD data_ind, DWORD split_off, DWORD split_ind, WORD type, DWORD len_off)
@@ -139,7 +139,7 @@ PcHooks::hookLstrFunctions()
   DPRINT("leave");
 }
 
-PcHooks::hookWcharFunctions()
+void PcHooks::hookWcharFunctions()
 {
   DPRINT("enter");
   // 12/1/2013 jichi:

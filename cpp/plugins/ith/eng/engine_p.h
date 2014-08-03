@@ -63,6 +63,7 @@ bool InsertYeti2PSPHook();      // PSP Yetigame.jp
 
 // PC engines
 
+bool Insert2RMHook();           // 2RM - Adventure Engine
 bool InsertAbelHook();          // Abel
 bool InsertAdobeAirHook();      // Adobe AIR
 bool InsertAliceHook();         // System40@AliceSoft; do not work for latest alice games
