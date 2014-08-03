@@ -28,8 +28,8 @@
 //#define DEBUG "engine_p.h"
 
 #ifdef DEBUG
-# include "uniquemap.h"
 # include "ith/common/growl.h"
+# include "uniquemap.h"
 namespace { // unnamed debug functions
 // jichi 12/17/2013: Copied from int TextHook::GetLength(DWORD base, DWORD in)
 int GetHookDataLength(const HookParam &hp, DWORD base, DWORD in)
@@ -135,23 +135,53 @@ ULONG SafeMatchBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD
 }
 
 // jichi 7/17/2014: Search mapped memory for emulators
-ULONG SafeMatchBytesInMappedMemory(LPCVOID pattern, DWORD patternSize, BYTE wildcard = XX)
+ULONG _SafeMatchBytesInMappedMemory(LPCVOID pattern, DWORD patternSize, BYTE wildcard,
+                                   ULONG start, ULONG stop, ULONG step)
 {
-  enum : ULONG {
-    //start = MemDbg::MappedMemoryStartAddress, // 0x01000000
-    //stop = MemDbg::MemoryStopAddress, // 0x7fffffff
-    start = 0x01000000
-    , stop = 0x15000000 // hooking to code after this might crash VNR
-    , step = 0x00050000 // in order to work on PPSSPP 0.9.9
-    //, step = 0x00010000 // crash otoboku PSP on 0.9.9 since 5pb is wrongly inserted
-    //, step = 0x01000000 // only works for PPSSPP 0.9.8
-    //, step = 0x00100000 // in order to work for 0.9.9
-    //, step = 0x1000 // step  must be at least 0x1000 (offset in SearchPattern)
-  };
   for (ULONG i = start; i < stop; i += step) // + patternSize to avoid overlap
     if (ULONG r = SafeMatchBytes(pattern, patternSize, i, i + step + patternSize + 1, wildcard))
       return r;
   return 0;
+}
+
+inline ULONG SafeMatchBytesInGCMemory(LPCVOID pattern, DWORD patternSize, BYTE wildcard = XX)
+{
+  enum : ULONG {
+    start = MemDbg::MappedMemoryStartAddress // 0x01000000
+    , stop = MemDbg::MemoryStopAddress // 0x7ffeffff
+    , step = start
+  };
+  return _SafeMatchBytesInMappedMemory(pattern, patternSize, wildcard, start, stop, step);
+}
+
+inline ULONG SafeMatchBytesInPSPMemory(LPCVOID pattern, DWORD patternSize, BYTE wildcard = XX)
+{
+  enum : ULONG {
+    start = MemDbg::MappedMemoryStartAddress // 0x01000000
+    , stop = 0x15000000 // hooking to code after this might crash VNR
+    , step = 0x00050000 // in order to work on PPSSPP 0.9.9
+    //, step = 0x1000 // step  must be at least 0x1000 (offset in SearchPattern)
+    //, step = 0x00010000 // crash otoboku PSP on 0.9.9 since 5pb is wrongly inserted
+    //, step = 0x00100000 // in order to work for 0.9.9
+    //, step = 0x01000000 // only works for PPSSPP 0.9.8
+  };
+  return _SafeMatchBytesInMappedMemory(pattern, patternSize, wildcard, start, stop, step);
+}
+
+inline ULONG SafeMatchBytesInPS2Memory(LPCVOID pattern, DWORD patternSize, BYTE wildcard = XX)
+{
+  // PCSX2 memory range
+  // ds: begin from 0x20000000
+  // cs: begin from 0x30000000
+  enum : ULONG {
+    //start = MemDbg::MappedMemoryStartAddress // 0x01000000
+    start = 0x30000000 // larger than PSP to skip the garbage memory
+    , stop = 0x40000000 // larger than PSP as PS2 has larger memory
+    , step = 0x00010000 // smaller than PPS
+    //, step = 0x00050000 // the same as PPS
+    //, step = 0x1000 // step  must be at least 0x1000 (offset in SearchPattern)
+  };
+  return _SafeMatchBytesInMappedMemory(pattern, patternSize, wildcard, start, stop, step);
 }
 
 // 7/29/2014 jichi: I should move these functions to different files
@@ -6034,7 +6064,7 @@ bool InsertSideBHook()
 bool InsertGCHooks()
 {
   // TODO: Add generic hooks
-  return insertVanillawareGCHook();
+  return InsertVanillawareGCHook();
   //return false;
 }
 
@@ -6174,7 +6204,7 @@ static void SpecialGCHookVanillaware(DWORD esp_base, HookParam *hp, DWORD *data,
   }
 }
 
-bool insertVanillawareGCHook()
+bool InsertVanillawareGCHook()
 {
   ConsoleOutput("vnreng: Vanillaware GC: enter");
 
@@ -6198,7 +6228,7 @@ bool insertVanillawareGCHook()
   enum { memory_offset = 3 }; // 160941a0   0fb680 00000810  movzx eax,byte ptr ds:[eax+0x10080000]
   enum { hook_offset = 0x160941a0 - 0x16094193 };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInGCMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Vanillaware GC: pattern not found");
   else {
@@ -6599,7 +6629,7 @@ bool InsertAlchemistPSPHook()
   enum { memory_offset = 3 }; // 13407711   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]
   enum { hook_offset = 0x13407711 - 0x134076f4 };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: Alchemist PSP: pattern not found");
@@ -6698,7 +6728,7 @@ bool InsertAlchemist2PSPHook()
   enum { memory_offset = 2 }; // 13400f13   8bb8 00004007    mov edi,dword ptr ds:[eax+0x7400000]
   enum { hook_offset = 0x13400f13 - 0x13400ef4 };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: Alchemist2 PSP: pattern not found");
@@ -6936,7 +6966,7 @@ bool Insert5pbPSPHook()
   enum { memory_offset = 3 }; // 13575386   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]
   enum { hook_offset = sizeof(bytes) - memory_offset };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: 5pb PSP: pattern not found");
@@ -7039,7 +7069,7 @@ bool InsertImageepochPSPHook()
   enum { memory_offset = 3 }; // 1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000]
   enum { hook_offset = sizeof(bytes) - memory_offset };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Imageepoch PSP: pattern not found");
   else {
@@ -7568,7 +7598,7 @@ bool InsertYetiPSPHook()
   enum { memory_offset = 3 }; // 14e49f4e   0fb6b0 00000008  movzx esi,byte ptr ds:[eax+0x8000000]
   enum { hook_offset = sizeof(bytes) - memory_offset };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Yeti PSP: pattern not found");
   else {
@@ -7710,7 +7740,7 @@ bool InsertKidPSPHook()
   enum { memory_offset = 3 }; // 13973aac   0fb6b8 00008007  movzx edi,byte ptr ds:[eax+0x7800000]
   enum { hook_offset = 0x13973aac - 0x13973a7c };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: KID PSP: pattern not found");
   else {
@@ -7804,7 +7834,7 @@ bool InsertCyberfrontPSPHook()
   enum { memory_offset = 2 }; // 13909a51   8890 00008007    mov byte ptr ds:[eax+0x7800000],dl
   enum { hook_offset = 0x13909a51 - 0x13909a2c };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: CYBERFRONT PSP: pattern not found");
   else {
@@ -8043,7 +8073,7 @@ bool InsertYeti2PSPHook()
   enum { hook_offset = sizeof(bytes) - memory_offset };
   //enum { hook_offset = sizeof(bytes) + 4 }; // point to next statement after ebp is assigned
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Yeti2 PSP: pattern not found");
   else {
@@ -8225,7 +8255,7 @@ bool InsertBandaiNamePSPHook()
   enum { memory_offset = 3 };  // 1346c181   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
   enum { hook_offset = sizeof(bytes) - memory_offset };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: BANDAI Name PSP: pattern not found");
   else {
@@ -8317,7 +8347,7 @@ bool InsertBandaiPSPHook()
   enum { memory_offset = 3 };  // 13400589   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
   enum { hook_offset = 0x13400589 - 0x13400560 };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: BANDAI PSP: pattern not found");
   else {
@@ -8336,8 +8366,8 @@ bool InsertBandaiPSPHook()
   return addr;
 }
 
-/** 7/22/2014 jichi: Nippon1 PSP engine, 0.9.8
- *  Sample game: うたの☆プリンスさまっ♪
+/** 7/22/2014 jichi: Nippon1 PSP engine, 0.9.8 only
+ *  Sample game: うたの☆プリンスさまっ♪  (0.9.8 only)
  *
  *  Memory address is FIXED.
  *  Debug method: breakpoint the precomputed address
@@ -8407,7 +8437,7 @@ bool InsertNippon1PSPHook()
   enum { memory_offset = 3 };
   enum { hook_offset = 0x134e0583 - 0x134e0554 };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Nippon1 PSP: pattern not found");
   else {
@@ -8424,8 +8454,8 @@ bool InsertNippon1PSPHook()
   return addr;
 }
 
-/** 7/26/2014 jichi: Alternative Nippon1 PSP engine, 0.9.8
- *  Sample game: 神々の悪戯
+/** 7/26/2014 jichi: Alternative Nippon1 PSP engine, 0.9.8 only
+ *  Sample game: 神々の悪戯 (0.9.8 only)
  *  Issue: character name cannot be extracted
  *
  *  Memory address is FIXED.
@@ -8507,7 +8537,7 @@ bool InsertNippon2PSPHook()
   enum { memory_offset = 3 };
   enum { hook_offset = sizeof(bytes) - memory_offset };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Nippon2 PSP: pattern not found");
   else {
@@ -8524,8 +8554,8 @@ bool InsertNippon2PSPHook()
   return addr;
 }
 
-/** 7/26/2014 jichi Broccoli PSP engine, 0.9.8
- *  Sample game: 明治東亰恋伽
+/** 7/26/2014 jichi Broccoli PSP engine, 0.9.8, 0.9.9
+ *  Sample game: 明治東亰恋伽 (works on both 0.9.8, 0.9.9)
  *
  *  Memory address is FIXED.
  *  Debug method: breakpoint the memory address
@@ -8651,7 +8681,7 @@ bool InsertBroccoliPSPHook()
   };
   enum { hook_offset = 0x13d26d87 - 0x13d26d4d };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Broccoli PSP: pattern not found");
   else {
@@ -8754,7 +8784,7 @@ bool InsertOtomatePSPHook()
   //enum { hook_offset = 0x13c01008 - 0x13c00fe4 };
   enum { hook_offset = 0x13c01001- 0x13c00fe4 };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   //ITH_GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: Otomate PSP: pattern not found");
@@ -8966,7 +8996,7 @@ bool InsertIntensePSPHook()
   enum { memory_offset = 3 };
   enum { hook_offset = 0x13472267 - 0x13472228 };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Intense PSP: pattern not found");
   else {
@@ -9043,7 +9073,7 @@ bool InsertTecmoPSPHook()
   enum { memory_offset = 2 };
   enum { hook_offset = 0x13459901 - 0x134598e4 };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Tecmo PSP: pattern not found");
   else {
@@ -9069,8 +9099,225 @@ bool InsertTecmoPSPHook()
 bool InsertPCSX2Hooks()
 {
   // TODO: Add generic hooks
+  return InsertTypeMoonPS2Hook();
   //return InsertNamcoPS2Hook();
-  return false;
+  //return false;
+}
+
+/** 7/19/2014 jichi
+ *  Tested game: Fate/Stay Night [Realta Nua]
+ *
+ *  Fixed memory address.
+ *
+ *  Debug method: Debug next text location at \0.
+ *  There are three locations that are OK to hook.
+ *  The first one is used.
+ *
+ *  Runtime stack:
+ *  0dc1f7e0   055be7c0
+ *  0dc1f7e4   023105b0  pcsx2.023105b0
+ *  0dc1f7e8   0dc1f804
+ *  0dc1f7ec   023a406b  pcsx2.023a406b
+ *  0dc1f7f0   00000000
+ *  0dc1f7f4   000027e5
+
+ *  305a5424   2b05 809e9500    sub eax,dword ptr ds:[0x959e80]
+ *  305a542a   0f88 05000000    js 305a5435
+ *  305a5430  -e9 cbebdfd1      jmp pcsx2.023a4000
+ *  305a5435   8b0d 20ac9600    mov ecx,dword ptr ds:[0x96ac20]
+ *  305a543b   89c8             mov eax,ecx
+ *  305a543d   c1e8 0c          shr eax,0xc
+ *  305a5440   8b0485 30009e12  mov eax,dword ptr ds:[eax*4+0x129e0030]
+ *  305a5447   bb 57545a30      mov ebx,0x305a5457
+ *  305a544c   01c1             add ecx,eax
+ *  305a544e  -0f88 ecbcd7d1    js pcsx2.02321140
+ *  305a5454   0fbe01           movsx eax,byte ptr ds:[ecx]	; jichi: hook here
+ *  305a5457   99               cdq
+ *  305a5458   a3 f0ab9600      mov dword ptr ds:[0x96abf0],eax
+ *  305a545d   8915 f4ab9600    mov dword ptr ds:[0x96abf4],edx
+ *  305a5463   a1 40ac9600      mov eax,dword ptr ds:[0x96ac40]
+ *  305a5468   3b05 f0ab9600    cmp eax,dword ptr ds:[0x96abf0]
+ *  305a546e   75 11            jnz short 305a5481
+ *  305a5470   a1 44ac9600      mov eax,dword ptr ds:[0x96ac44]
+ *  305a5475   3b05 f4ab9600    cmp eax,dword ptr ds:[0x96abf4]
+ *  305a547b   0f84 3a000000    je 305a54bb
+ *  305a5481   8305 00ac9600 24 add dword ptr ds:[0x96ac00],0x24
+ *  305a5488   9f               lahf
+ *  305a5489   66:c1f8 0f       sar ax,0xf
+ *  305a548d   98               cwde
+ *  305a548e   a3 04ac9600      mov dword ptr ds:[0x96ac04],eax
+ *  305a5493   c705 a8ad9600 6c>mov dword ptr ds:[0x96ada8],0x10e26c
+ *  305a549d   a1 c0ae9600      mov eax,dword ptr ds:[0x96aec0]
+ *  305a54a2   83c0 04          add eax,0x4
+ *
+ *  3038c78e  -0f88 ac4af9d1    js pcsx2.02321240
+ *  3038c794   8911             mov dword ptr ds:[ecx],edx
+ *  3038c796   8b0d 60ab9600    mov ecx,dword ptr ds:[0x96ab60]
+ *  3038c79c   89c8             mov eax,ecx
+ *  3038c79e   c1e8 0c          shr eax,0xc
+ *  3038c7a1   8b0485 30009e12  mov eax,dword ptr ds:[eax*4+0x129e0030]
+ *  3038c7a8   bb b8c73830      mov ebx,0x3038c7b8
+ *  3038c7ad   01c1             add ecx,eax
+ *  3038c7af  -0f88 8b49f9d1    js pcsx2.02321140
+ *  3038c7b5   0fbe01           movsx eax,byte ptr ds:[ecx]	; jichi: or hook here
+ *  3038c7b8   99               cdq
+ *  3038c7b9   a3 e0ab9600      mov dword ptr ds:[0x96abe0],eax
+ *  3038c7be   8915 e4ab9600    mov dword ptr ds:[0x96abe4],edx
+ *  3038c7c4   c705 20ab9600 00>mov dword ptr ds:[0x96ab20],0x0
+ *  3038c7ce   c705 24ab9600 00>mov dword ptr ds:[0x96ab24],0x0
+ *  3038c7d8   c705 f0ab9600 25>mov dword ptr ds:[0x96abf0],0x25
+ *  3038c7e2   c705 f4ab9600 00>mov dword ptr ds:[0x96abf4],0x0
+ *  3038c7ec   833d e0ab9600 25 cmp dword ptr ds:[0x96abe0],0x25
+ *  3038c7f3   75 0d            jnz short 3038c802
+ *  3038c7f5   833d e4ab9600 00 cmp dword ptr ds:[0x96abe4],0x0
+ *  3038c7fc   0f84 34000000    je 3038c836
+ *  3038c802   31c0             xor eax,eax
+ *
+ *  304e1a0a   8b0d 40ab9600    mov ecx,dword ptr ds:[0x96ab40]
+ *  304e1a10   89c8             mov eax,ecx
+ *  304e1a12   c1e8 0c          shr eax,0xc
+ *  304e1a15   8b0485 30009e12  mov eax,dword ptr ds:[eax*4+0x129e0030]
+ *  304e1a1c   bb 2c1a4e30      mov ebx,0x304e1a2c
+ *  304e1a21   01c1             add ecx,eax
+ *  304e1a23  -0f88 17f7e3d1    js pcsx2.02321140
+ *  304e1a29   0fbe01           movsx eax,byte ptr ds:[ecx]	; jichi: or hook here
+ *  304e1a2c   99               cdq
+ *  304e1a2d   a3 f0ab9600      mov dword ptr ds:[0x96abf0],eax
+ *  304e1a32   8915 f4ab9600    mov dword ptr ds:[0x96abf4],edx
+ *  304e1a38   a1 f0ab9600      mov eax,dword ptr ds:[0x96abf0]
+ *  304e1a3d   3b05 d0ab9600    cmp eax,dword ptr ds:[0x96abd0]
+ *  304e1a43   75 11            jnz short 304e1a56
+ *  304e1a45   a1 f4ab9600      mov eax,dword ptr ds:[0x96abf4]
+ *  304e1a4a   3b05 d4ab9600    cmp eax,dword ptr ds:[0x96abd4]
+ *  304e1a50   0f84 3c000000    je 304e1a92
+ *  304e1a56   a1 f0ab9600      mov eax,dword ptr ds:[0x96abf0]
+ *  304e1a5b   83c0 d0          add eax,-0x30
+ *  304e1a5e   99               cdq
+ */
+namespace { // unnamed
+bool _typemoongarbage_ch(char c)
+{
+  return c == '%' || c == '.' || c == ' ' || c == ','
+      || c >= '0' && c <= '9'
+      || c >= 'A' && c <= 'z'; // also ignore ASCII 91-96: [ \ ] ^ _ `
+}
+
+// Trim leading garbage
+LPCSTR _typemoonltrim(LPCSTR p)
+{
+  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  if (p && p[0] == '%')
+    for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
+      if (!_typemoongarbage_ch(*p))
+        return p;
+  return nullptr;
+}
+
+// Remove trailing garbage such as %n
+size_t _typemoonstrlen(LPCSTR text)
+{
+  size_t len = ::strlen(text);
+  size_t ret = len;
+  while (len && _typemoongarbage_ch(text[len - 1])) {
+    len--;
+    if (text[len] == '%')
+      ret = len;
+  }
+  return ret;
+}
+
+} // unnamed namespace
+
+static void SpecialPS2HookTypeMoon(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  CC_UNUSED(hp);
+  static LPCSTR lasttext; // this value should be the same for the same game
+  static size_t lastsize;
+
+  LPCSTR cur = LPCSTR(regof(ecx, esp_base));
+  if (!cur || !*cur)
+    return;
+
+  LPCSTR text = reverse_search_begin(cur);
+  if (!text)
+    return;
+  //text = _typemoonltrim(text);
+  if (lasttext != text) {
+    lasttext = text;
+    lastsize = 0; // reset last size
+  }
+
+  size_t size = ::strlen(text);
+  if (size == lastsize)
+    return;
+  if (size > lastsize) // incremental
+    text += lastsize;
+  lastsize = size;
+
+  text = _typemoonltrim(text);
+  size = _typemoonstrlen(text);
+  //size = ::strlen(text);
+
+  *data = (DWORD)text;
+  *len = size;
+
+  *split = FIXED_SPLIT_VALUE << 2; // merge all threads
+  //*split = *(DWORD *)(esp_base + 4); // use [esp+4] as split
+  //*split = regof(eax, esp_base);
+  //*split = regof(esi, esp_base);
+}
+
+bool InsertTypeMoonPS2Hook()
+{
+  ConsoleOutput("vnreng: TypeMoon PS2: enter");
+  const BYTE bytes[] =  {
+    0x2b,0x05, XX4,       // 305a5424   2b05 809e9500    sub eax,dword ptr ds:[0x959e80]
+    0x0f,0x88, XX4,       // 305a542a   0f88 05000000    js 305a5435
+    0xe9, XX4,            // 305a5430  -e9 cbebdfd1      jmp pcsx2.023a4000
+    0x8b,0x0d, XX4,       // 305a5435   8b0d 20ac9600    mov ecx,dword ptr ds:[0x96ac20]
+    0x89,0xc8,            // 305a543b   89c8             mov eax,ecx
+    0xc1,0xe8, 0x0c,      // 305a543d   c1e8 0c          shr eax,0xc
+    0x8b,0x04,0x85, XX4,  // 305a5440   8b0485 30009e12  mov eax,dword ptr ds:[eax*4+0x129e0030]
+    0xbb, XX4,            // 305a5447   bb 57545a30      mov ebx,0x305a5457
+    0x01,0xc1,            // 305a544c   01c1             add ecx,eax
+    // Following pattern is not sufficient
+    0x0f,0x88, XX4,       // 305a544e  -0f88 ecbcd7d1    js pcsx2.02321140
+    0x0f,0xbe,0x01,       // 305a5454   0fbe01           movsx eax,byte ptr ds:[ecx] ; jichi: hook here
+    0x99,                 // 305a5457   99               cdq
+    0xa3, XX4,            // 305a5458   a3 f0ab9600      mov dword ptr ds:[0x96abf0],eax
+    0x89,0x15, XX4,       // 305a545d   8915 f4ab9600    mov dword ptr ds:[0x96abf4],edx
+    0xa1, XX4,            // 305a5463   a1 40ac9600      mov eax,dword ptr ds:[0x96ac40]
+    0x3b,0x05, XX4,       // 305a5468   3b05 f0ab9600    cmp eax,dword ptr ds:[0x96abf0]
+    0x75, 0x11,           // 305a546e   75 11            jnz short 305a5481
+    0xa1, XX4,            // 305a5470   a1 44ac9600      mov eax,dword ptr ds:[0x96ac44]
+    0x3b,0x05, XX4,       // 305a5475   3b05 f4ab9600    cmp eax,dword ptr ds:[0x96abf4]
+    0x0f,0x84, XX4,       // 305a547b   0f84 3a000000    je 305a54bb
+    0x83,0x05, XX4, 0x24, // 305a5481   8305 00ac9600 24 add dword ptr ds:[0x96ac00],0x24
+    0x9f,                 // 305a5488   9f               lahf
+    0x66,0xc1,0xf8, 0x0f, // 305a5489   66:c1f8 0f       sar ax,0xf
+    0x98                  // 305a548d   98               cwde
+  };
+  enum { hook_offset = 0x305a5454 - 0x305a5424 };
+
+  DWORD addr = SafeMatchBytesInPS2Memory(bytes, sizeof(bytes));
+  //addr = 0x30403967;
+  if (!addr)
+    ConsoleOutput("vnreng: TypeMoon PS2: pattern not found");
+  else {
+    //ITH_GROWL_DWORD(addr + hook_offset);
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.type = USING_STRING|EXTERN_HOOK|NO_CONTEXT; // no context to get rid of return address
+    hp.extern_fun = SpecialPS2HookTypeMoon;
+    //hp.off = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
+    //hp.length_offset = 1;
+    ConsoleOutput("vnreng: TypeMoon PS2: INSERT");
+    //ITH_GROWL_DWORD(hp.addr);
+    NewHook(hp, L"TypeMoon PS2");
+  }
+
+  ConsoleOutput("vnreng: TypeMoon PS2: leave");
+  return addr;
 }
 
 #if 0 // jichi 7/19/2014: duplication text
@@ -9085,7 +9332,7 @@ bool InsertNamcoPS2Hook()
   };
   enum { hook_offset = 0 };
 
-  //DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  //DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   //DWORD addr = 0x303baf26;
   DWORD addr = 0x303C4B72;
   if (!addr)
@@ -9105,63 +9352,6 @@ bool InsertNamcoPS2Hook()
   return addr;
 }
 #endif // 0
-
-#if 0 // Issue: variate code pattern
-/** 7/19/2014 jichi
- *  Tested game: Fate/Stay Night [Realta Nua]
- */
-bool InsertTypeMoonPS2Hook()
-{
-  ConsoleOutput("vnreng: TypeMoon PS2: enter");
-  const BYTE bytes[] =  {
-    //0x01,0xc1,              // 3040395f   01c1             add ecx,eax
-    0x0f,0x88, XX4,         // 30403961  -0f88 d9d7ced2    js pcsx2.030f1140
-    0x0f,0xbe,0x01,         // 30403967   0fbe01           movsx eax,byte ptr ds:[ecx]
-    0x99,                   // 3040396a   99               cdq
-    0xa3, XX4,              // 3040396b   a3 d0ab7301      mov dword ptr ds:[0x173abd0],eax
-    0x89,0x15, XX4,         // 30403970   8915 d4ab7301    mov dword ptr ds:[0x173abd4],edx
-    0xc7,0x05, XX4, 0x90,   // 30403976   c705 a8ad7301 90>mov dword ptr ds:[0x173ada8],0x109590
-    0xa1, XX4,              // 30403980   a1 c0ae7301      mov eax,dword ptr ds:[0x173aec0]
-    0x83,0xc0, 0x03,        // 30403985   83c0 03          add eax,0x3
-    0xa3, XX4,              // 30403988   a3 c0ae7301      mov dword ptr ds:[0x173aec0],eax
-    0x2b,0x05, XX4,         // 3040398d   2b05 809e7201    sub eax,dword ptr ds:[0x1729e80]
-    0x0f,0x88 //, XX4       // 30403993  ^0f88 51fdffff    js 304036ea
-  };
-  enum { hook_offset = 0x30403967 - 0x30403961 };
-
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
-  //addr = 0x30403967;
-  if (!addr)
-    ConsoleOutput("vnreng: TypeMoon PS2: pattern not found");
-  else {
-    // Runtime context
-    // eax: value such as 0x20000000
-    // ebx: mapped address code region
-    // ecx: text address
-    // edx: code address
-    // ebp = esp, bp-frame
-    // esi: illegal memory address, probabiliy relative memory address
-    // edi: -4
-    // esp[0]: -1
-    // esp[4]: code address
-    // esp[8]: memory address
-    // esp[c]: code address
-    // esp[10]: code address
-    HookParam hp = {};
-    hp.addr = addr + hook_offset;
-    hp.type = USING_STRING|USING_SPLIT; // no context to get rid of return address
-    hp.off = pusha_ecx_off - 4; // ecx
-    hp.split = hp.off; // use ecx address to split
-    ConsoleOutput("vnreng: TypeMoon PS2: INSERT");
-    //ITH_GROWL_DWORD(hp.addr);
-    NewHook(hp, L"TypeMoon PS2");
-  }
-
-  ConsoleOutput("vnreng: TypeMoon PS2: leave");
-  return addr;
-}
-#endif // 0
-
 
 } // namespace Engine
 
@@ -9248,7 +9438,7 @@ bool InsertSegaPSPHook()
   enum { hook_offset = sizeof(bytes) - memory_offset };
   //enum { hook_offset = 0x13513495 - 0x13513478 };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: SEGA PSP: pattern not found");
   else {
@@ -9372,7 +9562,7 @@ bool InsertShadePSPHook()
   enum{ memory_offset = 3 };
   enum { hook_offset = 0x13400e3d - 0x13400e12 };
 
-  ULONG addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  ULONG addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Shade PSP: failed");
   else {
@@ -9492,7 +9682,7 @@ bool InsertAlchemist3PSPHook()
   enum { memory_offset = 3 };
   enum { hook_offset = 0x13407711 - 0x134076f4 };
 
-  DWORD addr = SafeMatchBytesInMappedMemory(bytes, sizeof(bytes));
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
     ConsoleOutput("vnreng: Alchemist3 PSP: pattern not found");
   else {

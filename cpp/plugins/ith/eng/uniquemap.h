@@ -24,7 +24,7 @@ public:
    *  This function is thread-safe.
    *  @param  key  text split
    *  @param  value  text address
-   *  @return  whether the value is the same as last value for the specified key.
+   *  @return  whether the value is different from the last value for the specified key.
    */
   bool update(key_type key, value_type value);
 

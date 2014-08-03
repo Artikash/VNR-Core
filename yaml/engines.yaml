@@ -9,10 +9,17 @@ rename:
   SolfaSoft: ScenarioPlayerA
   SofthouseChara: SystemAoi
 
+gc:
+  - Vanillaware GC
+
+ps2:
+  - TypeMoon PS2
+
 psp:
   all:
     - 5pb PSP
     - Alchemist2 PSP
+    - Broccoli PSP
     - CYBERFRONT PSP
     - Intense PSP
     - Imageepoch PSP
@@ -26,11 +33,8 @@ psp:
     - Alchemist PSP
     - BANDAI PSP
     - BANDAI Name PSP
-    # Following are not sure
-    - Broccoli PSP
     - Nippon1 PSP
     - Nippon2 PSP
-    - Tecmo PSP
 
 gc:
   - Vanillaware GC
@@ -149,8 +153,9 @@ simple:
   - System43
   - SystemAoi
   - Taskforce2
-  - Tecmo PSP
   - Tenco
+  - TypeMoon PS2
+  - Vanillaware GC
   - WAFFLE
   - Yeti PSP
   - Yeti2 PSP
@@ -290,10 +295,10 @@ char:
   - SystemC
   - TanukiSoft
   - Taskforce2
-  - Tecmo PSP
   - Tenco
   - TinkerBell
   - Triangle
+  - TypeMoon PS2
   - Vanillaware GC
   - WAFFLE
   - WillPlus

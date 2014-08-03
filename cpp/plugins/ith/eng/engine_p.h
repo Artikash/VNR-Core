@@ -22,13 +22,13 @@ extern trigger_fun_t trigger_fun_;
 // Wii engines
 
 bool InsertGCHooks(); // Dolphin
-bool insertVanillawareGCHook();
+bool InsertVanillawareGCHook();
 
 // PS2 engines
 
 bool InsertPCSX2Hooks(); // PCSX2
+bool InsertTypeMoonPS2Hook();
 //bool InsertNamcoPS2Hook();
-//bool InsertTypeMoonPS2Hook();
 
 // PSP engines
 
