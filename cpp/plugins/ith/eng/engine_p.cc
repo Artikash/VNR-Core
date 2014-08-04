@@ -8095,11 +8095,11 @@ bool InsertYeti2PSPHook()
 
 /** 7/22/2014 jichi BANDAI PSP engine, 0.9.8 only
  *  Replaced by Otomate PPSSPP on 0.9.9.
-
- *  Sample game: 密室のサクリファイス work on 0.9.8, not 0.9.9
- *
  *  Sample game: School Rumble PSP (SHIFT-JIS)
  *  See: http://sakuradite.com/topic/333
+ *
+ *  Sample game: 密室のサクリファイス work on 0.9.8, not 0.9.9
+ *
  *
  *  Sample game: Shining Hearts (UTF-8)
  *  See: http://sakuradite.com/topic/346
@@ -8962,9 +8962,9 @@ bool InsertOtomatePPSSPPHook()
 static void SpecialPSPHookIntense(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD eax = regof(eax, esp_base);
-  LPCSTR text = LPCSTR(eax + hp->userValue);
+  DWORD text = eax + hp->userValue;
   if (BYTE c = *(BYTE *)text) { // unsigned char
-    *data = (DWORD)text;
+    *data = text;
     *len = ::LeadByteTable[c]; // 1 or 2
     //*split = regof(ecx, esp_base); // cause scenario text to split
     //*split = regof(edx, esp_base); // cause scenario text to split
@@ -9099,15 +9099,15 @@ bool InsertTecmoPSPHook()
 bool InsertPCSX2Hooks()
 {
   // TODO: Add generic hooks
-  return InsertTypeMoonPS2Hook();
-  //return InsertNamcoPS2Hook();
-  //return false;
+  return InsertTypeMoonPS2Hook()
+      || InsertMarvelousPS2Hook();
 }
 
 /** 7/19/2014 jichi
- *  Tested game: Fate/Stay Night [Realta Nua]
+ *  Tested game: Fate/stay night [Realta Nua]
  *
  *  Fixed memory address.
+ *  Text is incrementally increased.
  *
  *  Debug method: Debug next text location at \0.
  *  There are three locations that are OK to hook.
@@ -9120,7 +9120,7 @@ bool InsertPCSX2Hooks()
  *  0dc1f7ec   023a406b  pcsx2.023a406b
  *  0dc1f7f0   00000000
  *  0dc1f7f4   000027e5
-
+ *
  *  305a5424   2b05 809e9500    sub eax,dword ptr ds:[0x959e80]
  *  305a542a   0f88 05000000    js 305a5435
  *  305a5430  -e9 cbebdfd1      jmp pcsx2.023a4000
@@ -9235,7 +9235,7 @@ static void SpecialPS2HookTypeMoon(DWORD esp_base, HookParam *hp, DWORD *data, D
   static size_t lastsize;
 
   LPCSTR cur = LPCSTR(regof(ecx, esp_base));
-  if (!cur || !*cur)
+  if (!*cur)
     return;
 
   LPCSTR text = reverse_search_begin(cur);
@@ -9272,7 +9272,7 @@ bool InsertTypeMoonPS2Hook()
   ConsoleOutput("vnreng: TypeMoon PS2: enter");
   const BYTE bytes[] =  {
     0x2b,0x05, XX4,       // 305a5424   2b05 809e9500    sub eax,dword ptr ds:[0x959e80]
-    0x0f,0x88, XX4,       // 305a542a   0f88 05000000    js 305a5435
+    0x0f,0x88, 0x05,0x00,0x00,0x00, // 305a542a   0f88 05000000    js 305a5435
     0xe9, XX4,            // 305a5430  -e9 cbebdfd1      jmp pcsx2.023a4000
     0x8b,0x0d, XX4,       // 305a5435   8b0d 20ac9600    mov ecx,dword ptr ds:[0x96ac20]
     0x89,0xc8,            // 305a543b   89c8             mov eax,ecx
@@ -9317,6 +9317,254 @@ bool InsertTypeMoonPS2Hook()
   }
 
   ConsoleOutput("vnreng: TypeMoon PS2: leave");
+  return addr;
+}
+
+/** 8/3/2014 jichi
+ *  Tested game: School Rumble ねる娘は育つ
+ *
+ *  Fixed memory address.
+ *
+ *  Debug method: Predict text location.
+ *  There are a couple of locations that are OK to hook.
+ *  The last one is used.
+ *
+ *  Issue: the order of chara and scenario is reversed: 「scenario」chara
+ *
+ *  eax 20000000
+ *  ecx 202d5ab3
+ *  edx 00000000
+ *  ebx 3026e299
+ *  esp 0c14f910
+ *  ebp 0c14f918
+ *  esi 0014f470
+ *  edi 00000000
+ *  eip 3026e296
+ *
+ *  3026e1d5  -0f88 a530d7d2    js pcsx2.02fe1280
+ *  3026e1db   0f1202           movlps xmm0,qword ptr ds:[edx]
+ *  3026e1de   0f1301           movlps qword ptr ds:[ecx],xmm0
+ *  3026e1e1   ba 10ac6201      mov edx,0x162ac10
+ *  3026e1e6   8b0d d0ac6201    mov ecx,dword ptr ds:[0x162acd0]         ; pcsx2.01ffed00
+ *  3026e1ec   83c1 10          add ecx,0x10
+ *  3026e1ef   83e1 f0          and ecx,0xfffffff0
+ *  3026e1f2   89c8             mov eax,ecx
+ *  3026e1f4   c1e8 0c          shr eax,0xc
+ *  3026e1f7   8b0485 30006d0d  mov eax,dword ptr ds:[eax*4+0xd6d0030]
+ *  3026e1fe   bb 11e22630      mov ebx,0x3026e211
+ *  3026e203   01c1             add ecx,eax
+ *  3026e205  -0f88 b530d7d2    js pcsx2.02fe12c0
+ *  3026e20b   0f280a           movaps xmm1,dqword ptr ds:[edx]
+ *  3026e20e   0f2909           movaps dqword ptr ds:[ecx],xmm1
+ *  3026e211   ba 00ac6201      mov edx,0x162ac00
+ *  3026e216   8b0d d0ac6201    mov ecx,dword ptr ds:[0x162acd0]         ; pcsx2.01ffed00
+ *  3026e21c   83e1 f0          and ecx,0xfffffff0
+ *  3026e21f   89c8             mov eax,ecx
+ *  3026e221   c1e8 0c          shr eax,0xc
+ *  3026e224   8b0485 30006d0d  mov eax,dword ptr ds:[eax*4+0xd6d0030]
+ *  3026e22b   bb 3ee22630      mov ebx,0x3026e23e
+ *  3026e230   01c1             add ecx,eax
+ *  3026e232  -0f88 8830d7d2    js pcsx2.02fe12c0
+ *  3026e238   0f2812           movaps xmm2,dqword ptr ds:[edx]
+ *  3026e23b   0f2911           movaps dqword ptr ds:[ecx],xmm2
+ *  3026e23e   31c0             xor eax,eax
+ *  3026e240   a3 f4ac6201      mov dword ptr ds:[0x162acf4],eax
+ *  3026e245   c705 f0ac6201 d4>mov dword ptr ds:[0x162acf0],0x1498d4
+ *  3026e24f   c705 a8ad6201 c0>mov dword ptr ds:[0x162ada8],0x1281c0
+ *  3026e259   a1 c0ae6201      mov eax,dword ptr ds:[0x162aec0]
+ *  3026e25e   83c0 07          add eax,0x7
+ *  3026e261   a3 c0ae6201      mov dword ptr ds:[0x162aec0],eax
+ *  3026e266   2b05 809e6101    sub eax,dword ptr ds:[0x1619e80]
+ *  3026e26c   0f88 05000000    js 3026e277
+ *  3026e272  -e9 895ddfd2      jmp pcsx2.03064000
+ *  3026e277   8b0d 40ab6201    mov ecx,dword ptr ds:[0x162ab40]
+ *  3026e27d   89c8             mov eax,ecx
+ *  3026e27f   c1e8 0c          shr eax,0xc
+ *  3026e282   8b0485 30006d0d  mov eax,dword ptr ds:[eax*4+0xd6d0030]
+ *  3026e289   bb 99e22630      mov ebx,0x3026e299
+ *  3026e28e   01c1             add ecx,eax
+ *  3026e290  -0f88 6a2dd7d2    js pcsx2.02fe1000
+ *  3026e296   0fb601           movzx eax,byte ptr ds:[ecx]	; jichi: hook here
+ *  3026e299   a3 60ab6201      mov dword ptr ds:[0x162ab60],eax
+ *  3026e29e   c705 64ab6201 00>mov dword ptr ds:[0x162ab64],0x0
+ *  3026e2a8   a1 60ab6201      mov eax,dword ptr ds:[0x162ab60]
+ *  3026e2ad   05 7fffffff      add eax,-0x81
+ *  3026e2b2   99               cdq
+ *  3026e2b3   a3 70ab6201      mov dword ptr ds:[0x162ab70],eax
+ *  3026e2b8   8915 74ab6201    mov dword ptr ds:[0x162ab74],edx
+ *  3026e2be   b8 01000000      mov eax,0x1
+ *  3026e2c3   833d 74ab6201 00 cmp dword ptr ds:[0x162ab74],0x0
+ *  3026e2ca   72 0d            jb short 3026e2d9
+ *  3026e2cc   77 09            ja short 3026e2d7
+ *  3026e2ce   833d 70ab6201 18 cmp dword ptr ds:[0x162ab70],0x18
+ *  3026e2d5   72 02            jb short 3026e2d9
+ *  3026e2d7   31c0             xor eax,eax
+ *  3026e2d9   a3 10ab6201      mov dword ptr ds:[0x162ab10],eax
+ *  3026e2de   c705 14ab6201 00>mov dword ptr ds:[0x162ab14],0x0
+ *  3026e2e8   c705 20ab6201 00>mov dword ptr ds:[0x162ab20],0x0
+ *  3026e2f2   c705 24ab6201 00>mov dword ptr ds:[0x162ab24],0x0
+ *  3026e2fc   c705 30ab6201 00>mov dword ptr ds:[0x162ab30],0x0
+ *  3026e306   c705 34ab6201 00>mov dword ptr ds:[0x162ab34],0x0
+ *  3026e310   833d 10ab6201 00 cmp dword ptr ds:[0x162ab10],0x0
+ *  3026e317   0f85 41000000    jnz 3026e35e
+ *  3026e31d   833d 14ab6201 00 cmp dword ptr ds:[0x162ab14],0x0
+ *  3026e324   0f85 34000000    jnz 3026e35e
+ *  3026e32a   31c0             xor eax,eax
+ *  3026e32c   a3 50ab6201      mov dword ptr ds:[0x162ab50],eax
+ *  3026e331   a3 54ab6201      mov dword ptr ds:[0x162ab54],eax
+ *  3026e336   c705 a8ad6201 c0>mov dword ptr ds:[0x162ada8],0x1285c0
+ *  3026e340   a1 c0ae6201      mov eax,dword ptr ds:[0x162aec0]
+ *  3026e345   83c0 08          add eax,0x8
+ *  3026e348   a3 c0ae6201      mov dword ptr ds:[0x162aec0],eax
+ *  3026e34d   2b05 809e6101    sub eax,dword ptr ds:[0x1619e80]
+ *  3026e353   0f88 96280000    js 30270bef
+ *  3026e359  -e9 a25cdfd2      jmp pcsx2.03064000
+ *  3026e35e   31c0             xor eax,eax
+ *  3026e360   a3 50ab6201      mov dword ptr ds:[0x162ab50],eax
+ *  3026e365   a3 54ab6201      mov dword ptr ds:[0x162ab54],eax
+ *  3026e36a   c705 a8ad6201 dc>mov dword ptr ds:[0x162ada8],0x1281dc
+ *  3026e374   a1 c0ae6201      mov eax,dword ptr ds:[0x162aec0]
+ *  3026e379   83c0 08          add eax,0x8
+ *  3026e37c   a3 c0ae6201      mov dword ptr ds:[0x162aec0],eax
+ *  3026e381   2b05 809e6101    sub eax,dword ptr ds:[0x1619e80]
+ *  3026e387   0f88 a61f0000    js 30270333
+ *  3026e38d  -e9 6e5cdfd2      jmp pcsx2.03064000
+ *  3026e392   b8 01000000      mov eax,0x1
+ *  3026e397   833d 64ab6201 00 cmp dword ptr ds:[0x162ab64],0x0
+ *  3026e39e   7c 10            jl short 3026e3b0
+ *  3026e3a0   7f 0c            jg short 3026e3ae
+ *  3026e3a2   813d 60ab6201 80>cmp dword ptr ds:[0x162ab60],0x80
+ *  3026e3ac   72 02            jb short 3026e3b0
+ *  3026e3ae   31c0             xor eax,eax
+ *  3026e3b0   a3 10ab6201      mov dword ptr ds:[0x162ab10],eax
+ *  3026e3b5   c705 14ab6201 00>mov dword ptr ds:[0x162ab14],0x0
+ *  3026e3bf   31c0             xor eax,eax
+ *  3026e3c1   a3 54ab6201      mov dword ptr ds:[0x162ab54],eax
+ *  3026e3c6   c705 50ab6201 01>mov dword ptr ds:[0x162ab50],0x1
+ *  3026e3d0   c705 a8ad6201 e8>mov dword ptr ds:[0x162ada8],0x1285e8
+ *  3026e3da   a1 c0ae6201      mov eax,dword ptr ds:[0x162aec0]
+ *  3026e3df   83c0 03          add eax,0x3
+ *  3026e3e2   a3 c0ae6201      mov dword ptr ds:[0x162aec0],eax
+ *  3026e3e7   2b05 809e6101    sub eax,dword ptr ds:[0x1619e80]
+ *  3026e3ed   0f88 05000000    js 3026e3f8
+ *  3026e3f3  -e9 085cdfd2      jmp pcsx2.03064000
+ *  3026e3f8   833d 10ab6201 00 cmp dword ptr ds:[0x162ab10],0x0
+ *  3026e3ff   0f85 49000000    jnz 3026e44e
+ *  3026e405   833d 14ab6201 00 cmp dword ptr ds:[0x162ab14],0x0
+ *  3026e40c   0f85 3c000000    jnz 3026e44e
+ *  3026e412   a1 60ab6201      mov eax,dword ptr ds:[0x162ab60]
+ *  3026e417   c1e0 03          shl eax,0x3
+ *  3026e41a   99               cdq
+ *  3026e41b   a3 30ab6201      mov dword ptr ds:[0x162ab30],eax
+ *  3026e420   8915 34ab6201    mov dword ptr ds:[0x162ab34],edx
+ *  3026e426   c705 a8ad6201 04>mov dword ptr ds:[0x162ada8],0x128604
+ *  3026e430   a1 c0ae6201      mov eax,dword ptr ds:[0x162aec0]
+ *  3026e435   83c0 02          add eax,0x2
+ *  3026e438   a3 c0ae6201      mov dword ptr ds:[0x162aec0],eax
+ *  3026e43d   2b05 809e6101    sub eax,dword ptr ds:[0x1619e80]
+ *  3026e443   0f88 93220000    js 302706dc
+ *  3026e449  -e9 b25bdfd2      jmp pcsx2.03064000
+ *  3026e44e   a1 60ab6201      mov eax,dword ptr ds:[0x162ab60]
+ *  3026e453   c1e0 03          shl eax,0x3
+ *  3026e456   99               cdq
+ *  3026e457   a3 30ab6201      mov dword ptr ds:[0x162ab30],eax
+ *  3026e45c   8915 34ab6201    mov dword ptr ds:[0x162ab34],edx
+ *  3026e462   c705 a8ad6201 f0>mov dword ptr ds:[0x162ada8],0x1285f0
+ *  3026e46c   a1 c0ae6201      mov eax,dword ptr ds:[0x162aec0]
+ *  3026e471   83c0 02          add eax,0x2
+ *  3026e474   a3 c0ae6201      mov dword ptr ds:[0x162aec0],eax
+ *  3026e479   2b05 809e6101    sub eax,dword ptr ds:[0x1619e80]
+ *  3026e47f   0f88 91270000    js 30270c16
+ *  3026e485  -e9 765bdfd2      jmp pcsx2.03064000
+ *  3026e48a   a1 30ab6201      mov eax,dword ptr ds:[0x162ab30]
+ *  3026e48f   0305 60ab6201    add eax,dword ptr ds:[0x162ab60]
+ *  3026e495   99               cdq
+ *  3026e496   a3 30ab6201      mov dword ptr ds:[0x162ab30],eax
+ *  3026e49b   8915 34ab6201    mov dword ptr ds:[0x162ab34],edx
+ *  3026e4a1   a1 30ab6201      mov eax,dword ptr ds:[0x162ab30]
+ *  3026e4a6   c1e0 05          shl eax,0x5
+ *  3026e4a9   99               cdq
+ *  3026e4aa   a3 30ab6201      mov dword ptr ds:[0x162ab30],eax
+ *  3026e4af   8915 34ab6201    mov dword ptr ds:[0x162ab34],edx
+ *  3026e4b5   a1 30ab6201      mov eax,dword ptr ds:[0x162ab30]
+ *  3026e4ba   05 e01f2b00      add eax,0x2b1fe0
+ *  3026e4bf   99               cdq
+ *  3026e4c0   a3 20ab6201      mov dword ptr ds:[0x162ab20],eax
+ *  3026e4c5   8915 24ab6201    mov dword ptr ds:[0x162ab24],edx
+ *  3026e4cb   8b35 f0ac6201    mov esi,dword ptr ds:[0x162acf0]
+ *  3026e4d1   8935 a8ad6201    mov dword ptr ds:[0x162ada8],esi
+ *  3026e4d7   a1 c0ae6201      mov eax,dword ptr ds:[0x162aec0]
+ *  3026e4dc   83c0 07          add eax,0x7
+ *  3026e4df   a3 c0ae6201      mov dword ptr ds:[0x162aec0],eax
+ *  3026e4e4   2b05 809e6101    sub eax,dword ptr ds:[0x1619e80]
+ *  3026e4ea  -0f88 155bdfd2    js pcsx2.03064005
+ *  3026e4f0  -e9 0b5bdfd2      jmp pcsx2.03064000
+ *  3026e4f5   a1 20ab6201      mov eax,dword ptr ds:[0x162ab20]
+ *  3026e4fa   8b15 24ab6201    mov edx,dword ptr ds:[0x162ab24]
+ *  3026e500   a3 00ac6201      mov dword ptr ds:[0x162ac00],eax
+ *  3026e505   8915 04ac6201    mov dword ptr ds:[0x162ac04],edx
+ *  3026e50b   833d 00ac6201 00 cmp dword ptr ds:[0x162ac00],0x0
+ *  3026e512   75 0d            jnz short 3026e521
+ *  3026e514   833d 04ac6201 00 cmp dword ptr ds:[0x162ac04],0x0
+ *  3026e51b   0f84 39000000    je 3026e55a
+ *  3026e521   31c0             xor eax,eax
+ */
+// Use fixed split for this hook
+static void SpecialPS2HookMarvelous(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  CC_UNUSED(hp);
+  DWORD text = regof(ecx, esp_base);
+  if (BYTE c = *(BYTE *)text) { // BYTE is unsigned
+    *data = text;
+    *len = ::LeadByteTable[c];
+    *split = FIXED_SPLIT_VALUE * 3; // merge all threads
+    //*split = regof(esi, esp_base);
+    //*split = *(DWORD *)(esp_base + 4*5); // esp[5]
+  }
+}
+
+bool InsertMarvelousPS2Hook()
+{
+  ConsoleOutput("vnreng: Marvelous PS2: enter");
+  const BYTE bytes[] =  {
+    0x2b,0x05, XX4,                     // 3026e266   2b05 809e6101    sub eax,dword ptr ds:[0x1619e80]
+    0x0f,0x88, 0x05,0x00,0x00,0x00,     // 3026e26c   0f88 05000000    js 3026e277
+    0xe9, XX4,                          // 3026e272  -e9 895ddfd2      jmp pcsx2.03064000
+    0x8b,0x0d, XX4,                     // 3026e277   8b0d 40ab6201    mov ecx,dword ptr ds:[0x162ab40]
+    0x89,0xc8,                          // 3026e27d   89c8             mov eax,ecx
+    0xc1,0xe8, 0x0c,                    // 3026e27f   c1e8 0c          shr eax,0xc
+    0x8b,0x04,0x85, XX4,                // 3026e282   8b0485 30006d0d  mov eax,dword ptr ds:[eax*4+0xd6d0030]
+    0xbb, XX4,                          // 3026e289   bb 99e22630      mov ebx,0x3026e299
+    0x01,0xc1,                          // 3026e28e   01c1             add ecx,eax
+    0x0f,0x88, XX4,                     // 3026e290  -0f88 6a2dd7d2    js pcsx2.02fe1000
+    0x0f,0xb6,0x01,                     // 3026e296   0fb601           movzx eax,byte ptr ds:[ecx]	; jichi: hook here
+    0xa3, XX4,                          // 3026e299   a3 60ab6201      mov dword ptr ds:[0x162ab60],eax
+    0xc7,0x05, XX4, 0x00,0x00,0x00,0x00,// 3026e29e   c705 64ab6201 00>mov dword ptr ds:[0x162ab64],0x0
+    0xa1, XX4,                          // 3026e2a8   a1 60ab6201      mov eax,dword ptr ds:[0x162ab60]
+    0x05, 0x7f,0xff,0xff,0xff,          // 3026e2ad   05 7fffffff      add eax,-0x81
+    0x99,                               // 3026e2b2   99               cdq
+    0xa3 //70ab6201                     // 3026e2b3   a3 70ab6201      mov dword ptr ds:[0x162ab70],eax
+  };
+  enum { hook_offset = 0x3026e296 - 0x3026e266 };
+
+  DWORD addr = SafeMatchBytesInPS2Memory(bytes, sizeof(bytes));
+  //addr = 0x30403967;
+  if (!addr)
+    ConsoleOutput("vnreng: Marvelous PS2: pattern not found");
+  else {
+    //ITH_GROWL_DWORD(addr + hook_offset);
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.type = USING_STRING|EXTERN_HOOK|NO_CONTEXT; // no context to get rid of return address
+    hp.extern_fun = SpecialPS2HookMarvelous;
+    //hp.off = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
+    //hp.length_offset = 1;
+    ConsoleOutput("vnreng: Marvelous PS2: INSERT");
+    //ITH_GROWL_DWORD(hp.addr);
+    NewHook(hp, L"Marvelous PS2");
+  }
+
+  ConsoleOutput("vnreng: Marvelous PS2: leave");
   return addr;
 }
 

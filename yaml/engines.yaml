@@ -13,6 +13,7 @@ gc:
   - Vanillaware GC
 
 ps2:
+  - Marvelous PS2
   - TypeMoon PS2
 
 psp:
@@ -132,6 +133,7 @@ simple:
   - Majiro
   - Malie2
   - Malie3
+  - Marvelous PS2
   - Mono
   - NeXAS
   - Nippon1 PSP
@@ -165,9 +167,13 @@ single: # single thread
   - Eushully
   - Rejet
   - SiglusEngine2
+  # PSP
   - 5pb PSP
   - CYBERFRONT PSP
   - Intense PSP
+  # PS2
+  - Marvelous PS2
+  - TypeMoon PS2
 
 repeat:
   - Malie       # finite
