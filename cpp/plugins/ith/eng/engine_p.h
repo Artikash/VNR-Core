@@ -27,7 +27,8 @@ bool InsertVanillawareGCHook();
 // PS2 engines
 
 bool InsertPCSX2Hooks(); // PCSX2
-bool InsertTypeMoonPS2Hook();
+bool InsertMarvelousPS2Hook();  // http://marvelous.jp
+bool InsertTypeMoonPS2Hook();   // http://typemoon.com
 //bool InsertNamcoPS2Hook();
 
 // PSP engines
