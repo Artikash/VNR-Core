@@ -168,6 +168,7 @@ single: # single thread
   - 5pb PSP
   - CYBERFRONT PSP
   - Intense PSP
+  - TypeMoon PS2
 
 repeat:
   - Malie       # finite
