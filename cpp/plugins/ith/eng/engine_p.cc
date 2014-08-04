@@ -76,7 +76,7 @@ namespace { // unnamed helpers
 enum : BYTE { XX = MemDbg::WidecardByte }; // 0x11
 #define XX2 XX,XX       // WORD
 #define XX4 XX2,XX2     // DWORD
-#define XX8 XX4,XX4,    // QWORD
+#define XX8 XX4,XX4     // QWORD
 
 // jichi 8/18/2013: Original maximum relative address in ITH
 //enum { MAX_REL_ADDR = 0x200000 };
@@ -6613,7 +6613,7 @@ bool InsertAlchemistPSPHook()
      //0xcc,                         // 134076f2   cc               int3
      //0xcc,                         // 134076f3   cc               int3
      0x77, 0x0f,                     // 134076f4   77 0f            ja short 13407705
-     0xc7,0x05, XX4, XX4,            // 134076f6   c705 a8aa1001 40>mov dword ptr ds:[0x110aaa8],0x8931040
+     0xc7,0x05, XX8,                 // 134076f6   c705 a8aa1001 40>mov dword ptr ds:[0x110aaa8],0x8931040
      0xe9, XX4,                      // 13407700  -e9 ff88f2f3      jmp 07330004
      0x8b,0x05, XX4,                 // 13407705   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
      0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1340770b   81e0 ffffff3f    and eax,0x3fffffff
@@ -6712,7 +6712,7 @@ bool InsertAlchemist2PSPHook()
   ConsoleOutput("vnreng: Alchemist2 PSP: enter");
   const BYTE bytes[] =  {
     0x77, 0x0f,                     // 13400ef4   77 0f            ja short 13400f05
-    0xc7,0x05, XX4, XX4,            // 13400ef6   c705 a8aa1001 d0>mov dword ptr ds:[0x110aaa8],0x889aad0
+    0xc7,0x05, XX8,                 // 13400ef6   c705 a8aa1001 d0>mov dword ptr ds:[0x110aaa8],0x889aad0
     0xe9, XX4,                      // 13400f00  -e9 fff050f0      jmp 03910004
     0x8b,0x35, XX4,                 // 13400f05   8b35 78a71001    mov esi,dword ptr ds:[0x110a778]
     0x8b,0xc6,                      // 13400f0b   8bc6             mov eax,esi
@@ -6925,7 +6925,7 @@ bool Insert5pbPSPHook()
   const BYTE bytes[] =  {
     //0x90,                         // 135752c7   90               nop
     0x77, 0x0f,                     // 135752c8   77 0f            ja short 135752d9
-    0xc7,0x05, XX4,XX4,             // 135752ca   c705 a8aa1001 d4>mov dword ptr ds:[0x110aaa8],0x8888ed4
+    0xc7,0x05, XX8,                 // 135752ca   c705 a8aa1001 d4>mov dword ptr ds:[0x110aaa8],0x8888ed4
     0xe9, XX4,                      // 135752d4  -e9 2badf3ef      jmp 034b0004
     0x8b,0x35, XX4,                 // 135752d9   8b35 dca71001    mov esi,dword ptr ds:[0x110a7dc]
     0x8d,0x76, 0xa0,                // 135752df   8d76 a0          lea esi,dword ptr ds:[esi-0x60]
@@ -7055,7 +7055,7 @@ bool InsertImageepochPSPHook()
   const BYTE bytes[] =  {
     //0xcc,                         // 1346d34f   cc               int3
     0x77, 0x0f,                     // 1346d350   77 0f            ja short 1346d361
-    0xc7,0x05, XX4, XX4,            // 1346d352   c705 a8aa1001 e4>mov dword ptr ds:[0x110aaa8],0x89609e4
+    0xc7,0x05, XX8,                 // 1346d352   c705 a8aa1001 e4>mov dword ptr ds:[0x110aaa8],0x89609e4
     0xe9, XX4,                      // 1346d35c  -e9 a32c27f0      jmp 036e0004
     0x8b,0x05, XX4,                 // 1346d361   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1346d367   81e0 ffffff3f    and eax,0x3fffffff
@@ -7573,7 +7573,7 @@ bool InsertYetiPSPHook()
   const BYTE bytes[] =  {
     //0xcc,                         // 14e49edb   cc               int3
     0x77, 0x0f,                     // 14e49edc   77 0f            ja short 14e49eed
-    0xc7,0x05, XX4, XX4,            // 14e49ede   c705 a8aa1001 98>mov dword ptr ds:[0x110aaa8],0x885ff98
+    0xc7,0x05, XX8,                 // 14e49ede   c705 a8aa1001 98>mov dword ptr ds:[0x110aaa8],0x885ff98
     0xe9, XX4,                      // 14e49ee8  -e9 17619eee      jmp 03830004
     0x8b,0x35, XX4,                 // 14e49eed   8b35 70a71001    mov esi,dword ptr ds:[0x110a770]
     0xc1,0xee, 0x1f,                // 14e49ef3   c1ee 1f          shr esi,0x1f
@@ -7727,7 +7727,7 @@ bool InsertKidPSPHook()
   const BYTE bytes[] =  {
     //0x90,                           // 13973a7b   90               nop
     0x77, 0x0f,                     // 13973a7c   77 0f            ja short 13973a8d
-    0xc7,0x05, XX4, XX4,            // 13973a7e   c705 a8aa1001 90>mov dword ptr ds:[0x110aaa8],0x885c290
+    0xc7,0x05, XX8,                 // 13973a7e   c705 a8aa1001 90>mov dword ptr ds:[0x110aaa8],0x885c290
     0xe9, XX4,                      // 13973a88  -e9 77c5ecef      jmp 03840004
     0x8b,0x05, XX4,                 // 13973a8d   8b05 90a71001    mov eax,dword ptr ds:[0x110a790]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13973a93   81e0 ffffff3f    and eax,0x3fffffff
@@ -7817,7 +7817,7 @@ bool InsertCyberfrontPSPHook()
   const BYTE bytes[] =  {
     //0x90,                         // 13909a2b   90               nop
     0x77, 0x0f,                     // 13909a2c   77 0f            ja short 13909a3d
-    0xc7,0x05, XX4, XX4,            // 13909a2e   c705 a8aa1001 04>mov dword ptr ds:[0x110aaa8],0x8815304
+    0xc7,0x05, XX8,                 // 13909a2e   c705 a8aa1001 04>mov dword ptr ds:[0x110aaa8],0x8815304
     0xe9, XX4,                      // 13909a38  -e9 c765d1ef      jmp 03620004
     0xc7,0xc6, 0x00,0x00,0x00,0x00, // 13909a3d   c7c6 00000000    mov esi,0x0
     0x8b,0x05, XX4,                 // 13909a43   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
@@ -8095,7 +8095,7 @@ bool InsertYeti2PSPHook()
 
 /** 7/22/2014 jichi BANDAI PSP engine, 0.9.8 only
  *  Replaced by Otomate PPSSPP on 0.9.9.
- *  Sample game: School Rumble PSP (SHIFT-JIS)
+ *  Sample game: School Rumble PSP 姉さん事件です (SHIFT-JIS)
  *  See: http://sakuradite.com/topic/333
  *
  *  Sample game: 密室のサクリファイス work on 0.9.8, not 0.9.9
@@ -8231,7 +8231,7 @@ bool InsertBandaiNamePSPHook()
     //0xcc,                         // 1346c122   cc               int3
     //0xcc,                         // 1346c123   cc               int3
     0x77, 0x0f,                     // 1346c124   77 0f            ja short 1346c135
-    0xc7,0x05, XX4, XX4,            // 1346c126   c705 a8aa1001 a4>mov dword ptr ds:[0x110aaa8],0x882f2a4
+    0xc7,0x05, XX8,                 // 1346c126   c705 a8aa1001 a4>mov dword ptr ds:[0x110aaa8],0x882f2a4
     0xe9, XX4,                      // 1346c130  -e9 cf3e2cf0      jmp 03730004
     0x8b,0x05, XX4,                 // 1346c135   8b05 a8a71001    mov eax,dword ptr ds:[0x110a7a8]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1346c13b   81e0 ffffff3f    and eax,0x3fffffff
@@ -8333,7 +8333,7 @@ bool InsertBandaiPSPHook()
 
   const BYTE bytes[] =  {
     0x77, 0x0f,                     // 13400560   77 0f            ja short 13400571
-    0xc7,0x05, XX4, XX4,            // 13400562   c705 a8aa1001 cc>mov dword ptr ds:[0x110aaa8],0x883decc
+    0xc7,0x05, XX8,                 // 13400562   c705 a8aa1001 cc>mov dword ptr ds:[0x110aaa8],0x883decc
     0xe9, XX4,                      // 1340056c  -e9 93fa54f0      jmp 03950004
     0x8b,0x35, XX4,                 // 13400571   8b35 78a71001    mov esi,dword ptr ds:[0x110a778]
     0x81,0xc6, 0x01,0x00,0x00,0x00, // 13400577   81c6 01000000    add esi,0x1
@@ -8421,7 +8421,7 @@ bool InsertNippon1PSPHook()
   const BYTE bytes[] =  {
     //0xcc,                         // 134e0553   cc               int3
     0x77, 0x0f,                     // 134e0554   77 0f            ja short 134e0565
-    0xc7,0x05, XX4, XX4,            // 134e0556   c705 a8aa1001 34>mov dword ptr ds:[0x110aaa8],0x8853a34
+    0xc7,0x05, XX8,                 // 134e0556   c705 a8aa1001 34>mov dword ptr ds:[0x110aaa8],0x8853a34
     0xe9, XX4,                      // 134e0560  -e9 9ffa03f0      jmp 03520004
     0x8b,0x35, XX4,                 // 134e0565   8b35 74a71001    mov esi,dword ptr ds:[0x110a774]
     0xd1,0xe6,                      // 134e056b   d1e6             shl esi,1
@@ -8767,7 +8767,7 @@ bool InsertOtomatePSPHook()
   ConsoleOutput("vnreng: Otomate PSP: enter");
   const BYTE bytes[] =  {
     0x77, 0x0f,                     // 13c00fe4   77 0f            ja short 13c00ff5
-    0xc7,0x05, XX4, XX4,            // 13c00fe6   c705 a8aa1001 30>mov dword ptr ds:[0x110aaa8],0x884b330
+    0xc7,0x05, XX8,                 // 13c00fe6   c705 a8aa1001 30>mov dword ptr ds:[0x110aaa8],0x884b330
     0xe9, XX4,                      // 13c00ff0  -e9 0ff0edf2      jmp 06ae0004
     0x8b,0x05, XX4,                 // 13c00ff5   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13c00ffb   81e0 ffffff3f    and eax,0x3fffffff
@@ -8978,7 +8978,7 @@ bool InsertIntensePSPHook()
   ConsoleOutput("vnreng: Intense PSP: enter");
   const BYTE bytes[] =  {
     0x77, 0x0f,                     // 13472228   77 0f            ja short 13472239
-    0xc7,0x05, XX4, XX4,            // 1347222a   c705 a8aa1001 20>mov dword ptr ds:[0x110aaa8],0x884ce20
+    0xc7,0x05, XX8,                 // 1347222a   c705 a8aa1001 20>mov dword ptr ds:[0x110aaa8],0x884ce20
     0xe9, XX4,                      // 13472234  -e9 cbdd16f0      jmp 035e0004
     0x8b,0x05, XX4,                 // 13472239   8b05 a8a71001    mov eax,dword ptr ds:[0x110a7a8]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1347223f   81e0 ffffff3f    and eax,0x3fffffff
@@ -9055,7 +9055,7 @@ bool InsertTecmoPSPHook()
 
   const BYTE bytes[] =  {
     0x77, 0x0f,                     // 134598e4   77 0f            ja short 134598f5
-    0xc7,0x05, XX4, XX4,            // 134598e6   c705 a8aa1001 8c>mov dword ptr ds:[0x110aaa8],0x880f08c
+    0xc7,0x05, XX8,                 // 134598e6   c705 a8aa1001 8c>mov dword ptr ds:[0x110aaa8],0x880f08c
     0xe9, XX4,                      // 134598f0  -e9 0f67fbef      jmp 03410004
     0x8b,0x05, XX4,                 // 134598f5   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 134598fb   81e0 ffffff3f    and eax,0x3fffffff
@@ -9100,7 +9100,8 @@ bool InsertPCSX2Hooks()
 {
   // TODO: Add generic hooks
   return InsertTypeMoonPS2Hook()
-      || InsertMarvelousPS2Hook();
+      || InsertMarvelousPS2Hook()
+      || InsertMarvelous2PS2Hook();
 }
 
 /** 7/19/2014 jichi
@@ -9324,6 +9325,7 @@ bool InsertTypeMoonPS2Hook()
  *  Tested game: School Rumble ねる娘は育つ
  *
  *  Fixed memory address.
+ *  There is only one matched address.
  *
  *  Debug method: Predict text location.
  *  There are a couple of locations that are OK to hook.
@@ -9568,6 +9570,193 @@ bool InsertMarvelousPS2Hook()
   return addr;
 }
 
+/** 8/3/2014 jichi
+ *  Tested game: School Rumble 二学期
+ *
+ *  Fixed memory address.
+ *  There is only one matched address.
+ *
+ *  Debug method: Breakpoint the memory address.
+ *
+ *  Issue: It cannot extract character name.
+ *
+ *  302072bd   a3 c0ae9e01      mov dword ptr ds:[0x19eaec0],eax
+ *  302072c2   2b05 809e9d01    sub eax,dword ptr ds:[0x19d9e80]         ; cdvdgiga.5976f736
+ *  302072c8  ^0f88 f3cafcff    js 301d3dc1
+ *  302072ce  -e9 2dcd21d3      jmp pcsx2.03424000
+ *  302072d3   8b0d 50ab9e01    mov ecx,dword ptr ds:[0x19eab50]
+ *  302072d9   89c8             mov eax,ecx
+ *  302072db   c1e8 0c          shr eax,0xc
+ *  302072de   8b0485 3000e511  mov eax,dword ptr ds:[eax*4+0x11e50030]
+ *  302072e5   bb f5722030      mov ebx,0x302072f5
+ *  302072ea   01c1             add ecx,eax
+ *  302072ec  -0f88 0e9d19d3    js pcsx2.033a1000
+ *  302072f2   0fb601           movzx eax,byte ptr ds:[ecx]
+ *  302072f5   a3 20ab9e01      mov dword ptr ds:[0x19eab20],eax
+ *  302072fa   c705 24ab9e01 00>mov dword ptr ds:[0x19eab24],0x0
+ *  30207304   8305 60ab9e01 ff add dword ptr ds:[0x19eab60],-0x1
+ *  3020730b   9f               lahf
+ *  3020730c   66:c1f8 0f       sar ax,0xf
+ *  30207310   98               cwde
+ *  30207311   a3 64ab9e01      mov dword ptr ds:[0x19eab64],eax
+ *  30207316   8305 50ab9e01 01 add dword ptr ds:[0x19eab50],0x1
+ *  3020731d   9f               lahf
+ *  3020731e   66:c1f8 0f       sar ax,0xf
+ *  30207322   98               cwde
+ *  30207323   a3 54ab9e01      mov dword ptr ds:[0x19eab54],eax
+ *  30207328   8b15 20ab9e01    mov edx,dword ptr ds:[0x19eab20]
+ *  3020732e   8b0d 30ab9e01    mov ecx,dword ptr ds:[0x19eab30]
+ *  30207334   89c8             mov eax,ecx
+ *  30207336   c1e8 0c          shr eax,0xc
+ *  30207339   8b0485 3000e511  mov eax,dword ptr ds:[eax*4+0x11e50030]
+ *  30207340   bb 4f732030      mov ebx,0x3020734f
+ *  30207345   01c1             add ecx,eax
+ *  30207347  -0f88 739e19d3    js pcsx2.033a11c0
+ *  3020734d   8811             mov byte ptr ds:[ecx],dl    ; jichi: hook here, text in dl
+ *  3020734f   8305 30ab9e01 01 add dword ptr ds:[0x19eab30],0x1
+ *  30207356   9f               lahf
+ *  30207357   66:c1f8 0f       sar ax,0xf
+ *  3020735b   98               cwde
+ *  3020735c   a3 34ab9e01      mov dword ptr ds:[0x19eab34],eax
+ *  30207361   a1 60ab9e01      mov eax,dword ptr ds:[0x19eab60]
+ *  30207366   3b05 40ab9e01    cmp eax,dword ptr ds:[0x19eab40]
+ *  3020736c   75 11            jnz short 3020737f
+ *  3020736e   a1 64ab9e01      mov eax,dword ptr ds:[0x19eab64]
+ *  30207373   3b05 44ab9e01    cmp eax,dword ptr ds:[0x19eab44]
+ *  30207379   0f84 28000000    je 302073a7
+ *  3020737f   c705 a8ad9e01 34>mov dword ptr ds:[0x19eada8],0x17eb34
+ *  30207389   a1 c0ae9e01      mov eax,dword ptr ds:[0x19eaec0]
+ *  3020738e   83c0 09          add eax,0x9
+ *  30207391   a3 c0ae9e01      mov dword ptr ds:[0x19eaec0],eax
+ *  30207396   2b05 809e9d01    sub eax,dword ptr ds:[0x19d9e80]         ; cdvdgiga.5976f736
+ *  3020739c  ^0f88 31ffffff    js 302072d3
+ *  302073a2  -e9 59cc21d3      jmp pcsx2.03424000
+ *  302073a7   c705 a8ad9e01 50>mov dword ptr ds:[0x19eada8],0x17eb50
+ *  302073b1   a1 c0ae9e01      mov eax,dword ptr ds:[0x19eaec0]
+ *  302073b6   83c0 09          add eax,0x9
+ *  302073b9   a3 c0ae9e01      mov dword ptr ds:[0x19eaec0],eax
+ *  302073be   2b05 809e9d01    sub eax,dword ptr ds:[0x19d9e80]         ; cdvdgiga.5976f736
+ *  302073c4  ^0f88 75cbfcff    js 301d3f3f
+ *  302073ca  -e9 31cc21d3      jmp pcsx2.03424000
+ *  302073cf   8b15 10ac9e01    mov edx,dword ptr ds:[0x19eac10]
+ *  302073d5   8b0d 20ac9e01    mov ecx,dword ptr ds:[0x19eac20]
+ *  302073db   83c1 04          add ecx,0x4
+ *  302073de   89c8             mov eax,ecx
+ *  302073e0   c1e8 0c          shr eax,0xc
+ *  302073e3   8b0485 3000e511  mov eax,dword ptr ds:[eax*4+0x11e50030]
+ *  302073ea   bb f9732030      mov ebx,0x302073f9
+ *  302073ef   01c1             add ecx,eax
+ *  302073f1  -0f88 499e19d3    js pcsx2.033a1240
+ *  302073f7   8911             mov dword ptr ds:[ecx],edx
+ *  302073f9   c705 a8ad9e01 5c>mov dword ptr ds:[0x19eada8],0x18d25c
+ *  30207403   a1 c0ae9e01      mov eax,dword ptr ds:[0x19eaec0]
+ *  30207408   83c0 03          add eax,0x3
+ *  3020740b   a3 c0ae9e01      mov dword ptr ds:[0x19eaec0],eax
+ *  30207410   2b05 809e9d01    sub eax,dword ptr ds:[0x19d9e80]         ; cdvdgiga.5976f736
+ *  30207416   0f88 05000000    js 30207421
+ *  3020741c  -e9 dfcb21d3      jmp pcsx2.03424000
+ *  30207421   a1 50ac9e01      mov eax,dword ptr ds:[0x19eac50]
+ *  30207426   05 00a2ffff      add eax,0xffffa200
+ *  3020742b   99               cdq
+ *  3020742c   a3 00ac9e01      mov dword ptr ds:[0x19eac00],eax
+ *  30207431   8915 04ac9e01    mov dword ptr ds:[0x19eac04],edx
+ *  30207437   31d2             xor edx,edx
+ *  30207439   8b0d d0ac9e01    mov ecx,dword ptr ds:[0x19eacd0]
+ *  3020743f   89c8             mov eax,ecx
+ *  30207441   c1e8 0c          shr eax,0xc
+ *  30207444   8b0485 3000e511  mov eax,dword ptr ds:[eax*4+0x11e50030]
+ *  3020744b   bb 5a742030      mov ebx,0x3020745a
+ *  30207450   01c1             add ecx,eax
+ *  30207452  -0f88 e89d19d3    js pcsx2.033a1240
+ *  30207458   8911             mov dword ptr ds:[ecx],edx
+ *  3020745a   a1 00ac9e01      mov eax,dword ptr ds:[0x19eac00]
+ *  3020745f   8b15 04ac9e01    mov edx,dword ptr ds:[0x19eac04]
+ */
+// Use fixed split for this hook
+static void SpecialPS2HookMarvelous2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  CC_UNUSED(hp);
+  DWORD text = esp_base + pusha_edx_off - 4; // get text in dl: 3020734d   8811  mov byte ptr ds:[ecx],dl
+  if (BYTE c = *(BYTE *)text) { // BYTE is unsigned
+    *data = text;
+    *len = 1;
+    //*split = FIXED_SPLIT_VALUE * 4; // merge all threads
+    *split = regof(esi, esp_base);
+    //*split = *(DWORD *)(esp_base + 4*5); // esp[5]
+  }
+}
+
+bool InsertMarvelous2PS2Hook()
+{
+  ConsoleOutput("vnreng: Marvelous2 PS2: enter");
+  const BYTE bytes[] =  {
+    // The following pattern is not sufficient
+    0x89,0xc8,            // 30207334   89c8             mov eax,ecx
+    0xc1,0xe8, 0x0c,      // 30207336   c1e8 0c          shr eax,0xc
+    0x8b,0x04,0x85, XX4,  // 30207339   8b0485 3000e511  mov eax,dword ptr ds:[eax*4+0x11e50030]
+    0xbb, XX4,            // 30207340   bb 4f732030      mov ebx,0x3020734f
+    0x01,0xc1,            // 30207345   01c1             add ecx,eax
+    0x0f,0x88, XX4,       // 30207347  -0f88 739e19d3    js pcsx2.033a11c0
+    0x88,0x11,            // 3020734d   8811             mov byte ptr ds:[ecx],dl    ; jichi: hook here, text in dl
+    0x83,0x05, XX4, 0x01, // 3020734f   8305 30ab9e01 01 add dword ptr ds:[0x19eab30],0x1
+    0x9f,                 // 30207356   9f               lahf
+    0x66,0xc1,0xf8, 0x0f, // 30207357   66:c1f8 0f       sar ax,0xf
+    0x98,                 // 3020735b   98               cwde
+    // The above pattern is not sufficient
+    0xa3, XX4,            // 3020735c   a3 34ab9e01      mov dword ptr ds:[0x19eab34],eax
+    0xa1, XX4,            // 30207361   a1 60ab9e01      mov eax,dword ptr ds:[0x19eab60]
+    0x3b,0x05, XX4,       // 30207366   3b05 40ab9e01    cmp eax,dword ptr ds:[0x19eab40]
+    0x75, 0x11,           // 3020736c   75 11            jnz short 3020737f
+    0xa1, XX4,            // 3020736e   a1 64ab9e01      mov eax,dword ptr ds:[0x19eab64]
+    0x3b,0x05, XX4,       // 30207373   3b05 44ab9e01    cmp eax,dword ptr ds:[0x19eab44]
+    0x0f,0x84, XX4,       // 30207379   0f84 28000000    je 302073a7
+    0xc7,0x05, XX8,       // 3020737f   c705 a8ad9e01 34>mov dword ptr ds:[0x19eada8],0x17eb34
+    // The above pattern is not sufficient
+    0xa1, XX4,            // 30207389   a1 c0ae9e01      mov eax,dword ptr ds:[0x19eaec0]
+    0x83,0xc0, 0x09,      // 3020738e   83c0 09          add eax,0x9
+    0xa3, XX4,            // 30207391   a3 c0ae9e01      mov dword ptr ds:[0x19eaec0],eax
+    0x2b,0x05, XX4,       // 30207396   2b05 809e9d01    sub eax,dword ptr ds:[0x19d9e80]         ; cdvdgiga.5976f736
+    0x0f,0x88, XX4,       // 3020739c  ^0f88 31ffffff    js 302072d3
+    0xe9, XX4,            // 302073a2  -e9 59cc21d3      jmp pcsx2.03424000
+    0xc7,0x05, XX8,       // 302073a7   c705 a8ad9e01 50>mov dword ptr ds:[0x19eada8],0x17eb50
+    0xa1, XX4,            // 302073b1   a1 c0ae9e01      mov eax,dword ptr ds:[0x19eaec0]
+    0x83,0xc0, 0x09,      // 302073b6   83c0 09          add eax,0x9
+    0xa3, XX4,            // 302073b9   a3 c0ae9e01      mov dword ptr ds:[0x19eaec0],eax
+    0x2b,0x05, XX4,       // 302073be   2b05 809e9d01    sub eax,dword ptr ds:[0x19d9e80]         ; cdvdgiga.5976f736
+    0x0f,0x88, XX4,       // 302073c4  ^0f88 75cbfcff    js 301d3f3f
+    0xe9, XX4,            // 302073ca  -e9 31cc21d3      jmp pcsx2.03424000
+    0x8b,0x15, XX4,       // 302073cf   8b15 10ac9e01    mov edx,dword ptr ds:[0x19eac10]
+    0x8b,0x0d, XX4,       // 302073d5   8b0d 20ac9e01    mov ecx,dword ptr ds:[0x19eac20]
+    0x83,0xc1, 0x04,      // 302073db   83c1 04          add ecx,0x4
+    0x89,0xc8,            // 302073de   89c8             mov eax,ecx
+    0xc1,0xe8, 0x0c,      // 302073e0   c1e8 0c          shr eax,0xc
+    0x8b,0x04,0x85, XX4,  // 302073e3   8b0485 3000e511  mov eax,dword ptr ds:[eax*4+0x11e50030]
+    0xbb, XX4,            // 302073ea   bb f9732030      mov ebx,0x302073f9
+    0x01,0xc1             // 302073ef   01c1             add ecx,eax
+  };
+  enum { hook_offset = 0x3020734d - 0x30207334 };
+
+  DWORD addr = SafeMatchBytesInPS2Memory(bytes, sizeof(bytes));
+  //addr = 0x30403967;
+  if (!addr)
+    ConsoleOutput("vnreng: Marvelous2 PS2: pattern not found");
+  else {
+    //ITH_GROWL_DWORD(addr + hook_offset);
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.type = USING_STRING|EXTERN_HOOK|NO_CONTEXT; // no context to get rid of return address
+    hp.extern_fun = SpecialPS2HookMarvelous2;
+    //hp.off = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
+    //hp.length_offset = 1;
+    ConsoleOutput("vnreng: Marvelous2 PS2: INSERT");
+    //ITH_GROWL_DWORD(hp.addr);
+    NewHook(hp, L"Marvelous2 PS2");
+  }
+
+  ConsoleOutput("vnreng: Marvelous2 PS2: leave");
+  return addr;
+}
+
 #if 0 // jichi 7/19/2014: duplication text
 
 /** 7/19/2014 jichi
@@ -9671,7 +9860,7 @@ bool InsertSegaPSPHook()
   ConsoleOutput("vnreng: SEGA PSP: enter");
   const BYTE bytes[] =  {
     0x77, 0x0f,                     // 13513478   77 0f            ja short 13513489
-    0xc7,0x05, XX4, XX4,            // 1351347a   c705 a8aa1001 38>mov dword ptr ds:[0x110aaa8],0x89cae38
+    0xc7,0x05, XX8,                 // 1351347a   c705 a8aa1001 38>mov dword ptr ds:[0x110aaa8],0x89cae38
     0xe9, XX4,                      // 13513484  -e9 7bcb4ff0      jmp 03a10004
     0x8b,0x05, XX4,                 // 13513489   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1351348f   81e0 ffffff3f    and eax,0x3fffffff
@@ -9916,7 +10105,7 @@ bool InsertAlchemist3PSPHook()
     //0xcc,                         // 13400e12   cc               int3
     //0xcc,                         // 13400e13   cc               int3
     0x77, 0x0f,                     // 13400e14   77 0f            ja short 13400e25
-    0xc7,0x05, XX4, XX4,            // 13400e16   c705 a8aa1001 84>mov dword ptr ds:[0x110aaa8],0x8931084
+    0xc7,0x05, XX8,                 // 13400e16   c705 a8aa1001 84>mov dword ptr ds:[0x110aaa8],0x8931084
     0xe9, XX4,                      // 13400e20  -e9 dff148f0      jmp 03890004
     0x8b,0x05, XX4,                 // 13400e25   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13400e2b   81e0 ffffff3f    and eax,0x3fffffff
