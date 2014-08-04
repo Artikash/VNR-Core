@@ -25,7 +25,15 @@ Item { id: root_
   //property bool windowVisible: !wine && (gameWindow_.visible || ajaxIndicator_.visible || !growl_.hidden)
 
   //property bool ignoresFocus: dock_.ignoresFocusChecked && gameWindow_.fullScreen
-  property bool ignoresFocus: center_.fullScreen && !center_.stretched && !settings_.kagamiFocusEnabled
+  property bool ignoresFocus:
+      center_.fullScreen
+      && !center_.stretched
+      && !currentGameIsEmulator
+      && !settings_.kagamiFocusEnabled
+
+  // 8/3/2014 TODO: Remove focus restriction for CIRCUS game as well
+  property int currentGameId: datamanPlugin_.gameItemId // cached
+  property bool currentGameIsEmulator: currentGameId > 50 && currentGameId < 60
 
   property bool mirageVisible: false
 

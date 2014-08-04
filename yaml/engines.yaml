@@ -2,6 +2,7 @@
 # 12/7/2013 jichi
 
 rename:
+  #AB2Try: YaneSDK # TODO
   AUEngine: Tenco
   MAJIRO: Majiro
   Pencil: Pensil
@@ -107,6 +108,7 @@ nongui:
 simple:
   - 2RM
   - 5pb PSP
+  - AB2Try
   - Adobe AIR
   - Alchemist PSP
   - Alchemist2 PSP
@@ -166,6 +168,7 @@ simple:
   - YukaSystem2
 
 single: # single thread
+  - AB2Try
   - Eushully
   - Rejet
   - SiglusEngine2
@@ -242,6 +245,7 @@ char:
   # Engines
   - 2RM
   - 5pb PSP
+  - AB2Try
   - AbelSoftware
   - Alchemist PSP
   - Alchemist2 PSP

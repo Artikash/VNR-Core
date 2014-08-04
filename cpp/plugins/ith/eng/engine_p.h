@@ -66,6 +66,7 @@ bool InsertYeti2PSPHook();      // PSP Yetigame.jp
 // PC engines
 
 bool Insert2RMHook();           // 2RM - Adventure Engine
+bool InsertAB2TryHook();        // Yane@AkabeiSoft2Try: YaneSDK.dll.
 bool InsertAbelHook();          // Abel
 bool InsertAdobeAirHook();      // Adobe AIR
 bool InsertAliceHook();         // System40@AliceSoft; do not work for latest alice games
@@ -121,7 +122,6 @@ bool InsertWhirlpoolHook();     // YU-RIS: *.ypf
 bool InsertWillPlusHook();      // WillPlus: Rio.arc
 bool InsertWolfHook();          // Wolf: Data.wolf
 
-void InsertAB2TryHook();        // Yane@AkabeiSoft2Try: YaneSDK.dll.
 void InsertBrunsHook();         // Bruns: bruns.exe
 void InsertKiriKiriHook();      // KiriKiri: *.xp3, resource string
 void InsertIronGameSystemHook();// IroneGameSystem: igs_sample.exe

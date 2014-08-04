@@ -2964,7 +2964,7 @@ static void SpecialHookSofthouse(DWORD esp_base, HookParam* hp, DWORD* data, DWO
     for (i = 0; i < *len; i++)
       if (string_u[i] == L'>'||string_u[i] == L']') {
         *data = (DWORD)(string_u+i+1);
-        *split = 0;
+        *split = 0; // 8/3/2014 jichi: split is zero, so return address is used as split
         *len -= i + 1;
         *len <<= 1;
         return;
@@ -2974,7 +2974,7 @@ static void SpecialHookSofthouse(DWORD esp_base, HookParam* hp, DWORD* data, DWO
     for (i=0;i<*len;i++)
       if (string_a[i]=='>'||string_a[i]==']') {
         *data = (DWORD)(string_a+i+1);
-        *split = 0;
+        *split = 0; // 8/3/2014 jichi: split is zero, so return address is sued as split
         *len -= i+1;
         return;
       }
@@ -3050,7 +3050,7 @@ static void SpecialHookCaramelBox(DWORD esp_base, HookParam* hp, DWORD* data, DW
 
   *len = buffer_index;
   *data = (DWORD)text_buffer;
-  *split = 0;
+  *split = 0; // 8/3/2014 jichi: use return address as split
 }
 // jichi 10/1/2013: Change return type to bool
 bool InsertCaramelBoxHook()
@@ -3245,6 +3245,7 @@ AkabeiSoft2Try hook:
   So if you are in title screen this approach will fail.
 
 ********************************************************************************************/
+namespace { // unnamed
 MEMORY_WORKING_SET_LIST *GetWorkingSet()
 {
   DWORD len,retl;
@@ -3256,7 +3257,7 @@ MEMORY_WORKING_SET_LIST *GetWorkingSet()
   status = NtQueryVirtualMemory(NtCurrentProcess(), 0, MemoryWorkingSetList, buffer, len, &retl);
   if (status == STATUS_INFO_LENGTH_MISMATCH) {
     len = *(DWORD*)buffer;
-    len = ((len << 2) & 0xFFFFF000) + 0x4000;
+    len = ((len << 2) & 0xfffff000) + 0x4000;
     retl = 0;
     NtFreeVirtualMemory(NtCurrentProcess(), &buffer, &retl, MEM_RELEASE);
     buffer = 0;
@@ -3279,27 +3280,17 @@ typedef struct _NSTRING
   DWORD lenWithoutNull;
   WCHAR str[1];
 } NSTRING;
-static void SpecialHookAB2Try(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
-{
-  CC_UNUSED(hp);
-  DWORD test = *(DWORD*)(esp_base - 0x10);
-  if (test != 0) return;
-  NSTRING *s = *(NSTRING**)(esp_base - 0x8);
-  *len = s->lenWithoutNull << 1;
-  *data = (DWORD)s->str;
-  *split = 0;
-}
 
 // qsort correctly identifies overflow.
 int cmp(const void * a, const void * b)
 { return *(int*)a - *(int*)b; }
 
-BOOL FindCharacteristInstruction(MEMORY_WORKING_SET_LIST* list)
+BOOL FindCharacteristInstruction(MEMORY_WORKING_SET_LIST *list)
 {
   DWORD base, size;
   DWORD i, j, k, addr, retl;
   NTSTATUS status;
-  qsort(&list->WorkingSetList, list->NumberOfPages, 4, cmp);
+  ::qsort(&list->WorkingSetList, list->NumberOfPages, 4, cmp);
   base = list->WorkingSetList[0];
   size = 0x1000;
   for (i = 1; i < list->NumberOfPages; i++) {
@@ -3311,7 +3302,7 @@ BOOL FindCharacteristInstruction(MEMORY_WORKING_SET_LIST* list)
       size += 0x1000;
     else {
       if (size > 0x2000) {
-        addr = base & ~0xFFF;
+        addr = base & ~0xfff;
         status = NtQueryVirtualMemory(NtCurrentProcess(),(PVOID)addr,
           MemorySectionName,text_buffer_prev,0x1000,&retl);
         if (!NT_SUCCESS(status)) {
@@ -3322,7 +3313,7 @@ BOOL FindCharacteristInstruction(MEMORY_WORKING_SET_LIST* list)
                 HookParam hp = {};
                 hp.addr = j;
                 hp.extern_fun = SpecialHookAB2Try;
-                hp.type = USING_STRING | USING_UNICODE| EXTERN_HOOK | NO_CONTEXT;
+                hp.type = USING_STRING|USING_UNICODE|EXTERN_HOOK|NO_CONTEXT;
                 ConsoleOutput("vnreng: INSERT AB2Try");
                 NewHook(hp, L"AB2Try");
                 //ConsoleOutput("Please adjust text speed to fastest/immediate.");
@@ -3339,26 +3330,49 @@ BOOL FindCharacteristInstruction(MEMORY_WORKING_SET_LIST* list)
   }
   return FALSE;
 }
-void InsertAB2TryHook()
+} // unnamed namespace
+static void SpecialHookAB2Try(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  DWORD size = 0;
-  MEMORY_WORKING_SET_LIST *list = GetWorkingSet();
-  if (list == 0) {
-    ConsoleOutput("vnreng:AB2Try: cannot find working list");
+  CC_UNUSED(hp);
+  //DWORD test = *(DWORD*)(esp_base - 0x10);
+  DWORD edx = regof(edx, esp_base);
+  if (edx != 0)
     return;
+
+  //NSTRING *s = *(NSTRING **)(esp_base - 8);
+  if (const NSTRING *s = (NSTRING *)regof(eax, esp_base)) {
+    *len = s->lenWithoutNull << 1;
+    *data = (DWORD)s->str;
+    //*split = 0;
+    *split = FIXED_SPLIT_VALUE; // 8/3/2014 jichi: change to single threads
   }
-  if (!FindCharacteristInstruction(list))
-    ConsoleOutput("vnreng:AB2Try: cannot find characteristic sequence");
-    //L"Make sure you have start the game and have seen some text on the screen.");
-  NtFreeVirtualMemory(NtCurrentProcess(), (PVOID*)&list, &size, MEM_RELEASE);
 }
+
+bool InsertAB2TryHook()
+{
+  MEMORY_WORKING_SET_LIST *list = GetWorkingSet();
+  if (!list) {
+    ConsoleOutput("vnreng:AB2Try: cannot find working list");
+    return false;
+  }
+  bool ret = FindCharacteristInstruction(list);
+  if (ret)
+    ConsoleOutput("vnreng:AB2Try: found characteristic sequence");
+  else
+    ConsoleOutput("vnreng:AB2Try: cannot find characteristic sequence");
+  //L"Make sure you have start the game and have seen some text on the screen.");
+  DWORD size = 0;
+  NtFreeVirtualMemory(NtCurrentProcess(), (PVOID*)&list, &size, MEM_RELEASE);
+  return ret;
+}
+
 /********************************************************************************************
 C4 hook: (Contributed by Stomp)
   Game folder contains C4.EXE or XEX.EXE.
 ********************************************************************************************/
 bool InsertC4Hook()
 {
-  const BYTE bytes[]={0x8a, 0x10, 0x40, 0x80, 0xfa, 0x5f, 0x88, 0x15};
+  const BYTE bytes[] = { 0x8a, 0x10, 0x40, 0x80, 0xfa, 0x5f, 0x88, 0x15 };
   //enum { hook_offset = 0 };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   if (!addr) {
@@ -3401,7 +3415,7 @@ static void SpecialHookWillPlus(DWORD esp_base, HookParam* hp, DWORD* data, DWOR
     char* str = *(char**)(esp_base + hp->off);
     *data = (DWORD)str;
     *len = strlen(str);
-    *split = 0;
+    *split = 0; // 8/3/2014 jichi: use return address as split
   }
   detect_offset = 1;
 }
