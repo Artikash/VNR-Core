@@ -63,7 +63,7 @@ class GameBoardDialog(SkWebView):
     self.setWindowIcon(rc.icon('window-gameboard'))
     self.setWindowTitle(mytr_("Game Board"))
     self.__d = _GameBoardDialog(self)
-    self.resize(750, 660)
+    self.resize(765, 660)
 
     # Refresh only once
     self.__d.refresh()
