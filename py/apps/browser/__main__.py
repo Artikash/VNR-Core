@@ -87,6 +87,9 @@ def main():
   ss = settings.global_()
   ss.setParent(a)
 
+  reader = settings.global_()
+  #reader.setParent(a) # reader does NOT have a app parent
+
   dprint("update settings")
   ss_version = ss.version()
   if ss_version != config.VERSION_TIMESTAMP:
@@ -101,10 +104,20 @@ def main():
     ss.setVersion(config.VERSION_TIMESTAMP)
     ss.sync()
 
-  if settings.reader().isCursorThemeEnabled():
+  if reader.isCursorThemeEnabled():
     dprint("load cursor theme")
     import curtheme
     curtheme.load()
+
+  from sakurakit import skpaths
+  skpaths.append_paths((
+    reader.jbeijingLocation(),
+    reader.ezTransLocation(),
+    reader.atlasLocation(),
+    reader.localeEmulatorLocation(),
+    os.path.join(reader.lecLocation(), r"Nova\JaEn") if reader.lecLocation() else "",
+    os.path.join(reader.dreyeLocation(), r"DreyeMT\SDK\bin") if reader.dreyeLocation() else "",
+  ))
 
   dprint("set max thread count")
   from PySide.QtCore import QThreadPool
@@ -125,7 +138,7 @@ def main():
 
 if __name__ == '__main__':
   import sys
-  print >> sys.stderr, "reader: enter"
+  print >> sys.stderr, "browser: enter"
   #print __file__
   import initrc
   initrc.initenv()
@@ -133,7 +146,7 @@ if __name__ == '__main__':
   #initrc.checkintegrity()
 
   ret = main()
-  print >> sys.stderr, "reader: leave, ret =", ret
+  print >> sys.stderr, "browser: leave, ret =", ret
   sys.exit(ret)
   #assert False, "unreachable"
   assert False, "unreachable"
