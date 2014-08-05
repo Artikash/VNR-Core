@@ -251,6 +251,8 @@ class TranslatorManager(QObject):
     """
     return self.hasOnlineTranslators() or self.hasOfflineTranslators()
 
+  def isAvailable(self): return self.hasTranslators()
+
   def translate(self, text, fr='ja', to='en', engine='', online=True, async=False, cached=True):
     """Translate using any translator
     @param  text  unicode

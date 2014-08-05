@@ -178,7 +178,7 @@ class _MainObject(object):
     ret.setJBeijingEnabled(reader.isJBeijingEnabled() and bool(reader.jbeijingLocation()))
     ret.setLecEnabled(reader.isLecEnabled() and bool(reader.lecLocation()))
 
-    if ss.isTranslationEnabled() and not ret.hasTranslators():
+    if ss.isTranslationEnabled() and not ret.isAvailable():
       ss.setTranslationEnabled(False)
 
     ret.setEnabled(ss.isTranslationEnabled())
