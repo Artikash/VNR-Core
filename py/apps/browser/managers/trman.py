@@ -14,7 +14,7 @@ from PySide.QtCore import QObject, Signal, Slot, Qt
 from sakurakit import skevents
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
-import features, textutil
+import textutil
 import _trman
 
 @Q_Q
@@ -41,7 +41,7 @@ class _TranslatorManager(object):
     self.lecEnabled = \
     True # bool
 
-  normalizeText = staticmethod(textutil.normalize_punct)
+  normalizeText = staticmethod(textutil.normalizepunct)
 
   @memoizedproperty
   def lougoTranslator(self): return _trman.LougoTranslator()
@@ -91,17 +91,6 @@ class _TranslatorManager(object):
   @memoizedproperty
   def exciteTranslator(self):
     return _trman.ExciteTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
-
-  @staticmethod
-  def translateAndApply(func, tr, *args, **kwargs):
-    """
-    @param  func  function to apply
-    @param  tr  function to translate
-    @param  *args  passed to tr
-    @param  **kwargs  passed to tr
-    """
-    r = tr(*args, **kwargs)
-    if r[0]: func(*r)
 
   def getTranslator(self, key):
     """
@@ -244,10 +233,9 @@ class TranslatorManager(QObject):
   ## Queries ##
 
   def warmup(self):
-    if features.MACHINE_TRANSLATION:
-      for it in self.__d.iterOfflineTranslators():
-        dprint("warm up %s" % it.key)
-        it.warmup()
+    for it in self.__d.iterOfflineTranslators():
+      dprint("warm up %s" % it.key)
+      it.warmup()
 
   def hasOnlineTranslators(self):
     """
@@ -289,54 +277,9 @@ class TranslatorManager(QObject):
     """
     @return  bool
     """
-    return features.MACHINE_TRANSLATION and self.hasTranslators()
+    return self.hasTranslators()
 
-  def guessTranslationLanguage(self): # -> str
-    if not self.isEnabled():
-      return ''
-    d = self.__d
-    if d.ezTransEnabled:
-      return 'ko'
-    if d.hanVietEnabled:
-      return 'vi'
-    if d.jbeijingEnabled or d.baiduEnabled or d.dreyeEnabled:
-      return 'zhs' if d.language == 'zhs' else 'zht'
-    if (d.atlasEnabled or d.lecEnabled) and not any((
-        d.infoseekEnabled,
-        d.transruEnabled,
-        d.exciteEnabled,
-        d.bingEnabled,
-        d.googleEnabled,
-        d.lecOnlineEnabled,
-      )):
-      return 'en'
-    return d.language
-
-  def translate(self, *args, **kwargs):
-    """
-    @return  unicode
-    """
-    return self.translateOne(*args, **kwargs)[0] or ''
-
-  def translateDirect(self, text, fr='ja', engine='', async=False):
-    """
-   Test @param  text  unicode
-    @param  fr  unicode  language
-    @param  to  unicode  language
-    @param  async  bool
-    @return  unicode sub
-    """
-    #if not features.MACHINE_TRANSLATION or not text:
-    if not text:
-      return ''
-    d = self.__d
-    e = d.getTranslator(engine)
-    if e:
-      return e.translateTest(text, fr=fr, to=d.language, async=async)
-    dwarn("invalid translator: %s" % engine)
-    return ''
-
-  def translateOne(self, text, fr='ja', engine='', online=True, async=False, cached=True, emit=False):
+  def translate(self, text, fr='ja', engine='', online=True, async=False, cached=True, emit=False):
     """Translate using any translator
     @param  text  unicode
     @param  fr  unicode  language
@@ -347,7 +290,7 @@ class TranslatorManager(QObject):
     @param  cached  bool  NOT USED, always cached
     @return  unicode sub or None, unicode lang, unicode provider
     """
-    if not features.MACHINE_TRANSLATION or not text:
+    if not text:
       return None, None, None
     d = self.__d
     text = d.normalizeText(text)
@@ -362,71 +305,26 @@ class TranslatorManager(QObject):
       return it.translate(text, fr=fr, to=d.language, async=True, emit=emit)
     return None, None, None
 
-  def translateApply(self, func, text, fr='ja'):
-    """Specialized for textman
-    @param  text  unicode
-    @param  fr  unicode  language
-    @param  to  unicode  language
-    @param  func  function(unicode sub, unicode lang, unicode provider)
-    """
-    if not features.MACHINE_TRANSLATION or not text:
-      return
-    d = self.__d
-    text = d.normalizeText(text)
-
-    for it in d.iterOfflineTranslators():
-      r = it.translate(text, fr=fr, to=d.language, async=False)
-      if r[0]: func(*r)
-
-    for it in d.iterOnlineTranslators():
-      skevents.runlater(partial(d.translateAndApply,
-          func, it.translate, text, fr=fr, to=d.language, async=True))
-
 @memoized
 def manager(): return TranslatorManager()
 
 #def translate(*args, **kwargs):
 #  return manager().translate(*args, **kwargs)
 
-class YakuCoffeeBean(QObject):
-  def __init__(self, parent=None):
-    super(YakuCoffeeBean, self).__init__(parent)
-
-  @Slot(result=bool)
-  def enabled(self):
-    return manager().isEnabled()
-
-  @Slot(unicode, result=unicode)
-  def yaku(self, t):
-    """
-    @param  t  unicode
-    @return  unicode
-    """
-    return manager().translate(t, async=True)
-
 # EOF
 
-#  def _translateOnlineByBing(self, text):
+#class YakuCoffeeBean(QObject):
+#  def __init__(self, parent=None):
+#    super(YakuCoffeeBean, self).__init__(parent)
+#
+#  @Slot(result=bool)
+#  def enabled(self):
+#    return manager().isEnabled()
+#
+#  @Slot(unicode, result=unicode)
+#  def yaku(self, t):
 #    """
-#    @param  text  unicode
-#    @return  unicode sub, unicode lang, unicode provider
+#    @param  t  unicode
+#    @return  unicode
 #    """
-#    lang = self.language
-#    text = self._applySourceTerms(text, lang)
-#    text = self._prepareEscapeTerms(text, lang)
-#    text = self._prepareSentenceTransformation(text)
-#    sub = skthreads.runsync(partial(
-#        bingtrans.translate, text, to=lang),
-#        parent=self.q)
-#    if sub:
-#      if bingtrans.bad_translation(sub):
-#        growl.error(self.q.tr(
-#"""So many users are using Microsoft translator this month that
-#VNR has run out of free monthly quota TT
-#Please try a different translator in Preferences instead.
-#"""))
-#        sub = ""
-#      else:
-#        sub = self._applyEscapeTerms(sub, lang)
-#        sub = self._applyTargetTerms(sub, lang)
-#    return sub, lang, mytr_("Bing")
+#    return manager().translate(t, async=True)
