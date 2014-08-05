@@ -32,7 +32,6 @@ class _TranslatorManager(object):
     self.baiduEnabled = \
     self.lecOnlineEnabled = \
     self.transruEnabled = \
-    self.lougoEnabled = \
     self.hanVietEnabled = \
     self.jbeijingEnabled = \
     self.dreyeEnabled = \
@@ -42,9 +41,6 @@ class _TranslatorManager(object):
     True # bool
 
   normalizeText = staticmethod(textutil.normalizepunct)
-
-  @memoizedproperty
-  def lougoTranslator(self): return _trman.LougoTranslator()
 
   @memoizedproperty
   def hanVietTranslator(self): return _trman.HanVietTranslator()
@@ -105,8 +101,6 @@ class _TranslatorManager(object):
       return self.transruTranslator
     if key == 'hanviet':
       return self.hanVietTranslator
-    if key == 'lou':
-      return self.lougoTranslator
     try: return getattr(self, key + 'Translator')
     except AttributeError: pass
 
@@ -114,7 +108,6 @@ class _TranslatorManager(object):
     """
     @yield  Translator
     """
-    #if self.lougoEnabled: yield self.lougoTranslator
     if self.jbeijingEnabled: yield self.jbeijingTranslator
     if self.dreyeEnabled: yield self.dreyeTranslator
     if self.ezTransEnabled: yield self.ezTranslator
@@ -209,9 +202,6 @@ class TranslatorManager(QObject):
   def isTransruEnabled(self): return self.__d.transruEnabled
   def setTransruEnabled(self, value): self.__d.transruEnabled = value
 
-  def isLougoEnabled(self): return self.__d.lougoEnabled
-  def setLougoEnabled(self, value): self.__d.lougoEnabled = value
-
   def isHanVietEnabled(self): return self.__d.hanVietEnabled
   def setHanVietEnabled(self, value): self.__d.hanVietEnabled = value
 
@@ -258,7 +248,6 @@ class TranslatorManager(QObject):
     """
     d = self.__d
     return any((
-      #d.lougoEnabled,
       d.hanVietEnabled,
       d.jbeijingEnabled,
       d.dreyeEnabled,

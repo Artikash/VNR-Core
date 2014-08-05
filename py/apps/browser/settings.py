@@ -26,8 +26,8 @@ class Settings(QSettings):
 
   def __init__(self):
     super(Settings, self).__init__(
-      QSettings.NativeFormat, QSettings.UserScope,
-      config.VERSION_DOMAIN, config.VERSION_NAME)
+        QSettings.NativeFormat, QSettings.UserScope,
+        config.VERSION_DOMAIN, config.VERSION_NAME)
 
   def setVersion(self, value): self.setValue('Version', value)
   def version(self): return to_int(self.value('Version'))
@@ -55,8 +55,8 @@ class ReaderSettings(QSettings):
 
   def __init__(self):
     super(ReaderSettings, self).__init__(
-      QSettings.NativeFormat, QSettings.UserScope,
-      config.VERSION_DOMAIN, "reader")
+        QSettings.NativeFormat, QSettings.UserScope,
+        config.VERSION_DOMAIN, "reader")
 
   def version(self): return to_int(self.value('Version'))
   def updateTime(self): return to_int(self.value('UpdateTime'))
@@ -94,5 +94,28 @@ class ReaderSettings(QSettings):
     @return  {str ttskey:int speed}
     """
     return to_dict(self.value('SAPISpeeds'))
+
+  ## Translators
+
+  def jbeijingLocation(self): return to_unicode(self.value('JBeijingLocation'))
+  def ezTransLocation(self): return to_unicode(self.value('ezTransLocation'))
+  def dreyeLocation(self): return to_unicode(self.value('DreyeLocation'))
+  def atlasLocation(self): return to_unicode(self.value('AtlasLocation'))
+  def lecLocation(self): return to_unicode(self.value('LecLocation'))
+
+  def isBaiduEnabled(self): return to_bool(self.value('BaiduEnabled'))
+  def isBingEnabled(self): return to_bool(self.value('BingEnabled', True)) # only enabled
+  def isExciteEnabled(self): return to_bool(self.value('ExciteEnabled'))
+  def isGoogleEnabled(self): return to_bool(self.value('GoogleEnabled'))
+  def isHanVietEnabled(self): return to_bool(self.value('HanVietEnabled'))
+  def isInfoseekEnabled(self): return to_bool(self.value('InfoseekEnabled'))
+  def isLecOnlineEnabled(self): return to_bool(self.value('LecOnlineEnabled'))
+  def isTransruEnabled(self): return to_bool(self.value('TransruEnabled'))
+
+  def isAtlasEnabled(self): return to_bool(self.value('AtlasEnabled'))
+  def isEzTransEnabled(self): return to_bool(self.value('ezTransEnabled'))
+  def isDreyeEnabled(self): return to_bool(self.value('DreyeEnabled'))
+  def isJBeijingEnabled(self): return to_bool(self.value('JBeijingEnabled'))
+  def isLecEnabled(self): return to_bool(self.value('LecEnabled'))
 
 # EOF
