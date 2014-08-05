@@ -33,6 +33,7 @@ class MainObject(QObject):
 
     dprint("create managers")
     d.ttsManager
+    d.translatorManager
     d.beanManager
     d.jlpManager
     d.cacheManager
@@ -150,6 +151,32 @@ class _MainObject(object):
     #self.networkManager.onlineChanged.connect(ret.setEnabled)
 
     ret.clearTemporaryFiles()
+    return ret
+
+  @memoizedproperty
+  def translatorManager(self):
+    dprint("create translator manager")
+    import trman, settings
+    ret = trman.manager()
+    ret.setParent(self.q)
+
+    reader = settings.reader()
+
+    ret.setBaiduEnabled(reader.isBingEnabled())
+    ret.setBingEnabled(reader.isBingEnabled())
+    ret.setExciteEnabled(reader.isExciteEnabled())
+    ret.setGoogleEnabled(reader.isGoogleEnabled())
+    ret.setHanVietEnabled(reader.isHanVietEnabled())
+    ret.setInfoseekEnabled(reader.isInfoseekEnabled())
+    ret.setLecOnlineEnabled(reader.isLecOnlineEnabled())
+    ret.setTransruEnabled(reader.isTransruEnabled())
+
+    ret.setAtlasEnabled(reader.isAtlasEnabled() and bool(reader.atlasLocation()))
+    ret.setEzTransEnabled(reader.isEzTransEnabled() and bool(reader.ezTransLocation()))
+    ret.setDreyeEnabled(reader.isDreyeEnabled() and bool(reader.dreyeLocation()))
+    ret.setJBeijingEnabled(reader.isJBeijingEnabled() and bool(reader.jbeijingLocation()))
+    ret.setLecEnabled(reader.isLecEnabled() and bool(reader.lecLocation()))
+
     return ret
 
   @memoizedproperty
