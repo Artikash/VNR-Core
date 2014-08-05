@@ -160,6 +160,7 @@ class _MainObject(object):
     ret = trman.manager()
     ret.setParent(self.q)
 
+    ss = settings.global_()
     reader = settings.reader()
 
     ret.setBaiduEnabled(reader.isBingEnabled())
@@ -177,6 +178,11 @@ class _MainObject(object):
     ret.setJBeijingEnabled(reader.isJBeijingEnabled() and bool(reader.jbeijingLocation()))
     ret.setLecEnabled(reader.isLecEnabled() and bool(reader.lecLocation()))
 
+    if ss.isTranslationEnabled() and not ret.hasTranslators():
+      ss.setTranslationEnabled(False)
+
+    ret.setEnabled(ss.isTranslationEnabled())
+    ss.translationEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty

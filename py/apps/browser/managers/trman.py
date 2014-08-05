@@ -22,8 +22,8 @@ class _TranslatorManager(object):
 
   def __init__(self, q):
     #self.convertsChinese = False
-    self.online = False
-    self.language = 'en' # str, user language
+    self.enabled = True
+    self.online = True
 
     self.infoseekEnabled = \
     self.exciteEnabled = \
@@ -142,26 +142,12 @@ class TranslatorManager(QObject):
     super(TranslatorManager, self).__init__(parent)
     self.__d = _TranslatorManager(self)
 
-    self.clearCacheRequested.connect(self.clearCache, Qt.QueuedConnection)
-
   ## Signals ##
 
   onlineAbortionRequested = Signal()
   #infoseekAbortionRequested = Signal()
   #bingAbortionRequested = Signal()
   #baiduAbortionRequested = Signal()
-
-  # Logs
-  languagesReceived = Signal(unicode, unicode) # fr, to
-  sourceTextReceived = Signal(unicode)      # text after applying source terms
-  escapedTextReceived = Signal(unicode)    # text after preparing escaped terms
-  splitTextsReceived = Signal(list)  # texts after splitting
-  splitTranslationsReceived = Signal(list)  # translations after applying translation
-  jointTranslationReceived = Signal(unicode)  # translation before applying terms
-  escapedTranslationReceived = Signal(unicode)  # translation after unescaping terms
-  targetTranslationReceived = Signal(unicode)  # translation after applying target terms
-
-  clearCacheRequested = Signal() # async
 
   def abortOnline(self):
     self.onlineAbortionRequested.emit()
@@ -174,6 +160,9 @@ class TranslatorManager(QObject):
     dprint("pass")
 
   ## Properties ##
+
+  def isEnabled(self): return self.__d.enabled
+  def setEnabled(self, t): self.__d.enabled = t
 
   def language(self): return self.__d.language
   def setLanguage(self, value): self.__d.language = value
@@ -262,36 +251,29 @@ class TranslatorManager(QObject):
     """
     return self.hasOnlineTranslators() or self.hasOfflineTranslators()
 
-  def isEnabled(self):
-    """
-    @return  bool
-    """
-    return self.hasTranslators()
-
-  def translate(self, text, fr='ja', engine='', online=True, async=False, cached=True, emit=False):
+  def translate(self, text, fr='ja', to='en', engine='', online=True, async=False, cached=True):
     """Translate using any translator
     @param  text  unicode
     @param  fr  unicode  language
     @param  to  unicode  language
     @param  async  bool
     @param  online  bool
-    @param  emit  bool  whether emit intermediate results
     @param  cached  bool  NOT USED, always cached
     @return  unicode sub or None, unicode lang, unicode provider
     """
-    if not text:
-      return None, None, None
     d = self.__d
+    if not text or not d.enabled:
+      return None, None, None
     text = d.normalizeText(text)
     if engine:
       e = d.getTranslator(engine)
       if e:
-        return e.translate(text, fr=fr, to=d.language, async=async, emit=emit)
+        return e.translate(text, fr=fr, to=to, async=async)
       dwarn("invalid translator: %s" % engine)
     for it in d.iterOfflineTranslators():
-      return it.translate(text, fr=fr, to=d.language, async=async, emit=emit)
+      return it.translate(text, fr=fr, to=to, async=async, emit=emit)
     for it in d.iterOnlineTranslators():
-      return it.translate(text, fr=fr, to=d.language, async=True, emit=emit)
+      return it.translate(text, fr=fr, to=to, async=True, emit=emit)
     return None, None, None
 
 @memoized

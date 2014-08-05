@@ -87,7 +87,7 @@ def main():
   ss = settings.global_()
   ss.setParent(a)
 
-  reader = settings.global_()
+  reader = settings.reader()
   #reader.setParent(a) # reader does NOT have a app parent
 
   dprint("update settings")
@@ -111,10 +111,10 @@ def main():
 
   from sakurakit import skpaths
   skpaths.append_paths((
+    #reader.localeEmulatorLocation(),
     reader.jbeijingLocation(),
     reader.ezTransLocation(),
     reader.atlasLocation(),
-    reader.localeEmulatorLocation(),
     os.path.join(reader.lecLocation(), r"Nova\JaEn") if reader.lecLocation() else "",
     os.path.join(reader.dreyeLocation(), r"DreyeMT\SDK\bin") if reader.dreyeLocation() else "",
   ))

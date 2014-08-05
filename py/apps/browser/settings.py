@@ -51,6 +51,13 @@ class Settings(QSettings):
       self.setValue("TtsEnabled", value)
       self.ttsEnabledChanged.emit(value)
 
+  translationEnabledChanged = Signal(bool)
+  def isTranslationEnabled(self): return to_bool(self.value("TranslationEnabled"))
+  def setTranslationEnabled(self, value):
+    if value != self.isTranslationEnabled():
+      self.setValue("TranslationEnabled", value)
+      self.translationEnabledChanged.emit(value)
+
 class ReaderSettings(QSettings):
 
   def __init__(self):
