@@ -253,13 +253,30 @@ class TranslatorManager(QObject):
 
   def isAvailable(self): return self.hasTranslators()
 
-  def translate(self, text, fr='ja', to='en', engine='', online=True, async=False, cached=True):
+  def enabledEngines(self): # -> [str]
+    r = []
+    if d.hanVietEnabled: r.append('hanviet')
+    if d.jbeijingEnabled: r.append('jbeijing')
+    if d.dreyeEnabled: r.append('dreye')
+    if d.ezTransEnabled: r.append('eztrans')
+    if d.lecEnabled: r.append('lec')
+    if d.atlasEnabled: r.append('atlas')
+
+    if d.baiduEnabled: r.append('baidu')
+    if d.googleEnabled: r.append('google')
+    if d.bingEnabled: r.append('bing')
+    if d.lecOnlineEnabled: r.append('lecol')
+    if d.transruEnabled: r.append('transru')
+    if d.infoseekEnabled: r.append('infoseek')
+    if d.exciteEnabled: r.append('excite')
+    return r
+
+  def translate(self, text, fr='ja', to='en', engine='', async=False, cached=True):
     """Translate using any translator
     @param  text  unicode
     @param  fr  unicode  language
     @param  to  unicode  language
     @param  async  bool
-    @param  online  bool
     @param  cached  bool  NOT USED, always cached
     @return  unicode sub or None, unicode lang, unicode provider
     """

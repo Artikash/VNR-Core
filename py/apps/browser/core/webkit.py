@@ -251,6 +251,7 @@ class _WbWebPage(object):
       ('clipBean', m.clipBean),
       ('jlpBean', m.jlpBean),
       ('settingsBean', m.settingsBean),
+      ('trBean', m.trBean),
       ('ttsBean', m.ttsBean),
     )
 
