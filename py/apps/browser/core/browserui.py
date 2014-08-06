@@ -71,14 +71,16 @@ class _WebBrowser(object):
     ss = settings.global_()
     self._injectEnabled = ss.isMeCabEnabled()
     self._ttsEnabled = ss.isTtsEnabled() # cached
+    self._translationEnabled = ss.isTranslationEnabled() # cached
 
     self.loadProgress = 100 # int [0,100]
 
     self.visitedUrls = [] # [str url]
     self.closedUrls = [] # [str url]
 
-    import jlpman, ttsman
+    import jlpman, trman, ttsman
     self._jlpAvailable = jlpman.manager().isAvailable() # bool
+    self._trAvailable = trman.manager().isAvailable() # bool
     self._ttsAvailable = ttsman.manager().isAvailable() # bool
 
     #layout = QtWidgets.QVBoxLayout()
@@ -300,6 +302,14 @@ class _WebBrowser(object):
     a.triggered[bool].connect(ss.setMeCabEnabled)
     a.triggered[bool].connect(self._setInjectEnabled)
 
+    #a = ret.addAction(u"訳")
+    #a.setCheckable(True)
+    #a.setToolTip(i18n.tr("Toggle Japanese translator"))
+    #a.setEnabled(self._trAvailable)
+    #a.setChecked(self._injectEnabled and self._jlpAvailable and self._trAvailable)
+    #a.triggered[bool].connect(ss.setTranslationEnabled)
+    #a.triggered[bool].connect(self._setTranslationEnabled)
+
     a = self.ttsAct = ret.addAction(u"♪") # おんぷ
     a.setCheckable(True)
     a.setToolTip("%s (TTS)" % i18n.tr("Toggle text-to-speech") )
@@ -344,6 +354,13 @@ class _WebBrowser(object):
 
   def _setTtsEnabled(self, t): # bool ->
     self._ttsEnabled = t
+    self._reinject()
+
+  def _setTranslationEnabled(self, t): # bool ->
+    self._translationEnabled = t
+    self._reinject()
+
+  def _reinject(self):
     for w in self._iterTabWidgets():
       w.inject()
 

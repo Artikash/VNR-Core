@@ -97,6 +97,8 @@ TR_LOCATIONS = map(parse_path, APP_YAML['tr']['locations']) # [unicode path]
 
 QT_TRANSLATIONS_LOCATION = parse_path(SHARE_YAML['qt']['tr'])  # unicode path
 
+JCUSERDIC_LOCATIONS = map(parse_path, SHARE_YAML['jcuserdic']) # [unicode abspath]
+
 ## Languages ##
 
 ENCODINGS = SHARE_YAML['encodings']   # [str enc]

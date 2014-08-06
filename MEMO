@@ -40,13 +40,20 @@ kagami.qml: jbeijingColor
 grimoire.qml: ..
 mirage.qml: ..
 reader.yaml: ..
-settings.py: jbeijingColor jbeijingEnabled jbeijingLocation
-config.py: JBEIJING_COLOR
-_prefs.py: jbeijing
-_trman.py: ..
-trman.py: ..
-mytr.py: ..
-trtraits.py: ..
-main.py: jbeijingEnabled
+reader:
+  settings.py: jbeijingColor jbeijingEnabled jbeijingLocation
+  config.py: JBEIJING_COLOR
+  _prefs.py: jbeijing
+  _trman.py: ..
+  trman.py: ..
+  mytr.py: ..
+  trtraits.py: ..
+  main.py: jbeijingEnabled
+
+browser:
+  settings.py: jbeijingEnabled jbeijingLocation
+  main.py: jbeijingEnabled
+  _trman.py: ..
+  trman.py: ..
 
 # EOF

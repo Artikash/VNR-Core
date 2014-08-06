@@ -5,6 +5,9 @@
 #   - parse: string -> string
 # - ttsBean
 #   - speak: string ->
+# - trBean
+#   - translators: -> string
+#   - translateWith: string -> string
 # Export functions
 # - annotate: (el)->
 # Style classes after injection
@@ -82,7 +85,11 @@ isalnumpunct = (ch) -> /[0-9a-zA-Z０-９ａ-ｚＡ-Ｚ'"?!,\.]/.test ch # strin
 
 ttsenabled = -> # -> bool
   annot = document.body.dataset.annot
-  (not annot or ~annot.indexOf 'tts')
+  (annot and ~annot.indexOf 'tts')
+
+trenabled = -> # -> bool
+  annot = document.body.dataset.annot
+  (annot and ~annot.indexOf 'tr')
 
 # %span sentence
 #   %ruby(class=word#{number})
@@ -99,7 +106,6 @@ renderruby = (text, ruby, feature, className) -> # must be consistent with parse
   ret.appendChild rb
   ret.appendChild rt
   ret.ondblclick = ->
-    annot = document.body.dataset.annot
     ttsBean.speak text if text and ttsenabled()
   ret
 

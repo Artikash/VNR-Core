@@ -217,6 +217,7 @@ class _GameView(object):
       ('i18nBean', m.i18nBean),
       ('mainBean', m.mainBean),
       ('jlpBean', m.jlpBean),
+      ('trBean', m.trBean),
       ('ttsBean', m.ttsBean),
       ('viewBean', self._viewBean),
       ('youtubeBean', m.youtubeBean),
@@ -224,7 +225,6 @@ class _GameView(object):
       ('gameBean', self._gameBean), # do it at last
 
       #('shioriBean', m.shioriBean), # temporarily not used
-      #('yakuBean', m.yakuBean), # temporarily not used
     )
 
   @memoizedproperty

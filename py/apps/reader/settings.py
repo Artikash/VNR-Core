@@ -56,8 +56,8 @@ class Settings(QSettings):
 
   def __init__(self):
     super(Settings, self).__init__(
-      QSettings.NativeFormat, QSettings.UserScope,
-      config.VERSION_DOMAIN, config.VERSION_NAME)
+        QSettings.NativeFormat, QSettings.UserScope,
+        config.VERSION_DOMAIN, config.VERSION_NAME)
     self.__d = _Settings(self)
 
   def autoSync(self): self.__d.syncTimer.start()
@@ -951,7 +951,7 @@ class Settings(QSettings):
 
   infoseekEnabledChanged = Signal(bool)
   def isInfoseekEnabled(self):
-    return to_bool(self.value('InfoseekEnabled', False))
+    return to_bool(self.value('InfoseekEnabled'))
   def setInfoseekEnabled(self, value):
     if value != self.isInfoseekEnabled():
       self.setValue('InfoseekEnabled', value)
@@ -967,7 +967,7 @@ class Settings(QSettings):
 
   googleEnabledChanged = Signal(bool)
   def isGoogleEnabled(self):
-    return to_bool(self.value('GoogleEnabled', False))
+    return to_bool(self.value('GoogleEnabled'))
   def setGoogleEnabled(self, value):
     if value != self.isGoogleEnabled():
       self.setValue('GoogleEnabled', value)

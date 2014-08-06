@@ -2,7 +2,7 @@
 # textutil.py
 # 3/21/2014 jichi
 
-#import re
+# Manipulate browesr URL
 
 def completeurl(url): # str -> str
   url = url.strip()
@@ -24,5 +24,21 @@ def elidetext(t, maxsize=20):
     return t
   else:
     return t[:maxsize - 3] + '...'
+
+# Manipulate text for translation
+
+def skipemptyline(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  return bool(text) and text != '\n'
+
+from sakurakit import skstr
+normalizepunct = skstr.multireplacer({
+  u"〜": u"～",
+  u"‥": u"…",
+  #u"\n": u" ", # JBeijing cannot handle multiple lines
+})
 
 # EOF

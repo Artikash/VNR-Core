@@ -61,8 +61,8 @@ class TranslationCache:
       self._shrink()
     return value
 
-  def _now(self):
-    return long(time()) # -> long  msecs
+  @staticmethod
+  def _now(): return long(time()) # -> long  msecs
 
   def _shrink(self):
     l = sorted(self.data.iteritems(), key=lambda it:it[1][1])
