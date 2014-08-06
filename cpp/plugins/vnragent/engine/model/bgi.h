@@ -8,6 +8,7 @@
 class BGIEngine : public EngineModel
 {
   SK_EXTEND_CLASS(BGIEngine, EngineModel)
+  static int textArgument; // ordinary of the text argument
   static ulong search(ulong startAddress, ulong stopAddress);
   static void hook(HookStack *stack);
 public:
