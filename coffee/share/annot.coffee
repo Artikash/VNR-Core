@@ -86,12 +86,14 @@ isalnumpunct = (ch) -> /[0-9a-zA-Z０-９ａ-ｚＡ-Ｚ'"?!,\.]/.test ch # strin
 ## Handlers
 
 ttsenabled = -> # -> bool
-  annot = document.body.dataset.annot
-  (annot and ~annot.indexOf 'tts')
+  document.body.classList.contains 'annot-opt-tts'
+  #annot = document.body.dataset.annot
+  #(annot and ~annot.indexOf 'tts')
 
 transenabled = -> # -> bool
-  annot = document.body.dataset.annot
-  (annot and ~annot.indexOf 'tr')
+  document.body.classList.contains 'annot-opt-tr'
+  #annot = document.body.dataset.annot
+  #(annot and ~annot.indexOf 'tr')
 
 onspeak = -> # this = element
   ttsBean.speak @getAttribute 'annot-text' if ttsenabled()

@@ -5,27 +5,30 @@
 # - cdnBean: coffeebean.CdnBean
 # - settingsBean: coffeebean.SettingsBean
 
-getdataset = -> # -> string  the value of %body[data-inject[
-  ret = if settingsBean.isJlpEnabled() then ['enabled'] else ['disabled']
-  ret.push 'tts' if settingsBean.isTtsEnabled()
-  ret.push 'tr' if settingsBean.isTranslationEnabled()
-  ret.join ' '
+#repaint = -> # ->
+#  # http://stackoverflow.com/questions/3485365/how-can-i-force-webkit-to-redraw-repaint-to-propagate-style-changes
+#  v = document.body.className
+#  document.body.className += ' inject-dummy'
+  #  document.body.className = v
 
-repaint = -> # ->
-  # http://stackoverflow.com/questions/3485365/how-can-i-force-webkit-to-redraw-repaint-to-propagate-style-changes
-  v = document.body.className
-  document.body.className += ' inject-dummy'
-  document.body.className = v
-  #if @$
-  #  $('body').addClass('inject-dummy').removeClass('inject-dummy')
-  #  $('body').addClass('inject-dummy').delay(0).removeClass('inject-dummy')
+#getdataset = -> # -> string  the value of %body[data-inject[
+#  ret = if settingsBean.isJlpEnabled() then ['enabled'] else ['disabled']
+#  ret.push 'tts' if settingsBean.isTtsEnabled()
+#  ret.push 'tr' if settingsBean.isTranslationEnabled()
+#  ret.join ' '
+#document.body.dataset.annot = getdataset()
 
-document.body.dataset.annot = getdataset()
+toggleclass = (el, cls, t) -> # element, string, booleaan
+  if t then el.classList.add cls else el.classList.remove cls
+
+(->
+  toggleclass @, 'annot-opt-ruby', settingsBean.isRubyEnabled()
+  toggleclass @, 'annot-opt-tts', settingsBean.isTtsEnabled()
+  toggleclass @, 'annot-opt-tr', settingsBean.isTranslationEnabled()
+).apply document.body
 
 # Make sure this script is only evaluated once
-if @injected
-  repaint()
-else
+unless @injected
   @injected = true
 
   linkcss = (url) -> # string -> el  return the inserted element
