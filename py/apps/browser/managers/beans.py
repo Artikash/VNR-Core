@@ -94,7 +94,7 @@ class TranslatorBean(QObject):
   @Slot(result=unicode)
   def translators(self): # [str translator_name]
     import trman
-    return ',',join(trman.manager().enabledEngines())
+    return ','.join(trman.manager().enabledEngines())
 
   @Slot(unicode, unicode, result=unicode)
   def translateWith(self, text, engine):
@@ -116,5 +116,10 @@ class SettingsBean(QObject):
   def isTtsEnabled(self):
     import settings
     return settings.global_().isTtsEnabled()
+
+  @Slot(result=bool)
+  def isTranslationEnabled(self):
+    import settings
+    return settings.global_().isTranslationEnabled()
 
 # EOF

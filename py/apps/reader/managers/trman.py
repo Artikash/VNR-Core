@@ -413,7 +413,7 @@ class TranslatorCoffeeBean(QObject):
 
   @Slot(result=unicode)
   def translators(self): # [str translator_name]
-    return ',',join(manager().enabledEngines())
+    return ','.join(manager().enabledEngines())
 
   @Slot(unicode, unicode, result=unicode)
   def translateWith(self, text, engine):

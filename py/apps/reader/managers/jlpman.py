@@ -61,7 +61,7 @@ class JlpManager:
       m = mecabman.manager()
       return mecabparse.parse(text,
           tagger=m.meCabTagger(),
-          wordtr=_mecabman._wordtrans,
+          #wordtr=_mecabman._wordtrans, # wordtr is always disabled
           **kwargs)
     if self._parserType == 'cabocha':
       from cabochajlp import cabochaparse
@@ -70,7 +70,7 @@ class JlpManager:
       m = cabochaman.manager()
       return cabochaparse.parse(text,
           parser=m.caboChaParser(),
-          wordtr=_cabochaman._wordtrans,
+          #wordtr=_cabochaman._wordtrans, # wordtr is always disabled
           **kwargs)
 
 # EOF

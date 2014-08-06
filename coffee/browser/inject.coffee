@@ -8,6 +8,7 @@
 getdataset = -> # -> string  the value of %body[data-inject[
   ret = if settingsBean.isJlpEnabled() then ['enabled'] else ['disabled']
   ret.push 'tts' if settingsBean.isTtsEnabled()
+  ret.push 'tr' if settingsBean.isTranslationEnabled()
   ret.join ' '
 
 repaint = -> # ->

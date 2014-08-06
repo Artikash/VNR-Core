@@ -291,9 +291,9 @@ class TranslatorManager(QObject):
         return e.translate(text, fr=fr, to=to, async=async)
       dwarn("invalid translator: %s" % engine)
     for it in d.iterOfflineTranslators():
-      return it.translate(text, fr=fr, to=to, async=async, emit=emit)
+      return it.translate(text, fr=fr, to=to, async=async)
     for it in d.iterOnlineTranslators():
-      return it.translate(text, fr=fr, to=to, async=True, emit=emit)
+      return it.translate(text, fr=fr, to=to, async=True)
     return None, None, None
 
 @memoized
