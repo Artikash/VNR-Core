@@ -106,9 +106,9 @@ ontranslate = -> # this = element
 
   text = @getAttribute 'annot-text'
   tip = @title
-  @title = tr 'ちょっとまってて > <'
+  @title = tr 'ちょっとまってて ...'
   for key in trBean.translators().split ','
-    trans = trBean.translateWith(text, key) or tr('failed')
+    trans = trBean.translateWith(text, key) or "#{tr 'failed'}!"
     if tip
       tip += '\n'
     tip += key + ': ' + trans

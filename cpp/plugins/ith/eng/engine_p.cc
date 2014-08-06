@@ -29,7 +29,8 @@
 
 #ifdef DEBUG
 # include "ith/common/growl.h"
-# include "uniquemap.h"
+//# include "uniquemap.h"
+//# include "uniquemap.cc"
 namespace { // unnamed debug functions
 // jichi 12/17/2013: Copied from int TextHook::GetLength(DWORD base, DWORD in)
 int GetHookDataLength(const HookParam &hp, DWORD base, DWORD in)
@@ -498,40 +499,301 @@ bool InsertBGI1Hook()
 
 /**
  *  jichi 2/5/2014: Add an alternative BGI hook
- *  See: vnragent BGI2 engine
+ *
+ *  Issue: This hook cannot extract character name for コトバの消えた日
+ *
+ *  See: http://tieba.baidu.com/p/2845113296
+ *  世界と世界の真ん中で
+ *  - /HSN4@349E0:sekachu.exe // Disabled BGI3, floating split char
+ *  - /HS-1C:-4@68E56 // Not used, cannot detect character name
+ *  - /HSC@34C80:sekachu.exe  // BGI2, extract both scenario and character names
+ *
+ *  [Lump of Sugar] 世界と世界の真ん中で
+ *  /HSC@34C80:sekachu.exe
+ *  - addr: 216192 = 0x34c80
+ *  - module: 3599131534
+ *  - off: 12 = 0xc
+ *  - type: 65 = 0x41
+ *
+ *  base: 0x11a0000
+ *  hook_addr = base + addr = 0x11d4c80
+ *
+ *  011d4c7e     cc             int3
+ *  011d4c7f     cc             int3
+ *  011d4c80  /$ 55             push ebp    ; jichi: hook here
+ *  011d4c81  |. 8bec           mov ebp,esp
+ *  011d4c83  |. 6a ff          push -0x1
+ *  011d4c85  |. 68 e6592601    push sekachu.012659e6
+ *  011d4c8a  |. 64:a1 00000000 mov eax,dword ptr fs:[0]
+ *  011d4c90  |. 50             push eax
+ *  011d4c91  |. 81ec 300d0000  sub esp,0xd30
+ *  011d4c97  |. a1 d8c82801    mov eax,dword ptr ds:[0x128c8d8]
+ *  011d4c9c  |. 33c5           xor eax,ebp
+ *  011d4c9e  |. 8945 f0        mov dword ptr ss:[ebp-0x10],eax
+ *  011d4ca1  |. 53             push ebx
+ *  011d4ca2  |. 56             push esi
+ *  011d4ca3  |. 57             push edi
+ *  011d4ca4  |. 50             push eax
+ *  011d4ca5  |. 8d45 f4        lea eax,dword ptr ss:[ebp-0xc]
+ *  011d4ca8  |. 64:a3 00000000 mov dword ptr fs:[0],eax
+ *  011d4cae  |. 8b4d 0c        mov ecx,dword ptr ss:[ebp+0xc]
+ *  011d4cb1  |. 8b55 18        mov edx,dword ptr ss:[ebp+0x18]
+ *  011d4cb4  |. 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
+ *  011d4cb7  |. 8b5d 10        mov ebx,dword ptr ss:[ebp+0x10]
+ *  011d4cba  |. 8b7d 38        mov edi,dword ptr ss:[ebp+0x38]
+ *  011d4cbd  |. 898d d8f3ffff  mov dword ptr ss:[ebp-0xc28],ecx
+ *  011d4cc3  |. 8b4d 28        mov ecx,dword ptr ss:[ebp+0x28]
+ *  011d4cc6  |. 8995 9cf3ffff  mov dword ptr ss:[ebp-0xc64],edx
+ *  011d4ccc  |. 51             push ecx
+ *  011d4ccd  |. 8b0d 305c2901  mov ecx,dword ptr ds:[0x1295c30]
+ *  011d4cd3  |. 8985 e0f3ffff  mov dword ptr ss:[ebp-0xc20],eax
+ *  011d4cd9  |. 8b45 1c        mov eax,dword ptr ss:[ebp+0x1c]
+ *  011d4cdc  |. 8d95 4cf4ffff  lea edx,dword ptr ss:[ebp-0xbb4]
+ *  011d4ce2  |. 52             push edx
+ *  011d4ce3  |. 899d 40f4ffff  mov dword ptr ss:[ebp-0xbc0],ebx
+ *  011d4ce9  |. 8985 1cf4ffff  mov dword ptr ss:[ebp-0xbe4],eax
+ *  011d4cef  |. 89bd f0f3ffff  mov dword ptr ss:[ebp-0xc10],edi
+ *  011d4cf5  |. e8 862efdff    call sekachu.011a7b80
+ *  011d4cfa  |. 33c9           xor ecx,ecx
+ *  011d4cfc  |. 8985 60f3ffff  mov dword ptr ss:[ebp-0xca0],eax
+ *  011d4d02  |. 3bc1           cmp eax,ecx
+ *  011d4d04  |. 0f84 0f1c0000  je sekachu.011d6919
+ *  011d4d0a  |. e8 31f6ffff    call sekachu.011d4340
+ *  011d4d0f  |. e8 6cf8ffff    call sekachu.011d4580
+ *  011d4d14  |. 8985 64f3ffff  mov dword ptr ss:[ebp-0xc9c],eax
+ *  011d4d1a  |. 8a03           mov al,byte ptr ds:[ebx]
+ *  011d4d1c  |. 898d 90f3ffff  mov dword ptr ss:[ebp-0xc70],ecx
+ *  011d4d22  |. 898d 14f4ffff  mov dword ptr ss:[ebp-0xbec],ecx
+ *  011d4d28  |. 898d 38f4ffff  mov dword ptr ss:[ebp-0xbc8],ecx
+ *  011d4d2e  |. 8d71 01        lea esi,dword ptr ds:[ecx+0x1]
+ *  011d4d31  |. 3c 20          cmp al,0x20                 ; jichi: pattern starts
+ *  011d4d33  |. 7d 75          jge short sekachu.011d4daa
+ *  011d4d35  |. 0fbec0         movsx eax,al
+ *  011d4d38  |. 83c0 fe        add eax,-0x2                             ;  switch (cases 2..8)
+ *  011d4d3b  |. 83f8 06        cmp eax,0x6
+ *  011d4d3e  |. 77 6a          ja short sekachu.011d4daa
+ *  011d4d40  |. ff2485 38691d0>jmp dword ptr ds:[eax*4+0x11d6938]
+ *
+ *
+ *  蒼の彼方 体験版 (8/6/2014)
+ *  01312cce     cc             int3    ; jichi: reladdr = 0x32cd0
+ *  01312ccf     cc             int3
+ *  01312cd0   $ 55             push ebp
+ *  01312cd1   . 8bec           mov ebp,esp
+ *  01312cd3   . 83e4 f8        and esp,0xfffffff8
+ *  01312cd6   . 6a ff          push -0x1
+ *  01312cd8   . 68 86583a01    push 蒼の彼方.013a5886
+ *  01312cdd   . 64:a1 00000000 mov eax,dword ptr fs:[0]
+ *  01312ce3   . 50             push eax
+ *  01312ce4   . 81ec 38090000  sub esp,0x938
+ *  01312cea   . a1 24673c01    mov eax,dword ptr ds:[0x13c6724]
+ *  01312cef   . 33c4           xor eax,esp
+ *  01312cf1   . 898424 3009000>mov dword ptr ss:[esp+0x930],eax
+ *  01312cf8   . 53             push ebx
+ *  01312cf9   . 56             push esi
+ *  01312cfa   . 57             push edi
+ *  01312cfb   . a1 24673c01    mov eax,dword ptr ds:[0x13c6724]
+ *  01312d00   . 33c4           xor eax,esp
+ *  01312d02   . 50             push eax
+ *  01312d03   . 8d8424 4809000>lea eax,dword ptr ss:[esp+0x948]
+ *  01312d0a   . 64:a3 00000000 mov dword ptr fs:[0],eax
+ *  01312d10   . 8b45 08        mov eax,dword ptr ss:[ebp+0x8]
+ *  01312d13   . 8b7d 0c        mov edi,dword ptr ss:[ebp+0xc]
+ *  01312d16   . 8b5d 30        mov ebx,dword ptr ss:[ebp+0x30]
+ *  01312d19   . 898424 8800000>mov dword ptr ss:[esp+0x88],eax
+ *  01312d20   . 8b45 14        mov eax,dword ptr ss:[ebp+0x14]
+ *  01312d23   . 898c24 8c00000>mov dword ptr ss:[esp+0x8c],ecx
+ *  01312d2a   . 8b0d a8734a01  mov ecx,dword ptr ds:[0x14a73a8]
+ *  01312d30   . 894424 4c      mov dword ptr ss:[esp+0x4c],eax
+ *  01312d34   . 899424 bc00000>mov dword ptr ss:[esp+0xbc],edx
+ *  01312d3b   . 8b55 20        mov edx,dword ptr ss:[ebp+0x20]
+ *  01312d3e   . 51             push ecx                                 ; /arg1 => 00000000
+ *  01312d3f   . 8d8424 0c02000>lea eax,dword ptr ss:[esp+0x20c]         ; |
+ *  01312d46   . 897c24 34      mov dword ptr ss:[esp+0x34],edi          ; |
+ *  01312d4a   . 899c24 8800000>mov dword ptr ss:[esp+0x88],ebx          ; |
+ *  01312d51   . e8 ca59fdff    call 蒼の彼方.012e8720                       ; \蒼の彼方.012e8720
+ *  01312d56   . 33c9           xor ecx,ecx
+ *  01312d58   . 898424 f400000>mov dword ptr ss:[esp+0xf4],eax
+ *  01312d5f   . 3bc1           cmp eax,ecx
+ *  01312d61   . 0f84 391b0000  je 蒼の彼方.013148a0
+ *  01312d67   . e8 54280000    call 蒼の彼方.013155c0
+ *  01312d6c   . e8 7f2a0000    call 蒼の彼方.013157f0
+ *  01312d71   . 898424 f800000>mov dword ptr ss:[esp+0xf8],eax
+ *  01312d78   . 8a07           mov al,byte ptr ds:[edi]
+ *  01312d7a   . 898c24 c400000>mov dword ptr ss:[esp+0xc4],ecx
+ *  01312d81   . 894c24 2c      mov dword ptr ss:[esp+0x2c],ecx
+ *  01312d85   . 894c24 1c      mov dword ptr ss:[esp+0x1c],ecx
+ *  01312d89   . b9 01000000    mov ecx,0x1
+ *  01312d8e   . 3c 20          cmp al,0x20     ; jichi: pattern starts
+ *  01312d90   . 7d 58          jge short 蒼の彼方.01312dea
+ *  01312d92   . 0fbec0         movsx eax,al
+ *  01312d95   . 83c0 fe        add eax,-0x2                             ;  switch (cases 2..8)
+ *  01312d98   . 83f8 06        cmp eax,0x6
+ *  01312d9b   . 77 4d          ja short 蒼の彼方.01312dea
+ *  01312d9d   . ff2485 c448310>jmp dword ptr ds:[eax*4+0x13148c4]
+ *  01312da4   > 898c24 c400000>mov dword ptr ss:[esp+0xc4],ecx          ;  case 2 of switch 01312d95
+ *  01312dab   . 03f9           add edi,ecx
+ *  01312dad   . eb 37          jmp short 蒼の彼方.01312de6
+ *  01312daf   > 894c24 2c      mov dword ptr ss:[esp+0x2c],ecx          ;  case 3 of switch 01312d95
+ *  01312db3   . 03f9           add edi,ecx
+ *  01312db5   . eb 2f          jmp short 蒼の彼方.01312de6
+ *  01312db7   > ba e0103b01    mov edx,蒼の彼方.013b10e0                    ;  case 4 of switch 01312d95
+ *  01312dbc   . eb 1a          jmp short 蒼の彼方.01312dd8
+ *  01312dbe   > ba e4103b01    mov edx,蒼の彼方.013b10e4                    ;  case 5 of switch 01312d95
+ *  01312dc3   . eb 13          jmp short 蒼の彼方.01312dd8
+ *  01312dc5   > ba e8103b01    mov edx,蒼の彼方.013b10e8                    ;  case 6 of switch 01312d95
+ *  01312dca   . eb 0c          jmp short 蒼の彼方.01312dd8
+ *  01312dcc   > ba ec103b01    mov edx,蒼の彼方.013b10ec                    ;  case 7 of switch 01312d95
+ *  01312dd1   . eb 05          jmp short 蒼の彼方.01312dd8
+ *  01312dd3   > ba f0103b01    mov edx,蒼の彼方.013b10f0                    ;  case 8 of switch 01312d95
+ *  01312dd8   > 8d7424 14      lea esi,dword ptr ss:[esp+0x14]
+ *  01312ddc   . 894c24 1c      mov dword ptr ss:[esp+0x1c],ecx
+ *  01312de0   . e8 1b8dffff    call 蒼の彼方.0130bb00
+ *  01312de5   . 47             inc edi
+ *  01312de6   > 897c24 30      mov dword ptr ss:[esp+0x30],edi
+ *  01312dea   > 8d8424 0802000>lea eax,dword ptr ss:[esp+0x208]         ;  default case of switch 01312d95
+ *  01312df1   . e8 ba1b0000    call 蒼の彼方.013149b0
+ *  01312df6   . 837d 10 00     cmp dword ptr ss:[ebp+0x10],0x0
+ *  01312dfa   . 8bb424 2802000>mov esi,dword ptr ss:[esp+0x228]
+ *  01312e01   . 894424 5c      mov dword ptr ss:[esp+0x5c],eax
+ *  01312e05   . 74 12          je short 蒼の彼方.01312e19
+ *  01312e07   . 56             push esi                                 ; /arg1
+ *  01312e08   . e8 c31b0000    call 蒼の彼方.013149d0                       ; \蒼の彼方.013149d0
+ *  01312e0d   . 83c4 04        add esp,0x4
+ *  01312e10   . 898424 c000000>mov dword ptr ss:[esp+0xc0],eax
+ *  01312e17   . eb 0b          jmp short 蒼の彼方.01312e24
+ *  01312e19   > c78424 c000000>mov dword ptr ss:[esp+0xc0],0x0
+ *  01312e24   > 8b4b 04        mov ecx,dword ptr ds:[ebx+0x4]
+ *  01312e27   . 0fafce         imul ecx,esi
+ *  01312e2a   . b8 1f85eb51    mov eax,0x51eb851f
+ *  01312e2f   . f7e9           imul ecx
+ *  01312e31   . c1fa 05        sar edx,0x5
+ *  01312e34   . 8bca           mov ecx,edx
+ *  01312e36   . c1e9 1f        shr ecx,0x1f
+ *  01312e39   . 03ca           add ecx,edx
+ *  01312e3b   . 894c24 70      mov dword ptr ss:[esp+0x70],ecx
+ *  01312e3f   . 85c9           test ecx,ecx
+ *  01312e41   . 7f 09          jg short 蒼の彼方.01312e4c
+ *  01312e43   . b9 01000000    mov ecx,0x1
+ *  01312e48   . 894c24 70      mov dword ptr ss:[esp+0x70],ecx
+ *  01312e4c   > 8b53 08        mov edx,dword ptr ds:[ebx+0x8]
+ *  01312e4f   . 0fafd6         imul edx,esi
+ *  01312e52   . b8 1f85eb51    mov eax,0x51eb851f
+ *  01312e57   . f7ea           imul edx
+ *  01312e59   . c1fa 05        sar edx,0x5
+ *  01312e5c   . 8bc2           mov eax,edx
+ *  01312e5e   . c1e8 1f        shr eax,0x1f
+ *  01312e61   . 03c2           add eax,edx
+ *  01312e63   . 894424 78      mov dword ptr ss:[esp+0x78],eax
+ *  01312e67   . 85c0           test eax,eax
+ *  01312e69   . 7f 09          jg short 蒼の彼方.01312e74
+ *  01312e6b   . b8 01000000    mov eax,0x1
+ *  01312e70   . 894424 78      mov dword ptr ss:[esp+0x78],eax
+ *  01312e74   > 33d2           xor edx,edx
+ *  01312e76   . 895424 64      mov dword ptr ss:[esp+0x64],edx
+ *  01312e7a   . 895424 6c      mov dword ptr ss:[esp+0x6c],edx
+ *  01312e7e   . 8b13           mov edx,dword ptr ds:[ebx]
+ *  01312e80   . 4a             dec edx                                  ;  switch (cases 1..2)
+ *  01312e81   . 74 0e          je short 蒼の彼方.01312e91
+ *  01312e83   . 4a             dec edx
+ *  01312e84   . 75 13          jnz short 蒼の彼方.01312e99
+ *  01312e86   . 8d1409         lea edx,dword ptr ds:[ecx+ecx]           ;  case 2 of switch 01312e80
+ *  01312e89   . 895424 64      mov dword ptr ss:[esp+0x64],edx
+ *  01312e8d   . 03c0           add eax,eax
+ *  01312e8f   . eb 04          jmp short 蒼の彼方.01312e95
+ *  01312e91   > 894c24 64      mov dword ptr ss:[esp+0x64],ecx          ;  case 1 of switch 01312e80
+ *  01312e95   > 894424 6c      mov dword ptr ss:[esp+0x6c],eax
+ *  01312e99   > 8b9c24 3802000>mov ebx,dword ptr ss:[esp+0x238]         ;  default case of switch 01312e80
+ *  01312ea0   . 8bc3           mov eax,ebx
+ *  01312ea2   . e8 d98bffff    call 蒼の彼方.0130ba80
+ *  01312ea7   . 8bc8           mov ecx,eax
+ *  01312ea9   . 8bc3           mov eax,ebx
+ *  01312eab   . e8 e08bffff    call 蒼の彼方.0130ba90
+ *  01312eb0   . 6a 01          push 0x1                                 ; /arg1 = 00000001
+ *  01312eb2   . 8bd0           mov edx,eax                              ; |
+ *  01312eb4   . 8db424 1c01000>lea esi,dword ptr ss:[esp+0x11c]         ; |
+ *  01312ebb   . e8 3056fdff    call 蒼の彼方.012e84f0                       ; \蒼の彼方.012e84f0
+ *  01312ec0   . 8bc7           mov eax,edi
+ *  01312ec2   . 83c4 04        add esp,0x4
+ *  01312ec5   . 8d70 01        lea esi,dword ptr ds:[eax+0x1]
+ *  01312ec8   > 8a08           mov cl,byte ptr ds:[eax]
+ *  01312eca   . 40             inc eax
+ *  01312ecb   . 84c9           test cl,cl
+ *  01312ecd   .^75 f9          jnz short 蒼の彼方.01312ec8
+ *  01312ecf   . 2bc6           sub eax,esi
+ *  01312ed1   . 40             inc eax
+ *  01312ed2   . 50             push eax
+ *  01312ed3   . e8 e74c0600    call 蒼の彼方.01377bbf
+ *  01312ed8   . 33f6           xor esi,esi
+ *  01312eda   . 83c4 04        add esp,0x4
  */
+static inline size_t _bgistrlen(LPCSTR text)
+{
+  size_t r = ::strlen(text);
+  if (r >=2 && *(WORD *)(text + r - 2) == 0xa581) // remove trailing ▼ = \x81\xa5
+    r -= 2;
+  return r;
+}
+
+static void SpecialHookBGI2(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+{
+  LPCSTR text = (LPCSTR)*(DWORD *)(esp_base + hp->off);
+  if (text) {
+    *data = (DWORD)text;
+    *len = _bgistrlen(text);
+  }
+}
+
 bool InsertBGI2Hook()
 {
   const BYTE bytes[] = {
     0x3c, 0x20,      // 011d4d31  |. 3c 20          cmp al,0x20
-    0x7d, 0x75,      // 011d4d33  |. 7d 75          jge short sekachu.011d4daa
+    0x7d, XX,        // 011d4d33  |. 7d 75          jge short sekachu.011d4daa ; jichi: 0x75 could be different
     0x0f,0xbe,0xc0,  // 011d4d35  |. 0fbec0         movsx eax,al
     0x83,0xc0, 0xfe, // 011d4d38  |. 83c0 fe        add eax,-0x2                             ;  switch (cases 2..8)
-    0x83,0xf8, 0x06, // 011d4d3b  |. 83f8 06        cmp eax,0x6
-    0x77, 0x6a       // 011d4d3e  |. 77 6a          ja short sekachu.011d4daa
+    0x83,0xf8, 0x06  // 011d4d3b  |. 83f8 06        cmp eax,0x6
+    // The following code does not exist in newer BGI games after 蒼の彼方
+    //0x77, 0x6a     // 011d4d3e  |. 77 6a          ja short sekachu.011d4daa
   };
-  enum { hook_offset = 0x34c80 - 0x34d31 }; // distance to the beginning of the function
+  enum {  // distance to the beginning of the function
+    hook_offset_3 = 0x34c80 - 0x34d31 // for old BGI2 game, text is in arg2
+    , hook_offset_2 = 0x01312cd0 - 0x01312d8e // for new BGI2 game since 蒼の彼方 (2014/08), text is in arg3
+  };
+
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
+  ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   //ITH_GROWL_DWORD(reladdr);
   if (!addr) {
     ConsoleOutput("vnreng:BGI2: pattern not found");
     return false;
   }
-  addr += hook_offset;
+
+  DWORD funaddr = MemDbg::findEnclosingAlignedFunction(addr, 0x100); // range is around 177 ~ 190
+
   enum : BYTE { push_ebp = 0x55 };  // 011d4c80  /$ 55             push ebp
-  if (*(BYTE *)addr != push_ebp) {
+  if (!funaddr || *(BYTE *)funaddr != push_ebp) {
     ConsoleOutput("vnreng:BGI2: pattern found but the function offset is invalid");
     return false;
   }
 
   HookParam hp = {};
+  switch (funaddr - addr) {
+  case hook_offset_3: hp.off = 4 * 3; break; // arg3
+  case hook_offset_2: hp.off = 4 * 2; break; // arg2
+  default:
+    ConsoleOutput("vnreng:BGI2: function found bug unrecognized hook offset");
+    return false;
+  }
+
   // jichi 5/12/2014: Using split could distinguish name and choices. But the signature becames unstable
+  // Try using relative split
   //hp.type = USING_STRING|USING_SPLIT;
   //hp.split = -0x18;
-  hp.type = USING_STRING;
-  hp.off = 0xc;
-  hp.addr = addr;
+
+  hp.addr = funaddr;
+  //hp.type = USING_STRING; // split using caller's address
+  hp.type = USING_STRING|EXTERN_HOOK; // use extern hook to trim illegal characters
+  hp.extern_fun = SpecialHookBGI2;
 
   //ITH_GROWL_DWORD2(hp.addr, module_base_);
 
@@ -1053,7 +1315,7 @@ rUGP hook:
 ********************************************************************************************/
 static void SpecialHookRUGP(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
 {
-  DWORD* stack = (DWORD*)esp_base;
+  DWORD *stack = (DWORD *)esp_base;
   DWORD i,val;
   for (i = 0; i < 4; i++) {
     val = *stack++;
@@ -3285,6 +3547,23 @@ typedef struct _NSTRING
 int cmp(const void * a, const void * b)
 { return *(int*)a - *(int*)b; }
 
+void SpecialHookAB2Try(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  CC_UNUSED(hp);
+  //DWORD test = *(DWORD*)(esp_base - 0x10);
+  DWORD edx = regof(edx, esp_base);
+  if (edx != 0)
+    return;
+
+  //NSTRING *s = *(NSTRING **)(esp_base - 8);
+  if (const NSTRING *s = (NSTRING *)regof(eax, esp_base)) {
+    *len = s->lenWithoutNull << 1;
+    *data = (DWORD)s->str;
+    //*split = 0;
+    *split = FIXED_SPLIT_VALUE; // 8/3/2014 jichi: change to single threads
+  }
+}
+
 BOOL FindCharacteristInstruction(MEMORY_WORKING_SET_LIST *list)
 {
   DWORD base, size;
@@ -3331,23 +3610,6 @@ BOOL FindCharacteristInstruction(MEMORY_WORKING_SET_LIST *list)
   return FALSE;
 }
 } // unnamed namespace
-static void SpecialHookAB2Try(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
-{
-  CC_UNUSED(hp);
-  //DWORD test = *(DWORD*)(esp_base - 0x10);
-  DWORD edx = regof(edx, esp_base);
-  if (edx != 0)
-    return;
-
-  //NSTRING *s = *(NSTRING **)(esp_base - 8);
-  if (const NSTRING *s = (NSTRING *)regof(eax, esp_base)) {
-    *len = s->lenWithoutNull << 1;
-    *data = (DWORD)s->str;
-    //*split = 0;
-    *split = FIXED_SPLIT_VALUE; // 8/3/2014 jichi: change to single threads
-  }
-}
-
 bool InsertAB2TryHook()
 {
   MEMORY_WORKING_SET_LIST *list = GetWorkingSet();

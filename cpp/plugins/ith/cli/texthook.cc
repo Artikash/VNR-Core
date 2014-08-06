@@ -324,13 +324,15 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
   }
 #endif // 0
   dwDataIn = *(DWORD *)(dwDataBase + hp.off); // default value
-  if (dwType & EXTERN_HOOK)
+  if (dwType & EXTERN_HOOK) {
     //DataFun fun=(DataFun)hp.extern_fun;
     //auto fun = hp.extern_fun;
     hp.extern_fun(dwDataBase, &hp, &dwDataIn, &dwSplit, &dwCount);
     //if (dwCount == 0 || dwCount > MAX_DATA_SIZE)
     //  return 0;
-  else {
+    if (dwSplit && (dwType & RELATIVE_SPLIT) && dwSplit > ::processStartAddress)
+      dwSplit -= ::processStartAddress;
+  } else {
     if (dwDataIn == 0)
       return 0;
     if (dwType & FIXING_SPLIT)
