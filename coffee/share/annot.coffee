@@ -73,6 +73,8 @@ trim = (str, chars=WHITE_SPACES) ->
 
 ## Helpers
 
+tr = (t) -> t # TODO: Not implemented, supposed to return the translated string
+
 # half-width/full-width letters, numbers, and some half-width punctuations
 isalnum = (ch) -> /[0-9a-zA-Z０-９ａ-ｚＡ-Ｚ]/.test ch # string ->bool
 
@@ -81,15 +83,39 @@ isalnum = (ch) -> /[0-9a-zA-Z０-９ａ-ｚＡ-Ｚ]/.test ch # string ->bool
 
 isalnumpunct = (ch) -> /[0-9a-zA-Z０-９ａ-ｚＡ-Ｚ'"?!,\.]/.test ch # string ->bool
 
-## Render
+## Handlers
 
 ttsenabled = -> # -> bool
   annot = document.body.dataset.annot
   (annot and ~annot.indexOf 'tts')
 
-trenabled = -> # -> bool
+transenabled = -> # -> bool
   annot = document.body.dataset.annot
   (annot and ~annot.indexOf 'tr')
+
+onspeak = -> # this = element
+  ttsBean.speak @getAttribute 'annot-text' if ttsenabled()
+
+ontranslate = -> # this = element
+  return if not transenabled() or @classList.contains('annot-locked') or @classList.contains('annot-translated')
+
+  @classList.add 'annot-locked'
+  @classList.add 'annot-translated'
+
+  text = @getAttribute 'annot-text'
+  tip = @title
+  @title = tr 'ちょっとまってて > <'
+  for key in trBean.translators().split ','
+    trans = trBean.translateWith(text, key) or tr('failed')
+    if tip
+      tip += '\n'
+    tip += key + ': ' + trans
+    @title = tip
+
+  @classList.remove 'annot-locked'
+
+## Render
+
 
 # %span sentence
 #   %ruby(class=word#{number})
@@ -101,12 +127,18 @@ renderruby = (text, ruby, feature, className) -> # must be consistent with parse
   rt = document.createElement 'rt'
   rt.textContent = ruby
   ret = document.createElement 'ruby'
-  ret.title = feature if feature
   ret.className = className
   ret.appendChild rb
   ret.appendChild rt
   ret.ondblclick = ->
     ttsBean.speak text if text and ttsenabled()
+
+  #ret.title = feature if feature
+  if feature
+    ret.onmouseover = do (feature) ->-> # bind
+      @title = feature unless transenabled()
+    ret.onmouseout = ->
+      @removeAttribute 'title' if @title
   ret
 
 renderrepl = (text) -> # string -> node
@@ -133,8 +165,12 @@ renderrepl = (text) -> # string -> node
         ruby = renderruby.apply @, word
         seg.appendChild ruby
       if segtext
-        seg.onclick = do (segtext) ->-> # bind segtext
-          ttsBean.speak segtext if ttsenabled()
+        seg.setAttribute 'annot-text',  segtext
+        #seg.onclick = do (segtext) ->-> # bind
+        #  ttsBean.speak segtext if ttsenabled()
+        seg.onclick = onspeak
+        seg.onmouseover = ontranslate
+
       ret.appendChild seg
     ret
 
@@ -146,6 +182,7 @@ rendersrc = (el) -> # node -> node
     ret
   else
     el.cloneNode()
+
 
 ## Inject
 

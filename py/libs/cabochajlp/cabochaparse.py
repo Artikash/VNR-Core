@@ -73,8 +73,8 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, wordtr=None, grou
     import cabocharc
     parser = cabocharc.parser()
   if reading:
-    if ruby == mecabdef.RB_TR:
-      wordtr = None
+    #if ruby == mecabdef.RB_TR:
+    #  wordtr = None
     katatrans = (cconv.kata2hira if ruby == mecabdef.RB_HIRA else
                  cconv.kata2hangul if ruby == mecabdef.RB_HANGUL else
                  cconv.kata2thai if ruby == mecabdef.RB_THAI else
