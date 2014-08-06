@@ -285,6 +285,25 @@ class TranslatorManager(QObject):
     """
     return self.hasOnlineTranslators() or self.hasOfflineTranslators()
 
+  def enabledEngines(self): # -> [str]
+    d = self.__d
+    r = []
+    if d.hanVietEnabled: r.append('hanviet')
+    if d.jbeijingEnabled: r.append('jbeijing')
+    if d.dreyeEnabled: r.append('dreye')
+    if d.ezTransEnabled: r.append('eztrans')
+    if d.lecEnabled: r.append('lec')
+    if d.atlasEnabled: r.append('atlas')
+
+    if d.baiduEnabled: r.append('baidu')
+    if d.googleEnabled: r.append('google')
+    if d.bingEnabled: r.append('bing')
+    if d.lecOnlineEnabled: r.append('lecol')
+    if d.transruEnabled: r.append('transru')
+    if d.infoseekEnabled: r.append('infoseek')
+    if d.exciteEnabled: r.append('excite')
+    return r
+
   def isEnabled(self):
     """
     @return  bool
@@ -388,21 +407,18 @@ def manager(): return TranslatorManager()
 #def translate(*args, **kwargs):
 #  return manager().translate(*args, **kwargs)
 
-class YakuCoffeeBean(QObject):
-  def __init__(self, parent=None):
-    super(YakuCoffeeBean, self).__init__(parent)
+class TranslatorCoffeeBean(QObject):
+  def __init__(self, parent):
+    super(TranslatorCoffeeBean, self).__init__(parent)
 
-  @Slot(result=bool)
-  def enabled(self):
-    return manager().isEnabled()
+  @Slot(result=unicode)
+  def translators(self): # [str translator_name]
+    return ',',join(manager().enabledEngines())
 
-  @Slot(unicode, result=unicode)
-  def yaku(self, t):
-    """
-    @param  t  unicode
-    @return  unicode
-    """
-    return manager().translate(t, async=True)
+  @Slot(unicode, unicode, result=unicode)
+  def translateWith(self, text, engine):
+    # I should not hardcode fr = 'ja' here
+    return manager().translate(text, engine=engine, fr='ja', async=True)[0] or ''
 
 # EOF
 

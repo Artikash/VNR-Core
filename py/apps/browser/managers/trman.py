@@ -254,6 +254,7 @@ class TranslatorManager(QObject):
   def isAvailable(self): return self.hasTranslators()
 
   def enabledEngines(self): # -> [str]
+    d = self.__d
     r = []
     if d.hanVietEnabled: r.append('hanviet')
     if d.jbeijingEnabled: r.append('jbeijing')

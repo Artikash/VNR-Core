@@ -302,13 +302,13 @@ class _WebBrowser(object):
     a.triggered[bool].connect(ss.setMeCabEnabled)
     a.triggered[bool].connect(self._setInjectEnabled)
 
-    a = ret.addAction(u"訳")
-    a.setCheckable(True)
-    a.setToolTip(i18n.tr("Toggle Japanese translator"))
-    a.setEnabled(self._trAvailable)
-    a.setChecked(self._injectEnabled and self._jlpAvailable and self._trAvailable)
-    a.triggered[bool].connect(ss.setTranslationEnabled)
-    a.triggered[bool].connect(self._setTranslationEnabled)
+    #a = ret.addAction(u"訳")
+    #a.setCheckable(True)
+    #a.setToolTip(i18n.tr("Toggle Japanese translator"))
+    #a.setEnabled(self._trAvailable)
+    #a.setChecked(self._injectEnabled and self._jlpAvailable and self._trAvailable)
+    #a.triggered[bool].connect(ss.setTranslationEnabled)
+    #a.triggered[bool].connect(self._setTranslationEnabled)
 
     a = self.ttsAct = ret.addAction(u"♪") # おんぷ
     a.setCheckable(True)

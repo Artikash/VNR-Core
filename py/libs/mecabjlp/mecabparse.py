@@ -53,7 +53,8 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
     import mecabtag
     tagger = mecabtag.gettagger()
   if reading:
-    #wordtr = _wordtr if ruby == mecabdef.RB_TR else None
+    if ruby == mecabdef.RB_TR:
+      wordtr = None
     katatrans = (cconv.kata2hira if ruby == mecabdef.RB_HIRA else
                  cconv.kata2hangul if ruby == mecabdef.RB_HANGUL else
                  cconv.kata2thai if ruby == mecabdef.RB_THAI else

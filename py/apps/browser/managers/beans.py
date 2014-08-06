@@ -72,10 +72,10 @@ class TtsBean(QObject):
   def __init__(self, parent):
     super(TtsBean, self).__init__(parent)
 
-  @Slot(result=bool)
-  def isEnabled(self):
-    import ttsman
-    return ttsman.manager().isEnabled()
+  #@Slot(result=bool)
+  #def isEnabled(self):
+  #  import ttsman
+  #  return ttsman.manager().isEnabled()
 
   @Slot(unicode)
   def speak(self, text):
@@ -86,10 +86,10 @@ class TranslatorBean(QObject):
   def __init__(self, parent):
     super(TranslatorBean, self).__init__(parent)
 
-  @Slot(result=bool)
-  def isEnabled(self):
-    import trman
-    return trman.manager().isEnabled()
+  #@Slot(result=bool)
+  #def isEnabled(self):
+  #  import trman
+  #  return trman.manager().isEnabled()
 
   @Slot(result=unicode)
   def translators(self): # [str translator_name]
@@ -101,7 +101,7 @@ class TranslatorBean(QObject):
     # I should not hardcode fr and to languages here
     import settings, trman
     lang = settings.reader().userLanguage()
-    return trman.translate(text, engine=engine, fr='ja', to=lang, async=True)[0]
+    return trman.manager().translate(text, engine=engine, fr='ja', to=lang, async=True)[0] or ''
 
 class SettingsBean(QObject):
   def __init__(self, parent):

@@ -136,8 +136,8 @@ class CoffeeBeanManager(object):
     return ttsman.TtsCoffeeBean(self.parent())
 
   @memoizedproperty
-  def yakuBean(self):
+  def trBean(self):
     import trman
-    return trman.YakuCoffeeBean(self.parent())
+    return trman.TranslatorCoffeeBean(self.parent())
 
 # EOF
