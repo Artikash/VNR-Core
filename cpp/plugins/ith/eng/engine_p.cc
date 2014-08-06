@@ -727,30 +727,30 @@ bool InsertBGI1Hook()
  *  01312ed8   . 33f6           xor esi,esi
  *  01312eda   . 83c4 04        add esp,0x4
  */
-static inline size_t _bgistrlen(LPCSTR text)
-{
-  size_t r = ::strlen(text);
-  if (r >=2 && *(WORD *)(text + r - 2) == 0xa581) // remove trailing ▼ = \x81\xa5
-    r -= 2;
-  return r;
-}
-
-static void SpecialHookBGI2(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
-{
-  LPCSTR text = (LPCSTR)*(DWORD *)(esp_base + hp->off);
-  if (text) {
-    *data = (DWORD)text;
-    *len = _bgistrlen(text);
-  }
-}
+//static inline size_t _bgistrlen(LPCSTR text)
+//{
+//  size_t r = ::strlen(text);
+//  if (r >=2 && *(WORD *)(text + r - 2) == 0xa581) // remove trailing ▼ = \x81\xa5
+//    r -= 2;
+//  return r;
+//}
+//
+//static void SpecialHookBGI2(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+//{
+//  LPCSTR text = (LPCSTR)*(DWORD *)(esp_base + hp->off);
+//  if (text) {
+//    *data = (DWORD)text;
+//    *len = _bgistrlen(text);
+//  }
+//}
 
 bool InsertBGI2Hook()
 {
   const BYTE bytes[] = {
     0x3c, 0x20,      // 011d4d31  |. 3c 20          cmp al,0x20
-    0x7d, XX,        // 011d4d33  |. 7d 75          jge short sekachu.011d4daa ; jichi: 0x75 could be different
+    0x7d, XX,        // 011d4d33  |. 7d 75          jge short sekachu.011d4daa ; jichi: 0x75 or 0x58
     0x0f,0xbe,0xc0,  // 011d4d35  |. 0fbec0         movsx eax,al
-    0x83,0xc0, 0xfe, // 011d4d38  |. 83c0 fe        add eax,-0x2                             ;  switch (cases 2..8)
+    0x83,0xc0, 0xfe, // 011d4d38  |. 83c0 fe        add eax,-0x2               ;  switch (cases 2..8)
     0x83,0xf8, 0x06  // 011d4d3b  |. 83f8 06        cmp eax,0x6
     // The following code does not exist in newer BGI games after 蒼の彼方
     //0x77, 0x6a     // 011d4d3e  |. 77 6a          ja short sekachu.011d4daa
@@ -784,16 +784,12 @@ bool InsertBGI2Hook()
     ConsoleOutput("vnreng:BGI2: function found bug unrecognized hook offset");
     return false;
   }
-
-  // jichi 5/12/2014: Using split could distinguish name and choices. But the signature becames unstable
-  // Try using relative split
-  //hp.type = USING_STRING|USING_SPLIT;
-  //hp.split = -0x18;
-
   hp.addr = funaddr;
-  //hp.type = USING_STRING; // split using caller's address
-  hp.type = USING_STRING|EXTERN_HOOK; // use extern hook to trim illegal characters
-  hp.extern_fun = SpecialHookBGI2;
+
+  // jichi 5/12/2014: Using split could distinguish name and choices. But the signature might become unstable
+  hp.type = USING_STRING|USING_SPLIT;
+  hp.split = 4 * 8; // pseudo arg8
+  //hp.split = -0x18;
 
   //ITH_GROWL_DWORD2(hp.addr, module_base_);
 
