@@ -108,7 +108,7 @@ class SettingsBean(QObject):
     super(SettingsBean, self).__init__(parent)
 
   @Slot(result=bool)
-  def isJlpEnabled(self):
+  def isRubyEnabled(self):
     import settings
     return settings.global_().isMeCabEnabled()
 

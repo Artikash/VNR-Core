@@ -331,42 +331,46 @@ initToolbar = ->
 ## Ruby furigana and TTS injection ##
 
 initAnnot = ->
-  document.body.dataset.annot = 'disabled' # disable by default
+  #document.body.dataset.annot = 'disabled' # disable by default
   $.fn.annotate = -> # create inject plugin
     @each -> window.annotate @ # inject using the annot plugin
     @
 
 renderNewAnnot = ->
-  annot = document.body.dataset.annot
-  $('.annot:not(.annot-root)').annotate() if ~annot.indexOf 'enable'
+  if document.body.classList.contains 'annot-opt-ruby'
+    $('.annot:not(.annot-root)').annotate()
 
 toggleAnnotTts = ->
-  v = document.body.dataset.annot
-  if ~v.indexOf 'tts'
-    v = v.replace 'tts', ''
-  else
-    v += 'tts'
-  document.body.dataset.annot = v
-  refreshDocumentClass()
+  $(document.body).toggleClass 'annot-opt-tts'
+
+  #v = document.body.dataset.annot
+  #if ~v.indexOf 'tts'
+  #  v = v.replace 'tts', ''
+  #else
+  #  v += 'tts'
+  #document.body.dataset.annot = v
+  #refreshDocumentClass()
 
 toggleAnnotRuby = ->
-  v = document.body.dataset.annot
-  if ~v.indexOf 'enable'
-    v = v.replace 'enable', 'disable'
-  else
-    v = v.replace 'disable', 'enable'
-  document.body.dataset.annot = v
-  refreshDocumentClass()
+  $(document.body).toggleClass 'annot-opt-ruby'
   renderNewAnnot()
 
+  #v = document.body.dataset.annot
+  #if ~v.indexOf 'enable'
+  #  v = v.replace 'enable', 'disable'
+  #else
+  #  v = v.replace 'disable', 'enable'
+  #document.body.dataset.annot = v
+  #refreshDocumentClass()
+
 # http://stackoverflow.com/questions/3485365/how-can-i-force-webkit-to-redraw-repaint-to-propagate-style-changes
-refreshDocumentClass = -> # ->
-  v = document.body.className
-  document.body.className += ' refresh-dummy'
-  document.body.className = v
-  #if @$
-  #  $('body').addClass('inject-dummy').removeClass('inject-dummy')
-  #  $('body').addClass('inject-dummy').delay(0).removeClass('inject-dummy')
+#refreshDocumentClass = -> # ->
+#  v = document.body.className
+#  document.body.className += ' refresh-dummy'
+#  document.body.className = v
+#  #if @$
+#  #  $('body').addClass('inject-dummy').removeClass('inject-dummy')
+#  #  $('body').addClass('inject-dummy').delay(0).removeClass('inject-dummy')
 
 ## Render ##
 
