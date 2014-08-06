@@ -117,6 +117,7 @@ SOURCES += \
 # Engine models
 HEADERS += \
   engine/model/bgi.h \
+  engine/model/bgi2.h \
   engine/model/circus.h \
   engine/model/elf.h \
   engine/model/eushully.h \
@@ -128,6 +129,7 @@ HEADERS += \
   #engine/model/test.h
 SOURCES += \
   engine/model/bgi.cc \
+  engine/model/bgi2.cc \
   engine/model/circus.cc \
   engine/model/elf.cc \
   engine/model/eushully.cc \

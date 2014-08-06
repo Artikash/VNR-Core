@@ -5,6 +5,7 @@
 #include "engine/enginecontroller.h"
 #include "engine/enginefactory.h"
 #include "engine/model/bgi.h"
+#include "engine/model/bgi2.h"
 #include "engine/model/circus.h"
 #include "engine/model/elf.h"
 #include "engine/model/eushully.h"
@@ -22,7 +23,8 @@
 EngineController *EngineFactory::createEngine()
 {
   static EngineModel *models[] = {
-   new BGIEngine
+   new BGI2Engine // must come before BGIEngine
+   , new BGIEngine
    , new CircusEngine
    , new ElfEngine
    , new EushullyEngine
