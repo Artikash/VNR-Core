@@ -38,28 +38,28 @@ FANYI_API = "http://fanyi.baidu.com/transapi"
 #  #Accept-Encoding:gzip, deflate
 #}
 
+# Different pairs are marked with '*'
 _LANG = {
-  'ar': 'ara',
+  'ar': 'ara', # *
   'en': 'en',
-  'ja': 'jp',
-  'zhs': 'zh',
-  'zht': 'zh',
+  'ja': 'jp', # *
+  'zhs': 'zh', # *
+  'zht': 'zh', # *
   'ko': 'kor',
   'vi': 'vi',
   'th': 'th',
   'ms': 'ms',
   'id': 'id',
   'de': 'de',
-  'fr': 'fra',
-  'es': 'spa',
+  'fr': 'fra', # *
+  'es': 'spa', # *
   'it': 'it',
   'nl': 'nl',
   'pl': 'pl',
   'pt': 'pt',
   'ru': 'ru',
 }
-def _lang(lang):
-  return _LANG.get(lang) or 'en'
+def _lang(lang): return _LANG.get(lang) or 'en' # str -> str
 
 def translate(text, to='zhs', fr='ja'):
   """Return translated text, which is NOT in unicode format
