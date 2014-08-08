@@ -100,6 +100,7 @@ class _TranslatorManager(object):
     @param  *args  passed to tr
     @param  **kwargs  passed to tr
     """
+    # TODO: I might be able to do runsync here instead of within tr
     r = tr(*args, **kwargs)
     if r[0]: func(*r)
 

@@ -17,7 +17,7 @@ from sakurakit.skdebug import dwarn, derror
 ICIBA_API = "http://jp.iciba.com/api.php"
 #ICIBA_API = "http://fy.iciba.com/api.php"
 
-# Coffee source code:
+# Coffeescript extracted from the HTML:
 #  _query = ->
 #    return false  if jQuery.trim(jQuery("#inputC").val()).length is 0
 #    jQuery("#copy-botton").css "display", "none"
@@ -27,29 +27,6 @@ ICIBA_API = "http://jp.iciba.com/api.php"
 #      url: "api.php"
 #      data: "q=" + encodeURIComponent(jQuery(".inputC").val()) + "&type=" + jQuery.mod
 #      success: (msg) ->
-#        if msg.error is 0
-#          unless msg.outstr is "0"
-#            jQuery(".tip").css "display", "block"
-#            jQuery("#resultC").attr "class", "resultC"
-#            jQuery(".tip").html "提示：“" + msg.outstr + "”以后的内容没有被翻译，单次翻译最多5000字"
-#            jQuery("#baiDu").css "display", "block"
-#
-#          #setcopy(msg.retcopy);
-#          else if msg.outstr is "0"
-#            jQuery(".tip").css "display", "none"
-#            jQuery("#resultC").attr "class", "resultC resultC2"
-#            jQuery("#baiDu").css "display", "block"
-#
-#          #setcopy(msg.retcopy);
-#          jQuery(".h2 h2 span").html msg.type
-#          jQuery(".resultIndex").css "display", "none"
-#          jQuery("#yj").css "display", "none"
-#          jQuery(".resultM").css "display", "block"
-#          jQuery("#resultC").html msg.ret
-#          jQuery("#clean").css "display", "block"
-#        else
-#          alert "系统出错"
-#        return
 #
 # Request: q=%E4%BD%A0%E5%A5%BD&type=zh-jp
 # Response: {"error":0,"outstr":0,"from":"jp","to":"zh","type":"\u65e5 -> \u4e2d","ret":"\u4f60\u597d\u3002<br \/><br \/>","retcopy":"\u4f60\u597d\u3002"}
@@ -104,7 +81,17 @@ def translate(text, to='zhs', fr='ja'):
 if __name__ == "__main__":
   #t = translate(u"こん\nにちは！", to='zhs', fr='ja')
   #t = translate(u"你好！", to='zhs', fr='ja')
-  t = translate(u"こん\nにちは！", to='en', fr='ja')
+  #t = translate(u"こん\nにちは！", to='en', fr='ja')
+  #print t
+
+  s = u"""
+オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく、タイトルロゴはもちろん金時や定春の行動や表情、登場する道具（万事屋の面々が乗る車のデザインなど）やクレジット文字など、細部に渡って変更がなされた。更に、坂田金時が『銀魂'』を最終回に追い込み新しいアニメ『まんたま』を始めようとした時にはエンディングや提供表示の煽りコメントが最終回を思わせる演出となり、『まんたま』でも専用のタイトルロゴとオープニングアニメーション（スタッフクレジット付き）が新造され、偽物の提供クレジットまで表示されるなど随所に至るまで徹底的な演出が行われた。また、テレビ欄では金魂篇終了回は『金魂'』最終回として、その翌週は新番組「銀魂'」として案内された。
+"""
+
+  from sakurakit.skprofiler import SkProfiler
+  with SkProfiler():
+    for i in range(10):
+      t = translate(s, to='zhs', fr='ja')
   print t
 
 # EOF
