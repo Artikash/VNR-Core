@@ -41,6 +41,8 @@ class MainObject(QObject):
     dprint("show root window")
     w = d.mainWindow
 
+    d.ttsManager.setParentWidget(w)
+
     urls = [it for it in args if not it.startswith('-')]
     args_offset = 2 if skos.WIN else 1
     urls = urls[args_offset:]
@@ -191,6 +193,7 @@ class _MainObject(object):
     import ttsman, settings
     ret = ttsman.manager()
     ret.setParent(self.q)
+    #ret.setParentWidget(self.mainWindow)
 
     ss = settings.global_()
 

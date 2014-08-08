@@ -26,6 +26,9 @@ class TtsManager(QObject):
   def isEnabled(self): return self.__d.enabled
   def setEnabled(self, t): self.__d.enabled = t
 
+  def parentWidget(self): return self.__d.parentWidget # QWidget
+  def setParentWidget(self, v): self.__d.parentWidget = v
+
   def defaultEngine(self): return self.__d.defaultEngineKey
   def setDefaultEngine(self, key):
     """
@@ -87,9 +90,11 @@ class _TtsManager(object):
 
   def __init__(self, q):
     self.enabled = True
+    self.parentWidget = None  # QWidget
     self.defaultEngineKey = '' # str
     self._speakTask = None   # partial function object
 
+    self._googleEngine = None # _ttsman.GoogleEngine
     self._yukariEngine = None # _ttsman.YukariEngine
     self._zunkoEngine = None  # _ttsman.ZunkoEngine
     self._sapiEngines = {}    # {str key:_ttsman.SapiEngine}
@@ -121,7 +126,7 @@ class _TtsManager(object):
     """
     @yield  engine
     """
-    for it in self._yukariEngine, self._zunkoEngine:
+    for it in self._yukariEngine, self._zunkoEngine: #, self._googleEngine # Google is disabled
       if it and it.isValid():
         yield it
     for it in self._sapiEngines.itervalues():
@@ -176,6 +181,19 @@ class _TtsManager(object):
     eng.speak(text)
 
     #skevents.runlater(partial(eng.speak, text))
+
+  # Voice engines
+
+  @property
+  def googleEngine(self):
+    if not self._googleEngine:
+      ss = settings.global_()
+      self._googleEngine = _ttsman.GoogleEngine(
+          online=self._online,
+          language='ja', # force Japanese language at this point
+          parentWidget=self.parentWidget)
+      #ss.googleTtsLanguageChanged.connect(self._googleEngine.setLanguage)
+    return self._googleEngine
 
   # Voiceroid
 
@@ -256,6 +274,8 @@ class _TtsManager(object):
       return self.zunkoEngine
     if key == 'yukari':
       return self.yukariEngine
+    if key == 'google':
+      return self.googleEngine
     return self.getSapiEngine(key)
 
   def _doSpeakTask(self):

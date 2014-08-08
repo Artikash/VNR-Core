@@ -15,8 +15,8 @@ import settings
 #  def location(self): return ""
 #  #def url(self): return ""
 
+# Cached abstract class
 class Library(object):
-  """Cached"""
 
   def __init__(self):
     self.__exists = None
