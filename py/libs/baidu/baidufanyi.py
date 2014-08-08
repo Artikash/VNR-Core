@@ -38,28 +38,28 @@ FANYI_API = "http://fanyi.baidu.com/transapi"
 #  #Accept-Encoding:gzip, deflate
 #}
 
+# Different pairs are marked with '*'
 _LANG = {
-  'ar': 'ara',
+  'ar': 'ara', # *
   'en': 'en',
-  'ja': 'jp',
-  'zhs': 'zh',
-  'zht': 'zh',
+  'ja': 'jp', # *
+  'zhs': 'zh', # *
+  'zht': 'zh', # *
   'ko': 'kor',
   'vi': 'vi',
   'th': 'th',
   'ms': 'ms',
   'id': 'id',
   'de': 'de',
-  'fr': 'fra',
-  'es': 'spa',
+  'fr': 'fra', # *
+  'es': 'spa', # *
   'it': 'it',
   'nl': 'nl',
   'pl': 'pl',
   'pt': 'pt',
   'ru': 'ru',
 }
-def _lang(lang):
-  return _LANG.get(lang) or 'en'
+def _lang(lang): return _LANG.get(lang) or 'en' # str -> str
 
 def translate(text, to='zhs', fr='ja'):
   """Return translated text, which is NOT in unicode format
@@ -115,16 +115,26 @@ def translate(text, to='zhs', fr='ja'):
   except: pass
 
 if __name__ == "__main__":
-  t = translate(u"こんにちは！", to='zhs', fr='ja')
+  #t = translate(u"こんにちは！", to='zhs', fr='ja')
   #t = translate(u"こんにちは！", to='ar', fr='ja')
   #t = translate(u"Hello World!", to='zhs', fr='en')
   #t = translate(u"神马", to='ar', fr='zhs')
-  print t
+  #print t
   #from PySide.QtGui import *
   #a = QApplication(sys.argv)
   #w = QLabel(t)
   #w.show()
   #a.exec_()
+
+  s = u"""
+オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく、タイトルロゴはもちろん金時や定春の行動や表情、登場する道具（万事屋の面々が乗る車のデザインなど）やクレジット文字など、細部に渡って変更がなされた。更に、坂田金時が『銀魂'』を最終回に追い込み新しいアニメ『まんたま』を始めようとした時にはエンディングや提供表示の煽りコメントが最終回を思わせる演出となり、『まんたま』でも専用のタイトルロゴとオープニングアニメーション（スタッフクレジット付き）が新造され、偽物の提供クレジットまで表示されるなど随所に至るまで徹底的な演出が行われた。また、テレビ欄では金魂篇終了回は『金魂'』最終回として、その翌週は新番組「銀魂'」として案内された。
+"""
+
+  from sakurakit.skprofiler import SkProfiler
+  with SkProfiler():
+    for i in range(10):
+      t = translate(s, to='zhs', fr='ja')
+  print t
 
 # EOF
 
