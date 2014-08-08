@@ -707,11 +707,16 @@ class BingTranslator(OnlineMachineTranslator):
   def __init__(self, **kwargs):
     super(BingTranslator, self).__init__(**kwargs)
 
-  @memoizedproperty
-  def engine(self):
+    # It is dangerous to create engine here, which is async
     from microsoft import bingtrans
     bingtrans.session = requests.Session()
-    return bingtrans.create_engine()
+    self.engine = bingtrans.create_engine() # time-limited
+
+  #@memoizedproperty
+  #def engine(self):
+  #  from microsoft import bingtrans
+  #  bingtrans.session = requests.Session()
+  #  return bingtrans.create_engine()
 
   #__bing_repl_after = staticmethod(skstr.multireplacer({
   #  '[': u'【',
