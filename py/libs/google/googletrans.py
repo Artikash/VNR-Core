@@ -12,6 +12,8 @@ import re, requests
 from sakurakit.skdebug import dwarn, derror
 from sakurakit.skstr import unescapehtml
 
+session = requests # global session
+
 _LOCALES = {
   'zht': 'zh-TW',
   'zhs': 'zh-CN',
@@ -46,7 +48,7 @@ def translate(t, to='auto', fr='auto'):
   @return  unicode or None
   """
   try:
-    r = requests.get(GOOGLE_TRANS_API, headers=GOOGLE_HEADERS, params={
+    r = session.get(GOOGLE_TRANS_API, headers=GOOGLE_HEADERS, params={
       'hl': _locale(to),
       'sl': _locale(fr),
       'q': t,

@@ -12,6 +12,8 @@ import json
 import requests
 from sakurakit.skdebug import dwarn, derror
 
+session = requests # global session
+
 # Either of the two are OK.
 # But the difault type are different
 ICIBA_API = "http://jp.iciba.com/api.php"
@@ -48,7 +50,7 @@ def translate(text, to='zhs', fr='ja'):
   """
   try:
     api = ICIBA_API
-    r = requests.post(api, data={
+    r = session.post(api, data={
       'q': text,
       'type': '-'.join((
         _lang(fr),
@@ -89,9 +91,17 @@ if __name__ == "__main__":
 """
 
   from sakurakit.skprofiler import SkProfiler
+
+  session = requests.Session()
   with SkProfiler():
     for i in range(10):
       t = translate(s, to='zhs', fr='ja')
-  print t
+  #print t
+
+  session = requests
+  with SkProfiler():
+    for i in range(10):
+      t = translate(s, to='zhs', fr='ja')
+  #print t
 
 # EOF

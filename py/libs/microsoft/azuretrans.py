@@ -34,6 +34,8 @@ from sakurakit.skdebug import dwarn, error
 from sakurakit.sknetio import GZIP_HEADERS
 from sakurakit.skstr import unescapehtml
 
+session = requests # global session
+
 # http://www.developer.nokia.com/Community/Discussion/showthread.php?211356-QNetworkRequest-Authentication
 # http://docs.python-requests.org/en/latest/user/advanced/#custom-authentication
 # "Authorization", "Basic " + QByteArray(QString("%1:%2").arg("USERNAME").arg("PASSWORD").toAscii()).toBase64());
@@ -79,7 +81,7 @@ def translate(text, to='en', fr='ja'):
   @return  unicode or None
   """
   try:
-    r = requests.get(BT_API,
+    r = session.get(BT_API,
       headers=GZIP_HEADERS,
       auth=AUTH,
       params={

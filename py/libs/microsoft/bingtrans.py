@@ -12,6 +12,8 @@ from sakurakit.skdebug import dwarn, derror
 from sakurakit.sknetio import GZIP_HEADERS
 from sakurakit.skstr import unescapehtml
 
+session = requests # global session
+
 # See: http://msdn.microsoft.com/en-us/library/hh456380.aspx
 MS_LCODE = {
   'zht': 'zh-CHT',
@@ -61,7 +63,7 @@ class _BingTranslator:
 
   def resetToken(self):
     try:
-      r = requests.get(_BingTranslator.TOKEN_URL, headers=GZIP_HEADERS)
+      r = session.get(_BingTranslator.TOKEN_URL, headers=GZIP_HEADERS)
       t = r.content
       if r.ok and t:
         m = _BingTranslator.TOKEN_RE.search(t)
@@ -103,7 +105,7 @@ class BingTranslator(object):
         # - Status Code: HTTP/1.1 200 OK
         # - Response Body:
         #   onComplete_0([{"Alignment":"0:2-19:24 4:6-5:10 7:8-0:3 9:12-12:17","From":"ja","OriginalTextSentenceLengths":[13],"TranslatedText":"Only hatred begets hatred","TranslatedTextSentenceLengths":[25]}]);
-        r = requests.get(_BingTranslator.TRANSLATE_URL,
+        r = session.get(_BingTranslator.TRANSLATE_URL,
           #headers=GZIP_HEADERS,
           params={
             'appId': '"%s"' % tok,

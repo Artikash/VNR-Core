@@ -15,6 +15,8 @@ from sakurakit import skstr
 from sakurakit.skdebug import dwarn, derror
 #from sakurakit.sknetio import GZIP_HEADERS
 
+session = requests # global session
+
 # See: http://docs.python-requests.org/en/latest/user/advanced/#keep-alive
 # See: http://stackoverflow.com/questions/10115126/python-requests-close-http-connection
 #session = requests.session(config={'keep_alive': False})
@@ -223,7 +225,7 @@ def translate(text, to='en', fr='ja'):
   Returned text is not decoded, as its encoding can be guessed.
   """
   try:
-    r = requests.get(INFOSEEK_API,
+    r = session.get(INFOSEEK_API,
       #headers=GZIP_HEADERS, # GZIP is not enabled, because the return is not long
       params={
         INFOSEEK_QUERY_LANG: _lang(to, fr),

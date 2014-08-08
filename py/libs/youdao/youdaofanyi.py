@@ -97,6 +97,8 @@ import requests
 from sakurakit.skdebug import dwarn, derror
 #from sakurakit.sknetio import GZIP_HEADERS
 
+session = requests # global session
+
 # Example:
 #FANYI_API = "http://fanyi.youdao.com/translate?smartresult=dict&smartresult=rule&smartresult=ugc&sessionFrom=null"
 FANYI_API = "http://fanyi.youdao.com/translate"
@@ -151,7 +153,7 @@ def translate(text, to='zhs', fr='ja'):
   #tok = self.__d.token
   #if tok:
   try:
-    r = requests.post(FANYI_API,
+    r = session.post(FANYI_API,
       #headers=GZIP_HEADERS,
       data = {
         'doctype': 'text', # or json, xml, etc
