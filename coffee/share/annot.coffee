@@ -81,7 +81,7 @@ isalnum = (ch) -> /[0-9a-zA-Z０-９ａ-ｚＡ-Ｚ]/.test ch # string ->bool
 # half-width punctuations
 #ispunct = (ch) -> /['"?!,\.]/.test ch # string -> bool
 
-isalnumpunct = (ch) -> /[0-9a-zA-Z０-９ａ-ｚＡ-Ｚ'"?!,\.]/.test ch # string ->bool
+isalphapunct = (ch) -> /[a-zA-Zａ-ｚＡ-Ｚ'"?!,\.]/.test ch # string ->bool
 
 ## Handlers
 
@@ -110,7 +110,7 @@ ontranslate = -> # this = element
   for key in trBean.translators().split ','
     trans = trBean.translateWith(text, key) or "#{tr 'failed'}!"
     if tip
-      tip += '\n'
+      tip += '\n' # does NOT work on windows, though
     tip += key + ': ' + trans
     @title = tip
 
@@ -161,7 +161,7 @@ renderrepl = (text) -> # string -> node
           space = document.createTextNode ' '
           #space.class = 'annot-space' # not needded
           seg.appendChild space
-        lastletter = isalnumpunct surf.slice -1
+        lastletter = isalphapunct surf.slice -1
 
         segtext += surf
         ruby = renderruby.apply @, word

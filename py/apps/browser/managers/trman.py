@@ -11,16 +11,19 @@
 import itertools
 from functools import partial
 from PySide.QtCore import QObject, Signal, Slot, Qt
-from sakurakit import skevents
-from sakurakit.skclass import Q_Q, memoized, memoizedproperty
+from sakurakit import skthreads
+from sakurakit.skclass import memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 import textutil
 import _trman
 
-@Q_Q
+#@Q_Q
 class _TranslatorManager(object):
 
   def __init__(self, q):
+    self.parent = q # QObject
+    self.abortSignal = q.onlineAbortionRequested # Signal
+
     #self.convertsChinese = False
     self.enabled = True
     self.online = True
@@ -46,47 +49,47 @@ class _TranslatorManager(object):
   def hanVietTranslator(self): return _trman.HanVietTranslator()
 
   @memoizedproperty
-  def atlasTranslator(self): return _trman.AtlasTranslator(parent=self.q)
+  def atlasTranslator(self): return _trman.AtlasTranslator(parent=self.parent)
 
   @memoizedproperty
-  def lecTranslator(self): return _trman.LecTranslator(parent=self.q)
+  def lecTranslator(self): return _trman.LecTranslator(parent=self.parent)
 
   @memoizedproperty
-  def ezTranslator(self): return _trman.EzTranslator(parent=self.q)
+  def ezTranslator(self): return _trman.EzTranslator(parent=self.parent)
 
   @memoizedproperty
-  def dreyeTranslator(self): return _trman.DreyeTranslator(parent=self.q)
+  def dreyeTranslator(self): return _trman.DreyeTranslator(parent=self.parent)
 
   @memoizedproperty
-  def jbeijingTranslator(self): return _trman.JBeijingTranslator(parent=self.q)
+  def jbeijingTranslator(self): return _trman.JBeijingTranslator(parent=self.parent)
 
   @memoizedproperty
   def baiduTranslator(self):
-    return _trman.BaiduTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+    return _trman.BaiduTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
   @memoizedproperty
   def googleTranslator(self):
-    return _trman.GoogleTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+    return _trman.GoogleTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
   @memoizedproperty
   def bingTranslator(self):
-    return _trman.BingTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+    return _trman.BingTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
   @memoizedproperty
   def lecOnlineTranslator(self):
-    return _trman.LecOnlineTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+    return _trman.LecOnlineTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
   @memoizedproperty
   def transruTranslator(self):
-    return _trman.TransruTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+    return _trman.TransruTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
   @memoizedproperty
   def infoseekTranslator(self):
-    return _trman.InfoseekTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+    return _trman.InfoseekTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
   @memoizedproperty
   def exciteTranslator(self):
-    return _trman.ExciteTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+    return _trman.ExciteTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
   def getTranslator(self, key):
     """
@@ -120,13 +123,13 @@ class _TranslatorManager(object):
     @yield  Translator
     """
     if self.online:
-      if self.infoseekEnabled: yield self.infoseekTranslator
-      if self.exciteEnabled: yield self.exciteTranslator
-      if self.lecOnlineEnabled: yield self.lecOnlineTranslator
-      if self.transruEnabled: yield self.transruTranslator
+      if self.baiduEnabled: yield self.baiduTranslator
       if self.bingEnabled: yield self.bingTranslator
       if self.googleEnabled: yield self.googleTranslator
-      if self.baiduEnabled: yield self.baiduTranslator
+      if self.transruEnabled: yield self.transruTranslator
+      if self.lecOnlineEnabled: yield self.lecOnlineTranslator
+      if self.exciteEnabled: yield self.exciteTranslator
+      if self.infoseekEnabled: yield self.infoseekTranslator
 
   def iterTranslators(self):
     """
@@ -293,7 +296,11 @@ class TranslatorManager(QObject):
     for it in d.iterOfflineTranslators():
       return it.translate(text, fr=fr, to=to, async=async)
     for it in d.iterOnlineTranslators():
-      return it.translate(text, fr=fr, to=to, async=True)
+      #return it.translate(text, fr=fr, to=to, async=True)
+      return skthreads.runsync(partial(
+          it.translate, text, fr=fr, to=to, async=False),
+          abortSignal=self.onlineAbortionRequested,
+          parent=self) or (None, None, None)
     return None, None, None
 
 @memoized

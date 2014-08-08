@@ -15,6 +15,7 @@ from sakurakit.skclass import memoized, staticproperty
 from sakurakit.skdebug import dprint, dwarn
 import config, dataman, defs, i18n
 
+# All methods are supposed to be thread-safe, though they are not
 class _TermManager:
 
   def __init__(self):
