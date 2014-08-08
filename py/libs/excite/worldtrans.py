@@ -14,6 +14,13 @@ from sakurakit.skstr import unescapehtml
 
 session = requests # global session
 
+def _LANG(lang):
+  """
+  @param  lang  str
+  @return  str
+  """
+  return 'CH' if lang == 'ZH' else lang
+
 EXCITE_API =  "http://www.excite.co.jp/world/"
 def api(to='en', fr='ja'):
   """
@@ -25,9 +32,9 @@ def api(to='en', fr='ja'):
   if 'en' in langs:
     return ''.join((EXCITE_API, "english/?wb_lp=", FR, TO)) # http://www.excite.co.jp/world/english/?wb_lp=jaen
   elif 'zhs' in langs:
-    return ''.join((EXCITE_API, "chinese/?wb_lp=", FR[:2], TO[:2]))
+    return ''.join((EXCITE_API, "chinese/?wb_lp=", _LANG(FR[:2]), _LANG(TO[:2])))
   elif 'zht' in langs:
-    return ''.join((EXCITE_API, "chinese/?big5=yes&wb_lp=", FR[:2], TO[:2]))
+    return ''.join((EXCITE_API, "chinese/?big5=yes&wb_lp=", _LANG(FR[:2]), _LANG(TO[:2])))
   elif 'ko' in langs:
     return ''.join((EXCITE_API, "korean/?wb_lp=", FR, TO))
   elif 'fr' in langs:
@@ -103,12 +110,15 @@ def translate(text, to='en', fr='ja'):
   return ""
 
 if __name__ == '__main__':
-  t = translate(u"あのね\nすもももももももものうち！", 'zht')
-  import sys
-  from PySide.QtGui import *
-  a = QApplication(sys.argv)
-  w = QLabel(t)
-  w.show()
-  a.exec_()
+  #s = u"あのね\nすもももももももものうち！"
+  s = u"こんにちは"
+  t = translate(s, 'zhs')
+  print t
+  #import sys
+  #from PySide.QtGui import *
+  #a = QApplication(sys.argv)
+  #w = QLabel(t)
+  #w.show()
+  #a.exec_()
 
 # EOF
