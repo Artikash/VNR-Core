@@ -292,7 +292,7 @@ Item { id: root_
     width: buttonRow_.width + 30
 
     //visible: !root_.locked
-    visible: !root_.empty
+    visible: root_.containsVisibleText
 
     property bool active: listMouseArea_.containsMouse ||
                           toolTip_.containsMouse ||
@@ -488,6 +488,10 @@ Item { id: root_
     //}
   }
 
+  // Hide shadow when no text/name/translation are visible
+  property bool containsVisibleText: listView_.count > 0
+      && (root_.textVisible || root_.nameVisible || !root_._pageIndex || root_._pageIndex < listView_.count - 1)
+
   Rectangle { id: shadow_
     anchors {
       left: listView_.left; right: listView_.right
@@ -497,7 +501,8 @@ Item { id: root_
     height: Math.min(listView_.height,
             -listView_.contentY + root_.listFooterY - y)
             + 5
-    visible: root_.shadowEnabled && listView_.count > 0
+    visible: root_.shadowEnabled && root_.containsVisibleText
+
     //color: root_.revertsColor ? '#99ffffff' : '#44000000'
     color: '#44000000'
     opacity: 0.27 // #44
@@ -550,7 +555,7 @@ Item { id: root_
       width: listView_.width
       radius: 5
       color: root_.shadowEnabled ? '#33000000' : 'transparent'
-      visible: root_.highlightVisible
+      visible: root_.highlightVisible && root_.containsVisibleText
 
       MouseArea { id: highlightMouseArea_ // drag area
         Component.onCompleted: root_.highlightMouseArea = highlightMouseArea_
