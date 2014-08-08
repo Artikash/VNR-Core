@@ -302,7 +302,7 @@ class _WebBrowser(object):
     a.triggered[bool].connect(ss.setMeCabEnabled)
     a.triggered[bool].connect(self._setInjectEnabled)
 
-    a = self.trAct = ret.addAction(u"訳")
+    a = self.trAct = ret.addAction(u"意")
     a.setCheckable(True)
     a.setToolTip(i18n.tr("Toggle machine translator"))
     a.setEnabled(self._injectEnabled and self._jlpAvailable and self._trAvailable)

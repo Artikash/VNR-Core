@@ -11,16 +11,19 @@
 import itertools
 from functools import partial
 from PySide.QtCore import QObject, Signal, Slot, Qt
-from sakurakit import skevents
-from sakurakit.skclass import Q_Q, memoized, memoizedproperty
+from sakurakit import skevents, skthreads
+from sakurakit.skclass import  memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 import features, textutil
 import _trman
 
-@Q_Q
+#@Q_Q
 class _TranslatorManager(object):
 
   def __init__(self, q):
+    self.parent = q # QObject
+    self.abortSignal = q.onlineAbortionRequested # signal
+
     #self.convertsChinese = False
     self.online = False
     self.language = 'en' # str, user language
@@ -50,50 +53,49 @@ class _TranslatorManager(object):
   def hanVietTranslator(self): return _trman.HanVietTranslator()
 
   @memoizedproperty
-  def atlasTranslator(self): return _trman.AtlasTranslator(parent=self.q)
+  def atlasTranslator(self): return _trman.AtlasTranslator(parent=self.parent)
 
   @memoizedproperty
-  def lecTranslator(self): return _trman.LecTranslator(parent=self.q)
+  def lecTranslator(self): return _trman.LecTranslator(parent=self.parent)
 
   @memoizedproperty
-  def ezTranslator(self): return _trman.EzTranslator(parent=self.q)
+  def ezTranslator(self): return _trman.EzTranslator(parent=self.parent)
 
   @memoizedproperty
-  def dreyeTranslator(self): return _trman.DreyeTranslator(parent=self.q)
+  def dreyeTranslator(self): return _trman.DreyeTranslator(parent=self.parent)
 
   @memoizedproperty
-  def jbeijingTranslator(self): return _trman.JBeijingTranslator(parent=self.q)
+  def jbeijingTranslator(self): return _trman.JBeijingTranslator(parent=self.parent)
 
   @memoizedproperty
   def baiduTranslator(self):
-    return _trman.BaiduTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+    return _trman.BaiduTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
   @memoizedproperty
   def googleTranslator(self):
-    return _trman.GoogleTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+    return _trman.GoogleTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
   @memoizedproperty
   def bingTranslator(self):
-    return _trman.BingTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+    return _trman.BingTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
   @memoizedproperty
   def lecOnlineTranslator(self):
-    return _trman.LecOnlineTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+    return _trman.LecOnlineTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
   @memoizedproperty
   def transruTranslator(self):
-    return _trman.TransruTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+    return _trman.TransruTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
   @memoizedproperty
   def infoseekTranslator(self):
-    return _trman.InfoseekTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+    return _trman.InfoseekTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
   @memoizedproperty
   def exciteTranslator(self):
-    return _trman.ExciteTranslator(parent=self.q, abortSignal=self.q.onlineAbortionRequested)
+    return _trman.ExciteTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
-  @staticmethod
-  def translateAndApply(func, tr, *args, **kwargs):
+  def translateAndApply(self, func, tr, *args, **kwargs):
     """
     @param  func  function to apply
     @param  tr  function to translate
@@ -101,8 +103,15 @@ class _TranslatorManager(object):
     @param  **kwargs  passed to tr
     """
     # TODO: I might be able to do runsync here instead of within tr
-    r = tr(*args, **kwargs)
-    if r[0]: func(*r)
+    async = kwargs.get('async')
+    if async:
+      kwargs['async'] = False
+      r = skthreads.runsync(partial(tr, *args, **kwargs),
+          abortSignal=self.abortSignal,
+          parent=self.parent)
+    else:
+      r = tr(*args, **kwargs)
+    if r and r[0]: func(*r)
 
   def getTranslator(self, key):
     """
@@ -134,18 +143,28 @@ class _TranslatorManager(object):
     if self.lecEnabled: yield self.lecTranslator
     if self.atlasEnabled: yield self.atlasTranslator
 
-  def iterOnlineTranslators(self):
+  def iterOnlineTranslators(self, reverse=False):
     """Iterate reversely
+    @param* reverse  bool
     @yield  Translator
     """
     if self.online:
-      if self.infoseekEnabled: yield self.infoseekTranslator
-      if self.exciteEnabled: yield self.exciteTranslator
-      if self.lecOnlineEnabled: yield self.lecOnlineTranslator
-      if self.transruEnabled: yield self.transruTranslator
-      if self.bingEnabled: yield self.bingTranslator
-      if self.googleEnabled: yield self.googleTranslator
-      if self.baiduEnabled: yield self.baiduTranslator
+      if reverse:
+        if self.infoseekEnabled: yield self.infoseekTranslator
+        if self.exciteEnabled: yield self.exciteTranslator
+        if self.lecOnlineEnabled: yield self.lecOnlineTranslator
+        if self.transruEnabled: yield self.transruTranslator
+        if self.googleEnabled: yield self.googleTranslator
+        if self.bingEnabled: yield self.bingTranslator
+        if self.baiduEnabled: yield self.baiduTranslator
+      else:
+        if self.baiduEnabled: yield self.baiduTranslator
+        if self.bingEnabled: yield self.bingTranslator
+        if self.googleEnabled: yield self.googleTranslator
+        if self.transruEnabled: yield self.transruTranslator
+        if self.lecOnlineEnabled: yield self.lecOnlineTranslator
+        if self.exciteEnabled: yield self.exciteTranslator
+        if self.infoseekEnabled: yield self.infoseekTranslator
 
   def iterTranslators(self):
     """
@@ -379,7 +398,12 @@ class TranslatorManager(QObject):
     for it in d.iterOfflineTranslators():
       return it.translate(text, fr=fr, to=d.language, async=async, emit=emit)
     for it in d.iterOnlineTranslators():
-      return it.translate(text, fr=fr, to=d.language, async=True, emit=emit)
+      if emit:
+        return it.translate(text, fr=fr, to=d.language, async=True, emit=emit)
+      else: # force async for online translation
+        return skthreads.runsync(partial(it.translate, text, fr=fr, to=d.language, async=False, emit=False),
+            abortSignal=self.onlineAbortionRequested,
+            parent=self) or (None, None, None)
     return None, None, None
 
   def translateApply(self, func, text, fr='ja'):
@@ -398,7 +422,7 @@ class TranslatorManager(QObject):
       r = it.translate(text, fr=fr, to=d.language, async=False)
       if r[0]: func(*r)
 
-    for it in d.iterOnlineTranslators():
+    for it in d.iterOnlineTranslators(reverse=True): # need reverse since skevents is used
       skevents.runlater(partial(d.translateAndApply,
           func, it.translate, text, fr=fr, to=d.language, async=True))
 
@@ -434,10 +458,10 @@ class TranslatorCoffeeBean(QObject):
 #    text = self._prepareSentenceTransformation(text)
 #    sub = skthreads.runsync(partial(
 #        bingtrans.translate, text, to=lang),
-#        parent=self.q)
+#        parent=self.parent)
 #    if sub:
 #      if bingtrans.bad_translation(sub):
-#        growl.error(self.q.tr(
+#        growl.error(self.parent.tr(
 #"""So many users are using Microsoft translator this month that
 #VNR has run out of free monthly quota TT
 #Please try a different translator in Preferences instead.

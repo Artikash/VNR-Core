@@ -35,6 +35,8 @@ _PARAGRAPH_RE = re.compile(r"(%s)" % '|'.join(_PARAGRAPH_SET))
 #_SENTENCE_SET = frozenset(__SENTENCE_DELIM)
 _SENTENCE_RE = re.compile(ur"([。？！」\n])(?![。！？）」\n]|$)")
 
+# All methods in this class are supposed to be thread-safe
+# Though they are not orz
 class TranslationCache:
   def __init__(self, maxSize=100, shrinkSize=30):
     """
