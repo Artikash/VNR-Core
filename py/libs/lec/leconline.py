@@ -13,7 +13,8 @@ from sakurakit.skdebug import dwarn, derror
 from sakurakit.sknetio import GZIP_HEADERS
 #from sakurakit.skstr import escapehtml
 
-import requests
+session = requests # global session
+
 LEC_API = "http://www.lec.com/translate-demos.asp"
 
 def _make_post(text, to, fr):
@@ -65,7 +66,7 @@ def translate(text, to='en', fr='ja'):
   @return  unicode or None
   """
   try:
-    r = requests.post(LEC_API,
+    r = session.post(LEC_API,
         headers=GZIP_HEADERS,
         data=_make_post(text, to, fr))
 

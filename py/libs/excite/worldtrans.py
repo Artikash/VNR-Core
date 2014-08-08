@@ -12,6 +12,8 @@ from sakurakit.skdebug import dwarn, derror
 from sakurakit.sknetio import GZIP_HEADERS
 from sakurakit.skstr import unescapehtml
 
+session = requests # global session
+
 EXCITE_API =  "http://www.excite.co.jp/world/"
 def api(to='en', fr='ja'):
   """
@@ -57,7 +59,7 @@ def translate(text, to='en', fr='ja'):
   @return  unicode or None
   """
   try:
-    r = requests.get(api(to, fr),
+    r = session.get(api(to, fr),
       headers=GZIP_HEADERS,
       params={
         'before': text

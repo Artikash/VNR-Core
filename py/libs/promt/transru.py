@@ -18,6 +18,8 @@ import requests
 from sakurakit.skdebug import dwarn, derror
 #from sakurakit.sknetio import GZIP_HEADERS
 
+session = requests # global session
+
 #RU_API = "http://translation.ru/Default.aspx/Text?prmtlang=ru"
 #RU_API = "http://logrus.ru" "/services/TranslationService.asmx/GetTranslateNew"
 RU_API = "http://www.translate.ru" "/services/TranslationService.asmx/GetTranslateNew"
@@ -54,7 +56,7 @@ def translate(text, to='ru', fr='ja'):
   Returned text is not decoded, as its encoding can be guessed.
   """
   try:
-    r = requests.post(RU_API,
+    r = session.post(RU_API,
       headers=RU_HEADERS,
       data=json.dumps({
         'dirCode': fr[0] + to[0], # dir
