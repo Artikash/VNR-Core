@@ -4,42 +4,42 @@
 <context>
     <name>my</name>
     <message>
-        <location filename="dialogs/textprefs.py" line="228"/>
+        <location filename="dialogs/textprefs.py" line="227"/>
         <source>Edit /H Hook Code</source>
         <translation>编辑/H特殊码</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="230"/>
+        <location filename="dialogs/textprefs.py" line="229"/>
         <source>Modify the game-specific ITH hook code</source>
         <translation>修改当前游戏的特殊码</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="317"/>
+        <location filename="dialogs/textprefs.py" line="316"/>
         <source>Apply text thread and encoding settings</source>
         <translation>保存游戏文本和编码的设定</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="521"/>
+        <location filename="dialogs/textprefs.py" line="520"/>
         <source>No running game</source>
         <translation>没有找到运行中的游戏</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="524"/>
+        <location filename="dialogs/textprefs.py" line="523"/>
         <source>Missing major text thread</source>
         <translation>请选择主要的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="527"/>
+        <location filename="dialogs/textprefs.py" line="526"/>
         <source>Press SAVE to save changes</source>
         <translation>点击【保存】来保存设定</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="608"/>
+        <location filename="dialogs/textprefs.py" line="607"/>
         <source>Text settings are saved</source>
         <translation>文本设定已保存</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="609"/>
+        <location filename="dialogs/textprefs.py" line="608"/>
         <source>Text settings are not changed</source>
         <translation>文本设定没有改变</translation>
     </message>
@@ -741,12 +741,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>使用{0}改变游戏字符编码</translation>
     </message>
     <message>
-        <location filename="managers/netman.py" line="108"/>
+        <location filename="managers/netman.py" line="110"/>
         <source>Connected to the Internet</source>
         <translation>连接到网络</translation>
     </message>
     <message>
-        <location filename="managers/netman.py" line="110"/>
+        <location filename="managers/netman.py" line="112"/>
         <source>Disconnected from the Internet</source>
         <translation>断开网络连接</translation>
     </message>
@@ -816,32 +816,32 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>Dr.eye译典通中日、中英翻译软件</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="377"/>
+        <location filename="managers/_trman.py" line="380"/>
         <source>ATLAS translator is loaded</source>
         <translation>加载ATLAS日英翻译引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="452"/>
+        <location filename="managers/_trman.py" line="455"/>
         <source>LEC translator is loaded</source>
         <translation>加载LEC日英翻译引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="694"/>
+        <location filename="managers/_trman.py" line="697"/>
         <source>Dr.eye Japanese-Chinese translator is loaded</source>
         <translation>加载Dr.eye日中翻译引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="707"/>
+        <location filename="managers/_trman.py" line="710"/>
         <source>Dr.eye English-Chinese translator is loaded</source>
         <translation>加载Dr.eye中英翻译引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="590"/>
+        <location filename="managers/_trman.py" line="593"/>
         <source>JBeijing translator is loaded</source>
         <translation>加载J北京日中翻译引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="618"/>
+        <location filename="managers/_trman.py" line="621"/>
         <source>Failed to load user-defined dictionaries</source>
         <translation>载入自定义辞书失败</translation>
     </message>
@@ -866,87 +866,87 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>更新来自其他同学的评论</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="769"/>
+        <location filename="managers/_trman.py" line="772"/>
         <source>Cannot load {0} for machine translation. Please check Preferences/Location</source>
         <translation>无法载入{0}机翻引擎。请检查下使用偏好中的软件位置</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="612"/>
+        <location filename="managers/_trman.py" line="615"/>
         <source>Load user-defined dictionaries</source>
         <translation>载入其他同学的自定义辞书</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5630"/>
+        <location filename="managers/dataman.py" line="5635"/>
         <source>Sign in as &apos;{0}&apos;</source>
         <translation>登录为&apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5631"/>
+        <location filename="managers/dataman.py" line="5636"/>
         <source>User language is &apos;{0}&apos;</source>
         <translation>语言是&apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5636"/>
+        <location filename="managers/dataman.py" line="5641"/>
         <source>Sign in failed as &apos;{0}&apos;</source>
         <translation>登录&apos;{0}&apos;失败了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6462"/>
+        <location filename="managers/dataman.py" line="6467"/>
         <source>Fetching comments</source>
         <translation>更新评论中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6473"/>
+        <location filename="managers/dataman.py" line="6478"/>
         <source>Loading offline comments</source>
         <translation>载入离线评论</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6483"/>
+        <location filename="managers/dataman.py" line="6488"/>
         <source>Found {0} comments</source>
         <translation>找到{0}条评论</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7011"/>
+        <location filename="managers/dataman.py" line="7016"/>
         <source>Failed to save changes, will try later</source>
         <translation>这次保存变更没有成功呢，VNR等下会重试的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7707"/>
+        <location filename="managers/dataman.py" line="7712"/>
         <source>Updating dictionary terms online</source>
         <translation>更新共享词条中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7726"/>
+        <location filename="managers/dataman.py" line="7731"/>
         <source>Found {0} terms</source>
         <translation>找到{0}个词条</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7729"/>
+        <location filename="managers/dataman.py" line="7734"/>
         <source>Failed to download terms online</source>
         <translation>更新词条失败了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7730"/>
+        <location filename="managers/dataman.py" line="7735"/>
         <source>Something might be wrong with the Internet connection</source>
         <translation>也许网络连接不畅</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8046"/>
+        <location filename="managers/dataman.py" line="8051"/>
         <source>Failed to get game information</source>
         <translation>获取游戏信息失败了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8200"/>
+        <location filename="managers/dataman.py" line="8205"/>
         <source>The game does not exist. Did you delete it?</source>
         <translation>游戏并不存在。是不是已经被你删除了呢？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8791"/>
+        <location filename="managers/dataman.py" line="8796"/>
         <source>Please sign in to submit comment</source>
         <translation>请先登录再提交评论</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8808"/>
+        <location filename="managers/dataman.py" line="8813"/>
         <source>Cannot connect to the Internet</source>
         <translation>无法连接到网络</translation>
     </message>
@@ -1016,7 +1016,7 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>非常重要的更新信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1884"/>
+        <location filename="main.py" line="1885"/>
         <source>The dictionary is empty. Please refresh it when you are online.</source>
         <translation>辞书是空的。请在有网络连接时再更新吧。</translation>
     </message>
@@ -1061,17 +1061,17 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>请选择图片的位置</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7621"/>
+        <location filename="managers/dataman.py" line="7626"/>
         <source>Updating game database online</source>
         <translation>更新在线游戏数据库中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7644"/>
+        <location filename="managers/dataman.py" line="7649"/>
         <source>Failed to update game database</source>
         <translation>更新游戏数据库没有成功</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7661"/>
+        <location filename="managers/dataman.py" line="7666"/>
         <source>Game database is updated</source>
         <translation>游戏数据库更新完成</translation>
     </message>
@@ -1113,27 +1113,27 @@ It might take a couple of seconds to complete.</source>
         <translation>{0}需要管理员权限。请以管理员身份重新启动VNR</translation>
     </message>
     <message>
-        <location filename="main.py" line="1903"/>
+        <location filename="main.py" line="1904"/>
         <source>There are no user-contributed subtitles</source>
         <translation>没有来自其他同学的字幕呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8849"/>
+        <location filename="managers/dataman.py" line="8854"/>
         <source>Shared dictionary is empty</source>
         <translation>共享辞书是空的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8846"/>
+        <location filename="managers/dataman.py" line="8851"/>
         <source>Dictionary entries are saved to the desktop</source>
         <translation>词条数据保存到了桌面</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8892"/>
+        <location filename="managers/dataman.py" line="8897"/>
         <source>There are no subtitles</source>
         <translation>这个游戏还没有人工字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8889"/>
+        <location filename="managers/dataman.py" line="8894"/>
         <source>Subtitles are saved to the desktop</source>
         <translation>字幕数据保存到了桌面</translation>
     </message>
@@ -1148,12 +1148,12 @@ It might take a couple of seconds to complete.</source>
         <translation>缺少语音合成需要的QuickTime</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8456"/>
+        <location filename="managers/dataman.py" line="8461"/>
         <source>Please start the game to submit comment</source>
         <translation>请在开始游戏后提交字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="4493"/>
+        <location filename="managers/dataman.py" line="4498"/>
         <source>No user-contributed subtitles found</source>
         <translation>没有来自其他同学的字幕呢</translation>
     </message>
@@ -1168,7 +1168,7 @@ It might take a couple of seconds to complete.</source>
         <translation>ezTrans XP日韩翻译软件</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="522"/>
+        <location filename="managers/_trman.py" line="525"/>
         <source>ezTrans XP is loaded</source>
         <translation>加载ezTrans XP日韩翻译引擎</translation>
     </message>
@@ -1244,7 +1244,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>{0}的百分比</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7951"/>
+        <location filename="managers/dataman.py" line="7956"/>
         <source>Searching game information online</source>
         <translation>正在网上检索游戏信息</translation>
     </message>
@@ -1359,22 +1359,22 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="101"/>
+        <location filename="dialogs/textprefs.py" line="100"/>
         <source>This is main scenario</source>
         <translation>这是主线的对白</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="108"/>
+        <location filename="dialogs/textprefs.py" line="107"/>
         <source>These are character names</source>
         <translation>这些是人物的名字</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="115"/>
+        <location filename="dialogs/textprefs.py" line="114"/>
         <source>This is extra scenario</source>
         <translation>这是次要的对白</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="122"/>
+        <location filename="dialogs/textprefs.py" line="121"/>
         <source>Don&apos;t translate the text</source>
         <translation>不要翻译这些文本</translation>
     </message>
@@ -1389,7 +1389,7 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>百度中文翻译服务</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7158"/>
+        <location filename="managers/dataman.py" line="7163"/>
         <source>Your {0} is &apos;{1}&apos;</source>
         <translation>你的{0}是&apos;{1}&apos;</translation>
     </message>
@@ -1470,22 +1470,22 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>快捷方式指向的位置并不存在呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6176"/>
+        <location filename="managers/dataman.py" line="6181"/>
         <source>Remove bad user-defined hcode</source>
         <translation>自动移除错误的特殊码</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5098"/>
+        <location filename="managers/dataman.py" line="5103"/>
         <source>Update game information</source>
         <translation>更新游戏信息</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5106"/>
+        <location filename="managers/dataman.py" line="5111"/>
         <source>Found {0} references</source>
         <translation>找到{0}个游戏的引用</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5108"/>
+        <location filename="managers/dataman.py" line="5113"/>
         <source>No game references found</source>
         <translation>没有找到游戏的信息</translation>
     </message>
@@ -1495,7 +1495,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>未知的游戏。请更新下游戏数据库。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8353"/>
+        <location filename="managers/dataman.py" line="8358"/>
         <source>Please sign in to submit reference</source>
         <translation>请先登录再提交信息</translation>
     </message>
@@ -1669,7 +1669,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
 如果你有超能力，你也许可以在经过/未经其他同学允许的情况下，改进来自其他同学的贡献（比如字幕）。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5367"/>
+        <location filename="managers/dataman.py" line="5372"/>
         <source>Reference already existed</source>
         <translation>游戏信息已经存在了</translation>
     </message>
@@ -1689,7 +1689,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>保留所有来自{0}的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="419"/>
+        <location filename="dialogs/textprefs.py" line="418"/>
         <source>Keep all threads from the selected dialog engine</source>
         <translation>保留所有来自对话游戏引擎的文本</translation>
     </message>
@@ -1802,7 +1802,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>使用中文的同学推荐</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="327"/>
+        <location filename="dialogs/textprefs.py" line="326"/>
         <source>Reset to last saved settings</source>
         <translation>恢复到上次保存的设定</translation>
     </message>
@@ -1850,7 +1850,7 @@ than turning on global repetition filters here.</source>
 而不要在这里打开全局的重复过滤。</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="386"/>
+        <location filename="dialogs/textprefs.py" line="385"/>
         <source>Warning: Please do not turn on repetition filters unless there are repetitions!</source>
         <translation>警告：请不要打开重复过滤的选项，除非文本中真的有重复！</translation>
     </message>
@@ -1884,17 +1884,17 @@ This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source
 这样将会产生大量的垃圾文本，而这不会是你想要达到的！</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6400"/>
+        <location filename="managers/dataman.py" line="6405"/>
         <source>Searching for game character names</source>
         <translation>搜索游戏中人物的姓名</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6410"/>
+        <location filename="managers/dataman.py" line="6415"/>
         <source>Found {0} game characters</source>
         <translation>找到{0}个游戏人物</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6427"/>
+        <location filename="managers/dataman.py" line="6432"/>
         <source>Game character names not found</source>
         <translation>没有找到人物的姓名</translation>
     </message>
@@ -2047,7 +2047,7 @@ DMM上几乎可以找到近期发售的全部游戏，但是不缺少很老的�
         <translation>你真的要下载全部YouTube的动画到桌面吗？</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="355"/>
+        <location filename="dialogs/textprefs.py" line="354"/>
         <source>Insert spaces between words</source>
         <translation>在单词间插入空格</translation>
     </message>
@@ -2075,12 +2075,12 @@ This might result in redundant spaces for Japanese games.</source>
 对日文游戏打开这个选项也许会造成翻译中多余的空格。</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="359"/>
+        <location filename="dialogs/textprefs.py" line="358"/>
         <source>Preserve spaces between (English) words</source>
         <translation>保留（英文）单词之间的空格</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6215"/>
+        <location filename="managers/dataman.py" line="6220"/>
         <source>Remove non-existed game</source>
         <translation>移除不存在的游戏</translation>
     </message>
@@ -2503,12 +2503,12 @@ Just don&apos;t forget to export LC_ALL=ja_JP.UTF8 before launching VNR.</source
         <translation>找到{0}个YouTube动画</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6206"/>
+        <location filename="managers/dataman.py" line="6211"/>
         <source>Do not keep all scenario threads in text settings</source>
         <translation>不保留游戏的全部对话文本</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6197"/>
+        <location filename="managers/dataman.py" line="6202"/>
         <source>Ignore repetition filters in text settings</source>
         <translation>不过滤游戏文本中的重复</translation>
     </message>
@@ -3116,7 +3116,7 @@ VNR可以自动从台湾大学下载并安装pAppLocale。
         <translation>使用单词字典需要安装至少一个MeCab辞书。</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="293"/>
+        <location filename="dialogs/textprefs.py" line="292"/>
         <source>Don&apos;t forget to maximize the text speed (see Help).</source>
         <translation>不要忘记最大化游戏文本的速度（参看帮助）。</translation>
     </message>
@@ -3310,7 +3310,7 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>VNR不仅支持日文TTS，还支持包括中文、英文等其他语言的SAPI TTS。当这里选择的TTS的语言和游戏语言不同时，VNR会转而读出翻译字幕，而不会出游戏文本。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6085"/>
+        <location filename="managers/dataman.py" line="6090"/>
         <source>VNR&apos;s game profile (%s) was corrupted. Recovered from backup.</source>
         <translation>VNR的游戏设定（%s）损坏了呢。恢复到过去备份的设定。</translation>
     </message>
@@ -3533,7 +3533,7 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation>清除选定的位置</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="957"/>
+        <location filename="dialogs/textprefs.py" line="956"/>
         <source>Engine: ITH</source>
         <translation>文本提取：ITH</translation>
     </message>
@@ -3553,7 +3553,7 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation>你想要永久的移除{0}个选定的条目吗？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8720"/>
+        <location filename="managers/dataman.py" line="8725"/>
         <source>Editing other&apos;s entry is not allowed</source>
         <translation>不可以编辑其他人的条目的</translation>
     </message>
@@ -3578,12 +3578,12 @@ D. 日文无交集：泰文&lt;br/&gt;
         <translation>你想要禁用{0}个选定的条目吗？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8734"/>
+        <location filename="managers/dataman.py" line="8739"/>
         <source>{0} items updated</source>
         <translation>修改了{0}个条目</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6188"/>
+        <location filename="managers/dataman.py" line="6193"/>
         <source>Automatically correct text settings</source>
         <translation>自动修正文本设定</translation>
     </message>
@@ -3703,12 +3703,12 @@ VNR的提取方法支持内嵌翻译到游戏中去，但是支持的游戏比IT
         <translation>在使用了MeCab辞书后修改它也许需要重新启动VNR（在Windows XP上一定需要重新启动）。</translation>
     </message>
     <message>
-        <location filename="managers/netman.py" line="98"/>
+        <location filename="managers/netman.py" line="100"/>
         <source>Always enable Internet access as you wish</source>
         <translation>如你所愿总是连接到网络</translation>
     </message>
     <message>
-        <location filename="managers/netman.py" line="102"/>
+        <location filename="managers/netman.py" line="104"/>
         <source>Always disable Internet access as you wish</source>
         <translation>如你所愿禁止连接到网络</translation>
     </message>
@@ -3753,7 +3753,7 @@ Daijirin is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, an
     <message>
         <location filename="dialogs/_prefs.py" line="2130"/>
         <source>Han Viet Chinese-Vietnamese translator</source>
-        <translation>Hán Việt汉越辞书翻译</translation>
+        <translation>Hán Việt汉越辞书（将中文翻译为越南文）</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="2313"/>
