@@ -1025,8 +1025,19 @@ class BaiduTranslator(OnlineMachineTranslator):
 
   def __init__(self, **kwargs):
     super(BaiduTranslator, self).__init__(**kwargs)
-    from baidu import baidufanyi
-    self.engine = baidufanyi
+
+  def getEngine(self, fr, to):
+    """
+    @param  fr  str
+    @param  to  str
+    @return baidu.baidufanyi or kingsoft.iciba
+    """
+    if fr == 'ja' and to.startswith('zh'):
+      from kingsoft import iciba
+      return iciba
+    else:
+      from baidu import baidufanyi
+      return baidufanyi
 
   __baidu_repl_before = staticmethod(skstr.multireplacer({
     #u'【': u'‘', # open single quote
@@ -1059,8 +1070,9 @@ class BaiduTranslator(OnlineMachineTranslator):
         return repl, to, self.key
     repl = self._escapeText(text, to=to, emit=emit)
     if repl:
+      engine = self.getEngine(fr=fr, to=to)
       repl = self.__baidu_repl_before(repl)
-      repl = self._translate(emit, repl, self.engine.translate,
+      repl = self._translate(emit, repl, engine.translate,
           to=to, fr=fr, async=async)
       if repl:
         if to == 'zht':
@@ -1077,7 +1089,8 @@ class BaiduTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    try: return self._translateTest(self.engine.translate,
+    engine = self.getEngine(fr=fr, to=to)
+    try: return self._translateTest(engine.translate,
             text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
 
