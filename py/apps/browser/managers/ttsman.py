@@ -60,7 +60,7 @@ class TtsManager(QObject):
     if not skos.WIN:
       return False
     d = self.__d
-    for it in d.yukariEngine, d.zunkoEngine:
+    for it in d.yukariEngine, d.zunkoEngine, d.googleEngine:
       if it.isValid():
         return True
     import sapiman
@@ -126,7 +126,7 @@ class _TtsManager(object):
     """
     @yield  engine
     """
-    for it in self._yukariEngine, self._zunkoEngine: #, self._googleEngine # Google is disabled
+    for it in self._yukariEngine, self._zunkoEngine, self._googleEngine: # Google is disabled
       if it and it.isValid():
         yield it
     for it in self._sapiEngines.itervalues():
