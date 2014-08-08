@@ -18,6 +18,8 @@ class BuyApi(object):
   ENCODING = 'euc-jp'
   COOKIES = {'adult_check_flag':'1'} #, 'user_agent_flag':'1'}
 
+  session = None # requests.Session or None
+
   def _makereq(self, id):
     """
     @param  kw
@@ -38,7 +40,7 @@ class BuyApi(object):
     @return  str
     """
     # Disable redirects
-    return sknetio.getdata(url, gzip=True, allow_redirects=False, cookies=self.COOKIES)
+    return sknetio.getdata(url, gzip=True, allow_redirects=False, cookies=self.COOKIES, session=self.session)
 
   def query(self, id):
     """

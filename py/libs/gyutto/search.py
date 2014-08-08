@@ -26,6 +26,8 @@ class SearchApi(object):
 
   GAME_CATEGORIES = PC_GAME_CATEGORY_ID, DOUJIN_GAME_CATEGORY_ID
 
+  session = None # requests.Session or None
+
   def _makereq(self, text, category_id, action):
     """
     @param  text  str
@@ -48,7 +50,7 @@ class SearchApi(object):
     @param  params  kw
     @return  str
     """
-    return sknetio.getdata(self.API, gzip=True, params=params, cookies=self.COOKIES)
+    return sknetio.getdata(self.API, gzip=True, params=params, cookies=self.COOKIES, session=self.session)
 
   def query(self, text, category_id=0, action='display'):
     """

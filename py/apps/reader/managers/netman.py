@@ -25,6 +25,8 @@ from mytr import my
 from sysinfo import timestamp2jst
 import config, dataman, defs, features, growl
 
+session = requests.Session() # global request session
+
 API = config.API_REST
 #API = "http://localhost:5000/api/1"
 #API = "http://localhost:5000/api/1"
@@ -120,7 +122,7 @@ class _NetworkManager(object):
   def queryVersion(self):
     params = {'ver': self.version}
     try:
-      r = requests.get(API + '/app/version', params=params, headers=GZIP_HEADERS)
+      r = session.get(API + '/app/version', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         #app = root.find('./apps/app[@id="%i"]' % config.VERSION_ID)
@@ -158,7 +160,7 @@ class _NetworkManager(object):
     if lang not in ('en', 'zhs', 'zht'):
       lang = 'en'
     try:
-      r = requests.get(API + '/app/msg', params=params, headers=GZIP_HEADERS)
+      r = session.get(API + '/app/msg', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         #app = root.find('./apps/app[@id="%i"]' % config.VERSION_ID)
@@ -193,7 +195,7 @@ class _NetworkManager(object):
     assert userName and password, "missing user name or password "
     params = {'ver':self.version, 'login':userName, 'password':password}
     try:
-      r = requests.get(API + '/user/query', params=params, headers=GZIP_HEADERS)
+      r = session.get(API + '/user/query', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         user = root.find('./users/user')
@@ -252,7 +254,7 @@ class _NetworkManager(object):
         params['delcolor'] = True
 
     try:
-      r = requests.post(API + '/user/update', data=params, headers=POST_HEADERS)
+      r = session.post(API + '/user/update', data=params, headers=POST_HEADERS)
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         user = root.find('./users/user')
@@ -289,7 +291,7 @@ class _NetworkManager(object):
   #  """
   #  params = {'ver': self.version}
   #  try:
-  #    r = requests.get(API + '/game/md5', params=params, headers=GZIP_HEADERS)
+  #    r = session.get(API + '/game/md5', params=params, headers=GZIP_HEADERS)
   #    if r.ok:
   #      c = r.content
   #      if c:
@@ -315,7 +317,7 @@ class _NetworkManager(object):
     """
     params = {'ver': self.version}
     try:
-      r = requests.get(API + '/item/list', params=params, headers=GZIP_HEADERS)
+      r = session.get(API + '/item/list', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         TYPES = dataman.Reference.TYPES
@@ -375,7 +377,7 @@ class _NetworkManager(object):
   #  """
   #  params = {'ver': self.version}
   #  try:
-  #    r = requests.get(API + '/ref/list', params=params, headers=GZIP_HEADERS)
+  #    r = session.get(API + '/ref/list', params=params, headers=GZIP_HEADERS)
   #    if r.ok and _response_is_xml(r):
   #      root = etree.fromstring(r.content)
   #      TYPES = dataman.Reference.TYPES
@@ -427,7 +429,7 @@ class _NetworkManager(object):
     """
     params = {'ver': self.version}
     try:
-      r = requests.get(API + '/game/list', params=params, headers=GZIP_HEADERS)
+      r = session.get(API + '/game/list', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         ret = {}
@@ -474,7 +476,7 @@ class _NetworkManager(object):
     """
     params = {'ver': self.version}
     try:
-      r = requests.get(API + '/user/list', params=params, headers=GZIP_HEADERS)
+      r = session.get(API + '/user/list', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         context = etree.iterparse(StringIO(r.content), events=('start','end'))
 
@@ -530,7 +532,7 @@ class _NetworkManager(object):
       params['md5'] = md5
 
     try:
-      r = requests.get(API + '/game/query', params=params, headers=GZIP_HEADERS)
+      r = session.get(API + '/game/query', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         game = root.find('./games/game')
@@ -623,7 +625,7 @@ class _NetworkManager(object):
       if game.names[t]:       params['%sname' % t]      = game.names[t]
 
     try:
-      r = requests.post(API + '/game/update', data=params, headers=POST_HEADERS)
+      r = session.post(API + '/game/update', data=params, headers=POST_HEADERS)
 
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
@@ -670,7 +672,7 @@ class _NetworkManager(object):
       params['md5'] = md5
 
     try:
-      r = requests.get(API + '/ref/query', params=params, headers=GZIP_HEADERS)
+      r = session.get(API + '/ref/query', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         #root = etree.fromstring(r.content)
         GUEST_ID = dataman.GUEST.id
@@ -785,10 +787,10 @@ class _NetworkManager(object):
 
     try:
       if not async:
-        r = requests.post(API + '/ref/submit', data=params, headers=POST_HEADERS)
+        r = session.post(API + '/ref/submit', data=params, headers=POST_HEADERS)
       else:
         r = skthreads.runsync(partial(
-            requests.post,
+            session.post,
             API + '/ref/submit', data=params, headers=POST_HEADERS),
             parent=self.q)
 
@@ -866,10 +868,10 @@ class _NetworkManager(object):
 
     try:
       if not async:
-        r = requests.post(API + '/ref/update', data=params, headers=POST_HEADERS)
+        r = session.post(API + '/ref/update', data=params, headers=POST_HEADERS)
       else:
         r = skthreads.runsync(partial(
-            requests.post,
+            session.post,
             API + '/ref/update', data=params, headers=POST_HEADERS),
             parent=self.q)
 
@@ -923,7 +925,7 @@ class _NetworkManager(object):
     self._addBlockedLanguages(params)
 
     try:
-      r = requests.get(API + '/comment/query', params=params, headers=GZIP_HEADERS)
+      r = session.get(API + '/comment/query', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         #root = etree.fromstring(r.content)
 
@@ -1111,10 +1113,10 @@ class _NetworkManager(object):
 
     try:
       if not async:
-        r = requests.post(API + '/comment/submit', data=params, headers=POST_HEADERS)
+        r = session.post(API + '/comment/submit', data=params, headers=POST_HEADERS)
       else:
         r = skthreads.runsync(partial(
-            requests.post,
+            session.post,
             API + '/comment/submit', data=params, headers=POST_HEADERS),
             parent=self.q)
 
@@ -1202,10 +1204,10 @@ class _NetworkManager(object):
 
     try:
       if not async:
-        r = requests.post(API + '/comment/update', data=params, headers=POST_HEADERS)
+        r = session.post(API + '/comment/update', data=params, headers=POST_HEADERS)
       else:
         r = skthreads.runsync(partial(
-            requests.post,
+            session.post,
             API + '/comment/update', data=params, headers=POST_HEADERS),
             parent=self.q)
 
@@ -1254,7 +1256,7 @@ class _NetworkManager(object):
     }
     self._addBlockedLanguages(params)
     try:
-      r = requests.get(API + '/term/list', params=params, headers=GZIP_HEADERS)
+      r = session.get(API + '/term/list', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         context = etree.iterparse(StringIO(r.content), events=('start','end'))
 
@@ -1372,10 +1374,10 @@ class _NetworkManager(object):
 
     try:
       if not async:
-        r = requests.post(API + '/term/submit', data=params, headers=POST_HEADERS)
+        r = session.post(API + '/term/submit', data=params, headers=POST_HEADERS)
       else:
         r = skthreads.runsync(partial(
-            requests.post,
+            session.post,
             API + '/term/submit', data=params, headers=POST_HEADERS),
             parent=self.q)
 
@@ -1451,10 +1453,10 @@ class _NetworkManager(object):
 
     try:
       if not async:
-        r = requests.post(API + '/term/update', data=params, headers=POST_HEADERS)
+        r = session.post(API + '/term/update', data=params, headers=POST_HEADERS)
       else:
         r = skthreads.runsync(partial(
-            requests.post,
+            session.post,
             API + '/term/update', data=params, headers=POST_HEADERS),
             parent=self.q)
 

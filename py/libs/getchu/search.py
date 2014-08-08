@@ -34,6 +34,8 @@ class SearchApi(object):
   #GENRES = 'all', 'pc_soft', 'doujin', 'all_lady'
   PC_GAME_GENRES = 'pc_soft', 'doujin', 'all_lady'
 
+  session = None # requests.Session or None
+
   def _makereq(self, text, genre, sort, sort2):
     """
     @param  text  str
@@ -50,7 +52,7 @@ class SearchApi(object):
     @param  params  kw
     @return  str
     """
-    return sknetio.getdata(self.API, gzip=True, params=params) #, cookies=self.COOKIES)
+    return sknetio.getdata(self.API, gzip=True, params=params, session=self.session) #, cookies=self.COOKIES)
 
   def query(self, text, genre='all', sort='release_date', sort2='down'):
     """

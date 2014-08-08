@@ -58,17 +58,20 @@ def _mimematch(r, pattern):
   try: return re.search(pattern, r.headers['content-type'], re.IGNORECASE)
   except: pass
 
-def postdata(url, headers=None, gzip=True, mimefilter=None, **kwargs):
+def postdata(url, headers=None, gzip=True, mimefilter=None, session=None, **kwargs):
   """
   @param  url  str
-  @param  path  str
-  @param  mode  str  'w' or 'wb'
+  @param* headers  kw
+  @param* gzip  bool
+  @param* path  str
+  @param* mode  str  'w' or 'wb'
+  @param  session  requests.Session
   @return  data or None
   """
   try:
     if gzip:
       headers = skcontainer.mergedicts(headers,  GZIP_HEADERS) if headers else GZIP_HEADERS
-    r = requests.post(url, headers=headers, **kwargs)
+    r = (session or requests).post(url, headers=headers, **kwargs)
     if r.ok and (not mimefilter or _mimematch(r, mimefilter)):
       return r.content
   except Exception, e: derror(e)
@@ -84,17 +87,20 @@ def postdata(url, headers=None, gzip=True, mimefilter=None, **kwargs):
   #try: dwarn(r.url)
   #except: pass
 
-def _getres(url, headers=None, gzip=True, mimefilter=None, **kwargs):
+def _getres(url, headers=None, gzip=True, mimefilter=None, session=None, **kwargs):
   """
   @param  url  str
-  @param  path  str
-  @param  mode  str  'w' or 'wb'
+  @param* headers  kw
+  @param* gzip  bool
+  @param* path  str
+  @param* mode  str  'w' or 'wb'
+  @param* session  requests.Session
   @return  response or None
   @raise
   """
   if gzip:
     headers = skcontainer.mergedicts(headers,  GZIP_HEADERS) if headers else GZIP_HEADERS
-  r = requests.get(url, headers=headers, **kwargs)
+  r = (session or requests).get(url, headers=headers, **kwargs)
   if r.ok and (not mimefilter or _mimematch(r, mimefilter)):
     return r
 

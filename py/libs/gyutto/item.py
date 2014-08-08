@@ -24,6 +24,8 @@ class ItemApi(object):
   ENCODING = 'sjis'
   COOKIES = {'adult_check_flag':'1'} #, 'user_agent_flag':'1'}
 
+  session = None # requests.Session or None
+
   def _makereq(self, id):
     """
     @param  kw
@@ -44,7 +46,7 @@ class ItemApi(object):
     @return  str
     """
     # Disable redirects for gyutto items
-    return sknetio.getdata(url, gzip=True, cookies=self.COOKIES, allow_redirects=True)
+    return sknetio.getdata(url, gzip=True, cookies=self.COOKIES, allow_redirects=True, session=self.session)
 
   def query(self, id=None, url=None):
     """

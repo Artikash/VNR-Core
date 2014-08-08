@@ -24,6 +24,8 @@ class SearchApi(object):
   ALL_PATHS = '', 'material', 'soft', 'comics', 'bl', 'b', 'blgame', 'a', 'abooks', 'game', 'anime'
   GAME_PATHS = '', 'game', 'soft', 'a', 'b', 'blgame'
 
+  session = None # requests.Session or None
+
   def _makereq(self, **kwargs):
     """
     @param  kw
@@ -51,7 +53,7 @@ class SearchApi(object):
     @param  url  str
     @return  str not int
     """
-    return sknetio.getdata(url, gzip=True) #, cookies=self.COOKIES)
+    return sknetio.getdata(url, gzip=True, session=self.session) #, cookies=self.COOKIES)
 
   def query(self, text, path, limit=30, sort='new'):
     """
