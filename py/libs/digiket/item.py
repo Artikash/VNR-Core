@@ -21,6 +21,8 @@ class ItemApi(object):
   ENCODING = 'sjis'
   COOKIES = {'adult_check':'1'}
 
+  session = None # requests.Session or None
+
   def _makereq(self, id):
     """
     @param  kw
@@ -40,7 +42,7 @@ class ItemApi(object):
     @param  url  str
     @return  str not int
     """
-    return sknetio.getdata(url, gzip=True, cookies=self.COOKIES)
+    return sknetio.getdata(url, gzip=True, cookies=self.COOKIES, session=self.session)
 
   def query(self, id):
     """

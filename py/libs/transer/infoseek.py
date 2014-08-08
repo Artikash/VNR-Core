@@ -19,7 +19,7 @@ session = requests # global session
 
 # See: http://docs.python-requests.org/en/latest/user/advanced/#keep-alive
 # See: http://stackoverflow.com/questions/10115126/python-requests-close-http-connection
-#session = requests.session(config={'keep_alive': False})
+#session = requests.Session(config={'keep_alive': False})
 
 # See: http://transer.com/sdk/rest_api_function.html
 #   key=LICENCE 	オプション 	サービスのユーザーライセンスを提供します。HTTPリクエストヘッダもしくはHTTP認証のいずれかを使用してユーザーライセンスが提供される場合、URLを指定する必要はありません。

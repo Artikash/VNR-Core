@@ -33,6 +33,8 @@ class TableApi(object):
   TABLE_NAME = '' # str
   TABLE = {} # {str key:function}
 
+  session = None # requests.Session or None
+
   def query(self, *args, **kwargs):
     """
     @param* id  int or str
@@ -54,7 +56,7 @@ class TableApi(object):
     """
     @return  str
     """
-    return sknetio.postdata(self.HOST + self.SELECT_URL, gzip=True, data=kwargs)
+    return sknetio.postdata(self.HOST + self.SELECT_URL, gzip=True, data=kwargs, session=self.session)
 
   def _makereq(self, *args, **kwargs):
     """

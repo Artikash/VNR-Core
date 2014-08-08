@@ -33,6 +33,8 @@ class SearchApi(object):
 
   ENCODING = 'utf8'
 
+  session = None # requests.Session or None
+
   def _makereq(self, *args, **kwargs):
     """
     @return  kw
@@ -53,7 +55,7 @@ class SearchApi(object):
     @param  url  str
     @return  str
     """
-    return sknetio.getdata(url, gzip=True)
+    return sknetio.getdata(url, gzip=True, session=self.session)
 
   def query(self, text, domain=DOMAINS[0]):
     """

@@ -18,6 +18,8 @@ class SearchApi(object):
   API = "http://holyseal.net/cgi-bin/mlistview.cgi?word=%s"
   ENCODING = 'sjis'
 
+  session = None # requests.Session or None
+
   def _makereq(self, text):
     """
     @param  kw
@@ -37,7 +39,7 @@ class SearchApi(object):
     @param  url  str
     @return  str
     """
-    return sknetio.getdata(url, gzip=True)
+    return sknetio.getdata(url, gzip=True, session=self.session)
 
   def query(self, text):
     """

@@ -10,8 +10,7 @@ if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
-import json
-import urllib2
+import json, urllib2
 from sakurakit import sknetio
 from sakurakit.skdebug import dwarn
 
@@ -19,6 +18,8 @@ class ParserBase(object):
   ENCODING = 'utf8'
 
 class DataParser(ParserBase):
+
+  session = None # requests.Session or None
 
   def _makereq(self, *args, **kwargs):
     """
@@ -41,7 +42,7 @@ class DataParser(ParserBase):
     @param  url  str
     @return  str
     """
-    return sknetio.getdata(url, gzip=True)
+    return sknetio.getdata(url, gzip=True, session=self.session)
 
   def query(self, *args, **kwargs):
     """

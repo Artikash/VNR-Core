@@ -19,6 +19,8 @@ class TagApi(object):
   API = HOST + "tag/-/view/ajax-index?content_id=%s"
   #ENCODING = 'utf8'
 
+  session = None # requests.Session or None
+
   def _makereq(self, id):
     """
     @param  kw
@@ -38,7 +40,7 @@ class TagApi(object):
     @param  url  str
     @return  str
     """
-    return sknetio.getdata(url, gzip=True)
+    return sknetio.getdata(url, gzip=True, session=self.session)
 
   # Example:
   # http://www.dmm.co.jp/tag/-/view/ajax-index?content_id=waffle_0053

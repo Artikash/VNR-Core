@@ -17,6 +17,8 @@ class TitleApi(object):
   API = HOST + "/title.php?title_id=%s"
   ENCODING = 'utf8'
 
+  session = None # requests.Session or None
+
   def _makereq(self, id):
     """
     @param  kw
@@ -37,7 +39,7 @@ class TitleApi(object):
     @return  str
     """
     # Disable redirects for gyutto items
-    return sknetio.getdata(url, gzip=True)
+    return sknetio.getdata(url, gzip=True, session=self.session)
 
   def query(self, id=None):
     """

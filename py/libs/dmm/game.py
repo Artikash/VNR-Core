@@ -20,6 +20,8 @@ def sethost(url): GameApi.HOST = url
 class GameApi(object):
   HOST = DEFAULT_HOST
 
+  session = None # requests.Session or None
+
   def _makereq(self, url):
     """
     @param  kw
@@ -32,7 +34,7 @@ class GameApi(object):
     @param  url  str
     @return  str
     """
-    return sknetio.getdata(url, gzip=True)
+    return sknetio.getdata(url, gzip=True, session=self.session)
 
   def query(self, url):
     """

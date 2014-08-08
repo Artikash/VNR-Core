@@ -29,6 +29,8 @@ class ReviewApi(object):
   ENCODING = 'euc-jp'
   #COOKIES = {'getchu_adalt_flag':'getchu.com'}
 
+  session = None # requests.Session or None
+
   def _makereq(self, id):
     """
     @param  kw
@@ -48,7 +50,7 @@ class ReviewApi(object):
     @param  url  str
     @return  str
     """
-    return sknetio.getdata(url, gzip=True) #, cookies=self.COOKIES)
+    return sknetio.getdata(url, gzip=True, session=self.session) #, cookies=self.COOKIES)
 
   def query(self, id):
     """

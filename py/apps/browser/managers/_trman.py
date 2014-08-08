@@ -9,6 +9,7 @@
 # - comment: user's subtitle or comment
 
 import os, re
+import requests
 from functools import partial
 from itertools import ifilter, imap
 from time import time
@@ -567,6 +568,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
   def __init__(self, **kwargs):
     super(InfoseekTranslator, self).__init__(**kwargs)
     from transer import infoseek
+    infoseek.session = requests.Session()
     self.engine = infoseek
 
   #__infoseek_repl_after = staticmethod(skstr.multireplacer({
@@ -596,6 +598,7 @@ class ExciteTranslator(OnlineMachineTranslator):
   def __init__(self, **kwargs):
     super(ExciteTranslator, self).__init__(**kwargs)
     from excite import worldtrans
+    worldtrans.session = requests.Session()
     self.engine = worldtrans
 
   #__excite_repl_after = staticmethod(skstr.multireplacer({
@@ -626,6 +629,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
     super(LecOnlineTranslator, self).__init__(**kwargs)
 
     from lec import leconline
+    leconline.session = requests.Session()
     self.engine = leconline
 
   def translate(self, text, to='en', fr='ja', async=False):
@@ -650,6 +654,7 @@ class TransruTranslator(OnlineMachineTranslator):
     super(TransruTranslator, self).__init__(**kwargs)
 
     from promt import transru
+    transru.session = requests.Session()
     self.engine = transru
 
   def translate(self, text, to='en', fr='ja', async=False):
@@ -674,6 +679,7 @@ class GoogleTranslator(OnlineMachineTranslator):
     super(GoogleTranslator, self).__init__(**kwargs)
 
     from google import googletrans
+    googletrans.session = requests.Session()
     self.engine = googletrans
 
   #__google_repl_after = staticmethod(skstr.multireplacer({
@@ -704,6 +710,7 @@ class BingTranslator(OnlineMachineTranslator):
   @memoizedproperty
   def engine(self):
     from microsoft import bingtrans
+    bingtrans.session = requests.Session()
     return bingtrans.create_engine()
 
   #__bing_repl_after = staticmethod(skstr.multireplacer({
@@ -732,6 +739,7 @@ class BaiduTranslator(OnlineMachineTranslator):
   def __init__(self, **kwargs):
     super(BaiduTranslator, self).__init__(**kwargs)
     from baidu import baidufanyi
+    baidufanyi.session = requests.Session()
     self.engine = baidufanyi
 
   __baidu_repl_before = staticmethod(skstr.multireplacer({
