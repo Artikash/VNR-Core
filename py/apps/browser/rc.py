@@ -57,6 +57,10 @@ def image_url(name):
   return QUrl.fromLocalFile(
       os.path.abspath(image_path(name))).toString()
 
+def wallpaper_url():
+  import settings
+  return settings.reader().wallpaperUrl() or image_url('wallpaper')
+
 def mecab_rc_path(name):
   """
   @param  str  name

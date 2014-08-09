@@ -78,7 +78,10 @@ class ReaderSettings(QSettings):
   def userLanguage(self): return self.value('UserLanguage')
 
   def isMainlandChina(self): return to_bool(self.value('MainlandChina'))
+
   def isCursorThemeEnabled(self): return to_bool(self.value('CursorThemeEnabled', True))
+
+  def wallpaperUrl(self): return to_unicode(self.value('SpringBoardWallpaperUrl'))
 
   ## MeCab
 
