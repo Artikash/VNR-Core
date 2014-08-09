@@ -42,9 +42,13 @@
       #toolbar
         #zoomSlider.dragdealer.rounded.vertical
           .handle.red(title="#{tr('Zoom')}"): 拡大
-        %button.btn.btn-default.btn-block.btn-xs.btn-ruby(type="button",title="振仮名")
-          %span.fa.fa-font
-        %button.btn.btn-default.btn-block.btn-xs.btn-tts(type="button",title="#{tr('TTS')}")
+        %button.btn.btn-default.btn-block.btn-xs.btn-annot(type="button",data-annot="annot-opt-ruby", title="振仮名")
+          あ
+        %button.btn.btn-default.btn-block.btn-xs.btn-annot(type="button",data-annot="annot-opt-tr",title="翻訳")
+          訳
+        %button.btn.btn-default.btn-block.btn-xs.btn-annot(type="button",data-annot="annot-opt-tr-tip",title="ツールチップで翻訳を表示する")
+          示
+        %button.btn.btn-default.btn-block.btn-xs.btn-annot(type="button",data-annot="annot-opt-tts",title="#{tr('TTS')}")
           %span.fa.fa-music
         %button.btn.btn-default.btn-block.btn-xs.btn-top(type="button",title="#{tr('Scroll to top')}")
           %span.fa.fa-chevron-up

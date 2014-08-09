@@ -188,10 +188,9 @@ class _TtsManager(object):
   def googleEngine(self):
     if not self._googleEngine:
       ss = settings.global_()
-      self._googleEngine = _ttsman.GoogleEngine(
-          online=self._online,
-          language='ja', # force Japanese language at this point
-          parentWidget=self.parentWidget)
+      self._googleEngine = _ttsman.GoogleEngine(parent=self.parentWidget)
+          #online=self._online,
+          #language='ja', # force Japanese language at this point
       #ss.googleTtsLanguageChanged.connect(self._googleEngine.setLanguage)
     return self._googleEngine
 

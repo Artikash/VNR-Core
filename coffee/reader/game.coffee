@@ -301,30 +301,18 @@ initToolbar = ->
 
   toolbar = new Toolbar @viewBean,
     width: 60   # height of slider + margin-right
-    #height: 229 + 15 # height of slider + 3 * button + margin-bottom + slider height
-    height: 229 + 50 # height of slider + 5 * button + margin-bottom + slider height
+    height: 215 + 7 * 15 # height of slider + 7 * button + margin-bottom + slider height
     move: slider.reloadOffset
 
   # Bind toolbar annot buttons
-  $rubyButton = $ '#toolbar .btn.btn-ruby'
-  $ttsButton = $ '#toolbar .btn.btn-tts'
 
-  $rubyButton.prop 'disabled', true unless jlpBean.isEnabled()
-  $rubyButton.click ->
+  #$rubyButton.prop 'disabled', true unless jlpBean.isEnabled()
+  $('#toolbar .btn.btn-annot').click ->
     $(@).toggleClass 'btn-default'
         .toggleClass 'btn-success'
-    toggleAnnotRuby()
-    disabled = $(@).hasClass 'btn-default'
-    if disabled
-      $ttsButton.prop 'disabled', true
-    else if ttsBean.isEnabled()
-      $ttsButton.prop 'disabled', false
-
-  $ttsButton.prop 'disabled', true # disable by default
-  $ttsButton.click ->
-    $(@).toggleClass 'btn-default'
-        .toggleClass 'btn-success'
-    toggleAnnotTts()
+    opt = @dataset.annot
+    $(document.body).toggleClass opt
+    renderNewAnnot()
 
   dprint 'bindToolbar: leave'
 
@@ -337,31 +325,7 @@ initAnnot = ->
     @
 
 renderNewAnnot = ->
-  if document.body.classList.contains 'annot-opt-ruby'
-    $('.annot:not(.annot-root)').annotate()
-
-toggleAnnotTts = ->
-  $(document.body).toggleClass 'annot-opt-tts'
-
-  #v = document.body.dataset.annot
-  #if ~v.indexOf 'tts'
-  #  v = v.replace 'tts', ''
-  #else
-  #  v += 'tts'
-  #document.body.dataset.annot = v
-  #refreshDocumentClass()
-
-toggleAnnotRuby = ->
-  $(document.body).toggleClass 'annot-opt-ruby'
-  renderNewAnnot()
-
-  #v = document.body.dataset.annot
-  #if ~v.indexOf 'enable'
-  #  v = v.replace 'enable', 'disable'
-  #else
-  #  v = v.replace 'disable', 'enable'
-  #document.body.dataset.annot = v
-  #refreshDocumentClass()
+  $('.annot:not(.annot-root)').annotate() if $(document.body).is '[class |= annot-opt]' # http://api.jquery.com/attribute-contains-prefix-selector/
 
 # http://stackoverflow.com/questions/3485365/how-can-i-force-webkit-to-redraw-repaint-to-propagate-style-changes
 #refreshDocumentClass = -> # ->

@@ -69,9 +69,10 @@ class WebBrowser(SkDraggableMainWindow):
 class _WebBrowser(object):
   def __init__(self, q):
     ss = settings.global_()
-    self._injectEnabled = ss.isMeCabEnabled()
+    self._rubyEnabled = ss.isRubyEnabled()
     self._ttsEnabled = ss.isTtsEnabled() # cached
-    self._translationEnabled = ss.isTranslationEnabled() # cached
+    self._fullTranslationEnabled = ss.isFullTranslationEnabled() # cached
+    self._translationTipEnabled = ss.isTranslationTipEnabled() # cached
 
     self.loadProgress = 100 # int [0,100]
 
@@ -80,8 +81,8 @@ class _WebBrowser(object):
 
     import jlpman, trman, ttsman
     self._jlpAvailable = jlpman.manager().isAvailable() # bool
-    self._trAvailable = trman.manager().isAvailable() # bool
     self._ttsAvailable = ttsman.manager().isAvailable() # bool
+    self._translatorAvailable = trman.manager().isAvailable() # bool
 
     #layout = QtWidgets.QVBoxLayout()
     #layout.addWidget(self.addressWidget)
@@ -296,30 +297,38 @@ class _WebBrowser(object):
 
     a = ret.addAction(u"あ")
     a.setCheckable(True)
-    a.setToolTip("%s (MeCab)" % i18n.tr("Toggle Japanese parser"))
+    a.setToolTip(i18n.tr("Toggle Japanese furigana"))
     a.setEnabled(self._jlpAvailable)
-    a.setChecked(self._injectEnabled)
-    a.triggered[bool].connect(ss.setMeCabEnabled)
-    a.triggered[bool].connect(self._setInjectEnabled)
+    a.setChecked(self._rubyEnabled)
+    a.triggered[bool].connect(ss.setRubyEnabled)
+    a.triggered[bool].connect(self._setRubyEnabled)
 
-    a = self.trAct = ret.addAction(u"意")
+    a = self.fullTranslationAct = ret.addAction(u"訳")
     a.setCheckable(True)
-    a.setToolTip(i18n.tr("Toggle machine translator"))
-    a.setEnabled(self._injectEnabled and self._jlpAvailable and self._trAvailable)
-    a.setChecked(self._translationEnabled)
-    a.triggered[bool].connect(ss.setTranslationEnabled)
-    a.triggered[bool].connect(self._setTranslationEnabled)
+    a.setToolTip(i18n.tr("Translate all texts"))
+    a.setEnabled(self._translatorAvailable)
+    a.setChecked(self._fullTranslationEnabled)
+    a.triggered[bool].connect(ss.setFullTranslationEnabled)
+    a.triggered[bool].connect(self._setFullTranslationEnabled)
+
+    a = self.translationTipAct = ret.addAction(u"示")
+    a.setCheckable(True)
+    a.setToolTip(i18n.tr("Pop up translation tooltip when hover"))
+    a.setEnabled(self._translatorAvailable)
+    a.setChecked(self._translationTipEnabled)
+    a.triggered[bool].connect(ss.setTranslationTipEnabled)
+    a.triggered[bool].connect(self._setTranslationTipEnabled)
 
     a = self.ttsAct = ret.addAction(u"♪") # おんぷ
     a.setCheckable(True)
     a.setToolTip("%s (TTS)" % i18n.tr("Toggle text-to-speech") )
-    a.setEnabled(self._injectEnabled and self._jlpAvailable and self._ttsAvailable)
+    a.setEnabled(self._ttsAvailable)
     a.setChecked(self._ttsEnabled)
     a.triggered[bool].connect(ss.setTtsEnabled)
     a.triggered[bool].connect(self._setTtsEnabled)
     a.setVisible(skos.WIN) # only enabled on Windows
 
-    a = ret.addAction(u"⌘") # U+2318 コマンド記号
+    a = ret.addAction(u"≡") # U+226, three lines; alternative: "⌘", U+2318 コマンド記号
     a.setToolTip(tr_("Menu"))
     a.setMenu(self.optionMenu)
     #a.triggered.connect(a.menu().exec_)
@@ -342,28 +351,40 @@ class _WebBrowser(object):
     a.setToolTip("about:version")
     return ret
 
-  ## JLP ##
+  ## Inject ##
 
-  def _setInjectEnabled(self, t): # bool ->
-    self._injectEnabled = t
-    for w in self._iterTabWidgets():
-      w.setInjectEnabled(t)
+  # Combinations:
+  # trtip, tts, trtip+tts
+  # trful, trful+tts, trful+tts, trful+ruby+tts
+  # ruby, ruby+tts, ruby+trtip, ruby+trtip+tts
 
-    if self._ttsAvailable:
-      self.ttsAct.setEnabled(t)
-    if self._trAvailable:
-      self.trAct.setEnabled(t)
+  def isInjectEnabled(self):
+    return self._fullTranslationEnabled or self._translationTipEnabled or self._rubyEnabled or self._ttsEnabled
+
+  def _setRubyEnabled(self, t): # bool ->
+    if self._rubyEnabled != t:
+      self._rubyEnabled = t
+      self._reinject()
 
   def _setTtsEnabled(self, t): # bool ->
-    self._ttsEnabled = t
-    self._reinject()
+    if self._ttsEnabled != t:
+      self._ttsEnabled = t
+      self._reinject()
 
-  def _setTranslationEnabled(self, t): # bool ->
-    self._translationEnabled = t
-    self._reinject()
+  def _setFullTranslationEnabled(self, t): # bool ->
+    if self._fullTranslationEnabled != t:
+      self._fullTranslationEnabled = t
+      self._reinject()
+
+  def _setTranslationTipEnabled(self, t): # bool ->
+    if self._translationTipEnabled != t:
+      self._translationTipEnabled = t
+      self._reinject()
 
   def _reinject(self):
+    t = self.isInjectEnabled()
     for w in self._iterTabWidgets():
+      w.setInjectEnabled(t)
       w.inject()
 
   ## Load/save ##
@@ -629,7 +650,7 @@ class _WebBrowser(object):
         ref() == self.tabWidget.currentWidget() and self.refreshLoadProgress(),
         ref))
 
-    ret.setInjectEnabled(self._injectEnabled)
+    ret.setInjectEnabled(self.isInjectEnabled())
 
     ret.installEventFilter(self.gestureFilter)
 
@@ -671,7 +692,7 @@ class _WebBrowser(object):
   def refreshWindowTitle(self):
     t = self.currentTabTitle()
     if not t:
-      t = u"Kagami (α)"
+      t = u"Website Reader (α)"
     self.q.setWindowTitle(t)
 
   def refreshWindowIcon(self):

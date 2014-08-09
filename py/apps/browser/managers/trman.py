@@ -25,7 +25,7 @@ class _TranslatorManager(object):
     self.abortSignal = q.onlineAbortionRequested # Signal
 
     #self.convertsChinese = False
-    self.enabled = True
+    #self.enabled = True
     self.online = True
 
     self.infoseekEnabled = \
@@ -164,8 +164,8 @@ class TranslatorManager(QObject):
 
   ## Properties ##
 
-  def isEnabled(self): return self.__d.enabled
-  def setEnabled(self, t): self.__d.enabled = t
+  #def isEnabled(self): return self.__d.enabled
+  #def setEnabled(self, t): self.__d.enabled = t
 
   def language(self): return self.__d.language
   def setLanguage(self, value): self.__d.language = value
@@ -285,7 +285,7 @@ class TranslatorManager(QObject):
     @return  unicode sub or None, unicode lang, unicode provider
     """
     d = self.__d
-    if not text or not d.enabled:
+    if not text: # or not d.enabled:
       return None, None, None
     text = d.normalizeText(text)
     if engine:

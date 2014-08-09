@@ -37,7 +37,7 @@ _PARAGRAPH_RE = re.compile(r"(%s)" % '|'.join(_PARAGRAPH_SET))
 _SENTENCE_RE = re.compile(ur"([。？！」\n])(?![。！？）」\n]|$)")
 
 class TranslationCache:
-  def __init__(self, maxSize=100, shrinkSize=30):
+  def __init__(self, maxSize=1000, shrinkSize=300): # a much larger cache size than reader
     """
     @param  maxSize  max data size
     @param  shrinkSize  data to delete when oversize
