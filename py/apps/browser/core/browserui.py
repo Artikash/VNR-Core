@@ -342,6 +342,11 @@ class _WebBrowser(object):
     ret = QtWidgets.QMenu(self.q)
 
     #a = ret.addAction(rc.standard_icon(QtWidgets.QStyle.SP_DialogHelpButton), tr_("Help"))
+    a = ret.addAction(tr_("Preferences"))
+    a.triggered.connect(self._openSettingsPage)
+    a.setToolTip("about:settings")
+
+    #a = ret.addAction(rc.standard_icon(QtWidgets.QStyle.SP_DialogHelpButton), tr_("Help"))
     a = ret.addAction(tr_("Help"))
     a.triggered.connect(self._openHelpPage)
     a.setToolTip("about:help")
@@ -472,6 +477,7 @@ class _WebBrowser(object):
       if w:
         w.rehighlight(t)
 
+  def _openSettingsPage(self): self.openUrlAfterCurrent('about:settings', focus=True)
   def _openHelpPage(self): self.openUrlAfterCurrent('about:help', focus=True)
   def _openAboutPage(self): self.openUrlAfterCurrent('about:version', focus=True)
 

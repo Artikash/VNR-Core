@@ -55,8 +55,9 @@ class WbWebView(skwebkit.SkWebView):
   # Injection
 
   def inject(self):
-    if not self.url().isEmpty():
-      self.page().inject()
+    #url = self.url()
+    #if url.isEmpty():
+    self.page().inject()
 
   def isInjectEnabled(self): return self.page().injectEnabled
   def setInjectEnabled(self, t): self.page().setInjectEnabled(t)
@@ -71,6 +72,9 @@ class WbWebView(skwebkit.SkWebView):
       data = rc.html_data(t)
       if data:
         self.setHtml(data)
+        if t == 'about:settings':
+          import beans
+          self.page().mainFrame().addToJavaScriptWindowObject('settingsBean', beans.manager().settingsBean)
         return
     super(WbWebView, self).load(url)
 
@@ -121,7 +125,9 @@ class WbWebPage(skwebkit.SkWebPage):
   def isLoading(self): return self.__d.progress < 100
   def isFinished(self): return self.__d.progress == 100
 
-  def inject(self): self.__d.injectJavaScript() # Force inject
+  def inject(self):
+    if self.__d.canInject():
+      self.__d.injectJavaScript() # Force inject
 
   def isInjectEnabled(self): return self.__d.injectEnabled
   def setInjectEnabled(self, t): self.__d.injectEnabled = t
@@ -214,10 +220,14 @@ class _WbWebPage(object):
     self.progress = 0
   def _onLoadFinished(self, success): # bool ->
     self.progress = 100
-    if success and self.injectEnabled:
+    if success and self.injectEnabled and self.canInject():
       self.injectJavaScript()
 
   ## JavaScript
+
+  def canInject(self):
+    url = self.q.mainFrame().url()
+    return not (url.isEmpty() or url.toString().startswith('about:'))
 
   def _onJavaScriptCleared(self):
     self._beansInjected = False

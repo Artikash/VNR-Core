@@ -128,6 +128,12 @@ def main():
   import webrc
   webrc.update_web_settings()
 
+  if reader.isMainlandChina():
+    dprint("set up proxy")
+    from google import googletts, googletrans
+    googletts.seturl(config.PROXY_GOOGLE_TTS)
+    googletrans.seturl(config.PROXY_GOOGLE_TRANS)
+
   dprint("create main object")
   import main
   m = main.MainObject()

@@ -165,6 +165,7 @@ URL_TEMPLATE = {
   'about:blank': 'start',
   #'about:error': 'error',
   'about:help': 'help',
+  'about:settings': 'settings',
   'about:version': 'about',
 }
 HTML_DATA = {} # {str url:unicode data}
@@ -185,6 +186,10 @@ def html_data(url): # QUrl|str -> unicode|None
         import i18nutil, settings
         t = settings.global_().version()
         params['version'] = i18nutil.timestamp2datetime(t)
+      elif key == 'settings':
+        import settings
+        params['settings'] = settings.global_()
+        params['reader'] = settings.reader()
       ret = HTML_DATA[url] = jinja_template(key).render(params) # unicode html
   return ret
 

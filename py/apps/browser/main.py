@@ -165,24 +165,62 @@ class _MainObject(object):
     ss = settings.global_()
     reader = settings.reader()
 
-    ret.setBaiduEnabled(reader.isBingEnabled())
-    ret.setBingEnabled(reader.isBingEnabled())
-    ret.setExciteEnabled(reader.isExciteEnabled())
-    ret.setGoogleEnabled(reader.isGoogleEnabled())
-    ret.setHanVietEnabled(reader.isHanVietEnabled())
-    ret.setInfoseekEnabled(reader.isInfoseekEnabled())
-    ret.setLecOnlineEnabled(reader.isLecOnlineEnabled())
-    ret.setTransruEnabled(reader.isTransruEnabled())
+    if not reader.jbeijingLocation() and ss.isJBeijingEnabled():
+      ss.setJBeijingEnabled(False)
 
-    ret.setAtlasEnabled(reader.isAtlasEnabled() and bool(reader.atlasLocation()))
-    ret.setEzTransEnabled(reader.isEzTransEnabled() and bool(reader.ezTransLocation()))
-    ret.setDreyeEnabled(reader.isDreyeEnabled() and bool(reader.dreyeLocation()))
-    ret.setJBeijingEnabled(reader.isJBeijingEnabled() and bool(reader.jbeijingLocation()))
-    ret.setLecEnabled(reader.isLecEnabled() and bool(reader.lecLocation()))
+    if not reader.ezTransLocation() and ss.isEzTransEnabled():
+      ss.setEzTransEnabled(False)
 
-    if not ret.isAvailable():
-      ss.setFullTranslationEnabled(False)
-      ss.setTranslationTipEnabled(False)
+    if not reader.dreyeLocation() and ss.isDreyeEnabled():
+      ss.setDreyeEnabled(False)
+
+    if not reader.atlasLocation() and ss.isAtlasEnabled():
+      ss.setAtlasEnabled(False)
+
+    if not reader.lecLocation() and ss.isLecEnabled():
+      ss.setLecEnabled(False)
+
+    ret.setInfoseekEnabled(ss.isInfoseekEnabled())
+    ss.infoseekEnabledChanged.connect(ret.setInfoseekEnabled)
+
+    ret.setExciteEnabled(ss.isExciteEnabled())
+    ss.exciteEnabledChanged.connect(ret.setExciteEnabled)
+
+    ret.setBingEnabled(ss.isBingEnabled())
+    ss.bingEnabledChanged.connect(ret.setBingEnabled)
+
+    ret.setGoogleEnabled(ss.isGoogleEnabled())
+    ss.googleEnabledChanged.connect(ret.setGoogleEnabled)
+
+    ret.setTransruEnabled(ss.isTransruEnabled())
+    ss.transruEnabledChanged.connect(ret.setTransruEnabled)
+
+    ret.setBaiduEnabled(ss.isBaiduEnabled())
+    ss.baiduEnabledChanged.connect(ret.setBaiduEnabled)
+
+    ret.setLecOnlineEnabled(ss.isLecOnlineEnabled())
+    ss.lecOnlineEnabledChanged.connect(ret.setLecOnlineEnabled)
+
+    #ret.setYoudaoEnabled(ss.isYoudaoEnabled())
+    #ss.youdaoEnabledChanged.connect(ret.setYoudaoEnabled)
+
+    ret.setHanVietEnabled(ss.isHanVietEnabled())
+    ss.hanVietEnabledChanged.connect(ret.setHanVietEnabled)
+
+    ret.setJBeijingEnabled(ss.isJBeijingEnabled())
+    ss.jbeijingEnabledChanged.connect(ret.setJBeijingEnabled)
+
+    ret.setDreyeEnabled(ss.isDreyeEnabled())
+    ss.dreyeEnabledChanged.connect(ret.setDreyeEnabled)
+
+    ret.setEzTransEnabled(ss.isEzTransEnabled())
+    ss.ezTransEnabledChanged.connect(ret.setEzTransEnabled)
+
+    ret.setAtlasEnabled(ss.isAtlasEnabled())
+    ss.atlasEnabledChanged.connect(ret.setAtlasEnabled)
+
+    ret.setLecEnabled(ss.isLecEnabled())
+    ss.lecEnabledChanged.connect(ret.setLecEnabled)
 
     #ret.setEnabled(ss.isTranslationEnabled())
     #ss.translationEnabledChanged.connect(ret.setEnabled)

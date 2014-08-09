@@ -475,6 +475,7 @@ templates:
     haml/browser/help:  haml/browser/help.haml
     haml/browser/error: haml/browser/error.haml
     haml/browser/start: haml/browser/start.haml
+    haml/browser/settings: haml/browser/settings.haml
 
 avatars:
   location:         $PWD/images/avatars
