@@ -97,8 +97,9 @@ class TranslatorBean(QObject):
     return ','.join(trman.manager().enabledEngines())
 
   @Slot(unicode, unicode, result=unicode)
-  def translateWith(self, text, engine):
+  def translate(self, text, engine):
     # I should not hardcode fr and to languages here
+    # Force async
     import settings, trman
     lang = settings.reader().userLanguage()
     return trman.manager().translate(text, engine=engine, fr='ja', to=lang, async=True)[0] or ''
@@ -110,7 +111,7 @@ class SettingsBean(QObject):
   @Slot(result=bool)
   def isRubyEnabled(self):
     import settings
-    return settings.global_().isMeCabEnabled()
+    return settings.global_().isRubyEnabled()
 
   @Slot(result=bool)
   def isTtsEnabled(self):
@@ -118,8 +119,13 @@ class SettingsBean(QObject):
     return settings.global_().isTtsEnabled()
 
   @Slot(result=bool)
-  def isTranslationEnabled(self):
+  def isFullTranslationEnabled(self):
     import settings
-    return settings.global_().isTranslationEnabled()
+    return settings.global_().isFullTranslationEnabled()
+
+  @Slot(result=bool)
+  def isTranslationTipEnabled(self):
+    import settings
+    return settings.global_().isTranslationTipEnabled()
 
 # EOF

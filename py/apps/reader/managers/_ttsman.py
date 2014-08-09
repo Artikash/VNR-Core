@@ -43,28 +43,24 @@ class GoogleEngine(VoiceEngine):
 
   @memoizedproperty
   def engine(self):
-    from google import googletts
-    ret = googletts.GoogleTtsEngine()
-    #googletts.update_web_settings()
-
     import windows
     parentWindow = windows.top()
-    ret.setParent(parentWindow)
-    ret.setParentWidget(parentWindow)
-    return ret
+
+    from google import googletts
+    return googletts.GoogleTtsEngine(parentWindow)
 
   def warmup(self):
     """@reimp"""
     if self.isOnline() and self.isValid():
       self.engine.warmup()
 
-  def speak(self, text):
+  def speak(self, text, language=None):
     """@reimp@"""
     if self.isOnline():
       if not self.isValid():
         growl.warn(my.tr("Missing QuickTime needed by text-to-speech"))
       else:
-        self.engine.speak(text, language=self.language)
+        self.engine.speak(text, language=language or self.language)
 
 class VocalroidEngine(VoiceEngine):
 

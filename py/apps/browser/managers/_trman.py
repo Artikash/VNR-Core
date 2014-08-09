@@ -37,7 +37,7 @@ _PARAGRAPH_RE = re.compile(r"(%s)" % '|'.join(_PARAGRAPH_SET))
 _SENTENCE_RE = re.compile(ur"([。？！」\n])(?![。！？）」\n]|$)")
 
 class TranslationCache:
-  def __init__(self, maxSize=100, shrinkSize=30):
+  def __init__(self, maxSize=1000, shrinkSize=300): # a much larger cache size than reader
     """
     @param  maxSize  max data size
     @param  shrinkSize  data to delete when oversize
@@ -707,11 +707,16 @@ class BingTranslator(OnlineMachineTranslator):
   def __init__(self, **kwargs):
     super(BingTranslator, self).__init__(**kwargs)
 
-  @memoizedproperty
-  def engine(self):
+    # It is dangerous to create engine here, which is async
     from microsoft import bingtrans
     bingtrans.session = requests.Session()
-    return bingtrans.create_engine()
+    self.engine = bingtrans.create_engine() # time-limited
+
+  #@memoizedproperty
+  #def engine(self):
+  #  from microsoft import bingtrans
+  #  bingtrans.session = requests.Session()
+  #  return bingtrans.create_engine()
 
   #__bing_repl_after = staticmethod(skstr.multireplacer({
   #  '[': u'【',

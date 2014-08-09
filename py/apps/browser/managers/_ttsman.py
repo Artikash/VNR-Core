@@ -22,6 +22,44 @@ class VoiceEngine(object):
   def speak(self, text): pass
   def stop(self): pass
 
+class GoogleEngine(VoiceEngine):
+  key = 'google' # override
+  name = u'Google TTS' # override
+
+  def __init__(self, online=True, language='ja', parent=None):
+    self._valid = False     # bool
+    self.online = online    # bool
+    self.language = language # str
+    self.parentWidget = parent # QWidget or None
+
+  def setOnline(self, v): self.online = v
+  def isOnline(self): return self.online
+
+  def isValid(self):
+    """"@reimp"""
+    if not self._valid:
+      import libman
+      self._valid = libman.quicktime().exists()
+    return self._valid
+
+  @memoizedproperty
+  def engine(self):
+    from google import googletts
+    return googletts.GoogleTtsEngine(self.parentWidget)
+
+  def warmup(self):
+    """@reimp"""
+    if self.isOnline() and self.isValid():
+      self.engine.warmup()
+
+  def speak(self, text, language=None):
+    """@reimp@"""
+    if self.isOnline():
+      if not self.isValid():
+        growl.warn(my.tr("Missing QuickTime needed by text-to-speech"))
+      else:
+        self.engine.speak(text, language=language or self.language)
+
 class VocalroidEngine(VoiceEngine):
 
   def __init__(self, voiceroid, path=''):
@@ -148,48 +186,3 @@ class SapiEngine(VoiceEngine):
         e.stop()
 
 # EOF
-
-#class GoogleEngine(VoiceEngine):
-#  key = 'google' # override
-#  name = u'Google TTS' # override
-#
-#  def __init__(self, online=True, language='ja'):
-#    self._valid = False     # bool
-#    self.online = online    # bool
-#    self.language = language # str
-#
-#  def setOnline(self, v): self.online = v
-#  def isOnline(self): return self.online
-#
-#  def isValid(self):
-#    """"@reimp"""
-#    if not self._valid:
-#      import libman
-#      self._valid = libman.quicktime().exists()
-#    return self._valid
-#
-#  @memoizedproperty
-#  def engine(self):
-#    from google import googletts
-#    ret = googletts.GoogleTtsEngine()
-#    #googletts.update_web_settings()
-#
-#    import windows
-#    parentWindow = windows.top()
-#    ret.setParent(parentWindow)
-#    ret.setParentWidget(parentWindow)
-#    return ret
-#
-#  def warmup(self):
-#    """@reimp"""
-#    if self.isOnline() and self.isValid():
-#      self.engine.warmup()
-#
-#  def speak(self, text):
-#    """@reimp@"""
-#    if self.isOnline():
-#      if not self.isValid():
-#        growl.warn(i18n.tr("Missing QuickTime needed by text-to-speech"))
-#      else:
-#        self.engine.speak(text, language=self.language)
-

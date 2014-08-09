@@ -11,11 +11,8 @@ if __name__ == '__main__':
   import sys
   sys.path.append("..") # debug only
 
-from functools import partial
-import requests
-from PySide.QtCore import QObject, QUrl
-from sakurakit import skthreads
-from sakurakit.skdebug import dprint, dwarn
+from PySide.QtCore import QUrl
+#from sakurakit.skdebug import dprint
 
 def defaulturl(): return "http://translate.google.com/translate_tts"
 def seturl(url):
@@ -28,9 +25,9 @@ def seturl(url):
 GOOGLE_TTS_API = defaulturl()
 
 class _GoogleTtsEngine(object):
-  def __init__(self):
+  def __init__(self, parent):
     self.warmed = False # if q.say has been invoked at least once
-    self._parentWidget = None
+    self._parentWidget = parent
     self._webView = None
 
   @property
@@ -55,37 +52,9 @@ class _GoogleTtsEngine(object):
     if self._webView:
       self._webView.stop()
 
-  @staticmethod
-  def get(text, language):
-    """
-    @param  text  str or unicode
-    @param  language  str
-    @return  (str content, str mimetype) or (None, None)
-    """
-    try:
-      r = requests.get(GOOGLE_TTS_API, params={
-        'tl': language,
-        'q': text,
-      })
-      c = r.content # always read all content
-      mimetype = r.headers['content-type'] # return None if no mimetype
-      return c, mimetype
-    #except socket.error, e:
-    #  dprint("socket error", e.args)
-    except requests.ConnectionError, e:
-      dprint("connection error", e.args)
-    except requests.HTTPError, e:
-      dprint("http error", e.args)
-    except KeyError:
-      dprint("missing content type in response headers")
-    except Exception, e:
-      dwarn(e)
-    return None, None
-
-class GoogleTtsEngine(QObject):
+class GoogleTtsEngine(object):
   def __init__(self, parent=None):
-    super(GoogleTtsEngine, self).__init__(parent)
-    self.__d = _GoogleTtsEngine()
+    self.__d = _GoogleTtsEngine(parent)
 
   def parentWidget(self):
     """
@@ -104,7 +73,7 @@ class GoogleTtsEngine(QObject):
 
   def warmup(self):
     if not self.__d.warmed:
-      self.speak(" ", language='ja')
+      self.speak(" ", language='ja') # speak an empty space
 
   def speak(self, text, language='en', async=False):
     """
@@ -115,23 +84,11 @@ class GoogleTtsEngine(QObject):
     #dprint("enter: language = %s, async = %s" % (language, async))
     if len(language) > 2:
       language = language[:2] # only 2 characters are kept
-      #dprint("language = %s" % language)
-    #dprint(text)
-    if async:
-      content, mimetype = skthreads.runsync(partial(
-          self.__d.get, text, language=language),
-          parent=self)
-      if mimetype and mimetype.lower().startswith('audio'):
-        self.__d.webView.setContent(content, mimetype)
-        # FIXME: QuickTime plugin does not automatically play the local media stream
-      else:
-        dwarn("unknown mimetype %s" % mimetype)
-    else:
-      url = QUrl(GOOGLE_TTS_API)
-      url.addQueryItem('tl', language)
-      url.addEncodedQueryItem('q', QUrl.toPercentEncoding(text))
-      self.__d.webView.load(url)
-      #dprint(url.toString())
+    url = QUrl(GOOGLE_TTS_API)
+    url.addQueryItem('tl', language)
+    url.addEncodedQueryItem('q', QUrl.toPercentEncoding(text))
+    self.__d.webView.load(url)
+    #dprint(url.toString())
     self.__d.warmed = True
     #dprint("leave")
 
@@ -171,7 +128,7 @@ def update_web_settings(settings=None):
   #QWebSettings.setOfflineWebApplicationCachePath(G_PATH_CACHES)
 
   # See: http://webkit.org/blog/427/webkit-page-cache-i-the-basics/
-  ws.setMaximumPagesInCache(30)
+  ws.setMaximumPagesInCache(10) # do not cache lots of pages
 
 if __name__ == '__main__':
   print "enter"

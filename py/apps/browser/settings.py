@@ -41,8 +41,8 @@ class Settings(QSettings):
   def setReaderActivated(self, value): self.setValue("ReaderActivated", value)
   def isReaderActivated(self): return to_bool(self.value("ReaderActivated", True))
 
-  def setMeCabEnabled(self, value): self.setValue("MeCabEnabled", value)
-  def isMeCabEnabled(self): return to_bool(self.value("MeCabEnabled"))
+  def setRubyEnabled(self, value): self.setValue("RubyEnabled", value)
+  def isRubyEnabled(self): return to_bool(self.value("RubyEnabled"))
 
   ttsEnabledChanged = Signal(bool)
   def isTtsEnabled(self): return to_bool(self.value("TtsEnabled"))
@@ -51,12 +51,19 @@ class Settings(QSettings):
       self.setValue("TtsEnabled", value)
       self.ttsEnabledChanged.emit(value)
 
-  translationEnabledChanged = Signal(bool)
-  def isTranslationEnabled(self): return to_bool(self.value("TranslationEnabled"))
-  def setTranslationEnabled(self, value):
-    if value != self.isTranslationEnabled():
-      self.setValue("TranslationEnabled", value)
-      self.translationEnabledChanged.emit(value)
+  fullTranslationEnabledChanged = Signal(bool)
+  def isFullTranslationEnabled(self): return to_bool(self.value("FullTranslationEnabled"))
+  def setFullTranslationEnabled(self, value):
+    if value != self.isFullTranslationEnabled():
+      self.setValue("FullTranslationEnabled", value)
+      self.fullTranslationEnabledChanged.emit(value)
+
+  translationTipEnabledChanged = Signal(bool)
+  def isTranslationTipEnabled(self): return to_bool(self.value("TranslationTipEnabled"))
+  def setTranslationTipEnabled(self, value):
+    if value != self.isTranslationTipEnabled():
+      self.setValue("TranslationTipEnabled", value)
+      self.translationTipEnabledChanged.emit(value)
 
 class ReaderSettings(QSettings):
 

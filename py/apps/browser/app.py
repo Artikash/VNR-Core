@@ -13,7 +13,7 @@ class Application(QApplication):
   def __init__(self, argv):
     super(Application, self).__init__(argv)
 
-    self.setApplicationName(u"Kagami Browser")
+    self.setApplicationName(u"Website Reader")
     self.setApplicationVersion(str(config.VERSION_TIMESTAMP))
     self.setOrganizationName(config.VERSION_ORGANIZATION)
     self.setOrganizationDomain(config.VERSION_DOMAIN)

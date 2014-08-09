@@ -59,11 +59,11 @@ class WbWebView(skwebkit.SkWebView):
       self.page().inject()
 
   def isInjectEnabled(self): return self.page().injectEnabled
-  def setInjectEnabled(self, t):
-    page = self.page()
-    if page.isInjectEnabled() != t:
-      page.setInjectEnabled(t)
-      self.inject()
+  def setInjectEnabled(self, t): self.page().setInjectEnabled(t)
+    #page = self.page()
+    #if page.isInjectEnabled() != t:
+    #  page.setInjectEnabled(t)
+    #  self.inject()
 
   def load(self, url): # QUrl ->
     t = url.toString() if isinstance(url, QUrl) else url

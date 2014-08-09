@@ -18,13 +18,14 @@
 #  ret.join ' '
 #document.body.dataset.annot = getdataset()
 
-toggleclass = (el, cls, t) -> # element, string, booleaan
-  if t then el.classList.add cls else el.classList.remove cls
-
 (->
+  toggleclass = (el, cls, t) -> # element, string, booleaan
+    if t then el.classList.add cls else el.classList.remove cls
+
+  toggleclass @, 'annot-opt-tr', settingsBean.isFullTranslationEnabled()
   toggleclass @, 'annot-opt-ruby', settingsBean.isRubyEnabled()
   toggleclass @, 'annot-opt-tts', settingsBean.isTtsEnabled()
-  toggleclass @, 'annot-opt-tr', settingsBean.isTranslationEnabled()
+  toggleclass @, 'annot-opt-tr-tip', settingsBean.isTranslationTipEnabled()
 ).apply document.body
 
 # Make sure this script is only evaluated once

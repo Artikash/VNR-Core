@@ -1,8 +1,6 @@
 /* annot.sass
    3/29/2014 jichi
 
-@import main/cursor
-
 .annot-ruby
   //a:hover,
   &:hover
@@ -46,13 +44,37 @@
     rb
       text-decoration: underline
 
-body.annot-opt-tts .annot-ruby ruby
-  @extend .cursor-pointer
+$hl-color: #fffbcc // yellow, highlight color
+$hl-hover-color: #fffb00  // yello
 
-body.annot-opt-ruby .annot-src
-  display: none
+.annot-container // container
+  display: inline-block
 
-body:not(.annot-opt-ruby) .annot-ruby
-  display: none
+.annot-tr:hover
+  background-color: $hl-color
+
+body
+  // Display pointer when TTS
+  //&.annot-opt-tts .annot-ruby ruby
+  //  @extend .cursor-pointer
+  // Hide source when toggle
+  &.annot-opt-ruby .annot-src
+    display: none
+  &.annot-opt-tr .annot-src
+    display: none
+  &:not(.annot-opt-ruby) .annot-ruby
+    display: none
+  &:not(.annot-opt-tr) .annot-tr
+    display: none
+  // Highlight when translation tip/tts is enabled
+  &.annot-opt-tts,
+  &.annot-opt-tr-tip
+    .annot-src:hover
+      background-color: $hl-color
+  // Both source and translation are visible
+  &.annot-opt-tr.annot-opt-ruby .annot-tr
+    background-color: $hl-color
+    &:hover
+      background-color: $hl-hover-color
 
 // EOF

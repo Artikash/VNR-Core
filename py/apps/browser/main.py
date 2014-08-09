@@ -41,6 +41,8 @@ class MainObject(QObject):
     dprint("show root window")
     w = d.mainWindow
 
+    d.ttsManager.setParentWidget(w)
+
     urls = [it for it in args if not it.startswith('-')]
     args_offset = 2 if skos.WIN else 1
     urls = urls[args_offset:]
@@ -74,8 +76,8 @@ class MainObject(QObject):
     yes = QMessageBox.Yes
     no = QMessageBox.No
     sel = QMessageBox.question(self.__d.rootWindow,
-        u"Kagami Browser",
-        i18n.tr("Quit the Kagami Browser?"),
+        u"Website Reader",
+        i18n.tr("Quit the Website Reader?"),
         yes|no, no)
     if sel == yes:
       self.quit()
@@ -178,11 +180,12 @@ class _MainObject(object):
     ret.setJBeijingEnabled(reader.isJBeijingEnabled() and bool(reader.jbeijingLocation()))
     ret.setLecEnabled(reader.isLecEnabled() and bool(reader.lecLocation()))
 
-    if ss.isTranslationEnabled() and not ret.isAvailable():
-      ss.setTranslationEnabled(False)
+    if not ret.isAvailable():
+      ss.setFullTranslationEnabled(False)
+      ss.setTranslationTipEnabled(False)
 
-    ret.setEnabled(ss.isTranslationEnabled())
-    ss.translationEnabledChanged.connect(ret.setEnabled)
+    #ret.setEnabled(ss.isTranslationEnabled())
+    #ss.translationEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -191,6 +194,7 @@ class _MainObject(object):
     import ttsman, settings
     ret = ttsman.manager()
     ret.setParent(self.q)
+    #ret.setParentWidget(self.mainWindow)
 
     ss = settings.global_()
 
