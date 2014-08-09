@@ -65,6 +65,114 @@ class Settings(QSettings):
       self.setValue("TranslationTipEnabled", value)
       self.translationTipEnabledChanged.emit(value)
 
+  # Translators
+
+  infoseekEnabledChanged = Signal(bool)
+  def isInfoseekEnabled(self):
+    return to_bool(self.value('InfoseekEnabled'))
+  def setInfoseekEnabled(self, value):
+    if value != self.isInfoseekEnabled():
+      self.setValue('InfoseekEnabled', value)
+      self.infoseekEnabledChanged.emit(value)
+
+  exciteEnabledChanged = Signal(bool)
+  def isExciteEnabled(self):
+    return to_bool(self.value('ExciteEnabled'))
+  def setExciteEnabled(self, value):
+    if value != self.isExciteEnabled():
+      self.setValue('ExciteEnabled', value)
+      self.exciteEnabledChanged.emit(value)
+
+  googleEnabledChanged = Signal(bool)
+  def isGoogleEnabled(self):
+    return to_bool(self.value('GoogleEnabled'))
+  def setGoogleEnabled(self, value):
+    if value != self.isGoogleEnabled():
+      self.setValue('GoogleEnabled', value)
+      self.googleEnabledChanged.emit(value)
+
+  bingEnabledChanged = Signal(bool)
+  def isBingEnabled(self):
+    return to_bool(self.value('BingEnabled', True)) # the only one enabled
+  def setBingEnabled(self, value):
+    if value != self.isBingEnabled():
+      self.setValue('BingEnabled', value)
+      self.bingEnabledChanged.emit(value)
+
+  baiduEnabledChanged = Signal(bool)
+  def isBaiduEnabled(self):
+    return to_bool(self.value('BaiduEnabled'))
+  def setBaiduEnabled(self, value):
+    if value != self.isBaiduEnabled():
+      self.setValue('BaiduEnabled', value)
+      self.baiduEnabledChanged.emit(value)
+
+  lecOnlineEnabledChanged = Signal(bool)
+  def isLecOnlineEnabled(self):
+    return to_bool(self.value('LecOnlineEnabled'))
+  def setLecOnlineEnabled(self, value):
+    if value != self.isLecOnlineEnabled():
+      self.setValue('LecOnlineEnabled', value)
+      self.lecOnlineEnabledChanged.emit(value)
+
+  transruEnabledChanged = Signal(bool)
+  def isTransruEnabled(self):
+    return to_bool(self.value('TransruEnabled'))
+  def setTransruEnabled(self, value):
+    if value != self.isTransruEnabled():
+      self.setValue('TransruEnabled', value)
+      self.transruEnabledChanged.emit(value)
+
+  hanVietEnabledChanged = Signal(bool)
+  def isHanVietEnabled(self):
+    return to_bool(self.value('HanVietEnabled'))
+  def setHanVietEnabled(self, value):
+    if value != self.isHanVietEnabled():
+      self.setValue('HanVietEnabled', value)
+      self.hanVietEnabledChanged.emit(value)
+
+  atlasEnabledChanged = Signal(bool)
+  def isAtlasEnabled(self):
+    return to_bool(self.value('AtlasEnabled'))
+  def setAtlasEnabled(self, value):
+    if value != self.isAtlasEnabled():
+      self.setValue('AtlasEnabled', value)
+      self.atlasEnabledChanged.emit(value)
+
+  lecEnabledChanged = Signal(bool)
+  def isLecEnabled(self):
+    return to_bool(self.value('LecEnabled'))
+  def setLecEnabled(self, value):
+    if value != self.isLecEnabled():
+      self.setValue('LecEnabled', value)
+      self.lecEnabledChanged.emit(value)
+
+  jbeijingEnabledChanged = Signal(bool)
+  def isJBeijingEnabled(self):
+    return to_bool(self.value('JBeijingEnabled'))
+  def setJBeijingEnabled(self, value):
+    if value != self.isJBeijingEnabled():
+      self.setValue('JBeijingEnabled', value)
+      self.jbeijingEnabledChanged.emit(value)
+
+  dreyeEnabledChanged =Signal(bool)
+  def isDreyeEnabled(self):
+    return to_bool(self.value('DreyeEnabled'))
+  def setDreyeEnabled(self, value):
+    if value != self.isDreyeEnabled():
+      self.setValue('DreyeEnabled', value)
+      self.dreyeEnabledChanged.emit(value)
+
+  ezTransEnabledChanged = Signal(bool)
+  def isEzTransEnabled(self):
+    return to_bool(self.value('ezTransEnabled'))
+  def setEzTransEnabled(self, value):
+    if value != self.isEzTransEnabled():
+      self.setValue('ezTransEnabled', value)
+      self.ezTransEnabledChanged.emit(value)
+
+# VNR's settings
+
 class ReaderSettings(QSettings):
 
   def __init__(self):
@@ -119,20 +227,5 @@ class ReaderSettings(QSettings):
   def dreyeLocation(self): return to_unicode(self.value('DreyeLocation'))
   def atlasLocation(self): return to_unicode(self.value('AtlasLocation'))
   def lecLocation(self): return to_unicode(self.value('LecLocation'))
-
-  def isBaiduEnabled(self): return to_bool(self.value('BaiduEnabled'))
-  def isBingEnabled(self): return to_bool(self.value('BingEnabled', True)) # only enabled
-  def isExciteEnabled(self): return to_bool(self.value('ExciteEnabled'))
-  def isGoogleEnabled(self): return to_bool(self.value('GoogleEnabled'))
-  def isHanVietEnabled(self): return to_bool(self.value('HanVietEnabled'))
-  def isInfoseekEnabled(self): return to_bool(self.value('InfoseekEnabled'))
-  def isLecOnlineEnabled(self): return to_bool(self.value('LecOnlineEnabled'))
-  def isTransruEnabled(self): return to_bool(self.value('TransruEnabled'))
-
-  def isAtlasEnabled(self): return to_bool(self.value('AtlasEnabled'))
-  def isEzTransEnabled(self): return to_bool(self.value('ezTransEnabled'))
-  def isDreyeEnabled(self): return to_bool(self.value('DreyeEnabled'))
-  def isJBeijingEnabled(self): return to_bool(self.value('JBeijingEnabled'))
-  def isLecEnabled(self): return to_bool(self.value('LecEnabled'))
 
 # EOF

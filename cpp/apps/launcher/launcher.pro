@@ -3,8 +3,8 @@
 
 TEMPLATE = subdirs
 SUBDIRS = \
-  pyreader \
-  reader
+  pybrowser browser \
+  pyreader reader
   #pyinstaller
   #installer
   #updater

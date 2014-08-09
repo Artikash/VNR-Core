@@ -2001,14 +2001,14 @@ class _HonyakuTab(object):
 
   @memoizedproperty
   def bingButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Microsoft Bing multilingual translation service"))
+    ret = QtWidgets.QCheckBox(my.tr("Microsoft Bing.com multilingual translation service"))
     ret.setChecked(settings.global_().isBingEnabled())
     ret.toggled.connect(settings.global_().setBingEnabled)
     return ret
 
   @memoizedproperty
   def googleButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Google multilingual translation service"))
+    ret = QtWidgets.QCheckBox(my.tr("Google.com multilingual translation service"))
     ret.setChecked(settings.global_().isGoogleEnabled())
     ret.toggled.connect(settings.global_().setGoogleEnabled)
     return ret

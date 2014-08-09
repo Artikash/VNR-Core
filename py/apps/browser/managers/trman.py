@@ -254,7 +254,8 @@ class TranslatorManager(QObject):
     """
     return self.hasOnlineTranslators() or self.hasOfflineTranslators()
 
-  def isAvailable(self): return self.hasTranslators()
+  #def isAvailable(self): return self.hasTranslators()
+  def isAvailable(self): return True # always available
 
   def enabledEngines(self): # -> [str]
     d = self.__d

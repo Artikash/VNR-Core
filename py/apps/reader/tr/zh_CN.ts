@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="zh_CN">
+<!DOCTYPE TS><TS version="1.1" language="zh_CN">
 <context>
     <name>my</name>
     <message>
@@ -550,7 +549,7 @@ Especially if you would like to translate this game.</source>
 如果可能的话，强烈建议你&lt;b&gt;调整游戏文本速度到最快&lt;/b&gt;。
 特别是当你打算翻译这个游戏的时候。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="1890"/>
         <source>Kojien (広辞苑) Japanese-Japanese dictionary</source>
         <translation>広辞苑日日字典</translation>
@@ -1092,7 +1091,7 @@ It might take a couple of seconds to complete.</source>
         <translation>你希望现在就更新吗？
 这会花费几秒钟来完成。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="1904"/>
         <source>Zhongri (日中) Japanese-Chinese dictionary</source>
         <translation>日中统合辞典</translation>
@@ -1143,7 +1142,7 @@ It might take a couple of seconds to complete.</source>
         <translation>适用于日文编码的Windows</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="65"/>
+        <location filename="managers/_ttsman.py" line="61"/>
         <source>Missing QuickTime needed by text-to-speech</source>
         <translation>缺少语音合成需要的QuickTime</translation>
     </message>
@@ -1286,7 +1285,7 @@ If yes, VNR will block all settings for this language.</source>
 它和你当前的用户语言是相同的呢。
 如果屏蔽它，VNR会屏蔽所有与这个语言有关的设定。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="2814"/>
         <source>Wadoku (和独) Japanese-German dictionary</source>
         <translation>和独日德辞书</translation>
@@ -1435,8 +1434,8 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="2004"/>
-        <source>Microsoft Bing multilingual translation service</source>
-        <translation>微软Bing的多国语言翻译服务</translation>
+        <source>Microsoft Bing.com multilingual translation service</source>
+        <translation>Bing.com微软多国语言翻译服务</translation>
     </message>
     <message>
         <location filename="dialogs/prompt.py" line="351"/>
@@ -1565,8 +1564,8 @@ unless you have been familiar with VNR.</source>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="2011"/>
-        <source>Google multilingual translation service</source>
-        <translation>Google的多国语言翻译服务</translation>
+        <source>Google.com multilingual translation service</source>
+        <translation>Google.com多国语言翻译服务</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="2276"/>
@@ -1613,7 +1612,7 @@ VNR will automatically check for updates.</source>
 数据库可以用来帮助识别新的游戏。
 VNR会自动检查更新的。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="60"/>
         <source>&lt;h4&gt;About the account&lt;/h4&gt;
 You don&apos;t need an account to access machine translations and subtitles from others.&lt;br/&gt;
@@ -1898,7 +1897,7 @@ This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source
         <source>Game character names not found</source>
         <translation>没有找到人物的姓名</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="200"/>
         <source>&lt;h3&gt;Motivation&lt;/h3&gt;
 In VNR, game settings including user-contributed subtitles and series-specific dictionary terms
@@ -2216,12 +2215,12 @@ Zunko is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and y
         <translation>外部语音合成软件的位置</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="105"/>
+        <location filename="managers/_ttsman.py" line="101"/>
         <source>Activate Voiceroid+</source>
         <translation>打开VOICEROID+</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="111"/>
+        <location filename="managers/_ttsman.py" line="107"/>
         <source>Cannot find Voiceroid+</source>
         <translation>没有找到VOICEROID+</translation>
     </message>
@@ -2659,7 +2658,7 @@ VNR中可以共享对游戏内容的&lt;span style=&apos;color:purple&apos;&gt;�
 需要导出字幕到XML文件，可以在【字幕编辑器】中点击【导出】按钮。
 </translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="330"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 In Text Settings and Game Wizard,
@@ -2822,7 +2821,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
         <source>Unknown game. Please try editing the game information.</source>
         <translation>未知的游戏。请尝试编辑下游戏情报。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="365"/>
         <source>The hook code is a &lt;i&gt;hash string&lt;/i&gt; encoded by the information needed to sync with specific game.
 It is not required by all the games, but is essential for some ones.
@@ -3727,7 +3726,7 @@ VNR的提取方法支持内嵌翻译到游戏中去，但是支持的游戏比IT
         <source>Do you want to enable the selected {0} items?</source>
         <translation>你想要启用{0}个选定的条目吗？</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="1882"/>
         <source>Daijirin (大辞林) Japanese-Japanese/English dictionary</source>
         <translation>大辞林日日/和英字典</translation>

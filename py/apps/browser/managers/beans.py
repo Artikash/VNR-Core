@@ -5,6 +5,7 @@
 import json
 from PySide.QtCore import QObject, Slot
 from sakurakit.skclass import memoized, memoizedproperty
+from sakurakit.skdebug import dprint
 import rc
 
 @memoized
@@ -127,5 +128,41 @@ class SettingsBean(QObject):
   def isTranslationTipEnabled(self):
     import settings
     return settings.global_().isTranslationTipEnabled()
+
+  @Slot(str, result=bool)
+  def isTranslatorEnabled(self, key):
+    if key == 'jbeijing':
+      Key = 'JBeijing'
+    elif key == 'lecol':
+      Key = 'LecOnline'
+    elif key == 'ez':
+      Key = 'EzTrans'
+    elif key == 'hanviet':
+      Key = 'HanViet'
+    else:
+      Key = key.capitalize()
+    #dprint(Key)
+    import settings
+    fun = "is%sEnabled" % Key
+    ss = settings.global_()
+    return getattr(ss, fun)()
+
+  @Slot(str, bool)
+  def setTranslatorEnabled(self, key, value):
+    if key == 'jbeijing':
+      Key = 'JBeijing'
+    elif key == 'lecol':
+      Key = 'LecOnline'
+    elif key == 'ez':
+      Key = 'EzTrans'
+    elif key == 'hanviet':
+      Key = 'HanViet'
+    else:
+      Key = key.capitalize()
+    dprint(Key, value)
+    import settings
+    fun = "set%sEnabled" % Key
+    ss = settings.global_()
+    getattr(ss, fun)(value)
 
 # EOF

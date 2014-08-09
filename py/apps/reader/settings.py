@@ -975,7 +975,7 @@ class Settings(QSettings):
 
   bingEnabledChanged = Signal(bool)
   def isBingEnabled(self):
-    return to_bool(self.value('BingEnabled', True))
+    return to_bool(self.value('BingEnabled', True)) # the only one enabled
   def setBingEnabled(self, value):
     if value != self.isBingEnabled():
       self.setValue('BingEnabled', value)
