@@ -1746,7 +1746,7 @@ static void SpecialHookShina(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* 
     *len=0;
   else {
     for (skip = 0; text_buffer[skip]; skip++)
-      text_buffer_prev[skip]=text_buffer[skip];
+      text_buffer_prev[skip] = text_buffer[skip];
     text_buffer_prev[skip] = 0;
     *data = (DWORD)text_buffer_prev;
     *len = skip;
@@ -6719,6 +6719,9 @@ bool InsertPPSSPPHooks()
   bool bandaiFound = InsertBandaiPSPHook();
   InsertBandaiNamePSPHook();
 
+  InsertImageepoch2PSPHook();
+
+
   // Hooks whose pattern is not generic enouph
 
   InsertCyberfrontPSPHook();
@@ -6729,6 +6732,8 @@ bool InsertPPSSPPHooks()
   InsertAlchemistPSPHook();
   InsertAlchemist2PSPHook();
 
+  //InsertTypeMoonPSPHook() // otomate is creating too many garbage
+  //|| InsertOtomatePSPHook();
   InsertOtomatePSPHook();
 
   if (!bandaiFound) {
@@ -7259,7 +7264,7 @@ bool Insert5pbPSPHook()
 /** 7/13/2014 jichi imageepoch.co.jp PSP engine, 0.9.8, 0.9.9
  *  Sample game: BLACK☆ROCK SHOOTER
  *
- *  Float memory addresses: two matches
+ *  Float memory addresses: two matches, UTF-8
  *
  *  7/29/2014: seems to work on 0.9.9
  *
@@ -7335,11 +7340,14 @@ bool InsertImageepochPSPHook()
     0x8b,0x3d, XX4,                 // 1346d373   8b3d 78a71001    mov edi,dword ptr ds:[0x110a778]
     0x8b,0xc6,                      // 1346d379   8bc6             mov eax,esi
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1346d37b   81e0 ffffff3f    and eax,0x3fffffff
-    0x0f,0xb6,0xa8 //, XX4          // 1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+    0x0f,0xb6,0xa8, XX4,            // 1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000] ; jichi: hook here
+    0x8d,0x56, 0x01,                // 1346d388   8d56 01          lea edx,dword ptr ds:[esi+0x1]
+    0x8b,0xc5,                      // 1346d38b   8bc5             mov eax,ebp
+    0x0f,0xbe,0xc8                  // 1346d38d   0fbec8           movsx ecx,al
   };
-  //enum { hook_offset = 0x1346d36d - 0x1346d350 };
   enum { memory_offset = 3 }; // 1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000]
-  enum { hook_offset = sizeof(bytes) - memory_offset };
+  enum { hook_offset = 0x1346d381 - 0x1346d350 };
+  //enum { hook_offset = sizeof(bytes) - memory_offset };
 
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
   if (!addr)
@@ -7359,6 +7367,89 @@ bool InsertImageepochPSPHook()
   }
 
   ConsoleOutput("vnreng: Imageepoch PSP: leave");
+  return addr;
+}
+
+/** 8/9/2014 jichi imageepoch.co.jp PSP engine, 0.9.8, 0.9.9
+ *  Sample game: Sol Trigger (0.9.8, 0.9.9)
+ *
+ *  Though Imageepoch1 also exists, it cannot find scenario text.
+ *
+ *  FIXED memory addresses (different from Imageepoch1): two matches, UTF-8
+ *
+ *  Debug method: find current text and add breakpoint.
+ *
+ *  There a couple of good functions. The first one is used.
+ *  There is only one text threads.
+ *
+ *  135fd497   cc               int3
+ *  135fd498   77 0f            ja short 135fd4a9
+ *  135fd49a   c705 a8aa1001 20>mov dword ptr ds:[0x110aaa8],0x8952d20
+ *  135fd4a4  -e9 5b2b2ef0      jmp 038e0004
+ *  135fd4a9   8b35 dca71001    mov esi,dword ptr ds:[0x110a7dc]
+ *  135fd4af   81c6 04000000    add esi,0x4
+ *  135fd4b5   8b05 a8a71001    mov eax,dword ptr ds:[0x110a7a8]
+ *  135fd4bb   81e0 ffffff3f    and eax,0x3fffffff
+ *  135fd4c1   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]   ; jichi: hook here
+ *  135fd4c8   813d 68a71001 00>cmp dword ptr ds:[0x110a768],0x0
+ *  135fd4d2   893d 78a71001    mov dword ptr ds:[0x110a778],edi
+ *  135fd4d8   c705 aca71001 23>mov dword ptr ds:[0x110a7ac],0x23434623
+ *  135fd4e2   c705 b0a71001 30>mov dword ptr ds:[0x110a7b0],0x30303030
+ *  135fd4ec   8935 b4a71001    mov dword ptr ds:[0x110a7b4],esi
+ *  135fd4f2   c705 b8a71001 00>mov dword ptr ds:[0x110a7b8],0x0
+ *  135fd4fc   0f85 16000000    jnz 135fd518
+ *  135fd502   832d c4aa1001 08 sub dword ptr ds:[0x110aac4],0x8
+ *  135fd509   e9 22000000      jmp 135fd530
+ *  135fd50e   01642d 95        add dword ptr ss:[ebp+ebp-0x6b],esp
+ *  135fd512   08e9             or cl,ch
+ *  135fd514   0b2b             or ebp,dword ptr ds:[ebx]
+ *  135fd516   2e:f0:832d c4aa1>lock sub dword ptr cs:[0x110aac4],0x8    ; lock prefix
+ *  135fd51f   c705 a8aa1001 40>mov dword ptr ds:[0x110aaa8],0x8952d40
+ *  135fd529  -e9 f52a2ef0      jmp 038e0023
+ *  135fd52e   90               nop
+ *  135fd52f   cc               int3
+ */
+bool InsertImageepoch2PSPHook()
+{
+  ConsoleOutput("vnreng: Imageepoch2 PSP: enter");
+
+  const BYTE bytes[] =  {
+                                         // 135fd497   cc               int3
+    0x77, 0x0f,                          // 135fd498   77 0f            ja short 135fd4a9
+    0xc7,0x05, XX8,                      // 135fd49a   c705 a8aa1001 20>mov dword ptr ds:[0x110aaa8],0x8952d20
+    0xe9, XX4,                           // 135fd4a4  -e9 5b2b2ef0      jmp 038e0004
+    0x8b,0x35, XX4,                      // 135fd4a9   8b35 dca71001    mov esi,dword ptr ds:[0x110a7dc]
+    0x81,0xc6, 0x04,0x00,0x00,0x00,      // 135fd4af   81c6 04000000    add esi,0x4
+    0x8b,0x05, XX4,                      // 135fd4b5   8b05 a8a71001    mov eax,dword ptr ds:[0x110a7a8]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f,      // 135fd4bb   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb6,0xb8, XX4,                 // 135fd4c1   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]   ; jichi: hook here
+    0x81,0x3d, XX4, 0x00,0x00,0x00,0x00, // 135fd4c8   813d 68a71001 00>cmp dword ptr ds:[0x110a768],0x0
+    0x89,0x3d, XX4,                      // 135fd4d2   893d 78a71001    mov dword ptr ds:[0x110a778],edi
+    0xc7,0x05, XX8,                      // 135fd4d8   c705 aca71001 23>mov dword ptr ds:[0x110a7ac],0x23434623
+    0xc7,0x05, XX8,                      // 135fd4e2   c705 b0a71001 30>mov dword ptr ds:[0x110a7b0],0x30303030
+    0x89,0x35, XX4,                      // 135fd4ec   8935 b4a71001    mov dword ptr ds:[0x110a7b4],esi
+    0xc7,0x05, XX4, 0x00,0x00,0x00,0x00, // 135fd4f2   c705 b8a71001 00>mov dword ptr ds:[0x110a7b8],0x0
+    0x0f,0x85 //, XX4,                   // 135fd4fc   0f85 16000000    jnz 135fd518
+  };
+  enum { memory_offset = 3 }; // 1346d381   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000]
+  enum { hook_offset = 0x135fd4c1 - 0x135fd498 };
+
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
+  if (!addr)
+    ConsoleOutput("vnreng: Imageepoch2 PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT; // UTF-8, though
+    hp.off = pusha_eax_off - 4;
+    hp.split = pusha_ecx_off - 4;
+    hp.extern_fun = SpecialPSPHook;
+    ConsoleOutput("vnreng: Imageepoch2 PSP: INSERT");
+    NewHook(hp, L"Imageepoch2 PSP");
+  }
+
+  ConsoleOutput("vnreng: Imageepoch2 PSP: leave");
   return addr;
 }
 
@@ -9165,7 +9256,6 @@ bool InsertOtomatePPSSPPHook()
 }
 
 /** 7/27/2014 jichi Intense.jp PSP engine, 0.9.8, 0.9.9,
- *  Missing in PPSSPP 0.9.9.
  *  Though Otomate can work, it cannot work line by line.
  *
  *  Sample game: 密室のサクリファイス work on 0.9.8 & 0.9.9
@@ -9284,6 +9374,162 @@ bool InsertIntensePSPHook()
   ConsoleOutput("vnreng: Intense PSP: leave");
   return addr;
 }
+
+#if 0 // 8/9/2014 jichi: cannot find a good function
+
+/** 8/9/2014 jichi Typemoon.com PSP engine, 0.9.8, 0.9.9,
+ *
+ *  Sample game: Fate CCC
+ *  This game is made by both TYPE-MOON and Imageepoch
+ *  But the encoding is SHIFT-JIS than UTF-8 like other Imageepoch games.
+ *  Otomate hook will produce significant amount of garbage.
+ *
+ *  Memory address is FIXED.
+ *  There are two matches in the memory.
+ *
+ *  Debug method: breakpoint the memory address
+ *  The hooked functions were looping which made it difficult to debug.
+ *
+ *  Two looped functions are as follows. The first one is used
+ *  The second function is tested as bad.
+ *
+ *  Registers: (all of them are fixed except eax)
+ *  EAX 08C91373
+ *  ECX 00000016
+ *  EDX 00000012
+ *  EBX 0027A580
+ *  ESP 0353E6D0
+ *  EBP 0000000B
+ *  ESI 0000001E
+ *  EDI 00000001
+ *  EIP 1351E14D
+ *
+ *  1351e12d   f0:90            lock nop                                 ; lock prefix is not allowed
+ *  1351e12f   cc               int3
+ *  1351e130   77 0f            ja short 1351e141
+ *  1351e132   c705 a8aa1001 b8>mov dword ptr ds:[0x110aaa8],0x88ed7b8
+ *  1351e13c  -e9 c31e27f0      jmp 03790004
+ *  1351e141   8b05 aca71001    mov eax,dword ptr ds:[0x110a7ac]
+ *  1351e147   81e0 ffffff3f    and eax,0x3fffffff
+ *  1351e14d   0fbeb0 01004007  movsx esi,byte ptr ds:[eax+0x7400001]	; or jichi: hook here
+ *  1351e154   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
+ *  1351e15a   81e0 ffffff3f    and eax,0x3fffffff
+ *  1351e160   8bb8 50004007    mov edi,dword ptr ds:[eax+0x7400050]
+ *  1351e166   81e6 ff000000    and esi,0xff
+ *  1351e16c   8bc6             mov eax,esi
+ *  1351e16e   8b35 a8a71001    mov esi,dword ptr ds:[0x110a7a8]
+ *  1351e174   0bf0             or esi,eax
+ *  1351e176   c1e6 10          shl esi,0x10
+ *  1351e179   c1fe 10          sar esi,0x10
+ *  1351e17c   893d 78a71001    mov dword ptr ds:[0x110a778],edi
+ *  1351e182   8935 7ca71001    mov dword ptr ds:[0x110a77c],esi
+ *  1351e188   c705 e4a71001 d4>mov dword ptr ds:[0x110a7e4],0x88ed7d4
+ *  1351e192   832d c4aa1001 07 sub dword ptr ds:[0x110aac4],0x7
+ *  1351e199   e9 0e000000      jmp 1351e1ac
+ *  1351e19e   01ac3e 8e08e97b  add dword ptr ds:[esi+edi+0x7be9088e],eb>
+ *  1351e1a5   1e               push ds
+ *  1351e1a6   27               daa
+ *  1351e1a7   f0:90            lock nop                                 ; lock prefix is not allowed
+ *  1351e1a9   cc               int3
+ *
+ *  13513f23   cc               int3
+ *  13513f24   77 0f            ja short 13513f35
+ *  13513f26   c705 a8aa1001 d4>mov dword ptr ds:[0x110aaa8],0x88e7bd4
+ *  13513f30  -e9 cfc027f0      jmp 03790004
+ *  13513f35   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+ *  13513f3b   81e0 ffffff3f    and eax,0x3fffffff
+ *  13513f41   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]
+ *  13513f48   8b3d 84a71001    mov edi,dword ptr ds:[0x110a784]
+ *  13513f4e   8d7f 01          lea edi,dword ptr ds:[edi+0x1]
+ *  13513f51   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+ *  13513f57   81e0 ffffff3f    and eax,0x3fffffff
+ *  13513f5d   8bd6             mov edx,esi
+ *  13513f5f   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl	; jichi: bad hook
+ *  13513f65   8b2d 78a71001    mov ebp,dword ptr ds:[0x110a778]
+ *  13513f6b   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+ *  13513f6e   33c0             xor eax,eax
+ *  13513f70   3b3d 80a71001    cmp edi,dword ptr ds:[0x110a780]
+ *  13513f76   0f9cc0           setl al
+ *  13513f79   8bf0             mov esi,eax
+ *  13513f7b   8b15 7ca71001    mov edx,dword ptr ds:[0x110a77c]
+ *  13513f81   8d52 01          lea edx,dword ptr ds:[edx+0x1]
+ *  13513f84   81fe 00000000    cmp esi,0x0
+ *  13513f8a   892d 78a71001    mov dword ptr ds:[0x110a778],ebp
+ *  13513f90   8915 7ca71001    mov dword ptr ds:[0x110a77c],edx
+ *  13513f96   893d 84a71001    mov dword ptr ds:[0x110a784],edi
+ *  13513f9c   8935 88a71001    mov dword ptr ds:[0x110a788],esi
+ *  13513fa2   0f84 16000000    je 13513fbe
+ *  13513fa8   832d c4aa1001 07 sub dword ptr ds:[0x110aac4],0x7
+ *  13513faf  ^e9 70ffffff      jmp 13513f24
+ *  13513fb4   01d4             add esp,edx
+ *  13513fb6   7b 8e            jpo short 13513f46
+ *  13513fb8   08e9             or cl,ch
+ *  13513fba   65:c027 f0       shl byte ptr gs:[edi],0xf0               ; shift constant out of range 1..31
+ *  13513fbe   832d c4aa1001 07 sub dword ptr ds:[0x110aac4],0x7
+ *  13513fc5   e9 0e000000      jmp 13513fd8
+ *  13513fca   01f0             add eax,esi
+ *  13513fcc   7b 8e            jpo short 13513f5c
+ *  13513fce   08e9             or cl,ch
+ *  13513fd0   4f               dec edi
+ *  13513fd1   c027 f0          shl byte ptr ds:[edi],0xf0               ; shift constant out of range 1..31
+ *  13513fd4   90               nop
+ *  13513fd5   cc               int3
+ *  13513fd6   cc               int3
+ */
+// Read text from dl
+static void SpecialPSPHookTypeMoon(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  DWORD eax = regof(eax, esp_base);
+  DWORD text = eax + hp->userValue - 1; // the text is in the previous byte
+  if (BYTE c = *(BYTE *)text) { // unsigned char
+    *data = text;
+    *len = ::LeadByteTable[c]; // 1 or 2
+    //*split = regof(ecx, esp_base);
+    //*split = regof(edx, esp_base);
+    *split = regof(ebx, esp_base);
+  }
+}
+bool InsertTypeMoonPSPHook()
+{
+  ConsoleOutput("vnreng: Intense PSP: enter");
+  const BYTE bytes[] =  {
+    0x77, 0x0f,                     // 1351e130   77 0f            ja short 1351e141
+    0xc7,0x05, XX8,                 // 1351e132   c705 a8aa1001 b8>mov dword ptr ds:[0x110aaa8],0x88ed7b8
+    0xe9, XX4,                      // 1351e13c  -e9 c31e27f0      jmp 03790004
+    0x8b,0x05, XX4,                 // 1351e141   8b05 aca71001    mov eax,dword ptr ds:[0x110a7ac]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1351e147   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xbe,0xb0, XX4,            // 1351e14d   0fbeb0 01004007  movsx esi,byte ptr ds:[eax+0x7400001]	;  jichi: hook here
+    0x8b,0x05, XX4,                 // 1351e154   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1351e15a   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xb8, XX4,                 // 1351e160   8bb8 50004007    mov edi,dword ptr ds:[eax+0x7400050]
+    0x81,0xe6, 0xff,0x00,0x00,0x00, // 1351e166   81e6 ff000000    and esi,0xff
+    0x8b,0xc6,                      // 1351e16c   8bc6             mov eax,esi
+    0x8b,0x35, XX4,                 // 1351e16e   8b35 a8a71001    mov esi,dword ptr ds:[0x110a7a8]
+    0x0b,0xf0,                      // 1351e174   0bf0             or esi,eax
+    0xc1,0xe6, 0x10,                // 1351e176   c1e6 10          shl esi,0x10
+    0xc1,0xfe, 0x10                 // 1351e179   c1fe 10          sar esi,0x10
+  };
+  enum { memory_offset = 3 };
+  enum { hook_offset = 0x1351e14d - 0x1351e130 };
+
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
+  if (!addr)
+    ConsoleOutput("vnreng: TypeMoon PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
+    hp.extern_fun = SpecialPSPHookTypeMoon;
+    ConsoleOutput("vnreng: TypeMoon PSP: INSERT");
+    NewHook(hp, L"TypeMoon PSP");
+  }
+
+  ConsoleOutput("vnreng: TypeMoon PSP: leave");
+  return addr;
+}
+
+#endif // 0
 
 #if 0 // 7/25/2014: This function is not invoked? Why?
 /** 7/22/2014 jichi: KOEI TECMO PSP, 0.9.8
