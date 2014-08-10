@@ -52,9 +52,10 @@ bool InsertBroccoliPSPHook();   // PSP Broccoli.co.jp
 
 bool InsertCyberfrontPSPHook(); // PSP CYBERFRONT (closed)
 bool InsertImageepochPSPHook(); // PSP Imageepoch.co.jp
-bool InsertImageepoch2PSPHook(); // PSP Imageepoch.co.jp
+bool InsertImageepoch2PSPHook();// PSP Imageepoch.co.jp
+bool InsertKadokawaNamePSPHook();   // PSP Kadokawa.co.jp
 bool InsertTecmoPSPHook();      // PSP Koeitecmo.co.jp
-//bool InsertTypeMoonPSPHook();   // PSP Typemoon.com
+//bool InsertTypeMoonPSPHook(); // PSP Typemoon.com
 
 bool InsertOtomatePSPHook();    // PSP Otomate.jp, 0.9.8 only
 
