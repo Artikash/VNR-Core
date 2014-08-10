@@ -145,31 +145,31 @@ ULONG _SafeMatchBytesInMappedMemory(LPCVOID pattern, DWORD patternSize, BYTE wil
   return 0;
 }
 
-inline ULONG SafeMatchBytesInGCMemory(LPCVOID pattern, DWORD patternSize, BYTE wildcard = XX)
+inline ULONG SafeMatchBytesInGCMemory(LPCVOID pattern, DWORD patternSize)
 {
   enum : ULONG {
     start = MemDbg::MappedMemoryStartAddress // 0x01000000
     , stop = MemDbg::MemoryStopAddress // 0x7ffeffff
     , step = start
   };
-  return _SafeMatchBytesInMappedMemory(pattern, patternSize, wildcard, start, stop, step);
+  return _SafeMatchBytesInMappedMemory(pattern, patternSize, XX, start, stop, step);
 }
 
-inline ULONG SafeMatchBytesInPSPMemory(LPCVOID pattern, DWORD patternSize, BYTE wildcard = XX)
+inline ULONG SafeMatchBytesInPSPMemory(LPCVOID pattern, DWORD patternSize, DWORD start = MemDbg::MappedMemoryStartAddress)
 {
   enum : ULONG {
-    start = MemDbg::MappedMemoryStartAddress // 0x01000000
-    , stop = 0x15000000 // hooking to code after this might crash VNR
+    //start = MemDbg::MappedMemoryStartAddress // 0x01000000
+    stop = 0x15000000 // hooking to code after this might crash VNR
     , step = 0x00050000 // in order to work on PPSSPP 0.9.9
     //, step = 0x1000 // step  must be at least 0x1000 (offset in SearchPattern)
     //, step = 0x00010000 // crash otoboku PSP on 0.9.9 since 5pb is wrongly inserted
     //, step = 0x00100000 // in order to work for 0.9.9
     //, step = 0x01000000 // only works for PPSSPP 0.9.8
   };
-  return _SafeMatchBytesInMappedMemory(pattern, patternSize, wildcard, start, stop, step);
+  return _SafeMatchBytesInMappedMemory(pattern, patternSize, XX, start, stop, step);
 }
 
-inline ULONG SafeMatchBytesInPS2Memory(LPCVOID pattern, DWORD patternSize, BYTE wildcard = XX)
+inline ULONG SafeMatchBytesInPS2Memory(LPCVOID pattern, DWORD patternSize)
 {
   // PCSX2 memory range
   // ds: begin from 0x20000000
@@ -182,7 +182,7 @@ inline ULONG SafeMatchBytesInPS2Memory(LPCVOID pattern, DWORD patternSize, BYTE 
     //, step = 0x00050000 // the same as PPS
     //, step = 0x1000 // step  must be at least 0x1000 (offset in SearchPattern)
   };
-  return _SafeMatchBytesInMappedMemory(pattern, patternSize, wildcard, start, stop, step);
+  return _SafeMatchBytesInMappedMemory(pattern, patternSize, XX, start, stop, step);
 }
 
 // 7/29/2014 jichi: I should move these functions to different files
@@ -6709,6 +6709,7 @@ bool InsertPPSSPPHooks()
   Insert5pbPSPHook();
   InsertBroccoliPSPHook();
   InsertIntensePSPHook();
+  //InsertKadokawaNamePSPHook(); // disabled
   InsertNippon1PSPHook();
   InsertNippon2PSPHook();
 
@@ -6720,7 +6721,6 @@ bool InsertPPSSPPHooks()
   InsertBandaiNamePSPHook();
 
   InsertImageepoch2PSPHook();
-
 
   // Hooks whose pattern is not generic enouph
 
@@ -7380,7 +7380,7 @@ bool InsertImageepochPSPHook()
  *  Debug method: find current text and add breakpoint.
  *
  *  There a couple of good functions. The first one is used.
- *  There is only one text threads.
+ *  There is only one text threads. But it cannot extract character names.
  *
  *  135fd497   cc               int3
  *  135fd498   77 0f            ja short 135fd4a9
@@ -9374,6 +9374,236 @@ bool InsertIntensePSPHook()
   ConsoleOutput("vnreng: Intense PSP: leave");
   return addr;
 }
+
+/** 8/9/2014 jichi Kadokawa.co.jp PSP engine, 0.9.8, ?,
+ *
+ *  Sample game: 未来日記 work on 0.9.8, not tested on 0.9.9
+ *
+ *  FIXME: Currently, only the character name works
+ *
+ *  Memory address is FIXED.
+ *  Debug method: predict and breakpoint the memory address
+ *
+ *  There are two matches in the memory, and only one function accessing them.
+ *
+ *  Character name function is as follows.
+ *  The scenario is the text after the name.
+ *
+ *  1348d79f   cc               int3
+ *  1348d7a0   77 0f            ja short 1348d7b1
+ *  1348d7a2   c705 a8aa1001 fc>mov dword ptr ds:[0x110aaa8],0x884c6fc
+ *  1348d7ac  -e9 532844f0      jmp 038d0004
+ *  1348d7b1   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+ *  1348d7b7   81e0 ffffff3f    and eax,0x3fffffff
+ *  1348d7bd   0fb6b0 00004007  movzx esi,byte ptr ds:[eax+0x7400000]	; jichi: hook here
+ *  1348d7c4   81fe 00000000    cmp esi,0x0
+ *  1348d7ca   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+ *  1348d7d0   0f85 2f000000    jnz 1348d805
+ *  1348d7d6   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+ *  1348d7dc   81e0 ffffff3f    and eax,0x3fffffff
+ *  1348d7e2   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]
+ *  1348d7e9   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+ *  1348d7ef   832d c4aa1001 03 sub dword ptr ds:[0x110aac4],0x3
+ *  1348d7f6   c705 a8aa1001 5c>mov dword ptr ds:[0x110aaa8],0x884c75c
+ *  1348d800  -e9 1e2844f0      jmp 038d0023
+ *  1348d805   832d c4aa1001 03 sub dword ptr ds:[0x110aac4],0x3
+ *  1348d80c   e9 0b000000      jmp 1348d81c
+ *  1348d811   0108             add dword ptr ds:[eax],ecx
+ *  1348d813   c78408 e9082844 >mov dword ptr ds:[eax+ecx+0x442808e9],0x>
+ *  1348d81e   c705 a8aa1001 08>mov dword ptr ds:[0x110aaa8],0x884c708
+ *  1348d828  -e9 d72744f0      jmp 038d0004
+ *  1348d82d   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+ *  1348d833   81e0 ffffff3f    and eax,0x3fffffff
+ *  1348d839   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]
+ *  1348d840   81fe 00000000    cmp esi,0x0
+ *  1348d846   8935 88a71001    mov dword ptr ds:[0x110a788],esi
+ *  1348d84c   0f85 16000000    jnz 1348d868
+ *  1348d852   832d c4aa1001 03 sub dword ptr ds:[0x110aac4],0x3
+ *  1348d859   e9 aa030000      jmp 1348dc08
+ *  1348d85e   0154c7 84        add dword ptr ds:[edi+eax*8-0x7c],edx
+ *  1348d862   08e9             or cl,ch
+ *  1348d864   bb 2744f083      mov ebx,0x83f04427
+ *  1348d869   2d c4aa1001      sub eax,0x110aac4
+ *  1348d86e   03e9             add ebp,ecx
+ *  1348d870   0c 00            or al,0x0
+ *  1348d872   0000             add byte ptr ds:[eax],al
+ *  1348d874   0114c7           add dword ptr ds:[edi+eax*8],edx
+ *  1348d877   8408             test byte ptr ds:[eax],cl
+ *  1348d879  -e9 a52744f0      jmp 038d0023
+ *  1348d87e   90               nop
+ *  1348d87f   cc               int3
+ *
+ *  Scenario function is as follows.
+ *  But I am not able to find it at runtime.
+ *
+ *  13484483   90               nop
+ *  13484484   77 0f            ja short 13484495
+ *  13484486   c705 a8aa1001 30>mov dword ptr ds:[0x110aaa8],0x884b030
+ *  13484490  -e9 6fbb59f3      jmp 06a20004
+ *  13484495   8b35 74a71001    mov esi,dword ptr ds:[0x110a774]
+ *  1348449b   81fe 00000000    cmp esi,0x0
+ *  134844a1   9c               pushfd
+ *  134844a2   8bc6             mov eax,esi
+ *  134844a4   8b35 84a71001    mov esi,dword ptr ds:[0x110a784]
+ *  134844aa   03f0             add esi,eax
+ *  134844ac   8935 74a71001    mov dword ptr ds:[0x110a774],esi
+ *  134844b2   9d               popfd
+ *  134844b3   0f8f 0c000000    jg 134844c5
+ *  134844b9   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
+ *  134844c0  ^e9 23b0f9ff      jmp 1341f4e8
+ *  134844c5   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
+ *  134844cc   e9 0b000000      jmp 134844dc
+ *  134844d1   0138             add dword ptr ds:[eax],edi
+ *  134844d3   b0 84            mov al,0x84
+ *  134844d5   08e9             or cl,ch
+ *  134844d7   48               dec eax
+ *  134844d8   bb 59f39077      mov ebx,0x7790f359
+ *  134844dd   0fc7             ???                                      ; unknown command
+ *  134844df   05 a8aa1001      add eax,0x110aaa8
+ *  134844e4   38b0 8408e917    cmp byte ptr ds:[eax+0x17e90884],dh
+ *  134844ea   bb 59f38b05      mov ebx,0x58bf359
+ *  134844ef  ^7c a7            jl short 13484498
+ *  134844f1   1001             adc byte ptr ds:[ecx],al
+ *  134844f3   81e0 ffffff3f    and eax,0x3fffffff
+ *  134844f9   0fb6b0 00004007  movzx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here, byte by byte
+ *  13484500   8b05 84a71001    mov eax,dword ptr ds:[0x110a784]
+ *  13484506   81e0 ffffff3f    and eax,0x3fffffff
+ *  1348450c   8bd6             mov edx,esi
+ *  1348450e   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl
+ *  13484514   8b3d 84a71001    mov edi,dword ptr ds:[0x110a784]
+ *  1348451a   8d7f 01          lea edi,dword ptr ds:[edi+0x1]
+ *  1348451d   8b2d 7ca71001    mov ebp,dword ptr ds:[0x110a77c]
+ *  13484523   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+ *  13484526   3b3d 74a71001    cmp edi,dword ptr ds:[0x110a774]
+ *  1348452c   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+ *  13484532   892d 7ca71001    mov dword ptr ds:[0x110a77c],ebp
+ *  13484538   893d 84a71001    mov dword ptr ds:[0x110a784],edi
+ *  1348453e   0f84 16000000    je 1348455a
+ *  13484544   832d c4aa1001 05 sub dword ptr ds:[0x110aac4],0x5
+ *  1348454b  ^e9 8cffffff      jmp 134844dc
+ *  13484550   0138             add dword ptr ds:[eax],edi
+ *  13484552   b0 84            mov al,0x84
+ *  13484554   08e9             or cl,ch
+ *  13484556   c9               leave
+ *  13484557   ba 59f3832d      mov edx,0x2d83f359
+ *  1348455c   c4aa 100105e9    les ebp,fword ptr ds:[edx+0xe9050110]    ; modification of segment register
+ *  13484562   0e               push cs
+ *  13484563   0000             add byte ptr ds:[eax],al
+ *  13484565   0001             add byte ptr ds:[ecx],al
+ *  13484567   4c               dec esp
+ *  13484568   b0 84            mov al,0x84
+ *  1348456a   08e9             or cl,ch
+ *  1348456c   b3 ba            mov bl,0xba
+ *  1348456e   59               pop ecx
+ *  1348456f   f3:              prefix rep:                              ; superfluous prefix
+ *  13484570   90               nop
+ *  13484571   cc               int3
+ *  13484572   cc               int3
+ *  13484573   cc               int3
+ */
+bool InsertKadokawaNamePSPHook()
+{
+  ConsoleOutput("vnreng: Kadokawa Name PSP: enter");
+  const BYTE bytes[] =  {
+    0x77, 0x0f,                     // 1348d7a0   77 0f            ja short 1348d7b1
+    0xc7,0x05, XX8,                 // 1348d7a2   c705 a8aa1001 fc>mov dword ptr ds:[0x110aaa8],0x884c6fc
+    0xe9, XX4,                      // 1348d7ac  -e9 532844f0      jmp 038d0004
+    0x8b,0x05, XX4,                 // 1348d7b1   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1348d7b7   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb6,0xb0, XX4,            // 1348d7bd   0fb6b0 00004007  movzx esi,byte ptr ds:[eax+0x7400000]	; jichi: hook here
+    0x81,0xfe, 0x00,0x00,0x00,0x00, // 1348d7c4   81fe 00000000    cmp esi,0x0
+    0x89,0x35, XX4,                 // 1348d7ca   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+    0x0f,0x85, 0x2f,0x00,0x00,0x00, // 1348d7d0   0f85 2f000000    jnz 1348d805
+    0x8b,0x05, XX4,                 // 1348d7d6   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1348d7dc   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xbe,0xb0, XX4,            // 1348d7e2   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]
+    0x89,0x35 //, XX4,              // 1348d7e9   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+  };
+  enum { memory_offset = 3 };
+  enum { hook_offset = 0x1348d7bd - 0x1348d7a0 };
+
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
+  if (!addr)
+    ConsoleOutput("vnreng: Kadokawa Name PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT;
+    hp.off = pusha_eax_off - 4;
+    hp.split = pusha_edx_off - 4; // use edx to split repetition
+    hp.extern_fun = SpecialPSPHook;
+
+    //ITH_GROWL_DWORD2(hp.addr, hp.userValue);
+    ConsoleOutput("vnreng: Kadokawa Name PSP: INSERT");
+    NewHook(hp, L"Kadokawa Name PSP");
+  }
+
+  ConsoleOutput("vnreng: Kadokawa Name PSP: leave");
+  return addr;
+}
+
+#if 0 // 8/9/2014 jichi: does not work
+
+bool InsertKadokawaPSPHook()
+{
+  ConsoleOutput("vnreng: Kadokawa PSP: enter");
+  const BYTE bytes[] =  {
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 134844f3   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb6,0xb0, XX4,            // 134844f9   0fb6b0 00004007  movzx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here, byte by byte
+    0x8b,0x05, XX4,                 // 13484500   8b05 84a71001    mov eax,dword ptr ds:[0x110a784]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13484506   81e0 ffffff3f    and eax,0x3fffffff
+    0x8b,0xd6,                      // 1348450c   8bd6             mov edx,esi
+    0x88,0x90, XX4,                 // 1348450e   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl
+    0x8b,0x3d, XX4,                 // 13484514   8b3d 84a71001    mov edi,dword ptr ds:[0x110a784]
+    0x8d,0x7f, 0x01,                // 1348451a   8d7f 01          lea edi,dword ptr ds:[edi+0x1]
+    0x8b,0x2d, XX4,                 // 1348451d   8b2d 7ca71001    mov ebp,dword ptr ds:[0x110a77c]
+    0x8d,0x6d, 0x01,                // 13484523   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
+    0x3b,0x3d, XX4,                 // 13484526   3b3d 74a71001    cmp edi,dword ptr ds:[0x110a774]
+    0x89,0x35, XX4,                 // 1348452c   8935 70a71001    mov dword ptr ds:[0x110a770],esi
+    0x89,0x2d, XX4,                 // 13484532   892d 7ca71001    mov dword ptr ds:[0x110a77c],ebp
+    0x89,0x3d, XX4,                 // 13484538   893d 84a71001    mov dword ptr ds:[0x110a784],edi
+    // Above is not sufficient
+    //0x0f,0x84, XX4,                 // 1348453e   0f84 16000000    je 1348455a
+    //0x83,0x2d, XX4, 0x05,           // 13484544   832d c4aa1001 05 sub dword ptr ds:[0x110aac4],0x5
+    //0xe9, XX4,                      // 1348454b  ^e9 8cffffff      jmp 134844dc
+    //0x01,0x38,                      // 13484550   0138             add dword ptr ds:[eax],edi
+    //0xb0, 0x84,                     // 13484552   b0 84            mov al,0x84
+    //0x08,0xe9                       // 13484554   08e9             or cl,ch
+    // Below will change at runtime
+  };
+  enum { memory_offset = 3 };
+  enum { hook_offset = 0x134844f9 - 0x134844f3 };
+
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
+  if (!addr) {
+    ConsoleOutput("vnreng: Kadokawa PSP: pattern not found");
+    return false;
+  }
+  addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes), addr);
+  addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes), addr);
+
+  if (!addr)
+    ConsoleOutput("vnreng: Kadokawa PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT;
+    hp.off = pusha_eax_off - 4;
+    hp.split = pusha_ecx_off - 4; // use edx to split repetition
+    hp.length_offset = 1; // byte by byte
+    hp.extern_fun = SpecialPSPHook;
+
+    //ITH_GROWL_DWORD2(hp.addr, hp.userValue);
+    ConsoleOutput("vnreng: Kadokawa PSP: INSERT");
+    NewHook(hp, L"Kadokawa PSP");
+  }
+
+  ConsoleOutput("vnreng: Kadokawa PSP: leave");
+  return addr;
+}
+#endif // 0
 
 #if 0 // 8/9/2014 jichi: cannot find a good function
 
