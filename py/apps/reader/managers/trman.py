@@ -355,7 +355,7 @@ class TranslatorManager(QObject):
     """
     @return  unicode
     """
-    return self.translateOne(*args, **kwargs)
+    return self.translateOne(*args, **kwargs)[0]
 
   def translateDirect(self, text, fr='ja', engine='', async=False):
     """
@@ -444,7 +444,7 @@ class TranslatorCoffeeBean(QObject):
   def translate(self, text, engine):
     # I should not hardcode fr = 'ja' here
     # Force async
-    return manager().translate(text, engine=engine, fr='ja', async=True)[0] or ''
+    return manager().translate(text, engine=engine, fr='ja', async=True) or ''
 
 # EOF
 
