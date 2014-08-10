@@ -26,6 +26,7 @@ psp:
     - CYBERFRONT PSP
     - Intense PSP
     - Imageepoch PSP
+    - Imageepoch2 PSP
     - KID PSP
     - Otomate PSP
     - Yeti PSP
@@ -129,6 +130,7 @@ simple:
   - Elf
   - Eushully
   - Intense PSP
+  - Imageepoch2 PSP
   - KID PSP
   - KiriKiri1
   - KiriKiri2
@@ -376,6 +378,7 @@ utf8:
   - sceCccUTF8toUTF16
   # Engine
   - Imageepoch PSP
+  - Imageepoch2 PSP
   - YukaSystem2
 
 # EOF
