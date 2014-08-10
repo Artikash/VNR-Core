@@ -190,8 +190,8 @@ _renderTranslationElement = (trans, text) -> # string, string -> node  the secon
     ret.title = trans
   ret
 
-PARAGRAPH_SPLIT_STR = '【】「」♪'
-PARAGRAPH_SPLIT_RE = /([【】「」♪])/
+PARAGRAPH_SPLIT_STR = '【】「」『』♪'
+PARAGRAPH_SPLIT_RE = /([【】「」『』♪])/
 
 SENTENCE_SPLIT_RE = /(.*?[…‥！？。?!]+)/
 
