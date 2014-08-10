@@ -15,7 +15,7 @@ from itertools import ifilter, imap
 from time import time
 from cconv.cconv import wide2thin, wide2thin_digit
 from zhszht.zhszht import zhs2zht, zht2zhs
-from sakurakit import skstr, skthreads
+from sakurakit import skthreads
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
 from i18n import i18n
@@ -747,23 +747,23 @@ class BaiduTranslator(OnlineMachineTranslator):
     baidufanyi.session = requests.Session()
     self.engine = baidufanyi
 
-  __baidu_repl_before = staticmethod(skstr.multireplacer({
-    #u'【': u'‘', # open single quote
-    #u'】': u'’：', # close single quote
-    #u'「': u'“', # open double quote
-    #u'」': u'”', # close double quote
-    u'『': u'“‘', # open double single quote
-    u'』': u'’”', # close single double quote
+  #__baidu_repl_before = staticmethod(skstr.multireplacer({
+  #  #u'【': u'‘', # open single quote
+  #  #u'】': u'’：', # close single quote
+  #  u'「': u'‘“', # open single double quote
+  #  u'」': u'”’', # close double single quote
+  #  u'『': u'“‘', # open double single quote
+  #  u'』': u'’”', # close single double quote
 
-  }))
-  __baidu_repl_after = staticmethod(skstr.multireplacer({
-    #u'‘': u'【', # open single quote
-    #u'’：': u'】', # close single quote
-    #u'“': u'「', # open double quote
-    #u'”': u'」', # close double quote
-    u'“‘': u'『', # open double single quote
-    u'’”': u'』', # close single double quote
-  }))
+  #}))
+  #__baidu_repl_after = staticmethod(skstr.multireplacer({
+  #  #u'‘': u'【', # open single quote
+  #  #u'’：': u'】', # close single quote
+  #  u'‘“': u'「', # open single double quote
+  #  u'”’': u'」', # close double single quote
+  #  u'“‘': u'『', # open double single quote
+  #  u'’”': u'』', # close single double quote
+  #}))
   def translate(self, text, to='zhs', fr='ja', async=False):
     """@reimp"""
     #if fr not in ('ja', 'en', 'zhs', 'zht'):
@@ -775,13 +775,13 @@ class BaiduTranslator(OnlineMachineTranslator):
       return repl, to, self.key
     repl = self._escapeText(text, to=to)
     if repl:
-      repl = self.__baidu_repl_before(repl)
+      #repl = self.__baidu_repl_before(repl)
       repl = self._translate(repl, self.engine.translate,
           to=to, fr=fr, async=async)
       if repl:
         if to == 'zht':
           repl = zhs2zht(repl)
-        repl = self.__baidu_repl_after(repl)
+        #repl = self.__baidu_repl_after(repl)
         repl = self._unescapeTranslation(repl, to=to)
         self.cache.update(text, repl)
     return repl, to, self.key

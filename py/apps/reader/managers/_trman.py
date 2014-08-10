@@ -1062,8 +1062,8 @@ class BaiduTranslator(OnlineMachineTranslator):
   __baidu_repl_before = staticmethod(skstr.multireplacer({
     #u'【': u'‘', # open single quote
     #u'】': u'’：', # close single quote
-    #u'「': u'“', # open double quote
-    #u'」': u'”', # close double quote
+    #u'「': u'‘“', # open single double quote
+    #u'」': u'”’', # close double single quote
     u'『': u'“‘', # open double single quote
     u'』': u'’”', # close single double quote
 
@@ -1071,8 +1071,8 @@ class BaiduTranslator(OnlineMachineTranslator):
   __baidu_repl_after = staticmethod(skstr.multireplacer({
     #u'‘': u'【', # open single quote
     #u'’：': u'】', # close single quote
-    #u'“': u'「', # open double quote
-    #u'”': u'」', # close double quote
+    #u'‘“': u'「', # open single double quote
+    #u'”’': u'」', # close double single quote
     u'“‘': u'『', # open double single quote
     u'’”': u'』', # close single double quote
   }))
