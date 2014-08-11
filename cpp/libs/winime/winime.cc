@@ -52,23 +52,23 @@ void winime_destroy(winime_t *ife)
 }
 
 // Get the entire result
-bool winime_apply(winime_t *ife, unsigned long req, unsigned long mode, const winime_apply_func_t &func, const wchar_t *src, size_t len)
+bool winime_apply(winime_t *ife, unsigned long req, unsigned long mode, const winime_apply_fun_t &fun, const wchar_t *src, size_t len)
 {
-  if (!ife || !src || func.empty())
+  if (!ife || !src || fun.empty())
     return false;
   MORRSLT *mr = nullptr;
   if (FAILED(ife->GetJMorphResult(req, mode, len ? len : ::wcslen(src), src, nullptr, &mr)) || !mr)
     return false;
   //Q_ASSERT(mr);
   //qDebug() << QString::fromWCharArray(mr->pwchOutput, mr->cchOutput);
-  func(mr->pwchOutput, mr->cchOutput);
+  fun(mr->pwchOutput, mr->cchOutput);
   ::CoTaskMemFree(mr);
   return true;
 }
 
-bool winime_collect(winime_t *ife, unsigned long req, unsigned long mode, const winime_collect_func_t &func, const wchar_t *src, size_t len)
+bool winime_collect(winime_t *ife, unsigned long req, unsigned long mode, const winime_collect_fun_t &fun, const wchar_t *src, size_t len)
 {
-  if (!ife || !src || func.empty())
+  if (!ife || !src || fun.empty())
     return false;
   MORRSLT *mr = nullptr;
   if (FAILED(ife->GetJMorphResult(req, mode, len ? len : ::wcslen(src), src, nullptr, &mr)) || !mr)
@@ -80,7 +80,7 @@ bool winime_collect(winime_t *ife, unsigned long req, unsigned long mode, const 
   //for (int i = 0; i < mr->cWDD; i++) {
   //  const WDD *it = mr->pWDD + i;
   for (const WDD *it = mr->pWDD; it != mr->pWDD + mr->cWDD; ++it)
-    func(src + it->wReadPos, it->cchRead,
+    fun(src + it->wReadPos, it->cchRead,
          mr->pwchOutput + it->wDispPos, it->cchDisp);
     //qDebug()<<QString::fromWCharArray(pwchInput+mr->pWDD[i].wReadPos, mr->pWDD[i].cchRead);
     //qDebug()<<QString::fromWCharArray(mr->pwchOutput+mr->pWDD[i].wReadPos, mr->pWDD[i].cchRead);
