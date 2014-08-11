@@ -3161,7 +3161,7 @@ static void SpecialHookDebonosu(DWORD esp_base, HookParam* hp, DWORD* data, DWOR
 {
   CC_UNUSED(split);
   DWORD retn = *(DWORD*)esp_base;
-  if (*(WORD*)retn == 0xc483) //add esp, *
+  if (*(WORD*)retn == 0xc483) // add esp, *
     hp->off = 4;
   else
     hp->off = -0x8;
@@ -3192,11 +3192,11 @@ bool InsertDebonosuHook()
       for (DWORD j = i + 6, k = j + 0x10; j < k; j++)
         if (*(BYTE *)j == 0xb8 &&
             *(DWORD *)(j + 1) == push)
-          if (DWORD addr = SafeFindEntryAligned(i, 0x200)) {
+          if (DWORD hook_addr = SafeFindEntryAligned(i, 0x200)) {
             HookParam hp = {};
-            hp.addr = addr;
+            hp.addr = hook_addr;
             hp.extern_fun = SpecialHookDebonosu;
-            hp.type = USING_STRING | EXTERN_HOOK;
+            hp.type = USING_STRING|EXTERN_HOOK;
             ConsoleOutput("vnreng: INSERT Debonosu");
             NewHook(hp, L"Debonosu");
             //RegisterEngineType(ENGINE_DEBONOSU);
