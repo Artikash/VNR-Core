@@ -159,7 +159,8 @@ inline ULONG SafeMatchBytesInPSPMemory(LPCVOID pattern, DWORD patternSize, DWORD
 {
   enum : ULONG {
     //start = MemDbg::MappedMemoryStartAddress // 0x01000000
-    stop = 0x15000000 // hooking to code after this might crash VNR
+    //stop = 0x15000000 // hooking to code after this might crash VNR
+    stop = MemDbg::MemoryStopAddress
     , step = 0x00050000 // in order to work on PPSSPP 0.9.9
     //, step = 0x1000 // step  must be at least 0x1000 (offset in SearchPattern)
     //, step = 0x00010000 // crash otoboku PSP on 0.9.9 since 5pb is wrongly inserted
@@ -3161,7 +3162,7 @@ static void SpecialHookDebonosu(DWORD esp_base, HookParam* hp, DWORD* data, DWOR
 {
   CC_UNUSED(split);
   DWORD retn = *(DWORD*)esp_base;
-  if (*(WORD*)retn == 0xc483) //add esp, *
+  if (*(WORD*)retn == 0xc483) // add esp, *
     hp->off = 4;
   else
     hp->off = -0x8;
@@ -3192,11 +3193,11 @@ bool InsertDebonosuHook()
       for (DWORD j = i + 6, k = j + 0x10; j < k; j++)
         if (*(BYTE *)j == 0xb8 &&
             *(DWORD *)(j + 1) == push)
-          if (DWORD addr = SafeFindEntryAligned(i, 0x200)) {
+          if (DWORD hook_addr = SafeFindEntryAligned(i, 0x200)) {
             HookParam hp = {};
-            hp.addr = addr;
+            hp.addr = hook_addr;
             hp.extern_fun = SpecialHookDebonosu;
-            hp.type = USING_STRING | EXTERN_HOOK;
+            hp.type = USING_STRING|EXTERN_HOOK;
             ConsoleOutput("vnreng: INSERT Debonosu");
             NewHook(hp, L"Debonosu");
             //RegisterEngineType(ENGINE_DEBONOSU);
@@ -7025,6 +7026,8 @@ bool InsertAlchemist2PSPHook()
 
 /** 7/13/2014 jichi 5pb.jp PSP engine, 0.9.8, 0.9.9
  *  Sample game: STEINS;GATE
+ *
+ *  FIXME: The current pattern could crash VNR
  *
  *  Note: searching after 0x15000000 would found a wrong address on 0.9.9.
  *  Hooking to it would crash PPSSPP.

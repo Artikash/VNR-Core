@@ -133,11 +133,11 @@ RtlRaiseException (
 //
 class AtExitCall {
 public:
-  AtExitCall(func_t f) : m_func(f), m_next(m_exit_list) { m_exit_list = this; }
+  AtExitCall(fun_t f) : m_func(f), m_next(m_exit_list) { m_exit_list = this; }
   ~AtExitCall() { m_func(); m_exit_list = m_next; }
   static void run() { while (m_exit_list) delete m_exit_list; }
 private:
-  func_t        m_func;
+  fun_t        m_func;
   AtExitCall*     m_next;
   static AtExitCall*  m_exit_list;
 };

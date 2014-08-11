@@ -1,5 +1,5 @@
-# disasm.pri
-# 1/31/2012 jichi
+# cevio.pri
+# 6/15/2014 jichi
 #
 # See: http://guide2.project-cevio.com/interface
 # - COM: http://guide2.project-cevio.com/interface/com
@@ -14,10 +14,10 @@
 # I need to track the changes of COM interfaces on http://guide2.project-cevio.com/
 
 win32 {
-DEFINES     += WITH_LIB_CEVIO
+DEFINES += WITH_LIB_CEVIO
 
 CEVIO_VERSION = 2.2.10.0
-INCLUDEPATH  += $$PWD/$$CEVIO_VERSION
+INCLUDEPATH += $$PWD/$$CEVIO_VERSION
 DEPENDPATH  += $$PWD
 
 HEADERS += \
