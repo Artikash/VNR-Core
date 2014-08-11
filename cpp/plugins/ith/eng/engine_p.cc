@@ -159,7 +159,8 @@ inline ULONG SafeMatchBytesInPSPMemory(LPCVOID pattern, DWORD patternSize, DWORD
 {
   enum : ULONG {
     //start = MemDbg::MappedMemoryStartAddress // 0x01000000
-    stop = 0x15000000 // hooking to code after this might crash VNR
+    //stop = 0x15000000 // hooking to code after this might crash VNR
+    stop = MemDbg::MemoryStopAddress
     , step = 0x00050000 // in order to work on PPSSPP 0.9.9
     //, step = 0x1000 // step  must be at least 0x1000 (offset in SearchPattern)
     //, step = 0x00010000 // crash otoboku PSP on 0.9.9 since 5pb is wrongly inserted
@@ -7025,6 +7026,8 @@ bool InsertAlchemist2PSPHook()
 
 /** 7/13/2014 jichi 5pb.jp PSP engine, 0.9.8, 0.9.9
  *  Sample game: STEINS;GATE
+ *
+ *  FIXME: The current pattern could crash VNR
  *
  *  Note: searching after 0x15000000 would found a wrong address on 0.9.9.
  *  Hooking to it would crash PPSSPP.
