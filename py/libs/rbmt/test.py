@@ -75,15 +75,14 @@ class CaboChaTokenizer(MachineTokenizer):
   def tokenize(self, text):
     """@reimp
     @param  text  unicode
-    @return  [[JapaneseToken]]
+    @return  [[JapaneseToken], int link]  group with the same link should be put in the same phrase
     """
     ret = []
     encoding = self.encoding
     tree = self.parser.parse(text.encode(encoding))
 
-    # Link is not accurate and ignored
     newgroup = False
-    #link = 0
+    link = 0
     group = []
     for i in xrange(tree.token_size()):
       token = tree.token(i)
@@ -91,33 +90,32 @@ class CaboChaTokenizer(MachineTokenizer):
       surface = token.surface.decode(encoding, errors='ignore')
       feature = token.feature.decode(encoding, errors='ignore')
 
-      #if not i and token.chunk: # first element
-      #  link = token.chunk.link
+      if not i and token.chunk: # first element
+        link = token.chunk.link
 
       if newgroup and token.chunk:
-        ret.append(group)
+        ret.append((group, link))
         group = [JapaneseToken(text=surface, feature=feature)]
-        #link = token.chunk.link
+        link = token.chunk.link
         newgroup = False
       else:
         group.append(JapaneseToken(text=surface, feature=feature))
       newgroup = True
 
     if group:
-      #ret.append((group, link))
-      ret.append(group) # link is ignored
+      ret.append((group, link))
     return ret
 
 # Japanese parser
 
-AST_PHRASE_NULL = "null"
-AST_PHRASE_NOUN = "noun"
-AST_PHRASE_VERB = "verb"
-AST_PHRASE_ADJ = "adj" # adjective
-AST_PHRASE_ADV = "adv" # adverb
-AST_PHRASE_SUB = "sub" # suject
-AST_PHRASE_OBJ = "obj" # object
-AST_PHRASE_PRED = "pred" # predicate
+#AST_PHRASE_NULL = "null"
+#AST_PHRASE_NOUN = "noun"
+#AST_PHRASE_VERB = "verb"
+#AST_PHRASE_ADJ = "adj" # adjective
+#AST_PHRASE_ADV = "adv" # adverb
+#AST_PHRASE_SUB = "sub" # suject
+#AST_PHRASE_OBJ = "obj" # object
+#AST_PHRASE_PRED = "pred" # predicate
 
 AST_CLASS_NULL = "null"
 AST_CLASS_NODE = "node"
@@ -162,6 +160,14 @@ class ASTContainer(ASTNode): # abstract
     """@reimp"""
     return "".join((it.unparse()for it in self.children))
 
+  def removeLastChild(self):
+    l = self.children
+    if l:
+      last = l.pop()
+      if l:
+        l[-1].next = None
+
+
 class ASTParagraph(ASTContainer): # container of sentences
   classType = AST_CLASS_PARAGRAPH
   def __init__(self, *args, **kwargs):
@@ -179,11 +185,10 @@ class ASTClause(ASTContainer): # container of phrases
     super(ASTClause, self).__init__(children=children)
     self.hasPunct = hasPunct # bool
 
-class ASTPhrase(ASTContainer):
+class ASTPhrase(ASTContainer): # container of [phrase or word]
   classType = AST_CLASS_PHRASE
-  def __init__(self, children=[], type=AST_PHRASE_NULL):
-    super(ASTPhrase, self).__init__(children=children)
-    self.type = type # str
+  def __init__(self, *args, **kwargs):
+    super(ASTPhrase, self).__init__(*args, **kwargs)
 
 class ASTWord(ASTNode):
   classType = AST_CLASS_WORD
@@ -199,6 +204,55 @@ class JapaneseParser(MachineParser):
   def __init__(self):
     super(JapaneseParser, self).__init__()
 
+  def _reduceLinkedPhrases(self, linkedphrases):
+    """
+    @param  linkedphrases  [phrase, int link]
+    @return  [phrase]
+    """
+    if not linkedphrases:
+      return []
+    if len(linkedphrases) == 1:
+      return [linkedphrases[0][0]]
+
+    lastphrase, lastlink = linkedphrases.pop()
+
+    splitindex = None
+    for i,(phrase,link) in enumerate(linkedphrases):
+      if link >= lastlink:
+        splitindex = i
+
+    if splitindex is None:
+      l = self._reduceLinkedPhrases(linkedphrases)
+      if not l:
+        l = [lastphrase]
+      elif len(l) == 1:
+        l = [l[0], lastphrase]
+      else:
+        l = [ASTPhrase(children=l), lastphrase]
+
+    else:
+      left = linkedphrases[:splitindex+1]
+      left = self._reduceLinkedPhrases(left)
+      if len(left) == 1:
+        left = left[0]
+      elif left:
+        left = ASTPhrase(children=left)
+
+      right = linkedphrases[splitindex+1:]
+      right = self._reduceLinkedPhrases(right)
+      if len(right) == 1:
+        right = right[0]
+      elif right:
+        right = ASTPhrase(children=right)
+
+      l = []
+      if left:
+        l.append(left)
+      if right:
+        l.append(right)
+      l.append(lastphrase)
+    return [ASTPhrase(children=l)]
+
   def parse(self, tokens):
     """@reimp
     @param  tokens  [[Token]]
@@ -206,25 +260,31 @@ class JapaneseParser(MachineParser):
     """
     paragraph_sentences = []
     sentence_clauses = []
-    clause_phrases = []
-    for group in tokens:
+
+    linked_phrases = [] # [phrase, int link]
+
+    for index,(group,link) in enumerate(tokens):
       words = [ASTWord(token=token) for token in group]
       phrase = ASTPhrase(children=words)
 
-      clause_phrases.append(phrase)
+      if link == -1:
+        link = index
+      linked_phrases.append((phrase, link))
 
       last = group[-1]
       if last.type == TOKEN_TYPE_PUNCT:
-        clause = ASTClause(children=clause_phrases, hasPunct=True)
-        clause_phrases = []
+        phrases = self._reduceLinkedPhrases(linked_phrases)
+        linked_phrases = []
+        clause = ASTClause(children=phrases, hasPunct=True)
         sentence_clauses.append(clause)
         if last.flags & TOKEN_PUNCT_STOP:
           sentence = ASTSentence(children=sentence_clauses, hasPunct=True)
           paragraph_sentences.append(sentence)
           paragraph_sentences = []
 
-    if clause_phrases:
-      clause = ASTClause(children=clause_phrases, hasPunct=False)
+    if linked_phrases:
+      phrases = self._reduceLinkedPhrases(linked_phrases)
+      clause = ASTClause(children=phrases, hasPunct=False)
       sentence_clauses.append(clause)
 
     if sentence_clauses:
@@ -315,11 +375,7 @@ class JapaneseChineseTranslator(MachineTranslator):
       last = nodes[-1]
       if last.classType == AST_CLASS_WORD:
         token = last.token
-        if token.text == u"で":
-          l = self.translatePhrasesOrWords(nodes[:-1])
-          l.insert(0, ASTWord(token=ChineseToken(u"在")))
-          return l
-        elif token.text == u"の":
+        if token.text == u"の":
           l = self.translatePhrasesOrWords(nodes[:-1])
           l.append(ASTWord(token=ChineseToken(u"的")))
           return l
@@ -327,6 +383,16 @@ class JapaneseChineseTranslator(MachineTranslator):
           l = self.translatePhrasesOrWords(nodes[:-1])
           l.append(ASTWord(token=ChineseToken(u"在")))
           return l
+      elif last.classType == AST_CLASS_PHRASE:
+        phrases = last.children
+        lastlast = phrases[-1]
+        if lastlast.classType == AST_CLASS_WORD:
+          token = lastlast.token
+          if token.text == u"で":
+            last.removeLastChild()
+            l = self.translatePhrasesOrWords(nodes)
+            l.insert(0, ASTWord(token=ChineseToken(u"在")))
+            return l
       return map(self.translatePhraseOrWord, nodes)
 
   def translateWord(self, node):
@@ -364,13 +430,14 @@ if __name__ == '__main__':
 
   # baidu: 未来日本在许多城市，大大小小的犯罪蔓延。
   # manual: 近未来的日本，大大小小的犯罪在许多城市蔓延。
-  text = u"近未来の近未来の日本、多くの多くの都市で大小の大小の多くの犯罪が蔓延。"
+  text = u"近未来の日本、多くの都市で大小の犯罪が蔓延。"
+  #text = u"警察を主とした治安機関は機能を失いつつあったが、暁東市は様々な犯罪対策を行なう事で国内でもトップクラスの治安を保っていた。"
 
   print "-- test tokenizer --"
   _t = CaboChaTokenizer()
   tokens = _t.tokenize(text)
-  for i,it in enumerate(tokens):
-    print i, ','.join(t.text for t in it)
+  for i,(group, link) in enumerate(tokens):
+    print i, link, ','.join(t.text for t in group)
 
   print "-- test parser --"
 
