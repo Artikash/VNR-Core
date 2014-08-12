@@ -61,58 +61,65 @@ modiocr_lang modiocr_from_file(const wchar_t *path, modiocr_flags langs, const m
   if (CC_UNLIKELY(!path || !langs))
     return ret;
 
-  IDocument *doc;
-  if (!SUCCEEDED(::CoCreateInstance(CLSID_Document, nullptr, CLSCTX_ALL, IID_IDocument,
-      reinterpret_cast<LPVOID *>(&doc)) || !doc))
-    return ret;
-  WinCom::ScopedUnknownPtr scoped_doc(doc);
-
-  try { // This method will raise if path does not exist
-    if (!SUCCEEDED(doc->Create(path)))
+  try {
+    IDocument *doc;
+    if (!SUCCEEDED(::CoCreateInstance(CLSID_Document, nullptr, CLSCTX_ALL, IID_IDocument,
+        reinterpret_cast<LPVOID *>(&doc)) || !doc))
       return ret;
-  } catch (...) {
-    return ret;
-  }
+    WinCom::ScopedUnknownPtr scoped_doc(doc);
 
-  for (int i = 0; !ret && i < sizeof(::_languages)/sizeof(*::_languages); i++)
-    if ((langs & (1 << i))
-         && SUCCEEDED(doc->OCR(_languages[i], VARIANT_TRUE, VARIANT_TRUE)))
-      ret = modiocr_lang(1 << i);
+    if (!SUCCEEDED(doc->Create(path))) // might raise
+      return ret;
 
-  if (!ret)
-    return ret;
+    qDebug() << 111111;
+    doc->OCR(miLANG_JAPANESE, VARIANT_FALSE, VARIANT_FALSE);
+    qDebug() << 222222;
 
-  IImages *images;
-  doc->get_Images(&images);
-  WinCom::ScopedUnknownPtr scoped_images(images);
+    // Disable change orientation and angle of the image
+    // OCR(LangId, OCROrientImage, OCRStraightenImage)
+    // http://msdn.microsoft.com/en-us/library/office/aa202819%28v=office.11%29.aspx
+    for (int i = 0; !ret && i < sizeof(::_languages)/sizeof(*::_languages); i++)
+      if ((langs & (1 << i))
+           && SUCCEEDED(doc->OCR(_languages[i], VARIANT_FALSE, VARIANT_FALSE)))
+        ret = modiocr_lang(1 << i);
 
-  long imageCount = 0;
-  images->get_Count(&imageCount);
-  for (long imageIndex = 0; imageIndex < imageCount; imageIndex++) {
-    IImage *image;
-    images->get_Item(imageIndex, reinterpret_cast<IDispatch**>(&image));
-    WinCom::ScopedUnknownPtr scoped_image(image);
+    if (!ret)
+      return ret;
 
-    ILayout *layout;
-    image->get_Layout(&layout);
-    WinCom::ScopedUnknownPtr scoped_layout(layout);
+    IImages *images;
+    doc->get_Images(&images);
+    WinCom::ScopedUnknownPtr scoped_images(images);
 
-    IWords *words;
-    layout->get_Words(&words);
-    WinCom::ScopedUnknownPtr scoped_words(words);
+    long imageCount = 0;
+    images->get_Count(&imageCount);
+    for (long imageIndex = 0; imageIndex < imageCount; imageIndex++) {
+      IImage *image;
+      images->get_Item(imageIndex, reinterpret_cast<IDispatch**>(&image));
+      WinCom::ScopedUnknownPtr scoped_image(image);
 
-    long wordCount = 0;
-    //layout->get_NumWords(&wordCount);
-    words->get_Count(&wordCount);
-    for (long wordIndex = 0; wordIndex < wordCount; wordIndex++) {
-      IWord *word;
-      words->get_Item(wordIndex, reinterpret_cast<IDispatch**>(&word));
-      WinCom::ScopedUnknownPtr scoped_word(word);
+      ILayout *layout;
+      image->get_Layout(&layout);
+      WinCom::ScopedUnknownPtr scoped_layout(layout);
 
-      BSTR text = nullptr;
-      if (SUCCEEDED(word->get_Text(&text)) && text)
-        fun(text);
+      IWords *words;
+      layout->get_Words(&words);
+      WinCom::ScopedUnknownPtr scoped_words(words);
+
+      long wordCount = 0;
+      //layout->get_NumWords(&wordCount);
+      words->get_Count(&wordCount);
+      for (long wordIndex = 0; wordIndex < wordCount; wordIndex++) {
+        IWord *word;
+        words->get_Item(wordIndex, reinterpret_cast<IDispatch**>(&word));
+        WinCom::ScopedUnknownPtr scoped_word(word);
+
+        BSTR text = nullptr;
+        if (SUCCEEDED(word->get_Text(&text)) && text)
+          fun(text);
+      }
     }
+
+  } catch (...) {
   }
 
   return ret;
