@@ -54,7 +54,6 @@ bool modiocr_available()
   return false;
 }
 
-#include <QDebug>
 modiocr_lang modiocr_from_file(const wchar_t *path, modiocr_flags langs, const modiocr_collect_fun_t &fun)
 {
   modiocr_lang ret = modiocr_lang_null;
@@ -71,9 +70,9 @@ modiocr_lang modiocr_from_file(const wchar_t *path, modiocr_flags langs, const m
     if (!SUCCEEDED(doc->Create(path))) // might raise
       return ret;
 
-    qDebug() << 111111;
-    doc->OCR(miLANG_JAPANESE, VARIANT_FALSE, VARIANT_FALSE);
-    qDebug() << 222222;
+    //qDebug() << "crash here";
+    //doc->OCR(miLANG_JAPANESE, VARIANT_FALSE, VARIANT_FALSE);
+    //qDebug() << "succeed";
 
     // Disable change orientation and angle of the image
     // OCR(LangId, OCROrientImage, OCRStraightenImage)
