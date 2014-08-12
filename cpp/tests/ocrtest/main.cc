@@ -7,6 +7,7 @@
 
 int main()
 {
+  qDebug() << "enter";
   const wchar_t *path = L"test.tiff";
 
   modiocr_flags langs = modiocr_lang_ja|modiocr_lang_zhs|modiocr_lang_zht|modiocr_lang_en;
@@ -21,6 +22,7 @@ int main()
   }
 
   CoUninitialize();
+  qDebug() << "leave";
   return 0;
 }
 

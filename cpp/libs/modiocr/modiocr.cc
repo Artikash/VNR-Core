@@ -54,6 +54,7 @@ bool modiocr_available()
   return false;
 }
 
+#include <QDebug>
 modiocr_lang modiocr_from_file(const wchar_t *path, modiocr_flags langs, const modiocr_collect_fun_t &fun)
 {
   modiocr_lang ret = modiocr_lang_null;
@@ -66,8 +67,12 @@ modiocr_lang modiocr_from_file(const wchar_t *path, modiocr_flags langs, const m
     return ret;
   WinCom::ScopedUnknownPtr scoped_doc(doc);
 
-  if (!SUCCEEDED(doc->Create(path)))
+  try { // This method will raise if path does not exist
+    if (!SUCCEEDED(doc->Create(path)))
+      return ret;
+  } catch (...) {
     return ret;
+  }
 
   for (int i = 0; !ret && i < sizeof(::_languages)/sizeof(*::_languages); i++)
     if ((langs & (1 << i))
