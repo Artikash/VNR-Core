@@ -5,10 +5,43 @@
 #include <windows.h>
 #include "modiocr/modiocr.h"
 #include "wincom/wincomptr.h"
-#include "modi/modi.h"
+#include "modi/mdivwctl.h"
 #include "cc/ccmacro.h"
 
+//#import "C:\\Program Files\\Common Files\\Microsoft Shared\\MODI\\11.0\\MDIVWCTL.DLL"
 //#import "C:\\Program Files\\Common Files\\Microsoft Shared\\MODI\\12.0\\MDIVWCTL.DLL"
+
+using namespace MODI;
+
+static MiLANGUAGES _languages[] = {
+  miLANG_JAPANESE   // 0
+
+  , miLANG_CHINESE_SIMPLIFIED   // 1
+  , miLANG_CHINESE_TRADITIONAL  // 2
+
+  , miLANG_KOREAN   // 3
+
+  , miLANG_CZECH    // 4
+  , miLANG_DANISH   // 5
+  , miLANG_DUTCH    // 6
+  , miLANG_FINNISH  // 7
+  , miLANG_FRENCH   // 8
+  , miLANG_GERMAN   // 9
+  , miLANG_GREEK    // 10
+  , miLANG_HUNGARIAN    // 11
+  , miLANG_ITALIAN  // 12
+  , miLANG_NORWEGIAN    // 13
+  , miLANG_POLISH   // 14
+  , miLANG_PORTUGUESE   // 15
+  , miLANG_RUSSIAN  // 16
+  , miLANG_SPANISH  // 17
+  , miLANG_SWEDISH  // 18
+  , miLANG_TURKISH  // 19
+
+  , miLANG_ENGLISH  // 20
+
+  , miLANG_SYSDEFAULT   // 21
+};
 
 bool modiocr_available()
 {
@@ -21,23 +54,31 @@ bool modiocr_available()
   return false;
 }
 
-bool modiocr_from_file(const wchar_t *path, const modiocr_collect_fun_t &fun);
+modiocr_lang modiocr_from_file(const wchar_t *path, modiocr_flags langs, const modiocr_collect_fun_t &fun)
 {
-  if (CC_UNLIKELY(!path))
-    return false;
+  modiocr_lang ret = modiocr_lang_null;
+  if (CC_UNLIKELY(!path || !langs))
+    return ret;
 
   IDocument *doc;
-  if (!SUCCEEDED::CoCreateInstance(CLSID_Document, nullptr, CLSCTX_ALL, IID_IDocument,
-      reinterpret_cast<LPVOID *>(&doc)) || !doc)
-    return false;
+  if (!SUCCEEDED(::CoCreateInstance(CLSID_Document, nullptr, CLSCTX_ALL, IID_IDocument,
+      reinterpret_cast<LPVOID *>(&doc)) || !doc))
+    return ret;
   WinCom::ScopedUnknownPtr scoped_doc(doc);
 
-  if (!SUCCEEDED(IDobj->Create(path) || !SUCCEEDED(IDobj->OCR(miLANG_SYSDEFAULT, 1, 1)))
-    return false;
+  if (!SUCCEEDED(doc->Create(path)))
+    return ret;
+
+  for (int i = 0; !ret && i < sizeof(::_languages)/sizeof(*::_languages); i++)
+    if ((langs & (1 << i))
+         && SUCCEEDED(doc->OCR(_languages[i], VARIANT_TRUE, VARIANT_TRUE)))
+      ret = modiocr_lang(1 << i);
+
+  if (!ret)
+    return ret;
 
   IImages *images;
-  if (!SUCCEEDED(doc->get_Images(&images) || !images);
-    return false;
+  doc->get_Images(&images);
   WinCom::ScopedUnknownPtr scoped_images(images);
 
   long imageCount = 0;
@@ -52,7 +93,7 @@ bool modiocr_from_file(const wchar_t *path, const modiocr_collect_fun_t &fun);
     WinCom::ScopedUnknownPtr scoped_layout(layout);
 
     IWords *words;
-    ILayout->get_Words(&words);
+    layout->get_Words(&words);
     WinCom::ScopedUnknownPtr scoped_words(words);
 
     long wordCount = 0;
@@ -60,16 +101,16 @@ bool modiocr_from_file(const wchar_t *path, const modiocr_collect_fun_t &fun);
     words->get_Count(&wordCount);
     for (long wordIndex = 0; wordIndex < wordCount; wordIndex++) {
       IWord *word;
-      IWords->get_Item(wordIindex, reinterpret_cast<IDispatch**>(&word));
+      words->get_Item(wordIndex, reinterpret_cast<IDispatch**>(&word));
       WinCom::ScopedUnknownPtr scoped_word(word);
 
       BSTR text = nullptr;
-      if (SUCCEEDED(IWord->get_Text(&result)) && text)
+      if (SUCCEEDED(word->get_Text(&text)) && text)
         fun(text);
     }
   }
 
-  return true;
+  return ret;
 }
 
 // EOF

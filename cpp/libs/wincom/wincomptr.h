@@ -5,7 +5,7 @@
 // Smart pointers for COM.
 
 #include "wincom/wincom.h"
-#include <unknown.h> // IUnknown
+#include <unknwn.h> // IUnknown
 
 WINCOM_BEGIN_NAMESPACE
 
