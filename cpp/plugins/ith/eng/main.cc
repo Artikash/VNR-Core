@@ -12,6 +12,7 @@ BOOL WINAPI DllMain(HANDLE hModule, DWORD reason, LPVOID lpReserved)
   CC_UNUSED(lpReserved);
   switch(reason) {
   case DLL_PROCESS_ATTACH:
+    Engine::processAttached_ = true;
     LdrDisableThreadCalloutsForDll(hModule);
     IthInitSystemService();
     ConsoleOutput("vnreng:DllMain: enter");
@@ -21,6 +22,7 @@ BOOL WINAPI DllMain(HANDLE hModule, DWORD reason, LPVOID lpReserved)
     //NtSetEvent(hEngineOn,0);
     break;
   case DLL_PROCESS_DETACH:
+    Engine::processAttached_ = false;
     ConsoleOutput("vnreng:DllMain: leave");
     //NtClearEvent(hEngineOn);
     //NtClose(hEngineOn);

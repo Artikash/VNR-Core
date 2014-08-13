@@ -1,5 +1,5 @@
 # coding: utf8
-# token.py
+# lex.py
 # 8/12/2014 jichi
 # Lexical utilities
 

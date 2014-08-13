@@ -29,6 +29,8 @@ WCHAR process_name_[MAX_PATH]; // cached
 DWORD module_base_,
       module_limit_;
 
+bool processAttached_;
+
 //LPVOID trigger_addr;
 trigger_fun_t trigger_fun_;
 

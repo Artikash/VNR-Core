@@ -8,6 +8,7 @@
 namespace Engine {
 
 void init(HANDLE hModule);
+extern bool processAttached_; // the dll is loaded
 
 } // namespace Engine
 

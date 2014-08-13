@@ -13,17 +13,16 @@ class MachineTokenizer(object):
 class MachineParser(object):
   def parse(self, tokens): pass # list -> tree
 
-class MachineTranslator(object):
-  def translate(self, tree): pass # tree -> tree
+class MachineTransformer(object):
+  def transform(self, tree): pass # tree -> tree
 
-class MachineDriver(object):
-  def learn(self, *args, **kwargs): pass
+class MachineTranslator(object):
   def translate(self, text): pass # unicode -> unicode
 
 # Japanese tokenizer
 
-import token
-# The same as token.py
+import lex
+# The same as lex.py
 TOKEN_TYPE_NULL = ''
 TOKEN_TYPE_KANJI = 'kanji'
 TOKEN_TYPE_RUBY = 'ruby'
@@ -54,7 +53,7 @@ class Token(object):
 
 class JapaneseToken(Token):
   def __init__(self, text, **kwargs):
-    type = token.text_type(text)
+    type = lex.text_type(text)
     flags = 0
     if type == TOKEN_TYPE_PUNCT:
       flags = token_punct_flags(text)
@@ -304,98 +303,104 @@ J2C_WORDS = {
   u"多く": u"许多",
 }
 
-class JapaneseChineseTranslator(MachineTranslator):
-  def __init__(self):
-    super(JapaneseChineseTranslator, self).__init__()
+class JapaneseChineseTransformer(MachineTransformer):
+  def __init__(self, fallbackTranslate=None):
+    super(JapaneseChineseTransformer, self).__init__()
 
-  def translate(self, tree):
+    if not fallbackTranslate:
+      fallbackTranslate = lambda x:x
+    self.fallbackTranslate = fallbackTranslate # unicode text -> unicode text
+
+  def transform(self, tree):
     """@reimp"""
     if not tree:
       return ASTNull()
-    ret = self.translateNode(tree)
+    ret = self.transformNode(tree)
     self.updateToken(ret)
     return ret
 
-  # Context insensitive translation
+  # Context insensitive transformation
 
   def updateToken(self, node):
     assert node
     if node.classType == AST_CLASS_WORD:
       token = node.token
       if token.type == TOKEN_TYPE_PUNCT:
-        token.text = self.translatePunctuation(token.text)
+        token.text = self.transformPunctuation(token.text)
     else:
       for it in node.children:
         self.updateToken(it)
 
-  def translatePunctuation(self, text):
+  def transformPunctuation(self, text):
     return J2C_PUNCT.get(text) or text
 
-  # Context sensitive translation
+  # Context sensitive transformation
 
-  def translateNode(self, node):
+  def transformNode(self, node):
     assert node
     if node.classType == AST_CLASS_PARAGRAPH:
-      return self.translateParagraph(node)
+      return self.transformParagraph(node)
     else:
       return ASTNull()
 
-  def translateParagraph(self, node):
+  def transformParagraph(self, node):
     cls = ASTParagraph
     assert node and node.classType == cls.classType
-    return cls(children=map(self.translateSentence, node.children))
+    return cls(children=map(self.transformSentence, node.children))
 
-  def translateSentence(self, node):
+  def transformSentence(self, node):
     cls = ASTSentence
     assert node and node.classType == cls.classType
-    return cls(children=map(self.translateClause, node.children), hasPunct=node.hasPunct)
+    return cls(children=map(self.transformClause, node.children), hasPunct=node.hasPunct)
 
-  def translateClause(self, node):
+  def transformClause(self, node):
     cls = ASTClause
     assert node and node.classType == cls.classType
-    return cls(children=map(self.translatePhrase, node.children), hasPunct=node.hasPunct)
+    return cls(children=map(self.transformPhrase, node.children), hasPunct=node.hasPunct)
 
-  def translatePhraseOrWord(self, node):
+  def transformPhraseOrWord(self, node):
     assert node
     if node.classType == AST_CLASS_PHRASE:
-      return self.translatePhrase(node)
+      return self.transformPhrase(node)
     if node.classType == AST_CLASS_WORD:
-      return self.translateWord(node)
+      return self.transformWord(node)
     assert False
 
-  def translatePhrase(self, node):
+  def transformPhrase(self, node):
     cls = ASTPhrase
     assert node and node.classType == cls.classType
-    return cls(children=self.translatePhrasesOrWords(node.children))
+    return cls(children=self.transformPhraseOrWordList(node.children))
 
-  def translatePhrasesOrWords(self, nodes): # [ASTNode]
+  def transformPhraseOrWordList(self, nodes): # [ASTNode]
     if len(nodes) == 1:
-      return [self.translatePhraseOrWord(nodes[0])]
+      return [self.transformPhraseOrWord(nodes[0])]
     else:
+       # Machine translation rules
       last = nodes[-1]
       if last.classType == AST_CLASS_WORD:
         token = last.token
         if token.text == u"の":
-          l = self.translatePhrasesOrWords(nodes[:-1])
+          l = self.transformPhraseOrWordList(nodes[:-1])
           l.append(ASTWord(token=ChineseToken(u"的")))
           return l
         elif token.text == u"が":
-          l = self.translatePhrasesOrWords(nodes[:-1])
+          l = self.transformPhraseOrWordList(nodes[:-1])
           l.append(ASTWord(token=ChineseToken(u"在")))
           return l
       elif last.classType == AST_CLASS_PHRASE:
+        # TODO: This modification should happen only after the other places has been translated
         phrases = last.children
         lastlast = phrases[-1]
         if lastlast.classType == AST_CLASS_WORD:
           token = lastlast.token
           if token.text == u"で":
             last.removeLastChild()
-            l = self.translatePhrasesOrWords(nodes)
+            l = self.transformPhraseOrWordList(nodes)
             l.insert(0, ASTWord(token=ChineseToken(u"在")))
             return l
-      return map(self.translatePhraseOrWord, nodes)
+      return map(self.transformPhraseOrWord, nodes)
 
-  def translateWord(self, node):
+  def transformWord(self, node):
     cls = ASTWord
     assert node and node.classType == cls.classType
 
@@ -408,22 +413,37 @@ class JapaneseChineseTranslator(MachineTranslator):
     text = J2C_WORDS.get(text) or text
     return cls(token=ChineseToken(text))
 
-## Japanese-Chinese translator
-#
-#class JapaneseChineseDriver(MachineDriver):
-#  def __init__(self):
-#    super(JapaneseChineseDriver, self).__init__()
-#
-#    self.tokenizer = CaboChaTokenizer()
-#    self.parser = JapaneseParser()
-#    self.translator = JapaneseChineseTranslator()
-#
-#  def translate(self, text):
-#    """@reimp"""
-#    tokens = self.tokenizer.tokenize(text)
-#    tree = self.parser.parse(tokens)
-#    tree = self.translator.translate(tree)
-#    return tree.unparse()
+# Japanese-Chinese translator
+
+class JapaneseChineseTranslator(MachineTranslator):
+  def __init__(self):
+    super(JapaneseChineseTranslator, self).__init__()
+
+    self.tokenizer = CaboChaTokenizer()
+    self.parser = JapaneseParser()
+    self.transformer = JapaneseChineseTransformer()
+
+  def translate(self, text):
+    """@reimp"""
+    tokens = self.tokenizer.tokenize(text)
+    tree = self.parser.parse(tokens)
+    tree = self.transformer.transform(tree)
+    return tree.unparse()
+
+# Alternative machine translator
+
+class GoogleTranslator(MachineTranslator):
+
+  def __init__(self, fr='', to=''):
+    self.fr = fr # str  language
+    self.to = to # str  language
+
+    from google import googletrans
+    self._translate = googletrans.translate
+
+  def translate(self, text): # unicode -> unicode
+    """@reimp"""
+    return self._translate(text, fr=self.fr, to=self.to) or ''
 
 if __name__ == '__main__':
   #text = u"近未来の日本、多くの都市で大小の犯罪が蔓延。警察を主とした治安機関は機能を失いつつあったが、暁東市は様々な犯罪対策を行なう事で国内でもトップクラスの治安を保っていた。そのため、安全を求める人々が集り暁東市の物価は高騰、その結果資産家が多く住む街となった。そのような状況のため、資産家の令嬢と彼女ら（プリンシパル、護衛対象者）を守るボディーガードを同時に育成する教育機関が存在している。"
@@ -445,15 +465,18 @@ if __name__ == '__main__':
   tree = _p.parse(tokens)
   print tree.unparse()
 
+
   print "-- test translator --"
-  _t = JapaneseChineseTranslator()
-  tree = _t.translate(tree)
+  _g = GoogleTranslator(fr='ja', to='zhs')
+
+  _t = JapaneseChineseTransformer(fallbackTranslate=_g.translate)
+
+  tree = _t.transform(tree)
   print tree.unparse()
 
-  #print "-- test driver --"
-  #_d = JapaneseChineseDriver()
-  #trans = _d.translate(text)
-  #print trans
-
+  print "-- test translator --"
+  _d = JapaneseChineseTranslator()
+  trans = _d.translate(text)
+  print trans
 
 # EOF
