@@ -7,7 +7,7 @@
 
 CONFIG += pysideplugin noqtgui
 include(../../../config.pri)
-include($$COMDIR/modio/modio.pri)
+include($$COMDIR/modi/modi.pri)
 include($$LIBDIR/modiocr/modiocr.pri)
 
 INCLUDEPATH += $$LIBDIR/modiocr # needed by shiboken generated code
