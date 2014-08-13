@@ -6651,7 +6651,7 @@ struct PPSSPPFunction
 
 } // unnamed namespace
 
-bool InsertPPSSPPUnknownHLEHooks()
+bool InsertPPSSPP099HLEHooks()
 {
   return InsertOtomatePPSSPPHook();
 }
@@ -6703,17 +6703,26 @@ bool InsertPPSSPPHooks()
 {
   ConsoleOutput("vnreng: PPSSPP: enter");
 
-  InsertPPSSPPUnknownHLEHooks();
-
   InsertPPSSPPHLEHooks();
 
-  Insert5pbPSPHook();
+  bool engineFound = false;
+  engineFound = Insert5pbPSPHook() || engineFound;
+  engineFound = InsertCyberfrontPSPHook() || engineFound;
+  engineFound = InsertImageepoch2PSPHook() || engineFound;
+
+  bool version099 = false;
+  if (!engineFound)
+    version099 = InsertPPSSPP099HLEHooks();
+
   InsertBroccoliPSPHook();
-  InsertCyberfrontPSPHook();
   InsertIntensePSPHook();
   //InsertKadokawaNamePSPHook(); // disabled
-  InsertNippon1PSPHook();
-  InsertNippon2PSPHook();
+  InsertKonamiPSPHook();
+
+  if (!version099) { // only works for 099 anyway
+    InsertNippon1PSPHook();
+    InsertNippon2PSPHook(); // This could crash PPSSPP 099 just like 5pb
+  }
 
   //InsertTecmoPSPHook();
 
@@ -6721,8 +6730,6 @@ bool InsertPPSSPPHooks()
 
   bool bandaiFound = InsertBandaiPSPHook();
   InsertBandaiNamePSPHook();
-
-  InsertImageepoch2PSPHook();
 
   // Hooks whose pattern is not generic enouph
 
@@ -9428,6 +9435,169 @@ bool InsertIntensePSPHook()
   return addr;
 }
 
+/** 8/12/2014 jichi Konami.jp PSP engine, 0.9.8, 0.9.9,
+ *  Though Alchemist/Otomate can work, it has bad split that creates too many threads.
+ *
+ *  Sample game: 幻想水滸伝 紡がれし百年の時 on 0.9.8, 0.9.9
+ *
+ *  Memory address is FIXED.
+ *  But hardware accesses are looped.
+ *  Debug method: predict and breakpoint the memory address
+ *
+ *  There are two matches in the memory.
+ *  Three looped functions are as follows.
+ *  I randomply picked the first one.
+ *
+ *  It cannot extract character names.
+ *
+ *  14178f73   cc               int3
+ *  14178f74   77 0f            ja short 14178f85
+ *  14178f76   c705 c84c1301 a4>mov dword ptr ds:[0x1134cc8],0x88129a4
+ *  14178f80  -e9 7f7071ef      jmp 03890004
+ *  14178f85   8b05 c8491301    mov eax,dword ptr ds:[0x11349c8]
+ *  14178f8b   81e0 ffffff3f    and eax,0x3fffffff
+ *  14178f91   0fbeb0 00000008  movsx esi,byte ptr ds:[eax+0x8000000]	; jichi: hook here, loop
+ *  14178f98   81fe 40000000    cmp esi,0x40
+ *  14178f9e   8935 98491301    mov dword ptr ds:[0x1134998],esi
+ *  14178fa4   c705 9c491301 40>mov dword ptr ds:[0x113499c],0x40
+ *  14178fae   0f85 2f000000    jnz 14178fe3
+ *  14178fb4   8b05 c8491301    mov eax,dword ptr ds:[0x11349c8]
+ *  14178fba   81e0 ffffff3f    and eax,0x3fffffff
+ *  14178fc0   0fbeb0 01000008  movsx esi,byte ptr ds:[eax+0x8000001]
+ *  14178fc7   8935 98491301    mov dword ptr ds:[0x1134998],esi
+ *  14178fcd   832d e44c1301 04 sub dword ptr ds:[0x1134ce4],0x4
+ *  14178fd4   c705 c84c1301 d0>mov dword ptr ds:[0x1134cc8],0x88129d0
+ *  14178fde  -e9 407071ef      jmp 03890023
+ *  14178fe3   832d e44c1301 04 sub dword ptr ds:[0x1134ce4],0x4
+ *  14178fea   e9 0d000000      jmp 14178ffc
+ *  14178fef   01b429 8108e92a  add dword ptr ds:[ecx+ebp+0x2ae90881],es>
+ *  14178ff6   70 71            jo short 14179069
+ *  14178ff8   ef               out dx,eax                               ; i/o command
+ *  14178ff9   90               nop
+ *  14178ffa   cc               int3
+ *
+ *  1417a18c   77 0f            ja short 1417a19d
+ *  1417a18e   c705 c84c1301 78>mov dword ptr ds:[0x1134cc8],0x8818378
+ *  1417a198  -e9 675e71ef      jmp 03890004
+ *  1417a19d   8b05 c8491301    mov eax,dword ptr ds:[0x11349c8]
+ *  1417a1a3   81e0 ffffff3f    and eax,0x3fffffff
+ *  1417a1a9   0fbeb0 00000008  movsx esi,byte ptr ds:[eax+0x8000000]	; jichi: hook here, loop
+ *  1417a1b0   81fe 0a000000    cmp esi,0xa
+ *  1417a1b6   8935 98491301    mov dword ptr ds:[0x1134998],esi
+ *  1417a1bc   c705 9c491301 0a>mov dword ptr ds:[0x113499c],0xa
+ *  1417a1c6   0f84 2e000000    je 1417a1fa
+ *  1417a1cc   8b05 fc491301    mov eax,dword ptr ds:[0x11349fc]
+ *  1417a1d2   81e0 ffffff3f    and eax,0x3fffffff
+ *  1417a1d8   8bb0 18000008    mov esi,dword ptr ds:[eax+0x8000018]
+ *  1417a1de   8935 98491301    mov dword ptr ds:[0x1134998],esi
+ *  1417a1e4   832d e44c1301 04 sub dword ptr ds:[0x1134ce4],0x4
+ *  1417a1eb   e9 24000000      jmp 1417a214
+ *  1417a1f0   01b0 838108e9    add dword ptr ds:[eax+0xe9088183],esi
+ *  1417a1f6   295e 71          sub dword ptr ds:[esi+0x71],ebx
+ *  1417a1f9   ef               out dx,eax                               ; i/o command
+ *  1417a1fa   832d e44c1301 04 sub dword ptr ds:[0x1134ce4],0x4
+ *  1417a201   e9 1e660000      jmp 14180824
+ *  1417a206   0188 838108e9    add dword ptr ds:[eax+0xe9088183],ecx
+ *  1417a20c   135e 71          adc ebx,dword ptr ds:[esi+0x71]
+ *  1417a20f   ef               out dx,eax                               ; i/o command
+ *  1417a210   90               nop
+ *  1417a211   cc               int3
+ *  1417a212   cc               int3
+ *
+ *  1417a303   90               nop
+ *  1417a304   77 0f            ja short 1417a315
+ *  1417a306   c705 c84c1301 48>mov dword ptr ds:[0x1134cc8],0x8818448
+ *  1417a310  -e9 ef5c71ef      jmp 03890004
+ *  1417a315   8b35 dc491301    mov esi,dword ptr ds:[0x11349dc]
+ *  1417a31b   8b3d 98491301    mov edi,dword ptr ds:[0x1134998]
+ *  1417a321   33c0             xor eax,eax
+ *  1417a323   3bf7             cmp esi,edi
+ *  1417a325   0f9cc0           setl al
+ *  1417a328   8bf8             mov edi,eax
+ *  1417a32a   81ff 00000000    cmp edi,0x0
+ *  1417a330   893d 98491301    mov dword ptr ds:[0x1134998],edi
+ *  1417a336   0f84 2f000000    je 1417a36b
+ *  1417a33c   8b05 c8491301    mov eax,dword ptr ds:[0x11349c8]
+ *  1417a342   81e0 ffffff3f    and eax,0x3fffffff
+ *  1417a348   0fbeb0 00000008  movsx esi,byte ptr ds:[eax+0x8000000]	; jichi: hook here, loop
+ *  1417a34f   8935 98491301    mov dword ptr ds:[0x1134998],esi
+ *  1417a355   832d e44c1301 03 sub dword ptr ds:[0x1134ce4],0x3
+ *  1417a35c   e9 23000000      jmp 1417a384
+ *  1417a361   018484 8108e9b8  add dword ptr ss:[esp+eax*4+0xb8e90881],>
+ *  1417a368   5c               pop esp
+ *  1417a369  ^71 ef            jno short 1417a35a
+ *  1417a36b   832d e44c1301 03 sub dword ptr ds:[0x1134ce4],0x3
+ *  1417a372   c705 c84c1301 54>mov dword ptr ds:[0x1134cc8],0x8818454
+ *  1417a37c  -e9 a25c71ef      jmp 03890023
+ *  1417a381   90               nop
+ *  1417a382   cc               int3
+ */
+// Read text from looped address word by word
+// Use reverse search to avoid looping issue assume the text is at fixed address.
+static void SpecialPSPHookKonami(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  //static LPCSTR lasttext; // this value should be the same for the same game
+  static size_t lastsize;
+
+  DWORD eax = regof(eax, esp_base);
+  LPCSTR cur = LPCSTR(eax + hp->userValue);
+  if (!*cur)
+    return;
+
+  LPCSTR text = reverse_search_begin(cur);
+  if (!text)
+    return;
+  //if (lasttext != text) {
+  //  lasttext = text;
+  //  lastsize = 0; // reset last size
+  //}
+
+  size_t size = ::strlen(text);
+  if (size == lastsize)
+    return;
+
+  *len = lastsize = size;
+  *data = (DWORD)text;
+
+  *split = regof(ebx, esp_base); // ecx changes for each character, ebx is an address, edx is stable, but very large
+}
+bool InsertKonamiPSPHook()
+{
+  ConsoleOutput("vnreng: KONAMI PSP: enter");
+  const BYTE bytes[] =  {
+                                         // 14178f73   cc               int3
+    0x77, 0x0f,                          // 14178f74   77 0f            ja short 14178f85
+    0xc7,0x05, XX8,                      // 14178f76   c705 c84c1301 a4>mov dword ptr ds:[0x1134cc8],0x88129a4
+    0xe9, XX4,                           // 14178f80  -e9 7f7071ef      jmp 03890004
+    0x8b,0x05, XX4,                      // 14178f85   8b05 c8491301    mov eax,dword ptr ds:[0x11349c8]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f,      // 14178f8b   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xbe,0xb0, XX4,                 // 14178f91   0fbeb0 00000008  movsx esi,byte ptr ds:[eax+0x8000000]	; jichi: hook here, loop
+    0x81,0xfe, 0x40,0x00,0x00,0x00,      // 14178f98   81fe 40000000    cmp esi,0x40
+    0x89,0x35 //, XX4,                      // 14178f9e   8935 98491301    mov dword ptr ds:[0x1134998],esi
+    //0xc7,0x05, XX4, 0x40,0x00,0x00,0x00,  // 14178fa4   c705 9c491301 40>mov dword ptr ds:[0x113499c],0x40
+    //0x0f,0x85, 0x2f,0x00,0x00,0x00,0x00,  // 14178fae   0f85 2f000000    jnz 14178fe3
+    //0x8b,0x05, XX4                        // 14178fb4   8b05 c8491301    mov eax,dword ptr ds:[0x11349c8]
+  };
+  enum { memory_offset = 3 };
+  enum { hook_offset = 0x14178f91 - 0x14178f74 };
+
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
+  if (!addr)
+    ConsoleOutput("vnreng: KONAMI PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|NO_CONTEXT;
+    hp.extern_fun = SpecialPSPHookKonami;
+    ConsoleOutput("vnreng: KONAMI PSP: INSERT");
+    NewHook(hp, L"KONAMI PSP");
+  }
+
+  ConsoleOutput("vnreng: KONAMI PSP: leave");
+  return addr;
+}
+
 /** 8/9/2014 jichi Kadokawa.co.jp PSP engine, 0.9.8, ?,
  *
  *  Sample game: 未来日記 work on 0.9.8, not tested on 0.9.9
@@ -9774,7 +9944,7 @@ static void SpecialPSPHookTypeMoon(DWORD esp_base, HookParam *hp, DWORD *data, D
 }
 bool InsertTypeMoonPSPHook()
 {
-  ConsoleOutput("vnreng: Intense PSP: enter");
+  ConsoleOutput("vnreng: TypeMoon PSP: enter");
   const BYTE bytes[] =  {
     0x77, 0x0f,                     // 1351e130   77 0f            ja short 1351e141
     0xc7,0x05, XX8,                 // 1351e132   c705 a8aa1001 b8>mov dword ptr ds:[0x110aaa8],0x88ed7b8
@@ -10030,6 +10200,7 @@ size_t _typemoonstrlen(LPCSTR text)
 
 } // unnamed namespace
 
+// Use last text size to determine
 static void SpecialPS2HookTypeMoon(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(hp);
