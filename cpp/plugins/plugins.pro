@@ -26,6 +26,7 @@ win32: SUBDIRS += vnragent
 win32: SUBDIRS += vnrlocale
 
 #win32: SUBDIRS += pyeffects
+win32: SUBDIRS += pymodiocr
 win32: SUBDIRS += pymsime
 win32: SUBDIRS += pywintts
 win32: SUBDIRS += pywinutil

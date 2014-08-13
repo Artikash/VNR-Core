@@ -17,7 +17,7 @@ int main()
 
   CoInitialize(nullptr);
   if (modiocr_available()) {
-    modiocr_lang lang = modiocr_from_file(path, langs, [](const wchar_t *text) {
+    modiocr_lang lang = modiocr_readfile(path, langs, [](const wchar_t *text) {
       qDebug() << QString::fromWCharArray(text);
     });
 

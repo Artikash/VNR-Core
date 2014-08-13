@@ -11,7 +11,6 @@
 #include "winime/winime.h"
 #include <windows.h>
 #include <msime.h>
-#include <cstring> // for wcslen
 
 winime_t *winime_create(const wchar_t *cls) ///< create an im engine of given class
 {
@@ -52,12 +51,13 @@ void winime_destroy(winime_t *ife)
 }
 
 // Get the entire result
-bool winime_apply(winime_t *ife, unsigned long req, unsigned long mode, const winime_apply_fun_t &fun, const wchar_t *src, size_t len)
+bool winime_apply(winime_t *ife, unsigned long req, unsigned long mode,
+    const wchar_t *src, size_t len, const winime_apply_fun_t &fun)
 {
   if (!ife || !src || fun.empty())
     return false;
   MORRSLT *mr = nullptr;
-  if (FAILED(ife->GetJMorphResult(req, mode, len ? len : ::wcslen(src), src, nullptr, &mr)) || !mr)
+  if (FAILED(ife->GetJMorphResult(req, mode, len, src, nullptr, &mr)) || !mr)
     return false;
   //Q_ASSERT(mr);
   //qDebug() << QString::fromWCharArray(mr->pwchOutput, mr->cchOutput);
@@ -66,12 +66,13 @@ bool winime_apply(winime_t *ife, unsigned long req, unsigned long mode, const wi
   return true;
 }
 
-bool winime_collect(winime_t *ife, unsigned long req, unsigned long mode, const winime_collect_fun_t &fun, const wchar_t *src, size_t len)
+bool winime_collect(winime_t *ife, unsigned long req, unsigned long mode,
+    const wchar_t *src, size_t len, const winime_collect_fun_t &fun)
 {
   if (!ife || !src || fun.empty())
     return false;
   MORRSLT *mr = nullptr;
-  if (FAILED(ife->GetJMorphResult(req, mode, len ? len : ::wcslen(src), src, nullptr, &mr)) || !mr)
+  if (FAILED(ife->GetJMorphResult(req, mode, len, src, nullptr, &mr)) || !mr)
     return false;
   //Q_ASSERT(mr);
   //qDebug() << QString::fromWCharArray(mr->pwchOutput, mr->cchOutput);
