@@ -40,7 +40,7 @@ bool InsertPPSSPPHooks();        // PPSSPPWindows
 
 bool InsertPPSSPPHLEHooks();
 
-bool InsertPPSSPPUnknownHooks();
+bool InsertPPSSPP099Hooks();
 bool InsertOtomatePPSSPPHook(); // PSP otomate.jp, 0.9.9 only
 
 bool Insert5pbPSPHook();        // PSP 5pb.jp
@@ -53,7 +53,8 @@ bool InsertBroccoliPSPHook();   // PSP Broccoli.co.jp
 bool InsertCyberfrontPSPHook(); // PSP CYBERFRONT (closed)
 bool InsertImageepochPSPHook(); // PSP Imageepoch.co.jp
 bool InsertImageepoch2PSPHook();// PSP Imageepoch.co.jp
-bool InsertKadokawaNamePSPHook();   // PSP Kadokawa.co.jp
+bool InsertKadokawaNamePSPHook(); // PSP Kadokawa.co.jp
+bool InsertKonamiPSPHook();     // PSP Konami.jp
 bool InsertTecmoPSPHook();      // PSP Koeitecmo.co.jp
 //bool InsertTypeMoonPSPHook(); // PSP Typemoon.com
 

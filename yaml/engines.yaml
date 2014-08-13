@@ -28,6 +28,7 @@ psp:
     - Imageepoch PSP
     - Imageepoch2 PSP
     - KID PSP
+    - KONAMI PSP
     - Otomate PSP
     - Yeti PSP
     - Yeti2 PSP
@@ -134,6 +135,7 @@ simple:
   - KID PSP
   - KiriKiri1
   - KiriKiri2
+  #- KONAMI PSP # KONAMI could have both repeat and float text
   - MAJIRO # renamed
   - Majiro
   - Malie2
@@ -177,6 +179,7 @@ single: # single thread
   # PSP
   - 5pb PSP
   - Intense PSP
+  - KONAMI PSP
   # PS2
   - Marvelous PS2
   - TypeMoon PS2
@@ -275,6 +278,7 @@ char:
   - Eushully
   - Gesen18
   - Intense PSP
+  - KONAMI PSP
   - KID PSP
   - Live
   - Lucifen
