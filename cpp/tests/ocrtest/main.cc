@@ -7,15 +7,26 @@
 
 int main()
 {
-  const wchar_t *path = L"test.tiff";
+  //std::cerr << "iostream:enter" << std::endl;
+  qDebug() << "enter";
+
+  //const wchar_t *path = L"z:\\Users\\jichi\\Desktop\\wiki.tiff";
+  const wchar_t *path = L"wiki.tiff";
+
+  modiocr_flags langs = modiocr_lang_ja|modiocr_lang_zhs|modiocr_lang_zht|modiocr_lang_en;
 
   CoInitialize(nullptr);
-  if (modiocr_available())
-    modiocr_from_file(path, [](const wchar_t *text) {
+  if (modiocr_available()) {
+    modiocr_lang lang = modiocr_from_file(path, langs, [](const wchar_t *text) {
       qDebug() << QString::fromWCharArray(text);
     });
 
+    qDebug() << (int)lang;
+  }
+
   CoUninitialize();
+  //std::cerr << "iostream:leave" << std::endl;
+  qDebug() << "leave";
   return 0;
 }
 

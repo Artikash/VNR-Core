@@ -94,6 +94,7 @@ processes:
   - jct.exe             # JBeijing
   - JCTchs.exe          # JBeijing
   - KHALMNPR.exe        # Logitech
+  - KuGou.exe           # Kugou
   - MacDrive.exe        # MacDrive
   - mousegesture.exe    # Sogou
   - netbeans.exe        # NetBeans

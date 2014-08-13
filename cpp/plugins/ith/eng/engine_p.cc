@@ -7,6 +7,7 @@
 #endif // _MSC_VER
 
 #include "engine_p.h"
+#include "engine.h"
 #include "hookdefs.h"
 #include "util.h"
 #include "ith/cli/cli.h"
@@ -139,7 +140,7 @@ ULONG SafeMatchBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD
 ULONG _SafeMatchBytesInMappedMemory(LPCVOID pattern, DWORD patternSize, BYTE wildcard,
                                    ULONG start, ULONG stop, ULONG step)
 {
-  for (ULONG i = start; i < stop; i += step) // + patternSize to avoid overlap
+  for (ULONG i = start; i < stop && Engine::processAttached_; i += step) // + patternSize to avoid overlap
     if (ULONG r = SafeMatchBytes(pattern, patternSize, i, i + step + patternSize + 1, wildcard))
       return r;
   return 0;
@@ -155,13 +156,12 @@ inline ULONG SafeMatchBytesInGCMemory(LPCVOID pattern, DWORD patternSize)
   return _SafeMatchBytesInMappedMemory(pattern, patternSize, XX, start, stop, step);
 }
 
-inline ULONG SafeMatchBytesInPSPMemory(LPCVOID pattern, DWORD patternSize, DWORD start = MemDbg::MappedMemoryStartAddress)
+inline ULONG SafeMatchBytesInPSPMemory(LPCVOID pattern, DWORD patternSize, DWORD start = MemDbg::MappedMemoryStartAddress, DWORD stop = MemDbg::MemoryStopAddress)
 {
   enum : ULONG {
     //start = MemDbg::MappedMemoryStartAddress // 0x01000000
-    //stop = 0x15000000 // hooking to code after this might crash VNR
-    stop = MemDbg::MemoryStopAddress
-    , step = 0x00050000 // in order to work on PPSSPP 0.9.9
+    //stop = 0x15000000 // hooking to code after this might crash VNR in 5pb
+    step = 0x00050000 // in order to work on PPSSPP 0.9.9
     //, step = 0x1000 // step  must be at least 0x1000 (offset in SearchPattern)
     //, step = 0x00010000 // crash otoboku PSP on 0.9.9 since 5pb is wrongly inserted
     //, step = 0x00100000 // in order to work for 0.9.9
@@ -7036,6 +7036,8 @@ bool InsertAlchemist2PSPHook()
  *
  *  Debug method: precompute memory address and set break points, then navigate to that scene
  *
+ *  Attach to this function for wrong game might cause BEX (buffer overflow) exception.
+ *
  *  135752c7   90               nop
  *  135752c8   77 0f            ja short 135752d9
  *  135752ca   c705 a8aa1001 d4>mov dword ptr ds:[0x110aaa8],0x8888ed4
@@ -7246,7 +7248,11 @@ bool Insert5pbPSPHook()
   enum { memory_offset = 3 }; // 13575386   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]
   enum { hook_offset = sizeof(bytes) - memory_offset };
 
-  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
+  enum {
+    start = MemDbg::MappedMemoryStartAddress
+    , stop = 0x15000000 // smaller to avoid crash in 0.9.9
+  };
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes), start, stop);
   //ITH_GROWL_DWORD(addr);
   if (!addr)
     ConsoleOutput("vnreng: 5pb PSP: pattern not found");

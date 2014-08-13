@@ -18,14 +18,15 @@
 win32 {
 DEFINES += WITH_LIB_MODI
 
-MODI_VERSION = 12.0 # Office 2007
-INCLUDEPATH += $$PWD/$$MODI_VERSION
+INCLUDEPATH += $$PWD
 DEPENDPATH  += $$PWD
 
 HEADERS += \
   $$PWD/mdivwctl.h \
-  $$PWD/$$MODI_VERSION/MDIVWCTL.tlh \
-  $$PWD/$$MODI_VERSION/MDIVWCTL.tli
+  $$PWD/11.0/mdivwctl.tlh \
+  $$PWD/11.0/mdivwctl_guid.tlh \
+  $$PWD/12.0/mdivwctl.tlh \
+  $$PWD/12.0/mdivwctl.tli
 }
 
 # EOF
