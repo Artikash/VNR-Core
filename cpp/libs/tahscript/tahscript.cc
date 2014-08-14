@@ -2,13 +2,21 @@
 // 8/14/2014 jichi
 
 #include "tahscript/tahscript.h"
-#include <QtCore/QStringList>
+#include <QtCore/QString>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <QtCore/QRegExp>
+#include <list> // instead of QList which is slow that stores pointers instead of elements
+#include <utility> // for pair which is faster than QPair
+#include <boost/foreach.hpp>
 
 #define DEBUG "tahscript.cc"
 #include "sakurakit/skdebug.h"
+
+#define TAHSCRIPT_COMMENT_CHAR      '#' // indicate the beginning of a line comment
+//#define TAHSCRIPT_COMMENT_CHAR_LEN  1 // not used
+#define TAHSCRIPT_RULE_DELIM        "=>" // deliminator of the rule pair
+#define TAHSCRIPT_RULE_DELIM_LEN    (sizeof(TAHSCRIPT_RULE_DELIM)  - 1) // strlen
 
 /** Helpers */
 
@@ -22,6 +30,27 @@ struct TahScriptRule
 
   TahScriptRule() : sourceRe(nullptr) {}
   ~TahScriptRule() { if (sourceRe) delete sourceRe; }
+
+  void init(const QString &s, const QString &t)
+  {
+    target = t;
+    if (isRegExp(s))
+      sourceRe = new QRegExp(s);
+    else
+      source = s;
+  }
+
+private:
+  static bool isRegExp(const QString &s)
+  {
+    foreach (const QChar &c, s)
+      switch (c.unicode()) {
+      case L'(': case L')': case L'[': case L']': case L'^': case L'$':
+      case L'|': case L'\\': case L'?': case L'!': case L'*': case L'.':
+        return true;
+      }
+    return false;
+  }
 };
 
 } // unnamed namespace
@@ -36,7 +65,7 @@ public:
   int ruleCount;
 
   TahScriptManagerPrivate() : rules(nullptr), ruleCount(0) {}
-  ~TahScriptManagerPrivate() { if (rules) delete rules; }
+  ~TahScriptManagerPrivate() { if (rules) delete[] rules; }
 
   void clear()
   {
@@ -45,6 +74,15 @@ public:
       delete rules;
       rules = nullptr;
     }
+  }
+
+  void reset(int size)
+  {
+    Q_ASSERT(size > 0);
+    ruleCount = size;
+    if (rules)
+      delete rules;
+    rules = new TahScriptRule[size];
   }
 };
 
@@ -57,7 +95,7 @@ TahScriptManager::~TahScriptManager() { delete d_; }
 
 
 int TahScriptManager::size() const { return d_->ruleCount; }
-bool TahScriptManager::isEmpty() const { return d_->ruleCount; }
+bool TahScriptManager::isEmpty() const { return !d_->ruleCount; }
 
 void TahScriptManager::clear() { d_->clear(); }
 
@@ -72,15 +110,34 @@ bool TahScriptManager::loadFile(const QString &path)
     return false;
   }
 
-  QStringList lines;
+  std::list<std::pair<QString, QString> > lines;
 
   QTextStream in(&file);
   while (!in.atEnd()) {
-    QString line = in.readLine();
+    QString line = in.readLine().trimmed();
+    if (!line.isEmpty() && !line.startsWith(TAHSCRIPT_COMMENT_CHAR)) {
+      int index = line.indexOf(TAHSCRIPT_RULE_DELIM);
+      if (index <= -1) {
+        DOUT("failed to parse line:" << line);
+        continue;
+      }
+      lines.push_back(std::make_pair(
+          line.left(index).trimmed(),
+          line.mid(index + TAHSCRIPT_RULE_DELIM_LEN).trimmed()));
+    }
   }
-
   file.close();
-  return false;
+
+  if (lines.empty())
+    return false;
+
+  d_->reset(lines.size());
+
+  int i = 0;
+  BOOST_FOREACH (const auto &it, lines)
+    d_->rules[i++].init(it.first, it.second);
+
+  return true;
 }
 
 // Translation
