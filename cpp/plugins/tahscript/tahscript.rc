@@ -1,6 +1,6 @@
 /*
- * texthook.rc
- * 10/20/2011 jichi
+ * tahscript.rc
+ * 8/14/2014 jichi
  */
 #if defined(UNDER_CE)
 # include <winbase.h>
@@ -29,8 +29,8 @@ VS_VERSION_INFO VERSIONINFO
             VALUE "FileDescription", "Text Hook\0"
             VALUE "FileVersion", "1.0.0.0\0"
             VALUE "LegalCopyright", "Copyright (C) 2012.\0"
-            VALUE "OriginalFilename", "texthook.dll\0"
-            VALUE "ProductName", "texthook\0"
+            VALUE "OriginalFilename", "tahscript.dll\0"
+            VALUE "ProductName", "tahscript\0"
          END
       END
    END
