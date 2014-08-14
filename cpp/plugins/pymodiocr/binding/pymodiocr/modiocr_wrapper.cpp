@@ -72,7 +72,7 @@ static PyObject* Sbk_ModiOcrFunc_isValid(PyObject* self)
     return pyResult;
 }
 
-static PyObject* Sbk_ModiOcrFunc_readFile(PyObject* self, PyObject* args)
+static PyObject* Sbk_ModiOcrFunc_readText(PyObject* self, PyObject* args)
 {
     PyObject* pyResult = 0;
     int overloadId = -1;
@@ -84,20 +84,20 @@ static PyObject* Sbk_ModiOcrFunc_readFile(PyObject* self, PyObject* args)
     // invalid argument lengths
 
 
-    if (!PyArg_UnpackTuple(args, "readFile", 2, 2, &(pyArgs[0]), &(pyArgs[1])))
+    if (!PyArg_UnpackTuple(args, "readText", 2, 2, &(pyArgs[0]), &(pyArgs[1])))
         return 0;
 
 
     // Overloaded function decisor
-    // 0: readFile(QString,int)
+    // 0: readText(QString,int)
     if (numArgs == 2
         && (pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArgs[0])))
         && (pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[1])))) {
-        overloadId = 0; // readFile(QString,int)
+        overloadId = 0; // readText(QString,int)
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_ModiOcrFunc_readFile_TypeError;
+    if (overloadId == -1) goto Sbk_ModiOcrFunc_readText_TypeError;
 
     // Call function/method
     {
@@ -107,9 +107,64 @@ static PyObject* Sbk_ModiOcrFunc_readFile(PyObject* self, PyObject* args)
         pythonToCpp[1](pyArgs[1], &cppArg1);
 
         if (!PyErr_Occurred()) {
-            // readFile(QString,int)
+            // readText(QString,int)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            QStringList cppResult = ::ModiOcr::readFile(cppArg0, cppArg1);
+            QString cppResult = ::ModiOcr::readText(cppArg0, cppArg1);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+
+    Sbk_ModiOcrFunc_readText_TypeError:
+        const char* overloads[] = {"unicode, int", 0};
+        Shiboken::setErrorAboutWrongArguments(args, "pymodiocr.ModiOcr.readText", overloads);
+        return 0;
+}
+
+static PyObject* Sbk_ModiOcrFunc_readTextList(PyObject* self, PyObject* args)
+{
+    PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp[] = { 0, 0 };
+    SBK_UNUSED(pythonToCpp)
+    int numArgs = PyTuple_GET_SIZE(args);
+    PyObject* pyArgs[] = {0, 0};
+
+    // invalid argument lengths
+
+
+    if (!PyArg_UnpackTuple(args, "readTextList", 2, 2, &(pyArgs[0]), &(pyArgs[1])))
+        return 0;
+
+
+    // Overloaded function decisor
+    // 0: readTextList(QString,int)
+    if (numArgs == 2
+        && (pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArgs[0])))
+        && (pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[1])))) {
+        overloadId = 0; // readTextList(QString,int)
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_ModiOcrFunc_readTextList_TypeError;
+
+    // Call function/method
+    {
+        ::QString cppArg0 = ::QString();
+        pythonToCpp[0](pyArgs[0], &cppArg0);
+        int cppArg1;
+        pythonToCpp[1](pyArgs[1], &cppArg1);
+
+        if (!PyErr_Occurred()) {
+            // readTextList(QString,int)
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            QStringList cppResult = ::ModiOcr::readTextList(cppArg0, cppArg1);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRINGLIST_IDX], &cppResult);
         }
@@ -121,15 +176,16 @@ static PyObject* Sbk_ModiOcrFunc_readFile(PyObject* self, PyObject* args)
     }
     return pyResult;
 
-    Sbk_ModiOcrFunc_readFile_TypeError:
+    Sbk_ModiOcrFunc_readTextList_TypeError:
         const char* overloads[] = {"unicode, int", 0};
-        Shiboken::setErrorAboutWrongArguments(args, "pymodiocr.ModiOcr.readFile", overloads);
+        Shiboken::setErrorAboutWrongArguments(args, "pymodiocr.ModiOcr.readTextList", overloads);
         return 0;
 }
 
 static PyMethodDef Sbk_ModiOcr_methods[] = {
     {"isValid", (PyCFunction)Sbk_ModiOcrFunc_isValid, METH_NOARGS|METH_STATIC},
-    {"readFile", (PyCFunction)Sbk_ModiOcrFunc_readFile, METH_VARARGS|METH_STATIC},
+    {"readText", (PyCFunction)Sbk_ModiOcrFunc_readText, METH_VARARGS|METH_STATIC},
+    {"readTextList", (PyCFunction)Sbk_ModiOcrFunc_readTextList, METH_VARARGS|METH_STATIC},
 
     {0} // Sentinel
 };

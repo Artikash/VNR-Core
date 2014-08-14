@@ -7,7 +7,18 @@
 bool ModiOcr::isValid()
 { return ::modiocr_available(); }
 
-QStringList ModiOcr::readFile(const QString &path, int language)
+QString ModiOcr::readText(const QString &path, int language)
+{
+  QString ret;
+  ::modiocr_readfile((const wchar_t *)path.utf16(), language,
+    [&ret](const wchar_t *text) {
+      ret.append(QString::fromWCharArray(text));
+    }
+  );
+  return ret;
+}
+
+QStringList ModiOcr::readTextList(const QString &path, int language)
 {
   QStringList ret;
   ::modiocr_readfile((const wchar_t *)path.utf16(), language,
