@@ -67,6 +67,7 @@ typedef unsigned long modiocr_flags;
 bool modiocr_available();
 
 typedef boost::function<void (const wchar_t *)> modiocr_collect_fun_t;
-modiocr_lang modiocr_from_file(const wchar_t *path, modiocr_flags lang, const modiocr_collect_fun_t &fun);
+modiocr_lang modiocr_readfile(const wchar_t *path, modiocr_flags lang,
+                              const modiocr_collect_fun_t &fun);
 
 // EOF

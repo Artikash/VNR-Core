@@ -54,7 +54,7 @@ bool modiocr_available()
   return false;
 }
 
-modiocr_lang modiocr_from_file(const wchar_t *path, modiocr_flags langs, const modiocr_collect_fun_t &fun)
+modiocr_lang modiocr_readfile(const wchar_t *path, modiocr_flags langs, const modiocr_collect_fun_t &fun)
 {
   modiocr_lang ret = modiocr_lang_null;
   if (CC_UNLIKELY(!path || !langs))

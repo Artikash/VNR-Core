@@ -73,22 +73,9 @@ QString Msime_ja::toYomigana(const QString& text, int type) const
     ::winime_apply(d_->ime,
          WINIME_REQ_REV,
          MSIME_MODE_FLAGS | (type == Katagana ? WINIME_MODE_KATAGANA : WINIME_MODE_HIRAGANA),
-         ime_applier(&ret),
          (const wchar_t *)text.utf16(),
-         text.size());
-  return ret;
-}
-
-QList<QPair<QString, QString> > Msime_ja::toFurigana(const QString& text, int type) const
-{
-  QList<QPair<QString, QString> > ret;
-  if (d_->ime)
-    ::winime_collect(d_->ime,
-         WINIME_REQ_REV,
-         MSIME_MODE_FLAGS | (type == Katagana ? WINIME_MODE_KATAGANA : WINIME_MODE_HIRAGANA),
-         ime_collector(&ret),
-         (const wchar_t *)text.utf16(),
-         text.size());
+         text.size(),
+         ime_applier(&ret));
   return ret;
 }
 
@@ -99,9 +86,22 @@ QString Msime_ja::toKanji(const QString &text, ulong flags) const
     ::winime_apply(d_->ime,
          flags & Autocorrect ? WINIME_REQ_RECONV : WINIME_REQ_CONV,
          MSIME_MODE_FLAGS,
-         ime_applier(&ret),
          (const wchar_t *)text.utf16(),
-         text.size());
+         text.size(),
+         ime_applier(&ret));
+  return ret;
+}
+
+QList<QPair<QString, QString> > Msime_ja::toFurigana(const QString& text, int type) const
+{
+  QList<QPair<QString, QString> > ret;
+  if (d_->ime)
+    ::winime_collect(d_->ime,
+         WINIME_REQ_REV,
+         MSIME_MODE_FLAGS | (type == Katagana ? WINIME_MODE_KATAGANA : WINIME_MODE_HIRAGANA),
+         (const wchar_t *)text.utf16(),
+         text.size(),
+         ime_collector(&ret));
   return ret;
 }
 
