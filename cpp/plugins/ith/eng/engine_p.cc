@@ -75,6 +75,15 @@ int GetHookDataLength(const HookParam &hp, DWORD base, DWORD in)
 
 namespace { // unnamed helpers
 
+int PPSSPP_VERSION = 98; // 0.9.8 by default
+
+enum : DWORD {
+  PPSSPP_MEMORY_SEARCH_STEP_98 = 0x01000000
+  , PPSSPP_MEMORY_SEARCH_STEP_99 = 0x00050000
+  //, step = 0x1000 // step  must be at least 0x1000 (offset in SearchPattern)
+  //, step = 0x00010000 // crash otoboku PSP on 0.9.9 since 5pb is wrongly inserted
+};
+
 enum : BYTE { XX = MemDbg::WidecardByte }; // 0x11
 #define XX2 XX,XX       // WORD
 #define XX4 XX2,XX2     // DWORD
@@ -158,15 +167,7 @@ inline ULONG SafeMatchBytesInGCMemory(LPCVOID pattern, DWORD patternSize)
 
 inline ULONG SafeMatchBytesInPSPMemory(LPCVOID pattern, DWORD patternSize, DWORD start = MemDbg::MappedMemoryStartAddress, DWORD stop = MemDbg::MemoryStopAddress)
 {
-  enum : ULONG {
-    //start = MemDbg::MappedMemoryStartAddress // 0x01000000
-    //stop = 0x15000000 // hooking to code after this might crash VNR in 5pb
-    step = 0x00050000 // in order to work on PPSSPP 0.9.9
-    //, step = 0x1000 // step  must be at least 0x1000 (offset in SearchPattern)
-    //, step = 0x00010000 // crash otoboku PSP on 0.9.9 since 5pb is wrongly inserted
-    //, step = 0x00100000 // in order to work for 0.9.9
-    //, step = 0x01000000 // only works for PPSSPP 0.9.8
-  };
+  ULONG step = PPSSPP_VERSION == 98 ? PPSSPP_MEMORY_SEARCH_STEP_98 : PPSSPP_MEMORY_SEARCH_STEP_99;
   return _SafeMatchBytesInMappedMemory(pattern, patternSize, XX, start, stop, step);
 }
 
@@ -6705,21 +6706,20 @@ bool InsertPPSSPPHooks()
 
   InsertPPSSPPHLEHooks();
 
-  bool engineFound = false;
-  engineFound = Insert5pbPSPHook() || engineFound;
-  engineFound = InsertCyberfrontPSPHook() || engineFound;
-  engineFound = InsertImageepoch2PSPHook() || engineFound;
+  if (InsertPPSSPP099HLEHooks())
+    PPSSPP_VERSION = 99;
 
-  bool version099 = false;
-  if (!engineFound)
-    version099 = InsertPPSSPP099HLEHooks();
+  //bool engineFound = false;
+  Insert5pbPSPHook();
+  InsertCyberfrontPSPHook();
+  InsertImageepoch2PSPHook();
 
   InsertBroccoliPSPHook();
   InsertIntensePSPHook();
   //InsertKadokawaNamePSPHook(); // disabled
   InsertKonamiPSPHook();
 
-  if (!version099) { // only works for 099 anyway
+  if (PPSSPP_VERSION != 99) { // only works for 0.9.8 anyway
     InsertNippon1PSPHook();
     InsertNippon2PSPHook(); // This could crash PPSSPP 099 just like 5pb
   }
@@ -7254,10 +7254,8 @@ bool Insert5pbPSPHook()
   enum { memory_offset = 3 }; // 13575386   0fbeb0 00004007  movsx esi,byte ptr ds:[eax+0x7400000]
   enum { hook_offset = sizeof(bytes) - memory_offset };
 
-  enum {
-    start = MemDbg::MappedMemoryStartAddress
-    , stop = 0x15000000 // smaller to avoid crash in 0.9.9
-  };
+  enum : DWORD { start = MemDbg::MappedMemoryStartAddress };
+  DWORD stop = PPSSPP_VERSION == 99 ? 0x15000000 : MemDbg::MemoryStopAddress;
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes), start, stop);
   //ITH_GROWL_DWORD(addr);
   if (!addr)
@@ -8940,6 +8938,7 @@ bool InsertNippon1PSPHook()
 //  }
 //}
 
+// 8/13/2014: 5pb might crash on 0.9.9.
 bool InsertNippon2PSPHook()
 {
   ConsoleOutput("vnreng: Nippon2 PSP: enter");
