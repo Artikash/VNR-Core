@@ -6706,8 +6706,12 @@ bool InsertPPSSPPHooks()
 
   InsertPPSSPPHLEHooks();
 
-  if (InsertPPSSPP099HLEHooks())
+  if (InsertPPSSPP099HLEHooks()) {
     PPSSPP_VERSION = 99;
+
+    ConsoleOutput("vnreng: PPSSPP version = 0.9.9");
+  } else
+    ConsoleOutput("vnreng: PPSSPP version = 0.9.8");
 
   //bool engineFound = false;
   Insert5pbPSPHook();
