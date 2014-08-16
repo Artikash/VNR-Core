@@ -54,7 +54,6 @@ class _PrefsDialog(object):
 
   def _createUi(self, q):
     self.userTab = _prefs.UserTab()
-    self.honyakuTab = _prefs.HonyakuTab()
     self.textTab = _prefs.TextTab()
     self.ttsTab = _prefs.TtsTab()
     self.gameTab = _prefs.GameTab()
@@ -64,6 +63,11 @@ class _PrefsDialog(object):
     self.engineTab = _prefs.EngineTab()
     self.featureTab = _prefs.FeatureTab()
     #self.pluginTab = _prefs.PluginTab()
+
+    self.translationTab = _prefs.TranslationTab()
+    self.machineTranslationTab = _prefs.MachineTranslationTab()
+    self.dictionaryTranslationTab = _prefs.DictionaryTranslationTab()
+    self.translationScriptTab = _prefs.TranslationScriptTab()
 
     self.downloadsTab = _prefs.DownloadsTab()
     self.dictionaryDownloadsTab = _prefs.DictionaryDownloadsTab()
@@ -103,13 +107,13 @@ class _PrefsDialog(object):
           'children': [
             { 'widget': self.launcherDownloadsTab,
               'user': self._indexWidget(self.launcherDownloadsTab),
-              'decoration': rc.icon('pref-locale-path'),
+              'decoration': rc.icon('pref-locale'),
               'display': tr_("Launch"),
               'toolTip': my.tr("Locale changers"),
             },
             { 'widget': self.dictionaryDownloadsTab,
               'user': self._indexWidget(self.dictionaryDownloadsTab),
-              'decoration': rc.icon('pref-dict-path'),
+              'decoration': rc.icon('pref-dict'),
               'display': tr_("Dictionaries"),
               'toolTip': my.tr("Manage dictionaries"),
             },
@@ -123,7 +127,7 @@ class _PrefsDialog(object):
           'children': [
             { 'widget': self.localeLibraryTab,
               'user': self._indexWidget(self.localeLibraryTab),
-              'decoration': rc.icon('pref-locale-path'),
+              'decoration': rc.icon('pref-locale'),
               'display': tr_("Launch"),
               'toolTip': my.tr("Locations of external locale changers"),
             },
@@ -135,7 +139,7 @@ class _PrefsDialog(object):
             },
             { 'widget': self.dictionaryLibraryTab,
               'user': self._indexWidget(self.dictionaryLibraryTab),
-              'decoration': rc.icon('pref-dict-path'),
+              'decoration': rc.icon('pref-dict'),
               'display': tr_("Dictionaries"),
               'toolTip': my.tr("Locations of external dictionary"),
             },
@@ -147,11 +151,31 @@ class _PrefsDialog(object):
             },
           ]
         },
-        { 'widget': self.honyakuTab,
-          'user': self._indexWidget(self.honyakuTab),
+        { 'widget': self.translationTab,
+          'user': self._indexWidget(self.translationTab),
           'decoration': rc.icon('pref-tr'),
           'display': tr_("Translation"),
           'toolTip': my.tr("Machine translators"),
+          'children': [
+            { 'widget': self.machineTranslationTab,
+              'user': self._indexWidget(self.machineTranslationTab),
+              'decoration': rc.icon('pref-tr-path'),
+              'display': tr_("Translators"),
+              'toolTip': my.tr("Preferred machine translators"),
+            },
+            { 'widget': self.dictionaryTranslationTab,
+              'user': self._indexWidget(self.dictionaryTranslationTab),
+              'decoration': rc.icon('pref-dict'),
+              'display': tr_("Dictionaries"),
+              'toolTip': my.tr("Preferred look-up dictionaries"),
+            },
+            { 'widget': self.translationScriptTab,
+              'user': self._indexWidget(self.translationScriptTab),
+              'decoration': rc.icon('pref-script'),
+              'display': tr_("Scripts"),
+              'toolTip': my.tr("Translation replacement scripts"),
+            },
+          ]
         },
         { 'widget': self.ttsTab,
           'user': self._indexWidget(self.ttsTab),
@@ -237,7 +261,6 @@ class _PrefsDialog(object):
 
   def itertabs(self):
     yield self.userTab
-    yield self.honyakuTab
     yield self.textTab
     yield self.uiTab
     yield self.ttsTab
@@ -246,6 +269,11 @@ class _PrefsDialog(object):
     yield self.i18nTab
     yield self.featureTab
     #yield self.pluginTab
+
+    yield self.translationTab
+    yield self.machineTranslationTab
+    yield self.dictionaryTranslationTab
+    yield self.translationScriptTab
 
     yield self.downloadsTab
     yield self.dictionaryDownloadsTab
@@ -315,7 +343,7 @@ class PrefsDialog(QtWidgets.QSplitter):
 #             tip=my.tr("User account"))
 #    q.addTab(self.libraryTab, text=tr_("Location"), icon=rc.icon('pref-config'),
 #             tip=my.tr("Locations of external libraries"))
-#    q.addTab(self.honyakuTab, text=tr_("Translator"), icon=rc.icon('pref-tr'),
+#    q.addTab(self.TranslationTab, text=tr_("Translator"), icon=rc.icon('pref-tr'),
 #             tip=my.tr("Machine translators"))
 #    q.addTab(self.textTab, text=tr_("Text"), icon=rc.icon('pref-text'),
 #             tip=my.tr("Text rendering"))

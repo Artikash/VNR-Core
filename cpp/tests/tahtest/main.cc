@@ -7,10 +7,10 @@ int main()
 {
   qDebug() << "enter";
 
-  wchar_t ws[] = L"頑張ろ！";
+  wchar_t ws[] = L"裕輔なら、問題なく対処してくれるだろう。";
   QString text = QString::fromWCharArray(ws);
 
-  QString path = "../cpp/libs/tahscript/example.txt";
+  QString path = "../../../../Caches/Dictionaries/TAHScripts/ja-ja.wiki";
 
   TahScriptManager m;
   m.loadFile(path);

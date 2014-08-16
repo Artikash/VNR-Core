@@ -1,4 +1,4 @@
-// pymodiocr_config.h
+// pytahscript_config.h
 // 8/13/2014 jichi
 
 // See: http://qt-project.org/wiki/PySide_Binding_Generation_Tutorial%3A_Module_4_The_Global_Header
@@ -17,6 +17,6 @@
 //#include <PySide/globalreceiver.h>
 #include <pyside_global.h>  // Essential
 //#include <QtCore>
-#include "pymodiocr.h"
+#include "tahscript/tahscript.h"
 
 // EOF

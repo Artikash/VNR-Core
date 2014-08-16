@@ -491,6 +491,11 @@ avatars:
 #  #user_edict:       $APPDATA/cjklib/edict.db
 #  #enamdict:         $PWD/../../Dictionaries/enamdict.db
 #  #lingoes:          $APPDATA/org.sakuradite.reader/db/lingoes
+tahscript:
+  url:              http://153.121.54.194/wiki/en/Special:Source?topic=VNR/Translation_Scripts
+  locations:
+    ja:             $PWD/../../../Caches/Dictionaries/TAHScripts/ja-ja.wiki
+    en:             $PWD/../../../Caches/Dictionaries/TAHScripts/ja-en.wiki
 
 # Must be consistent with python scripts and dicts.py
 mecab:
@@ -567,10 +572,11 @@ icons:
   pref-download:    $PWD/images/download.png
   pref-dev:         $PWD/images/dev.png
   pref-text:        $PWD/images/doc.png
-  pref-dict-path:   $PWD/images/dock/dict.png
+  pref-script:      $PWD/images/dock/edit.png
+  pref-dict:        $PWD/images/dock/dict.png
   pref-feature:     $PWD/images/gear.png
   pref-i18n:        $PWD/images/earth.png
-  pref-locale-path: $PWD/images/dock/launch.png
+  pref-locale:      $PWD/images/dock/launch.png
   pref-shortcuts:   $PWD/images/passage.png
   pref-tr-path:     $PWD/images/dock/yaku.png
   pref-tr:          $PWD/images/people.png

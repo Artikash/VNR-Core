@@ -19,7 +19,7 @@ from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
 from mytr import my, mytr_
-import config, growl, mecabman, termman, textutil
+import config, growl, mecabman, termman, trscriptman, textutil
 import trman
 
 #from sakurakit.skprofiler import SkProfiler
@@ -90,13 +90,14 @@ class Translator(object):
     """
     return ''
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """
     @param  text  unicode
     @param  to  str
     @param* fr  str
     @param* async  bool
     @param* emit  bool
+    @param* scriptEnabled  bool
     @return  (unicode sub or None, str lang or None, self.name or None)
     """
     return None, to, self.key
@@ -105,6 +106,8 @@ class Translator(object):
 
   def emitLanguages(self, fr, to):
     trman.manager().languagesReceived.emit(fr, to)
+  def emitNormalizedText(self, t):
+    trman.manager().normalizedTextReceived.emit(t)
   def emitSourceText(self, t):
     trman.manager().sourceTextReceived.emit(t)
   def emitEscapedText(self, t):
@@ -123,17 +126,26 @@ class Translator(object):
 class LougoTranslator(Translator):
   key = 'lou' # override
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """
     @param  text  unicode
     @param* fr  unicode
     @param* async  bool  ignored, always sync
+    @param* emit  bool
+    @param* scriptEnabled  bool
     @return  unicode sub, unicode lang, unicode provider
     """
     if emit:
       self.emitLanguages(fr='ja', to='en')
     if fr != 'ja':
       return None, None, None
+
+    if scriptEnabled:
+      t = text
+      text = trscriptman.manager().normalizeText(text, fr=fr, to=to)
+      if emit and text != t:
+        self.emitNormalizedText(text)
+
     tm = termman.manager()
     t = text
     text = tm.applySourceTerms(text, 'en')
@@ -158,11 +170,13 @@ class LougoTranslator(Translator):
 class HanVietTranslator(Translator):
   key = 'hanviet' # override
 
-  def translate(self, text, to='vi', fr='zhs', async=False, emit=False):
+  def translate(self, text, to='vi', fr='zhs', async=False, emit=False, scriptEnabled=True):
     """
     @param  text  unicode
     @param* fr  unicode
     @param* async  bool  ignored, always sync
+    @param* emit  bool
+    @param* scriptEnabled  bool  ignored
     @return  unicode sub, unicode lang, unicode provider
     """
     if emit:
@@ -171,11 +185,20 @@ class HanVietTranslator(Translator):
     #  return None, None, None
     if fr == 'zht':
       text = zht2zhs(text)
+
+    #if scriptEnabled:
+    #  sm = trscriptman.manager()
+    #  t = text
+    #  text = sm.normalizeText(text, fr=fr, to=to)
+    #  if emit and text != t:
+    #    self.emitNormalizedText(text)
+
     tm = termman.manager()
     t = text
     text = tm.applySourceTerms(text, 'zhs')
     if emit and text != t:
       self.emitSourceText(text)
+
     from hanviet.hanviet import han2viet
     sub = han2viet(text)
     if sub:
@@ -303,18 +326,29 @@ class MachineTranslator(Translator):
     """
     return skthreads.runsync(partial(fn, text, **kwargs)) if async else fn(text, **kwargs)
 
-  def _escapeText(self, text, to, emit):
+  def _escapeText(self, text, to, fr, emit, scriptEnabled):
     """
     @param  text  unicode
     @param  to  str  language
-    @param* emit  bool
+    @param  fr  str  language
+    @param  emit  bool
+    @param  scriptEnabled  bool
     @return  unicode
     """
+    if scriptEnabled:
+      # 8/14/2014: Only test 0.007 second
+      #with SkProfiler():
+      t = text
+      text = trscriptman.manager().normalizeText(text, fr=fr, to=to)
+      if emit and text != t:
+        self.emitNormalizedText(text)
+
     tm = termman.manager()
     t = text
     text = tm.applySourceTerms(text, to)
     if emit and text != t:
       self.emitSourceText(text)
+
     t = text
     #with SkProfiler():
     text = tm.prepareEscapeTerms(text, to)
@@ -401,7 +435,7 @@ class AtlasTranslator(OfflineMachineTranslator):
           async=async)
       return ''
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     to = 'en'
     if emit:
@@ -412,7 +446,7 @@ class AtlasTranslator(OfflineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, emit=emit)
+    repl = self._escapeText(text, to, fr, emit, scriptEnabled)
     if repl:
       try:
         repl = self._translate(emit, repl, self.engine.translate, async=async)
@@ -476,7 +510,7 @@ class LecTranslator(OfflineMachineTranslator):
           async=async)
       return ''
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     to = 'en'
     if emit:
@@ -487,7 +521,7 @@ class LecTranslator(OfflineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, emit=emit)
+    repl = self._escapeText(text, to, fr, emit, scriptEnabled)
     if repl:
       try:
         repl = self._translate(emit, repl, self.engine.translate, async=async)
@@ -545,7 +579,7 @@ class EzTranslator(OfflineMachineTranslator):
           async=async)
       return ''
 
-  def translate(self, text, to='ko', fr='ja', async=False, emit=False):
+  def translate(self, text, to='ko', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     to = 'ko'
     if emit:
@@ -556,7 +590,7 @@ class EzTranslator(OfflineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, emit=emit)
+    repl = self._escapeText(text, to, fr, emit, scriptEnabled)
     if repl:
       try:
         repl = self._translate(emit, repl, self.engine.translate, async=async)
@@ -644,7 +678,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
           async=async)
       return ''
 
-  def translate(self, text, to='zhs', fr='ja', async=False, emit=False):
+  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     if fr != 'ja':
       if emit:
@@ -657,7 +691,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
       if repl:
         return repl, to, self.key
     #with SkProfiler():
-    repl = self._escapeText(text, to=to, emit=emit)
+    repl = self._escapeText(text, to, fr, emit, scriptEnabled)
     if repl:
       repl = repl.replace('\n', ' ') # JBeijing cannot handle multiple lines
       try:
@@ -738,7 +772,7 @@ class DreyeTranslator(OfflineMachineTranslator):
   #  '[': u'【',
   #  ' ]': u'】',
   #}))
-  def translate(self, text, to='zhs', fr='ja', async=False, emit=False):
+  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     if fr == 'zht':
       text = zht2zhs(text)
@@ -750,7 +784,7 @@ class DreyeTranslator(OfflineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, emit=emit)
+    repl = self._escapeText(text, to, fr, emit, scriptEnabled)
     if repl:
       try:
         repl = self._translate(emit, repl, engine.translate, async=async, to=to, fr=fr)
@@ -788,7 +822,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
   #  '[': u'【',
   #  ']\n': u'】',
   #}))
-  def translate(self, text, to='en', fr='ja', async=False, emit=False):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     if fr != 'ja':
       return None, None, None
@@ -799,7 +833,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, emit=emit)
+    repl = self._escapeText(text, to, fr, emit, scriptEnabled)
     if repl:
       repl = self._translate(emit, repl, self.engine.translate,
           to=to, fr=fr, async=async)
@@ -832,7 +866,7 @@ class ExciteTranslator(OnlineMachineTranslator):
   #  '[': u'【',
   #  ']\n': u'】',
   #}))
-  def translate(self, text, to='en', fr='ja', async=False, emit=False):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     if fr != 'ja':
       return None, None, None
@@ -843,7 +877,7 @@ class ExciteTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, emit=emit)
+    repl = self._escapeText(text, to, fr, emit, scriptEnabled)
     if repl:
       repl = self._translate(emit, repl, self.engine.translate,
           to=to, fr=fr, async=async)
@@ -873,7 +907,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
     leconline.session = requests.Session()
     self.engine = leconline
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     to = 'en' if to in ('ms', 'th', 'vi') else to
     if emit:
@@ -882,7 +916,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, emit=emit)
+    repl = self._escapeText(text, to, fr, emit, scriptEnabled)
     if repl:
       repl = self._translate(emit, repl, self.engine.translate,
           to=to, fr=fr, async=async)
@@ -912,7 +946,7 @@ class TransruTranslator(OnlineMachineTranslator):
     transru.session = requests.Session()
     self.engine = transru
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     to = 'en' if to not in ('ja', 'en', 'ru', 'it', 'fr', 'de', 'pt', 'es') else to
     if emit:
@@ -921,7 +955,7 @@ class TransruTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, emit=emit)
+    repl = self._escapeText(text, to, fr, emit, scriptEnabled)
     if repl:
       repl = self._translate(emit, repl, self.engine.translate,
           to=to, fr=fr, async=async)
@@ -954,7 +988,7 @@ class GoogleTranslator(OnlineMachineTranslator):
   #__google_repl_after = staticmethod(skstr.multireplacer({
   #  '...': u'…',
   #}))
-  def translate(self, text, to='en', fr='ja', async=False, emit=False):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     if emit:
       self.emitLanguages(fr=fr, to=to)
@@ -962,7 +996,7 @@ class GoogleTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, emit=emit)
+    repl = self._escapeText(text, to, fr, emit, scriptEnabled)
     if repl:
       repl = self._translate(emit, repl, self.engine.translate,
           to=to, fr=fr, async=async)
@@ -1005,7 +1039,7 @@ class BingTranslator(OnlineMachineTranslator):
   #  '[': u'【',
   #  ']\n': u'】',
   #}))
-  def translate(self, text, to='en', fr='ja', async=False, emit=False):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     #if fr != 'ja':
     #  return None, None, None
@@ -1015,7 +1049,7 @@ class BingTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, emit=emit)
+    repl = self._escapeText(text, to, fr, emit, scriptEnabled)
     if repl:
       repl = self._translate(emit, repl, self.engine.translate,
           to=to, fr=fr, async=async)
@@ -1076,7 +1110,7 @@ class BaiduTranslator(OnlineMachineTranslator):
     u'“‘': u'『', # open double single quote
     u'’”': u'』', # close single double quote
   }))
-  def translate(self, text, to='zhs', fr='ja', async=False, emit=False):
+  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     #if fr not in ('ja', 'en', 'zhs', 'zht'):
     #  return None, None, None
@@ -1088,7 +1122,7 @@ class BaiduTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    repl = self._escapeText(text, to=to, emit=emit)
+    repl = self._escapeText(text, to, fr, emit, scriptEnabled)
     if repl:
       engine = self.getEngine(fr=fr, to=to)
       repl = self.__baidu_repl_before(repl)

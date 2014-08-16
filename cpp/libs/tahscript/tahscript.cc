@@ -13,7 +13,11 @@
 #define DEBUG "tahscript.cc"
 #include "sakurakit/skdebug.h"
 
-#define TAHSCRIPT_COMMENT_CHAR      '#' // indicate the beginning of a line comment
+//#define DEBUG_RULE // output the rule that is applied
+
+#define TAHSCRIPT_COMMENT_CHAR1     '#' // indicate the beginning of a line comment
+#define TAHSCRIPT_COMMENT_CHAR2     '*' // original comment
+#define TAHSCRIPT_COMMENT_CHAR3     '=' // wiki section
 //#define TAHSCRIPT_COMMENT_CHAR_LEN  1 // not used
 #define TAHSCRIPT_RULE_DELIM        "=>" // deliminator of the rule pair
 #define TAHSCRIPT_RULE_DELIM_LEN    (sizeof(TAHSCRIPT_RULE_DELIM)  - 1) // strlen
@@ -31,13 +35,23 @@ struct TahScriptRule
   TahScriptRule() : sourceRe(nullptr) {}
   ~TahScriptRule() { if (sourceRe) delete sourceRe; }
 
-  void init(const QString &s, const QString &t)
+  bool init(const QString &s, const QString &t)
   {
+    if (isRegExp(s)) {
+      QRegExp *re = new QRegExp(s, Qt::CaseSensitive, QRegExp::RegExp2); // use Perl-compatible syntax, default in Qt5
+      if (re->isEmpty()) {
+        DOUT("invalid regexp:" << s);
+      delete re;
+      return false;
+    }
+    sourceRe = re;
     target = t;
-    if (isRegExp(s))
-      sourceRe = new QRegExp(s);
-    else
-      source = s;
+    target.replace('$', '\\'); // convert Javascript RegExp to Perl
+  } else {
+    source = s;
+    target = t;
+  }
+  return true;
   }
 
 private:
@@ -45,8 +59,8 @@ private:
   {
     foreach (const QChar &c, s)
       switch (c.unicode()) {
-      case L'(': case L')': case L'[': case L']': case L'^': case L'$':
-      case L'|': case L'\\': case L'?': case L'!': case L'*': case L'.':
+      case '(': case ')': case '[': case ']': case '^': case '$':
+      case '|': case '\\': case '?': case '!': case '*': case '.':
         return true;
       }
     return false;
@@ -113,18 +127,25 @@ bool TahScriptManager::loadFile(const QString &path)
   std::list<std::pair<QString, QString> > lines;
 
   QTextStream in(&file);
+  in.setCodec("UTF-8"); // enforce UTF-8
   while (!in.atEnd()) {
     QString line = in.readLine().trimmed();
-    if (!line.isEmpty() && !line.startsWith(TAHSCRIPT_COMMENT_CHAR)) {
-      int index = line.indexOf(TAHSCRIPT_RULE_DELIM);
-      if (index <= -1) {
-        DOUT("failed to parse line:" << line);
-        continue;
+    if (!line.isEmpty())
+      switch (line[0].unicode()) {
+      case TAHSCRIPT_COMMENT_CHAR1:
+      case TAHSCRIPT_COMMENT_CHAR2:
+      case TAHSCRIPT_COMMENT_CHAR3:
+        break;
+      default:
+        int index = line.indexOf(TAHSCRIPT_RULE_DELIM);
+        if (index <= -1) {
+          DOUT("failed to parse line:" << line);
+          continue;
+        }
+        lines.push_back(std::make_pair(
+            line.left(index).trimmed(),
+            line.mid(index + TAHSCRIPT_RULE_DELIM_LEN).trimmed()));
       }
-      lines.push_back(std::make_pair(
-          line.left(index).trimmed(),
-          line.mid(index + TAHSCRIPT_RULE_DELIM_LEN).trimmed()));
-    }
   }
   file.close();
 
@@ -144,6 +165,9 @@ bool TahScriptManager::loadFile(const QString &path)
 QString TahScriptManager::translate(const QString &text) const
 {
   QString ret = text;
+#ifdef DEBUG_RULE
+  QString previous;
+#endif // DEBUG_RULE
   if (d_->ruleCount && d_->rules)
     for (int i = 0; i < d_->ruleCount; i++) {
       const TahScriptRule &rule = d_->rules[i];
@@ -152,12 +176,22 @@ QString TahScriptManager::translate(const QString &text) const
           ret.remove(*rule.sourceRe);
         else
           ret.replace(*rule.sourceRe, rule.target);
-      } else {
+      } else if (!rule.source.isEmpty()) {
         if (rule.target.isEmpty())
           ret.remove(rule.source);
         else
           ret.replace(rule.source, rule.target);
       }
+
+#ifdef DEBUG_RULE
+      if (previous != ret) {
+        if (rule.sourceRe)
+          DOUT(rule.sourceRe->pattern() << rule.target);
+        else
+          DOUT(rule.source << rule.target);
+      }
+      previous = ret;
+#endif // DEBUG_RULE
     }
   return ret;
 }

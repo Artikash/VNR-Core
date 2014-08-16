@@ -1539,10 +1539,101 @@ class TextTab(QtWidgets.QDialog):
   def load(self): pass
   def refresh(self): pass
 
-## Honyaku ##
+## Translation ##
+
+class TranslationTab(QtWidgets.QDialog):
+  def __init__(self, parent=None):
+    super(TranslationTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+
+    layout = QtWidgets.QVBoxLayout()
+    label = QtWidgets.QLabel(my.tr(
+"You can select your preferred machine translators and look-up dictionaries here. The translators and dictionaries are independent that do not require each other. Look-up dictionaries require downloading at least one offline MeCab dictionary."
+))
+    label.setWordWrap(True)
+    l = skwidgets.SkWidgetLayout(label)
+    w = QtWidgets.QGroupBox(tr_("About"))
+    w.setLayout(l)
+    layout.addWidget(w)
+    layout.addStretch()
+    self.setLayout(layout)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): pass
 
 #@Q_Q
-class _HonyakuTab(object):
+class _TranslationScriptTab(object):
+
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.tahGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+
+  # TAH group
+
+  @memoizedproperty
+  def tahGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.tahJaButton)
+    layout.addWidget(self.tahEnButton)
+    layout.addWidget(self.tahInfoLabel)
+    ret = QtWidgets.QGroupBox(my.tr("TAH replacement script for Japanese machine translation"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def tahJaButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Enable Japanse-Japanese correction for all languages"))
+    ret.setChecked(settings.global_().isTranslationScriptJaEnabled())
+    ret.toggled.connect(settings.global_().setTranslationScriptJaEnabled)
+    return ret
+
+  @memoizedproperty
+  def tahEnButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Enable Japanese-English correction for Latin languages"))
+    ret.setChecked(settings.global_().isTranslationScriptEnEnabled())
+    ret.toggled.connect(settings.global_().setTranslationScriptEnEnabled)
+    return ret
+
+  @memoizedproperty
+  def tahInfoLabel(self):
+    url = "http://sakuradite.com/wiki/en/VNR/Translation_Scripts"
+    ret = QtWidgets.QLabel(my.tr(
+"""TAH script is a set of <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> rules originally written by @errzotl to enhance ATLAS Japanese-English translation.
+But the script serves to correct and normalize spoken Japanese rather than translation.
+<br/><br/>
+VNR's script is branched from @errzotl's 0.16 script and maintained at <a href="{0}">{0}</a>.
+VNR will periodically sync the local script with the online wiki.
+You usually don't want to disable this unless for debugging purpose.
+<br/><br/>
+Normal users don't need to touch this script.
+But if you want, you can try VNR's Machine Translation Tester to see how TAH script participates in the machine translation pipeline.
+You can also edit the local translation script in caches, but it will be overwritten after the update.
+It will be better to merge your changes with the online wiki."""
+).format(url))
+    ret.setTextFormat(Qt.RichText)
+    ret.setWordWrap(True)
+    ret.setOpenExternalLinks(True)
+    return ret
+
+class TranslationScriptTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(TranslationScriptTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _TranslationScriptTab(self)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): pass #self.__d.refresh()
+
+#@Q_Q
+class _MachineTranslationTab(object):
 
   def __init__(self, q):
     self._createUi(q)
@@ -1551,10 +1642,6 @@ class _HonyakuTab(object):
     blans = settings.global_().blockedLanguages()
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.honyakuGroup)
-    #layout.addWidget(self.parserGroup)
-    layout.addWidget(self.meCabGroup)
-    layout.addWidget(self.furiganaGroup)
-    layout.addWidget(self.dictGroup)
     #layout.addWidget(self.correctionGroup)
     if 'zh' not in blans:
       layout.addWidget(self.chineseGroup)
@@ -1580,6 +1667,249 @@ class _HonyakuTab(object):
   #  ret.setChecked(settings.global_().isMsimeCorrectionEnabled())
   #  ret.toggled.connect(settings.global_().setMsimeCorrectionEnabled)
   #  return ret
+
+  # Chinese group
+
+  @memoizedproperty
+  def chineseGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.chineseButton)
+    ret = QtWidgets.QGroupBox(my.tr("Preferred Chinese characters"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def chineseButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Convert Simplified Chinese subtitles to Traditional Chinese"))
+    ret.setChecked(settings.global_().convertsChinese())
+    ret.toggled.connect(settings.global_().setConvertsChinese)
+    return ret
+
+  # Machine translator
+
+  @memoizedproperty
+  def honyakuGroup(self):
+    blans = settings.global_().blockedLanguages()
+    ret = QtWidgets.QGroupBox(my.tr("Preferred machine translation providers"))
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(QtWidgets.QLabel(my.tr("Online translators") + ":"))
+    if 'zh' not in blans:
+      layout.addWidget(self.baiduButton)
+      #layout.addWidget(self.youdaoButton)
+    layout.addWidget(self.bingButton)
+    layout.addWidget(self.googleButton)
+    layout.addWidget(self.lecOnlineButton)
+    layout.addWidget(self.infoseekButton)
+    layout.addWidget(self.exciteButton)
+    if 'ru' not in blans:
+      layout.addWidget(self.transruButton)
+    layout.addWidget(QtWidgets.QLabel(my.tr("Offline translators") + ":"))
+    if 'zh' not in blans:
+      layout.addWidget(self.jbeijingButton)
+      layout.addWidget(self.dreyeButton)
+    if 'ko' not in blans:
+      layout.addWidget(self.ezTransButton)
+    if 'vi' not in blans: #and 'zh' not in blans:
+      layout.addWidget(self.hanVietButton)
+    if 'en' not in blans:
+      layout.addWidget(self.atlasButton)
+      layout.addWidget(self.lecButton)
+    #layout.addWidget(self.lougoButton)
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def bingButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Microsoft Bing.com multilingual translation service"))
+    ret.setChecked(settings.global_().isBingEnabled())
+    ret.toggled.connect(settings.global_().setBingEnabled)
+    return ret
+
+  @memoizedproperty
+  def googleButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Google.com multilingual translation service"))
+    ret.setChecked(settings.global_().isGoogleEnabled())
+    ret.toggled.connect(settings.global_().setGoogleEnabled)
+    return ret
+
+  @memoizedproperty
+  def infoseekButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("Infoseek.ne.jp multilingual translation service"),
+        my.tr("excluding {0}").format(', '.join((
+            tr_("ms"),
+            tr_("ar"),
+            tr_("nl"),
+            tr_("pl"),
+            tr_("ru"),
+    )))))
+    ret.setChecked(settings.global_().isInfoseekEnabled())
+    ret.toggled.connect(settings.global_().setInfoseekEnabled)
+    return ret
+
+  @memoizedproperty
+  def exciteButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("Excite.co.jp multilingual translation service"),
+        my.tr("excluding {0}").format(', '.join((
+            tr_("ms"),
+            tr_("th"),
+            tr_("vi"),
+            tr_("id"),
+            tr_("ar"),
+            tr_("nl"),
+            tr_("pl"),
+            )))))
+    ret.setChecked(settings.global_().isExciteEnabled())
+    ret.toggled.connect(settings.global_().setExciteEnabled)
+    return ret
+
+  @memoizedproperty
+  def lecOnlineButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
+        my.tr("LEC.com multilingual translation service"),
+        my.tr("recommended for European"),
+        my.tr("excluding {0}").format(', '.join((
+            tr_("ms"),
+            tr_("th"),
+            tr_("vi"),
+    )))))
+    ret.setChecked(settings.global_().isLecOnlineEnabled())
+    ret.toggled.connect(settings.global_().setLecOnlineEnabled)
+    return ret
+
+  @memoizedproperty
+  def baiduButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("Baidu.com Chinese translation service"),
+        my.tr("recommended for Chinese")))
+    ret.setChecked(settings.global_().isBaiduEnabled())
+    ret.toggled.connect(settings.global_().setBaiduEnabled)
+    return ret
+
+  @memoizedproperty
+  def transruButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
+        my.tr("Translate.Ru multilingual translation service"),
+        my.tr("recommended for Russian"),
+        my.tr("including {0}").format(', '.join((
+            tr_("ja"),
+            tr_("en"),
+            tr_("de"),
+            tr_("es"),
+            tr_("fr"),
+            tr_("it"),
+            tr_("pt"),
+            tr_("ru"),
+    )))))
+    ret.setChecked(settings.global_().isTransruEnabled())
+    ret.toggled.connect(settings.global_().setTransruEnabled)
+    return ret
+
+  #@memoizedproperty
+  #def youdaoButton(self):
+  #  ret = QtWidgets.QCheckBox(my.tr("Youdao.com Chinese translation service"))
+  #  ret.setChecked(settings.global_().isYoudaoEnabled())
+  #  ret.toggled.connect(settings.global_().setYoudaoEnabled)
+  #  return ret
+
+  #@memoizedproperty
+  #def lougoButton(self):
+  #  ret = QtWidgets.QCheckBox(u"ルー語%s" % (
+  #      my.tr("Japanese-English hybrid language")))
+  #  ret.setChecked(settings.global_().isLougoEnabled())
+  #  ret.toggled.connect(settings.global_().setLougoEnabled)
+  #  return ret
+
+  @memoizedproperty
+  def dreyeButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Dr.eye Chinese-Japanese/English translator"))
+    ret.setChecked(settings.global_().isDreyeEnabled())
+    ret.toggled.connect(settings.global_().setDreyeEnabled)
+    return ret
+
+  @memoizedproperty
+  def jbeijingButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("JBeijing Chinese translator"),
+        my.tr("recommended for Chinese")))
+    ret.setChecked(settings.global_().isJBeijingEnabled())
+    ret.toggled.connect(settings.global_().setJBeijingEnabled)
+    return ret
+
+  @memoizedproperty
+  def ezTransButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("ezTrans XP Korean translator"))
+    ret.setChecked(settings.global_().isEzTransEnabled())
+    ret.toggled.connect(settings.global_().setEzTransEnabled)
+    return ret
+
+  @memoizedproperty
+  def hanVietButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Han Viet Chinese-Vietnamese translator"))
+    ret.setChecked(settings.global_().isHanVietEnabled())
+    ret.toggled.connect(settings.global_().setHanVietEnabled)
+    return ret
+
+  @memoizedproperty
+  def atlasButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("ATLAS English translator"))
+    ret.setChecked(settings.global_().isAtlasEnabled())
+    ret.toggled.connect(settings.global_().setAtlasEnabled)
+    return ret
+
+  @memoizedproperty
+  def lecButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("LEC English translator"))
+    ret.setChecked(settings.global_().isLecEnabled())
+    ret.toggled.connect(settings.global_().setLecEnabled)
+    return ret
+
+  #def selectedTranslator(self):
+  #  return ('atlas' if self.atlasButton.isChecked() else
+  #          'jbeijing' if self.jbeijingButton.isChecked() else
+  #          'infoseek')
+
+  def refresh(self):
+    ss = settings.global_()
+    blans = ss.blockedLanguages()
+
+    # Translators
+    if 'zh' not in blans:
+      self.jbeijingButton.setEnabled(ss.isJBeijingEnabled() or bool(libman.jbeijing().location()))
+      self.dreyeButton.setEnabled(ss.isDreyeEnabled() or bool(libman.dreye().location()))
+    if 'ko' not in blans:
+      self.ezTransButton.setEnabled(ss.isEzTransEnabled() or bool(libman.eztrans().location()))
+    if 'en' not in blans:
+      self.atlasButton.setEnabled(ss.isAtlasEnabled() or bool(libman.atlas().location()))
+      self.lecButton.setEnabled(ss.isLecEnabled() or bool(libman.lec().location()))
+
+class MachineTranslationTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(MachineTranslationTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _MachineTranslationTab(self)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): self.__d.refresh()
+
+#@Q_Q
+class _DictionaryTranslationTab(object):
+
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    blans = settings.global_().blockedLanguages()
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.meCabGroup)
+    layout.addWidget(self.furiganaGroup)
+    layout.addWidget(self.dictGroup)
+    layout.addStretch()
+    q.setLayout(layout)
 
   # Chinese group
 
@@ -1966,204 +2296,9 @@ class _HonyakuTab(object):
     ret.toggled.connect(settings.global_().setLingoesJaEnEnabled)
     return ret
 
-  # Machine translator
-
-  @memoizedproperty
-  def honyakuGroup(self):
-    blans = settings.global_().blockedLanguages()
-    ret = QtWidgets.QGroupBox(my.tr("Preferred machine translation providers"))
-    layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(QtWidgets.QLabel(my.tr("Online translators") + ":"))
-    if 'zh' not in blans:
-      layout.addWidget(self.baiduButton)
-      #layout.addWidget(self.youdaoButton)
-    layout.addWidget(self.bingButton)
-    layout.addWidget(self.googleButton)
-    layout.addWidget(self.lecOnlineButton)
-    layout.addWidget(self.infoseekButton)
-    layout.addWidget(self.exciteButton)
-    if 'ru' not in blans:
-      layout.addWidget(self.transruButton)
-    layout.addWidget(QtWidgets.QLabel(my.tr("Offline translators") + ":"))
-    if 'zh' not in blans:
-      layout.addWidget(self.jbeijingButton)
-      layout.addWidget(self.dreyeButton)
-    if 'ko' not in blans:
-      layout.addWidget(self.ezTransButton)
-    if 'vi' not in blans: #and 'zh' not in blans:
-      layout.addWidget(self.hanVietButton)
-    if 'en' not in blans:
-      layout.addWidget(self.atlasButton)
-      layout.addWidget(self.lecButton)
-    #layout.addWidget(self.lougoButton)
-    ret.setLayout(layout)
-    return ret
-
-  @memoizedproperty
-  def bingButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Microsoft Bing.com multilingual translation service"))
-    ret.setChecked(settings.global_().isBingEnabled())
-    ret.toggled.connect(settings.global_().setBingEnabled)
-    return ret
-
-  @memoizedproperty
-  def googleButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Google.com multilingual translation service"))
-    ret.setChecked(settings.global_().isGoogleEnabled())
-    ret.toggled.connect(settings.global_().setGoogleEnabled)
-    return ret
-
-  @memoizedproperty
-  def infoseekButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        my.tr("Infoseek.ne.jp multilingual translation service"),
-        my.tr("excluding {0}").format(', '.join((
-            tr_("ms"),
-            tr_("ar"),
-            tr_("nl"),
-            tr_("pl"),
-            tr_("ru"),
-    )))))
-    ret.setChecked(settings.global_().isInfoseekEnabled())
-    ret.toggled.connect(settings.global_().setInfoseekEnabled)
-    return ret
-
-  @memoizedproperty
-  def exciteButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        my.tr("Excite.co.jp multilingual translation service"),
-        my.tr("excluding {0}").format(', '.join((
-            tr_("ms"),
-            tr_("th"),
-            tr_("vi"),
-            tr_("id"),
-            tr_("ar"),
-            tr_("nl"),
-            tr_("pl"),
-            )))))
-    ret.setChecked(settings.global_().isExciteEnabled())
-    ret.toggled.connect(settings.global_().setExciteEnabled)
-    return ret
-
-  @memoizedproperty
-  def lecOnlineButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
-        my.tr("LEC.com multilingual translation service"),
-        my.tr("recommended for European"),
-        my.tr("excluding {0}").format(', '.join((
-            tr_("ms"),
-            tr_("th"),
-            tr_("vi"),
-    )))))
-    ret.setChecked(settings.global_().isLecOnlineEnabled())
-    ret.toggled.connect(settings.global_().setLecOnlineEnabled)
-    return ret
-
-  @memoizedproperty
-  def baiduButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        my.tr("Baidu.com Chinese translation service"),
-        my.tr("recommended for Chinese")))
-    ret.setChecked(settings.global_().isBaiduEnabled())
-    ret.toggled.connect(settings.global_().setBaiduEnabled)
-    return ret
-
-  @memoizedproperty
-  def transruButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s, %s)" % (
-        my.tr("Translate.Ru multilingual translation service"),
-        my.tr("recommended for Russian"),
-        my.tr("including {0}").format(', '.join((
-            tr_("ja"),
-            tr_("en"),
-            tr_("de"),
-            tr_("es"),
-            tr_("fr"),
-            tr_("it"),
-            tr_("pt"),
-            tr_("ru"),
-    )))))
-    ret.setChecked(settings.global_().isTransruEnabled())
-    ret.toggled.connect(settings.global_().setTransruEnabled)
-    return ret
-
-  #@memoizedproperty
-  #def youdaoButton(self):
-  #  ret = QtWidgets.QCheckBox(my.tr("Youdao.com Chinese translation service"))
-  #  ret.setChecked(settings.global_().isYoudaoEnabled())
-  #  ret.toggled.connect(settings.global_().setYoudaoEnabled)
-  #  return ret
-
-  #@memoizedproperty
-  #def lougoButton(self):
-  #  ret = QtWidgets.QCheckBox(u"ルー語%s" % (
-  #      my.tr("Japanese-English hybrid language")))
-  #  ret.setChecked(settings.global_().isLougoEnabled())
-  #  ret.toggled.connect(settings.global_().setLougoEnabled)
-  #  return ret
-
-  @memoizedproperty
-  def dreyeButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Dr.eye Chinese-Japanese/English translator"))
-    ret.setChecked(settings.global_().isDreyeEnabled())
-    ret.toggled.connect(settings.global_().setDreyeEnabled)
-    return ret
-
-  @memoizedproperty
-  def jbeijingButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        my.tr("JBeijing Chinese translator"),
-        my.tr("recommended for Chinese")))
-    ret.setChecked(settings.global_().isJBeijingEnabled())
-    ret.toggled.connect(settings.global_().setJBeijingEnabled)
-    return ret
-
-  @memoizedproperty
-  def ezTransButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("ezTrans XP Korean translator"))
-    ret.setChecked(settings.global_().isEzTransEnabled())
-    ret.toggled.connect(settings.global_().setEzTransEnabled)
-    return ret
-
-  @memoizedproperty
-  def hanVietButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Han Viet Chinese-Vietnamese translator"))
-    ret.setChecked(settings.global_().isHanVietEnabled())
-    ret.toggled.connect(settings.global_().setHanVietEnabled)
-    return ret
-
-  @memoizedproperty
-  def atlasButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("ATLAS English translator"))
-    ret.setChecked(settings.global_().isAtlasEnabled())
-    ret.toggled.connect(settings.global_().setAtlasEnabled)
-    return ret
-
-  @memoizedproperty
-  def lecButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("LEC English translator"))
-    ret.setChecked(settings.global_().isLecEnabled())
-    ret.toggled.connect(settings.global_().setLecEnabled)
-    return ret
-
-  #def selectedTranslator(self):
-  #  return ('atlas' if self.atlasButton.isChecked() else
-  #          'jbeijing' if self.jbeijingButton.isChecked() else
-  #          'infoseek')
-
   def refresh(self):
     ss = settings.global_()
     blans = ss.blockedLanguages()
-
-    # Translators
-    if 'zh' not in blans:
-      self.jbeijingButton.setEnabled(ss.isJBeijingEnabled() or bool(libman.jbeijing().location()))
-      self.dreyeButton.setEnabled(ss.isDreyeEnabled() or bool(libman.dreye().location()))
-    if 'ko' not in blans:
-      self.ezTransButton.setEnabled(ss.isEzTransEnabled() or bool(libman.eztrans().location()))
-    if 'en' not in blans:
-      self.atlasButton.setEnabled(ss.isAtlasEnabled() or bool(libman.atlas().location()))
-      self.lecButton.setEnabled(ss.isLecEnabled() or bool(libman.lec().location()))
 
     # Dictionaries
     if 'zh' not in blans:
@@ -2228,12 +2363,12 @@ class _HonyakuTab(object):
 
     self.refreshCaboCha()
 
-class HonyakuTab(QtWidgets.QDialog):
+class DictionaryTranslationTab(QtWidgets.QDialog):
 
   def __init__(self, parent=None):
-    super(HonyakuTab, self).__init__(parent)
+    super(DictionaryTranslationTab, self).__init__(parent)
     skqss.class_(self, 'texture')
-    self.__d = _HonyakuTab(self)
+    self.__d = _DictionaryTranslationTab(self)
 
   def save(self): pass
   def load(self): pass
@@ -3292,7 +3427,6 @@ class LauncherDownloadsTab(QtWidgets.QDialog):
 #LIBRARY_MINIMUM_WIDTH = 320
 LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT = 100
 
-
 class LibraryTab(QtWidgets.QDialog):
 
   def __init__(self, parent=None):
@@ -3303,7 +3437,7 @@ class LibraryTab(QtWidgets.QDialog):
     label = QtWidgets.QLabel(my.tr(
 """Some of the features of VNR need external applications to be installed.
 You can specify the locations of external libraries here."""))
-    #label.setWordWrap(True)
+    label.setWordWrap(True)
 
     layout = skwidgets.SkWidgetLayout(label)
     w = QtWidgets.QGroupBox(tr_("About"))

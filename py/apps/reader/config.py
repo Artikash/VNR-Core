@@ -158,6 +158,7 @@ APP_UPDATE_COMMENTS_INTERVAL = parse_int(_APP['updateCommentsInterval'])
 APP_UPDATE_REFS_INTERVAL = parse_int(_APP['updateRefsInterval'])
 APP_UPDATE_TERMS_INTERVAL = parse_int(_APP['updateTermsInterval'])
 APP_UPDATE_GAMES_INTERVAL = parse_int(_APP['updateGamesInterval'])
+APP_UPDATE_TAH_INTERVAL = parse_int(_APP['updateTAHInterval'])
 
 APP_SOCKET_TYPE = _APP['socketType'] # str
 APP_SOCKET_NAME = _APP['socketName'] # str
@@ -421,6 +422,10 @@ TEMPLATE_LOCATION = parse_path(SHARE_YAML['templates']['location']) # unicode ab
 TEMPLATE_ENTRIES = SHARE_YAML['templates']['entries'] # {str name:unicode relpath}
 
 JCUSERDIC_LOCATIONS = map(parse_path, SHARE_YAML['jcuserdic']) # [unicode abspath]
+
+TAHSCRIPT_URL = SHARE_YAML['tahscript']['url'] # str url
+TAHSCRIPT_LOCATIONS = {k: parse_path(v) # {str name:unicode apspath}
+    for k,v in SHARE_YAML['tahscript']['locations'].iteritems()}
 
 MECAB_DICS = {k: parse_path(v) # {str name:unicode relpath}
     for k,v in SHARE_YAML['mecab']['dicdir'].iteritems()}

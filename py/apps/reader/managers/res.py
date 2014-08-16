@@ -19,6 +19,8 @@ class Resource(object):
     import osutil
     osutil.open_location(location)
 
+  def get(self): return False # -> bool # abstract
+
   def exists(self): # -> bool
     return os.path.exists(self.path)
   def locked(self): # -> bool
@@ -26,7 +28,6 @@ class Resource(object):
     return os.path.exists(self.lockpath)
   def remove(self): # -> bool
     return skfileio.removefile(self.path)
-  def get(self): pass # -> bool
   def valid(self): return self.exists()
 
   def removetree(self): # -> bool # utility
@@ -53,9 +54,27 @@ class AppLocale(Resource):
     from scripts import apploc
     return apploc.get()
 
+#class TahScript(Resource):
+#  URL = 'http://sakuradite.com/wiki/en/VNR/Translation_Scripts'
+#
+#  def __init__(self):
+#    from sakurakit import skpaths
+#    super(TahScript, self).__init__(
+#      path=os.path.join(rc.DIR_CACHE_DICT, "Scripts/tahscript.txt"),
+#      lockpath=os.path.join(rc.DIR_TMP, "tahscript.lock"),
+#    )
+#
+#  def get(self): # override
+#    # TODO
+#    # Fetch the online wiki at URL
+#    return True
+
 # Global objects
 
 @memoized
 def apploc(): return AppLocale()
+
+#@memoized
+#def tahscript(): return TahScript()
 
 # EOF

@@ -6962,6 +6962,29 @@ class _DataManager(object):
       self.dirtyReferencesLocked = False
     dprint("leave")
 
+  ## Translation scripts ##
+
+  @staticmethod
+  def saveTranslationScripts(kw):
+    """
+    @param  kw  {str key:unicode data]
+    @return  bool
+    """
+    try:
+      for lang,path in config.TAHSCRIPT_LOCATIONS.iteritems():
+        data = kw.get(lang)
+        if data:
+          dir = os.path.dirname(path)
+          if not os.path.exists(dir):
+            os.makedirs(dir)
+          skfileio.removefile(path)
+          if not skfileio.writefile(path, data):
+            return False
+      return True
+    except Exception, e:
+      dwarn(e)
+    return False
+
   ## Terminologies ##
 
   def invalidateTerms(self): self.q.termsChanged.emit()
@@ -7179,6 +7202,7 @@ class DataManager(QObject):
   termsEditableChanged = Signal(bool)
   gameFilesChanged = Signal()
   gameItemsChanged = Signal()
+  translationScriptsChanged = Signal()
 
   ## Construction ##
 
@@ -7734,6 +7758,30 @@ class DataManager(QObject):
           my.tr("Failed to download terms online"),
           my.tr("Something might be wrong with the Internet connection"),
         )))
+      dprint("leave")
+
+  def updateTranslationScripts(self):
+    if netman.manager().isOnline():
+      dprint("enter")
+      growl.msg(my.tr("Updating translation scripts online") + " ...")
+
+      data = netman.manager().getTranslationScripts()
+      if not data:
+        growl.warn('<br/>'.join((
+          my.tr("Failed to download translation scripts online"),
+          my.tr("Something might be wrong with the Internet connection"),
+        )))
+      elif not self.__d.saveTranslationScripts(data):
+        growl.warn(my.tr("Failed to save translation scripts to the disk"))
+      else:
+        self.translationScriptsChanged.emit()
+        import trscriptman
+        count = trscriptman.manager().scriptCount()
+        if not count:
+          growl.warn(my.tr("Failed to save translation scripts to the disk"))
+        else:
+          settings.global_().setTranslationScriptTime(skdatetime.current_unixtime())
+          growl.msg(my.tr("Found {0} translation rules").format(count))
       dprint("leave")
 
   def queryReferences(self, gameId=0, init=True, online=False, onlineLater=False):
@@ -8920,6 +8968,22 @@ class DataManagerProxy(QObject):
     #    self.gameIdChanged.emit(self.gameId))
     dm.currentGameChanged.connect(lambda:
         self.gameItemIdChanged.emit(self.gameItemId))
+
+  ## Translation scripts ##
+
+  @Slot()
+  def updateTranslationScripts(self):
+    if prompt.confirmUpdateTranslationScripts():
+      manager().updateTranslationScripts()
+
+  @Slot()
+  def reloadTranslationScripts(self):
+    if prompt.confirmReloadTranslationScripts():
+      import trscriptman
+      sm = trscriptman.manager()
+      sm.reloadScripts()
+      count = sm.scriptCount()
+      growl.msg(my.tr("Found {0} translation rules").format(count))
 
   ## Games ##
 
