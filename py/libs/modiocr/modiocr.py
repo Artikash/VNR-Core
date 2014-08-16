@@ -44,6 +44,7 @@ from sakurakit import skos
 if skos.WIN:
   from  pymodiocr import ModiOcr
   available = ModiOcr.isValid # -> bool
+  # Note: the read functions might raise if the path does not on Windows XP
   readtext = ModiOcr.readText # (unicode path, int lang) -> unicode
   readtexts = ModiOcr.readTextList # (unicode path, int lang) -> [unicode]
 else:

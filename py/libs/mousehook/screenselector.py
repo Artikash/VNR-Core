@@ -1,6 +1,6 @@
 # coding: utf8
-# winpicker.py
-# 10/6/2012 jichi
+# screenselector.py
+# 8/16/2014 jichi
 # Windows only
 # See: http://sourceforge.net/apps/mediawiki/pyhook/index.php?title=PyHook_Tutorial
 
@@ -9,7 +9,7 @@
 # func = self.keyboard_funcs.get(msg)
 # => func = self.keyboard_funcs.get( int(str(msg)) )
 
-__all__ = ['WindowPicker']
+__all__ = ['ScreenSelector']
 
 if __name__ == '__main__':
   import sys
@@ -19,16 +19,18 @@ from PySide.QtCore import QObject, Signal
 from sakurakit import skos
 from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.skdebug import dprint
-from sakurakit.skunicode import u
+#from sakurakit.skunicode import u
 
 if skos.WIN:
 
   @Q_Q
-  class _WindowPicker(object):
+  class _ScreenSelector(object):
 
     def __init__(self):
       self.singleShot = True # bool
       self.active = False # bool
+      self.pressed = False # bool
+      self.pressCondition = None # -> bool
 
     def hook(self):
       dprint("pass")
@@ -42,18 +44,35 @@ if skos.WIN:
       dprint("creating pyhook manager")
       import pyHook
       ret = pyHook.HookManager()
-      ret.MouseLeftDown = \
-      ret.MouseRightDown = \
-      ret.MouseMiddleDown = \
-        self._onMousePress
+      #ret.MouseRightDown =
+      #ret.MouseMiddleDown =
+      ret.MouseLeftDown = self._onMousePress
+      ret.MouseLeftUp = self._onMouseRelease
       return ret
 
-    def _clickWindow(self, hwnd, title):
+    def _pressWindow(self, hwnd, x, y):
+      """
+      @param  hwnd  long
+      @param  x  int
+      @param  y  int
+      """
+      if self.active:
+        #if self.singleShot:
+        #  self.unhook()
+        #  self.active = False
+        self.q.mousePressed.emit(x, y, hwnd)
+
+    def _releaseWindow(self, hwnd, x, y):
+      """
+      @param  hwnd  long
+      @param  x  int
+      @param  y  int
+      """
       if self.active:
         if self.singleShot:
           self.unhook()
           self.active = False
-        self.q.windowClicked.emit(hwnd, title)
+        self.q.mouseReleased.emit(x, y, hwnd)
 
     def _onMousePress(self, event):
       """
@@ -61,7 +80,8 @@ if skos.WIN:
       @return  bool  Whether pass the event to other handlers
       """
       dprint("enter")
-      if self.active:
+      if self.active and not self.pressed and (not self.pressCondition or self.pressCondition()):
+        self.pressed = True
         #print "---"
         #print "  message name:", event.MessageName
         #print "  message (MSG):", event.Message
@@ -74,21 +94,36 @@ if skos.WIN:
         #print "---"
 
         hwnd = event.Window
-        title = u(event.WindowName)
-        if hwnd:
-          dprint("found hwnd")
-          self._clickWindow(hwnd, title)
-          dprint("leave: active")
-          return False # eat the event
+        #title = u(event.WindowName)
+        self._pressWindow(hwnd, *event.Position)
+        dprint("leave: active")
+        return False # eat the event
       dprint("leave: not active")
       return True # return True to pass the event to other handlers
 
-  class WindowPicker(QObject):
-    def __init__(self, parent=None):
-      super(WindowPicker, self).__init__(parent)
-      self.__d = _WindowPicker(self)
+    def _onMouseRelease(self, event):
+      """
+      @param  event  pyHook.HookManager.MouseEvent
+      @return  bool  Whether pass the event to other handlers
+      """
+      dprint("enter")
+      if self.active and self.pressed:
+        self.pressed = False
+        hwnd = event.Window
+        #title = u(event.WindowName)
+        self._releaseWindow(hwnd, *event.Position)
+        dprint("leave: active")
+        return False # eat the event
+      dprint("leave: not active")
+      return True # return True to pass the event to other handlers
 
-    windowClicked = Signal(long, unicode)
+  class ScreenSelector(QObject):
+    def __init__(self, parent=None):
+      super(ScreenSelector, self).__init__(parent)
+      self.__d = _ScreenSelector(self)
+
+    mousePressed = Signal(int, int, long) # x, y, hwnd
+    mouseReleased = Signal(int, int, long) # x, y, hwnd
 
     def isSingleShot(self): return self.__d.singleShot
     def setSingleShot(self, t): self.__d.singleShot = t
@@ -105,11 +140,18 @@ if skos.WIN:
         d.active = False
         d.unhook()
 
+    def isPressed(self): return self.__d.pressed
+
+    def pressCondition(self): return self.__d.pressCondition
+    def setPressCondition(self, callback): # None or -> bool
+      self.__d.pressCondition = callback
+
 else: # dummy
 
-  class WindowPicker(QObject):
+  class ScreenSelector(QObject):
 
-    windowClicked = Signal(long, unicode) # hwnd, title
+    mousePressed = Signal(int, int, long) # x, y, hwnd
+    mouseReleased = Signal(int, int, long) # x, y, hwnd
 
     def isSingleShot(self): return False
     def setSingleShot(self, t): pass
@@ -118,14 +160,23 @@ else: # dummy
     def start(self): pass
     def stop(self): pass
 
+    def isPressed(self): return False
+
+    def pressCondition(self): return None
+    def setPressCondition(self, v): pass
+
 # Debug entry
 if __name__ == '__main__':
   # Start event loop and block the main thread
   import sys
   import pythoncom
 
-  w = WindowPicker()
-  w.windowClicked.connect(lambda: sys.exit(0))
+  w = ScreenSelector()
+
+  from sakurakit import skwin
+  w.setPressCondition(skwin.is_key_shift_pressed)
+
+  w.mouseReleased.connect(lambda: sys.exit(0))
   w.start()
   pythoncom.PumpMessages() # wait forever
 

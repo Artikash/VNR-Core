@@ -257,6 +257,14 @@ class _MainObject(object):
     ret.clearTemporaryFiles()
     return ret
 
+  @memoizedproperty
+  def ocrManager(self):
+    dprint("create ocr manager")
+    import ocrman
+    ret = ocrman.manager()
+    ret.setParent(self.q)
+    return ret
+
   #@memoizedproperty
   #def dataMiner(self):
   #  import datamine
@@ -1431,6 +1439,7 @@ class MainObject(QObject):
     d.postEditorManager
     d.hotkeyManager
     d.ttsManager
+    d.ocrManager
 
     dprint("warm up tts")
     d.ttsManager.warmup() # It might take a lot of time to warmup google
@@ -1578,6 +1587,7 @@ class MainObject(QObject):
 
     dprint("leave")
 
+    #skevents.runlater(d.ocrManager.start, 5000) # 5 seconds
     #self.showReferenceView()
     #  import jsonapi
     #  jsonapi.gameinfo()

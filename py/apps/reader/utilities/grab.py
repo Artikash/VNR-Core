@@ -80,6 +80,6 @@ def desktop(*args, **kwargs):
   """
   from PySide.QtCore import QApplication
   qApp = QApplication.instance()
-  return bool(qApp) and widget(qApp.desktop(), *args, **kwargs)
+  return bool(qApp) and window(qApp.desktop().winId(), *args, **kwargs)
 
 # EOF

@@ -11,9 +11,11 @@ int main()
   qDebug() << "enter";
 
   //const wchar_t *path = L"z:\\Users\\jichi\\Desktop\\wiki.tiff";
-  const wchar_t *path = L"wiki.tiff";
+  //const wchar_t *path = L"en.tiff";
+  const wchar_t *path = L"wiki.png";
 
   modiocr_flags langs = modiocr_lang_ja|modiocr_lang_zhs|modiocr_lang_zht|modiocr_lang_en;
+  //modiocr_flags langs = modiocr_lang_en;
 
   CoInitialize(nullptr);
   if (modiocr_available()) {

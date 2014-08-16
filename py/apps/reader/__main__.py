@@ -187,6 +187,11 @@ def main():
   #from PySide.QtCore import QDir
 
   from sakurakit import skfileio
+  dprint("remove broken caches")
+  for it in rc.DIR_APP_TMP,:
+    if os.path.exists(it):
+      skfileio.removetree(it)
+
   map(skfileio.makedirs, (
     rc.DIR_XML_COMMENT,
     rc.DIR_XML_VOICE,
@@ -206,6 +211,7 @@ def main():
     rc.DIR_CACHE_SCAPE,
     rc.DIR_CACHE_TRAILERS,
     rc.DIR_CACHE_WEB,
+    rc.DIR_TMP_OCR,
   ))
 
   if skos.WIN:
@@ -228,11 +234,6 @@ def main():
     os.path.join(ss.lecLocation(), r"Nova\JaEn") if ss.lecLocation() else "",
     os.path.join(ss.dreyeLocation(), r"DreyeMT\SDK\bin") if ss.dreyeLocation() else "",
   ))
-
-  dprint("remove broken caches")
-  for it in rc.DIR_APP_TMP,:
-    if os.path.exists(it):
-      skfileio.removetree(it)
 
   if sys.getrecursionlimit() < config.PY_RECURSION_LIMIT:
     dprint("increase recursion limit")

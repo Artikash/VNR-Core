@@ -25,6 +25,8 @@ DIR_APP_TMP = DIR_APP_CACHE + '/tmp'# $app/Caches/tmp
 
 DIR_TMP = DIR_APP_TMP
 
+DIR_TMP_OCR = DIR_TMP + '/ocr' # $app/Caches/tmp/ocr
+
 #DIR_PLUGIN      = DIR_SAKURA + '/userplugin'    # Sakura/userplugin
 #DIR_PLUGIN_PY   = DIR_PLUGIN + '/py/1' # userplugin/py/1
 #DIR_PLUGIN_JS   = DIR_PLUGIN + '/js/1' # userplugin/js/1
