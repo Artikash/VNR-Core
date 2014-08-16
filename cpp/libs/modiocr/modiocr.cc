@@ -60,20 +60,23 @@ modiocr_lang modiocr_readfile(const wchar_t *path, modiocr_flags langs, const mo
   if (CC_UNLIKELY(!path || !langs))
     return ret;
 
+  // Use scoped pointers to release IUnknown objects
+  // since these functions might raise at unknown point
   try {
-    IDocument *doc;
+    IDocument *doc = nullptr;
     if (!SUCCEEDED(::CoCreateInstance(CLSID_Document, nullptr, CLSCTX_ALL, IID_IDocument,
         reinterpret_cast<LPVOID *>(&doc)) || !doc))
       return ret;
     WinCom::ScopedUnknownPtr scoped_doc(doc);
 
-    if (!SUCCEEDED(doc->Create(path))) // might raise
+    if (!SUCCEEDED(doc->Create(path))) // raise when path does not exist
       return ret;
 
     //qDebug() << "crash here";
     //doc->OCR(miLANG_JAPANESE, VARIANT_FALSE, VARIANT_FALSE);
     //qDebug() << "succeed";
 
+    // The OCR might raise without administrator priviledges
     // Disable change orientation and angle of the image
     // OCR(LangId, OCROrientImage, OCRStraightenImage)
     // http://msdn.microsoft.com/en-us/library/office/aa202819%28v=office.11%29.aspx
@@ -118,7 +121,7 @@ modiocr_lang modiocr_readfile(const wchar_t *path, modiocr_flags langs, const mo
       }
     }
 
-  } catch (...) {
+  } catch (...) { // I don't know the exact exception type
   }
 
   return ret;

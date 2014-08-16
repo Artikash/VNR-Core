@@ -10,6 +10,7 @@ SUBDIRS += \
   jsontest \
   pytest \
   socktest \
+  tahtest \
   uitest
 
 win32: SUBDIRS += \

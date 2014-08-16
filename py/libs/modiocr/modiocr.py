@@ -44,10 +44,12 @@ from sakurakit import skos
 if skos.WIN:
   from  pymodiocr import ModiOcr
   available = ModiOcr.isValid # -> bool
-  readfile = ModiOcr.readFile # (unicode path, int lang) -> [unicode]
+  readtext = ModiOcr.readText # (unicode path, int lang) -> unicode
+  readtexts = ModiOcr.readTextList # (unicode path, int lang) -> [unicode]
 else:
   def available(): return False
-  def readfile(): return []
+  def readtext(): return ''
+  def readtexts(): return []
 
 if __name__ == '__main__':
   import os, sys
@@ -61,6 +63,6 @@ if __name__ == '__main__':
     print "not available"
   else:
     path = "./wiki.tiff"
-    print readfile(path, LANG_JA)
+    print readtext(path, LANG_JA)
 
 # EOF

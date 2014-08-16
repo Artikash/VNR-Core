@@ -90,10 +90,10 @@ Item {
       onTriggered: mainPlugin_.showGameView()
     }
 
-    Desktop.MenuItem {
-      text: My.tr("Game Discussion")
-      onTriggered: mainPlugin_.showGameDiscussion()
-    }
+    //Desktop.MenuItem {
+    //  text: My.tr("Game Discussion")
+    //  onTriggered: mainPlugin_.showGameDiscussion()
+    //}
 
     Desktop.MenuItem {
       text: My.tr("Spring Board")

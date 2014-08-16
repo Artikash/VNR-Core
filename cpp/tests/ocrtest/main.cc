@@ -1,5 +1,5 @@
 // main.cc
-// 6/15/2014 jichi
+// 8/11/2014 jichi
 #include "modiocr/modiocr.h"
 #include <qt_windows.h>
 #include <QtCore/QDebug>

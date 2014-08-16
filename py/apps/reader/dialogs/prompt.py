@@ -343,6 +343,42 @@ It might take a couple of seconds to complete."""),
 )).format(i18n.timestamp2datetime(t)),
       Yes|No, No)
 
+def confirmUpdateTranslationScripts():
+  """
+  @return  bool
+  """
+  if not netman.manager().isOnline():
+    growl.warn(my.tr("Cannot perform update when offline"))
+    return
+  #_speak(u"今すぐ辞書を更新しますか？")
+  t = settings.global_().translationScriptTime() or config.VERSION_TIMESTAMP
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Update translation scripts on Wiki"),
+      "\n\n".join((
+my.tr("""Translation scripts are updated on: {0}.
+The scripts might enhance machine translation quality.
+VNR will check for automatically updates."""),
+my.tr("""Do you want to update now?
+It might take a couple of seconds to complete."""),
+)).format(i18n.timestamp2datetime(t)),
+      Yes|No, No)
+
+def confirmReloadTranslationScripts():
+  """
+  @return  bool
+  """
+  url = "http://sakuradite.com/wiki/en/VNR/Translation_Scripts"
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Reload offline translation scripts"),
+my.tr("""Do you want to reload the offline translation scripts?
+Most most most users don't need to do this.
+
+But if you have manually modified the local TAH script, you can reload it here.
+However, the local script will be overwritten by the online version on next update.
+You want have to merge your changes online in the following URL."""
+) + "\n\n" + url,
+      Yes|No, No)
+
 def confirmUpdateGameFiles():
   """
   @return  bool

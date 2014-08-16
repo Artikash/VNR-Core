@@ -1,7 +1,7 @@
 # socktest.pro
 # 4/29/2014
 
-CONFIG += nogui
+CONFIG += noqtgui
 include(../../../config.pri)
 include($$LIBDIR/qtsocketsvc/qtsocketsvc.pri)
 

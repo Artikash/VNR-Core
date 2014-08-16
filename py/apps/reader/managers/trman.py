@@ -191,8 +191,9 @@ class TranslatorManager(QObject):
 
   # Logs
   languagesReceived = Signal(unicode, unicode) # fr, to
-  sourceTextReceived = Signal(unicode)      # text after applying source terms
-  escapedTextReceived = Signal(unicode)    # text after preparing escaped terms
+  normalizedTextReceived = Signal(unicode) # text after applying translation replacement scripts
+  sourceTextReceived = Signal(unicode) # text after applying source terms
+  escapedTextReceived = Signal(unicode) # text after preparing escaped terms
   splitTextsReceived = Signal(list)  # texts after splitting
   splitTranslationsReceived = Signal(list)  # translations after applying translation
   jointTranslationReceived = Signal(unicode)  # translation before applying terms
@@ -375,33 +376,45 @@ class TranslatorManager(QObject):
     dwarn("invalid translator: %s" % engine)
     return ''
 
-  def translateOne(self, text, fr='ja', engine='', online=True, async=False, cached=True, emit=False):
+  def translateOne(self, text, fr='ja', engine='', online=True, async=False, cached=True, emit=False, scriptEnabled=True):
     """Translate using any translator
     @param  text  unicode
-    @param  fr  unicode  language
-    @param  to  unicode  language
-    @param  async  bool
-    @param  online  bool
-    @param  emit  bool  whether emit intermediate results
-    @param  cached  bool  NOT USED, always cached
+    @param* fr  unicode  language
+    @param* to  unicode  language
+    @param* async  bool
+    @param* online  bool
+    @param* emit  bool  whether emit intermediate results
+    @param* scriptEnabled  bool  whether enable the translation script
+    @param* cached  bool  NOT USED, always cached
     @return  unicode sub or None, unicode lang, unicode provider
     """
     if not features.MACHINE_TRANSLATION or not text:
       return None, None, None
     d = self.__d
+
+    kw = {
+      'fr': fr,
+      'to': d.language,
+      'async': async,
+      'emit': emit,
+      'scriptEnabled': scriptEnabled,
+    }
+
     text = d.normalizeText(text)
     if engine:
       e = d.getTranslator(engine)
       if e:
-        return e.translate(text, fr=fr, to=d.language, async=async, emit=emit)
+        return e.translate(text, **kw)
       dwarn("invalid translator: %s" % engine)
     for it in d.iterOfflineTranslators():
-      return it.translate(text, fr=fr, to=d.language, async=async, emit=emit)
+      return it.translate(text, **kw)
     for it in d.iterOnlineTranslators():
       if emit:
-        return it.translate(text, fr=fr, to=d.language, async=True, emit=emit)
+        return it.translate(text, **kw)
       else: # force async for online translation
-        return skthreads.runsync(partial(it.translate, text, fr=fr, to=d.language, async=False, emit=False),
+        if async:
+          kw['async'] = False # use single thread
+        return skthreads.runsync(partial(it.translate, text, **kw),
             abortSignal=self.onlineAbortionRequested,
             parent=self) or (None, None, None)
     return None, None, None

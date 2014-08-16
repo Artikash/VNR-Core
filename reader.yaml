@@ -10,7 +10,7 @@ version:
   name: reader
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1407983110
+  timestamp: 1408161379
 
 app:
   #debug: true
@@ -19,6 +19,7 @@ app:
   updateTermsInterval:      3600 * 8    # every 8 hours
   greetingInterval:         3600 * 10   # every 10 hours
   updateGamesInterval:      3600 * 18   # every 18 hours
+  updateTAHInterval:        3688 * 18   # every 18 hours, translation script
   updateInterval:           3600 * 24   # every 1 day
   updateCommentsInterval:   86400 * 1   # every 1 day
   updateRefsInterval:       86400 * 1   # every 1 day

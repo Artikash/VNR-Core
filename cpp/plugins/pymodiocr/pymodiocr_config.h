@@ -1,5 +1,5 @@
 // pymodiocr_config.h
-// 4/1/2012 jichi
+// 8/13/2014 jichi
 
 // See: http://qt-project.org/wiki/PySide_Binding_Generation_Tutorial%3A_Module_4_The_Global_Header
 #undef QT_NO_STL

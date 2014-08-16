@@ -83,6 +83,9 @@ class Settings(QSettings):
   def setTermsTime(self, value): self.setValue('TermsTime', value)
   def termsTime(self): return to_int(self.value('TermsTime'))
 
+  def setTranslationScriptTime(self, value): self.setValue('TranslationScriptTime', value)
+  def translationScriptTime(self): return to_int(self.value('TranslationScriptTime'))
+
   ## Window sizes ##
 
   def setSpringBoardSize(self, value): self.setValue('SpringBoardSize', value)
@@ -1071,6 +1074,23 @@ class Settings(QSettings):
       self.machineTranslatorChanged.emit()
 
   ## Translation options ##
+
+  translationScriptJaEnabledChanged = Signal(bool)
+  def isTranslationScriptJaEnabled(self): return to_bool(self.value('TranslationScriptJaEnabled', True))
+  def setTranslationScriptJaEnabled(self, value):
+    if value != self.isTranslationScriptJaEnabled():
+      self.setValue('TranslationScriptJaEnabled', value)
+      self.translationScriptJaEnabledChanged.emit(value)
+
+  translationScriptEnEnabledChanged = Signal(bool)
+  def isTranslationScriptEnEnabled(self): return to_bool(self.value('TranslationScriptEnEnabled', True))
+  def setTranslationScriptEnEnabled(self, value):
+    if value != self.isTranslationScriptEnEnabled():
+      self.setValue('TranslationScriptEnEnabled', value)
+      self.translationScriptEnEnabledChanged.emit(value)
+
+  def isAnyTranslationScriptEnabled(self):
+    return self.isTranslationScriptJaEnabled() or self.isTranslationScriptEnEnabled()
 
   termEnabledChanged = Signal(bool)
   def isTermEnabled(self): return to_bool(self.value('TermEnabled', True))

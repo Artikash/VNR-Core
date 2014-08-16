@@ -48,6 +48,8 @@ class _MTTester(object):
     tm.languagesReceived.connect(lambda fr, to: (
         self.setFromLanguageLabelText(fr),
         self.setToLanguageLabelText(to)))
+    tm.normalizedTextReceived.connect(lambda t:
+        self.normalizedTextEdit.setPlainText(t or _EMPTY_TEXT))
     tm.sourceTextReceived.connect(lambda t:
         self.sourceTextEdit.setPlainText(t or _EMPTY_TEXT))
     tm.escapedTextReceived.connect(lambda t:
@@ -102,7 +104,11 @@ class _MTTester(object):
     grid.addWidget(QtWidgets.QLabel(_RIGHTARROW), r, c)
     c += 1
     cell = QtWidgets.QVBoxLayout()
-    cell.addWidget(self.originTextButton)
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.originTextButton)
+    row.addWidget(self.originTextLabel)
+    row.addStretch()
+    cell.addLayout(row)
     cell.addWidget(self.originTextEdit)
     grid.addLayout(cell, r, c)
 
@@ -110,7 +116,11 @@ class _MTTester(object):
     grid.addWidget(QtWidgets.QLabel(_RIGHTARROW), r, c)
     c += 1
     cell = QtWidgets.QVBoxLayout()
-    cell.addWidget(self.normalizedTextLabel)
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.normalizedTextButton)
+    row.addWidget(self.normalizedTextLabel)
+    row.addStretch()
+    cell.addLayout(row)
     cell.addWidget(self.normalizedTextEdit)
     grid.addLayout(cell, r, c)
 
@@ -235,6 +245,7 @@ class _MTTester(object):
     return trtraits.TRAITS[self.translatorEdit.currentIndex()]['key']
 
   def _isOriginTermsEnabled(self): return self.originTextButton.isChecked()
+  def _isTranslationScriptEnabled(self): return self.normalizedTextButton.isChecked()
 
   def _speak(self):
     t = self._currentText()
@@ -265,7 +276,8 @@ class _MTTester(object):
         self.directTranslationEdit.setPlainText(raw)
 
       if self._isOriginTermsEnabled():
-        tt = termman.manager().applyOriginTerms(t, lang)
+        tt = textutil.normalize_punct(t)
+        tt = termman.manager().applyOriginTerms(tt, lang)
         if tt != t:
           t = tt
           self.setOriginTextEditText(t or _EMPTY_TEXT)
@@ -274,13 +286,9 @@ class _MTTester(object):
       else:
         self.originTextEdit.setPlainText(_DISABLED_TEXT)
       if t:
-        tt = textutil.normalize_punct(t)
-        if tt != t:
-          t = tt
-          self.normalizedTextEdit.setPlainText(t)
-        else:
-          self.normalizedTextEdit.setPlainText(_EMPTY_TEXT)
-        t = trman.manager().translate(t, emit=True, **params)
+        t = trman.manager().translate(t, emit=True,
+            scriptEnabled=self._isTranslationScriptEnabled(),
+            **params)
         if t:
           self.finalTranslationEdit.setPlainText(t)
       dprint("leave")
@@ -485,13 +493,15 @@ class _MTTester(object):
 
   @memoizedproperty
   def originTextButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Apply terms for original text") + "*")
-    ret.setToolTip(my.tr("Apply terms in the Shared Dictionary to correct original text"))
+    ret = QtWidgets.QCheckBox()
     ret.setChecked(True)
     return ret
   @memoizedproperty
+  def originTextLabel(self):
+    return self._createTextLabel(self.originTextEdit, my.tr("Apply terms for original text") + _TERM_STAR)
+  @memoizedproperty
   def originTextEdit(self):
-    return self._createTextView(self.originTextButton.toolTip())
+    return self._createTextView(my.tr("Apply terms in the Shared Dictionary to correct original text"))
   def setOriginTextEditText(self, t):
     e = self.originTextEdit
     e.setPlainText(t)
@@ -523,11 +533,16 @@ class _MTTester(object):
     return ret
 
   @memoizedproperty
+  def normalizedTextButton(self):
+    ret = QtWidgets.QCheckBox();
+    ret.setChecked(True)
+    return ret
+  @memoizedproperty
   def normalizedTextLabel(self):
-    return self._createTextLabel(self.normalizedTextEdit, my.tr("Normalize punctuations"))
+    return self._createTextLabel(self.normalizedTextEdit, my.tr("Apply translation scripts") + _LANGUAGE_STAR)
   @memoizedproperty
   def normalizedTextEdit(self):
-    return self._createTextView(my.tr("Replace less-used UNICODE punctuations with commonly-used one, such as various ellipses and primes"))
+    return self._createTextView(my.tr("Rewrite Japanese according to the rules in the translation scripts"))
 
   @memoizedproperty
   def sourceTextLabel(self):

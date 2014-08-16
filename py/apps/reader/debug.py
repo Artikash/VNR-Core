@@ -37,13 +37,12 @@ if __name__ == '__main__':
   print "debug: enter"
   initenv()
 
-if __name__ == '__main__':
   from PySide import QtCore, QtGui
 
-  import settings
-  ss = settings.global_()
-  ss.setBlockedLanguages({'en','de'})
-  print ss.blockedLanguages()
+  #import settings
+  #ss = settings.global_()
+  #ss.setBlockedLanguages({'en','de'})
+  #print ss.blockedLanguages()
 
   def test_vnragent():
     import rpcman, config
@@ -78,5 +77,15 @@ if __name__ == '__main__':
       print os.path.exists(dll)
       skwinsec.injectdll(dll, pid=pid)
     print "debug: leave"
+
+  def test_ocr():
+    import os
+    from modiocr import modiocr
+    path = "wiki.tiff"
+    #path = r"Z:\Users\jichi\opt\stream\Library\Frameworks\Sakura\py\apps\reader\wiki.tiff"
+    lang = modiocr.LANG_JA
+    ok = modiocr.readfile(path, lang)
+
+  test_ocr()
 
 # EOF

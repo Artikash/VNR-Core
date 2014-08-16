@@ -693,7 +693,9 @@ class _TextManager(object):
     self._translateNameAndShow(text)
 
   def _translateNameAndShow(self, text):
-    sub, lang, provider = trman.manager().translateOne(text, self.gameLanguage)
+    # Disable translation script for name
+    sub, lang, provider = trman.manager().translateOne(text,
+        self.gameLanguage, scriptEnabled=False)
     if sub:
       self.q.nameTranslationReceived.emit(sub, lang, provider)
 
