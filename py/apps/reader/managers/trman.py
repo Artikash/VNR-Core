@@ -445,9 +445,10 @@ def manager(): return TranslatorManager()
 #def translate(*args, **kwargs):
 #  return manager().translate(*args, **kwargs)
 
-class TranslatorCoffeeBean(QObject):
-  def __init__(self, parent):
-    super(TranslatorCoffeeBean, self).__init__(parent)
+# Bean for both coffee and QML code
+class TranslatorBean(QObject):
+  def __init__(self, parent=None):
+    super(TranslatorBean, self).__init__(parent)
 
   @Slot(result=unicode)
   def translators(self): # [str translator_name]

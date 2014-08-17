@@ -49,6 +49,8 @@ class _OcrManager(object):
     text = self.readScreen(x, y, width, height)
     if text:
       self.q.textReceived.emit(text, x, y, width, height)
+    else:
+      growl.notify(my.tr("OCR did not recognize Japanese text"))
 
   # Mouse hook
 
@@ -132,7 +134,7 @@ class _OcrManager(object):
     #ret = skthreads.runsync(partial(self._readImageFile, path))
     #with SkProfiler(): # take around 3 seconds
     ret = self._readImageFile(path)
-    skfileio.removefile(path)
+    #skfileio.removefile(path)
     return ret
 
 class OcrManager(QObject):

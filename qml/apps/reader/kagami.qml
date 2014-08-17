@@ -212,6 +212,8 @@ Item { id: root_
 
   Plugin.DataManagerProxy { id: datamanPlugin_ }
 
+  Plugin.TranslatorBean { id: trPlugin_ }
+
   Plugin.SystemStatus { id: statusPlugin_ }
 
   Comet.GlobalComet { id: globalComet_ }
@@ -891,9 +893,11 @@ Item { id: root_
       }
     }
 
-    //Kagami.PopupManager { id: popupman_
-    //  anchors.fill: parent
-    //}
+    Kagami.PopupManager { id: popupman_
+      anchors.fill: parent
+      zoomFactor: root_.globalZoomFactor
+      ignoresFocus: root_.ignoresFocus
+    }
 
     Kagami.Growl { id: growl_
       //anchors {

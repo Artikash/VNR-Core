@@ -279,8 +279,8 @@
         <translation>開啟變態詞條</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="959"/>
-        <location filename="../kagami/dock.qml" line="963"/>
+        <location filename="../kagami/dock.qml" line="976"/>
+        <location filename="../kagami/dock.qml" line="980"/>
         <source>Show current time</source>
         <translation>顯示當前時間</translation>
     </message>
@@ -300,12 +300,12 @@
         <translation>彈出鼠標指向的日文詞語的翻譯（禁用時需要點擊文本才會彈出）</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1052"/>
+        <location filename="../kagami/dock.qml" line="959"/>
         <source>Show notification</source>
         <translation>顯示提醒</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1056"/>
+        <location filename="../kagami/dock.qml" line="963"/>
         <source>Show notification at the corner of the screen</source>
         <translation>在屏幕邊緣顯示消息</translation>
     </message>
@@ -521,17 +521,17 @@
         <translation>你可以拖動這裡來移動文本。</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1458"/>
+        <location filename="../kagami/grimoire.qml" line="1463"/>
         <source>Hide text box</source>
         <translation>隱藏文本</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="660"/>
+        <location filename="../kagami/grimoire.qml" line="665"/>
         <source>Lock text box position</source>
         <translation>鎖定文本位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="602"/>
+        <location filename="../kagami/grimoire.qml" line="607"/>
         <source>Save text box position</source>
         <translation>保存文本位置</translation>
     </message>
@@ -546,57 +546,57 @@
         <translation>使用語音合成讀出當前的日文遊戲文本</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="621"/>
+        <location filename="../kagami/grimoire.qml" line="626"/>
         <source>Move text box to the saved position</source>
         <translation>移動文本到保存的位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="680"/>
+        <location filename="../kagami/grimoire.qml" line="685"/>
         <source>Unlock text box position</source>
         <translation>解鎖文本位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="572"/>
+        <location filename="../kagami/grimoire.qml" line="577"/>
         <source>You can drag this black bar to move the text box.</source>
         <translation>你可以拖動這個黑條條來移動文本。</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="693"/>
+        <location filename="../kagami/grimoire.qml" line="698"/>
         <source>you can drag me!</source>
         <translation>可以拖動這裡的！</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1278"/>
+        <location filename="../kagami/grimoire.qml" line="1283"/>
         <source>Add to the Shared Dictionary</source>
         <translation>添加到共享辭書</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1406"/>
+        <location filename="../kagami/grimoire.qml" line="1411"/>
         <source>Read Current</source>
         <translation>讀出當前</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1412"/>
+        <location filename="../kagami/grimoire.qml" line="1417"/>
         <source>Scroll to the Beginning</source>
         <translation>滾動到首頁</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1417"/>
+        <location filename="../kagami/grimoire.qml" line="1422"/>
         <source>Scroll to the End</source>
         <translation>滾動到尾頁</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1430"/>
+        <location filename="../kagami/grimoire.qml" line="1435"/>
         <source>Lock Position</source>
         <translation>鎖定位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1436"/>
+        <location filename="../kagami/grimoire.qml" line="1441"/>
         <source>Save Position</source>
         <translation>保存位置</translation>
     </message>
     <message>
-        <location filename="../kagami/grimoire.qml" line="1441"/>
+        <location filename="../kagami/grimoire.qml" line="1446"/>
         <source>Load Position</source>
         <translation>載入位置</translation>
     </message>
@@ -718,49 +718,49 @@
         <translation>かがみ</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="320"/>
+        <location filename="../kagami.qml" line="330"/>
         <source>VNR&apos;s top padding</source>
         <translation>VNR頂部的填充</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="336"/>
+        <location filename="../kagami.qml" line="346"/>
         <source>VNR&apos;s bottom padding</source>
         <translation>VNR底部的填充</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="352"/>
+        <location filename="../kagami.qml" line="362"/>
         <source>VNR&apos;s left padding</source>
         <translation>VNR左邊的填充</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="368"/>
+        <location filename="../kagami.qml" line="378"/>
         <source>VNR&apos;s right padding</source>
         <translation>VNR右邊的填充</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="498"/>
+        <location filename="../kagami.qml" line="508"/>
         <source>Save the text box position</source>
         <translation>保存文本的位置</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="500"/>
-        <location filename="../kagami.qml" line="512"/>
-        <location filename="../kagami.qml" line="526"/>
+        <location filename="../kagami.qml" line="510"/>
+        <location filename="../kagami.qml" line="522"/>
+        <location filename="../kagami.qml" line="536"/>
         <source>Cannot find the game window. Is it closed?</source>
         <translation>沒有找到遊戲窗口。是不是已經關閉了呢？</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="510"/>
+        <location filename="../kagami.qml" line="520"/>
         <source>Load the text box position</source>
         <translation>載入文本的位置</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="524"/>
+        <location filename="../kagami.qml" line="534"/>
         <source>Reset the text box position</source>
         <translation>重置文本的位置</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="882"/>
+        <location filename="../kagami.qml" line="892"/>
         <source>Not login or offline</source>
         <translation>沒有登錄或沒有網絡連接</translation>
     </message>
@@ -869,6 +869,20 @@
         <location filename="../voiceview/optionbar.qml" line="42"/>
         <source>Dub voices for newly discovered characters (disabled by default)</source>
         <translation>為新發現的人物姓名配音（默認無效）</translation>
+    </message>
+</context>
+<context>
+    <name>popupcomponent</name>
+    <message>
+        <location filename="../kagami/popupcomponent.qml" line="108"/>
+        <source>You can drag the border to move the text box</source>
+        <translation>你可以通過拖動四週的邊框來移動文本框</translation>
+    </message>
+    <message>
+        <location filename="../kagami/popupcomponent.qml" line="285"/>
+        <location filename="../kagami/popupcomponent.qml" line="289"/>
+        <source>Translating</source>
+        <translation>正在翻譯中</translation>
     </message>
 </context>
 <context>

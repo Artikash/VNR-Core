@@ -56,7 +56,7 @@ class _PrefsDialog(object):
     self.userTab = _prefs.UserTab()
     self.textTab = _prefs.TextTab()
     self.ttsTab = _prefs.TtsTab()
-    #self.ocrTab = _prefs.OcrTab()
+    self.ocrTab = _prefs.OcrTab()
     self.gameTab = _prefs.GameTab()
     self.shortcutsTab = _prefs.ShortcutsTab()
     self.uiTab = _prefs.UiTab()
@@ -79,7 +79,7 @@ class _PrefsDialog(object):
     self.translatorLibraryTab = _prefs.TranslatorLibraryTab()
     self.dictionaryLibraryTab = _prefs.DictionaryLibraryTab()
     self.ttsLibraryTab = _prefs.TtsLibraryTab()
-    #self.ocrLibraryTab = _prefs.OcrLibraryTab()
+    self.ocrLibraryTab = _prefs.OcrLibraryTab()
 
     #for t in self.itertabs():
     #  t.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
@@ -151,12 +151,12 @@ class _PrefsDialog(object):
               'display': mytr_("Voice"),
               'toolTip': my.tr("Locations of external TTS"),
             },
-            #{ 'widget': self.ocrLibraryTab,
-            #  'user': self._indexWidget(self.ocrLibraryTab),
-            #  'decoration': rc.icon('pref-ocr-path'),
-            #  'display': mytr_("Recognition"),
-            #  'toolTip': my.tr("Locations of external OCR libraries"),
-            #},
+            { 'widget': self.ocrLibraryTab,
+              'user': self._indexWidget(self.ocrLibraryTab),
+              'decoration': rc.icon('pref-ocr-path'),
+              'display': mytr_("Recognition"),
+              'toolTip': my.tr("Locations of external OCR libraries"),
+            },
           ]
         },
         { 'widget': self.translationTab,
@@ -191,12 +191,12 @@ class _PrefsDialog(object):
           'display': mytr_("Voice"),
           'toolTip': mytr_("Text-to-speech") + " (TTS)",
         },
-        #{ 'widget': self.ocrTab,
-        #  'user': self._indexWidget(self.ocrTab),
-        #  'decoration': rc.icon('pref-ocr'),
-        #  'display': mytr_("Recognition"),
-        #  'toolTip': mytr_("Optical character recognition") + " (OCR)",
-        #},
+        { 'widget': self.ocrTab,
+          'user': self._indexWidget(self.ocrTab),
+          'decoration': rc.icon('pref-ocr'),
+          'display': u"%s (α)" % mytr_("Recognition"),
+          'toolTip': mytr_("Optical character recognition") + " (OCR)",
+        },
         { 'widget': self.textTab,
           'user': self._indexWidget(self.textTab),
           'display': tr_("Font"),
@@ -278,7 +278,7 @@ class _PrefsDialog(object):
     yield self.textTab
     yield self.uiTab
     yield self.ttsTab
-    #yield self.ocrTab
+    yield self.ocrTab
     yield self.gameTab
     yield self.shortcutsTab
     yield self.i18nTab
@@ -299,7 +299,7 @@ class _PrefsDialog(object):
     yield self.translatorLibraryTab
     yield self.dictionaryLibraryTab
     yield self.ttsLibraryTab
-    #yield self.ocrLibraryTab
+    yield self.ocrLibraryTab
 
   def stop(self):
     for t in self.itertabs():
