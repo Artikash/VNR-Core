@@ -691,7 +691,7 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     layout.addWidget(self.applocButton)
     layout.addWidget(self.localeEmulatorButton)
     layout.addWidget(self.ntleaButton)
-    #layout.addWidget(self.localeSwitchButton)
+    layout.addWidget(self.localeSwitchButton)
     #layout.addWidget(self.launchInfoLabel)
     ret = QtWidgets.QGroupBox(my.tr("Preferred game loader"))
     ret.setLayout(layout)
@@ -754,7 +754,7 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     ss = settings.global_()
     b = (self.applocButton if ss.isApplocEnabled() else
          self.ntleaButton if ss.isNtleaEnabled() else
-         #self.localeSwitchButton if ss.isLocaleSwitchEnabled() else
+         self.localeSwitchButton if ss.isLocaleSwitchEnabled() else
          self.localeEmulatorButton if ss.isLocaleEmulatorEnabled() else
          self.disableButton)
     if not b.isChecked():
@@ -764,7 +764,7 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     ss = settings.global_()
     ss.setApplocEnabled(self.applocButton.isChecked())
     ss.setNtleaEnabled(self.ntleaButton.isChecked())
-    #ss.setLocaleSwitchEnabled(self.localeSwitchButton.isChecked())
+    ss.setLocaleSwitchEnabled(self.localeSwitchButton.isChecked())
     ss.setLocaleEmulatorEnabled(self.localeEmulatorButton.isChecked())
 
 class GameTab(QtWidgets.QDialog):
