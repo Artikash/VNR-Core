@@ -27,6 +27,7 @@ SOURCES = \
   managers/gameagent.py \
   managers/gameman.py \
   managers/netman.py \
+  managers/ocrman.py \
   managers/rpcman.py \
   managers/textman.py \
   managers/_trman.py \

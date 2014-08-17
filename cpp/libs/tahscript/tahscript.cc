@@ -92,10 +92,11 @@ public:
 
   void reset(int size)
   {
+    DOUT(size);
     Q_ASSERT(size > 0);
     ruleCount = size;
     if (rules)
-      delete rules;
+      delete[] rules;
     rules = new TahScriptRule[size];
   }
 };

@@ -4,13 +4,15 @@
 
 import os
 from functools import partial
-from PySide.QtCore import QObject, QCoreApplication
+from PySide.QtCore import Qt, QObject, Signal
 from PySide.QtGui import QPixmap
-from sakurakit import skwidgets, skfileio, skthreads
-from sakurakit.skclass import memoized, Q_Q
+from Qt5.QtWidgets import QApplication
+from sakurakit import skwidgets, skfileio
+from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from modiocr import modiocr
-import rc
+from mytr import my
+import growl, rc
 
 IMAGE_FORMAT = 'png'
 
@@ -21,7 +23,50 @@ def manager(): return OcrManager()
 class _OcrManager(object):
 
   def __init__(self):
-    self.language = 'ja'
+    self.enabled = False # bool
+    #self.language = 'ja'
+
+  # Rubberband
+
+  @memoizedproperty
+  def rubberBand(self):
+    from sakurakit.skrubberband import SkMouseRubberBand
+    #import windows
+    #parent = windows.top()
+    parent = None # this make rubberband as top window
+    ret = SkMouseRubberBand(SkMouseRubberBand.Rectangle, parent)
+    ret.selected.connect(self._onRectSelected, Qt.QueuedConnection) # do it later
+    return ret
+
+  def _onRectSelected(self, x, y, width, height):
+    """
+    @param  x  int
+    @param  y  int
+    @param  width  int
+    @param  height  int
+    """
+    #dprint(x, y, width, height)
+    text = self.readScreen(x, y, width, height)
+    if text:
+      self.q.textReceived.emit(text, x, y, width, height)
+
+  # Mouse hook
+
+  @memoizedproperty
+  def mouseHook(self):
+    from mousehook.screenselector import ScreenSelector
+    ret = ScreenSelector()
+    from sakurakit import skwin
+    ret.setPressCondition(skwin.is_key_shift_pressed)
+    ret.setSingleShot(False)
+
+    rb = self.rubberBand
+    ret.mousePressed.connect(rb.press)
+    ret.mouseReleased.connect(rb.release)
+    ret.mouseMoved.connect(rb.move)
+    return ret
+
+  # OCR
 
   @staticmethod
   def _randomPath():
@@ -44,7 +89,7 @@ class _OcrManager(object):
     if wid:
       return QPixmap.grabWindow(skwidgets.to_wid(wid), x, y, width, height)
     else:
-      qApp = QCoreApplication.instance()
+      qApp = QApplication.instance()
       wid = qApp.desktop().winId()
       return QPixmap.grabWindow(wid, x, y, width, height)
 
@@ -63,9 +108,9 @@ class _OcrManager(object):
     @param  path  unicode
     @return  unicode  text
     """
-    return modiocr.readtext(path, modiocr.LANG_JA)
+    return modiocr.readtext(path, modiocr.LANG_JA) # force Japanese
 
-  def readScreen(self, x, y, width, height, async=False):
+  def readScreen(self, x, y, width, height):
     """
     @param  x  int
     @param  y  int
@@ -83,11 +128,11 @@ class _OcrManager(object):
     if not self._savePixmap(pm, path) or not os.path.exists(path):
       dwarn("failed to save pixmap")
       return
-    if async:
-      ret = skthreads.runsync(partial(self._readImageFile, path))
-    else:
-      ret = self._readImageFile(path)
-    #skfileio.removefile(path)
+    # FIXME: Async would crash
+    #ret = skthreads.runsync(partial(self._readImageFile, path))
+    #with SkProfiler(): # take around 3 seconds
+    ret = self._readImageFile(path)
+    skfileio.removefile(path)
     return ret
 
 class OcrManager(QObject):
@@ -95,13 +140,23 @@ class OcrManager(QObject):
     super(OcrManager, self).__init__(parent)
     self.__d = _OcrManager(self)
 
-  def start(self):
-    dprint("pass")
-    from sakurakit.skprofiler import SkProfiler
-    with SkProfiler():
-      self.__d.readScreen(0, 0, 1440, 900)
+  textReceived = Signal(unicode, int, int, int, int) # text, x, y, width, height
 
-  def stop(self):
-    dprint("pass")
+  def isInstalled(self):
+    return os.path.exists(modiocr.DLL_PATH) and modiocr.available() #and skwin.ADMIN
+
+  def isEnabled(self): return self.__d.enabled
+
+  def setEnabled(self, t):
+    d = self.__d
+    if d.enabled != t:
+      d.enabled = t
+      dprint(t)
+      if t:
+        growl.msg(my.tr("Start OCR screen reader"))
+        d.mouseHook.start()
+      else:
+        d.mouseHook.stop()
+        growl.msg(my.tr("Stop OCR screen reader"))
 
 # EOF

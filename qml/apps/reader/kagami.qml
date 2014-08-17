@@ -891,6 +891,10 @@ Item { id: root_
       }
     }
 
+    //Kagami.PopupManager { id: popupman_
+    //  anchors.fill: parent
+    //}
+
     Kagami.Growl { id: growl_
       //anchors {
       //  right: center_.fullScreen ? center_.right : parent.right

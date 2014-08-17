@@ -175,6 +175,9 @@ class reader(QObject):
 
       self.tr("Capture"),
 
+      self.tr("Recognition"),
+      self.tr("Optical character recognition"),
+
       self.tr("Open in external browser"),
       self.tr("Open in external window"),
 

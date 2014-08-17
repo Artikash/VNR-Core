@@ -263,7 +263,13 @@ class _MainObject(object):
     import ocrman
     ret = ocrman.manager()
     ret.setParent(self.q)
+
+    ss = settings.global_()
+    ret.setEnabled(features.ADMIN != False and ss.isOcrEnabled() and ret.isInstalled())
+    ss.ocrEnabledChanged.connect(ret.setEnabled)
     return ret
+
+  def initializeOCR(self): self.ocrManager
 
   #@memoizedproperty
   #def dataMiner(self):
@@ -1439,7 +1445,9 @@ class MainObject(QObject):
     d.postEditorManager
     d.hotkeyManager
     d.ttsManager
-    d.ocrManager
+
+    #d.ocrManager
+    #skevents.runlater(d.initializeOCR, 3000) # delay start OCR
 
     dprint("warm up tts")
     d.ttsManager.warmup() # It might take a lot of time to warmup google

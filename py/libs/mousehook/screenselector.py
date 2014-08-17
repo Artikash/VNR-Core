@@ -48,6 +48,7 @@ if skos.WIN:
       #ret.MouseMiddleDown =
       ret.MouseLeftDown = self._onMousePress
       ret.MouseLeftUp = self._onMouseRelease
+      ret.MouseMove = self._onMouseMove
       return ret
 
     def _pressWindow(self, hwnd, x, y):
@@ -56,11 +57,10 @@ if skos.WIN:
       @param  x  int
       @param  y  int
       """
-      if self.active:
-        #if self.singleShot:
-        #  self.unhook()
-        #  self.active = False
-        self.q.mousePressed.emit(x, y, hwnd)
+      #if self.singleShot:
+      #  self.unhook()
+      #  self.active = False
+      self.q.mousePressed.emit(x, y, hwnd)
 
     def _releaseWindow(self, hwnd, x, y):
       """
@@ -68,19 +68,26 @@ if skos.WIN:
       @param  x  int
       @param  y  int
       """
-      if self.active:
-        if self.singleShot:
-          self.unhook()
-          self.active = False
-        self.q.mouseReleased.emit(x, y, hwnd)
+      if self.singleShot:
+        self.unhook()
+        self.active = False
+      self.q.mouseReleased.emit(x, y, hwnd)
+
+    def _moveWindow(self, hwnd, x, y):
+      """
+      @param  hwnd  long
+      @param  x  int
+      @param  y  int
+      """
+      self.q.mouseMoved.emit(x, y, hwnd)
 
     def _onMousePress(self, event):
       """
       @param  event  pyHook.HookManager.MouseEvent
       @return  bool  Whether pass the event to other handlers
       """
-      dprint("enter")
       if self.active and not self.pressed and (not self.pressCondition or self.pressCondition()):
+        dprint("enter")
         self.pressed = True
         #print "---"
         #print "  message name:", event.MessageName
@@ -98,7 +105,7 @@ if skos.WIN:
         self._pressWindow(hwnd, *event.Position)
         dprint("leave: active")
         return False # eat the event
-      dprint("leave: not active")
+      #dprint("leave: not active")
       return True # return True to pass the event to other handlers
 
     def _onMouseRelease(self, event):
@@ -106,15 +113,30 @@ if skos.WIN:
       @param  event  pyHook.HookManager.MouseEvent
       @return  bool  Whether pass the event to other handlers
       """
-      dprint("enter")
       if self.active and self.pressed:
+        dprint("enter")
         self.pressed = False
         hwnd = event.Window
         #title = u(event.WindowName)
         self._releaseWindow(hwnd, *event.Position)
         dprint("leave: active")
         return False # eat the event
-      dprint("leave: not active")
+      #dprint("leave: not active")
+      return True # return True to pass the event to other handlers
+
+    def _onMouseMove(self, event):
+      """
+      @param  event  pyHook.HookManager.MouseEvent
+      @return  bool  Whether pass the event to other handlers
+      """
+      #dprint("enter")
+      if self.active and self.pressed:
+        hwnd = event.Window
+        #title = u(event.WindowName)
+        self._moveWindow(hwnd, *event.Position)
+        #dprint("leave: active")
+        return False # eat the event
+      #dprint("leave: not active")
       return True # return True to pass the event to other handlers
 
   class ScreenSelector(QObject):
@@ -124,6 +146,7 @@ if skos.WIN:
 
     mousePressed = Signal(int, int, long) # x, y, hwnd
     mouseReleased = Signal(int, int, long) # x, y, hwnd
+    mouseMoved = Signal(int, int, long) # x, y, hwnd
 
     def isSingleShot(self): return self.__d.singleShot
     def setSingleShot(self, t): self.__d.singleShot = t
@@ -152,6 +175,7 @@ else: # dummy
 
     mousePressed = Signal(int, int, long) # x, y, hwnd
     mouseReleased = Signal(int, int, long) # x, y, hwnd
+    mouseMoved = Signal(int, int, long) # x, y, hwnd
 
     def isSingleShot(self): return False
     def setSingleShot(self, t): pass
