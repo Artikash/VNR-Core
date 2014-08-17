@@ -38,6 +38,7 @@ Item {
       onTriggered: mainPlugin_.openRunningGame()
       shortcut: 'Alt+S'
     }
+    Desktop.Separator {}
     Desktop.MenuItem {
       text: My.tr("Update Game Database")
       shortcut: 'Alt+U'
