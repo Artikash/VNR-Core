@@ -1212,7 +1212,10 @@ class _OcrTab(object):
 
   @memoizedproperty
   def ocrInfoLabel(self):
-    ret = QtWidgets.QLabel(my.tr("When enabled, you can press Shift+Mouse to select the text to read."))
+    ret = QtWidgets.QLabel("\n".join((
+      my.tr("When enabled, you can press Shift+Mouse to select the text to read."),
+      my.tr("OCR requires MODI OCR from Microsoft Office 2007 to be installed."),
+    )))
     ret.setWordWrap(True)
     #ret.setOpenExternalLinks(True)
     return ret
