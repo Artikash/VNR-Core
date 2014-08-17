@@ -312,7 +312,7 @@ By default it is the same as the executable of the game process."""))
     layout.addWidget(self.applocButton)
     layout.addWidget(self.localeEmulatorButton)
     layout.addWidget(self.ntleaButton)
-    #layout.addWidget(self.localeSwitchButton)
+    layout.addWidget(self.localeSwitchButton)
 
     #introLabel = QtWidgets.QLabel(my.tr(
     #  "When embedding translation is enabled, if the game's encoding is SHIFT-JIS and your language is not SHIFT-JIS compatible, VNR will always launch the game using AppLocale"
@@ -380,7 +380,7 @@ By default it is the same as the executable of the game process."""))
     b = (self.disableLoaderButton if loader == 'none' else
          self.applocButton if loader == 'apploc' else
          self.ntleaButton if loader == 'ntlea' else
-         #self.localeSwitchButton if loader == 'lsc' else
+         self.localeSwitchButton if loader == 'lsc' else
          self.localeEmulatorButton if loader == 'le' else
          self.defaultLoaderButton)
     if not b.isChecked():
@@ -391,7 +391,7 @@ By default it is the same as the executable of the game process."""))
       'none' if self.disableLoaderButton.isChecked() else
       'apploc' if self.applocButton.isChecked() else
       'ntlea' if self.ntleaButton.isChecked() else
-      #'lsc' if self.localeSwitchButton.isChecked() else
+      'lsc' if self.localeSwitchButton.isChecked() else
       'le' if self.localeEmulatorButton.isChecked() else
       '')
     dataman.manager().setGameLoader(loader, md5=self.game.md5)

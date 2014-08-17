@@ -6161,9 +6161,9 @@ class _DataManager(object):
         if not g.language: g.language = 'ja'
 
         # Error checking
-        if g.loader == 'lsc':
-          dwarn("change game loader from LocaleSwitch to AppLocale")
-          g.loader = 'apploc'
+        #if g.loader == 'lsc':
+        #  dwarn("change game loader from LocaleSwitch to AppLocale")
+        #  g.loader = 'apploc'
 
         # Change game engines
         if g.threadName:
