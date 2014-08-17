@@ -893,7 +893,7 @@ Item { id: root_
       }
     }
 
-    Kagami.PopupManager { id: popupman_
+    Kagami.TextPopup { //id: popup_
       anchors.fill: parent
       zoomFactor: root_.globalZoomFactor
       ignoresFocus: root_.ignoresFocus

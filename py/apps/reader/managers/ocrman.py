@@ -12,7 +12,7 @@ from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from modiocr import modiocr
 from mytr import my
-import growl, rc
+import config, growl, rc
 
 IMAGE_FORMAT = 'png'
 
@@ -134,7 +134,8 @@ class _OcrManager(object):
     #ret = skthreads.runsync(partial(self._readImageFile, path))
     #with SkProfiler(): # take around 3 seconds
     ret = self._readImageFile(path)
-    #skfileio.removefile(path)
+    if not config.APP_DEBUG:
+      skfileio.removefile(path)
     return ret
 
 class OcrManager(QObject):

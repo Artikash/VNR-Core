@@ -64,7 +64,7 @@ qmlRegisterType(kagami.GospelBean, QML_PLUGIN, 1, 0, 'GospelBean')
 qmlRegisterType(kagami.GossipBean, QML_PLUGIN, 1, 0, 'GossipBean')
 qmlRegisterType(kagami.GrimoireBean, QML_PLUGIN, 1, 0, 'GrimoireBean')
 qmlRegisterType(kagami.OmajinaiBean, QML_PLUGIN, 1, 0, 'OmajinaiBean')
-qmlRegisterType(kagami.PopupBean, QML_PLUGIN, 1, 0, 'PopupBean')
+qmlRegisterType(kagami.TextPopupBean, QML_PLUGIN, 1, 0, 'TextPopupBean')
 qmlRegisterType(kagami.MirageBean, QML_PLUGIN, 1, 0, 'MirageBean')
 
 import growl

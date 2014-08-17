@@ -119,7 +119,7 @@ def update_web_settings(settings=None):
 
   #ws.setAttribute(QWebSettings.ZoomTextOnly, False)
 
-  ws.setDefaultTextEncoding("SHIFT-JIS")
+  #ws.setDefaultTextEncoding("SHIFT-JIS")
   #ws.setDefaultTextEncoding("EUC-JP")
 
   #ws.setLocalStoragePath(G_PATH_CACHES)
