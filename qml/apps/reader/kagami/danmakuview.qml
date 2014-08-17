@@ -7,6 +7,7 @@ import org.sakuradite.reader 1.0 as Plugin
 import '../../../js/util.min.js' as Util
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../imports/qmleffects' as Effects
+import '../../../js/local.js' as Local // Local.comet
 //import '../share' as Share
 
 Item { id: root_
@@ -20,10 +21,12 @@ Item { id: root_
 
   // - Private -
 
+  Component.onCompleted: Local.lanes = [] // [bool free]
+
   //clip: true
 
   //property variant freeway: [] // [bool free] Deficiency in QML
-  property QtObject lanes: ListModel {} // [int:bool free]
+  //property QtObject lanes: ListModel {} // [int:bool free]
   property int _LANE_HEIGHT: 30
 
   //Plugin.SubtitleEditorManagerProxy { id: subeditPlugin_ }
@@ -66,7 +69,8 @@ Item { id: root_
       //}
 
       function remove() {
-        root_.lanes.get(model.lane).free = true
+        //root_.lanes.get(model.lane).free = true
+        Local.lanes[model.lane] = true
         model_.remove(model.index)
       }
 
@@ -206,18 +210,16 @@ Item { id: root_
 
 
   // - Actions -
-  function createLane() { return {free:false} }
 
   function getLane() { // return int lane
-    for (var i = 0; i < lanes.count; ++i) {
-      var l = lanes.get(i)
-      if (l.free) {
-        l.free = false
+    var lanes = Local.lanes
+    for (var i in lanes)
+      if (lanes[i]) {
+        lanes[i] = false
         return i
       }
-    }
-    lanes.append(createLane())
-    return lanes.count - 1
+    lanes.push(false)
+    return lanes.length - 1
   }
 
   function show(comment) {
