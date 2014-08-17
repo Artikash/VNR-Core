@@ -11,63 +11,57 @@
 
 __all__ = ['WindowPicker']
 
+if __name__ == '__main__':
+  import sys
+  sys.path.append('..')
+
 from PySide.QtCore import QObject, Signal
-from sakurakit.skclass import Q_Q
+from sakurakit import skos
+from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.skunicode import u
 
-import os
-if os.name == 'nt':
+if skos.WIN:
 
   @Q_Q
   class _WindowPicker(object):
 
-    _instance = None
-
     def __init__(self):
-      _WindowPicker._instance = self
-      self.singleShot = True
-      self._active = False
-      self._hookManager = None # HookManager instance
+      self.singleShot = True # bool
+      self.active = False # bool
 
-    @property
-    def active(self): return self._active
+    def hook(self):
+      dprint("pass")
+      self.hookManager.HookMouse()
+    def unhook(self):
+      dprint("pass")
+      self.hookManager.UnhookMouse()
 
-    @active.setter
-    def active(self, t):
-      if t != self._active:
-        if t:
-          self.hookManager.HookMouse()
-        elif self._hookManager:
-          self._hookManager.UnhookMouse()
-        self._active = t
-
-    @property
-    def hookManager(self):
-      if not self._hookManager:
-        dprint("creating pyhook manager")
-        import pyHook
-        self._hookManager = pyHook.HookManager()
-        self._hookManager.MouseLeftDown = \
-        self._hookManager.MouseRightDown = \
-        self._hookManager.MouseMiddleDown = \
-          _WindowPicker._onMousePress
-      return self._hookManager
+    @memoizedproperty
+    def hookManager(self): # -> HookManager instance
+      dprint("creating pyhook manager")
+      import pyHook
+      ret = pyHook.HookManager()
+      ret.MouseLeftDown = \
+      ret.MouseRightDown = \
+      ret.MouseMiddleDown = \
+        self._onMousePress
+      return ret
 
     def _clickWindow(self, hwnd, title):
-      if self.singleShot:
-        self.active = False
-      self.q.windowClicked.emit(hwnd, title)
+      if self.active:
+        if self.singleShot:
+          self.unhook()
+          self.active = False
+        self.q.windowClicked.emit(hwnd, title)
 
-    @staticmethod
-    def _onMousePress(event):
+    def _onMousePress(self, event):
       """
+      @param  event  pyHook.HookManager.MouseEvent
       @return  bool  Whether pass the event to other handlers
       """
       dprint("enter")
-      d = _WindowPicker._instance
-      if d._active:
-        dprint("active")
+      if self.active:
         #print "---"
         #print "  message name:", event.MessageName
         #print "  message (MSG):", event.Message
@@ -83,20 +77,16 @@ if os.name == 'nt':
         title = u(event.WindowName)
         if hwnd:
           dprint("found hwnd")
-          d._clickWindow(hwnd, title)
-          dprint("leave: ret = False")
+          self._clickWindow(hwnd, title)
+          dprint("leave: active")
           return False # eat the event
-      dprint("leave: ret = True")
+      dprint("leave: not active")
       return True # return True to pass the event to other handlers
 
   class WindowPicker(QObject):
-    #instance = None
-
     def __init__(self, parent=None):
       super(WindowPicker, self).__init__(parent)
       self.__d = _WindowPicker(self)
-      #WindowPicker.instance = self
-      dprint("pass")
 
     windowClicked = Signal(long, unicode)
 
@@ -104,8 +94,16 @@ if os.name == 'nt':
     def setSingleShot(self, t): self.__d.singleShot = t
 
     def isActive(self): return self.__d.active
-    def start(self): self.__d.active = True
-    def stop(self): self.__d.active = False
+    def start(self):
+      d = self.__d
+      if not d.active:
+        d.active = True
+        d.hook()
+    def stop(self):
+      d = self.__d
+      if d.active:
+        d.active = False
+        d.unhook()
 
 else: # dummy
 
@@ -121,9 +119,14 @@ else: # dummy
     def stop(self): pass
 
 # Debug entry
-if __name__ == '__main__' and os.name == 'nt':
+if __name__ == '__main__':
   # Start event loop and block the main thread
+  import sys
   import pythoncom
+
+  w = WindowPicker()
+  w.windowClicked.connect(lambda: sys.exit(0))
+  w.start()
   pythoncom.PumpMessages() # wait forever
 
 # EOF

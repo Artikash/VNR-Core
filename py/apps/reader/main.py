@@ -257,6 +257,20 @@ class _MainObject(object):
     ret.clearTemporaryFiles()
     return ret
 
+  @memoizedproperty
+  def ocrManager(self):
+    dprint("create ocr manager")
+    import ocrman
+    ret = ocrman.manager()
+    ret.setParent(self.q)
+
+    ss = settings.global_()
+    ret.setEnabled(features.ADMIN != False and ss.isOcrEnabled() and ret.isInstalled())
+    ss.ocrEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  def initializeOCR(self): self.ocrManager
+
   #@memoizedproperty
   #def dataMiner(self):
   #  import datamine
@@ -1432,6 +1446,9 @@ class MainObject(QObject):
     d.hotkeyManager
     d.ttsManager
 
+    #d.ocrManager
+    #skevents.runlater(d.initializeOCR, 3000) # delay start OCR
+
     dprint("warm up tts")
     d.ttsManager.warmup() # It might take a lot of time to warmup google
 
@@ -1578,6 +1595,7 @@ class MainObject(QObject):
 
     dprint("leave")
 
+    #skevents.runlater(d.ocrManager.start, 5000) # 5 seconds
     #self.showReferenceView()
     #  import jsonapi
     #  jsonapi.gameinfo()

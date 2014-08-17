@@ -14,7 +14,7 @@ from sakurakit.sktr import tr_, notr_
 from msime import msime
 from dataman import GUEST
 from mytr import my, mytr_
-import config, cacheman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, osutil, rc, res, sapiman, settings, ttsman
+import config, cacheman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, ocrman, osutil, rc, res, sapiman, settings, ttsman
 
 DOWNLOAD_REFRESH_INTERVAL = 3000 # 3 seconds
 
@@ -1175,6 +1175,71 @@ class TtsTab(QtWidgets.QDialog):
   def load(self): pass
   def refresh(self): self.__d.refresh()
 
+## OCR ##
+
+@Q_Q
+class _OcrTab(object):
+
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.ocrGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+
+  ## OCR ##
+
+  @memoizedproperty
+  def ocrGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+
+    layout.addWidget(self.modiButton)
+    layout.addWidget(self.ocrInfoLabel)
+    layout.addWidget(self.modiAdminLabel)
+
+    ret = QtWidgets.QGroupBox(mytr_("Optical character recognition") + " (OCR)")
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def modiButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Start OCR screen reader for Japanese"))
+    ret.setChecked(settings.global_().isOcrEnabled())
+    ret.toggled.connect(settings.global_().setOcrEnabled)
+    return ret
+
+  @memoizedproperty
+  def ocrInfoLabel(self):
+    ret = QtWidgets.QLabel(my.tr("When enabled, you can press Shift+Mouse to select the text to read."))
+    ret.setWordWrap(True)
+    #ret.setOpenExternalLinks(True)
+    return ret
+
+  @memoizedproperty
+  def modiAdminLabel(self):
+    ret = QtWidgets.QLabel(my.tr("OCR requires starting VNR as administrator to work."))
+    ret.setWordWrap(True)
+    #ret.setOpenExternalLinks(True)
+    return ret
+
+  def refresh(self):
+    self.modiButton.setEnabled(features.ADMIN != False and ocrman.manager().isInstalled())
+    skqss.class_(self.modiAdminLabel, 'text-error' if features.ADMIN == False else 'text-success')
+
+class OcrTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(OcrTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _OcrTab(self)
+    #self.setMinimumWidth(330)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): self.__d.refresh()
+
 ## i18n ##
 
 #@Q_Q
@@ -1581,7 +1646,8 @@ class _TranslationScriptTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.tahJaButton)
     layout.addWidget(self.tahEnButton)
-    layout.addWidget(self.tahInfoLabel)
+    layout.addWidget(self.tahInfoEdit)
+    layout.addStretch()
     ret = QtWidgets.QGroupBox(my.tr("TAH replacement script for Japanese machine translation"))
     ret.setLayout(layout)
     return ret
@@ -1601,9 +1667,19 @@ class _TranslationScriptTab(object):
     return ret
 
   @memoizedproperty
-  def tahInfoLabel(self):
+  def tahInfoEdit(self):
+    ret = QtWidgets.QTextBrowser()
+    #ret.setTextFormat(Qt.RichText)
+    #ret.setWordWrap(True)
+    #ret.setOpenExternalLinks(True)
+    skqss.class_(ret, 'texture')
+    ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
+    #ret.setAlignment(Qt.AlignCenter)
+    ret.setReadOnly(True)
+    ret.setOpenExternalLinks(True)
+
     url = "http://sakuradite.com/wiki/en/VNR/Translation_Scripts"
-    ret = QtWidgets.QLabel(my.tr(
+    ret.setHtml(my.tr(
 """TAH script is a set of <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> rules originally written by @errzotl to enhance ATLAS Japanese-English translation.
 But the script serves to correct and normalize spoken Japanese rather than translation.
 <br/><br/>
@@ -1616,9 +1692,6 @@ But if you want, you can try VNR's Machine Translation Tester to see how TAH scr
 You can also edit the local translation script in caches, but it will be overwritten after the update.
 It will be better to merge your changes with the online wiki."""
 ).format(url))
-    ret.setTextFormat(Qt.RichText)
-    ret.setWordWrap(True)
-    ret.setOpenExternalLinks(True)
     return ret
 
 class TranslationScriptTab(QtWidgets.QDialog):
@@ -3486,6 +3559,8 @@ Just don't forget to export LC_ALL=ja_JP.UTF8 before launching VNR."""))
     editRow.addWidget(self.localeEmulatorLocationClearButton)
     layout.addLayout(editRow)
     layout.addWidget(self.localeEmulatorInfoEdit)
+
+    layout.addStretch()
     ret = QtWidgets.QGroupBox(notr_("Locale Emulator (2MB)"))
     ret.setLayout(layout)
     return ret
@@ -4983,6 +5058,83 @@ class TtsLibraryTab(QtWidgets.QDialog):
     super(TtsLibraryTab, self).__init__(parent)
     skqss.class_(self, 'texture')
     self.__d = _TtsLibraryTab(self)
+    #self.setChildrenCollapsible(False)
+    #self.setMinimumWidth(LIBRARY_MINIMUM_WIDTH)
+
+  def load(self): self.__d.refresh()
+  def save(self): pass #self.__d.save()
+  def refresh(self): pass
+
+# OCR library tab
+
+@Q_Q
+class _OcrLibraryTab(object):
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    # Google TTS
+    layout.addWidget(self.modiOcrGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+
+  ## MODI OCR ##
+
+  @memoizedproperty
+  def modiOcrGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.modiOcrLocationEdit)
+    layout.addWidget(self.modiOcrInfoEdit)
+    #layout.addWidget(self.modiOcrEnableButton)
+
+    layout.addStretch()
+    ret = QtWidgets.QGroupBox("MODI OCR (%s, 36MB)" % tr_("Japanese"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def modiOcrLocationEdit(self):
+    ret = QtWidgets.QLineEdit()
+    ret.setReadOnly(True)
+    ret.setToolTip(tr_("Location"))
+    return ret
+
+  @memoizedproperty
+  def modiOcrInfoEdit(self):
+    ret = QtWidgets.QTextBrowser()
+    skqss.class_(ret, 'texture')
+    ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
+    ret.setAlignment(Qt.AlignCenter)
+    ret.setReadOnly(True)
+    ret.setOpenExternalLinks(True)
+    return ret
+
+  def _refreshModiOcr(self):
+    libman.modiocr().refresh()
+    ok = libman.modiocr().exists()
+    if ok:
+      path = libman.modiocr().location()
+      path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
+    skqss.class_(self.modiOcrLocationEdit, 'normal' if ok else 'muted')
+    self.modiOcrLocationEdit.setText(path if ok else tr_("Not found"))
+
+    #ms_url = libman.ModiOcr.URL
+    url = libman.ModiOcr.DOWNLOAD_URL
+    self.modiOcrInfoEdit.setHtml(my.tr(
+"""Microsoft MODI OCR from Office 2007 is needed by VNR's <span style="color:purple">optical character recognition</span>.
+You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or download MODI from the following page:
+<center><a href="{0}">{0}</a></center>""").format(url))
+
+  def refresh(self):
+    self._refreshModiOcr()
+
+class OcrLibraryTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(OcrLibraryTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _OcrLibraryTab(self)
     #self.setChildrenCollapsible(False)
     #self.setMinimumWidth(LIBRARY_MINIMUM_WIDTH)
 

@@ -196,6 +196,14 @@ class LocaleEmulator(Library):
       if path:
         skpaths.append_path(path)
 
+class ModiOcr(Library):
+  URL = "http://www.microsoft.com/office/downloads/"
+  DOWNLOAD_URL = "https://mega.co.nz/#F!g00SQJZS!pm3bAcS6qHotPzJQUT596Q"
+
+  def location(self):
+    from modiocr import modiocr
+    return os.path.dirname(modiocr.DLL_PATH)
+
 class QuickTime(Library):
   URL = "http://www.apple.com/quicktime/download/"
 
@@ -232,6 +240,8 @@ def dreye(): return Dreye()
 def eztrans(): return EzTrans()
 @memoized
 def quicktime(): return QuickTime()
+@memoized
+def modiocr(): return ModiOcr()
 
 # EOF
 

@@ -204,6 +204,15 @@ class Settings(QSettings):
       self.setValue('BlockedLanguages', value)
       self.blockedLanguagesChanged.emit(value)
 
+  ## OCR ##
+
+  ocrEnabledChanged = Signal(bool)
+  def isOcrEnabled(self): return to_bool(self.value('OcrEnabled'))
+  def setOcrEnabled(self, value):
+    if value != self.isOcrEnabled():
+      self.setValue('OcrEnabled', value)
+      self.ocrEnabledChanged.emit(value)
+
   ## AppLocale ##
 
   #applocEnabledChanged = Signal(bool)

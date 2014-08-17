@@ -4,7 +4,7 @@
 
 __all__ = ['Application']
 
-from PySide.QtCore import QTranslator
+from PySide.QtCore import QTranslator, QObject
 from Qt5.QtWidgets import QApplication
 from sakurakit import skos
 from sakurakit.skdebug import dprint, dwarn, derror
@@ -66,7 +66,9 @@ class Application(QApplication):
 
     See: http://www.02.246.ne.jp/~torutk/cxx/qt/QtMemo.html
     """
-    try: return super(Application, self).notify(receiver, event)
+    try:
+      if isinstance(receiver, QObject): # receiver could be QCursor. Only notify QObject
+        return super(Application, self).notify(receiver, event)
     except KeyboardInterrupt, e:
       derror(e)
     except Exception, e:

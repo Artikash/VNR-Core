@@ -6,6 +6,7 @@ if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
+import os
 from sakurakit.skclass import memoized
 
 # This file must be consistent with modiocr.h
@@ -40,10 +41,14 @@ LANG_EN = 1 << 20 # miLANG_ENGLISH = 9,
 
 LANG_DEFAULT = 1 << 21 # miLANG_SYSDEFAULT = 2048
 
+from sakurakit import skpaths
+DLL_PATH = os.path.join(skpaths.PROGRAMFILES, 'Common Files/Microsoft Shared/MODI/12.0/MDIVWCTL.dll')
+
 from sakurakit import skos
 if skos.WIN:
   from  pymodiocr import ModiOcr
   available = ModiOcr.isValid # -> bool
+  # Note: the read functions might raise if the path does not on Windows XP
   readtext = ModiOcr.readText # (unicode path, int lang) -> unicode
   readtexts = ModiOcr.readTextList # (unicode path, int lang) -> [unicode]
 else:

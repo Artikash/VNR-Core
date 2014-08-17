@@ -577,6 +577,8 @@ icons:
   pref-feature:     $PWD/images/gear.png
   pref-i18n:        $PWD/images/earth.png
   pref-locale:      $PWD/images/dock/launch.png
+  pref-ocr:         $PWD/images/camera.png
+  pref-ocr-path:    $PWD/images/dock/camera.png
   pref-shortcuts:   $PWD/images/passage.png
   pref-tr-path:     $PWD/images/dock/yaku.png
   pref-tr:          $PWD/images/people.png

@@ -54,7 +54,7 @@ Plugin.MainObjectProxy { \
 "
     })
 
-    append({ name: My.tr("Web Browser")
+    append({ name: My.tr("Website Reader")
       , icon: 'image://rc/dock-browser'
       , toolTip: qsTr("VNR's built-in web browser")
       , qml: "\
