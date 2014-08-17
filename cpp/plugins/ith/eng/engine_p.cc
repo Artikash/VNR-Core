@@ -4176,6 +4176,260 @@ bool InsertNextonHook()
   return true;
 }
 
+/** jichi 8/17/2014 Nexton1
+ *  Sample games:
+ *  - [Nomad][071026] 淫烙の巫女 Trial
+ *
+ *  Debug method: text are prefetched into memory. Add break point to it.
+ *
+ *  GetGlyphOutlineA is called, but no correct text.
+ *
+ *  There are so many good hooks. The shortest function was picked,as follows:
+ *  0041974e   cc               int3
+ *  0041974f   cc               int3
+ *  00419750   56               push esi    ; jichi: hook here, text in arg0
+ *  00419751   8b7424 08        mov esi,dword ptr ss:[esp+0x8]
+ *  00419755   8bc6             mov eax,esi
+ *  00419757   57               push edi
+ *  00419758   8d78 01          lea edi,dword ptr ds:[eax+0x1]
+ *  0041975b   eb 03            jmp short inrakutr.00419760
+ *  0041975d   8d49 00          lea ecx,dword ptr ds:[ecx]
+ *  00419760   8a10             mov dl,byte ptr ds:[eax]	; jichi: eax is the text
+ *  00419762   83c0 01          add eax,0x1
+ *  00419765   84d2             test dl,dl
+ *  00419767  ^75 f7            jnz short inrakutr.00419760
+ *  00419769   2bc7             sub eax,edi
+ *  0041976b   50               push eax
+ *  0041976c   56               push esi
+ *  0041976d   83c1 04          add ecx,0x4
+ *  00419770   e8 eb85feff      call inrakutr.00401d60
+ *  00419775   5f               pop edi
+ *  00419776   5e               pop esi
+ *  00419777   c2 0400          retn 0x4
+ *  0041977a   cc               int3
+ *  0041977b   cc               int3
+ *  0041977c   cc               int3
+ *
+ *  Runtime stack: this function takes two arguments. Text address is in arg0.
+ *
+ *  Other possible hooks are as follows:
+ *  00460caf   53               push ebx
+ *  00460cb0   c700 16000000    mov dword ptr ds:[eax],0x16
+ *  00460cb6   e8 39feffff      call inrakutr.00460af4
+ *  00460cbb   83c4 14          add esp,0x14
+ *  00460cbe   385d fc          cmp byte ptr ss:[ebp-0x4],bl
+ *  00460cc1   74 07            je short inrakutr.00460cca
+ *  00460cc3   8b45 f8          mov eax,dword ptr ss:[ebp-0x8]
+ *  00460cc6   8360 70 fd       and dword ptr ds:[eax+0x70],0xfffffffd
+ *  00460cca   33c0             xor eax,eax
+ *  00460ccc   eb 2c            jmp short inrakutr.00460cfa
+ *  00460cce   0fb601           movzx eax,byte ptr ds:[ecx]	; jichi: here, ecx
+ *  00460cd1   8b55 f4          mov edx,dword ptr ss:[ebp-0xc]
+ *  00460cd4   f64410 1d 04     test byte ptr ds:[eax+edx+0x1d],0x4
+ *  00460cd9   74 0e            je short inrakutr.00460ce9
+ *  00460cdb   8d51 01          lea edx,dword ptr ds:[ecx+0x1]
+ *  00460cde   381a             cmp byte ptr ds:[edx],bl
+ *  00460ce0   74 07            je short inrakutr.00460ce9
+ *  00460ce2   c1e0 08          shl eax,0x8
+ *  00460ce5   8bf0             mov esi,eax
+ *  00460ce7   8bca             mov ecx,edx
+ *  00460ce9   0fb601           movzx eax,byte ptr ds:[ecx]
+ *  00460cec   03c6             add eax,esi
+ *  00460cee   385d fc          cmp byte ptr ss:[ebp-0x4],bl
+ *  00460cf1   74 07            je short inrakutr.00460cfa
+ *  00460cf3   8b4d f8          mov ecx,dword ptr ss:[ebp-0x8]
+ *  00460cf6   8361 70 fd       and dword ptr ds:[ecx+0x70],0xfffffffd
+ *  00460cfa   5e               pop esi
+ *  00460cfb   5b               pop ebx
+ *  00460cfc   c9               leave
+ *  00460cfd   c3               retn
+ *
+ *  00460d41   74 05            je short inrakutr.00460d48
+ *  00460d43   381e             cmp byte ptr ds:[esi],bl
+ *  00460d45   74 01            je short inrakutr.00460d48
+ *  00460d47   46               inc esi
+ *  00460d48   8bc6             mov eax,esi
+ *  00460d4a   5e               pop esi
+ *  00460d4b   5b               pop ebx
+ *  00460d4c   c3               retn
+ *  00460d4d   56               push esi
+ *  00460d4e   8b7424 08        mov esi,dword ptr ss:[esp+0x8]
+ *  00460d52   0fb606           movzx eax,byte ptr ds:[esi]	; jichi: esi & ebp
+ *  00460d55   50               push eax
+ *  00460d56   e8 80fcffff      call inrakutr.004609db
+ *  00460d5b   85c0             test eax,eax
+ *  00460d5d   59               pop ecx
+ *  00460d5e   74 0b            je short inrakutr.00460d6b
+ *  00460d60   807e 01 00       cmp byte ptr ds:[esi+0x1],0x0
+ *  00460d64   74 05            je short inrakutr.00460d6b
+ *  00460d66   6a 02            push 0x2
+ *  00460d68   58               pop eax
+ *  00460d69   5e               pop esi
+ *  00460d6a   c3               retn
+ *
+ *  00460d1d   53               push ebx
+ *  00460d1e   53               push ebx
+ *  00460d1f   53               push ebx
+ *  00460d20   53               push ebx
+ *  00460d21   53               push ebx
+ *  00460d22   c700 16000000    mov dword ptr ds:[eax],0x16
+ *  00460d28   e8 c7fdffff      call inrakutr.00460af4
+ *  00460d2d   83c4 14          add esp,0x14
+ *  00460d30   33c0             xor eax,eax
+ *  00460d32   eb 16            jmp short inrakutr.00460d4a
+ *  00460d34   0fb606           movzx eax,byte ptr ds:[esi]	; jichi: esi, ebp
+ *  00460d37   50               push eax
+ *  00460d38   e8 9efcffff      call inrakutr.004609db
+ *  00460d3d   46               inc esi
+ *  00460d3e   85c0             test eax,eax
+ *  00460d40   59               pop ecx
+ *  00460d41   74 05            je short inrakutr.00460d48
+ *  00460d43   381e             cmp byte ptr ds:[esi],bl
+ *  00460d45   74 01            je short inrakutr.00460d48
+ *  00460d47   46               inc esi
+ *
+ *  0042c59f   cc               int3
+ *  0042c5a0   56               push esi
+ *  0042c5a1   8bf1             mov esi,ecx
+ *  0042c5a3   8b86 cc650000    mov eax,dword ptr ds:[esi+0x65cc]
+ *  0042c5a9   8b50 1c          mov edx,dword ptr ds:[eax+0x1c]
+ *  0042c5ac   57               push edi
+ *  0042c5ad   8b7c24 0c        mov edi,dword ptr ss:[esp+0xc]
+ *  0042c5b1   8d8e cc650000    lea ecx,dword ptr ds:[esi+0x65cc]
+ *  0042c5b7   57               push edi
+ *  0042c5b8   ffd2             call edx
+ *  0042c5ba   8bc7             mov eax,edi
+ *  0042c5bc   8d50 01          lea edx,dword ptr ds:[eax+0x1]
+ *  0042c5bf   90               nop
+ *  0042c5c0   8a08             mov cl,byte ptr ds:[eax]	; jichi: here eax
+ *  0042c5c2   83c0 01          add eax,0x1
+ *  0042c5c5   84c9             test cl,cl
+ *  0042c5c7  ^75 f7            jnz short inrakutr.0042c5c0
+ *  0042c5c9   2bc2             sub eax,edx
+ *  0042c5cb   50               push eax
+ *  0042c5cc   57               push edi
+ *  0042c5cd   8d8e 24660000    lea ecx,dword ptr ds:[esi+0x6624]
+ *  0042c5d3   e8 8857fdff      call inrakutr.00401d60
+ *  0042c5d8   8b86 b4660000    mov eax,dword ptr ds:[esi+0x66b4]
+ *  0042c5de   85c0             test eax,eax
+ *  0042c5e0   74 0d            je short inrakutr.0042c5ef
+ *  0042c5e2   8b8e b8660000    mov ecx,dword ptr ds:[esi+0x66b8]
+ *  0042c5e8   2bc8             sub ecx,eax
+ *  0042c5ea   c1f9 02          sar ecx,0x2
+ *  0042c5ed   75 05            jnz short inrakutr.0042c5f4
+ *  0042c5ef   e8 24450300      call inrakutr.00460b18
+ *  0042c5f4   8b96 b4660000    mov edx,dword ptr ds:[esi+0x66b4]
+ *  0042c5fa   8b0a             mov ecx,dword ptr ds:[edx]
+ *  0042c5fc   8b01             mov eax,dword ptr ds:[ecx]
+ *  0042c5fe   8b50 30          mov edx,dword ptr ds:[eax+0x30]
+ *  0042c601   ffd2             call edx
+ *  0042c603   8b06             mov eax,dword ptr ds:[esi]
+ *  0042c605   8b90 f8000000    mov edx,dword ptr ds:[eax+0xf8]
+ *  0042c60b   6a 00            push 0x0
+ *  0042c60d   68 c3164a00      push inrakutr.004a16c3
+ *  0042c612   57               push edi
+ *  0042c613   8bce             mov ecx,esi
+ *  0042c615   ffd2             call edx
+ *  0042c617   5f               pop edi
+ *  0042c618   5e               pop esi
+ *  0042c619   c2 0400          retn 0x4
+ *  0042c61c   cc               int3
+ *
+ *  0041974e   cc               int3
+ *  0041974f   cc               int3
+ *  00419750   56               push esi
+ *  00419751   8b7424 08        mov esi,dword ptr ss:[esp+0x8]
+ *  00419755   8bc6             mov eax,esi
+ *  00419757   57               push edi
+ *  00419758   8d78 01          lea edi,dword ptr ds:[eax+0x1]
+ *  0041975b   eb 03            jmp short inrakutr.00419760
+ *  0041975d   8d49 00          lea ecx,dword ptr ds:[ecx]
+ *  00419760   8a10             mov dl,byte ptr ds:[eax]	; jichi: eax
+ *  00419762   83c0 01          add eax,0x1
+ *  00419765   84d2             test dl,dl
+ *  00419767  ^75 f7            jnz short inrakutr.00419760
+ *  00419769   2bc7             sub eax,edi
+ *  0041976b   50               push eax
+ *  0041976c   56               push esi
+ *  0041976d   83c1 04          add ecx,0x4
+ *  00419770   e8 eb85feff      call inrakutr.00401d60
+ *  00419775   5f               pop edi
+ *  00419776   5e               pop esi
+ *  00419777   c2 0400          retn 0x4
+ *  0041977a   cc               int3
+ *  0041977b   cc               int3
+ *  0041977c   cc               int3
+ *
+ *  0042c731   57               push edi
+ *  0042c732   ffd0             call eax
+ *  0042c734   8bc7             mov eax,edi
+ *  0042c736   8d50 01          lea edx,dword ptr ds:[eax+0x1]
+ *  0042c739   8da424 00000000  lea esp,dword ptr ss:[esp]
+ *  0042c740   8a08             mov cl,byte ptr ds:[eax]	; jichi: eax
+ *  0042c742   83c0 01          add eax,0x1
+ *  0042c745   84c9             test cl,cl
+ *  0042c747  ^75 f7            jnz short inrakutr.0042c740
+ *  0042c749   2bc2             sub eax,edx
+ *  0042c74b   8bf8             mov edi,eax
+ *  0042c74d   e8 fe1d0100      call inrakutr.0043e550
+ *  0042c752   8b0d 187f4c00    mov ecx,dword ptr ds:[0x4c7f18]
+ *  0042c758   8b11             mov edx,dword ptr ds:[ecx]
+ *  0042c75a   8b42 70          mov eax,dword ptr ds:[edx+0x70]
+ *  0042c75d   ffd0             call eax
+ *  0042c75f   83c0 0a          add eax,0xa
+ *  0042c762   0fafc7           imul eax,edi
+ *  0042c765   5f               pop edi
+ *  0042c766   8986 60660000    mov dword ptr ds:[esi+0x6660],eax
+ */
+bool InsertNexton1Hook()
+{
+  // Use accurate stopAddress in case of running out of memory
+  // Since the file pattern for Nexton1 is not accurate.
+  ULONG startAddress, stopAddress;
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) {
+    ConsoleOutput("vnreng:NEXTON1: failed to get memory range");
+    return false;
+  }
+  const BYTE bytes[] = {
+    0x56,                  // 00419750   56               push esi    ; jichi: hook here, text in arg0
+    0x8b,0x74,0x24, 0x08,  // 00419751   8b7424 08        mov esi,dword ptr ss:[esp+0x8]
+    0x8b,0xc6,             // 00419755   8bc6             mov eax,esi
+    0x57,                  // 00419757   57               push edi
+    0x8d,0x78, 0x01,       // 00419758   8d78 01          lea edi,dword ptr ds:[eax+0x1]
+    0xeb, 0x03,            // 0041975b   eb 03            jmp short inrakutr.00419760
+    0x8d,0x49, 0x00,       // 0041975d   8d49 00          lea ecx,dword ptr ds:[ecx]
+    0x8a,0x10,             // 00419760   8a10             mov dl,byte ptr ds:[eax]	; jichi: eax is the text
+    0x83,0xc0, 0x01,       // 00419762   83c0 01          add eax,0x1
+    0x84,0xd2,             // 00419765   84d2             test dl,dl
+    0x75, 0xf7,            // 00419767  ^75 f7            jnz short inrakutr.00419760
+    0x2b,0xc7,             // 00419769   2bc7             sub eax,edi
+    0x50,                  // 0041976b   50               push eax
+    0x56,                  // 0041976c   56               push esi
+    0x83,0xc1, 0x04        // 0041976d   83c1 04          add ecx,0x4
+    //0xe8, XX4,           // 00419770   e8 eb85feff      call inrakutr.00401d60
+    //0x5f,                // 00419775   5f               pop edi
+    //0x5e,                // 00419776   5e               pop esi
+    //0xc2, 0x04,0x00      // 00419777   c2 0400          retn 0x4
+  };
+  enum { hook_offset = 0 }; // distance to the beginning of the function
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), startAddress, stopAddress);
+  //ITH_GROWL_DWORD(addr); // supposed to be 0x4010e0
+  if (!addr) {
+    ConsoleOutput("vnreng:NEXTON1: pattern not found");
+    return false;
+  }
+  //ITH_GROWL_DWORD(addr);
+
+  HookParam hp = {};
+  hp.addr = addr + hook_offset;
+  //hp.length_offset = 1;
+  hp.off = 4; // [esp+4] == arg0
+  hp.type = USING_STRING;
+  ConsoleOutput("vnreng: INSERT NEXTON1");
+  NewHook(hp, L"NEXTON1");
+  return true;
+}
+
 /**
  *  jichi 9/16/2013: a-unicorn / gesen18
  *  See (CaoNiMaGeBi): http://tieba.baidu.com/p/2586681823

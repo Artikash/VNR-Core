@@ -511,6 +511,17 @@ DWORD DetermineEngineOther()
   return no;
 }
 
+// jichi 8/17/2014
+// Put the patterns that might break other games at last
+DWORD DetermineEngineAtLast()
+{
+  enum : DWORD { yes = 0, no = 1 }; // return value
+  if (IthCheckFile(L"comnArc.arc") && IthCheckFile(L"DATA.arc") // these two files might exist in multiple files
+      && InsertNexton1Hook()) // old nexton game
+    return yes;
+  return no;
+}
+
 // jichi 6/1/2014
 DWORD DetermineEngineGeneric()
 {
@@ -615,6 +626,7 @@ bool UnsafeDetermineEngineType()
     && DetermineEngineByProcessName()
     && DetermineEngineByFile5()
     && DetermineEngineOther()
+    && DetermineEngineAtLast()
     && DetermineEngineGeneric()
     && DetermineNoHookEngine()
   );
