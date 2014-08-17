@@ -274,6 +274,22 @@ Item { id: root_
 
         color: item_.color
 
+        opacity: 0.01 // invisible by default
+
+        property bool active: toolTip_.containsMouse
+                           || headerTip_.containsMouse
+                           || headerRow_.hover
+
+        states: State { name: 'ACTIVE'
+          when: header_.active
+          PropertyChanges { target: header_; opacity: 0.8 }
+          //PropertyChanges { target: horizontalScrollBar_; opacity: 1 }
+        }
+
+        transitions: Transition { from: 'ACTIVE'
+          NumberAnimation { property: 'opacity'; duration: 400 }
+        }
+
         MouseArea {
           anchors.fill: parent
           acceptedButtons: Qt.LeftButton
@@ -286,6 +302,11 @@ Item { id: root_
           }
         }
 
+        Desktop.TooltipArea { id: headerTip_
+          anchors.fill: parent
+          text: qsTr("You can drag the border to move the text box")
+        }
+
         Row { id: headerRow_
           //anchors.centerIn: parent
           anchors {
@@ -294,13 +315,15 @@ Item { id: root_
             leftMargin: header_._MARGIN
           }
 
+          property bool hover: closeButton_.hover || translateButton_.hover
+
           spacing: header_._MARGIN * 2
 
           property int cellWidth: 15
           property int pixelSize: 10
           property color backgroundColor
 
-          Share.CircleButton {
+          Share.CircleButton { id: closeButton_
             diameter: parent.cellWidth
             font.pixelSize: parent.pixelSize
             font.bold: hover
