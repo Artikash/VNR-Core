@@ -140,6 +140,8 @@ class _TermInput(object):
       t = my.tr("a title after names")
     elif tt == 'speech':
       t = my.tr("replace Japanese for TTS")
+    elif tt == 'ocr':
+      t = my.tr("replace Japanese for OCR")
     elif tt == 'origin':
       t = my.tr("replace Japanese before whatever")
     else:
