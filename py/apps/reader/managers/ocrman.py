@@ -12,7 +12,7 @@ from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from modiocr import modiocr
 from mytr import my
-import config, growl, rc, termman
+import growl, rc, termman
 
 IMAGE_FORMAT = 'png'
 
@@ -123,21 +123,23 @@ class _OcrManager(object):
     @param* async  bool  FIXME: why async would crash OCR?
     @return  unicode or None
     """
+    dprint("enter")
     pm = self._capturePixmap(x, y, width, height)
     if not pm or pm.isNull():
-      dwarn("failed to capture image")
+      dwarn("leave: failed to capture image")
       return
     # TODO: process pixmap here
     path = self._randomPath()
     if not self._savePixmap(pm, path) or not os.path.exists(path):
-      dwarn("failed to save pixmap")
+      dwarn("leave: failed to save pixmap")
       return
     # FIXME: Async would crash
     #ret = skthreads.runsync(partial(self._readImageFile, path))
     #with SkProfiler(): # take around 3 seconds
     ret = self._readImageFile(path)
-    if not config.APP_DEBUG:
-      skfileio.removefile(path)
+    #if not config.APP_DEBUG:
+    #  skfileio.removefile(path) # do not remove file, in case two random paths are the same
+    dprint("leave")
     return ret
 
 class OcrManager(QObject):
