@@ -64,10 +64,11 @@ class _OcrManager(object):
     ret.setPressCondition(skwin.is_key_shift_pressed)
     ret.setSingleShot(False)
 
+    # Use queued connection to avoid possible crash since it is on a different thread?
     rb = self.rubberBand
-    ret.mousePressed.connect(rb.press)
-    ret.mouseReleased.connect(rb.release)
-    ret.mouseMoved.connect(rb.move)
+    ret.mousePressed.connect(rb.press, Qt.QueuedConnection)
+    ret.mouseReleased.connect(rb.release, Qt.QueuedConnection)
+    ret.mouseMoved.connect(rb.move, Qt.QueuedConnection)
     return ret
 
   # OCR
