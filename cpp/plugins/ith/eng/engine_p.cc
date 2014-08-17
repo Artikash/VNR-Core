@@ -4424,8 +4424,7 @@ bool InsertNexton1Hook()
   hp.addr = addr + hook_offset;
   //hp.length_offset = 1;
   hp.off = 4; // [esp+4] == arg0
-  //hp.type = USING_STRING;
-  hp.type = USING_STRING|NO_CONTEXT|USING_SPLIT|RELATIVE_SPLIT; // use relative return address as split
+  hp.type = USING_STRING;
   ConsoleOutput("vnreng: INSERT NEXTON1");
   NewHook(hp, L"NEXTON1");
   return true;
