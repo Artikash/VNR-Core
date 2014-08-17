@@ -194,7 +194,7 @@ class _PrefsDialog(object):
         { 'widget': self.ocrTab,
           'user': self._indexWidget(self.ocrTab),
           'decoration': rc.icon('pref-ocr'),
-          'display': mytr_("Recognition"),
+          'display': u"%s (α)" % mytr_("Recognition"),
           'toolTip': mytr_("Optical character recognition") + " (OCR)",
         },
         { 'widget': self.textTab,

@@ -134,7 +134,7 @@ class _OcrManager(object):
     #ret = skthreads.runsync(partial(self._readImageFile, path))
     #with SkProfiler(): # take around 3 seconds
     ret = self._readImageFile(path)
-    skfileio.removefile(path)
+    #skfileio.removefile(path)
     return ret
 
 class OcrManager(QObject):

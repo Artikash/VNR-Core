@@ -9,6 +9,7 @@ import '.' as Kagami
 Item { id: root_
 
   property real zoomFactor: 1.0
+  property bool ignoresFocus: false
 
   // - Private -
 
@@ -19,19 +20,22 @@ Item { id: root_
 
   Kagami.PopupComponent { id: comp_ }
 
-  function showPopup(text, x, y) { // string ->
+  function showPopup(text, posX, posY) { // string ->
     var popup = comp_.createObject(root_, {
-      x: x
-      , y: y
+      x: posX
+      , y: posY
       //, width: 640
       //, height: 480
       , zoomFactor: root_.zoomFactor
+      , ignoresFocus: root_.ignoresFocus
       , minimumX: x
       , maximumX: x + width
       , minimumY: y
       , maximumY: y + height
       , text: text
     })
+    popup.maximumX -= popup.width
+    popup.maximumY -= popup.height
 
     popup.closeRequested.connect(popup.destroy)
   }

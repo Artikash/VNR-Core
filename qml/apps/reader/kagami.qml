@@ -896,6 +896,7 @@ Item { id: root_
     Kagami.PopupManager { id: popupman_
       anchors.fill: parent
       zoomFactor: root_.globalZoomFactor
+      ignoresFocus: root_.ignoresFocus
     }
 
     Kagami.Growl { id: growl_
