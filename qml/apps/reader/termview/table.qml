@@ -224,6 +224,7 @@ Item { id: root_
             case 'title': return qsTr("Title")
             case 'speech': return My.tr("Voice")
             case 'origin': return My.tr("Original text")
+            case 'ocr': return My.tr("OCR")
             default: return Sk.tr("Translation")
             }
           }
@@ -243,6 +244,7 @@ Item { id: root_
               append({value:'title', text:My.tr("Title")})
               append({value:'speech', text:My.tr("Voice")})
               append({value:'origin', text:My.tr("Original text")})
+              append({value:'ocr', text:My.tr("OCR")})
             }
           }
 
@@ -269,6 +271,7 @@ Item { id: root_
             case 'title': selectedIndex = 4; break
             case 'speech': selectedIndex = 5; break
             case 'origin': selectedIndex = 6; break
+            case 'ocr': selectedIndex = 7; break
             default: selectedIndex = 0
             }
           }

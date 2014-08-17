@@ -2007,8 +2007,8 @@ class _Term(object):
     sig = Signal(type)
     return Property(type, getter, sync_setter if sync else setter, notify=sig), sig
 
-  TYPES = 'target', 'source', 'escape', 'name', 'title', 'speech', 'origin' #, 'name'
-  TR_TYPES = tr_("Translation"), tr_("Japanese"), tr_("Escape"), mytr_("Chara"), mytr_("Title"), mytr_("Voice"), mytr_("Original text") #, mytr_("Character name")
+  TYPES = 'target', 'source', 'escape', 'name', 'title', 'speech', 'origin', 'ocr' #, 'name'
+  TR_TYPES = tr_("Translation"), tr_("Japanese"), tr_("Escape"), mytr_("Chara"), mytr_("Title"), mytr_("Voice"), mytr_("Original text"), 'OCR' #, mytr_("Character name")
 
 class Term(QObject):
   __D = _Term
@@ -8578,6 +8578,8 @@ class DataManager(QObject):
     return self.__d.iterTermsWithType('origin')
   def iterSpeechTerms(self):
     return self.__d.iterTermsWithType('speech')
+  def iterOcrTerms(self):
+    return self.__d.iterTermsWithType('ocr')
   def iterTitleTerms(self):
     return self.__d.iterTermsWithType('title')
   #def iterSourceTerms(self):

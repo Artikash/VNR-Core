@@ -941,12 +941,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>遊戲並不存在。是不是已經被你刪除了呢？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8844"/>
+        <location filename="managers/dataman.py" line="8846"/>
         <source>Please sign in to submit comment</source>
         <translation>請先登錄再提交評論</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8861"/>
+        <location filename="managers/dataman.py" line="8863"/>
         <source>Cannot connect to the Internet</source>
         <translation>無法連接到網絡</translation>
     </message>
@@ -1118,22 +1118,22 @@ It might take a couple of seconds to complete.</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8902"/>
+        <location filename="managers/dataman.py" line="8904"/>
         <source>Shared dictionary is empty</source>
         <translation>共享辭書是空的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8899"/>
+        <location filename="managers/dataman.py" line="8901"/>
         <source>Dictionary entries are saved to the desktop</source>
         <translation>詞條數據保存到了桌面</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8945"/>
+        <location filename="managers/dataman.py" line="8947"/>
         <source>There are no subtitles</source>
         <translation>這個遊戲還沒有人工字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8942"/>
+        <location filename="managers/dataman.py" line="8944"/>
         <source>Subtitles are saved to the desktop</source>
         <translation>字幕數據保存到了桌面</translation>
     </message>
@@ -2908,22 +2908,22 @@ You can redownload it later if you have Internet access.</source>
         <translation>Excite.co.jp的多國語言翻譯服務</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="285"/>
+        <location filename="dialogs/terminput.py" line="287"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="288"/>
+        <location filename="dialogs/terminput.py" line="290"/>
         <source>The pattern is kind of short. You might want to turn on the series-specific option.</source>
         <translation>匹配的文本太短了呢。你最好把詞條設定為系列專用的。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="294"/>
+        <location filename="dialogs/terminput.py" line="296"/>
         <source>Everything looks OK</source>
         <translation>看起來還好</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="303"/>
+        <location filename="dialogs/terminput.py" line="305"/>
         <source>Create dictionary entry</source>
         <translation>創建詞條</translation>
     </message>
@@ -2937,7 +2937,7 @@ The dictionary will be installed to {1}.</source>
 完成后，辭書會被安裝到{1}。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="291"/>
+        <location filename="dialogs/terminput.py" line="293"/>
         <source>The translation is empty. VNR will delete the text matched with the pattern.</source>
         <translation>沒有指定翻譯。這樣的話VNR會刪掉匹配的文本。</translation>
     </message>
@@ -3034,7 +3034,7 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>JMDict日文-荷蘭文辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="262"/>
+        <location filename="dialogs/terminput.py" line="264"/>
         <source>Add new term</source>
         <translation>添加詞條</translation>
     </message>
@@ -3164,7 +3164,7 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>替換語音合成前的日文</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="145"/>
+        <location filename="dialogs/terminput.py" line="147"/>
         <source>replace Japanese before whatever</source>
         <translation>在一切處理前替換日文原文</translation>
     </message>
@@ -3516,7 +3516,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>你想要永久的移除{0}個選定的條目嗎？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8773"/>
+        <location filename="managers/dataman.py" line="8775"/>
         <source>Editing other&apos;s entry is not allowed</source>
         <translation>不可以編輯其他人的條目的</translation>
     </message>
@@ -3541,7 +3541,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>你想要禁用{0}個選定的條目嗎？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8787"/>
+        <location filename="managers/dataman.py" line="8789"/>
         <source>{0} items updated</source>
         <translation>修改了{0}個條目</translation>
     </message>
@@ -3783,7 +3783,7 @@ VNR會自動檢查更新的。</translation>
         <translation>保存翻譯腳本失敗了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8986"/>
+        <location filename="managers/dataman.py" line="8988"/>
         <source>Found {0} translation rules</source>
         <translation>找到{0}條翻譯規則</translation>
     </message>
@@ -3887,12 +3887,12 @@ You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or d
         <translation>OCR軟件的位置</translation>
     </message>
     <message>
-        <location filename="managers/ocrman.py" line="158"/>
+        <location filename="managers/ocrman.py" line="161"/>
         <source>Start OCR screen reader</source>
         <translation>開始光學文字識別</translation>
     </message>
     <message>
-        <location filename="managers/ocrman.py" line="162"/>
+        <location filename="managers/ocrman.py" line="165"/>
         <source>Stop OCR screen reader</source>
         <translation>停止光學文字識別</translation>
     </message>
@@ -3907,7 +3907,7 @@ You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or d
         <translation>OCR需要用管理員權限運行VNR才可以正常工作的。</translation>
     </message>
     <message>
-        <location filename="managers/ocrman.py" line="53"/>
+        <location filename="managers/ocrman.py" line="55"/>
         <source>OCR did not recognize Japanese text</source>
         <translation>OCR沒有能識別出日文</translation>
     </message>
@@ -3915,6 +3915,11 @@ You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or d
         <location filename="dialogs/_prefs.py" line="1217"/>
         <source>OCR requires MODI OCR from Microsoft Office 2007 to be installed.</source>
         <translation>OCR需要安裝微軟Office 2007中的MODI OCR組件。</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="145"/>
+        <source>replace Japanese for OCR</source>
+        <translation>替換光學文字識別前的日文</translation>
     </message>
 </context>
 </TS>

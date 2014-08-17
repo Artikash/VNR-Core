@@ -12,7 +12,7 @@ from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from modiocr import modiocr
 from mytr import my
-import config, growl, rc
+import config, growl, rc, termman
 
 IMAGE_FORMAT = 'png'
 
@@ -48,9 +48,11 @@ class _OcrManager(object):
     #dprint(x, y, width, height)
     text = self.readScreen(x, y, width, height)
     if text:
-      self.q.textReceived.emit(text, x, y, width, height)
-    else:
-      growl.notify(my.tr("OCR did not recognize Japanese text"))
+      text = termman.manager().applyOcrTerms(text)
+      if text:
+        self.q.textReceived.emit(text, x, y, width, height)
+        return
+    growl.notify(my.tr("OCR did not recognize Japanese text"))
 
   # Mouse hook
 
