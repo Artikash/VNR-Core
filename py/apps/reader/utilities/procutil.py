@@ -214,6 +214,27 @@ def open_executable_with_leproc(path, params=None):
   params = leproc.params(path=path, args=params)
   return skwin.create_process(exe, params=params)
 
+def open_executable_with_ntleas(path, params=None):
+  """
+  @param  path  str  path to executable
+  @param* params  [unicode param] or None
+  @return  long  pid of ntleas, not the target process!
+  """
+  dprint("path = %s" % path)
+  import settings
+  exe = os.path.join(settings.global_().ntleasLocation(), 'ntleas.exe')
+  #exe = 'ntleas.exe'
+  if not os.path.exists(exe):
+    growl.error('<br/>'.join((
+        my.tr("Cannot find ntleas executable") + ' ' + exe,
+        my.tr("Please try adjusting the location in Preferences"),
+        )))
+    return 0
+
+  from ntleas import ntleas
+  params = ntleas.params(path=path, args=params)
+  return skwin.create_process(exe, params=params)
+
 def open_executable_with_lsc(path, params=None):
   """
   @param  path  str  path to executable

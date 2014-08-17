@@ -17,7 +17,7 @@ from sakurakit.skclass import Q_Q, staticproperty, memoized, memoizedproperty
 from sakurakit.skcontainer import uniquelist
 from sakurakit.skdebug import dprint, dwarn, derror
 #from sakurakit.skqml import QmlObject
-from sakurakit.sktr import tr_
+from sakurakit.sktr import tr_, notr_
 from sakurakit.skunicode import sjis_encodable
 from zhszht.zhszht import zhs2zht
 from cconv import cconv
@@ -2008,7 +2008,7 @@ class _Term(object):
     return Property(type, getter, sync_setter if sync else setter, notify=sig), sig
 
   TYPES = 'target', 'source', 'escape', 'name', 'title', 'speech', 'origin', 'ocr' #, 'name'
-  TR_TYPES = tr_("Translation"), tr_("Japanese"), tr_("Escape"), mytr_("Chara"), mytr_("Title"), mytr_("Voice"), mytr_("Original text"), 'OCR' #, mytr_("Character name")
+  TR_TYPES = tr_("Translation"), tr_("Japanese"), tr_("Escape"), mytr_("Chara"), mytr_("Title"), mytr_("Voice"), mytr_("Original text"), notr_("OCR") #, mytr_("Character name")
 
 class Term(QObject):
   __D = _Term

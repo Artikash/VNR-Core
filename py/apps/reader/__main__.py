@@ -231,6 +231,7 @@ def main():
     ss.ezTransLocation(),
     ss.atlasLocation(),
     ss.localeEmulatorLocation(),
+    ss.ntleasLocation(),
     os.path.join(ss.lecLocation(), r"Nova\JaEn") if ss.lecLocation() else "",
     os.path.join(ss.dreyeLocation(), r"DreyeMT\SDK\bin") if ss.dreyeLocation() else "",
   ))

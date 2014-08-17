@@ -494,6 +494,7 @@ class GameProfile(QtCore.QObject):
   def usingNtlea(self): return not self.launchLanguage and (self.loader == 'ntlea' or not self.loader and settings.global_().isNtleaEnabled())
   def usingLocaleSwitch(self): return not self.launchLanguage and (self.loader == 'lsc' or not self.loader and settings.global_().isLocaleSwitchEnabled())
   def usingLocaleEmulator(self): return not self.launchLanguage and (self.loader == 'le' or not self.loader and settings.global_().isLocaleEmulatorEnabled())
+  def usingNtleas(self): return not self.launchLanguage and (self.loader == 'ntleas' or not self.loader and settings.global_().isNtleasEnabled())
 
   def updateProcess(self, retries=2, launch=True):
     """
@@ -534,6 +535,7 @@ class GameProfile(QtCore.QObject):
         usingLocaleEmulator = self.usingLocaleEmulator()
         usingLocaleSwitch = self.usingLocaleSwitch()
         usingNtlea = self.usingNtlea()
+        usingNtleas = self.usingNtleas()
 
         #if features.ADMIN == False and (usingLocaleSwitch or usingLocaleEmulator):
         if features.ADMIN == False and usingLocaleSwitch:
@@ -581,6 +583,22 @@ class GameProfile(QtCore.QObject):
                   ntpid = procutil.open_executable_with_leproc(launchPath, params=params)
                   if not ntpid:
                     growl.error(my.tr("Failed to launch the game with {0}").format(notr_("Locale Emulator")))
+                  elif updateLater(): return
+          # Launch with NTLEAS
+          elif usingNtleas:
+            #path = QtCore.QDir.toNativeSeparators(self.path) # not needed by ntleas
+            path = winutil.to_short_path(path) or path
+            proc = procutil.get_process_by_path(path)
+            if not proc:
+              if not self.launchPath or not os.path.exists(self.launchPath):
+                if not launch:
+                  if updateLater(verbose=True): return
+                else:
+                  growl.notify(my.tr("Launch the game with {0}").format(notr_("Ntleas")))
+                  ntpid = procutil.open_executable_with_ntleas(path)
+                  #proc = procutil.get_process_by_path(path)
+                  if not ntpid:
+                    growl.error(my.tr("Failed to launch the game with {0}").format(notr_("NTLEA")))
                   elif updateLater(): return
           # Launch with NTLEA
           elif usingNtlea:

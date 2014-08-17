@@ -690,6 +690,7 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     layout.addWidget(self.disableButton)
     layout.addWidget(self.applocButton)
     layout.addWidget(self.localeEmulatorButton)
+    layout.addWidget(self.ntleasButton)
     layout.addWidget(self.ntleaButton)
     layout.addWidget(self.localeSwitchButton)
     #layout.addWidget(self.launchInfoLabel)
@@ -750,10 +751,21 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     ret.toggled.connect(self._saveLauncher)
     return ret
 
+  @memoizedproperty
+  def ntleasButton(self):
+    ret = QtWidgets.QRadioButton("%s (%s)" % (
+        my.tr("Use {0} to change game locale").format(notr_("Ntleas")),
+        tr_("download")))
+    #if features.ADMIN == False:
+    #  skqss.class_(ret, 'warning')
+    ret.toggled.connect(self._saveLauncher)
+    return ret
+
   def _loadLauncher(self):
     ss = settings.global_()
     b = (self.applocButton if ss.isApplocEnabled() else
          self.ntleaButton if ss.isNtleaEnabled() else
+         self.ntleasButton if ss.isNtleasEnabled() else
          self.localeSwitchButton if ss.isLocaleSwitchEnabled() else
          self.localeEmulatorButton if ss.isLocaleEmulatorEnabled() else
          self.disableButton)
@@ -764,8 +776,14 @@ But if you have a slow laptop, enabling it might slow down Windows.""")))
     ss = settings.global_()
     ss.setApplocEnabled(self.applocButton.isChecked())
     ss.setNtleaEnabled(self.ntleaButton.isChecked())
+    ss.setNtleasEnabled(self.ntleasButton.isChecked())
     ss.setLocaleSwitchEnabled(self.localeSwitchButton.isChecked())
     ss.setLocaleEmulatorEnabled(self.localeEmulatorButton.isChecked())
+
+  def refresh(self):
+    self.localeEmulatorButton.setEnabled(libman.localeEmulator().exists())
+    self.ntleasButton.setEnabled(libman.ntleas().exists())
+    self.localeSwitchButton.setEnabled(features.ADMIN != False)
 
 class GameTab(QtWidgets.QDialog):
 
@@ -777,7 +795,7 @@ class GameTab(QtWidgets.QDialog):
 
   def save(self): pass
   def load(self): pass
-  def refresh(self): pass
+  def refresh(self): self.__d.refresh()
 
 ## Shortcuts ##
 
@@ -3548,6 +3566,7 @@ Just don't forget to export LC_ALL=ja_JP.UTF8 before launching VNR."""))
     else:
       #layout.addWidget(self.appLocaleGroup)
       layout.addWidget(self.localeEmulatorGroup)
+      layout.addWidget(self.ntleasGroup)
     layout.addStretch()
     q.setLayout(layout)
 
@@ -3562,8 +3581,6 @@ Just don't forget to export LC_ALL=ja_JP.UTF8 before launching VNR."""))
     editRow.addWidget(self.localeEmulatorLocationClearButton)
     layout.addLayout(editRow)
     layout.addWidget(self.localeEmulatorInfoEdit)
-
-    layout.addStretch()
     ret = QtWidgets.QGroupBox(notr_("Locale Emulator (2MB)"))
     ret.setLayout(layout)
     return ret
@@ -3641,12 +3658,93 @@ You could get the latest version here:
 <center><a href="%s">%s</a></center>
 You can say THANKS to its author here:
 <center><a href="%s">%s</a></center>
-""") % (url,url, thank_url,thank_url)
-    if ok else my.tr(
-"""Locale Emulator is an application that could help change Japanese game to your locale.<br/>
-It is similar to NTLEA, and seems to work better in Windows 7/8.<br/>
-Locale Emulator is <span style="color:purple">free</span> and open source. You could get the latest version here:
-<center><a href="%s">%s</a></center>""") % (url,url))
+""") % (url,url, thank_url,thank_url))
+
+  ## Ntleas ##
+
+  @memoizedproperty
+  def ntleasGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    editRow = QtWidgets.QHBoxLayout()
+    editRow.addWidget(self.ntleasLocationEdit)
+    editRow.addWidget(self.ntleasLocationButton)
+    editRow.addWidget(self.ntleasLocationClearButton)
+    layout.addLayout(editRow)
+    layout.addWidget(self.ntleasInfoEdit)
+    ret = QtWidgets.QGroupBox(notr_("Ntleas (1MB)"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def ntleasLocationEdit(self):
+    ret = QtWidgets.QLineEdit()
+    ret.setReadOnly(True)
+    ret.setToolTip(tr_("Location"))
+    return ret
+
+  @memoizedproperty
+  def ntleasLocationButton(self):
+    ret = QtWidgets.QPushButton(tr_("Browse"))
+    skqss.class_(ret, BROWSE_BTN_CLASS)
+    ret.setToolTip(my.tr("Select the location of {0}").format(notr_("Ntleas")))
+    ret.clicked.connect(self._getNtleasLocation)
+    return ret
+
+  @memoizedproperty
+  def ntleasLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the specified location"))
+    ret.clicked.connect(self._clearNtleasLocation)
+    return ret
+
+  @memoizedproperty
+  def ntleasInfoEdit(self):
+    ret = QtWidgets.QTextBrowser()
+    skqss.class_(ret, 'texture')
+    ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
+    ret.setAlignment(Qt.AlignCenter)
+    ret.setReadOnly(True)
+    ret.setOpenExternalLinks(True)
+    return ret
+
+  def _getNtleasLocation(self):
+    path = libman.ntleas().location() or skpaths.HOME
+    path = QtWidgets.QFileDialog.getExistingDirectory(self.q,
+        my.tr("Please select the folder containing {0}").format('"ntleas.exe (x86)"'),
+        path, 0)
+    if path:
+      if not libman.ntleas().verifyLocation(path):
+        growl.error(my.tr("Couldn't find {0} from the specified location").format(notr_("Ntleas")))
+      else:
+        path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
+        libman.ntleas().setLocation(path)
+        self._refreshNtleas()
+
+  def _clearNtleasLocation(self):
+    libman.ntleas().setLocation('')
+    self._refreshNtleas()
+
+  def _refreshNtleas(self):
+    libman.ntleas().refresh()
+    ok = libman.ntleas().exists()
+    if ok:
+      path = libman.ntleas().location()
+      if path:
+        path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
+      ok = bool(path) and os.path.exists(path)
+
+    self.ntleasLocationClearButton.setVisible(ok)
+
+    skqss.class_(self.ntleasLocationEdit, 'normal' if ok else 'muted')
+    self.ntleasLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(notr_("Ntleas")))
+
+    url = libman.Ntleas.URL
+    self.ntleasInfoEdit.setHtml(my.tr(
+"""Ntleas is an application that could help change Japanese game to your locale.<br/>
+It is a descendant of NTLEA whose development has stopped.
+Ntleas is <span style="color:purple">free</span> and open source. You could get the latest version here:
+<center><a href="{0}">{0}</a></center>""").format(url))
 
 #  ## AppLocale ##
 #
@@ -3700,6 +3798,7 @@ Locale Emulator is <span style="color:purple">free</span> and open source. You c
     #self._refreshNtlea()
     #self._refreshAppLocale()
     self._refreshLocaleEmulator()
+    self._refreshNtleas()
 
   #def save(self):
   #  self._saveJBeijing()
@@ -5239,7 +5338,7 @@ class _EngineTab(object):
   def launchEnableButton(self):
     ss = settings.global_()
     ret = QtWidgets.QCheckBox(my.tr(
-      "Use VNR's built-in game launcher instead of NTLEA/LocaleEmulator if have to"
+      "Use VNR's built-in game launcher instead of others if have to"
     ))
     ret.setChecked(ss.isGameAgentLauncherEnabled())
     ret.toggled.connect(ss.setGameAgentLauncherEnabled)
