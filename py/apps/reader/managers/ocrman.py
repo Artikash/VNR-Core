@@ -35,8 +35,8 @@ class _OcrManager(object):
     parent = windows.top()
     #parent = None # this make rubberband as top window
     ret = SkMouseRubberBand(SkMouseRubberBand.Rectangle, parent)
-    ret.selected.connect(self._onRectSelected, Qt.QueuedConnection) # do it later
     ret.setWindowFlags(ret.windowFlags()|Qt.Popup) # popup is needed to display the window out side of its parent
+    ret.selected.connect(self._onRectSelected, Qt.QueuedConnection) # do it later
     return ret
 
   def _onRectSelected(self, x, y, width, height):
