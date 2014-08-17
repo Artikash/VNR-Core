@@ -33,6 +33,9 @@ qmlRegisterType(skqml.SkClipboardProxy, QML_PLUGIN, 1, 0, 'ClipboardProxy')
 import main
 qmlRegisterType(main.MainObjectProxy, QML_PLUGIN, 1, 0, 'MainObjectProxy')
 
+import trman
+qmlRegisterType(trman.TranslatorBean, QML_PLUGIN, 1, 0, 'TranslatorBean')
+
 import ttsman
 qmlRegisterType(ttsman.TtsQmlBean, QML_PLUGIN, 1, 0, 'Tts')
 
@@ -61,6 +64,7 @@ qmlRegisterType(kagami.GospelBean, QML_PLUGIN, 1, 0, 'GospelBean')
 qmlRegisterType(kagami.GossipBean, QML_PLUGIN, 1, 0, 'GossipBean')
 qmlRegisterType(kagami.GrimoireBean, QML_PLUGIN, 1, 0, 'GrimoireBean')
 qmlRegisterType(kagami.OmajinaiBean, QML_PLUGIN, 1, 0, 'OmajinaiBean')
+qmlRegisterType(kagami.PopupBean, QML_PLUGIN, 1, 0, 'PopupBean')
 qmlRegisterType(kagami.MirageBean, QML_PLUGIN, 1, 0, 'MirageBean')
 
 import growl

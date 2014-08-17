@@ -79,7 +79,7 @@ Rectangle { id: root_
     anchors.fill: parent
     acceptedButtons: Qt.LeftButton
     drag {
-      target: parent
+      target: root_
       axis: Drag.XandYAxis
 
       minimumX: root_.minimumX; minimumY: root_.minimumY
@@ -135,7 +135,7 @@ Rectangle { id: root_
       onLinkActivated: Qt.openUrlExternally(link)
       //console.log("shiori.qml: link activated:", link)
 
-      effect: Share.TextEffect { }
+      effect: Share.TextEffect {}
 
       MouseArea { //id: textCursor_
         anchors.fill: parent

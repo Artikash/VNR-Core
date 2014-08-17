@@ -3,25 +3,36 @@
  *  Text popup manager for OCR.
  */
 import QtQuick 1.1
-//import org.sakuradite.reader 1.0 as Plugin
+import org.sakuradite.reader 1.0 as Plugin
 import '.' as Kagami
 
 Item { id: root_
 
+  property real zoomFactor: 1.0
+
   // - Private -
+
+  Plugin.PopupBean { //id: bean_
+    Component.onCompleted:
+      popupRequested.connect(showPopup)
+  }
+
   Kagami.PopupComponent { id: comp_ }
 
-/*
-  Component.onCompleted: {
-    console.log(1111111)
+  function showPopup(text, x, y) { // string ->
     var popup = comp_.createObject(root_, {
-      x: 100
-      , y: 100
+      x: x
+      , y: y
       //, width: 640
       //, height: 480
-      , text: "hellllllllllo worldddddddd"
-      , zoomFactor: 1.33
+      , zoomFactor: root_.zoomFactor
+      , minimumX: x
+      , maximumX: x + width
+      , minimumY: y
+      , maximumY: y + height
+      , text: text
     })
+
+    popup.closeRequested.connect(popup.destroy)
   }
-  */
 }

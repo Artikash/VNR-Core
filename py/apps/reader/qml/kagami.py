@@ -19,6 +19,25 @@ from sakurakit.skdebug import dprint, dwarn
 from mytr import my
 import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, qmldialog, rc, settings
 
+## Text popup ##
+
+class PopupBean(QObject):
+
+  instance = None
+
+  def __init__(self, parent=None):
+    super(PopupBean, self).__init__(parent)
+    PopupBean.instance = self
+    dprint("pass")
+
+  popupRequested = Signal(unicode, int, int)  # text, x, y
+
+class PopupController:
+
+  def showPopup(self, text, x, y): # unicode, int, int
+    if PopupBean.instance:
+      PopupBean.instance.popupRequested.emit(text, x, y)
+
 ## Grimoire ##
 
 class _GrimoireBean:

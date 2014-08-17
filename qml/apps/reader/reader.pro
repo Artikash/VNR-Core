@@ -9,6 +9,7 @@ SOURCES = \
   kagami/dock.qml \
   kagami/grimoire.qml \
   kagami/menubutton.qml \
+  kagami/popupcomponent.qml \
   kagami/shiori.qml \
   postview.qml \
   postview/inputedit.qml \

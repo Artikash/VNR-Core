@@ -49,6 +49,8 @@ class _OcrManager(object):
     text = self.readScreen(x, y, width, height)
     if text:
       self.q.textReceived.emit(text, x, y, width, height)
+    else:
+      growl.notify(my.tr("OCR did not recognize Japanese text"))
 
   # Mouse hook
 

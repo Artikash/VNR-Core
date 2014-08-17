@@ -263,10 +263,12 @@ class _MainObject(object):
     import ocrman
     ret = ocrman.manager()
     ret.setParent(self.q)
+    ret.textReceived.connect(self.popup.showPopup)
 
     ss = settings.global_()
     ret.setEnabled(features.ADMIN != False and ss.isOcrEnabled() and ret.isInstalled())
     ss.ocrEnabledChanged.connect(ret.setEnabled)
+
     return ret
 
   def initializeOCR(self): self.ocrManager
@@ -794,6 +796,11 @@ class _MainObject(object):
   def grimoire(self):
     import kagami
     return kagami.GrimoireController(self.q)
+
+  @memoizedproperty
+  def popup(self):
+    import kagami
+    return kagami.PopupController() #(self.q)
 
   @memoizedproperty
   def omajinai(self):
@@ -1447,7 +1454,7 @@ class MainObject(QObject):
     d.ttsManager
 
     #d.ocrManager
-    #skevents.runlater(d.initializeOCR, 3000) # delay start OCR
+    skevents.runlater(d.initializeOCR, 3000) # delay start OCR
 
     dprint("warm up tts")
     d.ttsManager.warmup() # It might take a lot of time to warmup google
