@@ -262,6 +262,16 @@ class Settings(QSettings):
   def setLocaleEmulatorLocation(self, value):
     self.setValue('LocaleEmulatorLocation', value)
 
+  def isNtleasEnabled(self):
+    return to_bool(self.value('NtleasEnabled'))
+  def setNtleasEnabled(self, value):
+    self.setValue('NtleasEnabled', value)
+
+  def ntleasLocation(self):
+    return to_unicode(self.value('NtleasLocation'))
+  def setNtleasLocation(self, value):
+    self.setValue('NtleasLocation', value)
+
   ## QuickTime ##
 
   #def isQuickTimeEnabled(self): return to_bool(self.value('QuickTimeEnabled', True))

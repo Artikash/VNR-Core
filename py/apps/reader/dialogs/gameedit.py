@@ -15,7 +15,7 @@ from sakurakit.skdebug import dprint
 #from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_, notr_
 from mytr import my, mytr_
-import config, dataman, features, growl, i18n, osutil, rc
+import config, dataman, features, growl, i18n, libman, osutil, rc
 
 @Q_Q
 class _GameEditor(object):
@@ -42,6 +42,11 @@ class _GameEditor(object):
     self._loadLocation()
     self._loadLoader()
     self._loadTimeZone()
+
+    # Enabled
+    self.localeEmulatorButton.setEnabled(libman.localeEmulator().exists())
+    self.ntleasButton.setEnabled(libman.ntleas().exists())
+    self.localeSwitchButton.setEnabled(features.ADMIN != False)
 
   def showWarning(self, text):
     bar = self.q.statusBar()
@@ -311,6 +316,7 @@ By default it is the same as the executable of the game process."""))
     layout.addWidget(self.disableLoaderButton)
     layout.addWidget(self.applocButton)
     layout.addWidget(self.localeEmulatorButton)
+    layout.addWidget(self.ntleasButton)
     layout.addWidget(self.ntleaButton)
     layout.addWidget(self.localeSwitchButton)
 
@@ -343,8 +349,9 @@ By default it is the same as the executable of the game process."""))
 
   @memoizedproperty
   def applocButton(self):
-    ret = QtWidgets.QRadioButton(
-        my.tr("Use {0} to change game locale").format(notr_("AppLocale")))
+    ret = QtWidgets.QRadioButton("%s (%s)" % (
+        my.tr("Use {0} to change game locale").format(notr_("AppLocale")),
+        tr_("download")))
     ret.toggled.connect(self._saveLoader)
     return ret
 
@@ -367,8 +374,20 @@ By default it is the same as the executable of the game process."""))
 
   @memoizedproperty
   def localeEmulatorButton(self):
-    ret = QtWidgets.QRadioButton(
-        my.tr("Use {0} to change game locale").format(notr_("Locale Emulator")))
+    ret = QtWidgets.QRadioButton("%s (%s)" % (
+        my.tr("Use {0} to change game locale").format(notr_("Locale Emulator")),
+        tr_("download")))
+        #tr_("recommended")))
+    #if features.ADMIN == False:
+    #  skqss.class_(ret, 'warning')
+    ret.toggled.connect(self._saveLoader)
+    return ret
+
+  @memoizedproperty
+  def ntleasButton(self):
+    ret = QtWidgets.QRadioButton("%s (%s)" % (
+        my.tr("Use {0} to change game locale").format(notr_("Ntleas")),
+        tr_("download")))
         #tr_("recommended")))
     #if features.ADMIN == False:
     #  skqss.class_(ret, 'warning')
@@ -380,6 +399,7 @@ By default it is the same as the executable of the game process."""))
     b = (self.disableLoaderButton if loader == 'none' else
          self.applocButton if loader == 'apploc' else
          self.ntleaButton if loader == 'ntlea' else
+         self.ntleasButton if loader == 'ntleas' else
          self.localeSwitchButton if loader == 'lsc' else
          self.localeEmulatorButton if loader == 'le' else
          self.defaultLoaderButton)
@@ -391,6 +411,7 @@ By default it is the same as the executable of the game process."""))
       'none' if self.disableLoaderButton.isChecked() else
       'apploc' if self.applocButton.isChecked() else
       'ntlea' if self.ntleaButton.isChecked() else
+      'ntleas' if self.ntleasButton.isChecked() else
       'lsc' if self.localeSwitchButton.isChecked() else
       'le' if self.localeEmulatorButton.isChecked() else
       '')

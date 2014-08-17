@@ -196,6 +196,23 @@ class LocaleEmulator(Library):
       if path:
         skpaths.append_path(path)
 
+class Ntleas(Library):
+  URL = "http://ntlea.codeplex.com"
+
+  def location(self):
+    """@reimp"""
+    return settings.global_().ntleasLocation()
+
+  def verifyLocation(self, path):
+    """@reimp"""
+    return bool(path) and os.path.exists(os.path.join(path, "ntleas.exe"))
+
+  def setLocation(self, path):
+    if path != self.location():
+      settings.global_().setNtleasLocation(path)
+      if path:
+        skpaths.append_path(path)
+
 class ModiOcr(Library):
   URL = "http://www.microsoft.com/office/downloads/"
   DOWNLOAD_URL = "https://mega.co.nz/#F!g00SQJZS!pm3bAcS6qHotPzJQUT596Q"
@@ -226,6 +243,8 @@ class QuickTime(Library):
 
 @memoized
 def localeEmulator(): return LocaleEmulator()
+@memoized
+def ntleas(): return Ntleas()
 @memoized
 def apploc(): return AppLocale()
 @memoized
