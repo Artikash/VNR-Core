@@ -102,6 +102,7 @@ bool InsertMEDHook();           // MED: *.med
 bool InsertMonoHook();          // Mono (Unity3D): */Mono/mono.dll
 bool InsertNeXASHook();         // NeXAS: Thumbnail.pac
 bool InsertNextonHook();        // NEXTON: aInfo.db
+bool InsertNexton1Hook();
 bool InsertNitroPlusHook();     // NitroPlus: *.npa
 bool InsertPensilHook();        // Pensil: PSetup.exe
 bool InsertQLIEHook();          // QLiE: GameData/*.pack

@@ -176,6 +176,7 @@ single: # single thread
   - Eushully
   - Rejet
   - SiglusEngine2
+  - NEXTON1
   # PSP
   - 5pb PSP
   - Intense PSP
@@ -196,6 +197,7 @@ norepeat:
   - QLIE
   - QLIE2
   - NEXTON
+  - NEXTON1 # I am not sure if it could be floating like NEXTON
   - TanukiSoft # But this thread is floating
   - Unity # removed
 
@@ -291,6 +293,7 @@ char:
   - MED
   - NeXAS
   - NEXTON
+  - NEXTON1
   - Nippon1 PSP
   - Nippon2 PSP
   - NitroPlus
