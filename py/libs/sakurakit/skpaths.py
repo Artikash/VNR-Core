@@ -23,8 +23,10 @@ HOME = QDir.homePath()  # unicode
 DESKTOP = (QDesktopServices.storageLocation(QDesktopServices.DesktopLocation)
     or os.path.join(HOME, 'Desktop'))
 
-WINDIR = u(os.environ.get('windir') or r"C:\Windows")
-PROGRAMFILES = u(os.environ.get('programfiles') or r"C:\Program Files")
+SYSTEMDRIVE = u(os.environ.get('windir') or r"C:")
+WINDIR = u(os.environ.get('windir') or os.path.join(SYSTEMDRIVE, r"Windows"))
+PROGRAMFILES = u(os.environ.get('programfiles') or os.path.join(SYSTEMDRIVE, r"Program Files"))
+PROGRAMFILESx86 = u(os.environ.get('programfiles(x86)')) or PROGRAMFILES # try x86 first
 APPDATA = u(os.environ.get('appdata') or os.path.join(HOME, r"AppData\Roaming"))
 LOCALAPPDATA = u(os.environ.get('localappdata') or os.path.join(HOME, r"AppData\Local"))
 
