@@ -9051,6 +9051,9 @@ class DataManagerProxy(QObject):
     userId = manager().user().id
     if not userId:
       return
+    needsConfirm = userId == GUEST_USER_ID or userId != term.userId
+    if needsConfirm and not prompt.confirmDuplicateEntry():
+      return
     timestamp = skdatetime.current_unixtime()
     ret = c.clone(
         id=0, userId=userId, timestamp=timestamp, disabled=False, deleted=False,
@@ -9146,6 +9149,9 @@ class DataManagerProxy(QObject):
   def duplicateTerm(self, term):
     userId = manager().user().id
     if not userId:
+      return
+    needsConfirm = userId == GUEST_USER_ID or userId != term.userId
+    if needsConfirm and not prompt.confirmDuplicateEntry():
       return
     ret = term.clone(
         id=0, userId=userId, disabled=False, deleted=False,
