@@ -219,7 +219,7 @@ class ModiOcr(Library):
 
   def location(self):
     from modiocr import modiocr
-    return os.path.dirname(modiocr.DLL_PATH)
+    return modiocr.MODI_PATH
 
 class QuickTime(Library):
   URL = "http://www.apple.com/quicktime/download/"

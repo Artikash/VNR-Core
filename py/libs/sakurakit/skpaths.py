@@ -23,12 +23,14 @@ HOME = QDir.homePath()  # unicode
 DESKTOP = (QDesktopServices.storageLocation(QDesktopServices.DesktopLocation)
     or os.path.join(HOME, 'Desktop'))
 
-SYSTEMDRIVE = u(os.environ.get('windir') or r"C:")
-WINDIR = u(os.environ.get('windir') or os.path.join(SYSTEMDRIVE, r"Windows"))
-PROGRAMFILES = u(os.environ.get('programfiles') or os.path.join(SYSTEMDRIVE, r"Program Files"))
-PROGRAMFILESx86 = u(os.environ.get('programfiles(x86)')) or PROGRAMFILES # try x86 first
-APPDATA = u(os.environ.get('appdata') or os.path.join(HOME, r"AppData\Roaming"))
-LOCALAPPDATA = u(os.environ.get('localappdata') or os.path.join(HOME, r"AppData\Local"))
+SYSTEMDRIVE = u(os.environ.get('windir')) or r"C:"
+WINDIR = u(os.environ.get('WinDir')) or os.path.join(SYSTEMDRIVE, r"Windows")
+PROGRAMFILES = u(os.environ.get('ProgramFiles')) or os.path.join(SYSTEMDRIVE, r"Program Files")
+PROGRAMFILESx86 = u(os.environ.get('ProgramFiles(x86)')) or PROGRAMFILES # try x86 first
+COMMONPROGRAMFILES = u(os.environ.get('CommonProgramFiles')) or os.path.join(PROGRAMFILES, r"Common Files")
+COMMONPROGRAMFILESx86 = u(os.environ.get('CommonProgramFiles(x86)')) or os.path.join(PROGRAMFILESx86, r"Common Files")
+APPDATA = u(os.environ.get('AppData')) or os.path.join(HOME, r"AppData\Roaming")
+LOCALAPPDATA = u(os.environ.get('LocalAppData')) or os.path.join(HOME, r"AppData\Local")
 
 SYSTEM32 = os.path.join(WINDIR, 'System32')
 

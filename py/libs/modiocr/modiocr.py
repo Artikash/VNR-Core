@@ -42,8 +42,11 @@ LANG_EN = 1 << 20 # miLANG_ENGLISH = 9,
 LANG_DEFAULT = 1 << 21 # miLANG_SYSDEFAULT = 2048
 
 from sakurakit import skpaths
-#DLL_PATH = os.path.join(skpaths.PROGRAMFILES, 'Common Files/Microsoft Shared/MODI/12.0/MDIVWCTL.dll')
-DLL_PATH = os.path.join(skpaths.PROGRAMFILESx86, 'Common Files/Microsoft Shared/MODI/12.0/MDIVWCTL.dll')
+MODI_PATH = os.path.join(skpaths.COMMONPROGRAMFILESx86, r'Microsoft Shared\MODI\12.0')
+MODI_DLLS = [os.path.join(MODI_PATH, dll) for dll in (
+  'MDIVWCTL.DLL',
+  'MSPCORE.DLL',
+)]
 
 from sakurakit import skos
 if skos.WIN:

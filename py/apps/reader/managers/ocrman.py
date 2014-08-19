@@ -152,7 +152,7 @@ class OcrManager(QObject):
   textReceived = Signal(unicode, int, int, int, int) # text, x, y, width, height
 
   def isInstalled(self):
-    return os.path.exists(modiocr.DLL_PATH) and modiocr.available() #and skwin.ADMIN
+    return os.path.exists(modiocr.MODI_PATH) and modiocr.available() #and skwin.ADMIN
 
   def isEnabled(self): return self.__d.enabled
 
