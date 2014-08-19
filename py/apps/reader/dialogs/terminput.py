@@ -117,7 +117,7 @@ class _TermInput(object):
     ret.addItems(dataman.Term.TR_TYPES)
     ret.setMaxVisibleItems(ret.count())
     ret.setMaximumWidth(COMBOBOX_MAXWIDTH)
-    ret.currentIndexChanged.connect(self._refreshTypeLabel)
+    ret.currentIndexChanged.connect(self.refresh)
     return ret
 
   @memoizedproperty
@@ -201,7 +201,7 @@ class _TermInput(object):
     skqss.class_(ret, 'normal')
     ret.setPlaceholderText(mytr_("Replaced text"))
     ret.setToolTip(ret.placeholderText())
-    ret.textChanged.connect(self._refreshStatus)
+    ret.textChanged.connect(self.refresh)
     return ret
 
   @memoizedproperty
@@ -213,8 +213,16 @@ class _TermInput(object):
     #ret.textChanged.connect(self.refresh)
     return ret
 
-  def _canSave(self):
-    return bool(self.patternEdit.text().strip())
+  def _canSave(self): # -> bool
+    return bool(self.patternEdit.text().strip()) and not self._isUseless()
+
+  def _isUseless(self): # -> bool  has no effect
+    pattern = self.patternEdit.text().strip()
+    if self._getType() not in ('escape', 'title', 'name'):
+      text = self.textEdit.text().strip()
+      if pattern == text:
+        return True
+    return False
 
   def _getLanguage(self): # -> str
     return config.LANGUAGES[self.languageEdit.currentIndex()]
@@ -285,6 +293,9 @@ class _TermInput(object):
     if not pattern:
       skqss.class_(w, 'text-info')
       w.setText("%s: %s" % (tr_("Note"), my.tr("Missing pattern")))
+    elif self._isUseless():
+      skqss.class_(w, 'text-error')
+      w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is the same as the translation that is useless.")))
     elif len(pattern.strip()) < 3 and not self.specialButton.isChecked():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is kind of short. You might want to turn on the series-specific option.")))

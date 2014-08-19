@@ -211,6 +211,17 @@ def confirmDeleteComment(comment):
 #      my.tr("Do you want to permanently delete this subtitle?"),
 #      Yes|No, No)
 
+def confirmDuplicateEntry():
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Clone entry"),
+my.tr("""Do you want to clone other people's entry?
+The entry has already been enabled even without you cloning it.
+Instead, cloning will result in duplicate entries that makes it more difficult to manage."""),
+      Yes|No, No)
+
 def confirmClearEntries():
   """
   @return  bool
