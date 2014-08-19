@@ -135,7 +135,7 @@ if skos.WIN:
         #title = u(event.WindowName)
         self._moveWindow(hwnd, *event.Position)
         #dprint("leave: active")
-        return False # eat the event
+        #return False # Always bypass the event
       #dprint("leave: not active")
       return True # return True to pass the event to other handlers
 
