@@ -516,7 +516,7 @@ DWORD DetermineEngineOther()
 DWORD DetermineEngineAtLast()
 {
   enum : DWORD { yes = 0, no = 1 }; // return value
-  if (IthCheckFile(L"comnArc.arc") && IthCheckFile(L"DATA.arc") // these two files might exist in multiple files
+  if (IthCheckFile(L"comnArc.arc") // this file might exist in multiple files
       && InsertNexton1Hook()) // old nexton game
     return yes;
   return no;
