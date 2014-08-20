@@ -6,6 +6,11 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <QtCore/QRegExp>
+
+#include <QtCore/QReadWriteLock> // thread-safety
+#include <QtCore/QReadLocker>
+#include <QtCore/QWriteLocker>
+
 #include <list> // instead of QList which is slow that stores pointers instead of elements
 #include <utility> // for pair which is faster than QPair
 #include <boost/foreach.hpp>
@@ -75,6 +80,8 @@ private:
 class TahScriptManagerPrivate
 {
 public:
+  QReadWriteLock lock;
+
   TahScriptRule *rules; // use array for performance reason
   int ruleCount;
 
@@ -112,7 +119,11 @@ TahScriptManager::~TahScriptManager() { delete d_; }
 int TahScriptManager::size() const { return d_->ruleCount; }
 bool TahScriptManager::isEmpty() const { return !d_->ruleCount; }
 
-void TahScriptManager::clear() { d_->clear(); }
+void TahScriptManager::clear()
+{
+  QWriteLocker locker(&d_->lock);
+  d_->clear();
+}
 
 // Initialization
 bool TahScriptManager::loadFile(const QString &path)
@@ -153,6 +164,7 @@ bool TahScriptManager::loadFile(const QString &path)
   if (lines.empty())
     return false;
 
+  QWriteLocker locker(&d_->lock);
   d_->reset(lines.size());
 
   int i = 0;
@@ -165,6 +177,7 @@ bool TahScriptManager::loadFile(const QString &path)
 // Translation
 QString TahScriptManager::translate(const QString &text) const
 {
+  QReadLocker locker(&d_->lock);
   QString ret = text;
 #ifdef DEBUG_RULE
   QString previous;

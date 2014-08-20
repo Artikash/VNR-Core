@@ -22,7 +22,7 @@ from mytr import my, mytr_
 import config, growl, mecabman, termman, trscriptman, textutil
 import trman
 
-#from sakurakit.skprofiler import SkProfiler
+from sakurakit.skprofiler import SkProfiler
 
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()
@@ -336,7 +336,7 @@ class MachineTranslator(Translator):
     @return  unicode
     """
     if scriptEnabled:
-      # 8/14/2014: Only test 0.007 second
+      # 8/19/2014: Only test 0.007 second, with or without locks
       #with SkProfiler():
       t = text
       text = trscriptman.manager().normalizeText(text, fr=fr, to=to)
