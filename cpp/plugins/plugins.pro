@@ -18,6 +18,8 @@ SUBDIRS += pyvnrmem
 #SUBDIRS += pymetacall
 #SUBDIRS += pytexscript
 
+win32: SUBDIRS += mousehook #pymousehook
+
 win32: SUBDIRS += ith
 win32: SUBDIRS += texthook pytexthook
 #win32: SUBDIRS += texthookxp pytexthookxp
