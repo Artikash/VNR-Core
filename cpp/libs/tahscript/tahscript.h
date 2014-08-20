@@ -7,6 +7,7 @@
 #include "sakurakit/skglobal.h"
 #include <QtCore/QString>
 
+// All functions in this class are thread-safe to Qt threads
 class TahScriptManagerPrivate;
 class TahScriptManager
 {
