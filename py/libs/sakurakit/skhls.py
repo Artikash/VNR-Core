@@ -67,10 +67,15 @@ HLS_TODO_PATTERNS = (
 class SkCppHighlighter(QSyntaxHighlighter):
 
   KEYWORD_PATTERNS = (
+    r"\bcase\b",
     r"\bclass\b",
+    r"\bdefault\b",
     r"\benum\b",
     r"\bexplicit\b",
     r"\bfriend\b",
+    r"\bfor\b",
+    r"\belse\b",
+    r"\bif\b",
     r"\binline\b",
     r"\bnamespace\b",
     r"\boperator\b",
@@ -78,6 +83,7 @@ class SkCppHighlighter(QSyntaxHighlighter):
     r"\bprotected\b",
     r"\bpublic\b",
     r"\breturn\b",
+    r"\bswitch\b",
     r"\bstruct\b",
     r"\btemplate\b",
     r"\btypedef\b",
@@ -103,8 +109,6 @@ class SkCppHighlighter(QSyntaxHighlighter):
     r"\bstatic\b",
     r"\bstruct\b",
     r"\bunsigned\b",
-    r"\bvirtual\b",
-    r"\bvolatile\b",
   )
 
   CONSTANT_PATTERNS = (

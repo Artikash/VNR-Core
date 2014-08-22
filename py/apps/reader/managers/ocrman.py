@@ -4,7 +4,7 @@
 
 import os
 from functools import partial
-from PySide.QtCore import Qt, QObject, Signal
+from PySide.QtCore import QObject, Signal
 from PySide.QtGui import QPixmap
 from Qt5.QtWidgets import QApplication
 from sakurakit import skwidgets, skfileio
@@ -26,18 +26,25 @@ class _OcrManager(object):
     self.enabled = False # bool
     #self.language = 'ja'
 
+  @memoizedproperty
+  def mouseSelector(self):
+    from mousesel import mousesel
+    ret = mousesel.global_()
+    ret.selected.connect(self._onRectSelected)
+    return ret
+
   # Rubberband
 
-  @memoizedproperty
-  def rubberBand(self):
-    from sakurakit.skrubberband import SkMouseRubberBand
-    import windows
-    parent = windows.top()
-    #parent = None # this make rubberband as top window
-    ret = SkMouseRubberBand(SkMouseRubberBand.Rectangle, parent)
-    ret.setWindowFlags(ret.windowFlags()|Qt.Popup) # popup is needed to display the window out side of its parent
-    ret.selected.connect(self._onRectSelected, Qt.QueuedConnection) # do it later
-    return ret
+  #@memoizedproperty
+  #def rubberBand(self):
+  #  from sakurakit.skrubberband import SkMouseRubberBand
+  #  import windows
+  #  parent = windows.top()
+  #  #parent = None # this make rubberband as top window
+  #  ret = SkMouseRubberBand(SkMouseRubberBand.Rectangle, parent)
+  #  ret.setWindowFlags(ret.windowFlags()|Qt.Popup) # popup is needed to display the window out side of its parent
+  #  ret.selected.connect(self._onRectSelected, Qt.QueuedConnection) # do it later
+  #  return ret
 
   def _onRectSelected(self, x, y, width, height):
     """
@@ -57,20 +64,19 @@ class _OcrManager(object):
 
   # Mouse hook
 
-  @memoizedproperty
-  def mouseHook(self):
-    from mousehook.screenselector import ScreenSelector
-    ret = ScreenSelector()
-    from sakurakit import skwin
-    ret.setPressCondition(skwin.is_key_shift_pressed)
-    ret.setSingleShot(False)
-
-    # Use queued connection to avoid possible crash since it is on a different thread?
-    rb = self.rubberBand
-    ret.mousePressed.connect(rb.press, Qt.QueuedConnection)
-    ret.mouseReleased.connect(rb.release, Qt.QueuedConnection)
-    ret.mouseMoved.connect(rb.move, Qt.QueuedConnection)
-    return ret
+  #@memoizedproperty
+  #def mouseHook(self):
+  #  from mousehook.screenselector import ScreenSelector
+  #  ret = ScreenSelector()
+  #  from sakurakit import skwin
+  #  ret.setPressCondition(skwin.is_key_shift_pressed)
+  #  ret.setSingleShot(False)
+  #  # Use queued connection to avoid possible crash since it is on a different thread?
+  #  rb = self.rubberBand
+  #  ret.mousePressed.connect(rb.press, Qt.QueuedConnection)
+  #  ret.mouseReleased.connect(rb.release, Qt.QueuedConnection)
+  #  ret.mouseMoved.connect(rb.move, Qt.QueuedConnection)
+  #  return ret
 
   # OCR
 
@@ -161,11 +167,10 @@ class OcrManager(QObject):
     if d.enabled != t:
       d.enabled = t
       dprint(t)
+      d.mouseSelector.setEnabled(t)
       if t:
         growl.msg(my.tr("Start OCR screen reader"))
-        d.mouseHook.start()
       else:
-        d.mouseHook.stop()
         growl.msg(my.tr("Stop OCR screen reader"))
 
 # EOF

@@ -96,7 +96,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
 
   masonry: http://cdn.jsdelivr.net/masonry/3.1.5/masonry.min.js
 
-  moment: http://cdn.jsdelivr.net/momentjs/2.7.0/moment.min.js
+  moment: http://cdn.jsdelivr.net/momentjs/2.8.1/moment.min.js
   #moment: http://cdn.jsdelivr.net/momentjs/2.5.1/moment-with-langs.min.js
   #underscore: http://cdn.jsdelivr.net/underscorejs/1.6.0/underscore-min.js
   underscore: http://cdn.jsdelivr.net/lodash/2.4.1/lodash.min.js
