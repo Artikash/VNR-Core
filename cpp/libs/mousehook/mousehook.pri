@@ -6,6 +6,8 @@ DEFINES += WITH_LIB_MOUSEHOOK
 
 DEPENDPATH += $$PWD
 
+LIBS += -luser32 # for hook functions
+
 HEADERS += $$PWD/mousehook.h
 SOURCES += $$PWD/mousehook.cc
 }

@@ -3,6 +3,9 @@
 #include "qtrubberband/mouserubberband.h"
 #include <QtGui/QApplication>
 
+//#define DEBUG "mouserubberband"
+#include "sakurakit/skdebug.h"
+
 /** Private class */
 
 class MouseRubberBandPrivate
@@ -16,19 +19,23 @@ public:
 
 /** Public class */
 
-MouseRubberBand::MouseRubberBand(QObject *parent) : Base(parent), d_(new D) {}
+MouseRubberBand::MouseRubberBand(Shape s, QWidget *p)
+  : Base(s, p), d_(new D) {}
+
 MouseRubberBand::~MouseRubberBand() { delete d_; }
 
 bool MouseRubberBand::isPressed() const { return d_->pressed; }
 
 void MouseRubberBand::press(int x, int y)
 {
-  setGeometry(x, y, 0, 0)
+  DOUT("enter");
+  setGeometry(x, y, 0, 0);
   d_->x = x;
   d_->y = y;
   d_->pressed = true;
   QApplication::setOverrideCursor(Qt::CrossCursor);
   show();
+  DOUT("leave");
 }
 
 void MouseRubberBand::move(int x, int y)
@@ -44,10 +51,12 @@ void MouseRubberBand::move(int x, int y)
 
 void MouseRubberBand::release()
 {
+  DOUT("enter");
   cancel();
-  QRect r = self.geometry();
+  QRect r = geometry();
   if (!r.isEmpty())
     emit selected(r.x(), r.y(), r.width(), r.height());
+  DOUT("leave");
 }
 
 void MouseRubberBand::cancel()

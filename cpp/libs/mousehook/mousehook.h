@@ -11,7 +11,8 @@ void mousehook_stop();
 bool mousehook_active();
 
 ///  Return true if eat the event
-typedef boost::function<bool (long x, long y, void *hwnd)> mousehook_fun_t;
+typedef boost::function<bool (int x, int y, void *hwnd)> mousehook_fun_t;
+extern const mousehook_fun_t mousehook_fun_null;
 
 void mousehook_onmove(mousehook_fun_t callback);
 void mousehook_onlbuttonup(mousehook_fun_t callback);

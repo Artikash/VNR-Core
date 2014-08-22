@@ -11,6 +11,7 @@ SUBDIRS += qmlhelperplugin
 SUBDIRS += qmltexscriptplugin
 SUBDIRS += qmltextplugin
 
+SUBDIRS += pymousesel
 SUBDIRS += pytahscript
 SUBDIRS += pyvnrmem
 #SUBDIRS += pyreader

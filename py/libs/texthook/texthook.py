@@ -324,9 +324,7 @@ if skos.WIN:
             d.addHookCode(d.pid, code, name)
 
 else:
-  class TextHook(QObject):
-    """Dummy
-    """
+  class TextHook(QObject): # dummy
     def __init__(self, parent=None):
       super(TextHook, self).__init__(parent)
 

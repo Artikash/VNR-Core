@@ -12,6 +12,9 @@
 
 #include <boost/bind.hpp>
 
+#define DEBUG "mouseselector"
+#include "sakurakit/skdebug.h"
+
 /** Private class */
 
 class MouseSelectorPrivate
@@ -26,16 +29,25 @@ public:
   QWidget *parentWidget;
   MouseRubberBand *rb;
 
+  void createRubberBand()
+  {
+    rb = new MouseRubberBand(QRubberBand::Rectangle, parentWidget);
+    q_->connect(rb, SIGNAL(selected(int,int,int,int)), SIGNAL(selected(int,int,int,int)),
+                Qt::QueuedConnection); // use queued connection to leave mouse event loop
+  }
+
   // For mouse hook
   bool pressed;
 
-private:
+//private:
   bool onMousePress(int x, int y, void *wid)
   {
     Q_UNUSED(wid);
-    if (enabled && pressed && isPressAllowed()) {
+    if (enabled //&& !pressed  // !pressed not checked in case sth is wrong at runtime
+                && isPressAllowed()) {
       pressed = true;
       rb->press(x, y);
+      DOUT("pass");
       return true;
     }
     return false;
@@ -56,6 +68,7 @@ private:
       pressed = false;
       rb->move(x, y);
       rb->release();
+      DOUT("pass");
       return true;
     }
     return false;
@@ -68,18 +81,18 @@ public:
     : q_(q), enabled(false), parentWidget(nullptr), rb(nullptr)
     , pressed(false)
   {
-    ::mousehook_lbuttondown(boost::bind(&Self::onMousePress, this));
-    ::mousehook_lbuttonup(boost::bind(&Self::onMouseRelease, this));
-    ::mousehook_onmove(boost::bind(&Self::onMouseMove, this));
+    ::mousehook_onlbuttondown(boost::bind(&Self::onMousePress, this, _1, _2, _3));
+    ::mousehook_onlbuttonup(boost::bind(&Self::onMouseRelease, this, _1, _2, _3));
+    ::mousehook_onmove(boost::bind(&Self::onMouseMove, this, _1, _2, _3));
   }
 
   ~MouseSelectorPrivate()
   {
     if (enabled)
       ::mousehook_stop();
-    ::mousehook_onmove(nullptr);
-    ::mousehook_lbuttondown(nullptr);
-    ::mousehook_lbuttonup(nullptr);
+    ::mousehook_onmove(mousehook_fun_null);
+    ::mousehook_onlbuttondown(mousehook_fun_null);
+    ::mousehook_onlbuttonup(mousehook_fun_null);
     if (rb)
       delete rb;
   }
@@ -90,15 +103,15 @@ public:
 MouseSelector::MouseSelector(QObject *parent) : Base(parent), d_(new D(this)) {}
 MouseSelector::~MouseSelector() { delete d_; }
 
-QWidget *MouseSelector::parentWidget() const { return d_->parentWidget; }
-void MouseSelector::setParentWidget(QWidget *v)
-{
-  if (d_->parentWidget != v) {
-    d_->parentWidget = v;
-    if (d_->rb)
-      d_->rb->setParent(v);
-  }
-}
+//QWidget *MouseSelector::parentWidget() const { return d_->parentWidget; }
+//void MouseSelector::setParentWidget(QWidget *v)
+//{
+//  if (d_->parentWidget != v) {
+//    d_->parentWidget = v;
+//    if (d_->rb)
+//      d_->rb->setParent(v);
+//  }
+//}
 
 bool MouseSelector::isEnabled() const
 { return d_->enabled; }
@@ -106,9 +119,10 @@ bool MouseSelector::isEnabled() const
 void MouseSelector::setEnabled(bool t)
 {
   if (d_->enabled != t) {
+    DOUT(t);
     if (t) {
-      if (!t_->rb)
-        t_->rb = new MouseRubberBand(QRubberBand::Rectangle, d_->parentWidget);
+      if (!d_->rb)
+        d_->createRubberBand();
       d_->enabled = true;
       ::mousehook_start();
     } else {

@@ -10,12 +10,12 @@
 class MouseRubberBandPrivate;
 class MouseRubberBand : public QRubberBand
 {
-  Q_OBJECT(QObject)
+  Q_OBJECT
   Q_DISABLE_COPY(MouseRubberBand)
-  SK_EXTEND_CLASS(MouseRubberBand, QObject)
+  SK_EXTEND_CLASS(MouseRubberBand, QRubberBand)
   SK_DECLARE_PRIVATE(MouseRubberBandPrivate)
 public:
-  explicit MouseRubberBand(Shape s, QObject *p = nullptr);
+  explicit MouseRubberBand(Shape s, QWidget *p = nullptr);
   ~MouseRubberBand();
 
   bool isPressed() const;

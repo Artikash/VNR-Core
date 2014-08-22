@@ -12,7 +12,7 @@ QT_FORWARD_DECLARE_CLASS(QWidget)
 class MouseSelectorPrivate;
 class MouseSelector : public QObject
 {
-  Q_OBJECT(QObject)
+  Q_OBJECT
   Q_DISABLE_COPY(MouseSelector)
   SK_EXTEND_CLASS(MouseSelector, QObject)
   SK_DECLARE_PRIVATE(MouseSelectorPrivate)
@@ -20,8 +20,8 @@ public:
   explicit MouseSelector(QObject *parent = nullptr);
   ~MouseSelector();
 
-  QWidget *parentWidget() const;
-  void setParentWidget(QWidget *parentWidget);
+  //QWidget *parentWidget() const;
+  //void setParentWidget(QWidget *parentWidget);
 
   bool isEnabled() const;
   void setEnabled(bool t);

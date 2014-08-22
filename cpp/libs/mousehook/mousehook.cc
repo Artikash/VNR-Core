@@ -2,6 +2,9 @@
 // 11/26/2011
 
 #include "mousehook/mousehook.h"
+#include <windows.h>
+
+const mousehook_fun_t mousehook_fun_null; // global variable
 
 namespace { // unnamed
 
@@ -45,7 +48,8 @@ LRESULT CALLBACK MouseProc(__in int nCode, __in WPARAM wparam, __in LPARAM lpara
     }
   }
 
-  return ::CallNextHookEx(hHook, nCode, wparam, lparam);
+  HHOOK hook = d_ ? d_->hook : nullptr;
+  return ::CallNextHookEx(hook, nCode, wparam, lparam);
 }
 
 } // unnamed namespace
@@ -56,10 +60,9 @@ void mousehook_start()
 {
   if (!d_)
     d_ = new D;
-  if (!d_->hook) {
-    enum { hInstance = nullptr, dwThreadId = 0};
-    d_->hook = ::SetWindowsHookEx(WH_MOUSE_LL, MouseProc, hInstance, dwThreadId);
-  }
+  if (!d_->hook)
+    //enum { hInstance = nullptr, dwThreadId = 0};
+    d_->hook = ::SetWindowsHookExA(WH_MOUSE_LL, MouseProc, nullptr, 0);
 }
 
 void mousehook_stop()
