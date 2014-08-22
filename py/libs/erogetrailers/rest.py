@@ -45,6 +45,7 @@ _PATCHES = { # {long id:kw}
   9981:  {'brand' :u"美蕾"},        # 星の王女
   #10489: {'dmm2': '543ka0066'},     # プレスタ！ ～Precious☆Star'sフェスティバル～
   10839: {'brand':u"Mink"},         # 夜勤病棟 復刻版+
+  11992: {'amazon': ''}, # 廻る娼館街のリィナ -- delete wrong amazon
 }
 
 # API is stateless
