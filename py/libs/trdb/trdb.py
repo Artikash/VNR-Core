@@ -89,4 +89,8 @@ if __name__ == '__main__':
 
     print queryvalue(cur, u'こんにちは')
 
+    with sqlite3.connect(path) as conn2:
+      cur2 = conn2.cursor()
+      print queryvalue(cur2, u'こんにちは')
+
 # EOF
