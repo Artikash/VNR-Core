@@ -339,6 +339,15 @@ def gaiji_dict(name):
     GAIJI[name] = ret = plistlib.readPlist(path) if path else {}
   return ret
 
+def trdb_path(key, fr, to):
+  """
+  @param  key  str
+  @param  fr  str  language
+  @param  to  str  language
+  @return  unicode  path
+  """
+  return "%s/%s-%s.db" % (config.TRDB_LOCATIONS[key], fr, to)
+
 # Lingoes
 #def lingoes_path(lang):
 #  """Return icon for the specific file

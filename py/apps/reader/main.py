@@ -575,6 +575,14 @@ class _MainObject(object):
     return ret
 
   @memoizedproperty
+  def translationCacheManager(self):
+    dprint("create translation cache manager")
+    import trcache
+    ret = trcache.manager()
+    ret.setParent(self.q)
+    return ret
+
+  @memoizedproperty
   def translatorManager(self):
     dprint("create translator manager")
     import trman
@@ -1432,6 +1440,7 @@ class MainObject(QObject):
     d.termManager
     d.translationScriptManager
     d.translatorManager
+    d.translationCacheManager
     d.dictionaryManager
     d.meCabManager
     d.caboChaManager

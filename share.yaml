@@ -497,7 +497,7 @@ tahscript:
     ja:             $PWD/../../../Caches/Dictionaries/TAHScripts/ja-ja.wiki
     en:             $PWD/../../../Caches/Dictionaries/TAHScripts/ja-en.wiki
 
-translations:
+trdb:
   bing:             $PWD/../../../Caches/Translations/Microsoft
   excite:           $PWD/../../../Caches/Translations/Excite
   google:           $PWD/../../../Caches/Translations/Google
