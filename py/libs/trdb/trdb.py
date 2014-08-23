@@ -75,6 +75,7 @@ def createdb(dbpath): # unicode path -> bool
   return False
 
 if __name__ == '__main__':
+  from sakurakit.skprofiler import SkProfiler
   import os
   path = 'test.db'
   if os.path.exists(path):
@@ -82,12 +83,19 @@ if __name__ == '__main__':
   ok = createdb(path)
   print ok
 
-  with sqlite3.connect(path) as conn:
-    cur = conn.cursor()
-    insertentry(cur, u'こんにちは', 'hello')
-    conn.commit()
+  with SkProfiler():
+    with sqlite3.connect(path) as conn:
+      pass
 
-    print queryvalue(cur, u'こんにちは')
+  with sqlite3.connect(path) as conn:
+    with SkProfiler():
+      cur = conn.cursor()
+    with SkProfiler():
+      insertentry(cur, u'こんにちは', 'hello')
+      conn.commit()
+
+    with SkProfiler():
+      print queryvalue(cur, u'こんにちは')
 
     with sqlite3.connect(path) as conn2:
       cur2 = conn2.cursor()

@@ -109,6 +109,7 @@ processes:
   - kmplayer.exe        # KMPlayer
   - KSafeTray.exe       # Kingsoft
   - liebao.exe          # LieBao Browser
+  - LIEBAO.EXE          # LieBao Browser
   - LEGUI.exe           # Locale Emulator
   - Maxthon.exe         # Maxthon
   - MediaInfo.exe       # MediaInfo
