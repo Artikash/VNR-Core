@@ -11,7 +11,15 @@ from sakurakit.skdebug import dwarn
 
 #TABLE_NAME = 'entry'
 
-def queryentry(cur, word='', wordlike='', limit=0): # cursor, string -> entry; raise
+def queryentry(cur, word='', wordlike='', limit=0):
+  """
+  @param  cursor
+  @param* word  unicode
+  @param* wordlike  unicode
+  @param* limit  int
+  @return  (unicode word, unicode content)
+  @raise
+  """
   params = []
   sql = "SELECT word,content FROM entry"
   if word:
@@ -26,7 +34,15 @@ def queryentry(cur, word='', wordlike='', limit=0): # cursor, string -> entry; r
   cur.execute(sql, params)
   return cur.fetchone()
 
-def queryentries(cur, word='', wordlike='', limit=0): # cursor, string -> [entry]; raise
+def queryentries(cur, word='', wordlike='', limit=0):
+  """
+  @param  cursor
+  @param* word  unicode
+  @param* wordlike  unicode
+  @param* limit  int
+  @return  [unicode word, unicode content]
+  @raise
+  """
   params = []
   sql = "SELECT word,content FROM entry"
   if word:
@@ -42,13 +58,28 @@ def queryentries(cur, word='', wordlike='', limit=0): # cursor, string -> [entry
   return cur.fetchall()
 
 def insertentry(cur, entry): # cursor, entry; raise
+  """
+  @param  cursor
+  @param  entry  (uincode word, unicode content)
+  @raise
+  """
   cur.execute("INSERT INTO entry(word,content) VALUES(?,?)", entry)
 
 def insertentries(cur, entries): # cursor, [entry]; raise
+  """
+  @param  cursor
+  @param  entries  [uincode word, unicode content]
+  @raise
+  """
   for it in entries:
     insertentry(it)
 
 def createtables(cur): # cursor -> bool
+  """
+  @param  cursor
+  @return  bool
+  @raise
+  """
   cur.execute('''\
 CREATE TABLE entry(
 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -60,6 +91,10 @@ CREATE UNIQUE INDEX idx_word ON entry(word ASC)
   return True
 
 def createdb(dbpath): # unicode path -> bool
+  """
+  @param  dbpath  unicode
+  @return  bool
+  """
   try:
     with sqlite3.connect(dbpath) as conn:
       cur = conn.cursor()
