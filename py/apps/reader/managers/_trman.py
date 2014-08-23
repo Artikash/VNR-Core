@@ -20,9 +20,9 @@ from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
 from mytr import my, mytr_
 import config, growl, mecabman, termman, trscriptman, textutil
-import trman
+import trman, trcache
 
-from sakurakit.skprofiler import SkProfiler
+#from sakurakit.skprofiler import SkProfiler
 
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()
@@ -58,11 +58,11 @@ class TranslationCache:
       t[1] = self._now()
       return t[0]
 
-  def update(self, key, value): # unicode, unicode -> unicode
+  def update(self, key, value): # unicode, unicode ->
     self.data[key] = [value, self._now()]
     if len(self.data) > self.maxSize:
       self._shrink()
-    return value
+    #return value
 
   @staticmethod
   def _now(): return long(time()) # -> long  msecs
@@ -222,6 +222,7 @@ class HanVietTranslator(Translator):
 class MachineTranslator(Translator):
 
   splitsSentences = False # bool
+  persistentCaching = False # bool  whether use sqlite to cache the translation
 
   #_CACHE_LENGTH = 10 # length of the translation to cache
 
@@ -245,6 +246,8 @@ class MachineTranslator(Translator):
     @param  text  unicode
     @param  async  bool
     @param  tr  function(unicode text, str to, str fr)
+    @param  fr  str
+    @param  to  str
     @return  unicode or None
     """
     #if len(text) > self._CACHE_LENGTH:
@@ -252,12 +255,31 @@ class MachineTranslator(Translator):
     #       tr, text, **kwargs),
     #       abortSignal=self.abortSignal,
     #       parent=self.parent) if async else tr(text, **kwargs)
-    return self._cache.get(text) or (self._cache.update(text,
-        skthreads.runsync(partial(
-          tr, text, **kwargs),
-          abortSignal=self.abortSignal,
-          parent=self.parent) if async else
-        tr(text, **kwargs)))
+    ret = self._cache.get(text)
+    if ret:
+      return ret
+
+    if self.persistentCaching:
+      #with SkProfiler(): # takes about 0.03 to create, 0.02 to insert
+      ret = trcache.get(key=self.key, fr=kwargs['fr'], to=kwargs['to'], text=text)
+      if ret:
+        self._cache.update(text, ret)
+        return ret
+
+    ret = skthreads.runsync(partial(
+        tr, text, **kwargs),
+        abortSignal=self.abortSignal,
+        parent=self.parent) if async else tr(text, **kwargs)
+
+    if ret:
+      if not isinstance(ret, unicode):
+        ret = ret.decode('utf8', errors='ignore')
+      if ret:
+        self._cache.update(text, ret)
+        if self.persistentCaching:
+          #with SkProfiler(): # takes about 0.003
+          trcache.add(key=self.key, fr=kwargs['fr'], to=kwargs['to'], text=text, translation=ret)
+    return ret
 
   def __tr(self, text, *args, **kwargs):
     """
@@ -384,8 +406,15 @@ class MachineTranslator(Translator):
     text = textutil.beautify_subtitle(text)
     return text
 
-OnlineMachineTranslator = MachineTranslator
-OfflineMachineTranslator = MachineTranslator
+class OfflineMachineTranslator(MachineTranslator):
+  persistentCaching = False # bool  disable sqlite
+  def __init__(self, *args, **kwargs):
+    super(OfflineMachineTranslator, self).__init__(*args, **kwargs)
+
+class OnlineMachineTranslator(MachineTranslator):
+  persistentCaching = True # bool  enable sqlite
+  def __init__(self, *args, **kwargs):
+    super(OnlineMachineTranslator, self).__init__(*args, **kwargs)
 
 ## Offline
 

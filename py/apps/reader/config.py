@@ -463,4 +463,7 @@ YAML_LOCATIONS = {k: parse_path(v) # {str name:unicode abspath}
 CURSOR_LOCATIONS = {k: parse_path(v) # {str name:unicode apspath}
     for k,v in SHARE_YAML['cursors'].iteritems()}
 
+TRDB_LOCATIONS = {k: parse_path(v) # {str name:unicode abspath}
+    for k,v in SHARE_YAML['trdb'].iteritems()}
+
 # EOF

@@ -39,6 +39,7 @@ util.js: jbeijing: & make
 kagami.qml: jbeijingColor
 grimoire.qml: ..
 mirage.qml: ..
+share.yaml: ..
 reader.yaml: ..
 reader:
   settings.py: jbeijingColor jbeijingEnabled jbeijingLocation
