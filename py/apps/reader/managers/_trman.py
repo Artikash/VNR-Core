@@ -22,7 +22,7 @@ from mytr import my, mytr_
 import config, growl, mecabman, termman, trscriptman, textutil
 import trman, trcache
 
-from sakurakit.skprofiler import SkProfiler
+#from sakurakit.skprofiler import SkProfiler
 
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()
@@ -241,7 +241,7 @@ class MachineTranslator(Translator):
     self.cache.clear()
     self._cache.clear()
 
-  def __cachedtr(self, text, async, tr, fr, to, **kwargs):
+  def __cachedtr(self, text, async, tr, **kwargs):
     """
     @param  text  unicode
     @param  async  bool
@@ -261,22 +261,24 @@ class MachineTranslator(Translator):
 
     if self.persistentCaching:
       #with SkProfiler(): # takes about 0.03 to create, 0.02 to insert
-      ret = trcache.get(key=self.key, fr=fr, to=to, text=text)
+      ret = trcache.get(key=self.key, fr=kwargs['fr'], to=kwargs['to'], text=text)
       if ret:
         self._cache.update(text, ret)
         return ret
 
     ret = skthreads.runsync(partial(
-        tr, text, fr=fr, to=to, **kwargs),
+        tr, text, **kwargs),
         abortSignal=self.abortSignal,
-        parent=self.parent) if async else tr(text, fr=fr, to=to, **kwargs)
+        parent=self.parent) if async else tr(text, **kwargs)
 
     if ret:
-      self._cache.update(text, ret)
-      if self.persistentCaching:
-        #with SkProfiler(): # takes about 0.003
-        trcache.add(key=self.key, fr=fr, to=to, text=text, translation=ret)
-
+      if not isinstance(ret, unicode):
+        ret = ret.decode('utf8', errors='ignore')
+      if ret:
+        self._cache.update(text, ret)
+        if self.persistentCaching:
+          #with SkProfiler(): # takes about 0.003
+          trcache.add(key=self.key, fr=kwargs['fr'], to=kwargs['to'], text=text, translation=ret)
     return ret
 
   def __tr(self, text, *args, **kwargs):
