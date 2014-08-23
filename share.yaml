@@ -498,6 +498,7 @@ tahscript:
     en:             $PWD/../../../Caches/Dictionaries/TAHScripts/ja-en.wiki
 
 trdb:
+  baidu:            $PWD/../../../Caches/Translations/Baidu
   bing:             $PWD/../../../Caches/Translations/Microsoft
   excite:           $PWD/../../../Caches/Translations/Excite
   google:           $PWD/../../../Caches/Translations/Google
