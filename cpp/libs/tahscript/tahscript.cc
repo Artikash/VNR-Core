@@ -18,7 +18,7 @@
 #define DEBUG "tahscript.cc"
 #include "sakurakit/skdebug.h"
 
-//#define DEBUG_RULE // output the rule that is applied
+#define DEBUG_RULE // output the rule that is applied
 
 #define TAHSCRIPT_COMMENT_CHAR1     '#' // indicate the beginning of a line comment
 #define TAHSCRIPT_COMMENT_CHAR2     '*' // original comment
@@ -200,9 +200,9 @@ QString TahScriptManager::translate(const QString &text) const
 #ifdef DEBUG_RULE
       if (previous != ret) {
         if (rule.sourceRe)
-          DOUT(rule.sourceRe->pattern() << rule.target);
+          DOUT(rule.sourceRe->pattern() << rule.target << ret);
         else
-          DOUT(rule.source << rule.target);
+          DOUT(rule.source << rule.target << ret);
       }
       previous = ret;
 #endif // DEBUG_RULE
