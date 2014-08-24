@@ -56,6 +56,7 @@ junai:
   - 枕
   - 戯画
 
+seminuki:
   # Supposed to be nuki but junai at server side
   #- Galette
   #- Iris
@@ -64,6 +65,7 @@ junai:
   - アリスソフト
   - エウシュリー
   - エスクード
+  - 脳内彼女
 
 nuki:
   - 13cm

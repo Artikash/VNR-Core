@@ -136,7 +136,7 @@ def guess_thread_encoding(name): # str -> str or None
 ## Game info ##
 
 JUNAI_BRANDS = frozenset(BRANDS_YAML['junai'])
-NUKI_BRANDS = frozenset(BRANDS_YAML['nuki'])
+NUKI_BRANDS = frozenset(BRANDS_YAML['nuki'] + BRANDS_YAML['seminuki'])
 OTOME_BRANDS = frozenset(BRANDS_YAML['otome'])
 
 ## Application version ##
