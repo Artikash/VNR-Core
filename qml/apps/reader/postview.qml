@@ -93,7 +93,7 @@ Item { id: root_
       bottomMargin: 5
     }
     topicKey: root_.topicKey
-    height: visible ? 55 : 0
+    height: visible ? 65 : 0
     visible: !!statusPlugin_.userId && statusPlugin_.userId !== 4
   }
 }
