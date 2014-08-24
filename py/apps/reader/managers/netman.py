@@ -7,6 +7,9 @@
 # http://docs.python-requests.org/en/latest/user/quickstart/
 # - requests uses urllib3, which is thread-safe
 # http://docs.python-requests.org/en/latest/
+#
+# Some of the expensive requests that will parse large data are using session
+# Some cheap requests are using Qt session
 
 import operator
 import requests
@@ -16,11 +19,12 @@ from cStringIO import StringIO
 #import xml.etree.cElementTree as etree
 from lxml import etree
 from PySide.QtCore import Signal, QObject
-from PySide.QtNetwork import QNetworkConfigurationManager
+from PySide.QtNetwork import QNetworkAccessManager, QNetworkConfigurationManager
 from sakurakit import skthreads, skstr
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty, memoizedmethod_filter
 from sakurakit.skdebug import dprint, dwarn, derror
 from sakurakit.sknetio import GZIP_HEADERS
+from qtrequests import qtrequests
 from mytr import my
 from sysinfo import timestamp2jst
 import config, dataman, defs, features, growl
@@ -43,13 +47,15 @@ POST_HEADERS = {
 
 @Q_Q
 class _NetworkManager(object):
-  def __init__(self):
+  def __init__(self, q):
     self._online = None # cached online status from qncm
     self.version = 0    # long timestamp
 
     self.cachedGamesById = {} # {long id:dataman.Game}
     self.cachedGamesByMd5 = {} # {str id:dataman.Game}
     self.blockedLanguages = set() # set(str) not None
+
+    self.qtSession = qtrequests.Session(QNetworkAccessManager(q))
 
     # Track online status when network is down
     #self._onlineTimer = QTimer(self.q)
@@ -117,13 +123,14 @@ class _NetworkManager(object):
   @property
   @memoizedmethod_filter(bool)
   def cachedVersion(self):
-     return skthreads.runsync(self.queryVersion, parent=self.q)
+     #return skthreads.runsync(self.queryVersion, parent=self.q)
+     return self.queryVersion()
 
   def queryVersion(self):
     params = {'ver': self.version}
     try:
-      r = session.get(API + '/app/version', params=params, headers=GZIP_HEADERS)
-      if r.ok and _response_is_xml(r):
+      r = self.qtSession.get(API + '/app/version', params=params, headers=GZIP_HEADERS)
+      if r.ok: #and _response_is_xml(r):
         root = etree.fromstring(r.content)
         #app = root.find('./apps/app[@id="%i"]' % config.VERSION_ID)
         app = root.find('./apps/app[@name="vnr"]')
@@ -195,8 +202,8 @@ class _NetworkManager(object):
     assert userName and password, "missing user name or password "
     params = {'ver':self.version, 'login':userName, 'password':password}
     try:
-      r = session.get(API + '/user/query', params=params, headers=GZIP_HEADERS)
-      if r.ok and _response_is_xml(r):
+      r = self.qtSession.get(API + '/user/query', params=params, headers=GZIP_HEADERS)
+      if r.ok: #and _response_is_xml(r):
         root = etree.fromstring(r.content)
         user = root.find('./users/user')
 
@@ -254,7 +261,7 @@ class _NetworkManager(object):
         params['delcolor'] = True
 
     try:
-      r = session.post(API + '/user/update', data=params, headers=POST_HEADERS)
+      r = self.qtSession.post(API + '/user/update', data=params, headers=POST_HEADERS)
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         user = root.find('./users/user')
@@ -1591,9 +1598,10 @@ class NetworkManager(QObject):
     Thread-safe.
     """
     if self.isOnline() and userName and password:
-      return skthreads.runsync(partial(
-          self.__d.queryUser, userName, password),
-          parent=self)
+      return self.__d.queryUser(userName, password)
+      #return skthreads.runsync(partial(
+      #    self.__d.queryUser, userName, password),
+      #    parent=self)
 
   def updateUser(self, userName, password, language=None, gender=None, avatar=None, color=None, homepage=None):
     """
@@ -1602,10 +1610,12 @@ class NetworkManager(QObject):
     Thread-safe.
     """
     if self.isOnline() and userName and password:
-      return skthreads.runsync(partial(
-          self.__d.updateUser, userName, password,
-          language=language, gender=gender, avatar=avatar, color=color, homepage=homepage),
-          parent=self)
+      return self.__d.updateUser(userName, password,
+          language=language, gender=gender, avatar=avatar, color=color, homepage=homepage)
+      #return skthreads.runsync(partial(
+      #    self.__d.updateUser, userName, password,
+      #    language=language, gender=gender, avatar=avatar, color=color, homepage=homepage),
+      #    parent=self)
     return False
 
   def getUsers(self):

@@ -90,6 +90,20 @@ class _Session:
       return data.encode(self.encoding, errors='ignore')
     return "%s" % data # might throw
 
+  def _tounicode(self, data):
+    """
+    @param  data  any
+    @return  str not unicode not None
+    """
+    if isinstance(data, str):
+      return data
+      #return data.decode(self.encoding, errors='ignore')
+    if isinstance(data, unicode):
+      return data
+    if isinstance(data, bool):
+      return 'true' if data else 'false' # use lower case
+    return "%s" % data # might throw
+
   def _createUrl(self, url, params=None):
     """
     @param  url  unicode
@@ -99,7 +113,7 @@ class _Session:
     url = QUrl(url)
     if params:
       for k,v in params.iteritems():
-        url.addQueryItem(k, v)
+        url.addQueryItem(self._tounicode(k), self._tounicode(v))
     return url
 
   def _encodePostData(self, data):

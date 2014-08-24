@@ -101,6 +101,7 @@ def memoizedmethod(method):
 #memoizedstaticmethod = memoized
 #memoizedclassmethod = memoized
 
+# This will leak memory after self is deleted
 def memoizedproperty(method):
   """Method decorator"""
   return property(memoizedmethod(method))
@@ -155,6 +156,7 @@ def memoized_filter(f):
         return ret
   return memoizer
 
+# This will leak memory after self is deleted
 def memoizedmethod_filter(f):
   """Return function decorator
   @param  f  take return value, and return bool
