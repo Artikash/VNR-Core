@@ -1117,7 +1117,7 @@ class BaiduTranslator(OnlineMachineTranslator):
     @param  to  str
     @return baidu.baidufanyi or kingsoft.iciba
     """
-    if fr == 'ja' and to.startswith('zh'):
+    if fr in ('ja', 'en') and to.startswith('zh'):
       return self.iciba
     else:
       return self.baidufanyi
