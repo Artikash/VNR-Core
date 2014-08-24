@@ -75,6 +75,7 @@ class TranslationCache:
 
 class Translator(object):
   key = 'tr' # str
+  asyncSupported = True # whether threading is supported
 
   def clearCache(self): pass
 
@@ -269,7 +270,7 @@ class MachineTranslator(Translator):
     ret = skthreads.runsync(partial(
         tr, text, **kwargs),
         abortSignal=self.abortSignal,
-        parent=self.parent) if async else tr(text, **kwargs)
+        parent=self.parent) if async and self.asyncSupported else tr(text, **kwargs)
 
     if ret:
       if not isinstance(ret, unicode):
@@ -346,7 +347,7 @@ class MachineTranslator(Translator):
     @param* async  bool  ignored, always sync
     @return  unicode sub, unicode lang, unicode provider
     """
-    return skthreads.runsync(partial(fn, text, **kwargs)) if async else fn(text, **kwargs)
+    return skthreads.runsync(partial(fn, text, **kwargs)) if async and self.asyncSupported else fn(text, **kwargs)
 
   def _escapeText(self, text, to, fr, emit, scriptEnabled):
     """
@@ -1049,20 +1050,17 @@ class GoogleTranslator(OnlineMachineTranslator):
 
 class BingTranslator(OnlineMachineTranslator):
   key = 'bing' # override
+  asyncSupported = False # override  disable async
 
-  def __init__(self, **kwargs):
+  def __init__(self, session=None, **kwargs):
     super(BingTranslator, self).__init__(**kwargs)
+    self.session = session # requests session
 
-    # It is dangerous to create engine here, which is async
+  @memoizedproperty
+  def engine(self):
     from microsoft import bingtrans
-    bingtrans.session = requests.Session()
-    self.engine = bingtrans.create_engine() # time-limited
-
-  #@memoizedproperty
-  #def engine(self)I:
-  #  from microsoft import bingtrans
-  #  bingtrans.session = requests.Session()
-  #  self.engine = bingtrans.create_engine() # time-limited
+    bingtrans.session = self.session or requests.Session()
+    return bingtrans.create_engine() # time-limited
 
   #__bing_repl_after = staticmethod(skstr.multireplacer({
   #  '[': u'【',
@@ -1099,16 +1097,17 @@ class BingTranslator(OnlineMachineTranslator):
 
 class BaiduTranslator(OnlineMachineTranslator):
   key = 'baidu' # override
+  asyncSupported = False # override  disable async
 
-  def __init__(self, **kwargs):
+  def __init__(self, session=None, **kwargs):
     super(BaiduTranslator, self).__init__(**kwargs)
 
     from kingsoft import iciba
-    iciba.session = requests.Session()
+    iciba.session = session or requests.Session()
     self.iciba = iciba
 
     from baidu import baidufanyi
-    baidufanyi.session = requests.Session()
+    baidufanyi.session = session or requests.Session()
     self.baidufanyi = baidufanyi
 
   def getEngine(self, fr, to):

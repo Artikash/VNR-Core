@@ -44,6 +44,11 @@ class _TranslatorManager(object):
     self.lecEnabled = \
     True # bool
 
+    from PySide.QtNetwork import QNetworkAccessManager
+    nam = QNetworkAccessManager(q)
+    from qtrequests import qtrequests
+    self.session = qtrequests.Session(nam, abortSignal=self.abortSignal)
+
   normalizeText = staticmethod(textutil.normalize_punct)
 
   @memoizedproperty
@@ -69,7 +74,7 @@ class _TranslatorManager(object):
 
   @memoizedproperty
   def baiduTranslator(self):
-    return _trman.BaiduTranslator(parent=self.parent, abortSignal=self.abortSignal)
+    return _trman.BaiduTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session)
 
   @memoizedproperty
   def googleTranslator(self):
@@ -77,7 +82,7 @@ class _TranslatorManager(object):
 
   @memoizedproperty
   def bingTranslator(self):
-    return _trman.BingTranslator(parent=self.parent, abortSignal=self.abortSignal)
+    return _trman.BingTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session)
 
   @memoizedproperty
   def lecOnlineTranslator(self):
@@ -95,7 +100,8 @@ class _TranslatorManager(object):
   def exciteTranslator(self):
     return _trman.ExciteTranslator(parent=self.parent, abortSignal=self.abortSignal)
 
-  def translateAndApply(self, func, tr, *args, **kwargs):
+  @staticmethod
+  def translateAndApply(func, tr, *args, **kwargs):
     """
     @param  func  function to apply
     @param  tr  function to translate
@@ -103,14 +109,14 @@ class _TranslatorManager(object):
     @param  **kwargs  passed to tr
     """
     # TODO: I might be able to do runsync here instead of within tr
-    async = kwargs.get('async')
-    if async:
-      kwargs['async'] = False
-      r = skthreads.runsync(partial(tr, *args, **kwargs),
-          abortSignal=self.abortSignal,
-          parent=self.parent)
-    else:
-      r = tr(*args, **kwargs)
+    #async = kwargs.get('async')
+    #if async:
+    #  kwargs['async'] = False
+    #  r = skthreads.runsync(partial(tr, *args, **kwargs),
+    #      abortSignal=self.abortSignal,
+    #      parent=self.parent)
+    #else:
+    r = tr(*args, **kwargs)
     if r and r[0]: func(*r)
 
   def getTranslator(self, key):
@@ -144,7 +150,7 @@ class _TranslatorManager(object):
     if self.atlasEnabled: yield self.atlasTranslator
 
   def iterOnlineTranslators(self, reverse=False):
-    """Iterate reversely
+    """
     @param* reverse  bool
     @yield  Translator
     """
@@ -409,9 +415,9 @@ class TranslatorManager(QObject):
     for it in d.iterOfflineTranslators():
       return it.translate(text, **kw)
     for it in d.iterOnlineTranslators():
-      if emit:
+      if emit or not it.asyncSupported:
         return it.translate(text, **kw)
-      else: # force async for online translation
+      else: # not emit and asyncSupported
         if async:
           kw['async'] = False # use single thread
         return skthreads.runsync(partial(it.translate, text, **kw),
@@ -435,9 +441,10 @@ class TranslatorManager(QObject):
       r = it.translate(text, fr=fr, to=d.language, async=False)
       if r[0]: func(*r)
 
+    # Always disable async
     for it in d.iterOnlineTranslators(reverse=True): # need reverse since skevents is used
       skevents.runlater(partial(d.translateAndApply,
-          func, it.translate, text, fr=fr, to=d.language, async=True))
+          func, it.translate, text, fr=fr, to=d.language, async=False))
 
 @memoized
 def manager(): return TranslatorManager()
