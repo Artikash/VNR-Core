@@ -73,12 +73,12 @@ class _TranslatorManager(object):
   def jbeijingTranslator(self): return _trman.JBeijingTranslator(parent=self.parent)
 
   @memoizedproperty
-  def baiduTranslator(self):
-    return _trman.BaiduTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session)
+  def googleTranslator(self):
+    return _trman.GoogleTranslator(parent=self.parent, abortSignal=self.abortSignal) # , session=self.session # not work sync https redirect
 
   @memoizedproperty
-  def googleTranslator(self):
-    return _trman.GoogleTranslator(parent=self.parent, abortSignal=self.abortSignal)
+  def baiduTranslator(self):
+    return _trman.BaiduTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session)
 
   @memoizedproperty
   def bingTranslator(self):
@@ -86,19 +86,19 @@ class _TranslatorManager(object):
 
   @memoizedproperty
   def lecOnlineTranslator(self):
-    return _trman.LecOnlineTranslator(parent=self.parent, abortSignal=self.abortSignal)
+    return _trman.LecOnlineTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session)
 
   @memoizedproperty
   def transruTranslator(self):
-    return _trman.TransruTranslator(parent=self.parent, abortSignal=self.abortSignal)
+    return _trman.TransruTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session)
 
   @memoizedproperty
   def infoseekTranslator(self):
-    return _trman.InfoseekTranslator(parent=self.parent, abortSignal=self.abortSignal)
+    return _trman.InfoseekTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session)
 
   @memoizedproperty
   def exciteTranslator(self):
-    return _trman.ExciteTranslator(parent=self.parent, abortSignal=self.abortSignal)
+    return _trman.ExciteTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session)
 
   @staticmethod
   def translateAndApply(func, tr, *args, **kwargs):

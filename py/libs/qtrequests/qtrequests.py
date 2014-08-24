@@ -5,8 +5,7 @@
 
 __all__ = ['Session']
 
-import json
-import urllib
+import urllib, zlib
 from PySide.QtCore import QUrl, QEventLoop, QCoreApplication
 from PySide.QtNetwork import QNetworkRequest
 
@@ -16,8 +15,19 @@ from PySide.QtNetwork import QNetworkRequest
 #  def __del__(self):
 #    print "del: pass"
 
-MIMETYPE_JSON = 'application/json'
+#MIMETYPE_JSON = 'application/json'
 MIMETYPE_FORM = 'application/x-www-form-urlencoded'
+
+# Is this thread-safe?
+_zlib_decomp = zlib.decompressobj(16 + zlib.MAX_WBITS) # The magic number is only for http
+def _gunzip(data):
+  """
+  @param  data  str
+  @return  data  str
+
+  GZIP, see: http://rationalpie.wordpress.com/2010/06/02/python-streaming-gzip-decompression/
+  """
+  return _zlib_decomp.decompress(data)
 
 class Response:
   def __init__(self, ok=True, content=''):
@@ -116,19 +126,19 @@ class _Session:
       #return json.dumps(data) # application/json
     return "%s" % data # may throw for unknown data format
 
-  def _gunzip(self, data):
-    """
-    @param  data  str
-    @return  data  str
-    """
-    return data
-
   def _readReply(self, reply):
     """
     @param  reply  QNetworkReply
     @return  str
+
+    GZIP, see: http://rationalpie.wordpress.com/2010/06/02/python-streaming-gzip-decompression/
     """
-    return reply.readAll().data()
+    ret = reply.readAll().data()
+    enc = reply.rawHeader('Content-Encoding').data() # QByteArray to str
+    if enc and 'gzip' in enc:
+      try: ret = _gunzip(ret)
+      except: pass # ignore gunzip error
+    return ret
 
   def get(self, *args, **kwargs):
     """

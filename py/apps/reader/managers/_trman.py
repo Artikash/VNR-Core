@@ -841,11 +841,12 @@ class DreyeTranslator(OfflineMachineTranslator):
 
 class InfoseekTranslator(OnlineMachineTranslator):
   key = 'infoseek' # override
+  asyncSupported = False # override  disable async
 
-  def __init__(self, **kwargs):
+  def __init__(self, session=None, **kwargs):
     super(InfoseekTranslator, self).__init__(**kwargs)
     from transer import infoseek
-    infoseek.session = requests.Session()
+    infoseek.session = session or requests.Session()
     self.engine = infoseek
 
   #__infoseek_repl_after = staticmethod(skstr.multireplacer({
@@ -885,11 +886,12 @@ class InfoseekTranslator(OnlineMachineTranslator):
 
 class ExciteTranslator(OnlineMachineTranslator):
   key = 'excite' # override
+  asyncSupported = False # override  disable async
 
-  def __init__(self, **kwargs):
+  def __init__(self, session=None, **kwargs):
     super(ExciteTranslator, self).__init__(**kwargs)
     from excite import worldtrans
-    worldtrans.session = requests.Session()
+    worldtrans.session = session or requests.Session()
     self.engine = worldtrans
 
   #__excite_repl_after = staticmethod(skstr.multireplacer({
@@ -929,12 +931,13 @@ class ExciteTranslator(OnlineMachineTranslator):
 
 class LecOnlineTranslator(OnlineMachineTranslator):
   key = 'lecol' # override
+  asyncSupported = False # override  disable async
 
-  def __init__(self, **kwargs):
+  def __init__(self, session=None, **kwargs):
     super(LecOnlineTranslator, self).__init__(**kwargs)
 
     from lec import leconline
-    leconline.session = requests.Session()
+    leconline.session = session or requests.Session()
     self.engine = leconline
 
   def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
@@ -968,12 +971,13 @@ class LecOnlineTranslator(OnlineMachineTranslator):
 
 class TransruTranslator(OnlineMachineTranslator):
   key = 'transru' # override
+  asyncSupported = False # override  disable async
 
-  def __init__(self, **kwargs):
+  def __init__(self, session=None, **kwargs):
     super(TransruTranslator, self).__init__(**kwargs)
 
     from promt import transru
-    transru.session = requests.Session()
+    transru.session = session or requests.Session()
     self.engine = transru
 
   def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
