@@ -26,9 +26,13 @@ Item { id: root_
 
   Flickable { id: scrollArea_
     anchors {
-      fill: parent
-      topMargin: 3
+      //fill: parent
+      topMargin: 3; bottomMargin: 3
       leftMargin: 9; rightMargin: 9
+
+      left: parent.left; right: parent.right
+      top: parent.top
+      bottom: footer_.top
     }
     contentHeight: textEdit_.paintedHeight
     clip: true
