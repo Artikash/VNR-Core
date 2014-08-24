@@ -100,15 +100,55 @@ def translate(text, to='ru', fr='ja'):
   except: pass
 
 if __name__ == '__main__':
-  t = translate(u"あのね  すもももももももものうち", 'en')
-  print type(t), t
-  t = translate(u"hello", 'ja', 'en')
-  print type(t), t
+#  t = translate(u"あのね  すもももももももものうち", 'en')
+#  print type(t), t
+#  t = translate(u"hello", 'ja', 'en')
+#  print type(t), t
+#
+#  t = u"""あのね
+#だめなの
+#><"""
+#  print translate(t, 'en', 'ja')
 
-  t = u"""あのね
-だめなの
-><"""
-  print translate(t, 'en', 'ja')
+  def test():
+    global session
 
+    s = u"""
+オープニングやエンディングのアニメーションは単純に主人公を入れ替えた程度の物ではなく、タイトルロゴはもちろん金時や定春の行動や表情、登場する道具（万事屋の面々が乗る車のデザインなど）やクレジット文字など、細部に渡って変更がなされた。更に、坂田金時が『銀魂'』を最終回に追い込み新しいアニメ『まんたま』を始めようとした時にはエンディングや提供表示の煽りコメントが最終回を思わせる演出となり、『まんたま』でも専用のタイトルロゴとオープニングアニメーション（スタッフクレジット付き）が新造され、偽物の提供クレジットまで表示されるなど随所に至るまで徹底的な演出が行われた。また、テレビ欄では金魂篇終了回は『金魂'』最終回として、その翌週は新番組「銀魂'」として案内された。
+"""
+    fr = "ja"
+    to = "en"
+
+    #s = u"What are you doing?"
+    #fr = "en"
+
+    from sakurakit.skprofiler import SkProfiler
+
+    from qtrequests import qtrequests
+    from PySide.QtNetwork import QNetworkAccessManager
+    session = qtrequests.Session(QNetworkAccessManager())
+    with SkProfiler():
+      for i in range(10):
+        t = translate(s, to=to, fr=fr)
+    print t
+
+    session = requests.Session()
+    with SkProfiler():
+      for i in range(10):
+        t = translate(s, to=to, fr=fr)
+    print t
+
+    #session = requests
+    #with SkProfiler():
+    #  for i in range(10):
+    #    t = translate(s, to=to, fr=fr)
+    #print t
+
+    app.quit()
+
+  from PySide.QtCore import QCoreApplication, QTimer
+  app = QCoreApplication(sys.argv)
+  QTimer.singleShot(0, test)
+  app.exec_()
 
 # EOF
