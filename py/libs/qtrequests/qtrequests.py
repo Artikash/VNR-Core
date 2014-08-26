@@ -159,12 +159,15 @@ class _Session:
     @param  url  unicode
     @return  str or None
     """
+    ret = None
     reply = self.nam.get(self._createGetRequest(*args, **kwargs))
     self._waitReply(reply)
     if reply.isRunning():
       reply.abort() # return None
     else:
-      return self._readReply(reply)
+      ret = self._readReply(reply)
+    reply.deleteLater()
+    return ret
 
   def post(self, url, data=None, **kwargs):
     """
@@ -172,6 +175,7 @@ class _Session:
     @param* data  any
     @return  str or None
     """
+    ret = None
     reply = self.nam.post(
         self._createPostRequest(url, **kwargs),
         self._createPostData(data))
@@ -179,7 +183,9 @@ class _Session:
     if reply.isRunning():
       reply.abort()
     else:
-      return self._readReply(reply)
+      ret = self._readReply(reply)
+    reply.deleteLater()
+    return ret
 
 class Session(object):
 
