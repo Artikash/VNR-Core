@@ -58,6 +58,7 @@ Item { id: root_
 
       function show(text, x, y) { // string, int, int ->
         reset()
+        item_.translatedText = ''
         item_.text = text
         item_.x = x
         item_.y = y
@@ -100,10 +101,18 @@ Item { id: root_
           y = maximumY
       }
 
+      property string translatedText
+      function speak() {
+        var text = translatedText || textEdit_.text
+        if (text)
+          ttsPlugin_.speak(text, 'ja')
+      }
+
       function translate() {
         item_.locked = true
         var text = textEdit_.text
         if (text) {
+          item_.translatedText = text
           var keys = trPlugin_.translators().split(',')
           if (keys.length)
             textEdit_.textFormat = TextEdit.RichText
@@ -315,7 +324,10 @@ Item { id: root_
             leftMargin: header_._MARGIN
           }
 
-          property bool hover: closeButton_.hover || translateButton_.hover
+          property bool hover:
+              closeButton_.hover ||
+              translateButton_.hover ||
+              ttsButton_.hover
 
           spacing: header_._MARGIN * 2
 
@@ -352,6 +364,19 @@ Item { id: root_
                 item_.translate()
               }
           }
+
+          Share.CircleButton { id: ttsButton_
+            diameter: parent.cellWidth
+            font.pixelSize: parent.pixelSize
+            font.bold: hover
+            font.family: 'MS Gothic'
+            backgroundColor: 'transparent'
+
+            text: "♪" // おんぷ
+            toolTip: My.tr("Speak")
+            onClicked: item_.speak()
+          }
+
         }
       }
     }
