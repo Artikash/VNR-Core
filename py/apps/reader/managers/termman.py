@@ -8,6 +8,7 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
+from collections import OrderedDict
 from functools import partial
 from zhszht.zhszht import zhs2zht
 from sakurakit import skthreads
@@ -154,19 +155,48 @@ class TermManager:
 
   ## Queries ##
 
-  def queryTermTitles(self, language):
-    """
+  #def queryTermTitles(self, language, sort=True):
+  #  """
+  #  @param  language  unicode
+  #  @param* sort  bool
+  #  @return  {unicode from:unicode to} not None not empty
+  #  """
+  #  d = self.__d
+  #  ret = {'':''}
+  #  if not d.enabled or d.locked:
+  #    return ret
+  #  zht = language == 'zht'
+  #  q = self.__d.iterTerms(
+  #      dataman.manager().iterTitleTerms(),
+  #      language)
+  #  for t in q:
+  #    td = t.d
+  #    if not td.hentai or d.hentai:
+  #      pat = td.pattern
+  #      repl = td.text
+  #      if zht and td.language == 'zhs':
+  #        pat = zhs2zht(pat)
+  #        if repl: # and self.convertsChinese:
+  #          repl = zhs2zht(repl)
+  #      ret[pat] = repl
+  #  return ret
+
+  def queryOrderedTermTitles(self, language, sort=True):
+    """Terms sorted by length and id
     @param  language  unicode
-    @return  {unicode from:unicode to} not None not empty
+    @param* sort  bool
+    @return  OrderedDict{unicode from:unicode to} not None not empty
     """
     d = self.__d
     ret = {'':''}
     if not d.enabled or d.locked:
       return ret
+    ret = OrderedDict(ret)
     zht = language == 'zht'
     q = self.__d.iterTerms(
         dataman.manager().iterTitleTerms(),
         language)
+    l = [] # [long id, unicode pattern, unicode replacement]
     for t in q:
       td = t.d
       if not td.hentai or d.hentai:
@@ -176,7 +206,11 @@ class TermManager:
           pat = zhs2zht(pat)
           if repl: # and self.convertsChinese:
             repl = zhs2zht(repl)
-        ret[pat] = repl
+        l.append((td.id, pat, repl))
+    l.sort(key=lambda it:
+        (len(it[1]), it[0]))
+    for id,pat,repl in l:
+      ret[pat] = repl
     return ret
 
   def applyTargetTerms(self, text, language):
