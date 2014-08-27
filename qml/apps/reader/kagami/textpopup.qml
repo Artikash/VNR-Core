@@ -73,6 +73,7 @@ Item { id: root_
       function reset() {
         translateButton_.enabled = true
         toolTip_.text = qsTr("You can drag the border to move the text box")
+        textEdit_.textFormat = TextEdit.PlainText
       }
 
       Component.onCompleted: console.log("textpopup.qml:onCompleted: pass")
