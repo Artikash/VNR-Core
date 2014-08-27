@@ -2280,10 +2280,10 @@ class Term(QObject):
     d = self.__d
     if not d.prepareReplace and d.pattern:
       titles = manager().termTitles()
-      l = sorted(titles.iterkeys(), key=len)
+      #l = sorted(titles.iterkeys(), key=len) # already sorted
       esc = defs.NAME_ESCAPE + ' '
       h = self.priority or d.id or id(self)
-      table = {k : esc%(h,i) for i,k in enumerate(l)}
+      table = {k : esc%(h,i) for i,k in enumerate(titles)}
       d.prepareReplace = skstr.multireplacer(table,
           prefix=d.pattern,
           escape=not d.regex)
@@ -2300,14 +2300,14 @@ class Term(QObject):
     d = self.__d
     if not d.applyReplace and d.pattern:
       titles = manager().termTitles()
-      l = sorted(titles.iterkeys(), key=len)
+      #l = sorted(titles.iterkeys(), key=len) already sorted
       esc = defs.NAME_ESCAPE
       #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
       h = self.priority or d.id or id(self)
       if self.convertsChinese():
-        table = {esc%(h,i) : zhs2zht(d.text) + titles[k] for i,k in enumerate(l)}
+        table = {esc%(h,i) : zhs2zht(d.text) + titles[k] for i,k in enumerate(titles)}
       else:
-        table = {esc%(h,i) : d.text + titles[k] for i,k in enumerate(l)}
+        table = {esc%(h,i) : d.text + titles[k] for i,k in enumerate(titles)}
       d.applyReplace = skstr.multireplacer(table) #escape=False
     return d.applyReplace
 
@@ -2383,10 +2383,10 @@ class NameItem(object):
     @return  multireplacer
     """
     titles = manager().termTitles()
-    l = sorted(titles.iterkeys(), key=len)
+    #l = sorted(titles.iterkeys(), key=len) # already sorted
     esc = defs.CHARA_ESCAPE + ' '
     h = self.id or id(d)
-    table = {k : esc%(h,i) for i,k in enumerate(l)}
+    table = {k : esc%(h,i) for i,k in enumerate(titles)}
     return skstr.multireplacer(table, prefix=self.text, escape=True)
 
   @memoizedproperty
@@ -2395,11 +2395,11 @@ class NameItem(object):
     @return  multireplacer
     """
     titles = manager().termTitles()
-    l = sorted(titles.iterkeys(), key=len)
+    #l = sorted(titles.iterkeys(), key=len) # already sorted
     esc = defs.CHARA_ESCAPE
     #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
     h = self.id or id(d)
-    table = {esc%(h,i) : self.translation + titles[k] for i,k in enumerate(l)}
+    table = {esc%(h,i) : self.translation + titles[k] for i,k in enumerate(titles)}
     return skstr.multireplacer(table) #escape=False
 
 ## References ##
@@ -5454,7 +5454,7 @@ class _DataManager(object):
     self.termsEditable = False # disable editable by default
     self.termsInitialized = False # if the terms has initialized
 
-    self._termTitles = None  # {unicode from:unicode to} or None
+    self._termTitles = None  # OrderedDict{unicode from:unicode to} or None
 
     # References to modify
     #self._referencesDirty = False    # bool
@@ -5562,7 +5562,7 @@ class _DataManager(object):
   def termTitles(self):
     if self._termTitles is None:
       lang = self.user.language
-      self._termTitles = termman.manager().queryTermTitles(lang)
+      self._termTitles = termman.manager().queryOrderedTermTitles(lang)
     return self._termTitles
 
   @termTitles.setter
