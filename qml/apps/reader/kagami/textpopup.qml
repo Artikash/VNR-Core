@@ -19,8 +19,9 @@ Item { id: root_
 
   // - Private -
 
-  property int _DEFAULT_WIDTH: 200 * root_.zoomFactor
   property int _MAX_HEIGHT: 200 * root_.zoomFactor
+
+  property int _DEFAULT_WIDTH: 200 * root_.zoomFactor
   property int _MIN_WIDTH: 50 * root_.zoomFactor
   property int _MAX_WIDTH: 800 * root_.zoomFactor
 
@@ -153,7 +154,7 @@ Item { id: root_
         anchors.fill: parent
       }
 
-      MouseArea {
+      MouseArea { // draggable area
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton
         drag {

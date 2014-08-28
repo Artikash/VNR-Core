@@ -24,10 +24,11 @@ Rectangle { id: root_
 
   property real zoomFactor: 1.0
 
-  // Slots
-  // - popup(string text, int x, int y)
+  property alias textWidth: textEdit_.width
 
   // - Private -
+
+  property int _RESIZABLE_AREA_WIDTH: 20 // resizable mouse area thickness
 
   property bool enabled: bean_.enabled // cached
 
@@ -37,8 +38,11 @@ Rectangle { id: root_
   property int _X_OFFSET: 20
   property int _Y_OFFSET: 15
 
-  property int _MAX_WIDTH: 300 * zoomFactor
   property int _MAX_HEIGHT: 200 * zoomFactor
+
+  //property int _DEFAULT_WIDTH: 300 * zoomFactor
+  property int _MIN_WIDTH: 50 * root_.zoomFactor
+  property int _MAX_WIDTH: 800 * root_.zoomFactor
 
   property int _CONTENT_MARGIN: 10
 
@@ -75,7 +79,12 @@ Rectangle { id: root_
   //  radius: parent.radius
   //}
 
-  MouseArea {
+  Desktop.TooltipArea { id: toolTip_
+    anchors.fill: parent
+    text: root_.toolTipEnabled ? qsTr("You can drag the border to move the text box") : ''
+  }
+
+  MouseArea { // draggable area
     anchors.fill: parent
     acceptedButtons: Qt.LeftButton
     drag {
@@ -87,9 +96,53 @@ Rectangle { id: root_
     }
   }
 
-  Desktop.TooltipArea { id: toolTip_
-    anchors.fill: parent
-    text: root_.toolTipEnabled ? qsTr("You can drag the border to move the text box") : ''
+  MouseArea { // right draggable area
+    anchors {
+      top: parent.top; bottom: parent.bottom
+      right: parent.right
+    }
+    width: _RESIZABLE_AREA_WIDTH
+    acceptedButtons: Qt.LeftButton
+
+    property int pressedX
+    onPressed: pressedX = mouseX
+    onPositionChanged:
+      if (pressed) {
+        var w = textEdit_.width + mouseX - pressedX
+        if (w > _MIN_WIDTH && w < _MAX_WIDTH)
+          textEdit_.width = w
+      }
+
+    Desktop.TooltipArea { id: leftResizeTip_
+      anchors.fill: parent
+      text: Sk.tr("Resize")
+    }
+  }
+
+  MouseArea { // left draggable area
+    anchors {
+      top: parent.top; bottom: parent.bottom
+      left: parent.left
+    }
+    width: _RESIZABLE_AREA_WIDTH
+    acceptedButtons: Qt.LeftButton
+
+    property int pressedX
+    onPressed: pressedX = mouseX
+    onPositionChanged:
+      if (pressed) {
+        var dx = mouseX - pressedX
+        var w = textEdit_.width - dx
+        if (w > _MIN_WIDTH && w < _MAX_WIDTH) {
+          textEdit_.width = w
+          root_.x += dx
+        }
+      }
+
+    Desktop.TooltipArea { id: rightResizeTip_
+      anchors.fill: parent
+      text: Sk.tr("Resize")
+    }
   }
 
   function scrollTop() {
@@ -117,7 +170,7 @@ Rectangle { id: root_
 
     TextEdit { id: textEdit_
       anchors.centerIn: parent
-      width: _MAX_WIDTH // FIXME: automatically adjust width
+      //width: _DEFAULT_WIDTH // FIXME: automatically adjust width
 
       //selectByMouse: true // conflicts with flickable
 
@@ -213,9 +266,14 @@ Rectangle { id: root_
     opacity = 0
   }
 
+  function reset() {
+    //textEdit_.width = _DEFAULT_WIDTH
+  }
+
   function popup(text, x, y) {
     if (!root_.enabled)
       return
+    reset()
     root_.x = x + _X_OFFSET; root_.y = y + _Y_OFFSET
     textEdit_.text = bean_.render(text)
     ensureVisible()

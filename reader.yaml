@@ -10,7 +10,7 @@ version:
   name: reader
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1409257668
+  timestamp: 1409260877
 
 app:
   #debug: true
@@ -64,6 +64,7 @@ settings:
   zoomFactor: 1.33
   widthFactor: 0.7
   shadowOpacity: 0.7
+  dictionaryPopupWidth: 300 # default width
   # Grimoire colors:
   fontColor: snow #'#fffafa'
   shadowColor: black
