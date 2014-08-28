@@ -741,12 +741,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>使用{0}改變遊戲字符編碼</translation>
     </message>
     <message>
-        <location filename="managers/netman.py" line="110"/>
+        <location filename="managers/netman.py" line="116"/>
         <source>Connected to the Internet</source>
         <translation>連接到網絡</translation>
     </message>
     <message>
-        <location filename="managers/netman.py" line="112"/>
+        <location filename="managers/netman.py" line="118"/>
         <source>Disconnected from the Internet</source>
         <translation>斷開網絡連接</translation>
     </message>
@@ -816,32 +816,32 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>Dr.eye譯典通中日、中英翻譯軟件</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="414"/>
+        <location filename="managers/_trman.py" line="444"/>
         <source>ATLAS translator is loaded</source>
         <translation>加載ATLAS日英翻譯引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="489"/>
+        <location filename="managers/_trman.py" line="519"/>
         <source>LEC translator is loaded</source>
         <translation>加載LEC日英翻譯引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="731"/>
+        <location filename="managers/_trman.py" line="761"/>
         <source>Dr.eye Japanese-Chinese translator is loaded</source>
         <translation>加載Dr.eye日中翻譯引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="744"/>
+        <location filename="managers/_trman.py" line="774"/>
         <source>Dr.eye English-Chinese translator is loaded</source>
         <translation>加載Dr.eye中英翻譯引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="627"/>
+        <location filename="managers/_trman.py" line="657"/>
         <source>JBeijing translator is loaded</source>
         <translation>加載J北京日中翻譯引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="655"/>
+        <location filename="managers/_trman.py" line="685"/>
         <source>Failed to load user-defined dictionaries</source>
         <translation>載入自定義辭書失敗</translation>
     </message>
@@ -866,12 +866,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>更新來自其他同學的評論</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="806"/>
+        <location filename="managers/_trman.py" line="836"/>
         <source>Cannot load {0} for machine translation. Please check Preferences/Location</source>
         <translation>無法載入{0}機翻引擎。請檢查下使用偏好中的軟件位置</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="649"/>
+        <location filename="managers/_trman.py" line="679"/>
         <source>Load user-defined dictionaries</source>
         <translation>載入其他同學的自定義辭書</translation>
     </message>
@@ -971,52 +971,52 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>使用自定義特殊碼</translation>
     </message>
     <message>
-        <location filename="main.py" line="1291"/>
+        <location filename="main.py" line="1294"/>
         <source>Please close the current game first before opening new games</source>
         <translation>打開新遊戲前，請先關閉當前的遊戲</translation>
     </message>
     <message>
-        <location filename="main.py" line="1547"/>
+        <location filename="main.py" line="1551"/>
         <source>Found running game</source>
         <translation>發現運行中的遊戲</translation>
     </message>
     <message>
-        <location filename="main.py" line="1557"/>
+        <location filename="main.py" line="1561"/>
         <source>Found new game</source>
         <translation>發現新遊戲</translation>
     </message>
     <message>
-        <location filename="main.py" line="1566"/>
+        <location filename="main.py" line="1570"/>
         <source>Because you are offline, please manually add game using Game Wizard</source>
         <translation>因為沒有網絡連接，請在遊戲向導中手動添加遊戲</translation>
     </message>
     <message>
-        <location filename="main.py" line="1379"/>
+        <location filename="main.py" line="1382"/>
         <source>File does not exist {0}</source>
         <translation>文件不存在：{0}</translation>
     </message>
     <message>
-        <location filename="main.py" line="1790"/>
+        <location filename="main.py" line="1794"/>
         <source>Update requires Internet access</source>
         <translation>更新需要網絡連接</translation>
     </message>
     <message>
-        <location filename="main.py" line="1803"/>
+        <location filename="main.py" line="1807"/>
         <source>You are using the latest app</source>
         <translation>已經是最新的版本了呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="1808"/>
+        <location filename="main.py" line="1812"/>
         <source>Update released</source>
         <translation>發現軟件更新</translation>
     </message>
     <message>
-        <location filename="main.py" line="1832"/>
+        <location filename="main.py" line="1836"/>
         <source>Critical update message</source>
         <translation>非常重要的更新信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1941"/>
+        <location filename="main.py" line="1945"/>
         <source>The dictionary is empty. Please refresh it when you are online.</source>
         <translation>辭書是空的。請在有網絡連接時再更新吧。</translation>
     </message>
@@ -1113,7 +1113,7 @@ It might take a couple of seconds to complete.</source>
         <translation>{0}需要管理員權限。請以管理員身份重新啟動VNR</translation>
     </message>
     <message>
-        <location filename="main.py" line="1960"/>
+        <location filename="main.py" line="1964"/>
         <source>There are no user-contributed subtitles</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
@@ -1158,7 +1158,7 @@ It might take a couple of seconds to complete.</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="1650"/>
+        <location filename="main.py" line="1654"/>
         <source>Loading comment ... patient!</source>
         <translation>載入字幕中…請稍等片刻！</translation>
     </message>
@@ -1168,7 +1168,7 @@ It might take a couple of seconds to complete.</source>
         <translation>ezTrans XP日韓翻譯軟件</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="559"/>
+        <location filename="managers/_trman.py" line="589"/>
         <source>ezTrans XP is loaded</source>
         <translation>加載ezTrans XP日韓翻譯引擎</translation>
     </message>
@@ -1229,7 +1229,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>以日本時區啟動遊戲</translation>
     </message>
     <message>
-        <location filename="main.py" line="1102"/>
+        <location filename="main.py" line="1105"/>
         <source>Analyzing data ... patient!</source>
         <translation>分析數據中…請稍等片刻！</translation>
     </message>
@@ -1249,12 +1249,12 @@ Kojien is detected on your system at the above location.</source>
         <translation>正在網上檢索遊戲信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1390"/>
+        <location filename="main.py" line="1393"/>
         <source>It seems to be an unknown game. Please add it using Game Wizard</source>
         <translation>未知的遊戲，請在遊戲向導中手動添加</translation>
     </message>
     <message>
-        <location filename="main.py" line="1388"/>
+        <location filename="main.py" line="1391"/>
         <source>The game already exists</source>
         <translation>遊戲已經存在了呢</translation>
     </message>
@@ -1490,7 +1490,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>沒有找到遊戲的信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1690"/>
+        <location filename="main.py" line="1694"/>
         <source>Unknown game. Please try updating the database.</source>
         <translation>未知的遊戲。請更新下遊戲數據庫。</translation>
     </message>
@@ -1707,7 +1707,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>是否允許其他人修改</translation>
     </message>
     <message>
-        <location filename="main.py" line="1322"/>
+        <location filename="main.py" line="1325"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Drag game lnk/exe to Spring Board
@@ -1785,7 +1785,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>恢复到上次保存的設定</translation>
     </message>
     <message>
-        <location filename="main.py" line="1326"/>
+        <location filename="main.py" line="1329"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Add the game using Game Wizard</source>
@@ -1833,7 +1833,7 @@ than turning on global repetition filters here.</source>
         <translation>警告：請不要打開重复過濾的選項，除非文本中真的有重复！</translation>
     </message>
     <message>
-        <location filename="main.py" line="1620"/>
+        <location filename="main.py" line="1624"/>
         <source>The feature is not available on Wine</source>
         <translation>Wine上不支持這個功能呢</translation>
     </message>
@@ -2775,7 +2775,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
         <translation>請再檢查下使用偏好中程序的位置。</translation>
     </message>
     <message>
-        <location filename="main.py" line="1680"/>
+        <location filename="main.py" line="1684"/>
         <source>Unknown game. Please try editing the game information.</source>
         <translation>未知的遊戲。請嘗試編輯下遊戲情報。</translation>
     </message>
@@ -2897,22 +2897,22 @@ You can redownload it later if you have Internet access.</source>
         <translation>Excite.co.jp的多國語言翻譯服務</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="295"/>
+        <location filename="dialogs/terminput.py" line="298"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="301"/>
+        <location filename="dialogs/terminput.py" line="304"/>
         <source>The pattern is kind of short. You might want to turn on the series-specific option.</source>
         <translation>匹配的文本太短了呢。你最好把詞條設定為系列專用的。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="307"/>
+        <location filename="dialogs/terminput.py" line="313"/>
         <source>Everything looks OK</source>
         <translation>看起來還好</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="316"/>
+        <location filename="dialogs/terminput.py" line="322"/>
         <source>Create dictionary entry</source>
         <translation>創建詞條</translation>
     </message>
@@ -2926,7 +2926,7 @@ The dictionary will be installed to {1}.</source>
 完成后，辭書會被安裝到{1}。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="304"/>
+        <location filename="dialogs/terminput.py" line="307"/>
         <source>The translation is empty. VNR will delete the text matched with the pattern.</source>
         <translation>沒有指定翻譯。這樣的話VNR會刪掉匹配的文本。</translation>
     </message>
@@ -3023,7 +3023,7 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>JMDict日文-荷蘭文辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="272"/>
+        <location filename="dialogs/terminput.py" line="275"/>
         <source>Add new term</source>
         <translation>添加詞條</translation>
     </message>
@@ -3093,7 +3093,7 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>在Spring Board上顯示在線的同學數</translation>
     </message>
     <message>
-        <location filename="main.py" line="1631"/>
+        <location filename="main.py" line="1635"/>
         <source>Processing Shared Dictionary ... Please try later</source>
         <translation>正在處理共享辭書…請稍等一下下</translation>
     </message>
@@ -3123,37 +3123,37 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>全局的遊戲快捷鍵</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="139"/>
+        <location filename="dialogs/terminput.py" line="142"/>
         <source>a Japanese name</source>
         <translation>這是個日文名字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="141"/>
+        <location filename="dialogs/terminput.py" line="144"/>
         <source>a title after names</source>
         <translation>這是日文名字后的稱謂</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="133"/>
+        <location filename="dialogs/terminput.py" line="136"/>
         <source>replace after translation</source>
         <translation>替換翻譯后的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="135"/>
+        <location filename="dialogs/terminput.py" line="138"/>
         <source>replace Japanese before translation</source>
         <translation>替換翻譯前的日文</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="137"/>
+        <location filename="dialogs/terminput.py" line="140"/>
         <source>escape the Japanese word</source>
         <translation>轉義日文單詞以避免被翻譯</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="143"/>
+        <location filename="dialogs/terminput.py" line="146"/>
         <source>replace Japanese for TTS</source>
         <translation>替換語音合成前的日文</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="147"/>
+        <location filename="dialogs/terminput.py" line="150"/>
         <source>replace Japanese before whatever</source>
         <translation>在一切處理前替換日文原文</translation>
     </message>
@@ -3490,7 +3490,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>VNR的內嵌引擎不支持/H特殊碼</translation>
     </message>
     <message>
-        <location filename="main.py" line="1715"/>
+        <location filename="main.py" line="1719"/>
         <source>Unknown game engine</source>
         <translation>未知的遊戲引擎</translation>
     </message>
@@ -3650,12 +3650,12 @@ VNR的提取方法支持內嵌翻譯到遊戲中去，但是支持的遊戲比IT
         <translation>在使用了MeCab辭書后修改它也許需要重新啟動VNR（在Windows XP上一定需要重新啟動）。</translation>
     </message>
     <message>
-        <location filename="managers/netman.py" line="100"/>
+        <location filename="managers/netman.py" line="106"/>
         <source>Always enable Internet access as you wish</source>
         <translation>如你所願總是連接到網絡</translation>
     </message>
     <message>
-        <location filename="managers/netman.py" line="104"/>
+        <location filename="managers/netman.py" line="110"/>
         <source>Always disable Internet access as you wish</source>
         <translation>如你所願禁止連接到網絡</translation>
     </message>
@@ -3871,12 +3871,12 @@ You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or d
         <translation>OCR軟件的位置</translation>
     </message>
     <message>
-        <location filename="managers/ocrman.py" line="165"/>
+        <location filename="managers/ocrman.py" line="179"/>
         <source>Start OCR screen reader</source>
         <translation>開始光學文字識別</translation>
     </message>
     <message>
-        <location filename="managers/ocrman.py" line="169"/>
+        <location filename="managers/ocrman.py" line="181"/>
         <source>Stop OCR screen reader</source>
         <translation>停止光學文字識別</translation>
     </message>
@@ -3891,7 +3891,7 @@ You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or d
         <translation>OCR需要用管理員權限運行VNR才可以正常工作的。</translation>
     </message>
     <message>
-        <location filename="managers/ocrman.py" line="56"/>
+        <location filename="managers/ocrman.py" line="70"/>
         <source>OCR did not recognize Japanese text</source>
         <translation>OCR沒有能識別出日文</translation>
     </message>
@@ -3901,7 +3901,7 @@ You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or d
         <translation>OCR需要安裝微軟Office 2007中的MODI OCR組件。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="145"/>
+        <location filename="dialogs/terminput.py" line="148"/>
         <source>replace Japanese for OCR</source>
         <translation>替換光學文字識別前的日文</translation>
     </message>
@@ -3941,9 +3941,14 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
 相反，克隆會產生重复的條目，管理起來會更加困難。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="298"/>
+        <location filename="dialogs/terminput.py" line="301"/>
         <source>The pattern is the same as the translation that is useless.</source>
         <translation>匹配的文本和替換的文本相同，這樣子做沒有意義。</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="310"/>
+        <source>The pattern is short and only contains hiragana that could be ambiguous.</source>
+        <translation>匹配的文本很短且只包含平假名，這樣很容易產生歧義。</translation>
     </message>
 </context>
 </TS>

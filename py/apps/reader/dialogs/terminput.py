@@ -10,6 +10,7 @@ if __name__ == '__main__':
   import debug
   debug.initenv()
 
+import re
 from functools import partial
 from PySide.QtCore import Qt #, Signal
 from Qt5 import QtWidgets
@@ -21,6 +22,8 @@ import config, dataman, growl, i18n, rc
 
 #COMBOBOX_MAXWIDTH = 100
 COMBOBOX_MAXWIDTH = 80
+
+RE_SHORT_HIRAGANA = re.compile(u'^[あ-ん]{1,3}$')
 
 @Q_Q
 class _TermInput(object):
@@ -302,6 +305,9 @@ class _TermInput(object):
     elif not self.textEdit.text().strip():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The translation is empty. VNR will delete the text matched with the pattern.")))
+    elif RE_SHORT_HIRAGANA.match(pattern):
+      skqss.class_(w, 'text-error')
+      w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is short and only contains hiragana that could be ambiguous.")))
     else:
       skqss.class_(w, 'text-success')
       w.setText("%s: %s" % (tr_("Note"), my.tr("Everything looks OK")))
