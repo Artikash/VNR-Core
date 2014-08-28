@@ -23,6 +23,9 @@ else:
     def isEnabled(self): return False
     def setEnabled(self, t): pass
 
+    def comboKey(self): return 0
+    def setComboKey(self, v): pass
+
 @memoized
 def global_(): return MouseSelector()
 
