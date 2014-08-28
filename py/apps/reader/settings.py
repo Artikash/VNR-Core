@@ -1799,6 +1799,8 @@ class SettingsProxy(QObject):
   grimoireWidthFactor = float_property('GrimoireWidthFactor', config.SETTINGS_WIDTH_FACTOR)
   grimoireShadowOpacity = float_property('GrimoireShadowOpacity', config.SETTINGS_SHADOW_OPACITY)
 
+  shioriWidth = int_property('DictionaryPopupWidth', config.SETTINGS_DICT_POPUP_WIDTH)
+
   mirageTextVisible = bool_property('MirageText', True)
   mirageTranslationVisible = bool_property('MirageTranslation', True)
   mirageSpeaksText = bool_property('MirageSpeaksText', False)
