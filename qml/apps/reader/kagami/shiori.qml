@@ -24,7 +24,7 @@ Rectangle { id: root_
 
   property real zoomFactor: 1.0
 
-  property alias textWidth: textEdit_.width
+  property int defaultWidth //: textEdit_.width / zoomFactor
 
   // - Private -
 
@@ -110,7 +110,7 @@ Rectangle { id: root_
       if (pressed) {
         var w = textEdit_.width + mouseX - pressedX
         if (w > _MIN_WIDTH && w < _MAX_WIDTH)
-          textEdit_.width = w
+          root_.defaultWidth = w / root_.zoomFactor
       }
 
     Desktop.TooltipArea { id: leftResizeTip_
@@ -134,7 +134,7 @@ Rectangle { id: root_
         var dx = mouseX - pressedX
         var w = textEdit_.width - dx
         if (w > _MIN_WIDTH && w < _MAX_WIDTH) {
-          textEdit_.width = w
+          root_.defaultWidth = w / root_.zoomFactor
           root_.x += dx
         }
       }
@@ -170,6 +170,7 @@ Rectangle { id: root_
 
     TextEdit { id: textEdit_
       anchors.centerIn: parent
+      width: root_.defaultWidth * root_.zoomFactor
       //width: _DEFAULT_WIDTH // FIXME: automatically adjust width
 
       //selectByMouse: true // conflicts with flickable
