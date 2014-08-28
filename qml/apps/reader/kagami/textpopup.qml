@@ -19,6 +19,13 @@ Item { id: root_
 
   // - Private -
 
+  property int _DEFAULT_WIDTH: 200 * root_.zoomFactor
+  property int _MAX_HEIGHT: 200 * root_.zoomFactor
+  property int _MIN_WIDTH: 50 * root_.zoomFactor
+  property int _MAX_WIDTH: 800 * root_.zoomFactor
+
+  property int _RESIZABLE_AREA_WIDTH: 20 // resizable mouse area thickness
+
   Component.onCompleted: Local.items = [] // [item]
 
   Plugin.TextPopupBean { //id: bean_
@@ -53,6 +60,7 @@ Item { id: root_
       property int maximumY: minimumY + root_.height - height
 
       property alias text: textEdit_.text
+      property alias textWidth: textEdit_.width
 
       property bool locked: false // indicate whether this object is being translated
 
@@ -74,6 +82,7 @@ Item { id: root_
         translateButton_.enabled = true
         toolTip_.text = qsTr("You can drag the border to move the text box")
         textEdit_.textFormat = TextEdit.PlainText
+        textWidth = _DEFAULT_WIDTH
       }
 
       Component.onCompleted: console.log("textpopup.qml:onCompleted: pass")
@@ -86,9 +95,6 @@ Item { id: root_
 
       width: scrollArea_.width + _CONTENT_MARGIN * 2
       height: scrollArea_.height + _CONTENT_MARGIN * 2
-
-      property int _MAX_WIDTH: 200 * root_.zoomFactor
-      property int _MAX_HEIGHT: 200 * root_.zoomFactor
 
       // So that the popup will not be out of screen
       function ensureVisible() {
@@ -141,6 +147,12 @@ Item { id: root_
         textEdit_.text = text
       }
 
+      // Draggable margins
+
+      Desktop.TooltipArea { id: toolTip_
+        anchors.fill: parent
+      }
+
       MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton
@@ -151,10 +163,60 @@ Item { id: root_
           minimumX: item_.minimumX; minimumY: item_.minimumY
           maximumX: item_.maximumX; maximumY: item_.maximumY
         }
+
+        //Desktop.TooltipArea { id: dragTip_
+        //  anchors.fill: parent
+        //  text: Sk.tr("Move")
+        //}
       }
 
-      Desktop.TooltipArea { id: toolTip_
-        anchors.fill: parent
+      MouseArea { // right draggable area
+        anchors {
+          top: parent.top; bottom: parent.bottom
+          right: parent.right
+        }
+        width: _RESIZABLE_AREA_WIDTH
+        acceptedButtons: Qt.LeftButton
+
+        property int pressedX
+        onPressed: pressedX = mouseX
+        onPositionChanged:
+          if (pressed) {
+            var w = textEdit_.width + mouseX - pressedX
+            if (w > _MIN_WIDTH && w < _MAX_WIDTH)
+              textEdit_.width = w
+          }
+
+        Desktop.TooltipArea { id: leftResizeTip_
+          anchors.fill: parent
+          text: Sk.tr("Resize")
+        }
+      }
+
+      MouseArea { // left draggable area
+        anchors {
+          top: parent.top; bottom: parent.bottom
+          left: parent.left
+        }
+        width: _RESIZABLE_AREA_WIDTH
+        acceptedButtons: Qt.LeftButton
+
+        property int pressedX
+        onPressed: pressedX = mouseX
+        onPositionChanged:
+          if (pressed) {
+            var dx = mouseX - pressedX
+            var w = textEdit_.width - dx
+            if (w > _MIN_WIDTH && w < _MAX_WIDTH) {
+              textEdit_.width = w
+              item_.x += dx
+            }
+          }
+
+        Desktop.TooltipArea { id: rightResizeTip_
+          anchors.fill: parent
+          text: Sk.tr("Resize")
+        }
       }
 
       Flickable { id: scrollArea_
@@ -178,7 +240,7 @@ Item { id: root_
 
         TextEdit { id: textEdit_
           anchors.centerIn: parent
-          width: _MAX_WIDTH // FIXME: automatically adjust width
+          //width: _MAX_WIDTH // FIXME: automatically adjust width
 
           //selectByMouse: true // conflicts with flickable
 
@@ -287,6 +349,9 @@ Item { id: root_
         opacity: 0.01 // invisible by default
 
         property bool active: toolTip_.containsMouse
+                           //|| dragTip_.containsMouse
+                           || leftResizeTip_.containsMouse
+                           || rightResizeTip_.containsMouse
                            || headerTip_.containsMouse
                            || headerRow_.hover
 
