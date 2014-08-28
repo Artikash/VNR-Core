@@ -933,10 +933,10 @@ Item { id: root_
 
       zoomFactor: dock_.shioriZoomFactor * root_.globalZoomFactor
 
-      onTextWidthChanged: settings_.shioriWidth = textWidth
+      onDefaultWidthChanged: settings_.shioriWidth = defaultWidth
 
       Component.onCompleted: {
-        textWidth = settings_.shioriWidth
+        defaultWidth = settings_.shioriWidth
 
         shiori_.yakuAt.connect(popup)
         grimoire_.yakuAt.connect(popup)
