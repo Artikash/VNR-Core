@@ -711,11 +711,6 @@ class _MainObject(object):
     import gameview
     return gameview.manager()
 
-  @property
-  def topicViewManager(self):
-    import topicview
-    return topicview.manager()
-
   @memoizedproperty
   def aboutDialog(self):
     import about
@@ -2004,7 +1999,13 @@ class MainObject(QObject):
       if w.isVisible():
         w.hide()
 
-    for p in 'subtitleEditorManager', 'gameEditorManager', 'userViewManager', 'gameViewManager':
+    for p in (
+        'subtitleEditorManager',
+        'postEditorManager',
+        'gameEditorManager',
+        'userViewManager',
+        'gameViewManager',
+      ):
       if hasmemoizedproperty(self, p):
         getattr(self, p).hide()
 

@@ -23,8 +23,11 @@ public:
   //QWidget *parentWidget() const;
   //void setParentWidget(QWidget *parentWidget);
 
-  bool isEnabled() const;
+  bool isEnabled() const; // default false
   void setEnabled(bool t);
+
+  int comboKey() const; // windows VK, default 0
+  void setComboKey(int vk);
 
 signals:
   void selected(int x, int y, int width, int height);

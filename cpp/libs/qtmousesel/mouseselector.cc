@@ -26,6 +26,7 @@ class MouseSelectorPrivate
 public:
   // For mouse selection
   bool enabled;
+  int comboKey; // vk
   QWidget *parentWidget;
   MouseRubberBand *rb;
 
@@ -36,10 +37,10 @@ public:
                 Qt::QueuedConnection); // use queued connection to leave mouse event loop
   }
 
+private:
   // For mouse hook
   bool pressed;
 
-//private:
   bool onMousePress(int x, int y, void *wid)
   {
     Q_UNUSED(wid);
@@ -74,11 +75,15 @@ public:
     return false;
   }
 
-  static bool isPressAllowed() { return WinKey::isKeyShiftPressed(); }
+  bool isPressAllowed() const
+  { return !comboKey || WinKey::isKeyPressed(comboKey); }
 
 public:
   explicit MouseSelectorPrivate(Q *q)
-    : q_(q), enabled(false), parentWidget(nullptr), rb(nullptr)
+    : q_(q)
+    , enabled(false)
+    , comboKey(0)
+    , parentWidget(nullptr), rb(nullptr)
     , pressed(false)
   {
     ::mousehook_onlbuttondown(boost::bind(&Self::onMousePress, this, _1, _2, _3));
@@ -112,6 +117,12 @@ MouseSelector::~MouseSelector() { delete d_; }
 //      d_->rb->setParent(v);
 //  }
 //}
+
+int MouseSelector::comboKey() const
+{ return d_->comboKey; }
+
+void MouseSelector::setComboKey(int vk)
+{ d_->comboKey = vk; }
 
 bool MouseSelector::isEnabled() const
 { return d_->enabled; }

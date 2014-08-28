@@ -33,6 +33,9 @@ class _OcrManager(object):
     from mousesel import mousesel
     ret = mousesel.global_()
     ret.selected.connect(self._onRectSelected)
+
+    import win32con
+    ret.setComboKey(win32con.VK_SHIFT)
     return ret
 
   # Rubberband
