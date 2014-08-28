@@ -14,10 +14,12 @@ from modiocr import modiocr
 from mytr import my
 import growl, rc, termman
 
-IMAGE_FORMAT = 'png'
-
 @memoized
 def manager(): return OcrManager()
+
+IMAGE_FORMAT = 'png'
+OCR_MIN_WIDTH = 3
+OCR_MIN_HEIGHT = 3
 
 @Q_Q
 class _OcrManager(object):
@@ -53,6 +55,8 @@ class _OcrManager(object):
     @param  width  int
     @param  height  int
     """
+    if width < OCR_MIN_WIDTH or height < OCR_MIN_HEIGHT:
+      return
     #dprint(x, y, width, height)
     text = self.readScreen(x, y, width, height)
     if text:
