@@ -711,11 +711,6 @@ class _MainObject(object):
     import gameview
     return gameview.manager()
 
-  @property
-  def topicViewManager(self):
-    import topicview
-    return topicview.manager()
-
   @memoizedproperty
   def aboutDialog(self):
     import about
