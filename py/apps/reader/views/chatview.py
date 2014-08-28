@@ -2,6 +2,12 @@
 # chatview.py
 # 8/27/2014 jichi
 
+if __name__ == '__main__':
+  import sys
+  sys.path.append('..')
+  import debug
+  debug.initenv()
+
 import json
 #from functools import partial
 from PySide.QtCore import Qt, Slot, QObject
@@ -67,7 +73,7 @@ class _ChatView(object):
     ret.ignoreSslErrors() # needed to access Twitter
 
     ret.pageAction(QWebPage.Reload).triggered.connect(
-        self.updateAndRefresh, Qt.QueuedConnection)
+        self.refresh, Qt.QueuedConnection)
 
     ret.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks) # Since there are local images
     #ret.page().setLinkDelegationPolicy(QWebPage.DelegateExternalLinks)
@@ -76,61 +82,15 @@ class _ChatView(object):
 
   def refresh(self):
     """@reimp"""
-    q = self.q
-    info = dm.queryGameInfo(itemId=self.itemId, id=self.gameId, cache=False)
-    self._gameBean.info = info
-    if info:
-      if not self.gameId:
-        self.gameId = info.gameId
-      if not self.itemId:
-        self.itemId = info.itemId
-
-    title = info.title if info else ""
-    if not title and self.gameId:
-      title = dm.queryGameName(id=self.gameId)
-
-    t = title or tr_("Game")
-    if info and info.itemId:
-      t += " #%s" % info.itemId
-    if info:
-      if info.upcoming:
-        t += u" (未発売)"
-      elif info.recent:
-        t += u" (新作)"
-    q.setWindowTitle(t)
-
-    icon = info.icon if info else None
-    q.setWindowIcon(icon or rc.icon('window-ChatView'))
-
-    self.editButton.setEnabled(bool(self.gameId))
-    self.launchButton.setEnabled(bool(info and info.local))
-    self.discussButton.setEnabled(bool(info and info.itemId))
-
-    # Fake base addr that twitter javascript can access document.cookie
-    #baseUrl = ''
-    #baseUrl = "http://localhost:6100"
-    #baseUrl = "http://www.amazon.co.jp" # cross domain so that amazon iframe works
-    #baseUrl = 'qrc://'     # would crash QByteArray when refresh
-    #baseUrl = 'qrc://any'  # would crash QByteArray when refresh
-    baseUrl = 'qrc:///_'    # any place is fine
-    #baseUrl = 'file:///'    # would crash QByteArray when refresh
-    #baseUrl = 'file:///any' # any place that is local
-
+    baseUrl = 'http://sakuradite.com'    # any place is fine
     w = self.webView
-    w.setHtml(rc.haml_template('haml/game').render({
-      'title': title,
-      'game': info,
-      #'cache': cacheman.CacheJinjaUtil,
+    w.setHtml(rc.haml_template('haml/chat').render({
+      #'title': title,
       'rc': rc,
       'py': py,
       'tr': tr_,
-      #'i18n': i18n,
-      'jlp': mecabman.manager(),
       #'settings', settings.global_(),
-      'online': netman.manager().isOnline(),
-      #'proxy': proxy.manager(),
     }), baseUrl)
-
     self._injectBeans()
 
   @memoizedproperty
@@ -253,5 +213,10 @@ class ChatViewManagerProxy(QObject):
   @Slot(int)
   def showTopic(self, id):
     manager().showTopic(id)
+
+if __name__ == '__main__':
+  a = debug.app()
+  manager().showTopic(51)
+  a.exec_()
 
 # EOF
