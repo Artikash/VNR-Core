@@ -90,6 +90,10 @@ Item { id: root_
   }
 
   function loadSettings() {
+    shiori_.defaultWidth = settings_.shioriWidth
+
+    grimoire_.widthFactor = settings_.grimoireWidthFactor
+
     //dock_.windowHookChecked = settings_.windowHookEnabled
     //dock_.windowTextChecked = settings_.windowTextVisible
     dock_.speaksTextChecked = settings_.speaksGameText
@@ -119,7 +123,6 @@ Item { id: root_
 
     dock_.shioriZoomFactor = settings_.shioriZoomFactor
     dock_.grimoireZoomFactor = settings_.grimoireZoomFactor
-    dock_.widthFactor = settings_.grimoireWidthFactor
     dock_.alignCenterChecked = settings_.grimoireAlignCenter
     dock_.textChecked = settings_.grimoireTextVisible
     dock_.nameChecked = settings_.grimoireNameVisible
@@ -145,6 +148,10 @@ Item { id: root_
   }
 
   function saveSettings() {
+    settings_.shioriWidth = shiori_.defaultWidth
+
+    settings_.grimoireWidthFactor = grimoire_.widthFactor
+
     settings_.glowIntensity = dock_.glowIntensity
     settings_.glowRadius = dock_.glowRadius
 
@@ -163,7 +170,6 @@ Item { id: root_
     settings_.shioriZoomFactor = dock_.shioriZoomFactor
     settings_.grimoireZoomFactor = dock_.grimoireZoomFactor
     settings_.grimoireSlimDock = dock_.slimChecked
-    settings_.grimoireWidthFactor = dock_.widthFactor
     settings_.grimoireShadowOpacity = dock_.shadowOpacity
     settings_.grimoireAlignCenter = dock_.alignCenterChecked
 
@@ -445,9 +451,13 @@ Item { id: root_
         //}
         x: (locked && !dragging) ? relativeX + center_.x : x
         y: (locked && !dragging) ? relativeY + center_.y : y
-        width: center_.width * widthFactor
 
+        //property real widthFactor
+        property alias widthFactor: dock_.widthFactor
+
+        width: center_.width * widthFactor //* root_.globalZoomFactor
         height: center_.height * 0.7
+
         //property int maxHeight: center_.height * 3 / 4
         //height: maxHeight < root_.height - y ? maxHeight : root_.height - y
 
@@ -602,7 +612,7 @@ Item { id: root_
         //locked: dock_.lockChecked
 
         zoomFactor: dock_.grimoireZoomFactor * root_.globalZoomFactor
-        property alias widthFactor: dock_.widthFactor
+        //property alias widthFactor: dock_.widthFactor
 
         textVisible: dock_.textChecked
         nameVisible: dock_.nameChecked
@@ -627,6 +637,57 @@ Item { id: root_
         //  //else
         //  //  repaint()
         //}
+
+        property int minWidth: dock_.minimumWidthFactor * center_.width
+        property int maxWidth: dock_.maximumWidthFactor * center_.width
+
+        MouseArea { // left draggable area
+          anchors {
+            top: parent.top; bottom: parent.bottom
+            left: parent.left
+            margins: grimoire_.shadowMargin
+          }
+          width: 20 + grimoire_.shadowMargin
+          acceptedButtons: Qt.LeftButton
+
+          property int pressedX
+          onPressed: pressedX = mouseX
+          onPositionChanged:
+            if (pressed && center_.width) {
+              var w = grimoire_.width - (mouseX - pressedX) * 2
+              if (w > grimoire_.minWidth && w < grimoire_.maxWidth)
+                grimoire_.widthFactor = w / center_.width
+            }
+
+          Desktop.TooltipArea { //id: leftResizeTip_
+            anchors.fill: parent
+            text: Sk.tr("Resize")
+          }
+        }
+
+        MouseArea { // right draggable area
+          anchors {
+            top: parent.top; bottom: parent.bottom
+            right: parent.right
+            margins: grimoire_.shadowMargin
+          }
+          width: 20 + grimoire_.shadowMargin
+          acceptedButtons: Qt.LeftButton
+
+          property int pressedX
+          onPressed: pressedX = mouseX
+          onPositionChanged:
+            if (pressed && center_.width) {
+              var w = grimoire_.width + (mouseX - pressedX) * 2
+              if (w > grimoire_.minWidth && w < grimoire_.maxWidth)
+                grimoire_.widthFactor = w / center_.width
+            }
+
+          Desktop.TooltipArea { //id: rightResizeTip_
+            anchors.fill: parent
+            text: Sk.tr("Resize")
+          }
+        }
       }
 
       Kagami.NoteView { //id: gospel_
@@ -933,11 +994,7 @@ Item { id: root_
 
       zoomFactor: dock_.shioriZoomFactor * root_.globalZoomFactor
 
-      onDefaultWidthChanged: settings_.shioriWidth = defaultWidth
-
       Component.onCompleted: {
-        defaultWidth = settings_.shioriWidth
-
         shiori_.yakuAt.connect(popup)
         grimoire_.yakuAt.connect(popup)
         //graffiti_.yakuAt.connect(popup)
