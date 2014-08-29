@@ -1,5 +1,6 @@
 ; chat.haml
 ; 8/29/2014 jichi
+; @param  topicId  long
 ; @param  title  unicode
 ; @param  rc  rc
 ;!!! 5
@@ -17,7 +18,8 @@
       }
 
   %body
-    .container
+    .topic(data-id="#{topicId}")
+      .posts
 
     :javascript
     -for it in \

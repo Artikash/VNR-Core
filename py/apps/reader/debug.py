@@ -20,13 +20,24 @@ def initenv():
     try: os.environ[it] += os.pathsep + os.pathsep.join(config.ENV_PATH)
     except: pass
 
+def debugon():
+  from sakurakit import skdebug
+  skdebug.DEBUG = True
+  import config
+  config.APP_DEBUG = True
+
+
 def app():
+  debugon()
+
   import app
   a = app.Application(sys.argv)
   a.loadTranslations()
   return a
 
 def app_exec(timeout=1000):
+  debugon()
+
   from PySide.QtCore import QTimer
   from Qt5.QtWidgets import QApplication
   app = QApplication(sys.argv)
@@ -36,11 +47,6 @@ def app_exec(timeout=1000):
 if __name__ == '__main__':
   print "debug: enter"
   initenv()
-
-  from sakurakit import skdebug
-  skdebug.DEBUG = True
-  import config
-  config.APP_DEBUG = True
 
   from PySide import QtCore, QtGui
 
@@ -94,7 +100,7 @@ if __name__ == '__main__':
   def test_chat():
     a = app()
     import chatview
-    chatview.manager().showTopic(50)
+    chatview.manager().showTopic(51)
     a.exec_()
 
   test_chat()

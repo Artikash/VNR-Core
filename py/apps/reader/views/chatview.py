@@ -60,7 +60,7 @@ class _ChatView(object):
     m = coffeebean.manager()
     return (
       ('cacheBean', m.cacheBean),
-      ('trBean', m.trBean),
+      #('trBean', m.trBean),
       #('viewBean', self._viewBean),
     )
 
@@ -82,9 +82,12 @@ class _ChatView(object):
 
   def refresh(self):
     """@reimp"""
-    baseUrl = 'http://sakuradite.com'    # any place is fine
+    #baseUrl = 'http://sakuradite.com'
+    baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy
+
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/chat').render({
+      'topicId': self.topicId,
       'title': tr_("Chat"),
       'rc': rc,
     }), baseUrl)
@@ -225,7 +228,7 @@ class ChatViewManagerProxy(QObject):
 
 if __name__ == '__main__':
   a = debug.app()
-  manager().showTopic(51)
+  manager().showTopic(409)
   a.exec_()
 
 # EOF
