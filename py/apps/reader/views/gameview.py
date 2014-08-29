@@ -394,18 +394,17 @@ class _GameView(object):
 
   def _edit(self): main.manager().showReferenceView(gameId=self.gameId)
 
-  @memoizedproperty
-  def refreshButton(self):
-    ret = QtWidgets.QPushButton(tr_("Refresh"))
-    skqss.class_(ret, 'btn btn-info')
-    ret.setToolTip(tr_("Refresh") + " (Ctrl+R)")
-    #ret.setStatusTip(ret.toolTip())
-    ret.clicked.connect(self.updateAndRefresh)
-
-    nm = netman.manager()
-    ret.setEnabled(nm.isOnline())
-    nm.onlineChanged.connect(ret.setEnabled)
-    return ret
+  #@memoizedproperty
+  #def refreshButton(self):
+  #  ret = QtWidgets.QPushButton(tr_("Refresh"))
+  #  skqss.class_(ret, 'btn btn-info')
+  #  ret.setToolTip(tr_("Refresh") + " (Ctrl+R)")
+  #  #ret.setStatusTip(ret.toolTip())
+  #  ret.clicked.connect(self.updateAndRefresh)
+  #  nm = netman.manager()
+  #  ret.setEnabled(nm.isOnline())
+  #  nm.onlineChanged.connect(ret.setEnabled)
+  #  return ret
 
   @memoizedproperty
   def helpButton(self):

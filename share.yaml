@@ -456,6 +456,7 @@ templates:
     qml/userplugin: qml/userplugin.qml
     haml/credits:   haml/credits.haml
     haml/help:      haml/help.haml
+    haml/chat:      haml/chat.haml
     haml/game:      haml/game.haml
     haml/gameboard: haml/gameboard.haml
     haml/user:      haml/user.haml

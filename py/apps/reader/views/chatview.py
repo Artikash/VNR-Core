@@ -20,7 +20,7 @@ from sakurakit.skwebkit import SkWebView #, SkWebViewBean
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
 #from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
-import main, osutil, py, rc
+import osutil, rc
 
 @Q_Q
 class _ChatView(object):
@@ -85,11 +85,8 @@ class _ChatView(object):
     baseUrl = 'http://sakuradite.com'    # any place is fine
     w = self.webView
     w.setHtml(rc.haml_template('haml/chat').render({
-      #'title': title,
+      'title': tr_("Chat"),
       'rc': rc,
-      'py': py,
-      'tr': tr_,
-      #'settings', settings.global_(),
     }), baseUrl)
     self._injectBeans()
 
@@ -98,12 +95,24 @@ class _ChatView(object):
     ret = SkStyleView()
     skqss.class_(ret, 'texture')
     layout = QtWidgets.QHBoxLayout()
-    layout.addStretch()
     layout.addWidget(self.newButton)
-    #layout.addWidget(self.refreshButton) # disabled
+    layout.addStretch()
     layout.addWidget(self.browseButton)
+    layout.addWidget(self.refreshButton)
     ret.setLayout(layout)
     layout.setContentsMargins(4, 4, 4, 4)
+    return ret
+
+  @memoizedproperty
+  def refreshButton(self):
+    ret = QtWidgets.QPushButton(tr_("Refresh"))
+    skqss.class_(ret, 'btn btn-info')
+    ret.setToolTip(tr_("Refresh") + " (Ctrl+R)")
+    #ret.setStatusTip(ret.toolTip())
+    ret.clicked.connect(self.refresh)
+    #nm = netman.manager()
+    #ret.setEnabled(nm.isOnline())
+    #nm.onlineChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
@@ -146,7 +155,7 @@ class ChatView(QtWidgets.QMainWindow):
       self.__d.refresh()
     super(ChatView, self).setVisible(value)
     if not value:
-      d.webView.clear()
+      self.__d.webView.clear()
 
 class _ChatViewManager:
   def __init__(self):

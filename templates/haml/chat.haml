@@ -1,0 +1,21 @@
+; chat.haml
+; 8/29/2014 jichi
+; @param  title  unicode
+; @param  rc  rc
+;!!! 5
+
+%html(lang="ja")
+  %head
+    ; Stylesheets
+    -for it in 'bootstrap3.css', 'font-awesome4.css'
+      %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
+
+  %body
+    :javascript
+    -for it in \
+        'jquery', 'jquery.ui', \
+        'haml', \
+        'rest'
+      %script(src="#{rc.cdn_url(it)}")
+
+; EOF
