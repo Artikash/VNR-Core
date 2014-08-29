@@ -84,9 +84,13 @@ Item { id: root_
   property string dutchFont
   property string polishFont
 
+  property int shadowMargin: -8 // shadow_.margins
+
   property int contentHeight: shadow_.y + shadow_.height
 
-  property bool dragging: headerMouseArea_.drag.active ||
+  property bool dragging:
+      headerMouseArea_.drag.active ||
+      listTopMouseArea_.drag.active ||
       !!highlightMouseArea && highlightMouseArea.drag.active
   property bool empty: !listModel_.count
 
@@ -294,7 +298,7 @@ Item { id: root_
     //visible: !root_.locked
     visible: root_.containsVisibleText
 
-    property bool active: listMouseArea_.containsMouse ||
+    property bool active: listTopMouseTip_.containsMouse ||
                           toolTip_.containsMouse ||
                           buttonRow_.hover ||
                           !!highlightMouseArea && highlightMouseArea.hover
@@ -495,7 +499,7 @@ Item { id: root_
   Rectangle { id: shadow_
     anchors {
       left: listView_.left; right: listView_.right
-      margins: -8
+      margins: root_.shadowMargin
     }
     y: Math.max(-listView_.contentY, 0)
     height: Math.min(listView_.height,
@@ -519,6 +523,8 @@ Item { id: root_
     //}
   }
 
+  property int _RESIZABLE_AREA_WIDTH: 20 // resizable mouse area thickness
+
   ListView { id: listView_
     anchors.fill: parent
     //width: root_.width; height: root_.height
@@ -526,14 +532,27 @@ Item { id: root_
     boundsBehavior: Flickable.DragOverBounds // no overshoot bounds
     snapMode: ListView.SnapToItem   // move to bounds
 
-    MouseArea { id: listMouseArea_
+    MouseArea { id: listTopMouseArea_ // mouse area for the header
       anchors {
         left: parent.left; right: parent.right
         top: parent.top
       }
-      height: 9
-      hoverEnabled: true
-      acceptedButtons: Qt.NoButton
+      //height: 9
+      height: _RESIZABLE_AREA_WIDTH
+      //hoverEnabled: true
+      acceptedButtons: Qt.LeftButton
+
+      drag {
+        target: root_
+        axis: Drag.XandYAxis
+        //minimumX: root_.minimumX; minimumY: root_.minimumY
+        //maximumX: root_.maximumX; maximumY: root_.maximumY
+      }
+
+      Desktop.TooltipArea { id: listTopMouseTip_
+        anchors.fill: parent
+        text: Sk.tr("Move")
+      }
     }
 
     //contentWidth: width

@@ -171,29 +171,6 @@ Item { id: root_
         //}
       }
 
-      MouseArea { // right draggable area
-        anchors {
-          top: parent.top; bottom: parent.bottom
-          right: parent.right
-        }
-        width: _RESIZABLE_AREA_WIDTH
-        acceptedButtons: Qt.LeftButton
-
-        property int pressedX
-        onPressed: pressedX = mouseX
-        onPositionChanged:
-          if (pressed) {
-            var w = textEdit_.width + mouseX - pressedX
-            if (w > _MIN_WIDTH && w < _MAX_WIDTH)
-              textEdit_.width = w
-          }
-
-        Desktop.TooltipArea { id: leftResizeTip_
-          anchors.fill: parent
-          text: Sk.tr("Resize")
-        }
-      }
-
       MouseArea { // left draggable area
         anchors {
           top: parent.top; bottom: parent.bottom
@@ -212,6 +189,29 @@ Item { id: root_
               textEdit_.width = w
               item_.x += dx
             }
+          }
+
+        Desktop.TooltipArea { id: leftResizeTip_
+          anchors.fill: parent
+          text: Sk.tr("Resize")
+        }
+      }
+
+      MouseArea { // right draggable area
+        anchors {
+          top: parent.top; bottom: parent.bottom
+          right: parent.right
+        }
+        width: _RESIZABLE_AREA_WIDTH
+        acceptedButtons: Qt.LeftButton
+
+        property int pressedX
+        onPressed: pressedX = mouseX
+        onPositionChanged:
+          if (pressed) {
+            var w = textEdit_.width + mouseX - pressedX
+            if (w > _MIN_WIDTH && w < _MAX_WIDTH)
+              textEdit_.width = w
           }
 
         Desktop.TooltipArea { id: rightResizeTip_
