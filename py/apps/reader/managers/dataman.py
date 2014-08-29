@@ -1423,7 +1423,7 @@ class Game(object):
 
   #@property
   def gameType(self): # str not None, '' or 'otome' or 'junai' or 'nuki'
-    if self.itemId:
+    if self.itemId and self.itemId >= defs.MIN_NORMAL_GAME_ITEM_ID:
       g = manager().queryGameItem(self.itemId)
       if g:
         return 'otome' if g.otome else 'nuki' if g.okazu else 'junai'
@@ -1457,7 +1457,7 @@ class _GameObject(object):
   @memoizedproperty
   def gameType(self): # unicode or None
     info = self.info
-    if info:
+    if info and info.itemId >= defs.MIN_NORMAL_GAME_ITEM_ID: # skip emulator which is less than 100
       return 'otome' if info.otome0 else 'junai' if not info.okazu0 else 'nuki'
     return ''
 
