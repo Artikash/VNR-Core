@@ -16,8 +16,8 @@ Item { id: root_
 
   property int contentHeight: shadow_.y + shadow_.height
 
-  property bool dragging: headerMouseArea_.drag.active ||
-      !!highlightMouseArea && highlightMouseArea.drag.active
+  //property bool dragging: headerMouseArea_.drag.active ||
+  //    !!highlightMouseArea && highlightMouseArea.drag.active
   property bool empty: !listModel_.count
 
   //property alias borderVisible: borderAct_.checked
@@ -85,6 +85,10 @@ Item { id: root_
   }
 
   // - Private -
+
+  property int _MIN_WIDTH: 50
+  property int _MAX_WIDTH: 1900
+  property int _RESIZABLE_AREA_WIDTH: 15
 
   opacity: 0
   states: State {
@@ -227,8 +231,11 @@ Item { id: root_
     //visible: !root_.locked
     visible: !root_.empty
 
-    property bool active: listMouseArea_.containsMouse ||
-                          toolTip_.containsMouse ||
+    property bool active: toolTip_.containsMouse ||
+                          topResizeTip_.containsMouse ||
+                          bottomResizeTip_.containsMouse ||
+                          leftResizeTip_.containsMouse ||
+                          rightResizeTip_.containsMouse ||
                           closeButton_.hover ||
                           //speakButton_.hover ||
                           !!highlightMouseArea && highlightMouseArea.hover
@@ -323,10 +330,12 @@ Item { id: root_
     }
   }
 
+  property int _SHADOW_MARGIN: -8
+
   Rectangle { id: shadow_
     anchors {
       left: listView_.left; right: listView_.right
-      margins: -8
+      margins: _SHADOW_MARGIN
     }
     y: Math.max(-listView_.contentY, 0)
     height: Math.min(listView_.height,
@@ -356,14 +365,104 @@ Item { id: root_
     boundsBehavior: Flickable.DragOverBounds // no overshoot bounds
     snapMode: ListView.SnapToItem   // move to bounds
 
-    MouseArea { id: listMouseArea_
+    // Drag
+
+    MouseArea { // top draggable area
       anchors {
         left: parent.left; right: parent.right
         top: parent.top
       }
-      height: 9
-      hoverEnabled: true
-      acceptedButtons: Qt.NoButton
+      //height: 9
+      height: _RESIZABLE_AREA_WIDTH
+      //hoverEnabled: true
+      acceptedButtons: Qt.LeftButton
+
+      drag {
+        target: root_
+        axis: Drag.XandYAxis
+        //minimumX: root_.minimumX; minimumY: root_.minimumY
+        //maximumX: root_.maximumX; maximumY: root_.maximumY
+      }
+
+      Desktop.TooltipArea { id: topResizeTip_
+        anchors.fill: parent
+        text: Sk.tr("Move")
+      }
+    }
+
+    MouseArea { // bottom draggable area
+      anchors {
+        left: parent.left; right: parent.right
+      }
+      y: shadow_.height - height
+      //height: 9
+      height: _RESIZABLE_AREA_WIDTH
+      //hoverEnabled: true
+      acceptedButtons: Qt.LeftButton
+
+      drag {
+        target: root_
+        axis: Drag.XandYAxis
+        //minimumX: root_.minimumX; minimumY: root_.minimumY
+        //maximumX: root_.maximumX; maximumY: root_.maximumY
+      }
+
+      Desktop.TooltipArea { id: bottomResizeTip_
+        anchors.fill: parent
+        text: Sk.tr("Move")
+      }
+    }
+
+
+    MouseArea { // left draggable area
+      anchors {
+        top: parent.top; bottom: parent.bottom
+        left: parent.left
+        margins: _SHADOW_MARGIN
+      }
+      width: _RESIZABLE_AREA_WIDTH - _SHADOW_MARGIN
+      acceptedButtons: Qt.LeftButton
+
+      property int pressedX
+      onPressed: pressedX = mouseX
+      onPositionChanged:
+        if (pressed) {
+          var dx = mouseX - pressedX
+          var w = root_.width - dx
+          if (w > _MIN_WIDTH && w < _MAX_WIDTH) {
+            root_.width = w
+            root_.x += dx
+          }
+        }
+
+      Desktop.TooltipArea { id: leftResizeTip_
+        anchors.fill: parent
+        text: Sk.tr("Resize")
+      }
+    }
+
+    MouseArea { // right draggable area
+      anchors {
+        top: parent.top; bottom: parent.bottom
+        right: parent.right
+        margins: _SHADOW_MARGIN
+      }
+      width: _RESIZABLE_AREA_WIDTH - _SHADOW_MARGIN
+      acceptedButtons: Qt.LeftButton
+
+      property int pressedX
+      onPressed: pressedX = mouseX
+      onPositionChanged:
+        if (pressed) {
+          var w = root_.width + mouseX - pressedX
+          if (w > _MIN_WIDTH && w < _MAX_WIDTH)
+            root_.width = w
+        }
+
+      Desktop.TooltipArea { id: rightResizeTip_
+        anchors.fill: parent
+        text: Sk.tr("Resize")
+      }
     }
 
     //contentWidth: width

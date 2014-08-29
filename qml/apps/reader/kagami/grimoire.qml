@@ -525,7 +525,7 @@ Item { id: root_
     //}
   }
 
-  property int _RESIZABLE_AREA_WIDTH: 20 // resizable mouse area thickness
+  property int _RESIZABLE_AREA_WIDTH: 15 // resizable mouse area thickness
 
   ListView { id: listView_
     anchors.fill: parent
@@ -556,7 +556,6 @@ Item { id: root_
         text: Sk.tr("Move")
       }
     }
-
 
     MouseArea { id: listBottomMouseArea_ // mouse area for the header
       anchors {
