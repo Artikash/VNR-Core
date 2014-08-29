@@ -19,6 +19,8 @@ Item { id: root_
 
   // - Private -
 
+  clip: true
+
   // A light, semi-transparent background
   Rectangle {
     anchors.fill: parent
