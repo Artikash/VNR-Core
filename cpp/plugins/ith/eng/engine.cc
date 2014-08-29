@@ -47,7 +47,7 @@ DWORD InsertDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 DWORD DeterminePCEngine()
 {
   enum : DWORD { yes = 0, no = 1 }; // return value
-  if (IthCheckFile(L"PPSSPPWindows.exe")) { // jichi 7/12/2014
+  if (IthFindFile(L"PPSSPP*.exe")) { // jichi 7/12/2014 PPSSPPWindows.exe, PPSSPPEX.exe PPSSPPSP.exe
     InsertPPSSPPHooks();
     return yes;
   }
