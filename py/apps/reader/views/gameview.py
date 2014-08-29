@@ -363,7 +363,7 @@ class _GameView(object):
   @memoizedproperty
   def discussButton(self):
     ret = QtWidgets.QPushButton(mytr_("Discuss"))
-    skqss.class_(ret, 'btn btn-info')
+    skqss.class_(ret, 'btn btn-default')
     ret.setToolTip(mytr_("Game Discussion"))
     #ret.setStatusTip(ret.toolTip())
     ret.setEnabled(False)

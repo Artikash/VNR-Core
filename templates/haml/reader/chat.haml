@@ -7,15 +7,23 @@
 %html(lang="ja")
   %head
     ; Stylesheets
-    -for it in 'bootstrap3.css', 'font-awesome4.css'
+    -for it in 'bootstrap3.css', 'font-awesome4.css', 'reader/chat.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
 
+    :css
+      body {
+        background-image: url("#{rc.wallpaper_url()}");
+        background-size: cover;
+      }
+
   %body
+    .container
+
     :javascript
     -for it in \
         'jquery', 'jquery.ui', \
         'haml', \
-        'rest'
+        'share/rest', 'reader/chat'
       %script(src="#{rc.cdn_url(it)}")
 
 ; EOF

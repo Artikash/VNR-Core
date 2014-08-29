@@ -118,7 +118,7 @@ class _ChatView(object):
   @memoizedproperty
   def browseButton(self):
     ret = QtWidgets.QPushButton(tr_("Browse"))
-    skqss.class_(ret, 'btn btn-info')
+    skqss.class_(ret, 'btn btn-default')
     ret.setToolTip(tr_("Launch"))
     #ret.setStatusTip(ret.toolTip())
     ret.clicked.connect(lambda:
