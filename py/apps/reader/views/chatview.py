@@ -84,7 +84,7 @@ class _ChatView(object):
     """@reimp"""
     baseUrl = 'http://sakuradite.com'    # any place is fine
     w = self.webView
-    w.setHtml(rc.haml_template('haml/chat').render({
+    w.setHtml(rc.haml_template('haml/reader/chat').render({
       'title': tr_("Chat"),
       'rc': rc,
     }), baseUrl)

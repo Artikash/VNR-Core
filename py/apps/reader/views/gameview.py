@@ -316,7 +316,7 @@ class _GameView(object):
     #baseUrl = 'file:///any' # any place that is local
 
     w = self.webView
-    w.setHtml(rc.haml_template('haml/game').render({
+    w.setHtml(rc.haml_template('haml/reader/game').render({
       'title': title,
       'game': info,
       'cache': cacheman.CacheJinjaUtil,

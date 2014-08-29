@@ -143,7 +143,7 @@ null
     #    operator.itemgetter('timestamp'))
     import py
     q = self.q
-    q.setHtml(rc.haml_template('haml/gameboard').render({
+    q.setHtml(rc.haml_template('haml/reader/gameboard').render({
       #'cacher': cacheman.UrlCacher,
       'games': games,
       #'i18n': i18n,

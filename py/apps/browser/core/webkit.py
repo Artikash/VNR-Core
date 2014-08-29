@@ -238,7 +238,7 @@ class _WbWebPage(object):
     #if not self.q.parent().url().isEmpty():
     self.injectBeans()
     f = self.q.mainFrame()
-    f.evaluateJavaScript(rc.cdn_data('inject'))
+    f.evaluateJavaScript(rc.cdn_data('browser/inject'))
 
   def injectBeans(self):
     if not self._beansInjected: # and not self.q.parent().url().isEmpty():

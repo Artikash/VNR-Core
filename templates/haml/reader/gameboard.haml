@@ -7,7 +7,7 @@
 ;!!! 5
 %html(lang="ja")
   %head
-    -for it in 'bootstrap2.css', 'dragdealer.css', 'metro.css', 'font-awesome3.css', 'gameboard.css'
+    -for it in 'bootstrap2.css', 'dragdealer.css', 'metro.css', 'font-awesome3.css', 'reader/gameboard.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
     :css
       body {
@@ -250,7 +250,8 @@
           'underscore', 'underscore.string', \
           'dragdealer', 'masonry', \
           'haml', 'moment', \
-          'choco', 'widgets', 'gameboard'
+          'share/choco', \
+          'reader/widgets', 'reader/gameboard'
         %script(src="#{rc.cdn_url(it)}")
 
 ; EOF

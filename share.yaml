@@ -131,23 +131,24 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #haml: http://rawgithub.com/creationix/haml-js/master/lib/haml.js?0.4.3
   haml: $PWD/../AJAX/haml/haml.min.js
 
-  # My own sass and coffeescript
-
-  choco: $PWD/coffee/libs/choco.min.js
-  annot: $PWD/coffee/share/annot.min.js
-  rest: $PWD/coffee/share/rest.min.js
-
-  # Reader
-  widgets: $PWD/coffee/reader/widgets.min.js
-
-  game: $PWD/coffee/reader/game.min.js
-  game.css: $PWD/rb/compass/web/css/game.min.css
-  gameboard: $PWD/coffee/reader/gameboard.min.js
-  gameboard.css: $PWD/rb/compass/web/css/gameboard.min.css
-
+  # CSS
   dragdealer.css: $PWD/rb/compass/web/css/dragdealer.min.css
   metro.css: $PWD/rb/compass/web/css/metro.min.css
   #iframe.css: $PWD/rb/compass/web/css/iframe.min.css
+
+  # My own sass and coffeescript
+
+  share/choco: $PWD/coffee/libs/choco.min.js
+  share/annot: $PWD/coffee/share/annot.min.js
+  share/rest: $PWD/coffee/share/rest.min.js
+
+  # Reader
+  reader/widgets: $PWD/coffee/reader/widgets.min.js
+
+  reader/game: $PWD/coffee/reader/game.min.js
+  reader/game.css: $PWD/rb/compass/web/css/game.min.css
+  reader/gameboard: $PWD/coffee/reader/gameboard.min.js
+  reader/gameboard.css: $PWD/rb/compass/web/css/gameboard.min.css
 
   #amazon.css: $PWD/rb/compass/web/css/sites/amazon.min.css
   #getchu.css: $PWD/rb/compass/web/css/sites/getchu.min.css
@@ -157,7 +158,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #dmm.css: $PWD/rb/compass/web/css/sites/dmm.min.css
 
   # Browser
-  inject: $PWD/coffee/browser/inject.min.js
+  browser/inject: $PWD/coffee/browser/inject.min.js
   #browser: $PWD/coffee/browser/browser.js
   browser: $PWD/coffee/browser/browser.min.js
   browser.css: $PWD/rb/compass/web/css/browser.min.css
@@ -454,12 +455,6 @@ templates:
   entries:
     qml/opengame:   qml/opengame.qml
     qml/userplugin: qml/userplugin.qml
-    haml/credits:   haml/credits.haml
-    haml/help:      haml/help.haml
-    haml/chat:      haml/chat.haml
-    haml/game:      haml/game.haml
-    haml/gameboard: haml/gameboard.haml
-    haml/user:      haml/user.haml
     html/furigana:  html/furigana.html
     html/shiori:    html/shiori.html
     xml/comments:   xml/comments.xml
@@ -472,11 +467,18 @@ templates:
     xml/users:      xml/users.xml
     xml/voices:     xml/voices.xml
 
-    haml/browser/about: haml/browser/about.haml
-    haml/browser/help:  haml/browser/help.haml
-    haml/browser/error: haml/browser/error.haml
-    haml/browser/start: haml/browser/start.haml
-    haml/browser/settings: haml/browser/settings.haml
+    haml/reader/credits:    haml/reader/credits.haml
+    haml/reader/chat:       haml/reader/chat.haml
+    haml/reader/help:       haml/reader/help.haml
+    haml/reader/game:       haml/reader/game.haml
+    haml/reader/gameboard:  haml/reader/gameboard.haml
+    haml/reader/user:       haml/reader/user.haml
+
+    haml/browser/about:     haml/browser/about.haml
+    haml/browser/help:      haml/browser/help.haml
+    haml/browser/error:     haml/browser/error.haml
+    haml/browser/start:     haml/browser/start.haml
+    haml/browser/settings:  haml/browser/settings.haml
 
 avatars:
   location:         $PWD/images/avatars
