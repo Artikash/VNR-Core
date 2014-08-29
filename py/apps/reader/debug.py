@@ -37,6 +37,11 @@ if __name__ == '__main__':
   print "debug: enter"
   initenv()
 
+  from sakurakit import skdebug
+  skdebug.DEBUG = True
+  import config
+  config.APP_DEBUG = True
+
   from PySide import QtCore, QtGui
 
   #import settings
@@ -86,6 +91,12 @@ if __name__ == '__main__':
     lang = modiocr.LANG_JA
     ok = modiocr.readfile(path, lang)
 
-  test_ocr()
+  def test_chat():
+    a = app()
+    import chatview
+    chatview.manager().showTopic(50)
+    a.exec_()
+
+  test_chat()
 
 # EOF
