@@ -91,6 +91,7 @@ Item { id: root_
   property bool dragging:
       headerMouseArea_.drag.active ||
       listTopMouseArea_.drag.active ||
+      listBottomMouseArea_.drag.active ||
       !!highlightMouseArea && highlightMouseArea.drag.active
   property bool empty: !listModel_.count
 
@@ -298,8 +299,9 @@ Item { id: root_
     //visible: !root_.locked
     visible: root_.containsVisibleText
 
-    property bool active: listTopMouseTip_.containsMouse ||
-                          toolTip_.containsMouse ||
+    property bool active: toolTip_.containsMouse ||
+                          listTopMouseTip_.containsMouse ||
+                          listBottomMouseTip_.containsMouse ||
                           buttonRow_.hover ||
                           !!highlightMouseArea && highlightMouseArea.hover
 
@@ -550,6 +552,30 @@ Item { id: root_
       }
 
       Desktop.TooltipArea { id: listTopMouseTip_
+        anchors.fill: parent
+        text: Sk.tr("Move")
+      }
+    }
+
+
+    MouseArea { id: listBottomMouseArea_ // mouse area for the header
+      anchors {
+        left: parent.left; right: parent.right
+      }
+      y: shadow_.height - height
+      //height: 9
+      height: _RESIZABLE_AREA_WIDTH
+      //hoverEnabled: true
+      acceptedButtons: Qt.LeftButton
+
+      drag {
+        target: root_
+        axis: Drag.XandYAxis
+        //minimumX: root_.minimumX; minimumY: root_.minimumY
+        //maximumX: root_.maximumX; maximumY: root_.maximumY
+      }
+
+      Desktop.TooltipArea { id: listBottomMouseTip_
         anchors.fill: parent
         text: Sk.tr("Move")
       }
