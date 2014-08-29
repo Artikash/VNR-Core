@@ -29,8 +29,13 @@ Item { id: root_
 
   property int _BBCODE_TIMESTAMP: 1363922891
 
-  property int _MAX_WIDTH: 400
-  property int _MAX_HEIGHT: 400
+  property int _MAX_HEIGHT: 400 * zoomFactor
+
+  property int _DEFAULT_WIDTH: 400 * root_.zoomFactor
+  property int _MIN_WIDTH: 50 * root_.zoomFactor
+  property int _MAX_WIDTH: 1000 * root_.zoomFactor
+
+  property int _RESIZABLE_AREA_WIDTH: 15 // resizable mouse area thickness
 
   property int _FADE_DURATION: 800
 
@@ -62,7 +67,7 @@ Item { id: root_
     color: toolTip_.containsMouse ? '#aa000000' : '#88000000'
   }
 
-  MouseArea { id: dragArea_
+  MouseArea { //id: dragArea_
     anchors.fill: parent
     hoverEnabled: true
     acceptedButtons: Qt.LeftButton
@@ -72,6 +77,55 @@ Item { id: root_
 
       minimumX: root_.minimumX; minimumY: root_.minimumY
       maximumX: root_.maximumX; maximumY: root_.maximumY
+    }
+  }
+
+  MouseArea { // left draggable area
+    anchors {
+      top: parent.top; bottom: parent.bottom
+      left: parent.left
+    }
+    width: _RESIZABLE_AREA_WIDTH
+    acceptedButtons: Qt.LeftButton
+
+    property int pressedX
+    onPressed: pressedX = mouseX
+    onPositionChanged:
+      if (pressed) {
+        var dx = mouseX - pressedX
+        var w = textEdit_.width - dx
+        if (w > _MIN_WIDTH && w < _MAX_WIDTH) {
+          textEdit_.width = w
+          root_.x += dx
+        }
+      }
+
+    Desktop.TooltipArea { id: leftResizeTip_
+      anchors.fill: parent
+      text: Sk.tr("Resize")
+    }
+  }
+
+  MouseArea { // right draggable area
+    anchors {
+      top: parent.top; bottom: parent.bottom
+      right: parent.right
+    }
+    width: _RESIZABLE_AREA_WIDTH
+    acceptedButtons: Qt.LeftButton
+
+    property int pressedX
+    onPressed: pressedX = mouseX
+    onPositionChanged:
+      if (pressed) {
+        var w = textEdit_.width + mouseX - pressedX
+        if (w > _MIN_WIDTH && w < _MAX_WIDTH)
+          textEdit_.width = w
+      }
+
+    Desktop.TooltipArea { id: rightResizeTip_
+      anchors.fill: parent
+      text: Sk.tr("Resize")
     }
   }
 
@@ -96,7 +150,7 @@ Item { id: root_
 
     TextEdit { id: textEdit_
       anchors.centerIn: parent
-      width: _MAX_WIDTH // FIXME: automatically adjust width
+      //width: _DEFAULT_WIDTH // FIXME: automatically adjust width
       readOnly: true
 
       selectByMouse: true // conflicts with flickable
@@ -204,7 +258,7 @@ Item { id: root_
       return ~t.indexOf("\\") ? tex_.toHtml(t) : t
   }
 
-  //Plugin.SubtitleEditorManagerProxy { id: subeditPlugin__ }
+  //Plugin.SubtitleEditorManagerProxy { id: subeditPlugin_ }
   //Plugin.UserViewManagerProxy { id: userViewPlugin_ }
 
   Plugin.GospelBean { id: bean_
@@ -216,6 +270,7 @@ Item { id: root_
   }
 
   function clear() {
+    textEdit_.width = _DEFAULT_WIDTH
     root_.comment = null
     if (root_.comments.count > 0)
       root_.comments.clear()
@@ -256,7 +311,7 @@ Item { id: root_
 
     Desktop.MenuItem { //id: editAct_
       text: Sk.tr("Edit")
-      onTriggered: if (comment) subeditPlugin__.showComment(comment)
+      onTriggered: if (comment) subeditPlugin_.showComment(comment)
     }
 
     Desktop.MenuItem {
