@@ -2907,12 +2907,12 @@ You can redownload it later if you have Internet access.</source>
         <translation>匹配的文本太短了呢。你最好把词条设定为系列专用的。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="313"/>
+        <location filename="dialogs/terminput.py" line="316"/>
         <source>Everything looks OK</source>
         <translation>看起来还好</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="322"/>
+        <location filename="dialogs/terminput.py" line="325"/>
         <source>Create dictionary entry</source>
         <translation>创建词条</translation>
     </message>
@@ -3949,6 +3949,11 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <location filename="dialogs/terminput.py" line="310"/>
         <source>The pattern is short and only contains hiragana that could be ambiguous.</source>
         <translation>匹配的文本很短且只包含平假名，这样很容易产生歧义。</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="313"/>
+        <source>The pattern is long. Please DO NOT add subtitles to Shared Dictionary.</source>
+        <translation>匹配的文本很长。请不要把人工字幕加入共享辞书。</translation>
     </message>
 </context>
 </TS>

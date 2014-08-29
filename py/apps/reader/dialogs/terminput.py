@@ -299,7 +299,7 @@ class _TermInput(object):
     elif self._isUseless():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is the same as the translation that is useless.")))
-    elif len(pattern.strip()) < 3 and not self.specialButton.isChecked():
+    elif len(pattern) < 3 and not self.specialButton.isChecked():
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is kind of short. You might want to turn on the series-specific option.")))
     elif not self.textEdit.text().strip():
@@ -308,6 +308,9 @@ class _TermInput(object):
     elif RE_SHORT_HIRAGANA.match(pattern):
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is short and only contains hiragana that could be ambiguous.")))
+    elif len(pattern) > 10 and not self.regexButton.isChecked():
+      skqss.class_(w, 'text-error')
+      w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is long. Please DO NOT add subtitles to Shared Dictionary.")))
     else:
       skqss.class_(w, 'text-success')
       w.setText("%s: %s" % (tr_("Note"), my.tr("Everything looks OK")))

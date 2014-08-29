@@ -1916,7 +1916,7 @@ You can add games from different sites. Some differences are as follows:
 &lt;br/&gt;
 * ErogeTrailers has the information of amazon and dmm, so that you don&apos;t have to add other sites manually.
 &lt;br/&gt;
-* Amazon has popular games, but no 同人 games and no latest 独占 games.
+* Amazon has popular games, but no 同人 games and no latest 獨佔 games.
 &lt;br/&gt;
 DMM covers most of recent games, but is missing old games (say, before 2008).
 &lt;br/&gt;
@@ -1964,7 +1964,7 @@ VNR可以添加不同網站上的遊戲。它們的不同如下：
 &lt;br/&gt;
 * ErogeTrailers上已包含Amazon和DMM的信息。添加了ErogeTrailers就不需要添加其他鏈接了。
 &lt;br/&gt;
-* Amazon上包含很多名作，但是沒有同人遊戲，也沒有一些剛剛發售的独占遊戲。
+* Amazon上包含很多名作，但是沒有同人遊戲，也沒有一些剛剛發售的獨佔遊戲。
 &lt;br/&gt;
 DMM上幾乎可以找到近期發售的全部遊戲，但是不缺少很老的遊戲，比如2008年之前的。
 &lt;br/&gt;
@@ -2907,12 +2907,12 @@ You can redownload it later if you have Internet access.</source>
         <translation>匹配的文本太短了呢。你最好把詞條設定為系列專用的。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="313"/>
+        <location filename="dialogs/terminput.py" line="316"/>
         <source>Everything looks OK</source>
         <translation>看起來還好</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="322"/>
+        <location filename="dialogs/terminput.py" line="325"/>
         <source>Create dictionary entry</source>
         <translation>創建詞條</translation>
     </message>
@@ -3949,6 +3949,11 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <location filename="dialogs/terminput.py" line="310"/>
         <source>The pattern is short and only contains hiragana that could be ambiguous.</source>
         <translation>匹配的文本很短且只包含平假名，這樣很容易產生歧義。</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="313"/>
+        <source>The pattern is long. Please DO NOT add subtitles to Shared Dictionary.</source>
+        <translation>匹配的文本很長。請不要把人工字幕加入共享辭書。</translation>
     </message>
 </context>
 </TS>
