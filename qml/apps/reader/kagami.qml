@@ -641,29 +641,29 @@ Item { id: root_
         property int minWidth: dock_.minimumWidthFactor * center_.width
         property int maxWidth: dock_.maximumWidthFactor * center_.width
 
-        MouseArea { // left draggable area
-          anchors {
-            top: parent.top; bottom: parent.bottom
-            left: parent.left
-            margins: grimoire_.shadowMargin
-          }
-          width: 20 + grimoire_.shadowMargin
-          acceptedButtons: Qt.LeftButton
-
-          property int pressedX
-          onPressed: pressedX = mouseX
-          onPositionChanged:
-            if (pressed && center_.width) {
-              var w = grimoire_.width - (mouseX - pressedX) * 2
-              if (w > grimoire_.minWidth && w < grimoire_.maxWidth)
-                grimoire_.widthFactor = w / center_.width
-            }
-
-          Desktop.TooltipArea { //id: leftResizeTip_
-            anchors.fill: parent
-            text: Sk.tr("Resize")
-          }
-        }
+        //MouseArea { // left draggable area
+        //  anchors {
+        //    top: parent.top; bottom: parent.bottom
+        //    left: parent.left
+        //    margins: grimoire_.shadowMargin
+        //  }
+        //  width: 20 + grimoire_.shadowMargin
+        //  acceptedButtons: Qt.LeftButton
+        //
+        //  property int pressedX
+        //  onPressed: pressedX = mouseX
+        //  onPositionChanged:
+        //    if (pressed && center_.width) {
+        //      var w = grimoire_.width - (mouseX - pressedX) //* 2
+        //      if (w > grimoire_.minWidth && w < grimoire_.maxWidth)
+        //        grimoire_.widthFactor = w / center_.width
+        //    }
+        //
+        //  Desktop.TooltipArea { //id: leftResizeTip_
+        //    anchors.fill: parent
+        //    text: Sk.tr("Resize")
+        //  }
+        //}
 
         MouseArea { // right draggable area
           anchors {
@@ -678,7 +678,7 @@ Item { id: root_
           onPressed: pressedX = mouseX
           onPositionChanged:
             if (pressed && center_.width) {
-              var w = grimoire_.width + (mouseX - pressedX) * 2
+              var w = grimoire_.width + (mouseX - pressedX) //* 2
               if (w > grimoire_.minWidth && w < grimoire_.maxWidth)
                 grimoire_.widthFactor = w / center_.width
             }
