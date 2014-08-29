@@ -25,7 +25,7 @@ Item { id: root_
   property int _MIN_WIDTH: 50 * root_.zoomFactor
   property int _MAX_WIDTH: 800 * root_.zoomFactor
 
-  property int _RESIZABLE_AREA_WIDTH: 20 // resizable mouse area thickness
+  property int _RESIZABLE_AREA_WIDTH: 15 // resizable mouse area thickness
 
   Component.onCompleted: Local.items = [] // [item]
 

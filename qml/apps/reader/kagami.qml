@@ -641,13 +641,15 @@ Item { id: root_
         property int minWidth: dock_.minimumWidthFactor * center_.width
         property int maxWidth: dock_.maximumWidthFactor * center_.width
 
+        property int _RESIZABLE_AREA_WIDTH: 20
+
         MouseArea { // left draggable area
           anchors {
             top: parent.top; bottom: parent.bottom
             left: parent.left
             margins: grimoire_.shadowMargin
           }
-          width: 20 + grimoire_.shadowMargin
+          width: parent._RESIZABLE_AREA_WIDTH - grimoire_.shadowMargin
           acceptedButtons: Qt.LeftButton
 
           property int pressedX
@@ -676,7 +678,7 @@ Item { id: root_
             right: parent.right
             margins: grimoire_.shadowMargin
           }
-          width: 20 + grimoire_.shadowMargin
+          width: parent._RESIZABLE_AREA_WIDTH - grimoire_.shadowMargin
           acceptedButtons: Qt.LeftButton
 
           property int pressedX
