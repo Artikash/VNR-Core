@@ -84,16 +84,19 @@ showPosts = (l) -> # [post] -> string
 # AJAX actions
 
 refresh = ->
+  spin true
   rest.forum.list 'post',
     data:
       topic: TOPIC_ID
       limit: POST_LIMIT
     error: ->
+      spin false
       #$spin.spin false
       #$container.removeClass 'rendered'
       #$msg.addClass 'text-danger'
       #    .text "(Internet #{tr 'error'})"
     success: (data) ->
+      spin false
       if data.length
         showPosts data
       #$spin.spin false
@@ -104,6 +107,8 @@ refresh = ->
       #    .hide()
       #    .html h
       #    .fadeIn()
+
+spin = (t) -> $('#spin').spin if t then 'large' else false
 
 ## Main ##
 
