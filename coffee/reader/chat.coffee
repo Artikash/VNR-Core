@@ -13,10 +13,45 @@ POST_LIMIT = 20
 
 #HOST = 'http://sakuradite.com'
 
+tr = (t) -> t
+
+cache_img = (url) -> url #cacheBean.cacheImage url
+
 # Render
 
+#
+# - content: string html
+# - userAvatar: string url
+HAML_POST = Haml '''\
+.post
+  .avatar
+    :if userAvatar
+      %img.img-rounded(src="#{userAvatar}")
+  .head
+    .user #{userName}
+  .content = content
+'''
+
+getAvatarUrl = (id, size=128) -> # string, int -> string
+  unless id
+    ''
+  else unless size
+    cache_img "http://media.getchute.com/media/#{id}"
+  else
+    cache_img "http://media.getchute.com/media/#{id}/#{size}x#{size}"
+
+renderContent = (t) -> # string -> string
+  return '' unless t?
+  bbcode.parse linkify _.escape t.replace /]\n/g, ']'
+    .replace /<li><\/li>/g, '<li>'
+
 renderPost = (post) -> # kw -> string
-  post.content
+  HAML_POST
+    userName: post.userName
+    # TODO: Cache user avatar image
+    userAvatar: getAvatarUrl post.userAvatar
+    # TODO: cache bbcode
+    content: renderContent post.content
 
 renderPosts = (l) -> # [post] -> string
   l.map(renderPost).join ''

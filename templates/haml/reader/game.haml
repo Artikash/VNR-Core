@@ -476,7 +476,7 @@
           %script(src="#{rc.cdn_url(it)}")
 
         -if game.dmm and game.dmm.hasSampleImages()
-          -for it in 'underscore', 'underscore.string', 'share/choco'
+          -for it in 'underscore', 'underscore.string', 'libs/choco'
             %script(src="#{rc.cdn_url(it)}")
 
         -if not mainland and game.hasTwitterWidgets()

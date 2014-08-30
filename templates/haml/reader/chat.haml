@@ -18,13 +18,15 @@
       }
 
   %body
-    .topic(data-id="#{topicId}")
+    .topic.portal(data-id="#{topicId}")
       .posts
 
     :javascript
     -for it in \
         'jquery', 'jquery.ui', \
-        'haml', \
+        'underscore', \
+        'bbcode', 'haml', \
+        'libs/linkify', \
         'share/rest', 'reader/chat'
       %script(src="#{rc.cdn_url(it)}")
 

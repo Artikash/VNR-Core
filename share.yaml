@@ -131,6 +131,8 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #haml: http://rawgithub.com/creationix/haml-js/master/lib/haml.js?0.4.3
   haml: $PWD/../AJAX/haml/haml.min.js
 
+  bbcode: $PWD/../AJAX/npm/bbcode.min.js
+
   # CSS
   dragdealer.css: $PWD/rb/compass/web/css/dragdealer.min.css
   metro.css: $PWD/rb/compass/web/css/metro.min.css
@@ -138,7 +140,9 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
 
   # My own sass and coffeescript
 
-  share/choco: $PWD/coffee/libs/choco.min.js
+  libs/choco: $PWD/coffee/libs/choco.min.js
+  libs/linkify: $PWD/coffee/libs/linkify.min.js
+
   share/annot: $PWD/coffee/share/annot.min.js
   share/rest: $PWD/coffee/share/rest.min.js
 
