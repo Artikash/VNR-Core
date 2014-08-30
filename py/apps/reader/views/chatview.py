@@ -20,7 +20,7 @@ from sakurakit.skwebkit import SkWebView #, SkWebViewBean
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
 #from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
-import main, osutil, py, rc
+import osutil, rc
 
 @Q_Q
 class _ChatView(object):
@@ -60,7 +60,7 @@ class _ChatView(object):
     m = coffeebean.manager()
     return (
       ('cacheBean', m.cacheBean),
-      ('trBean', m.trBean),
+      #('trBean', m.trBean),
       #('viewBean', self._viewBean),
     )
 
@@ -82,14 +82,14 @@ class _ChatView(object):
 
   def refresh(self):
     """@reimp"""
-    baseUrl = 'http://sakuradite.com'    # any place is fine
+    #baseUrl = 'http://sakuradite.com'
+    baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy
+
     w = self.webView
-    w.setHtml(rc.haml_template('haml/chat').render({
-      #'title': title,
+    w.setHtml(rc.haml_template('haml/reader/chat').render({
+      'topicId': self.topicId,
+      'title': tr_("Chat"),
       'rc': rc,
-      'py': py,
-      'tr': tr_,
-      #'settings', settings.global_(),
     }), baseUrl)
     self._injectBeans()
 
@@ -98,18 +98,30 @@ class _ChatView(object):
     ret = SkStyleView()
     skqss.class_(ret, 'texture')
     layout = QtWidgets.QHBoxLayout()
-    layout.addStretch()
     layout.addWidget(self.newButton)
-    #layout.addWidget(self.refreshButton) # disabled
+    layout.addStretch()
     layout.addWidget(self.browseButton)
+    layout.addWidget(self.refreshButton)
     ret.setLayout(layout)
     layout.setContentsMargins(4, 4, 4, 4)
     return ret
 
   @memoizedproperty
+  def refreshButton(self):
+    ret = QtWidgets.QPushButton(tr_("Refresh"))
+    skqss.class_(ret, 'btn btn-info')
+    ret.setToolTip(tr_("Refresh") + " (Ctrl+R)")
+    #ret.setStatusTip(ret.toolTip())
+    ret.clicked.connect(self.refresh)
+    #nm = netman.manager()
+    #ret.setEnabled(nm.isOnline())
+    #nm.onlineChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
   def browseButton(self):
     ret = QtWidgets.QPushButton(tr_("Browse"))
-    skqss.class_(ret, 'btn btn-info')
+    skqss.class_(ret, 'btn btn-default')
     ret.setToolTip(tr_("Launch"))
     #ret.setStatusTip(ret.toolTip())
     ret.clicked.connect(lambda:
@@ -146,7 +158,7 @@ class ChatView(QtWidgets.QMainWindow):
       self.__d.refresh()
     super(ChatView, self).setVisible(value)
     if not value:
-      d.webView.clear()
+      self.__d.webView.clear()
 
 class _ChatViewManager:
   def __init__(self):
@@ -216,7 +228,7 @@ class ChatViewManagerProxy(QObject):
 
 if __name__ == '__main__':
   a = debug.app()
-  manager().showTopic(51)
+  manager().showTopic(409)
   a.exec_()
 
 # EOF

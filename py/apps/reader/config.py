@@ -176,7 +176,7 @@ SETTINGS_ZOOM_FACTOR = parse_float(_SETTINGS['zoomFactor'])
 SETTINGS_WIDTH_FACTOR = parse_float(_SETTINGS['widthFactor'])
 SETTINGS_SHADOW_OPACITY = parse_float(_SETTINGS['shadowOpacity'])
 
-SETTINGS_DICT_POPUP_WIDTH = parse_float(_SETTINGS['dictionaryPopupWidth'])
+SETTINGS_DICT_POPUP_WIDTH = parse_int(_SETTINGS['dictionaryPopupWidth'])
 
 SETTINGS_FONT_COLOR = _SETTINGS['fontColor']
 SETTINGS_SHADOW_COLOR = _SETTINGS['shadowColor']

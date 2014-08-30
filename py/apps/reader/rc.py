@@ -415,6 +415,13 @@ def image_url(name):
   return QUrl.fromLocalFile(
       os.path.abspath(image_path(name)))
 
+def wallpaper_url():
+  """
+  @return  unicode not None
+  """
+  import settings
+  return settings.global_().springBoardWallpaperUrl() or image_url('wallpaper').toString()
+
 FILE_ICON_PROVIDER = QFileIconProvider()
 def file_icon(path):
   """Return icon for the specific file

@@ -17,7 +17,7 @@
 %html(lang="ja")
   %head
     ; Stylesheets
-    -for it in 'bootstrap3.css', 'font-awesome4.css', 'bootstrap.switch.css', 'dragdealer.css', 'game.css'
+    -for it in 'bootstrap3.css', 'font-awesome4.css', 'bootstrap.switch.css', 'dragdealer.css', 'reader/game.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
 
     :css
@@ -471,11 +471,12 @@
             'spin', 'jquery.spin', \
             'bootstrap.switch', 'dragdealer', \
             'haml', 'masonry', \
-            'annot', 'rest', 'widgets', 'game'
+            'share/annot', 'share/rest', \
+            'reader/widgets', 'reader/game'
           %script(src="#{rc.cdn_url(it)}")
 
         -if game.dmm and game.dmm.hasSampleImages()
-          -for it in 'underscore', 'underscore.string', 'choco'
+          -for it in 'underscore', 'underscore.string', 'libs/choco'
             %script(src="#{rc.cdn_url(it)}")
 
         -if not mainland and game.hasTwitterWidgets()

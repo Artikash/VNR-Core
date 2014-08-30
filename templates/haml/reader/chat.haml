@@ -1,0 +1,33 @@
+; chat.haml
+; 8/29/2014 jichi
+; @param  topicId  long
+; @param  title  unicode
+; @param  rc  rc
+;!!! 5
+
+%html(lang="ja")
+  %head
+    ; Stylesheets
+    -for it in 'bootstrap3.css', 'font-awesome4.css', 'reader/chat.css'
+      %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
+
+    :css
+      body {
+        background-image: url("#{rc.wallpaper_url()}");
+        background-size: cover;
+      }
+
+  %body
+    .topic.portal(data-id="#{topicId}")
+      .posts
+
+    :javascript
+    -for it in \
+        'jquery', 'jquery.ui', \
+        'underscore', \
+        'bbcode', 'haml', 'moment', \
+        'libs/linkify', \
+        'share/rest', 'reader/chat'
+      %script(src="#{rc.cdn_url(it)}")
+
+; EOF

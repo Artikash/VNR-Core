@@ -44,11 +44,11 @@ HOST = 'http://153.121.54.194'
             #growl.showEmptyList type unless list.length
             success? list
             return
-          growl.showInternetError tr type
+          growl.showInternetError type
           error?()
         error: (xhr) ->
           console.warn type, 'error:', JSON.stringify xhr
-          growl.showInternetError tr type
+          growl.showInternetError type
           error?()
 
     query: (type, data:data, success:success, error:error) ->
@@ -61,11 +61,11 @@ HOST = 'http://153.121.54.194'
             console.log type, 'query: id =', obj.id
             success? obj
             return
-          growl.showInternetError tr type
+          growl.showInternetError type
           error?()
         error: (xhr) ->
           console.warn type, 'error:', JSON.stringify xhr
-          growl.showInternetError tr type
+          growl.showInternetError type
           error?()
 
     create: (type, data:data, success:success, error:error) ->
@@ -80,12 +80,12 @@ HOST = 'http://153.121.54.194'
             return
           switch res.status
             when defs.STATUS_USER_ERR then growl.showSignInError()
-            when defs.STATUS_DUP_ERR then growl.showDupError tr type
-            else growl.showInternetError tr type
+            when defs.STATUS_DUP_ERR then growl.showDupError type
+            else growl.showInternetError type
           error?()
         error: (xhr) ->
           console.warn type, 'error:', JSON.stringify xhr
-          growl.showInternetError tr type
+          growl.showInternetError type
           error?()
 
     update: (type, data:data, success:success, error:error) ->
@@ -101,11 +101,11 @@ HOST = 'http://153.121.54.194'
           if res.status is defs.STATUS_USER_ERR
             growl.showSignInError()
           else
-            growl.showInternetError tr type
+            growl.showInternetError type
           error?()
         error: (xhr) ->
           console.warn type, 'error:', JSON.stringify xhr
-          growl.showInternetError tr type
+          growl.showInternetError type
           error?()
 
 # EOF

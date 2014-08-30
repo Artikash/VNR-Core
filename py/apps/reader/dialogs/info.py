@@ -11,11 +11,11 @@ REGEX = "http://en.wikipedia.org/wiki/Regular_expression"
 
 def renderCredits():
   import rc
-  return rc.haml_template('haml/credits').render()
+  return rc.haml_template('haml/reader/credits').render()
 
 def renderAppHelp():
   import rc
-  return rc.haml_template('haml/help').render()
+  return rc.haml_template('haml/reader/help').render()
 
 #def renderAppHelp():
 #  demo_url = config.URL_READER_DEMO

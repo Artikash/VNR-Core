@@ -1,0 +1,33 @@
+/* chat.sass
+   8/29/2014 jichi
+   See: http://isotope.metafizzy.co/css/style.css
+
+//@import bootstrap/fa
+@import main/color
+@import main/shadow
+
+img.avatar
+  @extend .avatar-shadow
+
+.topic.portal
+  padding: 9px
+  background-color: rgba(255,255,255,0.9)
+
+.post
+  margin: 9px
+  .left
+    float: left
+    width: 50px
+  .right
+    margin-left: 50px + 9px
+    > .head
+      .user
+        color: darkblue // TODO: Use linke instead
+        display: inline
+      .time
+        @extend .text-minor
+        display: inline
+        margin-left: 9px
+        font-size: 90%
+
+// EOF

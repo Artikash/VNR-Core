@@ -316,7 +316,7 @@ class _GameView(object):
     #baseUrl = 'file:///any' # any place that is local
 
     w = self.webView
-    w.setHtml(rc.haml_template('haml/game').render({
+    w.setHtml(rc.haml_template('haml/reader/game').render({
       'title': title,
       'game': info,
       'cache': cacheman.CacheJinjaUtil,
@@ -363,7 +363,7 @@ class _GameView(object):
   @memoizedproperty
   def discussButton(self):
     ret = QtWidgets.QPushButton(mytr_("Discuss"))
-    skqss.class_(ret, 'btn btn-info')
+    skqss.class_(ret, 'btn btn-default')
     ret.setToolTip(mytr_("Game Discussion"))
     #ret.setStatusTip(ret.toolTip())
     ret.setEnabled(False)
@@ -394,18 +394,17 @@ class _GameView(object):
 
   def _edit(self): main.manager().showReferenceView(gameId=self.gameId)
 
-  @memoizedproperty
-  def refreshButton(self):
-    ret = QtWidgets.QPushButton(tr_("Refresh"))
-    skqss.class_(ret, 'btn btn-info')
-    ret.setToolTip(tr_("Refresh") + " (Ctrl+R)")
-    #ret.setStatusTip(ret.toolTip())
-    ret.clicked.connect(self.updateAndRefresh)
-
-    nm = netman.manager()
-    ret.setEnabled(nm.isOnline())
-    nm.onlineChanged.connect(ret.setEnabled)
-    return ret
+  #@memoizedproperty
+  #def refreshButton(self):
+  #  ret = QtWidgets.QPushButton(tr_("Refresh"))
+  #  skqss.class_(ret, 'btn btn-info')
+  #  ret.setToolTip(tr_("Refresh") + " (Ctrl+R)")
+  #  #ret.setStatusTip(ret.toolTip())
+  #  ret.clicked.connect(self.updateAndRefresh)
+  #  nm = netman.manager()
+  #  ret.setEnabled(nm.isOnline())
+  #  nm.onlineChanged.connect(ret.setEnabled)
+  #  return ret
 
   @memoizedproperty
   def helpButton(self):
