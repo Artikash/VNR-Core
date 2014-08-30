@@ -44,9 +44,11 @@ formatDate = (t, fmt) -> # long, string -> string
 # Render
 
 # - content  string html
-# - userAvatar  string url
+# - userAvatar  string url or ''
 # - createTime  string
-# - userStyle  string
+# - updateTime  string or ''
+# - userStyle  string or ''
+# - lang  string or ''
 HAML_POST = Haml '''\
 .post
   .left
@@ -55,7 +57,9 @@ HAML_POST = Haml '''\
   .right
     .head
       .user(style="#{userStyle}") #{userName}
-      .time = createTime
+      .time.text-minor = createTime
+      .lang = lang
+      .time.text-success = updateTime
     .content = content
 %hr
 '''
@@ -64,11 +68,11 @@ renderPost = (post) -> # kw -> string
   HAML_POST
     userName: post.userName
     userStyle: if post.userColor then "color:#{post.userColor}" else ''
-    # TODO: Cache user avatar image
+    lang: post.lang
     userAvatar: getAvatarUrl post.userAvatar, 50
-    # TODO: cache bbcode
     content: renderContent post.content
     createTime: formatDate post.createTime, 'H:mm M/D/YY ddd'
+    updateTime: if post.updateTime > post.createTime then formatDate post.updateTime, 'H:mm M/D/YY ddd' else ''
 
 renderPosts = (l) -> # [post] -> string
   l.map(renderPost).join ''
