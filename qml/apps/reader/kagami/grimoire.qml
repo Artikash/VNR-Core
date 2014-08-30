@@ -127,7 +127,10 @@ Item { id: root_
 
   //property bool revertsColor: false
 
+  property real globalZoomFactor: 1.0
   property real zoomFactor: 1.0
+  property real minimumZoomFactor: 0.5
+  property real maximumZoomFactor: 3.0
 
   property alias shadowOpacity: shadow_.opacity
 
@@ -163,6 +166,21 @@ Item { id: root_
 
   //property int _FADE_DURATION: 400
 
+  property real _zoomFactor: zoomFactor * globalZoomFactor // actual zoom factor
+
+  property real zoomStep: 0.05
+
+  function zoomIn() {
+    var v = zoomFactor + zoomStep
+    if (v < maximumZoomFactor)
+      zoomFactor = v
+  }
+  function zoomOut() {
+    var v = zoomFactor - zoomStep
+    if (v > minimumZoomFactor)
+      zoomFactor = v
+  }
+
   property bool highlightVisible: false // disable highlight by default unless pagebreak
 
   property QtObject highlightMouseArea
@@ -173,11 +191,11 @@ Item { id: root_
 
   TexScript.TexHtmlParser { id: tex_
     settings: TexScript.TexHtmlSettings {
-      tinySize: Math.round(zoomFactor * 10) + 'px'
-      smallSize: Math.round(zoomFactor * 14) + 'px'
-      normalSize: Math.round(zoomFactor * 18) + 'px' // the same as textEdit_.font.pixelSize
-      largeSize: Math.round(zoomFactor * 28) + 'px'
-      hugeSize: Math.round(zoomFactor * 40) + 'px'
+      tinySize: Math.round(root_._zoomFactor * 10) + 'px'
+      smallSize: Math.round(root_._zoomFactor * 14) + 'px'
+      normalSize: Math.round(root_._zoomFactor * 18) + 'px' // the same as textEdit_.font.pixelSize
+      largeSize: Math.round(root_._zoomFactor * 28) + 'px'
+      hugeSize: Math.round(root_._zoomFactor * 40) + 'px'
 
       hrefStyle: "color:snow"
       urlStyle: hrefStyle
@@ -357,61 +375,65 @@ Item { id: root_
         //leftMargin: header_.radius
       }
 
-      spacing: -2
+      spacing: 2
 
-      property int buttonSize: 25
-      property int pixelSize: 14
-      property color hoverColor: '#556a6d6a' // black
-      property string fontFamily: 'MS Gothic'
-      property bool hover: closeButton_.hover || speakButton_.hover
+      property bool hover: closeButton_.hover
+                        || ttsButton_.hover
+                        || zoomOutButton_.hover
+                        || zoomInButton_.hover
 
-      Share.CloseButton { id: closeButton_
-        width: parent.buttonSize; height: parent.buttonSize
-        font.pixelSize: parent.pixelSize
-        font.family: parent.fontFamily
-        color: root_.fontColor
-        backgroundColor: hover ?  parent.hoverColor : 'transparent'
-        //onClicked: root_.hide()
-        onClicked: root_.clear()
-        toolTip: qsTr("Clear the text box")
-      }
+      //property int cellWidth: 15
+      //property int pixelSize: 10
+      property int cellWidth: 20
+      property int pixelSize: 12
 
-      //Share.CloseButton { id: closeButton_
-      //  width: parent.buttonSize; height: parent.buttonSize
-      //  font.pixelSize: parent.pixelSize
-      //  font.family: parent.fontFamily
-      //  color: root_.fontColor
-      //  backgroundColor: hover ?  parent.hoverColor : 'transparent'
-      //  onClicked: root_.hide()
-      //  toolTip: qsTr("Pause VNR. You can re-enable it from the left dock.")
-      //}
-
-      //Share.TextButton { id: clearButton_
-      //  width: parent.buttonSize; height: parent.buttonSize
-      //  //shadowWidth: width + 15; shadowHeight: height + 15
-      //  font.pixelSize: parent.pixelSize
-      //  font.bold: hover
-      //  font.family: parent.fontFamily
-      //  color: root_.fontColor
-      //  backgroundColor: hover ?  parent.hoverColor : 'transparent'
-      //  text: "≠" // not equal
-      //  toolTip: qsTr("Clear the text box")
-      //  onClicked: root_.clear()
-      //}
-
-      Share.TextButton { id: speakButton_
-        width: parent.buttonSize; height: parent.buttonSize
-        //shadowWidth: width + 15; shadowHeight: height + 15
+      Share.CircleButton { id: closeButton_
+        diameter: parent.cellWidth
         font.pixelSize: parent.pixelSize
         font.bold: hover
-        font.family: parent.fontFamily
-        color: root_.fontColor
-        backgroundColor: hover ?  parent.hoverColor : 'transparent'
+        font.family: 'MS Gothic'
+        backgroundColor: 'transparent'
+
+        text: "×" // ばつ
+        toolTip: Sk.tr("Close")
+        onClicked: root_.clear()
+      }
+
+      Share.CircleButton { id: ttsButton_
+        diameter: parent.cellWidth
+        font.pixelSize: parent.pixelSize
+        font.bold: hover
+        font.family: 'MS Gothic'
+        backgroundColor: 'transparent'
 
         text: "♪" // おんぷ
-        toolTip: !root_.toolTipEnabled ? '' :
-            qsTr("Read current Japanese game text using TTS") + " (" + Sk.tr("Middle-click")  + ")"
+        //toolTip: My.tr("Speak")
+        toolTip: qsTr("Read current Japanese game text using TTS") + " (" + Sk.tr("Middle-click")  + ")"
         onClicked: root_.speakTextRequested()
+      }
+
+      Share.CircleButton { id: zoomOutButton_
+        diameter: parent.cellWidth
+        font.pixelSize: parent.pixelSize
+        font.bold: hover
+        font.family: 'MS Gothic'
+        backgroundColor: 'transparent'
+
+        text: "-"
+        toolTip: Sk.tr("Zoom out") + " " + Math.floor(root_.zoomFactor * 100) + "%"
+        onClicked: root_.zoomOut()
+      }
+
+      Share.CircleButton { id: zoomInButton_
+        diameter: parent.cellWidth
+        font.pixelSize: parent.pixelSize
+        font.bold: hover
+        font.family: 'MS Gothic'
+        backgroundColor: 'transparent'
+
+        text: "+"
+        toolTip: Sk.tr("Zoom in") + " " + Math.floor(root_.zoomFactor * 100) + "%"
+        onClicked: root_.zoomIn()
       }
     }
 
@@ -1065,7 +1087,7 @@ Item { id: root_
         //color: root_.revertsColor ? '#050500' : 'snow'
         color: root_.fontColor
 
-        property int fontPixelSize: 18 * zoomFactor // prevent loop binding issue
+        property int fontPixelSize: 18 * root_._zoomFactor // prevent loop binding issue
         font.pixelSize: fontPixelSize
 
         function renderText() {
@@ -1084,8 +1106,8 @@ Item { id: root_
                   //root_.msimeParserEnabled,
                   root_.rubyType,
                   root_.rubyDic,
-                  Math.round(root_.width / (20 * zoomFactor)), // char per line
-                  Math.round(10 * zoomFactor) + 'px', // ruby size of furigana
+                  Math.round(root_.width / (20 * root_._zoomFactor)), // char per line
+                  Math.round(10 * root_._zoomFactor) + 'px', // ruby size of furigana
                   textItem_.hover, // colorize
                   root_.alignCenter
                 )

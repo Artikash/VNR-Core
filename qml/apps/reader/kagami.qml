@@ -90,9 +90,10 @@ Item { id: root_
   }
 
   function loadSettings() {
-    shiori_.defaultWidth = settings_.shioriWidth
+    grimoire_.zoomFactor = settings_.grimoireZoomFactor
     popup_.zoomFactor = settings_.ocrZoomFactor
     shiori_.zoomFactor = settings_.shioriZoomFactor
+    shiori_.defaultWidth = settings_.shioriWidth
 
     grimoire_.widthFactor = settings_.grimoireWidthFactor
 
@@ -124,7 +125,7 @@ Item { id: root_
     dock_.splitsTranslationChecked = settings_.splitsTranslation
 
     //dock_.shioriZoomFactor = settings_.shioriZoomFactor
-    dock_.grimoireZoomFactor = settings_.grimoireZoomFactor
+    //dock_.grimoireZoomFactor = settings_.grimoireZoomFactor
     dock_.alignCenterChecked = settings_.grimoireAlignCenter
     dock_.textChecked = settings_.grimoireTextVisible
     dock_.nameChecked = settings_.grimoireNameVisible
@@ -150,9 +151,10 @@ Item { id: root_
   }
 
   function saveSettings() {
-    settings_.shioriWidth = shiori_.defaultWidth
+    settings_.grimoireZoomFactor = grimoire_.zoomFactor
     settings_.ocrZoomFactor = popup_.zoomFactor
     settings_.shioriZoomFactor = shiori_.zoomFactor
+    settings_.shioriWidth = shiori_.defaultWidth
 
     settings_.grimoireWidthFactor = grimoire_.widthFactor
 
@@ -172,7 +174,7 @@ Item { id: root_
 
     //settings_.copiesGameText = dock_.copiesTextChecked
     //settings_.shioriZoomFactor = dock_.shioriZoomFactor
-    settings_.grimoireZoomFactor = dock_.grimoireZoomFactor
+    //settings_.grimoireZoomFactor = dock_.grimoireZoomFactor
     settings_.grimoireSlimDock = dock_.slimChecked
     settings_.grimoireShadowOpacity = dock_.shadowOpacity
     settings_.grimoireAlignCenter = dock_.alignCenterChecked
@@ -615,7 +617,15 @@ Item { id: root_
         //borderVisible: dock_.borderChecked
         //locked: dock_.lockChecked
 
-        zoomFactor: dock_.grimoireZoomFactor * root_.globalZoomFactor
+        globalZoomFactor: root_.globalZoomFactor
+
+        minimumZoomFactor: dock_.minimumZoomFactor
+        maximumZoomFactor: dock_.maximumZoomFactor
+        onZoomFactorChanged:
+          if (dock_.grimoireZoomFactor != zoomFactor)
+            dock_.grimoireZoomFactor = zoomFactor
+
+        //zoomFactor: dock_.grimoireZoomFactor * root_.globalZoomFactor
         //property alias widthFactor: dock_.widthFactor
 
         textVisible: dock_.textChecked
@@ -811,6 +821,10 @@ Item { id: root_
           if (gameTextCapacity > 20)
             if (settings_.gameTextCapacity !== Math.round(gameTextCapacity))
               settings_.gameTextCapacity = Math.round(gameTextCapacity)
+
+        onGrimoireZoomFactorChanged:
+          if (grimoire_.zoomFactor != grimoireZoomFactor)
+            grimoire_.zoomFactor = grimoireZoomFactor
 
         //onWindowHookCheckedChanged: settings_.windowHookEnabled = windowHookChecked
         //onWindowTextCheckedChanged: settings_.windowTextVisible = windowTextChecked

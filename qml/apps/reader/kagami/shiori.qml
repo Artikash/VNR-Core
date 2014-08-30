@@ -30,6 +30,8 @@ Rectangle { id: root_
 
   // - Private -
 
+  property real _zoomFactor: zoomFactor * globalZoomFactor // actual zoom factor
+
   property int _RESIZABLE_AREA_WIDTH: 20 // resizable mouse area thickness
 
   property bool enabled: bean_.enabled // cached
@@ -40,11 +42,11 @@ Rectangle { id: root_
   property int _X_OFFSET: 20
   property int _Y_OFFSET: 15
 
-  property int _MAX_HEIGHT: 200 * zoomFactor * globalZoomFactor
+  property int _MAX_HEIGHT: 200 * _zoomFactor
 
   //property int _DEFAULT_WIDTH: 300 * zoomFactor
-  property int _MIN_WIDTH: 50 * zoomFactor * globalZoomFactor
-  property int _MAX_WIDTH: 800 * zoomFactor * globalZoomFactor
+  property int _MIN_WIDTH: 50 * _zoomFactor
+  property int _MAX_WIDTH: 800 * _zoomFactor
 
   property int _CONTENT_MARGIN: 10
 
@@ -54,18 +56,18 @@ Rectangle { id: root_
   radius: 10
   opacity: 0 // initial opacity is zero
 
-  property real zoomStep: 0.1
-  property real minZoomFactor: 0.5
-  property real maxZoomFactor: 5.0
+  property real zoomStep: 0.05
+  property real minimumZoomFactor: 0.5
+  property real maximumZoomFactor: 3.0
 
   function zoomIn() {
     var v = zoomFactor + zoomStep
-    if (v < maxZoomFactor)
+    if (v < maximumZoomFactor)
       zoomFactor = v
   }
   function zoomOut() {
     var v = zoomFactor - zoomStep
-    if (v > minZoomFactor)
+    if (v > minimumZoomFactor)
       zoomFactor = v
   }
 
@@ -130,7 +132,7 @@ Rectangle { id: root_
         var dx = mouseX - pressedX
         var w = textEdit_.width - dx
         if (w > _MIN_WIDTH && w < _MAX_WIDTH) {
-          root_.defaultWidth = w / (root_.zoomFactor * root_.globalZoomFactor)
+          root_.defaultWidth = w / root_._zoomFactor
           root_.x += dx
         }
       }
@@ -155,7 +157,7 @@ Rectangle { id: root_
       if (pressed) {
         var w = textEdit_.width + mouseX - pressedX
         if (w > _MIN_WIDTH && w < _MAX_WIDTH)
-          root_.defaultWidth = w / (root_.zoomFactor * root_.globalZoomFactor)
+          root_.defaultWidth = w / root_._zoomFactor
       }
 
     Desktop.TooltipArea { id: rightResizeTip_
@@ -189,7 +191,7 @@ Rectangle { id: root_
 
     TextEdit { id: textEdit_
       anchors.centerIn: parent
-      width: root_.defaultWidth * root_.zoomFactor * root_.globalZoomFactor
+      width: root_.defaultWidth * root_._zoomFactor
       //width: _DEFAULT_WIDTH // FIXME: automatically adjust width
 
       //selectByMouse: true // conflicts with flickable
@@ -198,7 +200,7 @@ Rectangle { id: root_
       wrapMode: TextEdit.Wrap
       focus: true
       color: 'snow'
-      font.pixelSize: 12 * root_.zoomFactor * root_.globalZoomFactor
+      font.pixelSize: 12 * root_._zoomFactor
       font.bold: true
       font.family: 'MS Mincho' // 明朝
 

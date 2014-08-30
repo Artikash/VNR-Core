@@ -93,6 +93,9 @@ Item { id: root_
 
   //property alias shioriZoomFactor: shioriZoomSlider_.value
   property alias grimoireZoomFactor: grimoireZoomSlider_.value
+  property alias minimumZoomFactor: grimoireZoomSlider_.minimumValue
+  property alias maximumZoomFactor: grimoireZoomSlider_.maximumValue
+
   property alias shadowOpacity: shadowSlider_.value
   property alias gameTextCapacity: textSlider_.value
 

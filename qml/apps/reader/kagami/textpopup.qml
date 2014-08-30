@@ -21,26 +21,28 @@ Item { id: root_
 
   // - Private -
 
-  property real zoomStep: 0.1
-  property real minZoomFactor: 0.5
-  property real maxZoomFactor: 5.0
+  property real _zoomFactor: zoomFactor * globalZoomFactor // actual zoom factor
+
+  property real zoomStep: 0.05
+  property real minimumZoomFactor: 0.5
+  property real maximumZoomFactor: 3.0
 
   function zoomIn() {
     var v = zoomFactor + zoomStep
-    if (v < maxZoomFactor)
+    if (v < maximumZoomFactor)
       zoomFactor = v
   }
   function zoomOut() {
     var v = zoomFactor - zoomStep
-    if (v > minZoomFactor)
+    if (v > minimumZoomFactor)
       zoomFactor = v
   }
 
-  property int _MAX_HEIGHT: 200 * zoomFactor * globalZoomFactor
+  property int _MAX_HEIGHT: 200 * _zoomFactor
 
-  property int _DEFAULT_WIDTH: 200 * zoomFactor * globalZoomFactor
-  property int _MIN_WIDTH: 50 * zoomFactor * globalZoomFactor
-  property int _MAX_WIDTH: 800 * zoomFactor * globalZoomFactor
+  property int _DEFAULT_WIDTH: 200 * _zoomFactor
+  property int _MIN_WIDTH: 50 * _zoomFactor
+  property int _MAX_WIDTH: 800 * _zoomFactor
 
   property int _RESIZABLE_AREA_WIDTH: 15 // resizable mouse area thickness
 
@@ -268,7 +270,7 @@ Item { id: root_
           wrapMode: TextEdit.Wrap
           focus: true
           color: 'snow'
-          font.pixelSize: 12 * root_.zoomFactor * root_.globalZoomFactor
+          font.pixelSize: 12 * root_._zoomFactor
           //font.bold: true
           //font.family: 'MS Mincho' // 明朝
 
