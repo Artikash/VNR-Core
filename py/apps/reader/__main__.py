@@ -359,6 +359,9 @@ def migrate(ss_version): # long ->
 
   try: # this try is in case I forgot certain rc directories for update
 
+    if ss_version <= 1409368561: # reset float illegal value
+      ss.setValue('DictionaryPopupWidth', config.SETTINGS_DICT_POPUP_WIDTH)
+
     if ss_version <= 1406156022:
       # http://sakuradite.com/topic/337
       # Disable UniDicMJL
