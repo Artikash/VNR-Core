@@ -20,11 +20,13 @@
   %body
     .topic.portal(data-id="#{topicId}")
       .posts
+    #spin
 
     :javascript
     -for it in \
         'jquery', 'jquery.ui', \
         'underscore', \
+        'spin', 'jquery.spin', \
         'bbcode', 'haml', 'moment', \
         'libs/linkify', \
         'share/rest', 'reader/chat'

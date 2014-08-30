@@ -79,7 +79,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #dragdealer.css: https://dragdealer.googlecode.com/svn/tags/0.9.5/dragdealer.css
   dragdealer: $PWD/../AJAX/dragdealer/0.9.5/dragdealer.min.js
 
-  # jsDelivr: http://jsdelivr.com/
+  # jsDelivr: http://jsdelivr.com, https://github.com/jsdelivr/jsdelivr/tree/master/files
 
   # The latest version does not work: http://stackoverflow.com/questions/20542309/using-masonry-with-imagesloaded/22448679#22448679
   #jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.1.4/imagesloaded.min.js
@@ -87,10 +87,10 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.0.4/imagesloaded.pkgd.min.js
   jquery.ui: http://cdn.jsdelivr.net/jquery.ui/1.11.0/jquery-ui.min.js
 
-  bootstrap.switch: $PWD/../AJAX/bootstrap-switch/3.0.1/bootstrap-switch.min.js
+  bootstrap.switch: $PWD/../AJAX/github/bootstrap-switch.min.js
   #bootstrap.switch: http://www.bootstrap-switch.org/dist/js/bootstrap-switch.min.js # 3.0.1, block user agent
   #bootstrap.switch: http://cdn.jsdelivr.net/bootstrap.switch/3.0.0/js/bootstrap-switch.min.js
-  bootstrap.switch.css: $PWD/../AJAX/bootstrap-switch/3.0.1/bootstrap-switch.min.css
+  bootstrap.switch.css: $PWD/../AJAX/github/bootstrap-switch.min.css
   #bootstrap.switch.css: http://www.bootstrap-switch.org/dist/css/bootstrap3/bootstrap-switch.min.css # 3.0.1
   #bootstrap.switch.css: http:'//cdn.jsdelivr.net/bootstrap.switch/3.0.0/css/bootstrap3/bootstrap-switch.min.css
 

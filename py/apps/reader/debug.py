@@ -100,7 +100,7 @@ if __name__ == '__main__':
   def test_chat():
     a = app()
     import chatview
-    chatview.manager().showTopic(51)
+    chatview.manager().showTopic(409)
     a.exec_()
 
   test_chat()
