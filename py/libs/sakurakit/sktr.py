@@ -370,6 +370,8 @@ class sakurakit(QObject):
       self.tr("Wikipedia"),
       self.tr("Version"),
       self.tr("Zoom"),
+      self.tr("Zoom In"), self.tr("Zoom in"),
+      self.tr("Zoom Out"), self.tr("Zoom out"),
 
       # Status
       self.tr("Yes"),

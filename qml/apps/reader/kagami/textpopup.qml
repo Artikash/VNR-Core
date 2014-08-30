@@ -14,18 +14,37 @@ import '../share' as Share
 
 Item { id: root_
 
-  property real zoomFactor: 1.0
+  property real globalZoomFactor: 1.0
   property bool ignoresFocus: false
+
+  property real zoomFactor: 1.0
 
   // - Private -
 
-  property int _MAX_HEIGHT: 200 * root_.zoomFactor
+  property real zoomStep: 0.1
+  property real minZoomFactor: 0.5
+  property real maxZoomFactor: 5.0
 
-  property int _DEFAULT_WIDTH: 200 * root_.zoomFactor
-  property int _MIN_WIDTH: 50 * root_.zoomFactor
-  property int _MAX_WIDTH: 800 * root_.zoomFactor
+  function zoomIn() {
+    var v = zoomFactor + zoomStep
+    if (v < maxZoomFactor)
+      zoomFactor = v
+  }
+  function zoomOut() {
+    var v = zoomFactor - zoomStep
+    if (v > minZoomFactor)
+      zoomFactor = v
+  }
+
+  property int _MAX_HEIGHT: 200 * zoomFactor * globalZoomFactor
+
+  property int _DEFAULT_WIDTH: 200 * zoomFactor * globalZoomFactor
+  property int _MIN_WIDTH: 50 * zoomFactor * globalZoomFactor
+  property int _MAX_WIDTH: 800 * zoomFactor * globalZoomFactor
 
   property int _RESIZABLE_AREA_WIDTH: 15 // resizable mouse area thickness
+
+  property int _HEADER_MARGIN: 2
 
   Component.onCompleted: Local.items = [] // [item]
 
@@ -249,7 +268,7 @@ Item { id: root_
           wrapMode: TextEdit.Wrap
           focus: true
           color: 'snow'
-          font.pixelSize: 12 * root_.zoomFactor
+          font.pixelSize: 12 * root_.zoomFactor * root_.globalZoomFactor
           //font.bold: true
           //font.family: 'MS Mincho' // 明朝
 
@@ -337,13 +356,12 @@ Item { id: root_
         anchors {
           left: parent.left
           bottom: parent.top
-          //bottomMargin: -_MARGIN*2
+          //bottomMargin: -_HEADER_MARGIN*2
         }
         radius: 7
 
-        property int _MARGIN: 2
-        width: headerRow_.width + _MARGIN * 2 + _MARGIN * 8
-        height: headerRow_.height + _MARGIN * 2
+        width: headerRow_.width + _HEADER_MARGIN * 2 + _HEADER_MARGIN * 8
+        height: headerRow_.height + _HEADER_MARGIN * 2
 
         color: item_.color
 
@@ -388,19 +406,20 @@ Item { id: root_
           anchors {
             verticalCenter: parent.verticalCenter
             left: parent.left
-            leftMargin: header_._MARGIN
+            leftMargin: _HEADER_MARGIN
           }
 
           property bool hover:
               closeButton_.hover ||
               translateButton_.hover ||
-              ttsButton_.hover
+              ttsButton_.hover ||
+              zoomInButton_.hover ||
+              zoomOutButton_.hover
 
-          spacing: header_._MARGIN * 2
+          spacing: _HEADER_MARGIN * 2
 
           property int cellWidth: 15
           property int pixelSize: 10
-          property color backgroundColor
 
           Share.CircleButton { id: closeButton_
             diameter: parent.cellWidth
@@ -444,6 +463,29 @@ Item { id: root_
             onClicked: item_.speak()
           }
 
+          Share.CircleButton { id: zoomOutButton_
+            diameter: parent.cellWidth
+            font.pixelSize: parent.pixelSize
+            font.bold: hover
+            font.family: 'MS Gothic'
+            backgroundColor: 'transparent'
+
+            text: "-"
+            toolTip: Sk.tr("Zoom out") + " " + Math.floor(root_.zoomFactor * 100) + "%"
+            onClicked: root_.zoomOut()
+          }
+
+          Share.CircleButton { id: zoomInButton_
+            diameter: parent.cellWidth
+            font.pixelSize: parent.pixelSize
+            font.bold: hover
+            font.family: 'MS Gothic'
+            backgroundColor: 'transparent'
+
+            text: "+"
+            toolTip: Sk.tr("Zoom in") + " " + Math.floor(root_.zoomFactor * 100) + "%"
+            onClicked: root_.zoomIn()
+          }
         }
       }
     }

@@ -22,9 +22,11 @@ Rectangle { id: root_
 
   signal yakuAt(string text, int x, int y) // popup honyaku of text at (x, y)
 
+  property real globalZoomFactor: 1.0
+
   property real zoomFactor: 1.0
 
-  property int defaultWidth //: textEdit_.width / zoomFactor
+  property int defaultWidth //: textEdit_.width / (zoomFactor * globalZoomFactor)
 
   // - Private -
 
@@ -38,11 +40,11 @@ Rectangle { id: root_
   property int _X_OFFSET: 20
   property int _Y_OFFSET: 15
 
-  property int _MAX_HEIGHT: 200 * zoomFactor
+  property int _MAX_HEIGHT: 200 * zoomFactor * globalZoomFactor
 
   //property int _DEFAULT_WIDTH: 300 * zoomFactor
-  property int _MIN_WIDTH: 50 * root_.zoomFactor
-  property int _MAX_WIDTH: 800 * root_.zoomFactor
+  property int _MIN_WIDTH: 50 * zoomFactor * globalZoomFactor
+  property int _MAX_WIDTH: 800 * zoomFactor * globalZoomFactor
 
   property int _CONTENT_MARGIN: 10
 
@@ -51,6 +53,21 @@ Rectangle { id: root_
 
   radius: 10
   opacity: 0 // initial opacity is zero
+
+  property real zoomStep: 0.1
+  property real minZoomFactor: 0.5
+  property real maxZoomFactor: 5.0
+
+  function zoomIn() {
+    var v = zoomFactor + zoomStep
+    if (v < maxZoomFactor)
+      zoomFactor = v
+  }
+  function zoomOut() {
+    var v = zoomFactor - zoomStep
+    if (v > minZoomFactor)
+      zoomFactor = v
+  }
 
   //gradient: Gradient {  // color: aarrggbb
   //  GradientStop { position: 0.0;  color: '#ec8f8c8c' }
@@ -78,6 +95,8 @@ Rectangle { id: root_
   //  border.width: _CONTENT_MARGIN / 3
   //  radius: parent.radius
   //}
+
+  property bool hover: toolTip_.containsMouse || header_.hover
 
   Desktop.TooltipArea { id: toolTip_
     anchors.fill: parent
@@ -111,7 +130,7 @@ Rectangle { id: root_
         var dx = mouseX - pressedX
         var w = textEdit_.width - dx
         if (w > _MIN_WIDTH && w < _MAX_WIDTH) {
-          root_.defaultWidth = w / root_.zoomFactor
+          root_.defaultWidth = w / (root_.zoomFactor * root_.globalZoomFactor)
           root_.x += dx
         }
       }
@@ -136,7 +155,7 @@ Rectangle { id: root_
       if (pressed) {
         var w = textEdit_.width + mouseX - pressedX
         if (w > _MIN_WIDTH && w < _MAX_WIDTH)
-          root_.defaultWidth = w / root_.zoomFactor
+          root_.defaultWidth = w / (root_.zoomFactor * root_.globalZoomFactor)
       }
 
     Desktop.TooltipArea { id: rightResizeTip_
@@ -170,7 +189,7 @@ Rectangle { id: root_
 
     TextEdit { id: textEdit_
       anchors.centerIn: parent
-      width: root_.defaultWidth * root_.zoomFactor
+      width: root_.defaultWidth * root_.zoomFactor * root_.globalZoomFactor
       //width: _DEFAULT_WIDTH // FIXME: automatically adjust width
 
       //selectByMouse: true // conflicts with flickable
@@ -179,7 +198,7 @@ Rectangle { id: root_
       wrapMode: TextEdit.Wrap
       focus: true
       color: 'snow'
-      font.pixelSize: 12 * root_.zoomFactor
+      font.pixelSize: 12 * root_.zoomFactor * root_.globalZoomFactor
       font.bold: true
       font.family: 'MS Mincho' // 明朝
 
@@ -252,7 +271,7 @@ Rectangle { id: root_
   }
 
   function hide() {
-    if (!autoHideAct_.checked || toolTip_.containsMouse)
+    if (!autoHideAct_.checked || root_.hover)
       show() // QtBUG: cannot restart timer within onTriggered, see: http://comments.gmane.org/gmane.comp.lib.qt.qml/3085
     else {
       //console.log("shiori.qml: hiding")
@@ -409,8 +428,53 @@ Rectangle { id: root_
     }
   }
 
-  Share.CloseButton {
+  property int _HEADER_MARGIN: 2
+
+  Row { id: header_
     anchors { left: parent.left; top: parent.top; margins: -4 }
-    onClicked: root_.hideNow()
+    spacing: _HEADER_MARGIN * 2
+
+    property bool hover: closeButton_.hover
+                      || zoomInButton_.hover
+                      || zoomOutButton_.hover
+
+    property int cellWidth: 15
+    property int pixelSize: 10
+
+    Share.CircleButton { id: closeButton_
+      diameter: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      font.bold: hover
+      font.family: 'MS Gothic'
+      backgroundColor: 'transparent'
+
+      text: "×" // ばつ
+      toolTip: Sk.tr("Close")
+      onClicked: root_.hideNow()
+    }
+
+    Share.CircleButton { id: zoomOutButton_
+      diameter: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      font.bold: hover
+      font.family: 'MS Gothic'
+      backgroundColor: 'transparent'
+
+      text: "-"
+      toolTip: Sk.tr("Zoom out") + " " + Math.floor(root_.zoomFactor * 100) + "%"
+      onClicked: root_.zoomOut()
+    }
+
+    Share.CircleButton { id: zoomInButton_
+      diameter: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      font.bold: hover
+      font.family: 'MS Gothic'
+      backgroundColor: 'transparent'
+
+      text: "+"
+      toolTip: Sk.tr("Zoom in") + " " + Math.floor(root_.zoomFactor * 100) + "%"
+      onClicked: root_.zoomIn()
+    }
   }
 }

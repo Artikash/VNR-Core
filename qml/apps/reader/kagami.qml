@@ -91,6 +91,8 @@ Item { id: root_
 
   function loadSettings() {
     shiori_.defaultWidth = settings_.shioriWidth
+    popup_.zoomFactor = settings_.ocrZoomFactor
+    shiori_.zoomFactor = settings_.shioriZoomFactor
 
     grimoire_.widthFactor = settings_.grimoireWidthFactor
 
@@ -121,7 +123,7 @@ Item { id: root_
     dock_.splitsTextChecked = settings_.splitsGameText
     dock_.splitsTranslationChecked = settings_.splitsTranslation
 
-    dock_.shioriZoomFactor = settings_.shioriZoomFactor
+    //dock_.shioriZoomFactor = settings_.shioriZoomFactor
     dock_.grimoireZoomFactor = settings_.grimoireZoomFactor
     dock_.alignCenterChecked = settings_.grimoireAlignCenter
     dock_.textChecked = settings_.grimoireTextVisible
@@ -149,6 +151,8 @@ Item { id: root_
 
   function saveSettings() {
     settings_.shioriWidth = shiori_.defaultWidth
+    settings_.ocrZoomFactor = popup_.zoomFactor
+    settings_.shioriZoomFactor = shiori_.zoomFactor
 
     settings_.grimoireWidthFactor = grimoire_.widthFactor
 
@@ -167,7 +171,7 @@ Item { id: root_
     settings_.splitsTranslation = dock_.splitsTranslationChecked
 
     //settings_.copiesGameText = dock_.copiesTextChecked
-    settings_.shioriZoomFactor = dock_.shioriZoomFactor
+    //settings_.shioriZoomFactor = dock_.shioriZoomFactor
     settings_.grimoireZoomFactor = dock_.grimoireZoomFactor
     settings_.grimoireSlimDock = dock_.slimChecked
     settings_.grimoireShadowOpacity = dock_.shadowOpacity
@@ -261,8 +265,8 @@ Item { id: root_
         grimoire_.scrollEnd()
         //dock_.show() // already implemented when visible changed
 
-    onWindowClosed:
-      shiori_.hideNow()
+    //onWindowClosed:
+    //  shiori_.hideNow()
 
     onStretchedChanged:
       if (stretched !== dock_.windowStretchedChecked)
@@ -962,9 +966,9 @@ Item { id: root_
       }
     }
 
-    Kagami.TextPopup { //id: popup_
+    Kagami.TextPopup { id: popup_
       anchors.fill: parent
-      zoomFactor: root_.globalZoomFactor
+      globalZoomFactor: root_.globalZoomFactor
       ignoresFocus: root_.ignoresFocus
     }
 
@@ -1000,7 +1004,7 @@ Item { id: root_
 
       toolTipEnabled: !center_.fullScreenOrStretched
 
-      zoomFactor: dock_.shioriZoomFactor * root_.globalZoomFactor
+      globalZoomFactor: root_.globalZoomFactor
 
       Component.onCompleted: {
         shiori_.yakuAt.connect(popup)

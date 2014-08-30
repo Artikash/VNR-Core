@@ -1793,6 +1793,7 @@ class SettingsProxy(QObject):
   grimoireDanmakuVisible = bool_property('GrimoireDanmaku', True)
   grimoireNameVisible = bool_property('GrimoireName', True)
 
+  ocrZoomFactor = float_property('OCRZoomFactor', 1.0)
   shioriZoomFactor = float_property('ShioriZoomFactor', config.SETTINGS_ZOOM_FACTOR)
 
   grimoireZoomFactor = float_property('GrimoireZoomFactor', config.SETTINGS_ZOOM_FACTOR)
