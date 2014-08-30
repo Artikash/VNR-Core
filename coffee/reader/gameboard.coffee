@@ -520,6 +520,8 @@ init = ->
   else
     dprint 'init: enter'
 
+    moment.locale 'ja'
+
     #gm = new GameManager @bean
     gm = new GameManager @bean
 

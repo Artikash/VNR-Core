@@ -17,20 +17,7 @@ tr = (t) -> t
 
 cache_img = (url) -> url #cacheBean.cacheImage url
 
-# Render
-
-#
-# - content: string html
-# - userAvatar: string url
-HAML_POST = Haml '''\
-.post
-  .avatar
-    :if userAvatar
-      %img.img-rounded(src="#{userAvatar}")
-  .head
-    .user #{userName}
-  .content = content
-'''
+# Utilities
 
 getAvatarUrl = (id, size=128) -> # string, int -> string
   unless id
@@ -45,13 +32,43 @@ renderContent = (t) -> # string -> string
   bbcode.parse linkify _.escape t.replace /]\n/g, ']'
     .replace /<li><\/li>/g, '<li>'
 
+formatDate = (t, fmt) -> # long, string -> string
+  try
+    t *= 1000 if typeof(t) in ['number', 'string']
+    if t then moment(t).format fmt else ''
+    #date = @dateFromUnixTime date if typeof(date) in ['number', 'string']
+    #dateformat date, fmt
+  catch
+    ''
+
+# Render
+
+# - content  string html
+# - userAvatar  string url
+# - createTime  string
+# - userStyle  string
+HAML_POST = Haml '''\
+.post
+  .left
+    :if userAvatar
+      %img.img-circle.avatar(src="#{userAvatar}")
+  .right
+    .head
+      .user(style="#{userStyle}") #{userName}
+      .time = createTime
+    .content = content
+%hr
+'''
+
 renderPost = (post) -> # kw -> string
   HAML_POST
     userName: post.userName
+    userStyle: if post.userColor then "color:#{post.userColor}" else ''
     # TODO: Cache user avatar image
-    userAvatar: getAvatarUrl post.userAvatar
+    userAvatar: getAvatarUrl post.userAvatar, 50
     # TODO: cache bbcode
     content: renderContent post.content
+    createTime: formatDate post.createTime, 'H:mm M/D/YY ddd'
 
 renderPosts = (l) -> # [post] -> string
   l.map(renderPost).join ''
@@ -92,6 +109,8 @@ init = ->
     setTimeout init, 100 # Wait until bean is ready
   else
     dprint 'init: enter'
+
+    moment.locale 'ja'
 
     @TOPIC_ID = $('.topic').data 'id' # global game item id
 
