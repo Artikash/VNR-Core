@@ -717,7 +717,7 @@ Item { id: root_
         maximumX: parent.width - width
         maximumY: parent.height - height
 
-        zoomFactor: root_.globalZoomFactor
+        globalZoomFactor: root_.globalZoomFactor
 
         ignoresFocus: root_.ignoresFocus
         effectColor: settings_.grimoireCommentColor

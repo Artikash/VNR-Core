@@ -18,6 +18,7 @@ Item { id: root_
   property int maximumY
 
   property bool ignoresFocus: false
+  property real globalZoomFactor: 1.0
   property real zoomFactor: 1.0
 
   property bool commentVisible
@@ -27,13 +28,30 @@ Item { id: root_
 
   // - Private -
 
+  property real _zoomFactor: zoomFactor * globalZoomFactor
+
+  property real zoomStep: 0.05
+  property real minimumZoomFactor: 0.5
+  property real maximumZoomFactor: 3.0
+
+  function zoomIn() {
+    var v = zoomFactor + zoomStep
+    if (v < maximumZoomFactor)
+      zoomFactor = v
+  }
+  function zoomOut() {
+    var v = zoomFactor - zoomStep
+    if (v > minimumZoomFactor)
+      zoomFactor = v
+  }
+
   property int _BBCODE_TIMESTAMP: 1363922891
 
-  property int _MAX_HEIGHT: 400 * zoomFactor
+  property int _MAX_HEIGHT: 400 * _zoomFactor
 
-  property int _DEFAULT_WIDTH: 400 * root_.zoomFactor
-  property int _MIN_WIDTH: 50 * root_.zoomFactor
-  property int _MAX_WIDTH: 1000 * root_.zoomFactor
+  property int _DEFAULT_WIDTH: 400 * _zoomFactor
+  property int _MIN_WIDTH: 50 * _zoomFactor
+  property int _MAX_WIDTH: 1000 * _zoomFactor
 
   property int _RESIZABLE_AREA_WIDTH: 15 // resizable mouse area thickness
 
@@ -64,7 +82,7 @@ Item { id: root_
   Rectangle { // shadow
     anchors.fill: parent
     radius: 10
-    color: toolTip_.containsMouse ? '#aa000000' : '#88000000'
+    color: root_.hover ? '#aa000000' : '#88000000'
   }
 
   MouseArea { //id: dragArea_
@@ -185,7 +203,7 @@ Item { id: root_
 
       //font.bold: Util.isAsianLanguage(root_.language)
       //font.italic: Util.isLatinLanguage(root_.language)
-      font.pixelSize: 16 * root_.zoomFactor
+      font.pixelSize: 16 * root_._zoomFactor
 
       // Not working, which cause textedit width to shrink
       //onTextChanged: width = Math.min(_MAX_WIDTH, paintedWidth)
@@ -361,6 +379,8 @@ Item { id: root_
     }
   }
 
+  property bool hover: toolTip_.containsMouse || header_.hover
+
   Desktop.TooltipArea { id: toolTip_
     anchors.fill: parent
     text: comment ? commentSummary(comment) : ""
@@ -375,8 +395,51 @@ Item { id: root_
     return us + lang + ' ' + ts
   }
 
-  Share.CloseButton {
+  Row { id: header_
     anchors { left: parent.left; top: parent.top; margins: -4 }
-    onClicked: root_.hide()
+    spacing: _HEADER_MARGIN * 2
+
+    property bool hover: closeButton_.hover
+                      || zoomInButton_.hover
+                      || zoomOutButton_.hover
+
+    property int cellWidth: 15
+    property int pixelSize: 10
+
+    Share.CircleButton { id: closeButton_
+      diameter: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      font.bold: hover
+      font.family: 'MS Gothic'
+      backgroundColor: 'transparent'
+
+      text: "×" // ばつ
+      toolTip: Sk.tr("Close")
+      onClicked: root_.hide()
+    }
+
+    Share.CircleButton { id: zoomOutButton_
+      diameter: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      font.bold: hover
+      font.family: 'MS Gothic'
+      backgroundColor: 'transparent'
+
+      text: "-"
+      toolTip: Sk.tr("Zoom out") + " " + Math.floor(root_.zoomFactor * 100) + "%"
+      onClicked: root_.zoomOut()
+    }
+
+    Share.CircleButton { id: zoomInButton_
+      diameter: parent.cellWidth
+      font.pixelSize: parent.pixelSize
+      font.bold: hover
+      font.family: 'MS Gothic'
+      backgroundColor: 'transparent'
+
+      text: "+"
+      toolTip: Sk.tr("Zoom in") + " " + Math.floor(root_.zoomFactor * 100) + "%"
+      onClicked: root_.zoomIn()
+    }
   }
 }
