@@ -105,7 +105,22 @@ Item { id: root_
 
   Plugin.Settings { id: settings_ } // Already defined in kagami
 
-  property real zoomFactor: settings_.grimoireZoomFactor
+  property real zoomFactor: 1.0 // settings_.grimoireZoomFactor
+
+  property real zoomStep: 0.05
+  property real minimumZoomFactor: 0.5
+  property real maximumZoomFactor: 3.0
+
+  function zoomIn() {
+    var v = zoomFactor + zoomStep
+    if (v < maximumZoomFactor)
+      zoomFactor = v
+  }
+  function zoomOut() {
+    var v = zoomFactor - zoomStep
+    if (v > minimumZoomFactor)
+      zoomFactor = v
+  }
 
   //property alias shadowOpacity: shadow_.opacity
   property real shadowOpacity: settings_.grimoireShadowOpacity
@@ -225,7 +240,8 @@ Item { id: root_
       left: listView_.left; leftMargin: -9
       bottom: listView_.top; bottomMargin: 4
     }
-    width: 50; height: 20
+    width: buttonRow_.width + 30
+    height: 20
     radius: 9
 
     //visible: !root_.locked
@@ -236,7 +252,7 @@ Item { id: root_
                           bottomResizeTip_.containsMouse ||
                           leftResizeTip_.containsMouse ||
                           rightResizeTip_.containsMouse ||
-                          closeButton_.hover ||
+                          buttonRow_.hover ||
                           //speakButton_.hover ||
                           !!highlightMouseArea && highlightMouseArea.hover
 
@@ -285,17 +301,77 @@ Item { id: root_
       }
     }
 
-    Share.CloseButton { id: closeButton_
+    Row { id: buttonRow_
       anchors {
         verticalCenter: parent.verticalCenter
         left: parent.left
         //leftMargin: header_.radius
       }
-      //visible: header_.active
-      color: root_.fontColor
-      onClicked: root_.hide()
-      toolTip: qsTr("Hide text box")
+
+      spacing: 2
+
+      property bool hover: closeButton_.hover
+                        || ttsButton_.hover
+                        || zoomOutButton_.hover
+                        || zoomInButton_.hover
+
+      //property int cellWidth: 15
+      //property int pixelSize: 10
+      property int cellWidth: 20
+      property int pixelSize: 12
+
+      Share.CircleButton { id: closeButton_
+        diameter: parent.cellWidth
+        font.pixelSize: parent.pixelSize
+        font.bold: hover
+        font.family: 'MS Gothic'
+        backgroundColor: 'transparent'
+
+        text: "×" // ばつ
+        toolTip: Sk.tr("Close")
+        onClicked: root_.hide()
+      }
+
+      Share.CircleButton { id: ttsButton_
+        diameter: parent.cellWidth
+        font.pixelSize: parent.pixelSize
+        font.bold: hover
+        font.family: 'MS Gothic'
+        backgroundColor: 'transparent'
+        color: root_.fontColor
+
+        text: "♪" // おんぷ
+        toolTip: My.tr("Speak")
+        onClicked: root_.speakCurrentText()
+      }
+
+      Share.CircleButton { id: zoomOutButton_
+        diameter: parent.cellWidth
+        font.pixelSize: parent.pixelSize
+        font.bold: hover
+        font.family: 'MS Gothic'
+        backgroundColor: 'transparent'
+        color: root_.fontColor
+
+        text: "-"
+        toolTip: Sk.tr("Zoom out") + " " + Math.floor(root_.zoomFactor * 100) + "%"
+        onClicked: root_.zoomOut()
+      }
+
+      Share.CircleButton { id: zoomInButton_
+        diameter: parent.cellWidth
+        font.pixelSize: parent.pixelSize
+        font.bold: hover
+        font.family: 'MS Gothic'
+        backgroundColor: 'transparent'
+        color: root_.fontColor
+
+        text: "+"
+        toolTip: Sk.tr("Zoom in") + " " + Math.floor(root_.zoomFactor * 100) + "%"
+        onClicked: root_.zoomIn()
+      }
     }
+
 
     Desktop.ContextMenu { id: headerMenu_
 
@@ -892,6 +968,7 @@ Item { id: root_
   property int _timestamp: 0 // current text timestamp
 
   function loadSettings() {
+    zoomFactor = settings_.mirageZoomFactor
     clipboardEnabled = settings_.mirageClipboardEnabled
     mouseEnabled = settings_.mirageMouseEnabled
     textVisible = settings_.mirageTextVisible
@@ -900,6 +977,7 @@ Item { id: root_
     speaksTranslation = settings_.mirageSpeaksTranslation
   }
   function saveSettings() {
+    settings_.mirageZoomFactor = zoomFactor
     settings_.mirageClipboardEnabled = clipboardEnabled
     settings_.mirageMouseEnabled = mouseEnabled
     settings_.mirageTextVisible = textVisible
@@ -937,7 +1015,20 @@ Item { id: root_
     listView_.currentIndex = _pageIndex
   }
 
+  property string currentText
+  property string currentLang
+
+  function speakCurrentText() {
+    if (currentText && currentLang)
+      tts_.speak(currentText, currentLang)
+  }
+
   function showText(text, lang, timestamp) {
+    if (lang && text) {
+      currentLang = lang
+      currentText = text
+    }
+
     _timestamp = timestamp
     addText(text, lang, 'text')
     if (speaksText)

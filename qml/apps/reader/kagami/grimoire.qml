@@ -393,6 +393,7 @@ Item { id: root_
         font.bold: hover
         font.family: 'MS Gothic'
         backgroundColor: 'transparent'
+        color: root_.fontColor
 
         text: "×" // ばつ
         toolTip: Sk.tr("Close")
@@ -405,6 +406,7 @@ Item { id: root_
         font.bold: hover
         font.family: 'MS Gothic'
         backgroundColor: 'transparent'
+        color: root_.fontColor
 
         text: "♪" // おんぷ
         //toolTip: My.tr("Speak")
@@ -418,6 +420,7 @@ Item { id: root_
         font.bold: hover
         font.family: 'MS Gothic'
         backgroundColor: 'transparent'
+        color: root_.fontColor
 
         text: "-"
         toolTip: Sk.tr("Zoom out") + " " + Math.floor(root_.zoomFactor * 100) + "%"
@@ -430,6 +433,7 @@ Item { id: root_
         font.bold: hover
         font.family: 'MS Gothic'
         backgroundColor: 'transparent'
+        color: root_.fontColor
 
         text: "+"
         toolTip: Sk.tr("Zoom in") + " " + Math.floor(root_.zoomFactor * 100) + "%"

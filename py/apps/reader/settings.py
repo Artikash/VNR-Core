@@ -1802,6 +1802,7 @@ class SettingsProxy(QObject):
 
   shioriWidth = int_property('DictionaryPopupWidth', config.SETTINGS_DICT_POPUP_WIDTH)
 
+  mirageZoomFactor = float_property('MirageZoomFactor', config.SETTINGS_ZOOM_FACTOR)
   mirageTextVisible = bool_property('MirageText', True)
   mirageTranslationVisible = bool_property('MirageTranslation', True)
   mirageSpeaksText = bool_property('MirageSpeaksText', False)
