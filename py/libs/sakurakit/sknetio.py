@@ -55,7 +55,7 @@ def _mimematch(r, pattern):
   @param  pattern  str
   @return  None or not None
   """
-  try: return re.search(pattern, r.headers['content-type'], re.IGNORECASE)
+  try: return re.search(pattern, r.headers['Content-Type'], re.IGNORECASE)
   except: pass
 
 def postdata(url, headers=None, gzip=True, mimefilter=None, session=None, **kwargs):

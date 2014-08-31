@@ -5,7 +5,7 @@
 
 __all__ = ['Session']
 
-import urllib, zlib
+import json, urllib, zlib
 from PySide.QtCore import QUrl, QEventLoop, QCoreApplication
 from PySide.QtNetwork import QNetworkRequest
 
@@ -15,7 +15,7 @@ from PySide.QtNetwork import QNetworkRequest
 #  def __del__(self):
 #    print "del: pass"
 
-#MIMETYPE_JSON = 'application/json'
+MIMETYPE_JSON = 'application/json'
 MIMETYPE_FORM = 'application/x-www-form-urlencoded'
 
 # Is this thread-safe?
@@ -77,7 +77,7 @@ class _Session:
     r = self._createRequest(*args, **kwargs)
     headers = kwargs.get('headers')
     if not headers or 'Content-Type' not in headers:
-      r.setHeader(QNetworkRequest.ContentTypeHeader, MIMETYPE_FORM)
+      r.setRawHeader('Content-Type', MIMETYPE_FORM) # setRawHeader is faster than setHeader
     return r
 
   def _tostr(self, data):
@@ -117,17 +117,25 @@ class _Session:
         url.addQueryItem(self._tounicode(k), self._tounicode(v))
     return url
 
-  def _encodePostData(self, data):
+  def _encodePostFormData(self, data):
     """
     @param  data  {unicode key:unicode value}
-    @return  str
+    @return  str not unicode
     """
     data = {self._tostr(k):self._tostr(v) for k,v in data.iteritems()}
     return urllib.urlencode(data) # application/x-www-form-urlencoded
 
-  def _createPostData(self, data):
+  def _encodePostJsonData(self, data):
+    """
+    @param  data  {unicode key:unicode value}
+    @return  str not unicode
+    """
+    return json.dumps(data)
+
+  def _createPostData(self, data, contentType=''):
     """
     @param  data  None str or unicode or kw
+    @param  contentType  str
     @return  str
     """
     if data is None:
@@ -137,8 +145,10 @@ class _Session:
     if isinstance(data, unicode):
       return self._tostr(data)
     if isinstance(data, dict):
-      return self._encodePostData(data) # application/x-www-form-urlencoded
-      #return json.dumps(data) # application/json
+      if contentType == MIMETYPE_JSON:
+        return self._encodePostJsonData(data)
+      else:
+        return self._encodePostFormData(data) # application/x-www-form-urlencoded
     return "%s" % data # may throw for unknown data format
 
   def _readReply(self, reply):
@@ -177,9 +187,10 @@ class _Session:
     @return  str or None
     """
     ret = None
-    reply = self.nam.post(
-        self._createPostRequest(url, **kwargs),
-        self._createPostData(data))
+    req = self._createPostRequest(url, **kwargs)
+    contentType = req.rawHeader('Content-Type')
+    data = self._createPostData(data, contentType=contentType)
+    reply = self.nam.post(req, data)
     self._waitReply(reply)
     if reply.isRunning():
       reply.abort()
@@ -266,11 +277,14 @@ if __name__ == '__main__':
     s = Session(nam)
 
     from sakurakit.skprofiler import SkProfiler
-    url = "http://www.google.com"
+    #url = "http://www.google.com"
+    url = "http://localhost:8080/json/post/create"
+    data = {'lang':'ja'}
+    headers = {'Content-Type':'application/json'}
     with SkProfiler():
-      r = s.post(url)
+      r = s.post(url, data=json.dumps(data), headers=headers)
       print r.ok
-      print type(r.content)
+      print r.content
 
     print "quit"
     app.quit()

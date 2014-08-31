@@ -39,16 +39,16 @@ XML_API = config.API_REST
 
 # Return true when context-type is xml or is None
 def _response_is_xml(r):
-  try: return "/xml" in r.headers['content-type'].lower()
+  try: return "/xml" in r.headers['Content-Type'].lower()
   except (KeyError, TypeError, AttributeError): return True
 
 XML_POST_HEADERS = {
-  'accept-encoding': 'gzip',
-  'content-type': 'application/x-www-form-urlencoded',
+  'Accept-Encoding': 'gzip',
+  'Content-Type': 'application/x-www-form-urlencoded',
 }
 
 JSON_HEADERS = {
-  'content-type': 'application/json',
+  'Content-Type': 'application/json',
 }
 
 @Q_Q
@@ -212,7 +212,9 @@ class _NetworkManager(object):
     """
     #data['ver'] = self.version
     try:
-      r = self.qtSession.post(JSON_API + path, data=data, headers=JSON_HEADERS) #, headers=GZIP_HEADERS)
+      r = self.qtSession.post(JSON_API + path,
+          data=json.dumps(data),
+          headers=JSON_HEADERS) #, headers=GZIP_HEADERS)
       if r.ok:
         res = json.loads(r.content)
         return res['status'] == 0
