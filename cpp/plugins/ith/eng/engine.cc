@@ -351,17 +351,6 @@ DWORD DetermineEngineByFile4()
   }
   return no;
 }
-DWORD DetermineEngineByFile5()
-{
-  enum : DWORD { yes = 0, no = 1 }; // return value
-  // jichi 7/6/2014: named as ScenarioPlayer since resource string could be: scenario player program for xxx
-  // Do this at last as it is common
-  if (IthFindFile(L"*.iar") && IthFindFile(L"*.sec5")) { // jichi 4/18/2014: Other game engine could also have *.iar such as Ryokucha
-    InsertScenarioPlayerHook();
-    return yes;
-  }
-  return no;
-}
 
 DWORD DetermineEngineByProcessName()
 {
@@ -516,6 +505,12 @@ DWORD DetermineEngineOther()
 DWORD DetermineEngineAtLast()
 {
   enum : DWORD { yes = 0, no = 1 }; // return value
+  // jichi 7/6/2014: named as ScenarioPlayer since resource string could be: scenario player program for xxx
+  // Do this at last as it is common
+  if (IthFindFile(L"*.iar") && IthFindFile(L"*.sec5")) { // jichi 4/18/2014: Other game engine could also have *.iar such as Ryokucha
+    InsertScenarioPlayerHook();
+    return yes;
+  }
   if (IthCheckFile(L"comnArc.arc") // this file might exist in multiple files
       && InsertNexton1Hook()) // old nexton game
     return yes;
@@ -624,7 +619,6 @@ bool UnsafeDetermineEngineType()
     && DetermineEngineByFile3()
     && DetermineEngineByFile4()
     && DetermineEngineByProcessName()
-    && DetermineEngineByFile5()
     && DetermineEngineOther()
     && DetermineEngineAtLast()
     && DetermineEngineGeneric()

@@ -3,7 +3,7 @@
 # Required by chat.haml
 #
 # Beans:
-# - i18nBean: coffeebean.I18nBean
+# - cacheBean: cacheman.CacheCoffeeBean
 
 dprint = -> console.log.apply console, arguments
 #dprint = ->
@@ -128,6 +128,8 @@ init = ->
     #setTimeout gm.show, 200
     #setTimeout _.partial(quicksearch, styleClass, gf.refreshFilter),  2000
     dprint 'init: leave'
+
+    $.growl 'Hello World', type:'danger'
 
 $ -> init()
 
