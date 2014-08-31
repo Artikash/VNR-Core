@@ -204,6 +204,10 @@ class PostEditorManager(QObject):
     qApp = QCoreApplication.instance()
     qApp.aboutToQuit.connect(self.hide)
 
+    import dataman, netman
+    netman.manager().onlineChanged.connect(lambda t: t or self.hide())
+    dataman.manager().loginChanged.connect(lambda t: t or self.hide())
+
   postChanged = Signal(unicode) # json
 
   #def clear(self): self.hide()

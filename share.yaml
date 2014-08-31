@@ -184,6 +184,8 @@ apis:
   rest: http://153.121.54.194/api/xml
   #rest: http://sakuradite.com/api/xml
   #rest: http://localhost:5000/api/xml
+  ajax: http://153.121.54.194/api/json/ # must end with '/'
+  #ajax: http://localhost:8080/api/json/
   push: http://153.121.54.194/push/ # must end with '/'
   #push: http://sakuradite.com/push/
   #push: http://localhost:8080/push/

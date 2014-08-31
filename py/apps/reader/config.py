@@ -217,6 +217,7 @@ APP_PYTHONPATH = map(parse_path, APP_YAML['env']['pythonpath']) # [unicode abspa
 ## URLs ##
 API_REST = SHARE_YAML['apis']['rest']
 API_PUSH = SHARE_YAML['apis']['push']
+API_AJAX = SHARE_YAML['apis']['ajax']
 
 URL_READER_DEMO = SHARE_YAML['urls']['reader_demo']
 

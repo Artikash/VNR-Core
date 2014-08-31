@@ -35,6 +35,7 @@ SOURCES = \
   managers/_trman.py \
   managers/_ttsman.py \
   managers/ttsman.py \
+  views/chatview.py \
   views/gameview.py \
   views/userview.py \
   qml/kagami.py \

@@ -30,9 +30,10 @@ def _gunzip(data):
   return _zlib_decomp.decompress(data)
 
 class Response:
-  def __init__(self, ok=True, content=''):
+  def __init__(self, ok=True, content='', url=''):
     self.ok = ok # bool
     self.content = content # str
+    self.url = url # unicode
 
 class _Session:
   encoding = 'utf8'
@@ -224,19 +225,19 @@ class Session(object):
 
   # Queries
 
-  def get(self, *args, **kwargs):
+  def get(self, url, *args, **kwargs):
     """Similar to requests.get.
     @param  url  unicode
     @param* headers  {unicode key:unicode value}
     @param* params  {unicode key:unicode value}
     @return  Response not None
     """
-    data = self.__d.get(*args, **kwargs)
+    data = self.__d.get(url, *args, **kwargs)
     ok = data is not None
     content = data or ''
-    return Response(ok=ok, content=content)
+    return Response(ok=ok, content=content, url=url)
 
-  def post(self, *args, **kwargs):
+  def post(self, url, *args, **kwargs):
     """Similar to requests.post.
     @param  url  unicode
     @param  data  None or str or unicode or kw
@@ -244,10 +245,10 @@ class Session(object):
     @param* params  {unicode key:unicode value}
     @return  Response not None
     """
-    data = self.__d.post(*args, **kwargs)
+    data = self.__d.post(url, *args, **kwargs)
     ok = data is not None
     content = data or ''
-    return Response(ok=ok, content=content)
+    return Response(ok=ok, content=content, url=url)
 
 if __name__ == '__main__':
   import sys

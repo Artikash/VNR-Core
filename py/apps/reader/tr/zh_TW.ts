@@ -741,12 +741,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>使用{0}改變遊戲字符編碼</translation>
     </message>
     <message>
-        <location filename="managers/netman.py" line="116"/>
+        <location filename="managers/netman.py" line="118"/>
         <source>Connected to the Internet</source>
         <translation>連接到網絡</translation>
     </message>
     <message>
-        <location filename="managers/netman.py" line="118"/>
+        <location filename="managers/netman.py" line="120"/>
         <source>Disconnected from the Internet</source>
         <translation>斷開網絡連接</translation>
     </message>
@@ -3650,12 +3650,12 @@ VNR的提取方法支持內嵌翻譯到遊戲中去，但是支持的遊戲比IT
         <translation>在使用了MeCab辭書后修改它也許需要重新啟動VNR（在Windows XP上一定需要重新啟動）。</translation>
     </message>
     <message>
-        <location filename="managers/netman.py" line="106"/>
+        <location filename="managers/netman.py" line="108"/>
         <source>Always enable Internet access as you wish</source>
         <translation>如你所願總是連接到網絡</translation>
     </message>
     <message>
-        <location filename="managers/netman.py" line="110"/>
+        <location filename="managers/netman.py" line="112"/>
         <source>Always disable Internet access as you wish</source>
         <translation>如你所願禁止連接到網絡</translation>
     </message>
@@ -3969,6 +3969,16 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <location filename="dialogs/postinput.py" line="125"/>
         <source>Edit submitted</source>
         <translation>編輯已提交</translation>
+    </message>
+    <message>
+        <location filename="views/chatview.py" line="161"/>
+        <source>Failed to submit post</source>
+        <translation>保存內容失敗了</translation>
+    </message>
+    <message>
+        <location filename="views/chatview.py" line="162"/>
+        <source>Please try again</source>
+        <translation>請再重試下吧</translation>
     </message>
 </context>
 </TS>
