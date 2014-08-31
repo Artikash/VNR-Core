@@ -120,7 +120,7 @@ class _PostInput(object):
 
     if post['content']:
       self.q.postReceived.emit(json.dumps(post))
-      self.postContent = '' # clear content but leave language
+      #self.postContent = '' # clear content but leave language
 
       growl.msg(my.tr("Edit submitted"))
 
@@ -192,6 +192,10 @@ class PostInputManager(QObject):
     from PySide.QtCore import QCoreApplication
     qApp = QCoreApplication.instance()
     qApp.aboutToQuit.connect(self.hide)
+
+    import dataman, netman
+    netman.manager().onlineChanged.connect(lambda t: t or self.hide())
+    dataman.manager().loginChanged.connect(lambda t: t or self.hide())
 
   postReceived = Signal(unicode) # json
 

@@ -11,7 +11,7 @@
 # Some of the expensive requests that will parse large data are using session
 # Some cheap requests are using Qt session
 
-import operator
+import json, operator
 import requests
 from datetime import datetime
 from functools import partial
@@ -31,18 +31,24 @@ import config, dataman, defs, features, growl
 
 session = requests.Session() # global request session
 
-API = config.API_REST
-#API = "http://localhost:5000/api/1"
-#API = "http://localhost:5000/api/1"
+JSON_API = config.API_AJAX
+
+XML_API = config.API_REST
+#XML_API = "http://localhost:5000/api/1"
+#XML_API = "http://localhost:5000/api/1"
 
 # Return true when context-type is xml or is None
 def _response_is_xml(r):
-  try: return "/xml" in r.headers['content-type'].lower()
+  try: return "/xml" in r.headers['Content-Type'].lower()
   except (KeyError, TypeError, AttributeError): return True
 
-POST_HEADERS = {
-  'accept-encoding': 'gzip',
-  'content-type': 'application/x-www-form-urlencoded',
+XML_POST_HEADERS = {
+  'Accept-Encoding': 'gzip',
+  'Content-Type': 'application/x-www-form-urlencoded',
+}
+
+JSON_HEADERS = {
+  'Content-Type': 'application/json',
 }
 
 @Q_Q
@@ -129,7 +135,7 @@ class _NetworkManager(object):
   def queryVersion(self):
     params = {'ver': self.version}
     try:
-      r = self.qtSession.get(API + '/app/version', params=params, headers=GZIP_HEADERS)
+      r = self.qtSession.get(XML_API + '/app/version', params=params, headers=GZIP_HEADERS)
       if r.ok: #and _response_is_xml(r):
         root = etree.fromstring(r.content)
         #app = root.find('./apps/app[@id="%i"]' % config.VERSION_ID)
@@ -140,10 +146,10 @@ class _NetworkManager(object):
 
     #except socket.error, e:
     #  dwarn("socket error", e.args)
-    except requests.ConnectionError, e:
-      dwarn("connection error", e.args)
-    except requests.HTTPError, e:
-      dwarn("http error", e.args)
+    #except requests.ConnectionError, e:
+    #  dwarn("connection error", e.args)
+    #except requests.HTTPError, e:
+    #  dwarn("http error", e.args)
     except etree.ParseError, e:
       dwarn("xml parse error", e.args)
     except KeyError, e:
@@ -167,7 +173,7 @@ class _NetworkManager(object):
     if lang not in ('en', 'zhs', 'zht'):
       lang = 'en'
     try:
-      r = session.get(API + '/app/msg', params=params, headers=GZIP_HEADERS)
+      r = session.get(XML_API + '/app/msg', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         #app = root.find('./apps/app[@id="%i"]' % config.VERSION_ID)
@@ -196,13 +202,37 @@ class _NetworkManager(object):
     try: dwarn(r.url)
     except: pass
 
+  ## AJAX #
+
+  def ajax(self, path, data):
+    """
+    @param  path  unicode
+    @param  data  kw
+    @return  bool
+    """
+    #data['ver'] = self.version
+    try:
+      r = self.qtSession.post(JSON_API + path,
+          data=json.dumps(data),
+          headers=JSON_HEADERS) #, headers=GZIP_HEADERS)
+      if r.ok:
+        res = json.loads(r.content)
+        return res['status'] == 0
+    except Exception, e:
+      derror(e)
+
+    dwarn("failed data follow")
+    try: dwarn(path, data)
+    except: pass
+    return False
+
   ## User #
 
   def queryUser(self, userName, password):
     assert userName and password, "missing user name or password "
     params = {'ver':self.version, 'login':userName, 'password':password}
     try:
-      r = self.qtSession.get(API + '/user/query', params=params, headers=GZIP_HEADERS)
+      r = self.qtSession.get(XML_API + '/user/query', params=params, headers=GZIP_HEADERS)
       if r.ok: #and _response_is_xml(r):
         root = etree.fromstring(r.content)
         user = root.find('./users/user')
@@ -225,10 +255,10 @@ class _NetworkManager(object):
 
     #except socket.error, e:
     #  dwarn("socket error", e.args)
-    except requests.ConnectionError, e:
-      dwarn("connection error", e.args)
-    except requests.HTTPError, e:
-      dwarn("http error", e.args)
+    #except requests.ConnectionError, e:
+    #  dwarn("connection error", e.args)
+    #except requests.HTTPError, e:
+    #  dwarn("http error", e.args)
     except etree.ParseError, e:
       dwarn("xml parse error", e.args)
     except KeyError, e:
@@ -261,7 +291,7 @@ class _NetworkManager(object):
         params['delcolor'] = True
 
     try:
-      r = self.qtSession.post(API + '/user/update', data=params, headers=POST_HEADERS)
+      r = self.qtSession.post(XML_API + '/user/update', data=params, headers=XML_POST_HEADERS)
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         user = root.find('./users/user')
@@ -272,10 +302,10 @@ class _NetworkManager(object):
 
     #except socket.error, e:
     #  dwarn("socket error", e.args)
-    except requests.ConnectionError, e:
-      dwarn("connection error", e.args)
-    except requests.HTTPError, e:
-      dwarn("http error", e.args)
+    #except requests.ConnectionError, e:
+    #  dwarn("connection error", e.args)
+    #except requests.HTTPError, e:
+    #  dwarn("http error", e.args)
     except etree.ParseError, e:
       dwarn("xml parse error", e.args)
     except KeyError, e:
@@ -298,7 +328,7 @@ class _NetworkManager(object):
   #  """
   #  params = {'ver': self.version}
   #  try:
-  #    r = session.get(API + '/game/md5', params=params, headers=GZIP_HEADERS)
+  #    r = session.get(XML_API + '/game/md5', params=params, headers=GZIP_HEADERS)
   #    if r.ok:
   #      c = r.content
   #      if c:
@@ -324,7 +354,7 @@ class _NetworkManager(object):
     """
     params = {'ver': self.version}
     try:
-      r = session.get(API + '/item/list', params=params, headers=GZIP_HEADERS)
+      r = session.get(XML_API + '/item/list', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         TYPES = dataman.Reference.TYPES
@@ -384,7 +414,7 @@ class _NetworkManager(object):
   #  """
   #  params = {'ver': self.version}
   #  try:
-  #    r = session.get(API + '/ref/list', params=params, headers=GZIP_HEADERS)
+  #    r = session.get(XML_API + '/ref/list', params=params, headers=GZIP_HEADERS)
   #    if r.ok and _response_is_xml(r):
   #      root = etree.fromstring(r.content)
   #      TYPES = dataman.Reference.TYPES
@@ -436,7 +466,7 @@ class _NetworkManager(object):
     """
     params = {'ver': self.version}
     try:
-      r = session.get(API + '/game/list', params=params, headers=GZIP_HEADERS)
+      r = session.get(XML_API + '/game/list', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         ret = {}
@@ -483,7 +513,7 @@ class _NetworkManager(object):
     """
     params = {'ver': self.version}
     try:
-      r = session.get(API + '/user/list', params=params, headers=GZIP_HEADERS)
+      r = session.get(XML_API + '/user/list', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         context = etree.iterparse(StringIO(r.content), events=('start','end'))
 
@@ -539,7 +569,7 @@ class _NetworkManager(object):
       params['md5'] = md5
 
     try:
-      r = session.get(API + '/game/query', params=params, headers=GZIP_HEADERS)
+      r = session.get(XML_API + '/game/query', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
         game = root.find('./games/game')
@@ -632,7 +662,7 @@ class _NetworkManager(object):
       if game.names[t]:       params['%sname' % t]      = game.names[t]
 
     try:
-      r = session.post(API + '/game/update', data=params, headers=POST_HEADERS)
+      r = session.post(XML_API + '/game/update', data=params, headers=XML_POST_HEADERS)
 
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
@@ -679,7 +709,7 @@ class _NetworkManager(object):
       params['md5'] = md5
 
     try:
-      r = session.get(API + '/ref/query', params=params, headers=GZIP_HEADERS)
+      r = session.get(XML_API + '/ref/query', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         #root = etree.fromstring(r.content)
         GUEST_ID = dataman.GUEST.id
@@ -794,11 +824,11 @@ class _NetworkManager(object):
 
     try:
       if not async:
-        r = session.post(API + '/ref/submit', data=params, headers=POST_HEADERS)
+        r = session.post(XML_API + '/ref/submit', data=params, headers=XML_POST_HEADERS)
       else:
         r = skthreads.runsync(partial(
             session.post,
-            API + '/ref/submit', data=params, headers=POST_HEADERS),
+            XML_API + '/ref/submit', data=params, headers=XML_POST_HEADERS),
             parent=self.q)
 
       if r.ok and _response_is_xml(r):
@@ -875,11 +905,11 @@ class _NetworkManager(object):
 
     try:
       if not async:
-        r = session.post(API + '/ref/update', data=params, headers=POST_HEADERS)
+        r = session.post(XML_API + '/ref/update', data=params, headers=XML_POST_HEADERS)
       else:
         r = skthreads.runsync(partial(
             session.post,
-            API + '/ref/update', data=params, headers=POST_HEADERS),
+            XML_API + '/ref/update', data=params, headers=XML_POST_HEADERS),
             parent=self.q)
 
       if r.ok and _response_is_xml(r):
@@ -932,7 +962,7 @@ class _NetworkManager(object):
     self._addBlockedLanguages(params)
 
     try:
-      r = session.get(API + '/comment/query', params=params, headers=GZIP_HEADERS)
+      r = session.get(XML_API + '/comment/query', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         #root = etree.fromstring(r.content)
 
@@ -1120,11 +1150,11 @@ class _NetworkManager(object):
 
     try:
       if not async:
-        r = session.post(API + '/comment/submit', data=params, headers=POST_HEADERS)
+        r = session.post(XML_API + '/comment/submit', data=params, headers=XML_POST_HEADERS)
       else:
         r = skthreads.runsync(partial(
             session.post,
-            API + '/comment/submit', data=params, headers=POST_HEADERS),
+            XML_API + '/comment/submit', data=params, headers=XML_POST_HEADERS),
             parent=self.q)
 
       if r.ok and _response_is_xml(r):
@@ -1211,11 +1241,11 @@ class _NetworkManager(object):
 
     try:
       if not async:
-        r = session.post(API + '/comment/update', data=params, headers=POST_HEADERS)
+        r = session.post(XML_API + '/comment/update', data=params, headers=XML_POST_HEADERS)
       else:
         r = skthreads.runsync(partial(
             session.post,
-            API + '/comment/update', data=params, headers=POST_HEADERS),
+            XML_API + '/comment/update', data=params, headers=XML_POST_HEADERS),
             parent=self.q)
 
       if r.ok and _response_is_xml(r):
@@ -1263,7 +1293,7 @@ class _NetworkManager(object):
     }
     self._addBlockedLanguages(params)
     try:
-      r = session.get(API + '/term/list', params=params, headers=GZIP_HEADERS)
+      r = session.get(XML_API + '/term/list', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         context = etree.iterparse(StringIO(r.content), events=('start','end'))
 
@@ -1381,11 +1411,11 @@ class _NetworkManager(object):
 
     try:
       if not async:
-        r = session.post(API + '/term/submit', data=params, headers=POST_HEADERS)
+        r = session.post(XML_API + '/term/submit', data=params, headers=XML_POST_HEADERS)
       else:
         r = skthreads.runsync(partial(
             session.post,
-            API + '/term/submit', data=params, headers=POST_HEADERS),
+            XML_API + '/term/submit', data=params, headers=XML_POST_HEADERS),
             parent=self.q)
 
       if r.ok and _response_is_xml(r):
@@ -1460,11 +1490,11 @@ class _NetworkManager(object):
 
     try:
       if not async:
-        r = session.post(API + '/term/update', data=params, headers=POST_HEADERS)
+        r = session.post(XML_API + '/term/update', data=params, headers=XML_POST_HEADERS)
       else:
         r = skthreads.runsync(partial(
             session.post,
-            API + '/term/update', data=params, headers=POST_HEADERS),
+            XML_API + '/term/update', data=params, headers=XML_POST_HEADERS),
             parent=self.q)
 
       if r.ok and _response_is_xml(r):
@@ -1836,6 +1866,15 @@ class NetworkManager(QObject):
     if self.isOnline() and term.id and userName and password:
       return self.__d.updateTerm(term, userName, password, async=async)
     return False
+
+  ## Forum ##
+
+  def submitPost(self, **post):
+    """
+    @return  bool
+    Thread-safe.
+    """
+    return self.isOnline() and self.__d.ajax('post/create', post)
 
 @memoized
 def manager(): return NetworkManager()

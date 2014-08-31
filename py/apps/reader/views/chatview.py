@@ -20,7 +20,7 @@ from sakurakit.skwebkit import SkWebView #, SkWebViewBean
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
 #from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
-import osutil, rc
+import growl, osutil, rc
 
 @Q_Q
 class _ChatView(object):
@@ -137,7 +137,32 @@ class _ChatView(object):
     ret.clicked.connect(self._new)
     return ret
 
-  def _new(self): main.manager().showReferenceView(gameId=self.gameId)
+  @memoizedproperty
+  def postInputManager(self):
+    import postinput
+    ret = postinput.PostInputManager(self.q)
+    ret.postReceived.connect(self._submit)
+    return ret
+
+  def _submit(self, postData):
+    """
+    @param  postData  unicode json
+    """
+    import dataman, netman
+    if self.topicId and netman.manager().isOnline():
+      user = dataman.manager().user()
+      if user.name and user.password:
+        post = json.loads(postData)
+        post['topic'] = self.topicId
+        post['login'] = user.name
+        post['password'] = user.password
+        if not netman.manager().submitPost(**post):
+          growl.warn("<br/>".join((
+            my.tr("Failed to submit post"),
+            my.tr("Please try again"),
+          )))
+
+  def _new(self): self.postInputManager.newPost()
 
 class ChatView(QtWidgets.QMainWindow):
   def __init__(self, parent=None):

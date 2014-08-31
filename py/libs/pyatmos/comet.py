@@ -85,13 +85,13 @@ class CometConnection(object):
   @staticmethod
   def currentTimeMillis(): return int(time.time() * 1000)
 
-  @staticmethod
-  def get(*args, **kwargs): return requests.get(*args, **kwargs)
+  def get(self, *args, **kwargs): return self.session.get(*args, **kwargs)
 
-  @staticmethod
-  def post(*args, **kwargs): return requests.post(*args, **kwargs)
+  def post(self, *args, **kwargs): return self.session.post(*args, **kwargs)
 
   def __init__(self, url):
+    self.session = requests.Session()
+
     self.url = url # str
     self.trackingId = 0 # string or 0
 
