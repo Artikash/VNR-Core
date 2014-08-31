@@ -2,7 +2,7 @@
 # postedit.py
 # 6/30/2014 jichi
 
-__all__ = ['PostEditorManager', 'PostEditorManagerProxy']
+__all__ = ['PostEditorManager', 'PostEditorManagerBean']
 
 if __name__ == '__main__':
   import sys
@@ -14,7 +14,7 @@ import json
 from PySide.QtCore import Qt, Signal, Slot, QObject
 from Qt5 import QtWidgets
 from sakurakit import skqss, skwidgets
-from sakurakit.skclass import Q_Q, memoized, memoizedproperty
+from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
 from mytr import mytr_
@@ -76,6 +76,7 @@ class _PostEditor(object):
   @memoizedproperty
   def contentEdit(self):
     ret = QtWidgets.QTextEdit()
+    skqss.class_(ret, 'texture')
     ret.setToolTip(tr_("Content"))
     ret.setAcceptRichText(False)
     ret.setMinimumHeight(TEXTEDIT_MINIMUM_HEIGHT)
@@ -197,9 +198,13 @@ class PostEditorManager(QObject):
     super(PostEditorManager, self).__init__(parent)
     self.__d = _PostEditorManager()
 
+    from PySide.QtCore import QCoreApplication
+    qApp = QCoreApplication.instance()
+    qApp.aboutToQuit.connect(self.hide)
+
   postChanged = Signal(unicode) # json
 
-  def clear(self): self.hide()
+  #def clear(self): self.hide()
 
   def hide(self):
     if self.__d.dialogs:
@@ -212,15 +217,15 @@ class PostEditorManager(QObject):
     w.setPost(**post)
     w.show()
 
-@memoized
-def manager(): return PostEditorManager()
+#@memoized
+#def manager(): return PostEditorManager()
 
 #@QmlObject
-class PostEditorManagerProxy(QObject):
+class PostEditorManagerBean(QObject):
   def __init__(self, parent=None):
-    super(PostEditorManagerProxy, self).__init__(parent)
-
-    manager().postChanged.connect(self.postChanged)
+    super(PostEditorManagerBean, self).__init__(parent)
+    self.__d = PostEditorManager(self)
+    self.__d.postChanged.connect(self.postChanged)
 
   postChanged = Signal(unicode) # json
 
@@ -234,7 +239,8 @@ class PostEditorManagerProxy(QObject):
 
 if __name__ == '__main__':
   a = debug.app()
-  manager().editPost(id=123, content="123", lang='en')
+  m = PostEditorManager()
+  m.editPost(id=123, content="123", lang='en')
   a.exec_()
 
 # EOF

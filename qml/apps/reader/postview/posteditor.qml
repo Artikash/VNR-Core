@@ -18,7 +18,7 @@ Item { id: root_
 
   // - Private -
 
-  Plugin.PostEditorManagerProxy { id: editor_
+  Plugin.PostEditorManager { id: editor_
     Component.onCompleted: postChanged.connect(root_.submit)
   }
 
