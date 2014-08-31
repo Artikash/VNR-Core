@@ -59,7 +59,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
 
   #font-awesome.css: http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css
   font-awesome3.css: $PWD/../AJAX/font-awesome/3.2.1/css/font-awesome.min.css
-  font-awesome4.css: $PWD/../AJAX/font-awesome/4.1.0/css/font-awesome.min.css
+  font-awesome4.css: $PWD/../AJAX/font-awesome/4.2.0/css/font-awesome.min.css
 
   twitter.widgets: http://platform.twitter.com/widgets.js
 
@@ -98,8 +98,8 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
 
   masonry: http://cdn.jsdelivr.net/masonry/3.1.5/masonry.min.js
 
-  #moment: http://cdn.jsdelivr.net/momentjs/2.8.1/moment.min.js
-  moment: http://cdn.jsdelivr.net/momentjs/2.8.1/moment-with-locales.min.js
+  #moment: http://cdn.jsdelivr.net/momentjs/2.8.2/moment.min.js
+  moment: http://cdn.jsdelivr.net/momentjs/2.8.2/moment-with-locales.min.js
   #underscore: http://cdn.jsdelivr.net/underscorejs/1.6.0/underscore-min.js
   underscore: http://cdn.jsdelivr.net/lodash/2.4.1/lodash.min.js
   underscore.string: http://cdn.jsdelivr.net/underscore.string/2.3.3/underscore.string.min.js
