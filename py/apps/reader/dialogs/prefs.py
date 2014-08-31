@@ -62,6 +62,7 @@ class _PrefsDialog(object):
     self.uiTab = _prefs.UiTab()
     self.i18nTab = _prefs.I18nTab()
     self.engineTab = _prefs.EngineTab()
+    self.internetTab = _prefs.InternetTab()
     self.featureTab = _prefs.FeatureTab()
     #self.pluginTab = _prefs.PluginTab()
 
@@ -233,6 +234,12 @@ class _PrefsDialog(object):
           'decoration': rc.icon('pref-config'),
           'toolTip': my.tr("Embedded subtitles"),
         },
+        { 'widget': self.internetTab,
+          'user': self._indexWidget(self.internetTab),
+          'decoration': rc.icon('pref-internet'),
+          'display': tr_("Internet"),
+          'toolTip': my.tr("Internet options"),
+        },
         { 'widget': self.featureTab,
           'user': self._indexWidget(self.featureTab),
           'decoration': rc.icon('pref-feature'),
@@ -282,6 +289,7 @@ class _PrefsDialog(object):
     yield self.gameTab
     yield self.shortcutsTab
     yield self.i18nTab
+    yield self.internetTab
     yield self.featureTab
     #yield self.pluginTab
 
@@ -321,7 +329,8 @@ class PrefsDialog(QtWidgets.QSplitter):
     for i in xrange(self.count()):
       skqss.class_(self.widget(i), 'texture')
 
-    self.resize(500,480)
+    #self.resize(500,480)
+    self.resize(500,485) # large enough that there is no vertical scroll bar
     self.setSizes([160,340])
     dprint("pass")
 
