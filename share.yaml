@@ -610,6 +610,7 @@ icons:
   pref-tts:         $PWD/images/music.png
   pref-tts-path:    $PWD/images/sound.png
   window-bbcode:    $PWD/images/dock/bb.png
+  window-chat:      $PWD/images/browser.png
   window-dict:      $PWD/images/dock/dict.png
   window-jdict:     $PWD/images/dock/jdict.png
   window-gameboard: $PWD/images/dock/reader.png

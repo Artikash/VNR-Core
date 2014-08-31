@@ -60,8 +60,7 @@ class _ChatView(object):
     m = coffeebean.manager()
     return (
       ('cacheBean', m.cacheBean),
-      #('trBean', m.trBean),
-      #('viewBean', self._viewBean),
+      ('i18nBean', m.i18nBean),
     )
 
   @memoizedproperty
@@ -90,6 +89,7 @@ class _ChatView(object):
       'topicId': self.topicId,
       'title': tr_("Chat"),
       'rc': rc,
+      'tr': tr_,
     }), baseUrl)
     self._injectBeans()
 
@@ -143,7 +143,8 @@ class ChatView(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
     super(ChatView, self).__init__(parent, WINDOW_FLAGS)
-    #self.setWindowIcon(rc.icon('window-chat'))
+    self.setWindowIcon(rc.icon('window-chat'))
+    self.setWindowTitle(tr_("Chat"))
     self.__d = _ChatView(self)
 
   def refresh(self): self.__d.refresh()
@@ -228,7 +229,7 @@ class ChatViewManagerProxy(QObject):
 
 if __name__ == '__main__':
   a = debug.app()
-  manager().showTopic(409)
+  manager().showTopic(102)
   a.exec_()
 
 # EOF

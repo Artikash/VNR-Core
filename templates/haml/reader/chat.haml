@@ -3,6 +3,7 @@
 ; @param  topicId  long
 ; @param  title  unicode
 ; @param  rc  rc
+; @param  tr  sktr.tr_
 ;!!! 5
 
 %html(lang="ja")
@@ -20,6 +21,9 @@
   %body
     .topic.portal(data-id="#{topicId}")
       .posts
+      .foot
+        %a.btn.btn-link.btn-more(role="button")
+          #{tr('More')}
     #spin
 
     :javascript

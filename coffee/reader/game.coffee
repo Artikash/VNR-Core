@@ -1074,7 +1074,7 @@ bindDraggable = ->
 ## Main ##
 
 init = ->
-  unless @gameBean?
+  unless @gameBean? # the last injected bean
     dprint 'init: wait'
     setTimeout init, 100 # Wait until bean is ready
   else
