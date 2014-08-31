@@ -1,4 +1,4 @@
-/** posteditor.qml
+/** postinput.qml
  *  2/23/2014 jichi
  *
  *  See:
@@ -10,30 +10,33 @@ import '../../../js/ajax.min.js' as Ajax
 
 Item { id: root_
 
-  property string postUrl //: Define.DOMAIN_COM + '/api/json/post/update'
-  //property string postUrl: 'http://192.168.1.105:8080/api/json/post/update'
+  property string topicKey // topicId
+  property string postUrl //: Define.DOMAIN_COM + '/api/json/post/create'
+  //property string postUrl: 'http://192.168.1.105:8080/api/json/post/create'
 
   // string json ->
-  function editPost(post) { editor_.editPost(post) }
+  function newPost() { editor_.newPost() }
 
   // - Private -
 
-  Plugin.PostEditorManager { id: editor_
-    Component.onCompleted: postChanged.connect(root_.submit)
+  Plugin.PostInputManager { id: editor_
+    Component.onCompleted: postReceived.connect(root_.submit)
   }
 
   function submit(postString) {
+    console.log(postString)
     var post = JSON.parse(postString)
     var user = statusPlugin_.userName
     var pass = statusPlugin_.userPassword
-    if (user && pass && user === post.userName) { // double check user
+    if (user && pass && post.content) {
       var req = {
         login: user
         , password: pass
-        , id: post.id
+        , content: post.content
+        , topic: root_.topicKey
+        //, type: 'post'
+        //, replyId:
       }
-      if (post.content)
-        req.content = post.content
       if (post.lang)
         req.lang = post.lang
       send(req)

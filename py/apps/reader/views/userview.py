@@ -98,7 +98,7 @@ class UserViewManager:
   def __init__(self):
     self.__d = _UserViewManager()
 
-  def clear(self): self.hide()
+  #def clear(self): self.hide()
 
   def hide(self):
     if self.__d.dialogs:

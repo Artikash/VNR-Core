@@ -1,8 +1,8 @@
 # coding: utf8
-# postedit.py
-# 6/30/2014 jichi
+# postinput.py
+# 8/30/2014 jichi
 
-__all__ = ['PostEditorManager', 'PostEditorManagerBean']
+__all__ = ['PostInputManager', 'PostInputManagerBean']
 
 if __name__ == '__main__':
   import sys
@@ -23,17 +23,17 @@ import config, growl, i18n, rc
 TEXTEDIT_MINIMUM_HEIGHT = 50
 
 @Q_Q
-class _PostEditor(object):
+class _PostInput(object):
   def __init__(self, q):
-    self.postId = 0 # long
-    self.userName = '' # unicode
-    #self.userName = '' # unicode
-    self.postLanguage = ''
-    self.postContent = ''
+    self.clear()
 
     self._createUi(q)
 
     skwidgets.shortcut('ctrl+s', self._save, parent=q)
+
+  def clear(self):
+    self.postLanguage = ''
+    self.postContent = ''
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
@@ -57,9 +57,9 @@ class _PostEditor(object):
 
   @memoizedproperty
   def saveButton(self):
-    ret = QtWidgets.QPushButton(tr_("Save"))
+    ret = QtWidgets.QPushButton(tr_("Submit"))
     skqss.class_(ret, 'btn btn-primary')
-    ret.setToolTip(tr_("Save") + " (Ctrl+S)")
+    ret.setToolTip(tr_("Submit") + " (Ctrl+S)")
     ret.setDefault(True)
     ret.clicked.connect(self._save)
     ret.clicked.connect(self.q.hide) # save and hide
@@ -102,29 +102,25 @@ class _PostEditor(object):
   def _getContent(self):
     return self.contentEdit.toPlainText().strip()
 
-  def _isChanged(self):
-    t = self._getContent()
-    return bool(t) and t != self.postContent or self.postLanguage != self._getLanguage()
-
   def _onContentChanged(self):
-    self.saveButton.setEnabled(self._isChanged())
+    self.saveButton.setEnabled(bool(self._getContent()))
 
   def _onLanguageChanged(self):
     self.spellHighlighter.setLanguage(self._getLanguage())
-    self.saveButton.setEnabled(self._isChanged())
 
   def _save(self):
-    v = self._getContent()
     post = {}
-    if v and v != self.postContent:
-      post['content'] = self.postContent = v
-    v = self._getLanguage()
-    if v != self.postLanguage:
-      post['lang'] = self.postLanguage = v
-    if post:
-      post['id'] = self.postId
-      post['userName'] = self.userName
-      self.q.postChanged.emit(json.dumps(post))
+    post['content'] = self.postContent = self._getContent()
+    post['lang'] = self.postLanguage = self._getLanguage()
+
+    #import dataman
+    #user = dataman.manager().user()
+    #post['login'] = user.name
+    #post['pasword'] = user.password
+
+    if post['content']:
+      self.q.postReceived.emit(json.dumps(post))
+      self.postContent = '' # clear content but leave language
 
       growl.msg(my.tr("Edit submitted"))
 
@@ -139,17 +135,17 @@ class _PostEditor(object):
 
     self.spellHighlighter.setLanguage(self.postLanguage) # must after lang
 
-class PostEditor(QtWidgets.QDialog):
+class PostInput(QtWidgets.QDialog):
 
-  postChanged = Signal(unicode) # json
+  postReceived = Signal(unicode) # json
 
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
-    super(PostEditor, self).__init__(parent, WINDOW_FLAGS)
+    super(PostInput, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
-    self.setWindowTitle(mytr_("Post Editor"))
+    self.setWindowTitle(mytr_("New Post"))
     self.setWindowIcon(rc.icon('window-textedit'))
-    self.__d = _PostEditor(self)
+    self.__d = _PostInput(self)
     #self.statusBar() # show status bar
 
     import netman
@@ -157,23 +153,15 @@ class PostEditor(QtWidgets.QDialog):
     import dataman
     dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
 
-  def setPost(self, id, userName='', language='', content='', **ignored):
-    d = self.__d
-    d.postId = id
-    d.userName = userName
-    d.postLanguage = language
-    d.postContent = content
-
-    if self.isVisible():
-      d.refresh()
+  #def clear(self): self.__d.clear()
 
   def setVisible(self, value):
     """@reimp @public"""
     if value and not self.isVisible():
       self.__d.refresh()
-    super(PostEditor, self).setVisible(value)
+    super(PostInput, self).setVisible(value)
 
-class _PostEditorManager:
+class _PostInputManager:
   def __init__(self):
     self.dialogs = []
 
@@ -181,30 +169,31 @@ class _PostEditorManager:
   def _createDialog():
     import windows
     parent = windows.top()
-    ret = PostEditor(parent)
+    ret = PostInput(parent)
     ret.resize(300, 200)
     return ret
 
   def getDialog(self, q): # QObject -> QWidget
     for w in self.dialogs:
       if not w.isVisible():
+        #w.clear() # use last input
         return w
     ret = self._createDialog()
     self.dialogs.append(ret)
-    ret.postChanged.connect(q.postChanged)
+    ret.postReceived.connect(q.postReceived)
     return ret
 
 #@Q_Q
-class PostEditorManager(QObject):
+class PostInputManager(QObject):
   def __init__(self, parent=None):
-    super(PostEditorManager, self).__init__(parent)
-    self.__d = _PostEditorManager()
+    super(PostInputManager, self).__init__(parent)
+    self.__d = _PostInputManager()
 
     from PySide.QtCore import QCoreApplication
     qApp = QCoreApplication.instance()
     qApp.aboutToQuit.connect(self.hide)
 
-  postChanged = Signal(unicode) # json
+  postReceived = Signal(unicode) # json
 
   #def clear(self): self.hide()
 
@@ -214,35 +203,29 @@ class PostEditorManager(QObject):
         if w.isVisible():
           w.hide()
 
-  def editPost(self, **post):
+  def newPost(self):
     w = self.__d.getDialog(self)
-    w.setPost(**post)
     w.show()
 
 #@memoized
-#def manager(): return PostEditorManager()
+#def manager(): return PostInputManager()
 
 #@QmlObject
-class PostEditorManagerBean(QObject):
+class PostInputManagerBean(QObject):
   def __init__(self, parent=None):
-    super(PostEditorManagerBean, self).__init__(parent)
-    self.__d = PostEditorManager(self)
-    self.__d.postChanged.connect(self.postChanged)
+    super(PostInputManagerBean, self).__init__(parent)
+    self.__d = PostInputManager(self)
+    self.__d.postReceived.connect(self.postReceived)
 
-  postChanged = Signal(unicode) # json
+  postReceived = Signal(unicode) # json
 
-  @Slot(unicode)
-  def editPost(self, data): # json ->
-    try:
-      post = json.loads(data)
-      post['id'] = long(post['id'])
-      self.__d.editPost(**post)
-    except Exception, e: dwarn(e)
+  @Slot()
+  def newPost(self): self.__d.newPost()
 
 if __name__ == '__main__':
   a = debug.app()
-  m = PostEditorManager()
-  m.editPost(id=123, content="123", lang='en')
+  m = PostInputManager()
+  m.newPost()
   a.exec_()
 
 # EOF

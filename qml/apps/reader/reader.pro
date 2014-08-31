@@ -12,7 +12,7 @@ SOURCES = \
   kagami/popupcomponent.qml \
   kagami/shiori.qml \
   postview.qml \
-  postview/inputedit.qml \
+  postview/postinput.qml \
   postview/posteditor.qml \
   refview.qml \
   refview/inspector.qml \

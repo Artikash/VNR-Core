@@ -3,10 +3,13 @@
    See: http://isotope.metafizzy.co/css/style.css
 
 //@import bootstrap/fa
+@import main/bbcode
 @import main/color
 @import main/shadow
 
 img.avatar
+  width: 50
+  height: 50
   @extend .avatar-shadow
 
 .topic.portal
@@ -15,10 +18,10 @@ img.avatar
 
 .post
   margin: 9px
-  .left
+  > .left
     float: left
-    width: 50px
-  .right
+    width: 50px // default avatar width
+  > .right
     margin-left: 50px + 9px
     > .head
       .user
@@ -34,5 +37,21 @@ img.avatar
         display: inline
         margin-left: 9px
         font-size: 90%
+    > .image
+      margin: 5px
+      > a > img
+        @extend .img-shadow
+        max-width: 100%
+    > .contents
+      img
+        @extend .img-shadow
+        max-width: 100%
+.reply
+  > .post
+    margin-right: 15px
+    margin-left: 5%
+    img.avatar // smaller
+      width: 40px
+      height: 40px
 
 // EOF

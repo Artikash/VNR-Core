@@ -25,6 +25,7 @@ class reader(QObject):
       self.tr("Subtitle Maker"), self.tr("Subtitle maker"),
       self.tr("Subtitle Editor"), self.tr("Subtitle editor"),
       self.tr("Post Editor"), #self.tr("Post editor"),
+      self.tr("New Post"),
       self.tr("Game Settings"),
       self.tr("Game Finder"),
       self.tr("Game References"),
@@ -69,6 +70,8 @@ class reader(QObject):
       self.tr("Community subtitle"),
       self.tr("User comment"),
       self.tr("User danmaku"),
+
+      self.tr("New"),
 
       self.tr("Original text"), self.tr("original text"),
       self.tr("Voice"),

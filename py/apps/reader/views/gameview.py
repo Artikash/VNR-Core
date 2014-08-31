@@ -484,7 +484,7 @@ class GameViewManager:
   def __init__(self):
     self.__d = _GameViewManager()
 
-  def clear(self): self.hide()
+  #def clear(self): self.hide()
 
   def hide(self):
     if self.__d.dialogs:

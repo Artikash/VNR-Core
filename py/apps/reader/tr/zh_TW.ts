@@ -971,52 +971,52 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>使用自定義特殊碼</translation>
     </message>
     <message>
-        <location filename="main.py" line="1294"/>
+        <location filename="main.py" line="1302"/>
         <source>Please close the current game first before opening new games</source>
         <translation>打開新遊戲前，請先關閉當前的遊戲</translation>
     </message>
     <message>
-        <location filename="main.py" line="1551"/>
+        <location filename="main.py" line="1560"/>
         <source>Found running game</source>
         <translation>發現運行中的遊戲</translation>
     </message>
     <message>
-        <location filename="main.py" line="1561"/>
+        <location filename="main.py" line="1570"/>
         <source>Found new game</source>
         <translation>發現新遊戲</translation>
     </message>
     <message>
-        <location filename="main.py" line="1570"/>
+        <location filename="main.py" line="1579"/>
         <source>Because you are offline, please manually add game using Game Wizard</source>
         <translation>因為沒有網絡連接，請在遊戲向導中手動添加遊戲</translation>
     </message>
     <message>
-        <location filename="main.py" line="1382"/>
+        <location filename="main.py" line="1390"/>
         <source>File does not exist {0}</source>
         <translation>文件不存在：{0}</translation>
     </message>
     <message>
-        <location filename="main.py" line="1794"/>
+        <location filename="main.py" line="1803"/>
         <source>Update requires Internet access</source>
         <translation>更新需要網絡連接</translation>
     </message>
     <message>
-        <location filename="main.py" line="1807"/>
+        <location filename="main.py" line="1816"/>
         <source>You are using the latest app</source>
         <translation>已經是最新的版本了呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="1812"/>
+        <location filename="main.py" line="1821"/>
         <source>Update released</source>
         <translation>發現軟件更新</translation>
     </message>
     <message>
-        <location filename="main.py" line="1836"/>
+        <location filename="main.py" line="1845"/>
         <source>Critical update message</source>
         <translation>非常重要的更新信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1945"/>
+        <location filename="main.py" line="1954"/>
         <source>The dictionary is empty. Please refresh it when you are online.</source>
         <translation>辭書是空的。請在有網絡連接時再更新吧。</translation>
     </message>
@@ -1113,7 +1113,7 @@ It might take a couple of seconds to complete.</source>
         <translation>{0}需要管理員權限。請以管理員身份重新啟動VNR</translation>
     </message>
     <message>
-        <location filename="main.py" line="1964"/>
+        <location filename="main.py" line="1973"/>
         <source>There are no user-contributed subtitles</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
@@ -1158,7 +1158,7 @@ It might take a couple of seconds to complete.</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
     <message>
-        <location filename="main.py" line="1654"/>
+        <location filename="main.py" line="1663"/>
         <source>Loading comment ... patient!</source>
         <translation>載入字幕中…請稍等片刻！</translation>
     </message>
@@ -1229,7 +1229,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>以日本時區啟動遊戲</translation>
     </message>
     <message>
-        <location filename="main.py" line="1105"/>
+        <location filename="main.py" line="1113"/>
         <source>Analyzing data ... patient!</source>
         <translation>分析數據中…請稍等片刻！</translation>
     </message>
@@ -1249,12 +1249,12 @@ Kojien is detected on your system at the above location.</source>
         <translation>正在網上檢索遊戲信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1393"/>
+        <location filename="main.py" line="1401"/>
         <source>It seems to be an unknown game. Please add it using Game Wizard</source>
         <translation>未知的遊戲，請在遊戲向導中手動添加</translation>
     </message>
     <message>
-        <location filename="main.py" line="1391"/>
+        <location filename="main.py" line="1399"/>
         <source>The game already exists</source>
         <translation>遊戲已經存在了呢</translation>
     </message>
@@ -1490,7 +1490,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>沒有找到遊戲的信息</translation>
     </message>
     <message>
-        <location filename="main.py" line="1694"/>
+        <location filename="main.py" line="1703"/>
         <source>Unknown game. Please try updating the database.</source>
         <translation>未知的遊戲。請更新下遊戲數據庫。</translation>
     </message>
@@ -1707,7 +1707,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>是否允許其他人修改</translation>
     </message>
     <message>
-        <location filename="main.py" line="1325"/>
+        <location filename="main.py" line="1333"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Drag game lnk/exe to Spring Board
@@ -1785,7 +1785,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>恢复到上次保存的設定</translation>
     </message>
     <message>
-        <location filename="main.py" line="1329"/>
+        <location filename="main.py" line="1337"/>
         <source>Unknown running game. You could try:
 1. Update game database
 2. Add the game using Game Wizard</source>
@@ -1833,7 +1833,7 @@ than turning on global repetition filters here.</source>
         <translation>警告：請不要打開重复過濾的選項，除非文本中真的有重复！</translation>
     </message>
     <message>
-        <location filename="main.py" line="1624"/>
+        <location filename="main.py" line="1633"/>
         <source>The feature is not available on Wine</source>
         <translation>Wine上不支持這個功能呢</translation>
     </message>
@@ -2775,7 +2775,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
         <translation>請再檢查下使用偏好中程序的位置。</translation>
     </message>
     <message>
-        <location filename="main.py" line="1684"/>
+        <location filename="main.py" line="1693"/>
         <source>Unknown game. Please try editing the game information.</source>
         <translation>未知的遊戲。請嘗試編輯下遊戲情報。</translation>
     </message>
@@ -3093,7 +3093,7 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>在Spring Board上顯示在線的同學數</translation>
     </message>
     <message>
-        <location filename="main.py" line="1635"/>
+        <location filename="main.py" line="1644"/>
         <source>Processing Shared Dictionary ... Please try later</source>
         <translation>正在處理共享辭書…請稍等一下下</translation>
     </message>
@@ -3490,7 +3490,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>VNR的內嵌引擎不支持/H特殊碼</translation>
     </message>
     <message>
-        <location filename="main.py" line="1719"/>
+        <location filename="main.py" line="1728"/>
         <source>Unknown game engine</source>
         <translation>未知的遊戲引擎</translation>
     </message>
@@ -3964,6 +3964,11 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <location filename="dialogs/prefs.py" line="241"/>
         <source>Internet options</source>
         <translation>Internet選項</translation>
+    </message>
+    <message>
+        <location filename="dialogs/postinput.py" line="125"/>
+        <source>Edit submitted</source>
+        <translation>編輯已提交</translation>
     </message>
 </context>
 </TS>

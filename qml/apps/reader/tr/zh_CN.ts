@@ -614,19 +614,16 @@
 <context>
     <name>inputedit</name>
     <message>
-        <location filename="../postview/inputedit.qml" line="98"/>
         <source>Shift+Enter to submit</source>
-        <translation>按下Shift+回车来提交</translation>
+        <translation type="obsolete">按下Shift+回车来提交</translation>
     </message>
     <message>
-        <location filename="../postview/inputedit.qml" line="170"/>
         <source>I am sorry that I am failed to save the changes</source>
-        <translation>很抱歉保存变更失败了呢</translation>
+        <translation type="obsolete">很抱歉保存变更失败了呢</translation>
     </message>
     <message>
-        <location filename="../postview/inputedit.qml" line="172"/>
         <source>Something might be wrong with the Internet connection</source>
-        <translation>也许链接不畅</translation>
+        <translation type="obsolete">也许链接不畅</translation>
     </message>
 </context>
 <context>
@@ -887,6 +884,19 @@
     </message>
     <message>
         <location filename="../postview/posteditor.qml" line="53"/>
+        <source>Something might be wrong with the Internet connection</source>
+        <translation>也许链接不畅</translation>
+    </message>
+</context>
+<context>
+    <name>postinput</name>
+    <message>
+        <location filename="../postview/postinput.qml" line="51"/>
+        <source>I am sorry that I am failed to save the changes</source>
+        <translation>很抱歉保存变更失败了呢</translation>
+    </message>
+    <message>
+        <location filename="../postview/postinput.qml" line="53"/>
         <source>Something might be wrong with the Internet connection</source>
         <translation>也许链接不畅</translation>
     </message>
