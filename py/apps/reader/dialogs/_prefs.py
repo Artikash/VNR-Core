@@ -2468,20 +2468,18 @@ class DictionaryTranslationTab(QtWidgets.QDialog):
   def load(self): pass
   def refresh(self): self.__d.refresh()
 
-## App features ##
+## Internet options ##
 
 #@Q_Q
-class _FeatureTab(object):
+class _InternetTab(object):
 
   def __init__(self, q):
     self._createUi(q)
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.featureGroup)
-    layout.addWidget(self.internetGroup)
+    layout.addWidget(self.connectionGroup)
     layout.addWidget(self.proxyGroup)
-    layout.addWidget(self.fullScreenGroup) # disabled as people seldom use it
     layout.addStretch()
     q.setLayout(layout)
 
@@ -2523,48 +2521,11 @@ If you enable this option, VNR will try providing alternative services."""
     for it in self.chinaButton, self.chinaLabel:
       skqss.class_(it, 'normal' if ok else '')
 
-  ## Full screen ##
-
-  @memoizedproperty
-  def fullScreenGroup(self):
-    layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.kagamiFocusButton)
-    layout.addWidget(self.kagamiFocusLabel)
-    ret = QtWidgets.QGroupBox(tr_("Full screen"))
-    ret.setLayout(layout)
-    self._updatetKagamiFocusGroup()
-    return ret
-
-  @memoizedproperty
-  def kagamiFocusLabel(self):
-    ret = QtWidgets.QLabel(my.tr(
-      "Since context menu would break full screen in most games, you normally don't want to enable this unless you have a very small screen size."
-    ))
-    ret.setWordWrap(True)
-    skqss.class_(ret, 'error')
-    return ret
-
-  @memoizedproperty
-  def kagamiFocusButton(self):
-    ret = QtWidgets.QCheckBox(my.tr(
-      "Force enabling context menu in full screen"
-    ))
-    ss = settings.global_()
-    ret.setChecked(ss.isKagamiFocusEnabled())
-    ret.toggled.connect(ss.setKagamiFocusEnabled)
-    ret.toggled.connect(self._updatetKagamiFocusGroup)
-    return ret
-
-  def _updatetKagamiFocusGroup(self):
-    ok = not self.kagamiFocusButton.isChecked()
-    for it in self.kagamiFocusButton, self.kagamiFocusLabel:
-      skqss.class_(it, 'warning' if ok else 'error')
-
   ## Internet ##
 
   @memoizedproperty
-  def internetGroup(self):
-    ret = QtWidgets.QGroupBox(tr_("Internet"))
+  def connectionGroup(self):
+    ret = QtWidgets.QGroupBox(my.tr("Internet connection"))
     layout = QtWidgets.QVBoxLayout()
 
     row = QtWidgets.QHBoxLayout()
@@ -2607,6 +2568,70 @@ If you enable this option, VNR will try providing alternative services."""
     ret.currentIndexChanged.connect(_save)
     ret.currentIndexChanged.connect(netman.manager().updateOnline)
     return ret
+
+class InternetTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(InternetTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _InternetTab(self)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): pass
+
+
+## App features ##
+
+#@Q_Q
+class _FeatureTab(object):
+
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.featureGroup)
+    layout.addWidget(self.fullScreenGroup) # disabled as people seldom use it
+    layout.addStretch()
+    q.setLayout(layout)
+
+  ## Full screen ##
+
+  @memoizedproperty
+  def fullScreenGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.kagamiFocusButton)
+    layout.addWidget(self.kagamiFocusLabel)
+    ret = QtWidgets.QGroupBox(tr_("Full screen"))
+    ret.setLayout(layout)
+    self._updatetKagamiFocusGroup()
+    return ret
+
+  @memoizedproperty
+  def kagamiFocusLabel(self):
+    ret = QtWidgets.QLabel(my.tr(
+      "Since context menu would break full screen in most games, you normally don't want to enable this unless you have a very small screen size."
+    ))
+    ret.setWordWrap(True)
+    skqss.class_(ret, 'error')
+    return ret
+
+  @memoizedproperty
+  def kagamiFocusButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Force enabling context menu in full screen"
+    ))
+    ss = settings.global_()
+    ret.setChecked(ss.isKagamiFocusEnabled())
+    ret.toggled.connect(ss.setKagamiFocusEnabled)
+    ret.toggled.connect(self._updatetKagamiFocusGroup)
+    return ret
+
+  def _updatetKagamiFocusGroup(self):
+    ok = not self.kagamiFocusButton.isChecked()
+    for it in self.kagamiFocusButton, self.kagamiFocusLabel:
+      skqss.class_(it, 'warning' if ok else 'error')
 
   ## Feature ##
 
