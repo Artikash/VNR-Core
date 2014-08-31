@@ -87,7 +87,7 @@ class _ChatView(object):
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/chat').render({
       'topicId': self.topicId,
-      'title': tr_("Chat"),
+      'title': mytr_("Discuss"),
       'rc': rc,
       'tr': tr_,
     }), baseUrl)
@@ -144,7 +144,7 @@ class ChatView(QtWidgets.QMainWindow):
     WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
     super(ChatView, self).__init__(parent, WINDOW_FLAGS)
     self.setWindowIcon(rc.icon('window-chat'))
-    self.setWindowTitle(tr_("Chat"))
+    self.setWindowTitle(mytr_("Discuss"))
     self.__d = _ChatView(self)
 
   def refresh(self): self.__d.refresh()

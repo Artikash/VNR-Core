@@ -1,8 +1,8 @@
 # coding: utf8
-# postedit.py
-# 6/30/2014 jichi
+# postinput.py
+# 8/30/2014 jichi
 
-__all__ = ['PostEditorManager', 'PostEditorManagerProxy']
+__all__ = ['PostInputManager', 'PostInputManagerProxy']
 
 if __name__ == '__main__':
   import sys
@@ -23,7 +23,7 @@ import config, i18n, rc
 TEXTEDIT_MINIMUM_HEIGHT = 50
 
 @Q_Q
-class _PostEditor(object):
+class _PostInput(object):
   def __init__(self, q):
     self.postId = 0 # long
     self.userName = '' # unicode
@@ -136,17 +136,17 @@ class _PostEditor(object):
 
     self.spellHighlighter.setLanguage(self.postLanguage) # must after lang
 
-class PostEditor(QtWidgets.QDialog):
+class PostInput(QtWidgets.QDialog):
 
   postChanged = Signal(unicode) # json
 
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
-    super(PostEditor, self).__init__(parent, WINDOW_FLAGS)
+    super(PostInput, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
-    self.setWindowTitle(mytr_("Post Editor"))
+    self.setWindowTitle(mytr_("New Post"))
     self.setWindowIcon(rc.icon('window-textedit'))
-    self.__d = _PostEditor(self)
+    self.__d = _PostInput(self)
     #self.statusBar() # show status bar
 
     import netman
@@ -168,9 +168,9 @@ class PostEditor(QtWidgets.QDialog):
     """@reimp @public"""
     if value and not self.isVisible():
       self.__d.refresh()
-    super(PostEditor, self).setVisible(value)
+    super(PostInput, self).setVisible(value)
 
-class _PostEditorManager:
+class _PostInputManager:
   def __init__(self):
     self.dialogs = []
 
@@ -178,7 +178,7 @@ class _PostEditorManager:
   def _createDialog():
     import windows
     parent = windows.top()
-    ret = PostEditor(parent)
+    ret = PostInput(parent)
     ret.resize(300, 200)
     return ret
 
@@ -192,10 +192,10 @@ class _PostEditorManager:
     return ret
 
 #@Q_Q
-class PostEditorManager(QObject):
+class PostInputManager(QObject):
   def __init__(self, parent=None):
-    super(PostEditorManager, self).__init__(parent)
-    self.__d = _PostEditorManager()
+    super(PostInputManager, self).__init__(parent)
+    self.__d = _PostInputManager()
 
   postChanged = Signal(unicode) # json
 
@@ -207,34 +207,34 @@ class PostEditorManager(QObject):
         if w.isVisible():
           w.hide()
 
-  def editPost(self, **post):
+  def newPost(self, **post):
     w = self.__d.getDialog(self)
     w.setPost(**post)
     w.show()
 
 @memoized
-def manager(): return PostEditorManager()
+def manager(): return PostInputManager()
 
 #@QmlObject
-class PostEditorManagerProxy(QObject):
+class PostInputManagerProxy(QObject):
   def __init__(self, parent=None):
-    super(PostEditorManagerProxy, self).__init__(parent)
+    super(PostInputManagerProxy, self).__init__(parent)
 
     manager().postChanged.connect(self.postChanged)
 
   postChanged = Signal(unicode) # json
 
   @Slot(unicode)
-  def editPost(self, data): # json ->
+  def newPost(self, data): # json ->
     try:
       post = json.loads(data)
       post['id'] = long(post['id'])
-      manager().editPost(**post)
+      manager().newPost(**post)
     except Exception, e: dwarn(e)
 
 if __name__ == '__main__':
   a = debug.app()
-  manager().editPost(id=123, content="123", lang='en')
+  manager().newPost(id=123, content="123", lang='en')
   a.exec_()
 
 # EOF
