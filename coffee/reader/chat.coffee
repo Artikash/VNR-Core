@@ -129,8 +129,6 @@ init = ->
     #setTimeout _.partial(quicksearch, styleClass, gf.refreshFilter),  2000
     dprint 'init: leave'
 
-    $.growl 'Hello World', type:'danger'
-
 $ -> init()
 
 # EOF

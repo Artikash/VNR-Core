@@ -18,7 +18,7 @@ import '.' as Kagami
 Item { id: root_
   // should be larger enough to hold the panel
   //width: 390 + floatingWidth
-  width: buttonGrid_.width + 60 // margin: 20
+  width: buttonGrid_.width + floatingWidth + 28 // floatingWidth = 32 or 64
   height: buttonGrid_.height + 20 // margin: 10
 
   property alias floatingWidth: floatingRect_.width
