@@ -17,8 +17,8 @@ from sakurakit import skqss, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
-from mytr import mytr_
-import config, i18n, rc
+from mytr import mytr_, my
+import config, growl, i18n, rc
 
 TEXTEDIT_MINIMUM_HEIGHT = 50
 
@@ -125,6 +125,8 @@ class _PostEditor(object):
       post['id'] = self.postId
       post['userName'] = self.userName
       self.q.postChanged.emit(json.dumps(post))
+
+      growl.msg(my.tr("Edit submitted"))
 
   def refresh(self):
     self.saveButton.setEnabled(False)
@@ -234,7 +236,7 @@ class PostEditorManagerBean(QObject):
     try:
       post = json.loads(data)
       post['id'] = long(post['id'])
-      manager().editPost(**post)
+      self.__d.editPost(**post)
     except Exception, e: dwarn(e)
 
 if __name__ == '__main__':

@@ -17,8 +17,8 @@ from sakurakit import skqss, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
-from mytr import mytr_
-import config, i18n, rc
+from mytr import mytr_, my
+import config, growl, i18n, rc
 
 TEXTEDIT_MINIMUM_HEIGHT = 50
 
@@ -113,14 +113,16 @@ class _PostInput(object):
     post['content'] = self.postContent = self._getContent()
     post['lang'] = self.postLanguage = self._getLanguage()
 
-    import dataman
-    user = dataman.manager().user()
-    post['login'] = user.name
-    post['pasword'] = user.password
+    #import dataman
+    #user = dataman.manager().user()
+    #post['login'] = user.name
+    #post['pasword'] = user.password
 
-    if post['content'] and post['login']:
+    if post['content']:
       self.q.postReceived.emit(json.dumps(post))
       self.postContent = '' # clear content but leave language
+
+      growl.msg(my.tr("Edit submitted"))
 
   def refresh(self):
     self.saveButton.setEnabled(False)
@@ -217,7 +219,7 @@ class PostInputManagerBean(QObject):
 
   postReceived = Signal(unicode) # json
 
-  @Slot(unicode)
+  @Slot()
   def newPost(self): self.__d.newPost()
 
 if __name__ == '__main__':

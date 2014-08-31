@@ -167,6 +167,7 @@ class sakurakit(QObject):
       self.tr("Resize"),
       self.tr("Restart"),
       self.tr("Resume"),
+      self.tr("Reply"),
       self.tr("Save"), self.tr("save"),
       self.tr("Secondary"), self.tr("secondary"),
       self.tr("Select"),

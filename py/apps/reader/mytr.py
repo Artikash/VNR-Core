@@ -71,6 +71,8 @@ class reader(QObject):
       self.tr("User comment"),
       self.tr("User danmaku"),
 
+      self.tr("New"),
+
       self.tr("Original text"), self.tr("original text"),
       self.tr("Voice"),
       self.tr("Speech"),

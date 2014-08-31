@@ -685,7 +685,7 @@ class _MainObject(object):
     import subedit
     ret = subedit.manager()
     #ret.setParent(self.q)
-    self.gameManager.processChanged.connect(ret.clear)
+    self.gameManager.processChanged.connect(ret.hide)
     return ret
 
   #@memoizedproperty
