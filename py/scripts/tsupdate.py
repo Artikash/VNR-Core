@@ -106,15 +106,19 @@ def main(argv):
   """
   dprint("enter")
   ret = 0
-  try:
-    if len(argv) != 2:
-      dwarn("usage: %s" % USAGE)
-    else:
+  if len(argv) != 2:
+    dwarn("usage: %s" % USAGE)
+  else:
+    # Enable this could cause translation to be blocked by Google
+    #import requests
+    #from google import googletrans
+    #googletrans.session = requests.Session() # speed up network access
+    try:
       ok = translatefile(fout=argv[0], fin=argv[1])
       ret = 0 if ok else 1
-  except Exception, e:
-    dwarn(e)
-    ret = 1
+    except Exception, e:
+      dwarn(e)
+      ret = 1
   dprint("leave: ret = %s" % ret)
   return ret
 

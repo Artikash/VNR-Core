@@ -171,16 +171,19 @@ Plugin.MainObjectProxy { \
 "
     })
 
-    append({ name: My.tr("Web Browser") + " (α)" // あるふぁ
-      , searchText: "Web Browser" + "\n" + My.tr("Web Browser")
-      , icon: 'image://rc/dock-browser'
-      , toolTip: qsTr("VNR's built-in web browser")
-      , qml: "\
-import org.sakuradite.reader 1.0 as Plugin; \
-Plugin.MainObjectProxy { \
-  function run() { showWebBrowser() } \
-} \
-"
-    })
   }
 }
+
+// EOF
+
+//    append({ name: My.tr("Web Browser") + " (α)" // あるふぁ
+//      , searchText: "Web Browser" + "\n" + My.tr("Web Browser")
+//      , icon: 'image://rc/dock-browser'
+//      , toolTip: qsTr("VNR's built-in web browser")
+//      , qml: "\
+//import org.sakuradite.reader 1.0 as Plugin; \
+//Plugin.MainObjectProxy { \
+//  function run() { showWebBrowser() } \
+//} \
+//"
+//    })

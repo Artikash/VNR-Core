@@ -3715,11 +3715,13 @@ You can say THANKS to its author here:
         path, 0)
     if path:
       if not libman.ntleas().verifyLocation(path):
-        growl.error(my.tr("Couldn't find {0} from the specified location").format(notr_("Ntleas")))
-      else:
-        path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
-        libman.ntleas().setLocation(path)
-        self._refreshNtleas()
+        path = os.path.join(path, 'x86') # append x86
+        if not libman.ntleas().verifyLocation(path):
+          growl.error(my.tr("Couldn't find {0} from the specified location").format(notr_("Ntleas")))
+          return;
+      path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
+      libman.ntleas().setLocation(path)
+      self._refreshNtleas()
 
   def _clearNtleasLocation(self):
     libman.ntleas().setLocation('')

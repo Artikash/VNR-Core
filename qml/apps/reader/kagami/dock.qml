@@ -91,8 +91,11 @@ Item { id: root_
   //property alias borderChecked: borderButton_.checked
   //property alias lockChecked: lockButton_.checked
 
-  property alias shioriZoomFactor: shioriZoomSlider_.value
+  //property alias shioriZoomFactor: shioriZoomSlider_.value
   property alias grimoireZoomFactor: grimoireZoomSlider_.value
+  property alias minimumZoomFactor: grimoireZoomSlider_.minimumValue
+  property alias maximumZoomFactor: grimoireZoomSlider_.maximumValue
+
   property alias shadowOpacity: shadowSlider_.value
   property alias gameTextCapacity: textSlider_.value
 
@@ -684,7 +687,7 @@ Item { id: root_
                          copySubtitleButton_.hover ||
                          //voiceButton_.hover ||
                          //subtitleVoiceButton_.hover ||
-                         shioriZoomSlider_.hover ||
+                         //shioriZoomSlider_.hover ||
                          grimoireZoomSlider_.hover ||
                          widthSlider_.hover ||
                          shadowSlider_.hover ||
@@ -1087,7 +1090,7 @@ Item { id: root_
         //language: root_.language
       }
 
-      Item { width: 1; height: 1 }
+      //Item { width: 1; height: 1 }
 
       Share.LabeledSlider { id: grimoireZoomSlider_
         height: parent.cellHeight
@@ -1125,23 +1128,24 @@ Item { id: root_
         //language: root_.language
       }
 
-      Share.LabeledSlider { id: shioriZoomSlider_
-        height: parent.cellHeight
-        width: parent.cellWidth
-        text: Sk.tr("Popup")
-        font.pixelSize: parent.pixelSize
-        font.bold: true
-        labelWidth: 40
-        handleWidth: 15
-        toolTip: qsTr("Zoom popup size")
-        handleToolTip: Math.round(value * 100) + "%"
+      //Item { width: 1; height: 1 }
 
-        //value: 1.0
-        minimumValue: 0.5
-        maximumValue: 3.0
-        font.family: parent.cellFont
-        //language: root_.language
-      }
+      //Share.LabeledSlider { id: shioriZoomSlider_
+      //  height: parent.cellHeight
+      //  width: parent.cellWidth
+      //  text: Sk.tr("Popup")
+      //  font.pixelSize: parent.pixelSize
+      //  font.bold: true
+      //  labelWidth: 40
+      //  handleWidth: 15
+      //  toolTip: qsTr("Zoom popup size")
+      //  handleToolTip: Math.round(value * 100) + "%"
+      //  //value: 1.0
+      //  minimumValue: 0.5
+      //  maximumValue: 3.0
+      //  font.family: parent.cellFont
+      //  //language: root_.language
+      //}
 
       Share.LabeledSlider { id: shadowSlider_
         height: parent.cellHeight

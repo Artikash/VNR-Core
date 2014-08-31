@@ -9,7 +9,7 @@ if __name__ == '__main__':
 
 import re
 #from sakurakit import skfileio
-from sakurakit.skdebug import dwarn
+from sakurakit.skdebug import dprint, dwarn
 
 # Sample XML:
 #    <message>
@@ -25,6 +25,7 @@ def trtext(tr, text, locale):
   @param* fr  str  language
   @return  unicode or None
   """
+  outer = {'count':0}
   def _iter():
     rx_spaces = re.compile(r"[\s\n]+", re.DOTALL)
     rx_tag = re.compile(r"(<.+?>)")
@@ -52,7 +53,9 @@ def trtext(tr, text, locale):
         if not source:
           yield ''
         else:
+          outer['count'] += 1
           t = tr(source, to=to, fr=fr)
+          dprint(outer['count'])
           if t:
             yield t
           else:

@@ -1016,7 +1016,8 @@ class GoogleTranslator(OnlineMachineTranslator):
     super(GoogleTranslator, self).__init__(**kwargs)
 
     from google import googletrans
-    googletrans.session = requests.Session()
+    # Session is not used, or it could get blocked by Google
+    #googletrans.session = requests.Session()
     self.engine = googletrans
 
   #__google_repl_after = staticmethod(skstr.multireplacer({

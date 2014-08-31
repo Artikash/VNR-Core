@@ -1793,6 +1793,7 @@ class SettingsProxy(QObject):
   grimoireDanmakuVisible = bool_property('GrimoireDanmaku', True)
   grimoireNameVisible = bool_property('GrimoireName', True)
 
+  ocrZoomFactor = float_property('OCRZoomFactor', 1.0)
   shioriZoomFactor = float_property('ShioriZoomFactor', config.SETTINGS_ZOOM_FACTOR)
 
   grimoireZoomFactor = float_property('GrimoireZoomFactor', config.SETTINGS_ZOOM_FACTOR)
@@ -1801,6 +1802,7 @@ class SettingsProxy(QObject):
 
   shioriWidth = int_property('DictionaryPopupWidth', config.SETTINGS_DICT_POPUP_WIDTH)
 
+  mirageZoomFactor = float_property('MirageZoomFactor', config.SETTINGS_ZOOM_FACTOR)
   mirageTextVisible = bool_property('MirageText', True)
   mirageTranslationVisible = bool_property('MirageTranslation', True)
   mirageSpeaksText = bool_property('MirageSpeaksText', False)
