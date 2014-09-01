@@ -33,8 +33,10 @@ class _PostInput(object):
 
   def clear(self):
     self.replyId = 0 # long
-    self.postLanguage = '' # str
     self.postContent = '' # str
+
+    import dataman
+    self.postLanguage = dataman.manager().user().language
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
