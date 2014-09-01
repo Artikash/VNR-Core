@@ -898,7 +898,7 @@ class _MainObject(object):
 
   @memoizedproperty
   def subtitleView(self):
-    ret = qmldialog.SubtitleView(self.topWindow)
+    ret = qmldialog.SubtitleView(self.normalWindow)
     self.widgets.append(ret)
     assert ret.rootObject(), "unless fail to load subview.qml"
     return ret
