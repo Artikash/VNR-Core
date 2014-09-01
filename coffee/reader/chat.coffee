@@ -125,11 +125,11 @@ bindNewPosts = ->
       .removeClass 'post-new'
 
     postId = $this.data 'id'
+    post = findPost postId
 
     $foot = $this.find '> .right > .foot'
 
     $foot.find('.btn-edit').click ->
-      post = findPost postId
       if post
         editPost post
       false
@@ -138,8 +138,9 @@ bindNewPosts = ->
       replyPost postId
       false
 
+    $foot.find('.like-group').removeClass 'fade-in' if post?.likeCount or post?.dislikeCount
+
     $foot.find('.btn.like').click ->
-      post = findPost postId
       if post and post.userName != USER_NAME
         $that = $foot.find '.btn.dislike.selected'
         if $that.length
@@ -147,6 +148,7 @@ bindNewPosts = ->
           $value = $that.find '.value'
           $value.text -1 + Number $value.text()
         $this = $ @
+        $this.parent('.like-group').removeClass 'fade-in'
         selected = $this.hasClass 'selected'
         value = if selected then 0 else 1
         ticket.update
@@ -164,7 +166,6 @@ bindNewPosts = ->
       false
 
     $foot.find('.btn.dislike').click ->
-      post = findPost postId
       if post and post.userName != USER_NAME
         $that = $foot.find '.btn.like.selected'
         if $that.length
@@ -172,6 +173,7 @@ bindNewPosts = ->
           $value = $that.find '.value'
           $value.text -1 + Number $value.text()
         $this = $ @
+        $this.parent('.like-group').removeClass 'fade-in'
         selected = $this.hasClass 'selected'
         value = if selected then 0 else -1
         ticket.update
