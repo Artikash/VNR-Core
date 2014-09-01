@@ -97,6 +97,7 @@ class _ChatView(object):
     """@reimp"""
     #baseUrl = 'http://sakuradite.com'
     baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy
+    #baseUrl = 'http://localhost:8080'
 
     import dataman
     userName = dataman.manager().user().name
@@ -311,6 +312,13 @@ class ChatViewManager:
     self.__d = _ChatViewManager()
 
   #def clear(self): self.hide()
+
+  def isVisible(self):
+    if self.__d.dialogs:
+      for w in self.__d.dialogs:
+        if w.isVisible():
+          return True
+    return False
 
   def hide(self):
     if self.__d.dialogs:

@@ -18,7 +18,7 @@ Item {
 
     text: "123"
 
-    onClicked: running = true
+    onClicked: running = !running
 
     //onClicked: toggleState()
 

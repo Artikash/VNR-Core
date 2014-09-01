@@ -107,11 +107,15 @@ class _PostEditor(object):
     return bool(t) and t != self.postContent or self.postLanguage != self._getLanguage()
 
   def _onContentChanged(self):
-    self.saveButton.setEnabled(self._isChanged())
+    self.saveButton.setEnabled(self._canSave())
+
+  def _canSave(self): # -> bool
+    t = self._getContent()
+    return len(t) >= config.POST_CONTENT_MIN_LENGTH and len(t) <= config.POST_CONTENT_MAX_LENGTH and self._isChanged()
 
   def _onLanguageChanged(self):
     self.spellHighlighter.setLanguage(self._getLanguage())
-    self.saveButton.setEnabled(self._isChanged())
+    self.saveButton.setEnabled(self._canSave())
 
   def _save(self):
     v = self._getContent()
@@ -157,11 +161,11 @@ class PostEditor(QtWidgets.QDialog):
     import dataman
     dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
 
-  def setPost(self, id, userName='', language='', content='', **ignored):
+  def setPost(self, id, userName='', language='', lang='', content='', **ignored):
     d = self.__d
     d.postId = id
     d.userName = userName
-    d.postLanguage = language
+    d.postLanguage = language or lang
     d.postContent = content
 
     if self.isVisible():
@@ -211,6 +215,13 @@ class PostEditorManager(QObject):
   postChanged = Signal(unicode) # json
 
   #def clear(self): self.hide()
+
+  def isVisible(self):
+    if self.__d.dialogs:
+      for w in self.__d.dialogs:
+        if w.isVisible():
+          return True
+    return False
 
   def hide(self):
     if self.__d.dialogs:

@@ -526,6 +526,13 @@ class GameEditorManager:
   def clear(self):
     self.hide()
 
+  def isVisible(self):
+    if self.__d.dialogs:
+      for w in self.__d.dialogs:
+        if w.isVisible():
+          return True
+    return False
+
   def hide(self):
     if self.__d.dialogs:
       for w in self.__d.dialogs:

@@ -1700,8 +1700,8 @@ class MainObject(QObject):
       import osutil
       osutil.open_url("http://sakuradite.com/game/%s" % itemId)
 
-  def showChatView(self, topicId): # long ->
-    self.__d.chatViewManager.showTopic(topicId)
+  def showChatView(self, topicId): self.__d.chatViewManager.showTopic(topicId) # long ->
+  def isChatViewVisible(self): return self.__d.chatViewManager.isVisible()
 
   def showGameView(self, gameId=None): # long ->
     d = self.__d
@@ -2138,6 +2138,8 @@ class MainObjectProxy(QObject):
 
   @Slot()
   def showGlobalChatView(self): manager().showChatView(config.GLOBAL_TOPIC_ID)
+  @Slot(result=bool)
+  def isGlobalChatViewVisible(self): manager().isChatViewVisible() # global id not used
 
   @Slot(QObject) # dataman.GameObject
   def showGameObjectSubtitles(self, g): manager().showSubtitleView(game=g)

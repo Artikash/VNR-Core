@@ -90,7 +90,6 @@ createTemplates = ->
         %a(href="${image.url}" title="${image.title}")
           %img(src="${image.url}" alt="${image.title}")
   .reply
-%hr
 """.replace /\$/g, '#'
 
 POSTS = [] # [object post]
@@ -112,14 +111,14 @@ $getPost = (postId) ->  $ ".post[data-id=#{postId}]" # long -> $el
 
 findPost = (id) -> _.findWhere POSTS, id:id # long -> object
 
-editPost = (post) -> postEditBean.editPost JSON.stringify post
+editPost = (post) -> postEditBean.editPost JSON.stringify post # long ->
 
-replyPost = (post) -> alert "reply"
+replyPost = (postId) ->  postInputBean.replyPost postId # long ->
 
 bindNewPosts = ->
   $('.post.post-new').each ->
     $this = $ @
-      .removeClass 'new'
+      .removeClass 'post-new'
 
     postId = $this.data 'id'
 
@@ -129,13 +128,11 @@ bindNewPosts = ->
       post = findPost postId
       if post
         editPost post
+      false
 
     $foot.find('.btn-reply').click ->
-      post = findPost postId
-      if post
-        replyPost post
-
-#highlightNewPosts = -> $('.post.post-new').effect 'highlight', HIGHLIGHT_INTERVAL
+      replyPost postId
+      false
 
 addPosts = (posts) -> # [object post] ->
   POSTS.push.apply POSTS, posts
@@ -156,21 +153,23 @@ addPosts = (posts) -> # [object post] ->
 
   bindNewPosts()
 
-#highlightNewPosts = -> $('.post.post-new').effect 'highlight', HIGHLIGHT_INTERVAL
+highlightNewPosts = -> $('.post.post-new').effect 'highlight', HIGHLIGHT_INTERVAL
 
 addPost = (post) -> # object post ->
   POSTS.push post
   if post.type is 'post'
     h = renderPost post
     $(h).prependTo '.topic > .posts'
-        .effect 'highlight', HIGHLIGHT_INTERVAL
+        #.effect 'highlight', HIGHLIGHT_INTERVAL
+    highlightNewPosts()
     bindNewPosts()
   else if post.type is 'reply'
     $ref = $getPost post.replyId
     if $ref.length
-      h = renderPost it
+      h = renderPost post
       $(h).appendTo($ref.children('.reply'))
-          .effect 'highlight', HIGHLIGHT_INTERVAL
+          #.effect 'highlight', HIGHLIGHT_INTERVAL
+      highlightNewPosts()
       bindNewPosts()
     else
       dprint 'addPost: error: post lost'
@@ -183,14 +182,16 @@ updatePost = (post) -> # object post ->
     fillObject oldpost, post
     $post = $getPost post.id
     if $post.length
-      $reply = $post.children '.reply'
-      $post.replaceWith renderPost post
+      $h = $ renderPost post
+      $h.children('.reply').replaceWith $post.children '.reply'
 
-      $post = $getPost post.id
-      $post.children('reply').replaceWith $reply
+      $post.replaceWith $h
 
-      $post.effect 'highlight', HIGHLIGHT_INTERVAL
+      #$post = $getPost post.id
+      #$post.children('reply').replaceWith $reply
 
+      #$h.effect 'highlight', HIGHLIGHT_INTERVAL
+      highlightNewPosts()
       bindNewPosts()
       return
 
@@ -205,7 +206,7 @@ paint = ->
   rest.forum.list 'post',
     data:
       topic: TOPIC_ID
-      sort: 'createTime'
+      sort: 'updateTime'
       asc: false
       limit: POST_LIMIT
     error: ->
@@ -223,7 +224,7 @@ more = ->
   rest.forum.list 'post',
     data:
       topic: TOPIC_ID
-      sort: 'createTime'
+      sort: 'updateTime'
       asc: false
       first: POSTS.length
       limit: POST_LIMIT

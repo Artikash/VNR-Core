@@ -187,7 +187,20 @@ Item { id: root_
       text: count > 1 ? My.tr("Message") + " " + count : My.tr("Message")
       width: 80
 
-      onClicked: mainPlugin_.showGlobalChatView()
+      onClicked: {
+        running = false
+        mainPlugin_.showGlobalChatView()
+      }
+
+      Component.onCompleted: {
+        gComet.postReceived.connect(start)
+        gComet.postUpdated.connect(start)
+      }
+
+      function start() {
+        if (!mainPlugin_.isGlobalChatViewVisible())
+          running = true
+      }
     }
 
     Share.InputBar { id: searchBar_
