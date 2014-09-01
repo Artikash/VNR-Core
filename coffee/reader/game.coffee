@@ -527,7 +527,7 @@ initSettingsSwitch = ->
             $spin.spin false
             $container.removeClass 'rendered'
             $msg.addClass 'text-danger'
-                .text "(Internet #{tr 'error'})"
+                .text "(#{tr 'Internet error'})"
           success: (data) ->
             $spin.spin false
             if data.file
@@ -566,7 +566,7 @@ initUsersSwitch = ->
             $spin.spin false
             $container.removeClass 'rendered'
             $msg.addClass 'text-danger'
-                .text "(Internet #{tr 'error'})"
+                .text "(#{tr 'Internet error'})"
           success: (data) ->
             $spin.spin false
             users = data.users or data.subs
@@ -610,7 +610,7 @@ initReviewSwitch = ->
             $spin.spin false
             $container.removeClass 'rendered'
             $msg.addClass 'text-danger'
-                .text "(Internet #{tr 'error'})"
+                .text "(#{tr 'Internet error'})"
           success: (data) ->
             $spin.spin false
             users = data.users or data.subs
