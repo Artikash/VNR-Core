@@ -22,13 +22,14 @@ class Kagami(SkDeclarativeView):
       #imageProviders=(
       #  (qmlrc.ResourceImageProvider.PROVIDER_ID, qmlrc.ResourceImageProvider()),
       #))
-    Kagami.instance = self
 
     ctx = 'globalComet', 'gameComet'
     for k in ctx:
       obj = self.rootObject().findChild(QObject, k)
       assert obj
       setattr(self, k, obj)
+
+    Kagami.instance = self
 
     # Not used ...
     #self._createShortcuts()
@@ -79,12 +80,23 @@ class VoiceView(SkDeclarativeView):
 
 class TermView(SkDeclarativeView):
 
+  instance = None
+
   def __init__(self, parent=None):
     super(TermView, self).__init__(rc.qml_url('termview'), parent,
       imageProviders=(
         (qmlrc.ResourceImageProvider.PROVIDER_ID, qmlrc.ResourceImageProvider()),
       ))
     self.setWindowIcon(rc.icon('window-dict'))
+
+    ctx = 'termComet',
+    for k in ctx:
+      obj = self.rootObject().findChild(QObject, k)
+      assert obj
+      setattr(self, k, obj)
+
+    TermView.instance = self
+
     dprint("pass")
 
 class SubtitleMaker(SkDeclarativeView):

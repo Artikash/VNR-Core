@@ -419,7 +419,7 @@ class _UiTab(object):
     if not features.WINE:
       layout.addWidget(self.mouseGroup)
     layout.addWidget(self.springBoardGroup)
-    layout.addWidget(self.statusGroup)
+    #layout.addWidget(self.statusGroup)
     layout.addStretch()
     q.setLayout(layout)
 

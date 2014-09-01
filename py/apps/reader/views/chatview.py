@@ -87,7 +87,7 @@ class _ChatView(object):
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/chat').render({
       'topicId': self.topicId,
-      'title': mytr_("Discuss"),
+      'title': mytr_("Message"),
       'rc': rc,
       'tr': tr_,
     }), baseUrl)
@@ -164,12 +164,22 @@ class _ChatView(object):
 
   def _new(self): self.postInputManager.newPost()
 
+  # append ;null for better performance
+  def addPost(self, data): # unicode json ->
+    js = 'if (window.addPostData) addPostData(%s); null' % data
+    self.webkit.evaljs(js)
+
+  # append ;null for better performance
+  def updatePost(self, data): # unicode json ->
+    js = 'if (window.updatePostData) updatePostData(%s); null' % data
+    self.webkit.evaljs(js)
+
 class ChatView(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
     super(ChatView, self).__init__(parent, WINDOW_FLAGS)
     self.setWindowIcon(rc.icon('window-chat'))
-    self.setWindowTitle(mytr_("Discuss"))
+    self.setWindowTitle(mytr_("Message"))
     self.__d = _ChatView(self)
 
   def refresh(self): self.__d.refresh()
@@ -186,9 +196,22 @@ class ChatView(QtWidgets.QMainWindow):
     if not value:
       self.__d.webView.clear()
 
+  def addPost(self, data): # unicode json ->
+    self.__d.addPost(data)
+
+  def updatePost(self, data): # unicode json ->
+    self.__d.updatePost(data)
+
 class _ChatViewManager:
   def __init__(self):
     self.dialogs = []
+
+    import comets
+    comet = comets.globalComet()
+    #assert comet
+    if comet: # for debug purpose when comet is empty
+      comet.postDataReceived.connect(self._onPostReceived)
+      comet.postDataUpdated.connect(self._onPostUpdated)
 
   def _createDialog(self):
     import windows
@@ -196,6 +219,26 @@ class _ChatViewManager:
     ret = ChatView(parent=parent)
     ret.resize(550, 580)
     return ret
+
+  def _onPostReceived(self, data):
+    try:
+      obj = json.loads(data)
+      topicId = obj['topicId']
+      for w in self.dialogs:
+        if w.isVisible() and w.topicId() == topicId:
+          w.addPost(data)
+    except Exception, e:
+      dwarn(e)
+
+  def _onPostUpdated(self, data):
+    try:
+      obj = json.loads(data)
+      topicId = obj['topicId']
+      for w in self.dialogs:
+        if w.isVisible() and w.topicId() == topicId:
+          w.updatePost(data)
+    except Exception, e:
+      dwarn(e)
 
   def getDialog(self, topicId=0):
     """
@@ -253,8 +296,10 @@ class ChatViewManagerProxy(QObject):
     manager().showTopic(id)
 
 if __name__ == '__main__':
+  import config
   a = debug.app()
-  manager().showTopic(102)
+  #manager().showTopic('global')
+  manager().showTopic(config.GLOBAL_TOPIC_ID)
   a.exec_()
 
 # EOF

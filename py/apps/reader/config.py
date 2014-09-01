@@ -400,6 +400,11 @@ def language2lcid(lang): # str -> long
 LINGOES_LANGS = SHARE_YAML['lingoes'] # [str lang]
 JMDICT_LANGS = SHARE_YAML['jmdict'] # [str lang]
 
+# Forum
+
+GLOBAL_TOPIC_ID = SHARE_YAML['forum']['topics']['global']
+TERM_TOPIC_ID = SHARE_YAML['forum']['topics']['term']
+
 ## Locations ##
 
 AVATARS_LOCATION = os.path.abspath(parse_path(SHARE_YAML['avatars']['location'])) # unicode abspath

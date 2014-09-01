@@ -92,6 +92,8 @@ class reader(QObject):
       self.tr('Moderate anonymous subs'),
       self.tr('Moderate anonymous terms'),
 
+      self.tr('Message'),
+      self.tr('Messages'),
       self.tr('Discuss'),
       self.tr('Discussion'),
       self.tr('Game Discussion'),

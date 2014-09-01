@@ -19,7 +19,8 @@ HOST = 'http://153.121.54.194'
 
 @tr = (text) -> i18nBean.tr text # string -> string
 
-cache_img = (url) -> url #cacheBean.cacheImage url
+#cache_img = (url) -> url #cacheBean.cacheImage url
+cache_img = (url) -> cacheBean.cacheImage url
 
 # Utilities
 
@@ -90,7 +91,9 @@ renderPost = (data) -> # object post -> string
     updateTime: if data.updateTime > data.createTime then formatDate data.updateTime, 'H:mm M/D/YY ddd' else ''
     image: if data.image then {title:data.image.title, url:getImageUrl data.image} else null
 
-appendPosts = (posts) -> # [object post] ->
+$getPost = (postId) ->  $ ".post[data-id=#{postId}]" # long -> $el
+
+addPosts = (posts) -> # [object post] ->
   h = (renderPost it for it in posts when it.type is 'post').join ''
   $('.topic > .posts').append h
   #$(h).hide().appendTo('.topic > .posts').fadeIn()
@@ -99,28 +102,42 @@ appendPosts = (posts) -> # [object post] ->
   if replies.length
     replies = _.sortBy replies, (it) -> it.createTime
     for it in replies
-      $ref = $ ".post[data-id=#{it.replyId}]"
+      $ref = $getPost it.replyId
       if $ref.length
         h = renderPost it
         $ref.children('.reply').append h
       else
-        dprint 'appendPosts: error: post lost'
+        dprint 'addPosts: error: post lost'
 
-appendPost = (post) -> # object post ->
+addPost = (post) -> # object post ->
   if post.type is 'post'
     h = renderPost post
     $(h).appendTo '.topic > .posts'
         .effect 'highlight', HIGHLIGHT_INTERVAL
   else if post.type is 'reply'
-    $ref = $ ".post[data-id=#{post.replyId}]"
+    $ref = $getPost post.replyId
     if $ref.length
       h = renderPost it
       $(h).appendTo($ref.children('.reply'))
           .effect 'highlight', HIGHLIGHT_INTERVAL
     else
-      dprint 'appendPost: error: post lost'
+      dprint 'addPost: error: post lost'
   else
-    dprint 'appendPost: error: unknown post type'
+    dprint 'addPost: error: unknown post type'
+
+updatePost = (post) -> # object post ->
+  $post = $getPost post.id
+  if $post.length
+    $reply = $post.children '.reply'
+    $post.replaceWith renderPost post
+
+    $post = $getPost post.id
+    $post.children('reply').replaceWith $reply
+
+    $post.effect 'highlight', HIGHLIGHT_INTERVAL
+
+  else
+    dprint 'updatePost: error: post lost'
 
 # AJAX actions
 
@@ -143,7 +160,7 @@ paint = ->
       spin false
       if data.length
         POST_COUNT += data.length
-        appendPosts data
+        addPosts data
       else
         growl.warn tr "Internet error"
 
@@ -163,7 +180,7 @@ more = ->
       spin false
       if data.length
         POST_COUNT += data.length
-        appendPosts data
+        addPosts data
       else
         growl tr "No more"
 
@@ -177,6 +194,8 @@ bind = ->
     false
 
 ## Main ##
+
+INITIALIZED = false
 
 init = ->
   unless @i18nBean? # the last injected bean
@@ -192,10 +211,28 @@ init = ->
     bind()
     paint()
 
+    INITIALIZED = true
+
     #setTimeout gm.show, 200
     #setTimeout _.partial(quicksearch, styleClass, gf.refreshFilter),  2000
     dprint 'init: leave'
 
 $ -> init()
+
+@addPostData = (data) ->
+  return unless INITIALIZED
+  try
+    obj = JSON.parse data
+    addPost obj
+  catch e
+    dprint 'addPost: invalid json', e
+
+@updatePostData = (data) ->
+  return unless INITIALIZED
+  try
+    obj = JSON.parse data
+    updatePost obj
+  catch e
+    dprint 'addPost: invalid json', e
 
 # EOF

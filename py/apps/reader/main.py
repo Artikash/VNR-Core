@@ -719,6 +719,11 @@ class _MainObject(object):
     import gameview
     return gameview.manager()
 
+  @property
+  def chatViewManager(self):
+    import chatview
+    return chatview.manager()
+
   @memoizedproperty
   def aboutDialog(self):
     import about
@@ -1695,7 +1700,10 @@ class MainObject(QObject):
       import osutil
       osutil.open_url("http://sakuradite.com/game/%s" % itemId)
 
-  def showGameView(self, gameId=None):
+  def showChatView(self, topicId): # long ->
+    self.__d.chatViewManager.showTopic(topicId)
+
+  def showGameView(self, gameId=None): # long ->
     d = self.__d
     if not gameId:
       gameId = d.dataManager.currentGameId()
@@ -2013,6 +2021,7 @@ class MainObject(QObject):
         'gameEditorManager',
         'userViewManager',
         'gameViewManager',
+        'chatViewManager',
       ):
       if hasmemoizedproperty(self, p):
         getattr(self, p).hide()
@@ -2126,6 +2135,9 @@ class MainObjectProxy(QObject):
   def showTextReaderHelp(self): manager().showTextReaderHelp()
   @Slot()
   def showGameView(self): manager().showGameView()
+
+  @Slot()
+  def showGlobalChatView(self): manager().showChatView(config.GLOBAL_TOPIC_ID)
 
   @Slot(QObject) # dataman.GameObject
   def showGameObjectSubtitles(self, g): manager().showSubtitleView(game=g)
