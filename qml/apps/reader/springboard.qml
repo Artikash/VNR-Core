@@ -178,10 +178,29 @@ Item { id: root_
         right: parent.right
         bottom: parent.bottom
         bottomMargin: 3
-        rightMargin: 120
+        rightMargin: 110
       }
       count: gComet.connectionCount
-      visible: gComet.active && count > 1 && settingsPlugin_.cometCounterVisible
+      //visible: gComet.active && count > 1 //&& settingsPlugin_.cometCounterVisible
+      visible: statusPlugin_.online
+
+      text: count > 1 ? My.tr("Message") + " " + count : My.tr("Message")
+      width: 80
+
+      onClicked: {
+        running = false
+        mainPlugin_.showGlobalChatView()
+      }
+
+      Component.onCompleted: {
+        gComet.postReceived.connect(start)
+        gComet.postUpdated.connect(start)
+      }
+
+      function start() {
+        if (!mainPlugin_.isGlobalChatViewVisible())
+          running = true
+      }
     }
 
     Share.InputBar { id: searchBar_

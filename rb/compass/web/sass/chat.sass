@@ -6,23 +6,27 @@
 @import main/bbcode
 @import main/color
 @import main/shadow
+@import main/transition
+
+$avatar-width: 40px
 
 img.avatar
-  width: 50
-  height: 50
+  width: $avatar-width
+  height: $avatar-width
   @extend .avatar-shadow
 
 .topic.portal
-  padding: 9px
+  padding: 9px 18px
   background-color: rgba(255,255,255,0.9)
 
 .post
-  margin: 9px
+  padding-top: 9px // include the height of footer
+  min-height: $avatar-width
   > .left
     float: left
-    width: 50px // default avatar width
+    width: 0px
   > .right
-    margin-left: 50px + 9px
+    margin-left: $avatar-width + 9px
     > .head
       .user
         color: darkblue // TODO: Use linke instead
@@ -33,7 +37,8 @@ img.avatar
         margin-left: 9px
         font-size: 90%
       .lang
-        @extend .text-minor
+        //@extend .text-minor
+        color: purple
         display: inline
         margin-left: 9px
         font-size: 90%
@@ -42,16 +47,29 @@ img.avatar
       > a > img
         @extend .img-shadow
         max-width: 100%
-    > .contents
+    > .content
+      font-size: 95%
       img
         @extend .img-shadow
         max-width: 100%
+    >.foot
+      margin-top: -5px
+      height: 20px // larger than the height of buttons
+      .fade-in
+        opacity: 0
+  &:hover > .right > .foot .fade-in
+    opacity: 1
+
+$reply-avatar-width: $avatar-width * 0.8
 .reply
+  margin-top: 9px
   > .post
-    margin-right: 15px
     margin-left: 5%
+    min-height: $reply-avatar-width
     img.avatar // smaller
-      width: 40px
-      height: 40px
+      width: $reply-avatar-width
+      height: $reply-avatar-width
+    > .right
+      margin-left: $reply-avatar-width + 9px
 
 // EOF

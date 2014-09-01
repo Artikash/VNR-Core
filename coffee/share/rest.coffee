@@ -30,6 +30,7 @@ growl =
 
 #HOST = 'http://sakuradite.com'
 HOST = 'http://153.121.54.194'
+#HOST = 'http://localhost:8080'
 
 @rest = # export
   forum: # ajax/forum.coffee

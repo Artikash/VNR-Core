@@ -36,6 +36,11 @@ Share.TwinkleButton { //id: root_
   border.color: '#33555555'  // gray
   pauseColor: '#99ffffff'  // white
 
+  runningColor: '#9900ff00' // green
+  runningColor2: '#9900bfff' // blue
+
+  duration: 2000 // 2 seconds
+
   //language: root_.language
   //font.family: 'DFGirl'
 

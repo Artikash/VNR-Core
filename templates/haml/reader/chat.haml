@@ -1,6 +1,7 @@
 ; chat.haml
 ; 8/29/2014 jichi
 ; @param  topicId  long
+; @param  userName  string
 ; @param  title  unicode
 ; @param  rc  rc
 ; @param  tr  sktr.tr_
@@ -27,6 +28,9 @@
     #spin
 
     :javascript
+      window.TOPIC_ID = #{topicId};
+      window.USER_NAME = "#{userName}";
+
     -for it in \
         'jquery', 'jquery.ui', \
         'bootstrap.growl', \

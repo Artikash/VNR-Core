@@ -5,6 +5,8 @@
 # Beans:
 # - cacheBean: cacheman.CacheCoffeeBean
 # - i18nBean: coffeebean.I18nBean
+# - postInputBean: postInput.PostInputManagerBean
+# - postEditBean: postedit.PostEditorManagerBean
 
 dprint = -> console.log.apply console, arguments
 #dprint = ->
@@ -19,9 +21,17 @@ HOST = 'http://153.121.54.194'
 
 @tr = (text) -> i18nBean.tr text # string -> string
 
-cache_img = (url) -> url #cacheBean.cacheImage url
+#cache_img = (url) -> url #cacheBean.cacheImage url
+cache_img = (url) -> cacheBean.cacheImage url
 
 # Utilities
+
+fillObject = (dst, src) -> # object, object
+  for k,v of dst
+    delete dst[k]
+  #_.extend pty, src
+  for k,v of src
+    dst[k] = src[k]
 
 getImageUrl = (data) -> # object -> string
   cache_img "#{HOST}/upload/image/#{data.id}.#{data.suffix}"
@@ -50,32 +60,39 @@ formatDate = (t, fmt) -> # long, string -> string
 
 # Render
 
-# - content  string html
-# - userAvatar  string url or ''
-# - createTime  string
-# - updateTime  string or ''
-# - userStyle  string or ''
-# - lang  string or ''
-HAML_POST = Haml '''\
-.post(data-id="#{id}" data-type="#{type}")
+createTemplates = ->
+
+  # - content  string html
+  # - userAvatar  string url or ''
+  # - createTime  string
+  # - updateTime  string or ''
+  # - userStyle  string or ''
+  # - lang  string or ''
+  @HAML_POST = Haml """\
+.post.post-new(data-id="${id}" data-type="${type}")
   .left
     :if userAvatar
-      %img.img-circle.avatar(src="#{userAvatar}")
+      %img.img-circle.avatar(src="${userAvatar}")
   .right
     .head
-      .user(style="#{userStyle}") #{userName}
+      .user(style="${userStyle}") ${userName}
       .time.text-minor = createTime
       .lang = lang
       .time.text-success = updateTime
     .content.bbcode = content
     .foot
+      .btn-group.pull-right.fade-in
+        :if userName == USER_NAME
+          %a.btn.btn-link.btn-sm.btn-edit(role="button" title="#{tr 'Edit'}") #{tr 'Edit'}
+        %a.btn.btn-link.btn-sm.btn-reply(role="button" title="#{tr 'Reply'}") #{tr 'Reply'}
     :if image
       .image
-        %a(href="#{image.url}" title="#{image.title}")
-          %img(src="#{image.url}" alt="#{image.title}")
+        %a(href="${image.url}" title="${image.title}")
+          %img(src="${image.url}" alt="${image.title}")
   .reply
-%hr
-'''
+""".replace /\$/g, '#'
+
+POSTS = [] # [object post]
 
 renderPost = (data) -> # object post -> string
   HAML_POST
@@ -90,7 +107,35 @@ renderPost = (data) -> # object post -> string
     updateTime: if data.updateTime > data.createTime then formatDate data.updateTime, 'H:mm M/D/YY ddd' else ''
     image: if data.image then {title:data.image.title, url:getImageUrl data.image} else null
 
-appendPosts = (posts) -> # [object post] ->
+$getPost = (postId) ->  $ ".post[data-id=#{postId}]" # long -> $el
+
+findPost = (id) -> _.findWhere POSTS, id:id # long -> object
+
+editPost = (post) -> postEditBean.editPost JSON.stringify post # long ->
+
+replyPost = (postId) ->  postInputBean.replyPost postId # long ->
+
+bindNewPosts = ->
+  $('.post.post-new').each ->
+    $this = $ @
+      .removeClass 'post-new'
+
+    postId = $this.data 'id'
+
+    $foot = $this.find '> .right > .foot'
+
+    $foot.find('.btn-edit').click ->
+      post = findPost postId
+      if post
+        editPost post
+      false
+
+    $foot.find('.btn-reply').click ->
+      replyPost postId
+      false
+
+addPosts = (posts) -> # [object post] ->
+  POSTS.push.apply POSTS, posts
   h = (renderPost it for it in posts when it.type is 'post').join ''
   $('.topic > .posts').append h
   #$(h).hide().appendTo('.topic > .posts').fadeIn()
@@ -99,41 +144,69 @@ appendPosts = (posts) -> # [object post] ->
   if replies.length
     replies = _.sortBy replies, (it) -> it.createTime
     for it in replies
-      $ref = $ ".post[data-id=#{it.replyId}]"
+      $ref = $getPost it.replyId
       if $ref.length
         h = renderPost it
         $ref.children('.reply').append h
       else
-        dprint 'appendPosts: error: post lost'
+        dprint 'addPosts: error: post lost'
 
-appendPost = (post) -> # object post ->
+  bindNewPosts()
+
+highlightNewPosts = -> $('.post.post-new').effect 'highlight', HIGHLIGHT_INTERVAL
+
+addPost = (post) -> # object post ->
+  POSTS.push post
   if post.type is 'post'
     h = renderPost post
-    $(h).appendTo '.topic > .posts'
-        .effect 'highlight', HIGHLIGHT_INTERVAL
+    $(h).prependTo '.topic > .posts'
+        #.effect 'highlight', HIGHLIGHT_INTERVAL
+    highlightNewPosts()
+    bindNewPosts()
   else if post.type is 'reply'
-    $ref = $ ".post[data-id=#{post.replyId}]"
+    $ref = $getPost post.replyId
     if $ref.length
-      h = renderPost it
+      h = renderPost post
       $(h).appendTo($ref.children('.reply'))
-          .effect 'highlight', HIGHLIGHT_INTERVAL
+          #.effect 'highlight', HIGHLIGHT_INTERVAL
+      highlightNewPosts()
+      bindNewPosts()
     else
-      dprint 'appendPost: error: post lost'
+      dprint 'addPost: error: post lost'
   else
-    dprint 'appendPost: error: unknown post type'
+    dprint 'addPost: error: unknown post type'
+
+updatePost = (post) -> # object post ->
+  oldpost = findPost post.id
+  if oldpost
+    fillObject oldpost, post
+    $post = $getPost post.id
+    if $post.length
+      $h = $ renderPost post
+      $h.children('.reply').replaceWith $post.children '.reply'
+
+      $post.replaceWith $h
+
+      #$post = $getPost post.id
+      #$post.children('reply').replaceWith $reply
+
+      #$h.effect 'highlight', HIGHLIGHT_INTERVAL
+      highlightNewPosts()
+      bindNewPosts()
+      return
+
+  dprint 'updatePost: error: post lost'
 
 # AJAX actions
 
 spin = (t) -> $('#spin').spin if t then 'large' else false
-
-POST_COUNT = 0 # int
 
 paint = ->
   spin true
   rest.forum.list 'post',
     data:
       topic: TOPIC_ID
-      sort: 'createTime'
+      sort: 'updateTime'
       asc: false
       limit: POST_LIMIT
     error: ->
@@ -142,8 +215,7 @@ paint = ->
     success: (data) ->
       spin false
       if data.length
-        POST_COUNT += data.length
-        appendPosts data
+        addPosts data
       else
         growl.warn tr "Internet error"
 
@@ -152,9 +224,9 @@ more = ->
   rest.forum.list 'post',
     data:
       topic: TOPIC_ID
-      sort: 'createTime'
+      sort: 'updateTime'
       asc: false
-      first: POST_COUNT
+      first: POSTS.length
       limit: POST_LIMIT
     error: ->
       spin false
@@ -162,8 +234,7 @@ more = ->
     success: (data) ->
       spin false
       if data.length
-        POST_COUNT += data.length
-        appendPosts data
+        addPosts data
       else
         growl tr "No more"
 
@@ -178,6 +249,10 @@ bind = ->
 
 ## Main ##
 
+@READY = false
+@addPost = addPost
+@updatePost = updatePost
+
 init = ->
   unless @i18nBean? # the last injected bean
     dprint 'init: wait'
@@ -187,10 +262,14 @@ init = ->
 
     moment.locale 'ja'
 
-    @TOPIC_ID = $('.topic').data 'id' # global game item id
+    #@TOPIC_ID = $('.topic').data 'id' # global game item id
+
+    createTemplates()
 
     bind()
     paint()
+
+    @READY = true
 
     #setTimeout gm.show, 200
     #setTimeout _.partial(quicksearch, styleClass, gf.refreshFilter),  2000

@@ -207,13 +207,15 @@ class _NetworkManager(object):
   def ajax(self, path, data):
     """
     @param  path  unicode
-    @param  data  kw
+    @param  data  kw or str
     @return  bool
     """
     #data['ver'] = self.version
     try:
+      if not isinstance(data, str) and not isinstance(data, unicode):
+        data = json.dumps(data)
       r = self.qtSession.post(JSON_API + path,
-          data=json.dumps(data),
+          data=data,
           headers=JSON_HEADERS) #, headers=GZIP_HEADERS)
       if r.ok:
         res = json.loads(r.content)
@@ -1869,12 +1871,21 @@ class NetworkManager(QObject):
 
   ## Forum ##
 
-  def submitPost(self, **post):
+  def submitPost(self, data):
     """
+    @param  data  kw or str
     @return  bool
     Thread-safe.
     """
-    return self.isOnline() and self.__d.ajax('post/create', post)
+    return self.isOnline() and self.__d.ajax('post/create', data)
+
+  def updatePost(self, data):
+    """
+    @param  data  kw or str
+    @return  bool
+    Thread-safe.
+    """
+    return self.isOnline() and self.__d.ajax('post/update', data)
 
 @memoized
 def manager(): return NetworkManager()

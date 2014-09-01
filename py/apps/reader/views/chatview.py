@@ -9,10 +9,10 @@ if __name__ == '__main__':
   debug.initenv()
 
 import json
-#from functools import partial
+from functools import partial
 from PySide.QtCore import Qt, Slot, QObject
 from Qt5 import QtWidgets
-from sakurakit import skqss
+from sakurakit import skevents, skqss
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.sktr import tr_
@@ -56,12 +56,26 @@ class _ChatView(object):
     """
     return  [(unicode name, QObject bean)]
     """
-    import coffeebean
+    import coffeebean, postedit, postinput
     m = coffeebean.manager()
     return (
       ('cacheBean', m.cacheBean),
       ('i18nBean', m.i18nBean),
+      ('postEditBean', self.postEditBean),
+      ('postInputBean', self.postInputBean),
     )
+
+  @memoizedproperty
+  def postEditBean(self):
+    import postedit
+    ret = postedit.PostEditorManagerBean(parent=self.q, manager=self.postEditorManager)
+    return ret
+
+  @memoizedproperty
+  def postInputBean(self):
+    import postinput
+    ret = postinput.PostInputManagerBean(parent=self.q, manager=self.postInputManager)
+    return ret
 
   @memoizedproperty
   def webView(self):
@@ -83,11 +97,16 @@ class _ChatView(object):
     """@reimp"""
     #baseUrl = 'http://sakuradite.com'
     baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy
+    #baseUrl = 'http://localhost:8080'
+
+    import dataman
+    userName = dataman.manager().user().name
 
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/chat').render({
       'topicId': self.topicId,
-      'title': mytr_("Discuss"),
+      'userName': userName,
+      'title': mytr_("Message"),
       'rc': rc,
       'tr': tr_,
     }), baseUrl)
@@ -132,9 +151,16 @@ class _ChatView(object):
   def newButton(self):
     ret = QtWidgets.QPushButton(tr_("New"))
     skqss.class_(ret, 'btn btn-success')
-    ret.setToolTip(tr_("Edit") + " (Ctrl+N)")
+    ret.setToolTip(tr_("New") + " (Ctrl+N)")
     #ret.setStatusTip(ret.toolTip())
     ret.clicked.connect(self._new)
+    return ret
+
+  @memoizedproperty
+  def postEditorManager(self):
+    import postedit
+    ret = postedit.PostEditorManager(self.q)
+    ret.postChanged.connect(self._update)
     return ret
 
   @memoizedproperty
@@ -148,28 +174,64 @@ class _ChatView(object):
     """
     @param  postData  unicode json
     """
-    import dataman, netman
-    if self.topicId and netman.manager().isOnline():
+    import dataman
+    if self.topicId:
       user = dataman.manager().user()
       if user.name and user.password:
         post = json.loads(postData)
         post['topic'] = self.topicId
         post['login'] = user.name
         post['password'] = user.password
-        if not netman.manager().submitPost(**post):
-          growl.warn("<br/>".join((
-            my.tr("Failed to submit post"),
-            my.tr("Please try again"),
-          )))
+        skevents.runlater(partial(self._submitPost, post))
+
+  def _submitPost(self, post):
+    import netman
+    if not netman.manager().submitPost(post):
+      growl.warn("<br/>".join((
+        my.tr("Failed to submit post"),
+        my.tr("Please try again"),
+      )))
+
+  def _update(self, postData):
+    """
+    @param  postData  unicode json
+    """
+    import dataman
+    if self.topicId:
+      user = dataman.manager().user()
+      if user.name and user.password:
+        post = json.loads(postData)
+        #post['topic'] = self.topicId
+        post['login'] = user.name
+        post['password'] = user.password
+        skevents.runlater(partial(self._updatePost, post))
+
+  def _updatePost(self, post):
+    import netman
+    if not netman.manager().updatePost(post):
+      growl.warn("<br/>".join((
+        my.tr("Failed to update post"),
+        my.tr("Please try again"),
+      )))
 
   def _new(self): self.postInputManager.newPost()
+
+  # append ;null for better performance
+  def addPost(self, data): # unicode json ->
+    js = 'if (window.READY) addPost(%s); null' % data
+    self.webView.evaljs(js)
+
+  # append ;null for better performance
+  def updatePost(self, data): # unicode json ->
+    js = 'if (window.READY) updatePost(%s); null' % data
+    self.webView.evaljs(js)
 
 class ChatView(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
     super(ChatView, self).__init__(parent, WINDOW_FLAGS)
     self.setWindowIcon(rc.icon('window-chat'))
-    self.setWindowTitle(mytr_("Discuss"))
+    self.setWindowTitle(mytr_("Message"))
     self.__d = _ChatView(self)
 
   def refresh(self): self.__d.refresh()
@@ -186,9 +248,22 @@ class ChatView(QtWidgets.QMainWindow):
     if not value:
       self.__d.webView.clear()
 
+  def addPost(self, data): # unicode json ->
+    self.__d.addPost(data)
+
+  def updatePost(self, data): # unicode json ->
+    self.__d.updatePost(data)
+
 class _ChatViewManager:
   def __init__(self):
     self.dialogs = []
+
+    import comets
+    comet = comets.globalComet()
+    #assert comet
+    if comet: # for debug purpose when comet is empty
+      comet.postDataReceived.connect(self._onPostReceived)
+      comet.postDataUpdated.connect(self._onPostUpdated)
 
   def _createDialog(self):
     import windows
@@ -196,6 +271,26 @@ class _ChatViewManager:
     ret = ChatView(parent=parent)
     ret.resize(550, 580)
     return ret
+
+  def _onPostReceived(self, data):
+    try:
+      obj = json.loads(data)
+      topicId = obj['topicId']
+      for w in self.dialogs:
+        if w.isVisible() and w.topicId() == topicId:
+          w.addPost(data)
+    except Exception, e:
+      dwarn(e)
+
+  def _onPostUpdated(self, data):
+    try:
+      obj = json.loads(data)
+      topicId = obj['topicId']
+      for w in self.dialogs:
+        if w.isVisible() and w.topicId() == topicId:
+          w.updatePost(data)
+    except Exception, e:
+      dwarn(e)
 
   def getDialog(self, topicId=0):
     """
@@ -217,6 +312,13 @@ class ChatViewManager:
     self.__d = _ChatViewManager()
 
   #def clear(self): self.hide()
+
+  def isVisible(self):
+    if self.__d.dialogs:
+      for w in self.__d.dialogs:
+        if w.isVisible():
+          return True
+    return False
 
   def hide(self):
     if self.__d.dialogs:
@@ -253,8 +355,10 @@ class ChatViewManagerProxy(QObject):
     manager().showTopic(id)
 
 if __name__ == '__main__':
+  import config
   a = debug.app()
-  manager().showTopic(102)
+  #manager().showTopic('global')
+  manager().showTopic(config.GLOBAL_TOPIC_ID)
   a.exec_()
 
 # EOF

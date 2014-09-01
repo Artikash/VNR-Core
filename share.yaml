@@ -190,6 +190,11 @@ apis:
   #push: http://sakuradite.com/push/
   #push: http://localhost:8080/push/
 
+forum:
+  topics:
+    global: 50
+    term: 51
+
 urls:
   reader_demo: "http://www.youtube.com/watch?v=KxRGwS4gkW4"
   #reader_demo: "http://www.youtube.com/watch?v=MCwqRHoEjIU"

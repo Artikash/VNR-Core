@@ -32,8 +32,9 @@ class _PostInput(object):
     skwidgets.shortcut('ctrl+s', self._save, parent=q)
 
   def clear(self):
-    self.postLanguage = ''
-    self.postContent = ''
+    self.replyId = 0 # long
+    self.postLanguage = '' # str
+    self.postContent = '' # str
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
@@ -103,7 +104,11 @@ class _PostInput(object):
     return self.contentEdit.toPlainText().strip()
 
   def _onContentChanged(self):
-    self.saveButton.setEnabled(bool(self._getContent()))
+    self.saveButton.setEnabled(self._canSave())
+
+  def _canSave(self): # -> bool
+    t = self._getContent()
+    return len(t) >= config.POST_CONTENT_MIN_LENGTH and len(t) <= config.POST_CONTENT_MAX_LENGTH
 
   def _onLanguageChanged(self):
     self.spellHighlighter.setLanguage(self._getLanguage())
@@ -119,6 +124,11 @@ class _PostInput(object):
     #post['pasword'] = user.password
 
     if post['content']:
+      if self.replyId:
+        post['type'] = 'reply'
+        post['reply'] = self.replyId
+      else:
+        post['type'] = 'post'
       self.q.postReceived.emit(json.dumps(post))
       #self.postContent = '' # clear content but leave language
 
@@ -152,6 +162,9 @@ class PostInput(QtWidgets.QDialog):
     netman.manager().onlineChanged.connect(lambda online: online or self.hide())
     import dataman
     dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
+
+  def replyId(self): return self.__d.replyId
+  def setReplyId(self, v): self.__d.replyId = v
 
   #def clear(self): self.__d.clear()
 
@@ -201,14 +214,22 @@ class PostInputManager(QObject):
 
   #def clear(self): self.hide()
 
+  def isVisible(self):
+    if self.__d.dialogs:
+      for w in self.__d.dialogs:
+        if w.isVisible():
+          return True
+    return False
+
   def hide(self):
     if self.__d.dialogs:
       for w in self.__d.dialogs:
         if w.isVisible():
           w.hide()
 
-  def newPost(self):
+  def newPost(self, replyId=0): # long ->
     w = self.__d.getDialog(self)
+    w.setReplyId(replyId)
     w.show()
 
 #@memoized
@@ -216,15 +237,18 @@ class PostInputManager(QObject):
 
 #@QmlObject
 class PostInputManagerBean(QObject):
-  def __init__(self, parent=None):
+  def __init__(self, parent=None, manager=None):
     super(PostInputManagerBean, self).__init__(parent)
-    self.__d = PostInputManager(self)
-    self.__d.postReceived.connect(self.postReceived)
+    self.manager = manager or PostInputManager(self)
+    self.manager.postReceived.connect(self.postReceived)
 
   postReceived = Signal(unicode) # json
 
   @Slot()
-  def newPost(self): self.__d.newPost()
+  def newPost(self): self.manager.newPost()
+
+  @Slot(int)
+  def replyPost(self, postId): self.manager.newPost(replyId=postId)
 
 if __name__ == '__main__':
   a = debug.app()

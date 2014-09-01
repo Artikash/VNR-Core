@@ -1,4 +1,5 @@
 # coding: utf8
+# trscriptman.py
 # 8/14/2014 jichi
 
 from sakurakit.skclass import memoized
