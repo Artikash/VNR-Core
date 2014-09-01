@@ -62,12 +62,6 @@ formatDate = (t, fmt) -> # long, string -> string
 
 createTemplates = ->
 
-  # - content  string html
-  # - userAvatar  string url or ''
-  # - createTime  string
-  # - updateTime  string or ''
-  # - userStyle  string or ''
-  # - lang  string or ''
   @HAML_POST = Haml """\
 .post.post-new(data-id="${id}" data-type="${type}")
   .left
@@ -80,11 +74,19 @@ createTemplates = ->
       .lang = lang
       .time.text-success = updateTime
     .content.bbcode = content
-    .foot
-      .btn-group.pull-right.fade-in
-        :if userName == USER_NAME
-          %a.btn.btn-link.btn-sm.btn-edit(role="button" title="#{tr 'Edit'}") #{tr 'Edit'}
-        %a.btn.btn-link.btn-sm.btn-reply(role="button" title="#{tr 'Reply'}") #{tr 'Reply'}
+    :if USER_NAME && USER_NAME != 'guest'
+      .foot
+        .btn-group.like-group.fade-in
+          %a.like.btn.btn-link.btn-sm(role="button" title="#{tr 'Like'}")
+            %span.fa.fa-thumbs-up
+            %span.value = likeCount
+          %a.dislike.btn.btn-link.btn-sm(role="button" title="#{tr 'Dislike'}")
+            %span.fa.fa-thumbs-down
+            %span.value = dislikeCount
+        .btn-group.pull-right.fade-in
+          :if userName == USER_NAME
+            %a.btn.btn-link.btn-sm.btn-edit(role="button" title="#{tr 'Edit'}") #{tr 'Edit'}
+          %a.btn.btn-link.btn-sm.btn-reply(role="button" title="#{tr 'Reply'}") #{tr 'Reply'}
     :if image
       .image
         %a(href="${image.url}" title="${image.title}")
@@ -106,6 +108,8 @@ renderPost = (data) -> # object post -> string
     createTime: formatDate data.createTime, 'H:mm M/D/YY ddd'
     updateTime: if data.updateTime > data.createTime then formatDate data.updateTime, 'H:mm M/D/YY ddd' else ''
     image: if data.image then {title:data.image.title, url:getImageUrl data.image} else null
+    likeCount: data.likeCount or 0
+    dislikeCount: data.dislikeCount or 0
 
 $getPost = (postId) ->  $ ".post[data-id=#{postId}]" # long -> $el
 
@@ -132,6 +136,56 @@ bindNewPosts = ->
 
     $foot.find('.btn-reply').click ->
       replyPost postId
+      false
+
+    $foot.find('.btn.like').click ->
+      post = findPost postId
+      if post and post.userName != USER_NAME
+        $that = $foot.find '.btn.dislike.selected'
+        if $that.length
+          $that.removeClass 'selected'
+          $value = $that.find '.value'
+          $value.text -1 + Number $value.text()
+        $this = $ @
+        selected = $this.hasClass 'selected'
+        value = if selected then 0 else 1
+        ticket.update
+          data:
+            login: USER_NAME
+            password: USER_PASSWORD
+            targetType: 'post'
+            targetId: postId
+            type: 'like'
+            value: value
+          success: =>
+            $this.toggleClass 'selected'
+            $value = $this.find '.value'
+            $value.text (if selected then -1 else 1) + Number $value.text()
+      false
+
+    $foot.find('.btn.dislike').click ->
+      post = findPost postId
+      if post and post.userName != USER_NAME
+        $that = $foot.find '.btn.like.selected'
+        if $that.length
+          $that.removeClass 'selected'
+          $value = $that.find '.value'
+          $value.text -1 + Number $value.text()
+        $this = $ @
+        selected = $this.hasClass 'selected'
+        value = if selected then 0 else -1
+        ticket.update
+          data:
+            login: USER_NAME
+            password: USER_PASSWORD
+            targetType: 'post'
+            targetId: postId
+            type: 'like'
+            value: value
+          success: =>
+            $this.toggleClass 'selected'
+            $value = $this.find '.value'
+            $value.text (if selected then -1 else 1) + Number $value.text()
       false
 
 addPosts = (posts) -> # [object post] ->
