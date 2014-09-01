@@ -100,12 +100,13 @@ class _ChatView(object):
     #baseUrl = 'http://localhost:8080'
 
     import dataman
-    userName = dataman.manager().user().name
+    user = dataman.manager().user()
 
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/chat').render({
       'topicId': self.topicId,
-      'userName': userName,
+      'userName': user.name,
+      'userPassword': user.password,
       'title': mytr_("Message"),
       'rc': rc,
       'tr': tr_,

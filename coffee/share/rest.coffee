@@ -109,4 +109,50 @@ HOST = 'http://153.121.54.194'
           growl.showInternetError type
           error?()
 
+@ticket =
+  update: (data:data, success:success, error:error) ->
+    ID = 'ticket'
+    #if LOCKED
+    #  growl.showInternetBusy data.type
+    #else
+    #  LOCKED = true # prevent massive ticket
+    postJSON
+      url: "/json/#{ID}/update"
+      data: data
+      success: (res) ->
+        #LOCKED = false
+        if res.status is 0 and res.id
+          console.log ID, 'update: id =', res.id
+          success?()
+          return
+        if res.status is defs.STATUS_USER_ERR
+          growl.showSignInError()
+        else
+          growl.showInternetError data.type
+        error?()
+      error: (xhr) ->
+        #LOCKED = false
+        console.warn ID, 'error:', JSON.stringify xhr
+        growl.showInternetError data.type
+        error?()
+
+  list: (data:data, success:success, error:error) ->
+    ID = 'ticket'
+    postJSON
+      url: "/json/#{ID}/list"
+      data: data
+      success: (res) ->
+        if res.status is 0 and res.data
+          list = res.data
+          console.log ID, 'list: count =', list.length
+          #growl.showEmptyList type unless list.length
+          success? list
+          return
+        growl.showInternetError data.type
+        error?()
+      error: (xhr) ->
+        console.warn ID, 'error:', JSON.stringify xhr
+        growl.showInternetError data.type
+        error?()
+
 # EOF
