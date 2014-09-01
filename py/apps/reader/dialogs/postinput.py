@@ -216,15 +216,15 @@ class PostInputManager(QObject):
 
 #@QmlObject
 class PostInputManagerBean(QObject):
-  def __init__(self, parent=None):
+  def __init__(self, parent=None, manager=None):
     super(PostInputManagerBean, self).__init__(parent)
-    self.__d = PostInputManager(self)
-    self.__d.postReceived.connect(self.postReceived)
+    self.manager = manager or PostInputManager(self)
+    self.manager.postReceived.connect(self.postReceived)
 
   postReceived = Signal(unicode) # json
 
   @Slot()
-  def newPost(self): self.__d.newPost()
+  def newPost(self): self.manager.newPost()
 
 if __name__ == '__main__':
   a = debug.app()

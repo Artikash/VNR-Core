@@ -6,6 +6,7 @@
 @import main/bbcode
 @import main/color
 @import main/shadow
+@import main/transition
 
 img.avatar
   width: 50
@@ -46,6 +47,12 @@ img.avatar
       img
         @extend .img-shadow
         max-width: 100%
+
+    >.foot .fade-in
+      opacity: 0
+  &:hover > .right > .foot .fade-in
+    opacity: 1
+
 .reply
   > .post
     margin-right: 15px

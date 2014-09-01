@@ -9,10 +9,10 @@ if __name__ == '__main__':
   debug.initenv()
 
 import json
-#from functools import partial
+from functools import partial
 from PySide.QtCore import Qt, Slot, QObject
 from Qt5 import QtWidgets
-from sakurakit import skqss
+from sakurakit import skevents, skqss
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.sktr import tr_
@@ -56,12 +56,26 @@ class _ChatView(object):
     """
     return  [(unicode name, QObject bean)]
     """
-    import coffeebean
+    import coffeebean, postedit, postinput
     m = coffeebean.manager()
     return (
       ('cacheBean', m.cacheBean),
       ('i18nBean', m.i18nBean),
+      ('postEditBean', self.postEditBean),
+      ('postInputBean', self.postInputBean),
     )
+
+  @memoizedproperty
+  def postEditBean(self):
+    import postedit
+    ret = postedit.PostEditorManagerBean(parent=self.q, manager=self.postEditorManager)
+    return ret
+
+  @memoizedproperty
+  def postInputBean(self):
+    import postinput
+    ret = postinput.PostInputManagerBean(parent=self.q, manager=self.postInputManager)
+    return ret
 
   @memoizedproperty
   def webView(self):
@@ -84,9 +98,13 @@ class _ChatView(object):
     #baseUrl = 'http://sakuradite.com'
     baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy
 
+    import dataman
+    userName = dataman.manager().user().name
+
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/chat').render({
       'topicId': self.topicId,
+      'userName': userName,
       'title': mytr_("Message"),
       'rc': rc,
       'tr': tr_,
@@ -132,9 +150,16 @@ class _ChatView(object):
   def newButton(self):
     ret = QtWidgets.QPushButton(tr_("New"))
     skqss.class_(ret, 'btn btn-success')
-    ret.setToolTip(tr_("Edit") + " (Ctrl+N)")
+    ret.setToolTip(tr_("New") + " (Ctrl+N)")
     #ret.setStatusTip(ret.toolTip())
     ret.clicked.connect(self._new)
+    return ret
+
+  @memoizedproperty
+  def postEditorManager(self):
+    import postedit
+    ret = postedit.PostEditorManager(self.q)
+    ret.postChanged.connect(self._update)
     return ret
 
   @memoizedproperty
@@ -148,31 +173,57 @@ class _ChatView(object):
     """
     @param  postData  unicode json
     """
-    import dataman, netman
-    if self.topicId and netman.manager().isOnline():
+    import dataman
+    if self.topicId:
       user = dataman.manager().user()
       if user.name and user.password:
         post = json.loads(postData)
         post['topic'] = self.topicId
         post['login'] = user.name
         post['password'] = user.password
-        if not netman.manager().submitPost(**post):
-          growl.warn("<br/>".join((
-            my.tr("Failed to submit post"),
-            my.tr("Please try again"),
-          )))
+        skevents.runlater(partial(self._submitPost, post))
+
+  def _submitPost(self, post):
+    import netman
+    if not netman.manager().submitPost(post):
+      growl.warn("<br/>".join((
+        my.tr("Failed to submit post"),
+        my.tr("Please try again"),
+      )))
+
+  def _update(self, postData):
+    """
+    @param  postData  unicode json
+    """
+    import dataman
+    if self.topicId:
+      user = dataman.manager().user()
+      if user.name and user.password:
+        post = json.loads(postData)
+        #post['topic'] = self.topicId
+        post['login'] = user.name
+        post['password'] = user.password
+        skevents.runlater(partial(self._updatePost, post))
+
+  def _updatePost(self, post):
+    import netman
+    if not netman.manager().updatePost(post):
+      growl.warn("<br/>".join((
+        my.tr("Failed to update post"),
+        my.tr("Please try again"),
+      )))
 
   def _new(self): self.postInputManager.newPost()
 
   # append ;null for better performance
   def addPost(self, data): # unicode json ->
-    js = 'if (window.addPostData) addPostData(%s); null' % data
-    self.webkit.evaljs(js)
+    js = 'if (window.READY) addPost(%s); null' % data
+    self.webView.evaljs(js)
 
   # append ;null for better performance
   def updatePost(self, data): # unicode json ->
-    js = 'if (window.updatePostData) updatePostData(%s); null' % data
-    self.webkit.evaljs(js)
+    js = 'if (window.READY) updatePost(%s); null' % data
+    self.webView.evaljs(js)
 
 class ChatView(QtWidgets.QMainWindow):
   def __init__(self, parent=None):

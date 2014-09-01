@@ -292,6 +292,7 @@ class sakurakit(QObject):
       self.tr("Images"),
       self.tr("Information"),
       self.tr("International"),
+      self.tr("Internet error"),
       self.tr("Internet status"),
       self.tr("i18n"),
       self.tr("Keyboard"),

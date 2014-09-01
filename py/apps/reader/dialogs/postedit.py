@@ -228,10 +228,10 @@ class PostEditorManager(QObject):
 
 #@QmlObject
 class PostEditorManagerBean(QObject):
-  def __init__(self, parent=None):
+  def __init__(self, parent=None, manager=None):
     super(PostEditorManagerBean, self).__init__(parent)
-    self.__d = PostEditorManager(self)
-    self.__d.postChanged.connect(self.postChanged)
+    self.manager = manager or PostEditorManager(self)
+    self.manager.postChanged.connect(self.postChanged)
 
   postChanged = Signal(unicode) # json
 
@@ -240,7 +240,7 @@ class PostEditorManagerBean(QObject):
     try:
       post = json.loads(data)
       post['id'] = long(post['id'])
-      self.__d.editPost(**post)
+      self.manager.editPost(**post)
     except Exception, e: dwarn(e)
 
 if __name__ == '__main__':
