@@ -148,9 +148,11 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   libs/linkify: $PWD/coffee/libs/linkify.min.js
 
   share/annot: $PWD/coffee/share/annot.min.js
+  share/defs: $PWD/coffee/share/defs.min.js
   share/growl: $PWD/coffee/share/growl.min.js
   share/nogrowl: $PWD/coffee/share/nogrowl.min.js
   share/rest: $PWD/coffee/share/rest.min.js
+  share/util: $PWD/coffee/share/util.min.js
 
   # Reader
   reader/widgets: $PWD/coffee/reader/widgets.min.js

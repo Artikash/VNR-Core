@@ -16,61 +16,30 @@ POST_LIMIT = 20
 
 HIGHLIGHT_INTERVAL = 1500
 
-#HOST = 'http://sakuradite.com'
-HOST = 'http://153.121.54.194'
-
-@tr = (text) -> i18nBean.tr text # string -> string
-
 PAGE_TITLE = document.title
-
-#cache_img = (url) -> url #cacheBean.cacheImage url
-cache_img = (url) -> cacheBean.cacheImage url
-
-# Utilities
-
-fillObject = (dst, src) -> # object, object
-  for k,v of dst
-    delete dst[k]
-  #_.extend pty, src
-  for k,v of src
-    dst[k] = src[k]
-
-getLangName = (lang) -> i18nBean.getLangShortName lang # string -> string
-
-getImageUrl = (data) -> # object -> string
-  cache_img "#{HOST}/upload/image/#{data.id}.#{data.suffix}"
-
-getAvatarUrl = (id, size=128) -> # string, int -> string
-  unless id
-    ''
-  else unless size
-    cache_img "http://media.getchute.com/media/#{id}"
-  else
-    cache_img "http://media.getchute.com/media/#{id}/#{size}x#{size}"
-
-renderContent = (t) -> # string -> string
-  return '' unless t?
-  bbcode.parse linkify _.escape t.replace /]\n/g, ']'
-    .replace /<li><\/li>/g, '<li>'
-
-formatDate = (t, fmt) -> # long, string -> string
-  try
-    t *= 1000 if typeof(t) in ['number', 'string']
-    if t then moment(t).format fmt else ''
-    #date = @dateFromUnixTime date if typeof(date) in ['number', 'string']
-    #dateformat date, fmt
-  catch
-    ''
 
 # Render
 
 createTemplates = ->
 
+  # HAML for topic
+  # - id
+  # - type
+  # - userName
+  # - userStyle
+  # - lang
+  # - userAvatarUrl  url or null
+  # - content: string  html
+  # - createTime
+  # - updateTime
+  # - image  url or null
+  # - likeCount  int
+  # - dislikeCount  int
   @HAML_POST = Haml """\
 .post.post-new(data-id="${id}" data-type="${type}")
   .left
-    :if userAvatar
-      %img.img-circle.avatar(src="${userAvatar}")
+    :if userAvatarUrl
+      %img.img-circle.avatar(src="${userAvatarUrl}")
   .right
     .head
       .user(style="${userStyle}") ${userName}
@@ -106,12 +75,12 @@ renderPost = (data) -> # object post -> string
     type: data.type
     userName: data.userName
     userStyle: if data.userColor then "color:#{data.userColor}" else ''
-    lang: getLangName data.lang
-    userAvatar: getAvatarUrl data.userAvatar
-    content: renderContent data.content
-    createTime: formatDate data.createTime, 'H:mm M/D/YY ddd'
-    updateTime: if data.updateTime > data.createTime then formatDate data.updateTime, 'H:mm M/D/YY ddd' else ''
-    image: if data.image then {title:data.image.title, url:getImageUrl data.image} else null
+    lang: util.getLangName data.lang
+    userAvatarUrl: util.getAvatarUrl data.userAvatar
+    content: util.renderContent data.content
+    createTime: util.formatDate data.createTime
+    updateTime: if data.updateTime > data.createTime then util.formatDate data.updateTime else ''
+    image: if data.image then {title:data.image.title, url:util.getImageUrl data.image} else null
     likeCount: data.likeCount or 0
     dislikeCount: data.dislikeCount or 0
 
@@ -241,7 +210,7 @@ addPost = (post) -> # object post ->
 updatePost = (post) -> # object post ->
   oldpost = findPost post.id
   if oldpost
-    fillObject oldpost, post
+    util.fillObject oldpost, post
     $post = $getPost post.id
     if $post.length
       $h = $ renderPost post

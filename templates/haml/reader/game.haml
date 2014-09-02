@@ -1,6 +1,8 @@
 ; game.haml
 ; 6/29/2013 jichi
 ; @param  title  unicode
+; @param  userName  string
+; @param  userPassword  string
 ; @param  game  dataman.GameInfo
 ; @param  tr  sktr.tr_
 ; @param  i18n  i18n
@@ -454,18 +456,22 @@
       -if game
         :javascript
           window.JQUERY_RATY_PATH = '#{rc.cdn_url('jquery.raty.path')}';
+          window.USER_NAME = "#{userName}";
+          window.USER_PASSWORD = "#{userPassword}";
 
         -for it in \
             'jquery', 'jquery.imagesloaded', 'jquery.raty', 'jquery.ui', \
+            'underscore', \
             'spin', 'jquery.spin', \
             'bootstrap.switch', 'dragdealer', \
-            'haml', 'masonry', 'sprintf', \
-            'share/annot', 'share/rest', \
+            'bbcode', 'haml', 'masonry', 'moment', 'sprintf', \
+            'libs/linkify', \
+            'share/defs', 'share/annot', 'share/rest', 'share/util', \
             'reader/widgets', 'reader/game'
           %script(src="#{rc.cdn_url(it)}")
 
         -if game.dmm and game.dmm.hasSampleImages()
-          -for it in 'underscore', 'underscore.string', 'libs/choco'
+          -for it in 'underscore.string', 'libs/choco'
             %script(src="#{rc.cdn_url(it)}")
 
         -if not mainland and game.hasTwitterWidgets()

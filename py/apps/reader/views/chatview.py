@@ -20,7 +20,7 @@ from sakurakit.skwebkit import SkWebView #, SkWebViewBean
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
 #from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
-import growl, osutil, rc
+import dataman, growl, netman, osutil, rc
 
 @Q_Q
 class _ChatView(object):
@@ -101,7 +101,6 @@ class _ChatView(object):
     baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy
     #baseUrl = 'http://localhost:8080'
 
-    import dataman
     user = dataman.manager().user()
 
     w = self.webView
@@ -177,7 +176,6 @@ class _ChatView(object):
     """
     @param  postData  unicode json
     """
-    import dataman
     if self.topicId:
       user = dataman.manager().user()
       if user.name and user.password:
@@ -188,7 +186,6 @@ class _ChatView(object):
         skevents.runlater(partial(self._submitPost, post))
 
   def _submitPost(self, post):
-    import netman
     if not netman.manager().submitPost(post):
       growl.warn("<br/>".join((
         my.tr("Failed to submit post"),
@@ -199,7 +196,6 @@ class _ChatView(object):
     """
     @param  postData  unicode json
     """
-    import dataman
     if self.topicId:
       user = dataman.manager().user()
       if user.name and user.password:
@@ -210,7 +206,6 @@ class _ChatView(object):
         skevents.runlater(partial(self._updatePost, post))
 
   def _updatePost(self, post):
-    import netman
     if not netman.manager().updatePost(post):
       growl.warn("<br/>".join((
         my.tr("Failed to update post"),

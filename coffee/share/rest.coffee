@@ -28,9 +28,10 @@ growl =
   showSignInError: ->
   showDupError: ->
 
+# HOST is defined in defs.coffee
 #HOST = 'http://sakuradite.com'
-HOST = 'http://153.121.54.194'
 #HOST = 'http://localhost:8080'
+#HOST = 'http://153.121.54.194'
 
 @rest = # export
   forum: # ajax/forum.coffee
