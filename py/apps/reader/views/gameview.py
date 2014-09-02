@@ -315,8 +315,12 @@ class _GameView(object):
     #baseUrl = 'file:///'    # would crash QByteArray when refresh
     #baseUrl = 'file:///any' # any place that is local
 
+    user = dataman.manager().user()
+
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/game').render({
+      'userName': user.name,
+      'userPassword': user.password,
       'title': title,
       'game': info,
       'cache': cacheman.CacheJinjaUtil,

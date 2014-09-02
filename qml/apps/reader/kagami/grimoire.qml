@@ -551,7 +551,7 @@ Item { id: root_
     //}
   }
 
-  property int _RESIZABLE_AREA_WIDTH: 15 // resizable mouse area thickness
+  property int _RESIZABLE_AREA_HEIGHT: 10 // resizable mouse area thickness
 
   ListView { id: listView_
     anchors.fill: parent
@@ -566,7 +566,7 @@ Item { id: root_
         top: parent.top
       }
       //height: 9
-      height: _RESIZABLE_AREA_WIDTH
+      height: _RESIZABLE_AREA_HEIGHT
       //hoverEnabled: true
       acceptedButtons: Qt.LeftButton
 
@@ -589,7 +589,7 @@ Item { id: root_
       }
       y: shadow_.height - height
       //height: 9
-      height: _RESIZABLE_AREA_WIDTH
+      height: _RESIZABLE_AREA_HEIGHT
       //hoverEnabled: true
       acceptedButtons: Qt.LeftButton
 

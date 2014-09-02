@@ -88,7 +88,8 @@ Item { id: root_
 
   property int _MIN_WIDTH: 50
   property int _MAX_WIDTH: 1900
-  property int _RESIZABLE_AREA_WIDTH: 15
+  property int _RESIZABLE_AREA_WIDTH: 20
+  property int _RESIZABLE_AREA_HEIGHT: 10
 
   opacity: 0
   states: State {
@@ -449,7 +450,7 @@ Item { id: root_
         top: parent.top
       }
       //height: 9
-      height: _RESIZABLE_AREA_WIDTH
+      height: _RESIZABLE_AREA_HEIGHT
       //hoverEnabled: true
       acceptedButtons: Qt.LeftButton
 
@@ -472,7 +473,7 @@ Item { id: root_
       }
       y: shadow_.height - height
       //height: 9
-      height: _RESIZABLE_AREA_WIDTH
+      height: _RESIZABLE_AREA_HEIGHT
       //hoverEnabled: true
       acceptedButtons: Qt.LeftButton
 

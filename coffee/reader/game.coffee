@@ -16,8 +16,6 @@
 dprint = ->
 timer = -> new choco.Timer arguments ...
 
-HOST = 'http://sakuradite.com'
-
 #bind = ->
 #  #$('[title]').tooltip() # use bootstrap tooltip
 
@@ -35,13 +33,6 @@ SCAPE_REVIEW_PAGE_SIZE = 20
 SCAPE_REVIEW_MAX_LENGTH = 200 # max content length
 
 HIGHLIGHT_INTERVAL = 1000 # int msecs
-
-# Global translation function
-@tr = (text) -> i18nBean.tr text # string -> string
-getLangName = (lang) -> i18nBean.getLangShortName lang # string -> string
-
-cacheimg = (url) -> cacheBean.cacheImage url # string -> string
-cacheurl = (url) -> cacheBean.cacheUrl url # string -> string
 
 # Delay template creation until i18nBean becomes available
 createTemplates = ->
@@ -216,6 +207,50 @@ createTemplates = ->
         .content.annot(title="メモ") = content
 """.replace /\$/g, '#'
 
+  # HAML for topic
+  # - id
+  # - userName
+  # - userStyle
+  # - lang
+  # - userAvatarUrl  url or null
+  # - content: string  html
+  # - createTime
+  # - updateTime
+  # - image  url or null
+  # - likeCount  int
+  # - dislikeCount  int
+  @HAML_REVIEW_TOPIC = Haml """\
+.topic.topic-new(data-id="${id}" data-type="review")
+  .left
+    :if userAvatarUrl
+      %img.img-circle.avatar(src="${userAvatarUrl}")
+  .right
+    .head
+      .user(style="${userStyle}") ${userName}
+      .time.text-minor = createTime
+      .lang = lang
+      .time.text-success = updateTime
+    .content.bbcode = content
+    :if USER_NAME && USER_NAME != 'guest'
+      .foot
+        .btn-group.like-group.fade-in
+          %a.like.btn.btn-link.btn-sm(role="button" title="#{tr 'Like'}")
+            %span.fa.fa-thumbs-up
+            %span.value = likeCount
+          %a.dislike.btn.btn-link.btn-sm(role="button" title="#{tr 'Dislike'}")
+            %span.fa.fa-thumbs-down
+            %span.value = dislikeCount
+        .btn-group.pull-right.fade-in
+          :if userName == USER_NAME
+            %a.btn.btn-link.btn-sm.btn-edit(role="button" title="#{tr 'Edit'}") #{tr 'Edit'}
+          %a.btn.btn-link.btn-sm.btn-reply(role="button" title="#{tr 'Reply'}") #{tr 'Reply'}
+    :if image
+      .image
+        %a(href="${image.url}" title="${image.title}")
+          %img(src="${image.url}" alt="${image.title}")
+  .reply
+""".replace /\$/g, '#'
+
 # Classes
 
 class SpinCounter
@@ -372,9 +407,9 @@ renderSettings = (file) -> # game.file
 renderUsers = (users) -> # game.file
   for it in users
     #it.url = "#{HOST}/user/#{it.userName}"
-    it.langName = getLangName(it.lang) or '*'
+    it.langName = util.getLangName(it.lang) or '*'
     if it.userAvatar
-      it.userAvatarUrl = cacheimg "http://media.getchute.com/media/#{it.userAvatar}/128x128"
+      it.userAvatarUrl = util.getAvatarUrl it.userAvatar
   HAML_USERS users:users
 
 renderReview = (type) -> # string -> string
@@ -412,7 +447,8 @@ _renderScapeReview = (review)-> # -> string
       contentLength: review.memo?.length
       lessContent: lessContent
 
-  catch # catch in case type error
+  catch e # catch in case type error
+    dprint e
     '<div class="entry entry-empty"/>'
 
 renderScapeReviews = (offset, limit) -> # int, int -> string, bool empty
@@ -585,6 +621,8 @@ initUsersSwitch = ->
               $msg.removeClass 'text-danger'
                   .text " (#{tr 'Empty'})"
 
+REVIEW_TOPIC_LIMIT = 20
+
 initReviewSwitch = ->
   $section = $ 'section.stats'
   $container = $section.find '.contents'
@@ -602,10 +640,15 @@ initReviewSwitch = ->
 
         $spin.spin 'section'
 
-        rest.forum.query 'game',
+        rest.forum.list 'topic',
           data:
-            id: GAME_ID
-            select: 'users'
+            type: 'review'
+            subjectId: GAME_ID
+            subjectType: 'game'
+            sort: 'updateTime'
+            asc: false
+            limit: REVIEW_TOPIC_LIMIT
+            complete: true
           error: ->
             $spin.spin false
             $container.removeClass 'rendered'
@@ -613,10 +656,9 @@ initReviewSwitch = ->
                 .text "(#{tr 'Internet error'})"
           success: (data) ->
             $spin.spin false
-            users = data.users or data.subs
-            if users
+            if data.length
               $msg.empty()
-              h = renderUsers users
+              h = renderReviewTopics data
               $container
                 .hide()
                 .html h
@@ -624,6 +666,28 @@ initReviewSwitch = ->
             else
               $msg.removeClass 'text-danger'
                   .text " (#{tr 'Empty'})"
+
+renderReviewTopics = (l) -> # [object] -> string
+  try
+    l.map(_renderReviewTopic).join ''
+  catch e
+    dprint e
+    '<div class="entry entry-empty"/>'
+
+_renderReviewTopic = (data) -> # object -> string  raise
+  HAML_REVIEW_TOPIC
+    id: data.id
+    userName: data.userName
+    userStyle: if data.userColor then "color:#{data.userColor}" else ''
+    lang: util.getLangName data.lang
+    userAvatarUrl: util.getAvatarUrl data.userAvatar
+    content: util.renderContent data.content
+    createTime: util.formatDate data.createTime
+    updateTime: if data.updateTime > data.createTime then util.formatDate data.updateTime else ''
+    image: if data.image then {title:data.image.title, url:util.getImageUrl data.image} else null
+    likeCount: data.likeCount or 0
+    dislikeCount: data.dislikeCount or 0
+    scores: data.scores # {overall:int score, ecchi:int score}
 
 #initCGSwitch = ->
 #  $section = $ 'section.cg'
@@ -1087,6 +1151,8 @@ init = ->
     setTimeout init, 100 # Wait until bean is ready
   else
     dprint 'init: enter'
+
+    moment.locale 'ja'
 
     @GAME_ID = $('.game').data 'id' # global game item id
 
