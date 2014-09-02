@@ -21,6 +21,8 @@ HOST = 'http://153.121.54.194'
 
 @tr = (text) -> i18nBean.tr text # string -> string
 
+PAGE_TITLE = document.title
+
 #cache_img = (url) -> url #cacheBean.cacheImage url
 cache_img = (url) -> cacheBean.cacheImage url
 
@@ -32,6 +34,8 @@ fillObject = (dst, src) -> # object, object
   #_.extend pty, src
   for k,v of src
     dst[k] = src[k]
+
+getLangName = (lang) -> i18nBean.getLangShortName lang # string -> string
 
 getImageUrl = (data) -> # object -> string
   cache_img "#{HOST}/upload/image/#{data.id}.#{data.suffix}"
@@ -102,7 +106,7 @@ renderPost = (data) -> # object post -> string
     type: data.type
     userName: data.userName
     userStyle: if data.userColor then "color:#{data.userColor}" else ''
-    lang: data.lang
+    lang: getLangName data.lang
     userAvatar: getAvatarUrl data.userAvatar
     content: renderContent data.content
     createTime: formatDate data.createTime, 'H:mm M/D/YY ddd'
@@ -192,6 +196,7 @@ bindNewPosts = ->
 
 addPosts = (posts) -> # [object post] ->
   POSTS.push.apply POSTS, posts
+  document.title = "#{PAGE_TITLE} (#{POSTS.length})"
   h = (renderPost it for it in posts when it.type is 'post').join ''
   $('.topic > .posts').append h
   #$(h).hide().appendTo('.topic > .posts').fadeIn()
@@ -213,6 +218,7 @@ highlightNewPosts = -> $('.post.post-new').effect 'highlight', HIGHLIGHT_INTERVA
 
 addPost = (post) -> # object post ->
   POSTS.push post
+  document.title = "#{PAGE_TITLE} (#{POSTS.length})"
   if post.type is 'post'
     h = renderPost post
     $(h).prependTo '.topic > .posts'

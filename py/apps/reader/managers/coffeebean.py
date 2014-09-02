@@ -65,8 +65,11 @@ class I18nBean(QObject):
     @param  lang  unicode
     @return  unicode
     """
+    if not lang:
+      return ''
     import config, i18n
-    return i18n.language_name2(config.htmllocale2language(lang)) if lang else ''
+    ret = config.htmllocale2language(lang)
+    return i18n.language_name2(ret) or ret or lang
 
 class JlpBean(QObject):
   def __init__(self, parent):
