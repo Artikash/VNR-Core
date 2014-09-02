@@ -28,5 +28,6 @@ Rectangle { id: root_
   Share.CloseButton { id: closeButton_
     anchors { left: parent.left; top: parent.top; margins: -9 }
     onClicked: parent.visible = false
+    //visible: hover || tip_.containsMouse // this will make it difficult to close
   }
 }

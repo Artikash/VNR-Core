@@ -1044,8 +1044,8 @@ initRatings = ->
     $this.raty
       readOnly: true
       half: true
-      score: if count then sum/count/2 else 0
-    if count
+      score: if count > 0 then sum/count/2 else 0
+    if count > 0
       score = sum/count
       $this.closest '.score-row'
            .find '.score-label'
