@@ -396,7 +396,7 @@ Item { id: root_
 
       Share.TextButton { id: hotkeyButton_
         height: parent.cellHeight; width: parent.cellWidth
-        text: slimChecked ? Sk.tr("Keyboard").charAt(0) : My.tr("Shortcuts")
+        text: slimChecked ? Sk.tr("Keyboard").charAt(0) : qsTr("Short")
         font.pixelSize: parent.pixelSize
         //font.bold: true
         radius: parent.cellRadius

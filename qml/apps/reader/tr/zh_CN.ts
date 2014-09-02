@@ -203,6 +203,11 @@
         <translation>切换透明背景</translation>
     </message>
     <message>
+        <location filename="../kagami/dock.qml" line="399"/>
+        <source>Short</source>
+        <translation>快捷键</translation>
+    </message>
+    <message>
         <location filename="../kagami/dock.qml" line="410"/>
         <source>Toggle mouse and keyboard shortcuts</source>
         <translation>切换键盘鼠标快捷键</translation>
