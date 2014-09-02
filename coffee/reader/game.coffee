@@ -1037,11 +1037,19 @@ initRatings = ->
     full: 1.0
 
   $('.raty').each ->
-    type = @dataset.type
-    $(@).raty
+    #type = @dataset.type
+    sum = @dataset.sum
+    count = @dataset.count
+    $this = $ @
+    $this.raty
       readOnly: true
       half: true
-      #score: @topic.scores[$this.data 'type'] / 2
+      score: if count then sum/count/2 else 0
+    if count
+      score = sum/count
+      $this.closest '.score-row'
+           .find '.score-label'
+           .html "#{sprintf '%.1f', score}&times;#{count}"
 
 ## Bootstrap ##
 

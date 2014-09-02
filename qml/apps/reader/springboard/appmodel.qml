@@ -171,6 +171,17 @@ Plugin.MainObjectProxy { \
 "
     })
 
+    append({ name: My.tr("Messages")
+      , searchText: "Messages" + "\n" + My.tr("Messages")
+      , icon: 'image://rc/dock-chat'
+      , toolTip: qsTr("Real-time messages from other users")
+      , qml: "\
+import org.sakuradite.reader 1.0 as Plugin; \
+Plugin.MainObjectProxy { \
+  function run() { showGlobalChatView() } \
+} \
+"
+    })
   }
 }
 

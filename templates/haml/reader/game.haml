@@ -275,75 +275,64 @@
                 -else
                   %a(href="#{GG_Q}#{game.title}",title="#{tr('Google')}: #{game.title}")
                     %img(src="#{it}")
-          ; temporarily disabled
-          -if false
-            %hr
-            %section.stats
-              .title
-                .title-content #{tr('Rating')}
-              .body.form-horizontal
-                .row
-                  %label.control-label.col-xs-2 #{tr('Play')}
-                  .form-control-static.col-xs-10
-                    %span.count #{game.visitCount or 1}
-                .row
-                  %label.control-label.col-xs-2 #{tr('Subtitle')}
-                  .form-control-static.col-xs-10
-                    %span.count #{game.commentCount or 0}
-                -if game.scape and game.scape.median
-                  .row
-                    %label.control-label.col-xs-2 批評空間
-                    .form-control-static.col-xs-10
-                      %a(href="#{game.scape.url}",title="#{game.scape.url}")
-                        #{game.scape.median}&times;#{game.scape.medianCount or 1}
-                -if game.gameItem
-                  .row.score-row
-                    %label.control-label.col-xs-2 #{i18n.score_name('overall')}
-                    .form-control-static.col-xs-10
-                      -if game.gameItem
-                        -set sum = game.gameItem.overallScoreSum
-                        -set count = game.gameItem.overallScoreCount
-                      -else
-                        -set sum = 0
-                        -set count = 0
-                      %span.raty.rating(data-type="overall",data-sum="#{sum}",data-count="#{count}")
-                      %span.score-label
-                  .row.score-row
-                    %label.control-label.col-xs-2 #{i18n.score_name('ecchi')}
-                    .form-control-static.col-xs-10
-                      -if game.gameItem
-                        -set sum = game.gameItem.ecchiScoreSum
-                        -set count = game.gameItem.ecchiScoreCount
-                      -else
-                        -set sum = 0
-                        -set count = 0
-                      %span.raty.rating(data-type="ecchi",data-sum="#{sum}",data-count="#{count}")
-                      %span.score-label
-                  .row.score-row
-                    %label.control-label.col-xs-2 #{i18n.score_name('easy')}
-                    .form-control-static.col-xs-10
-                      -if game.gameItem
-                        -set sum = game.gameItem.easyScoreSum
-                        -set count = game.gameItem.easyScoreCount
-                      -else
-                        -set sum = 0
-                        -set count = 0
-                      %span.raty.rating(data-type="easy",data-sum="#{sum}",data-count="#{count}")
-                      %span.score-label
+          %hr
+          %section.stats
+            .title
+              .title-content #{tr('Rating')}
+            .body.form-horizontal
+              ;.row
+              ;  %label.control-label.col-xs-2 #{tr('Play')}
+              ;  .form-control-static.col-xs-10
+              ;    %span.count #{game.visitCount or 1}
+              ;.row
+              ;  %label.control-label.col-xs-2 #{tr('Subtitle')}
+              ;  .form-control-static.col-xs-10
+              ;    %span.count #{game.commentCount or 0}
+              ;-if game.scape and game.scape.median
+              ;  .row
+              ;    %label.control-label.col-xs-2 批評空間
+              ;    .form-control-static.col-xs-10
+              ;      %a(href="#{game.scape.url}",title="#{game.scape.url}")
+              ;        #{game.scape.median}&times;#{game.scape.medianCount or 1}
               -if game.gameItem
-                .footer
-                  .col-xs-2
-                    %button.btn-review.btn.btn-primary.btn-sm(type="button")
-                      %span.fa.fa-star
-                      #{tr('Review')}
-                  .switch-group
-                    -if online
-                      %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
-                      %span.msg
+                .row.score-row
+                  %label.control-label.col-xs-2 #{i18n.score_name('overall')}
+                  .form-control-static.col-xs-10
+                    -if game.gameItem
+                      -set sum = game.gameItem.overallScoreSum
+                      -set count = game.gameItem.overallScoreCount
                     -else
-                      %input.switch(disabled="true",type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
-                      %span.msg #{'(' + tr('Offline') + ')'}
-                .contents
+                      -set sum = 0
+                      -set count = 0
+                    .raty.rating(data-type="overall",data-sum="#{sum}",data-count="#{count}")
+                    .score-label
+                      %span.text-minor #{tr('Not specified')}
+                .row.score-row
+                  %label.control-label.col-xs-2 #{i18n.score_name('ecchi')}
+                  .form-control-static.col-xs-10
+                    -if game.gameItem
+                      -set sum = game.gameItem.ecchiScoreSum
+                      -set count = game.gameItem.ecchiScoreCount
+                    -else
+                      -set sum = 0
+                      -set count = 0
+                    .raty.rating(data-type="ecchi",data-sum="#{sum}",data-count="#{count}")
+                    .score-label
+                      %span.text-minor #{tr('Not specified')}
+            -if false and game.gameItem
+              .footer
+                .col-xs-2
+                  %button.btn-review.btn.btn-primary.btn-sm(type="button")
+                    %span.fa.fa-star
+                    #{tr('Review')}
+                .switch-group
+                  -if online
+                    %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+                    %span.msg
+                  -else
+                    %input.switch(disabled="true",type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
+                    %span.msg #{'(' + tr('Offline') + ')'}
+              .contents
           %hr
           %section.settings
             .title
@@ -470,7 +459,7 @@
             'jquery', 'jquery.imagesloaded', 'jquery.raty', 'jquery.ui', \
             'spin', 'jquery.spin', \
             'bootstrap.switch', 'dragdealer', \
-            'haml', 'masonry', \
+            'haml', 'masonry', 'sprintf', \
             'share/annot', 'share/rest', \
             'reader/widgets', 'reader/game'
           %script(src="#{rc.cdn_url(it)}")

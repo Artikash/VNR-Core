@@ -232,7 +232,7 @@ class ChatView(QtWidgets.QMainWindow):
     WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
     super(ChatView, self).__init__(parent, WINDOW_FLAGS)
     self.setWindowIcon(rc.icon('window-chat'))
-    self.setWindowTitle(mytr_("Message"))
+    self.setWindowTitle(mytr_("Messages"))
     self.__d = _ChatView(self)
 
   def refresh(self): self.__d.refresh()

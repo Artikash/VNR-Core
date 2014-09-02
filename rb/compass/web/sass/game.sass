@@ -128,6 +128,8 @@ $yt-img-scale: 1.0
       .contents .empty
         @extend .text-minor
         margin-left: 20px
+      > .body.form-horizontal
+        margin-top: 9px
       &.info
         .tts
           @extend .icon-margin-left
@@ -199,12 +201,16 @@ $yt-img-scale: 1.0
               width: 100%
       &.stats
         position: relative
-        .rating
-          margin-right: 9px
-        .score
+        .rating // .raty
+          // display:block + float-left is needed to use margin-top, see: http://stackoverflow.com/questions/16570110/add-margin-top-or-padding-top-to-a-series-of-display-inline-div-tags
+          float: left
+          margin-top: -5px
+          margin-right: 10px
+        .score-label
           @extend .score-color
-        .score-hint
-          margin-left: 9px
+          display: inline
+        //.score-hint
+        //  margin-left: 9px
         //.count
         //  @extend .score-color
         .btn-review
