@@ -96,6 +96,8 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #bootstrap.switch.css: http://www.bootstrap-switch.org/dist/css/bootstrap3/bootstrap-switch.min.css # 3.0.1
   #bootstrap.switch.css: http:'//cdn.jsdelivr.net/bootstrap.switch/3.0.0/css/bootstrap3/bootstrap-switch.min.css
 
+  sprintf: $PWD/../AJAX/github/sprintf.min.js
+
   masonry: http://cdn.jsdelivr.net/masonry/3.1.5/masonry.min.js
 
   #moment: http://cdn.jsdelivr.net/momentjs/2.8.2/moment.min.js
@@ -617,7 +619,7 @@ icons:
   pref-tts:         $PWD/images/music.png
   pref-tts-path:    $PWD/images/sound.png
   window-bbcode:    $PWD/images/dock/bb.png
-  window-chat:      $PWD/images/browser.png
+  window-chat:      $PWD/images/dock/messages.png
   window-dict:      $PWD/images/dock/dict.png
   window-jdict:     $PWD/images/dock/jdict.png
   window-gameboard: $PWD/images/dock/reader.png
@@ -647,6 +649,7 @@ images:
   arrow-down:       $PWD/images/arrow.png
   dock-bbcode:      $PWD/images/dock/bb.png
   dock-browser:     $PWD/images/dock/browser.png
+  dock-chat:        $PWD/images/dock/messages.png
   dock-dict:        $PWD/images/dock/dict.png
   dock-jdict:       $PWD/images/dock/jdict.png
   dock-gameboard:   $PWD/images/dock/reader.png

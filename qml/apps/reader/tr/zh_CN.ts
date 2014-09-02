@@ -48,6 +48,11 @@
         <translation>显示已知游戏数据</translation>
     </message>
     <message>
+        <location filename="../springboard/appmodel.qml" line="177"/>
+        <source>Real-time messages from other users</source>
+        <translation>来自其他同学的即时的留言</translation>
+    </message>
+    <message>
         <source>VNR&apos;s built-in web browser</source>
         <translation type="obsolete">VNR自带的网络浏览器</translation>
     </message>
@@ -55,7 +60,7 @@
 <context>
     <name>cometcounter</name>
     <message>
-        <location filename="../springboard/cometcounter.qml" line="43"/>
+        <location filename="../springboard/cometcounter.qml" line="48"/>
         <source>{0} people are online now</source>
         <translation>{0}个同学正在线上</translation>
     </message>
@@ -891,12 +896,12 @@
 <context>
     <name>postinput</name>
     <message>
-        <location filename="../postview/postinput.qml" line="51"/>
+        <location filename="../postview/postinput.qml" line="54"/>
         <source>I am sorry that I am failed to save the changes</source>
         <translation>很抱歉保存变更失败了呢</translation>
     </message>
     <message>
-        <location filename="../postview/postinput.qml" line="53"/>
+        <location filename="../postview/postinput.qml" line="56"/>
         <source>Something might be wrong with the Internet connection</source>
         <translation>也许链接不畅</translation>
     </message>
@@ -904,12 +909,12 @@
 <context>
     <name>postview</name>
     <message>
-        <location filename="../postview.qml" line="20"/>
+        <location filename="../postview.qml" line="23"/>
         <source>New post from {0}</source>
         <translation>{0}发来了新信息</translation>
     </message>
     <message>
-        <location filename="../postview.qml" line="26"/>
+        <location filename="../postview.qml" line="29"/>
         <source>Post edited from {0}</source>
         <translation>{0}刚刚编辑了信息</translation>
     </message>
@@ -1008,7 +1013,7 @@
 <context>
     <name>springboard</name>
     <message>
-        <location filename="../springboard.qml" line="227"/>
+        <location filename="../springboard.qml" line="246"/>
         <source>You can type part of the game name or path here</source>
         <translation>你可以在这里输入游戏的名称或者路径中的部分文字</translation>
     </message>

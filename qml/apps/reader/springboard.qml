@@ -184,7 +184,7 @@ Item { id: root_
       //visible: gComet.active && count > 1 //&& settingsPlugin_.cometCounterVisible
       visible: statusPlugin_.online
 
-      text: count > 1 ? My.tr("Message") + " " + count : My.tr("Message")
+      text: count > 1 ? My.tr("Messages") + " " + count : My.tr("Message")
       width: 80
 
       onClicked: {
