@@ -10,6 +10,8 @@
 
 %html(lang="ja")
   %head
+    %title #{title}
+
     ; Stylesheets
     -for it in 'bootstrap3.css', 'font-awesome4.css', 'reader/chat.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")

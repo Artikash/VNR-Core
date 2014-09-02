@@ -81,7 +81,7 @@ class _ChatView(object):
   def webView(self):
     from PySide.QtWebKit import QWebPage
     ret = SkWebView()
-    #ret.titleChanged.connect(self.q.setWindowTitle)
+    ret.titleChanged.connect(self.q.setWindowTitle)
     ret.enableHighlight() # highlight selected text
     ret.ignoreSslErrors() # needed to access Twitter
 
@@ -89,6 +89,8 @@ class _ChatView(object):
         self.refresh, Qt.QueuedConnection)
 
     ret.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks) # Since there are local images
+    ret.page().mainFrame().setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAlwaysOff) # disable horizontal scroll
+
     #ret.page().setLinkDelegationPolicy(QWebPage.DelegateExternalLinks)
     ret.linkClicked.connect(osutil.open_url)
     return ret
@@ -104,10 +106,10 @@ class _ChatView(object):
 
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/chat').render({
+      'title': mytr_("Messages"),
       'topicId': self.topicId,
       'userName': user.name,
       'userPassword': user.password,
-      'title': mytr_("Message"),
       'rc': rc,
       'tr': tr_,
     }), baseUrl)

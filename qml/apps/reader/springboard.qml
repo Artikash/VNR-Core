@@ -178,13 +178,13 @@ Item { id: root_
         right: parent.right
         bottom: parent.bottom
         bottomMargin: 3
-        rightMargin: 110
+        rightMargin: 108 // larger than bottom buttons
       }
       count: gComet.connectionCount
       //visible: gComet.active && count > 1 //&& settingsPlugin_.cometCounterVisible
       visible: statusPlugin_.online
 
-      text: count > 1 ? My.tr("Messages") + " " + count : My.tr("Message")
+      text: count > 1 ? My.tr("Message") + " " + count : My.tr("Message")
       width: 80
 
       onClicked: {
