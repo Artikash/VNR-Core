@@ -687,6 +687,7 @@ _renderReviewTopic = (data) -> # object -> string  raise
     image: if data.image then {title:data.image.title, url:util.getImageUrl data.image} else null
     likeCount: data.likeCount or 0
     dislikeCount: data.dislikeCount or 0
+    scores: data.scores # {overall:int score, ecchi:int score}
 
 #initCGSwitch = ->
 #  $section = $ 'section.cg'

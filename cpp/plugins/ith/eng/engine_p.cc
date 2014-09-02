@@ -3622,7 +3622,7 @@ bool InsertAB2TryHook()
     ConsoleOutput("vnreng:AB2Try: cannot find characteristic sequence");
   //L"Make sure you have start the game and have seen some text on the screen.");
   DWORD size = 0;
-  NtFreeVirtualMemory(NtCurrentProcess(), (PVOID*)&list, &size, MEM_RELEASE);
+  NtFreeVirtualMemory(NtCurrentProcess(), (PVOID *)&list, &size, MEM_RELEASE);
   return ret;
 }
 
