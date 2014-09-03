@@ -307,7 +307,7 @@
                       -set sum = 0
                       -set count = 0
                     .raty.rating(data-type="overall",data-sum="#{sum}",data-count="#{count}")
-                    .score-label
+                    .score-label.score-overall.text-danger
                       %span.text-minor #{tr('Not specified')}
                 .row.score-row
                   %label.control-label.col-xs-2 #{i18n.score_name('ecchi')}
@@ -319,9 +319,9 @@
                       -set sum = 0
                       -set count = 0
                     .raty.rating(data-type="ecchi",data-sum="#{sum}",data-count="#{count}")
-                    .score-label
+                    .score-label.score-ecchi.text-info
                       %span.text-minor #{tr('Not specified')}
-            -if false and game.gameItem
+            -if game.gameItem
               .footer
                 .col-xs-2
                   %button.btn-review.btn.btn-primary.btn-sm(type="button")
@@ -335,6 +335,8 @@
                     %input.switch(disabled="true",type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
                     %span.msg #{'(' + tr('Offline') + ')'}
               .contents
+                .topics
+                .footer
           %hr
           %section.settings
             .title
