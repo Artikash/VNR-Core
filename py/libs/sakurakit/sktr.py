@@ -193,6 +193,9 @@ class sakurakit(QObject):
       self.tr("More"),
       self.tr("No more"),
 
+      self.tr("Replies"),
+      self.tr("No replies"),
+
       # Articles
       self.tr("All files"),
       self.tr("Executable"), self.tr("Executables"),

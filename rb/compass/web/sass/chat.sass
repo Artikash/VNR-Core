@@ -27,7 +27,7 @@ img.avatar
     width: 0px
   > .right
     margin-left: $avatar-width + 9px
-    > .head
+    > .header
       .user
         color: darkblue // TODO: Use linke instead
         display: inline
@@ -52,12 +52,12 @@ img.avatar
       img
         @extend .img-shadow
         max-width: 100%
-    >.foot
+    >.footer
       margin-top: -5px
       height: 18px // larger than the height of buttons
       .fade-in
         opacity: 0
-  &:hover > .right > .foot .fade-in
+  &:hover > .right > .footer .fade-in
     opacity: 1
 
 $reply-avatar-width: $avatar-width * 0.8

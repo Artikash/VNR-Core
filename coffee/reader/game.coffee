@@ -37,6 +37,8 @@ HIGHLIGHT_INTERVAL = 1000 # int msecs
 # Delay template creation until i18nBean becomes available
 createTemplates = ->
   @HTML_EMPTY = Haml.render ".empty #{'(' + tr('Empty') + ')'}"
+  @HTML_NOMORE = Haml.render ".empty #{'(' + tr('No more') + ')'}"
+  @HTML_MORE = Haml.render """%button.btn-more.btn.btn-info(type="button" title="#{tr 'More'}") #{tr 'More'}"""
 
   # HAML for sample images
   # - param  url
@@ -219,20 +221,35 @@ createTemplates = ->
   # - image  url or null
   # - likeCount  int
   # - dislikeCount  int
+  # - postCount  int
+  # - scores
+  #   - ecchi  int
+  #   - overall  int
   @HAML_REVIEW_TOPIC = Haml """\
 .topic.topic-new(data-id="${id}" data-type="review")
   .left
     :if userAvatarUrl
       %img.img-circle.avatar(src="${userAvatarUrl}")
   .right
-    .head
-      .user(style="${userStyle}") ${userName}
+    .header(style="${userStyle}")
+      .user @${userName}
+      :if scores
+        :if scores.overall != undefined
+          .score.score-overall.text-danger ${scores.overall}/10
+        :if scores.ecchi != undefined
+          .score.score-ecchi.text-info H:${scores.ecchi}/10
       .time.text-minor = createTime
       .lang = lang
       .time.text-success = updateTime
     .content.bbcode = content
     :if USER_NAME && USER_NAME != 'guest'
-      .foot
+      .footer
+        .btn-group.reply-group
+          :if postCount
+            %a.btn.btn-link.btn-more(role="button" title="#{tr 'More'}")
+              #{tr 'Replies'} (${postCount})
+          :else
+            .text-minor (#{tr 'No replies'})
         .btn-group.like-group.fade-in
           %a.like.btn.btn-link.btn-sm(role="button" title="#{tr 'Like'}")
             %span.fa.fa-thumbs-up
@@ -622,10 +639,17 @@ initUsersSwitch = ->
                   .text " (#{tr 'Empty'})"
 
 REVIEW_TOPIC_LIMIT = 20
+REVIEW_TOPICS = [] # [topic]
+NEW_REVIEW_TOPIC_COUNT = 0
+
+_noMoreReviewTopics = -> # -> bool
+  (REVIEW_TOPICS.length - NEW_REVIEW_TOPIC_COUNT) % REVIEW_TOPIC_LIMIT
 
 initReviewSwitch = ->
   $section = $ 'section.stats'
-  $container = $section.find '.contents'
+  $contents = $section.find '.contents'
+  $footer = $contents.find '.footer'
+  $container = $contents.find '.topics'
   $spin = $section.find '.spin'
   $msg = $section.find '.msg'
   $section.find('input.switch').bootstrapSwitch()
@@ -663,11 +687,45 @@ initReviewSwitch = ->
                 .hide()
                 .html h
                 .fadeIn()
+              if _noMoreReviewTopics()
+                $footer.html HTML_NOMORE
+              else
+                $footer.html HTML_MORE
+                $footer.find('.btn-more').click moreReviewTopics
             else
               $msg.removeClass 'text-danger'
                   .text " (#{tr 'Empty'})"
 
+  moreReviewTopics = ->
+    rest.forum.list 'topic',
+      data:
+        type: 'review'
+        subjectId: GAME_ID
+        subjectType: 'game'
+        sort: 'updateTime'
+        asc: false
+        first: REVIEW_TOPICS.length
+        limit: REVIEW_TOPIC_LIMIT
+        complete: true
+      error: ->
+        $spin.spin false
+        #$container.removeClass 'rendered'
+        #$msg.addClass 'text-danger'
+        #    .text "(#{tr 'Internet error'})"
+      success: (data) ->
+        $spin.spin false
+        if data.length
+          #$msg.empty()
+          h = renderReviewTopics data
+          $container.append h
+        if _noMoreReviewTopics()
+          $footer.html HTML_NOMORE
+        #else
+        #  $msg.removeClass 'text-danger'
+        #      .text " (#{tr 'Empty'})"
+
 renderReviewTopics = (l) -> # [object] -> string
+  REVIEW_TOPICS.push.apply REVIEW_TOPICS, l
   try
     l.map(_renderReviewTopic).join ''
   catch e
@@ -685,9 +743,10 @@ _renderReviewTopic = (data) -> # object -> string  raise
     createTime: util.formatDate data.createTime
     updateTime: if data.updateTime > data.createTime then util.formatDate data.updateTime else ''
     image: if data.image then {title:data.image.title, url:util.getImageUrl data.image} else null
+    scores: data.scores # {overall:int score, ecchi:int score}
     likeCount: data.likeCount or 0
     dislikeCount: data.dislikeCount or 0
-    scores: data.scores # {overall:int score, ecchi:int score}
+    postCount: data.postCount
 
 #initCGSwitch = ->
 #  $section = $ 'section.cg'
@@ -973,7 +1032,7 @@ bindScapeReviewList = ($spin) ->
         renderNewAnnot()
         empty = _noMoreScapeReviews()
     # Empty
-    $this.replaceWith HTML_EMPTY if empty
+    $this.replaceWith HTML_NOMORE if empty
     false
 
 initCGPills = -> # Sample images

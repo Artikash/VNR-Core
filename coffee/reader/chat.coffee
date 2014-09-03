@@ -41,14 +41,14 @@ createTemplates = ->
     :if userAvatarUrl
       %img.img-circle.avatar(src="${userAvatarUrl}")
   .right
-    .head
-      .user(style="${userStyle}") ${userName}
+    .header
+      .user(style="${userStyle}") @${userName}
       .time.text-minor = createTime
       .lang = lang
       .time.text-success = updateTime
     .content.bbcode = content
     :if USER_NAME && USER_NAME != 'guest'
-      .foot
+      .footer
         .btn-group.like-group.fade-in
           %a.like.btn.btn-link.btn-sm(role="button" title="#{tr 'Like'}")
             %span.fa.fa-thumbs-up
@@ -100,22 +100,22 @@ bindNewPosts = ->
     postId = $this.data 'id'
     post = findPost postId
 
-    $foot = $this.find '> .right > .foot'
+    $footer = $this.find '> .right > .footer'
 
-    $foot.find('.btn-edit').click ->
+    $footer.find('.btn-edit').click ->
       if post
         editPost post
       false
 
-    $foot.find('.btn-reply').click ->
+    $footer.find('.btn-reply').click ->
       replyPost postId
       false
 
-    $foot.find('.like-group').removeClass 'fade-in' if post?.likeCount or post?.dislikeCount
+    $footer.find('.like-group').removeClass 'fade-in' if post?.likeCount or post?.dislikeCount
 
-    $foot.find('.btn.like').click ->
+    $footer.find('.btn.like').click ->
       if post and post.userName != USER_NAME
-        $that = $foot.find '.btn.dislike.selected'
+        $that = $footer.find '.btn.dislike.selected'
         if $that.length
           $that.removeClass 'selected'
           $value = $that.find '.value'
@@ -138,9 +138,9 @@ bindNewPosts = ->
             $value.text (if selected then -1 else 1) + Number $value.text()
       false
 
-    $foot.find('.btn.dislike').click ->
+    $footer.find('.btn.dislike').click ->
       if post and post.userName != USER_NAME
-        $that = $foot.find '.btn.like.selected'
+        $that = $footer.find '.btn.like.selected'
         if $that.length
           $that.removeClass 'selected'
           $value = $that.find '.value'
@@ -270,7 +270,7 @@ more = ->
         growl tr "No more"
 
 bind = ->
-  $('.topic > .foot > .btn-more').click ->
+  $('.topic > .footer > .btn-more').click ->
     $this = $ @
     unless $this.data 'locked'
       $this.data 'lock', true
