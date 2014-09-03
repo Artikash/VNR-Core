@@ -321,7 +321,8 @@
                     .raty.rating(data-type="ecchi",data-sum="#{sum}",data-count="#{count}")
                     .score-label.score-ecchi.text-info
                       %span.text-minor #{tr('Not specified')}
-            -if game.gameItem
+            ;-if game.gameItem
+            -if false and game.gameItem
               .footer
                 .col-xs-2
                   %button.btn-review.btn.btn-primary.btn-sm(type="button")

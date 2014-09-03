@@ -221,6 +221,7 @@ createTemplates = ->
   # - image  url or null
   # - likeCount  int
   # - dislikeCount  int
+  # - postCount  int
   # - scores
   #   - ecchi  int
   #   - overall  int
@@ -243,6 +244,12 @@ createTemplates = ->
     .content.bbcode = content
     :if USER_NAME && USER_NAME != 'guest'
       .footer
+        .btn-group.reply-group
+          :if postCount
+            %a.btn.btn-link.btn-more(role="button" title="#{tr 'More'}")
+              #{tr 'Replies'} (${postCount})
+          :else
+            .text-minor (#{tr 'No replies'})
         .btn-group.like-group.fade-in
           %a.like.btn.btn-link.btn-sm(role="button" title="#{tr 'Like'}")
             %span.fa.fa-thumbs-up
@@ -736,9 +743,10 @@ _renderReviewTopic = (data) -> # object -> string  raise
     createTime: util.formatDate data.createTime
     updateTime: if data.updateTime > data.createTime then util.formatDate data.updateTime else ''
     image: if data.image then {title:data.image.title, url:util.getImageUrl data.image} else null
+    scores: data.scores # {overall:int score, ecchi:int score}
     likeCount: data.likeCount or 0
     dislikeCount: data.dislikeCount or 0
-    scores: data.scores # {overall:int score, ecchi:int score}
+    postCount: data.postCount
 
 #initCGSwitch = ->
 #  $section = $ 'section.cg'
