@@ -94,13 +94,13 @@ replyPost = (postId) ->  postInputBean.replyPost postId # long ->
 
 bindNewPosts = ->
   $('.post.post-new').each ->
-    $this = $ @
+    $post = $ @
       .removeClass 'post-new'
 
-    postId = $this.data 'id'
+    postId = $post.data 'id'
     post = findPost postId
 
-    $footer = $this.find '> .right > .footer'
+    $footer = $post.find '> .right > .footer'
 
     $footer.find('.btn-edit').click ->
       if post
@@ -242,13 +242,13 @@ paint = ->
       limit: POST_LIMIT
     error: ->
       spin false
-      growl.warn tr "Internet error"
+      growl.warn tr 'Internet error'
     success: (data) ->
       spin false
       if data.length
         addPosts data
       else
-        growl.warn tr "Internet error"
+        growl.warn tr 'Internet error'
 
 more = ->
   spin true
@@ -261,7 +261,7 @@ more = ->
       limit: POST_LIMIT
     error: ->
       spin false
-      growl.warn tr "Internet error"
+      growl.warn tr 'Internet error'
     success: (data) ->
       spin false
       if data.length
