@@ -321,13 +321,18 @@
                     .raty.rating(data-type="ecchi",data-sum="#{sum}",data-count="#{count}")
                     .score-label.score-ecchi.text-info
                       %span.text-minor #{tr('Not specified')}
-            ;-if game.gameItem
-            -if false and game.gameItem
+            -if game.gameItem
               .footer
                 .col-xs-2
-                  %button.btn-review.btn.btn-primary.btn-sm(type="button")
-                    %span.fa.fa-star
-                    #{tr('Review')}
+                  ;-if online
+                  ;  %button.btn-review.btn.btn-primary.btn-sm(type="button")
+                  ;    %span.fa.fa-star
+                  ;    #{tr('Review')}
+                  ;-else
+                  ;  %button.btn-review.btn.btn-primary.btn-sm(disabled="true",type="button",title="#{tr('Offline')}")
+                  ;    %span.fa.fa-star
+                  ;    #{tr('Review')}
+                  .title-content #{tr('Review')}
                 .switch-group
                   -if online
                     %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")
@@ -465,6 +470,7 @@
         -for it in \
             'jquery', 'jquery.imagesloaded', 'jquery.raty', 'jquery.ui', \
             'underscore', \
+            'bootstrap.growl', \
             'spin', 'jquery.spin', \
             'bootstrap.switch', 'dragdealer', \
             'bbcode', 'haml', 'masonry', 'moment', 'sprintf', \

@@ -311,9 +311,13 @@ class _GameView(object):
     #baseUrl = "http://www.amazon.co.jp" # cross domain so that amazon iframe works
     #baseUrl = 'qrc://'     # would crash QByteArray when refresh
     #baseUrl = 'qrc://any'  # would crash QByteArray when refresh
-    baseUrl = 'qrc:///_'    # any place is fine
     #baseUrl = 'file:///'    # would crash QByteArray when refresh
     #baseUrl = 'file:///any' # any place that is local
+    online = netman.manager().isOnline()
+    if online:
+      baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy
+    else:
+      baseUrl = 'qrc:///_'    # any place is fine
 
     user = dataman.manager().user()
 
@@ -330,7 +334,7 @@ class _GameView(object):
       'i18n': i18n,
       'jlp': mecabman.manager(),
       #'settings', settings.global_(),
-      'online': netman.manager().isOnline(),
+      'online': online,
       'proxy': proxy.manager(),
       'mainland': features.MAINLAND_CHINA,
     }), baseUrl)

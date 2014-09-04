@@ -246,7 +246,7 @@ createTemplates = ->
       .footer
         .btn-group.reply-group
           :if postCount
-            %a.btn.btn-link.btn-more(role="button" title="#{tr 'More'}")
+            %a.btn.btn-link.btn-posts(role="button" title="#{tr 'More'}")
               #{tr 'Replies'} (${postCount})
           :else
             .text-minor (#{tr 'No replies'})
@@ -257,10 +257,55 @@ createTemplates = ->
           %a.dislike.btn.btn-link.btn-sm(role="button" title="#{tr 'Dislike'}")
             %span.fa.fa-thumbs-down
             %span.value = dislikeCount
-        .btn-group.pull-right.fade-in
-          :if userName == USER_NAME
-            %a.btn.btn-link.btn-sm.btn-edit(role="button" title="#{tr 'Edit'}") #{tr 'Edit'}
-          %a.btn.btn-link.btn-sm.btn-reply(role="button" title="#{tr 'Reply'}") #{tr 'Reply'}
+        -#.btn-group.pull-right.fade-in
+        -#  :if userName == USER_NAME
+        -#    %a.btn.btn-link.btn-sm.btn-edit(role="button" title="#{tr 'Edit'}") #{tr 'Edit'}
+        -#  %a.btn.btn-link.btn-sm.btn-reply(role="button" title="#{tr 'Reply'}") #{tr 'Reply'}
+    :if image
+      .image
+        %a(href="${image.url}" title="${image.title}")
+          %img(src="${image.url}" alt="${image.title}")
+  .reply
+""".replace /\$/g, '#'
+
+  # HAML for topic
+  # - id
+  # - type
+  # - userName
+  # - userStyle
+  # - lang
+  # - userAvatarUrl  url or null
+  # - content: string  html
+  # - createTime
+  # - updateTime
+  # - image  url or null
+  # - likeCount  int
+  # - dislikeCount  int
+  @HAML_POST = Haml """\
+.post.post-new(data-id="${id}" data-type="${type}")
+  .left
+    :if userAvatarUrl
+      %img.img-circle.avatar(src="${userAvatarUrl}")
+  .right
+    .header
+      .user(style="${userStyle}") @${userName}
+      .time.text-minor = createTime
+      .lang = lang
+      .time.text-success = updateTime
+    .content.bbcode = content
+    :if USER_NAME && USER_NAME != 'guest'
+      .footer
+        .btn-group.like-group.fade-in
+          %a.like.btn.btn-link.btn-sm(role="button" title="#{tr 'Like'}")
+            %span.fa.fa-thumbs-up
+            %span.value = likeCount
+          %a.dislike.btn.btn-link.btn-sm(role="button" title="#{tr 'Dislike'}")
+            %span.fa.fa-thumbs-down
+            %span.value = dislikeCount
+        -#.btn-group.pull-right.fade-in
+        -#  :if userName == USER_NAME
+        -#    %a.btn.btn-link.btn-sm.btn-edit(role="button" title="#{tr 'Edit'}") #{tr 'Edit'}
+        -#  %a.btn.btn-link.btn-sm.btn-reply(role="button" title="#{tr 'Reply'}") #{tr 'Reply'}
     :if image
       .image
         %a(href="${image.url}" title="${image.title}")
@@ -642,6 +687,8 @@ REVIEW_TOPIC_LIMIT = 20
 REVIEW_TOPICS = [] # [topic]
 NEW_REVIEW_TOPIC_COUNT = 0
 
+findTopic = (id) -> _.findWhere REVIEW_TOPICS, id:id # long -> object
+
 _noMoreReviewTopics = -> # -> bool
   (REVIEW_TOPICS.length - NEW_REVIEW_TOPIC_COUNT) % REVIEW_TOPIC_LIMIT
 
@@ -655,11 +702,14 @@ initReviewSwitch = ->
   $section.find('input.switch').bootstrapSwitch()
     .on 'switchChange.bootstrapSwitch', (event, checked) ->
       unless checked
-        $container.fadeOut()
-      else if $container.hasClass 'rendered'
-        $container.fadeIn()
+        $contents.fadeOut()
+        #$container.fadeOut()
+      else if $contents.hasClass 'rendered'
+        $contents.fadeIn()
+        #$container.fadeIn()
       else
-        $container.show()
+        #$container.show()
+        $contents.show()
            .addClass 'rendered'
 
         $spin.spin 'section'
@@ -675,7 +725,7 @@ initReviewSwitch = ->
             complete: true
           error: ->
             $spin.spin false
-            $container.removeClass 'rendered'
+            $contents.removeClass 'rendered'
             $msg.addClass 'text-danger'
                 .text "(#{tr 'Internet error'})"
           success: (data) ->
@@ -692,6 +742,7 @@ initReviewSwitch = ->
               else
                 $footer.html HTML_MORE
                 $footer.find('.btn-more').click moreReviewTopics
+              bindNewReviewTopics()
             else
               $msg.removeClass 'text-danger'
                   .text " (#{tr 'Empty'})"
@@ -712,6 +763,7 @@ initReviewSwitch = ->
         #$container.removeClass 'rendered'
         #$msg.addClass 'text-danger'
         #    .text "(#{tr 'Internet error'})"
+        growl.warn tr 'Internet error'
       success: (data) ->
         $spin.spin false
         if data.length
@@ -720,6 +772,7 @@ initReviewSwitch = ->
           $container.append h
         if _noMoreReviewTopics()
           $footer.html HTML_NOMORE
+        bindNewReviewTopics()
         #else
         #  $msg.removeClass 'text-danger'
         #      .text " (#{tr 'Empty'})"
@@ -747,6 +800,263 @@ _renderReviewTopic = (data) -> # object -> string  raise
     likeCount: data.likeCount or 0
     dislikeCount: data.dislikeCount or 0
     postCount: data.postCount
+
+bindNewReviewTopics = ->
+  $('.topic.topic-new').each ->
+    $topic = $ @
+      .removeClass 'topic-new'
+
+    topicId = $topic.data 'id'
+    topic = findTopic topicId
+
+    $footer = $topic.find '> .right > .footer'
+
+    $footer.find('.btn-edit').click ->
+      if topic
+        editTopic topic
+      false
+
+    $footer.find('.btn-reply').click ->
+      replyTopic topicId
+      false
+
+    $footer.find('.btn-posts').click ->
+      $(@).remove()
+      moreTopicPosts topicId
+      false
+
+    $footer.find('.like-group').removeClass 'fade-in' if topic?.likeCount or topic?.dislikeCount
+
+    $footer.find('.btn.like').click ->
+      if topic and topic.userName != USER_NAME
+        $that = $footer.find '.btn.dislike.selected'
+        if $that.length
+          $that.removeClass 'selected'
+          $value = $that.find '.value'
+          $value.text -1 + Number $value.text()
+        $this = $ @
+        $this.parent('.like-group').removeClass 'fade-in'
+        selected = $this.hasClass 'selected'
+        value = if selected then 0 else 1
+        ticket.update
+          data:
+            login: USER_NAME
+            password: USER_PASSWORD
+            targetType: 'topic'
+            targetId: topicId
+            type: 'like'
+            value: value
+          success: =>
+            $this.toggleClass 'selected'
+            $value = $this.find '.value'
+            $value.text (if selected then -1 else 1) + Number $value.text()
+      false
+
+    $footer.find('.btn.dislike').click ->
+      if topic and topic.userName != USER_NAME
+        $that = $footer.find '.btn.like.selected'
+        if $that.length
+          $that.removeClass 'selected'
+          $value = $that.find '.value'
+          $value.text -1 + Number $value.text()
+        $this = $ @
+        $this.parent('.like-group').removeClass 'fade-in'
+        selected = $this.hasClass 'selected'
+        value = if selected then 0 else -1
+        ticket.update
+          data:
+            login: USER_NAME
+            password: USER_PASSWORD
+            targetType: 'topic'
+            targetId: topicId
+            type: 'like'
+            value: value
+          success: =>
+            $this.toggleClass 'selected'
+            $value = $this.find '.value'
+            $value.text (if selected then -1 else 1) + Number $value.text()
+      false
+
+moreTopicPosts = (topicId) -> # int ->
+  #$spin.spin 'section'
+  rest.forum.list 'post',
+    data:
+      topic: topicId
+      sort: 'createTime'
+      asc: true
+      limit: POST_LIMIT
+    error: ->
+      #$spin.spin false
+      growl.warn tr 'Internet error'
+    success: (data) ->
+      #$spin.spin false
+      if data.length
+        addTopicPosts topicId, data
+      else
+        growl.warn tr 'Internet error'
+
+## Review posts ##
+
+POST_LIMIT = 20
+
+POSTS = [] # [object post]
+
+renderPost = (data) -> # object post -> string
+  HAML_POST
+    id: data.id
+    type: data.type
+    userName: data.userName
+    userStyle: if data.userColor then "color:#{data.userColor}" else ''
+    lang: util.getLangName data.lang
+    userAvatarUrl: util.getAvatarUrl data.userAvatar
+    content: util.renderContent data.content
+    createTime: util.formatDate data.createTime
+    updateTime: if data.updateTime > data.createTime then util.formatDate data.updateTime else ''
+    image: if data.image then {title:data.image.title, url:util.getImageUrl data.image} else null
+    likeCount: data.likeCount or 0
+    dislikeCount: data.dislikeCount or 0
+
+$getPost = (postId) ->  $ ".post[data-id=#{postId}]" # long -> $el
+
+findPost = (id) -> _.findWhere POSTS, id:id # long -> object
+
+editPost = (post) -> postEditBean.editPost JSON.stringify post # long ->
+
+replyPost = (postId) ->  postInputBean.replyPost postId # long ->
+
+bindNewPosts = ->
+  $('.post.post-new').each ->
+    $this = $ @
+      .removeClass 'post-new'
+
+    postId = $this.data 'id'
+    post = findPost postId
+
+    $footer = $this.find '> .right > .footer'
+
+    $footer.find('.btn-edit').click ->
+      if post
+        editPost post
+      false
+
+    $footer.find('.btn-reply').click ->
+      replyPost postId
+      false
+
+    $footer.find('.like-group').removeClass 'fade-in' if post?.likeCount or post?.dislikeCount
+
+    $footer.find('.btn.like').click ->
+      if post and post.userName != USER_NAME
+        $that = $footer.find '.btn.dislike.selected'
+        if $that.length
+          $that.removeClass 'selected'
+          $value = $that.find '.value'
+          $value.text -1 + Number $value.text()
+        $this = $ @
+        $this.parent('.like-group').removeClass 'fade-in'
+        selected = $this.hasClass 'selected'
+        value = if selected then 0 else 1
+        ticket.update
+          data:
+            login: USER_NAME
+            password: USER_PASSWORD
+            targetType: 'post'
+            targetId: postId
+            type: 'like'
+            value: value
+          success: =>
+            $this.toggleClass 'selected'
+            $value = $this.find '.value'
+            $value.text (if selected then -1 else 1) + Number $value.text()
+      false
+
+    $footer.find('.btn.dislike').click ->
+      if post and post.userName != USER_NAME
+        $that = $footer.find '.btn.like.selected'
+        if $that.length
+          $that.removeClass 'selected'
+          $value = $that.find '.value'
+          $value.text -1 + Number $value.text()
+        $this = $ @
+        $this.parent('.like-group').removeClass 'fade-in'
+        selected = $this.hasClass 'selected'
+        value = if selected then 0 else -1
+        ticket.update
+          data:
+            login: USER_NAME
+            password: USER_PASSWORD
+            targetType: 'post'
+            targetId: postId
+            type: 'like'
+            value: value
+          success: =>
+            $this.toggleClass 'selected'
+            $value = $this.find '.value'
+            $value.text (if selected then -1 else 1) + Number $value.text()
+      false
+
+addTopicPosts = (topicId, posts) -> # [int topicId, object post] ->
+  POSTS.push.apply POSTS, posts
+  h = (renderPost it for it in posts when it.type is 'post').join ''
+  $(".topic[data-id=#{topicId}] > .reply").append h
+  #$(h).hide().appendTo('.topic > .posts').fadeIn()
+
+  replies = (it for it in posts when it.type is 'reply')
+  if replies.length
+    replies = _.sortBy replies, (it) -> it.createTime
+    for it in replies
+      $ref = $getPost it.replyId
+      if $ref.length
+        h = renderPost it
+        $ref.children('.reply').append h
+      else
+        dprint 'addPosts: error: post lost'
+
+  bindNewPosts()
+
+highlightNewPosts = -> $('.post.post-new').effect 'highlight', HIGHLIGHT_INTERVAL
+
+#addPost = (post) -> # object post ->
+#  POSTS.push post
+#  if post.type is 'post'
+#    h = renderPost post
+#    $(h).prependTo '.topic > .posts'
+#        #.effect 'highlight', HIGHLIGHT_INTERVAL
+#    highlightNewPosts()
+#    bindNewPosts()
+#  else if post.type is 'reply'
+#    $ref = $getPost post.replyId
+#    if $ref.length
+#      h = renderPost post
+#      $(h).appendTo($ref.children('.reply'))
+#          #.effect 'highlight', HIGHLIGHT_INTERVAL
+#      highlightNewPosts()
+#      bindNewPosts()
+#    else
+#      dprint 'addPost: error: post lost'
+#  else
+#    dprint 'addPost: error: unknown post type'
+#
+#updatePost = (post) -> # object post ->
+#  oldpost = findPost post.id
+#  if oldpost
+#    util.fillObject oldpost, post
+#    $post = $getPost post.id
+#    if $post.length
+#      $h = $ renderPost post
+#      $h.children('.reply').replaceWith $post.children '.reply'
+#
+#      $post.replaceWith $h
+#
+#      #$post = $getPost post.id
+#      #$post.children('reply').replaceWith $reply
+#
+#      #$h.effect 'highlight', HIGHLIGHT_INTERVAL
+#      highlightNewPosts()
+#      bindNewPosts()
+#      return
+#
+#  dprint 'updatePost: error: post lost'
 
 #initCGSwitch = ->
 #  $section = $ 'section.cg'
