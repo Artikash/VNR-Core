@@ -6971,6 +6971,7 @@ bool InsertPPSSPPHooks()
   Insert5pbPSPHook();
   InsertCyberfrontPSPHook();
   InsertImageepoch2PSPHook();
+  InsertFelistellaPSPHook();
 
   InsertBroccoliPSPHook();
   InsertIntensePSPHook();
@@ -9649,7 +9650,7 @@ static void SpecialPSPHookIntense(DWORD esp_base, HookParam *hp, DWORD *data, DW
     //*split = regof(edx, esp_base); // cause scenario text to split
 
     //*split = regof(ebx, esp_base); // works, but floating value
-    *split = FIXED_SPLIT_VALUE << 3;
+    *split = FIXED_SPLIT_VALUE * 3;
   }
 }
 bool InsertIntensePSPHook()
@@ -10022,6 +10023,140 @@ bool InsertKadokawaNamePSPHook()
   ConsoleOutput("vnreng: Kadokawa Name PSP: leave");
   return addr;
 }
+
+/** 9/5/2014 jichi felistella.co.jp PSP engine, 0.9.8, 0.9.9
+ *  Sample game: Summon Night 5 0.9.8/0.9.9
+ *
+ *  Encoding: utf8
+ *  Fixed memory addresses: two matches
+ *
+ *  Debug method: predict the text and add break-points.
+ *
+ *  There are two good functions
+ *  The second is used as it contains fewer garbage
+ *
+ *  // Not used
+ *  14081173   cc               int3
+ *  14081174   77 0f            ja short 14081185
+ *  14081176   c705 c84c1301 40>mov dword ptr ds:[0x1134cc8],0x8989540
+ *  14081180  -e9 7feef5f3      jmp 07fe0004
+ *  14081185   8b35 9c491301    mov esi,dword ptr ds:[0x113499c]
+ *  1408118b   8bc6             mov eax,esi
+ *  1408118d   81e0 ffffff3f    and eax,0x3fffffff
+ *  14081193   0fb6b8 00000008  movzx edi,byte ptr ds:[eax+0x8000000] ; jichi: hook here
+ *  1408119a   8bef             mov ebp,edi
+ *  1408119c   81e5 80000000    and ebp,0x80
+ *  140811a2   8d76 01          lea esi,dword ptr ds:[esi+0x1]
+ *  140811a5   81fd 00000000    cmp ebp,0x0
+ *  140811ab   c705 90491301 00>mov dword ptr ds:[0x1134990],0x0
+ *  140811b5   893d 9c491301    mov dword ptr ds:[0x113499c],edi
+ *  140811bb   8935 a0491301    mov dword ptr ds:[0x11349a0],esi
+ *  140811c1   892d a4491301    mov dword ptr ds:[0x11349a4],ebp
+ *  140811c7   0f85 16000000    jnz 140811e3
+ *  140811cd   832d e44c1301 06 sub dword ptr ds:[0x1134ce4],0x6
+ *  140811d4   e9 fbf71200      jmp 141b09d4
+ *  140811d9   01dc             add esp,ebx
+ *  140811db   95               xchg eax,ebp
+ *  140811dc   98               cwde
+ *  140811dd   08e9             or cl,ch
+ *  140811df   40               inc eax
+ *
+ *  // Used
+ *  141be92f   cc               int3
+ *  141be930   77 0f            ja short 141be941
+ *  141be932   c705 c84c1301 0c>mov dword ptr ds:[0x1134cc8],0x8988f0c
+ *  141be93c  -e9 c316e2f3      jmp 07fe0004
+ *  141be941   8b35 98491301    mov esi,dword ptr ds:[0x1134998]
+ *  141be947   8bc6             mov eax,esi
+ *  141be949   81e0 ffffff3f    and eax,0x3fffffff
+ *  141be94f   0fb6b8 00000008  movzx edi,byte ptr ds:[eax+0x8000000] ; jichi: hook here
+ *  141be956   81ff 00000000    cmp edi,0x0
+ *  141be95c   c705 90491301 00>mov dword ptr ds:[0x1134990],0x0
+ *  141be966   893d 98491301    mov dword ptr ds:[0x1134998],edi
+ *  141be96c   8935 9c491301    mov dword ptr ds:[0x113499c],esi
+ *  141be972   0f85 16000000    jnz 141be98e
+ *  141be978   832d e44c1301 04 sub dword ptr ds:[0x1134ce4],0x4
+ *  141be97f   e9 e4020000      jmp 141bec68
+ *  141be984   01748f 98        add dword ptr ds:[edi+ecx*4-0x68],esi
+ *  141be988   08e9             or cl,ch
+ *  141be98a   95               xchg eax,ebp
+ *  141be98b   16               push ss
+ *  141be98c  ^e2 f3            loopd short 141be981
+ *  141be98e   832d e44c1301 04 sub dword ptr ds:[0x1134ce4],0x4
+ *  141be995   e9 0e000000      jmp 141be9a8
+ *  141be99a   011c8f           add dword ptr ds:[edi+ecx*4],ebx
+ *  141be99d   98               cwde
+ *  141be99e   08e9             or cl,ch
+ *  141be9a0   7f 16            jg short 141be9b8
+ *  141be9a2  ^e2 f3            loopd short 141be997
+ *  141be9a4   90               nop
+ *  141be9a5   cc               int3
+ */
+// Only split text when edi is eax
+// The value of edi is either eax or 0
+static void SpecialPSPHookFelistella(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  DWORD eax = regof(eax, esp_base);
+  LPCSTR text = LPCSTR(eax + hp->userValue);
+  if (text) {
+    *len = ::strlen(text); // utf8
+    *data = (DWORD)text;
+
+    DWORD edi = regof(edi, esp_base);
+    *split = FIXED_SPLIT_VALUE * (edi == eax ? 4 : 5);
+  }
+}
+bool InsertFelistellaPSPHook()
+{
+  ConsoleOutput("vnreng: FELISTELLA PSP: enter");
+  const BYTE bytes[] =  {
+    //0xcc,                              // 141be92f   cc               int3
+    0x77, 0x0f,                          // 141be930   77 0f            ja short 141be941
+    0xc7,0x05, XX8,                      // 141be932   c705 c84c1301 0c>mov dword ptr ds:[0x1134cc8],0x8988f0c
+    0xe9, XX4,                           // 141be93c  -e9 c316e2f3      jmp 07fe0004
+    0x8b,0x35, XX4,                      // 141be941   8b35 98491301    mov esi,dword ptr ds:[0x1134998]
+    0x8b,0xc6,                           // 141be947   8bc6             mov eax,esi
+    0x81,0xe0, 0xff,0xff,0xff,0x3f,      // 141be949   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xb6,0xb8, XX4,                 // 141be94f   0fb6b8 00000008  movzx edi,byte ptr ds:[eax+0x8000000] ; jichi: hook here
+    0x81,0xff, 0x00,0x00,0x00,0x00,      // 141be956   81ff 00000000    cmp edi,0x0
+    0xc7,0x05, XX4, 0x00,0x00,0x00,0x00, // 141be95c   c705 90491301 00>mov dword ptr ds:[0x1134990],0x0
+    0x89,0x3d, XX4,                      // 141be966   893d 98491301    mov dword ptr ds:[0x1134998],edi
+    0x89,0x35, XX4,                      // 141be96c   8935 9c491301    mov dword ptr ds:[0x113499c],esi
+    0x0f,0x85, XX4,                      // 141be972   0f85 16000000    jnz 141be98e
+    0x83,0x2d, XX4, 0x04,                // 141be978   832d e44c1301 04 sub dword ptr ds:[0x1134ce4],0x4
+    // Above is not sufficient
+    0xe9, XX4,                           // 141be97f   e9 e4020000      jmp 141bec68
+    0x01,0x74,0x8f, 0x98                 // 141be984   01748f 98        add dword ptr ds:[edi+ecx*4-0x68],esi
+    //0x08,0xe9,                         // 141be988   08e9             or cl,ch
+    // Below could be changed for different run
+    //0x95,                              // 141be98a   95               xchg eax,ebp
+    //0x16                               // 141be98b   16               push ss
+  };
+  enum { memory_offset = 3 };
+  enum { hook_offset = 0x141be94f - 0x141be930 };
+
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
+  //ITH_GROWL_DWORD(addr);
+  if (!addr)
+    ConsoleOutput("vnreng: FELISTELLA PSP: pattern not found");
+  else {
+    HookParam hp = {};
+    hp.addr = addr + hook_offset;
+    hp.userValue = *(DWORD *)(hp.addr + memory_offset);
+    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
+    //hp.extern_fun = SpecialPSPHook;
+    hp.extern_fun = SpecialPSPHookFelistella;
+    hp.off = pusha_eax_off - 4;
+    //hp.split = pusha_ecx_off - 4; // cause main thread to split
+    //hp.split = pusha_edx_off - 4; // cause main thread to split for different lines
+    ConsoleOutput("vnreng: FELISTELLA PSP: INSERT");
+    NewHook(hp, L"FELISTELLA PSP");
+  }
+
+  ConsoleOutput("vnreng: FELISTELLA PSP: leave");
+  return addr;
+}
+
 
 #if 0 // 8/9/2014 jichi: does not work
 

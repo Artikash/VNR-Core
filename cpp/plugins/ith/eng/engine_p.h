@@ -49,6 +49,7 @@ bool InsertAlchemist2PSPHook(); // PSP Alchemist-net.co.jp
 bool InsertBandaiNamePSPHook(); // PSP Bandai.co.jp
 bool InsertBandaiPSPHook();     // PSP Bandai.co.jp
 bool InsertBroccoliPSPHook();   // PSP Broccoli.co.jp
+bool InsertFelistellaPSPHook(); // PSP felistella.co.jp
 
 bool InsertCyberfrontPSPHook(); // PSP CYBERFRONT (closed)
 bool InsertImageepochPSPHook(); // PSP Imageepoch.co.jp
