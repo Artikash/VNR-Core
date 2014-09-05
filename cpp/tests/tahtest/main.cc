@@ -1,10 +1,14 @@
 // main.cc
 // 8/14/2014 jichi
 #include "tahscript/tahscript.h"
-#include <QtCore/QDebug>
+#include <QtCore>
 
 int main()
 {
+  QRegExp re("x");
+  QString t = "xxx111xxx";
+  qDebug () << t.remove(re);
+  return 0;
   qDebug() << "enter";
 
   //wchar_t ws[] = L"裕輔なら、問題なく対処してくれるだろう。";

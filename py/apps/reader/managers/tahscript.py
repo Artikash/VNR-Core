@@ -2,8 +2,13 @@
 # tahscript.py
 # 8/14/2014 jichi
 
+import re
 from sakurakit.skclass import memoized, memoizedproperty
 from sakurakit.skdebug import dprint
+
+_repeat_comma = re.compile(ur'。+')
+def repair_tah_text(t): # unicode -> unicode
+  return _repeat_comma.sub(u'。', t)
 
 @memoized
 def manager(): return TahScriptManager()
@@ -75,6 +80,6 @@ class TahScriptManager:
     d = self.__d
     if not d.enabled:
       return text
-    return d.tah.translate(text) or text # totally deleting ret is NOT allowed in case of malicious rule
+    return repair_tah_text(d.tah.translate(text)) or text # totally deleting ret is NOT allowed in case of malicious rule
 
 # EOF
