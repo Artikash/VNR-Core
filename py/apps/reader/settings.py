@@ -1095,7 +1095,7 @@ class Settings(QSettings):
   ## Translation options ##
 
   tahScriptEnabledChanged = Signal(bool)
-  def isTahScriptEnabled(self): return to_bool(self.value('TahScriptEnabled', True))
+  def isTahScriptEnabled(self): return to_bool(self.value('TahScriptEnabled')) # disabled by default
   def setTahScriptEnabled(self, value):
     if value != self.isTahScriptEnabled():
       self.setValue('TahScriptEnabled', value)
