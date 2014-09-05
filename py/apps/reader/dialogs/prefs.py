@@ -69,7 +69,7 @@ class _PrefsDialog(object):
     self.translationTab = _prefs.TranslationTab()
     self.machineTranslationTab = _prefs.MachineTranslationTab()
     self.dictionaryTranslationTab = _prefs.DictionaryTranslationTab()
-    self.translationScriptTab = _prefs.TranslationScriptTab()
+    #self.translationScriptTab = _prefs.TranslationScriptTab()
 
     self.downloadsTab = _prefs.DownloadsTab()
     self.dictionaryDownloadsTab = _prefs.DictionaryDownloadsTab()
@@ -178,12 +178,12 @@ class _PrefsDialog(object):
               'display': tr_("Dictionaries"),
               'toolTip': my.tr("Preferred look-up dictionaries"),
             },
-            { 'widget': self.translationScriptTab,
-              'user': self._indexWidget(self.translationScriptTab),
-              'decoration': rc.icon('pref-script'),
-              'display': tr_("Scripts"),
-              'toolTip': my.tr("Translation replacement scripts"),
-            },
+            #{ 'widget': self.translationScriptTab,
+            #  'user': self._indexWidget(self.translationScriptTab),
+            #  'decoration': rc.icon('pref-script'),
+            #  'display': tr_("Scripts"),
+            #  'toolTip': my.tr("Translation replacement scripts"),
+            #},
           ]
         },
         { 'widget': self.ttsTab,
@@ -296,7 +296,7 @@ class _PrefsDialog(object):
     yield self.translationTab
     yield self.machineTranslationTab
     yield self.dictionaryTranslationTab
-    yield self.translationScriptTab
+    #yield self.translationScriptTab
 
     yield self.downloadsTab
     yield self.dictionaryDownloadsTab

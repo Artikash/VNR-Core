@@ -561,18 +561,18 @@ class _MainObject(object):
     #ss.convertsChineseChanged.connect(ret.setConvertsChinese)
     return ret
 
-  @memoizedproperty
-  def translationScriptManager(self):
-    dprint("create translation script manager")
-    import trscriptman
-    ret = trscriptman.manager()
-    ss = settings.global_()
-    ret.setLanguageEnabled('ja', ss.isTranslationScriptJaEnabled())
-    ret.setLanguageEnabled('en', ss.isTranslationScriptEnEnabled())
-    ss.translationScriptJaEnabledChanged.connect(partial(ret.setLanguageEnabled, 'ja'))
-    ss.translationScriptEnEnabledChanged.connect(partial(ret.setLanguageEnabled, 'en'))
-    self.dataManager.translationScriptsChanged.connect(ret.reloadScripts)
-    return ret
+  #@memoizedproperty
+  #def translationScriptManager(self):
+  #  dprint("create translation script manager")
+  #  import trscriptman
+  #  ret = trscriptman.manager()
+  #  ss = settings.global_()
+  #  ret.setLanguageEnabled('ja', ss.isTranslationScriptJaEnabled())
+  #  ret.setLanguageEnabled('en', ss.isTranslationScriptEnEnabled())
+  #  ss.translationScriptJaEnabledChanged.connect(partial(ret.setLanguageEnabled, 'ja'))
+  #  ss.translationScriptEnEnabledChanged.connect(partial(ret.setLanguageEnabled, 'en'))
+  #  self.dataManager.translationScriptsChanged.connect(ret.reloadScripts)
+  #  return ret
 
   @memoizedproperty
   def translationCacheManager(self):
@@ -1446,7 +1446,7 @@ class MainObject(QObject):
     d.gameAgent
 
     d.termManager
-    d.translationScriptManager
+    #d.translationScriptManager
     d.translatorManager
     d.translationCacheManager
     d.dictionaryManager
@@ -1538,9 +1538,9 @@ class MainObject(QObject):
         dprint("update terms later")
         skevents.runlater(dm.updateTerms)
 
-      if d.translationScriptManager.isEmpty() and settings.global_().isAnyTranslationScriptEnabled():
-        dprint("update translate scripts later")
-        skevents.runlater(dm.updateTranslationScripts)
+      #if d.translationScriptManager.isEmpty() and settings.global_().isAnyTranslationScriptEnabled():
+      #  dprint("update translate scripts later")
+      #  skevents.runlater(dm.updateTranslationScripts)
 
     #dprint("warm up translators")
     #d.translatorManager.warmup()
@@ -1599,8 +1599,8 @@ class MainObject(QObject):
         # Greetings are disabled
         #skevents.runlater(self.checkGreeting, 7000)
 
-    if settings.global_().isAnyTranslationScriptEnabled():
-      skevents.runlater(self.checkTranslationScripts, 60000) # 1min
+    #if settings.global_().isAnyTranslationScriptEnabled():
+    #  skevents.runlater(self.checkTranslationScripts, 60000) # 1min
     skevents.runlater(self.checkDigests, 90000) # 1.5min
     skevents.runlater(self.checkTerms, 120000) # 2min
 
@@ -1890,16 +1890,16 @@ class MainObject(QObject):
     self.__d.dataManager.updateTerms()
     dprint("leave")
 
-  def checkTranslationScripts(self):
-    dprint("enter")
-    if not self.isOnline():
-      return
-    now = skdatetime.current_unixtime()
-    if now < settings.global_().translationScriptTime() + config.APP_UPDATE_TAH_INTERVAL:
-      dprint("leave: ignore")
-      return
-    self.__d.dataManager.updateTranslationScripts()
-    dprint("leave")
+  #def checkTranslationScripts(self):
+  #  dprint("enter")
+  #  if not self.isOnline():
+  #    return
+  #  now = skdatetime.current_unixtime()
+  #  if now < settings.global_().translationScriptTime() + config.APP_UPDATE_TAH_INTERVAL:
+  #    dprint("leave: ignore")
+  #    return
+  #  self.__d.dataManager.updateTranslationScripts()
+  #  dprint("leave")
 
   def checkGreeting(self):
     if not self.isOnline():

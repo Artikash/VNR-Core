@@ -18,14 +18,15 @@
 #define DEBUG "tahscript.cc"
 #include "sakurakit/skdebug.h"
 
-#define DEBUG_RULE // output the rule that is applied
+//#define DEBUG_RULE // output the rule that is applied
 
 #define TAHSCRIPT_COMMENT_CHAR1     '#' // indicate the beginning of a line comment
 #define TAHSCRIPT_COMMENT_CHAR2     '*' // original comment
 #define TAHSCRIPT_COMMENT_CHAR3     '=' // wiki section
 //#define TAHSCRIPT_COMMENT_CHAR_LEN  1 // not used
-#define TAHSCRIPT_RULE_DELIM        "=>" // deliminator of the rule pair
-#define TAHSCRIPT_RULE_DELIM_LEN    (sizeof(TAHSCRIPT_RULE_DELIM)  - 1) // strlen
+#define TAHSCRIPT_RULE_DELIM        '\t' // deliminator of the rule pair
+enum { TAHSCRIPT_RULE_DELIM_LEN = 1 };
+//enum { TAHSCRIPT_RULE_DELIM_LEN = (sizeof(TAHSCRIPT_RULE_DELIM)  - 1) }; // strlen
 
 /** Helpers */
 

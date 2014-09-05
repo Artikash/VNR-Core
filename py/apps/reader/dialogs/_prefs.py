@@ -1649,82 +1649,82 @@ class TranslationTab(QtWidgets.QDialog):
   def refresh(self): pass
 
 #@Q_Q
-class _TranslationScriptTab(object):
-
-  def __init__(self, q):
-    self._createUi(q)
-
-  def _createUi(self, q):
-    layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.tahGroup)
-    layout.addStretch()
-    q.setLayout(layout)
-
-  # TAH group
-
-  @memoizedproperty
-  def tahGroup(self):
-    layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.tahJaButton)
-    layout.addWidget(self.tahEnButton)
-    layout.addWidget(self.tahInfoEdit)
-    layout.addStretch()
-    ret = QtWidgets.QGroupBox(my.tr("TAH replacement script for Japanese machine translation"))
-    ret.setLayout(layout)
-    return ret
-
-  @memoizedproperty
-  def tahJaButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Enable Japanse-Japanese correction for all languages"))
-    ret.setChecked(settings.global_().isTranslationScriptJaEnabled())
-    ret.toggled.connect(settings.global_().setTranslationScriptJaEnabled)
-    return ret
-
-  @memoizedproperty
-  def tahEnButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Enable Japanese-English correction for Latin languages"))
-    ret.setChecked(settings.global_().isTranslationScriptEnEnabled())
-    ret.toggled.connect(settings.global_().setTranslationScriptEnEnabled)
-    return ret
-
-  @memoizedproperty
-  def tahInfoEdit(self):
-    ret = QtWidgets.QTextBrowser()
-    #ret.setTextFormat(Qt.RichText)
-    #ret.setWordWrap(True)
-    #ret.setOpenExternalLinks(True)
-    skqss.class_(ret, 'texture')
-    ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
-    #ret.setAlignment(Qt.AlignCenter)
-    ret.setReadOnly(True)
-    ret.setOpenExternalLinks(True)
-
-    url = "http://sakuradite.com/wiki/en/VNR/Translation_Scripts"
-    ret.setHtml(my.tr(
-"""TAH script is a set of <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> rules originally written by @errzotl to enhance ATLAS Japanese-English translation.
-But the script serves to correct and normalize spoken Japanese rather than translation.
-<br/><br/>
-VNR's script is branched from @errzotl's 0.16 script and maintained at <a href="{0}">{0}</a>.
-VNR will periodically sync the local script with the online wiki.
-You usually don't want to disable this unless for debugging purpose.
-<br/><br/>
-Normal users don't need to touch this script.
-But if you want, you can try VNR's Machine Translation Tester to see how TAH script participates in the machine translation pipeline.
-You can also edit the local translation script in caches, but it will be overwritten after the update.
-It will be better to merge your changes with the online wiki."""
-).format(url))
-    return ret
-
-class TranslationScriptTab(QtWidgets.QDialog):
-
-  def __init__(self, parent=None):
-    super(TranslationScriptTab, self).__init__(parent)
-    skqss.class_(self, 'texture')
-    self.__d = _TranslationScriptTab(self)
-
-  def save(self): pass
-  def load(self): pass
-  def refresh(self): pass #self.__d.refresh()
+#class _TranslationScriptTab(object):
+#
+#  def __init__(self, q):
+#    self._createUi(q)
+#
+#  def _createUi(self, q):
+#    layout = QtWidgets.QVBoxLayout()
+#    layout.addWidget(self.tahGroup)
+#    layout.addStretch()
+#    q.setLayout(layout)
+#
+#  # TAH group
+#
+#  @memoizedproperty
+#  def tahGroup(self):
+#    layout = QtWidgets.QVBoxLayout()
+#    layout.addWidget(self.tahJaButton)
+#    layout.addWidget(self.tahEnButton)
+#    layout.addWidget(self.tahInfoEdit)
+#    layout.addStretch()
+#    ret = QtWidgets.QGroupBox(my.tr("TAH replacement script for Japanese machine translation"))
+#    ret.setLayout(layout)
+#    return ret
+#
+#  @memoizedproperty
+#  def tahJaButton(self):
+#    ret = QtWidgets.QCheckBox(my.tr("Enable Japanse-Japanese correction for all languages"))
+#    ret.setChecked(settings.global_().isTranslationScriptJaEnabled())
+#    ret.toggled.connect(settings.global_().setTranslationScriptJaEnabled)
+#    return ret
+#
+#  @memoizedproperty
+#  def tahEnButton(self):
+#    ret = QtWidgets.QCheckBox(my.tr("Enable Japanese-English correction for Latin languages"))
+#    ret.setChecked(settings.global_().isTranslationScriptEnEnabled())
+#    ret.toggled.connect(settings.global_().setTranslationScriptEnEnabled)
+#    return ret
+#
+#  @memoizedproperty
+#  def tahInfoEdit(self):
+#    ret = QtWidgets.QTextBrowser()
+#    #ret.setTextFormat(Qt.RichText)
+#    #ret.setWordWrap(True)
+#    #ret.setOpenExternalLinks(True)
+#    skqss.class_(ret, 'texture')
+#    ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
+#    #ret.setAlignment(Qt.AlignCenter)
+#    ret.setReadOnly(True)
+#    ret.setOpenExternalLinks(True)
+#
+#    url = "http://sakuradite.com/wiki/en/VNR/Translation_Scripts"
+#    ret.setHtml(my.tr(
+#"""TAH script is a set of <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> rules originally written by @errzotl to enhance ATLAS Japanese-English translation.
+#But the script serves to correct and normalize spoken Japanese rather than translation.
+#<br/><br/>
+#VNR's script is branched from @errzotl's 0.16 script and maintained at <a href="{0}">{0}</a>.
+#VNR will periodically sync the local script with the online wiki.
+#You usually don't want to disable this unless for debugging purpose.
+#<br/><br/>
+#Normal users don't need to touch this script.
+#But if you want, you can try VNR's Machine Translation Tester to see how TAH script participates in the machine translation pipeline.
+#You can also edit the local translation script in caches, but it will be overwritten after the update.
+#It will be better to merge your changes with the online wiki."""
+#).format(url))
+#    return ret
+#
+#class TranslationScriptTab(QtWidgets.QDialog):
+#
+#  def __init__(self, parent=None):
+#    super(TranslationScriptTab, self).__init__(parent)
+#    skqss.class_(self, 'texture')
+#    self.__d = _TranslationScriptTab(self)
+#
+#  def save(self): pass
+#  def load(self): pass
+#  def refresh(self): pass #self.__d.refresh()
 
 #@Q_Q
 class _MachineTranslationTab(object):
@@ -1739,6 +1739,8 @@ class _MachineTranslationTab(object):
     #layout.addWidget(self.correctionGroup)
     if 'zh' not in blans:
       layout.addWidget(self.chineseGroup)
+    if 'en' not in blans:
+      layout.addWidget(self.tahGroup)
     layout.addStretch()
     q.setLayout(layout)
 
@@ -1761,6 +1763,50 @@ class _MachineTranslationTab(object):
   #  ret.setChecked(settings.global_().isMsimeCorrectionEnabled())
   #  ret.toggled.connect(settings.global_().setMsimeCorrectionEnabled)
   #  return ret
+
+  # TAH script group
+
+  @memoizedproperty
+  def tahGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.tahButton)
+    layout.addWidget(self.tahInfoLabel)
+    #layout.addStretch()
+    ret = QtWidgets.QGroupBox(my.tr("ATLAS TAH script"))
+    ret.setLayout(layout)
+
+    ss = settings.global_()
+    ret.setEnabled(ss.isAtlasEnabled())
+    ss.atlasEnabledChanged.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def tahButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Apply TAH script for ATLAS Japanese-English machine translation"))
+    ret.setChecked(settings.global_().isTahScriptEnabled())
+    ret.toggled.connect(settings.global_().setTahScriptEnabled)
+    return ret
+
+  @memoizedproperty
+  def tahInfoLabel(self):
+    ret = QtWidgets.QLabel()
+    #ret.setTextFormat(Qt.RichText)
+    #ret.setWordWrap(True)
+    #ret.setOpenExternalLinks(True)
+    #skqss.class_(ret, 'texture')
+    #ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
+    #ret.setAlignment(Qt.AlignCenter)
+    #ret.setReadOnly(True)
+    ret.setWordWrap(True)
+    ret.setOpenExternalLinks(True)
+
+    email = 'TAHscript@outlook.com'
+    ret.setText(my.tr(
+"""TAH script is a set of <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> rules originally written by @errzotl to enhance ATLAS translation quality.
+You can report the bugs to <a href="mailto:{0}">{0}</a>."""
+).format(email))
+    return ret
 
   # Chinese group
 

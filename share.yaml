@@ -515,11 +515,13 @@ avatars:
 #  #user_edict:       $APPDATA/cjklib/edict.db
 #  #enamdict:         $PWD/../../Dictionaries/enamdict.db
 #  #lingoes:          $APPDATA/org.sakuradite.reader/db/lingoes
-tahscript:
-  url:              http://153.121.54.194/wiki/en/Special:Source?topic=VNR/Translation_Scripts
-  locations:
-    ja:             $PWD/../../../Caches/Dictionaries/TAHScripts/ja-ja.wiki
-    en:             $PWD/../../../Caches/Dictionaries/TAHScripts/ja-en.wiki
+
+#tahscript:
+#  url:              http://153.121.54.194/wiki/en/Special:Source?topic=VNR/Translation_Scripts
+#  locations:
+#    ja:             $PWD/../../../Caches/Dictionaries/TAHScripts/ja-ja.wiki
+#    en:             $PWD/../../../Caches/Dictionaries/TAHScripts/ja-en.wiki
+tahscript:          $PWD/../../Dictionaries/tahscript/names.txt
 
 trdb:
   baidu:            $PWD/../../../Caches/Translations/Baidu
