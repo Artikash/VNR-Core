@@ -5,17 +5,13 @@
 
 int main()
 {
-  QRegExp re("x");
-  QString t = "xxx111xxx";
-  qDebug () << t.remove(re);
-  return 0;
   qDebug() << "enter";
 
   //wchar_t ws[] = L"裕輔なら、問題なく対処してくれるだろう。";
   wchar_t ws[] = L"「いなさそうですっ」";
   QString text = QString::fromWCharArray(ws);
 
-  QString path = "../../../../Caches/Dictionaries/TAHScripts/ja-ja.wiki";
+  QString path = "../../../Dictionaries/tahscript/names.txt";
 
   TahScriptManager m;
   m.loadFile(path);
