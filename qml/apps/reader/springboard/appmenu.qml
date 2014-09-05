@@ -50,17 +50,17 @@ Item {
       enabled: statusPlugin_.online
       onTriggered: datamanPlugin_.updateTerms()
     }
-    Desktop.MenuItem {
-      text: My.tr("Update Translation Scripts")
-      enabled: statusPlugin_.online
-      onTriggered: datamanPlugin_.updateTranslationScripts()
-    }
-    Desktop.Separator {}
-    Desktop.MenuItem {
-      text: My.tr("Reload Translation Scripts")
-      enabled: statusPlugin_.online
-      onTriggered: datamanPlugin_.reloadTranslationScripts()
-    }
+    //Desktop.MenuItem {
+    //  text: My.tr("Update Translation Scripts")
+    //  enabled: statusPlugin_.online
+    //  onTriggered: datamanPlugin_.updateTranslationScripts()
+    //}
+    //Desktop.Separator {}
+    //Desktop.MenuItem {
+    //  text: My.tr("Reload Translation Scripts")
+    //  enabled: statusPlugin_.online
+    //  onTriggered: datamanPlugin_.reloadTranslationScripts()
+    //}
     Desktop.Separator {}
     Desktop.MenuItem {
       text: My.tr("Game Board")

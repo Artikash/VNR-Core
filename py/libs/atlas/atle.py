@@ -168,7 +168,8 @@ class Loader(object):
 
 if __name__ == '__main__': # DEBUG
   import os
-  os.environ['PATH'] += os.pathsep + r"C:\Program Files\ATLAS V14"
+  #os.environ['PATH'] += os.pathsep + r"C:\Program Files\ATLAS V14"
+  os.environ['PATH'] += os.pathsep + r"C:\Applications\ATLAS V14"
 
   l = Loader()
   l.init()

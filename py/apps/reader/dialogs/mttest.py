@@ -347,7 +347,14 @@ class _MTTester(object):
     ret.setEditable(False)
     ret.addItems([it['name'] for it in trtraits.TRAITS])
     ret.setMaxVisibleItems(ret.count())
+    ret.currentIndexChanged.connect(self._onTranslatorChanged)
     return ret
+
+  def _onTranslatorChanged(self):
+    atlas = self._currentTranslator() == 'atlas'
+    self.normalizedTextButton.setEnabled(atlas)
+    self.normalizedTextLabel.setEnabled(atlas)
+    self.normalizedTextEdit.setEnabled(atlas)
 
   @memoizedproperty
   def fromLanguageEdit(self):
@@ -536,13 +543,18 @@ class _MTTester(object):
   def normalizedTextButton(self):
     ret = QtWidgets.QCheckBox();
     ret.setChecked(True)
+    ret.setEnabled(False)
     return ret
   @memoizedproperty
   def normalizedTextLabel(self):
-    return self._createTextLabel(self.normalizedTextEdit, my.tr("Apply translation scripts") + _LANGUAGE_STAR)
+    ret = self._createTextLabel(self.normalizedTextEdit, my.tr("Apply ATLAS TAH script"))
+    ret.setEnabled(False)
+    return ret
   @memoizedproperty
   def normalizedTextEdit(self):
-    return self._createTextView(my.tr("Rewrite Japanese according to the rules in the translation scripts"))
+    ret = self._createTextView(my.tr("Rewrite Japanese according to the rules in TAH script"))
+    ret.setEnabled(False)
+    return ret
 
   @memoizedproperty
   def sourceTextLabel(self):

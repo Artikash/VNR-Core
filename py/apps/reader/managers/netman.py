@@ -1529,53 +1529,53 @@ class _NetworkManager(object):
     except: pass
     return False
 
-  @staticmethod
-  def _parseTranslationScripts(h, begin, end):
-    """
-    @param  h  str  html
-    @param  begin  str
-    @param  end  str
-    @return  unicode
-    """
-    ENCODING = 'utf8'
-    start = h.find(begin)
-    if start > 0:
-      start += len(begin)
-      stop = h.find(end, start)
-      if stop > 0:
-        h = h[start:stop]
-        h = h.decode(ENCODING, errors='ignore')
-        h = skstr.unescapehtml(h)
-        dprint("line number = %s" % len(h))
-        return h
+  #@staticmethod
+  #def _parseTranslationScripts(h, begin, end):
+  #  """
+  #  @param  h  str  html
+  #  @param  begin  str
+  #  @param  end  str
+  #  @return  unicode
+  #  """
+  #  ENCODING = 'utf8'
+  #  start = h.find(begin)
+  #  if start > 0:
+  #    start += len(begin)
+  #    stop = h.find(end, start)
+  #    if stop > 0:
+  #      h = h[start:stop]
+  #      h = h.decode(ENCODING, errors='ignore')
+  #      h = skstr.unescapehtml(h)
+  #      dprint("line number = %s" % len(h))
+  #      return h
 
-  def getTranslationScripts(self):
-    """
-    @return  {str key:unicode contents}
-    """
-    markers = (
-      ('ja', ("TAH SCRIPT JA-JA BEGIN", "TAH SCRIPT JA-JA END")),
-      ('en', ("TAH SCRIPT JA-EN BEGIN", "TAH SCRIPT JA-EN END")),
-    )
-    try:
-      r = session.get(config.TAHSCRIPT_URL, headers=GZIP_HEADERS)
-      if r.ok:
-        h = r.content
-        if h:
-          return {k:self._parseTranslationScripts(h, *args) for k,args in markers}
+  #def getTranslationScripts(self):
+  #  """
+  #  @return  {str key:unicode contents}
+  #  """
+  #  markers = (
+  #    ('ja', ("TAH SCRIPT JA-JA BEGIN", "TAH SCRIPT JA-JA END")),
+  #    ('en', ("TAH SCRIPT JA-EN BEGIN", "TAH SCRIPT JA-EN END")),
+  #  )
+  #  try:
+  #    r = session.get(config.TAHSCRIPT_URL, headers=GZIP_HEADERS)
+  #    if r.ok:
+  #      h = r.content
+  #      if h:
+  #        return {k:self._parseTranslationScripts(h, *args) for k,args in markers}
 
-    #except socket.error, e:
-    #  dwarn("socket error", e.args)
-    except requests.ConnectionError, e:
-      dwarn("connection error", e.args)
-    except requests.HTTPError, e:
-      dwarn("http error", e.args)
-    except Exception, e:
-      derror(e)
+  #  #except socket.error, e:
+  #  #  dwarn("socket error", e.args)
+  #  except requests.ConnectionError, e:
+  #    dwarn("connection error", e.args)
+  #  except requests.HTTPError, e:
+  #    dwarn("http error", e.args)
+  #  except Exception, e:
+  #    derror(e)
 
-    dwarn("failed URL follows")
-    try: dwarn(r.url)
-    except: pass
+  #  dwarn("failed URL follows")
+  #  try: dwarn(r.url)
+  #  except: pass
 
 class NetworkManager(QObject):
   """All methods are stateless and thread-safe"""
@@ -1818,12 +1818,12 @@ class NetworkManager(QObject):
 
   ## Wiki ##
 
-  def getTranslationScripts(self):
-    """
-    @return  {str key:unicode contents} or None
-    """
-    if self.isOnline():
-      return skthreads.runsync(self.__d.getTranslationScripts, parent=self)
+  #def getTranslationScripts(self):
+  #  """
+  #  @return  {str key:unicode contents} or None
+  #  """
+  #  if self.isOnline():
+  #    return skthreads.runsync(self.__d.getTranslationScripts, parent=self)
 
   ## Terms ##
 
