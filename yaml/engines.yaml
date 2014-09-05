@@ -24,6 +24,7 @@ psp:
     - Alchemist2 PSP
     - Broccoli PSP
     - CYBERFRONT PSP
+    - FELISTELLA PSP
     - Intense PSP
     - Imageepoch PSP
     - Imageepoch2 PSP
@@ -131,6 +132,7 @@ simple:
   - EAGLS
   - Elf
   - Eushully
+  - FELISTELLA PSP
   - Intense PSP
   - Imageepoch2 PSP
   - KID PSP
@@ -387,6 +389,7 @@ utf8:
   - sceCccUTF8toSJIS
   - sceCccUTF8toUTF16
   # Engine
+  - FELISTELLA PSP
   - Imageepoch PSP
   - Imageepoch2 PSP
   - YukaSystem2
