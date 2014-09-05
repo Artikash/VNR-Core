@@ -1772,7 +1772,7 @@ class _MachineTranslationTab(object):
     layout.addWidget(self.tahButton)
     layout.addWidget(self.tahInfoLabel)
     #layout.addStretch()
-    ret = QtWidgets.QGroupBox(my.tr("ATLAS TAH script"))
+    ret = QtWidgets.QGroupBox(my.tr("ATLAS Japanese-English TAH script"))
     ret.setLayout(layout)
 
     ss = settings.global_()
