@@ -142,7 +142,7 @@ bool TahScriptManager::loadFile(const QString &path)
   QTextStream in(&file);
   in.setCodec("UTF-8"); // enforce UTF-8
   while (!in.atEnd()) {
-    QString line = in.readLine().trimmed();
+    QString line = in.readLine().trimmed(); // trim the ending new line char
     if (!line.isEmpty())
       switch (line[0].unicode()) {
       case TAHSCRIPT_COMMENT_CHAR1:
@@ -151,13 +151,11 @@ bool TahScriptManager::loadFile(const QString &path)
         break;
       default:
         int index = line.indexOf(TAHSCRIPT_RULE_DELIM);
-        if (index <= -1) {
-          DOUT("failed to parse line:" << line);
-          continue;
-        }
-        lines.push_back(std::make_pair(
-            line.left(index).trimmed(),
-            line.mid(index + TAHSCRIPT_RULE_DELIM_LEN).trimmed()));
+        QString left = line.left(index), //.trimmed()
+                right;
+        if (index != -1)
+          right = line.mid(index + TAHSCRIPT_RULE_DELIM_LEN);
+        lines.push_back(std::make_pair(left, right));
       }
   }
   file.close();
