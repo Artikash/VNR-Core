@@ -263,7 +263,7 @@ class _MainObject(object):
     import ocrman
     ret = ocrman.manager()
     ret.setParent(self.q)
-    ret.textReceived.connect(self.textPopup.showPopup)
+    ret.textReceived.connect(self.ocrPopup.showPopup)
 
     ss = settings.global_()
     ret.setEnabled(features.ADMIN != False and ss.isOcrEnabled() and ret.isInstalled())
@@ -818,9 +818,9 @@ class _MainObject(object):
     return kagami.GrimoireController(self.q)
 
   @memoizedproperty
-  def textPopup(self):
+  def ocrPopup(self):
     import kagami
-    return kagami.TextPopupController() #(self.q)
+    return kagami.OcrPopupController() #(self.q)
 
   @memoizedproperty
   def omajinai(self):
