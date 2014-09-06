@@ -6958,7 +6958,9 @@ bool InsertPPSSPPHooks()
     ConsoleOutput("vnreng: failed to get PPSSPP version");
 
   InsertPPSSPPHLEHooks();
-  InsertOtomatePPSSPPHook();
+
+  if (PPSSPP_VERSION[1] == 9 && PPSSPP_VERSION[2] == 9 && PPSSPP_VERSION[3] == 0) // FIXME: only works for 0.9.9.0
+    InsertOtomatePPSSPPHook();
 
   //bool engineFound = false;
   Insert5pbPSPHook();
