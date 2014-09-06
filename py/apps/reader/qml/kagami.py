@@ -21,22 +21,22 @@ import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, q
 
 ## Text popup ##
 
-class TextPopupBean(QObject):
+class OcrPopupBean(QObject):
 
   instance = None
 
   def __init__(self, parent=None):
-    super(TextPopupBean, self).__init__(parent)
-    TextPopupBean.instance = self
+    super(OcrPopupBean, self).__init__(parent)
+    OcrPopupBean.instance = self
     dprint("pass")
 
   popupRequested = Signal(unicode, unicode, int, int)  # text, language, x, y
 
-class TextPopupController:
+class OcrPopupController:
 
   def showPopup(self, text, language, x, y): # unicode, unicode, int, int
-    if TextPopupBean.instance:
-      TextPopupBean.instance.popupRequested.emit(text, language, x, y)
+    if OcrPopupBean.instance:
+      OcrPopupBean.instance.popupRequested.emit(text, language, x, y)
 
 ## Grimoire ##
 
