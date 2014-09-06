@@ -17,9 +17,11 @@ import growl, rc, termman
 @memoized
 def manager(): return OcrManager()
 
-IMAGE_FORMAT = 'png'
 OCR_MIN_WIDTH = 3
 OCR_MIN_HEIGHT = 3
+
+OCR_IMAGE_FORMAT = 'png'
+OCR_IMAGE_QUALITY = 100 # -1 or [0, 100], 100 is lossless quality
 
 @Q_Q
 class _OcrManager(object):
@@ -96,7 +98,7 @@ class _OcrManager(object):
     @return  unicode
     """
     from time import time
-    return "%s/%f.%s" % (rc.DIR_TMP_OCR, time(), IMAGE_FORMAT)
+    return "%s/%f.%s" % (rc.DIR_TMP_OCR, time(), OCR_IMAGE_FORMAT)
 
   @staticmethod
   def _capturePixmap(x, y, width, height, wid=None):
@@ -116,13 +118,13 @@ class _OcrManager(object):
       return QPixmap.grabWindow(wid, x, y, width, height)
 
   @staticmethod
-  def _savePixmap(pm, path, format=IMAGE_FORMAT, quality=-1):
+  def _savePixmap(pm, path):
     """
     @param  pm  QPixmap
     @param  path  unicode
     @return  bool
     """
-    return pm.save(path, format, quality)
+    return pm.save(path, OCR_IMAGE_FORMAT, OCR_IMAGE_QUALITY)
 
   def _readImageFile(self, path):
     """
