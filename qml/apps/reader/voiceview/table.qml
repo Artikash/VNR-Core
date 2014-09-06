@@ -23,7 +23,7 @@ Item { id: root_
   // - Private -
 
   Plugin.Tts { id: tts_ }
-  property variant ttsEngines: tts_.availableEngines().split(',')
+  property variant ttsEngines: tts_.availableEngines() ? tts_.availableEngines().split(',') : []
 
   //Component.onCompleted: {
   //  console.log(ttsEngines)

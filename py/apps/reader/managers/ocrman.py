@@ -26,7 +26,9 @@ class _OcrManager(object):
 
   def __init__(self):
     self.enabled = False # bool
-    #self.language = 'ja'
+    self.delim = '' # str
+    self.languages = [] # [str lang]
+    self.languageFlags = 0 # int
 
   @memoizedproperty
   def mouseSelector(self):
@@ -65,7 +67,8 @@ class _OcrManager(object):
     if text:
       text = termman.manager().applyOcrTerms(text)
       if text:
-        self.q.textReceived.emit(text, x, y, width, height)
+        lang = self.languages[0] if self.languages else 'ja'
+        self.q.textReceived.emit(text, lang, x, y, width, height)
         return
     growl.notify(my.tr("OCR did not recognize Japanese text"))
 
@@ -121,13 +124,15 @@ class _OcrManager(object):
     """
     return pm.save(path, format, quality)
 
-  @staticmethod
-  def _readImageFile(path):
+  def _readImageFile(self, path):
     """
     @param  path  unicode
     @return  unicode  text
     """
-    return modiocr.readtext(path, modiocr.LANG_JA) # force Japanese
+    if self.delim:
+      return self.delim.join(modiocr.readtexts(path, self.languageFlags))
+    else:
+      return modiocr.readtext(path, self.languageFlags)
 
   def readScreen(self, x, y, width, height):
     """
@@ -162,10 +167,21 @@ class OcrManager(QObject):
     super(OcrManager, self).__init__(parent)
     self.__d = _OcrManager(self)
 
-  textReceived = Signal(unicode, int, int, int, int) # text, x, y, width, height
+  textReceived = Signal(unicode, unicode, int, int, int, int) # text, language, x, y, width, height
+
+  def languages(self): return self.__d.languages
+  def setLanguages(self, v):
+    d = self.__d
+    if v != d.languages:
+      dprint(','.join(v))
+      d.languages = v
+      d.languageFlags = modiocr.locales2lang(v) or modiocr.LANG_JA # Japanese by default
 
   def isInstalled(self):
     return os.path.exists(modiocr.MODI_PATH) and modiocr.available() #and skwin.ADMIN
+
+  def isSpaceEnabled(self): return bool(self.__d.delim)
+  def setSpaceEnabled(self, v): self.__d.delim = ' ' if v else ''
 
   def isEnabled(self): return self.__d.enabled
 

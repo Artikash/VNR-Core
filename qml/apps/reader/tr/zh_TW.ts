@@ -52,10 +52,6 @@
         <source>Real-time messages from other users</source>
         <translation>來自其他同學的即時的留言</translation>
     </message>
-    <message>
-        <source>VNR&apos;s built-in web browser</source>
-        <translation type="obsolete">VNR自帶的網絡瀏覽器</translation>
-    </message>
 </context>
 <context>
     <name>cometcounter</name>
@@ -319,10 +315,6 @@
         <translation>在屏幕邊緣顯示消息</translation>
     </message>
     <message>
-        <source>Zoom popup size</source>
-        <translation type="obsolete">調整彈出辭書翻譯的大小</translation>
-    </message>
-    <message>
         <location filename="../kagami/dock.qml" line="1174"/>
         <source>G.I</source>
         <translation>光強</translation>
@@ -544,10 +536,6 @@
         <translation>保存文本位置</translation>
     </message>
     <message>
-        <source>Clear the text box</source>
-        <translation type="obsolete">清空文本框框中的文字</translation>
-    </message>
-    <message>
         <location filename="../kagami/grimoire.qml" line="413"/>
         <source>Read current Japanese game text using TTS</source>
         <translation>使用語音合成讀出當前的日文遊戲文本</translation>
@@ -622,26 +610,7 @@
     </message>
 </context>
 <context>
-    <name>inputedit</name>
-    <message>
-        <source>Shift+Enter to submit</source>
-        <translation type="obsolete">按下Shift+回車來提交</translation>
-    </message>
-    <message>
-        <source>I am sorry that I am failed to save the changes</source>
-        <translation type="obsolete">很抱歉保存變更失敗了呢</translation>
-    </message>
-    <message>
-        <source>Something might be wrong with the Internet connection</source>
-        <translation type="obsolete">也許鏈接不暢</translation>
-    </message>
-</context>
-<context>
     <name>inspector</name>
-    <message>
-        <source>Click to copy the game information to the clipboard and read the text using TTS</source>
-        <translation type="obsolete">單擊來用TTS讀出遊戲信息，並复制文本到剪貼板</translation>
-    </message>
     <message>
         <location filename="../springboard/inspector.qml" line="160"/>
         <source>Launch the game, or attach to the running game</source>
@@ -678,14 +647,6 @@
         <translation>設定</translation>
     </message>
     <message>
-        <source>Discuss</source>
-        <translation type="obsolete">討論</translation>
-    </message>
-    <message>
-        <source>Visit the discussion page online</source>
-        <translation type="obsolete">打開討論的頁面</translation>
-    </message>
-    <message>
         <location filename="../springboard/inspector.qml" line="202"/>
         <source>Show game information</source>
         <translation>顯示遊戲情報</translation>
@@ -704,14 +665,6 @@
         <location filename="../springboard/inspector.qml" line="220"/>
         <source>Remove this game from the dashboard</source>
         <translation>從Dashboard中移除這個遊戲</translation>
-    </message>
-    <message>
-        <source>Found 1 reference from {0}</source>
-        <translation type="obsolete">在{0}上找到一個鏈接</translation>
-    </message>
-    <message>
-        <source>Missing references from {0}</source>
-        <translation type="obsolete">缺少{0}上的鏈接</translation>
     </message>
 </context>
 <context>
@@ -834,21 +787,17 @@
 <context>
     <name>mirage</name>
     <message>
-        <location filename="../textreader/mirage.qml" line="299"/>
+        <location filename="../textreader/mirage.qml" line="300"/>
         <source>You can drag me to move the text box.</source>
         <translation>你可以拖動這裡來移動文本。</translation>
     </message>
     <message>
-        <source>Hide text box</source>
-        <translation type="obsolete">隱藏文本</translation>
-    </message>
-    <message>
-        <location filename="../textreader/mirage.qml" line="581"/>
+        <location filename="../textreader/mirage.qml" line="582"/>
         <source>You can drag this black bar to move the text box.</source>
         <translation>你可以拖動這個黑條條來移動文本。</translation>
     </message>
     <message>
-        <location filename="../textreader/mirage.qml" line="637"/>
+        <location filename="../textreader/mirage.qml" line="638"/>
         <source>you can drag me!</source>
         <translation>可以拖動這裡的！</translation>
     </message>
@@ -872,17 +821,6 @@
         <location filename="../voiceview/optionbar.qml" line="42"/>
         <source>Dub voices for newly discovered characters (disabled by default)</source>
         <translation>為新發現的人物姓名配音（默認無效）</translation>
-    </message>
-</context>
-<context>
-    <name>popupcomponent</name>
-    <message>
-        <source>You can drag the border to move the text box</source>
-        <translation type="obsolete">你可以通過拖動四週的邊框來移動文本框</translation>
-    </message>
-    <message>
-        <source>Translating</source>
-        <translation type="obsolete">正在翻譯中</translation>
     </message>
 </context>
 <context>
@@ -1076,6 +1014,20 @@
         <location filename="../termview.qml" line="141"/>
         <source>Type part of the pattern, text, user, language, etc, and press Enter to search</source>
         <translation>輸入需要查找的文本，翻譯，用戶名，語言等，然后按下回車搜索</translation>
+    </message>
+</context>
+<context>
+    <name>textpopup</name>
+    <message>
+        <location filename="../kagami/textpopup.qml" line="108"/>
+        <location filename="../kagami/textpopup.qml" line="409"/>
+        <source>You can drag the border to move the text box</source>
+        <translation>你可以通過拖動四週的邊框來移動文本框</translation>
+    </message>
+    <message>
+        <location filename="../kagami/textpopup.qml" line="457"/>
+        <source>Translating</source>
+        <translation>正在翻譯中</translation>
     </message>
 </context>
 <context>

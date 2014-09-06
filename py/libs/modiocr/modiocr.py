@@ -41,6 +41,40 @@ LANG_EN = 1 << 20 # miLANG_ENGLISH = 9,
 
 LANG_DEFAULT = 1 << 21 # miLANG_SYSDEFAULT = 2048
 
+LOCALE_LANG = {
+ 'ja': LANG_JA,
+ 'zh': LANG_ZHS, # use zhs as GBK covers both ja and zht
+ 'zhs': LANG_ZHS, 'zh-CN': LANG_ZHS,
+ 'zht': LANG_ZHT, 'zh-TW': LANG_ZHT,
+ 'ko': LANG_KO,
+ 'cs': LANG_CS,
+ 'da': LANG_DA,
+ 'nl': LANG_NL,
+ 'fi': LANG_FI,
+ 'fr': LANG_FR,
+ 'de': LANG_DE,
+ 'el': LANG_EL,
+ 'hu': LANG_HU,
+ 'it': LANG_IT,
+ 'nb': LANG_NB,
+ 'pl': LANG_PL,
+ 'pt': LANG_PT,
+ 'ru': LANG_RU,
+ 'es': LANG_ES,
+ 'sv': LANG_SV,
+ 'tr': LANG_TR,
+ 'en': LANG_EN,
+}
+
+def locale2lang(v): # str -> int
+  return LOCALE_LANG.get(v) or 0
+
+def locales2lang(v): # [str] -> int
+  ret = 0
+  for it in v:
+    ret |= LOCALE_LANG.get(it) or 0
+  return ret
+
 from sakurakit import skpaths
 MODI_PATH = os.path.join(skpaths.COMMONPROGRAMFILESx86, r'Microsoft Shared\MODI')
 #MODI_PATH = os.path.join(skpaths.COMMONPROGRAMFILESx86, r'Microsoft Shared\MODI\11.0')

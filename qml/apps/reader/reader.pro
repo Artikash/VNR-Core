@@ -11,6 +11,7 @@ SOURCES = \
   kagami/menubutton.qml \
   kagami/popupcomponent.qml \
   kagami/shiori.qml \
+  kagami/textpopup.qml \
   postview.qml \
   postview/postinput.qml \
   postview/posteditor.qml \

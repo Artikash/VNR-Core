@@ -30,13 +30,13 @@ class TextPopupBean(QObject):
     TextPopupBean.instance = self
     dprint("pass")
 
-  popupRequested = Signal(unicode, int, int)  # text, x, y
+  popupRequested = Signal(unicode, unicode, int, int)  # text, language, x, y
 
 class TextPopupController:
 
-  def showPopup(self, text, x, y): # unicode, int, int
+  def showPopup(self, text, language, x, y): # unicode, unicode, int, int
     if TextPopupBean.instance:
-      TextPopupBean.instance.popupRequested.emit(text, x, y)
+      TextPopupBean.instance.popupRequested.emit(text, language, x, y)
 
 ## Grimoire ##
 

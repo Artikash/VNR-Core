@@ -34,7 +34,7 @@ import main
 qmlRegisterType(main.MainObjectProxy, QML_PLUGIN, 1, 0, 'MainObjectProxy')
 
 import trman
-qmlRegisterType(trman.TranslatorBean, QML_PLUGIN, 1, 0, 'TranslatorBean')
+qmlRegisterType(trman.TranslatorQmlBean, QML_PLUGIN, 1, 0, 'TranslatorBean')
 
 import ttsman
 qmlRegisterType(ttsman.TtsQmlBean, QML_PLUGIN, 1, 0, 'Tts')

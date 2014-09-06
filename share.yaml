@@ -366,6 +366,28 @@ languages:
   # Not supported
   - th
   - ar
+  ocr: # The order is consistent with modiocr's definition
+  - ja  # 1041: Japanese - Japan
+  - zhs # 2052: Chinese (Simplified) - People's Republic of China
+  - zht # 1028: Chinese - Republic of China (Taiwan), 3076: Chinese - Hong Kong (S.A.R.)
+  - ko  # 1042: Korean - Korea
+  #- cs # 1029: Czech - Czech Republic
+  #- da # 1030: Danish - Denmark
+  - nl  # 1043: Dutch - Netherlands
+  #- fi # 1035: Finnish - Finland
+  - fr  # 1036: French - France
+  - de  # 1031: German - Germany
+  #- el # 1032: Greek - Greece
+  #- hu # 1038: Hungarian - Hungary
+  - it  # 1040: Italian - Italy
+  #- nb  # 1044: Norwegian (Bokmål) - Norway
+  - pl  # 1045: Polish - Poland
+  - pt  # 1046: Portuguese - Brazil
+  - ru  # 1049: Russian - Russia
+  #- sv # 1053: Swedish - Sweden
+  #- tr # 1055: Turkish - Turkey
+  - es  # 3082: Spanish (Modern Sort) - Spain
+  - en  # 1033: English - United States
 
 languageNames:
   ja: 日本語

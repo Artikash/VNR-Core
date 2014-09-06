@@ -1199,13 +1199,81 @@ class TtsTab(QtWidgets.QDialog):
 class _OcrTab(object):
 
   def __init__(self, q):
+    self.languageButtons = [] # [QCheckBox]
     self._createUi(q)
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.ocrGroup)
+    layout.addWidget(self.optionGroup)
+    layout.addWidget(self.languageGroup)
     layout.addStretch()
     q.setLayout(layout)
+
+    ss = settings.global_()
+    ocrEnabled = ss.isOcrEnabled() and features.ADMIN != False
+    for w in self.optionGroup, self.languageGroup:
+      w.setEnabled(ocrEnabled)
+      ss.ocrEnabledChanged.connect(w.setEnabled)
+
+  ## Options ##
+
+  @memoizedproperty
+  def optionGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.spaceButton)
+    ret = QtWidgets.QGroupBox(my.tr("Text transformation settings"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def spaceButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Insert spaces between words")
+        + " (%s: %s)" % (tr_("for example"), "Howareyou! => How are you!"))
+    ss = settings.global_()
+    ret.setChecked(ss.isOcrSpaceEnabled())
+    ret.toggled.connect(ss.setOcrSpaceEnabled)
+    return ret
+
+  ## Languages ##
+
+  @memoizedproperty
+  def languageGroup(self):
+    ss = settings.global_()
+
+    layout = QtWidgets.QVBoxLayout()
+
+    langs = frozenset(ss.ocrLanguages())
+    for lang in config.OCR_LANGUAGES:
+      b = self._createLanguageButton(lang, lang in langs)
+      layout.addWidget(b)
+
+    layout.addWidget(self.languageInfoLabel)
+
+    ret = QtWidgets.QGroupBox(my.tr("Text character languages"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def languageInfoLabel(self):
+    ret = QtWidgets.QLabel(my.tr(
+      "Characters are matched in the same order as the selected languages."
+    ))
+    ret.setWordWrap(True)
+    #ret.setOpenExternalLinks(True)
+    return ret
+
+  def _createLanguageButton(self, lang, t): # str, bool -> QCheckBox
+    ret = QtWidgets.QCheckBox(i18n.language_name(lang))
+    ret.language = lang
+    ret.setChecked(t)
+    ret.toggled.connect(self._saveLanguages)
+    self.languageButtons.append(ret)
+    return ret
+
+  def _saveLanguages(self):
+    langs = [b.language for b in self.languageButtons if b.isChecked()]
+    settings.global_().setOcrLanguages(langs)
 
   ## OCR ##
 
@@ -5264,7 +5332,7 @@ class _OcrLibraryTab(object):
     #layout.addWidget(self.modiOcrEnableButton)
 
     layout.addStretch()
-    ret = QtWidgets.QGroupBox("MODI OCR (%s, 36MB)" % tr_("Japanese"))
+    ret = QtWidgets.QGroupBox("MODI OCR (61MB)")
     ret.setLayout(layout)
     return ret
 

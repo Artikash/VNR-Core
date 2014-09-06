@@ -268,6 +268,10 @@ class _MainObject(object):
     ss = settings.global_()
     ret.setEnabled(features.ADMIN != False and ss.isOcrEnabled() and ret.isInstalled())
     ss.ocrEnabledChanged.connect(ret.setEnabled)
+    ret.setLanguages(ss.ocrLanguages())
+    ss.ocrLanguagesChanged.connect(ret.setLanguages)
+    ret.setSpaceEnabled(ss.isOcrSpaceEnabled())
+    ss.ocrSpaceEnabledChanged.connect(ret.setSpaceEnabled)
 
     return ret
 
