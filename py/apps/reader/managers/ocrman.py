@@ -72,7 +72,7 @@ class _OcrManager(object):
         lang = self.languages[0] if self.languages else 'ja'
         self.q.textReceived.emit(text, lang, x, y, width, height)
         return
-    growl.notify(my.tr("OCR did not recognize Japanese text"))
+    growl.notify(my.tr("OCR did not recognize any texts in the image"))
 
   # Mouse hook
 

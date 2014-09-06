@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="zh_CN">
+<!DOCTYPE TS>
+<TS version="2.0" language="zh_CN">
 <context>
     <name>my</name>
     <message>
@@ -549,7 +550,7 @@ Especially if you would like to translate this game.</source>
 如果可能的话，强烈建议你&lt;b&gt;调整游戏文本速度到最快&lt;/b&gt;。
 特别是当你打算翻译这个游戏的时候。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="2428"/>
         <source>Kojien (広辞苑) Japanese-Japanese dictionary</source>
         <translation>広辞苑日日字典</translation>
@@ -1091,7 +1092,7 @@ It might take a couple of seconds to complete.</source>
         <translation>你希望现在就更新吗？
 这会花费几秒钟来完成。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="2442"/>
         <source>Zhongri (日中) Japanese-Chinese dictionary</source>
         <translation>日中统合辞典</translation>
@@ -1285,7 +1286,7 @@ If yes, VNR will block all settings for this language.</source>
 它和你当前的用户语言是相同的呢。
 如果屏蔽它，VNR会屏蔽所有与这个语言有关的设定。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="3182"/>
         <source>Wadoku (和独) Japanese-German dictionary</source>
         <translation>和独日德辞书</translation>
@@ -1590,7 +1591,7 @@ VNR will automatically check for updates.</source>
 数据库可以用来帮助识别新的游戏。
 VNR会自动检查更新的。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="60"/>
         <source>&lt;h4&gt;About the account&lt;/h4&gt;
 You don&apos;t need an account to access machine translations and subtitles from others.&lt;br/&gt;
@@ -1875,7 +1876,7 @@ This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source
         <source>Game character names not found</source>
         <translation>没有找到人物的姓名</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="200"/>
         <source>&lt;h3&gt;Motivation&lt;/h3&gt;
 In VNR, game settings including user-contributed subtitles and series-specific dictionary terms
@@ -2615,7 +2616,7 @@ VNR中可以共享对游戏内容的&lt;span style=&apos;color:purple&apos;&gt;�
 需要导出字幕到XML文件，可以在【字幕编辑器】中点击【导出】按钮。
 </translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="330"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 In Text Settings and Game Wizard,
@@ -2778,7 +2779,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
         <source>Unknown game. Please try editing the game information.</source>
         <translation>未知的游戏。请尝试编辑下游戏情报。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="365"/>
         <source>The hook code is a &lt;i&gt;hash string&lt;/i&gt; encoded by the information needed to sync with specific game.
 It is not required by all the games, but is essential for some ones.
@@ -3673,7 +3674,7 @@ VNR的提取方法支持内嵌翻译到游戏中去，但是支持的游戏比IT
         <source>Do you want to enable the selected {0} items?</source>
         <translation>你想要启用{0}个选定的条目吗？</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="2420"/>
         <source>Daijirin (大辞林) Japanese-Japanese/English dictionary</source>
         <translation>大辞林日日/和英字典</translation>
@@ -3727,70 +3728,6 @@ Daijirin is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, an
         <translation>GBK和汉简明字典</translation>
     </message>
     <message>
-        <location filename="dialogs/mttest.py" line="542"/>
-        <source>Apply translation scripts</source>
-        <translation type="obsolete">使用翻译脚本</translation>
-    </message>
-    <message>
-        <location filename="dialogs/mttest.py" line="545"/>
-        <source>Rewrite Japanese according to the rules in the translation scripts</source>
-        <translation type="obsolete">使用翻译脚本中定义的规则来规范日文原文</translation>
-    </message>
-    <message>
-        <location filename="dialogs/prompt.py" line="367"/>
-        <source>Update translation scripts on Wiki</source>
-        <translation type="obsolete">更新Wiki上的翻译脚本</translation>
-    </message>
-    <message>
-        <location filename="dialogs/prompt.py" line="371"/>
-        <source>Translation scripts are updated on: {0}.
-The scripts might enhance machine translation quality.
-VNR will check for automatically updates.</source>
-        <translation type="obsolete">翻译脚本在{0}时已经更新过了。
-翻译脚本可以帮助改进机翻质量。
-VNR会自动检查更新的。</translation>
-    </message>
-    <message>
-        <location filename="managers/dataman.py" line="7766"/>
-        <source>Updating translation scripts online</source>
-        <translation type="obsolete">更新翻译脚本中</translation>
-    </message>
-    <message>
-        <location filename="managers/dataman.py" line="7771"/>
-        <source>Failed to download translation scripts online</source>
-        <translation type="obsolete">更新翻译脚本失败了</translation>
-    </message>
-    <message>
-        <location filename="managers/dataman.py" line="7781"/>
-        <source>Failed to save translation scripts to the disk</source>
-        <translation type="obsolete">保存翻译脚本失败了</translation>
-    </message>
-    <message>
-        <location filename="managers/dataman.py" line="8988"/>
-        <source>Found {0} translation rules</source>
-        <translation type="obsolete">找到{0}条翻译规则</translation>
-    </message>
-    <message>
-        <location filename="dialogs/prompt.py" line="383"/>
-        <source>Reload offline translation scripts</source>
-        <translation type="obsolete">重新载入翻译脚本</translation>
-    </message>
-    <message>
-        <location filename="dialogs/prompt.py" line="390"/>
-        <source>Do you want to reload the offline translation scripts?
-Most most most users don&apos;t need to do this.
-
-But if you have manually modified the local TAH script, you can reload it here.
-However, the local script will be overwritten by the online version on next update.
-You want have to merge your changes online in the following URL.</source>
-        <translation type="obsolete">你要重新载入本地的翻译脚本吗？
-绝大部分绝大部分同学并不需要这个操作的。
-
-除非你手动修改了本地翻译脚本，那么可以在这里重新载入它。
-但是，VNR在下次从Wiki更新数据时会覆盖掉本地脚本的。
-你最好把你在本地的修改添加到下边的Wiki中才好。</translation>
-    </message>
-    <message>
         <location filename="dialogs/_prefs.py" line="1706"/>
         <source>You can select your preferred machine translators and look-up dictionaries here. The translators and dictionaries are independent that do not require each other. Look-up dictionaries require downloading at least one offline MeCab dictionary.</source>
         <translation>你可以在这里选择想用的机器翻译软件和分词查词的字典。机翻和词典是独立的。另外，要使用字典查词的功能，至少需要安装一个离线的MeCab分词辞书才好。</translation>
@@ -3804,51 +3741,6 @@ You want have to merge your changes online in the following URL.</source>
         <location filename="dialogs/prefs.py" line="179"/>
         <source>Preferred look-up dictionaries</source>
         <translation>想用的分词和查词的字典</translation>
-    </message>
-    <message>
-        <location filename="dialogs/prefs.py" line="185"/>
-        <source>Translation replacement scripts</source>
-        <translation type="obsolete">翻译修正脚本</translation>
-    </message>
-    <message>
-        <location filename="dialogs/_prefs.py" line="1672"/>
-        <source>TAH replacement script for Japanese machine translation</source>
-        <translation type="obsolete">TAH日文机器翻译矫正脚本</translation>
-    </message>
-    <message>
-        <location filename="dialogs/_prefs.py" line="1678"/>
-        <source>Enable Japanse-Japanese correction for all languages</source>
-        <translation type="obsolete">开启对日文口语的矫正</translation>
-    </message>
-    <message>
-        <location filename="dialogs/_prefs.py" line="1685"/>
-        <source>Enable Japanese-English correction for Latin languages</source>
-        <translation type="obsolete">开启对日英翻译的矫正（日中翻译时VNR会自动禁用的）</translation>
-    </message>
-    <message>
-        <location filename="dialogs/_prefs.py" line="1715"/>
-        <source>TAH script is a set of &lt;a href=&quot;http://en.wikipedia.org/wiki/Regular_expression&quot;&gt;regular expression&lt;/a&gt; rules originally written by @errzotl to enhance ATLAS Japanese-English translation.
-But the script serves to correct and normalize spoken Japanese rather than translation.
-&lt;br/&gt;&lt;br/&gt;
-VNR&apos;s script is branched from @errzotl&apos;s 0.16 script and maintained at &lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;.
-VNR will periodically sync the local script with the online wiki.
-You usually don&apos;t want to disable this unless for debugging purpose.
-&lt;br/&gt;&lt;br/&gt;
-Normal users don&apos;t need to touch this script.
-But if you want, you can try VNR&apos;s Machine Translation Tester to see how TAH script participates in the machine translation pipeline.
-You can also edit the local translation script in caches, but it will be overwritten after the update.
-It will be better to merge your changes with the online wiki.</source>
-        <translation type="obsolete">TAH脚本是由@errzotl为提高ATLAS日英翻译而写的&lt;a href=&quot;http://zh.wikipedia.org/wiki/正则表达式&quot;&gt;正则表达式&lt;/a&gt;字符串变化脚本。
-但是，脚本本身更多的是纠正日文的不规则口语，而不是英文翻译。
-&lt;br/&gt;&lt;br/&gt;
-VNR中的脚本来自@errzotl&apos;s 0.16的版本，保存在在线的Wki上：&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;。
-VNR每个一段时间，都会自动去更新这个脚本的。
-除非为了Debug，一般情况下大家并不需要禁用这个脚本的。
-&lt;br/&gt;&lt;br/&gt;
-绝大部分同学不用理会这个脚本的。
-但是如果你想要了解这个脚本是如何参加到VNR机器翻译的pipeline中，你可以尝试VNR的【测试机器翻译】的程序。
-你也可以手动编辑本地Caches中的脚本，但是本地的修改在VNR更新词库后会丢失。
-要把本地的修改添加到VNR上边的Wiki中才好。</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="1294"/>
@@ -3870,12 +3762,12 @@ You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or d
         <translation>OCR软件的位置</translation>
     </message>
     <message>
-        <location filename="managers/ocrman.py" line="195"/>
+        <location filename="managers/ocrman.py" line="197"/>
         <source>Start OCR screen reader</source>
         <translation>开始光学文字识别</translation>
     </message>
     <message>
-        <location filename="managers/ocrman.py" line="197"/>
+        <location filename="managers/ocrman.py" line="199"/>
         <source>Stop OCR screen reader</source>
         <translation>停止光学文字识别</translation>
     </message>
@@ -3888,11 +3780,6 @@ You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or d
         <location filename="dialogs/_prefs.py" line="1311"/>
         <source>OCR requires starting VNR as administrator to work.</source>
         <translation>OCR需要用管理员权限运行VNR才可以正常工作的。</translation>
-    </message>
-    <message>
-        <location filename="managers/ocrman.py" line="73"/>
-        <source>OCR did not recognize Japanese text</source>
-        <translation>OCR没有能识别出日文</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="1303"/>
@@ -4025,6 +3912,11 @@ You can report the bugs to &lt;a href=&quot;mailto:{0}&quot;&gt;{0}&lt;/a&gt;.</
         <location filename="dialogs/_prefs.py" line="1225"/>
         <source>Text transformation settings</source>
         <translation>文本变换设定</translation>
+    </message>
+    <message>
+        <location filename="managers/ocrman.py" line="75"/>
+        <source>OCR did not recognize any texts in the image</source>
+        <translation>OCR没有能够识别出文本</translation>
     </message>
 </context>
 </TS>
