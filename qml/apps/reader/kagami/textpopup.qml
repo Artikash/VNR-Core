@@ -137,7 +137,7 @@ Item { id: root_
       function speak() {
         var text = translatedText || textEdit_.text
         if (text)
-          ttsPlugin_.speak(text, 'ja')
+          ttsPlugin_.speak(text, language)
       }
 
       function translate() {
