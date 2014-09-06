@@ -442,7 +442,9 @@ _renderSampleImage = (url) ->
   HAML_SAMPLE_IMAGE url:url
 
 renderSampleImages = (type) -> # -> int count, string html
-  l = gameBean.getSampleImages(type).split ','
+  s = gameBean.getSampleImages type
+  return [0, ''] unless s
+  l = s.split ','
   [l.length, l.map(_renderSampleImage).join('')]
 
 _renderVideo = (params) ->

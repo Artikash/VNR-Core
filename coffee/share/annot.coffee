@@ -106,12 +106,14 @@ onTranslateTip = -> # this = element
   text = @getAttribute 'annot-text'
   tip = @title
   @title = tr 'ちょっとまってて ...'
-  for key in trBean.translators().split ','
-    trans = trBean.translate(text, key) or "#{tr 'failed'}!"
-    if tip
-      tip += '\n' # does NOT work on windows, though
-    tip += key + ': ' + trans
-    @title = tip
+  s = trBean.translators()
+  if s
+    for key in s.split ','
+      trans = trBean.translate(text, key) or "#{tr 'failed'}!"
+      if tip
+        tip += '\n' # does NOT work on windows, though
+      tip += key + ': ' + trans
+      @title = tip
 
   @classList.remove 'annot-locked'
 

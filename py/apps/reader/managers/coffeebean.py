@@ -141,6 +141,6 @@ class CoffeeBeanManager(object):
   @memoizedproperty
   def trBean(self):
     import trman
-    return trman.TranslatorBean(self.parent())
+    return trman.TranslatorCoffeeBean(self.parent())
 
 # EOF

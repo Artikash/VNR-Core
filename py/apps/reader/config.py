@@ -367,6 +367,8 @@ def is_kanji_language(lang): return lang in KANJI_LANGUAGE_SET
 SJIS_LANGUAGES = SHARE_YAML['languages']['sjis']  # [str lang]
 SJIS_LANGUAGE_SET = frozenset(SJIS_LANGUAGES)
 
+OCR_LANGUAGES = SHARE_YAML['languages']['ocr']  # [str lang]
+
 LANGUAGE_SET = frozenset(LANGUAGES)
 def is_valid_language(lang):
   return lang in LANGUAGE_SET

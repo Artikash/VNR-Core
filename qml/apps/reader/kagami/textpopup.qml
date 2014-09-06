@@ -55,19 +55,19 @@ Item { id: root_
       popupRequested.connect(showPopup)
   }
 
-  function showPopup(text, x, y) { // string ->
+  function showPopup(text, lang, x, y) { // string, string, int, int ->
     var items = Local.items
     for (var i in items) {
       var item = items[i]
       if (!item.visible && !item.locked) {
         console.log("textpopup.qml:showPopup: reuse existing item")
-        item.show(text, x, y)
+        item.show(text, lang, x, y)
         return
       }
     }
     console.log("textpopup.qml:showPopup: create new item")
     var item = comp_.createObject(root_)
-    item.show(text, x, y)
+    item.show(text, lang, x, y)
     items.push(item)
   }
 
@@ -84,12 +84,15 @@ Item { id: root_
       property alias text: textEdit_.text
       property alias textWidth: textEdit_.width
 
+      property string language: 'ja'
+
       property bool locked: false // indicate whether this object is being translated
 
-      function show(text, x, y) { // string, int, int ->
+      function show(text, lang, x, y) { // string, string, int, int ->
         reset()
         item_.translatedText = ''
         item_.text = text
+        item_.language = lang //|| 'ja'
         item_.x = x
         item_.y = y
         ensureVisible()
@@ -142,21 +145,24 @@ Item { id: root_
         var text = textEdit_.text
         if (text) {
           item_.translatedText = text
-          var keys = trPlugin_.translators().split(',')
-          if (keys.length)
-            textEdit_.textFormat = TextEdit.RichText
-            for (var i in keys) {
-              var key = keys[i]
-              var tr = trPlugin_.translate(text, key)
-              if (tr && tr != text)
-                appendTranslation(tr, key)
+          var str = trPlugin_.translators(language)
+          if (str) {
+            var keys = str.split(',')
+            if (keys.length)
+              textEdit_.textFormat = TextEdit.RichText
+              for (var i in keys) {
+                var key = keys[i]
+                var tr = trPlugin_.translate(text, language, key)
+                if (tr && tr != text)
+                  appendTranslation(tr, key)
 
-              var name = My.tr(Util.translatorName(key))
-              if (i == 0)
-                toolTip_.text = name
-              else
-                toolTip_.text += ", " + name
-            }
+                var name = My.tr(Util.translatorName(key))
+                if (i == 0)
+                  toolTip_.text = name
+                else
+                  toolTip_.text += ", " + name
+              }
+          }
         }
         item_.locked = false
       }

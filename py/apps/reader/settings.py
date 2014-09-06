@@ -20,7 +20,7 @@ def to_bool(value):
 
 def to_float(value, default=0.0):
   try: return float(value)
-  except (ValueError, TypeError): return default
+  except Exception: return default
 
 def to_size(value):
   """
@@ -28,19 +28,27 @@ def to_size(value):
   @return  (int w, int h)
   """
   try: return value.width(), value.height()
-  except AttributeError: return 0,0
+  except Exception: return 0,0
+
+def to_list(value):
+  """
+  @param  value  list or None
+  @return  set
+  """
+  try: return value if isinstance(value, list) else list(value) if value is not None else list()
+  except Exception: return list()
 
 def to_set(value):
   """
-  @param  value [list] or None
+  @param  value  set or None
   @return  set
   """
   try: return value if isinstance(value, set) else set(value) if value is not None else set()
-  except TypeError: return set()
+  except Exception: return set()
 
 def to_dict(value):
   """
-  @param  dict or None
+  @param  value  dict or None
   @return  dict
   """
   return value if isinstance(value, dict) else {}
@@ -212,6 +220,20 @@ class Settings(QSettings):
     if value != self.isOcrEnabled():
       self.setValue('OcrEnabled', value)
       self.ocrEnabledChanged.emit(value)
+
+  ocrSpaceEnabledChanged = Signal(bool)
+  def isOcrSpaceEnabled(self): return to_bool(self.value('OCRSpace'))
+  def setOcrSpaceEnabled(self, value):
+    if value != self.isOcrSpaceEnabled():
+      self.setValue('OCRSpace', value)
+      self.ocrSpaceEnabledChanged.emit(value)
+
+  ocrLanguagesChanged = Signal(list)
+  def ocrLanguages(self): return to_list(self.value('OCRLanguages', ['ja','zhs','zht','en']))
+  def setOcrLanguages(self, value):
+    if value != self.ocrLanguages():
+      self.setValue('OCRLanguages', value)
+      self.ocrLanguagesChanged.emit(value)
 
   ## AppLocale ##
 

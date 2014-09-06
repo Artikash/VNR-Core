@@ -312,11 +312,14 @@ class TranslatorManager(QObject):
     """
     return self.hasOnlineTranslators() or self.hasOfflineTranslators()
 
-  def enabledEngines(self): # -> [str]
+  def enabledEngines(self, fr=''): # str -> [str]
     d = self.__d
     r = []
-    if d.hanVietEnabled: r.append('hanviet')
-    if d.jbeijingEnabled: r.append('jbeijing')
+    if d.hanVietEnabled and (not fr or fr.startswith('zh')):
+      r.append('hanviet')
+    if d.jbeijingEnabled and (not fr or fr in ('ja', 'zhs', 'zht')):
+      r.append('jbeijing')
+
     if d.dreyeEnabled: r.append('dreye')
     if d.ezTransEnabled: r.append('eztrans')
     if d.lecEnabled: r.append('lec')
@@ -452,20 +455,33 @@ def manager(): return TranslatorManager()
 #def translate(*args, **kwargs):
 #  return manager().translate(*args, **kwargs)
 
-# Bean for both coffee and QML code
-class TranslatorBean(QObject):
+class TranslatorCoffeeBean(QObject):
   def __init__(self, parent=None):
-    super(TranslatorBean, self).__init__(parent)
+    super(TranslatorCoffeeBean, self).__init__(parent)
 
   @Slot(result=unicode)
-  def translators(self): # [str translator_name]
+  def translators(self): # -> [str translator_name]
     return ','.join(manager().enabledEngines())
 
   @Slot(unicode, unicode, result=unicode)
   def translate(self, text, engine):
     # I should not hardcode fr = 'ja' here
     # Force async
-    return manager().translate(text, engine=engine, fr='ja', async=True) or ''
+    return manager().translate(text, engine=engine, async=True) or ''
+
+class TranslatorQmlBean(QObject):
+  def __init__(self, parent=None):
+    super(TranslatorQmlBean, self).__init__(parent)
+
+  @Slot(unicode, result=unicode)
+  def translators(self, language): # str -> [str translator_name]
+    return ','.join(manager().enabledEngines(language))
+
+  @Slot(unicode, unicode, unicode, result=unicode)
+  def translate(self, text, language, engine):
+    # I should not hardcode fr = 'ja' here
+    # Force async
+    return manager().translate(text, engine=engine, fr=language, async=True) or ''
 
 # EOF
 
