@@ -7,8 +7,7 @@ int main()
 {
   qDebug() << "enter";
 
-  //wchar_t ws[] = L"裕輔なら、問題なく対処してくれるだろう。";
-  wchar_t ws[] = L"「いなさそうですっ」";
+  wchar_t ws[] = L"test";
   QString text = QString::fromWCharArray(ws);
 
   QString path = "../../../Dictionaries/tahscript/names.txt";
