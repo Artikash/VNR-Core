@@ -24,7 +24,8 @@ enum { MAX_REL_ADDR = 0x200000 }; // jichi 8/18/2013: maximum relative address
 
 namespace Engine {
 
-WCHAR process_name_[MAX_PATH]; // cached
+WCHAR process_name_[MAX_PATH], // cached
+      process_path_[MAX_PATH]; // cached
 
 DWORD module_base_,
       module_limit_;
@@ -691,6 +692,7 @@ DWORD IdentifyEngine()
 void Engine::init(HANDLE hModule)
 {
   Util::GetProcessName(process_name_); // Initialize process name
+  Util::GetProcessPath(process_path_); // Initialize process path
   ::RegisterEngineModule((DWORD)hModule, (DWORD)IdentifyEngine, (DWORD)InsertDynamicHook);
 }
 

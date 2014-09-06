@@ -23,7 +23,7 @@ DWORD FindModuleBase(DWORD hash);
 bool SearchResourceString(LPCWSTR str);
 
 /**
- *  @param  name
+ *  @param  name  process name without path deliminator
  */
 inline void GetProcessName(wchar_t *name)
 {
@@ -36,7 +36,24 @@ inline void GetProcessName(wchar_t *name)
     mov eax,[eax+0xc]
     mov it,eax
   }
-  wcscpy(name, it->BaseDllName.Buffer);
+  ::wcscpy(name, it->BaseDllName.Buffer);
+}
+
+/**
+ *  @param  path with process name and directy name
+ */
+inline void GetProcessPath(wchar_t *path)
+{
+  //assert(path);
+  PLDR_DATA_TABLE_ENTRY it;
+  __asm
+  {
+    mov eax,fs:[0x30]
+    mov eax,[eax+0xc]
+    mov eax,[eax+0xc]
+    mov it,eax
+  }
+  ::wcscpy(path, it->FullDllName.Buffer);
 }
 
 /**

@@ -11,7 +11,8 @@ struct HookParam; // defined in ith types.h
 namespace Engine {
 
 // Global variables
-extern wchar_t process_name_[MAX_PATH]; // cached
+extern wchar_t process_name_[MAX_PATH], // cached
+               process_path_[MAX_PATH]; // cached
 extern DWORD module_base_,
              module_limit_;
 
@@ -39,8 +40,6 @@ void SpecialPSPHook(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DW
 bool InsertPPSSPPHooks();        // PPSSPPWindows
 
 bool InsertPPSSPPHLEHooks();
-
-bool InsertPPSSPP099Hooks();
 bool InsertOtomatePPSSPPHook(); // PSP otomate.jp, 0.9.9 only
 
 bool Insert5pbPSPHook();        // PSP 5pb.jp

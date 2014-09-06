@@ -16,6 +16,7 @@
 #include "memdbg/memsearch.h"
 #include "ntinspect/ntinspect.h"
 #include "disasm/disasm.h"
+#include "winversion/winversion.h"
 #include "cc/ccmacro.h"
 
 // jichi 7/6/2014: read esp_base
@@ -75,7 +76,7 @@ int GetHookDataLength(const HookParam &hp, DWORD base, DWORD in)
 
 namespace { // unnamed helpers
 
-int PPSSPP_VERSION = 98; // 0.9.8 by default
+int PPSSPP_VERSION[4] = { 0, 9, 8, 0 }; // 0.9.8 by default
 
 enum : DWORD {
   PPSSPP_MEMORY_SEARCH_STEP_98 = 0x01000000
@@ -167,7 +168,7 @@ inline ULONG SafeMatchBytesInGCMemory(LPCVOID pattern, DWORD patternSize)
 
 inline ULONG SafeMatchBytesInPSPMemory(LPCVOID pattern, DWORD patternSize, DWORD start = MemDbg::MappedMemoryStartAddress, DWORD stop = MemDbg::MemoryStopAddress)
 {
-  ULONG step = PPSSPP_VERSION == 98 ? PPSSPP_MEMORY_SEARCH_STEP_98 : PPSSPP_MEMORY_SEARCH_STEP_99;
+  ULONG step = PPSSPP_VERSION[1] == 9 && PPSSPP_VERSION[2] == 8 ? PPSSPP_MEMORY_SEARCH_STEP_98 : PPSSPP_MEMORY_SEARCH_STEP_99;
   return _SafeMatchBytesInMappedMemory(pattern, patternSize, XX, start, stop, step);
 }
 
@@ -6906,11 +6907,6 @@ struct PPSSPPFunction
 
 } // unnamed namespace
 
-bool InsertPPSSPP099HLEHooks()
-{
-  return InsertOtomatePPSSPPHook();
-}
-
 bool InsertPPSSPPHLEHooks()
 {
   ConsoleOutput("vnreng: PPSSPP HLE: enter");
@@ -6958,14 +6954,11 @@ bool InsertPPSSPPHooks()
 {
   ConsoleOutput("vnreng: PPSSPP: enter");
 
+  if (!WinVersion::queryFileVersion(process_path_, PPSSPP_VERSION))
+    ConsoleOutput("vnreng: failed to get PPSSPP version");
+
   InsertPPSSPPHLEHooks();
-
-  if (InsertPPSSPP099HLEHooks()) {
-    PPSSPP_VERSION = 99;
-
-    ConsoleOutput("vnreng: PPSSPP version = 0.9.9");
-  } else
-    ConsoleOutput("vnreng: PPSSPP version = 0.9.8");
+  InsertOtomatePPSSPPHook();
 
   //bool engineFound = false;
   Insert5pbPSPHook();
@@ -6978,7 +6971,7 @@ bool InsertPPSSPPHooks()
   //InsertKadokawaNamePSPHook(); // disabled
   InsertKonamiPSPHook();
 
-  if (PPSSPP_VERSION != 99) { // only works for 0.9.8 anyway
+  if (PPSSPP_VERSION[1] == 9 && PPSSPP_VERSION[2] == 8) { // only works for 0.9.8 anyway
     InsertNippon1PSPHook();
     InsertNippon2PSPHook(); // This could crash PPSSPP 099 just like 5pb
   }
@@ -7514,7 +7507,7 @@ bool Insert5pbPSPHook()
   enum { hook_offset = sizeof(bytes) - memory_offset };
 
   enum : DWORD { start = MemDbg::MappedMemoryStartAddress };
-  DWORD stop = PPSSPP_VERSION == 99 ? 0x15000000 : MemDbg::MemoryStopAddress;
+  DWORD stop = PPSSPP_VERSION[1] == 9 && PPSSPP_VERSION[2] == 8 ? MemDbg::MemoryStopAddress : 0x15000000;
   DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes), start, stop);
   //ITH_GROWL_DWORD(addr);
   if (!addr)

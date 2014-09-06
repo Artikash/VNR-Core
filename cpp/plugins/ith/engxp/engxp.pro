@@ -10,6 +10,7 @@ include($$LIBDIR/disasm/disasm.pri)
 include($$LIBDIR/memdbg/memdbg.pri)
 include($$LIBDIR/ntinspect/ntinspect.pri)
 include($$LIBDIR/winseh/winseh_safe.pri)
+include($$LIBDIR/winversion/winversion.pri)
 
 VPATH += ../eng
 INCLUDEPATH += ../eng
