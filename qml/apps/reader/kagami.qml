@@ -980,7 +980,7 @@ Item { id: root_
       }
     }
 
-    Kagami.TextPopup { id: popup_
+    Kagami.OcrPopup { id: popup_
       anchors.fill: parent
       globalZoomFactor: root_.globalZoomFactor
       ignoresFocus: root_.ignoresFocus

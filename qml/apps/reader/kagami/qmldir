@@ -12,5 +12,5 @@ Grimoire        grimoire.qml
 Growl           growl.qml
 MenuButton      menubutton.qml
 NoteView        noteview.qml
+OcrPopup        ocrpopup.qml
 Shiori          shiori.qml
-TextPopup       textpopup.qml

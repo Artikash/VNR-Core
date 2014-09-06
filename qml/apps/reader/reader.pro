@@ -9,9 +9,9 @@ SOURCES = \
   kagami/dock.qml \
   kagami/grimoire.qml \
   kagami/menubutton.qml \
+  kagami/ocrpopup.qml \
   kagami/popupcomponent.qml \
   kagami/shiori.qml \
-  kagami/textpopup.qml \
   postview.qml \
   postview/postinput.qml \
   postview/posteditor.qml \

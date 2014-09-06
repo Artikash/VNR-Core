@@ -816,6 +816,20 @@
     </message>
 </context>
 <context>
+    <name>ocrpopup</name>
+    <message>
+        <location filename="../kagami/ocrpopup.qml" line="108"/>
+        <location filename="../kagami/ocrpopup.qml" line="409"/>
+        <source>You can drag the border to move the text box</source>
+        <translation>你可以通过拖动四周的边框来移动文本框</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocrpopup.qml" line="457"/>
+        <source>Translating</source>
+        <translation>正在翻译中</translation>
+    </message>
+</context>
+<context>
     <name>optionbar</name>
     <message>
         <location filename="../voiceview/optionbar.qml" line="42"/>
@@ -1014,20 +1028,6 @@
         <location filename="../termview.qml" line="141"/>
         <source>Type part of the pattern, text, user, language, etc, and press Enter to search</source>
         <translation>输入需要查找的文本，翻译，用户名，语言等，然后按下回车搜索</translation>
-    </message>
-</context>
-<context>
-    <name>textpopup</name>
-    <message>
-        <location filename="../kagami/textpopup.qml" line="108"/>
-        <location filename="../kagami/textpopup.qml" line="409"/>
-        <source>You can drag the border to move the text box</source>
-        <translation>你可以通过拖动四周的边框来移动文本框</translation>
-    </message>
-    <message>
-        <location filename="../kagami/textpopup.qml" line="457"/>
-        <source>Translating</source>
-        <translation>正在翻译中</translation>
     </message>
 </context>
 <context>
