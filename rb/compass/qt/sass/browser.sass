@@ -106,6 +106,10 @@ $hover-border-color: #7da8e6 // bluer, emulate bootstrap border
 
 /** Toolbar style */
 
+$toolbar-button-width: 24px // large enough so that all buttons are visible
+$toolbar-nav-count: 6 // number of buttons in the left navigation bar
+$toolbar-opt-count: 5 // number of buttons in the right option bar
+
 =toolbar-aero-style($foreground-color, $background-color, $border-color)
   // Address toolbar
   QToolBar.webkit.toolbar
@@ -114,9 +118,9 @@ $hover-border-color: #7da8e6 // bluer, emulate bootstrap border
     border-radius: 4px
 
     &.toolbar-nav
-      min-width: 80px
+      min-width: $toolbar-button-width * $toolbar-nav-count
     &.toolbar-opt
-      min-width: 40px
+      min-width: $toolbar-button-width * $toolbar-opt-count
 
     QToolButton
       color: $foreground-color
@@ -149,9 +153,9 @@ $hover-border-color: #7da8e6 // bluer, emulate bootstrap border
     background-color: rgba($background-color, 0.5)
 
     &.toolbar-nav
-      min-width: 80px
+      min-width: $toolbar-button-width * $toolbar-nav-count
     &.toolbar-opt
-      min-width: 40px
+      min-width: $toolbar-button-width * $toolbar-opt-count
 
     QToolButton
       color: $foreground-color

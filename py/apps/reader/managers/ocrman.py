@@ -12,7 +12,7 @@ from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from modiocr import modiocr
 from mytr import my
-import growl, rc, termman, winman
+import growl, rc, termman, windows, winman
 
 @memoized
 def manager(): return OcrManager()
@@ -42,6 +42,7 @@ class _OcrManager(object):
   def mouseSelector(self):
     from mousesel import mousesel
     ret = mousesel.global_()
+    ret.setParentWidget(windows.top())
     ret.pressed.connect(self._onPressed, Qt.QueuedConnection)
     ret.selected.connect(self._onRectSelected)
 
@@ -69,6 +70,7 @@ class _OcrManager(object):
     """
     self.pressedX = x
     self.pressedY = y
+    windows.raise_top_window()
 
   def _onRectSelected(self, x, y, width, height):
     """

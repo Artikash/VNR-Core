@@ -47,6 +47,7 @@ MouseSelectorPrivate::~MouseSelectorPrivate()
 void MouseSelectorPrivate::createRubberBand()
 {
   rb = new MouseRubberBand(QRubberBand::Rectangle, parentWidget);
+  rb->setWindowFlags(rb->windowFlags() | Qt::Popup); // needed when parentWidget is not nullptr
   q_->connect(rb, SIGNAL(selected(int,int,int,int)), SIGNAL(selected(int,int,int,int)),
       Qt::QueuedConnection); // use queued connection to leave mouse event loop
 }
@@ -100,15 +101,15 @@ bool MouseSelectorPrivate::onMouseRelease(int x, int y, void *wid)
 MouseSelector::MouseSelector(QObject *parent) : Base(parent), d_(new D(this)) {}
 MouseSelector::~MouseSelector() { delete d_; }
 
-//QWidget *MouseSelector::parentWidget() const { return d_->parentWidget; }
-//void MouseSelector::setParentWidget(QWidget *v)
-//{
-//  if (d_->parentWidget != v) {
-//    d_->parentWidget = v;
-//    if (d_->rb)
-//      d_->rb->setParent(v);
-//  }
-//}
+QWidget *MouseSelector::parentWidget() const { return d_->parentWidget; }
+void MouseSelector::setParentWidget(QWidget *v)
+{
+  if (d_->parentWidget != v) {
+    d_->parentWidget = v;
+    if (d_->rb)
+      d_->rb->setParent(v);
+  }
+}
 
 int MouseSelector::comboKey() const
 { return d_->comboKey; }

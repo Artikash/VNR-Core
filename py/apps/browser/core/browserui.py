@@ -285,6 +285,14 @@ class _WebBrowser(object):
     a = ret.addAction(u"←") # ひだり
     a.triggered.connect(self.undoCloseTab)
     a.setToolTip(u"%s (Ctrl+Shift+T, %s: ←→)" % (i18n.tr("Undo close tab"), i18n.tr("Gesture")))
+
+    a = ret.addAction(u"＋") # fullwidth +
+    a.triggered.connect(self.zoomIn)
+    a.setToolTip(u"%s (Ctrl+=)" % tr_("Zoom In"))
+
+    a = ret.addAction(u"ー") # fullwidth -
+    a.triggered.connect(self.zoomIn)
+    a.setToolTip(u"%s (Ctrl+-)" % tr_("Zoom Out"))
     return ret
 
   @memoizedproperty
@@ -682,6 +690,14 @@ class _WebBrowser(object):
     w = self.tabWidget.currentWidget()
     if w:
       w.reload()
+  def zoomIn(self):
+    w = self.tabWidget.currentWidget()
+    if w:
+      w.zoomIn()
+  def zoomOut(self):
+    w = self.tabWidget.currentWidget()
+    if w:
+      w.zoomOut()
 
   def currentTabTitle(self): # -> unicode
     w = self.tabWidget.currentWidget()

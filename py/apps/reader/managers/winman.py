@@ -6,17 +6,14 @@ from PySide.QtCore import Slot
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skwinobj import SkWindowObject
-
-def _raise_window():
-  import windows
-  windows.top().bringWindowToTop()
+import windows
 
 class WindowObject(SkWindowObject):
   def __init__(self, *args, **kwargs):
     super(WindowObject, self).__init__(*args, **kwargs)
     self.referenceCount = 1 # int
     #self.visibleChanged.connect(_raise_window) # make sure ocr popup is on top
-    self.minimizedChanged.connect(_raise_window) # make sure ocr popup is on top
+    self.minimizedChanged.connect(windows.raise_top_window) # make sure ocr popup is on top
 
   @Slot()
   def release(self): manager().releaseWindowObject(self)

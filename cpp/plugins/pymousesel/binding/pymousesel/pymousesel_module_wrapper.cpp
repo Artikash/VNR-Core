@@ -32,6 +32,8 @@ void init_MouseSelector(PyObject* module);
 // Required modules' type and converter arrays.
 PyTypeObject** SbkPySide_QtCoreTypes;
 SbkConverter** SbkPySide_QtCoreTypeConverters;
+PyTypeObject** SbkPySide_QtGuiTypes;
+SbkConverter** SbkPySide_QtGuiTypeConverters;
 
 // Module initialization ------------------------------------------------------------
 // Container Type converters.
@@ -245,6 +247,14 @@ SBK_MODULE_INIT_FUNCTION_BEGIN(pymousesel)
             return SBK_MODULE_INIT_ERROR;
         SbkPySide_QtCoreTypes = Shiboken::Module::getTypes(requiredModule);
         SbkPySide_QtCoreTypeConverters = Shiboken::Module::getTypeConverters(requiredModule);
+    }
+
+    {
+        Shiboken::AutoDecRef requiredModule(Shiboken::Module::import("PySide.QtGui"));
+        if (requiredModule.isNull())
+            return SBK_MODULE_INIT_ERROR;
+        SbkPySide_QtGuiTypes = Shiboken::Module::getTypes(requiredModule);
+        SbkPySide_QtGuiTypeConverters = Shiboken::Module::getTypeConverters(requiredModule);
     }
 
     // Create an array of wrapper types for the current module.
