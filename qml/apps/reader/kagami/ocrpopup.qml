@@ -55,19 +55,19 @@ Item { id: root_
       popupRequested.connect(showPopup)
   }
 
-  function showPopup(text, lang, x, y, winobj) { // string, string, int, int ->
+  function showPopup(text, lang, x, y, imgobj, winobj) { // string, string, int, int, OcrImageObject, WindowObject ->
     var items = Local.items
     for (var i in items) {
       var item = items[i]
       if (!item.visible && !item.locked) {
         console.log("ocrpopup.qml:showPopup: reuse existing item")
-        item.show(text, lang, x, y, winobj)
+        item.show(text, lang, x, y, imgobj, winobj)
         return
       }
     }
     console.log("ocrpopup.qml:showPopup: create new item")
     var item = comp_.createObject(root_)
-    item.show(text, lang, x, y, winobj)
+    item.show(text, lang, x, y, imgobj, winobj)
     items.push(item)
   }
 
@@ -88,13 +88,15 @@ Item { id: root_
 
       property bool locked: false // indicate whether this object is being translated
 
-      property QtObject window // window proxy object
+      property QtObject window // WindowObject  window proxy
+      property QtObject image // OcrImageObject  ocr controller
 
-      function show(text, lang, x, y, window) { // string, string, int, int, QObject ->
+      function show(text, lang, x, y, image, window) { // string, string, int, int, OcrImageObject, WindowObject ->
         reset()
-        item_.translatedText = ''
-        item_.text = text
+        item_.text = text || ('(' + Sk.tr('empty') + ')')
         item_.language = lang //|| 'ja'
+
+        item_.image = image
 
         item_.window = window
 
@@ -115,6 +117,18 @@ Item { id: root_
 
       // - Private -
 
+      function release() {
+        releaseWindow()
+        releaseImage()
+      }
+
+      function releaseImage() {
+        if (image) {
+          image.release()
+          image = null
+        }
+      }
+
       function releaseWindow() {
         if (window) {
           window.visibleChanged.disconnect(setVisible)
@@ -128,7 +142,7 @@ Item { id: root_
       //property bool hidden: true
       //visible: !hidden && (!window || window.visible)
 
-      onVisibleChanged: if (!visible) releaseWindow()
+      onVisibleChanged: if (!visible) release()
 
       property int relativeX
       property int relativeY
@@ -172,7 +186,9 @@ Item { id: root_
         textEdit_.textFormat = TextEdit.PlainText
         textWidth = _DEFAULT_WIDTH
 
-        releaseWindow()
+        translatedText = ''
+
+        release()
       }
 
       Component.onCompleted: console.log("ocrpopup.qml:onCompleted: pass")
