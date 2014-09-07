@@ -15,6 +15,9 @@ def top(): return TopWindow()
 @memoized
 def normal(): return NormalWindow()
 
+def raise_top_window(): top().bringWindowToTop()
+def raise_normal_window(): normal().bringWindowToTop()
+
 class _Window(QWidget):
 
   def __init__(self, parent=None, f=0):

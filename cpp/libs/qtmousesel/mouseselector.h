@@ -21,8 +21,8 @@ public:
   explicit MouseSelector(QObject *parent = nullptr);
   ~MouseSelector();
 
-  //QWidget *parentWidget() const;
-  //void setParentWidget(QWidget *parentWidget);
+  QWidget *parentWidget() const;
+  void setParentWidget(QWidget *parentWidget);
 
   bool isEnabled() const; // default false
   void setEnabled(bool t);

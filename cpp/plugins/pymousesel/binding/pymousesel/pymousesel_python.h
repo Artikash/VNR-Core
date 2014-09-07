@@ -13,28 +13,29 @@
 #include <pysidesignal.h>
 // Module Includes
 #include <pyside_qtcore_python.h>
+#include <pyside_qtgui_python.h>
 
 // Binded library includes
 #include <mouseselector.h>
 // Conversion Includes - Primitive Types
+#include <QStringList>
+#include <qabstractitemmodel.h>
 #include <QString>
 #include <signalmanager.h>
 #include <typeresolver.h>
 #include <QtConcurrentFilter>
-#include <QStringList>
-#include <qabstractitemmodel.h>
 
 // Conversion Includes - Container Types
-#include <QList>
 #include <QMap>
 #include <QStack>
-#include <QMultiMap>
+#include <QLinkedList>
 #include <QVector>
+#include <QSet>
 #include <QPair>
 #include <pysideconversions.h>
-#include <QSet>
 #include <QQueue>
-#include <QLinkedList>
+#include <QList>
+#include <QMultiMap>
 
 // Type indices
 #define SBK_MOUSESELECTOR_IDX                                        0

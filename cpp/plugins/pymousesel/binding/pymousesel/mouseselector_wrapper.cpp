@@ -22,6 +22,7 @@
 #include <qobject.h>
 #include <qobjectdefs.h>
 #include <qthread.h>
+#include <qwidget.h>
 
 
 // Native ---------------------------------------------------------
@@ -413,6 +414,35 @@ static PyObject* Sbk_MouseSelectorFunc_isEnabled(PyObject* self)
     return pyResult;
 }
 
+static PyObject* Sbk_MouseSelectorFunc_parentWidget(PyObject* self)
+{
+    MouseSelectorWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (MouseSelectorWrapper*)((::MouseSelector*)Shiboken::Conversions::cppPointer(SbkpymouseselTypes[SBK_MOUSESELECTOR_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+
+    // Call function/method
+    {
+
+        if (!PyErr_Occurred()) {
+            // parentWidget()const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            QWidget * cppResult = const_cast<const ::MouseSelectorWrapper*>(cppSelf)->parentWidget();
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkPySide_QtGuiTypes[SBK_QWIDGET_IDX], cppResult);
+            Shiboken::Object::setParent(self, pyResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+}
+
 static PyObject* Sbk_MouseSelectorFunc_setComboKey(PyObject* self, PyObject* pyArg)
 {
     MouseSelectorWrapper* cppSelf = 0;
@@ -501,11 +531,59 @@ static PyObject* Sbk_MouseSelectorFunc_setEnabled(PyObject* self, PyObject* pyAr
         return 0;
 }
 
+static PyObject* Sbk_MouseSelectorFunc_setParentWidget(PyObject* self, PyObject* pyArg)
+{
+    MouseSelectorWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (MouseSelectorWrapper*)((::MouseSelector*)Shiboken::Conversions::cppPointer(SbkpymouseselTypes[SBK_MOUSESELECTOR_IDX], (SbkObject*)self));
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: setParentWidget(QWidget*)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppPointerConvertible((SbkObjectType*)SbkPySide_QtGuiTypes[SBK_QWIDGET_IDX], (pyArg)))) {
+        overloadId = 0; // setParentWidget(QWidget*)
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_MouseSelectorFunc_setParentWidget_TypeError;
+
+    // Call function/method
+    {
+        if (!Shiboken::Object::isValid(pyArg))
+            return 0;
+        ::QWidget* cppArg0;
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // setParentWidget(QWidget*)
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            cppSelf->setParentWidget(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+        }
+    }
+
+    if (PyErr_Occurred()) {
+        return 0;
+    }
+    Py_RETURN_NONE;
+
+    Sbk_MouseSelectorFunc_setParentWidget_TypeError:
+        const char* overloads[] = {"PySide.QtGui.QWidget", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pymousesel.MouseSelector.setParentWidget", overloads);
+        return 0;
+}
+
 static PyMethodDef Sbk_MouseSelector_methods[] = {
     {"comboKey", (PyCFunction)Sbk_MouseSelectorFunc_comboKey, METH_NOARGS},
     {"isEnabled", (PyCFunction)Sbk_MouseSelectorFunc_isEnabled, METH_NOARGS},
+    {"parentWidget", (PyCFunction)Sbk_MouseSelectorFunc_parentWidget, METH_NOARGS},
     {"setComboKey", (PyCFunction)Sbk_MouseSelectorFunc_setComboKey, METH_O},
     {"setEnabled", (PyCFunction)Sbk_MouseSelectorFunc_setEnabled, METH_O},
+    {"setParentWidget", (PyCFunction)Sbk_MouseSelectorFunc_setParentWidget, METH_O},
 
     {0} // Sentinel
 };
