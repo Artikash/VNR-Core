@@ -313,9 +313,10 @@ class _GameView(object):
     #baseUrl = 'qrc://any'  # would crash QByteArray when refresh
     #baseUrl = 'file:///'    # would crash QByteArray when refresh
     #baseUrl = 'file:///any' # any place that is local
+    needsPost = info and info.gameItem and (info.gameItem.overallScoreCount or info.gameItem.ecchiScoreCount)
     online = netman.manager().isOnline()
-    if online:
-      baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy
+    if online and needsPost:
+      baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy, but this would break getchu
     else:
       baseUrl = 'qrc:///_'    # any place is fine
 
