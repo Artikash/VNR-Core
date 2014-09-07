@@ -115,18 +115,21 @@ if skos.WIN:
     """
     def __init__(self, parent=None, winId=0, pyObject=None):
       super(SkWindowObject, self).__init__(parent)
-      self.__d = _SkWindowObject(self, winId, pyObject)
+      d = self.__d = _SkWindowObject(self, winId, pyObject)
+      if winId:
+        d.refreshTimer.start()
 
     ## WId ##
 
     def setWinId(self, handle):
-      if self.__d.obj.handle != handle:
-        self.__d.obj.handle = handle
-        if handle and not self.__d.refreshTimer.isActive():
-          self.__d.refreshTimer.start()
-        elif not handle and self.__d.refreshTimer.isActive():
-          self.__d.refreshTimer.stop()
-          self.__d.reset()
+      d = self.__d
+      if d.obj.handle != handle:
+        d.obj.handle = handle
+        if handle and not d.refreshTimer.isActive():
+          d.refreshTimer.start()
+        elif not handle and d.refreshTimer.isActive():
+          d.refreshTimer.stop()
+          d.reset()
         self.winIdChanged.emit(handle)
         self.activeChanged.emit(bool(handle))
         if not handle:
@@ -158,11 +161,8 @@ if skos.WIN:
     validChanged = Signal(bool)
     valid = Property(bool, isValid, notify=validChanged)
 
-    def startRefresh(self):
-      self.__d.refreshTimer.start()
-
-    def stopRefresh(self):
-      self.__d.refreshTimer.stop()
+    def startRefresh(self): self.__d.refreshTimer.start()
+    def stopRefresh(self): self.__d.refreshTimer.stop()
 
     def refresh(self):
       d = self.__d

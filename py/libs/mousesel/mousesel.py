@@ -18,7 +18,7 @@ else:
     def __init__(self, parent=None):
       super(MouseSelector, self).__init__(parent)
 
-    selected = Signal(int, int, int, int) # x, y, width, height
+    selected = Signal(int, int, int, int,) # x, y, width, height
 
     def isEnabled(self): return False
     def setEnabled(self, t): pass

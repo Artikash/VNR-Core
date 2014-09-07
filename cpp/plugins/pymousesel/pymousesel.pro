@@ -18,7 +18,9 @@ INCLUDEPATH += $$LIBDIR/qtmousesel # needed by shiboken generated code
 QT += core
 #QT -= gui
 
+# GUI is needed for WId
 INCLUDEPATH += $$PYSIDE_HOME/include/PySide/QtCore
+#INCLUDEPATH += $$PYSIDE_HOME/include/PySide/QtGui
 
 ## Sources
 

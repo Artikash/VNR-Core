@@ -1,6 +1,7 @@
 // mouseselector.cc
 // 8/21/2014 jichi
 #include "qtmousesel/mouseselector.h"
+#include "qtmousesel/mouseselector_p.h"
 #include "qtrubberband/mouserubberband.h"
 
 #ifdef Q_OS_WIN
@@ -17,91 +18,82 @@
 
 /** Private class */
 
-class MouseSelectorPrivate
+// Construction
+
+MouseSelectorPrivate::MouseSelectorPrivate(Q *q)
+  : q_(q)
+  , enabled(false)
+  , comboKey(0)
+  , parentWidget(nullptr), rb(nullptr)
+  , pressed(false)
+  //, pressedWid(0)
 {
-  typedef MouseSelectorPrivate Self;
-  typedef MouseSelector Q;
-  Q *q_;
+  ::mousehook_onlbuttondown(boost::bind(&Self::onMousePress, this, _1, _2, _3));
+  ::mousehook_onlbuttonup(boost::bind(&Self::onMouseRelease, this, _1, _2, _3));
+  ::mousehook_onmove(boost::bind(&Self::onMouseMove, this, _1, _2, _3));
+}
 
-public:
-  // For mouse selection
-  bool enabled;
-  int comboKey; // vk
-  QWidget *parentWidget;
-  MouseRubberBand *rb;
+MouseSelectorPrivate::~MouseSelectorPrivate()
+{
+  if (enabled)
+    ::mousehook_stop();
+  ::mousehook_onmove(mousehook_fun_null);
+  ::mousehook_onlbuttondown(mousehook_fun_null);
+  ::mousehook_onlbuttonup(mousehook_fun_null);
+  if (rb)
+    delete rb;
+}
 
-  void createRubberBand()
-  {
-    rb = new MouseRubberBand(QRubberBand::Rectangle, parentWidget);
-    q_->connect(rb, SIGNAL(selected(int,int,int,int)), SIGNAL(selected(int,int,int,int)),
-                Qt::QueuedConnection); // use queued connection to leave mouse event loop
+void MouseSelectorPrivate::createRubberBand()
+{
+  rb = new MouseRubberBand(QRubberBand::Rectangle, parentWidget);
+  q_->connect(rb, SIGNAL(selected(int,int,int,int)), SIGNAL(selected(int,int,int,int)),
+      Qt::QueuedConnection); // use queued connection to leave mouse event loop
+}
+
+//void MouseSelectorPrivate::trigger(int x, int y, int width, int height)
+//{ q_->emit selected(x, y, width, height, pressedWid); }
+
+// Callbacks
+
+bool MouseSelectorPrivate::isPressAllowed() const
+{ return !comboKey || WinKey::isKeyPressed(comboKey); }
+
+bool MouseSelectorPrivate::onMousePress(int x, int y, void *wid)
+{
+  if (enabled //&& !pressed  // !pressed not checked in case sth is wrong at runtime
+              && isPressAllowed()) {
+    //pressedWid = reinterpret_cast<WId>(wid);
+    pressed = true;
+    q_->emit pressed(x, y);
+    rb->press(x, y);
+    DOUT("pass");
+    return true;
   }
+  return false;
+}
 
-private:
-  // For mouse hook
-  bool pressed;
+bool MouseSelectorPrivate::onMouseMove(int x, int y, void *wid)
+{
+  Q_UNUSED(wid);
+  if (enabled && pressed)
+    rb->move(x, y);
+  return false;
+}
 
-  bool onMousePress(int x, int y, void *wid)
-  {
-    Q_UNUSED(wid);
-    if (enabled //&& !pressed  // !pressed not checked in case sth is wrong at runtime
-                && isPressAllowed()) {
-      pressed = true;
-      rb->press(x, y);
-      DOUT("pass");
-      return true;
-    }
-    return false;
+bool MouseSelectorPrivate::onMouseRelease(int x, int y, void *wid)
+{
+  Q_UNUSED(wid);
+  if (enabled && pressed) {
+    pressed = false;
+    q_->emit released(x, y);
+    rb->move(x, y);
+    rb->release();
+    DOUT("pass");
+    return true;
   }
-
-  bool onMouseMove(int x, int y, void *wid)
-  {
-    Q_UNUSED(wid);
-    if (enabled && pressed)
-      rb->move(x, y);
-    return false;
-  }
-
-  bool onMouseRelease(int x, int y, void *wid)
-  {
-    Q_UNUSED(wid);
-    if (enabled && pressed) {
-      pressed = false;
-      rb->move(x, y);
-      rb->release();
-      DOUT("pass");
-      return true;
-    }
-    return false;
-  }
-
-  bool isPressAllowed() const
-  { return !comboKey || WinKey::isKeyPressed(comboKey); }
-
-public:
-  explicit MouseSelectorPrivate(Q *q)
-    : q_(q)
-    , enabled(false)
-    , comboKey(0)
-    , parentWidget(nullptr), rb(nullptr)
-    , pressed(false)
-  {
-    ::mousehook_onlbuttondown(boost::bind(&Self::onMousePress, this, _1, _2, _3));
-    ::mousehook_onlbuttonup(boost::bind(&Self::onMouseRelease, this, _1, _2, _3));
-    ::mousehook_onmove(boost::bind(&Self::onMouseMove, this, _1, _2, _3));
-  }
-
-  ~MouseSelectorPrivate()
-  {
-    if (enabled)
-      ::mousehook_stop();
-    ::mousehook_onmove(mousehook_fun_null);
-    ::mousehook_onlbuttondown(mousehook_fun_null);
-    ::mousehook_onlbuttonup(mousehook_fun_null);
-    if (rb)
-      delete rb;
-  }
-};
+  return false;
+}
 
 /** Public class */
 

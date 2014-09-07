@@ -14,7 +14,8 @@ public:
   bool pressed;
   int x, y;
 
-  MouseRubberBandPrivate() : pressed(false) {} // x,y are not initialized
+  MouseRubberBandPrivate()
+    : pressed(false), x(0), y(0) {} // x,y are not initialized
 };
 
 /** Public class */

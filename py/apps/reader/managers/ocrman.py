@@ -4,15 +4,15 @@
 
 import os
 from functools import partial
-from PySide.QtCore import QObject, Signal
+from PySide.QtCore import QObject, Signal, Qt
 from PySide.QtGui import QPixmap
 from Qt5.QtWidgets import QApplication
-from sakurakit import skwidgets, skfileio
+from sakurakit import skwidgets, skfileio, skwin
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from modiocr import modiocr
 from mytr import my
-import growl, rc, termman
+import growl, rc, termman, winman
 
 @memoized
 def manager(): return OcrManager()
@@ -31,11 +31,18 @@ class _OcrManager(object):
     self.delim = '' # str
     self.languages = [] # [str lang]
     self.languageFlags = 0 # int
+    self.pressedX = self.pressedY = 0
+
+    from PySide.QtCore import QCoreApplication
+    qApp = QCoreApplication.instance()
+    wid = qApp.desktop().winId()
+    self.DESKTOP_HWND = skwin.hwnd_from_wid(wid)
 
   @memoizedproperty
   def mouseSelector(self):
     from mousesel import mousesel
     ret = mousesel.global_()
+    ret.pressed.connect(self._onPressed, Qt.QueuedConnection)
     ret.selected.connect(self._onRectSelected)
 
     import win32con
@@ -55,6 +62,14 @@ class _OcrManager(object):
   #  ret.selected.connect(self._onRectSelected, Qt.QueuedConnection) # do it later
   #  return ret
 
+  def _onPressed(self, x, y):
+    """
+    @param  x  int
+    @param  y  int
+    """
+    self.pressedX = x
+    self.pressedY = y
+
   def _onRectSelected(self, x, y, width, height):
     """
     @param  x  int
@@ -70,9 +85,15 @@ class _OcrManager(object):
       text = termman.manager().applyOcrTerms(text)
       if text:
         lang = self.languages[0] if self.languages else 'ja'
-        self.q.textReceived.emit(text, lang, x, y, width, height)
+
+        winobj = self._getWindowObject(self.pressedX, self.pressedY)
+        self.q.textReceived.emit(text, lang, x, y, width, height, winobj)
         return
     growl.notify(my.tr("OCR did not recognize any texts in the image"))
+
+  def _getWindowObject(self, x, y): # int, int -> QObject or None
+    hwnd = skwin.get_window_at(x, y)
+    return winman.manager().createWindowObject(hwnd) if hwnd and hwnd != self.DESKTOP_HWND else None
 
   # Mouse hook
 
@@ -169,7 +190,7 @@ class OcrManager(QObject):
     super(OcrManager, self).__init__(parent)
     self.__d = _OcrManager(self)
 
-  textReceived = Signal(unicode, unicode, int, int, int, int) # text, language, x, y, width, height
+  textReceived = Signal(unicode, unicode, int, int, int, int, QObject) # text, language, x, y, width, height, winobj
 
   def languages(self): return self.__d.languages
   def setLanguages(self, v):

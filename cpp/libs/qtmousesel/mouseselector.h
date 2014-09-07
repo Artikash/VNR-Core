@@ -5,6 +5,7 @@
 // 8/21/2014 jichi
 
 #include <QtCore/QObject>
+//#include <QtGui/qwindowdefs.h> // for WId
 #include "sakurakit/skglobal.h"
 
 QT_FORWARD_DECLARE_CLASS(QWidget)
@@ -30,6 +31,8 @@ public:
   void setComboKey(int vk);
 
 signals:
+  void pressed(int x, int y);
+  void released(int x, int y);
   void selected(int x, int y, int width, int height);
 };
 
