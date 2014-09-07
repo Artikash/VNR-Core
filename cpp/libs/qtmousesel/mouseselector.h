@@ -30,6 +30,15 @@ public:
   int comboKey() const; // windows VK, default 0
   void setComboKey(int vk);
 
+  int refreshInterval() const;
+  void setRefreshInterval(int value);
+
+  bool isRefreshEnabled() const;
+  void setRefreshEnabled(bool value);
+
+public slots:
+  void refresh();
+
 signals:
   void pressed(int x, int y);
   void released(int x, int y);

@@ -28,6 +28,8 @@ class _OcrManager(object):
     from mousesel import mousesel
     ret = mousesel.global_()
     ret.setParentWidget(windows.top())
+    ret.setRefreshInterval(5000) # refresh every 5 seconds
+    ret.setRefreshEnabled(True)
     ret.pressed.connect(self._onPressed, Qt.QueuedConnection)
     ret.selected.connect(self._onRectSelected) # already queued
 
