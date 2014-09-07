@@ -494,8 +494,8 @@ my.tr("But Drag-and-Drop does not work when VNR has admin privilege T_T"),
 
   @memoizedproperty
   def springBoardWallpaperButton(self):
-    ret = QtWidgets.QPushButton(tr_("Reset"))
-    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret = QtWidgets.QPushButton(tr_("Remove"))
+    skqss.class_(ret, 'btn btn-danger')
     ret.setToolTip(my.tr("Reset to the default wallpaper"))
     ret.clicked.connect(partial(
         settings.global_().setSpringBoardWallpaperUrl, ""))
