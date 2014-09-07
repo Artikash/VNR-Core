@@ -79,7 +79,7 @@ class _PostInput(object):
   @memoizedproperty
   def contentEdit(self):
     ret = QtWidgets.QTextEdit()
-    skqss.class_(ret, 'texture')
+    #skqss.class_(ret, 'texture')
     ret.setToolTip(tr_("Content"))
     ret.setAcceptRichText(False)
     ret.setMinimumHeight(TEXTEDIT_MINIMUM_HEIGHT)
