@@ -55,19 +55,19 @@ Item { id: root_
       popupRequested.connect(showPopup)
   }
 
-  function showPopup(text, lang, x, y) { // string, string, int, int ->
+  function showPopup(text, lang, x, y, winobj) { // string, string, int, int ->
     var items = Local.items
     for (var i in items) {
       var item = items[i]
       if (!item.visible && !item.locked) {
         console.log("ocrpopup.qml:showPopup: reuse existing item")
-        item.show(text, lang, x, y)
+        item.show(text, lang, x, y, winobj)
         return
       }
     }
     console.log("ocrpopup.qml:showPopup: create new item")
     var item = comp_.createObject(root_)
-    item.show(text, lang, x, y)
+    item.show(text, lang, x, y, winobj)
     items.push(item)
   }
 
@@ -88,26 +88,43 @@ Item { id: root_
 
       property bool locked: false // indicate whether this object is being translated
 
-      function show(text, lang, x, y) { // string, string, int, int ->
+      property QtObject window // window proxy object
+
+      function show(text, lang, x, y, winobj) { // string, string, int, int, QObject ->
         reset()
         item_.translatedText = ''
         item_.text = text
         item_.language = lang //|| 'ja'
         item_.x = x
         item_.y = y
+
+        item_.window = winobj
+
         ensureVisible()
         visible = true
       }
 
-      function hide() { visible = false }
+      function hide() {
+        visible = false
+        releaseWindow()
+      }
 
       // - Private -
+
+      function releaseWindow() {
+        if (item_.window) {
+          item_.window.release()
+          item_.window = null
+        }
+      }
 
       function reset() {
         translateButton_.enabled = true
         toolTip_.text = qsTr("You can drag the border to move the text box")
         textEdit_.textFormat = TextEdit.PlainText
         textWidth = _DEFAULT_WIDTH
+
+        releaseWindow()
       }
 
       Component.onCompleted: console.log("ocrpopup.qml:onCompleted: pass")

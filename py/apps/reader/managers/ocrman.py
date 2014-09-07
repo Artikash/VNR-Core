@@ -7,12 +7,12 @@ from functools import partial
 from PySide.QtCore import QObject, Signal
 from PySide.QtGui import QPixmap
 from Qt5.QtWidgets import QApplication
-from sakurakit import skwidgets, skfileio
+from sakurakit import skwidgets, skfileio, skwin
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from modiocr import modiocr
 from mytr import my
-import growl, rc, termman
+import growl, rc, termman, winman
 
 @memoized
 def manager(): return OcrManager()
@@ -70,7 +70,10 @@ class _OcrManager(object):
       text = termman.manager().applyOcrTerms(text)
       if text:
         lang = self.languages[0] if self.languages else 'ja'
-        self.q.textReceived.emit(text, lang, x, y, width, height)
+
+        hwnd = skwin.get_window_at(x, y)
+        winobj = winman.manager().createWindowObject(hwnd) if hwnd else None
+        self.q.textReceived.emit(text, lang, x, y, width, height, winobj)
         return
     growl.notify(my.tr("OCR did not recognize any texts in the image"))
 
@@ -169,7 +172,7 @@ class OcrManager(QObject):
     super(OcrManager, self).__init__(parent)
     self.__d = _OcrManager(self)
 
-  textReceived = Signal(unicode, unicode, int, int, int, int) # text, language, x, y, width, height
+  textReceived = Signal(unicode, unicode, int, int, int, int, QObject) # text, language, x, y, width, height, winobj
 
   def languages(self): return self.__d.languages
   def setLanguages(self, v):
