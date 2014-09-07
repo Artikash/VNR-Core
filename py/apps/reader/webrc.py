@@ -9,6 +9,10 @@ def update_web_settings(settings=None):
   """
   @param  settings  QWebSettings or None
   """
+  # FIXME: This has no effect!
+  # 9/6/2014: I have to modify bool SecurityOrigin::canRequest(const KURL& url) const in order to disable it.
+  # See: http://qt-project.org/forums/viewthread/31888
+  #
   # When combined with QWebSettings.LocalContentCanAccess*, it will by pass same-domain constraints
   #from PySide.QtWebKit import QWebSecurityOrigin
   #for scheme in 'http', 'https':
@@ -35,6 +39,7 @@ def update_web_settings(settings=None):
   ws.setAttribute(QWebSettings.LocalStorageEnabled, True)
   ws.setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls, True)
   ws.setAttribute(QWebSettings.LocalContentCanAccessFileUrls, True)
+  #ws.setAttribute(QWebSettings.LocalContentCanAccessFileUrls, False) # needed by same-origin-policy
 
   ws.setAttribute(QWebSettings.ZoomTextOnly, False)
 
