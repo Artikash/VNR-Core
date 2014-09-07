@@ -90,35 +90,83 @@ Item { id: root_
 
       property QtObject window // window proxy object
 
-      function show(text, lang, x, y, winobj) { // string, string, int, int, QObject ->
+      function show(text, lang, x, y, window) { // string, string, int, int, QObject ->
         reset()
         item_.translatedText = ''
         item_.text = text
         item_.language = lang //|| 'ja'
-        item_.x = x
-        item_.y = y
 
-        item_.window = winobj
+        item_.window = window
+
+        if (window) {
+          item_.relativeX = x - window.x
+          item_.relativeY = y - window.y
+          window.visibleChanged.connect(setVisible)
+        } else {
+          item_.x = x
+          item_.y = y
+        }
 
         ensureVisible()
-        visible = true
+        visible = window ? window.visible : true
       }
 
-      function hide() {
-        visible = false
-        releaseWindow()
-      }
+      function hide() { visible = false }
 
       // - Private -
 
       function releaseWindow() {
-        if (item_.window) {
-          item_.window.release()
-          item_.window = null
+        if (window) {
+          window.visibleChanged.disconnect(setVisible)
+          window.release()
+          window = null
         }
       }
 
+      function setVisible(t) { visible = t }
+
+      //property bool hidden: true
+      //visible: !hidden && (!window || window.visible)
+
+      onVisibleChanged: if (!visible) releaseWindow()
+
+      property int relativeX
+      property int relativeY
+
+      property bool dragging:
+          dragArea_.drag.active ||
+          headerDragArea_.drag.active
+          //leftResizeArea_.pressed ||
+          //rightResizeArea_.pressed
+
+      onDraggingChanged: keepPosotion()
+      function keepPosotion() {
+        if (window) {
+          relativeX = x - window.x
+          relativeY = y - window.y
+        }
+      }
+
+      x: (!dragging && window) ? relativeX + window.x : x
+      y: (!dragging && window) ? relativeY + window.y : y
+
+      function setX(v) { // int ->
+        if (!dragging && window)
+          relativeX = v - window.x
+        else
+          x = v
+      }
+
+      function setY(v) { // int ->
+        if (!dragging && window)
+          relativeY = v - window.y
+        else
+          y = v
+      }
+
       function reset() {
+        relativeX = relativeY = 0
+
         translateButton_.enabled = true
         toolTip_.text = qsTr("You can drag the border to move the text box")
         textEdit_.textFormat = TextEdit.PlainText
@@ -141,13 +189,13 @@ Item { id: root_
       // So that the popup will not be out of screen
       function ensureVisible() {
         if (x < minimumX)
-          x = minimumX
+          setX(minimumX)
         if (y < minimumY)
-          y = minimumY
+          setY(minimumY)
         if (x > maximumX)
-          x = maximumX
+          setX(maximumX)
         if (y > maximumY)
-          y = maximumY
+          setY(maximumY)
       }
 
       property string translatedText
@@ -198,7 +246,7 @@ Item { id: root_
         anchors.fill: parent
       }
 
-      MouseArea { // draggable area
+      MouseArea { id: dragArea_
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton
         drag {
@@ -215,7 +263,7 @@ Item { id: root_
         //}
       }
 
-      MouseArea { // left draggable area
+      MouseArea { id: leftResizeArea_
         anchors {
           top: parent.top; bottom: parent.bottom
           left: parent.left
@@ -231,7 +279,13 @@ Item { id: root_
             var w = textEdit_.width - dx
             if (w > _MIN_WIDTH && w < _MAX_WIDTH) {
               textEdit_.width = w
-              item_.x += dx
+
+              //item_.x += dx
+              //setX(item_.x + dx)
+              if (window)
+                item_.relativeX += dx
+              else
+                item_.x += dx
             }
           }
 
@@ -241,7 +295,7 @@ Item { id: root_
         }
       }
 
-      MouseArea { // right draggable area
+      MouseArea { id: rightResizeArea_
         anchors {
           top: parent.top; bottom: parent.bottom
           right: parent.right
@@ -409,7 +463,7 @@ Item { id: root_
           NumberAnimation { property: 'opacity'; duration: 400 }
         }
 
-        MouseArea {
+        MouseArea { id: headerDragArea_
           anchors.fill: parent
           acceptedButtons: Qt.LeftButton
           drag {

@@ -115,7 +115,9 @@ if skos.WIN:
     """
     def __init__(self, parent=None, winId=0, pyObject=None):
       super(SkWindowObject, self).__init__(parent)
-      self.__d = _SkWindowObject(self, winId, pyObject)
+      d = self.__d = _SkWindowObject(self, winId, pyObject)
+      if winId:
+        d.refreshTimer.start()
 
     ## WId ##
 
@@ -159,11 +161,8 @@ if skos.WIN:
     validChanged = Signal(bool)
     valid = Property(bool, isValid, notify=validChanged)
 
-    def startRefresh(self):
-      self.__d.refreshTimer.start()
-
-    def stopRefresh(self):
-      self.__d.refreshTimer.stop()
+    def startRefresh(self): self.__d.refreshTimer.start()
+    def stopRefresh(self): self.__d.refreshTimer.stop()
 
     def refresh(self):
       d = self.__d

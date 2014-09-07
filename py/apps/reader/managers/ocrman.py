@@ -4,7 +4,7 @@
 
 import os
 from functools import partial
-from PySide.QtCore import QObject, Signal
+from PySide.QtCore import QObject, Signal, Qt
 from PySide.QtGui import QPixmap
 from Qt5.QtWidgets import QApplication
 from sakurakit import skwidgets, skfileio, skwin
@@ -31,11 +31,18 @@ class _OcrManager(object):
     self.delim = '' # str
     self.languages = [] # [str lang]
     self.languageFlags = 0 # int
+    self.pressedX = self.pressedY = 0
+
+    from PySide.QtCore import QCoreApplication
+    qApp = QCoreApplication.instance()
+    wid = qApp.desktop().winId()
+    self.DESKTOP_HWND = skwin.hwnd_from_wid(wid)
 
   @memoizedproperty
   def mouseSelector(self):
     from mousesel import mousesel
     ret = mousesel.global_()
+    ret.pressed.connect(self._onPressed, Qt.QueuedConnection)
     ret.selected.connect(self._onRectSelected)
 
     import win32con
@@ -55,6 +62,14 @@ class _OcrManager(object):
   #  ret.selected.connect(self._onRectSelected, Qt.QueuedConnection) # do it later
   #  return ret
 
+  def _onPressed(self, x, y):
+    """
+    @param  x  int
+    @param  y  int
+    """
+    self.pressedX = x
+    self.pressedY = y
+
   def _onRectSelected(self, x, y, width, height):
     """
     @param  x  int
@@ -71,11 +86,14 @@ class _OcrManager(object):
       if text:
         lang = self.languages[0] if self.languages else 'ja'
 
-        hwnd = skwin.get_window_at(x, y)
-        winobj = winman.manager().createWindowObject(hwnd) if hwnd else None
+        winobj = self._getWindowObject(self.pressedX, self.pressedY)
         self.q.textReceived.emit(text, lang, x, y, width, height, winobj)
         return
     growl.notify(my.tr("OCR did not recognize any texts in the image"))
+
+  def _getWindowObject(self, x, y): # int, int -> QObject or None
+    hwnd = skwin.get_window_at(x, y)
+    return winman.manager().createWindowObject(hwnd) if hwnd and hwnd != self.DESKTOP_HWND else None
 
   # Mouse hook
 

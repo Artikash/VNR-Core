@@ -65,6 +65,7 @@ bool MouseSelectorPrivate::onMousePress(int x, int y, void *wid)
               && isPressAllowed()) {
     //pressedWid = reinterpret_cast<WId>(wid);
     pressed = true;
+    q_->emit pressed(x, y);
     rb->press(x, y);
     DOUT("pass");
     return true;
@@ -85,6 +86,7 @@ bool MouseSelectorPrivate::onMouseRelease(int x, int y, void *wid)
   Q_UNUSED(wid);
   if (enabled && pressed) {
     pressed = false;
+    q_->emit released(x, y);
     rb->move(x, y);
     rb->release();
     DOUT("pass");

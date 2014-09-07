@@ -31,6 +31,8 @@ public:
   void setComboKey(int vk);
 
 signals:
+  void pressed(int x, int y);
+  void released(int x, int y);
   void selected(int x, int y, int width, int height);
 };
 
