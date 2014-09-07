@@ -5,6 +5,7 @@
 // 8/21/2014 jichi
 
 #include <QtCore/QObject>
+//#include <QtGui/qwindowdefs.h> // for WId
 #include "sakurakit/skglobal.h"
 
 QT_FORWARD_DECLARE_CLASS(QWidget)

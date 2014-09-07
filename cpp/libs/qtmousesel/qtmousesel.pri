@@ -8,8 +8,11 @@ QT += core gui
 
 DEPENDPATH += $$PWD
 
-HEADERS += $$PWD/mouseselector.h
-SOURCES += $$PWD/mouseselector.cc
+HEADERS += \
+  $$PWD/mouseselector_p.h \
+  $$PWD/mouseselector.h
+SOURCES += \
+  $$PWD/mouseselector.cc
 }
 
 # EOF

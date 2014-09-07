@@ -275,12 +275,23 @@ class _MainObject(object):
 
     return ret
 
-  def initializeOCR(self): self.ocrManager
+  def initializeOCR(self):
+    self.windowManager
+    self.ocrManager
 
   #@memoizedproperty
   #def dataMiner(self):
   #  import datamine
   #  return datamine.DataMiner(self.q)
+
+  @memoizedproperty
+  def windowManager(self):
+    dprint("create window manager")
+    import winman
+    ret = winman.manager()
+    ret.setParent(self.q)
+
+    return ret
 
   @memoizedproperty
   def gameManager(self):

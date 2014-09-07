@@ -3,7 +3,7 @@
 
 #include "mousehook/mousehook.h"
 #include <windows.h>
-
+#include <QDebug>
 const mousehook_fun_t mousehook_fun_null; // global variable
 
 namespace { // unnamed
@@ -42,7 +42,7 @@ LRESULT CALLBACK MouseProc(__in int nCode, __in WPARAM wparam, __in LPARAM lpara
     if (callback) {
       LONG x = e->pt.x;
       LONG y = e->pt.y;
-      HWND hwnd = e->hwnd;
+      HWND hwnd = e->hwnd; // this could be zero for desktop events: http://stackoverflow.com/questions/8054287/c-sharp-hook-hwnd-is-always-0
       if (callback(x, y, hwnd))
         return TRUE; // return non-zero value to eat the event
     }

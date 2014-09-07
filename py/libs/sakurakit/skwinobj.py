@@ -120,13 +120,14 @@ if skos.WIN:
     ## WId ##
 
     def setWinId(self, handle):
-      if self.__d.obj.handle != handle:
-        self.__d.obj.handle = handle
-        if handle and not self.__d.refreshTimer.isActive():
-          self.__d.refreshTimer.start()
-        elif not handle and self.__d.refreshTimer.isActive():
-          self.__d.refreshTimer.stop()
-          self.__d.reset()
+      d = self.__d
+      if d.obj.handle != handle:
+        d.obj.handle = handle
+        if handle and not d.refreshTimer.isActive():
+          d.refreshTimer.start()
+        elif not handle and d.refreshTimer.isActive():
+          d.refreshTimer.stop()
+          d.reset()
         self.winIdChanged.emit(handle)
         self.activeChanged.emit(bool(handle))
         if not handle:
