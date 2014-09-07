@@ -254,9 +254,7 @@ class TermManager:
     @param  language  unicode
     @return  unicode
     """
-    if not language:
-      language = self.__d.language
-    return self.__d.applyTerms(dataman.manager().iterOcrTerms(), text, language)
+    return self.__d.applyTerms(dataman.manager().iterOcrTerms(), text, language or self.__d.language)
 
   def applySourceTerms(self, text, language):
     """

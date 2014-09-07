@@ -73,6 +73,12 @@ void mousehook_stop()
   }
 }
 
+void mousehook_restart()
+{
+  mousehook_stop();
+  mousehook_start();
+}
+
 void mousehook_onmove(mousehook_fun_t v)
 {
   if (!d_)

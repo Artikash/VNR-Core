@@ -8,6 +8,7 @@
 
 void mousehook_start();
 void mousehook_stop();
+void mousehook_restart();
 bool mousehook_active();
 
 ///  Return true if eat the event

@@ -6,8 +6,11 @@
 
 //#include <QtCore/QObject>
 //#include <QtGui/qwindowdefs.h> // for WId
-#include <QtGui/QWidget>
+#include <QtGlobal>
 #include "sakurakit/skglobal.h"
+
+QT_FORWARD_DECLARE_CLASS(QTimer)
+QT_FORWARD_DECLARE_CLASS(QWidget)
 
 class MouseRubberBand;
 class MouseSelector;
@@ -29,6 +32,8 @@ public:
   int comboKey; // vk
   QWidget *parentWidget;
   MouseRubberBand *rb;
+  bool refreshEnabled;
+  QTimer *refreshTimer;
 
   void createRubberBand();
 

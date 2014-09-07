@@ -26,6 +26,17 @@ else:
     def comboKey(self): return 0
     def setComboKey(self, v): pass
 
+    def parentWidget(self): pass
+    def setParentWidget(self, v): pass
+
+    def refreshInterval(self): return 0
+    def setRefreshInterval(self, v): pass
+
+    def isRefreshEnabled(self): return False
+    def setRefreshEnabled(self, v): pass
+
+    def refresh(self): pass
+
 @memoized
 def global_(): return MouseSelector()
 

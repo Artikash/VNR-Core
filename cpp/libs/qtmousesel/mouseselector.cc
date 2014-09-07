@@ -11,10 +11,13 @@
 # error "Windows only"
 #endif // Q_OS_WIN
 
+#include <QtCore/QTimer>
 #include <boost/bind.hpp>
 
 #define DEBUG "mouseselector"
 #include "sakurakit/skdebug.h"
+
+enum { DEFAULT_REFRESH_INTERVAL = 5000 }; // 5 seconds
 
 /** Private class */
 
@@ -24,10 +27,18 @@ MouseSelectorPrivate::MouseSelectorPrivate(Q *q)
   : q_(q)
   , enabled(false)
   , comboKey(0)
-  , parentWidget(nullptr), rb(nullptr)
+  , parentWidget(nullptr)
+  , rb(nullptr)
+  , refreshEnabled(false)
+  , refreshTimer(nullptr)
   , pressed(false)
   //, pressedWid(0)
 {
+  refreshTimer = new QTimer(q);
+  refreshTimer->setSingleShot(false);
+  refreshTimer->setInterval(DEFAULT_REFRESH_INTERVAL);
+  q_->connect(refreshTimer, SIGNAL(timeout()), SLOT(refresh()));
+
   ::mousehook_onlbuttondown(boost::bind(&Self::onMousePress, this, _1, _2, _3));
   ::mousehook_onlbuttonup(boost::bind(&Self::onMouseRelease, this, _1, _2, _3));
   ::mousehook_onmove(boost::bind(&Self::onMouseMove, this, _1, _2, _3));
@@ -129,11 +140,38 @@ void MouseSelector::setEnabled(bool t)
         d_->createRubberBand();
       d_->enabled = true;
       ::mousehook_start();
+      if (d_->refreshEnabled)
+        d_->refreshTimer->start();
     } else {
       ::mousehook_stop();
       d_->enabled = false;
+      if (d_->refreshEnabled)
+        d_->refreshTimer->stop();
     }
   }
+}
+
+int MouseSelector::refreshInterval() const { return d_->refreshTimer->interval(); }
+void MouseSelector::setRefreshInterval(int v) { d_->refreshTimer->setInterval(v); }
+
+bool MouseSelector::isRefreshEnabled() const { return d_->refreshEnabled; }
+void MouseSelector::setRefreshEnabled(bool t)
+{
+  if (d_->refreshEnabled != t) {
+    d_->refreshEnabled = t;
+    if (d_->enabled) {
+      if (t)
+        d_->refreshTimer->start();
+      else
+        d_->refreshTimer->stop();
+    }
+  }
+}
+
+void MouseSelector::refresh()
+{
+  if (d_->enabled && !d_->pressed) // no need to refresh when already pressed
+    ::mousehook_restart();
 }
 
 // EOF

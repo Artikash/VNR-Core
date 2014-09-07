@@ -414,6 +414,34 @@ static PyObject* Sbk_MouseSelectorFunc_isEnabled(PyObject* self)
     return pyResult;
 }
 
+static PyObject* Sbk_MouseSelectorFunc_isRefreshEnabled(PyObject* self)
+{
+    MouseSelectorWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (MouseSelectorWrapper*)((::MouseSelector*)Shiboken::Conversions::cppPointer(SbkpymouseselTypes[SBK_MOUSESELECTOR_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+
+    // Call function/method
+    {
+
+        if (!PyErr_Occurred()) {
+            // isRefreshEnabled()const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            bool cppResult = const_cast<const ::MouseSelectorWrapper*>(cppSelf)->isRefreshEnabled();
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+}
+
 static PyObject* Sbk_MouseSelectorFunc_parentWidget(PyObject* self)
 {
     MouseSelectorWrapper* cppSelf = 0;
@@ -433,6 +461,59 @@ static PyObject* Sbk_MouseSelectorFunc_parentWidget(PyObject* self)
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkPySide_QtGuiTypes[SBK_QWIDGET_IDX], cppResult);
             Shiboken::Object::setParent(self, pyResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+}
+
+static PyObject* Sbk_MouseSelectorFunc_refresh(PyObject* self)
+{
+    MouseSelectorWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (MouseSelectorWrapper*)((::MouseSelector*)Shiboken::Conversions::cppPointer(SbkpymouseselTypes[SBK_MOUSESELECTOR_IDX], (SbkObject*)self));
+
+    // Call function/method
+    {
+
+        if (!PyErr_Occurred()) {
+            // refresh()
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            cppSelf->refresh();
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+        }
+    }
+
+    if (PyErr_Occurred()) {
+        return 0;
+    }
+    Py_RETURN_NONE;
+}
+
+static PyObject* Sbk_MouseSelectorFunc_refreshInterval(PyObject* self)
+{
+    MouseSelectorWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (MouseSelectorWrapper*)((::MouseSelector*)Shiboken::Conversions::cppPointer(SbkpymouseselTypes[SBK_MOUSESELECTOR_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+
+    // Call function/method
+    {
+
+        if (!PyErr_Occurred()) {
+            // refreshInterval()const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            int cppResult = const_cast<const ::MouseSelectorWrapper*>(cppSelf)->refreshInterval();
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<int>(), &cppResult);
         }
     }
 
@@ -577,13 +658,106 @@ static PyObject* Sbk_MouseSelectorFunc_setParentWidget(PyObject* self, PyObject*
         return 0;
 }
 
+static PyObject* Sbk_MouseSelectorFunc_setRefreshEnabled(PyObject* self, PyObject* pyArg)
+{
+    MouseSelectorWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (MouseSelectorWrapper*)((::MouseSelector*)Shiboken::Conversions::cppPointer(SbkpymouseselTypes[SBK_MOUSESELECTOR_IDX], (SbkObject*)self));
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: setRefreshEnabled(bool)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArg)))) {
+        overloadId = 0; // setRefreshEnabled(bool)
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_MouseSelectorFunc_setRefreshEnabled_TypeError;
+
+    // Call function/method
+    {
+        bool cppArg0;
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // setRefreshEnabled(bool)
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            cppSelf->setRefreshEnabled(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+        }
+    }
+
+    if (PyErr_Occurred()) {
+        return 0;
+    }
+    Py_RETURN_NONE;
+
+    Sbk_MouseSelectorFunc_setRefreshEnabled_TypeError:
+        const char* overloads[] = {"bool", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pymousesel.MouseSelector.setRefreshEnabled", overloads);
+        return 0;
+}
+
+static PyObject* Sbk_MouseSelectorFunc_setRefreshInterval(PyObject* self, PyObject* pyArg)
+{
+    MouseSelectorWrapper* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = (MouseSelectorWrapper*)((::MouseSelector*)Shiboken::Conversions::cppPointer(SbkpymouseselTypes[SBK_MOUSESELECTOR_IDX], (SbkObject*)self));
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: setRefreshInterval(int)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArg)))) {
+        overloadId = 0; // setRefreshInterval(int)
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_MouseSelectorFunc_setRefreshInterval_TypeError;
+
+    // Call function/method
+    {
+        int cppArg0;
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // setRefreshInterval(int)
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            cppSelf->setRefreshInterval(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+        }
+    }
+
+    if (PyErr_Occurred()) {
+        return 0;
+    }
+    Py_RETURN_NONE;
+
+    Sbk_MouseSelectorFunc_setRefreshInterval_TypeError:
+        const char* overloads[] = {"int", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pymousesel.MouseSelector.setRefreshInterval", overloads);
+        return 0;
+}
+
 static PyMethodDef Sbk_MouseSelector_methods[] = {
     {"comboKey", (PyCFunction)Sbk_MouseSelectorFunc_comboKey, METH_NOARGS},
     {"isEnabled", (PyCFunction)Sbk_MouseSelectorFunc_isEnabled, METH_NOARGS},
+    {"isRefreshEnabled", (PyCFunction)Sbk_MouseSelectorFunc_isRefreshEnabled, METH_NOARGS},
     {"parentWidget", (PyCFunction)Sbk_MouseSelectorFunc_parentWidget, METH_NOARGS},
+    {"refresh", (PyCFunction)Sbk_MouseSelectorFunc_refresh, METH_NOARGS},
+    {"refreshInterval", (PyCFunction)Sbk_MouseSelectorFunc_refreshInterval, METH_NOARGS},
     {"setComboKey", (PyCFunction)Sbk_MouseSelectorFunc_setComboKey, METH_O},
     {"setEnabled", (PyCFunction)Sbk_MouseSelectorFunc_setEnabled, METH_O},
     {"setParentWidget", (PyCFunction)Sbk_MouseSelectorFunc_setParentWidget, METH_O},
+    {"setRefreshEnabled", (PyCFunction)Sbk_MouseSelectorFunc_setRefreshEnabled, METH_O},
+    {"setRefreshInterval", (PyCFunction)Sbk_MouseSelectorFunc_setRefreshInterval, METH_O},
 
     {0} // Sentinel
 };
