@@ -24,6 +24,7 @@ Paginator       paginator.qml
 PushButton      pushbutton.qml
 SearchBox       searchbox.qml
 Slider          slider.qml
+TextArea        textarea.qml
 TextButton      textbutton.qml
 TextEffect      texteffect.qml
 TwinkleCircleButton twinklecirclebutton.qml

@@ -200,7 +200,7 @@ Item { id: root_
       //property int cellRadius: 6 * root_.zoomFactor
       //property int pixelSize: 11 * root_.zoomFactor
 
-      //property color buttonColor: '#aa434343' // gray
+      //property color buttonColor: '#aa434343' // black
       property color buttonColor: '#aa00bfff' // blue
       //property color buttonColor: root_.fullScreen ? '#aa434343' : '#aa00bfff' // black:blue
 

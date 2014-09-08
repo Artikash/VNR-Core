@@ -23,7 +23,10 @@ Item { id: root_
   // - Private -
 
   Component { id: editComp_
-    Kagami.OcrEdit {}
+    Kagami.OcrEdit {
+      zoomFactor: root_._zoomFactor
+      ignoresFocus: root_.ignoresFocus
+    }
   }
 
   property real _zoomFactor: zoomFactor * globalZoomFactor // actual zoom factor
@@ -86,8 +89,8 @@ Item { id: root_
       property int maximumX: minimumX + root_.width - width
       property int maximumY: minimumY + root_.height - height
 
-      property alias text: textEdit_.text
-      property alias textWidth: textEdit_.width
+      //property alias text: textEdit_.text
+      //property alias textWidth: textEdit_.width
 
       property string language: 'ja'
 
@@ -98,7 +101,10 @@ Item { id: root_
 
       function show(text, lang, x, y, image, window) { // string, string, int, int, OcrImageObject, WindowObject ->
         reset()
-        item_.text = text || ('(' + Sk.tr('empty') + ')')
+
+        item_.originalText = item_.translatedText = text
+        textEdit_.text = text || ('(' + Sk.tr('empty') + ')')
+
         item_.language = lang //|| 'ja'
 
         item_.image = image
@@ -122,6 +128,10 @@ Item { id: root_
 
       // - Private -
 
+      property string originalText // OCR text
+      property string translatedText // text when translate button is pressed
+      property string currentText: translatedText || originalText
+
       property Item editItem
 
       function hideEdit() {
@@ -135,7 +145,7 @@ Item { id: root_
 
         editItem.x = Math.min(item_.x + item_.width + 10, root_.x + root_.width - item_.width)
         editItem.y = Math.min(item_.y, root_.x + root_.height - item_.height)
-        editItem.show(image)
+        editItem.show(image, originalText)
       }
 
       function release() {
@@ -205,10 +215,9 @@ Item { id: root_
 
         translateButton_.enabled = true
         toolTip_.text = qsTr("You can drag the border to move the text box")
-        textEdit_.textFormat = TextEdit.PlainText
-        textWidth = _DEFAULT_WIDTH
-
-        translatedText = ''
+        //textEdit_.textFormat = TextEdit.PlainText
+        //textWidth = _DEFAULT_WIDTH
+        textEdit_.width = _DEFAULT_WIDTH
 
         release()
       }
@@ -216,7 +225,7 @@ Item { id: root_
       Component.onCompleted: console.log("ocrpopup.qml:onCompleted: pass")
       Component.onDestruction: console.log("ocrpopup.qml:onDestruction: pass")
 
-      radius: 10
+      radius: 9
       color: '#99000000' // black
 
       property int _CONTENT_MARGIN: 10
@@ -236,11 +245,9 @@ Item { id: root_
           setY(maximumY)
       }
 
-      property string translatedText
       function speak() {
-        var text = translatedText || textEdit_.text
-        if (text)
-          ttsPlugin_.speak(text, language)
+        if (currentText)
+          ttsPlugin_.speak(currentText, language)
       }
 
       function translate() {
@@ -252,7 +259,7 @@ Item { id: root_
           if (str) {
             var keys = str.split(',')
             if (keys.length)
-              textEdit_.textFormat = TextEdit.RichText
+              //textEdit_.textFormat = TextEdit.RichText
               for (var i in keys) {
                 var key = keys[i]
                 var tr = trPlugin_.translate(text, language, key)
@@ -273,7 +280,7 @@ Item { id: root_
       function appendTranslation(tr, key) { // translator key, translation text
         var text = textEdit_.text
         if (text)
-          text += '<br/>'
+          text += '\n'
         text += tr
         textEdit_.text = text
       }
@@ -433,17 +440,18 @@ Item { id: root_
         //property int popupX
         //property int popupY
 
-        function popup(x, y) {
-          //popupX = x; popupY = y
-          showPopup(x, y)
-        }
+        //function popup(x, y) {
+        //  //popupX = x; popupY = y
+        //  showPopup(x, y)
+        //}
 
         Desktop.MenuItem { //id: copyAct_
           text: Sk.tr("Copy")
           shortcut: "Ctrl+C"
           onTriggered: {
-            textEdit_.selectAll()
-            textEdit_.copy()
+            var t = textEdit_.text || item_.currentText
+            if (t)
+              clipboardPlugin_.text = t
           }
         }
 
@@ -471,7 +479,7 @@ Item { id: root_
         onPressed: if (!root_.ignoresFocus) {
           //var gp = Util.itemGlobalPos(parent)
           var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-          contextMenu_.popup(gp.x, gp.y)
+          contextMenu_.showPopup(gp.x, gp.y)
         }
       }
 
