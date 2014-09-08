@@ -7,6 +7,7 @@ __all__ = ['OcrImageObject', 'OcrSettings']
 import os
 from PySide.QtCore import QObject, Property, Signal, Slot, QUrl
 from sakurakit import skfileio
+from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint, dwarn
 from modiocr import modiocr
 import termman
@@ -50,12 +51,17 @@ class OcrSettings(object):
   def setLanguages(self, v): # [str]
     self.languageFlags = modiocr.locales2lang(v) or modiocr.LANG_JA # Japanese by default
 
+@Q_Q
 class _OcrImageObject:
 
-  def __init__(self, pixmap, settings):
+  def __init__(self, q, pixmap, settings):
     self.settings = settings # OcrSettings
     self.pixmap = pixmap # QPixmap
     self.path = self._randomPath() # str
+
+    self.colorIntensityEnabled = False
+    self.minimumColorIntensity = 0.3
+    self.maximumColorIntensity = 0.7
 
   @staticmethod
   def _randomPath():
@@ -111,7 +117,7 @@ class OcrImageObject(QObject):
     @param  settings  OcrSettings
     """
     super(OcrImageObject, self).__init__(parent)
-    self.__d = _OcrImageObject(**kwargs)
+    self.__d = _OcrImageObject(self, **kwargs)
 
   imageUrlChanged = Signal(QUrl)
   imageUrl = Property(QUrl,
@@ -123,6 +129,27 @@ class OcrImageObject(QObject):
     @return  str
     """
     return self.__d.settings.language()
+
+  def setColorIntensityEnabled(self, t): self.__d.colorIntensityEnabled = t
+  colorIntensityEnabledChanged = Signal(bool)
+  colorIntensityEnabled = Property(bool,
+      lambda self: self.__d.colorIntensityEnabled,
+      setColorIntensityEnabled,
+      notify=colorIntensityEnabledChanged)
+
+  def setMinimumColorIntensity(self, v): self.__d.minimumColorIntensity = v
+  minimumColorIntensityChanged = Signal(float)
+  minimumColorIntensity = Property(float,
+      lambda self: self.__d.minimumColorIntensity,
+      setMinimumColorIntensity,
+      notify=minimumColorIntensityChanged)
+
+  def setMaximumColorIntensity(self, v): self.__d.maximumColorIntensity = v
+  maximumColorIntensityChanged = Signal(float)
+  maximumColorIntensity = Property(float,
+      lambda self: self.__d.maximumColorIntensity,
+      setMaximumColorIntensity,
+      notify=maximumColorIntensityChanged)
 
   @Slot(result=unicode)
   def ocr(self):

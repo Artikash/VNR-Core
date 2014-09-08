@@ -12,8 +12,8 @@ Rectangle { id: root_
   property bool ignoresFocus: false
 
   function show(image, text) { // OcrImageObject
-    //enableButton_.enabled = false
     imageObject = image
+    loadImageProperties()
     textArea_.textEdit.text = text || ('(' + Sk.tr("empty") + ')')
     textArea_.textEdit.font.pixelSize = zoomFactor * 12
     visible = true
@@ -21,6 +21,7 @@ Rectangle { id: root_
 
   function hide() {
     visible = false
+    saveImageProperties()
     imageObject = null
   }
 
@@ -29,6 +30,31 @@ Rectangle { id: root_
   //property alias text: textEdit_.text
 
   property QtObject imageObject // OcrImageObject  ocr controller
+
+  property bool savedColorIntensityEnable
+  property real savedMinimumColorIntensity
+  property real savedMaximumColorIntensity
+
+  function loadImageProperties() {
+    if (imageObject) {
+      enableButton_.checked = savedColorIntensityEnable = imageObject.colorIntensityEnabled
+      colorSlider_.startValue = savedMinimumColorIntensity = imageObject.minimumColorIntensity
+      colorSlider_.stopValue = savedMaximumColorIntensity = imageObject.maximumColorIntensity
+    }
+  }
+
+  function saveImageProperties() {
+    if (imageObject) {
+      imageObject.colorIntensityEnabled = savedColorIntensityEnable
+      imageObject.minimumColorIntensity = savedMinimumColorIntensity
+      imageObject.maximumColorIntensity = savedMaximumColorIntensity
+    }
+  }
+
+  function cancel() {
+    loadImageProperties()
+    saveImageProperties()
+  }
 
   property int _ROOT_MARGIN: 9
 
@@ -50,7 +76,14 @@ Rectangle { id: root_
 
   //property bool hover: tip_.containsMouse || closeButton_.hover
 
-  function refresh() {
+  function ocr() {
+    if (!imageObject)
+      return
+
+    imageObject.minimumColorIntensity = colorSlider_.startValue
+    imageObject.maximumColorIntensity = colorSlider_.stopValue
+    imageObject.colorIntensityEnabled = enableButton_.checked
+
     textArea_.textEdit.text = imageObject.ocr() || ('(' + Sk.tr("empty") + ')')
   }
 
@@ -141,6 +174,9 @@ Rectangle { id: root_
     stopHandleToolTip: stopLabelToolTip
 
     sliderToolTip: qsTr("Range of the text color intensity")
+
+    //onStartValueChanged: root_.refresh()
+    //onStopValueChanged: root_.refresh()
   }
 
   // Footer
@@ -159,7 +195,7 @@ Rectangle { id: root_
     text: Sk.tr("Enable")
     toolTip: Sk.tr("Enable")
 
-    //onClicked: applyButton_.enabled = true
+    //onCheckedChanged: root_.refresh()
   }
 
   Row { id: rightButtonRow_
@@ -173,23 +209,22 @@ Rectangle { id: root_
 
     Share.PushButton { //id: refreshButton_
       width: root_.buttonWidth
-      text: Sk.tr("Refresh")
+      text: "OCR"
       toolTip: Sk.tr("Refresh")
-      onClicked: root_.refresh()
+      onClicked: root_.ocr()
+
+      //styleHint: 'primary'
+      backgroundColor: '#aa00bfff' // blue
     }
 
-    //Share.PushButton { //id: cancelButton_
-    //  width: root_.buttonWidth
-    //  text: Sk.tr("Cancel")
-    //  toolTip: Sk.tr("Cancel")
-    //  onClicked: root_.hide()
-    //}
-
-    Share.PushButton { id: applyButton_
+    Share.PushButton { id: cancelButton_
       width: root_.buttonWidth
-      text: Sk.tr("Apply")
-      toolTip: Sk.tr("Apply")
-      //enabled: false // disable apply on startup
+      text: Sk.tr("Cancel")
+      toolTip: Sk.tr("Cancel")
+      onClicked: root_.cancel()
+
+      //styleHint: 'danger'
+      backgroundColor: '#aaff0000' // red
     }
   }
 
