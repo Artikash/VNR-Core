@@ -11,6 +11,7 @@ import '../../../js/util.min.js' as Util
 import '../../../components' as Components
 import '../../../js/local.js' as Local // Local.comet
 import '../share' as Share
+import '.' as Kagami
 
 Item { id: root_
 
@@ -20,6 +21,10 @@ Item { id: root_
   property real zoomFactor: 1.0
 
   // - Private -
+
+  Component { id: editComp_
+    Kagami.OcrEdit {}
+  }
 
   property real _zoomFactor: zoomFactor * globalZoomFactor // actual zoom factor
 
@@ -117,7 +122,24 @@ Item { id: root_
 
       // - Private -
 
+      property Item editItem
+
+      function hideEdit() {
+        if (editItem)
+          editItem.hide()
+      }
+
+      function showEdit() {
+        if (!editItem)
+          editItem = editComp_.createObject(root_)
+
+        editItem.x = Math.min(item_.x + item_.width + 10, root_.x + root_.width - item_.width)
+        editItem.y = Math.min(item_.y, root_.x + root_.height - item_.height)
+        editItem.show(image)
+      }
+
       function release() {
+        hideEdit() // release image in edit first
         releaseWindow()
         releaseImage()
       }
@@ -416,13 +438,19 @@ Item { id: root_
           showPopup(x, y)
         }
 
-        Desktop.MenuItem { id: copyAct_
+        Desktop.MenuItem { //id: copyAct_
           text: Sk.tr("Copy")
           shortcut: "Ctrl+C"
           onTriggered: {
             textEdit_.selectAll()
             textEdit_.copy()
           }
+        }
+
+        Desktop.MenuItem { //id: editAct_
+          text: qsTr("Select Color")
+          //shortcut: "Ctrl+C"
+          onTriggered: item_.showEdit()
         }
 
         Desktop.Separator {}
@@ -506,6 +534,7 @@ Item { id: root_
 
           property bool hover:
               closeButton_.hover ||
+              editButton_.hover ||
               translateButton_.hover ||
               ttsButton_.hover ||
               zoomInButton_.hover ||
@@ -528,7 +557,20 @@ Item { id: root_
             onClicked: item_.hide()
           }
 
-          Share.CloseButton { id: translateButton_
+          Share.CircleButton { id: editButton_
+            diameter: parent.cellWidth
+            font.pixelSize: parent.pixelSize
+            //font.bold: hover    // bold make the text too bold
+            font.family: 'MS Gothic'
+            backgroundColor: 'transparent'
+
+            color: enabled ? 'snow' : 'gray'
+            text: '色'
+            toolTip: qsTr("Select color")
+            onClicked: showEdit()
+          }
+
+          Share.CircleButton { id: translateButton_
             diameter: parent.cellWidth
             font.pixelSize: parent.pixelSize
             //font.bold: hover    // bold make the text too bold

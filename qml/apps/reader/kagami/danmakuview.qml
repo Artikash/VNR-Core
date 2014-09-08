@@ -42,7 +42,7 @@ Item { id: root_
     //return bbcodePlugin_.parse(t)
   }
 
-  //Component.onCompleted: console.log("omajinai.qml: pass")
+  //Component.onCompleted: console.log("danmakuview.qml: pass")
   Repeater { id: repeater_
     anchors.fill: parent
     model: ListModel { id: model_ }
@@ -229,6 +229,6 @@ Item { id: root_
 
   function clear() {
     //listModel_.clear()
-    console.log("omajinai.qml:clear: pass")
+    console.log("danmakuview.qml:clear: pass")
   }
 }

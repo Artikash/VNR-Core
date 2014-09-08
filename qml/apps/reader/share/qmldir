@@ -5,6 +5,7 @@ Blocker         blocker.qml
 BusySpinner     busyspinner.qml
 CachedAvatarImage cachedavatarimage.qml
 CheckBox        checkbox.qml
+CheckButton     checkbutton.qml
 CircleButton    circlebutton.qml
 ClearButton     clearbutton.qml
 CloseButton     closebutton.qml
@@ -20,6 +21,7 @@ IntSpinBox      intspinbox.qml
 LabeledSlider   labeledslider.qml
 Navigator       navigator.qml
 Paginator       paginator.qml
+PushButton      pushbutton.qml
 SearchBox       searchbox.qml
 Slider          slider.qml
 TextButton      textbutton.qml

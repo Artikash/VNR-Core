@@ -5,7 +5,7 @@
 __all__ = ['OcrImageObject', 'OcrSettings']
 
 import os
-from PySide.QtCore import QObject, Slot
+from PySide.QtCore import QObject, Property, Signal, Slot
 from sakurakit import skfileio
 from sakurakit.skdebug import dprint, dwarn
 from modiocr import modiocr
@@ -113,18 +113,23 @@ class OcrImageObject(QObject):
     super(OcrImageObject, self).__init__(parent)
     self.__d = _OcrImageObject(**kwargs)
 
-  @Slot(result=unicode)
-  def ocr(self):
-    """
-    @return  unicode
-    """
-    return self.__d.ocr()
+  imagePathChanged = Signal(unicode)
+  imagePath = Property(unicode,
+    lambda self: self.__d.path,
+    notify=imagePathChanged)
 
   def language(self):
     """
     @return  str
     """
     return self.__d.settings.language()
+
+  @Slot(result=unicode)
+  def ocr(self):
+    """
+    @return  unicode
+    """
+    return self.__d.ocr()
 
   @Slot()
   def release(self):
