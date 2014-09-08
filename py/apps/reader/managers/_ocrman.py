@@ -17,19 +17,19 @@ OCR_MIN_HEIGHT = 3
 OCR_IMAGE_FORMAT = 'png'
 OCR_IMAGE_QUALITY = 100 # -1 or [0, 100], 100 is lossless quality
 
-def capture_pixmap(x, y, width, height, wid=None):
+def capture_pixmap(x, y, width, height, hwnd=None):
   """
   @param  x  int
   @param  y  int
   @param  width  int
   @param  height  int
-  @param  wid  WId
+  @param  hwnd  int
   @return  QPixmap
   """
   from PySide.QtGui import QPixmap
-  if wid:
+  if hwnd:
     from sakurakit import skwidgets
-    return QPixmap.grabWindow(skwidgets.to_wid(wid), x, y, width, height)
+    return QPixmap.grabWindow(skwidgets.to_wid(hwnd), x, y, width, height)
   else:
     from PySide.QtCore import QCoreApplication
     qApp = QCoreApplication.instance()
@@ -133,18 +133,19 @@ class OcrImageObject(QObject):
     dprint("pass")
 
   @classmethod
-  def create(cls, x, y, width, height, **kwargs): # -> cls or None
+  def create(cls, x, y, width, height, hwnd=0, **kwargs): # -> cls or None
     """
     @param  x  int
     @param  y  int
     @param  width  int
     @param  height  int
+    @param* hwnd  int
     @param* kwargs  parameters to create OcrImageObject
     """
     if width < OCR_MIN_WIDTH or height < OCR_MIN_HEIGHT:
       dwarn("skip image that is too small")
       return
-    pm = capture_pixmap(x, y, width, height)
+    pm = capture_pixmap(x, y, width, height, hwnd)
     if not pm or pm.isNull():
       dwarn("failed to capture image")
       return
