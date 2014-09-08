@@ -6,10 +6,12 @@ import '.' as Share
 
 Share.TextButton {
 
+  property bool enabled: true
+
   // - Private -
   width: 50
   height: 25
-  backgroundColor: '#aa434343' // black
+  backgroundColor: enabled ? '#aa434343' : '#aabebebe' // black : gray
 
   radius: 5
 }

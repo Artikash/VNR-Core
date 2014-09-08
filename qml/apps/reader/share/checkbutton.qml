@@ -3,13 +3,18 @@
  */
 import '.' as Share
 
-Share.PushButton {
+Share.TextButton {
 
+  property bool enabled: true
   property bool checked
 
   // - Private -
 
-  backgroundColor: checked ? '#aa00ff00' : '#aa434343' // green : black
+  // - Private -
+  width: 50
+  height: 25
+  backgroundColor: !enabled ? '#aabebebe' : checked ? '#aa00ff00' : '#aa434343'  // gray : green : black
 
-  onClicked: checked = !checked
+  radius: 5
+  onClicked: if (enabled) checked = !checked
 }

@@ -12,6 +12,7 @@ Rectangle { id: root_
   property bool ignoresFocus: false
 
   function show(image, text) { // OcrImageObject
+    //enableButton_.enabled = false
     imageObject = image
     textArea_.textEdit.text = text || ('(' + Sk.tr("empty") + ')')
     textArea_.textEdit.font.pixelSize = zoomFactor * 12
@@ -112,20 +113,29 @@ Rectangle { id: root_
 
   // Slider
 
-  Share.ColorSlider { id: colorSlider_
+  Share.Slider2 { id: colorSlider_
     anchors {
       left: parent.left; right: parent.right
       bottom: rightButtonRow_.top
       margins: _ROOT_MARGIN
     }
-    height: 30
+    enabled: enableButton_.checked
+
+    minimumValue: 0.0
+    maximumValue: 1.0
+
+    startValue: 0.3
+    stopValue: 0.7
+
+    onStartValueChanged: applyButton_.enabled = true
+    onStopValueChanged: applyButton_.enabled = true
   }
 
   // Footer
 
   property int buttonWidth: 50
 
-  Share.CheckButton { //id: enableButton_
+  Share.CheckButton { id: enableButton_
     anchors {
       left: parent.left
       bottom: parent.bottom
@@ -136,6 +146,8 @@ Rectangle { id: root_
     //text: checked ? Sk.tr("Enable") : Sk.tr('Disable')
     text: Sk.tr("Enable")
     toolTip: Sk.tr("Enable")
+
+    onClicked: applyButton_.enabled = true
   }
 
   Row { id: rightButtonRow_
@@ -154,17 +166,18 @@ Rectangle { id: root_
       onClicked: root_.refresh()
     }
 
-    Share.PushButton { //id: cancelButton_
-      width: root_.buttonWidth
-      text: Sk.tr("Cancel")
-      toolTip: Sk.tr("Cancel")
-      onClicked: root_.hide()
-    }
+    //Share.PushButton { //id: cancelButton_
+    //  width: root_.buttonWidth
+    //  text: Sk.tr("Cancel")
+    //  toolTip: Sk.tr("Cancel")
+    //  onClicked: root_.hide()
+    //}
 
-    Share.PushButton { //id: saveButton_
+    Share.PushButton { id: applyButton_
       width: root_.buttonWidth
-      text: Sk.tr("Save")
-      toolTip: Sk.tr("Save")
+      text: Sk.tr("Apply")
+      toolTip: Sk.tr("Apply")
+      enabled: false // disable apply on startup
     }
   }
 
