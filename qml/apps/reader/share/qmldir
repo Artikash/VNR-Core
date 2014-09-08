@@ -4,6 +4,8 @@ AvatarImage     avatarimage.qml
 Blocker         blocker.qml
 BusySpinner     busyspinner.qml
 CachedAvatarImage cachedavatarimage.qml
+ColorSlider     colorslider.qml
+ColorSlider2    colorslider2.qml
 CheckBox        checkbox.qml
 CheckButton     checkbutton.qml
 CircleButton    circlebutton.qml

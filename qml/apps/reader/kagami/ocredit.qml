@@ -13,7 +13,7 @@ Rectangle { id: root_
 
   function show(image, text) { // OcrImageObject
     imageObject = image
-    textArea_.textEdit.text = text
+    textArea_.textEdit.text = text || ('(' + Sk.tr("empty") + ')')
     textArea_.textEdit.font.pixelSize = zoomFactor * 12
     visible = true
   }
@@ -37,6 +37,8 @@ Rectangle { id: root_
         + _ROOT_MARGIN
         + textRect_.height
         + _ROOT_MARGIN
+        + colorSlider_.height
+        + _ROOT_MARGIN
         + rightButtonRow_.height
         + _ROOT_MARGIN
 
@@ -46,6 +48,10 @@ Rectangle { id: root_
   //color: hover ? '#99000000' : '#55000000' // black
 
   //property bool hover: tip_.containsMouse || closeButton_.hover
+
+  function refresh() {
+    textArea_.textEdit.text = imageObject.ocr() || ('(' + Sk.tr("empty") + ')')
+  }
 
   MouseArea { id: mouse_
     anchors.fill: parent
@@ -73,9 +79,8 @@ Rectangle { id: root_
 
   Rectangle { id: textRect_ // background color
     anchors {
-      left: parent.left
-      right: parent.right
-      bottom: rightButtonRow_.top
+      left: parent.left; right: parent.right
+      bottom: colorSlider_.top
       margins: _ROOT_MARGIN
     }
     color: '#aaffffff' // white
@@ -105,6 +110,17 @@ Rectangle { id: root_
     }
   }
 
+  // Slider
+
+  Share.ColorSlider { id: colorSlider_
+    anchors {
+      left: parent.left; right: parent.right
+      bottom: rightButtonRow_.top
+      margins: _ROOT_MARGIN
+    }
+    height: 30
+  }
+
   // Footer
 
   property int buttonWidth: 50
@@ -130,6 +146,13 @@ Rectangle { id: root_
     }
 
     spacing: _ROOT_MARGIN
+
+    Share.PushButton { //id: refreshButton_
+      width: root_.buttonWidth
+      text: Sk.tr("Refresh")
+      toolTip: Sk.tr("Refresh")
+      onClicked: root_.refresh()
+    }
 
     Share.PushButton { //id: cancelButton_
       width: root_.buttonWidth
