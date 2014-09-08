@@ -16,7 +16,7 @@ Item { id: root_
   property alias labelWidth: label_.width
   property alias toolTip: toolTip_.text
   property alias handleToolTip: slider_.toolTip
-  property bool hover: enabled && (toolTip_.containsMouse || slider_.hover)
+  property bool hover: toolTip_.containsMouse || slider_.hover
   property alias handleWidth: slider_.handleWidth
   property alias value: slider_.value // real, default 0.0
   property alias maximumValue: slider_.maximumValue // real, default 0.0
@@ -36,7 +36,7 @@ Item { id: root_
     color: root_.enabled ? 'snow' : 'silver'
     effect: Share.TextEffect { highlight: root_.enabled && root_.hover }
 
-    font.bold: root_.hover
+    font.bold: root_.enabled && root_.hover
     //font.family: root_.language ? Util.fontFamilyForLanguage(root_.language) : ""
     font.strikeout: !root_.enabled
 

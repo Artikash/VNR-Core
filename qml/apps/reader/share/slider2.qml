@@ -13,15 +13,16 @@ Rectangle { id: root_
   smooth: true
 
   property alias toolTip: toolTip_.text
-  property alias startToolTip: startToolTip_.text
-  property alias stopToolTip: stopToolTip_.text
+  property alias startHandleToolTip: startToolTip_.text
+  property alias stopHandleToolTip: stopToolTip_.text
 
   property bool enabled: true
 
   property int handleWidth: 8
-  property bool hover: toolTip_.containsMouse
-                    || startToolTip_.containsMouse
-                    || stopToolTip_.containsMouse
+  property bool hover:
+      toolTip_.containsMouse ||
+      startToolTip_.containsMouse ||
+      stopToolTip_.containsMouse
 
   property real minimumValue: 0
   property real maximumValue: 100
@@ -119,7 +120,7 @@ Rectangle { id: root_
     }
     //border.color: '#99ff0000' // red
     border.color: '#bbffffaa' // yellow
-    border.width: root_.hover ? 2 : 0
+    border.width: root_.enabled && root_.hover ? 2 : 0
 
     visible: root_.enabled
 
@@ -155,7 +156,7 @@ Rectangle { id: root_
     }
     //border.color: '#99ff0000' // red
     border.color: '#bbffffaa' // yellow
-    border.width: root_.hover ? 2 : 0
+    border.width: root_.enabled && root_.hover ? 2 : 0
 
     visible: root_.enabled
 

@@ -113,7 +113,11 @@ Rectangle { id: root_
 
   // Slider
 
-  Share.Slider2 { id: colorSlider_
+  function toPercentage(value) { // real -> string
+    return Math.round(value * 100) + '%'
+  }
+
+  Share.LabeledSlider2 { id: colorSlider_
     anchors {
       left: parent.left; right: parent.right
       bottom: rightButtonRow_.top
@@ -127,8 +131,16 @@ Rectangle { id: root_
     startValue: 0.3
     stopValue: 0.7
 
-    onStartValueChanged: applyButton_.enabled = true
-    onStopValueChanged: applyButton_.enabled = true
+    startLabelText: toPercentage(startValue)
+    stopLabelText: toPercentage(stopValue)
+
+    startLabelToolTip: qsTr("Minimum text color intensity")
+    stopLabelToolTip: qsTr("Maximum text color intensity")
+
+    startHandleToolTip: startLabelToolTip
+    stopHandleToolTip: stopLabelToolTip
+
+    sliderToolTip: qsTr("Range of the text color intensity")
   }
 
   // Footer
@@ -147,7 +159,7 @@ Rectangle { id: root_
     text: Sk.tr("Enable")
     toolTip: Sk.tr("Enable")
 
-    onClicked: applyButton_.enabled = true
+    //onClicked: applyButton_.enabled = true
   }
 
   Row { id: rightButtonRow_
@@ -177,7 +189,7 @@ Rectangle { id: root_
       width: root_.buttonWidth
       text: Sk.tr("Apply")
       toolTip: Sk.tr("Apply")
-      enabled: false // disable apply on startup
+      //enabled: false // disable apply on startup
     }
   }
 

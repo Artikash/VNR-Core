@@ -19,6 +19,7 @@ InputBar        inputbar.qml
 InputBox        inputbox.qml
 IntSpinBox      intspinbox.qml
 LabeledSlider   labeledslider.qml
+LabeledSlider2  labeledslider2.qml
 Navigator       navigator.qml
 Paginator       paginator.qml
 PushButton      pushbutton.qml
