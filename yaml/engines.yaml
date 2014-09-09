@@ -230,10 +230,12 @@ slow:
   - RunrunEngine Old
 
 fast:
+  - AB2Try
   - MarineHeart
 
 # The game engines that require the game to be hooked after loaded
 delay:
+  - AB2Try # .NET delay loading
   - Adobe AIR
 
 # Thin character, SHIFT-JIS or GBK

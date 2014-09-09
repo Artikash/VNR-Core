@@ -1,4 +1,4 @@
-/** labeledslider2.qml
+/** labeledrangeslider.qml
  *  9/8/2014 jichi
  */
 import QtQuick 1.1
@@ -83,7 +83,7 @@ Item { id: root_
     }
   }
 
-  Share.Slider2 { id: slider_
+  Share.RangeSlider { id: slider_
     anchors {
       top: parent.top; bottom: parent.bottom
       left: startLabel_.right

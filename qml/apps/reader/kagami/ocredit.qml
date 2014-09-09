@@ -156,7 +156,7 @@ Rectangle { id: root_
     return Math.round(value * 100) + '%'
   }
 
-  Share.LabeledSlider2 { id: colorSlider_
+  Share.LabeledRangeSlider { id: colorSlider_
     anchors {
       left: parent.left; right: parent.right
       bottom: rightButtonRow_.top
