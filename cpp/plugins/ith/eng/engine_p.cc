@@ -29,6 +29,8 @@
 
 //#define DEBUG "engine_p.h"
 
+enum { VNR_TEXT_CAPACITY = 1500 }; // estimated max number of bytes allowed in VNR, slightly larger than VNR's text limit (1000)
+
 #ifdef DEBUG
 # include "ith/common/growl.h"
 //# include "uniquemap.h"
@@ -193,7 +195,7 @@ inline ULONG SafeMatchBytesInPS2Memory(LPCVOID pattern, DWORD patternSize)
 // Return the address of the first non-zero address
 LPCSTR reverse_search_begin(const char * s)
 {
-  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  enum { MAX_LENGTH = VNR_TEXT_CAPACITY };
   if (*s)
     for (size_t i = 0; i < MAX_LENGTH; i++, s--)
       if (!*s)
@@ -203,7 +205,7 @@ LPCSTR reverse_search_begin(const char * s)
 
 bool all_ascii(const char *s)
 {
-  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  enum { MAX_LENGTH = VNR_TEXT_CAPACITY };
   if (s)
     for (size_t i = 0; i < MAX_LENGTH && *s; i++, s--)
       if (*s < 0) // signed char
@@ -2425,7 +2427,7 @@ bool InsertMalie2Hook()
 
 // jichi 2/8/3014: Return the beginning and the end of the text
 // Remove the leading illegal characters
-enum { _MALIE3_MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+enum { _MALIE3_MAX_LENGTH = VNR_TEXT_CAPACITY };
 LPCWSTR _Malie3LTrim(LPCWSTR p)
 {
   if (p)
@@ -6758,7 +6760,7 @@ static void SpecialHookExp(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *sp
         arg3 = argof(3, esp_base); // size - 1
   if (arg1 && arg3)
     if (DWORD text = *(DWORD *)arg1)
-      if (!(text > lastText && text < lastText + 1500)) { // text is not a subtext of lastText, 1500 is roughly VNR's text capacity
+      if (!(text > lastText && text < lastText + VNR_TEXT_CAPACITY)) { // text is not a subtext of lastText
         lastText = text;
         *data = text; // mov edx,dword ptr ds:[eax]
         *len = ::strlen((LPCSTR)text);
@@ -6930,7 +6932,7 @@ inline bool _vanillawaregarbage_ch(char c)
 // Return true if the text is full of garbage characters
 bool _vanillawaregarbage(LPCSTR p)
 {
-  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  enum { MAX_LENGTH = VNR_TEXT_CAPACITY };
   for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
     if (!_vanillawaregarbage_ch(*p))
       return false;
@@ -7298,7 +7300,7 @@ inline bool _alchemistgarbage_ch(char c)
 // Return true if the text is full of garbage characters
 bool _alchemistgarbage(LPCSTR p)
 {
-  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  enum { MAX_LENGTH = VNR_TEXT_CAPACITY };
   for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
     if (!_alchemistgarbage_ch(*p))
       return false;
@@ -7316,7 +7318,7 @@ inline bool _rejetgarbage_ch(char c)
 
 bool _rejetgarbage(LPCSTR p)
 {
-  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  enum { MAX_LENGTH = VNR_TEXT_CAPACITY };
   for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
     if (!_rejetgarbage_ch(*p))
       return false;
@@ -7326,7 +7328,7 @@ bool _rejetgarbage(LPCSTR p)
 // Trim leading garbage
 LPCSTR _rejetltrim(LPCSTR p)
 {
-  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  enum { MAX_LENGTH = VNR_TEXT_CAPACITY };
   if (p)
     for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
       if (!_rejetgarbage_ch(*p))
@@ -7641,7 +7643,7 @@ inline bool _5pbgarbage_ch(char c)
 // Trim leading garbage
 LPCSTR _5pbltrim(LPCSTR p)
 {
-  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  enum { MAX_LENGTH = VNR_TEXT_CAPACITY };
   if (p)
     for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
       if (!_5pbgarbage_ch(*p))
@@ -9193,7 +9195,7 @@ size_t _bandaistrlen(LPCSTR text)
 // Trim leading garbage
 LPCSTR _bandailtrim(LPCSTR p)
 {
-  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  enum { MAX_LENGTH = VNR_TEXT_CAPACITY };
   if (p)
     for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
       if (!_bandaigarbage_ch(*p))
@@ -10783,7 +10785,7 @@ bool _typemoongarbage_ch(char c)
 // Trim leading garbage
 LPCSTR _typemoonltrim(LPCSTR p)
 {
-  enum { MAX_LENGTH = 1500 }; // slightly larger than VNR's text limit (1000)
+  enum { MAX_LENGTH = VNR_TEXT_CAPACITY };
   if (p && p[0] == '%')
     for (int count = 0; (*p) && count < MAX_LENGTH; count++, p++)
       if (!_typemoongarbage_ch(*p))
