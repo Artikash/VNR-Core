@@ -14,7 +14,7 @@
 #include "ith/cli/cli.h"
 #include "ith/sys/sys.h"
 #include "ith/common/except.h"
-//#include "ith/common/growl.h"
+#include "ith/common/growl.h"
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 
@@ -348,6 +348,10 @@ DWORD DetermineEngineByFile4()
   if (IthCheckFile(L"EAGLS.dll")) { // jichi 3/24/2014: E.A.G.L.S
     //ConsoleOutput("vnreng: IGNORE EAGLS");
     InsertEaglsHook();
+    return yes;
+  }
+  if (IthFindFile(L"model\\*.hed")) { // jichi 9/8/2014: EXP
+    InsertExpHook();
     return yes;
   }
   return no;
