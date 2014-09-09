@@ -816,15 +816,43 @@
     </message>
 </context>
 <context>
+    <name>ocredit</name>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="175"/>
+        <source>Minimum text color intensity</source>
+        <translation>文本顏色濃度的最小值</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="176"/>
+        <source>Maximum text color intensity</source>
+        <translation>文本顏色濃度的最大值</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="181"/>
+        <source>Range of the text color intensity</source>
+        <translation>文本顏色濃度的範圍</translation>
+    </message>
+</context>
+<context>
     <name>ocrpopup</name>
     <message>
-        <location filename="../kagami/ocrpopup.qml" line="108"/>
-        <location filename="../kagami/ocrpopup.qml" line="409"/>
+        <location filename="../kagami/ocrpopup.qml" line="229"/>
+        <location filename="../kagami/ocrpopup.qml" line="545"/>
         <source>You can drag the border to move the text box</source>
         <translation>你可以通過拖動四週的邊框來移動文本框</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopup.qml" line="457"/>
+        <location filename="../kagami/ocrpopup.qml" line="472"/>
+        <source>Select Color</source>
+        <translation>選擇顏色</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocrpopup.qml" line="590"/>
+        <source>Select color</source>
+        <translation>選擇顏色</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocrpopup.qml" line="607"/>
         <source>Translating</source>
         <translation>正在翻譯中</translation>
     </message>

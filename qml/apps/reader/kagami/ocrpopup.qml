@@ -140,12 +140,21 @@ Item { id: root_
       }
 
       function showEdit() {
-        if (!editItem)
+        if (!editItem) {
           editItem = editComp_.createObject(root_)
+          editItem.textChanged.connect(loadEditText)
+        }
 
         editItem.x = Math.min(item_.x + item_.width + 10, root_.x + root_.width - item_.width)
         editItem.y = Math.min(item_.y, root_.x + root_.height - item_.height)
         editItem.show(image, originalText)
+      }
+
+      function loadEditText() {
+        if (editItem) {
+          resetText()
+          textEdit_.text = originalText = translatedText = editItem.text
+        }
       }
 
       function release() {
@@ -210,15 +219,19 @@ Item { id: root_
           y = v
       }
 
-      function reset() {
+      function resetPosition() {
         relativeX = relativeY = 0
+        textEdit_.width = _DEFAULT_WIDTH
+      }
 
+      function resetText() {
         translateButton_.enabled = true
         toolTip_.text = qsTr("You can drag the border to move the text box")
-        //textEdit_.textFormat = TextEdit.PlainText
-        //textWidth = _DEFAULT_WIDTH
-        textEdit_.width = _DEFAULT_WIDTH
+      }
 
+      function reset() {
+        resetPosition()
+        resetText()
         release()
       }
 

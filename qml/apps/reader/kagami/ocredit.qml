@@ -11,6 +11,8 @@ Rectangle { id: root_
   property real zoomFactor: 1.0
   property bool ignoresFocus: false
 
+  property string text: textArea_.textEdit.text
+
   function show(image, text) { // OcrImageObject
     imageObject = image
     loadImageProperties()
@@ -26,8 +28,6 @@ Rectangle { id: root_
   }
 
   // - Private -
-
-  //property alias text: textEdit_.text
 
   property QtObject imageObject // OcrImageObject  ocr controller
 
@@ -51,9 +51,13 @@ Rectangle { id: root_
     }
   }
 
-  function cancel() {
-    loadImageProperties()
-    saveImageProperties()
+  function reset() {
+    if (imageObject) {
+      enableButton_.checked = savedColorIntensityEnable
+      colorSlider_.startValue = savedMinimumColorIntensity
+      colorSlider_.stopValue = savedMaximumColorIntensity
+      ocr()
+    }
   }
 
   property int _ROOT_MARGIN: 9
@@ -130,7 +134,8 @@ Rectangle { id: root_
 
       textEdit { // id: textEdit_  -- such syntax is not allowed
         textFormat: TextEdit.PlainText
-        wrapMode: TextEdit.WordWrap
+        //wrapMode: TextEdit.WordWrap
+        wrapMode: TextEdit.Wrap
         //color: 'snow'
         color: 'black'
         //font.pixelSize: Math.12 * root_._zoomFactor // FIXME: Do not work
@@ -161,8 +166,8 @@ Rectangle { id: root_
     minimumValue: 0.0
     maximumValue: 1.0
 
-    startValue: 0.3
-    stopValue: 0.7
+    //startValue: 0.3
+    //stopValue: 0.7
 
     startLabelText: toPercentage(startValue)
     stopLabelText: toPercentage(stopValue)
@@ -217,11 +222,11 @@ Rectangle { id: root_
       backgroundColor: '#aa00bfff' // blue
     }
 
-    Share.PushButton { id: cancelButton_
+    Share.PushButton { id: resetButton_
       width: root_.buttonWidth
-      text: Sk.tr("Cancel")
-      toolTip: Sk.tr("Cancel")
-      onClicked: root_.cancel()
+      text: Sk.tr("Reset")
+      toolTip: Sk.tr("Reset")
+      onClicked: root_.reset()
 
       //styleHint: 'danger'
       backgroundColor: '#aaff0000' // red

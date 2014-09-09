@@ -3,17 +3,17 @@
 
 #include "pymodiocr/pymodiocr.h"
 #include "modiocr/modiocr.h"
-#include <QtCore/QMutex>
-#include <QtCore/QMutexLocker>
+//#include <QtCore/QMutex>
+//#include <QtCore/QMutexLocker>
 
-static QMutex _mutex; // MODI OCR would crash if invoked simutaneously
+//static QMutex _mutex; // MODI OCR would crash if invoked simutaneously
 
 bool ModiOcr::isValid()
 { return ::modiocr_available(); }
 
 QString ModiOcr::readText(const QString &path, int language)
 {
-  QMutexLocker sync(&::_mutex);
+  //QMutexLocker sync(&::_mutex);
   QString ret;
   ::modiocr_readfile((const wchar_t *)path.utf16(), language,
     [&ret](const wchar_t *text) {
@@ -25,7 +25,7 @@ QString ModiOcr::readText(const QString &path, int language)
 
 QStringList ModiOcr::readTextList(const QString &path, int language)
 {
-  QMutexLocker sync(&::_mutex);
+  //QMutexLocker sync(&::_mutex);
   QStringList ret;
   ::modiocr_readfile((const wchar_t *)path.utf16(), language,
     [&ret](const wchar_t *text) {
