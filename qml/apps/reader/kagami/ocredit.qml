@@ -61,6 +61,7 @@ Rectangle { id: root_
   }
 
   property int _ROOT_MARGIN: 9
+  //property int spacing: _ROOT_MARGIN
 
   width: 300 // TODO: allow dynamically adjust this value
   height: _ROOT_MARGIN
@@ -162,6 +163,8 @@ Rectangle { id: root_
       margins: _ROOT_MARGIN
     }
     enabled: enableButton_.checked
+    spacing: _ROOT_MARGIN
+    labelWidth: 30
 
     minimumValue: 0.0
     maximumValue: 1.0

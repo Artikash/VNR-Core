@@ -8,6 +8,8 @@ if __name__ == '__main__': # DEBUG
 
 import os
 from sakurakit.skclass import memoized
+from sakurakit.skdebug import dwarn
+
 
 # This file must be consistent with modiocr.h
 # enum modiocr_lang : unsigned long
@@ -94,18 +96,20 @@ if skos.WIN:
   READ_MUTEX = QMutex() # sync access would crash
 
   def readtext(path, lang): # (unicode path, int lang) -> unicode
-    if READ_MUTEX.tryLock():
-      ret = ModiOcr.readText(path, lang)
-      READ_MUTEX.unlock()
-      return ret
-    return u''
+    if not READ_MUTEX.tryLock():
+      dwarn("failed to lock mutex due to contention")
+      return u''
+    ret = ModiOcr.readText(path, lang)
+    READ_MUTEX.unlock()
+    return ret
 
   def readtexts(path, lang): # (unicode path, int lang) -> [unicode]
-    if READ_MUTEX.tryLock():
-      ret = ModiOcr.readTextList(path, lang)
-      READ_MUTEX.unlock()
-      return ret
-    return []
+    if not READ_MUTEX.tryLock():
+      dwarn("failed to lock mutex due to contention")
+      return []
+    ret = ModiOcr.readTextList(path, lang)
+    READ_MUTEX.unlock()
+    return ret
 
 else:
   def available(): return False

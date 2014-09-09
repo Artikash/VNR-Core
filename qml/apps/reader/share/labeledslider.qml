@@ -24,6 +24,8 @@ Item { id: root_
   property alias enabled: slider_.enabled
   //property string language
 
+  property int spacing: 9
+
   // - Private -
 
   Text { id: label_
@@ -50,7 +52,7 @@ Item { id: root_
       top: parent.top; bottom: parent.bottom
       right: parent.right
       left: label_.right
-      leftMargin: 10
+      leftMargin: root_.spacing
     }
   }
 }
