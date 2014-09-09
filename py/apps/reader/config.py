@@ -436,10 +436,8 @@ TEMPLATE_ENTRIES = SHARE_YAML['templates']['entries'] # {str name:unicode relpat
 
 JCUSERDIC_LOCATIONS = map(parse_path, SHARE_YAML['jcuserdic']) # [unicode abspath]
 
-TAHSCRIPT_LOCATION = parse_path(SHARE_YAML['tahscript'])
-#TAHSCRIPT_URL = SHARE_YAML['tahscript']['url'] # str url
-#TAHSCRIPT_LOCATIONS = {k: parse_path(v) # {str name:unicode apspath}
-#    for k,v in SHARE_YAML['tahscript']['locations'].iteritems()}
+TAHSCRIPT_LOCATIONS = {k: parse_path(v) # {str key:unicode relpath}
+    for k,v in SHARE_YAML['tahscript'].iteritems()}
 
 MECAB_DICS = {k: parse_path(v) # {str name:unicode relpath}
     for k,v in SHARE_YAML['mecab']['dicdir'].iteritems()}

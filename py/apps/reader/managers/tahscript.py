@@ -3,7 +3,8 @@
 # 8/14/2014 jichi
 
 import re
-from sakurakit.skclass import memoized, memoizedproperty
+from functools import partial
+from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint
 
 _repeat_comma = re.compile(ur'。+')
@@ -16,54 +17,42 @@ def manager(): return TahScriptManager()
 class _TahScriptManager:
 
   def __init__(self):
-    self.enabled = False
+    self.enabled = {} # {str key:bool}
+    self.tah = {} # {str key:TahScriptManager}
 
-  @memoizedproperty
-  def tah(self):
-    import os
-    from pytahscript import TahScriptManager
-    import config
-    ret = TahScriptManager()
-    path = config.TAHSCRIPT_LOCATION
-    if os.path.exists(path):
-      ret.loadFile(path)
-      dprint("load %s rules" % ret.size())
+  def getTah(self, key): # str key -> TahScriptManager
+    ret = self.tah.get(key)
+    if not ret:
+      import os
+      from pytahscript import TahScriptManager
+      import config
+      ret = self.tah[key] = TahScriptManager()
+      path = config.TAHSCRIPT_LOCATIONS[key]
+      if os.path.exists(path):
+        ret.loadFile(path)
+        dprint("load %s rules for %s" % (ret.size(), key))
     return ret
-
-  #def reloadScripts(self, lang=None):
-  #  """
-  #  @param* lang  str
-  #  """
-  #  import os
-  #  paths = config.TAHSCRIPT_LOCATIONS
-  #  if not lang:
-  #    for lang,path in paths.iteritems():
-  #      if os.path.exists(path):
-  #        self.tah[lang].loadFile(path)
-  #        dprint("load (%s) %s rules from %s" % (lang, self.tah[lang].size(), path))
-  #  else:
-  #    path = paths.get(lang)
-  #    if path and os.path.exists(path):
-  #      self.tah[lang].loadFile(path)
-  #      dprint("load (%s) %s rules from %s" % (lang, self.tah[lang].size(), path))
 
 class TahScriptManager:
 
   def __init__(self):
     self.__d = _TahScriptManager()
 
+    # Put it here instead of main.py to delay initializing scripts
     import settings
     ss = settings.global_()
-    self.setEnabled(ss.isTahScriptEnabled())
-    ss.tahScriptEnabledChanged.connect(self.setEnabled)
+    self.setEnabled('atlas', ss.isAtlasScriptEnabled())
+    ss.atlasScriptEnabledChanged.connect(partial(self.setEnabled, 'atlas'))
+    self.setEnabled('lec', ss.isLecScriptEnabled())
+    ss.lecScriptEnabledChanged.connect(partial(self.setEnabled, 'lec'))
 
-  def isEnabled(self): return self.__d.enabled
-  def setEnabled(self, t):
+  def isEnabled(self, key): return bool(self.__d.enabled.get(key))
+  def setEnabled(self, key, t):
     d = self.__d
-    if d.enabled != t:
-      d.enabled = t
+    if d.enabled.get(key) != t:
+      d.enabled[key] = t
       if t:
-        d.tah # force loading tah script
+        d.getTah(key) # force loading tah script
 
   #def isEmpty(self):
   #  return all(it.isEmpty() for it in self.__d.tah.itervalues())
@@ -72,14 +61,15 @@ class TahScriptManager:
 
   #def reloadScripts(self): self.__d.reloadScripts() # reload scritps
 
-  def replace(self, text):
+  def apply(self, text, key):
     """
     @param  text  unicode
     @return  unicode
     """
     d = self.__d
-    if not d.enabled:
+    if not d.enabled.get(key):
       return text
-    return repair_tah_text(d.tah.translate(text)) or text # totally deleting ret is NOT allowed in case of malicious rule
+    tah = d.getTah(key)
+    return repair_tah_text(tah.translate(text)) or text # totally deleting ret is NOT allowed in case of malicious rule
 
 # EOF

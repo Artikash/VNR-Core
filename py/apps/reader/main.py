@@ -597,6 +597,17 @@ class _MainObject(object):
     ret.setParent(self.q)
     return ret
 
+  #@memoizedproperty
+  #def tahScriptManager(self):
+  #  import tahscript
+  #  ret = tahscript.manager()
+  #  ss = settings.global_()
+  #  ret.setEnabled('atlas', ss.isAtlasScriptEnabled())
+  #  ss.atlasScriptEnabledChanged.connect(partial(ret.setEnabled, 'atlas'))
+  #  ret.setEnabled('lec', ss.isLecScriptEnabled())
+  #  ss.lecScriptEnabledChanged.connect(partial(ret.setEnabled, 'lec'))
+  #  return ret
+
   @memoizedproperty
   def translatorManager(self):
     dprint("create translator manager")
@@ -1462,6 +1473,7 @@ class MainObject(QObject):
 
     d.termManager
     #d.translationScriptManager
+    #d.tahScriptManager
     d.translatorManager
     d.translationCacheManager
     d.dictionaryManager
