@@ -3872,7 +3872,7 @@ You can report the bugs to &lt;a href=&quot;mailto:{0}&quot;&gt;{0}&lt;/a&gt;.</
     <message>
         <location filename="dialogs/textprefs.py" line="292"/>
         <source>Please check &lt;a href=&apos;{0}&apos;&gt;this wiki&lt;/a&gt; if there is no correct text.</source>
-        <translation>如果没有正确的文本，请查看&lt;a href=&apos;{0}&apos;&gt;这个wiki&lt;/a&gt;该如何做。</translation>
+        <translation type="obsolete">如果没有正确的文本，请查看&lt;a href=&apos;{0}&apos;&gt;这个wiki&lt;/a&gt;该如何做。</translation>
     </message>
     <message utf8="true">
         <location filename="dialogs/info.py" line="366"/>
@@ -3928,6 +3928,11 @@ Check this wiki for what to do if there is no correct text.
 另外，有些游戏其实并不需要特殊码。但是需要调整下游戏的设定才可以工作。
 如果你找不到正确的文本，下边的Wiki也许可以有些帮助。
 &lt;center&gt;&lt;a href=&quot;{3}&quot;&gt;{3}&lt;/a&gt;&lt;/center&gt;</translation>
+    </message>
+    <message>
+        <location filename="dialogs/textprefs.py" line="292"/>
+        <source>Please check this &lt;a href=&apos;{0}&apos;&gt;Game Settings&lt;/a&gt; wiki if there is no correct text.</source>
+        <translation>如果没有正确的文本，请查看这个&lt;a href=&apos;{0}&apos;&gt;Game Settings&lt;/a&gt;的wiki该如何做。</translation>
     </message>
 </context>
 </TS>
