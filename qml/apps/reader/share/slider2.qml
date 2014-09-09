@@ -84,7 +84,7 @@ Rectangle { id: root_
     GradientStop { position: 1.0; color: 'white' } // lighter
   }
 
-  Rectangle { //id: groove_
+  Share.FadingRectangle { //id: groove_
     anchors {
       left: startHandle_.right
       right: stopHandle_.left
