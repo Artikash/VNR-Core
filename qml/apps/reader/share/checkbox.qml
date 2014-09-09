@@ -103,13 +103,12 @@ MouseArea { id: root_
     when: root_.checked && root_.enabled   // こっちの方がスマートかも
     PropertyChanges {
       target: boxGradBegin_
-      //color: '#b5e61d' // green
-      color: '#95e6ff'   // blue
+      color: '#cc87cefa' // lightskyblue
+      //color: '#aa87ceeb' // skyblue
     }
     PropertyChanges {
       target: boxGradEnd_
-      //color: '#637e0e' // green
-      color: '#437eff' // deep sky blue
+      color: root_.hover ? '#00bfff' : '#cc00bfff'// deepskyblue, darker, clear transparency when hover
     }
   }
   transitions: Transition { ColorAnimation {} }

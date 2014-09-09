@@ -9,8 +9,8 @@ from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from modiocr import modiocr
 from mytr import my
-import growl, windows, winman
 from _ocrman import OcrImageObject, OcrSettings
+import features, growl, windows, winman
 
 @memoized
 def manager(): return OcrManager()
@@ -67,18 +67,16 @@ class _OcrManager(object):
     @param  height  int
     """
     imgobj = OcrImageObject.create(x, y, width, height,
+        #hwnd=hwnd if features.WINE else 0,
         settings=self.settings, parent=self.q)
     if not imgobj:
       growl.notify(my.tr("OCR did not recognize any texts in the image"))
       return
+    hwnd = skwin.get_window_at(self.pressedX, self.pressedY)
     text = imgobj.ocr()
     lang = imgobj.language()
-    winobj = self._getWindowObject(self.pressedX, self.pressedY)
+    winobj = winman.manager().createWindowObject(hwnd) if hwnd else None #and hwnd != self.DESKTOP_HWND else None
     self.q.textReceived.emit(text, lang, x, y, width, height, imgobj, winobj)
-
-  def _getWindowObject(self, x, y): # int, int -> QObject or None
-    hwnd = skwin.get_window_at(x, y)
-    return winman.manager().createWindowObject(hwnd) if hwnd else None #and hwnd != self.DESKTOP_HWND else None
 
   # Mouse hook
 

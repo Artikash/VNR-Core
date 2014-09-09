@@ -11,6 +11,7 @@ import '../../../js/util.min.js' as Util
 import '../../../components' as Components
 import '../../../js/local.js' as Local // Local.comet
 import '../share' as Share
+import '.' as Kagami
 
 Item { id: root_
 
@@ -20,6 +21,13 @@ Item { id: root_
   property real zoomFactor: 1.0
 
   // - Private -
+
+  Component { id: editComp_
+    Kagami.OcrEdit {
+      zoomFactor: root_._zoomFactor
+      ignoresFocus: root_.ignoresFocus
+    }
+  }
 
   property real _zoomFactor: zoomFactor * globalZoomFactor // actual zoom factor
 
@@ -81,8 +89,8 @@ Item { id: root_
       property int maximumX: minimumX + root_.width - width
       property int maximumY: minimumY + root_.height - height
 
-      property alias text: textEdit_.text
-      property alias textWidth: textEdit_.width
+      //property alias text: textEdit_.text
+      //property alias textWidth: textEdit_.width
 
       property string language: 'ja'
 
@@ -93,7 +101,10 @@ Item { id: root_
 
       function show(text, lang, x, y, image, window) { // string, string, int, int, OcrImageObject, WindowObject ->
         reset()
-        item_.text = text || ('(' + Sk.tr('empty') + ')')
+
+        item_.originalText = item_.translatedText = text
+        textEdit_.text = text || ('(' + Sk.tr('empty') + ')')
+
         item_.language = lang //|| 'ja'
 
         item_.image = image
@@ -117,7 +128,37 @@ Item { id: root_
 
       // - Private -
 
+      property string originalText // OCR text
+      property string translatedText // text when translate button is pressed
+      property string currentText: translatedText || originalText
+
+      property Item editItem
+
+      function hideEdit() {
+        if (editItem)
+          editItem.hide()
+      }
+
+      function showEdit() {
+        if (!editItem) {
+          editItem = editComp_.createObject(root_)
+          editItem.textChanged.connect(loadEditText)
+        }
+
+        editItem.x = Math.min(item_.x + item_.width + 10, root_.x + root_.width - item_.width)
+        editItem.y = Math.min(item_.y, root_.x + root_.height - item_.height)
+        editItem.show(image, originalText)
+      }
+
+      function loadEditText() {
+        if (editItem) {
+          resetText()
+          textEdit_.text = originalText = translatedText = editItem.text
+        }
+      }
+
       function release() {
+        hideEdit() // release image in edit first
         releaseWindow()
         releaseImage()
       }
@@ -178,23 +219,26 @@ Item { id: root_
           y = v
       }
 
-      function reset() {
+      function resetPosition() {
         relativeX = relativeY = 0
+        textEdit_.width = _DEFAULT_WIDTH
+      }
 
+      function resetText() {
         translateButton_.enabled = true
         toolTip_.text = qsTr("You can drag the border to move the text box")
-        textEdit_.textFormat = TextEdit.PlainText
-        textWidth = _DEFAULT_WIDTH
+      }
 
-        translatedText = ''
-
+      function reset() {
+        resetPosition()
+        resetText()
         release()
       }
 
       Component.onCompleted: console.log("ocrpopup.qml:onCompleted: pass")
       Component.onDestruction: console.log("ocrpopup.qml:onDestruction: pass")
 
-      radius: 10
+      radius: 9
       color: '#99000000' // black
 
       property int _CONTENT_MARGIN: 10
@@ -214,11 +258,9 @@ Item { id: root_
           setY(maximumY)
       }
 
-      property string translatedText
       function speak() {
-        var text = translatedText || textEdit_.text
-        if (text)
-          ttsPlugin_.speak(text, language)
+        if (currentText)
+          ttsPlugin_.speak(currentText, language)
       }
 
       function translate() {
@@ -230,7 +272,7 @@ Item { id: root_
           if (str) {
             var keys = str.split(',')
             if (keys.length)
-              textEdit_.textFormat = TextEdit.RichText
+              //textEdit_.textFormat = TextEdit.RichText
               for (var i in keys) {
                 var key = keys[i]
                 var tr = trPlugin_.translate(text, language, key)
@@ -251,7 +293,7 @@ Item { id: root_
       function appendTranslation(tr, key) { // translator key, translation text
         var text = textEdit_.text
         if (text)
-          text += '<br/>'
+          text += '\n'
         text += tr
         textEdit_.text = text
       }
@@ -411,18 +453,25 @@ Item { id: root_
         //property int popupX
         //property int popupY
 
-        function popup(x, y) {
-          //popupX = x; popupY = y
-          showPopup(x, y)
-        }
+        //function popup(x, y) {
+        //  //popupX = x; popupY = y
+        //  showPopup(x, y)
+        //}
 
-        Desktop.MenuItem { id: copyAct_
+        Desktop.MenuItem { //id: copyAct_
           text: Sk.tr("Copy")
           shortcut: "Ctrl+C"
           onTriggered: {
-            textEdit_.selectAll()
-            textEdit_.copy()
+            var t = textEdit_.text || item_.currentText
+            if (t)
+              clipboardPlugin_.text = t
           }
+        }
+
+        Desktop.MenuItem { //id: editAct_
+          text: qsTr("Select Color")
+          //shortcut: "Ctrl+C"
+          onTriggered: item_.showEdit()
         }
 
         Desktop.Separator {}
@@ -443,7 +492,7 @@ Item { id: root_
         onPressed: if (!root_.ignoresFocus) {
           //var gp = Util.itemGlobalPos(parent)
           var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-          contextMenu_.popup(gp.x, gp.y)
+          contextMenu_.showPopup(gp.x, gp.y)
         }
       }
 
@@ -506,6 +555,7 @@ Item { id: root_
 
           property bool hover:
               closeButton_.hover ||
+              editButton_.hover ||
               translateButton_.hover ||
               ttsButton_.hover ||
               zoomInButton_.hover ||
@@ -528,7 +578,20 @@ Item { id: root_
             onClicked: item_.hide()
           }
 
-          Share.CloseButton { id: translateButton_
+          Share.CircleButton { id: editButton_
+            diameter: parent.cellWidth
+            font.pixelSize: parent.pixelSize
+            //font.bold: hover    // bold make the text too bold
+            font.family: 'MS Gothic'
+            backgroundColor: 'transparent'
+
+            color: enabled ? 'snow' : 'gray'
+            text: '色'
+            toolTip: qsTr("Select color")
+            onClicked: showEdit()
+          }
+
+          Share.CircleButton { id: translateButton_
             diameter: parent.cellWidth
             font.pixelSize: parent.pixelSize
             //font.bold: hover    // bold make the text too bold

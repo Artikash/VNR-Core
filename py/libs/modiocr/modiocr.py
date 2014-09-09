@@ -89,8 +89,24 @@ if skos.WIN:
   from  pymodiocr import ModiOcr
   available = ModiOcr.isValid # -> bool
   # Note: the read functions might raise if the path does not on Windows XP
-  readtext = ModiOcr.readText # (unicode path, int lang) -> unicode
-  readtexts = ModiOcr.readTextList # (unicode path, int lang) -> [unicode]
+
+  from PySide.QtCore import QMutex
+  READ_MUTEX = QMutex() # sync access would crash
+
+  def readtext(path, lang): # (unicode path, int lang) -> unicode
+    if READ_MUTEX.tryLock():
+      ret = ModiOcr.readText(path, lang)
+      READ_MUTEX.unlock()
+      return ret
+    return u''
+
+  def readtexts(path, lang): # (unicode path, int lang) -> [unicode]
+    if READ_MUTEX.tryLock():
+      ret = ModiOcr.readTextList(path, lang)
+      READ_MUTEX.unlock()
+      return ret
+    return []
+
 else:
   def available(): return False
   def readtext(): return ''

@@ -5,8 +5,10 @@
 __all__ = ['OcrImageObject', 'OcrSettings']
 
 import os
-from PySide.QtCore import QObject, Slot
+from PySide.QtCore import QObject, Property, Signal, Slot, QUrl
+from PySide.QtGui import QPixmap
 from sakurakit import skfileio
+from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint, dwarn
 from modiocr import modiocr
 import termman
@@ -17,19 +19,21 @@ OCR_MIN_HEIGHT = 3
 OCR_IMAGE_FORMAT = 'png'
 OCR_IMAGE_QUALITY = 100 # -1 or [0, 100], 100 is lossless quality
 
-def capture_pixmap(x, y, width, height, wid=None):
+FG_PIXEL = 0xff000000 # black text
+BG_PIXEL = 0xffffffff # white background
+
+def capture_pixmap(x, y, width, height, hwnd=None):
   """
   @param  x  int
   @param  y  int
   @param  width  int
   @param  height  int
-  @param  wid  WId
+  @param  hwnd  int
   @return  QPixmap
   """
-  from PySide.QtGui import QPixmap
-  if wid:
+  if hwnd:
     from sakurakit import skwidgets
-    return QPixmap.grabWindow(skwidgets.to_wid(wid), x, y, width, height)
+    return QPixmap.grabWindow(skwidgets.to_wid(hwnd), x, y, width, height)
   else:
     from PySide.QtCore import QCoreApplication
     qApp = QCoreApplication.instance()
@@ -50,12 +54,17 @@ class OcrSettings(object):
   def setLanguages(self, v): # [str]
     self.languageFlags = modiocr.locales2lang(v) or modiocr.LANG_JA # Japanese by default
 
+@Q_Q
 class _OcrImageObject:
 
-  def __init__(self, pixmap, settings):
+  def __init__(self, q, pixmap, settings):
     self.settings = settings # OcrSettings
     self.pixmap = pixmap # QPixmap
-    self.path = self._randomPath() # str
+    self.path = '' # str
+
+    self.colorIntensityEnabled = False
+    self.minimumColorIntensity = 0.7
+    self.maximumColorIntensity = 1.0
 
   @staticmethod
   def _randomPath():
@@ -72,7 +81,8 @@ class _OcrImageObject:
     """
     @return  unicode
     """
-    if not self._savePixmap(self.pixmap):
+    img = self._transformPixmap(self.pixmap)
+    if not self._savePixmap(img):
       return ''
     # FIXME: Async would crash
     #ret = skthreads.runsync(partial(self._readImageFile, path))
@@ -92,15 +102,48 @@ class _OcrImageObject:
     else:
       return modiocr.readtext(self.path, self.settings.languageFlags)
 
-  # Screenshot
+  # Pixmap
 
   def _savePixmap(self, pm):
     """
-    @param  pm  QPixmap
+    @param  pm  QPixmap or QImage
     @param  path  unicode
     @return  bool
     """
-    return pm.save(self.path, OCR_IMAGE_FORMAT, OCR_IMAGE_QUALITY) and os.path.exists(self.path)
+    path = self._randomPath()
+    ret = bool(pm) and not pm.isNull() and pm.save(path, OCR_IMAGE_FORMAT, OCR_IMAGE_QUALITY) and os.path.exists(path)
+    if ret:
+      skfileio.removefile(self.path)
+      self.setPath(path)
+    return ret
+
+  def setPath(self, v):
+    self.path = v
+    self.q.imageUrlChanged.emit(QUrl.fromLocalFile(v))
+
+  def _transformPixmap(self, pm):
+    """
+    @param  pm  QPixmap
+    @return  QPixmap or QImage
+    """
+    if not pm or pm.isNull() or not self.colorIntensityEnabled:
+      return pm
+    img = pm.toImage()
+    width = pm.width()
+    height = pm.height()
+    minimum = 255 * 255 * 3 * self.minimumColorIntensity * self.minimumColorIntensity
+    maximum = 255 * 255 * 3 * self.maximumColorIntensity * self.maximumColorIntensity
+    for x in xrange(width):
+      for y in xrange(height):
+        px = img.pixel(x, y)
+        #a = px >> 24 & 0xff # alpha
+        r = px >> 16 & 0xff
+        g = px >> 8 & 0xff
+        b = px & 0xff
+        v = r*r + g*g +b*b
+        px = FG_PIXEL if minimum <= v and v <= maximum else BG_PIXEL
+        img.setPixel(x, y, px)
+    return img
 
 # Passed to QML
 class OcrImageObject(QObject):
@@ -111,7 +154,39 @@ class OcrImageObject(QObject):
     @param  settings  OcrSettings
     """
     super(OcrImageObject, self).__init__(parent)
-    self.__d = _OcrImageObject(**kwargs)
+    self.__d = _OcrImageObject(self, **kwargs)
+
+  imageUrlChanged = Signal(QUrl)
+  imageUrl = Property(QUrl,
+      lambda self: QUrl.fromLocalFile(self.__d.path),
+      notify=imageUrlChanged)
+
+  def language(self):
+    """
+    @return  str
+    """
+    return self.__d.settings.language()
+
+  def setColorIntensityEnabled(self, t): self.__d.colorIntensityEnabled = t
+  colorIntensityEnabledChanged = Signal(bool)
+  colorIntensityEnabled = Property(bool,
+      lambda self: self.__d.colorIntensityEnabled,
+      setColorIntensityEnabled,
+      notify=colorIntensityEnabledChanged)
+
+  def setMinimumColorIntensity(self, v): self.__d.minimumColorIntensity = v
+  minimumColorIntensityChanged = Signal(float)
+  minimumColorIntensity = Property(float,
+      lambda self: self.__d.minimumColorIntensity,
+      setMinimumColorIntensity,
+      notify=minimumColorIntensityChanged)
+
+  def setMaximumColorIntensity(self, v): self.__d.maximumColorIntensity = v
+  maximumColorIntensityChanged = Signal(float)
+  maximumColorIntensity = Property(float,
+      lambda self: self.__d.maximumColorIntensity,
+      setMaximumColorIntensity,
+      notify=maximumColorIntensityChanged)
 
   @Slot(result=unicode)
   def ocr(self):
@@ -120,31 +195,26 @@ class OcrImageObject(QObject):
     """
     return self.__d.ocr()
 
-  def language(self):
-    """
-    @return  str
-    """
-    return self.__d.settings.language()
-
   @Slot()
   def release(self):
-    self.setParent(None)
     skfileio.removefile(self.__d.path)
+    self.setParent(None)
     dprint("pass")
 
   @classmethod
-  def create(cls, x, y, width, height, **kwargs): # -> cls or None
+  def create(cls, x, y, width, height, hwnd=0, **kwargs): # -> cls or None
     """
     @param  x  int
     @param  y  int
     @param  width  int
     @param  height  int
+    @param* hwnd  int
     @param* kwargs  parameters to create OcrImageObject
     """
     if width < OCR_MIN_WIDTH or height < OCR_MIN_HEIGHT:
       dwarn("skip image that is too small")
       return
-    pm = capture_pixmap(x, y, width, height)
+    pm = capture_pixmap(x, y, width, height, hwnd)
     if not pm or pm.isNull():
       dwarn("failed to capture image")
       return

@@ -10,7 +10,6 @@ Rectangle { id: root_
 
   property alias toolTip: tip_.text
   property alias hover: tip_.containsMouse
-  property bool dragging: false
   property alias drag: mouse_.drag
 
   // - Private -

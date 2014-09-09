@@ -1078,7 +1078,7 @@ Item { id: root_
 
   onMirageVisibleChanged: if (mirageVisible && !mirageComp) createMirage()
 
-  property QtObject mirageComp
+  property Component mirageComp
   function createMirage() {
     mirageComp = Qt.createComponent('textreader/mirage.qml');
     console.log("kagami.qml: createMirage: status:", mirageComp.status)

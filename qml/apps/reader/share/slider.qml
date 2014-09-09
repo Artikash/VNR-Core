@@ -51,21 +51,28 @@ Rectangle { id: root_
 
   //Plugin.SliderBean { Component.onCompleted: init() }
 
-  gradient: Gradient {
+  gradient: Gradient { // black
     GradientStop { position: 0.0; color: 'gray' }
-    GradientStop { position: 1.0; color: 'white' }
+    GradientStop { position: 1.0; color: 'white' } // darker
   }
 
-  //Rectangle { id: groove_
-  //  anchors {
-  //    left: parent.left
-  //    right: handle_.left
-  //    verticalCenter: parent.verticalCenter
-  //  }
-  //  height: parent.height
-  //  //radius: parent.radius
-  //  color: 'red'
-  //}
+  Rectangle { //id: groove_
+    anchors {
+      top: parent.top
+      bottom: parent.bottom
+      left: parent.left
+      right: handle_.left
+      margins: 1
+    }
+    //radius: parent.radius
+    visible: root_.enabled
+
+    gradient: Gradient { // blue
+      //GradientStop { position: 0.0; color: '#cc87ceeb' } // skyblue
+      GradientStop { position: 0.0; color: root_.hover ? '#87cefa' : '#cc87cefa' } // lightskyblue
+      GradientStop { position: 1.0; color: root_.hover ? '#00bfff' : '#cc00bfff' } // deepskyblue, darker, clear transparency when hover
+    }
+  }
 
   Share.FadingRectangle { id: handle_
     anchors.verticalCenter: parent.verticalCenter
@@ -90,7 +97,8 @@ Rectangle { id: root_
       anchors.fill: parent
       anchors.margins: -16 // Increase mouse area a lot outside the slider
       drag.target: parent; drag.axis: Drag.XAxis
-      drag.minimumX: 0; drag.maximumX: root_.width - handle_.width
+      drag.minimumX: 0
+      drag.maximumX: root_.width - handle_.width
     }
   }
 
