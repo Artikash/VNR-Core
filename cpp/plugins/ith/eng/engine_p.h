@@ -91,6 +91,7 @@ bool InsertDebonosuHook();      // Debonosu: bmp.bak and dsetup.dll
 bool InsertEaglsHook();         // E.A.G.L.S: EAGLES.dll
 bool InsertEMEHook();           // EmonEngine: emecfg.ecf
 bool InsertEushullyHook();      // Eushully: AGERC.DLL
+bool InsertExpHook();           // EXP: http://www.exp-inc.jp
 bool InsertGesen18Hook();       // Gsen18: *.szs
 bool InsertGXPHook();           // GXP: *.gxp
 bool InsertLiveHook();          // Live: live.dll
