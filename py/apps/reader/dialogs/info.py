@@ -72,7 +72,7 @@ def renderGameAgentHelp():
 This feature is currently under development and only supports a small portion of the games that ITH supports.
 More information could be found on the Wiki:
 <center>
-<a href="http://sakuradite.com/wiki/en/VNR/Game_Settings">http://sakuradite.com/wiki/en/VNR/Game_Settings</a>
+<a href="http://sakuradite.com/wiki/en/VNR/Embedded_Translation">http://sakuradite.com/wiki/en/VNR/Embedded_Translation</a>
 </center>
 
 <h3>Language limitations</h3>
@@ -331,10 +331,11 @@ def renderHookCodeHelp():
   #HCODE_HELP_URL = "https://www.google.com/#hl=en&safe=off&q=ITH%20hook%20code"
   HCODE_SEARCH_URL_1 = "http://agth.wikia.com/wiki/H-codes"
   HCODE_SEARCH_URL_2 = "http://agthdb.bakastyle.com"
+  HCODE_SEARCH_URL_3 = "http://blgames.proboards.com/post/1984"
   #CHEATENGINE_URL = "http://www.cheatengine.org"
   #CHEATENGINE_HELP_URL = "http://agth.wikia.com/wiki/Cheat_Engine_AGTH_Tutorial"
   #CHEATENGINE_HELP_URL_ZH = "http://user.qzone.qq.com/49755509"
-  GAMEENGINE_URL = "http://sakuradite.com/wiki/en/VNR/Game_Engine"
+  GAMESETTINGS_URL = "http://sakuradite.com/wiki/en/VNR/Game_Settings"
   return (my.tr(
 """The hook code is a <i>hash string</i> encoded by the information needed to sync with specific game.
 It is not required by all the games, but is essential for some ones.
@@ -349,8 +350,9 @@ Here's an example hook code for 「恋と選挙とチョコレート」:
 <center style="color:green">/HSN-4@B14B4:dirapi.dll</center>
 
 You can find most game-specific hook code from these places:
-<center><a href="%s">%s</a></center>
-<center><a href="%s">%s</a></center>
+<center><a href="{0}">{0}</a></center>
+<center><a href="{1}">{1}</a></center>
+<center><a href="{2}">{2}</a></center>
 <br/>
 
 Only /H code is supported, and other AGTH parameters are not supported (such as /P).
@@ -358,17 +360,14 @@ I mean, there should be NO SPACES within the hook code.
 Contents after spaces will be ignored.
 <br/><br/>
 
-If you find certain games share similar H-code, they might share the same game engine.
-If VNR does not support that engine, you can report the new engine here:
-<center><a href="%s">%s</a></center>
-This will help VNR to get rid of H-code for that kind of games.""")
-% (
-  HCODE_SEARCH_URL_1, HCODE_SEARCH_URL_1,
-  HCODE_SEARCH_URL_2, HCODE_SEARCH_URL_2,
-  GAMEENGINE_URL, GAMEENGINE_URL,
-  #CHEATENGINE_URL,
-  #CHEATENGINE_HELP_URL, CHEATENGINE_HELP_URL,
-  #CHEATENGINE_HELP_URL_ZH, CHEATENGINE_HELP_URL_ZH,
+Some games might not need H-code, but the game settings have to be adjusted.
+Check this wiki for what to do if there is no correct text.
+<center><a href="{3}">{3}</a></center>""")
+.format(
+  HCODE_SEARCH_URL_1,
+  HCODE_SEARCH_URL_2,
+  HCODE_SEARCH_URL_3,
+  GAMESETTINGS_URL,
 ))
 
 def renderEmbeddedTextSettingsHelp():

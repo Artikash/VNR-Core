@@ -288,10 +288,16 @@ class _TextTab(object):
 
     layout.addWidget(threadGroup)
 
+    wiki_url = 'http://www.sakuradite.com/wiki/en/VNR/Game_Settings'
+    wikiLabel = QtWidgets.QLabel(my.tr("Please check <a href='{0}'>this wiki</a> if there is no correct text.").format(wiki_url))
+    wikiLabel.setOpenExternalLinks(True)
+    skqss.class_(wikiLabel, "text-info")
+    layout.addWidget(wikiLabel)
+
     #msg = QtWidgets.QLabel(my.tr("WARNING: PLEASE DO NOT TURN ON REPETITION FILTERS UNLESS THERE ARE REPETITIONS!"))
-    msg = QtWidgets.QLabel(my.tr("Don't forget to maximize the text speed (see Help)."))
-    skqss.class_(msg, "text-info")
-    layout.addWidget(msg)
+    msgLabel = QtWidgets.QLabel(my.tr("Don't forget to maximize the text speed (see Help)."))
+    skqss.class_(msgLabel, "text-success")
+    layout.addWidget(msgLabel)
 
     #buttons = QtWidgets.QHBoxLayout()
     #buttons.addStretch()
@@ -803,7 +809,8 @@ class TextTab(QtWidgets.QWidget):
     """@reimp @public"""
     n = self.__d.threadLayout.count()
     #w = 500; h = 150
-    w = 500; h = 165
+    #w = 500; h = 165 # + 15 for msg
+    w = 500; h = 180  # + 15*2 for 2 msg labels
     if n <= 0:
       pass
     elif n < THREADLAYOUT_COLUMN_COUNT:

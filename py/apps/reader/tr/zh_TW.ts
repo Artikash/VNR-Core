@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="zh_TW">
+<!DOCTYPE TS>
+<TS version="2.0" language="zh_TW">
 <context>
     <name>my</name>
     <message>
@@ -13,32 +14,32 @@
         <translation>修改當前遊戲的特殊碼</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="316"/>
+        <location filename="dialogs/textprefs.py" line="322"/>
         <source>Apply text thread and encoding settings</source>
         <translation>保存遊戲文本和編碼的設定</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="520"/>
+        <location filename="dialogs/textprefs.py" line="526"/>
         <source>No running game</source>
         <translation>沒有找到運行中的遊戲</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="523"/>
+        <location filename="dialogs/textprefs.py" line="529"/>
         <source>Missing major text thread</source>
         <translation>請選擇主要的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="526"/>
+        <location filename="dialogs/textprefs.py" line="532"/>
         <source>Press SAVE to save changes</source>
         <translation>點擊【保存】來保存設定</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="607"/>
+        <location filename="dialogs/textprefs.py" line="613"/>
         <source>Text settings are saved</source>
         <translation>文本設定已保存</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="608"/>
+        <location filename="dialogs/textprefs.py" line="614"/>
         <source>Text settings are not changed</source>
         <translation>文本設定沒有改變</translation>
     </message>
@@ -549,7 +550,7 @@ Especially if you would like to translate this game.</source>
 如果可能的話，強烈建議你&lt;b&gt;調整遊戲文本速度到最快&lt;/b&gt;。
 特別是當你打算翻譯這個遊戲的時候。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="2441"/>
         <source>Kojien (広辞苑) Japanese-Japanese dictionary</source>
         <translation>広辞苑日日字典</translation>
@@ -1091,7 +1092,7 @@ It might take a couple of seconds to complete.</source>
         <translation>你希望現在就更新嗎？
 這會花費幾秒鐘來完成。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="2455"/>
         <source>Zhongri (日中) Japanese-Chinese dictionary</source>
         <translation>日中統合辭典</translation>
@@ -1285,7 +1286,7 @@ If yes, VNR will block all settings for this language.</source>
 它和你當前的用戶語言是相同的呢。
 如果屏蔽它，VNR會屏蔽所有與這個語言有關的設定。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="3195"/>
         <source>Wadoku (和独) Japanese-German dictionary</source>
         <translation>和独日德辭書</translation>
@@ -1590,7 +1591,7 @@ VNR will automatically check for updates.</source>
 數據庫可以用來幫助識別新的遊戲。
 VNR會自動檢查更新的。</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="60"/>
         <source>&lt;h4&gt;About the account&lt;/h4&gt;
 You don&apos;t need an account to access machine translations and subtitles from others.&lt;br/&gt;
@@ -1666,7 +1667,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>保留所有來自{0}的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="418"/>
+        <location filename="dialogs/textprefs.py" line="424"/>
         <source>Keep all threads from the selected dialog engine</source>
         <translation>保留所有來自對話遊戲引擎的文本</translation>
     </message>
@@ -1779,7 +1780,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>使用中文的同學推薦</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="326"/>
+        <location filename="dialogs/textprefs.py" line="332"/>
         <source>Reset to last saved settings</source>
         <translation>恢复到上次保存的設定</translation>
     </message>
@@ -1827,7 +1828,7 @@ than turning on global repetition filters here.</source>
 而不要在這裡打開全局的重复過濾。</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="385"/>
+        <location filename="dialogs/textprefs.py" line="391"/>
         <source>Warning: Please do not turn on repetition filters unless there are repetitions!</source>
         <translation>警告：請不要打開重复過濾的選項，除非文本中真的有重复！</translation>
     </message>
@@ -1875,7 +1876,7 @@ This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source
         <source>Game character names not found</source>
         <translation>沒有找到人物的姓名</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="200"/>
         <source>&lt;h3&gt;Motivation&lt;/h3&gt;
 In VNR, game settings including user-contributed subtitles and series-specific dictionary terms
@@ -2024,7 +2025,7 @@ DMM上幾乎可以找到近期發售的全部遊戲，但是不缺少很老的�
         <translation>你真的要下載全部YouTube的動畫到桌面嗎？</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="354"/>
+        <location filename="dialogs/textprefs.py" line="360"/>
         <source>Insert spaces between words</source>
         <translation>在單詞間插入空格</translation>
     </message>
@@ -2052,7 +2053,7 @@ This might result in redundant spaces for Japanese games.</source>
 對日文遊戲打開這個選項也許會造成翻譯中多餘的空格。</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="358"/>
+        <location filename="dialogs/textprefs.py" line="364"/>
         <source>Preserve spaces between (English) words</source>
         <translation>保留（英文）單詞之間的空格</translation>
     </message>
@@ -2615,7 +2616,7 @@ VNR中可以共享對遊戲內容的&lt;span style=&apos;color:purple&apos;&gt;�
 需要導出字幕到XML文件，可以在【字幕編輯器】中點擊【導出】按鈕。
 </translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/info.py" line="330"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 In Text Settings and Game Wizard,
@@ -2777,61 +2778,6 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
         <location filename="main.py" line="1725"/>
         <source>Unknown game. Please try editing the game information.</source>
         <translation>未知的遊戲。請嘗試編輯下遊戲情報。</translation>
-    </message>
-    <message encoding="UTF-8">
-        <location filename="dialogs/info.py" line="365"/>
-        <source>The hook code is a &lt;i&gt;hash string&lt;/i&gt; encoded by the information needed to sync with specific game.
-It is not required by all the games, but is essential for some ones.
-It is a string that always starts with &lt;span style=&quot;color:green&quot;&gt;&quot;/H&quot;&lt;/span&gt;.
-&lt;br/&gt;&lt;br/&gt;
-
-If you have already got a good text thread, you can ignore the following text.
-Otherwise, you have to search for the correct hook code specific for the game, and type it here.
-&lt;br/&gt;&lt;br/&gt;
-
-Here&apos;s an example hook code for 「恋と選挙とチョコレート」:
-&lt;center style=&quot;color:green&quot;&gt;/HSN-4@B14B4:dirapi.dll&lt;/center&gt;
-
-You can find most game-specific hook code from these places:
-&lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;
-&lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;
-&lt;br/&gt;
-
-Only /H code is supported, and other AGTH parameters are not supported (such as /P).
-I mean, there should be NO SPACES within the hook code.
-Contents after spaces will be ignored.
-&lt;br/&gt;&lt;br/&gt;
-
-If you find certain games share similar H-code, they might share the same game engine.
-If VNR does not support that engine, you can report the new engine here:
-&lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;
-This will help VNR to get rid of H-code for that kind of games.</source>
-        <translation>特殊碼是一串包含遊戲文本信息的&lt;b&gt;字符串&lt;/b&gt;。
-特殊碼不是所有的遊戲都需要的，但是對有些遊戲是必不可少的。
-特殊碼字符總是以&lt;span style=&quot;color:green&quot;&gt;&quot;/H&quot;&lt;/span&gt;開頭的。
-&lt;br/&gt;&lt;br/&gt;
-
-如果當前的遊戲已看到正確的日文文本，那麼請忽略下面的這些文字吧！
-但是如果文本不正確，請Google正確的特殊碼，然后貼在這裡就好了。
-&lt;br/&gt;&lt;br/&gt;
-
-這裡有一個「恋と選挙とチョコレート」的特殊碼的例子：
-&lt;center style=&quot;color:green&quot;&gt;/HSN-4@B14B4:dirapi.dll&lt;/center&gt;
-
-很多以前遊戲的特殊碼都可以在這裡找到：
-&lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;
-&lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;
-&lt;br/&gt;
-
-注：VNR只支持ITH的/H特殊碼，不支持AGTH的/P之類的參數。
-比如，特殊碼中是&lt;b&gt;不應該包含空格&lt;/b&gt;的。
-空格后面的內容會自動被VNR忽略掉。
-&lt;br/&gt;&lt;br/&gt;
-
-如果你發現很多遊戲的特殊碼都差不多，那麼它們可能有相同的遊戲引擎。
-你也許可以到這裡去描述下這些遊戲：
-&lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;
-這樣的話以后VNR對類似的遊戲就不再需要特殊碼了呢。</translation>
     </message>
     <message>
         <location filename="dialogs/prompt.py" line="559"/>
@@ -3067,7 +3013,7 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>使用單詞字典需要安裝至少一個MeCab辭書。</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="292"/>
+        <location filename="dialogs/textprefs.py" line="298"/>
         <source>Don&apos;t forget to maximize the text speed (see Help).</source>
         <translation>不要忘記最大化遊戲文本的速度（參看幫助）。</translation>
     </message>
@@ -3398,7 +3344,7 @@ VNR默認會使用TTS讀出遊戲的原始文本。
 This feature is currently under development and only supports a small portion of the games that ITH supports.
 More information could be found on the Wiki:
 &lt;center&gt;
-&lt;a href=&quot;http://sakuradite.com/wiki/en/VNR/Game_Settings&quot;&gt;http://sakuradite.com/wiki/en/VNR/Game_Settings&lt;/a&gt;
+&lt;a href=&quot;http://sakuradite.com/wiki/en/VNR/Embedded_Translation&quot;&gt;http://sakuradite.com/wiki/en/VNR/Embedded_Translation&lt;/a&gt;
 &lt;/center&gt;
 
 &lt;h3&gt;Language limitations&lt;/h3&gt;
@@ -3429,7 +3375,7 @@ and there will be a vnragent.log file generated in VNR&apos;s directory.</source
 這個功能還在開發中，當前支持的遊戲要遠遠少于ITH。
 更多的信息可以參看Wiki：
 &lt;center&gt;
-&lt;a href=&quot;http://sakuradite.com/wiki/zh/VNR/Game_Settings&quot;&gt;http://sakuradite.com/wiki/zh/VNR/Game_Settings&lt;/a&gt;
+&lt;a href=&quot;http://sakuradite.com/wiki/zh/VNR/Embedded_Translation&quot;&gt;http://sakuradite.com/wiki/zh/VNR/Embedded_Translation&lt;/a&gt;
 &lt;/center&gt;
 
 &lt;h3&gt;語言的局限性&lt;/h3&gt;
@@ -3479,7 +3425,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>清除選定的位置</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="956"/>
+        <location filename="dialogs/textprefs.py" line="963"/>
         <source>Engine: ITH</source>
         <translation>文本提取：ITH</translation>
     </message>
@@ -3534,7 +3480,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>自動修正文本設定</translation>
     </message>
     <message>
-        <location filename="dialogs/info.py" line="424"/>
+        <location filename="dialogs/info.py" line="423"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 In Text Settings, you can identify which text threads to display and translate.
 If after synchronizing with the game, no texts appear in VNR,
@@ -3673,7 +3619,7 @@ VNR的提取方法支持內嵌翻譯到遊戲中去，但是支持的遊戲比IT
         <source>Do you want to enable the selected {0} items?</source>
         <translation>你想要啟用{0}個選定的條目嗎？</translation>
     </message>
-    <message encoding="UTF-8">
+    <message utf8="true">
         <location filename="dialogs/_prefs.py" line="2433"/>
         <source>Daijirin (大辞林) Japanese-Japanese/English dictionary</source>
         <translation>大辞林日日/和英字典</translation>
@@ -3922,6 +3868,66 @@ You can report the bugs to &lt;a href=&quot;mailto:{0}&quot;&gt;{0}&lt;/a&gt;.</
         <translation>TAH腳本是一組由@errzotl大先生所寫的改善日英機器翻譯質量的&lt;a href=&quot;http://en.wikipedia.org/wiki/Regular_expression&quot;&gt;正則表達式&lt;/a&gt;。
 它並不會影響到中文的機器翻譯。
 你可以將使用中遇到的問題報道到&lt;a href=&quot;mailto:{0}&quot;&gt;{0}&lt;/a&gt;。</translation>
+    </message>
+    <message>
+        <location filename="dialogs/textprefs.py" line="292"/>
+        <source>Please check &lt;a href=&apos;{0}&apos;&gt;this wiki&lt;/a&gt; if there is no correct text.</source>
+        <translation>如果沒有正確的文本，請查看&lt;a href=&apos;{0}&apos;&gt;這個wiki&lt;/a&gt;該如何做。</translation>
+    </message>
+    <message utf8="true">
+        <location filename="dialogs/info.py" line="366"/>
+        <source>The hook code is a &lt;i&gt;hash string&lt;/i&gt; encoded by the information needed to sync with specific game.
+It is not required by all the games, but is essential for some ones.
+It is a string that always starts with &lt;span style=&quot;color:green&quot;&gt;&quot;/H&quot;&lt;/span&gt;.
+&lt;br/&gt;&lt;br/&gt;
+
+If you have already got a good text thread, you can ignore the following text.
+Otherwise, you have to search for the correct hook code specific for the game, and type it here.
+&lt;br/&gt;&lt;br/&gt;
+
+Here&apos;s an example hook code for 「恋と選挙とチョコレート」:
+&lt;center style=&quot;color:green&quot;&gt;/HSN-4@B14B4:dirapi.dll&lt;/center&gt;
+
+You can find most game-specific hook code from these places:
+&lt;center&gt;&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;&lt;/center&gt;
+&lt;center&gt;&lt;a href=&quot;{1}&quot;&gt;{1}&lt;/a&gt;&lt;/center&gt;
+&lt;center&gt;&lt;a href=&quot;{2}&quot;&gt;{2}&lt;/a&gt;&lt;/center&gt;
+&lt;br/&gt;
+
+Only /H code is supported, and other AGTH parameters are not supported (such as /P).
+I mean, there should be NO SPACES within the hook code.
+Contents after spaces will be ignored.
+&lt;br/&gt;&lt;br/&gt;
+
+Some games might not need H-code, but the game settings have to be adjusted.
+Check this wiki for what to do if there is no correct text.
+&lt;center&gt;&lt;a href=&quot;{3}&quot;&gt;{3}&lt;/a&gt;&lt;/center&gt;</source>
+        <translation>特殊碼是一串包含遊戲文本信息的&lt;b&gt;字符串&lt;/b&gt;。
+特殊碼不是所有的遊戲都需要的，但是對有些遊戲是必不可少的。
+特殊碼字符總是以&lt;span style=&quot;color:green&quot;&gt;&quot;/H&quot;&lt;/span&gt;開頭的。
+&lt;br/&gt;&lt;br/&gt;
+
+如果當前的遊戲已看到正確的日文文本，那麼請忽略下面的這些文字吧！
+但是如果文本不正確，請Google正確的特殊碼，然后貼在這裡就好了。
+&lt;br/&gt;&lt;br/&gt;
+
+這裡有一個「恋と選挙とチョコレート」的特殊碼的例子：
+&lt;center style=&quot;color:green&quot;&gt;/HSN-4@B14B4:dirapi.dll&lt;/center&gt;
+
+很多以前遊戲的特殊碼都可以在這裡找到：
+&lt;center&gt;&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;&lt;/center&gt;
+&lt;center&gt;&lt;a href=&quot;{1}&quot;&gt;{1}&lt;/a&gt;&lt;/center&gt;
+&lt;center&gt;&lt;a href=&quot;{2}&quot;&gt;{2}&lt;/a&gt;&lt;/center&gt;
+&lt;br/&gt;
+
+注：VNR只支持ITH的/H特殊碼，不支持AGTH的/P之類的參數。
+比如，特殊碼中是&lt;b&gt;不應該包含空格&lt;/b&gt;的。
+空格后面的內容會自動被VNR忽略掉。
+&lt;br/&gt;&lt;br/&gt;
+
+另外，有些遊戲其實並不需要特殊碼。但是需要調整下遊戲的設定才可以工作。
+如果你找不到正確的文本，下邊的Wiki也許可以有些幫助。
+&lt;center&gt;&lt;a href=&quot;{3}&quot;&gt;{3}&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
 </context>
 </TS>
