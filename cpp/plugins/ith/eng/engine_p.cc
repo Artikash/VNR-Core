@@ -6739,6 +6739,9 @@ bool InsertSideBHook()
  *  edi 02924340 ; text is in 02924350
  *  eip 00258020 .00258020
  *
+ *  Memory access pattern:
+ *  For long sentences, it first render the first line, then the second line, and so on.
+ *  So, the second line is a subtext of the entire dialog.
  */
 static void SpecialHookExp(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
@@ -6755,7 +6758,7 @@ static void SpecialHookExp(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *sp
         arg3 = argof(3, esp_base); // size - 1
   if (arg1 && arg3)
     if (DWORD text = *(DWORD *)arg1)
-      if (!(text > lastText && text < lastText + 0x200)) { // text is not a subtext of lastText
+      if (!(text > lastText && text < lastText + 1500)) { // text is not a subtext of lastText, 1500 is roughly VNR's text capacity
         lastText = text;
         *data = text; // mov edx,dword ptr ds:[eax]
         *len = ::strlen((LPCSTR)text);
