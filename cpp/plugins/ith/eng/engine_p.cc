@@ -6731,12 +6731,12 @@ bool InsertSideBHook()
  *  0f14f8c0   00000000
  *
  *  Registers:
- *  eax 0f14f8c0
- *  ecx 0f14f8b0
+ *  eax 0f14f8c0 ; floating at runtime
+ *  ecx 0f14f8b0; floating at runtime
  *  edx 00000000
- *  ebx 0f14fae0
- *  esp 0f14f87c
- *  ebp 0f14facc
+ *  ebx 0f14fae0; floating at runtime
+ *  esp 0f14f87c; floating at runtime
+ *  ebp 0f14facc; floating at runtime
  *  esi 00000047
  *  edi 02924340 ; text is in 02924350
  *  eip 00258020 .00258020
@@ -6747,26 +6747,27 @@ bool InsertSideBHook()
  */
 static void SpecialHookExp(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
-  static DWORD lastText;
+  static DWORD lasttext;
   // 00258020   55               push ebp  ; jichi: hook here
   // 00258021   8bec             mov ebp,esp
   // 00258023   8b45 08          mov eax,dword ptr ss:[ebp+0x8] ; jichi: move arg1 to eax
-  // 00258029   85c0             test eax,eax
+  // 00258029   85c0             test eax,eax   ; check if text is null
   // 0025802b   0f84 d8000000    je .00258109
-  // 00258031   837d 10 00       cmp dword ptr ss:[ebp+0x10],0x0 ; jichi: compare 0 with arg3
+  // 00258031   837d 10 00       cmp dword ptr ss:[ebp+0x10],0x0 ; jichi: compare 0 with arg3, which is size+1
   // 00258035   0f84 ce000000    je .00258109
-  // 0025803b   8b10             mov edx,dword ptr ds:[eax]
+  // 0025803b   8b10             mov edx,dword ptr ds:[eax] ; move text address to edx
   DWORD arg1 = argof(1, esp_base), // mov eax,dword ptr ss:[ebp+0x8]
         arg3 = argof(3, esp_base); // size - 1
   if (arg1 && arg3)
     if (DWORD text = *(DWORD *)arg1)
-      if (!(text > lastText && text < lastText + VNR_TEXT_CAPACITY)) { // text is not a subtext of lastText
-        lastText = text;
+      if (!(text > lasttext && text < lasttext + VNR_TEXT_CAPACITY)) { // text is not a subtext of lastText
+        lasttext = text;
         *data = text; // mov edx,dword ptr ds:[eax]
-        *len = ::strlen((LPCSTR)text);
         //*len = arg3 - 1; // the last char is the '\0', so -1, but this value is not reliable
+        *len = ::strlen((LPCSTR)text);
+        // Registers are not used as split as all of them are floating at runtime
         //*split = argof(4, esp_base); // arg4, always -8, this will merge all threads and result in repetition
-        *split = argof(7, esp_base); // reduce repetition
+        *split = argof(7, esp_base); // reduce repetition, but still have sub-text repeat
       }
 }
 bool InsertExpHook()
