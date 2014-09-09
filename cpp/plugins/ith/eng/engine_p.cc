@@ -4188,7 +4188,7 @@ bool InsertNextonHook()
  *  There are so many good hooks. The shortest function was picked,as follows:
  *  0041974e   cc               int3
  *  0041974f   cc               int3
- *  00419750   56               push esi    ; jichi: hook here, text in arg0
+ *  00419750   56               push esi    ; jichi: hook here, text in arg1
  *  00419751   8b7424 08        mov esi,dword ptr ss:[esp+0x8]
  *  00419755   8bc6             mov eax,esi
  *  00419757   57               push edi
@@ -4211,7 +4211,7 @@ bool InsertNextonHook()
  *  0041977b   cc               int3
  *  0041977c   cc               int3
  *
- *  Runtime stack: this function takes two arguments. Text address is in arg0.
+ *  Runtime stack: this function takes two arguments. Text address is in arg1.
  *
  *  Other possible hooks are as follows:
  *  00460caf   53               push ebx
@@ -4392,7 +4392,7 @@ bool InsertNexton1Hook()
     return false;
   }
   const BYTE bytes[] = {
-    0x56,                  // 00419750   56               push esi    ; jichi: hook here, text in arg0
+    0x56,                  // 00419750   56               push esi    ; jichi: hook here, text in arg1
     0x8b,0x74,0x24, 0x08,  // 00419751   8b7424 08        mov esi,dword ptr ss:[esp+0x8]
     0x8b,0xc6,             // 00419755   8bc6             mov eax,esi
     0x57,                  // 00419757   57               push edi
@@ -6752,14 +6752,14 @@ static void SpecialHookExp(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *sp
         arg3 = argof(3, esp_base); // size - 1
   if (arg1 && arg3) {
     *data = *(DWORD *)arg1; // mov edx,dword ptr ds:[eax]
-    *len = arg3 - 1; // 1 is the '\0'
-    *split = argof(4, esp_base); // arg4
+    *len = arg3 - 1; // the last char is the '\0', so -1
+    *split = argof(4, esp_base); // arg4, always -8, this will merge all threads
   }
 }
 bool InsertExpHook()
 {
   const BYTE bytes[] = {
-    0x55,                   // 00258020   55               push ebp  ; jichi: hook here
+    0x55,                   // 00258020   55               push ebp  ; jichi: hook here, function starts, text in [arg1], size+1 in arg3
     0x8b,0xec,              // 00258021   8bec             mov ebp,esp
     0x8b,0x45, 0x08,        // 00258023   8b45 08          mov eax,dword ptr ss:[ebp+0x8]
     0x83,0xec, 0x08,        // 00258026   83ec 08          sub esp,0x8
@@ -6775,7 +6775,7 @@ bool InsertExpHook()
     0x89,0x45, 0xfc,        // 00258049   8945 fc          mov dword ptr ss:[ebp-0x4],eax
     0x57,                   // 0025804c   57               push edi
     0x8d,0x49, 0x00,        // 0025804d   8d49 00          lea ecx,dword ptr ds:[ecx]
-    0x8a,0x0a               // 00258050   8a0a             mov cl,byte ptr ds:[edx]    jichi: text in accessed in edx
+    0x8a,0x0a               // 00258050   8a0a             mov cl,byte ptr ds:[edx]  ; jichi: text accessed in edx
   };
   enum { hook_offset = 0 };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
