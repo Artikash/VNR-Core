@@ -6598,7 +6598,9 @@ bool InsertSideBHook()
  *  There are three functions found using hardware breakpoints.
  *  The last one is used as the first two are looped.
  *
- *  base = 00120000
+ *  reladdr = 0x138020
+ *
+ *  baseaddr = 0x00120000
  *
  *  0025801d   cc               int3
  *  0025801e   cc               int3
@@ -6709,12 +6711,12 @@ bool InsertSideBHook()
  *  Stack:
  *  0f14f87c   00279177  return to .00279177 from .00258020
  *  0f14f880   0f14f8b0 ; arg1  address of the text's pointer
- *  0f14f884   0f14f8c0 ; arg2
+ *  0f14f884   0f14f8c0 ; arg2  pointed to zero, maybe a buffer
  *  0f14f888   00000047 ; arg3  it is zero if no text, this value might be text size + 1
- *  0f14f88c   ffffff80
+ *  0f14f88c   ffffff80 ; constant, used as split
  *  0f14f890   005768c8  .005768c8
- *  0f14f894   02924340 ; jichi: text is at 02924350
- *  0f14f898   00000001
+ *  0f14f894   02924340 ; text is at 02924350
+ *  0f14f898   00000001 ; this might also be a good asplit
  *  0f14f89c   1b520020
  *  0f14f8a0   00000000
  *  0f14f8a4   00000000
@@ -6740,6 +6742,7 @@ bool InsertSideBHook()
  */
 static void SpecialHookExp(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
+  static DWORD lastText;
   // 00258020   55               push ebp  ; jichi: hook here
   // 00258021   8bec             mov ebp,esp
   // 00258023   8b45 08          mov eax,dword ptr ss:[ebp+0x8] ; jichi: move arg1 to eax
@@ -6750,11 +6753,16 @@ static void SpecialHookExp(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *sp
   // 0025803b   8b10             mov edx,dword ptr ds:[eax]
   DWORD arg1 = argof(1, esp_base), // mov eax,dword ptr ss:[ebp+0x8]
         arg3 = argof(3, esp_base); // size - 1
-  if (arg1 && arg3) {
-    *data = *(DWORD *)arg1; // mov edx,dword ptr ds:[eax]
-    *len = arg3 - 1; // the last char is the '\0', so -1
-    *split = argof(4, esp_base); // arg4, always -8, this will merge all threads
-  }
+  if (arg1 && arg3)
+    if (DWORD text = *(DWORD *)arg1)
+      if (!(text > lastText && text < lastText + 0x200)) { // text is not a subtext of lastText
+        lastText = text;
+        *data = text; // mov edx,dword ptr ds:[eax]
+        *len = ::strlen((LPCSTR)text);
+        //*len = arg3 - 1; // the last char is the '\0', so -1, but this value is not reliable
+        //*split = argof(4, esp_base); // arg4, always -8, this will merge all threads and result in repetition
+        *split = argof(7, esp_base); // reduce repetition
+      }
 }
 bool InsertExpHook()
 {
