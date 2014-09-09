@@ -335,7 +335,6 @@ def renderHookCodeHelp():
   #CHEATENGINE_URL = "http://www.cheatengine.org"
   #CHEATENGINE_HELP_URL = "http://agth.wikia.com/wiki/Cheat_Engine_AGTH_Tutorial"
   #CHEATENGINE_HELP_URL_ZH = "http://user.qzone.qq.com/49755509"
-  GAMESETTINGS_URL = "http://sakuradite.com/wiki/en/VNR/Game_Settings"
   return (my.tr(
 """The hook code is a <i>hash string</i> encoded by the information needed to sync with specific game.
 It is not required by all the games, but is essential for some ones.
@@ -362,12 +361,11 @@ Contents after spaces will be ignored.
 
 Some games might not need H-code, but the game settings have to be adjusted.
 Check this wiki for what to do if there is no correct text.
-<center><a href="{3}">{3}</a></center>""")
+<center><a href="http://sakuradite.com/wiki/en/VNR/Game_Settings">http://sakuradite.com/wiki/en/VNR/Game_Settings</a></center>""")
 .format(
   HCODE_SEARCH_URL_1,
   HCODE_SEARCH_URL_2,
   HCODE_SEARCH_URL_3,
-  GAMESETTINGS_URL,
 ))
 
 def renderEmbeddedTextSettingsHelp():
