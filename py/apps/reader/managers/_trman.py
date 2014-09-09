@@ -20,7 +20,7 @@ from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
 from mytr import my, mytr_
 import config, growl, mecabman, termman, textutil
-import trman, trcache
+import trman, trcache, tahscript
 
 #from sakurakit.skprofiler import SkProfiler
 
@@ -467,12 +467,11 @@ class AtlasTranslator(OfflineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
-    if scriptEnabled:
-      import tahscript
+    if scriptEnabled and to == 'en' and fr == 'ja':
       # 8/19/2014: Only test 0.007 second, with or without locks
       #with SkProfiler():
       t = text
-      text = tahscript.manager().replace(text)
+      text = tahscript.manager().apply(text, self.key)
       if emit and text != t:
         self.emitNormalizedText(text)
     repl = self._escapeText(text, to, fr, emit)
@@ -539,7 +538,7 @@ class LecTranslator(OfflineMachineTranslator):
           async=async)
       return ''
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     to = 'en'
     if emit:
@@ -550,6 +549,11 @@ class LecTranslator(OfflineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
+    if scriptEnabled and to == 'en' and fr == 'ja':
+      t = text
+      text = tahscript.manager().apply(text, self.key)
+      if emit and text != t:
+        self.emitNormalizedText(text)
     repl = self._escapeText(text, to, fr, emit)
     if repl:
       try:
@@ -939,7 +943,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
     leconline.session = session or requests.Session()
     self.engine = leconline
 
-  def translate(self, text, to='en', fr='ja', async=False, emit=False, **kwargs):
+  def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     to = 'en' if to in ('ms', 'th', 'vi') else to
     if emit:
@@ -948,6 +952,11 @@ class LecOnlineTranslator(OnlineMachineTranslator):
       repl = self.cache.get(text)
       if repl:
         return repl, to, self.key
+    if scriptEnabled and to == 'en' and fr == 'ja':
+      t = text
+      text = tahscript.manager().apply(text, 'lec') # use 'lec' instead of 'lecol'
+      if emit and text != t:
+        self.emitNormalizedText(text)
     repl = self._escapeText(text, to, fr, emit)
     if repl:
       repl = self._translate(emit, repl, self.engine.translate,

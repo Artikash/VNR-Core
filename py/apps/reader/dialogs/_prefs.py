@@ -1837,23 +1837,36 @@ class _MachineTranslationTab(object):
   @memoizedproperty
   def tahGroup(self):
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.tahButton)
+    layout.addWidget(self.atlasTahButton)
+    layout.addWidget(self.lecTahButton)
     layout.addWidget(self.tahInfoLabel)
     #layout.addStretch()
-    ret = QtWidgets.QGroupBox(my.tr("ATLAS Japanese-English TAH script"))
+    ret = QtWidgets.QGroupBox(my.tr("TAH script for Japanese-English machine translators"))
     ret.setLayout(layout)
+    return ret
 
+  @memoizedproperty
+  def atlasTahButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+      "ATLAS offline machine translation"))
     ss = settings.global_()
+    ret.setChecked(ss.isAtlasScriptEnabled())
+    ret.toggled.connect(ss.setAtlasScriptEnabled)
     ret.setEnabled(ss.isAtlasEnabled())
     ss.atlasEnabledChanged.connect(ret.setEnabled)
     return ret
 
   @memoizedproperty
-  def tahButton(self):
+  def lecTahButton(self):
     ret = QtWidgets.QCheckBox(my.tr(
-      "Apply TAH script for ATLAS Japanese-English machine translation"))
-    ret.setChecked(settings.global_().isTahScriptEnabled())
-    ret.toggled.connect(settings.global_().setTahScriptEnabled)
+      "LEC online and offline machine translation"))
+    ss = settings.global_()
+    ret.setChecked(ss.isLecScriptEnabled())
+    ret.toggled.connect(ss.setLecScriptEnabled)
+    def load(): ret.setEnabled(ss.isLecEnabled() or ss.isLecOnlineEnabled())
+    load()
+    ss.lecEnabledChanged.connect(load)
+    ss.lecOnlineEnabledChanged.connect(load)
     return ret
 
   @memoizedproperty
@@ -1871,7 +1884,7 @@ class _MachineTranslationTab(object):
 
     email = 'TAHscript@outlook.com'
     ret.setText(my.tr(
-"""TAH script is a set of <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> rules originally written by @errzotl to enhance ATLAS translation quality.
+"""TAH script is a set of <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> rules originally written by @errzotl sensei to enhance Japanese-English translation quality.
 You can report the bugs to <a href="mailto:{0}">{0}</a>."""
 ).format(email))
     return ret

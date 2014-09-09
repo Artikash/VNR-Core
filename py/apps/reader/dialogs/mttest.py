@@ -351,10 +351,10 @@ class _MTTester(object):
     return ret
 
   def _onTranslatorChanged(self):
-    atlas = self._currentTranslator() == 'atlas'
-    self.normalizedTextButton.setEnabled(atlas)
-    self.normalizedTextLabel.setEnabled(atlas)
-    self.normalizedTextEdit.setEnabled(atlas)
+    tah = self._currentTranslator() in ('atlas', 'lec', 'lecol')
+    self.normalizedTextButton.setEnabled(tah)
+    self.normalizedTextLabel.setEnabled(tah)
+    self.normalizedTextEdit.setEnabled(tah)
 
   @memoizedproperty
   def fromLanguageEdit(self):
@@ -547,7 +547,7 @@ class _MTTester(object):
     return ret
   @memoizedproperty
   def normalizedTextLabel(self):
-    ret = self._createTextLabel(self.normalizedTextEdit, my.tr("Apply ATLAS TAH script"))
+    ret = self._createTextLabel(self.normalizedTextEdit, my.tr("Apply TAH script"))
     ret.setEnabled(False)
     return ret
   @memoizedproperty

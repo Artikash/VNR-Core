@@ -55,6 +55,8 @@ Item { id: root_
 
   property int _RESIZABLE_AREA_WIDTH: 15 // resizable mouse area thickness
 
+  property int _HEADER_MARGIN: 2
+
   property int _FADE_DURATION: 800
 
   property QtObject comment

@@ -1116,12 +1116,19 @@ class Settings(QSettings):
 
   ## Translation options ##
 
-  tahScriptEnabledChanged = Signal(bool)
-  def isTahScriptEnabled(self): return to_bool(self.value('TahScriptEnabled')) # disabled by default
-  def setTahScriptEnabled(self, value):
-    if value != self.isTahScriptEnabled():
-      self.setValue('TahScriptEnabled', value)
-      self.tahScriptEnabledChanged.emit(value)
+  atlasScriptEnabledChanged = Signal(bool)
+  def isAtlasScriptEnabled(self): return to_bool(self.value('AtlasScriptEnabled', True))
+  def setAtlasScriptEnabled(self, value):
+    if value != self.isAtlasScriptEnabled():
+      self.setValue('AtlasScriptEnabled', value)
+      self.atlasScriptEnabledChanged.emit(value)
+
+  lecScriptEnabledChanged = Signal(bool)
+  def isLecScriptEnabled(self): return to_bool(self.value('LecScriptEnabled', True))
+  def setLecScriptEnabled(self, value):
+    if value != self.isLecScriptEnabled():
+      self.setValue('LecScriptEnabled', value)
+      self.lecScriptEnabledChanged.emit(value)
 
   #translationScriptJaEnabledChanged = Signal(bool)
   #def isTranslationScriptJaEnabled(self): return to_bool(self.value('TranslationScriptJaEnabled', True))
