@@ -1,4 +1,4 @@
-/** slider2.qml
+/** rangeslider.qml
  *  9/7/2014 jichi
  *  See: QML dial control example
  */
