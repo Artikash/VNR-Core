@@ -31,6 +31,8 @@ Item { id: root_
   property alias stopLabelToolTip: stopToolTip_.text
   property alias stopHandleToolTip: slider_.stopHandleToolTip
 
+  property int spacing: 9
+
   // - Private -
 
   height: Math.max(startLabel_.height, slider_.height)
@@ -86,8 +88,8 @@ Item { id: root_
       top: parent.top; bottom: parent.bottom
       left: startLabel_.right
       right: stopLabel_.left
-      leftMargin: 10
-      rightMargin: 10
+      leftMargin: root_.spacing
+      rightMargin: root_.spacing
     }
     enabled: root_.enabled
   }
