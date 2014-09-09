@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="zh_TW">
+<!DOCTYPE TS><TS version="1.1" language="zh_TW">
 <context>
     <name>my</name>
     <message>
@@ -14,32 +13,32 @@
         <translation>修改當前遊戲的特殊碼</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="322"/>
+        <location filename="dialogs/textprefs.py" line="321"/>
         <source>Apply text thread and encoding settings</source>
         <translation>保存遊戲文本和編碼的設定</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="526"/>
+        <location filename="dialogs/textprefs.py" line="525"/>
         <source>No running game</source>
         <translation>沒有找到運行中的遊戲</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="529"/>
+        <location filename="dialogs/textprefs.py" line="528"/>
         <source>Missing major text thread</source>
         <translation>請選擇主要的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="532"/>
+        <location filename="dialogs/textprefs.py" line="531"/>
         <source>Press SAVE to save changes</source>
         <translation>點擊【保存】來保存設定</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="613"/>
+        <location filename="dialogs/textprefs.py" line="612"/>
         <source>Text settings are saved</source>
         <translation>文本設定已保存</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="614"/>
+        <location filename="dialogs/textprefs.py" line="613"/>
         <source>Text settings are not changed</source>
         <translation>文本設定沒有改變</translation>
     </message>
@@ -550,7 +549,7 @@ Especially if you would like to translate this game.</source>
 如果可能的話，強烈建議你&lt;b&gt;調整遊戲文本速度到最快&lt;/b&gt;。
 特別是當你打算翻譯這個遊戲的時候。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="2441"/>
         <source>Kojien (広辞苑) Japanese-Japanese dictionary</source>
         <translation>広辞苑日日字典</translation>
@@ -1092,7 +1091,7 @@ It might take a couple of seconds to complete.</source>
         <translation>你希望現在就更新嗎？
 這會花費幾秒鐘來完成。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="2455"/>
         <source>Zhongri (日中) Japanese-Chinese dictionary</source>
         <translation>日中統合辭典</translation>
@@ -1286,7 +1285,7 @@ If yes, VNR will block all settings for this language.</source>
 它和你當前的用戶語言是相同的呢。
 如果屏蔽它，VNR會屏蔽所有與這個語言有關的設定。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="3195"/>
         <source>Wadoku (和独) Japanese-German dictionary</source>
         <translation>和独日德辭書</translation>
@@ -1591,7 +1590,7 @@ VNR will automatically check for updates.</source>
 數據庫可以用來幫助識別新的遊戲。
 VNR會自動檢查更新的。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="60"/>
         <source>&lt;h4&gt;About the account&lt;/h4&gt;
 You don&apos;t need an account to access machine translations and subtitles from others.&lt;br/&gt;
@@ -1667,7 +1666,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>保留所有來自{0}的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="424"/>
+        <location filename="dialogs/textprefs.py" line="423"/>
         <source>Keep all threads from the selected dialog engine</source>
         <translation>保留所有來自對話遊戲引擎的文本</translation>
     </message>
@@ -1780,7 +1779,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>使用中文的同學推薦</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="332"/>
+        <location filename="dialogs/textprefs.py" line="331"/>
         <source>Reset to last saved settings</source>
         <translation>恢复到上次保存的設定</translation>
     </message>
@@ -1828,7 +1827,7 @@ than turning on global repetition filters here.</source>
 而不要在這裡打開全局的重复過濾。</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="391"/>
+        <location filename="dialogs/textprefs.py" line="390"/>
         <source>Warning: Please do not turn on repetition filters unless there are repetitions!</source>
         <translation>警告：請不要打開重复過濾的選項，除非文本中真的有重复！</translation>
     </message>
@@ -1876,7 +1875,7 @@ This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source
         <source>Game character names not found</source>
         <translation>沒有找到人物的姓名</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="200"/>
         <source>&lt;h3&gt;Motivation&lt;/h3&gt;
 In VNR, game settings including user-contributed subtitles and series-specific dictionary terms
@@ -2025,7 +2024,7 @@ DMM上幾乎可以找到近期發售的全部遊戲，但是不缺少很老的�
         <translation>你真的要下載全部YouTube的動畫到桌面嗎？</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="360"/>
+        <location filename="dialogs/textprefs.py" line="359"/>
         <source>Insert spaces between words</source>
         <translation>在單詞間插入空格</translation>
     </message>
@@ -2053,7 +2052,7 @@ This might result in redundant spaces for Japanese games.</source>
 對日文遊戲打開這個選項也許會造成翻譯中多餘的空格。</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="364"/>
+        <location filename="dialogs/textprefs.py" line="363"/>
         <source>Preserve spaces between (English) words</source>
         <translation>保留（英文）單詞之間的空格</translation>
     </message>
@@ -2616,7 +2615,7 @@ VNR中可以共享對遊戲內容的&lt;span style=&apos;color:purple&apos;&gt;�
 需要導出字幕到XML文件，可以在【字幕編輯器】中點擊【導出】按鈕。
 </translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="330"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 In Text Settings and Game Wizard,
@@ -3013,7 +3012,7 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>使用單詞字典需要安裝至少一個MeCab辭書。</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="298"/>
+        <location filename="dialogs/textprefs.py" line="297"/>
         <source>Don&apos;t forget to maximize the text speed (see Help).</source>
         <translation>不要忘記最大化遊戲文本的速度（參看幫助）。</translation>
     </message>
@@ -3425,7 +3424,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>清除選定的位置</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="963"/>
+        <location filename="dialogs/textprefs.py" line="962"/>
         <source>Engine: ITH</source>
         <translation>文本提取：ITH</translation>
     </message>
@@ -3480,7 +3479,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>自動修正文本設定</translation>
     </message>
     <message>
-        <location filename="dialogs/info.py" line="423"/>
+        <location filename="dialogs/info.py" line="421"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 In Text Settings, you can identify which text threads to display and translate.
 If after synchronizing with the game, no texts appear in VNR,
@@ -3619,7 +3618,7 @@ VNR的提取方法支持內嵌翻譯到遊戲中去，但是支持的遊戲比IT
         <source>Do you want to enable the selected {0} items?</source>
         <translation>你想要啟用{0}個選定的條目嗎？</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="2433"/>
         <source>Daijirin (大辞林) Japanese-Japanese/English dictionary</source>
         <translation>大辞林日日/和英字典</translation>
@@ -3869,13 +3868,8 @@ You can report the bugs to &lt;a href=&quot;mailto:{0}&quot;&gt;{0}&lt;/a&gt;.</
 它並不會影響到中文的機器翻譯。
 你可以將使用中遇到的問題報道到&lt;a href=&quot;mailto:{0}&quot;&gt;{0}&lt;/a&gt;。</translation>
     </message>
-    <message>
-        <location filename="dialogs/textprefs.py" line="292"/>
-        <source>Please check &lt;a href=&apos;{0}&apos;&gt;this wiki&lt;/a&gt; if there is no correct text.</source>
-        <translation type="obsolete">如果沒有正確的文本，請查看&lt;a href=&apos;{0}&apos;&gt;這個wiki&lt;/a&gt;該如何做。</translation>
-    </message>
-    <message utf8="true">
-        <location filename="dialogs/info.py" line="366"/>
+    <message encoding="UTF-8">
+        <location filename="dialogs/info.py" line="365"/>
         <source>The hook code is a &lt;i&gt;hash string&lt;/i&gt; encoded by the information needed to sync with specific game.
 It is not required by all the games, but is essential for some ones.
 It is a string that always starts with &lt;span style=&quot;color:green&quot;&gt;&quot;/H&quot;&lt;/span&gt;.
@@ -3901,7 +3895,7 @@ Contents after spaces will be ignored.
 
 Some games might not need H-code, but the game settings have to be adjusted.
 Check this wiki for what to do if there is no correct text.
-&lt;center&gt;&lt;a href=&quot;{3}&quot;&gt;{3}&lt;/a&gt;&lt;/center&gt;</source>
+&lt;center&gt;&lt;a href=&quot;http://sakuradite.com/wiki/en/VNR/Game_Settings&quot;&gt;http://sakuradite.com/wiki/en/VNR/Game_Settings&lt;/a&gt;&lt;/center&gt;</source>
         <translation>特殊碼是一串包含遊戲文本信息的&lt;b&gt;字符串&lt;/b&gt;。
 特殊碼不是所有的遊戲都需要的，但是對有些遊戲是必不可少的。
 特殊碼字符總是以&lt;span style=&quot;color:green&quot;&gt;&quot;/H&quot;&lt;/span&gt;開頭的。
@@ -3927,12 +3921,12 @@ Check this wiki for what to do if there is no correct text.
 
 另外，有些遊戲其實並不需要特殊碼。但是需要調整下遊戲的設定才可以工作。
 如果你找不到正確的文本，下邊的Wiki也許可以有些幫助。
-&lt;center&gt;&lt;a href=&quot;{3}&quot;&gt;{3}&lt;/a&gt;&lt;/center&gt;</translation>
+&lt;center&gt;&lt;a href=&quot;http://sakuradite.com/wiki/zh/VNR/Game_Settings&quot;&gt;http://sakuradite.com/wiki/zh/VNR/Game_Settings&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/textprefs.py" line="292"/>
-        <source>Please check this &lt;a href=&apos;{0}&apos;&gt;Game Settings&lt;/a&gt; wiki if there is no correct text.</source>
-        <translation>如果沒有正確的文本，請查看這個&lt;a href=&apos;{0}&apos;&gt;Game Settings&lt;/a&gt;的wiki該如何做。</translation>
+        <location filename="dialogs/textprefs.py" line="291"/>
+        <source>Please check this &lt;a href=&quot;http://sakuradite.com/wiki/en/VNR/Game_Settings&quot;&gt;Game Settings&lt;/a&gt; wiki if there is no correct text.</source>
+        <translation>如果沒有正確的文本，請查看這個&lt;a href=&quot;http://sakuradite.com/wiki/zh/VNR/Game_Settings&quot;&gt;Game Settings&lt;/a&gt;的wiki該如何做。</translation>
     </message>
 </context>
 </TS>

@@ -288,8 +288,7 @@ class _TextTab(object):
 
     layout.addWidget(threadGroup)
 
-    wiki_url = 'http://www.sakuradite.com/wiki/en/VNR/Game_Settings'
-    wikiLabel = QtWidgets.QLabel(my.tr("Please check this <a href='{0}'>Game Settings</a> wiki if there is no correct text.").format(wiki_url))
+    wikiLabel = QtWidgets.QLabel(my.tr('Please check this <a href="http://sakuradite.com/wiki/en/VNR/Game_Settings">Game Settings</a> wiki if there is no correct text.'))
     wikiLabel.setOpenExternalLinks(True)
     #skqss.class_(wikiLabel, "text-info")
     layout.addWidget(wikiLabel)
