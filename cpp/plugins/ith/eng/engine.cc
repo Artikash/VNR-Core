@@ -208,7 +208,7 @@ DWORD DetermineEngineByFile2()
     InsertRetouchHook();
     return yes;
   }
-  if (IthCheckFile(L"malie.ini")) {
+  if (IthCheckFile(L"Malie.ini") || IthCheckFile(L"Malie.exe")) { // jichi: 9/9/2014: Add malie.exe in case malie.ini is missing
     InsertMalieHook();
     return yes;
   }
