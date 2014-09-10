@@ -3,7 +3,7 @@
 
 #include "mousehook/mousehook.h"
 #include <windows.h>
-#include <QDebug>
+
 const mousehook_fun_t mousehook_fun_null; // global variable
 
 namespace { // unnamed
