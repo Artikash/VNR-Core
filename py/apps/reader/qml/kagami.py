@@ -30,13 +30,13 @@ class OcrPopupBean(QObject):
     OcrPopupBean.instance = self
     dprint("pass")
 
-  popupRequested = Signal(unicode, unicode, int, int, QObject, QObject)  # text, language, x, y, imgobj, winobj
+  popupRequested = Signal(int, int, QObject, QObject, unicode, unicode)  # x, y, imgobj, winobj, text, language
 
 class OcrPopupController:
 
-  def showPopup(self, text, language, x, y, width, height, imgobj, winobj): # unicode, unicode, int, int, int, int, QObject
+  def showPopup(self, x, y, width, height, imgobj, winobj, text, language): # int, int, int, int, QObject, QObject, unicode, unicode
     if OcrPopupBean.instance: # width & height are ignored
-      OcrPopupBean.instance.popupRequested.emit(text, language, x, y, imgobj, winobj)
+      OcrPopupBean.instance.popupRequested.emit(x, y, imgobj, winobj, text, language)
 
 ## Grimoire ##
 

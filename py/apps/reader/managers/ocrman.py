@@ -95,14 +95,14 @@ class _OcrManager(object):
     text = imgobj.ocr()
     lang = imgobj.language()
     winobj = winman.manager().createWindowObject(hwnd) if hwnd else None #and hwnd != self.DESKTOP_HWND else None
-    self.q.textReceived.emit(text, lang, x, y, width, height, imgobj, winobj)
+    self.q.popupRequested.emit(text, lang, x, y, width, height, imgobj, winobj)
 
 class OcrManager(QObject):
   def __init__(self, parent=None):
     super(OcrManager, self).__init__(parent)
     self.__d = _OcrManager(self)
 
-  textReceived = Signal(unicode, unicode, int, int, int, int, QObject, QObject) # text, language, x, y, width, height, OcrImageObject, WindowObject
+  popupRequested = Signal(int, int, int, int, QObject, QObject, unicode, unicode) # x, y, width, height, OcrImageObject, WindowObject, text, language
 
   def languages(self): return self.__d.settings.languages
   def setLanguages(self, v):

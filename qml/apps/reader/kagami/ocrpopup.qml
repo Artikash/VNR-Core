@@ -63,7 +63,7 @@ Item { id: root_
       popupRequested.connect(showPopup)
   }
 
-  function showPopup(text, lang, x, y, imgobj, winobj) { // string, string, int, int, OcrImageObject, WindowObject ->
+  function showPopup(x, y, imgobj, winobj, text, lang) { // int, int, OcrImageObject, WindowObject, string, string ->
     var items = Local.items
     for (var i in items) {
       var item = items[i]
