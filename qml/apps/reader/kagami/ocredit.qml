@@ -31,13 +31,15 @@ Rectangle { id: root_
 
   property QtObject imageObject // OcrImageObject  ocr controller
 
+  property bool savedEnabled
   property bool savedColorIntensityEnable
   property real savedMinimumColorIntensity
   property real savedMaximumColorIntensity
 
   function loadImageProperties() {
     if (imageObject) {
-      enableButton_.checked = savedColorIntensityEnable = imageObject.colorIntensityEnabled
+      enableButton_.checked = savedEnabled = imageObject.editable
+      colorEnableButton_.checked = savedColorIntensityEnable = imageObject.colorIntensityEnabled
       colorSlider_.startValue = savedMinimumColorIntensity = imageObject.minimumColorIntensity
       colorSlider_.stopValue = savedMaximumColorIntensity = imageObject.maximumColorIntensity
     }
@@ -45,6 +47,7 @@ Rectangle { id: root_
 
   function saveImageProperties() {
     if (imageObject) {
+      imageObject.editable = savedEnabled
       imageObject.colorIntensityEnabled = savedColorIntensityEnable
       imageObject.minimumColorIntensity = savedMinimumColorIntensity
       imageObject.maximumColorIntensity = savedMaximumColorIntensity
@@ -53,7 +56,8 @@ Rectangle { id: root_
 
   function reset() {
     if (imageObject) {
-      enableButton_.checked = savedColorIntensityEnable
+      enableButton_.checked = savedEnabled
+      colorEnableButton_.checked = savedColorIntensityEnable
       colorSlider_.startValue = savedMinimumColorIntensity
       colorSlider_.stopValue = savedMaximumColorIntensity
       ocr()
@@ -87,7 +91,8 @@ Rectangle { id: root_
 
     imageObject.minimumColorIntensity = colorSlider_.startValue
     imageObject.maximumColorIntensity = colorSlider_.stopValue
-    imageObject.colorIntensityEnabled = enableButton_.checked
+    imageObject.colorIntensityEnabled = colorEnableButton_.checked
+    imageObject.editable = enableButton_.checked
 
     textArea_.textEdit.text = imageObject.ocr() || ('(' + Sk.tr("empty") + ')')
   }
@@ -152,17 +157,31 @@ Rectangle { id: root_
 
   // Slider
 
+  Share.CheckDot { id: colorEnableButton_
+    anchors {
+      left: parent.left
+      verticalCenter: colorSlider_.verticalCenter
+      margins: _ROOT_MARGIN
+    }
+    enabled: enableButton_.checked
+    toolTip: qsTr("Color intensity")
+  }
+
+
   function toPercentage(value) { // real -> string
     return Math.round(value * 100) + '%'
   }
 
   Share.LabeledRangeSlider { id: colorSlider_
     anchors {
-      left: parent.left; right: parent.right
+      left: colorEnableButton_.right
+      right: parent.right
       bottom: rightButtonRow_.top
-      margins: _ROOT_MARGIN
+      //margins: _ROOT_MARGIN // remove left margin
+      rightMargin: _ROOT_MARGIN
+      bottomMargin: _ROOT_MARGIN
     }
-    enabled: enableButton_.checked
+    enabled: enableButton_.checked && colorEnableButton_.checked
     spacing: _ROOT_MARGIN
     labelWidth: 30
 
@@ -197,11 +216,10 @@ Rectangle { id: root_
       bottom: parent.bottom
       margins: _ROOT_MARGIN
     }
-    property bool checked
     width: root_.buttonWidth
     //text: checked ? Sk.tr("Enable") : Sk.tr('Disable')
     text: Sk.tr("Enable")
-    toolTip: Sk.tr("Enable")
+    toolTip: qsTr("Enable image transformations for OCR")
 
     //onCheckedChanged: root_.refresh()
   }
@@ -218,7 +236,7 @@ Rectangle { id: root_
     Share.PushButton { //id: refreshButton_
       width: root_.buttonWidth
       text: "OCR"
-      toolTip: Sk.tr("Refresh")
+      toolTip: qsTr("Apply OCR to the current image")
       onClicked: root_.ocr()
 
       //styleHint: 'primary'
@@ -228,7 +246,7 @@ Rectangle { id: root_
     Share.PushButton { id: resetButton_
       width: root_.buttonWidth
       text: Sk.tr("Reset")
-      toolTip: Sk.tr("Reset")
+      toolTip: qsTr("Reset to the last OCR settings")
       onClicked: root_.reset()
 
       //styleHint: 'danger'

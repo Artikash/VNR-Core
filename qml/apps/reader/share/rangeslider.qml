@@ -129,7 +129,12 @@ Rectangle { id: root_
 
     MouseArea { id: startMouse_
       anchors.fill: parent
-      anchors.margins: -16 // Increase mouse area a lot outside the slider
+
+      //anchors.margins: -16 // Increase mouse area a lot outside the slider
+      anchors.leftMargin: -4
+      anchors.topMargin: -4
+      anchors.bottomMargin: -4
+
       drag.target: parent; drag.axis: Drag.XAxis
       drag.minimumX: 0
       drag.maximumX: stopHandle_.x - startHandle_.width
@@ -165,7 +170,12 @@ Rectangle { id: root_
 
     MouseArea { id: stopMouse_
       anchors.fill: parent
-      anchors.margins: -16 // Increase mouse area a lot outside the slider
+
+      //anchors.margins: -16 // Increase mouse area a lot outside the slider
+      anchors.leftMargin: -4
+      anchors.topMargin: -4
+      anchors.bottomMargin: -4
+
       drag.target: parent; drag.axis: Drag.XAxis
       drag.minimumX: startHandle_.x + startHandle_.width
       drag.maximumX: root_.width - stopHandle_.width

@@ -61,8 +61,9 @@ class _OcrImageObject:
     self.settings = settings # OcrSettings
     self.pixmap = pixmap # QPixmap
     self.path = '' # str
+    self.editable = False # image transformation enabled
 
-    self.colorIntensityEnabled = False
+    self.colorIntensityEnabled = True
     self.minimumColorIntensity = 0.7
     self.maximumColorIntensity = 1.0
 
@@ -126,23 +127,24 @@ class _OcrImageObject:
     @param  pm  QPixmap
     @return  QPixmap or QImage
     """
-    if not pm or pm.isNull() or not self.colorIntensityEnabled:
+    if not pm or pm.isNull() or not self.editable:
       return pm
     img = pm.toImage()
-    width = pm.width()
-    height = pm.height()
-    minimum = 255 * 255 * 3 * self.minimumColorIntensity * self.minimumColorIntensity
-    maximum = 255 * 255 * 3 * self.maximumColorIntensity * self.maximumColorIntensity
-    for x in xrange(width):
-      for y in xrange(height):
-        px = img.pixel(x, y)
-        #a = px >> 24 & 0xff # alpha
-        r = px >> 16 & 0xff
-        g = px >> 8 & 0xff
-        b = px & 0xff
-        v = r*r + g*g +b*b
-        px = FG_PIXEL if minimum <= v and v <= maximum else BG_PIXEL
-        img.setPixel(x, y, px)
+    if self.colorIntensityEnabled:
+      width = pm.width()
+      height = pm.height()
+      minimum = 255 * 255 * 3 * self.minimumColorIntensity * self.minimumColorIntensity
+      maximum = 255 * 255 * 3 * self.maximumColorIntensity * self.maximumColorIntensity
+      for x in xrange(width):
+        for y in xrange(height):
+          px = img.pixel(x, y)
+          #a = px >> 24 & 0xff # alpha
+          r = px >> 16 & 0xff
+          g = px >> 8 & 0xff
+          b = px & 0xff
+          v = r*r + g*g +b*b
+          px = FG_PIXEL if minimum <= v and v <= maximum else BG_PIXEL
+          img.setPixel(x, y, px)
     return img
 
 # Passed to QML
@@ -166,6 +168,15 @@ class OcrImageObject(QObject):
     @return  str
     """
     return self.__d.settings.language()
+
+  def setEditable(self, t): self.__d.editable = t
+  editableChanged = Signal(bool)
+  editable = Property(bool,
+      lambda self: self.__d.editable,
+      setEditable,
+      notify=editableChanged)
+
+  # Color intensity
 
   def setColorIntensityEnabled(self, t): self.__d.colorIntensityEnabled = t
   colorIntensityEnabledChanged = Signal(bool)
