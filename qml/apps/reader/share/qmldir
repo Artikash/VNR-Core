@@ -6,6 +6,7 @@ BusySpinner         busyspinner.qml
 CachedAvatarImage   cachedavatarimage.qml
 CheckBox            checkbox.qml
 CheckButton         checkbutton.qml
+CheckDot            checkdot.qml
 CircleButton        circlebutton.qml
 ClearButton         clearbutton.qml
 CloseButton         closebutton.qml
