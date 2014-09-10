@@ -95,7 +95,7 @@ class _OcrManager(object):
     text = imgobj.ocr()
     lang = imgobj.language()
     winobj = winman.manager().createWindowObject(hwnd) if hwnd else None #and hwnd != self.DESKTOP_HWND else None
-    self.q.popupRequested.emit(text, lang, x, y, width, height, imgobj, winobj)
+    self.q.popupRequested.emit(x, y, width, height, imgobj, winobj, text, lang)
 
 class OcrManager(QObject):
   def __init__(self, parent=None):
