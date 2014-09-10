@@ -23,21 +23,33 @@ class _OcrManager(object):
     self.settings = OcrSettings()
     self.pressedX = self.pressedY = 0
 
+  # I/O hooks
+
   @memoizedproperty
   def mouseSelector(self):
     from mousesel import mousesel
-    ret = mousesel.global_()
+    ret = mousesel.MouseSelector()
     ret.setParentWidget(windows.top())
     ret.setRefreshInterval(5000) # refresh every 5 seconds
     ret.setRefreshEnabled(True)
-    ret.pressed.connect(self._onPressed, Qt.QueuedConnection)
-    ret.selected.connect(self._onRectSelected) # already queued
+    ret.pressed.connect(self._onMousePressed, Qt.QueuedConnection)
+    ret.selected.connect(self._onMouseSelected) # already queued
 
     import win32con
     ret.setComboKey(win32con.VK_SHIFT)
     return ret
 
-  # Rubberband
+  @memoizedproperty
+  def keyboardSignal(self):
+    from kbsignal import kbsignal
+    ret = kbsignal.KeyboardSignal()
+    #ret.setRefreshInterval(5000) # refresh every 5 seconds
+    #ret.setRefreshEnabled(True)
+    ret.pressed.connect(self._onKeyPressed, Qt.QueuedConnection)
+
+    import win32con
+    ret.setKeyEnabled(win32con.VK_F2, True)
+    return ret
 
   #@memoizedproperty
   #def rubberBand(self):
@@ -47,10 +59,17 @@ class _OcrManager(object):
   #  #parent = None # this make rubberband as top window
   #  ret = SkMouseRubberBand(SkMouseRubberBand.Rectangle, parent)
   #  ret.setWindowFlags(ret.windowFlags()|Qt.Popup) # popup is needed to display the window out side of its parent
-  #  ret.selected.connect(self._onRectSelected, Qt.QueuedConnection) # do it later
+  #  ret.selected.connect(self._onMouseSelected, Qt.QueuedConnection) # do it later
   #  return ret
 
-  def _onPressed(self, x, y):
+  # Key event
+
+  def _onKeyPressed(self, vk):
+    dprint(vk)
+
+  # Mouse event
+
+  def _onMousePressed(self, x, y):
     """
     @param  x  int
     @param  y  int
@@ -59,7 +78,7 @@ class _OcrManager(object):
     self.pressedY = y
     windows.raise_top_window()
 
-  def _onRectSelected(self, x, y, width, height):
+  def _onMouseSelected(self, x, y, width, height):
     """
     @param  x  int
     @param  y  int
@@ -77,22 +96,6 @@ class _OcrManager(object):
     lang = imgobj.language()
     winobj = winman.manager().createWindowObject(hwnd) if hwnd else None #and hwnd != self.DESKTOP_HWND else None
     self.q.textReceived.emit(text, lang, x, y, width, height, imgobj, winobj)
-
-  # Mouse hook
-
-  #@memoizedproperty
-  #def mouseHook(self):
-  #  from mousehook.screenselector import ScreenSelector
-  #  ret = ScreenSelector()
-  #  from sakurakit import skwin
-  #  ret.setPressCondition(skwin.is_key_shift_pressed)
-  #  ret.setSingleShot(False)
-  #  # Use queued connection to avoid possible crash since it is on a different thread?
-  #  rb = self.rubberBand
-  #  ret.mousePressed.connect(rb.press, Qt.QueuedConnection)
-  #  ret.mouseReleased.connect(rb.release, Qt.QueuedConnection)
-  #  ret.mouseMoved.connect(rb.move, Qt.QueuedConnection)
-  #  return ret
 
 class OcrManager(QObject):
   def __init__(self, parent=None):
@@ -120,9 +123,24 @@ class OcrManager(QObject):
       d.enabled = t
       dprint(t)
       d.mouseSelector.setEnabled(t)
+      #d.keyboardSignal.setEnabled(t)
       if t:
         growl.msg(my.tr("Start OCR screen reader"))
       else:
         growl.msg(my.tr("Stop OCR screen reader"))
 
 # EOF
+
+  #@memoizedproperty
+  #def mouseHook(self):
+  #  from mousehook.screenselector import ScreenSelector
+  #  ret = ScreenSelector()
+  #  from sakurakit import skwin
+  #  ret.setPressCondition(skwin.is_key_shift_pressed)
+  #  ret.setSingleShot(False)
+  #  # Use queued connection to avoid possible crash since it is on a different thread?
+  #  rb = self.rubberBand
+  #  ret.mousePressed.connect(rb.press, Qt.QueuedConnection)
+  #  ret.mouseReleased.connect(rb.release, Qt.QueuedConnection)
+  #  ret.mouseMoved.connect(rb.move, Qt.QueuedConnection)
+  #  return ret
