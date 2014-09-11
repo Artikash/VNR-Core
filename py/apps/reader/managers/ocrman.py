@@ -39,17 +39,17 @@ class _OcrManager(object):
     ret.setComboKey(win32con.VK_SHIFT)
     return ret
 
-  @memoizedproperty
-  def keyboardSignal(self):
-    from kbsignal import kbsignal
-    ret = kbsignal.KeyboardSignal()
-    #ret.setRefreshInterval(5000) # refresh every 5 seconds
-    #ret.setRefreshEnabled(True)
-    ret.pressed.connect(self._onKeyPressed, Qt.QueuedConnection)
+  #@memoizedproperty
+  #def keyboardSignal(self):
+  #  from kbsignal import kbsignal
+  #  ret = kbsignal.KeyboardSignal()
+  #  #ret.setRefreshInterval(5000) # refresh every 5 seconds
+  #  #ret.setRefreshEnabled(True)
+  #  ret.pressed.connect(self._onKeyPressed, Qt.QueuedConnection)
 
-    import win32con
-    ret.setKeyEnabled(win32con.VK_F2, True)
-    return ret
+  #  import win32con
+  #  ret.setKeyEnabled(win32con.VK_F2, True)
+  #  return ret
 
   #@memoizedproperty
   #def rubberBand(self):
