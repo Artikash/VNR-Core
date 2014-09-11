@@ -1,4 +1,4 @@
-/** busyindicator.qml
+/** gradientspinner.qml
  *  2/10/2013 jichi
  *
  *  See: http://qt-project.org/wiki/Busy-Indicator-for-QML
@@ -6,7 +6,7 @@
 import QtQuick 1.1
 import org.sakuradite.reader 1.0 as Plugin
 
-Plugin.BusySpinner { id: root_
+Plugin.GradientSpinner { id: root_
   property alias running: ani_.running
   property alias duration: ani_.duration
   property alias direction: ani_.direction

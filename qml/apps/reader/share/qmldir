@@ -2,7 +2,6 @@
 # 1/6/2013 jichi
 AvatarImage         avatarimage.qml
 Blocker             blocker.qml
-BusySpinner         busyspinner.qml
 CachedAvatarImage   cachedavatarimage.qml
 CheckBox            checkbox.qml
 CheckButton         checkbutton.qml
@@ -16,6 +15,7 @@ FadingImage         fadingimage.qml
 FadingItem          fadingitem.qml
 FadingRectangle     fadingrectangle.qml
 FloatingRectangle   floatingrectangle.qml
+GradientSpinner     gradientspinner.qml
 InputBar            inputbar.qml
 InputBox            inputbox.qml
 IntSpinBox          intspinbox.qml
