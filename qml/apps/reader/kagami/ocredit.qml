@@ -219,7 +219,7 @@ Rectangle { id: root_
     width: root_.buttonWidth
     //text: checked ? Sk.tr("Enable") : Sk.tr('Disable')
     text: Sk.tr("Enable")
-    toolTip: qsTr("Enable image transformations for OCR")
+    toolTip: qsTr("Enable image processing for OCR")
 
     //onCheckedChanged: root_.refresh()
   }

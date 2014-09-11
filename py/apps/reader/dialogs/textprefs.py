@@ -288,15 +288,15 @@ class _TextTab(object):
 
     layout.addWidget(threadGroup)
 
-    wikiLabel = QtWidgets.QLabel(my.tr('Please check this <a href="http://sakuradite.com/wiki/en/VNR/Game_Settings">Game Settings</a> wiki if there is no correct text.'))
-    wikiLabel.setOpenExternalLinks(True)
-    #skqss.class_(wikiLabel, "text-info")
-    layout.addWidget(wikiLabel)
-
     #msg = QtWidgets.QLabel(my.tr("WARNING: PLEASE DO NOT TURN ON REPETITION FILTERS UNLESS THERE ARE REPETITIONS!"))
     msgLabel = QtWidgets.QLabel(my.tr("Don't forget to maximize the text speed (see Help)."))
     skqss.class_(msgLabel, "text-success")
     layout.addWidget(msgLabel)
+
+    wikiLabel = QtWidgets.QLabel(my.tr('Please check this <a href="http://sakuradite.com/wiki/en/VNR/Game_Settings">Game Settings</a> wiki if there is no correct text.'))
+    wikiLabel.setOpenExternalLinks(True)
+    #skqss.class_(wikiLabel, "text-info")
+    layout.addWidget(wikiLabel)
 
     #buttons = QtWidgets.QHBoxLayout()
     #buttons.addStretch()
@@ -809,7 +809,7 @@ class TextTab(QtWidgets.QWidget):
     n = self.__d.threadLayout.count()
     #w = 500; h = 150
     #w = 500; h = 165 # + 15 for msg
-    w = 500; h = 180  # + 15*2 for 2 msg labels
+    w = 500; h = 190  # + 20*2 for 2 msg labels
     if n <= 0:
       pass
     elif n < THREADLAYOUT_COLUMN_COUNT:

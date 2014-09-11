@@ -263,7 +263,7 @@ class _MainObject(object):
     import ocrman
     ret = ocrman.manager()
     ret.setParent(self.q)
-    ret.textReceived.connect(self.ocrPopup.showPopup)
+    ret.popupRequested.connect(self.ocrPopup.showPopup)
 
     ss = settings.global_()
     ret.setEnabled(features.ADMIN != False and ss.isOcrEnabled() and ret.isInstalled())

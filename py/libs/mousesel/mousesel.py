@@ -3,9 +3,9 @@
 # 8/21/2014 jichi
 # Windows only
 
-#__all__ = ['MouseSelector']
+__all__ = ['MouseSelector']
 
-from sakurakit.skclass import memoized
+#from sakurakit.skclass import memoized
 
 from sakurakit import skos
 if skos.WIN:
@@ -18,7 +18,9 @@ else:
     def __init__(self, parent=None):
       super(MouseSelector, self).__init__(parent)
 
-    selected = Signal(int, int, int, int,) # x, y, width, height
+    selected = Signal(int, int, int, int) # x, y, width, height
+    pressed = Signal(int, int) # x, y
+    released = Signal(int, int) # x, y
 
     def isEnabled(self): return False
     def setEnabled(self, t): pass
@@ -37,7 +39,7 @@ else:
 
     def refresh(self): pass
 
-@memoized
-def global_(): return MouseSelector()
+#@memoized
+#def global_(): return MouseSelector()
 
 # EOF

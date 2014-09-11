@@ -7,7 +7,7 @@ import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
 import '../share' as Share
 
-Share.BusySpinner { // ajax indicator
+Share.GradientSpinner { // ajax indicator
 
   //width: 80; height: 80
   width: 60; height: 60
@@ -60,7 +60,7 @@ Share.BusySpinner { // ajax indicator
 
   Desktop.TooltipArea { id: toolTip_
     anchors.fill: parent
-    text: qsTr("{0} tasks").replace('{0}', threadPool_.threadCount)
+    text: qsTr("{0} background threads are running").replace('{0}', threadPool_.threadCount)
   }
 }
 

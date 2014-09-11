@@ -1,9 +1,6 @@
 # pymousesel.pro
 # 8/21/2014 jichi
 # Build pymousesel.pyd
-#
-# Though Qt is not indispensible, shiboken could save me some time for development.
-# Switch to pure PyC and get rid of QStringList if it becomes a performance bottle neck.
 
 CONFIG += pysideplugin #noqtgui
 include(../../../config.pri)

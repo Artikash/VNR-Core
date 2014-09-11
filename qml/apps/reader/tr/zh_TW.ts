@@ -6,8 +6,8 @@
     <name>ajaxindicator</name>
     <message>
         <location filename="../kagami/ajaxindicator.qml" line="63"/>
-        <source>{0} tasks</source>
-        <translation>{0}個任務</translation>
+        <source>{0} background threads are running</source>
+        <translation>{0}個線程正在后台運行</translation>
     </message>
 </context>
 <context>
@@ -818,19 +818,39 @@
 <context>
     <name>ocredit</name>
     <message>
-        <location filename="../kagami/ocredit.qml" line="175"/>
+        <location filename="../kagami/ocredit.qml" line="167"/>
+        <source>Color intensity</source>
+        <translation>顏色濃度</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="197"/>
         <source>Minimum text color intensity</source>
         <translation>文本顏色濃度的最小值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="176"/>
+        <location filename="../kagami/ocredit.qml" line="198"/>
         <source>Maximum text color intensity</source>
         <translation>文本顏色濃度的最大值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="181"/>
+        <location filename="../kagami/ocredit.qml" line="203"/>
         <source>Range of the text color intensity</source>
         <translation>文本顏色濃度的範圍</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="222"/>
+        <source>Enable image processing for OCR</source>
+        <translation>為OCR開啟圖像處理</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="239"/>
+        <source>Apply OCR to the current image</source>
+        <translation>應用OCR處理到當前的圖片</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="249"/>
+        <source>Reset to the last OCR settings</source>
+        <translation>恢复到上一次的OCR設定</translation>
     </message>
 </context>
 <context>

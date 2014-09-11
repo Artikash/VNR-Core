@@ -23,9 +23,11 @@ qmlRegisterType(QtWidgets.QGraphicsDropShadowEffect, QML_EFFECT, 1, 0, 'DropShad
 qmlRegisterType(QtWidgets.QGraphicsOpacityEffect, QML_EFFECT, 1, 0, 'Opacity')
 
 from sakurakit import skqml
-qmlRegisterType(skqml.SkDeclarativeBusySpinner, QML_PLUGIN, 1, 0, 'BusySpinner')
 qmlRegisterType(skqml.SkDesktopProxy, QML_PLUGIN, 1, 0, 'DesktopProxy')
 qmlRegisterType(skqml.SkClipboardProxy, QML_PLUGIN, 1, 0, 'ClipboardProxy')
+
+from qmlwidgets import qmlspinner
+qmlRegisterType(qmlspinner.QmlGradientSpinner, QML_PLUGIN, 1, 0, 'GradientSpinner')
 
 #from sakuradite import skqmlnet
 #qmlRegisterType(skqmlnet.QmlAjax, QML_PLUGIN, 1, 0, 'Ajax')

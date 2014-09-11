@@ -24,6 +24,7 @@ win32: SUBDIRS += ith
 win32: SUBDIRS += texthook pytexthook
 #win32: SUBDIRS += texthookxp pytexthookxp
 
+win32: SUBDIRS += pykbsignal
 win32: SUBDIRS += pymousesel
 
 win32: SUBDIRS += vnragent

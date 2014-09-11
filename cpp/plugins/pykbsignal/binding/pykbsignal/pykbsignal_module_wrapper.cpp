@@ -3,31 +3,31 @@
 #include <shiboken.h>
 #include <algorithm>
 #include <pyside.h>
-#include "pymodiocr_python.h"
+#include "pykbsignal_python.h"
 
 
 
 // Extra includes
 
 // Current module's type array.
-PyTypeObject** SbkpymodiocrTypes;
+PyTypeObject** SbkpykbsignalTypes;
 // Current module's converter array.
-SbkConverter** SbkpymodiocrTypeConverters;
+SbkConverter** SbkpykbsignalTypeConverters;
 void cleanTypesAttributes(void) {
-    for (int i = 0, imax = SBK_pymodiocr_IDX_COUNT; i < imax; i++) {
-        PyObject *pyType = reinterpret_cast<PyObject*>(SbkpymodiocrTypes[i]);
+    for (int i = 0, imax = SBK_pykbsignal_IDX_COUNT; i < imax; i++) {
+        PyObject *pyType = reinterpret_cast<PyObject*>(SbkpykbsignalTypes[i]);
         if (pyType && PyObject_HasAttrString(pyType, "staticMetaObject"))
             PyObject_SetAttrString(pyType, "staticMetaObject", Py_None);
     }
 }
 // Global functions ------------------------------------------------------------
 
-static PyMethodDef pymodiocr_methods[] = {
+static PyMethodDef pykbsignal_methods[] = {
     {0} // Sentinel
 };
 
 // Classes initialization functions ------------------------------------------------------------
-void init_ModiOcr(PyObject* module);
+void init_KeyboardSignal(PyObject* module);
 
 // Required modules' type and converter arrays.
 PyTypeObject** SbkPySide_QtCoreTypes;
@@ -35,6 +35,74 @@ SbkConverter** SbkPySide_QtCoreTypeConverters;
 
 // Module initialization ------------------------------------------------------------
 // Container Type converters.
+
+// C++ to Python conversion for type 'const QList<QObject * > &'.
+static PyObject* _constQList_QObjectPTR_REF_CppToPython__constQList_QObjectPTR_REF(const void* cppIn) {
+    ::QList<QObject * >& cppInRef = *((::QList<QObject * >*)cppIn);
+
+                // TEMPLATE - cpplist_to_pylist_conversion - START
+        PyObject* pyOut = PyList_New((int) cppInRef.size());
+        ::QList<QObject * >::const_iterator it = cppInRef.begin();
+        for (int idx = 0; it != cppInRef.end(); ++it, ++idx) {
+            ::QObject* cppItem(*it);
+            PyList_SET_ITEM(pyOut, idx, Shiboken::Conversions::pointerToPython((SbkObjectType*)SbkPySide_QtCoreTypes[SBK_QOBJECT_IDX], cppItem));
+        }
+        return pyOut;
+        // TEMPLATE - cpplist_to_pylist_conversion - END
+
+}
+static void _constQList_QObjectPTR_REF_PythonToCpp__constQList_QObjectPTR_REF(PyObject* pyIn, void* cppOut) {
+    ::QList<QObject * >& cppOutRef = *((::QList<QObject * >*)cppOut);
+
+                // TEMPLATE - pyseq_to_cpplist_conversion - START
+    for (int i = 0; i < PySequence_Size(pyIn); i++) {
+        Shiboken::AutoDecRef pyItem(PySequence_GetItem(pyIn, i));
+        ::QObject* cppItem = ((::QObject*)0);
+        Shiboken::Conversions::pythonToCppPointer((SbkObjectType*)SbkPySide_QtCoreTypes[SBK_QOBJECT_IDX], pyItem, &(cppItem));
+        cppOutRef << cppItem;
+    }
+    // TEMPLATE - pyseq_to_cpplist_conversion - END
+
+}
+static PythonToCppFunc is__constQList_QObjectPTR_REF_PythonToCpp__constQList_QObjectPTR_REF_Convertible(PyObject* pyIn) {
+    if (Shiboken::Conversions::checkSequenceTypes(SbkPySide_QtCoreTypes[SBK_QOBJECT_IDX], pyIn))
+        return _constQList_QObjectPTR_REF_PythonToCpp__constQList_QObjectPTR_REF;
+    return 0;
+}
+
+// C++ to Python conversion for type 'QList<QByteArray >'.
+static PyObject* _QList_QByteArray__CppToPython__QList_QByteArray_(const void* cppIn) {
+    ::QList<QByteArray >& cppInRef = *((::QList<QByteArray >*)cppIn);
+
+                // TEMPLATE - cpplist_to_pylist_conversion - START
+        PyObject* pyOut = PyList_New((int) cppInRef.size());
+        ::QList<QByteArray >::const_iterator it = cppInRef.begin();
+        for (int idx = 0; it != cppInRef.end(); ++it, ++idx) {
+            ::QByteArray cppItem(*it);
+            PyList_SET_ITEM(pyOut, idx, Shiboken::Conversions::copyToPython((SbkObjectType*)SbkPySide_QtCoreTypes[SBK_QBYTEARRAY_IDX], &cppItem));
+        }
+        return pyOut;
+        // TEMPLATE - cpplist_to_pylist_conversion - END
+
+}
+static void _QList_QByteArray__PythonToCpp__QList_QByteArray_(PyObject* pyIn, void* cppOut) {
+    ::QList<QByteArray >& cppOutRef = *((::QList<QByteArray >*)cppOut);
+
+                // TEMPLATE - pyseq_to_cpplist_conversion - START
+    for (int i = 0; i < PySequence_Size(pyIn); i++) {
+        Shiboken::AutoDecRef pyItem(PySequence_GetItem(pyIn, i));
+        ::QByteArray cppItem = ::QByteArray();
+        Shiboken::Conversions::pythonToCppCopy((SbkObjectType*)SbkPySide_QtCoreTypes[SBK_QBYTEARRAY_IDX], pyItem, &(cppItem));
+        cppOutRef << cppItem;
+    }
+    // TEMPLATE - pyseq_to_cpplist_conversion - END
+
+}
+static PythonToCppFunc is__QList_QByteArray__PythonToCpp__QList_QByteArray__Convertible(PyObject* pyIn) {
+    if (Shiboken::Conversions::convertibleSequenceTypes((SbkObjectType*)SbkPySide_QtCoreTypes[SBK_QBYTEARRAY_IDX], pyIn))
+        return _QList_QByteArray__PythonToCpp__QList_QByteArray_;
+    return 0;
+}
 
 // C++ to Python conversion for type 'QList<QVariant >'.
 static PyObject* _QList_QVariant__CppToPython__QList_QVariant_(const void* cppIn) {
@@ -159,10 +227,10 @@ static PythonToCppFunc is__QMap_QString_QVariant__PythonToCpp__QMap_QString_QVar
 #ifdef IS_PY3K
 static struct PyModuleDef moduledef = {
     /* m_base     */ PyModuleDef_HEAD_INIT,
-    /* m_name     */ "pymodiocr",
+    /* m_name     */ "pykbsignal",
     /* m_doc      */ 0,
     /* m_size     */ -1,
-    /* m_methods  */ pymodiocr_methods,
+    /* m_methods  */ pykbsignal_methods,
     /* m_reload   */ 0,
     /* m_traverse */ 0,
     /* m_clear    */ 0,
@@ -170,7 +238,7 @@ static struct PyModuleDef moduledef = {
 };
 
 #endif
-SBK_MODULE_INIT_FUNCTION_BEGIN(pymodiocr)
+SBK_MODULE_INIT_FUNCTION_BEGIN(pykbsignal)
     {
         Shiboken::AutoDecRef requiredModule(Shiboken::Module::import("PySide.QtCore"));
         if (requiredModule.isNull())
@@ -180,51 +248,66 @@ SBK_MODULE_INIT_FUNCTION_BEGIN(pymodiocr)
     }
 
     // Create an array of wrapper types for the current module.
-    static PyTypeObject* cppApi[SBK_pymodiocr_IDX_COUNT];
-    SbkpymodiocrTypes = cppApi;
+    static PyTypeObject* cppApi[SBK_pykbsignal_IDX_COUNT];
+    SbkpykbsignalTypes = cppApi;
 
     // Create an array of primitive type converters for the current module.
-    static SbkConverter* sbkConverters[SBK_pymodiocr_CONVERTERS_IDX_COUNT];
-    SbkpymodiocrTypeConverters = sbkConverters;
+    static SbkConverter* sbkConverters[SBK_pykbsignal_CONVERTERS_IDX_COUNT];
+    SbkpykbsignalTypeConverters = sbkConverters;
 
 #ifdef IS_PY3K
-    PyObject* module = Shiboken::Module::create("pymodiocr", &moduledef);
+    PyObject* module = Shiboken::Module::create("pykbsignal", &moduledef);
 #else
-    PyObject* module = Shiboken::Module::create("pymodiocr", pymodiocr_methods);
+    PyObject* module = Shiboken::Module::create("pykbsignal", pykbsignal_methods);
 #endif
 
     // Initialize classes in the type system
-    init_ModiOcr(module);
+    init_KeyboardSignal(module);
+
+    // Register converter for type 'const QList<QObject*>&'.
+    SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QLIST_QOBJECTPTR_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _constQList_QObjectPTR_REF_CppToPython__constQList_QObjectPTR_REF);
+    Shiboken::Conversions::registerConverterName(SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QLIST_QOBJECTPTR_IDX], "const QList<QObject*>&");
+    Shiboken::Conversions::registerConverterName(SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QLIST_QOBJECTPTR_IDX], "QList<QObject*>");
+    Shiboken::Conversions::addPythonToCppValueConversion(SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QLIST_QOBJECTPTR_IDX],
+        _constQList_QObjectPTR_REF_PythonToCpp__constQList_QObjectPTR_REF,
+        is__constQList_QObjectPTR_REF_PythonToCpp__constQList_QObjectPTR_REF_Convertible);
+
+    // Register converter for type 'QList<QByteArray>'.
+    SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QLIST_QBYTEARRAY_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QList_QByteArray__CppToPython__QList_QByteArray_);
+    Shiboken::Conversions::registerConverterName(SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QLIST_QBYTEARRAY_IDX], "QList<QByteArray>");
+    Shiboken::Conversions::addPythonToCppValueConversion(SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QLIST_QBYTEARRAY_IDX],
+        _QList_QByteArray__PythonToCpp__QList_QByteArray_,
+        is__QList_QByteArray__PythonToCpp__QList_QByteArray__Convertible);
 
     // Register converter for type 'QList<QVariant>'.
-    SbkpymodiocrTypeConverters[SBK_PYMODIOCR_QLIST_QVARIANT_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QList_QVariant__CppToPython__QList_QVariant_);
-    Shiboken::Conversions::registerConverterName(SbkpymodiocrTypeConverters[SBK_PYMODIOCR_QLIST_QVARIANT_IDX], "QList<QVariant>");
-    Shiboken::Conversions::addPythonToCppValueConversion(SbkpymodiocrTypeConverters[SBK_PYMODIOCR_QLIST_QVARIANT_IDX],
+    SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QLIST_QVARIANT_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QList_QVariant__CppToPython__QList_QVariant_);
+    Shiboken::Conversions::registerConverterName(SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QLIST_QVARIANT_IDX], "QList<QVariant>");
+    Shiboken::Conversions::addPythonToCppValueConversion(SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QLIST_QVARIANT_IDX],
         _QList_QVariant__PythonToCpp__QList_QVariant_,
         is__QList_QVariant__PythonToCpp__QList_QVariant__Convertible);
 
     // Register converter for type 'QList<QString>'.
-    SbkpymodiocrTypeConverters[SBK_PYMODIOCR_QLIST_QSTRING_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QList_QString__CppToPython__QList_QString_);
-    Shiboken::Conversions::registerConverterName(SbkpymodiocrTypeConverters[SBK_PYMODIOCR_QLIST_QSTRING_IDX], "QList<QString>");
-    Shiboken::Conversions::addPythonToCppValueConversion(SbkpymodiocrTypeConverters[SBK_PYMODIOCR_QLIST_QSTRING_IDX],
+    SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QLIST_QSTRING_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QList_QString__CppToPython__QList_QString_);
+    Shiboken::Conversions::registerConverterName(SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QLIST_QSTRING_IDX], "QList<QString>");
+    Shiboken::Conversions::addPythonToCppValueConversion(SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QLIST_QSTRING_IDX],
         _QList_QString__PythonToCpp__QList_QString_,
         is__QList_QString__PythonToCpp__QList_QString__Convertible);
 
     // Register converter for type 'QMap<QString,QVariant>'.
-    SbkpymodiocrTypeConverters[SBK_PYMODIOCR_QMAP_QSTRING_QVARIANT_IDX] = Shiboken::Conversions::createConverter(&PyDict_Type, _QMap_QString_QVariant__CppToPython__QMap_QString_QVariant_);
-    Shiboken::Conversions::registerConverterName(SbkpymodiocrTypeConverters[SBK_PYMODIOCR_QMAP_QSTRING_QVARIANT_IDX], "QMap<QString,QVariant>");
-    Shiboken::Conversions::addPythonToCppValueConversion(SbkpymodiocrTypeConverters[SBK_PYMODIOCR_QMAP_QSTRING_QVARIANT_IDX],
+    SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QMAP_QSTRING_QVARIANT_IDX] = Shiboken::Conversions::createConverter(&PyDict_Type, _QMap_QString_QVariant__CppToPython__QMap_QString_QVariant_);
+    Shiboken::Conversions::registerConverterName(SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QMAP_QSTRING_QVARIANT_IDX], "QMap<QString,QVariant>");
+    Shiboken::Conversions::addPythonToCppValueConversion(SbkpykbsignalTypeConverters[SBK_PYKBSIGNAL_QMAP_QSTRING_QVARIANT_IDX],
         _QMap_QString_QVariant__PythonToCpp__QMap_QString_QVariant_,
         is__QMap_QString_QVariant__PythonToCpp__QMap_QString_QVariant__Convertible);
 
     // Register primitive types converters.
 
-    Shiboken::Module::registerTypes(module, SbkpymodiocrTypes);
-    Shiboken::Module::registerTypeConverters(module, SbkpymodiocrTypeConverters);
+    Shiboken::Module::registerTypes(module, SbkpykbsignalTypes);
+    Shiboken::Module::registerTypeConverters(module, SbkpykbsignalTypeConverters);
 
     if (PyErr_Occurred()) {
         PyErr_Print();
-        Py_FatalError("can't initialize module pymodiocr");
+        Py_FatalError("can't initialize module pykbsignal");
     }
     PySide::registerCleanupFunction(cleanTypesAttributes);
 SBK_MODULE_INIT_FUNCTION_END
