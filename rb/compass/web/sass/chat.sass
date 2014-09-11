@@ -60,6 +60,10 @@ img.avatar
   &:hover > .right > .footer .fade-in
     opacity: 1
 
+  // only highlight the first post
+  &:not([data-type='reply']) > .right > .header
+    background-color: rgba(0,0,255,0.05) // blue
+
 $reply-avatar-width: $avatar-width * 0.8
 .post .reply
   margin-top: 9px
