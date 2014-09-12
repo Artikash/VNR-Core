@@ -81,6 +81,9 @@ import shiori
 qmlRegisterType(shiori.ShioriBean, QML_PLUGIN, 1, 0, 'ShioriBean')
 qmlRegisterType(shiori.ShioriQmlProxy, QML_PLUGIN, 1, 0, 'ShioriProxy')
 
+#import ocrman
+#qmlRegisterType(ocrman.OcrQmlBean, QML_PLUGIN, 1, 0, 'OcrBean')
+
 import submaker
 qmlRegisterType(submaker.GraffitiBean, QML_PLUGIN, 1, 0, 'GraffitiBean')
 qmlRegisterType(submaker.SubtitleContextBean, QML_PLUGIN, 1, 0, 'SubtitleContextBean')

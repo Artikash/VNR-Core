@@ -3,14 +3,15 @@
 # 8/13/2014 jichi
 
 import os
-from PySide.QtCore import QObject, Signal, Qt, QTimer
-from sakurakit import skwin
+from PySide.QtCore import QObject, Signal, Slot, Qt, QTimer
+from sakurakit import skfileio, skwin
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from modiocr import modiocr
 from mytr import my
 from _ocrman import OcrImageObject, OcrSettings
-import features, growl, windows, winman
+import _ocrman
+import features, growl, rc, windows, winman
 
 @memoized
 def manager(): return OcrManager()
@@ -27,6 +28,7 @@ class _OcrManager(object):
     #self.selectionEnabled = False # bool
     self.selectionEnabled = True # debug
     self.selectedWindow = 0 # long  game window hwnd
+    self.regionItems = [] # [QDeclarativeItem]
 
   # Automatic sampling game window
 
@@ -34,7 +36,7 @@ class _OcrManager(object):
   def ocrWindowTimer(self): # periodically check selected window
     ret = QTimer(self.q)
     ret.setSingleShot(False)
-    ret.setInterval(500) # TODO: Allow change this value
+    ret.setInterval(1000) # TODO: Allow change this value
     ret.timeout.connect(self.ocrWindow)
     return ret
 
@@ -47,8 +49,58 @@ class _OcrManager(object):
         t.stop()
 
   def ocrWindow(self):
-    if not self.selectedWindow:
+    if not self.enabled or not self.selectedWindow or not self.regionItems:
       return
+    texts = []
+    for index, item in enumerate(self.regionItems):
+      if item.property('visible') and item.property('enabled') and item.property('active'):
+        width = item.property('width')
+        height = item.property('height')
+        x = item.property('x')
+        y = item.property('y')
+        text = self._ocrRegion(x, y, width, height, index=index)
+        if text and text != item.property('recognizedText'):
+          item.setProperty('recognizedText', text)
+          #text = termman.manager().applyOcrTerms(text)
+          if text:
+            texts.append(text)
+    if texts:
+      text = '\n'.join(texts)
+      self.q.textRecognized.emit(text)
+
+  def _ocrRegion(self, x, y, width, height, index=0):
+    """
+    @param  x  int
+    @param  y  int
+    @param  width  int
+    @param  height  int
+    @param* index  int  an ID to distringuish the region
+    @return  unicode  recognized text
+    """
+    pm = self._capturePixmap(x, y, width, height)
+    if pm:
+      path = "%s/region#%s.%s" % (rc.DIR_TMP_OCR, index, _ocrman.OCR_IMAGE_FORMAT)
+      if _ocrman.save_pixmap(pm, path):
+        text = self._ocrImageFile(path)
+        #skfileio.removefile(path)
+        return text
+    return ''
+
+  def _capturePixmap(self, x, y, width, height): # int, int, int, int -> QPixmap or None
+    if x < 0:
+      width += x
+      x = 0
+    if y < 0:
+      height += y
+      y = 0
+    return _ocrman.capture_pixmap(x, y, width, height, hwnd=self.selectedWindow)
+
+  def _ocrImageFile(self, path): # unicode ->
+    delim = self.settings.deliminator
+    if delim:
+      return delim.join(modiocr.readtexts(path, self.settings.languageFlags))
+    else:
+      return modiocr.readtext(path, self.settings.languageFlags)
 
   # I/O hooks
 
@@ -153,6 +205,7 @@ class OcrManager(QObject):
 
   imageSelected = Signal(int, int, int, int, QObject, QObject, unicode, unicode) # x, y, width, height, OcrImageObject, WindowObject, text, language
   regionSelected = Signal(int, int, int, int) # x, y, width, height, OcrImageObject, WindowObject, text, language
+  textRecognized = Signal(unicode) # text in the selected region is recognized
 
   def languages(self): return self.__d.settings.languages
   def setLanguages(self, v):
@@ -190,6 +243,16 @@ class OcrManager(QObject):
     d = self.__d
     d.selectedWindow = hwnd
     d.setOcrWindowEnabled(bool(hwnd))
+
+  def addRegionItem(self, item): # QDeclarativeItem ->  the item in ocrregion.qml
+    self.__d.regionItems.append(item)
+
+  def clearRegionItems(self):
+    for item in self.__d.regionItems:
+      if item.property('active'):
+        item.setProperty('active', False)
+      if item.property('visible'):
+        item.setProperty('visible', False)
 
 # EOF
 

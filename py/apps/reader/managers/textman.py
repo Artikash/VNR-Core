@@ -738,6 +738,47 @@ class _TextManager(object):
         skclip.settext(text)
       self._translateTextAndShow(text, timestamp)
 
+  def showOcrText(self, text):
+    """
+    @param  text  unicode
+    """
+    if len(text) > self.gameTextCapacity:
+      dwarn("ignore long text, size = %i" % dataSize)
+      return
+    q = self.q
+
+    lang = self.gameLanguage or 'ja'
+    #text = self._repairText(text, self.language)
+    text = termman.manager().applyOriginTerms(text, lang)
+    if not text:
+      return
+    text = termman.manager().applyOcrTerms(text, lang)
+    if not text:
+      return
+
+    q.pageBreakReceived.emit()
+
+    dm = dataman.manager()
+
+    timestamp = skdatetime.current_unixtime()
+    self._updateTtsText(text)
+    #improved_text = self._correctText(text)
+    q.textReceived.emit(textutil.beautify_text(text), lang, timestamp)
+
+    # Making subtitle is currently disabled
+    #h = hashutil.strhash(data)
+    #dm.updateContext(h, text)
+    #q.rawTextReceived.emit(text, self.gameLanguage, h, 1) # context size is 1
+    #
+    #if dm.hasComments():
+    #  for c in dm.queryComments(hash=h):
+    #    self._showComment(c)
+
+    #if text
+    if settings.global_().copiesGameText():
+      skclip.settext(text)
+    self._translateTextAndShow(text, timestamp)
+
   ## Window translation ##
 
   def updateWindowTranslation(self):
@@ -889,6 +930,15 @@ class TextManager(QObject):
     @return  int
     """
     return self.__d.currentContextSize()
+
+  def addOcrText(self, text):
+    """
+    @param  text  string
+    """
+    d = self.__d
+    if not d.enabled:
+      return
+    d.showOcrText(text)
 
   def addIthText(self, rawData, renderedData, signature, name):
     """

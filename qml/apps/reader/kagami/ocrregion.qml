@@ -27,7 +27,7 @@ Item { id: root_
 
   Component.onCompleted: Local.items = [] // [item]
 
-  Plugin.OcrRegionBean { //id: bean_
+  Plugin.OcrRegionBean { id: bean_
     Component.onCompleted:
       regionRequested.connect(root_.showRegion)
   }
@@ -49,6 +49,7 @@ Item { id: root_
     var item = comp_.createObject(root_)
     item.show(pos.x, pos.y, width, height)
     items.push(item)
+    bean_.addRegionItem(item)
   }
 
   // Component
@@ -60,6 +61,8 @@ Item { id: root_
     Item { id: item_
       property bool active: true
       property bool enabled: true
+
+      property string recognizedText // last ocr-ed text
 
       function show(x, y, width, height) { // int, int, int, int
         item_.x = x

@@ -17,7 +17,7 @@ from sakurakit.skdebug import dprint, dwarn
 #from sakurakit.sktr import tr_
 #from msime import msime
 from mytr import my
-import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, qmldialog, rc, settings
+import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, ocrman, qmldialog, rc, settings
 
 ## OCR region ##
 
@@ -31,6 +31,10 @@ class OcrRegionBean(QObject):
     dprint("pass")
 
   regionRequested = Signal(int, int, int, int)  # x, y, width, height
+
+  @Slot(QObject) # QDeclarativeItem
+  def addRegionItem(self, item):
+    ocrman.manager().addRegionItem(item)
 
 class OcrRegionController:
 

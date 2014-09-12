@@ -31,6 +31,9 @@ def capture_pixmap(x, y, width, height, hwnd=None):
   @param  hwnd  int
   @return  QPixmap
   """
+  if width < OCR_MIN_WIDTH or height < OCR_MIN_HEIGHT:
+    dwarn("skip image that is too small")
+    return
   if hwnd:
     from sakurakit import skwidgets
     return QPixmap.grabWindow(skwidgets.to_wid(hwnd), x, y, width, height)
@@ -39,6 +42,9 @@ def capture_pixmap(x, y, width, height, hwnd=None):
     qApp = QCoreApplication.instance()
     wid = qApp.desktop().winId()
     return QPixmap.grabWindow(wid, x, y, width, height)
+
+def save_pixmap(pm, path): # QPixmap or QImage, unicode -> bool
+  return bool(pm) and not pm.isNull() and pm.save(path, OCR_IMAGE_FORMAT, OCR_IMAGE_QUALITY) and os.path.exists(path)
 
 class OcrSettings(object):
   def __init__(self):
@@ -112,7 +118,7 @@ class _OcrImageObject(object):
     @return  bool
     """
     path = self._randomPath()
-    ret = bool(pm) and not pm.isNull() and pm.save(path, OCR_IMAGE_FORMAT, OCR_IMAGE_QUALITY) and os.path.exists(path)
+    ret = save_pixmap(pm, path)
     if ret:
       skfileio.removefile(self.path)
       self.setPath(path)
@@ -222,9 +228,6 @@ class OcrImageObject(QObject):
     @param* hwnd  int
     @param* kwargs  parameters to create OcrImageObject
     """
-    if width < OCR_MIN_WIDTH or height < OCR_MIN_HEIGHT:
-      dwarn("skip image that is too small")
-      return
     pm = capture_pixmap(x, y, width, height, hwnd)
     if not pm or pm.isNull():
       dwarn("failed to capture image")

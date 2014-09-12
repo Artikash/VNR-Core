@@ -267,6 +267,9 @@ class _MainObject(object):
     ret.regionSelected.connect(self.ocrRegion.showRegion)
 
     self.gameManager.windowChanged.connect(ret.setSelectedWindow)
+    self.gameManager.processDetached.connect(ret.clearRegionItems)
+
+    ret.textRecognized.connect(self.textManager.addOcrText)
 
     ss = settings.global_()
     ret.setEnabled(features.ADMIN != False and ss.isOcrEnabled() and ret.isInstalled())
@@ -2176,7 +2179,7 @@ class MainObjectProxy(QObject):
   @Slot(int)
   def showGameView(self, gameId): manager().showGameView(gameId)
   @Slot(QObject) # dataman.Comment
-  def showGameView(self, comment): manager().showSubtitleEditor(comment)
+  def showSubtitleEditor(self, comment): manager().showSubtitleEditor(comment)
 
   @Slot()
   def showGlobalChatView(self): manager().showChatView(config.GLOBAL_TOPIC_ID)
