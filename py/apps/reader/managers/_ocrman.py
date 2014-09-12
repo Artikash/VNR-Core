@@ -31,6 +31,9 @@ def capture_pixmap(x, y, width, height, hwnd=None):
   @param  hwnd  int
   @return  QPixmap
   """
+  if width < OCR_MIN_WIDTH or height < OCR_MIN_HEIGHT:
+    dwarn("skip image that is too small: %sx%s" %(width, height))
+    return
   if hwnd:
     from sakurakit import skwidgets
     return QPixmap.grabWindow(skwidgets.to_wid(hwnd), x, y, width, height)
@@ -39,6 +42,9 @@ def capture_pixmap(x, y, width, height, hwnd=None):
     qApp = QCoreApplication.instance()
     wid = qApp.desktop().winId()
     return QPixmap.grabWindow(wid, x, y, width, height)
+
+def save_pixmap(pm, path): # QPixmap or QImage, unicode -> bool
+  return bool(pm) and not pm.isNull() and pm.save(path, OCR_IMAGE_FORMAT, OCR_IMAGE_QUALITY) and os.path.exists(path)
 
 class OcrSettings(object):
   def __init__(self):
@@ -55,13 +61,15 @@ class OcrSettings(object):
     self.languageFlags = modiocr.locales2lang(v) or modiocr.LANG_JA # Japanese by default
 
 @Q_Q
-class _OcrImageObject:
+class _OcrImageObject(object):
 
   def __init__(self, q, pixmap, settings):
     self.settings = settings # OcrSettings
     self.pixmap = pixmap # QPixmap
     self.path = '' # str
     self.editable = False # image transformation enabled
+    #self.width = width # int
+    #self.height = height # int
 
     self.colorIntensityEnabled = True
     self.minimumColorIntensity = 0.7
@@ -112,7 +120,7 @@ class _OcrImageObject:
     @return  bool
     """
     path = self._randomPath()
-    ret = bool(pm) and not pm.isNull() and pm.save(path, OCR_IMAGE_FORMAT, OCR_IMAGE_QUALITY) and os.path.exists(path)
+    ret = save_pixmap(pm, path)
     if ret:
       skfileio.removefile(self.path)
       self.setPath(path)
@@ -176,6 +184,16 @@ class OcrImageObject(QObject):
       setEditable,
       notify=editableChanged)
 
+  #widthChanged = Signal(int)
+  #width = Property(int,
+  #    lambda self: self.__d.width,
+  #    notify=widthChanged)
+
+  #heightChanged = Signal(int)
+  #height = Property(int,
+  #    lambda self: self.__d.height,
+  #    notify=heightChanged)
+
   # Color intensity
 
   def setColorIntensityEnabled(self, t): self.__d.colorIntensityEnabled = t
@@ -222,9 +240,6 @@ class OcrImageObject(QObject):
     @param* hwnd  int
     @param* kwargs  parameters to create OcrImageObject
     """
-    if width < OCR_MIN_WIDTH or height < OCR_MIN_HEIGHT:
-      dwarn("skip image that is too small")
-      return
     pm = capture_pixmap(x, y, width, height, hwnd)
     if not pm or pm.isNull():
       dwarn("failed to capture image")

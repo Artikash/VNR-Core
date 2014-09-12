@@ -380,12 +380,12 @@ class SubtitleEditorManager:
 def manager(): return SubtitleEditorManager()
 
 #@QmlObject
-class SubtitleEditorManagerProxy(QObject):
-  def __init__(self, parent=None):
-    super(SubtitleEditorManagerProxy, self).__init__(parent)
-
-  @Slot(QObject) # dataman.Comment
-  def showComment(self, c):
-    manager().showComment(c)
+#class SubtitleEditorManagerProxy(QObject):
+#  def __init__(self, parent=None):
+#    super(SubtitleEditorManagerProxy, self).__init__(parent)
+#
+#  @Slot(QObject) # dataman.Comment
+#  def showComment(self, c):
+#    manager().showComment(c)
 
 # EOF

@@ -263,7 +263,13 @@ class _MainObject(object):
     import ocrman
     ret = ocrman.manager()
     ret.setParent(self.q)
-    ret.popupRequested.connect(self.ocrPopup.showPopup)
+    ret.imageSelected.connect(self.ocrPopup.showPopup)
+    ret.regionSelected.connect(self.ocrRegion.showRegion)
+
+    self.gameManager.windowChanged.connect(ret.setSelectedWindow)
+    self.gameManager.processDetached.connect(ret.clearRegionItems)
+
+    ret.textRecognized.connect(self.textManager.addOcrText)
 
     ss = settings.global_()
     ret.setEnabled(features.ADMIN != False and ss.isOcrEnabled() and ret.isInstalled())
@@ -843,6 +849,11 @@ class _MainObject(object):
   def ocrPopup(self):
     import kagami
     return kagami.OcrPopupController() #(self.q)
+
+  @memoizedproperty
+  def ocrRegion(self):
+    import kagami
+    return kagami.OcrRegionController() #(self.q)
 
   @memoizedproperty
   def omajinai(self):
@@ -1730,6 +1741,9 @@ class MainObject(QObject):
   def showChatView(self, topicId): self.__d.chatViewManager.showTopic(topicId) # long ->
   def isChatViewVisible(self): return self.__d.chatViewManager.isVisible()
 
+  def showSubtitleEditor(self, comment): # dataman.Comment
+    self.__d.subtitleEditorManager.showComment(comment)
+
   def showGameView(self, gameId=None): # long ->
     d = self.__d
     if not gameId:
@@ -2161,7 +2175,11 @@ class MainObjectProxy(QObject):
   @Slot()
   def showTextReaderHelp(self): manager().showTextReaderHelp()
   @Slot()
-  def showGameView(self): manager().showGameView()
+  def showCurrentGameView(self): manager().showGameView()
+  @Slot(int)
+  def showGameView(self, gameId): manager().showGameView(gameId)
+  @Slot(QObject) # dataman.Comment
+  def showSubtitleEditor(self, comment): manager().showSubtitleEditor(comment)
 
   @Slot()
   def showGlobalChatView(self): manager().showChatView(config.GLOBAL_TOPIC_ID)

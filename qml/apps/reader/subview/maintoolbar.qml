@@ -32,8 +32,8 @@ Item { id: root_
 
   //Plugin.MainObjectProxy { id: mainPlugin_ }
   //Plugin.DataManagerProxy { id: datamanPlugin_ }
-  Plugin.SubtitleEditorManagerProxy { id: subedit_ }
-  Plugin.GameViewManagerProxy { id: gameview_ }
+  //Plugin.GameViewManagerProxy { id: gameview_ }
+  //Plugin.SubtitleEditorManagerProxy { id: subedit_ }
   Plugin.UserViewManagerProxy { id: userview_ }
 
   Desktop.ToolBar {
@@ -93,7 +93,7 @@ Item { id: root_
         visible: !!root_.currentItem && root_.currentItem.gameId
         onClicked:
           if (root_.currentItem)
-            gameview_.showGame(root_.currentItem.gameId)
+            mainPlugin_.showGameView(root_.currentItem.gameId)
       }
     }
 
@@ -159,7 +159,8 @@ Item { id: root_
   //}
   function editCurrentItem() {
     if (currentItem)
-      subedit_.showComment(currentItem)
+      mainPlugin_.showSubtitleEditor(currentItem)
+      //subedit_.showComment(currentItem)
   }
   function deleteCurrentItem() {
     if (currentItem)

@@ -1580,6 +1580,8 @@ class SettingsProxy(QObject):
 
     self.gameTextCapacityChanged.connect(g.gameTextCapacityChanged)
 
+    g.ocrEnabledChanged.connect(self.ocrEnabledChanged)
+
     #for sig in 'japaneseFontChanged':
     #  getattr(g, sig).connect(
     #      getattr(self, sig))
@@ -1861,6 +1863,9 @@ class SettingsProxy(QObject):
 
   kagamiFocusEnabledChanged = Signal(bool)
   kagamiFocusEnabled = bool_property('KagamiFocusEnabled', False, notify=kagamiFocusEnabledChanged)
+
+  ocrEnabledChanged = Signal(bool)
+  ocrEnabled = bool_property('OcrEnabled', False, notify=ocrEnabledChanged)
 
   graffitiCopyEnabled = bool_property('GraffitiCopy', True)
   graffitiHeaderVisible = bool_property('GraffitiHeaderVisible', True)

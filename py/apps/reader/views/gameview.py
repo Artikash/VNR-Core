@@ -2,7 +2,7 @@
 # gameview.py
 # 7/10/2013 jichi
 
-__all__ = ['GameViewManager', 'GameViewManagerProxy']
+__all__ = ['GameViewManager']
 
 import json, os
 from functools import partial
@@ -539,13 +539,14 @@ def manager():
   webrc.init()
   return GameViewManager()
 
+# Disabled to reduce the number of qml plugins
 #@QmlObject
-class GameViewManagerProxy(QObject):
-  def __init__(self, parent=None):
-    super(GameViewManagerProxy, self).__init__(parent)
-
-  @Slot(int)
-  def showGame(self, id):
-    manager().showGame(id)
+#class GameViewManagerProxy(QObject):
+#  def __init__(self, parent=None):
+#    super(GameViewManagerProxy, self).__init__(parent)
+#
+#  @Slot(int)
+#  def showGame(self, id):
+#    manager().showGame(id)
 
 # EOF

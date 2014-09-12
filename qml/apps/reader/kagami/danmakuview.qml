@@ -190,7 +190,7 @@ Item { id: root_
     }
     Desktop.MenuItem {
       text: Sk.tr("Edit")
-      onTriggered: subeditPlugin_.showComment(contextMenu_.getComment())
+      onTriggered: mainPlugin_.showSubtitleEditor(contextMenu_.getComment())
     }
     Desktop.Separator {}
     Desktop.MenuItem {

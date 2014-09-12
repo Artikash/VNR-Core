@@ -29,7 +29,7 @@ Item { id: root_
 
   //Plugin.MainObjectProxy { id: mainPlugin_ }
   //Plugin.DataManagerProxy { id: datamanPlugin_ }
-  Plugin.GameViewManagerProxy { id: gameview_ }
+  //Plugin.GameViewManagerProxy { id: gameview_ }
   Plugin.UserViewManagerProxy { id: userview_ }
 
   Desktop.ToolBar {
@@ -83,7 +83,7 @@ Item { id: root_
         visible: !!root_.currentItem && root_.currentItem.gameId
         onClicked:
           if (root_.currentItem)
-            gameview_.showGame(root_.currentItem.gameId)
+            mainPlugin_.showGameView(root_.currentItem.gameId)
       }
       //Desktop.ToolButton {
       //  text: currentItem && currentItem.disabled ? Sk.tr("Enable") : Sk.tr("Disable")

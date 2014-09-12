@@ -12,6 +12,7 @@ Grimoire        grimoire.qml
 Growl           growl.qml
 MenuButton      menubutton.qml
 NoteView        noteview.qml
-OcrEdit         ocredit.qml
 OcrPopup        ocrpopup.qml
+OcrPopupEdit    ocrpopupedit.qml
+OcrRegion       ocrregion.qml
 Shiori          shiori.qml

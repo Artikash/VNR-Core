@@ -38,7 +38,7 @@ Rectangle { id: root_
   //Plugin.MainObjectProxy { id: mainPlugin_ }
   Plugin.GameManagerProxy { id: gameman_ }
   Plugin.GameEditorManagerProxy { id: gameedit_ }
-  Plugin.GameViewManagerProxy { id: gameview_ }
+  //Plugin.GameViewManagerProxy { id: gameview_ }
 
   Desktop.TooltipArea { id: toolTip_
     anchors.fill: parent
@@ -200,7 +200,7 @@ Rectangle { id: root_
         width: parent.cellWidth
         text: My.tr("Info")
         toolTip: qsTr("Show game information")
-        onClicked: if (game) gameview_.showGame(game.id)
+        onClicked: if (game) mainPlugin_.showGameView(game.id)
       }
 
       Bootstrap.Button { id: browseButton_

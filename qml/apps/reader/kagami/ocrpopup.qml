@@ -23,7 +23,7 @@ Item { id: root_
   // - Private -
 
   Component { id: editComp_
-    Kagami.OcrEdit {
+    Kagami.OcrPopupEdit {
       zoomFactor: root_._zoomFactor
       ignoresFocus: root_.ignoresFocus
     }
@@ -60,7 +60,7 @@ Item { id: root_
 
   Plugin.OcrPopupBean { //id: bean_
     Component.onCompleted:
-      popupRequested.connect(showPopup)
+      popupRequested.connect(root_.showPopup)
   }
 
   function showPopup(x, y, imgobj, winobj, text, lang) { // int, int, OcrImageObject, WindowObject, string, string ->
@@ -82,7 +82,6 @@ Item { id: root_
   // Component
 
   Component { id: comp_
-
     Rectangle { id: item_
       property int minimumX: root_.x
       property int minimumY: root_.y
@@ -365,7 +364,8 @@ Item { id: root_
         onPressed: pressedX = mouseX
         onPositionChanged:
           if (pressed) {
-            var w = textEdit_.width + mouseX - pressedX
+            var dx = mouseX - pressedX
+            var w = textEdit_.width + dx
             if (w > _MIN_WIDTH && w < _MAX_WIDTH)
               textEdit_.width = w
           }

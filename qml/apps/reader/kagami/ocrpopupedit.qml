@@ -1,4 +1,4 @@
-/** ocredit.qml
+/** ocrpopupedit.qml
  *  9/7/2014 jichi
  */
 import QtQuick 1.1
@@ -67,7 +67,8 @@ Rectangle { id: root_
   property int _ROOT_MARGIN: 9
   //property int spacing: _ROOT_MARGIN
 
-  width: 300 // TODO: allow dynamically adjust this value
+  width: Math.max(300, image_.width + _ROOT_MARGIN * 2)
+
   height: _ROOT_MARGIN
         + image_.height
         + _ROOT_MARGIN
@@ -105,7 +106,8 @@ Rectangle { id: root_
 
   Image { id: image_
     anchors {
-      left: parent.left; right: parent.right
+      //left: parent.left; right: parent.right
+      horizontalCenter: parent.horizontalCenter
       bottom: textRect_.top
       margins: _ROOT_MARGIN
     }

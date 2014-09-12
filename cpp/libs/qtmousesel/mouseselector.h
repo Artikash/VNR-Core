@@ -8,7 +8,7 @@
 //#include <QtGui/qwindowdefs.h> // for WId
 #include "sakurakit/skglobal.h"
 
-QT_FORWARD_DECLARE_CLASS(QWidget)
+QT_FORWARD_DECLARE_CLASS(QRubberBand)
 
 class MouseSelectorPrivate;
 class MouseSelector : public QObject
@@ -21,8 +21,11 @@ public:
   explicit MouseSelector(QObject *parent = nullptr);
   ~MouseSelector();
 
-  QWidget *parentWidget() const;
-  void setParentWidget(QWidget *parentWidget);
+  //QWidget *parentWidget() const;
+  //void setParentWidget(QWidget *parentWidget);
+
+  QRubberBand *rubberBand() const;
+  //void setRubberBand(QRubberBand *value);
 
   bool isEnabled() const; // default false
   void setEnabled(bool t);

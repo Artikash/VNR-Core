@@ -17,9 +17,67 @@ from sakurakit.skdebug import dprint, dwarn
 #from sakurakit.sktr import tr_
 #from msime import msime
 from mytr import my
-import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, qmldialog, rc, settings
+import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, ocrman, qmldialog, rc, settings
 
-## Text popup ##
+## OCR region ##
+
+class _OcrRegionBean:
+  def __init__(self):
+    self.enabled = False
+    self.visible = False
+
+class OcrRegionBean(QObject):
+
+  instance = None
+
+  def __init__(self, parent=None):
+    super(OcrRegionBean, self).__init__(parent)
+    self.__d = _OcrRegionBean()
+
+    OcrRegionBean.instance = self
+    dprint("pass")
+
+  regionRequested = Signal(int, int, int, int)  # x, y, width, height
+
+  def setEnabled(self, t):
+    if self.__d.enabled != t:
+      self.__d.enabled = t
+      self.enabledChanged.emit(t)
+
+      # bad, though works
+      import ocrman
+      ocrman.manager().setRegionOcrEnabled(t)
+
+  enabledChanged = Signal(bool)
+  enabled = Property(bool,
+      lambda self: self.__d.enabled,
+      setEnabled, notify=enabledChanged)
+
+  def setVisible(self, t):
+    if self.__d.visible != t:
+      self.__d.visible = t
+      self.visibleChanged.emit(t)
+
+      # bad, though works
+      import ocrman
+      ocrman.manager().setRegionSelectionEnabled(t)
+
+  visibleChanged = Signal(bool)
+  visible = Property(bool,
+      lambda self: self.__d.visible,
+      setVisible, notify=visibleChanged)
+
+  @Slot(QObject) # QDeclarativeItem
+  def addRegionItem(self, item):
+    ocrman.manager().addRegionItem(item)
+
+class OcrRegionController:
+
+  def showRegion(self, x, y, width, height): # int, int, int, int
+    if OcrRegionBean.instance: # width & height are ignored
+      OcrRegionBean.instance.regionRequested.emit(x, y, width, height)
+
+## OCR popup ##
 
 class OcrPopupBean(QObject):
 

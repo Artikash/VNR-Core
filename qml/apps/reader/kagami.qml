@@ -26,8 +26,8 @@ Item { id: root_
 
   //property bool ignoresFocus: dock_.ignoresFocusChecked && gameWindow_.fullScreen
   property bool ignoresFocus:
-      center_.fullScreen
-      && !center_.stretched
+      gameWindowTracker_.fullScreen
+      && !gameWindowTracker_.stretched
       && !currentGameIsEmulator
       && !settings_.kagamiFocusEnabled
 
@@ -91,7 +91,7 @@ Item { id: root_
 
   function loadSettings() {
     grimoire_.zoomFactor = settings_.grimoireZoomFactor
-    popup_.zoomFactor = settings_.ocrZoomFactor
+    ocrPopup_.zoomFactor = settings_.ocrZoomFactor
     shiori_.zoomFactor = settings_.shioriZoomFactor
     shiori_.defaultWidth = settings_.shioriWidth
 
@@ -152,7 +152,7 @@ Item { id: root_
 
   function saveSettings() {
     settings_.grimoireZoomFactor = grimoire_.zoomFactor
-    settings_.ocrZoomFactor = popup_.zoomFactor
+    settings_.ocrZoomFactor = ocrPopup_.zoomFactor
     settings_.shioriZoomFactor = shiori_.zoomFactor
     settings_.shioriWidth = shiori_.defaultWidth
 
@@ -248,7 +248,7 @@ Item { id: root_
 
   Plugin.BBCodeParser { id: bbcodePlugin_ }
 
-  Plugin.SubtitleEditorManagerProxy { id: subeditPlugin_ }
+  //Plugin.SubtitleEditorManagerProxy { id: subeditPlugin_ }
   Plugin.UserViewManagerProxy { id: userViewPlugin_ }
 
   Plugin.ClipboardProxy { id: clipboardPlugin_ }
@@ -317,11 +317,11 @@ Item { id: root_
       }
 
       // 4 paddings surrounding the center
-      property int paddingMargin: -center_.borderWidth - 5 //(dock_.displayStretchedChecked ? 2 : 0)
-      property int paddingTopMargin: -center_.titleBarHeight - (dock_.displayStretchedChecked ? 2 : 0)
-      //property int paddingBottomMargin: -center_.borderWidth - (dock_.displayStretchedChecked ? 4 : 0)
+      property int paddingMargin: -gameWindowTracker_.borderWidth - 5 //(dock_.displayStretchedChecked ? 2 : 0)
+      property int paddingTopMargin: -gameWindowTracker_.titleBarHeight - (dock_.displayStretchedChecked ? 2 : 0)
+      //property int paddingBottomMargin: -gameWindowTracker_.borderWidth - (dock_.displayStretchedChecked ? 4 : 0)
 
-      //property bool paddingVisible: center_.stretched
+      //property bool paddingVisible: gameWindowTracker_.stretched
       property bool paddingVisible: false
       onPaddingVisibleChanged:
         if (paddingVisible !== dock_.paddingChecked)
@@ -331,11 +331,11 @@ Item { id: root_
         anchors {
           left: parent.left; right: parent.right
           top: parent.top
-          bottom: center_.top
+          bottom: gameWindowTracker_.top
           bottomMargin: parent.paddingTopMargin
         }
         color: 'black'
-        //visible: center_.stretched
+        //visible: gameWindowTracker_.stretched
         visible: gamePanel_.paddingVisible
         Desktop.TooltipArea {
           anchors.fill: parent
@@ -347,11 +347,11 @@ Item { id: root_
         anchors {
           left: parent.left; right: parent.right
           bottom: parent.bottom
-          top: center_.bottom
+          top: gameWindowTracker_.bottom
           topMargin: parent.paddingMargin
         }
         color: 'black'
-        //visible: center_.stretched
+        //visible: gameWindowTracker_.stretched
         visible: gamePanel_.paddingVisible
         Desktop.TooltipArea {
           anchors.fill: parent
@@ -362,12 +362,12 @@ Item { id: root_
       Rectangle { // Left
         anchors {
           left: parent.left
-          right: center_.left
-          top: center_.top; bottom: center_.bottom
+          right: gameWindowTracker_.left
+          top: gameWindowTracker_.top; bottom: gameWindowTracker_.bottom
           rightMargin: parent.paddingMargin
         }
         color: 'black'
-        //visible: center_.stretched
+        //visible: gameWindowTracker_.stretched
         visible: gamePanel_.paddingVisible
         Desktop.TooltipArea {
           anchors.fill: parent
@@ -378,12 +378,12 @@ Item { id: root_
       Rectangle { // Right
         anchors {
           right: parent.right
-          left: center_.right
-          top: center_.top; bottom: center_.bottom
+          left: gameWindowTracker_.right
+          top: gameWindowTracker_.top; bottom: gameWindowTracker_.bottom
           leftMargin: parent.paddingMargin
         }
         color: 'black'
-        //visible: center_.stretched
+        //visible: gameWindowTracker_.stretched
         visible: gamePanel_.paddingVisible
         Desktop.TooltipArea {
           anchors.fill: parent
@@ -392,8 +392,8 @@ Item { id: root_
       }
 
       // Cached gameproxy geometry
-      //Kagami.CentralArea { id: center_
-      Item { id: center_
+      //Kagami.CentralArea { id: gameWindowTracker_
+      Item { id: gameWindowTracker_ // invisible game window tracker to cache game window properties that are expensive
         visible: false
 
         // Fix the slow changes when minimized
@@ -427,9 +427,9 @@ Item { id: root_
 
       Kagami.CommentView { //id: gossip_
         anchors {
-          top: center_.top; bottom: center_.bottom
-          left: center_.left
-          right: center_.horizontalCenter
+          top: gameWindowTracker_.top; bottom: gameWindowTracker_.bottom
+          left: gameWindowTracker_.left
+          right: gameWindowTracker_.horizontalCenter
           margins: 20
         }
 
@@ -449,25 +449,25 @@ Item { id: root_
 
       Kagami.Grimoire { id: grimoire_
         //anchors {
-        //  fill: locked ? center_ : undefined
-        //  leftMargin: center_.width * (1 - widthFactor) / 2
-        //  rightMargin: center_.width * (1 - widthFactor) / 2
-        //  bottomMargin: center_.height / 4
-        //  topMargin: center_.fullScreen ? 0 : 25
+        //  fill: locked ? gameWindowTracker_ : undefined
+        //  leftMargin: gameWindowTracker_.width * (1 - widthFactor) / 2
+        //  rightMargin: gameWindowTracker_.width * (1 - widthFactor) / 2
+        //  bottomMargin: gameWindowTracker_.height / 4
+        //  topMargin: gameWindowTracker_.fullScreen ? 0 : 25
         //}
-        x: (locked && !dragging) ? relativeX + center_.x : x
-        y: (locked && !dragging) ? relativeY + center_.y : y
+        x: (locked && !dragging) ? relativeX + gameWindowTracker_.x : x
+        y: (locked && !dragging) ? relativeY + gameWindowTracker_.y : y
 
         //property real widthFactor
         property alias widthFactor: dock_.widthFactor
 
-        width: center_.width * widthFactor //* root_.globalZoomFactor
-        height: center_.height * 0.7
+        width: gameWindowTracker_.width * widthFactor //* root_.globalZoomFactor
+        height: gameWindowTracker_.height * 0.7
 
-        //property int maxHeight: center_.height * 3 / 4
+        //property int maxHeight: gameWindowTracker_.height * 3 / 4
         //height: maxHeight < root_.height - y ? maxHeight : root_.height - y
 
-        toolTipEnabled: !center_.fullScreenOrStretched
+        toolTipEnabled: !gameWindowTracker_.fullScreenOrStretched
 
         japaneseFont: settings_.japaneseFont
         englishFont: settings_.englishFont
@@ -489,24 +489,24 @@ Item { id: root_
         dutchFont: settings_.dutchFont
 
         function ensureVisible() {
-          if (x < center_.x || x+width/2 > center_.x+center_.width) {
-            if (locked) relativeX = (center_.width - width) / 2
-            else x = center_.x + (center_.width - width) / 2
+          if (x < gameWindowTracker_.x || x+width/2 > gameWindowTracker_.x+gameWindowTracker_.width) {
+            if (locked) relativeX = (gameWindowTracker_.width - width) / 2
+            else x = gameWindowTracker_.x + (gameWindowTracker_.width - width) / 2
           }
-          if (y < center_.y || y+height/2 > center_.y+center_.height) {
-            var h = center_.height * 0.75
+          if (y < gameWindowTracker_.y || y+height/2 > gameWindowTracker_.y+gameWindowTracker_.height) {
+            var h = gameWindowTracker_.height * 0.75
             if (locked) relativeY = h
-            else y = center_.y + h
+            else y = gameWindowTracker_.y + h
           }
         }
 
         // Bound bottom of grimoire in fullscreen mode
         onContentHeightChanged:
-          if (center_.fullScreen && y+contentHeight > center_.y+center_.height) {
-            var d = center_.height - contentHeight
-            if (d > center_.height*0.5) { // no more than half of the screen
+          if (gameWindowTracker_.fullScreen && y+contentHeight > gameWindowTracker_.y+gameWindowTracker_.height) {
+            var d = gameWindowTracker_.height - contentHeight
+            if (d > gameWindowTracker_.height*0.5) { // no more than half of the screen
               if (locked) relativeY = d
-              else y = center_.y + d
+              else y = gameWindowTracker_.y + d
             }
           }
 
@@ -517,9 +517,9 @@ Item { id: root_
         //onResetPosRequested: grimoire_.resetPosition()
 
         function savePosition() {
-          if (gamePanel_.visible && center_.width && center_.height) {
-            settings_.grimoireNormalizedX = (x - center_.x - (center_.width - width) / 2) / center_.width
-            settings_.grimoireNormalizedY = (y - center_.y - (center_.fullScreen ? 0 : 25)) / center_.height
+          if (gamePanel_.visible && gameWindowTracker_.width && gameWindowTracker_.height) {
+            settings_.grimoireNormalizedX = (x - gameWindowTracker_.x - (gameWindowTracker_.width - width) / 2) / gameWindowTracker_.width
+            settings_.grimoireNormalizedY = (y - gameWindowTracker_.y - (gameWindowTracker_.fullScreen ? 0 : 25)) / gameWindowTracker_.height
 
             growl_.showMessage(qsTr("Save the text box position"))
           } else
@@ -527,11 +527,11 @@ Item { id: root_
         }
 
         function loadPosition() {
-          if (gamePanel_.visible && center_.width && center_.height) {
+          if (gamePanel_.visible && gameWindowTracker_.width && gameWindowTracker_.height) {
             var locked_bak = locked
             locked = true
-            relativeX = settings_.grimoireNormalizedX * center_.width + (center_.width - width) / 2
-            relativeY = settings_.grimoireNormalizedY * center_.height + (center_.fullScreen ? 0 : 25)
+            relativeX = settings_.grimoireNormalizedX * gameWindowTracker_.width + (gameWindowTracker_.width - width) / 2
+            relativeY = settings_.grimoireNormalizedY * gameWindowTracker_.height + (gameWindowTracker_.fullScreen ? 0 : 25)
             locked = locked_bak
             growl_.showMessage(qsTr("Load the text box position"))
           } else
@@ -539,13 +539,13 @@ Item { id: root_
         }
 
         function resetPosition() {
-          if (gamePanel_.visible && center_.width > 0 && center_.height > 0) {
+          if (gamePanel_.visible && gameWindowTracker_.width > 0 && gameWindowTracker_.height > 0) {
             var locked_bak = locked
             locked = true
             // Top center
-            relativeX = (center_.width - width) / 2
-            relativeY = center_.titleBarHeight
-            //relativeY = center_.height * 0.75
+            relativeX = (gameWindowTracker_.width - width) / 2
+            relativeY = gameWindowTracker_.titleBarHeight
+            //relativeY = gameWindowTracker_.height * 0.75
             locked = locked_bak
             growl_.showMessage(qsTr("Reset the text box position"))
           } else
@@ -601,15 +601,15 @@ Item { id: root_
         lecOnlineColor: settings_.lecOnlineColor
         transruColor: settings_.transruColor
 
-        property int relativeX: settings_.grimoireNormalizedX * center_.width + (center_.width - width) / 2
-        property int relativeY: settings_.grimoireNormalizedY * center_.height + (center_.fullScreen ? 0 : 25)
+        property int relativeX: settings_.grimoireNormalizedX * gameWindowTracker_.width + (gameWindowTracker_.width - width) / 2
+        property int relativeY: settings_.grimoireNormalizedY * gameWindowTracker_.height + (gameWindowTracker_.fullScreen ? 0 : 25)
 
         onLockedChanged: keepPosotion()
         onDraggingChanged: keepPosotion()
 
         function keepPosotion() {
-          relativeX = x - center_.x
-          relativeY = y - center_.y
+          relativeX = x - gameWindowTracker_.x
+          relativeY = y - gameWindowTracker_.y
         }
 
         ignoresFocus: root_.ignoresFocus
@@ -652,8 +652,8 @@ Item { id: root_
         //  //  repaint()
         //}
 
-        property int minWidth: dock_.minimumWidthFactor * center_.width
-        property int maxWidth: dock_.maximumWidthFactor * center_.width
+        property int minWidth: dock_.minimumWidthFactor * gameWindowTracker_.width
+        property int maxWidth: dock_.maximumWidthFactor * gameWindowTracker_.width
 
         property int _RESIZABLE_AREA_WIDTH: 20
 
@@ -669,11 +669,11 @@ Item { id: root_
           property int pressedX
           onPressed: pressedX = mouseX
           onPositionChanged:
-            if (pressed && center_.width) {
+            if (pressed && gameWindowTracker_.width) {
               var dx = mouseX - pressedX
               var w = grimoire_.width - dx
               if (w > grimoire_.minWidth && w < grimoire_.maxWidth) {
-                grimoire_.widthFactor = w / center_.width
+                grimoire_.widthFactor = w / gameWindowTracker_.width
 
                 if (grimoire_.locked) grimoire_.relativeX += dx
                 else grimoire_.x += dx
@@ -698,11 +698,11 @@ Item { id: root_
           property int pressedX
           onPressed: pressedX = mouseX
           onPositionChanged:
-            if (pressed && center_.width) {
+            if (pressed && gameWindowTracker_.width) {
               var dx = mouseX - pressedX
               var w = grimoire_.width + dx
               if (w > grimoire_.minWidth && w < grimoire_.maxWidth)
-                grimoire_.widthFactor = w / center_.width
+                grimoire_.widthFactor = w / gameWindowTracker_.width
             }
 
           Desktop.TooltipArea { //id: rightResizeTip_
@@ -732,16 +732,16 @@ Item { id: root_
             updatePosition()
 
         function updatePosition() {
-          x = center_.x + center_.width - width - 20 // margin right
-          y = center_.y + (center_.height - height) / 2
+          x = gameWindowTracker_.x + gameWindowTracker_.width - width - 20 // margin right
+          y = gameWindowTracker_.y + (gameWindowTracker_.height - height) / 2
           ensureVisible()
         }
       }
 
       Kagami.DanmakuView { //id: omajinai_
         anchors {
-          fill: center_
-          //topMargin: center_.fullScreen ? 0 : 25 // skip header of the window
+          fill: gameWindowTracker_
+          //topMargin: gameWindowTracker_.fullScreen ? 0 : 25 // skip header of the window
           topMargin: 60
           rightMargin: 40
         }
@@ -758,15 +758,30 @@ Item { id: root_
         //glowRadius: grimoire_.glowRadius
       }
 
+      Kagami.OcrRegion { //id: ocrRegion_
+        anchors.fill: gameWindowTracker_
+
+        anchors.topMargin: gameWindowTracker_.fullScreen ? 0 : gameWindowTracker_.titleBarHeight // skip header of the window
+
+        enabled: dock_.ocrRegionEnabledChecked && gamePanel_.visible
+        visible: dock_.ocrRegionVisibleChecked && gamePanel_.visible
+
+        zoomFactor: root_.globalZoomFactor
+        ignoresFocus: root_.ignoresFocus
+        wine: root_.wine
+      }
+
+      // Dock
+
       Rectangle { // left dock sensor
         anchors {
-          left: center_.left
-          verticalCenter: center_.verticalCenter
-          leftMargin: -6 + Math.max(0, -center_.x)
+          left: gameWindowTracker_.left
+          verticalCenter: gameWindowTracker_.verticalCenter
+          leftMargin: -6 + Math.max(0, -gameWindowTracker_.x)
         }
         radius: 5
         width: 15
-        height: center_.height / 5
+        height: gameWindowTracker_.height / 5
         color: root_.wine ? '#10000000' : '#01000000' // alpha = 1/255 is too small that do not work on wine
 
         MouseArea { id: dockSensorArea_
@@ -780,11 +795,11 @@ Item { id: root_
 
       Kagami.Dock { id: dock_
         anchors {
-          verticalCenter: center_.verticalCenter
-          //left: withinPanel ? center_.left : undefined
-          //right: withinPanel ? undefined : center_.left
-          left: center_.left
-          leftMargin: center_.fullScreen ? 4 : Math.max(-floatingWidth + -2, -center_.x)
+          verticalCenter: gameWindowTracker_.verticalCenter
+          //left: withinPanel ? gameWindowTracker_.left : undefined
+          //right: withinPanel ? undefined : gameWindowTracker_.left
+          left: gameWindowTracker_.left
+          leftMargin: gameWindowTracker_.fullScreen ? 4 : Math.max(-floatingWidth + -2, -gameWindowTracker_.x)
         }
 
         zoomFactor: root_.globalZoomFactor
@@ -809,6 +824,8 @@ Item { id: root_
         ignoresFocus: root_.ignoresFocus
 
         //furiganaEnabled: root_.rubyEnabled
+
+        ocrEnabled: settings_.ocrEnabled
 
         onTextCheckedChanged: settings_.grimoireTextVisible = textChecked
         onNameCheckedChanged: settings_.grimoireNameVisible = nameChecked
@@ -865,15 +882,15 @@ Item { id: root_
             glowRadius = 4 //minimumGlowRadius
           }
 
-          if (gamePanel_.visible && center_.width > 0 && center_.height > 0) {
+          if (gamePanel_.visible && gameWindowTracker_.width > 0 && gameWindowTracker_.height > 0) {
             var locked_bak = grimoire_.locked
             grimoire_.locked = true
             if (glowChecked) { // top left
               grimoire_.relativeX = 40
-              grimoire_.relativeY = 40 + center_.titleBarHeight
+              grimoire_.relativeY = 40 + gameWindowTracker_.titleBarHeight
             } else { // top center
-              grimoire_.relativeX = (center_.width - grimoire_.width) / 2
-              grimoire_.relativeY = center_.titleBarHeight
+              grimoire_.relativeX = (gameWindowTracker_.width - grimoire_.width) / 2
+              grimoire_.relativeY = gameWindowTracker_.titleBarHeight
             }
             grimoire_.locked = locked_bak
           }
@@ -921,27 +938,27 @@ Item { id: root_
       }
 
       Kagami.CommentBar { id: commentBar_
-        //anchors { // sits below center_
-        //  //left: center_.left; right: center_.right
+        //anchors { // sits below gameWindowTracker_
+        //  //left: gameWindowTracker_.left; right: gameWindowTracker_.right
         //  //leftMargin: 9; rightMargin: 9
 
-        //  //top: center_.fullScreen ? undefined : center_.bottom
-        //  //bottom: center_.fullScreen ? center_.bottom : undefined
-        //  //bottom: center_.bottom
+        //  //top: gameWindowTracker_.fullScreen ? undefined : gameWindowTracker_.bottom
+        //  //bottom: gameWindowTracker_.fullScreen ? gameWindowTracker_.bottom : undefined
+        //  //bottom: gameWindowTracker_.bottom
         //  //margins: 12
         //  //bottomMargin: 12 + // avoid overlap with Windows task bar
         //  //    (graffiti_.alignment & Qt.AlignTop ? 0 : root_.taskBarHeight)
         //}
 
-        property int relativeY: center_.fullScreen ? (-8 - height) : 4
+        property int relativeY: gameWindowTracker_.fullScreen ? (-8 - height) : 4
         y: Math.min(
-            parent.height - height - 5 - (center_.stretched ? 0 : taskBarHeight),
-            center_.y + center_.height + relativeY)
+            parent.height - height - 5 - (gameWindowTracker_.stretched ? 0 : taskBarHeight),
+            gameWindowTracker_.y + gameWindowTracker_.height + relativeY)
 
-        x: Math.max(menuButton_.width + 5, center_.x) + 9
+        x: Math.max(menuButton_.width + 5, gameWindowTracker_.x) + 9
 
-        width: Math.max(400, center_.x + center_.width - x - 12)
-        //width: !activeFocus ? 400 : Math.max(400, center_.x + center_.width - x - 12)
+        width: Math.max(400, gameWindowTracker_.x + gameWindowTracker_.width - x - 12)
+        //width: !activeFocus ? 400 : Math.max(400, gameWindowTracker_.x + gameWindowTracker_.width - x - 12)
         //Behavior on width { SmoothedAnimation { velocity: 600 } }
         //Behavior on width { SpringAnimation { velocity: 2000; spring: 5.0; damping: 0.1 } } // spring: strength; damping: speed
 
@@ -963,7 +980,7 @@ Item { id: root_
 
         visible: !root_.ignoresFocus && dock_.slimChecked
 
-        fadingEnabled: !checked && (center_.stretched || gamePanel_.paddingVisible)
+        fadingEnabled: !checked && (gameWindowTracker_.stretched || gamePanel_.paddingVisible)
 
         //hoverEnabled: dock_.slimChecked
         //hoverEnabled: true
@@ -980,7 +997,7 @@ Item { id: root_
       }
     }
 
-    Kagami.OcrPopup { id: popup_
+    Kagami.OcrPopup { id: ocrPopup_
       anchors.fill: parent
       globalZoomFactor: root_.globalZoomFactor
       ignoresFocus: root_.ignoresFocus
@@ -988,16 +1005,16 @@ Item { id: root_
 
     Kagami.Growl { id: growl_
       //anchors {
-      //  right: center_.fullScreen ? center_.right : parent.right
-      //  verticalCenter: center_.fullScreen ? center_.verticalCenter : parent.verticalCenter
+      //  right: gameWindowTracker_.fullScreen ? gameWindowTracker_.right : parent.right
+      //  verticalCenter: gameWindowTracker_.fullScreen ? gameWindowTracker_.verticalCenter : parent.verticalCenter
       //}
 
       zoomFactor: root_.globalZoomFactor
 
-      property QtObject target: center_.fullScreen ? center_ : parent
+      property QtObject target: gameWindowTracker_.fullScreen ? gameWindowTracker_ : parent
       ignoresFocus: root_.ignoresFocus
 
-      visible: dock_.growlChecked && (!center_.fullScreen || dock_.visibleChecked)
+      visible: dock_.growlChecked && (!gameWindowTracker_.fullScreen || dock_.visibleChecked)
 
       // Mac OS X menu bar height is around 22px
       // http://stackoverflow.com/questions/2867503/height-of-the-apple-menubar
@@ -1016,7 +1033,7 @@ Item { id: root_
       ignoresFocus: root_.ignoresFocus
       z: 999 // top most
 
-      toolTipEnabled: !center_.fullScreenOrStretched
+      toolTipEnabled: !gameWindowTracker_.fullScreenOrStretched
 
       globalZoomFactor: root_.globalZoomFactor
 
@@ -1037,20 +1054,20 @@ Item { id: root_
 
         //leftMargin:
         //    !gamePanel_.visible ? 40 + 9 : // Considering taskbar width
-        //    center_.fullScreen ? 9 + center_.x :
-        //    2 + Math.max(0, -width/2 + center_.x)
+        //    gameWindowTracker_.fullScreen ? 9 + gameWindowTracker_.x :
+        //    2 + Math.max(0, -width/2 + gameWindowTracker_.x)
 
         //bottomMargin:
         //    !gamePanel_.visible ? 9 + taskBarHeight :
-        //    center_.fullScreen ? 9 + parent.height - center_.y - center_.height :
-        //    2 + Math.max(0, -height/2 + parent.height - center_.y - center_.height)
+        //    gameWindowTracker_.fullScreen ? 9 + parent.height - gameWindowTracker_.y - gameWindowTracker_.height :
+        //    2 + Math.max(0, -height/2 + parent.height - gameWindowTracker_.y - gameWindowTracker_.height)
       }
       //property int diameter: gamePanel_.visible ? 60 : 80
       //property int diameter: 80
       width: 60; height: 60
 
       //visible: !root_.ignoresFocus && count > 0
-      visible: (!dock_.slimChecked || !gamePanel_.visible) && count > 0 && !center_.fullScreenOrStretched
+      visible: (!dock_.slimChecked || !gamePanel_.visible) && count > 0 && !gameWindowTracker_.fullScreenOrStretched
 
       //Behavior on x { SpringAnimation { spring: 3; damping: 0.3; mass: 1.0 } }
       //Behavior on y { SpringAnimation { spring: 3; damping: 0.3; mass: 1.0 } }
@@ -1126,16 +1143,16 @@ Item { id: root_
       anchors { // anchored between central area and comment bar
         topMargin: 3; bottomMargin: 12
         // top:
-        //   left: center_.left; right: center_.right
+        //   left: gameWindowTracker_.left; right: gameWindowTracker_.right
         //   top: parent.top; bottom: commentBar_.top
         // bottom:
-        //   left: center_.left; right: center_.right
-        //   top: center_.bottom; bottom: commentBar_.top
+        //   left: gameWindowTracker_.left; right: gameWindowTracker_.right
+        //   top: gameWindowTracker_.bottom; bottom: commentBar_.top
         // left:
-        //   left: parent.left; right: center_.left
+        //   left: parent.left; right: gameWindowTracker_.left
         //   top: parent.top; bottom: commentBar_.top
         // right:
-        //   left: center_.right; right: parent.right
+        //   left: gameWindowTracker_.right; right: parent.right
         //   top: parent.top; bottom: commentBar_.top
         // top left:
         //   left: parent.left; right: parent.horizontalCenter
@@ -1153,8 +1170,8 @@ Item { id: root_
         left: {
           switch (alignment) {
             case Qt.AlignTop:
-            case Qt.AlignBottom: return center_.left
-            case Qt.AlignRight: return center_.right
+            case Qt.AlignBottom: return gameWindowTracker_.left
+            case Qt.AlignRight: return gameWindowTracker_.right
             case Qt.AlignLeft:
             case Qt.AlignLeft|Qt.AlignTop:
             case Qt.AlignLeft|Qt.AlignBottom: return parent.left
@@ -1166,8 +1183,8 @@ Item { id: root_
         right: {
           switch (alignment) {
             case Qt.AlignTop:
-            case Qt.AlignBottom: return center_.right
-            case Qt.AlignLeft: return center_.left
+            case Qt.AlignBottom: return gameWindowTracker_.right
+            case Qt.AlignLeft: return gameWindowTracker_.left
             case Qt.AlignRight:
             case Qt.AlignRight|Qt.AlignTop:
             case Qt.AlignRight|Qt.AlignBottom: return parent.right
@@ -1183,7 +1200,7 @@ Item { id: root_
             case Qt.AlignTop:
             case Qt.AlignTop|Qt.AlignLeft:
             case Qt.AlignTop|Qt.AlignRight: return parent.top
-            case Qt.AlignBottom: return center_.bottom
+            case Qt.AlignBottom: return gameWindowTracker_.bottom
             case Qt.AlignBottom|Qt.AlignLeft:
             case Qt.AlignBottom|Qt.AlignRight: return parent.verticalCenter
             default: console.log("kagami.qml:graffiti: ERROR top anchor")
