@@ -10,7 +10,6 @@
 #include "sakurakit/skglobal.h"
 
 QT_FORWARD_DECLARE_CLASS(QTimer)
-QT_FORWARD_DECLARE_CLASS(QWidget)
 
 class MouseRubberBand;
 class MouseSelector;
@@ -30,12 +29,12 @@ public:
   // For mouse selection
   bool enabled;
   int comboKey; // vk
-  QWidget *parentWidget;
-  MouseRubberBand *rb;
+  //QWidget *parentWidget;
+  mutable MouseRubberBand *rb; // dynamic create
   bool refreshEnabled;
   QTimer *refreshTimer;
 
-  void createRubberBand();
+  void createRubberBand() const;
 
 private:
   // For mouse hook

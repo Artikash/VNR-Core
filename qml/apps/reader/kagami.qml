@@ -760,7 +760,11 @@ Item { id: root_
 
       Kagami.OcrRegion { //id: ocrRegion_
         anchors.fill: gameWindowTracker_
-        visible: gamePanel_.visible
+
+        anchors.topMargin: gameWindowTracker_.fullScreen ? 0 : gameWindowTracker_.titleBarHeight // skip header of the window
+
+        enabled: dock_.ocrRegionEnabledChecked && gamePanel_.visible
+        visible: dock_.ocrRegionVisibleChecked && gamePanel_.visible
 
         zoomFactor: root_.globalZoomFactor
         ignoresFocus: root_.ignoresFocus
@@ -820,6 +824,8 @@ Item { id: root_
         ignoresFocus: root_.ignoresFocus
 
         //furiganaEnabled: root_.rubyEnabled
+
+        ocrEnabled: settings_.ocrEnabled
 
         onTextCheckedChanged: settings_.grimoireTextVisible = textChecked
         onNameCheckedChanged: settings_.grimoireNameVisible = nameChecked

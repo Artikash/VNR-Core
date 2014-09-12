@@ -21,16 +21,51 @@ import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, o
 
 ## OCR region ##
 
+class _OcrRegionBean:
+  def __init__(self):
+    self.enabled = False
+    self.visible = False
+
 class OcrRegionBean(QObject):
 
   instance = None
 
   def __init__(self, parent=None):
     super(OcrRegionBean, self).__init__(parent)
+    self.__d = _OcrRegionBean()
+
     OcrRegionBean.instance = self
     dprint("pass")
 
   regionRequested = Signal(int, int, int, int)  # x, y, width, height
+
+  def setEnabled(self, t):
+    if self.__d.enabled != t:
+      self.__d.enabled = t
+      self.enabledChanged.emit(t)
+
+      # bad, though works
+      import ocrman
+      ocrman.manager().setRegionOcrEnabled(t)
+
+  enabledChanged = Signal(bool)
+  enabled = Property(bool,
+      lambda self: self.__d.enabled,
+      setEnabled, notify=enabledChanged)
+
+  def setVisible(self, t):
+    if self.__d.visible != t:
+      self.__d.visible = t
+      self.visibleChanged.emit(t)
+
+      # bad, though works
+      import ocrman
+      ocrman.manager().setRegionSelectionEnabled(t)
+
+  visibleChanged = Signal(bool)
+  visible = Property(bool,
+      lambda self: self.__d.visible,
+      setVisible, notify=visibleChanged)
 
   @Slot(QObject) # QDeclarativeItem
   def addRegionItem(self, item):

@@ -32,7 +32,7 @@ def capture_pixmap(x, y, width, height, hwnd=None):
   @return  QPixmap
   """
   if width < OCR_MIN_WIDTH or height < OCR_MIN_HEIGHT:
-    dwarn("skip image that is too small")
+    dwarn("skip image that is too small: %sx%s" %(width, height))
     return
   if hwnd:
     from sakurakit import skwidgets

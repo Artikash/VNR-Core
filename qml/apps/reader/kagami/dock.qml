@@ -48,6 +48,10 @@ Item { id: root_
   property alias windowStretchedChecked: stretchWindowButton_.checked
   property alias paddingChecked: paddingButton_.checked
 
+  property alias ocrEnabled: ocrButton_.enabled
+  property alias ocrRegionEnabledChecked: ocrRegionEnabledButton_.checked
+  property alias ocrRegionVisibleChecked: ocrRegionVisibleButton_.checked
+
   property alias textChecked: textButton_.checked
   property alias translationChecked: translationButton_.checked
   property alias subtitleChecked: subtitleButton_.checked
@@ -180,6 +184,9 @@ Item { id: root_
       stretchButton_.hover ||
       stretchWindowButton_.hover ||
       stretchDisplayButton_.hover ||
+      ocrButton_.hover ||
+      ocrRegionEnabledButton_.hover ||
+      ocrRegionVisibleButton_.hover ||
       displayRatioButton_.hover ||
       paddingButton_.hover
 
@@ -353,6 +360,102 @@ Item { id: root_
           if (checked)
             root_.speakTextRequested()
           //growl_.showMessage(toolTip)
+        }
+      }
+
+      Share.TextButton { id: ocrButton_
+        height: parent.cellHeight; width: parent.cellWidth
+        //text: checked ? "×" : "◯" // ばつ、まる
+        text: slimChecked ? "光" : "OCR"
+        font.pixelSize: parent.pixelSize
+        //font.bold: true
+        //language: root_.language
+        //color: enabled ? 'snow' : 'black'
+        backgroundColor: !enabled ? parent.buttonDisabledColor :
+                         ocrRect_.visible ? parent.buttonPopupColor :
+                         checked ? parent.buttonCheckedColor :
+                         parent.buttonColor
+        radius: parent.cellRadius
+        font.family: parent.cellFont
+
+        //visible: !root_.ignoresFocus
+
+        property bool checked: ocrRegionEnabledButton_.checked || ocrRegionVisibleButton_.checked
+        //onCheckedChanged:
+        //  paddingButton_.checked = checked
+        //  if (checked)
+        //    stretchRect_.visible = false
+
+        property bool enabled: false
+        //property bool enabled: statusPlugin_.online && statusPlugin_.login
+        //onEnabledChanged:
+        //  if (!enabled) checked = false
+
+        //toolTip: checked ? qsTr("Leave full screen") : qsTr("Enter full screen")
+        toolTip: qsTr("Automatically recognize texts in the selected regions")
+        onClicked:
+          if (enabled)
+            ocrRect_.visible = !ocrRect_.visible
+          else
+            growl_.showWarning(qsTr("OCR is not enabled in Preferences"))
+
+        Share.FadingRectangle { id: ocrRect_
+          visible: false
+
+          anchors {
+            left: parent.right
+            verticalCenter: parent.verticalCenter
+            leftMargin: 6
+          }
+          height: ocrRow_.height + 10
+          width: ocrRow_.width + 10
+          radius: 11
+
+          color: floatingRect_.color
+
+          Row { id: ocrRow_
+            anchors.centerIn: parent
+            spacing: 4
+
+            Share.TextButton { id: ocrRegionEnabledButton_
+              height: buttonCol_.cellHeight; width: buttonCol_.cellWidth
+              //text: checked ? "×" : "◯" // ばつ、まる
+              text: slimChecked ? "◯" : Sk.tr("Enable") // まる
+              font.pixelSize: buttonCol_.pixelSize
+              //font.bold: true
+              //language: root_.language
+              //color: enabled ? 'snow' : 'silver'
+              backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
+              radius: buttonCol_.cellRadius
+              font.family: buttonCol_.cellFont
+
+              property bool checked
+              onClicked: checked = !checked
+              toolTip: qsTr("Start monitoring the selected regions")
+            }
+
+            Share.TextButton { id: ocrRegionVisibleButton_
+              height: buttonCol_.cellHeight; width: buttonCol_.cellWidth
+              //text: checked ? "×" : "◯" // ばつ、まる
+              text: slimChecked ? Sk.tr("Edit").charAt(0) : Sk.tr("Edit") // まる
+              font.pixelSize: buttonCol_.pixelSize
+              //font.bold: true
+              //language: root_.language
+              //color: enabled ? 'snow' : 'silver'
+              backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
+              radius: buttonCol_.cellRadius
+              font.family: buttonCol_.cellFont
+
+              property bool checked
+              onClicked: checked = !checked
+              toolTip: qsTr("Edit OCR regions")
+            }
+          }
+
+          Share.CloseButton { //id: closeButton_
+            anchors { left: parent.left; top: parent.top; margins: -9 }
+            onClicked: ocrRect_.visible = false
+          }
         }
       }
 

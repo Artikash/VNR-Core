@@ -15,6 +15,8 @@ Item { id: root_
   property real zoomFactor: 1.0
   property bool ignoresFocus: false
   property bool wine: false
+  property bool enabled: false
+  visible: false
 
   // - Private -
 
@@ -28,6 +30,9 @@ Item { id: root_
   Component.onCompleted: Local.items = [] // [item]
 
   Plugin.OcrRegionBean { id: bean_
+    enabled: root_.enabled
+    visible: root_.visible
+
     Component.onCompleted:
       regionRequested.connect(root_.showRegion)
   }
@@ -40,7 +45,6 @@ Item { id: root_
       var item = items[i]
       if (!item.active) {
         console.log("ocrregion.qml:showRegion: reuse existing item")
-        item.active = true
         item.show(pos.x, pos.y, width, height)
         return
       }
@@ -64,15 +68,26 @@ Item { id: root_
 
       property string recognizedText // last ocr-ed text
 
+      property bool dragging:
+          leftResizeArea_.pressed ||
+          rightResizeArea_.pressed ||
+          topResizeArea_.pressed ||
+          bottomResizeArea_.pressed ||
+          topLeftMoveArea_.drag.active ||
+          topRightMoveArea_.drag.active ||
+          bottomLeftMoveArea_.drag.active ||
+          bottomRightMoveArea_.drag.active
+
       function show(x, y, width, height) { // int, int, int, int
         item_.x = x
         item_.y = y
         setWidth(width)
         setHeight(height)
+        active = visible = true
       }
 
-      function hide() {
-        visible = false
+      function close() {
+        active = visible = false
       }
 
       // - Private -
@@ -135,7 +150,7 @@ Item { id: root_
         color: item_.borderColor
       }
 
-      MouseArea { //id: leftResizeArea_
+      MouseArea { id: leftResizeArea_
         anchors.fill: leftBorder_
         acceptedButtons: Qt.LeftButton
 
@@ -157,7 +172,7 @@ Item { id: root_
         }
       }
 
-      MouseArea { //id: rightResizeArea_
+      MouseArea { id: rightResizeArea_
         anchors.fill: rightBorder_
         acceptedButtons: Qt.LeftButton
 
@@ -177,7 +192,7 @@ Item { id: root_
         }
       }
 
-      MouseArea { //id: topResizeArea_
+      MouseArea { id: topResizeArea_
         anchors.fill: topBorder_
         acceptedButtons: Qt.LeftButton
 
@@ -199,7 +214,7 @@ Item { id: root_
         }
       }
 
-      MouseArea { //id: bottomResizeArea_
+      MouseArea { id: bottomResizeArea_
         anchors.fill: bottomBorder_
         acceptedButtons: Qt.LeftButton
 
@@ -219,7 +234,7 @@ Item { id: root_
         }
       }
 
-      MouseArea { //id: topLeftMoveArea_
+      MouseArea { id: topLeftMoveArea_
         anchors {
           top: parent.top
           left: parent.left
@@ -237,7 +252,7 @@ Item { id: root_
         }
       }
 
-      MouseArea { //id: topRightMoveArea_
+      MouseArea { id: topRightMoveArea_
         anchors {
           top: parent.top
           right: parent.right
@@ -255,7 +270,7 @@ Item { id: root_
         }
       }
 
-      MouseArea { //id: bottomLeftMoveArea_
+      MouseArea { id: bottomLeftMoveArea_
         anchors {
           bottom: parent.bottom
           left: parent.left
@@ -273,7 +288,7 @@ Item { id: root_
         }
       }
 
-      MouseArea { //id: bottomRightMoveArea_
+      MouseArea { id: bottomRightMoveArea_
         anchors {
           bottom: parent.bottom
           right: parent.right
@@ -322,7 +337,7 @@ Item { id: root_
 
           text: "×" // ばつ
           toolTip: Sk.tr("Close")
-          onClicked: item_.hide()
+          onClicked: item_.close()
         }
 
         Share.CircleButton { id: enableButton_

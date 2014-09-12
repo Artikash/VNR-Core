@@ -4,6 +4,7 @@
 
 import os
 from PySide.QtCore import QObject, Signal, Slot, Qt, QTimer
+from PySide.QtGui import QColor
 from sakurakit import skfileio, skwin
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
@@ -25,10 +26,10 @@ class _OcrManager(object):
     self.settings = OcrSettings()
     self.pressedX = self.pressedY = 0
 
-    #self.selectionEnabled = False # bool
-    self.selectionEnabled = True # debug
+    self.selectionEnabled = False # bool  Allow emitting selected region using mouse
     self.selectedWindow = 0 # long  game window hwnd
     self.regionItems = [] # [QDeclarativeItem]
+    self.regionOcrEnabled = False # bool  Allow applying OCR to the selected regions
 
   # Automatic sampling game window
 
@@ -49,24 +50,23 @@ class _OcrManager(object):
         t.stop()
 
   def ocrWindow(self):
-    if not self.enabled or not self.selectedWindow or not self.regionItems:
-      return
-    texts = []
-    for index, item in enumerate(self.regionItems):
-      if item.property('visible') and item.property('enabled') and item.property('active'):
-        width = item.property('width')
-        height = item.property('height')
-        x = item.property('x')
-        y = item.property('y')
-        text = self._ocrRegion(x, y, width, height, index=index)
-        if text and text != item.property('recognizedText'):
-          item.setProperty('recognizedText', text)
-          #text = termman.manager().applyOcrTerms(text)
-          if text:
-            texts.append(text)
-    if texts:
-      text = '\n'.join(texts)
-      self.q.textRecognized.emit(text)
+    if self.enabled and self.regionOcrEnabled and self.selectedWindow and self.regionItems:
+      texts = []
+      for index, item in enumerate(self.regionItems):
+        if item.property('visible') and item.property('enabled') and item.property('active') and not item.property('dragging'):
+          width = item.property('width')
+          height = item.property('height')
+          x = item.property('x')
+          y = item.property('y')
+          text = self._ocrRegion(x, y, width, height, index=index)
+          if text and text != item.property('recognizedText'):
+            item.setProperty('recognizedText', text)
+            #text = termman.manager().applyOcrTerms(text)
+            if text:
+              texts.append(text)
+      if texts:
+        text = '\n'.join(texts)
+        self.q.textRecognized.emit(text)
 
   def _ocrRegion(self, x, y, width, height, index=0):
     """
@@ -108,15 +108,38 @@ class _OcrManager(object):
   def mouseSelector(self):
     from mousesel import mousesel
     ret = mousesel.MouseSelector()
-    ret.setParentWidget(windows.top())
     ret.setRefreshInterval(5000) # refresh every 5 seconds
     ret.setRefreshEnabled(True)
     ret.pressed.connect(self._onMousePressed, Qt.QueuedConnection)
     ret.selected.connect(self._onMouseSelected) # already queued
 
+    rb = ret.rubberBand() # QRubberBand
+    rb.setParent(windows.top()) # must appear before setting window flags
+    rb.setWindowFlags(rb.windowFlags()|Qt.Popup) # needed when parentWidget is not nullptr
+
     import win32con
     ret.setComboKey(win32con.VK_SHIFT)
+    #ret.setComboKey(win32con.VK_MENU) # ALT
     return ret
+
+  @memoizedproperty
+  def rubberBand(self): # -> QRubberBand
+    return self.mouseSelector.rubberBand()
+
+  def setRubberBandColor(self, color): # QColor or str or Qt.color ->
+    w = self.rubberBand
+    if not color:
+      w.setGraphicsEffect(None)
+    else:
+      if not isinstance(color, QColor):
+        color = QColor(color)
+      from Qt5.QtWidgets import QGraphicsColorizeEffect
+      e = w.graphicsEffect()
+      if not e or not isinstance(e, QGraphicsColorizeEffect):
+        e = QGraphicsColorizeEffect(w)
+        e.setStrength(1)
+      e.setColor(color)
+      w.setGraphicsEffect(e)
 
   #@memoizedproperty
   #def keyboardSignal(self):
@@ -234,8 +257,19 @@ class OcrManager(QObject):
 
   # Selection
 
-  def isSelectionEnabled(self): return self.__d.selectionEnabled
-  def setSelectionEnabled(self, t): self.__d.selectionEnabled = t
+  def isRegionSelectionEnabled(self): return self.__d.selectionEnabled
+  def setRegionSelectionEnabled(self, t):
+    dprint(t)
+    d = self.__d
+    if d.selectionEnabled != t:
+      d.selectionEnabled = t
+      #d.setRubberBandColor('red' if t else None)
+      d.setRubberBandColor('magenta' if t else None)
+
+  def isRegionOcrEnabled(self): return self.__d.regionOcrEnabled
+  def setRegionOcrEnabled(self, t):
+    dprint(t)
+    self.__d.regionOcrEnabled = t
 
   def selectedWindow(self): return self.__d.selectedWindow # long
   def setSelectedWindow(self, hwnd):
@@ -246,6 +280,7 @@ class OcrManager(QObject):
 
   def addRegionItem(self, item): # QDeclarativeItem ->  the item in ocrregion.qml
     self.__d.regionItems.append(item)
+    #dprint(item) # too verbose
 
   def clearRegionItems(self):
     for item in self.__d.regionItems:
