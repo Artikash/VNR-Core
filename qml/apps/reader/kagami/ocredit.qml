@@ -1,4 +1,4 @@
-/** ocrpopupedit.qml
+/** ocredit.qml
  *  9/7/2014 jichi
  */
 import QtQuick 1.1

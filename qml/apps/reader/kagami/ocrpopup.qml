@@ -23,7 +23,7 @@ Item { id: root_
   // - Private -
 
   Component { id: editComp_
-    Kagami.OcrPopupEdit {
+    Kagami.OcrEdit {
       zoomFactor: root_._zoomFactor
       ignoresFocus: root_.ignoresFocus
     }
