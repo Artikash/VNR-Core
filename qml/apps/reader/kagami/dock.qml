@@ -379,6 +379,7 @@ Item { id: root_
         font.family: parent.cellFont
 
         //visible: !root_.ignoresFocus
+        visible: false
 
         property bool checked: ocrRegionEnabledButton_.checked || ocrRegionVisibleButton_.checked
         //onCheckedChanged:
