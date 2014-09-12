@@ -836,39 +836,39 @@
     </message>
 </context>
 <context>
-    <name>ocredit</name>
+    <name>ocrpopupedit</name>
     <message>
-        <location filename="../kagami/ocredit.qml" line="167"/>
+        <location filename="../kagami/ocrpopupedit.qml" line="167"/>
         <source>Color intensity</source>
         <translation>颜色浓度</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="197"/>
+        <location filename="../kagami/ocrpopupedit.qml" line="197"/>
         <source>Minimum text color intensity</source>
         <translation>文本颜色浓度的最小值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="198"/>
+        <location filename="../kagami/ocrpopupedit.qml" line="198"/>
         <source>Maximum text color intensity</source>
         <translation>文本颜色浓度的最大值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="203"/>
+        <location filename="../kagami/ocrpopupedit.qml" line="203"/>
         <source>Range of the text color intensity</source>
         <translation>文本颜色浓度的范围</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="222"/>
+        <location filename="../kagami/ocrpopupedit.qml" line="222"/>
         <source>Enable image processing for OCR</source>
         <translation>为OCR开启图像处理</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="239"/>
+        <location filename="../kagami/ocrpopupedit.qml" line="239"/>
         <source>Apply OCR to the current image</source>
         <translation>应用OCR处理到当前的图片</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="249"/>
+        <location filename="../kagami/ocrpopupedit.qml" line="249"/>
         <source>Reset to the last OCR settings</source>
         <translation>恢复到上一次的OCR设定</translation>
     </message>
