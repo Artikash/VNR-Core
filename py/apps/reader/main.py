@@ -266,6 +266,8 @@ class _MainObject(object):
     ret.imageSelected.connect(self.ocrPopup.showPopup)
     ret.regionSelected.connect(self.ocrRegion.showRegion)
 
+    self.gameManager.windowChanged.connect(ret.setSelectedWindow)
+
     ss = settings.global_()
     ret.setEnabled(features.ADMIN != False and ss.isOcrEnabled() and ret.isInstalled())
     ss.ocrEnabledChanged.connect(ret.setEnabled)
@@ -1736,6 +1738,9 @@ class MainObject(QObject):
   def showChatView(self, topicId): self.__d.chatViewManager.showTopic(topicId) # long ->
   def isChatViewVisible(self): return self.__d.chatViewManager.isVisible()
 
+  def showSubtitleEditor(self, comment): # dataman.Comment
+    self.__d.subtitleEditorManager.showComment(comment)
+
   def showGameView(self, gameId=None): # long ->
     d = self.__d
     if not gameId:
@@ -2170,6 +2175,8 @@ class MainObjectProxy(QObject):
   def showCurrentGameView(self): manager().showGameView()
   @Slot(int)
   def showGameView(self, gameId): manager().showGameView(gameId)
+  @Slot(QObject) # dataman.Comment
+  def showGameView(self, comment): manager().showSubtitleEditor(comment)
 
   @Slot()
   def showGlobalChatView(self): manager().showChatView(config.GLOBAL_TOPIC_ID)

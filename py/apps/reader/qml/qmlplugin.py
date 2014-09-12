@@ -108,8 +108,8 @@ qmlRegisterType(gameman.GameProxy, QML_PLUGIN, 1, 0, 'GameProxy')
 qmlRegisterType(gameman.GameWindowProxy, QML_PLUGIN, 1, 0, 'GameWindowProxy')
 qmlRegisterType(gameman.GameManagerProxy, QML_PLUGIN, 1, 0, 'GameManagerProxy')
 
-import subedit
-qmlRegisterType(subedit.SubtitleEditorManagerProxy, QML_PLUGIN, 1, 0, 'SubtitleEditorManagerProxy')
+#import subedit
+#qmlRegisterType(subedit.SubtitleEditorManagerProxy, QML_PLUGIN, 1, 0, 'SubtitleEditorManagerProxy')
 
 import postinput
 qmlRegisterType(postinput.PostInputManagerBean, QML_PLUGIN, 1, 0, 'PostInputManager')

@@ -331,7 +331,7 @@ Item { id: root_
 
     Desktop.MenuItem { //id: editAct_
       text: Sk.tr("Edit")
-      onTriggered: if (comment) subeditPlugin_.showComment(comment)
+      onTriggered: if (comment) mainPlugin_.showSubtitleEditor(comment)
     }
 
     Desktop.MenuItem {

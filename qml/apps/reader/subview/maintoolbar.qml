@@ -33,7 +33,7 @@ Item { id: root_
   //Plugin.MainObjectProxy { id: mainPlugin_ }
   //Plugin.DataManagerProxy { id: datamanPlugin_ }
   //Plugin.GameViewManagerProxy { id: gameview_ }
-  Plugin.SubtitleEditorManagerProxy { id: subedit_ }
+  //Plugin.SubtitleEditorManagerProxy { id: subedit_ }
   Plugin.UserViewManagerProxy { id: userview_ }
 
   Desktop.ToolBar {
@@ -159,7 +159,8 @@ Item { id: root_
   //}
   function editCurrentItem() {
     if (currentItem)
-      subedit_.showComment(currentItem)
+      mainPlugin_.showSubtitleEditor(currentItem)
+      //subedit_.showComment(currentItem)
   }
   function deleteCurrentItem() {
     if (currentItem)

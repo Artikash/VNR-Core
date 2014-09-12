@@ -248,7 +248,7 @@ Item { id: root_
 
   Plugin.BBCodeParser { id: bbcodePlugin_ }
 
-  Plugin.SubtitleEditorManagerProxy { id: subeditPlugin_ }
+  //Plugin.SubtitleEditorManagerProxy { id: subeditPlugin_ }
   Plugin.UserViewManagerProxy { id: userViewPlugin_ }
 
   Plugin.ClipboardProxy { id: clipboardPlugin_ }

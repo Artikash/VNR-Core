@@ -598,7 +598,7 @@ Item { id: root_
           visible: textItem_.hasComment
 
           text: Sk.tr("edit")
-          onClicked: subedit_.showComment(model.comment)
+          onClicked: mainPlugin_.showSubtitleEditor(model.comment)
           toolTip: qsTr("Edit properties of the subtitle")
         }
 
@@ -743,7 +743,7 @@ Item { id: root_
 
   Plugin.ShioriProxy { id: shiori_ }
 
-  Plugin.SubtitleEditorManagerProxy { id: subedit_ }
+  //Plugin.SubtitleEditorManagerProxy { id: subedit_ }
 
   Helper.QmlHelper { id: helper_ }
 

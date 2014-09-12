@@ -3,7 +3,7 @@
 # 8/13/2014 jichi
 
 import os
-from PySide.QtCore import QObject, Signal, Qt
+from PySide.QtCore import QObject, Signal, Qt, QTimer
 from sakurakit import skwin
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
@@ -21,11 +21,34 @@ class _OcrManager(object):
   def __init__(self):
     self.enabled = False # bool
 
-    #self.selectionEnabled = False # bool
-    self.selectionEnabled = True # debug
-
     self.settings = OcrSettings()
     self.pressedX = self.pressedY = 0
+
+    #self.selectionEnabled = False # bool
+    self.selectionEnabled = True # debug
+    self.selectedWindow = 0 # long  game window hwnd
+
+  # Automatic sampling game window
+
+  @memoizedproperty
+  def ocrWindowTimer(self): # periodically check selected window
+    ret = QTimer(self.q)
+    ret.setSingleShot(False)
+    ret.setInterval(500) # TODO: Allow change this value
+    ret.timeout.connect(self.ocrWindow)
+    return ret
+
+  def setOcrWindowEnabled(self, t):
+    t = self.ocrWindowTimer
+    if t.isActive() != t:
+      if t:
+        t.start()
+      else:
+        t.stop()
+
+  def ocrWindow(self):
+    if not self.selectedWindow:
+      return
 
   # I/O hooks
 
@@ -156,8 +179,17 @@ class OcrManager(QObject):
       else:
         growl.msg(my.tr("Stop OCR screen reader"))
 
+  # Selection
+
   def isSelectionEnabled(self): return self.__d.selectionEnabled
   def setSelectionEnabled(self, t): self.__d.selectionEnabled = t
+
+  def selectedWindow(self): return self.__d.selectedWindow # long
+  def setSelectedWindow(self, hwnd):
+    dprint(hwnd)
+    d = self.__d
+    d.selectedWindow = hwnd
+    d.setOcrWindowEnabled(bool(hwnd))
 
 # EOF
 

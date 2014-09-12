@@ -1333,7 +1333,7 @@ Item { id: root_
       onTriggered: {
         var item = listModel_.get(popupIndex())
         if (item && item.comment)
-          subeditPlugin_.showComment(item.comment)
+          mainPlugin_.showSubtitleEditor(item.comment)
       }
     }
 

@@ -71,9 +71,9 @@ Share.View { id: root_
     //console.log("submaker.qml:saveSettings: pass")
   }
 
-  //Plugin.MainObjectProxy { id: main_ }
-
   Plugin.Settings { id: settings_ }
+
+  Plugin.MainObjectProxy { id: mainPlugin_ }
 
   Plugin.SystemStatus { id: status_ }
   property bool canLock: status_.online && !!status_.userId && status_.userId !== 4
