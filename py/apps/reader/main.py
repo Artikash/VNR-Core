@@ -263,7 +263,8 @@ class _MainObject(object):
     import ocrman
     ret = ocrman.manager()
     ret.setParent(self.q)
-    ret.popupRequested.connect(self.ocrPopup.showPopup)
+    ret.imageSelected.connect(self.ocrPopup.showPopup)
+    ret.regionSelected.connect(self.ocrRegion.showRegion)
 
     ss = settings.global_()
     ret.setEnabled(features.ADMIN != False and ss.isOcrEnabled() and ret.isInstalled())
@@ -843,6 +844,11 @@ class _MainObject(object):
   def ocrPopup(self):
     import kagami
     return kagami.OcrPopupController() #(self.q)
+
+  @memoizedproperty
+  def ocrRegion(self):
+    import kagami
+    return kagami.OcrRegionController() #(self.q)
 
   @memoizedproperty
   def omajinai(self):
@@ -2161,7 +2167,9 @@ class MainObjectProxy(QObject):
   @Slot()
   def showTextReaderHelp(self): manager().showTextReaderHelp()
   @Slot()
-  def showGameView(self): manager().showGameView()
+  def showCurrentGameView(self): manager().showGameView()
+  @Slot(int)
+  def showGameView(self, gameId): manager().showGameView(gameId)
 
   @Slot()
   def showGlobalChatView(self): manager().showChatView(config.GLOBAL_TOPIC_ID)

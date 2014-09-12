@@ -91,7 +91,7 @@ Item { id: root_
 
   function loadSettings() {
     grimoire_.zoomFactor = settings_.grimoireZoomFactor
-    popup_.zoomFactor = settings_.ocrZoomFactor
+    ocrPopup_.zoomFactor = settings_.ocrZoomFactor
     shiori_.zoomFactor = settings_.shioriZoomFactor
     shiori_.defaultWidth = settings_.shioriWidth
 
@@ -152,7 +152,7 @@ Item { id: root_
 
   function saveSettings() {
     settings_.grimoireZoomFactor = grimoire_.zoomFactor
-    settings_.ocrZoomFactor = popup_.zoomFactor
+    settings_.ocrZoomFactor = ocrPopup_.zoomFactor
     settings_.shioriZoomFactor = shiori_.zoomFactor
     settings_.shioriWidth = shiori_.defaultWidth
 
@@ -980,9 +980,15 @@ Item { id: root_
       }
     }
 
-    Kagami.OcrPopup { id: popup_
+    Kagami.OcrPopup { id: ocrPopup_
       anchors.fill: parent
       globalZoomFactor: root_.globalZoomFactor
+      ignoresFocus: root_.ignoresFocus
+    }
+
+    Kagami.OcrRegion { //id: ocrRegion_
+      anchors.fill: parent
+      zoomFactor: root_.globalZoomFactor
       ignoresFocus: root_.ignoresFocus
     }
 

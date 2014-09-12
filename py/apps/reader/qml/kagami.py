@@ -19,7 +19,26 @@ from sakurakit.skdebug import dprint, dwarn
 from mytr import my
 import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, qmldialog, rc, settings
 
-## Text popup ##
+## OCR region ##
+
+class OcrRegionBean(QObject):
+
+  instance = None
+
+  def __init__(self, parent=None):
+    super(OcrRegionBean, self).__init__(parent)
+    OcrRegionBean.instance = self
+    dprint("pass")
+
+  regionRequested = Signal(int, int, int, int)  # x, y, width, height
+
+class OcrRegionController:
+
+  def showRegion(self, x, y, width, height): # int, int, int, int
+    if OcrRegionBean.instance: # width & height are ignored
+      OcrRegionBean.instance.regionRequested.emit(x, y, width, height)
+
+## OCR popup ##
 
 class OcrPopupBean(QObject):
 

@@ -20,6 +20,10 @@ class _OcrManager(object):
 
   def __init__(self):
     self.enabled = False # bool
+
+    #self.selectionEnabled = False # bool
+    self.selectionEnabled = True # debug
+
     self.settings = OcrSettings()
     self.pressedX = self.pressedY = 0
 
@@ -78,7 +82,20 @@ class _OcrManager(object):
     self.pressedY = y
     windows.raise_top_window()
 
-  def _onMouseSelected(self, x, y, width, height):
+  #def _onMouseSelected(self, x, y, width, height):
+  def _onMouseSelected(self, *args):
+    """
+    @param  x  int
+    @param  y  int
+    @param  width  int
+    @param  height  int
+    """
+    if self.selectionEnabled:
+      self._selectRegion(*args)
+    else:
+      self._selectImage(*args)
+
+  def _selectImage(self, x, y, width, height):
     """
     @param  x  int
     @param  y  int
@@ -89,20 +106,30 @@ class _OcrManager(object):
         #hwnd=hwnd if features.WINE else 0,
         settings=self.settings, parent=self.q)
     if not imgobj:
-      growl.notify(my.tr("OCR did not recognize any texts in the image"))
+      #growl.notify(my.tr("OCR did not recognize any texts in the image"))
       return
     hwnd = skwin.get_window_at(self.pressedX, self.pressedY)
     text = imgobj.ocr()
     lang = imgobj.language()
     winobj = winman.manager().createWindowObject(hwnd) if hwnd else None #and hwnd != self.DESKTOP_HWND else None
-    self.q.popupRequested.emit(x, y, width, height, imgobj, winobj, text, lang)
+    self.q.imageSelected.emit(x, y, width, height, imgobj, winobj, text, lang)
+
+  def _selectRegion(self, x, y, width, height):
+    """
+    @param  x  int
+    @param  y  int
+    @param  width  int
+    @param  height  int
+    """
+    self.q.regionSelected.emit(x, y, width, height)
 
 class OcrManager(QObject):
   def __init__(self, parent=None):
     super(OcrManager, self).__init__(parent)
     self.__d = _OcrManager(self)
 
-  popupRequested = Signal(int, int, int, int, QObject, QObject, unicode, unicode) # x, y, width, height, OcrImageObject, WindowObject, text, language
+  imageSelected = Signal(int, int, int, int, QObject, QObject, unicode, unicode) # x, y, width, height, OcrImageObject, WindowObject, text, language
+  regionSelected = Signal(int, int, int, int) # x, y, width, height, OcrImageObject, WindowObject, text, language
 
   def languages(self): return self.__d.settings.languages
   def setLanguages(self, v):
@@ -128,6 +155,9 @@ class OcrManager(QObject):
         growl.msg(my.tr("Start OCR screen reader"))
       else:
         growl.msg(my.tr("Stop OCR screen reader"))
+
+  def isSelectionEnabled(self): return self.__d.selectionEnabled
+  def setSelectionEnabled(self, t): self.__d.selectionEnabled = t
 
 # EOF
 

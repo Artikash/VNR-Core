@@ -60,7 +60,7 @@ Item { id: root_
 
   Plugin.OcrPopupBean { //id: bean_
     Component.onCompleted:
-      popupRequested.connect(showPopup)
+      popupRequested.connect(root_.showPopup)
   }
 
   function showPopup(x, y, imgobj, winobj, text, lang) { // int, int, OcrImageObject, WindowObject, string, string ->
@@ -82,7 +82,6 @@ Item { id: root_
   // Component
 
   Component { id: comp_
-
     Rectangle { id: item_
       property int minimumX: root_.x
       property int minimumY: root_.y

@@ -87,7 +87,7 @@ Item {
 
     Desktop.MenuItem {
       text: Sk.tr("Game Information")
-      onTriggered: mainPlugin_.showGameView()
+      onTriggered: mainPlugin_.showCurrentGameView()
     }
 
     //Desktop.MenuItem {

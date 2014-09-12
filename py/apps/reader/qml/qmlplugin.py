@@ -8,6 +8,9 @@
 #   - Proxy: QML => (invoke) => Python
 #   - Delegate: QML <= (invoke) <= Python
 #
+# Note: This file has reached 50 limits of qml plugins.
+# I have to disable existing plugins before adding new one.
+# This can be done by merging plugin manager with main plugin
 
 from Qt5.QtQml import qmlRegisterType
 import features
@@ -67,6 +70,7 @@ qmlRegisterType(kagami.GossipBean, QML_PLUGIN, 1, 0, 'GossipBean')
 qmlRegisterType(kagami.GrimoireBean, QML_PLUGIN, 1, 0, 'GrimoireBean')
 qmlRegisterType(kagami.OmajinaiBean, QML_PLUGIN, 1, 0, 'OmajinaiBean')
 qmlRegisterType(kagami.OcrPopupBean, QML_PLUGIN, 1, 0, 'OcrPopupBean')
+qmlRegisterType(kagami.OcrRegionBean, QML_PLUGIN, 1, 0, 'OcrRegionBean')
 qmlRegisterType(kagami.MirageBean, QML_PLUGIN, 1, 0, 'MirageBean')
 
 import growl
@@ -118,8 +122,8 @@ qmlRegisterType(gameedit.GameEditorManagerProxy, QML_PLUGIN, 1, 0, 'GameEditorMa
 #import prompt
 #qmlRegisterType(prompt.PromptProxy, QML_PLUGIN, 1, 0, 'PromptProxy')
 
-import gameview
-qmlRegisterType(gameview.GameViewManagerProxy, QML_PLUGIN, 1, 0, 'GameViewManagerProxy')
+#import gameview
+#qmlRegisterType(gameview.GameViewManagerProxy, QML_PLUGIN, 1, 0, 'GameViewManagerProxy')
 
 import userview
 qmlRegisterType(userview.UserViewManagerProxy, QML_PLUGIN, 1, 0, 'UserViewManagerProxy')

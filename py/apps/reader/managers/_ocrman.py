@@ -55,7 +55,7 @@ class OcrSettings(object):
     self.languageFlags = modiocr.locales2lang(v) or modiocr.LANG_JA # Japanese by default
 
 @Q_Q
-class _OcrImageObject:
+class _OcrImageObject(object):
 
   def __init__(self, q, pixmap, settings):
     self.settings = settings # OcrSettings
