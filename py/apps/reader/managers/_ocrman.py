@@ -68,6 +68,8 @@ class _OcrImageObject(object):
     self.pixmap = pixmap # QPixmap
     self.path = '' # str
     self.editable = False # image transformation enabled
+    #self.width = width # int
+    #self.height = height # int
 
     self.colorIntensityEnabled = True
     self.minimumColorIntensity = 0.7
@@ -181,6 +183,16 @@ class OcrImageObject(QObject):
       lambda self: self.__d.editable,
       setEditable,
       notify=editableChanged)
+
+  #widthChanged = Signal(int)
+  #width = Property(int,
+  #    lambda self: self.__d.width,
+  #    notify=widthChanged)
+
+  #heightChanged = Signal(int)
+  #height = Property(int,
+  #    lambda self: self.__d.height,
+  #    notify=heightChanged)
 
   # Color intensity
 

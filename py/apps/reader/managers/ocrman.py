@@ -79,7 +79,7 @@ class _OcrManager(object):
     """
     pm = self._capturePixmap(x, y, width, height)
     if pm:
-      path = "%s/region#%s.%s" % (rc.DIR_TMP_OCR, index, _ocrman.OCR_IMAGE_FORMAT)
+      path = "%s/region.%s.%s" % (rc.DIR_TMP_OCR, index, _ocrman.OCR_IMAGE_FORMAT)
       if _ocrman.save_pixmap(pm, path):
         text = self._ocrImageFile(path)
         #skfileio.removefile(path)
