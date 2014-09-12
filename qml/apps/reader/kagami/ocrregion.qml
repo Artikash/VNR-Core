@@ -20,12 +20,12 @@ Item { id: root_
 
   // - Private -
 
-  //Component { id: editComp_
-  //  Kagami.OcrEdit {
-  //    zoomFactor: root_._zoomFactor
-  //    ignoresFocus: root_.ignoresFocus
-  //  }
-  //}
+  Component { id: editComp_
+    Kagami.OcrEdit {
+      zoomFactor: root_.zoomFactor
+      ignoresFocus: root_.ignoresFocus
+    }
+  }
 
   Component.onCompleted: Local.items = [] // [item]
 
@@ -92,6 +92,8 @@ Item { id: root_
 
       // - Private -
 
+      onVisibleChanged: if (!visible) hideEdit()
+
       property real normalizedWidth: 1.0
       property real normalizedHeight: 1.0
       width: normalizedWidth * root_.width
@@ -111,6 +113,37 @@ Item { id: root_
                         || topRightTip_.containsMouse
                         || bottomLeftTip_.containsMouse
                         || bottomRightTip_.containsMouse
+
+      property Item editItem
+      property bool editLocked: false
+
+      function hideEdit() {
+        if (editItem)
+          editItem.hide()
+      }
+
+
+      function showEdit() {
+        if (editLocked)
+          return
+        var image = bean_.createImageObject(x, y, width, height)
+        if (!image) {
+          growl_.showWarning(qsTr("Failed to capture an image for the selected region"))
+          return
+        }
+        editLocked = true
+        if (!editItem)
+          editItem = editComp_.createObject(root_, {
+            visible: false // hide on startup
+            , autoReleaseImage: true
+          })
+
+        var text = image.ocr()
+        editItem.x = Math.min(item_.x + 30, root_.x + root_.width - item_.width)
+        editItem.y = Math.min(item_.y + 30, root_.x + root_.height - item_.height)
+        editItem.show(image, text)
+        editLocked = false
+      }
 
       // Resizable
 
@@ -324,6 +357,7 @@ Item { id: root_
 
         property bool hover: closeButton_.hover
                           || enableButton_.hover
+                          || editButton_.hover
 
         property int cellWidth: 15
         property int pixelSize: 10
@@ -347,12 +381,25 @@ Item { id: root_
           font.family: 'MS Gothic'
           backgroundColor: 'transparent'
 
-          text: checked ? "◯" : "Φ" //  まる / ふぁい
+          text: checked ? "◯" : "｜" //  まる
           //text: "◯" // まる
           toolTip: checked ? Sk.tr("Enabled") : Sk.tr("Disabled")
 
           property alias checked: item_.enabled
           onClicked: checked = !checked
+        }
+
+        Share.CircleButton { id: editButton_
+          diameter: parent.cellWidth
+          font.pixelSize: parent.pixelSize
+          font.bold: hover
+          font.family: 'MS Gothic'
+          backgroundColor: 'transparent'
+
+          text: "⌘" // U+2318 コマンド記号
+          toolTip: Sk.tr("Option")
+
+          onClicked: showEdit()
         }
       }
     }

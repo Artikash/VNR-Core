@@ -140,7 +140,9 @@ Item { id: root_
 
       function showEdit() {
         if (!editItem) {
-          editItem = editComp_.createObject(root_)
+          editItem = editComp_.createObject(root_, {
+            visible: false // hide on startup
+          })
           editItem.textChanged.connect(loadEditText)
         }
 

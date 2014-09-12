@@ -12,8 +12,10 @@ Rectangle { id: root_
   property bool ignoresFocus: false
 
   property string text: textArea_.textEdit.text
+  property bool autoReleaseImage: false
 
   function show(image, text) { // OcrImageObject
+    releaseImageObject()
     imageObject = image
     loadImageProperties()
     textArea_.textEdit.text = text || ('(' + Sk.tr("empty") + ')')
@@ -24,10 +26,16 @@ Rectangle { id: root_
   function hide() {
     visible = false
     saveImageProperties()
-    imageObject = null
+    releaseImageObject()
   }
 
   // - Private -
+
+  function releaseImageObject() {
+    if (autoReleaseImage && imageObject)
+      imageObject.release()
+    imageObject = null
+  }
 
   property QtObject imageObject // OcrImageObject  ocr controller
 

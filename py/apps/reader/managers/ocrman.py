@@ -193,6 +193,11 @@ class _OcrManager(object):
     else:
       self._selectImage(*args)
 
+  def createImageObject(self, x, y, width, height, hwnd=0): # int, int, int, int, int -> QObject
+    return OcrImageObject.create(x, y, width, height,
+        hwnd=hwnd,
+        settings=self.settings, parent=self.q)
+
   def _selectImage(self, x, y, width, height):
     """
     @param  x  int
@@ -200,9 +205,7 @@ class _OcrManager(object):
     @param  width  int
     @param  height  int
     """
-    imgobj = OcrImageObject.create(x, y, width, height,
-        #hwnd=hwnd if features.WINE else 0,
-        settings=self.settings, parent=self.q)
+    imgobj = self.createImageObject(x, y, width, height)
     if not imgobj:
       #growl.notify(my.tr("OCR did not recognize any texts in the image"))
       return
@@ -288,6 +291,9 @@ class OcrManager(QObject):
         item.setProperty('active', False)
       if item.property('visible'):
         item.setProperty('visible', False)
+
+  def createImageObject(self, x, y, width, height): # int, int, int, int -> QObject or None
+    return self.__d.createImageObject(x, y, width, height, self.__d.selectedWindow)
 
 # EOF
 
