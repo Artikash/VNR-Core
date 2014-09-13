@@ -70,6 +70,9 @@ Item { id: root_
 
       property QtObject imageObject // OcrImageObject
 
+      property int globalX: mapToItem(null, x, y).x
+      property int globalY: mapToItem(null, x, y).y
+
       property bool dragging:
           leftArea_.drag.active ||
           rightArea_.drag.active ||
@@ -138,21 +141,18 @@ Item { id: root_
         if (editLocked)
           return
         editLocked = true
-        if (imageObject) {
-          imageObject.x = x
-          imageObject.y = y
-          imageObject.width = width
-          imageObject.height = height
-          imageObject.capture()
-        } else {
+        if (!imageObject) {
           console.log("ocregion.qml: create image object")
-          imageObject = bean_.createImageObject(x, y, width, height)
-          if (!imageObject) {
-            growl_.showWarning(qsTr("Failed to capture an image for the selected region"))
-            editLocked = false
-            return
-          }
+          imageObject = bean_.createImageObject()
         }
+
+        imageObject.x = x
+        imageObject.y = y
+        imageObject.width = width
+        imageObject.height = height
+
+        imageObject.capture()
+
         if (!editItem)
           console.log("ocregion.qml: create ocr editor")
           editItem = editComp_.createObject(root_, {

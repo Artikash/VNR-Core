@@ -63,9 +63,9 @@ class OcrRegionBean(QObject):
   def addRegionItem(self, item):
     ocrman.manager().addRegionItem(item)
 
-  @Slot(int, int, int, int, result=QObject)
-  def createImageObject(self, x, y, width, height):
-    return ocrman.manager().createImageObject(x, y, width, height)
+  @Slot(result=QObject)
+  def createImageObject(self):
+    return ocrman.manager().createImageObject()
 
 class OcrRegionController:
 

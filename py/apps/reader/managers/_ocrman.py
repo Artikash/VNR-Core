@@ -195,6 +195,14 @@ class OcrImageObject(QObject):
       setEditable,
       notify=editableChanged)
 
+  #winIdChanged = Signal(long)
+  #winId = Property(long,
+  #    lambda self: self.__d.hwnd,
+  #    notify=winIdChanged)
+
+  #@Slot(result=bool)
+  #def hasWindow(self): return bool(self.__d.hwnd)
+
   def setX(self, v): self.__d.x = v
   xChanged = Signal(int)
   x = Property(int,
@@ -263,21 +271,21 @@ class OcrImageObject(QObject):
     self.setParent(None)
     dprint("pass")
 
-  @classmethod
-  def create(cls, x, y, width, height, hwnd=0, **kwargs): # -> cls or None
-    """
-    @param  x  int
-    @param  y  int
-    @param  width  int
-    @param  height  int
-    @param* hwnd  int
-    @param* kwargs  parameters to create OcrImageObject
-    """
-    pm = capture_pixmap(x, y, width, height, hwnd)
-    if not pm or pm.isNull():
-      dwarn("failed to capture image")
-      return
-    return cls(pixmap=pm, x=x, y=y, width=width, height=height, hwnd=hwnd, **kwargs)
+  #@classmethod
+  #def create(cls, x, y, width, height, hwnd=0, **kwargs): # -> cls or None
+  #  """
+  #  @param  x  int
+  #  @param  y  int
+  #  @param  width  int
+  #  @param  height  int
+  #  @param* hwnd  int
+  #  @param* kwargs  parameters to create OcrImageObject
+  #  """
+  #  pm = capture_pixmap(x, y, width, height, hwnd)
+  #  if not pm or pm.isNull():
+  #    dwarn("failed to capture image")
+  #    return
+  #  return cls(pixmap=pm, x=x, y=y, width=width, height=height, hwnd=hwnd, **kwargs)
 
 
   def transformPixmap(self, pm):
