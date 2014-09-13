@@ -14,6 +14,8 @@ from _ocrman import OcrImageObject, OcrSettings
 import _ocrman
 import features, growl, rc, windows, winman
 
+#from sakurakit.skprofiler import SkProfiler
+
 @memoized
 def manager(): return OcrManager()
 
@@ -37,7 +39,7 @@ class _OcrManager(object):
   def ocrWindowTimer(self): # periodically check selected window
     ret = QTimer(self.q)
     ret.setSingleShot(False)
-    ret.setInterval(1000) # TODO: Allow change this value
+    #ret.setInterval(2000) # TODO: Allow change this value
     ret.timeout.connect(self.ocrWindow)
     return ret
 
@@ -58,7 +60,7 @@ class _OcrManager(object):
           height = item.property('height')
           x = item.property('x')
           y = item.property('y')
-          text = self._ocrRegion(x, y, width, height, index=index)
+          text = self._ocrRegion(x, y, width, height, index=index, imageObject=item.property('imageObject'))
           if text and text != item.property('recognizedText'):
             item.setProperty('recognizedText', text)
             #text = termman.manager().applyOcrTerms(text)
@@ -68,21 +70,30 @@ class _OcrManager(object):
         text = '\n'.join(texts)
         self.q.textRecognized.emit(text)
 
-  def _ocrRegion(self, x, y, width, height, index=0):
+  def _ocrRegion(self, x, y, width, height, index=0, imageObject=None):
     """
     @param  x  int
     @param  y  int
     @param  width  int
     @param  height  int
     @param* index  int  an ID to distringuish the region
+    @param* imageObject  OcrImageObject
     @return  unicode  recognized text
     """
     pm = self._capturePixmap(x, y, width, height)
     if pm:
+      if imageObject:
+        pm = imageObject.transformPixmap(pm)
       path = "%s/region.%s.%s" % (rc.DIR_TMP_OCR, index, _ocrman.OCR_IMAGE_FORMAT)
       if _ocrman.save_pixmap(pm, path):
+        #with SkProfiler(): # 9/12/2014: 0.5 seconds
         text = self._ocrImageFile(path)
         #skfileio.removefile(path)
+
+        # Crash with multi-threads
+        #from functools import partial
+        #from sakurakit import skthreads
+        #text = skthreads.runsync(partial(self._ocrImageFile, path))
         return text
     return ''
 
@@ -274,6 +285,11 @@ class OcrManager(QObject):
     dprint(t)
     self.__d.regionOcrEnabled = t
 
+  def regionOcrInterval(self): return self.__d.ocrWindowTimer.interval()
+  def setRegionOcrInterval(self, v):
+    dprint(v)
+    self.__d.ocrWindowTimer.setInterval(v)
+
   def selectedWindow(self): return self.__d.selectedWindow # long
   def setSelectedWindow(self, hwnd):
     dprint(hwnd)
@@ -294,6 +310,7 @@ class OcrManager(QObject):
 
   def createImageObject(self, x, y, width, height): # int, int, int, int -> QObject or None
     return self.__d.createImageObject(x, y, width, height, self.__d.selectedWindow)
+
 
 # EOF
 

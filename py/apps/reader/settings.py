@@ -215,10 +215,10 @@ class Settings(QSettings):
   ## OCR ##
 
   ocrEnabledChanged = Signal(bool)
-  def isOcrEnabled(self): return to_bool(self.value('OcrEnabled'))
+  def isOcrEnabled(self): return to_bool(self.value('OCREnabled'))
   def setOcrEnabled(self, value):
     if value != self.isOcrEnabled():
-      self.setValue('OcrEnabled', value)
+      self.setValue('OCREnabled', value)
       self.ocrEnabledChanged.emit(value)
 
   ocrSpaceEnabledChanged = Signal(bool)
@@ -234,6 +234,13 @@ class Settings(QSettings):
     if value != self.ocrLanguages():
       self.setValue('OCRLanguages', value)
       self.ocrLanguagesChanged.emit(value)
+
+  ocrRefreshIntervalChanged = Signal(int)
+  def ocrRefreshInterval(self): return to_int(self.value('OCRRefreshInterval', 2000)) # 2 seconds by default
+  def setOcrRefreshInterval(self, value):
+    if value != self.ocrRefreshInterval():
+      self.setValue('OCRRefreshInterval', value)
+      self.ocrRefreshIntervalChanged.emit(value)
 
   ## AppLocale ##
 

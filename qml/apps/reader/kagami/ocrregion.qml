@@ -68,6 +68,8 @@ Item { id: root_
 
       property string recognizedText // last ocr-ed text
 
+      property QtObject imageObject // OcrImageObject
+
       property bool dragging:
           leftResizeArea_.pressed ||
           rightResizeArea_.pressed ||
@@ -90,7 +92,10 @@ Item { id: root_
         active = visible = false
       }
 
+
       // - Private -
+
+      onActiveChanged: if (!active) release()
 
       onVisibleChanged: if (!visible) hideEdit()
 
@@ -117,31 +122,45 @@ Item { id: root_
       property Item editItem
       property bool editLocked: false
 
+      function release() {
+        if (imageObject) {
+          imageObject.release()
+          imageObject = null
+        }
+      }
+
       function hideEdit() {
         if (editItem)
           editItem.hide()
       }
 
-
       function showEdit() {
         if (editLocked)
           return
-        var image = bean_.createImageObject(x, y, width, height)
-        if (!image) {
-          growl_.showWarning(qsTr("Failed to capture an image for the selected region"))
-          return
-        }
         editLocked = true
+        if (imageObject) {
+          imageObject.x = x
+          imageObject.y = y
+          imageObject.width = width
+          imageObject.height = height
+          imageObject.capture()
+        } else {
+          imageObject = bean_.createImageObject(x, y, width, height)
+          if (!imageObject) {
+            growl_.showWarning(qsTr("Failed to capture an image for the selected region"))
+            editLocked = false
+            return
+          }
+        }
         if (!editItem)
           editItem = editComp_.createObject(root_, {
             visible: false // hide on startup
-            , autoReleaseImage: true
           })
 
-        var text = image.ocr()
+        var text = imageObject.ocr()
         editItem.x = Math.min(item_.x + 30, root_.x + root_.width - item_.width)
         editItem.y = Math.min(item_.y + 30, root_.x + root_.height - item_.height)
-        editItem.show(image, text)
+        editItem.show(imageObject, text)
         editLocked = false
       }
 
@@ -351,7 +370,7 @@ Item { id: root_
           left: parent.left
           top: parent.top
           //margins: -_ITEM_BORDER_WIDTH - spacing
-          margins: -2
+          margins: -3
         }
         spacing: 0
 
