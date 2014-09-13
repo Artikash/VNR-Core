@@ -204,6 +204,16 @@
         <translation>使用偏好中没有打开光学识别的功能</translation>
     </message>
     <message>
+        <location filename="../kagami/dock.qml" line="423"/>
+        <source>Monitor</source>
+        <translation>监视</translation>
+    </message>
+    <message>
+        <location filename="../kagami/dock.qml" line="434"/>
+        <source>Monitor the selected regions and periodically extract texts in them</source>
+        <translation>监视选定的区域并自动识别里边的文字</translation>
+    </message>
+    <message>
         <location filename="../kagami/dock.qml" line="451"/>
         <source>Edit OCR regions</source>
         <translation>编辑光学识别的区域</translation>
@@ -315,9 +325,8 @@
         <translation>缩放字体大小</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="434"/>
         <source>Start monitoring the selected regions</source>
-        <translation>开始监视选定的区域</translation>
+        <translation type="obsolete">开始监视选定的区域</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1048"/>
@@ -848,32 +857,32 @@
         <translation>颜色浓度</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="207"/>
+        <location filename="../kagami/ocredit.qml" line="206"/>
         <source>Minimum text color intensity</source>
         <translation>文本颜色浓度的最小值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="208"/>
+        <location filename="../kagami/ocredit.qml" line="207"/>
         <source>Maximum text color intensity</source>
         <translation>文本颜色浓度的最大值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="213"/>
+        <location filename="../kagami/ocredit.qml" line="212"/>
         <source>Range of the text color intensity</source>
         <translation>文本颜色浓度的范围</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="232"/>
+        <location filename="../kagami/ocredit.qml" line="231"/>
         <source>Enable image processing for OCR</source>
         <translation>为OCR开启图像处理</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="249"/>
+        <location filename="../kagami/ocredit.qml" line="248"/>
         <source>Apply OCR to the current image</source>
         <translation>应用OCR处理到当前的图片</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="259"/>
+        <location filename="../kagami/ocredit.qml" line="258"/>
         <source>Reset to the last OCR settings</source>
         <translation>恢复到上一次的OCR设定</translation>
     </message>

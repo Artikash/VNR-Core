@@ -420,7 +420,7 @@ Item { id: root_
             Share.TextButton { id: ocrRegionEnabledButton_
               height: buttonCol_.cellHeight; width: buttonCol_.cellWidth
               //text: checked ? "×" : "◯" // ばつ、まる
-              text: slimChecked ? "◯" : Sk.tr("Enable") // まる
+              text: slimChecked ? "◯" : qsTr("Monitor") // まる
               font.pixelSize: buttonCol_.pixelSize
               //font.bold: true
               //language: root_.language
@@ -431,7 +431,7 @@ Item { id: root_
 
               property bool checked
               onClicked: checked = !checked
-              toolTip: qsTr("Start monitoring the selected regions")
+              toolTip: qsTr("Monitor the selected regions and periodically extract texts in them")
             }
 
             Share.TextButton { id: ocrRegionVisibleButton_
