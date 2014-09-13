@@ -71,14 +71,14 @@ Item { id: root_
       property QtObject imageObject // OcrImageObject
 
       property bool dragging:
-          leftResizeArea_.pressed ||
-          rightResizeArea_.pressed ||
-          topResizeArea_.pressed ||
-          bottomResizeArea_.pressed ||
-          topLeftMoveArea_.drag.active ||
-          topRightMoveArea_.drag.active ||
-          bottomLeftMoveArea_.drag.active ||
-          bottomRightMoveArea_.drag.active
+          leftArea_.drag.active ||
+          rightArea_.drag.active ||
+          topArea_.drag.active ||
+          bottomArea_.drag.active ||
+          topLeftArea_.pressed ||
+          topRightArea_.pressed ||
+          bottomLeftArea_.pressed ||
+          bottomRightArea_.pressed
 
       function show(x, y, width, height) { // int, int, int, int
         item_.x = x
@@ -204,109 +204,144 @@ Item { id: root_
         color: item_.borderColor
       }
 
-      MouseArea { id: leftResizeArea_
+      MouseArea { id: leftArea_
         anchors.fill: leftBorder_
+        acceptedButtons: Qt.LeftButton
+        drag {
+          target: item_
+          axis: Drag.XandYAxis
+        }
+
+        //property int pressedX
+        //onPressed: pressedX = mouseX
+        //onPositionChanged:
+        //  if (pressed) {
+        //    var dx = mouseX - pressedX
+        //    var w = item_.width - dx
+        //    if (w > _MIN_WIDTH) {
+        //      item_.setWidth(w)
+        //      item_.x += dx
+        //    }
+        //  }
+
+        Desktop.TooltipArea { id: leftTip_
+          anchors.fill: parent
+          text: Sk.tr("Move")
+        }
+      }
+
+      MouseArea { id: rightArea_
+        anchors.fill: rightBorder_
+        acceptedButtons: Qt.LeftButton
+        drag {
+          target: item_
+          axis: Drag.XandYAxis
+        }
+
+        //property int pressedX
+        //onPressed: pressedX = mouseX
+        //onPositionChanged:
+        //  if (pressed) {
+        //    var dx = mouseX - pressedX
+        //    var w = item_.width + dx
+        //    if (w > _MIN_WIDTH)
+        //      item_.setWidth(w)
+        //  }
+
+        Desktop.TooltipArea { id: rightTip_
+          anchors.fill: parent
+          text: Sk.tr("Move")
+        }
+      }
+
+      MouseArea { id: topArea_
+        anchors.fill: topBorder_
+        acceptedButtons: Qt.LeftButton
+        drag {
+          target: item_
+          axis: Drag.XandYAxis
+        }
+
+        //property int pressedY
+        //onPressed: pressedY = mouseY
+        //onPositionChanged:
+        //  if (pressed) {
+        //    var dy = mouseY - pressedY
+        //    var h = item_.height - dy
+        //    if (h > _MIN_WIDTH) {
+        //      item_.setHeight(h)
+        //      item_.y += dy
+        //    }
+        //  }
+
+        Desktop.TooltipArea { id: topTip_
+          anchors.fill: parent
+          text: Sk.tr("Move")
+        }
+      }
+
+      MouseArea { id: bottomArea_
+        anchors.fill: bottomBorder_
+        acceptedButtons: Qt.LeftButton
+        drag {
+          target: item_
+          axis: Drag.XandYAxis
+        }
+
+        //property int pressedY
+        //onPressed: pressedY = mouseY
+        //onPositionChanged:
+        //  if (pressed) {
+        //    var dy = mouseY - pressedY
+        //    var h = item_.height + dy
+        //    if (h > _MIN_WIDTH)
+        //      item_.setHeight(h)
+        //  }
+
+        Desktop.TooltipArea { id: bottomTip_
+          anchors.fill: parent
+          text: Sk.tr("Move")
+        }
+      }
+
+      MouseArea { id: topLeftArea_
+        anchors {
+          top: parent.top
+          left: parent.left
+        }
+        width: _ITEM_BORDER_WIDTH
+        height: _ITEM_BORDER_WIDTH
         acceptedButtons: Qt.LeftButton
 
         property int pressedX
-        onPressed: pressedX = mouseX
+        property int pressedY
+        onPressed: {
+          pressedX = mouseX
+          pressedY = mouseY
+        }
         onPositionChanged:
           if (pressed) {
             var dx = mouseX - pressedX
+            var dy = mouseY - pressedY
             var w = item_.width - dx
+            var h = item_.height - dy
             if (w > _MIN_WIDTH) {
               item_.setWidth(w)
               item_.x += dx
             }
-          }
-
-        Desktop.TooltipArea { id: leftTip_
-          anchors.fill: parent
-          text: Sk.tr("Resize")
-        }
-      }
-
-      MouseArea { id: rightResizeArea_
-        anchors.fill: rightBorder_
-        acceptedButtons: Qt.LeftButton
-
-        property int pressedX
-        onPressed: pressedX = mouseX
-        onPositionChanged:
-          if (pressed) {
-            var dx = mouseX - pressedX
-            var w = item_.width + dx
-            if (w > _MIN_WIDTH)
-              item_.setWidth(w)
-          }
-
-        Desktop.TooltipArea { id: rightTip_
-          anchors.fill: parent
-          text: Sk.tr("Resize")
-        }
-      }
-
-      MouseArea { id: topResizeArea_
-        anchors.fill: topBorder_
-        acceptedButtons: Qt.LeftButton
-
-        property int pressedY
-        onPressed: pressedY = mouseY
-        onPositionChanged:
-          if (pressed) {
-            var dy = mouseY - pressedY
-            var h = item_.height - dy
             if (h > _MIN_WIDTH) {
               item_.setHeight(h)
               item_.y += dy
             }
           }
 
-        Desktop.TooltipArea { id: topTip_
-          anchors.fill: parent
-          text: Sk.tr("Resize")
-        }
-      }
-
-      MouseArea { id: bottomResizeArea_
-        anchors.fill: bottomBorder_
-        acceptedButtons: Qt.LeftButton
-
-        property int pressedY
-        onPressed: pressedY = mouseY
-        onPositionChanged:
-          if (pressed) {
-            var dy = mouseY - pressedY
-            var h = item_.height + dy
-            if (h > _MIN_WIDTH)
-              item_.setHeight(h)
-          }
-
-        Desktop.TooltipArea { id: bottomTip_
-          anchors.fill: parent
-          text: Sk.tr("Resize")
-        }
-      }
-
-      MouseArea { id: topLeftMoveArea_
-        anchors {
-          top: parent.top
-          left: parent.left
-        }
-        width: _ITEM_BORDER_WIDTH
-        height: _ITEM_BORDER_WIDTH
-        acceptedButtons: Qt.LeftButton
-        drag {
-          target: item_
-          axis: Drag.XandYAxis
-        }
         Desktop.TooltipArea { id: topLeftTip_
           anchors.fill: parent
-          text: Sk.tr("Move")
+          text: Sk.tr("Resize")
         }
       }
 
-      MouseArea { id: topRightMoveArea_
+      MouseArea { id: topRightArea_
         anchors {
           top: parent.top
           right: parent.right
@@ -314,17 +349,36 @@ Item { id: root_
         width: _ITEM_BORDER_WIDTH
         height: _ITEM_BORDER_WIDTH
         acceptedButtons: Qt.LeftButton
-        drag {
-          target: item_
-          axis: Drag.XandYAxis
+
+        property int pressedX
+        property int pressedY
+        onPressed: {
+          pressedX = mouseX
+          pressedY = mouseY
         }
+        onPositionChanged:
+          if (pressed) {
+            var dx = mouseX - pressedX
+            var dy = mouseY - pressedY
+            var w = item_.width + dx
+            var h = item_.height - dy
+            if (w > _MIN_WIDTH) {
+              item_.setWidth(w)
+              //item_.x += dx
+            }
+            if (h > _MIN_WIDTH) {
+              item_.setHeight(h)
+              item_.y += dy
+            }
+          }
+
         Desktop.TooltipArea { id: topRightTip_
           anchors.fill: parent
-          text: Sk.tr("Move")
+          text: Sk.tr("Resize")
         }
       }
 
-      MouseArea { id: bottomLeftMoveArea_
+      MouseArea { id: bottomLeftArea_
         anchors {
           bottom: parent.bottom
           left: parent.left
@@ -332,17 +386,36 @@ Item { id: root_
         width: _ITEM_BORDER_WIDTH
         height: _ITEM_BORDER_WIDTH
         acceptedButtons: Qt.LeftButton
-        drag {
-          target: item_
-          axis: Drag.XandYAxis
+
+        property int pressedX
+        property int pressedY
+        onPressed: {
+          pressedX = mouseX
+          pressedY = mouseY
         }
+        onPositionChanged:
+          if (pressed) {
+            var dx = mouseX - pressedX
+            var dy = mouseY - pressedY
+            var w = item_.width - dx
+            var h = item_.height + dy
+            if (w > _MIN_WIDTH) {
+              item_.setWidth(w)
+              item_.x += dx
+            }
+            if (h > _MIN_WIDTH) {
+              item_.setHeight(h)
+              //item_.y += dy
+            }
+          }
+
         Desktop.TooltipArea { id: bottomLeftTip_
           anchors.fill: parent
-          text: Sk.tr("Move")
+          text: Sk.tr("Resize")
         }
       }
 
-      MouseArea { id: bottomRightMoveArea_
+      MouseArea { id: bottomRightArea_
         anchors {
           bottom: parent.bottom
           right: parent.right
@@ -350,13 +423,32 @@ Item { id: root_
         width: _ITEM_BORDER_WIDTH
         height: _ITEM_BORDER_WIDTH
         acceptedButtons: Qt.LeftButton
-        drag {
-          target: item_
-          axis: Drag.XandYAxis
+
+        property int pressedX
+        property int pressedY
+        onPressed: {
+          pressedX = mouseX
+          pressedY = mouseY
         }
+        onPositionChanged:
+          if (pressed) {
+            var dx = mouseX - pressedX
+            var dy = mouseY - pressedY
+            var w = item_.width + dx
+            var h = item_.height + dy
+            if (w > _MIN_WIDTH) {
+              item_.setWidth(w)
+              //item_.x += dx
+            }
+            if (h > _MIN_WIDTH) {
+              item_.setHeight(h)
+              //item_.y += dy
+            }
+          }
+
         Desktop.TooltipArea { id: bottomRightTip_
           anchors.fill: parent
-          text: Sk.tr("Move")
+          text: Sk.tr("Resize")
         }
       }
 
