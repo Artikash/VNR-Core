@@ -1217,7 +1217,7 @@ class _OcrTab(object):
       w.setEnabled(ocrEnabled)
       ss.ocrEnabledChanged.connect(w.setEnabled)
 
-  ## Region group ##
+  ## Screen group ##
 
   @memoizedproperty
   def screenGroup(self):
@@ -1230,9 +1230,17 @@ class _OcrTab(object):
     row.addStretch()
     layout.addLayout(row)
 
-    #layout.addWidget(self.screenInfoLabel)
+    layout.addWidget(self.screenInfoLabel)
     ret = QtWidgets.QGroupBox(my.tr("Screen capture options"))
     ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def screenInfoLabel(self):
+    ret = QtWidgets.QLabel(my.tr(
+      "When the interval is smaller, you will wait less time to get the new OCR text. But it will also require more CPU usage."
+    ))
+    ret.setWordWrap(True)
     return ret
 
   @memoizedproperty
