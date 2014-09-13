@@ -129,7 +129,7 @@ Item { id: root_
 
   property bool wine: statusPlugin_.wine // cached
 
-  //property bool fullScreen: ignoresFocus || stretchedChecked
+  property bool fullScreen: ignoresFocus || stretchedChecked
 
   //Plugin.Growl { id: growl_ }
   //Plugin.SystemStatus { id: statusPlugin_ }
@@ -396,6 +396,8 @@ Item { id: root_
         //property bool enabled: statusPlugin_.online && statusPlugin_.login
         //onEnabledChanged:
         //  if (!enabled) checked = false
+
+        visible: enabled || !root_.fullScreen
 
         //toolTip: checked ? qsTr("Leave full screen") : qsTr("Enter full screen")
         toolTip: qsTr("Automatically recognize texts in the selected regions")
