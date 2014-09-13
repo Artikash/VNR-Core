@@ -38,6 +38,7 @@ Item { id: root_
   property bool mirageVisible: false
 
   property bool wine: statusPlugin_.wine // cached
+  property int admin: statusPlugin_.admin // cached  xp: -1; otherwise 1 or 0
 
   // - Private -
 
@@ -827,7 +828,7 @@ Item { id: root_
 
         //furiganaEnabled: root_.rubyEnabled
 
-        ocrEnabled: settings_.ocrEnabled
+        ocrEnabled: settings_.ocrEnabled && !!root_.admin
 
         onTextCheckedChanged: settings_.grimoireTextVisible = textChecked
         onNameCheckedChanged: settings_.grimoireNameVisible = nameChecked

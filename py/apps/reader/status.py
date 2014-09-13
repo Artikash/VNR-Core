@@ -41,6 +41,11 @@ class SystemStatus(QObject):
       lambda _: features.WINE,
       notify=wineChanged)
 
+  adminChanged = Signal(int)
+  admin = Property(int,
+      lambda _: 1 if features.ADMIN == True else 0 if features.ADMIN == False else -1,
+      notify=adminChanged)
+
   onlineChanged = Signal(bool)
   online = Property(bool,
       lambda _: netman.manager().isOnline(),
