@@ -278,6 +278,8 @@ class _MainObject(object):
     ss.ocrLanguagesChanged.connect(ret.setLanguages)
     ret.setSpaceEnabled(ss.isOcrSpaceEnabled())
     ss.ocrSpaceEnabledChanged.connect(ret.setSpaceEnabled)
+    ret.setRegionOcrInterval(ss.ocrRefreshInterval())
+    ss.ocrRefreshIntervalChanged.connect(ret.setRegionOcrInterval)
 
     return ret
 

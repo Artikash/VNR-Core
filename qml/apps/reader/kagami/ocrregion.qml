@@ -20,12 +20,12 @@ Item { id: root_
 
   // - Private -
 
-  //Component { id: editComp_
-  //  Kagami.OcrEdit {
-  //    zoomFactor: root_._zoomFactor
-  //    ignoresFocus: root_.ignoresFocus
-  //  }
-  //}
+  Component { id: editComp_
+    Kagami.OcrEdit {
+      zoomFactor: root_.zoomFactor
+      ignoresFocus: root_.ignoresFocus
+    }
+  }
 
   Component.onCompleted: Local.items = [] // [item]
 
@@ -68,6 +68,8 @@ Item { id: root_
 
       property string recognizedText // last ocr-ed text
 
+      property QtObject imageObject // OcrImageObject
+
       property bool dragging:
           leftResizeArea_.pressed ||
           rightResizeArea_.pressed ||
@@ -90,7 +92,12 @@ Item { id: root_
         active = visible = false
       }
 
+
       // - Private -
+
+      onActiveChanged: if (!active) release()
+
+      onVisibleChanged: if (!visible) hideEdit()
 
       property real normalizedWidth: 1.0
       property real normalizedHeight: 1.0
@@ -111,6 +118,53 @@ Item { id: root_
                         || topRightTip_.containsMouse
                         || bottomLeftTip_.containsMouse
                         || bottomRightTip_.containsMouse
+
+      property Item editItem
+      property bool editLocked: false
+
+      function release() {
+        if (imageObject) {
+          imageObject.release()
+          imageObject = null
+        }
+      }
+
+      function hideEdit() {
+        if (editItem)
+          editItem.hide()
+      }
+
+      function showEdit() {
+        if (editLocked)
+          return
+        editLocked = true
+        if (imageObject) {
+          imageObject.x = x
+          imageObject.y = y
+          imageObject.width = width
+          imageObject.height = height
+          imageObject.capture()
+        } else {
+          console.log("ocregion.qml: create image object")
+          imageObject = bean_.createImageObject(x, y, width, height)
+          if (!imageObject) {
+            growl_.showWarning(qsTr("Failed to capture an image for the selected region"))
+            editLocked = false
+            return
+          }
+        }
+        if (!editItem)
+          console.log("ocregion.qml: create ocr editor")
+          editItem = editComp_.createObject(root_, {
+            visible: false // hide on startup
+          })
+
+        var text = imageObject.ocr()
+        editItem.x = Math.min(item_.x + 30, root_.x + root_.width - item_.width)
+        editItem.y = Math.min(item_.y, root_.x + root_.height - item_.height)
+        editItem.show(imageObject, text)
+        editLocked = false
+      }
 
       // Resizable
 
@@ -318,12 +372,13 @@ Item { id: root_
           left: parent.left
           top: parent.top
           //margins: -_ITEM_BORDER_WIDTH - spacing
-          margins: -2
+          margins: -3
         }
         spacing: 0
 
         property bool hover: closeButton_.hover
                           || enableButton_.hover
+                          || editButton_.hover
 
         property int cellWidth: 15
         property int pixelSize: 10
@@ -347,12 +402,25 @@ Item { id: root_
           font.family: 'MS Gothic'
           backgroundColor: 'transparent'
 
-          text: checked ? "◯" : "Φ" //  まる / ふぁい
+          text: checked ? "◯" : "｜" //  まる
           //text: "◯" // まる
           toolTip: checked ? Sk.tr("Enabled") : Sk.tr("Disabled")
 
           property alias checked: item_.enabled
           onClicked: checked = !checked
+        }
+
+        Share.CircleButton { id: editButton_
+          diameter: parent.cellWidth
+          font.pixelSize: parent.pixelSize
+          font.bold: hover
+          font.family: 'MS Gothic'
+          backgroundColor: 'transparent'
+
+          text: "⌘" // U+2318 コマンド記号
+          toolTip: Sk.tr("Option")
+
+          onClicked: showEdit()
         }
       }
     }

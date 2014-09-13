@@ -1,4 +1,4 @@
-/** ocrpopupedit.qml
+/** ocredit.qml
  *  9/7/2014 jichi
  */
 import QtQuick 1.1
@@ -12,6 +12,7 @@ Rectangle { id: root_
   property bool ignoresFocus: false
 
   property string text: textArea_.textEdit.text
+  //property bool autoReleaseImage: false
 
   function show(image, text) { // OcrImageObject
     imageObject = image
@@ -28,6 +29,12 @@ Rectangle { id: root_
   }
 
   // - Private -
+
+  //function releaseImageObject() {
+  //  if (autoReleaseImage && imageObject)
+  //    imageObject.release()
+  //  imageObject = null
+  //}
 
   property QtObject imageObject // OcrImageObject  ocr controller
 
@@ -47,10 +54,10 @@ Rectangle { id: root_
 
   function saveImageProperties() {
     if (imageObject) {
-      imageObject.editable = savedEnabled
-      imageObject.colorIntensityEnabled = savedColorIntensityEnable
-      imageObject.minimumColorIntensity = savedMinimumColorIntensity
-      imageObject.maximumColorIntensity = savedMaximumColorIntensity
+      imageObject.editable = enableButton_.checked
+      imageObject.colorIntensityEnabled = colorEnableButton_.checked
+      imageObject.minimumColorIntensity = colorSlider_.startValue
+      imageObject.maximumColorIntensity = colorSlider_.stopValue
     }
   }
 
@@ -159,16 +166,16 @@ Rectangle { id: root_
 
   // Slider
 
-  Share.CheckDot { id: colorEnableButton_
+  Share.CheckBox { id: colorEnableButton_
     anchors {
       left: parent.left
       verticalCenter: colorSlider_.verticalCenter
       margins: _ROOT_MARGIN
     }
     enabled: enableButton_.checked
+    text: qsTr("I")
     toolTip: qsTr("Color intensity")
   }
-
 
   function toPercentage(value) { // real -> string
     return Math.round(value * 100) + '%'

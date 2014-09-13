@@ -13,6 +13,8 @@ from sakurakit.skdebug import dprint, dwarn
 from modiocr import modiocr
 import termman
 
+#from sakurakit.skprofiler import SkProfiler
+
 OCR_MIN_WIDTH = 3
 OCR_MIN_HEIGHT = 3
 
@@ -63,13 +65,18 @@ class OcrSettings(object):
 @Q_Q
 class _OcrImageObject(object):
 
-  def __init__(self, q, pixmap, settings):
+  def __init__(self, q, pixmap, settings,
+      x, y, width, height, hwnd):
     self.settings = settings # OcrSettings
     self.pixmap = pixmap # QPixmap
     self.path = '' # str
     self.editable = False # image transformation enabled
-    #self.width = width # int
-    #self.height = height # int
+
+    self.x = x # int
+    self.y = y # int
+    self.width = width # int
+    self.height = height # int
+    self.hwnd = hwnd # long
 
     self.colorIntensityEnabled = True
     self.minimumColorIntensity = 0.7
@@ -90,16 +97,19 @@ class _OcrImageObject(object):
     """
     @return  unicode
     """
-    img = self._transformPixmap(self.pixmap)
+    img = self.transformPixmap(self.pixmap)
     if not self._savePixmap(img):
       return ''
     # FIXME: Async would crash
     #ret = skthreads.runsync(partial(self._readImageFile, path))
-    #with SkProfiler(): # take around 3 seconds
+    #with SkProfiler(): # take around 0.5 seconds
     text = self._readImage()
     if text:
       text = termman.manager().applyOcrTerms(text)
     return text
+
+  def capture(self):
+    self.pixmap = capture_pixmap(self.x, self.y, self.width, self.height, self.hwnd)
 
   def _readImage(self):
     """
@@ -130,7 +140,7 @@ class _OcrImageObject(object):
     self.path = v
     self.q.imageUrlChanged.emit(QUrl.fromLocalFile(v))
 
-  def _transformPixmap(self, pm):
+  def transformPixmap(self, pm):
     """
     @param  pm  QPixmap
     @return  QPixmap or QImage
@@ -178,21 +188,40 @@ class OcrImageObject(QObject):
     return self.__d.settings.language()
 
   def setEditable(self, t): self.__d.editable = t
+  def isEditable(self): return self.__d.editable
   editableChanged = Signal(bool)
   editable = Property(bool,
       lambda self: self.__d.editable,
       setEditable,
       notify=editableChanged)
 
-  #widthChanged = Signal(int)
-  #width = Property(int,
-  #    lambda self: self.__d.width,
-  #    notify=widthChanged)
+  def setX(self, v): self.__d.x = v
+  xChanged = Signal(int)
+  x = Property(int,
+      lambda self: self.__d.x,
+      setX,
+      notify=xChanged)
 
-  #heightChanged = Signal(int)
-  #height = Property(int,
-  #    lambda self: self.__d.height,
-  #    notify=heightChanged)
+  def setY(self, v): self.__d.y = v
+  yChanged = Signal(int)
+  y = Property(int,
+      lambda self: self.__d.y,
+      setY,
+      notify=yChanged)
+
+  def setWidth(self, v): self.__d.width = v
+  widthChanged = Signal(int)
+  width = Property(int,
+      lambda self: self.__d.width,
+      setWidth,
+      notify=widthChanged)
+
+  def setHeight(self, v): self.__d.height = v
+  heightChanged = Signal(int)
+  height = Property(int,
+      lambda self: self.__d.height,
+      setHeight,
+      notify=heightChanged)
 
   # Color intensity
 
@@ -225,6 +254,10 @@ class OcrImageObject(QObject):
     return self.__d.ocr()
 
   @Slot()
+  def capture(self):
+    self.__d.capture()
+
+  @Slot()
   def release(self):
     skfileio.removefile(self.__d.path)
     self.setParent(None)
@@ -244,6 +277,15 @@ class OcrImageObject(QObject):
     if not pm or pm.isNull():
       dwarn("failed to capture image")
       return
-    return cls(pixmap=pm, **kwargs)
+    return cls(pixmap=pm, x=x, y=y, width=width, height=height, hwnd=hwnd, **kwargs)
+
+
+  def transformPixmap(self, pm):
+    """
+    @param  pm  QPixmap
+    @return  QPixmap or QImage or None
+    """
+    #with SkProfiler(): # 9/12/2014: time = 1.3e-05
+    return self.__d.transformPixmap(pm)
 
 # EOF

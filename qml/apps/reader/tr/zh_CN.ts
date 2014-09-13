@@ -737,7 +737,7 @@
         <translation>重置文本的位置</translation>
     </message>
     <message>
-        <location filename="../kagami.qml" line="993"/>
+        <location filename="../kagami.qml" line="996"/>
         <source>Not login or offline</source>
         <translation>没有登录或没有网络连接</translation>
     </message>
@@ -836,39 +836,44 @@
     </message>
 </context>
 <context>
-    <name>ocrpopupedit</name>
+    <name>ocredit</name>
     <message>
-        <location filename="../kagami/ocrpopupedit.qml" line="167"/>
+        <location filename="../kagami/ocredit.qml" line="176"/>
+        <source>I</source>
+        <translation>光强</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="177"/>
         <source>Color intensity</source>
         <translation>颜色浓度</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopupedit.qml" line="197"/>
+        <location filename="../kagami/ocredit.qml" line="207"/>
         <source>Minimum text color intensity</source>
         <translation>文本颜色浓度的最小值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopupedit.qml" line="198"/>
+        <location filename="../kagami/ocredit.qml" line="208"/>
         <source>Maximum text color intensity</source>
         <translation>文本颜色浓度的最大值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopupedit.qml" line="203"/>
+        <location filename="../kagami/ocredit.qml" line="213"/>
         <source>Range of the text color intensity</source>
         <translation>文本颜色浓度的范围</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopupedit.qml" line="222"/>
+        <location filename="../kagami/ocredit.qml" line="232"/>
         <source>Enable image processing for OCR</source>
         <translation>为OCR开启图像处理</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopupedit.qml" line="239"/>
+        <location filename="../kagami/ocredit.qml" line="249"/>
         <source>Apply OCR to the current image</source>
         <translation>应用OCR处理到当前的图片</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopupedit.qml" line="249"/>
+        <location filename="../kagami/ocredit.qml" line="259"/>
         <source>Reset to the last OCR settings</source>
         <translation>恢复到上一次的OCR设定</translation>
     </message>
@@ -876,25 +881,33 @@
 <context>
     <name>ocrpopup</name>
     <message>
-        <location filename="../kagami/ocrpopup.qml" line="228"/>
-        <location filename="../kagami/ocrpopup.qml" line="545"/>
+        <location filename="../kagami/ocrpopup.qml" line="231"/>
+        <location filename="../kagami/ocrpopup.qml" line="548"/>
         <source>You can drag the border to move the text box</source>
         <translation>你可以通过拖动四周的边框来移动文本框</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopup.qml" line="472"/>
+        <location filename="../kagami/ocrpopup.qml" line="475"/>
         <source>Select Color</source>
         <translation>选择颜色</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopup.qml" line="590"/>
+        <location filename="../kagami/ocrpopup.qml" line="593"/>
         <source>Select color</source>
         <translation>选择颜色</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopup.qml" line="607"/>
+        <location filename="../kagami/ocrpopup.qml" line="610"/>
         <source>Translating</source>
         <translation>正在翻译中</translation>
+    </message>
+</context>
+<context>
+    <name>ocrregion</name>
+    <message>
+        <location filename="../kagami/ocrregion.qml" line="151"/>
+        <source>Failed to capture an image for the selected region</source>
+        <translation>从屏幕截取图片失败了</translation>
     </message>
 </context>
 <context>

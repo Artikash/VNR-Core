@@ -43,11 +43,7 @@ class OcrRegionBean(QObject):
     if self.__d.enabled != t:
       self.__d.enabled = t
       self.enabledChanged.emit(t)
-
-      # bad, though works
-      import ocrman
       ocrman.manager().setRegionOcrEnabled(t)
-
   enabledChanged = Signal(bool)
   enabled = Property(bool,
       lambda self: self.__d.enabled,
@@ -57,11 +53,7 @@ class OcrRegionBean(QObject):
     if self.__d.visible != t:
       self.__d.visible = t
       self.visibleChanged.emit(t)
-
-      # bad, though works
-      import ocrman
       ocrman.manager().setRegionSelectionEnabled(t)
-
   visibleChanged = Signal(bool)
   visible = Property(bool,
       lambda self: self.__d.visible,
@@ -70,6 +62,10 @@ class OcrRegionBean(QObject):
   @Slot(QObject) # QDeclarativeItem
   def addRegionItem(self, item):
     ocrman.manager().addRegionItem(item)
+
+  @Slot(int, int, int, int, result=QObject)
+  def createImageObject(self, x, y, width, height):
+    return ocrman.manager().createImageObject(x, y, width, height)
 
 class OcrRegionController:
 

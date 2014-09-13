@@ -23,6 +23,9 @@ MouseArea { id: root_
 
   acceptedButtons: Qt.LeftButton
 
+  height: Math.max(box_.height, text_.height)
+  width: box_.width + text_.width + text_.anchors.leftMargin
+
   // - Private -
 
   // チェック自体のサイズ変更
@@ -54,7 +57,8 @@ MouseArea { id: root_
       left: parent.left
       verticalCenter: parent.verticalCenter
     }
-    width: boxSize; height: boxSize
+    width: boxSize
+    height: boxSize
     radius: boxSize/2 + 1
 
     // ベースのグラデ

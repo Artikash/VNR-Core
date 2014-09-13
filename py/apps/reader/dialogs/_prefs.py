@@ -1205,21 +1205,52 @@ class _OcrTab(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.ocrGroup)
-    layout.addWidget(self.optionGroup)
+    layout.addWidget(self.screenGroup)
+    layout.addWidget(self.textGroup)
     layout.addWidget(self.languageGroup)
     layout.addStretch()
     q.setLayout(layout)
 
     ss = settings.global_()
     ocrEnabled = ss.isOcrEnabled() and features.ADMIN != False
-    for w in self.optionGroup, self.languageGroup:
+    for w in self.screenGroup, self.textGroup, self.languageGroup:
       w.setEnabled(ocrEnabled)
       ss.ocrEnabledChanged.connect(w.setEnabled)
 
-  ## Options ##
+  ## Region group ##
 
   @memoizedproperty
-  def optionGroup(self):
+  def screenGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+
+    # Translation wait time
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.screenRefreshTimeButton)
+    row.addWidget(QtWidgets.QLabel(my.tr("sec. <= Refresh interval to capture the screen")))
+    row.addStretch()
+    layout.addLayout(row)
+
+    #layout.addWidget(self.screenInfoLabel)
+    ret = QtWidgets.QGroupBox(my.tr("Screen capture options"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def screenRefreshTimeButton(self):
+    ret = QtWidgets.QDoubleSpinBox()
+    ret.setToolTip("%s: %s sec." % (tr_("Default"), 2))
+    ret.setRange(0.5, 10.0)
+    ret.setSingleStep(0.1)
+    ret.setDecimals(1) # 0.1
+    ss = settings.global_()
+    ret.setValue(ss.ocrRefreshInterval() / 1000.0)
+    ret.valueChanged[float].connect(lambda v: ss.setOcrRefreshInterval(int(v * 1000)))
+    return ret
+
+  ## Text option ##
+
+  @memoizedproperty
+  def textGroup(self):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.spaceButton)
     ret = QtWidgets.QGroupBox(my.tr("Text transformation settings"))

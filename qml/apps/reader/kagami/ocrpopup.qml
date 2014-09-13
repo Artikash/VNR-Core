@@ -23,7 +23,7 @@ Item { id: root_
   // - Private -
 
   Component { id: editComp_
-    Kagami.OcrPopupEdit {
+    Kagami.OcrEdit {
       zoomFactor: root_._zoomFactor
       ignoresFocus: root_.ignoresFocus
     }
@@ -140,7 +140,10 @@ Item { id: root_
 
       function showEdit() {
         if (!editItem) {
-          editItem = editComp_.createObject(root_)
+          console.log("ocregion.qml: create ocr editor")
+          editItem = editComp_.createObject(root_, {
+            visible: false // hide on startup
+          })
           editItem.textChanged.connect(loadEditText)
         }
 
