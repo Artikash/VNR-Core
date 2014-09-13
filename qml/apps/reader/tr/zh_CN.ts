@@ -838,6 +838,11 @@
 <context>
     <name>ocredit</name>
     <message>
+        <location filename="../kagami/ocredit.qml" line="176"/>
+        <source>I</source>
+        <translation>光强</translation>
+    </message>
+    <message>
         <location filename="../kagami/ocredit.qml" line="177"/>
         <source>Color intensity</source>
         <translation>颜色浓度</translation>
@@ -876,23 +881,23 @@
 <context>
     <name>ocrpopup</name>
     <message>
-        <location filename="../kagami/ocrpopup.qml" line="230"/>
-        <location filename="../kagami/ocrpopup.qml" line="547"/>
+        <location filename="../kagami/ocrpopup.qml" line="231"/>
+        <location filename="../kagami/ocrpopup.qml" line="548"/>
         <source>You can drag the border to move the text box</source>
         <translation>你可以通过拖动四周的边框来移动文本框</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopup.qml" line="474"/>
+        <location filename="../kagami/ocrpopup.qml" line="475"/>
         <source>Select Color</source>
         <translation>选择颜色</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopup.qml" line="592"/>
+        <location filename="../kagami/ocrpopup.qml" line="593"/>
         <source>Select color</source>
         <translation>选择颜色</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopup.qml" line="609"/>
+        <location filename="../kagami/ocrpopup.qml" line="610"/>
         <source>Translating</source>
         <translation>正在翻译中</translation>
     </message>
@@ -900,7 +905,7 @@
 <context>
     <name>ocrregion</name>
     <message>
-        <location filename="../kagami/ocrregion.qml" line="150"/>
+        <location filename="../kagami/ocrregion.qml" line="151"/>
         <source>Failed to capture an image for the selected region</source>
         <translation>从屏幕截取图片失败了</translation>
     </message>

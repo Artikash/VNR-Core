@@ -140,6 +140,7 @@ Item { id: root_
 
       function showEdit() {
         if (!editItem) {
+          console.log("ocregion.qml: create ocr editor")
           editItem = editComp_.createObject(root_, {
             visible: false // hide on startup
           })

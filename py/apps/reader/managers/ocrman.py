@@ -55,7 +55,7 @@ class _OcrManager(object):
     if self.enabled and self.regionOcrEnabled and self.selectedWindow and self.regionItems:
       texts = []
       for index, item in enumerate(self.regionItems):
-        if item.property('visible') and item.property('enabled') and item.property('active') and not item.property('dragging'):
+        if item.property('enabled') and item.property('active') and not item.property('dragging'):
           width = item.property('width')
           height = item.property('height')
           x = item.property('x')

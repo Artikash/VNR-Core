@@ -145,6 +145,7 @@ Item { id: root_
           imageObject.height = height
           imageObject.capture()
         } else {
+          console.log("ocregion.qml: create image object")
           imageObject = bean_.createImageObject(x, y, width, height)
           if (!imageObject) {
             growl_.showWarning(qsTr("Failed to capture an image for the selected region"))
@@ -153,13 +154,14 @@ Item { id: root_
           }
         }
         if (!editItem)
+          console.log("ocregion.qml: create ocr editor")
           editItem = editComp_.createObject(root_, {
             visible: false // hide on startup
           })
 
         var text = imageObject.ocr()
         editItem.x = Math.min(item_.x + 30, root_.x + root_.width - item_.width)
-        editItem.y = Math.min(item_.y + 30, root_.x + root_.height - item_.height)
+        editItem.y = Math.min(item_.y, root_.x + root_.height - item_.height)
         editItem.show(imageObject, text)
         editLocked = false
       }
