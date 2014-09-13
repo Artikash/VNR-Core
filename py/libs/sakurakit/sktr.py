@@ -269,6 +269,7 @@ class sakurakit(QObject):
       self.tr("Context"),
       self.tr("Context menu"), self.tr("context menu"),
       self.tr("Date"), self.tr("date"),
+      self.tr("Desktop"),
       self.tr("Dictionary"),
       self.tr("Dictionaries"),
       self.tr("Default"), self.tr("default"),

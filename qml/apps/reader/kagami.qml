@@ -769,6 +769,8 @@ Item { id: root_
         zoomFactor: root_.globalZoomFactor
         ignoresFocus: root_.ignoresFocus
         wine: root_.wine
+
+        globalPosEnabled: dock_.ocrDesktopChecked
       }
 
       // Dock
