@@ -92,6 +92,8 @@ if skos.WIN:
       self.refreshTimer.setInterval(200)
       self.refreshTimer.timeout.connect(q.refresh)
 
+      self.refreshCount = 0 # int
+
     def reset(self):
       """Reset cached fields"""
       self.valid = False
@@ -166,6 +168,8 @@ if skos.WIN:
 
     def refresh(self):
       d = self.__d
+      d.refreshCount = (d.refreshCount + 1) % 1000 # prevent from being too large
+
       old = d.valid
       new = self.valid
       if old != new:
@@ -190,14 +194,14 @@ if skos.WIN:
           self.heightChanged.emit(new.height())
 
         # Only update content size when geometry changed
-        old = self.contentSize()
-        new = d.obj.contentsize
-        if old != new:
-          d.contentSize = new
-          if old[0] != new[0]:
-            self.contentWidthChanged.emit(new[0])
-          if old[1] != new[1]:
-            self.contentHeightChanged.emit(new[1])
+        #old = self.contentSize()
+        #new = d.obj.contentsize
+        #if old != new:
+        #  d.contentSize = new
+        #  if old[0] != new[0]:
+        #    self.contentWidthChanged.emit(new[0])
+        #  if old[1] != new[1]:
+        #    self.contentHeightChanged.emit(new[1])
 
         # Only update window state when geometry changed
         old = self.windowState()
@@ -210,6 +214,18 @@ if skos.WIN:
             self.fullScreenChanged.emit(bool(new & Qt.WindowFullScreen))
           if old & Qt.WindowMinimized != new & Qt.WindowMinimized:
             self.minimizedChanged.emit(bool(new & Qt.WindowMinimized))
+
+      # I am not sure if this could cause slowdown in Rance, but the contentWidth might change when geometry not changed
+      # Slowdown the refresh rate and see if it could work
+      #elif d.refreshCount % 5 == 0: # refresh every 1 second = 200 * 5
+      old = self.contentSize()
+      new = d.obj.contentsize
+      if old != new:
+        d.contentSize = new
+        if old[0] != new[0]:
+          self.contentWidthChanged.emit(new[0])
+        if old[1] != new[1]:
+          self.contentHeightChanged.emit(new[1])
 
     def refreshInterval(self):
       """Default is 200 msecs"""

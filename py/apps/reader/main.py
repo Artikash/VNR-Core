@@ -346,8 +346,10 @@ class _MainObject(object):
 
     #ret.cleared.connect(tm.clear)
     ret.cleared.connect(self.textHook.detachProcess)
-    ret.cleared.connect(self.q.activate)
     ret.cleared.connect(self.gameDetectionTimer.start)
+
+    ret.cleared.connect(partial(skevents.runlater,
+        self.q.activate, 500)) # since openning SpringBoard is kind of slow
 
     ret.processChanged.connect(lambda pid:
         pid and self.gameDetectionTimer.stop())
