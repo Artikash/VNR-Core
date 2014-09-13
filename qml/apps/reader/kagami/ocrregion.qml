@@ -486,9 +486,7 @@ Item { id: root_
         anchors {
           left: topBorder_.left
           bottom: topBorder_.bottom
-          margins: -3 // so that it will not impact desktop OCR
-          //margins: -_ITEM_BORDER_WIDTH - 4
-          //margins: -3
+          //bottomMargin: 1
         }
         spacing: 0
 
