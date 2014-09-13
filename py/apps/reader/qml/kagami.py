@@ -25,6 +25,7 @@ class _OcrRegionBean:
   def __init__(self):
     self.enabled = False
     self.visible = False
+    self.desktopSelected = False
 
 class OcrRegionBean(QObject):
 
@@ -58,6 +59,16 @@ class OcrRegionBean(QObject):
   visible = Property(bool,
       lambda self: self.__d.visible,
       setVisible, notify=visibleChanged)
+
+  def setDesktopSelected(self, t):
+    if self.__d.desktopSelected != t:
+      self.__d.desktopSelected = t
+      self.desktopSelectedChanged.emit(t)
+      ocrman.manager().setDesktopSelected(t)
+  desktopSelectedChanged = Signal(bool)
+  desktopSelected = Property(bool,
+      lambda self: self.__d.desktopSelected,
+      setDesktopSelected, notify=desktopSelectedChanged)
 
   @Slot(QObject) # QDeclarativeItem
   def addRegionItem(self, item):

@@ -51,6 +51,7 @@ Item { id: root_
   property alias ocrEnabled: ocrButton_.enabled
   property alias ocrRegionEnabledChecked: ocrRegionEnabledButton_.checked
   property alias ocrRegionVisibleChecked: ocrRegionVisibleButton_.checked
+  property alias ocrDesktopChecked: ocrDesktopButton_.checked
 
   property alias textChecked: textButton_.checked
   property alias translationChecked: translationButton_.checked
@@ -187,6 +188,7 @@ Item { id: root_
       ocrButton_.hover ||
       ocrRegionEnabledButton_.hover ||
       ocrRegionVisibleButton_.hover ||
+      ocrDesktopButton_.hover ||
       displayRatioButton_.hover ||
       paddingButton_.hover
 
@@ -380,7 +382,11 @@ Item { id: root_
 
         //visible: !root_.ignoresFocus
 
-        property bool checked: ocrRegionEnabledButton_.checked || ocrRegionVisibleButton_.checked
+        property bool checked:
+            ocrRegionEnabledButton_.checked ||
+            ocrRegionVisibleButton_.checked
+            //ocrDesktopButton_.checked
+
         //onCheckedChanged:
         //  paddingButton_.checked = checked
         //  if (checked)
@@ -449,6 +455,23 @@ Item { id: root_
               property bool checked
               onClicked: checked = !checked
               toolTip: qsTr("Edit OCR regions")
+            }
+
+            Share.TextButton { id: ocrDesktopButton_
+              height: buttonCol_.cellHeight; width: buttonCol_.cellWidth
+              //text: checked ? "×" : "◯" // ばつ、まる
+              text: slimChecked ? Sk.tr("Desktop").charAt(0) : Sk.tr("Desktop")
+              font.pixelSize: buttonCol_.pixelSize
+              //font.bold: true
+              //language: root_.language
+              //color: enabled ? 'snow' : 'silver'
+              backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
+              radius: buttonCol_.cellRadius
+              font.family: buttonCol_.cellFont
+
+              property bool checked
+              onClicked: checked = !checked
+              toolTip: qsTr("Capture the entire desktop instead of the game window")
             }
           }
 

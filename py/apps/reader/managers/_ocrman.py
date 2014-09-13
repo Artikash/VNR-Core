@@ -108,8 +108,11 @@ class _OcrImageObject(object):
       text = termman.manager().applyOcrTerms(text)
     return text
 
-  def capture(self):
+  def captureWindow(self):
     self.pixmap = capture_pixmap(self.x, self.y, self.width, self.height, self.hwnd)
+
+  def captureDesktop(self):
+    self.pixmap = capture_pixmap(self.x, self.y, self.width, self.height)
 
   def _readImage(self):
     """
@@ -262,8 +265,12 @@ class OcrImageObject(QObject):
     return self.__d.ocr()
 
   @Slot()
-  def capture(self):
-    self.__d.capture()
+  def captureWindow(self):
+    self.__d.captureWindow()
+
+  @Slot()
+  def captureDesktop(self):
+    self.__d.captureDesktop()
 
   @Slot()
   def release(self):

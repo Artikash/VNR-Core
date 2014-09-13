@@ -16,6 +16,7 @@ Item { id: root_
   property bool ignoresFocus: false
   property bool wine: false
   property bool enabled: false
+  property bool globalPosEnabled: false // capture desktop instead of window
   visible: false
 
   // - Private -
@@ -32,6 +33,7 @@ Item { id: root_
   Plugin.OcrRegionBean { id: bean_
     enabled: root_.enabled
     visible: root_.visible
+    desktopSelected: root_.globalPosEnabled
 
     Component.onCompleted:
       regionRequested.connect(root_.showRegion)
@@ -70,8 +72,8 @@ Item { id: root_
 
       property QtObject imageObject // OcrImageObject
 
-      property int globalX: mapToItem(null, x, y).x
-      property int globalY: mapToItem(null, x, y).y
+      property int globalX: root_.mapToItem(null, x, y).x // revert of the mapFromItem at root
+      property int globalY: root_.mapToItem(null, x, y).y
 
       property bool dragging:
           leftArea_.drag.active ||
@@ -146,12 +148,21 @@ Item { id: root_
           imageObject = bean_.createImageObject()
         }
 
-        imageObject.x = x
-        imageObject.y = y
         imageObject.width = width
         imageObject.height = height
 
-        imageObject.capture()
+        if (root_.globalPosEnabled) {
+          imageObject.x = globalX
+          imageObject.y = globalY
+        } else {
+          imageObject.x = x
+          imageObject.y = y
+        }
+
+        if (root_.globalPosEnabled)
+          imageObject.captureDesktop()
+        else
+          imageObject.captureWindow()
 
         if (!editItem)
           console.log("ocregion.qml: create ocr editor")
@@ -171,36 +182,48 @@ Item { id: root_
       Rectangle { id: leftBorder_
         anchors {
           top: parent.top; bottom: parent.bottom
-          left: parent.left
+          right: parent.left
+          topMargin: -_ITEM_BORDER_WIDTH
+          bottomMargin: -_ITEM_BORDER_WIDTH
         }
         width: _ITEM_BORDER_WIDTH
+        radius: _ITEM_BORDER_WIDTH / 2
         color: item_.borderColor
       }
 
       Rectangle { id: rightBorder_
         anchors {
           top: parent.top; bottom: parent.bottom
-          right: parent.right
+          left: parent.right
+          topMargin: -_ITEM_BORDER_WIDTH
+          bottomMargin: -_ITEM_BORDER_WIDTH
         }
         width: _ITEM_BORDER_WIDTH
+        radius: _ITEM_BORDER_WIDTH / 2
         color: item_.borderColor
       }
 
       Rectangle { id: topBorder_
         anchors {
           left: parent.left; right: parent.right
-          top: parent.top
+          bottom: parent.top
+          leftMargin: -_ITEM_BORDER_WIDTH
+          rightMargin: -_ITEM_BORDER_WIDTH
         }
         height: _ITEM_BORDER_WIDTH
+        radius: _ITEM_BORDER_WIDTH / 2
         color: item_.borderColor
       }
 
       Rectangle { id: bottomBorder_
         anchors {
           left: parent.left; right: parent.right
-          bottom: parent.bottom
+          top: parent.bottom
+          leftMargin: -_ITEM_BORDER_WIDTH
+          rightMargin: -_ITEM_BORDER_WIDTH
         }
         height: _ITEM_BORDER_WIDTH
+        radius: _ITEM_BORDER_WIDTH / 2
         color: item_.borderColor
       }
 
@@ -306,8 +329,8 @@ Item { id: root_
 
       MouseArea { id: topLeftArea_
         anchors {
-          top: parent.top
-          left: parent.left
+          bottom: parent.top
+          right: parent.left
         }
         width: _ITEM_BORDER_WIDTH
         height: _ITEM_BORDER_WIDTH
@@ -343,8 +366,8 @@ Item { id: root_
 
       MouseArea { id: topRightArea_
         anchors {
-          top: parent.top
-          right: parent.right
+          bottom: parent.top
+          left: parent.right
         }
         width: _ITEM_BORDER_WIDTH
         height: _ITEM_BORDER_WIDTH
@@ -380,8 +403,8 @@ Item { id: root_
 
       MouseArea { id: bottomLeftArea_
         anchors {
-          bottom: parent.bottom
-          left: parent.left
+          top: parent.bottom
+          right: parent.left
         }
         width: _ITEM_BORDER_WIDTH
         height: _ITEM_BORDER_WIDTH
@@ -417,8 +440,8 @@ Item { id: root_
 
       MouseArea { id: bottomRightArea_
         anchors {
-          bottom: parent.bottom
-          right: parent.right
+          top: parent.bottom
+          left: parent.right
         }
         width: _ITEM_BORDER_WIDTH
         height: _ITEM_BORDER_WIDTH
@@ -461,10 +484,11 @@ Item { id: root_
 
       Row { id: header_
         anchors {
-          left: parent.left
-          top: parent.top
-          //margins: -_ITEM_BORDER_WIDTH - spacing
-          margins: -3
+          left: topBorder_.left
+          bottom: topBorder_.bottom
+          margins: -3 // so that it will not impact desktop OCR
+          //margins: -_ITEM_BORDER_WIDTH - 4
+          //margins: -3
         }
         spacing: 0
 
@@ -538,6 +562,7 @@ Item { id: root_
 
       MouseArea { id: mouse_
         anchors.fill: parent
+        anchors.margins: -_ITEM_BORDER_WIDTH
         acceptedButtons: Qt.RightButton
         onPressed:
           if (!root_.ignoresFocus) {
