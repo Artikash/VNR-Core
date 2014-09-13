@@ -764,7 +764,7 @@ Item { id: root_
 
         anchors.topMargin: gameWindowTracker_.fullScreen ? 0 : gameWindowTracker_.titleBarHeight // skip header of the window
 
-        enabled: dock_.ocrRegionEnabledChecked && gamePanel_.visible
+        enabled: dock_.ocrRegionEnabledChecked && gamePanel_.visible && dock_.visibleChecked
         visible: dock_.ocrRegionVisibleChecked && gamePanel_.visible
 
         zoomFactor: root_.globalZoomFactor
