@@ -131,6 +131,7 @@ Item { id: root_
         if (imageObject) {
           imageObject.release()
           imageObject = null
+          console.log("ocregion.qml: release image object")
         }
       }
 
@@ -171,8 +172,8 @@ Item { id: root_
           })
 
         var text = imageObject.ocr()
-        editItem.x = Math.min(item_.x + 30, root_.x + root_.width - item_.width)
-        editItem.y = Math.min(item_.y, root_.x + root_.height - item_.height)
+        editItem.x = Math.min(item_.x, root_.x + root_.width - item_.width)
+        editItem.y = Math.min(item_.y, root_.y + root_.height - item_.height)
         editItem.show(imageObject, text)
         editLocked = false
       }

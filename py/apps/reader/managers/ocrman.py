@@ -311,6 +311,7 @@ class OcrManager(QObject):
 
   def selectedWindow(self): return self.__d.selectedWindow # long
   def setSelectedWindow(self, hwnd):
+    from sakurakit import skwin
     dprint(hwnd)
     d = self.__d
     d.selectedWindow = hwnd

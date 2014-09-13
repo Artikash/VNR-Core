@@ -7,7 +7,7 @@ __all__ = ['Application']
 from PySide.QtCore import QTranslator
 from Qt5.QtWidgets import QApplication
 from sakurakit.skdebug import dprint, dwarn
-import config
+import config, rc
 
 class Application(QApplication):
   def __init__(self, argv):
@@ -17,6 +17,7 @@ class Application(QApplication):
     self.setApplicationVersion(str(config.VERSION_TIMESTAMP))
     self.setOrganizationName(config.VERSION_ORGANIZATION)
     self.setOrganizationDomain(config.VERSION_DOMAIN)
+    self.setWindowIcon(rc.icon('logo-browser'))
 
     dprint("pass")
 
