@@ -28,6 +28,7 @@ class _OcrManager(object):
     self.settings = OcrSettings()
     self.pressedX = self.pressedY = 0
 
+    self.desktopSelected = False # bool  select desktop instead of the game window
     self.selectionEnabled = False # bool  Allow emitting selected region using mouse
     self.selectedWindow = 0 # long  game window hwnd
     self.regionItems = [] # [QDeclarativeItem]
@@ -55,13 +56,19 @@ class _OcrManager(object):
   def ocrWindow(self):
     if self.enabled and self.regionOcrEnabled and self.selectedWindow and self.regionItems:
       texts = []
+      hwnd = 0 if self.desktopSelected else self.selectedWindow
       for index, item in enumerate(self.regionItems):
         if item.property('enabled') and item.property('active') and not item.property('dragging'):
           width = item.property('width')
           height = item.property('height')
-          x = item.property('x')
-          y = item.property('y')
-          text = self._ocrRegion(x, y, width, height, index=index, imageObject=item.property('imageObject'))
+          if hwnd:
+            x = item.property('x')
+            y = item.property('y')
+          else:
+            x = item.property('globalX')
+            y = item.property('globalY')
+
+          text = self._ocrRegion(x, y, width, height, hwnd=hwnd, index=index, imageObject=item.property('imageObject'))
           if text and text != item.property('recognizedText'):
             item.setProperty('recognizedText', text)
             #text = termman.manager().applyOcrTerms(text)
@@ -71,7 +78,7 @@ class _OcrManager(object):
         text = '\n'.join(texts)
         self.q.textRecognized.emit(text)
 
-  def _ocrRegion(self, x, y, width, height, index=0, imageObject=None):
+  def _ocrRegion(self, x, y, width, height, hwnd=0, index=0, imageObject=None):
     """
     @param  x  int
     @param  y  int
@@ -81,7 +88,7 @@ class _OcrManager(object):
     @param* imageObject  OcrImageObject
     @return  unicode  recognized text
     """
-    pm = self._capturePixmap(x, y, width, height)
+    pm = self._capturePixmap(x, y, width, height, hwnd)
     if pm:
       if imageObject:
         pm = imageObject.transformPixmap(pm)
@@ -98,14 +105,14 @@ class _OcrManager(object):
         return text
     return ''
 
-  def _capturePixmap(self, x, y, width, height): # int, int, int, int -> QPixmap or None
+  def _capturePixmap(self, x, y, width, height, hwnd=0): # int, int, int, int, int -> QPixmap or None
     if x < 0:
       width += x
       x = 0
     if y < 0:
       height += y
       y = 0
-    return _ocrman.capture_pixmap(x, y, width, height, hwnd=self.selectedWindow)
+    return _ocrman.capture_pixmap(x, y, width, height, hwnd)
 
   def _ocrImageFile(self, path): # unicode ->
     delim = self.settings.deliminator
@@ -205,10 +212,9 @@ class _OcrManager(object):
     else:
       self._selectImage(*args)
 
-  def createImageObject(self, x, y, width, height, hwnd=0): # int, int, int, int, int -> QObject
-    return OcrImageObject.create(x, y, width, height,
-        hwnd=hwnd,
-        settings=self.settings, parent=self.q)
+  def createImageObject(self, x=0, y=0, width=0, height=0, hwnd=0, pixmap=None): # int, int, int, int, int -> QObject
+    return OcrImageObject(x=x, y=y, width=width, height=height, hwnd=hwnd,
+        pixmap=pixmap, settings=self.settings, parent=self.q)
 
   def _selectImage(self, x, y, width, height):
     """
@@ -217,7 +223,11 @@ class _OcrManager(object):
     @param  width  int
     @param  height  int
     """
-    imgobj = self.createImageObject(x, y, width, height)
+    pm = self._capturePixmap(x, y, width, height)
+    if not pm:
+      dwarn("image too small")
+      return
+    imgobj = self.createImageObject(x, y, width, height, pixmap=pm)
     if not imgobj:
       #growl.notify(my.tr("OCR did not recognize any texts in the image"))
       return
@@ -282,6 +292,11 @@ class OcrManager(QObject):
       #d.setRubberBandColor('red' if t else None)
       d.setRubberBandColor('magenta' if t else None)
 
+  def isDesktopSelected(self): return self.__d.desktopSelected
+  def setDesktopSelected(self, t):
+    dprint(t)
+    self.__d.desktopSelected = t
+
   def isRegionOcrEnabled(self): return self.__d.regionOcrEnabled
   def setRegionOcrEnabled(self, t):
     dprint(t)
@@ -312,9 +327,8 @@ class OcrManager(QObject):
       if item.property('visible'):
         item.setProperty('visible', False)
 
-  def createImageObject(self, x, y, width, height): # int, int, int, int -> QObject or None
-    return self.__d.createImageObject(x, y, width, height, self.__d.selectedWindow)
-
+  def createImageObject(self): # -> QObject or None
+    return self.__d.createImageObject(hwnd=self.__d.selectedWindow)
 
 # EOF
 
