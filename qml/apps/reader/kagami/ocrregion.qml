@@ -64,7 +64,7 @@ Item { id: root_
   Component { id: comp_
     Item { id: item_
       property bool active: true
-      property bool enabled: true
+      property alias enabled: enableAct_.checked
 
       property string recognizedText // last ocr-ed text
 
@@ -498,7 +498,7 @@ Item { id: root_
           //text: "◯" // まる
           toolTip: checked ? Sk.tr("Enabled") : Sk.tr("Disabled")
 
-          property alias checked: item_.enabled
+          property alias checked: enableAct_.checked
           onClicked: checked = !checked
         }
 
@@ -514,6 +514,37 @@ Item { id: root_
 
           onClicked: showEdit()
         }
+      }
+
+      // Context menu
+
+      Desktop.ContextMenu { id: contextMenu_
+        Desktop.MenuItem {
+          text: Sk.tr("Close")
+          onTriggered: item_.close()
+        }
+
+        Desktop.MenuItem { id: enableAct_
+          text: Sk.tr("Enable")
+          checkable: true
+          checked: true
+        }
+
+        Desktop.MenuItem {
+          text: Sk.tr("Edit")
+          onTriggered: item_.showEdit()
+        }
+      }
+
+      MouseArea { id: mouse_
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        onPressed:
+          if (!root_.ignoresFocus) {
+            //var gp = Util.itemGlobalPos(parent)
+            var gp = mapToItem(null, x + mouse.x, y + mouse.y)
+            contextMenu_.showPopup(gp.x, gp.y)
+          }
       }
     }
   }
