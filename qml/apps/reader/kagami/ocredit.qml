@@ -137,8 +137,10 @@ Rectangle { id: root_
       margins: _ROOT_MARGIN
     }
     color: '#aaffffff' // white
-    height: 100
     radius: 4
+    //height: 100
+    //height: 60
+    height: root_.width ? Math.max(70, 30000/root_.width) : 100 // 70 ~ 100
 
     Share.TextArea { id: textArea_
       anchors.fill: parent

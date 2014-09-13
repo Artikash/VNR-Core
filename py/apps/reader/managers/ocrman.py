@@ -43,10 +43,11 @@ class _OcrManager(object):
     ret.timeout.connect(self.ocrWindow)
     return ret
 
-  def setOcrWindowEnabled(self, t):
+  def updateOcrWindowTimer(self):
+    v = self.enabled and self.regionOcrEnabled and self.ocrWindow
     t = self.ocrWindowTimer
-    if t.isActive() != t:
-      if t:
+    if t.isActive() != v:
+      if v:
         t.start()
       else:
         t.stop()
@@ -263,6 +264,7 @@ class OcrManager(QObject):
       d.enabled = t
       dprint(t)
       d.mouseSelector.setEnabled(t)
+      d.updateOcrWindowTimer()
       #d.keyboardSignal.setEnabled(t)
       if t:
         growl.msg(my.tr("Start OCR screen reader"))
@@ -283,7 +285,9 @@ class OcrManager(QObject):
   def isRegionOcrEnabled(self): return self.__d.regionOcrEnabled
   def setRegionOcrEnabled(self, t):
     dprint(t)
-    self.__d.regionOcrEnabled = t
+    d = self.__d
+    d.regionOcrEnabled = t
+    d.updateOcrWindowTimer()
 
   def regionOcrInterval(self): return self.__d.ocrWindowTimer.interval()
   def setRegionOcrInterval(self, v):
@@ -295,7 +299,7 @@ class OcrManager(QObject):
     dprint(hwnd)
     d = self.__d
     d.selectedWindow = hwnd
-    d.setOcrWindowEnabled(bool(hwnd))
+    d.updateOcrWindowTimer()
 
   def addRegionItem(self, item): # QDeclarativeItem ->  the item in ocrregion.qml
     self.__d.regionItems.append(item)
