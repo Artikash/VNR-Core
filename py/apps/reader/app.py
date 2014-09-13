@@ -9,7 +9,7 @@ from Qt5.QtWidgets import QApplication
 from sakurakit import skos
 from sakurakit.skdebug import dprint, dwarn, derror
 from mytr import mytr_
-import config
+import config, rc
 
 #if skos.WIN:
 #  from win32con import WM_QUIT, WM_ENDSESSION, WM_QUERYENDSESSION
@@ -42,6 +42,7 @@ class Application(QApplication):
     self.setApplicationVersion(str(config.VERSION_TIMESTAMP))
     self.setOrganizationName(config.VERSION_ORGANIZATION)
     self.setOrganizationDomain(config.VERSION_DOMAIN)
+    self.setWindowIcon(rc.icon('logo-reader'))
 
     #if skos.WIN:
     #  ignoreWindowsExceptions()
