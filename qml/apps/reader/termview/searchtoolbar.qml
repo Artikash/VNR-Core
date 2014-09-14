@@ -50,7 +50,8 @@ Row { id: root_ // Theme refers to Bootstrap.label
     width: parent.cellWidth; height: parent.cellHeight
     styleClass: 'btn btn-inverse'
 
-    text: Sk.tr("language")
+    //text: Sk.tr("language")
+    text: qsTr("lang")
     toolTip: qsTr("Search your language")
 
     onClicked: {

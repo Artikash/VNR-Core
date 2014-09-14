@@ -37,7 +37,10 @@ Item { id: root_
   Plugin.DataManagerProxy { id: datamanPlugin_ }
   //Plugin.CometManagerProxy { id: cometPlugin_ }
 
-  Plugin.Settings { id: settings_ }
+  Plugin.Settings { id: settings_
+    onHentaiChanged: if (option_.hentaiEnabled != hentai) option_.hentaiEnabled = hentai
+    onTermMarkedChanged: if (option_.markEnabled != termMarked) option_.markEnabled = termMarked
+  }
 
   Plugin.SystemStatus { id: statusPlugin_ } // FIXME: why this is indispensible
   property int userId: statusPlugin_.online ? statusPlugin_.userId : 0
@@ -143,7 +146,7 @@ Item { id: root_
 
     placeholderText: Sk.tr("Search") + " ... (" + holder() + Sk.tr("regular expression") + ", " + Sk.tr("case-insensitive") + ")"
     function holder() {
-      return '@' + Sk.tr('user') + ", " + '#' + Sk.tr("game") + ", " + '#' + Sk.tr("game") + "ID, "
+      return '@' + Sk.tr('user') + ", " + '#' + Sk.tr("game") + ", " //+ '#' + Sk.tr("game") + "ID, "
     }
   }
 
@@ -163,9 +166,25 @@ Item { id: root_
   // Inspector at the bottom
   TermView.Inspector { id: inspector_
     anchors {
-      left: parent.left; right: parent.right
+      left: parent.left
       bottom: parent.bottom
+      right: option_.left
     }
     currentItem: table_.currentItem
+  }
+
+  TermView.OptionPanel { id: option_
+    anchors {
+      right: parent.right
+      bottom: parent.bottom
+    }
+    height: inspector_.height
+
+    Component.onCompleted: {
+      hentaiEnabled = settings_.hentai
+      markEnabled = settings_.termMarked
+    }
+    onHentaiEnabledChanged: if (settings_.hentai != hentaiEnabled) settings_.hentai = hentaiEnabled
+    onMarkEnabledChanged: if (settings_.termMarked != markEnabled) settings_.termMarked = markEnabled
   }
 }

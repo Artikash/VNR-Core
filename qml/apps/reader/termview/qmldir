@@ -3,6 +3,7 @@
 Counter         counter.qml
 Inspector       inspector.qml
 MainToolBar     maintoolbar.qml
+OptionPanel     optionpanel.qml
 SearchToolBar   searchtoolbar.qml
 SelectToolBar   selecttoolbar.qml
 Table           table.qml

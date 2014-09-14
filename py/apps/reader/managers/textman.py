@@ -544,6 +544,7 @@ class _TextManager(object):
 
     if not text:
       text = self._decodeText(renderedData).strip()
+    #text = u"サディステック"
     #text = u"「なにこれ」"
     #text = u"めばえちゃん"
     #text = u"ツナ缶"

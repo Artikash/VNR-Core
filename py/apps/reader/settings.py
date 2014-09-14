@@ -113,13 +113,6 @@ class Settings(QSettings):
       self.setValue('KagamiFocusEnabled', value)
       self.kagamiFocusEnabledChanged.emit(value)
 
-  hentaiEnabledChanged = Signal(bool)
-  def isHentaiEnabled(self): return to_bool(self.value('Hentai', False))
-  #def setHentaiEnabled(self, value):
-  #  if value != self.isHentai():
-  #    self.setValue('Hentai', value)
-  #    self.hentaiChanged.emit(value)
-
   ## User profile ##
 
   userIdChanged = Signal(int)
@@ -1154,13 +1147,6 @@ class Settings(QSettings):
   #def isAnyTranslationScriptEnabled(self):
   #  return self.isTranslationScriptJaEnabled() or self.isTranslationScriptEnEnabled()
 
-  termEnabledChanged = Signal(bool)
-  def isTermEnabled(self): return to_bool(self.value('TermEnabled', True))
-  #def setTermEnabled(self, value):
-  #  if value != self.isTermEnabled():
-  #    self.setValue('TermEnabled', value)
-  #    self.termEnabledChanged.emit(value)
-
   copiesGameTextChanged = Signal(bool)
   def copiesGameText(self): return to_bool(self.value('CopyGameText'))
 
@@ -1174,6 +1160,17 @@ class Settings(QSettings):
     if value != self.convertsChinese():
       self.setValue('ConvertsChinese', value)
       self.convertsChineseChanged.emit(value)
+
+  ## Shared Dictionary ##
+
+  termEnabledChanged = Signal(bool)
+  def isTermEnabled(self): return to_bool(self.value('TermEnabled', True))
+
+  termMarkedChanged = Signal(bool)
+  def isTermMarked(self): return to_bool(self.value('TermMarked'))
+
+  hentaiEnabledChanged = Signal(bool)
+  def isHentaiEnabled(self): return to_bool(self.value('Hentai'))
 
   ## Fonts ##
 
@@ -1577,8 +1574,9 @@ class SettingsProxy(QObject):
     g.cometCounterVisibleChanged.connect(self.cometCounterVisibleChanged)
 
     self.hentaiChanged.connect(g.hentaiEnabledChanged)
-
     self.termEnabledChanged.connect(g.termEnabledChanged)
+    self.termMarkedChanged.connect(g.termMarkedChanged)
+
     self.copiesGameTextChanged.connect(g.copiesGameTextChanged)
     self.copiesGameSubtitleChanged.connect(g.copiesGameSubtitleChanged)
 
@@ -1643,6 +1641,16 @@ class SettingsProxy(QObject):
       lambda _: global_().isTermEnabled(),
       setTermEnabled,
       notify=termEnabledChanged)
+
+  def setTermMarked(self, value):
+    if value != self.termMarked:
+      global_().setValue('TermMarked', value)
+      self.termMarkedChanged.emit(value)
+  termMarkedChanged = Signal(bool)
+  termMarked = Property(bool,
+      lambda _: global_().isTermMarked(),
+      setTermMarked,
+      notify=termMarkedChanged)
 
   #def setWindowHookEnabled(self, value):
   #  if value != self.windowHookEnabled:
