@@ -60,8 +60,8 @@ Item { id: root_
 
   // Component
 
+  property int _ITEM_BORDER_WIDTH: 7
   property int _MIN_WIDTH: _ITEM_BORDER_WIDTH * 2 + 5
-  property int _ITEM_BORDER_WIDTH: 10
 
   Component { id: comp_
     Item { id: item_
@@ -112,8 +112,6 @@ Item { id: root_
       function setWidth(v) { normalizedWidth = root_.width ? v / root_.width : 0 }
       function setHeight(v) { normalizedHeight = root_.height ? v / root_.height : 0 }
 
-      property color borderColor: enabled ? '#aa0000ff' : '#aa800080' // blue : purple
-
       property bool hover: header_.hover
                         || leftTip_.containsMouse
                         || rightTip_.containsMouse
@@ -126,6 +124,12 @@ Item { id: root_
 
       property Item editItem
       property bool editLocked: false
+
+      property color pauseColor: enabled ? '#aa00bfff' : '#aa800080' // blue : purple
+      property color runningColor: pauseColor
+      property color runningColor2: '#aafffafa' // snow
+      property int twinkleInterval: 400 * 2 // 2 times of jQuery animation interval
+      //property color runningColor2: '#aabebebe' // gray
 
       function release() {
         if (imageObject) {
@@ -180,7 +184,7 @@ Item { id: root_
 
       // Resizable
 
-      Rectangle { id: leftBorder_
+      Share.TwinkleRectangle { id: leftBorder_
         anchors {
           top: parent.top; bottom: parent.bottom
           right: parent.left
@@ -189,10 +193,16 @@ Item { id: root_
         }
         width: _ITEM_BORDER_WIDTH
         radius: _ITEM_BORDER_WIDTH / 2
-        color: item_.borderColor
+
+        pauseColor: item_.pauseColor
+        runningColor: item_.runningColor
+        runningColor2: item_.runningColor2
+        duration: item_.twinkleInterval
+        running: visible && ((!!item_.editItem && item_.editItem.visible)
+              || leftTip_.containsMouse || topLeftTip_.containsMouse || bottomLeftTip_.containsMouse)
       }
 
-      Rectangle { id: rightBorder_
+      Share.TwinkleRectangle { id: rightBorder_
         anchors {
           top: parent.top; bottom: parent.bottom
           left: parent.right
@@ -201,10 +211,16 @@ Item { id: root_
         }
         width: _ITEM_BORDER_WIDTH
         radius: _ITEM_BORDER_WIDTH / 2
-        color: item_.borderColor
+
+        pauseColor: item_.pauseColor
+        runningColor: item_.runningColor
+        runningColor2: item_.runningColor2
+        duration: item_.twinkleInterval
+        running: visible && ((!!item_.editItem && item_.editItem.visible)
+              || rightTip_.containsMouse || topRightTip_.containsMouse || bottomRightTip_.containsMouse)
       }
 
-      Rectangle { id: topBorder_
+      Share.TwinkleRectangle { id: topBorder_
         anchors {
           left: parent.left; right: parent.right
           bottom: parent.top
@@ -213,10 +229,16 @@ Item { id: root_
         }
         height: _ITEM_BORDER_WIDTH
         radius: _ITEM_BORDER_WIDTH / 2
-        color: item_.borderColor
+
+        pauseColor: item_.pauseColor
+        runningColor: item_.runningColor
+        runningColor2: item_.runningColor2
+        duration: item_.twinkleInterval
+        running: visible && ((!!item_.editItem && item_.editItem.visible)
+              || topTip_.containsMouse || topLeftTip_.containsMouse || topRightTip_.containsMouse)
       }
 
-      Rectangle { id: bottomBorder_
+      Share.TwinkleRectangle { id: bottomBorder_
         anchors {
           left: parent.left; right: parent.right
           top: parent.bottom
@@ -225,7 +247,13 @@ Item { id: root_
         }
         height: _ITEM_BORDER_WIDTH
         radius: _ITEM_BORDER_WIDTH / 2
-        color: item_.borderColor
+
+        pauseColor: item_.pauseColor
+        runningColor: item_.runningColor
+        runningColor2: item_.runningColor2
+        duration: item_.twinkleInterval
+        running: visible && ((!!item_.editItem && item_.editItem.visible)
+              || bottomTip_.containsMouse || bottomLeftTip_.containsMouse || bottomRightTip_.containsMouse)
       }
 
       MouseArea { id: leftArea_
@@ -487,6 +515,7 @@ Item { id: root_
         anchors {
           left: topBorder_.left
           bottom: topBorder_.bottom
+          leftMargin: -1
           //bottomMargin: 1
         }
         spacing: 0

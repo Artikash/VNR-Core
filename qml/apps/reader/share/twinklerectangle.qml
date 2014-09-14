@@ -1,10 +1,9 @@
-/** twinklebutton.qml
- *  3/2/2014 jichi
+/** twinklerectangle.qml
+ *  9/14/2014 jichi
  */
 import QtQuick 1.1
-import '.' as Share
 
-Share.TextButton { id: root_
+Rectangle { id: root_
 
   property int duration: 1000
   property bool running: false
@@ -13,14 +12,6 @@ Share.TextButton { id: root_
   property color runningColor2: '#aa00ff00' // green
 
   // - Private -
-
-  Component.onCompleted:
-    if (running) {
-      if (state !== 'running')
-        state = 'running'
-      else
-        state = 'running2'
-    }
 
   onRunningChanged: {
     if (!running)
@@ -31,23 +22,31 @@ Share.TextButton { id: root_
       state = 'running'
   }
 
-  //Behavior on backgroundColor { ColorAnimation {} }
+  Component.onCompleted:
+    if (running) {
+      if (state !== 'running')
+        state = 'running'
+      else
+        state = 'running2'
+    }
+
+  //Behavior on color { ColorAnimation {} }
 
   state: 'pause'
   states: [
     State { name: 'pause' // stopped
       PropertyChanges { target: root_
-        backgroundColor: root_.pauseColor
+        color: root_.pauseColor
       }
     }
     , State { name: 'running' // twinkling
       PropertyChanges { target: root_
-        backgroundColor: root_.runningColor
+        color: root_.runningColor
       }
     }
     , State { name: 'running2' // twinkling
       PropertyChanges { target: root_
-        backgroundColor: root_.runningColor2
+        color: root_.runningColor2
      }
     }
   ]
@@ -74,16 +73,3 @@ Share.TextButton { id: root_
     }
   ]
 }
-
-// EOF
-
-  //transitions: Transition {
-  //  ParallelAnimation {
-  //    ColorAnimation {}
-  //    //NumberAnimation { property: 'scale'; duration: 100 }
-  //    SpringAnimation {
-  //      property: 'scale'; duration: 100
-  //      spring: 5.0; damping: 0.05 // spring: strength; damping: speed
-  //    }
-  //  }
-  //}

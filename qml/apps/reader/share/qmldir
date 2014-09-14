@@ -32,4 +32,5 @@ TextButton          textbutton.qml
 TextEffect          texteffect.qml
 TwinkleCircleButton twinklecirclebutton.qml
 TwinkleButton       twinklebutton.qml
+TwinkleRectangle    twinklerectangle.qml
 View                view.qml
