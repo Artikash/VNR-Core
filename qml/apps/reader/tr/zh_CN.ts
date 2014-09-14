@@ -941,7 +941,7 @@
     <message>
         <location filename="../termview/optionpanel.qml" line="18"/>
         <source>Enable hentai rules for H-scene</source>
-        <translation>对H的对话使用变态词条</translation>
+        <translation>对H的对话使用Hentai词条</translation>
     </message>
 </context>
 <context>
