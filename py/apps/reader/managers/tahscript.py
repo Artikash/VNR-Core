@@ -54,6 +54,9 @@ class TahScriptManager:
       if t:
         d.getTah(key) # force loading tah script
 
+      import trman
+      trman.manager().clearCache()
+
   #def isEmpty(self):
   #  return all(it.isEmpty() for it in self.__d.tah.itervalues())
   #def scriptCount(self):

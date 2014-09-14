@@ -587,6 +587,9 @@ class _MainObject(object):
     ret.setEscapeMarked(ss.isTermMarked())
     ss.termMarkedChanged.connect(ret.setEscapeMarked)
 
+    for sig in ss.hentaiEnabledChanged, ss.termMarkedChanged:
+      sig.connect(self.translatorManager.clearCache)
+
     #ret.setConvertsChinese(ss.convertsChinese())
     #ss.convertsChineseChanged.connect(ret.setConvertsChinese)
     return ret
