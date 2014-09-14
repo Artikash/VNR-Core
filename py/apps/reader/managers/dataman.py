@@ -1702,7 +1702,7 @@ class _Comment(object):
     return self._gameMd5
 
   @gameMd5.setter
-  def gameMd5(self, val): self._gameMd5 = val
+  def gameMd5(self, v): self._gameMd5 = v
 
   @staticmethod
   def synthesize(name, type, sync=False):
@@ -2272,6 +2272,9 @@ class Term(QObject):
           escape=not d.regex)
     return d.replace
 
+  @replace.setter
+  def replace(self, v): self.__d.replace = v
+
   @property
   def prepareReplace(self):
     """
@@ -2289,6 +2292,9 @@ class Term(QObject):
           escape=not d.regex)
     return d.prepareReplace
 
+  @prepareReplace.setter
+  def prepareReplace(self, v): self.__d.prepareReplace = v
+
   def convertsChinese(self):
     return manager().user().language == 'zht' and self.__d.language == 'zhs'
 
@@ -2299,17 +2305,21 @@ class Term(QObject):
     """
     d = self.__d
     if not d.applyReplace and d.pattern:
+      mark = termman.manager().markEscapeText
       titles = manager().termTitles()
       #l = sorted(titles.iterkeys(), key=len) already sorted
       esc = defs.NAME_ESCAPE
       #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
       h = self.priority or d.id or id(self)
       if self.convertsChinese():
-        table = {esc%(h,i) : zhs2zht(d.text) + titles[k] for i,k in enumerate(titles)}
+        table = {esc%(h,i) : mark(zhs2zht(d.text) + titles[k]) for i,k in enumerate(titles)}
       else:
-        table = {esc%(h,i) : d.text + titles[k] for i,k in enumerate(titles)}
+        table = {esc%(h,i) : mark(d.text + titles[k]) for i,k in enumerate(titles)}
       d.applyReplace = skstr.multireplacer(table) #escape=False
     return d.applyReplace
+
+  @applyReplace.setter
+  def applyReplace(self, v): self.__d.applyReplace = v
 
   #def setPattern(self, value):
   #  d = self.__d
@@ -2394,12 +2404,13 @@ class NameItem(object):
     """
     @return  multireplacer
     """
+    mark = termman.manager().markEscapeText
     titles = manager().termTitles()
     #l = sorted(titles.iterkeys(), key=len) # already sorted
     esc = defs.CHARA_ESCAPE
     #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
     h = self.id or id(d)
-    table = {esc%(h,i) : self.translation + titles[k] for i,k in enumerate(titles)}
+    table = {esc%(h,i) : mark(self.translation + titles[k]) for i,k in enumerate(titles)}
     return skstr.multireplacer(table) #escape=False
 
 ## References ##
