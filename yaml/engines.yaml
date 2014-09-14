@@ -132,7 +132,6 @@ simple:
   - EAGLS
   - Elf
   - Eushully
-  - EXP
   - FELISTELLA PSP
   - Intense PSP
   - Imageepoch2 PSP
@@ -200,6 +199,7 @@ repeat:
 norepeat:
   - Artemis
   - BALDR # removed
+  - EXP # there could be different type of threads, but it is OK to merge them
   - Gesen18
   - QLIE
   - QLIE2
