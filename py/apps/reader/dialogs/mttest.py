@@ -57,9 +57,9 @@ class _MTTester(object):
     tm.jointTranslationReceived.connect(lambda t:
         self.jointTranslationEdit.setPlainText(t or _EMPTY_TEXT))
     tm.escapedTranslationReceived.connect(lambda t:
-        self.escapedTranslationEdit.setPlainText(t or _EMPTY_TEXT))
+        self.escapedTranslationEdit.setHtml(t or _EMPTY_TEXT))
     tm.targetTranslationReceived.connect(lambda t:
-        self.targetTranslationEdit.setPlainText(t or _EMPTY_TEXT))
+        self.targetTranslationEdit.setHtml(t or _EMPTY_TEXT))
 
     tm.splitTextsReceived.connect(lambda l:
         self.splitTextEdit.setPlainText('\n--------\n'.join(l) if l else _EMPTY_TEXT))
@@ -290,7 +290,7 @@ class _MTTester(object):
             scriptEnabled=self._isTranslationScriptEnabled(),
             **params)
         if t:
-          self.finalTranslationEdit.setPlainText(t)
+          self.finalTranslationEdit.setHtml(t)
       dprint("leave")
 
   @memoizedproperty
@@ -455,12 +455,16 @@ class _MTTester(object):
     label.setText(labelText)
 
   @staticmethod
-  def _createTextView(tip=''):
+  def _createTextView(tip='', rich=False):
     """
     @param* tip  unicode
+    @param* rich  enable richText
     @return  QTextEdit
     """
-    ret = QtWidgets.QPlainTextEdit(_EMPTY_TEXT)
+    if rich:
+      ret = QtWidgets.QTextEdit(_EMPTY_TEXT)
+    else:
+      ret = QtWidgets.QPlainTextEdit(_EMPTY_TEXT)
     ret.setMinimumWidth(_TEXTEDIT_MINWIDTH)
     ret.setMinimumHeight(_TEXTEDIT_MINHEIGHT)
     if tip:
@@ -535,7 +539,7 @@ class _MTTester(object):
     return self._createTextLabel(self.finalTranslationEdit, my.tr("Final translation"))
   @memoizedproperty
   def finalTranslationEdit(self):
-    ret = self._createTextView(my.tr("Actual translation used by VNR"))
+    ret = self._createTextView(my.tr("Actual translation used by VNR"), rich=True)
     ret.textChanged.connect(self._refreshEqualLabel)
     return ret
 
@@ -576,14 +580,16 @@ class _MTTester(object):
         my.tr("Unescape terms and names") + _TERM_STAR + _LANGUAGE_STAR)
   @memoizedproperty
   def escapedTranslationEdit(self):
-    return self._createTextView(my.tr("Character names in Shared Dictionary/Game Information will be applied only for Kanji-based languages"))
+    return self._createTextView(my.tr("Character names in Shared Dictionary/Game Information will be applied only for Kanji-based languages"),
+        rich=True)
 
   @memoizedproperty
   def targetTranslationLabel(self):
     return self._createTextLabel(self.targetTranslationEdit, my.tr("Apply translation terms") + _TERM_STAR)
   @memoizedproperty
   def targetTranslationEdit(self):
-    return self._createTextView(my.tr("Apply translation terms in the Shared Dictionary to correct translations from the machine translator"))
+    return self._createTextView(my.tr("Apply translation terms in the Shared Dictionary to correct translations from the machine translator"),
+        rich=True)
 
   @memoizedproperty
   def splitTextLabel(self):

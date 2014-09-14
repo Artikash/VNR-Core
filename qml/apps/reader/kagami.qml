@@ -210,9 +210,8 @@ Item { id: root_
     //onVoiceCharacterEnabledChanged:
     //  if (dock_.voiceChecked !== voiceCharacterEnabled)
     //    dock_.voiceChecked = voiceCharacterEnabled
-    onSpeaksGameTextChanged:
-      if (dock_.speaksTextChecked !== speaksGameText)
-        dock_.speaksTextChecked = speaksGameText
+    onSpeaksGameTextChanged: if (dock_.speaksTextChecked != speaksGameText) dock_.speaksTextChecked = speaksGameText
+    onHentaiChanged: if (dock_.hentaiChecked != hentai) dock_.hentaiChecked = hentai
   }
 
   //Plugin.SystemStatus { id: statusPlugin_
@@ -857,7 +856,9 @@ Item { id: root_
         onCopiesTextCheckedChanged: settings_.copiesGameText = copiesTextChecked
         onCopiesSubtitleCheckedChanged: settings_.copiesGameSubtitle = copiesSubtitleChecked
 
-        onHentaiCheckedChanged: settings_.hentai = hentaiChecked
+        onHentaiCheckedChanged:
+          if (settings_.hentai != hentaiChecked)
+            settings_.hentai = hentaiChecked
 
         //onVoiceCheckedChanged: settings_.voiceCharacterEnabled = dock_.voiceChecked
         //onSubtitleVoiceCheckedChanged: settings_.subtitleVoiceEnabled = dock_.subtitleVoiceChecked

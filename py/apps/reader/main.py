@@ -579,8 +579,13 @@ class _MainObject(object):
     ret.setEnabled(ss.isTermEnabled())
     ss.termEnabledChanged.connect(ret.setEnabled)
 
-    ret.setHentai(ss.isHentai())
-    ss.hentaiChanged.connect(ret.setHentai)
+    ret.setHentaiEnabled(ss.isHentaiEnabled())
+    ss.hentaiEnabledChanged.connect(ret.setHentaiEnabled)
+
+    ret.setTargetMarked(ss.isTermMarked())
+    ss.termMarkedChanged.connect(ret.setTargetMarked)
+    ret.setEscapeMarked(ss.isTermMarked())
+    ss.termMarkedChanged.connect(ret.setEscapeMarked)
 
     #ret.setConvertsChinese(ss.convertsChinese())
     #ss.convertsChineseChanged.connect(ret.setConvertsChinese)

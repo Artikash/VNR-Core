@@ -16,6 +16,12 @@ from sakurakit.skclass import memoized, staticproperty
 from sakurakit.skdebug import dprint, dwarn
 import config, dataman, defs, i18n
 
+@memoized
+def manager(): return TermManager()
+
+def _mark_text(text): # unicode -> unicode
+  return '<span style="text-decoration:underline">%s</span>' % text
+
 # All methods are supposed to be thread-safe, though they are not
 class _TermManager:
 
@@ -26,16 +32,20 @@ class _TermManager:
     self.hentai = False # bool
     self.language = 'en' # str
 
+    self.targetMarked = False # bool
+    self.escapeMarked = False # bool
+
   #@classmethod
   #def needsEscape(cls):
   #  return config.is_asian_language(cls.language)
 
-  def applyTerms(self, terms, text, language, convertsChinese=False):
+  def applyTerms(self, terms, text, language, convertsChinese=False, marksChanges=False):
     """
     @param  terms  iterable dataman.Term
     @param  text  unicode
     @param  language  unicode
     @param* convertsChinese  bool
+    @param*  marksChanges  bool  mark the replacement text
     @return  unicode
     """
     if not self.enabled:
@@ -53,10 +63,13 @@ class _TermManager:
           z = convertsChinese and zht and td.language == 'zhs'
           #repl = term.bbcodeText if term.bbcode else term.text
           repl = td.text
-          if z and repl: # and self.convertsChinese:
-            repl = zhs2zht(repl)
+          if repl:
+            if z: # and self.convertsChinese:
+              repl = zhs2zht(repl)
             #elif config.is_latin_language(td.language):
             #  repl += " "
+            if marksChanges:
+              repl = _mark_text(repl)
           if not term.patternNeedsRe():
             pattern = zhs2zht(td.pattern) if z else td.pattern
             text = text.replace(pattern, repl)
@@ -120,10 +133,16 @@ class TermManager:
   def isEnabled(self): return self.__d.enabled
   def setEnabled(self, value): self.__d.enabled = value
 
-  def isHentai(self): return self.__d.hentai
-  def setHentai(self, value):
+  def isHentaiEnabled(self): return self.__d.hentai
+  def setHentaiEnabled(self, value):
     dprint(value)
     self.__d.hentai = value
+
+  def isEscapeMarked(self): return self.__d.escapeMarked
+  def setEscapeMarked(self, t): self.__d.escapeMarked = t
+
+  def isTargetMarked(self): return self.__d.targetMarked
+  def setTargetMarked(self, t): self.__d.targetMarked = t
 
   #def convertsChinese(self): return self.__d.convertsChinese
   #def setConvertsChinese(self, value): self.__d.convertsChinese = value
@@ -220,7 +239,7 @@ class TermManager:
     @return  unicode
     """
     return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
-        text, language, convertsChinese=True)
+        text, language, convertsChinese=True, marksChanges=self.__d.targetMarked)
 
   def applyOriginTerms(self, text, language):
     """
@@ -334,8 +353,11 @@ class TermManager:
         else:
           #repl = term.bbcodeText if term.bbcode else term.text
           repl = td.text
-          if repl and zht and td.language == 'zhs':
-            repl = zhs2zht(repl)
+          if repl:
+            if zht and td.language == 'zhs':
+              repl = zhs2zht(repl)
+            if d.escapeMarked:
+              repl = _mark_text(repl)
           #elif config.is_latin_language(td.language):
           #  repl += " "
           h = term.priority or td.id or id(term)
@@ -408,8 +430,5 @@ class TermManager:
       for name in dm.iterNameItems():
         if text == name.text:
           return name.yomi or text
-
-@memoized
-def manager(): return TermManager()
 
 # EOF
