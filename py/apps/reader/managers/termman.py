@@ -138,16 +138,26 @@ class TermManager:
     dprint(value)
     self.__d.hentai = value
 
-  def isEscapeMarked(self): return self.__d.escapeMarked
-  def setEscapeMarked(self, t): self.__d.escapeMarked = t
-
   def isTargetMarked(self): return self.__d.targetMarked
   def setTargetMarked(self, t): self.__d.targetMarked = t
+
+  def isEscapeMarked(self): return self.__d.escapeMarked
+  def setEscapeMarked(self, t): self.__d.escapeMarked = t
+    # Doing this would break the shared dictionary
+    #for term in dataman.manager().iterEscapeTerms():
+    #  term.applyReplace = None
+
+  def clearMarkCache(self): # invoked on escapeMarked changes in settings
+    for term in dataman.manager().iterEscapeTerms():
+      term.applyReplace = None
+
+  def markEscapeText(self, text): # unicode -> unicode
+    return _mark_text(text) if text and self.__d.escapeMarked else text
 
   #def convertsChinese(self): return self.__d.convertsChinese
   #def setConvertsChinese(self, value): self.__d.convertsChinese = value
 
-  ## Warm up ##
+  ## Cache ##
 
   def warmup(self, async=True, interval=0): # bool, int
     d = self.__d
