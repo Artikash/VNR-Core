@@ -113,9 +113,9 @@ class Settings(QSettings):
       self.setValue('KagamiFocusEnabled', value)
       self.kagamiFocusEnabledChanged.emit(value)
 
-  hentaiChanged = Signal(bool)
-  def isHentai(self): return to_bool(self.value('Hentai', False))
-  #def setHentai(self, value):
+  hentaiEnabledChanged = Signal(bool)
+  def isHentaiEnabled(self): return to_bool(self.value('Hentai', False))
+  #def setHentaiEnabled(self, value):
   #  if value != self.isHentai():
   #    self.setValue('Hentai', value)
   #    self.hentaiChanged.emit(value)
@@ -1576,7 +1576,7 @@ class SettingsProxy(QObject):
 
     g.cometCounterVisibleChanged.connect(self.cometCounterVisibleChanged)
 
-    self.hentaiChanged.connect(g.hentaiChanged)
+    self.hentaiChanged.connect(g.hentaiEnabledChanged)
 
     self.termEnabledChanged.connect(g.termEnabledChanged)
     self.copiesGameTextChanged.connect(g.copiesGameTextChanged)
@@ -1620,7 +1620,7 @@ class SettingsProxy(QObject):
       self.hentaiChanged.emit(value)
   hentaiChanged = Signal(bool)
   hentai = Property(bool,
-      lambda _: global_().isHentai(),
+      lambda _: global_().isHentaiEnabled(),
       setHentai,
       notify=hentaiChanged)
 

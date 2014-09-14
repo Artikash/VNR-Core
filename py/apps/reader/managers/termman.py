@@ -120,8 +120,8 @@ class TermManager:
   def isEnabled(self): return self.__d.enabled
   def setEnabled(self, value): self.__d.enabled = value
 
-  def isHentai(self): return self.__d.hentai
-  def setHentai(self, value):
+  def isHentaiEnabled(self): return self.__d.hentai
+  def setHentaiEnabled(self, value):
     dprint(value)
     self.__d.hentai = value
 
