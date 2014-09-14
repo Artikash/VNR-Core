@@ -784,8 +784,13 @@ Item { id: root_
     }
   }
 
-  onVisibleChanged: stretchRect_.visible = false
-  onIgnoresFocusChanged: stretchRect_.visible = false
+  onVisibleChanged: hidePopups()
+  onIgnoresFocusChanged: hidePopups()
+
+  function hidePopups() {
+    stretchRect_.visible = false
+    ocrRect_.visible = false
+  }
 
   Share.FadingRectangle { id: panel_
     anchors.fill: parent

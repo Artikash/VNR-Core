@@ -6,7 +6,7 @@ import '.' as Share
 
 Share.TextButton { id: root_
 
-  property int duration: 1000
+  property int duration: 400 * 2 // two times of jquery interval
   property bool running: false
   property color pauseColor: '#aaff0000' // red
   property color runningColor: '#aa00bfff' // blue
