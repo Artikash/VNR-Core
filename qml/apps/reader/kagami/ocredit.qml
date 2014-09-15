@@ -426,7 +426,7 @@ Rectangle { id: root_
 
     handleWidth: intensitySlider_.handleWidth
 
-    text: formatScale(enabled ? value : minimumValue)
+    text: formatScale(enabled ? value : 1.0)
     sliderToolTip: qsTr("Scale ratio") + " [" + formatScale(minimumValue) + "," + formatScale(maximumValue) + "]"
   }
 
