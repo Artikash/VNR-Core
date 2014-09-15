@@ -831,6 +831,9 @@ class _ShortcutsTab(object):
     grid.addWidget(self.ttsCheckBox, r, 0)
     grid.addWidget(self.ttsButton, r, 1)
     r += 1
+    grid.addWidget(self.grabCheckBox, r, 0)
+    grid.addWidget(self.grabButton, r, 1)
+    r += 1
 
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)
@@ -839,6 +842,47 @@ class _ShortcutsTab(object):
     layout.addWidget(infoLabel)
     ret = QtWidgets.QGroupBox(my.tr("Global game shortcuts"))
     ret.setLayout(layout)
+    return ret
+
+  # Grab
+
+  @memoizedproperty
+  def grabButton(self):
+    ret = QtWidgets.QPushButton()
+    ret.setToolTip(mytr_("Shortcuts"))
+    ss = settings.global_()
+
+    def _refresh():
+      t = ss.grabHotkey()
+      ret.setText(i18n.combined_key_name(t) if t else tr_("Not specified"))
+      skqss.class_(ret, 'btn btn-default' if t else 'btn btn-danger')
+    _refresh()
+    ss.grabHotkeyChanged.connect(_refresh)
+
+    ret.clicked.connect(lambda: (
+        self.grabDialog.setValue(ss.grabHotkey()),
+        self.grabDialog.show()))
+
+    ret.setEnabled(self.grabCheckBox.isChecked())
+    self.grabCheckBox.toggled.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def grabCheckBox(self):
+    ret = QtWidgets.QCheckBox(my.tr("Take a screenshot of the game window"))
+    ss = settings.global_()
+    ret.setChecked(ss.isGrabHotkeyEnabled())
+    ret.toggled.connect(ss.setGrabHotkeyEnabled)
+    return ret
+
+  @memoizedproperty
+  def grabDialog(self):
+    import hkinput
+    ret = hkinput.HotkeyInputDialog(self.q)
+    ret.setWindowTitle("%s - %s" % (
+      ret.windowTitle(), tr_("Screenshot")))
+    ss = settings.global_()
+    ret.valueChanged.connect(ss.setGrabHotkey)
     return ret
 
   # TTS

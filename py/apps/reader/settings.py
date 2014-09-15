@@ -609,6 +609,23 @@ class Settings(QSettings):
       self.setValue('TextHotkey', value)
       self.textHotkeyChanged.emit(value)
 
+  # Take snapshot
+  grabHotkeyEnabledChanged = Signal(bool)
+  def isGrabHotkeyEnabled(self):
+    return to_bool(self.value('GrabHotkeyEnabled', True))
+  def setGrabHotkeyEnabled(self, value):
+    if value != self.isGrabHotkeyEnabled():
+      self.setValue('GrabHotkeyEnabled', value)
+      self.grabHotkeyEnabledChanged.emit(value)
+
+  grabHotkeyChanged = Signal(str)
+  def grabHotkey(self):
+    return self.value('GrabHotkey', 'Alt\nS') # alt + s, \n = hkman.HOTKEY_DELIM
+  def setGrabHotkey(self, value):
+    if value != self.grabHotkey():
+      self.setValue('GrabHotkey', value)
+      self.grabHotkeyChanged.emit(value)
+
   ## TTS ##
 
   speaksGameTextChanged = Signal(bool)
