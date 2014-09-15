@@ -25,8 +25,8 @@ def _locale(lang):
   """
   return _LOCALES.get(lang) or lang
 
-#def defaulturl(): return 'https://translate.google.com/m'
-def defaulturl(): return 'http://translate.google.com/m'
+#def defaulturl(): return 'http://translate.google.com/m' # this will redirect to https
+def defaulturl(): return 'https://translate.google.com/m'
 def seturl(url):
   """
   @param  url  str
@@ -56,6 +56,16 @@ def translate(t, to='auto', fr='auto'):
       'sl': _locale(fr),
       'q': t,
     })
+
+    # Debug redirect
+    # http://stackoverflow.com/questions/20475552/python-requests-library-redirect-new-url
+    #if r.history:
+    #  print "Request was redirected"
+    #  for resp in r.history:
+    #    print resp.status_code, resp.url
+    #  print "Final destination:"
+    #  print r.status_code, r.url
+
     h = r.content
     if h:
       start = h.find(_TEXT_BEGIN)
@@ -103,25 +113,33 @@ if __name__ == '__main__':
     # Does not work because
     # 1. need GZIP
     # 2. need redirect from http:// to https://
-    from qtrequests import qtrequests
-    from PySide.QtNetwork import QNetworkAccessManager
-    session = qtrequests.Session(QNetworkAccessManager())
-    with SkProfiler():
-      for i in range(1):
-        t = translate(s, to=to, fr=fr)
+    #from qtrequests import qtrequests
+    #from PySide.QtNetwork import QNetworkAccessManager
+    #session = qtrequests.Session(QNetworkAccessManager())
+    #with SkProfiler():
+    #  for i in range(1):
+    #    t = translate(s, to=to, fr=fr)
     #print t
 
-    session = requests.Session()
+    # Could get blocked if using the same session
+    #session = requests.Session()
+    #with SkProfiler():
+    #  for i in range(1):
+    #    t = translate(s, to=to, fr=fr)
+    #print t
+
+    session = requests
     with SkProfiler():
       for i in range(1):
         t = translate(s, to=to, fr=fr)
     print t
 
-    #session = requests
-    #with SkProfiler():
-    #  for i in range(10):
-    #    t = translate(s, to=to, fr=fr)
-    #print t
+    seturl("http://153.121.52.138:443/proxy/gg/trans/m")
+
+    with SkProfiler():
+      for i in range(1):
+        t = translate(s, to=to, fr=fr)
+    print t
 
     app.quit()
 

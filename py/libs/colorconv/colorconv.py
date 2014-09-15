@@ -29,12 +29,12 @@ def argb2pix(a, r, g, b): # (int, int, int) -> int
 # S and I are easy to compute, but H is very expensive
 # See: http://www.had2know.com/technology/hsi-rgb-color-converter-equations.html
 # See: http://stackoverflow.com/questions/23889620/is-there-any-other-way-to-convert-rgb-to-hsi
-def rgb2hsi(r, g, b): # int, int, int -> float rad, float, float
+def rgb2hsi(r, g, b): # int, int, int -> float rad or None, float, float
   s,i = rgb2hsi_si(r, g, b)
   h = rgb2hsi_h(r, g, b)
   return h,s,i
 
-def rgb2hsi_h(r, g, b): # int, int, int -> float
+def rgb2hsi_h(r, g, b): # int, int, int -> float or None
   if r or g or b:
     dRG = r - g
     dRB = r - b
@@ -45,7 +45,7 @@ def rgb2hsi_h(r, g, b): # int, int, int -> float
       cos = (dRG+dRB)/(2*math.sqrt(d))
       try: return math.acos(cos) * 2
       except ValueError: pass  # if cos is too big
-  return 0.0
+  return None
 
 def rgb2hsi_si(r, g, b): # int, int, int -> float, float
   i = (r + g + b) / 3.0 # intense

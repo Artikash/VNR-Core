@@ -222,12 +222,13 @@ class _OcrImageObject(object):
 
           if fg and hueEnabled:
             h = colorconv.rgb2hsi_h(*rgb)
-            if hmin < hmax:
+            if h is None: # black or white
+              fg = False
+            elif hmin <= hmax:
               if h < hmin or h > hmax:
                 fg = False
-            else:
-              if hmax < h and h < hmin:
-                fg = False
+            elif hmax < h and h < hmin: # hmax < hmin
+              fg = False
 
           img.setPixel(x, y, FG_PIXEL if fg else BG_PIXEL)
 
