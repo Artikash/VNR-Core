@@ -91,8 +91,8 @@ class _OcrImageObject(object):
     self.maximumHue = 2/3.
 
     self.saturationEnabled = False
-    self.minimumSaturation = 0.8
-    self.maximumSaturation = 1.0
+    self.minimumSaturation = 0.0
+    self.maximumSaturation = 0.3
 
     self.scaleEnabled = False
     self.scaleFactor = 1.0
