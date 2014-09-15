@@ -359,6 +359,12 @@ def migrate(ss_version): # long ->
 
   try: # this try is in case I forgot certain rc directories for update
 
+    if ss_version <= 1410806479:
+      path = rc.DIR_CACHE_AVATAR
+      if os.path.exists(path):
+        skfileio.removetree(path)
+        skfileio.makedirs(path)
+
     if ss_version <= 1409368561: # reset float illegal value
       ss.setValue('DictionaryPopupWidth', config.SETTINGS_DICT_POPUP_WIDTH)
 
