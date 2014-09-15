@@ -1214,7 +1214,7 @@ Item { id: root_
         labelWidth: 40
         handleWidth: 15
         toolTip: qsTr("The maximum length of allowed game text. Text longer than that will be ignored.")
-        handleToolTip: qsTr("Maximum number of allowed characters in the game text is {0}").replace('{0}', Math.round(value / 2))
+        sliderToolTip: qsTr("Maximum number of allowed characters in the game text is {0}").replace('{0}', Math.round(value / 2))
 
         //value: 50.0
         minimumValue: 100.0
@@ -1234,7 +1234,7 @@ Item { id: root_
         labelWidth: 40
         handleWidth: 15
         toolTip: qsTr("Zoom font size")
-        handleToolTip: Math.round(value * 100) + "%"
+        sliderToolTip: Math.round(value * 100) + "%"
 
         //value: 1.0
         minimumValue: 0.5
@@ -1252,7 +1252,7 @@ Item { id: root_
         labelWidth: 40
         handleWidth: 15
         toolTip: qsTr("Text box width")
-        handleToolTip: Math.round(value * 100) + "%"
+        sliderToolTip: Math.round(value * 100) + "%"
 
         //value: 1.0
         minimumValue: 0.2
@@ -1272,7 +1272,7 @@ Item { id: root_
       //  labelWidth: 40
       //  handleWidth: 15
       //  toolTip: qsTr("Zoom popup size")
-      //  handleToolTip: Math.round(value * 100) + "%"
+      //  sliderToolTip: Math.round(value * 100) + "%"
       //  //value: 1.0
       //  minimumValue: 0.5
       //  maximumValue: 3.0
@@ -1290,7 +1290,7 @@ Item { id: root_
         labelWidth: 40
         handleWidth: 15
         toolTip: qsTr("Text background shadow transparency")
-        handleToolTip: Math.round(value * 100 / maximumValue) + "%"
+        sliderToolTip: Math.round(value * 100 / maximumValue) + "%"
 
         enabled: root_.shadowChecked
 
@@ -1304,13 +1304,13 @@ Item { id: root_
       Share.LabeledSlider { id: glowIntensitySlider_
         height: parent.cellHeight
         width: parent.cellWidth
-        text: qsTr("G.I")
+        text: qsTr("Lightness")
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40
         handleWidth: 15
         toolTip: qsTr("Text glowing intensity")
-        handleToolTip: Math.round(value * 100 / maximumValue) + "%"
+        sliderToolTip: Math.round(value * 100 / maximumValue) + "%"
 
         //value: 2
         minimumValue: 1 //root_.minimumGlowIntensity
@@ -1322,13 +1322,13 @@ Item { id: root_
       Share.LabeledSlider { id: glowRadiusSlider_
         height: parent.cellHeight
         width: parent.cellWidth
-        text: qsTr("G.R")
+        text: qsTr("Range")
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40
         handleWidth: 15
         toolTip: qsTr("Text glowing range")
-        handleToolTip: Math.round(value * 100 / maximumValue) + "%"
+        sliderToolTip: Math.round(value * 100 / maximumValue) + "%"
 
         //value: 8.0
         minimumValue: 1 //root_.minimumGlowRadius

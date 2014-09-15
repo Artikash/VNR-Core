@@ -16,11 +16,16 @@ FadingItem          fadingitem.qml
 FadingRectangle     fadingrectangle.qml
 FloatingRectangle   floatingrectangle.qml
 GradientSpinner     gradientspinner.qml
+GrayRangeSlider     grayrangeslider.qml
+HueRangeSlider      huerangeslider.qml
 InputBar            inputbar.qml
 InputBox            inputbox.qml
 IntSpinBox          intspinbox.qml
+LabeledGrayRangeSlider labeledgrayrangeslider.qml
+LabeledHueRangeSlider labeledhuerangeslider.qml
 LabeledRangeSlider  labeledrangeslider.qml
 LabeledSlider       labeledslider.qml
+LinearGradient      lineargradient.qml
 Navigator           navigator.qml
 Paginator           paginator.qml
 PushButton          pushbutton.qml

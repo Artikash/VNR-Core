@@ -6,7 +6,7 @@ DEFINES += WITH_LIB_QMLTEXT
 
 DEPENDPATH += $$PWD
 
-QT += core gui
+QT += core gui declarative
 
 HEADERS += \
   $$PWD/contouredtextedit.h
