@@ -23,7 +23,8 @@ def _avatarurl(token): # string -> string
   @param  token  unicode
   @return  unicode
   """
-  return "http://media.getchute.com/media/%s/128x128" % token
+  return "http://media.getchute.com/media/%s" % token
+  #return "http://media.getchute.com/media/%s/128x128" % token
   #return "http://avatars.io/%s?size=large" % token
 
 avatarurl = _avatarurl

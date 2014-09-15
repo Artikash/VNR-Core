@@ -36,7 +36,7 @@ HOST = 'http://153.121.54.194'
   getImageUrl: (data) -> # object -> string
     cacheimg "#{HOST}/upload/image/#{data.id}.#{data.suffix}"
 
-  getAvatarUrl: (id, size=128) -> # string, int -> string
+  getAvatarUrl: (id, size=0) -> # string, int -> string
     unless id
       ''
     else unless size
