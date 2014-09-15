@@ -21,7 +21,7 @@ def _savepixmap(pm, path=None, format='png', clipboard=True, quality=-1):
     if clipboard:
       skclip.setpixmap(pm)
     if not path:
-      ts = datetime.now().strftime("%H%M%S")
+      ts = datetime.now().strftime("%Y%m%d-%H%M%S")
       fileName = "vnr-capture-%ix%i-%s.%s" % (pm.width(), pm.height(), ts, format)
       path = os.path.join(skpaths.DESKTOP, fileName)
     ok = pm.save(path, format, quality)

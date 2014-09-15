@@ -271,8 +271,8 @@ Rectangle { id: root_
     //startValue: 0.3
     //stopValue: 0.7
 
-    startLabelText: formatIntensity(startValue)
-    stopLabelText: formatIntensity(stopValue)
+    startLabelText: formatIntensity(enabled ? startValue : minimumValue)
+    stopLabelText: formatIntensity(enabled ? stopValue : maximumValue)
 
     startLabelToolTip: qsTr("Minimum text color intensity")
     stopLabelToolTip: qsTr("Maximum text color intensity")
@@ -322,8 +322,8 @@ Rectangle { id: root_
     //startValue: 0.3
     //stopValue: 0.7
 
-    startLabelText: formatHue(startValue)
-    stopLabelText: formatHue(stopValue)
+    startLabelText: formatHue(enabled ? startValue : minimumValue)
+    stopLabelText: formatHue(enabled ? stopValue : maximumValue)
 
     startLabelToolTip: qsTr("Minimum hue of the text color")
     stopLabelToolTip: qsTr("Maximum hue of the text color")
@@ -373,8 +373,8 @@ Rectangle { id: root_
     //startValue: 0.3
     //stopValue: 0.7
 
-    startLabelText: formatSaturation(startValue)
-    stopLabelText: formatSaturation(stopValue)
+    startLabelText: formatSaturation(enabled ? startValue : minimumValue)
+    stopLabelText: formatSaturation(enabled ? stopValue : maximumValue)
 
     startColor: 'black'
     stopColor: 'red'
@@ -426,7 +426,7 @@ Rectangle { id: root_
 
     handleWidth: intensitySlider_.handleWidth
 
-    text: formatScale(value)
+    text: formatScale(enabled ? value : minimumValue)
     sliderToolTip: qsTr("Scale ratio") + " [" + formatScale(minimumValue) + "," + formatScale(maximumValue) + "]"
   }
 
