@@ -15,4 +15,4 @@ public:
   void registerTypes(const char *uri) override;
 };
 
-#endif // TEXSCRIPTPLUGIN_H
+#endif // QMLTEXT_H

@@ -30,6 +30,7 @@ qmlRegisterType(skqml.SkDesktopProxy, QML_PLUGIN, 1, 0, 'DesktopProxy')
 qmlRegisterType(skqml.SkClipboardProxy, QML_PLUGIN, 1, 0, 'ClipboardProxy')
 
 from qmlwidgets import qmlspinner
+#qmlRegisterType(qmlgradient.QmlLinearGradient, QML_PLUGIN, 1, 0, 'LinearGradient')
 qmlRegisterType(qmlspinner.QmlGradientSpinner, QML_PLUGIN, 1, 0, 'GradientSpinner')
 
 #from sakuradite import skqmlnet

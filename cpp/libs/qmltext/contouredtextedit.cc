@@ -40,7 +40,7 @@ void DeclarativeContouredTextEdit::setContourEnabled(bool v)
   if (d_->enabled != v) {
     //prepareGeometryChange();
     d_->enabled = v;
-    emit contourEnabledChanged(v);
+    emit contourEnabledChanged();
     update();
   }
 }
@@ -51,7 +51,7 @@ void DeclarativeContouredTextEdit::setContourColor(const QColor &v)
 {
   if (d_->color != v) {
     d_->color = v;
-    emit contourColorChanged(v);
+    emit contourColorChanged();
     update();
   }
 }
@@ -63,7 +63,7 @@ void DeclarativeContouredTextEdit::setContourRadius(int v)
   if (d_->radius != v) {
     //prepareGeometryChange();
     d_->radius = v;
-    emit contourRadiusChanged(v);
+    emit contourRadiusChanged();
     update();
   }
 }
@@ -75,7 +75,7 @@ void DeclarativeContouredTextEdit::setContourOffset(const QPoint &v)
   if (d_->offset != v) {
     //prepareGeometryChange();
     d_->offset = v;
-    emit contourOffsetChanged(v);
+    emit contourOffsetChanged();
     update();
   }
 }

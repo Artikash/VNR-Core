@@ -22,7 +22,7 @@ class DeclarativeContouredTextEdit : public QDeclarativeTextEdit
   Q_PROPERTY(int contourXOffset READ contourXOffset WRITE setContourXOffset NOTIFY contourOffsetChanged)
   Q_PROPERTY(int contourYOffset READ contourYOffset WRITE setContourYOffset NOTIFY contourOffsetChanged)
 public:
-  DeclarativeContouredTextEdit(QDeclarativeItem *parent = nullptr);
+  explicit DeclarativeContouredTextEdit(QDeclarativeItem *parent = nullptr);
   ~DeclarativeContouredTextEdit();
 
 signals:
@@ -55,10 +55,10 @@ public slots:
   void setContourRadius(int radius);
 
 signals:
-  void contourEnabledChanged(bool enabled);
-  void contourOffsetChanged(const QPoint &offset);
-  void contourRadiusChanged(int radius);
-  void contourColorChanged(const QColor &color);
+  void contourEnabledChanged();
+  void contourOffsetChanged();
+  void contourRadiusChanged();
+  void contourColorChanged();
 };
 
 QML_DECLARE_TYPE(DeclarativeContouredTextEdit)

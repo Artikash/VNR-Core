@@ -36,7 +36,7 @@ class _QmlGradientSpinner(object):
     @return str
     """
     if not self._hash:
-      self._hash = "%s%s%s%s%s%s" % (
+      self._hash = "QmlGradientSpinner-%s-%s-%s-%s-%s-%s" % (
         self.innerRadius, self.outerRadius,
         self.actualInnerRadius, self.actualOuterRadius,
         self.foregroundColor, self.backgroundColor,
@@ -67,7 +67,7 @@ class QmlGradientSpinner(QDeclarativeItem):
     self.backgroundColorChanged.connect(self.__d.invalidateHash)
     self.foregroundColorChanged.connect(self.__d.invalidateHash)
 
-    self.setFlag(QGraphicsItem.ItemHasNoContents, False)
+    self.setFlag(QGraphicsItem.ItemHasNoContents, False) # enable paint function
 
   def setInnerRadius(self, value):
     self.__d.innerRadius = value

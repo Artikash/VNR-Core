@@ -7,6 +7,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += qmleffectsplugin
+SUBDIRS += qmlgradientplugin
 SUBDIRS += qmlhelperplugin
 SUBDIRS += qmltexscriptplugin
 SUBDIRS += qmltextplugin
