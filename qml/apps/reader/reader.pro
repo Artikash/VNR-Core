@@ -11,7 +11,6 @@ SOURCES = \
   kagami/menubutton.qml \
   kagami/ocredit.qml \
   kagami/ocrpopup.qml \
-  kagami/ocrregion.qml \
   kagami/popupcomponent.qml \
   kagami/shiori.qml \
   postview.qml \

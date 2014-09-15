@@ -104,26 +104,26 @@
         <translation>使用TTS自動讀出日文遊戲文本</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="992"/>
+        <location filename="../kagami/dock.qml" line="997"/>
         <source>Automatically copy Japanese game text to the clipboard</source>
         <translation>自動复制日文遊戲文本到剪貼板</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="930"/>
-        <location filename="../kagami/dock.qml" line="940"/>
-        <location filename="../kagami/dock.qml" line="950"/>
+        <location filename="../kagami/dock.qml" line="935"/>
+        <location filename="../kagami/dock.qml" line="945"/>
+        <location filename="../kagami/dock.qml" line="955"/>
         <source>Display {0}</source>
         <translation>顯示{0}</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="960"/>
-        <location filename="../kagami/dock.qml" line="970"/>
-        <location filename="../kagami/dock.qml" line="980"/>
+        <location filename="../kagami/dock.qml" line="965"/>
+        <location filename="../kagami/dock.qml" line="975"/>
+        <location filename="../kagami/dock.qml" line="985"/>
         <source>Display {0} from other users</source>
         <translation>顯示其他同學的{0}</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1008"/>
+        <location filename="../kagami/dock.qml" line="1013"/>
         <source>Shadow behind text</source>
         <translation>文本背景陰影</translation>
     </message>
@@ -143,27 +143,27 @@
         <translation>沒有登錄或沒有網絡連接</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1012"/>
+        <location filename="../kagami/dock.qml" line="1017"/>
         <source>Display background shadow behind the text</source>
         <translation>在文本后面顯示背景陰影</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1018"/>
+        <location filename="../kagami/dock.qml" line="1023"/>
         <source>Text aligns center</source>
         <translation>文本居中顯示</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1022"/>
+        <location filename="../kagami/dock.qml" line="1027"/>
         <source>Align center or align left</source>
         <translation>文本居中或左對齊</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1069"/>
+        <location filename="../kagami/dock.qml" line="1074"/>
         <source>Popup when hover</source>
         <translation>翻譯鼠標下的文本</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="988"/>
+        <location filename="../kagami/dock.qml" line="993"/>
         <source>Text to clipboard</source>
         <translation>文本到剪貼板</translation>
     </message>
@@ -173,23 +173,23 @@
         <translation>切換Slim界面</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1083"/>
+        <location filename="../kagami/dock.qml" line="1088"/>
         <source>Enable Hentai terms in the Shared Dictionary for Machihne Translation</source>
         <translation>開啟共享辭書中拔作專用的Hentai詞條</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1087"/>
+        <location filename="../kagami/dock.qml" line="1092"/>
         <source>Enter hentai mode</source>
         <translation>進入Hentai模式</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1088"/>
+        <location filename="../kagami/dock.qml" line="1093"/>
         <source>Leave hentai mode</source>
         <translation>離開Hentai模式</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="509"/>
-        <location filename="../kagami/dock.qml" line="1282"/>
+        <location filename="../kagami/dock.qml" line="1287"/>
         <source>Transp</source>
         <translation>透明</translation>
     </message>
@@ -279,112 +279,108 @@
         <translation>在線的{1}人中的{0}人正在玩這個遊戲</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="998"/>
+        <location filename="../kagami/dock.qml" line="1003"/>
         <source>Sub to clipboard</source>
         <translation>翻譯到剪貼板</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1002"/>
+        <location filename="../kagami/dock.qml" line="1007"/>
         <source>Automatically copy machine or user-contributed translation to the clipboard</source>
         <translation>自動复制人工或者機器翻譯到剪貼板</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1029"/>
+        <location filename="../kagami/dock.qml" line="1034"/>
         <source>Split game text</source>
         <translation>分行顯示日文</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1033"/>
+        <location filename="../kagami/dock.qml" line="1038"/>
         <source>Split Japanese sentences by lines</source>
         <translation>分行顯示日文的句子</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1039"/>
+        <location filename="../kagami/dock.qml" line="1044"/>
         <source>Split translation</source>
         <translation>分行顯示翻譯</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1043"/>
+        <location filename="../kagami/dock.qml" line="1048"/>
         <source>Split machine translation sentences by lines</source>
         <translation>分行顯示機器翻譯的句子</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1079"/>
+        <location filename="../kagami/dock.qml" line="1084"/>
         <source>Enable hentai term</source>
         <translation>開啟變態詞條</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1110"/>
-        <location filename="../kagami/dock.qml" line="1114"/>
+        <location filename="../kagami/dock.qml" line="1115"/>
+        <location filename="../kagami/dock.qml" line="1119"/>
         <source>Show current time</source>
         <translation>顯示當前時間</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1249"/>
+        <location filename="../kagami/dock.qml" line="1254"/>
         <source>Text box width</source>
         <translation>文本的寬度</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1231"/>
+        <location filename="../kagami/dock.qml" line="1236"/>
         <source>Zoom font size</source>
         <translation>縮放字體大小</translation>
     </message>
     <message>
-        <source>Start monitoring the selected regions</source>
-        <translation type="obsolete">開始監視選定的區域</translation>
-    </message>
-    <message>
-        <location filename="../kagami/dock.qml" line="1073"/>
+        <location filename="../kagami/dock.qml" line="1078"/>
         <source>Popup translation while hovering instead of clicking the game text</source>
         <translation>彈出鼠標指向的日文詞語的翻譯（禁用時需要點擊文本才會彈出）</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1093"/>
+        <location filename="../kagami/dock.qml" line="1098"/>
         <source>Show notification</source>
         <translation>顯示提醒</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1097"/>
+        <location filename="../kagami/dock.qml" line="1102"/>
         <source>Show notification at the corner of the screen</source>
         <translation>在屏幕邊緣顯示消息</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1302"/>
-        <source>G.I</source>
-        <translation>光強</translation>
+        <location filename="../kagami/dock.qml" line="1307"/>
+        <source>Lightness</source>
+        <translation>亮度</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1307"/>
+        <location filename="../kagami/dock.qml" line="1312"/>
         <source>Text glowing intensity</source>
         <translation>字幕發光強度</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1320"/>
-        <source>G.R</source>
+        <location filename="../kagami/dock.qml" line="1325"/>
+        <source>Range</source>
         <translation>範圍</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1325"/>
+        <location filename="../kagami/dock.qml" line="1330"/>
         <source>Text glowing range</source>
         <translation>字幕發光範圍</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1287"/>
+        <location filename="../kagami/dock.qml" line="1292"/>
         <source>Text background shadow transparency</source>
         <translation>文本背景陰影的透明度</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1206"/>
+        <location filename="../kagami/dock.qml" line="1211"/>
         <source>Length</source>
         <translation>長度</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1211"/>
+        <location filename="../kagami/dock.qml" line="1216"/>
         <source>The maximum length of allowed game text. Text longer than that will be ignored.</source>
         <translation>遊戲文本最大長度。超過指定長度的文本會被忽略掉。</translation>
     </message>
     <message>
-        <location filename="../kagami/dock.qml" line="1212"/>
+        <location filename="../kagami/dock.qml" line="1217"/>
         <source>Maximum number of allowed characters in the game text is {0}</source>
         <translation>遊戲文本中允許的字符數不超過{0}</translation>
     </message>
@@ -852,42 +848,107 @@
 <context>
     <name>ocredit</name>
     <message>
-        <location filename="../kagami/ocredit.qml" line="178"/>
+        <location filename="../kagami/ocredit.qml" line="251"/>
         <source>I</source>
-        <translation>光強</translation>
+        <translation>亮度</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="179"/>
-        <source>Color intensity</source>
-        <translation>顏色濃度</translation>
-    </message>
-    <message>
-        <location filename="../kagami/ocredit.qml" line="208"/>
+        <location filename="../kagami/ocredit.qml" line="277"/>
         <source>Minimum text color intensity</source>
         <translation>文本顏色濃度的最小值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="209"/>
+        <location filename="../kagami/ocredit.qml" line="278"/>
         <source>Maximum text color intensity</source>
         <translation>文本顏色濃度的最大值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="214"/>
+        <location filename="../kagami/ocredit.qml" line="283"/>
         <source>Range of the text color intensity</source>
         <translation>文本顏色濃度的範圍</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="233"/>
+        <location filename="../kagami/ocredit.qml" line="302"/>
+        <source>H</source>
+        <translation>色度</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="252"/>
+        <source>Color intensity in HSI model</source>
+        <translation>色彩亮度（HSI顏色模型）</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="303"/>
+        <source>Hue in HSI model</source>
+        <translation>色相（HSI顏色模型）</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="328"/>
+        <source>Minimum hue of the text color</source>
+        <translation>文本色相的最小值</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="329"/>
+        <source>Maximum hue of the text color</source>
+        <translation>文本色相的最大值</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="334"/>
+        <source>Range of the text color&apos;s hue</source>
+        <translation>文本色相的範圍</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="353"/>
+        <source>S</source>
+        <translation>飽和</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="354"/>
+        <source>Saturation in HSI model</source>
+        <translation>色彩飽和度（HSI顏色模型）</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="382"/>
+        <source>Minimum saturation of the text color</source>
+        <translation>文本顏色飽和度的最小值</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="383"/>
+        <source>Maximum saturation of the text color</source>
+        <translation>文本顏色飽和度的最大值</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="388"/>
+        <source>Range of the text color&apos;s saturation</source>
+        <translation>文本顏色飽和度的範圍</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="407"/>
+        <source>Z</source>
+        <translation>縮放</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="408"/>
+        <source>Zoom image text that is too large or too small</source>
+        <translation>縮放圖片中過大或過小的文字</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="430"/>
+        <source>Scale ratio</source>
+        <translation>縮放的倍數</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocredit.qml" line="446"/>
         <source>Enable image processing for OCR</source>
         <translation>為OCR開啟圖像處理</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="250"/>
+        <location filename="../kagami/ocredit.qml" line="463"/>
         <source>Apply OCR to the current image</source>
         <translation>應用OCR處理到當前的圖片</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="260"/>
+        <location filename="../kagami/ocredit.qml" line="473"/>
         <source>Reset to the last OCR settings</source>
         <translation>恢复到上一次的OCR設定</translation>
     </message>
@@ -914,13 +975,6 @@
         <location filename="../kagami/ocrpopup.qml" line="610"/>
         <source>Translating</source>
         <translation>正在翻譯中</translation>
-    </message>
-</context>
-<context>
-    <name>ocrregion</name>
-    <message>
-        <source>Failed to capture an image for the selected region</source>
-        <translation type="obsolete">從屏幕截取圖片失敗了</translation>
     </message>
 </context>
 <context>

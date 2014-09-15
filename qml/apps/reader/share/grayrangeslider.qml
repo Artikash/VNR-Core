@@ -1,4 +1,4 @@
-/** colorrangeslider.qml
+/** grayrangeslider.qml
  *  9/14/2014 jichi
  *  See: QML dial control example
  */
@@ -24,11 +24,14 @@ Rectangle { id: root_
       startToolTip_.containsMouse ||
       stopToolTip_.containsMouse
 
-  property real minimumValue: 0
-  property real maximumValue: 100
+  property real minimumValue: 0 // 0%
+  property real maximumValue: 1.0 // 100%
 
   property real startValue: 0
   property real stopValue: 0
+
+  property string startColor: 'black'
+  property string stopColor: 'white'
 
   // - Private -
 
@@ -84,6 +87,18 @@ Rectangle { id: root_
     GradientStop { position: 1.0; color: 'white' } // lighter
   }
 
+  Share.LinearGradient { id: grad_ // horizontal gradient
+    anchors.fill: parent
+    colors: [root_.startColor, root_.stopColor]
+    positions: [0.0, 1.0]
+
+    startPoint: Qt.point(0,0)
+    stopPoint: Qt.point(1,0)
+
+    visible: root_.enabled
+    opacity: 0.7
+  }
+
   Share.FadingRectangle { //id: groove_
     anchors {
       left: startHandle_.right
@@ -98,15 +113,6 @@ Rectangle { id: root_
       //GradientStop { position: 0.0; color: '#aa87cefa' } // lightskyblue
       GradientStop { position: 0.0; color: root_.hover ? '#87cefa' : '#cc87cefa' } // lightskyblue
       GradientStop { position: 1.0; color: root_.hover ? '#00bfff' : '#cc00bfff' } // deepskyblue, darker, clear transparency when hover
-    }
-
-    Share.LinearGradient { id: grad_
-      anchors.fill: parent
-      colors: ['black', 'white']
-      positions: [0.0, 1.0]
-
-      startPoint: Qt.point(0,0)
-      stopPoint: Qt.point(1,0)
     }
   }
 

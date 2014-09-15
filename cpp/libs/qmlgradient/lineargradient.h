@@ -18,6 +18,7 @@ class DeclarativeLinearGradient : public QDeclarativeItem
   SK_DISABLE_COPY(DeclarativeLinearGradient)
   SK_DECLARE_PRIVATE(DeclarativeLinearGradientPrivate)
   Q_PROPERTY(bool visible READ isVisible WRITE setVisible NOTIFY visibleChanged)
+  Q_PROPERTY(qreal opacity READ opacity WRITE setOpacity NOTIFY opacityChanged)
   Q_PROPERTY(QVariantList colors READ colors WRITE setColors NOTIFY colorsChanged)
   Q_PROPERTY(QVariantList positions READ positions WRITE setPositions NOTIFY positionsChanged)
   Q_PROPERTY(QPointF startPoint READ startPoint WRITE setStartPoint NOTIFY startPointChanged)
@@ -28,6 +29,8 @@ public:
 
 public:
   bool isVisible() const;
+  qreal opacity() const;
+
   QVariantList colors() const;
   QVariantList positions() const;
   QPointF startPoint() const;
@@ -37,6 +40,7 @@ public:
 
 public slots:
   void setVisible(bool visible);
+  void setOpacity(qreal opacity);
 
   void setColors(const QVariantList &l);
   void setPositions(const QVariantList &l);
@@ -47,6 +51,7 @@ public slots:
 
 signals:
   void visibleChanged();
+  void opacityChanged();
   void colorsChanged();
   void positionsChanged();
   void startPointChanged();

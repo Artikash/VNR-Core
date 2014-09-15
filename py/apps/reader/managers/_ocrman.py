@@ -4,14 +4,18 @@
 
 __all__ = ['OcrImageObject', 'OcrSettings']
 
-import os
-from PySide.QtCore import QObject, Property, Signal, Slot, QUrl
+import math, os
+from PySide.QtCore import Qt, QObject, Property, Signal, Slot, QUrl
 from PySide.QtGui import QPixmap
 from sakurakit import skfileio
 from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint, dwarn
+from colorconv import colorconv
 from modiocr import modiocr
 import termman
+
+# TODO: Move to colorutil
+# http://www.had2know.com/technology/hsi-rgb-color-converter-equations.html
 
 #from sakurakit.skprofiler import SkProfiler
 
@@ -82,6 +86,17 @@ class _OcrImageObject(object):
     self.minimumColorIntensity = 0.7
     self.maximumColorIntensity = 1.0
 
+    self.hueEnabled = False
+    self.minimumHue = 1/3.
+    self.maximumHue = 2/3.
+
+    self.saturationEnabled = False
+    self.minimumSaturation = 0.8
+    self.maximumSaturation = 1.0
+
+    self.scaleEnabled = False
+    self.scaleFactor = 1.0
+
   @staticmethod
   def _randomPath():
     """
@@ -151,21 +166,76 @@ class _OcrImageObject(object):
     if not pm or pm.isNull() or not self.editable:
       return pm
     img = pm.toImage()
-    if self.colorIntensityEnabled:
-      width = pm.width()
-      height = pm.height()
-      minimum = 255 * 255 * 3 * self.minimumColorIntensity * self.minimumColorIntensity
-      maximum = 255 * 255 * 3 * self.maximumColorIntensity * self.maximumColorIntensity
+    width = pm.width()
+    height = pm.height()
+
+    intensityEnabled = self.colorIntensityEnabled
+    hueEnabled = self.hueEnabled
+    saturationEnabled = self.saturationEnabled
+
+    # HSI model
+    # http://www.had2know.com/technology/hsi-rgb-color-converter-equations.html
+    # https://en.wikipedia.org/wiki/HSL_and_HSV#Lightness
+
+    if intensityEnabled and not (hueEnabled or saturationEnabled):
+      imin3 = 255 * 3 * self.minimumColorIntensity
+      imax3 = 255 * 3 * self.maximumColorIntensity
       for x in xrange(width):
         for y in xrange(height):
-          px = img.pixel(x, y)
+          px = img.pixel(x, y) # int
           #a = px >> 24 & 0xff # alpha
           r = px >> 16 & 0xff
           g = px >> 8 & 0xff
           b = px & 0xff
-          v = r*r + g*g +b*b
-          px = FG_PIXEL if minimum <= v and v <= maximum else BG_PIXEL
+          i3 = r + g +b # I in HSI model * 3
+          px = FG_PIXEL if imin3 <= i3 and i3 <=  imax3 else BG_PIXEL
           img.setPixel(x, y, px)
+
+    elif hueEnabled or saturationEnabled or intensityEnabled:
+
+      if hueEnabled:
+        hmin = self.minimumHue * math.pi * 2
+        hmax = self.maximumHue * math.pi * 2
+
+      if saturationEnabled:
+        smin = self.minimumSaturation
+        smax = self.maximumSaturation
+
+      if intensityEnabled:
+        imin = self.minimumColorIntensity * 255
+        imax = self.maximumColorIntensity * 255
+
+      for x in xrange(width):
+        for y in xrange(height):
+          px = img.pixel(x, y) # int
+          rgb = colorconv.pix2rgb(px)
+
+          s,i = colorconv.rgb2hsi_si(*rgb)
+
+          fg = True
+
+          if intensityEnabled and not (imin <= i and i <= imax):
+            fg = False
+
+          if fg and saturationEnabled and not (smin <= s and s <= smax):
+            fg = False
+
+          if fg and hueEnabled:
+            h = colorconv.rgb2hsi_h(*rgb)
+            if hmin < hmax:
+              if h < hmin or h > hmax:
+                fg = False
+            else:
+              if hmax < h and h < hmin:
+                fg = False
+
+          img.setPixel(x, y, FG_PIXEL if fg else BG_PIXEL)
+
+    if self.scaleEnabled and self.scaleFactor != 1.0:
+      width *= self.scaleFactor
+      height *= self.scaleFactor
+      #img = img.scaled(width, height)
+      img = img.scaled(width, height, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
     return img
 
 # Passed to QML
@@ -234,6 +304,22 @@ class OcrImageObject(QObject):
       setHeight,
       notify=heightChanged)
 
+  # Zoom image
+
+  def setScaleEnabled(self, t): self.__d.scaleEnabled = t
+  scaleEnabledChanged = Signal(bool)
+  scaleEnabled = Property(bool,
+      lambda self: self.__d.scaleEnabled,
+      setScaleEnabled,
+      notify=scaleEnabledChanged)
+
+  def setScaleFactor(self, v): self.__d.scaleFactor = v
+  scaleFactorChanged = Signal(float)
+  scaleFactor = Property(float,
+      lambda self: self.__d.scaleFactor,
+      setScaleFactor,
+      notify=scaleFactorChanged)
+
   # Color intensity
 
   def setColorIntensityEnabled(self, t): self.__d.colorIntensityEnabled = t
@@ -256,6 +342,52 @@ class OcrImageObject(QObject):
       lambda self: self.__d.maximumColorIntensity,
       setMaximumColorIntensity,
       notify=maximumColorIntensityChanged)
+
+  # Color saturation
+
+  def setSaturationEnabled(self, t): self.__d.saturationEnabled = t
+  saturationEnabledChanged = Signal(bool)
+  saturationEnabled = Property(bool,
+      lambda self: self.__d.saturationEnabled,
+      setSaturationEnabled,
+      notify=saturationEnabledChanged)
+
+  def setMinimumSaturation(self, v): self.__d.minimumSaturation = v
+  minimumSaturationChanged = Signal(float)
+  minimumSaturation = Property(float,
+      lambda self: self.__d.minimumSaturation,
+      setMinimumSaturation,
+      notify=minimumSaturationChanged)
+
+  def setMaximumSaturation(self, v): self.__d.maximumSaturation = v
+  maximumSaturationChanged = Signal(float)
+  maximumSaturation = Property(float,
+      lambda self: self.__d.maximumSaturation,
+      setMaximumSaturation,
+      notify=maximumSaturationChanged)
+
+  # Color hue
+
+  def setHueEnabled(self, t): self.__d.hueEnabled = t
+  hueEnabledChanged = Signal(bool)
+  hueEnabled = Property(bool,
+      lambda self: self.__d.hueEnabled,
+      setHueEnabled,
+      notify=hueEnabledChanged)
+
+  def setMinimumHue(self, v): self.__d.minimumHue = v
+  minimumHueChanged = Signal(float)
+  minimumHue = Property(float,
+      lambda self: self.__d.minimumHue,
+      setMinimumHue,
+      notify=minimumHueChanged)
+
+  def setMaximumHue(self, v): self.__d.maximumHue = v
+  maximumHueChanged = Signal(float)
+  maximumHue = Property(float,
+      lambda self: self.__d.maximumHue,
+      setMaximumHue,
+      notify=maximumHueChanged)
 
   @Slot(result=unicode)
   def ocr(self):

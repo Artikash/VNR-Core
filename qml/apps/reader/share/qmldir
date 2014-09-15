@@ -9,7 +9,6 @@ CheckDot            checkdot.qml
 CircleButton        circlebutton.qml
 ClearButton         clearbutton.qml
 CloseButton         closebutton.qml
-ColorRangeSlider    colorrangeslider.qml
 FadeInImage         fadeinimage.qml
 FadeOutImage        fadeoutimage.qml
 FadingImage         fadingimage.qml
@@ -17,9 +16,13 @@ FadingItem          fadingitem.qml
 FadingRectangle     fadingrectangle.qml
 FloatingRectangle   floatingrectangle.qml
 GradientSpinner     gradientspinner.qml
+GrayRangeSlider     grayrangeslider.qml
+HueRangeSlider      huerangeslider.qml
 InputBar            inputbar.qml
 InputBox            inputbox.qml
 IntSpinBox          intspinbox.qml
+LabeledGrayRangeSlider labeledgrayrangeslider.qml
+LabeledHueRangeSlider labeledhuerangeslider.qml
 LabeledRangeSlider  labeledrangeslider.qml
 LabeledSlider       labeledslider.qml
 LinearGradient      lineargradient.qml

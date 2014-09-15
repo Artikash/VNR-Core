@@ -39,34 +39,83 @@ Rectangle { id: root_
   property QtObject imageObject // OcrImageObject  ocr controller
 
   property bool savedEnabled
-  property bool savedColorIntensityEnable
+
+  property bool savedScaleEnabled
+  property real savedScaleFactor
+
+  property bool savedColorIntensityEnabled
   property real savedMinimumColorIntensity
   property real savedMaximumColorIntensity
+
+  property bool savedHueEnabled
+  property real savedMinimumHue
+  property real savedMaximumHue
+
+  property bool savedSaturationEnabled
+  property real savedMinimumSaturation
+  property real savedMaximumSaturation
 
   function loadImageProperties() {
     if (imageObject) {
       enableButton_.checked = savedEnabled = imageObject.editable
-      colorEnableButton_.checked = savedColorIntensityEnable = imageObject.colorIntensityEnabled
-      colorSlider_.startValue = savedMinimumColorIntensity = imageObject.minimumColorIntensity
-      colorSlider_.stopValue = savedMaximumColorIntensity = imageObject.maximumColorIntensity
+
+      scaleEnableButton_.checked = savedScaleEnabled = imageObject.scaleEnabled
+      scaleSlider_.value = savedScaleFactor = imageObject.scaleFactor
+
+      intensityEnableButton_.checked = savedColorIntensityEnabled = imageObject.colorIntensityEnabled
+      intensitySlider_.startValue = savedMinimumColorIntensity = imageObject.minimumColorIntensity
+      intensitySlider_.stopValue = savedMaximumColorIntensity = imageObject.maximumColorIntensity
+
+      hueEnableButton_.checked = savedHueEnabled = imageObject.hueEnabled
+      hueSlider_.startValue = savedMinimumHue = imageObject.minimumHue
+      hueSlider_.stopValue = savedMaximumHue = imageObject.maximumHue
+
+      saturationEnableButton_.checked = savedSaturationEnabled = imageObject.saturationEnabled
+      saturationSlider_.startValue = savedMinimumSaturation = imageObject.minimumSaturation
+      saturationSlider_.stopValue = savedMaximumSaturation = imageObject.maximumSaturation
     }
   }
 
   function saveImageProperties() {
     if (imageObject) {
       imageObject.editable = enableButton_.checked
-      imageObject.colorIntensityEnabled = colorEnableButton_.checked
-      imageObject.minimumColorIntensity = colorSlider_.startValue
-      imageObject.maximumColorIntensity = colorSlider_.stopValue
+
+      imageObject.scaleEnabled = scaleEnableButton_.checked
+      imageObject.scaleFactor = scaleSlider_.value
+
+      imageObject.colorIntensityEnabled = intensityEnableButton_.checked
+      imageObject.minimumColorIntensity = intensitySlider_.startValue
+      imageObject.maximumColorIntensity = intensitySlider_.stopValue
+
+      imageObject.hueEnabled = hueEnableButton_.checked
+      imageObject.minimumHue = hueSlider_.startValue
+      imageObject.maximumHue = hueSlider_.stopValue
+
+      imageObject.saturationEnabled = saturationEnableButton_.checked
+      imageObject.minimumSaturation = saturationSlider_.startValue
+      imageObject.maximumSaturation = saturationSlider_.stopValue
     }
   }
 
   function reset() {
     if (imageObject) {
       enableButton_.checked = savedEnabled
-      colorEnableButton_.checked = savedColorIntensityEnable
-      colorSlider_.startValue = savedMinimumColorIntensity
-      colorSlider_.stopValue = savedMaximumColorIntensity
+
+      scaleEnableButton_.checked = savedScaleEnabled
+      scaleSlider_.value = savedScaleFactor
+
+      intensityEnableButton_.checked = savedColorIntensityEnabled
+      intensitySlider_.startValue = savedMinimumColorIntensity
+      intensitySlider_.stopValue = savedMaximumColorIntensity
+
+      hueEnableButton_.checked = savedHueEnabled
+      hueSlider_.startValue = savedMinimumHue
+      hueSlider_.stopValue = savedMaximumHue
+
+      saturationEnableButton_.checked = savedSaturationEnabled
+      saturationSlider_.startValue = savedMinimumSaturation
+      saturationSlider_.stopValue = savedMaximumSaturation
+
       ocr()
     }
   }
@@ -81,7 +130,13 @@ Rectangle { id: root_
         + _ROOT_MARGIN
         + textRect_.height
         + _ROOT_MARGIN
-        + colorSlider_.height
+        + intensitySlider_.height
+        + _ROOT_MARGIN
+        + hueSlider_.height
+        + _ROOT_MARGIN
+        + saturationSlider_.height
+        + _ROOT_MARGIN
+        + scaleSlider_.height
         + _ROOT_MARGIN
         + rightButtonRow_.height
         + _ROOT_MARGIN
@@ -97,9 +152,21 @@ Rectangle { id: root_
     if (!imageObject)
       return
 
-    imageObject.minimumColorIntensity = colorSlider_.startValue
-    imageObject.maximumColorIntensity = colorSlider_.stopValue
-    imageObject.colorIntensityEnabled = colorEnableButton_.checked
+    imageObject.minimumColorIntensity = intensitySlider_.startValue
+    imageObject.maximumColorIntensity = intensitySlider_.stopValue
+    imageObject.colorIntensityEnabled = intensityEnableButton_.checked
+
+    imageObject.minimumHue = hueSlider_.startValue
+    imageObject.maximumHue = hueSlider_.stopValue
+    imageObject.hueEnabled = hueEnableButton_.checked
+
+    imageObject.minimumSaturation = saturationSlider_.startValue
+    imageObject.maximumSaturation = saturationSlider_.stopValue
+    imageObject.saturationEnabled = saturationEnableButton_.checked
+
+    imageObject.scaleFactor = scaleSlider_.value
+    imageObject.scaleEnabled = scaleEnableButton_.checked
+
     imageObject.editable = enableButton_.checked
 
     textArea_.textEdit.text = imageObject.ocr() || ('(' + Sk.tr("empty") + ')')
@@ -133,7 +200,7 @@ Rectangle { id: root_
   Rectangle { id: textRect_ // background color
     anchors {
       left: parent.left; right: parent.right
-      bottom: colorSlider_.top
+      bottom: intensitySlider_.top
       margins: _ROOT_MARGIN
     }
     color: '#aaffffff' // white
@@ -166,35 +233,37 @@ Rectangle { id: root_
     }
   }
 
-  // Slider
+  // Color intensity
 
-  Share.CheckBox { id: colorEnableButton_
+  property int _SLIDER_LABEL_WIDTH: 30
+
+  function formatIntensity(value) { // real -> string
+    return Math.round(value * 255)
+  }
+
+  Share.CheckBox { id: intensityEnableButton_
     anchors {
       left: parent.left
-      verticalCenter: colorSlider_.verticalCenter
+      verticalCenter: intensitySlider_.verticalCenter
       margins: _ROOT_MARGIN
     }
     enabled: enableButton_.checked
     text: qsTr("I")
-    toolTip: qsTr("Color intensity")
+    toolTip: qsTr("Color intensity in HSI model") + " [0,255]"
   }
 
-  function toPercentage(value) { // real -> string
-    return Math.round(value * 100) + '%'
-  }
-
-  Share.LabeledRangeSlider { id: colorSlider_
+  Share.LabeledGrayRangeSlider { id: intensitySlider_
     anchors {
-      left: colorEnableButton_.right
+      left: intensityEnableButton_.right
       right: parent.right
-      bottom: rightButtonRow_.top
+      bottom: hueSlider_.top
       //margins: _ROOT_MARGIN // remove left margin
       rightMargin: _ROOT_MARGIN
       bottomMargin: _ROOT_MARGIN
     }
-    enabled: enableButton_.checked && colorEnableButton_.checked
+    enabled: enableButton_.checked && intensityEnableButton_.checked
     spacing: _ROOT_MARGIN
-    labelWidth: 30
+    labelWidth: _SLIDER_LABEL_WIDTH
 
     minimumValue: 0.0
     maximumValue: 1.0
@@ -202,8 +271,8 @@ Rectangle { id: root_
     //startValue: 0.3
     //stopValue: 0.7
 
-    startLabelText: toPercentage(startValue)
-    stopLabelText: toPercentage(stopValue)
+    startLabelText: formatIntensity(startValue)
+    stopLabelText: formatIntensity(stopValue)
 
     startLabelToolTip: qsTr("Minimum text color intensity")
     stopLabelToolTip: qsTr("Maximum text color intensity")
@@ -215,6 +284,150 @@ Rectangle { id: root_
 
     //onStartValueChanged: root_.refresh()
     //onStopValueChanged: root_.refresh()
+  }
+
+  // Color hue
+
+  function formatHue(value) { // real -> string
+    return Math.round(360 * value) + "°"
+  }
+
+  Share.CheckBox { id: hueEnableButton_
+    anchors {
+      left: parent.left
+      verticalCenter: hueSlider_.verticalCenter
+      margins: _ROOT_MARGIN
+    }
+    enabled: enableButton_.checked
+    text: qsTr("H")
+    toolTip: qsTr("Hue in HSI model") + " [0°,360°]"
+  }
+
+  Share.LabeledHueRangeSlider { id: hueSlider_
+    anchors {
+      left: hueEnableButton_.right
+      right: parent.right
+      bottom: saturationSlider_.top
+      //margins: _ROOT_MARGIN // remove left margin
+      rightMargin: _ROOT_MARGIN
+      bottomMargin: _ROOT_MARGIN
+    }
+    enabled: enableButton_.checked && hueEnableButton_.checked
+    spacing: _ROOT_MARGIN
+    labelWidth: _SLIDER_LABEL_WIDTH
+
+    minimumValue: 0.0
+    maximumValue: 1.0
+
+    //startValue: 0.3
+    //stopValue: 0.7
+
+    startLabelText: formatHue(startValue)
+    stopLabelText: formatHue(stopValue)
+
+    startLabelToolTip: qsTr("Minimum hue of the text color")
+    stopLabelToolTip: qsTr("Maximum hue of the text color")
+
+    startHandleToolTip: startLabelToolTip
+    stopHandleToolTip: stopLabelToolTip
+
+    sliderToolTip: qsTr("Range of the text color's hue")
+
+    //onStartValueChanged: root_.refresh()
+    //onStopValueChanged: root_.refresh()
+  }
+
+  // Color saturation
+
+  function formatSaturation(value) { // real -> string
+    return value.toFixed(2)
+  }
+
+  Share.CheckBox { id: saturationEnableButton_
+    anchors {
+      left: parent.left
+      verticalCenter: saturationSlider_.verticalCenter
+      margins: _ROOT_MARGIN
+    }
+    enabled: enableButton_.checked
+    text: qsTr("S")
+    toolTip: qsTr("Saturation in HSI model") + " [0°,360°]"
+  }
+
+  Share.LabeledGrayRangeSlider { id: saturationSlider_
+    anchors {
+      left: saturationEnableButton_.right
+      right: parent.right
+      bottom: scaleSlider_.top
+      //margins: _ROOT_MARGIN // remove left margin
+      rightMargin: _ROOT_MARGIN
+      bottomMargin: _ROOT_MARGIN
+    }
+    enabled: enableButton_.checked && saturationEnableButton_.checked
+    spacing: _ROOT_MARGIN
+    labelWidth: _SLIDER_LABEL_WIDTH
+
+    minimumValue: 0.0
+    maximumValue: 1.0
+
+    //startValue: 0.3
+    //stopValue: 0.7
+
+    startLabelText: formatSaturation(startValue)
+    stopLabelText: formatSaturation(stopValue)
+
+    startColor: 'black'
+    stopColor: 'red'
+
+    startLabelToolTip: qsTr("Minimum saturation of the text color")
+    stopLabelToolTip: qsTr("Maximum saturation of the text color")
+
+    startHandleToolTip: startLabelToolTip
+    stopHandleToolTip: stopLabelToolTip
+
+    sliderToolTip: qsTr("Range of the text color's saturation")
+
+    //onStartValueChanged: root_.refresh()
+    //onStopValueChanged: root_.refresh()
+  }
+  // Scale
+
+  function formatScale(value) { // real -> string
+    return value.toFixed(2)
+    //return 'x' + value.toFixed(2)
+  }
+
+  Share.CheckBox { id: scaleEnableButton_
+    anchors {
+      left: parent.left
+      verticalCenter: scaleSlider_.verticalCenter
+      margins: _ROOT_MARGIN
+    }
+    enabled: enableButton_.checked
+    text: qsTr("Z")
+    toolTip: qsTr("Zoom image text that is too large or too small")
+  }
+
+  Share.LabeledSlider { id: scaleSlider_
+    anchors {
+      left: scaleEnableButton_.right
+      right: parent.right
+      bottom: rightButtonRow_.top
+      //margins: _ROOT_MARGIN // remove left margin
+      bottomMargin: _ROOT_MARGIN
+      rightMargin: _SLIDER_LABEL_WIDTH + _ROOT_MARGIN * 2
+    }
+    enabled: enableButton_.checked && scaleEnableButton_.checked
+    spacing: _ROOT_MARGIN
+    labelWidth: _SLIDER_LABEL_WIDTH
+
+    minimumValue: 0.2
+    maximumValue: 2.0
+
+    handleWidth: intensitySlider_.handleWidth
+
+    text: formatScale(value)
+    sliderToolTip: qsTr("Scale ratio") + " [" + formatScale(minimumValue) + "," + formatScale(maximumValue) + "]"
   }
 
   // Footer

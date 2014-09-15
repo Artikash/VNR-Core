@@ -12,6 +12,7 @@ class DeclarativeLinearGradientPrivate
 {
 public:
   bool visible;
+  qreal opacity;
   QList<QColor> colors;
   QList<qreal> positions;
   QPointF startPoint;
@@ -19,7 +20,7 @@ public:
   QBrush brush;
   bool brushDirty;
 
-  DeclarativeLinearGradientPrivate() : visible(true), brushDirty(true) {}
+  DeclarativeLinearGradientPrivate() : visible(true), opacity(1.0), brushDirty(true) {}
 
   void invalidateBrush() { brushDirty = true; }
   bool updateBrush(int width, int height);
@@ -80,6 +81,8 @@ QVariantList DeclarativeLinearGradient::positions() const
   return r;
 }
 
+qreal DeclarativeLinearGradient::opacity() const { return d_->opacity; }
+
 QPointF DeclarativeLinearGradient::startPoint() const { return d_->startPoint; }
 QPointF DeclarativeLinearGradient::stopPoint() const { return d_->stopPoint; }
 
@@ -87,9 +90,20 @@ void DeclarativeLinearGradient::setVisible(bool t)
 {
   if (d_->visible != t) {
     d_->visible = t;
+    if (d_->visible)
+      update();
     emit visibleChanged();
-    update();
   }
+}
+
+void DeclarativeLinearGradient::setOpacity(qreal v)
+{
+  if (qFuzzyCompare(d_->opacity, v))
+    return;
+  d_->opacity = v;
+  if (d_->visible)
+    update();
+  emit opacityChanged();
 }
 
 void DeclarativeLinearGradient::setColors(const QVariantList &l)
@@ -100,8 +114,9 @@ void DeclarativeLinearGradient::setColors(const QVariantList &l)
   if (d_->colors != v) {
     d_->colors = v;
     d_->invalidateBrush();
+    if (d_->visible)
+      update();
     emit colorsChanged();
-    update();
   }
 }
 
@@ -113,8 +128,9 @@ void DeclarativeLinearGradient::setPositions(const QVariantList &l)
   if (d_->positions != v) {
     d_->positions = v;
     d_->invalidateBrush();
+    if (d_->visible)
+      update();
     emit positionsChanged();
-    update();
   }
 }
 
@@ -123,8 +139,9 @@ void DeclarativeLinearGradient::setStartPoint(const QPointF &v)
   if (d_->startPoint != v) {
     d_->startPoint = v;
     d_->invalidateBrush();
+    if (d_->visible)
+      update();
     emit startPointChanged();
-    update();
   }
 }
 
@@ -133,8 +150,9 @@ void DeclarativeLinearGradient::setStopPoint(const QPointF &v)
   if (d_->stopPoint != v) {
     d_->stopPoint = v;
     d_->invalidateBrush();
+    if (d_->visible)
+      update();
     emit stopPointChanged();
-    update();
   }
 }
 
@@ -147,8 +165,10 @@ void DeclarativeLinearGradient::paint(QPainter *painter, const QStyleOptionGraph
   Q_UNUSED(option);
   Q_UNUSED(widget);
   //painter->setRenderHints(QPainter::Antialiasing, true);
-  if (d_->visible && (!d_->brushDirty || d_->updateBrush(width(), height())))
+  if (d_->visible && (!d_->brushDirty || d_->updateBrush(width(), height()))) {
+    painter->setOpacity(d_->opacity);
     painter->fillRect(boundingRect(), d_->brush);
+  }
 }
 
 // EOF

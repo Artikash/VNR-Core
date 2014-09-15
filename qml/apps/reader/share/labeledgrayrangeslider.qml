@@ -1,5 +1,5 @@
-/** labeledrangeslider.qml
- *  9/8/2014 jichi
+/** labeledgrayrangeslider.qml
+ *  9/14/2014 jichi
  */
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
@@ -14,6 +14,9 @@ Item { id: root_
 
   property alias startValue: slider_.startValue
   property alias stopValue: slider_.stopValue
+
+  property alias startColor: slider_.startColor
+  property alias stopColor: slider_.stopColor
 
   property bool enabled: true
   property bool hover:
@@ -85,7 +88,7 @@ Item { id: root_
     }
   }
 
-  Share.RangeSlider { id: slider_
+  Share.GrayRangeSlider { id: slider_
     anchors {
       top: parent.top; bottom: parent.bottom
       left: startLabel_.right

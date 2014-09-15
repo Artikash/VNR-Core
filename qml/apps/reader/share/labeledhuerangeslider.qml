@@ -1,5 +1,5 @@
-/** labeledrangeslider.qml
- *  9/8/2014 jichi
+/** labeledhuerangeslider.qml
+ *  9/14/2014 jichi
  */
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
@@ -85,7 +85,7 @@ Item { id: root_
     }
   }
 
-  Share.RangeSlider { id: slider_
+  Share.HueRangeSlider { id: slider_
     anchors {
       top: parent.top; bottom: parent.bottom
       left: startLabel_.right
