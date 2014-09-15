@@ -80,6 +80,11 @@ class _HotkeyManager(object):
         'on': ss.isTextHotkeyEnabled(), # bool
         'key': ss.textHotkey(), # string
       },
+      'grab': { # string task name
+        'do': self._onGrab, # function
+        'on': ss.isGrabHotkeyEnabled(), # bool
+        'key': ss.grabHotkey(), # string
+      },
     }
 
     ss.ttsHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'tts'))
@@ -87,6 +92,9 @@ class _HotkeyManager(object):
 
     ss.textHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'text'))
     ss.textHotkeyChanged.connect(partial(self.setMappingKey, 'text'))
+
+    ss.grabHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'grab'))
+    ss.grabHotkeyChanged.connect(partial(self.setMappingKey, 'grab'))
 
     #from PySide import QtCore
     #qApp = QtCore.QCoreApplication.instance()
@@ -163,6 +171,12 @@ class _HotkeyManager(object):
     import textman
     tm = textman.manager()
     tm.setEnabled(not tm.isEnabled())
+    dprint("pass")
+
+  @staticmethod
+  def _onGrab():
+    import gameman
+    gameman.manager().captureWindow()
     dprint("pass")
 
 #@QmlObject

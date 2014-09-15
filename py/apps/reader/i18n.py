@@ -98,7 +98,7 @@ KEY_NAMES = {
   'Escape': 'Esc',
 }
 def key_name(t): # str -> unicode
-  return KEY_NAMES.get(t) or t
+  return KEY_NAMES.get(t) or t.capitalize() if t else ''
 
 def combined_key_name(t, delim='+'): # str -> unicode
   from hkman import unpackhotkey

@@ -891,15 +891,13 @@ class GameManager(QtCore.QObject):
     self.windowChanged.emit(wid)
 
   def captureWindow(self):
-    if self.__d.game:
-      hwnd = self.__d.game.wid
-      if hwnd:
-        import grab
-        ok = grab.window(hwnd)
-        if ok:
-          growl.msg(my.tr("Screenshot saved to clipboard and desktop"))
-        else:
-          growl.warn(my.tr("Cannot save the screenshot"))
+    import grab
+    hwnd = self.__d.game.wid if self.__d.game else 0
+    ok = grab.window(hwnd) if hwnd else grab.desktop()
+    if ok:
+      growl.msg(my.tr("Screenshot saved to clipboard and desktop"))
+    else:
+      growl.warn(my.tr("Cannot save the screenshot"))
 
   def openExecutable(self, path, launchPath=""):
     #self.setGame(path=path)
