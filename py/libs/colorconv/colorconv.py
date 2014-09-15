@@ -56,7 +56,8 @@ def deg2rad(d): return d * math.pi / 180 # float -> float
 def rad2deg(d): return d * 180 / math.pi # float -> float
 
 if __name__ == '__main__':
-  r,g,b = pix2rgb(0x0f32ff)
+  #r,g,b = pix2rgb(0x0f32ff)
+  r,g,b = pix2rgb(0x0000ff)
   print r,g,b
   h,s,i = rgb2hsi(r,g,b)
   print h,s,i
