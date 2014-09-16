@@ -16,17 +16,21 @@ int main()
   //QString q = "\xa4\xa2";
   //const wchar_t *text = (LPCWSTR)q.utf16();
 
-  //const wchar_t *voice = L"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Speech\\Voices\\Tokens\\VW Misaki";
-  const wchar_t *voice = L"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Speech\\Voices\\Tokens\\CeVIO-\u3055\u3068\u3046\u3055\u3055\u3089";
+  const wchar_t *voice = L"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Speech\\Voices\\Tokens\\VW Misaki";
+  //const wchar_t *voice = L"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Speech\\Voices\\Tokens\\CeVIO-\u3055\u3068\u3046\u3055\u3055\u3089";
 
-  CoInitialize(nullptr);
+  //CoInitialize(nullptr);
+  //OleInitialize(nullptr);
+  CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
   wintts_t *tts = wintts_create();
   Q_ASSERT(tts);
   wintts_set_voice(tts, voice);
   wintts_speak(tts, text);
   wintts_destroy(tts);
 
-  CoUninitialize();
+  //CoUninitialize();
+  OleUninitialize();
   return 0;
 }
 
