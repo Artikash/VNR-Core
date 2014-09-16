@@ -307,6 +307,7 @@ class sakurakit(QObject):
       self.tr("Local"),
       self.tr("Location"),
       self.tr("Locations"),
+      self.tr("Macro"),
       self.tr("Menu"),
       self.tr("Method"),
       self.tr("Name"),

@@ -101,6 +101,9 @@ NAME_ESCAPE = "9%i.%i58" # ESCAPE of escaped character name
 
 CHARA_ESCAPE = "9%i.%i48" # ESCAPE of character names from getchu
 
+TERM_MACRO_BEGIN = '{{'
+TERM_MACRO_END = '}}'
+
 # Game info
 OKAZU_TAGS = [
   u"催眠",
