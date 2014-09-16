@@ -280,7 +280,7 @@ Rectangle { id: root_
     startHandleToolTip: startLabelToolTip
     stopHandleToolTip: stopLabelToolTip
 
-    sliderToolTip: qsTr("Range of the text color intensity")
+    sliderToolTip: qsTr("Range of the text color intensity") + " [0,255]"
 
     //onStartValueChanged: root_.refresh()
     //onStopValueChanged: root_.refresh()
@@ -331,7 +331,7 @@ Rectangle { id: root_
     startHandleToolTip: startLabelToolTip
     stopHandleToolTip: stopLabelToolTip
 
-    sliderToolTip: qsTr("Range of the text color's hue")
+    sliderToolTip: qsTr("Range of the text color's hue") + " [0°,360°]"
 
     //onStartValueChanged: root_.refresh()
     //onStopValueChanged: root_.refresh()
@@ -351,7 +351,7 @@ Rectangle { id: root_
     }
     enabled: enableButton_.checked
     text: qsTr("S")
-    toolTip: qsTr("Saturation in HSI model") + " [0°,360°]"
+    toolTip: qsTr("Saturation in HSI model") + " [0,1]"
   }
 
   Share.LabeledGrayRangeSlider { id: saturationSlider_
@@ -385,7 +385,7 @@ Rectangle { id: root_
     startHandleToolTip: startLabelToolTip
     stopHandleToolTip: stopLabelToolTip
 
-    sliderToolTip: qsTr("Range of the text color's saturation")
+    sliderToolTip: qsTr("Range of the text color's saturation") + " [0,1]"
 
     //onStartValueChanged: root_.refresh()
     //onStopValueChanged: root_.refresh()
@@ -427,7 +427,7 @@ Rectangle { id: root_
     handleWidth: intensitySlider_.handleWidth
 
     text: formatScale(enabled ? value : 1.0)
-    sliderToolTip: qsTr("Scale ratio") + " [" + formatScale(minimumValue) + "," + formatScale(maximumValue) + "]"
+    sliderToolTip: qsTr("Scale ratio") + " [0.2,2.0]"
   }
 
   // Footer
