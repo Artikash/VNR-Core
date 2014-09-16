@@ -11,6 +11,7 @@ import requests
 from sakurakit import skstr
 from sakurakit.skdebug import dwarn, derror
 #from sakurakit.sknetio import GZIP_HEADERS
+from cconv.cconv import wide2thin
 
 session = requests # global session
 
@@ -87,7 +88,7 @@ def translate(text, to='en', fr='ja'):
           start += 1
           stop = ret.find(FRESHEYE_AREA_END, start)
           if stop > 0:
-            return ret[start:stop]
+            return wide2thin(ret[start:stop])
 
   #except socket.error, e:
   #  dwarn("socket error", e.args)

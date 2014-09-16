@@ -1019,6 +1019,7 @@ class TransruTranslator(OnlineMachineTranslator):
 
 class GoogleTranslator(OnlineMachineTranslator):
   key = 'google' # override
+  asyncSupported = True # override  enable async
 
   def __init__(self, **kwargs):
     super(GoogleTranslator, self).__init__(**kwargs)

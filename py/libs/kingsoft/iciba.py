@@ -106,13 +106,13 @@ if __name__ == "__main__":
     from PySide.QtNetwork import QNetworkAccessManager
     session = qtrequests.Session(QNetworkAccessManager())
     with SkProfiler():
-      for i in range(1):
+      for i in range(10):
         t = translate(s, to=to, fr=fr)
     #print t
 
     session = requests.Session()
     with SkProfiler():
-      for i in range(1):
+      for i in range(10):
         t = translate(s, to=to, fr=fr)
     #print t
 
