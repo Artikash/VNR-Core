@@ -8,6 +8,7 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
+import re
 from functools import partial
 from zhszht.zhszht import zhs2zht
 from sakurakit import skthreads
@@ -20,6 +21,8 @@ def manager(): return TermManager()
 
 def _mark_text(text): # unicode -> unicode
   return '<span style="text-decoration:underline">%s</span>' % text
+
+_RE_MACRO = re.compile('{{(.+?)}}')
 
 # All methods are supposed to be thread-safe, though they are not
 class _TermManager:
@@ -286,6 +289,16 @@ class TermManager:
     d = self.__d
     if not d.enabled or d.locked:
       return text
+    dm = dataman.manager()
+    # {{name}}
+    for m in _RE_MACRO.finditer(text):
+      macro = m.group(1)
+      t = dm.queryMacroTerm(macro)
+      if t:
+        repl = t.d.text
+        text = text.replace("{{%s}}" % macro, repl)
+      else:
+        dwarn("missing macro", t.d.pattern, pattern)
     return text
 
   # Escaped

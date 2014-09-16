@@ -1957,10 +1957,14 @@ class _Term(object):
       manager().invalidateSortedTerms()
     #else:
     #if d.type == 'term'
-    self._clearCachedProperties()
+
+    self.clearCachedProperties()
     manager().clearTermTitles()
 
-  def _clearCachedProperties(self):
+    if self.type == 'macro': # bug: change type to macro will not have effect at once
+      manager().clearMacroCache() # might be slow, though
+
+  def clearCachedProperties(self):
     self.replace = self.prepareReplace = self.applyReplace = self.patternRe = None
 
   def setDirty(self, dirty):
@@ -2086,6 +2090,10 @@ class Term(QObject):
     return self.__d.dirtyProperties
 
   def clearDirtyProperties(self): self.__d.setDirty(False)
+
+  # Cache
+
+  def clearCache(self): self.__d.clearCachedProperties()
 
   ## Properties ##
 
@@ -8923,6 +8931,16 @@ class DataManager(QObject):
     d.dirtyTerms.add(term)
     d.submitDirtyTermsLater()
     d.touchTerms()
+
+  def queryMacroTerm(self, pattern): return self.__d.macroTerms.get(pattern)
+
+  def clearMacroCache(self):
+    d = self.__d
+    d.clearMacroTerms()
+    for t in d.terms:
+      td = t.d
+      if td.regex and not td.disabled and defs.TERM_MACRO_BEGIN in td.pattern:
+        t.clearCache()
 
   def invalidateSortedTerms(self): self.__d.sortedTerms = None
   def clearTermTitles(self): self.__d.clearTermTitles()
