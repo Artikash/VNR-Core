@@ -5,6 +5,7 @@
 # Always use long for unixtimestamp, as after year 2038 int32 will overflow.
 
 import itertools, operator, os, re #, shutil
+from collections import OrderedDict
 from ctypes import c_longlong
 from datetime import datetime
 from functools import partial
@@ -1956,10 +1957,14 @@ class _Term(object):
       manager().invalidateSortedTerms()
     #else:
     #if d.type == 'term'
-    self._clearCachedProperties()
+
+    self.clearCachedProperties()
     manager().clearTermTitles()
 
-  def _clearCachedProperties(self):
+    if self.type == 'macro': # bug: change type to macro will not have effect at once
+      manager().clearMacroCache() # might be slow, though
+
+  def clearCachedProperties(self):
     self.replace = self.prepareReplace = self.applyReplace = self.patternRe = None
 
   def setDirty(self, dirty):
@@ -2007,8 +2012,8 @@ class _Term(object):
     sig = Signal(type)
     return Property(type, getter, sync_setter if sync else setter, notify=sig), sig
 
-  TYPES = 'target', 'source', 'escape', 'name', 'title', 'speech', 'origin', 'ocr' #, 'name'
-  TR_TYPES = tr_("Translation"), tr_("Japanese"), tr_("Escape"), mytr_("Chara"), mytr_("Title"), mytr_("Voice"), mytr_("Original text"), notr_("OCR") #, mytr_("Character name")
+  TYPES = 'target', 'source', 'escape', 'name', 'title', 'speech', 'origin', 'ocr', 'macro'
+  TR_TYPES = tr_("Translation"), tr_("Japanese"), tr_("Escape"), mytr_("Chara"), mytr_("Title"), mytr_("Voice"), mytr_("Original text"), notr_("OCR"), tr_("Macro")
 
 class Term(QObject):
   __D = _Term
@@ -2085,6 +2090,10 @@ class Term(QObject):
     return self.__d.dirtyProperties
 
   def clearDirtyProperties(self): self.__d.setDirty(False)
+
+  # Cache
+
+  def clearCache(self): self.__d.clearCachedProperties()
 
   ## Properties ##
 
@@ -2228,16 +2237,14 @@ class Term(QObject):
     """
     d = self.__d
     if not d.patternRe and d.pattern:
-      #pattern = d.pattern
-      #if isinstance(pattern, str):
-      #  try: pattern = pattern.decode('utf8') # enforce unicode
-      #  except UnicodeDecodeError: pass
-      d.patternRe = (
-        #re.compile(d.pattern, re.IGNORECASE|re.DOTALL) if d.regex and d.ignoresCase else
-        re.compile(d.pattern, re.DOTALL) if d.regex else
-        #re.compile(re.escape(d.pattern), re.IGNORECASE) if d.ignoresCase else
-        re.compile(re.escape(d.pattern))
-      )
+      pattern = d.pattern
+      if defs.TERM_MACRO_BEGIN in pattern:
+        pattern = termman.manager().applyMacroTerms(pattern)
+      if pattern:
+        d.patternRe = (
+          re.compile(pattern, re.DOTALL) if d.regex else
+          re.compile(re.escape(pattern))
+        )
     return d.patternRe
 
   def patternNeedsRe(self):
@@ -2265,11 +2272,15 @@ class Term(QObject):
     """
     d = self.__d
     if not d.replace and d.pattern:
-      titles = manager().termTitles()
-      table = {k : d.text + v + ' ' for k,v in titles.iteritems()} # append space
-      d.replace = skstr.multireplacer(table,
-          prefix=d.pattern,
-          escape=not d.regex)
+      pattern = d.pattern
+      if defs.TERM_MACRO_BEGIN in pattern:
+        pattern = termman.manager().applyMacroTerms(pattern)
+      if pattern:
+        titles = manager().termTitles()
+        table = {k : d.text + v + ' ' for k,v in titles.iteritems()} # append space
+        d.replace = skstr.multireplacer(table,
+            prefix=pattern,
+            escape=not d.regex)
     return d.replace
 
   @replace.setter
@@ -2282,14 +2293,18 @@ class Term(QObject):
     """
     d = self.__d
     if not d.prepareReplace and d.pattern:
-      titles = manager().termTitles()
-      #l = sorted(titles.iterkeys(), key=len) # already sorted
-      esc = defs.NAME_ESCAPE + ' '
-      h = self.priority or d.id or id(self)
-      table = {k : esc%(h,i) for i,k in enumerate(titles)}
-      d.prepareReplace = skstr.multireplacer(table,
-          prefix=d.pattern,
-          escape=not d.regex)
+      pattern = d.pattern
+      if defs.TERM_MACRO_BEGIN in pattern:
+        pattern = termman.manager().applyMacroTerms(pattern)
+      if pattern:
+        titles = manager().termTitles()
+        #l = sorted(titles.iterkeys(), key=len) # already sorted
+        esc = defs.NAME_ESCAPE + ' '
+        h = self.priority or d.id or id(self)
+        table = {k : esc%(h,i) for i,k in enumerate(titles)}
+        d.prepareReplace = skstr.multireplacer(table,
+            prefix=pattern,
+            escape=not d.regex)
     return d.prepareReplace
 
   @prepareReplace.setter
@@ -5466,6 +5481,7 @@ class _DataManager(object):
     self.termsInitialized = False # if the terms has initialized
 
     self._termTitles = None  # OrderedDict{unicode from:unicode to} or None
+    self._macroTerms = None  # {unicode pattern:[Term]} or None   indexed macros
 
     # References to modify
     #self._referencesDirty = False    # bool
@@ -5540,14 +5556,7 @@ class _DataManager(object):
       self.terms = []                 # [Term], not None
       self.sortedTerms = None
 
-  def clearTermTitles(self):
-    #dprint("enter")
-    self.termTitles = None
-    #dprint("leave")
-
-  def clearNameItems(self):
-    self.nameItems = []
-    #mecabman.manager().clearDictionary()
+  def clearNameItems(self): self.nameItems = [] #; mecabman.manager().clearDictionary()
 
   @property
   def sortedTerms(self):
@@ -5568,17 +5577,56 @@ class _DataManager(object):
   def sortedTerms(self, v):
     self._sortedTerms = v
     self.clearTermTitles()
+    self.clearMacroTerms()
 
   @property
   def termTitles(self):
     if self._termTitles is None:
-      lang = self.user.language
-      self._termTitles = termman.manager().queryOrderedTermTitles(lang)
+      self._termTitles = self._queryTermTitles()
     return self._termTitles
 
-  @termTitles.setter
-  def termTitles(self, v):
-    self._termTitles = v
+  #@termTitles.setter
+  #def termTitles(self, v): self._termTitles = v
+
+  def clearTermTitles(self): self._termTitles = None
+
+  def _queryTermTitles(self):
+    """Terms sorted by length and id
+    @return  OrderedDict{unicode from:unicode to} not None not empty
+    """
+    lang = self.user.language
+    zht = lang == 'zht'
+    q = termman.manager().filterTerms(self.q.iterTitleTerms(), lang)
+    l = [] # [long id, unicode pattern, unicode replacement]
+    ret = OrderedDict({'':''})
+    for t in q:
+      td = t.d
+      pat = td.pattern
+      repl = td.text
+      if zht and td.language == 'zhs':
+        pat = zhs2zht(pat)
+        if repl: # and self.convertsChinese:
+          repl = zhs2zht(repl)
+      l.append((td.id, pat, repl))
+    l.sort(key=lambda it:
+        (len(it[1]), it[0]))
+    for id,pat,repl in l:
+      ret[pat] = repl
+    return ret
+
+  # Macros
+
+  @property
+  def macroTerms(self):
+    if self._macroTerms is None:
+      self._macroTerms = {t.d.pattern:t for t in
+          termman.manager().filterTerms(self.q.iterMacroTerms(), self.user.language)}
+    return self._macroTerms
+
+  #@macroTerms.setter
+  #def macroTerms(self, v): self._macroTerms = v
+
+  def clearMacroTerms(self): self._macroTerms = None
 
   ## User ##
 
@@ -8593,6 +8641,8 @@ class DataManager(QObject):
     return self.__d.iterTermsWithType('ocr')
   def iterTitleTerms(self):
     return self.__d.iterTermsWithType('title')
+  def iterMacroTerms(self):
+    return self.__d.iterTermsWithType('macro')
   #def iterSourceTerms(self):
   #  return self.__d.iterTermsWithType('source')
   def iterWordTerms(self):
@@ -8881,6 +8931,16 @@ class DataManager(QObject):
     d.dirtyTerms.add(term)
     d.submitDirtyTermsLater()
     d.touchTerms()
+
+  def queryMacroTerm(self, pattern): return self.__d.macroTerms.get(pattern)
+
+  def clearMacroCache(self):
+    d = self.__d
+    d.clearMacroTerms()
+    for t in d.terms:
+      td = t.d
+      if td.regex and not td.disabled and defs.TERM_MACRO_BEGIN in td.pattern:
+        t.clearCache()
 
   def invalidateSortedTerms(self): self.__d.sortedTerms = None
   def clearTermTitles(self): self.__d.clearTermTitles()

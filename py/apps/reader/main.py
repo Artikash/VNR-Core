@@ -311,6 +311,7 @@ class _MainObject(object):
     tm = self.textManager
     ret.processDetached.connect(tm.clear)
 
+
     ret.languageChanged.connect(tm.setGameLanguage)
     ret.encodingChanged.connect(tm.setEncoding)
     ret.threadChanged.connect(tm.setScenarioThread)
@@ -328,6 +329,9 @@ class _MainObject(object):
     ret.threadKeptChanged.connect(tm.setKeepsThreads)
 
     ret.removesRepeatChanged.connect(tm.setRemovesRepeatText)
+
+    dm = self.dataManager
+    ret.processChanged.connect(dm.clearMacroCache)
 
     agent = self.gameAgent
     agent.processDetached.connect(ret.processDetached)
@@ -447,13 +451,25 @@ class _MainObject(object):
     for sig in (
         ss.machineTranslatorChanged,
         ss.termEnabledChanged,
-        #ss.userLanguageChanged
+        ss.userLanguageChanged,
         dm.termsChanged,
         #dm.gameFilesChanged, # duplicate with gameItemsChanged
         dm.gameItemsChanged,
         #self.gameManager.processChanged,   # this would cause recursion
         ):
       sig.connect(ret.clearTranslationCache)
+
+    # These should be moved to dataManager. Put here to avoid recursion, moved to gameman
+
+    for sig in (
+        ss.termEnabledChanged,
+        ss.userLanguageChanged,
+        dm.termsChanged,
+        #dm.gameFilesChanged, # duplicate with gameItemsChanged
+        dm.gameItemsChanged,
+        #self.gameManager.processChanged,   # this would cause recursion, moved to gameman
+        ):
+      sig.connect(dm.clearMacroCache)
 
     #ss.windowTextVisibleChanged.connect(ret.refreshWindowTranslation)
     return ret

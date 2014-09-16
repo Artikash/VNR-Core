@@ -131,6 +131,8 @@ class _TermInput(object):
 
   def _refreshTypeLabel(self):
     tt = self._getType()
+    self.regexButton.setEnabled(tt not in ('title', 'macro'))
+
     if tt == 'target':
       t = my.tr("replace after translation")
     elif tt == 'source':
@@ -147,6 +149,8 @@ class _TermInput(object):
       t = my.tr("replace Japanese for OCR")
     elif tt == 'origin':
       t = my.tr("replace Japanese before whatever")
+    elif tt == 'macro':
+      t = my.tr("reusable regular expression pattern")
     else:
       t = ''
     if t:
@@ -256,7 +260,7 @@ class _TermInput(object):
       pattern = self.patternEdit.text().strip()
       comment = self.commentEdit.text().strip()
       text = self.textEdit.text().strip()
-      regex = self.regexButton.isChecked()
+      regex = type == 'macro' or (self.regexButton.isChecked() and type != 'title')
       special = self.specialButton.isChecked() and bool(gameId or md5)
       ret = dataman.Term(gameId=gameId, gameMd5=md5,
           userId=user.id,

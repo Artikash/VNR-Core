@@ -63,7 +63,7 @@ Item { id: root_
   }
 
   function shouldHighlight(term) {
-    return term.private_ || term.language === 'ja' || term.type === 'origin' //|| term.type === 'name'
+    return term.private_ || term.language === 'ja' || term.type === 'origin' || term.type === 'macro'
   }
 
   function itemColor(term) {
@@ -220,6 +220,7 @@ Item { id: root_
             case 'escape': return Sk.tr("Escape")
             case 'source': return Sk.tr("Japanese")
             case 'target': return Sk.tr("Translation")
+            case 'macro': return Sk.tr("Macro")
             case 'name': return My.tr("Chara")
             case 'title': return qsTr("Title")
             case 'speech': return My.tr("Voice")
@@ -245,6 +246,7 @@ Item { id: root_
               append({value:'speech', text:My.tr("Voice")})
               append({value:'origin', text:My.tr("Original text")})
               append({value:'ocr', text:My.tr("OCR")})
+              append({value:'macro', text:Sk.tr("Macro")})
             }
           }
 
@@ -272,6 +274,7 @@ Item { id: root_
             case 'speech': selectedIndex = 5; break
             case 'origin': selectedIndex = 6; break
             case 'ocr': selectedIndex = 7; break
+            case 'macro': selectedIndex = 8; break
             default: selectedIndex = 0
             }
           }
@@ -346,8 +349,8 @@ Item { id: root_
         height: table_.cellHeight
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
-          enabled: canEdit(itemValue) && itemValue.type !== 'title' // prevent title terms from using regex
-          checked: itemValue.regex
+          enabled: canEdit(itemValue) && itemValue.type !== 'title' && itemValue.type !== 'macro' // prevent title terms from using regex
+          checked: itemValue.regex || itemValue.type === 'macro' // force regex for macros
           onCheckedChanged:
             if (enabled && checked !== itemValue.regex)
               itemValue.regex = checked

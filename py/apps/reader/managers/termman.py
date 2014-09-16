@@ -8,7 +8,7 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
-from collections import OrderedDict
+import re
 from functools import partial
 from zhszht.zhszht import zhs2zht
 from sakurakit import skthreads
@@ -21,6 +21,8 @@ def manager(): return TermManager()
 
 def _mark_text(text): # unicode -> unicode
   return '<span style="text-decoration:underline">%s</span>' % text
+
+_RE_MACRO = re.compile('{{(.+?)}}')
 
 # All methods are supposed to be thread-safe, though they are not
 class _TermManager:
@@ -210,37 +212,13 @@ class TermManager:
   #      ret[pat] = repl
   #  return ret
 
-  def queryOrderedTermTitles(self, language, sort=True):
-    """Terms sorted by length and id
-    @param  language  unicode
-    @param* sort  bool
-    @return  OrderedDict{unicode from:unicode to} not None not empty
+  def filterTerms(self, terms, language):
     """
-    d = self.__d
-    ret = {'':''}
-    if not d.enabled or d.locked:
-      return ret
-    ret = OrderedDict(ret)
-    zht = language == 'zht'
-    q = self.__d.iterTerms(
-        dataman.manager().iterTitleTerms(),
-        language)
-    l = [] # [long id, unicode pattern, unicode replacement]
-    for t in q:
-      td = t.d
-      if not td.hentai or d.hentai:
-        pat = td.pattern
-        repl = td.text
-        if zht and td.language == 'zhs':
-          pat = zhs2zht(pat)
-          if repl: # and self.convertsChinese:
-            repl = zhs2zht(repl)
-        l.append((td.id, pat, repl))
-    l.sort(key=lambda it:
-        (len(it[1]), it[0]))
-    for id,pat,repl in l:
-      ret[pat] = repl
-    return ret
+    @param  terms  iterable dataman.Term
+    @param  language  unicode
+    @yield  Term
+    """
+    return self.__d.iterTerms(terms, language)
 
   def applyTargetTerms(self, text, language):
     """
@@ -301,6 +279,26 @@ class TermManager:
             text = name.replace(text)
       except Exception, e: dwarn(e)
       text = text.rstrip() # remove trailing spaces
+    return text
+
+  def applyMacroTerms(self, text):
+    """
+    @param  text  unicode
+    @return  unicode
+    """
+    d = self.__d
+    if not d.enabled or d.locked:
+      return text
+    dm = dataman.manager()
+    # {{name}}
+    for m in _RE_MACRO.finditer(text):
+      macro = m.group(1)
+      t = dm.queryMacroTerm(macro)
+      if t:
+        repl = t.d.text
+        text = text.replace("{{%s}}" % macro, repl)
+      else:
+        dwarn("missing macro", t.d.pattern, pattern)
     return text
 
   # Escaped

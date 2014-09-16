@@ -2842,22 +2842,22 @@ You can redownload it later if you have Internet access.</source>
         <translation>Excite.co.jp的多國語言翻譯服務</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="298"/>
+        <location filename="dialogs/terminput.py" line="300"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="304"/>
+        <location filename="dialogs/terminput.py" line="306"/>
         <source>The pattern is kind of short. You might want to turn on the series-specific option.</source>
         <translation>匹配的文本太短了呢。你最好把詞條設定為系列專用的。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="316"/>
+        <location filename="dialogs/terminput.py" line="318"/>
         <source>Everything looks OK</source>
         <translation>看起來還好</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="325"/>
+        <location filename="dialogs/terminput.py" line="327"/>
         <source>Create dictionary entry</source>
         <translation>創建詞條</translation>
     </message>
@@ -2871,7 +2871,7 @@ The dictionary will be installed to {1}.</source>
 完成后，辭書會被安裝到{1}。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="307"/>
+        <location filename="dialogs/terminput.py" line="309"/>
         <source>The translation is empty. VNR will delete the text matched with the pattern.</source>
         <translation>沒有指定翻譯。這樣的話VNR會刪掉匹配的文本。</translation>
     </message>
@@ -2968,7 +2968,7 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>JMDict日文-荷蘭文辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="275"/>
+        <location filename="dialogs/terminput.py" line="277"/>
         <source>Add new term</source>
         <translation>添加詞條</translation>
     </message>
@@ -3707,12 +3707,12 @@ You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or d
         <translation>OCR軟件的位置</translation>
     </message>
     <message>
-        <location filename="managers/ocrman.py" line="280"/>
+        <location filename="managers/ocrman.py" line="276"/>
         <source>Start OCR screen reader</source>
         <translation>開始光學文字識別</translation>
     </message>
     <message>
-        <location filename="managers/ocrman.py" line="282"/>
+        <location filename="managers/ocrman.py" line="278"/>
         <source>Stop OCR screen reader</source>
         <translation>停止光學文字識別</translation>
     </message>
@@ -3772,17 +3772,17 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
 相反，克隆會產生重复的條目，管理起來會更加困難。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="301"/>
+        <location filename="dialogs/terminput.py" line="303"/>
         <source>The pattern is the same as the translation that is useless.</source>
         <translation>匹配的文本和替換的文本相同，這樣子做沒有意義。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="310"/>
+        <location filename="dialogs/terminput.py" line="312"/>
         <source>The pattern is short and only contains hiragana that could be ambiguous.</source>
         <translation>匹配的文本很短且只包含平假名，這樣很容易產生歧義。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="313"/>
+        <location filename="dialogs/terminput.py" line="315"/>
         <source>The pattern is long. Please DO NOT add subtitles to Shared Dictionary.</source>
         <translation>匹配的文本很長。請不要把人工字幕加入共享辭書。</translation>
     </message>
@@ -3943,6 +3943,11 @@ Check this wiki for what to do if there is no correct text.
         <location filename="dialogs/_prefs.py" line="872"/>
         <source>Take a screenshot of the game window</source>
         <translation>對遊戲窗口截取圖片</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="152"/>
+        <source>reusable regular expression pattern</source>
+        <translation>可重用的正則表達式定義</translation>
     </message>
 </context>
 </TS>
