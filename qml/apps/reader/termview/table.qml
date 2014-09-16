@@ -258,6 +258,8 @@ Item { id: root_
               var t = model.get(selectedIndex).value
               if (t !== itemValue.type) {
                 itemValue.type = t
+                if (t === 'macro' && !itemValue.regex)
+                  itemValue.regex = true
                 itemValue.updateUserId = root_.userId
                 itemValue.updateTimestamp = Util.currentUnixTime()
               }
