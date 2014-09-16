@@ -14,6 +14,8 @@ Rectangle { id: root_
   property string text: textArea_.textEdit.text
   //property bool autoReleaseImage: false
 
+  property bool busy: false // whether is ocring
+
   function show(image, text) { // OcrImageObject
     imageObject = image
     loadImageProperties()
@@ -169,7 +171,9 @@ Rectangle { id: root_
 
     imageObject.editable = enableButton_.checked
 
+    busy = true
     textArea_.textEdit.text = imageObject.ocr() || ('(' + Sk.tr("empty") + ')')
+    busy = false
   }
 
   MouseArea { id: mouse_
@@ -462,9 +466,9 @@ Rectangle { id: root_
       text: "OCR"
       toolTip: qsTr("Apply OCR to the current image")
       onClicked: root_.ocr()
-
-      //styleHint: 'primary'
-      backgroundColor: '#aa00bfff' // blue
+      enabled: !root_.busy
+      styleHint: 'primary'
+      backgroundColor: style.activeColor // do not change color
     }
 
     Share.PushButton { id: resetButton_
@@ -472,9 +476,9 @@ Rectangle { id: root_
       text: Sk.tr("Reset")
       toolTip: qsTr("Reset to the last OCR settings")
       onClicked: root_.reset()
-
-      //styleHint: 'danger'
-      backgroundColor: '#aaff0000' // red
+      enabled: !root_.busy
+      styleHint: 'danger'
+      backgroundColor: style.activeColor // do not change color
     }
   }
 

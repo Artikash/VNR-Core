@@ -848,107 +848,107 @@
 <context>
     <name>ocredit</name>
     <message>
-        <location filename="../kagami/ocredit.qml" line="251"/>
+        <location filename="../kagami/ocredit.qml" line="255"/>
         <source>I</source>
         <translation>亮度</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="277"/>
+        <location filename="../kagami/ocredit.qml" line="281"/>
         <source>Minimum text color intensity</source>
         <translation>文本颜色浓度的最小值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="278"/>
+        <location filename="../kagami/ocredit.qml" line="282"/>
         <source>Maximum text color intensity</source>
         <translation>文本颜色浓度的最大值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="283"/>
+        <location filename="../kagami/ocredit.qml" line="287"/>
         <source>Range of the text color intensity</source>
         <translation>文本颜色浓度的范围</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="302"/>
+        <location filename="../kagami/ocredit.qml" line="306"/>
         <source>H</source>
         <translation>色度</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="252"/>
+        <location filename="../kagami/ocredit.qml" line="256"/>
         <source>Color intensity in HSI model</source>
         <translation>色彩亮度（HSI颜色模型）</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="303"/>
+        <location filename="../kagami/ocredit.qml" line="307"/>
         <source>Hue in HSI model</source>
         <translation>色相（HSI颜色模型）</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="328"/>
+        <location filename="../kagami/ocredit.qml" line="332"/>
         <source>Minimum hue of the text color</source>
         <translation>文本色相的最小值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="329"/>
+        <location filename="../kagami/ocredit.qml" line="333"/>
         <source>Maximum hue of the text color</source>
         <translation>文本色相的最大值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="334"/>
+        <location filename="../kagami/ocredit.qml" line="338"/>
         <source>Range of the text color&apos;s hue</source>
         <translation>文本色相的范围</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="353"/>
+        <location filename="../kagami/ocredit.qml" line="357"/>
         <source>S</source>
         <translation>饱和</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="354"/>
+        <location filename="../kagami/ocredit.qml" line="358"/>
         <source>Saturation in HSI model</source>
         <translation>色彩饱和度（HSI颜色模型）</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="382"/>
+        <location filename="../kagami/ocredit.qml" line="386"/>
         <source>Minimum saturation of the text color</source>
         <translation>文本颜色饱和度的最小值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="383"/>
+        <location filename="../kagami/ocredit.qml" line="387"/>
         <source>Maximum saturation of the text color</source>
         <translation>文本颜色饱和度的最大值</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="388"/>
+        <location filename="../kagami/ocredit.qml" line="392"/>
         <source>Range of the text color&apos;s saturation</source>
         <translation>文本颜色饱和度的范围</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="407"/>
+        <location filename="../kagami/ocredit.qml" line="411"/>
         <source>Z</source>
         <translation>缩放</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="408"/>
+        <location filename="../kagami/ocredit.qml" line="412"/>
         <source>Zoom image text that is too large or too small</source>
         <translation>缩放图片中过大或过小的文字</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="430"/>
+        <location filename="../kagami/ocredit.qml" line="434"/>
         <source>Scale ratio</source>
         <translation>缩放的倍数</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="446"/>
+        <location filename="../kagami/ocredit.qml" line="450"/>
         <source>Enable image processing for OCR</source>
         <translation>为OCR开启图像处理</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="463"/>
+        <location filename="../kagami/ocredit.qml" line="467"/>
         <source>Apply OCR to the current image</source>
         <translation>应用OCR处理到当前的图片</translation>
     </message>
     <message>
-        <location filename="../kagami/ocredit.qml" line="473"/>
+        <location filename="../kagami/ocredit.qml" line="476"/>
         <source>Reset to the last OCR settings</source>
         <translation>恢复到上一次的OCR设定</translation>
     </message>
@@ -956,25 +956,38 @@
 <context>
     <name>ocrpopup</name>
     <message>
-        <location filename="../kagami/ocrpopup.qml" line="231"/>
-        <location filename="../kagami/ocrpopup.qml" line="548"/>
+        <location filename="../kagami/ocrpopup.qml" line="149"/>
+        <source>Waiting for previous OCR to finish</source>
+        <translation>等待之前的OCR任务完成</translation>
+    </message>
+    <message>
+        <location filename="../kagami/ocrpopup.qml" line="234"/>
+        <location filename="../kagami/ocrpopup.qml" line="551"/>
         <source>You can drag the border to move the text box</source>
         <translation>你可以通过拖动四周的边框来移动文本框</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopup.qml" line="475"/>
+        <location filename="../kagami/ocrpopup.qml" line="478"/>
         <source>Select Color</source>
         <translation>选择颜色</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopup.qml" line="593"/>
+        <location filename="../kagami/ocrpopup.qml" line="596"/>
         <source>Select color</source>
         <translation>选择颜色</translation>
     </message>
     <message>
-        <location filename="../kagami/ocrpopup.qml" line="610"/>
+        <location filename="../kagami/ocrpopup.qml" line="613"/>
         <source>Translating</source>
         <translation>正在翻译中</translation>
+    </message>
+</context>
+<context>
+    <name>ocrregion</name>
+    <message>
+        <location filename="../kagami/ocrregion.qml" line="157"/>
+        <source>Waiting for previous OCR to finish</source>
+        <translation>等待之前的OCR任务完成</translation>
     </message>
 </context>
 <context>

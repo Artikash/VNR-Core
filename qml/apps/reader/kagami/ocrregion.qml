@@ -147,6 +147,17 @@ Item { id: root_
       function showEdit() {
         if (editLocked)
           return
+
+        if (!editItem) {
+          console.log("ocregion.qml: create ocr editor")
+          editItem = editComp_.createObject(root_, {
+            visible: false // hide on startup
+          })
+        } else if (editItem.busy) {
+          growl_.showWarning(qsTr("Waiting for previous OCR to finish") + ' ...')
+          return
+        }
+
         editLocked = true
         if (!imageObject) {
           console.log("ocregion.qml: create image object")
@@ -168,12 +179,6 @@ Item { id: root_
           imageObject.captureDesktop()
         else
           imageObject.captureWindow()
-
-        if (!editItem)
-          console.log("ocregion.qml: create ocr editor")
-          editItem = editComp_.createObject(root_, {
-            visible: false // hide on startup
-          })
 
         var text = imageObject.ocr()
         editItem.x = Math.min(item_.x, root_.x + root_.width - item_.width)

@@ -1291,7 +1291,7 @@ class _OcrTab(object):
   def screenRefreshTimeButton(self):
     ret = QtWidgets.QDoubleSpinBox()
     ret.setToolTip("%s: %s sec." % (tr_("Default"), 2))
-    ret.setRange(0.5, 10.0)
+    ret.setRange(0.1, 10.0)
     ret.setSingleStep(0.1)
     ret.setDecimals(1) # 0.1
     ss = settings.global_()

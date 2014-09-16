@@ -12,7 +12,7 @@ from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint, dwarn
 from colorconv import colorconv
 from modiocr import modiocr
-import termman
+import ocrutil, termman
 
 # TODO: Move to colorutil
 # http://www.had2know.com/technology/hsi-rgb-color-converter-equations.html
@@ -129,15 +129,15 @@ class _OcrImageObject(object):
   def captureDesktop(self):
     self.pixmap = capture_pixmap(self.x, self.y, self.width, self.height)
 
-  def _readImage(self):
+  def _readImage(self, async=True):
     """
     @return  unicode  text
     """
     delim = self.settings.deliminator
     if delim:
-      return delim.join(modiocr.readtexts(self.path, self.settings.languageFlags))
+      return delim.join(ocrutil.readtexts(self.path, self.settings.languageFlags, async=async))
     else:
-      return modiocr.readtext(self.path, self.settings.languageFlags)
+      return ocrutil.readtext(self.path, self.settings.languageFlags, async=async)
 
   # Pixmap
 

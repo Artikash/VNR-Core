@@ -3,15 +3,24 @@
  *  A black color theme for text button
  */
 import '.' as Share
+import 'pushbutton.min.js' as Js
 
 Share.TextButton {
 
-  property bool enabled: true
+  property color defaultColor
+  property color disabledColor
+
+  property string styleHint: 'inverse'
+  property variant style: Js.style(styleHint)
+  //property alias effectColor: effect_.color
 
   // - Private -
+
   width: 50
   height: 25
-  backgroundColor: enabled ? '#aa434343' : '#aabebebe' // black : gray
 
   radius: 5
+
+  color: style.textColor
+  backgroundColor: enabled ? style.activeColor : style.disabledColor
 }
