@@ -145,6 +145,9 @@ Item { id: root_
             visible: false // hide on startup
           })
           editItem.textChanged.connect(loadEditText)
+        } else if (editItem.busy) {
+          growl_.showWarning(qsTr("Waiting for previous OCR to finish") + ' ...')
+          return
         }
 
         editItem.x = Math.min(item_.x + item_.width + 10, root_.x + root_.width - item_.width)

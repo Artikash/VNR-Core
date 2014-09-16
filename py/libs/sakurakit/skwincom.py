@@ -7,6 +7,33 @@ import skos
 if skos.WIN:
   import pythoncom # Automatically invoke OleInitialize
 
+  class SkCoInitializer:
+    def __init__(self, threading=None):
+      self.threading = threading # bool or None
+
+    def __enter__(self):
+      if self.threading is None: # The same as STA
+        pythoncom.CoInitialize()
+      elif self.threading: # Multi-thread apartment (MTA)
+        pythoncom.CoInitializeEx(pythoncom.COINIT_MULTITHREADED)
+      else: # Single thread apartment (STA)
+        pythoncom.CoInitializeEx(pythoncom.COINIT_APARTMENTTHREADED)
+
+    def __exit__(self, *err):
+      pythoncom.CoUninitialize()
+
+  #class SkCoProcessInitializer:
+  #  def __enter__(self): pythoncom.OleInitialize()
+  #  def __exit__(self, *err): pythoncom.OleUninitialize()
+
+else: # On mac
+
+  class SkCoInitializer:
+    def __init__(self, threading=None): self.threading = threading
+    def __enter__(self): pass
+    def __exit__(self, *err): pass
+
+
 # EOF
 
 # Given the following, no need to bother CoInitialize/CoUninitialize for single-thread app

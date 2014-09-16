@@ -12,7 +12,7 @@ from modiocr import modiocr
 from mytr import my
 from _ocrman import OcrImageObject, OcrSettings
 import _ocrman
-import features, growl, rc, windows, winman
+import features, growl, ocrutil, rc, windows, winman
 
 #from sakurakit.skprofiler import SkProfiler
 
@@ -33,6 +33,7 @@ class _OcrManager(object):
     self.selectedWindow = 0 # long  game window hwnd
     self.regionItems = [] # [QDeclarativeItem]
     self.regionOcrEnabled = False # bool  Allow applying OCR to the selected regions
+    self.regionBusy = False # is busy applying OCR
 
   # Automatic sampling game window
 
@@ -54,7 +55,8 @@ class _OcrManager(object):
         t.stop()
 
   def ocrWindow(self):
-    if self.enabled and self.regionOcrEnabled and self.selectedWindow and self.regionItems:
+    if self.enabled and self.regionOcrEnabled and not self.regionBusy and self.selectedWindow and self.regionItems:
+      self.regionBusy = True
       texts = []
       hwnd = 0 if self.desktopSelected else self.selectedWindow
       for index, item in enumerate(self.regionItems):
@@ -77,6 +79,7 @@ class _OcrManager(object):
       if texts:
         text = '\n'.join(texts)
         self.q.textRecognized.emit(text)
+      self.regionBusy = False
 
   def _ocrRegion(self, x, y, width, height, hwnd=0, index=0, imageObject=None):
     """
@@ -95,14 +98,7 @@ class _OcrManager(object):
       path = "%s/region.%s.%s" % (rc.DIR_TMP_OCR, index, _ocrman.OCR_IMAGE_FORMAT)
       if _ocrman.save_pixmap(pm, path):
         #with SkProfiler(): # 9/12/2014: 0.5 seconds
-        text = self._ocrImageFile(path)
-        #skfileio.removefile(path)
-
-        # Crash with multi-threads
-        #from functools import partial
-        #from sakurakit import skthreads
-        #text = skthreads.runsync(partial(self._ocrImageFile, path))
-        return text
+        return self._ocrImageFile(path)
     return ''
 
   def _capturePixmap(self, x, y, width, height, hwnd=0): # int, int, int, int, int -> QPixmap or None
@@ -114,12 +110,12 @@ class _OcrManager(object):
       y = 0
     return _ocrman.capture_pixmap(x, y, width, height, hwnd)
 
-  def _ocrImageFile(self, path): # unicode ->
+  def _ocrImageFile(self, path, async=True): # unicode ->
     delim = self.settings.deliminator
     if delim:
-      return delim.join(modiocr.readtexts(path, self.settings.languageFlags))
+      return delim.join(ocrutil.readtexts(path, self.settings.languageFlags, async=async))
     else:
-      return modiocr.readtext(path, self.settings.languageFlags)
+      return ocrutil.readtext(path, self.settings.languageFlags, async=async)
 
   # I/O hooks
 

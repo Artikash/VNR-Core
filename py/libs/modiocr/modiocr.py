@@ -7,9 +7,6 @@ if __name__ == '__main__': # DEBUG
   sys.path.append("..")
 
 import os
-from sakurakit.skclass import memoized
-from sakurakit.skdebug import dwarn
-
 
 # This file must be consistent with modiocr.h
 # enum modiocr_lang : unsigned long
@@ -90,26 +87,8 @@ from sakurakit import skos
 if skos.WIN:
   from  pymodiocr import ModiOcr
   available = ModiOcr.isValid # -> bool
-  # Note: the read functions might raise if the path does not on Windows XP
-
-  from PySide.QtCore import QMutex
-  READ_MUTEX = QMutex() # sync access would crash
-
-  def readtext(path, lang): # (unicode path, int lang) -> unicode
-    if not READ_MUTEX.tryLock():
-      dwarn("failed to lock mutex due to contention")
-      return u''
-    ret = ModiOcr.readText(path, lang)
-    READ_MUTEX.unlock()
-    return ret
-
-  def readtexts(path, lang): # (unicode path, int lang) -> [unicode]
-    if not READ_MUTEX.tryLock():
-      dwarn("failed to lock mutex due to contention")
-      return []
-    ret = ModiOcr.readTextList(path, lang)
-    READ_MUTEX.unlock()
-    return ret
+  readtext = ModiOcr.readText # (unicode path, int lang) -> unicode
+  readtexts = ModiOcr.readTextList # (unicode path, int lang) -> [unicode]
 
 else:
   def available(): return False
