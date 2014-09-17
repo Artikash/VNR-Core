@@ -2273,7 +2273,7 @@ class Term(QObject):
     d = self.__d
     if not d.replace and d.pattern:
       pattern = d.pattern
-      if defs.TERM_MACRO_BEGIN in pattern:
+      if d.regex and defs.TERM_MACRO_BEGIN in pattern:
         pattern = termman.manager().applyMacroTerms(pattern)
       if pattern:
         titles = manager().termTitles()
@@ -2294,7 +2294,7 @@ class Term(QObject):
     d = self.__d
     if not d.prepareReplace and d.pattern:
       pattern = d.pattern
-      if defs.TERM_MACRO_BEGIN in pattern:
+      if d.regex and defs.TERM_MACRO_BEGIN in pattern:
         pattern = termman.manager().applyMacroTerms(pattern)
       if pattern:
         titles = manager().termTitles()

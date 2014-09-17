@@ -809,7 +809,7 @@ class TextTab(QtWidgets.QWidget):
     n = self.__d.threadLayout.count()
     #w = 500; h = 150
     #w = 500; h = 165 # + 15 for msg
-    w = 500; h = 190  # + 20*2 for 2 msg labels
+    w = 500; h = 195  # + 20*2 for 2 msg labels
     if n <= 0:
       pass
     elif n < THREADLAYOUT_COLUMN_COUNT:

@@ -566,10 +566,20 @@ DWORD DetermineNoHookEngine()
     ConsoleOutput("vnreng: IGNORE Atelier Kaguya BY/TH");
     return yes;
   }
+
   if (IthFindFile(L"*.bsa")) {
     ConsoleOutput("vnreng: IGNORE Bishop");
     return yes;
   }
+
+  // jichi 3/19/2014: Escude game
+  // Example: bgm.bin gfx.bin maou.bin script.bin snd.bin voc.bin
+  if (IthCheckFile(L"gfx.bin") && IthCheckFile(L"snd.bin") && IthCheckFile(L"voc.bin")) {
+    ConsoleOutput("vnreng: IGNORE Escudo");
+    return yes;
+  }
+
+
   if (wcsstr(process_name_, L"lcsebody") || !wcsncmp(process_name_, L"lcsebo~", 7)) { // jichi 3/19/2014: LC-ScriptEngine, GetGlyphOutlineA
     ConsoleOutput("vnreng: IGNORE lcsebody");
     return yes;
