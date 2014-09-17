@@ -22,7 +22,7 @@ def manager(): return TermManager()
 def _mark_text(text): # unicode -> unicode
   return '<span style="text-decoration:underline">%s</span>' % text
 
-_RE_MACRO = re.compile('{{(.+?)}}')
+RE_MACRO = re.compile('{{(.+?)}}')
 
 # All methods are supposed to be thread-safe, though they are not
 class _TermManager:
@@ -291,14 +291,13 @@ class TermManager:
       return text
     dm = dataman.manager()
     # {{name}}
-    for m in _RE_MACRO.finditer(text):
+    for m in RE_MACRO.finditer(text):
       macro = m.group(1)
-      t = dm.queryMacroTerm(macro)
-      if t:
-        repl = t.d.text
-        text = text.replace("{{%s}}" % macro, repl)
+      repl = dm.queryTermMacro(macro)
+      if repl is None:
+        dwarn("missing macro", macro)
       else:
-        dwarn("missing macro", t.d.pattern, pattern)
+        text = text.replace("{{%s}}" % macro, repl)
     return text
 
   # Escaped
