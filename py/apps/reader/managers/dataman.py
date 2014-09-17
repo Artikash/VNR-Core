@@ -5481,7 +5481,7 @@ class _DataManager(object):
     self.termsInitialized = False # if the terms has initialized
 
     self._termTitles = None  # OrderedDict{unicode from:unicode to} or None
-    self._macroTerms = None  # {unicode pattern:[Term]} or None   indexed macros
+    self._termMacros = None  # {unicode pattern:unicode repl} or None   indexed macros
 
     # References to modify
     #self._referencesDirty = False    # bool
@@ -5577,7 +5577,7 @@ class _DataManager(object):
   def sortedTerms(self, v):
     self._sortedTerms = v
     self.clearTermTitles()
-    self.clearMacroTerms()
+    self.clearTermMacros()
 
   @property
   def termTitles(self):
@@ -5617,16 +5617,41 @@ class _DataManager(object):
   # Macros
 
   @property
-  def macroTerms(self):
-    if self._macroTerms is None:
-      self._macroTerms = {t.d.pattern:t for t in
-          termman.manager().filterTerms(self.q.iterMacroTerms(), self.user.language)}
-    return self._macroTerms
+  def termMacros(self):
+    if self._termMacros is None:
+      self._termMacros = self._queryTermMacros()
+    return self._termMacros
 
-  #@macroTerms.setter
-  #def macroTerms(self, v): self._macroTerms = v
+  def _queryTermMacros(self):
+    """
+    @return  {unicode pattern:unicode repl} not None
+    """
+    ret = {t.d.pattern:t.d.text for t in
+      termman.manager().filterTerms(self.q.iterMacroTerms(), self.user.language)}
+    dirty = True
+    while dirty:
+      dirty = False
+      for pattern,text in ret.iteritems(): # not iteritems as I will modify ret
+        if text and defs.TERM_MACRO_BEGIN in text:
+          dirty = True
+          ok = False
+          for m in termman.RE_MACRO.finditer(text):
+            macro = m.group(1)
+            repl = ret.get(macro)
+            if repl:
+              text = text.replace("{{%s}}" % macro, repl)
+              ok = True
+            else:
+              dwarn("missing macro", macro, text)
+              ok = False
+              break
+          if ok:
+            ret[pattern] = text
+          else:
+            ret[pattern] = None # delete this pattern
+    return {k:v for k,v in ret.iteritems() if v is not None}
 
-  def clearMacroTerms(self): self._macroTerms = None
+  def clearTermMacros(self): self._termMacros = None
 
   ## User ##
 
@@ -8932,11 +8957,16 @@ class DataManager(QObject):
     d.submitDirtyTermsLater()
     d.touchTerms()
 
-  def queryMacroTerm(self, pattern): return self.__d.macroTerms.get(pattern)
+  def queryTermMacro(self, pattern):
+    """
+    @param  unicode
+    @return  unicode or None
+    """
+    return self.__d.termMacros.get(pattern)
 
   def clearMacroCache(self):
     d = self.__d
-    d.clearMacroTerms()
+    d.clearTermMacros()
     for t in d.terms:
       td = t.d
       if td.regex and not td.disabled and defs.TERM_MACRO_BEGIN in td.pattern:
