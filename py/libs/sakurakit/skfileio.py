@@ -136,6 +136,16 @@ def removetree(path): # remove the whole directory recursively
     return True
   except: return False
 
+def emptydir(path):
+  """
+  @param  path  str
+  @return  bool
+
+  FIXME: This implementation is very slow.
+  """
+  try: return bool(os.listdir(work_path))
+  except: return False
+
 def trashfile(path):
   """
   @param  path  str or unicode

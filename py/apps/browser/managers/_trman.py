@@ -494,8 +494,8 @@ class DreyeTranslator(OfflineMachineTranslator):
 
   @memoizedproperty
   def jcEngine(self):
-    from dreye import dreye
-    ret = dreye.create_engine('ja')
+    from dreye import dreyemt
+    ret = dreyemt.create_engine('ja')
     ok = ret.load()
     #import atexit
     #atexit.register(ret.destroy)
@@ -507,8 +507,8 @@ class DreyeTranslator(OfflineMachineTranslator):
 
   @memoizedproperty
   def ecEngine(self):
-    from dreye import dreye
-    ret = dreye.create_engine('en')
+    from dreye import dreyemt
+    ret = dreyemt.create_engine('en')
     ok = ret.load()
     #import atexit
     #atexit.register(ret.destroy)

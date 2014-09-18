@@ -287,7 +287,7 @@ class TermManager:
     @return  unicode
     """
     d = self.__d
-    if not d.enabled or d.locked:
+    if not d.enabled: #or d.locked: # disabling lock will cause terms cannot be init property on the startup
       return text
     dm = dataman.manager()
     # {{name}}
