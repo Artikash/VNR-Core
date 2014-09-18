@@ -5628,8 +5628,8 @@ class _DataManager(object):
     """
     ret = {t.d.pattern:t.d.text for t in
       termman.manager().filterTerms(self.q.iterMacroTerms(), self.user.language)}
-    dirty = True
-    while dirty:
+    MAX_COUNT = 1000
+    for count in xrange(1, MAX_COUNT):
       dirty = False
       for pattern,text in ret.iteritems(): # not iteritems as I will modify ret
         if text and defs.TERM_MACRO_BEGIN in text:
@@ -5649,6 +5649,10 @@ class _DataManager(object):
             ret[pattern] = text
           else:
             ret[pattern] = None # delete this pattern
+      if not dirty:
+        break
+    if count == MAX_COUNT - 1:
+      dwarn("recursive macro definition")
     return {k:v for k,v in ret.iteritems() if v is not None}
 
   def clearTermMacros(self): self._termMacros = None
