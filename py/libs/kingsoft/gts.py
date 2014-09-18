@@ -57,19 +57,11 @@ if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
-DLLS = {
- "enzhs": "GTS/EnglishSChinese/EngSChSDK.dll",
- "enzht": "GTS/EnglishTChinese/EngTChSDK.dll",
- "jazhs": "GTS/JapaneseSChinese/JPNSCHSDK.dll",
- "jazht": "GTS/JapaneseTChinese/JPNTCHSDK.dll",
- "zhsen": "GTS/SChineseEnglish/SchEngSDK.dll",
- "zhten": "GTS/TChineseEnglish/TchEngSDK.dll",
-}
-
 import ctypes, os
 import win32api
 #from sakurakit import msvcrt
 from sakurakit.skdebug import dprint, dwarn
+from sakurakit.skunicode import u, u_sjis
 
 SESSION_BUFFER_SIZE = 0x40 # the same as JBeijing
 ZH_BUFFER_SIZE = 3000 # allocate buffer size. p.s. max text size in VNR is 256 * 3=768. BUFFER_SIZE > 768 * 2
@@ -142,7 +134,7 @@ class _Loader(object):
   @property
   def dllDirectory(self):
     """
-    @return  unicode
+    @return  str not unicode
     """
     if not self._dllDirectory:
       try: self._dllDirectory = os.path.dirname(self._dllLocation())
@@ -162,24 +154,27 @@ class _Loader(object):
 
     # Load default dic, which is required
     defdic = os.path.join(path, DEFAULT_DIC)
-    self._setBasicDictPath(os.path.join(defdic))
+    ret = self._setBasicDictPath(os.path.join(defdic)) # this cannot fail, or it won't work
 
+    # This will double the translation time orz.
+    # I should selectively enable the dict that is useful
     # Load extra dic, which is optional
-    priority = 0
-    for dic in os.listdir(path):
-      if dic not in (DEFAULT_DIC, USER_DIC):
-        dicpath = os.path.join(path, dic)
-        if os.path.isdir(dicpath):
-          priority += 1
-          self._setProfDictPath(dicpath, priority)
+    #priority = 0
+    #for dic in os.listdir(path):
+    #  if dic not in (DEFAULT_DIC, USER_DIC):
+    #    dicpath = os.path.join(path, dic)
+    #    if os.path.isdir(dicpath):
+    #      priority += 1
+    #      self._setProfDictPath(dicpath, priority)
 
     # Load user dic
     from sakurakit import skfileio
-    userdic = os.path.join(path, USER_DIC).encode('ascii', errors='ignore')
+    userdic = os.path.join(path, USER_DIC)
     if userdic and os.path.exists(userdic) and not skfileio.emptydir(userdic):
       self._setUserDictPathA(userdic)
 
-    dprint("leave")
+    dprint("leave: ok = %s" % ret)
+    return ret
 
   def _startSession(self):
     """
@@ -189,6 +184,7 @@ class _Loader(object):
     Guessed:
     int __stdcall StartSession(LPCWSTR path, DWORD bufferStart, DWORD bufferStop, LPCWSTR pathName)
 
+    path must be unicode instead of str.
     start and stop are a chunk of buffer, size = 0x40
 
     Debugging method: debug SeniorTranslate for StartSession
@@ -210,11 +206,13 @@ class _Loader(object):
        054FFF4C   00000003
        054FFF50   0040C48B  RETURN to SeniorTr.0040C48B from SeniorTr.0041FB40
     """
-    dicpath = os.path.join(self.dllDirectory, DEFAULT_DIC)
+    dicpath = u(os.path.join(self.dllDirectory, DEFAULT_DIC))
+    if not dicpath or not os.path.exists(dicpath):
+      dwarn("gts dic directory does not exist")
+      return False
     buf = self.sessionBuffer
     start = ctypes.addressof(buf)
     stop = start + SESSION_BUFFER_SIZE
-    print dicpath
     ok = 0 == self.dll.StartSession(dicpath, start, stop, DEFAULT_DIC)
     dprint("ok =", ok)
     return ok
@@ -247,9 +245,10 @@ class _Loader(object):
     @raise  WindowsError, AttributeError
 
     Guessed:
-    int __stdcall CloseEngine(DWORD key)
+    int __stdcall CloseEngine()
+    int __stdcall CloseEngineM(DWORD key)
     """
-    return 0 == self.dll.CloseEngine(self.key)
+    return 0 == self.dll.CloseEngineM(self.key)
 
   def _setBasicDictPath(self, path):
     """
@@ -265,8 +264,8 @@ class _Loader(object):
     """
     dprint("pass")
     return 0 == (
-        self.dll.SetBasicDictPathW(self.key, path) if isinstance(path, str) else
-        self.dll.SetBasicDictPathM(self.key, path))
+        self.dll.SetBasicDictPathM(self.key, path) if isinstance(path, str) else
+        self.dll.SetBasicDictPathW(self.key, path))
 
   def _setProfDictPath(self, path, priority):
     """
@@ -354,7 +353,12 @@ class Loader(object):
     @return   unicode or None
     @throw  RuntimeError
     """
-    try: return self.__d.translate(text)
+    try:
+      if isinstance(text, str):
+        text = u_sjis(text)
+        if not text:
+          return ''
+      return self.__d.translate(text)
     except (WindowsError, AttributeError, TypeError), e:
       dwarn("failed to load gts sdk dll, raise runtime error", e)
       raise RuntimeError("failed to access gts sdk dll")
@@ -363,17 +367,48 @@ class Loader(object):
 
 if __name__ == '__main__': # DEBUG
   import os
-  #path = r"Z:\Local\Windows\Applications\FASTAIT_PERSONAL"
-  path = r"C:\tmp\FASTAIT_PERSONAL"
-  dllpath = DLLS['jazhs']
+  langs = 'jazhs'
+  #langs = 'jazht'
+  #langs = 'enzht'
+  #langs = 'enzhs'
+  #langs = 'zhsen'
+
+  #s = u"こんにちは"
+  #s = u"お花の匂い"
+  #s = u"憎しみは憎しみしか生まない。"
+  #s = u"123.45は憎しか生まない。"
+  s = u"テキストまたはウェブサイトのアドレスを入力するか、ドキュメントを翻訳します。"
+  #s = u"憎しみは憎しみしか生まない。 そんなことを聞いたことがありますが、誰でも人生の中で一度や二度、他人(親兄弟も ... 憎む理由はなんでしょうか？ 自分に不利益な何かをもたらしたから？ "
+  #s = u"憎しみは憎しみしか生まない。"
+  #s = u"そんなことを聞いたことがありますが、誰でも人生の中で一度や二度、他人(親兄弟も ... 憎む理由はなんでしょうか？ 自分に不利益な何かをもたらしたから？ "
+  #s = u"そんなことを聞いたことがありますが、誰でも人生の中で一度や二度、他人(親兄弟も ... 憎む理由はなんでしょうか？ 自分に不利益な何かをもたらしたから？ "
+  #s = u"自分に不利益な何かをもたらしたから？"
+  #s = u"憎む理由はなんでしょうか？" # why this is very slow? certain phrase is missing?
+  #s = "hello"
+  #s = u'你好'
+  #s = u'你说什么'
+  #s = u'what did you say?'
+
+  from fastait import DLLS
+
+  path = r"Z:\Local\Windows\Applications\FASTAIT_PERSONAL"
+  #path = r"C:\tmp\FASTAIT_PERSONAL"
+  dllpath = DLLS[langs]
   dllpath = os.path.join(path, dllpath)
   bufsize = ZH_BUFFER_SIZE
   os.environ['PATH'] += os.pathsep + os.path.dirname(dllpath)
   t = Loader(dllpath, bufsize)
   t.init()
-  #s = u"お花の匂い"
-  s = u"こんにちは"
-  ret = t.translate(s)
+
+  from sakurakit.skprofiler import SkProfiler
+  with SkProfiler():
+    ret = t.translate(s)
+  with SkProfiler():
+    ret = t.translate(s)
+  with SkProfiler():
+    ret = t.translate(s)
+  with SkProfiler():
+    ret = t.translate(s)
 
   from PySide.QtGui import QApplication, QLabel
   a = QApplication(sys.argv)
