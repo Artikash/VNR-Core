@@ -1,6 +1,8 @@
 # coding: utf8
 # jbjct.py
 # 1/3/2013 jichi
+#
+# Debug method: first find hotspots, then use OllyDbg to find runtime values
 
 if __name__ == '__main__': # DEBUG
   import sys
@@ -215,6 +217,9 @@ class _Loader(object):
       int &toCapacity,
       LPWSTR buffer,
       int &bufferCapacity)
+
+    Note: This function is not thread-safe!
+    Using persistent buffers is faster, but not thread-safe!
     """
     out = self.buffer1
     buf = self.buffer2

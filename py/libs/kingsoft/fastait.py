@@ -1,23 +1,19 @@
 # coding: utf8
-# dreye.py
-# 5/20/2013 jichi
+# fastait.py
+# 9/17/2014 jichi
 
 if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")
 
 import os
-from sakurakit import skpaths, skos
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 
 class _Engine(object):
   def __init__(self, dllLoader):
-    self._dllLoader = dllLoader # transcom.JCLoader or ECLoader
+    self._dllLoader = dllLoader # gts.Loader
     self.dllLoaded = False
-    self.pathLoaded = False
-    #self.userDicLoaded = False
-    #self.userDicPaths = set() # [unicode path]
 
   @memoizedproperty
   def loader(self): return self._dllLoader()
@@ -27,36 +23,10 @@ class _Engine(object):
     self.dllLoaded = self.loader.isInitialized()
     dprint("ok = %s" % self.dllLoaded)
 
-  def loadPath(self):
-    path = self.registryLocation()
-    if path and os.path.exists(path):
-      path = os.path.join(path, r"DreyeMT\SDK\bin")
-      skpaths.append_path(path)
-    self.pathLoaded = True
-
   def destroy(self):
     if self.dllLoaded:
       self.loader.destroy()
       dprint("pass")
-
-  @staticmethod
-  def registryLocation():
-    """
-    @yield  unicode  the userdic prefix without ".dic"
-    """
-    if not skos.WIN:
-      return
-
-    REG_PATH   = r"SOFTWARE\Inventec\Dreye\9.0\System\InstallInfo"
-    REG_KEY    = r"BasePath"
-    import _winreg
-    hk = _winreg.HKEY_LOCAL_MACHINE
-    try:
-      with _winreg.ConnectRegistry(None, hk) as reg: # computer_name = None
-        with _winreg.OpenKey(reg, REG_PATH) as key:
-          path = _winreg.QueryValueEx(key, REG_KEY)[0]
-          return path
-    except (WindowsError, TypeError, AttributeError): pass
 
 class Engine(object):
 
@@ -77,8 +47,6 @@ class Engine(object):
     @return  bool
     """
     d = self.__d
-    if not d.pathLoaded:
-      d.loadPath()
     if not d.dllLoaded:
       d.loadDll()
       #if not d.userDicLoaded:
@@ -96,29 +64,21 @@ class Engine(object):
     if not self.isLoaded():
       self.load()
       if not self.isLoaded():
-        raise RuntimeError("Failed to load Dr.eye dll")
+        raise RuntimeError("Failed to load FastAIT dll")
     return self.__d.loader.translate(text, to, fr)
 
   def warmup(self):
     #try: self.translate(u" ")
-    try: self.translate(u"あ")
+    try: self.translate(u"a")
     except Exception, e: dwarn(e)
 
-  @staticmethod
-  def location():
-    """
-    @return  str or None
-    """
-    ret = _Engine.registryLocation()
-    if ret and os.path.exists(os.path.join(ret, r"DreyeMT\SDK\bin")):
-      return ret
-
-def create_engine(lang='ja'):
-  import transcom
-  if lang == 'ja':
-    return Engine(transcom.JCLoader)
-  elif lang == 'en':
-    return Engine(transcom.ECLoader)
+def create_engine(fr='ja', to='zhs'):
+  import gts
+  dllpath = gts.DLLS(fr + to)
+  if dllpath:
+    dllname = os.path.basename(dllpath)
+    bufsize = gts.EN_BUFFER_SIZE if fr == 'en' or to == 'en' else gts.ZH_BUFFER_SIZE
+    return Engine(gts.Loader(dllname, bufsize))
 
 location = Engine.location # return unicode
 

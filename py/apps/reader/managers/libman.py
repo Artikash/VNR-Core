@@ -135,8 +135,8 @@ class Dreye(Library):
     ret = settings.global_().dreyeLocation()
     if self.verifyLocation(ret):
       return ret
-    from dreye import dreye
-    ret = dreye.location()
+    from dreye import dreyemt
+    ret = dreyemt.location()
     if self.verifyLocation(ret):
       return ret
     return settings.global_().dreyeLocation()

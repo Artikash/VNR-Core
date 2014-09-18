@@ -6,8 +6,9 @@
 
 extern "C" {
 typedef DWORD (__stdcall *StartSession)(wchar_t *path, void *bufferStart, void *bufferStop, const wchar_t *app);
-typedef DWORD (__stdcall *OpenEngine)(int bufferSize);
-typedef DWORD (__stdcall *SimpleTransSentM)(int, const wchar_t *fr, wchar_t *t, int, int);
+typedef DWORD (__stdcall *OpenEngine)(int key);
+typedef DWORD (__stdcall *SimpleTransSentM)(int key, const wchar_t *fr, wchar_t *t, int, int);
+typedef DWORD (__stdcall *SetBasicDictPathW)(int key, const wchar_t *fr);
 }
 
 int main()
@@ -21,6 +22,7 @@ int main()
     StartSession startSession = (StartSession)::GetProcAddress(h, "StartSession");
     OpenEngine openEngine = (OpenEngine)::GetProcAddress(h, "OpenEngine");
     SimpleTransSentM simpleTransSentM = (SimpleTransSentM)::GetProcAddress(h, "SimpleTransSentM");
+    SetBasicDictPathW setBasicDictPathW = (SetBasicDictPathW)::GetProcAddress(h, "SetBasicDictPathW");
 
     enum { bufferSize = key };
     char buffer[bufferSize];
@@ -28,6 +30,7 @@ int main()
     int ret = startSession(path, buffer, buffer + bufferSize, L"DCT");
 
     ret = openEngine(key);
+    ret = setBasicDictPathW(key, path);
 
     wchar_t fr[] = L"こんにちは";
     wchar_t to[0x400] = {};
