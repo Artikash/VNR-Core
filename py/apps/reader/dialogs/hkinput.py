@@ -34,10 +34,10 @@ class HotkeyInputDialog(QtWidgets.QDialog):
     #self.resize(300, 250)
     #self.statusBar() # show status bar
 
-  def setValue(self, v):
+  def setValue(self, v): # str ->
     self.__d.defaultValue = v
 
-  def setVisible(self, t):
+  def setVisible(self, t): # bool ->
     if t:
       self.__d.refresh()
     super(HotkeyInputDialog, self).setVisible(t)
@@ -124,7 +124,7 @@ class _HotkeyInputDialog(object):
     if styleClass:
       skqss.class_(ret, styleClass)
     ret.setCheckable(True)
-    ret.value = key
+    ret.value = key # str
     ret.clicked.connect(partial(lambda ret, key, group:
         self.updateCurrentValue(key, toggled=ret.isChecked(), group=group),
         ret, key, group))

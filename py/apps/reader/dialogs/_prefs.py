@@ -16,6 +16,10 @@ from dataman import GUEST
 from mytr import my, mytr_
 import config, cacheman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, ocrman, osutil, rc, res, sapiman, settings, ttsman
 
+def parent_window(): # replace self.q to make sure windows is always visible
+  import windows
+  return windows.top()
+
 DOWNLOAD_REFRESH_INTERVAL = 3000 # 3 seconds
 
 MECAB_DICT_NAMES = {
@@ -825,14 +829,14 @@ class _ShortcutsTab(object):
     grid = QtWidgets.QGridLayout()
 
     r = 0
-    grid.addWidget(self.textCheckBox, r, 0)
-    grid.addWidget(self.textButton, r, 1)
+    grid.addWidget(self.textButton, r, 0)
+    grid.addWidget(self.textCheckBox, r, 1)
     r += 1
-    grid.addWidget(self.ttsCheckBox, r, 0)
-    grid.addWidget(self.ttsButton, r, 1)
+    grid.addWidget(self.ttsButton, r, 0)
+    grid.addWidget(self.ttsCheckBox, r, 1)
     r += 1
-    grid.addWidget(self.grabCheckBox, r, 0)
-    grid.addWidget(self.grabButton, r, 1)
+    grid.addWidget(self.grabButton, r, 0)
+    grid.addWidget(self.grabCheckBox, r, 1)
     r += 1
 
     layout = QtWidgets.QVBoxLayout()
@@ -878,7 +882,7 @@ class _ShortcutsTab(object):
   @memoizedproperty
   def grabDialog(self):
     import hkinput
-    ret = hkinput.HotkeyInputDialog(self.q)
+    ret = hkinput.HotkeyInputDialog(parent_window())
     ret.setWindowTitle("%s - %s" % (
       ret.windowTitle(), tr_("Screenshot")))
     ss = settings.global_()
@@ -1249,6 +1253,7 @@ class _OcrTab(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.ocrGroup)
+    layout.addWidget(self.shortcutsGroup)
     layout.addWidget(self.screenGroup)
     layout.addWidget(self.textGroup)
     layout.addWidget(self.languageGroup)
@@ -1257,7 +1262,7 @@ class _OcrTab(object):
 
     ss = settings.global_()
     ocrEnabled = ss.isOcrEnabled() and features.ADMIN != False
-    for w in self.screenGroup, self.textGroup, self.languageGroup:
+    for w in self.screenGroup, self.shortcutsGroup, self.textGroup, self.languageGroup:
       w.setEnabled(ocrEnabled)
       ss.ocrEnabledChanged.connect(w.setEnabled)
 
@@ -1358,6 +1363,64 @@ class _OcrTab(object):
     langs = [b.language for b in self.languageButtons if b.isChecked()]
     settings.global_().setOcrLanguages(langs)
 
+  ## Shortcuts ##
+
+  @memoizedproperty
+  def shortcutsGroup(self):
+    layout = QtWidgets.QHBoxLayout()
+
+    layout.addWidget(self.comboKeyButton)
+    label = QtWidgets.QLabel("<= " + my.tr("Combine with mouse to select OCR region"))
+    layout.addWidget(label)
+    layout.addStretch()
+
+    #grid = QtWidgets.QGridLayout()
+    #r = 0
+    #grid.addWidget(self.comboKeyButton, r, 0)
+    #label = QtWidgets.QLabel("<= " + my.tr("Combine with mouse to select OCR region"))
+    #grid.addWidget(label, r, 1)
+    #r += 1
+
+    #layout = QtWidgets.QVBoxLayout()
+    #layout.addLayout(grid)
+    #infoLabel = QtWidgets.QLabel()
+    #infoLabel.setWordWrap(True)
+    #layout.addWidget(infoLabel)
+
+    ret = QtWidgets.QGroupBox(my.tr("Keyboard shortcuts"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def comboKeyButton(self):
+    ret = QtWidgets.QPushButton()
+    ret.setToolTip(mytr_("Shortcuts"))
+    ss = settings.global_()
+
+    import vkinput
+    def _refresh():
+      vk = ss.ocrComboKey()
+      ret.setText(vkinput.vk_name(vk) if vk else tr_("Not specified"))
+      skqss.class_(ret, 'btn btn-default' if vk else 'btn btn-danger')
+    _refresh()
+    ss.ocrComboKeyChanged.connect(_refresh)
+
+    ret.clicked.connect(lambda: (
+        self.comboKeyDialog.setValue(ss.ocrComboKey()),
+        self.comboKeyDialog.show()))
+    return ret
+
+  @memoizedproperty
+  def comboKeyDialog(self):
+    import vkinput
+    ret = vkinput.VirtualKeyInputDialog(parent_window())
+    ret.setWindowTitle("%s - %s" % (
+      ret.windowTitle(), "OCR"))
+    ret.setDeletable(False)
+    ss = settings.global_()
+    ret.valueChanged.connect(ss.setOcrComboKey)
+    return ret
+
   ## OCR ##
 
   @memoizedproperty
@@ -1382,7 +1445,7 @@ class _OcrTab(object):
   @memoizedproperty
   def ocrInfoLabel(self):
     ret = QtWidgets.QLabel("\n".join((
-      my.tr("When enabled, you can press Shift+Mouse to select the text to read."),
+      my.tr("When enabled, you can press HotKey+Mouse to select the text to read."),
       my.tr("OCR requires MODI OCR from Microsoft Office 2007 to be installed."),
     )))
     ret.setWordWrap(True)
