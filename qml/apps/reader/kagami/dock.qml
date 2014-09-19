@@ -445,7 +445,7 @@ Item { id: root_
             Share.TextButton { id: ocrRegionVisibleButton_
               height: buttonCol_.cellHeight; width: buttonCol_.cellWidth
               //text: checked ? "×" : "◯" // ばつ、まる
-              text: slimChecked ? Sk.tr("Edit").charAt(0) : Sk.tr("Edit") // まる
+              text: slimChecked ? Sk.tr("Select").charAt(0) : Sk.tr("Select") // まる
               font.pixelSize: buttonCol_.pixelSize
               //font.bold: true
               //language: root_.language
