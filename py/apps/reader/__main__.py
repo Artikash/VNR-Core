@@ -236,6 +236,14 @@ def main():
     os.path.join(ss.dreyeLocation(), r"DreyeMT\SDK\bin") if ss.dreyeLocation() else "",
   ))
 
+  path = ss.fastaitLocation()
+  if path:
+    path = os.path.join(path, 'GTS')
+    if os.path.exists(path):
+      dllpaths = skfileio.listdirs(path)
+      if dllpaths:
+        skpaths.append_paths(dllpaths)
+
   if sys.getrecursionlimit() < config.PY_RECURSION_LIMIT:
     dprint("increase recursion limit")
     sys.setrecursionlimit(config.PY_RECURSION_LIMIT)

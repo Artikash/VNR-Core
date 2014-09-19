@@ -119,6 +119,15 @@ def main():
     os.path.join(reader.dreyeLocation(), r"DreyeMT\SDK\bin") if reader.dreyeLocation() else "",
   ))
 
+  path = reader.fastaitLocation()
+  if path:
+    path = os.path.join(path, "GTS")
+    if os.path.exists(path):
+      from sakurakit import skfileio
+      dllpaths = skfileio.listdirs(path)
+      if dllpaths:
+        skpaths.append_paths(dllpaths)
+
   dprint("set max thread count")
   from PySide.QtCore import QThreadPool
   if QThreadPool.globalInstance().maxThreadCount() < config.QT_THREAD_COUNT:

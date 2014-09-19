@@ -10,12 +10,12 @@ import os
 from sakurakit.skdebug import dprint, dwarn
 
 DLLS = {
- "enzhs": "GTS/EnglishSChinese/EngSChSDK.dll",
- "enzht": "GTS/EnglishTChinese/EngTChSDK.dll",
- "jazhs": "GTS/JapaneseSChinese/JPNSCHSDK.dll",
- "jazht": "GTS/JapaneseTChinese/JPNTCHSDK.dll",
- "zhsen": "GTS/SChineseEnglish/SchEngSDK.dll",
- "zhten": "GTS/TChineseEnglish/TchEngSDK.dll",
+  "enzhs": "GTS/EnglishSChinese/EngSChSDK.dll",
+  "enzht": "GTS/EnglishTChinese/EngTChSDK.dll",
+  "jazhs": "GTS/JapaneseSChinese/JPNSCHSDK.dll",
+  "jazht": "GTS/JapaneseTChinese/JPNTCHSDK.dll",
+  "zhsen": "GTS/SChineseEnglish/SchEngSDK.dll",
+  "zhten": "GTS/TChineseEnglish/TchEngSDK.dll",
 }
 
 class _Engine(object):
@@ -58,11 +58,11 @@ class Engine(object):
       #  self.loadDefaultUserDic()
     return self.isLoaded()
 
-  def translate(self, text):
+  def translate(self, text, fr=None, to=None):
     """
     @param  text  unicode
-    @param  fr  unicode
-    @param  to  unicode
+    @param* fr  unicode  ignored
+    @param* to  unicode  ignored
     @return   unicode or None
     @throw  RuntimeError
     """

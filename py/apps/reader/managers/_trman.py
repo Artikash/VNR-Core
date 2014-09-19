@@ -160,7 +160,7 @@ class LougoTranslator(Translator):
   def translateTest(self, text, **kwargs):
     """
     @param  text  unicode
-    @return  unicode sub, unicode lang, unicode provider
+    @return  unicode sub
     """
     return mecabman.tolou(text)
 
@@ -205,7 +205,7 @@ class HanVietTranslator(Translator):
   def translateTest(self, text, **kwargs):
     """
     @param  text  unicode
-    @return  unicode sub, unicode lang, unicode provider
+    @return  unicode sub
     """
     from hanviet.hanviet import han2viet
     return han2viet(text)
@@ -447,7 +447,7 @@ class AtlasTranslator(OfflineMachineTranslator):
     @param  text  unicode
     @param* fr  unicode
     @param* async  bool  ignored, always sync
-    @return  unicode sub, unicode lang, unicode provider
+    @return  unicode sub
     """
     try: return self._translateTest(self.engine.translate, text, async=async)
     except Exception, e:
@@ -529,7 +529,7 @@ class LecTranslator(OfflineMachineTranslator):
     @param  text  unicode
     @param* fr  unicode
     @param* async  bool  ignored, always sync
-    @return  unicode sub, unicode lang, unicode provider
+    @return  unicode sub
     """
     try: return self._translateTest(self.engine.translate, text, async=async)
     except Exception, e:
@@ -603,7 +603,7 @@ class EzTranslator(OfflineMachineTranslator):
     @param  text  unicode
     @param* fr  unicode
     @param* async  bool  ignored, always sync
-    @return  unicode sub, unicode lang, unicode provider
+    @return  unicode sub
     """
     try: return self._translateTest(self.engine.translate, text, async=async)
     except Exception, e:
@@ -701,7 +701,7 @@ class JBeijingTranslator(OfflineMachineTranslator):
     @param  text  unicode
     @param* fr  unicode
     @param* async  bool  ignored, always sync
-    @return  unicode sub, unicode lang, unicode provider
+    @return  unicode sub
     """
     simplified = to == 'zhs'
     try: return self._translateTest(self.engine.translate, text, async=async, simplified=simplified)
@@ -746,6 +746,171 @@ class JBeijingTranslator(OfflineMachineTranslator):
                 async=async)
     return None, None, None
 
+class FastAITTranslator(OfflineMachineTranslator):
+  key = 'fastait' # override
+
+  def __init__(self, **kwargs):
+    super(FastAITTranslator, self).__init__(**kwargs)
+    self._warned = False # bool
+
+  @memoizedproperty
+  def jazhsEngine(self):
+    from kingsoft import fastait
+    ret = fastait.create_engine(fr='ja', to='zhs')
+    ok = ret.load()
+    #import atexit
+    #atexit.register(ret.destroy)
+    if ok:
+      growl.msg(my.tr("FastAIT Japanese-Chinese translator is loaded"))
+    else:
+      growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("FastAIT")))
+    return ret
+
+  @memoizedproperty
+  def jazhtEngine(self):
+    from kingsoft import fastait
+    ret = fastait.create_engine(fr='ja', to='zht')
+    ok = ret.load()
+    #import atexit
+    #atexit.register(ret.destroy)
+    if ok:
+      growl.msg(my.tr("FastAIT Japanese-Chinese translator is loaded"))
+    else:
+      growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("FastAIT")))
+    return ret
+
+  @memoizedproperty
+  def enzhsEngine(self):
+    from kingsoft import fastait
+    ret = fastait.create_engine(fr='en', to='zhs')
+    ok = ret.load()
+    #import atexit
+    #atexit.register(ret.destroy)
+    if ok:
+      growl.msg(my.tr("FastAIT English-Chinese translator is loaded"))
+    else:
+      growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("FastAIT")))
+    return ret
+
+  @memoizedproperty
+  def enzhtEngine(self):
+    from kingsoft import fastait
+    ret = fastait.create_engine(fr='en', to='zht')
+    ok = ret.load()
+    #import atexit
+    #atexit.register(ret.destroy)
+    if ok:
+      growl.msg(my.tr("FastAIT English-Chinese translator is loaded"))
+    else:
+      growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("FastAIT")))
+    return ret
+
+  @memoizedproperty
+  def zhsenEngine(self):
+    from kingsoft import fastait
+    ret = fastait.create_engine(fr='zhs', to='en')
+    ok = ret.load()
+    #import atexit
+    #atexit.register(ret.destroy)
+    if ok:
+      growl.msg(my.tr("FastAIT Chinese-English translator is loaded"))
+    else:
+      growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("FastAIT")))
+    return ret
+
+  @memoizedproperty
+  def zhtenEngine(self):
+    from kingsoft import fastait
+    ret = fastait.create_engine(fr='zht', to='en')
+    ok = ret.load()
+    #import atexit
+    #atexit.register(ret.destroy)
+    if ok:
+      growl.msg(my.tr("FastAIT Chinese-English translator is loaded"))
+    else:
+      growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("FastAIT")))
+    return ret
+
+  def getEngine(self, fr, to):
+    langs = fr + to
+    if langs == 'jazhs':
+      return self.jazhsEngine
+    elif langs == 'jazht':
+      return self.jazhtEngine
+    elif langs == 'enzhs':
+      return self.enzhsEngine
+    elif langs == 'enzht':
+      return self.enzhtEngine
+    elif langs == 'zhsen':
+      return self.zhsenEngine
+    elif langs == 'zhten':
+      return self.zhtenEngine
+
+  def translateTest(self, text, to='en', fr='ja', async=False):
+    """
+    @param  text  unicode
+    @param* fr  unicode
+    @param* async  bool  ignored, always sync
+    @return  unicode sub
+    """
+    try:
+      engine = self.getEngine(fr=fr, to=to)
+      if engine:
+        return self._translateTest(engine.translate, text, to=to, fr=fr, async=async)
+    except Exception, e:
+      dwarn(e)
+      growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("Dr.eye")),
+          async=async)
+    return ''
+
+  # Ignored
+  #def warmup(self):
+  #  """@reimp"""
+  #  self.ecEngine.warmup()
+  #  self.jcEngine.warmup()
+
+  # Prevent Fastait from turning 『』 to 「」
+  __ja_repl_before = staticmethod(skstr.multireplacer({
+    u'『': u'“‘', # open double single quote
+    u'』': u'’”', # close single double quote
+
+  }))
+  __ja_repl_after = staticmethod(skstr.multireplacer({
+    u'“‘': u'『', # open double single quote
+    u'’”': u'』', # close single double quote
+  }))
+  def translate(self, text, to='zhs', fr='ja', async=False, emit=False, **kwargs):
+    """@reimp"""
+    engine = self.getEngine(to=to, fr=fr)
+    if engine:
+      if emit:
+        self.emitLanguages(fr=fr, to=to)
+      else:
+        repl = self.cache.get(text)
+        if repl:
+          return repl, to, self.key
+      repl = self._escapeText(text, to, fr, emit)
+      if repl:
+        try:
+          if fr == 'ja':
+            repl = self.__ja_repl_before(repl)
+          repl = self._translate(emit, repl, engine.translate, async=async, to=to, fr=fr)
+          if repl:
+            if fr == 'ja':
+              repl = self.__ja_repl_after(repl)
+            repl = self._unescapeTranslation(repl, to=to, emit=emit)
+            self.cache.update(text, repl)
+            return repl, to, self.key
+        #except RuntimeError, e:
+        except Exception, e:
+          if not self._warned:
+            self._warned = True
+            dwarn(e) # This might crash colorama TT
+            if not async:
+              growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("FastAIT")),
+                  async=async)
+    return None, None, None
+
 class DreyeTranslator(OfflineMachineTranslator):
   key = 'dreye' # override
 
@@ -784,7 +949,7 @@ class DreyeTranslator(OfflineMachineTranslator):
     @param  text  unicode
     @param* fr  unicode
     @param* async  bool  ignored, always sync
-    @return  unicode sub, unicode lang, unicode provider
+    @return  unicode sub
     """
     try:
       engine = self.jcEngine if fr == 'ja' else self.ecEngine
@@ -809,7 +974,6 @@ class DreyeTranslator(OfflineMachineTranslator):
     """@reimp"""
     if fr == 'zht':
       text = zht2zhs(text)
-    simplified = to == 'zhs'
     engine = self.jcEngine if fr == 'ja' else self.ecEngine
     if emit:
       self.emitLanguages(fr=fr, to=to)
@@ -881,7 +1045,7 @@ class InfoseekTranslator(OnlineMachineTranslator):
     @param  text  unicode
     @param* fr  unicode
     @param* async  bool  ignored, always sync
-    @return  unicode sub, unicode lang, unicode provider
+    @return  unicode sub
     """
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
@@ -926,7 +1090,7 @@ class ExciteTranslator(OnlineMachineTranslator):
     @param  text  unicode
     @param* fr  unicode
     @param* async  bool  ignored, always sync
-    @return  unicode sub, unicode lang, unicode provider
+    @return  unicode sub
     """
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
@@ -971,7 +1135,7 @@ class LecOnlineTranslator(OnlineMachineTranslator):
     @param  text  unicode
     @param* fr  unicode
     @param* async  bool  ignored, always sync
-    @return  unicode sub, unicode lang, unicode provider
+    @return  unicode sub
     """
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
@@ -1011,7 +1175,7 @@ class TransruTranslator(OnlineMachineTranslator):
     @param  text  unicode
     @param* fr  unicode
     @param* async  bool  ignored, always sync
-    @return  unicode sub, unicode lang, unicode provider
+    @return  unicode sub
     """
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async)
@@ -1056,7 +1220,7 @@ class GoogleTranslator(OnlineMachineTranslator):
     @param  text  unicode
     @param* fr  unicode
     @param* async  bool  ignored, always sync
-    @return  unicode sub, unicode lang, unicode provider
+    @return  unicode sub
     """
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async) #.decode('utf8', errors='ignore')
@@ -1104,7 +1268,7 @@ class BingTranslator(OnlineMachineTranslator):
     @param  text  unicode
     @param* fr  unicode
     @param* async  bool  ignored, always sync
-    @return  unicode sub, unicode lang, unicode provider
+    @return  unicode sub
     """
     try: return self._translateTest(self.engine.translate, text, to=to, fr=fr, async=async)
     except Exception, e: dwarn(e); return ''
@@ -1183,7 +1347,7 @@ class BaiduTranslator(OnlineMachineTranslator):
     @param  text  unicode
     @param* fr  unicode
     @param* async  bool  ignored, always sync
-    @return  unicode sub, unicode lang, unicode provider
+    @return  unicode sub
     """
     engine = self.getEngine(fr=fr, to=to)
     try: return self._translateTest(engine.translate,
@@ -1250,7 +1414,7 @@ class BaiduTranslator(OnlineMachineTranslator):
 #    @param  text  unicode
 #    @param* fr  unicode
 #    @param* async  bool  ignored, always sync
-#    @return  unicode sub, unicode lang, unicode provider
+#    @return  unicode sub
 #    """
 #    try: return self._translateTest(youdaofanyi.translate, text, to=to, fr=fr, async=async)
 #    except Exception, e: dwarn(e); return ''

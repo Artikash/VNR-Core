@@ -155,6 +155,14 @@ class Settings(QSettings):
       self.setValue('JBeijingEnabled', value)
       self.jbeijingEnabledChanged.emit(value)
 
+  fastaitEnabledChanged = Signal(bool)
+  def isFastaitEnabled(self):
+    return to_bool(self.value('FastAITEnabled'))
+  def setFastaitEnabled(self, value):
+    if value != self.isFastaitEnabled():
+      self.setValue('FastAITEnabled', value)
+      self.fastaitEnabledChanged.emit(value)
+
   dreyeEnabledChanged =Signal(bool)
   def isDreyeEnabled(self):
     return to_bool(self.value('DreyeEnabled'))
@@ -223,6 +231,7 @@ class ReaderSettings(QSettings):
   ## Translators
 
   def jbeijingLocation(self): return to_unicode(self.value('JBeijingLocation'))
+  def fastaitLocation(self): return to_unicode(self.value('FastAITLocation'))
   def ezTransLocation(self): return to_unicode(self.value('ezTransLocation'))
   def dreyeLocation(self): return to_unicode(self.value('DreyeLocation'))
   def atlasLocation(self): return to_unicode(self.value('AtlasLocation'))

@@ -13,6 +13,7 @@ TRAITS = [ # [TranslatorTraits]
   {'key':'transru', 'online':True, 'name':mytr_("Translate.Ru")},
   {'key':'baidu',   'online':True, 'name':mytr_("Baidu")},
   {'key':'jbeijing','online':False, 'name':mytr_("JBeijing")},
+  {'key':'fastait', 'online':False, 'name':mytr_("FastAIT")},
   {'key':'dreye',   'online':False, 'name':mytr_("Dr.eye")},
   {'key':'eztrans', 'online':False, 'name':mytr_("ezTrans XP")},
   {'key':'hanviet', 'online':False, 'name':u"Hán Việt"},

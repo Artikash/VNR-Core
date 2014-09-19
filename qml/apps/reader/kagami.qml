@@ -594,6 +594,7 @@ Item { id: root_
         lougoColor: settings_.lougoColor
         hanVietColor: settings_.hanVietColor
         jbeijingColor: settings_.jbeijingColor
+        fastaitColor: settings_.fastaitColor
         dreyeColor: settings_.dreyeColor
         ezTransColor: settings_.ezTransColor
         atlasColor: settings_.atlasColor

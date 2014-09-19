@@ -504,6 +504,15 @@ class Settings(QSettings):
       self.setValue('JBeijingColor', value)
       self.jbeijingColorChanged.emit(value)
 
+  fastaitColorChanged = Signal(str)
+  def fastaitColor(self):
+    return self.value('FastAITColor', config.SETTINGS_FASTAIT_COLOR)
+  def setFastaitColor(self, value):
+    value = value or config.SETTINGS_FASTAIT_COLOR
+    if value != self.fastaitColor():
+      self.setValue('FastAITColor', value)
+      self.fastaitColorChanged.emit(value)
+
   dreyeColorChanged = Signal(str)
   def dreyeColor(self):
     return self.value('DreyeColor', config.SETTINGS_DREYE_COLOR)
@@ -1001,6 +1010,11 @@ class Settings(QSettings):
   def setJBeijingLocation(self, path):
     self.setValue('JBeijingLocation', path)
 
+  def fastaitLocation(self):
+    return to_unicode(self.value('FastAITLocation'))
+  def setFastaitLocation(self, path):
+    self.setValue('FastAITLocation', path)
+
   def ezTransLocation(self):
     return to_unicode(self.value('ezTransLocation'))
   def setEzTransLocation(self, path):
@@ -1122,6 +1136,15 @@ class Settings(QSettings):
     if value != self.isJBeijingEnabled():
       self.setValue('JBeijingEnabled', value)
       self.jbeijingEnabledChanged.emit(value)
+      self.machineTranslatorChanged.emit()
+
+  fastaitEnabledChanged = Signal(bool)
+  def isFastaitEnabled(self):
+    return to_bool(self.value('FastAITEnabled'))
+  def setFastaitEnabled(self, value):
+    if value != self.isFastaitEnabled():
+      self.setValue('FastAITEnabled', value)
+      self.fastaitEnabledChanged.emit(value)
       self.machineTranslatorChanged.emit()
 
   dreyeEnabledChanged =Signal(bool)
@@ -1586,6 +1609,7 @@ class SettingsProxy(QObject):
     g.lougoColorChanged.connect(self.lougoColorChanged)
     g.hanVietColorChanged.connect(self.hanVietColorChanged)
     g.jbeijingColorChanged.connect(self.jbeijingColorChanged)
+    g.fastaitColorChanged.connect(self.fastaitColorChanged)
     g.dreyeColorChanged.connect(self.dreyeColorChanged)
     g.ezTransColorChanged.connect(self.ezTransColorChanged)
     g.atlasColorChanged.connect(self.atlasColorChanged)
@@ -1841,6 +1865,8 @@ class SettingsProxy(QObject):
   hanVietColor = unicode_property('HanVietColor', config.SETTINGS_HANVIET_COLOR, notify=hanVietColorChanged)
   jbeijingColorChanged = Signal(unicode)
   jbeijingColor = unicode_property('JBeijingColor', config.SETTINGS_JBEIJING_COLOR, notify=jbeijingColorChanged)
+  fastaitColorChanged = Signal(unicode)
+  fastaitColor = unicode_property('FastAITColor', config.SETTINGS_FASTAIT_COLOR, notify=fastaitColorChanged)
   dreyeColorChanged = Signal(unicode)
   dreyeColor = unicode_property('DreyeColor', config.SETTINGS_DREYE_COLOR, notify=dreyeColorChanged)
   ezTransColorChanged = Signal(unicode)

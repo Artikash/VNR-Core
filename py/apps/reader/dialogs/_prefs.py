@@ -1768,6 +1768,7 @@ class _TextTab(object):
       ('Baidu', None,  mytr_("Baidu"), 'zh'),
       #('Youdao', None,  mytr_("Youdao"), 'zh'),
       ('JBeijing', None,  mytr_("JBeijing"), 'zh'),
+      ('Fastait', None,  mytr_("FastAIT"), 'zh'),
       ('Dreye', None,  mytr_("Dr.eye"), 'zh'),
       ('EzTrans', 'ezTrans',  mytr_("ezTrans"), 'ko'),
       ('HanViet', 'hanViet',  u"Hán Việt", 'vi'),
@@ -1823,7 +1824,7 @@ class _TextTab(object):
 
     for Name in ('Font', 'Shadow', 'Text', 'Subtitle', 'Comment', 'Danmaku',
                  #'Lougo',
-                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Baidu', 'JBeijing', 'Dreye', 'EzTrans', 'HanViet', 'Atlas', 'Lec'):
+                 'Bing', 'Google', 'LecOnline', 'Infoseek', 'Excite', 'Transru', 'Baidu', 'JBeijing', 'Fastait', 'Dreye', 'EzTrans', 'HanViet', 'Atlas', 'Lec'):
       try: getattr(self, '_load{0}Color'.format(Name))(self)
       except AttributeError: pass
 
@@ -2074,6 +2075,7 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     layout.addWidget(QtWidgets.QLabel(my.tr("Offline translators") + ":"))
     if 'zh' not in blans:
       layout.addWidget(self.jbeijingButton)
+      layout.addWidget(self.fastaitButton)
       layout.addWidget(self.dreyeButton)
     if 'ko' not in blans:
       layout.addWidget(self.ezTransButton)
@@ -2206,6 +2208,15 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     return ret
 
   @memoizedproperty
+  def fastaitButton(self):
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("FastAIT Chinese-Japanese/English translator"),
+        my.tr("recommended for Chinese")))
+    ret.setChecked(settings.global_().isFastaitEnabled())
+    ret.toggled.connect(settings.global_().setFastaitEnabled)
+    return ret
+
+  @memoizedproperty
   def ezTransButton(self):
     ret = QtWidgets.QCheckBox(my.tr("ezTrans XP Korean translator"))
     ret.setChecked(settings.global_().isEzTransEnabled())
@@ -2245,6 +2256,7 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     # Translators
     if 'zh' not in blans:
       self.jbeijingButton.setEnabled(ss.isJBeijingEnabled() or bool(libman.jbeijing().location()))
+      self.fastaitButton.setEnabled(ss.isFastaitEnabled() or bool(libman.fastait().location()))
       self.dreyeButton.setEnabled(ss.isDreyeEnabled() or bool(libman.dreye().location()))
     if 'ko' not in blans:
       self.ezTransButton.setEnabled(ss.isEzTransEnabled() or bool(libman.eztrans().location()))
@@ -4129,6 +4141,7 @@ class _TranslatorLibraryTab(object):
     layout = QtWidgets.QVBoxLayout()
     if 'zh' not in blans:
       layout.addWidget(self.jbeijingGroup)
+      layout.addWidget(self.fastaitGroup)
       layout.addWidget(self.dreyeGroup)
     if 'ko' not in blans:
       layout.addWidget(self.ezTransGroup)
@@ -4241,6 +4254,99 @@ JBeijing is <span style="color:purple">not free</span>, and you can purchase one
   #    path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
   #    settings.global_().setJBeijingLocation(path)
 
+  ## FastAIT ##
+
+  @memoizedproperty
+  def fastaitGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    editRow = QtWidgets.QHBoxLayout()
+    editRow.addWidget(self.fastaitLocationEdit)
+    editRow.addWidget(self.fastaitLocationButton)
+    editRow.addWidget(self.fastaitLocationClearButton)
+    layout.addLayout(editRow)
+    layout.addWidget(self.fastaitInfoEdit)
+    ret = QtWidgets.QGroupBox(notr_("Kingsoft FastAIT") + u" (金山快譯, 534MB)")
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def fastaitLocationEdit(self):
+    ret = QtWidgets.QLineEdit()
+    ret.setReadOnly(True)
+    ret.setToolTip(tr_("Location"))
+    return ret
+
+  @memoizedproperty
+  def fastaitLocationButton(self):
+    ret = QtWidgets.QPushButton(tr_("Browse"))
+    skqss.class_(ret, BROWSE_BTN_CLASS)
+    ret.setToolTip(my.tr("Select the location of {0}").format(mytr_("FastAIT")))
+    ret.clicked.connect(self._getFastaitLocation)
+    return ret
+
+  @memoizedproperty
+  def fastaitLocationClearButton(self):
+    ret = QtWidgets.QPushButton(tr_("Clear"))
+    skqss.class_(ret, CLEAR_BTN_CLASS)
+    ret.setToolTip(my.tr("Clear the specified location"))
+    ret.clicked.connect(self._clearFastaitLocation)
+    return ret
+
+  @memoizedproperty
+  def fastaitInfoEdit(self):
+    ret = QtWidgets.QTextBrowser()
+    skqss.class_(ret, 'texture')
+    ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
+    ret.setAlignment(Qt.AlignCenter)
+    ret.setReadOnly(True)
+    ret.setOpenExternalLinks(True)
+    return ret
+
+  def _getFastaitLocation(self):
+    path = libman.fastait().location() or skpaths.HOME
+    path = QtWidgets.QFileDialog.getExistingDirectory(self.q,
+        my.tr("Please select the folder containing {0}").format('"NetTrans.exe"'),
+        path, 0)
+    if path:
+      if not libman.fastait().verifyLocation(path):
+        growl.error(my.tr("Couldn't find {0} from the specified location").format(mytr_("FastAIT")))
+      else:
+        path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
+        libman.fastait().setLocation(path)
+        self._refreshFastait()
+
+        if not skstr.isascii(path):
+          growl.warn(my.tr("You have non-ascii characters in the path which might work as expected"))
+
+  def _clearFastaitLocation(self):
+    libman.fastait().setLocation('')
+    self._refreshFastait()
+
+  def _refreshFastait(self):
+    libman.fastait().refresh()
+    ok = libman.fastait().exists()
+    if ok:
+      path = libman.fastait().location()
+      if path:
+        path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
+      ok = bool(path) and os.path.exists(path)
+    self.fastaitLocationClearButton.setVisible(ok)
+    #self.fastaitLocationButton.setVisible(not ok)
+    skqss.class_(self.fastaitLocationEdit,
+        'normal' if ok and skstr.isascii(path) else
+        'error' if ok else
+        'muted')
+    self.fastaitLocationEdit.setText(path if ok else my.tr("Not found, please specify the location of {0}").format(mytr_("FastAIT")))
+
+    url = libman.FastAIT.URL
+    self.fastaitInfoEdit.setHtml(my.tr(
+"""Kingsoft FastAIT All Professional Edition is used by <span style="color:purple">offline Chinese-Japanese/English</span> translation.<br/>
+FastAIT is detected on your system at the above location.""")
+    if ok else my.tr(
+"""Kingsoft FastAIT All Professional Edition is needed by <span style="color:purple">offline Chinese-Japanese/English</span> translation.<br/>
+FastAIT is <span style="color:green">free</span>, and you can download one here from iCIBA:
+<center><a href="%s">%s</a></center>""") % (url, url))
+
   ## Dr.eye ##
 
   @memoizedproperty
@@ -4331,7 +4437,7 @@ JBeijing is <span style="color:purple">not free</span>, and you can purchase one
 Dr.eye is detected on your system at the above location.""")
     if ok else my.tr(
 """Inventec Dr.eye v9.0 is needed by <span style="color:purple">offline Chinese-Japanese/English</span> translation.<br/>
-Dr.eye is <span color="purple">not free</span>, and you can purchase one here from Inventec:
+Dr.eye is <span style="color:purple">not free</span>, and you can purchase one here from Inventec:
 <center><a href="%s">%s</a></center>""") % (url, url))
 
   ## ezTrans ##
@@ -4615,6 +4721,7 @@ It is <span style="color:purple">not free</span>, and you can purchase one here 
 
   def refresh(self):
     self._refreshJBeijing()
+    self._refreshFastait()
     self._refreshDreye()
     self._refreshEzTrans()
     self._refreshAtlas()

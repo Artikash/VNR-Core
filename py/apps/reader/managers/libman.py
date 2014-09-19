@@ -127,6 +127,26 @@ class JBeijing(Library):
       if path:
         skpaths.append_path(path)
 
+class FastAIT(Library):
+  URL = "http://ky.iciba.com"
+
+  def location(self):
+    """@reimp"""
+    return settings.global_().fastaitLocation()
+
+  def verifyLocation(self, path):
+    """@reimp"""
+    return bool(path) and os.path.exists(os.path.join(path, "GTS"))
+
+  def setLocation(self, path):
+    if path != self.location():
+      settings.global_().setFastaitLocation(path)
+      if path:
+        from sakurakit import skfileio
+        dllpaths = skfileio.listdirs(os.path.join(path, "GTS"))
+        if dllpaths:
+          skpaths.append_paths(dllpaths)
+
 class Dreye(Library):
   URL = "http://www.dreye.com"
 
@@ -253,6 +273,8 @@ def atlas(): return Atlas()
 def lec(): return Lec()
 @memoized
 def jbeijing(): return JBeijing()
+@memoized
+def fastait(): return FastAIT()
 @memoized
 def dreye(): return Dreye()
 @memoized
