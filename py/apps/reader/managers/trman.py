@@ -38,6 +38,7 @@ class _TranslatorManager(object):
     self.lougoEnabled = \
     self.hanVietEnabled = \
     self.jbeijingEnabled = \
+    self.fastaitEnabled = \
     self.dreyeEnabled = \
     self.ezTransEnabled = \
     self.atlasEnabled = \
@@ -65,6 +66,9 @@ class _TranslatorManager(object):
 
   @memoizedproperty
   def ezTranslator(self): return _trman.EzTranslator(parent=self.parent)
+
+  @memoizedproperty
+  def fastaitTranslator(self): return _trman.FastAITTranslator(parent=self.parent)
 
   @memoizedproperty
   def dreyeTranslator(self): return _trman.DreyeTranslator(parent=self.parent)
@@ -143,6 +147,7 @@ class _TranslatorManager(object):
     """
     #if self.lougoEnabled: yield self.lougoTranslator
     if self.jbeijingEnabled: yield self.jbeijingTranslator
+    if self.fastaitEnabled: yield self.fastaitTranslator
     if self.dreyeEnabled: yield self.dreyeTranslator
     if self.ezTransEnabled: yield self.ezTranslator
     if self.hanVietEnabled: yield self.hanVietTranslator
@@ -256,6 +261,9 @@ class TranslatorManager(QObject):
   def isJBeijingEnabled(self): return self.__d.jbeijingEnabled
   def setJBeijingEnabled(self, value): self.__d.jbeijingEnabled = value
 
+  def isFastaitEnabled(self): return self.__d.fastaitEnabled
+  def setFastaitEnabled(self, value): self.__d.fastaitEnabled = value
+
   def isDreyeEnabled(self): return self.__d.dreyeEnabled
   def setDreyeEnabled(self, value): self.__d.dreyeEnabled = value
 
@@ -300,6 +308,7 @@ class TranslatorManager(QObject):
       #d.lougoEnabled,
       d.hanVietEnabled,
       d.jbeijingEnabled,
+      d.fastaitEnabled,
       d.dreyeEnabled,
       d.ezTransEnabled,
       d.lecEnabled,
@@ -320,6 +329,7 @@ class TranslatorManager(QObject):
     if d.jbeijingEnabled and (not fr or fr in ('ja', 'zhs', 'zht')):
       r.append('jbeijing')
 
+    if d.fastaitEnabled: r.append('fastait')
     if d.dreyeEnabled: r.append('dreye')
     if d.ezTransEnabled: r.append('eztrans')
     if d.lecEnabled: r.append('lec')
@@ -348,7 +358,7 @@ class TranslatorManager(QObject):
       return 'ko'
     if d.hanVietEnabled:
       return 'vi'
-    if d.jbeijingEnabled or d.baiduEnabled or d.dreyeEnabled:
+    if d.jbeijingEnabled or d.baiduEnabled or d.fastaitEnabled or d.dreyeEnabled:
       return 'zhs' if d.language == 'zhs' else 'zht'
     if (d.atlasEnabled or d.lecEnabled) and not any((
         d.infoseekEnabled,

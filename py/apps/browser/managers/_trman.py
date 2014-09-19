@@ -485,6 +485,144 @@ class JBeijingTranslator(OfflineMachineTranslator):
                 async=async)
     return None, None, None
 
+class FastAITTranslator(OfflineMachineTranslator):
+  key = 'fastait' # override
+
+  def __init__(self, **kwargs):
+    super(FastAITTranslator, self).__init__(**kwargs)
+    self._warned = False # bool
+
+  @memoizedproperty
+  def jazhsEngine(self):
+    from kingsoft import fastait
+    ret = fastait.create_engine(fr='ja', to='zhs')
+    ok = ret.load()
+    #import atexit
+    #atexit.register(ret.destroy)
+    if ok:
+      growl.msg(i18n.tr("FastAIT Japanese-Chinese translator is loaded"))
+    else:
+      growl.error(i18n.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("FastAIT")))
+    return ret
+
+  @memoizedproperty
+  def jazhtEngine(self):
+    from kingsoft import fastait
+    ret = fastait.create_engine(fr='ja', to='zht')
+    ok = ret.load()
+    #import atexit
+    #atexit.register(ret.destroy)
+    if ok:
+      growl.msg(i18n.tr("FastAIT Japanese-Chinese translator is loaded"))
+    else:
+      growl.error(i18n.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("FastAIT")))
+    return ret
+
+  @memoizedproperty
+  def enzhsEngine(self):
+    from kingsoft import fastait
+    ret = fastait.create_engine(fr='en', to='zhs')
+    ok = ret.load()
+    #import atexit
+    #atexit.register(ret.destroy)
+    if ok:
+      growl.msg(i18n.tr("FastAIT English-Chinese translator is loaded"))
+    else:
+      growl.error(i18n.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("FastAIT")))
+    return ret
+
+  @memoizedproperty
+  def enzhtEngine(self):
+    from kingsoft import fastait
+    ret = fastait.create_engine(fr='en', to='zht')
+    ok = ret.load()
+    #import atexit
+    #atexit.register(ret.destroy)
+    if ok:
+      growl.msg(i18n.tr("FastAIT English-Chinese translator is loaded"))
+    else:
+      growl.error(i18n.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("FastAIT")))
+    return ret
+
+  @memoizedproperty
+  def zhsenEngine(self):
+    from kingsoft import fastait
+    ret = fastait.create_engine(fr='zhs', to='en')
+    ok = ret.load()
+    #import atexit
+    #atexit.register(ret.destroy)
+    if ok:
+      growl.msg(i18n.tr("FastAIT Chinese-English translator is loaded"))
+    else:
+      growl.error(i18n.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("FastAIT")))
+    return ret
+
+  @memoizedproperty
+  def zhtenEngine(self):
+    from kingsoft import fastait
+    ret = fastait.create_engine(fr='zht', to='en')
+    ok = ret.load()
+    #import atexit
+    #atexit.register(ret.destroy)
+    if ok:
+      growl.msg(i18n.tr("FastAIT Chinese-English translator is loaded"))
+    else:
+      growl.error(i18n.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("FastAIT")))
+    return ret
+
+  def getEngine(self, fr, to):
+    langs = fr + to
+    if langs == 'jazhs':
+      return self.jazhsEngine
+    elif langs == 'jazht':
+      return self.jazhtEngine
+    elif langs == 'enzhs':
+      return self.enzhsEngine
+    elif langs == 'enzht':
+      return self.enzhtEngine
+    elif langs == 'zhsen':
+      return self.zhsenEngine
+    elif langs == 'zhten':
+      return self.zhtenEngine
+
+  # Ignored
+  #def warmup(self):
+  #  """@reimp"""
+  #  self.ecEngine.warmup()
+  #  self.jcEngine.warmup()
+
+  #__fastait_repl_after = staticmethod(skstr.multireplacer({
+  #  '[': u'【',
+  #  ' ]': u'】',
+  #}))
+  def translate(self, text, to='zhs', fr='ja', async=False):
+    """@reimp"""
+    repl = self.cache.get(text)
+    if repl:
+      return repl, to, self.key
+    engine = self.getEngine(fr=fr, to=to)
+    if engine:
+      repl = self._escapeText(text, to=to)
+      if repl:
+        try:
+          repl = self._translate(repl, engine.translate, async=async, to=to, fr=fr)
+          if repl:
+            #sub = self._applySentenceTransformation(sub)
+            #sub = self.__fastait_repl_after(sub)
+            #sub = sub.replace(']', u'】')
+            repl = self._unescapeTranslation(repl, to=to)
+            self.cache.update(text, repl)
+            return repl, to, self.key
+        #except RuntimeError, e:
+        except Exception, e:
+          if not self._warned:
+            self._warned = True
+            dwarn(e) # This might crash colorama TT
+            if not async:
+              growl.error(i18n.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(i18n.tr("FastAIT")),
+                  async=async)
+    return None, None, None
+
 class DreyeTranslator(OfflineMachineTranslator):
   key = 'dreye' # override
 
@@ -532,7 +670,6 @@ class DreyeTranslator(OfflineMachineTranslator):
     """@reimp"""
     if fr == 'zht':
       text = zht2zhs(text)
-    simplified = to == 'zhs'
     engine = self.jcEngine if fr == 'ja' else self.ecEngine
     repl = self.cache.get(text)
     if repl:

@@ -123,6 +123,9 @@ class reader(QObject):
       self.tr("JBeijing7"),
       self.tr("Dr.eye"),
       #self.tr("Han Viet"),
+      self.tr("FastAIT"),
+      self.tr("Kingsoft"),
+      self.tr("Kingsoft FastAIT"),
 
       self.tr("Built-in"),
       self.tr("built-in"),

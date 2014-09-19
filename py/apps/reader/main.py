@@ -691,6 +691,9 @@ class _MainObject(object):
     ret.setJBeijingEnabled(ss.isJBeijingEnabled())
     ss.jbeijingEnabledChanged.connect(ret.setJBeijingEnabled)
 
+    ret.setFastaitEnabled(ss.isFastaitEnabled())
+    ss.fastaitEnabledChanged.connect(ret.setFastaitEnabled)
+
     ret.setDreyeEnabled(ss.isDreyeEnabled())
     ss.dreyeEnabledChanged.connect(ret.setDreyeEnabled)
 

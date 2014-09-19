@@ -44,17 +44,26 @@ reader.yaml: ..
 reader:
   settings.py: jbeijingColor jbeijingEnabled jbeijingLocation
   config.py: JBEIJING_COLOR
-  _prefs.py: jbeijing
-  _trman.py: ..
-  trman.py: ..
+  libman.py: ..
   mytr.py: ..
   trtraits.py: ..
   main.py: jbeijingEnabled
+  __main__.py: jbeijing
+  _prefs.py: jbeijing
+  _trman.py: ..
+  trman.py: ..
 
 browser:
   settings.py: jbeijingEnabled jbeijingLocation
+  beans.py
+  settings.haml
   main.py: jbeijingEnabled
+  __main__.py
   _trman.py: ..
   trman.py: ..
+
+wiki Machine Translators and Additional Software
+
+debug translating special characters
 
 # EOF

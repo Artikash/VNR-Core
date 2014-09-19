@@ -37,6 +37,7 @@ class _TranslatorManager(object):
     self.transruEnabled = \
     self.hanVietEnabled = \
     self.jbeijingEnabled = \
+    self.fastaitEnabled = \
     self.dreyeEnabled = \
     self.ezTransEnabled = \
     self.atlasEnabled = \
@@ -56,6 +57,9 @@ class _TranslatorManager(object):
 
   @memoizedproperty
   def ezTranslator(self): return _trman.EzTranslator(parent=self.parent)
+
+  @memoizedproperty
+  def fastaitTranslator(self): return _trman.FastAITTranslator(parent=self.parent)
 
   @memoizedproperty
   def dreyeTranslator(self): return _trman.DreyeTranslator(parent=self.parent)
@@ -112,6 +116,7 @@ class _TranslatorManager(object):
     @yield  Translator
     """
     if self.jbeijingEnabled: yield self.jbeijingTranslator
+    if self.fastaitEnabled: yield self.fastaitTranslator
     if self.dreyeEnabled: yield self.dreyeTranslator
     if self.ezTransEnabled: yield self.ezTranslator
     if self.hanVietEnabled: yield self.hanVietTranslator
@@ -203,6 +208,9 @@ class TranslatorManager(QObject):
   def isDreyeEnabled(self): return self.__d.dreyeEnabled
   def setDreyeEnabled(self, value): self.__d.dreyeEnabled = value
 
+  def isFastaitEnabled(self): return self.__d.fastaitEnabled
+  def setFastaitEnabled(self, value): self.__d.fastaitEnabled = value
+
   def isEzTransEnabled(self): return self.__d.ezTransEnabled
   def setEzTransEnabled(self, value): self.__d.ezTransEnabled = value
 
@@ -242,6 +250,7 @@ class TranslatorManager(QObject):
     return any((
       d.hanVietEnabled,
       d.jbeijingEnabled,
+      d.fastaitEnabled,
       d.dreyeEnabled,
       d.ezTransEnabled,
       d.lecEnabled,
@@ -262,6 +271,7 @@ class TranslatorManager(QObject):
     r = []
     if d.hanVietEnabled: r.append('hanviet')
     if d.jbeijingEnabled: r.append('jbeijing')
+    if d.fastaitEnabled: r.append('fastait')
     if d.dreyeEnabled: r.append('dreye')
     if d.ezTransEnabled: r.append('eztrans')
     if d.lecEnabled: r.append('lec')

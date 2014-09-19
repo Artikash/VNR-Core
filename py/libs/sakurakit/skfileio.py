@@ -146,6 +146,22 @@ def emptydir(path):
   try: return bool(os.listdir(work_path))
   except: return False
 
+def listdirs(path):
+  """Return directories in path
+  @param  path
+  @return  [unicode]
+  """
+  try: return [os.path.join(path, it) for it in os.listdir(path) if os.path.isdir(path)]
+  except: return []
+
+def listfiles(path):
+  """Return files in path
+  @param  path
+  @return  [unicode]
+  """
+  try: return [os.path.join(path, it) for it in os.listdir(path) if os.path.isfile(path)]
+  except: return []
+
 def trashfile(path):
   """
   @param  path  str or unicode

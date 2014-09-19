@@ -146,6 +146,7 @@ var TRANSLATOR_NAME = {
   , baidu: "百度"
   //, youdao: "有道"
   , jbeijing: "J北京"
+  , fastait: "金山快譯"
   , dreye: "Dr.eye"
   , eztrans: "ezTrans XP"
   , atlas: "ATLAS"

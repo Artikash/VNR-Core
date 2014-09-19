@@ -58,6 +58,7 @@ Item { id: root_
   property color lougoColor
   property color hanVietColor
   property color jbeijingColor
+  property color fastaitColor
   property color dreyeColor
   property color ezTransColor
   property color atlasColor
@@ -913,6 +914,7 @@ Item { id: root_
           switch(model.provider) {
           case 'hanviet': return root_.hanVietColor
           case 'jbeijing': return root_.jbeijingColor
+          case 'fastait': return root_.fastaitColor
           case 'dreye': return root_.dreyeColor
           case 'eztrans': return root_.ezTransColor
           case 'atlas': return root_.atlasColor

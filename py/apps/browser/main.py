@@ -168,6 +168,9 @@ class _MainObject(object):
     if not reader.jbeijingLocation() and ss.isJBeijingEnabled():
       ss.setJBeijingEnabled(False)
 
+    if not reader.fastaitLocation() and ss.isFastaitEnabled():
+      ss.setFastaitEnabled(False)
+
     if not reader.ezTransLocation() and ss.isEzTransEnabled():
       ss.setEzTransEnabled(False)
 
@@ -209,6 +212,9 @@ class _MainObject(object):
 
     ret.setJBeijingEnabled(ss.isJBeijingEnabled())
     ss.jbeijingEnabledChanged.connect(ret.setJBeijingEnabled)
+
+    ret.setFastaitEnabled(ss.isFastaitEnabled())
+    ss.fastaitEnabledChanged.connect(ret.setFastaitEnabled)
 
     ret.setDreyeEnabled(ss.isDreyeEnabled())
     ss.dreyeEnabledChanged.connect(ret.setDreyeEnabled)
