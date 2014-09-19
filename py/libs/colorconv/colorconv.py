@@ -27,6 +27,14 @@ def argb2pix(a, r, g, b): # (int, int, int) -> int
   return a << 24 + r << 16 + g << 8 + b
 
 # S and I are easy to compute, but H is very expensive
+#
+# Online verification: http://www.picturetopeople.org/color_converter.html
+# Formulation: https://mail.python.org/pipermail/image-sig/2005-March/003236.html
+#
+#   I = 1/3 * (R+G+B)
+#   S = 1 - (3/(R+G+B))*(min(R,G,B))
+#   H = cos^-1 ( (((R-G)+(R-B))/2)/ (sqrt((R-G)^2 + (R-B)*(G-B) )))
+#
 # See: http://www.had2know.com/technology/hsi-rgb-color-converter-equations.html
 # See: http://stackoverflow.com/questions/23889620/is-there-any-other-way-to-convert-rgb-to-hsi
 def rgb2hsi(r, g, b): # int, int, int -> float rad or None, float, float
@@ -43,7 +51,9 @@ def rgb2hsi_h(r, g, b): # int, int, int -> float or None
     d = dRG*dRG + dRB*dGB
     if d:
       cos = (dRG+dRB)/(2*math.sqrt(d))
-      try: return math.acos(cos) * 2
+      try:
+        ret = math.acos(cos)
+        return 2 * math.pi - ret if dRG > dRB else ret
       except ValueError: pass  # if cos is too big
   return None
 
@@ -56,11 +66,16 @@ def deg2rad(d): return d * math.pi / 180 # float -> float
 def rad2deg(d): return d * 180 / math.pi # float -> float
 
 if __name__ == '__main__':
-  #r,g,b = pix2rgb(0x0f32ff)
-  r,g,b = pix2rgb(0x0000ff)
-  print r,g,b
+  #r,g,b = pix2rgb(0xff0000) # hue = 0
+  #r,g,b = pix2rgb(0x00ff00) # hue = 120
+  #r,g,b = pix2rgb(0x0000ff) # hue = 240
+  r,g,b = pix2rgb(0x010203) # hue = 210
+  #r,g,b = pix2rgb(0x000001) # hue = 240
+  #r,g,b = pix2rgb(0x000101) # hue = 180
+  #r,g,b = pix2rgb(0x000102) # hue = 210
+  print 'rgb:', r,g,b
   h,s,i = rgb2hsi(r,g,b)
-  print h,s,i
-  print h * 180 / math.pi
+  print 'hsi:', h,s,i
+  print 'hue:', h * 180 / math.pi
 
 # EOF
