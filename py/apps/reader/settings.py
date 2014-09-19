@@ -11,6 +11,10 @@ import defs, config
 
 __all__ = ['SettingsProxy']
 
+# http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
+# win32con
+VK_SHIFT = 0x10
+
 def to_bool(value):
   return value == True or value  == 'true'
 
@@ -213,6 +217,13 @@ class Settings(QSettings):
     if value != self.isOcrEnabled():
       self.setValue('OCREnabled', value)
       self.ocrEnabledChanged.emit(value)
+
+  ocrComboKeyChanged = Signal(int)
+  def ocrComboKey(self): return to_int(self.value('OCRVirtualKey', VK_SHIFT))
+  def setOcrComboKey(self, value):
+    if value != self.ocrComboKey():
+      self.setValue('OCRVirtualKey', value)
+      self.ocrComboKeyChanged.emit(value)
 
   ocrSpaceEnabledChanged = Signal(bool)
   def isOcrSpaceEnabled(self): return to_bool(self.value('OCRSpace'))

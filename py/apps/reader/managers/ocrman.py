@@ -132,9 +132,10 @@ class _OcrManager(object):
     rb.setParent(windows.top()) # must appear before setting window flags
     rb.setWindowFlags(rb.windowFlags()|Qt.Popup) # needed when parentWidget is not nullptr
 
-    import win32con
-    ret.setComboKey(win32con.VK_SHIFT)
-    #ret.setComboKey(win32con.VK_MENU) # ALT
+    import settings
+    ss = settings.global_()
+    ret.setComboKey(ss.ocrComboKey())
+    ss.ocrComboKeyChanged.connect(ret.setComboKey)
     return ret
 
   @memoizedproperty
