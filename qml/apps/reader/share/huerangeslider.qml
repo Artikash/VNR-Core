@@ -114,6 +114,7 @@ Rectangle { id: root_
       bottom: parent.bottom
       margins: 1
     }
+    //radius: root_.radius
     visible: root_.enabled && root_.startValue > root_.stopValue
     gradient: root_.grooveGradient
   }
@@ -126,6 +127,7 @@ Rectangle { id: root_
       bottom: parent.bottom
       margins: 1
     }
+    //radius: root_.radius
     visible: leftGroove_.visible
     gradient: root_.grooveGradient
   }
@@ -138,6 +140,7 @@ Rectangle { id: root_
       bottom: parent.bottom
       margins: 1
     }
+    //radius: root_.radius
     visible: root_.enabled && root_.startValue < root_.stopValue
     gradient: root_.grooveGradient
   }

@@ -107,6 +107,8 @@ Rectangle { id: root_
       bottom: parent.bottom
       margins: 1
     }
+    //radius: root_.radius
+
     visible: root_.enabled
 
     gradient: Gradient { // blue

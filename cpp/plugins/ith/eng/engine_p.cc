@@ -5617,6 +5617,15 @@ bool InsertMarineHeartHook()
  *  - Scenario: arg1 + 4*5 is 0, arg1+0xc is address of the text
  *  - Character: arg1 + 4*10 is 0, arg1+0xc is text
  */
+static inline size_t _elf_strlen(LPCSTR p) // limit search address which might be bad
+{
+  //CC_ASSERT(p);
+  for (size_t i = 0; i < VNR_TEXT_CAPACITY; i++)
+    if (!*p++)
+      return i;
+  return 0; // when len >= VNR_TEXT_CAPACITY
+}
+
 static void SpecialHookElf(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(hp);
@@ -5631,11 +5640,14 @@ static void SpecialHookElf(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *sp
   } else if (*(DWORD *)arg2_chara == 0) {
     text = arg2_chara + 0xc;
     *split = 2;
-  } else
-    return;
-
-  *data = text;
-  *len = ::strlen((LPCSTR)text);
+  }
+  // Text from scenario could be bad when open backlog while the character is speaking
+  //if (text && text < MemDbg::UserMemoryStopAddress) {
+  if (text && !::IsBadReadPtr((LPCVOID)text, 1)) {
+    *len = _elf_strlen((LPCSTR)text); // in case the text is bad but still readable
+    //*len = ::strlen((LPCSTR)text);
+    *data = text;
+  }
 }
 
 /**
@@ -5720,7 +5732,8 @@ bool InsertElfHook()
   //enum { hook_offset = 0xc };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
-  //ITH_GROWL_DWORD(reladdr);
+  //ITH_GROWL_DWORD(addr);
+  //addr = 0x42f170; // 愛姉妹4 Trial
   //reladdr = 0x2f9b0; // 愛姉妹4
   //reladdr = 0x2f0f0; // SEXティーチャー剛史 trial
   if (!addr) {
@@ -6718,7 +6731,7 @@ bool InsertSideBHook()
  *  0f14f88c   ffffff80 ; constant, used as split
  *  0f14f890   005768c8  .005768c8
  *  0f14f894   02924340 ; text is at 02924350
- *  0f14f898   00000001 ; this might also be a good asplit
+ *  0f14f898   00000001 ; this might also be a good split
  *  0f14f89c   1b520020
  *  0f14f8a0   00000000
  *  0f14f8a4   00000000
@@ -6761,8 +6774,7 @@ static void SpecialHookExp(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *sp
   if (arg1 && arg3)
     if (DWORD text = *(DWORD *)arg1)
       if (!(text > lasttext && text < lasttext + VNR_TEXT_CAPACITY)) { // text is not a subtext of lastText
-        lasttext = text;
-        *data = text; // mov edx,dword ptr ds:[eax]
+        *data = lasttext = text; // mov edx,dword ptr ds:[eax]
         //*len = arg3 - 1; // the last char is the '\0', so -1, but this value is not reliable
         *len = ::strlen((LPCSTR)text);
         // Registers are not used as split as all of them are floating at runtime
