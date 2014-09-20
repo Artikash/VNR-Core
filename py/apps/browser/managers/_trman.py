@@ -597,6 +597,7 @@ class FastAITTranslator(OfflineMachineTranslator):
   #}))
   def translate(self, text, to='zhs', fr='ja', async=False):
     """@reimp"""
+    #async = True # force async
     repl = self.cache.get(text)
     if repl:
       return repl, to, self.key

@@ -881,6 +881,7 @@ class FastAITTranslator(OfflineMachineTranslator):
   }))
   def translate(self, text, to='zhs', fr='ja', async=False, emit=False, **kwargs):
     """@reimp"""
+    async = True # force async since FastAIT is randomly slow
     engine = self.getEngine(to=to, fr=fr)
     if engine:
       if emit:
