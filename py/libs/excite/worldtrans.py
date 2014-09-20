@@ -141,13 +141,13 @@ if __name__ == '__main__':
     with SkProfiler():
       for i in range(1):
         t = translate(s, to=to, fr=fr)
-    #print t
+    print t
 
     session = requests.Session()
     with SkProfiler():
       for i in range(1):
         t = translate(s, to=to, fr=fr)
-    #print t
+    print t
 
     #session = requests
     #with SkProfiler():

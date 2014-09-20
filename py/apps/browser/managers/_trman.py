@@ -735,7 +735,7 @@ class ExciteTranslator(OnlineMachineTranslator):
   def __init__(self, **kwargs):
     super(ExciteTranslator, self).__init__(**kwargs)
     from excite import worldtrans
-    worldtrans.session = requests.Session()
+    #worldtrans.session = session or requests.Session() # Session is disabled otherwise it will get blocked
     self.engine = worldtrans
 
   #__excite_repl_after = staticmethod(skstr.multireplacer({
@@ -746,7 +746,8 @@ class ExciteTranslator(OnlineMachineTranslator):
     """@reimp"""
     if fr != 'ja':
       return None, None, None
-    to = 'en' if to in ('ms', 'id', 'th', 'vi', 'ar', 'nl', 'pl') else to
+    if to in ('ms', 'id', 'th', 'vi', 'ar', 'nl', 'pl'):
+      to = 'en'
     repl = self.cache.get(text)
     if repl:
       return repl, to, self.key
@@ -860,6 +861,7 @@ class BingTranslator(OnlineMachineTranslator):
   #  '[': u'【',
   #  ']\n': u'】',
   #}))
+  __fix_escape = re.compile(r'(?<=[0-9]),(?=[0-9])') # replace ',' between digits with '.'
   def translate(self, text, to='en', fr='ja', async=False):
     """@reimp"""
     #if fr != 'ja':
@@ -872,6 +874,7 @@ class BingTranslator(OnlineMachineTranslator):
       repl = self._translate(repl, self.engine.translate,
           to=to, fr=fr, async=async)
       if repl:
+        #repl = self.__fix_escape.sub('.', repl) # only needed by Shared Dictionary
         repl = self._unescapeTranslation(repl, to=to)
         self.cache.update(text, repl)
     return repl, to, self.key
