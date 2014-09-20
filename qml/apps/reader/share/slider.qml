@@ -64,7 +64,7 @@ Rectangle { id: root_
       right: handle_.left
       margins: 1
     }
-    //radius: parent.radius
+    //radius: root_.radius * 1.5
     visible: root_.enabled
 
     gradient: Gradient { // blue

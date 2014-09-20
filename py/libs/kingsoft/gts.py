@@ -71,6 +71,8 @@ EN_BUFFER_SIZE = 10000 # allocate buffer size. p.s. max text size in VNR is 256 
 DEFAULT_DIC = "DCT"
 USER_DIC = "User"
 
+PROF_DIC_ENABLED = False # disable prof dict by default that is slow
+
 class _Loader(object):
 
   def __init__(self, dllPath, bufferSize):
@@ -158,14 +160,15 @@ class _Loader(object):
 
     # This will double the translation time orz.
     # I should selectively enable the dict that is useful
-    # Load extra dic, which is optional
-    #priority = 0
-    #for dic in os.listdir(path):
-    #  if dic not in (DEFAULT_DIC, USER_DIC):
-    #    dicpath = os.path.join(path, dic)
-    #    if os.path.isdir(dicpath):
-    #      priority += 1
-    #      self._setProfDictPath(dicpath, priority)
+    if PROF_DIC_ENABLED:
+      # Load extra dic, which is optional
+      priority = 0
+      for dic in os.listdir(path):
+        if dic not in (DEFAULT_DIC, USER_DIC):
+          dicpath = os.path.join(path, dic)
+          if os.path.isdir(dicpath):
+            priority += 1
+            self._setProfDictPath(dicpath, priority)
 
     # Load user dic
     from sakurakit import skfileio

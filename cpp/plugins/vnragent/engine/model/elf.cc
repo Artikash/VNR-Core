@@ -41,11 +41,15 @@ LPCSTR __fastcall newHookFun(void *self, void *edx, DWORD arg1, DWORD arg2, DWOR
     // By debugging, this text is later released using heapFree
     LPCSTR *p = (LPCSTR *)(arg2_scene + 0xc),
            text = *p;
-    QByteArray data = q->dispatchTextA(text, signature, role);
-    *p = (LPCSTR)data.constData();
-    LPCSTR ret = oldHookFun(self, arg1, arg2, arg3);
-    *p = text; // restore old hook
-    return ret;
+
+    // Text from scenario could be bad when open backlog while the character is speaking
+    if (text && !::IsBadReadPtr((LPCVOID)text, 1)) {
+      QByteArray data = q->dispatchTextA(text, signature, role);
+      *p = (LPCSTR)data.constData();
+      LPCSTR ret = oldHookFun(self, arg1, arg2, arg3);
+      *p = text; // restore old hook
+      return ret;
+    }
 
   // Name
   // FIXME: The name has to be truncated
@@ -63,8 +67,8 @@ LPCSTR __fastcall newHookFun(void *self, void *edx, DWORD arg1, DWORD arg2, DWOR
     return oldHookFun(self, arg1, arg2, arg3);
 
   // Warning: unknown game parameter
-  } else
-    return oldHookFun(self, arg1, arg2, arg3);
+  }
+  return oldHookFun(self, arg1, arg2, arg3);
 #undef deref
 }
 
