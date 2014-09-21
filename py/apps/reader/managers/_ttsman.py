@@ -3,15 +3,20 @@
 # 4/7/2013 jichi
 
 import os
+from functools import partial
+#from PySide.QtCore import QMutex
+from sakurakit import skthreads
 from sakurakit.skclass import memoizedproperty
 from sakurakit.sktr import tr_
+from sakurakit.skwincom import SkCoInitializer
 from mytr import my
 import growl
 
 ## Voice engines ##
 
 class VoiceEngine(object):
-  key = ''      # str
+  type = ''         # str
+  key = ''          # str
   language = 'ja'   # str
   name = tr_('Unknown') # unicode
   #gender = 'f'  # str
@@ -23,6 +28,7 @@ class VoiceEngine(object):
   def stop(self): pass
 
 class GoogleEngine(VoiceEngine):
+  type = 'qt'
   key = 'google' # override
   name = u'Google TTS' # override
 
@@ -63,6 +69,7 @@ class GoogleEngine(VoiceEngine):
         self.engine.speak(text, language=language or self.language)
 
 class VocalroidEngine(VoiceEngine):
+  type = 'vocalroid'
 
   def __init__(self, voiceroid, path=''):
     self.path = path # unicode
@@ -123,6 +130,7 @@ class VocalroidEngine(VoiceEngine):
     if self._speaking:
       self._speaking = False
       e = self.engine
+      #if e:
       if e:
         e.stop()
 
@@ -139,11 +147,14 @@ class ZunkoEngine(VocalroidEngine):
     super(ZunkoEngine, self).__init__(v, **kwargs)
 
 class SapiEngine(VoiceEngine):
+  type = 'sapi'
+
   def __init__(self, key, speed=0):
     self.key = key      # str
     self.speed = speed  # int
     self._speaking = False
     self._valid = False
+    #self.mutex = QMutex() # speak mutex
 
     import sapi.engine, sapi.registry
     kw = sapi.registry.query(key=self.key)
@@ -171,13 +182,27 @@ class SapiEngine(VoiceEngine):
 
   def speak(self, text):
     """@remip"""
+    skthreads.runasync(partial(self._speakasync, text))
+
+  def _speakasync(self, text):
     e = self.engine
     if e:
-      if self._speaking:
-        e.stop()
-      else:
-        self._speaking = True
-      e.speak(text)
+      with SkCoInitializer(threading=True):
+        if self._speaking:
+          e.stop()
+        else:
+          self._speaking = True
+        e.speak(text)
+
+  #def speak(self, text):
+  #  """@remip"""
+  #  e = self.engine
+  #  if e:
+  #    if self._speaking:
+  #      e.stop()
+  #    else:
+  #      self._speaking = True
+  #    e.speak(text)
 
   def stop(self):
     """@remip"""

@@ -63,6 +63,7 @@ class _TtsManager(object):
 
   def stop(self):
     for it in self.iterActiveEngines():
+      #if it.type != 'sapi': # do not disable sapi TTS to make it faster
       it.stop()
 
   def speakLater(self, text, interval, **kwargs): # unicode, long ->
@@ -109,6 +110,10 @@ class _TtsManager(object):
     #if not text:
     #  return
     text = self._repairText(text, eng.key)
+
+    #if eng.type == 'sapi':
+    #  eng.speak(text, async=True)
+    #else:
     eng.speak(text)
 
     #skevents.runlater(partial(eng.speak, text))
