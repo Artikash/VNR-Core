@@ -66,10 +66,10 @@ class _TtsManager(object):
       it.stop()
 
   def speakLater(self, text, interval, **kwargs): # unicode, long ->
-    self._speakTask = partial(self._speak, text, **kwargs)
+    self._speakTask = partial(self.speak, text, **kwargs)
     self._speakTimer.start(interval)
 
-  def _speak(self, text, engine='', termEnabled=False, language='', verbose=True):
+  def speak(self, text, engine='', termEnabled=False, language='', verbose=True):
     """
     @param  text  unicode
     @param* engine  str
@@ -274,7 +274,10 @@ class TtsManager(QObject):
   def speak(self, text, interval=100, **kwargs):
     if not features.TEXT_TO_SPEECH:
       return
-    self.__d.speakLater(text, interval=interval, **kwargs)
+    if interval:
+      self.__d.speakLater(text, interval=interval, **kwargs)
+    else:
+      self.__d.speak(text, **kwargs)
 
   def getEngineLanguage(self, key): # str  engine key -> str not None
     eng = self.__d.getEngine(key)
