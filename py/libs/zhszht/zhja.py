@@ -45,6 +45,7 @@ TJ = {
   u"噜": u"魯",
 
   u"爸": u"巴",
+  u"脖": u"月孛",
 
   # Not needed, but to simplified version
   #u"號": u"号",
