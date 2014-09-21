@@ -11,6 +11,7 @@ SUBDIRS += \
   pytest \
   socktest \
   tahtest \
+  trtest \
   uitest
 
 win32: SUBDIRS += \

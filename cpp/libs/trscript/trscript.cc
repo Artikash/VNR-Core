@@ -12,7 +12,7 @@
 //#include <QtCore/QWriteLocker>
 
 #include <list> // instead of QList which is slow that stores pointers instead of elements
-#include <utility> // for pair which is faster than QPair
+#include <tuple>
 #include <boost/foreach.hpp>
 
 #define DEBUG "trscript.cc"
@@ -20,8 +20,8 @@
 
 //#define DEBUG_RULE // output the rule that is applied
 
-#define SCRIPT_COMMENT_CHAR     '#' // indicate the beginning of a line comment
-//#define SCRIPT_COMMENT_CHAR_LEN  1 // not used
+#define SCRIPT_CH_COMMENT   '#' // indicate the beginning of a line comment
+#define SCRIPT_CH_REGEX     'r'
 
 #define SCRIPT_RULE_DELIM        '\t' // deliminator of the rule pair
 enum { SCRIPT_RULE_DELIM_LEN = 1 };
@@ -40,36 +40,28 @@ struct TranslationScriptRule
   TranslationScriptRule() : sourceRe(nullptr) {}
   ~TranslationScriptRule() { if (sourceRe) delete sourceRe; }
 
-  bool init(const QString &s, const QString &t)
+  bool init(const QString &s, const QString &t, bool regex)
   {
-    if (isRegExp(s)) {
+    if (regex) {
       QRegExp *re = new QRegExp(s, Qt::CaseSensitive, QRegExp::RegExp2); // use Perl-compatible syntax, default in Qt5
       if (re->isEmpty()) {
         DOUT("invalid regexp:" << s);
-      delete re;
-      return false;
+        delete re;
+        return false;
+      }
+      sourceRe = re;
+      target = t;
+      //target.replace('$', '\\'); // convert Javascript RegExp to Perl
+    } else {
+      source = s;
+      target = t;
     }
-    sourceRe = re;
-    target = t;
-    target.replace('$', '\\'); // convert Javascript RegExp to Perl
-  } else {
-    source = s;
-    target = t;
-  }
-  return true;
+    return true;
   }
 
-private:
-  static bool isRegExp(const QString &s)
-  {
-    foreach (const QChar &c, s)
-      switch (c.unicode()) {
-      case '(': case ')': case '[': case ']': case '^': case '$':
-      case '|': case '\\': case '?': case '!': case '*': case '.':
-        return true;
-      }
-    return false;
-  }
+  bool init(const std::tuple<QString, QString, bool> &t)
+  { return init(std::get<0>(t), std::get<1>(t), std::get<2>(t)); }
+
 };
 
 } // unnamed namespace
@@ -134,23 +126,28 @@ bool TranslationScriptManager::loadFile(const QString &path)
     return false;
   }
 
-  std::list<std::pair<QString, QString> > lines;
+  std::list<std::tuple<QString, QString, bool> > lines; // pattern, text, regex
 
   QTextStream in(&file);
   in.setCodec("UTF-8"); // enforce UTF-8
   while (!in.atEnd()) {
-    QString line = in.readLine().trimmed(); // trim the ending new line char
-    if (!line.isEmpty() && line[0].unicode() != SCRIPT_COMMENT_CHAR) {
-      // left middle right
-      int index = line.indexOf(SCRIPT_RULE_DELIM);
+    QString line = in.readLine(); //.trimmed(); // trim the ending new line char
+    if (!line.isEmpty()) {
+      bool regex = false;
+      int textStartIndex = 1; // index of the text after flags, +1 to skip \t
+      switch (line[0].unicode()) {
+      case SCRIPT_CH_COMMENT: continue;
+      case SCRIPT_CH_REGEX: regex = true; textStartIndex++; break;
+      }
+      int index = line.indexOf(SCRIPT_RULE_DELIM, textStartIndex);
       QString left, right;
       if (index == -1)
-        left = line;
+        left = line.mid(textStartIndex);
       else {
-        left = line.left(index); //.trimmed()
+        left = line.mid(textStartIndex, index - textStartIndex); //.trimmed()
         right = line.mid(index + SCRIPT_RULE_DELIM_LEN);
       }
-      lines.push_back(std::make_pair(left, right));
+      lines.push_back(std::make_tuple(left, right, regex));
     }
   }
   file.close();
@@ -163,7 +160,7 @@ bool TranslationScriptManager::loadFile(const QString &path)
 
   int i = 0;
   BOOST_FOREACH (const auto &it, lines)
-    d_->rules[i++].init(it.first, it.second);
+    d_->rules[i++].init(it);
 
   return true;
 }

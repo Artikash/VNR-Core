@@ -4,13 +4,11 @@
 #
 # Format: flags \t pattern \t replace
 #
-# Flags (similar to sed in linux):
-# - s (action): substitute
-# - d (action): delete
-# - r (option): enable regex
+# Flags:
+# - r: enable regex
 
-s 	この子	this
-d	なに
-sr	か.いい	lovely
+	kore	this
+	nani
+r	kaw.ii	lovely
 
 # EOF

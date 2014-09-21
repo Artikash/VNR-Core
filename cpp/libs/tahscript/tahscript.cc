@@ -47,17 +47,17 @@ struct TahScriptRule
       QRegExp *re = new QRegExp(s, Qt::CaseSensitive, QRegExp::RegExp2); // use Perl-compatible syntax, default in Qt5
       if (re->isEmpty()) {
         DOUT("invalid regexp:" << s);
-      delete re;
-      return false;
+        delete re;
+        return false;
+      }
+      sourceRe = re;
+      target = t;
+      target.replace('$', '\\'); // convert Javascript RegExp to Perl
+    } else {
+      source = s;
+      target = t;
     }
-    sourceRe = re;
-    target = t;
-    target.replace('$', '\\'); // convert Javascript RegExp to Perl
-  } else {
-    source = s;
-    target = t;
-  }
-  return true;
+    return true;
   }
 
 private:
@@ -141,7 +141,7 @@ bool TahScriptManager::loadFile(const QString &path)
   QTextStream in(&file);
   in.setCodec("UTF-8"); // enforce UTF-8
   while (!in.atEnd()) {
-    QString line = in.readLine().trimmed(); // trim the ending new line char
+    QString line = in.readLine(); //.trimmed(); // trim the spaces
     if (!line.isEmpty())
       switch (line[0].unicode()) {
       case TAHSCRIPT_COMMENT_CHAR1:
