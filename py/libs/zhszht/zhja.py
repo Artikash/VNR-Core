@@ -38,6 +38,9 @@ TJ = {
   u"噗": u"璞",
   u"呲": u"兹",
 
+  u"咕": u"古",
+  u"噜": u"魯",
+
   u"爸": u"巴",
 
   # Not needed, but to simplified version
