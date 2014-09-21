@@ -22,6 +22,9 @@ def manager(): return TermManager()
 def _mark_text(text): # unicode -> unicode
   return '<span style="text-decoration:underline">%s</span>' % text
 
+_re_marks = re.compile(r'<[0-9a-zA-Z: "/:=-]+?>')
+def remove_marks(text): return _re_marks.sub('', text)
+
 RE_MACRO = re.compile('{{(.+?)}}')
 
 # All methods are supposed to be thread-safe, though they are not
