@@ -2,13 +2,13 @@
 # 6/9/2014 jichi
 #
 # Defaults:
-# - wideChar: false
-# - regionLocked: false
+# - wideChar: false  game has UTF-16 encoding or not
+# - regionLocked: false  game require Japanese locale or not
 
 -
   name: BGI     # 5/11/2014 jichi
   regionLocked: true # need vnrloc.dll and hooking WideCharToMultiByte, maybe
-  vnrlocale: false # TODO: need a better name
+  #vnrlocale: false # TODO: need a better name
   exist: BGI.*
 -
   name: CIRCUS  # 6/5/2014
