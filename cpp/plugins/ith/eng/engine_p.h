@@ -40,7 +40,7 @@ void SpecialPSPHook(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DW
 bool InsertPPSSPPHooks();        // PPSSPPWindows
 
 bool InsertPPSSPPHLEHooks();
-bool InsertOtomatePPSSPPHook(); // PSP otomate.jp, 0.9.9 only
+bool InsertOtomatePPSSPPHook(); // PSP otomate.jp, 0.9.9.0 only
 
 bool Insert5pbPSPHook();        // PSP 5pb.jp
 bool InsertAlchemistPSPHook();  // PSP Alchemist-net.co.jp, 0.9.8 only
@@ -59,6 +59,7 @@ bool InsertTecmoPSPHook();      // PSP Koeitecmo.co.jp
 //bool InsertTypeMoonPSPHook(); // PSP Typemoon.com
 
 bool InsertOtomatePSPHook();    // PSP Otomate.jp, 0.9.8 only
+//bool InsertOtomate2PSPHook(); // PSP otomate.jp >= 0.9.9.1
 
 bool InsertIntensePSPHook();    // PSP Intense.jp
 bool InsertKidPSPHook();        // PSP Kid-game.co.jp

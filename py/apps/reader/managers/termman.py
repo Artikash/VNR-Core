@@ -37,9 +37,55 @@ class _TermManager:
     self.targetMarked = False # bool
     self.escapeMarked = False # bool
 
+    self.cancelSavingTerms = False # bool
+
   #@classmethod
   #def needsEscape(cls):
   #  return config.is_asian_language(cls.language)
+
+  #def saveTerms(self, terms, text, language, convertsChinese=False, marksChanges=False):
+  #  """
+  #  @param  terms  iterable dataman.Term
+  #  @param  text  unicode
+  #  @param  language  unicode
+  #  @param* hasTitles  bool
+  #  @param* convertsChinese  bool
+  #  @param* marksChanges  bool  mark the replacement text
+  #  @return  unicode
+  #  """
+  #  lines = [] # (bool pattern, bool text, bool regex)
+  #
+  #  dm = dataman.manager()
+  #  hasTitles = dm.hasTermTitles() # cached
+  #  zht = language == 'zht' # cached
+  #  for term in terms:
+  #    td = term.d # To improve performance
+  #    if (not td.hentai or self.hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
+  #      if self.cancelSavingTerms:
+  #        return
+  #      if hasTitles and term.needsReplace():
+  #        try: text = term.replace(text)
+  #        except Exception, e: dwarn(td.pattern, td.text, e)
+  #      else:
+  #        z = convertsChinese and zht and td.language == 'zhs'
+  #        #repl = term.bbcodeText if term.bbcode else term.text
+  #        repl = td.text
+  #        if repl:
+  #          if z: # and self.convertsChinese:
+  #            repl = zhs2zht(repl)
+  #          #elif config.is_latin_language(td.language):
+  #          #  repl += " "
+  #          if marksChanges:
+  #            repl = _mark_text(repl)
+  #        if not term.patternNeedsRe():
+  #          pattern = zhs2zht(td.pattern) if z else td.pattern
+  #          text = text.replace(pattern, repl)
+  #        else:
+  #          try: text = term.patternRe.sub(repl, text)
+  #          except Exception, e: dwarn(td.pattern, td.text, e)
+  #      if not text: # well, the text is deleted by terms
+  #        break
+  #  return text
 
   def applyTerms(self, terms, text, language, convertsChinese=False, marksChanges=False):
     """

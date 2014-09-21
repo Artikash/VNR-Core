@@ -23,7 +23,7 @@
 #define SCRIPT_CH_COMMENT   '#' // indicate the beginning of a line comment
 #define SCRIPT_CH_REGEX     'r'
 
-#define SCRIPT_RULE_DELIM        '\t' // deliminator of the rule pair
+#define SCRIPT_RULE_DELIM   '\t' // deliminator of the rule pair
 enum { SCRIPT_RULE_DELIM_LEN = 1 };
 //enum { SCRIPT_RULE_DELIM_LEN = (sizeof(SCRIPT_RULE_DELIM)  - 1) }; // strlen
 

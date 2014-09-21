@@ -7186,6 +7186,8 @@ bool InsertPPSSPPHLEHooks()
 
 bool InsertPPSSPPHooks()
 {
+  //if (PPSSPP_VERSION[1] == 9 && (PPSSPP_VERSION[2] > 9 || PPSSPP_VERSION[2] == 9 && PPSSPP_VERSION[3] >= 1)) // >= 0.9.9.1
+
   ConsoleOutput("vnreng: PPSSPP: enter");
 
   if (!WinVersion::queryFileVersion(process_path_, PPSSPP_VERSION))
@@ -7193,7 +7195,7 @@ bool InsertPPSSPPHooks()
 
   InsertPPSSPPHLEHooks();
 
-  if (PPSSPP_VERSION[1] == 9 && PPSSPP_VERSION[2] == 9 && PPSSPP_VERSION[3] == 0) // FIXME: only works for 0.9.9.0
+  if (PPSSPP_VERSION[1] == 9 && PPSSPP_VERSION[2] == 9 && PPSSPP_VERSION[3] == 0) // 0.9.9.0
     InsertOtomatePPSSPPHook();
 
   //bool engineFound = false;
@@ -9714,6 +9716,8 @@ bool InsertOtomatePSPHook()
 
 /** 7/29/2014 jichi Otomate PPSSPP 0.9.9
  *  Sample game: Amnesia Crowd
+ *  Sample game: Amnesia Later
+ *
  *  006db4af   cc               int3
  *  006db4b0   8b15 b8ebaf00    mov edx,dword ptr ds:[0xafebb8]          ; ppssppwi.01134988
  *  006db4b6   56               push esi
@@ -9801,6 +9805,118 @@ bool InsertOtomatePPSSPPHook()
   ConsoleOutput("vnreng: Otomate PPSSPP: leave");
   return addr;
 }
+
+#if 0 // FIXME: I am not able to find stable pattern in PSP 0.9.9.1
+
+/** 9/21/2014 jichi Otomate PPSSPP 0.9.9.1
+ *  Sample game: Amnesia Later
+ *
+ *  There are four fixed memory addresses.
+ *  The two out of four can be used.
+ *  (The other twos have loops or cannot be debugged).
+ *
+ *  This function is the same as PPSSPP 0.9.9.1 (?).
+ *
+ *  14039126   cc               int3
+ *  14039127   cc               int3
+ *  14039128   77 0f            ja short 14039139
+ *  1403912a   c705 988e1301 3c>mov dword ptr ds:[0x1138e98],0x8922c3c
+ *  14039134  -e9 cb6e83ef      jmp 03870004
+ *  14039139   8b05 688b1301    mov eax,dword ptr ds:[0x1138b68]
+ *  1403913f   81e0 ffffff3f    and eax,0x3fffffff
+ *  14039145   0fbeb0 00000008  movsx esi,byte ptr ds:[eax+0x8000000]   ; jichi: text accessed, but looped
+ *  1403914c   8b05 6c8b1301    mov eax,dword ptr ds:[0x1138b6c]
+ *  14039152   81e0 ffffff3f    and eax,0x3fffffff
+ *  14039158   0fbeb8 00000008  movsx edi,byte ptr ds:[eax+0x8000000]
+ *  1403915f   3bf7             cmp esi,edi
+ *  14039161   8935 748b1301    mov dword ptr ds:[0x1138b74],esi
+ *  14039167   893d 7c8b1301    mov dword ptr ds:[0x1138b7c],edi
+ *  1403916d   0f84 2f000000    je 140391a2
+ *  14039173   8b05 688b1301    mov eax,dword ptr ds:[0x1138b68]
+ *  14039179   81e0 ffffff3f    and eax,0x3fffffff
+ *  1403917f   0fb6b0 00000008  movzx esi,byte ptr ds:[eax+0x8000000]   ; jichi: hook here
+ *  14039186   8935 608b1301    mov dword ptr ds:[0x1138b60],esi
+ *  1403918c   832d b48e1301 04 sub dword ptr ds:[0x1138eb4],0x4
+ *  14039193   e9 24000000      jmp 140391bc
+ *  14039198   0170 2c          add dword ptr ds:[eax+0x2c],esi
+ *  1403919b   92               xchg eax,edx
+ *  1403919c   08e9             or cl,ch
+ *  1403919e   816e 83 ef832db4 sub dword ptr ds:[esi-0x7d],0xb42d83ef
+ *  140391a5   8e13             mov ss,word ptr ds:[ebx]                 ; modification of segment register
+ *  140391a7   0104e9           add dword ptr ds:[ecx+ebp*8],eax
+ *  140391aa   b2 59            mov dl,0x59
+ *  140391ac   0000             add byte ptr ds:[eax],al
+ *  140391ae   014c2c 92        add dword ptr ss:[esp+ebp-0x6e],ecx
+ *  140391b2   08e9             or cl,ch
+ *  140391b4   6b6e 83 ef       imul ebp,dword ptr ds:[esi-0x7d],-0x11
+ *  140391b8   90               nop
+ *  140391b9   cc               int3
+ *  140391ba   cc               int3
+ */
+// Get bytes in esi
+static void SpecialPSPHookOtomate2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  //static uniquemap uniq;
+  DWORD text = esp_base + pusha_esi_off - 4;
+  if (*(LPCSTR *)text) {
+    *split = regof(ecx, esp_base); // this would cause lots of texts, but it works for all games
+    *data = text;
+    *len = 1;
+  }
+}
+
+bool InsertOtomate2PSPHook()
+{
+  ConsoleOutput("vnreng: Otomate2 PSP: enter");
+  const BYTE bytes[] =  {
+    0x77, 0x0f,                     // 14039128   77 0f            ja short 14039139
+    0xc7,0x05, XX8,                 // 1403912a   c705 988e1301 3c>mov dword ptr ds:[0x1138e98],0x8922c3c
+    0xe9, XX4,                      // 14039134  -e9 cb6e83ef      jmp 03870004
+    0x8b,0x05, XX4,                 // 14039139   8b05 688b1301    mov eax,dword ptr ds:[0x1138b68]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1403913f   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xbe,0xb0, XX4,            // 14039145   0fbeb0 00000008  movsx esi,byte ptr ds:[eax+0x8000000]   ; jichi: text accessed, but looped
+    0x8b,0x05, XX4,                 // 1403914c   8b05 6c8b1301    mov eax,dword ptr ds:[0x1138b6c]
+    0x81,0xe0, 0xff,0xff,0xff,0x3f, // 14039152   81e0 ffffff3f    and eax,0x3fffffff
+    0x0f,0xbe,0xb8, XX4,            // 14039158   0fbeb8 00000008  movsx edi,byte ptr ds:[eax+0x8000000]
+    0x3b,0xf7,                      // 1403915f   3bf7             cmp esi,edi
+    0x89,0x35, XX4,                 // 14039161   8935 748b1301    mov dword ptr ds:[0x1138b74],esi
+    0x89,0x3d, XX4,                 // 14039167   893d 7c8b1301    mov dword ptr ds:[0x1138b7c],edi
+    0x0f,0x84, 0x2f,0x00,0x00,0x00, // 1403916d   0f84 2f000000    je 140391a2
+
+    //0x8b,0x05, XX4,                 // 14039173   8b05 688b1301    mov eax,dword ptr ds:[0x1138b68]
+    //0x81,0xe0, 0xff,0xff,0xff,0x3f, // 14039179   81e0 ffffff3f    and eax,0x3fffffff
+    //0x0f,0xb6,0xb0, XX4,            // 1403917f   0fb6b0 00000008  movzx esi,byte ptr ds:[eax+0x8000000]   ; jichi: text accessed
+    //0x89,0x35, XX4,                 // 14039186   8935 608b1301    mov dword ptr ds:[0x1138b60],esi   ; jichi: hook here, get lower bytes in esi
+    //0x83,0x2d, XX4, 0x04            // 1403918c   832d b48e1301 04 sub dword ptr ds:[0x1138eb4],0x4
+  };
+  enum { hook_offset = 0x14039186 - 0x14039128 };
+
+  DWORD addr = SafeMatchBytesInPSPMemory(bytes, sizeof(bytes));
+  if (!addr) {
+    ConsoleOutput("vnreng: Otomate2 PSP: leave: first pattern not found");
+    return false;
+  }
+  addr += hook_offset;
+
+  //0x89,0x35, XX4,                 // 14039186   8935 608b1301    mov dword ptr ds:[0x1138b60],esi   ; jichi: hook here, get lower bytes in esi
+  enum : WORD { mov_esi = 0x3589 };
+  if (*(WORD *)addr != mov_esi) {
+    ConsoleOutput("vnreng: Otomate2 PSP: leave: second pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr;
+  hp.type = USING_STRING|NO_CONTEXT|EXTERN_HOOK;
+  hp.extern_fun = SpecialPSPHookOtomate2;
+  ConsoleOutput("vnreng: Otomate2 PSP: INSERT");
+  NewHook(hp, L"Otomate PSP");
+
+  ConsoleOutput("vnreng: Otomate2 PSP: leave");
+  return addr;
+}
+
+#endif // 0
 
 /** 7/27/2014 jichi Intense.jp PSP engine, 0.9.8, 0.9.9,
  *  Though Otomate can work, it cannot work line by line.
