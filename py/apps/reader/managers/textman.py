@@ -1019,6 +1019,7 @@ class TextManager(QObject):
             sub = zht2ja(sub)
         #elif d.language == 'zhs' and lang.startswith('zh'):
         #  sub = zht2zhs(sub)
+        sub = termman.remove_marks(sub)
         self.agentTranslationProcessed.emit(sub, rawHash, role)
 
     d.addAgentText(text, role, needsTranslation=needsTranslation)
