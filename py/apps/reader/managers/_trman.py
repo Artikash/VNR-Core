@@ -8,6 +8,8 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
+from sakurakit.skprofiler import SkProfiler
+
 import os, re
 import requests
 from functools import partial
@@ -22,7 +24,7 @@ from mytr import my, mytr_
 import config, growl, mecabman, termman, textutil
 import trman, trcache, tahscript
 
-#from sakurakit.skprofiler import SkProfiler
+#from sakurakit.SkProfiler import SkProfiler
 
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()
@@ -713,6 +715,8 @@ class JBeijingTranslator(OfflineMachineTranslator):
 
   def translate(self, text, to='zhs', fr='ja', async=False, emit=False, **kwargs):
     """@reimp"""
+    # Profiler: 1e-5 seconds
+    #with SkProfiler():
     if fr != 'ja':
       if emit:
         self.emitLanguages(fr='ja', to=to)
@@ -724,16 +728,15 @@ class JBeijingTranslator(OfflineMachineTranslator):
       if repl:
         return repl, to, self.key
     #with SkProfiler():
-    repl = self._escapeText(text, to, fr, emit)
+    repl = self._escapeText(text, to, fr, emit) # 0.1 seconds
     if repl:
       repl = repl.replace('\n', ' ') # JBeijing cannot handle multiple lines
       try:
-        #with SkProfiler():
-        repl = self._translate(emit, repl, self.engine.translate, async=async, simplified=simplified)
+        repl = self._translate(emit, repl, self.engine.translate, async=async, simplified=simplified) # 0.1 seconds
         if repl:
-          repl = wide2thin_digit(repl) # convert wide digits to thin digits
           #with SkProfiler():
-          repl = self._unescapeTranslation(repl, to=to, emit=emit)
+          repl = wide2thin_digit(repl) # convert wide digits to thin digits
+          repl = self._unescapeTranslation(repl, to=to, emit=emit) # 0.1 seconds
           self.cache.update(text, repl)
           return repl, to, self.key
       #except RuntimeError, e:

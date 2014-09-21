@@ -1,7 +1,7 @@
-// tahscript.cc
-// 8/14/2014 jichi
+// trscript.cc
+// 9/20/2014 jichi
 
-#include "tahscript/tahscript.h"
+#include "trscript/trscript.h"
 #include <QtCore/QString>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
@@ -15,31 +15,30 @@
 #include <utility> // for pair which is faster than QPair
 #include <boost/foreach.hpp>
 
-#define DEBUG "tahscript.cc"
+#define DEBUG "trscript.cc"
 #include "sakurakit/skdebug.h"
 
 //#define DEBUG_RULE // output the rule that is applied
 
-#define TAHSCRIPT_COMMENT_CHAR1     '#' // indicate the beginning of a line comment
-#define TAHSCRIPT_COMMENT_CHAR2     '*' // original comment
-#define TAHSCRIPT_COMMENT_CHAR3     '=' // wiki section
-//#define TAHSCRIPT_COMMENT_CHAR_LEN  1 // not used
-#define TAHSCRIPT_RULE_DELIM        '\t' // deliminator of the rule pair
-enum { TAHSCRIPT_RULE_DELIM_LEN = 1 };
-//enum { TAHSCRIPT_RULE_DELIM_LEN = (sizeof(TAHSCRIPT_RULE_DELIM)  - 1) }; // strlen
+#define SCRIPT_COMMENT_CHAR     '#' // indicate the beginning of a line comment
+//#define SCRIPT_COMMENT_CHAR_LEN  1 // not used
+
+#define SCRIPT_RULE_DELIM        '\t' // deliminator of the rule pair
+enum { SCRIPT_RULE_DELIM_LEN = 1 };
+//enum { SCRIPT_RULE_DELIM_LEN = (sizeof(SCRIPT_RULE_DELIM)  - 1) }; // strlen
 
 /** Helpers */
 
 namespace { // unnamed
 
-struct TahScriptRule
+struct TranslationScriptRule
 {
   QString source;
   QString target;
   QRegExp *sourceRe; // cached compiled regex
 
-  TahScriptRule() : sourceRe(nullptr) {}
-  ~TahScriptRule() { if (sourceRe) delete sourceRe; }
+  TranslationScriptRule() : sourceRe(nullptr) {}
+  ~TranslationScriptRule() { if (sourceRe) delete sourceRe; }
 
   bool init(const QString &s, const QString &t)
   {
@@ -77,16 +76,16 @@ private:
 
 /** Private class */
 
-class TahScriptManagerPrivate
+class TranslationScriptManagerPrivate
 {
 public:
   //QReadWriteLock lock;
 
-  TahScriptRule *rules; // use array for performance reason
+  TranslationScriptRule *rules; // use array for performance reason
   int ruleCount;
 
-  TahScriptManagerPrivate() : rules(nullptr), ruleCount(0) {}
-  ~TahScriptManagerPrivate() { if (rules) delete[] rules; }
+  TranslationScriptManagerPrivate() : rules(nullptr), ruleCount(0) {}
+  ~TranslationScriptManagerPrivate() { if (rules) delete[] rules; }
 
   void clear()
   {
@@ -104,7 +103,7 @@ public:
     ruleCount = size;
     if (rules)
       delete[] rules;
-    rules = new TahScriptRule[size];
+    rules = new TranslationScriptRule[size];
   }
 };
 
@@ -112,21 +111,20 @@ public:
 
 // Construction
 
-TahScriptManager::TahScriptManager() : d_(new D) {}
-TahScriptManager::~TahScriptManager() { delete d_; }
+TranslationScriptManager::TranslationScriptManager() : d_(new D) {}
+TranslationScriptManager::~TranslationScriptManager() { delete d_; }
 
+int TranslationScriptManager::size() const { return d_->ruleCount; }
+bool TranslationScriptManager::isEmpty() const { return !d_->ruleCount; }
 
-int TahScriptManager::size() const { return d_->ruleCount; }
-bool TahScriptManager::isEmpty() const { return !d_->ruleCount; }
-
-void TahScriptManager::clear()
+void TranslationScriptManager::clear()
 {
   //QWriteLocker locker(&d_->lock);
   d_->clear();
 }
 
 // Initialization
-bool TahScriptManager::loadFile(const QString &path)
+bool TranslationScriptManager::loadFile(const QString &path)
 {
   // File IO
   // http://stackoverflow.com/questions/2612103/qt-reading-from-a-text-file
@@ -142,23 +140,18 @@ bool TahScriptManager::loadFile(const QString &path)
   in.setCodec("UTF-8"); // enforce UTF-8
   while (!in.atEnd()) {
     QString line = in.readLine().trimmed(); // trim the ending new line char
-    if (!line.isEmpty())
-      switch (line[0].unicode()) {
-      case TAHSCRIPT_COMMENT_CHAR1:
-      case TAHSCRIPT_COMMENT_CHAR2:
-      case TAHSCRIPT_COMMENT_CHAR3:
-        break;
-      default:
-        int index = line.indexOf(TAHSCRIPT_RULE_DELIM);
-        QString left, right;
-        if (index == -1)
-          left = line;
-        else {
-          left = line.left(index); //.trimmed()
-          right = line.mid(index + TAHSCRIPT_RULE_DELIM_LEN);
-        }
-        lines.push_back(std::make_pair(left, right));
+    if (!line.isEmpty() && line[0].unicode() != SCRIPT_COMMENT_CHAR) {
+      // left middle right
+      int index = line.indexOf(SCRIPT_RULE_DELIM);
+      QString left, right;
+      if (index == -1)
+        left = line;
+      else {
+        left = line.left(index); //.trimmed()
+        right = line.mid(index + SCRIPT_RULE_DELIM_LEN);
       }
+      lines.push_back(std::make_pair(left, right));
+    }
   }
   file.close();
 
@@ -176,7 +169,7 @@ bool TahScriptManager::loadFile(const QString &path)
 }
 
 // Translation
-QString TahScriptManager::translate(const QString &text) const
+QString TranslationScriptManager::translate(const QString &text) const
 {
   //QReadLocker locker(&d_->lock);
   QString ret = text;

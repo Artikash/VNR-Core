@@ -8,8 +8,9 @@ import time
 import skdebug
 
 class SkProfiler(object):
-  def __init__(self, verbose=skdebug.DEBUG):
-    self.verbose = verbose
+  def __init__(self, text=None, verbose=skdebug.DEBUG):
+    self.verbose = verbose # bool
+    self.text = text # str, or anything that can be printed
 
   def __enter__(self):
     self.start = time.clock()
@@ -19,7 +20,10 @@ class SkProfiler(object):
     self.end = time.clock()
     self.interval = self.end - self.start
     if self.verbose:
-      print "time:", self.interval
+      if self.text is not None:
+        print text, ":time:", self.interval
+      else:
+        print "time:", self.interval
 
 if __name__ == '__main__':
   count = 1

@@ -8,8 +8,6 @@ DEPENDPATH += $$PWD
 
 QT += core network
 
-#INCLUDEPATH += $$QT_SRC
-
 HEADERS += \
   $$PWD/bufferedlocalsocketclient.h \
   $$PWD/bufferedtcpsocketclient.h \

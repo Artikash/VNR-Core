@@ -3,7 +3,6 @@
 # See: http://www.hongfire.com/forum/showthread.php/94395-Translation-Aggregator-v0-4-9/page51?p=2269439#post2269439
 # See: http://www.hongfire.com/forum/showthread.php/94395-Translation-Aggregator-v0-4-9?p=1811363#post1811363
 
-INCLUDEPATH += $$QT_SRC
 DEFINES += WITH_LIB_TAHSCRIPT
 
 DEPENDPATH += $$PWD

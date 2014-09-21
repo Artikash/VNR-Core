@@ -8,6 +8,8 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
+#from sakurakit.skprofiler import SkProfiler
+
 from ctypes import c_longlong
 from functools import partial
 from PySide.QtCore import Signal, Slot, Property, QObject, QTimer
@@ -341,10 +343,8 @@ class _TextManager(object):
       #size = len(text)
       #nochange = len(text) == size
     if language:
+      #with SkProfiler(): # 0.046 seconds
       text = termman.manager().applyOriginTerms(text, language)
-      #from sakurakit.skprofiler import SkProfiler
-      #with SkProfiler():
-      #  text = termman.manager().applyOriginTerms(text, language)
     if self.removesRepeat and text: # and nochange:
       t = textutil.remove_repeat_text(text)
       delta = len(text) - len(t)
@@ -542,6 +542,9 @@ class _TextManager(object):
             for h in self.oldHashes[:CONTEXT_CAPACITY-1]]
       self.oldHashes[0] = hashutil.strhash_old_vnr(rawData)
 
+    # Profiler: 1e-5 seconds
+
+    #with SkProfiler():
     if not text:
       text = self._decodeText(renderedData).strip()
     #text = u"サディステック"
@@ -590,6 +593,8 @@ class _TextManager(object):
 
     self._updateTtsText(text)
 
+    # Profiler: 0.05 seconds because of origin term
+
     #improved_text = self._correctText(text)
     q.textReceived.emit(textutil.beautify_text(text), self.gameLanguage, timestamp)
     sz = self.currentContextSize()
@@ -602,6 +607,8 @@ class _TextManager(object):
       q.rawTextReceived.emit(text, self.gameLanguage, h, sz)
 
     q.contextChanged.emit()
+
+    # Profiler: 1e-4
 
     userId = dm.user().id
     if dm.hasComments():
@@ -662,10 +669,13 @@ class _TextManager(object):
                 #dm.updateContext(c.hash, c.context)
             self._showComment(c)
 
+    # Profiler: 1e-4
 
     if text:
       if settings.global_().copiesGameText():
         skclip.settext(text)
+      # Profiler: 0.35 seconds because of the machine translation
+      #with SkProfiler():
       self._translateTextAndShow(text, timestamp)
 
   def showNameText(self, data=None, text=None, agent=True):
@@ -972,6 +982,7 @@ class TextManager(QObject):
     elif d.otherSignatures and signature in d.otherSignatures:
       d.showOtherText(renderedData, agent=False)
     elif signature == d.scenarioSignature or d.keepsThreads and name == d.scenarioThreadName:
+      #with SkProfiler(): # 0.3 seconds
       d.showScenarioText(rawData=rawData, renderedData=renderedData, agent=False)
     #d.locked = False
 

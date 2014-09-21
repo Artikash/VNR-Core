@@ -14,6 +14,4 @@ DEPENDPATH += $$PWD
 HEADERS += $$PWD/qtjson.h
 SOURCES += $$PWD/qtjson.cc
 
-#INCLUDEPATH += $$QT_SRC
-
 # EOF

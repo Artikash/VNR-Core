@@ -1,0 +1,16 @@
+# encoding: utf8
+# example.txt
+# 8/14/2014 jichi
+#
+# Format: flags \t pattern \t replace
+#
+# Flags (similar to sed in linux):
+# - s (action): substitute
+# - d (action): delete
+# - r (option): enable regex
+
+s 	この子	this
+d	なに
+sr	か.いい	lovely
+
+# EOF
