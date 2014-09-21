@@ -5633,21 +5633,21 @@ static void SpecialHookElf(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *sp
   DWORD arg1 = arg1of(esp_base);
   DWORD arg2_scene = arg1 + 4*5,
         arg2_chara = arg1 + 4*10;
-  DWORD text = 0;
+  DWORD text; //= 0; // This variable will be killed
   if (*(DWORD *)arg2_scene == 0) {
     text = *(DWORD *)(arg2_scene + 0xc);
+    if (!text || ::IsBadReadPtr((LPCVOID)text, 1)) // Text from scenario could be bad when open backlog while the character is speaking
+      return;
     *split = 1;
   } else if (*(DWORD *)arg2_chara == 0) {
     text = arg2_chara + 0xc;
     *split = 2;
-  }
-  // Text from scenario could be bad when open backlog while the character is speaking
+  } else
+    return;
   //if (text && text < MemDbg::UserMemoryStopAddress) {
-  if (text && !::IsBadReadPtr((LPCVOID)text, 1)) {
-    *len = _elf_strlen((LPCSTR)text); // in case the text is bad but still readable
-    //*len = ::strlen((LPCSTR)text);
-    *data = text;
-  }
+  *len = _elf_strlen((LPCSTR)text); // in case the text is bad but still readable
+  //*len = ::strlen((LPCSTR)text);
+  *data = text;
 }
 
 /**
