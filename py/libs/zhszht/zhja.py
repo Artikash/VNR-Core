@@ -9,6 +9,7 @@ TJ = {
   # Equivalent conversion
   u"—": u"ー",
 
+  u"內": u"内",
   u"說": u"説",
   u"团": u"団",
   u"蔥": u"葱",
@@ -59,6 +60,7 @@ if __name__ == '__main__':
   ja = u"「嗯你妳會認為我的事相當自私？」"
   zh = zht2ja(ja)
   print u"歲"== u"歳"
+  print u"內"== u"内"
 
   from PySide.QtCore import *
   c = QTextCodec.codecForName('sjis')
