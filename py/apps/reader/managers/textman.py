@@ -19,6 +19,7 @@ from sakurakit.skdebug import dwarn
 #from sakurakit.skqml import QmlObject
 #from sakurakit.skunicode import u
 from memcache.container import SizeLimitedList
+from zhszht.zhja import zht2ja
 from zhszht.zhszht import zhs2zht
 from mytr import my
 from texthook import texthook
@@ -1009,9 +1010,13 @@ class TextManager(QObject):
         async = role == OTHER_THREAD_TYPE
         sub, lang, provider = trman.manager().translateOne(text, async=async, online=True)
       if sub:
-        # Enforce Traditional Chinese encoding
-        if d.language == 'zht' and lang.startswith('zh'):
-          sub = zhs2zht(sub)
+        if d.language.startswith('zh'):
+          convertsKanji = settings.global_().gameAgentConvertsKanji()
+          # Enforce Traditional Chinese encoding
+          if convertsKanji and d.language == 'zhs':
+            sub = zhs2zht(sub)
+          if convertsKanji:
+            sub = zht2ja(sub)
         #elif d.language == 'zhs' and lang.startswith('zh'):
         #  sub = zht2zhs(sub)
         self.agentTranslationProcessed.emit(sub, rawHash, role)

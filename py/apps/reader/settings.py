@@ -1372,10 +1372,19 @@ class Settings(QSettings):
   ## Game agent ##
 
   # Whether allow disabling game launchers
-  def isGameAgentLauncherEnabled(self):
-    return to_bool(self.value('GameAgentLauncher', True))
-  def setGameAgentLauncherEnabled(self, value):
-    self.setValue('GameAgentLauncher', value)
+  #def isGameAgentLauncherEnabled(self):
+  #  return to_bool(self.value('GameAgentLauncher', True))
+  #def setGameAgentLauncherEnabled(self, value):
+  #  self.setValue('GameAgentLauncher', value)
+
+  # Convert Chinese kanji to Japanese
+  gameAgentConvertsKanjiChanged = Signal(bool)
+  def gameAgentConvertsKanji(self):
+    return to_bool(self.value('GameAgentConvertsKanji', True))
+  def setGameAgentConvertsKanji(self, value):
+    if value != self.gameAgentConvertsKanji():
+      self.setValue('GameAgentConvertsKanji', value)
+      self.gameAgentConvertsKanjiChanged.emit(value)
 
   def isGameAgentLauncherNeeded(self):
     return self.isGameAgentEnabled() and (
@@ -1394,7 +1403,7 @@ class Settings(QSettings):
 
   embeddedTranslationWaitTimeChanged = Signal(int)
   def embeddedTranslationWaitTime(self):
-    return to_int(self.value('EmbeddedTranslationWaitTime', 1000)) # 1 second by default
+    return to_int(self.value('EmbeddedTranslationWaitTime', 2000)) # 2 seconds by default
   def setEmbeddedTranslationWaitTime(self, value):
     if value != self.embeddedTranslationWaitTime():
       self.setValue('EmbeddedTranslationWaitTime', value)

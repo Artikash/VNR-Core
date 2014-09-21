@@ -5659,22 +5659,33 @@ class _EngineTab(object):
     self._createUi(q)
 
   def _createUi(self, q):
+    ss = settings.global_()
+    blans = ss.blockedLanguages()
+
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.agentGroup)
     layout.addWidget(self.textGroup)
     layout.addWidget(self.optionGroup)
-    layout.addWidget(self.launchGroup)
+
+    if 'zh' not in blans:
+      layout.addWidget(self.chineseGroup)
+
     layout.addWidget(self.infoEdit)
     layout.addStretch()
     q.setLayout(layout)
 
     b = self.agentEnableButton
-    for w in self.textGroup, self.optionGroup:
+    l = [self.textGroup, self.optionGroup]
+    if 'zh' not in blans:
+      l.append(self.chineseGroup)
+    for w in l:
       w.setEnabled(b.isChecked())
       b.toggled.connect(w.setEnabled)
 
-    ss = settings.global_()
-    for w in self.launchGroup, self.translationWaitTimeButton:
+    l = [self.translationWaitTimeButton]
+    if 'zh' not in blans:
+      l.append(self.chineseGroup)
+    for w in l:
       slot = partial(lambda w, value: w.setEnabled(ss.isGameAgentLauncherNeeded()), w)
       slot(None)
       ss.gameAgentEnabledChanged.connect(slot)
@@ -5730,36 +5741,63 @@ class _EngineTab(object):
     #ret.linkActivated.connect(partial(m.openWiki, 'VNR/Game Settings'))
     return ret
 
-  ## Launcher ##
+  ## Chinese ##
 
   @memoizedproperty
-  def launchGroup(self):
+  def chineseGroup(self):
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.launchEnableButton)
-    layout.addWidget(self.launchInfoLabel)
-    ret = QtWidgets.QGroupBox(my.tr("Preferred game launch method"))
+    layout.addWidget(self.chineseEnableButton)
+
+    info =  QtWidgets.QLabel(my.tr(
+      "Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation. Otherwise, Chinese characters might be shown as question marks."
+    ))
+    info.setWordWrap(True)
+    layout.addWidget(info)
+
+    ret = QtWidgets.QGroupBox(my.tr("Preferred Chinese characters"))
     ret.setLayout(layout)
     return ret
 
   @memoizedproperty
-  def launchEnableButton(self):
+  def chineseEnableButton(self):
     ss = settings.global_()
     ret = QtWidgets.QCheckBox(my.tr(
-      "Use VNR's built-in game launcher instead of others if have to"
+      "Use Traditional Chinese or Japanese kanji"
     ))
-    ret.setChecked(ss.isGameAgentLauncherEnabled())
-    ret.toggled.connect(ss.setGameAgentLauncherEnabled)
+    ret.setChecked(ss.gameAgentConvertsKanji())
+    ret.toggled.connect(ss.setGameAgentConvertsKanji)
     return ret
 
-  @memoizedproperty
-  def launchInfoLabel(self):
-    ret = QtWidgets.QLabel(' '.join((
-      my.tr("This is indispensable for SHIFT-JIS games when your language is NOT Latin-based."),
-      my.tr("It is only needed when embedding translation is enabled."),
-      my.tr("The current implementation is buggy. It is only guaranteed to work well on Japanese Windows."),
-    )))
-    ret.setWordWrap(True)
-    return ret
+  ## Launcher ##
+
+  #@memoizedproperty
+  #def launchGroup(self):
+  #  layout = QtWidgets.QVBoxLayout()
+  #  layout.addWidget(self.launchEnableButton)
+  #  layout.addWidget(self.launchInfoLabel)
+  #  ret = QtWidgets.QGroupBox(my.tr("Preferred game launch method"))
+  #  ret.setLayout(layout)
+  #  return ret
+
+  #@memoizedproperty
+  #def launchEnableButton(self):
+  #  ss = settings.global_()
+  #  ret = QtWidgets.QCheckBox(my.tr(
+  #    "Use VNR's built-in game launcher instead of others if have to"
+  #  ))
+  #  ret.setChecked(ss.isGameAgentLauncherEnabled())
+  #  ret.toggled.connect(ss.setGameAgentLauncherEnabled)
+  #  return ret
+
+  #@memoizedproperty
+  #def launchInfoLabel(self):
+  #  ret = QtWidgets.QLabel(' '.join((
+  #    my.tr("This is indispensable for SHIFT-JIS games when your language is NOT Latin-based."),
+  #    my.tr("It is only needed when embedding translation is enabled."),
+  #    my.tr("The current implementation is buggy. It is only guaranteed to work well on Japanese Windows."),
+  #  )))
+  #  ret.setWordWrap(True)
+  #  return ret
 
   ## Options ##
 
@@ -5773,9 +5811,7 @@ class _EngineTab(object):
     # Translation wait time
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.translationWaitTimeButton)
-    row.addWidget(QtWidgets.QLabel("<= %s (%s)" % (
-        my.tr("Translation wait time"),
-        "1000 msec = 1 sec")))
+    row.addWidget(QtWidgets.QLabel("<= %s" % my.tr("Translation wait time")))
     row.addStretch()
     layout.addLayout(row)
 
@@ -5786,13 +5822,22 @@ class _EngineTab(object):
 
   @memoizedproperty
   def translationWaitTimeButton(self):
-    ret = QtWidgets.QSpinBox()
-    ret.setToolTip("%s: %s msec" % (tr_("Default"), 1000))
-    ret.setRange(100, 10000)
-    ret.setSingleStep(10)
+    #ret = QtWidgets.QSpinBox()
+    #ret.setToolTip("%s: %s msec" % (tr_("Default"), 1000))
+    #ret.setRange(100, 10000)
+    #ret.setSingleStep(10)
+    #ss = settings.global_()
+    #ret.setValue(ss.embeddedTranslationWaitTime())
+    #ret.valueChanged[int].connect(ss.setEmbeddedTranslationWaitTime)
+
+    ret = QtWidgets.QDoubleSpinBox()
+    ret.setToolTip("%s: %s sec." % (tr_("Default"), 2))
+    ret.setRange(0.1, 10.0)
+    ret.setSingleStep(0.1)
+    ret.setDecimals(1) # 0.1
     ss = settings.global_()
-    ret.setValue(ss.embeddedTranslationWaitTime())
-    ret.valueChanged[int].connect(ss.setEmbeddedTranslationWaitTime)
+    ret.setValue(ss.embeddedTranslationWaitTime() / 1000.0)
+    ret.valueChanged[float].connect(lambda v: ss.setEmbeddedTranslationWaitTime(int(v * 1000)))
     return ret
 
   @memoizedproperty

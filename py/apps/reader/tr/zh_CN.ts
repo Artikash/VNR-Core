@@ -204,7 +204,7 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>恢复默认的颜色</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2299"/>
+        <location filename="dialogs/_prefs.py" line="5757"/>
         <source>Preferred Chinese characters</source>
         <translation>优先的中文字符集</translation>
     </message>
@@ -691,27 +691,27 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>没有在网络上找到文本设定，请手动在游戏向导中添加</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1047"/>
+        <location filename="managers/gameman.py" line="1049"/>
         <source>Cannot find game process. Please retry after game start.</source>
         <translation>没有找到游戏进程。请在游戏开始后重试。</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1096"/>
+        <location filename="managers/gameman.py" line="1098"/>
         <source>Cannot sync with game. Try restarting the game or using Game Wizard to set up connection</source>
         <translation>无法与游戏同步。请重新启动游戏，或者使用游戏向导添加</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1106"/>
+        <location filename="managers/gameman.py" line="1108"/>
         <source>Cannot find game thread. Try using Game Wizard to set up connection</source>
         <translation>没有找到游戏文本。请使用游戏向导添加</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1121"/>
+        <location filename="managers/gameman.py" line="1123"/>
         <source>Failed to apply hook code</source>
         <translation>载入特殊码失败</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1123"/>
+        <location filename="managers/gameman.py" line="1125"/>
         <source>Try adjusting it in Text Settings</source>
         <translation>请在文本设定中调整</translation>
     </message>
@@ -721,12 +721,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>从Dashboard移除这个游戏吗？</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1539"/>
+        <location filename="managers/gameman.py" line="1541"/>
         <source>Game removed</source>
         <translation>游戏移除</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1549"/>
+        <location filename="managers/gameman.py" line="1551"/>
         <source>Location does not exist</source>
         <translation>位置不存在</translation>
     </message>
@@ -816,32 +816,32 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>Dr.eye译典通中日、中英翻译软件</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="435"/>
+        <location filename="managers/_trman.py" line="437"/>
         <source>ATLAS translator is loaded</source>
         <translation>加载ATLAS日英翻译引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="517"/>
+        <location filename="managers/_trman.py" line="519"/>
         <source>LEC translator is loaded</source>
         <translation>加载LEC日英翻译引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="922"/>
+        <location filename="managers/_trman.py" line="933"/>
         <source>Dr.eye Japanese-Chinese translator is loaded</source>
         <translation>加载Dr.eye日中翻译引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="935"/>
+        <location filename="managers/_trman.py" line="946"/>
         <source>Dr.eye English-Chinese translator is loaded</source>
         <translation>加载Dr.eye中英翻译引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="660"/>
+        <location filename="managers/_trman.py" line="662"/>
         <source>JBeijing translator is loaded</source>
         <translation>加载J北京日中翻译引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="688"/>
+        <location filename="managers/_trman.py" line="690"/>
         <source>Failed to load user-defined dictionaries</source>
         <translation>载入自定义辞书失败</translation>
     </message>
@@ -851,12 +851,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>忽略过长的游戏文本</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1136"/>
+        <location filename="managers/textman.py" line="1147"/>
         <source>Reload user-contributed comments</source>
         <translation>更新其他同学的评论</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1275"/>
+        <location filename="managers/textman.py" line="1286"/>
         <source>No game text received yet</source>
         <translation>还没有收到游戏文本</translation>
     </message>
@@ -866,12 +866,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>更新来自其他同学的评论</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="996"/>
+        <location filename="managers/_trman.py" line="1007"/>
         <source>Cannot load {0} for machine translation. Please check Preferences/Location</source>
         <translation>无法载入{0}机翻引擎。请检查下使用偏好中的软件位置</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="682"/>
+        <location filename="managers/_trman.py" line="684"/>
         <source>Load user-defined dictionaries</source>
         <translation>载入其他同学的自定义辞书</translation>
     </message>
@@ -1143,7 +1143,7 @@ It might take a couple of seconds to complete.</source>
         <translation>适用于日文编码的Windows</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="61"/>
+        <location filename="managers/_ttsman.py" line="67"/>
         <source>Missing QuickTime needed by text-to-speech</source>
         <translation>缺少语音合成需要的QuickTime</translation>
     </message>
@@ -1168,7 +1168,7 @@ It might take a couple of seconds to complete.</source>
         <translation>ezTrans XP日韩翻译软件</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="592"/>
+        <location filename="managers/_trman.py" line="594"/>
         <source>ezTrans XP is loaded</source>
         <translation>加载ezTrans XP日韩翻译引擎</translation>
     </message>
@@ -1647,12 +1647,12 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>忽略无限循环重复的句子</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="890"/>
+        <location filename="managers/textman.py" line="900"/>
         <source>Eliminate finite repetition in the text</source>
         <translation>去除重复有限次的文字</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="907"/>
+        <location filename="managers/textman.py" line="917"/>
         <source>Keep all text threads generated from {0}</source>
         <translation>保留所有来自{0}的文本</translation>
     </message>
@@ -2184,32 +2184,32 @@ Zunko is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and y
         <translation>外部语音合成软件的位置</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="101"/>
+        <location filename="managers/_ttsman.py" line="108"/>
         <source>Activate Voiceroid+</source>
         <translation>打开VOICEROID+</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="107"/>
+        <location filename="managers/_ttsman.py" line="114"/>
         <source>Cannot find Voiceroid+</source>
         <translation>没有找到VOICEROID+</translation>
     </message>
     <message>
-        <location filename="managers/ttsman.py" line="172"/>
+        <location filename="managers/ttsman.py" line="177"/>
         <source>Load TTS</source>
         <translation>载入TTS</translation>
     </message>
     <message>
-        <location filename="managers/ttsman.py" line="178"/>
+        <location filename="managers/ttsman.py" line="183"/>
         <source>Failed to load TTS</source>
         <translation>载入TTS失败了</translation>
     </message>
     <message>
-        <location filename="managers/ttsman.py" line="90"/>
+        <location filename="managers/ttsman.py" line="91"/>
         <source>TTS is not available in Preferences</source>
         <translation>使用偏好中没有可以用的TTS</translation>
     </message>
     <message>
-        <location filename="managers/ttsman.py" line="97"/>
+        <location filename="managers/ttsman.py" line="98"/>
         <source>TTS is not available</source>
         <translation>没有可以用的TTS</translation>
     </message>
@@ -3202,12 +3202,12 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>VNR的游戏设定（%s）损坏了呢。恢复到过去备份的设定。</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1222"/>
+        <location filename="managers/gameman.py" line="1224"/>
         <source>This game requires the text speed to be either Normal or Slow instead of Fast to work</source>
         <translation>这个游戏要求文本速度必须是Normal或者是Slow而不能是Fast才可以工作</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1227"/>
+        <location filename="managers/gameman.py" line="1229"/>
         <source>This game requires opening VNR after starting/loading the game</source>
         <translation>这个游戏要求一定要在先载入游戏，再打开VNR</translation>
     </message>
@@ -3217,67 +3217,67 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>需要MeCab辞书</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1224"/>
+        <location filename="managers/gameman.py" line="1226"/>
         <source>This game requires the text speed to be Fast to work</source>
         <translation>这个游戏要求文本速度必须是Fast才可以工作</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1219"/>
+        <location filename="managers/gameman.py" line="1221"/>
         <source>This game might need turning on repetition elimination</source>
         <translation>这个游戏也许需要打开去除重复的选项</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5703"/>
+        <location filename="dialogs/_prefs.py" line="5714"/>
         <source>Preferred game text extraction method</source>
         <translation>提取游戏文本的方法</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5712"/>
+        <location filename="dialogs/_prefs.py" line="5723"/>
         <source>Use VNR&apos;s built-in hook instead of ITH if possible</source>
         <translation>如果可能的话，用VNR自己的提取方法而不使用ITH</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5720"/>
+        <location filename="dialogs/_prefs.py" line="5731"/>
         <source>Changing the text extraction method requires restarting the game.</source>
         <translation>修改文本提取方法需要重新启动游戏才会生效。</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="5740"/>
         <source>Preferred game launch method</source>
-        <translation>启动游戏时转区的方法</translation>
+        <translation type="obsolete">启动游戏时转区的方法</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="5757"/>
         <source>This is indispensable for SHIFT-JIS games when your language is NOT Latin-based.</source>
-        <translation>当你的语言不是拉丁语言时，这对内嵌翻译SHIFT-JIS编码的游戏是必需的。</translation>
+        <translation type="obsolete">当你的语言不是拉丁语言时，这对内嵌翻译SHIFT-JIS编码的游戏是必需的。</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="5758"/>
         <source>It is only needed when embedding translation is enabled.</source>
-        <translation>这个选项仅仅当开启内嵌翻译时才有用。</translation>
+        <translation type="obsolete">这个选项仅仅当开启内嵌翻译时才有用。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5777"/>
+        <location filename="dialogs/_prefs.py" line="5815"/>
         <source>Translation wait time</source>
         <translation>翻译超时时间</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5783"/>
+        <location filename="dialogs/_prefs.py" line="5821"/>
         <source>Embedding options</source>
         <translation>嵌入文字的选项</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5802"/>
+        <location filename="dialogs/_prefs.py" line="5840"/>
         <source>A large wait time might also slow down the game when your machine translator is slow.</source>
         <translation>当超时时间很长而你的机翻工具又很慢时，可能会让游戏一卡一卡的。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5809"/>
+        <location filename="dialogs/_prefs.py" line="5847"/>
         <source>Disable text extraction when Ctrl is pressed</source>
         <translation>当按下Ctrl键时，暂停提取文本</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5819"/>
+        <location filename="dialogs/_prefs.py" line="5857"/>
         <source>Preferred text to embed in the game</source>
         <translation>要内嵌的文本</translation>
     </message>
@@ -3292,7 +3292,7 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>检测到游戏引擎</translation>
     </message>
     <message>
-        <location filename="managers/gameman.py" line="1069"/>
+        <location filename="managers/gameman.py" line="1071"/>
         <source>Use VNR&apos;s built-in hook instead of ITH</source>
         <translation>用VNR自己的文本提取方法而不使用ITH</translation>
     </message>
@@ -3302,24 +3302,24 @@ VNR默认会使用TTS读出游戏的原始文本。
         <translation>转码失败了</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="788"/>
+        <location filename="managers/textman.py" line="798"/>
         <source>Translating window text ...</source>
         <translation>正在翻译窗口的文字...</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="804"/>
+        <location filename="managers/textman.py" line="814"/>
         <source>Updating window text ...</source>
         <translation>正在刷新窗口的文字...</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="808"/>
+        <location filename="managers/textman.py" line="818"/>
         <source>Not found machine translation</source>
         <translation>没有找到机器翻译</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="5759"/>
         <source>The current implementation is buggy. It is only guaranteed to work well on Japanese Windows.</source>
-        <translation>当前的实现还很不稳定。要保证嵌入字幕正常显示，最好在日文的Windows上执行游戏。</translation>
+        <translation type="obsolete">当前的实现还很不稳定。要保证嵌入字幕正常显示，最好在日文的Windows上执行游戏。</translation>
     </message>
     <message>
         <location filename="dialogs/info.py" line="96"/>
@@ -3385,12 +3385,12 @@ D. 日文无交集：泰文&lt;br/&gt;
 如果这个功能会让你的游戏崩溃掉，那么可以尝试运行Debug VNR，然后将VNR文件夹下的vnragent.log和崩溃游戏的名字一起发给我。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5721"/>
+        <location filename="dialogs/_prefs.py" line="5732"/>
         <source>This feature is currently under development, and only supports a small portion of the games that ITH supports.</source>
         <translation>和ITH比起来现在只有很少的游戏是支持的。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5722"/>
+        <location filename="dialogs/_prefs.py" line="5733"/>
         <source>The current supported game engines are: {0}</source>
         <translation>当前支持的游戏引擎是：{0}</translation>
     </message>
@@ -3724,7 +3724,7 @@ You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or d
     <message>
         <location filename="dialogs/_prefs.py" line="5749"/>
         <source>Use VNR&apos;s built-in game launcher instead of others if have to</source>
-        <translation>如果需要的话，用VNR自己的启动方法而不使用其他的转区工具</translation>
+        <translation type="obsolete">如果需要的话，用VNR自己的启动方法而不使用其他的转区工具</translation>
     </message>
     <message>
         <location filename="utilities/procutil.py" line="229"/>
@@ -3982,19 +3982,29 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付费软件&lt;/span&gt;，
 &lt;span style=&quot;color:red&quot;&gt;注：Dr.eye的路径中不可以包含中文字符的。&lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="777"/>
+        <location filename="managers/_trman.py" line="780"/>
         <source>FastAIT Japanese-Chinese translator is loaded</source>
         <translation>加载金山快译日中翻译引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="803"/>
+        <location filename="managers/_trman.py" line="806"/>
         <source>FastAIT English-Chinese translator is loaded</source>
         <translation>加载金山快译英中翻译引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="829"/>
+        <location filename="managers/_trman.py" line="832"/>
         <source>FastAIT Chinese-English translator is loaded</source>
         <translation>加载金山快译中英翻译引擎</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="5753"/>
+        <source>Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation. Otherwise, Chinese characters might be shown as question marks.</source>
+        <translation>将简体中文的内嵌翻译转换为正体中文或日本汉字。否则，一些汉字会变成问号。</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="5766"/>
+        <source>Use Traditional Chinese or Japanese kanji</source>
+        <translation>使用正体中文或日本汉字</translation>
     </message>
 </context>
 </TS>
