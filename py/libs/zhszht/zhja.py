@@ -21,6 +21,8 @@ TJ = {
   u"你": u"ｲ尓",
   u"妳": u"ｲ尓",
 
+  u"她": u"他",
+
   # Inequivalent conversion
   u"啊": u"哦",
   u"噢": u"哦",
