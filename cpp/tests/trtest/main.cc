@@ -1,18 +1,18 @@
 // main.cc
-// 8/14/2014 jichi
-#include "tahscript/tahscript.h"
+// 9/20/2014 jichi
+#include "trscript/trscript.h"
 #include <QtCore>
 
 int main()
 {
   qDebug() << "enter";
 
-  wchar_t ws[] = L"test";
+  wchar_t ws[] = L"kawaii";
   QString text = QString::fromWCharArray(ws);
 
-  QString path = "../../../Dictionaries/tahscript/atlas.txt";
+  QString path = "../cpp/libs/trscript/example.txt";
 
-  TahScriptManager m;
+  TranslationScriptManager m;
   m.loadFile(path);
 
   if (!m.isEmpty()) {

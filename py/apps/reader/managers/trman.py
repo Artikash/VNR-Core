@@ -8,6 +8,8 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
+#from sakurakit.skprofiler import SkProfiler
+
 import itertools
 from functools import partial
 from PySide.QtCore import QObject, Signal, Slot, Qt
@@ -451,7 +453,9 @@ class TranslatorManager(QObject):
     text = d.normalizeText(text)
 
     for it in d.iterOfflineTranslators():
+      #with SkProfiler(): # 0.3 seconds
       r = it.translate(text, fr=fr, to=d.language, async=False)
+      #with SkProfiler(): # 0.0004 seconds
       if r[0]: func(*r)
 
     # Always disable async

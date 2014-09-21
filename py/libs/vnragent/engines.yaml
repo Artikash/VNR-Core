@@ -2,46 +2,46 @@
 # 6/9/2014 jichi
 #
 # Defaults:
-# - wideChar: false
-# - regionLocked: false
+# - wideChar: false  game has UTF-16 encoding or not
+# - regionLocked: false  game require Japanese locale or not
 
 -
   name: BGI     # 5/11/2014 jichi
-  regionLocked: true # need vnrloc.dll and hooking WideCharToMultiByte, maybe
-  vnrlocale: false # TODO: need a better name
   exist: BGI.*
+  #regionLocked: true # need vnrloc.dll and hooking WideCharToMultiByte, maybe
+  #vnrlocale: true # TODO: need a better name
 -
   name: CIRCUS  # 6/5/2014
-  regionLocked: true # It simply cannot display gbk, which become "?". Need hijack encoding or gdi functions
   exist: advdata/grp/names.dat
+  #regionLocked: true # It simply cannot display gbk, which become "?". Need hijack encoding or gdi functions
 -
   name: Elf     # 5/31/2014
-  regionLocked: true # It simply cannot display gbk, which become "?". Need hijack encoding or gdi functions
   exist:
     - data.arc
     - effect.arc
     - mes.arc
+  #regionLocked: true # It simply cannot display gbk, which become "?". Need hijack encoding or gdi functions
 -
   name: Eushully # 6/1/2014
-  regionLocked: true # text become ????, and it cannot translate name
   exist: AGERC.DLL
+  #regionLocked: true # text become ????, and it cannot translate name
 -
   name: Majiro  # 4/20/2014
-  regionLocked: false # with minor issue
   exist:
     - data*.arc
     - stream*.arc
+  #regionLocked: false # with minor issue
 -
   name: SideB # 8/2/2014
-  regionLocked: false # with minor issue
   exist:
     - lua5.1.dll
     - dat/0001.dat
+  #regionLocked: false # with minor issue
 -
   name: SiglusEngine # 5/25/2014, supposed to be SiglusEngine2
   wideChar: true
-  regionLocked: false # with minor issue
   exist: SiglusEngine.exe
+  #regionLocked: true # with minor issue
 
 # EOF
 

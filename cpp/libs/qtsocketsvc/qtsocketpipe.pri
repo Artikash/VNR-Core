@@ -9,6 +9,7 @@ QT += core
 
 HEADERS += $$PWD/socketpipe.h
 
+# Needed to implement windows socket pipe
 INCLUDEPATH += $$QT_SRC
 
 win32 {

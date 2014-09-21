@@ -1,0 +1,9 @@
+#ifndef SBK_TRANSLATIONSCRIPTMANAGER_H
+#define SBK_TRANSLATIONSCRIPTMANAGER_H
+
+#include <shiboken.h>
+
+#include <trscript.h>
+
+#endif // SBK_TRANSLATIONSCRIPTMANAGER_H
+

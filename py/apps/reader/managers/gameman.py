@@ -1020,21 +1020,21 @@ class GameManager(QtCore.QObject):
 
       if not g.language: g.language = 'ja'
 
-      agentEnabled = ss.isGameAgentEnabled() # bool
-      agentEngine = None
-      if agentEnabled and not g.launchLanguage:
-        agentEngine = gameagent.global_().guessEngine(pid=pid, path=path)
-        if agentEngine and ss.isGameAgentLauncherEnabled() and ss.isGameAgentLauncherNeeded():
-          # TODO: Restore get game encoding in the future
-          # First, allow modify game encoding in game edit
-          #if g.encoding and g.encoding != 'utf-16' or not g.encoding and agentEngine.encoding() != 'utf-16':
-          if not agentEngine.regionLocked and not agentEngine.wideChar and (not g.encoding or g.encoding != 'utf-16'):
-            import trman
-            launchLanguage = trman.manager().guessTranslationLanguage()
-            if launchLanguage in config.SJIS_LANGUAGE_SET:
-              launchLanguage = ''
-            g.launchLanguage = launchLanguage
-            g.vnrlocale = agentEngine.vnrlocale
+      agentEngine = gameagent.global_().guessEngine(pid=pid, path=path) if ss.isGameAgentEnabled() else None
+      dprint("agent engine = %s" % (agentEngine.name if agentEngine else "None"))
+
+      #dprint("agent engine: %s" % agentEngine)
+      #  if agentEngine and ss.isGameAgentLauncherEnabled() and ss.isGameAgentLauncherNeeded():
+      #    # TODO: Restore get game encoding in the future
+      #    # First, allow modify game encoding in game edit
+      #    #if g.encoding and g.encoding != 'utf-16' or not g.encoding and agentEngine.encoding() != 'utf-16':
+      #    if not agentEngine.regionLocked and not agentEngine.wideChar and (not g.encoding or g.encoding != 'utf-16'):
+      #      import trman
+      #      launchLanguage = trman.manager().guessTranslationLanguage()
+      #      if launchLanguage in config.SJIS_LANGUAGE_SET:
+      #        launchLanguage = ''
+      #      g.launchLanguage = launchLanguage
+      #      g.vnrlocale = agentEngine.vnrlocale
 
       if not g.hasProcess():
         dprint("update process")

@@ -1,0 +1,14 @@
+# encoding: utf8
+# example.txt
+# 8/14/2014 jichi
+#
+# Format: flags \t pattern \t replace
+#
+# Flags:
+# - r: enable regex
+
+	kore	this
+	nani
+r	kaw.ii	lovely
+
+# EOF

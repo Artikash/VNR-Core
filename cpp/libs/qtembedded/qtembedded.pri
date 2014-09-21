@@ -17,6 +17,4 @@ HEADERS += \
 
 win32: SOURCES += $$PWD/applicationrunner_win.cc
 
-#INCLUDEPATH += $$QT_SRC
-
 # EOF
