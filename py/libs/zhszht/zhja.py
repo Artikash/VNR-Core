@@ -18,6 +18,7 @@ TJ = {
   u"誒": u"欸",
   u"幫": u"幇",
   u"雞": u"鶏",
+  u"歲": u"歳",
 
   u"你": u"ｲ尓",
   u"妳": u"ｲ尓",
@@ -57,6 +58,7 @@ def zht2ja(t): # unicode -> unicode
 if __name__ == '__main__':
   ja = u"「嗯你妳會認為我的事相當自私？」"
   zh = zht2ja(ja)
+  print u"歲"== u"歳"
 
   from PySide.QtCore import *
   c = QTextCodec.codecForName('sjis')
