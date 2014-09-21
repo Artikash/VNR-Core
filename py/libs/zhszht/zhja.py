@@ -26,11 +26,13 @@ TJ = {
   u"噢": u"哦",
   u"喲": u"哦",
   u"喔": u"哦",
-  u"吧": u"呀",
   u"啦": u"拉",
   u"哎": u"欸",
-  u"呃": u"额",
+  u"呃": u"額",
   u"嗎": u"嘛",
+
+  u"吧": u"巴",
+  u"嗯": u"恩",
 
   u"爸": u"巴",
 
@@ -45,7 +47,7 @@ def zht2ja(t): # unicode -> unicode
   return ''.join((TJ.get(c) or c for c in t))
 
 if __name__ == '__main__':
-  ja = u"「你妳會認為我的事相當自私？」"
+  ja = u"「嗯你妳會認為我的事相當自私？」"
   zh = zht2ja(ja)
 
   from PySide.QtCore import *
