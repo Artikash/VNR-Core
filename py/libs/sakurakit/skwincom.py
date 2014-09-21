@@ -33,7 +33,6 @@ else: # On mac
     def __enter__(self): pass
     def __exit__(self, *err): pass
 
-
 # EOF
 
 # Given the following, no need to bother CoInitialize/CoUninitialize for single-thread app

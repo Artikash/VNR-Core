@@ -63,13 +63,14 @@ class _TtsManager(object):
 
   def stop(self):
     for it in self.iterActiveEngines():
+      #if it.type != 'sapi': # do not disable sapi TTS to make it faster
       it.stop()
 
   def speakLater(self, text, interval, **kwargs): # unicode, long ->
-    self._speakTask = partial(self._speak, text, **kwargs)
+    self._speakTask = partial(self.speak, text, **kwargs)
     self._speakTimer.start(interval)
 
-  def _speak(self, text, engine='', termEnabled=False, language='', verbose=True):
+  def speak(self, text, engine='', termEnabled=False, language='', verbose=True):
     """
     @param  text  unicode
     @param* engine  str
@@ -109,6 +110,10 @@ class _TtsManager(object):
     #if not text:
     #  return
     text = self._repairText(text, eng.key)
+
+    #if eng.type == 'sapi':
+    #  eng.speak(text, async=True)
+    #else:
     eng.speak(text)
 
     #skevents.runlater(partial(eng.speak, text))
@@ -274,7 +279,10 @@ class TtsManager(QObject):
   def speak(self, text, interval=100, **kwargs):
     if not features.TEXT_TO_SPEECH:
       return
-    self.__d.speakLater(text, interval=interval, **kwargs)
+    if interval:
+      self.__d.speakLater(text, interval=interval, **kwargs)
+    else:
+      self.__d.speak(text, **kwargs)
 
   def getEngineLanguage(self, key): # str  engine key -> str not None
     eng = self.__d.getEngine(key)

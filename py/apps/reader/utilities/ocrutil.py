@@ -3,8 +3,9 @@
 # 9/15/2014 jichi
 
 from functools import partial
-from sakurakit import skthreads, skwincom
+from sakurakit import skthreads
 from sakurakit.skdebug import dwarn
+from sakurakit.skwincom import SkCoInitializer
 from modiocr import modiocr
 import main
 
@@ -45,11 +46,11 @@ def readtexts(path, lang, async=False):
   return skthreads.runsync(partial(_readtexts_async, path, lang), parent=parent) if async else _readtexts_sync(path, lang)
 
 def _readtext_async(*args, **kwargs):
-  with skwincom.SkCoInitializer():
+  with SkCoInitializer():
     return _readtext_sync(*args, **kwargs)
 
 def _readtexts_async(*args, **kwargs):
-  with skwincom.SkCoInitializer():
+  with SkCoInitializer():
     return _readtexts_sync(*args, **kwargs)
 
 def _readtext_sync(*args, **kwargs):
