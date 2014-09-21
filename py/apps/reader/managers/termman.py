@@ -23,7 +23,7 @@ def _mark_text(text): # unicode -> unicode
   return '<span style="text-decoration:underline">%s</span>' % text
 
 _re_marks = re.compile(r'<[0-9a-zA-Z: "/:=-]+?>')
-def remove_marks(text): return _re_marks.sub('', text)
+def _remove_marks(text): return _re_marks.sub('', text)
 
 RE_MACRO = re.compile('{{(.+?)}}')
 
@@ -486,5 +486,8 @@ class TermManager:
       for name in dm.iterNameItems():
         if text == name.text:
           return name.yomi or text
+
+  def removeMarks(self, text): # unicode -> unicode
+    return _remove_marks(text) if self.__d.escapeMarked else text
 
 # EOF
