@@ -30,20 +30,24 @@ TJ = {
   u"醬": u"醤",
   u"眾": u"衆",
   u"團": u"団",
+  u"溫": u"温",
+  u"狀": u"状",
 
   u"你": u"ｲ尓",
   u"妳": u"ｲ尓",
+  u"哪": u"ﾛ那",
 
   u"她": u"他",
 
   u"脖": u"月孛",
 
   # Inequivalent conversion
+  u"呢": u"吶",
   u"啊": u"哦",
   u"噢": u"哦",
   u"喲": u"哦",
   u"喔": u"哦",
-  u"啦": u"拉",
+  u"啦": u"吶",
   u"哎": u"欸",
   u"呃": u"額",
   u"嗎": u"嘛",
@@ -78,7 +82,7 @@ def zht2ja(t): # unicode -> unicode
   return ''.join((TJ.get(c) or c for c in t))
 
 if __name__ == '__main__':
-  ja = u"「嗯你妳會認為我的事相當自私？」"
+  ja = u"「哪嗯你妳會認為我的事相當自私？」"
   zh = zht2ja(ja)
   print u"歲"== u"歳"
   print u"內"== u"内"
