@@ -37,58 +37,53 @@ class _TermManager:
     self.hentai = False # bool
     self.language = 'en' # str
 
-    self.targetMarked = False # bool
-    self.escapeMarked = False # bool
+    self.marked = False # bool
 
+    # TODO: For saving terms
     self.cancelSavingTerms = False # bool
+    self.sourceLanguage = 'ja' # str
+    self.targetLanguage = 'en' # str
 
   #@classmethod
   #def needsEscape(cls):
   #  return config.is_asian_language(cls.language)
 
-  #def saveTerms(self, terms, text, language, convertsChinese=False, marksChanges=False):
-  #  """
-  #  @param  terms  iterable dataman.Term
-  #  @param  text  unicode
-  #  @param  language  unicode
-  #  @param* hasTitles  bool
-  #  @param* convertsChinese  bool
-  #  @param* marksChanges  bool  mark the replacement text
-  #  @return  unicode
-  #  """
-  #  lines = [] # (bool pattern, bool text, bool regex)
-  #
-  #  dm = dataman.manager()
-  #  hasTitles = dm.hasTermTitles() # cached
-  #  zht = language == 'zht' # cached
-  #  for term in terms:
-  #    td = term.d # To improve performance
-  #    if (not td.hentai or self.hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
-  #      if self.cancelSavingTerms:
-  #        return
-  #      if hasTitles and term.needsReplace():
-  #        try: text = term.replace(text)
-  #        except Exception, e: dwarn(td.pattern, td.text, e)
-  #      else:
-  #        z = convertsChinese and zht and td.language == 'zhs'
-  #        #repl = term.bbcodeText if term.bbcode else term.text
-  #        repl = td.text
-  #        if repl:
-  #          if z: # and self.convertsChinese:
-  #            repl = zhs2zht(repl)
-  #          #elif config.is_latin_language(td.language):
-  #          #  repl += " "
-  #          if marksChanges:
-  #            repl = _mark_text(repl)
-  #        if not term.patternNeedsRe():
-  #          pattern = zhs2zht(td.pattern) if z else td.pattern
-  #          text = text.replace(pattern, repl)
-  #        else:
-  #          try: text = term.patternRe.sub(repl, text)
-  #          except Exception, e: dwarn(td.pattern, td.text, e)
-  #      if not text: # well, the text is deleted by terms
-  #        break
-  #  return text
+  def saveTerms(self, terms, text, language, convertsChinese=False, marksChanges=False):
+    """
+    @param  terms  iterable dataman.Term
+    @param  text  unicode
+    @param  language  unicode
+    @param* hasTitles  bool
+    @param* convertsChinese  bool
+    @param* marksChanges  bool  mark the replacement text
+    """
+    lines = [] # (unicode pattern, unicode text, bool regex)
+
+    dm = dataman.manager()
+    termTitles = dm.termTitles() # cached
+    zht = language == 'zht' # cached
+    for term in terms:
+      td = term.d # To improve performance
+      if (not td.hentai or self.hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
+        if self.cancelSavingTerms:
+          return
+        if termTitles and term.needsReplace():
+          pass # TODO: Iterate titles x names
+        else:
+          z = convertsChinese and zht and td.language == 'zhs'
+          #repl = term.bbcodeText if term.bbcode else term.text
+          repl = td.text
+          if repl:
+            if z: # and self.convertsChinese:
+              repl = zhs2zht(repl)
+            #elif config.is_latin_language(td.language):
+            #  repl += " "
+            if marksChanges:
+              repl = _mark_text(repl)
+          pattern = zhs2zht(td.pattern) if z else td.pattern
+          lines.append((pattern, repl, td.regex))
+
+    # CHECKPOINT: Save lines to disk
 
   def applyTerms(self, terms, text, language, convertsChinese=False, marksChanges=False):
     """
@@ -189,21 +184,15 @@ class TermManager:
     dprint(value)
     self.__d.hentai = value
 
-  def isTargetMarked(self): return self.__d.targetMarked
-  def setTargetMarked(self, t): self.__d.targetMarked = t
-
-  def isEscapeMarked(self): return self.__d.escapeMarked
-  def setEscapeMarked(self, t): self.__d.escapeMarked = t
-    # Doing this would break the shared dictionary
-    #for term in dataman.manager().iterEscapeTerms():
-    #  term.applyReplace = None
+  def isMarked(self): return self.__d.marked
+  def setMarked(self, t): self.__d.marked = t
 
   def clearMarkCache(self): # invoked on escapeMarked changes in settings
     for term in dataman.manager().iterEscapeTerms():
       term.applyReplace = None
 
   def markEscapeText(self, text): # unicode -> unicode
-    return _mark_text(text) if text and self.__d.escapeMarked else text
+    return _mark_text(text) if text and self.__d.marked else text
 
   #def convertsChinese(self): return self.__d.convertsChinese
   #def setConvertsChinese(self, value): self.__d.convertsChinese = value
@@ -276,7 +265,7 @@ class TermManager:
     @return  unicode
     """
     return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
-        text, language, convertsChinese=True, marksChanges=self.__d.targetMarked)
+        text, language, convertsChinese=True, marksChanges=self.__d.marked)
 
   def applyOriginTerms(self, text, language):
     """
@@ -412,7 +401,7 @@ class TermManager:
           if repl:
             if zht and td.language == 'zhs':
               repl = zhs2zht(repl)
-            if d.escapeMarked:
+            if d.marked:
               repl = _mark_text(repl)
           #elif config.is_latin_language(td.language):
           #  repl += " "
@@ -488,6 +477,6 @@ class TermManager:
           return name.yomi or text
 
   def removeMarks(self, text): # unicode -> unicode
-    return _remove_marks(text) if self.__d.escapeMarked else text
+    return _remove_marks(text) if self.__d.marked else text
 
 # EOF

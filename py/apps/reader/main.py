@@ -598,10 +598,8 @@ class _MainObject(object):
     ret.setHentaiEnabled(ss.isHentaiEnabled())
     ss.hentaiEnabledChanged.connect(ret.setHentaiEnabled)
 
-    ret.setTargetMarked(ss.isTermMarked())
-    ss.termMarkedChanged.connect(ret.setTargetMarked)
-    ret.setEscapeMarked(ss.isTermMarked())
-    ss.termMarkedChanged.connect(ret.setEscapeMarked)
+    ret.setMarked(ss.isTermMarked())
+    ss.termMarkedChanged.connect(ret.setMarked)
 
     ss.termMarkedChanged.connect(ret.clearMarkCache)
 
