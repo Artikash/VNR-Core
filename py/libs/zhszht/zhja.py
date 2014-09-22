@@ -10,6 +10,7 @@ TJ = {
   u"—": u"ー",
 
   u"內": u"内",
+  u"晚": u"晩",
   u"說": u"説",
   u"团": u"団",
   u"蔥": u"葱",
@@ -66,6 +67,7 @@ if __name__ == '__main__':
   zh = zht2ja(ja)
   print u"歲"== u"歳"
   print u"內"== u"内"
+  print u"晚" == u"晩"
 
   from PySide.QtCore import *
   c = QTextCodec.codecForName('sjis')
