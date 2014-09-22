@@ -9,6 +9,7 @@ TJ = {
   # Equivalent conversion
   u"—": u"ー",
 
+  u"誒": u"欸",
   u"內": u"内",
   u"晚": u"晩",
   u"說": u"説",
@@ -17,7 +18,6 @@ TJ = {
   u"擊": u"撃",
   u"絕": u"絶",
   u"佈": u"布",
-  u"誒": u"欸",
   u"幫": u"幇",
   u"雞": u"鶏",
   u"歲": u"歳",
@@ -36,6 +36,7 @@ TJ = {
   u"你": u"ｲ尓",
   u"妳": u"ｲ尓",
   u"哪": u"ﾛ那",
+  u"謊": u"言荒",
 
   u"她": u"他",
 
@@ -57,6 +58,8 @@ TJ = {
   u"嗯": u"恩",
   u"噗": u"璞",
   u"呲": u"兹",
+  u"嘟": u"都",
+  u"噥": u"農",
 
   u"咕": u"呼",
   u"噜": u"魯",
@@ -82,7 +85,7 @@ def zht2ja(t): # unicode -> unicode
   return ''.join((TJ.get(c) or c for c in t))
 
 if __name__ == '__main__':
-  ja = u"「哪嗯你妳會認為我的事相當自私？」"
+  ja = u"「謊哪嗯你妳會認為我的事相當自私？」"
   zh = zht2ja(ja)
   print u"歲"== u"歳"
   print u"內"== u"内"
