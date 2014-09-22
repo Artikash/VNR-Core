@@ -33,6 +33,8 @@ TJ = {
   u"溫": u"温",
   u"狀": u"状",
   u"麽": u"麼",
+  u"查": u"査",
+  u"姬": u"姫",
 
   u"你": u"ｲ尓",
   u"妳": u"ｲ尓",
@@ -92,6 +94,7 @@ if __name__ == '__main__':
   print u"內"== u"内"
   print u"晚" == u"晩"
   print u"虛" == u"虚"
+  print u"查" == u"査"
 
   from PySide.QtCore import *
   c = QTextCodec.codecForName('sjis')
