@@ -6,7 +6,7 @@ hcode:
   - /HB8*0:D4@0:GDI32.dll:GetTextExtentPoint32A # 幻創のイデア
   - /HA-C:40@0:GDI32.dll:GetTextMetricsA # 幻創のイデア
   - /HA8@394F8:gdi32.dll # 幻創のイデア
-  #-/HS-8@42D8F4 # X: 媚肉の香り, O: スクエアな関係</
+  #-/HS-8@42D8F4 # X: 媚肉の香り, O: スクエアな関係
   #-/HB18*0@4D2CD8 # X: 少女騎士物語, O: はつゆきさくら
   #-/HWN-8*0@14F36:libscr.dll # Berry's
   #-/HSN-4@B14B4 # Justy×Nasty ～魔王はじめました～

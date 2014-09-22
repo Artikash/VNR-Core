@@ -77,6 +77,7 @@ class _PostEditor(object):
   def contentEdit(self):
     ret = QtWidgets.QTextEdit()
     #skqss.class_(ret, 'texture')
+    skqss.class_(ret, 'edit edit-default')
     ret.setToolTip(tr_("Content"))
     ret.setAcceptRichText(False)
     ret.setMinimumHeight(TEXTEDIT_MINIMUM_HEIGHT)
