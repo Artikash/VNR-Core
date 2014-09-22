@@ -55,13 +55,15 @@ TJ = {
   u"咕": u"呼",
   u"噜": u"魯",
   u"麽": u"幺",
-
+  u"吵": u"炒",
   u"筷": u"快",
   u"爸": u"巴",
+  u"桌": u"卓",
 
   # Not needed, but to simplified version
   #u"號": u"号",
   #u"體": u"体",
+  u"遙": u"遥",
 }
 
 #def zhs2ja(s): # unicode -> unicode
