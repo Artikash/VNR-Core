@@ -27,6 +27,7 @@ TJ = {
   u"僱": u"雇",
   u"錄": u"録",
   u"莆": u"蒲",
+  u"虛": u"虚",
 
   u"你": u"ｲ尓",
   u"妳": u"ｲ尓",
@@ -53,7 +54,9 @@ TJ = {
 
   u"咕": u"呼",
   u"噜": u"魯",
+  u"麽": u"幺",
 
+  u"筷": u"快",
   u"爸": u"巴",
 
   # Not needed, but to simplified version
@@ -72,6 +75,7 @@ if __name__ == '__main__':
   print u"歲"== u"歳"
   print u"內"== u"内"
   print u"晚" == u"晩"
+  print u"虛" == u"虚"
 
   from PySide.QtCore import *
   c = QTextCodec.codecForName('sjis')
