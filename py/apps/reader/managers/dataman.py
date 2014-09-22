@@ -6253,6 +6253,14 @@ class _DataManager(object):
         #  dwarn("change game loader from LocaleSwitch to AppLocale")
         #  g.loader = 'apploc'
 
+        if g.language in ('ja', 'zhs', 'zht') and g.keepsSpace:
+          dwarn("ignore keeping spaces: id=%s" % g.id)
+          g.keepsSpace = False
+          growl.notify('<br/>'.join((
+            my.tr("Disable keeping space for Kanji language") + " (%s)" % g.language ,
+            g.name,
+          )))
+
         # Change game engines
         if g.threadName:
           v = config.RENAMED_GAME_ENGINES.get(g.threadName)
