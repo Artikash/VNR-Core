@@ -26,6 +26,8 @@ TJ = {
 
   u"她": u"他",
 
+  u"脖": u"月孛",
+
   # Inequivalent conversion
   u"啊": u"哦",
   u"噢": u"哦",
@@ -45,7 +47,7 @@ TJ = {
   u"噜": u"魯",
 
   u"爸": u"巴",
-  u"脖": u"月孛",
+  u"莆": u"蒲",
 
   # Not needed, but to simplified version
   #u"號": u"号",
