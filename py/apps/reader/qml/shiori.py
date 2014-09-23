@@ -50,12 +50,14 @@ class ShioriBean(QObject):
     #return dictman.manager().render(text, *args)
     mutex = self.__d.renderMutex
     if mutex.tryLock():
-      ret = skthreads.runsync(partial(dictman.manager().render, text, *args))
+      ret = skthreads.runsync(partial(
+          dictman.manager().render, text, *args),
+          parent=self)
       mutex.unlock()
       return ret
     else:
-      dwarn('thread contention')
-      return ''
+      dwarn("ignore thread contention")
+      return ""
 
   popup = Signal(unicode, int, int)  # text, x, y
 
