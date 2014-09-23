@@ -183,11 +183,13 @@ Item { id: root_
         //font.family: "Helvetica"
         //font.family: "MS Mincho"
         font.family: "YouYuan"
+        //font.family: "Heiti TC"
+
+        font.bold: true
 
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 
         font.pixelSize: 18 * root_.zoomFactor
-        font.bold: true
         color: 'snow'
 
         function renderText(t) { return t ? t : "" }
