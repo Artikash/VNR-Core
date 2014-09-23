@@ -28,6 +28,8 @@ class NullEdict(object):
 
 class Edict(object):
 
+  RECONNECT = True # Automatically recreate connection
+
   @property
   def d(self):
     """
@@ -43,6 +45,8 @@ class Edict(object):
         from cjklib.dictionary import EDICT
         ret = EDICT(databaseUrl=dburl)
         ret.getAll(limit=1) # warmup, in case the db file is corrupted
+        if self.RECONNECT:
+          ret.db.connection.close()
         self._d = ret
       except Exception, e:
         dwarn(e)
@@ -51,6 +55,9 @@ class Edict(object):
   def __init__(self, location=None):
     self._d = None # edict instance
     self.location = location # unicode or None
+
+  def connect(self): self.d.db.connection = self.d.db.engine.connect()
+  def disconnect(self): self.d.db.connection.close()
 
   def valid(self):
     """
@@ -72,6 +79,8 @@ class Edict(object):
     """
     #if self.d:
     try:
+      if self.RECONNECT:
+        self.connect()
       for it in self.d.getFor(text, **kwargs):
         complete = False
         yield it
@@ -80,6 +89,8 @@ class Edict(object):
         if text:
           for it in self.lookup(text, **kwargs):
             yield it
+      if self.RECONNECT:
+        self.disconnect()
     except Exception, e: # in case the db file is deleted
       dwarn(e)
 
@@ -166,16 +177,25 @@ class Edict(object):
     Return the first hitted word in the dictionary.
     """
     if text and self.d:
-      for it in self.d.getForHeadword(text, limit=limit):
-        ret = self._rx_tr2.sub('',
-          self._rx_tr1.sub('', it.Translation).strip()
-        ).strip()
-        if ret and (not wc or ret.count(' ') <= wc):
-          return ret
-      if complete:
-        text = self.complete(text)
-        if text:
-          return self.translate(text, wc=wc, limit=limit)
+      try:
+        if self.RECONNECT:
+          self.connect()
+        for it in self.d.getForHeadword(text, limit=limit):
+          ret = self._rx_tr2.sub('',
+            self._rx_tr1.sub('', it.Translation).strip()
+          ).strip()
+          if ret and (not wc or ret.count(' ') <= wc):
+            if self.RECONNECT:
+              self.disconnect()
+            return ret
+        if self.RECONNECT:
+          self.disconnect()
+        if complete:
+          text = self.complete(text)
+          if text:
+            return self.translate(text, wc=wc, limit=limit)
+      except Exception, e: # in case the db file is deleted
+        dwarn(e)
 
 if __name__ == '__main__':
   t = u"殺す"
@@ -242,6 +262,7 @@ if __name__ == '__main__':
     print it.Translation
   #print "enam translation:"
   #print enamdict.translate(t)
+
   print "edict translation:"
   print edict.translate(t)
 
