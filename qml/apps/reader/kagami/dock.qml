@@ -397,7 +397,7 @@ Item { id: root_
         //onEnabledChanged:
         //  if (!enabled) checked = false
 
-        visible: enabled || !root_.fullScreen
+        visible: enabled //|| !root_.fullScreen // hide if not enabled
 
         //toolTip: checked ? qsTr("Leave full screen") : qsTr("Enter full screen")
         toolTip: qsTr("Automatically recognize texts in the selected regions")
