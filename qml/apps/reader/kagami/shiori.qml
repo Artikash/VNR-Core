@@ -295,9 +295,13 @@ Rectangle { id: root_
   function popup(text, x, y) {
     if (!root_.enabled)
       return
+    var html = bean_.render(text)
+    if (!html) // thread contention, ignore
+      return
     reset()
     root_.x = x + _X_OFFSET; root_.y = y + _Y_OFFSET
-    textEdit_.text = bean_.render(text)
+    textEdit_.text = html
+    //textEdit_.text = bean_.render(text)
     ensureVisible()
     show()
   }

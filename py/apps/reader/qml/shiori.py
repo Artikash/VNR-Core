@@ -2,13 +2,20 @@
 # shiori.py
 # 10/10/2012 jichi
 
-from PySide.QtCore import Signal, Slot, Property, QObject
+from functools import partial
+from PySide.QtCore import Signal, Slot, Property, QObject, QMutex
+from sakurakit import skthreads
 from sakurakit.skdebug import dprint, dwarn
 #from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_
 from mytr import my
 from kagami import GrimoireBean
 import dictman, qmldialog, settings
+
+class _ShioriBean:
+  def __init__(self):
+    self.enabled = True
+    self.renderMutex = QMutex()
 
 #@QmlObject
 class ShioriBean(QObject):
@@ -17,18 +24,18 @@ class ShioriBean(QObject):
 
   def __init__(self, parent=None):
     super(ShioriBean, self).__init__(parent)
+    self.__d = _ShioriBean()
     ShioriBean.instance = self
-    self._enabled = True # bool
 
     ss = settings.global_()
-    self._enabled = ss.isDictionaryEnabled()
+    self.__d.enabled = ss.isDictionaryEnabled()
     ss.dictionaryEnabledChanged.connect(self.setEnabled)
     dprint("pass")
 
-  def isEnabled(self): return self._enabled
+  def isEnabled(self): return self.__d.enabled
   def setEnabled(self, v):
-    if self._enabled != v:
-      self._enabled = v
+    if self.__d.enabled != v:
+      self.__d.enabled = v
       self.enabledChanged.emit(v)
   enabledChanged = Signal(bool)
   enabled = Property(bool, isEnabled, setEnabled, notify=enabledChanged)
@@ -40,7 +47,15 @@ class ShioriBean(QObject):
     @return  unicode not None  html
     """
     args = GrimoireBean.instance.lookupFeature(text) or []
-    return dictman.manager().render(text, *args)
+    #return dictman.manager().render(text, *args)
+    mutex = self.__d.renderMutex
+    if mutex.tryLock():
+      ret = skthreads.runsync(partial(dictman.manager().render, text, *args))
+      mutex.unlock()
+      return ret
+    else:
+      dwarn('thread contention')
+      return ''
 
   popup = Signal(unicode, int, int)  # text, x, y
 
