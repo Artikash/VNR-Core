@@ -115,9 +115,9 @@ Item { id: root_
   //onCommentVisibleChanged: console.log("grimoire.qml: comment visible =", commentVisible)
 
   property bool popupEnabled: true
-  property bool readEnabled: true
+  //property bool readEnabled: true
 
-  property bool copyEnabled: true
+  //property bool copyEnabled: true
   //onCopyEnabledChanged: console.log("grimoire.qml: copy enabled =", copyEnabled)
 
   property bool hoverEnabled: false
@@ -983,14 +983,15 @@ Item { id: root_
               var t = textEdit_.selectedText
               if (t) {
                 lastSelectedText = t
+                //if (root_.copyEnabled)
+                textEdit_.copy()
                 if (!root_.hoverEnabled && root_.popupEnabled && model.language === 'ja' && root_.furiganaEnabled) {
                   //var gp = Util.itemGlobalPos(parent)
                   var gp = mapToItem(null, x + mouse.x, y + mouse.y)
                   root_.yakuAt(t, gp.x, gp.y)
                 }
-                if (root_.copyEnabled)
-                  textEdit_.copy()
-                if (root_.readEnabled && model.language === 'ja')
+                //if (root_.readEnabled && model.language === 'ja')
+                if (model.type === 'text' || model.type !== 'name')
                   ttsPlugin_.speak(t, model.language)
               }
             }
@@ -1000,11 +1001,12 @@ Item { id: root_
             if (model.language) {
               var t = model.text
               if (t) {
+                //if (root_.copyEnabled)
+                clipboardPlugin_.text = t
                 textEdit_.deselect()
-                if (root_.copyEnabled)
-                  clipboardPlugin_.text = t
-                if (root_.readEnabled)
-                  ttsPlugin_.speak(t, model.language)
+                //if (root_.readEnabled)
+                //if (model.type === 'text' || model.type !== 'name')
+                ttsPlugin_.speak(t, model.language)
               }
             }
         }
