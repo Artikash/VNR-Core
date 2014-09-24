@@ -301,6 +301,7 @@ J2C_PUNCT = {
 
 J2C_WORDS = {
   u"多く": u"许多",
+  u"あなた": u"你",
 }
 
 class JapaneseChineseTransformer(MachineTransformer):
@@ -387,6 +388,8 @@ class JapaneseChineseTransformer(MachineTransformer):
           l = self.transformPhraseOrWordList(nodes[:-1])
           l.append(ASTWord(token=ChineseToken(u"在")))
           return l
+        elif token.text == u"は":
+          return self.transformPhraseOrWordList(nodes[:-1])
       elif last.classType == AST_CLASS_PHRASE:
         # TODO: This modification should happen only after the other places has been translated
         phrases = last.children
@@ -451,8 +454,10 @@ if __name__ == '__main__':
 
   # baidu: 未来日本在许多城市，大大小小的犯罪蔓延。
   # manual: 近未来的日本，大大小小的犯罪在许多城市蔓延。
-  text = u"近未来の日本、多くの都市で大小の犯罪が蔓延。"
+  #text = u"近未来の日本、多くの都市で大小の犯罪が蔓延。"
   #text = u"警察を主とした治安機関は機能を失いつつあったが、暁東市は様々な犯罪対策を行なう事で国内でもトップクラスの治安を保っていた。"
+  #text = u"憎しみは憎しみしか生まない。"
+  text = u"あなたは誰ですか？"
 
   print "-- test tokenizer --"
   _t = CaboChaTokenizer()
