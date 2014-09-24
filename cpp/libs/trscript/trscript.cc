@@ -83,7 +83,7 @@ public:
   {
     ruleCount = 0;
     if (rules) {
-      delete rules;
+      delete[] rules;
       rules = nullptr;
     }
   }
@@ -152,8 +152,10 @@ bool TranslationScriptManager::loadFile(const QString &path)
   }
   file.close();
 
-  if (lines.empty())
+  if (lines.empty()) {
+    d_->clear();
     return false;
+  }
 
   //QWriteLocker locker(&d_->lock);
   d_->reset(lines.size());

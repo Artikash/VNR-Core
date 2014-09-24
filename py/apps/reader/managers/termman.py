@@ -30,6 +30,15 @@ RE_MACRO = re.compile('{{(.+?)}}')
 # All methods are supposed to be thread-safe, though they are not
 class _TermManager:
 
+  SAVE_PARAMS = {
+    'tts': {'convertsChinese':False, 'marksChanges':False},
+    'ocr': {'convertsChinese':False, 'marksChanges':False},
+    'origin': {'convertsChinese':False, 'marksChanges':False},
+    'source': {'convertsChinese':False, 'marksChanges':False},
+
+    'target': {'convertsChinese':True, 'marksChanges':True},
+  }
+
   def __init__(self):
     #self.convertsChinese = False
     self.enabled = True # bool
@@ -48,8 +57,9 @@ class _TermManager:
   #def needsEscape(cls):
   #  return config.is_asian_language(cls.language)
 
-  def saveTerms(self, terms, text, language, convertsChinese=False, marksChanges=False):
+  def saveTerms(self, type, convertsChinese=False, marksChanges=False):
     """
+    @param  type  str
     @param  terms  iterable dataman.Term
     @param  text  unicode
     @param  language  unicode
@@ -57,10 +67,12 @@ class _TermManager:
     @param* convertsChinese  bool
     @param* marksChanges  bool  mark the replacement text
     """
+    language = self.sourceLanguage
     lines = [] # (unicode pattern, unicode text, bool regex)
 
     dm = dataman.manager()
     termTitles = dm.termTitles() # cached
+    terms = dm.iterTermsWithType(type)
     zht = language == 'zht' # cached
     for term in terms:
       td = term.d # To improve performance
@@ -83,7 +95,27 @@ class _TermManager:
           pattern = zhs2zht(td.pattern) if z else td.pattern
           lines.append((pattern, repl, td.regex))
 
-    # CHECKPOINT: Save lines to disk
+    path = config.term_path(type)
+    self.writeLines(path, lines)
+
+  @staticmethod
+  def writeTerms(path, lines):
+    """
+    @param  path  unicode
+    @param  lines  [unicode pattern, unicode repl, bool regex]
+    @return  bool
+    """
+    try:
+      with open(path, 'w') as f:
+        f.writelines(
+            (("r\t%s\t%s" if regex else "\t%s\t%s") % (pattern, repl))
+            if repl else
+            (("r\t%s" if regex else "\t%s\n") % pattern)
+            for pattern,repl,regex in lines)
+        return True
+    except Exception, e:
+      dwarn(e)
+      return False
 
   def applyTerms(self, terms, text, language, convertsChinese=False, marksChanges=False):
     """
