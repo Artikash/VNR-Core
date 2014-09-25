@@ -6,9 +6,15 @@ __all__ = ['SapiEngine']
 
 if __name__ == '__main__': # debug
   import os, sys
-  os.environ['PATH'] += os.path.pathsep + "../../../bin"
-  sys.path.append("../../../bin")
-  sys.path.append("..")
+  os.environ["PATH"] = os.path.pathsep.join((
+    "../../../bin",
+    "../../../../Qt/PySide",
+  ))
+  map(sys.path.append, (
+    "../../../../Qt/PySide",
+    "../../../bin",
+    "..",
+  ))
 
 from sakurakit import skstr
 from sakurakit.skclass import memoizedproperty
@@ -84,7 +90,6 @@ class SapiEngine(object):
       self.tts.speak(text, async)
 
 if __name__ == '__main__': # debug
-  import sys
   import pythoncom
   #pythoncom.OleInitialize()
   #reg = r"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\VW Misaki"
