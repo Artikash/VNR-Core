@@ -23,7 +23,7 @@ from sakurakit.skunicode import sjis_encodable
 from zhszht.zhszht import zhs2zht
 from cconv import cconv
 from mytr import my, mytr_
-import cacheman, config, csvutil, defs, features, growl, hashutil, i18n, main, mecabman, nameman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
+import cacheman, config, csvutil, defs, features, growl, hashutil, i18n, main, mecabman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
 
 SUBMIT_INTERVAL = 5000 # 5 seconds
 REF_SUBMIT_INTERVAL = 1000 # 1 second
@@ -2360,73 +2360,73 @@ class Term(QObject):
 
 ## Name ##
 
-class NameItem(object):
-
-  def __init__(self, id=0, text="", yomi=""):
-    self.id = id # long
-    self.text = text # unicode
-    self.yomi = yomi # unicode
-
-  #@staticmethod
-  #def needsEscape():
-  #  return not config.is_asian_language(manager().user().language)
-
-  #@staticmethod
-  #def needsRomaji():
-  #  return not config.is_kanji_language(manager().user().language)
-
-  @memoizedproperty
-  def translation(self):
-    """
-    @return  unicode
-    """
-    lang = manager().user().language
-    if config.is_kanji_language(lang):
-      return self.text
-    if lang == 'ja':
-      return ''
-    yomi = self.yomi or self.text
-    if not textutil.match_kata_hira_punc(yomi):
-      return ''
-    if lang == 'ko': return cconv.yomi2hangul(yomi)
-    if lang == 'th': return cconv.yomi2thai(yomi)
-    return cconv.yomi2romaji(yomi).title()
-
-  @memoizedproperty
-  def replace(self):
-    """
-    @return  multireplacer
-    """
-    titles = manager().termTitles()
-    # Append a space at the end
-    table = {k : self.translation + v + ' ' for k,v in titles.iteritems()}
-    return skstr.multireplacer(table, prefix=self.text, escape=True)
-
-  @memoizedproperty
-  def prepareReplace(self):
-    """
-    @return  multireplacer
-    """
-    titles = manager().termTitles()
-    #l = sorted(titles.iterkeys(), key=len) # already sorted
-    esc = defs.CHARA_ESCAPE + ' '
-    h = self.id or id(d)
-    table = {k : esc%(h,i) for i,k in enumerate(titles)}
-    return skstr.multireplacer(table, prefix=self.text, escape=True)
-
-  @memoizedproperty
-  def applyReplace(self):
-    """
-    @return  multireplacer
-    """
-    mark = termman.manager().markEscapeText
-    titles = manager().termTitles()
-    #l = sorted(titles.iterkeys(), key=len) # already sorted
-    esc = defs.CHARA_ESCAPE
-    #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
-    h = self.id or id(d)
-    table = {esc%(h,i) : mark(self.translation + titles[k]) for i,k in enumerate(titles)}
-    return skstr.multireplacer(table) #escape=False
+#class NameItem(object):
+#
+#  def __init__(self, id=0, text="", yomi=""):
+#    self.id = id # long
+#    self.text = text # unicode
+#    self.yomi = yomi # unicode
+#
+#  #@staticmethod
+#  #def needsEscape():
+#  #  return not config.is_asian_language(manager().user().language)
+#
+#  #@staticmethod
+#  #def needsRomaji():
+#  #  return not config.is_kanji_language(manager().user().language)
+#
+#  @memoizedproperty
+#  def translation(self):
+#    """
+#    @return  unicode
+#    """
+#    lang = manager().user().language
+#    if config.is_kanji_language(lang):
+#      return self.text
+#    if lang == 'ja':
+#      return ''
+#    yomi = self.yomi or self.text
+#    if not textutil.match_kata_hira_punc(yomi):
+#      return ''
+#    if lang == 'ko': return cconv.yomi2hangul(yomi)
+#    if lang == 'th': return cconv.yomi2thai(yomi)
+#    return cconv.yomi2romaji(yomi).title()
+#
+#  @memoizedproperty
+#  def replace(self):
+#    """
+#    @return  multireplacer
+#    """
+#    titles = manager().termTitles()
+#    # Append a space at the end
+#    table = {k : self.translation + v + ' ' for k,v in titles.iteritems()}
+#    return skstr.multireplacer(table, prefix=self.text, escape=True)
+#
+#  @memoizedproperty
+#  def prepareReplace(self):
+#    """
+#    @return  multireplacer
+#    """
+#    titles = manager().termTitles()
+#    #l = sorted(titles.iterkeys(), key=len) # already sorted
+#    esc = defs.CHARA_ESCAPE + ' '
+#    h = self.id or id(d)
+#    table = {k : esc%(h,i) for i,k in enumerate(titles)}
+#    return skstr.multireplacer(table, prefix=self.text, escape=True)
+#
+#  @memoizedproperty
+#  def applyReplace(self):
+#    """
+#    @return  multireplacer
+#    """
+#    mark = termman.manager().markEscapeText
+#    titles = manager().termTitles()
+#    #l = sorted(titles.iterkeys(), key=len) # already sorted
+#    esc = defs.CHARA_ESCAPE
+#    #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
+#    h = self.id or id(d)
+#    table = {esc%(h,i) : mark(self.translation + titles[k]) for i,k in enumerate(titles)}
+#    return skstr.multireplacer(table) #escape=False
 
 ## References ##
 
@@ -5494,7 +5494,7 @@ class _DataManager(object):
 
     # Current game
     self.currentGame = None # class Game
-    self.currentGameids = [] # [long gameId] not None
+    self.currentGameIds = [] # [long gameId] not None
     self._currentGameObject = None # QObject
 
     # Game library, which is a list of games indexed by their md5, not null
@@ -5512,7 +5512,7 @@ class _DataManager(object):
 
     self._gameInfo = [] # [GameInfo]
 
-    self.nameItems = [] # [NameItem]
+    #self.nameItems = [] # [NameItem]
 
     self.users = {} # {long id:UserDigest}
 
@@ -5556,7 +5556,7 @@ class _DataManager(object):
       self.terms = []                 # [Term], not None
       self.sortedTerms = None
 
-  def clearNameItems(self): self.nameItems = [] #; mecabman.manager().clearDictionary()
+  #def clearNameItems(self): self.nameItems = [] #; mecabman.manager().clearDictionary()
 
   @property
   def sortedTerms(self):
@@ -6463,8 +6463,7 @@ class _DataManager(object):
     @param  type  str
     @yield  Term
     """
-    try: ids = self.currentGameIds # 8/27/2013: Why AttributeError?!
-    except AttributeError: ids = []
+    ids = self.currentGameIds # 8/27/2013: Why AttributeError?!
     for t in self.sortedTerms:
       td = t.d # To improve performance
       if not td.disabled and not td.deleted and td.type == type and (not td.special or
@@ -6476,8 +6475,7 @@ class _DataManager(object):
     @param  types  [str]
     @yield  Term
     """
-    try: ids = self.currentGameIds # 8/27/2013: Why AttributeError?!
-    except AttributeError: ids = []
+    ids = self.currentGameIds # 8/27/2013: Why AttributeError?!
     for t in self.sortedTerms:
       td = t.d # To improve performance
       if not td.disabled and not td.deleted and td.type in types and (not td.special or
@@ -6486,47 +6484,47 @@ class _DataManager(object):
 
   ## Character name ##
 
-  def updateNameItems(self):
-    #if not gid or gameId and gameId != gid:
-    #  dwarn("game changed")
-    #  return
-    if self.nameItems:
-      dwarn("name items already exist")
-      return
-    mm = mecabman.manager()
-    if not mm.isEnabled():
-      dwarn("mecab is not enabled")
-      return
-    dprint("enter")
-    growl.msg(my.tr("Searching for game character names") + " ...")
-    game = self.currentGame
-    if game and game.itemId:
-      info = self.q.currentGameInfo()
-      if info and info.itemId == game.itemId:
-        l = info.characters # may surrender event cycles
-        if l:
-          if self.nameItems:
-            dwarn("leave: name items already exist")
-            return
-          growl.msg(my.tr("Found {0} game characters").format(len(l)))
-          #names = ((kw['name'],kw['yomi']) for kw in l)
-          names = [(kw['name'],kw['yomi']) for kw in l]
-          nm = nameman.manager()
-          self.nameItems = nm.parseNameItems(names)
-
-          itemId = game.itemId
-          dicpath = nm.cachedMeCabDic(itemId)
-          if not dicpath:
-            dicpath = skthreads.runsync(partial(
-                nm.compileMeCabDic,
-                names,
-                itemId))
-          if dicpath and not mm.userDictionary():
-            mm.setUserDictionary(dicpath)
-          dprint("leave: item count = %i" % len(self.nameItems))
-          return
-    growl.msg(my.tr("Game character names not found"))
-    dprint("leave: no items")
+  #def updateNameItems(self):
+  #  #if not gid or gameId and gameId != gid:
+  #  #  dwarn("game changed")
+  #  #  return
+  #  if self.nameItems:
+  #    dwarn("name items already exist")
+  #    return
+  #  mm = mecabman.manager()
+  #  if not mm.isEnabled():
+  #    dwarn("mecab is not enabled")
+  #    return
+  #  dprint("enter")
+  #  growl.msg(my.tr("Searching for game character names") + " ...")
+  #  game = self.currentGame
+  #  if game and game.itemId:
+  #    info = self.q.currentGameInfo()
+  #    if info and info.itemId == game.itemId:
+  #      l = info.characters # may surrender event cycles
+  #      if l:
+  #        if self.nameItems:
+  #          dwarn("leave: name items already exist")
+  #          return
+  #        growl.msg(my.tr("Found {0} game characters").format(len(l)))
+  #        #names = ((kw['name'],kw['yomi']) for kw in l)
+  #        names = [(kw['name'],kw['yomi']) for kw in l]
+  #        nm = nameman.manager()
+  #        self.nameItems = nm.parseNameItems(names)
+  #
+  #        itemId = game.itemId
+  #        dicpath = nm.cachedMeCabDic(itemId)
+  #        if not dicpath:
+  #          dicpath = skthreads.runsync(partial(
+  #              nm.compileMeCabDic,
+  #              names,
+  #              itemId))
+  #        if dicpath and not mm.userDictionary():
+  #          mm.setUserDictionary(dicpath)
+  #        dprint("leave: item count = %i" % len(self.nameItems))
+  #        return
+  #  growl.msg(my.tr("Game character names not found"))
+  #  dprint("leave: no items")
 
   def _updateContexts(self):
     self.contexts = {h:c[0].context for h,c in self.comments.iteritems()} if self.comments else {}
@@ -7324,7 +7322,7 @@ class DataManager(QObject):
     ss.userColorChanged.connect(d.saveUserColor)
 
     ss.userLanguageChanged.connect(d.clearTermTitles)
-    ss.userLanguageChanged.connect(d.clearNameItems)
+    #ss.userLanguageChanged.connect(d.clearNameItems)
 
     qApp = QCoreApplication.instance()
     qApp.aboutToQuit.connect(d.submitDirtyComments)
@@ -7941,17 +7939,17 @@ class DataManager(QObject):
     """
     return self.__d.gameInfo
 
-  def hasNameItems(self):
-    """
-    @return  bool
-    """
-    return bool(self.__d.nameItems)
+  #def hasNameItems(self):
+  #  """
+  #  @return  bool
+  #  """
+  #  return bool(self.__d.nameItems)
 
-  def iterNameItems(self):
-    """
-    @return  [NameItems] not None
-    """
-    return self.__d.nameItems
+  #def iterNameItems(self):
+  #  """
+  #  @return  [NameItems] not None
+  #  """
+  #  return self.__d.nameItems
 
   def queryGameInfo(self, id=None, md5=None, itemId=None, cache=True):
     """
@@ -8119,7 +8117,7 @@ class DataManager(QObject):
     d.currentGameObject = None
     d.currentGameIds = []
     d.clearTermTitles()
-    d.clearNameItems()
+    #d.clearNameItems()
     #mecabman.manager().clearDictionary()
     if not game:
       return
@@ -8169,9 +8167,9 @@ class DataManager(QObject):
 
     #gid = self.currentGameId()
     #if gid:
-    if mecabman.manager().isEnabled() and mecabman.manager().supportsUserDic():
-      dprint("update game-specicfic translation")
-      skevents.runlater(d.updateNameItems, 3000) # delay a little
+    #if mecabman.manager().isEnabled() and mecabman.manager().supportsUserDic():
+    #  dprint("update game-specicfic translation")
+    #  skevents.runlater(d.updateNameItems, 3000) # delay a little
 
   def reloadComments(self):
     d = self.__d
@@ -8656,7 +8654,7 @@ class DataManager(QObject):
     """
     @return  [Term]
     """
-    return self.__d.terms
+    return self.__d.sortedTerms
   #def termData(self): return list(self.__d.iterTermData())
 
   def termTitles(self):

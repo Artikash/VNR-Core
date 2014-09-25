@@ -8,13 +8,15 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
-import re
+import os, re
 from functools import partial
+from time import time
+from PySide.QtCore import Signal, QObject, QTimer, QMutex
 from zhszht.zhszht import zhs2zht
-from sakurakit import skthreads
-from sakurakit.skclass import memoized, staticproperty
+from sakurakit import skfileio, skthreads
+from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
-import config, dataman, defs, i18n
+import config, dataman, defs, i18n, rc
 
 @memoized
 def manager(): return TermManager()
@@ -27,95 +29,151 @@ def _remove_marks(text): return _re_marks.sub('', text)
 
 RE_MACRO = re.compile('{{(.+?)}}')
 
-# All methods are supposed to be thread-safe, though they are not
+@Q_Q
 class _TermManager:
 
-  SAVE_PARAMS = {
-    'tts': {'convertsChinese':False, 'marksChanges':False},
-    'ocr': {'convertsChinese':False, 'marksChanges':False},
-    'origin': {'convertsChinese':False, 'marksChanges':False},
-    'source': {'convertsChinese':False, 'marksChanges':False},
+  #SAVE_PARAMS = {
+  #  'tts': {'convertsChinese':False, 'marksChanges':False},
+  #  'ocr': {'convertsChinese':False, 'marksChanges':False},
+  #  'origin': {'convertsChinese':False, 'marksChanges':False},
+  #  'source': {'convertsChinese':False, 'marksChanges':False},
+  #
+  #  'target': {'convertsChinese':True, 'marksChanges':True},
+  #}
 
-    'target': {'convertsChinese':True, 'marksChanges':True},
-  }
+  # Cover all term types, but decouple escape into before and after
+  #SAVE_TYPES = 'origin', 'source', 'target', 'escape_before', 'escape_after', 'ocr', 'tts'
+  #SAVE_TYPES = 'origin',
+  SAVE_TYPES = 'ocr',
 
-  def __init__(self):
+  def __init__(self, q):
     #self.convertsChinese = False
     self.enabled = True # bool
-    self.locked = False  # bool
     self.hentai = False # bool
-    self.language = 'en' # str
 
     self.marked = False # bool
 
-    # TODO: For saving terms
-    self.cancelSavingTerms = False # bool
-    self.sourceLanguage = 'ja' # str
-    self.targetLanguage = 'en' # str
+    # For saving terms
+    self.updateTime = 0 # float
+
+    self.targetLanguages = set() # [str language]
+
+    self.saveMutex = QMutex()
+
+    t = self.saveTimer = QTimer(q)
+    t.setSingleShot(True)
+    t.setInterval(1000) # wait for 1 seconds for rebuilding
+    t.timeout.connect(self.saveDirtyTerms)
 
   #@classmethod
   #def needsEscape(cls):
   #  return config.is_asian_language(cls.language)
 
-  def saveTerms(self, type, convertsChinese=False, marksChanges=False):
-    """
-    @param  type  str
-    @param  terms  iterable dataman.Term
-    @param  text  unicode
-    @param  language  unicode
-    @param* hasTitles  bool
-    @param* convertsChinese  bool
-    @param* marksChanges  bool  mark the replacement text
-    """
-    language = self.sourceLanguage
-    lines = [] # (unicode pattern, unicode text, bool regex)
+  def saveDirtyTerms(self):
+    if not self.saveMutex.tryLock():
+      dwarn("retry later due to thread contention")
+      self.saveTimer.start()
+      return
+
+    skthreads.runsync(self._saveDirtyTerms, parent=self.q)
+    self.saveMutex.unlock()
+
+  def _saveDirtyTerms(self): # invoked async
+    dprint("enter")
+    saveTime = time()
+
+    if saveTime < self.updateTime:
+      dwarn("leave: cancel saving out-of-date terms")
+      return
+
+    hentai = self.hentai
+    marked = self.marked
 
     dm = dataman.manager()
-    termTitles = dm.termTitles() # cached
-    terms = dm.iterTermsWithType(type)
-    zht = language == 'zht' # cached
-    for term in terms:
-      td = term.d # To improve performance
-      if (not td.hentai or self.hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
-        if self.cancelSavingTerms:
+    gameIds = dm.currentGameIds()
+    if gameIds:
+      gameIds = set(gameIds) # in case it is changed during iteration
+    #terms = list(dm.terms()) # in case it is changed during iteration
+    terms = dm.terms() # not back up to save memory
+
+    dprint("terms count = %s" % len(terms))
+
+    for lang in list(self.targetLanguages): # back up language in case it is changed
+      for type in self.SAVE_TYPES:
+
+        if saveTime < self.updateTime:
+          dwarn("leave: cancel saving out-of-date terms")
           return
-        if termTitles and term.needsReplace():
-          pass # TODO: Iterate titles x names
-        else:
-          z = convertsChinese and zht and td.language == 'zhs'
-          #repl = term.bbcodeText if term.bbcode else term.text
+
+        self._saveTerms(saveTime, terms, type, lang, gameIds, hentai, marked)
+
+    dprint("leave")
+
+  def _saveTerms(self, saveTime, terms, type, language, gameIds, hentai, marked):
+    """This method is invoked from a different thread
+    @param  terms  [Term]
+    @param  saveTime  float
+    @param  type  str  term type
+    @param  language  str  target text language
+    @param  gameIds  set(ing gameId)
+    @param  hentai  bool
+    @param  marked  bool
+    @return  bool
+    """
+    marksChanges = marked and type in ('target', 'escape_before', 'escape_after')
+    convertsChinese = language == 'zht' and type in ('target', 'escape_before', 'escape_after')
+
+    path = rc.term_path(type, language)
+    dir = os.path.dirname(path)
+    if not os.path.exists(dir):
+      skfileio.makedirs(dir)
+    try:
+      with open(path, 'w') as f:
+        for td in self._iterTermData(terms, type, language, gameIds, hentai):
+          if saveTime < self.updateTime:
+            raise Exception("cancel saving out-of-date terms")
+          z = convertsChinese and td.language == 'zhs'
           repl = td.text
           if repl:
-            if z: # and self.convertsChinese:
+            if z:
               repl = zhs2zht(repl)
             #elif config.is_latin_language(td.language):
             #  repl += " "
             if marksChanges:
               repl = _mark_text(repl)
-          pattern = zhs2zht(td.pattern) if z else td.pattern
-          lines.append((pattern, repl, td.regex))
-
-    path = config.term_path(type)
-    self.writeLines(path, lines)
-
-  @staticmethod
-  def writeTerms(path, lines):
-    """
-    @param  path  unicode
-    @param  lines  [unicode pattern, unicode repl, bool regex]
-    @return  bool
-    """
-    try:
-      with open(path, 'w') as f:
-        f.writelines(
-            (("r\t%s\t%s" if regex else "\t%s\t%s") % (pattern, repl))
-            if repl else
-            (("r\t%s" if regex else "\t%s\n") % pattern)
-            for pattern,repl,regex in lines)
-        return True
+          pattern = td.pattern
+          if z:
+            pattern = zhs2zht(pattern)
+          f.write(
+              (("r\t%s\t%s\n" if td.regex else "\t%s\t%s\n") % (pattern, repl)) if repl else
+              (("r\t%s\n" if td.regex else "\t%s\n") % pattern))
+          return True
     except Exception, e:
       dwarn(e)
-      return False
+
+    skfileio.removefile(path)
+    return False
+
+  @staticmethod
+  def _iterTermData(terms, type, language, gameIds, hentai):
+    """
+    @param  terms  [Term]
+    @param  type  str
+    @param  language  str
+    @param  gameIds  set(int gameId)
+    @param  hentai  bool
+    @yield  _Term
+    """
+    type2 = 'name' if type == 'source' and not config.is_asian_language(language) else ''
+    for t in terms:
+      td = t.d # To improve performance
+      if (not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
+          and (td.type == type or type2 and td.type == type2)
+          and (not td.special or gameIds and td.gameId and td.gameId in gameIds)
+          and (not td.hentai or hentai)
+          and i18n.language_compatible_to(td.language, language)
+        ):
+        yield td
 
   def applyTerms(self, terms, text, language, convertsChinese=False, marksChanges=False):
     """
@@ -195,18 +253,21 @@ class _TermManager:
     self.locked = False
     dprint("leave")
 
-class TermManager:
+class TermManager(QObject):
 
   ## Construction ##
 
-  def __init__(self): self.__d = _TermManager()
+  def __init__(self, parent=None):
+    super(TermManager, self).__init__(parent)
+    self.__d = _TermManager(self)
+
+  cacheRebuilt = Signal()
 
   ## Properties ##
 
-  def isLocked(self): return self.__d.locked
+  #def isLocked(self): return self.__d.locked
 
-  def language(self): return self.__d.language
-  def setLanguage(self, value): self.__d.language = value
+  def setLanguage(self, v): self.__d.targetLanguages = set([v]) # reset languages
 
   def isEnabled(self): return self.__d.enabled
   def setEnabled(self, value): self.__d.enabled = value
@@ -219,6 +280,8 @@ class TermManager:
   def isMarked(self): return self.__d.marked
   def setMarked(self, t): self.__d.marked = t
 
+  ## Marks ##
+
   def clearMarkCache(self): # invoked on escapeMarked changes in settings
     for term in dataman.manager().iterEscapeTerms():
       term.applyReplace = None
@@ -226,61 +289,43 @@ class TermManager:
   def markEscapeText(self, text): # unicode -> unicode
     return _mark_text(text) if text and self.__d.marked else text
 
+  def removeMarks(self, text): # unicode -> unicode
+    return _remove_marks(text) if self.__d.marked else text
+
   #def convertsChinese(self): return self.__d.convertsChinese
   #def setConvertsChinese(self, value): self.__d.convertsChinese = value
 
   ## Cache ##
 
-  def warmup(self, async=True, interval=0): # bool, int
+  def invalidateCache(self):
     d = self.__d
-    if not d.enabled or d.locked:
-      return
-    dprint("enter")
-    dm = dataman.manager()
+    d.updateTime = time()
+    d.saveTimer.start()
 
-    task = partial(d.warmup,
-        terms=dm.terms(),
-        hasTitles=dm.hasTermTitles(),
-        hentai=d.hentai,
-        language=d.language)
+  #def warmup(self, async=True, interval=0): # bool, int
+  #  d = self.__d
+  #  if not d.enabled or d.locked:
+  #    return
+  #  dprint("enter")
+  #  dm = dataman.manager()
 
-    if not async:
-      apply(task)
-    else:
-      d.locked = True
-      if interval:
-        skthreads.runasynclater(task, interval)
-      else:
-        skthreads.runasync(task)
-    dprint("leave")
+  #  task = partial(d.warmup,
+  #      terms=dm.terms(),
+  #      hasTitles=dm.hasTermTitles(),
+  #      hentai=d.hentai,
+  #      language=d.language)
+
+  #  if not async:
+  #    apply(task)
+  #  else:
+  #    d.locked = True
+  #    if interval:
+  #      skthreads.runasynclater(task, interval)
+  #    else:
+  #      skthreads.runasync(task)
+  #  dprint("leave")
 
   ## Queries ##
-
-  #def queryTermTitles(self, language, sort=True):
-  #  """
-  #  @param  language  unicode
-  #  @param* sort  bool
-  #  @return  {unicode from:unicode to} not None not empty
-  #  """
-  #  d = self.__d
-  #  ret = {'':''}
-  #  if not d.enabled or d.locked:
-  #    return ret
-  #  zht = language == 'zht'
-  #  q = self.__d.iterTerms(
-  #      dataman.manager().iterTitleTerms(),
-  #      language)
-  #  for t in q:
-  #    td = t.d
-  #    if not td.hentai or d.hentai:
-  #      pat = td.pattern
-  #      repl = td.text
-  #      if zht and td.language == 'zhs':
-  #        pat = zhs2zht(pat)
-  #        if repl: # and self.convertsChinese:
-  #          repl = zhs2zht(repl)
-  #      ret[pat] = repl
-  #  return ret
 
   def filterTerms(self, terms, language):
     """
@@ -342,13 +387,13 @@ class TermManager:
     dm = dataman.manager()
     d = self.__d
     text = d.applyTerms(dm.iterSourceTerms(), text, language)
-    if text and dm.hasNameItems() and config.is_latin_language(d.language):
-      try:
-        for name in dm.iterNameItems():
-          if name.translation:
-            text = name.replace(text)
-      except Exception, e: dwarn(e)
-      text = text.rstrip() # remove trailing spaces
+    #if text and dm.hasNameItems() and config.is_latin_language(d.language):
+    #  try:
+    #    for name in dm.iterNameItems():
+    #      if name.translation:
+    #        text = name.replace(text)
+    #  except Exception, e: dwarn(e)
+    #  text = text.rstrip() # remove trailing spaces
     return text
 
   def applyMacroTerms(self, text):
@@ -400,12 +445,12 @@ class TermManager:
             except Exception, e: dwarn(td.pattern, td.text, e)
         if not text:
           break
-    if text and dm.hasNameItems() and config.is_asian_language(d.language):
-      try:
-        for name in dm.iterNameItems():
-          if name.translation:
-            text = name.prepareReplace(text)
-      except Exception, e: dwarn(e)
+    #if text and dm.hasNameItems() and config.is_asian_language(d.language):
+    #  try:
+    #    for name in dm.iterNameItems():
+    #      if name.translation:
+    #        text = name.prepareReplace(text)
+    #  except Exception, e: dwarn(e)
     return text
 
   def applyEscapeTerms(self, text, language):
@@ -442,24 +487,24 @@ class TermManager:
           text = text.replace(key, repl)
         if not text:
           break
-    if text and dm.hasNameItems() and config.is_asian_language(d.language):
-      try:
-        for name in dm.iterNameItems():
-          if name.translation:
-            text = name.applyReplace(text)
-      except Exception, e: dwarn(e)
+    #if text and dm.hasNameItems() and config.is_asian_language(d.language):
+    #  try:
+    #    for name in dm.iterNameItems():
+    #      if name.translation:
+    #        text = name.applyReplace(text)
+    #  except Exception, e: dwarn(e)
     return text
 
   ## MeCab ##
 
-  def applyWordTerms(self, text):
-    """
-    @param  text  unicode
-    @return  unicode
-    """
-    # This feature is disabled
-    # Compiled MeCab dictionary id preferred
-    return text
+  #def applyWordTerms(self, text):
+  #  """
+  #  @param  text  unicode
+  #  @return  unicode
+  #  """
+  #  # This feature is disabled
+  #  # Compiled MeCab dictionary id preferred
+  #  return text
 
     #d = self.__d
     #if not d.enabled or d.locked:
@@ -474,41 +519,41 @@ class TermManager:
     #    text = text.replace(name.text, " %s " % name.text)
     #return text.strip()
 
-  def queryLatinWordTerms(self, text):
-    """
-    @param  text  unicode
-    @return  unicode or None
-    """
-    d = self.__d
-    if not d.enabled or d.locked:
-      return text
-    dm = dataman.manager()
-    for term in dm.iterLatinSourceTerms():
-      td = term.d
-      if (not td.hentai or d.hentai) and td.pattern and not td.regex and td.language == 'en':
-        if text == td.pattern and td.text:
-          return td.text.capitalize() if td.type == 'name' else td.text
+  # Temporarily disabled for being slow
+  #def queryLatinWordTerms(self, text):
+  #  """
+  #  @param  text  unicode
+  #  @return  unicode or None
+  #  """
+  #  d = self.__d
+  #  if not d.enabled or d.locked:
+  #    return text
+  #  dm = dataman.manager()
+  #  for term in dm.iterLatinSourceTerms():
+  #    td = term.d
+  #    if (not td.hentai or d.hentai) and td.pattern and not td.regex and td.language == 'en':
+  #      if text == td.pattern and td.text:
+  #        return td.text.capitalize() if td.type == 'name' else td.text
 
-  def queryFuriTerms(self, text):
-    """
-    @param  text  unicode
-    @return  unicode or None
-    """
-    d = self.__d
-    if not d.enabled or d.locked:
-      return text
-    dm = dataman.manager()
-    for term in dm.iterFuriTerms():
-      td = term.d
-      if (not td.hentai or d.hentai) and td.pattern and not td.regex and td.language == 'ja': # skip using regular expressions
-        if text == td.pattern and td.text:
-          return td.text
-    if dm.hasNameItems():
-      for name in dm.iterNameItems():
-        if text == name.text:
-          return name.yomi or text
+  # Temporarily disabled for being slow
+  #def queryFuriTerms(self, text):
+  #  """
+  #  @param  text  unicode
+  #  @return  unicode or None
+  #  """
+  #  d = self.__d
+  #  if not d.enabled or d.locked:
+  #    return text
+  #  dm = dataman.manager()
+  #  for term in dm.iterFuriTerms():
+  #    td = term.d
+  #    if (not td.hentai or d.hentai) and td.pattern and not td.regex and td.language == 'ja': # skip using regular expressions
+  #      if text == td.pattern and td.text:
+  #        return td.text
 
-  def removeMarks(self, text): # unicode -> unicode
-    return _remove_marks(text) if self.__d.marked else text
+    #if dm.hasNameItems():
+    #  for name in dm.iterNameItems():
+    #    if text == name.text:
+    #      return name.yomi or text
 
 # EOF

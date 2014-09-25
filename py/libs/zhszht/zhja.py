@@ -77,6 +77,8 @@ TJ = {
   u"糰": u"団", # おにぎり
   u"碟": u"盤", # 碟子
 
+  u"辦": u"做", # 办法、怎么办
+
   # Not needed, but to simplified version
   #u"號": u"号",
   #u"體": u"体",
@@ -89,7 +91,7 @@ def zht2ja(t): # unicode -> unicode
   return ''.join((TJ.get(c) or c for c in t))
 
 if __name__ == '__main__':
-  ja = u"「謊哪嗯你妳會認為我的事相當自私？」"
+  ja = u"裡學聯衝擊特首辦被截應"
   zh = zht2ja(ja)
   print u"歲"== u"歳"
   print u"內"== u"内"

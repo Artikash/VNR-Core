@@ -165,11 +165,12 @@ class MeCabParser:
     tagger = self.tagger()
     if not tagger:
       raise StopIteration
+    termEnabled = False # Force disabling terms for being slow
     if termEnabled:
       tm = termman.manager()
       termEnabled = tm.isEnabled()
-    if termEnabled:
-      text = tm.applyWordTerms(text)
+    #if termEnabled:
+    #  text = tm.applyWordTerms(text)
     if not fmt:
       fmt = self.fmt # mecabfmt
     if reading:

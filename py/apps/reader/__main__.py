@@ -212,6 +212,7 @@ def main():
     rc.DIR_CACHE_TRAILERS,
     rc.DIR_CACHE_WEB,
     rc.DIR_TMP_OCR,
+    rc.DIR_TMP_TERM, # not needed, though
   ))
 
   if skos.WIN:

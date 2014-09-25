@@ -116,18 +116,18 @@ class _MainObject(object):
     ret.setSuggestedDataCapacity(ss.gameTextCapacity())
     return ret
 
-  @memoizedproperty
-  def nameManager(self):
-    dprint("create name manager") # Move this upward before kagami
-    import nameman
-    ret = nameman.manager()
+  #@memoizedproperty
+  #def nameManager(self):
+  #  dprint("create name manager") # Move this upward before kagami
+  #  import nameman
+  #  ret = nameman.manager()
 
-    import settings
-    ss = settings.global_()
+  #  import settings
+  #  ss = settings.global_()
 
-    ret.setMeCabDictionary(ss.meCabDictionary())
-    ss.meCabDictionaryChanged.connect(ret.setMeCabDictionary)
-    return ret
+  #  ret.setMeCabDictionary(ss.meCabDictionary())
+  #  ss.meCabDictionaryChanged.connect(ret.setMeCabDictionary)
+  #  return ret
 
   @memoizedproperty
   def jlpManager(self):
@@ -585,7 +585,7 @@ class _MainObject(object):
     dprint("create term manager")
     import termman
     ret = termman.manager()
-    #ret.setParent(self.q)
+    ret.setParent(self.q)
 
     ss = settings.global_()
 
@@ -1522,7 +1522,7 @@ class MainObject(QObject):
     d.meCabManager
     d.caboChaManager
     d.jlpManager
-    d.nameManager
+    #d.nameManager
     d.referenceManager
     d.trailersManager
     d.dmmManager
@@ -1614,7 +1614,7 @@ class MainObject(QObject):
     #dprint("warm up translators")
     #d.translatorManager.warmup()
     dprint("schedule to warm up translators")
-    skevents.runlater(d.translatorManager.warmup)
+    skevents.runlater(d.translatorManager.warmup, 1000) # warm up after 1 seconds to avoid blocking on the startup
 
     dprint("start rpc server")
     d.rpcServer.start()
@@ -1673,9 +1673,9 @@ class MainObject(QObject):
     skevents.runlater(self.checkDigests, 90000) # 1.5min
     skevents.runlater(self.checkTerms, 120000) # 2min
 
-    if dm.hasTerms():
-      dprint("warm up dictionary terms")
-      d.termManager.warmup(async=True, interval=1000) # warm up after 1 second
+    #if dm.hasTerms():
+    #  dprint("warm up dictionary terms")
+    #  d.termManager.warmup(async=True, interval=1000) # warm up after 1 second
 
     dprint("show windows")
     skevents.runlater(self.showKagami)
@@ -1688,6 +1688,8 @@ class MainObject(QObject):
     #  d.topWindowHolder.show()
 
     dprint("leave")
+
+    d.termManager.invalidateCache() # TO BE REMOVED
 
     #skevents.runlater(d.ocrManager.start, 5000) # 5 seconds
     #self.showReferenceView()
@@ -1714,11 +1716,11 @@ class MainObject(QObject):
 
   def showTermView(self):
     d = self.__d
-    if d.termManager.isLocked():
-      growl.msg(my.tr("Processing Shared Dictionary ... Please try later"));
-    else:
-      d.dataManager.setTermsEditable(True)
-      skevents.runlater(partial(_MainObject.showQmlWindow, d.termView))
+    #if d.termManager.isLocked():
+    #  growl.msg(my.tr("Processing Shared Dictionary ... Please try later"));
+    #else:
+    d.dataManager.setTermsEditable(True)
+    skevents.runlater(partial(_MainObject.showQmlWindow, d.termView))
 
   def showSpringBoard(self):
     skevents.runlater(partial(_MainObject.showQmlWindow, self.__d.springBoardDialog))
