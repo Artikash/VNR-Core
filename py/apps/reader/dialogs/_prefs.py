@@ -1499,7 +1499,9 @@ class _I18nTab(object):
       ret.setChecked(lang in ss.blockedLanguages())
       ret.clicked[bool].connect(lambda value:
           self._toggleLanguage(lang, value))
-          #ret.setChecked(not value)))
+      ret.setEnabled(ret.isChecked() or not ss.userLanguage().startswith(lang))
+      ss.userLanguageChanged.connect(lambda value:
+          ret.setEnabled(ret.isChecked() or not value.startswith(lang)))
       return ret
 
     layout = QtWidgets.QVBoxLayout()
