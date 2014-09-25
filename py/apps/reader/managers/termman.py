@@ -147,7 +147,7 @@ class _TermManager:
           f.write(
               (("r\t%s\t%s\n" if td.regex else "\t%s\t%s\n") % (pattern, repl)) if repl else
               (("r\t%s\n" if td.regex else "\t%s\n") % pattern))
-          return True
+        return True
     except Exception, e:
       dwarn(e)
 
