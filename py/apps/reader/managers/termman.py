@@ -67,6 +67,8 @@ class _TermManager:
     t.setInterval(1000) # wait for 1 seconds for rebuilding
     t.timeout.connect(self.saveDirtyTerms)
 
+  def rebuildCacheLater(self): self.saveTimer.start()
+
   def _createScriptManager(self, type, language): # unicode, unicode -> TranslationScriptManager
     key = type + language
     ret = self.scripts.get(key)
@@ -77,6 +79,7 @@ class _TermManager:
   def getScriptManager(self, type, language): # unicode, unicode -> TranslationScriptManager
     return self.scripts.get(type + language)
 
+
   #@classmethod
   #def needsEscape(cls):
   #  return config.is_asian_language(cls.language)
@@ -84,7 +87,7 @@ class _TermManager:
   def saveDirtyTerms(self):
     if not self.saveMutex.tryLock():
       dwarn("retry later due to thread contention")
-      self.saveTimer.start()
+      self.rebuildCacheLater()
       return
 
     skthreads.runsync(self._saveDirtyTerms, parent=self.q)
@@ -203,6 +206,9 @@ class _TermManager:
     """
     # TODO: Schedule to update terms when man is missing
     man = self.getScriptManager(type, language)
+    if man is None and language not in self.targetLanguages:
+      self.targetLanguages.add(language)
+      self.rebuildCacheLater()
     return man.translate(text) if man and not man.isEmpty() else text
 
 class TermManager(QObject):
@@ -252,7 +258,7 @@ class TermManager(QObject):
   def invalidateCache(self):
     d = self.__d
     d.updateTime = time()
-    d.saveTimer.start()
+    d.rebuildCacheLater()
 
   #def warmup(self, async=True, interval=0): # bool, int
   #  d = self.__d
