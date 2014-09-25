@@ -180,29 +180,30 @@ class SapiEngine(VoiceEngine):
       self._valid = bool(self.engine) and self.engine.isValid()
     return self._valid
 
-  def speak(self, text):
-    """@remip"""
-    skthreads.runasync(partial(self._speakasync, text))
-
-  def _speakasync(self, text):
-    e = self.engine
-    if e:
-      with SkCoInitializer(threading=True):
-        if self._speaking:
-          e.stop()
-        else:
-          self._speaking = True
-        e.speak(text)
-
   #def speak(self, text):
   #  """@remip"""
+  #  skthreads.runasync(partial(self._speakasync, text))
+
+  #def _speakasync(self, text):
   #  e = self.engine
   #  if e:
-  #    if self._speaking:
-  #      e.stop()
-  #    else:
-  #      self._speaking = True
-  #    e.speak(text)
+  #    with SkCoInitializer(threading=True):
+  #      if self._speaking:
+  #        e.stop()
+  #      else:
+  #        self._speaking = True
+  #      e.speak(text)
+  #      #e.speak(text, async=False) # async=False, or it might crash?
+
+  def speak(self, text):
+    """@remip"""
+    e = self.engine
+    if e:
+      if self._speaking:
+        e.stop()
+      else:
+        self._speaking = True
+      e.speak(text)
 
   def stop(self):
     """@remip"""
