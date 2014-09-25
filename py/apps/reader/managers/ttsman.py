@@ -4,6 +4,8 @@
 
 __all__ = ['TtsQmlBean', 'TtsCoffeeBean']
 
+#from sakurakit.skprofiler import SkProfiler
+
 from functools import partial
 from PySide.QtCore import QObject, Slot, QTimer
 #from sakurakit import skevents, skthreads
@@ -114,7 +116,8 @@ class _TtsManager(object):
     #if eng.type == 'sapi':
     #  eng.speak(text, async=True)
     #else:
-    eng.speak(text)
+    #with SkProfiler():
+    eng.speak(text) # 0.007 ~ 0.009 seconds for SAPI
 
     #skevents.runlater(partial(eng.speak, text))
 
@@ -249,6 +252,7 @@ class TtsManager(QObject):
   def stop(self):
     if not features.TEXT_TO_SPEECH:
       return
+    #with SkProfiler(): # 0.002 ~ 0.004 seconds when speaking with SAPI
     self.__d.stop()
 
   def warmup(self):
