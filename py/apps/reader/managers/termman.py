@@ -16,6 +16,7 @@ from zhszht.zhszht import zhs2zht
 from sakurakit import skfileio, skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
+from pytrscript import TranslationScriptManager
 import config, dataman, defs, i18n, rc
 
 @memoized
@@ -42,9 +43,8 @@ class _TermManager:
   #}
 
   # Cover all term types, but decouple escape into before and after
-  #SAVE_TYPES = 'origin', 'source', 'target', 'escape_before', 'escape_after', 'ocr', 'tts'
-  #SAVE_TYPES = 'origin',
-  SAVE_TYPES = 'ocr',
+  SAVE_TYPES = 'origin', 'source', 'target', 'speech', 'ocr'
+  #SAVE_TYPES = 'escape_before', 'escape_after'
 
   def __init__(self, q):
     #self.convertsChinese = False
@@ -60,10 +60,22 @@ class _TermManager:
 
     self.saveMutex = QMutex()
 
+    self.scripts = {} # {unicode key:TranslationScriptManager}  key = lang + type
+
     t = self.saveTimer = QTimer(q)
     t.setSingleShot(True)
     t.setInterval(1000) # wait for 1 seconds for rebuilding
     t.timeout.connect(self.saveDirtyTerms)
+
+  def _createScriptManager(self, type, language): # unicode, unicode -> TranslationScriptManager
+    key = type + language
+    ret = self.scripts.get(key)
+    if not ret:
+      ret = self.scripts[key] = TranslationScriptManager()
+    return ret
+
+  def getScriptManager(self, type, language): # unicode, unicode -> TranslationScriptManager
+    return self.scripts.get(type + language)
 
   #@classmethod
   #def needsEscape(cls):
@@ -96,7 +108,7 @@ class _TermManager:
     #terms = list(dm.terms()) # in case it is changed during iteration
     terms = dm.terms() # not back up to save memory
 
-    dprint("terms count = %s" % len(terms))
+    dprint("term count = %s" % len(terms))
 
     for lang in list(self.targetLanguages): # back up language in case it is changed
       for type in self.SAVE_TYPES:
@@ -105,7 +117,9 @@ class _TermManager:
           dwarn("leave: cancel saving out-of-date terms")
           return
 
-        self._saveTerms(saveTime, terms, type, lang, gameIds, hentai, marked)
+        ok = self._saveTerms(saveTime, terms, type, lang, gameIds, hentai, marked)
+        if not ok:
+          dwarn("failed to save terms: type = %s, lang = %s" % (type, lang))
 
     dprint("leave")
 
@@ -147,11 +161,17 @@ class _TermManager:
           f.write(
               (("r\t%s\t%s\n" if td.regex else "\t%s\t%s\n") % (pattern, repl)) if repl else
               (("r\t%s\n" if td.regex else "\t%s\n") % pattern))
+
+      man = self._createScriptManager(type, language)
+      if not man.isEmpty():
+        man.clear()
+      if man.loadFile(path):
+        dprint("type = %s, lang = %s, count = %s" % (type, language, man.size()))
         return True
     except Exception, e:
       dwarn(e)
 
-    skfileio.removefile(path)
+    #skfileio.removefile(path) # TODO: Remove file when failed
     return False
 
   @staticmethod
@@ -175,83 +195,15 @@ class _TermManager:
         ):
         yield td
 
-  def applyTerms(self, terms, text, language, convertsChinese=False, marksChanges=False):
+  def applyTerms(self, text, type, language):
     """
-    @param  terms  iterable dataman.Term
     @param  text  unicode
-    @param  language  unicode
-    @param* convertsChinese  bool
-    @param*  marksChanges  bool  mark the replacement text
-    @return  unicode
+    @param  type  str
+    @param  language  str
     """
-    if not self.enabled:
-      return text
-    dm = dataman.manager()
-    hasTitles = dm.hasTermTitles() # cached
-    zht = language == 'zht' # cached
-    for term in terms:
-      td = term.d # To improve performance
-      if (not td.hentai or self.hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
-        if hasTitles and term.needsReplace():
-          try: text = term.replace(text)
-          except Exception, e: dwarn(td.pattern, td.text, e)
-        else:
-          z = convertsChinese and zht and td.language == 'zhs'
-          #repl = term.bbcodeText if term.bbcode else term.text
-          repl = td.text
-          if repl:
-            if z: # and self.convertsChinese:
-              repl = zhs2zht(repl)
-            #elif config.is_latin_language(td.language):
-            #  repl += " "
-            if marksChanges:
-              repl = _mark_text(repl)
-          if not term.patternNeedsRe():
-            pattern = zhs2zht(td.pattern) if z else td.pattern
-            text = text.replace(pattern, repl)
-          else:
-            try: text = term.patternRe.sub(repl, text)
-            except Exception, e: dwarn(td.pattern, td.text, e)
-        if not text: # well, the text is deleted by terms
-          break
-    return text
-
-  def iterTerms(self, terms, language):
-    """
-    @param  terms  iterable dataman.Term
-    @param  language  unicode
-    @yield  Term
-    """
-    if not self.enabled:
-      return
-    for term in terms:
-      td = term.d # To improve performance
-      if (not td.hentai or self.hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
-        yield term
-
-  def warmup(self, terms, language='', hasTitles=False, hentai=False): # [dataman.Term], str, bool ->
-    dprint("enter")
-    needsEscape = config.is_asian_language(language)
-    for term in terms:
-      td = term.d # To improve performance
-      if not td.disabled and not td.special and (not td.hentai or hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
-        if hasTitles and term.needsReplace():
-          try:
-            if needsEscape:
-              term.prepareReplace
-              term.applyReplace
-            else:
-              term.replace
-          except Exception, e: dwarn(td.pattern, td.text, e)
-        elif td.pattern and term.patternNeedsRe():
-          try: term.patternRe
-          except Exception, e: dwarn(td.pattern, td.text, e)
-
-    import trman
-    trman.manager().clearCacheRequested.emit()
-
-    self.locked = False
-    dprint("leave")
+    # TODO: Schedule to update terms when man is missing
+    man = self.getScriptManager(type, language)
+    return man.translate(text) if man and not man.isEmpty() else text
 
 class TermManager(QObject):
 
@@ -366,9 +318,7 @@ class TermManager(QObject):
     @param  language  unicode
     @return  unicode
     """
-    if not language:
-      language = self.__d.language
-    return self.__d.applyTerms(dataman.manager().iterSpeechTerms(), text, language)
+    return self.__d.applyTerms(text, 'speech', language or self.__d.language)
 
   def applyOcrTerms(self, text, language=None):
     """
@@ -376,7 +326,7 @@ class TermManager(QObject):
     @param  language  unicode
     @return  unicode
     """
-    return self.__d.applyTerms(dataman.manager().iterOcrTerms(), text, language or self.__d.language)
+    return self.__d.applyTerms(text, 'ocr', language or self.__d.language)
 
   def applySourceTerms(self, text, language):
     """
@@ -495,65 +445,144 @@ class TermManager(QObject):
     #  except Exception, e: dwarn(e)
     return text
 
-  ## MeCab ##
-
-  #def applyWordTerms(self, text):
-  #  """
-  #  @param  text  unicode
-  #  @return  unicode
-  #  """
-  #  # This feature is disabled
-  #  # Compiled MeCab dictionary id preferred
-  #  return text
-
-    #d = self.__d
-    #if not d.enabled or d.locked:
-    #  return text
-    #dm = dataman.manager()
-    #for term in dm.iterWordTerms():
-    #  td = term.d
-    #  if (not td.hentai or d.hentai) and not td.regex: #and td.language == 'ja': # skip using regular expressions, ignore languages
-    #    text = text.replace(td.pattern, " %s " % td.pattern)
-    #if dm.hasNameItems():
-    #  for name in dm.iterNameItems():
-    #    text = text.replace(name.text, " %s " % name.text)
-    #return text.strip()
-
-  # Temporarily disabled for being slow
-  #def queryLatinWordTerms(self, text):
-  #  """
-  #  @param  text  unicode
-  #  @return  unicode or None
-  #  """
-  #  d = self.__d
-  #  if not d.enabled or d.locked:
-  #    return text
-  #  dm = dataman.manager()
-  #  for term in dm.iterLatinSourceTerms():
-  #    td = term.d
-  #    if (not td.hentai or d.hentai) and td.pattern and not td.regex and td.language == 'en':
-  #      if text == td.pattern and td.text:
-  #        return td.text.capitalize() if td.type == 'name' else td.text
-
-  # Temporarily disabled for being slow
-  #def queryFuriTerms(self, text):
-  #  """
-  #  @param  text  unicode
-  #  @return  unicode or None
-  #  """
-  #  d = self.__d
-  #  if not d.enabled or d.locked:
-  #    return text
-  #  dm = dataman.manager()
-  #  for term in dm.iterFuriTerms():
-  #    td = term.d
-  #    if (not td.hentai or d.hentai) and td.pattern and not td.regex and td.language == 'ja': # skip using regular expressions
-  #      if text == td.pattern and td.text:
-  #        return td.text
-
-    #if dm.hasNameItems():
-    #  for name in dm.iterNameItems():
-    #    if text == name.text:
-    #      return name.yomi or text
-
 # EOF
+
+#  ## MeCab ##
+#
+#  def applyWordTerms(self, text):
+#    """
+#    @param  text  unicode
+#    @return  unicode
+#    """
+#    # This feature is disabled
+#    # Compiled MeCab dictionary id preferred
+#    return text
+#
+#   #d = self.__d
+#   #if not d.enabled or d.locked:
+#   #  return text
+#   #dm = dataman.manager()
+#   #for term in dm.iterWordTerms():
+#   #  td = term.d
+#   #  if (not td.hentai or d.hentai) and not td.regex: #and td.language == 'ja': # skip using regular expressions, ignore languages
+#   #    text = text.replace(td.pattern, " %s " % td.pattern)
+#   #if dm.hasNameItems():
+#   #  for name in dm.iterNameItems():
+#   #    text = text.replace(name.text, " %s " % name.text)
+#   #return text.strip()
+#
+#   Temporarily disabled for being slow
+#  def queryLatinWordTerms(self, text):
+#    """
+#    @param  text  unicode
+#    @return  unicode or None
+#    """
+#    d = self.__d
+#    if not d.enabled or d.locked:
+#      return text
+#    dm = dataman.manager()
+#    for term in dm.iterLatinSourceTerms():
+#      td = term.d
+#      if (not td.hentai or d.hentai) and td.pattern and not td.regex and td.language == 'en':
+#        if text == td.pattern and td.text:
+#          return td.text.capitalize() if td.type == 'name' else td.text
+#
+#   Temporarily disabled for being slow
+#  def queryFuriTerms(self, text):
+#    """
+#    @param  text  unicode
+#    @return  unicode or None
+#    """
+#    d = self.__d
+#    if not d.enabled or d.locked:
+#      return text
+#    dm = dataman.manager()
+#    for term in dm.iterFuriTerms():
+#      td = term.d
+#      if (not td.hentai or d.hentai) and td.pattern and not td.regex and td.language == 'ja': # skip using regular expressions
+#        if text == td.pattern and td.text:
+#          return td.text
+#
+#   #if dm.hasNameItems():
+#    #  for name in dm.iterNameItems():
+#    #    if text == name.text:
+#    #      return name.yomi or text
+#
+#  def applyTerms(self, terms, text, language, convertsChinese=False, marksChanges=False):
+#    """
+#    @param  terms  iterable dataman.Term
+#    @param  text  unicode
+#    @param  language  unicode
+#    @param* convertsChinese  bool
+#    @param*  marksChanges  bool  mark the replacement text
+#    @return  unicode
+#    """
+#    if not self.enabled:
+#      return text
+#    dm = dataman.manager()
+#    hasTitles = dm.hasTermTitles() # cached
+#    zht = language == 'zht' # cached
+#    for term in terms:
+#      td = term.d # To improve performance
+#      if (not td.hentai or self.hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
+#        if hasTitles and term.needsReplace():
+#          try: text = term.replace(text)
+#          except Exception, e: dwarn(td.pattern, td.text, e)
+#        else:
+#          z = convertsChinese and zht and td.language == 'zhs'
+#          #repl = term.bbcodeText if term.bbcode else term.text
+#          repl = td.text
+#          if repl:
+#            if z: # and self.convertsChinese:
+#              repl = zhs2zht(repl)
+#            #elif config.is_latin_language(td.language):
+#            #  repl += " "
+#            if marksChanges:
+#              repl = _mark_text(repl)
+#          if not term.patternNeedsRe():
+#            pattern = zhs2zht(td.pattern) if z else td.pattern
+#            text = text.replace(pattern, repl)
+#          else:
+#            try: text = term.patternRe.sub(repl, text)
+#            except Exception, e: dwarn(td.pattern, td.text, e)
+#        if not text: # well, the text is deleted by terms
+#          break
+#    return text
+#
+#  def iterTerms(self, terms, language):
+#    """
+#    @param  terms  iterable dataman.Term
+#    @param  language  unicode
+#    @yield  Term
+#    """
+#    if not self.enabled:
+#      return
+#    for term in terms:
+#      td = term.d # To improve performance
+#      if (not td.hentai or self.hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
+#        yield term
+#
+#  def warmup(self, terms, language='', hasTitles=False, hentai=False): # [dataman.Term], str, bool ->
+#    dprint("enter")
+#    needsEscape = config.is_asian_language(language)
+#    for term in terms:
+#      td = term.d # To improve performance
+#      if not td.disabled and not td.special and (not td.hentai or hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
+#        if hasTitles and term.needsReplace():
+#          try:
+#            if needsEscape:
+#              term.prepareReplace
+#              term.applyReplace
+#            else:
+#              term.replace
+#          except Exception, e: dwarn(td.pattern, td.text, e)
+#        elif td.pattern and term.patternNeedsRe():
+#          try: term.patternRe
+#          except Exception, e: dwarn(td.pattern, td.text, e)
+#
+#    import trman
+#    trman.manager().clearCacheRequested.emit()
+#
+#    self.locked = False
+#    dprint("leave")
+#

@@ -90,7 +90,7 @@ public:
 
   void reset(int size)
   {
-    DOUT(size);
+    //DOUT(size);
     Q_ASSERT(size > 0);
     ruleCount = size;
     if (rules)
@@ -120,7 +120,7 @@ bool TranslationScriptManager::loadFile(const QString &path)
 {
   // File IO
   // http://stackoverflow.com/questions/2612103/qt-reading-from-a-text-file
-  QFile file(path);
+  QFile file(t);
   if (!file.open(QIODevice::ReadOnly)) {
     DOUT("failed to open file at path:" << path);
     return false;

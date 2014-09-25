@@ -11,6 +11,7 @@ int main()
   QString text = QString::fromWCharArray(ws);
 
   QString path = "../cpp/libs/trscript/example.txt";
+  //path = "Z:\\Users\\jichi\\opt\\stream/Caches/tmp/reader/dict/zht/ocr.txt";
 
   TranslationScriptManager m;
   m.loadFile(path);

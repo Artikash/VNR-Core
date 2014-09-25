@@ -157,15 +157,15 @@ def refs_xml_path(gameId):
 
 # Terms
 
-#TERM_RELPATHS = {
-#  'ocr': 'ocr.txt',
-#  'tts': 'tts.txt',
-#  'origin': 'origin.txt',
-#  'source': 'source.txt',
-#  'target': 'target.txt',
-#  'escape_before': 'escape_before.txt',
-#  'escape_after': 'escape_after.txt',
-#}
+TERM_RELPATHS = {
+  'ocr': 'ocr.txt',
+  'speech': 'tts.txt',
+  'origin': 'origin.txt',
+  'source': 'source.txt',
+  'target': 'target.txt',
+  'escape_before': 'escape_before.txt',
+  'escape_after': 'escape_after.txt',
+}
 def term_path(type, language):
   """
   @param  type  str
@@ -173,7 +173,7 @@ def term_path(type, language):
   @return  unicode  path
   @nothrow
   """
-  return "%s/%s/%s.txt" % (DIR_TMP_TERM, language, type)
+  return "%s/%s/%s.txt" % (DIR_TMP_TERM, language, TERM_RELPATHS[type])
 
 # MeCab
 
