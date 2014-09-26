@@ -781,47 +781,48 @@ class _NetworkManager(object):
     """Update reference if succeeded
     @return  (gameId, itemId) or None
     """
-    assert userName and password, "missing user name or password"
-    assert ref and (ref.gameId or md5), "missing game id and digest"
+    rd = ref.d
+    #assert userName and password, "missing user name or password"
+    #assert ref and (ref.gameId or md5), "missing game id and digest"
 
     params = {
       'ver': self.version,
       'login': userName,
       'password': password,
-      'type': ref.type,
-      'key': ref.key,
-      'url': ref.url,
-      'title': ref.title
-          if len(ref.title) <= defs.MAX_TEXT_LENGTH
-          else ref.title[:defs.MAX_TEXT_LENGTH],
+      'type': rd.type,
+      'key': rd.key,
+      'url': rd.url,
+      'title': rd.title
+          if len(rd.title) <= defs.MAX_TEXT_LENGTH
+          else rd.title[:defs.MAX_TEXT_LENGTH],
     }
-    if ref.brand:
-      params['brand'] = ref.brand
-    if ref.date:
-      params['date'] = ref.date
-    if ref.image:
-      params['image'] = ref.image
-    #if ref.itemId:
-    #  params['itemId'] = ref.itemId
-    if ref.gameId:
-      params['gameid'] = ref.gameId
+    if rd.brand:
+      params['brand'] = rd.brand
+    if rd.date:
+      params['date'] = rd.date
+    if rd.image:
+      params['image'] = rd.image
+    #if rd.itemId:
+    #  params['itemId'] = rd.itemId
+    if rd.gameId:
+      params['gameid'] = rd.gameId
     else:
-      params['md5'] = md5 or ref.gameMd5
+      params['md5'] = md5 or rd.gameMd5
 
-    if ref.comment:
-      params['comment'] = (ref.comment
-          if len(ref.comment) <= defs.MAX_TEXT_LENGTH
-          else ref.comment[:defs.MAX_TEXT_LENGTH])
+    if rd.comment:
+      params['comment'] = (rd.comment
+          if len(rd.comment) <= defs.MAX_TEXT_LENGTH
+          else rd.comment[:defs.MAX_TEXT_LENGTH])
 
-    if ref.updateComment:
-      params['updatecomment'] = (ref.updateComment
-          if len(ref.updateComment) <= defs.MAX_TEXT_LENGTH
-          else ref.updateComment[:defs.MAX_TEXT_LENGTH])
+    if rd.updateComment:
+      params['updatecomment'] = (rd.updateComment
+          if len(rd.updateComment) <= defs.MAX_TEXT_LENGTH
+          else rd.updateComment[:defs.MAX_TEXT_LENGTH])
 
-    if ref.deleted:
+    if rd.deleted:
       # Should never happen. I mean, deleted subs should have been skipped in dataman
       params['del'] = True
-    if ref.disabled:
+    if rd.disabled:
       params['disable'] = True
 
     try:
@@ -838,8 +839,14 @@ class _NetworkManager(object):
         el = root.find('./references/reference')
 
         # Be careful about async here
-        ref.id = int(el.get('id'))
-        ref.itemId = int(el.find('itemId').text)
+        # Might raise after ref QObject is deleted
+        try:
+          ref.id = int(el.get('id'))
+          ref.itemId = int(el.find('itemId').text)
+        except Exception, e:
+          dwarn(e)
+          rd.id = int(el.get('id'))
+          rd.itemId = int(el.find('itemId').text)
 
         gameId = itemId = 0
         el = root.find('./games/game')
@@ -847,7 +854,7 @@ class _NetworkManager(object):
           gameId = int(el.get('id'))
           itemId = int(el.find('itemId').text)
 
-        dprint("ref id = %i" % ref.id)
+        dprint("ref id = %i" % rd.id)
         return gameId, itemId
 
     #except socket.error, e:
@@ -873,22 +880,22 @@ class _NetworkManager(object):
     """
     @return  (int gameId, int itemId) or None
     """
-    assert userName and password, "missing user name or password"
-    assert ref and ref.id, "missing reference id"
-
+    #assert userName and password, "missing user name or password"
+    #assert ref and ref.id, "missing reference id"
+    rd = ref.d
     params = {}
     pty = ref.dirtyProperties()
     if not pty:
       dwarn("warning: reference to update is not dirty")
-      return ref.itemId
+      return rd.itemId
 
-    if 'deleted' in pty:        params['del'] = ref.deleted
-    if not ref.deleted:
-      if 'disabled' in pty:     params['disable'] = ref.disabled
+    if 'deleted' in pty:        params['del'] = rd.deleted
+    if not rd.deleted:
+      if 'disabled' in pty:     params['disable'] = rd.disabled
 
       for k in 'comment', 'updateComment':
         if k in pty:
-          v = getattr(ref, k)
+          v = getattr(rd, k)
           if v:
             params[k.lower()] = (v
                 if len(v) <= defs.MAX_TEXT_LENGTH
@@ -898,11 +905,11 @@ class _NetworkManager(object):
 
     if not params:
       dwarn("warning: nothing change")
-      return ref.itemId
+      return rd.itemId
 
     params['login'] = userName
     params['password'] = password
-    params['id'] = ref.id
+    params['id'] = rd.id
     params['ver'] = self.version
 
     try:
@@ -1106,48 +1113,49 @@ class _NetworkManager(object):
 
   def submitComment(self, comment, userName, password, md5=None, async=False):
     """Return comment and update comment if succeeded"""
-    assert userName and password, "missing user name or password"
-    assert comment and (comment.gameId or md5), "missing game id and digest"
+    #assert userName and password, "missing user name or password"
+    #assert comment and (comment.gameId or md5), "missing game id and digest"
+    cd = comment.d
 
     params = {
       'ver': self.version,
       'login': userName,
       'password': password,
-      'lang': comment.language,
-      'type': comment.type,
-      'ctxhash': comment.hash,
-      'ctxsize': comment.contextSize,
-      'text': comment.text
-          if len(comment.text) <= defs.MAX_TEXT_LENGTH
-          else comment.text[:defs.MAX_TEXT_LENGTH],
+      'lang': cd.language,
+      'type': cd.type,
+      'ctxhash': cd.hash,
+      'ctxsize': cd.contextSize,
+      'text': cd.text
+          if len(cd.text) <= defs.MAX_TEXT_LENGTH
+          else cd.text[:defs.MAX_TEXT_LENGTH],
     }
-    if comment.gameId:
-      params['gameid'] = comment.gameId
+    if cd.gameId:
+      params['gameid'] = cd.gameId
     else:
-      params['md5'] = md5 or comment.gameMd5
+      params['md5'] = md5 or cd.gameMd5
 
-    if comment.comment:
-      params['comment'] = (comment.comment
-          if len(comment.comment) <= defs.MAX_TEXT_LENGTH
-          else comment.comment[:defs.MAX_TEXT_LENGTH])
+    if cd.comment:
+      params['comment'] = (cd.comment
+          if len(cd.comment) <= defs.MAX_TEXT_LENGTH
+          else cd.comment[:defs.MAX_TEXT_LENGTH])
 
-    if comment.updateComment:
-      params['updatecomment'] = (comment.updateComment
-          if len(comment.updateComment) <= defs.MAX_TEXT_LENGTH
-          else comment.updateComment[:defs.MAX_TEXT_LENGTH])
+    if cd.updateComment:
+      params['updatecomment'] = (cd.updateComment
+          if len(cd.updateComment) <= defs.MAX_TEXT_LENGTH
+          else cd.updateComment[:defs.MAX_TEXT_LENGTH])
 
-    if comment.context:
-      params['ctx'] = (comment.context
-          if len(comment.context) <= defs.MAX_TEXT_LENGTH
-          else comment.context[:defs.MAX_TEXT_LENGTH])
-    if comment.deleted:
+    if cd.context:
+      params['ctx'] = (cd.context
+          if len(cd.context) <= defs.MAX_TEXT_LENGTH
+          else cd.context[:defs.MAX_TEXT_LENGTH])
+    if cd.deleted:
       # Should never happen. I mean, deleted subs should have been skipped in dataman
       params['del'] = True
-    if comment.disabled:
+    if cd.disabled:
       params['disable'] = True
-    if comment.locked:
+    if cd.locked:
       params['lock'] = True
-    #if comment.popup:
+    #if cd.popup:
     #  params['popup'] = True
 
     try:
@@ -1164,10 +1172,15 @@ class _NetworkManager(object):
         el = root.find('./comments/comment')
 
         # Be careful about async here
-        comment.id = int(el.get('id'))
+        # Might crash after QObject is deleted
+        cid = int(el.get('id'))
+        try: comment.id = cid
+        except Exception, e:
+          dwarn(e)
+          cd.id = cid
 
-        dprint("comment id = %i" % comment.id)
-        return comment.id
+        dprint("comment id = %i" % cd.id)
+        return cd.id
 
     #except socket.error, e:
     #  dwarn("socket error", e.args)
@@ -1191,8 +1204,9 @@ class _NetworkManager(object):
 
   def updateComment(self, comment, userName, password, async=False):
     """Return if succeeded"""
-    assert userName and password, "missing user name or password"
-    assert comment and comment.id, "missing comment id"
+    #assert userName and password, "missing user name or password"
+    #assert comment and comment.id, "missing comment id"
+    cd = comment.d
 
     params = {}
     pty = comment.dirtyProperties()
@@ -1200,8 +1214,8 @@ class _NetworkManager(object):
       dwarn("warning: comment to update is not dirty")
       return True
 
-    if 'deleted' in pty:        params['del'] = comment.deleted
-    if not comment.deleted:
+    if 'deleted' in pty:        params['del'] = cd.deleted
+    if not cd.deleted:
       for k,v in (
           ('type', 'type'),
           ('language', 'lang'),
@@ -1211,16 +1225,16 @@ class _NetworkManager(object):
           ('locked', 'lock'),
         ):
         if k in pty:
-          params[v] = getattr(comment, k)
+          params[v] = getattr(cd, k)
 
       if 'text' in pty:
-        params['text'] = (comment.text
-            if len(comment.text) <= defs.MAX_TEXT_LENGTH
-            else comment.text[:defs.MAX_TEXT_LENGTH])
-      if 'context' in pty and comment.context:
-        params['ctx'] = (comment.context
-            if len(comment.context) <= defs.MAX_TEXT_LENGTH
-            else comment.context[:defs.MAX_TEXT_LENGTH])
+        params['text'] = (cd.text
+            if len(cd.text) <= defs.MAX_TEXT_LENGTH
+            else cd.text[:defs.MAX_TEXT_LENGTH])
+      if 'context' in pty and cd.context:
+        params['ctx'] = (cd.context
+            if len(cd.context) <= defs.MAX_TEXT_LENGTH
+            else cd.context[:defs.MAX_TEXT_LENGTH])
 
       for k in 'comment', 'updateComment':
         if k in pty:
@@ -1238,7 +1252,7 @@ class _NetworkManager(object):
 
     params['login'] = userName
     params['password'] = password
-    params['id'] = comment.id
+    params['id'] = cd.id
     params['ver'] = self.version
 
     try:
@@ -1363,52 +1377,53 @@ class _NetworkManager(object):
 
   def submitTerm(self, term, userName, password, async=False):
     """Return term and update term if succeeded"""
-    assert userName and password, "missing user name or password"
-    assert term, "term"
+    #assert userName and password, "missing user name or password"
+    #assert term, "term"
+    td = term.d
 
     params = {
       'ver': self.version,
       'login': userName,
       'password': password,
-      'lang': term.language,
-      'type': term.type,
+      'lang': td.language,
+      'type': td.type,
     }
-    if term.gameId:
-      params['gameid'] = term.gameId
-    elif term.gameMd5:
-      params['md5'] = term.gameMd5
+    if td.gameId:
+      params['gameid'] = td.gameId
+    elif td.gameMd5:
+      params['md5'] = td.gameMd5
 
-    if term.pattern:
-      params['pattern'] = (term.pattern
-          if len(term.pattern) <= defs.MAX_TEXT_LENGTH
-          else term.pattern[:defs.MAX_TEXT_LENGTH])
+    if td.pattern:
+      params['pattern'] = (td.pattern
+          if len(td.pattern) <= defs.MAX_TEXT_LENGTH
+          else td.pattern[:defs.MAX_TEXT_LENGTH])
 
-    if term.text:
-      params['text'] = (term.text
-          if len(term.text) <= defs.MAX_TEXT_LENGTH
-          else term.text[:defs.MAX_TEXT_LENGTH])
+    if td.text:
+      params['text'] = (td.text
+          if len(td.text) <= defs.MAX_TEXT_LENGTH
+          else td.text[:defs.MAX_TEXT_LENGTH])
 
-    if term.comment:
-      params['comment'] = (term.comment
-          if len(term.comment) <= defs.MAX_TEXT_LENGTH
-          else term.comment[:defs.MAX_TEXT_LENGTH])
+    if td.comment:
+      params['comment'] = (td.comment
+          if len(td.comment) <= defs.MAX_TEXT_LENGTH
+          else td.comment[:defs.MAX_TEXT_LENGTH])
 
-    if term.updateComment:
-      params['updatecomment'] = (term.updateComment
-          if len(term.updateComment) <= defs.MAX_TEXT_LENGTH
-          else term.updateComment[:defs.MAX_TEXT_LENGTH])
+    if td.updateComment:
+      params['updatecomment'] = (td.updateComment
+          if len(td.updateComment) <= defs.MAX_TEXT_LENGTH
+          else td.updateComment[:defs.MAX_TEXT_LENGTH])
 
-    if term.special: params['special'] = True
-    if term.private: params['private'] = True
-    if term.hentai: params['hentai'] = True
-    if term.regex: params['regex'] = True
-    #if term.bbcode: params['bbcode'] = True
-    #if term.ignoresCase: params['ignoreCase'] = True
+    if td.special: params['special'] = True
+    if td.private: params['private'] = True
+    if td.hentai: params['hentai'] = True
+    if td.regex: params['regex'] = True
+    #if td.bbcode: params['bbcode'] = True
+    #if td.ignoresCase: params['ignoreCase'] = True
 
-    if term.deleted:
+    if td.deleted:
       # Should never happen. I mean, deleted subs should have been skipped in dataman
       params['del'] = True
-    if term.disabled:
+    if td.disabled:
       params['disable'] = True
 
     try:
@@ -1425,10 +1440,15 @@ class _NetworkManager(object):
         el = root.find('./terms/term')
 
         # Be careful about async here
-        term.id = int(el.get('id'))
+        # Might raise after ref QObject is deleted
+        tid = int(el.get('id'))
+        try: term.id = tid
+        except Exception, e:
+          dwarn(e)
+          td.id = tid
 
-        dprint("term id = %i" % term.id)
-        return term.id
+        dprint("term id = %i" % td.id)
+        return td.id
 
     #except socket.error, e:
     #  dwarn("socket error", e.args)
@@ -1452,8 +1472,9 @@ class _NetworkManager(object):
 
   def updateTerm(self, term, userName, password, async=False):
     """Return if succeeded"""
-    assert userName and password, "missing user name or password"
-    assert term and term.id, "missing term id"
+    #assert userName and password, "missing user name or password"
+    #assert term and term.id, "missing term id"
+    td = term.d
 
     params = {}
     pty = term.dirtyProperties()
@@ -1461,10 +1482,10 @@ class _NetworkManager(object):
       dwarn("warning: term to update is not dirty")
       return True
 
-    if 'deleted' in pty:        params['del'] = term.deleted
-    if not term.deleted:
-      if 'language' in pty:     params['lang'] = term.language
-      if 'disabled' in pty:     params['disable'] = term.disabled
+    if 'deleted' in pty:        params['del'] = td.deleted
+    if not td.deleted:
+      if 'language' in pty:     params['lang'] = td.language
+      if 'disabled' in pty:     params['disable'] = td.disabled
 
       for k in 'gameId', 'type', 'special', 'private', 'hentai', 'regex':
         if k in pty:
@@ -1473,7 +1494,7 @@ class _NetworkManager(object):
       # Note: actually, there is no 'delpattern'
       for k in 'pattern', 'text', 'comment', 'updateComment':
         if k in pty:
-          v = getattr(term, k)
+          v = getattr(td, k)
           if v:
             params[k.lower()] = (v
                 if len(v) <= defs.MAX_TEXT_LENGTH
@@ -1487,7 +1508,7 @@ class _NetworkManager(object):
 
     params['login'] = userName
     params['password'] = password
-    params['id'] = term.id
+    params['id'] = td.id
     params['ver'] = self.version
 
     try:
@@ -1748,7 +1769,7 @@ class NetworkManager(QObject):
 
     Thread-safe.
     """
-    if self.isOnline() and (ref.gameId or md5) and userName and password:
+    if self.isOnline() and (ref.d.gameId or md5) and userName and password:
       return self.__d.submitReference(ref, userName, password, md5, async=async)
 
   def updateReference(self, ref, userName, password, async=False):
@@ -1758,7 +1779,7 @@ class NetworkManager(QObject):
 
     Thread-safe.
     """
-    if self.isOnline() and ref.id and userName and password:
+    if self.isOnline() and ref.d.id and userName and password:
       return self.__d.updateReference(ref, userName, password, async=async)
 
   ## Comments ##
@@ -1796,7 +1817,7 @@ class NetworkManager(QObject):
     #    parent=self)
     #    if self.isOnline() and (comment.gameId or md5) and userName and password
     #    else 0)
-    if self.isOnline() and (comment.gameId or md5) and userName and password:
+    if self.isOnline() and (comment.d.gameId or md5) and userName and password:
       return self.__d.submitComment(comment, userName, password, md5, async=async)
     return 0
 
@@ -1812,7 +1833,7 @@ class NetworkManager(QObject):
     #    parent=self)
     #    if self.isOnline() and comment.id and userName and password
     #    else False)
-    if self.isOnline() and comment.id and userName and password:
+    if self.isOnline() and comment.d.id and userName and password:
       return self.__d.updateComment(comment, userName, password, async=async)
     return False
 
@@ -1865,7 +1886,7 @@ class NetworkManager(QObject):
 
     Thread-safe.
     """
-    if self.isOnline() and term.id and userName and password:
+    if self.isOnline() and term.d.id and userName and password:
       return self.__d.updateTerm(term, userName, password, async=async)
     return False
 

@@ -6946,18 +6946,19 @@ class _DataManager(object):
       self.dirtyCommentsLocked = True
       nm = netman.manager()
       for c in tuple(self.dirtyComments): # copy dirty comments into a new list
+        cd = c.d
         async = not main.EXITED
         ok = True
-        if c.id:
+        if cd.id:
           ok = nm.updateComment(c, self.user.name, self.user.password, async=async)
-        elif not c.deleted:
+        elif not cd.deleted:
           ok = nm.submitComment(c, self.user.name, self.user.password, md5=c.gameMd5, async=async)
         if ok:
           c.clearDirtyProperties()
         else:
           growl.warn('<br/>'.join((
             my.tr("Failed to save changes, will try later"),
-            c.text,
+            cd.text,
           )))
       #self.dirtyCommentsMutex.unlock()
       self.dirtyCommentsLocked = False
@@ -7125,18 +7126,19 @@ class _DataManager(object):
       self.dirtyTermsLocked = True
       nm = netman.manager()
       for t in tuple(self.dirtyTerms): # copy dirty terms into a new list
+        td = t.d
         async = not main.EXITED
         ok = True
-        if t.id:
+        if td.id:
           ok = nm.updateTerm(t, self.user.name, self.user.password, async=async)
-        elif not t.deleted:
+        elif not td.deleted:
           ok = nm.submitTerm(t, self.user.name, self.user.password, async=async)
         if ok:
           t.clearDirtyProperties()
         else:
           growl.warn('<br/>'.join((
             my.tr("Failed to save changes, will try later"),
-            t.text,
+            td.text,
           )))
       #self.dirtyTermsMutex.unlock()
       self.dirtyTermsLocked = False

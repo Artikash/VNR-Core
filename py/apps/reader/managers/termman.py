@@ -277,7 +277,7 @@ class _TermManager:
 
     t = self.saveTimer = QTimer(q)
     t.setSingleShot(True)
-    t.setInterval(2000) # wait for 2 seconds for rebuilding
+    t.setInterval(3000) # wait for 3 seconds for rebuilding
     t.timeout.connect(self.saveTerms)
 
     q.invalidateCacheRequested.connect(t.start, Qt.QueuedConnection)
