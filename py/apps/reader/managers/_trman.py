@@ -24,8 +24,6 @@ from mytr import my, mytr_
 import config, growl, mecabman, termman, textutil
 import trman, trcache, tahscript
 
-#from sakurakit.SkProfiler import SkProfiler
-
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()
 _NO_RE = re.compile('')
@@ -366,7 +364,7 @@ class MachineTranslator(Translator):
       self.emitSourceText(text)
 
     t = text
-    #with SkProfiler():
+    #with SkProfiler(): # 9/26/2014: 0.01 seconds
     text = tm.prepareEscapeTerms(text, to)
     if emit and text != t:
       self.emitEscapedText(text)
@@ -387,7 +385,7 @@ class MachineTranslator(Translator):
       self.emitJointTranslation(text)
     #text = self.__google_repl_after(text)
     t = text
-    #with SkProfiler():
+    #with SkProfiler(): # 9/26/2014: 0.07 seconds
     text = tm.applyEscapeTerms(text, to)
     if emit and text != t:
       self.emitEscapedTranslation(text)
