@@ -1964,6 +1964,8 @@ class _Term(object):
     if self.type == 'macro': # bug: change type to macro will not have effect at once
       manager().clearMacroCache() # might be slow, though
 
+    termman.manager().invalidateCache() # invalidate term cache when any term is changed
+
   def clearCachedProperties(self):
     self.replace = self.prepareReplace = self.applyReplace = self.patternRe = None
 
