@@ -8651,10 +8651,17 @@ class DataManager(QObject):
   def hasTerms(self): return bool(self.__d.terms)
 
   def terms(self):
+    """Used by TermModel
+    @return  [Term]
     """
+    return self.__d.terms
+
+  def sortedTerms(self):
+    """Used by termman
     @return  [Term]
     """
     return self.__d.sortedTerms
+
   #def termData(self): return list(self.__d.iterTermData())
 
   def termTitles(self):

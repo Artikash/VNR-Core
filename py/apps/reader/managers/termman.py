@@ -108,7 +108,7 @@ class _TermManager:
     if gameIds:
       gameIds = set(gameIds) # in case it is changed during iteration
     #terms = list(dm.terms()) # in case it is changed during iteration
-    terms = dm.terms() # not back up to save memory
+    terms = dm.sortedTerms() # not back up to save memory
 
     dprint("term count = %s" % len(terms))
 
