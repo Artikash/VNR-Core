@@ -8,7 +8,7 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
-from sakurakit.skprofiler import SkProfiler
+#from sakurakit.skprofiler import SkProfiler
 
 import os, re
 import requests
@@ -359,12 +359,13 @@ class MachineTranslator(Translator):
 
     tm = termman.manager()
     t = text
+    #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
     text = tm.applySourceTerms(text, to)
     if emit and text != t:
       self.emitSourceText(text)
 
     t = text
-    #with SkProfiler(): # 9/26/2014: 0.01 seconds
+    #with SkProfiler(): # 9/26/2014: C++ 0.015 seconds, Python: 0.05 seconds
     text = tm.prepareEscapeTerms(text, to)
     if emit and text != t:
       self.emitEscapedText(text)
@@ -385,11 +386,12 @@ class MachineTranslator(Translator):
       self.emitJointTranslation(text)
     #text = self.__google_repl_after(text)
     t = text
-    #with SkProfiler(): # 9/26/2014: 0.07 seconds
+    #with SkProfiler(): # 9/26/2014: 0.08 seconds, Python: 0.06 seconds
     text = tm.applyEscapeTerms(text, to)
     if emit and text != t:
       self.emitEscapedTranslation(text)
     t = text
+    #with SkProfiler(): # 9/26/2014: 0.0005 seconds, Python: 0.04 seconds
     text = tm.applyTargetTerms(text, to)
     if emit and text != t:
       self.emitTargetTranslation(text)
