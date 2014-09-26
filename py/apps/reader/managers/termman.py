@@ -22,15 +22,16 @@ import config, dataman, defs, i18n, rc
 @memoized
 def manager(): return TermManager()
 
-def _mark_text(text): # unicode -> unicode
-  return '<span style="text-decoration:underline">%s</span>' % text
-
 _re_marks = re.compile(r'<[0-9a-zA-Z: "/:=-]+?>')
 def _remove_marks(text): return _re_marks.sub('', text)
 
-RE_MACRO = re.compile('{{(.+?)}}')
-
 class TermWriter:
+
+  @staticmethod
+  def _markText(text): # unicode -> unicode
+    return '<span style="text-decoration:underline">%s</span>' % text
+
+  RE_MACRO = re.compile('{{(.+?)}}')
 
   def __init__(self, createTime, terms, gameIds, hentai, marked):
     self.createTime = createTime # float
@@ -39,16 +40,15 @@ class TermWriter:
     self.hentai = hentai # bool
     self.marked = marked # bool
 
-    #macros = self._queryTermMacros(terms, lang, gameIds, hentai) # {unicode pattern:unicode repl}
-
   def isOutdated(self): # -> bool
     return self.createTime < _TermManager.instance.updateTime
 
-  def saveTerms(self, path, type, language):
+  def saveTerms(self, path, type, language, macros):
     """This method is invoked from a different thread
     @param  path  unicode
     @param  type  str  term type
     @param  language  str  target text language
+    @param  macros  {unicode pattern:unicode repl}
     @return  bool
     """
     marksChanges = self.marked and type in ('target', 'escape_before', 'escape_after') # bool
@@ -69,9 +69,11 @@ class TermWriter:
             #elif config.is_latin_language(td.language):
             #  repl += " "
             if marksChanges:
-              repl = _mark_text(repl)
-          regex = td.regex
+              repl = self._markText(repl)
           pattern = td.pattern
+          regex = td.regex
+          if regex:
+            pattern = self._applyMacros(pattern, macros)
           if z:
             pattern = zhs2zht(pattern)
           f.write(
@@ -125,7 +127,7 @@ class TermWriter:
         ):
         yield td
 
-  def _queryTermMacros(self, language):
+  def queryTermMacros(self, language):
     """
     @param  terms  [Term]
     @param  language  str
@@ -134,14 +136,14 @@ class TermWriter:
     @return  {unicode pattern:unicode repl} not None
     """
     ret = {td.pattern:td.text  for td in self._iterTermData('macro', language)}
-    MAX_COUNT = 1000
-    for count in xrange(1, MAX_COUNT):
+    MAX_ITER_COUNT = 1000
+    for count in xrange(1, MAX_ITER_COUNT):
       dirty = False
       for pattern,text in ret.iteritems(): # not iteritems as I will modify ret
         if text and defs.TERM_MACRO_BEGIN in text:
           dirty = True
           ok = False
-          for m in RE_MACRO.finditer(text):
+          for m in self.RE_MACRO.finditer(text):
             macro = m.group(1)
             repl = ret.get(macro)
             if repl:
@@ -157,9 +159,24 @@ class TermWriter:
             ret[pattern] = None # delete this pattern
       if not dirty:
         break
-    if count == MAX_COUNT - 1:
+    if count == MAX_ITER_COUNT - 1:
       dwarn("recursive macro definition")
     return {k:v for k,v in ret.iteritems() if v is not None}
+
+  def _applyMacros(self, text, macros):
+    """
+    @param  text  unicode
+    @param  macros  {unicode pattern:unicode repl}
+    @return  unicode
+    """
+    for m in self.RE_MACRO.finditer(text):
+      macro = m.group(1)
+      repl = macros.get(macro)
+      if repl is None:
+        dwarn("missing macro", macro)
+      else:
+        text = text.replace("{{%s}}" % macro, repl)
+    return text
 
 @Q_Q
 class _TermManager:
@@ -261,7 +278,8 @@ class _TermManager:
           if not man.isEmpty():
             man.clear()
 
-          if w.saveTerms(path, type, lang) and man.loadFile(path):
+          macros = w.queryTermMacros(lang)
+          if w.saveTerms(path, type, lang, macros) and man.loadFile(path):
             dprint("type = %s, lang = %s, count = %s" % (type, lang, man.size()))
 
         langs[lang] = createTime
@@ -317,8 +335,8 @@ class TermManager(QObject):
     for term in dataman.manager().iterEscapeTerms():
       term.applyReplace = None
 
-  def markEscapeText(self, text): # unicode -> unicode
-    return _mark_text(text) if text and self.__d.marked else text
+  #def markEscapeText(self, text): # unicode -> unicode
+  #  return _mark_text(text) if text and self.__d.marked else text
 
   def removeMarks(self, text): # unicode -> unicode
     return _remove_marks(text) if self.__d.marked else text
@@ -425,25 +443,6 @@ class TermManager(QObject):
     #        text = name.replace(text)
     #  except Exception, e: dwarn(e)
     #  text = text.rstrip() # remove trailing spaces
-    return text
-
-  def applyMacroTerms(self, text):
-    """
-    @param  text  unicode
-    @return  unicode
-    """
-    d = self.__d
-    if not d.enabled: #or d.locked: # disabling lock will cause terms cannot be init property on the startup
-      return text
-    dm = dataman.manager()
-    # {{name}}
-    for m in RE_MACRO.finditer(text):
-      macro = m.group(1)
-      repl = dm.queryTermMacro(macro)
-      if repl is None:
-        dwarn("missing macro", macro)
-      else:
-        text = text.replace("{{%s}}" % macro, repl)
     return text
 
   # Escaped
