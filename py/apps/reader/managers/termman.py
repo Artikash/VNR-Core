@@ -9,6 +9,7 @@
 # - comment: user's subtitle or comment
 
 import os, re
+from collections import OrderedDict
 from functools import partial
 from time import time
 from PySide.QtCore import Signal, QObject, QTimer, QMutex
@@ -43,21 +44,24 @@ class TermWriter:
   def isOutdated(self): # -> bool
     return self.createTime < _TermManager.instance.updateTime
 
-  def saveTerms(self, path, type, language, macros):
+  def saveTerms(self, path, type, language, macros, titles):
     """This method is invoked from a different thread
     @param  path  unicode
     @param  type  str  term type
     @param  language  str  target text language
     @param  macros  {unicode pattern:unicode repl}
+    @param  titles  {unicode from:unicode to} not None not empty
     @return  bool
     """
-    marksChanges = self.marked and type in ('target', 'escape_before', 'escape_after') # bool
-    convertsChinese = language == 'zht' and type in ('target', 'escape_before', 'escape_after') # bool
+    marksChanges = self.marked and type in ('target', 'escape_before', 'escape_after')
+    convertsChinese = language == 'zht' and type in ('target', 'escape_before', 'escape_after')
+    if type not in ('source', 'escape_before', 'escape_after'):
+      titles = None
 
     try:
       empty = True
       with open(path, 'w') as f:
-        f.write(self._createHeader(type, language, marksChanges))
+        f.write(self._renderHeader(type, language, marksChanges))
         for td in self._iterTermData(type, language):
           if self.isOutdated():
             raise Exception("cancel saving out-of-date terms")
@@ -76,9 +80,13 @@ class TermWriter:
             pattern = self._applyMacros(pattern, macros)
           if z:
             pattern = zhs2zht(pattern)
-          f.write(
-              (("r\t%s\t%s\n" if regex else "\t%s\t%s\n") % (pattern, repl)) if repl else
-              (("r\t%s\n" if regex else "\t%s\n") % pattern))
+
+          if titles:
+            for k,v in titles.iteritems(): # append space
+              f.write(self._renderLine(pattern + k, repl + v + ' ', regex))
+          else:
+            f.write(self._renderLine(pattern, repl, regex))
+
           empty = False
 
       if not empty:
@@ -90,7 +98,17 @@ class TermWriter:
     skfileio.removefile(path) # Remove file when failed
     return False
 
-  def _createHeader(self, type, language, marked):
+  def _renderLine(self, pattern, repl, regex):
+    """
+    @param  pattern  unicode
+    @param  repl  unicode
+    @param  regex  bool
+    @return  unicode
+    """
+    return ((("r\t%s\t%s\n" if regex else "\t%s\t%s\n") % (pattern, repl)) if repl else
+        (("r\t%s\n" if regex else "\t%s\n") % pattern))
+
+  def _renderHeader(self, type, language, marked):
     """
     @param  type  str
     @param  language  str
@@ -116,7 +134,10 @@ class TermWriter:
     @param  hentai  bool
     @yield  _Term
     """
-    type2 = 'name' if type == 'source' and not config.is_asian_language(language) else ''
+    type2 = 'name' if (
+      type.startswith('escape') and config.is_asian_language(language)
+      or type == 'source' and not config.is_asian_language(language)
+    ) else ''
     for t in self.terms:
       td = t.d # To improve performance
       if (not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
@@ -135,7 +156,7 @@ class TermWriter:
     @param  hentai  bool
     @return  {unicode pattern:unicode repl} not None
     """
-    ret = {td.pattern:td.text  for td in self._iterTermData('macro', language)}
+    ret = {td.pattern:td.text for td in self._iterTermData('macro', language)}
     MAX_ITER_COUNT = 1000
     for count in xrange(1, MAX_ITER_COUNT):
       dirty = False
@@ -162,6 +183,28 @@ class TermWriter:
     if count == MAX_ITER_COUNT - 1:
       dwarn("recursive macro definition")
     return {k:v for k,v in ret.iteritems() if v is not None}
+
+  def queryTermTitles(self, language):
+    """Terms sorted by length and id
+    @param  language
+    @return  OrderedDict{unicode from:unicode to} not None not empty
+    """
+    zht = language == 'zht'
+    l = [] # [long id, unicode pattern, unicode replacement]
+    ret = OrderedDict({'':''})
+    for td in self._iterTermData('title', language):
+      pat = td.pattern
+      repl = td.text
+      if zht and td.language == 'zhs':
+        pat = zhs2zht(pat)
+        if repl: # and self.convertsChinese:
+          repl = zhs2zht(repl)
+      l.append((td.id, pat, repl))
+    l.sort(key=lambda it:
+        (len(it[1]), it[0]))
+    for id,pat,repl in l:
+      ret[pat] = repl
+    return ret
 
   def _applyMacros(self, text, macros):
     """
@@ -264,6 +307,9 @@ class _TermManager:
 
     for lang,ts in langs.items(): # back up items
       if ts < self.updateTime: # skip language that does not out of date
+        macros = w.queryTermMacros(lang)
+        titles = w.queryTermTitles(lang)
+
         for type in self.SAVE_TYPES:
           if w.isOutdated():
             dwarn("leave: cancel saving out-of-date terms")
@@ -278,8 +324,7 @@ class _TermManager:
           if not man.isEmpty():
             man.clear()
 
-          macros = w.queryTermMacros(lang)
-          if w.saveTerms(path, type, lang, macros) and man.loadFile(path):
+          if w.saveTerms(path, type, lang, macros, titles) and man.loadFile(path):
             dprint("type = %s, lang = %s, count = %s" % (type, lang, man.size()))
 
         langs[lang] = createTime
