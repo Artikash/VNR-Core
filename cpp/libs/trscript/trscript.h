@@ -38,6 +38,11 @@ public:
 
   // Rewrite the text according to the script, thread-safe
   QString translate(const QString &text) const;
+
+  // Render option
+
+  bool isUnderline() const;
+  void setUnderline(bool value);
 };
 
 #endif // TRSCRIPT_H

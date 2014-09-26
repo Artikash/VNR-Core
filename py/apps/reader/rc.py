@@ -158,13 +158,13 @@ def refs_xml_path(gameId):
 # Terms
 
 TERM_RELPATHS = {
-  'ocr': 'ocr.txt',
-  'speech': 'tts.txt',
-  'origin': 'origin.txt',
-  'source': 'source.txt',
-  'target': 'target.txt',
-  'escape_before': 'escape_before.txt',
-  'escape_after': 'escape_after.txt',
+  'ocr': 'ocr',
+  'speech': 'tts',
+  'origin': 'origin',
+  'source': 'source',
+  'target': 'target',
+  'escape_source': 'escape_source',
+  'escape_target': 'escape_target',
 }
 def term_path(type, language):
   """

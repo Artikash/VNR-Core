@@ -330,8 +330,8 @@ class _MainObject(object):
 
     ret.removesRepeatChanged.connect(tm.setRemovesRepeatText)
 
-    dm = self.dataManager
-    ret.processChanged.connect(dm.clearMacroCache)
+    #dm = self.dataManager
+    #ret.processChanged.connect(dm.clearMacroCache)
 
     agent = self.gameAgent
     agent.processDetached.connect(ret.processDetached)
@@ -451,6 +451,7 @@ class _MainObject(object):
     for sig in (
         ss.machineTranslatorChanged,
         ss.termEnabledChanged,
+        ss.termMarkedChanged,
         ss.userLanguageChanged,
         dm.termsChanged,
         #dm.gameFilesChanged, # duplicate with gameItemsChanged
@@ -461,15 +462,15 @@ class _MainObject(object):
 
     # These should be moved to dataManager. Put here to avoid recursion, moved to gameman
 
-    for sig in (
-        ss.termEnabledChanged,
-        ss.userLanguageChanged,
-        dm.termsChanged,
-        #dm.gameFilesChanged, # duplicate with gameItemsChanged
-        dm.gameItemsChanged,
-        #self.gameManager.processChanged,   # this would cause recursion, moved to gameman
-        ):
-      sig.connect(dm.clearMacroCache)
+    #for sig in (
+    #    ss.termEnabledChanged,
+    #    ss.userLanguageChanged,
+    #    dm.termsChanged,
+    #    #dm.gameFilesChanged, # duplicate with gameItemsChanged
+    #    dm.gameItemsChanged,
+    #    #self.gameManager.processChanged,   # this would cause recursion, moved to gameman
+    #    ):
+    #  sig.connect(dm.clearMacroCache)
 
     #ss.windowTextVisibleChanged.connect(ret.refreshWindowTranslation)
     return ret
@@ -601,11 +602,9 @@ class _MainObject(object):
     ret.setMarked(ss.isTermMarked())
     ss.termMarkedChanged.connect(ret.setMarked)
 
-    ss.termMarkedChanged.connect(ret.clearMarkCache)
-
     for sig in (
         ss.userIdChanged, ss.userLanguageChanged,
-        ss.hentaiEnabledChanged, ss.termMarkedChanged,
+        ss.hentaiEnabledChanged, #ss.termMarkedChanged,
         self.gameManager.processChanged,
         self.dataManager.termsChanged,
       ):

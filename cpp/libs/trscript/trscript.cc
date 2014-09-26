@@ -61,7 +61,6 @@ struct TranslationScriptRule
 
   bool init(const std::tuple<QString, QString, bool> &t)
   { return init(std::get<0>(t), std::get<1>(t), std::get<2>(t)); }
-
 };
 
 } // unnamed namespace
@@ -76,7 +75,9 @@ public:
   TranslationScriptRule *rules; // use array for performance reason
   int ruleCount;
 
-  TranslationScriptManagerPrivate() : rules(nullptr), ruleCount(0) {}
+  bool underline;
+
+  TranslationScriptManagerPrivate() : rules(nullptr), ruleCount(0), underline(false) {}
   ~TranslationScriptManagerPrivate() { if (rules) delete[] rules; }
 
   void clear()
@@ -97,6 +98,13 @@ public:
       delete[] rules;
     rules = new TranslationScriptRule[size];
   }
+
+  QString renderTarget(const QString &text) const
+  { return underline ? underlineText(text) : text; }
+
+private:
+  static QString underlineText(const QString &text)
+  { return "<span style=\"text-decoration:underline\">" + text + "</span>"; }
 };
 
 /** Public class */
@@ -109,6 +117,9 @@ TranslationScriptManager::~TranslationScriptManager() { delete d_; }
 int TranslationScriptManager::size() const { return d_->ruleCount; }
 bool TranslationScriptManager::isEmpty() const { return !d_->ruleCount; }
 
+bool TranslationScriptManager::isUnderline() const { return d_->underline; }
+void TranslationScriptManager::setUnderline(bool value) { d_->underline = value; }
+
 void TranslationScriptManager::clear()
 {
   //QWriteLocker locker(&d_->lock);
@@ -120,7 +131,7 @@ bool TranslationScriptManager::loadFile(const QString &path)
 {
   // File IO
   // http://stackoverflow.com/questions/2612103/qt-reading-from-a-text-file
-  QFile file(t);
+  QFile file(path);
   if (!file.open(QIODevice::ReadOnly)) {
     DOUT("failed to open file at path:" << path);
     return false;
@@ -182,12 +193,12 @@ QString TranslationScriptManager::translate(const QString &text) const
         if (rule.target.isEmpty())
           ret.remove(*rule.sourceRe);
         else
-          ret.replace(*rule.sourceRe, rule.target);
+          ret.replace(*rule.sourceRe, d_->renderTarget(rule.target));
       } else if (!rule.source.isEmpty()) {
         if (rule.target.isEmpty())
           ret.remove(rule.source);
         else
-          ret.replace(rule.source, rule.target);
+          ret.replace(rule.source, d_->renderTarget(rule.target));
       }
 
 #ifdef DEBUG_RULE

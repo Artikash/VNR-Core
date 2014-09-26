@@ -8,11 +8,13 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
+#from sakurakit.skprofiler import SkProfiler
+
 import os, re
 from collections import OrderedDict
 from functools import partial
 from time import time
-from PySide.QtCore import Signal, QObject, QTimer, QMutex
+from PySide.QtCore import Signal, QObject, QTimer, QMutex, Qt
 from zhszht.zhszht import zhs2zht
 from sakurakit import skfileio, skthreads
 from sakurakit.skclass import memoized, Q_Q
@@ -26,20 +28,21 @@ def manager(): return TermManager()
 _re_marks = re.compile(r'<[0-9a-zA-Z: "/:=-]+?>')
 def _remove_marks(text): return _re_marks.sub('', text)
 
+SCRIPT_KEY_SEP = ',' # Separator of script manager key
+
 class TermWriter:
 
-  @staticmethod
-  def _markText(text): # unicode -> unicode
-    return '<span style="text-decoration:underline">%s</span>' % text
+  #@staticmethod
+  #def _markText(text): # unicode -> unicode
+  #  return '<span style="text-decoration:underline">%s</span>' % text
 
   RE_MACRO = re.compile('{{(.+?)}}')
 
-  def __init__(self, createTime, terms, gameIds, hentai, marked):
+  def __init__(self, createTime, termData, gameIds, hentai):
     self.createTime = createTime # float
-    self.terms = terms # [Term]
+    self.termData = termData # [_Term]
     self.gameIds = gameIds # set(ing gameId)
     self.hentai = hentai # bool
-    self.marked = marked # bool
 
   def isOutdated(self): # -> bool
     return self.createTime < _TermManager.instance.updateTime
@@ -53,37 +56,66 @@ class TermWriter:
     @param  titles  {unicode from:unicode to} not None not empty
     @return  bool
     """
-    marksChanges = self.marked and type in ('target', 'escape_before', 'escape_after')
-    convertsChinese = language == 'zht' and type in ('target', 'escape_before', 'escape_after')
-    if type not in ('source', 'escape_before', 'escape_after'):
+    #marksChanges = self.marked and type in ('target', 'escape_target')
+    convertsChinese = language == 'zht' and type in ('target', 'escape_source', 'escape_target')
+    if type not in ('source', 'escape_source', 'escape_target'):
       titles = None
 
+    empty = True
+
+    escape_source = type == 'escape_source'
+    escape_target = type == 'escape_target'
+
+    count = len(self.termData)
     try:
-      empty = True
       with open(path, 'w') as f:
-        f.write(self._renderHeader(type, language, marksChanges))
-        for td in self._iterTermData(type, language):
+        f.write(self._renderHeader(type, language))
+        for index,td in enumerate(self._iterTermData(type, language)):
           if self.isOutdated():
             raise Exception("cancel saving out-of-date terms")
           z = convertsChinese and td.language == 'zhs'
-          repl = td.text
-          if repl:
-            if z:
-              repl = zhs2zht(repl)
-            #elif config.is_latin_language(td.language):
-            #  repl += " "
-            if marksChanges:
-              repl = self._markText(repl)
-          pattern = td.pattern
-          regex = td.regex
-          if regex:
-            pattern = self._applyMacros(pattern, macros)
-          if z:
-            pattern = zhs2zht(pattern)
 
-          if titles:
-            for k,v in titles.iteritems(): # append space
-              f.write(self._renderLine(pattern + k, repl + v + ' ', regex))
+          regex = td.regex
+
+          td_is_name = td.type == 'name'
+
+          if escape_source or escape_target:
+            priority = count - index
+            if not td_is_name:
+              key = defs.TERM_ESCAPE % priority
+
+          if escape_source:
+            if not td_is_name:
+              repl = key
+          else:
+            repl = td.text
+            if repl and z:
+              repl = zhs2zht(repl)
+              #elif config.is_latin_language(td.language):
+              #  repl += " "
+              #if marksChanges:
+              #  repl = self._markText(repl)
+
+          if escape_target:
+            if not td_is_name:
+              pattern = key + ' '
+          else:
+            pattern = td.pattern
+            if regex:
+              pattern = self._applyMacros(pattern, macros)
+            if z:
+              pattern = zhs2zht(pattern)
+
+          if titles and td_is_name:
+            if escape_source:
+              for i,k in enumerate(titles.iterkeys()):
+                f.write(self._renderLine(pattern + k, defs.NAME_ESCAPE%(priority,i)  + ' ', regex))
+            elif escape_target:
+              for i,v in enumerate(titles.itervalues()):
+                f.write(self._renderLine(defs.NAME_ESCAPE%(priority,i), repl + v, regex))
+            else:
+              for k,v in titles.iteritems():
+                f.write(self._renderLine(pattern + k, repl + v + ' ', regex))
           else:
             f.write(self._renderLine(pattern, repl, regex))
 
@@ -108,11 +140,10 @@ class TermWriter:
     return ((("r\t%s\t%s\n" if regex else "\t%s\t%s\n") % (pattern, repl)) if repl else
         (("r\t%s\n" if regex else "\t%s\n") % pattern))
 
-  def _renderHeader(self, type, language, marked):
+  def _renderHeader(self, type, language):
     """
     @param  type  str
     @param  language  str
-    @param  marked  bool
     @return  unicode
     """
     return """\
@@ -120,28 +151,28 @@ class TermWriter:
 # Modifying this file will NOT affect VNR.
 #
 # Unix time: %s
-# Options: type = %s, language = %s, hentai = %s, underline = %s, games = (%s)
+# Options: type = %s, language = %s, hentai = %s, games = (%s)
 #
-""" % (self.createTime, type, language, self.hentai, marked,
+""" % (self.createTime, type, language, self.hentai,
     ','.join(self.gameIds) if self.gameIds else 'empty')
 
   def _iterTermData(self, type, language):
     """
-    @param  terms  [Term]
     @param  type  str
     @param  language  str
-    @param  gameIds  set(int gameId)
-    @param  hentai  bool
     @yield  _Term
     """
-    type2 = 'name' if (
-      type.startswith('escape') and config.is_asian_language(language)
-      or type == 'source' and not config.is_asian_language(language)
-    ) else ''
-    for t in self.terms:
-      td = t.d # To improve performance
-      if (not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
-          and (td.type == type or type2 and td.type == type2)
+    type2 = ''
+    if type.startswith('escape'):
+      type = 'escape'
+      if config.is_asian_language(language):
+        type2 = 'name'
+    elif type == 'source' and not config.is_asian_language(language):
+      type2 = 'name'
+
+    for td in self.termData:
+      if (#not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
+          (td.type == type or type2 and td.type == type2)
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
           and (not td.hentai or self.hentai)
           and i18n.language_compatible_to(td.language, language)
@@ -150,10 +181,7 @@ class TermWriter:
 
   def queryTermMacros(self, language):
     """
-    @param  terms  [Term]
     @param  language  str
-    @param  gameIds  set(int gameId)
-    @param  hentai  bool
     @return  {unicode pattern:unicode repl} not None
     """
     ret = {td.pattern:td.text for td in self._iterTermData('macro', language)}
@@ -227,8 +255,7 @@ class _TermManager:
   instance = None # _TermManager  needed for updateTime
 
   # Cover all term types, but decouple escape into before and after
-  SAVE_TYPES = 'origin', 'source', 'target', 'speech', 'ocr'
-  #SAVE_TYPES = 'escape_before', 'escape_after'
+  SAVE_TYPES = 'origin', 'source', 'target', 'speech', 'ocr', 'escape_source', 'escape_target'
 
   def __init__(self, q):
     _TermManager.instance = self
@@ -236,7 +263,6 @@ class _TermManager:
     #self.convertsChinese = False
     self.enabled = True # bool
     self.hentai = False # bool
-
     self.marked = False # bool
 
     # For saving terms
@@ -251,20 +277,27 @@ class _TermManager:
 
     t = self.saveTimer = QTimer(q)
     t.setSingleShot(True)
-    t.setInterval(1000) # wait for 1 seconds for rebuilding
+    t.setInterval(2000) # wait for 2 seconds for rebuilding
     t.timeout.connect(self.saveTerms)
 
-  def rebuildCacheLater(self): self.saveTimer.start()
+    q.invalidateCacheRequested.connect(t.start, Qt.QueuedConnection)
+
+  def rebuildCacheLater(self, queued=False):
+    if queued:
+      self.q.invalidateCacheRequested.emit()
+    else:
+      self.saveTimer.start()
 
   def _createScriptManager(self, type, language): # unicode, unicode -> TranslationScriptManager
-    key = type + language
+    key = SCRIPT_KEY_SEP.join((type, language))
     ret = self.scripts.get(key)
     if not ret:
       ret = self.scripts[key] = TranslationScriptManager()
+      ret.setUnderline(self.marked and type in ('target', 'escape_target'))
     return ret
 
   def getScriptManager(self, type, language): # unicode, unicode -> TranslationScriptManager
-    return self.scripts.get(type + language)
+    return self.scripts.get(SCRIPT_KEY_SEP.join((type, language)))
 
   #@classmethod
   #def needsEscape(cls):
@@ -273,7 +306,7 @@ class _TermManager:
   def saveTerms(self):
     if not self.saveMutex.tryLock():
       dwarn("retry later due to thread contention")
-      self.rebuildCacheLater()
+      self.rebuildCacheLater(queued=True)
       return
 
     saveTime = time()
@@ -294,12 +327,16 @@ class _TermManager:
     if gameIds:
       gameIds = set(gameIds) # in case it is changed during iteration
 
+    termData = (t.d for t in dm.terms() if not t.d.disabled and not t.d.deleted and t.d.pattern) # filtered
+    termData = sorted(termData, reverse=True, key=lambda td:
+          (len(td.pattern), td.private, td.special, td.id)) # it.regex  true is applied first
+
     w = TermWriter(
       createTime=createTime,
-      terms=dm.sortedTerms(), # not back up to save memory
+      termData=termData, # not back up to save memory
       gameIds=gameIds,
       hentai=self.hentai,
-      marked=self.marked,
+      #marked=self.marked,
     )
 
     langs = self.targetLanguages
@@ -354,14 +391,21 @@ class TermManager(QObject):
 
   cacheChanged = Signal()
 
+  invalidateCacheRequested = Signal() # private use
+
   ## Properties ##
 
   #def isLocked(self): return self.__d.locked
 
   def setTargetLanguage(self, v):
     if v:
-      self.__d.targetLanguage = v
-      self.__d.targetLanguages = {v:0} # reset languages
+      d = self.__d
+      d.targetLanguage = v
+
+      langs = {v:0}
+      if v != 'ja':
+        langs['ja'] = 0
+      d.targetLanguages = langs # reset languages
 
   def isEnabled(self): return self.__d.enabled
   def setEnabled(self, value): self.__d.enabled = value
@@ -372,13 +416,20 @@ class TermManager(QObject):
     self.__d.hentai = value
 
   def isMarked(self): return self.__d.marked
-  def setMarked(self, t): self.__d.marked = t
+  def setMarked(self, t):
+    d = self.__d
+    if d.marked != t:
+      d.marked = t
+      for key,man in d.scripts.iteritems():
+        type = key.partition(SCRIPT_KEY_SEP)[0]
+        marked = t and type in ('target', 'escape_target')
+        man.setUnderline(marked)
 
   ## Marks ##
 
-  def clearMarkCache(self): # invoked on escapeMarked changes in settings
-    for term in dataman.manager().iterEscapeTerms():
-      term.applyReplace = None
+  #def clearMarkCache(self): # invoked on escapeMarked changes in settings
+  #  for term in dataman.manager().iterEscapeTerms():
+  #    term.applyReplace = None
 
   #def markEscapeText(self, text): # unicode -> unicode
   #  return _mark_text(text) if text and self.__d.marked else text
@@ -437,8 +488,13 @@ class TermManager(QObject):
     @param  language  unicode
     @return  unicode
     """
-    return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
-        text, language, convertsChinese=True, marksChanges=self.__d.marked)
+    d = self.__d
+    #with SkProfiler(): # 9/26/2014: 0.0003 second
+    return d.applyTerms(text, 'target', language) if d.enabled else text
+    #if d.marked and language.startswith('zh'):
+    #  ret = ret.replace('> ', '')
+    #return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
+    #    text, language, convertsChinese=True, marksChanges=self.__d.marked)
 
   def applyOriginTerms(self, text, language):
     """
@@ -446,7 +502,10 @@ class TermManager(QObject):
     @param  language  unicode
     @return  unicode
     """
-    return self.__d.applyTerms(dataman.manager().iterOriginTerms(), text, language)
+    d = self.__d
+    #with SkProfiler(): # 9/26/2014: 3e-05 second
+    return d.applyTerms(text, 'origin', language or d.targetLanguage) if d.enabled else text
+    #return self.__d.applyTerms(dataman.manager().iterOriginTerms(), text, language)
 
   #def applyNameTerms(self, text, language):
   #  """
@@ -462,7 +521,8 @@ class TermManager(QObject):
     @param  language  unicode
     @return  unicode
     """
-    return self.__d.applyTerms(text, 'speech', language or self.__d.targetLanguage)
+    d = self.__d
+    return d.applyTerms(text, 'speech', language or d.targetLanguage) if d.enabled else text
 
   def applyOcrTerms(self, text, language=None):
     """
@@ -470,7 +530,8 @@ class TermManager(QObject):
     @param  language  unicode
     @return  unicode
     """
-    return self.__d.applyTerms(text, 'ocr', language or self.__d.targetLanguage)
+    d = self.__d
+    return d.applyTerms(text, 'ocr', language or d.targetLanguage) if d.enabled else text
 
   def applySourceTerms(self, text, language):
     """
@@ -478,9 +539,12 @@ class TermManager(QObject):
     @param  language  unicode
     @return  unicode
     """
-    dm = dataman.manager()
     d = self.__d
-    text = d.applyTerms(dm.iterSourceTerms(), text, language)
+    #with SkProfiler(): # 9/15/2014: 0.0005 second
+    return d.applyTerms(text, 'source', language) if d.enabled else text
+    #dm = dataman.manager()
+    #d = self.__d
+    #text = d.applyTerms(dm.iterSourceTerms(), text, language)
     #if text and dm.hasNameItems() and config.is_latin_language(d.targetLanguage):
     #  try:
     #    for name in dm.iterNameItems():
@@ -488,9 +552,6 @@ class TermManager(QObject):
     #        text = name.replace(text)
     #  except Exception, e: dwarn(e)
     #  text = text.rstrip() # remove trailing spaces
-    return text
-
-  # Escaped
 
   def prepareEscapeTerms(self, text, language):
     """
@@ -499,34 +560,8 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    if not d.enabled or d.locked:
-      return text
-    dm = dataman.manager()
-    hasTitles = dm.hasTermTitles() # cached
-    esc = defs.TERM_ESCAPE + ' '
-    for term in dm.iterEscapeTerms():
-      td = term.d # To improve performance
-      if (not td.hentai or d.hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
-        if hasTitles and term.needsReplace():
-          try: text = term.prepareReplace(text)
-          except Exception, e: dwarn(td.pattern, td.text, e)
-        else:
-          h = term.priority or td.id or id(term)
-          key = esc % h
-          if not term.patternNeedsRe():
-            text = text.replace(td.pattern, key)
-          else:
-            try: text = term.patternRe.sub(key, text)
-            except Exception, e: dwarn(td.pattern, td.text, e)
-        if not text:
-          break
-    #if text and dm.hasNameItems() and config.is_asian_language(d.targetLanguage):
-    #  try:
-    #    for name in dm.iterNameItems():
-    #      if name.translation:
-    #        text = name.prepareReplace(text)
-    #  except Exception, e: dwarn(e)
-    return text
+    #with SkProfiler(): # 9/26/2014: 0.01 second
+    return d.applyTerms(text, 'escape_source', language) if d.enabled else text
 
   def applyEscapeTerms(self, text, language):
     """
@@ -535,43 +570,96 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    if not d.enabled or d.locked:
+    if not d.enabled:
       return text
-    dm = dataman.manager()
-    hasTitles = dm.hasTermTitles() # cached
-    esc = defs.TERM_ESCAPE
-    zht = language == 'zht' # cached
-    for term in dm.iterEscapeTerms():
-      td = term.d # To improve performance
-      if (not td.hentai or d.hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
-        if hasTitles and term.needsReplace():
-          try: text = term.applyReplace(text)
-          except Exception, e: dwarn(td.pattern, td.text, e)
-        else:
-          #repl = term.bbcodeText if term.bbcode else term.text
-          repl = td.text
-          if repl:
-            if zht and td.language == 'zhs':
-              repl = zhs2zht(repl)
-            if d.marked:
-              repl = _mark_text(repl)
-          #elif config.is_latin_language(td.language):
-          #  repl += " "
-          h = term.priority or td.id or id(term)
-          key = esc % h
-          text = text.replace(key, repl)
-        if not text:
-          break
-    #if text and dm.hasNameItems() and config.is_asian_language(d.targetLanguage):
-    #  try:
-    #    for name in dm.iterNameItems():
-    #      if name.translation:
-    #        text = name.applyReplace(text)
-    #  except Exception, e: dwarn(e)
-    return text
+    #with SkProfiler(): # 9/26/2014: 0.009 second
+    ret = d.applyTerms(text, 'escape_target', language)
+    if d.marked and language.startswith('zh'):
+      ret = ret.replace('> ', '')
+    return ret
 
 # EOF
 
+#  # Escaped
+#
+#  def prepareEscapeTerms(self, text, language):
+#    """
+#    @param  text  unicode
+#    @param  language  unicode
+#    @return  unicode
+#    """
+#    d = self.__d
+#    if not d.enabled or d.locked:
+#      return text
+#    dm = dataman.manager()
+#    hasTitles = dm.hasTermTitles() # cached
+#    esc = defs.TERM_ESCAPE + ' '
+#    for term in dm.iterEscapeTerms():
+#      td = term.d # To improve performance
+#      if (not td.hentai or d.hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
+#        if hasTitles and term.needsReplace():
+#          try: text = term.prepareReplace(text)
+#          except Exception, e: dwarn(td.pattern, td.text, e)
+#        else:
+#          h = term.priority or td.id or id(term)
+#          key = esc % h
+#          if not term.patternNeedsRe():
+#            text = text.replace(td.pattern, key)
+#          else:
+#            try: text = term.patternRe.sub(key, text)
+#            except Exception, e: dwarn(td.pattern, td.text, e)
+#        if not text:
+#          break
+#    #if text and dm.hasNameItems() and config.is_asian_language(d.targetLanguage):
+#    #  try:
+#    #    for name in dm.iterNameItems():
+#    #      if name.translation:
+#    #        text = name.prepareReplace(text)
+#    #  except Exception, e: dwarn(e)
+#    return text
+#
+#  def applyEscapeTerms(self, text, language):
+#    """
+#    @param  text  unicode
+#    @param  language  unicode
+#    @return  unicode
+#    """
+#    d = self.__d
+#    if not d.enabled or d.locked:
+#      return text
+#    dm = dataman.manager()
+#    hasTitles = dm.hasTermTitles() # cached
+#    esc = defs.TERM_ESCAPE
+#    zht = language == 'zht' # cached
+#    for term in dm.iterEscapeTerms():
+#      td = term.d # To improve performance
+#      if (not td.hentai or d.hentai) and td.pattern and i18n.language_compatible_to(td.language, language):
+#        if hasTitles and term.needsReplace():
+#          try: text = term.applyReplace(text)
+#          except Exception, e: dwarn(td.pattern, td.text, e)
+#        else:
+#          #repl = term.bbcodeText if term.bbcode else term.text
+#          repl = td.text
+#          if repl:
+#            if zht and td.language == 'zhs':
+#              repl = zhs2zht(repl)
+#            if d.marked:
+#              repl = _mark_text(repl)
+#          #elif config.is_latin_language(td.language):
+#          #  repl += " "
+#          h = term.priority or td.id or id(term)
+#          key = esc % h
+#          text = text.replace(key, repl)
+#        if not text:
+#          break
+#    #if text and dm.hasNameItems() and config.is_asian_language(d.targetLanguage):
+#    #  try:
+#    #    for name in dm.iterNameItems():
+#    #      if name.translation:
+#    #        text = name.applyReplace(text)
+#    #  except Exception, e: dwarn(e)
+#    return text
+#
 #  ## MeCab ##
 #
 #  def applyWordTerms(self, text):

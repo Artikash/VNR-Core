@@ -103,6 +103,34 @@ static PyObject* Sbk_TranslationScriptManagerFunc_isEmpty(PyObject* self)
     return pyResult;
 }
 
+static PyObject* Sbk_TranslationScriptManagerFunc_isUnderline(PyObject* self)
+{
+    ::TranslationScriptManager* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::TranslationScriptManager*)Shiboken::Conversions::cppPointer(SbkpytrscriptTypes[SBK_TRANSLATIONSCRIPTMANAGER_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+
+    // Call function/method
+    {
+
+        if (!PyErr_Occurred()) {
+            // isUnderline()const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            bool cppResult = const_cast<const ::TranslationScriptManager*>(cppSelf)->isUnderline();
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+}
+
 static PyObject* Sbk_TranslationScriptManagerFunc_loadFile(PyObject* self, PyObject* pyArg)
 {
     ::TranslationScriptManager* cppSelf = 0;
@@ -147,6 +175,50 @@ static PyObject* Sbk_TranslationScriptManagerFunc_loadFile(PyObject* self, PyObj
     Sbk_TranslationScriptManagerFunc_loadFile_TypeError:
         const char* overloads[] = {"unicode", 0};
         Shiboken::setErrorAboutWrongArguments(pyArg, "pytrscript.TranslationScriptManager.loadFile", overloads);
+        return 0;
+}
+
+static PyObject* Sbk_TranslationScriptManagerFunc_setUnderline(PyObject* self, PyObject* pyArg)
+{
+    ::TranslationScriptManager* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::TranslationScriptManager*)Shiboken::Conversions::cppPointer(SbkpytrscriptTypes[SBK_TRANSLATIONSCRIPTMANAGER_IDX], (SbkObject*)self));
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: setUnderline(bool)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArg)))) {
+        overloadId = 0; // setUnderline(bool)
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_TranslationScriptManagerFunc_setUnderline_TypeError;
+
+    // Call function/method
+    {
+        bool cppArg0;
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // setUnderline(bool)
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            cppSelf->setUnderline(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+        }
+    }
+
+    if (PyErr_Occurred()) {
+        return 0;
+    }
+    Py_RETURN_NONE;
+
+    Sbk_TranslationScriptManagerFunc_setUnderline_TypeError:
+        const char* overloads[] = {"bool", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pytrscript.TranslationScriptManager.setUnderline", overloads);
         return 0;
 }
 
@@ -228,7 +300,9 @@ static PyObject* Sbk_TranslationScriptManagerFunc_translate(PyObject* self, PyOb
 static PyMethodDef Sbk_TranslationScriptManager_methods[] = {
     {"clear", (PyCFunction)Sbk_TranslationScriptManagerFunc_clear, METH_NOARGS},
     {"isEmpty", (PyCFunction)Sbk_TranslationScriptManagerFunc_isEmpty, METH_NOARGS},
+    {"isUnderline", (PyCFunction)Sbk_TranslationScriptManagerFunc_isUnderline, METH_NOARGS},
     {"loadFile", (PyCFunction)Sbk_TranslationScriptManagerFunc_loadFile, METH_O},
+    {"setUnderline", (PyCFunction)Sbk_TranslationScriptManagerFunc_setUnderline, METH_O},
     {"size", (PyCFunction)Sbk_TranslationScriptManagerFunc_size, METH_NOARGS},
     {"translate", (PyCFunction)Sbk_TranslationScriptManagerFunc_translate, METH_O},
 
