@@ -56,6 +56,7 @@ class _TermManager:
     # For saving terms
     self.updateTime = 0 # float
 
+    self.targetLanguage = 'ja' # str  targetLanguage
     self.targetLanguages = {} # [str language:float time]
 
     self.saveMutex = QMutex()
@@ -122,8 +123,8 @@ class _TermManager:
             return
 
           ok = self._saveTerms(saveTime, terms, type, lang, gameIds, hentai, marked)
-          if not ok:
-            dwarn("failed to save terms: type = %s, lang = %s" % (type, lang))
+          #if not ok:
+          #  dwarn("failed to save terms: type = %s, lang = %s" % (type, lang))
 
         langs[lang] = saveTime
 
@@ -148,7 +149,9 @@ class _TermManager:
     if not os.path.exists(dir):
       skfileio.makedirs(dir)
     try:
+      empty = True
       with open(path, 'w') as f:
+        f.write(self._termHeader(saveTime, type, language, gameIds, hentai, marked))
         for td in self._iterTermData(terms, type, language, gameIds, hentai):
           if saveTime < self.updateTime:
             raise Exception("cancel saving out-of-date terms")
@@ -167,18 +170,33 @@ class _TermManager:
           f.write(
               (("r\t%s\t%s\n" if td.regex else "\t%s\t%s\n") % (pattern, repl)) if repl else
               (("r\t%s\n" if td.regex else "\t%s\n") % pattern))
+          empty = False
 
       man = self._createScriptManager(type, language)
       if not man.isEmpty():
         man.clear()
-      if man.loadFile(path):
+      if not empty and man.loadFile(path):
         dprint("type = %s, lang = %s, count = %s" % (type, language, man.size()))
         return True
     except Exception, e:
       dwarn(e)
 
-    #skfileio.removefile(path) # TODO: Remove file when failed
+    skfileio.removefile(path) # Remove file when failed
     return False
+
+  @staticmethod
+  def _termHeader(saveTime, type, language, gameIds, hentai, marked):
+    """
+    @param  terms  [Term]
+    @param  type  str
+    @param  language  str
+    @param  gameIds  set(int gameId)
+    @param  hentai  bool
+    @return  unicode
+    """
+    return "# unixtime = %s, type = %s, language = %s, hentai = %s, underline = %s, games = %s\n" % (
+        saveTime, type, language, hentai, marked,
+        ','.join(gameIds) if gameIds else 'empty')
 
   @staticmethod
   def _iterTermData(terms, type, language, gameIds, hentai):
@@ -209,7 +227,7 @@ class _TermManager:
     """
     # TODO: Schedule to update terms when man is missing
     man = self.getScriptManager(type, language)
-    if man is None and language not in self.targetLanguages:
+    if man is None:
       self.targetLanguages[language] = 0
       self.rebuildCacheLater()
     return man.translate(text) if man and not man.isEmpty() else text
@@ -222,14 +240,15 @@ class TermManager(QObject):
     super(TermManager, self).__init__(parent)
     self.__d = _TermManager(self)
 
-  cacheRebuilt = Signal()
+  cacheChanged = Signal()
 
   ## Properties ##
 
   #def isLocked(self): return self.__d.locked
 
-  def setLanguage(self, v):
+  def setTargetLanguage(self, v):
     if v:
+      self.__d.targetLanguage = v
       self.__d.targetLanguages = {v:0} # reset languages
 
   def isEnabled(self): return self.__d.enabled
@@ -264,6 +283,8 @@ class TermManager(QObject):
     d = self.__d
     d.updateTime = time()
     d.rebuildCacheLater()
+
+  warmup = invalidateCache
 
   #def warmup(self, async=True, interval=0): # bool, int
   #  d = self.__d
@@ -329,7 +350,7 @@ class TermManager(QObject):
     @param  language  unicode
     @return  unicode
     """
-    return self.__d.applyTerms(text, 'speech', language or self.__d.language)
+    return self.__d.applyTerms(text, 'speech', language or self.__d.targetLanguage)
 
   def applyOcrTerms(self, text, language=None):
     """
@@ -337,7 +358,7 @@ class TermManager(QObject):
     @param  language  unicode
     @return  unicode
     """
-    return self.__d.applyTerms(text, 'ocr', language or self.__d.language)
+    return self.__d.applyTerms(text, 'ocr', language or self.__d.targetLanguage)
 
   def applySourceTerms(self, text, language):
     """
@@ -348,7 +369,7 @@ class TermManager(QObject):
     dm = dataman.manager()
     d = self.__d
     text = d.applyTerms(dm.iterSourceTerms(), text, language)
-    #if text and dm.hasNameItems() and config.is_latin_language(d.language):
+    #if text and dm.hasNameItems() and config.is_latin_language(d.targetLanguage):
     #  try:
     #    for name in dm.iterNameItems():
     #      if name.translation:
@@ -406,7 +427,7 @@ class TermManager(QObject):
             except Exception, e: dwarn(td.pattern, td.text, e)
         if not text:
           break
-    #if text and dm.hasNameItems() and config.is_asian_language(d.language):
+    #if text and dm.hasNameItems() and config.is_asian_language(d.targetLanguage):
     #  try:
     #    for name in dm.iterNameItems():
     #      if name.translation:
@@ -448,7 +469,7 @@ class TermManager(QObject):
           text = text.replace(key, repl)
         if not text:
           break
-    #if text and dm.hasNameItems() and config.is_asian_language(d.language):
+    #if text and dm.hasNameItems() and config.is_asian_language(d.targetLanguage):
     #  try:
     #    for name in dm.iterNameItems():
     #      if name.translation:

@@ -120,7 +120,8 @@ class _OcrImageObject(object):
     #with SkProfiler(): # take around 0.5 seconds
     text = self._readImage()
     if text:
-      text = termman.manager().applyOcrTerms(text)
+      lang = self.settings.language()
+      text = termman.manager().applyOcrTerms(text, lang)
     return text
 
   def captureWindow(self):

@@ -589,8 +589,8 @@ class _MainObject(object):
 
     ss = settings.global_()
 
-    ret.setLanguage(ss.userLanguage())
-    ss.userLanguageChanged.connect(ret.setLanguage)
+    ret.setTargetLanguage(ss.userLanguage())
+    ss.userLanguageChanged.connect(ret.setTargetLanguage)
 
     ret.setEnabled(ss.isTermEnabled())
     ss.termEnabledChanged.connect(ret.setEnabled)
@@ -603,8 +603,17 @@ class _MainObject(object):
 
     ss.termMarkedChanged.connect(ret.clearMarkCache)
 
-    for sig in ss.hentaiEnabledChanged, ss.termMarkedChanged:
-      sig.connect(self.translatorManager.clearCache)
+    for sig in (
+        ss.userIdChanged, ss.userLanguageChanged,
+        ss.hentaiEnabledChanged, ss.termMarkedChanged,
+        self.gameManager.processChanged,
+        self.dataManager.termsChanged,
+      ):
+      sig.connect(ret.invalidateCache)
+
+    #for sig in ss.hentaiEnabledChanged, ss.termMarkedChanged:
+    #  sig.connect(self.translatorManager.clearCache)
+    #ret.cacheChanged.connect(self.translatorManager.clearCache)
 
     #ret.setConvertsChinese(ss.convertsChinese())
     #ss.convertsChineseChanged.connect(ret.setConvertsChinese)
@@ -705,12 +714,10 @@ class _MainObject(object):
     ss.lecEnabledChanged.connect(ret.setLecEnabled)
 
     for sig in (
+        self.termManager.cacheChanged,
         ss.machineTranslatorChanged,
         ss.termEnabledChanged,
-        #ss.userLanguageChanged,
-        self.gameManager.processChanged,
-        self.dataManager.termsChanged,
-        ):
+      ):
       sig.connect(ret.clearCache)
 
     qApp = QCoreApplication.instance()
@@ -1579,9 +1586,9 @@ class MainObject(QObject):
     #  dprint("warm up google tts engine")
     #  d.googleTtsEngine.warmup()
 
-    #if dm.hasTerms():
-    #  dprint("warm up dictionary terms")
-    #  d.termManager.warmup()
+    if dm.hasTerms():
+      dprint("warm up dictionary terms")
+      d.termManager.warmup()
 
     dprint("login later")
     skevents.runlater(dm.reloadUser)
@@ -1831,6 +1838,11 @@ class MainObject(QObject):
   def showCommentHelp(self): _MainObject.showWindow(self.__d.commentHelpDialog)
   def showReferenceHelp(self): _MainObject.showWindow(self.__d.referenceHelpDialog)
   def showVoiceHelp(self): _MainObject.showWindow(self.__d.voiceHelpDialog)
+
+  def showTermCache(self):
+    growl.msg(my.tr("Browse current enabled terms"))
+    import osutil
+    osutil.open_location(rc.DIR_TMP_TERM)
 
   def showGameWizard(self, path=None):
     w = self.__d.gameWizardDialog
@@ -2189,6 +2201,8 @@ class MainObjectProxy(QObject):
   def showVoiceSettings(self): manager().showVoiceSettings()
   @Slot()
   def showTermHelp(self): manager().showTermHelp()
+  @Slot()
+  def showTermCache(self): manager().showTermCache()
   @Slot()
   def showCommentHelp(self): manager().showCommentHelp()
   @Slot()

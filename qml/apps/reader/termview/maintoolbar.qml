@@ -152,6 +152,13 @@ Item { id: root_
       }
 
       Desktop.ToolButton {
+        text: Sk.tr("Browse")
+        visible: root_.enabled && !!root_.userId
+        tooltip: qsTr("Browse current enabled rules")
+        onClicked: mainPlugin_.showTermCache()
+      }
+
+      Desktop.ToolButton {
         text: Sk.tr("Update")
         visible: root_.enabled && !!root_.userId
         tooltip: qsTr("Update entries online")
