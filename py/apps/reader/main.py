@@ -1689,8 +1689,6 @@ class MainObject(QObject):
 
     dprint("leave")
 
-    d.termManager.invalidateCache() # TO BE REMOVED
-
     #skevents.runlater(d.ocrManager.start, 5000) # 5 seconds
     #self.showReferenceView()
     #  import jsonapi

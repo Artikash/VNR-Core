@@ -56,7 +56,7 @@ class _TermManager:
     # For saving terms
     self.updateTime = 0 # float
 
-    self.targetLanguages = set() # [str language]
+    self.targetLanguages = {} # [str language:float time]
 
     self.saveMutex = QMutex()
 
@@ -78,7 +78,6 @@ class _TermManager:
 
   def getScriptManager(self, type, language): # unicode, unicode -> TranslationScriptManager
     return self.scripts.get(type + language)
-
 
   #@classmethod
   #def needsEscape(cls):
@@ -113,16 +112,20 @@ class _TermManager:
 
     dprint("term count = %s" % len(terms))
 
-    for lang in list(self.targetLanguages): # back up language in case it is changed
-      for type in self.SAVE_TYPES:
+    langs = self.targetLanguages
+    #for lang,ts in langs.iteritems():
+    for lang,ts in langs.items(): # back up items
+      if ts < self.updateTime: # skip language that does not out of date
+        for type in self.SAVE_TYPES:
+          if saveTime < self.updateTime:
+            dwarn("leave: cancel saving out-of-date terms")
+            return
 
-        if saveTime < self.updateTime:
-          dwarn("leave: cancel saving out-of-date terms")
-          return
+          ok = self._saveTerms(saveTime, terms, type, lang, gameIds, hentai, marked)
+          if not ok:
+            dwarn("failed to save terms: type = %s, lang = %s" % (type, lang))
 
-        ok = self._saveTerms(saveTime, terms, type, lang, gameIds, hentai, marked)
-        if not ok:
-          dwarn("failed to save terms: type = %s, lang = %s" % (type, lang))
+        langs[lang] = saveTime
 
     dprint("leave")
 
@@ -207,7 +210,7 @@ class _TermManager:
     # TODO: Schedule to update terms when man is missing
     man = self.getScriptManager(type, language)
     if man is None and language not in self.targetLanguages:
-      self.targetLanguages.add(language)
+      self.targetLanguages[language] = 0
       self.rebuildCacheLater()
     return man.translate(text) if man and not man.isEmpty() else text
 
@@ -225,7 +228,9 @@ class TermManager(QObject):
 
   #def isLocked(self): return self.__d.locked
 
-  def setLanguage(self, v): self.__d.targetLanguages = set([v]) # reset languages
+  def setLanguage(self, v):
+    if v:
+      self.__d.targetLanguages = {v:0} # reset languages
 
   def isEnabled(self): return self.__d.enabled
   def setEnabled(self, value): self.__d.enabled = value

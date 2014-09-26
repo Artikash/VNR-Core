@@ -36,6 +36,8 @@ TJ = {
   u"查": u"査",
   u"姬": u"姫",
   u"惠": u"恵",
+  u"德": u"徳",
+  u"綠": u"緑",
 
   u"你": u"ｲ尓",
   u"妳": u"ｲ尓",
@@ -91,7 +93,7 @@ def zht2ja(t): # unicode -> unicode
   return ''.join((TJ.get(c) or c for c in t))
 
 if __name__ == '__main__':
-  ja = u"裡學聯衝擊特首辦被截應"
+  ja = u"壹周刊:施明德說，目前藍綠惡鬥致使台灣無法變"
   zh = zht2ja(ja)
   print u"歲"== u"歳"
   print u"內"== u"内"
