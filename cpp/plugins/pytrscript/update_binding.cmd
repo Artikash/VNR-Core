@@ -23,7 +23,7 @@ set TYPESYSTEM_PATH=%TYPESYSTEM_HOME%/cpp;%TYPESYSTEM_HOME%/stl
 set TARGET_HOME=../../libs/%LIBTARGET%
 set QT_HOME=c:/qt/4
 ::set PYTHON_HOME=%CD%/../../../../Python
-set PYTHON_HOME=c:/python27
+::set PYTHON_HOME=c:/python27
 set PYTHON_HOME=z:/Local/Windows/Developer/Python
 set PYSIDE_HOME=%PYTHON_HOME%/Lib/site-packages/PySide
 
@@ -50,12 +50,11 @@ set INC=%INC%;%PYSIDE_HOME%/include/PySide
 set INC=%INC%;%PYSIDE_HOME%/include/PySide/QtCore
 set INC=%INC%;%TARGET_HOME%;%LIBPATH%
 set INC=%INC%;..
+
 set _=
 ::set _= %_% --debug-level=full --no-suppress-warnings
-
 :: Disable Qt
 ::set _=%_% --enable-pyside-extensions
-
 set _=%_% --enable-parent-ctor-heuristic
 set _=%_% --use-isnull-as-nb_nonzero
 set _=%_% --enable-return-value-heuristic

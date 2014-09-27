@@ -18,13 +18,13 @@ rm -Rf %OUTDIR% %LOG%
 
 set LIBPATH=%CD%/../../libs
 set TYPESYSTEM_HOME=%CD%/../../typesystems
-set TYPESYSTEM_PATH=%TYPESYSTEM_HOME%/stl
+set TYPESYSTEM_PATH=%TYPESYSTEM_HOME%/cpp;%TYPESYSTEM_HOME%/stl
 
 set TARGET_HOME=../../libs/%LIBTARGET%
 set QT_HOME=c:/qt/4
 ::set PYTHON_HOME=%CD%/../../../../Python
-set PYTHON_HOME=c:/python27
-::set PYTHON_HOME=z:/Local/Windows/Developer/Python
+::set PYTHON_HOME=c:/python27
+set PYTHON_HOME=z:/Local/Windows/Developer/Python
 set PYSIDE_HOME=%PYTHON_HOME%/Lib/site-packages/PySide
 
 set PATH=%QT_HOME%/bin;%PYSIDE_HOME%;%PATH%

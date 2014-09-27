@@ -5,7 +5,7 @@
 // 4/7/2013 jichi
 
 #include "sakurakit/skglobal.h"
-#include <QtCore/QString>
+#include <string>
 
 class WinTts_p;
 class WinTts
@@ -23,13 +23,13 @@ public:
   bool isValid() const;
 
   // Example registry: L"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Speech\\Voices\\Tokens\\VW Misaki"
-  bool setVoice(const QString& registry);
-  QString voice() const;
+  bool setVoice(const std::wstring& registry);
+  std::wstring voice() const;
   bool hasVoice() const;
 
   // - Actions -
 
-  bool speak(const QString& text, bool async = false) const;
+  bool speak(const std::wstring& text, bool async = false) const;
   bool purge(bool async = false) const; // clear previous speak
 };
 

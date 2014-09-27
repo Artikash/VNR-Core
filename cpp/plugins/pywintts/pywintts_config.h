@@ -15,7 +15,7 @@
 #endif // __clang__
 
 //#include <PySide/globalreceiver.h>
-#include <pyside_global.h>  // Essential
+//#include <pyside_global.h>  // Essential for Qt applications
 //#include <QtCore>
 #include "pywintts.h"
 
