@@ -32,24 +32,36 @@ enum { SCRIPT_RULE_DELIM_LEN = 1 };
 
 namespace { // unnamed
 
+const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
+
+// Force inlining text rendering functions
+#define _underline_text(text) \
+  (L"<span style=\"text-decoration:underline\">" + (text) + L"</span>")
+
+#define render_text(text, underline) \
+  ((text).empty() ? std::wstring(): (underline) ? _underline_text((text)) : (text))
+
 struct TranslationScriptRule
 {
+  mutable bool empty;
   std::wstring source;
   std::wstring target;
   boost::wregex *sourceRe; // cached compiled regex
 
-  TranslationScriptRule() : sourceRe(nullptr) {}
+  TranslationScriptRule() : empty(true), sourceRe(nullptr) {}
   ~TranslationScriptRule() { if (sourceRe) delete sourceRe; }
 
-  bool init(const std::wstring &s, const std::wstring &t, bool regex)
+  void init(const std::wstring &s, const std::wstring &t, bool regex)
   {
+    empty = false;
     if (regex) {
       boost::wregex *re = nullptr;
       try {
         re = new boost::wregex(s);
       } catch (...) { // boost::bad_pattern
         DWOUT("invalid regex pattern:" << s);
-        return false;
+        empty = true;
+        return;
       }
 
       sourceRe = re;
@@ -59,14 +71,43 @@ struct TranslationScriptRule
       source = s;
       target = t;
     }
-    return true;
   }
 
-  bool init(const boost::tuple<std::wstring, std::wstring, bool> &t)
-  { return init(boost::get<0>(t), boost::get<1>(t), boost::get<2>(t)); }
-};
+  // Replacement
+private:
+  void string_replace(std::wstring &ret, bool underline) const
+  {
+    if (target.empty())
+      boost::erase_all(ret, source);
+    else
+      boost::replace_all(ret, source, render_text(target, underline));
+  }
 
-const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
+  void regex_replace(std::wstring &ret, bool underline) const
+  {
+    //Q_ASSERT(sourceRe);
+    try  {
+      boost::wsmatch m; // search first, which has less opportunity to happen
+      // match_default is the default value
+      // format_all is needed to enable all features, but it is sligntly slower
+      if (boost::regex_search(ret, m, *sourceRe))
+        ret = boost::regex_replace(ret, *sourceRe, render_text(target, underline),
+            boost::match_default|boost::format_all);
+    } catch (...) {
+      DWOUT("invalid regex expression:" << target);
+      empty = true;
+    }
+  }
+
+public:
+  void replace(std::wstring &ret, bool underline) const
+  {
+    if (sourceRe)
+      regex_replace(ret, underline);
+    else if (boost::algorithm::contains(ret, source)) // check exist first which is faster and could avoid rendering target
+      string_replace(ret, underline);
+  }
+};
 
 } // unnamed namespace
 
@@ -74,6 +115,7 @@ const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
 
 class TranslationScriptManagerPrivate
 {
+
 public:
   //QReadWriteLock lock;
 
@@ -102,14 +144,8 @@ public:
     if (rules)
       delete[] rules;
     rules = new TranslationScriptRule[size];
+
   }
-
-  std::wstring renderTarget(const std::wstring &text) const
-  { return underline ? underlineText(text) : text; }
-
-private:
-  static std::wstring underlineText(const std::wstring &text)
-  { return L"<span style=\"text-decoration:underline\">" + text + L"</span>";  }
 };
 
 /** Public class */
@@ -125,11 +161,7 @@ bool TranslationScriptManager::isEmpty() const { return !d_->ruleCount; }
 bool TranslationScriptManager::isUnderline() const { return d_->underline; }
 void TranslationScriptManager::setUnderline(bool value) { d_->underline = value; }
 
-void TranslationScriptManager::clear()
-{
-  //QWriteLocker locker(&d_->lock);
-  d_->clear();
-}
+void TranslationScriptManager::clear() { d_->clear(); }
 
 // Initialization
 bool TranslationScriptManager::loadFile(const std::wstring &path)
@@ -159,7 +191,8 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
         left = line.substr(textStartIndex, index - textStartIndex); //.trimmed()
         right = line.substr(index + SCRIPT_RULE_DELIM_LEN);
       }
-      lines.push_back(boost::make_tuple(left, right, regex));
+      if (!left.empty())
+        lines.push_back(boost::make_tuple(left, right, regex));
     }
 
   fin.close();
@@ -174,7 +207,7 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
 
   int i = 0;
   BOOST_FOREACH (const auto &it, lines)
-    d_->rules[i++].init(it);
+    d_->rules[i++].init(boost::get<0>(it), boost::get<1>(it), boost::get<2>(it));
 
   return true;
 }
@@ -190,22 +223,8 @@ std::wstring TranslationScriptManager::translate(const std::wstring &text) const
   if (d_->ruleCount && d_->rules)
     for (int i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
-
-      if (rule.sourceRe) {
-        // format_all is needed to enable all features
-        try  {
-          ret = rule.target.empty()
-              ? boost::regex_replace(ret, *rule.sourceRe, "", boost::match_default|boost::format_all) // there is no regex_erase
-              : boost::regex_replace(ret, *rule.sourceRe, d_->renderTarget(rule.target), boost::match_default|boost::format_all);
-        } catch (...) {
-          DWOUT("invalid regex expression:" << rule.target);
-        }
-      } else if (!rule.source.empty()) {
-        if (rule.target.empty())
-          boost::erase_all(ret, rule.source);
-        else
-          boost::replace_all(ret, rule.source, d_->renderTarget(rule.target));
-      }
+      if (!rule.empty)
+        rule.replace(ret, d_->underline);
 
 #ifdef DEBUG_RULE
       if (previous != ret) {

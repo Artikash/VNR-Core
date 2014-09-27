@@ -530,7 +530,7 @@ class TermManager(QObject):
     """
     d = self.__d
     # 9/25/2014: Qt 0.0003 seconds
-    # 9/26/2014: Boost 0.001 seconds
+    # 9/27/2014: Boost 0.0005 seconds, underline = True
     #with SkProfiler():
     return d.applyTerms(text, 'target', language) if d.enabled else text
     #if d.marked and language.startswith('zh'):
@@ -546,7 +546,7 @@ class TermManager(QObject):
     """
     d = self.__d
     # 9/25/2014: Qt 3e-05 seconds
-    # 9/26/2014: Boost 3e-05 seconds
+    # 9/26/2014: Boost 4e-05 seconds
     #with SkProfiler():
     return d.applyTerms(text, 'origin', language or d.targetLanguage) if d.enabled else text
     #return self.__d.applyTerms(dataman.manager().iterOriginTerms(), text, language)
@@ -607,8 +607,8 @@ class TermManager(QObject):
     """
     d = self.__d
     # 9/25/2014: Qt 0.01 seconds
-    # 9/26/2014: Boost 0.03 seconds
-    # 9/26/2014: Boost with grouped titles 0.002 seconds
+    # 9/27/2014: Boost 0.033 seconds, underline = True
+    # 9/27/2014: Boost 0.007 seconds, by delay rendering underline
     #with SkProfiler():
     return d.applyTerms(text, 'escape_source', language) if d.enabled else text
 
@@ -622,7 +622,8 @@ class TermManager(QObject):
     if not d.enabled:
       return text
     # 9/25/2014: Qt 0.009 seconds
-    # 9/26/2014: Boost 0.07 seconds
+    # 9/27/2014: Boost 0.05 seconds, underline = True
+    # 9/27/2014: Boost 0.01 seconds, by delaying rendering underline
     #with SkProfiler():
     ret = d.applyTerms(text, 'escape_target', language)
     if d.marked and language.startswith('zh'):

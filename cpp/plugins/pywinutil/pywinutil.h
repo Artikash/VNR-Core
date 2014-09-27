@@ -4,12 +4,12 @@
 // pywinutil.h
 // 6/13/2013 jichi
 
-#include <QtCore/QString>
+#include <string>
 
 namespace WinUtil {
-QString resolveLink(const QString &lnkfile);
-QString toShortPath(const QString &longpath);
-QString toLongPath(const QString &shortpath);
+std::wstring resolveLink(const std::wstring &lnkfile);
+std::wstring toShortPath(const std::wstring &longpath);
+std::wstring toLongPath(const std::wstring &shortpath);
 } // namespace WinUtil
 
 #endif // PYWINUTIL

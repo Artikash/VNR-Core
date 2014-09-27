@@ -66,7 +66,7 @@ bool Msime_ja::isValid() const { return d_->ime; }
 
 // - Actions -
 
-QString Msime_ja::toYomigana(const QString& text, int type) const
+QString Msime_ja::toYomigana(const QString &text, int type) const
 {
   QString ret;
   if (d_->ime)
@@ -92,7 +92,7 @@ QString Msime_ja::toKanji(const QString &text, ulong flags) const
   return ret;
 }
 
-QList<QPair<QString, QString> > Msime_ja::toFurigana(const QString& text, int type) const
+QList<QPair<QString, QString> > Msime_ja::toFurigana(const QString &text, int type) const
 {
   QList<QPair<QString, QString> > ret;
   if (d_->ime)

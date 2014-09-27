@@ -1,10 +1,6 @@
 
 // default includes
 #include <shiboken.h>
-#include <pysidesignal.h>
-#include <pysideproperty.h>
-#include <pyside.h>
-#include <destroylistener.h>
 #include <typeresolver.h>
 #include <typeinfo>
 #include "pywinutil_python.h"
@@ -26,9 +22,9 @@ static PyObject* Sbk_WinUtilFunc_resolveLink(PyObject* self, PyObject* pyArg)
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: resolveLink(QString)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
-        overloadId = 0; // resolveLink(QString)
+    // 0: resolveLink(std::wstring)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpywinutilTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // resolveLink(std::wstring)
     }
 
     // Function signature not found.
@@ -36,15 +32,15 @@ static PyObject* Sbk_WinUtilFunc_resolveLink(PyObject* self, PyObject* pyArg)
 
     // Call function/method
     {
-        ::QString cppArg0 = ::QString();
+        ::std::wstring cppArg0 = ::std::wstring();
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // resolveLink(QString)
+            // resolveLink(std::wstring)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            QString cppResult = ::WinUtil::resolveLink(cppArg0);
+            std::wstring cppResult = ::WinUtil::resolveLink(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
+            pyResult = Shiboken::Conversions::copyToPython(SbkpywinutilTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
         }
     }
 
@@ -55,7 +51,7 @@ static PyObject* Sbk_WinUtilFunc_resolveLink(PyObject* self, PyObject* pyArg)
     return pyResult;
 
     Sbk_WinUtilFunc_resolveLink_TypeError:
-        const char* overloads[] = {"unicode", 0};
+        const char* overloads[] = {"std::wstring", 0};
         Shiboken::setErrorAboutWrongArguments(pyArg, "pywinutil.WinUtil.resolveLink", overloads);
         return 0;
 }
@@ -68,9 +64,9 @@ static PyObject* Sbk_WinUtilFunc_toLongPath(PyObject* self, PyObject* pyArg)
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: toLongPath(QString)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
-        overloadId = 0; // toLongPath(QString)
+    // 0: toLongPath(std::wstring)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpywinutilTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // toLongPath(std::wstring)
     }
 
     // Function signature not found.
@@ -78,15 +74,15 @@ static PyObject* Sbk_WinUtilFunc_toLongPath(PyObject* self, PyObject* pyArg)
 
     // Call function/method
     {
-        ::QString cppArg0 = ::QString();
+        ::std::wstring cppArg0 = ::std::wstring();
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // toLongPath(QString)
+            // toLongPath(std::wstring)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            QString cppResult = ::WinUtil::toLongPath(cppArg0);
+            std::wstring cppResult = ::WinUtil::toLongPath(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
+            pyResult = Shiboken::Conversions::copyToPython(SbkpywinutilTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
         }
     }
 
@@ -97,7 +93,7 @@ static PyObject* Sbk_WinUtilFunc_toLongPath(PyObject* self, PyObject* pyArg)
     return pyResult;
 
     Sbk_WinUtilFunc_toLongPath_TypeError:
-        const char* overloads[] = {"unicode", 0};
+        const char* overloads[] = {"std::wstring", 0};
         Shiboken::setErrorAboutWrongArguments(pyArg, "pywinutil.WinUtil.toLongPath", overloads);
         return 0;
 }
@@ -110,9 +106,9 @@ static PyObject* Sbk_WinUtilFunc_toShortPath(PyObject* self, PyObject* pyArg)
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: toShortPath(QString)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
-        overloadId = 0; // toShortPath(QString)
+    // 0: toShortPath(std::wstring)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpywinutilTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // toShortPath(std::wstring)
     }
 
     // Function signature not found.
@@ -120,15 +116,15 @@ static PyObject* Sbk_WinUtilFunc_toShortPath(PyObject* self, PyObject* pyArg)
 
     // Call function/method
     {
-        ::QString cppArg0 = ::QString();
+        ::std::wstring cppArg0 = ::std::wstring();
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // toShortPath(QString)
+            // toShortPath(std::wstring)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            QString cppResult = ::WinUtil::toShortPath(cppArg0);
+            std::wstring cppResult = ::WinUtil::toShortPath(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
+            pyResult = Shiboken::Conversions::copyToPython(SbkpywinutilTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
         }
     }
 
@@ -139,7 +135,7 @@ static PyObject* Sbk_WinUtilFunc_toShortPath(PyObject* self, PyObject* pyArg)
     return pyResult;
 
     Sbk_WinUtilFunc_toShortPath_TypeError:
-        const char* overloads[] = {"unicode", 0};
+        const char* overloads[] = {"std::wstring", 0};
         Shiboken::setErrorAboutWrongArguments(pyArg, "pywinutil.WinUtil.toShortPath", overloads);
         return 0;
 }
