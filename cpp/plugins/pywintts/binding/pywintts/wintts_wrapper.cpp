@@ -1,10 +1,6 @@
 
 // default includes
 #include <shiboken.h>
-#include <pysidesignal.h>
-#include <pysideproperty.h>
-#include <pyside.h>
-#include <destroylistener.h>
 #include <typeresolver.h>
 #include <typeinfo>
 #include "pywintts_python.h"
@@ -192,9 +188,9 @@ static PyObject* Sbk_WinTtsFunc_setVoice(PyObject* self, PyObject* pyArg)
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: setVoice(QString)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
-        overloadId = 0; // setVoice(QString)
+    // 0: setVoice(std::wstring)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpywinttsTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // setVoice(std::wstring)
     }
 
     // Function signature not found.
@@ -202,11 +198,11 @@ static PyObject* Sbk_WinTtsFunc_setVoice(PyObject* self, PyObject* pyArg)
 
     // Call function/method
     {
-        ::QString cppArg0 = ::QString();
+        ::std::wstring cppArg0 = ::std::wstring();
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // setVoice(QString)
+            // setVoice(std::wstring)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
             bool cppResult = cppSelf->setVoice(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
@@ -221,7 +217,7 @@ static PyObject* Sbk_WinTtsFunc_setVoice(PyObject* self, PyObject* pyArg)
     return pyResult;
 
     Sbk_WinTtsFunc_setVoice_TypeError:
-        const char* overloads[] = {"unicode", 0};
+        const char* overloads[] = {"std::wstring", 0};
         Shiboken::setErrorAboutWrongArguments(pyArg, "pywintts.WinTts.setVoice", overloads);
         return 0;
 }
@@ -255,12 +251,12 @@ static PyObject* Sbk_WinTtsFunc_speak(PyObject* self, PyObject* args, PyObject* 
 
 
     // Overloaded function decisor
-    // 0: speak(QString,bool)const
-    if ((pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArgs[0])))) {
+    // 0: speak(std::wstring,bool)const
+    if ((pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(SbkpywinttsTypeConverters[SBK_STD_WSTRING_IDX], (pyArgs[0])))) {
         if (numArgs == 1) {
-            overloadId = 0; // speak(QString,bool)const
+            overloadId = 0; // speak(std::wstring,bool)const
         } else if ((pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[1])))) {
-            overloadId = 0; // speak(QString,bool)const
+            overloadId = 0; // speak(std::wstring,bool)const
         }
     }
 
@@ -280,13 +276,13 @@ static PyObject* Sbk_WinTtsFunc_speak(PyObject* self, PyObject* args, PyObject* 
                     goto Sbk_WinTtsFunc_speak_TypeError;
             }
         }
-        ::QString cppArg0 = ::QString();
+        ::std::wstring cppArg0 = ::std::wstring();
         pythonToCpp[0](pyArgs[0], &cppArg0);
         bool cppArg1 = false;
         if (pythonToCpp[1]) pythonToCpp[1](pyArgs[1], &cppArg1);
 
         if (!PyErr_Occurred()) {
-            // speak(QString,bool)const
+            // speak(std::wstring,bool)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
             bool cppResult = const_cast<const ::WinTts*>(cppSelf)->speak(cppArg0, cppArg1);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
@@ -301,7 +297,7 @@ static PyObject* Sbk_WinTtsFunc_speak(PyObject* self, PyObject* args, PyObject* 
     return pyResult;
 
     Sbk_WinTtsFunc_speak_TypeError:
-        const char* overloads[] = {"unicode, bool = false", 0};
+        const char* overloads[] = {"std::wstring, bool = false", 0};
         Shiboken::setErrorAboutWrongArguments(args, "pywintts.WinTts.speak", overloads);
         return 0;
 }
@@ -321,9 +317,9 @@ static PyObject* Sbk_WinTtsFunc_voice(PyObject* self)
         if (!PyErr_Occurred()) {
             // voice()const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            QString cppResult = const_cast<const ::WinTts*>(cppSelf)->voice();
+            std::wstring cppResult = const_cast<const ::WinTts*>(cppSelf)->voice();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
+            pyResult = Shiboken::Conversions::copyToPython(SbkpywinttsTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
         }
     }
 

@@ -200,25 +200,34 @@ CONFIG(qmlplugin) {
 
 CONFIG(pysideplugin) {
   message(CONFIG pysideplugin)
-  CONFIG += pyplugin
+  CONFIG += pyplugin shiboken
   QT += core
 
-  LIBS += -L$$PYSIDE_HOME -lshiboken-python2.7 -lpyside-python2.7
+  LIBS += -L$$PYSIDE_HOME -lpyside-python2.7
   INCLUDEPATH += \
     $$PYSIDE_HOME/include/PySide \
     $$PYSIDE_HOME/include/PySide-2.7 \
-    $$PYSIDE_HOME/include/shiboken \
-    $$PYSIDE_HOME/include/shiboken-2.7 \
-    $$PYSIDE_HOME/include
+    $$PYSIDE_HOME/include \
+    $$PYSIDE_HOME/include/PySide/QtCore \
+    $$PYSIDE_HOME/include/PySide/QtGui \
+    $$QT_HOME/include/QtGui # needed by pyside qtcore
+}
 
-  INCLUDEPATH += $$QT_HOME/include/QtGui # needed by pyside qtcore
+CONFIG(shiboken) {
+  message(CONFIG shiboken)
+
+  LIBS += -L$$PYSIDE_HOME -lshiboken-python2.7
+  INCLUDEPATH += \
+    $$PYSIDE_HOME/include/shiboken \
+    $$PYSIDE_HOME/include/shiboken-2.7
 
   # Ignore warnings from Shiboken and PySide
   mac {
-    QMAKE_CXXFLAGS_WARN_ON += -Wno-header-guard
-    QMAKE_CXXFLAGS_WARN_ON += -Wno-mismatched-tags  # struct SbkObject was previously declared as a class
-    QMAKE_CXXFLAGS_WARN_ON += -Wno-missing-field-initializers
-    QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter
+    QMAKE_CXXFLAGS_WARN_ON += \
+        -Wno-header-guard \
+        -Wno-mismatched-tags   \
+        -Wno-missing-field-initializers \
+        -Wno-unused-parameter
   }
   win32 {
     # QMAKE_CXXFLAGS_WARN_ON does not work on windows

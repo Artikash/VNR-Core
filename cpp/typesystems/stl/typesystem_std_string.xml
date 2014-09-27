@@ -19,6 +19,29 @@ For <string>.
   </inject-code>
   -->
 
+  <!-- Shiboken has built-in support for this type
+  <primitive-type name="std::string" target-lang-api-name="PyString">
+    <include file-name="string" location="global"/>
+    <conversion-rule>
+      <native-to-target>
+      const int N = %in.size();
+      const char *str = %in.c_str();
+	  PyObject *%out = PyString_FromStringAndSize(str, N);
+      return %out;
+      </native-to-target>
+      <target-to-native>
+        <add-conversion type="PyString">
+        const char *str = PyString_AS_STRING(%in);
+        %out = str;
+        </add-conversion>
+        <add-conversion type="Py_None">
+        %out = %OUTTYPE();
+        </add-conversion>
+      </target-to-native>
+    </conversion-rule>
+  </primitive-type>
+  -->
+
   <!-- See QString from typesystem_core_common.xml -->
   <primitive-type name="std::wstring" target-lang-api-name="PyUnicode">
     <include file-name="string" location="global"/>
