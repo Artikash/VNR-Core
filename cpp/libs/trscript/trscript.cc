@@ -34,7 +34,7 @@ namespace { // unnamed
 
 const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
 
-// Force inlining text rendering functions
+// Force inlining text rendering functions to avoid copying std::wstring on return
 #define _underline_text(text) \
   (L"<span style=\"text-decoration:underline\">" + (text) + L"</span>")
 
