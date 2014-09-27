@@ -92,7 +92,7 @@ public:
   {
     ruleCount = 0;
     if (rules) {
-      delete rules;
+      delete[] rules;
       rules = nullptr;
     }
   }
@@ -162,8 +162,10 @@ bool TahScriptManager::loadFile(const QString &path)
   }
   file.close();
 
-  if (lines.empty())
+  if (lines.empty()) {
+    d_->clear();
     return false;
+  }
 
   //QWriteLocker locker(&d_->lock);
   d_->reset(lines.size());
@@ -181,7 +183,7 @@ QString TahScriptManager::translate(const QString &text) const
   //QReadLocker locker(&d_->lock);
   QString ret = text;
 #ifdef DEBUG_RULE
-  QString previous;
+  QString previous = text;
 #endif // DEBUG_RULE
   if (d_->ruleCount && d_->rules)
     for (int i = 0; i < d_->ruleCount; i++) {

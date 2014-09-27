@@ -23,7 +23,7 @@ from sakurakit.skunicode import sjis_encodable
 from zhszht.zhszht import zhs2zht
 from cconv import cconv
 from mytr import my, mytr_
-import cacheman, config, csvutil, defs, features, growl, hashutil, i18n, main, mecabman, nameman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
+import cacheman, config, csvutil, defs, features, growl, hashutil, i18n, main, mecabman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
 
 SUBMIT_INTERVAL = 5000 # 5 seconds
 REF_SUBMIT_INTERVAL = 1000 # 1 second
@@ -1913,6 +1913,8 @@ class _Term(object):
 
   def __init__(self, q,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai):
+    #self.priority = 0 # int  assigned after sorting
+
     self.id = id                # long
     self.gameId = gameId        # long
     self._gameMd5 = gameMd5     # str
@@ -1938,12 +1940,12 @@ class _Term(object):
 
     self.selected = False       # bool
 
-    self.patternRe = None # compiled re or None
+    #self.patternRe = None # compiled re or None
     #self.bbcodeText = None # unicode or None  cached BBCode
 
-    self.replace = None # multi-replacer function or none
-    self.prepareReplace = None # multi-replacer function or none
-    self.applyReplace = None # multi-replacer function or none
+    #self.replace = None # multi-replacer function or none
+    #self.prepareReplace = None # multi-replacer function or none
+    #self.applyReplace = None # multi-replacer function or none
 
     self.dirtyProperties = set() # set([str])
 
@@ -1953,19 +1955,23 @@ class _Term(object):
     if self.id:
       self.dirtyProperties.add(name)
     self.setDirty(True)
-    if name in ('pattern', 'private', 'special'): # since the terms are sorted by them
-      manager().invalidateSortedTerms()
+
+    if name not in ('private', 'selected', 'comment', 'updateComment', 'timestamp', 'updateTimestamp', 'updateUserId', 'updateUserHash'):
+      termman.manager().invalidateCache() # invalidate term cache when any term is changed
+
+    #if name in ('pattern', 'private', 'special'): # since the terms are sorted by them
+    #  manager().invalidateSortedTerms()
     #else:
     #if d.type == 'term'
 
-    self.clearCachedProperties()
-    manager().clearTermTitles()
+    #self.clearCachedProperties()
+    #manager().clearTermTitles()
 
-    if self.type == 'macro': # bug: change type to macro will not have effect at once
-      manager().clearMacroCache() # might be slow, though
+    #if self.type == 'macro': # bug: change type to macro will not have effect at once
+    #  manager().clearMacroCache() # might be slow, though
 
-  def clearCachedProperties(self):
-    self.replace = self.prepareReplace = self.applyReplace = self.patternRe = None
+  #def clearCachedProperties(self):
+  #  self.replace = self.prepareReplace = self.applyReplace = self.patternRe = None
 
   def setDirty(self, dirty):
     if dirty:
@@ -2046,7 +2052,6 @@ class Term(QObject):
       **ignored):
     self.__d = _Term(self,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai)
-    self.priority = 0 # int
     if init:
       self.init(parent)
 
@@ -2093,7 +2098,7 @@ class Term(QObject):
 
   # Cache
 
-  def clearCache(self): self.__d.clearCachedProperties()
+  #def clearCache(self): self.__d.clearCachedProperties()
 
   ## Properties ##
 
@@ -2179,6 +2184,13 @@ class Term(QObject):
       setGameId,
       notify=gameIdChanged)
 
+  @property
+  def modifiedTimestamp(self):
+    """
+    @return  long  used for sorting
+    """
+    return max(self.__d.timestamp, self.__d.updateTimestamp)
+
   #@property
   #def bbcodeText(self):
   #  """
@@ -2229,35 +2241,35 @@ class Term(QObject):
   #    setIgnoresCase,
   #    notify=ignoresCaseChanged)
 
-  @property
-  def patternRe(self):
-    """
-    @throw  re exception
-    @return  re or None
-    """
-    d = self.__d
-    if not d.patternRe and d.pattern:
-      pattern = d.pattern
-      if defs.TERM_MACRO_BEGIN in pattern:
-        pattern = termman.manager().applyMacroTerms(pattern)
-      if pattern:
-        d.patternRe = (
-          re.compile(pattern, re.DOTALL) if d.regex else
-          re.compile(re.escape(pattern))
-        )
-    return d.patternRe
+  #@property
+  #def patternRe(self):
+  #  """
+  #  @throw  re exception
+  #  @return  re or None
+  #  """
+  #  d = self.__d
+  #  if not d.patternRe and d.pattern:
+  #    pattern = d.pattern
+  #    if defs.TERM_MACRO_BEGIN in pattern:
+  #      pattern = termman.manager().applyMacroTerms(pattern)
+  #    if pattern:
+  #      d.patternRe = (
+  #        re.compile(pattern, re.DOTALL) if d.regex else
+  #        re.compile(re.escape(pattern))
+  #      )
+  #  return d.patternRe
 
-  def patternNeedsRe(self):
-    """
-    @return  bool
-    """
-    return self.__d.regex #or self.__d.type == 'name'
+  #def patternNeedsRe(self):
+  #  """
+  #  @return  bool
+  #  """
+  #  return self.__d.regex #or self.__d.type == 'name'
 
-  def needsReplace(self):
-    """
-    @return  bool
-    """
-    return self.__d.type == 'name' #and bool(manager().termTitles())
+  #def needsReplace(self):
+  #  """
+  #  @return  bool
+  #  """
+  #  return self.__d.type == 'name' #and bool(manager().termTitles())
 
   #def needsEscape(self):
   #  """
@@ -2265,76 +2277,76 @@ class Term(QObject):
   #  """
   #  return config.is_asian_language(self.__d.language)
 
-  @property
-  def replace(self):
-    """
-    @return  multireplacer
-    """
-    d = self.__d
-    if not d.replace and d.pattern:
-      pattern = d.pattern
-      if d.regex and defs.TERM_MACRO_BEGIN in pattern:
-        pattern = termman.manager().applyMacroTerms(pattern)
-      if pattern:
-        titles = manager().termTitles()
-        table = {k : d.text + v + ' ' for k,v in titles.iteritems()} # append space
-        d.replace = skstr.multireplacer(table,
-            prefix=pattern,
-            escape=not d.regex)
-    return d.replace
+  #@property
+  #def replace(self):
+  #  """
+  #  @return  multireplacer
+  #  """
+  #  d = self.__d
+  #  if not d.replace and d.pattern:
+  #    pattern = d.pattern
+  #    if d.regex and defs.TERM_MACRO_BEGIN in pattern:
+  #      pattern = termman.manager().applyMacroTerms(pattern)
+  #    if pattern:
+  #      titles = manager().termTitles()
+  #      table = {k : d.text + v + ' ' for k,v in titles.iteritems()} # append space
+  #      d.replace = skstr.multireplacer(table,
+  #          prefix=pattern,
+  #          escape=not d.regex)
+  #  return d.replace
 
-  @replace.setter
-  def replace(self, v): self.__d.replace = v
+  #@replace.setter
+  #def replace(self, v): self.__d.replace = v
 
-  @property
-  def prepareReplace(self):
-    """
-    @return  multireplacer
-    """
-    d = self.__d
-    if not d.prepareReplace and d.pattern:
-      pattern = d.pattern
-      if d.regex and defs.TERM_MACRO_BEGIN in pattern:
-        pattern = termman.manager().applyMacroTerms(pattern)
-      if pattern:
-        titles = manager().termTitles()
-        #l = sorted(titles.iterkeys(), key=len) # already sorted
-        esc = defs.NAME_ESCAPE + ' '
-        h = self.priority or d.id or id(self)
-        table = {k : esc%(h,i) for i,k in enumerate(titles)}
-        d.prepareReplace = skstr.multireplacer(table,
-            prefix=pattern,
-            escape=not d.regex)
-    return d.prepareReplace
+  #@property
+  #def prepareReplace(self):
+  #  """
+  #  @return  multireplacer
+  #  """
+  #  d = self.__d
+  #  if not d.prepareReplace and d.pattern:
+  #    pattern = d.pattern
+  #    if d.regex and defs.TERM_MACRO_BEGIN in pattern:
+  #      pattern = termman.manager().applyMacroTerms(pattern)
+  #    if pattern:
+  #      titles = manager().termTitles()
+  #      #l = sorted(titles.iterkeys(), key=len) # already sorted
+  #      esc = defs.NAME_ESCAPE + ' '
+  #      h = self.priority or d.id or id(self)
+  #      table = {k : esc%(h,i) for i,k in enumerate(titles)}
+  #      d.prepareReplace = skstr.multireplacer(table,
+  #          prefix=pattern,
+  #          escape=not d.regex)
+  #  return d.prepareReplace
 
-  @prepareReplace.setter
-  def prepareReplace(self, v): self.__d.prepareReplace = v
+  #@prepareReplace.setter
+  #def prepareReplace(self, v): self.__d.prepareReplace = v
 
-  def convertsChinese(self):
-    return manager().user().language == 'zht' and self.__d.language == 'zhs'
+  #def convertsChinese(self):
+  #  return manager().user().language == 'zht' and self.__d.language == 'zhs'
 
-  @property
-  def applyReplace(self):
-    """
-    @return  multireplacer
-    """
-    d = self.__d
-    if not d.applyReplace and d.pattern:
-      mark = termman.manager().markEscapeText
-      titles = manager().termTitles()
-      #l = sorted(titles.iterkeys(), key=len) already sorted
-      esc = defs.NAME_ESCAPE
-      #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
-      h = self.priority or d.id or id(self)
-      if self.convertsChinese():
-        table = {esc%(h,i) : mark(zhs2zht(d.text) + titles[k]) for i,k in enumerate(titles)}
-      else:
-        table = {esc%(h,i) : mark(d.text + titles[k]) for i,k in enumerate(titles)}
-      d.applyReplace = skstr.multireplacer(table) #escape=False
-    return d.applyReplace
+  #@property
+  #def applyReplace(self):
+  #  """
+  #  @return  multireplacer
+  #  """
+  #  d = self.__d
+  #  if not d.applyReplace and d.pattern:
+  #    mark = termman.manager().markEscapeText
+  #    titles = manager().termTitles()
+  #    #l = sorted(titles.iterkeys(), key=len) already sorted
+  #    esc = defs.NAME_ESCAPE
+  #    #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
+  #    h = self.priority or d.id or id(self)
+  #    if self.convertsChinese():
+  #      table = {esc%(h,i) : mark(zhs2zht(d.text) + titles[k]) for i,k in enumerate(titles)}
+  #    else:
+  #      table = {esc%(h,i) : mark(d.text + titles[k]) for i,k in enumerate(titles)}
+  #    d.applyReplace = skstr.multireplacer(table) #escape=False
+  #  return d.applyReplace
 
-  @applyReplace.setter
-  def applyReplace(self, v): self.__d.applyReplace = v
+  #@applyReplace.setter
+  #def applyReplace(self, v): self.__d.applyReplace = v
 
   #def setPattern(self, value):
   #  d = self.__d
@@ -2351,82 +2363,75 @@ class Term(QObject):
   #    setPattern,
   #    notify=patternChanged)
 
-  @property
-  def modifiedTimestamp(self):
-    """
-    @return  long  used for sorting
-    """
-    return max(self.__d.timestamp, self.__d.updateTimestamp)
-
 ## Name ##
 
-class NameItem(object):
-
-  def __init__(self, id=0, text="", yomi=""):
-    self.id = id # long
-    self.text = text # unicode
-    self.yomi = yomi # unicode
-
-  #@staticmethod
-  #def needsEscape():
-  #  return not config.is_asian_language(manager().user().language)
-
-  #@staticmethod
-  #def needsRomaji():
-  #  return not config.is_kanji_language(manager().user().language)
-
-  @memoizedproperty
-  def translation(self):
-    """
-    @return  unicode
-    """
-    lang = manager().user().language
-    if config.is_kanji_language(lang):
-      return self.text
-    if lang == 'ja':
-      return ''
-    yomi = self.yomi or self.text
-    if not textutil.match_kata_hira_punc(yomi):
-      return ''
-    if lang == 'ko': return cconv.yomi2hangul(yomi)
-    if lang == 'th': return cconv.yomi2thai(yomi)
-    return cconv.yomi2romaji(yomi).title()
-
-  @memoizedproperty
-  def replace(self):
-    """
-    @return  multireplacer
-    """
-    titles = manager().termTitles()
-    # Append a space at the end
-    table = {k : self.translation + v + ' ' for k,v in titles.iteritems()}
-    return skstr.multireplacer(table, prefix=self.text, escape=True)
-
-  @memoizedproperty
-  def prepareReplace(self):
-    """
-    @return  multireplacer
-    """
-    titles = manager().termTitles()
-    #l = sorted(titles.iterkeys(), key=len) # already sorted
-    esc = defs.CHARA_ESCAPE + ' '
-    h = self.id or id(d)
-    table = {k : esc%(h,i) for i,k in enumerate(titles)}
-    return skstr.multireplacer(table, prefix=self.text, escape=True)
-
-  @memoizedproperty
-  def applyReplace(self):
-    """
-    @return  multireplacer
-    """
-    mark = termman.manager().markEscapeText
-    titles = manager().termTitles()
-    #l = sorted(titles.iterkeys(), key=len) # already sorted
-    esc = defs.CHARA_ESCAPE
-    #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
-    h = self.id or id(d)
-    table = {esc%(h,i) : mark(self.translation + titles[k]) for i,k in enumerate(titles)}
-    return skstr.multireplacer(table) #escape=False
+#class NameItem(object):
+#
+#  def __init__(self, id=0, text="", yomi=""):
+#    self.id = id # long
+#    self.text = text # unicode
+#    self.yomi = yomi # unicode
+#
+#  #@staticmethod
+#  #def needsEscape():
+#  #  return not config.is_asian_language(manager().user().language)
+#
+#  #@staticmethod
+#  #def needsRomaji():
+#  #  return not config.is_kanji_language(manager().user().language)
+#
+#  @memoizedproperty
+#  def translation(self):
+#    """
+#    @return  unicode
+#    """
+#    lang = manager().user().language
+#    if config.is_kanji_language(lang):
+#      return self.text
+#    if lang == 'ja':
+#      return ''
+#    yomi = self.yomi or self.text
+#    if not textutil.match_kata_hira_punc(yomi):
+#      return ''
+#    if lang == 'ko': return cconv.yomi2hangul(yomi)
+#    if lang == 'th': return cconv.yomi2thai(yomi)
+#    return cconv.yomi2romaji(yomi).title()
+#
+#  @memoizedproperty
+#  def replace(self):
+#    """
+#    @return  multireplacer
+#    """
+#    titles = manager().termTitles()
+#    # Append a space at the end
+#    table = {k : self.translation + v + ' ' for k,v in titles.iteritems()}
+#    return skstr.multireplacer(table, prefix=self.text, escape=True)
+#
+#  @memoizedproperty
+#  def prepareReplace(self):
+#    """
+#    @return  multireplacer
+#    """
+#    titles = manager().termTitles()
+#    #l = sorted(titles.iterkeys(), key=len) # already sorted
+#    esc = defs.CHARA_ESCAPE + ' '
+#    h = self.id or id(d)
+#    table = {k : esc%(h,i) for i,k in enumerate(titles)}
+#    return skstr.multireplacer(table, prefix=self.text, escape=True)
+#
+#  @memoizedproperty
+#  def applyReplace(self):
+#    """
+#    @return  multireplacer
+#    """
+#    mark = termman.manager().markEscapeText
+#    titles = manager().termTitles()
+#    #l = sorted(titles.iterkeys(), key=len) # already sorted
+#    esc = defs.CHARA_ESCAPE
+#    #esc = defs.NAME_ESCAPE.replace('.', r'\.') # do not need
+#    h = self.id or id(d)
+#    table = {esc%(h,i) : mark(self.translation + titles[k]) for i,k in enumerate(titles)}
+#    return skstr.multireplacer(table) #escape=False
 
 ## References ##
 
@@ -5472,7 +5477,7 @@ class _DataManager(object):
     #self.dirtyCommentsMutex = QMutex()
 
     self.terms = []                 # [Term], not None
-    self._sortedTerms = None
+    #self._sortedTerms = None
     self._termsDirty = False
     self.dirtyTerms = set()         # set(Term)
     self.dirtyTermsLocked = False   # bool
@@ -5480,8 +5485,8 @@ class _DataManager(object):
     self.termsEditable = False # disable editable by default
     self.termsInitialized = False # if the terms has initialized
 
-    self._termTitles = None  # OrderedDict{unicode from:unicode to} or None
-    self._termMacros = None  # {unicode pattern:unicode repl} or None   indexed macros
+    #self._termTitles = None  # OrderedDict{unicode from:unicode to} or None
+    #self._termMacros = None  # {unicode pattern:unicode repl} or None   indexed macros
 
     # References to modify
     #self._referencesDirty = False    # bool
@@ -5494,7 +5499,7 @@ class _DataManager(object):
 
     # Current game
     self.currentGame = None # class Game
-    self.currentGameids = [] # [long gameId] not None
+    self.currentGameIds = [] # [long gameId] not None
     self._currentGameObject = None # QObject
 
     # Game library, which is a list of games indexed by their md5, not null
@@ -5512,7 +5517,7 @@ class _DataManager(object):
 
     self._gameInfo = [] # [GameInfo]
 
-    self.nameItems = [] # [NameItem]
+    #self.nameItems = [] # [NameItem]
 
     self.users = {} # {long id:UserDigest}
 
@@ -5554,108 +5559,108 @@ class _DataManager(object):
           if t.parent():
             t.setParent(None)
       self.terms = []                 # [Term], not None
-      self.sortedTerms = None
+      #self.sortedTerms = None
 
-  def clearNameItems(self): self.nameItems = [] #; mecabman.manager().clearDictionary()
+  #def clearNameItems(self): self.nameItems = [] #; mecabman.manager().clearDictionary()
 
-  @property
-  def sortedTerms(self):
-    if self._sortedTerms is None:
-      if not self.terms:
-        self._sortedTerms = []
-      else:
-        l = (it for it in self.terms if not it.d.disabled and not it.d.deleted) # filtered
-        l = sorted(l, reverse=True, key=lambda it:
-              (len(it.d.pattern), it.d.private, it.d.special, it.d.id)) # it.regex  true is applied first
-        count = len(l)
-        for index, it in enumerate(l):
-          it.priority = count - index
-        self._sortedTerms = l
-    return self._sortedTerms
+  #@property
+  #def sortedTerms(self):
+  #  if self._sortedTerms is None:
+  #    if not self.terms:
+  #      self._sortedTerms = []
+  #    else:
+  #      l = (it for it in self.terms if not it.d.disabled and not it.d.deleted) # filtered
+  #      l = sorted(l, reverse=True, key=lambda it:
+  #            (len(it.d.pattern), it.d.private, it.d.special, it.d.id)) # it.regex  true is applied first
+  #      count = len(l)
+  #      for index, it in enumerate(l):
+  #        it.priority = count - index
+  #      self._sortedTerms = l
+  #  return self._sortedTerms
 
-  @sortedTerms.setter
-  def sortedTerms(self, v):
-    self._sortedTerms = v
-    self.clearTermTitles()
-    self.clearTermMacros()
+  #@sortedTerms.setter
+  #def sortedTerms(self, v):
+  #  self._sortedTerms = v
+  #  self.clearTermTitles()
+  #  self.clearTermMacros()
 
-  @property
-  def termTitles(self):
-    if self._termTitles is None:
-      self._termTitles = self._queryTermTitles()
-    return self._termTitles
+  #@property
+  #def termTitles(self):
+  #  if self._termTitles is None:
+  #    self._termTitles = self._queryTermTitles()
+  #  return self._termTitles
 
   #@termTitles.setter
   #def termTitles(self, v): self._termTitles = v
 
-  def clearTermTitles(self): self._termTitles = None
+  #def clearTermTitles(self): self._termTitles = None
 
-  def _queryTermTitles(self):
-    """Terms sorted by length and id
-    @return  OrderedDict{unicode from:unicode to} not None not empty
-    """
-    lang = self.user.language
-    zht = lang == 'zht'
-    q = termman.manager().filterTerms(self.q.iterTitleTerms(), lang)
-    l = [] # [long id, unicode pattern, unicode replacement]
-    ret = OrderedDict({'':''})
-    for t in q:
-      td = t.d
-      pat = td.pattern
-      repl = td.text
-      if zht and td.language == 'zhs':
-        pat = zhs2zht(pat)
-        if repl: # and self.convertsChinese:
-          repl = zhs2zht(repl)
-      l.append((td.id, pat, repl))
-    l.sort(key=lambda it:
-        (len(it[1]), it[0]))
-    for id,pat,repl in l:
-      ret[pat] = repl
-    return ret
+  #def _queryTermTitles(self):
+  #  """Terms sorted by length and id
+  #  @return  OrderedDict{unicode from:unicode to} not None not empty
+  #  """
+  #  lang = self.user.language
+  #  zht = lang == 'zht'
+  #  q = termman.manager().filterTerms(self.q.iterTitleTerms(), lang)
+  #  l = [] # [long id, unicode pattern, unicode replacement]
+  #  ret = OrderedDict({'':''})
+  #  for t in q:
+  #    td = t.d
+  #    pat = td.pattern
+  #    repl = td.text
+  #    if zht and td.language == 'zhs':
+  #      pat = zhs2zht(pat)
+  #      if repl: # and self.convertsChinese:
+  #        repl = zhs2zht(repl)
+  #    l.append((td.id, pat, repl))
+  #  l.sort(key=lambda it:
+  #      (len(it[1]), it[0]))
+  #  for id,pat,repl in l:
+  #    ret[pat] = repl
+  #  return ret
 
   # Macros
 
-  @property
-  def termMacros(self):
-    if self._termMacros is None:
-      self._termMacros = self._queryTermMacros()
-    return self._termMacros
+  #@property
+  #def termMacros(self):
+  #  if self._termMacros is None:
+  #    self._termMacros = self._queryTermMacros()
+  #  return self._termMacros
 
-  def _queryTermMacros(self):
-    """
-    @return  {unicode pattern:unicode repl} not None
-    """
-    ret = {t.d.pattern:t.d.text for t in
-      termman.manager().filterTerms(self.q.iterMacroTerms(), self.user.language)}
-    MAX_COUNT = 1000
-    for count in xrange(1, MAX_COUNT):
-      dirty = False
-      for pattern,text in ret.iteritems(): # not iteritems as I will modify ret
-        if text and defs.TERM_MACRO_BEGIN in text:
-          dirty = True
-          ok = False
-          for m in termman.RE_MACRO.finditer(text):
-            macro = m.group(1)
-            repl = ret.get(macro)
-            if repl:
-              text = text.replace("{{%s}}" % macro, repl)
-              ok = True
-            else:
-              dwarn("missing macro", macro, text)
-              ok = False
-              break
-          if ok:
-            ret[pattern] = text
-          else:
-            ret[pattern] = None # delete this pattern
-      if not dirty:
-        break
-    if count == MAX_COUNT - 1:
-      dwarn("recursive macro definition")
-    return {k:v for k,v in ret.iteritems() if v is not None}
+  #def _queryTermMacros(self):
+  #  """
+  #  @return  {unicode pattern:unicode repl} not None
+  #  """
+  #  ret = {t.d.pattern:t.d.text for t in
+  #    termman.manager().filterTerms(self.q.iterMacroTerms(), self.user.language)}
+  #  MAX_COUNT = 1000
+  #  for count in xrange(1, MAX_COUNT):
+  #    dirty = False
+  #    for pattern,text in ret.iteritems(): # not iteritems as I will modify ret
+  #      if text and defs.TERM_MACRO_BEGIN in text:
+  #        dirty = True
+  #        ok = False
+  #        for m in termman.RE_MACRO.finditer(text):
+  #          macro = m.group(1)
+  #          repl = ret.get(macro)
+  #          if repl:
+  #            text = text.replace("{{%s}}" % macro, repl)
+  #            ok = True
+  #          else:
+  #            dwarn("missing macro", macro, text)
+  #            ok = False
+  #            break
+  #        if ok:
+  #          ret[pattern] = text
+  #        else:
+  #          ret[pattern] = None # delete this pattern
+  #    if not dirty:
+  #      break
+  #  if count == MAX_COUNT - 1:
+  #    dwarn("recursive macro definition")
+  #  return {k:v for k,v in ret.iteritems() if v is not None}
 
-  def clearTermMacros(self): self._termMacros = None
+  #def clearTermMacros(self): self._termMacros = None
 
   ## User ##
 
@@ -6458,75 +6463,73 @@ class _DataManager(object):
     for it in self.terms:
       yield it.d
 
-  def iterTermsWithType(self, type):
-    """
-    @param  type  str
-    @yield  Term
-    """
-    try: ids = self.currentGameIds # 8/27/2013: Why AttributeError?!
-    except AttributeError: ids = []
-    for t in self.sortedTerms:
-      td = t.d # To improve performance
-      if not td.disabled and not td.deleted and td.type == type and (not td.special or
-          ids and td.gameId and td.gameId in ids):
-        yield t
+  #def iterTermsWithType(self, type):
+  #  """
+  #  @param  type  str
+  #  @yield  Term
+  #  """
+  #  ids = self.currentGameIds # 8/27/2013: Why AttributeError?!
+  #  for t in self.sortedTerms:
+  #    td = t.d # To improve performance
+  #    if not td.disabled and not td.deleted and td.type == type and (not td.special or
+  #        ids and td.gameId and td.gameId in ids):
+  #      yield t
 
-  def iterTermsWithTypes(self, types):
-    """
-    @param  types  [str]
-    @yield  Term
-    """
-    try: ids = self.currentGameIds # 8/27/2013: Why AttributeError?!
-    except AttributeError: ids = []
-    for t in self.sortedTerms:
-      td = t.d # To improve performance
-      if not td.disabled and not td.deleted and td.type in types and (not td.special or
-          ids and td.gameId and td.gameId in ids):
-        yield t
+  #def iterTermsWithTypes(self, types):
+  #  """
+  #  @param  types  [str]
+  #  @yield  Term
+  #  """
+  #  ids = self.currentGameIds # 8/27/2013: Why AttributeError?!
+  #  for t in self.sortedTerms:
+  #    td = t.d # To improve performance
+  #    if not td.disabled and not td.deleted and td.type in types and (not td.special or
+  #        ids and td.gameId and td.gameId in ids):
+  #      yield t
 
   ## Character name ##
 
-  def updateNameItems(self):
-    #if not gid or gameId and gameId != gid:
-    #  dwarn("game changed")
-    #  return
-    if self.nameItems:
-      dwarn("name items already exist")
-      return
-    mm = mecabman.manager()
-    if not mm.isEnabled():
-      dwarn("mecab is not enabled")
-      return
-    dprint("enter")
-    growl.msg(my.tr("Searching for game character names") + " ...")
-    game = self.currentGame
-    if game and game.itemId:
-      info = self.q.currentGameInfo()
-      if info and info.itemId == game.itemId:
-        l = info.characters # may surrender event cycles
-        if l:
-          if self.nameItems:
-            dwarn("leave: name items already exist")
-            return
-          growl.msg(my.tr("Found {0} game characters").format(len(l)))
-          #names = ((kw['name'],kw['yomi']) for kw in l)
-          names = [(kw['name'],kw['yomi']) for kw in l]
-          nm = nameman.manager()
-          self.nameItems = nm.parseNameItems(names)
-
-          itemId = game.itemId
-          dicpath = nm.cachedMeCabDic(itemId)
-          if not dicpath:
-            dicpath = skthreads.runsync(partial(
-                nm.compileMeCabDic,
-                names,
-                itemId))
-          if dicpath and not mm.userDictionary():
-            mm.setUserDictionary(dicpath)
-          dprint("leave: item count = %i" % len(self.nameItems))
-          return
-    growl.msg(my.tr("Game character names not found"))
-    dprint("leave: no items")
+  #def updateNameItems(self):
+  #  #if not gid or gameId and gameId != gid:
+  #  #  dwarn("game changed")
+  #  #  return
+  #  if self.nameItems:
+  #    dwarn("name items already exist")
+  #    return
+  #  mm = mecabman.manager()
+  #  if not mm.isEnabled():
+  #    dwarn("mecab is not enabled")
+  #    return
+  #  dprint("enter")
+  #  growl.msg(my.tr("Searching for game character names") + " ...")
+  #  game = self.currentGame
+  #  if game and game.itemId:
+  #    info = self.q.currentGameInfo()
+  #    if info and info.itemId == game.itemId:
+  #      l = info.characters # may surrender event cycles
+  #      if l:
+  #        if self.nameItems:
+  #          dwarn("leave: name items already exist")
+  #          return
+  #        growl.msg(my.tr("Found {0} game characters").format(len(l)))
+  #        #names = ((kw['name'],kw['yomi']) for kw in l)
+  #        names = [(kw['name'],kw['yomi']) for kw in l]
+  #        nm = nameman.manager()
+  #        self.nameItems = nm.parseNameItems(names)
+  #
+  #        itemId = game.itemId
+  #        dicpath = nm.cachedMeCabDic(itemId)
+  #        if not dicpath:
+  #          dicpath = skthreads.runsync(partial(
+  #              nm.compileMeCabDic,
+  #              names,
+  #              itemId))
+  #        if dicpath and not mm.userDictionary():
+  #          mm.setUserDictionary(dicpath)
+  #        dprint("leave: item count = %i" % len(self.nameItems))
+  #        return
+  #  growl.msg(my.tr("Game character names not found"))
+  #  dprint("leave: no items")
 
   def _updateContexts(self):
     self.contexts = {h:c[0].context for h,c in self.comments.iteritems()} if self.comments else {}
@@ -6943,18 +6946,19 @@ class _DataManager(object):
       self.dirtyCommentsLocked = True
       nm = netman.manager()
       for c in tuple(self.dirtyComments): # copy dirty comments into a new list
+        cd = c.d
         async = not main.EXITED
         ok = True
-        if c.id:
+        if cd.id:
           ok = nm.updateComment(c, self.user.name, self.user.password, async=async)
-        elif not c.deleted:
+        elif not cd.deleted:
           ok = nm.submitComment(c, self.user.name, self.user.password, md5=c.gameMd5, async=async)
         if ok:
           c.clearDirtyProperties()
         else:
           growl.warn('<br/>'.join((
             my.tr("Failed to save changes, will try later"),
-            c.text,
+            cd.text,
           )))
       #self.dirtyCommentsMutex.unlock()
       self.dirtyCommentsLocked = False
@@ -7122,18 +7126,19 @@ class _DataManager(object):
       self.dirtyTermsLocked = True
       nm = netman.manager()
       for t in tuple(self.dirtyTerms): # copy dirty terms into a new list
+        td = t.d
         async = not main.EXITED
         ok = True
-        if t.id:
+        if td.id:
           ok = nm.updateTerm(t, self.user.name, self.user.password, async=async)
-        elif not t.deleted:
+        elif not td.deleted:
           ok = nm.submitTerm(t, self.user.name, self.user.password, async=async)
         if ok:
           t.clearDirtyProperties()
         else:
           growl.warn('<br/>'.join((
             my.tr("Failed to save changes, will try later"),
-            t.text,
+            td.text,
           )))
       #self.dirtyTermsMutex.unlock()
       self.dirtyTermsLocked = False
@@ -7323,8 +7328,8 @@ class DataManager(QObject):
     ss.userGenderChanged.connect(d.saveUserGender)
     ss.userColorChanged.connect(d.saveUserColor)
 
-    ss.userLanguageChanged.connect(d.clearTermTitles)
-    ss.userLanguageChanged.connect(d.clearNameItems)
+    #ss.userLanguageChanged.connect(d.clearTermTitles)
+    #ss.userLanguageChanged.connect(d.clearNameItems)
 
     qApp = QCoreApplication.instance()
     qApp.aboutToQuit.connect(d.submitDirtyComments)
@@ -7941,17 +7946,17 @@ class DataManager(QObject):
     """
     return self.__d.gameInfo
 
-  def hasNameItems(self):
-    """
-    @return  bool
-    """
-    return bool(self.__d.nameItems)
+  #def hasNameItems(self):
+  #  """
+  #  @return  bool
+  #  """
+  #  return bool(self.__d.nameItems)
 
-  def iterNameItems(self):
-    """
-    @return  [NameItems] not None
-    """
-    return self.__d.nameItems
+  #def iterNameItems(self):
+  #  """
+  #  @return  [NameItems] not None
+  #  """
+  #  return self.__d.nameItems
 
   def queryGameInfo(self, id=None, md5=None, itemId=None, cache=True):
     """
@@ -8118,8 +8123,8 @@ class DataManager(QObject):
     d.currentGame = None
     d.currentGameObject = None
     d.currentGameIds = []
-    d.clearTermTitles()
-    d.clearNameItems()
+    #d.clearTermTitles()
+    #d.clearNameItems()
     #mecabman.manager().clearDictionary()
     if not game:
       return
@@ -8169,9 +8174,9 @@ class DataManager(QObject):
 
     #gid = self.currentGameId()
     #if gid:
-    if mecabman.manager().isEnabled() and mecabman.manager().supportsUserDic():
-      dprint("update game-specicfic translation")
-      skevents.runlater(d.updateNameItems, 3000) # delay a little
+    #if mecabman.manager().isEnabled() and mecabman.manager().supportsUserDic():
+    #  dprint("update game-specicfic translation")
+    #  skevents.runlater(d.updateNameItems, 3000) # delay a little
 
   def reloadComments(self):
     d = self.__d
@@ -8653,20 +8658,27 @@ class DataManager(QObject):
   def hasTerms(self): return bool(self.__d.terms)
 
   def terms(self):
-    """
+    """Used by TermModel
     @return  [Term]
     """
     return self.__d.terms
+
+  #def sortedTerms(self):
+  #  """Used by termman
+  #  @return  [Term]
+  #  """
+  #  return self.__d.sortedTerms
+
   #def termData(self): return list(self.__d.iterTermData())
 
-  def termTitles(self):
-    """NOT escaped
-    @return  {unicode source:unicode translation} not None
-    """
-    return self.__d.termTitles
+  #def termTitles(self):
+  #  """NOT escaped
+  #  @return  {unicode source:unicode translation} not None
+  #  """
+  #  return self.__d.termTitles
 
-  def hasTermTitles(self):
-    return len(self.__d.termTitles) > 1
+  #def hasTermTitles(self):
+  #  return len(self.__d.termTitles) > 1
 
   def iterTargetTerms(self):
     return self.__d.iterTermsWithType('target')
@@ -8712,8 +8724,8 @@ class DataManager(QObject):
       return
 
     #term.deleted = True
-    try: d._sortedTerms.remove(term)
-    except: pass
+    #try: d._sortedTerms.remove(term)
+    #except: pass
     if term.parent():
       skevents.runlater(partial(term.setParent, None), 90000) # after 1.5 min
 
@@ -8762,8 +8774,8 @@ class DataManager(QObject):
 
     if count:
       d.terms = [t for t in d.terms if not (t.d.selected and t.d.deleted)]
-      if d._sortedTerms:
-        d._sortedTerms = [t for t in d._sortedTerms if not (t.d.selected and t.d.deleted)]
+      #if d._sortedTerms:
+      #  d._sortedTerms = [t for t in d._sortedTerms if not (t.d.selected and t.d.deleted)]
 
       d.invalidateTerms()
       d.touchTerms()
@@ -8946,7 +8958,7 @@ class DataManager(QObject):
       return False
 
     d.terms.append(term)
-    self.invalidateSortedTerms()
+    #self.invalidateSortedTerms()
 
     if commit:
       d.dirtyTerms.add(term)
@@ -8969,23 +8981,23 @@ class DataManager(QObject):
     d.submitDirtyTermsLater()
     d.touchTerms()
 
-  def queryTermMacro(self, pattern):
-    """
-    @param  unicode
-    @return  unicode or None
-    """
-    return self.__d.termMacros.get(pattern)
+  #def queryTermMacro(self, pattern):
+  #  """
+  #  @param  unicode
+  #  @return  unicode or None
+  #  """
+  #  return self.__d.termMacros.get(pattern)
 
-  def clearMacroCache(self):
-    d = self.__d
-    d.clearTermMacros()
-    for t in d.terms:
-      td = t.d
-      if td.regex and not td.disabled and defs.TERM_MACRO_BEGIN in td.pattern:
-        t.clearCache()
+  #def clearMacroCache(self):
+  #  d = self.__d
+  #  d.clearTermMacros()
+  #  for t in d.terms:
+  #    td = t.d
+  #    if td.regex and not td.disabled and defs.TERM_MACRO_BEGIN in td.pattern:
+  #      t.clearCache()
 
-  def invalidateSortedTerms(self): self.__d.sortedTerms = None
-  def clearTermTitles(self): self.__d.clearTermTitles()
+  #def invalidateSortedTerms(self): self.__d.sortedTerms = None
+  #def clearTermTitles(self): self.__d.clearTermTitles()
 
   def removeDirtyTerm(self, term):
     try: self.__d.dirtyTerms.remove(term)

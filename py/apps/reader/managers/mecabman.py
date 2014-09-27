@@ -284,9 +284,9 @@ class MeCabManager:
   def meCabTagger(self): return _MP.tagger() # MeCab.Tagger
   def meCabFormat(self): return _MP.fmt # mecabfmt
 
-  def supportsUserDic(self): # -> bool
-    import nameman
-    return self.dicName in nameman.SUPPORTED_DICS
+  #def supportsUserDic(self): # -> bool
+  #  import nameman
+  #  return self.dicName in nameman.SUPPORTED_DICS
 
   def setEnabled(self, t): # bool
     _MP.setenabled(t)

@@ -21,11 +21,13 @@ import cacheman, config, defs, hashutil
 DIR_APP = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../../..'))
 DIR_APP_LIBRARY = DIR_APP + '/Library'
 DIR_APP_CACHE = DIR_APP + '/Caches'
-DIR_APP_TMP = DIR_APP_CACHE + '/tmp'# $app/Caches/tmp
 
-DIR_TMP = DIR_APP_TMP
+DIR_TMP = DIR_APP_CACHE + '/tmp'# $app/Caches/tmp
 
-DIR_TMP_OCR = DIR_TMP + '/ocr' # $app/Caches/tmp/ocr
+DIR_APP_TMP = DIR_TMP + '/reader'
+
+DIR_TMP_OCR = DIR_APP_TMP + '/ocr'   # $app/Caches/tmp/reader/ocr
+DIR_TMP_TERM = DIR_APP_TMP + '/dict' # $app/Caches/tmp/reader/dict
 
 #DIR_PLUGIN      = DIR_SAKURA + '/userplugin'    # Sakura/userplugin
 #DIR_PLUGIN_PY   = DIR_PLUGIN + '/py/1' # userplugin/py/1
@@ -152,6 +154,26 @@ def refs_xml_path(gameId):
   @nothrow
   """
   return "%s/%s.xml" % (DIR_XML_REF, gameId)
+
+# Terms
+
+TERM_RELPATHS = {
+  'ocr': 'ocr',
+  'speech': 'tts',
+  'origin': 'origin',
+  'source': 'source',
+  'target': 'target',
+  'escape_source': 'escape_source',
+  'escape_target': 'escape_target',
+}
+def term_path(type, language):
+  """
+  @param  type  str
+  @param  language  str
+  @return  unicode  path
+  @nothrow
+  """
+  return "%s/%s/%s.txt" % (DIR_TMP_TERM, language, TERM_RELPATHS[type])
 
 # MeCab
 

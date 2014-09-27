@@ -116,18 +116,18 @@ class _MainObject(object):
     ret.setSuggestedDataCapacity(ss.gameTextCapacity())
     return ret
 
-  @memoizedproperty
-  def nameManager(self):
-    dprint("create name manager") # Move this upward before kagami
-    import nameman
-    ret = nameman.manager()
+  #@memoizedproperty
+  #def nameManager(self):
+  #  dprint("create name manager") # Move this upward before kagami
+  #  import nameman
+  #  ret = nameman.manager()
 
-    import settings
-    ss = settings.global_()
+  #  import settings
+  #  ss = settings.global_()
 
-    ret.setMeCabDictionary(ss.meCabDictionary())
-    ss.meCabDictionaryChanged.connect(ret.setMeCabDictionary)
-    return ret
+  #  ret.setMeCabDictionary(ss.meCabDictionary())
+  #  ss.meCabDictionaryChanged.connect(ret.setMeCabDictionary)
+  #  return ret
 
   @memoizedproperty
   def jlpManager(self):
@@ -330,8 +330,8 @@ class _MainObject(object):
 
     ret.removesRepeatChanged.connect(tm.setRemovesRepeatText)
 
-    dm = self.dataManager
-    ret.processChanged.connect(dm.clearMacroCache)
+    #dm = self.dataManager
+    #ret.processChanged.connect(dm.clearMacroCache)
 
     agent = self.gameAgent
     agent.processDetached.connect(ret.processDetached)
@@ -451,6 +451,7 @@ class _MainObject(object):
     for sig in (
         ss.machineTranslatorChanged,
         ss.termEnabledChanged,
+        ss.termMarkedChanged,
         ss.userLanguageChanged,
         dm.termsChanged,
         #dm.gameFilesChanged, # duplicate with gameItemsChanged
@@ -461,15 +462,15 @@ class _MainObject(object):
 
     # These should be moved to dataManager. Put here to avoid recursion, moved to gameman
 
-    for sig in (
-        ss.termEnabledChanged,
-        ss.userLanguageChanged,
-        dm.termsChanged,
-        #dm.gameFilesChanged, # duplicate with gameItemsChanged
-        dm.gameItemsChanged,
-        #self.gameManager.processChanged,   # this would cause recursion, moved to gameman
-        ):
-      sig.connect(dm.clearMacroCache)
+    #for sig in (
+    #    ss.termEnabledChanged,
+    #    ss.userLanguageChanged,
+    #    dm.termsChanged,
+    #    #dm.gameFilesChanged, # duplicate with gameItemsChanged
+    #    dm.gameItemsChanged,
+    #    #self.gameManager.processChanged,   # this would cause recursion, moved to gameman
+    #    ):
+    #  sig.connect(dm.clearMacroCache)
 
     #ss.windowTextVisibleChanged.connect(ret.refreshWindowTranslation)
     return ret
@@ -585,12 +586,12 @@ class _MainObject(object):
     dprint("create term manager")
     import termman
     ret = termman.manager()
-    #ret.setParent(self.q)
+    ret.setParent(self.q)
 
     ss = settings.global_()
 
-    ret.setLanguage(ss.userLanguage())
-    ss.userLanguageChanged.connect(ret.setLanguage)
+    ret.setTargetLanguage(ss.userLanguage())
+    ss.userLanguageChanged.connect(ret.setTargetLanguage)
 
     ret.setEnabled(ss.isTermEnabled())
     ss.termEnabledChanged.connect(ret.setEnabled)
@@ -601,10 +602,17 @@ class _MainObject(object):
     ret.setMarked(ss.isTermMarked())
     ss.termMarkedChanged.connect(ret.setMarked)
 
-    ss.termMarkedChanged.connect(ret.clearMarkCache)
+    for sig in (
+        ss.userIdChanged, ss.userLanguageChanged,
+        ss.hentaiEnabledChanged, #ss.termMarkedChanged,
+        self.gameManager.processChanged,
+        self.dataManager.termsChanged,
+      ):
+      sig.connect(ret.invalidateCache)
 
-    for sig in ss.hentaiEnabledChanged, ss.termMarkedChanged:
-      sig.connect(self.translatorManager.clearCache)
+    #for sig in ss.hentaiEnabledChanged, ss.termMarkedChanged:
+    #  sig.connect(self.translatorManager.clearCache)
+    #ret.cacheChanged.connect(self.translatorManager.clearCache)
 
     #ret.setConvertsChinese(ss.convertsChinese())
     #ss.convertsChineseChanged.connect(ret.setConvertsChinese)
@@ -705,12 +713,10 @@ class _MainObject(object):
     ss.lecEnabledChanged.connect(ret.setLecEnabled)
 
     for sig in (
+        self.termManager.cacheChanged,
         ss.machineTranslatorChanged,
         ss.termEnabledChanged,
-        #ss.userLanguageChanged,
-        self.gameManager.processChanged,
-        self.dataManager.termsChanged,
-        ):
+      ):
       sig.connect(ret.clearCache)
 
     qApp = QCoreApplication.instance()
@@ -1522,7 +1528,7 @@ class MainObject(QObject):
     d.meCabManager
     d.caboChaManager
     d.jlpManager
-    d.nameManager
+    #d.nameManager
     d.referenceManager
     d.trailersManager
     d.dmmManager
@@ -1614,7 +1620,7 @@ class MainObject(QObject):
     #dprint("warm up translators")
     #d.translatorManager.warmup()
     dprint("schedule to warm up translators")
-    skevents.runlater(d.translatorManager.warmup)
+    skevents.runlater(d.translatorManager.warmup, 1000) # warm up after 1 seconds to avoid blocking on the startup
 
     dprint("start rpc server")
     d.rpcServer.start()
@@ -1673,9 +1679,9 @@ class MainObject(QObject):
     skevents.runlater(self.checkDigests, 90000) # 1.5min
     skevents.runlater(self.checkTerms, 120000) # 2min
 
-    if dm.hasTerms():
-      dprint("warm up dictionary terms")
-      d.termManager.warmup(async=True, interval=1000) # warm up after 1 second
+    #if dm.hasTerms():
+    #  dprint("warm up dictionary terms")
+    #  d.termManager.warmup(async=True, interval=1000) # warm up after 1 second
 
     dprint("show windows")
     skevents.runlater(self.showKagami)
@@ -1714,11 +1720,11 @@ class MainObject(QObject):
 
   def showTermView(self):
     d = self.__d
-    if d.termManager.isLocked():
-      growl.msg(my.tr("Processing Shared Dictionary ... Please try later"));
-    else:
-      d.dataManager.setTermsEditable(True)
-      skevents.runlater(partial(_MainObject.showQmlWindow, d.termView))
+    #if d.termManager.isLocked():
+    #  growl.msg(my.tr("Processing Shared Dictionary ... Please try later"));
+    #else:
+    d.dataManager.setTermsEditable(True)
+    skevents.runlater(partial(_MainObject.showQmlWindow, d.termView))
 
   def showSpringBoard(self):
     skevents.runlater(partial(_MainObject.showQmlWindow, self.__d.springBoardDialog))
@@ -1831,6 +1837,11 @@ class MainObject(QObject):
   def showCommentHelp(self): _MainObject.showWindow(self.__d.commentHelpDialog)
   def showReferenceHelp(self): _MainObject.showWindow(self.__d.referenceHelpDialog)
   def showVoiceHelp(self): _MainObject.showWindow(self.__d.voiceHelpDialog)
+
+  def showTermCache(self):
+    growl.msg(my.tr("Browse current enabled terms"))
+    import osutil
+    osutil.open_location(rc.DIR_TMP_TERM)
 
   def showGameWizard(self, path=None):
     w = self.__d.gameWizardDialog
@@ -2189,6 +2200,8 @@ class MainObjectProxy(QObject):
   def showVoiceSettings(self): manager().showVoiceSettings()
   @Slot()
   def showTermHelp(self): manager().showTermHelp()
+  @Slot()
+  def showTermCache(self): manager().showTermCache()
   @Slot()
   def showCommentHelp(self): manager().showCommentHelp()
   @Slot()
