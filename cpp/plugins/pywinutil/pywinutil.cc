@@ -3,32 +3,42 @@
 
 #include "pywinutil/pywinutil.h"
 #include "winshell/winshell.h"
-#include <qt_windows.h>
-#include <QtCore/QDir>
-#include <QtCore>
+#include <windows.h>
 
-QString WinUtil::resolveLink(const QString &input)
+namespace { // unnamed
+
+static inline std::wstring toNativeSeparators(const std::wstring &input)
 {
-  wchar_t buf[MAX_PATH];
-  QString path = QDir::toNativeSeparators(input);
-  return WinShell::resolveLink((LPCWSTR)path.utf16(), buf, MAX_PATH) ?
-      QString::fromWCharArray(buf) : QString();
+  std::wstring ret = input;
+  for (size_t i = 0; i < ret.size(); i++)
+    if (ret[i] == L'/')
+      ret[i] = L'\\';
+  return ret;
 }
 
-QString WinUtil::toLongPath(const QString &input)
+} // unnamed namespace
+
+std::wstring WinUtil::resolveLink(const std::wstring &input)
 {
   wchar_t buf[MAX_PATH];
-  QString path = QDir::toNativeSeparators(input);
-  size_t size = ::GetLongPathNameW((LPCWSTR)path.utf16(), buf, MAX_PATH);
-  return size ? QString::fromWCharArray(buf, size) : QString();
+  std::wstring path = ::toNativeSeparators(input);
+  return WinShell::resolveLink(path.c_str(), buf, MAX_PATH) ? buf : L"";
 }
 
-QString WinUtil::toShortPath(const QString &input)
+std::wstring WinUtil::toLongPath(const std::wstring &input)
 {
   wchar_t buf[MAX_PATH];
-  QString path = QDir::toNativeSeparators(input);
-  size_t size = ::GetShortPathNameW((LPCWSTR)path.utf16(), buf, MAX_PATH);
-  return size ? QString::fromWCharArray(buf, size) : QString();
+  std::wstring path = ::toNativeSeparators(input);
+  size_t size = ::GetLongPathNameW(path.c_str(), buf, MAX_PATH);
+  return size ? std::wstring(buf, size) : std::wstring();
+}
+
+std::wstring WinUtil::toShortPath(const std::wstring &input)
+{
+  wchar_t buf[MAX_PATH];
+  std::wstring path = ::toNativeSeparators(input);
+  size_t size = ::GetShortPathNameW(path.c_str(), buf, MAX_PATH);
+  return size ? std::wstring(buf, size) : std::wstring();
 }
 
 // EOF

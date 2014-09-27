@@ -52,7 +52,8 @@ set INC=%INC%;%TARGET_HOME%;%LIBPATH%
 set INC=%INC%;..
 set _=
 ::set _= %_% --debug-level=full --no-suppress-warnings
-set _=%_% --enable-pyside-extensions
+:: Disable Qt
+::set _=%_% --enable-pyside-extensions
 set _=%_% --enable-parent-ctor-heuristic
 set _=%_% --use-isnull-as-nb_nonzero
 set _=%_% --enable-return-value-heuristic
