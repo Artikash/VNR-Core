@@ -23,13 +23,13 @@ public:
   bool isValid() const;
 
   // Example registry: L"HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Speech\\Voices\\Tokens\\VW Misaki"
-  bool setVoice(const std::wstring& registry);
+  bool setVoice(const std::wstring &registry);
   std::wstring voice() const;
   bool hasVoice() const;
 
   // - Actions -
 
-  bool speak(const std::wstring& text, bool async = false) const;
+  bool speak(const std::wstring &text, bool async = false) const;
   bool purge(bool async = false) const; // clear previous speak
 };
 

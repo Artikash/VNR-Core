@@ -3,6 +3,8 @@
 
 // pymodiocr.h
 // 8/13/2014 jichi
+//
+// Qt is used instead of pure C++ to reduce memory copy of the returned containers.
 
 #include <QtCore/QStringList>
 
@@ -18,8 +20,8 @@ public:
    *  @param  path  image path, could be either TIFF or JPEG
    *  @param  language  language enum defined in modiocr.h
    */
-  static QString readText(const QString& path, int language);
-  static QStringList readTextList(const QString& path, int language);
+  static QString readText(const QString &path, int language);
+  static QStringList readTextList(const QString &path, int language);
 };
 
 #endif // PYMODIOCR_H

@@ -3,6 +3,7 @@
 
 // msime_ja.h
 // 4/1/2013 jichi
+// Qt is used instead of pure C++ to reduce memory copy of the returned containers.
 
 #include "sakurakit/skglobal.h"
 #include <QtCore/QList>
@@ -34,8 +35,8 @@ public:
 
   // - Actions -
 
-  QString toYomigana(const QString& text, int type = AnyType) const;
-  QList<QPair<QString, QString> > toFurigana(const QString& text, int type = AnyType) const;
+  QString toYomigana(const QString &text, int type = AnyType) const;
+  QList<QPair<QString, QString> > toFurigana(const QString &text, int type = AnyType) const;
   QString toKanji(const QString &text, ulong flags = 0) const;
 };
 
