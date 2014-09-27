@@ -5,7 +5,7 @@
 // 9/20/2014 jichi
 
 #include "sakurakit/skglobal.h"
-#include <QtCore/QString>
+#include <string>
 
 // All functions in this class are thread-safe to Qt threads
 class TranslationScriptManagerPrivate;
@@ -32,12 +32,12 @@ public:
   void clear();
 
   ///  Clear script from file
-  bool loadFile(const QString &path);
+  bool loadFile(const std::wstring &path);
 
   // Replacement
 
   // Rewrite the text according to the script, thread-safe
-  QString translate(const QString &text) const;
+  std::wstring translate(const std::wstring &text) const;
 
   // Render option
 

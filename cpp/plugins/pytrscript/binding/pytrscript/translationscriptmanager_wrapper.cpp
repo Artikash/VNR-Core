@@ -1,10 +1,6 @@
 
 // default includes
 #include <shiboken.h>
-#include <pysidesignal.h>
-#include <pysideproperty.h>
-#include <pyside.h>
-#include <destroylistener.h>
 #include <typeresolver.h>
 #include <typeinfo>
 #include "pytrscript_python.h"
@@ -144,9 +140,9 @@ static PyObject* Sbk_TranslationScriptManagerFunc_loadFile(PyObject* self, PyObj
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: loadFile(QString)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
-        overloadId = 0; // loadFile(QString)
+    // 0: loadFile(std::wstring)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpytrscriptTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // loadFile(std::wstring)
     }
 
     // Function signature not found.
@@ -154,11 +150,11 @@ static PyObject* Sbk_TranslationScriptManagerFunc_loadFile(PyObject* self, PyObj
 
     // Call function/method
     {
-        ::QString cppArg0 = ::QString();
+        ::std::wstring cppArg0 = ::std::wstring();
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // loadFile(QString)
+            // loadFile(std::wstring)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
             bool cppResult = cppSelf->loadFile(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
@@ -173,7 +169,7 @@ static PyObject* Sbk_TranslationScriptManagerFunc_loadFile(PyObject* self, PyObj
     return pyResult;
 
     Sbk_TranslationScriptManagerFunc_loadFile_TypeError:
-        const char* overloads[] = {"unicode", 0};
+        const char* overloads[] = {"std::wstring", 0};
         Shiboken::setErrorAboutWrongArguments(pyArg, "pytrscript.TranslationScriptManager.loadFile", overloads);
         return 0;
 }
@@ -263,9 +259,9 @@ static PyObject* Sbk_TranslationScriptManagerFunc_translate(PyObject* self, PyOb
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: translate(QString)const
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
-        overloadId = 0; // translate(QString)const
+    // 0: translate(std::wstring)const
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpytrscriptTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // translate(std::wstring)const
     }
 
     // Function signature not found.
@@ -273,15 +269,15 @@ static PyObject* Sbk_TranslationScriptManagerFunc_translate(PyObject* self, PyOb
 
     // Call function/method
     {
-        ::QString cppArg0 = ::QString();
+        ::std::wstring cppArg0 = ::std::wstring();
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // translate(QString)const
+            // translate(std::wstring)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            QString cppResult = const_cast<const ::TranslationScriptManager*>(cppSelf)->translate(cppArg0);
+            std::wstring cppResult = const_cast<const ::TranslationScriptManager*>(cppSelf)->translate(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
+            pyResult = Shiboken::Conversions::copyToPython(SbkpytrscriptTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
         }
     }
 
@@ -292,7 +288,7 @@ static PyObject* Sbk_TranslationScriptManagerFunc_translate(PyObject* self, PyOb
     return pyResult;
 
     Sbk_TranslationScriptManagerFunc_translate_TypeError:
-        const char* overloads[] = {"unicode", 0};
+        const char* overloads[] = {"std::wstring", 0};
         Shiboken::setErrorAboutWrongArguments(pyArg, "pytrscript.TranslationScriptManager.translate", overloads);
         return 0;
 }

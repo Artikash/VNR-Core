@@ -13,6 +13,7 @@ env:
   - $PWD/../Qt/PySide
   - $PWD/../MeCab/bin
   - $PWD/../CaboCha/bin
+  - $PWD/../Boost/bin
   #- $PWD/../EB/site-packages
 
   pythonpath:
@@ -41,6 +42,7 @@ env:
   - $PWD/../Qt/translations/qt_ko.qm
   - $PWD/../MeCab/bin/libmecab.dll
   - $PWD/../EB/site-packages/eb.pyd
+  - $PWD/../Boost/bin/boost_regex.dll
   - $PWD/../../Dictionaries/gaiji/KOJIEN.plist
   - $PWD/../../Fonts/msgothic.ttf
   #- $PWD/../../Dictionaries/lingoes/ja-zh.ld2
@@ -223,6 +225,8 @@ proxies:
   dmm:          http://153.121.52.138/proxy/dmm
   dlsite:       http://153.121.52.138/proxy/dlsite/www
   dlsite_img:   http://153.121.52.138/proxy/dlsite/img
+  toranoana:    http://153.121.52.138/proxy/toranoana/www
+  toranoana_img: http://153.121.52.138/proxy/toranoana/img
 
   # http://sakuradite.com/topic/140
   # http://9gal.com/read.php?tid=417812&page=e

@@ -76,7 +76,7 @@ win32 {
   DETOURS_HOME  = "$$PROGRAMFILES/Microsoft Research/Detours Express 3.0"
   #DEV_HOME      = c:/dev
   DEV_HOME      = z:/local/windows/developer
-  BOOST_HOME    = $$DEV_HOME/boost
+  BOOST_HOME    = $$DEV_HOME/boost/build
   #ITH_HOME      = $$DEV_HOME/ith
   MSIME_HOME    = $$DEV_HOME/msime
   #PYTHON_HOME  = $$ROOTDIR/../Python
@@ -103,6 +103,11 @@ mac {
 
 INCLUDEPATH     += $$BOOST_HOME $$BOOST_HOME/include
 LIBS            += -L$$BOOST_HOME/lib
+
+# Disable automatically linking with boost silently
+# See: http://www.boost.org/doc/libs/1_56_0/boost/config/user.hpp
+DEFINES += BOOST_ALL_NO_LIB
+mac: BOOST_VARIANT = -mt
 
 ## Config
 

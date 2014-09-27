@@ -11,7 +11,7 @@
 // - DERR: similar to std::cerr. Print to qWarning
 #if defined(DEBUG) && !defined(SK_NO_DEBUG)
 
-# ifdef QT_CORE_LIB
+# if defined(QT_CORE_LIB) && !defined(SK_NO_QT)
 #   include <QtCore/QDebug>
 #   define DPRINT(...)    qDebug(QString("%1:%2:").arg((DEBUG), (__FUNCTION__)).toLocal8Bit().constData(), __VA_ARGS__)
 #   define DOUT(_msg)     qDebug() << QString("%1:%2:").arg((DEBUG), (__FUNCTION__)).toLocal8Bit().constData() << _msg
@@ -20,8 +20,11 @@
 #   include <iostream>
 #   include <cstdio>
 #   define DPRINT(...)    fprintf(stderr, DEBUG ":" __FUNCTION__ ": " __VA_ARGS__)
+#   define DWPRINT(...)   fwprintf(stderr, DEBUG ":" __FUNCTION__ ": " __VA_ARGS__)
 #   define DOUT(_msg)     std::cout << DEBUG << ":" << __FUNCTION__ << ": " << _msg << std::endl
+#   define DWOUT(_msg)    std::wcout << DEBUG << ":" << __FUNCTION__ << ": " << _msg << std::endl
 #   define DERR(_msg)     std::cerr << DEBUG << ":" << __FUNCTION__ << ": " << _msg << std::endl
+#   define DWERR(_msg)    std::wcerr << DEBUG << ":" << __FUNCTION__ << ": " << _msg << std::endl
 # endif // QT_CORE_LIB
 
 #else // DEBUG

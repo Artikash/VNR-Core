@@ -61,6 +61,8 @@ class TermWriter:
     if type not in ('source', 'escape_source', 'escape_target'):
       titles = None
 
+    titleCount = len(titles) if titles else 0 # int
+
     empty = True
 
     escape_source = type == 'escape_source'
@@ -106,18 +108,48 @@ class TermWriter:
             if z:
               pattern = zhs2zht(pattern)
 
+          # See: http://stackoverflow.com/questions/6005821/how-to-do-multiple-substitutions-using-boost-regex
+          # pattern: A(?:(sama)|(1)|(2)|(4)|(5)|(6)|(7)|(8)|(9)|(sam))
+          # repl: BCD(?1yy)(?10xxx)
           if titles and td_is_name:
             if escape_source:
+              repl_prefix = (defs.NAME_ESCAPE_PREFIX % priority) + "."
+              repl_suffix = defs.NAME_ESCAPE_SUFFIX + " " # padding space
+              pattern += r"(?:"
               for i,k in enumerate(titles.iterkeys()):
-                f.write(self._renderLine(pattern + k, defs.NAME_ESCAPE%(priority,i)  + ' ', regex))
+                if i:
+                  pattern += r"|(%s)" % k
+                  repl_prefix += r":(?%i%i" % (i+1,titleCount-i)
+                  repl_suffix = r")" + repl_suffix
+                else: # first
+                  pattern += r"(%s)" % k
+                  repl_prefix += r"(?%i" % (titleCount-i)
+                  repl_suffix = r")" + repl_suffix
+              pattern += r"|)" # trailing "|" so that the title can be empty
+              repl = repl_prefix + repl_suffix
             elif escape_target:
+              pattern = (defs.NAME_ESCAPE_PREFIX % priority) + r"\.(?:" # escape the dot
               for i,v in enumerate(titles.itervalues()):
-                f.write(self._renderLine(defs.NAME_ESCAPE%(priority,i), repl + v, regex))
+                if i:
+                  pattern += r"|(%i)" % (titleCount-i)
+                else: # first
+                  pattern += r"(%i)" % (titleCount-i)
+                if v:
+                  repl += r"(?%i%s)" % (i+1,v)
+              pattern += r")" + defs.NAME_ESCAPE_SUFFIX
+              #repl+= " " # do not padding space as only Chinese/Korean uses escaped terms
             else:
-              for k,v in titles.iteritems():
-                f.write(self._renderLine(pattern + k, repl + v + ' ', regex))
-          else:
-            f.write(self._renderLine(pattern, repl, regex))
+              pattern += r"(?:"
+              for i,(k,v) in enumerate(titles.iteritems()):
+                if i:
+                  pattern += r"|(%s)" % k
+                else: # first
+                  pattern += r"(%s)" % k
+                if v:
+                  repl += r"(?%i%s)" % (i+1,v)
+              pattern += r")"
+              repl += " " # padding space
+          f.write(self._renderLine(pattern, repl, regex))
 
           empty = False
 
@@ -154,7 +186,7 @@ class TermWriter:
 # Options: type = %s, language = %s, hentai = %s, games = (%s)
 #
 """ % (self.createTime, type, language, self.hentai,
-    ','.join(self.gameIds) if self.gameIds else 'empty')
+    ','.join(map(str, self.gameIds)) if self.gameIds else 'empty')
 
   def _iterTermData(self, type, language):
     """
@@ -215,11 +247,12 @@ class TermWriter:
   def queryTermTitles(self, language):
     """Terms sorted by length and id
     @param  language
-    @return  OrderedDict{unicode from:unicode to} not None not empty
+    @return  OrderedDict{unicode from:unicode to}
     """
     zht = language == 'zht'
     l = [] # [long id, unicode pattern, unicode replacement]
-    ret = OrderedDict({'':''})
+    #ret = OrderedDict({'':''})
+    ret = OrderedDict()
     for td in self._iterTermData('title', language):
       pat = td.pattern
       repl = td.text
@@ -228,8 +261,8 @@ class TermWriter:
         if repl: # and self.convertsChinese:
           repl = zhs2zht(repl)
       l.append((td.id, pat, repl))
-    l.sort(key=lambda it:
-        (len(it[1]), it[0]))
+    l.sort(reverse=True, key=lambda it:
+        (len(it[1]), it[0])) # longer terms come at first, newer come at first
     for id,pat,repl in l:
       ret[pat] = repl
     return ret
@@ -489,7 +522,10 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    #with SkProfiler(): # 9/26/2014: 0.0003 second
+    # 9/25/2014: Qt 0.0003 seconds
+    # 9/26/2014: Boost 0.001 seconds
+    # 9/26/2014: Boost with grouped titles 0.0005 seconds
+    #with SkProfiler():
     return d.applyTerms(text, 'target', language) if d.enabled else text
     #if d.marked and language.startswith('zh'):
     #  ret = ret.replace('> ', '')
@@ -503,7 +539,9 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    #with SkProfiler(): # 9/26/2014: 3e-05 second
+    # 9/25/2014: Qt 3e-05 seconds
+    # 9/26/2014: Boost 3e-05 seconds
+    #with SkProfiler():
     return d.applyTerms(text, 'origin', language or d.targetLanguage) if d.enabled else text
     #return self.__d.applyTerms(dataman.manager().iterOriginTerms(), text, language)
 
@@ -540,7 +578,9 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    #with SkProfiler(): # 9/15/2014: 0.0005 second
+    # 9/25/2014: Qt 0.0005 seconds
+    # 9/26/2014: Boost 0.001 seconds
+    #with SkProfiler():
     return d.applyTerms(text, 'source', language) if d.enabled else text
     #dm = dataman.manager()
     #d = self.__d
@@ -560,7 +600,10 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    #with SkProfiler(): # 9/26/2014: 0.01 second
+    # 9/25/2014: Qt 0.01 seconds
+    # 9/26/2014: Boost 0.03 seconds
+    # 9/26/2014: Boost with grouped titles 0.002 seconds
+    #with SkProfiler():
     return d.applyTerms(text, 'escape_source', language) if d.enabled else text
 
   def applyEscapeTerms(self, text, language):
@@ -572,7 +615,10 @@ class TermManager(QObject):
     d = self.__d
     if not d.enabled:
       return text
-    #with SkProfiler(): # 9/26/2014: 0.009 second
+    # 9/25/2014: Qt 0.009 seconds
+    # 9/26/2014: Boost 0.05 seconds
+    # 9/26/2014: Boost with grouped titles 0.004 seconds
+    #with SkProfiler():
     ret = d.applyTerms(text, 'escape_target', language)
     if d.marked and language.startswith('zh'):
       ret = ret.replace('> ', '')

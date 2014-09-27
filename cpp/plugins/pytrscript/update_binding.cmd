@@ -17,12 +17,14 @@ if exist "%OUTDIR%" ren "%OUTDIR%" "%OUTDIR%".bak
 rm -Rf %OUTDIR% %LOG%
 
 set LIBPATH=%CD%/../../libs
+set TYPESYSTEM_HOME=%CD%/../../typesystems
+set TYPESYSTEM_PATH=%TYPESYSTEM_HOME%/cpp;%TYPESYSTEM_HOME%/stl
 
 set TARGET_HOME=../../libs/%LIBTARGET%
 set QT_HOME=c:/qt/4
 ::set PYTHON_HOME=%CD%/../../../../Python
 set PYTHON_HOME=c:/python27
-::set PYTHON_HOME=z:/Local/Windows/Developer/Python
+set PYTHON_HOME=z:/Local/Windows/Developer/Python
 set PYSIDE_HOME=%PYTHON_HOME%/Lib/site-packages/PySide
 
 set PATH=%QT_HOME%/bin;%PYSIDE_HOME%;%PATH%
@@ -50,13 +52,16 @@ set INC=%INC%;%TARGET_HOME%;%LIBPATH%
 set INC=%INC%;..
 set _=
 ::set _= %_% --debug-level=full --no-suppress-warnings
-set _=%_% --enable-pyside-extensions
+
+:: Disable Qt
+::set _=%_% --enable-pyside-extensions
+
 set _=%_% --enable-parent-ctor-heuristic
 set _=%_% --use-isnull-as-nb_nonzero
 set _=%_% --enable-return-value-heuristic
 set _=%_% --avoid-protected-hack
 set _=%_% --include-paths=%INC%
-set _=%_% --typesystem-paths=%PYSIDE_HOME%/typesystems
+set _=%_% --typesystem-paths=%PYSIDE_HOME%/typesystems;%TYPESYSTEM_PATH%
 set _=%_% --output-directory=%OUTDIR%
 
 >"%LOG%" shiboken %HEADER% %TYPESYSTEM% %_% || exit /b 1

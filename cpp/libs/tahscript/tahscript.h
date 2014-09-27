@@ -3,6 +3,8 @@
 
 // tahscript.h
 // 8/14/2014 jichi
+//
+// QRegExp is used instead boost since QRegExp is faster.
 
 #include "sakurakit/skglobal.h"
 #include <QtCore/QString>

@@ -5,7 +5,8 @@
 # Though Qt is not indispensible, shiboken could save me some time for development.
 # Switch to pure PyC and get rid of QStringList if it becomes a performance bottle neck.
 
-CONFIG += pysideplugin noqtgui
+#CONFIG += pysideplugin noqtgui
+CONFIG += pysideplugin noqt
 include(../../../config.pri)
 include($$LIBDIR/trscript/trscript.pri)
 
@@ -13,7 +14,7 @@ INCLUDEPATH += $$LIBDIR/trscript # needed by shiboken generated code
 
 ## Libraries
 
-QT += core
+QT -= core
 QT -= gui
 
 INCLUDEPATH += $$PYSIDE_HOME/include/PySide/QtCore

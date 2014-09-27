@@ -2,19 +2,20 @@
 // 9/20/2014 jichi
 
 #include "trscript/trscript.h"
-#include <QtCore/QString>
-#include <QtCore/QFile>
-#include <QtCore/QTextStream>
-#include <QtCore/QRegExp>
-
-//#include <QtCore/QReadWriteLock> // thread-safety
-//#include <QtCore/QReadLocker>
-//#include <QtCore/QWriteLocker>
 
 #include <list> // instead of QList which is slow that stores pointers instead of elements
-#include <tuple>
-#include <boost/foreach.hpp>
+#include <fstream>
 
+//#include <tuple>
+#include <boost/tuple/tuple.hpp>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/foreach.hpp>
+#include <boost/regex.hpp>
+
+#include "cpputil/cpplocale.h"
+
+#define SK_NO_QT
 #define DEBUG "trscript.cc"
 #include "sakurakit/skdebug.h"
 
@@ -33,22 +34,24 @@ namespace { // unnamed
 
 struct TranslationScriptRule
 {
-  QString source;
-  QString target;
-  QRegExp *sourceRe; // cached compiled regex
+  std::wstring source;
+  std::wstring target;
+  boost::wregex *sourceRe; // cached compiled regex
 
   TranslationScriptRule() : sourceRe(nullptr) {}
   ~TranslationScriptRule() { if (sourceRe) delete sourceRe; }
 
-  bool init(const QString &s, const QString &t, bool regex)
+  bool init(const std::wstring &s, const std::wstring &t, bool regex)
   {
     if (regex) {
-      QRegExp *re = new QRegExp(s, Qt::CaseSensitive, QRegExp::RegExp2); // use Perl-compatible syntax, default in Qt5
-      if (re->isEmpty()) {
-        DOUT("invalid regexp:" << s);
-        delete re;
+      boost::wregex *re = nullptr;
+      try {
+        re = new boost::wregex(s);
+      } catch (...) { // boost::bad_pattern
+        DWOUT("invalid regex pattern:" << s);
         return false;
       }
+
       sourceRe = re;
       target = t;
       //target.replace('$', '\\'); // convert Javascript RegExp to Perl
@@ -59,9 +62,11 @@ struct TranslationScriptRule
     return true;
   }
 
-  bool init(const std::tuple<QString, QString, bool> &t)
-  { return init(std::get<0>(t), std::get<1>(t), std::get<2>(t)); }
+  bool init(const boost::tuple<std::wstring, std::wstring, bool> &t)
+  { return init(boost::get<0>(t), boost::get<1>(t), boost::get<2>(t)); }
 };
+
+const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
 
 } // unnamed namespace
 
@@ -92,19 +97,19 @@ public:
   void reset(int size)
   {
     //DOUT(size);
-    Q_ASSERT(size > 0);
+    //Q_ASSERT(size > 0);
     ruleCount = size;
     if (rules)
       delete[] rules;
     rules = new TranslationScriptRule[size];
   }
 
-  QString renderTarget(const QString &text) const
+  std::wstring renderTarget(const std::wstring &text) const
   { return underline ? underlineText(text) : text; }
 
 private:
-  static QString underlineText(const QString &text)
-  { return "<span style=\"text-decoration:underline\">" + text + "</span>"; }
+  static std::wstring underlineText(const std::wstring &text)
+  { return L"<span style=\"text-decoration:underline\">" + text + L"</span>";  }
 };
 
 /** Public class */
@@ -127,41 +132,37 @@ void TranslationScriptManager::clear()
 }
 
 // Initialization
-bool TranslationScriptManager::loadFile(const QString &path)
+bool TranslationScriptManager::loadFile(const std::wstring &path)
 {
-  // File IO
-  // http://stackoverflow.com/questions/2612103/qt-reading-from-a-text-file
-  QFile file(path);
-  if (!file.open(QIODevice::ReadOnly)) {
-    DOUT("failed to open file at path:" << path);
+  std::wifstream fin(path);
+  if(!fin.is_open()) {
+    DOUT("Unable to open file");
     return false;
   }
+  fin.imbue(UTF8_LOCALE);
 
-  std::list<std::tuple<QString, QString, bool> > lines; // pattern, text, regex
+  std::list<boost::tuple<std::wstring, std::wstring, bool> > lines; // pattern, text, regex
 
-  QTextStream in(&file);
-  in.setCodec("UTF-8"); // enforce UTF-8
-  while (!in.atEnd()) {
-    QString line = in.readLine(); //.trimmed(); // trim the ending new line char
-    if (!line.isEmpty()) {
+  for (std::wstring line; std::getline(fin, line);)
+    if (!line.empty()) {
       bool regex = false;
       int textStartIndex = 1; // index of the text after flags, +1 to skip \t
-      switch (line[0].unicode()) {
+      switch (line[0]) {
       case SCRIPT_CH_COMMENT: continue;
       case SCRIPT_CH_REGEX: regex = true; textStartIndex++; break;
       }
-      int index = line.indexOf(SCRIPT_RULE_DELIM, textStartIndex);
-      QString left, right;
-      if (index == -1)
-        left = line.mid(textStartIndex);
+      std::wstring left, right;
+      auto index = line.find(SCRIPT_RULE_DELIM, textStartIndex);
+      if (index == std::wstring::npos)
+        left = line.substr(textStartIndex);
       else {
-        left = line.mid(textStartIndex, index - textStartIndex); //.trimmed()
-        right = line.mid(index + SCRIPT_RULE_DELIM_LEN);
+        left = line.substr(textStartIndex, index - textStartIndex); //.trimmed()
+        right = line.substr(index + SCRIPT_RULE_DELIM_LEN);
       }
-      lines.push_back(std::make_tuple(left, right, regex));
+      lines.push_back(boost::make_tuple(left, right, regex));
     }
-  }
-  file.close();
+
+  fin.close();
 
   if (lines.empty()) {
     d_->clear();
@@ -179,34 +180,39 @@ bool TranslationScriptManager::loadFile(const QString &path)
 }
 
 // Translation
-QString TranslationScriptManager::translate(const QString &text) const
+std::wstring TranslationScriptManager::translate(const std::wstring &text) const
 {
   //QReadLocker locker(&d_->lock);
-  QString ret = text;
+  std::wstring ret = text;
 #ifdef DEBUG_RULE
-  QString previous;
+  std::wstring previous = text;
 #endif // DEBUG_RULE
   if (d_->ruleCount && d_->rules)
     for (int i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
+
       if (rule.sourceRe) {
-        if (rule.target.isEmpty())
-          ret.remove(*rule.sourceRe);
+        // format_all is needed to enable all features
+        try  {
+          ret = rule.target.empty()
+              ? boost::regex_replace(ret, *rule.sourceRe, "", boost::match_default|boost::format_all) // there is no regex_erase
+              : boost::regex_replace(ret, *rule.sourceRe, d_->renderTarget(rule.target), boost::match_default|boost::format_all);
+        } catch (...) {
+          DWOUT("invalid regex expression:" << rule.target);
+        }
+      } else if (!rule.source.empty()) {
+        if (rule.target.empty())
+          boost::erase_all(ret, rule.source);
         else
-          ret.replace(*rule.sourceRe, d_->renderTarget(rule.target));
-      } else if (!rule.source.isEmpty()) {
-        if (rule.target.isEmpty())
-          ret.remove(rule.source);
-        else
-          ret.replace(rule.source, d_->renderTarget(rule.target));
+          boost::replace_all(ret, rule.source, d_->renderTarget(rule.target));
       }
 
 #ifdef DEBUG_RULE
       if (previous != ret) {
         if (rule.sourceRe)
-          DOUT(rule.sourceRe->pattern() << rule.target << ret);
+          DOUT(QString::fromStdWString(rule.target) << QString::fromStdWString(ret));
         else
-          DOUT(rule.source << rule.target << ret);
+          DOUT(QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target) << QString::fromStdWString(ret));
       }
       previous = ret;
 #endif // DEBUG_RULE

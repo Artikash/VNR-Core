@@ -183,7 +183,7 @@ QString TahScriptManager::translate(const QString &text) const
   //QReadLocker locker(&d_->lock);
   QString ret = text;
 #ifdef DEBUG_RULE
-  QString previous;
+  QString previous = text;
 #endif // DEBUG_RULE
   if (d_->ruleCount && d_->rules)
     for (int i = 0; i < d_->ruleCount; i++) {

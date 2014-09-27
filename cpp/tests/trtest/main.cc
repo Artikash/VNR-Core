@@ -7,26 +7,23 @@ int main()
 {
   qDebug() << "enter";
 
-  //wchar_t ws[] = L"kawaii";
-  wchar_t ws[] = L"aBbA";
-  QString text = QString::fromWCharArray(ws);
+  wchar_t ws[] = L"kawaii";
+  //QString text = QString::fromWCharArray(ws);
+  std::wstring text = ws;
 
-  QString path = "../cpp/libs/trscript/example.txt";
+  std::wstring path = L"../cpp/libs/trscript/example.txt";
   //path = "Z:\\Users\\jichi\\opt\\stream/Caches/tmp/reader/dict/zht/ocr.txt";
-  path = "Z:\\Users\\jichi\\opt\\stream\\Caches\\tmp\\reader\\dict\\ja\\origin.txt";
+  path = L"../../../../Caches/tmp/reader/dict/ja/origin.txt";
 
   TranslationScriptManager m;
   m.setUnderline(true);
   m.loadFile(path);
 
   if (!m.isEmpty()) {
-    qDebug() << text;
+    qDebug() << QString::fromStdWString(text);
     text = m.translate(text);
-    qDebug() << text;
+    qDebug() << QString::fromStdWString(text);
   }
-
-  QRegExp rx("(a.*?b)(.*)", Qt::CaseSensitive, QRegExp::RegExp2);
-  qDebug() << text.replace(rx, "\\2\\1");
 
   qDebug() << "leave";
   return 0;
