@@ -3744,10 +3744,9 @@ bool InsertTanukiHook()
 static void SpecialHookRyokucha(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
 {
   CC_UNUSED(split);
-  DWORD *base = (DWORD*)esp_base;
-  DWORD i, j;
-  for (i = 1; i < 5; i++) {
-    j = base[i];
+  const DWORD *base = (const DWORD *)esp_base;
+  for (DWORD i = 1; i < 5; i++) {
+    DWORD j = base[i];
     if ((j >> 16) == 0 && (j >> 8)) {
       hp->off = i << 2;
       *data = j;
@@ -3783,7 +3782,7 @@ bool InsertRyokuchaDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
     hp.addr = insert_addr;
     hp.length_offset = 1;
     hp.extern_fun = SpecialHookRyokucha;
-    hp.type = BIG_ENDIAN | EXTERN_HOOK;
+    hp.type = BIG_ENDIAN|EXTERN_HOOK;
     ConsoleOutput("vnreng: INSERT StudioRyokucha");
     NewHook(hp, L"StudioRyokucha");
     return true;
@@ -5365,7 +5364,7 @@ bool InsertAdobeAirHook()
  *  - off: 4
  *  - type: 4
  *
- *  ASCII: あやめ
+ *  ASCII: あやめ, hook_offset = -50
  *  Function starts
  *  00609bef  /> cc             int3
  *  00609bf0  /> 55             push ebp
@@ -5397,7 +5396,7 @@ bool InsertAdobeAirHook()
  *  00609c38  |. c2 0400        retn 0x4
  *  Function stops
  *
- *  WideChar: 『こいなか-小田舎で初恋x中出しセクシャルライフ-』
+ *  WideChar: こいなか-小田舎で初恋x中出しセクシャルライフ-, hook_offset = -53
  *  0040653a     cc             int3
  *  0040653b     cc             int3
  *  0040653c     cc             int3
@@ -5431,6 +5430,41 @@ bool InsertAdobeAirHook()
  *  00406582   . 8be5           mov esp,ebp
  *  00406584   . 5d             pop ebp
  *  00406585   . c2 0400        retn 0x4
+ *
+ *  WideChar: 祝福の鐘の音は、桜色の風と共に, hook_offset = -50,
+ *  FIXME: how to know if it is UTF16? This game has /H code, though:
+ *
+ *      /HA-4@94D62:shukufuku_main.exe
+ *
+ *  011d619e   cc               int3
+ *  011d619f   cc               int3
+ *  011d61a0   55               push ebp
+ *  011d61a1   8bec             mov ebp,esp
+ *  011d61a3   64:a1 00000000   mov eax,dword ptr fs:[0]
+ *  011d61a9   6a ff            push -0x1
+ *  011d61ab   68 d1811f01      push .011f81d1
+ *  011d61b0   50               push eax
+ *  011d61b1   64:8925 00000000 mov dword ptr fs:[0],esp
+ *  011d61b8   81ec 80000000    sub esp,0x80
+ *  011d61be   53               push ebx
+ *  011d61bf   8b5d 08          mov ebx,dword ptr ss:[ebp+0x8]
+ *  011d61c2   57               push edi
+ *  011d61c3   8bf9             mov edi,ecx
+ *  011d61c5   8b07             mov eax,dword ptr ds:[edi]
+ *  011d61c7   83f8 02          cmp eax,0x2
+ *  011d61ca   75 1f            jnz short .011d61eb
+ *  011d61cc   3b5f 40          cmp ebx,dword ptr ds:[edi+0x40]
+ *  011d61cf   75 1a            jnz short .011d61eb
+ *  011d61d1   837f 44 00       cmp dword ptr ds:[edi+0x44],0x0
+ *  011d61d5   74 14            je short .011d61eb
+ *  011d61d7   5f               pop edi
+ *  011d61d8   b0 01            mov al,0x1
+ *  011d61da   5b               pop ebx
+ *  011d61db   8b4d f4          mov ecx,dword ptr ss:[ebp-0xc]
+ *  011d61de   64:890d 00000000 mov dword ptr fs:[0],ecx
+ *  011d61e5   8be5             mov esp,ebp
+ *  011d61e7   5d               pop ebp
+ *  011d61e8   c2 0400          retn 0x4
  */
 bool InsertScenarioPlayerHook()
 {
@@ -5457,8 +5491,8 @@ bool InsertScenarioPlayerHook()
     0x8b,0x4d, 0xf4 // 00609c2b  |. 8b4d f4        mov ecx,dword ptr ss:[ebp-0xc]
   };
   enum { // distance to the beginning of the function
-    hook_offset_A = 0x00609bf0 - 0x00609c25, // -53
-    hook_offset_W = 0x00406540 - 0x00406572  // -50
+    hook_offset_A = 0x00609bf0 - 0x00609c25   // -53
+    , hook_offset_W = 0x00406540 - 0x00406572 // -50
   };
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG start = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
