@@ -450,6 +450,9 @@ DWORD DetermineEngineByProcessName()
   wcscpy(str + len - 4, L"_checksum.exe");
   if (IthCheckFile(str)) {
     InsertRyokuchaHook();
+
+    if (IthFindFile(L"*.iar") && IthFindFile(L"*.sec5")) // jichi 9/27/2014: For new Ryokucha games
+      InsertScenarioPlayerHook();
     return yes;
   }
 
