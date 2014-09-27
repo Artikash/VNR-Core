@@ -79,16 +79,13 @@ class TermWriter:
 
           regex = td.regex
 
-          td_is_name = td.type == 'name'
 
           if escape_source or escape_target:
             priority = count - index
-            if not td_is_name:
-              key = defs.TERM_ESCAPE % priority
+            key = defs.TERM_ESCAPE % priority
 
           if escape_source:
-            if not td_is_name:
-              repl = key
+            repl = key
           else:
             repl = td.text
             if repl and z:
@@ -99,8 +96,7 @@ class TermWriter:
               #  repl = self._markText(repl)
 
           if escape_target:
-            if not td_is_name:
-              pattern = key + ' '
+            pattern = key
           else:
             pattern = td.pattern
             if regex:
@@ -111,44 +107,58 @@ class TermWriter:
           # See: http://stackoverflow.com/questions/6005821/how-to-do-multiple-substitutions-using-boost-regex
           # pattern: A(?:(sama)|(1)|(2)|(4)|(5)|(6)|(7)|(8)|(9)|(sam))
           # repl: BCD(?1yy)(?10xxx)
-          if titles and td_is_name:
+          #if titleCount and td_is_name:
+          #  if escape_source:
+          #    repl_prefix = (defs.NAME_ESCAPE_PREFIX % priority) + "."
+          #    repl_suffix = defs.NAME_ESCAPE_SUFFIX + " " # padding space
+          #    pattern += r"(?:"
+          #    for i,k in enumerate(titles.iterkeys()):
+          #      if i:
+          #        pattern += r"|(%s)" % k
+          #        repl_prefix += r":(?%i%i" % (i+1,titleCount-i)
+          #        repl_suffix = r")" + repl_suffix
+          #      else: # first
+          #        pattern += r"(%s)" % k
+          #        repl_prefix += r"(?%i" % (titleCount-i)
+          #        repl_suffix = r")" + repl_suffix
+          #    pattern += r"|)" # trailing "|" so that the title can be empty
+          #    repl = repl_prefix + repl_suffix
+          #  elif escape_target:
+          #    pattern = (defs.NAME_ESCAPE_PREFIX % priority) + r"\.(?:" # escape the dot
+          #    for i,v in enumerate(titles.itervalues()):
+          #      if i:
+          #        pattern += r"|(%i)" % (titleCount-i)
+          #      else: # first
+          #        pattern += r"(%i)" % (titleCount-i)
+          #      if v:
+          #        repl += r"(?%i%s)" % (i+1,v)
+          #    pattern += r")" + defs.NAME_ESCAPE_SUFFIX
+          #    #repl+= " " # do not padding space as only Chinese/Korean uses escaped terms
+          #  else:
+          #    pattern += r"(?:"
+          #    for i,(k,v) in enumerate(titles.iteritems()):
+          #      if i:
+          #        pattern += r"|(%s)" % k
+          #      else: # first
+          #        pattern += r"(%s)" % k
+          #      if v:
+          #        repl += r"(?%i%s)" % (i+1,v)
+          #    pattern += r")"
+          #    repl += " " # padding space
+
+          if titleCount and td.type == 'name':
             if escape_source:
-              repl_prefix = (defs.NAME_ESCAPE_PREFIX % priority) + "."
-              repl_suffix = defs.NAME_ESCAPE_SUFFIX + " " # padding space
-              pattern += r"(?:"
+              esc = defs.NAME_ESCAPE + " " # padding space
               for i,k in enumerate(titles.iterkeys()):
-                if i:
-                  pattern += r"|(%s)" % k
-                  repl_prefix += r":(?%i%i" % (i+1,titleCount-i)
-                  repl_suffix = r")" + repl_suffix
-                else: # first
-                  pattern += r"(%s)" % k
-                  repl_prefix += r"(?%i" % (titleCount-i)
-                  repl_suffix = r")" + repl_suffix
-              pattern += r"|)" # trailing "|" so that the title can be empty
-              repl = repl_prefix + repl_suffix
+                f.write(self._renderLine(pattern + k, esc % (priority, titleCount - i), regex))
             elif escape_target:
-              pattern = (defs.NAME_ESCAPE_PREFIX % priority) + r"\.(?:" # escape the dot
+              esc = defs.NAME_ESCAPE
               for i,v in enumerate(titles.itervalues()):
-                if i:
-                  pattern += r"|(%i)" % (titleCount-i)
-                else: # first
-                  pattern += r"(%i)" % (titleCount-i)
-                if v:
-                  repl += r"(?%i%s)" % (i+1,v)
-              pattern += r")" + defs.NAME_ESCAPE_SUFFIX
-              #repl+= " " # do not padding space as only Chinese/Korean uses escaped terms
+                f.write(self._renderLine(esc % (priority, titleCount - i), repl + v, regex)) # no padding space for Chinese names
             else:
-              pattern += r"(?:"
-              for i,(k,v) in enumerate(titles.iteritems()):
-                if i:
-                  pattern += r"|(%s)" % k
-                else: # first
-                  pattern += r"(%s)" % k
-                if v:
-                  repl += r"(?%i%s)" % (i+1,v)
-              pattern += r")"
-              repl += " " # padding space
+              for k,v in titles.iteritems():
+                f.write(self._renderLine(pattern + k, repl + v + " ", regex)) # padding space for Japanese names
+
           f.write(self._renderLine(pattern, repl, regex))
 
           empty = False
@@ -524,7 +534,6 @@ class TermManager(QObject):
     d = self.__d
     # 9/25/2014: Qt 0.0003 seconds
     # 9/26/2014: Boost 0.001 seconds
-    # 9/26/2014: Boost with grouped titles 0.0005 seconds
     #with SkProfiler():
     return d.applyTerms(text, 'target', language) if d.enabled else text
     #if d.marked and language.startswith('zh'):
@@ -616,8 +625,7 @@ class TermManager(QObject):
     if not d.enabled:
       return text
     # 9/25/2014: Qt 0.009 seconds
-    # 9/26/2014: Boost 0.05 seconds
-    # 9/26/2014: Boost with grouped titles 0.004 seconds
+    # 9/26/2014: Boost 0.07 seconds
     #with SkProfiler():
     ret = d.applyTerms(text, 'escape_target', language)
     if d.marked and language.startswith('zh'):
