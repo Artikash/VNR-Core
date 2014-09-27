@@ -287,7 +287,7 @@ DWORD DetermineEngineByFile3()
     return yes;
   }
   if (IthFindFile(L"arc.a*")) {
-    InsertApricotHook();
+    InsertApricoTHook();
     return yes;
   }
   if (IthFindFile(L"*.mpk")) {
@@ -519,8 +519,12 @@ DWORD DetermineEngineAtLast()
     InsertScenarioPlayerHook();
     return yes;
   }
-  if (IthCheckFile(L"comnArc.arc") // this file might exist in multiple files
+  if (IthCheckFile(L"comnArc.arc") // jichi 8/17/2014: this file might exist in multiple files
       && InsertNexton1Hook()) // old nexton game
+    return yes;
+
+  if (IthCheckFile(L"arc.dat") // jichi 9/27/2014: too common
+      && InsertApricoTHook())
     return yes;
   return no;
 }
