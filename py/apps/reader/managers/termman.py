@@ -298,7 +298,7 @@ class _TermManager:
   instance = None # _TermManager  needed for updateTime
 
   # Cover all term types, but decouple escape into before and after
-  SAVE_TYPES = 'origin', 'source', 'target', 'speech', 'ocr', 'escape_source', 'escape_target'
+  #SAVE_TYPES = 'origin', 'source', 'target', 'speech', 'ocr', 'escape_source', 'escape_target'
 
   def __init__(self, q):
     _TermManager.instance = self
@@ -312,11 +312,11 @@ class _TermManager:
     self.updateTime = 0 # float
 
     self.targetLanguage = 'ja' # str  targetLanguage
-    self.targetLanguages = {} # [str language:float time]
 
     self.saveMutex = QMutex()
 
-    self.scripts = {} # {unicode key:TranslationScriptManager}  key = lang + type
+    self.scripts = {} # {str key:TranslationScriptManager}  key = lang + type
+    self.scriptTimes = {} # [str key:float time]
 
     t = self.saveTimer = QTimer(q)
     t.setSingleShot(True)
@@ -339,14 +339,13 @@ class _TermManager:
       ret.setUnderline(self.marked and type in ('target', 'escape_target'))
     return ret
 
-  def getScriptManager(self, type, language): # unicode, unicode -> TranslationScriptManager
-    return self.scripts.get(SCRIPT_KEY_SEP.join((type, language)))
-
   #@classmethod
   #def needsEscape(cls):
   #  return config.is_asian_language(cls.language)
 
   def saveTerms(self):
+    if not self.scriptTimes:
+      return
     if not self.saveMutex.tryLock():
       dwarn("retry later due to thread contention")
       self.rebuildCacheLater(queued=True)
@@ -362,6 +361,11 @@ class _TermManager:
     """Invoked async
     @param  createTime  float
     """
+    #for lang,ts in self.targetLanguages.iteritems():
+    times = self.scriptTimes
+    if not times:
+      return
+
     dprint("enter")
 
     dm = dataman.manager()
@@ -382,32 +386,30 @@ class _TermManager:
       #marked=self.marked,
     )
 
-    langs = self.targetLanguages
-    #for lang,ts in self.targetLanguages.iteritems():
-
-    for lang,ts in langs.items(): # back up items
+    #for scriptKey,ts in times.iteritems():
+    for scriptKey,ts in times.items(): # back up items
       if ts < self.updateTime: # skip language that does not out of date
+        type, lang = scriptKey.split(SCRIPT_KEY_SEP)
         macros = w.queryTermMacros(lang)
         titles = w.queryTermTitles(lang)
 
-        for type in self.SAVE_TYPES:
-          if w.isOutdated():
-            dwarn("leave: cancel saving out-of-date terms")
-            return
+        if w.isOutdated():
+          dwarn("leave: cancel saving out-of-date terms")
+          return
 
-          path = rc.term_path(type, lang) # unicode
-          dir = os.path.dirname(path) # unicode path
-          if not os.path.exists(dir):
-            skfileio.makedirs(dir)
+        path = rc.term_path(type, lang) # unicode
+        dir = os.path.dirname(path) # unicode path
+        if not os.path.exists(dir):
+          skfileio.makedirs(dir)
 
-          man = self._createScriptManager(type, lang)
-          if not man.isEmpty():
-            man.clear()
+        man = self._createScriptManager(type, lang)
+        if not man.isEmpty():
+          man.clear()
 
-          if w.saveTerms(path, type, lang, macros, titles) and man.loadFile(path):
-            dprint("type = %s, lang = %s, count = %s" % (type, lang, man.size()))
+        if w.saveTerms(path, type, lang, macros, titles) and man.loadFile(path):
+          dprint("type = %s, lang = %s, count = %s" % (type, lang, man.size()))
 
-        langs[lang] = createTime
+        times[scriptKey] = createTime
 
     dprint("leave")
 
@@ -418,9 +420,10 @@ class _TermManager:
     @param  language  str
     """
     # TODO: Schedule to update terms when man is missing
-    man = self.getScriptManager(type, language)
+    key = SCRIPT_KEY_SEP.join((type, language))
+    man = self.scripts.get(key)
     if man is None:
-      self.targetLanguages[language] = 0
+      self.scriptTimes[key] = 0
       self.rebuildCacheLater()
     return man.translate(text) if man and not man.isEmpty() else text
 
@@ -441,14 +444,10 @@ class TermManager(QObject):
   #def isLocked(self): return self.__d.locked
 
   def setTargetLanguage(self, v):
-    if v:
-      d = self.__d
+    d = self.__d
+    if v and v != d.targetLanguage:
       d.targetLanguage = v
-
-      langs = {v:0}
-      if v != 'ja':
-        langs['ja'] = 0
-      d.targetLanguages = langs # reset languages
+      d.scriptTimes = {} # reset scriptTimes
 
   def isEnabled(self): return self.__d.enabled
   def setEnabled(self, value): self.__d.enabled = value
@@ -464,7 +463,7 @@ class TermManager(QObject):
     if d.marked != t:
       d.marked = t
       for key,man in d.scripts.iteritems():
-        type = key.partition(SCRIPT_KEY_SEP)[0]
+        type = key.split(SCRIPT_KEY_SEP)[0]
         marked = t and type in ('target', 'escape_target')
         man.setUnderline(marked)
 
@@ -489,8 +488,6 @@ class TermManager(QObject):
     d = self.__d
     d.updateTime = time()
     d.rebuildCacheLater()
-
-  warmup = invalidateCache
 
   #def warmup(self, async=True, interval=0): # bool, int
   #  d = self.__d

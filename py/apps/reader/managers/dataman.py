@@ -8958,7 +8958,7 @@ class DataManager(QObject):
       return False
 
     d.terms.append(term)
-    self.invalidateSortedTerms()
+    #self.invalidateSortedTerms()
 
     if commit:
       d.dirtyTerms.add(term)

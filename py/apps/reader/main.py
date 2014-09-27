@@ -1585,9 +1585,9 @@ class MainObject(QObject):
     #  dprint("warm up google tts engine")
     #  d.googleTtsEngine.warmup()
 
-    if dm.hasTerms():
-      dprint("warm up dictionary terms")
-      d.termManager.warmup()
+    #if dm.hasTerms():
+    #  dprint("warm up dictionary terms")
+    #  d.termManager.warmup()
 
     dprint("login later")
     skevents.runlater(dm.reloadUser)
