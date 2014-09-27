@@ -4,6 +4,7 @@
 rename:
   #AB2Try: YaneSDK # TODO
   AUEngine: Tenco
+  ApRicot: ApRicoT
   MAJIRO: Majiro
   Pencil: Pensil
   Silkys: Elf
@@ -116,7 +117,8 @@ simple:
   - Alchemist2 PSP
   - AMUSE CRAFT
   - AOS
-  - ApRicot
+  - ApRicot # renamed
+  - ApRicoT
   - AUEngine # renamed
   - BANDAI Name PSP
   - BGI
@@ -366,7 +368,8 @@ wchar:
   - sceFontGetShadowGlyphImage_Clip
   # Engines
   - Adobe AIR
-  - ApRicot
+  - ApRicot # renamed
+  - ApRicoT
   - BALDR # removed
   - Bruns
   - Cotopha

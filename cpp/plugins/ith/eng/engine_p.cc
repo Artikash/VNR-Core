@@ -3016,7 +3016,7 @@ Apricot hook:
   Only name and text data is needed.
 
 ********************************************************************************************/
-static void SpecialHookApricot(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+static void SpecialHookApricoT(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
 {
   CC_UNUSED(hp);
   DWORD reg_esi = *(DWORD *)(esp_base - 0x20);
@@ -3065,7 +3065,7 @@ static void SpecialHookApricot(DWORD esp_base, HookParam* hp, DWORD* data, DWORD
   }
 
 }
-bool InsertApricotHook()
+bool InsertApricoTHook()
 {
   for (DWORD i = module_base_ + 0x1000; i < module_limit_ - 4; i++)
     if ((*(DWORD *)i & 0xfff8fc)==0x3cf880)  // cmp reg,0x3c
@@ -3073,15 +3073,15 @@ bool InsertApricotHook()
         if ((*(DWORD *)j & 0xffffff) == 0x4c2) { // retn 4
           HookParam hp = {};
           hp.addr = j + 3;
-          hp.extern_fun = SpecialHookApricot;
+          hp.extern_fun = SpecialHookApricoT;
           hp.type = EXTERN_HOOK|USING_STRING|USING_UNICODE|NO_CONTEXT;
-          ConsoleOutput("vnreng: INSERT Apricot");
-          NewHook(hp, L"ApRicot");
+          ConsoleOutput("vnreng: INSERT ApricoT");
+          NewHook(hp, L"ApRicoT");
           //RegisterEngineType(ENGINE_APRICOT);
           return true;
         }
 
-  ConsoleOutput("vnreng:Apricot: failed");
+  ConsoleOutput("vnreng:ApricoT: failed");
   return false;
 }
 void InsertStuffScriptHook()
