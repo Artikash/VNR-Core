@@ -800,8 +800,8 @@ class _NetworkManager(object):
       params['brand'] = rd.brand
     if rd.date:
       params['date'] = rd.date
-    if rd.image:
-      params['image'] = rd.image
+    if ref.image:
+      params['image'] = ref.image # _References don't have image
     #if rd.itemId:
     #  params['itemId'] = rd.itemId
     if rd.gameId:
