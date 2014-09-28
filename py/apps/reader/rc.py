@@ -160,7 +160,7 @@ def refs_xml_path(gameId):
 TERM_RELPATHS = {
   'ocr': 'ocr',
   'speech': 'tts',
-  'origin': 'origin',
+  'origin': 'game',
   'source': 'source',
   'target': 'target',
   'escape_source': 'escape_source',
