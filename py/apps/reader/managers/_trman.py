@@ -398,7 +398,7 @@ class MachineTranslator(Translator):
     #text = text.replace("( ", '(')
     #text = text.replace(u"\n】", u"】\n")
     text = textutil.beautify_subtitle(text)
-    return text
+    return text.strip() # escape could produce trailing " "
 
 class OfflineMachineTranslator(MachineTranslator):
   persistentCaching = False # bool  disable sqlite
