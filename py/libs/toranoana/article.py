@@ -10,9 +10,12 @@ if __name__ == '__main__': # DEBUG
 
 import re
 from datetime import datetime
-from sakurakit import sknetio, skstr
+from sakurakit import sknetio
 #from sakurakit.skdebug import dwarn
 from sakurakit.skstr import unescapehtml
+
+def clean_title(title): # unicode -> unicode
+  return title.replace("(PC)", "")
 
 class ArticleApi(object):
   ENCODING = 'sjis'
@@ -78,7 +81,7 @@ class ArticleApi(object):
     return {
       'url': url, # str not None
       'id': id, # str
-      'title': self._cleantitle(title), # unicode not None
+      'title': clean_title(title), # unicode not None
       'date': self._parsedate(h), # datetime or None
       'ecchi': ecchi, # bool
       'otome': otome, # bool
@@ -92,9 +95,6 @@ class ArticleApi(object):
       'price': self._parseprice(h), # int not None
       'description': self._parsedesc(h), # unicode or None
     }
-
-  def _cleantitle(self, title): # unicode -> unicode
-    return title.replace("(PC)", "")
 
   _rx_url_id = re.compile(r"/([0-9]+)\.html")
   def _parseurlid(self, url):
@@ -149,7 +149,7 @@ class ArticleApi(object):
     """
     m = self._rx_title.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1))
+      return unescapehtml(m.group(1))
 
   # Example: http://www.toranoana.jp/mailorder/article/21/0006/53/25/210006532528.html
   # url: http://img.toranoana.jp/img18/21/0006/53/25/210006532528-1.jpg
@@ -247,7 +247,7 @@ class ArticleApi(object):
     """
     m = self._rx_comment.search(h)
     if m:
-      return skstr.unescapehtml(m.group(1))
+      return unescapehtml(m.group(1))
 
   @staticmethod
   def __parsetableanchor(h, rx):
@@ -262,7 +262,7 @@ class ArticleApi(object):
       i = ret.find('>')
       j = ret.rfind('<')
       if i != -1 and j != -1:
-        return skstr.unescapehtml(ret[i+1:j])
+        return unescapehtml(ret[i+1:j])
 
   _rx_brand = __maketablerx(u"(?:メーカー|サークル)")
   def _parsebrand(self, h):
@@ -306,7 +306,7 @@ class ArticleApi(object):
       if "<a" not in h:
         return h.split()
       else:
-        return [skstr.unescapehtml(m.group(1)) for m in self._rx_href_content.finditer(h)]
+        return [unescapehtml(m.group(1)) for m in self._rx_href_content.finditer(h)]
 
   # Example: 価格：<span class="bold">1,400</span><b>円</b>（＋税）<br>
   _rx_price = re.compile(ur'価格：<span class="bold">([0-9,]+)</span><b>円</b>')
@@ -327,7 +327,7 @@ class ArticleApi(object):
     if i != -1:
       j = h.find('<table', i)
       if j != -1:
-        ret = skstr.unescapehtml(h[i:j]).rstrip()
+        ret = unescapehtml(h[i:j]).rstrip()
         while ret.endswith('<br>'): # remove trailing "<br>"
           ret = ret[:-5].rstrip()
         return ret

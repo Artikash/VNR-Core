@@ -12,6 +12,7 @@ import re
 from sakurakit import sknetio
 #from sakurakit.skdebug import dwarn
 from sakurakit.skstr import unescapehtml, urlencode
+from article import clean_title
 
 DEFAULT_HOST = "http://www.toranoana.jp"
 _QUERY_PATH = "/cgi-bin/R2/allsearch.cgi"
@@ -63,7 +64,6 @@ class SearchApi(object):
         #adl=0, # 一般／18禁: 0=both, 1=15, 2=18
       )
       h = self._fetch(**req)
-      print h
       if h:
         h = h.decode(self.ENCODING, errors='ignore')
         if h:
@@ -86,29 +86,39 @@ class SearchApi(object):
   #
   _rx_parse = re.compile(
     #r'class="work_border"'
-    r'class="work_thumb"'
+    r'<td class="c0"'
     r'.*?'
-    r'class="work_rankin"'
+    r'<td class="c7"'
   , re.DOTALL)
 
-  _rx_url = re.compile(
-"""class="work_name">
-<a href="([^"]+?)">
-([^<]+?)</a>""")
+  # Example:
+  # <td class="c1">
+  #   <a href="/mailorder/article/21/0006/53/25/210006532528.html">(PC)レミニセンス 初回限定版</a>
+  # </td>
+  _rx_url_title = re.compile(r"\s*?".join((
+    r'td class="c1">',
+    r'<a href="([^"]+?)">([^<]+?)<',
+  )), re.DOTALL)
 
-  _rx_title = re.compile(
-"""class="work_name">
-<a href="([^"]+?)">
-([^<]+?)</a>""")
+  # <td class="c0">
+  #   <a href="/mailorder/article/21/0006/54/35/210006543567.html">
+  #     <img src=http://img.toranoana.jp/img18/21/0006/54/35/210006543567-1r.jpg border="1" alt="(PC)レミニセンス Re:collect"  height="40">
+  #   </a>
+  # </td>
+  _rx_img = re.compile(r"\s*?".join((
+    r'td class="c0">',
+    r'<a [^>]*>',
+    r'<img src=(\S+)', # no quotes surrounding image
+  )), re.DOTALL)
 
-  _rx_brand = re.compile(
-"""class="maker_name">
-.*>([^<]+?)</a>""")
+  _rx_brand = re.compile(r"\s*?".join((
+    r'td class="c3">',
+    r'<a [^>]*>([^<]+?)<',
+  )), re.DOTALL)
 
-  _rx_price = re.compile(r'class="work_price">([0-9,]+)')
+  # Example: <td class="c4" align="right" nowrap>7,920円(+税)</td>
+  _rx_price = re.compile(ur'td class="c4"[^>]*?>([0-9,]+)円')
 
-  # <img src="//img.dlsite.jp/modpub/images2/work/doujin/RJ125000/RJ124710_img_sam.jpg"
-  _rx_img = re.compile(r'//img\.dlsite\.jp/[0-9a-zA-Z/_]*_img_sam.jpg')
   def _iterparse(self, h):
     """
     @param  h  unicode
@@ -116,29 +126,53 @@ class SearchApi(object):
     """
     for m in self._rx_parse.finditer(h):
       hh = m.group()
-      mm = self._rx_url_name.search(hh)
+      mm = self._rx_url_title.search(hh)
       if mm:
         url = mm.group(1)
-        name = unescapehtml(mm.group(2))
+        title = clean_title(unescapehtml(mm.group(2)))
 
-        mm = self._rx_brand.search(hh)
-        brand = unescapehtml(mm.group(1)) if mm else None
+        id = self._parseurlid(url)
+        path = self._parseurlpath(url)
+        if id and path:
 
-        mm = self._rx_price.search(hh)
-        try: price = int(mm.group(1))
-        except: price = 0
+          mm = self._rx_brand.search(hh)
+          brand = unescapehtml(mm.group(1)) if mm else None
 
-        mm = self._rx_img.search(h)
-        img = 'http:' + mm.group().replace('_img_sam.jpg', '_img_main.jpg') if mm else ''
+          mm = self._rx_img.search(hh)
+          img = mm.group(1).replace('r.jpg', '.jpg') if mm else None
 
-        yield {
-          'url': url,     # str not None
-          'image': img, # str or None
-          'title': name,   # unicode not None
-          'brand': brand, # unicode or None
-          'price': price, # int not None
-          'date': date,  # datetime or None
-        }
+          mm = self._rx_price.search(hh)
+          try: price = int(mm.group(1).replace(',', ''))
+          except: price = 0
+
+          yield {
+            'url': "http://www.toranoana.jp" + url,     # str not None
+            'id': id,
+            'title': title, # unicode not None
+            'image': img, # str or None
+            'brand': brand, # unicode or None
+            'price': price, # int not None
+          }
+
+  _rx_url_id = re.compile(r"/([0-9]+)\.html")
+  def _parseurlid(self, url):
+    """
+    @param  str
+    @return  str
+    """
+    m = self._rx_url_id.search(url)
+    if m:
+      return m.group(1)
+
+  _rx_url_path = re.compile(r"/article/(.+)/[0-9]+\.html")
+  def _parseurlpath(self, url):
+    """
+    @param  str
+    @return  str or None
+    """
+    m = self._rx_url_path.search(url)
+    if m:
+      return m.group(1)
 
 if __name__ == '__main__':
   api = SearchApi()
