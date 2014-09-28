@@ -151,7 +151,8 @@
           .group
             %h5 通販サイト
             -for url,name in \
-                ("www.dmm.co.jp/top", "DMM"),
+                ("www.dmm.co.jp/top", "DMM"), \
+                ("www.toranoana.jp", "とらのあな"),
               %div(class="site")
                 %a(href="http://#{url}",title="#{url}") #{name}
           .group
