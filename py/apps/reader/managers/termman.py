@@ -628,6 +628,7 @@ class TermManager(QObject):
     ret = d.applyTerms(text, 'escape_target', language)
     if d.marked and language.startswith('zh'):
       ret = ret.replace("> ", ">")
+      ret = ret.replace(" <", "<")
     return ret
 
 # EOF
