@@ -2362,7 +2362,7 @@ class _DictionaryTranslationTab(object):
       "Changing the MeCab dictionary after it is used might require restarting VNR (always needed on Windows XP)."
     ))
     infoLabel.setWordWrap(True)
-    skqss.class_(infoLabel, 'text-error')
+    #skqss.class_(infoLabel, 'text-error')
     layout.addWidget(infoLabel)
 
     ret = QtWidgets.QGroupBox(my.tr("Preferred MeCab dictionary for parsing Japanese"))
