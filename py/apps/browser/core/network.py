@@ -37,19 +37,9 @@ class WbNetworkCookieJar(sknetwork.SkNetworkCookieJar):
   def _injectCookies(self):
     from PySide.QtCore import QUrl
     from PySide.QtNetwork import QNetworkCookie
-    import config
+    import cookies
 
-    # Note: http://www must appear after the IP
-    GETCHU_COOKIES = {'getchu_adalt_flag':'getchu.com'}
-    GETCHU_URLS = config.PROXY_GETCHU_URL, "http://www.getchu.com"
-
-    DMM_COOKIES = {'cklg':'ja', 'ckcy':'2'}
-    DMM_URLS = config.PROXY_DMM_URL, "http://www.dmm.co.jp"
-
-    for cookies, urls in (
-        (GETCHU_COOKIES, GETCHU_URLS),
-        (DMM_COOKIES, DMM_URLS),
-      ):
+    for cookies,urls in cookies.itercookies():
       l = [QNetworkCookie(k,v) for k,v in cookies.iteritems()]
       for url in urls:
         if url.startswith("http://www."):

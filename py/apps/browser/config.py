@@ -166,6 +166,12 @@ GETCHU_HOST = SHARE_YAML['proxies']['getchu'].replace('http://', '')
 PROXY_GETCHU_URL = SHARE_YAML['proxies']['getchu']
 PROXY_DMM_URL = SHARE_YAML['proxies']['dmm']
 
+PROXY_DLSITE_URL = SHARE_YAML['proxies']['dlsite']
+PROXY_DLSITE_IMG_URL = SHARE_YAML['proxies']['dlsite_img']
+
+PROXY_TORANOANA_URL = SHARE_YAML['proxies']['toranoana']
+PROXY_TORANOANA_IMG_URL = SHARE_YAML['proxies']['toranoana_img']
+
 #PROXY_GOOGLE_SEARCH = _PROXY['googlesearch']
 PROXY_GOOGLE_TRANS = SHARE_YAML['proxies']['googletrans']
 PROXY_GOOGLE_TTS = SHARE_YAML['proxies']['googletts']

@@ -34,18 +34,24 @@ _PROXY_SITES = {
 _DLSITE_PROXY_SITES = {
   _normalize_host(host):key
   for host,key in (
-    ('www.dlsite.com', '/dlsite/www'),
-    ('img.dlsite.jp', '/dlsite/img'),
+    ('www.dlsite.com', 'dlsite/www'),
+    ('img.dlsite.jp', 'dlsite/img'),
+  )
+} # {string host: string key}
+
+_TORANOANA_PROXY_SITES = {
+  _normalize_host(host):key
+  for host,key in (
+    ('www.toranoana.jp', 'toranoana/www'),
+    ('img.toranoana.jp', 'toranoana/img'),
   )
 } # {string host: string key}
 
 ## Functions ##
 
 def toproxyurl(url): # QUrl -> QUrl or None
-  if not isinstance(url, QUrl):
-    url = QUrl(url)
   if url.scheme() == 'http':
-    url = QUrl(url)
+    url = QUrl(url) # Avoid modifying the original URL
     host = _normalize_host(url.host())
     ip = _PROXY_DOMAINS.get(host) if _MAINLAND else None
     if ip:
@@ -53,7 +59,7 @@ def toproxyurl(url): # QUrl -> QUrl or None
     else:
       key = _PROXY_SITES.get(host)
       if not key and _MAINLAND:
-        key = _DLSITE_PROXY_SITES.get(host)
+        key = _DLSITE_PROXY_SITES.get(host) or _TORANOANA_PROXY_SITES.get(host)
       if key:
         url.setHost(config.PROXY_HOST)
         path = '/proxy/' + key + url.path()
