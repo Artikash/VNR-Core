@@ -28,13 +28,14 @@ class SearchApi(object):
   HOST = DEFAULT_HOST
   API = HOST + _QUERY_PATH
 
-  #DOMAINS = 'home', 'soft', 'comic', 'pro', 'maniax', 'girls'
-  DOMAINS = 'home', 'soft', 'pro', 'maniax', 'girls'
-
   ENCODING = 'sjis'
   COOKIES = {'afg':'0'}
 
   session = None # requests.Session or None
+
+  PCGAME_KIND = 2103
+  DOUJIN_KIND = 0401
+  KINDS = PCGAME_KIND, DOUJIN_KIND
 
   def _makereq(self, **kwargs):
     """
@@ -49,20 +50,22 @@ class SearchApi(object):
     """
     return sknetio.postdata(url, data=data, gzip=True, session=self.session, cookies=self.COOKIES)
 
-  def query(self, text, domain=DOMAINS[0]):
+  def query(self, text, kind=KINDS[0], otome=False, **kwargs):
     """
-    @param  tet  str
+    @param  text  str
+    @param  kind  str
+    @param  otome  bool
     @yield  {kw} or None
     """
     text = text.encode(self.ENCODING, errors='ignore')
     if text:
       req = self._makereq(
-        search=text,
-        item_kind=2103,
-        bl_fg=0,
-        #obj=0, # 男性向／女性向: 0=both, 1=m, 2=f
-        #adl=0, # 一般／18禁: 0=both, 1=15, 2=18
-      )
+          search=text,
+          item_kind=kind,
+          bl_fg=1 if otome else 0,
+          #obj=0, # 男性向／女性向: 0=both, 1=m, 2=f
+          #adl=0, # 一般／18禁: 0=both, 1=15, 2=18
+          **kwargs)
       h = self._fetch(**req)
       if h:
         h = h.decode(self.ENCODING, errors='ignore')
