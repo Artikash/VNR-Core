@@ -35,7 +35,7 @@ def readtext(path, lang, async=False, parent=None):
   """
   return skthreads.runsync(partial(_readtext_async, path, lang), parent=parent) if async else _readtext_sync(path, lang)
 
-def readtexts(path, lang, async=False):
+def readtexts(path, lang, async=False, parent=None):
   """
   @param  path  unicode
   @param  lang  unicode
