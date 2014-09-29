@@ -40,7 +40,7 @@ from sakurakit.skstr import unescapehtml
 _PATCHES = { # {long id:kw}
   2220:  {'brand': u"CORE-DUSK"},   # メサイア (MESSIAH)
   2309:  {'erogamescape': '6102'},  # カスタム隷奴III
-  4143:  {'title': u"Blaze of Destiny II The bginning of the fate"},
+  4143:  {'title': u"Blaze of Destiny II The beginning of the fate"},
   9952:  {'erogamescape': '17943'}, # 学☆王 -THE ROYAL SEVEN STARS- +METEOR(P
   9981:  {'brand' :u"美蕾"},        # 星の王女
   #10489: {'dmm2': '543ka0066'},     # プレスタ！ ～Precious☆Star'sフェスティバル～

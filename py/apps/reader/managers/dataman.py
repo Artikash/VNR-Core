@@ -2748,6 +2748,8 @@ class TrailersItem: #(object):
       v = kwargs.get(k)
       v = [it['name'] for it in v] if v else []
       setattr(self, k, v)
+      if self.musicians:
+        self.musicians = uniquelist(self.musicians)
 
   def iterVideoIdsWithImage(self, cache=True):
     """
