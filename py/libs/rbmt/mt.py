@@ -6,6 +6,7 @@ if __name__ == '__main__':
   import sys
   sys.path.append('..')
 
+from collections import OrderedDict
 from itertools import imap
 from sakurakit.skdebug import dwarn
 
@@ -17,51 +18,84 @@ class Token:
   def unparse(self): return self.text
 
 class Parser:
-  encoding = 'utf8'
 
   def __init__(self):
     import CaboCha
     self.cabocha = CaboCha.Parser()
+    self.cabochaEncoding = 'utf8'
 
   def parse(self, text):
     """
     @param  unicode
-    @return  [[Token]...]
+    @return  list
     """
-    ret = []
-    encoding = self.encoding
+    encoding = self.cabochaEncoding
     tree = self.cabocha.parse(text.encode(encoding))
 
-    newgroup = False
+    MAX_LINK = 32768 # use this value instead of -1
     link = 0
-    group = []
+
+    phrase = [] # [Token]
+    phrases = [] # [int link, [Token]]
     for i in xrange(tree.token_size()):
       token = tree.token(i)
 
       surface = token.surface.decode(encoding, errors='ignore')
       feature = token.feature.decode(encoding, errors='ignore')
+      word = Token(surface, feature)
 
-      if not i and token.chunk: # first element
+      if token.chunk is not None:
+        if phrase:
+          phrases.append((link, phrase))
+          phrase = []
         link = token.chunk.link
+        if link == -1:
+          link = MAX_LINK
+      phrase.append(word)
 
-      if newgroup and token.chunk:
-        ret.append((group, link))
-        group = [Token(surface, feature)]
-        link = token.chunk.link
-        newgroup = False
-      else:
-        group.append(Token(surface, feature))
-      newgroup = True
+    if phrase:
+      phrases.append((link, phrase))
 
-    if group:
-      ret.append((group, link))
-    return ret
+    return self._parsePhrases(phrases)
 
+  def _parsePhrases(self, phrases):
+    """This is a recursive function.
+    [@param  phrases [int link, [Token]]]
+    @return  list
+    """
+    if not phrases: # This should only happen at the first iteration
+      return []
+    elif len(phrases) == 1:
+      return phrases[0][1]
+    else: # len(phrases) > 2
+      lastlink, lastphrase = phrases[-1]
+      ret = [lastphrase]
+      l = []
+      for i in xrange(len(phrases) - 2, -1, -1):
+        link, phrase = phrases[i]
+        if lastlink > link:
+          l.insert(0, (link, phrase))
+        else:
+          if l:
+            ret.insert(0, self._parsePhrases(l))
+          l = [(link, phrase)]
+      ret.insert(0, self._parsePhrases(l))
+      return ret
 
 class Unparser:
 
   def __init__(self):
     self.tokensep = ''
+
+  def dumps(self, x): # debug print
+    """
+    @param  x  Token or [[Token]...]
+    @return  s
+    """
+    if isinstance(x, Token):
+      return x.unparse()
+    else:
+      return "(%s)" % ' '.join(imap(self.dumps, x))
 
   def unparse(self, x):
     """
@@ -74,15 +108,41 @@ class Unparser:
       return self.tokensep.join(imap(self.unparse, x))
 
 if __name__ == '__main__':
-  text = u"私のことを好きですか"
+  # ((((私 の)こと)を)(好きですか)？)"
+  #text = u"私のことを好きですか？"
+  # ((憎しみ は)(憎しみ しか)(生ま ない)。)
+  #text = u"憎しみは憎しみしか生まない"
+
+  #(((近未来 の)日本)、) (((((多くの)都市)で)(((大小の)犯罪)が)蔓延)。)
+  #text = u"近未来の日本、多くの都市で大小の犯罪が蔓延。"
+
+  # Example (link, surface) pairs:
+  # 太郎は花子が読んでいる本を次郎に渡した
+  # 5 太郎
+  # none は
+  # 2 花子
+  # none が
+  # 3 読ん
+  # none で
+  # none いる
+  # 5 本
+  # none を
+  # 5 次郎
+  # none に
+  # -1 渡し
+  # none た
+  text = u"太郎は花子が読んでいる本を次郎に渡した。"
 
   print text
 
   p = Parser()
-  l = p.parse(text)
+  tree = p.parse(text)
 
   up = Unparser()
-  ret = up.unparse(l)
+
+  print up.dumps(tree)
+
+  ret = up.unparse(tree)
 
   print ret
 

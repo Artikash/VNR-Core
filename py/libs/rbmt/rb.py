@@ -13,10 +13,14 @@ if __name__ == '__main__':
 # - String with spaces require quotes, such as "a string with space".
 # - $x: single tree node
 # - @x: a list of sibling tree nodes
+# - $x:n Represent a noun, or use $x:v to represent a verb
 #
 # Examples:
 # (@x の)   => (@x 的)
 # (@x で)   => (在 @x)
+#
+# $x:n = /regex/   the :n means $x is a noun, similarly, $vt, $v
+# $x:n:v = /regex/ the :n is a noun or a verb? a noun and a verb?
 #
 # @x の   => @x 的
 # @x で   => 在 @x
