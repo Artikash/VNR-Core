@@ -10,7 +10,6 @@ if __name__ == '__main__': # DEBUG
 
 import re
 from restful.online import DataParser
-from sakurakit.skcontainer import uniquelist
 from sakurakit.skdebug import dwarn
 from sakurakit.skstr import unescapehtml
 
@@ -67,10 +66,7 @@ class SoftApi(DataParser):
     for role in 'writer', 'artist', 'sdartist':
       rx = self._rx_creators[role]
       ret[role + 's'] = list(self._iterparsemakers(h, rx))
-    l = list(self._iterparsemakers(h, self._rx_creators['musician'])) + list(self._iterparsemakers(h, self._rx_creators['musician2']))
-    #if l:
-    #  l = uniquelist(l)
-    ret['musicians'] = l
+    ret['musicians'] = list(self._iterparsemakers(h, self._rx_creators['musician'])) + list(self._iterparsemakers(h, self._rx_creators['musician2']))
     return ret
 
   # <div style="text-align: center; padding-top:10px;"><img src="http://www.noukano.com/koisen/banner/koisen-600x120-5.jpg" /></div>
@@ -246,6 +242,7 @@ if __name__ == '__main__':
   api = SoftApi()
   k = 8710
   k = 8680
+  k = 11503
   print '-' * 10
   q = api.query(k)
   print q['otome']
