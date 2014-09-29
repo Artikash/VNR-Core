@@ -68,8 +68,8 @@ class SoftApi(DataParser):
       rx = self._rx_creators[role]
       ret[role + 's'] = list(self._iterparsemakers(h, rx))
     l = list(self._iterparsemakers(h, self._rx_creators['musician'])) + list(self._iterparsemakers(h, self._rx_creators['musician2']))
-    if l:
-      l = uniquelist(l)
+    #if l:
+    #  l = uniquelist(l)
     ret['musicians'] = l
     return ret
 
