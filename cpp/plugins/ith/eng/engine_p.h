@@ -74,6 +74,7 @@ bool Insert2RMHook();           // 2RM - Adventure Engine
 bool InsertAB2TryHook();        // Yane@AkabeiSoft2Try: YaneSDK.dll.
 bool InsertAbelHook();          // Abel
 bool InsertAdobeAirHook();      // Adobe AIR
+bool InsertAdobeFlash10Hook();  // Adobe Flash Player 10
 bool InsertAliceHook();         // System40@AliceSoft; do not work for latest alice games
 bool InsertAmuseCraftHook();    // AMUSE CRAFT: *.pac
 bool InsertAnex86Hook();        // Anex86: anex86.exe

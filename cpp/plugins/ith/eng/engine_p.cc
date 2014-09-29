@@ -27,7 +27,7 @@
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 
-//#define DEBUG "engine_p.h"
+#define DEBUG "engine_p.h"
 
 enum { VNR_TEXT_CAPACITY = 1500 }; // estimated max number of bytes allowed in VNR, slightly larger than VNR's text limit (1000)
 
@@ -6854,6 +6854,327 @@ bool InsertExpHook()
   NewHook(hp, L"EXP");
   return true;
 }
+
+#if 0 // jichi 9/28/2014: CHECKPOINT I am not able to find a split value to reduce number of threads and remove repetition
+// CHECKPOINT: I should try to hook to the second function and disgard the first one!!!
+
+/** jichi 9/28/2014 Adobe Flash Player v10
+ *  Sample game: [softhouse-seal] *セックス　あ～ん♪　パンツァー
+ *
+ *  There are three matched memory addresses in UTF8 encoding.
+ *  All three texts are different.
+ *  Only two of them can be hardware breakpointed.
+ *  One of them containing garbage HTML texts.
+ *  The other one is clean.
+ *
+ *  All the two functions are looped.
+ *  All the two functions are out of the code region.
+ *
+ *  I. Hooked function with plain text.
+ *  The text address is at the first argument, as follows:
+ *
+ *  Stack:
+ *  0096e9e8   0023b30c  return to .0023b30c from .00201010
+ *  0096e9ec   02208188  ascii "/screen/instance26" ; jichi: text address, could be 0
+ *  0096e9f0   0c8b2608  ; jichi: this sometimes become the return address
+ *  0096e9f4   003077cd  return to .003077cd from .0023b2f6
+ *  0096e9f8   02221000
+ *
+ *  00548b3d   cc               int3
+ *  00548b3e   cc               int3
+ *  00548b3f   cc               int3
+ *  00548b40   51               push ecx    ; jichi: hook here
+ *  00548b41   891424           mov dword ptr ss:[esp],edx
+ *  00548b44   85d2             test edx,edx
+ *  00548b46   0f84 a6000000    je .00548bf2
+ *  00548b4c   f7c2 ff0f0000    test edx,0xfff
+ *  00548b52   75 08            jnz short .00548b5c
+ *  00548b54   52               push edx
+ *  00548b55   e8 f6fdffff      call .00548950
+ *  00548b5a   59               pop ecx
+ *  00548b5b   c3               retn
+ *  00548b5c   53               push ebx
+ *  00548b5d   55               push ebp
+ *  00548b5e   8b2d a0e35d00    mov ebp,dword ptr ds:[0x5de3a0]          ; kernel32.interlockedcompareexchange
+ *  00548b64   56               push esi
+ *  00548b65   57               push edi
+ *  00548b66   8bf2             mov esi,edx
+ *  00548b68   81e6 00f0ffff    and esi,0xfffff000
+ *  00548b6e   8b7e 1c          mov edi,dword ptr ds:[esi+0x1c]
+ *  00548b71   33db             xor ebx,ebx
+ *  00548b73   53               push ebx
+ *  00548b74   6a 01            push 0x1
+ *  00548b76   83c7 20          add edi,0x20
+ *  00548b79   57               push edi
+ *  00548b7a   ffd5             call ebp
+ *  00548b7c   85c0             test eax,eax
+ *  00548b7e   74 1e            je short .00548b9e
+ *  00548b80   43               inc ebx
+ *  00548b81   b8 00000000      mov eax,0x0
+ *  00548b86   83e3 3f          and ebx,0x3f
+ *  00548b89   0f94c0           sete al
+ *  00548b8c   50               push eax
+ *  00548b8d   ff15 a4e35d00    call dword ptr ds:[0x5de3a4]             ; kernel32.sleep
+ *  00548b93   6a 00            push 0x0
+ *  00548b95   6a 01            push 0x1
+ *  00548b97   57               push edi
+ *  00548b98   ffd5             call ebp
+ *  00548b9a   85c0             test eax,eax
+ *  00548b9c  ^75 e2            jnz short .00548b80
+ *  00548b9e   8b4424 10        mov eax,dword ptr ss:[esp+0x10]
+ *  00548ba2   8b0e             mov ecx,dword ptr ds:[esi]
+ *  00548ba4   8908             mov dword ptr ds:[eax],ecx
+ *  00548ba6   0fb756 10        movzx edx,word ptr ds:[esi+0x10]  ; jichi: text accessed here in esi
+ *  00548baa   8906             mov dword ptr ds:[esi],eax
+ *  00548bac   8b46 1c          mov eax,dword ptr ds:[esi+0x1c]
+ *  00548baf   3b50 04          cmp edx,dword ptr ds:[eax+0x4]
+ *  00548bb2   75 16            jnz short .00548bca
+ *  00548bb4   8b48 14          mov ecx,dword ptr ds:[eax+0x14]
+ *  00548bb7   894e 14          mov dword ptr ds:[esi+0x14],ecx
+ *  00548bba   8b40 14          mov eax,dword ptr ds:[eax+0x14]
+ *  00548bbd   85c0             test eax,eax
+ *  00548bbf   74 03            je short .00548bc4
+ *  00548bc1   8970 18          mov dword ptr ds:[eax+0x18],esi
+ *  00548bc4   8b56 1c          mov edx,dword ptr ds:[esi+0x1c]
+ *  00548bc7   8972 14          mov dword ptr ds:[edx+0x14],esi
+ *  00548bca   b8 ffff0000      mov eax,0xffff
+ *  00548bcf   66:0146 10       add word ptr ds:[esi+0x10],ax
+ *  00548bd3   0fb746 10        movzx eax,word ptr ds:[esi+0x10]
+ *  00548bd7   66:85c0          test ax,ax
+ *  00548bda   75 09            jnz short .00548be5
+ *  00548bdc   8b4e 1c          mov ecx,dword ptr ds:[esi+0x1c]
+ *  00548bdf   56               push esi
+ *  00548be0   e8 0b740000      call .0054fff0
+ *  00548be5   6a 00            push 0x0
+ *  00548be7   57               push edi
+ *  00548be8   ff15 9ce35d00    call dword ptr ds:[0x5de39c]             ; kernel32.interlockedexchange
+ *  00548bee   5f               pop edi
+ *  00548bef   5e               pop esi
+ *  00548bf0   5d               pop ebp
+ *  00548bf1   5b               pop ebx
+ *  00548bf2   59               pop ecx
+ *  00548bf3   c3               retn
+ *  00548bf4   cc               int3
+ *  00548bf5   cc               int3
+ *
+ *  II. Unhooked function with HTML text:
+ *  The text address is the second argument.
+ *
+ *  Stack:
+ *  0021ecc0   012cb263  return to .012cb263 from .01654ce0
+ *  0021ecc4   021e6858
+ *  0021ecc8   021e6510  ascii "this" ; jichi: This is the text address
+ *  0021eccc   00000005  : jichi: This value is usually the same as ecx, but it is never 0
+ *  0021ecd0   0d834fc8
+ *  0021ecd4   0220e2e0
+ *  0021ecd8   0d834fdc
+ *  0021ecdc   012cbffc  return to .012cbffc from .012cb22e
+ *  0021ece0   021e6510  ascii "this"
+ *  0021ece4   0be547a0
+ *  0021ece8   01377ad1  return to .01377ad1 from .01332350
+ *
+ *  005c4cdd   cc               int3
+ *  005c4cde   cc               int3
+ *  005c4cdf   cc               int3
+ *  005c4ce0   55               push ebp ; jichi: hook here
+ *  005c4ce1   8bec             mov ebp,esp
+ *  005c4ce3   57               push edi
+ *  005c4ce4   56               push esi
+ *  005c4ce5   8b75 0c          mov esi,dword ptr ss:[ebp+0xc]
+ *  005c4ce8   8b4d 10          mov ecx,dword ptr ss:[ebp+0x10]
+ *  005c4ceb   8b7d 08          mov edi,dword ptr ss:[ebp+0x8]
+ *  005c4cee   8bc1             mov eax,ecx
+ *  005c4cf0   8bd1             mov edx,ecx
+ *  005c4cf2   03c6             add eax,esi
+ *  005c4cf4   3bfe             cmp edi,esi
+ *  005c4cf6   76 08            jbe short .005c4d00
+ *  005c4cf8   3bf8             cmp edi,eax
+ *  005c4cfa   0f82 a4010000    jb .005c4ea4
+ *  005c4d00   81f9 00010000    cmp ecx,0x100
+ *  005c4d06   72 1f            jb short .005c4d27
+ *  005c4d08   833d 607b6e00 00 cmp dword ptr ds:[0x6e7b60],0x0
+ *  005c4d0f   74 16            je short .005c4d27
+ *  005c4d11   57               push edi
+ *  005c4d12   56               push esi
+ *  005c4d13   83e7 0f          and edi,0xf
+ *  005c4d16   83e6 0f          and esi,0xf
+ *  005c4d19   3bfe             cmp edi,esi
+ *  005c4d1b   5e               pop esi
+ *  005c4d1c   5f               pop edi
+ *  005c4d1d   75 08            jnz short .005c4d27
+ *  005c4d1f   5e               pop esi
+ *  005c4d20   5f               pop edi
+ *  005c4d21   5d               pop ebp
+ *  005c4d22   e9 5f420000      jmp .005c8f86
+ *  005c4d27   f7c7 03000000    test edi,0x3
+ *  005c4d2d   75 15            jnz short .005c4d44
+ *  005c4d2f   c1e9 02          shr ecx,0x2
+ *  005c4d32   83e2 03          and edx,0x3
+ *  005c4d35   83f9 08          cmp ecx,0x8
+ *  005c4d38   72 2a            jb short .005c4d64
+ *  005c4d3a   f3:a5            rep movs dword ptr es:[edi],dword ptr ds>   ; jichi: text accessed here in eax, address in edi
+ *  005c4d3c   ff2495 544e5c00  jmp dword ptr ds:[edx*4+0x5c4e54]
+ *  005c4d43   90               nop
+ *  005c4d44   8bc7             mov eax,edi
+ *  005c4d46   ba 03000000      mov edx,0x3
+ *  005c4d4b   83e9 04          sub ecx,0x4
+ *  005c4d4e   72 0c            jb short .005c4d5c
+ *  005c4d50   83e0 03          and eax,0x3
+ *  005c4d53   03c8             add ecx,eax
+ *  005c4d55   ff2485 684d5c00  jmp dword ptr ds:[eax*4+0x5c4d68]
+ *  005c4d5c   ff248d 644e5c00  jmp dword ptr ds:[ecx*4+0x5c4e64]
+ *  005c4d63   90               nop
+ *  005c4d64   ff248d e84d5c00  jmp dword ptr ds:[ecx*4+0x5c4de8]
+ *  005c4d6b   90               nop
+ *  005c4d6c   78 4d            js short .005c4dbb
+ *  005c4d6e   5c               pop esp
+ *  005c4d6f   00a44d 5c00c84d  add byte ptr ss:[ebp+ecx*2+0x4dc8005c],a>
+ *  005c4d76   5c               pop esp
+ *  005c4d77   0023             add byte ptr ds:[ebx],ah
+ *  005c4d79   d18a 0688078a    ror dword ptr ds:[edx+0x8a078806],1
+ *  005c4d7f   46               inc esi
+ *  005c4d80   0188 47018a46    add dword ptr ds:[eax+0x468a0147],ecx
+ *  005c4d86   02c1             add al,cl
+ *  005c4d88  -e9 02884702      jmp 02a3d58f
+ *  005c4d8d   83c6 03          add esi,0x3
+ *  005c4d90   83c7 03          add edi,0x3
+ *  005c4d93   83f9 08          cmp ecx,0x8
+ *  005c4d96  ^72 cc            jb short .005c4d64
+ *  005c4d98   f3:a5            rep movs dword ptr es:[edi],dword ptr ds>
+ *  005c4d9a   ff2495 544e5c00  jmp dword ptr ds:[edx*4+0x5c4e54]
+ *  005c4da1   8d49 00          lea ecx,dword ptr ds:[ecx]
+ *  005c4da4   23d1             and edx,ecx
+ *  005c4da6   8a06             mov al,byte ptr ds:[esi]
+ *  005c4da8   8807             mov byte ptr ds:[edi],al
+ *  005c4daa   8a46 01          mov al,byte ptr ds:[esi+0x1]
+ *  005c4dad   c1e9 02          shr ecx,0x2
+ *  005c4db0   8847 01          mov byte ptr ds:[edi+0x1],al
+ *  005c4db3   83c6 02          add esi,0x2
+ *  005c4db6   83c7 02          add edi,0x2
+ *  005c4db9   83f9 08          cmp ecx,0x8
+ *  005c4dbc  ^72 a6            jb short .005c4d64
+ *  005c4dbe   f3:a5            rep movs dword ptr es:[edi],dword ptr ds>
+ *  005c4dc0   ff2495 544e5c00  jmp dword ptr ds:[edx*4+0x5c4e54]
+ *  005c4dc7   90               nop
+ *  005c4dc8   23d1             and edx,ecx
+ *  005c4dca   8a06             mov al,byte ptr ds:[esi]
+ *  005c4dcc   8807             mov byte ptr ds:[edi],al
+ *  005c4dce   83c6 01          add esi,0x1
+ *  005c4dd1   c1e9 02          shr ecx,0x2
+ *  005c4dd4   83c7 01          add edi,0x1
+ *  005c4dd7   83f9 08          cmp ecx,0x8
+ *  005c4dda  ^72 88            jb short .005c4d64
+ *  005c4ddc   f3:a5            rep movs dword ptr es:[edi],dword ptr ds>
+ *  005c4dde   ff2495 544e5c00  jmp dword ptr ds:[edx*4+0x5c4e54]
+ *  005c4de5   8d49 00          lea ecx,dword ptr ds:[ecx]
+ *  005c4de8   4b               dec ebx
+ *  005c4de9   4e               dec esi
+ *  005c4dea   5c               pop esp
+ *  005c4deb   0038             add byte ptr ds:[eax],bh
+ *  005c4ded   4e               dec esi
+ *  005c4dee   5c               pop esp
+ *  005c4def   0030             add byte ptr ds:[eax],dh
+ *  005c4df1   4e               dec esi
+ *  005c4df2   5c               pop esp
+ *  005c4df3   0028             add byte ptr ds:[eax],ch
+ *  005c4df5   4e               dec esi
+ *  005c4df6   5c               pop esp
+ *  005c4df7   0020             add byte ptr ds:[eax],ah
+ *  005c4df9   4e               dec esi
+ *  005c4dfa   5c               pop esp
+ *  005c4dfb   0018             add byte ptr ds:[eax],bl
+ *  005c4dfd   4e               dec esi
+ *  005c4dfe   5c               pop esp
+ *  005c4dff   0010             add byte ptr ds:[eax],dl
+ *  005c4e01   4e               dec esi
+ *  005c4e02   5c               pop esp
+ *  005c4e03   0008             add byte ptr ds:[eax],cl
+ *  005c4e05   4e               dec esi
+ *  005c4e06   5c               pop esp
+ *  005c4e07   008b 448ee489    add byte ptr ds:[ebx+0x89e48e44],cl
+ *  005c4e0d   44               inc esp
+ *  005c4e0e   8f               ???                                      ; unknown command
+ *  005c4e0f   e4 8b            in al,0x8b                               ; i/o command
+ *  005c4e11   44               inc esp
+ *  005c4e12   8ee8             mov gs,ax                                ; modification of segment register
+ *  005c4e14   89448f e8        mov dword ptr ds:[edi+ecx*4-0x18],eax
+ *  005c4e18   8b448e ec        mov eax,dword ptr ds:[esi+ecx*4-0x14]
+ *  005c4e1c   89448f ec        mov dword ptr ds:[edi+ecx*4-0x14],eax
+ *  005c4e20   8b448e f0        mov eax,dword ptr ds:[esi+ecx*4-0x10]
+ *  005c4e24   89448f f0        mov dword ptr ds:[edi+ecx*4-0x10],eax
+ *  005c4e28   8b448e f4        mov eax,dword ptr ds:[esi+ecx*4-0xc]
+ *  005c4e2c   89448f f4        mov dword ptr ds:[edi+ecx*4-0xc],eax
+ *  005c4e30   8b448e f8        mov eax,dword ptr ds:[esi+ecx*4-0x8]
+ *  005c4e34   89448f f8        mov dword ptr ds:[edi+ecx*4-0x8],eax
+ *  005c4e38   8b448e fc        mov eax,dword ptr ds:[esi+ecx*4-0x4]
+ *  005c4e3c   89448f fc        mov dword ptr ds:[edi+ecx*4-0x4],eax
+ *  005c4e40   8d048d 00000000  lea eax,dword ptr ds:[ecx*4]
+ *  005c4e47   03f0             add esi,eax
+ *  005c4e49   03f8             add edi,eax
+ *  005c4e4b   ff2495 544e5c00  jmp dword ptr ds:[edx*4+0x5c4e54]
+ *  005c4e52   8bff             mov edi,edi
+ *  005c4e54   64:4e            dec esi                                  ; superfluous prefix
+ *  005c4e56   5c               pop esp
+ *  005c4e57   006c4e 5c        add byte ptr ds:[esi+ecx*2+0x5c],ch
+ *  005c4e5b   0078 4e          add byte ptr ds:[eax+0x4e],bh
+ *  005c4e5e   5c               pop esp
+ *  005c4e5f   008c4e 5c008b45  add byte ptr ds:[esi+ecx*2+0x458b005c],c>
+ *  005c4e66   085e 5f          or byte ptr ds:[esi+0x5f],bl
+ *  005c4e69   c9               leave
+ *  005c4e6a   c3               retn
+ *  005c4e6b   90               nop
+ */
+static void SpecialHookAdobeFlash10(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  LPCSTR text = (LPCSTR)argof(1, esp_base);
+  if (text && *text < 0) { // skip non-ascii texts
+    *data = (DWORD)text;
+    *len = ::strlen(text);
+    //*split = FIXED_SPLIT_VALUE;
+    //*split = text; // This will create too many threads
+    //*split = regof(eax, esp_base); // eax will create too many threads
+    //*split = regof(ecx, esp_base); // ecx will merge all texts
+    //*split = regof(ebx, esp_base); // ebx/edx will create many threads with repetition
+    //*split = regof(esi, esp_base); // esi/edi will create too many threads
+    //*split = regof(ebp, esp_base); // esp/ebp will create many threads with repetition
+
+    //*split = argof(2, esp_base); // create too many threads with repetition
+    //if (arg2 && !::IsBadReadPtr((LPCVOID)text, 1))
+    //  *split = *(DWORD *)arg2;
+  }
+}
+bool InsertAdobeFlash10Hook()
+{
+  const BYTE bytes[] = {
+    0x51,            // 00548b40   51               push ecx    ; jichi: hook here
+    0x89,0x14,0x24,  // 00548b41   891424           mov dword ptr ss:[esp],edx
+    0x85,0xd2,       // 00548b44   85d2             test edx,edx
+    0x0f,0x84, XX4,  // 00548b46   0f84 a6000000    je .00548bf2
+    0xf7,0xc2, XX4,  // 00548b4c   f7c2 ff0f0000    test edx,0xfff
+    0x75, 0x08,      // 00548b52   75 08            jnz short .00548b5c
+    0x52,            // 00548b54   52               push edx
+    0xe8 //, XX4     // 00548b55   e8 f6fdffff      call .00548950
+  };
+  enum { hook_offset = 0 };
+  ULONG addr = SafeMatchBytes(bytes, sizeof(bytes), module_base_, MemDbg::UserMemoryStopAddress); // search out of code region
+  //ITH_GROWL_DWORD(addr); // floating, 0x15d8b40 as base addr = 0x1200000
+  //return true;
+  if (!addr) {
+    ConsoleOutput("vnreng:AdobeFlash10: pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr + hook_offset;
+  hp.type = NO_CONTEXT|USING_STRING|EXTERN_HOOK; // NO_CONTEXT to get rid of floating address
+  //hp.type = USING_STRING|EXTERN_HOOK; // This will cause floating text address
+  hp.extern_fun = SpecialHookAdobeFlash10;
+  ConsoleOutput("vnreng: INSERT Adobe Flash 10");
+  NewHook(hp, L"Adobe Player 10");
+  return true;
+}
+
+#endif // 0
 
 /** jichi 7/20/2014 Dolphin
  *  Tested with Dolphin 4.0
