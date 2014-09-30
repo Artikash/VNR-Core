@@ -2,10 +2,17 @@
 # mt.py
 # 9/29/2014
 
+__all__ = [
+  'Parser',
+  'SourceTransformer',
+  'Unparser',
+]
+
 if __name__ == '__main__':
   import sys
   sys.path.append('..')
 
+import re
 from collections import OrderedDict
 from itertools import imap
 from sakurakit.skdebug import dwarn
@@ -17,6 +24,21 @@ class Token:
 
   def unparse(self): return self.text
 
+#__PARAGRAPH_DELIM = u"【】「」♪" # machine translation of sentence deliminator
+#_PARAGRAPH_SET = frozenset(__PARAGRAPH_DELIM)
+#_PARAGRAPH_RE = re.compile(r"(%s)" % '|'.join(_PARAGRAPH_SET))
+
+
+_SENTENCE_RE = re.compile(ur"([。？！」\n])(?![。！？）」\n]|$)")
+class Lexer:
+
+  def splitSentences(self, text):
+    """
+    @param  text  unicode
+    @return  [unicode]
+    """
+    return _SENTENCE_RE.sub(r"\1\n", text).split("\n")
+
 class Parser:
 
   def __init__(self):
@@ -27,7 +49,14 @@ class Parser:
   def parse(self, text):
     """
     @param  unicode
-    @return  list
+    @return  tree
+    """
+    return self._parse(self._tokenize(text))
+
+  def _tokenize(self, text):
+    """Tokenize
+    @param  unicode
+    @return  [int link, [Token]]]  token stream
     """
     encoding = self.cabochaEncoding
     tree = self.cabocha.parse(text.encode(encoding))
@@ -36,7 +65,7 @@ class Parser:
     link = 0
 
     phrase = [] # [Token]
-    phrases = [] # [int link, [Token]]
+    ret = [] # [int link, [Token]]
     for i in xrange(tree.token_size()):
       token = tree.token(i)
 
@@ -46,7 +75,7 @@ class Parser:
 
       if token.chunk is not None:
         if phrase:
-          phrases.append((link, phrase))
+          ret.append((link, phrase))
           phrase = []
         link = token.chunk.link
         if link == -1:
@@ -54,14 +83,13 @@ class Parser:
       phrase.append(word)
 
     if phrase:
-      phrases.append((link, phrase))
+      ret.append((link, phrase))
+    return ret
 
-    return self._parsePhrases(phrases)
-
-  def _parsePhrases(self, phrases):
+  def _parse(self, phrases):
     """This is a recursive function.
-    [@param  phrases [int link, [Token]]]
-    @return  list
+    [@param  phrases [int link, [Token]]]  token stream
+    @return  tree
     """
     if not phrases: # This should only happen at the first iteration
       return []
@@ -77,10 +105,31 @@ class Parser:
           l.insert(0, (link, phrase))
         else:
           if l:
-            ret.insert(0, self._parsePhrases(l))
+            ret.insert(0, self._parse(l))
           l = [(link, phrase)]
-      ret.insert(0, self._parsePhrases(l))
+      ret.insert(0, self._parse(l))
       return ret
+
+class SourceTransformer:
+
+  PROMOTE_WORDS = (
+    u"。",
+  )
+
+  def transform(self, tree):
+    """
+    @param  tree  parse tree
+    """
+    for text in self.PROMOTE_WORDS:
+      self._promote(tree, text)
+
+  def _promote(self, tree, text):
+    """
+    @param  tree  parse tree
+    @param  text  unicode
+    """
+    pass
+
 
 class Unparser:
 
@@ -131,19 +180,24 @@ if __name__ == '__main__':
   # none に
   # -1 渡し
   # none た
-  text = u"太郎は花子が読んでいる本を次郎に渡した。"
+  #text = u"太郎は花子が読んでいる本を次郎に渡した。"
+  text = u"立派な太郎は、可愛い花子が読んでいる本を立派な次郎に渡した。"
 
-  print text
-
+  lex = Lexer()
   p = Parser()
-  tree = p.parse(text)
-
+  st = SourceTransformer()
   up = Unparser()
 
-  print up.dumps(tree)
+  for s in lex.splitSentences(text):
+    print s
+    tree = p.parse(s)
 
-  ret = up.unparse(tree)
+    st.transform(tree)
 
-  print ret
+    print up.dumps(tree)
+
+    ret = up.unparse(tree)
+
+    print ret
 
 # EOF
