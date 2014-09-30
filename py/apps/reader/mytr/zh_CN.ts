@@ -761,7 +761,7 @@
     <message>
         <location filename="mytr.py" line="160"/>
         <source>Name</source>
-        <translation>姓名</translation>
+        <translation>名字</translation>
     </message>
     <message>
         <location filename="mytr.py" line="161"/>
