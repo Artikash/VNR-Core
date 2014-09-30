@@ -133,22 +133,22 @@ class _TermInput(object):
     tt = self._getType()
     self.regexButton.setEnabled(tt not in ('title', 'macro'))
 
-    if tt == 'target':
-      t = my.tr("replace after translation")
+    if tt == 'escape':
+      t = my.tr("translate text from input to text language")
     elif tt == 'source':
-      t = my.tr("replace Japanese before translation")
-    elif tt == 'escape':
-      t = my.tr("escape the Japanese word")
+      t = my.tr("transform text in input langauge before translation")
+    elif tt == 'target':
+      t = my.tr("transform text in output language after translation")
     elif tt == 'name':
-      t = my.tr("a Japanese name")
+      t = my.tr("a character name")
     elif tt == 'title':
       t = my.tr("a title after names")
     elif tt == 'speech':
-      t = my.tr("replace Japanese for TTS")
+      t = my.tr("transform text before TTS")
     elif tt == 'ocr':
-      t = my.tr("replace Japanese for OCR")
+      t = my.tr("transform text after OCR")
     elif tt == 'origin':
-      t = my.tr("replace Japanese before whatever")
+      t = my.tr("transform extracted game text")
     elif tt == 'macro':
       t = my.tr("reusable regular expression pattern")
     else:
@@ -241,9 +241,9 @@ class _TermInput(object):
   def _getType(self): # -> str
     return dataman.Term.TYPES[self.typeEdit.currentIndex()]
 
-  def _setType(self, v): # str
-    index = dataman.Term.TYPES.index(v)
-    self.typeEdit.setCurrentIndex(index)
+  #def _setType(self, v): # str
+  #  index = dataman.Term.TYPES.index(v)
+  #  self.typeEdit.setCurrentIndex(index)
 
   def save(self):
     if self._canSave():
@@ -284,10 +284,10 @@ class _TermInput(object):
     for it in self.patternEdit, self.textEdit: #, self.commentEdit:
       it.clear()
 
-  def autofill(self):
-    lang = self._getLanguage()
-    type = 'escape' if config.is_kanji_language(lang) else 'source'
-    self._setType(type)
+  #def autofill(self):
+  #  lang = self._getLanguage()
+  #  type = 'escape' if config.is_kanji_language(lang) else 'source'
+  #  self._setType(type)
 
   def refresh(self):
     self.saveButton.setEnabled(self._canSave())
@@ -329,7 +329,7 @@ class TermInput(QtWidgets.QDialog):
     self.setWindowTitle(my.tr("Create dictionary entry"))
     self.setWindowIcon(rc.icon('window-dict'))
     self.__d = _TermInput(self)
-    self.__d.autofill()
+    #self.__d.autofill()
     self.resize(300, 250)
     #self.statusBar() # show status bar
 

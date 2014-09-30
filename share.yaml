@@ -341,7 +341,7 @@ languages:
   - vi
   - ms
   - id
-  asian:
+  asian: # on contrast of latin
   - ja
   - zht
   - zhs
@@ -352,6 +352,7 @@ languages:
   - ja
   - zht
   - zhs
+  - ko
   sjis: # SHIFT-JIS compatible
   - ja
   # Latin (European)

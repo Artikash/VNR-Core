@@ -509,10 +509,10 @@ class _MTTester(object):
     return ret
   @memoizedproperty
   def originTextLabel(self):
-    return self._createTextLabel(self.originTextEdit, my.tr("Apply terms for original text") + _TERM_STAR)
+    return self._createTextLabel(self.originTextEdit, my.tr("Apply game terms") + _TERM_STAR)
   @memoizedproperty
   def originTextEdit(self):
-    return self._createTextView(my.tr("Apply terms in the Shared Dictionary to correct original text"))
+    return self._createTextView(my.tr("Apply game terms in the Shared Dictionary to correct game text"))
   def setOriginTextEditText(self, t):
     e = self.originTextEdit
     e.setPlainText(t)

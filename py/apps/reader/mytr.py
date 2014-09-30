@@ -44,8 +44,6 @@ class reader(QObject):
       self.tr("Test BBCode"), #self.tr("Test BBCode"),
       self.tr("Test Machine Translation"), self.tr("Test machine translation"),
 
-      self.tr("Title"),
-
       self.tr("Note"),
 
       # Messages
@@ -73,7 +71,7 @@ class reader(QObject):
 
       self.tr("New"),
 
-      self.tr("Original text"), self.tr("original text"),
+      #self.tr("Original text"), self.tr("original text"),
       self.tr("Voice"),
       self.tr("Speech"),
       self.tr("Embedded"),
@@ -87,7 +85,7 @@ class reader(QObject):
       self.tr("Character"), self.tr("character"),
 
       self.tr("Dialog"), self.tr("dialog"),
-      self.tr("Chara"), self.tr("chara"),
+      #self.tr("Chara"), self.tr("chara"),
 
       self.tr('Moderate anonymous subs'),
       self.tr('Moderate anonymous terms'),
@@ -157,6 +155,16 @@ class reader(QObject):
       self.tr("Info"),
 
       self.tr("Transp"),
+
+      # Terms
+      self.tr("Name"),
+      self.tr("Suffix"),
+
+      self.tr("TTS"),
+      self.tr("OCR"),
+
+      self.tr("Input"),
+      self.tr("Output"),
 
       #self.tr("Background shadow color"),
       #self.tr("Game text color"),

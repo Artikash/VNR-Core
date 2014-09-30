@@ -161,10 +161,10 @@ TERM_RELPATHS = {
   'ocr': 'ocr',
   'speech': 'tts',
   'origin': 'game',
-  'source': 'source',
-  'target': 'target',
-  'escape_source': 'escape_source',
-  'escape_target': 'escape_target',
+  'source': 'input',
+  'target': 'output',
+  'escape_source': 'escape_input',
+  'escape_target': 'escape_output',
 }
 def term_path(type, language):
   """

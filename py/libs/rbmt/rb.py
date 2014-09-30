@@ -19,8 +19,8 @@ if __name__ == '__main__':
 # (@x の)   => (@x 的)
 # (@x で)   => (在 @x)
 #
-# $x=/regex/.n   the :n means $x is a noun, similarly, $vt, $v
-# $x=/regex/.n.v  either .noun or .verb
+# $x=/regex/:n   the :n means $x is a noun, similarly, $vt, $v
+# $x=/regex/:n:v  either .noun or .verb
 # It is just like CSS class selector, but the relation is or instead of and.
 #
 # @x の   => @x 的
