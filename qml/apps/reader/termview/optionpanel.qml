@@ -11,7 +11,7 @@ Column { id: root_
   // - Private -
 
   Desktop.CheckBox { id: markButton_
-    text: qsTr("Underline changes from escape/translation rules")
+    text: qsTr("Underline the modified text if possible")
   }
 
   Desktop.CheckBox { id: hentaiButton_
