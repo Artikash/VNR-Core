@@ -204,17 +204,18 @@ class TermWriter:
     @param  language  str
     @yield  _Term
     """
-    type2 = ''
+    type2 = type3 = ''
     if type.startswith('escape'):
       type = 'escape'
-      if config.is_asian_language(language):
+      if config.is_kanji_language(language):
         type2 = 'name'
-    elif type == 'source' and not config.is_asian_language(language):
+    elif type == 'source' and not config.is_kanji_language(language):
       type2 = 'name'
+      type3 = 'escape'
 
     for td in self.termData:
       if (#not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
-          (td.type == type or type2 and td.type == type2)
+          (td.type == type or type2 and td.type == type2 or type3 and td.type == type3)
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
           and (not td.hentai or self.hentai)
           and i18n.language_compatible_to(td.language, language)
@@ -341,7 +342,7 @@ class _TermManager:
 
   #@classmethod
   #def needsEscape(cls):
-  #  return config.is_asian_language(cls.language)
+  #  return config.is_kanji_language(cls.language)
 
   def saveTerms(self):
     if not self.scriptTimes:
@@ -663,7 +664,7 @@ class TermManager(QObject):
 #            except Exception, e: dwarn(td.pattern, td.text, e)
 #        if not text:
 #          break
-#    #if text and dm.hasNameItems() and config.is_asian_language(d.targetLanguage):
+#    #if text and dm.hasNameItems() and config.is_kanji_language(d.targetLanguage):
 #    #  try:
 #    #    for name in dm.iterNameItems():
 #    #      if name.translation:
@@ -705,7 +706,7 @@ class TermManager(QObject):
 #          text = text.replace(key, repl)
 #        if not text:
 #          break
-#    #if text and dm.hasNameItems() and config.is_asian_language(d.targetLanguage):
+#    #if text and dm.hasNameItems() and config.is_kanji_language(d.targetLanguage):
 #    #  try:
 #    #    for name in dm.iterNameItems():
 #    #      if name.translation:
@@ -830,7 +831,7 @@ class TermManager(QObject):
 #
 #  def warmup(self, terms, language='', hasTitles=False, hentai=False): # [dataman.Term], str, bool ->
 #    dprint("enter")
-#    needsEscape = config.is_asian_language(language)
+#    needsEscape = config.is_kanji_language(language)
 #    for term in terms:
 #      td = term.d # To improve performance
 #      if not td.disabled and not td.special and (not td.hentai or hentai) and td.pattern and i18n.language_compatible_to(td.language, language):

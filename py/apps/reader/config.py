@@ -357,6 +357,7 @@ LATIN_LANGUAGES = SHARE_YAML['languages']['latin']  # [str lang]
 LATIN_LANGUAGE_SET = frozenset(LATIN_LANGUAGES)
 def is_latin_language(lang): return lang in LATIN_LANGUAGE_SET
 
+# Never used
 ASIAN_LANGUAGES = SHARE_YAML['languages']['asian']  # [str lang]
 ASIAN_LANGUAGE_SET = frozenset(ASIAN_LANGUAGES)
 def is_asian_language(lang): return lang in ASIAN_LANGUAGE_SET

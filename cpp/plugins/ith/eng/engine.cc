@@ -522,10 +522,14 @@ DWORD DetermineEngineAtLast()
   if (IthCheckFile(L"comnArc.arc") // jichi 8/17/2014: this file might exist in multiple files
       && InsertNexton1Hook()) // old nexton game
     return yes;
-
   if (IthCheckFile(L"arc.dat") // jichi 9/27/2014: too common
       && InsertApricoTHook())
     return yes;
+#if 0
+  if (IthFindFile(L"swf\\*.swf") // jichi 9/28/2014: Adobe Flash Player
+      && InsertAdobeFlash10Hook()) // only v10 might be supported. Otherwise, fallback to Lstr hooks
+    return yes;
+#endif // 0
   return no;
 }
 

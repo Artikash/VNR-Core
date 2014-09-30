@@ -1199,14 +1199,6 @@
     </message>
 </context>
 <context>
-    <name>table</name>
-    <message>
-        <location filename="../termview/table.qml" line="225"/>
-        <source>Title</source>
-        <translation>稱謂</translation>
-    </message>
-</context>
-<context>
     <name>termview</name>
     <message>
         <location filename="../termview.qml" line="144"/>

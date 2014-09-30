@@ -217,15 +217,15 @@ Item { id: root_
           verticalAlignment: Text.AlignVCenter
           text: {
             switch (itemValue.type) {
-            case 'escape': return Sk.tr("Escape")
-            case 'source': return Sk.tr("Japanese")
-            case 'target': return Sk.tr("Translation")
-            case 'macro': return Sk.tr("Macro")
-            case 'name': return My.tr("Chara")
-            case 'title': return qsTr("Title")
-            case 'speech': return My.tr("Voice")
-            case 'origin': return My.tr("Original text")
+            case 'escape': return Sk.tr("Translation")
+            case 'source': return My.tr("Input")
+            case 'target': return My.tr("Output")
+            case 'name': return My.tr("Name")
+            case 'title': return My.tr("Suffix")
+            case 'origin': return Sk.tr("Game")
+            case 'speech': return My.tr("TTS")
             case 'ocr': return My.tr("OCR")
+            case 'macro': return Sk.tr("Macro")
             default: return Sk.tr("Translation")
             }
           }
@@ -238,13 +238,13 @@ Item { id: root_
           anchors { fill: parent; leftMargin: table_.cellSpacing }
           model: ListModel { //id: typeModel_
             Component.onCompleted: {
-              append({value:'target', text:Sk.tr("Translation")})
-              append({value:'source', text:Sk.tr("Japanese")})
-              append({value:'escape', text:Sk.tr("Escape")})
-              append({value:'name', text:My.tr("Chara")})
-              append({value:'title', text:My.tr("Title")})
-              append({value:'speech', text:My.tr("Voice")})
-              append({value:'origin', text:My.tr("Original text")})
+              append({value:'escape', text:Sk.tr("Translation")})
+              append({value:'source', text:My.tr("Input")})
+              append({value:'target', text:My.tr("Output")})
+              append({value:'name', text:My.tr("Name")})
+              append({value:'title', text:My.tr("Suffix")})
+              append({value:'origin', text:Sk.tr("Game")})
+              append({value:'speech', text:My.tr("TTS")})
               append({value:'ocr', text:My.tr("OCR")})
               append({value:'macro', text:Sk.tr("Macro")})
             }

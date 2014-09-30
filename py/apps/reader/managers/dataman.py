@@ -2018,8 +2018,8 @@ class _Term(object):
     sig = Signal(type)
     return Property(type, getter, sync_setter if sync else setter, notify=sig), sig
 
-  TYPES = 'target', 'source', 'escape', 'name', 'title', 'speech', 'origin', 'ocr', 'macro'
-  TR_TYPES = tr_("Translation"), tr_("Japanese"), tr_("Escape"), mytr_("Chara"), mytr_("Title"), mytr_("Voice"), mytr_("Original text"), notr_("OCR"), tr_("Macro")
+  TYPES = 'escape', 'source', 'target', 'name', 'title', 'origin', 'speech', 'ocr', 'macro'
+  TR_TYPES = tr_("Translation"), mytr_("Input"), mytr_("Output"), mytr_("Name"), mytr_("Suffix"), tr_("Game"), mytr_("TTS"), mytr_("OCR"), tr_("Macro")
 
 class Term(QObject):
   __D = _Term
@@ -2275,7 +2275,7 @@ class Term(QObject):
   #  """
   #  @return  bool
   #  """
-  #  return config.is_asian_language(self.__d.language)
+  #  return config.is_kanji_language(self.__d.language)
 
   #@property
   #def replace(self):
@@ -2374,7 +2374,7 @@ class Term(QObject):
 #
 #  #@staticmethod
 #  #def needsEscape():
-#  #  return not config.is_asian_language(manager().user().language)
+#  #  return not config.is_kanji_language(manager().user().language)
 #
 #  #@staticmethod
 #  #def needsRomaji():
@@ -8682,38 +8682,38 @@ class DataManager(QObject):
   #def hasTermTitles(self):
   #  return len(self.__d.termTitles) > 1
 
-  def iterTargetTerms(self):
-    return self.__d.iterTermsWithType('target')
-  def iterOriginTerms(self):
-    return self.__d.iterTermsWithType('origin')
-  def iterSpeechTerms(self):
-    return self.__d.iterTermsWithType('speech')
-  def iterOcrTerms(self):
-    return self.__d.iterTermsWithType('ocr')
-  def iterTitleTerms(self):
-    return self.__d.iterTermsWithType('title')
-  def iterMacroTerms(self):
-    return self.__d.iterTermsWithType('macro')
+  #def iterTargetTerms(self):
+  #  return self.__d.iterTermsWithType('target')
+  #def iterOriginTerms(self):
+  #  return self.__d.iterTermsWithType('origin')
+  #def iterSpeechTerms(self):
+  #  return self.__d.iterTermsWithType('speech')
+  #def iterOcrTerms(self):
+  #  return self.__d.iterTermsWithType('ocr')
+  #def iterTitleTerms(self):
+  #  return self.__d.iterTermsWithType('title')
+  #def iterMacroTerms(self):
+  #  return self.__d.iterTermsWithType('macro')
+  ##def iterSourceTerms(self):
+  ##  return self.__d.iterTermsWithType('source')
+  #def iterWordTerms(self):
+  #  return self.__d.iterTermsWithTypes(('name', 'speech'))
+  #def iterFuriTerms(self):
+  #  return self.__d.iterTermsWithType('speech')
+  #def iterLatinSourceTerms(self):
+  #  return self.__d.iterTermsWithTypes(('source', 'name'))
   #def iterSourceTerms(self):
-  #  return self.__d.iterTermsWithType('source')
-  def iterWordTerms(self):
-    return self.__d.iterTermsWithTypes(('name', 'speech'))
-  def iterFuriTerms(self):
-    return self.__d.iterTermsWithType('speech')
-  def iterLatinSourceTerms(self):
-    return self.__d.iterTermsWithTypes(('source', 'name'))
-  def iterSourceTerms(self):
-    d = self.__d
-    lang = d.user.language
-    return  (d.iterTermsWithType('source')
-        if config.is_asian_language(lang) else
-        d.iterTermsWithTypes(('source', 'name')))
-  def iterEscapeTerms(self):
-    d = self.__d
-    lang = d.user.language
-    return  (d.iterTermsWithType('escape')
-        if config.is_latin_language(lang) else
-        d.iterTermsWithTypes(('escape', 'name')))
+  #  d = self.__d
+  #  lang = d.user.language
+  #  return  (d.iterTermsWithType('source')
+  #      if config.is_kanji_language(lang) else
+  #      d.iterTermsWithTypes(('source', 'name')))
+  #def iterEscapeTerms(self):
+  #  d = self.__d
+  #  lang = d.user.language
+  #  return  (d.iterTermsWithType('escape')
+  #      if config.is_latin_language(lang) else
+  #      d.iterTermsWithTypes(('escape', 'name')))
 
   def removeTerm(self, term):
     """

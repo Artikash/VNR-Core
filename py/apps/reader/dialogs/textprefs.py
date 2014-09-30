@@ -103,7 +103,7 @@ class _TextThreadView(object):
         skqss.toggleclass(b, 'btn-primary', value),
         b))
 
-    b = self.buttonRow.addButton(mytr_("chara"),
+    b = self.buttonRow.addButton(mytr_("name"),
         tip=my.tr("These are character names"))   # scenario
     skqss.class_(b, 'btn btn-default btn-sm')
     b.toggled.connect(partial(lambda b, value:
