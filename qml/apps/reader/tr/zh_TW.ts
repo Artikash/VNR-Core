@@ -1007,8 +1007,8 @@
     <name>optionpanel</name>
     <message>
         <location filename="../termview/optionpanel.qml" line="14"/>
-        <source>Underline changes from escape/translation rules</source>
-        <translation>下劃線被轉義或翻譯詞條修改的文本</translation>
+        <source>Underline the modified text if possible</source>
+        <translation>下劃線被詞條修改的文本</translation>
     </message>
     <message>
         <location filename="../termview/optionpanel.qml" line="18"/>
