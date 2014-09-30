@@ -19,8 +19,9 @@ if __name__ == '__main__':
 # (@x の)   => (@x 的)
 # (@x で)   => (在 @x)
 #
-# $x:n = /regex/   the :n means $x is a noun, similarly, $vt, $v
-# $x:n:v = /regex/ the :n is a noun or a verb? a noun and a verb?
+# $x=/regex/.n   the :n means $x is a noun, similarly, $vt, $v
+# $x=/regex/.n.v  either .noun or .verb
+# It is just like CSS class selector, but the relation is or instead of and.
 #
 # @x の   => @x 的
 # @x で   => 在 @x
@@ -31,6 +32,9 @@ if __name__ == '__main__':
 # Parse tree:
 # 私のことを好きですか
 # (((私 の) (こと を)) (好きですか?))
+#
+#
+# Non-node group:   (?:A B C)  the "(?:" means it is not groupped??
 
 if __name__ == '__main__':
   pass

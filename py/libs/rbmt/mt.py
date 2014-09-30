@@ -18,9 +18,10 @@ from itertools import imap
 from sakurakit.skdebug import dwarn
 
 class Token:
-  def __init__(self, text='', feature=''):
+  def __init__(self, text='', feature='', language=''):
     self.text = text # unicode
     self.feature = feature # unicode
+    self.language = language
 
   def unparse(self): return self.text
   def dumps(self): return self.text
@@ -28,7 +29,6 @@ class Token:
 #__PARAGRAPH_DELIM = u"【】「」♪" # machine translation of sentence deliminator
 #_PARAGRAPH_SET = frozenset(__PARAGRAPH_DELIM)
 #_PARAGRAPH_RE = re.compile(r"(%s)" % '|'.join(_PARAGRAPH_SET))
-
 
 _SENTENCE_RE = re.compile(ur"([。？！」\n])(?![。！？）」\n]|$)")
 class Lexer:
@@ -72,7 +72,7 @@ class Parser:
 
       surface = token.surface.decode(encoding, errors='ignore')
       feature = token.feature.decode(encoding, errors='ignore')
-      word = Token(surface, feature)
+      word = Token(surface, feature=feature, language='ja')
 
       if token.chunk is not None:
         if phrase:
@@ -113,24 +113,51 @@ class Parser:
 
 class SourceTransformer:
 
-  PROMOTE_WORDS = (
-    u"。",
-  )
-
   def transform(self, tree):
     """
     @param  tree  parse tree
     """
-    for text in self.PROMOTE_WORDS:
-      self._promote(tree, text)
+    self._promote(tree)
 
-  def _promote(self, tree, text):
-    """
+  def _promote(self, tree):
+    """Promote right-most token
     @param  tree  parse tree
     @param  text  unicode
     """
     pass
+    #if not tree or isinstance(tree, Token):
+    #  return
+    #right = tree[-1]
+    #if isinstance(right, Token):
 
+class Translator:
+
+  def translate(self, tree):
+    """
+    @param  tree  parse tree
+    """
+    return self._translateTree(tree)
+
+  def _translateTree(self, tree):
+    """
+    @param  tree
+    """
+    if isinstance(tree, Token):
+      self._translateToken(tree)
+    else:
+      self._translateList(tree)
+
+  def _translateList(self, l):
+    """
+    @param  l  list
+    """
+    pass
+
+  def _translateToken(self, tok):
+    """
+    @param  tok  Token
+    """
+    pass
 
 class Unparser:
 
@@ -158,14 +185,6 @@ class Unparser:
       return self.tokensep.join(imap(self.unparse, x))
 
 if __name__ == '__main__':
-  # ((((私 の)こと)を)(好きですか)？)"
-  #text = u"私のことを好きですか？"
-  # ((憎しみ は)(憎しみ しか)(生ま ない)。)
-  #text = u"憎しみは憎しみしか生まない"
-
-  #(((近未来 の)日本)、) (((((多くの)都市)で)(((大小の)犯罪)が)蔓延)。)
-  #text = u"近未来の日本、多くの都市で大小の犯罪が蔓延。"
-
   # Example (link, surface) pairs:
   # 太郎は花子が読んでいる本を次郎に渡した
   # 5 太郎
@@ -187,20 +206,31 @@ if __name__ == '__main__':
   #text = u"あたしは日本人です。"
 
   #text = u"【綾波レイ】「ごめんなさい。こう言う時どんな顔すればいいのか分からないの。」"
-  text = u"ごめんなさい。こう言う時どんな顔すればいいのか分からないの。"
+  #text = u"ごめんなさい。こう言う時どんな顔すればいいのか分からないの。"
+  #text = u"こう言う時どんな顔すればいいのか分からないの。"
+  text = u"こう言う時どんな顔すればいいのか分からないのか？"
+
+  #text = u"私のことを好きですか？"
+  #text = u"憎しみは憎しみしか生まない"
+
+  #text = u"近未来の日本、多くの都市で大小の犯罪が蔓延。"
+  #text = u"近未来の日本は、多くの都市で大小の犯罪が蔓延。"
 
   lex = Lexer()
   p = Parser()
   st = SourceTransformer()
+  tr = Translator()
   up = Unparser()
 
   for s in lex.splitSentences(text):
     print s
     tree = p.parse(s)
 
-    st.transform(tree)
-
     print up.dumps(tree)
+    st.transform(tree)
+    print up.dumps(tree)
+
+    tr.translate(tree)
 
     ret = up.unparse(tree)
 
