@@ -49,22 +49,22 @@
         <translation>コメント</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="203"/>
+        <location filename="mytr.py" line="204"/>
         <source>Auto Hide</source>
         <translation>自動的に隠す</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="204"/>
+        <location filename="mytr.py" line="205"/>
         <source>Edit Subtitle</source>
         <translation>字幕の編集</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="206"/>
+        <location filename="mytr.py" line="207"/>
         <source>New subtitle</source>
         <translation>新しい字幕</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="205"/>
+        <location filename="mytr.py" line="206"/>
         <source>New comment</source>
         <translation>新しいコメント</translation>
     </message>
@@ -114,7 +114,7 @@
         <translation>テキストスレ</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="212"/>
+        <location filename="mytr.py" line="213"/>
         <source>Sync with Running Game</source>
         <translation>実行中なゲームと同期</translation>
     </message>
@@ -124,22 +124,22 @@
         <translation>背景の影</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="207"/>
+        <location filename="mytr.py" line="208"/>
         <source>Add comment</source>
         <translation>コメントを追加</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="207"/>
+        <location filename="mytr.py" line="208"/>
         <source>add comment</source>
         <translation>コメントを追加</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="208"/>
+        <location filename="mytr.py" line="209"/>
         <source>Add subtitle</source>
         <translation>字幕を追加</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="208"/>
+        <location filename="mytr.py" line="209"/>
         <source>add subtitle</source>
         <translation>字幕を追加</translation>
     </message>
@@ -179,7 +179,7 @@
         <translation>音声</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="210"/>
+        <location filename="mytr.py" line="211"/>
         <source>Read Sentence</source>
         <translation>会話を語る</translation>
     </message>
@@ -234,32 +234,32 @@
         <translation>Dr.eye</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="176"/>
+        <location filename="mytr.py" line="177"/>
         <source>Game-specific</source>
         <translation>ゲーム専用</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="178"/>
+        <location filename="mytr.py" line="179"/>
         <source>Current game</source>
         <translation>現在のゲーム</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="180"/>
+        <location filename="mytr.py" line="181"/>
         <source>{0} games</source>
         <translation>{0}本ゲーム</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="213"/>
+        <location filename="mytr.py" line="214"/>
         <source>Update Shared Dictionary</source>
         <translation>共有辞書の更新</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="214"/>
+        <location filename="mytr.py" line="215"/>
         <source>Update Shared Subtitles</source>
         <translation>共有字幕の更新</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="215"/>
+        <location filename="mytr.py" line="216"/>
         <source>Update Game Database</source>
         <translation>ゲーム情報の更新</translation>
     </message>
@@ -424,7 +424,7 @@
         <translation type="obsolete">{0}を隠す</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="190"/>
+        <location filename="mytr.py" line="191"/>
         <source>Speak {0}</source>
         <translation>{0}を話す</translation>
     </message>
@@ -454,12 +454,12 @@
         <translation type="obsolete">キャラ</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="200"/>
+        <location filename="mytr.py" line="201"/>
         <source>Monitor mouse</source>
         <translation>マウスを監視</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="201"/>
+        <location filename="mytr.py" line="202"/>
         <source>Monitor clipboard</source>
         <translation>クリップボードを監視</translation>
     </message>
@@ -519,7 +519,7 @@
         <translation>匿名単語の編集</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="177"/>
+        <location filename="mytr.py" line="178"/>
         <source>Series-specific</source>
         <translation>シリーズ専用</translation>
     </message>
@@ -559,7 +559,7 @@
         <translation>YouTubeの保存</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="192"/>
+        <location filename="mytr.py" line="193"/>
         <source>Capture</source>
         <translation>スクショ</translation>
     </message>
@@ -629,17 +629,17 @@
         <translation>日本語辞書</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="182"/>
+        <location filename="mytr.py" line="183"/>
         <source>{0} people are viewing this page</source>
         <translation>{0}人がこのページを読んている</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="197"/>
+        <location filename="mytr.py" line="198"/>
         <source>Open in external browser</source>
         <translation>外部のブラウザで開く</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="198"/>
+        <location filename="mytr.py" line="199"/>
         <source>Open in external window</source>
         <translation>外部のウインドウで開く</translation>
     </message>
@@ -704,22 +704,22 @@
         <translation>読み易い</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="216"/>
+        <location filename="mytr.py" line="217"/>
         <source>Update Translation Scripts</source>
         <translation>翻訳スクリプトの更新</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="217"/>
+        <location filename="mytr.py" line="218"/>
         <source>Reload Translation Scripts</source>
         <translation>翻訳スクリプトのリロード</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="194"/>
+        <location filename="mytr.py" line="195"/>
         <source>Recognition</source>
         <translation>光学認識</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="195"/>
+        <location filename="mytr.py" line="196"/>
         <source>Optical character recognition</source>
         <translation>光学文字認識</translation>
     </message>
@@ -764,29 +764,34 @@
         <translation>名前</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="161"/>
+        <location filename="mytr.py" line="162"/>
         <source>Suffix</source>
         <translation>称号</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="163"/>
+        <location filename="mytr.py" line="164"/>
         <source>TTS</source>
         <translation>音声合成</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="164"/>
+        <location filename="mytr.py" line="165"/>
         <source>OCR</source>
         <translation>光学認識</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="166"/>
+        <location filename="mytr.py" line="167"/>
         <source>Input</source>
         <translation>入力</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="167"/>
+        <location filename="mytr.py" line="168"/>
         <source>Output</source>
         <translation>出力</translation>
+    </message>
+    <message>
+        <location filename="mytr.py" line="161"/>
+        <source>name</source>
+        <translation>名前</translation>
     </message>
 </context>
 </TS>
