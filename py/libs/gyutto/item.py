@@ -169,7 +169,7 @@ class ItemApi(object):
     @return  unicode  URL or None
     """
     ret = self._parseddlink(u'ブランド', h) or self._parseddlink(u'サークル', h)
-    return ret.replace(" / ", ',').replace("/", ',').replace(u"／", ',') if ret else ''
+    return ret.replace(" / ", ',').replace(u"／", ',') if ret else ''
 
   _rx_filesize = re.compile(r'([0-9\.]+) ([GMK]?)B')
   def _parsefilesize(self, h):
