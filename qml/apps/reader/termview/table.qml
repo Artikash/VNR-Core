@@ -268,13 +268,13 @@ Item { id: root_
           selectedText: model.get(selectedIndex).text
           Component.onCompleted: {
             switch (itemValue.type) { // Must be consistent with the model
-            case 'target': selectedIndex = 0; break
+            case 'escape': selectedIndex = 0; break
             case 'source': selectedIndex = 1; break
-            case 'escape': selectedIndex = 2; break
+            case 'target': selectedIndex = 2; break
             case 'name': selectedIndex = 3; break
             case 'title': selectedIndex = 4; break
-            case 'speech': selectedIndex = 5; break
-            case 'origin': selectedIndex = 6; break
+            case 'origin': selectedIndex = 5; break
+            case 'speech': selectedIndex = 6; break
             case 'ocr': selectedIndex = 7; break
             case 'macro': selectedIndex = 8; break
             default: selectedIndex = 0

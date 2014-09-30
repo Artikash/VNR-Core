@@ -118,6 +118,7 @@ class _TermInput(object):
     ret = QtWidgets.QComboBox()
     ret.setEditable(False)
     ret.addItems(dataman.Term.TR_TYPES)
+    ret.setCurrentIndex(0)
     ret.setMaxVisibleItems(ret.count())
     ret.setMaximumWidth(COMBOBOX_MAXWIDTH)
     ret.currentIndexChanged.connect(self.refresh)
