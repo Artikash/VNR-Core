@@ -23,6 +23,7 @@ class Token:
     self.feature = feature # unicode
 
   def unparse(self): return self.text
+  def dumps(self): return self.text
 
 #__PARAGRAPH_DELIM = u"【】「」♪" # machine translation of sentence deliminator
 #_PARAGRAPH_SET = frozenset(__PARAGRAPH_DELIM)
@@ -142,7 +143,7 @@ class Unparser:
     @return  s
     """
     if isinstance(x, Token):
-      return x.unparse()
+      return x.dumps()
     else:
       return "(%s)" % ' '.join(imap(self.dumps, x))
 
@@ -181,7 +182,12 @@ if __name__ == '__main__':
   # -1 渡し
   # none た
   #text = u"太郎は花子が読んでいる本を次郎に渡した。"
-  text = u"立派な太郎は、可愛い花子が読んでいる本を立派な次郎に渡した。"
+  #text = u"立派な太郎は、可愛い花子が読んでいる本を立派な次郎に渡した。"
+  #text = u"あたしは、日本人です。"
+  #text = u"あたしは日本人です。"
+
+  #text = u"【綾波レイ】「ごめんなさい。こう言う時どんな顔すればいいのか分からないの。」"
+  text = u"ごめんなさい。こう言う時どんな顔すればいいのか分からないの。"
 
   lex = Lexer()
   p = Parser()
