@@ -142,17 +142,28 @@ class Lexer:
       return phrases[0][1]
     else: # len(phrases) > 2
       lastlink, lastphrase = phrases[-1]
-      ret = [lastphrase]
+      if len(lastphrase) == 1:
+        ret = [lastphrase[0]]
+      else:
+        ret = [lastphrase]
       l = []
+
       for i in xrange(len(phrases) - 2, -1, -1):
         link, phrase = phrases[i]
         if lastlink > link:
           l.insert(0, (link, phrase))
         else:
           if l:
-            ret.insert(0, self._parse(l))
+            c = self._parse(l)
+            if isinstance(c, list) and len(c) == 1:
+              c = c[0]
+            ret.insert(0, c)
           l = [(link, phrase)]
-      ret.insert(0, self._parse(l))
+
+      c = self._parse(l)
+      if isinstance(c, list) and len(c) == 1:
+        c = c[0]
+      ret.insert(0, c)
       return ret
 
   # For cebug usage
@@ -175,6 +186,20 @@ class Lexer:
       return x.unparse()
     else:
       return self.unparsesep.join(imap(self.unparse, x))
+
+# Rule
+
+class Rule:
+
+  def __init__(self):
+    pass
+
+  def translate(self, node):
+    """
+    @param  node  Node
+    @return  Node
+    """
+    return node
 
 # Parser
 class Parser:
@@ -209,15 +234,15 @@ class Translator:
     """
     return self._translate(tree)
 
-  def _translate(self, tree):
+  def _translate(self, node):
     """
-    @param  tree  Node
+    @param  node  Node
     @return  Node
     """
-    if tree.token:
-      return Node(token=tree.token)
-    elif tree.children:
-      return Node(token=tree.token, children=map(self._translate, tree.children))
+    if node.token:
+      return Node(token=node.token)
+    elif node.children:
+      return Node(token=node.token, children=map(self._translate, node.children))
     else:
       return Node()
 

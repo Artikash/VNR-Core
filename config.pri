@@ -86,6 +86,7 @@ win32 {
   QT_HOME       = c:/qt/4
   QT_SRC        = c:/qt
   SAPI_HOME     = "$$PROGRAMFILES/Microsoft Speech SDK 5.1"
+  WMSDK_HOME    = c:/wmsdk/wmpsdk9
 
   WDK_HOME      = c:/winddk/7600.16385.1
 }
