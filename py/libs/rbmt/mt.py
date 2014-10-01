@@ -31,7 +31,7 @@ class Token:
 class Node: # tree node
   unparsesep = ""
 
-  def __init__(self, children=None, parent=None, token=None):
+  def __init__(self, token=None, children=None, parent=None):
     self.children = children # [Node] or None
     self.parent = parent # Node
     self.token = token # token
@@ -61,6 +61,8 @@ class Node: # tree node
       return self.token.dump()
     elif self.children:
       return "(%s)" % ' '.join((it.dumpTree() for it in self.children))
+    else:
+      return ''
 
   def unparseTree(self): # recursively clear all children
     """
@@ -70,6 +72,8 @@ class Node: # tree node
       return self.token.unparse()
     elif self.children:
       return self.unparsesep.join((it.unparseTree() for it in self.children))
+    else:
+      return ''
 
 # Lexer
 
@@ -191,15 +195,89 @@ class Lexer:
 
 class Rule:
 
-  def __init__(self):
-    pass
+  def __init__(self, source, target):
+    self.source = source # list or unicode
+    self.target = target # list or unicode
 
   def translate(self, node):
     """
     @param  node  Node
-    @return  Node
+    @return  Node or None
     """
-    return node
+    m = self.matchSource(node)
+    if m:
+      return self.createTarget(m)
+
+  def matchSource(self, node):
+    """
+    @param  node  Node
+    @return  bool
+    """
+    return self._matchSource(self.source, node)
+
+  @classmethod
+  def _matchSource(cls, source, node):
+    """
+    @param  source  list or unicode
+    @param  node  Node
+    @return  bool
+    """
+    if source:
+      if isinstance(source, str) or isinstance(source, unicode):
+        if node.token and node.token.text == source:
+          return True
+      if not node.token and len(node.children) == len(source):
+        for s,c in zip(source, node.children):
+          if not cls._matchSource(s, c):
+            return False
+        return True
+    return False
+
+  def createTarget(self, m):
+    """
+    @param  m  matched object  not used
+    @return  Node or None
+    """
+    return self._createTarget(self.target)
+
+  @classmethod
+  def _createTarget(cls, target):
+    """
+    @param  target  list or unicode
+    @return  Node or None
+    """
+    if target:
+      if isinstance(target, str) or isinstance(target, unicode):
+        return Node(Token(target))
+      else:
+        return map(cls._createTarget, target)
+    return Node() # Represent deleted node, TODO: skip empty node
+
+class RuleParser:
+
+  def createRule(self, source, target):
+    s = self.parseRule(source)
+    if s:
+      t = self.parseRule(target)
+      return Rule(s, t)
+
+  def parseRule(self, text):
+    """
+    @param  text
+    @return  list or unicode
+    """
+    if not text:
+      return None
+
+    if '(' not in text and ')' not in text:
+      if ' ' not in text:
+        return text
+      l = text.split()
+      return l[0] if len(l) == 1 else l
+
+    i = text.find('(')
+    if i > 0:
+      pass
 
 # Parser
 class Parser:
@@ -227,6 +305,13 @@ class Parser:
 
 class Translator:
 
+  def __init__(self):
+    rp = RuleParser()
+    self.rules = [rp.createRule(*it) for it in (
+      (u"顔", u"脸"),
+      (u"分から ない の 。", u"不知道的。"),
+    )]
+
   def translate(self, tree):
     """
     @param  tree  Node
@@ -239,6 +324,10 @@ class Translator:
     @param  node  Node
     @return  Node
     """
+    for rule in self.rules:
+      ret = rule.translate(node)
+      if ret:
+        return ret
     if node.token:
       return Node(token=node.token)
     elif node.children:
@@ -326,10 +415,10 @@ if __name__ == '__main__':
     newtree = tr.translate(tree)
     print "-- translated tree --\n", newtree.dumpTree()
 
+    #ret = up.unparse(tree)
+    print "-- output --\n", newtree.unparseTree()
+
     tree.clearTree()
     newtree.clearTree()
-
-    #ret = up.unparse(tree)
-    #print "-- output --\n", ret
 
 # EOF
