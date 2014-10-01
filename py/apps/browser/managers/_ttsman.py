@@ -44,8 +44,8 @@ class GoogleEngine(VoiceEngine):
 
   @memoizedproperty
   def engine(self):
-    from google import googletts
-    return googletts.GoogleTtsEngine(self.parentWidget)
+    from google.googletts import GoogleTtsPlayer
+    return GoogleTtsPlayer(self.parentWidget)
 
   def warmup(self):
     """@reimp"""

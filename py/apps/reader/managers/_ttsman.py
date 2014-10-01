@@ -53,7 +53,7 @@ class GoogleEngine(VoiceEngine):
     parentWindow = windows.top()
 
     from google import googletts
-    return googletts.GoogleTtsEngine(parentWindow)
+    return googletts.GoogleTtsPlayer(parentWindow)
 
   def warmup(self):
     """@reimp"""
