@@ -2301,7 +2301,7 @@ Show是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，�
     <message>
         <location filename="dialogs/mttest.py" line="565"/>
         <source>Apply Japaneses terms and names</source>
-        <translation>使用日文詞條和姓名翻譯</translation>
+        <translation type="obsolete">使用日文詞條和姓名翻譯</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="572"/>
@@ -2366,12 +2366,12 @@ Show是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，�
     <message>
         <location filename="dialogs/mttest.py" line="588"/>
         <source>Apply translation terms</source>
-        <translation>使用翻譯詞條</translation>
+        <translation type="obsolete">使用翻譯詞條</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="591"/>
         <source>Apply translation terms in the Shared Dictionary to correct translations from the machine translator</source>
-        <translation>使用共享辭書中的翻譯詞條來修正機翻后的文本</translation>
+        <translation type="obsolete">使用共享辭書中的翻譯詞條來修正機翻后的文本</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="542"/>
@@ -2832,22 +2832,22 @@ You can redownload it later if you have Internet access.</source>
         <translation>Excite.co.jp的多國語言翻譯服務</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="302"/>
+        <location filename="dialogs/terminput.py" line="303"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="308"/>
+        <location filename="dialogs/terminput.py" line="309"/>
         <source>The pattern is kind of short. You might want to turn on the series-specific option.</source>
         <translation>匹配的文本太短了呢。你最好把詞條設定為系列專用的。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="320"/>
+        <location filename="dialogs/terminput.py" line="321"/>
         <source>Everything looks OK</source>
         <translation>看起來還好</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="329"/>
+        <location filename="dialogs/terminput.py" line="330"/>
         <source>Create dictionary entry</source>
         <translation>創建詞條</translation>
     </message>
@@ -2861,7 +2861,7 @@ The dictionary will be installed to {1}.</source>
 完成后，辭書會被安裝到{1}。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="311"/>
+        <location filename="dialogs/terminput.py" line="312"/>
         <source>The translation is empty. VNR will delete the text matched with the pattern.</source>
         <translation>沒有指定翻譯。這樣的話VNR會刪掉匹配的文本。</translation>
     </message>
@@ -2958,7 +2958,7 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>JMDict日文-荷蘭文辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="279"/>
+        <location filename="dialogs/terminput.py" line="280"/>
         <source>Add new term</source>
         <translation>添加詞條</translation>
     </message>
@@ -3063,7 +3063,7 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation type="obsolete">這是個日文名字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="146"/>
+        <location filename="dialogs/terminput.py" line="147"/>
         <source>a title after names</source>
         <translation>這是日文名字后的稱謂</translation>
     </message>
@@ -3757,17 +3757,17 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
 相反，克隆會產生重复的條目，管理起來會更加困難。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="305"/>
+        <location filename="dialogs/terminput.py" line="306"/>
         <source>The pattern is the same as the translation that is useless.</source>
         <translation>匹配的文本和替換的文本相同，這樣子做沒有意義。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="314"/>
+        <location filename="dialogs/terminput.py" line="315"/>
         <source>The pattern is short and only contains hiragana that could be ambiguous.</source>
         <translation>匹配的文本很短且只包含平假名，這樣很容易產生歧義。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="317"/>
+        <location filename="dialogs/terminput.py" line="318"/>
         <source>The pattern is long. Please DO NOT add subtitles to Shared Dictionary.</source>
         <translation>匹配的文本很長。請不要把人工字幕加入共享辭書。</translation>
     </message>
@@ -3930,7 +3930,7 @@ Check this wiki for what to do if there is no correct text.
         <translation>對遊戲窗口截取圖片</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="154"/>
+        <location filename="dialogs/terminput.py" line="155"/>
         <source>reusable regular expression pattern</source>
         <translation>可重用的正則表達式定義</translation>
     </message>
@@ -4017,7 +4017,7 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，
         <translation>瀏覽當前開啟的詞條</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="144"/>
+        <location filename="dialogs/terminput.py" line="145"/>
         <source>a character name</source>
         <translation>人物的姓名</translation>
     </message>
@@ -4032,17 +4032,17 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，
         <translation>使用共享辭書中的遊戲詞條修正文本</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="138"/>
+        <location filename="dialogs/terminput.py" line="139"/>
         <source>translate text from input to text language</source>
         <translation>翻譯輸入語言到輸出語言</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="142"/>
+        <location filename="dialogs/terminput.py" line="143"/>
         <source>transform text in output language after translation</source>
         <translation>在翻譯后修正輸出的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="140"/>
+        <location filename="dialogs/terminput.py" line="141"/>
         <source>transform text in input langauge before translation</source>
         <translation>在翻譯前修正輸入的文字</translation>
     </message>
@@ -4057,19 +4057,34 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，
         <translation type="obsolete">修正需要光學識別的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="152"/>
+        <location filename="dialogs/terminput.py" line="153"/>
         <source>transform extracted game text</source>
         <translation>修正從遊戲中提取到的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="148"/>
+        <location filename="dialogs/terminput.py" line="149"/>
         <source>transform text before TTS</source>
         <translation>修正語音合成前的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="150"/>
+        <location filename="dialogs/terminput.py" line="151"/>
         <source>transform text after OCR</source>
         <translation>修正光學識別后的文字</translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="565"/>
+        <source>Apply input terms and names</source>
+        <translation>使用輸入詞條和姓名翻譯</translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="588"/>
+        <source>Apply output terms</source>
+        <translation>使用輸出詞條</translation>
+    </message>
+    <message>
+        <location filename="dialogs/mttest.py" line="591"/>
+        <source>Apply output terms in the Shared Dictionary to correct translations from the machine translator</source>
+        <translation>使用共享辭書中的輸出詞條來修正機翻后的文本</translation>
     </message>
 </context>
 </TS>

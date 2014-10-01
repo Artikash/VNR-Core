@@ -562,7 +562,7 @@ class _MTTester(object):
 
   @memoizedproperty
   def sourceTextLabel(self):
-    return self._createTextLabel(self.sourceTextEdit, my.tr("Apply Japaneses terms and names") + _TERM_STAR + _LANGUAGE_STAR)
+    return self._createTextLabel(self.sourceTextEdit, my.tr("Apply input terms and names") + _TERM_STAR + _LANGUAGE_STAR)
   @memoizedproperty
   def sourceTextEdit(self):
     return self._createTextView(my.tr("Character names in Shared Dictionary/Game Information will be applied only for Latin-charactered languages"))
@@ -585,10 +585,10 @@ class _MTTester(object):
 
   @memoizedproperty
   def targetTranslationLabel(self):
-    return self._createTextLabel(self.targetTranslationEdit, my.tr("Apply translation terms") + _TERM_STAR)
+    return self._createTextLabel(self.targetTranslationEdit, my.tr("Apply output terms") + _TERM_STAR)
   @memoizedproperty
   def targetTranslationEdit(self):
-    return self._createTextView(my.tr("Apply translation terms in the Shared Dictionary to correct translations from the machine translator"),
+    return self._createTextView(my.tr("Apply output terms in the Shared Dictionary to correct translations from the machine translator"),
         rich=True)
 
   @memoizedproperty

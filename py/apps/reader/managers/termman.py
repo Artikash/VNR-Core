@@ -77,8 +77,7 @@ class TermWriter:
             raise Exception("cancel saving out-of-date terms")
           z = convertsChinese and td.language == 'zhs'
 
-          regex = td.regex
-
+          regex = td.regex and not escape_target
 
           if escape_source or escape_target:
             priority = count - index
