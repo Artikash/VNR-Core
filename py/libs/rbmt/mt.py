@@ -3,6 +3,7 @@
 # 9/29/2014
 
 __all__ = [
+  'Lexer',
   'Parser',
   'Transformer',
   'Unparser',
@@ -20,19 +21,26 @@ from sakurakit.skdebug import dwarn
 # Tree
 
 class Token:
-  def __init__(self, text='', feature='', language=''):
+  def __init__(self, text='', feature=''):
     self.text = text # unicode
     self.feature = feature # unicode
-    self.language = language
 
   def unparse(self): return self.text
-  def dumps(self): return self.text
+  def dump(self): return self.text
 
 class Node: # tree node
-  def __init__(self):
-    self.children = None # [Node] or None
-    self.parent = None # Node
-    self.token = None # token
+  unparsesep = ""
+
+  def __init__(self, children=None, parent=None, token=None):
+    self.children = children # [Node] or None
+    self.parent = parent # Node
+    self.token = token # token
+
+    if children:
+      for it in children:
+        it.parent = self
+
+  def isEmpty(self): return not self.token and not self.children
 
   def clear(self):
     self.children = None
@@ -45,10 +53,36 @@ class Node: # tree node
         it.clearTree()
     self.clear()
 
-# Parser
+  def dumpTree(self): # recursively clear all children
+    """
+    @return  unicode
+    """
+    if self.token:
+      return self.token.dump()
+    elif self.children:
+      return "(%s)" % ' '.join((it.dumpTree() for it in self.children))
+
+  def unparseTree(self): # recursively clear all children
+    """
+    @return  unicode
+    """
+    if self.token:
+      return self.token.unparse()
+    elif self.children:
+      return self.unparsesep.join((it.unparseTree() for it in self.children))
+
+# Lexer
 
 _SENTENCE_RE = re.compile(ur"([。？！」\n])(?![。！？）」\n]|$)")
+
 class Lexer:
+
+  def __init__(self):
+    import CaboCha
+    self.cabocha = CaboCha.Parser()
+    self.cabochaEncoding = 'utf8'
+
+    self.unparsesep = ''
 
   def splitSentences(self, text):
     """
@@ -57,17 +91,10 @@ class Lexer:
     """
     return _SENTENCE_RE.sub(r"\1\n", text).split("\n")
 
-class Parser:
-
-  def __init__(self):
-    import CaboCha
-    self.cabocha = CaboCha.Parser()
-    self.cabochaEncoding = 'utf8'
-
   def parse(self, text):
     """
     @param  unicode
-    @return  tree
+    @return  stream
     """
     return self._parse(self._tokenize(text))
 
@@ -77,19 +104,19 @@ class Parser:
     @return  [int link, [Token]]]  token stream
     """
     encoding = self.cabochaEncoding
-    tree = self.cabocha.parse(text.encode(encoding))
+    stream = self.cabocha.parse(text.encode(encoding))
 
     MAX_LINK = 32768 # use this value instead of -1
     link = 0
 
     phrase = [] # [Token]
     ret = [] # [int link, [Token]]
-    for i in xrange(tree.token_size()):
-      token = tree.token(i)
+    for i in xrange(stream.token_size()):
+      token = stream.token(i)
 
       surface = token.surface.decode(encoding, errors='ignore')
       feature = token.feature.decode(encoding, errors='ignore')
-      word = Token(surface, feature=feature, language='ja')
+      word = Token(surface, feature=feature)
 
       if token.chunk is not None:
         if phrase:
@@ -107,7 +134,7 @@ class Parser:
   def _parse(self, phrases):
     """This is a recursive function.
     [@param  phrases [int link, [Token]]]  token stream
-    @return  tree
+    @return  stream
     """
     if not phrases: # This should only happen at the first iteration
       return []
@@ -129,15 +156,47 @@ class Parser:
       return ret
 
   # For cebug usage
-  def _dumps(self, x):
-    """Debug only
+  def dump(self, x):
+    """
     @param  x  Token or [[Token]...]
     @return  s
     """
     if isinstance(x, Token):
-      return x.dumps()
+      return x.dump()
     else:
-      return "(%s)" % ' '.join(imap(self._dumps, x))
+      return "(%s)" % ' '.join(imap(self.dump, x))
+
+  def unparse(self, x):
+    """
+    @param  x  Token or [[Token]...]
+    @return  unicode
+    """
+    if isinstance(x, Token):
+      return x.unparse()
+    else:
+      return self.unparsesep.join(imap(self.unparse, x))
+
+# Parser
+class Parser:
+
+  def parse(self, stream):
+    """
+    @param  stream  Token or [[Token]...]
+    @return  Node
+    """
+    return self._parse(stream)
+
+  def _parse(self, x):
+    """
+    @param  x  Token or [[Token]...]
+    @return  Node
+    """
+    if isinstance(x, Token):
+      return Node(token=x)
+    if x:
+      return Node(children=map(self._parse, x))
+    else:
+      return Node()
 
 # Translator
 
@@ -145,34 +204,22 @@ class Translator:
 
   def translate(self, tree):
     """
-    @param  tree  parse tree
+    @param  tree  Node
+    @return  Node
     """
-    return self._translateAny(tree)
+    return self._translate(tree)
 
-  def _translateAny(self, tree):
+  def _translate(self, tree):
     """
-    @param  tree
+    @param  tree  Node
+    @return  Node
     """
-    if isinstance(tree, Token):
-      return self._translateToken(tree)
+    if tree.token:
+      return Node(token=tree.token)
+    elif tree.children:
+      return Node(token=tree.token, children=map(self._translate, tree.children))
     else:
-      return self._translateList(tree)
-
-  def _translateList(self, l):
-    """
-    @param  l  list
-    """
-    if not l:
-      return []
-    if len(l) == 1:
-      return [self._translateAny(l[0])]
-    return l
-
-  def _translateToken(self, tok):
-    """
-    @param  tok  Token
-    """
-    return tok
+      return Node()
 
 # Unparser
 
@@ -181,15 +228,15 @@ class Unparser:
   def __init__(self):
     self.tokensep = ''
 
-  def dumps(self, x): # debug print
+  def dump(self, x): # debug print
     """
     @param  x  Token or [[Token]...]
     @return  s
     """
     if isinstance(x, Token):
-      return x.dumps()
+      return x.dump()
     else:
-      return "(%s)" % ' '.join(imap(self.dumps, x))
+      return "(%s)" % ' '.join(imap(self.dump, x))
 
   def unparse(self, x):
     """
@@ -233,21 +280,31 @@ if __name__ == '__main__':
   #text = u"近未来の日本、多くの都市で大小の犯罪が蔓延。"
   #text = u"近未来の日本は、多くの都市で大小の犯罪が蔓延。"
 
-  lex = Lexer()
-  p = Parser()
+  lexer = Lexer()
+  parser = Parser()
   tr = Translator()
   up = Unparser()
 
-  for s in lex.splitSentences(text):
+  for s in lexer.splitSentences(text):
     print "-- sentence --\n", s
 
-    tree = p.parse(s)
-    print "-- parse tree --\n", p._dumps(tree)
+    stream = lexer.parse(s)
+    t = lexer.unparse(stream)
+    print "-- token stream == text ? %s  --\n" % (s == t), t
+    print "-- token stream --\n", lexer.dump(stream)
 
-    tree = tr.translate(tree)
-    print "-- translated tree --\n", up.dumps(tree)
+    tree = parser.parse(stream)
+    print "-- parse tree --\n", tree.dumpTree()
 
-    ret = up.unparse(tree)
-    print "-- output --\n", ret
+    print "-- unparse tree --\n", tree.unparseTree()
+
+    newtree = tr.translate(tree)
+    print "-- translated tree --\n", newtree.dumpTree()
+
+    tree.clearTree()
+    newtree.clearTree()
+
+    #ret = up.unparse(tree)
+    #print "-- output --\n", ret
 
 # EOF
