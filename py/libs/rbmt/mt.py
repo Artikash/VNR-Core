@@ -4,7 +4,7 @@
 
 __all__ = [
   'Parser',
-  'SourceTransformer',
+  'Transformer',
   'Unparser',
 ]
 
@@ -17,6 +17,8 @@ from collections import OrderedDict
 from itertools import imap
 from sakurakit.skdebug import dwarn
 
+# Tree
+
 class Token:
   def __init__(self, text='', feature='', language=''):
     self.text = text # unicode
@@ -26,9 +28,24 @@ class Token:
   def unparse(self): return self.text
   def dumps(self): return self.text
 
-#__PARAGRAPH_DELIM = u"【】「」♪" # machine translation of sentence deliminator
-#_PARAGRAPH_SET = frozenset(__PARAGRAPH_DELIM)
-#_PARAGRAPH_RE = re.compile(r"(%s)" % '|'.join(_PARAGRAPH_SET))
+class Node: # tree node
+  def __init__(self):
+    self.children = None # [Node] or None
+    self.parent = None # Node
+    self.token = None # token
+
+  def clear(self):
+    self.children = None
+    self.parent = None
+    self.token = None
+
+  def clearTree(self): # recursively clear all children
+    if self.children:
+      for it in self.children:
+        it.clearTree()
+    self.clear()
+
+# Parser
 
 _SENTENCE_RE = re.compile(ur"([。？！」\n])(?![。！？）」\n]|$)")
 class Lexer:
@@ -111,24 +128,18 @@ class Parser:
       ret.insert(0, self._parse(l))
       return ret
 
-class SourceTransformer:
+  # For cebug usage
+  def _dumps(self, x):
+    """Debug only
+    @param  x  Token or [[Token]...]
+    @return  s
+    """
+    if isinstance(x, Token):
+      return x.dumps()
+    else:
+      return "(%s)" % ' '.join(imap(self._dumps, x))
 
-  def transform(self, tree):
-    """
-    @param  tree  parse tree
-    """
-    self._promote(tree)
-
-  def _promote(self, tree):
-    """Promote right-most token
-    @param  tree  parse tree
-    @param  text  unicode
-    """
-    pass
-    #if not tree or isinstance(tree, Token):
-    #  return
-    #right = tree[-1]
-    #if isinstance(right, Token):
+# Translator
 
 class Translator:
 
@@ -136,28 +147,34 @@ class Translator:
     """
     @param  tree  parse tree
     """
-    return self._translateTree(tree)
+    return self._translateAny(tree)
 
-  def _translateTree(self, tree):
+  def _translateAny(self, tree):
     """
     @param  tree
     """
     if isinstance(tree, Token):
-      self._translateToken(tree)
+      return self._translateToken(tree)
     else:
-      self._translateList(tree)
+      return self._translateList(tree)
 
   def _translateList(self, l):
     """
     @param  l  list
     """
-    pass
+    if not l:
+      return []
+    if len(l) == 1:
+      return [self._translateAny(l[0])]
+    return l
 
   def _translateToken(self, tok):
     """
     @param  tok  Token
     """
-    pass
+    return tok
+
+# Unparser
 
 class Unparser:
 
@@ -207,8 +224,8 @@ if __name__ == '__main__':
 
   #text = u"【綾波レイ】「ごめんなさい。こう言う時どんな顔すればいいのか分からないの。」"
   #text = u"ごめんなさい。こう言う時どんな顔すればいいのか分からないの。"
-  #text = u"こう言う時どんな顔すればいいのか分からないの。"
-  text = u"こう言う時どんな顔すればいいのか分からないのか？"
+  text = u"こう言う時どんな顔すればいいのか分からないの。"
+  #text = u"こう言う時どんな顔すればいいのか分からないのか？"
 
   #text = u"私のことを好きですか？"
   #text = u"憎しみは憎しみしか生まない"
@@ -218,22 +235,19 @@ if __name__ == '__main__':
 
   lex = Lexer()
   p = Parser()
-  st = SourceTransformer()
   tr = Translator()
   up = Unparser()
 
   for s in lex.splitSentences(text):
-    print s
+    print "-- sentence --\n", s
+
     tree = p.parse(s)
+    print "-- parse tree --\n", p._dumps(tree)
 
-    print up.dumps(tree)
-    st.transform(tree)
-    print up.dumps(tree)
-
-    tr.translate(tree)
+    tree = tr.translate(tree)
+    print "-- translated tree --\n", up.dumps(tree)
 
     ret = up.unparse(tree)
-
-    print ret
+    print "-- output --\n", ret
 
 # EOF
