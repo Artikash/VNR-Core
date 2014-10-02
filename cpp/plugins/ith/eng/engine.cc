@@ -53,7 +53,7 @@ DWORD DeterminePCEngine()
     return yes;
   }
 
-  if (IthFindFile(L"pcsx2*.exe")) { // jichi 7/19/2014
+  if (IthFindFile(L"pcsx2*.exe")) { // jichi 7/19/2014 PCSX2.exe or PCSX2WX.exe
     if (!InsertPCSX2Hooks()) { // don't forget to rebuild vnrcli to inject SSE
       // Always insert PC hooks so that user could add PCSX2 to VNR.
       // TO BE REMOVED after more PS2 engines are added.
