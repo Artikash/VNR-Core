@@ -1613,6 +1613,14 @@ class GameObject(QObject):
 
 class _Character:
 
+  __slots__ = (
+    'name',
+    'gender',
+    'ttsEngine',
+    'ttsEnabled',
+    'timestamp',
+  )
+
   @staticmethod
   def synthesize(name, type):
     """
