@@ -165,5 +165,7 @@ processes:
   - wmplayer.exe        # Windows media player
   - XMP.exe             # Xunlei KanKan
   - YoukuDesktop.exe    # Youku
+  # Unsupported games
+  - KanColleViewer  # http://grabacr.net/kancolleviewer
 
 # EOF
