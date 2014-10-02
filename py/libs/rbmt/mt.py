@@ -42,6 +42,38 @@ class Node: # tree node
 
   def isEmpty(self): return not self.token and not self.children
 
+  # Children
+
+  def appendChild(self, node):
+    """
+    @param  node  Node
+    """
+    self.children.append(node)
+    node.parent = self
+
+  def prependChild(self, node):
+    """
+    @param  node  Node
+    """
+    self.children.insert(0, node)
+    node.parent = self
+
+  def appendChildren(self, l):
+    """
+    @param  l  [Node]
+    """
+    for it in l:
+      self.appendChild(it)
+
+  def prependChildren(self, l):
+    """
+    @param  l  [Node]
+    """
+    for it in l:
+      self.prependChild(it)
+
+  # Delete
+
   def clear(self):
     self.children = None
     self.parent = None
@@ -52,6 +84,8 @@ class Node: # tree node
       for it in self.children:
         it.clearTree()
     self.clear()
+
+  # Output
 
   def dumpTree(self): # recursively clear all children
     """
@@ -193,25 +227,28 @@ class Lexer:
 
 # Rule
 
+class PatternList(list):
+  def __init__(self, *args, **kwargs):
+    super(PatternList, self).__init__(*args, **kwargs)
+    self.exactMatching = False # bool
+
+
+class RuleMatchedObject:
+  def __init__(self, node=None):
+    self.node = node # Node
+    self.startIndex = None # int
+    self.stopIndex = None
+
 class Rule:
 
   def __init__(self, source, target):
     self.source = source # list or unicode
     self.target = target # list or unicode
 
-  def translate(self, node):
-    """
-    @param  node  Node
-    @return  Node or None
-    """
-    m = self.matchSource(node)
-    if m:
-      return self.createTarget(m)
-
   def matchSource(self, node):
     """
     @param  node  Node
-    @return  bool
+    @return  bool or RuleMatchedObject
     """
     return self._matchSource(self.source, node)
 
@@ -226,24 +263,52 @@ class Rule:
       if isinstance(source, str) or isinstance(source, unicode):
         if node.token and node.token.text == source:
           return True
-      if not node.token and len(node.children) == len(source):
-        for s,c in zip(source, node.children):
-          if not cls._matchSource(s, c):
-            return False
-        return True
-    return False
+      elif not node.token and node.children:
+        if source.exactMatching:
+          if len(node.children) == len(source):
+            for s,c in zip(source, node.children):
+              if not cls._matchSource(s, c):
+                return False
+            return True
+        elif len(source) <= len(node.children):
+          sourceIndex = 0
+          for i in xrange(len(node.children)):
+            c = node.children[i]
+            s = source[sourceIndex]
+            if sourceIndex == 0:
+              if i + len(source) > len(node.children):
+                return False
+              if not cls._matchSource(s, c):
+                continue
+            elif not cls._matchSource(s, c):
+              return False
+            sourceIndex += 1
+            if sourceIndex == len(source):
+              break
+          if sourceIndex == len(source):
+            if len(source) == len(node.children):
+              return True
+            stopIndex = i
+            startIndex = stopIndex - len(source) + 1
 
-  def createTarget(self, m):
+
+            m = RuleMatchedObject(node)
+            m.startIndex = startIndex
+            m.stopIndex = stopIndex
+            return m
+
+  def createTarget(self, m=None):
     """
-    @param  m  matched object  not used
+    @param* m  matched object
     @return  Node or None
     """
-    return self._createTarget(self.target)
+    return self._createTarget(self.target, m)
 
   @classmethod
-  def _createTarget(cls, target):
+  def _createTarget(cls, target, m=None):
     """
     @param  target  list or unicode
+    @param* m  matched object
     @return  Node or None
     """
     if target:
@@ -273,7 +338,7 @@ class RuleParser:
       if ' ' not in text:
         return text
       l = text.split()
-      return l[0] if len(l) == 1 else l
+      return l[0] if len(l) == 1 else PatternList(l)
 
     i = text.find('(')
     if i > 0:
@@ -325,9 +390,23 @@ class Translator:
     @return  Node
     """
     for rule in self.rules:
-      ret = rule.translate(node)
-      if ret:
-        return ret
+      m = rule.matchSource(node)
+      if m:
+        if isinstance(m, RuleMatchedObject):
+          ret = rule.createTarget(node)
+          if not ret.children:
+            ret = Node(children=[ret])
+          left = m.node.children[:m.startIndex]
+          if left:
+            left = map(self._translate, left)
+            ret.prependChildren(left)
+          right = m.node.children[m.stopIndex+1:]
+          if right:
+            right = map(self._translate, right)
+            ret.appendChildren(right)
+          return ret
+        else:
+          return rule.createTarget(node)
     if node.token:
       return Node(token=node.token)
     elif node.children:
