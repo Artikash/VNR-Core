@@ -20,6 +20,7 @@ win32: SUBDIRS += \
   ocrtest \
   sehtest \
   ttstest \
-  vertest
+  vertest \
+  wmptest
 
 # EOF
