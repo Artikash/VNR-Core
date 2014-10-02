@@ -15,7 +15,8 @@
 int main(int argc, char *argv[])
 {
 //#define URL L"http://translate.google.com/translate_tts?tl=ja&q=hello"
-#define URL L"http://tts.baidu.com/text2audio?lan=jp&pid=101&ie=UTF-8&text=hello"
+//#define URL L"http://tts.baidu.com/text2audio?lan=jp&pid=101&ie=UTF-8&text=hello"
+#define URL L"Z:\\Users\\jichi\\tmp\\test.mp3"
   ::CoInitialize(NULL);
   IWMPPlayer *player;
   HRESULT ok = ::CoCreateInstance(CLSID_WindowsMediaPlayer, NULL, CLSCTX_INPROC_SERVER, IID_IWMPPlayer, (void**)&player);
