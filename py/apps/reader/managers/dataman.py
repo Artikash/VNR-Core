@@ -1303,7 +1303,35 @@ class GameInfo(object):
         if vid not in vids:
           yield vid
 
-class GameItem:
+class GameItem(object):
+  __slots__ = (
+    'id',
+    'title',
+    'romajiTitle',
+    'brand',
+    'series',
+    'image',
+    'wiki',
+    'timestamp',
+    'date',
+    'otome',
+    'okazu',
+    'scapeMedian',
+    'scapeCount',
+    'tags',
+    'artists',
+    'sdartists',
+    'writers',
+    'musicians',
+
+    'overallScoreSum',
+    'overallScoreCount',
+    'ecchiScoreSum',
+    'ecchiScoreCount',
+    'easyScoreSum',
+    'easyScoreCount',
+  )
+
   def __init__(self, id=0,
       title="", romajiTitle="", brand="", series="", image="", wiki="",
       timestamp=0, date=None, artists='', sdartists='', writers='', musicians='',
@@ -1430,7 +1458,16 @@ class Game(object):
         return 'otome' if g.otome else 'nuki' if g.okazu else 'junai'
     return ''
 
-class GameFile:
+class GameFile(object):
+  __slots__ = (
+    'id',
+    'md5',
+    'name',
+    'itemId',
+    'visitCount',
+    'commentCount',
+  )
+
   def __init__(self, id=0, itemId=0, visitCount=0, commentCount=0, md5="", name=""):
     self.id = id        # long
     self.md5 = md5      # str
