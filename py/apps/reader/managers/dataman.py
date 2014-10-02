@@ -1656,6 +1656,35 @@ class Character(QObject):
 
 @Q_Q
 class _Comment(object):
+
+  __slots__ = (
+    'q', 'qref', # Q_Q
+
+    'id',
+    'gameId',
+    '_gameMd5',
+    'userId',
+    'userHash',
+    'type',
+    'language',
+    'timestamp',
+    'updateTimestamp',
+    'updateUserId',
+    'text',
+    'disabled',
+    'deleted',
+    'locked',
+    'hash',
+    'context',
+    'contextSize',
+    'comment',
+    'updateComment',
+
+    'selected',
+
+    'dirtyProperties',
+  )
+
   def __init__(self, q,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, hash, context, contextSize, comment, updateComment, disabled, deleted, locked):
     self.id = id                # long
@@ -1909,36 +1938,36 @@ class Comment(QObject):
 
 @Q_Q
 class _Term(object):
-  __slots__ = [
+  __slots__ = (
     'q', 'qref', # Q_Q
 
-    "id",
-    "gameId",
-    "_gameMd5",
-    "userId",
-    "userHash",
-    "type",
-    "language",
-    "timestamp",
-    "updateTimestamp",
-    "updateUserId",
-    "text",
-    "pattern",
-    "comment",
-    "updateComment",
-    "regex",
-    "disabled",
-    "deleted",
-    "special",
-    "private",
-    "hentai",
+    'id',
+    'gameId',
+    '_gameMd5',
+    'userId',
+    'userHash',
+    'type',
+    'language',
+    'timestamp',
+    'updateTimestamp',
+    'updateUserId',
+    'text',
+    'pattern',
+    'comment',
+    'updateComment',
+    'regex',
+    'disabled',
+    'deleted',
+    'special',
+    'private',
+    'hentai',
 
-    "selected",
+    'selected',
 
-    "dirtyProperties",
+    'dirtyProperties',
 
-    "_gameItemId",
-  ]
+    '_gameItemId',
+  )
 
   def __init__(self, q,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai):
