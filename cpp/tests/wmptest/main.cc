@@ -12,7 +12,7 @@
 // http://social.msdn.microsoft.com/Forums/vstudio/ko-KR/db3007bd-0410-45a0-bab0-6b0a20723f14/windows-media-playermfcatl?forum=visualcpluszhchs
 #import "wmp.dll" raw_interfaces_only raw_native_types no_namespace named_guids
 
-int main()
+int main(int argc, char *argv[])
 {
 //#define URL L"http://translate.google.com/translate_tts?tl=ja&q=hello"
 #define URL L"http://tts.baidu.com/text2audio?lan=jp&pid=101&ie=UTF-8&text=hello"
@@ -23,15 +23,21 @@ int main()
     player->put_enabled(VARIANT_TRUE);
     IWMPControls *ctrl;
     ok = player->get_controls(&ctrl);
+    qDebug() << ok;
     if (SUCCEEDED(ok)) {
       IWMPSettings *settings;
       player->get_settings(&settings);
-      settings->put_volume(100);
-      qDebug() << player->put_URL(URL);
+      qDebug() << settings->put_volume(100);
+      qDebug() << settings->put_autoStart(VARIANT_TRUE);
+      BSTR url = ::SysAllocString(URL);
+      qDebug() << player->put_URL(url);
+      ::SysFreeString(url);
       qDebug() << ctrl->play();
       qDebug() << ::GetLastError();
       //Sleep(2000);
       system("pause");
+      //QCoreApplication a(argc, argv);
+      //a.exec();
       settings->Release();
     }
     ctrl->Release();
