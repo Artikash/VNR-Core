@@ -123,6 +123,13 @@ GUEST = User(id=GUEST_USER_ID, name='guest', password='guest', language='en')
 ## Game ##
 
 class GameInfo(object):
+  __slots__ = (
+    '_memoized', # @memoized
+
+    'gameId',
+    'itemId',
+    'async',
+  )
 
   def __init__(self, gameId=0, itemId=0, async=True):
     self.gameId = gameId # long
