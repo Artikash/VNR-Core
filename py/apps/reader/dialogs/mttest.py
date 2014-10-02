@@ -477,7 +477,7 @@ class _MTTester(object):
 
   @memoizedproperty
   def textLabel(self):
-    text = mytr_("Original text")
+    text = my.tr("Original text")
     ret = QtWidgets.QLabel()
     ret.setText('<span style="color:blue">%s</span>' % text)
     ret.setToolTip(my.tr("Original text to translate"))
