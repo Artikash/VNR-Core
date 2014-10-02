@@ -45,7 +45,18 @@ def _is_protected_data(d):
 
 ## Data types ##
 
-class UserDigest:
+class UserDigest(object):
+  __slots__ = (
+    'id',
+    'name',
+    'language',
+    'gender',
+    'homepage',
+    'avatar',
+    'color',
+    'termLevel',
+    'commentLevel',
+  )
   def __init__(self, id=0, name='', language='', avatar='', gender='', color='', homepage='',
       termLevel=0, commentLevel=0):
     self.id = id            # long
@@ -58,7 +69,19 @@ class UserDigest:
     self.termLevel = termLevel # int
     self.commentLevel = commentLevel # int
 
-class User:
+class User(object):
+  __slots__ = (
+    'id',
+    'name',
+    'password',
+    'language',
+    'gender',
+    'homepage',
+    'avatar',
+    'color',
+    'termLevel',
+    'commentLevel',
+  )
   def __init__(self, id=0, name='', password='', language='', gender='', color='', avatar='', homepage='',
       termLevel=0, commentLevel=0):
     self.id = id
@@ -2582,6 +2605,33 @@ class Term(QObject):
 
 @Q_Q
 class _Reference(object):
+  __slots__ = (
+    'q', 'qref',  # Q_Q
+
+    'id',
+    'itemId',
+    'gameId',
+    '_gameMd5',
+    'userId',
+    'userHash',
+    'type',
+    'timestamp',
+    'updateTimestamp',
+    'updateUserId',
+    'updateUserHash',
+    'key',
+    'title',
+    'brand',
+    'url',
+    'date',
+    'comment',
+    'updateComment',
+    'disabled',
+    'deleted',
+
+    'dirtyProperties',
+  )
+
   def __init__(self, q,
       id, itemId, gameId, gameMd5, userId, userHash, type, timestamp, updateTimestamp, updateUserId, key, title, brand, url, date, comment, updateComment, disabled, deleted):
     self.id = id                # long
