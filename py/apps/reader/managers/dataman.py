@@ -1477,6 +1477,16 @@ class GameFile(object):
     self.commentCount = commentCount # int
 
 class _GameObject(object):
+  __slots__ = [
+    '_memoized', # @memoized
+
+    'id',
+    'md5',
+    'name',
+    'path',
+    'launchPath',
+    'language',
+  ]
 
   @memoizedproperty
   def info(self):
