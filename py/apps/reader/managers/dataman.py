@@ -2895,7 +2895,17 @@ class Reference(QObject):
     for it in self.sampleImages:
       yield cacheman.cache_image_url(it) if cache else it
 
-class TrailersItem: #(object):
+class TrailersItem(object):
+  __slots__ = (
+    'series',
+    'banner',
+    'otome',
+    'brands',
+    'videos',
+
+    'artists', 'sdartists', 'writers', 'musicians',
+  )
+
   def __init__(self,
       series="", banner="",
       otome=False,
@@ -3429,7 +3439,14 @@ class HolysealReference(Reference): #(object):
     self.artists = artists # [unicode name]
     self.writers = writers # [unicode name]
 
-class TokutenItem: # erogame-tokuten webpage, images will crash Python2
+class TokutenItem(object): # erogame-tokuten webpage, images will crash Python2
+  __slots__ = (
+    'key',
+    'url',
+    'images',
+    'image',
+  )
+
   type = 'tokuten'
   def __init__(self, key="", url="", images=[], **kwargs):
     self.key = key # str
@@ -3446,7 +3463,11 @@ class TokutenItem: # erogame-tokuten webpage, images will crash Python2
     for it in self.images:
       return cacheman.cache_image_url(it) if cache else it
 
-class DmmPage: # DMM webpage
+class DmmPage(object): # DMM webpage
+  __slots__ = (
+    'description',
+    'review',
+  )
   def __init__(self, url="",
       description="", review="",
       **kwargs):
