@@ -1909,7 +1909,36 @@ class Comment(QObject):
 
 @Q_Q
 class _Term(object):
-  #def __del__(self):  dprint("_Term deleted")
+  __slots__ = [
+    'q', 'qref', # Q_Q
+
+    "id",
+    "gameId",
+    "_gameMd5",
+    "userId",
+    "userHash",
+    "type",
+    "language",
+    "timestamp",
+    "updateTimestamp",
+    "updateUserId",
+    "text",
+    "pattern",
+    "comment",
+    "updateComment",
+    "regex",
+    "disabled",
+    "deleted",
+    "special",
+    "private",
+    "hentai",
+
+    "selected",
+
+    "dirtyProperties",
+
+    "_gameItemId",
+  ]
 
   def __init__(self, q,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai):

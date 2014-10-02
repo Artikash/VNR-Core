@@ -236,8 +236,9 @@ class PatternList(list):
 class RuleMatchedObject:
   def __init__(self, node=None):
     self.node = node # Node
-    self.startIndex = None # int
-    self.stopIndex = None
+    self.captureCount = 0 # int
+    self.captureStarts = None # [int]
+    self.captureStops = None # [int]
 
 class Rule:
 
@@ -290,7 +291,6 @@ class Rule:
               return True
             stopIndex = i
             startIndex = stopIndex - len(source) + 1
-
 
             m = RuleMatchedObject(node)
             m.startIndex = startIndex
