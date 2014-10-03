@@ -81,9 +81,9 @@ class Node: # tree node
         self.appendChild(x)
     elif x:
       if len(x) == 1:
-        self.appendChild(x)
+        self.appendChild(x[0])
       else:
-        self.children.extend(x)
+        self.appendChildren(x)
 
   # Delete
 
@@ -246,13 +246,13 @@ class PatternList(list):
     super(PatternList, self).__init__(*args, **kwargs)
     self.exactMatching = False # bool
 
-class RuleMatchedObject(object):
+class RuleMatchedList(object):
   __slots__ = (
-    'node',
+    'nodes',
     'captureCount', 'captureStarts', 'captureStops',
   )
-  def __init__(self, node=None):
-    self.node = node # Node
+  def __init__(self, nodes=[]):
+    self.nodes = nodes # [Node]
     self.captureCount = 0 # int
     self.captureStarts = None # [int]
     self.captureStops = None # [int]  excluding
@@ -264,73 +264,84 @@ class Rule(object):
     self.source = source # list or unicode
     self.target = target # list or unicode
 
-  def matchSource(self, node):
+  def matchSource(self, x):
     """
-    @param  node  Node
-    @return  bool or RuleMatchedObject
+    @param  x  Node or token or list
+    @return  bool or RuleMatchedList
     """
-    return self._matchSource(self.source, node)
+    if self.source:
+      return self._matchSource(self.source, x)
 
   @classmethod
-  def _matchSource(cls, source, node):
+  def _matchSource(cls, source, x):
     """
     @param  source  list or unicode
-    @param  node  Node
+    @param  x  Node or Token or list
     @return  bool
     """
-    if source:
-      if isinstance(source, str) or isinstance(source, unicode):
-        return cls._matchSourceString(source, node)
-      elif not node.token and node.children:
-        if source.exactMatching or len(source) == len(node.children):
-          return cls._exactMatchSourceList(source, node)
-        elif len(source) < len(node.children):
-          return cls._matchSourceList(source, node)
+    if not x:
+      return
+    if isinstance(x, Node):
+      for c in x.token, x.children:
+        if c:
+          return cls._matchSource(source, c)
+      return
+
+    if isinstance(source, str) or isinstance(source, unicode):
+      if isinstance(x, Token):
+        return cls._matchSourceString(source, x)
+      return
+
+    if isinstance(x, list):
+      if source.exactMatching or len(source) == len(x):
+        return cls._exactMatchSourceList(source, x)
+      elif len(source) < len(x):
+        return cls._matchSourceList(source, x)
 
   @staticmethod
-  def _matchSourceString(source, node):
+  def _matchSourceString(source, token):
     """
     @param  source  unicode
-    @param  node  Node
+    @param  token  Token
     @return  bool
     """
-    return bool(node.token) and node.token.text == source
+    return source == token.text
 
   @classmethod
-  def _exactMatchSourceList(cls, source, node):
+  def _exactMatchSourceList(cls, source, nodes):
     """
     @param  source  list
-    @param  node  Node
+    @param  nodes  list
     @return  bool
     """
-    if len(node.children) == len(source):
-      for s,c in zip(source, node.children):
+    if len(source) == len(nodes):
+      for s,c in zip(source, nodes):
         if not cls._matchSource(s, c):
           return False
-    return True
+      return True
 
   @classmethod
-  def _matchSourceList(cls, source, node):
+  def _matchSourceList(cls, source, nodes):
     """
     @param  source  list
-    @param  node  Node
-    @return  RuleMatchedObject or None
+    @param  nodes  list
+    @return  RuleMatchedList or None
     """
     starts = []
     sourceIndex = 0
-    for i,c in enumerate(node.children):
+    for i,c in enumerate(nodes):
       s = source[sourceIndex]
-      if sourceIndex == 0 and i + len(source) > len(node.children):
+      if sourceIndex == 0 and i + len(source) > len(nodes):
         break
       if not cls._matchSource(s, c):
         sourceIndex = 0
       elif sourceIndex == len(source) - 1:
+        starts.append(i - sourceIndex)
         sourceIndex = 0
-        starts.append(i)
       else:
         sourceIndex += 1
     if starts:
-      m = RuleMatchedObject(node)
+      m = RuleMatchedList(nodes)
       m.captureCount = len(starts)
       m.captureStarts = starts
       m.captureStops = [it + len(source) for it in starts]
@@ -423,29 +434,33 @@ class Translator:
     """
     return self._translate(tree)
 
-  def _translate(self, node):
+  def _translate(self, x):
     """
-    @param  node  Node
-    @return  Node
+    @param  x  Node or token or list
+    @return  Node not None
     """
     for rule in self.rules:
-      m = rule.matchSource(node)
+      m = rule.matchSource(x)
       if m:
-        if isinstance(m, RuleMatchedObject):
-          return self._translateMatch(rule, m)
+        if isinstance(m, RuleMatchedList):
+          return self._translateMatchedList(rule, m)
         else:
           return rule.createTarget()
-    if node.token:
-      return Node(token=node.token)
-    elif node.children:
-      return Node(token=node.token, children=map(self._translate, node.children))
-    else:
-      return Node()
+    if isinstance(x, list):
+      return Node(children=map(self._translate, x))
+    if isinstance(x, Token):
+      return Node(token=x)
+    if isinstance(x, Node):
+      if x.token:
+        return Node(token=x.token)
+      elif x.children:
+        return Node(children=map(self._translate, x.children))
+    return Node()
 
-  def _translateMatch(self, rule, m):
+  def _translateMatchedList(self, rule, m):
     """
     @param  rule  Rule
-    @param  m  RuleMatchedObject
+    @param  m  RuleMatchedList
     @return  Node
     """
     ret = Node(children=[])
@@ -453,17 +468,21 @@ class Translator:
       if not i:
         start = m.captureStarts[i]
         if start > 0:
-          left = m.node.children[:start]
+          left = m.nodes[:start]
           if left:
-            left = map(self._translate, left)
+            left = self._translate(left)
+            if left.children:
+              left = left.children
             ret.compactAppend(left)
       ret.compactAppend(rule.createTarget())
       if i == m.captureCount - 1:
         stop = m.captureStops[i]
-        if stop < len(m.node.children):
-          right = m.node.children[stop:]
+        if stop < len(m.nodes):
+          right = m.nodes[stop:]
           if right:
-            right = map(self._translate, right)
+            right = self._translate(right)
+            if right.children:
+              right = right.children
             ret.compactAppend(right)
     return ret
 
