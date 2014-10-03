@@ -5,7 +5,7 @@
 __all__ = [
   'Lexer',
   'Parser',
-  'Transformer',
+  'RuleBasedTranslator',
   'Unparser',
 ]
 
@@ -28,13 +28,21 @@ class Token:
   def unparse(self): return self.text
   def dump(self): return self.text
 
-class Node: # tree node
+class Node(object): # tree node
+  __slots__ = (
+    'children',
+    'parent',
+    'token',
+    'language',
+  )
+
   unparsesep = ""
 
-  def __init__(self, token=None, children=None, parent=None):
+  def __init__(self, token=None, children=None, parent=None, language=''):
     self.children = children # [Node] or None
     self.parent = parent # Node
     self.token = token # token
+    self.language = language # str
 
     if children:
       for it in children:
@@ -258,11 +266,18 @@ class RuleMatchedList(object):
     self.captureStops = None # [int]  excluding
 
 class Rule(object):
-  __slots__ = 'source', 'target'
+  __slots__ = (
+    'source',
+    'target',
+    'sourceLanguage',
+    'targetLanguage',
+  )
 
-  def __init__(self, source, target):
+  def __init__(self, sourceLanguage, targetLanguage, source, target):
     self.source = source # list or unicode
     self.target = target # list or unicode
+    self.sourceLanguage = sourceLanguage # str
+    self.targetLanguage = targetLanguage # str
 
   def matchSource(self, x):
     """
@@ -272,8 +287,7 @@ class Rule(object):
     if self.source:
       return self._matchSource(self.source, x)
 
-  @classmethod
-  def _matchSource(cls, source, x):
+  def _matchSource(self, source, x):
     """
     @param  source  list or unicode
     @param  x  Node or Token or list
@@ -282,21 +296,23 @@ class Rule(object):
     if not x:
       return
     if isinstance(x, Node):
+      if x.language != self.sourceLanguage:
+        return
       for c in x.token, x.children:
         if c:
-          return cls._matchSource(source, c)
+          return self._matchSource(source, c)
       return
 
     if isinstance(source, str) or isinstance(source, unicode):
       if isinstance(x, Token):
-        return cls._matchSourceString(source, x)
+        return self._matchSourceString(source, x)
       return
 
     if isinstance(x, list):
       if source.exactMatching or len(source) == len(x):
-        return cls._exactMatchSourceList(source, x)
+        return self._exactMatchSourceList(source, x)
       elif len(source) < len(x):
-        return cls._matchSourceList(source, x)
+        return self._matchSourceList(source, x)
 
   @staticmethod
   def _matchSourceString(source, token):
@@ -307,8 +323,7 @@ class Rule(object):
     """
     return source == token.text
 
-  @classmethod
-  def _exactMatchSourceList(cls, source, nodes):
+  def _exactMatchSourceList(self, source, nodes):
     """
     @param  source  list
     @param  nodes  list
@@ -316,12 +331,11 @@ class Rule(object):
     """
     if len(source) == len(nodes):
       for s,c in zip(source, nodes):
-        if not cls._matchSource(s, c):
+        if not self._matchSource(s, c):
           return False
       return True
 
-  @classmethod
-  def _matchSourceList(cls, source, nodes):
+  def _matchSourceList(self, source, nodes):
     """
     @param  source  list
     @param  nodes  list
@@ -333,7 +347,7 @@ class Rule(object):
       s = source[sourceIndex]
       if sourceIndex == 0 and i + len(source) > len(nodes):
         break
-      if not cls._matchSource(s, c):
+      if not self._matchSource(s, c):
         sourceIndex = 0
       elif sourceIndex == len(source) - 1:
         starts.append(i - sourceIndex)
@@ -354,8 +368,7 @@ class Rule(object):
     """
     return self._createTarget(self.target, m)
 
-  @classmethod
-  def _createTarget(cls, target, m=None):
+  def _createTarget(self, target, m=None):
     """
     @param  target  list or unicode
     @param* m  matched object
@@ -363,18 +376,18 @@ class Rule(object):
     """
     if target:
       if isinstance(target, str) or isinstance(target, unicode):
-        return Node(Token(target))
+        return Node(Token(target), language=self.targetLanguage)
       else:
-        return map(cls._createTarget, target)
+        return map(self._createTarget, target)
     return Node() # Represent deleted node, TODO: skip empty node
 
 class RuleParser:
 
-  def createRule(self, source, target):
+  def createRule(self, sourceLanguage, targetLanguage, source, target):
     s = self.parseRule(source)
     if s:
       t = self.parseRule(target)
-      return Rule(s, t)
+      return Rule(sourceLanguage, targetLanguage, s, t)
 
   def parseRule(self, text):
     """
@@ -397,6 +410,8 @@ class RuleParser:
 # Parser
 class Parser:
 
+  language = 'ja'
+
   def parse(self, stream):
     """
     @param  stream  Token or [[Token]...]
@@ -410,19 +425,21 @@ class Parser:
     @return  Node
     """
     if isinstance(x, Token):
-      return Node(token=x)
+      return Node(token=x, language=self.language)
     if x:
-      return Node(children=map(self._parse, x))
+      return Node(children=map(self._parse, x), language=self.language)
     else:
       return Node()
 
 # Translator
 
-class Translator:
+class RuleBasedTranslator:
 
-  def __init__(self):
+  def __init__(self, fr, to):
+    self.fr = fr # str
+    self.to = to # str
     rp = RuleParser()
-    self.rules = [rp.createRule(*it) for it in (
+    self.rules = [rp.createRule(fr, to, *it) for it in (
       (u"顔", u"脸"),
       (u"分から ない の 。", u"不知道的。"),
     )]
@@ -432,7 +449,9 @@ class Translator:
     @param  tree  Node
     @return  Node
     """
-    return self._translate(tree)
+    ret = self._translate(tree)
+    self._updateLanguage(ret)
+    return ret
 
   def _translate(self, x):
     """
@@ -486,32 +505,67 @@ class Translator:
             ret.compactAppend(right)
     return ret
 
-# Unparser
-
-class Unparser:
-
-  def __init__(self):
-    self.tokensep = ''
-
-  def dump(self, x): # debug print
+  def _updateLanguage(self, node):
     """
-    @param  x  Token or [[Token]...]
-    @return  s
+    @param  node  Node
     """
-    if isinstance(x, Token):
-      return x.dump()
-    else:
-      return "(%s)" % ' '.join(imap(self.dump, x))
+    if not node.language:
+      if node.token:
+        node.language = self.fr
+      elif node.children:
+        language = None
+        for it in node.children:
+          self._updateLanguage(it)
+          if not it.language:
+            language = ''
+          elif language is None:
+            language = it.language
+          elif language != it.language:
+            language = ''
+        if language:
+          node.language = language
 
-  def unparse(self, x):
+# Machine translator
+
+class MachineTranslator:
+
+  def __init__(self, fr, to):
+    self.fr = fr # str
+    self.to = to # str
+
+  def translate(self, tree):
     """
-    @param  x  Token or [[Token]...]
+    @param  tree  Node
     @return  unicode
     """
-    if isinstance(x, Token):
-      return x.unparse()
-    else:
-      return self.tokensep.join(imap(self.unparse, x))
+    return tree.unparseTree()
+
+# Unparser
+#
+#class Unparser:
+#
+#  def __init__(self):
+#    self.tokensep = ''
+#
+#  def dump(self, x): # debug print
+#    """
+#    @param  x  Token or [[Token]...]
+#    @return  s
+#    """
+#    if isinstance(x, Token):
+#      return x.dump()
+#    else:
+#      return "(%s)" % ' '.join(imap(self.dump, x))
+#
+#  def unparse(self, x):
+#    """
+#    @param  x  Token or [[Token]...]
+#    @return  unicode
+#    """
+#    if isinstance(x, Token):
+#      return x.unparse()
+#    else:
+#      return self.tokensep.join(imap(self.unparse, x))
 
 if __name__ == '__main__':
   # Example (link, surface) pairs:
@@ -547,8 +601,8 @@ if __name__ == '__main__':
 
   lexer = Lexer()
   parser = Parser()
-  tr = Translator()
-  up = Unparser()
+  tr = RuleBasedTranslator(fr='ja', to='zhs')
+  mt = MachineTranslator(fr='ja', to='zhs')
 
   for s in lexer.splitSentences(text):
     print "-- sentence --\n", s
@@ -564,10 +618,15 @@ if __name__ == '__main__':
     print "-- unparse tree --\n", tree.unparseTree()
 
     newtree = tr.translate(tree)
-    print "-- translated tree --\n", newtree.dumpTree()
+    print "-- rule-based translated tree (lang = %s)--\n" % newtree.language, newtree.dumpTree()
 
-    #ret = up.unparse(tree)
-    print "-- output --\n", newtree.unparseTree()
+    if newtree.language == 'ja':
+      ret = newtree.unparseTree()
+      print "-- unparsed output --\n", ret
+    else:
+      ret = mt.translate(newtree)
+      print "-- machine translated output --\n", ret
+
 
     tree.clearTree()
     newtree.clearTree()
