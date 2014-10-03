@@ -440,7 +440,7 @@ class RuleBasedTranslator:
     self.to = to # str
     rp = RuleParser()
     self.rules = [rp.createRule(fr, to, *it) for it in (
-      (u"顔", u"脸"),
+      #(u"顔", u"脸"),
       (u"分から ない の 。", u"不知道的。"),
     )]
 
@@ -529,16 +529,97 @@ class RuleBasedTranslator:
 
 class MachineTranslator:
 
-  def __init__(self, fr, to):
+  def __init__(self, fr, to, tr, escape=True, sep=""):
     self.fr = fr # str
     self.to = to # str
+    self.tr = tr # function
+    self.sep = sep # str
+    self.escape = escape # bool
 
   def translate(self, tree):
     """
     @param  tree  Node
     @return  unicode
     """
-    return tree.unparseTree()
+    return self._translateTree(tree)
+
+  def _translateText(self, text):
+    """
+    @param  text  unicode
+    @return  unicode
+    """
+    #print text
+    return self.tr(text, fr=self.fr, to=self.to)
+
+  def _translateTree(self, x):
+    """
+    @param  x  Node
+    @return  unicode
+    """
+    if x.language == self.to:
+      return x.unparseTree()
+    elif x.language == self.fr or x.token:
+      return self._translateText(x.unparseTree())
+    elif not x.language and x.children:
+      #return self.unparsesep.join(imap(self._translateTree, x.children))
+      if self.escape:
+        return self._translateEscape(x)
+      else:
+        return self._translateText(x.unparseTree())
+    else:
+      return x.unparseTree()
+
+  def _translateEscape(self, x):
+    """
+    @param  x  Node
+    @return  unicode
+    """
+    esc = {}
+    t = self._prepareEscape(x, esc)
+    t = self._translateText(t)
+    if not t:
+      return ""
+    elif not esc:
+      return t
+    else:
+      return self._restoreEscape(t, esc)
+
+  def _restoreEscape(self, t, esc):
+    """
+    @param  t  unicode
+    @param  esc  dict
+    @return  unicode
+    """
+    keys = esc.keys()
+    keys.sort(key=len, reverse=True)
+    for k in keys:
+      t = t.replace(k, esc[k])
+    return t
+
+  ESCAPE_KEY = "9%i.648"
+  def _prepareEscape(self, x, esc):
+    """
+    @param  x  Node
+    @param  esc  dict
+    @return  unicode
+    """
+    if x.token:
+      text = x.token.text
+      return self._escapeText(text, esc) if x.language == self.to else text
+    elif x.children:
+      return self.sep.join((self._prepareEscape(it, esc) for it in x.children))
+    else:
+      return ''
+
+  def _escapeText(self, text, esc):
+    """
+    @param  text  unicode
+    @param  esc  dict
+    @return  unicode
+    """
+    key = self.ESCAPE_KEY % len(esc)
+    esc[key] = text
+    return key + ' '
 
 # Unparser
 #
@@ -602,7 +683,13 @@ if __name__ == '__main__':
   lexer = Lexer()
   parser = Parser()
   tr = RuleBasedTranslator(fr='ja', to='zhs')
-  mt = MachineTranslator(fr='ja', to='zhs')
+
+  #from google import googletrans
+  #f = googletrans.translate
+
+  from kingsoft import iciba
+  f = iciba.translate
+  mt = MachineTranslator(fr='ja', to='zhs', tr=f)
 
   for s in lexer.splitSentences(text):
     print "-- sentence --\n", s
