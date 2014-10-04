@@ -2,7 +2,7 @@
 # qcometpool.py
 # jichi 2/17/2014
 
-__all__ = ['QCometPool']
+__all__ = 'QCometPool',
 
 from PySide.QtCore import QObject
 from qcometthread import QCometThread

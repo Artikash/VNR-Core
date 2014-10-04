@@ -2,7 +2,7 @@
 # qtplayer.py
 # 10/1/2014 jichi
 
-__all__ = ['HiddenPlayer']
+__all__ = 'HiddenPlayer',
 
 from PySide.QtCore import QUrl
 from sakurakit.skdebug import dprint

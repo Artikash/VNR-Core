@@ -2,10 +2,10 @@
 # skwinobj.py
 # 10/21/2012 jichi
 # Windows only
-__all__ = [
+__all__ = (
   'SkWindowPyObject', 'SkWindowObject',
   'SkTaskBarPyObject', 'SkTaskBarObject',
-]
+)
 
 from functools import partial
 from PySide.QtCore import Signal, Property, QObject, Qt, QTimer

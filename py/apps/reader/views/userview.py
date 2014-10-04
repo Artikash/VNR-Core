@@ -2,7 +2,7 @@
 # userview.py
 # 6/29/2013 jichi
 
-__all__ = ['UserViewManager', 'UserViewManagerProxy']
+__all__ = 'UserViewManager', 'UserViewManagerProxy'
 
 from PySide.QtCore import Qt, Slot
 from PySide import QtCore

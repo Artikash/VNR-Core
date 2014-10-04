@@ -1,7 +1,7 @@
 # coding: utf8
 # skthreads.py
 # 10/29/2012 jichi
-__all__ = ['runsync', 'runasync', 'runasynclater']
+__all__ = 'runsync', 'runasync', 'runasynclater'
 
 from functools import partial
 from PySide.QtCore import Signal, Qt, QObject, QRunnable,QThreadPool

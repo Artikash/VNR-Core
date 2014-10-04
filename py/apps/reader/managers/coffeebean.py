@@ -2,7 +2,7 @@
 # coffeebean.py
 # 10/11/2013 jichi
 
-__all__ = ['YoutubeBean', 'CoffeeBeanManager']
+__all__ = 'YoutubeBean', 'CoffeeBeanManager'
 
 from PySide.QtCore import Slot, QObject
 from sakurakit.skclass import memoized, memoizedproperty

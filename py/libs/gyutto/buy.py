@@ -2,7 +2,7 @@
 # buy.py
 # 11/28/2013 jichi
 
-__all__ = ['BuyApi']
+__all__ = 'BuyApi',
 
 if __name__ == '__main__': # DEBUG
   import sys

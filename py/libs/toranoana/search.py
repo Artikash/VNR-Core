@@ -2,7 +2,7 @@
 # search.py
 # 9/28/2014 jichi
 
-__all__ = ['SearchApi']
+__all__ = 'SearchApi',
 
 if __name__ == '__main__': # DEBUG
   import sys

@@ -5,7 +5,7 @@
 # doc: http://mecab.googlecode.com/svn/trunk/mecab/doc/index.html
 # doxygen: http://mecab.googlecode.com/svn/trunk/mecab/doc/doxygen/annotated.html
 
-__all__ = ['MeCabParser']
+__all__ = 'MeCabParser',
 
 import os
 import MeCab

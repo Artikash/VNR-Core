@@ -1,7 +1,7 @@
 # coding: utf8
 # container.py
 # 1/15/2013 jichi
-__all__ = ['SizeLimitedDict', 'SizeLimitedList']
+__all__ = 'SizeLimitedDict', 'SizeLimitedList'
 
 # Use the slower version dict is not used as the time.
 # See: http://anthon.home.xs4all.nl/Python/ordereddict/

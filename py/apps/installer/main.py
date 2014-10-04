@@ -2,7 +2,7 @@
 # main.py
 # 12/13/2012 jichi
 
-__all__ = ['MainObject']
+__all__ = 'MainObject',
 
 from PySide.QtCore import QCoreApplication, QObject
 from sakurakit import skevents

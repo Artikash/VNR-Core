@@ -2,7 +2,7 @@
 # skwidgets.py
 # 10/5/2012 jichi
 
-__all__ = [
+__all__ = (
   'to_wid', 'shortcut', 'clear_layout',
   'SkButtonRow',
   'SkContainerWidget',
@@ -12,7 +12,7 @@ __all__ = [
   'SkTabPane',
   'SkTitlelessDockWidget',
   'SkStyleView',
-]
+)
 
 from PySide.QtCore import Qt
 from PySide import QtCore, QtGui

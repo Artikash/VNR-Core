@@ -8,7 +8,7 @@
 #
 # FIXME: Why csv does not work?!
 # http://erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki/create_csv.php?SQL=SELECT+gamename+from+gamelist+limit+100
-__all__ = ['TableApi', 'GameTableApi', 'ReviewTableApi']
+__all__ = 'TableApi', 'GameTableApi', 'ReviewTableApi'
 
 if __name__ == '__main__': # DEBUG
   import sys

@@ -2,7 +2,7 @@
 # gameboard.py
 # 7/31/2013 jichi
 
-__all__ = ['GameBoardDialog']
+__all__ = 'GameBoardDialog',
 
 #from functools import partial
 #import operator

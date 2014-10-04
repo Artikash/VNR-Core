@@ -3,7 +3,7 @@
 # 6/14/2014 jichi
 # See: cabocha/src/tree.cpp
 
-__all__ = ['CaboChaParser']
+__all__ = 'CaboChaParser',
 
 import os
 from sakurakit.skdebug import dprint, dwarn

@@ -2,7 +2,7 @@
 # mytr.py
 # 10/8/2012 jichi
 
-__all__ = ['my', 'mytr_']
+__all__ = 'my', 'mytr_'
 
 from PySide.QtCore import QObject
 from sakurakit.skclass import memoized

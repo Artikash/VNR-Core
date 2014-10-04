@@ -2,7 +2,7 @@
 # hkinput.py
 # 3/15/2014 jichi
 
-__all__ = ['HotkeyInputDialog']
+__all__ = 'HotkeyInputDialog',
 
 if __name__ == '__main__':
   import sys

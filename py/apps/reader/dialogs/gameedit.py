@@ -2,7 +2,7 @@
 # GameDialog.py
 # 5/15/2013 jichi
 
-__all__ = ['GameEditorManager', 'GameEditorManagerProxy']
+__all__ = 'GameEditorManager', 'GameEditorManagerProxy'
 
 import os
 from functools import partial

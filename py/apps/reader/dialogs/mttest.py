@@ -3,7 +3,7 @@
 # 11/20/2013 jichi
 # Machine translation tester.
 
-__all__ = ['MTTester']
+__all__ = 'MTTester',
 
 if __name__ == '__main__':
   import sys

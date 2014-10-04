@@ -2,7 +2,7 @@
 # retest.py
 # 12/16/2012 jichi
 
-__all__ = ['RegExpTester']
+__all__ = 'RegExpTester',
 
 if __name__ == '__main__':
   import sys

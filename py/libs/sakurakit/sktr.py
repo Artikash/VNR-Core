@@ -2,7 +2,7 @@
 # sktr.py
 # 10/8/2012 jichi
 
-__all__ = ['tr_', 'notr_', 'utr_']
+__all__ = 'tr_', 'notr_', 'utr_'
 
 from PySide.QtCore import QObject
 from skclass import memoized

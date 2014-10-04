@@ -2,7 +2,7 @@
 # 6/25/2013
 # See: pip compressinja
 
-__all__ = ['XmlCompressor']
+__all__ = 'XmlCompressor',
 
 import re
 from jinja2.ext import Extension

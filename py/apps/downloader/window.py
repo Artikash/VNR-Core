@@ -2,7 +2,7 @@
 # window.py
 # 11/29/2013 jichi
 
-__all__ = ['MainWindow']
+__all__ = 'MainWindow',
 
 from itertools import imap
 from PySide.QtCore import Signal, Qt

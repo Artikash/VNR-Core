@@ -2,7 +2,7 @@
 # network.py
 # 12/13/2012 jichi
 
-__all__ = ['WbNetworkAccessManager']
+__all__ = 'WbNetworkAccessManager',
 
 import os
 from PySide.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkDiskCache

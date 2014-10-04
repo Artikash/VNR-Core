@@ -2,7 +2,7 @@
 # article.py
 # 9/27/2014 jichi
 
-__all__ = ['ArticleApi']
+__all__ = 'ArticleApi',
 
 if __name__ == '__main__': # DEBUG
   import sys

@@ -2,7 +2,7 @@
 # dictest.py
 # 2/16/2014 jichi
 
-__all__ = ['DictionaryTester']
+__all__ = 'DictionaryTester',
 
 if __name__ == '__main__':
   import sys

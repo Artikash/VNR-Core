@@ -18,7 +18,7 @@
 #
 # - 0x5c: int offset - 0x60
 
-__all__ = ['LingoesDict']
+__all__ = 'LingoesDict',
 
 if __name__ == '__main__':
   import sys

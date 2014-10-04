@@ -2,7 +2,7 @@
 # subeditor.py
 # 1/23/2013 jichi
 
-__all__ = ['SubtitleEditorManager', 'SubtitleEditorManagerProxy']
+__all__ = 'SubtitleEditorManager', 'SubtitleEditorManagerProxy'
 
 from PySide.QtCore import Qt, Slot, QObject
 from Qt5 import QtWidgets

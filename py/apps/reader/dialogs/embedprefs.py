@@ -2,7 +2,7 @@
 # embedprefs.py
 # 11/5/2012 jichi
 
-__all__ = ['TextPrefsDialog']
+__all__ = 'TextPrefsDialog',
 
 if __name__ == '__main__':
   import sys

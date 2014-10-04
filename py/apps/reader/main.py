@@ -11,7 +11,7 @@
 # Query directions:
 # - textman => dataman => netman
 
-__all__ = ['MainObject', 'MainObjectProxy']
+__all__ = 'MainObject', 'MainObjectProxy'
 
 import os
 from functools import partial

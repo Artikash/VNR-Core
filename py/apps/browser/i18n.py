@@ -2,7 +2,7 @@
 # i18n.py
 # 10/8/2012 jichi
 
-__all__ = ['i18n']
+__all__ = 'i18n',
 
 from PySide.QtCore import QObject
 

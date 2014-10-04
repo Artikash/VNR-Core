@@ -2,7 +2,7 @@
 # prefs.py
 # 10/28/2012 jichi
 
-__all__ = ['PrefsDialog']
+__all__ = 'PrefsDialog',
 
 from PySide.QtCore import Qt
 from Qt5 import QtWidgets

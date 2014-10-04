@@ -3,7 +3,7 @@
 # 4/5/2012 jichi
 # See: http://doc.qt.nokia.com/qq/qq18-mousegestures.html
 
-__all__ = ['MouseGesture']
+__all__ = 'MouseGesture',
 
 from PySide.QtCore import Qt, QObject, Signal
 

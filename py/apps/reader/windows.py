@@ -1,7 +1,7 @@
 # coding: utf8
 # windows.py
 # 10/5/2012 jichi
-__all__ = ['TopWindow', 'NormalWindow']
+__all__ = 'TopWindow', 'NormalWindow'
 
 from itertools import imap
 from PySide.QtCore import Qt, QCoreApplication, QTimer, Signal

@@ -2,7 +2,7 @@
 # engine.py
 # 4/7/2013 jichi
 
-__all__ = ['SapiEngine']
+__all__ = 'SapiEngine',
 
 if __name__ == '__main__': # debug
   import os, sys

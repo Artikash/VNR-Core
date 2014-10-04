@@ -9,7 +9,7 @@ from sakurakit.skdebug import dwarn
 from sakurakit.sktypes import to_int, to_unicode #to_long
 import defs, config
 
-__all__ = ['SettingsProxy']
+__all__ = 'SettingsProxy',
 
 # http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
 # win32con

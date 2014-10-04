@@ -6,7 +6,7 @@
 # The EDICT class from cjklib is not thread safe.
 # So, it must be warmed up in the main thread.
 
-__all__ = ['Edict']
+__all__ = 'NullEdict', 'Edict'
 
 if __name__ == '__main__': # DEBUG
   import sys

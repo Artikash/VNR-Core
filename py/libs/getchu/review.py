@@ -2,7 +2,7 @@
 # review.py
 # 11/28/2013 jichi
 
-__all__ = ['ReviewApi']
+__all__ = 'ReviewApi',
 
 if __name__ == '__main__': # DEBUG
   import sys

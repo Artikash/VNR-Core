@@ -3,7 +3,7 @@
 # 8/21/2014 jichi
 # Windows only
 
-__all__ = ['MouseSelector']
+__all__ = 'MouseSelector',
 
 #from sakurakit.skclass import memoized
 

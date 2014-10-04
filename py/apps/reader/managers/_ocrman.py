@@ -2,7 +2,7 @@
 # _ocrman.py
 # 9/7/2014 jichi
 
-__all__ = ['OcrImageObject', 'OcrSettings']
+__all__ = 'OcrImageObject', 'OcrSettings'
 
 import math, os
 from PySide.QtCore import Qt, QObject, Property, Signal, Slot, QUrl

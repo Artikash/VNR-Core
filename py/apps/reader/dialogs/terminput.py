@@ -2,7 +2,7 @@
 # terminput.py
 # 2/12/2014 jichi
 
-__all__ = ['TermInput']
+__all__ = 'TermInput',
 
 if __name__ == '__main__':
   import sys

@@ -2,7 +2,7 @@
 # ytinput.py
 # 11/29/2013 jichi
 
-__all__ = ['YouTubeInput']
+__all__ = 'YouTubeInput',
 
 if __name__ == '__main__':
   import sys

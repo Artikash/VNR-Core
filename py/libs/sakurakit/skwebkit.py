@@ -2,7 +2,7 @@
 # skwebkit.py
 # 11/9/2011 jichi
 
-__all__ = ['SkWebViewBean', 'SkWebView', 'SkReadOnlyWebView']
+__all__ = 'SkWebViewBean', 'SkWebView', 'SkReadOnlyWebView'
 
 import os
 from functools import partial

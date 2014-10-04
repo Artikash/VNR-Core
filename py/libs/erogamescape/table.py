@@ -17,7 +17,7 @@
 #    game	uid	tokuten	tourokubi	hitokoto	memo	netabare	id	giveup	possession	play	reserve	outline	before_hitokoto	before_tokuten	before_tourokubi	outline_hitokoto	display	play_tourokubi	outline_netabare	outline_tourokubi	display_unique_count	sage	before_purchase_will	before_sage	total_play_time	time_before_understanding_fun	okazu_tokuten	trial_version_hitokoto	trial_version_hitokoto_sage	trial_version_hitokoto_tourokubi	timestamp	modified
 #    19919	もっこりん	86	2014-07-01 03:11:37.042071+09	何も考えず適当にギャグに笑っておけばいいゲーム。相変わらず盛り上げるのはお上手だなぁと。点数は相当贔屓目	ケツの穴に修正がないのと、（起承転結の）結がないのは掛けているのか……？	t	1411808	f	f	t	f						f	2014-07-01 03:11:37.042071	f			f		f			-999		f		2014-07-01 10:42:17.88611	2014-07-01 10:42:17.88611
 
-__all__ = ['Api']
+__all__ = 'Api',
 
 if __name__ == '__main__': # DEBUG
   import sys

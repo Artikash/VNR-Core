@@ -2,7 +2,7 @@
 # mainwindow.py
 # 12/13/2012 jichi
 
-__all__ = ['MainWindow']
+__all__ = 'MainWindow',
 
 #from itertools import imap
 from PySide.QtCore import QTimer

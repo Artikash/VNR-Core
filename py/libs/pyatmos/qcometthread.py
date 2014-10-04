@@ -2,7 +2,7 @@
 # qcometthread.py
 # jichi 2/17/2014
 
-__all__ = ['QCometThread']
+__all__ = 'QCometThread',
 
 from PySide.QtCore import Signal, QThread
 from comet import CometConnection
