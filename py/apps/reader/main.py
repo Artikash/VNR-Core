@@ -599,12 +599,16 @@ class _MainObject(object):
     ret.setHentaiEnabled(ss.isHentaiEnabled())
     ss.hentaiEnabledChanged.connect(ret.setHentaiEnabled)
 
+    ret.setSyntaxEnabled(ss.isTranslationSyntaxEnabled())
+    ss.translationSyntaxEnabledChanged.connect(ret.setSyntaxEnabled)
+
     ret.setMarked(ss.isTermMarked())
     ss.termMarkedChanged.connect(ret.setMarked)
 
     for sig in (
         ss.userIdChanged, ss.userLanguageChanged,
         ss.hentaiEnabledChanged, #ss.termMarkedChanged,
+        ss.translationSyntaxEnabledChanged,
         self.gameManager.processChanged,
         self.dataManager.termsChanged,
       ):

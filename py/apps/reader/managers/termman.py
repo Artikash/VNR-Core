@@ -309,6 +309,7 @@ class _TermManager:
     self.enabled = True # bool
     self.hentai = False # bool
     self.marked = False # bool
+    self.syntax = False # bool
 
     # For saving terms
     self.updateTime = 0 # float
@@ -458,6 +459,11 @@ class TermManager(QObject):
   def setHentaiEnabled(self, value):
     dprint(value)
     self.__d.hentai = value
+
+  def isSyntaxEnabled(self): return self.__d.syntax
+  def setSyntaxEnabled(self, value):
+    dprint(value)
+    self.__d.syntax = value
 
   def isMarked(self): return self.__d.marked
   def setMarked(self, t):
