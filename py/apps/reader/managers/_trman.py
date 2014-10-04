@@ -318,22 +318,35 @@ class MachineTranslator(Translator):
         break
       yield t # 10/10/2013: maybe, using generator instead would be faster?
 
-  def _translate(self, emit, *args, **kwargs):
+  def _translate(self, emit, text, tr, **kwargs):
     """
     @param  emit  bool
     @param  text  unicode
     @param  tr  function(text, to, fr)
-    @param  async  bool
     @param  kwargs  arguments passed to tr
     @return  unicode
     """
+    tr = self._getRuleBasedTranslate(tr, **kwargs)
     #delim = ' ' if self.splitsSentences else ''
     if emit:
-       l = list(self._itertranslate(*args, **kwargs))
+       l = list(self._itertranslate(text, tr, **kwargs))
        self.emitSplitTranslations(l)
        return ''.join(l)
     else:
-      return ''.join(self._itertranslate(*args, **kwargs))
+      return ''.join(self._itertranslate(text, tr, **kwargs))
+
+  def _getRuleBasedTranslate(self, tr, fr, to, **ignored):
+    """
+    @param  tr  function
+    @param  fr  str
+    @param  to  str
+    @return  function
+    """
+    if fr == 'ja':
+      mt = termman.manager().getRuleBasedTranslator(to)
+      if mt:
+        return partial(mt.translate, tr=tr)
+    return tr
 
   def _translateTest(self, fn, text, async=False, **kwargs):
     """

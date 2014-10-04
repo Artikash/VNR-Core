@@ -31,6 +31,18 @@ def _remove_marks(text): return _re_marks.sub('', text)
 
 SCRIPT_KEY_SEP = ',' # Separator of script manager key
 
+class TermTranslator(rbmt.MachineTranslator):
+  def __init__(self, language, underline=True):
+    escape = config.is_kanji_language(language)
+    sep = '' if languages.startswith('zh') else ' '
+    super(TermTranslator, language,
+        sep=sep,
+        escape=escape,
+        underline=underline and escape)
+
+  def translate(self, text, tr=None, fr="", to=""):
+    return super(TermTranslator, self).translate(text, tr=tr)
+
 class TermWriter:
 
   #@staticmethod
@@ -512,7 +524,7 @@ class TermManager(QObject):
     ret = d.rbmt.get(language)
     if ret:
       return ret if ret.ruleCount() else None
-    ret = d.rbmt[language] = rbmt.Translator()
+    ret = d.rbmt[language] = TermTranslator(language, underline=d.underline)
     d.rbmtTimes[language] = 0
     d.rebuildCacheLater()
     return None
@@ -550,6 +562,9 @@ class TermManager(QObject):
         type = key.split(SCRIPT_KEY_SEP)[0]
         marked = t and type in ('target', 'escape_target')
         man.setUnderline(marked)
+
+      for it in d.rbmt.itervalues():
+        it.setUnderline(t and it.escape)
 
   ## Marks ##
 
