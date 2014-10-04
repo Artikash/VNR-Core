@@ -10,11 +10,13 @@ if __name__ == '__main__':
 
 from sakurakit.skdebug import dwarn
 
+from rule import RuleBuilder
+RULE_BUILDER = RuleBuilder()
+
 INPUT_LANGUAGE = 'ja'
 INPUT_SEPARATOR = ''
 
-from rule import RuleBuilder
-RULE_BUILDER = RuleBuilder()
+# Rule
 
 def createrule(source, target, language):
   """
@@ -25,7 +27,35 @@ def createrule(source, target, language):
   """
   return RULE_BUILDER.createRule(INPUT_LANGUAGE, language, source, target)
 
-class _MachineTranslator:
+# Analyzer
+
+class _MachineAnalyzer:
+
+  def __init__(self):
+    from frontend import Lexer
+    self.lexer = Lexer()
+
+    #from midend import TreeBuilder
+    #self.parser = TreeBuilder()
+
+class MachineAnayzer(object):
+
+  def __init__(self):
+    self.__d = _MachineAnalyzer()
+
+
+  def parseToString(self, text):
+    """
+    @param  text  unicode
+    @return  unicode
+    """
+    ll = self.__d.lexer
+    stream = ll.parse(text)
+    return ll.dump(stream).replace('( ', '(').replace(' )', ')') if stream else text
+
+# Translator
+
+class _MachineTranslator(object):
 
   def __init__(self, language, tr, escape, sep, underline):
     self.language = language # str  language
@@ -218,6 +248,8 @@ if __name__ == '__main__':
   from kingsoft import iciba
   tr = iciba.translate
 
+  ma = MachineAnayzer() #, tr=tr)
+
   mt = MachineTranslator(language=to) #, tr=tr)
 
 
@@ -229,7 +261,12 @@ if __name__ == '__main__':
   )]
   mt.setRules(rules)
 
-  for s in mt.splitSentences(text):
+  #for s in mt.splitSentences(text):
+  if True:
+    s = text
+
+    print "-- analysis --\n", ma.parseToString(s)
+
     print "-- sentence --\n", s
 
     with SkProfiler():
