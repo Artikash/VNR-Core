@@ -2,7 +2,7 @@
 # api.py
 # 8/10/2014
 
-__all__ = 'Translator',
+__all__ = 'MachineTranslator',
 
 if __name__ == '__main__':
   import sys
@@ -13,6 +13,18 @@ from sakurakit.skdebug import dwarn
 INPUT_LANGUAGE = 'ja'
 INPUT_SEPARATOR = ''
 
+from rule import RuleBuilder
+RULE_BUILDER = RuleBuilder()
+
+def createrule(source, target, language):
+  """
+  @param  source  unicode
+  @param  target  unicode
+  @param  language  str
+  @return  rule.Rule or None
+  """
+  return RULE_BUILDER.createRule(INPUT_LANGUAGE, language, source, target)
+
 class _MachineTranslator:
 
   def __init__(self, language, translate, escape, sep, underline):
@@ -22,14 +34,11 @@ class _MachineTranslator:
     self.sep = sep # bool
     self.underline = underline # bool
 
-    from rule import RuleBuilder
-    self.rb = RuleBuilder()
-
     from frontend import Lexer
     self.lexer = Lexer()
 
     from midend import TreeBuilder
-    self.tb = TreeBuilder()
+    self.parser = TreeBuilder()
 
     from midend import RuleBasedTranslator
     self.rt = RuleBasedTranslator(fr=INPUT_LANGUAGE, to=language)
@@ -39,16 +48,6 @@ class _MachineTranslator:
         fr=INPUT_LANGUAGE, frsep=INPUT_SEPARATOR,
         to=language, tosep=sep,
         escape=escape, underline=underline)
-
-  # Rule
-
-  def createRule(self, source, target):
-    """
-    @param  source  unicode
-    @param  target  unicode
-    @return  rule.Rule
-    """
-    return self.rb.createRule(INPUT_LANGUAGE, self.language, source, target)
 
   # Translate
 
@@ -66,7 +65,7 @@ class _MachineTranslator:
       return ""
     #print self.lexer.dump(stream)
 
-    stree = self.tb.parse(stream)
+    stree = self.parser.parse(stream)
     if not stree:
       return ""
     #print tree.dumpTree()
@@ -128,18 +127,20 @@ class MachineTranslator:
 
   def ruleCount(self): return len(self.__d.rt.rules)
 
-  def clearRules(self): self.__d.rt.rules = [] #.clear() # clear not used for thread-safety
+  def setRules(self, v): self.__d.rt.rules = v
 
-  def addRule(self, source, target):
-    """
-    @param  source  unicode
-    @param  target  unicode
-    """
-    rule = self.__d.createRule(source, target)
-    if rule:
-      self.__d.rt.rules.append(rule)
-    else:
-      dwarn("failed to parse rule:", source, target)
+  #def clearRules(self): self.__d.rt.rules = [] #.clear() # clear not used for thread-safety
+
+  #def addRule(self, source, target):
+  #  """
+  #  @param  source  unicode
+  #  @param  target  unicode
+  #  """
+  #  rule = self.__d.createRule(source, target)
+  #  if rule:
+  #    self.__d.rt.rules.append(rule)
+  #  else:
+  #    dwarn("failed to parse rule:", source, target)
 
   # Lexical utilities
 
@@ -213,15 +214,18 @@ if __name__ == '__main__':
   from kingsoft import iciba
   fun = iciba.translate
 
-  mt = MachineTranslator(language='zhs', translate=fun)
+  to = 'zhs'
+
+  mt = MachineTranslator(language=to, translate=fun)
 
 
+  rules = [createrule(k, v, to)
   for k,v in (
-      (u"顔", u"表情"),
-      (u"(分から ない の 。)", u"不知道的。"),
-      (u"どんな", u"怎样的"),
-    ):
-    mt.addRule(k, v)
+    (u"顔", u"表情"),
+    (u"(分から ない の 。)", u"不知道的。"),
+    (u"どんな", u"怎样的"),
+  )]
+  mt.setRules(rules)
 
   for s in mt.splitSentences(text):
     print "-- sentence --\n", s
