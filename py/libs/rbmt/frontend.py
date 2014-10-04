@@ -13,12 +13,12 @@ _SENTENCE_RE = re.compile(ur"([。？！」\n])(?![。！？）」\n]|$)")
 
 class Lexer:
 
+  unparsesep = ''
+
   def __init__(self):
     import CaboCha
     self.cabocha = CaboCha.Parser()
     self.cabochaEncoding = 'utf8'
-
-    self.unparsesep = ''
 
   def splitSentences(self, text):
     """

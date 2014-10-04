@@ -101,13 +101,32 @@ class MachineTranslator:
   # Properties
 
   def language(self): return self.__d.language # -> str
+  def setLanguage(self, v):
+    d = self.__d
+    if d.language != v:
+      d.language = d.mt.to = d.rt.to = v
 
   def isUnderlineEnabled(self): return self.__d.underline # -> bool
+  def setUnderlineEnabled(self, t):
+    d = self.__d
+    if d.underline != t:
+      d.underline = d.mt.underline = t
+
   def isEscapeEnabled(self): return self.__d.escap # -> bool
+  def setEscapeEnabled(self, t):
+    d = self.__d
+    if d.escape != t:
+      d.escape = d.mt.escape = t
 
   def separator(self): return self.__d.sep # -> str
+  def setSeparator(self, v):
+    d = self.__d
+    if d.sep != v:
+      d.sep = d.mt.tosep = v
 
   # Rule
+
+  def ruleCount(self): return len(self.__d.rt.rules)
 
   def clearRules(self): self.__d.rt.rules = [] #.clear() # clear not used for thread-safety
 
