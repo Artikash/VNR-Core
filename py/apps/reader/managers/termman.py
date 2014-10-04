@@ -16,6 +16,7 @@ from functools import partial
 from time import time
 from PySide.QtCore import Signal, QObject, QTimer, QMutex, Qt
 from zhszht.zhszht import zhs2zht
+from rbmt import api as rbmt
 from sakurakit import skfileio, skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
@@ -321,6 +322,9 @@ class _TermManager:
     self.scripts = {} # {str key:TranslationScriptManager}  key = lang + type
     self.scriptTimes = {} # [str key:float time]
 
+    self.rbmt = {} # {str language:rbmt.api.Translator}
+    self.rbmtTimes = {} # [str language:float time]
+
     t = self.saveTimer = QTimer(q)
     t.setSingleShot(True)
     t.setInterval(2000) # wait for 2 seconds for rebuilding
@@ -365,8 +369,9 @@ class _TermManager:
     @param  createTime  float
     """
     #for lang,ts in self.targetLanguages.iteritems():
-    times = self.scriptTimes
-    if not times:
+    scriptTimes = self.scriptTimes
+    rbmtTimes = self.rbmtTimes
+    if (not scriptTimes and not rbmtTimes) or createTime < self.updateTime:
       return
 
     dprint("enter")
@@ -381,6 +386,58 @@ class _TermManager:
     termData = sorted(termData, reverse=True, key=lambda td:
           (len(td.pattern), td.private, td.special, td.id)) # it.regex  true is applied first
 
+    if scriptTimes and createTime >= self.updateTime:
+      self._saveScriptTerms(createTime=createTime, termData=termData, gameIds=gameIds, times=scriptTimes)
+
+    if rbmtTimes and createTime >= self.updateTime:
+      self._saveSyntaxTerms(createTime=createTime, termData=termData, gameIds=gameIds, times=rbmtTimes)
+
+    dprint("leave")
+
+  def _saveSyntaxTerms(self, createTime, termData, gameIds, times):
+    """
+    @param  createTime  float
+    @param  termData  [_Term]
+    @param  gameIds  [int] or None
+    @param  times  {str key:float time}
+    """
+    dprint("enter")
+    rules = []
+    hentai = self.hentai
+    for language, time in times:
+      for td in termData:
+        if (#not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
+            (td.type == type or type2 and td.type == type2 or type3 and td.type == type3)
+            and (not td.special or gameIds and td.gameId and td.gameId in gameIds)
+            and (not td.hentai or hentai)
+            and i18n.language_compatible_to(td.language, language)
+            and td.syntax == syntax
+          ):
+          if createTime < self.updateTime:
+            dwarn("leave: cancel saving out-of-date syntax terms")
+            return
+          rule = rbmt.createrule(source, target, language)
+          if not rule:
+            dwarn("failed to parse rule:", source, target)
+          else:
+            rules.append(rule)
+
+      mt = self.rbmt[language]
+      if createTime < self.updateTime:
+        dwarn("leave: cancel saving out-of-date syntax terms")
+        return
+      mt.setRules(rules)
+
+    dprint("leave")
+
+  def _saveScriptTerms(self, createTime, termData, gameIds, times):
+    """
+    @param  createTime  float
+    @param  termData  [_Term]
+    @param  gameIds  [int] or None
+    @param  times  {str key:float time}
+    """
+    dprint("enter")
     w = TermWriter(
       createTime=createTime,
       termData=termData, # not back up to save memory
@@ -413,7 +470,6 @@ class _TermManager:
           dprint("type = %s, lang = %s, count = %s" % (type, lang, man.size()))
 
         times[scriptKey] = createTime
-
     dprint("leave")
 
   def applyTerms(self, text, type, language):
@@ -446,11 +502,31 @@ class TermManager(QObject):
 
   #def isLocked(self): return self.__d.locked
 
+  def getRuleBasedTranslator(self, language):
+    """
+    @param  language  str
+    @return rbmt.api.Translator or None
+    """
+    if not self.isSyntaxEnabled or not self.isEnabled:
+      return
+    ret = d.rbmt.get(language)
+    if ret:
+      return ret if ret.ruleCount() else None
+    ret = d.rbmt[language] = rbmt.Translator()
+    d.rbmtTimes[language] = 0
+    d.rebuildCacheLater()
+    return None
+
   def setTargetLanguage(self, v):
     d = self.__d
     if v and v != d.targetLanguage:
       d.targetLanguage = v
-      d.scriptTimes = {} # reset scriptTimes
+      # Reset translation scripts
+      d.scripts = {}
+      d.scriptTimes = {}
+      # Reset rule-based translator
+      d.rbmt = {}
+      d.rbmtTimes = {}
 
   def isEnabled(self): return self.__d.enabled
   def setEnabled(self, value): self.__d.enabled = value

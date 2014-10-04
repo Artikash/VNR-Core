@@ -36,6 +36,10 @@ _PARAGRAPH_RE = re.compile(r"(%s)" % '|'.join(_PARAGRAPH_SET))
 #_SENTENCE_SET = frozenset(__SENTENCE_DELIM)
 _SENTENCE_RE = re.compile(ur"([。？！」\n])(?![。！？）」\n]|$)")
 
+_re_escape = re.compile(ur"[0-9. 、。？！…]+")
+def is_escaped_text(text): # unicode -> bool
+  return bool(_re_escape.match(text))
+
 # All methods in this class are supposed to be thread-safe
 # Though they are not orz
 class TranslationCache:
@@ -281,7 +285,7 @@ class MachineTranslator(Translator):
     """
     # Current max length of escaped char is 12
     return ('' if not text else
-        text if len(text) == 1 and text in _PARAGRAPH_SET or len(text) <= 12 and sktypes.is_float(text) else
+        text if len(text) == 1 and text in _PARAGRAPH_SET or is_escaped_text(text) else #len(text) <= 12 and sktypes.is_float(text) else
         self.__cachedtr(text, *args, **kwargs))
 
   def _itertexts(self, text):
