@@ -6,21 +6,22 @@ __all__ = 'MachineTranslator',
 
 class MachineTranslator:
 
-  def __init__(self, fr, to, tr, escape=True, frsep="", tosep="", underline=True):
+  def __init__(self, fr, to, tr=None, escape=True, frsep="", tosep="", underline=True):
     self.fr = fr # str
     self.to = to # str
-    self.tr = tr # function
+    self.tr = tr # function or None
     self.frsep = frsep # str
     self.tosep = tosep # str
     self.escape = escape # bool
     self.underline = underline # bool
 
-  def translate(self, tree):
+  def translate(self, tree, tr=None):
     """
     @param  tree  Node
+    @param* tr  function or None
     @return  unicode
     """
-    ret = self._translateTree(tree)
+    ret = self._translateTree(tree, tr=tr)
     if self.underline and not self.tosep:
       ret = ret.replace("> ", ">")
       ret = ret.replace(" <", "<")
@@ -31,41 +32,44 @@ class MachineTranslator:
   def _underlineText(self, text):
     return '<span style="text-decoration:underline">%s</span>' % text
 
-  def _translateText(self, text):
+  def _translateText(self, text, tr=None):
     """
     @param  text  unicode
+    @param* tr  function or None
     @return  unicode
     """
-    #print text
-    return self.tr(text, fr=self.fr, to=self.to)
+    tr = tr or self.tr
+    return tr(text, fr=self.fr, to=self.to) if tr else text
 
-  def _translateTree(self, x):
+  def _translateTree(self, x, tr=None):
     """
     @param  x  Node
+    @param  tr  function or None
     @return  unicode
     """
     if x.language == self.to:
       return self._renderText(x.unparseTree(self.tosep))
     elif x.language == self.fr or x.token:
-      return self._translateText(x.unparseTree(self.frsep))
+      return self._translateText(x.unparseTree(self.frsep), tr=tr)
     elif not x.language and x.children:
       #return self.unparsesep.join(imap(self._translateTree, x.children))
       if self.escape:
-        return self._translateEscape(x)
+        return self._translateEscape(x, tr=tr)
       else:
-        return self._translateText(x.unparseTree(self.frsep))
+        return self._translateText(x.unparseTree(self.frsep), tr=tr)
     else:
       dwarn("unreachable code path")
       return x.unparseTree(self.frsep)
 
-  def _translateEscape(self, x):
+  def _translateEscape(self, x, tr=None):
     """
     @param  x  Node
+    @param* tr  function or None
     @return  unicode
     """
     esc = {}
     t = self._prepareEscape(x, esc)
-    t = self._translateText(t)
+    t = self._translateText(t, tr=tr)
     if not t:
       return ""
     elif not esc:

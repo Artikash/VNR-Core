@@ -27,10 +27,10 @@ def createrule(source, target, language):
 
 class _MachineTranslator:
 
-  def __init__(self, language, translate, escape, sep, underline):
+  def __init__(self, language, tr, escape, sep, underline):
     self.language = language # str  language
     self.escape = escape # bool
-    self.translateFunction = translate # function
+    self.translateFunction = tr # function or None
     self.sep = sep # bool
     self.underline = underline # bool
 
@@ -44,7 +44,7 @@ class _MachineTranslator:
     self.rt = RuleBasedTranslator(fr=INPUT_LANGUAGE, to=language)
 
     from backend import MachineTranslator
-    self.mt = MachineTranslator(tr=translate,
+    self.mt = MachineTranslator(tr=tr,
         fr=INPUT_LANGUAGE, frsep=INPUT_SEPARATOR,
         to=language, tosep=sep,
         escape=escape, underline=underline)
@@ -52,9 +52,9 @@ class _MachineTranslator:
   # Translate
 
   def directTranslate(self, text): # unicode -> unicode
-    return self.translateFunction(text, fr=INPUT_LANGUAGE, to=self.language)
+    return self.translateFunction(text, fr=INPUT_LANGUAGE, to=self.language) if self.translateFunction else ""
 
-  def translate(self, source): # unicode -> unicode
+  def translate(self, source, tr=None): # unicode -> unicode
     if not source:
       return ""
     if not self.rt.rules:
@@ -79,7 +79,7 @@ class _MachineTranslator:
     if ttree.language == self.language:
       target = ttree.unparseTree(self.sep)
     else:
-      target = self.mt.translate(ttree)
+      target = self.mt.translate(ttree, tr=tr)
 
     ttree.clearTree()
 
@@ -87,15 +87,15 @@ class _MachineTranslator:
 
 class MachineTranslator:
 
-  def __init__(self, language, translate, escape=True, sep="", underline=True):
+  def __init__(self, language, tr=None, escape=True, sep="", underline=True):
     """
     @param  language  str  target language
-    @param  translate  function  (unicode text, str fr, str to) -> unicode
-    @param  escape  bool
-    @param  sep  str
-    @param  underline  bool
+    @param* r  function  (unicode text, str fr, str to) -> unicode
+    @param* escape  bool
+    @param* sep  str
+    @param* underline  bool
     """
-    self.__d = _MachineTranslator(language, translate, escape, sep, underline)
+    self.__d = _MachineTranslator(language, tr, escape, sep, underline)
 
   # Properties
 
@@ -153,12 +153,13 @@ class MachineTranslator:
 
   # Translate
 
-  def translate(self, text):
+  def translate(self, text, tr=None):
     """
     @param  text  unicode
+    @param* tr  function or None
     @return  unicode
     """
-    return self.__d.translate(text)
+    return self.__d.translate(text, tr=tr)
 
 if __name__ == '__main__':
   # Example (link, surface) pairs:
@@ -211,12 +212,12 @@ if __name__ == '__main__':
   #from google import googletrans
   #f = googletrans.translate
 
-  from kingsoft import iciba
-  fun = iciba.translate
-
   to = 'zhs'
 
-  mt = MachineTranslator(language=to, translate=fun)
+  from kingsoft import iciba
+  tr = iciba.translate
+
+  mt = MachineTranslator(language=to, tr=tr)
 
 
   rules = [createrule(k, v, to)
