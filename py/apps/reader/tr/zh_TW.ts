@@ -876,77 +876,77 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>載入其他同學的自定義辭書</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5921"/>
+        <location filename="managers/dataman.py" line="5926"/>
         <source>Sign in as &apos;{0}&apos;</source>
         <translation>登錄為&apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5922"/>
+        <location filename="managers/dataman.py" line="5927"/>
         <source>User language is &apos;{0}&apos;</source>
         <translation>語言是&apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5927"/>
+        <location filename="managers/dataman.py" line="5932"/>
         <source>Sign in failed as &apos;{0}&apos;</source>
         <translation>登錄&apos;{0}&apos;失敗了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6759"/>
+        <location filename="managers/dataman.py" line="6764"/>
         <source>Fetching comments</source>
         <translation>更新評論中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6770"/>
+        <location filename="managers/dataman.py" line="6775"/>
         <source>Loading offline comments</source>
         <translation>載入離線評論</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6780"/>
+        <location filename="managers/dataman.py" line="6785"/>
         <source>Found {0} comments</source>
         <translation>找到{0}條評論</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7333"/>
+        <location filename="managers/dataman.py" line="7338"/>
         <source>Failed to save changes, will try later</source>
         <translation>這次保存變更沒有成功呢，VNR等下會重試的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8030"/>
+        <location filename="managers/dataman.py" line="8035"/>
         <source>Updating dictionary terms online</source>
         <translation>更新共享詞條中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8049"/>
+        <location filename="managers/dataman.py" line="8054"/>
         <source>Found {0} terms</source>
         <translation>找到{0}個詞條</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8052"/>
+        <location filename="managers/dataman.py" line="8057"/>
         <source>Failed to download terms online</source>
         <translation>更新詞條失敗了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8053"/>
+        <location filename="managers/dataman.py" line="8058"/>
         <source>Something might be wrong with the Internet connection</source>
         <translation>也許網絡連接不暢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8393"/>
+        <location filename="managers/dataman.py" line="8398"/>
         <source>Failed to get game information</source>
         <translation>獲取遊戲信息失敗了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8547"/>
+        <location filename="managers/dataman.py" line="8552"/>
         <source>The game does not exist. Did you delete it?</source>
         <translation>遊戲並不存在。是不是已經被你刪除了呢？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9149"/>
+        <location filename="managers/dataman.py" line="9154"/>
         <source>Please sign in to submit comment</source>
         <translation>請先登錄再提交評論</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9166"/>
+        <location filename="managers/dataman.py" line="9171"/>
         <source>Cannot connect to the Internet</source>
         <translation>無法連接到網絡</translation>
     </message>
@@ -1061,17 +1061,17 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>請選擇圖片的位置</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7944"/>
+        <location filename="managers/dataman.py" line="7949"/>
         <source>Updating game database online</source>
         <translation>更新在線遊戲數據庫中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7967"/>
+        <location filename="managers/dataman.py" line="7972"/>
         <source>Failed to update game database</source>
         <translation>更新遊戲數據庫沒有成功</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7984"/>
+        <location filename="managers/dataman.py" line="7989"/>
         <source>Game database is updated</source>
         <translation>遊戲數據庫更新完成</translation>
     </message>
@@ -1118,22 +1118,22 @@ It might take a couple of seconds to complete.</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9222"/>
+        <location filename="managers/dataman.py" line="9227"/>
         <source>Shared dictionary is empty</source>
         <translation>共享辭書是空的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9219"/>
+        <location filename="managers/dataman.py" line="9224"/>
         <source>Dictionary entries are saved to the desktop</source>
         <translation>詞條數據保存到了桌面</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9265"/>
+        <location filename="managers/dataman.py" line="9270"/>
         <source>There are no subtitles</source>
         <translation>這個遊戲還沒有人工字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9262"/>
+        <location filename="managers/dataman.py" line="9267"/>
         <source>Subtitles are saved to the desktop</source>
         <translation>字幕數據保存到了桌面</translation>
     </message>
@@ -1148,12 +1148,12 @@ It might take a couple of seconds to complete.</source>
         <translation>缺少語音合成需要的QuickTime</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8803"/>
+        <location filename="managers/dataman.py" line="8808"/>
         <source>Please start the game to submit comment</source>
         <translation>請在開始遊戲后提交字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="4722"/>
+        <location filename="managers/dataman.py" line="4727"/>
         <source>No user-contributed subtitles found</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
@@ -1244,7 +1244,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>{0}的百分比</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8298"/>
+        <location filename="managers/dataman.py" line="8303"/>
         <source>Searching game information online</source>
         <translation>正在網上檢索遊戲信息</translation>
     </message>
@@ -1379,7 +1379,7 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>百度中文翻譯服務</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7480"/>
+        <location filename="managers/dataman.py" line="7485"/>
         <source>Your {0} is &apos;{1}&apos;</source>
         <translation>你的{0}是&apos;{1}&apos;</translation>
     </message>
@@ -1460,22 +1460,22 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>快捷方式指向的位置並不存在呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6475"/>
+        <location filename="managers/dataman.py" line="6480"/>
         <source>Remove bad user-defined hcode</source>
         <translation>自動移除錯誤的特殊碼</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5327"/>
+        <location filename="managers/dataman.py" line="5332"/>
         <source>Update game information</source>
         <translation>更新遊戲信息</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5335"/>
+        <location filename="managers/dataman.py" line="5340"/>
         <source>Found {0} references</source>
         <translation>找到{0}個遊戲的引用</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5337"/>
+        <location filename="managers/dataman.py" line="5342"/>
         <source>No game references found</source>
         <translation>沒有找到遊戲的信息</translation>
     </message>
@@ -1485,7 +1485,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>未知的遊戲。請更新下遊戲數據庫。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8700"/>
+        <location filename="managers/dataman.py" line="8705"/>
         <source>Please sign in to submit reference</source>
         <translation>請先登錄再提交信息</translation>
     </message>
@@ -1637,7 +1637,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
 如果你有超能力，你也許可以在經過/未經其他同學允許的情況下，改進來自其他同學的貢獻（比如字幕）。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5596"/>
+        <location filename="managers/dataman.py" line="5601"/>
         <source>Reference already existed</source>
         <translation>遊戲信息已經存在了</translation>
     </message>
@@ -2048,7 +2048,7 @@ This might result in redundant spaces for Japanese games.</source>
         <translation>保留（英文）單詞之間的空格</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6514"/>
+        <location filename="managers/dataman.py" line="6519"/>
         <source>Remove non-existed game</source>
         <translation>移除不存在的遊戲</translation>
     </message>
@@ -2450,12 +2450,12 @@ Just don&apos;t forget to export LC_ALL=ja_JP.UTF8 before launching VNR.</source
         <translation>找到{0}個YouTube動畫</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6505"/>
+        <location filename="managers/dataman.py" line="6510"/>
         <source>Do not keep all scenario threads in text settings</source>
         <translation>不保留遊戲的全部對話文本</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6496"/>
+        <location filename="managers/dataman.py" line="6501"/>
         <source>Ignore repetition filters in text settings</source>
         <translation>不過濾遊戲文本中的重复</translation>
     </message>
@@ -2832,22 +2832,22 @@ You can redownload it later if you have Internet access.</source>
         <translation>Excite.co.jp的多國語言翻譯服務</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="303"/>
+        <location filename="dialogs/terminput.py" line="312"/>
         <source>Missing pattern</source>
         <translation>缺少匹配的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="309"/>
+        <location filename="dialogs/terminput.py" line="318"/>
         <source>The pattern is kind of short. You might want to turn on the series-specific option.</source>
         <translation>匹配的文本太短了呢。你最好把詞條設定為系列專用的。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="321"/>
+        <location filename="dialogs/terminput.py" line="330"/>
         <source>Everything looks OK</source>
         <translation>看起來還好</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="330"/>
+        <location filename="dialogs/terminput.py" line="339"/>
         <source>Create dictionary entry</source>
         <translation>創建詞條</translation>
     </message>
@@ -2861,7 +2861,7 @@ The dictionary will be installed to {1}.</source>
 完成后，辭書會被安裝到{1}。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="312"/>
+        <location filename="dialogs/terminput.py" line="321"/>
         <source>The translation is empty. VNR will delete the text matched with the pattern.</source>
         <translation>沒有指定翻譯。這樣的話VNR會刪掉匹配的文本。</translation>
     </message>
@@ -2958,7 +2958,7 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>JMDict日文-荷蘭文辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="280"/>
+        <location filename="dialogs/terminput.py" line="289"/>
         <source>Add new term</source>
         <translation>添加詞條</translation>
     </message>
@@ -3063,7 +3063,7 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation type="obsolete">這是個日文名字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="147"/>
+        <location filename="dialogs/terminput.py" line="151"/>
         <source>a title after names</source>
         <translation>這是日文名字后的稱謂</translation>
     </message>
@@ -3197,7 +3197,7 @@ VNR默認會使用TTS讀出遊戲的原始文本。
         <translation>VNR不僅支持日文TTS，還支持包括中文、英文等其他語言的SAPI TTS。當這裡選擇的TTS的語言和遊戲語言不同時，VNR會轉而讀出翻譯字幕，而不會出遊戲文本。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6376"/>
+        <location filename="managers/dataman.py" line="6381"/>
         <source>VNR&apos;s game profile (%s) was corrupted. Recovered from backup.</source>
         <translation>VNR的遊戲設定（%s）損壞了呢。恢复到過去備份的設定。</translation>
     </message>
@@ -3435,7 +3435,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>你想要永久的移除{0}個選定的條目嗎？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9078"/>
+        <location filename="managers/dataman.py" line="9083"/>
         <source>Editing other&apos;s entry is not allowed</source>
         <translation>不可以編輯其他人的條目的</translation>
     </message>
@@ -3460,12 +3460,12 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>你想要禁用{0}個選定的條目嗎？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9092"/>
+        <location filename="managers/dataman.py" line="9097"/>
         <source>{0} items updated</source>
         <translation>修改了{0}個條目</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6487"/>
+        <location filename="managers/dataman.py" line="6492"/>
         <source>Automatically correct text settings</source>
         <translation>自動修正文本設定</translation>
     </message>
@@ -3757,17 +3757,17 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
 相反，克隆會產生重复的條目，管理起來會更加困難。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="306"/>
+        <location filename="dialogs/terminput.py" line="315"/>
         <source>The pattern is the same as the translation that is useless.</source>
         <translation>匹配的文本和替換的文本相同，這樣子做沒有意義。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="315"/>
+        <location filename="dialogs/terminput.py" line="324"/>
         <source>The pattern is short and only contains hiragana that could be ambiguous.</source>
         <translation>匹配的文本很短且只包含平假名，這樣很容易產生歧義。</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="318"/>
+        <location filename="dialogs/terminput.py" line="327"/>
         <source>The pattern is long. Please DO NOT add subtitles to Shared Dictionary.</source>
         <translation>匹配的文本很長。請不要把人工字幕加入共享辭書。</translation>
     </message>
@@ -3930,7 +3930,7 @@ Check this wiki for what to do if there is no correct text.
         <translation>對遊戲窗口截取圖片</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="155"/>
+        <location filename="dialogs/terminput.py" line="159"/>
         <source>reusable regular expression pattern</source>
         <translation>可重用的正則表達式定義</translation>
     </message>
@@ -4007,7 +4007,7 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，
         <translation>使用正體中文或日本漢字</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6458"/>
+        <location filename="managers/dataman.py" line="6463"/>
         <source>Disable keeping space for Kanji language</source>
         <translation>禁止為漢字語言的遊戲保存空格</translation>
     </message>
@@ -4017,7 +4017,7 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，
         <translation>瀏覽當前開啟的詞條</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="145"/>
+        <location filename="dialogs/terminput.py" line="149"/>
         <source>a character name</source>
         <translation>人物的姓名</translation>
     </message>
@@ -4032,17 +4032,17 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，
         <translation>使用共享辭書中的遊戲詞條修正文本</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="139"/>
+        <location filename="dialogs/terminput.py" line="143"/>
         <source>translate text from input to text language</source>
         <translation>翻譯輸入語言到輸出語言</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="143"/>
+        <location filename="dialogs/terminput.py" line="147"/>
         <source>transform text in output language after translation</source>
         <translation>在翻譯后修正輸出的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="141"/>
+        <location filename="dialogs/terminput.py" line="145"/>
         <source>transform text in input langauge before translation</source>
         <translation>在翻譯前修正輸入的文字</translation>
     </message>
@@ -4057,17 +4057,17 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，
         <translation type="obsolete">修正需要光學識別的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="153"/>
+        <location filename="dialogs/terminput.py" line="157"/>
         <source>transform extracted game text</source>
         <translation>修正從遊戲中提取到的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="149"/>
+        <location filename="dialogs/terminput.py" line="153"/>
         <source>transform text before TTS</source>
         <translation>修正語音合成前的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/terminput.py" line="151"/>
+        <location filename="dialogs/terminput.py" line="155"/>
         <source>transform text after OCR</source>
         <translation>修正光學識別后的文字</translation>
     </message>
@@ -4090,6 +4090,11 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，
         <location filename="dialogs/mttest.py" line="481"/>
         <source>Original text</source>
         <translation>原文</translation>
+    </message>
+    <message>
+        <location filename="dialogs/terminput.py" line="189"/>
+        <source>Japanese syntax aware</source>
+        <translation>日文語法</translation>
     </message>
 </context>
 </TS>

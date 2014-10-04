@@ -54,6 +54,9 @@ class _TermInput(object):
     grid.addWidget(self.regexButton, r, 1)
     r += 1
 
+    grid.addWidget(self.syntaxButton, r, 1)
+    r += 1
+
     grid.addWidget(QtWidgets.QLabel(tr_("Pattern") + ":"), r, 0)
     grid.addWidget(self.patternEdit, r, 1)
     r += 1
@@ -131,8 +134,11 @@ class _TermInput(object):
     return ret
 
   def _refreshTypeLabel(self):
+    user = dataman.manager().user()
+
     tt = self._getType()
     self.regexButton.setEnabled(tt not in ('title', 'macro'))
+    self.syntaxButton.setEnabled(tt == 'escape' and not user.isGuest())
 
     if tt == 'escape':
       t = my.tr("translate text from input to text language")
@@ -179,6 +185,10 @@ class _TermInput(object):
   @memoizedproperty
   def regexButton(self):
     return QtWidgets.QCheckBox(tr_("Regular expression"))
+
+  @memoizedproperty
+  def syntaxButton(self):
+    return QtWidgets.QCheckBox(my.tr("Japanese syntax aware"))
 
   @memoizedproperty
   def specialButton(self):
@@ -262,11 +272,12 @@ class _TermInput(object):
       comment = self.commentEdit.text().strip()
       text = self.textEdit.text().strip()
       regex = type == 'macro' or (self.regexButton.isChecked() and type != 'title')
+      syntax = type == 'escape' and self.syntaxButton.isChecked() and not user.isGuest()
       special = self.specialButton.isChecked() and bool(gameId or md5)
       ret = dataman.Term(gameId=gameId, gameMd5=md5,
           userId=user.id,
           language=lang, type=type,
-          special=special, regex=regex,
+          special=special, regex=regex, syntax=syntax,
           timestamp=skdatetime.current_unixtime(),
           pattern=pattern, text=text, comment=comment)
 
@@ -313,7 +324,7 @@ class _TermInput(object):
     elif RE_SHORT_HIRAGANA.match(pattern):
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is short and only contains hiragana that could be ambiguous.")))
-    elif len(pattern) > 10 and not self.regexButton.isChecked():
+    elif len(pattern) > 10 and not (self.regexButton.isChecked() or self.syntaxButton.isChecked()):
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is long. Please DO NOT add subtitles to Shared Dictionary.")))
     else:

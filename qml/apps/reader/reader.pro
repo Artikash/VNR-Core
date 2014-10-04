@@ -39,6 +39,7 @@ SOURCES = \
   termview/optionpanel.qml \
   termview/searchtoolbar.qml \
   termview/selecttoolbar.qml \
+  termview/table.qml \
   termview.qml \
   textreader/mirage.qml \
   voiceview/footer.qml \

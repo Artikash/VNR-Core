@@ -1199,6 +1199,19 @@
     </message>
 </context>
 <context>
+    <name>table</name>
+    <message>
+        <location filename="../termview/table.qml" line="365"/>
+        <source>Regex</source>
+        <translation>正則表達</translation>
+    </message>
+    <message>
+        <location filename="../termview/table.qml" line="438"/>
+        <source>Series</source>
+        <translation>系列專用</translation>
+    </message>
+</context>
+<context>
     <name>termview</name>
     <message>
         <location filename="../termview.qml" line="144"/>

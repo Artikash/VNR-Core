@@ -2046,6 +2046,7 @@ class _Term(object):
     'special',
     'private',
     'hentai',
+    'syntax',
 
     'selected',
 
@@ -2055,7 +2056,7 @@ class _Term(object):
   )
 
   def __init__(self, q,
-      id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai):
+      id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax):
     #self.priority = 0 # int  assigned after sorting
 
     self.id = id                # long
@@ -2080,6 +2081,7 @@ class _Term(object):
     self.special = special      # bool
     self.private = private      # bool
     self.hentai = hentai        # bool
+    self.syntax = syntax        # bool
 
     self.selected = False       # bool
 
@@ -2191,10 +2193,10 @@ class Term(QObject):
       pattern="", comment="", updateComment="",
       updateUserId=0, updateTimestamp=0,
       regex=False,
-      disabled=False, deleted=False, special=False, private=False, hentai=False,
+      disabled=False, deleted=False, special=False, private=False, hentai=False, syntax=False,
       **ignored):
     self.__d = _Term(self,
-      id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai)
+      id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax)
     if init:
       self.init(parent)
 
@@ -2222,6 +2224,7 @@ class Term(QObject):
       special=d.special,
       private=d.private,
       hentai=d.hentai,
+      syntax=d.syntax,
       regex=d.regex,
       gameId=d.gameId, gameMd5=d.gameMd5,
       comment=d.comment, updateComment=d.updateComment,
@@ -2266,6 +2269,7 @@ class Term(QObject):
   private, privateChanged = __D.synthesize('private', bool, sync=True)
   regex, regexChanged = __D.synthesize('regex', bool, sync=True)
   hentai, hentaiChanged = __D.synthesize('hentai', bool, sync=True)
+  syntax, syntaxChanged = __D.synthesize('syntax', bool, sync=True)
 
   selected, selectedChanged = __D.synthesize('selected', bool) # whether the item is selected in term table
 
@@ -4096,6 +4100,7 @@ class _TermModel(object):
     'type',
     'language',
     'regex',
+    'syntax',
     'hentai',
     'special',
     'gameId',
@@ -7406,7 +7411,7 @@ class _DataManager(object):
             #if tag in ('gameId', 'userId', 'timestamp', 'updateUserId', 'updateTimestamp'):
             elif tag.endswith('Id') or tag.endswith('Hash') or tag.endswith('Count') or tag.endswith('imestamp'):
               kw[tag] = int(text)
-            elif tag in ('special', 'private', 'hentai', 'regex'):
+            elif tag in ('special', 'private', 'syntax', 'hentai', 'regex'):
               kw[tag] = text == 'true'
 
           elif path == 2 and kw['type'] in Term.TYPES:

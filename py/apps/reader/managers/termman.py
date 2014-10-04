@@ -197,10 +197,11 @@ class TermWriter:
 """ % (self.createTime, type, language, self.hentai,
     ','.join(map(str, self.gameIds)) if self.gameIds else 'empty')
 
-  def _iterTermData(self, type, language):
+  def _iterTermData(self, type, language, syntax=False):
     """
     @param  type  str
     @param  language  str
+    @param* syntax  bool
     @yield  _Term
     """
     type2 = type3 = ''
@@ -218,6 +219,7 @@ class TermWriter:
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
           and (not td.hentai or self.hentai)
           and i18n.language_compatible_to(td.language, language)
+          and td.syntax == syntax
         ):
         yield td
 
