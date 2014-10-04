@@ -304,6 +304,11 @@ def main():
     import curtheme
     curtheme.load()
 
+  # Disable RBMT if CaboCha or UniDic is disabled
+  if ss.isTranslationSyntaxEnabled() and not (
+      ss.isCaboChaEnabled() and ss.meCabDictionary() == 'unidic'):
+    ss.setTranslationSyntaxEnabled(False)
+
   #dprint("set max thread count")
   from PySide.QtCore import QThreadPool
   currentThreadCount = QThreadPool.globalInstance().maxThreadCount()

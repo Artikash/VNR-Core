@@ -1551,6 +1551,103 @@ class I18nTab(QtWidgets.QDialog):
   def load(self): pass
   def refresh(self): pass
 
+## Term ##
+
+#@Q_Q
+class _TermTab(object):
+
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.generalGroup)
+    layout.addWidget(self.rbmtGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+
+  @memoizedproperty
+  def generalGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.underlineButton)
+    #layout.addWidget(self.hentaiButton)
+    ret = QtWidgets.QGroupBox(my.tr("Machine translation option"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def underlineButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Underline the text modified by the Shared Dictionary if possible"))
+    ss = settings.global_()
+    ret.setChecked(ss.isTermMarked())
+    ret.toggled.connect(ss.setTermMarked)
+    return ret
+
+  #@memoizedproperty
+  #def hentaiButton(self):
+  #  ret = QtWidgets.QRadioButton(my.tr("Enable hentai rules for H-scene"))
+  #  ss = settings.global_()
+  #  ret.setChecked(ss.isHentaiEnabled())
+  #  ret.toggled.connect(ss.setHentaiEnabled)
+  #  return ret
+
+  @memoizedproperty
+  def rbmtGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.syntaxButton)
+    layout.addWidget(self.syntaxInfo)
+    ret = QtWidgets.QGroupBox("%s (%s)" % (
+      my.tr("VNR's machine translation system"),
+      my.tr("require {0}").format(','.join((
+        'MeCab',
+        'CaboCha',
+        'UniDic',
+      ))),
+    ))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def syntaxButton(self):
+    ret = QtWidgets.QCheckBox("%s (alpha)" % my.tr("Enable Japanese syntax terms to enhance machine translation quality"))
+    ss = settings.global_()
+    ret.setChecked(ss.isTranslationSyntaxEnabled())
+    ret.toggled.connect(ss.setTranslationSyntaxEnabled)
+    ret.toggled.connect(self._onTranslationSyntaxChanged)
+    return ret
+
+  def _onTranslationSyntaxChanged(self):
+    ss = settings.global_()
+    if ss.isTranslationSyntaxEnabled():
+      ss.setCaboChaEnabled(True)
+      ss.setMeCabDictionary('unidic')
+
+  @memoizedproperty
+  def syntaxInfo(self):
+    ret = QtWidgets.QLabel(my.tr(
+      "VNR's machine translator is based on the syntax terms in the Shared Dictionary. This feature is still under development, and the existing syntax terms are insufficient to translate most Japanese sentences. When there is no matched syntax for a sentence, the selected 3rd machine translators will be used as alternative."
+    ))
+    ret.setWordWrap(True)
+    return ret
+
+  def refresh(self):
+    ss = settings.global_()
+    self.syntaxButton.setEnabled(
+        ss.isTranslationSyntaxEnabled() or
+        dicts.mecab('unidic').exists() and dicts.cabocha('unidic').exists())
+    self.syntaxButton.setChecked(ss.isTranslationSyntaxEnabled()) # force reload settings
+
+class TermTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(TermTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _TermTab(self)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): self.__d.refresh()
+
 ## Text ##
 
 @Q_Q
@@ -2374,6 +2471,7 @@ class _DictionaryTranslationTab(object):
   def disableMeCabButton(self):
     ret = QtWidgets.QRadioButton("%s (%s)" % (my.tr("Do not parse Japanese to furigana"), tr_("default")))
     ret.toggled.connect(self._saveMeCab)
+    ret.toggled.connect(self._checkRBMT)
     return ret
 
   @memoizedproperty
@@ -2386,18 +2484,20 @@ class _DictionaryTranslationTab(object):
   def mljButton(self):
     ret = QtWidgets.QRadioButton(MECAB_DICT_NAMES['unidic-mlj'])
     ret.toggled.connect(self._saveMeCab)
+    ret.toggled.connect(self._checkRBMT)
     return ret
 
   @memoizedproperty
   def ipadicButton(self):
     ret = QtWidgets.QRadioButton(MECAB_DICT_NAMES['ipadic'])
     ret.toggled.connect(self._saveMeCab)
+    ret.toggled.connect(self._checkRBMT)
     return ret
 
   def _loadMeCab(self):
     t = settings.global_().meCabDictionary()
-    b = (self.ipadicButton if t == 'ipadic' else
-         self.unidicButton if t == 'unidic' else
+    b = (self.unidicButton if t == 'unidic' else
+         self.ipadicButton if t == 'ipadic' else
          #self.mljButton if t == 'unidic-mlj' else
          self.disableMeCabButton)
     if not b.isChecked():
@@ -2420,6 +2520,7 @@ class _DictionaryTranslationTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isCaboChaEnabled())
     ret.toggled.connect(ss.setCaboChaEnabled)
+    ret.toggled.connect(self._checkRBMT)
     return ret
 
   def refreshCaboCha(self):
@@ -2428,6 +2529,21 @@ class _DictionaryTranslationTab(object):
         ss.isCaboChaEnabled() or
         ss.meCabDictionary() == 'unidic' and dicts.cabocha('unidic').exists() or
         ss.meCabDictionary() == 'ipadic' and dicts.cabocha('ipadic').exists()))
+
+  def _checkRBMT(self):
+    ss = settings.global_()
+    if ss.isTranslationSyntaxEnabled() and not (
+        ss.isCaboChaEnabled() and ss.meCabDictionary() == 'unidic'):
+      if prompt.confirmTranslationSyntaxDisabled():
+        ss.setTranslationSyntaxEnabled(False)
+      else:
+        if not ss.isCaboChaEnabled():
+          ss.setCaboChaEnabled(True)
+          self.caboChaButton.setChecked(True)
+
+        if ss.meCabDictionary() != 'unidic':
+          ss.setMeCabDictionary('unidic')
+          self._loadMeCab()
 
   # Furigana
 
@@ -2743,6 +2859,10 @@ class _DictionaryTranslationTab(object):
     #self.mljButton.setEnabled(dicts.mecab('unidic-mlj').exists())
 
     self.refreshCaboCha()
+
+    # Refresh
+    self.caboChaButton.setChecked(ss.isCaboChaEnabled()) # force reload cabocha
+    self._loadMeCab()
 
 class DictionaryTranslationTab(QtWidgets.QDialog):
 

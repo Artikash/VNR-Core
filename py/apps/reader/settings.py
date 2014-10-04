@@ -1231,8 +1231,8 @@ class Settings(QSettings):
   def isTranslationSyntaxEnabled(self): return to_bool(self.value('RBMT'))
   def setTranslationSyntaxEnabled(self, t):
     if t != self.isTranslationSyntaxEnabled():
-      self.setValue('RBMT', value)
-      self.translationSyntaxEnabledChanged.emit(value)
+      self.setValue('RBMT', t)
+      self.translationSyntaxEnabledChanged.emit(t)
 
   ## Fonts ##
 

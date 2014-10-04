@@ -71,6 +71,8 @@ class _PrefsDialog(object):
     self.dictionaryTranslationTab = _prefs.DictionaryTranslationTab()
     #self.translationScriptTab = _prefs.TranslationScriptTab()
 
+    self.termTab = _prefs.TermTab()
+
     self.downloadsTab = _prefs.DownloadsTab()
     self.dictionaryDownloadsTab = _prefs.DictionaryDownloadsTab()
     self.launcherDownloadsTab = _prefs.LauncherDownloadsTab()
@@ -186,6 +188,12 @@ class _PrefsDialog(object):
             #},
           ]
         },
+        { 'widget': self.termTab,
+          'user': self._indexWidget(self.termTab),
+          'decoration': rc.icon('pref-share'),
+          'display': mytr_("Shared Dictionary"),
+          'toolTip': mytr_("Shared Dictionary"),
+        },
         { 'widget': self.ttsTab,
           'user': self._indexWidget(self.ttsTab),
           'decoration': rc.icon('pref-tts'),
@@ -292,6 +300,7 @@ class _PrefsDialog(object):
     yield self.internetTab
     yield self.featureTab
     #yield self.pluginTab
+    yield self.termTab
 
     yield self.translationTab
     yield self.machineTranslationTab
@@ -330,8 +339,8 @@ class PrefsDialog(QtWidgets.QSplitter):
       skqss.class_(self.widget(i), 'texture')
 
     #self.resize(500,480)
-    self.resize(500,485) # large enough that there is no vertical scroll bar
-    self.setSizes([160,340])
+    self.resize(550,485) # large enough that there is no vertical scroll bar
+    self.setSizes([170,380]) # 170 + 380 = 550
     dprint("pass")
 
   def setVisible(self, visible):

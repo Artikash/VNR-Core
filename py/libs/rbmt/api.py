@@ -214,10 +214,11 @@ if __name__ == '__main__':
 
   to = 'zhs'
 
+  from sakurakit.skprofiler import SkProfiler
   from kingsoft import iciba
   tr = iciba.translate
 
-  mt = MachineTranslator(language=to, tr=tr)
+  mt = MachineTranslator(language=to) #, tr=tr)
 
 
   rules = [createrule(k, v, to)
@@ -231,7 +232,8 @@ if __name__ == '__main__':
   for s in mt.splitSentences(text):
     print "-- sentence --\n", s
 
-    t = mt.translate(s)
+    with SkProfiler():
+      t = mt.translate(s)
 
     print "-- output-- \n", t
 
