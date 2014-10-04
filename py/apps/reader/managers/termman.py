@@ -534,7 +534,7 @@ class TermManager(QObject):
     #with SkProfiler():
     return d.applyTerms(text, 'target', language) if d.enabled else text
     #if d.marked and language.startswith('zh'):
-    #  ret = ret.replace('> ', '')
+    #  ret = ret.replace('> ', '>')
     #return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
     #    text, language, convertsChinese=True, marksChanges=self.__d.marked)
 

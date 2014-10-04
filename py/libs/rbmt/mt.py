@@ -14,7 +14,7 @@ if __name__ == '__main__':
   sys.path.append('..')
 
 import re
-from collections import OrderedDict
+from collections import deque, OrderedDict
 from itertools import imap
 from sakurakit.skdebug import dwarn
 
@@ -384,12 +384,12 @@ class Rule(object):
 class RuleParser:
 
   def createRule(self, sourceLanguage, targetLanguage, source, target):
-    s = self.parseRule(source)
+    s = self.parse(source)
     if s:
-      t = self.parseRule(target)
+      t = self.parse(target)
       return Rule(sourceLanguage, targetLanguage, s, t)
 
-  def parseRule(self, text):
+  def parse(self, text):
     """
     @param  text
     @return  list or unicode
@@ -403,9 +403,50 @@ class RuleParser:
       l = text.split()
       return l[0] if len(l) == 1 else PatternList(l)
 
-    i = text.find('(')
-    if i > 0:
-      pass
+    return self._parse(self._tokenize(text))
+
+  re_split = re.compile(r'([()])|\s')
+  def _tokenize(self, text):
+    """
+    @param  text
+    @return  list
+    """
+    return filter(bool, self.re_split.split(text))
+
+  def _parse(self, l):
+    """
+    @param  l  list
+    @return  list or unicode or None
+    """
+    if not l:
+      return
+    l = deque(l)
+    s = [] # stack
+    while l:
+      x = l.popleft()
+      if x != ')':
+        s.append(x)
+      else:
+        # reduce until '('
+        p = PatternList()
+        p.exactMatching = True
+        while s:
+          x = s.pop()
+          if x == '(':
+            break
+          p.insert(0, x)
+        if x != '(':
+          dwarn("error: unbalanced parenthesis")
+          return
+        if p:
+          s.append(p)
+    if not s:
+      return
+    # reduce until bol
+    if '(' in s:
+      dwarn("error: unbalanced parenthesis")
+      return
+    return s[0] if len(s) == 1 else PatternList(s)
 
 # Parser
 class Parser:
@@ -440,8 +481,9 @@ class RuleBasedTranslator:
     self.to = to # str
     rp = RuleParser()
     self.rules = [rp.createRule(fr, to, *it) for it in (
-      #(u"顔", u"脸"),
-      (u"分から ない の 。", u"不知道的。"),
+      (u"顔", u"表情"),
+      (u"(分から ない の 。)", u"不知道的。"),
+      (u"どんな", u"怎样的"),
     )]
 
   def translate(self, tree):
@@ -529,19 +571,29 @@ class RuleBasedTranslator:
 
 class MachineTranslator:
 
-  def __init__(self, fr, to, tr, escape=True, sep=""):
+  def __init__(self, fr, to, tr, escape=True, sep="", underline=True):
     self.fr = fr # str
     self.to = to # str
     self.tr = tr # function
     self.sep = sep # str
     self.escape = escape # bool
+    self.underline = underline # bool
 
   def translate(self, tree):
     """
     @param  tree  Node
     @return  unicode
     """
-    return self._translateTree(tree)
+    ret = self._translateTree(tree)
+    if self.underline and not self.sep:
+      ret = ret.replace("> ", ">")
+      ret = ret.replace(" <", "<")
+    return ret
+
+  def _renderText(self, text):
+    return self._underlineText(text) if self.underline else text
+  def _underlineText(self, text):
+    return '<span style="text-decoration:underline">%s</span>' % text
 
   def _translateText(self, text):
     """
@@ -557,7 +609,7 @@ class MachineTranslator:
     @return  unicode
     """
     if x.language == self.to:
-      return x.unparseTree()
+      return self._renderText(x.unparseTree())
     elif x.language == self.fr or x.token:
       return self._translateText(x.unparseTree())
     elif not x.language and x.children:
@@ -593,7 +645,7 @@ class MachineTranslator:
     keys = esc.keys()
     keys.sort(key=len, reverse=True)
     for k in keys:
-      t = t.replace(k, esc[k])
+      t = t.replace(k, self._renderText(esc[k]))
     return t
 
   ESCAPE_KEY = "9%i.648"
@@ -713,7 +765,6 @@ if __name__ == '__main__':
     else:
       ret = mt.translate(newtree)
       print "-- machine translated output --\n", ret
-
 
     tree.clearTree()
     newtree.clearTree()
