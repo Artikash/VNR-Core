@@ -38,7 +38,7 @@ class _MachineAnalyzer:
     #from midend import TreeBuilder
     #self.parser = TreeBuilder()
 
-class MachineAnayzer(object):
+class MachineAnalyzer(object):
 
   def __init__(self, cabocha):
     """
@@ -117,6 +117,23 @@ class _MachineTranslator:
 
     return target
 
+  def dumpTranslate(self, source): # unicode -> unicode
+    ret = ''
+    stree = ttree = None
+    if source:
+      if self.rt.rules:
+        stream = self.lexer.parse(source)
+        if stream:
+          stree = self.parser.parse(stream)
+          if stree:
+            ttree = self.rt.translate(stree)
+            if ttree:
+              ret = ttree.dumpTree()
+    for it in stree, ttree:
+      if it:
+        it.clearTree()
+    return ret
+
 class MachineTranslator(object):
 
   def __init__(self, cabocha, language, tr=None, escape=True, sep="", underline=True):
@@ -137,6 +154,8 @@ class MachineTranslator(object):
     d = self.__d
     if d.language != v:
       d.language = d.mt.to = d.rt.to = v
+      for rule in d.rules:
+        rule.targetLanguage = v
 
   def isUnderlineEnabled(self): return self.__d.underline # -> bool
   def setUnderlineEnabled(self, t):
@@ -159,7 +178,6 @@ class MachineTranslator(object):
   # Rule
 
   def ruleCount(self): return len(self.__d.rt.rules)
-
   def setRules(self, v): self.__d.rt.rules = v
 
   #def clearRules(self): self.__d.rt.rules = [] #.clear() # clear not used for thread-safety
@@ -194,6 +212,14 @@ class MachineTranslator(object):
     """
     return self.__d.translate(text, tr=tr)
 
+  def dumpTranslate(self, text):
+    """
+    @param  text  unicode
+    @param* tr  function or None
+    @return  unicode
+    """
+    return self.__d.dumpTranslate(text)
+
 if __name__ == '__main__':
   # Example (link, surface) pairs:
   # 太郎は花子が読んでいる本を次郎に渡した
@@ -218,6 +244,7 @@ if __name__ == '__main__':
   #text = u"【綾波レイ】「ごめんなさい。こう言う時どんな顔すればいいのか分からないの。」"
   #text = u"ごめんなさい。こう言う時どんな顔すればいいのか分からないの。"
   text = u"こう言う時どんな顔すればいいのか分からないの。"
+  #text = u"こう言う時どんな顔すればいいのか分からないのか？"
   #text = u"こう言う時どんな顔すればいいのか分からないのか？"
 
   #text = u"私のことを好きですか？"
@@ -254,14 +281,15 @@ if __name__ == '__main__':
   import CaboCha
   cabocha = CaboCha.Parser()
 
-  ma = MachineAnayzer(cabocha) #, tr=tr)
+  ma = MachineAnalyzer(cabocha) #, tr=tr)
 
   mt = MachineTranslator(cabocha, language=to, underline=False) #, tr=tr)
 
   rules = [createrule(k, v, to)
   for k,v in (
     #(u"顔", u"表情"),
-    (u"(分から ない の 。)", u"不知道的。"),
+    #(u"(分から ない の 。)", u"不知道的。"),
+    (u"(分から ない の 。)", u"(不 知道 的 。)"),
     #(u"どんな", u"怎样的"),
   )]
   mt.setRules(rules)
@@ -273,6 +301,8 @@ if __name__ == '__main__':
     print "-- analysis --\n", ma.parseToString(s)
 
     print "-- sentence --\n", s
+
+    print "-- dump-- \n", mt.dumpTranslate(s)
 
     with SkProfiler():
       t = mt.translate(s)

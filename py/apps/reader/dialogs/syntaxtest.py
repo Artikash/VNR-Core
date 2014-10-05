@@ -15,29 +15,38 @@ from PySide.QtCore import Qt
 from Qt5 import QtWidgets
 from sakurakit import skqss
 from sakurakit.skclass import memoizedproperty
-from sakurakit.skdebug import dprint
+from sakurakit.skdebug import dprint, dwarn
 from sakurakit.sktr import tr_
-from mytr import my
+import rbmt.api as rbmt
+from mytr import my, mytr_
 import rc
+
+_EMPTY_TEXT = "(%s)" % tr_("Empty")
+_ERROR_TEXT = "(%s)" % tr_("Error")
 
 class _SyntaxTester(object):
 
   def __init__(self, q):
+    self.language = '' # str
     self._createUi(q)
-    self._refresh()
+
+    import settings
+    settings.global_().userLanguageChanged.connect(self._reloadLanguage)
+    self._reloadLanguage()
+
+    if self.isEnabled():
+      self._refreshSyntaxView()
+      self._refreshTargetView()
 
   def _createUi(self, q):
-    self.sourceView.setPlainText(u"""こんにちは""")
+    self.sourceView.setPlainText(u"【綾波レイ】「ごめんなさい。こう言う時どんな顔すればいいのか分からないの。」")
+    self.patternEdit.setText(u"(分から ない の 。)")
+    self.replaceEdit.setText(u"(不 知道 的 。)")
 
-    self.patternEdit.setText(u"白")
-    self.replaceEdit.setText("White")
-
-    for sig in (
-        self.sourceView.textChanged,
-        self.patternEdit.textChanged,
-        self.replaceEdit.textChanged,
-        ):
-      sig.connect(self._refresh)
+    self.sourceView.textChanged.connect(self._refreshSyntaxView)
+    self.sourceView.textChanged.connect(self._refreshTargetView)
+    self.patternEdit.textChanged.connect(self._refreshTargetView)
+    self.replaceEdit.textChanged.connect(self._refreshTargetView)
 
     layout = QtWidgets.QVBoxLayout()
 
@@ -51,6 +60,10 @@ class _SyntaxTester(object):
     grid.addWidget(QtWidgets.QLabel(tr_("Translation") + ":"))
     grid.addWidget(self.replaceEdit)
 
+    # 2
+    grid.addWidget(QtWidgets.QLabel(tr_("Language") + ":"))
+    grid.addWidget(self.languageLabel)
+
     layout.addLayout(grid)
 
     splitter = QtWidgets.QSplitter(Qt.Vertical)
@@ -60,12 +73,66 @@ class _SyntaxTester(object):
     layout.addWidget(splitter)
     q.setLayout(layout)
 
-  def _refresh(self):
-    """
-    @param  text  unicode
-    @return  unicode
-    """
-    pass
+  @property
+  def cabocha(self):
+    import cabochaman
+    return cabochaman.cabochaparser()
+
+  @memoizedproperty
+  def ma(self):
+    return rbmt.MachineAnalyzer(self.cabocha)
+
+  @memoizedproperty
+  def mt(self):
+    return rbmt.MachineTranslator(self.cabocha, 'zhs')
+
+  def _refreshSyntaxView(self):
+    text = self.sourceView.toPlainText().strip()
+    if text:
+      try:
+        text = self.ma.parseToString(text)
+        if text:
+          self.syntaxView.setPlainText(text or _EMPTY_TEXT)
+          return
+      except Exception, e:
+        dwarn(e)
+
+    self.syntaxView.setPlainText(_EMPTY_TEXT)
+
+  def _refreshTargetView(self):
+    source = self.sourceView.toPlainText().strip()
+    if source:
+      pattern = self.patternEdit.text().strip()
+      if pattern:
+        try:
+          target = self.replaceEdit.text().strip()
+          rule = rbmt.createrule(pattern, target, self.language)
+          if rule:
+            self.mt.setRules([rule])
+            target = self.mt.dumpTranslate(source)
+            self.targetView.setPlainText(target or _EMPTY_TEXT)
+            return
+        except Exception, e:
+          dwarn(e)
+
+    self.targetView.setPlainText(_EMPTY_TEXT)
+
+  @memoizedproperty
+  def languageLabel(self):
+    ret = QtWidgets.QLabel()
+    skqss.class_(ret, 'text-info')
+    ret.setToolTip(tr_("Language"))
+    return ret
+
+  def _reloadLanguage(self):
+    import dataman, i18n
+    lang = dataman.manager().user().language
+    if lang != self.language:
+      self.language = lang
+      self.languageLabel.setText(i18n.language_name(lang))
+      sep = '' if lang.startswith('zh') else ' '
+      self.mt.setSeparator(sep)
+      self.mt.setLanguage(lang)
 
   @memoizedproperty
   def sourceView(self):
@@ -78,7 +145,7 @@ class _SyntaxTester(object):
   def syntaxView(self):
     ret = QtWidgets.QPlainTextEdit()
     ret.setReadOnly(True)
-    skqss.class_(ret, 'normal')
+    skqss.class_(ret, 'texture')
     ret.setToolTip(my.tr("Syntax parse tree"))
     return ret
 
@@ -102,12 +169,14 @@ class _SyntaxTester(object):
   def replaceEdit(self):
     ret = QtWidgets.QLineEdit()
     skqss.class_(ret, 'normal')
-    ret.setToolTip(my.tr("Subtree to create"))
+    ret.setToolTip(my.tr("Subtree to replace"))
     ret.setPlaceholderText(ret.toolTip())
     return ret
 
-  def refreshEnabled(self):
-    pass
+  def isEnabled(self):
+    import settings
+    ss = settings.global_()
+    return ss.isCaboChaEnabled() and ss.meCabDictionary() == 'unidic'
 
 # I have to use QMainWindow, or the texture will not work
 class SyntaxTester(QtWidgets.QDialog):
@@ -117,15 +186,15 @@ class SyntaxTester(QtWidgets.QDialog):
     super(SyntaxTester, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.__d = _SyntaxTester(self)
-    self.setWindowTitle(my.tr("Test Japanese Syntax"))
-    self.setWindowIcon(rc.icon('window-regexp'))
+    self.setWindowTitle(mytr_("Test Japanese Syntax Tree"))
+    self.setWindowIcon(rc.icon('window-syntax'))
     self.resize(380, 350)
     dprint("pass")
 
   def setVisible(self, t):
     """@reimp"""
-    if t:
-      self.__d.refreshEnabled()
+    if t and t != self.isVisible():
+      self.setEnabled(self.__d.isEnabled())
     super(SyntaxTester, self).setVisible(t)
 
 if __name__ == '__main__':

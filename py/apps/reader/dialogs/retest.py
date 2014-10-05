@@ -46,7 +46,7 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
         self.replaceEdit.textChanged,
         self.regexCheckBox.toggled,
         self.ignoreCaseCheckBox.toggled,
-        ):
+      ):
       sig.connect(self._refresh)
 
     layout = QtWidgets.QVBoxLayout()

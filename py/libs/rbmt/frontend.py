@@ -6,7 +6,7 @@ __all__ = 'Lexer',
 
 import re
 from itertools import imap
-from tree import Node, Token
+from tree import Token
 
 # Lexer
 

@@ -173,7 +173,9 @@ class Rule(object):
       if isinstance(target, str) or isinstance(target, unicode):
         return Node(Token(target), language=self.targetLanguage)
       else:
-        return map(self._createTarget, target)
+        l = map(self._createTarget, target)
+        if l:
+          return l[0] if len(l) == 1 else Node(children=l, language=self.targetLanguage)
     return Node() # Represent deleted node, TODO: skip empty node
 
 class RuleBuilder:

@@ -13,7 +13,7 @@
 <context>
     <name>appmodel</name>
     <message>
-        <location filename="../springboard/appmodel.qml" line="43"/>
+        <location filename="../springboard/appmodel.qml" line="48"/>
         <source>Settings of language, translation, UI, etc</source>
         <translation>語言，翻譯，界面之類的設定</translation>
     </message>
@@ -23,32 +23,32 @@
         <translation>一步一步添加新的遊戲</translation>
     </message>
     <message>
-        <location filename="../springboard/appmodel.qml" line="67"/>
+        <location filename="../springboard/appmodel.qml" line="62"/>
         <source>Shared dictionary for machine translation</source>
         <translation>為機器翻譯使用的辭書</translation>
     </message>
     <message>
-        <location filename="../springboard/appmodel.qml" line="91"/>
+        <location filename="../springboard/appmodel.qml" line="83"/>
         <source>Japanese word dictionary</source>
         <translation>日文單詞字典</translation>
     </message>
     <message>
-        <location filename="../springboard/appmodel.qml" line="104"/>
+        <location filename="../springboard/appmodel.qml" line="91"/>
         <source>Window text translator</source>
         <translation>翻譯窗口中的文本</translation>
     </message>
     <message>
-        <location filename="../springboard/appmodel.qml" line="116"/>
+        <location filename="../springboard/appmodel.qml" line="98"/>
         <source>Searching game information online</source>
         <translation>在網絡上搜索遊戲的信息</translation>
     </message>
     <message>
-        <location filename="../springboard/appmodel.qml" line="128"/>
+        <location filename="../springboard/appmodel.qml" line="105"/>
         <source>Information of online games</source>
         <translation>顯示已知遊戲數據</translation>
     </message>
     <message>
-        <location filename="../springboard/appmodel.qml" line="177"/>
+        <location filename="../springboard/appmodel.qml" line="134"/>
         <source>Real-time messages from other users</source>
         <translation>來自其他同學的即時的留言</translation>
     </message>
@@ -1004,19 +1004,6 @@
     </message>
 </context>
 <context>
-    <name>optionpanel</name>
-    <message>
-        <location filename="../termview/optionpanel.qml" line="14"/>
-        <source>Underline the modified text if possible</source>
-        <translation>下劃線被詞條修改的文本</translation>
-    </message>
-    <message>
-        <location filename="../termview/optionpanel.qml" line="18"/>
-        <source>Enable hentai rules for H-scene</source>
-        <translation>對H的對話使用Hentai詞條</translation>
-    </message>
-</context>
-<context>
     <name>posteditor</name>
     <message>
         <location filename="../postview/posteditor.qml" line="51"/>
@@ -1201,12 +1188,12 @@
 <context>
     <name>table</name>
     <message>
-        <location filename="../termview/table.qml" line="365"/>
+        <location filename="../termview/table.qml" line="364"/>
         <source>Regex</source>
         <translation>正則表達</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="438"/>
+        <location filename="../termview/table.qml" line="435"/>
         <source>Series</source>
         <translation>系列專用</translation>
     </message>

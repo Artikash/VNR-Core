@@ -98,13 +98,15 @@ class MachineTranslator:
     @param  esc  dict
     @return  unicode
     """
-    if x.token:
-      text = x.token.text
-      return self._escapeText(text, esc) if x.language == self.to else text
+    if x.language == self.to:
+      text = x.unparseTree(self.tosep)
+      if text:
+        return self._escapeText(text, esc)
+    elif x.token:
+      return x.token.text
     elif x.children:
       return self.frsep.join((self._prepareEscape(it, esc) for it in x.children))
-    else:
-      return ''
+    return ''
 
   def _escapeText(self, text, esc):
     """

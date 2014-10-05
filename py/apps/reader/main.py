@@ -1045,6 +1045,13 @@ class _MainObject(object):
     return ret
 
   @memoizedproperty
+  def syntaxTesterDialog(self):
+    import syntaxtest
+    ret = syntaxtest.SyntaxTester(self.normalWindow)
+    self.widgets.append(ret)
+    return ret
+
+  @memoizedproperty
   def bbcodeTesterDialog(self):
     import bbtest
     ret = bbtest.BBCodeTester(self.topWindow)
@@ -1829,6 +1836,7 @@ class MainObject(QObject):
   def showYouTubeInput(self): _MainObject.showWindow(self.__d.youTubeInputDialog)
   def showDictionaryTester(self): _MainObject.showWindow(self.__d.dictionaryTesterDialog)
   def showMachineTranslationTester(self): _MainObject.showWindow(self.__d.machineTranslationTesterDialog)
+  def showJapaneseSyntaxTester(self): _MainObject.showWindow(self.__d.syntaxTesterDialog)
   def showBBCodeTester(self): _MainObject.showWindow(self.__d.bbcodeTesterDialog)
   def showRegExpTester(self): _MainObject.showWindow(self.__d.regExpTesterDialog)
   def showGameFinder(self): _MainObject.showWindow(self.__d.gameFinderDialog)
@@ -2166,6 +2174,8 @@ class MainObjectProxy(QObject):
   def showDictionaryTester(self): manager().showDictionaryTester()
   @Slot()
   def showMachineTranslationTester(self): manager().showMachineTranslationTester()
+  @Slot()
+  def showJapaneseSyntaxTester(self): manager().showJapaneseSyntaxTester()
   @Slot()
   def showBBCodeTester(self): manager().showBBCodeTester()
   @Slot()

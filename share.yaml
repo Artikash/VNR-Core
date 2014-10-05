@@ -660,6 +660,7 @@ icons:
   window-refinput:  $PWD/images/reader.png
   window-refview:   $PWD/images/dock/edit.png
   window-regexp:    $PWD/images/dock/exp.png
+  window-syntax:    $PWD/images/dock/tree.png
   window-shortcuts: $PWD/images/passage.png
   window-submaker:  $PWD/images/dock/edit.png
   window-subview:   $PWD/images/dock/edit.png
@@ -688,6 +689,7 @@ images:
   dock-mttest:      $PWD/images/dock/yaku.png
   dock-prefs:       $PWD/images/dock/prefs.png
   dock-regexp:      $PWD/images/dock/exp.png
+  dock-syntax:      $PWD/images/dock/tree.png
   dock-textedit:    $PWD/images/dock/edit.png
   dock-textreader:  $PWD/images/dock/magnifier.png
   dock-youtube:     $PWD/images/dock/youtube.png

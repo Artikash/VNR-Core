@@ -43,6 +43,8 @@ class reader(QObject):
       self.tr("Test Regular Expression"), self.tr("Test regular expression"),
       self.tr("Test BBCode"), #self.tr("Test BBCode"),
       self.tr("Test Machine Translation"), self.tr("Test machine translation"),
+      self.tr("Test Japanese Syntax Tree"), self.tr("Test Japanese syntax tree"),
+      self.tr("Japanese Syntax Tree"),
 
       self.tr("Note"),
 
