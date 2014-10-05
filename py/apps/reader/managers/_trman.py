@@ -306,13 +306,10 @@ class MachineTranslator(Translator):
     @param  text  unicode
     @param  tr  function(text, to, fr)
     @param  async  bool
-    @param  kwargs  arguments passed to tr
     @yield  unicode
     """
     for line in self._itertexts(text):
-      t = self.__tr(line,
-          async, tr, # *args
-          **kwargs)
+      t = self.__tr(line, async, tr, **kwargs)
       if t is None:
         dwarn("translation failed or aborted using '%s'" % self.key)
         break
@@ -323,10 +320,11 @@ class MachineTranslator(Translator):
     @param  emit  bool
     @param  text  unicode
     @param  tr  function(text, to, fr)
+    @param  async  bool
     @param  kwargs  arguments passed to tr
     @return  unicode
     """
-    tr = self._getRuleBasedTranslate(tr, **kwargs)
+    tr = self.__partialTranslate(tr, **kwargs)
     #delim = ' ' if self.splitsSentences else ''
     if emit:
        l = list(self._itertranslate(text, tr, **kwargs))
@@ -335,11 +333,12 @@ class MachineTranslator(Translator):
     else:
       return ''.join(self._itertranslate(text, tr, **kwargs))
 
-  def _getRuleBasedTranslate(self, tr, fr, to, **ignored):
+  def __partialTranslate(self, tr, fr, to, async=False):
     """
     @param  tr  function
     @param  fr  str
     @param  to  str
+    @param* async  bool  not used
     @return  function
     """
     if fr == 'ja':
@@ -476,6 +475,9 @@ class AtlasTranslator(OfflineMachineTranslator):
           async=async)
       return ''
 
+  def _translateApi(self, text, fr='', to=''): # unicode -> unicode
+    return self.engine.translate(text)
+
   def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     to = 'en'
@@ -497,7 +499,8 @@ class AtlasTranslator(OfflineMachineTranslator):
     repl = self._escapeText(text, to, fr, emit)
     if repl:
       try:
-        repl = self._translate(emit, repl, self.engine.translate, async=async)
+        repl = self._translate(emit, repl, self._translateApi,
+            fr=fr, to=to, async=async)
         if repl:
           # ATLAS always try to append period at the end
           repl = wide2thin(repl) #.replace(u". 。", ". ").replace(u"。", ". ").replace(u" 」", u"」").rstrip()
@@ -558,6 +561,9 @@ class LecTranslator(OfflineMachineTranslator):
           async=async)
       return ''
 
+  def _translateApi(self, text, fr='', to=''): # unicode -> unicode
+    return self.engine.translate(text)
+
   def translate(self, text, to='en', fr='ja', async=False, emit=False, scriptEnabled=True):
     """@reimp"""
     to = 'en'
@@ -577,7 +583,8 @@ class LecTranslator(OfflineMachineTranslator):
     repl = self._escapeText(text, to, fr, emit)
     if repl:
       try:
-        repl = self._translate(emit, repl, self.engine.translate, async=async)
+        repl = self._translate(emit, repl, self._translateApi,
+            fr=fr, to=to, async=async)
         if repl:
           repl = wide2thin(repl) #.replace(u"。", ". ").replace(u" 」", u"」").rstrip()
           repl = self._unescapeTranslation(repl, to=to, emit=emit)
@@ -632,6 +639,9 @@ class EzTranslator(OfflineMachineTranslator):
           async=async)
       return ''
 
+  def _translateApi(self, text, fr='', to=''): # unicode -> unicode
+    return self.engine.translate(text)
+
   def translate(self, text, to='ko', fr='ja', async=False, emit=False, **kwargs):
     """@reimp"""
     to = 'ko'
@@ -646,7 +656,8 @@ class EzTranslator(OfflineMachineTranslator):
     repl = self._escapeText(text, to, fr, emit)
     if repl:
       try:
-        repl = self._translate(emit, repl, self.engine.translate, async=async)
+        repl = self._translate(emit, repl, self._translateApi,
+            fr=fr, to=to, async=async)
         if repl:
           repl = self._unescapeTranslation(repl, to=to, emit=emit)
           self.cache.update(text, repl)
@@ -731,6 +742,9 @@ class JBeijingTranslator(OfflineMachineTranslator):
           async=async)
       return ''
 
+  def _translateApi(self, text, fr='', to='', simplified=False): # unicode -> unicode
+    return self.engine.translate(text, simplified=simplified)
+
   def translate(self, text, to='zhs', fr='ja', async=False, emit=False, **kwargs):
     """@reimp"""
     # Profiler: 1e-5 seconds
@@ -750,7 +764,9 @@ class JBeijingTranslator(OfflineMachineTranslator):
     if repl:
       repl = repl.replace('\n', ' ') # JBeijing cannot handle multiple lines
       try:
-        repl = self._translate(emit, repl, self.engine.translate, async=async, simplified=simplified) # 0.1 seconds
+        repl = self._translate(emit, repl,
+            partial(self._translateApi, simplified=simplified),
+            fr=fr, to=to, async=async) # 0.1 seconds
         if repl:
           #with SkProfiler():
           repl = wide2thin_digit(repl) # convert wide digits to thin digits
@@ -916,7 +932,8 @@ class FastAITTranslator(OfflineMachineTranslator):
         try:
           if fr == 'ja':
             repl = self.__ja_repl_before(repl)
-          repl = self._translate(emit, repl, engine.translate, async=async, to=to, fr=fr)
+          repl = self._translate(emit, repl, engine.translate,
+              to=to, fr=fr, async=async)
           if repl:
             if fr == 'ja':
               repl = self.__ja_repl_after(repl)
@@ -1006,7 +1023,8 @@ class DreyeTranslator(OfflineMachineTranslator):
     repl = self._escapeText(text, to, fr, emit)
     if repl:
       try:
-        repl = self._translate(emit, repl, engine.translate, async=async, to=to, fr=fr)
+        repl = self._translate(emit, repl, engine.translate,
+            to=to, fr=fr, async=async)
         if repl:
           if to != 'zhs':
             repl = zhs2zht(repl)
