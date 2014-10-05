@@ -31,18 +31,20 @@ def createrule(source, target, language):
 
 class _MachineAnalyzer:
 
-  def __init__(self):
+  def __init__(self, cabocha):
     from frontend import Lexer
-    self.lexer = Lexer()
+    self.lexer = Lexer(cabocha)
 
     #from midend import TreeBuilder
     #self.parser = TreeBuilder()
 
 class MachineAnayzer(object):
 
-  def __init__(self):
-    self.__d = _MachineAnalyzer()
-
+  def __init__(self, cabocha):
+    """
+    @param  cabocha  CaboCha.Parser
+    """
+    self.__d = _MachineAnalyzer(cabocha)
 
   def parseToString(self, text):
     """
@@ -51,13 +53,13 @@ class MachineAnayzer(object):
     """
     ll = self.__d.lexer
     stream = ll.parse(text)
-    return ll.dump(stream).replace('( ', '(').replace(' )', ')') if stream else text
+    return ll.dump(stream) if stream else text
 
 # Translator
 
-class _MachineTranslator(object):
+class _MachineTranslator:
 
-  def __init__(self, language, tr, escape, sep, underline):
+  def __init__(self, cabocha, language, tr, escape, sep, underline):
     self.language = language # str  language
     self.escape = escape # bool
     self.translateFunction = tr # function or None
@@ -65,7 +67,7 @@ class _MachineTranslator(object):
     self.underline = underline # bool
 
     from frontend import Lexer
-    self.lexer = Lexer()
+    self.lexer = Lexer(cabocha)
 
     from midend import TreeBuilder
     self.parser = TreeBuilder()
@@ -115,17 +117,18 @@ class _MachineTranslator(object):
 
     return target
 
-class MachineTranslator:
+class MachineTranslator(object):
 
-  def __init__(self, language, tr=None, escape=True, sep="", underline=True):
+  def __init__(self, cabocha, language, tr=None, escape=True, sep="", underline=True):
     """
+    @param  cabocha  CaboCha.Parser
     @param  language  str  target language
     @param* r  function  (unicode text, str fr, str to) -> unicode
     @param* escape  bool
     @param* sep  str
     @param* underline  bool
     """
-    self.__d = _MachineTranslator(language, tr, escape, sep, underline)
+    self.__d = _MachineTranslator(cabocha, language, tr, escape, sep, underline)
 
   # Properties
 
@@ -248,10 +251,12 @@ if __name__ == '__main__':
   from kingsoft import iciba
   tr = iciba.translate
 
-  ma = MachineAnayzer() #, tr=tr)
+  import CaboCha
+  cabocha = CaboCha.Parser()
 
-  mt = MachineTranslator(language=to) #, tr=tr)
+  ma = MachineAnayzer(cabocha) #, tr=tr)
 
+  mt = MachineTranslator(cabocha, language=to, underline=False) #, tr=tr)
 
   rules = [createrule(k, v, to)
   for k,v in (

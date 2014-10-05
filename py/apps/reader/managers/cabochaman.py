@@ -23,6 +23,12 @@ _CP = _cabochaman.CaboChaParser()
 parse = _CP.parse
 #def parse(*args, **kwargs): return _CP.parse(*args, **kwargs)
 
+def cabochaparser():
+  """
+  @return  CaboCha.Parser or None
+  """
+  return _CP.parser()
+
 def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colorize=False, center=True, furiType=defs.FURI_HIRA, **kwargs):
   """
   @param  text  unicode

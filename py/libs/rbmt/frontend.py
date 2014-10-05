@@ -12,27 +12,55 @@ from tree import Node, Token
 
 _SENTENCE_RE = re.compile(ur"([。？！」\n])(?![。！？）」\n]|$)")
 
+__PARAGRAPH_DELIM = u"【】「」♪" # machine translation of sentence deliminator
+_PARAGRAPH_SET = frozenset(__PARAGRAPH_DELIM)
+_PARAGRAPH_RE = re.compile(r"([%s])" % ''.join(_PARAGRAPH_SET))
+
 class Lexer:
 
   unparsesep = ''
 
-  def __init__(self):
-    import CaboCha
-    self.cabocha = CaboCha.Parser()
-    self.cabochaEncoding = 'utf8'
+  def __init__(self, cabochaParser, cabochaEncoding='utf8'):
+    self.cabochaParser = cabochaParser # CaboCha.Parser
+    self.cabochaEncoding = cabochaEncoding
 
-  def splitSentences(self, text):
+  def _splitSentences(self, text):
     """
     @param  text  unicode
     @return  [unicode]
     """
     return _SENTENCE_RE.sub(r"\1\n", text).split("\n")
 
+  def _splitParagraphs(self, text):
+    """
+    @param  text  unicode
+    @return  [unicode]
+    """
+    return _PARAGRAPH_RE.split(text)
+
   def parse(self, text):
     """
     @param  unicode
     @return  stream
     """
+    ret = list(self._iterparse(text))
+    return ret[0] if len(ret) == 1 else ret
+
+  def _iterparse(self, text):
+    """
+    @param  text  unicode
+    @yield  stream
+    """
+    for p in self._splitParagraphs(text):
+      if len(p) == 1 and p in _PARAGRAPH_SET:
+        yield Token(p)
+      else:
+        for s in self._splitSentences(p):
+          ret = self.parseSentence(s.strip())
+          if ret:
+            yield ret
+
+  def parseSentence(self, text):
     return self._parse(self._tokenize(text))
 
   def _tokenize(self, text):
@@ -41,7 +69,7 @@ class Lexer:
     @return  [int link, [Token]]]  token stream
     """
     encoding = self.cabochaEncoding
-    stream = self.cabocha.parse(text.encode(encoding))
+    stream = self.cabochaParser.parse(text.encode(encoding))
 
     MAX_LINK = 32768 # use this value instead of -1
     link = 0

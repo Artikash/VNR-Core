@@ -6,6 +6,7 @@ __all__ = 'TreeBuilder', 'RuleBasedTranslator'
 
 from tree import Node, Token
 from rule import RuleMatchedList
+from defs import ANY_LANGUAGE
 
 # Parser
 
@@ -26,7 +27,7 @@ class TreeBuilder:
     @return  Node
     """
     if isinstance(x, Token):
-      return Node(token=x, language=self.language)
+      return Node(token=x, language=self.language if x.feature else ANY_LANGUAGE)
     if x:
       return Node(children=map(self._parse, x), language=self.language)
     else:
@@ -125,7 +126,10 @@ class RuleBasedTranslator:
           elif language is None:
             language = it.language
           elif language != it.language:
-            language = ''
+            if language == ANY_LANGUAGE:
+              language = it.language
+            elif it.language != ANY_LANGUAGE:
+              language = ''
         if language:
           node.language = language
 

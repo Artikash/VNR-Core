@@ -4,6 +4,8 @@
 
 __all__ = 'MachineTranslator',
 
+from defs import ANY_LANGUAGE
+
 class MachineTranslator:
 
   def __init__(self, fr, to, tr=None, escape=True, frsep="", tosep="", underline=True):
@@ -47,7 +49,7 @@ class MachineTranslator:
     @param  tr  function or None
     @return  unicode
     """
-    if x.language == self.to:
+    if x.language == self.to or x.language == ANY_LANGUAGE:
       return self._renderText(x.unparseTree(self.tosep))
     elif x.language == self.fr or x.token:
       return self._translateText(x.unparseTree(self.frsep), tr=tr)

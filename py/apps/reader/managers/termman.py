@@ -21,7 +21,7 @@ from sakurakit import skfileio, skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
 from pytrscript import TranslationScriptManager
-import config, dataman, defs, i18n, rc
+import config, cabochaman, dataman, defs, i18n, rc
 
 @memoized
 def manager(): return TermManager()
@@ -32,10 +32,10 @@ def _remove_marks(text): return _re_marks.sub('', text)
 SCRIPT_KEY_SEP = ',' # Separator of script manager key
 
 class TermTranslator(rbmt.MachineTranslator):
-  def __init__(self, language, underline=True):
+  def __init__(self, cabocha, language, underline=True):
     escape = config.is_kanji_language(language)
-    sep = '' if languages.startswith('zh') else ' '
-    super(TermTranslator, language,
+    sep = '' if language.startswith('zh') else ' '
+    super(TermTranslator, self).__init__(cabocha, language,
         sep=sep,
         escape=escape,
         underline=underline and escape)
@@ -519,15 +519,19 @@ class TermManager(QObject):
     @param  language  str
     @return rbmt.api.Translator or None
     """
-    if not self.isSyntaxEnabled or not self.isEnabled:
+    if not self.isSyntaxEnabled or not self.isEnabled or not language:
       return
+    d = self.__d
     ret = d.rbmt.get(language)
     if ret:
       return ret if ret.ruleCount() else None
-    ret = d.rbmt[language] = TermTranslator(language, underline=d.underline)
-    d.rbmtTimes[language] = 0
-    d.rebuildCacheLater()
-    return None
+    cabocha = cabochaman.cabochaparser()
+    if not cabocha:
+      dwarn("failed to create cabocha parser")
+    else:
+      ret = d.rbmt[language] = TermTranslator(cabocha, language, underline=d.marked)
+      d.rbmtTimes[language] = 0
+      d.rebuildCacheLater()
 
   def setTargetLanguage(self, v):
     d = self.__d
