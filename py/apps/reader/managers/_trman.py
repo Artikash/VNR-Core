@@ -8,7 +8,7 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
-from sakurakit.skprofiler import SkProfiler
+#from sakurakit.skprofiler import SkProfiler
 
 import os, re
 import requests
@@ -263,11 +263,11 @@ class MachineTranslator(Translator):
         self._cache.update(text, ret)
         return ret
 
-    with SkProfiler():
-      ret = skthreads.runsync(partial(
-          tr, text, **kwargs),
-          abortSignal=self.abortSignal,
-          parent=self.parent) if async and self.asyncSupported else tr(text, **kwargs)
+    #with SkProfiler():
+    ret = skthreads.runsync(partial(
+        tr, text, **kwargs),
+        abortSignal=self.abortSignal,
+        parent=self.parent) if async and self.asyncSupported else tr(text, **kwargs)
 
     if ret:
       if not isinstance(ret, unicode):
