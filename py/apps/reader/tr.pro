@@ -15,6 +15,7 @@ SOURCES = \
   dialogs/mttest.py \
   dialogs/refinput.py \
   dialogs/subedit.py \
+  dialogs/syntaxtest.py \
   dialogs/postedit.py \
   dialogs/postinput.py \
   dialogs/_prefs.py \

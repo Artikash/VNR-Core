@@ -58,7 +58,7 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
     grid.addWidget(self.patternEdit, 0, 1)
 
     # 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Text") + ":"))
+    grid.addWidget(QtWidgets.QLabel(tr_("Translation") + ":"))
     grid.addWidget(self.replaceEdit)
 
     # 2

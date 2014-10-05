@@ -53,7 +53,7 @@ class MachineAnayzer(object):
     """
     ll = self.__d.lexer
     stream = ll.parse(text)
-    return ll.dump(stream) if stream else text
+    return ll.dump(stream) if stream else ''
 
 # Translator
 
@@ -94,18 +94,18 @@ class _MachineTranslator:
 
     stream = self.lexer.parse(source)
     if not stream:
-      return ""
+      return self.directTranslate(source)
     #print self.lexer.dump(stream)
 
     stree = self.parser.parse(stream)
     if not stree:
-      return ""
+      return self.directTranslate(source)
     #print tree.dumpTree()
 
     ttree = self.rt.translate(stree)
     stree.clearTree() # release memory
     if not ttree:
-      return ""
+      return self.directTranslate(source)
     #print tree.dumpTree()
 
     if ttree.language == self.language:

@@ -17,11 +17,13 @@ from time import time
 from PySide.QtCore import Signal, QObject, QTimer, QMutex, Qt
 from zhszht.zhszht import zhs2zht
 from rbmt import api as rbmt
-from sakurakit import skfileio, skthreads
+from sakurakit import skfileio, skos, skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
-from pytrscript import TranslationScriptManager
 import config, cabochaman, dataman, defs, i18n, rc
+
+if skos.WIN:
+  from pytrscript import TranslationScriptManager
 
 @memoized
 def manager(): return TermManager()
