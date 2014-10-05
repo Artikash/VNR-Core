@@ -157,14 +157,14 @@ class MachineTranslator(object):
       for rule in d.rt.rules:
         rule.targetLanguage = v
 
-  def isUnderlineEnabled(self): return self.__d.underline # -> bool
-  def setUnderlineEnabled(self, t):
+  def isUnderline(self): return self.__d.underline # -> bool
+  def setUnderline(self, t):
     d = self.__d
     if d.underline != t:
       d.underline = d.mt.underline = t
 
-  def isEscapeEnabled(self): return self.__d.escap # -> bool
-  def setEscapeEnabled(self, t):
+  def isEscape(self): return self.__d.escap # -> bool
+  def setEscape(self, t):
     d = self.__d
     if d.escape != t:
       d.escape = d.mt.escape = t
