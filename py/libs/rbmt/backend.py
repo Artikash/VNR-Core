@@ -24,6 +24,8 @@ class MachineTranslator:
     @return  unicode
     """
     ret = self._translateTree(tree, tr=tr)
+    if not ret:
+      return ''
     if self.underline and not self.tosep:
       ret = ret.replace("> ", ">")
       ret = ret.replace(" <", "<")
