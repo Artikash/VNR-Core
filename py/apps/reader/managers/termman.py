@@ -343,6 +343,7 @@ class _TermManager:
     t.timeout.connect(self.saveTerms)
 
     q.invalidateCacheRequested.connect(t.start, Qt.QueuedConnection)
+    q.cacheChangedRequested.connect(q.cacheChanged, Qt.QueuedConnection)
 
   def rebuildCacheLater(self, queued=False):
     if queued:
@@ -404,6 +405,9 @@ class _TermManager:
     if rbmtTimes and createTime >= self.updateTime:
       self._saveSyntaxTerms(createTime=createTime, termData=termData, gameIds=gameIds, times=rbmtTimes)
 
+    if createTime >= self.updateTime:
+      dprint("cache changed")
+      self.q.cacheChangedRequested.emit()
     dprint("leave")
 
   def _saveSyntaxTerms(self, createTime, termData, gameIds, times):
@@ -416,19 +420,24 @@ class _TermManager:
     dprint("enter")
     rules = []
     hentai = self.hentai
-    for language, time in times:
+    for language, time in times.iteritems():
+      convertsChinese = language == 'zht'
       for td in termData:
         if (#not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
-            (td.type == type or type2 and td.type == type2 or type3 and td.type == type3)
+            td.syntax and td.type == 'escape'
             and (not td.special or gameIds and td.gameId and td.gameId in gameIds)
             and (not td.hentai or hentai)
             and i18n.language_compatible_to(td.language, language)
-            and td.syntax == syntax
           ):
           if createTime < self.updateTime:
             dwarn("leave: cancel saving out-of-date syntax terms")
             return
-          rule = rbmt.createrule(source, target, language)
+          z = convertsChinese and td.language == 'zhs'
+          pattern = td.pattern
+          repl = td.text
+          if repl and z:
+            repl = zhs2zht(repl)
+          rule = rbmt.createrule(pattern, repl, language)
           if not rule:
             dwarn("failed to parse rule:", source, target)
           else:
@@ -439,6 +448,8 @@ class _TermManager:
         dwarn("leave: cancel saving out-of-date syntax terms")
         return
       mt.setRules(rules)
+      times[language] = createTime
+      dprint("lang = %s, count = %s" % (language, mt.ruleCount()))
 
     dprint("leave")
 
@@ -508,6 +519,7 @@ class TermManager(QObject):
 
   cacheChanged = Signal()
 
+  cacheChangedRequested = Signal() # private euse
   invalidateCacheRequested = Signal() # private use
 
   ## Properties ##

@@ -260,9 +260,9 @@ if __name__ == '__main__':
 
   rules = [createrule(k, v, to)
   for k,v in (
-    (u"顔", u"表情"),
+    #(u"顔", u"表情"),
     (u"(分から ない の 。)", u"不知道的。"),
-    (u"どんな", u"怎样的"),
+    #(u"どんな", u"怎样的"),
   )]
   mt.setRules(rules)
 

@@ -103,7 +103,7 @@ class Node(object): # tree node
     else:
       return ''
 
-  def unparseTree(self, sep): # recursively clear all children
+  def unparseTree(self, sep=''): # recursively clear all children
     """
     @param  sep  unicode
     @return  unicode

@@ -423,7 +423,8 @@ class OfflineMachineTranslator(MachineTranslator):
     super(OfflineMachineTranslator, self).__init__(*args, **kwargs)
 
 class OnlineMachineTranslator(MachineTranslator):
-  persistentCaching = True # bool  enable sqlite
+  #persistentCaching = True # bool  enable sqlite
+  persistentCaching = False # bool  temporarily disabled, or it will break the syntax translator
   def __init__(self, *args, **kwargs):
     super(OnlineMachineTranslator, self).__init__(*args, **kwargs)
 

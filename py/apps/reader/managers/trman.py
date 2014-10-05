@@ -30,6 +30,8 @@ class _TranslatorManager(object):
     self.online = False
     self.language = 'en' # str, user language
 
+    self.allTranslators = [] # all created translators
+
     self.infoseekEnabled = \
     self.exciteEnabled = \
     self.bingEnabled = \
@@ -54,57 +56,64 @@ class _TranslatorManager(object):
 
   normalizeText = staticmethod(textutil.normalize_punct)
 
-  @memoizedproperty
-  def lougoTranslator(self): return _trman.LougoTranslator()
+  def _newtr(self, tr):
+    """
+    @param  tr  _trman.Translator
+    """
+    self.allTranslators.append(tr)
+    return tr
 
   @memoizedproperty
-  def hanVietTranslator(self): return _trman.HanVietTranslator()
+  def lougoTranslator(self): return self._newtr(_trman.LougoTranslator())
 
   @memoizedproperty
-  def atlasTranslator(self): return _trman.AtlasTranslator(parent=self.parent)
+  def hanVietTranslator(self): return self._newtr(_trman.HanVietTranslator())
 
   @memoizedproperty
-  def lecTranslator(self): return _trman.LecTranslator(parent=self.parent)
+  def atlasTranslator(self): return self._newtr(_trman.AtlasTranslator(parent=self.parent))
 
   @memoizedproperty
-  def ezTranslator(self): return _trman.EzTranslator(parent=self.parent)
+  def lecTranslator(self): return self._newtr(_trman.LecTranslator(parent=self.parent))
 
   @memoizedproperty
-  def fastaitTranslator(self): return _trman.FastAITTranslator(parent=self.parent)
+  def ezTranslator(self): return self._newtr(_trman.EzTranslator(parent=self.parent))
 
   @memoizedproperty
-  def dreyeTranslator(self): return _trman.DreyeTranslator(parent=self.parent)
+  def fastaitTranslator(self): return self._newtr(_trman.FastAITTranslator(parent=self.parent))
 
   @memoizedproperty
-  def jbeijingTranslator(self): return _trman.JBeijingTranslator(parent=self.parent)
+  def dreyeTranslator(self): return self._newtr(self._newtr(_trman.DreyeTranslator(parent=self.parent)))
+
+  @memoizedproperty
+  def jbeijingTranslator(self): return self._newtr(_trman.JBeijingTranslator(parent=self.parent))
 
   @memoizedproperty
   def googleTranslator(self):
-    return _trman.GoogleTranslator(parent=self.parent, abortSignal=self.abortSignal) # , session=self.session # not work sync https redirect
+    return self._newtr(_trman.GoogleTranslator(parent=self.parent, abortSignal=self.abortSignal)) # , session=self.session # not work sync https redirect
 
   @memoizedproperty
   def baiduTranslator(self):
-    return _trman.BaiduTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session)
+    return self._newtr(_trman.BaiduTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session))
 
   @memoizedproperty
   def bingTranslator(self):
-    return _trman.BingTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session)
+    return self._newtr(_trman.BingTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session))
 
   @memoizedproperty
   def lecOnlineTranslator(self):
-    return _trman.LecOnlineTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session)
+    return self._newtr(_trman.LecOnlineTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session))
 
   @memoizedproperty
   def transruTranslator(self):
-    return _trman.TransruTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session)
+    return self._newtr(_trman.TransruTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session))
 
   @memoizedproperty
   def infoseekTranslator(self):
-    return _trman.InfoseekTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session)
+    return self._newtr(_trman.InfoseekTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session))
 
   @memoizedproperty
   def exciteTranslator(self):
-    return _trman.ExciteTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session)
+    return self._newtr(_trman.ExciteTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session))
 
   @staticmethod
   def translateAndApply(func, tr, *args, **kwargs):
@@ -221,7 +230,7 @@ class TranslatorManager(QObject):
     #  sig.emit()
 
   def clearCache(self):
-    for it in self.__d.iterTranslators():
+    for it in self.__d.allTranslators:
       it.clearCache()
     dprint("pass")
 
