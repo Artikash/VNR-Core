@@ -2,7 +2,7 @@
 # addressui.py
 # 12/13/2012 jichi
 
-__all__ = ['WbAddressEdit']
+__all__ = 'WbAddressEdit',
 
 from PySide import QtGui
 from PySide.QtCore import Qt, Signal

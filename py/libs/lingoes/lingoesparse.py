@@ -17,11 +17,12 @@
 # - 0x1c: long id
 #
 # - 0x5c: int offset - 0x60
+
+__all__ = 'parse', 'parsefile'
+
 if __name__ == '__main__':
   import sys
   sys.path.append("..")
-
-__all__ = ['parse', 'parsefile']
 
 import zlib
 from sakurakit.skdebug import dprint, dwarn

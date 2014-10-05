@@ -2,11 +2,11 @@
 # localsocketsrv.py
 # jichi 4/28/2014
 
+__all__ = 'LocalSocketServer',
+
 if __name__ == '__main__':
   import sys
   sys.path.append('..')
-
-__all__ = ['LocalSocketServer']
 
 import weakref
 from functools import partial

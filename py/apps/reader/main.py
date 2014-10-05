@@ -11,7 +11,7 @@
 # Query directions:
 # - textman => dataman => netman
 
-__all__ = ['MainObject', 'MainObjectProxy']
+__all__ = 'MainObject', 'MainObjectProxy'
 
 import os
 from functools import partial
@@ -599,12 +599,16 @@ class _MainObject(object):
     ret.setHentaiEnabled(ss.isHentaiEnabled())
     ss.hentaiEnabledChanged.connect(ret.setHentaiEnabled)
 
+    ret.setSyntaxEnabled(ss.isTranslationSyntaxEnabled())
+    ss.translationSyntaxEnabledChanged.connect(ret.setSyntaxEnabled)
+
     ret.setMarked(ss.isTermMarked())
     ss.termMarkedChanged.connect(ret.setMarked)
 
     for sig in (
         ss.userIdChanged, ss.userLanguageChanged,
         ss.hentaiEnabledChanged, #ss.termMarkedChanged,
+        ss.translationSyntaxEnabledChanged,
         self.gameManager.processChanged,
         self.dataManager.termsChanged,
       ):
@@ -1037,6 +1041,13 @@ class _MainObject(object):
   def machineTranslationTesterDialog(self):
     import mttest
     ret = mttest.MTTester(self.normalWindow)
+    self.widgets.append(ret)
+    return ret
+
+  @memoizedproperty
+  def syntaxTesterDialog(self):
+    import syntaxtest
+    ret = syntaxtest.SyntaxTester(self.normalWindow)
     self.widgets.append(ret)
     return ret
 
@@ -1825,6 +1836,7 @@ class MainObject(QObject):
   def showYouTubeInput(self): _MainObject.showWindow(self.__d.youTubeInputDialog)
   def showDictionaryTester(self): _MainObject.showWindow(self.__d.dictionaryTesterDialog)
   def showMachineTranslationTester(self): _MainObject.showWindow(self.__d.machineTranslationTesterDialog)
+  def showJapaneseSyntaxTester(self): _MainObject.showWindow(self.__d.syntaxTesterDialog)
   def showBBCodeTester(self): _MainObject.showWindow(self.__d.bbcodeTesterDialog)
   def showRegExpTester(self): _MainObject.showWindow(self.__d.regExpTesterDialog)
   def showGameFinder(self): _MainObject.showWindow(self.__d.gameFinderDialog)
@@ -2162,6 +2174,8 @@ class MainObjectProxy(QObject):
   def showDictionaryTester(self): manager().showDictionaryTester()
   @Slot()
   def showMachineTranslationTester(self): manager().showMachineTranslationTester()
+  @Slot()
+  def showJapaneseSyntaxTester(self): manager().showJapaneseSyntaxTester()
   @Slot()
   def showBBCodeTester(self): manager().showBBCodeTester()
   @Slot()

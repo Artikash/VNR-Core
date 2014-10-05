@@ -2,7 +2,7 @@
 # skqml.py
 # 10/5/2012 jichi
 
-__all__ = [
+__all__ = (
   'QmlItem',
   'QmlObject',
   'QmlObjectInit',
@@ -10,7 +10,7 @@ __all__ = [
   'SkDeclarativeDragDropEventFilter',
   'SkDeclarativeView',
   'SkDesktopProxy',
-]
+)
 
 from PySide.QtCore import Property, Signal, Qt, QObject, QCoreApplication
 from Qt5.QtQuick1 import QDeclarativeView

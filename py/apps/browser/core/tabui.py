@@ -2,7 +2,7 @@
 # tabui.py
 # 12/13/2012 jichi
 
-__all__ = ['WbTabBar', 'WbTabWidget']
+__all__ = 'WbTabBar', 'WbTabWidget'
 
 from PySide.QtCore import Qt, Signal
 from Qt5 import QtWidgets

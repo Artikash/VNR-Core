@@ -2,7 +2,7 @@
 # ttsman.py
 # 4/7/2013 jichi
 
-__all__ = ['TtsQmlBean', 'TtsCoffeeBean']
+__all__ = 'TtsQmlBean', 'TtsCoffeeBean'
 
 #from sakurakit.skprofiler import SkProfiler
 

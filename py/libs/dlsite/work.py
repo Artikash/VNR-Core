@@ -2,7 +2,7 @@
 # work.py
 # 11/26/2013 jichi
 
-__all__ = ['WorkApi']
+__all__ = 'WorkApi',
 
 if __name__ == '__main__': # DEBUG
   import sys

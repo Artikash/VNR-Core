@@ -2,7 +2,7 @@
 # gamewiz.py
 # 10/14/2012 jichi
 
-__all__ = ['GameWizard']
+__all__ = 'GameWizard',
 
 import os
 from functools import partial

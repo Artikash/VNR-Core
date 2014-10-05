@@ -2,7 +2,7 @@
 # game.py
 # 11/23/2013 jichi
 
-__all__ = ['GameApi']
+__all__ = 'GameApi',
 
 if __name__ == '__main__': # DEBUG
   import sys

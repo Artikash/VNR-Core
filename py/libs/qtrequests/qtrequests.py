@@ -3,7 +3,7 @@
 # 8/23/2014 jichi
 # Python requests implemented using QtNetwork.
 
-__all__ = ['Session']
+__all__ = 'Session',
 
 import json, urllib, zlib
 from PySide.QtCore import QUrl, QEventLoop, QCoreApplication

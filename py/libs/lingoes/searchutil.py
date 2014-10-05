@@ -2,7 +2,7 @@
 # searchutil.py
 # 1/16/2013 jichi
 
-__all__ = ['lookup', 'lookupprefix']
+__all__ = 'lookup', 'lookupprefix'
 
 import bisect
 from itertools import islice

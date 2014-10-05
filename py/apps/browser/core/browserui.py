@@ -2,7 +2,7 @@
 # browserui.py
 # 12/13/2012 jichi
 
-__all__ = ['WebBrowser']
+__all__ = 'WebBrowser',
 
 import re, weakref
 from functools import partial

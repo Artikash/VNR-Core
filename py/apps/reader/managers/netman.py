@@ -1343,7 +1343,7 @@ class _NetworkManager(object):
               text = elem.text
               if tag in ('gameId', 'userId', 'userHash', 'timestamp', 'updateUserId', 'updateTimestamp'):
                 kw[tag] = int(text)
-              elif tag in ('special', 'private', 'hentai', 'regex', 'disabled'):
+              elif tag in ('special', 'private', 'syntax', 'hentai', 'regex', 'disabled'):
                 kw[tag] = text == 'true'
               else:
                 kw[tag] = text or ''
@@ -1416,6 +1416,7 @@ class _NetworkManager(object):
     if td.special: params['special'] = True
     if td.private: params['private'] = True
     if td.hentai: params['hentai'] = True
+    if td.syntax: params['syntax'] = True
     if td.regex: params['regex'] = True
     #if td.bbcode: params['bbcode'] = True
     #if td.ignoresCase: params['ignoreCase'] = True
@@ -1487,7 +1488,7 @@ class _NetworkManager(object):
       if 'language' in pty:     params['lang'] = td.language
       if 'disabled' in pty:     params['disable'] = td.disabled
 
-      for k in 'gameId', 'type', 'special', 'private', 'hentai', 'regex':
+      for k in 'gameId', 'type', 'special', 'private', 'syntax', 'hentai', 'regex':
         if k in pty:
           params[k.lower()] = getattr(term, k)
 

@@ -2,7 +2,7 @@
 # caching.py
 # 7/25/2013 jichi
 
-__all__ = ['CachingRestApi']
+__all__ = 'CachingRestApi',
 if __name__ == '__main__': # DEBUG
   import sys
   sys.path.append("..")

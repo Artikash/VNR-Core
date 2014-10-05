@@ -604,6 +604,16 @@ There is no way to change the installation location.
 VNR can also uninstall it later if you want.""").format(location),
       Yes|No, No)
 
+def confirmTranslationSyntaxDisabled():
+  """
+  @return  bool
+  """
+  return Yes == QMessageBox.question(_parent(),
+      my.tr("Disable syntax-based translation system"),
+      my.tr("""VNR has to disable the syntax-based Japanese translation if CaboCha or UniDic is not enabled.
+Do you want to continue?"""),
+      Yes|No, No)
+
 # QML
 
 #@QmlObject

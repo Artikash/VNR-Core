@@ -2,7 +2,7 @@
 # caching.py
 # 4/9/2014 jichi
 
-__all__ = ['CachingProductApi']
+__all__ = 'CachingProductApi',
 
 if __name__ == '__main__': # DEBUG
   import sys

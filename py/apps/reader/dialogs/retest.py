@@ -2,7 +2,7 @@
 # retest.py
 # 12/16/2012 jichi
 
-__all__ = ['RegExpTester']
+__all__ = 'RegExpTester',
 
 if __name__ == '__main__':
   import sys
@@ -46,7 +46,7 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
         self.replaceEdit.textChanged,
         self.regexCheckBox.toggled,
         self.ignoreCaseCheckBox.toggled,
-        ):
+      ):
       sig.connect(self._refresh)
 
     layout = QtWidgets.QVBoxLayout()
@@ -58,7 +58,7 @@ For example, "regular(?= exp)" will match all "regular" before " exp".
     grid.addWidget(self.patternEdit, 0, 1)
 
     # 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Text") + ":"))
+    grid.addWidget(QtWidgets.QLabel(tr_("Translation") + ":"))
     grid.addWidget(self.replaceEdit)
 
     # 2

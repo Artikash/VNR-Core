@@ -2,7 +2,7 @@
 # product.py
 # 4/9/2014 jichi
 
-__all__ = ['ProductApi']
+__all__ = 'ProductApi',
 
 if __name__ == '__main__': # DEBUG
   import sys

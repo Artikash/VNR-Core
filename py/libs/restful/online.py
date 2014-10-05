@@ -4,7 +4,7 @@
 #
 # See: http://ymotongpoo.hatenablog.com/entry/20081123/1227430671
 
-__all__ = ['DataParser', 'FileParser', 'JsonFileParser']
+__all__ = 'DataParser', 'FileParser', 'JsonFileParser'
 
 if __name__ == '__main__': # DEBUG
   import sys

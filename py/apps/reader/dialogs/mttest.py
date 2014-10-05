@@ -3,7 +3,7 @@
 # 11/20/2013 jichi
 # Machine translation tester.
 
-__all__ = ['MTTester']
+__all__ = 'MTTester',
 
 if __name__ == '__main__':
   import sys
@@ -54,17 +54,19 @@ class _MTTester(object):
         self.sourceTextEdit.setPlainText(t or _EMPTY_TEXT))
     tm.escapedTextReceived.connect(lambda t:
         self.escapedTextEdit.setPlainText(t or _EMPTY_TEXT))
+
+    tm.splitTextsReceived.connect(lambda l:
+        self.splitTextEdit.setPlainText('\n--------\n'.join(l) if l else _EMPTY_TEXT))
+
     tm.jointTranslationReceived.connect(lambda t:
-        self.jointTranslationEdit.setPlainText(t or _EMPTY_TEXT))
+        self.jointTranslationEdit.setHtml(t or _EMPTY_TEXT))
     tm.escapedTranslationReceived.connect(lambda t:
         self.escapedTranslationEdit.setHtml(t or _EMPTY_TEXT))
     tm.targetTranslationReceived.connect(lambda t:
         self.targetTranslationEdit.setHtml(t or _EMPTY_TEXT))
 
-    tm.splitTextsReceived.connect(lambda l:
-        self.splitTextEdit.setPlainText('\n--------\n'.join(l) if l else _EMPTY_TEXT))
     tm.splitTranslationsReceived.connect(lambda l:
-        self.splitTranslationEdit.setPlainText('\n--------\n'.join(l) if l else _EMPTY_TEXT))
+        self.splitTranslationEdit.setHtml('<br/>--------<br/>'.join(l) if l else _EMPTY_TEXT))
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
@@ -532,7 +534,7 @@ class _MTTester(object):
     return self._createTextLabel(self.jointTranslationEdit, my.tr("Concatenated translation"))
   @memoizedproperty
   def jointTranslationEdit(self):
-    return self._createTextView(my.tr("Join split translations"))
+    return self._createTextView(my.tr("Join split translations"), rich=True)
 
   @memoizedproperty
   def finalTranslationLabel(self):
@@ -603,7 +605,7 @@ class _MTTester(object):
     return self._createTextLabel(self.splitTranslationEdit, my.tr("Separated translations"))
   @memoizedproperty
   def splitTranslationEdit(self):
-    return self._createTextView(my.tr("Translations for split texts"))
+    return self._createTextView(my.tr("Translations for split texts"), rich=True)
 
 class MTTester(QtWidgets.QDialog):
 

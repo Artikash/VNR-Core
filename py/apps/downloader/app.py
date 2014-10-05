@@ -2,7 +2,7 @@
 # app.py
 # 12/13/2012 jichi
 
-__all__ = ['Application']
+__all__ = 'Application',
 
 from Qt5.QtWidgets import QApplication
 from sakurakit.skdebug import dprint

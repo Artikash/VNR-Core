@@ -28,7 +28,7 @@
 #   "gyutto":""
 #  }
 
-__all__ = ['RestApi']
+__all__ = 'RestApi',
 
 if __name__ == '__main__': # DEBUG
   import sys

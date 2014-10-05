@@ -9,7 +9,7 @@
 # func = self.keyboard_funcs.get(msg)
 # => func = self.keyboard_funcs.get( int(str(msg)) )
 
-__all__ = ['WindowPicker']
+__all__ = 'WindowPicker',
 
 if __name__ == '__main__':
   import sys

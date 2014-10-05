@@ -4,7 +4,7 @@
 #
 # See: dmmPartsRequest in http://www.dmm.co.jp/js/parts_request.js
 
-__all__ = ['TagApi']
+__all__ = 'TagApi',
 
 if __name__ == '__main__': # DEBUG
   import sys

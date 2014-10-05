@@ -2,7 +2,7 @@
 # vkinput.py
 # 9/15/2014 jichi
 
-__all__ = ['VirtualKeyInputDialog']
+__all__ = 'VirtualKeyInputDialog',
 
 if __name__ == '__main__':
   import sys

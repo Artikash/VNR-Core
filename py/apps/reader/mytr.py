@@ -2,7 +2,7 @@
 # mytr.py
 # 10/8/2012 jichi
 
-__all__ = ['my', 'mytr_']
+__all__ = 'my', 'mytr_'
 
 from PySide.QtCore import QObject
 from sakurakit.skclass import memoized
@@ -43,6 +43,9 @@ class reader(QObject):
       self.tr("Test Regular Expression"), self.tr("Test regular expression"),
       self.tr("Test BBCode"), #self.tr("Test BBCode"),
       self.tr("Test Machine Translation"), self.tr("Test machine translation"),
+      self.tr("Test Japanese Syntax Tree"), self.tr("Test Japanese syntax tree"),
+      self.tr("Test Japanese Syntax"),
+      self.tr("Japanese Syntax Tree"),
 
       self.tr("Note"),
 

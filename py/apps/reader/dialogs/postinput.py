@@ -2,7 +2,7 @@
 # postinput.py
 # 8/30/2014 jichi
 
-__all__ = ['PostInputManager', 'PostInputManagerBean']
+__all__ = 'PostInputManager', 'PostInputManagerBean'
 
 if __name__ == '__main__':
   import sys

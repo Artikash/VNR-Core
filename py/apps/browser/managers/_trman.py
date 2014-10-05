@@ -30,7 +30,7 @@ _NO_RE = re.compile('')
 
 __PARAGRAPH_DELIM = u"【】「」♪" # machine translation of sentence deliminator
 _PARAGRAPH_SET = frozenset(__PARAGRAPH_DELIM)
-_PARAGRAPH_RE = re.compile(r"(%s)" % '|'.join(_PARAGRAPH_SET))
+_PARAGRAPH_RE = re.compile(r"([%s])" % ''.join(_PARAGRAPH_SET))
 
 #__SENTENCE_DELIM = u"\n【】「」。♪" #…！？# machine translation of sentence deliminator
 #_SENTENCE_SET = frozenset(__SENTENCE_DELIM)

@@ -2,7 +2,7 @@
 # about.py
 # 12/28/2013 jichi
 
-__all__ = ['AboutDialog']
+__all__ = 'AboutDialog',
 
 if __name__ == '__main__':
   import sys

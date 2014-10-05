@@ -2,7 +2,7 @@
 # gameview.py
 # 7/10/2013 jichi
 
-__all__ = ['GameViewManager']
+__all__ = 'GameViewManager',
 
 import json, os
 from functools import partial

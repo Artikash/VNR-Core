@@ -2,7 +2,7 @@
 # main.py
 # 11/29/2013 jichi
 
-__all__ = ['MainObject']
+__all__ = 'MainObject',
 
 import os
 from PySide.QtCore import Qt, QCoreApplication, QObject

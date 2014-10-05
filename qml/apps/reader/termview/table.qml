@@ -232,7 +232,7 @@ Item { id: root_
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: itemValue.disabled
-          font.bold: itemValue.regex
+          font.bold: itemValue.regex || itemValue.syntax
         }
         Desktop.ComboBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
@@ -302,7 +302,7 @@ Item { id: root_
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: itemValue.disabled
-          font.bold: itemValue.regex
+          font.bold: itemValue.regex || itemValue.syntax
         }
         Desktop.ComboBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
@@ -342,16 +342,32 @@ Item { id: root_
       }
     }
 
-    // Column: Regex
+    // Column: Syntax
     Desktop.TableColumn {
-      role: 'object'; title: Sk.tr("Regular expression")
-      //width: 40
-      width: 55
+      role: 'object'; title: Sk.tr("Syntax")
+      width: 40
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
-          enabled: canEdit(itemValue) && itemValue.type !== 'title' && itemValue.type !== 'macro' // prevent title terms from using regex
+          enabled: canEdit(itemValue) && itemValue.type === 'escape' && root_.userId !== _GUEST_USER_ID // only escape syntax is allowed
+          checked: itemValue.syntax && itemValue.type === 'escape' // force syntax for translatoin
+          onCheckedChanged:
+            if (enabled && checked !== itemValue.syntax)
+              itemValue.syntax = checked
+        }
+      }
+    }
+
+    // Column: Regex
+    Desktop.TableColumn {
+      role: 'object'; title: qsTr("Regex")
+      width: 40
+      delegate: Item {
+        height: table_.cellHeight
+        Desktop.CheckBox {
+          anchors { fill: parent; leftMargin: table_.cellSpacing }
+          enabled: canEdit(itemValue) && itemValue.type !== 'title' && itemValue.type !== 'macro' && !itemValue.syntax // prevent from using regex
           checked: itemValue.regex || itemValue.type === 'macro' // force regex for macros
           onCheckedChanged:
             if (enabled && checked !== itemValue.regex)
@@ -400,8 +416,7 @@ Item { id: root_
     // Column: Game specific
     Desktop.TableColumn {
       role: 'object'; title: "Hentai" // My.tr("Hentai")
-      //width: 40
-      width: 45
+      width: 40
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
@@ -417,9 +432,8 @@ Item { id: root_
 
     // Column: Game specific
     Desktop.TableColumn {
-      role: 'object'; title: My.tr("Series-specific")
-      //width: 40
-      width: 55
+      role: 'object'; title: qsTr("Series")
+      width: 40
       delegate: Item {
         height: table_.cellHeight
         Desktop.CheckBox {
@@ -449,7 +463,7 @@ Item { id: root_
           visible: !itemSelected || !editable
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: itemValue.disabled
-          font.bold: itemValue.regex
+          font.bold: itemValue.regex || itemValue.syntax
         }
         Desktop.ComboBox {
           anchors { fill: parent; leftMargin: table_.cellSpacing }
@@ -526,7 +540,7 @@ Item { id: root_
           text: itemValue.pattern
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: !itemSelected && itemValue.disabled
-          font.bold: itemValue.regex
+          font.bold: itemValue.regex || itemValue.syntax
         }
         TextInput {
           anchors { fill: parent; leftMargin: table_.cellSpacing; topMargin: 6 }
@@ -575,7 +589,7 @@ Item { id: root_
           text: itemValue.text
           color: itemSelected ? 'white' : itemColor(itemValue)
           font.strikeout: !itemSelected && itemValue.disabled
-          font.bold: itemValue.regex
+          font.bold: itemValue.regex || itemValue.syntax
         }
         TextInput {
           anchors { fill: parent; leftMargin: table_.cellSpacing; topMargin: 6 }
@@ -587,7 +601,7 @@ Item { id: root_
           readOnly: !editable
           maximumLength: _MAX_TEXT_LENGTH
           //property bool valid: Util.trim(text).length >= _MIN_TEXT_LENGTH
-          //font.bold: itemValue.regex
+          //font.bold: itemValue.regex || itemValue.syntax
 
           Component.onCompleted: text = itemValue.text
 
@@ -623,7 +637,7 @@ Item { id: root_
           text: itemValue.comment
           color: itemSelected ? 'white' : commentColor(itemValue)
           //font.strikeout: !itemSelected && itemValue.disabled
-          //font.bold: itemValue.regex
+          //font.bold: itemValue.regex || itemValue.syntax
 
           //function setText(v) { text = v }
           //Component.onCompleted: itemValue.commentChanged.connect(setText)
@@ -750,7 +764,7 @@ Item { id: root_
           text: itemValue.updateComment
           color: itemSelected ? 'white' : updateCommentColor(itemValue)
           //font.strikeout: itemValue.disabled
-          //font.bold: itemValue.regex
+          //font.bold: itemValue.regex || itemValue.syntax
         }
         TextInput {
           anchors { fill: parent; leftMargin: table_.cellSpacing; topMargin: 6 }

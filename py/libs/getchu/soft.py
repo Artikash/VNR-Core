@@ -2,7 +2,7 @@
 # soft.py
 # 10/20/2013 jichi
 
-__all__ = ['SoftApi']
+__all__ = 'SoftApi',
 
 if __name__ == '__main__': # DEBUG
   import sys

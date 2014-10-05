@@ -2,7 +2,7 @@
 # cacheman.py
 # 7/4/2012 jichi
 
-__all__ = ['CacheJinjaUtil', 'CacheCoffeeBean']
+__all__ = 'CacheJinjaUtil', 'CacheCoffeeBean'
 
 import os, re
 from functools import partial

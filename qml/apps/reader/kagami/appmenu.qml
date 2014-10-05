@@ -71,6 +71,11 @@ Item {
       onTriggered: mainPlugin_.showMachineTranslationTester()
     }
 
+    Desktop.MenuItem {
+      text: My.tr("Test Japanese Syntax")
+      onTriggered: mainPlugin_.showJapaneseSyntaxTester()
+    }
+
     Desktop.Separator {}
 
     Desktop.MenuItem {

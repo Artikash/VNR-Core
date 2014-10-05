@@ -2,7 +2,7 @@
 # bbtest.py
 # 12/16/2012 jichi
 
-__all__ = ['BBCodeTester']
+__all__ = 'BBCodeTester',
 
 if __name__ == '__main__':
   import sys

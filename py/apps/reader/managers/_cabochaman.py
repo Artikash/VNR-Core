@@ -3,7 +3,7 @@
 # 6/14/2014 jichi
 # See: cabocha/src/tree.cpp
 
-__all__ = ['CaboChaParser']
+__all__ = 'CaboChaParser',
 
 import os
 from sakurakit.skdebug import dprint, dwarn
@@ -40,6 +40,7 @@ class CaboChaParser(object):
     self.fmt = mecabfmt.DEFAULT
 
     self.parsers = {} # {unicode dicfile:CaboCha.Parser}
+    #self.parsersbydic = {} # unicode dic:CaboCha.Parser}
 
   def setenabled(self, v): self.enabled = v
 
@@ -67,6 +68,8 @@ class CaboChaParser(object):
         ret = self.parsers[self.rcfile] = cabocharc.createparser(args)
         if not ret:
           dwarn("failed to create cabocha parser")
+        #else:
+        #  self.parsersbydic[self.dic] = ret
       return ret
 
   def parse(self, text, termEnabled=False, type=False, fmt=None, group=False, reading=False, feature=False, furiType=defs.FURI_HIRA, readingTypes=(cabochadef.TYPE_KANJI,)):

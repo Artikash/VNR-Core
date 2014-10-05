@@ -2,7 +2,7 @@
 # postedit.py
 # 6/30/2014 jichi
 
-__all__ = ['PostEditorManager', 'PostEditorManagerBean']
+__all__ = 'PostEditorManager', 'PostEditorManagerBean'
 
 if __name__ == '__main__':
   import sys

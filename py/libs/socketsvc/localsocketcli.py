@@ -2,11 +2,11 @@
 # localsocketcli.py
 # jichi 4/28/2014
 
+__all__ = 'LocalSocketClient',
+
 if __name__ == '__main__':
   import sys
   sys.path.append('..')
-
-__all__ = ['LocalSocketClient']
 
 from PySide.QtCore import QObject, Signal, QTimer
 from sakurakit.skclass import Q_Q

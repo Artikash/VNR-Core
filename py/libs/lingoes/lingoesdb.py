@@ -2,7 +2,7 @@
 # lingoesdb.py
 # 1/16/2013 jichi
 
-__all__ = ['LingoesDb']
+__all__ = 'LingoesDb',
 
 if __name__ == '__main__':
   import sys

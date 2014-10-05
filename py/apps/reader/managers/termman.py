@@ -16,11 +16,14 @@ from functools import partial
 from time import time
 from PySide.QtCore import Signal, QObject, QTimer, QMutex, Qt
 from zhszht.zhszht import zhs2zht
-from sakurakit import skfileio, skthreads
+from rbmt import api as rbmt
+from sakurakit import skfileio, skos, skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
-from pytrscript import TranslationScriptManager
-import config, dataman, defs, i18n, rc
+import config, cabochaman, dataman, defs, i18n, rc
+
+if skos.WIN:
+  from pytrscript import TranslationScriptManager
 
 @memoized
 def manager(): return TermManager()
@@ -29,6 +32,18 @@ _re_marks = re.compile(r'<[0-9a-zA-Z: "/:=-]+?>')
 def _remove_marks(text): return _re_marks.sub('', text)
 
 SCRIPT_KEY_SEP = ',' # Separator of script manager key
+
+class TermTranslator(rbmt.MachineTranslator):
+  def __init__(self, cabocha, language, underline=True):
+    escape = config.is_kanji_language(language)
+    sep = '' if language.startswith('zh') else ' '
+    super(TermTranslator, self).__init__(cabocha, language,
+        sep=sep,
+        escape=escape,
+        underline=underline and escape)
+
+  def translate(self, text, tr=None, fr="", to=""):
+    return super(TermTranslator, self).translate(text, tr=tr)
 
 class TermWriter:
 
@@ -197,10 +212,11 @@ class TermWriter:
 """ % (self.createTime, type, language, self.hentai,
     ','.join(map(str, self.gameIds)) if self.gameIds else 'empty')
 
-  def _iterTermData(self, type, language):
+  def _iterTermData(self, type, language, syntax=False):
     """
     @param  type  str
     @param  language  str
+    @param* syntax  bool
     @yield  _Term
     """
     type2 = type3 = ''
@@ -218,6 +234,7 @@ class TermWriter:
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
           and (not td.hentai or self.hentai)
           and i18n.language_compatible_to(td.language, language)
+          and td.syntax == syntax
         ):
         yield td
 
@@ -307,6 +324,7 @@ class _TermManager:
     self.enabled = True # bool
     self.hentai = False # bool
     self.marked = False # bool
+    self.syntax = False # bool
 
     # For saving terms
     self.updateTime = 0 # float
@@ -318,12 +336,16 @@ class _TermManager:
     self.scripts = {} # {str key:TranslationScriptManager}  key = lang + type
     self.scriptTimes = {} # [str key:float time]
 
+    self.rbmt = {} # {str language:rbmt.api.Translator}
+    self.rbmtTimes = {} # [str language:float time]
+
     t = self.saveTimer = QTimer(q)
     t.setSingleShot(True)
     t.setInterval(2000) # wait for 2 seconds for rebuilding
     t.timeout.connect(self.saveTerms)
 
     q.invalidateCacheRequested.connect(t.start, Qt.QueuedConnection)
+    q.cacheChangedRequested.connect(q.cacheChanged, Qt.QueuedConnection)
 
   def rebuildCacheLater(self, queued=False):
     if queued:
@@ -362,8 +384,9 @@ class _TermManager:
     @param  createTime  float
     """
     #for lang,ts in self.targetLanguages.iteritems():
-    times = self.scriptTimes
-    if not times:
+    scriptTimes = self.scriptTimes
+    rbmtTimes = self.rbmtTimes
+    if (not scriptTimes and not rbmtTimes) or createTime < self.updateTime:
       return
 
     dprint("enter")
@@ -378,6 +401,68 @@ class _TermManager:
     termData = sorted(termData, reverse=True, key=lambda td:
           (len(td.pattern), td.private, td.special, td.id)) # it.regex  true is applied first
 
+    if scriptTimes and createTime >= self.updateTime:
+      self._saveScriptTerms(createTime=createTime, termData=termData, gameIds=gameIds, times=scriptTimes)
+
+    if rbmtTimes and createTime >= self.updateTime:
+      self._saveSyntaxTerms(createTime=createTime, termData=termData, gameIds=gameIds, times=rbmtTimes)
+
+    if createTime >= self.updateTime:
+      dprint("cache changed")
+      self.q.cacheChangedRequested.emit()
+    dprint("leave")
+
+  def _saveSyntaxTerms(self, createTime, termData, gameIds, times):
+    """
+    @param  createTime  float
+    @param  termData  [_Term]
+    @param  gameIds  [int] or None
+    @param  times  {str key:float time}
+    """
+    dprint("enter")
+    rules = []
+    hentai = self.hentai
+    for language, time in times.iteritems():
+      convertsChinese = language == 'zht'
+      for td in termData:
+        if (#not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
+            td.syntax and td.type == 'escape'
+            and (not td.special or gameIds and td.gameId and td.gameId in gameIds)
+            and (not td.hentai or hentai)
+            and i18n.language_compatible_to(td.language, language)
+          ):
+          if createTime < self.updateTime:
+            dwarn("leave: cancel saving out-of-date syntax terms")
+            return
+          z = convertsChinese and td.language == 'zhs'
+          pattern = td.pattern
+          repl = td.text
+          if repl and z:
+            repl = zhs2zht(repl)
+          rule = rbmt.createrule(pattern, repl, language)
+          if not rule:
+            dwarn("failed to parse rule:", source, target)
+          else:
+            rules.append(rule)
+
+      mt = self.rbmt[language]
+      if createTime < self.updateTime:
+        dwarn("leave: cancel saving out-of-date syntax terms")
+        return
+      mt.setRules(rules)
+      times[language] = createTime
+      dprint("lang = %s, count = %s" % (language, mt.ruleCount()))
+
+    dprint("leave")
+
+  def _saveScriptTerms(self, createTime, termData, gameIds, times):
+    """
+    @param  createTime  float
+    @param  termData  [_Term]
+    @param  gameIds  [int] or None
+    @param  times  {str key:float time}
+    """
+    dprint("enter")
     w = TermWriter(
       createTime=createTime,
       termData=termData, # not back up to save memory
@@ -410,7 +495,6 @@ class _TermManager:
           dprint("type = %s, lang = %s, count = %s" % (type, lang, man.size()))
 
         times[scriptKey] = createTime
-
     dprint("leave")
 
   def applyTerms(self, text, type, language):
@@ -437,17 +521,42 @@ class TermManager(QObject):
 
   cacheChanged = Signal()
 
+  cacheChangedRequested = Signal() # private euse
   invalidateCacheRequested = Signal() # private use
 
   ## Properties ##
 
   #def isLocked(self): return self.__d.locked
 
+  def getRuleBasedTranslator(self, language):
+    """
+    @param  language  str
+    @return rbmt.api.Translator or None
+    """
+    if not self.isSyntaxEnabled or not self.isEnabled or not language:
+      return
+    d = self.__d
+    ret = d.rbmt.get(language)
+    if ret:
+      return ret if ret.ruleCount() else None
+    cabocha = cabochaman.cabochaparser()
+    if not cabocha:
+      dwarn("failed to create cabocha parser")
+    else:
+      ret = d.rbmt[language] = TermTranslator(cabocha, language, underline=d.marked)
+      d.rbmtTimes[language] = 0
+      d.rebuildCacheLater()
+
   def setTargetLanguage(self, v):
     d = self.__d
     if v and v != d.targetLanguage:
       d.targetLanguage = v
-      d.scriptTimes = {} # reset scriptTimes
+      # Reset translation scripts
+      d.scripts = {}
+      d.scriptTimes = {}
+      # Reset rule-based translator
+      d.rbmt = {}
+      d.rbmtTimes = {}
 
   def isEnabled(self): return self.__d.enabled
   def setEnabled(self, value): self.__d.enabled = value
@@ -456,6 +565,11 @@ class TermManager(QObject):
   def setHentaiEnabled(self, value):
     dprint(value)
     self.__d.hentai = value
+
+  def isSyntaxEnabled(self): return self.__d.syntax
+  def setSyntaxEnabled(self, value):
+    dprint(value)
+    self.__d.syntax = value
 
   def isMarked(self): return self.__d.marked
   def setMarked(self, t):
@@ -466,6 +580,9 @@ class TermManager(QObject):
         type = key.split(SCRIPT_KEY_SEP)[0]
         marked = t and type in ('target', 'escape_target')
         man.setUnderline(marked)
+
+      for it in d.rbmt.itervalues():
+        it.setUnderline(t and it.escape)
 
   ## Marks ##
 
@@ -534,7 +651,7 @@ class TermManager(QObject):
     #with SkProfiler():
     return d.applyTerms(text, 'target', language) if d.enabled else text
     #if d.marked and language.startswith('zh'):
-    #  ret = ret.replace('> ', '')
+    #  ret = ret.replace('> ', '>')
     #return self.__d.applyTerms(dataman.manager().iterTargetTerms(),
     #    text, language, convertsChinese=True, marksChanges=self.__d.marked)
 

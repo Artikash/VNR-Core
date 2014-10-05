@@ -2,7 +2,7 @@
 # webkit.py
 # 12/13/2012 jichi
 
-__all__ = ['WbWebView', 'WbWebPage']
+__all__ = 'WbWebView', 'WbWebPage'
 
 import re
 from PySide.QtCore import Qt, Signal, QEvent, QUrl

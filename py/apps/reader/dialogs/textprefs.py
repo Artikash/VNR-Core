@@ -2,7 +2,7 @@
 # textprefs.py
 # 11/5/2012 jichi
 
-__all__ = ['TextPrefsDialog']
+__all__ = 'TextPrefsDialog',
 
 import os
 from functools import partial

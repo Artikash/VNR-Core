@@ -3,7 +3,7 @@
 # 11/28/2013 jichi
 # Note: the new line character is \r\n
 
-__all__ = ['ItemApi']
+__all__ = 'ItemApi',
 
 if __name__ == '__main__': # DEBUG
   import sys

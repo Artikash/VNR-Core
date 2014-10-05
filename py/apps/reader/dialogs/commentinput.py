@@ -2,7 +2,7 @@
 # commentinput.py
 # 5/28/2014 jichi
 
-__all__ = ['CommentInputDialog']
+__all__ = 'CommentInputDialog',
 
 if __name__ == '__main__':
   import sys

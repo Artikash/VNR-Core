@@ -2,7 +2,7 @@
 # main.py
 # 11/29/2013 jichi
 
-__all__ = ['Downloader']
+__all__ = 'Downloader',
 
 if __name__ == '__main__': # DEBUG
   import debug

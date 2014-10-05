@@ -9,7 +9,7 @@ from sakurakit.skdebug import dwarn
 from sakurakit.sktypes import to_int, to_unicode #to_long
 import defs, config
 
-__all__ = ['SettingsProxy']
+__all__ = 'SettingsProxy',
 
 # http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
 # win32con
@@ -1219,9 +1219,20 @@ class Settings(QSettings):
 
   termMarkedChanged = Signal(bool)
   def isTermMarked(self): return to_bool(self.value('TermMarked'))
+  def setTermMarked(self, t):
+    if t != self.isTermMarked():
+      self.setValue('TermMarked', t)
+      self.termMarkedChanged.emit(t)
 
   hentaiEnabledChanged = Signal(bool)
   def isHentaiEnabled(self): return to_bool(self.value('Hentai'))
+
+  translationSyntaxEnabledChanged = Signal(bool)
+  def isTranslationSyntaxEnabled(self): return to_bool(self.value('RBMT'))
+  def setTranslationSyntaxEnabled(self, t):
+    if t != self.isTranslationSyntaxEnabled():
+      self.setValue('RBMT', t)
+      self.translationSyntaxEnabledChanged.emit(t)
 
   ## Fonts ##
 
@@ -1636,7 +1647,7 @@ class SettingsProxy(QObject):
 
     self.hentaiChanged.connect(g.hentaiEnabledChanged)
     self.termEnabledChanged.connect(g.termEnabledChanged)
-    self.termMarkedChanged.connect(g.termMarkedChanged)
+    #self.termMarkedChanged.connect(g.termMarkedChanged)
 
     self.copiesGameTextChanged.connect(g.copiesGameTextChanged)
     self.copiesGameSubtitleChanged.connect(g.copiesGameSubtitleChanged)
@@ -1703,15 +1714,15 @@ class SettingsProxy(QObject):
       setTermEnabled,
       notify=termEnabledChanged)
 
-  def setTermMarked(self, value):
-    if value != self.termMarked:
-      global_().setValue('TermMarked', value)
-      self.termMarkedChanged.emit(value)
-  termMarkedChanged = Signal(bool)
-  termMarked = Property(bool,
-      lambda _: global_().isTermMarked(),
-      setTermMarked,
-      notify=termMarkedChanged)
+  #def setTermMarked(self, value):
+  #  if value != self.termMarked:
+  #    global_().setValue('TermMarked', value)
+  #    self.termMarkedChanged.emit(value)
+  #termMarkedChanged = Signal(bool)
+  #termMarked = Property(bool,
+  #    lambda _: global_().isTermMarked(),
+  #    setTermMarked,
+  #    notify=termMarkedChanged)
 
   #def setWindowHookEnabled(self, value):
   #  if value != self.windowHookEnabled:

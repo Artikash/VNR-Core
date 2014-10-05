@@ -2,7 +2,7 @@
 # skwebkit.py
 # 11/9/2011 jichi
 
-__all__ = ['SkNetworkCookieJar']
+__all__ = 'SkNetworkCookieJar',
 
 from skdebug import dprint
 from PySide.QtNetwork import QNetworkCookie, QNetworkCookieJar
