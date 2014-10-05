@@ -154,7 +154,7 @@ class MachineTranslator(object):
     d = self.__d
     if d.language != v:
       d.language = d.mt.to = d.rt.to = v
-      for rule in d.rules:
+      for rule in d.rt.rules:
         rule.targetLanguage = v
 
   def isUnderlineEnabled(self): return self.__d.underline # -> bool

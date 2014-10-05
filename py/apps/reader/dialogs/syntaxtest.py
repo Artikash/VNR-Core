@@ -143,7 +143,7 @@ class _SyntaxTester(object):
 
   @memoizedproperty
   def syntaxView(self):
-    ret = QtWidgets.QPlainTextEdit()
+    ret = QtWidgets.QPlainTextEdit(my.tr("Missing MeCab, CaboCha, or UniDic"))
     ret.setReadOnly(True)
     skqss.class_(ret, 'texture')
     ret.setToolTip(my.tr("Syntax parse tree"))
@@ -151,7 +151,7 @@ class _SyntaxTester(object):
 
   @memoizedproperty
   def targetView(self):
-    ret = QtWidgets.QTextEdit()
+    ret = QtWidgets.QTextEdit(my.tr("Missing MeCab, CaboCha, or UniDic"))
     ret.setReadOnly(True)
     skqss.class_(ret, 'texture')
     ret.setToolTip(tr_("Output"))

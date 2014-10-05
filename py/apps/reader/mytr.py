@@ -44,6 +44,7 @@ class reader(QObject):
       self.tr("Test BBCode"), #self.tr("Test BBCode"),
       self.tr("Test Machine Translation"), self.tr("Test machine translation"),
       self.tr("Test Japanese Syntax Tree"), self.tr("Test Japanese syntax tree"),
+      self.tr("Test Japanese Syntax"),
       self.tr("Japanese Syntax Tree"),
 
       self.tr("Note"),
