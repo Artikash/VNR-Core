@@ -582,7 +582,7 @@ class TermManager(QObject):
         man.setUnderline(marked)
 
       for it in d.rbmt.itervalues():
-        it.setUnderline(t and it.escape)
+        it.setUnderline(t and it.isEscape())
 
   ## Marks ##
 
