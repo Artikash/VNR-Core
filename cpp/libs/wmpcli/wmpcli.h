@@ -9,32 +9,42 @@
 
 // - Types -
 
-struct IWMPlayer;
 struct IWMPControls;
 struct IWMPMedia;
+struct IWMPPlayer;
 struct IWMPSettings;
 
-typedef IWMPlayer wmp_player_t;
 typedef IWMPControls wmp_control_t;
 typedef IWMPMedia wmp_media_t;
+typedef IWMPPlayer wmp_player_t;
 typedef IWMPSettings wmp_settings_t;
 
 // - Functions -
 
 // Construction
 wmp_player_t *wmp_player_create();
-void wmp_player_release(wmp_player_t *p);
+int wmp_player_release(wmp_player_t *p); // return reference count
 
 wmp_control_t *wmp_player_get_control(wmp_player_t *p);
-void wmp_control_release(wmp_control_t *c);
+int wmp_control_release(wmp_control_t *c); // return reference count
 
 wmp_settings_t *wmp_player_get_settings(wmp_player_t *p);
-void wmp_settings_release(wmp_settings_t *s);
+int wmp_settings_release(wmp_settings_t *s); // return reference count
 
-void wmp_media_release(wmp_media_t *m);
+int wmp_media_release(wmp_media_t *m); // return reference count
 
 // Player
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd563514%28v=vs.85%29.aspx
+
+bool wmp_player_close(wmp_player_t *p);
+
+inline void wmp_player_destroy(wmp_player_t *p)
+{
+  if (p) {
+    wmp_player_close(p);
+    wmp_player_release(p);
+  }
+}
 
 // Player is disabled on the startup
 bool wmp_player_set_enabled(wmp_player_t *p, bool t);
@@ -52,7 +62,7 @@ const wchar_t *wmp_player_get_url(wmp_player_t *p);
 
 // None, invisible, full, minimal
 bool wmp_player_set_uimode(wmp_player_t *p, const wchar_t *val);
-const wchar_t *wmp_player_get_uimode(wmp_player_t *p)
+const wchar_t *wmp_player_get_uimode(wmp_player_t *p);
 
 // Control
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd563179%28v=vs.85%29.aspx
@@ -90,10 +100,12 @@ bool wmp_settings_set_baseurl(wmp_settings_t *s, const wchar_t *val);
 const wchar_t *wmp_settings_get_baseurl(wmp_settings_t *s);
 
 // [0,100] if succeed, or -1 if failed
+enum { wmp_min_volume = 0, wmp_max_volume = 100 };
 bool wmp_settings_set_volume(wmp_settings_t *s, int val);
 int wmp_settings_get_volume(wmp_settings_t *s);
 
 // [-100,100], default is 0
+enum { wmp_min_balance = -100, wmp_max_balance = 100 };
 bool wmp_settings_set_balance(wmp_settings_t *s, int val);
 int wmp_settings_get_balance(wmp_settings_t *s);
 

@@ -1,83 +1,84 @@
 // wmpcli.cc
 // 10/5/2014 jichi
 
-#include "wincli/wincli.h"
+#include "wmpcli/wmpcli.h"
 #include <windows.h>
 #include "wmp/wmp.h"
 #include "cc/ccmacro.h"
 
 // Construction
-void wmp_player_release(wmp_player_t *p) { p->Release(); }
-void wmp_control_release(wmp_control_t *c) { c->Release(); }
-void wmp_settings_release(wmp_settings_t *s) { s->Release(); }
-void wmp_media_release(wmp_media_t *m) { m->Release(); }
+int wmp_player_release(wmp_player_t *p) { return p->Release(); }
+int wmp_control_release(wmp_control_t *c) { return c->Release(); }
+int wmp_settings_release(wmp_settings_t *s) { return s->Release(); }
+int wmp_media_release(wmp_media_t *m) { return m->Release(); }
 
 wmp_player_t *wmp_player_create()
 {
-  IWMPlayer *p = nullptr;
+  IWMPPlayer *p = nullptr;
   return SUCCEEDED(::CoCreateInstance(CLSID_WindowsMediaPlayer, nullptr, CLSCTX_INPROC_SERVER, IID_IWMPPlayer,
       reinterpret_cast<LPVOID *>(&p))) ? p : nullptr;
 }
 
-wmp_control_t *wmp_player_get_control(wmp_player_t *p);
+wmp_control_t *wmp_player_get_control(wmp_player_t *p)
 {
   IWMPControls *c;
-  return SUCCEEDED(player->get_controls(&c)) ? c : nullptr;
+  return SUCCEEDED(p->get_controls(&c)) ? c : nullptr;
 }
 
-wmp_settings_t *wmp_player_get_settings(wmp_player_t *p);
+wmp_settings_t *wmp_player_get_settings(wmp_player_t *p)
 {
   IWMPSettings *s;
-  return SUCCEEDED(player->get_settings(&s)) ? s : nullptr;
+  return SUCCEEDED(p->get_settings(&s)) ? s : nullptr;
 }
 
 // Player
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd563514%28v=vs.85%29.aspx
 
-// Player is disabled on the startup
+bool wmp_player_close(wmp_player_t *p) { return SUCCEEDED(p->close()); }
+
 bool wmp_player_set_enabled(wmp_player_t *p, bool t)
-{ return SUCCEEDED(player->put_enabled(p, t); }
+{ return SUCCEEDED(p->put_enabled(t)); }
 
 bool wmp_player_get_enabled(wmp_player_t *p)
 {
   VARIANT_BOOL t;
-  return SUCCEEDED(player->get_enabled(p, &t)) && t;
+  return SUCCEEDED(p->get_enabled(&t)) && t;
 }
 
 bool wmp_player_set_fullscreen(wmp_player_t *p, bool t)
-{ return SUCCEEDED(player->put_fullScreen(p, t); }
+{ return SUCCEEDED(p->put_fullScreen(t)); }
 
 bool wmp_player_get_fullscreen(wmp_player_t *p)
 {
   VARIANT_BOOL t;
-  return SUCCEEDED(player->get_fullScreen(p, &t)) && t;
+  return SUCCEEDED(p->get_fullScreen(&t)) && t;
 }
 
 bool wmp_player_set_contextmenuenabled(wmp_player_t *p, bool t)
-{ return SUCCEEDED(player->put_enableContextMenu(p, t); }
+{ return SUCCEEDED(p->put_enableContextMenu(t)); }
 
 bool wmp_player_get_contextmenuenabled(wmp_player_t *p)
 {
   VARIANT_BOOL t;
-  return SUCCEEDED(player->get_enableContextMenu(p, &t)) && t;
+  return SUCCEEDED(p->get_enableContextMenu(&t)) && t;
 }
 
-bool wmp_player_set_url(wmp_player_t *p, const wchar_t *val);
-{ return SUCCEEDED(player->put_URL(p, val); }
+bool wmp_player_set_url(wmp_player_t *p, const wchar_t *val)
+{ return SUCCEEDED(p->put_URL(const_cast<BSTR>(val))); }
 
-const wchar_t *wmp_player_get_url(wmp_player_t *p);
+const wchar_t *wmp_player_get_url(wmp_player_t *p)
 {
   BSTR val;
-  return SUCCEEDED(player->get_URL(p, &val)) ? val : nullptr;
+  return SUCCEEDED(p->get_URL(&val)) ? val : nullptr;
 }
 
-bool wmp_player_set_uimode(wmp_player_t *p, const wchar_t *mode);
-{ return SUCCEEDED(player->put_uiMode(p, val); }
+bool wmp_player_set_uimode(wmp_player_t *p, const wchar_t *val)
+{ return SUCCEEDED(p->put_uiMode(const_cast<BSTR>(val))); }
 
 const wchar_t *wmp_player_get_uimode(wmp_player_t *p)
 {
   BSTR val;
-  return SUCCEEDED(player->get_uiMode(p, &val)) ? val : nullptr;
+  return SUCCEEDED(p->get_uiMode(&val)) ? val : nullptr;
 }
 
 // Control
@@ -95,13 +96,13 @@ bool wmp_control_backward(wmp_control_t *c) { return SUCCEEDED(c->fastReverse())
 bool wmp_control_set_pos(wmp_control_t *c, double val)
 { return SUCCEEDED(c->put_currentPosition(val)); }
 
-double wmp_control_get_pos(wmp_control_t *c);
+double wmp_control_get_pos(wmp_control_t *c)
 {
   double val;
   return SUCCEEDED(c->get_currentPosition(&val)) ? val : -1;
 }
 
-bool wmp_control_set_media(wmp_control_t *c, wmp_media_t *m);
+bool wmp_control_set_media(wmp_control_t *c, wmp_media_t *m)
 { return SUCCEEDED(c->put_currentItem(m)); }
 
 wmp_media_t *wmp_control_get_media(wmp_control_t *c)
@@ -130,17 +131,17 @@ bool wmp_settings_get_autostart(wmp_settings_t *s)
   return SUCCEEDED(s->get_autoStart(&t)) && t;
 }
 
-bool wmp_settings_set_baseurl(wmp_settings_t *s, const wchar_t *val);
-{ return SUCCEEDED(s->put_baseUrl(t, val)); }
+bool wmp_settings_set_baseurl(wmp_settings_t *s, const wchar_t *val)
+{ return SUCCEEDED(s->put_baseURL(const_cast<BSTR>(val))); }
 
 const wchar_t *wmp_settings_get_baseurl(wmp_settings_t *s)
 {
   BSTR val;
-  return SUCCEEDED(s->get_baseUrl(&val)) ? val : nullptr;
+  return SUCCEEDED(s->get_baseURL(&val)) ? val : nullptr;
 }
 
 bool wmp_settings_set_volume(wmp_settings_t *s, int val)
-{ return SUCCEEDED(s->put_volume(t, val)); }
+{ return SUCCEEDED(s->put_volume(val)); }
 
 int wmp_settings_get_volume(wmp_settings_t *s)
 {
@@ -149,7 +150,7 @@ int wmp_settings_get_volume(wmp_settings_t *s)
 }
 
 bool wmp_settings_set_balance(wmp_settings_t *s, int val)
-{ return SUCCEEDED(s->put_balance(t, val)); }
+{ return SUCCEEDED(s->put_balance(val)); }
 
 int wmp_settings_get_balance(wmp_settings_t *s)
 {
@@ -158,7 +159,7 @@ int wmp_settings_get_balance(wmp_settings_t *s)
 }
 
 bool wmp_settings_set_mute(wmp_settings_t *s, bool t)
-{ return SUCCEEDED(s->put_mute(t, t)); }
+{ return SUCCEEDED(s->put_mute(t)); }
 
 bool wmp_settings_get_mute(wmp_settings_t *s)
 {
@@ -167,7 +168,7 @@ bool wmp_settings_get_mute(wmp_settings_t *s)
 }
 
 bool wmp_settings_set_rate(wmp_settings_t *s, double val)
-{ return SUCCEEDED(s->put_rate(t, val)); }
+{ return SUCCEEDED(s->put_rate( val)); }
 
 double wmp_settings_get_rate(wmp_settings_t *s)
 {
@@ -175,10 +176,10 @@ double wmp_settings_get_rate(wmp_settings_t *s)
   return SUCCEEDED(s->get_rate(&val)) ? val : -1;
 }
 
-bool wmp_settings_set_playcount(wmp_settings_t *s, int val);
-{ return SUCCEEDED(s->put_playCount(t, val)); }
+bool wmp_settings_set_playcount(wmp_settings_t *s, int val)
+{ return SUCCEEDED(s->put_playCount(val)); }
 
-int wmp_settings_get_playcount(wmp_settings_t *s);
+int wmp_settings_get_playcount(wmp_settings_t *s)
 {
   long val;
   return SUCCEEDED(s->get_playCount(&val)) ? val : 0;
@@ -219,7 +220,7 @@ bool wmp_media_equal(wmp_media_t *x, wmp_media_t *y)
 {
   VARIANT_BOOL t;
   return x == y
-      || x && y && SUCCEEDED(s->get_isIdentical(y, &t)) && t;
+      || x && y && SUCCEEDED(x->get_isIdentical(y, &t)) && t;
 }
 
 double wmp_media_get_duration(wmp_media_t *m)
@@ -229,11 +230,11 @@ double wmp_media_get_duration(wmp_media_t *m)
 }
 
 bool wmp_media_set_name(wmp_media_t *m, const wchar_t *val)
-{ return SUCCEEDED(m->put_name(&val)); }
+{ return SUCCEEDED(m->put_name(const_cast<BSTR>(val))); }
 
-const wchar_t *wmp_media_get_name(wmp_media_t *m);
+const wchar_t *wmp_media_get_name(wmp_media_t *m)
 {
-  const wchar_t *val;
+  BSTR val;
   return SUCCEEDED(m->get_name(&val)) ? val : nullptr;
 }
 
@@ -243,16 +244,16 @@ int wmp_media_get_imagewidth(wmp_media_t *m)
   return SUCCEEDED(m->get_imageSourceWidth(&val)) ? val : -1;
 }
 
-int wmp_media_get_imageheight(wmp_media_t *m);
+int wmp_media_get_imageheight(wmp_media_t *m)
 {
   long val;
   return SUCCEEDED(m->get_imageSourceHeight(&val)) ? val : -1;
 }
 
-const wchar_t *wmp_media_get_url(wmp_media_t *m);
+const wchar_t *wmp_media_get_url(wmp_media_t *m)
 {
-  const wchar_t *val;
-  return SUCCEEDED(m->get_sourceUrl(&val)) ? val : nullptr;
+  BSTR val;
+  return SUCCEEDED(m->get_sourceURL(&val)) ? val : nullptr;
 }
 
 // EOF
