@@ -14,6 +14,7 @@
 //#import "wmp.dll"
 // http://social.msdn.microsoft.com/Forums/vstudio/ko-KR/db3007bd-0410-45a0-bab0-6b0a20723f14/windows-media-playermfcatl?forum=visualcpluszhchs
 //#import "wmp.dll" raw_interfaces_only raw_native_types no_namespace named_guids
+//#import "wmp.dll" raw_native_types no_namespace named_guids
 
 int main()
 {

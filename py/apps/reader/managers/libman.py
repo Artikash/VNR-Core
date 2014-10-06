@@ -238,8 +238,8 @@ class ModiOcr(Library):
   DOWNLOAD_URL = "https://mega.co.nz/#F!g00SQJZS!pm3bAcS6qHotPzJQUT596Q"
 
   def location(self):
-    from modiocr import modiocr
-    return modiocr.MODI_PATH
+    from modi import modi
+    return modi.MODI_PATH
 
 class QuickTime(Library):
   URL = "http://www.apple.com/quicktime/download/"

@@ -9,8 +9,8 @@
 // http://blog.firefly-vj.net/blog/2008/05/15/directshow-windowsmobile-play-mp3-windows-media-player/
 
 // Generated from wmp.dll on Windows 7 x86 with Windows Media Player 12
+// Adding raw_interfaces_only since wmp.tli is not used.
 //#import "wmp.dll" raw_interfaces_only raw_native_types no_namespace named_guids
 #include "12.0/wmp.tlh"
-//#include "12.0/wmp.tli"   // not used
 
 // EOF

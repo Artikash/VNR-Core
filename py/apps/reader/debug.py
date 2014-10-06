@@ -90,12 +90,11 @@ if __name__ == '__main__':
     print "debug: leave"
 
   def test_ocr():
-    import os
-    from modiocr import modiocr
+    from modi import modi
     path = "wiki.tiff"
     #path = r"Z:\Users\jichi\opt\stream\Library\Frameworks\Sakura\py\apps\reader\wiki.tiff"
-    lang = modiocr.LANG_JA
-    ok = modiocr.readfile(path, lang)
+    lang = modi.LANG_JA
+    ok = modi.readfile(path, lang)
 
   def test_chat():
     a = app()

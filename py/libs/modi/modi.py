@@ -1,5 +1,5 @@
 # coding: utf8
-# modiocr.py
+# modi.py
 # 8/13/2013 jichi
 
 if __name__ == '__main__': # DEBUG
@@ -85,10 +85,10 @@ MODI_PATH = os.path.join(skpaths.COMMONPROGRAMFILESx86, r'Microsoft Shared\MODI'
 
 from sakurakit import skos
 if skos.WIN:
-  from  pymodiocr import ModiOcr
-  available = ModiOcr.isValid # -> bool
-  readtext = ModiOcr.readText # (unicode path, int lang) -> unicode
-  readtexts = ModiOcr.readTextList # (unicode path, int lang) -> [unicode]
+  from  pymodi import ModiReader
+  available = ModiReader.isValid # -> bool
+  readtext = ModiReader.readText # (unicode path, int lang) -> unicode
+  readtexts = ModiReader.readTextList # (unicode path, int lang) -> [unicode]
 
 else:
   def available(): return False

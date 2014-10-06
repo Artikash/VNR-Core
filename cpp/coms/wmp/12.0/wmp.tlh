@@ -2,8 +2,8 @@
 //
 // c:\tmp\build-sakura-desktop-release\cpp\tests\wmptest\release\wmp.tlh
 //
-// C++ source equivalent of Win32 type library C:\WINDOWS\system32\wmp.dll
-// compiler-generated file created 10/02/14 at 00:33:43 - DO NOT EDIT!
+// C++ source equivalent of Win32 type library wmp.dll
+// compiler-generated file created 10/05/14 at 21:40:06 - DO NOT EDIT!
 
 #pragma once
 #pragma pack(push, 8)

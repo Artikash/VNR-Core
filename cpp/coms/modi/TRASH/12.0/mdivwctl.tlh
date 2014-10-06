@@ -1264,6 +1264,6 @@ extern "C" const GUID __declspec(selectany) CLSID_MiSelectRects =
 // Wrapper method implementations
 //
 
-#include "12.0/mdivwctl.tli"
+#include "c:\tmp\build-sakura-desktop-release\cpp\tests\ocrtest\release\mdivwctl.tli"
 
 #pragma pack(pop)

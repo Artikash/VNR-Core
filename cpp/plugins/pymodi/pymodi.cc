@@ -1,17 +1,17 @@
-// pymodiocr.cc
+// pymodi.cc
 // 8/13/2014
 
-#include "pymodiocr/pymodiocr.h"
+#include "pymodi/pymodi.h"
 #include "modiocr/modiocr.h"
 //#include <QtCore/QMutex>
 //#include <QtCore/QMutexLocker>
 
 //static QMutex _mutex; // MODI OCR would crash if invoked simutaneously
 
-bool ModiOcr::isValid()
+bool ModiReader::isValid()
 { return ::modiocr_available(); }
 
-QString ModiOcr::readText(const QString &path, int language)
+QString ModiReader::readText(const QString &path, int language)
 {
   //QMutexLocker sync(&::_mutex);
   QString ret;
@@ -23,7 +23,7 @@ QString ModiOcr::readText(const QString &path, int language)
   return ret;
 }
 
-QStringList ModiOcr::readTextList(const QString &path, int language)
+QStringList ModiReader::readTextList(const QString &path, int language)
 {
   //QMutexLocker sync(&::_mutex);
   QStringList ret;

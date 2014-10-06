@@ -10,8 +10,7 @@ DEPENDPATH  += $$PWD
 
 HEADERS += \
   $$PWD/wmp.h \
-  $$PWD/$$WMP_VERSION/wmp.tlh \
-  $$PWD/$$WMP_VERSION/wmp.tli
+  $$PWD/$$WMP_VERSION/wmp.tlh
 }
 
 # EOF

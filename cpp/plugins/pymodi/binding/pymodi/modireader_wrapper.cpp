@@ -7,9 +7,9 @@
 #include <destroylistener.h>
 #include <typeresolver.h>
 #include <typeinfo>
-#include "pymodiocr_python.h"
+#include "pymodi_python.h"
 
-#include "modiocr_wrapper.h"
+#include "modireader_wrapper.h"
 
 // Extra includes
 
@@ -19,26 +19,26 @@
 
 extern "C" {
 static int
-Sbk_ModiOcr_Init(PyObject* self, PyObject* args, PyObject* kwds)
+Sbk_ModiReader_Init(PyObject* self, PyObject* args, PyObject* kwds)
 {
     SbkObject* sbkSelf = reinterpret_cast<SbkObject*>(self);
-    if (Shiboken::Object::isUserType(self) && !Shiboken::ObjectType::canCallConstructor(self->ob_type, Shiboken::SbkType< ::ModiOcr >()))
+    if (Shiboken::Object::isUserType(self) && !Shiboken::ObjectType::canCallConstructor(self->ob_type, Shiboken::SbkType< ::ModiReader >()))
         return -1;
 
-    ::ModiOcr* cptr = 0;
+    ::ModiReader* cptr = 0;
 
     // Call function/method
     {
 
         if (!PyErr_Occurred()) {
-            // ModiOcr()
+            // ModiReader()
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            cptr = new ::ModiOcr();
+            cptr = new ::ModiReader();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
         }
     }
 
-    if (PyErr_Occurred() || !Shiboken::Object::setCppPointer(sbkSelf, Shiboken::SbkType< ::ModiOcr >(), cptr)) {
+    if (PyErr_Occurred() || !Shiboken::Object::setCppPointer(sbkSelf, Shiboken::SbkType< ::ModiReader >(), cptr)) {
         delete cptr;
         return -1;
     }
@@ -49,7 +49,7 @@ Sbk_ModiOcr_Init(PyObject* self, PyObject* args, PyObject* kwds)
     return 1;
 }
 
-static PyObject* Sbk_ModiOcrFunc_isValid(PyObject* self)
+static PyObject* Sbk_ModiReaderFunc_isValid(PyObject* self)
 {
     PyObject* pyResult = 0;
 
@@ -59,7 +59,7 @@ static PyObject* Sbk_ModiOcrFunc_isValid(PyObject* self)
         if (!PyErr_Occurred()) {
             // isValid()
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            bool cppResult = ::ModiOcr::isValid();
+            bool cppResult = ::ModiReader::isValid();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
         }
@@ -72,7 +72,7 @@ static PyObject* Sbk_ModiOcrFunc_isValid(PyObject* self)
     return pyResult;
 }
 
-static PyObject* Sbk_ModiOcrFunc_readText(PyObject* self, PyObject* args)
+static PyObject* Sbk_ModiReaderFunc_readText(PyObject* self, PyObject* args)
 {
     PyObject* pyResult = 0;
     int overloadId = -1;
@@ -97,7 +97,7 @@ static PyObject* Sbk_ModiOcrFunc_readText(PyObject* self, PyObject* args)
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_ModiOcrFunc_readText_TypeError;
+    if (overloadId == -1) goto Sbk_ModiReaderFunc_readText_TypeError;
 
     // Call function/method
     {
@@ -109,7 +109,7 @@ static PyObject* Sbk_ModiOcrFunc_readText(PyObject* self, PyObject* args)
         if (!PyErr_Occurred()) {
             // readText(QString,int)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            QString cppResult = ::ModiOcr::readText(cppArg0, cppArg1);
+            QString cppResult = ::ModiReader::readText(cppArg0, cppArg1);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], &cppResult);
         }
@@ -121,13 +121,13 @@ static PyObject* Sbk_ModiOcrFunc_readText(PyObject* self, PyObject* args)
     }
     return pyResult;
 
-    Sbk_ModiOcrFunc_readText_TypeError:
+    Sbk_ModiReaderFunc_readText_TypeError:
         const char* overloads[] = {"unicode, int", 0};
-        Shiboken::setErrorAboutWrongArguments(args, "pymodiocr.ModiOcr.readText", overloads);
+        Shiboken::setErrorAboutWrongArguments(args, "pymodi.ModiReader.readText", overloads);
         return 0;
 }
 
-static PyObject* Sbk_ModiOcrFunc_readTextList(PyObject* self, PyObject* args)
+static PyObject* Sbk_ModiReaderFunc_readTextList(PyObject* self, PyObject* args)
 {
     PyObject* pyResult = 0;
     int overloadId = -1;
@@ -152,7 +152,7 @@ static PyObject* Sbk_ModiOcrFunc_readTextList(PyObject* self, PyObject* args)
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_ModiOcrFunc_readTextList_TypeError;
+    if (overloadId == -1) goto Sbk_ModiReaderFunc_readTextList_TypeError;
 
     // Call function/method
     {
@@ -164,7 +164,7 @@ static PyObject* Sbk_ModiOcrFunc_readTextList(PyObject* self, PyObject* args)
         if (!PyErr_Occurred()) {
             // readTextList(QString,int)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            QStringList cppResult = ::ModiOcr::readTextList(cppArg0, cppArg1);
+            QStringList cppResult = ::ModiReader::readTextList(cppArg0, cppArg1);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(SbkPySide_QtCoreTypeConverters[SBK_QSTRINGLIST_IDX], &cppResult);
         }
@@ -176,35 +176,35 @@ static PyObject* Sbk_ModiOcrFunc_readTextList(PyObject* self, PyObject* args)
     }
     return pyResult;
 
-    Sbk_ModiOcrFunc_readTextList_TypeError:
+    Sbk_ModiReaderFunc_readTextList_TypeError:
         const char* overloads[] = {"unicode, int", 0};
-        Shiboken::setErrorAboutWrongArguments(args, "pymodiocr.ModiOcr.readTextList", overloads);
+        Shiboken::setErrorAboutWrongArguments(args, "pymodi.ModiReader.readTextList", overloads);
         return 0;
 }
 
-static PyMethodDef Sbk_ModiOcr_methods[] = {
-    {"isValid", (PyCFunction)Sbk_ModiOcrFunc_isValid, METH_NOARGS|METH_STATIC},
-    {"readText", (PyCFunction)Sbk_ModiOcrFunc_readText, METH_VARARGS|METH_STATIC},
-    {"readTextList", (PyCFunction)Sbk_ModiOcrFunc_readTextList, METH_VARARGS|METH_STATIC},
+static PyMethodDef Sbk_ModiReader_methods[] = {
+    {"isValid", (PyCFunction)Sbk_ModiReaderFunc_isValid, METH_NOARGS|METH_STATIC},
+    {"readText", (PyCFunction)Sbk_ModiReaderFunc_readText, METH_VARARGS|METH_STATIC},
+    {"readTextList", (PyCFunction)Sbk_ModiReaderFunc_readTextList, METH_VARARGS|METH_STATIC},
 
     {0} // Sentinel
 };
 
 } // extern "C"
 
-static int Sbk_ModiOcr_traverse(PyObject* self, visitproc visit, void* arg)
+static int Sbk_ModiReader_traverse(PyObject* self, visitproc visit, void* arg)
 {
     return reinterpret_cast<PyTypeObject*>(&SbkObject_Type)->tp_traverse(self, visit, arg);
 }
-static int Sbk_ModiOcr_clear(PyObject* self)
+static int Sbk_ModiReader_clear(PyObject* self)
 {
     return reinterpret_cast<PyTypeObject*>(&SbkObject_Type)->tp_clear(self);
 }
 // Class Definition -----------------------------------------------
 extern "C" {
-static SbkObjectType Sbk_ModiOcr_Type = { { {
+static SbkObjectType Sbk_ModiReader_Type = { { {
     PyVarObject_HEAD_INIT(&SbkObjectType_Type, 0)
-    /*tp_name*/             "pymodiocr.ModiOcr",
+    /*tp_name*/             "pymodi.ModiReader",
     /*tp_basicsize*/        sizeof(SbkObject),
     /*tp_itemsize*/         0,
     /*tp_dealloc*/          &SbkDeallocWrapper,
@@ -224,13 +224,13 @@ static SbkObjectType Sbk_ModiOcr_Type = { { {
     /*tp_as_buffer*/        0,
     /*tp_flags*/            Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_GC,
     /*tp_doc*/              0,
-    /*tp_traverse*/         Sbk_ModiOcr_traverse,
-    /*tp_clear*/            Sbk_ModiOcr_clear,
+    /*tp_traverse*/         Sbk_ModiReader_traverse,
+    /*tp_clear*/            Sbk_ModiReader_clear,
     /*tp_richcompare*/      0,
     /*tp_weaklistoffset*/   0,
     /*tp_iter*/             0,
     /*tp_iternext*/         0,
-    /*tp_methods*/          Sbk_ModiOcr_methods,
+    /*tp_methods*/          Sbk_ModiReader_methods,
     /*tp_members*/          0,
     /*tp_getset*/           0,
     /*tp_base*/             reinterpret_cast<PyTypeObject*>(&SbkObject_Type),
@@ -238,7 +238,7 @@ static SbkObjectType Sbk_ModiOcr_Type = { { {
     /*tp_descr_get*/        0,
     /*tp_descr_set*/        0,
     /*tp_dictoffset*/       0,
-    /*tp_init*/             Sbk_ModiOcr_Init,
+    /*tp_init*/             Sbk_ModiReader_Init,
     /*tp_alloc*/            0,
     /*tp_new*/              SbkObjectTpNew,
     /*tp_free*/             0,
@@ -257,47 +257,47 @@ static SbkObjectType Sbk_ModiOcr_Type = { { {
 // Type conversion functions.
 
 // Python to C++ pointer conversion - returns the C++ object of the Python wrapper (keeps object identity).
-static void ModiOcr_PythonToCpp_ModiOcr_PTR(PyObject* pyIn, void* cppOut) {
-    Shiboken::Conversions::pythonToCppPointer(&Sbk_ModiOcr_Type, pyIn, cppOut);
+static void ModiReader_PythonToCpp_ModiReader_PTR(PyObject* pyIn, void* cppOut) {
+    Shiboken::Conversions::pythonToCppPointer(&Sbk_ModiReader_Type, pyIn, cppOut);
 }
-static PythonToCppFunc is_ModiOcr_PythonToCpp_ModiOcr_PTR_Convertible(PyObject* pyIn) {
+static PythonToCppFunc is_ModiReader_PythonToCpp_ModiReader_PTR_Convertible(PyObject* pyIn) {
     if (pyIn == Py_None)
         return Shiboken::Conversions::nonePythonToCppNullPtr;
-    if (PyObject_TypeCheck(pyIn, (PyTypeObject*)&Sbk_ModiOcr_Type))
-        return ModiOcr_PythonToCpp_ModiOcr_PTR;
+    if (PyObject_TypeCheck(pyIn, (PyTypeObject*)&Sbk_ModiReader_Type))
+        return ModiReader_PythonToCpp_ModiReader_PTR;
     return 0;
 }
 
 // C++ to Python pointer conversion - tries to find the Python wrapper for the C++ object (keeps object identity).
-static PyObject* ModiOcr_PTR_CppToPython_ModiOcr(const void* cppIn) {
+static PyObject* ModiReader_PTR_CppToPython_ModiReader(const void* cppIn) {
     PyObject* pyOut = (PyObject*)Shiboken::BindingManager::instance().retrieveWrapper(cppIn);
     if (pyOut) {
         Py_INCREF(pyOut);
         return pyOut;
     }
-    const char* typeName = typeid(*((::ModiOcr*)cppIn)).name();
-    return Shiboken::Object::newObject(&Sbk_ModiOcr_Type, const_cast<void*>(cppIn), false, false, typeName);
+    const char* typeName = typeid(*((::ModiReader*)cppIn)).name();
+    return Shiboken::Object::newObject(&Sbk_ModiReader_Type, const_cast<void*>(cppIn), false, false, typeName);
 }
 
-void init_ModiOcr(PyObject* module)
+void init_ModiReader(PyObject* module)
 {
-    SbkpymodiocrTypes[SBK_MODIOCR_IDX] = reinterpret_cast<PyTypeObject*>(&Sbk_ModiOcr_Type);
+    SbkpymodiTypes[SBK_MODIREADER_IDX] = reinterpret_cast<PyTypeObject*>(&Sbk_ModiReader_Type);
 
-    if (!Shiboken::ObjectType::introduceWrapperType(module, "ModiOcr", "ModiOcr*",
-        &Sbk_ModiOcr_Type, &Shiboken::callCppDestructor< ::ModiOcr >)) {
+    if (!Shiboken::ObjectType::introduceWrapperType(module, "ModiReader", "ModiReader*",
+        &Sbk_ModiReader_Type, &Shiboken::callCppDestructor< ::ModiReader >)) {
         return;
     }
 
     // Register Converter
-    SbkConverter* converter = Shiboken::Conversions::createConverter(&Sbk_ModiOcr_Type,
-        ModiOcr_PythonToCpp_ModiOcr_PTR,
-        is_ModiOcr_PythonToCpp_ModiOcr_PTR_Convertible,
-        ModiOcr_PTR_CppToPython_ModiOcr);
+    SbkConverter* converter = Shiboken::Conversions::createConverter(&Sbk_ModiReader_Type,
+        ModiReader_PythonToCpp_ModiReader_PTR,
+        is_ModiReader_PythonToCpp_ModiReader_PTR_Convertible,
+        ModiReader_PTR_CppToPython_ModiReader);
 
-    Shiboken::Conversions::registerConverterName(converter, "ModiOcr");
-    Shiboken::Conversions::registerConverterName(converter, "ModiOcr*");
-    Shiboken::Conversions::registerConverterName(converter, "ModiOcr&");
-    Shiboken::Conversions::registerConverterName(converter, typeid(::ModiOcr).name());
+    Shiboken::Conversions::registerConverterName(converter, "ModiReader");
+    Shiboken::Conversions::registerConverterName(converter, "ModiReader*");
+    Shiboken::Conversions::registerConverterName(converter, "ModiReader&");
+    Shiboken::Conversions::registerConverterName(converter, typeid(::ModiReader).name());
 
 
 

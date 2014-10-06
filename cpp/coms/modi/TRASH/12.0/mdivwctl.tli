@@ -417,7 +417,7 @@ inline HRESULT IDocument::PrintOut ( long From, long To, long Copies, BSTR Print
 
 inline HRESULT _IDocumentEvents::OnOCRProgress ( int Progress, VARIANT_BOOL * Cancel ) {
     HRESULT _result = 0;
-    _com_dispatch_method(this, 0x1, DISPATCH_METHOD, VT_ERROR, (void*)&_result,
+    _com_dispatch_method(this, 0x1, DISPATCH_METHOD, VT_ERROR, (void*)&_result, 
         L"\x0003\x400b", Progress, Cancel);
     return _result;
 }
