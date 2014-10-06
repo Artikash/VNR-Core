@@ -4,11 +4,10 @@
 #include "wmpcli/wmpcli.h"
 #include <windows.h>
 #include "wmp/wmp.h"
-#include "cc/ccmacro.h"
 
 // Construction
 int wmp_player_release(wmp_player_t *p) { return p->Release(); }
-int wmp_control_release(wmp_control_t *c) { return c->Release(); }
+int wmp_controls_release(wmp_controls_t *c) { return c->Release(); }
 int wmp_settings_release(wmp_settings_t *s) { return s->Release(); }
 int wmp_media_release(wmp_media_t *m) { return m->Release(); }
 
@@ -19,7 +18,7 @@ wmp_player_t *wmp_player_create()
       reinterpret_cast<LPVOID *>(&p))) ? p : nullptr;
 }
 
-wmp_control_t *wmp_player_get_control(wmp_player_t *p)
+wmp_controls_t *wmp_player_get_controls(wmp_player_t *p)
 {
   IWMPControls *c;
   return SUCCEEDED(p->get_controls(&c)) ? c : nullptr;
@@ -83,29 +82,29 @@ const wchar_t *wmp_player_get_uimode(wmp_player_t *p)
 
 // Control
 
-bool wmp_control_play(wmp_control_t *c) { return SUCCEEDED(c->play()); }
-bool wmp_control_stop(wmp_control_t *c) { return SUCCEEDED(c->stop()); }
-bool wmp_control_pause(wmp_control_t *c) { return SUCCEEDED(c->pause()); }
+bool wmp_controls_play(wmp_controls_t *c) { return SUCCEEDED(c->play()); }
+bool wmp_controls_stop(wmp_controls_t *c) { return SUCCEEDED(c->stop()); }
+bool wmp_controls_pause(wmp_controls_t *c) { return SUCCEEDED(c->pause()); }
 
-bool wmp_control_previous(wmp_control_t *c) { return SUCCEEDED(c->previous()); }
-bool wmp_control_next(wmp_control_t *c) { return SUCCEEDED(c->next()); }
+bool wmp_controls_previous(wmp_controls_t *c) { return SUCCEEDED(c->previous()); }
+bool wmp_controls_next(wmp_controls_t *c) { return SUCCEEDED(c->next()); }
 
-bool wmp_control_forward(wmp_control_t *c) { return SUCCEEDED(c->fastForward()); }
-bool wmp_control_backward(wmp_control_t *c) { return SUCCEEDED(c->fastReverse()); }
+bool wmp_controls_forward(wmp_controls_t *c) { return SUCCEEDED(c->fastForward()); }
+bool wmp_controls_backward(wmp_controls_t *c) { return SUCCEEDED(c->fastReverse()); }
 
-bool wmp_control_set_pos(wmp_control_t *c, double val)
+bool wmp_controls_set_pos(wmp_controls_t *c, double val)
 { return SUCCEEDED(c->put_currentPosition(val)); }
 
-double wmp_control_get_pos(wmp_control_t *c)
+double wmp_controls_get_pos(wmp_controls_t *c)
 {
   double val;
   return SUCCEEDED(c->get_currentPosition(&val)) ? val : -1;
 }
 
-bool wmp_control_set_media(wmp_control_t *c, wmp_media_t *m)
+bool wmp_controls_set_media(wmp_controls_t *c, wmp_media_t *m)
 { return SUCCEEDED(c->put_currentItem(m)); }
 
-wmp_media_t *wmp_control_get_media(wmp_control_t *c)
+wmp_media_t *wmp_controls_get_media(wmp_controls_t *c)
 {
   IWMPMedia *m;
   return SUCCEEDED(c->get_currentItem(&m)) ? m : nullptr;

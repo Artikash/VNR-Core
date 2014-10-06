@@ -9,7 +9,7 @@ CONFIG += pyplugin shiboken noqt
 include(../../../config.pri)
 include($$LIBDIR/winshell/winshell.pri)
 
-INCLUDEPATH += $$LIBDIR/winshell # needed by shiboken generated code
+#INCLUDEPATH += $$LIBDIR/winshell # needed by shiboken generated code
 
 ## Sources
 

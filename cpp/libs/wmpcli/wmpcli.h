@@ -14,7 +14,7 @@ struct IWMPMedia;
 struct IWMPPlayer;
 struct IWMPSettings;
 
-typedef IWMPControls wmp_control_t;
+typedef IWMPControls wmp_controls_t;
 typedef IWMPMedia wmp_media_t;
 typedef IWMPPlayer wmp_player_t;
 typedef IWMPSettings wmp_settings_t;
@@ -25,8 +25,8 @@ typedef IWMPSettings wmp_settings_t;
 wmp_player_t *wmp_player_create();
 int wmp_player_release(wmp_player_t *p); // return reference count
 
-wmp_control_t *wmp_player_get_control(wmp_player_t *p);
-int wmp_control_release(wmp_control_t *c); // return reference count
+wmp_controls_t *wmp_player_get_controls(wmp_player_t *p);
+int wmp_controls_release(wmp_controls_t *c); // return reference count
 
 wmp_settings_t *wmp_player_get_settings(wmp_player_t *p);
 int wmp_settings_release(wmp_settings_t *s); // return reference count
@@ -46,7 +46,6 @@ inline void wmp_player_destroy(wmp_player_t *p)
   }
 }
 
-// Player is disabled on the startup
 bool wmp_player_set_enabled(wmp_player_t *p, bool t);
 bool wmp_player_get_enabled(wmp_player_t *p);
 
@@ -67,22 +66,22 @@ const wchar_t *wmp_player_get_uimode(wmp_player_t *p);
 // Control
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd563179%28v=vs.85%29.aspx
 
-bool wmp_control_play(wmp_control_t *c);
-bool wmp_control_stop(wmp_control_t *c);
-bool wmp_control_pause(wmp_control_t *c);
+bool wmp_controls_play(wmp_controls_t *c);
+bool wmp_controls_stop(wmp_controls_t *c);
+bool wmp_controls_pause(wmp_controls_t *c);
 
-bool wmp_control_previous(wmp_control_t *c);
-bool wmp_control_next(wmp_control_t *c);
+bool wmp_controls_previous(wmp_controls_t *c);
+bool wmp_controls_next(wmp_controls_t *c);
 
-bool wmp_control_forward(wmp_control_t *c);
-bool wmp_control_backward(wmp_control_t *c);
+bool wmp_controls_forward(wmp_controls_t *c);
+bool wmp_controls_backward(wmp_controls_t *c);
 
 // Seconds from the beginning. Return -1 if failed.
-bool wmp_control_set_pos(wmp_control_t *c, double val);
-double wmp_control_get_pos(wmp_control_t *c);
+bool wmp_controls_set_pos(wmp_controls_t *c, double val);
+double wmp_controls_get_pos(wmp_controls_t *c);
 
-bool wmp_control_set_media(wmp_control_t *c, wmp_media_t *val);
-wmp_media_t *wmp_control_get_media(wmp_control_t *c);
+bool wmp_controls_set_media(wmp_controls_t *c, wmp_media_t *val);
+wmp_media_t *wmp_controls_get_media(wmp_controls_t *c);
 
 // Settings
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd563648%28v=vs.85%29.aspx

@@ -29,8 +29,8 @@ int main()
   ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
   if (wmp_player_t *p = wmp_player_create()) {
-    wmp_player_set_enabled(p, true);
-    //if (wmp_control_t *c = wmp_player_get_control(p)) {
+    //wmp_player_set_enabled(p, true);
+    //if (wmp_controls_t *c = wmp_player_get_control(p)) {
       //if (wmp_settings_t *s = wmp_player_get_settings(p)) {
       //  wmp_settings_set_volume(s, wmp_max_volume);
       //  wmp_settings_set_autostart(s, true);

@@ -1,6 +1,6 @@
 # pysapi.pro
 # 4/7/2013 jichi
-# Build pywintts.pyd
+# Build pysapi.pyd
 #
 # Though Qt is not indispensible, shiboken could save me some time for development.
 # Switch to pure PyC and get rid of QStringList if it becomes a performance bottle neck.
@@ -9,7 +9,7 @@ CONFIG += pyplugin shiboken noqt
 include(../../../config.pri)
 include($$LIBDIR/wintts/wintts.pri)
 
-INCLUDEPATH += $$LIBDIR/wintts # needed by shiboken generated code
+#INCLUDEPATH += $$LIBDIR/wintts # needed by shiboken generated code
 
 ## Sources
 
