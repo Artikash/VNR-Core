@@ -16,7 +16,7 @@
 # http://www.comicer.com/stronghorse/water/software/modi.htm
 
 win32 {
-DEFINES += WITH_LIB_MODI
+DEFINES += WITH_COM_MODI
 
 INCLUDEPATH += $$PWD
 DEPENDPATH  += $$PWD
