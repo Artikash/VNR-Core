@@ -16,15 +16,13 @@
 # http://www.comicer.com/stronghorse/water/software/modi.htm
 
 win32 {
-DEFINES += WITH_LIB_MODI
+DEFINES += WITH_COM_MODI
 
 INCLUDEPATH += $$PWD
 DEPENDPATH  += $$PWD
 
 HEADERS += \
   $$PWD/mdivwctl.h \
-  $$PWD/11.0/mdivwctl.tlh \
-  $$PWD/11.0/mdivwctl_guid.tlh \
   $$PWD/12.0/mdivwctl.tlh \
   $$PWD/12.0/mdivwctl.tli
 }

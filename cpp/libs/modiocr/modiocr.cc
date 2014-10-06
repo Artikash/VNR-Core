@@ -10,8 +10,10 @@
 
 //#import "C:\\Program Files\\Common Files\\Microsoft Shared\\MODI\\11.0\\MDIVWCTL.DLL"
 //#import "C:\\Program Files\\Common Files\\Microsoft Shared\\MODI\\12.0\\MDIVWCTL.DLL"
+//#import "C:\\Program Files\\Common Files\\Microsoft Shared\\MODI\\12.0\\MDIVWCTL.DLL" \
+//     raw_native_types no_namespace named_guids
 
-using namespace MODI;
+//using namespace MODI;
 
 static MiLANGUAGES _languages[] = {
   miLANG_JAPANESE   // 0
@@ -69,7 +71,8 @@ modiocr_lang modiocr_readfile(const wchar_t *path, modiocr_flags langs, const mo
       return ret;
     WinCom::ScopedUnknownPtr scoped_doc(doc);
 
-    if (!SUCCEEDED(doc->Create(path))) // raise when path does not exist
+    WinCom::ScopedBstr scoped_path(path);
+    if (!SUCCEEDED(doc->Create(scoped_path.get()))) // raise when path does not exist
       return ret;
 
     //qDebug() << "crash here";

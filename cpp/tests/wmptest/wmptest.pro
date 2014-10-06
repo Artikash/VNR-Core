@@ -2,14 +2,15 @@
 # 10/1/2014
 
 include(../../../config.pri)
-#include($$LIBDIR/winmp/winmp.pri)
+include($$COMDIR/wmp/wmp.pri)
+#include($$LIBDIR/wmpcli/wmpcli.pri)
 
 # Source
 
 TEMPLATE = app
 TARGET = wmptest
 
-INCLUDEPATH += $$WMSDK_HOME/include
+#INCLUDEPATH += $$WMSDK_HOME/include
 LIBS  += -lole32
 
 DEPENDPATH += .

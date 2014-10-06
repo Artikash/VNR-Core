@@ -6,7 +6,7 @@ from functools import partial
 from sakurakit import skthreads
 from sakurakit.skdebug import dwarn
 from sakurakit.skwincom import SkCoInitializer
-from modiocr import modiocr
+from modi import modi
 import main
 
 # Note: the read functions might raise if the image path does not exist on Windows XP
@@ -55,10 +55,10 @@ def _readtexts_async(*args, **kwargs):
 
 def _readtext_sync(*args, **kwargs):
   with _ReadLocker():
-    return modiocr.readtext(*args, **kwargs)
+    return modi.readtext(*args, **kwargs)
 
 def _readtexts_sync(*args, **kwargs):
   with _ReadLocker():
-    return modiocr.readtexts(*args, **kwargs)
+    return modi.readtexts(*args, **kwargs)
 
 # EOF

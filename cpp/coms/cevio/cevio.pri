@@ -14,7 +14,7 @@
 # I need to track the changes of COM interfaces on http://guide2.project-cevio.com/
 
 win32 {
-DEFINES += WITH_LIB_CEVIO
+DEFINES += WITH_COM_CEVIO
 
 CEVIO_VERSION = 2.2.10.0
 INCLUDEPATH += $$PWD/$$CEVIO_VERSION
@@ -24,7 +24,6 @@ HEADERS += \
   $$PWD/cevio.h \
   $$PWD/$$CEVIO_VERSION/CeVIO.Talk.RemoteService.tlh \
   $$PWD/$$CEVIO_VERSION/CeVIO.Talk.RemoteService.tli
-
 }
 
 # EOF

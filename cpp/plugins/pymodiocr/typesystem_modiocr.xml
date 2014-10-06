@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<!-- typesyste_modiocr.xml 4/1/2013 jichi -->
-<typesystem package='pymodiocr'>
-  <load-typesystem name="typesystem_core_common.xml" generate="no" />
-  <object-type name="ModiOcr" />
-</typesystem>

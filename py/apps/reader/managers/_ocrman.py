@@ -11,7 +11,7 @@ from sakurakit import skfileio
 from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint, dwarn
 from colorconv import colorconv
-from modiocr import modiocr
+from modi import modi
 import ocrutil, termman
 
 # TODO: Move to colorutil
@@ -56,7 +56,7 @@ class OcrSettings(object):
   def __init__(self):
     self.deliminator = '' # str
     self.languages = [] # [str lang]
-    self.languageFlags = modiocr.LANG_JA # int
+    self.languageFlags = modi.LANG_JA # int
 
   def isSpaceEnabled(self): return bool(self.deliminator)
   def setSpaceEnabled(self, t): self.deliminator = ' ' if t else ''
@@ -64,7 +64,7 @@ class OcrSettings(object):
   def language(self): return self.languages[0] if self.languages else 'ja' # -> str
 
   def setLanguages(self, v): # [str]
-    self.languageFlags = modiocr.locales2lang(v) or modiocr.LANG_JA # Japanese by default
+    self.languageFlags = modi.locales2lang(v) or modi.LANG_JA # Japanese by default
 
 @Q_Q
 class _OcrImageObject(object):
