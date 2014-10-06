@@ -63,26 +63,6 @@ const wchar_t *wmp_player_get_url(wmp_player_t *p);
 bool wmp_player_set_uimode(wmp_player_t *p, const wchar_t *val);
 const wchar_t *wmp_player_get_uimode(wmp_player_t *p);
 
-// Control
-// http://msdn.microsoft.com/en-us/library/windows/desktop/dd563179%28v=vs.85%29.aspx
-
-bool wmp_controls_play(wmp_controls_t *c);
-bool wmp_controls_stop(wmp_controls_t *c);
-bool wmp_controls_pause(wmp_controls_t *c);
-
-bool wmp_controls_previous(wmp_controls_t *c);
-bool wmp_controls_next(wmp_controls_t *c);
-
-bool wmp_controls_forward(wmp_controls_t *c);
-bool wmp_controls_backward(wmp_controls_t *c);
-
-// Seconds from the beginning. Return -1 if failed.
-bool wmp_controls_set_pos(wmp_controls_t *c, double val);
-double wmp_controls_get_pos(wmp_controls_t *c);
-
-bool wmp_controls_set_media(wmp_controls_t *c, wmp_media_t *val);
-wmp_media_t *wmp_controls_get_media(wmp_controls_t *c);
-
 // Settings
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd563648%28v=vs.85%29.aspx
 
@@ -98,7 +78,7 @@ bool wmp_settings_get_autostart(wmp_settings_t *s);
 bool wmp_settings_set_baseurl(wmp_settings_t *s, const wchar_t *val);
 const wchar_t *wmp_settings_get_baseurl(wmp_settings_t *s);
 
-// [0,100] if succeed, or -1 if failed
+// [0,100] if succeed, or 0 if failed
 enum { wmp_min_volume = 0, wmp_max_volume = 100 };
 bool wmp_settings_set_volume(wmp_settings_t *s, int val);
 int wmp_settings_get_volume(wmp_settings_t *s);
@@ -132,20 +112,40 @@ bool wmp_settings_get_repeat(wmp_settings_t *s);
 bool wmp_settings_set_autorewind(wmp_settings_t *s, bool t);
 bool wmp_settings_get_autorewind(wmp_settings_t *s);
 
+// Controls
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd563179%28v=vs.85%29.aspx
+
+bool wmp_controls_play(wmp_controls_t *c);
+bool wmp_controls_stop(wmp_controls_t *c);
+bool wmp_controls_pause(wmp_controls_t *c);
+
+bool wmp_controls_previous(wmp_controls_t *c);
+bool wmp_controls_next(wmp_controls_t *c);
+
+bool wmp_controls_forward(wmp_controls_t *c);
+bool wmp_controls_backward(wmp_controls_t *c);
+
+// Seconds from the beginning. Return 0 if failed.
+bool wmp_controls_set_pos(wmp_controls_t *c, double val);
+double wmp_controls_get_pos(wmp_controls_t *c);
+
+bool wmp_controls_set_media(wmp_controls_t *c, wmp_media_t *val);
+wmp_media_t *wmp_controls_get_media(wmp_controls_t *c);
+
 // Media
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd563397%28v=vs.85%29.aspx
 
 // The two media are the same
 bool wmp_media_equal(wmp_media_t *x, wmp_media_t *y);
 
-// Return -1 if failed
+// Return 0 if failed
 double wmp_media_get_duration(wmp_media_t *m);
 
 // Return nullptr if failed
 const wchar_t *wmp_media_get_name(wmp_media_t *m);
 bool wmp_media_set_name(wmp_media_t *m, const wchar_t *val);
 
-// Return -1 if failed
+// Return 0 if failed
 int wmp_media_get_imagewidth(wmp_media_t *m);
 int wmp_media_get_imageheight(wmp_media_t *m);
 

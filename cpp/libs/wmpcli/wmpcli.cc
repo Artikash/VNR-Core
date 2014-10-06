@@ -1,11 +1,80 @@
 // wmpcli.cc
 // 10/5/2014 jichi
 
+#ifdef _MSC_VER
+# pragma warning (disable:4800)   // C4800: forcing value to bool
+#endif // _MSC_VER
+
 #include "wmpcli/wmpcli.h"
 #include <windows.h>
 #include "wmp/wmp.h"
 
+#define action(_objtype, _iname, _oname) \
+  bool wmp_##_objtype##_##_iname(wmp_##_objtype##_t *obj) \
+  { return SUCCEEDED(obj->_oname()); }
+
+#define _setter(_objtype, _itype, _iname, _otype, _oname) \
+  bool wmp_##_objtype##_set_##_iname(wmp_##_objtype##_t *obj, _itype val) \
+  { return SUCCEEDED(obj->put_##_oname(val)); }
+
+#define str_setter(_objtype, _iname, _oname) \
+  bool wmp_##_objtype##_set_##_iname(wmp_##_objtype##_t *obj, const wchar_t *val) \
+  { return SUCCEEDED(obj->put_##_oname(const_cast<BSTR>(val))); }
+
+#define _getter(_objtype, _itype, _iname, _otype, _oname, _defval) \
+  _itype wmp_##_objtype##_get_##_iname(wmp_##_objtype##_t *obj) \
+  { \
+    _otype val; \
+    return SUCCEEDED(obj->get_##_oname(&val)) ? val : _defval; \
+  }
+
+#define bool_getter(_objtype, _iname, _oname) \
+  bool wmp_##_objtype##_get_##_iname(wmp_##_objtype##_t *obj) \
+  { \
+    VARIANT_BOOL val; \
+    return SUCCEEDED(obj->get_##_oname(&val)) && val; \
+  }
+
+#define _property(_objtype, _itype, _iname, _otype, _oname, _defval) \
+  _getter(_objtype, _itype, _iname, _otype, _oname, _defval) \
+  _setter(_objtype, _itype, _iname, _otype, _oname)
+
+#define bool_setter(_objtype, _iname, _oname) \
+  _setter(_objtype, bool, _iname, VARIANT_BOOL, _oname)
+
+#define str_getter(_objtype, _iname, _oname) \
+  _getter(_objtype, const wchar_t *, _iname, BSTR, _oname, nullptr) \
+
+#define float_setter(_objtype, _iname, _oname) \
+  _setter(_objtype, double, _iname, double, _oname)
+
+#define float_getter(_objtype, _iname, _oname) \
+  _getter(_objtype, double, _iname, double, _oname, 0) \
+
+#define int_setter(_objtype, _iname, _oname) \
+  _setter(_objtype, int, _iname, long, _oname)
+
+#define int_getter(_objtype, _iname, _oname) \
+  _getter(_objtype, int, _iname, long, _oname, 0) \
+
+#define bool_property(_objtype, _iname, _oname) \
+  bool_getter(_objtype, _iname, _oname) \
+  bool_setter(_objtype, _iname, _oname)
+
+#define str_property(_objtype, _iname, _oname) \
+  str_getter(_objtype, _iname, _oname) \
+  str_setter(_objtype, _iname, _oname)
+
+#define float_property(_objtype, _iname, _oname) \
+  float_getter(_objtype, _iname, _oname) \
+  float_setter(_objtype, _iname, _oname)
+
+#define int_property(_objtype, _iname, _oname) \
+  int_getter(_objtype, _iname, _oname) \
+  int_setter(_objtype, _iname, _oname)
+
 // Construction
+
 int wmp_player_release(wmp_player_t *p) { return p->Release(); }
 int wmp_controls_release(wmp_controls_t *c) { return c->Release(); }
 int wmp_settings_release(wmp_settings_t *s) { return s->Release(); }
@@ -31,158 +100,26 @@ wmp_settings_t *wmp_player_get_settings(wmp_player_t *p)
 }
 
 // Player
-// http://msdn.microsoft.com/en-us/library/windows/desktop/dd563514%28v=vs.85%29.aspx
 
-bool wmp_player_close(wmp_player_t *p) { return SUCCEEDED(p->close()); }
+action(player, close, close)
 
-bool wmp_player_set_enabled(wmp_player_t *p, bool t)
-{ return SUCCEEDED(p->put_enabled(t)); }
+bool_property(player, enabled, enabled)
+bool_property(player, fullscreen, fullScreen)
+bool_property(player, contextmenuenabled, enableContextMenu)
 
-bool wmp_player_get_enabled(wmp_player_t *p)
-{
-  VARIANT_BOOL t;
-  return SUCCEEDED(p->get_enabled(&t)) && t;
-}
-
-bool wmp_player_set_fullscreen(wmp_player_t *p, bool t)
-{ return SUCCEEDED(p->put_fullScreen(t)); }
-
-bool wmp_player_get_fullscreen(wmp_player_t *p)
-{
-  VARIANT_BOOL t;
-  return SUCCEEDED(p->get_fullScreen(&t)) && t;
-}
-
-bool wmp_player_set_contextmenuenabled(wmp_player_t *p, bool t)
-{ return SUCCEEDED(p->put_enableContextMenu(t)); }
-
-bool wmp_player_get_contextmenuenabled(wmp_player_t *p)
-{
-  VARIANT_BOOL t;
-  return SUCCEEDED(p->get_enableContextMenu(&t)) && t;
-}
-
-bool wmp_player_set_url(wmp_player_t *p, const wchar_t *val)
-{ return SUCCEEDED(p->put_URL(const_cast<BSTR>(val))); }
-
-const wchar_t *wmp_player_get_url(wmp_player_t *p)
-{
-  BSTR val;
-  return SUCCEEDED(p->get_URL(&val)) ? val : nullptr;
-}
-
-bool wmp_player_set_uimode(wmp_player_t *p, const wchar_t *val)
-{ return SUCCEEDED(p->put_uiMode(const_cast<BSTR>(val))); }
-
-const wchar_t *wmp_player_get_uimode(wmp_player_t *p)
-{
-  BSTR val;
-  return SUCCEEDED(p->get_uiMode(&val)) ? val : nullptr;
-}
-
-// Control
-
-bool wmp_controls_play(wmp_controls_t *c) { return SUCCEEDED(c->play()); }
-bool wmp_controls_stop(wmp_controls_t *c) { return SUCCEEDED(c->stop()); }
-bool wmp_controls_pause(wmp_controls_t *c) { return SUCCEEDED(c->pause()); }
-
-bool wmp_controls_previous(wmp_controls_t *c) { return SUCCEEDED(c->previous()); }
-bool wmp_controls_next(wmp_controls_t *c) { return SUCCEEDED(c->next()); }
-
-bool wmp_controls_forward(wmp_controls_t *c) { return SUCCEEDED(c->fastForward()); }
-bool wmp_controls_backward(wmp_controls_t *c) { return SUCCEEDED(c->fastReverse()); }
-
-bool wmp_controls_set_pos(wmp_controls_t *c, double val)
-{ return SUCCEEDED(c->put_currentPosition(val)); }
-
-double wmp_controls_get_pos(wmp_controls_t *c)
-{
-  double val;
-  return SUCCEEDED(c->get_currentPosition(&val)) ? val : -1;
-}
-
-bool wmp_controls_set_media(wmp_controls_t *c, wmp_media_t *m)
-{ return SUCCEEDED(c->put_currentItem(m)); }
-
-wmp_media_t *wmp_controls_get_media(wmp_controls_t *c)
-{
-  IWMPMedia *m;
-  return SUCCEEDED(c->get_currentItem(&m)) ? m : nullptr;
-}
+str_property(player, url, URL)
+str_property(player, uimode, uiMode)
 
 // Settings
 
-bool wmp_settings_set_errordialogsenabled(wmp_settings_t *s, bool t)
-{ return SUCCEEDED(s->put_enableErrorDialogs(t)); }
-
-bool wmp_settings_get_errordialogsenabled(wmp_settings_t *s)
-{
-  VARIANT_BOOL t;
-  return SUCCEEDED(s->get_enableErrorDialogs(&t)) && t;
-}
-
-bool wmp_settings_set_autostart(wmp_settings_t *s, bool t)
-{ return SUCCEEDED(s->put_autoStart(t)); }
-
-bool wmp_settings_get_autostart(wmp_settings_t *s)
-{
-  VARIANT_BOOL t;
-  return SUCCEEDED(s->get_autoStart(&t)) && t;
-}
-
-bool wmp_settings_set_baseurl(wmp_settings_t *s, const wchar_t *val)
-{ return SUCCEEDED(s->put_baseURL(const_cast<BSTR>(val))); }
-
-const wchar_t *wmp_settings_get_baseurl(wmp_settings_t *s)
-{
-  BSTR val;
-  return SUCCEEDED(s->get_baseURL(&val)) ? val : nullptr;
-}
-
-bool wmp_settings_set_volume(wmp_settings_t *s, int val)
-{ return SUCCEEDED(s->put_volume(val)); }
-
-int wmp_settings_get_volume(wmp_settings_t *s)
-{
-  long val;
-  return SUCCEEDED(s->get_volume(&val)) ? val : -1;
-}
-
-bool wmp_settings_set_balance(wmp_settings_t *s, int val)
-{ return SUCCEEDED(s->put_balance(val)); }
-
-int wmp_settings_get_balance(wmp_settings_t *s)
-{
-  long val;
-  return SUCCEEDED(s->get_balance(&val)) ? val : 0;
-}
-
-bool wmp_settings_set_mute(wmp_settings_t *s, bool t)
-{ return SUCCEEDED(s->put_mute(t)); }
-
-bool wmp_settings_get_mute(wmp_settings_t *s)
-{
-  VARIANT_BOOL t;
-  return SUCCEEDED(s->get_mute(&t)) && t;
-}
-
-bool wmp_settings_set_rate(wmp_settings_t *s, double val)
-{ return SUCCEEDED(s->put_rate( val)); }
-
-double wmp_settings_get_rate(wmp_settings_t *s)
-{
-  double val;
-  return SUCCEEDED(s->get_rate(&val)) ? val : -1;
-}
-
-bool wmp_settings_set_playcount(wmp_settings_t *s, int val)
-{ return SUCCEEDED(s->put_playCount(val)); }
-
-int wmp_settings_get_playcount(wmp_settings_t *s)
-{
-  long val;
-  return SUCCEEDED(s->get_playCount(&val)) ? val : 0;
-}
+bool_property(settings, errordialogsenabled, enableErrorDialogs)
+bool_property(settings, autostart, autoStart)
+str_property(settings, baseurl, baseURL)
+int_property(settings, volume, volume)
+int_property(settings, balance, balance)
+bool_property(settings, mute, mute)
+float_property(settings, rate, rate)
+int_property(settings, playcount, playCount)
 
 // Shuffle the order
 bool wmp_settings_set_shuffle(wmp_settings_t *s, bool t)
@@ -213,6 +150,27 @@ bool wmp_settings_get_autorewind(wmp_settings_t *s)
   return SUCCEEDED(s->getMode(L"autoRewind", &t)) && t;
 }
 
+// Controls
+
+action(controls, play, play)
+action(controls, pause, pause)
+action(controls, stop, stop)
+action(controls, previous, previous)
+action(controls, next, next)
+action(controls, forward, fastForward)
+action(controls, backward, fastReverse)
+
+float_property(controls, pos, currentPosition)
+
+bool wmp_controls_set_media(wmp_controls_t *c, wmp_media_t *m)
+{ return SUCCEEDED(c->put_currentItem(m)); }
+
+wmp_media_t *wmp_controls_get_media(wmp_controls_t *c)
+{
+  IWMPMedia *m;
+  return SUCCEEDED(c->get_currentItem(&m)) ? m : nullptr;
+}
+
 // Media
 
 bool wmp_media_equal(wmp_media_t *x, wmp_media_t *y)
@@ -222,37 +180,11 @@ bool wmp_media_equal(wmp_media_t *x, wmp_media_t *y)
       || x && y && SUCCEEDED(x->get_isIdentical(y, &t)) && t;
 }
 
-double wmp_media_get_duration(wmp_media_t *m)
-{
-  double val;
-  return SUCCEEDED(m->get_duration(&val)) ? val : -1;
-}
+int_getter(media, imagewidth, imageSourceWidth)
+int_getter(media, imageheight, imageSourceHeight)
+float_getter(media, duration, duration)
+str_getter(media, url, sourceURL)
 
-bool wmp_media_set_name(wmp_media_t *m, const wchar_t *val)
-{ return SUCCEEDED(m->put_name(const_cast<BSTR>(val))); }
-
-const wchar_t *wmp_media_get_name(wmp_media_t *m)
-{
-  BSTR val;
-  return SUCCEEDED(m->get_name(&val)) ? val : nullptr;
-}
-
-int wmp_media_get_imagewidth(wmp_media_t *m)
-{
-  long val;
-  return SUCCEEDED(m->get_imageSourceWidth(&val)) ? val : -1;
-}
-
-int wmp_media_get_imageheight(wmp_media_t *m)
-{
-  long val;
-  return SUCCEEDED(m->get_imageSourceHeight(&val)) ? val : -1;
-}
-
-const wchar_t *wmp_media_get_url(wmp_media_t *m)
-{
-  BSTR val;
-  return SUCCEEDED(m->get_sourceURL(&val)) ? val : nullptr;
-}
+str_property(media, name, name)
 
 // EOF

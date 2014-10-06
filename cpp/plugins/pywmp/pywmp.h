@@ -29,7 +29,7 @@ public:
 
   // Settings
 
-  int volume() const; // [0, 100] or -1 if failed
+  int volume() const; // [0, 100] or 0 if failed
   void setVolume(int v);
 
   double speed() const; // 1.0 by default

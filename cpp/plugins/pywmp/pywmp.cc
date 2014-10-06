@@ -55,7 +55,7 @@ bool WindowsMediaPlayer::stop()
 // Settings
 
 int WindowsMediaPlayer::volume() const
-{ return d_->s ? wmp_settings_get_volume(d_->s) : -1; }
+{ return d_->s ? wmp_settings_get_volume(d_->s) : 0; }
 
 void WindowsMediaPlayer::setVolume(int v)
 { if (CC_LIKELY(d_->s)) wmp_settings_set_volume(d_->s, v); }
