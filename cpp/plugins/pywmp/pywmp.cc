@@ -19,7 +19,8 @@ public:
   {
     if (p = wmp_player_create()) {
       c = wmp_player_get_controls(p);
-      s = wmp_player_get_settings(p);
+      if (s = wmp_player_get_settings(p))
+        wmp_settings_set_errordialogsenabled(s, false);
     }
   }
 

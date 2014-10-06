@@ -46,13 +46,13 @@ inline void wmp_player_destroy(wmp_player_t *p)
   }
 }
 
-bool wmp_player_set_enabled(wmp_player_t *p, bool t);
+bool wmp_player_set_enabled(wmp_player_t *p, bool t); // default true
 bool wmp_player_get_enabled(wmp_player_t *p);
 
-bool wmp_player_set_fullscreen(wmp_player_t *p, bool t);
+bool wmp_player_set_fullscreen(wmp_player_t *p, bool t); // default false
 bool wmp_player_get_fullscreen(wmp_player_t *p);
 
-bool wmp_player_set_contextmenuenabled(wmp_player_t *p, bool t);
+bool wmp_player_set_contextmenuenabled(wmp_player_t *p, bool t); // default true
 bool wmp_player_get_contextmenuenabled(wmp_player_t *p);
 
 // Not sure why this function is not on MSDN
@@ -67,7 +67,7 @@ const wchar_t *wmp_player_get_uimode(wmp_player_t *p);
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd563648%28v=vs.85%29.aspx
 
 // Whether display a dialog on error
-bool wmp_settings_set_errordialogsenabled(wmp_settings_t *s, bool t);
+bool wmp_settings_set_errordialogsenabled(wmp_settings_t *s, bool t); // default false
 bool wmp_settings_get_errordialogsenabled(wmp_settings_t *s);
 
 // Whether play on URL changes
