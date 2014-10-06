@@ -1215,7 +1215,8 @@ class _TtsTab(object):
   def refresh(self):
     ss = settings.global_()
 
-    enabled = libman.quicktime().exists()
+    #enabled = libman.quicktime().exists()
+    enabled = libman.wmp().exists()
     for w in self.googleButton, self.googleLanguageEdit, self.googleTestButton:
       w.setEnabled(enabled)
 
@@ -5330,7 +5331,8 @@ class _TtsLibraryTab(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     # Google TTS
-    layout.addWidget(self.quickTimeGroup)
+    #layout.addWidget(self.quickTimeGroup)
+    layout.addWidget(self.wmpGroup)
     # Sapi
     layout.addWidget(self.showGroup)
     layout.addWidget(self.misakiGroup)
@@ -5340,27 +5342,27 @@ class _TtsLibraryTab(object):
     layout.addStretch()
     q.setLayout(layout)
 
-  ## QuickTime ##
+  ## Windows Media Player ##
 
   @memoizedproperty
-  def quickTimeGroup(self):
+  def wmpGroup(self):
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.quickTimeLocationEdit)
-    layout.addWidget(self.quickTimeInfoEdit)
+    layout.addWidget(self.wmpLocationEdit)
+    layout.addWidget(self.wmpInfoEdit)
     #layout.addWidget(self.quickTimeEnableButton)
-    ret = QtWidgets.QGroupBox(notr_("Apple QuickTime (74MB)"))
+    ret = QtWidgets.QGroupBox(notr_("Windows Media Player (7MB)"))
     ret.setLayout(layout)
     return ret
 
   @memoizedproperty
-  def quickTimeLocationEdit(self):
+  def wmpLocationEdit(self):
     ret = QtWidgets.QLineEdit()
     ret.setReadOnly(True)
     ret.setToolTip(tr_("Location"))
     return ret
 
   @memoizedproperty
-  def quickTimeInfoEdit(self):
+  def wmpInfoEdit(self):
     ret = QtWidgets.QTextBrowser()
     skqss.class_(ret, 'texture')
     ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
@@ -5369,44 +5371,93 @@ class _TtsLibraryTab(object):
     ret.setOpenExternalLinks(True)
     return ret
 
-  def _refreshQuickTime(self):
-    libman.quicktime().refresh()
-    ok = libman.quicktime().exists()
+  def _refreshWmp(self):
+    libman.wmp().refresh()
+    ok = libman.wmp().exists()
     if ok:
-      path = libman.quicktime().location()
+      path = libman.wmp().location()
       path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
-    skqss.class_(self.quickTimeLocationEdit, 'normal' if ok else 'muted')
-    self.quickTimeLocationEdit.setText(path if ok else tr_("Not found"))
+    skqss.class_(self.wmpLocationEdit, 'normal' if ok else 'muted')
+    self.wmpLocationEdit.setText(path if ok else tr_("Not found"))
 
-    url = libman.QuickTime.URL
-    self.quickTimeInfoEdit.setHtml(my.tr(
-"""Apple QuickTime is needed by <span style="color:purple">Google TTS</span>.<br/>
-QuickTime is detected on your system at the above location.""")
+    url = libman.WindowsMediaPlayer.URL
+    self.wmpInfoEdit.setHtml(my.tr(
+"""Windows Media Player is needed by <span style="color:purple">Online TTS</span>.<br/>
+Genuine Windows already have it installed by default, unless you have explicitly removed it by yourself.
+It is detected on your system at the above location.""")
     if ok else my.tr(
-"""Apple QuickTime is needed by <span style="color:purple">Google TTS</span>.<br/>
-You can get a free version of QuickTime here from Apple:
-<center><a href="%s">%s</a></center>""") % (url, url))
+"""Windows Media Player is needed by <span style="color:purple">Online TTS</span>.<br/>
+Genuine Windows already have it installed by default, unless you have explicitly removed it by yourself.
+You can reinistall Windows Media Player here from Microsoft for free:
+<center><a href="{0}">{0}</a></center>""").format(url))
 
-    #enabled = settings.global_().isQuickTimeEnabled()
-    #self.quickTimeEnableButton.setChecked(enabled)
-    #self.quickTimeLocationEdit.setEnabled(enabled)
-    #self.quickTimeInfoEdit.setEnabled(enabled)
-
-    #self._quickTimeEnableButton.setToolTip(
-    #  self.q.tr("QuickTime and TTS are enabled") if enabled else
-    #  self.q.tr("QuickTime and TTS are disabled")
-    #)
-    #self._quickTimeEnableButton.setVisible(not enabled or not ok)
-
-    #skqss.class_(self.quickTimeGroup, 'default' if ok else 'muted')
-
-    #self.quickTimeGroup.setStyleSheet("" if ok else
-    #  "QGroupBox { color:red }"
-    #)
-
-  #def _saveQuickTime(self):
-  #  settings.global_().setQuickTimeEnabled(
-  #      self.quickTimeEnableButton.isChecked())
+#  ## QuickTime ##
+#
+#  @memoizedproperty
+#  def quickTimeGroup(self):
+#    layout = QtWidgets.QVBoxLayout()
+#    layout.addWidget(self.quickTimeLocationEdit)
+#    layout.addWidget(self.quickTimeInfoEdit)
+#    #layout.addWidget(self.quickTimeEnableButton)
+#    ret = QtWidgets.QGroupBox(notr_("Apple QuickTime (74MB)"))
+#    ret.setLayout(layout)
+#    return ret
+#
+#  @memoizedproperty
+#  def quickTimeLocationEdit(self):
+#    ret = QtWidgets.QLineEdit()
+#    ret.setReadOnly(True)
+#    ret.setToolTip(tr_("Location"))
+#    return ret
+#
+#  @memoizedproperty
+#  def quickTimeInfoEdit(self):
+#    ret = QtWidgets.QTextBrowser()
+#    skqss.class_(ret, 'texture')
+#    ret.setMaximumHeight(LIBRARY_TEXTEDIT_MAXIMUM_HEIGHT)
+#    ret.setAlignment(Qt.AlignCenter)
+#    ret.setReadOnly(True)
+#    ret.setOpenExternalLinks(True)
+#    return ret
+#
+#  def _refreshQuickTime(self):
+#    libman.quicktime().refresh()
+#    ok = libman.quicktime().exists()
+#    if ok:
+#      path = libman.quicktime().location()
+#      path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
+#    skqss.class_(self.quickTimeLocationEdit, 'normal' if ok else 'muted')
+#    self.quickTimeLocationEdit.setText(path if ok else tr_("Not found"))
+#
+#    url = libman.QuickTime.URL
+#    self.quickTimeInfoEdit.setHtml(my.tr(
+#"""Apple QuickTime is needed by <span style="color:purple">Google TTS</span>.<br/>
+#QuickTime is detected on your system at the above location.""")
+#    if ok else my.tr(
+#"""Apple QuickTime is needed by <span style="color:purple">Google TTS</span>.<br/>
+#You can get a free version of QuickTime here from Apple:
+#<center><a href="%s">%s</a></center>""") % (url, url))
+#
+#    #enabled = settings.global_().isQuickTimeEnabled()
+#    #self.quickTimeEnableButton.setChecked(enabled)
+#    #self.quickTimeLocationEdit.setEnabled(enabled)
+#    #self.quickTimeInfoEdit.setEnabled(enabled)
+#
+#    #self._quickTimeEnableButton.setToolTip(
+#    #  self.q.tr("QuickTime and TTS are enabled") if enabled else
+#    #  self.q.tr("QuickTime and TTS are disabled")
+#    #)
+#    #self._quickTimeEnableButton.setVisible(not enabled or not ok)
+#
+#    #skqss.class_(self.quickTimeGroup, 'default' if ok else 'muted')
+#
+#    #self.quickTimeGroup.setStyleSheet("" if ok else
+#    #  "QGroupBox { color:red }"
+#    #)
+#
+#  #def _saveQuickTime(self):
+#  #  settings.global_().setQuickTimeEnabled(
+#  #      self.quickTimeEnableButton.isChecked())
 
   ## Misaki ##
 
@@ -5677,7 +5728,8 @@ Zunko is <span style="color:purple">not free</span>, and you can purchase one he
 <center><a href="%s">%s</a></center>""") % (url, url))
 
   def refresh(self):
-    self._refreshQuickTime()
+    self._refreshWmp()
+    #self._refreshQuickTime()
     self._refreshYukari()
     self._refreshZunko()
     self._refreshMisaki()
