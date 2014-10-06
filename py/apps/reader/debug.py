@@ -48,8 +48,6 @@ if __name__ == '__main__':
   print "debug: enter"
   initenv()
 
-  from PySide import QtCore, QtGui
-
   #import settings
   #ss = settings.global_()
   #ss.setBlockedLanguages({'en','de'})
@@ -93,13 +91,12 @@ if __name__ == '__main__':
     import os
     from sakurakit import skthreads
     from sakurakit.skwincom import SkCoInitializer
-    from wmp import wmp
+    from wmp.wmp import WindowsMediaPlayer
 
-    cls = wmp.getclass()
-    p = cls()
+    url = "http://translate.google.com/translate_tts?tl=ja&q=hello"
+    p = WindowsMediaPlayer()
     def run():
       with SkCoInitializer(threading=True):
-        url = "http://translate.google.com/translate_tts?tl=ja&q=hello"
         print p.isValid()
         print p.play(url)
 
