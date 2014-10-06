@@ -9,9 +9,8 @@
 wintts_t *wintts_create()
 {
   ISpVoice *ret = nullptr;
-  HRESULT ok = ::CoCreateInstance(CLSID_SpVoice, nullptr, CLSCTX_ALL, IID_ISpVoice,
-                     reinterpret_cast<LPVOID *>(&ret));
-  return SUCCEEDED(ok) ? ret : nullptr;
+  return SUCCEEDED(::CoCreateInstance(CLSID_SpVoice, nullptr, CLSCTX_ALL, IID_ISpVoice,
+      reinterpret_cast<LPVOID *>(&ret))) ? ret : nullptr;
 }
 
 void wintts_destroy(wintts_t *voice)
