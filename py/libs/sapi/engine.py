@@ -42,8 +42,8 @@ def _tovoicekey(key):
   """
   if key:
     for (hk,base) in (
-        ('HKEY_LOCAL_MACHINE', registry.TTS_HKLM_PATH),
-        ('HKEY_CURRENT_USER', registry.TTS_HKCU_PATH),
+        ('HKEY_LOCAL_MACHINE', registry.SAPI_HKLM_PATH),
+        ('HKEY_CURRENT_USER', registry.SAPI_HKCU_PATH),
       ):
       path = base +  '\\' + key
       if registry.exists(path, hk):
@@ -58,6 +58,7 @@ class SapiEngine(object):
       name='', vendor='',
       language='ja', gender='f',
       **kw):
+    self._sapi = None # pysapi.SapiPlayer
     self.key = key      # str registry key
     self.speed = speed  # int [-10,10]
     self.name = name    # str
@@ -65,18 +66,21 @@ class SapiEngine(object):
     self.language = language # str
     self.gender = gender # str
 
-  @memoizedproperty
-  def tts(self):
-    from  pywintts import WinTts
-    ret = WinTts()
-    ret.setVoice(_tovoicekey(self.key))
-    return ret
+  @property
+  def sapi(self):
+    if not self._sapi:
+      from  pysapi import SapiPlayer
+      ret = SapiPlayer()
+      ret.setVoice(_tovoicekey(self.key))
+      self._sapi = ret
+    return self._sapi
 
   def isValid(self):
-    return bool(self.key) and self.tts.isValid()
+    return bool(self.key) and self.sapi.isValid()
 
   def stop(self):
-    self.tts.purge()
+    if self._sapi:
+      self._sapi.purge()
 
   def speak(self, text, async=True):
     """
@@ -87,7 +91,7 @@ class SapiEngine(object):
     if text:
       if self.speed:
         text = _toxmltext(text, speed=self.speed)
-      self.tts.speak(text, async)
+      self.sapi.speak(text, async)
 
 if __name__ == '__main__': # debug
   import pythoncom

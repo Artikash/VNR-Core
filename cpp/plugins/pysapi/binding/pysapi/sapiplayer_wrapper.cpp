@@ -3,12 +3,12 @@
 #include <shiboken.h>
 #include <typeresolver.h>
 #include <typeinfo>
-#include "pywintts_python.h"
+#include "pysapi_python.h"
 
-#include "wintts_wrapper.h"
+#include "sapiplayer_wrapper.h"
 
 // Extra includes
-#include <pywintts.h>
+#include <pysapi.h>
 
 
 
@@ -16,26 +16,26 @@
 
 extern "C" {
 static int
-Sbk_WinTts_Init(PyObject* self, PyObject* args, PyObject* kwds)
+Sbk_SapiPlayer_Init(PyObject* self, PyObject* args, PyObject* kwds)
 {
     SbkObject* sbkSelf = reinterpret_cast<SbkObject*>(self);
-    if (Shiboken::Object::isUserType(self) && !Shiboken::ObjectType::canCallConstructor(self->ob_type, Shiboken::SbkType< ::WinTts >()))
+    if (Shiboken::Object::isUserType(self) && !Shiboken::ObjectType::canCallConstructor(self->ob_type, Shiboken::SbkType< ::SapiPlayer >()))
         return -1;
 
-    ::WinTts* cptr = 0;
+    ::SapiPlayer* cptr = 0;
 
     // Call function/method
     {
 
         if (!PyErr_Occurred()) {
-            // WinTts()
+            // SapiPlayer()
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            cptr = new ::WinTts();
+            cptr = new ::SapiPlayer();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
         }
     }
 
-    if (PyErr_Occurred() || !Shiboken::Object::setCppPointer(sbkSelf, Shiboken::SbkType< ::WinTts >(), cptr)) {
+    if (PyErr_Occurred() || !Shiboken::Object::setCppPointer(sbkSelf, Shiboken::SbkType< ::SapiPlayer >(), cptr)) {
         delete cptr;
         return -1;
     }
@@ -46,13 +46,13 @@ Sbk_WinTts_Init(PyObject* self, PyObject* args, PyObject* kwds)
     return 1;
 }
 
-static PyObject* Sbk_WinTtsFunc_hasVoice(PyObject* self)
+static PyObject* Sbk_SapiPlayerFunc_hasVoice(PyObject* self)
 {
-    ::WinTts* cppSelf = 0;
+    ::SapiPlayer* cppSelf = 0;
     SBK_UNUSED(cppSelf)
     if (!Shiboken::Object::isValid(self))
         return 0;
-    cppSelf = ((::WinTts*)Shiboken::Conversions::cppPointer(SbkpywinttsTypes[SBK_WINTTS_IDX], (SbkObject*)self));
+    cppSelf = ((::SapiPlayer*)Shiboken::Conversions::cppPointer(SbkpysapiTypes[SBK_SAPIPLAYER_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
 
     // Call function/method
@@ -61,7 +61,7 @@ static PyObject* Sbk_WinTtsFunc_hasVoice(PyObject* self)
         if (!PyErr_Occurred()) {
             // hasVoice()const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            bool cppResult = const_cast<const ::WinTts*>(cppSelf)->hasVoice();
+            bool cppResult = const_cast<const ::SapiPlayer*>(cppSelf)->hasVoice();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
         }
@@ -74,13 +74,13 @@ static PyObject* Sbk_WinTtsFunc_hasVoice(PyObject* self)
     return pyResult;
 }
 
-static PyObject* Sbk_WinTtsFunc_isValid(PyObject* self)
+static PyObject* Sbk_SapiPlayerFunc_isValid(PyObject* self)
 {
-    ::WinTts* cppSelf = 0;
+    ::SapiPlayer* cppSelf = 0;
     SBK_UNUSED(cppSelf)
     if (!Shiboken::Object::isValid(self))
         return 0;
-    cppSelf = ((::WinTts*)Shiboken::Conversions::cppPointer(SbkpywinttsTypes[SBK_WINTTS_IDX], (SbkObject*)self));
+    cppSelf = ((::SapiPlayer*)Shiboken::Conversions::cppPointer(SbkpysapiTypes[SBK_SAPIPLAYER_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
 
     // Call function/method
@@ -89,7 +89,7 @@ static PyObject* Sbk_WinTtsFunc_isValid(PyObject* self)
         if (!PyErr_Occurred()) {
             // isValid()const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            bool cppResult = const_cast<const ::WinTts*>(cppSelf)->isValid();
+            bool cppResult = const_cast<const ::SapiPlayer*>(cppSelf)->isValid();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
         }
@@ -102,13 +102,13 @@ static PyObject* Sbk_WinTtsFunc_isValid(PyObject* self)
     return pyResult;
 }
 
-static PyObject* Sbk_WinTtsFunc_purge(PyObject* self, PyObject* args, PyObject* kwds)
+static PyObject* Sbk_SapiPlayerFunc_purge(PyObject* self, PyObject* args, PyObject* kwds)
 {
-    ::WinTts* cppSelf = 0;
+    ::SapiPlayer* cppSelf = 0;
     SBK_UNUSED(cppSelf)
     if (!Shiboken::Object::isValid(self))
         return 0;
-    cppSelf = ((::WinTts*)Shiboken::Conversions::cppPointer(SbkpywinttsTypes[SBK_WINTTS_IDX], (SbkObject*)self));
+    cppSelf = ((::SapiPlayer*)Shiboken::Conversions::cppPointer(SbkpysapiTypes[SBK_SAPIPLAYER_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
     int overloadId = -1;
     PythonToCppFunc pythonToCpp[] = { 0 };
@@ -119,7 +119,7 @@ static PyObject* Sbk_WinTtsFunc_purge(PyObject* self, PyObject* args, PyObject* 
 
     // invalid argument lengths
     if (numArgs + numNamedArgs > 1) {
-        PyErr_SetString(PyExc_TypeError, "pywintts.WinTts.purge(): too many arguments");
+        PyErr_SetString(PyExc_TypeError, "pysapi.SapiPlayer.purge(): too many arguments");
         return 0;
     }
 
@@ -136,19 +136,19 @@ static PyObject* Sbk_WinTtsFunc_purge(PyObject* self, PyObject* args, PyObject* 
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_WinTtsFunc_purge_TypeError;
+    if (overloadId == -1) goto Sbk_SapiPlayerFunc_purge_TypeError;
 
     // Call function/method
     {
         if (kwds) {
             PyObject* value = PyDict_GetItemString(kwds, "async");
             if (value && pyArgs[0]) {
-                PyErr_SetString(PyExc_TypeError, "pywintts.WinTts.purge(): got multiple values for keyword argument 'async'.");
+                PyErr_SetString(PyExc_TypeError, "pysapi.SapiPlayer.purge(): got multiple values for keyword argument 'async'.");
                 return 0;
             } else if (value) {
                 pyArgs[0] = value;
                 if (!(pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[0]))))
-                    goto Sbk_WinTtsFunc_purge_TypeError;
+                    goto Sbk_SapiPlayerFunc_purge_TypeError;
             }
         }
         bool cppArg0 = false;
@@ -157,7 +157,7 @@ static PyObject* Sbk_WinTtsFunc_purge(PyObject* self, PyObject* args, PyObject* 
         if (!PyErr_Occurred()) {
             // purge(bool)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            bool cppResult = const_cast<const ::WinTts*>(cppSelf)->purge(cppArg0);
+            bool cppResult = const_cast<const ::SapiPlayer*>(cppSelf)->purge(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
         }
@@ -169,19 +169,19 @@ static PyObject* Sbk_WinTtsFunc_purge(PyObject* self, PyObject* args, PyObject* 
     }
     return pyResult;
 
-    Sbk_WinTtsFunc_purge_TypeError:
+    Sbk_SapiPlayerFunc_purge_TypeError:
         const char* overloads[] = {"bool = false", 0};
-        Shiboken::setErrorAboutWrongArguments(args, "pywintts.WinTts.purge", overloads);
+        Shiboken::setErrorAboutWrongArguments(args, "pysapi.SapiPlayer.purge", overloads);
         return 0;
 }
 
-static PyObject* Sbk_WinTtsFunc_setVoice(PyObject* self, PyObject* pyArg)
+static PyObject* Sbk_SapiPlayerFunc_setVoice(PyObject* self, PyObject* pyArg)
 {
-    ::WinTts* cppSelf = 0;
+    ::SapiPlayer* cppSelf = 0;
     SBK_UNUSED(cppSelf)
     if (!Shiboken::Object::isValid(self))
         return 0;
-    cppSelf = ((::WinTts*)Shiboken::Conversions::cppPointer(SbkpywinttsTypes[SBK_WINTTS_IDX], (SbkObject*)self));
+    cppSelf = ((::SapiPlayer*)Shiboken::Conversions::cppPointer(SbkpysapiTypes[SBK_SAPIPLAYER_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
     int overloadId = -1;
     PythonToCppFunc pythonToCpp;
@@ -189,12 +189,12 @@ static PyObject* Sbk_WinTtsFunc_setVoice(PyObject* self, PyObject* pyArg)
 
     // Overloaded function decisor
     // 0: setVoice(std::wstring)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpywinttsTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkpysapiTypeConverters[SBK_STD_WSTRING_IDX], (pyArg)))) {
         overloadId = 0; // setVoice(std::wstring)
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_WinTtsFunc_setVoice_TypeError;
+    if (overloadId == -1) goto Sbk_SapiPlayerFunc_setVoice_TypeError;
 
     // Call function/method
     {
@@ -216,19 +216,19 @@ static PyObject* Sbk_WinTtsFunc_setVoice(PyObject* self, PyObject* pyArg)
     }
     return pyResult;
 
-    Sbk_WinTtsFunc_setVoice_TypeError:
+    Sbk_SapiPlayerFunc_setVoice_TypeError:
         const char* overloads[] = {"std::wstring", 0};
-        Shiboken::setErrorAboutWrongArguments(pyArg, "pywintts.WinTts.setVoice", overloads);
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pysapi.SapiPlayer.setVoice", overloads);
         return 0;
 }
 
-static PyObject* Sbk_WinTtsFunc_speak(PyObject* self, PyObject* args, PyObject* kwds)
+static PyObject* Sbk_SapiPlayerFunc_speak(PyObject* self, PyObject* args, PyObject* kwds)
 {
-    ::WinTts* cppSelf = 0;
+    ::SapiPlayer* cppSelf = 0;
     SBK_UNUSED(cppSelf)
     if (!Shiboken::Object::isValid(self))
         return 0;
-    cppSelf = ((::WinTts*)Shiboken::Conversions::cppPointer(SbkpywinttsTypes[SBK_WINTTS_IDX], (SbkObject*)self));
+    cppSelf = ((::SapiPlayer*)Shiboken::Conversions::cppPointer(SbkpysapiTypes[SBK_SAPIPLAYER_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
     int overloadId = -1;
     PythonToCppFunc pythonToCpp[] = { 0, 0 };
@@ -239,10 +239,10 @@ static PyObject* Sbk_WinTtsFunc_speak(PyObject* self, PyObject* args, PyObject* 
 
     // invalid argument lengths
     if (numArgs + numNamedArgs > 2) {
-        PyErr_SetString(PyExc_TypeError, "pywintts.WinTts.speak(): too many arguments");
+        PyErr_SetString(PyExc_TypeError, "pysapi.SapiPlayer.speak(): too many arguments");
         return 0;
     } else if (numArgs < 1) {
-        PyErr_SetString(PyExc_TypeError, "pywintts.WinTts.speak(): not enough arguments");
+        PyErr_SetString(PyExc_TypeError, "pysapi.SapiPlayer.speak(): not enough arguments");
         return 0;
     }
 
@@ -252,7 +252,7 @@ static PyObject* Sbk_WinTtsFunc_speak(PyObject* self, PyObject* args, PyObject* 
 
     // Overloaded function decisor
     // 0: speak(std::wstring,bool)const
-    if ((pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(SbkpywinttsTypeConverters[SBK_STD_WSTRING_IDX], (pyArgs[0])))) {
+    if ((pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(SbkpysapiTypeConverters[SBK_STD_WSTRING_IDX], (pyArgs[0])))) {
         if (numArgs == 1) {
             overloadId = 0; // speak(std::wstring,bool)const
         } else if ((pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[1])))) {
@@ -261,19 +261,19 @@ static PyObject* Sbk_WinTtsFunc_speak(PyObject* self, PyObject* args, PyObject* 
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_WinTtsFunc_speak_TypeError;
+    if (overloadId == -1) goto Sbk_SapiPlayerFunc_speak_TypeError;
 
     // Call function/method
     {
         if (kwds) {
             PyObject* value = PyDict_GetItemString(kwds, "async");
             if (value && pyArgs[1]) {
-                PyErr_SetString(PyExc_TypeError, "pywintts.WinTts.speak(): got multiple values for keyword argument 'async'.");
+                PyErr_SetString(PyExc_TypeError, "pysapi.SapiPlayer.speak(): got multiple values for keyword argument 'async'.");
                 return 0;
             } else if (value) {
                 pyArgs[1] = value;
                 if (!(pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[1]))))
-                    goto Sbk_WinTtsFunc_speak_TypeError;
+                    goto Sbk_SapiPlayerFunc_speak_TypeError;
             }
         }
         ::std::wstring cppArg0 = ::std::wstring();
@@ -284,7 +284,7 @@ static PyObject* Sbk_WinTtsFunc_speak(PyObject* self, PyObject* args, PyObject* 
         if (!PyErr_Occurred()) {
             // speak(std::wstring,bool)const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            bool cppResult = const_cast<const ::WinTts*>(cppSelf)->speak(cppArg0, cppArg1);
+            bool cppResult = const_cast<const ::SapiPlayer*>(cppSelf)->speak(cppArg0, cppArg1);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
         }
@@ -296,19 +296,19 @@ static PyObject* Sbk_WinTtsFunc_speak(PyObject* self, PyObject* args, PyObject* 
     }
     return pyResult;
 
-    Sbk_WinTtsFunc_speak_TypeError:
+    Sbk_SapiPlayerFunc_speak_TypeError:
         const char* overloads[] = {"std::wstring, bool = false", 0};
-        Shiboken::setErrorAboutWrongArguments(args, "pywintts.WinTts.speak", overloads);
+        Shiboken::setErrorAboutWrongArguments(args, "pysapi.SapiPlayer.speak", overloads);
         return 0;
 }
 
-static PyObject* Sbk_WinTtsFunc_voice(PyObject* self)
+static PyObject* Sbk_SapiPlayerFunc_voice(PyObject* self)
 {
-    ::WinTts* cppSelf = 0;
+    ::SapiPlayer* cppSelf = 0;
     SBK_UNUSED(cppSelf)
     if (!Shiboken::Object::isValid(self))
         return 0;
-    cppSelf = ((::WinTts*)Shiboken::Conversions::cppPointer(SbkpywinttsTypes[SBK_WINTTS_IDX], (SbkObject*)self));
+    cppSelf = ((::SapiPlayer*)Shiboken::Conversions::cppPointer(SbkpysapiTypes[SBK_SAPIPLAYER_IDX], (SbkObject*)self));
     PyObject* pyResult = 0;
 
     // Call function/method
@@ -317,9 +317,9 @@ static PyObject* Sbk_WinTtsFunc_voice(PyObject* self)
         if (!PyErr_Occurred()) {
             // voice()const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            std::wstring cppResult = const_cast<const ::WinTts*>(cppSelf)->voice();
+            std::wstring cppResult = const_cast<const ::SapiPlayer*>(cppSelf)->voice();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(SbkpywinttsTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
+            pyResult = Shiboken::Conversions::copyToPython(SbkpysapiTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
         }
     }
 
@@ -330,32 +330,32 @@ static PyObject* Sbk_WinTtsFunc_voice(PyObject* self)
     return pyResult;
 }
 
-static PyMethodDef Sbk_WinTts_methods[] = {
-    {"hasVoice", (PyCFunction)Sbk_WinTtsFunc_hasVoice, METH_NOARGS},
-    {"isValid", (PyCFunction)Sbk_WinTtsFunc_isValid, METH_NOARGS},
-    {"purge", (PyCFunction)Sbk_WinTtsFunc_purge, METH_VARARGS|METH_KEYWORDS},
-    {"setVoice", (PyCFunction)Sbk_WinTtsFunc_setVoice, METH_O},
-    {"speak", (PyCFunction)Sbk_WinTtsFunc_speak, METH_VARARGS|METH_KEYWORDS},
-    {"voice", (PyCFunction)Sbk_WinTtsFunc_voice, METH_NOARGS},
+static PyMethodDef Sbk_SapiPlayer_methods[] = {
+    {"hasVoice", (PyCFunction)Sbk_SapiPlayerFunc_hasVoice, METH_NOARGS},
+    {"isValid", (PyCFunction)Sbk_SapiPlayerFunc_isValid, METH_NOARGS},
+    {"purge", (PyCFunction)Sbk_SapiPlayerFunc_purge, METH_VARARGS|METH_KEYWORDS},
+    {"setVoice", (PyCFunction)Sbk_SapiPlayerFunc_setVoice, METH_O},
+    {"speak", (PyCFunction)Sbk_SapiPlayerFunc_speak, METH_VARARGS|METH_KEYWORDS},
+    {"voice", (PyCFunction)Sbk_SapiPlayerFunc_voice, METH_NOARGS},
 
     {0} // Sentinel
 };
 
 } // extern "C"
 
-static int Sbk_WinTts_traverse(PyObject* self, visitproc visit, void* arg)
+static int Sbk_SapiPlayer_traverse(PyObject* self, visitproc visit, void* arg)
 {
     return reinterpret_cast<PyTypeObject*>(&SbkObject_Type)->tp_traverse(self, visit, arg);
 }
-static int Sbk_WinTts_clear(PyObject* self)
+static int Sbk_SapiPlayer_clear(PyObject* self)
 {
     return reinterpret_cast<PyTypeObject*>(&SbkObject_Type)->tp_clear(self);
 }
 // Class Definition -----------------------------------------------
 extern "C" {
-static SbkObjectType Sbk_WinTts_Type = { { {
+static SbkObjectType Sbk_SapiPlayer_Type = { { {
     PyVarObject_HEAD_INIT(&SbkObjectType_Type, 0)
-    /*tp_name*/             "pywintts.WinTts",
+    /*tp_name*/             "pysapi.SapiPlayer",
     /*tp_basicsize*/        sizeof(SbkObject),
     /*tp_itemsize*/         0,
     /*tp_dealloc*/          &SbkDeallocWrapper,
@@ -375,13 +375,13 @@ static SbkObjectType Sbk_WinTts_Type = { { {
     /*tp_as_buffer*/        0,
     /*tp_flags*/            Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_GC,
     /*tp_doc*/              0,
-    /*tp_traverse*/         Sbk_WinTts_traverse,
-    /*tp_clear*/            Sbk_WinTts_clear,
+    /*tp_traverse*/         Sbk_SapiPlayer_traverse,
+    /*tp_clear*/            Sbk_SapiPlayer_clear,
     /*tp_richcompare*/      0,
     /*tp_weaklistoffset*/   0,
     /*tp_iter*/             0,
     /*tp_iternext*/         0,
-    /*tp_methods*/          Sbk_WinTts_methods,
+    /*tp_methods*/          Sbk_SapiPlayer_methods,
     /*tp_members*/          0,
     /*tp_getset*/           0,
     /*tp_base*/             reinterpret_cast<PyTypeObject*>(&SbkObject_Type),
@@ -389,7 +389,7 @@ static SbkObjectType Sbk_WinTts_Type = { { {
     /*tp_descr_get*/        0,
     /*tp_descr_set*/        0,
     /*tp_dictoffset*/       0,
-    /*tp_init*/             Sbk_WinTts_Init,
+    /*tp_init*/             Sbk_SapiPlayer_Init,
     /*tp_alloc*/            0,
     /*tp_new*/              SbkObjectTpNew,
     /*tp_free*/             0,
@@ -408,47 +408,47 @@ static SbkObjectType Sbk_WinTts_Type = { { {
 // Type conversion functions.
 
 // Python to C++ pointer conversion - returns the C++ object of the Python wrapper (keeps object identity).
-static void WinTts_PythonToCpp_WinTts_PTR(PyObject* pyIn, void* cppOut) {
-    Shiboken::Conversions::pythonToCppPointer(&Sbk_WinTts_Type, pyIn, cppOut);
+static void SapiPlayer_PythonToCpp_SapiPlayer_PTR(PyObject* pyIn, void* cppOut) {
+    Shiboken::Conversions::pythonToCppPointer(&Sbk_SapiPlayer_Type, pyIn, cppOut);
 }
-static PythonToCppFunc is_WinTts_PythonToCpp_WinTts_PTR_Convertible(PyObject* pyIn) {
+static PythonToCppFunc is_SapiPlayer_PythonToCpp_SapiPlayer_PTR_Convertible(PyObject* pyIn) {
     if (pyIn == Py_None)
         return Shiboken::Conversions::nonePythonToCppNullPtr;
-    if (PyObject_TypeCheck(pyIn, (PyTypeObject*)&Sbk_WinTts_Type))
-        return WinTts_PythonToCpp_WinTts_PTR;
+    if (PyObject_TypeCheck(pyIn, (PyTypeObject*)&Sbk_SapiPlayer_Type))
+        return SapiPlayer_PythonToCpp_SapiPlayer_PTR;
     return 0;
 }
 
 // C++ to Python pointer conversion - tries to find the Python wrapper for the C++ object (keeps object identity).
-static PyObject* WinTts_PTR_CppToPython_WinTts(const void* cppIn) {
+static PyObject* SapiPlayer_PTR_CppToPython_SapiPlayer(const void* cppIn) {
     PyObject* pyOut = (PyObject*)Shiboken::BindingManager::instance().retrieveWrapper(cppIn);
     if (pyOut) {
         Py_INCREF(pyOut);
         return pyOut;
     }
-    const char* typeName = typeid(*((::WinTts*)cppIn)).name();
-    return Shiboken::Object::newObject(&Sbk_WinTts_Type, const_cast<void*>(cppIn), false, false, typeName);
+    const char* typeName = typeid(*((::SapiPlayer*)cppIn)).name();
+    return Shiboken::Object::newObject(&Sbk_SapiPlayer_Type, const_cast<void*>(cppIn), false, false, typeName);
 }
 
-void init_WinTts(PyObject* module)
+void init_SapiPlayer(PyObject* module)
 {
-    SbkpywinttsTypes[SBK_WINTTS_IDX] = reinterpret_cast<PyTypeObject*>(&Sbk_WinTts_Type);
+    SbkpysapiTypes[SBK_SAPIPLAYER_IDX] = reinterpret_cast<PyTypeObject*>(&Sbk_SapiPlayer_Type);
 
-    if (!Shiboken::ObjectType::introduceWrapperType(module, "WinTts", "WinTts*",
-        &Sbk_WinTts_Type, &Shiboken::callCppDestructor< ::WinTts >)) {
+    if (!Shiboken::ObjectType::introduceWrapperType(module, "SapiPlayer", "SapiPlayer*",
+        &Sbk_SapiPlayer_Type, &Shiboken::callCppDestructor< ::SapiPlayer >)) {
         return;
     }
 
     // Register Converter
-    SbkConverter* converter = Shiboken::Conversions::createConverter(&Sbk_WinTts_Type,
-        WinTts_PythonToCpp_WinTts_PTR,
-        is_WinTts_PythonToCpp_WinTts_PTR_Convertible,
-        WinTts_PTR_CppToPython_WinTts);
+    SbkConverter* converter = Shiboken::Conversions::createConverter(&Sbk_SapiPlayer_Type,
+        SapiPlayer_PythonToCpp_SapiPlayer_PTR,
+        is_SapiPlayer_PythonToCpp_SapiPlayer_PTR_Convertible,
+        SapiPlayer_PTR_CppToPython_SapiPlayer);
 
-    Shiboken::Conversions::registerConverterName(converter, "WinTts");
-    Shiboken::Conversions::registerConverterName(converter, "WinTts*");
-    Shiboken::Conversions::registerConverterName(converter, "WinTts&");
-    Shiboken::Conversions::registerConverterName(converter, typeid(::WinTts).name());
+    Shiboken::Conversions::registerConverterName(converter, "SapiPlayer");
+    Shiboken::Conversions::registerConverterName(converter, "SapiPlayer*");
+    Shiboken::Conversions::registerConverterName(converter, "SapiPlayer&");
+    Shiboken::Conversions::registerConverterName(converter, typeid(::SapiPlayer).name());
 
 
 

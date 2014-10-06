@@ -1,24 +1,24 @@
-#ifndef PYWINTTS_H
-#define PYWINTTS_H
+#ifndef PYSAPI_H
+#define PYSAPI_H
 
-// pywintts.h
+// pysapi.h
 // 4/7/2013 jichi
 
 #include "sakurakit/skglobal.h"
 #include <string>
 
-class WinTts_p;
-class WinTts
+class SapiPlayer_p;
+class SapiPlayer
 {
-  SK_CLASS(WinTts)
-  SK_DISABLE_COPY(WinTts)
-  SK_DECLARE_PRIVATE(WinTts_p)
+  SK_CLASS(SapiPlayer)
+  SK_DISABLE_COPY(SapiPlayer)
+  SK_DECLARE_PRIVATE(SapiPlayer_p)
 
 public:
-  // - Construction -
-
-  WinTts();
-  ~WinTts();
+  // Construction
+  //
+  SapiPlayer();
+  ~SapiPlayer();
 
   bool isValid() const;
 
@@ -27,10 +27,10 @@ public:
   std::wstring voice() const;
   bool hasVoice() const;
 
-  // - Actions -
+  // Actions
 
   bool speak(const std::wstring &text, bool async = false) const;
   bool purge(bool async = false) const; // clear previous speak
 };
 
-#endif // PYWINTTS
+#endif // PYSAPI_H

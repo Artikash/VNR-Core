@@ -1,4 +1,4 @@
-# pywintts.pro
+# pysapi.pro
 # 4/7/2013 jichi
 # Build pywintts.pyd
 #
@@ -13,29 +13,29 @@ INCLUDEPATH += $$LIBDIR/wintts # needed by shiboken generated code
 
 ## Sources
 
-SRCPATH = binding/pywintts
+SRCPATH = binding/pysapi
 INCLUDEPATH += $SRCPATH
 DEPENDPATH += $SRCPATH
 
 TEMPLATE = lib
-TARGET = pywintts
+TARGET = pysapi
 
 HEADERS += \
-  pywintts.h \
-  pywintts_config.h \
-  $$SRCPATH/pywintts_python.h \
-  $$SRCPATH/wintts_wrapper.h
+  pysapi.h \
+  pysapi_config.h \
+  $$SRCPATH/pysapi_python.h \
+  $$SRCPATH/sapiplayer_wrapper.h
 
 SOURCES += \
-  pywintts.cc \
-  $$SRCPATH/pywintts_module_wrapper.cpp \
-  $$SRCPATH/wintts_wrapper.cpp
+  pysapi.cc \
+  $$SRCPATH/pysapi_module_wrapper.cpp \
+  $$SRCPATH/sapiplayer_wrapper.cpp
 
 #!wince*: LIBS += -lshell32
-#RC_FILE += wintts.rc
+#RC_FILE += sapi.rc
 
 OTHER_FILES += \
-  typesystem_wintts.xml \
+  typesystem_sapi.xml \
   update_binding.cmd
 
 # EOF

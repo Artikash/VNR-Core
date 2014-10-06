@@ -4,8 +4,9 @@
 :: See: http://blog.csdn.net/dbzhang800/article/details/6387577
 @setlocal
 cd /d "%~dp0"
-set TARGET=wintts
-set LIBTARGET=%TARGET%
+set TARGET=sapi
+::set LIBTARGET=%TARGET%
+set LIBTARGET=wintts
 set PYTARGET=py%TARGET%
 set HEADER=%PYTARGET%_config.h
 set TYPESYSTEM=typesystem_%TARGET%.xml

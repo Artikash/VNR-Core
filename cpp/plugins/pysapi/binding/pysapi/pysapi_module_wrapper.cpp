@@ -2,24 +2,24 @@
 #include <sbkpython.h>
 #include <shiboken.h>
 #include <algorithm>
-#include "pywintts_python.h"
+#include "pysapi_python.h"
 
 
 
 // Extra includes
 
 // Current module's type array.
-PyTypeObject** SbkpywinttsTypes;
+PyTypeObject** SbkpysapiTypes;
 // Current module's converter array.
-SbkConverter** SbkpywinttsTypeConverters;
+SbkConverter** SbkpysapiTypeConverters;
 // Global functions ------------------------------------------------------------
 
-static PyMethodDef pywintts_methods[] = {
+static PyMethodDef pysapi_methods[] = {
     {0} // Sentinel
 };
 
 // Classes initialization functions ------------------------------------------------------------
-void init_WinTts(PyObject* module);
+void init_SapiPlayer(PyObject* module);
 
 
 // Module initialization ------------------------------------------------------------
@@ -82,10 +82,10 @@ static PythonToCppFunc is_Py_None_PythonToCpp_std_wstring_Convertible(PyObject* 
 #ifdef IS_PY3K
 static struct PyModuleDef moduledef = {
     /* m_base     */ PyModuleDef_HEAD_INIT,
-    /* m_name     */ "pywintts",
+    /* m_name     */ "pysapi",
     /* m_doc      */ 0,
     /* m_size     */ -1,
-    /* m_methods  */ pywintts_methods,
+    /* m_methods  */ pysapi_methods,
     /* m_reload   */ 0,
     /* m_traverse */ 0,
     /* m_clear    */ 0,
@@ -93,45 +93,45 @@ static struct PyModuleDef moduledef = {
 };
 
 #endif
-SBK_MODULE_INIT_FUNCTION_BEGIN(pywintts)
+SBK_MODULE_INIT_FUNCTION_BEGIN(pysapi)
     // Create an array of wrapper types for the current module.
-    static PyTypeObject* cppApi[SBK_pywintts_IDX_COUNT];
-    SbkpywinttsTypes = cppApi;
+    static PyTypeObject* cppApi[SBK_pysapi_IDX_COUNT];
+    SbkpysapiTypes = cppApi;
 
     // Create an array of primitive type converters for the current module.
-    static SbkConverter* sbkConverters[SBK_pywintts_CONVERTERS_IDX_COUNT];
-    SbkpywinttsTypeConverters = sbkConverters;
+    static SbkConverter* sbkConverters[SBK_pysapi_CONVERTERS_IDX_COUNT];
+    SbkpysapiTypeConverters = sbkConverters;
 
 #ifdef IS_PY3K
-    PyObject* module = Shiboken::Module::create("pywintts", &moduledef);
+    PyObject* module = Shiboken::Module::create("pysapi", &moduledef);
 #else
-    PyObject* module = Shiboken::Module::create("pywintts", pywintts_methods);
+    PyObject* module = Shiboken::Module::create("pysapi", pysapi_methods);
 #endif
 
     // Initialize classes in the type system
-    init_WinTts(module);
+    init_SapiPlayer(module);
 
     // Register converter for type 'std::wstring'.
-    SbkpywinttsTypeConverters[SBK_STD_WSTRING_IDX] = Shiboken::Conversions::createConverter(&PyUnicode_Type, std_wstring_CppToPython_std_wstring);
-    Shiboken::Conversions::registerConverterName(SbkpywinttsTypeConverters[SBK_STD_WSTRING_IDX], "std::wstring");
+    SbkpysapiTypeConverters[SBK_STD_WSTRING_IDX] = Shiboken::Conversions::createConverter(&PyUnicode_Type, std_wstring_CppToPython_std_wstring);
+    Shiboken::Conversions::registerConverterName(SbkpysapiTypeConverters[SBK_STD_WSTRING_IDX], "std::wstring");
     // Add user defined implicit conversions to type converter.
-    Shiboken::Conversions::addPythonToCppValueConversion(SbkpywinttsTypeConverters[SBK_STD_WSTRING_IDX],
+    Shiboken::Conversions::addPythonToCppValueConversion(SbkpysapiTypeConverters[SBK_STD_WSTRING_IDX],
         PyUnicode_PythonToCpp_std_wstring,
         is_PyUnicode_PythonToCpp_std_wstring_Convertible);
-    Shiboken::Conversions::addPythonToCppValueConversion(SbkpywinttsTypeConverters[SBK_STD_WSTRING_IDX],
+    Shiboken::Conversions::addPythonToCppValueConversion(SbkpysapiTypeConverters[SBK_STD_WSTRING_IDX],
         PyString_PythonToCpp_std_wstring,
         is_PyString_PythonToCpp_std_wstring_Convertible);
-    Shiboken::Conversions::addPythonToCppValueConversion(SbkpywinttsTypeConverters[SBK_STD_WSTRING_IDX],
+    Shiboken::Conversions::addPythonToCppValueConversion(SbkpysapiTypeConverters[SBK_STD_WSTRING_IDX],
         Py_None_PythonToCpp_std_wstring,
         is_Py_None_PythonToCpp_std_wstring_Convertible);
 
     // Register primitive types converters.
 
-    Shiboken::Module::registerTypes(module, SbkpywinttsTypes);
-    Shiboken::Module::registerTypeConverters(module, SbkpywinttsTypeConverters);
+    Shiboken::Module::registerTypes(module, SbkpysapiTypes);
+    Shiboken::Module::registerTypeConverters(module, SbkpysapiTypeConverters);
 
     if (PyErr_Occurred()) {
         PyErr_Print();
-        Py_FatalError("can't initialize module pywintts");
+        Py_FatalError("can't initialize module pysapi");
     }
 SBK_MODULE_INIT_FUNCTION_END
