@@ -89,6 +89,24 @@ if __name__ == '__main__':
       skwinsec.injectdll(dll, pid=pid)
     print "debug: leave"
 
+  def test_wmp():
+    import os
+    from sakurakit import skthreads
+    from sakurakit.skwincom import SkCoInitializer
+    from wmp import wmp
+
+    cls = wmp.getclass()
+    p = cls()
+    def run():
+      with SkCoInitializer(threading=True):
+        url = "http://translate.google.com/translate_tts?tl=ja&q=hello"
+        print p.isValid()
+        print p.play(url)
+
+    a = app()
+    skthreads.runasync(run)
+    a.exec_()
+
   def test_ocr():
     from modi import modi
     path = "wiki.tiff"
@@ -102,6 +120,6 @@ if __name__ == '__main__':
     chatview.manager().showTopic('global')
     a.exec_()
 
-  test_chat()
+  test_wmp()
 
 # EOF

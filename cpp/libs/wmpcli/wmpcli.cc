@@ -8,6 +8,7 @@
 #include "wmpcli/wmpcli.h"
 #include <windows.h>
 #include "wmp/wmp.h"
+#include "wincom/wincomptr.h"
 
 #define action(_objtype, _iname, _oname) \
   bool wmp_##_objtype##_##_iname(wmp_##_objtype##_t *obj) \
@@ -19,7 +20,10 @@
 
 #define str_setter(_objtype, _iname, _oname) \
   bool wmp_##_objtype##_set_##_iname(wmp_##_objtype##_t *obj, const wchar_t *val) \
-  { return SUCCEEDED(obj->put_##_oname(const_cast<BSTR>(val))); }
+  { \
+    WinCom::ScopedBstr p(val); \
+    return SUCCEEDED(obj->put_##_oname(p.get())); \
+  }
 
 #define _getter(_objtype, _itype, _iname, _otype, _oname, _defval) \
   _itype wmp_##_objtype##_get_##_iname(wmp_##_objtype##_t *obj) \
@@ -107,8 +111,8 @@ bool_property(player, enabled, enabled)
 bool_property(player, fullscreen, fullScreen)
 bool_property(player, contextmenuenabled, enableContextMenu)
 
-str_property(player, url, URL)
 str_property(player, uimode, uiMode)
+str_property(player, url, URL)
 
 // Settings
 
