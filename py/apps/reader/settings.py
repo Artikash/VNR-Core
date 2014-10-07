@@ -650,7 +650,7 @@ class Settings(QSettings):
 
   speaksGameTextChanged = Signal(bool)
   def speaksGameText(self):
-    return to_bool(self.value('SpeakGameText'))
+    return to_bool(self.value('SpeakGameText', True))
   def setSpeaksGameText(self, value):
     if value != self.speaksGameText():
       self.setValue('SpeakGameText', value)
@@ -664,7 +664,7 @@ class Settings(QSettings):
       self.setValue('VoiceCharacter', value)
       self.voiceCharacterEnabledChanged.emit(value)
 
-  #def isSubtitleVoiceEnabled(self): return to_bool(self.value('SubtitleVoice'))
+  def isSubtitleVoiceEnabled(self): return to_bool(self.value('SubtitleVoice'))
 
   #googleTtsEnabledChanged = Signal(bool)
   #def isGoogleTtsEnabled(self):
@@ -1770,7 +1770,8 @@ class SettingsProxy(QObject):
       lambda _, v: global_().setVoiceCharacterEnabled(v),
       notify=voiceCharacterEnabledChanged)
 
-  #subtitleVoiceEnabled = bool_property('SubtitleVoice', False)
+  subtitleVoiceEnabledChanged = Signal(bool)
+  subtitleVoiceEnabled = bool_property('SubtitleVoice', False, notify=subtitleVoiceEnabledChanged)
 
   japaneseFontChanged = Signal(unicode)
   japaneseFont = unicode_property('JapaneseFont', config.FONT_JA, notify=japaneseFontChanged)

@@ -19,6 +19,7 @@ Item { id: root_
   //Plugin.MainObjectProxy { id: main_ }
 
   function toggleEnabled() {
+    //settingsPlugin_.voiceCharacterEnabled = !enabled
     if (enabled)
       settingsPlugin_.voiceCharacterEnabled = false
     else
