@@ -587,12 +587,12 @@ class Settings(QSettings):
       self.setValue('UserCommentEnabled', value)
       self.allowsUserCommentChanged.emit(value)
 
-  allowsTextToSpeechChanged = Signal(bool)
-  def allowsTextToSpeech(self): return to_bool(self.value('TextToSpeechEnabled', True))
-  def setAllowsTextToSpeech(self, value):
-    if value != self.allowsTextToSpeech():
-      self.setValue('TextToSpeechEnabled', value)
-      self.allowsTextToSpeechChanged.emit(value)
+  #allowsTextToSpeechChanged = Signal(bool)
+  #def allowsTextToSpeech(self): return to_bool(self.value('TextToSpeechEnabled', True))
+  #def setAllowsTextToSpeech(self, value):
+  #  if value != self.allowsTextToSpeech():
+  #    self.setValue('TextToSpeechEnabled', value)
+  #    self.allowsTextToSpeechChanged.emit(value)
 
   ## Shortcuts ##
 
@@ -732,7 +732,7 @@ class Settings(QSettings):
 
   ttsEngineChanged = Signal(unicode)
   def ttsEngine(self):
-    return to_unicode(self.value('TTSEngine'))
+    return to_unicode(self.value('TTSEngine', 'baidu')) # Baidu by default
   def setTtsEngine(self, value):
     if value != self.ttsEngine():
       self.setValue('TTSEngine', value)

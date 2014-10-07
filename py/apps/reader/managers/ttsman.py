@@ -84,7 +84,7 @@ class _TtsManager(object):
     @param* language  unicode
     @param* verbose  bool  whether warn on error
     """
-    #if not features.TEXT_TO_SPEECH or not text:
+    #if not features.TEXT_TO_SPEECH:
     if not text:
       return
 
@@ -134,16 +134,12 @@ class _TtsManager(object):
 
     #skevents.runlater(partial(eng.speak, text))
 
-  # Google
-
   @property
   def online(self): return self._online
   @online.setter
   def online(self, v):
     if v != self._online:
       self._online = v
-      #if self._googleEngine:
-      #  self._googleEngine.setOnline(v)
 
   # Voiceroid
 
@@ -180,7 +176,9 @@ class _TtsManager(object):
         'speed':self.getSpeed(key),
         'volume':self.getVolume(key),
       }
-      if key == 'google':
+      if key == 'baidu':
+        ret = _ttsman.BaiduEngine(**kw)
+      elif key == 'google':
         ret = _ttsman.GoogleEngine(**kw)
       if ret and ret.isValid():
         self._onlineEngines[key] = ret
@@ -336,17 +334,10 @@ class TtsManager(QObject):
   def setOnline(self, v): self.__d.online = v
 
   def stop(self):
-    if not features.TEXT_TO_SPEECH:
-      return
+    #if not features.TEXT_TO_SPEECH:
+    #  return
     #with SkProfiler(): # 0.002 ~ 0.004 seconds when speaking with SAPI
     self.__d.stop()
-
-  #def warmup(self):
-  #  d = self.__d
-  #  if d.defaultEngineKey == 'google':
-  #    dprint("enter")
-  #    d.googleEngine.warmup()
-  #    dprint("leave")
 
   def defaultEngine(self): return self.__d.defaultEngineKey
   def setDefaultEngine(self, key):
@@ -383,8 +374,8 @@ class TtsManager(QObject):
     self.__d.setVolume(key, v)
 
   def speak(self, text, interval=100, **kwargs):
-    if not features.TEXT_TO_SPEECH:
-      return
+    #if not features.TEXT_TO_SPEECH:
+    #  return
     if interval:
       self.__d.speakLater(text, interval=interval, **kwargs)
     else:
@@ -447,7 +438,6 @@ class TtsQmlBean(QObject):
     @return  unicode  csv
     """
     return ',' + ','.join(manager().availableEngines())
-    #return ',google,yukari,zunko,VW Misaki'
 
 class TtsCoffeeBean(QObject):
   def __init__(self, parent=None):

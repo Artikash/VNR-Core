@@ -33,13 +33,13 @@ ADMIN = isadmin()
 INTERNET_CONNECTION = settings.global_().internetConnection()
 MACHINE_TRANSLATION = settings.global_().allowsMachineTranslation()
 USER_COMMENT = settings.global_().allowsUserComment()
-TEXT_TO_SPEECH = settings.global_().allowsTextToSpeech()
+#TEXT_TO_SPEECH = settings.global_().allowsTextToSpeech()
 MAINLAND_CHINA = False
 
 def setInternetConnection(v): global INTERNET_CONNECTION; INTERNET_CONNECTION = v
 def setMachineTranslation(v): global MACHINE_TRANSLATION; MACHINE_TRANSLATION = v
 def setUserComment(v): global USER_COMMENT; USER_COMMENT = v
-def setTextToSpeech(v): global TEXT_TO_SPEECH; TEXT_TO_SPEECH = v
+#def setTextToSpeech(v): global TEXT_TO_SPEECH; TEXT_TO_SPEECH = v
 
 def setMainlandChina(value):
   global MAINLAND_CHINA
@@ -72,7 +72,7 @@ def init():
   ss.internetConnectionChanged.connect(setInternetConnection)
   ss.allowsMachineTranslationChanged.connect(setMachineTranslation)
   ss.allowsUserCommentChanged.connect(setUserComment)
-  ss.allowsTextToSpeechChanged.connect(setTextToSpeech)
+  #ss.allowsTextToSpeechChanged.connect(setTextToSpeech)
 
   ss.mainlandChinaChanged.connect(setMainlandChina)
   if ss.isMainlandChina():

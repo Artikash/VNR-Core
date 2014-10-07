@@ -1089,8 +1089,12 @@ class _TtsTab(object):
     r = 0
     grid.addWidget(self.disableButton, r, 0)
 
+    r += 1
+    grid.addWidget(QtWidgets.QLabel(tr_("Online") + ":"), r, 0)
+
     # Google
     for k,b in ((
+        ('baidu', self.baiduButton),
         ('google', self.googleButton),
       )):
       r += 1
@@ -1113,7 +1117,38 @@ class _TtsTab(object):
       self.onlineWidgets.append(w)
       grid.addWidget(w, r, c)
 
+    # SAPI
+    if not self.sapiButtons:
+      r += 1
+      grid.addWidget(QtWidgets.QLabel("SAPI (%s)") % mytr_("not installed"), r, 0)
+    else:
+      r += 1
+      grid.addWidget(QtWidgets.QLabel("SAPI:"), r, 0)
+      for k,b in self.sapiButtons:
+        r += 1
+        c = 0
+        grid.addWidget(b, r, c)
+        w = self.createTestButton(k)
+
+        c += 1
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createVolumeEdit(k)
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createSpeedEdit(k)
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createPitchEdit(k)
+        grid.addWidget(w, r, c)
+
     # VOICEROID
+    r += 1
+    grid.addWidget(QtWidgets.QLabel("VOICEROID+:"), r, 0)
+
     for k,b in ((
         ('yukari', self.yukariButton),
         ('zunko', self.zunkoButton),
@@ -1127,34 +1162,12 @@ class _TtsTab(object):
       setattr(self, k + 'LaunchButton', w)
       grid.addWidget(w, r, 2)
 
-    # SAPI
-    for k,b in self.sapiButtons:
-      r += 1
-      c = 0
-      grid.addWidget(b, r, c)
-      w = self.createTestButton(k)
-
-      c += 1
-      grid.addWidget(w, r, c)
-
-      c += 1
-      w = self.createVolumeEdit(k)
-      grid.addWidget(w, r, c)
-
-      c += 1
-      w = self.createSpeedEdit(k)
-      grid.addWidget(w, r, c)
-
-      c += 1
-      w = self.createPitchEdit(k)
-      grid.addWidget(w, r, c)
-
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)
 
-    info = QtWidgets.QLabel(tr_("Note") + ": " + my.tr("VNR supports not only Japanese TTS, but all SAPI TTS in any languages. VNR will read translations instead of game texts if TTS's language is different from game's."))
-    info.setWordWrap(True)
-    layout.addWidget(info)
+    #info = QtWidgets.QLabel(tr_("Note") + ": " + my.tr("VNR supports not only Japanese TTS, but all SAPI TTS in any languages. VNR will read translations instead of game texts if TTS's language is different from game's."))
+    #info.setWordWrap(True)
+    #layout.addWidget(info)
 
     ret = QtWidgets.QGroupBox(my.tr("Preferred text-to-speech voice"))
     ret.setLayout(layout)
@@ -1163,25 +1176,31 @@ class _TtsTab(object):
 
   @memoizedproperty
   def disableButton(self):
-    ret = QtWidgets.QRadioButton("%s (%s)" % (my.tr("Disable TTS"), tr_("default")))
+    ret = QtWidgets.QRadioButton(my.tr("Disable TTS"))
     ret.toggled.connect(self._saveEngine)
     return ret
 
   @memoizedproperty
   def yukariButton(self):
-    ret = QtWidgets.QRadioButton(u"VOICEROID+ 結月ゆかり (♀)")
+    ret = QtWidgets.QRadioButton(u"結月ゆかり (♀)")
     ret.toggled.connect(self._saveEngine)
     return ret
 
   @memoizedproperty
   def zunkoButton(self):
-    ret = QtWidgets.QRadioButton(u"VOICEROID+ 東北ずん子 (♀)")
+    ret = QtWidgets.QRadioButton(u"東北ずん子 (♀)")
     ret.toggled.connect(self._saveEngine)
     return ret
 
   @memoizedproperty
   def googleButton(self):
-    ret = QtWidgets.QRadioButton(u"Google TTS (♀, %s)" % tr_("online"))
+    ret = QtWidgets.QRadioButton(u"Google (♀)")
+    ret.toggled.connect(self._saveEngine)
+    return ret
+
+  @memoizedproperty
+  def baiduButton(self):
+    ret = QtWidgets.QRadioButton(u"%s (♀, %s)" % (mytr_("Baidu"), tr_("default")))
     ret.toggled.connect(self._saveEngine)
     return ret
 
@@ -1209,7 +1228,10 @@ class _TtsTab(object):
     """
     ret = {
       '': self.disableButton,
+
       'google': self.googleButton,
+      'baidu': self.baiduButton,
+
       'yukari': self.yukariButton,
       'zunko': self.zunkoButton,
     }
@@ -3120,7 +3142,7 @@ class _FeatureTab(object):
     layout = QtWidgets.QVBoxLayout()
     #layout.addWidget(self.internetAccessButton)
 
-    for it in self.machineTranslationButton, self.userCommentButton, self.ttsButton:
+    for it in self.machineTranslationButton, self.userCommentButton:
       layout.addWidget(it)
       skqss.class_(it, 'warning' if it.isChecked() else '')
       it.toggled.connect(partial(lambda it, v:
@@ -3168,15 +3190,15 @@ class _FeatureTab(object):
     ret.toggled.connect(lambda v: ss.setAllowsUserComment(not v))
     return ret
 
-  @memoizedproperty
-  def ttsButton(self):
-    ss = settings.global_()
-    ret = QtWidgets.QCheckBox(my.tr(
-      "Disable speaking Japanese through text-to-speech"
-    ))
-    ret.setChecked(not ss.allowsTextToSpeech())
-    ret.toggled.connect(lambda v: ss.setAllowsTextToSpeech(not v))
-    return ret
+  #@memoizedproperty
+  #def ttsButton(self):
+  #  ss = settings.global_()
+  #  ret = QtWidgets.QCheckBox(my.tr(
+  #    "Disable speaking Japanese through text-to-speech"
+  #  ))
+  #  ret.setChecked(not ss.allowsTextToSpeech())
+  #  ret.toggled.connect(lambda v: ss.setAllowsTextToSpeech(not v))
+  #  return ret
 
 class FeatureTab(QtWidgets.QDialog):
 
