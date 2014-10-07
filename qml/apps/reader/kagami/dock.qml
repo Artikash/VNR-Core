@@ -81,8 +81,8 @@ Item { id: root_
   //property alias windowHookChecked: windowHookButton_.checked
   //property alias windowTextChecked: windowTextButton_.checked
 
-  //property alias speaksTextChecked: speakTextButton_.checked
-  property alias speaksTextChecked: speakButton_.checked
+  property alias speaksTextChecked: speakTextButton_.checked
+  property alias speaksTranslationChecked: speakTranslationButton_.checked
 
   property alias copiesTextChecked: copyTextButton_.checked
   property alias copiesSubtitleChecked: copySubtitleButton_.checked
@@ -180,6 +180,8 @@ Item { id: root_
       shadowButton_.hover ||
       glowButton_.hover ||
       speakButton_.hover ||
+      speakTextButton_.hover ||
+      speakTranslationButton_.hover ||
       commentBarButton_.hover ||
       captureButton_.hover ||
       stretchButton_.hover ||
@@ -344,26 +346,92 @@ Item { id: root_
         text: slimChecked ? "♪" : My.tr("Speak") // ♪
         font.pixelSize: parent.pixelSize
         //font.bold: true
+        backgroundColor: ttsRect_.visible ? parent.buttonPopupColor :
+                         checked ? parent.buttonCheckedColor :
+                         parent.buttonColor
         radius: parent.cellRadius
-        //visible: !root_.ignoresFocus
-        //visible: !statusPlugin_.wine
-
-        property bool checked
-        //backgroundColor: parent.buttonColor
-        backgroundColor: checked ? parent.buttonCheckedColor : parent.buttonColor
-
-        //language: root_.language
         font.family: parent.cellFont
-        //toolTip: qsTr("Read current Japanese game text using TTS")
-        toolTip: qsTr("Automatically read Japanese game text using TTS")
 
+        visible: !root_.ignoresFocus
+
+        property bool checked: speakTextButton_.checked || speakTranslationButton_.checked
+        //  if (checked)
+        //    stretchRect_.visible = false
+
+        //property bool enabled: statusPlugin_.online && statusPlugin_.login
+        //onEnabledChanged:
+        //  if (!enabled) checked = false
+
+        toolTip: qsTr("Automatically read game text or translation using TTS")
         onClicked: {
-          checked = !checked
-          if (checked)
+          ttsRect_.visible = !ttsRect_.visible
+          if (ttsRect_.visible)
             root_.speakTextRequested()
-          //growl_.showMessage(toolTip)
+        }
+
+        Share.FadingRectangle { id: ttsRect_
+          visible: false
+
+          anchors {
+            left: parent.right
+            verticalCenter: parent.verticalCenter
+            leftMargin: 6
+          }
+          height: ttsRow_.height + 10
+          width: ttsRow_.width + 10
+          radius: 11
+
+          color: floatingRect_.color
+
+          Row { id: ttsRow_
+            anchors.centerIn: parent
+            spacing: 4
+
+            Share.TextButton { id: speakTextButton_
+              height: buttonCol_.cellHeight; width: buttonCol_.cellWidth
+              text: slimChecked ? qsTr("Original").charAt(0) : qsTr("Original")
+              font.pixelSize: buttonCol_.pixelSize
+              backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
+              radius: buttonCol_.cellRadius
+              font.family: buttonCol_.cellFont
+
+              property bool checked
+              onClicked: {
+                checked = !checked
+                if (checked)
+                  speakTranslationButton_.checked = false
+              }
+
+              toolTip: qsTr("Automatically read game text using TTS")
+            }
+
+            Share.TextButton { id: speakTranslationButton_
+              height: buttonCol_.cellHeight
+              width: buttonCol_.cellWidth
+              text: slimChecked ? Sk.tr("Translation").charAt(0) : Sk.tr("Translation")
+              font.pixelSize: buttonCol_.pixelSize
+              backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
+              radius: buttonCol_.cellRadius
+              font.family: buttonCol_.cellFont
+
+              property bool checked
+              onClicked: {
+                checked = !checked
+                if (checked)
+                  speakTextButton_.checked = false
+              }
+
+              toolTip: qsTr("Automatically read subtitle using TTS")
+            }
+          }
+
+          Share.CloseButton { //id: closeButton_
+            anchors { left: parent.left; top: parent.top; margins: -9 }
+            onClicked: ttsRect_.visible = false
+          }
         }
       }
+
 
       Share.TextButton { id: ocrButton_
         height: parent.cellHeight; width: parent.cellWidth
@@ -788,8 +856,7 @@ Item { id: root_
   onIgnoresFocusChanged: hidePopups()
 
   function hidePopups() {
-    stretchRect_.visible = false
-    ocrRect_.visible = false
+    stretchRect_.visible = ocrRect_.visible = ttsRect_.visible = false
   }
 
   Share.FadingRectangle { id: panel_

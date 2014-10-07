@@ -311,13 +311,13 @@ class _TextManager(object):
     self.ttsText = self.ttsName = ""
 
   def _speakSubtitle(self):
-    text = self.ttsSubtitle
     tm = ttsman.manager()
+    text = termman.manager().removeMarks(self.ttsSubtitle)
     if text: #and self.gameLanguage == 'ja':
       if not settings.global_().isVoiceCharacterEnabled():
         lang = tm.defaultEngineLanguage()
         if lang == '*' or lang and lang[:2] == self.ttsSubtitleLanguage[:2]:
-          tm.speak(text, termEnabled=False, language=lang)
+          tm.speak(text, termEnabled=True, language=lang)
       else:
         tm.stop()
         dm = dataman.manager()
@@ -336,7 +336,7 @@ class _TextManager(object):
               #    #not text.startswith(u"「") and not text.endswith(u"」")
               #    or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
               #  ): # do not speak if no character name is detected
-              tm.speak(text, termEnabled=False, language=self.ttsSubtitleLanguage, engine=eng)
+              tm.speak(text, termEnabled=True, language=self.ttsSubtitleLanguage, engine=eng)
     self.ttsSubtitle = self.ttsSubtitleLanguage = self.ttsNameForSubtitle = ""
 
   def _repairText(self, text, language=None):

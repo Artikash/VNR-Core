@@ -100,7 +100,10 @@ Item { id: root_
 
     //dock_.windowHookChecked = settings_.windowHookEnabled
     //dock_.windowTextChecked = settings_.windowTextVisible
-    dock_.speaksTextChecked = settings_.speaksGameText
+
+    dock_.speaksTextChecked = settings_.speaksGameText && !settings_.subtitleVoiceEnabled
+    dock_.speaksTranslationChecked = settings_.speaksGameText && settings_.subtitleVoiceEnabled
+
     dock_.copiesTextChecked = settings_.copiesGameText
     dock_.copiesSubtitleChecked = settings_.copiesGameSubtitle
     //dock_.voiceChecked = settings_.voiceCharacterEnabled
@@ -210,8 +213,16 @@ Item { id: root_
     //onVoiceCharacterEnabledChanged:
     //  if (dock_.voiceChecked !== voiceCharacterEnabled)
     //    dock_.voiceChecked = voiceCharacterEnabled
-    onSpeaksGameTextChanged: if (dock_.speaksTextChecked != speaksGameText) dock_.speaksTextChecked = speaksGameText
     onHentaiChanged: if (dock_.hentaiChecked != hentai) dock_.hentaiChecked = hentai
+
+    onSpeaksGameTextChanged: {
+      var t = speaksGameText && !subtitleVoiceEnabled
+      if (t != dock_.speaksTextChecked)
+        dock_.speaksTextChecked = t
+      t = settings_.speaksGameText && settings_.subtitleVoiceEnabled
+      if (t != dock_.speaksTranslationChecked)
+        dock_.speaksTranslationChecked = t
+    }
   }
 
   //Plugin.SystemStatus { id: statusPlugin_
@@ -848,7 +859,26 @@ Item { id: root_
 
         //onWindowHookCheckedChanged: settings_.windowHookEnabled = windowHookChecked
         //onWindowTextCheckedChanged: settings_.windowTextVisible = windowTextChecked
-        onSpeaksTextCheckedChanged: settings_.speaksGameText = speaksTextChecked
+
+        onSpeaksTextCheckedChanged: updateTtsSettings()
+        onSpeaksTranslationCheckedChanged: updateTtsSettings()
+
+        function updateTtsSettings() {
+          if (!speaksTextChecked && !speaksTranslationChecked) {
+            if (settings_.speaksGameText)
+              settings_.speaksGameText = false
+          } else if (speaksTextChecked && !speaksTranslationChecked) {
+            if (!settings_.speaksGameText)
+              settings_.speaksGameText = true
+            if (settings_.subtitleVoiceEnabled)
+              settings_.subtitleVoiceEnabled = false
+          } else if (!speaksTextChecked && speaksTranslationChecked) {
+            if (!settings_.speaksGameText)
+              settings_.speaksGameText = true
+            if (!settings_.subtitleVoiceEnabled)
+              settings_.subtitleVoiceEnabled = true
+          } // else: both of them are checked, which does not make sense
+        }
 
         onClockCheckedChanged:
           if (clockChecked !== clock_.visible)

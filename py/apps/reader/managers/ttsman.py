@@ -119,7 +119,7 @@ class _TtsManager(object):
       dprint("language mismatch: %s != %s" % (language, eng.language))
       return
 
-    if termEnabled and (not language or language == 'ja'):
+    if termEnabled: #and (not language or language == 'ja'):
       text = termman.manager().applySpeechTerms(text)
     # Even if text is empty, trigger stop tts
     #if not text:
@@ -130,7 +130,10 @@ class _TtsManager(object):
     #  eng.speak(text, async=True)
     #else:
     #with SkProfiler():
-    eng.speak(text, language) # 0.007 ~ 0.009 seconds for SAPI
+    if text:
+      eng.speak(text, language) # 0.007 ~ 0.009 seconds for SAPI
+    else:
+      eng.stop()
 
     #skevents.runlater(partial(eng.speak, text))
 
