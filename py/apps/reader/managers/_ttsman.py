@@ -9,8 +9,10 @@ from PySide.QtCore import QThread, Signal, Qt
 from sakurakit import skfileio, skthreads, skwincom
 from sakurakit.sktr import tr_
 from zhszht.zhszht import zht2zhs
-from mytr import my
+from mytr import my, mytr_
 import growl, rc
+
+ONLINE_ENGINES = 'google', 'baidu'
 
 ## Voice engines ##
 
@@ -301,7 +303,6 @@ class OnlineThread(QThread):
     if d.playing:
       self.stopRequested.emit(now)
 
-ONLINE_ENGINES = 'google',
 class OnlineEngine(VoiceEngine):
   language = '*' # override
 
@@ -341,14 +342,14 @@ class OnlineEngine(VoiceEngine):
     else:
       language = language[:2] if language else 'ja'
       url = self.createUrl(text, language)
-      self.thread().requestPlay(url, volume=self.volume, speed=self.speed)
+      OnlineEngine.thread().requestPlay(url, volume=self.volume, speed=self.speed)
 
   def stop(self):
     """@reimp@"""
     if self._thread:
       self._thread.requestStop()
 
-  def createUrl(text, language=None): pass # str -> str
+  def createUrl(text, language): pass # unicode, str -> unicode
 
 class GoogleEngine(OnlineEngine):
   key = 'google' # override
@@ -357,9 +358,21 @@ class GoogleEngine(OnlineEngine):
   def __init__(self, *args, **kwargs):
     super(GoogleEngine, self).__init__(*args, **kwargs)
 
-  def createUrl(self, text, language=None):
+  def createUrl(self, text, language):
     """@reimp@"""
     from google import googletts
     return googletts.url(text, language, encoding=None) # encoding is not needed
+
+class BaiduEngine(OnlineEngine):
+  key = 'baidu' # override
+  name = mytr_("Baidu") + u' TTS' # override
+
+  def __init__(self, *args, **kwargs):
+    super(BaiduEngine, self).__init__(*args, **kwargs)
+
+  def createUrl(self, text, language):
+    """@reimp@"""
+    from baidu import baidutts
+    return baidutts.url(text, language)
 
 # EOF

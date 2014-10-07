@@ -753,5 +753,10 @@
         <source>Test Japanese Syntax</source>
         <translation>日本語文法の練習</translation>
     </message>
+    <message>
+        <location filename="mytr.py" line="141"/>
+        <source>not installed</source>
+        <translation>未インストール</translation>
+    </message>
 </context>
 </TS>

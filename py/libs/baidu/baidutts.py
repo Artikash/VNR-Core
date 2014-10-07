@@ -21,7 +21,7 @@ def url(text, language, encoding='UTF-8'):
       text = urllib.quote(text.encode(encoding, errors='ignore'))
     if text:
       language = baidudef.bdlang(language)
-      return API + "?ie=%s&tl=%s&q=%s" % (encoding, language, text)
+      return API + "?ie=%s&lan=%s&text=%s" % (encoding, language, text)
   return ''
 
 if __name__ == '__main__':

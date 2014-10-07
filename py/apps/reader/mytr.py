@@ -138,7 +138,7 @@ class reader(QObject):
 
       self.tr("Installing"),
       self.tr("Installed"),
-      self.tr("Not installed"),
+      self.tr("Not installed"), self.tr("not installed"),
 
       self.tr("Launcher"),
 
