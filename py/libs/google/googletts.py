@@ -4,7 +4,7 @@
 #
 # Example: "http://translate.google.com/translate_tts?tl=ja&q=hello"
 
-#import urllib
+import urllib
 
 DEFAULT_API = "http://translate.google.com/translate_tts"
 API = DEFAULT_API
@@ -12,13 +12,22 @@ API = DEFAULT_API
 def defaultapi(): return DEFAULT_API
 def setapi(url): global API; API = url
 
-def url(text, lang): # unicode, str -> unicode
-  if lang and text:
-    #if isinstance(text, unicode):
-    #  text = urllib.quote(text.encode('utf8', errors='ignore'))
-    return API + "?tl=%s&q=%s" % (lang, text)
-  else:
-    return ''
+def url(text, language, encoding='UTF-8'):
+  """
+  @param  text  unicode  not None
+  @param  language  str  not None
+  @param* encoding  utf8 or UTF-8
+  @return  unicode or str not None
+  """
+  if language:
+    if encoding and isinstance(text, unicode):
+      text = urllib.quote(text.encode(encoding, errors='ignore'))
+    if text:
+      if encoding:
+        return API + "?ie=%s&tl=%s&q=%s" % (encoding, language, text)
+      else:
+        return API + "?tl=%s&q=%s" % (language, text)
+  return ''
 
 #if __name__ == '__main__':
 #  import sys
