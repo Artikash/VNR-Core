@@ -1005,6 +1005,7 @@ class _TtsTab(object):
 
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.testButton)
+    row.addWidget(self.testLanguageButton)
     row.addWidget(self.testEdit)
     layout.addLayout(row)
 
@@ -1030,17 +1031,32 @@ class _TtsTab(object):
     ret.clicked.connect(self._test)
     return ret
 
+  @memoizedproperty
+  def testLanguageButton(self):
+    ret = QtWidgets.QComboBox()
+    ret.setToolTip(tr_("Language"))
+    ret.addItems(map(i18n.language_name2, config.LANGUAGES2))
+    ret.setMaxVisibleItems(ret.count())
+    return ret
+
+  def _testLanguage(self): # -> str or None
+    index = self.testLanguageButton.currentIndex()
+    try: return config.LANGUAGES2[index]
+    except IndexError: pass
+
   def _test(self, engine=''):
     """
     @param  engine  unicode
     """
     t = self.testEdit.text().strip()
     if t:
-      ttsman.speak(t, engine=engine)
+      lang = self._testLanguage()
+      ttsman.speak(t, engine=engine, language=lang, verbose=True)
 
   def createTestButton(self, engine='', parent=None):
     """
     @param  engine  str
+    @return  QPushButton
     """
     ret = QtWidgets.QPushButton(parent or self.q)
     ret.setText(tr_("Test"))
@@ -1077,7 +1093,7 @@ class _TtsTab(object):
     grid.addWidget(self.googleButton, r, 0)
     self.googleTestButton = self.createTestButton('google')
     grid.addWidget(self.googleTestButton, r, 1)
-    grid.addWidget(self.googleLanguageEdit, r, 2)
+    #grid.addWidget(self.googleLanguageEdit, r, 2)
 
     # VOICEROID
     for k,b in ((
@@ -1180,23 +1196,23 @@ class _TtsTab(object):
     ret.valueChanged[int].connect(partial(tm.setSapiSpeed, key))
     return ret
 
-  @memoizedproperty
-  def googleLanguageEdit(self):
-    ret = QtWidgets.QComboBox()
-    ret.setToolTip(tr_("Language"))
-    ret.addItems(map(i18n.language_name2, config.LANGUAGES2))
-    ret.setMaxVisibleItems(ret.count())
-    try: langIndex = config.LANGUAGES2.index(settings.global_().googleTtsLanguage())
-    except (ValueError, TypeError): langIndex = 1 # 'en'
-    ret.setCurrentIndex(langIndex)
-    ret.currentIndexChanged.connect(self._saveGoogleLanguage)
-    return ret
+  #@memoizedproperty
+  #def googleLanguageEdit(self):
+  #  ret = QtWidgets.QComboBox()
+  #  ret.setToolTip(tr_("Language"))
+  #  ret.addItems(map(i18n.language_name2, config.LANGUAGES2))
+  #  ret.setMaxVisibleItems(ret.count())
+  #  try: langIndex = config.LANGUAGES2.index(settings.global_().googleTtsLanguage())
+  #  except (ValueError, TypeError): langIndex = 1 # 'en'
+  #  ret.setCurrentIndex(langIndex)
+  #  ret.currentIndexChanged.connect(self._saveGoogleLanguage)
+  #  return ret
 
-  def _saveGoogleLanguage(self):
-    index = self.googleLanguageEdit.currentIndex()
-    try: lang = config.LANGUAGES2[index]
-    except IndexError: lang = 'ja'
-    settings.global_().setGoogleTtsLanguage(lang)
+  #def _saveGoogleLanguage(self):
+  #  index = self.googleLanguageEdit.currentIndex()
+  #  try: lang = config.LANGUAGES2[index]
+  #  except IndexError: lang = 'ja'
+  #  settings.global_().setGoogleTtsLanguage(lang)
 
   def _loadEngine(self):
     v = settings.global_().ttsEngine()
@@ -1217,7 +1233,7 @@ class _TtsTab(object):
 
     #enabled = libman.quicktime().exists()
     enabled = libman.wmp().exists()
-    for w in self.googleButton, self.googleLanguageEdit, self.googleTestButton:
+    for w in self.googleButton, self.googleTestButton:
       w.setEnabled(enabled)
 
     path = settings.global_().yukariLocation() or ttsman.manager().yukariLocation()
