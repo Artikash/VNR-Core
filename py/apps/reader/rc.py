@@ -28,6 +28,7 @@ DIR_APP_TMP = DIR_TMP + '/reader'
 
 DIR_TMP_OCR = DIR_APP_TMP + '/ocr'   # $app/Caches/tmp/reader/ocr
 DIR_TMP_TERM = DIR_APP_TMP + '/dict' # $app/Caches/tmp/reader/dict
+DIR_TMP_TTS = DIR_APP_TMP + '/tts'   # $app/Caches/tmp/reader/tts
 
 #DIR_PLUGIN      = DIR_SAKURA + '/userplugin'    # Sakura/userplugin
 #DIR_PLUGIN_PY   = DIR_PLUGIN + '/py/1' # userplugin/py/1
@@ -174,6 +175,19 @@ def term_path(type, language):
   @nothrow
   """
   return "%s/%s/%s.txt" % (DIR_TMP_TERM, language, TERM_RELPATHS[type])
+
+# TTS
+
+def tts_path(url):
+  """
+  @param  type  str
+  @param  language  str
+  @param  text  unicode
+  @return  unicode  path
+  @nothrow
+  """
+  name = hashutil.urlsum(url)
+  return "%s/%s.mp3" % (DIR_TMP_TTS, name)
 
 # MeCab
 

@@ -213,6 +213,7 @@ def main():
     rc.DIR_CACHE_WEB,
     rc.DIR_TMP_OCR,
     rc.DIR_TMP_TERM, # not needed, though
+    rc.DIR_TMP_TTS,
   ))
 
   if skos.WIN:

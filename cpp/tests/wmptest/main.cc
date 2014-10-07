@@ -26,8 +26,8 @@ int main()
 //#define URL L"http://tts.baidu.com/text2audio?lan=jp&pid=101&ie=UTF-8&text=hello"
 //#define URL L"http://tts.baidu.com/text2audio?lan=jp&pid=101&text=お花の匂い"
 //#define URL L"http://tts.baidu.com/text2audio?lan=jp&pid=101&ie=UTF-8&text=%E3%81%8A%E8%8A%B1%E3%81%AE%E5%8C%82%E3%81%84"
-#define URL L"http://tts.baidu.com/text2audio?lan=jp&pid=101&ie=UTF-8&text=%E3%81%8A%E8%8A%B1%E3%81%AE%E5%8C%82%E3%81%84"
-//#define URL L"Z:\\Users\\jichi\\tmp\\test.mp3"
+//#define URL L"http://tts.baidu.com/text2audio?lan=jp&pid=101&ie=UTF-8&text=%E3%81%8A%E8%8A%B1%E3%81%AE%E5%8C%82%E3%81%84"
+#define URL L"Z:\\Users\\jichi\\tmp\\test.mp3"
 
   // Require CoInitializeEX MTA
   // http://stackoverflow.com/questions/21699887/iaxwinhostwindow-createcontrol-returns-e-nointerface-when-trying-to-host-wmp-wit

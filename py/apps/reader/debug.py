@@ -93,12 +93,19 @@ if __name__ == '__main__':
     from sakurakit.skwincom import SkCoInitializer
     from wmp.wmp import WindowsMediaPlayer
 
-    url = "http://translate.google.com/translate_tts?tl=ja&q=hello"
+    #url = "http://translate.google.com/translate_tts?tl=ja&q=hello"
+    url = "http://tts.baidu.com/text2audio?lan=jp&ie=UTF-8&text=hello"
+    #url = "Z:/Users/jichi/tmp/test.mp3"
+    #url = r"Z:\Users\jichi\tmp\test.mp3"
+    #url = "Z:\Users\jichi\tmp\test.mp3"
+    #url = "Z:\\Users\\jichi\\tmp\\test.mp3"
+    print os.path.exists(url)
     p = WindowsMediaPlayer()
     def run():
       with SkCoInitializer(threading=True):
         print p.isValid()
         print p.play(url)
+        os.system("pause")
 
     a = app()
     skthreads.runasync(run)

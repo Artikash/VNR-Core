@@ -3,13 +3,14 @@
 # 4/7/2013 jichi
 
 import os
+from time import time
 from functools import partial
 from PySide.QtCore import QThread, Signal, Qt
-from sakurakit import skthreads, skwincom
+from sakurakit import skfileio, skthreads, skwincom
 from sakurakit.sktr import tr_
 from zhszht.zhszht import zht2zhs
 from mytr import my
-import growl
+import growl, rc
 
 ## Voice engines ##
 
@@ -177,50 +178,96 @@ class ZunkoEngine(VocalroidEngine):
 
 # Online engines
 
+class _OnlineThread:
+  def __init__(self):
+    self.playing = False
+    self.downloadCount = 0 # int
+    self.time = 0 # float
+
+  def init(self, q):
+    from pywmp import WindowsMediaPlayer
+    self.wmp = WindowsMediaPlayer()
+
+    from qtrequests import qtrequests
+    from PySide.QtNetwork import QNetworkAccessManager
+    nam = QNetworkAccessManager()
+    self.session = qtrequests.Session(nam, q.abortSignal)
+
+    q.abortSignalRequested.connect(q.abortSignal, Qt.QueuedConnection)
+
+    q.playRequested.connect(self.play, Qt.QueuedConnection)
+    q.stopRequested.connect(self.stop, Qt.QueuedConnection)
+
+  def play(self, url, time): # unicode, time ->
+    if time < self.time: # outdate
+      return
+    if not url:
+      self.stop()
+      return
+
+    path = rc.tts_path(url)
+    if os.path.exists(path):
+      self.playing = self.wmp.play(path)
+    else:
+      self.downloadCount += 1
+      r = self.session.get(url)
+      if self.downloadCount > 0:
+        self.downloadCount -= 1
+      if r and r.content and len(r.content) > 500: # Minimum TTS file size is around 1k for MP3
+        if time < self.time: # outdate
+          return
+        path = rc.tts_path(url)
+        if skfileio.writefile(path, r.content, mode='wb'):
+          if time < self.time: # outdate
+            return
+          self.playing = self.wmp.play(path)
+
+  def stop(self, time): # float ->
+    if time < self.time: # outdate
+      return
+    if self.playing:
+      self.wmp.stop()
+      self.playing = False
+
 class OnlineThread(QThread):
-  playRequested = Signal(unicode) # url
-  stopRequested = Signal()
+  playRequested = Signal(unicode, float) # url, time
+  stopRequested = Signal(float) # time
+  abortSignal = Signal()
+  abortSignalRequested = Signal()
 
   def __init__(self, parent=None):
     super(OnlineThread, self).__init__(parent)
-
-    from pywmp import WindowsMediaPlayer
-    self._wmp = WindowsMediaPlayer()
-
-    self._playing = False
+    self.__d = _OnlineThread()
 
   def run(self):
     """@reimp"""
     skwincom.coinit(threading=True) # critical to use WMP
-
-    self.playRequested.connect(self.play, Qt.QueuedConnection)
-    self.stopRequested.connect(self.stop, Qt.QueuedConnection)
-
+    self.__d.init(self)
     self.exec_()
 
   def destroy(self):
+    self.abortSignalRequested.emit()
     self.quit()
-    skwincom.couninit()
+    #skwincom.couninit() # never invoked
 
   # Actions
 
-  def play(self, url): # unicode ->
-    if url:
-      self._playing = self._wmp.play(url)
-    else:
-      self.stop()
-
-  def stop(self):
-    if self._playing:
-      self._wmp.stop()
-      self._playing = False
-
   def requestPlay(self, url): # unicode ->
-    self.playRequested.emit(url)
+    d = self.__d
+    now = time()
+    d.time = now
+    if d.downloadCount > 0:
+      self.abortSignalRequested.emit()
+    self.playRequested.emit(url, now)
 
   def requestStop(self, url): # unicode ->
-    if self._playing:
-      self.stopRequested.emit()
+    d = self.__d
+    now = time()
+    d.time = now
+    if d.downloadCount > 0:
+      self.abortSignalRequested.emit()
+    if d.playing:
+      self.stopRequested.emit(now)
 
 class OnlineEngine(VoiceEngine):
   language = '' # override
@@ -236,7 +283,7 @@ class OnlineEngine(VoiceEngine):
 
       from PySide.QtCore import QCoreApplication
       qApp = QCoreApplication.instance()
-      qApp.aboutToQuit.connect(t.quit)
+      qApp.aboutToQuit.connect(t.destroy)
 
       growl.msg(my.tr("Load {0}").format("Windows Media Player"))
     return cls._thread
@@ -272,6 +319,6 @@ class GoogleEngine(OnlineEngine):
   def createUrl(self, text, language=None):
     """@reimp@"""
     from google import googletts
-    return googletts.url(text, language)
+    return googletts.url(text, language, encoding=None) # encoding is not needed
 
 # EOF

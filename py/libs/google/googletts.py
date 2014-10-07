@@ -16,7 +16,7 @@ def url(text, language, encoding='UTF-8'):
   """
   @param  text  unicode  not None
   @param  language  str  not None
-  @param* encoding  utf8 or UTF-8
+  @param* encoding  utf8 or UTF-8 or None
   @return  unicode or str not None
   """
   if language:
