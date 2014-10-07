@@ -254,11 +254,11 @@ class _TextManager(object):
     tm = ttsman.manager()
     lang = tm.defaultEngineLanguage()
     if lang:
-      if lang[:2] == self.gameLanguage[:2]:
+      if lang == '*' or lang[:2] == self.gameLanguage[:2]:
         t = self.lastTtsText
         if t:
           tm.stop()
-          tm.speak(t, termEnabled=True, language=lang)
+          tm.speak(t, termEnabled=True, language=self.gameLanguage)
           return
       elif lang[:2] == self.lastTtsSubtitleLanguage[:2]:
         t = self.lastTtsSubtitle
@@ -276,8 +276,8 @@ class _TextManager(object):
     if text: #and self.gameLanguage == 'ja':
       if not settings.global_().isVoiceCharacterEnabled():
         lang = tm.defaultEngineLanguage()
-        if lang[:2] == self.gameLanguage[:2]:
-          tm.speak(text, termEnabled=True, language=lang)
+        if lang and (lang == '*' or lang[:2] == self.gameLanguage[:2]):
+          tm.speak(text, termEnabled=True, language=self.gameLanguage)
       else:
         dm = dataman.manager()
         name = self.ttsName
@@ -295,11 +295,11 @@ class _TextManager(object):
           if cd.ttsEnabled:
             eng = cd.ttsEngine or tm.defaultEngine()
             lang = tm.getEngineLanguage(eng)
-            if lang and lang[:2] == self.gameLanguage[:2] and (name or
+            if lang and (lang == '*' or lang[:2] == self.gameLanguage[:2]) and (name or
                 not text.startswith(u"「") and not text.endswith(u"」")
                 or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
               ): # do not speak if no character name is detected
-              tm.speak(text, termEnabled=True, language=lang, engine=eng)
+              tm.speak(text, termEnabled=True, language=self.gameLanguage, engine=eng)
         #else:
         #  tm.stop()
     self.ttsText = self.ttsName = ""
@@ -310,7 +310,7 @@ class _TextManager(object):
     if text: #and self.gameLanguage == 'ja':
       if not settings.global_().isVoiceCharacterEnabled():
         lang = tm.defaultEngineLanguage()
-        if lang[:2] == self.ttsSubtitleLanguage[:2]:
+        if lang and lang[:2] == self.ttsSubtitleLanguage[:2]:
           tm.speak(text, termEnabled=False, language=lang)
       else:
         dm = dataman.manager()

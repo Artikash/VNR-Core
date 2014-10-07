@@ -107,7 +107,7 @@ class _TtsManager(object):
       dprint("ignore when offline: %s" % eng.key)
       return
 
-    if language and eng.language and language[:2] != eng.language[:2]:
+    if language and eng.language and eng.language != '*' and language[:2] != eng.language[:2]:
       if verbose:
         growl.notify("<br/>".join((
             my.tr("TTS languages mismatch"),
@@ -295,7 +295,7 @@ class TtsManager(QObject):
 
   def getEngineLanguage(self, key): # str  engine key -> str not None
     eng = self.__d.getEngine(key)
-    return eng.language or '' if eng else ''
+    return eng.language if eng else ''
 
   def defaultEngineLanguage(self): # -> str not None
     return self.getEngineLanguage(self.__d.defaultEngineKey)

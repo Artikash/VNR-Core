@@ -260,7 +260,7 @@ class OnlineThread(QThread):
       self.abortSignalRequested.emit()
     self.playRequested.emit(url, now)
 
-  def requestStop(self, url): # unicode ->
+  def requestStop(self):
     d = self.__d
     now = time()
     d.time = now
@@ -270,7 +270,7 @@ class OnlineThread(QThread):
       self.stopRequested.emit(now)
 
 class OnlineEngine(VoiceEngine):
-  language = '' # override
+  language = '*' # override
 
   online = True # override
 
