@@ -198,7 +198,7 @@ class _TextManager(object):
 
   def _updateTtsSubtitle(self, text, language):
     ss = settings.global_()
-    if not ss.speaksGameText(): #or not ss.isVoiceCharacterEnabled() or not ss.isSubtitleVoiceEnabled():
+    if not ss.speaksGameText() or not ss.isSubtitleVoiceEnabled():
       return
     # Speak only the first subtitle, and the language must be matched
     if self.ttsSubtitle or language[:2] != self.language[:2]:
@@ -214,7 +214,7 @@ class _TextManager(object):
   def _updateTtsText(self, text):
     self.lastTtsText = self.ttsText = text
     ss = settings.global_()
-    if not ss.speaksGameText(): #or ss.isVoiceCharacterEnabled() and ss.isSubtitleVoiceEnabled():
+    if not ss.speaksGameText(): #or ss.isSubtitleVoiceEnabled(): subtitle still need tts text to guess character names
       return
     if text and self.ttsName:
       self._speakTextTimer.start(0)
@@ -235,10 +235,13 @@ class _TextManager(object):
     #else:
     if text and self.ttsText:
       self._speakTextTimer.start(0)
-      self._speakSubtitleTimer.start(0)
+      if ss.isSubtitleVoiceEnabled():
+        self._speakSubtitleTimer.start(0)
     else:
-      self._speakTextTimer.start(1000)
-      self._speakSubtitleTimer.start(1000)
+      timeout = 1000 # online machine translation latency is lone
+      self._speakTextTimer.start(timeout)
+      if ss.isSubtitleVoiceEnabled():
+        self._speakSubtitleTimer.start(timeout)
 
   @staticmethod
   def guessName(text):
@@ -273,11 +276,13 @@ class _TextManager(object):
   def _speakText(self):
     text = self.ttsText
     tm = ttsman.manager()
+    ss = settings.global_()
     if text: #and self.gameLanguage == 'ja':
       if not settings.global_().isVoiceCharacterEnabled():
-        lang = tm.defaultEngineLanguage()
-        if lang and (lang == '*' or lang[:2] == self.gameLanguage[:2]):
-          tm.speak(text, termEnabled=True, language=self.gameLanguage)
+        if not ss.isSubtitleVoiceEnabled():
+          lang = tm.defaultEngineLanguage()
+          if lang == '*' or lang and lang[:2] == self.gameLanguage[:2]:
+            tm.speak(text, termEnabled=True, language=self.gameLanguage)
       else:
         dm = dataman.manager()
         name = self.ttsName
@@ -288,18 +293,19 @@ class _TextManager(object):
           if name:
             dm.addCharacter(name)
             self.ttsNameForSubtitle = name
-        c = dm.queryCharacter(name)
-        tm.stop() # this requires that ttsSubtitle always comes after ttsText
-        if c:
-          cd = c.d
-          if cd.ttsEnabled:
-            eng = cd.ttsEngine or tm.defaultEngine()
-            lang = tm.getEngineLanguage(eng)
-            if lang and (lang == '*' or lang[:2] == self.gameLanguage[:2]) and (name or
-                not text.startswith(u"「") and not text.endswith(u"」")
-                or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
-              ): # do not speak if no character name is detected
-              tm.speak(text, termEnabled=True, language=self.gameLanguage, engine=eng)
+        if not ss.isSubtitleVoiceEnabled():
+          tm.stop() # this requires that ttsSubtitle always comes after ttsText
+          c = dm.queryCharacter(name)
+          if c:
+            cd = c.d
+            if cd.ttsEnabled:
+              eng = cd.ttsEngine or tm.defaultEngine()
+              lang = tm.getEngineLanguage(eng)
+              if lang and (lang == '*' or lang[:2] == self.gameLanguage[:2]) and (name or
+                  not text.startswith(u"「") and not text.endswith(u"」")
+                  or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
+                ): # do not speak if no character name is detected
+                tm.speak(text, termEnabled=True, language=self.gameLanguage, engine=eng)
         #else:
         #  tm.stop()
     self.ttsText = self.ttsName = ""
@@ -310,20 +316,22 @@ class _TextManager(object):
     if text: #and self.gameLanguage == 'ja':
       if not settings.global_().isVoiceCharacterEnabled():
         lang = tm.defaultEngineLanguage()
-        if lang and lang[:2] == self.ttsSubtitleLanguage[:2]:
+        if lang == '*' or lang and lang[:2] == self.ttsSubtitleLanguage[:2]:
           tm.speak(text, termEnabled=False, language=lang)
       else:
+        tm.stop()
         dm = dataman.manager()
         name = self.ttsNameForSubtitle
         c = dm.queryCharacter(name)
-        #tm.stop()
         if c:
           cd = c.d
           if cd.ttsEnabled:
             eng = cd.ttsEngine or tm.defaultEngine()
             lang = tm.getEngineLanguage(eng)
-            if lang and lang[:2] == self.ttsSubtitleLanguage[:2]:
-              tm.stop()
+            if lang and (lang == '*' or lang[:2] == self.ttsSubtitleLanguage[:2]) and (name or
+                not text.startswith(u"「") and not text.endswith(u"」")
+                or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
+              ): # do not speak if no character name is detected
               #if (name
               #    #not text.startswith(u"「") and not text.endswith(u"」")
               #    or dm.currentGame() and dm.currentGame().voiceDefaultEnabled # http://sakuradite.com/topic/170
