@@ -95,6 +95,11 @@ def translate(text, to='zhs', fr='ja'):
   except: pass
 
 if __name__ == "__main__":
+  s = u"你在说什么？"
+  t = translate(s, to='yue', fr='zh')
+  print t
+  sys.exit(0)
+
   def test():
     global session
 
