@@ -2,7 +2,7 @@
 # googletts.py
 # 11/25/2012 jichi
 #
-# Example: "http://translate.google.com/translate_tts?tl=ja&q=hello"
+# Example: http://translate.google.com/translate_tts?tl=ja&q=hello
 
 import urllib
 

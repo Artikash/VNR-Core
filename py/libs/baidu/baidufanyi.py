@@ -16,6 +16,7 @@ import requests
 #from time import time
 from sakurakit.skdebug import dwarn, derror
 #from sakurakit.sknetio import GZIP_HEADERS
+import baidudef
 
 from sakurakit import skdatetime
 def _rand(): return str(skdatetime.current_unixtime())
@@ -40,29 +41,6 @@ FANYI_API = "http://fanyi.baidu.com/transapi"
 #  #Accept-Encoding:gzip, deflate
 #}
 
-# Different pairs are marked with '*'
-_LANG = {
-  'ar': 'ara', # *
-  'en': 'en',
-  'ja': 'jp', # *
-  'zhs': 'zh', # *
-  'zht': 'zh', # *
-  'ko': 'kor',
-  'vi': 'vi',
-  'th': 'th',
-  'ms': 'ms',
-  'id': 'id',
-  'de': 'de',
-  'fr': 'fra', # *
-  'es': 'spa', # *
-  'it': 'it',
-  'nl': 'nl',
-  'pl': 'pl',
-  'pt': 'pt',
-  'ru': 'ru',
-}
-def _lang(lang): return _LANG.get(lang) or 'en' # str -> str
-
 def translate(text, to='zhs', fr='ja'):
   """Return translated text, which is NOT in unicode format
   @param  text  unicode not None
@@ -79,8 +57,8 @@ def translate(text, to='zhs', fr='ja'):
       #headers=HEADERS,
       data={
         'query': text, #.decode('utf8'),
-        'from': _lang(fr),
-        'to': _lang(to),
+        'from': baidudef.bdlang(fr),
+        'to': baidudef.bdlang(to),
         #'ie': 'utf-8',
         #'source': 'txt',
         #'t': _BaiduFanyi.timestamp(),
@@ -135,15 +113,15 @@ if __name__ == "__main__":
     from PySide.QtNetwork import QNetworkAccessManager
     session = qtrequests.Session(QNetworkAccessManager())
     with SkProfiler():
-      for i in range(10):
+      for i in range(1):
         t = translate(s, to=to, fr=fr)
-    #print t
+    print t
 
     session = requests.Session()
     with SkProfiler():
-      for i in range(10):
+      for i in range(1):
         t = translate(s, to=to, fr=fr)
-    #print t
+    print t
 
     #session = requests
     #with SkProfiler():
