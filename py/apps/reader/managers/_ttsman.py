@@ -7,6 +7,7 @@ from functools import partial
 from PySide.QtCore import QThread, Signal, Qt
 from sakurakit import skthreads, skwincom
 from sakurakit.sktr import tr_
+from zhszht.zhszht import zht2zhs
 from mytr import my
 import growl
 
@@ -19,9 +20,8 @@ class VoiceEngine(object):
   #gender = 'f'  # str
   online = False # bool  whether it is an online engine
 
-  def setLanguage(self, v): self.language = v
   def isValid(self): return True
-  def speak(self, text): pass
+  def speak(self, text, language=None): pass
   def stop(self): pass
 
 # Offline engines
@@ -61,7 +61,7 @@ class SapiEngine(OfflineEngine):
       self._valid = bool(self.engine) and self.engine.isValid()
     return self._valid
 
-  #def speak(self, text):
+  #def speak(self, text, language=None):
   #  """@remip"""
   #  skthreads.runasync(partial(self._speakasync, text))
 
@@ -76,7 +76,7 @@ class SapiEngine(OfflineEngine):
   #      e.speak(text)
   #      #e.speak(text, async=False) # async=False, or it might crash?
 
-  def speak(self, text):
+  def speak(self, text, language=None):
     """@remip"""
     e = self.engine
     if e:
@@ -84,6 +84,8 @@ class SapiEngine(OfflineEngine):
         e.stop()
       else:
         self._speaking = True
+      if language == 'zht':
+        text = zht2zhs(text)
       e.speak(text)
 
   def stop(self):
@@ -142,7 +144,7 @@ class VocalroidEngine(OfflineEngine):
         self.name,
       )))
 
-  def speak(self, text):
+  def speak(self, text, language=None):
     """@reimp@"""
     e = self.engine
     if e:
@@ -221,14 +223,21 @@ class OnlineThread(QThread):
       self.stopRequested.emit()
 
 class OnlineEngine(VoiceEngine):
+  language = '' # override
+
   online = True # override
 
   _thread = None
   @classmethod
   def thread(cls): # -> OnlineThread not None
     if not cls._thread:
-      cls._thread = OnlineThread()
-      cls._thread.start()
+      t = cls._thread = OnlineThread()
+      t.start()
+
+      from PySide.QtCore import QCoreApplication
+      qApp = QCoreApplication.instance()
+      qApp.aboutToQuit.connect(t.quit)
+
       growl.msg(my.tr("Load {0}").format("Windows Media Player"))
     return cls._thread
 
@@ -245,6 +254,7 @@ class OnlineEngine(VoiceEngine):
     if not self.isValid():
       growl.warn(my.tr("Missing Windows Media Player needed by text-to-speech"))
     else:
+      language = language[:2] if language else 'ja'
       url = self.createUrl(text, language)
       self.thread().requestPlay(url)
 
@@ -262,6 +272,6 @@ class GoogleEngine(OnlineEngine):
   def createUrl(self, text, language=None):
     """@reimp@"""
     from google import googletts
-    return googletts.url(text, language or 'ja')
+    return googletts.url(text, language)
 
 # EOF

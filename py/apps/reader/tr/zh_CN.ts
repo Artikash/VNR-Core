@@ -1145,7 +1145,7 @@ It might take a couple of seconds to complete.</source>
     <message>
         <location filename="managers/_ttsman.py" line="67"/>
         <source>Missing QuickTime needed by text-to-speech</source>
-        <translation>缺少语音合成需要的QuickTime</translation>
+        <translation type="obsolete">缺少语音合成需要的QuickTime</translation>
     </message>
     <message>
         <location filename="managers/dataman.py" line="8808"/>
@@ -2169,22 +2169,22 @@ Zunko is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and y
         <translation>外部语音合成软件的位置</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="108"/>
+        <location filename="managers/_ttsman.py" line="135"/>
         <source>Activate Voiceroid+</source>
         <translation>打开VOICEROID+</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="114"/>
+        <location filename="managers/_ttsman.py" line="141"/>
         <source>Cannot find Voiceroid+</source>
         <translation>没有找到VOICEROID+</translation>
     </message>
     <message>
-        <location filename="managers/ttsman.py" line="180"/>
+        <location filename="managers/ttsman.py" line="181"/>
         <source>Load TTS</source>
         <translation>载入TTS</translation>
     </message>
     <message>
-        <location filename="managers/ttsman.py" line="186"/>
+        <location filename="managers/ttsman.py" line="187"/>
         <source>Failed to load TTS</source>
         <translation>载入TTS失败了</translation>
     </message>
@@ -4062,6 +4062,16 @@ You can reinistall Windows Media Player here from Microsoft for free:
 正版的Windows默认是有安装的，除非你手动移除了它。
 你可以在下边微软的网站重新安装它：
 &lt;center&gt;&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;&lt;/center&gt;</translation>
+    </message>
+    <message>
+        <location filename="managers/_ttsman.py" line="237"/>
+        <source>Load {0}</source>
+        <translation>载入{0}</translation>
+    </message>
+    <message>
+        <location filename="managers/_ttsman.py" line="251"/>
+        <source>Missing Windows Media Player needed by text-to-speech</source>
+        <translation>缺少语音合成需要的Windows Media Player</translation>
     </message>
 </context>
 </TS>

@@ -107,7 +107,7 @@ class _TtsManager(object):
       dprint("ignore when offline: %s" % eng.key)
       return
 
-    if language and language[:2] != eng.language[:2]:
+    if language and eng.language and not language[:2] != eng.language[:2]:
       dprint("language mismatch: %s != %s" % (language, eng.language))
       return
 
@@ -122,7 +122,7 @@ class _TtsManager(object):
     #  eng.speak(text, async=True)
     #else:
     #with SkProfiler():
-    eng.speak(text) # 0.007 ~ 0.009 seconds for SAPI
+    eng.speak(text, language) # 0.007 ~ 0.009 seconds for SAPI
 
     #skevents.runlater(partial(eng.speak, text))
 
