@@ -31,17 +31,18 @@ OfflineEngine = VoiceEngine
 
 class SapiEngine(OfflineEngine):
 
-  def __init__(self, key, speed=0, pitch=0):
+  def __init__(self, key, speed=0, pitch=0, volume=100):
     self.key = key # str
     self.speed = speed  # int
     self.pitch = pitch  # int
+    self.volume = volume  # int
     self._speaking = False
     self._valid = False
     #self.mutex = QMutex() # speak mutex
 
     import sapi.engine, sapi.registry
     kw = sapi.registry.query(key=self.key)
-    self.engine = sapi.engine.SapiEngine(speed=speed, pitch=pitch, **kw) if kw else None
+    self.engine = sapi.engine.SapiEngine(speed=speed, pitch=pitch, volume=volume, **kw) if kw else None
     if self.engine:
       self.language = self.engine.language or 'ja' # override
       self.name = self.engine.name or tr_('Unknown')
@@ -66,6 +67,16 @@ class SapiEngine(OfflineEngine):
       e = self.engine
       if e:
         e.pitch = v
+
+  def setVolume(self, v):
+    """
+    @param  v  int  [0,100]
+    """
+    if self.volume != v:
+      self.volume = v
+      e = self.engine
+      if e:
+        e.volume = v
 
   def isValid(self):
     """"@reimp"""
@@ -280,6 +291,7 @@ class OnlineThread(QThread):
     if d.playing:
       self.stopRequested.emit(now)
 
+ONLINE_ENGINES = 'google',
 class OnlineEngine(VoiceEngine):
   language = '*' # override
 

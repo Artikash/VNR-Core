@@ -769,6 +769,13 @@ class Settings(QSettings):
     return to_dict(self.value('TTSSpeeds'))
   def setTtsSpeeds(self, value): self.setValue('TTSSpeeds', value)
 
+  def ttsVolumes(self):
+    """
+    @return  {str ttskey:int volume}
+    """
+    return to_dict(self.value('TTSVolumes'))
+  def setTtsVolumes(self, value): self.setValue('TTSVolumes', value)
+
   def ttsPitches(self):
     """
     @return  {str ttskey:int pitch}

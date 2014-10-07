@@ -1188,9 +1188,10 @@ class _TtsTab(object):
 
   def createSpeedEdit(self, key, parent=None):
     ret = QtWidgets.QSpinBox(parent or self.q)
-    ret.setToolTip("%s [-10,10]" % tr_("Speed"))
+    ret.setToolTip("%s [-10,10]")
     ret.setRange(-10, 10)
     ret.setSingleStep(1)
+    ret.setPrefix(tr_("Speed") + " ")
     tm = ttsman.manager()
     ret.setValue(tm.getSpeed(key))
     ret.valueChanged[int].connect(partial(tm.setSpeed, key))

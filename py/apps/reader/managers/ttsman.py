@@ -24,10 +24,10 @@ class _TtsManager(object):
     self._online = True     # bool
     self._speakTask = None   # partial function object
 
-    self._googleEngine = None # _ttsman.GoogleEngine
     self._yukariEngine = None # _ttsman.YukariEngine
     self._zunkoEngine = None  # _ttsman.ZunkoEngine
     self._sapiEngines = {}    # {str key:_ttsman.SapiEngine}
+    self._onlineEngines = {}  # {str key:_ttsman.OnlineEngine}
 
     #self.defaultEngineKey = 'wrong engine'
     #self.defaultEngineKey = 'VW Misaki'
@@ -56,8 +56,12 @@ class _TtsManager(object):
     """
     @yield  engine
     """
-    for it in self._googleEngine, self._yukariEngine, self._zunkoEngine:
-      if it and it.isValid() and (self._online or not it.online):
+    if self._online:
+      for it in self._onlineEngines.itervalues():
+        if it.isValid():
+          yield it
+    for it in self._yukariEngine, self._zunkoEngine:
+      if it and it.isValid():
         yield it
     for it in self._sapiEngines.itervalues():
       if it.isValid():
@@ -141,12 +145,6 @@ class _TtsManager(object):
       #if self._googleEngine:
       #  self._googleEngine.setOnline(v)
 
-  @property
-  def googleEngine(self):
-    if not self._googleEngine:
-      self._googleEngine = _ttsman.GoogleEngine()
-    return self._googleEngine
-
   # Voiceroid
 
   @property
@@ -173,6 +171,27 @@ class _TtsManager(object):
       )))
     return self._zunkoEngine
 
+  # Online
+
+  def getOnlineEngine(self, key):
+    ret = self._onlineEngines.get(key)
+    if not ret and key in _ttsman.ONLINE_ENGINES:
+      if key == 'google':
+        ret = _ttsman.GoogleEngine()
+      if ret and ret.isValid():
+        self._onlineEngines[key] = ret
+        growl.msg(' '.join((
+          my.tr("Load TTS"),
+          ret.name,
+        )))
+      else:
+        ret = None
+        growl.warn(' '.join((
+          my.tr("Failed to load TTS"),
+          key,
+        )))
+    return ret
+
   # SAPI
 
   def getSapiEngine(self, key):
@@ -181,19 +200,20 @@ class _TtsManager(object):
       ret = _ttsman.SapiEngine(key=key,
         speed=self.getSpeed(key),
         pitch=self.getPitch(key),
+        volume=self.getVolume(key),
       )
       if ret.isValid():
+        self._sapiEngines[key] = ret
         growl.msg(' '.join((
           my.tr("Load TTS"),
           ret.name,
         )))
-        self._sapiEngines[key] = ret
       else:
+        ret = None
         growl.warn(' '.join((
           my.tr("Failed to load TTS"),
           key,
         )))
-        ret = None
     return ret
 
   def getPitch(self, key):
@@ -217,6 +237,37 @@ class _TtsManager(object):
       eng = self._sapiEngines.get(key)
       if eng:
         eng.setPitch(v)
+      # I haven't figure out how to change WMP pitch yet
+      #else:
+      #  eng = self._onlineEngines.get(key)
+      #  if eng:
+      #    eng.setPitch(v)
+
+  def getVolume(self, key):
+    """
+    @param  key  str
+    @return  int
+    """
+    try: return int(settings.global_().ttsVolumes().get(key) or 100)
+    except (ValueError, TypeError): return 100
+
+  def setVolume(self, key, v):
+    """
+    @param  key  str
+    @param  v  int
+    """
+    ss = settings.global_()
+    m = ss.ttsVolumes()
+    if v != m.get(key):
+      m[key] = v
+      ss.setTtsVolumes(m)
+      eng = self._sapiEngines.get(key)
+      if eng:
+        eng.setVolume(v)
+      else:
+        eng = self._onlineEngines.get(key)
+        if eng:
+          eng.setVolume(v)
 
   def getSpeed(self, key):
     """
@@ -239,6 +290,10 @@ class _TtsManager(object):
       eng = self._sapiEngines.get(key)
       if eng:
         eng.setSpeed(v)
+      else:
+        eng = self._onlineEngines.get(key)
+        if eng:
+          eng.setSpeed(v)
 
   # Actions
 
@@ -252,9 +307,7 @@ class _TtsManager(object):
       return self.zunkoEngine
     if key == 'yukari':
       return self.yukariEngine
-    if key == 'google':
-      return self.googleEngine
-    return self.getSapiEngine(key)
+    return self.getOnlineEngine(key) or self.getSapiEngine(key)
 
   #@memoizedproperty
   #def speakTimer(self):
@@ -342,7 +395,7 @@ class TtsManager(QObject):
     """
     @return  [unicode]
     """
-    ret = ['google'] # warmup google take times, so, always available
+    ret = list(_ttsman.ONLINE_ENGINES)
     d = self.__d
     for it in d.yukariEngine, d.zunkoEngine:
       if it.isValid():
