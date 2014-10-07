@@ -1090,18 +1090,28 @@ class _TtsTab(object):
     grid.addWidget(self.disableButton, r, 0)
 
     # Google
-    r += 1
-
     for k,b in ((
         ('google', self.googleButton),
       )):
+      r += 1
+      c = 0
       self.onlineWidgets.append(b)
-      grid.addWidget(b, r, 0)
+      grid.addWidget(b, r, c)
+
+      c += 1
       w = self.createTestButton(k)
       self.onlineWidgets.append(w)
-      grid.addWidget(w, r, 1)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createVolumeEdit(k)
+      self.onlineWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      c += 1
       w = self.createSpeedEdit(k)
-      grid.addWidget(w, r, 2)
+      self.onlineWidgets.append(w)
+      grid.addWidget(w, r, c)
 
     # VOICEROID
     for k,b in ((
@@ -1120,11 +1130,24 @@ class _TtsTab(object):
     # SAPI
     for k,b in self.sapiButtons:
       r += 1
-      grid.addWidget(b, r, 0)
+      c = 0
+      grid.addWidget(b, r, c)
       w = self.createTestButton(k)
-      grid.addWidget(w, r, 1)
+
+      c += 1
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createVolumeEdit(k)
+      grid.addWidget(w, r, c)
+
+      c += 1
       w = self.createSpeedEdit(k)
-      grid.addWidget(w, r, 2)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createPitchEdit(k)
+      grid.addWidget(w, r, c)
 
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)
@@ -1203,6 +1226,29 @@ class _TtsTab(object):
     tm = ttsman.manager()
     ret.setValue(tm.getSpeed(key))
     ret.valueChanged[int].connect(partial(tm.setSpeed, key))
+    return ret
+
+  def createPitchEdit(self, key, parent=None):
+    ret = QtWidgets.QSpinBox(parent or self.q)
+    ret.setToolTip("%s [-10,10]" % tr_("Pitch"))
+    ret.setRange(-10, 10)
+    ret.setSingleStep(1)
+    ret.setPrefix(tr_("Pitch") + " ")
+    tm = ttsman.manager()
+    ret.setValue(tm.getPitch(key))
+    ret.valueChanged[int].connect(partial(tm.setPitch, key))
+    return ret
+
+  def createVolumeEdit(self, key, parent=None):
+    ret = QtWidgets.QSpinBox(parent or self.q)
+    ret.setToolTip("%s [0,100]" % tr_("Volume"))
+    ret.setRange(0, 100)
+    ret.setSingleStep(10)
+    ret.setPrefix(tr_("Volume") + " ")
+    ret.setSuffix("%")
+    tm = ttsman.manager()
+    ret.setValue(tm.getVolume(key))
+    ret.valueChanged[int].connect(partial(tm.setVolume, key))
     return ret
 
   #@memoizedproperty

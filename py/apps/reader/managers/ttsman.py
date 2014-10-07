@@ -374,6 +374,14 @@ class TtsManager(QObject):
     """
     self.__d.setPitch(key, v)
 
+  def getVolume(self, v):
+    return self.__d.getVolume(v)
+  def setVolume(self, key, v):
+    """
+    @param  value  int in [0,100]
+    """
+    self.__d.setVolume(key, v)
+
   def speak(self, text, interval=100, **kwargs):
     if not features.TEXT_TO_SPEECH:
       return
