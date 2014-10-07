@@ -25,16 +25,16 @@ def _locale(lang):
   """
   return _LOCALES.get(lang) or lang
 
-#def defaulturl(): return 'http://translate.google.com/m' # this will redirect to https
-def defaulturl(): return 'https://translate.google.com/m'
-def seturl(url):
+#def defaultapi(): return 'http://translate.google.com/m' # this will redirect to https
+def defaultapi(): return 'https://translate.google.com/m'
+def setapi(url):
   """
   @param  url  str
   """
   global GOOGLE_TRANS_API
   GOOGLE_TRANS_API = url
 
-GOOGLE_TRANS_API = defaulturl()
+GOOGLE_TRANS_API = defaultapi()
 
 GOOGLE_HEADERS = {
   'User-Agent': "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30)",
@@ -134,7 +134,7 @@ if __name__ == '__main__':
         t = translate(s, to=to, fr=fr)
     print t
 
-    seturl("http://153.121.52.138:443/proxy/gg/trans/m")
+    setapi("http://153.121.52.138:443/proxy/gg/trans/m")
 
     with SkProfiler():
       for i in range(1):

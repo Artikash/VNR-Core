@@ -9,7 +9,7 @@ CONFIG += pysideplugin noqtgui
 include(../../../config.pri)
 include($$LIBDIR/winime/winime.pri)
 
-INCLUDEPATH += $$LIBDIR/winime # needed by shiboken generated code
+#INCLUDEPATH += $$LIBDIR/winime # needed by shiboken generated code
 
 ## Libraries
 

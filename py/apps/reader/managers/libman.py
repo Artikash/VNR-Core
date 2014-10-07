@@ -241,6 +241,13 @@ class ModiOcr(Library):
     from modi import modi
     return modi.MODI_PATH
 
+class WindowsMediaPlayer(Library):
+  URL = "http://windows.microsoft.com/en-us/windows/download-windows-media-player"
+
+  def location(self):
+    from wmp import wmp
+    return wmp.WMP_DLL_PATH
+
 class QuickTime(Library):
   URL = "http://www.apple.com/quicktime/download/"
 
@@ -283,6 +290,8 @@ def eztrans(): return EzTrans()
 def quicktime(): return QuickTime()
 @memoized
 def modiocr(): return ModiOcr()
+@memoized
+def wmp(): return WindowsMediaPlayer()
 
 # EOF
 

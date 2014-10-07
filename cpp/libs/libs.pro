@@ -56,5 +56,6 @@ win32: include(winshell/winshell.pri)
 win32: include(wintimer/wintimer.pri)
 win32: include(wintts/wintts.pri)
 win32: include(winversion/winversion.pri)
+win32: include(wmpcli/wmpcli.pri)
 
 # EOF

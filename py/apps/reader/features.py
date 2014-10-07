@@ -54,13 +54,13 @@ def setMainlandChina(value):
     import dmm.game
     if not value:
       for it in googletts, googletrans:
-        it.seturl(it.defaulturl())
+        it.setapi(it.defaultapi())
       for it in  getchu.soft, getchu.search, dlsite.search, dmm.game, erogamescape.api:
         it.resethost()
     else:
       import config
-      googletts.seturl(config.PROXY_GOOGLE_TTS)
-      googletrans.seturl(config.PROXY_GOOGLE_TRANS)
+      googletts.setapi(config.PROXY_GOOGLE_TTS)
+      googletrans.setapi(config.PROXY_GOOGLE_TRANS)
       erogamescape.api.sethost(config.PROXY_EROGAMESCAPE)
       dmm.game.sethost(config.PROXY_DMM)
       dlsite.search.sethost(config.PROXY_DLSITE)

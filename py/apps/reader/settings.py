@@ -738,13 +738,13 @@ class Settings(QSettings):
       self.setValue('TTSEngine', value)
       self.ttsEngineChanged.emit(value)
 
-  googleTtsLanguageChanged = Signal(str)
-  def googleTtsLanguage(self):
-    return self.value('GoogleTTSLanguage', 'ja')
-  def setGoogleTtsLanguage(self, value):
-    if value != self.googleTtsLanguage():
-      self.setValue('GoogleTTSLanguage', value)
-      self.googleTtsLanguageChanged.emit(value)
+  #googleTtsLanguageChanged = Signal(str)
+  #def googleTtsLanguage(self):
+  #  return self.value('GoogleTTSLanguage', 'ja')
+  #def setGoogleTtsLanguage(self, value):
+  #  if value != self.googleTtsLanguage():
+  #    self.setValue('GoogleTTSLanguage', value)
+  #    self.googleTtsLanguageChanged.emit(value)
 
   zunkoLocationChanged = Signal(unicode)
   def zunkoLocation(self):

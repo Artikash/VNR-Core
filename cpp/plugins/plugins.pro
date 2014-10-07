@@ -37,5 +37,6 @@ win32: SUBDIRS += pymodi
 win32: SUBDIRS += pymsime
 win32: SUBDIRS += pysapi
 win32: SUBDIRS += pywinutil
+win32: SUBDIRS += pywmp
 
 # EOF

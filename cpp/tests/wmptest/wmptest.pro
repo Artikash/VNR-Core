@@ -3,7 +3,7 @@
 
 include(../../../config.pri)
 include($$COMDIR/wmp/wmp.pri)
-#include($$LIBDIR/wmpcli/wmpcli.pri)
+include($$LIBDIR/wmpcli/wmpcli.pri)
 
 # Source
 

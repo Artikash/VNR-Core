@@ -1560,8 +1560,8 @@ class MainObject(QObject):
     #d.ocrManager
     skevents.runlater(d.initializeOCR, 3000) # delay start OCR
 
-    dprint("warm up tts")
-    d.ttsManager.warmup() # It might take a lot of time to warmup google
+    #dprint("warm up tts")
+    #d.ttsManager.warmup() # It might take a lot of time to warmup google
 
     if settings.global_().isEdictEnabled():
       dprint("warm up edict")

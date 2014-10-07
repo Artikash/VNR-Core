@@ -18,7 +18,6 @@ class VoiceEngine(object):
 
   def setLanguage(self, v): self.language = v
   def isValid(self): return True
-  def warmup(self): pass
   def speak(self, text): pass
   def stop(self): pass
 
@@ -37,6 +36,8 @@ class GoogleEngine(VoiceEngine):
 
   def isValid(self):
     """"@reimp"""
+    return False # CHECKPOINT: Always disable Google engine
+
     if not self._valid:
       import libman
       self._valid = libman.quicktime().exists()
@@ -46,11 +47,6 @@ class GoogleEngine(VoiceEngine):
   def engine(self):
     from google.googletts import GoogleTtsPlayer
     return GoogleTtsPlayer(self.parentWidget)
-
-  def warmup(self):
-    """@reimp"""
-    if self.isOnline() and self.isValid():
-      self.engine.warmup()
 
   def speak(self, text, language=None):
     """@reimp@"""

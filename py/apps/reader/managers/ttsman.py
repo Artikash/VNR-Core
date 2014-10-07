@@ -57,7 +57,7 @@ class _TtsManager(object):
     @yield  engine
     """
     for it in self._googleEngine, self._yukariEngine, self._zunkoEngine:
-      if it and it.isValid():
+      if it and it.isValid() and (self._online or not it.online):
         yield it
     for it in self._sapiEngines.itervalues():
       if it.isValid():
@@ -100,9 +100,18 @@ class _TtsManager(object):
         my.tr("TTS is not available"),
         eng.name,
       )))
-      dprint("invalid engine: %s" % (eng.key))
+      dprint("invalid engine: %s" % eng.key)
       return
-    if language and language[:2] != eng.language[:2]:
+
+    if eng.online and not self._online:
+      dprint("ignore when offline: %s" % eng.key)
+      return
+
+    if language and eng.language and eng.language != '*' and language[:2] != eng.language[:2]:
+      if verbose:
+        growl.notify("<br/>".join((
+            my.tr("TTS languages mismatch"),
+            "%s: %s != %s" % (eng.key, language, eng.language))))
       dprint("language mismatch: %s != %s" % (language, eng.language))
       return
 
@@ -117,7 +126,7 @@ class _TtsManager(object):
     #  eng.speak(text, async=True)
     #else:
     #with SkProfiler():
-    eng.speak(text) # 0.007 ~ 0.009 seconds for SAPI
+    eng.speak(text, language) # 0.007 ~ 0.009 seconds for SAPI
 
     #skevents.runlater(partial(eng.speak, text))
 
@@ -129,17 +138,13 @@ class _TtsManager(object):
   def online(self, v):
     if v != self._online:
       self._online = v
-      if self._googleEngine:
-        self._googleEngine.setOnline(v)
+      #if self._googleEngine:
+      #  self._googleEngine.setOnline(v)
 
   @property
   def googleEngine(self):
     if not self._googleEngine:
-      ss = settings.global_()
-      self._googleEngine = _ttsman.GoogleEngine(
-          online=self._online,
-          language=ss.googleTtsLanguage())
-      ss.googleTtsLanguageChanged.connect(self._googleEngine.setLanguage)
+      self._googleEngine = _ttsman.GoogleEngine()
     return self._googleEngine
 
   # Voiceroid
@@ -255,12 +260,12 @@ class TtsManager(QObject):
     #with SkProfiler(): # 0.002 ~ 0.004 seconds when speaking with SAPI
     self.__d.stop()
 
-  def warmup(self):
-    d = self.__d
-    if d.defaultEngineKey == 'google':
-      dprint("enter")
-      d.googleEngine.warmup()
-      dprint("leave")
+  #def warmup(self):
+  #  d = self.__d
+  #  if d.defaultEngineKey == 'google':
+  #    dprint("enter")
+  #    d.googleEngine.warmup()
+  #    dprint("leave")
 
   def defaultEngine(self): return self.__d.defaultEngineKey
   def setDefaultEngine(self, key):
@@ -290,7 +295,7 @@ class TtsManager(QObject):
 
   def getEngineLanguage(self, key): # str  engine key -> str not None
     eng = self.__d.getEngine(key)
-    return eng.language or '' if eng else ''
+    return eng.language if eng else ''
 
   def defaultEngineLanguage(self): # -> str not None
     return self.getEngineLanguage(self.__d.defaultEngineKey)

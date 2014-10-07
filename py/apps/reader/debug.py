@@ -48,8 +48,6 @@ if __name__ == '__main__':
   print "debug: enter"
   initenv()
 
-  from PySide import QtCore, QtGui
-
   #import settings
   #ss = settings.global_()
   #ss.setBlockedLanguages({'en','de'})
@@ -89,6 +87,30 @@ if __name__ == '__main__':
       skwinsec.injectdll(dll, pid=pid)
     print "debug: leave"
 
+  def test_wmp():
+    import os
+    from sakurakit import skthreads
+    from sakurakit.skwincom import SkCoInitializer
+    from wmp.wmp import WindowsMediaPlayer
+
+    #url = "http://translate.google.com/translate_tts?tl=ja&q=hello"
+    url = "http://tts.baidu.com/text2audio?lan=jp&ie=UTF-8&text=hello"
+    #url = "Z:/Users/jichi/tmp/test.mp3"
+    #url = r"Z:\Users\jichi\tmp\test.mp3"
+    #url = "Z:\Users\jichi\tmp\test.mp3"
+    #url = "Z:\\Users\\jichi\\tmp\\test.mp3"
+    print os.path.exists(url)
+    p = WindowsMediaPlayer()
+    def run():
+      with SkCoInitializer(threading=True):
+        print p.isValid()
+        print p.play(url)
+        os.system("pause")
+
+    a = app()
+    skthreads.runasync(run)
+    a.exec_()
+
   def test_ocr():
     from modi import modi
     path = "wiki.tiff"
@@ -102,6 +124,6 @@ if __name__ == '__main__':
     chatview.manager().showTopic('global')
     a.exec_()
 
-  test_chat()
+  test_wmp()
 
 # EOF
