@@ -465,7 +465,7 @@ def file_icon(path):
   @return  QIcon not None
   @nothrow
   """
-  if path and path.endswith(".000"):
+  if path and (path.endswith(".000") or path.lower().endswith(".bin")):
     path = path[:-3] + "exe"
   return FILE_ICON_PROVIDER.icon(path)
 
