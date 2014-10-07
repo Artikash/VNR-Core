@@ -2169,12 +2169,12 @@ Zunko is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and y
         <translation>外部语音合成软件的位置</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="137"/>
+        <location filename="managers/_ttsman.py" line="138"/>
         <source>Activate Voiceroid+</source>
         <translation>打开VOICEROID+</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="143"/>
+        <location filename="managers/_ttsman.py" line="144"/>
         <source>Cannot find Voiceroid+</source>
         <translation>没有找到VOICEROID+</translation>
     </message>
@@ -4064,12 +4064,12 @@ You can reinistall Windows Media Player here from Microsoft for free:
 &lt;center&gt;&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="241"/>
+        <location filename="managers/_ttsman.py" line="288"/>
         <source>Load {0}</source>
         <translation>载入{0}</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="255"/>
+        <location filename="managers/_ttsman.py" line="302"/>
         <source>Missing Windows Media Player needed by text-to-speech</source>
         <translation>缺少语音合成需要的Windows Media Player</translation>
     </message>
