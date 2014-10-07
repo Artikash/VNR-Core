@@ -31,16 +31,19 @@ OfflineEngine = VoiceEngine
 
 class SapiEngine(OfflineEngine):
 
-  def __init__(self, key, speed=0):
-    self.key = key      # str
+  def __init__(self, key, speed=0, pitch=0, volume=100):
+    #super(SapiEngine, self).__init__()
+    self.key = key # str
     self.speed = speed  # int
+    self.pitch = pitch  # int
+    self.volume = volume  # int
     self._speaking = False
     self._valid = False
     #self.mutex = QMutex() # speak mutex
 
     import sapi.engine, sapi.registry
     kw = sapi.registry.query(key=self.key)
-    self.engine = sapi.engine.SapiEngine(speed=speed, **kw) if kw else None
+    self.engine = sapi.engine.SapiEngine(speed=speed, pitch=pitch, volume=volume, **kw) if kw else None
     if self.engine:
       self.language = self.engine.language or 'ja' # override
       self.name = self.engine.name or tr_('Unknown')
@@ -55,6 +58,26 @@ class SapiEngine(OfflineEngine):
       e = self.engine
       if e:
         e.speed = v
+
+  def setPitch(self, v):
+    """
+    @param  v  int  [-10,10]
+    """
+    if self.pitch != v:
+      self.pitch = v
+      e = self.engine
+      if e:
+        e.pitch = v
+
+  def setVolume(self, v):
+    """
+    @param  v  int  [0,100]
+    """
+    if self.volume != v:
+      self.volume = v
+      e = self.engine
+      if e:
+        e.volume = v
 
   def isValid(self):
     """"@reimp"""
@@ -102,6 +125,7 @@ class SapiEngine(OfflineEngine):
 class VocalroidEngine(OfflineEngine):
 
   def __init__(self, voiceroid, path=''):
+    #super(VocalroidEngine, self).__init__()
     self.path = path # unicode
     self._engine = None # VocalroidController
     self._speaking = False
@@ -198,7 +222,7 @@ class _OnlineThread:
     q.playRequested.connect(self.play, Qt.QueuedConnection)
     q.stopRequested.connect(self.stop, Qt.QueuedConnection)
 
-  def play(self, url, time): # unicode, time ->
+  def play(self, time, url, volume, speed): # float, unicode, int, int ->
     if time < self.time: # outdate
       return
     if not url:
@@ -207,7 +231,7 @@ class _OnlineThread:
 
     path = rc.tts_path(url)
     if os.path.exists(path):
-      self.playing = self.wmp.play(path)
+      self._playFile(path, volume, speed)
     else:
       self.downloadCount += 1
       r = self.session.get(url)
@@ -220,7 +244,15 @@ class _OnlineThread:
         if skfileio.writefile(path, r.content, mode='wb'):
           if time < self.time: # outdate
             return
-          self.playing = self.wmp.play(path)
+          self._playFile(path, volume, speed)
+
+  def _playFile(self, path, volume, speed): # unicode, int, int
+    if volume != 100:
+      self.wmp.setVolume(volume)
+    if speed:
+      speed = pow(1.1, speed)
+      self.wmp.setSpeed(speed)
+    self.playing = self.wmp.play(path)
 
   def stop(self, time): # float ->
     if time < self.time: # outdate
@@ -230,7 +262,7 @@ class _OnlineThread:
       self.playing = False
 
 class OnlineThread(QThread):
-  playRequested = Signal(unicode, float) # url, time
+  playRequested = Signal(float, unicode, int, int) # time, url, volume, speed
   stopRequested = Signal(float) # time
   abortSignal = Signal()
   abortSignalRequested = Signal()
@@ -252,13 +284,13 @@ class OnlineThread(QThread):
 
   # Actions
 
-  def requestPlay(self, url): # unicode ->
+  def requestPlay(self, url, volume=100, speed=0): # unicode ->
     d = self.__d
     now = time()
     d.time = now
     if d.downloadCount > 0:
       self.abortSignalRequested.emit()
-    self.playRequested.emit(url, now)
+    self.playRequested.emit(now, url, volume, speed)
 
   def requestStop(self):
     d = self.__d
@@ -269,6 +301,7 @@ class OnlineThread(QThread):
     if d.playing:
       self.stopRequested.emit(now)
 
+ONLINE_ENGINES = 'google',
 class OnlineEngine(VoiceEngine):
   language = '*' # override
 
@@ -285,8 +318,13 @@ class OnlineEngine(VoiceEngine):
       qApp = QCoreApplication.instance()
       qApp.aboutToQuit.connect(t.destroy)
 
-      growl.msg(my.tr("Load {0}").format("Windows Media Player"))
+      growl.msg(my.tr("Load {0} for TTS").format("Windows Media Player"))
     return cls._thread
+
+  def __init__(self, volume=100, speed=0):
+    #super(OnlineEngine, self).__init__()
+    self.speed = speed # int
+    self.volume = volume # int
 
   _valid = None
   def isValid(self):
@@ -303,7 +341,7 @@ class OnlineEngine(VoiceEngine):
     else:
       language = language[:2] if language else 'ja'
       url = self.createUrl(text, language)
-      self.thread().requestPlay(url)
+      self.thread().requestPlay(url, volume=self.volume, speed=self.speed)
 
   def stop(self):
     """@reimp@"""
@@ -315,6 +353,9 @@ class OnlineEngine(VoiceEngine):
 class GoogleEngine(OnlineEngine):
   key = 'google' # override
   name = u'Google TTS' # override
+
+  def __init__(self, *args, **kwargs):
+    super(GoogleEngine, self).__init__(*args, **kwargs)
 
   def createUrl(self, text, language=None):
     """@reimp@"""

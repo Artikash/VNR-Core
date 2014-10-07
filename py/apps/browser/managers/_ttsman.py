@@ -133,15 +133,16 @@ class ZunkoEngine(VocalroidEngine):
     super(ZunkoEngine, self).__init__(v, **kwargs)
 
 class SapiEngine(VoiceEngine):
-  def __init__(self, key, speed=0):
+  def __init__(self, key, speed=0, pitch=0):
     self.key = key      # str
     self.speed = speed  # int
+    self.pitch = pitch  # int
     self._speaking = False
     self._valid = False
 
     import sapi.engine, sapi.registry
     kw = sapi.registry.query(key=self.key)
-    self.engine = sapi.engine.SapiEngine(speed=speed, **kw) if kw else None
+    self.engine = sapi.engine.SapiEngine(speed=speed, pitch=pitch, **kw) if kw else None
     if self.engine:
       self.language = self.engine.language or 'ja' # override
       self.name = self.engine.name or tr_('Unknown')
@@ -156,6 +157,16 @@ class SapiEngine(VoiceEngine):
       e = self.engine
       if e:
         e.speed = v
+
+  def setPitch(self, v):
+    """
+    @param  v  int  [-10,10]
+    """
+    if self.pitch != v:
+      self.pitch = v
+      e = self.engine
+      if e:
+        e.pitch = v
 
   def isValid(self):
     """"@reimp"""

@@ -762,12 +762,26 @@ class Settings(QSettings):
       self.setValue('YukariLocation', value)
       self.yukariLocationChanged.emit(value)
 
-  def sapiSpeeds(self):
+  def ttsSpeeds(self):
     """
     @return  {str ttskey:int speed}
     """
-    return to_dict(self.value('SAPISpeeds'))
-  def setSapiSpeeds(self, value): self.setValue('SAPISpeeds', value)
+    return to_dict(self.value('TTSSpeeds'))
+  def setTtsSpeeds(self, value): self.setValue('TTSSpeeds', value)
+
+  def ttsVolumes(self):
+    """
+    @return  {str ttskey:int volume}
+    """
+    return to_dict(self.value('TTSVolumes'))
+  def setTtsVolumes(self, value): self.setValue('TTSVolumes', value)
+
+  def ttsPitches(self):
+    """
+    @return  {str ttskey:int pitch}
+    """
+    return to_dict(self.value('TTSPitches'))
+  def setTtsPitches(self, value): self.setValue('TTSPitches', value)
 
   ## Game launcher ##
 

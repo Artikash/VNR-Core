@@ -988,6 +988,7 @@ class ShortcutsTab(QtWidgets.QDialog):
 class _TtsTab(object):
 
   def __init__(self, q):
+    self.onlineWidgets = [] # [QWidget] any widget that involves online TTS
     self._createUi(q)
 
   def _createUi(self, q):
@@ -1089,11 +1090,28 @@ class _TtsTab(object):
     grid.addWidget(self.disableButton, r, 0)
 
     # Google
-    r += 1
-    grid.addWidget(self.googleButton, r, 0)
-    self.googleTestButton = self.createTestButton('google')
-    grid.addWidget(self.googleTestButton, r, 1)
-    #grid.addWidget(self.googleLanguageEdit, r, 2)
+    for k,b in ((
+        ('google', self.googleButton),
+      )):
+      r += 1
+      c = 0
+      self.onlineWidgets.append(b)
+      grid.addWidget(b, r, c)
+
+      c += 1
+      w = self.createTestButton(k)
+      self.onlineWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createVolumeEdit(k)
+      self.onlineWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createSpeedEdit(k)
+      self.onlineWidgets.append(w)
+      grid.addWidget(w, r, c)
 
     # VOICEROID
     for k,b in ((
@@ -1102,21 +1120,34 @@ class _TtsTab(object):
       )):
       r += 1
       grid.addWidget(b, r, 0)
-      tb = self.createTestButton(k)
-      setattr(self, k + 'TestButton', tb)
-      grid.addWidget(tb, r, 1)
-      lb = self.createVoiceroidLaunchButton(k)
-      setattr(self, k + 'LaunchButton', lb)
-      grid.addWidget(lb, r, 2)
+      w = self.createTestButton(k)
+      setattr(self, k + 'TestButton', w)
+      grid.addWidget(w, r, 1)
+      w = self.createVoiceroidLaunchButton(k)
+      setattr(self, k + 'LaunchButton', w)
+      grid.addWidget(w, r, 2)
 
     # SAPI
     for k,b in self.sapiButtons:
       r += 1
-      grid.addWidget(b, r, 0)
-      tb = self.createTestButton(k)
-      grid.addWidget(tb, r, 1)
-      e = self.createSapiSpeedEdit(k)
-      grid.addWidget(e, r, 2)
+      c = 0
+      grid.addWidget(b, r, c)
+      w = self.createTestButton(k)
+
+      c += 1
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createVolumeEdit(k)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createSpeedEdit(k)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createPitchEdit(k)
+      grid.addWidget(w, r, c)
 
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)
@@ -1137,12 +1168,6 @@ class _TtsTab(object):
     return ret
 
   @memoizedproperty
-  def googleButton(self):
-    ret = QtWidgets.QRadioButton(u"Google TTS (♀, %s)" % tr_("online"))
-    ret.toggled.connect(self._saveEngine)
-    return ret
-
-  @memoizedproperty
   def yukariButton(self):
     ret = QtWidgets.QRadioButton(u"VOICEROID+ 結月ゆかり (♀)")
     ret.toggled.connect(self._saveEngine)
@@ -1155,18 +1180,9 @@ class _TtsTab(object):
     return ret
 
   @memoizedproperty
-  def engineButtons(self):
-    """
-    @return  {unicode key:QRadioButton}
-    """
-    ret = {
-      '': self.disableButton,
-      'google': self.googleButton,
-      'yukari': self.yukariButton,
-      'zunko': self.zunkoButton,
-    }
-    for k,b in self.sapiButtons:
-      ret[k] = b
+  def googleButton(self):
+    ret = QtWidgets.QRadioButton(u"Google TTS (♀, %s)" % tr_("online"))
+    ret.toggled.connect(self._saveEngine)
     return ret
 
   @memoizedproperty
@@ -1186,14 +1202,53 @@ class _TtsTab(object):
       ret.append((it.key, b))
     return ret
 
-  def createSapiSpeedEdit(self, key, parent=None):
+  @memoizedproperty
+  def engineButtons(self):
+    """
+    @return  {unicode key:QRadioButton}
+    """
+    ret = {
+      '': self.disableButton,
+      'google': self.googleButton,
+      'yukari': self.yukariButton,
+      'zunko': self.zunkoButton,
+    }
+    for k,b in self.sapiButtons:
+      ret[k] = b
+    return ret
+
+  def createSpeedEdit(self, key, parent=None):
     ret = QtWidgets.QSpinBox(parent or self.q)
     ret.setToolTip("%s [-10,10]" % tr_("Speed"))
     ret.setRange(-10, 10)
     ret.setSingleStep(1)
+    ret.setPrefix(tr_("Speed") + " ")
     tm = ttsman.manager()
-    ret.setValue(tm.getSapiSpeed(key))
-    ret.valueChanged[int].connect(partial(tm.setSapiSpeed, key))
+    ret.setValue(tm.getSpeed(key))
+    ret.valueChanged[int].connect(partial(tm.setSpeed, key))
+    return ret
+
+  def createPitchEdit(self, key, parent=None):
+    ret = QtWidgets.QSpinBox(parent or self.q)
+    ret.setToolTip("%s [-10,10]" % tr_("Pitch"))
+    ret.setRange(-10, 10)
+    ret.setSingleStep(1)
+    ret.setPrefix(tr_("Pitch") + " ")
+    tm = ttsman.manager()
+    ret.setValue(tm.getPitch(key))
+    ret.valueChanged[int].connect(partial(tm.setPitch, key))
+    return ret
+
+  def createVolumeEdit(self, key, parent=None):
+    ret = QtWidgets.QSpinBox(parent or self.q)
+    ret.setToolTip("%s [0,100]" % tr_("Volume"))
+    ret.setRange(0, 100)
+    ret.setSingleStep(10)
+    ret.setPrefix(tr_("Volume") + " ")
+    ret.setSuffix("%")
+    tm = ttsman.manager()
+    ret.setValue(tm.getVolume(key))
+    ret.valueChanged[int].connect(partial(tm.setVolume, key))
     return ret
 
   #@memoizedproperty
@@ -1233,7 +1288,7 @@ class _TtsTab(object):
 
     #enabled = libman.quicktime().exists()
     enabled = libman.wmp().exists()
-    for w in self.googleButton, self.googleTestButton:
+    for w in self.onlineWidgets:
       w.setEnabled(enabled)
 
     path = settings.global_().yukariLocation() or ttsman.manager().yukariLocation()

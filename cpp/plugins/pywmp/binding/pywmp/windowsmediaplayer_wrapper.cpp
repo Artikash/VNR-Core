@@ -265,6 +265,34 @@ static PyObject* Sbk_WindowsMediaPlayerFunc_stop(PyObject* self)
     return pyResult;
 }
 
+static PyObject* Sbk_WindowsMediaPlayerFunc_version(PyObject* self)
+{
+    ::WindowsMediaPlayer* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::WindowsMediaPlayer*)Shiboken::Conversions::cppPointer(SbkpywmpTypes[SBK_WINDOWSMEDIAPLAYER_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+
+    // Call function/method
+    {
+
+        if (!PyErr_Occurred()) {
+            // version()const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            std::wstring cppResult = const_cast<const ::WindowsMediaPlayer*>(cppSelf)->version();
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(SbkpywmpTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+}
+
 static PyObject* Sbk_WindowsMediaPlayerFunc_volume(PyObject* self)
 {
     ::WindowsMediaPlayer* cppSelf = 0;
@@ -300,6 +328,7 @@ static PyMethodDef Sbk_WindowsMediaPlayer_methods[] = {
     {"setVolume", (PyCFunction)Sbk_WindowsMediaPlayerFunc_setVolume, METH_O},
     {"speed", (PyCFunction)Sbk_WindowsMediaPlayerFunc_speed, METH_NOARGS},
     {"stop", (PyCFunction)Sbk_WindowsMediaPlayerFunc_stop, METH_NOARGS},
+    {"version", (PyCFunction)Sbk_WindowsMediaPlayerFunc_version, METH_NOARGS},
     {"volume", (PyCFunction)Sbk_WindowsMediaPlayerFunc_volume, METH_NOARGS},
 
     {0} // Sentinel
