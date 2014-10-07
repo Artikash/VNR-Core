@@ -176,8 +176,12 @@ class _TtsManager(object):
   def getOnlineEngine(self, key):
     ret = self._onlineEngines.get(key)
     if not ret and key in _ttsman.ONLINE_ENGINES:
+      kw = {
+        'speed':self.getSpeed(key),
+        'volume':self.getVolume(key),
+      }
       if key == 'google':
-        ret = _ttsman.GoogleEngine()
+        ret = _ttsman.GoogleEngine(**kw)
       if ret and ret.isValid():
         self._onlineEngines[key] = ret
         growl.msg(' '.join((
@@ -267,7 +271,7 @@ class _TtsManager(object):
       else:
         eng = self._onlineEngines.get(key)
         if eng:
-          eng.setVolume(v)
+          eng.volume = v
 
   def getSpeed(self, key):
     """
@@ -293,7 +297,7 @@ class _TtsManager(object):
       else:
         eng = self._onlineEngines.get(key)
         if eng:
-          eng.setSpeed(v)
+          eng.speed = v
 
   # Actions
 
@@ -403,6 +407,12 @@ class TtsManager(QObject):
     import sapiman
     ret.extend(it.key for it in sapiman.voices())
     return ret
+
+  def onlineEngines(self):
+    """
+    @return  [unicode]
+    """
+    return _ttsman.ONLINE_ENGINES
 
 @memoized
 def manager(): return TtsManager()
