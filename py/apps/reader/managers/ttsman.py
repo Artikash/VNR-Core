@@ -112,10 +112,10 @@ class _TtsManager(object):
       return
 
     if language and eng.language and eng.language != '*' and language[:2] != eng.language[:2]:
-      if verbose:
-        growl.notify("<br/>".join((
-            my.tr("TTS languages mismatch"),
-            "%s: %s != %s" % (eng.key, language, eng.language))))
+      #if verbose:
+      #  growl.notify("<br/>".join((
+      #      my.tr("TTS languages mismatch"),
+      #      "%s: %s != %s" % (eng.key, language, eng.language))))
       dprint("language mismatch: %s != %s" % (language, eng.language))
       return
 
