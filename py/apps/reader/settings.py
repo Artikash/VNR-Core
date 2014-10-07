@@ -769,6 +769,13 @@ class Settings(QSettings):
     return to_dict(self.value('SAPISpeeds'))
   def setSapiSpeeds(self, value): self.setValue('SAPISpeeds', value)
 
+  def sapiPitches(self):
+    """
+    @return  {str ttskey:int speed}
+    """
+    return to_dict(self.value('SAPIPitches'))
+  def setSapiPitches(self, value): self.setValue('SAPIPitches', value)
+
   ## Game launcher ##
 
   def isGameDetectionEnabled(self): return to_bool(self.value('GameDetectionEnabled', True))

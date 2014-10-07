@@ -178,8 +178,10 @@ class _TtsManager(object):
   def getSapiEngine(self, key):
     ret = self._sapiEngines.get(key)
     if not ret:
-      speed = self.getSapiSpeed(key)
-      ret = _ttsman.SapiEngine(key=key, speed=speed)
+      ret = _ttsman.SapiEngine(key=key,
+        speed=self.getSapiSpeed(key),
+        pitch=self.getSapiPitch(key),
+      )
       if ret.isValid():
         growl.msg(' '.join((
           my.tr("Load TTS"),
@@ -193,6 +195,28 @@ class _TtsManager(object):
         )))
         ret = None
     return ret
+
+  def getSapiPitch(self, key):
+    """
+    @param  key  str
+    @return  int
+    """
+    try: return int(settings.global_().sapiPitches().get(key) or 0)
+    except (ValueError, TypeError): return 0
+
+  def setSapiPitch(self, key, v):
+    """
+    @param  key  str
+    @param  v  int
+    """
+    ss = settings.global_()
+    m = ss.sapiPitches()
+    if v != m.get(key):
+      m[key] = v
+      ss.setSapiPitches(m)
+      eng = self._sapiEngines.get(key)
+      if eng:
+        eng.setPitch(v)
 
   def getSapiSpeed(self, key):
     """
@@ -284,6 +308,14 @@ class TtsManager(QObject):
     @param  value  int in [-10,10]
     """
     self.__d.setSapiSpeed(key, v)
+
+  def getSapiPitch(self, v):
+    return self.__d.getSapiPitch(v)
+  def setSapiPitch(self, key, v):
+    """
+    @param  value  int in [-10,10]
+    """
+    self.__d.setSapiPitch(key, v)
 
   def speak(self, text, interval=100, **kwargs):
     if not features.TEXT_TO_SPEECH:

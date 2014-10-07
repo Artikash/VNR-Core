@@ -1143,11 +1143,6 @@ It might take a couple of seconds to complete.</source>
         <translation>适用于日文编码的Windows</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="67"/>
-        <source>Missing QuickTime needed by text-to-speech</source>
-        <translation type="obsolete">缺少语音合成需要的QuickTime</translation>
-    </message>
-    <message>
         <location filename="managers/dataman.py" line="8808"/>
         <source>Please start the game to submit comment</source>
         <translation>请在开始游戏后提交字幕</translation>
@@ -2071,24 +2066,6 @@ And here&apos;s an article illustrating how to update its dictionaries:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5385"/>
-        <source>Apple QuickTime is needed by &lt;span style=&quot;color:purple&quot;&gt;Google TTS&lt;/span&gt;.&lt;br/&gt;
-QuickTime is detected on your system at the above location.</source>
-        <translation type="obsolete">&lt;span style=&quot;color:purple&quot;&gt;Google TTS&lt;/span&gt;需要Apple的QuickTime才可以工作。&lt;br/&gt;
-如果你暂时居住在中国大陆地区，那么还需要在功能中打开大陆地区的选项。&lt;br/&gt;
-QuickTime设定在了上面的地方。</translation>
-    </message>
-    <message>
-        <location filename="dialogs/_prefs.py" line="5388"/>
-        <source>Apple QuickTime is needed by &lt;span style=&quot;color:purple&quot;&gt;Google TTS&lt;/span&gt;.&lt;br/&gt;
-You can get a free version of QuickTime here from Apple:
-&lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
-        <translation type="obsolete">&lt;span style=&quot;color:purple&quot;&gt;Google TTS&lt;/span&gt;需要Apple的QuickTime才可以工作。&lt;br/&gt;
-如果你暂时居住在中国大陆地区，那么还需要在功能中打开大陆地区的选项。&lt;br/&gt;
-QuickTime是免费的，你可以到Apple官网下载：
-&lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
-    </message>
-    <message>
         <location filename="dialogs/_prefs.py" line="5519"/>
         <source>VoiceText Misaki is needed by &lt;span style=&quot;color:purple&quot;&gt;offline TTS&lt;/span&gt;.&lt;br/&gt;
 Misaki is a Japanese female TTS SAPI library.&lt;br/&gt;
@@ -2169,22 +2146,22 @@ Zunko is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and y
         <translation>外部语音合成软件的位置</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="138"/>
+        <location filename="managers/_ttsman.py" line="149"/>
         <source>Activate Voiceroid+</source>
         <translation>打开VOICEROID+</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="144"/>
+        <location filename="managers/_ttsman.py" line="155"/>
         <source>Cannot find Voiceroid+</source>
         <translation>没有找到VOICEROID+</translation>
     </message>
     <message>
-        <location filename="managers/ttsman.py" line="185"/>
+        <location filename="managers/ttsman.py" line="187"/>
         <source>Load TTS</source>
         <translation>载入TTS</translation>
     </message>
     <message>
-        <location filename="managers/ttsman.py" line="191"/>
+        <location filename="managers/ttsman.py" line="193"/>
         <source>Failed to load TTS</source>
         <translation>载入TTS失败了</translation>
     </message>
@@ -4064,12 +4041,7 @@ You can reinistall Windows Media Player here from Microsoft for free:
 &lt;center&gt;&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="288"/>
-        <source>Load {0}</source>
-        <translation>载入{0}</translation>
-    </message>
-    <message>
-        <location filename="managers/_ttsman.py" line="302"/>
+        <location filename="managers/_ttsman.py" line="313"/>
         <source>Missing Windows Media Player needed by text-to-speech</source>
         <translation>缺少语音合成需要的Windows Media Player</translation>
     </message>
@@ -4077,6 +4049,11 @@ You can reinistall Windows Media Player here from Microsoft for free:
         <location filename="managers/ttsman.py" line="113"/>
         <source>TTS languages mismatch</source>
         <translation>语言合成的语言不一致</translation>
+    </message>
+    <message>
+        <location filename="managers/_ttsman.py" line="299"/>
+        <source>Load {0} for TTS</source>
+        <translation>为语音合成载入{0}</translation>
     </message>
 </context>
 </TS>
