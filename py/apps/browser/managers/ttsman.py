@@ -39,13 +39,21 @@ class TtsManager(QObject):
       d.defaultEngineKey = key
       #settings.reader().setTtsEngine(key)
 
-  def getSapiSpeed(self, v):
-    return self.__d.getSapiSpeed(v)
-  def setSapiSpeed(self, key, v):
+  def getSpeed(self, v):
+    return self.__d.getSpeed(v)
+  def setSpeed(self, key, v):
     """
     @param  value  int in [-10,10]
     """
-    self.__d.setSapiSpeed(key, v)
+    self.__d.setSpeed(key, v)
+
+  def getPitch(self, v):
+    return self.__d.getPitch(v)
+  def setPitch(self, key, v):
+    """
+    @param  value  int in [-10,10]
+    """
+    self.__d.setPitch(key, v)
 
   def speak(self, text, interval=100, **kwargs):
     self.__d.speakLater(text, interval=interval, **kwargs)
@@ -225,8 +233,10 @@ class _TtsManager(object):
   def getSapiEngine(self, key):
     ret = self._sapiEngines.get(key)
     if not ret:
-      speed = self.getSapiSpeed(key)
-      ret = _ttsman.SapiEngine(key=key, speed=speed)
+      ret = _ttsman.SapiEngine(key=key,
+        speed=self.getSpeed(key),
+        pitch=self.getPitch(key),
+      )
       if ret.isValid():
         growl.msg(' '.join((
           i18n.tr("Load TTS"),
@@ -241,24 +251,46 @@ class _TtsManager(object):
         ret = None
     return ret
 
-  def getSapiSpeed(self, key):
+  def getPitch(self, key):
     """
     @param  key  str
     @return  int
     """
-    try: return int(settings.reader().sapiSpeeds().get(key) or 0)
+    try: return int(settings.reader().ttsPitches().get(key) or 0)
     except (ValueError, TypeError): return 0
 
-  def setSapiSpeed(self, key, v):
+  def setPitch(self, key, v):
     """
     @param  key  str
     @param  v  int
     """
     ss = settings.reader()
-    m = ss.sapiSpeeds()
+    m = ss.ttsPitches()
     if v != m.get(key):
       m[key] = v
-      ss.setSapiSpeeds(m)
+      ss.setTtsPitches(m)
+      eng = self._sapiEngines.get(key)
+      if eng:
+        eng.setPitch(v)
+
+  def getSpeed(self, key):
+    """
+    @param  key  str
+    @return  int
+    """
+    try: return int(settings.reader().ttsSpeeds().get(key) or 0)
+    except (ValueError, TypeError): return 0
+
+  def setSpeed(self, key, v):
+    """
+    @param  key  str
+    @param  v  int
+    """
+    ss = settings.reader()
+    m = ss.ttsSpeeds()
+    if v != m.get(key):
+      m[key] = v
+      ss.setTtsSpeeds(m)
       eng = self._sapiEngines.get(key)
       if eng:
         eng.setSpeed(v)

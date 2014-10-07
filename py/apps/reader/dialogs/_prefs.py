@@ -1115,7 +1115,7 @@ class _TtsTab(object):
       grid.addWidget(b, r, 0)
       tb = self.createTestButton(k)
       grid.addWidget(tb, r, 1)
-      e = self.createSapiSpeedEdit(k)
+      e = self.createSpeedEdit(k)
       grid.addWidget(e, r, 2)
 
     layout = QtWidgets.QVBoxLayout()
@@ -1186,14 +1186,14 @@ class _TtsTab(object):
       ret.append((it.key, b))
     return ret
 
-  def createSapiSpeedEdit(self, key, parent=None):
+  def createSpeedEdit(self, key, parent=None):
     ret = QtWidgets.QSpinBox(parent or self.q)
     ret.setToolTip("%s [-10,10]" % tr_("Speed"))
     ret.setRange(-10, 10)
     ret.setSingleStep(1)
     tm = ttsman.manager()
-    ret.setValue(tm.getSapiSpeed(key))
-    ret.valueChanged[int].connect(partial(tm.setSapiSpeed, key))
+    ret.setValue(tm.getSpeed(key))
+    ret.valueChanged[int].connect(partial(tm.setSpeed, key))
     return ret
 
   #@memoizedproperty

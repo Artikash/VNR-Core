@@ -179,8 +179,8 @@ class _TtsManager(object):
     ret = self._sapiEngines.get(key)
     if not ret:
       ret = _ttsman.SapiEngine(key=key,
-        speed=self.getSapiSpeed(key),
-        pitch=self.getSapiPitch(key),
+        speed=self.getSpeed(key),
+        pitch=self.getPitch(key),
       )
       if ret.isValid():
         growl.msg(' '.join((
@@ -196,46 +196,46 @@ class _TtsManager(object):
         ret = None
     return ret
 
-  def getSapiPitch(self, key):
+  def getPitch(self, key):
     """
     @param  key  str
     @return  int
     """
-    try: return int(settings.global_().sapiPitches().get(key) or 0)
+    try: return int(settings.global_().ttsPitches().get(key) or 0)
     except (ValueError, TypeError): return 0
 
-  def setSapiPitch(self, key, v):
+  def setPitch(self, key, v):
     """
     @param  key  str
     @param  v  int
     """
     ss = settings.global_()
-    m = ss.sapiPitches()
+    m = ss.ttsPitches()
     if v != m.get(key):
       m[key] = v
-      ss.setSapiPitches(m)
+      ss.setTtsPitches(m)
       eng = self._sapiEngines.get(key)
       if eng:
         eng.setPitch(v)
 
-  def getSapiSpeed(self, key):
+  def getSpeed(self, key):
     """
     @param  key  str
     @return  int
     """
-    try: return int(settings.global_().sapiSpeeds().get(key) or 0)
+    try: return int(settings.global_().ttsSpeeds().get(key) or 0)
     except (ValueError, TypeError): return 0
 
-  def setSapiSpeed(self, key, v):
+  def setSpeed(self, key, v):
     """
     @param  key  str
     @param  v  int
     """
     ss = settings.global_()
-    m = ss.sapiSpeeds()
+    m = ss.ttsSpeeds()
     if v != m.get(key):
       m[key] = v
-      ss.setSapiSpeeds(m)
+      ss.setTtsSpeeds(m)
       eng = self._sapiEngines.get(key)
       if eng:
         eng.setSpeed(v)
@@ -301,21 +301,21 @@ class TtsManager(QObject):
       d.defaultEngineKey = key
       settings.global_().setTtsEngine(key)
 
-  def getSapiSpeed(self, v):
-    return self.__d.getSapiSpeed(v)
-  def setSapiSpeed(self, key, v):
+  def getSpeed(self, v):
+    return self.__d.getSpeed(v)
+  def setSpeed(self, key, v):
     """
     @param  value  int in [-10,10]
     """
-    self.__d.setSapiSpeed(key, v)
+    self.__d.setSpeed(key, v)
 
-  def getSapiPitch(self, v):
-    return self.__d.getSapiPitch(v)
-  def setSapiPitch(self, key, v):
+  def getPitch(self, v):
+    return self.__d.getPitch(v)
+  def setPitch(self, key, v):
     """
     @param  value  int in [-10,10]
     """
-    self.__d.setSapiPitch(key, v)
+    self.__d.setPitch(key, v)
 
   def speak(self, text, interval=100, **kwargs):
     if not features.TEXT_TO_SPEECH:

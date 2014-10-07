@@ -222,11 +222,17 @@ class ReaderSettings(QSettings):
   yukariLocationChanged = Signal(unicode)
   def yukariLocation(self): return to_unicode(self.value('YukariLocation'))
 
-  def sapiSpeeds(self):
+  def ttsSpeeds(self):
     """
     @return  {str ttskey:int speed}
     """
-    return to_dict(self.value('SAPISpeeds'))
+    return to_dict(self.value('TTSSpeeds'))
+
+  def ttsPitches(self):
+    """
+    @return  {str ttskey:int pitch}
+    """
+    return to_dict(self.value('TTSPitches'))
 
   ## Translators
 
