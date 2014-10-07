@@ -47,19 +47,25 @@
   _setter(_objtype, bool, _iname, VARIANT_BOOL, _oname)
 
 #define str_getter(_objtype, _iname, _oname) \
-  _getter(_objtype, const wchar_t *, _iname, BSTR, _oname, nullptr) \
+  _getter(_objtype, const wchar_t *, _iname, BSTR, _oname, nullptr)
 
 #define float_setter(_objtype, _iname, _oname) \
   _setter(_objtype, double, _iname, double, _oname)
 
 #define float_getter(_objtype, _iname, _oname) \
-  _getter(_objtype, double, _iname, double, _oname, 0) \
+  _getter(_objtype, double, _iname, double, _oname, 0)
 
 #define int_setter(_objtype, _iname, _oname) \
   _setter(_objtype, int, _iname, long, _oname)
 
 #define int_getter(_objtype, _iname, _oname) \
-  _getter(_objtype, int, _iname, long, _oname, 0) \
+  _getter(_objtype, int, _iname, long, _oname, 0)
+
+#define obj_setter(_objtype, _iname, _oname) \
+  _setter(_objtype, wmp_##_iname##_t *, _iname, wmp_##_iname##_t *, _oname)
+
+#define obj_getter(_objtype, _iname, _oname) \
+  _getter(_objtype, wmp_##_iname##_t *, _iname, wmp_##_iname##_t *, _oname, nullptr)
 
 #define bool_property(_objtype, _iname, _oname) \
   bool_getter(_objtype, _iname, _oname) \
@@ -77,12 +83,13 @@
   int_getter(_objtype, _iname, _oname) \
   int_setter(_objtype, _iname, _oname)
 
+#define obj_property(_objtype, _iname, _oname) \
+  obj_getter(_objtype, _iname, _oname) \
+  obj_setter(_objtype, _iname, _oname)
+
 // Construction
 
-int wmp_player_release(wmp_player_t *p) { return p->Release(); }
-int wmp_controls_release(wmp_controls_t *c) { return c->Release(); }
-int wmp_settings_release(wmp_settings_t *s) { return s->Release(); }
-int wmp_media_release(wmp_media_t *m) { return m->Release(); }
+int wmp_release(void *p) { return reinterpret_cast<IUnknown *>(p)->Release(); }
 
 wmp_player_t *wmp_player_create()
 {
@@ -91,21 +98,20 @@ wmp_player_t *wmp_player_create()
       reinterpret_cast<LPVOID *>(&p))) ? p : nullptr;
 }
 
-wmp_controls_t *wmp_player_get_controls(wmp_player_t *p)
-{
-  IWMPControls *c;
-  return SUCCEEDED(p->get_controls(&c)) ? c : nullptr;
-}
+obj_getter(player, controls, controls)
+obj_getter(player, error, Error)
+obj_getter(player, settings, settings)
+obj_getter(player, network, network)
 
-wmp_settings_t *wmp_player_get_settings(wmp_player_t *p)
-{
-  IWMPSettings *s;
-  return SUCCEEDED(p->get_settings(&s)) ? s : nullptr;
-}
+obj_property(player, media, currentMedia)
+obj_property(player, playlist, currentPlaylist)
 
 // Player
 
 action(player, close, close)
+
+str_getter(player, version, versionInfo)
+bool_getter(player, online, isOnline)
 
 bool_property(player, enabled, enabled)
 bool_property(player, fullscreen, fullScreen)
@@ -166,14 +172,7 @@ action(controls, backward, fastReverse)
 
 float_property(controls, pos, currentPosition)
 
-bool wmp_controls_set_media(wmp_controls_t *c, wmp_media_t *m)
-{ return SUCCEEDED(c->put_currentItem(m)); }
-
-wmp_media_t *wmp_controls_get_media(wmp_controls_t *c)
-{
-  IWMPMedia *m;
-  return SUCCEEDED(c->get_currentItem(&m)) ? m : nullptr;
-}
+obj_property(controls, media, currentItem)
 
 // Media
 

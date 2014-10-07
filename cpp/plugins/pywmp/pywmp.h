@@ -22,6 +22,8 @@ public:
 
   bool isValid() const;
 
+  std::wstring version() const;
+
   // Controls
 
   bool play(const std::wstring &url);

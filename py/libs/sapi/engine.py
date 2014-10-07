@@ -102,19 +102,20 @@ if __name__ == '__main__': # debug
   print 1
   t = u"Hello"
   t = u"お花の匂い"
-  tts.speak(t, async=False)
-  #tts.speak(u'<pitch middle="0"><rate speed="-5">%s</rate></pitch>' % t, async=False)
-  #tts.speak(u'<rate speed="-5">\n%s\n</rate>' % t, async=False
-  tts.speak(u'<volume level="5">\n%s\n</volume>' % t, async=False)
+  #tts.speak(t, async=False)
+  tts.speak(u'<pitch middle="5"><rate speed="-5">%s</rate></pitch>' % t, async=False)
+  #tts.speak(u'<rate speed="-10">\n%s\n</rate>' % t, async=False)
+  #tts.speak(u'<volume level="100">\n%s\n</volume>' % t, async=False)
   #tts.speak(u'<rate speed="5">お花の匂い</rate>', async=False)
-  sys.exit(0)
 
-  print 2
-  tts.stop()
-  tts.speak(u"お早う♪", async=False)
-  print 3
+  #sys.exit(0)
+
+  #print 2
+  #tts.stop()
+  #tts.speak(u"お早う♪", async=False)
+  #print 3
   import time
-  time.sleep(4)
+  time.sleep(3)
   print 4
 
 # EOF

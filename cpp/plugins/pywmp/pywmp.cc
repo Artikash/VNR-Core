@@ -27,11 +27,11 @@ public:
   ~WindowsMediaPlayer_p()
   {
     if (s)
-      wmp_settings_release(s);
+      wmp_release(s);
     if (c)
-      wmp_controls_release(c);
+      wmp_release(c);
     if (p)
-      wmp_player_release(p);
+      wmp_release(p);
   }
 };
 
@@ -44,6 +44,8 @@ WindowsMediaPlayer::~WindowsMediaPlayer() { delete d_; }
 
 bool WindowsMediaPlayer::isValid() const { return d_->s && d_->c && d_->p; }
 
+std::wstring WindowsMediaPlayer::version() const
+{ return d_->p ? wmp_player_get_version(d_->p) : L""; }
 
 // Controls
 
