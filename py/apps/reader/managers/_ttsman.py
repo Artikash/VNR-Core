@@ -4,72 +4,99 @@
 
 import os
 from functools import partial
-#from PySide.QtCore import QMutex
-from sakurakit import skthreads
-from sakurakit.skclass import memoizedproperty
+from PySide.QtCore import QThread, Signal, Qt
+from sakurakit import skthreads, skwincom
 from sakurakit.sktr import tr_
-from sakurakit.skwincom import SkCoInitializer
 from mytr import my
 import growl
 
 ## Voice engines ##
 
 class VoiceEngine(object):
-  type = ''         # str
   key = ''          # str
   language = 'ja'   # str
   name = tr_('Unknown') # unicode
   #gender = 'f'  # str
+  online = False # bool  whether it is an online engine
 
   def setLanguage(self, v): self.language = v
   def isValid(self): return True
-  def warmup(self): pass
   def speak(self, text): pass
   def stop(self): pass
 
-class GoogleEngine(VoiceEngine):
-  type = 'qt'
-  key = 'google' # override
-  name = u'Google TTS' # override
+# Offline engines
 
-  def __init__(self, online=True, language='ja'):
-    self._valid = False     # bool
-    self.online = online    # bool
-    self.language = language # str
+OfflineEngine = VoiceEngine
 
-  def setOnline(self, v): self.online = v
-  def isOnline(self): return self.online
+class SapiEngine(OfflineEngine):
+
+  def __init__(self, key, speed=0):
+    self.key = key      # str
+    self.speed = speed  # int
+    self._speaking = False
+    self._valid = False
+    #self.mutex = QMutex() # speak mutex
+
+    import sapi.engine, sapi.registry
+    kw = sapi.registry.query(key=self.key)
+    self.engine = sapi.engine.SapiEngine(speed=speed, **kw) if kw else None
+    if self.engine:
+      self.language = self.engine.language or 'ja' # override
+      self.name = self.engine.name or tr_('Unknown')
+      #self.gender = self.engine.gender or 'f'
+
+  def setSpeed(self, v):
+    """
+    @param  v  int  [-10,10]
+    """
+    if self.speed != v:
+      self.speed = v
+      e = self.engine
+      if e:
+        e.speed = v
 
   def isValid(self):
     """"@reimp"""
     if not self._valid:
-      import libman
-      self._valid = libman.quicktime().exists()
+      self._valid = bool(self.engine) and self.engine.isValid()
     return self._valid
 
-  @memoizedproperty
-  def engine(self):
-    import windows
-    parentWindow = windows.top()
+  #def speak(self, text):
+  #  """@remip"""
+  #  skthreads.runasync(partial(self._speakasync, text))
 
-    from google import googletts
-    return googletts.GoogleTtsPlayer(parentWindow)
+  #def _speakasync(self, text):
+  #  e = self.engine
+  #  if e:
+  #    with SkCoInitializer(threading=True):
+  #      if self._speaking:
+  #        e.stop()
+  #      else:
+  #        self._speaking = True
+  #      e.speak(text)
+  #      #e.speak(text, async=False) # async=False, or it might crash?
 
-  def warmup(self):
-    """@reimp"""
-    if self.isOnline() and self.isValid():
-      self.engine.warmup()
-
-  def speak(self, text, language=None):
-    """@reimp@"""
-    if self.isOnline():
-      if not self.isValid():
-        growl.warn(my.tr("Missing QuickTime needed by text-to-speech"))
+  def speak(self, text):
+    """@remip"""
+    e = self.engine
+    if e:
+      if self._speaking:
+        e.stop()
       else:
-        self.engine.speak(text, language=language or self.language)
+        self._speaking = True
+      e.speak(text)
 
-class VocalroidEngine(VoiceEngine):
-  type = 'vocalroid'
+  def stop(self):
+    """@remip"""
+    if self._speaking:
+      self._speaking = False
+      e = self.engine
+      if e:
+        e.stop()
+
+# Vocalroids
+
+class VocalroidEngine(OfflineEngine):
 
   def __init__(self, voiceroid, path=''):
     self.path = path # unicode
@@ -146,71 +173,95 @@ class ZunkoEngine(VocalroidEngine):
     v = voiceroid.apps.Zunko()
     super(ZunkoEngine, self).__init__(v, **kwargs)
 
-class SapiEngine(VoiceEngine):
-  type = 'sapi'
+# Online engines
 
-  def __init__(self, key, speed=0):
-    self.key = key      # str
-    self.speed = speed  # int
-    self._speaking = False
-    self._valid = False
-    #self.mutex = QMutex() # speak mutex
+class OnlineThread(QThread):
+  playRequested = Signal(unicode) # url
+  stopRequested = Signal()
 
-    import sapi.engine, sapi.registry
-    kw = sapi.registry.query(key=self.key)
-    self.engine = sapi.engine.SapiEngine(speed=speed, **kw) if kw else None
-    if self.engine:
-      self.language = self.engine.language or 'ja' # override
-      self.name = self.engine.name or tr_('Unknown')
-      #self.gender = self.engine.gender or 'f'
+  def __init__(self, parent=None):
+    super(OnlineThread, self).__init__(parent)
 
-  def setSpeed(self, v):
-    """
-    @param  v  int  [-10,10]
-    """
-    if self.speed != v:
-      self.speed = v
-      e = self.engine
-      if e:
-        e.speed = v
+    from pywmp import WindowsMediaPlayer
+    self._wmp = WindowsMediaPlayer()
 
-  def isValid(self):
-    """"@reimp"""
-    if not self._valid:
-      self._valid = bool(self.engine) and self.engine.isValid()
-    return self._valid
+    self._playing = False
 
-  #def speak(self, text):
-  #  """@remip"""
-  #  skthreads.runasync(partial(self._speakasync, text))
+  def run(self):
+    """@reimp"""
+    skwincom.coinit(threading=True) # critical to use WMP
 
-  #def _speakasync(self, text):
-  #  e = self.engine
-  #  if e:
-  #    with SkCoInitializer(threading=True):
-  #      if self._speaking:
-  #        e.stop()
-  #      else:
-  #        self._speaking = True
-  #      e.speak(text)
-  #      #e.speak(text, async=False) # async=False, or it might crash?
+    self.playRequested.connect(self.play, Qt.QueuedConnection)
+    self.stopRequested.connect(self.stop, Qt.QueuedConnection)
 
-  def speak(self, text):
-    """@remip"""
-    e = self.engine
-    if e:
-      if self._speaking:
-        e.stop()
-      else:
-        self._speaking = True
-      e.speak(text)
+    self.exec_()
+
+  def destroy(self):
+    self.quit()
+    skwincom.couninit()
+
+  # Actions
+
+  def play(self, url): # unicode ->
+    if url:
+      self._playing = self._wmp.play(url)
+    else:
+      self.stop()
 
   def stop(self):
-    """@remip"""
-    if self._speaking:
-      self._speaking = False
-      e = self.engine
-      if e:
-        e.stop()
+    if self._playing:
+      self._wmp.stop()
+      self._playing = False
+
+  def requestPlay(self, url): # unicode ->
+    self.playRequested.emit(url)
+
+  def requestStop(self, url): # unicode ->
+    if self._playing:
+      self.stopRequested.emit()
+
+class OnlineEngine(VoiceEngine):
+  online = True # override
+
+  _thread = None
+  @classmethod
+  def thread(cls): # -> OnlineThread not None
+    if not cls._thread:
+      cls._thread = OnlineThread()
+      cls._thread.start()
+      growl.msg(my.tr("Load {0}").format("Windows Media Player"))
+    return cls._thread
+
+  _valid = None
+  def isValid(self):
+    """@reimp"""
+    if not OnlineEngine._valid:
+      import libman
+      OnlineEngine._valid = libman.wmp().exists()
+    return OnlineEngine._valid
+
+  def speak(self, text, language=None):
+    """@reimp@"""
+    if not self.isValid():
+      growl.warn(my.tr("Missing Windows Media Player needed by text-to-speech"))
+    else:
+      url = self.createUrl(text, language)
+      self.thread().requestPlay(url)
+
+  def stop(self):
+    """@reimp@"""
+    if self._thread:
+      self._thread.requestStop()
+
+  def createUrl(text, language=None): pass # str -> str
+
+class GoogleEngine(OnlineEngine):
+  key = 'google' # override
+  name = u'Google TTS' # override
+
+  def createUrl(self, text, language=None):
+    """@reimp@"""
+    from google import googletts
+    return googletts.url(text, language or 'ja')
 
 # EOF
