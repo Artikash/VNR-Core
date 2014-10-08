@@ -1124,10 +1124,15 @@ class _TtsTab(object):
       grid.addWidget(QtWidgets.QLabel("SAPI (%s)" % mytr_("not installed")), r, 0)
     else:
       r += 1
-      grid.addWidget(QtWidgets.QLabel("SAPI:"), r, 0)
+      label = QtWidgets.QLabel("SAPI:")
+      if features.ADMIN:
+        skqss.class_(label, 'text-error')
+      grid.addWidget(label, r, 0)
       for k,b in self.sapiButtons:
         r += 1
         c = 0
+        if features.ADMIN:
+          skqss.class_(b, 'text-error')
         grid.addWidget(b, r, c)
         w = self.createTestButton(k)
 
@@ -1166,9 +1171,12 @@ class _TtsTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)
 
-    #info = QtWidgets.QLabel(tr_("Note") + ": " + my.tr("VNR supports not only Japanese TTS, but all SAPI TTS in any languages. VNR will read translations instead of game texts if TTS's language is different from game's."))
-    #info.setWordWrap(True)
-    #layout.addWidget(info)
+    if self.sapiButtons:
+      info = QtWidgets.QLabel(tr_("Note") + ": " + my.tr("SAPI TTS won't work when VNR is launched as Administrator."))
+      info.setWordWrap(True)
+      if features.ADMIN:
+        skqss.class_(info, 'text-error')
+      layout.addWidget(info)
 
     ret = QtWidgets.QGroupBox(my.tr("Preferred text-to-speech voice"))
     ret.setLayout(layout)
