@@ -1726,9 +1726,10 @@ class _TermTab(object):
 
   @memoizedproperty
   def syntaxInfo(self):
-    ret = QtWidgets.QLabel(my.tr(
-      "VNR's machine translator is based on the syntax terms in the Shared Dictionary. This feature is still under development, and the existing syntax terms are insufficient to translate most Japanese sentences. When there is no matched syntax for a sentence, the selected 3rd machine translators will be used as alternative."
-    ))
+    ret = QtWidgets.QLabel("<br/><br/>".join((
+      '<span style="color:purple">%s</span>' % my.tr('This feature is under development. Please <span style="color:red">DO NOT</span> enable this option unless you are familiar with Japanese and the Shared Dictionary.'),
+      my.tr("VNR's machine translator is based on the syntax terms in the Shared Dictionary. Currently, the existing syntax terms are insufficient to translate most Japanese sentences. When there is no matched syntax for a sentence, the selected 3rd machine translators will be used as alternative."),
+    )))
     ret.setWordWrap(True)
     return ret
 

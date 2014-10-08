@@ -374,6 +374,9 @@ def migrate(ss_version): # long ->
 
   try: # this try is in case I forgot certain rc directories for update
 
+    if ss_version <= 1412745537:
+      self.setValue("RBMT", False) # disable RBMT by default
+
     if ss_version <= 1412718122:
       ss.setValue('SubtitleVoice', False) # disable subtitle by default
       ss.setValue('SpeakGameText', True) # enable auto TTS by default
