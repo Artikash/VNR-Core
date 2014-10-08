@@ -6,7 +6,6 @@
 # textspy => textreader => kagami.mirage
 
 import re
-from functools import partial
 from PySide.QtCore import Signal, Slot, QObject #, QTimer
 from sakurakit import skdatetime, skevents, skstr, skthreads
 from sakurakit.skclass import Q_Q, memoized
@@ -50,15 +49,16 @@ class _TextReader(object):
   #  return text
 
   def _translateTextAndShow(self, text, time):
-    trman.manager().translateApply(partial(self._showTranslation, time),
-        text, self.gameLanguage)
+    trman.manager().translateApply(self._showTranslation,
+        text, self.gameLanguage,
+        time=time)
 
-  def _showTranslation(self, time, sub, language, provider):
+  def _showTranslation(self, sub, language, provider, time=0):
     """
-    @param  long  time
     @param  sub  unicode
     @param  language  unicode
     @param  provider  unicode
+    @param* long  time
     """
     #sub = userplugin.revise_translation(sub, language)
     if sub:

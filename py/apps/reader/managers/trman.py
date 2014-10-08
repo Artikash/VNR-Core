@@ -116,9 +116,10 @@ class _TranslatorManager(object):
     return self._newtr(_trman.ExciteTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session))
 
   @staticmethod
-  def translateAndApply(func, tr, *args, **kwargs):
+  def translateAndApply(func, kw, tr, *args, **kwargs):
     """
     @param  func  function to apply
+    @param  kw  arguments passed to func
     @param  tr  function to translate
     @param  *args  passed to tr
     @param  **kwargs  passed to tr
@@ -132,7 +133,7 @@ class _TranslatorManager(object):
     #      parent=self.parent)
     #else:
     r = tr(*args, **kwargs)
-    if r and r[0]: func(*r)
+    if r and r[0]: func(*r, **kw)
 
   def getTranslator(self, key):
     """
@@ -449,12 +450,12 @@ class TranslatorManager(QObject):
             parent=self) or (None, None, None)
     return None, None, None
 
-  def translateApply(self, func, text, fr='ja'):
+  def translateApply(self, func, text, fr='ja', **kwargs):
     """Specialized for textman
-    @param  text  unicode
-    @param  fr  unicode  language
-    @param  to  unicode  language
     @param  func  function(unicode sub, unicode lang, unicode provider)
+    @param  text  unicode
+    @param* fr  unicode  language
+    @param* kwargs  pass to func
     """
     if not features.MACHINE_TRANSLATION or not text:
       return
@@ -465,12 +466,12 @@ class TranslatorManager(QObject):
       #with SkProfiler(): # 0.3 seconds
       r = it.translate(text, fr=fr, to=d.language, async=False)
       #with SkProfiler(): # 0.0004 seconds
-      if r and r[0]: func(*r)
+      if r and r[0]: func(*r, **kwargs)
 
     # Always disable async
     for it in d.iterOnlineTranslators(reverse=True): # need reverse since skevents is used
       skevents.runlater(partial(d.translateAndApply,
-          func, it.translate, text, fr=fr, to=d.language, async=False))
+          func, kwargs, it.translate, text, fr=fr, to=d.language, async=False))
 
 @memoized
 def manager(): return TranslatorManager()
