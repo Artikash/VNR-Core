@@ -19,6 +19,7 @@ win32: SUBDIRS += \
   dlltest \
   ocrtest \
   sehtest \
+  srtest \
   ttstest \
   vertest \
   wmptest
