@@ -1238,6 +1238,7 @@ class _TtsTab(object):
 
       'google': self.googleButton,
       'baidu': self.baiduButton,
+      'bing': self.bingButton,
 
       'yukari': self.yukariButton,
       'zunko': self.zunkoButton,
