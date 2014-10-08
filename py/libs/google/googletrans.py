@@ -1,4 +1,5 @@
 # coding: utf8
+# googletrans.py
 # 8/2/2013 jichi
 #
 # See:
