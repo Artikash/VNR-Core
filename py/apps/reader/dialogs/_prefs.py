@@ -2252,6 +2252,7 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
   def chineseGroup(self):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.chineseButton)
+    layout.addWidget(self.yueButton)
     ret = QtWidgets.QGroupBox(my.tr("Preferred Chinese characters"))
     ret.setLayout(layout)
     return ret
@@ -2259,9 +2260,17 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
   @memoizedproperty
   def chineseButton(self):
     ret = QtWidgets.QCheckBox(my.tr(
-      "Convert Simplified Chinese subtitles to Traditional Chinese"))
+        "Convert Simplified Chinese subtitles to Traditional Chinese"))
     ret.setChecked(settings.global_().convertsChinese())
     ret.toggled.connect(settings.global_().setConvertsChinese)
+    return ret
+
+  @memoizedproperty
+  def yueButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+        "Convert Mandarin Chinese machine translation to Yue Chinese (using Baidu)"))
+    ret.setChecked(settings.global_().isYueEnabled())
+    ret.toggled.connect(settings.global_().setYueEnabled)
     return ret
 
   # Machine translator

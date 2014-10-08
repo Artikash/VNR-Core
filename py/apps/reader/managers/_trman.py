@@ -214,6 +214,32 @@ class HanVietTranslator(Translator):
     from hanviet.hanviet import han2viet
     return han2viet(text)
 
+## Text processing
+
+class YueTranslator(Translator):
+
+  def __init__(self, session=None, abortSignal=None):
+    self.abortSignal = abortSignal
+    self.session = session
+
+    from baidu import baidufanyi
+    baidufanyi.session = session or requests.Session()
+    self.engine = baidufanyi
+
+  def translate(self, text, fr, to='yue', async=False):
+    """@reimp"""
+    if text:
+      ret = skthreads.runsync(partial(
+        self.engne.translate, text, to=to, fr=fr),
+        abortSignal=self.abortSignal,
+        #parent=self.parent, # save memory?
+      ) if async else self.engine.translate(text, to=to, fr=fr)
+      if ret:
+        if fr != 'zhs':
+          ret = zhs2zht(ret)
+        return ret
+    return text
+
 # Machine translators
 
 class MachineTranslator(Translator):
@@ -226,12 +252,14 @@ class MachineTranslator(Translator):
   #_DELIM_SET = _PARAGRAPH_SET # set of deliminators
   #_DELIM_RE = _PARAGRAPH_RE   # rx of deliminators
 
-  def __init__(self, parent=None, abortSignal=None):
+  def __init__(self, parent=None, abortSignal=None, preprocess=None, postprocess=None):
     super(MachineTranslator, self).__init__()
     self.cache = TranslationCache()  # public overall translation cache
     self._cache = TranslationCache() # private translation cache for internal translation
-    self.parent = parent  # QObject
+    self.parent = parent  # QObject, not used though
     self.abortSignal = abortSignal # QtCore.Signal abort translation
+    self.preprocess = preprocess # function unicode text, str fr -> text
+    self.postprocess = postprocess # function unicode text, str to -> text
 
   def clearCache(self):
     """@reimp"""
@@ -375,6 +403,8 @@ class MachineTranslator(Translator):
     #  text = trscriptman.manager().normalizeText(text, fr=fr, to=to)
     #  if emit and text != t:
     #    self.emitNormalizedText(text)
+    if self.preprocess:
+      text = self.preprocess(text, fr)
 
     tm = termman.manager()
     t = text
@@ -416,6 +446,8 @@ class MachineTranslator(Translator):
       self.emitTargetTranslation(text)
     #text = text.replace("( ", '(')
     #text = text.replace(u"\n】", u"】\n")
+    if self.postprocess:
+      text = self.postprocess(text, to)
     text = textutil.beautify_subtitle(text)
     return text.strip() # escape could produce trailing " "
 

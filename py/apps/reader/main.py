@@ -668,8 +668,11 @@ class _MainObject(object):
     ret.setLanguage(ss.userLanguage())
     ss.userLanguageChanged.connect(ret.setLanguage)
 
-    ret.setLougoEnabled(ss.isLougoEnabled())
-    ss.lougoEnabledChanged.connect(ret.setLougoEnabled)
+    #ret.setLougoEnabled(ss.isLougoEnabled())
+    #ss.lougoEnabledChanged.connect(ret.setLougoEnabled)
+
+    ret.setYueEnabled(ss.isYueEnabled())
+    ss.yueEnabledChanged.connect(ret.setYueEnabled)
 
     ret.setInfoseekEnabled(ss.isInfoseekEnabled())
     ss.infoseekEnabledChanged.connect(ret.setInfoseekEnabled)
@@ -720,6 +723,7 @@ class _MainObject(object):
         self.termManager.cacheChanged,
         ss.machineTranslatorChanged,
         ss.termEnabledChanged,
+        ss.yueEnabledChanged,
       ):
       sig.connect(ret.clearCache)
 
