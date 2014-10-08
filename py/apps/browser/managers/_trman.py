@@ -850,7 +850,9 @@ class BingTranslator(OnlineMachineTranslator):
     # It is dangerous to create engine here, which is async
     from microsoft import bingtrans
     bingtrans.session = requests.Session()
-    self.engine = bingtrans.create_engine() # time-limited
+
+    import bingman
+    self.engine = bingman.manager() # time-limited
 
   #@memoizedproperty
   #def engine(self):
