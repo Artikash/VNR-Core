@@ -533,9 +533,9 @@ class TermManager(QObject):
     @param  language  str
     @return rbmt.api.Translator or None
     """
-    if not self.isSyntaxEnabled or not self.isEnabled or not language:
-      return
     d = self.__d
+    if not d.syntax or not d.enabled or not language:
+      return
     ret = d.rbmt.get(language)
     if ret:
       return ret if ret.ruleCount() else None
