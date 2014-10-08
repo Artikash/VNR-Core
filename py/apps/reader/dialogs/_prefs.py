@@ -5588,7 +5588,7 @@ You can reinistall Windows Media Player here from Microsoft for free:
     skqss.class_(self.misakiLocationEdit, 'normal' if ok else 'muted')
     self.misakiLocationEdit.setText(path if ok else tr_("Not found"))
 
-    url = "http://www.hoyasv.com/"
+    url = "http://voicetext.jp"
     self.misakiInfoEdit.setHtml(my.tr(
 """VoiceText Misaki is needed by <span style="color:purple">offline TTS</span>.<br/>
 Misaki is a Japanese female TTS SAPI library.<br/>
