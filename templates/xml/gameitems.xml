@@ -29,6 +29,9 @@
 %	if it.wiki
 			<wiki>{{it.wiki|e}}</wiki>
 %	endif
+%	if it.fileSize
+			<fileSize>{{it.fileSize}}</fileSize>
+%	endif
 %	if it.tags
 			<tags>{{it.tags|e}}</tags>
 %	endif
