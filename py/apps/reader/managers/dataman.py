@@ -637,6 +637,11 @@ class GameInfo(object):
       if r:
         yield r.url, r.type
 
+  @property
+  def fileSize0(self): # int
+    g = self.gameItem
+    return g.fileSize if g else 0
+
   @memoizedproperty
   def fileSize(self): # long not None
     try: return max(it.fileSize for it in (self.digiket, self.gyutto, self.dlsite) if it)
@@ -1342,6 +1347,7 @@ class GameItem(object):
     'series',
     'image',
     'wiki',
+    'fileSize',
     'timestamp',
     'date',
     'otome',
@@ -1364,7 +1370,7 @@ class GameItem(object):
 
   def __init__(self, id=0,
       title="", romajiTitle="", brand="", series="", image="", wiki="",
-      timestamp=0, date=None, artists='', sdartists='', writers='', musicians='',
+      timestamp=0, fileSize=0, date=None, artists='', sdartists='', writers='', musicians='',
       otome=False, okazu=False, scapeMedian=0, scapeCount=0, tags='',
       overallScoreSum=0, overallScoreCount=0, ecchiScoreSum=0, ecchiScoreCount=0, easyScoreSum=0, easyScoreCount=0,
     ):
@@ -1375,7 +1381,8 @@ class GameItem(object):
     self.series = series # unicode
     self.image = image # str
     self.wiki = wiki # unicode
-    self.timestamp = timestamp # long
+    self.fileSize = fileSize # int
+    self.timestamp = timestamp # int
     self.date = date # datetime or None
     self.otome = otome # bool
     self.okazu = okazu # int
@@ -6199,7 +6206,7 @@ class _DataManager(object):
               e.tags = text
             elif tag in ('otome', 'okazu'):
               setattr(e, tag, text == 'true')
-            elif tag in ('timestamp', 'scapeMedian', 'scapeCount', 'overallScoreSum', 'overallScoreCount', 'ecchiScoreSum', 'ecchiScoreCount', 'easyScoreSum', 'easyScoreCount'):
+            elif tag in ('timestamp', 'fileSize', 'scapeMedian', 'scapeCount', 'overallScoreSum', 'overallScoreCount', 'ecchiScoreSum', 'ecchiScoreCount', 'easyScoreSum', 'easyScoreCount'):
               setattr(e, tag, int(text))
             elif tag == 'date':
               e.date = datetime.strptime(text, '%Y%m%d')

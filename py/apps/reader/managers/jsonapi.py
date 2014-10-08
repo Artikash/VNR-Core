@@ -18,6 +18,7 @@ KEYS = (
   'romajiTitle0',
   'brand0',
   'date0',
+  'fileSize0',
   'imageUrl0',
   'series0',
   'okazu0',
