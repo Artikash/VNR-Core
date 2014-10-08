@@ -181,6 +181,8 @@ class _TtsManager(object):
       }
       if key == 'baidu':
         ret = _ttsman.BaiduEngine(**kw)
+      elif key == 'bing':
+        ret = _ttsman.BingEngine(**kw)
       elif key == 'google':
         ret = _ttsman.GoogleEngine(**kw)
       if ret and ret.isValid():

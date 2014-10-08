@@ -1096,6 +1096,7 @@ class _TtsTab(object):
     for k,b in ((
         ('baidu', self.baiduButton),
         ('google', self.googleButton),
+        ('bing', self.bingButton),
       )):
       r += 1
       c = 0
@@ -1201,6 +1202,12 @@ class _TtsTab(object):
   @memoizedproperty
   def baiduButton(self):
     ret = QtWidgets.QRadioButton(u"%s (♀, %s)" % (mytr_("Baidu"), tr_("default")))
+    ret.toggled.connect(self._saveEngine)
+    return ret
+
+  @memoizedproperty
+  def bingButton(self):
+    ret = QtWidgets.QRadioButton(u"%s (♀)" % mytr_("Bing"))
     ret.toggled.connect(self._saveEngine)
     return ret
 

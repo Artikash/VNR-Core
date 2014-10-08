@@ -13,6 +13,6 @@ def url(appId, text, language, format='audio/mp3'):
   @param* format  str
   @return  unicode
   """
-  return "%s?appId=%s&language=%s&format=%s&text=%s" % (appId, language, format, text)
+  return "%s?appId=%s&language=%s&format=%s&text=%s" % (API, appId, language, format, text)
 
 # EOF

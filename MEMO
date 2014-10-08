@@ -66,4 +66,10 @@ wiki Machine Translators and Additional Software
 
 debug translating special characters
 
+# TTS related files
+qml/apps/reader/voiceview/table.qml
+ttsman.py
+_ttsman.py
+_prefs.py
+
 # EOF
