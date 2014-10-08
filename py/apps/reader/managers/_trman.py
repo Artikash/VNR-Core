@@ -36,9 +36,9 @@ _PARAGRAPH_RE = re.compile(r"([%s])" % ''.join(_PARAGRAPH_SET))
 #_SENTENCE_SET = frozenset(__SENTENCE_DELIM)
 _SENTENCE_RE = re.compile(ur"([。？！」\n])(?![。！？）」\n]|$)")
 
-_re_escape = re.compile(ur"[0-9. 、。？！…]+")
+_re_escape = re.compile(ur"^[0-9. 、。？！…]+$")
 def is_escaped_text(text): # unicode -> bool
-  return bool(_re_escape.match(text))
+  return bool(_re_escape.search(text))
 
 # All methods in this class are supposed to be thread-safe
 # Though they are not orz
