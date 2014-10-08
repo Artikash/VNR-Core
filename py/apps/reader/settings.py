@@ -1226,6 +1226,14 @@ class Settings(QSettings):
       self.setValue('ConvertsChinese', value)
       self.convertsChineseChanged.emit(value)
 
+  yueEnabledChanged = Signal(bool)
+  def isYueEnabled(self):
+    return to_bool(self.value('YueEnabled'))
+  def setYueEnabled(self, value):
+    if value != self.isYueEnabled():
+      self.setValue('YueEnabled', value)
+      self.yueEnabledChanged.emit(value)
+
   ## Shared Dictionary ##
 
   termEnabledChanged = Signal(bool)

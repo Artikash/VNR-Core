@@ -30,6 +30,8 @@ class _TranslatorManager(object):
     self.online = False
     self.language = 'en' # str, user language
 
+    self.yueEnabled = False # translate zh to yue
+
     self.allTranslators = [] # all created translators
 
     self.infoseekEnabled = \
@@ -56,12 +58,23 @@ class _TranslatorManager(object):
 
   normalizeText = staticmethod(textutil.normalize_punct)
 
+  def postprocess(self, text, language):
+    if self.yueEnabled and language.startswith('zh') and self.online:
+      ret = self.yueTranslator.translate(text, fr=language)
+      if ret:
+        return ret
+    return text
+
   def _newtr(self, tr):
     """
     @param  tr  _trman.Translator
     """
     self.allTranslators.append(tr)
     return tr
+
+  @memoizedproperty
+  def yueTranslator(self): # no an independent machine translator
+    return _trman.YueTranslator(abortSignal=self.abortSignal, session=self.session)
 
   @memoizedproperty
   def lougoTranslator(self): return self._newtr(_trman.LougoTranslator())
@@ -79,25 +92,25 @@ class _TranslatorManager(object):
   def ezTranslator(self): return self._newtr(_trman.EzTranslator(parent=self.parent))
 
   @memoizedproperty
-  def fastaitTranslator(self): return self._newtr(_trman.FastAITTranslator(parent=self.parent))
+  def fastaitTranslator(self): return self._newtr(_trman.FastAITTranslator(parent=self.parent, postprocess=self.postprocess))
 
   @memoizedproperty
-  def dreyeTranslator(self): return self._newtr(self._newtr(_trman.DreyeTranslator(parent=self.parent)))
+  def dreyeTranslator(self): return self._newtr(self._newtr(_trman.DreyeTranslator(parent=self.parent, postprocess=self.postprocess)))
 
   @memoizedproperty
-  def jbeijingTranslator(self): return self._newtr(_trman.JBeijingTranslator(parent=self.parent))
+  def jbeijingTranslator(self): return self._newtr(_trman.JBeijingTranslator(parent=self.parent, postprocess=self.postprocess))
 
   @memoizedproperty
   def googleTranslator(self):
-    return self._newtr(_trman.GoogleTranslator(parent=self.parent, abortSignal=self.abortSignal)) # , session=self.session # not work sync https redirect
+    return self._newtr(_trman.GoogleTranslator(parent=self.parent, abortSignal=self.abortSignal, postprocess=self.postprocess)) # , session=self.session # not work sync https redirect
 
   @memoizedproperty
   def baiduTranslator(self):
-    return self._newtr(_trman.BaiduTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session))
+    return self._newtr(_trman.BaiduTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session, postprocess=self.postprocess))
 
   @memoizedproperty
   def bingTranslator(self):
-    return self._newtr(_trman.BingTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session))
+    return self._newtr(_trman.BingTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session, postprocess=self.postprocess))
 
   @memoizedproperty
   def lecOnlineTranslator(self):
@@ -242,6 +255,9 @@ class TranslatorManager(QObject):
 
   def isOnline(self): return self.__d.online
   def setOnline(self, value): self.__d.online = value
+
+  def isYueEnabled(self): return self.__d.yueEnabled
+  def setYueEnabled(self, value): self.__d.yueEnabled = value
 
   def isInfoseekEnabled(self): return self.__d.infoseekEnabled
   def setInfoseekEnabled(self, value): self.__d.infoseekEnabled = value
