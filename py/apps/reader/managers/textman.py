@@ -366,8 +366,9 @@ class _TextManager(object):
     return textutil.to_unicode(data, self.encoding)
 
   def _translateTextAndShow(self, text, time):
-    trman.manager().translateApply(partial(self._showTranslation, time),
-        text, self.gameLanguage)
+    trman.manager().translateApply(self._showTranslation,
+        text, self.gameLanguage,
+        time=time)
 
   def _showComment(self, c):
     """
@@ -376,12 +377,12 @@ class _TextManager(object):
     if not self.blockedLanguages or c.d.language[:2] not in self.blockedLanguages:
       self.q.commentReceived.emit(c)
 
-  def _showTranslation(self, time, sub, language, provider):
+  def _showTranslation(self, sub, language, provider, time=0):
     """
-    @param  long  time
     @param  sub  unicode
     @param  language  unicode
     @param  provider  unicode
+    @param* long  time
     """
     #sub = userplugin.revise_translation(sub, language)
     if sub:

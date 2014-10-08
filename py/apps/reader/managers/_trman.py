@@ -335,7 +335,7 @@ class MachineTranslator(Translator):
     if emit:
       self.emitSplitTranslations(l)
     #delim = ' ' if self.splitsSentences else ''
-    return ''.join(l)
+    return ''.join(l) if l else ''
 
   def __partialTranslate(self, tr, to, fr):
     """
