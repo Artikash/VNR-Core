@@ -465,7 +465,7 @@ class TranslatorManager(QObject):
       #with SkProfiler(): # 0.3 seconds
       r = it.translate(text, fr=fr, to=d.language, async=False)
       #with SkProfiler(): # 0.0004 seconds
-      if r[0]: func(*r)
+      if r and r[0]: func(*r)
 
     # Always disable async
     for it in d.iterOnlineTranslators(reverse=True): # need reverse since skevents is used
