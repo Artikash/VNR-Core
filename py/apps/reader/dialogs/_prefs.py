@@ -1121,7 +1121,7 @@ class _TtsTab(object):
     # SAPI
     if not self.sapiButtons:
       r += 1
-      grid.addWidget(QtWidgets.QLabel("SAPI (%s)") % mytr_("not installed"), r, 0)
+      grid.addWidget(QtWidgets.QLabel("SAPI (%s)" % mytr_("not installed")), r, 0)
     else:
       r += 1
       grid.addWidget(QtWidgets.QLabel("SAPI:"), r, 0)
