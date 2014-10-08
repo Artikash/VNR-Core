@@ -38,7 +38,7 @@ _SENTENCE_RE = re.compile(ur"([。？！」\n])(?![。！？）」\n]|$)")
 
 _re_escape = re.compile(ur"^[0-9. 、。？！…]+$")
 def is_escaped_text(text): # unicode -> bool
-  return bool(_re_escape.search(text))
+  return bool(_re_escape.match(text))
 
 # All methods in this class are supposed to be thread-safe
 # Though they are not orz
