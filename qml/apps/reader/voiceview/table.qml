@@ -42,6 +42,7 @@ Item { id: root_
     switch (key) {
     case '': return Sk.tr('Default')
     case 'google': return "Google"
+    case 'bing': return My.tr("Bing")
     case 'baidu': return My.tr("Baidu")
     case 'yukari': return "結月ゆかり"
     case 'zunko': return "東北ずん子"

@@ -12,7 +12,7 @@ from zhszht.zhszht import zht2zhs
 from mytr import my, mytr_
 import growl, rc
 
-ONLINE_ENGINES = 'google', 'baidu'
+ONLINE_ENGINES = 'baidu', 'google', 'bing'
 
 ## Voice engines ##
 
@@ -374,5 +374,14 @@ class BaiduEngine(OnlineEngine):
     """@reimp@"""
     from baidu import baidutts
     return baidutts.url(text, language)
+
+class BingEngine(OnlineEngine):
+  key = 'bing' # override
+  name = u'Bing TTS' # override
+
+  def __init__(self, *args, **kwargs):
+    super(BingEngine, self).__init__(*args, **kwargs)
+    import bingman
+    self.createUrl = bingman.manager().tts # override
 
 # EOF

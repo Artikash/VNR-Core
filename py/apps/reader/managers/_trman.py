@@ -1276,11 +1276,11 @@ class BingTranslator(OnlineMachineTranslator):
     super(BingTranslator, self).__init__(**kwargs)
     self.session = session # requests session
 
-  @memoizedproperty
-  def engine(self):
     from microsoft import bingtrans
     bingtrans.session = self.session or requests.Session()
-    return bingtrans.create_engine() # time-limited
+
+    import bingman
+    self.engine = bingman.manager()
 
   #__bing_repl_after = staticmethod(skstr.multireplacer({
   #  '[': u'【',

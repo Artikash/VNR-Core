@@ -1,5 +1,5 @@
 # coding: utf8
-# fresheyetrans.py
+# fresheyemt.py
 # 8/21/2012 jichi
 # See: http://ready.to/search/list/cs_trans.htm
 
