@@ -133,6 +133,8 @@ class reader(QObject):
 
       self.tr("Shortcuts"),
 
+      self.tr("Multilingual"), self.tr("multilingual"),
+
       self.tr("Need to install"),
       self.tr("need to install"),
 

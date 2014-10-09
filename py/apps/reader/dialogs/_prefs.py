@@ -1090,7 +1090,7 @@ class _TtsTab(object):
     grid.addWidget(self.disableButton, r, 0)
 
     r += 1
-    grid.addWidget(QtWidgets.QLabel(tr_("Online") + ":"), r, 0)
+    grid.addWidget(QtWidgets.QLabel("%s (%s):" % (tr_("online"), mytr_("multilingual")), r, 0)
 
     # Google
     for k,b in ((
@@ -1124,7 +1124,7 @@ class _TtsTab(object):
       grid.addWidget(QtWidgets.QLabel("SAPI (%s)" % mytr_("not installed")), r, 0)
     else:
       r += 1
-      label = QtWidgets.QLabel("SAPI:")
+      label = QtWidgets.QLabel("SAPI (%s):" % tr_("offline"))
       if features.ADMIN:
         skqss.class_(label, 'text-error')
       grid.addWidget(label, r, 0)
@@ -1153,7 +1153,7 @@ class _TtsTab(object):
 
     # VOICEROID
     r += 1
-    grid.addWidget(QtWidgets.QLabel("VOICEROID+:"), r, 0)
+    grid.addWidget(QtWidgets.QLabel("VOICEROID+ (%s):") % tr_("offline"), r, 0)
 
     for k,b in ((
         ('yukari', self.yukariButton),
