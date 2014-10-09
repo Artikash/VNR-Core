@@ -4,7 +4,7 @@
 #
 # Example: http://tts.baidu.com/text2audio?lan=jp&ie=UTF-8&text=hello
 
-import urllib
+from sakurakit.sknetio import topercentencoding
 import baidudef
 
 API = "http://tts.baidu.com/text2audio"
@@ -17,8 +17,7 @@ def url(text, language, encoding='UTF-8'):
   @return  unicode or str not None
   """
   if language:
-    if isinstance(text, unicode):
-      text = urllib.quote(text.encode(encoding, errors='ignore'))
+    text = topercentencoding(text, encoding)
     if text:
       language = baidudef.bdlang(language)
       return API + "?ie=%s&lan=%s&text=%s" % (encoding, language, text)

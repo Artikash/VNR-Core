@@ -138,7 +138,7 @@ class _SyntaxTester(object):
   def sourceView(self):
     ret = QtWidgets.QPlainTextEdit()
     skqss.class_(ret, 'normal')
-    ret.setToolTip(tr_("Input"))
+    ret.setToolTip(mytr_("Input"))
     return ret
 
   @memoizedproperty
@@ -154,7 +154,7 @@ class _SyntaxTester(object):
     ret = QtWidgets.QPlainTextEdit(my.tr("Missing MeCab, CaboCha, or UniDic"))
     ret.setReadOnly(True)
     skqss.class_(ret, 'texture')
-    ret.setToolTip(tr_("Output"))
+    ret.setToolTip(mytr_("Output"))
     return ret
 
   @memoizedproperty

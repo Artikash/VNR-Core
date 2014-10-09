@@ -1,6 +1,7 @@
 # coding: utf8
+# online.py
 # 10/8/2014 jichi
-
+#
 # 東北ずん子: http://www.ah-soft.com/voiceroid/zunko/
 #
 # Text: 憎しみは憎しみしか生まない。
@@ -14,8 +15,7 @@
 #
 # 2. GET http://182.48.0.54/aitalk-ajax/php/tmp/994_20141009112906855325490.mp3 [HTTP/1.1 200 OK 854ms]
 # Referer: http://182.48.0.54/aitalk-ajax/php/tmp/994_20141009112906855325490.mp3
-# Request: empty
-# Response: voiceFile=http://182.48.0.54/aitalk-ajax/php/tmp/994_20141009112906855325490.mp3
+# Response: empty
 #
 # 3. POST http://voice.ai-j.jp/aitalk_2webapi.php [HTTP/1.1 200 OK 187ms]
 # Referer: http://voice.ai-j.jp/voiceroid2demo_zunko.swf
@@ -38,5 +38,81 @@
 # 2. GET http://182.48.0.54/aitalk-ajax/php/tmp/2_201410091136361167072195.mp3 [HTTP/1.1 200 OK 2381ms]
 #
 # 3. POST http://voice.ai-j.jp/aitalk_2webapi.php [HTTP/1.1 200 OK 560ms]
+
+if __name__ == '__main__':
+  import sys
+  sys.path.append('..')
+
+import requests
+from sakurakit.skdebug import dwarn
+from sakurakit.skstr import urlencode
+
+ENGINES = { # unicode key -> int id
+  'yukari': 2,  # 結月ゆかり: http://www.ah-soft.com/voiceroid/yukari/index.html
+  'zunko': 994, # 東北ずん子: http://www.ah-soft.com/voiceroid/zunko/
+}
+
+API = "http://voice.ai-j.jp/aitalk_2webapi.php"
+
+HEADERS = {
+  'Content-Type':'application/x-www-form-urlencoded',
+  'Referer': 'http://voice.ai-j.jp', # referrer is not needed, but used in case something is wrong
+}
+
+def _urlencodefloat(v):
+  return ("%s" % v).replace('.', '%2E') if isinstance(v, float) else "%s" % v
+
+# Pitch: [0.5, 2.0], default 1.0
+# Speed: [0.5, 2.0], default 1.0
+def createdata(id, text, encoding='utf8', pitch=1, speed=1, gain=None, delay=None):
+  """
+  @param  id  int
+  @param  text  unicode
+  @param* encoding  str
+  @param* pitch  float  [0.5, 2.0]
+  @param* speed  float  [0.5, 2.0]
+  @param* gain  unknown
+  @param* delay  unknown
+  @return  unicode  post data
+  """
+  if encoding and isinstance(text, unicode):
+    text = text.encode(encoding, errors='ignore')
+  if not text:
+    return ''
+  # %5F is '_', see: http://www.w3schools.com/tags/ref_urlencode.asp
+  ret = "password=aidemo&username=AIHPDemo&reqid=create&speaker%%5Fid=%s" % id
+  if pitch is not None:
+    ret += "&pitch=" + _urlencodefloat(pitch)
+  if speed is not None:
+    ret += "&speed=" + _urlencodefloat(speed)
+  if gain is not None:
+    ret += "&gain=" + _urlencodefloat(gain)
+  if delay is not None:
+    ret += "&delay=" + _urlencodefloat(delay)
+  ret += "&text=" + urlencode(text)
+  return ret
+
+RESPONSE_BEGIN = "voiceFile="
+def resolveurl(data, session=requests):
+  """
+  @param  data  str
+  @param* session  requests
+  @return  unicode or None  url
+  """
+  try:
+    r = session.post(API, data=data, headers=HEADERS)
+    if r and r.ok and r.content and r.content.startswith(RESPONSE_BEGIN):
+      return r.content[len(RESPONSE_BEGIN):]
+  except Exception, e:
+    dwarn(e)
+
+if __name__ == '__main__':
+  text = u"こんにちは"
+  id = ENGINES['yukari']
+  data = createdata(id, text)
+  print data
+
+  url = resolveurl(data)
+  print url
 
 # EOF

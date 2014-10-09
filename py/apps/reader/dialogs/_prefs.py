@@ -1687,7 +1687,9 @@ class _TermTab(object):
 
   @memoizedproperty
   def underlineButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Underline the text modified by the Shared Dictionary if possible"))
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("Underline the text modified by the Shared Dictionary if possible"),
+        tr_("default")))
     ss = settings.global_()
     ret.setChecked(ss.isTermMarked())
     ret.toggled.connect(ss.setTermMarked)
