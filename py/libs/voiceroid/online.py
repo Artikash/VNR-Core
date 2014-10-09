@@ -66,6 +66,7 @@ VOICES = ( # unicode key -> int id
   Voice(996, 'shota',  'm', u"月読ショタ", "http://www.ah-soft.com/voiceroid/shota/"),
   Voice(993, 'taka',  'm',  u"鷹の爪 吉田くん", "http://www.ah-soft.com/voiceroid/taka/"),
 )
+VOICES = {it.key:it for it in VOICES}
 
 API = "http://voice.ai-j.jp/aitalk_2webapi.php"
 
@@ -76,15 +77,6 @@ HEADERS = {
 
 def _urlencodefloat(v):
   return ("%s" % v).replace('.', '%2E') if isinstance(v, float) else "%s" % v
-
-def getvoice(key):
-  """
-  @param  key  str
-  @return  Voice or None
-  """
-  for it in VOICES:
-    if it.key == key:
-      return it
 
 # Pitch: [0.5, 2.0], default 1.0
 # Speed: [0.5, 2.0], default 1.0
@@ -132,7 +124,7 @@ def resolveurl(data, session=requests):
 
 if __name__ == '__main__':
   text = u"こんにちは"
-  id = VOICES[0].id
+  id = VOICES['yukari'].id
   data = createdata(id, text)
   print data
 

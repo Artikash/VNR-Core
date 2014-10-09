@@ -99,6 +99,7 @@ VOICES = (
   # fr-CA
   Voice('chloe',     600, 4, 'fr', 'f', u'Chloé'),
 )
+VOICES = {it.key:it for it in VOICES}
 
 API = "http://dws.voicetext.jp/tomcat/servlet/vt"
 RESULT_URL = "http://dis.voicetext.jp/ASLCLCLVVS/JMEJSYGDCHMSMHSRKPJL/"
@@ -109,15 +110,6 @@ HEADERS = {
 }
 
 MAX_TEXT_LENGTH = 200
-
-def getvoice(key):
-  """
-  @param  key  str
-  @return  Voice or None
-  """
-  for it in VOICES:
-    if it.key == key:
-      return it
 
 # Pitch: [0.5, 2.0], default 1.0
 # Speed: [0.5, 2.0], default 1.0
@@ -153,7 +145,7 @@ def resolveurl(data, session=requests):
 
 if __name__ == '__main__':
   # HIKARI
-  v = VOICES[0]
+  v = VOICES['misaki']
   text = u"こんにちは"
   data = createdata(v.id, v.dic, text)
   print data

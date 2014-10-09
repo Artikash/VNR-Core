@@ -14,8 +14,6 @@ import voicetext.online as vtapi
 from mytr import my, mytr_
 import growl, rc
 
-ONLINE_ENGINES = 'baidu', 'google', 'bing'
-
 ## Voice engines ##
 
 class VoiceEngine(object):
@@ -308,7 +306,7 @@ class OnlineThread(QThread):
     if d.downloadCount > 0:
       self.abortSignalRequested.emit()
 
-    self.playRequested.emit(engine, text, language, time)
+    self.playRequested.emit(engine, text, language, now)
 
   def requestStop(self):
     d = self.__d
@@ -326,6 +324,8 @@ class OnlineEngine(VoiceEngine):
   volumeEnabled = True # bool
   speedEnabled = True # bool
 
+  ENGINES = 'baidu', 'google', 'bing'
+
   @staticmethod
   def create(key, **kwargs): # str -> OnlineEngine
     if key == BaiduEngine.key:
@@ -334,6 +334,10 @@ class OnlineEngine(VoiceEngine):
       return BingEngine(**kwargs)
     if key == GoogleEngine.key:
       return GoogleEngine(**kwargs)
+    if key in VoiceroidOnlineEngine.VOICES:
+      return VoiceroidOnlineEngine(key, **kwargs)
+    if key in VoiceTextOnlineEngine.VOICES:
+      return VoiceTextOnlineEngine(key, **kwargs)
 
   _thread = None
   @classmethod
@@ -354,6 +358,10 @@ class OnlineEngine(VoiceEngine):
     self.speed = speed # int
     self.pitch = pitch # int
     self.volume = volume # int
+
+  def setSpeed(self, v): self.speed = v
+  def setPitch(self, v): self.pitch = v
+  def setVolume(self, v): self.volume = v
 
   _valid = None
   def isValid(self):
@@ -445,8 +453,10 @@ class VoiceroidOnlineEngine(OnlineEngine):
   #key = 'voiceroid' # override
   #name = u'VOICEROID+' # override
 
+  VOICES = vrapi.VOICES
+
   def __init__(self, key, **kwargs):
-    voice = vrapi.getvoice(key)
+    voice = self.VOICES[key]
     self.voice = voice
     self.key = voice.key # override
     self.name = voice.name # override
@@ -464,8 +474,10 @@ class VoiceTextOnlineEngine(OnlineEngine):
   #key = 'voicetext' # override
   #name = u'VoiceText' # override
 
+  VOICES = vtapi.VOICES
+
   def __init__(self, key, **kwargs):
-    voice = vtapi.getvoice(key)
+    voice = self.VOICES[key]
     self.voice = voice
     self.key = voice.key # override
     self.name = voice.name # override
@@ -479,5 +491,9 @@ class VoiceTextOnlineEngine(OnlineEngine):
   def resolveUrl(self, url, session):
     """@override"""
     return vtapi.resolveurl(url, session)
+
+ONLINE_ENGINES = list(OnlineEngine.ENGINES)
+ONLINE_ENGINES.extend(VoiceroidOnlineEngine.VOICES.iterkeys())
+ONLINE_ENGINES.extend(VoiceTextOnlineEngine.VOICES.iterkeys())
 
 # EOF

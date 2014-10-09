@@ -13,7 +13,7 @@ def defaultapi(): return DEFAULT_API
 def setapi(url): global API; API = url
 
 #def url(text, language, encoding='UTF-8'):
-def url(text, language, encoding=None):
+def url(text, language, encoding=None): # encoding is not needed
   """
   @param  text  unicode  not None
   @param  language  str  not None
@@ -21,7 +21,8 @@ def url(text, language, encoding=None):
   @return  unicode or str not None
   """
   if language:
-    text = topercentencoding(text, encoding)
+    if encoding:
+      text = topercentencoding(text, encoding)
     if text:
       if encoding:
         return API + "?ie=%s&tl=%s&q=%s" % (encoding, language, text)
