@@ -236,6 +236,7 @@ class _UserTab(object):
   def resetUserColorButton(self):
     ret = QtWidgets.QPushButton(u"×") # ばつ
     ret.setMaximumWidth(20)
+    ret.setMaximumHeight(20)
     skqss.class_(ret, 'btn btn-default')
     ret.setToolTip(tr_("Reset"))
     ret.clicked.connect(self._resetUserColor)
@@ -993,8 +994,8 @@ class _TtsTab(object):
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.engineGroup)
     layout.addWidget(self.testGroup)
+    layout.addWidget(self.engineGroup)
     layout.addStretch()
     q.setLayout(layout)
 
@@ -1783,6 +1784,7 @@ class _TextTab(object):
     #ret = QtWidgets.QPushButton(tr_("Reset"))
     ret = QtWidgets.QPushButton(u"×") # ばつ
     ret.setMaximumWidth(20)
+    ret.setMaximumHeight(20)
     skqss.class_(ret, 'btn btn-default')
     ret.setToolTip(tr_("Reset") + ": " + defval)
     if sig:
@@ -1874,6 +1876,7 @@ class _TextTab(object):
     ret = QtWidgets.QPushButton(u"×") # ばつ
     skqss.class_(ret, 'btn btn-default')
     ret.setMaximumWidth(20)
+    ret.setMaximumHeight(20)
     ret.setToolTip(my.tr("Reset default color"))
     if sig:
       ret.clicked.connect(sig)
