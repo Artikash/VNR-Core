@@ -321,9 +321,6 @@ class OnlineEngine(VoiceEngine):
   language = '*' # override
   online = True # override
 
-  volumeEnabled = True # bool
-  speedEnabled = True # bool
-
   ENGINES = 'baidu', 'google', 'bing'
 
   @staticmethod
@@ -406,13 +403,10 @@ class OnlineEngine(VoiceEngine):
     @param  wmp  pywmp.WindowsMediaPlayer
     @return  bool
     """
-    if self.volumeEnabled and self.volume != 100:
-      wmp.setVolume(self.volume)
-    if self.speedEnabled and self.speed:
-      speed = pow(1.1, self.speed)
-      wmp.setSpeed(speed)
-    # Pitch is not supported by windows media player using COM
-    #if self.pitch:
+    speed = self.speed
+    speed = pow(1.1, speed) if speed else 1
+    wmp.setSpeed(speed)
+    wmp.setVolume(self.volume)
     return wmp.play(path)
 
 class GoogleEngine(OnlineEngine):
@@ -464,7 +458,9 @@ class VoiceroidOnlineEngine(OnlineEngine):
 
   def createUrl(self, text, language):
     """@override"""
-    return vrapi.createdata(self.voice.id, text, pitch=self.pitch)
+    pitch = self.pitch
+    pitch = pow(1.1, pitch) if pitch else 1 # 1.0 by default, 0.5 ~ 2.0
+    return vrapi.createdata(self.voice.id, text, pitch=pitch)
 
   def resolveUrl(self, url, session):
     """@override"""
@@ -486,7 +482,8 @@ class VoiceTextOnlineEngine(OnlineEngine):
 
   def createUrl(self, text, language):
     """@override"""
-    return vtapi.createdata(self.voice.id, self.voice.dic, text, pitch=self.pitch)
+    pitch = 100 + self.pitch * 10 # 100 by default
+    return vtapi.createdata(self.voice.id, self.voice.dic, text, pitch=pitch)
 
   def resolveUrl(self, url, session):
     """@override"""

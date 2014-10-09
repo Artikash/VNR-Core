@@ -147,7 +147,7 @@ if __name__ == '__main__':
   # HIKARI
   v = VOICES['misaki']
   text = u"こんにちは"
-  data = createdata(v.id, v.dic, text)
+  data = createdata(v.id, v.dic, text, pitch=200)
   print data
 
   url = resolveurl(data)
