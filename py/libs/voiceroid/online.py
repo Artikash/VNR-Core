@@ -47,10 +47,25 @@ import requests
 from sakurakit.skdebug import dwarn
 from sakurakit.skstr import urlencode
 
-ENGINES = { # unicode key -> int id
-  'yukari': 2,  # 結月ゆかり: http://www.ah-soft.com/voiceroid/yukari/index.html
-  'zunko': 994, # 東北ずん子: http://www.ah-soft.com/voiceroid/zunko/
-}
+class Voice:
+  __slots__ = 'id', 'key', 'gender', 'name', 'url'
+  def __init__(self, id, key, gender, name, url):
+    self.id = id # int
+    self.key = key # str
+    self.gender = gender
+    self.name = name # unicode
+    self.url = url # str
+
+VOICES = ( # unicode key -> int id
+  Voice(2,   'yukari', 'f', u"結月ゆかり", "http://www.ah-soft.com/voiceroid/yukari/"),
+  Voice(3,   'maki',   'f', u"民安ともえ", "http://www.ah-soft.com/voiceroid/maki/"),
+  Voice(994, 'zunko',  'f', u"東北ずん子", "http://www.ah-soft.com/voiceroid/zunko/"),
+  Voice(992, 'aoi',    'f', u"琴葉 葵",    "http://www.ah-soft.com/voiceroid/kotonoha/"),
+  Voice(999, 'akane',  'f', u"琴葉 茜",    "http://www.ah-soft.com/voiceroid/kotonoha/"),
+  Voice(995, 'ai',     'f', u"月読アイ",   "http://www.ah-soft.com/voiceroid/ai/"),
+  Voice(996, 'shota',  'm', u"月読ショタ", "http://www.ah-soft.com/voiceroid/shota/"),
+  Voice(993, 'taka',  'm',  u"鷹の爪 吉田くん", "http://www.ah-soft.com/voiceroid/taka/"),
+)
 
 API = "http://voice.ai-j.jp/aitalk_2webapi.php"
 
@@ -108,7 +123,7 @@ def resolveurl(data, session=requests):
 
 if __name__ == '__main__':
   text = u"こんにちは"
-  id = ENGINES['yukari']
+  id = VOICES[0].id
   data = createdata(id, text)
   print data
 
