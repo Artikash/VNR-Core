@@ -42,4 +42,66 @@
 # HONG (小紅, zht) Normal:  text=%E6%82%A8%E5%A5%BD%EF%BC%8C%E6%88%91%E6%98%AFVoiceText%E5%B0%8F%E7%B4%85%E3%80%82%0A%E5%85%B3%E4%BA%8E%E6%9C%AC%E5%BA%97%E7%9A%84%E8%90%A5%E4%B8%9A%E6%97%B6%E9%97%B4%E5%91%8A%E7%9F%A5&talkID=204&volume=100&speed=100&pitch=100&dict=0
 # HONG (小紅, zht) Micro:   text=%E6%82%A8%E5%A5%BD%EF%BC%8C%E6%88%91%E6%98%AFVoiceText%E5%B0%8F%E7%B4%85%E3%80%82%0A%E5%85%B3%E4%BA%8E%E6%9C%AC%E5%BA%97%E7%9A%84%E8%90%A5%E4%B8%9A%E6%97%B6%E9%97%B4%E5%91%8A%E7%9F%A5&talkID=254&volume=100&speed=100&pitch=100&dict=0
 
+if __name__ == '__main__':
+  import sys
+  sys.path.append('..')
+
+import requests
+from sakurakit.skdebug import dwarn
+from sakurakit.sknetio import topercentencoding
+
+ENGINES = { # unicode key -> int id
+  'yukari': 2,  # 結月ゆかり: http://www.ah-soft.com/voiceroid/yukari/index.html
+  'zunko': 994, # 東北ずん子: http://www.ah-soft.com/voiceroid/zunko/
+}
+
+API = "http://dws.voicetext.jp/tomcat/servlet/vt"
+RESULT_URL = "http://dis.voicetext.jp/ASLCLCLVVS/JMEJSYGDCHMSMHSRKPJL/"
+
+HEADERS = {
+  'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8', # UTF-8 is indispensable
+  'Referer': 'http://dws.voicetext.jp/tomcat/demonstration/top.html', # referrer is not needed, but used in case something is wrong
+}
+
+# Pitch: [0.5, 2.0], default 1.0
+# Speed: [0.5, 2.0], default 1.0
+def createdata(id, dic, text, encoding='utf8', pitch=100, speed=100, volume=100):
+  """
+  @param  id  int
+  @param  dic  int
+  @param  text  unicode
+  @param* encoding  str
+  @param* pitch  int
+  @param* speed  int
+  @param* volume  int
+  @return  unicode  post data
+  """
+  text = topercentencoding(text)
+  return "talkID=%s&dict=%s&pitch=%s&speed=%s&volume=%s&text=%s" % (id, dic, pitch, speed, volume, text) if text else ''
+
+RESPONSE_BEGIN = "comp="
+def resolveurl(data, session=requests):
+  """
+  @param  data  str
+  @param* session  requests
+  @return  unicode or None  url
+  """
+  try:
+    r = session.post(API, data=data, headers=HEADERS)
+    if r and r.ok and r.content and r.content.startswith(RESPONSE_BEGIN):
+      return RESULT_URL + r.content[len(RESPONSE_BEGIN):].rstrip()
+  except Exception, e:
+    dwarn(e)
+
+if __name__ == '__main__':
+  # HIKARI
+  id = 306
+  dic = 3
+  text = u"こんにちは"
+  data = createdata(id, dic, text)
+  print data
+
+  url = resolveurl(data)
+  print url
+
 # EOF
