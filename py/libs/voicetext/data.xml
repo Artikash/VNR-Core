@@ -6,9 +6,9 @@
     <resultpath>http://dws.voicetext.jp/ASLCLCLVVS/JMEJSYGDCHMSMHSRKPJL/</resultpath>
     <krpath>http://dws.voicetext.jp/tomcat/servlet/vt</krpath>
 
-    <countgetpath>http://dws.voicetext.jp/tomcat/servlet/get_count</countgetpath> 
-    <countputpath>http://dws.voicetext.jp/tomcat/servlet/put_count</countputpath> 
-    
+    <countgetpath>http://dws.voicetext.jp/tomcat/servlet/get_count</countgetpath>
+    <countputpath>http://dws.voicetext.jp/tomcat/servlet/put_count</countputpath>
+
     <countgetpath_micro>http://dws.voicetext.jp/tomcat/servlet/get_count_micro</countgetpath_micro>
     <countputpath_micro>http://dws.voicetext.jp/tomcat/servlet/put_count_micro</countputpath_micro>
   </apl_path>
@@ -285,7 +285,7 @@
     <speaker>305</speaker>
     <disp_text>カートリッジが正しくセットされておりません...</disp_text>
     <text>
-        <![CDATA[カートリッジが正しくセットされておりません。詳しくは操作説明書の67ページを御覧下さい。]]> 
+        <![CDATA[カートリッジが正しくセットされておりません。詳しくは操作説明書の67ページを御覧下さい。]]>
 　　</text>
   </osusume_data>
 
@@ -303,7 +303,7 @@
     <text>
         <![CDATA[つぎは、高田馬場、高田馬場、お出口は右側です。
 西武新宿線、地下鉄東西線はお乗り換えです。
-お客様にお願い致します。]]> 
+お客様にお願い致します。]]>
 　　</text>
   </osusume_data>
 
@@ -429,7 +429,7 @@
     <disp_text>女の子だからそんなこと言っちゃ駄目(*ﾉ▽ﾉ)ｲﾔﾝ</disp_text>
     <text>
         <![CDATA[女の子だからそんなこと言っちゃ駄目(*ﾉ▽ﾉ)ｲﾔﾝ
-泣きすぎで、化粧とれまくり。号(┬┬ω┬┬)泣 
+泣きすぎで、化粧とれまくり。号(┬┬ω┬┬)泣
 今日のご飯はラーメンでっす☆∩(^∇^)∩ﾊﾞﾝｻﾞｰｲ♪
 ダンディゾンの飯島さんシナモンロール売り切れ。(ﾟ◇ﾟ)~ガーン
 ]]>
@@ -466,7 +466,7 @@
     <speaker>305</speaker>
     <disp_text>カートリッジが正しくセットされておりません...</disp_text>
     <text>
-        <![CDATA[カートリッジが正しくセットされておりません。詳しくは操作説明書の67ページを御覧下さい。]]> 
+        <![CDATA[カートリッジが正しくセットされておりません。詳しくは操作説明書の67ページを御覧下さい。]]>
   </text>
   </osusume_data_micro>
   <osusume_data_micro>
