@@ -175,16 +175,11 @@ class _TtsManager(object):
   def getOnlineEngine(self, key):
     ret = self._onlineEngines.get(key)
     if not ret and key in _ttsman.ONLINE_ENGINES:
-      kw = {
-        'speed':self.getSpeed(key),
-        'volume':self.getVolume(key),
-      }
-      if key == 'baidu':
-        ret = _ttsman.BaiduEngine(**kw)
-      elif key == 'bing':
-        ret = _ttsman.BingEngine(**kw)
-      elif key == 'google':
-        ret = _ttsman.GoogleEngine(**kw)
+      ret = _ttsman.OnlineEngine.create(key,
+        speed=self.getSpeed(key),
+        pitch=self.getPitch(key),
+        volume=self.getVolume(key),
+      )
       if ret and ret.isValid():
         self._onlineEngines[key] = ret
         growl.msg(' '.join((
@@ -244,11 +239,10 @@ class _TtsManager(object):
       eng = self._sapiEngines.get(key)
       if eng:
         eng.setPitch(v)
-      # I haven't figure out how to change WMP pitch yet
-      #else:
-      #  eng = self._onlineEngines.get(key)
-      #  if eng:
-      #    eng.setPitch(v)
+      else:
+        eng = self._onlineEngines.get(key)
+        if eng:
+          eng.setPitch(v)
 
   def getVolume(self, key):
     """

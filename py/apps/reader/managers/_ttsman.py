@@ -204,6 +204,19 @@ class ZunkoEngine(VocalroidEngine):
 
 # Online engines
 
+class OnlineTask(object):
+  __slots__ = 'time', 'text', 'path', 'url', 'pitch', 'speed', 'volume'
+  def __init__(self, time=0, text="", path="", url="", pitch=0, speed=0, volume=100):
+    self.time = time # float
+    self.text = text # unicode  the text to speak
+    self.path = path # unicode  mp3 path
+    self.url = url # unicode  mp3 URL
+    self.pitch = pitch # int
+    self.speed = speed # int
+    self.volume = volume # int
+
+    # TODO: Add callback
+
 class _OnlineThread:
   def __init__(self):
     self.playing = False
@@ -224,37 +237,35 @@ class _OnlineThread:
     q.playRequested.connect(self.play, Qt.QueuedConnection)
     q.stopRequested.connect(self.stop, Qt.QueuedConnection)
 
-  def play(self, time, url, volume, speed): # float, unicode, int, int ->
-    if time < self.time: # outdate
+  def play(self, task): # OnlineTask ->
+    if task.time < self.time: # outdate
       return
-    if not url:
+    if not task.url:
       self.stop()
       return
 
-    path = rc.tts_path(url)
-    if os.path.exists(path):
-      self._playFile(path, volume, speed)
+    if os.path.exists(task.path):
+      self._playFile(task)
     else:
       self.downloadCount += 1
-      r = self.session.get(url)
+      r = self.session.get(task.url)
       if self.downloadCount > 0:
         self.downloadCount -= 1
       if r and r.content and len(r.content) > 500: # Minimum TTS file size is around 1k for MP3
-        if time < self.time: # outdate
+        if task.time < self.time: # outdate
           return
-        path = rc.tts_path(url)
-        if skfileio.writefile(path, r.content, mode='wb'):
-          if time < self.time: # outdate
+        if skfileio.writefile(task.path, r.content, mode='wb'):
+          if task.time < self.time: # outdate
             return
-          self._playFile(path, volume, speed)
+          self._playFile(task)
 
-  def _playFile(self, path, volume, speed): # unicode, int, int
-    if volume != 100:
-      self.wmp.setVolume(volume)
-    if speed:
-      speed = pow(1.1, speed)
+  def _playFile(self, task): # OnlineTask
+    if task.volume != 100:
+      self.wmp.setVolume(task.volume)
+    if task.speed:
+      speed = pow(1.1, task.speed)
       self.wmp.setSpeed(speed)
-    self.playing = self.wmp.play(path)
+    self.playing = self.wmp.play(task.path)
 
   def stop(self, time): # float ->
     if time < self.time: # outdate
@@ -264,7 +275,7 @@ class _OnlineThread:
       self.playing = False
 
 class OnlineThread(QThread):
-  playRequested = Signal(float, unicode, int, int) # time, url, volume, speed
+  playRequested = Signal(object) # OnlineTask
   stopRequested = Signal(float) # time
   abortSignal = Signal()
   abortSignalRequested = Signal()
@@ -286,13 +297,13 @@ class OnlineThread(QThread):
 
   # Actions
 
-  def requestPlay(self, url, volume=100, speed=0): # unicode ->
+  def requestPlay(self, task): # OnlineTask ->
     d = self.__d
     now = time()
-    d.time = now
+    d.time = task.time = now
     if d.downloadCount > 0:
       self.abortSignalRequested.emit()
-    self.playRequested.emit(now, url, volume, speed)
+    self.playRequested.emit(task)
 
   def requestStop(self):
     d = self.__d
@@ -305,8 +316,16 @@ class OnlineThread(QThread):
 
 class OnlineEngine(VoiceEngine):
   language = '*' # override
-
   online = True # override
+
+  @staticmethod
+  def create(key, **kwargs): # str -> OnlineEngine
+    if key == BaiduEngine.key:
+      return BaiduEngine(**kwargs)
+    if key == BingEngine.key:
+      return BingEngine(**kwargs)
+    if key == GoogleEngine.key:
+      return GoogleEngine(**kwargs)
 
   _thread = None
   @classmethod
@@ -322,9 +341,10 @@ class OnlineEngine(VoiceEngine):
       growl.msg(my.tr("Load {0} for TTS").format("Windows Media Player"))
     return cls._thread
 
-  def __init__(self, volume=100, speed=0):
+  def __init__(self, volume=100, speed=0, pitch=0):
     #super(OnlineEngine, self).__init__()
     self.speed = speed # int
+    self.pitch = pitch # int
     self.volume = volume # int
 
   _valid = None
@@ -342,7 +362,13 @@ class OnlineEngine(VoiceEngine):
     else:
       language = language[:2] if language else 'ja'
       url = self.createUrl(text, language)
-      OnlineEngine.thread().requestPlay(url, volume=self.volume, speed=self.speed)
+      OnlineEngine.thread().requestPlay(OnlineTask(
+          text=text,
+          url=url,
+          path=rc.tts_path(url),
+          volume=self.volume,
+          speed=self.speed,
+          pitch=self.pitch))
 
   def stop(self):
     """@reimp@"""
@@ -383,5 +409,21 @@ class BingEngine(OnlineEngine):
     super(BingEngine, self).__init__(*args, **kwargs)
     import bingman
     self.createUrl = bingman.manager().tts # override
+
+class VoiceroidOnlineEngine(OnlineEngine):
+  key = 'voiceroid' # override
+  name = u'VOICEROID+' # override
+
+  def __init__(self, *args, **kwargs):
+    super(VoiceroidOnlineEngine, self).__init__(*args, **kwargs)
+
+  # CHECKPOINT: Change the callback function
+  def fetchUrl(self, threaddata, text, language): # _OnlineThread, unicode, str -> unicode
+    """@override"""
+    pass
+  def playFile(self, threaddata):
+    """@override"""
+    pass
+
 
 # EOF
