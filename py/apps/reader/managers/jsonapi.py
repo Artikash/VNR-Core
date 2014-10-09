@@ -60,12 +60,17 @@ def gameinfo(start=0, count=100, sort=None, reverse=None, filters=None):
       error = False
       searchRe = searchDate = searchId = None
       search = params.get('search') # unicode
+      searchLargeSize = None # bool or None
       if search:
         if (search.startswith('20') or search.startswith('19')) and search.isdigit():
           searchDate = search
         elif search.startswith('#') and search[1:].isdigit():
           searchId = int(search[1:])
-        if not searchDate and not searchId:
+        elif search == 'GB':
+          searchLargeSize = True
+        elif search == 'MB':
+          searchLargeSize = False
+        if not searchDate and not searchId and searchLargeSize is None:
           try: searchRe = re.compile(search, re.IGNORECASE)
           except Exception, e:
             dwarn(e)
@@ -90,12 +95,20 @@ def gameinfo(start=0, count=100, sort=None, reverse=None, filters=None):
         if tags:
           tags = map(unicode.lower, tags)
         for it in data:
-          dt = None
+          if searchLargeSize is not None:
+            if not it.fileSize0 or it.fileSize0 < 1024 * 1024: continue
+            if searchLargeSize:
+              if it.fileSize0 < 1024 * 1024 * 1024: continue
+            else:
+              if it.fileSize0 >= 1024 * 1024 * 1024: continue
+
           if otome is not None and otome != it.otome0: continue
           if okazu is not None and okazu != it.okazu0: continue
           if local is not None and local != it.local: continue
           if upcoming and not it.upcoming0: continue
           if recent and not it.recent0: continue
+
+          dt = None
           if year or month:
             if not it.dateObject0: continue
             dt = it.dateObject0

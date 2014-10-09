@@ -70,15 +70,6 @@ GAME_HAML = Haml '''\
         .badge.badge-success(title="得点×点数") #{g.scapeMedian}x#{g.scapeCount}
       :if scoreColor === 'b'
         .badge.badge-inverse(title="得点×点数") #{g.scapeMedian}x#{g.scapeCount}
-    :if sizeColor
-      :if sizeColor === 'o'
-        .badge.badge-warning(title="容量") #{sizeTag}
-      :if sizeColor === 'r'
-        .badge.badge-important(title="容量") #{sizeTag}
-      :if sizeColor === 'g'
-        .badge.badge-success(title="容量") #{sizeTag}
-      :if sizeColor === 'b'
-        .badge.badge-inverse(title="容量") #{sizeTag}
     :if g.tags
       :for it in g.tags.split(',')
         .label(title="#{it}") = it
@@ -86,6 +77,15 @@ GAME_HAML = Haml '''\
       .label(data-text="#{g.moment.format('YYYYMM')}" title="発売日") = g.moment.format('M/D/YYYY')
     :if g.date > CURRENT_TIME
       .label.label-important(title="未発売") 未発売
+    :if sizeColor
+      :if sizeColor === 'o'
+        .label.label-warning(title="容量GB" data-text="GB") #{sizeTag}
+      :if sizeColor === 'r'
+        .label.label-important(title="容量GB" data-text="GB") #{sizeTag}
+      :if sizeColor === 'g'
+        .label.label-success(title="容量GB" data-text="GB") #{sizeTag}
+      :if sizeColor === 'b'
+        .label.label-inverse(title="容量MB" data-text="MB") #{sizeTag}
   %img.img-rounded(src="#{g.imageUrl}" title="#{tip}")
   .footer
     :if g.artists
@@ -258,7 +258,7 @@ class GameManager
       false
     $('#keyword .label').click ->
       #if @classList.contains cls
-      self.toggleKeyword  $.trim @innerHTML
+      self.toggleKeyword $.trim @innerHTML
       @classList.toggle 'label-info'
       self.refresh()
       false
