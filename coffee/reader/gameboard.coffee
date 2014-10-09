@@ -70,6 +70,15 @@ GAME_HAML = Haml '''\
         .badge.badge-success(title="得点×点数") #{g.scapeMedian}x#{g.scapeCount}
       :if scoreColor === 'b'
         .badge.badge-inverse(title="得点×点数") #{g.scapeMedian}x#{g.scapeCount}
+    :if sizeColor
+      :if sizeColor === 'o'
+        .badge.badge-warning(title="容量") #{sizeTag}
+      :if sizeColor === 'r'
+        .badge.badge-important(title="容量") #{sizeTag}
+      :if sizeColor === 'g'
+        .badge.badge-success(title="容量") #{sizeTag}
+      :if sizeColor === 'b'
+        .badge.badge-inverse(title="容量") #{sizeTag}
     :if g.tags
       :for it in g.tags.split(',')
         .label(title="#{it}") = it
@@ -195,7 +204,10 @@ class GameManager
       @options.reverse
       if @filters then JSON.stringify @filters else ''
     ]
-    g.moment = moment(g.date * 1000) for g in l if l.length
+    if l.length
+      for g in l
+        g.moment = moment(g.date * 1000)
+        g.fileSize = Math.floor(g.fileSize / (1024 * 1024)) if g.fileSize > 0 # fileSize is in MB
     l
 
   ## Tags ##
@@ -495,6 +507,20 @@ class GameManager
       else 'o' # orange
     )
 
+    sizeColor = (
+      unless g.fileSize then '' # gray
+      else if g.fileSize < 1024 then 'b' # black
+      else if g.fileSize < 2048 then 'g' # green
+      else if g.fileSize < 4048 then 'r' # red
+      else 'o' # orange
+    )
+
+    sizeTag = (
+      unless g.fileSize then ''
+      else if g.fileSize < 1024 then g.fileSize + 'M'
+      else Math.round(g.fileSize / 1024 * 100)/100 + 'G'
+    )
+
     #labels = if g.brand then g.brand.split ',' else []
     # I don't know why, but zh font looked better than ja
     #date = if g.date then g.moment 'M/D/YYYY' else ''
@@ -505,6 +531,8 @@ class GameManager
       width: @itemWidth
       scoreColor: scoreColor
       visitColor: visitColor
+      sizeColor: sizeColor
+      sizeTag: sizeTag
 
     c = ['game', 'new']
     #c.push 'local' if g.local
