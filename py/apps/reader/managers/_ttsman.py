@@ -9,6 +9,8 @@ from PySide.QtCore import QThread, Signal, Qt
 from sakurakit import skfileio, skthreads, skwincom
 from sakurakit.sktr import tr_
 from zhszht.zhszht import zht2zhs
+import voiceroid.online as vrapi
+import voicetext.online as vtapi
 from mytr import my, mytr_
 import growl, rc
 
@@ -132,7 +134,7 @@ class VocalroidEngine(OfflineEngine):
     self._engine = None # VocalroidController
     self._speaking = False
     self.voiceroid = voiceroid # Voiceroid
-    self.key = voiceroid.key
+    self.key = voiceroid.key + '.offline'
     self.name = voiceroid.name
 
   def getPath(self):
@@ -438,27 +440,44 @@ class BingEngine(OnlineEngine):
     import bingman
     self.createUrl = bingman.manager().tts # override
 
-VOICEROID_ENGINES = {
-  'voiceroid.zunko': u'東北ずん子', # http://www.ah-soft.com/voiceroid/zunko/
-}
 class VoiceroidOnlineEngine(OnlineEngine):
   language = 'ja' # override
   #key = 'voiceroid' # override
   #name = u'VOICEROID+' # override
 
-  speedEnabled = False # override  handle speed in voiceroid
-
-  def __init__(self, key, name, **kwargs):
+  def __init__(self, key, **kwargs):
+    voice = vrapi.getvoice(key)
+    self.voice = voice
+    self.key = voice.key # override
+    self.name = voice.name # override
     super(VoiceroidOnlineEngine, self).__init__(**kwargs)
-    self.key = key # override
-    self.name = name # override
 
   def createUrl(self, text, language):
     """@override"""
-    pass
+    return vrapi.createdata(self.voice.id, text, pitch=self.pitch)
 
   def resolveUrl(self, url, session):
     """@override"""
-    pass
+    return vrapi.resolveurl(url, session)
+
+class VoiceTextOnlineEngine(OnlineEngine):
+  #key = 'voicetext' # override
+  #name = u'VoiceText' # override
+
+  def __init__(self, key, **kwargs):
+    voice = vtapi.getvoice(key)
+    self.voice = voice
+    self.key = voice.key # override
+    self.name = voice.name # override
+    self.language = voice.language # override
+    super(VoiceTextOnlineEngine, self).__init__(**kwargs)
+
+  def createUrl(self, text, language):
+    """@override"""
+    return vtapi.createdata(self.voice.id, self.voice.dic, text, pitch=self.pitch)
+
+  def resolveUrl(self, url, session):
+    """@override"""
+    return vtapi.resolveurl(url, session)
 
 # EOF

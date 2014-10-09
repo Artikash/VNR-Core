@@ -63,7 +63,7 @@ class VocalroidEngine(VoiceEngine):
     self._engine = None # VocalroidController
     self._speaking = False
     self.voiceroid = voiceroid # Voiceroid
-    self.key = voiceroid.key
+    self.key = voiceroid.key + '.offline'
     self.name = voiceroid.name
 
   def getPath(self):

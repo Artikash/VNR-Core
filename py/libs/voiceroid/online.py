@@ -77,6 +77,15 @@ HEADERS = {
 def _urlencodefloat(v):
   return ("%s" % v).replace('.', '%2E') if isinstance(v, float) else "%s" % v
 
+def getvoice(key):
+  """
+  @param  key  str
+  @return  Voice or None
+  """
+  for it in VOICES:
+    if it.key == key:
+      return it
+
 # Pitch: [0.5, 2.0], default 1.0
 # Speed: [0.5, 2.0], default 1.0
 def createdata(id, text, encoding='utf8', pitch=1, speed=1, gain=None, delay=None):

@@ -48,7 +48,7 @@ class _TtsManager(object):
     @return  unicode
     """
     ret = text.replace(u'…', '.') # てんてんてん
-    if key == 'zunko':
+    if key == 'zunko.offline':
       ret = textutil.repair_zunko_text(ret)
     return ret
 
@@ -304,9 +304,9 @@ class _TtsManager(object):
     """
     if not key:
       return None
-    if key == 'zunko':
+    if key == 'zunko.offline':
       return self.zunkoEngine
-    if key == 'yukari':
+    if key == 'yukari.offline':
       return self.yukariEngine
     return self.getOnlineEngine(key) or self.getSapiEngine(key)
 

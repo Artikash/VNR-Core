@@ -110,6 +110,15 @@ HEADERS = {
 
 MAX_TEXT_LENGTH = 200
 
+def getvoice(key):
+  """
+  @param  key  str
+  @return  Voice or None
+  """
+  for it in VOICES:
+    if it.key == key:
+      return it
+
 # Pitch: [0.5, 2.0], default 1.0
 # Speed: [0.5, 2.0], default 1.0
 def createdata(id, dic, text, encoding='utf8', pitch=100, speed=100, volume=100):
