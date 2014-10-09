@@ -1090,7 +1090,7 @@ class _TtsTab(object):
     grid.addWidget(self.disableButton, r, 0)
 
     r += 1
-    grid.addWidget(QtWidgets.QLabel("%s (%s):" % (tr_("online"), mytr_("multilingual")), r, 0)
+    grid.addWidget(QtWidgets.QLabel("%s (%s):" % (mytr_("Multilingual"), tr_("online"))), r, 0)
 
     # Google
     for k,b in ((
@@ -1153,7 +1153,7 @@ class _TtsTab(object):
 
     # VOICEROID
     r += 1
-    grid.addWidget(QtWidgets.QLabel("VOICEROID+ (%s):") % tr_("offline"), r, 0)
+    grid.addWidget(QtWidgets.QLabel("VOICEROID+ (%s):" % tr_("offline")), r, 0)
 
     for k,b in ((
         ('yukari', self.yukariButton),
@@ -1191,13 +1191,13 @@ class _TtsTab(object):
 
   @memoizedproperty
   def yukariButton(self):
-    ret = QtWidgets.QRadioButton(u"結月ゆかり (♀)")
+    ret = QtWidgets.QRadioButton(u"結月ゆかり (♀, %s)" % tr_("ja"))
     ret.toggled.connect(self._saveEngine)
     return ret
 
   @memoizedproperty
   def zunkoButton(self):
-    ret = QtWidgets.QRadioButton(u"東北ずん子 (♀)")
+    ret = QtWidgets.QRadioButton(u"東北ずん子 (♀, %s)" % tr_("ja"))
     ret.toggled.connect(self._saveEngine)
     return ret
 
