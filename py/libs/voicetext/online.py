@@ -5,6 +5,7 @@
 # API: http://dws.voicetext.jp/tomcat/data.xml
 #
 # See: http://voicetext.jp/
+#
 # Example:
 #
 # HIKARI (ja) Normal:
@@ -50,10 +51,54 @@ import requests
 from sakurakit.skdebug import dwarn
 from sakurakit.sknetio import topercentencoding
 
-ENGINES = { # unicode key -> int id
-  'yukari': 2,  # 結月ゆかり: http://www.ah-soft.com/voiceroid/yukari/index.html
-  'zunko': 994, # 東北ずん子: http://www.ah-soft.com/voiceroid/zunko/
-}
+class Voice:
+  __slots__ = 'key', 'id', 'dic', 'language', 'gender', 'name'
+  def __init__(self, key, id, dic, language, gender, name):
+    self.id = id # int
+    self.microId = id + 50 # int
+    self.dic = dic # int
+    self.key = key # str
+    self.language = language # str
+    self.gender = gender # 'f' or 'm'
+    self.name = name # unicode
+
+#See: http://dws.voicetext.jp/tomcat/data.xml
+VOICES = (
+  # ja
+  Voice('hikari',    306, 3, 'ja', 'f', u'ヒカリ'),
+  Voice('sayaka',    304, 3, 'ja', 'f', u'サヤカ'),
+  Voice('haruka',    303, 3, 'ja', 'f', u'ハルカ'),
+  Voice('misaki',    302, 3, 'ja', 'f', u'ミサカ'),
+  Voice('takeru',    307, 3, 'ja', 'm', u'タケル'),
+  Voice('ryo',       305, 3, 'ja', 'm', u'リョウ'),
+  Voice('show',      301, 3, 'ja', 'm', u'ショウ'),
+
+  # zh-TW
+  Voice('hong',      202, 2, 'zh',  'f', u'小紅'),
+  Voice('qiang',     203, 2, 'zh',  'm', u'小强'),
+
+  # ko
+
+  Voice('hyeryun',   10,  0, 'ko',  'f', u'혜련'),
+  Voice('jihun',     3,   0, 'ko',  'f', u'小紅'),
+
+  # en-US
+  Voice('julie',     103, 1, 'en',  'f', u'Julie'),
+  Voice('kate',      100, 1, 'en',  'f', u'Kate'),
+  Voice('james',     104, 1, 'en',  'm', u'James'),
+  Voice('paul',      101, 1, 'en',  'm', u'Paul'),
+
+  # en
+  Voice('bridget',   500, 1, 'en',  'f', u'Bridget'),
+  Voice('hugh',      501, 2, 'en',  'm', u'Hugh'),
+
+  # es
+  Voice('violeta',   400, 4, 'es', 'f', u'Violeta'),
+  Voice('francisco', 401, 4, 'es', 'm', u'Francisco'),
+
+  # fr-CA
+  Voice('chloe',     600, 4, 'fr', 'f', u'Chloé'),
+)
 
 API = "http://dws.voicetext.jp/tomcat/servlet/vt"
 RESULT_URL = "http://dis.voicetext.jp/ASLCLCLVVS/JMEJSYGDCHMSMHSRKPJL/"
@@ -62,6 +107,8 @@ HEADERS = {
   'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8', # UTF-8 is indispensable
   'Referer': 'http://dws.voicetext.jp/tomcat/demonstration/top.html', # referrer is not needed, but used in case something is wrong
 }
+
+MAX_TEXT_LENGTH = 200
 
 # Pitch: [0.5, 2.0], default 1.0
 # Speed: [0.5, 2.0], default 1.0
@@ -76,6 +123,8 @@ def createdata(id, dic, text, encoding='utf8', pitch=100, speed=100, volume=100)
   @param* volume  int
   @return  unicode  post data
   """
+  if len(text) > MAX_TEXT_LENGTH:
+    text = text[:MAX_TEXT_LENGTH]
   text = topercentencoding(text)
   return "talkID=%s&dict=%s&pitch=%s&speed=%s&volume=%s&text=%s" % (id, dic, pitch, speed, volume, text) if text else ''
 
@@ -95,10 +144,9 @@ def resolveurl(data, session=requests):
 
 if __name__ == '__main__':
   # HIKARI
-  id = 306
-  dic = 3
+  v = VOICES[0]
   text = u"こんにちは"
-  data = createdata(id, dic, text)
+  data = createdata(v.id, v.dic, text)
   print data
 
   url = resolveurl(data)

@@ -52,7 +52,7 @@ class Voice:
   def __init__(self, id, key, gender, name, url):
     self.id = id # int
     self.key = key # str
-    self.gender = gender
+    self.gender = gender # 'f' or 'm'
     self.name = name # unicode
     self.url = url # str
 
