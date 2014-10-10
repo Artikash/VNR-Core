@@ -19,8 +19,11 @@ class _ReadLocker():
     self.locked = False
   def __enter__(self):
     self.locked = READ_MUTEX.tryLock()
-    if not self.locked:
+    if self.locked:
+      return self
+    else:
       dwarn("failed to lock mutex due to contention")
+      return
   def __exit__(self, *err):
     if self.locked:
       READ_MUTEX.unlock()
