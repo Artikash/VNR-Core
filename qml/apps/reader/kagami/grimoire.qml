@@ -165,6 +165,10 @@ Item { id: root_
 
   // - Private -
 
+  function removeHtmlTags(text) { // string ->  string  remove HTML tags
+    return text.replace(/<[0-9a-zA-Z: "/:=-]+>/g, '')
+  }
+
   //property int _FADE_DURATION: 400
 
   property real _zoomFactor: zoomFactor * globalZoomFactor // actual zoom factor
@@ -1371,7 +1375,7 @@ Item { id: root_
       onTriggered: {
         var item = listModel_.get(popupIndex())
         if (item && item.text)
-          clipboardPlugin_.text = item.text
+          clipboardPlugin_.text = root_.removeHtmlTags(item.text)
       }
     }
 

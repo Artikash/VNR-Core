@@ -396,7 +396,9 @@ class _TextManager(object):
     @param* language  str
     """
     if settings.global_().copiesGameSubtitle():
-      skclip.settext(sub)
+      sub = termman.manager().removeMarks(sub)
+      if sub:
+        skclip.settext(sub)
 
   #def _maximumDataSize(self):
   #  return defs.MAX_REPEAT_DATA_LENGTH if self.removesRepeat else defs.MAX_DATA_LENGTH
