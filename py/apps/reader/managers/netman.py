@@ -232,7 +232,7 @@ class _NetworkManager(object):
 
   def queryUser(self, userName, password):
     assert userName and password, "missing user name or password "
-    params = {'ver':self.version, 'login':userName, 'password':password}
+    params = {'ver':self.version, 'login':userName, 'password':password, 'app':'reader'}
     try:
       r = self.qtSession.get(XML_API + '/user/query', params=params, headers=GZIP_HEADERS)
       if r.ok: #and _response_is_xml(r):
