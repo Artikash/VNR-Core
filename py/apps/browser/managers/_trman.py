@@ -13,6 +13,7 @@ import requests
 from functools import partial
 from itertools import ifilter, imap
 from time import time
+from PySide.QtCore import QMutex
 from cconv.cconv import wide2thin, wide2thin_digit
 from zhszht.zhszht import zhs2zht, zht2zhs
 from sakurakit import skthreads
@@ -491,6 +492,7 @@ class FastAITTranslator(OfflineMachineTranslator):
   def __init__(self, **kwargs):
     super(FastAITTranslator, self).__init__(**kwargs)
     self._warned = False # bool
+    self._mutex = QMutex()
 
   @memoizedproperty
   def jazhsEngine(self):
@@ -606,7 +608,8 @@ class FastAITTranslator(OfflineMachineTranslator):
       repl = self._escapeText(text, to=to)
       if repl:
         try:
-          repl = self._translate(repl, engine.translate, async=async, to=to, fr=fr)
+          repl = self._translate(repl, partial(self._synchronizedTranslate, engine.translate),
+              async=async, to=to, fr=fr)
           if repl:
             #sub = self._applySentenceTransformation(sub)
             #sub = self.__fastait_repl_after(sub)
@@ -623,6 +626,12 @@ class FastAITTranslator(OfflineMachineTranslator):
               growl.error(i18n.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(i18n.tr("FastAIT")),
                   async=async)
     return None, None, None
+
+  def _synchronizedTranslate(self, tr, *args, **kwargs):
+    self._mutex.lock()
+    ret = tr(*args, **kwargs)
+    self._mutex.unlock()
+    return ret
 
 class DreyeTranslator(OfflineMachineTranslator):
   key = 'dreye' # override

@@ -15,6 +15,7 @@ import requests
 from functools import partial
 from itertools import ifilter, imap
 from time import time
+from PySide.QtCore import QMutex
 from cconv.cconv import wide2thin, wide2thin_digit
 from zhszht.zhszht import zhs2zht, zht2zhs
 from sakurakit import skstr, skthreads, sktypes
@@ -827,6 +828,7 @@ class FastAITTranslator(OfflineMachineTranslator):
   def __init__(self, **kwargs):
     super(FastAITTranslator, self).__init__(**kwargs)
     self._warned = False # bool
+    self._mutex = QMutex()
 
   @memoizedproperty
   def jazhsEngine(self):
@@ -956,7 +958,8 @@ class FastAITTranslator(OfflineMachineTranslator):
   }))
   def translate(self, text, to='zhs', fr='ja', async=False, emit=False, **kwargs):
     """@reimp"""
-    async = True # force async since FastAIT is randomly slow
+    #async = True # force async since FastAIT is randomly slow. but async would cause synchronization error
+    async = True
     engine = self.getEngine(to=to, fr=fr)
     if engine:
       if emit:
@@ -971,7 +974,7 @@ class FastAITTranslator(OfflineMachineTranslator):
           if fr == 'ja':
             repl = self.__ja_repl_before(repl)
           repl = self._translate(emit, repl,
-              engine.translate,
+              partial(self._synchronizedTranslate, engine.translate),
               to, fr, async)
           if repl:
             if fr == 'ja':
@@ -988,6 +991,12 @@ class FastAITTranslator(OfflineMachineTranslator):
               growl.error(my.tr("Cannot load {0} for machine translation. Please check Preferences/Location").format(mytr_("FastAIT")),
                   async=async)
     return None, None, None
+
+  def _synchronizedTranslate(self, tr, *args, **kwargs):
+    self._mutex.lock()
+    ret = tr(*args, **kwargs)
+    self._mutex.unlock()
+    return ret
 
 class DreyeTranslator(OfflineMachineTranslator):
   key = 'dreye' # override
