@@ -44,8 +44,50 @@ Item { id: root_
     case 'google': return "Google"
     case 'bing': return My.tr("Bing")
     case 'baidu': return My.tr("Baidu")
-    case 'yukari': return "結月ゆかり"
-    case 'zunko': return "東北ずん子"
+
+    case 'yukarioffline': return "結月ゆかり(♀)"
+    case 'zunkooffline': return "東北ずん子(♀)"
+
+    // Voiceroid
+    case 'yukari': return "結月ゆかり(♀)"
+    case 'maki':   return "民安ともえ(♀)"
+    case 'zunko':  return "東北ずん子(♀)"
+    case 'aoi':    return "琴葉 葵(♀)"
+    case 'akane':  return "琴葉 茜(♀)"
+    case 'ai':     return "月読アイ(♀)"
+    case 'shota':  return "月読ショタ(♂)"
+    case 'taka':   return "鷹の爪 吉田くん(♂)"
+
+    // VoiceText
+
+    case 'hikari': return "ヒカリ(ja,♀)"
+    case 'sayaka': return "サヤカ(ja,♀)"
+    case 'haruka': return "ハルカ(ja,♀)"
+    case 'misaki': return "ミサカ(ja,♀)"
+    case 'takeru': return "タケル(ja,♂)"
+    case 'ryo':    return "リョウ(ja,♂)"
+    case 'show':   return "ショウ(ja,♂)"
+
+    case 'hong':   return "小紅(zh,♀)"
+    case 'qiang':  return "小强(zh,♂)"
+
+    case 'hyeryun':return "혜련(ko,♀)"
+    case 'jihun':  return "지훈(ko,♂)"
+
+    case 'julie':  return "Julie(en-US,♀)"
+    case 'kate':   return "Kate(en-US,♀)"
+    case 'james':  return "James(en-US,♂)"
+    case 'paul':   return "Paul(en-US,♂)"
+
+    case 'bridget': return "Bridget(en-GB,♀)"
+    case 'hugh':    return "Hugh(en-GB,♂)"
+
+
+    case 'violeta':   return "Violeta(es,♀)"
+    case 'francisco': return "Francisco(es,♂)"
+
+    case 'chloe':     return "Chloé(fr-CA,♀)"
+
     default: return key
     }
   }

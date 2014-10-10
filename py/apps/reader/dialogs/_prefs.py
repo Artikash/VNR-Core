@@ -1375,6 +1375,8 @@ class _TtsTab(object):
         tr_("ja"),
       )
       b = QtWidgets.QRadioButton(text)
+      color = 'blue' if it.gender == 'm' else 'purple'
+      b.setStyleSheet("QRadioButton{color:%s}" % color)
       b.toggled.connect(self._saveEngine)
       ret.append((it.key, b))
     return ret
@@ -1392,6 +1394,8 @@ class _TtsTab(object):
         i18n.language_name2(it.language),
       )
       b = QtWidgets.QRadioButton(text)
+      color = 'blue' if it.gender == 'm' else 'purple'
+      b.setStyleSheet("QRadioButton{color:%s}" % color)
       b.toggled.connect(self._saveEngine)
       ret.append((it.key, b))
     return ret

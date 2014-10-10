@@ -63,42 +63,42 @@ class Voice:
     self.gender = gender # 'f' or 'm'
     self.name = name # unicode
 
-#See: http://dws.voicetext.jp/tomcat/data.xml
+# See: http://dws.voicetext.jp/tomcat/data.xml
 VOICES = (
   # ja
-  Voice('hikari',    306, 3, 'ja', 'f', u'ヒカリ'),
-  Voice('sayaka',    304, 3, 'ja', 'f', u'サヤカ'),
-  Voice('haruka',    303, 3, 'ja', 'f', u'ハルカ'),
-  Voice('misaki',    302, 3, 'ja', 'f', u'ミサカ'),
-  Voice('takeru',    307, 3, 'ja', 'm', u'タケル'),
-  Voice('ryo',       305, 3, 'ja', 'm', u'リョウ'),
-  Voice('show',      301, 3, 'ja', 'm', u'ショウ'),
+  Voice('hikari',    306, 3, 'ja', 'f', u"ヒカリ"),
+  Voice('sayaka',    304, 3, 'ja', 'f', u"サヤカ"),
+  Voice('haruka',    303, 3, 'ja', 'f', u"ハルカ"),
+  Voice('misaki',    302, 3, 'ja', 'f', u"ミサカ"),
+  Voice('takeru',    307, 3, 'ja', 'm', u"タケル"),
+  Voice('ryo',       305, 3, 'ja', 'm', u"リョウ"),
+  Voice('show',      301, 3, 'ja', 'm', u"ショウ"),
 
   # zh-TW
-  Voice('hong',      202, 2, 'zh',  'f', u'小紅'),
-  Voice('qiang',     203, 2, 'zh',  'm', u'小强'),
+  Voice('hong',      202, 2, 'zh',  'f', u"小紅"),
+  Voice('qiang',     203, 2, 'zh',  'm', u"小强"),
 
   # ko
 
-  Voice('hyeryun',   10,  0, 'ko',  'f', u'혜련'),
-  Voice('jihun',     3,   0, 'ko',  'f', u'小紅'),
+  Voice('hyeryun',   10,  0, 'ko',  'f', u"혜련"),
+  Voice('jihun',     3,   0, 'ko',  'm', u"지훈"),
 
   # en-US
-  Voice('julie',     103, 1, 'en',  'f', u'Julie'),
-  Voice('kate',      100, 1, 'en',  'f', u'Kate'),
-  Voice('james',     104, 1, 'en',  'm', u'James'),
-  Voice('paul',      101, 1, 'en',  'm', u'Paul'),
+  Voice('julie',     103, 1, 'en',  'f', u"Julie"),
+  Voice('kate',      100, 1, 'en',  'f', u"Kate"),
+  Voice('james',     104, 1, 'en',  'm', u"James"),
+  Voice('paul',      101, 1, 'en',  'm', u"Paul"),
 
   # en
-  Voice('bridget',   500, 1, 'en',  'f', u'Bridget'),
-  Voice('hugh',      501, 2, 'en',  'm', u'Hugh'),
+  Voice('bridget',   500, 1, 'en',  'f', u"Bridget"),
+  Voice('hugh',      501, 2, 'en',  'm', u"Hugh"),
 
   # es
-  Voice('violeta',   400, 4, 'es', 'f', u'Violeta'),
-  Voice('francisco', 401, 4, 'es', 'm', u'Francisco'),
+  Voice('violeta',   400, 4, 'es', 'f', u"Violeta"),
+  Voice('francisco', 401, 4, 'es', 'm', u"Francisco"),
 
   # fr-CA
-  Voice('chloe',     600, 4, 'fr', 'f', u'Chloé'),
+  Voice('chloe',     600, 4, 'fr', 'f', u"Chloé"),
 )
 VOICES = OrderedDict(((it.key,it) for it in VOICES))
 
