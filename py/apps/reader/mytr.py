@@ -79,7 +79,7 @@ class reader(QObject):
       self.tr("Speech"),
       self.tr("Embedded"),
       self.tr("Speak"),
-      self.tr("Text-to-speech"),
+      self.tr("Text-to-speech"), self.tr("Text-To-Speech"),
 
       self.tr("Context count"),
       self.tr("Previous context"),
@@ -132,6 +132,8 @@ class reader(QObject):
       self.tr("built-in"),
 
       self.tr("Shortcuts"),
+
+      self.tr("Multilingual"), self.tr("multilingual"),
 
       self.tr("Need to install"),
       self.tr("need to install"),

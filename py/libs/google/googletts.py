@@ -4,7 +4,7 @@
 #
 # Example: http://translate.google.com/translate_tts?tl=ja&q=hello
 
-import urllib
+from sakurakit.sknetio import topercentencoding
 
 DEFAULT_API = "http://translate.google.com/translate_tts"
 API = DEFAULT_API
@@ -12,7 +12,8 @@ API = DEFAULT_API
 def defaultapi(): return DEFAULT_API
 def setapi(url): global API; API = url
 
-def url(text, language, encoding='UTF-8'):
+#def url(text, language, encoding='UTF-8'):
+def url(text, language, encoding=None): # encoding is not needed
   """
   @param  text  unicode  not None
   @param  language  str  not None
@@ -20,8 +21,8 @@ def url(text, language, encoding='UTF-8'):
   @return  unicode or str not None
   """
   if language:
-    if encoding and isinstance(text, unicode):
-      text = urllib.quote(text.encode(encoding, errors='ignore'))
+    if encoding:
+      text = topercentencoding(text, encoding)
     if text:
       if encoding:
         return API + "?ie=%s&tl=%s&q=%s" % (encoding, language, text)

@@ -28,6 +28,8 @@ class _TtsManager(object):
     self._zunkoEngine = None  # _ttsman.ZunkoEngine
     self._sapiEngines = {}    # {str key:_ttsman.SapiEngine}
     self._onlineEngines = {}  # {str key:_ttsman.OnlineEngine}
+    self._voiceroidEngines = {}  # {str key:_ttsman.VoiceroidEngine}
+    self._voicetextEngines = {}  # {str key:_ttsman.VoiceTextEngine}
 
     #self.defaultEngineKey = 'wrong engine'
     #self.defaultEngineKey = 'VW Misaki'
@@ -48,7 +50,7 @@ class _TtsManager(object):
     @return  unicode
     """
     ret = text.replace(u'…', '.') # てんてんてん
-    if key == 'zunko':
+    if key == 'zunko.offline':
       ret = textutil.repair_zunko_text(ret)
     return ret
 
@@ -58,6 +60,12 @@ class _TtsManager(object):
     """
     if self._online:
       for it in self._onlineEngines.itervalues():
+        if it.isValid():
+          yield it
+      for it in self._voiceroidEngines.itervalues():
+        if it.isValid():
+          yield it
+      for it in self._voicetextEngines.itervalues():
         if it.isValid():
           yield it
     for it in self._yukariEngine, self._zunkoEngine:
@@ -175,16 +183,11 @@ class _TtsManager(object):
   def getOnlineEngine(self, key):
     ret = self._onlineEngines.get(key)
     if not ret and key in _ttsman.ONLINE_ENGINES:
-      kw = {
-        'speed':self.getSpeed(key),
-        'volume':self.getVolume(key),
-      }
-      if key == 'baidu':
-        ret = _ttsman.BaiduEngine(**kw)
-      elif key == 'bing':
-        ret = _ttsman.BingEngine(**kw)
-      elif key == 'google':
-        ret = _ttsman.GoogleEngine(**kw)
+      ret = _ttsman.OnlineEngine.create(key)
+      if ret:
+        ret.speed = self.getSpeed(key)
+        ret.pitch = self.getPitch(key)
+        ret.volume = self.getVolume(key)
       if ret and ret.isValid():
         self._onlineEngines[key] = ret
         growl.msg(' '.join((
@@ -241,14 +244,9 @@ class _TtsManager(object):
     if v != m.get(key):
       m[key] = v
       ss.setTtsPitches(m)
-      eng = self._sapiEngines.get(key)
+      eng = self.getCreatedEngine(key)
       if eng:
         eng.setPitch(v)
-      # I haven't figure out how to change WMP pitch yet
-      #else:
-      #  eng = self._onlineEngines.get(key)
-      #  if eng:
-      #    eng.setPitch(v)
 
   def getVolume(self, key):
     """
@@ -268,13 +266,9 @@ class _TtsManager(object):
     if v != m.get(key):
       m[key] = v
       ss.setTtsVolumes(m)
-      eng = self._sapiEngines.get(key)
+      eng = self.getCreatedEngine(key)
       if eng:
         eng.setVolume(v)
-      else:
-        eng = self._onlineEngines.get(key)
-        if eng:
-          eng.volume = v
 
   def getSpeed(self, key):
     """
@@ -294,13 +288,9 @@ class _TtsManager(object):
     if v != m.get(key):
       m[key] = v
       ss.setTtsSpeeds(m)
-      eng = self._sapiEngines.get(key)
+      eng = self.getCreatedEngine(key)
       if eng:
         eng.setSpeed(v)
-      else:
-        eng = self._onlineEngines.get(key)
-        if eng:
-          eng.speed = v
 
   # Actions
 
@@ -310,11 +300,23 @@ class _TtsManager(object):
     """
     if not key:
       return None
-    if key == 'zunko':
+    if key == 'zunkooffline':
       return self.zunkoEngine
-    if key == 'yukari':
+    if key == 'yukarioffline':
       return self.yukariEngine
     return self.getOnlineEngine(key) or self.getSapiEngine(key)
+
+  def getCreatedEngine(self, key):
+    """
+    @return  _ttsman.VoiceEngine or None
+    """
+    if not key:
+      return None
+    if key == 'zunkooffline':
+      return self._zunkoEngine
+    if key == 'yukarioffline':
+      return self._yukariEngine
+    return self._onlineEngines.get(key) or self._voiceroidEngines.get(key) or self._voicetextEngines.get(key) or self._sapiEngines.get(key)
 
   #@memoizedproperty
   #def speakTimer(self):
@@ -411,12 +413,6 @@ class TtsManager(QObject):
     import sapiman
     ret.extend(it.key for it in sapiman.voices())
     return ret
-
-  def onlineEngines(self):
-    """
-    @return  [unicode]
-    """
-    return _ttsman.ONLINE_ENGINES
 
 @memoized
 def manager(): return TtsManager()

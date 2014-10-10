@@ -373,6 +373,8 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
+    if ss_version <= 1412817938:
+      self.setValue('TermMarked', True) # enable underline by default
 
     if ss_version <= 1412745537:
       self.setValue("RBMT", False) # disable RBMT by default

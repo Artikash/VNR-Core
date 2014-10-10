@@ -1,7 +1,7 @@
 # coding: utf8
 # sknetio.py
 # 7/4/2013 jichi
-import os, re
+import os, re, urllib
 import requests
 from skdebug import dwarn, derror
 import skcontainer, skfileio
@@ -46,6 +46,28 @@ def urlne(x, y):
   @return  bool
   """
   return not urleq(x, y)
+
+def topercentencoding(text, encoding='utf8', safe=''):
+  """
+  @param  text  unicode or str
+  @param* encoding  str or None
+  @param* safe  str
+  @return  unicode
+  """
+  if encoding and isinstance(text, unicode):
+    text = text.encode(encoding, errors='ignore')
+  return urllib.quote(text, safe=safe) if text else ''
+
+def frompercentencoding(text, encoding=None):
+  """
+  @param  text  unicode or str
+  @param* encoding  str or None
+  @return  unicode
+  """
+  text = urllib.unquote(text)
+  if encoding:
+    text = text.decode(encoding, errors='ignore')
+  return text
 
 ## Get and post ##
 

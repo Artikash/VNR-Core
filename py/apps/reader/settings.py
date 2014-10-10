@@ -1240,7 +1240,7 @@ class Settings(QSettings):
   def isTermEnabled(self): return to_bool(self.value('TermEnabled', True))
 
   termMarkedChanged = Signal(bool)
-  def isTermMarked(self): return to_bool(self.value('TermMarked'))
+  def isTermMarked(self): return to_bool(self.value('TermMarked', True))
   def setTermMarked(self, t):
     if t != self.isTermMarked():
       self.setValue('TermMarked', t)
