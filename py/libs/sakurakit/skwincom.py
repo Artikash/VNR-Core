@@ -12,7 +12,7 @@ if skos.WIN:
     @param  threading  bool or None
     """
     if threading is None: # The same as STA
-      pythoncom.CoInitialize()
+      pythoncom.CoInitialize() # this function returns None
     elif threading: # Multi-thread apartment (MTA)
       pythoncom.CoInitializeEx(pythoncom.COINIT_MULTITHREADED)
     else: # Single thread apartment (STA)
@@ -26,6 +26,7 @@ if skos.WIN:
       self.threading = threading # bool or None
     def __enter__(self):
       coinit(self.threading)
+      return self
     def __exit__(self, *err):
       couninit()
 

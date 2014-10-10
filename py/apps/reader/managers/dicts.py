@@ -3,7 +3,9 @@
 # 11/25/2012 jichi
 
 import os
+from PySide.QtCore import QMutex
 from sakurakit.skclass import memoized, memoizedproperty
+from sakurakit.skthreads import SkMutexLocker
 from sakurakit.sktr import tr_
 from mytr import my
 import growl, rc, res
@@ -19,6 +21,7 @@ class Edict(Dict):
       path=os.path.join(rc.DIR_CACHE_DICT, "EDICT/edict.db"),
       lockpath=os.path.join(rc.DIR_TMP, "edict.lock"),
     )
+    self._mutex = QMutex()
 
   def get(self): # override
     from scripts import edict
@@ -35,7 +38,8 @@ class Edict(Dict):
   def lookup(self, *args, **kwargs): # override
     d = self.d
     if d.valid():
-      return d.lookup(*args, **kwargs)
+      with SkMutexLocker(self._mutex):
+        return list(d.lookup(*args, **kwargs)) # use list to finish the lock
     else:
       growl.warn(my.tr("{0} does not exist. Please try redownload it in Preferences").format('EDICT'))
 
