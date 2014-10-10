@@ -79,7 +79,7 @@ class reader(QObject):
       self.tr("Speech"),
       self.tr("Embedded"),
       self.tr("Speak"),
-      self.tr("Text-to-speech"),
+      self.tr("Text-to-speech"), self.tr("Text-To-Speech"),
 
       self.tr("Context count"),
       self.tr("Previous context"),

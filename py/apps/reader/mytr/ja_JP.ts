@@ -768,5 +768,10 @@
         <source>multilingual</source>
         <translation>多言語</translation>
     </message>
+    <message>
+        <location filename="mytr.py" line="82"/>
+        <source>Text-To-Speech</source>
+        <translation>音声合成</translation>
+    </message>
 </context>
 </TS>

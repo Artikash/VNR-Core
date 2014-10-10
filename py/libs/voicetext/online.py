@@ -48,6 +48,7 @@ if __name__ == '__main__':
   sys.path.append('..')
 
 import requests
+from collections import OrderedDict
 from sakurakit.skdebug import dwarn
 from sakurakit.sknetio import topercentencoding
 
@@ -99,7 +100,7 @@ VOICES = (
   # fr-CA
   Voice('chloe',     600, 4, 'fr', 'f', u'Chloé'),
 )
-VOICES = {it.key:it for it in VOICES}
+VOICES = OrderedDict(((it.key,it) for it in VOICES))
 
 API = "http://dws.voicetext.jp/tomcat/servlet/vt"
 RESULT_URL = "http://dis.voicetext.jp/ASLCLCLVVS/JMEJSYGDCHMSMHSRKPJL/"

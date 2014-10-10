@@ -44,6 +44,7 @@ if __name__ == '__main__':
   sys.path.append('..')
 
 import requests
+from collections import OrderedDict
 from sakurakit.skdebug import dwarn
 from sakurakit.skstr import urlencode
 
@@ -66,7 +67,7 @@ VOICES = ( # unicode key -> int id
   Voice(996, 'shota',  'm', u"月読ショタ", "http://www.ah-soft.com/voiceroid/shota/"),
   Voice(993, 'taka',  'm',  u"鷹の爪 吉田くん", "http://www.ah-soft.com/voiceroid/taka/"),
 )
-VOICES = {it.key:it for it in VOICES}
+VOICES = OrderedDict(((it.key,it) for it in VOICES))
 
 API = "http://voice.ai-j.jp/aitalk_2webapi.php"
 

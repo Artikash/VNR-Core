@@ -300,9 +300,9 @@ class _TtsManager(object):
     """
     if not key:
       return None
-    if key == 'zunko.offline':
+    if key == 'zunkooffline':
       return self.zunkoEngine
-    if key == 'yukari.offline':
+    if key == 'yukarioffline':
       return self.yukariEngine
     return self.getOnlineEngine(key) or self.getSapiEngine(key)
 
@@ -312,9 +312,9 @@ class _TtsManager(object):
     """
     if not key:
       return None
-    if key == 'zunko.offline':
+    if key == 'zunkooffline':
       return self._zunkoEngine
-    if key == 'yukari.offline':
+    if key == 'yukarioffline':
       return self._yukariEngine
     return self._onlineEngines.get(key) or self._voiceroidEngines.get(key) or self._voicetextEngines.get(key) or self._sapiEngines.get(key)
 
