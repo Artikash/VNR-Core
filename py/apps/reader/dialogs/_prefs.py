@@ -90,6 +90,13 @@ REGISTER_URL = "http://sakuradite.com"
 
 ICON_BUTTON_SIZE = QtCore.QSize(16, 16)
 
+def create_cell_button(): # QPushButton ->
+  ret = QtWidgets.QPushButton()
+  ret.setMaximumWidth(18)
+  ret.setMaximumHeight(18)
+  skqss.class_(ret, 'btn btn-default btn-sm')
+  return ret
+
 class TabAdaptor(object):
   def save(self): pass
   def load(self): pass
@@ -234,10 +241,8 @@ class _UserTab(object):
 
   @memoizedproperty
   def resetUserColorButton(self):
-    ret = QtWidgets.QPushButton(u"×") # ばつ
-    ret.setMaximumWidth(20)
-    ret.setMaximumHeight(20)
-    skqss.class_(ret, 'btn btn-default')
+    ret = create_cell_button()
+    ret.setText(u"×") # ばつ
     ret.setToolTip(tr_("Reset"))
     ret.clicked.connect(self._resetUserColor)
     return ret
@@ -878,6 +883,7 @@ class _ShortcutsTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isGrabHotkeyEnabled())
     ret.toggled.connect(ss.setGrabHotkeyEnabled)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
   @memoizedproperty
@@ -919,6 +925,7 @@ class _ShortcutsTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isTtsHotkeyEnabled())
     ret.toggled.connect(ss.setTtsHotkeyEnabled)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
   @memoizedproperty
@@ -959,6 +966,7 @@ class _ShortcutsTab(object):
     ss = settings.global_()
     ret.setChecked(ss.isTextHotkeyEnabled())
     ret.toggled.connect(ss.setTextHotkeyEnabled)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
   @memoizedproperty
@@ -1161,13 +1169,18 @@ class _TtsTab(object):
         ('zunko', self.zunkoButton),
       )):
       r += 1
-      grid.addWidget(b, r, 0)
+      c = 0
+      grid.addWidget(b, r, c)
+
+      c += 1
       w = self.createTestButton(k)
       setattr(self, k + 'TestButton', w)
-      grid.addWidget(w, r, 1)
+      grid.addWidget(w, r, c)
+
+      c += 1
       w = self.createVoiceroidLaunchButton(k)
       setattr(self, k + 'LaunchButton', w)
-      grid.addWidget(w, r, 2)
+      grid.addWidget(w, r, c)
 
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)
@@ -1781,11 +1794,8 @@ class _TextTab(object):
 
   @staticmethod
   def _createResetFontButton(defval, sig=None):
-    #ret = QtWidgets.QPushButton(tr_("Reset"))
-    ret = QtWidgets.QPushButton(u"×") # ばつ
-    ret.setMaximumWidth(20)
-    ret.setMaximumHeight(20)
-    skqss.class_(ret, 'btn btn-default')
+    ret = create_cell_button()
+    ret.setText(u"×") # ばつ
     ret.setToolTip(tr_("Reset") + ": " + defval)
     if sig:
       ret.clicked.connect(sig)
@@ -1873,10 +1883,8 @@ class _TextTab(object):
 
   @staticmethod
   def _createResetColorButton(sig=None):
-    ret = QtWidgets.QPushButton(u"×") # ばつ
-    skqss.class_(ret, 'btn btn-default')
-    ret.setMaximumWidth(20)
-    ret.setMaximumHeight(20)
+    ret = create_cell_button()
+    ret.setText(u"×") # ばつ
     ret.setToolTip(my.tr("Reset default color"))
     if sig:
       ret.clicked.connect(sig)
@@ -2000,6 +2008,7 @@ class _TextTab(object):
         if lang:
           t += " (%s)" % i18n.language_name(lang)
         label = QtWidgets.QLabel(t)
+        label.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
         resetButton = self._createResetColorButton(partial(
             getattr(ss, 'set{0}Color'.format(Name)),
             getattr(config, 'SETTINGS_{0}_COLOR'.format(NAME))))
@@ -2282,14 +2291,17 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
 
   @memoizedproperty
   def honyakuGroup(self):
+    # CHECKPOINT: Change QGridLayout
     blans = settings.global_().blockedLanguages()
     ret = QtWidgets.QGroupBox(my.tr("Preferred machine translation providers"))
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(QtWidgets.QLabel(my.tr("Online translators") + ":"))
-    if 'zh' not in blans:
-      layout.addWidget(self.baiduButton)
-      #layout.addWidget(self.youdaoButton)
     layout.addWidget(self.bingButton)
+    if 'zh' not in blans:
+      l = QtWidgets.QHBoxLayout()
+      l.addWidget(self._createBrowseButton("http://fanyi.baidu.com"))
+      l.addWidget(self.baiduButton)
+      layout.addLayout(l)
     layout.addWidget(self.googleButton)
     layout.addWidget(self.lecOnlineButton)
     layout.addWidget(self.infoseekButton)
@@ -2310,6 +2322,16 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
       layout.addWidget(self.lecButton)
     #layout.addWidget(self.lougoButton)
     ret.setLayout(layout)
+    return ret
+
+  def _createBrowseButton(self, path): # unicode or function -> QPushButton
+    ret = create_cell_button()
+    ret.setText(u"＋")
+    ret.setToolTip(tr_("Browse"))
+    if isinstance(path, str) or isinstance(path, unicode):
+      open = osutil.open_url if path.startswith('http') else osutil.open_url
+      path = partial(open, path)
+    ret.clicked.connect(path)
     return ret
 
   @memoizedproperty
@@ -3371,6 +3393,7 @@ class _DictionaryDownloadsTab(object):
       else:
         t = "%s (%s)" % (MECAB_DICT_NAMES[name], MECAB_DICT_SIZES[name])
       ret = self.meCabIntroLabels[name] = QtWidgets.QLabel(t)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
   def _getMeCab(self, name):
@@ -3430,8 +3453,9 @@ class _DictionaryDownloadsTab(object):
     for name in 'unidic', 'ipadic':
       grid.addWidget(self.getCaboChaButton(name), r, 0)
       grid.addWidget(self.getCaboChaStatusLabel(name), r, 1)
-      grid.addWidget(self.getCaboChaIntroLabel(name), r, 2)
-      grid.addWidget(QtWidgets.QWidget(), r, 3) # stretch
+      label = self.getCaboChaIntroLabel(name)
+      grid.addWidget(label, r, 2)
+      #grid.addWidget(QtWidgets.QWidget(), r, 3) # stretch
       r += 1
 
     ret = QtWidgets.QGroupBox(my.tr("CaboCha models for highlighting Japanese"))
@@ -3465,6 +3489,7 @@ class _DictionaryDownloadsTab(object):
     if not ret:
       t = "%s (%s)" % (CABOCHA_DICT_NAMES[name], CABOCHA_DICT_SIZES[name])
       ret = self.caboChaIntroLabels[name] = QtWidgets.QLabel(t)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
   def _getCaboCha(self, name):
@@ -3748,6 +3773,7 @@ class _DictionaryDownloadsTab(object):
       else:
         t = "%s (%s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name])
       ret = self.lingoesIntroLabels[name] = QtWidgets.QLabel(t)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
   def _getLingoes(self, name):
@@ -3824,6 +3850,7 @@ class _DictionaryDownloadsTab(object):
     if not ret:
       ret = self.jmdictIntroLabels[name] = QtWidgets.QLabel(
           "%s (%s)" % (JMDICT_DICT_NAMES[name], JMDICT_DICT_SIZES[name]))
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
     return ret
 
   def _getJMDict(self, name):
