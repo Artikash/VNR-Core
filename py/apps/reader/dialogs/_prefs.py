@@ -5230,12 +5230,16 @@ It is <span style="color:purple">not free</span>, and you can purchase one here 
 <center><a href="%s">%s</a></center>""") % (url, url))
 
   def refresh(self):
-    self._refreshJBeijing()
-    self._refreshFastait()
-    self._refreshDreye()
-    self._refreshEzTrans()
-    self._refreshAtlas()
-    self._refreshLec()
+    blans = settings.global_().blockedLanguages()
+    if 'zh' not in blans:
+      self._refreshJBeijing()
+      self._refreshFastait()
+      self._refreshDreye()
+    if 'ko' not in blans:
+      self._refreshEzTrans()
+    if 'en' not in blans:
+      self._refreshAtlas()
+      self._refreshLec()
 
 class TranslatorLibraryTab(QtWidgets.QDialog):
 
