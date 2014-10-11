@@ -3,6 +3,7 @@
 
 CONFIG += console noqt
 include(../../../config.pri)
+include($$LIBDIR/voiceroid/aitalked/aitalked.pri)
 
 # Source
 
