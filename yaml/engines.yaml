@@ -156,6 +156,8 @@ simple:
   - Pensil
   - RealLive
   - Rejet
+  - rUGP
+  - rUGP2
   - ShinaRio
   - SideB
   - SiglusEngine
@@ -318,6 +320,7 @@ char:
   - Rejet
   - RetouchSystem
   - rUGP
+  - rUGP2
   - ScenarioPlayerA
   - ShinaRio
   - SideB
