@@ -1,5 +1,5 @@
-# ttstest.pro
-# 6/15/2014
+# zunkotest.pro
+# 10/11/2014
 
 CONFIG += console noqt
 include(../../../config.pri)
@@ -7,7 +7,7 @@ include(../../../config.pri)
 # Source
 
 TEMPLATE = app
-TARGET = dlltest
+TARGET = zunkotest
 
 DEPENDPATH += .
 INCLUDEPATH += .

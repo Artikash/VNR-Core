@@ -1,0 +1,2 @@
+10/11/2014 jichi
+Exported from AITalkSynth.dll in zunko 1.6 using .NET Reflector 8.3.3.115.

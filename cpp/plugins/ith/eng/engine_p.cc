@@ -1398,7 +1398,7 @@ bool InsertRUGP1Hook()
 
 /** rUGP2 10/11/2014 jichi
  *
- *  Sample game: トータルイクリプス
+ *  Sample game: マブラヴ オルタネイティヴ トータル・イクリプス
  *  The existing rUGP#1/#2 cannot be identified.
  *  H-codes:
  *  - /HAN-4@1E51D:VM60.DLL
