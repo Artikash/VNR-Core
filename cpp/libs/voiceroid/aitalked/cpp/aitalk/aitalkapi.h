@@ -45,13 +45,13 @@ typedef AITalkResultCode (__stdcall *AITalkAPI_End)();
 // [DllImport("aitalked.dll", EntryPoint="AITalkAPI_GetParam")]
 // public static extern AITalkResultCode GetParam(IntPtr pParam, out uint size);
 #define _AITalkAPI_GetParam "_AITalkAPI_GetParam@8"
-typedef AITalkResultCode (__stdcall *AITalkAPI_GetParam)(const int *pParam, _Out_ unsigned int *size);
+typedef AITalkResultCode (__stdcall *AITalkAPI_GetParam)(_Out_opt_ AITalk_TTtsParam *pParam, _Out_ unsigned int *size);
 
 // AITalkAPI.cs:
 // [DllImport("aitalked.dll", EntryPoint="AITalkAPI_SetParam")]
 // public static extern AITalkResultCode SetParam(IntPtr pParam);
 #define _AITalkAPI_SetParam "_AITalkAPI_SetParam@4"
-typedef AITalkResultCode (__stdcall *AITalkAPI_SetParam)(const int *pParam);
+typedef AITalkResultCode (__stdcall *AITalkAPI_SetParam)(const AITalk_TTtsParam *pParam);
 
 // AITalkAPI.cs:
 // [DllImport("aitalked.dll", EntryPoint="AITalkAPI_TextToSpeech")]
@@ -64,7 +64,7 @@ typedef AITalkResultCode (__stdcall *AITalkAPI_TextToSpeech)(
 // [DllImport("aitalked.dll", EntryPoint="AITalkAPI_CloseSpeech")]
 // private static extern AITalkResultCode _CloseSpeech(int jobID, int useEvent = 0);
 #define _AITalkAPI_CloseSpeech "_AITalkAPI_CloseSpeech@8"
-typedef AITalkResultCode (__stdcall *AITalkAPI_CloseSpeech)(int jobID, int useEvent);
+typedef AITalkResultCode (__stdcall *AITalkAPI_CloseSpeech)(int jobID, _In_opt_ int useEvent);
 
 // AITalkAPI.cs:
 // [DllImport("aitalked.dll", EntryPoint="AITalkAPI_GetStatus")]

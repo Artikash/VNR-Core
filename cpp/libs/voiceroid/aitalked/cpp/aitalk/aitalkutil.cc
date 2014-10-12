@@ -54,49 +54,19 @@ AITalk::AITalkUtil::~AITalkUtil()
 
 AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobParam &jobparam, const char *text)
 {
+  AITalk_TTtsParam param;
+  AITalkResultCode res = this->GetParam(&param);
+  if (res != AITALKERR_SUCCESS)
+    return res;
+
+  //param.procTextBuf = _AITalkProcTextBuf;
+  //param.procRawBuf = _AITalkProcRawBuf;
+  //param.procEventTts = _AITalkProcEventTTS;
+  res = this->SetParam(param);
+  if (res != AITALKERR_SUCCESS)
+    return res;
+
   return _api.TextToSpeech(jobID, &jobparam, text);
-  //AITalk_TTtsParam param = new AITalk_TTtsParam();
-  //AITalkResultCode res = this.GetParam(ref param);
-  //this.OnWriteLog("[AITalkAPI_GetParam] " + res);
-  //if (res != AITalkResultCode.AITALKERR_SUCCESS)
-  //{
-  //    this._busy = false;
-  //    this._playing = false;
-  //    return res;
-  //}
-  //param.procTextBuf = this._AITalkProcTextBuf;
-  //param.procRawBuf = this._AITalkProcRawBuf;
-  //param.procEventTts = this._AITalkProcEventTTS;
-  //res = this.SetParam(ref param);
-  //this.OnWriteLog("[AITalkAPI_SetParam] " + res);
-  //if (res != AITalkResultCode.AITALKERR_SUCCESS)
-  //{
-  //    this._busy = false;
-  //    this._playing = false;
-  //    return res;
-  //}
-  //this.OnWriteLog("[AIAuidoAPI_ClearData] " + AIAudioAPI.ClearData());
-  //res = AITalkAPI.TextToSpeech(out jobID, ref jobparam, text);
-  //this.OnWriteLog("[AITalkAPI_TextToSpeech] " + res);
-  //if (res != AITalkResultCode.AITALKERR_SUCCESS)
-  //{
-  //    this._busy = false;
-  //    this._playing = false;
-  //    return res;
-  //}
-  //new Thread(delegate {
-  //    AITalkStatusCode code;
-  //    do
-  //    {
-  //        Thread.Sleep(this.GetStatusInterval);
-  //        res = this.GetStatus(jobID, out code);
-  //    }
-  //    while ((this._playing && (res == AITalkResultCode.AITALKERR_SUCCESS)) && (code != AITalkStatusCode.AITALKSTAT_DONE));
-  //    AITalkAPI.CloseSpeech(jobID, 0);
-  //    this.OnWriteLog("[AITalkAPI_CloseSpeech] " + res);
-  //    this._busy = false;
-  //}) { IsBackground = true }.Start();
-  //return res;
 }
 
 // EOF
