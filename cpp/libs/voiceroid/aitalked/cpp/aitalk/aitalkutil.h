@@ -3,13 +3,15 @@
 // aitalkutil.h
 // 10/11/2014 jichi
 #include "aitalk/aitalkapi.h"
+#include "aitalk/aiaudioapi.h"
 
 namespace AITalk {
 
 // C#: public class AITalkUtil : IDisposable
 class AITalkUtil
 {
-  AITalkAPI _api;
+  AITalkAPI _talk;
+  AIAudioAPI _audio;
   bool _valid;
   char _dirpath[MAX_PATH]; // directory of the DLL
   char _licpath[MAX_PATH]; // path to aitalked.lic
@@ -31,11 +33,11 @@ public:
 private:
   // AITalkUtil.cs: public AITalkResultCode GetStatus(int jobID, out AITalkStatusCode status)
   AITalkResultCode GetStatus(int jobID, _Out_ AITalkStatusCode *status) const
-  { return _api.GetStatus(jobID, status); }
+  { return _talk.GetStatus(jobID, status); }
 
   // AITalkUtil.cs: public AITalkResultCode SetParam(ref AITalk_TTtsParam param)
   AITalkResultCode SetParam(const AITalk_TTtsParam &param)
-  { return _api.SetParam(&param); }
+  { return _talk.SetParam(&param); }
 
   // AITalkUtil.cs: public virtual AITalkResultCode SynthAsync(ref AITalk_TJobParam jobparam, string text)
   AITalkResultCode SynthSync(_Out_ int *jobID, const AITalk_TJobParam &jobparam, const char *text);
@@ -44,7 +46,7 @@ private:
   AITalkResultCode GetParam(_Out_ AITalk_TTtsParam *param)
   {
     unsigned int num;
-    return _api.GetParam(param, &num);
+    return _talk.GetParam(param, &num);
   }
 
 public:

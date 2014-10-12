@@ -2,20 +2,22 @@
 // 10/11/2014 jichi
 #include "aitalk/aitalkutil.h"
 #include "aitalk/aitalkapi.h"
-#include "aitalk/aitalkconf.h"
+#include "aitalk/aitalkmarshal.h"
 #include "cpputil/cpppath.h"
 #include <windows.h>
 #include <cstring>
-#include <iostream>
+
 using namespace AITalk;
 
 // Construction
 
 AITalk::AITalkUtil::AITalkUtil(HMODULE h)
-  : _api(h), _valid(false)
+  : _talk(h), _audio(h), _valid(false)
 {
-  if (!_api.IsValid())
+  if (!_talk.IsValid() || !_audio.IsValid())
     return;
+
+  // Initialize talk API
 
   char dllpath[MAX_PATH];
   if (!::GetModuleFileNameA(h, dllpath, MAX_PATH))
@@ -30,33 +32,47 @@ AITalk::AITalkUtil::AITalkUtil(HMODULE h)
 
   ::memcpy(_licpath, dllpath, dirlen);
   ::strcpy(_licpath + dirlen, AITALK_CONFIG_LICENSE);
-  std::cerr << _dirpath << std::endl;
-  std::cerr << _licpath << std::endl;
 
-  AITalk_TConfig config;
-  config.hzVoiceDB = AITALK_CONFIG_FREQ;
-  config.msecTimeout = AITALK_CONFIG_TIMEOUT;
-  config.dirVoiceDBS = _dirpath; // r'C:\Program Files\AHS\VOICEROID+\zunko'
-  config.pathLicense = _licpath; // r'C:\Program Files\AHS\VOICEROID+\zunko\aitalk.lic'
-  config.codeAuthSeed = AITALK_CONFIG_CODEAUTHSEED;
-  config.lenAuthSeed = AITALK_CONFIG_LENAUTHSEED;
+  {
+    AITalk_TConfig config;
+    config.hzVoiceDB = AITALK_CONFIG_FREQUENCY;
+    config.msecTimeout = AITALK_CONFIG_TIMEOUT;
+    config.dirVoiceDBS = _dirpath; // r'C:\Program Files\AHS\VOICEROID+\zunko'
+    config.pathLicense = _licpath; // r'C:\Program Files\AHS\VOICEROID+\zunko\aitalk.lic'
+    config.codeAuthSeed = AITALK_CONFIG_CODEAUTHSEED;
+    config.lenAuthSeed = AITALK_CONFIG_LENAUTHSEED;
 
-  if (_api.Init(&config) != AITALKERR_SUCCESS)
-    return;
+    if (_talk.Init(&config) != AITALKERR_SUCCESS)
+      return;
+  }
 
-  //if (_api.VoiceLoad("zunko_22") != AITALKERR_SUCCESS)
+  //if (_talk.VoiceLoad("zunko_22") != AITALKERR_SUCCESS)
   //  return;
-  static char *langDir =  "C:\\Program Files\\AHS\\VOICEROID+\\zunko\\lang";
-  if (_api.VoiceLoad(langDir) != AITALKERR_SUCCESS)
-    return;
+  //static char *langDir =  "C:\\Program Files\\AHS\\VOICEROID+\\zunko\\lang";
+  //if (_talk.VoiceLoad(langDir) != AITALKERR_SUCCESS)
+  //  return;
+
+  // Initialize audio API
+  {
+    AIAudio_TConfig config;
+    config.msecLatency = AIAUDIO_CONFIG_BUFFERLATENCY;
+    config.lenBufferBytes = AITALK_CONFIG_FREQUENCY * 2 * AIAUDIO_CONFIG_BUFFERLENGTH;
+    config.hzSamplesPerSec = AITALK_CONFIG_FREQUENCY;
+    config.formatTag = AIAUDIOTYPE_PCM_16;
+    config.__reserved__ = 0;
+    if (_audio.Open(&config) != AIAUDIOERR_SUCCESS)
+      return;
+  }
 
   _valid = true;
 }
 
 AITalk::AITalkUtil::~AITalkUtil()
 {
-  if (_valid)
-    _api.End();
+  if (_valid) {
+    _audio.Close();
+    _talk.End();
+  }
 }
 
 // Speech synthesize
@@ -65,7 +81,7 @@ AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobPara
 {
   //unsigned num;
   //AITalk_TTtsParam param[10];
-  //AITalkResultCode res = _api.GetParam(param, &num);
+  //AITalkResultCode res = _talk.GetParam(param, &num);
   //if (res != AITALKERR_SUCCESS)
   //  return res;
 
@@ -77,20 +93,24 @@ AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobPara
   //  return res;
 
   size_t num;
-  AITalkResultCode code = _api.GetParam(nullptr, &num);
-  if (code == AITALKERR_INSUFFICIENT) {
-    char *buf = new char[num];
-    //IntPtr ptr = Marshal.AllocCoTaskMem((int) num);
-    code = _api.GetParam(buf, &num);
-    if (code != AITALKERR_SUCCESS) {
-      delete buf;
-      return code;
-    }
-    //param = AITalkMarshal.IntPtrToTTtsParam(ptr);
-    //Marshal.FreeCoTaskMem(ptr);
-  }
+  AITalkResultCode code = _talk.GetParam(nullptr, &num);
+  if (code != AITALKERR_INSUFFICIENT)
+    return AITALKERR_INSUFFICIENT;
 
-  return _api.TextToSpeech(jobID, &jobparam, text);
+  char *data = new char[num];
+  ((int *)data)[0] = num;
+  //IntPtr ptr = Marshal.AllocCoTaskMem((int) num);
+  code = _talk.GetParam(data, &num);
+  if (code != AITALKERR_SUCCESS) {
+    delete data;
+    return code;
+  }
+  //param = AITalkMarshal.IntPtrToTTtsParam(ptr);
+  //Marshal.FreeCoTaskMem(ptr);
+
+  AITalk_TTtsParam param;
+  AITalkMarshal::ReadTtsParam(&param, data);
+  return _talk.TextToSpeech(jobID, &jobparam, text);
 }
 
 // EOF

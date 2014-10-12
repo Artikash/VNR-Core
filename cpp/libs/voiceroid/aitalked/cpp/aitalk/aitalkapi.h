@@ -45,7 +45,7 @@ typedef AITalkResultCode (__stdcall *AITalkAPI_End)();
 // [DllImport("aitalked.dll", EntryPoint="AITalkAPI_GetParam")]
 // public static extern AITalkResultCode GetParam(IntPtr pParam, out uint size);
 #define _AITalkAPI_GetParam "_AITalkAPI_GetParam@8"
-typedef AITalkResultCode (__stdcall *AITalkAPI_GetParam)(_Out_opt_ void *pParam, _Out_ unsigned int *size);
+typedef AITalkResultCode (__stdcall *AITalkAPI_GetParam)(_Inout_opt_ void *pParam, _Out_ unsigned int *size);
 
 // AITalkAPI.cs:
 // [DllImport("aitalked.dll", EntryPoint="AITalkAPI_SetParam")]

@@ -172,7 +172,6 @@ typedef int (__stdcall *AITalkProcRawBuf)(AITalkEventReasonCode reasonCode, int 
 // }
 typedef int (__stdcall *AITalkProcEventTTS)(AITalkEventReasonCode reasonCode, int jobID, unsigned long tick, const char *name, const int *userData);
 
-
 /* Structures */
 
 // AITalk_TConfig.css:
@@ -282,7 +281,7 @@ struct AITalk_TTtsParam
     int pauseMiddle;
     int pauseLong;
     int pauseSentence;
-    const char *control;
+    char control[12]; // the length is used in AITalkMarshal.cs
   };
 
   struct TSpeakerParam
@@ -297,20 +296,23 @@ struct AITalk_TTtsParam
     int pauseSentence;
   };
 
-  unsigned int size;
-  AITalkProcTextBuf procTextBuf;
-  AITalkProcRawBuf procRawBuf;
-  AITalkProcEventTTS procEventTts;
-  unsigned int lenTextBufBytes;
-  unsigned int lenRawBufBytes;
-  float volume;
-  int pauseBegin;
-  int pauseTerm;
-  char voiceName[MAX_VOICENAME_];
+  unsigned int size;                // default 308
+  AITalkProcTextBuf procTextBuf;    // default 0
+  AITalkProcRawBuf procRawBuf;      // default 0
+  AITalkProcEventTTS procEventTts;  // default built-in
+  unsigned int lenTextBufBytes;     // default 16384
+  unsigned int lenRawBufBytes;      // default 176400
+  float volume;                     // default 1
+  int pauseBegin;                   // default -1
+  int pauseTerm;                    // default -1
+  char voiceName[MAX_VOICENAME_];   // default empty
   TJeitaParam Jeita;
-  unsigned int numSpeakers;
+  unsigned int numSpeakers;         // default 0
   int __reserved__;
   TSpeakerParam *Speaker; // TSpeakerParam[] Speaker;
+
+  size_t TotalSize() const
+  { return sizeof(*this) + numSpeakers * sizeof(TSpeakerParam); }
 };
 
 } // namespace AITalk

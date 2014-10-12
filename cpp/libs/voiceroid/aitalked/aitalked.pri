@@ -13,12 +13,17 @@ LIBS += -luser32 # for hook functions
 
 HEADERS += \
     $$AITALKED_SRC/aitalk/_windef.h \
+    $$AITALKED_SRC/aitalk/aiaudioapi.h \
+    $$AITALKED_SRC/aitalk/aiaudiodef.h \
     $$AITALKED_SRC/aitalk/aitalkapi.h \
     $$AITALKED_SRC/aitalk/aitalkconf.h \
     $$AITALKED_SRC/aitalk/aitalkdef.h \
+    $$AITALKED_SRC/aitalk/aitalkmarshal.h \
     $$AITALKED_SRC/aitalk/aitalkutil.h
 SOURCES += \
+    $$AITALKED_SRC/aitalk/aiaudioapi.cc \
     $$AITALKED_SRC/aitalk/aitalkapi.cc \
+    $$AITALKED_SRC/aitalk/aitalkmarshal.cc \
     $$AITALKED_SRC/aitalk/aitalkutil.cc
 }
 

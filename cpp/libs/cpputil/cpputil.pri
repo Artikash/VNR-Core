@@ -7,6 +7,9 @@ DEPENDPATH += $$PWD
 
 HEADERS += \
     $$PWD/cpplocale.h \
-    $$PWD/cpppath.h
+    $$PWD/cppmarshal.h \
+    $$PWD/cpppath.h \
+    $$PWD/cppstring.h \
+    $$PWD/cpptype.h
 
 # EOF
