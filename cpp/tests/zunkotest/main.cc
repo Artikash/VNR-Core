@@ -21,9 +21,9 @@ int main()
 
     int jobID;
     auto r = ai.TextToSpeech(&jobID, text);
-    std::cerr << "tts: " << (int)r << std::endl;
+    std::cerr << "tts: " << (int)r << ":" << jobID << std::endl;
 
-  system("pause");
+    ::Sleep(3000);
   }
   std::cerr << "leave" << std::endl;
   return 0;

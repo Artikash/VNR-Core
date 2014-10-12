@@ -7,8 +7,6 @@
 #include <windows.h>
 #include <cstring>
 
-#include <iostream>
-
 using namespace AITalk;
 
 // Construction
@@ -39,8 +37,10 @@ AITalk::AITalkUtil::AITalkUtil(HMODULE h)
     AITalk_TConfig config;
     config.hzVoiceDB = AITALK_CONFIG_FREQUENCY;
     config.msecTimeout = AITALK_CONFIG_TIMEOUT;
-    config.dirVoiceDBS = _dirpath; // r'C:\Program Files\AHS\VOICEROID+\zunko'
-    config.pathLicense = _licpath; // r'C:\Program Files\AHS\VOICEROID+\zunko\aitalk.lic'
+    //config.dirVoiceDBS = _dirpath; // r'C:\Program Files\AHS\VOICEROID+\zunko'
+    config.dirVoiceDBS = "C:\\Program Files\\AHS\\VOICEROID+\\zunko\\voice";
+    //config.pathLicense = _licpath; // r'C:\Program Files\AHS\VOICEROID+\zunko\aitalk.lic'
+    config.pathLicense = "C:\\Program Files\\AHS\\VOICEROID+\\zunko\\aitalk.lic";
     config.codeAuthSeed = AITALK_CONFIG_CODEAUTHSEED;
     config.lenAuthSeed = AITALK_CONFIG_LENAUTHSEED;
 
@@ -48,11 +48,16 @@ AITalk::AITalkUtil::AITalkUtil(HMODULE h)
       return;
   }
 
-  //if (_talk.VoiceLoad("zunko_22") != AITALKERR_SUCCESS)
-  //  return;
-  //static char *langDir =  "C:\\Program Files\\AHS\\VOICEROID+\\zunko\\lang";
-  //if (_talk.VoiceLoad(langDir) != AITALKERR_SUCCESS)
-  //  return;
+  AITalkResultCode code;
+  static char *langDir =  "C:\\Program Files\\AHS\\VOICEROID+\\zunko\\lang";
+  code = _talk.LangLoad(langDir);
+  if (code != AITALKERR_SUCCESS)
+    return;
+
+  static char *voiceName = "zunko_22";
+  code = _talk.VoiceLoad(voiceName);
+  if (code != AITALKERR_SUCCESS)
+    return;
 
   // Initialize audio API
   {
@@ -66,10 +71,7 @@ AITalk::AITalkUtil::AITalkUtil(HMODULE h)
       return;
   }
 
-  system("pause");
   _valid = true;
-  if (_talk.ReloadSymbolDic(nullptr) !=  AITALKERR_SUCCESS)
-    return;
 }
 
 AITalk::AITalkUtil::~AITalkUtil()

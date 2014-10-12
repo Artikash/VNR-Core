@@ -9,8 +9,10 @@
   var((AIAudioAPI_##var)::GetProcAddress(h, _AIAudioAPI_##var))
 
 AITalk::AIAudioAPI::AIAudioAPI(HMODULE h)
-  : ctor(Open)
+  : ctor(ClearData)
   , ctor(Close)
+  , ctor(Open)
+  , ctor(PushData)
 {}
 #undef ctor
 
