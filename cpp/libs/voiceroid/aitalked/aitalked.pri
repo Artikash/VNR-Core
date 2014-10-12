@@ -10,13 +10,14 @@ DEPENDPATH += $$PWD
 LIBS += -luser32 # for hook functions
 
 HEADERS += \
-  $$PWD/aitalk.h \
-  $$PWD/aitalked.h \
-  $$PWD/aitalksync.h
+    $$PWD/aitalkapi.h \
+    $$PWD/aitalkconfig.h \
+    $$PWD/aitalked.h \
+    $$PWD/aitalksync.h
 SOURCES += \
-  $$PWD/aitalk.cc \
-  $$PWD/aitalked.cc \
-  $$PWD/aitalksync.cc
+    $$PWD/aitalkapi.cc \
+    $$PWD/aitalked.cc \
+    $$PWD/aitalksync.cc
 }
 
 # EOF

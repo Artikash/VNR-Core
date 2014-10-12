@@ -3,4 +3,9 @@
 // aitalked.h
 // 10/11/2014 jichi
 
-// EOF
+namespace AITalk {
+
+bool Init(void *aitalkedDll); // HMODULE
+void Destroy();
+
+} // namespace AITalk

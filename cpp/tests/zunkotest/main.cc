@@ -1,5 +1,6 @@
 // main.cc
 // 10/11/2014 jichi
+#include "aitalked/aitalked.h"
 #include <windows.h>
 #include <iostream>
 #include <string>
@@ -9,7 +10,12 @@ int main()
   std::cerr << "enter" << std::endl;
   HMODULE h = ::LoadLibraryA("aitalked.dll");
   std::cerr << h << std::endl;
-  //if (h) {
+  if (h) {
+    bool ok = AITalk::Init(h);
+    std::cerr << "init: " << ok << std::endl;
+
+    AITalk::Destroy();
+  }
   //  Init init = (Init)::GetProcAddress(h, "_AITalkAPI_Init@4");
   //  TextToSpeech tts = (TextToSpeech)::GetProcAddress(h, "_AITalkAPI_TextToSpeech@12");
 
@@ -40,31 +46,6 @@ int main()
 
 // EOF
 
-//struct AITalk_TConfig
-//{
-//  int hzVoiceDB;
-//  const char *dirVoiceDBS;
-//  unsigned int msecTimeout;
-//  const char *pathLicense;
-//  const char *codeAuthSeed;
-//  unsigned int lenAuthSeed;
-//};
-//
-//enum AITalkJobInOut
-//{
-//  AITALKIOMODE_AIKANA_TO_JEITA = 0x17,
-//  AITALKIOMODE_AIKANA_TO_WAVE = 12,
-//  AITALKIOMODE_JEITA_TO_WAVE = 13,
-//  AITALKIOMODE_PLAIN_TO_AIKANA = 0x15,
-//  AITALKIOMODE_PLAIN_TO_WAVE = 11
-//};
-//
-//struct AITalk_TJobParam
-//{
-//  int modeInOut; // AITalkJobInOut
-//  void *userData;
-//};
-//
 //struct AITalk_TTtsParam
 //{
 //  const int MAX_VOICENAME_ = 80;
@@ -106,6 +87,3 @@ int main()
 //    int pauseSentence;
 //  };
 //};
-//
-//typedef int (__stdcall *Init)(const AITalk_TConfig *config);
-//typedef int (__stdcall *TextToSpeech)(int *jobID, AITalk_TJobParam *param, const char *sjistext);
