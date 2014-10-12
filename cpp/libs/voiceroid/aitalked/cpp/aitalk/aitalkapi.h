@@ -30,14 +30,20 @@ typedef AITalkResultCode (__stdcall *AITalkAPI_End)();
 // AITalkAPI.cs:
 // [DllImport("aitalked.dll", EntryPoint="AITalkAPI_ReloadPhraseDic")]
 // public static extern AITalkResultCode ReloadPhraseDic(string pathDic);
+#define _AITalkAPI_ReloadPhraseDic "_AITalkAPI_ReloadPhraseDic@4"
+typedef AITalkResultCode (__stdcall *AITalkAPI_ReloadPhraseDic)(const char *pathDic);
 
 // AITalkAPI.cs:
 // [DllImport("aitalked.dll", EntryPoint="AITalkAPI_ReloadSymbolDic")]
 // public static extern AITalkResultCode ReloadSymbolDic(string pathDic);
+#define _AITalkAPI_ReloadSymbolDic "_AITalkAPI_ReloadSymbolDic@4"
+typedef AITalkResultCode (__stdcall *AITalkAPI_ReloadSymbolDic)(const char *pathDic);
 
 // AITalkAPI.cs:
 // [DllImport("aitalked.dll", EntryPoint="AITalkAPI_ReloadWordDic")]
 // public static extern AITalkResultCode ReloadWordDic(string pathDic);
+#define _AITalkAPI_ReloadWordDic "_AITalkAPI_ReloadWordDic@4"
+typedef AITalkResultCode (__stdcall *AITalkAPI_ReloadWordDic)(const char *pathDic);
 
 // Actions
 
@@ -109,6 +115,9 @@ public:
   AITalkAPI_LangClear LangClear;
   AITalkAPI_LangLoad LangLoad;
   AITalkAPI_SetParam SetParam;
+  AITalkAPI_ReloadPhraseDic ReloadPhraseDic;
+  AITalkAPI_ReloadSymbolDic ReloadSymbolDic;
+  AITalkAPI_ReloadWordDic ReloadWordDic;
   AITalkAPI_TextToSpeech TextToSpeech;
   AITalkAPI_VoiceClear VoiceClear;
   AITalkAPI_VoiceLoad VoiceLoad;

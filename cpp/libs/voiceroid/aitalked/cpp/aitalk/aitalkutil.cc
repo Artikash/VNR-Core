@@ -7,6 +7,8 @@
 #include <windows.h>
 #include <cstring>
 
+#include <iostream>
+
 using namespace AITalk;
 
 // Construction
@@ -64,7 +66,10 @@ AITalk::AITalkUtil::AITalkUtil(HMODULE h)
       return;
   }
 
+  system("pause");
   _valid = true;
+  if (_talk.ReloadSymbolDic(nullptr) !=  AITALKERR_SUCCESS)
+    return;
 }
 
 AITalk::AITalkUtil::~AITalkUtil()
@@ -79,6 +84,7 @@ AITalk::AITalkUtil::~AITalkUtil()
 
 AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobParam &jobparam, const char *text)
 {
+  /*
   //unsigned num;
   //AITalk_TTtsParam param[10];
   //AITalkResultCode res = _talk.GetParam(param, &num);
@@ -107,9 +113,10 @@ AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobPara
   }
   //param = AITalkMarshal.IntPtrToTTtsParam(ptr);
   //Marshal.FreeCoTaskMem(ptr);
+  */
 
-  AITalk_TTtsParam param;
-  AITalkMarshal::ReadTtsParam(&param, data);
+  //AITalk_TTtsParam param;
+  //AITalkMarshal::ReadTtsParam(&param, data);
   return _talk.TextToSpeech(jobID, &jobparam, text);
 }
 
