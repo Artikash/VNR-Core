@@ -1,6 +1,6 @@
 #pragma once
 
-// aitalkconfig.h
+// aitalkconf.h
 // 10/11/2014 jichi
 
 #define AITALK_ENCODING "SHIFT-JIS"

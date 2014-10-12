@@ -4,20 +4,22 @@ win32 {
 
 DEFINES += WITH_LIB_AITALKED
 
-INCLUDEPATH += $$PWD/..
-DEPENDPATH += $$PWD
+AITALKED_SRC = $$PWD/cpp
+
+INCLUDEPATH += $$AITALKED_SRC
+DEPENDPATH += $$AITALKED_SRC/aitalk
 
 LIBS += -luser32 # for hook functions
 
 HEADERS += \
-    $$PWD/aitalkapi.h \
-    $$PWD/aitalkconfig.h \
-    $$PWD/aitalked.h \
-    $$PWD/aitalksync.h
+    $$AITALKED_SRC/aitalk/_windef.h \
+    $$AITALKED_SRC/aitalk/aitalkapi.h \
+    $$AITALKED_SRC/aitalk/aitalkconf.h \
+    $$AITALKED_SRC/aitalk/aitalkdef.h \
+    $$AITALKED_SRC/aitalk/aitalkutil.h
 SOURCES += \
-    $$PWD/aitalkapi.cc \
-    $$PWD/aitalked.cc \
-    $$PWD/aitalksync.cc
+    $$AITALKED_SRC/aitalk/aitalkapi.cc \
+    $$AITALKED_SRC/aitalk/aitalkutil.cc
 }
 
 # EOF

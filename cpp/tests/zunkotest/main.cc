@@ -1,6 +1,6 @@
 // main.cc
 // 10/11/2014 jichi
-#include "aitalked/aitalked.h"
+#include "aitalk/aitalkutil.h"
 #include <windows.h>
 #include <iostream>
 #include <string>
@@ -11,10 +11,9 @@ int main()
   HMODULE h = ::LoadLibraryA("aitalked.dll");
   std::cerr << h << std::endl;
   if (h) {
-    bool ok = AITalk::Init(h);
+    AITalk::AITalkUtil ai(h);
+    bool ok = ai.IsValid();
     std::cerr << "init: " << ok << std::endl;
-
-    AITalk::Destroy();
   }
   //  Init init = (Init)::GetProcAddress(h, "_AITalkAPI_Init@4");
   //  TextToSpeech tts = (TextToSpeech)::GetProcAddress(h, "_AITalkAPI_TextToSpeech@12");
