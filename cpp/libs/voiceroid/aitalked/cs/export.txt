@@ -1,7 +1,13 @@
 10/11/2014 jichi
 
-CS files are exported from AITalkSynth.dll in zunko 1.6 using .NET Reflector 8.3.3.115.
+CS files are exported from AITalkSynth.dll in zunko 1.6 using .NET Reflector 8.3.3.115 on .NET 4.5.
+Library has dependence on both VC 8.0 and VB 8.0.
 
+* VOICEROID 1.6.0.0
+
+* Common 1.0.1.0
+* LangEditModelLib 1.0.1.0
+* AITalkTuning 1.0.1.0
 * AITalkSynth 1.0.1.0
 
 Exported functions in aitalked.dll are as follows got using Dependency Walker.

@@ -2,6 +2,7 @@
 
 // aitalkdef.h
 // 10/11/2014 jichi
+#include "aitalk/aitalkconf.h"
 
 namespace AITalk
 {
@@ -271,12 +272,13 @@ struct AITalk_TJobParam
 // }
 struct AITalk_TTtsParam
 {
-  enum : int { MAX_VOICENAME_ = 80 };
+  // C#: public const int MAX_VOICENAME_ = 80;
+  enum { MAX_VOICENAME_ = AITALK_MAX_NAME }; // 80 is used in AITalkMarshal.cs
 
   struct TJeitaParam
   {
-    const char *femaleName;
-    const char *maleName;
+    char femaleName[MAX_VOICENAME_];
+    char maleName[MAX_VOICENAME_];
     int pauseMiddle;
     int pauseLong;
     int pauseSentence;
@@ -308,9 +310,7 @@ struct AITalk_TTtsParam
   TJeitaParam Jeita;
   unsigned int numSpeakers;
   int __reserved__;
-  //TSpeakerParam[] Speaker;
-  //TSpeakerParam Speaker[1];
-  TSpeakerParam Speaker[1];
+  TSpeakerParam *Speaker; // TSpeakerParam[] Speaker;
 };
 
 } // namespace AITalk

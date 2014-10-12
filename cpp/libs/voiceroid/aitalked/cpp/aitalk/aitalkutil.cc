@@ -46,6 +46,9 @@ AITalk::AITalkUtil::AITalkUtil(HMODULE h)
 
   //if (_api.VoiceLoad("zunko_22") != AITALKERR_SUCCESS)
   //  return;
+  static char *langDir =  "C:\\Program Files\\AHS\\VOICEROID+\\zunko\\lang";
+  if (_api.VoiceLoad(langDir) != AITALKERR_SUCCESS)
+    return;
 
   _valid = true;
 }
@@ -60,14 +63,11 @@ AITalk::AITalkUtil::~AITalkUtil()
 
 AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobParam &jobparam, const char *text)
 {
-  unsigned num;
-  AITalk_TTtsParam param[10];
-  AITalkResultCode res = _api.GetParam(param, &num);
-  if (res != AITALKERR_SUCCESS)
-    return res;
-
-  std::cerr << 11111 << std::endl;
-  std::cerr << 22222 << param[0].voiceName << 333333 << std::endl;
+  //unsigned num;
+  //AITalk_TTtsParam param[10];
+  //AITalkResultCode res = _api.GetParam(param, &num);
+  //if (res != AITALKERR_SUCCESS)
+  //  return res;
 
   //param.procTextBuf = _AITalkProcTextBuf;
   //param.procRawBuf = _AITalkProcRawBuf;
@@ -75,6 +75,20 @@ AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobPara
   //res = this->SetParam(param);
   //if (res != AITALKERR_SUCCESS)
   //  return res;
+
+  size_t num;
+  AITalkResultCode code = _api.GetParam(nullptr, &num);
+  if (code == AITALKERR_INSUFFICIENT) {
+    char *buf = new char[num];
+    //IntPtr ptr = Marshal.AllocCoTaskMem((int) num);
+    code = _api.GetParam(buf, &num);
+    if (code != AITALKERR_SUCCESS) {
+      delete buf;
+      return code;
+    }
+    //param = AITalkMarshal.IntPtrToTTtsParam(ptr);
+    //Marshal.FreeCoTaskMem(ptr);
+  }
 
   return _api.TextToSpeech(jobID, &jobparam, text);
 }

@@ -45,13 +45,13 @@ typedef AITalkResultCode (__stdcall *AITalkAPI_End)();
 // [DllImport("aitalked.dll", EntryPoint="AITalkAPI_GetParam")]
 // public static extern AITalkResultCode GetParam(IntPtr pParam, out uint size);
 #define _AITalkAPI_GetParam "_AITalkAPI_GetParam@8"
-typedef AITalkResultCode (__stdcall *AITalkAPI_GetParam)(_Out_opt_ AITalk_TTtsParam *pParam, _Out_ unsigned int *size);
+typedef AITalkResultCode (__stdcall *AITalkAPI_GetParam)(_Out_opt_ void *pParam, _Out_ unsigned int *size);
 
 // AITalkAPI.cs:
 // [DllImport("aitalked.dll", EntryPoint="AITalkAPI_SetParam")]
 // public static extern AITalkResultCode SetParam(IntPtr pParam);
 #define _AITalkAPI_SetParam "_AITalkAPI_SetParam@4"
-typedef AITalkResultCode (__stdcall *AITalkAPI_SetParam)(const AITalk_TTtsParam *pParam);
+typedef AITalkResultCode (__stdcall *AITalkAPI_SetParam)(const void *pParam);
 
 // AITalkAPI.cs:
 // [DllImport("aitalked.dll", EntryPoint="AITalkAPI_TextToSpeech")]
@@ -84,6 +84,18 @@ typedef AITalkResultCode (__stdcall *AITalkAPI_VoiceClear)();
 #define _AITalkAPI_VoiceLoad "_AITalkAPI_VoiceLoad@4"
 typedef AITalkResultCode (__stdcall *AITalkAPI_VoiceLoad)(const char *voiceName);
 
+// AITalkAPI.cs:
+// [DllImport("aitalked.dll", EntryPoint="AITalkAPI_LangClear")]
+// private static extern AITalkResultCode _LangClear();
+#define _AITalkAPI_LangClear "_AITalkAPI_LangClear@0"
+typedef AITalkResultCode (__stdcall *AITalkAPI_LangClear)();
+
+// AITalkAPI.cs:
+// [DllImport("aitalked.dll", EntryPoint="AITalkAPI_LangLoad")]
+// private static extern AITalkResultCode _LangLoad(string dirLang);
+#define _AITalkAPI_LangLoad "_AITalkAPI_LangLoad@4"
+typedef AITalkResultCode (__stdcall *AITalkAPI_LangLoad)(const char *dirLang);
+
 /* Manager class */
 
 class AITalkAPI
@@ -94,6 +106,8 @@ public:
   AITalkAPI_End End;
   AITalkAPI_GetParam GetParam;
   AITalkAPI_GetStatus GetStatus;
+  AITalkAPI_LangClear LangClear;
+  AITalkAPI_LangLoad LangLoad;
   AITalkAPI_SetParam SetParam;
   AITalkAPI_TextToSpeech TextToSpeech;
   AITalkAPI_VoiceClear VoiceClear;
@@ -117,6 +131,8 @@ public:
       && End
       && GetStatus
       && GetParam
+      && LangClear
+      && LangLoad
       && SetParam
       && TextToSpeech
       && VoiceClear

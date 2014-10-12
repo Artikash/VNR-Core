@@ -13,4 +13,6 @@
 #define AITALK_CONFIG_LENAUTHSEED   0               // AITalk_TConfig::lenAuthSeed
 #define AITALK_CONFIG_LICENSE       "aitalk.lic"    // relative path of the license file
 
+#define AITALK_MAX_NAME 80 // maximum length of the voice name string. 80 is used in AITalkMarshal.cs
+
 // EOF
