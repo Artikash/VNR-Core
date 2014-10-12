@@ -3,6 +3,7 @@
 // aitalkconf.h
 // 10/11/2014 jichi
 
+#define AITALK_DLL      "aitalked.dll"
 #define AITALK_ENCODING "SHIFT-JIS"
 
 // These values are got by debugging AITalkAPI_Init using OllyDbg at runtime

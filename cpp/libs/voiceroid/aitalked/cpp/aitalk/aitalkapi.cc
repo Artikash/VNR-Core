@@ -10,7 +10,9 @@
 
 AITalk::AITalkAPI::AITalkAPI(HMODULE h)
   : ctor(Init)
+  , ctor(CloseSpeech)
   , ctor(End)
+  , ctor(GetStatus)
   , ctor(TextToSpeech)
 {}
 #undef ctor

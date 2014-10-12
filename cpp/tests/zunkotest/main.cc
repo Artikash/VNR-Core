@@ -7,6 +7,7 @@
 
 int main()
 {
+  const char *text = "hello";
   std::cerr << "enter" << std::endl;
   HMODULE h = ::LoadLibraryA("aitalked.dll");
   std::cerr << h << std::endl;
@@ -14,6 +15,10 @@ int main()
     AITalk::AITalkUtil ai(h);
     bool ok = ai.IsValid();
     std::cerr << "init: " << ok << std::endl;
+
+    int jobID;
+    auto r = ai.TextToSpeech(&jobID, text);
+    std::cerr << "tts: " << (int)r << std::endl;
   }
   //  Init init = (Init)::GetProcAddress(h, "_AITalkAPI_Init@4");
   //  TextToSpeech tts = (TextToSpeech)::GetProcAddress(h, "_AITalkAPI_TextToSpeech@12");

@@ -12,9 +12,9 @@ using namespace AITalk;
 // Construction
 
 AITalk::AITalkUtil::AITalkUtil(HMODULE h)
-  : api_(h), valid_(false)
+  : _api(h), _valid(false)
 {
-  if (!api_.IsValid())
+  if (!_api.IsValid())
     return;
 
   char dllpath[MAX_PATH];
@@ -41,13 +41,62 @@ AITalk::AITalkUtil::AITalkUtil(HMODULE h)
   config.codeAuthSeed = AITALK_CONFIG_CODEAUTHSEED;
   config.lenAuthSeed = AITALK_CONFIG_LENAUTHSEED;
 
-  valid_ = 0 == api_.Init(&config);
+  _valid = _api.Init(&config) == AITALKERR_SUCCESS;
 }
 
 AITalk::AITalkUtil::~AITalkUtil()
 {
-  if (valid_)
-    api_.End();
+  if (_valid)
+    _api.End();
+}
+
+// Speech synthesize
+
+AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobParam &jobparam, const char *text)
+{
+  return _api.TextToSpeech(jobID, &jobparam, text);
+  //AITalk_TTtsParam param = new AITalk_TTtsParam();
+  //AITalkResultCode res = this.GetParam(ref param);
+  //this.OnWriteLog("[AITalkAPI_GetParam] " + res);
+  //if (res != AITalkResultCode.AITALKERR_SUCCESS)
+  //{
+  //    this._busy = false;
+  //    this._playing = false;
+  //    return res;
+  //}
+  //param.procTextBuf = this._AITalkProcTextBuf;
+  //param.procRawBuf = this._AITalkProcRawBuf;
+  //param.procEventTts = this._AITalkProcEventTTS;
+  //res = this.SetParam(ref param);
+  //this.OnWriteLog("[AITalkAPI_SetParam] " + res);
+  //if (res != AITalkResultCode.AITALKERR_SUCCESS)
+  //{
+  //    this._busy = false;
+  //    this._playing = false;
+  //    return res;
+  //}
+  //this.OnWriteLog("[AIAuidoAPI_ClearData] " + AIAudioAPI.ClearData());
+  //res = AITalkAPI.TextToSpeech(out jobID, ref jobparam, text);
+  //this.OnWriteLog("[AITalkAPI_TextToSpeech] " + res);
+  //if (res != AITalkResultCode.AITALKERR_SUCCESS)
+  //{
+  //    this._busy = false;
+  //    this._playing = false;
+  //    return res;
+  //}
+  //new Thread(delegate {
+  //    AITalkStatusCode code;
+  //    do
+  //    {
+  //        Thread.Sleep(this.GetStatusInterval);
+  //        res = this.GetStatus(jobID, out code);
+  //    }
+  //    while ((this._playing && (res == AITalkResultCode.AITALKERR_SUCCESS)) && (code != AITalkStatusCode.AITALKSTAT_DONE));
+  //    AITalkAPI.CloseSpeech(jobID, 0);
+  //    this.OnWriteLog("[AITalkAPI_CloseSpeech] " + res);
+  //    this._busy = false;
+  //}) { IsBackground = true }.Start();
+  //return res;
 }
 
 // EOF
