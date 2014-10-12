@@ -11,6 +11,8 @@ class AITalkUtil
 {
   AITalkAPI _api;
   bool _valid;
+  char _dirpath[MAX_PATH]; // directory of the DLL
+  char _licpath[MAX_PATH]; // path to aitalked.lic
 public:
   /**
    *  @param  h  aitalked.dll module

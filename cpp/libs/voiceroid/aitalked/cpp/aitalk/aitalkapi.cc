@@ -16,6 +16,8 @@ AITalk::AITalkAPI::AITalkAPI(HMODULE h)
   , ctor(GetStatus)
   , ctor(SetParam)
   , ctor(TextToSpeech)
+  , ctor(VoiceClear)
+  , ctor(VoiceLoad)
 {}
 #undef ctor
 

@@ -285,7 +285,7 @@ struct AITalk_TTtsParam
 
   struct TSpeakerParam
   {
-    const char *voiceName;
+    char voiceName[MAX_VOICENAME_];
     float volume;
     float speed;
     float pitch;
@@ -304,11 +304,12 @@ struct AITalk_TTtsParam
   float volume;
   int pauseBegin;
   int pauseTerm;
-  const char *voiceName;
+  char voiceName[MAX_VOICENAME_];
   TJeitaParam Jeita;
   unsigned int numSpeakers;
   int __reserved__;
   //TSpeakerParam[] Speaker;
+  //TSpeakerParam Speaker[1];
   TSpeakerParam Speaker[1];
 };
 

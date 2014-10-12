@@ -2,6 +2,8 @@
 
 CS files are exported from AITalkSynth.dll in zunko 1.6 using .NET Reflector 8.3.3.115.
 
+* AITalkSynth 1.0.1.0
+
 Exported functions in aitalked.dll are as follows got using Dependency Walker.
 
 ??0_Mutex@std@@QAE@W4_Uninitialized@1@@Z

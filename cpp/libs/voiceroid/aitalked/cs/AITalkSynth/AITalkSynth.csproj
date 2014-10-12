@@ -4,7 +4,7 @@
     <ProjectType>local</ProjectType>
     <ProjectVersion>7.10.377</ProjectVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>fba5fe08-b342-4626-9e40-b1b41081a1ff</ProjectGuid>
+    <ProjectGuid>b1170351-3e95-4380-ba00-6b7591f28f06</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <AssemblyName>AITalkSynth</AssemblyName>
     <OutputType>Library</OutputType>

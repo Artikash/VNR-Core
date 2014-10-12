@@ -72,6 +72,18 @@ typedef AITalkResultCode (__stdcall *AITalkAPI_CloseSpeech)(int jobID, _In_opt_ 
 #define _AITalkAPI_GetStatus "_AITalkAPI_GetStatus@8"
 typedef AITalkResultCode (__stdcall *AITalkAPI_GetStatus)(int jobID, _Out_ AITalkStatusCode *status);
 
+// AITalkAPI.cs:
+// [DllImport("aitalked.dll", EntryPoint="AITalkAPI_VoiceClear")]
+// private static extern AITalkResultCode _VoiceClear();
+#define _AITalkAPI_VoiceClear "_AITalkAPI_VoiceClear@0"
+typedef AITalkResultCode (__stdcall *AITalkAPI_VoiceClear)();
+
+// AITalkAPI.cs:
+// [DllImport("aitalked.dll", EntryPoint="AITalkAPI_VoiceLoad")]
+// private static extern AITalkResultCode _VoiceLoad(string voiceName);
+#define _AITalkAPI_VoiceLoad "_AITalkAPI_VoiceLoad@4"
+typedef AITalkResultCode (__stdcall *AITalkAPI_VoiceLoad)(const char *voiceName);
+
 /* Manager class */
 
 class AITalkAPI
@@ -84,6 +96,8 @@ public:
   AITalkAPI_GetStatus GetStatus;
   AITalkAPI_SetParam SetParam;
   AITalkAPI_TextToSpeech TextToSpeech;
+  AITalkAPI_VoiceClear VoiceClear;
+  AITalkAPI_VoiceLoad VoiceLoad;
 
   /**
    * @param  h  aitalked.dll module
@@ -105,6 +119,8 @@ public:
       && GetParam
       && SetParam
       && TextToSpeech
+      && VoiceClear
+      && VoiceLoad
     ;
   }
 };
