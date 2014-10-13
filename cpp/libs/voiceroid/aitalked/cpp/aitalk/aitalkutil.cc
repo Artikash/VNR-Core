@@ -7,7 +7,6 @@
 #include "cc/ccmacro.h"
 #include <windows.h>
 #include <cstring>
-#include <iostream>
 
 using namespace AITalk;
 
@@ -99,7 +98,8 @@ AIAudioResultCode AITalk::AITalkUtil::PushData(short wave[], unsigned int size, 
     return AIAUDIOERR_INVALID_ARGUMENT;
   size_t dstlen = size * 2;
   char *dst = new char[dstlen];
-  ::memcpy(dst, wave, dstlen);
+  if (dstlen)
+    ::memcpy(dst, wave, dstlen);
   AIAudioResultCode code = _audio.PushData(dst, dstlen, stop);
   //if (code != AIAudioResultCode.AIAUDIOERR_SUCCESS)
   //  this._playing = false;
@@ -147,19 +147,35 @@ AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobPara
 
 int AITalk::AITalkUtil::MyAITalkProcEventTTS(AITalkEventReasonCode reasonCode, int jobID, unsigned long tick, const char *name, const int *userData)
 {
-  std::cerr << "procevent" << std::endl;
+  CC_UNUSED(jobID);
+  CC_UNUSED(name);
+  CC_UNUSED(userData);
+  switch (reasonCode) {
+  case AITALKEVENT_BOOKMARK: _instance->PushEvent(tick, 0); break;
+  case AITALKEVENT_PH_LABEL: _instance->PushEvent(tick, 1); break;
+  }
   return 0;
 }
 int AITalk::AITalkUtil::MyAITalkProcTextBuf(AITalkEventReasonCode reasonCode, int jobID, const int *userData)
 {
-  std::cerr << "proctext" << std::endl;
+  CC_UNUSED(reasonCode);
+  CC_UNUSED(jobID);
+  CC_UNUSED(userData);
+  //uint size = 0;
+  //uint pos = 0;
+  //string str = "";
+  //if ((reasonCode == AITalkEventReasonCode.AITALKEVENT_TEXTBUF_FLUSH) || (reasonCode == AITalkEventReasonCode.AITALKEVENT_TEXTBUF_FULL))
+  //{
+  //  AITalkResultCode code = AITalkAPI.GetKana(jobID, this._kanaBuf, (uint) this._kanaBuf.Capacity, out size, out pos);
+  //  this.OnWriteLog(string.Concat(new object[] { "[AITalkAPI_GetKana] ", code, " : ", size }));
+  //  str = this._kanaBuf.ToString();
+  //}
   return 0;
 }
 
 int AITalk::AITalkUtil::MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int jobID, unsigned long tick, const int *userData)
 {
   CC_UNUSED(userData);
-  CC_UNUSED(tick);
   CC_UNUSED(jobID);
   if (!_instance)
     return 0;
@@ -170,14 +186,14 @@ int AITalk::AITalkUtil::MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int
   case AITALKEVENT_RAWBUF_FLUSH:
   case AITALKEVENT_RAWBUF_FULL:
     if (AITALKERR_SUCCESS == _instance->_talk.GetData(jobID, wave, wavelen, &size) && size > 0) {
-      //if (reasonCode == AITalkEventReasonCode.AITALKEVENT_RAWBUF_FLUSH)
-      //  this.PushEvent(tick, (IntPtr) 2L);
+      if (reasonCode == AITALKEVENT_RAWBUF_FLUSH)
+        _instance->PushEvent(tick, 2);
       _instance->PushData(wave, size, 0);
     }
     break;
   case AITALKEVENT_RAWBUF_CLOSE:
-    //this->PushEvent(tick, (IntPtr) 3L);
-    //_instance->PushData(new short[0], 0, 1);
+    _instance->PushEvent(tick, 3);
+    _instance->PushData(new short[0], 0, 1);
     break;
   }
   return 0;

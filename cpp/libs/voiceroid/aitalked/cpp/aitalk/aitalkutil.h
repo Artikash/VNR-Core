@@ -55,6 +55,14 @@ private:
   // AITalkUtil.cs: public AIAudioResultCode PushData(short[] wave, int size, int stop)
   AIAudioResultCode PushData(short wave[], unsigned int size, int stop);
 
+  // AITalkUtil.cs: public AIAudioResultCode PushEvent(ulong tick, IntPtr userData)
+  AIAudioResultCode PushEvent(unsigned long, unsigned long)
+  {
+    //return _audio.PushEvent(tick, reinterpret_cast<const int *>(userData));
+    // Audio event is disabled
+    return AIAUDIOERR_SUCCESS;
+  }
+
   // AITalkUtil.cs: protected virtual int MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int jobID, ulong tick, IntPtr userData)
   static int __stdcall MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int jobID, unsigned long tick, const int *userData);
 
