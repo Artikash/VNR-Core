@@ -59,20 +59,24 @@ MouseArea { id: root_
     //border.color: '#aa00bfff'
     border.color: '#99ffffaa' // yellow
 
-    gradient: Gradient {
-      GradientStop {
-        position: 0.0
-        color: root_.pressed ? Qt.darker(backgroundColor) :
-               root_.hover ? Qt.lighter(backgroundColor) :
-               Qt.lighter(backgroundColor)
-      }
-      GradientStop {
-        position: 1.0
-        color: root_.pressed ? Qt.darker(backgroundColor) :
-               root_.hover ? Qt.lighter(backgroundColor) :
-               backgroundColor
-      }
-    }
+    color: root_.pressed ? Qt.darker(backgroundColor) :
+           root_.hover ? Qt.lighter(backgroundColor) :
+           backgroundColor
+
+    //gradient: Gradient {
+    //  GradientStop {
+    //    position: 0.0
+    //    color: root_.pressed ? Qt.darker(backgroundColor) :
+    //           root_.hover ? Qt.lighter(backgroundColor) :
+    //           Qt.lighter(backgroundColor)
+    //  }
+    //  GradientStop {
+    //    position: 1.0
+    //    color: root_.pressed ? Qt.darker(backgroundColor) :
+    //           root_.hover ? Qt.lighter(backgroundColor) :
+    //           backgroundColor
+    //  }
+    //}
 
     //MouseArea { id: mouse_
     //  anchors.fill: parent
