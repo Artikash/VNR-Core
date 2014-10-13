@@ -18,7 +18,7 @@ Share.FloatingRectangle { id: root_
   // - Private -
 
   color: drag.active ? '#99000000' : '#55000000'
-  radius: 10
+  //radius: 10 // flat
 
   width: text_.width + 9
   height: text_.height + 9

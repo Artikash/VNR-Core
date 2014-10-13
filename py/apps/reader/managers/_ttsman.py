@@ -5,8 +5,9 @@
 import os
 from time import time
 from functools import partial
-from PySide.QtCore import QThread, Signal, Qt
+from PySide.QtCore import QThread, Signal, Qt, QMutex
 from sakurakit import skfileio, skthreads, skwincom
+from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
 from zhszht.zhszht import zht2zhs
 import voiceroid.online as vrapi
@@ -208,7 +209,9 @@ class ZunkoEngine(VoiceEngine):
 
   def __init__(self, volume=100):
     self.engine = self.createengine()
-    self.setVolume(volume)
+    self.mutex = QMutex() # speak mutex
+    #self.setVolume(volume)
+    self.engine.setVolume(volume/100.0)
 
   @classmethod
   def createengine(cls):
@@ -226,7 +229,11 @@ class ZunkoEngine(VoiceEngine):
     return ret
 
   def setVolume(self, v):
-    self.engine.setVolume(v/100.0)
+    if self.mutex.tryLock():
+      self.engine.setVolume(v/100.0)
+      self.mutex.unlock()
+    else:
+      dwarn("ignored due to thread contention")
 
   def isValid(self):
     """"@reimp"""
@@ -234,11 +241,19 @@ class ZunkoEngine(VoiceEngine):
 
   def speak(self, text, language=None):
     """"@reimp"""
-    return self.engine.speak(text)
+    if self.mutex.tryLock():
+      self.engine.speak(text)
+      self.mutex.unlock()
+    else:
+      dwarn("ignored due to thread contention")
 
   def stop(self):
     """"@reimp"""
-    return self.engine.stop()
+    if self.mutex.tryLock():
+      ret = self.engine.stop()
+      self.mutex.unlock()
+    else:
+      dwarn("ignored due to thread contention")
 
   def setPath(self, path):
     if path and os.path.exists(path):
