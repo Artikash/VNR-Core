@@ -64,6 +64,7 @@ AITalkResultCode AITalk::AITalkUtil::Init(HMODULE h, const AITalkSettings *setti
 
   code =_talk.VoiceLoad(AITALK_CONFIG_VOICENAME);
   if (code != AITALKERR_SUCCESS)
+
     return code;
   // Initialize audio API
   {
