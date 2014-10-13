@@ -117,4 +117,25 @@ struct AIAudio_TConfig
   int __reserved__;
 };
 
+// AIAudio_TWaveFormat.cs:
+// namespace AITalk
+// {
+//   using System;
+//   using System.Runtime.InteropServices;
+//
+//   [StructLayout(LayoutKind.Sequential)]
+//   public struct AIAudio_TWaveFormat
+//   {
+//     public int header;
+//     public int hzSamplesPerSec;
+//     public AIAudioFormatType formatTag;
+//   }
+// }
+struct AIAudio_TWaveFormat
+{
+  int header;
+  int hzSamplesPerSec;
+  AIAudioFormatType formatTag;
+};
+
 } // namespace AITalk

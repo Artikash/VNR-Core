@@ -4,10 +4,15 @@
 #include "aitalk/aitalkapi.h"
 #include "aitalk/aitalkmarshal.h"
 #include "cpputil/cpppath.h"
+#include "cc/ccmacro.h"
 #include <windows.h>
 #include <cstring>
+#include <iostream>
 
 using namespace AITalk;
+
+// Static variables
+AITalkUtil *AITalk::AITalkUtil::_instance;
 
 // Construction
 
@@ -72,33 +77,39 @@ AITalk::AITalkUtil::AITalkUtil(HMODULE h)
   }
 
   _valid = true;
+  _instance = this;
 }
 
 AITalk::AITalkUtil::~AITalkUtil()
 {
+  _instance = nullptr;
   if (_valid) {
     _audio.Close();
     _talk.End();
   }
 }
 
+// APIs wrappers
+
+AIAudioResultCode AITalk::AITalkUtil::PushData(short wave[], unsigned int size, int stop)
+{
+  //if (!this._playing)
+  //  return AIAudioResultCode.AIAUDIOERR_NO_PLAYING;
+  if (!wave)
+    return AIAUDIOERR_INVALID_ARGUMENT;
+  size_t dstlen = size * 2;
+  char *dst = new char[dstlen];
+  ::memcpy(dst, wave, dstlen);
+  AIAudioResultCode code = _audio.PushData(dst, dstlen, stop);
+  //if (code != AIAudioResultCode.AIAUDIOERR_SUCCESS)
+  //  this._playing = false;
+  return code;
+}
+
 // Speech synthesize
 
 AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobParam &jobparam, const char *text)
 {
-  /*
-  //unsigned num;
-  //AITalk_TTtsParam param[10];
-  //AITalkResultCode res = _talk.GetParam(param, &num);
-  //if (res != AITALKERR_SUCCESS)
-  //  return res;
-
-  //param.procTextBuf = _AITalkProcTextBuf;
-  //param.procRawBuf = _AITalkProcRawBuf;
-  //param.procEventTts = _AITalkProcEventTTS;
-  //res = this->SetParam(param);
-  //if (res != AITALKERR_SUCCESS)
-  //  return res;
 
   size_t num;
   AITalkResultCode code = _talk.GetParam(nullptr, &num);
@@ -113,13 +124,63 @@ AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobPara
     delete data;
     return code;
   }
-  //param = AITalkMarshal.IntPtrToTTtsParam(ptr);
-  //Marshal.FreeCoTaskMem(ptr);
-  */
+  AITalk_TTtsParam param;
+  AITalkMarshal::ReadTtsParam(&param, data);
 
-  //AITalk_TTtsParam param;
-  //AITalkMarshal::ReadTtsParam(&param, data);
+  param.procRawBuf = this->MyAITalkProcRawBuf;
+  param.procTextBuf = this->MyAITalkProcTextBuf;
+  param.procEventTts = this->MyAITalkProcEventTTS;
+
+  AITalkMarshal::WriteTtsParam(data, param);
+
+  AITalk_TTtsParam param2;
+  AITalkMarshal::ReadTtsParam(&param2, data);
+
+  code = _talk.SetParam(data);
+  if (code != AITALKERR_SUCCESS)
+    return code;
+
   return _talk.TextToSpeech(jobID, &jobparam, text);
+}
+
+// Hooks
+
+int AITalk::AITalkUtil::MyAITalkProcEventTTS(AITalkEventReasonCode reasonCode, int jobID, unsigned long tick, const char *name, const int *userData)
+{
+  std::cerr << "procevent" << std::endl;
+  return 0;
+}
+int AITalk::AITalkUtil::MyAITalkProcTextBuf(AITalkEventReasonCode reasonCode, int jobID, const int *userData)
+{
+  std::cerr << "proctext" << std::endl;
+  return 0;
+}
+
+int AITalk::AITalkUtil::MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int jobID, unsigned long tick, const int *userData)
+{
+  CC_UNUSED(userData);
+  CC_UNUSED(tick);
+  CC_UNUSED(jobID);
+  if (!_instance)
+    return 0;
+  unsigned int size = 0;
+  enum { wavelen = 1000 };
+  short wave[wavelen];
+  switch (reasonCode) {
+  case AITALKEVENT_RAWBUF_FLUSH:
+  case AITALKEVENT_RAWBUF_FULL:
+    if (AITALKERR_SUCCESS == _instance->_talk.GetData(jobID, wave, wavelen, &size) && size > 0) {
+      //if (reasonCode == AITalkEventReasonCode.AITALKEVENT_RAWBUF_FLUSH)
+      //  this.PushEvent(tick, (IntPtr) 2L);
+      _instance->PushData(wave, size, 0);
+    }
+    break;
+  case AITALKEVENT_RAWBUF_CLOSE:
+    //this->PushEvent(tick, (IntPtr) 3L);
+    //_instance->PushData(new short[0], 0, 1);
+    break;
+  }
+  return 0;
 }
 
 // EOF

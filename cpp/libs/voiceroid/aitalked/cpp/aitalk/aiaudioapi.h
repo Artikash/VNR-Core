@@ -37,6 +37,30 @@ typedef AIAudioResultCode (__stdcall *AIAudioAPI_ClearData)();
 #define _AIAudioAPI_PushData "_AIAudioAPI_PushData@12"
 typedef AIAudioResultCode (__stdcall *AIAudioAPI_PushData)(const char *buf, unsigned int len, int stop);
 
+// AITalkAudio.cs:
+// [DllImport("aitalked.dll", EntryPoint="AIAudioAPI_PushEvent")]
+// public static extern AIAudioResultCode PushEvent(ulong tick, IntPtr userData);
+#define _AIAudioAPI_PushEvent "_AIAudioAPI_PushEvent@12"
+typedef AIAudioResultCode (__stdcall *AIAudioAPI_PushEvent)(unsigned long tick, const int *userData);
+
+// AITalkAudio.cs:
+// [DllImport("aitalked.dll", EntryPoint="AIAudioAPI_Resume")]
+// public static extern AIAudioResultCode Resume();
+#define _AIAudioAPI_Resume "_AIAudioAPI_Resume@0"
+typedef AIAudioResultCode (__stdcall *AIAudioAPI_Resume)();
+
+// AITalkAudio.cs:
+// [DllImport("aitalked.dll", EntryPoint="AIAudioAPI_Suspend")]
+// public static extern AIAudioResultCode Suspend();
+#define _AIAudioAPI_Suspend "_AIAudioAPI_Suspend@0"
+typedef AIAudioResultCode (__stdcall *AIAudioAPI_Suspend)();
+
+// AITalkAudio.cs:
+// [DllImport("aitalked.dll", EntryPoint="AIAudioAPI_SaveWave")]
+// public static extern AIAudioResultCode SaveWave(string path, ref AIAudio_TWaveFormat format, byte[] buf, uint len);
+#define _AIAudioAPI_SaveWave "_AIAudioAPI_SaveWave@16"
+typedef AIAudioResultCode (__stdcall *AIAudioAPI_SaveWave)(const char *path, const AIAudio_TWaveFormat *format, const char buf[], unsigned int len);
+
 /* Manager class */
 
 class AIAudioAPI
@@ -46,6 +70,10 @@ public:
   AIAudioAPI_Close Close;
   AIAudioAPI_Open Open;
   AIAudioAPI_PushData PushData;
+  AIAudioAPI_PushEvent PushEvent;
+  AIAudioAPI_Resume Resume;
+  AIAudioAPI_SaveWave SaveWave;
+  AIAudioAPI_Suspend Suspend;
 
   /**
    * @param  h  aitalked.dll module
@@ -64,6 +92,10 @@ public:
         && Close
         && Open
         && PushData
+        && PushEvent
+        && Resume
+        && SaveWave
+        && Suspend
     ;
   }
 };

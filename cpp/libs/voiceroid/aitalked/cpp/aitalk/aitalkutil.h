@@ -10,6 +10,8 @@ namespace AITalk {
 // C#: public class AITalkUtil : IDisposable
 class AITalkUtil
 {
+  static AITalkUtil *_instance; // in order to bind "this" for "my" callbacks
+
   AITalkAPI _talk;
   AIAudioAPI _audio;
   bool _valid;
@@ -49,6 +51,19 @@ private:
     return _talk.GetParam(param, &num);
   }
 
+  // Convert short[] got from talkAPI to byte[] and pass to audio API
+  // AITalkUtil.cs: public AIAudioResultCode PushData(short[] wave, int size, int stop)
+  AIAudioResultCode PushData(short wave[], unsigned int size, int stop);
+
+  // AITalkUtil.cs: protected virtual int MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int jobID, ulong tick, IntPtr userData)
+  static int __stdcall MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int jobID, unsigned long tick, const int *userData);
+
+  // AITalkUtil.cs: pprotected virtual int MyAITalkProcEventTTS(AITalkEventReasonCode reasonCode, int jobID, ulong tick, string name, IntPtr userData)
+  static int __stdcall MyAITalkProcEventTTS(AITalkEventReasonCode reasonCode, int jobID, unsigned long tick, const char *name, const int *userData);
+
+  // AITalkUtil.cs: pprotected virtual int MyAITalkProcTextBuf(AITalkEventReasonCode reasonCode, int jobID, IntPtr userData)
+  static int __stdcall MyAITalkProcTextBuf(AITalkEventReasonCode reasonCode, int jobID, const int *userData);
+
 public:
   // AITalkUtil::SynthSync: while ((this._playing && (res == AITalkResultCode.AITALKERR_SUCCESS)) && (code != AITalkStatusCode.AITALKSTAT_DONE));
   bool IsPlaying(int jobID) const
@@ -58,6 +73,9 @@ public:
     return res == AITALKERR_SUCCESS && code == AITALKSTAT_DONE;
   }
 
+  AITalkResultCode CloseSpeech(int jobID)
+  { return _talk.CloseSpeech(jobID, 0); } // eventId is 0
+
   // AITalkUtil.cs: public AITalkResultCode TextToSpeech(string text)
   AITalkResultCode TextToSpeech(_Out_ int *jobID, const char *text)
   {
@@ -66,7 +84,6 @@ public:
      param.userData = nullptr;
      return this->SynthSync(jobID, param, text);
   }
-
 };
 
 } // namespace AITalk

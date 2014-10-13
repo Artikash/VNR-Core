@@ -13,6 +13,10 @@ AITalk::AIAudioAPI::AIAudioAPI(HMODULE h)
   , ctor(Close)
   , ctor(Open)
   , ctor(PushData)
+  , ctor(PushEvent)
+  , ctor(Resume)
+  , ctor(SaveWave)
+  , ctor(Suspend)
 {}
 #undef ctor
 

@@ -7,8 +7,8 @@
 
 int main()
 {
-  const char *text = "hello";
-  //  const char *t = "\x83\x6E\x21\x83\x8D\x81\x5B";
+  //const char *text = "hello";
+  const char *text = "\x83\x6E\x21\x83\x8D\x81\x5B";
   //
   std::cerr << "enter" << std::endl;
   HMODULE h = ::LoadLibraryA("aitalked.dll");
@@ -23,7 +23,10 @@ int main()
     auto r = ai.TextToSpeech(&jobID, text);
     std::cerr << "tts: " << (int)r << ":" << jobID << std::endl;
 
-    ::Sleep(3000);
+    system("pause");
+    ::Sleep(10000);
+    r = ai.CloseSpeech(jobID);
+    std::cerr << "close: " << (int)r << ":" << jobID << std::endl;
   }
   std::cerr << "leave" << std::endl;
   return 0;

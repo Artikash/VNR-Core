@@ -15,7 +15,7 @@ const void *AITalk::AITalkMarshal::ReadTtsParam(_Out_ AITalk_TTtsParam *param, c
   get(uint, &param->size);
   get(ptr, &param->procTextBuf);
   get(ptr, &param->procRawBuf);
-  get(ptr, &param->procRawBuf);
+  get(ptr, &param->procEventTts);
   get(uint, &param->lenTextBufBytes);
   get(uint, &param->lenRawBufBytes);
   get(float, &param->volume);
