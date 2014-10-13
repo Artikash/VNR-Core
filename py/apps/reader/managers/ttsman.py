@@ -405,13 +405,13 @@ class TtsManager(QObject):
     """
     @return  [unicode]
     """
-    ret = list(_ttsman.ONLINE_ENGINES)
     d = self.__d
-    for it in d.yukariEngine, d.zunkoEngine:
+    import sapiman
+    ret = [it.key for it in sapiman.voices()]
+    for it in d.zunkoEngine, d.yukariEngine:
       if it.isValid():
         ret.append(it.key)
-    import sapiman
-    ret.extend(it.key for it in sapiman.voices())
+    ret.extend(_ttsman.ONLINE_ENGINES)
     return ret
 
 @memoized

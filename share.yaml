@@ -41,6 +41,7 @@ env:
   - $PWD/../Python/Lib/site-packages/pydasm.pyd
   - $PWD/../Qt/translations/qt_ko.qm
   - $PWD/../MeCab/bin/libmecab.dll
+  - $PWD/../CaboCha/bin/cabocha.dll
   - $PWD/../EB/site-packages/eb.pyd
   - $PWD/../Boost/bin/boost_regex.dll
   - $PWD/../../Dictionaries/gaiji/KOJIEN.plist
