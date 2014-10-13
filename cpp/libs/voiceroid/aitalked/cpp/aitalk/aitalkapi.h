@@ -174,10 +174,7 @@ public:
    *
    * Initialize function pointers in the DLL module.
    */
-  explicit AITalkAPI(HMODULE h);
-
-  ///  Do nothing.
-  ~AITalkAPI();
+  bool LoadModule(HMODULE h);
 
   ///  Return if there are null methods.
   bool IsValid() const

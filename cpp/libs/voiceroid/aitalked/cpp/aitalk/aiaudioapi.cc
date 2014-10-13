@@ -3,23 +3,21 @@
 #include "aitalk/aiaudioapi.h"
 #include <windows.h>
 
-/* Global variables */
+bool AITalk::AIAudioAPI::LoadModule(HMODULE h)
+{
+#define get(var) \
+  (var = (AIAudioAPI_##var)::GetProcAddress(h, _AIAudioAPI_##var))
+  get(ClearData);
+  get(Close);
+  get(Open);
+  get(PushData);
+  get(PushEvent);
+  get(Resume);
+  get(SaveWave);
+  get(Suspend);
+#undef get
 
-#define ctor(var) \
-  var((AIAudioAPI_##var)::GetProcAddress(h, _AIAudioAPI_##var))
-
-AITalk::AIAudioAPI::AIAudioAPI(HMODULE h)
-  : ctor(ClearData)
-  , ctor(Close)
-  , ctor(Open)
-  , ctor(PushData)
-  , ctor(PushEvent)
-  , ctor(Resume)
-  , ctor(SaveWave)
-  , ctor(Suspend)
-{}
-#undef ctor
-
-AITalk::AIAudioAPI::~AIAudioAPI() {}
+  return IsValid();
+}
 
 // EOF

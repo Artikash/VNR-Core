@@ -1,7 +1,8 @@
 # zunkotest.pro
 # 10/11/2014
 
-CONFIG += console noqt
+#CONFIG += console noqt
+CONFIG += console
 include(../../../config.pri)
 include($$LIBDIR/voiceroid/aitalked/aitalked.pri)
 
@@ -13,7 +14,7 @@ TARGET = zunkotest
 DEPENDPATH += .
 INCLUDEPATH += .
 
-#HEADERS += main.h
+HEADERS += main.h
 SOURCES += main.cc
 
 # EOF

@@ -5,33 +5,33 @@
 
 /* Global variables */
 
-#define ctor(var) \
-  var((AITalkAPI_##var)::GetProcAddress(h, _AITalkAPI_##var))
+bool AITalk::AITalkAPI::LoadModule(HMODULE h)
+{
+#define get(var) \
+  (var =(AITalkAPI_##var)::GetProcAddress(h, _AITalkAPI_##var))
+  get(BLoadWordDic);
+  get(CloseKana);
+  get(CloseSpeech);
+  get(End);
+  get(GetData);
+  get(GetJeitaControl);
+  get(GetParam);
+  get(GetStatus);
+  get(Init);
+  get(LangClear);
+  get(LangLoad);
+  get(ReloadPhraseDic);
+  get(ReloadSymbolDic);
+  get(ReloadWordDic);
+  get(SetParam);
+  get(TextToKana);
+  get(TextToSpeech);
+  get(VersionInfo);
+  get(VoiceClear);
+  get(VoiceLoad);
+#undef get
 
-AITalk::AITalkAPI::AITalkAPI(HMODULE h)
-  : ctor(Init)
-  , ctor(BLoadWordDic)
-  , ctor(CloseKana)
-  , ctor(CloseSpeech)
-  , ctor(End)
-  , ctor(GetData)
-  , ctor(GetJeitaControl)
-  , ctor(GetParam)
-  , ctor(GetStatus)
-  , ctor(LangClear)
-  , ctor(LangLoad)
-  , ctor(ReloadPhraseDic)
-  , ctor(ReloadSymbolDic)
-  , ctor(ReloadWordDic)
-  , ctor(SetParam)
-  , ctor(TextToKana)
-  , ctor(TextToSpeech)
-  , ctor(VersionInfo)
-  , ctor(VoiceClear)
-  , ctor(VoiceLoad)
-{}
-#undef ctor
-
-AITalk::AITalkAPI::~AITalkAPI() {}
+  return IsValid();
+}
 
 // EOF

@@ -299,7 +299,7 @@ struct AITalk_TTtsParam
   unsigned int size;                // default 308
   AITalkProcTextBuf procTextBuf;    // default 0
   AITalkProcRawBuf procRawBuf;      // default 0
-  AITalkProcEventTTS procEventTts;  // default built-in
+  AITalkProcEventTTS procEventTts;  // default 0
   unsigned int lenTextBufBytes;     // default 16384
   unsigned int lenRawBufBytes;      // default 176400
   float volume;                     // default 1

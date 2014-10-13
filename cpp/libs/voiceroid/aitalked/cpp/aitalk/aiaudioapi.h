@@ -80,10 +80,7 @@ public:
    *
    * Initialize function pointers in the DLL module.
    */
-  explicit AIAudioAPI(HMODULE h);
-
-  ///  Do nothing.
-  ~AIAudioAPI();
+  bool LoadModule(HMODULE h);
 
   ///  Return if there are null methods.
   bool IsValid() const

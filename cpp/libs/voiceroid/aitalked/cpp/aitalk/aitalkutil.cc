@@ -15,53 +15,55 @@ AITalkUtil *AITalk::AITalkUtil::_instance;
 
 // Construction
 
-AITalk::AITalkUtil::AITalkUtil(HMODULE h)
-  : _talk(h), _audio(h), _valid(false)
+AITalkResultCode AITalk::AITalkUtil::Init(HMODULE h)
 {
-  if (!_talk.IsValid() || !_audio.IsValid())
-    return;
+  if (!_talk.LoadModule(h) || !_audio.LoadModule(h))
+    return AITALKERR_UNSUPPORTED;
 
   // Initialize talk API
 
   char dllpath[MAX_PATH];
   if (!::GetModuleFileNameA(h, dllpath, MAX_PATH))
-    return;
+    return AITALKERR_PATH_NOT_FOUND;
 
   size_t dirlen = ::cpp_wdirlen(dllpath);
   if (dirlen < 1)
-    return;
+    return AITALKERR_PATH_NOT_FOUND;
 
-  ::memcpy(_dirpath, dllpath, dirlen - 1);
-  _dirpath[dirlen - 1] = 0;
+  ::memcpy(_voicePath, dllpath, dirlen);
+  ::strcpy(_voicePath + dirlen, "voice");
 
-  ::memcpy(_licpath, dllpath, dirlen);
-  ::strcpy(_licpath + dirlen, AITALK_CONFIG_LICENSE);
+  ::memcpy(_langPath, dllpath, dirlen);
+  ::strcpy(_langPath + dirlen, "lang");
 
+  ::memcpy(_licensePath, dllpath, dirlen);
+  ::strcpy(_licensePath + dirlen, AITALK_CONFIG_LICENSE);
+
+  AITalkResultCode code;
   {
     AITalk_TConfig config;
     config.hzVoiceDB = AITALK_CONFIG_FREQUENCY;
     config.msecTimeout = AITALK_CONFIG_TIMEOUT;
-    //config.dirVoiceDBS = _dirpath; // r'C:\Program Files\AHS\VOICEROID+\zunko'
-    config.dirVoiceDBS = "C:\\Program Files\\AHS\\VOICEROID+\\zunko\\voice";
-    //config.pathLicense = _licpath; // r'C:\Program Files\AHS\VOICEROID+\zunko\aitalk.lic'
-    config.pathLicense = "C:\\Program Files\\AHS\\VOICEROID+\\zunko\\aitalk.lic";
+    config.dirVoiceDBS = _voicePath;
+    //config.dirVoiceDBS = "C:\\Program Files\\AHS\\VOICEROID+\\zunko\\voice";
+    config.pathLicense = _licensePath;
+    //config.pathLicense = "C:\\Program Files\\AHS\\VOICEROID+\\zunko\\aitalk.lic";
     config.codeAuthSeed = AITALK_CONFIG_CODEAUTHSEED;
     config.lenAuthSeed = AITALK_CONFIG_LENAUTHSEED;
 
-    if (_talk.Init(&config) != AITALKERR_SUCCESS)
-      return;
+    code = _talk.Init(&config);
+    if (code != AITALKERR_SUCCESS)
+      return code;
   }
 
-  AITalkResultCode code;
-  static char *langDir =  "C:\\Program Files\\AHS\\VOICEROID+\\zunko\\lang";
-  code = _talk.LangLoad(langDir);
+  //char langPath[] = "C:\\Program Files\\AHS\\VOICEROID+\\zunko\\lang";
+  code = _talk.LangLoad(_langPath);
   if (code != AITALKERR_SUCCESS)
-    return;
+    return code;
 
-  static char *voiceName = "zunko_22";
-  code = _talk.VoiceLoad(voiceName);
+  code =_talk.VoiceLoad(AITALK_CONFIG_VOICENAME);
   if (code != AITALKERR_SUCCESS)
-    return;
+    return code;
 
   // Initialize audio API
   {
@@ -71,36 +73,27 @@ AITalk::AITalkUtil::AITalkUtil(HMODULE h)
     config.hzSamplesPerSec = AITALK_CONFIG_FREQUENCY;
     config.formatTag = AIAUDIOTYPE_PCM_16;
     config.__reserved__ = 0;
-    if (_audio.Open(&config) != AIAUDIOERR_SUCCESS)
-      return;
+    AIAudioResultCode code = _audio.Open(&config);
+    if (code != AIAUDIOERR_SUCCESS)
+      return AITALKERR_INTERNAL_ERROR;
   }
-
   _valid = true;
-  _instance = this;
-}
-
-AITalk::AITalkUtil::~AITalkUtil()
-{
-  _instance = nullptr;
-  if (_valid) {
-    _audio.Close();
-    _talk.End();
-  }
+  return AITALKERR_SUCCESS;
 }
 
 // APIs wrappers
 
-AIAudioResultCode AITalk::AITalkUtil::PushData(short wave[], unsigned int size, int stop)
+AIAudioResultCode AITalk::AITalkUtil::PushData(short wave[], size_t size, bool loop)
 {
   //if (!this._playing)
   //  return AIAudioResultCode.AIAUDIOERR_NO_PLAYING;
   if (!wave)
     return AIAUDIOERR_INVALID_ARGUMENT;
-  size_t dstlen = size * 2;
+  size_t dstlen = size * 2; // 2 = sizeof(short)
   char *dst = new char[dstlen];
   if (dstlen)
     ::memcpy(dst, wave, dstlen);
-  AIAudioResultCode code = _audio.PushData(dst, dstlen, stop);
+  AIAudioResultCode code = _audio.PushData(dst, dstlen, loop ? 0 : 1);
   //if (code != AIAudioResultCode.AIAUDIOERR_SUCCESS)
   //  this._playing = false;
   return code;
@@ -110,6 +103,8 @@ AIAudioResultCode AITalk::AITalkUtil::PushData(short wave[], unsigned int size, 
 
 AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobParam &jobparam, const char *text)
 {
+  //_talk.ReloadSymbolDic(nullptr);
+  //_audio.ClearData();
 
   size_t num;
   AITalkResultCode code = _talk.GetParam(nullptr, &num);
@@ -128,8 +123,8 @@ AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobPara
   AITalkMarshal::ReadTtsParam(&param, data);
 
   param.procRawBuf = this->MyAITalkProcRawBuf;
-  param.procTextBuf = this->MyAITalkProcTextBuf;
-  param.procEventTts = this->MyAITalkProcEventTTS;
+  //param.procTextBuf = this->MyAITalkProcTextBuf;  // TTS Kana is disabled
+  //param.procEventTts = this->MyAITalkProcEventTTS;    // events are diabled
 
   AITalkMarshal::WriteTtsParam(data, param);
 
@@ -139,6 +134,9 @@ AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobPara
   code = _talk.SetParam(data);
   if (code != AITALKERR_SUCCESS)
     return code;
+
+  _waveBufLength = param.lenRawBufBytes / 2;
+  _waveBuf = new short[_waveBufLength];
 
   return _talk.TextToSpeech(jobID, &jobparam, text);
 }
@@ -179,21 +177,21 @@ int AITalk::AITalkUtil::MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int
   CC_UNUSED(jobID);
   if (!_instance)
     return 0;
-  unsigned int size = 0;
-  enum { wavelen = 1000 };
-  short wave[wavelen];
+  size_t size = 0;
   switch (reasonCode) {
   case AITALKEVENT_RAWBUF_FLUSH:
   case AITALKEVENT_RAWBUF_FULL:
-    if (AITALKERR_SUCCESS == _instance->_talk.GetData(jobID, wave, wavelen, &size) && size > 0) {
+    if (AITALKERR_SUCCESS == _instance->_talk.GetData(jobID, _instance->_waveBuf, _instance->_waveBufLength, &size) && size > 0) {
       if (reasonCode == AITALKEVENT_RAWBUF_FLUSH)
         _instance->PushEvent(tick, 2);
-      _instance->PushData(wave, size, 0);
+      _instance->PushData(_instance->_waveBuf, size);
+      _instance->CloseSpeech(jobID);
     }
     break;
   case AITALKEVENT_RAWBUF_CLOSE:
     _instance->PushEvent(tick, 3);
-    _instance->PushData(new short[0], 0, 1);
+    //_instance->PushData(new short[0], 0);
+    _instance->CloseSpeech(jobID);
     break;
   }
   return 0;
