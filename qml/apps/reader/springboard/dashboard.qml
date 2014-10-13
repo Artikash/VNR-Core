@@ -82,14 +82,15 @@ Item { id: root_
       Rectangle { id: content_
         color: 'transparent'
         smooth: true
-        anchors.fill: parent; anchors.margins: 20; radius: 10
+        anchors.fill: parent; anchors.margins: 20
+        //radius: 10 // change to flat style
 
         // Outline
         Rectangle {
-          anchors { fill: parent; margins: 2 }
+          anchors { fill: parent; margins: 1 }
           opacity: 0.4
-          radius: 8
           smooth: true
+          //radius: 8 // change to flat style
 
           color: {
             // http://www.tayloredmktg.com/rgb/
