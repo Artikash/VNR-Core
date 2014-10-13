@@ -19,7 +19,7 @@ Item { id: root_
   // should be larger enough to hold the panel
   //width: 390 + floatingWidth
   width: buttonGrid_.width + floatingWidth + 28 // floatingWidth = 32 or 64
-  height: buttonGrid_.height + 20 // margin: 10
+  height: buttonGrid_.height + 18 // margin: 10
 
   property alias floatingWidth: floatingRect_.width
 
@@ -164,7 +164,8 @@ Item { id: root_
     }
     height: buttonCol_.height + 10
     width: buttonCol_.width + 10
-    radius: 11
+    //radius: 11
+    radius: 0 // flat
 
     color: active ? '#aa000000' : '#55000000'
     property bool active: !panel_.visible
@@ -202,8 +203,9 @@ Item { id: root_
 
       property int cellWidth: 54 * (slimChecked ? 0.4 : 1) * root_.zoomFactor
       property int cellHeight: 21 * root_.zoomFactor
-      property int cellRadius: 7 * root_.zoomFactor
       property int pixelSize: 12 * root_.zoomFactor
+      //property int cellRadius: 7 * root_.zoomFactor
+      property int cellRadius: 0 // flat
 
       // * .9
       //property int cellWidth: 50 * (slimChecked ? 0.4 : 1) * root_.zoomFactor
@@ -379,7 +381,7 @@ Item { id: root_
           }
           height: ttsRow_.height + 10
           width: ttsRow_.width + 10
-          radius: 11
+          radius: floatingRect_.radius
 
           color: floatingRect_.color
 
@@ -485,7 +487,7 @@ Item { id: root_
           }
           height: ocrRow_.height + 10
           width: ocrRow_.width + 10
-          radius: 11
+          radius: floatingRect_.radius
 
           color: floatingRect_.color
 
@@ -650,7 +652,7 @@ Item { id: root_
           }
           height: stretchRow_.height + 10
           width: stretchRow_.width + 10
-          radius: 11
+          radius: floatingRect_.radius
 
           color: floatingRect_.color
 
@@ -898,7 +900,9 @@ Item { id: root_
     onVisibleChanged: if (visible) hideTimer_.restart()
     Component.onCompleted: visible = false  // hide on startup
 
-    radius: 10
+    //radius: 10
+    radius: 0 // flat
+
     //gradient: Gradient {  // color: aarrggbb
     //  GradientStop { position: 0.0;  color: '#9c8f8c8c' }
     //  GradientStop { position: 0.17; color: '#7a6a6d6a' }
