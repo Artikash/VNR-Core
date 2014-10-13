@@ -1000,6 +1000,7 @@ class _TtsTab(object):
 
   def __init__(self, q):
     self.onlineWidgets = [] # [QWidget] any widget that involves online TTS
+    self.zunkoWidgets = [] # [QWidget] any widgets that involves Zunko
     self._createUi(q)
 
   def _createUi(self, q):
@@ -1253,8 +1254,30 @@ class _TtsTab(object):
     grid.addWidget(QtWidgets.QLabel("VOICEROID+ (%s):" % tr_("offline")), r, 0, 1, 2)
 
     for k,b,bb in ((
+        ('zunkooffline', self.zunkoButton, self.zunkoBrowseButton),
+      )):
+      r += 1
+      c = 0
+      self.onlineWidgets.append(bb)
+      grid.addWidget(bb, r, c)
+
+      c += 1
+      grid.addWidget(b, r, c)
+
+      c += 1
+      w = self.createTestButton(k)
+      self.zunkoWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createVolumeEdit(k)
+      self.zunkoWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+
+    for k,b,bb in ((
         ('yukari', self.yukariButton, self.yukariBrowseButton),
-        ('zunko', self.zunkoButton, self.zunkoBrowseButton),
+        #('zunko', self.zunkoButton, self.zunkoBrowseButton),
       )):
       koffline = k + 'offline'
       r += 1
@@ -1322,10 +1345,13 @@ class _TtsTab(object):
   def zunkoButton(self):
     ret = QtWidgets.QRadioButton(u"東北ずん子 (♀, %s)" % tr_("ja"))
     ret.toggled.connect(self._saveEngine)
+    self.zunkoWidgets.append(ret)
     return ret
   @memoizedproperty
   def zunkoBrowseButton(self):
-    return self._createBrowseButton(ttsman.manager().zunkoLocation)
+    ret = self._createBrowseButton(settings.global_().zunkoLocation)
+    self.zunkoWidgets.append(ret)
+    return ret
 
   @memoizedproperty
   def googleButton(self):
@@ -1502,9 +1528,9 @@ class _TtsTab(object):
     for w in self.yukariButton, self.yukariTestButton, self.yukariLaunchButton, self.yukariBrowseButton:
       w.setEnabled(enabled)
 
-    path = settings.global_().zunkoLocation() or ttsman.manager().zunkoLocation()
+    path = settings.global_().zunkoLocation() #or ttsman.manager().zunkoLocation()
     enabled = bool(path)
-    for w in self.zunkoButton, self.zunkoTestButton, self.zunkoLaunchButton, self.zunkoBrowseButton:
+    for w in self.zunkoWidgets:
       w.setEnabled(enabled)
 
 class TtsTab(QtWidgets.QDialog):
@@ -5728,8 +5754,8 @@ class _TtsLibraryTab(object):
     layout.addWidget(self.showGroup)
     layout.addWidget(self.misakiGroup)
     # Voiceroid
-    layout.addWidget(self.yukariGroup)
     layout.addWidget(self.zunkoGroup)
+    layout.addWidget(self.yukariGroup)
     layout.addStretch()
     q.setLayout(layout)
 
@@ -6084,21 +6110,21 @@ Yukari is <span style="color:purple">not free</span>, and you can purchase one h
     self._refreshZunko()
 
   def _getZunkoLocation(self):
-    FILTERS = "%s (%s)" % (tr_("Executable"), "VOICEROID.exe")
-    path = settings.global_().zunkoLocation() or ttsman.manager().zunkoLocation()
-    path = path if path and os.path.exists(path) else skpaths.HOME
-    path, filter = QtWidgets.QFileDialog.getOpenFileName(self.q,
-        my.tr("Please select the location of {0}").format("VOICEROID.exe"), path, FILTERS)
+    path = settings.global_().zunkoLocation() or skpaths.HOME #or ttsman.manager().zunkoLocation()
+    path = QtWidgets.QFileDialog.getExistingDirectory(self.q,
+        my.tr("Please select the folder containing {0}").format("VOICEROID.exe"),
+        path, 0)
     if path:
-      if not os.path.exists(path):
-        growl.error(my.tr("Couldn't find {0} from the specified location").format('VOICEROID.exe'))
+      dll = "aitalked.dll"
+      if not os.path.exists(path) or not os.path.exists(os.path.join(path, dll)):
+        growl.error(my.tr("Couldn't find {0} from the specified location").format(dll))
       else:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
         settings.global_().setZunkoLocation(path)
         self._refreshZunko()
 
   def _refreshZunko(self):
-    path = settings.global_().zunkoLocation() or ttsman.manager().zunkoLocation()
+    path = settings.global_().zunkoLocation() #or ttsman.manager().zunkoLocation()
     if path:
       path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
     ok = bool(path) and os.path.exists(path)
@@ -6110,11 +6136,13 @@ Yukari is <span style="color:purple">not free</span>, and you can purchase one h
     url = "http://www.ah-soft.com/voiceroid/zunko"
     self.zunkoInfoEdit.setHtml(my.tr(
 """Voiceroid+ Zunko from AHS is used by <span style="color:purple">offline text-to-speech</span>.<br/>
-Yukari is a Japanese female TTS app.<br/>
+Zunko is a Japanese female TTS app.<br/>
+VNR does <span style="color:purple">NOT</span> need .NET to work with Zunko.<br/>
 Voiceroid is detected on your system at the above location.""")
     if ok else my.tr(
 """Voiceroid+ Zunko could be used for <span style="color:purple">offline text-to-speech</span>.<br/>
 Zunko is a Japanese female TTS app.<br/>
+VNR does <span style="color:purple">NOT</span> need .NET to work with Zunko.<br/>
 Zunko is <span style="color:purple">not free</span>, and you can purchase one here from AHS:
 <center><a href="%s">%s</a></center>""") % (url, url))
 

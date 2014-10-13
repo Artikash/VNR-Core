@@ -3,6 +3,8 @@
 #include "aitalked/aitalked.h"
 #include "aitalk/aitalkutil.h"
 #include <windows.h>
+#include "cpputil/cppmath.h"
+#include <iostream>
 
 using namespace AITalk;
 
@@ -11,11 +13,13 @@ using namespace AITalk;
 class AITalkSynthesizerPrivate
 {
 public:
+  AITalkUtil ai;
   HMODULE h;
   int jobId;
-  AITalkUtil ai;
+  AITalkSettings settings;
 
-  AITalkSynthesizerPrivate() : h(nullptr), jobId(0) {}
+  AITalkSynthesizerPrivate()
+    : h(nullptr), jobId(0) {}
 };
 
 /** Public class */
@@ -39,10 +43,32 @@ bool AITalkSynthesizer::init(const std::wstring &path)
   if (d_->h)
     ::FreeLibrary(d_->h);
   d_->h = LoadLibraryW(path.c_str());
-  return d_->h && d_->ai.Init(d_->h);
+  if (!d_->h)
+    return false;
+
+  try {
+    return d_->ai.Init(d_->h, &d_->settings) == 0;
+  } catch (...) {
+    std::cerr << "aitalked.cc:init: unhandled exception" << std::endl;
+    return false;
+  }
 }
 
 // Settings
+
+float AITalkSynthesizer::volume() const { return d_->settings.volume; }
+void AITalkSynthesizer::setVolume(float v)
+{
+  if (!cpp_fuzzy_compare(v, d_->settings.volume)) {
+    d_->settings.volume = v;
+    if (d_->ai.IsValid())
+      try {
+        d_->ai.LoadSettings(d_->settings);
+      } catch (...) {
+        std::cerr << "aitalked.cc:setVolume: unhandled exception" << std::endl;
+      }
+  }
+}
 
 // Actions
 
@@ -60,14 +86,19 @@ void AITalkSynthesizer::stop()
   }
 }
 
-bool AITalkSynthesizer::play(const std::string &text)
+bool AITalkSynthesizer::play(const char *text)
 {
   if (!d_->ai.IsValid())
     return false;
   if (d_->ai.IsSynthesizing() && d_->jobId)
     d_->ai.CloseSpeech(d_->jobId);
   d_->jobId = 0;
-  return d_->ai.TextToSpeech(&d_->jobId, text.c_str()) == 0;
+  try {
+    return d_->ai.TextToSpeech(&d_->jobId, text) == 0;
+  } catch (...) {
+    std::cerr << "aitalked.cc:play: unhandled exception" << std::endl;
+    return false;
+  }
 }
 
 // EOF

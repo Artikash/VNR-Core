@@ -21,10 +21,12 @@ public:
   bool isValid() const;
 
   // Settings
+  float volume() const;
+  void setVolume(float v);
 
   // Actions
 
-  bool play(const std::string &text); // it MUST be sjis text
+  bool play(const char *text); // it MUST be sjis text
   void stop();
   bool pause();
   bool resume();

@@ -496,7 +496,6 @@ yaml:
   blacklist:        $PWD/yaml/blacklist.yaml
   brands:           $PWD/yaml/brands.yaml
   messages:         $PWD/yaml/messages.yaml
-  zunko:            $PWD/yaml/zunko.yaml
 
 templates:
   location:         $PWD/templates

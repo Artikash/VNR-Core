@@ -7,7 +7,6 @@
 #include "cc/ccmacro.h"
 #include <windows.h>
 #include <cstring>
-//#include <iostream>
 
 using namespace AITalk;
 
@@ -16,7 +15,7 @@ AITalkUtil *AITalk::AITalkUtil::_instance;
 
 // Construction
 
-AITalkResultCode AITalk::AITalkUtil::Init(HMODULE h)
+AITalkResultCode AITalk::AITalkUtil::Init(HMODULE h, const AITalkSettings *settings)
 {
   if (!_talk.LoadModule(h) || !_audio.LoadModule(h))
     return AITALKERR_UNSUPPORTED;
@@ -57,7 +56,8 @@ AITalkResultCode AITalk::AITalkUtil::Init(HMODULE h)
       return code;
   }
 
-  //char langPath[] = "C:\\Program Files\\AHS\\VOICEROID+\\zunko\\lang";
+  // 10/12/2014: This would crash if multiple MeCab/CaboCha dlls are loaded
+  // And there are no ways to try-catch the exception
   code = _talk.LangLoad(_langPath);
   if (code != AITALKERR_SUCCESS)
     return code;
@@ -65,7 +65,6 @@ AITalkResultCode AITalk::AITalkUtil::Init(HMODULE h)
   code =_talk.VoiceLoad(AITALK_CONFIG_VOICENAME);
   if (code != AITALKERR_SUCCESS)
     return code;
-
   // Initialize audio API
   {
     AIAudio_TConfig config;
@@ -79,7 +78,7 @@ AITalkResultCode AITalk::AITalkUtil::Init(HMODULE h)
       return AITALKERR_INTERNAL_ERROR;
   }
 
-  code = InitParam();
+  code = InitParam(settings);
   if (code != AITALKERR_SUCCESS)
     return code;
 
@@ -105,7 +104,7 @@ AIAudioResultCode AITalk::AITalkUtil::PushData(short wave[], size_t size, bool l
   return code;
 }
 
-AITalkResultCode AITalk::AITalkUtil::InitParam()
+AITalkResultCode AITalk::AITalkUtil::InitParam(const AITalkSettings *settings)
 {
   //_talk.ReloadSymbolDic(nullptr);
   //_audio.ClearData();
@@ -121,7 +120,6 @@ AITalkResultCode AITalk::AITalkUtil::InitParam()
   code = _talk.GetParam(data, &num);
   if (code != AITALKERR_SUCCESS) {
     delete data;
-    _synthesizing = false;
     return code;
   }
   AITalk_TTtsParam param;
@@ -147,6 +145,9 @@ AITalkResultCode AITalk::AITalkUtil::InitParam()
   //  data = new char[param.TotalSize()];
   //}
 
+  if (settings)
+    param.volume = settings->volume;
+
   AITalkMarshal::WriteTtsParam(data, param);
 
   code = _talk.SetParam(data);
@@ -157,6 +158,33 @@ AITalkResultCode AITalk::AITalkUtil::InitParam()
   _waveBufLength = param.lenRawBufBytes / 2;
   _waveBuf = new short[_waveBufLength];
   return AITALKERR_SUCCESS;
+}
+
+AITalkResultCode AITalk::AITalkUtil::LoadSettings(const AITalkSettings &settings)
+{
+  size_t num;
+  AITalkResultCode code = _talk.GetParam(nullptr, &num);
+  if (code != AITALKERR_INSUFFICIENT)
+    return AITALKERR_INSUFFICIENT;
+
+  char *data = new char[num];
+  ((int *)data)[0] = num;
+
+  code = _talk.GetParam(data, &num);
+  if (code != AITALKERR_SUCCESS) {
+    delete data;
+    return code;
+  }
+
+  AITalk_TTtsParam param;
+  AITalkMarshal::ReadTtsParam(&param, data);
+
+  param.volume = settings.volume;
+
+  AITalkMarshal::WriteTtsParam(data, param);
+  code = _talk.SetParam(data);
+  delete data;
+  return code;
 }
 
 // Speech synthesize

@@ -14,7 +14,7 @@ void test()
 
   std::cerr << "enter" << std::endl;
   auto ai = new AITalkSynthesizer;
-  ai->init();
+  ai->init(L"aitalked.dll");
   bool ok = ai->isValid();
   std::cerr << "init: " << ok << std::endl;
 

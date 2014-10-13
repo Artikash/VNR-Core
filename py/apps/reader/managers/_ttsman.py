@@ -196,11 +196,52 @@ class YukariEngine(VocalroidEngine):
     v = voiceroid.apps.Yukari()
     super(YukariEngine, self).__init__(v, **kwargs)
 
-class ZunkoEngine(VocalroidEngine):
-  def __init__(self, **kwargs):
-    import voiceroid.apps
-    v = voiceroid.apps.Zunko()
-    super(ZunkoEngine, self).__init__(v, **kwargs)
+#class ZunkoEngine(VocalroidEngine):
+#  def __init__(self, **kwargs):
+#    import voiceroid.apps
+#    v = voiceroid.apps.Zunko()
+#    super(ZunkoEngine, self).__init__(v, **kwargs)
+
+class ZunkoEngine(VoiceEngine):
+  key = 'zunkooffline'          # str
+  name = u"東北ずん子" # unicode
+
+  def __init__(self, volume=100):
+    self.engine = self.createengine()
+    self.setVolume(volume)
+
+  @classmethod
+  def createengine(cls):
+    from voiceroid.zunko import ZunkoTalk
+    ret = ZunkoTalk()
+    ok = ret.load()
+    if ok:
+      growl.msg(my.tr("Load {0}").format(cls.name))
+    else:
+      growl.error(my.tr("Failed to load {0}. Please check Preferences/Location").format(cls.name))
+    return ret
+
+  def setVolume(self, v):
+    self.engine.setVolume(v/100.0)
+
+  def isValid(self):
+    """"@reimp"""
+    return self.engine.isValid()
+
+  def speak(self, text, language=None):
+    """"@reimp"""
+    return self.engine.speak(text)
+
+  def stop(self):
+    """"@reimp"""
+    return self.engine.stop()
+
+  def setLocation(self, path):
+    if path and os.path.exists(path):
+      from sakurakit import skpaths
+      skpaths.append_path(path)
+      if not self.engine.isValid():
+        self.engine.load()
 
 # Online engines
 

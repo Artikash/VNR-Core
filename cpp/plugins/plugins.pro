@@ -38,5 +38,6 @@ win32: SUBDIRS += pymsime
 win32: SUBDIRS += pysapi
 win32: SUBDIRS += pywinutil
 win32: SUBDIRS += pywmp
+win32: SUBDIRS += pyzunko
 
 # EOF

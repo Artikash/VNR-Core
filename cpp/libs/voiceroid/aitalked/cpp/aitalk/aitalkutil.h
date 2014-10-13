@@ -3,6 +3,7 @@
 // aitalkutil.h
 // 10/11/2014 jichi
 #include "aitalk/aitalkapi.h"
+#include "aitalk/aitalksettings.h"
 #include "aitalk/aiaudioapi.h"
 #include "aitalk/_windef.h"  // for HMODULE
 #include <cstddef> // for size_t
@@ -41,7 +42,7 @@ public:
    *
    *  Create Config and invoke AITalkAPI::Init.
    */
-  AITalkResultCode Init(HMODULE h);
+  AITalkResultCode Init(HMODULE h, const AITalkSettings *s = nullptr);
 
   bool IsValid() const { return _valid; }
 
@@ -56,8 +57,10 @@ public:
     }
   }
 
+  AITalkResultCode LoadSettings(const AITalkSettings &val);
+
 private:
-  AITalkResultCode InitParam();
+  AITalkResultCode InitParam(const AITalkSettings *settings = nullptr);
 
   // AITalkUtil.cs: public AITalkResultCode GetStatus(int jobID, out AITalkStatusCode status)
   //AITalkResultCode GetStatus(int jobID, _Out_ AITalkStatusCode *status) const

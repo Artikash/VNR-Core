@@ -302,7 +302,8 @@ class _TtsManager(object):
     @return  _ttsman.VoiceEngine or None
     """
     if key == 'zunkooffline':
-      return self.zunkoEngine
+      return None # zunko is not implemented yet
+      #return self.zunkoEngine
     if key == 'yukarioffline':
       return self.yukariEngine
     if key == 'google':

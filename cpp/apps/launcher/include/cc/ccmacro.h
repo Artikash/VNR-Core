@@ -15,4 +15,10 @@
 # define CC_UNLIKELY(x) (x)
 #endif
 
+Q_DECL_CONSTEXPR static inline bool qFuzzyCompare(float p1, float p2)
+{
+    return (qAbs(p1 - p2) <= 0.00001f * qMin(qAbs(p1), qAbs(p2)));
+}
+
+
 #endif // _CC_CCMACRO_H

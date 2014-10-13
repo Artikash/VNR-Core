@@ -159,72 +159,72 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>從當前遊戲移除特殊碼</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="116"/>
+        <location filename="dialogs/_prefs.py" line="125"/>
         <source>Get a new account online</source>
         <translation>申請一個新賬號</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="122"/>
+        <location filename="dialogs/_prefs.py" line="131"/>
         <source>Switch to guest account</source>
         <translation>切換到匿名賬戶</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="367"/>
+        <location filename="dialogs/_prefs.py" line="375"/>
         <source>GUI language changed.</source>
         <translation>界面的語言改變了呢。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="368"/>
+        <location filename="dialogs/_prefs.py" line="376"/>
         <source>VNR will use the new language next time.</source>
         <translation>VNR會在下次啟動時使用新的語言。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="494"/>
+        <location filename="dialogs/_prefs.py" line="502"/>
         <source>SpringBoard wallpaper location</source>
         <translation>SpringBoard的壁紙</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="471"/>
+        <location filename="dialogs/_prefs.py" line="479"/>
         <source>Just Drag-and-Drop your wallpaper file to the SpringBoard &gt;_&lt;</source>
         <translation>把你喜歡的壁紙拖到SpringBoard上就可以了&gt;_&lt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="551"/>
+        <location filename="dialogs/_prefs.py" line="559"/>
         <source>Customize mouse cursor</source>
         <translation>加載鼠標主題</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1884"/>
+        <location filename="dialogs/_prefs.py" line="2077"/>
         <source>Click to change the color</source>
         <translation>點擊改變顏色</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1875"/>
+        <location filename="dialogs/_prefs.py" line="2068"/>
         <source>Reset default color</source>
         <translation>恢复默認的顏色</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6050"/>
+        <location filename="dialogs/_prefs.py" line="6350"/>
         <source>Preferred Chinese characters</source>
         <translation>優先的中文字符集</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2525"/>
+        <location filename="dialogs/_prefs.py" line="2814"/>
         <source>Convert Simplified Chinese subtitles to Traditional Chinese</source>
         <translation>盡可能的將簡體中文翻譯轉換為繁體中文</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2686"/>
+        <location filename="dialogs/_prefs.py" line="2975"/>
         <source>Preferred Japanese furigana characters</source>
         <translation>日文振仮名的字符集</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2750"/>
+        <location filename="dialogs/_prefs.py" line="3039"/>
         <source>like this</source>
         <translation>比如這樣</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2281"/>
+        <location filename="dialogs/_prefs.py" line="2547"/>
         <source>Preferred machine translation providers</source>
         <translation>開啟的機器翻譯</translation>
     </message>
@@ -244,12 +244,12 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>機器翻譯</translation>
     </message>
     <message>
-        <location filename="dialogs/prefs.py" line="213"/>
+        <location filename="dialogs/prefs.py" line="207"/>
         <source>Text rendering</source>
         <translation>文本渲染</translation>
     </message>
     <message>
-        <location filename="dialogs/prefs.py" line="231"/>
+        <location filename="dialogs/prefs.py" line="225"/>
         <source>UI Theme</source>
         <translation>外觀主題</translation>
     </message>
@@ -259,32 +259,32 @@ If the hook code appear here again, please delete it here again.</source>
         <translation>程序的功能</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="503"/>
+        <location filename="dialogs/_prefs.py" line="511"/>
         <source>Reset to the default wallpaper</source>
         <translation>恢复默認的壁紙</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5386"/>
+        <location filename="dialogs/_prefs.py" line="6115"/>
         <source>Please select the folder containing {0}</source>
         <translation>請選擇包含{0}的文件夾</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5788"/>
+        <location filename="dialogs/_prefs.py" line="6086"/>
         <source>Select the location of {0}</source>
         <translation>選擇{0}的位置</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5822"/>
+        <location filename="dialogs/_prefs.py" line="6120"/>
         <source>Couldn&apos;t find {0} from the specified location</source>
         <translation>在選定的位置沒有找到{0}</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5836"/>
+        <location filename="dialogs/_prefs.py" line="6134"/>
         <source>Not found, please specify the location of {0}</source>
         <translation>沒有找到，請選擇{0}的位置</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2783"/>
+        <location filename="dialogs/_prefs.py" line="3072"/>
         <source>Preferred Japanese phrase dictionaries</source>
         <translation>提供日文詞語解釋的字典</translation>
     </message>
@@ -551,47 +551,47 @@ Especially if you would like to translate this game.</source>
 特別是當你打算翻譯這個遊戲的時候。</translation>
     </message>
     <message utf8="true">
-        <location filename="dialogs/_prefs.py" line="2837"/>
+        <location filename="dialogs/_prefs.py" line="3126"/>
         <source>Kojien (広辞苑) Japanese-Japanese dictionary</source>
         <translation>広辞苑日日字典</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2423"/>
+        <location filename="dialogs/_prefs.py" line="2680"/>
         <source>JBeijing Chinese translator</source>
         <translation>J北京日中翻譯軟件</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2454"/>
+        <location filename="dialogs/_prefs.py" line="2720"/>
         <source>ATLAS English translator</source>
         <translation>ATLAS日英翻譯軟件</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2461"/>
+        <location filename="dialogs/_prefs.py" line="2730"/>
         <source>LEC English translator</source>
         <translation>LEC日英翻譯軟件</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1188"/>
+        <location filename="dialogs/_prefs.py" line="1331"/>
         <source>Disable TTS</source>
         <translation>不使用語音合成</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="675"/>
+        <location filename="dialogs/_prefs.py" line="683"/>
         <source>Game detection</source>
         <translation>遊戲搜索</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="683"/>
+        <location filename="dialogs/_prefs.py" line="691"/>
         <source>Automatically detect running game</source>
         <translation>自動搜索正在運行中的遊戲</translation>
     </message>
     <message>
-        <location filename="dialogs/prefs.py" line="219"/>
+        <location filename="dialogs/prefs.py" line="213"/>
         <source>Game launch settings</source>
         <translation>遊戲啟動設定</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="599"/>
+        <location filename="dialogs/_prefs.py" line="607"/>
         <source>User-defined hook code could help VNR synchronize with the game.
 But incorrect hook code might crash VNR during the synchronization.
 When that happens, you can temporarily disable the user-defined code,
@@ -602,17 +602,17 @@ and then change the code to the correct one in Text Settings.</source>
 然后在【文本設定】中修改為正確的特殊碼。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="600"/>
+        <location filename="dialogs/_prefs.py" line="608"/>
         <source>User-defined hook code</source>
         <translation>自定義的遊戲特殊碼</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="608"/>
+        <location filename="dialogs/_prefs.py" line="616"/>
         <source>Enable hook code from other users to recognize text threads</source>
         <translation>使用來自其他同學的特殊碼來尋找遊戲文本</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="674"/>
+        <location filename="dialogs/_prefs.py" line="682"/>
         <source>Whether VNR should automatically sync with the running game it knows.
 It is equivalent to clicking the Launch icon docked in Spring Board.
 But if you have a slow laptop, enabling it might slow down Windows.</source>
@@ -731,12 +731,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>位置不存在</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="701"/>
+        <location filename="dialogs/_prefs.py" line="709"/>
         <source>Preferred game loader</source>
         <translation>遊戲啟動的方法</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="761"/>
+        <location filename="dialogs/_prefs.py" line="769"/>
         <source>Use {0} to change game locale</source>
         <translation>使用{0}改變遊戲字符編碼</translation>
     </message>
@@ -761,27 +761,27 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>用使用偏好中默認的方式打開遊戲</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="717"/>
+        <location filename="dialogs/_prefs.py" line="725"/>
         <source>Launch the game WITHOUT loader</source>
         <translation>不改變編碼直接運行遊戲</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1622"/>
+        <location filename="dialogs/_prefs.py" line="1816"/>
         <source>Block these languages as much as possible.</source>
         <translation>VNR會盡可能的屏蔽選定的語言。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1623"/>
+        <location filename="dialogs/_prefs.py" line="1817"/>
         <source>This includes user comments and subtitles.</source>
         <translation>屏蔽包括選定語言的評論和字幕。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1624"/>
+        <location filename="dialogs/_prefs.py" line="1818"/>
         <source>Language-specific preferences will disappear after restart.</source>
         <translation>使用偏好中有關的設定在下次啟動時也會消失。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1628"/>
+        <location filename="dialogs/_prefs.py" line="1822"/>
         <source>Blocked languages</source>
         <translation>屏蔽的語言</translation>
     </message>
@@ -811,7 +811,7 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>啟動遊戲后，在【文本設定】中可以編輯特殊碼。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2415"/>
+        <location filename="dialogs/_prefs.py" line="2669"/>
         <source>Dr.eye Chinese-Japanese/English translator</source>
         <translation>Dr.eye譯典通中日、中英翻譯軟件</translation>
     </message>
@@ -826,12 +826,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>加載LEC日英翻譯引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="1008"/>
+        <location filename="managers/_trman.py" line="1016"/>
         <source>Dr.eye Japanese-Chinese translator is loaded</source>
         <translation>加載Dr.eye日中翻譯引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="1021"/>
+        <location filename="managers/_trman.py" line="1029"/>
         <source>Dr.eye English-Chinese translator is loaded</source>
         <translation>加載Dr.eye中英翻譯引擎</translation>
     </message>
@@ -846,17 +846,17 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>載入自定義辭書失敗</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="544"/>
+        <location filename="managers/textman.py" line="546"/>
         <source>Game text is ignored for being too long</source>
         <translation>忽略過長的遊戲文本</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1162"/>
+        <location filename="managers/textman.py" line="1164"/>
         <source>Reload user-contributed comments</source>
         <translation>更新其他同學的評論</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="1301"/>
+        <location filename="managers/textman.py" line="1303"/>
         <source>No game text received yet</source>
         <translation>還沒有收到遊戲文本</translation>
     </message>
@@ -866,7 +866,7 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>更新來自其他同學的評論</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="1084"/>
+        <location filename="managers/_trman.py" line="1092"/>
         <source>Cannot load {0} for machine translation. Please check Preferences/Location</source>
         <translation>無法載入{0}機翻引擎。請檢查下使用偏好中的軟件位置</translation>
     </message>
@@ -876,77 +876,77 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>載入其他同學的自定義辭書</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5926"/>
+        <location filename="managers/dataman.py" line="5933"/>
         <source>Sign in as &apos;{0}&apos;</source>
         <translation>登錄為&apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5927"/>
+        <location filename="managers/dataman.py" line="5934"/>
         <source>User language is &apos;{0}&apos;</source>
         <translation>語言是&apos;{0}&apos;</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5932"/>
+        <location filename="managers/dataman.py" line="5939"/>
         <source>Sign in failed as &apos;{0}&apos;</source>
         <translation>登錄&apos;{0}&apos;失敗了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6764"/>
+        <location filename="managers/dataman.py" line="6771"/>
         <source>Fetching comments</source>
         <translation>更新評論中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6775"/>
+        <location filename="managers/dataman.py" line="6782"/>
         <source>Loading offline comments</source>
         <translation>載入離線評論</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6785"/>
+        <location filename="managers/dataman.py" line="6792"/>
         <source>Found {0} comments</source>
         <translation>找到{0}條評論</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7338"/>
+        <location filename="managers/dataman.py" line="7345"/>
         <source>Failed to save changes, will try later</source>
         <translation>這次保存變更沒有成功呢，VNR等下會重試的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8035"/>
+        <location filename="managers/dataman.py" line="8042"/>
         <source>Updating dictionary terms online</source>
         <translation>更新共享詞條中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8054"/>
+        <location filename="managers/dataman.py" line="8061"/>
         <source>Found {0} terms</source>
         <translation>找到{0}個詞條</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8057"/>
+        <location filename="managers/dataman.py" line="8064"/>
         <source>Failed to download terms online</source>
         <translation>更新詞條失敗了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8058"/>
+        <location filename="managers/dataman.py" line="8065"/>
         <source>Something might be wrong with the Internet connection</source>
         <translation>也許網絡連接不暢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8398"/>
+        <location filename="managers/dataman.py" line="8405"/>
         <source>Failed to get game information</source>
         <translation>獲取遊戲信息失敗了</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8552"/>
+        <location filename="managers/dataman.py" line="8559"/>
         <source>The game does not exist. Did you delete it?</source>
         <translation>遊戲並不存在。是不是已經被你刪除了呢？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9154"/>
+        <location filename="managers/dataman.py" line="9161"/>
         <source>Please sign in to submit comment</source>
         <translation>請先登錄再提交評論</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9171"/>
+        <location filename="managers/dataman.py" line="9178"/>
         <source>Cannot connect to the Internet</source>
         <translation>無法連接到網絡</translation>
     </message>
@@ -1046,32 +1046,32 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
         <translation>載入窗口翻譯</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="460"/>
+        <location filename="dialogs/_prefs.py" line="468"/>
         <source>Select the location of the picture</source>
         <translation>選擇圖片的位置</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="472"/>
+        <location filename="dialogs/_prefs.py" line="480"/>
         <source>But Drag-and-Drop does not work when VNR has admin privilege T_T</source>
         <translation>但是，當VNR以管理員身份啟動時，無法通過拖動添加T_T</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="514"/>
+        <location filename="dialogs/_prefs.py" line="522"/>
         <source>Please select the location of the picture</source>
         <translation>請選擇圖片的位置</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7949"/>
+        <location filename="managers/dataman.py" line="7956"/>
         <source>Updating game database online</source>
         <translation>更新在線遊戲數據庫中</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7972"/>
+        <location filename="managers/dataman.py" line="7979"/>
         <source>Failed to update game database</source>
         <translation>更新遊戲數據庫沒有成功</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7989"/>
+        <location filename="managers/dataman.py" line="7996"/>
         <source>Game database is updated</source>
         <translation>遊戲數據庫更新完成</translation>
     </message>
@@ -1093,17 +1093,17 @@ It might take a couple of seconds to complete.</source>
 這會花費幾秒鐘來完成。</translation>
     </message>
     <message utf8="true">
-        <location filename="dialogs/_prefs.py" line="2851"/>
+        <location filename="dialogs/_prefs.py" line="3140"/>
         <source>Zhongri (日中) Japanese-Chinese dictionary</source>
         <translation>日中統合辭典</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2361"/>
+        <location filename="dialogs/_prefs.py" line="2615"/>
         <source>excluding {0}</source>
         <translation>不包括{0}</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="742"/>
+        <location filename="dialogs/_prefs.py" line="750"/>
         <source>need admin priv</source>
         <translation>需要管理員權限</translation>
     </message>
@@ -1118,37 +1118,37 @@ It might take a couple of seconds to complete.</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9227"/>
+        <location filename="managers/dataman.py" line="9234"/>
         <source>Shared dictionary is empty</source>
         <translation>共享辭書是空的</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9224"/>
+        <location filename="managers/dataman.py" line="9231"/>
         <source>Dictionary entries are saved to the desktop</source>
         <translation>詞條數據保存到了桌面</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9270"/>
+        <location filename="managers/dataman.py" line="9277"/>
         <source>There are no subtitles</source>
         <translation>這個遊戲還沒有人工字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9267"/>
+        <location filename="managers/dataman.py" line="9274"/>
         <source>Subtitles are saved to the desktop</source>
         <translation>字幕數據保存到了桌面</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="718"/>
+        <location filename="dialogs/_prefs.py" line="726"/>
         <source>for Windows with Japanese locale</source>
         <translation>適用于日文編碼的Windows</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8808"/>
+        <location filename="managers/dataman.py" line="8815"/>
         <source>Please start the game to submit comment</source>
         <translation>請在開始遊戲后提交字幕</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="4727"/>
+        <location filename="managers/dataman.py" line="4734"/>
         <source>No user-contributed subtitles found</source>
         <translation>沒有來自其他同學的字幕呢</translation>
     </message>
@@ -1158,7 +1158,7 @@ It might take a couple of seconds to complete.</source>
         <translation>載入字幕中…請稍等片刻！</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2440"/>
+        <location filename="dialogs/_prefs.py" line="2703"/>
         <source>ezTrans XP Korean translator</source>
         <translation>ezTrans XP日韓翻譯軟件</translation>
     </message>
@@ -1168,35 +1168,35 @@ It might take a couple of seconds to complete.</source>
         <translation>加載ezTrans XP日韓翻譯引擎</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4486"/>
+        <location filename="dialogs/_prefs.py" line="4780"/>
         <source>Kodensha JBeijing v7 is used by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Chinese&lt;/span&gt; translation.&lt;br/&gt;
 JBeijing is detected on your system at the above location.</source>
         <translation>高電社的JBeijing7可以提供&lt;span style=&quot;color:purple&quot;&gt;離線日中&lt;/span&gt;翻譯。&lt;br/&gt;
 J北京設定在上面的位置。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4680"/>
+        <location filename="dialogs/_prefs.py" line="4974"/>
         <source>Inventec Dr.eye v9.0 is used by &lt;span style=&quot;color:purple&quot;&gt;offline Chinese-Japanese/English&lt;/span&gt; translation.&lt;br/&gt;
 Dr.eye is detected on your system at the above location.</source>
         <translation>英業達的Dr.eye譯典通可以提供&lt;span style=&quot;color:purple&quot;&gt;離線中日和中英&lt;/span&gt;翻譯。&lt;br/&gt;
 Dr.eye設定在上面的位置。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4773"/>
+        <location filename="dialogs/_prefs.py" line="5067"/>
         <source>ChangShin Soft ezTrans XP is used by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Korean&lt;/span&gt; translation.&lt;br/&gt;
 ezTrans is detected on your system at the above location.</source>
         <translation>ChangeShin Soft的ezTrans XP可以提供&lt;span style=&quot;color:purple&quot;&gt;離線日韓&lt;/span&gt;翻譯。&lt;br/&gt;
 ezTrans設定在上面的位置。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4866"/>
+        <location filename="dialogs/_prefs.py" line="5160"/>
         <source>Fujitsu Atlas v14 is used for &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-English&lt;/span&gt; translation.&lt;br/&gt;
 Atlas is detected on your system at the above location.</source>
         <translation>富士通的ATLAS v14可以提供&lt;span style=&quot;color:purple&quot;&gt;離線日英&lt;/span&gt;翻譯。&lt;br/&gt;
 ATLAS設定在上面的位置。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4869"/>
+        <location filename="dialogs/_prefs.py" line="5163"/>
         <source>Fujitsu Atlas v14 is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-English&lt;/span&gt; translation.&lt;br/&gt;
 You can get a free version of Atlas here from Fujitsu:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
@@ -1205,21 +1205,21 @@ ATLAS是付費軟件，你可以到富士通官網下載試用版：
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4959"/>
+        <location filename="dialogs/_prefs.py" line="5253"/>
         <source>LEC Power Translator v15 is used for &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-English&lt;/span&gt; translation.&lt;br/&gt;
 Power Translator is detected on your system at the above location.</source>
         <translation>LEC的Power Translator v15可以提供&lt;span style=&quot;color:purple&quot;&gt;離線日英&lt;/span&gt;翻譯。&lt;br/&gt;
 Power Translator設定在了上面的地方。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5148"/>
+        <location filename="dialogs/_prefs.py" line="5446"/>
         <source>Iwanami Kojien dictionary is used by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese&lt;/span&gt; word translation.&lt;br/&gt;
 Kojien is detected on your system at the above location.</source>
         <translation>岩波書店的広辞苑辭書可以為日文詞語提供&lt;span style=&quot;color:purple&quot;&gt;日文解釋&lt;/span&gt;。&lt;br/&gt;
 広辞苑設定在了上面的地方。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="659"/>
+        <location filename="dialogs/_prefs.py" line="667"/>
         <source>Launch game in Japanese Time Zone</source>
         <translation>以日本時區啟動遊戲</translation>
     </message>
@@ -1239,7 +1239,7 @@ Kojien is detected on your system at the above location.</source>
         <translation>{0}的百分比</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8303"/>
+        <location filename="managers/dataman.py" line="8310"/>
         <source>Searching game information online</source>
         <translation>正在網上檢索遊戲信息</translation>
     </message>
@@ -1254,12 +1254,12 @@ Kojien is detected on your system at the above location.</source>
         <translation>遊戲已經存在了呢</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="637"/>
+        <location filename="dialogs/_prefs.py" line="645"/>
         <source>Launch the game (*.exe/*.lnk) dropped onto the Spring Board</source>
         <translation>添加並運行拖曳到SpringBoard上的遊戲（*.exe或*.lnk）</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="624"/>
+        <location filename="dialogs/_prefs.py" line="632"/>
         <source>When enabled, VNR will launch the game dropped onto the Spring Board.
 When disabled, VNR will only add the new game without launching it.
 Drag-drop does not work when VNR is launched with admin privileges.</source>
@@ -1282,12 +1282,12 @@ If yes, VNR will block all settings for this language.</source>
 如果屏蔽它，VNR會屏蔽所有與這個語言有關的設定。</translation>
     </message>
     <message utf8="true">
-        <location filename="dialogs/_prefs.py" line="3595"/>
+        <location filename="dialogs/_prefs.py" line="3887"/>
         <source>Wadoku (和独) Japanese-German dictionary</source>
         <translation>和独日德辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4489"/>
+        <location filename="dialogs/_prefs.py" line="4783"/>
         <source>Kodensha JBeijing v7 is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Chinese&lt;/span&gt; translation.&lt;br/&gt;
 JBeijing is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from Kodensha:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
@@ -1297,7 +1297,7 @@ JBeijing是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;�
 &lt;span style=&quot;color:red&quot;&gt;注：J北京的路徑中不可以包含中文字符呢。&lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4776"/>
+        <location filename="dialogs/_prefs.py" line="5070"/>
         <source>ChangShin Soft ezTrans XP is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Korean&lt;/span&gt; translation.&lt;br/&gt;
 ezTrans is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from ChangShin Soft:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
@@ -1306,7 +1306,7 @@ ezTrans是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;�
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4962"/>
+        <location filename="dialogs/_prefs.py" line="5256"/>
         <source>LEC Power Translator v15 is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-English&lt;/span&gt; translation.
 It is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from LEC:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
@@ -1315,7 +1315,7 @@ Power Translator是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/s
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5152"/>
+        <location filename="dialogs/_prefs.py" line="5450"/>
         <source>Iwanami Kojien is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese&lt;/span&gt; word translation.&lt;br/&gt;
 It is a ja-ja dictionary distributed in &lt;a href=&quot;%s&quot;&gt;EPWING&lt;/a&gt; format DVD.&lt;br/&gt;
 Kojien is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from Iwanami:
@@ -1326,14 +1326,14 @@ Kojien is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and 
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5415"/>
+        <location filename="dialogs/_prefs.py" line="5713"/>
         <source>Shogakukan Zhongri is used by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Chinese&lt;/span&gt; word translation.&lt;br/&gt;
 Zhongri is detected on your system at the above location.</source>
         <translation>小學館的日中統合辭典可以為日文詞語提供&lt;span style=&quot;color:purple&quot;&gt;中文解釋&lt;/span&gt;。&lt;br/&gt;
 日中統合辭典設定在了上面的地方。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5419"/>
+        <location filename="dialogs/_prefs.py" line="5717"/>
         <source>Shogakukan Zhongri is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese-Chinese&lt;/span&gt; translation.&lt;br/&gt;
 It is a ja-zh dictionary distributed in &lt;a href=&quot;%s&quot;&gt;EPWING&lt;/a&gt; format DVD.&lt;br/&gt;
 Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from Amazon:
@@ -1369,27 +1369,27 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>你希望永久移除所有的條目嗎？</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2373"/>
+        <location filename="dialogs/_prefs.py" line="2627"/>
         <source>Baidu.com Chinese translation service</source>
         <translation>百度中文翻譯服務</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="7485"/>
+        <location filename="managers/dataman.py" line="7492"/>
         <source>Your {0} is &apos;{1}&apos;</source>
         <translation>你的{0}是&apos;{1}&apos;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="263"/>
+        <location filename="dialogs/_prefs.py" line="271"/>
         <source>Your favorite color</source>
         <translation>你喜歡的顏色</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="334"/>
+        <location filename="dialogs/_prefs.py" line="342"/>
         <source>Modification to guest account is not allowed</source>
         <translation>不可以修改匿名賬戶的設定</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="337"/>
+        <location filename="dialogs/_prefs.py" line="345"/>
         <source>Modification requires Internet access</source>
         <translation>修改設定需要網絡連接</translation>
     </message>
@@ -1419,7 +1419,7 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>停止翻譯鼠標下的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2312"/>
+        <location filename="dialogs/_prefs.py" line="2566"/>
         <source>Microsoft Bing.com multilingual translation service</source>
         <translation>Bing.com微軟多國語言翻譯服務</translation>
     </message>
@@ -1429,7 +1429,7 @@ Zhongri is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and
         <translation>離線時無法更新數據呢</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5421"/>
+        <location filename="dialogs/_prefs.py" line="5719"/>
         <source>&lt;span style=&quot;color:red&quot;&gt;Note: EPWING path cannot contain non-English characters!&lt;/span&gt;</source>
         <translation>&lt;span style=&quot;color:red&quot;&gt;注：EPWING辭書路徑中不可以包含中文字符呢！&lt;/span&gt;</translation>
     </message>
@@ -1455,22 +1455,22 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>快捷方式指向的位置並不存在呢</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6480"/>
+        <location filename="managers/dataman.py" line="6487"/>
         <source>Remove bad user-defined hcode</source>
         <translation>自動移除錯誤的特殊碼</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5332"/>
+        <location filename="managers/dataman.py" line="5339"/>
         <source>Update game information</source>
         <translation>更新遊戲信息</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5340"/>
+        <location filename="managers/dataman.py" line="5347"/>
         <source>Found {0} references</source>
         <translation>找到{0}個遊戲的引用</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5342"/>
+        <location filename="managers/dataman.py" line="5349"/>
         <source>No game references found</source>
         <translation>沒有找到遊戲的信息</translation>
     </message>
@@ -1480,7 +1480,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
         <translation>未知的遊戲。請更新下遊戲數據庫。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="8705"/>
+        <location filename="managers/dataman.py" line="8712"/>
         <source>Please sign in to submit reference</source>
         <translation>請先登錄再提交信息</translation>
     </message>
@@ -1527,19 +1527,19 @@ But it does not support Google Chrome and Foxit Reader.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2319"/>
+        <location filename="dialogs/_prefs.py" line="2573"/>
         <source>Google.com multilingual translation service</source>
         <translation>Google.com多國語言翻譯服務</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3030"/>
+        <location filename="dialogs/_prefs.py" line="3319"/>
         <source>Mainland China has blocked many international services including Google.
 If you enable this option, VNR will try providing alternative services.</source>
         <translation>中國大陸地區政府屏蔽了包括Google在內的網絡服務。
 開啟這個選項后，VNR會提供中國大陸可用的替代服務。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3039"/>
+        <location filename="dialogs/_prefs.py" line="3328"/>
         <source>You are currently living in Mainland China</source>
         <translation>你現在居住在中國大陸</translation>
     </message>
@@ -1632,7 +1632,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
 如果你有超能力，你也許可以在經過/未經其他同學允許的情況下，改進來自其他同學的貢獻（比如字幕）。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="5601"/>
+        <location filename="managers/dataman.py" line="5608"/>
         <source>Reference already existed</source>
         <translation>遊戲信息已經存在了</translation>
     </message>
@@ -1642,12 +1642,12 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>忽略無限循環重复的句子</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="910"/>
+        <location filename="managers/textman.py" line="912"/>
         <source>Eliminate finite repetition in the text</source>
         <translation>去除重复有限次的文字</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="927"/>
+        <location filename="managers/textman.py" line="929"/>
         <source>Keep all text threads generated from {0}</source>
         <translation>保留所有來自{0}的文本</translation>
     </message>
@@ -1667,7 +1667,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>最近被其他同學刪除了的特殊碼</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4491"/>
+        <location filename="dialogs/_prefs.py" line="4785"/>
         <source>&lt;span style=&quot;color:red&quot;&gt;Note: The path cannot contain non-English characters!&lt;/span&gt;</source>
         <translation>&lt;span style=&quot;color:red&quot;&gt;注：路徑中不可以包含中文字符呢！&lt;/span&gt;</translation>
     </message>
@@ -1760,7 +1760,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>文本來自自定義的特殊碼</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3740"/>
+        <location filename="dialogs/_prefs.py" line="4032"/>
         <source>recommended for Chinese</source>
         <translation>使用中文的同學推薦</translation>
     </message>
@@ -2028,17 +2028,17 @@ This might result in redundant spaces for Japanese games.</source>
         <translation>保留（英文）單詞之間的空格</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6519"/>
+        <location filename="managers/dataman.py" line="6526"/>
         <source>Remove non-existed game</source>
         <translation>移除不存在的遊戲</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1181"/>
+        <location filename="dialogs/_prefs.py" line="1311"/>
         <source>Preferred text-to-speech voice</source>
         <translation>默認的語音合成引擎</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5054"/>
+        <location filename="dialogs/_prefs.py" line="5352"/>
         <source>Microsoft Japanese IME is detected on your system at the above location.&lt;br/&gt;
 It could significantly improve the quality of Japanese analysis.&lt;br/&gt;
 It is &lt;span style=&quot;color:purple&quot;&gt;free&lt;/span&gt; for Office users, and you can get the latest version here from Microsoft:
@@ -2053,7 +2053,7 @@ And here&apos;s an article illustrating how to update its dictionaries:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5060"/>
+        <location filename="dialogs/_prefs.py" line="5358"/>
         <source>Microsoft Japanese IME could significantly improve the quality of Japanese analysis.&lt;br/&gt;
 It is &lt;span style=&quot;color:purple&quot;&gt;free&lt;/span&gt; for Office users, and you can get the latest version here from Microsoft:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;
@@ -2066,7 +2066,7 @@ And here&apos;s an article illustrating how to update its dictionaries:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5622"/>
+        <location filename="dialogs/_prefs.py" line="5920"/>
         <source>VoiceText Misaki is needed by &lt;span style=&quot;color:purple&quot;&gt;offline TTS&lt;/span&gt;.&lt;br/&gt;
 Misaki is a Japanese female TTS SAPI library.&lt;br/&gt;
 VoiceText is detected on your system at the above location.</source>
@@ -2075,7 +2075,7 @@ Misaki是一個女聲的日文TTS的SAPI類庫。&lt;br/&gt;
 Misaki是被設定在了上面的地方。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5626"/>
+        <location filename="dialogs/_prefs.py" line="5924"/>
         <source>VoiceText Misaki is needed by &lt;span style=&quot;color:purple&quot;&gt;offline TTS&lt;/span&gt;.&lt;br/&gt;
 Misaki is a Japanese female TTS SAPI library.&lt;br/&gt;
 Misaki is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from HOYA SERVICE:
@@ -2086,12 +2086,12 @@ Misaki是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5819"/>
+        <location filename="dialogs/_prefs.py" line="6030"/>
         <source>Please select the location of {0}</source>
         <translation>請選擇{0}的位置</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5756"/>
+        <location filename="dialogs/_prefs.py" line="6054"/>
         <source>Voiceroid+ Yukari from AHS is used by &lt;span style=&quot;color:purple&quot;&gt;offline TTS&lt;/span&gt;.&lt;br/&gt;
 Yukari is a Japanese female TTS app.&lt;br/&gt;
 Voiceroid is detected on your system at the above location.</source>
@@ -2100,7 +2100,7 @@ Voiceroid is detected on your system at the above location.</source>
 結月ゆかり設定在了上面的地方。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5760"/>
+        <location filename="dialogs/_prefs.py" line="6058"/>
         <source>Voiceroid+ Yukari could be used for &lt;span style=&quot;color:purple&quot;&gt;offline TTS&lt;/span&gt;.&lt;br/&gt;
 Yukari is a Japanese female TTS app.&lt;br/&gt;
 Yukari is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from AHS:
@@ -2115,7 +2115,7 @@ Yukari is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and 
         <source>Voiceroid+ Zunko from AHS is used by &lt;span style=&quot;color:purple&quot;&gt;offline text-to-speech&lt;/span&gt;.&lt;br/&gt;
 Yukari is a Japanese female TTS app.&lt;br/&gt;
 Voiceroid is detected on your system at the above location.</source>
-        <translation>VOICEROID+東北ずん子可以幫助&lt;span style=&quot;color:purple&quot;&gt;離線語音合成&lt;/span&gt;。&lt;br/&gt;
+        <translation type="obsolete">VOICEROID+東北ずん子可以幫助&lt;span style=&quot;color:purple&quot;&gt;離線語音合成&lt;/span&gt;。&lt;br/&gt;
 東北ずん子是一個女聲的日文TTS軟件。&lt;br/&gt;
 東北ずん子設定在了上面的地方。</translation>
     </message>
@@ -2125,7 +2125,7 @@ Voiceroid is detected on your system at the above location.</source>
 Zunko is a Japanese female TTS app.&lt;br/&gt;
 Zunko is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from AHS:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
-        <translation>VOICEROID+東北ずん子可以幫助&lt;span style=&quot;color:purple&quot;&gt;離線語音合成&lt;/span&gt;。&lt;br/&gt;
+        <translation type="obsolete">VOICEROID+東北ずん子可以幫助&lt;span style=&quot;color:purple&quot;&gt;離線語音合成&lt;/span&gt;。&lt;br/&gt;
 東北ずん子是一個女聲的日文TTS軟件。&lt;br/&gt;
 東北ずん子是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，你可以到AHS的官網購買：
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
@@ -2156,42 +2156,42 @@ Zunko is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and y
         <translation>沒有找到VOICEROID+</translation>
     </message>
     <message>
-        <location filename="managers/ttsman.py" line="215"/>
+        <location filename="managers/ttsman.py" line="218"/>
         <source>Load TTS</source>
         <translation>載入TTS</translation>
     </message>
     <message>
-        <location filename="managers/ttsman.py" line="221"/>
+        <location filename="managers/ttsman.py" line="224"/>
         <source>Failed to load TTS</source>
         <translation>載入TTS失敗了</translation>
     </message>
     <message>
-        <location filename="managers/ttsman.py" line="97"/>
+        <location filename="managers/ttsman.py" line="105"/>
         <source>TTS is not available in Preferences</source>
         <translation>使用偏好中沒有可以用的TTS</translation>
     </message>
     <message>
-        <location filename="managers/ttsman.py" line="104"/>
+        <location filename="managers/ttsman.py" line="112"/>
         <source>TTS is not available</source>
         <translation>沒有可以用的TTS</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1030"/>
+        <location filename="dialogs/_prefs.py" line="1042"/>
         <source>Read using the selected TTS engine</source>
         <translation>用你選定的TTS讀出</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1064"/>
+        <location filename="dialogs/_prefs.py" line="1076"/>
         <source>Read using this TTS</source>
         <translation>用這個TTS讀出</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="483"/>
+        <location filename="dialogs/_prefs.py" line="491"/>
         <source>Automatically change wallpaper for different games</source>
         <translation>根據不同遊戲自動更換壁紙</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5669"/>
+        <location filename="dialogs/_prefs.py" line="5967"/>
         <source>VoiceText Show is needed by &lt;span style=&quot;color:purple&quot;&gt;offline TTS&lt;/span&gt;.&lt;br/&gt;
 Show is a Japanese &lt;span style=&quot;color:red&quot;&gt;male&lt;/span&gt; TTS SAPI library.&lt;br/&gt;
 VoiceText is detected on your system at the above location.</source>
@@ -2200,7 +2200,7 @@ Show是一個&lt;span style=&quot;color:red&quot;&gt;男聲&lt;/span&gt;的日�
 Show是被設定在了上面的地方。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5673"/>
+        <location filename="dialogs/_prefs.py" line="5971"/>
         <source>VoiceText Show is needed by &lt;span style=&quot;color:purple&quot;&gt;offline TTS&lt;/span&gt;.&lt;br/&gt;
 Show is a Japanese &lt;span style=&quot;color:red&quot;&gt;male&lt;/span&gt; TTS SAPI library.&lt;br/&gt;
 Show is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from HOYA SERVICE:
@@ -2331,7 +2331,7 @@ Show是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，�
         <translation>外部語言環境啟動工具的位置</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4085"/>
+        <location filename="dialogs/_prefs.py" line="4379"/>
         <source>Some of the features of VNR need external applications to be installed.
 You can specify the locations of external libraries here.</source>
         <translation>一些VNR的功能需要安裝其他的軟件才好呢。
@@ -2348,7 +2348,7 @@ You can specify the locations of external libraries here.</source>
         <translation>未知遊戲</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4213"/>
+        <location filename="dialogs/_prefs.py" line="4507"/>
         <source>Locale Emulator could help change Japanese game to your locale.
 It is similar to NTLEA, and seems to work better in Windows 7/8.
 You could get the latest version here:
@@ -2365,7 +2365,7 @@ You can say THANKS to its author here:
 </translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4113"/>
+        <location filename="dialogs/_prefs.py" line="4407"/>
         <source>You don&apos;t have to change Japanese games&apos; locale in Wine.
 Just don&apos;t forget to export LC_ALL=ja_JP.UTF8 before launching VNR.</source>
         <translation>在Wine下不需要修改遊戲的區域編碼呢。
@@ -2387,12 +2387,12 @@ Just don&apos;t forget to export LC_ALL=ja_JP.UTF8 before launching VNR.</source
         <translation>找到{0}個YouTube動畫</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6510"/>
+        <location filename="managers/dataman.py" line="6517"/>
         <source>Do not keep all scenario threads in text settings</source>
         <translation>不保留遊戲的全部對話文本</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6501"/>
+        <location filename="managers/dataman.py" line="6508"/>
         <source>Ignore repetition filters in text settings</source>
         <translation>不過濾遊戲文本中的重复</translation>
     </message>
@@ -2652,37 +2652,37 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
 請點擊【編輯特殊碼】按鈕，並刪掉有問題的特殊碼。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3064"/>
+        <location filename="dialogs/_prefs.py" line="3353"/>
         <source>By default, VNR will automatically detect whether you have got Internet access. If the detection does not work well, you can force enabling/disabling the Internet here.</source>
         <translation>VNR會自動檢測網卡是否有網絡連接。如果檢測不能正常工作，可以在這裡強迫開啟或者禁用網絡連接。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3074"/>
+        <location filename="dialogs/_prefs.py" line="3363"/>
         <source>Automatically detect Internet status</source>
         <translation>自動檢測網絡連接</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3075"/>
+        <location filename="dialogs/_prefs.py" line="3364"/>
         <source>Always enable Internet access</source>
         <translation>總是允許網絡連接</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3076"/>
+        <location filename="dialogs/_prefs.py" line="3365"/>
         <source>Always disable Internet access</source>
         <translation>總是禁止網絡連接</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3204"/>
+        <location filename="dialogs/_prefs.py" line="3493"/>
         <source>Disable online and offline machine translation</source>
         <translation>禁止在線和離線的機器翻譯</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3214"/>
+        <location filename="dialogs/_prefs.py" line="3503"/>
         <source>Disable user-contributed comments and danmaku</source>
         <translation>禁止來自其他同學的字幕和彈幕</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3664"/>
+        <location filename="dialogs/_prefs.py" line="3956"/>
         <source>EDICT Japanese-English dictionary</source>
         <translation>EDICT日英字典</translation>
     </message>
@@ -2712,7 +2712,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
         <translation>下載辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3257"/>
+        <location filename="dialogs/_prefs.py" line="3546"/>
         <source>Some of the free resources are large but not useful to all users.
 So, these resources are not distributed together with VNR by default.
 You can select only the resources you need to download here.</source>
@@ -2732,7 +2732,7 @@ You can select only the resources you need to download here.</source>
         <translation>管理辭書</translation>
     </message>
     <message>
-        <location filename="managers/dicts.py" line="66"/>
+        <location filename="managers/dicts.py" line="70"/>
         <source>{0} does not exist. Please try redownload it in Preferences</source>
         <translation>{0}並不存在呢。請在使用偏好中重新下載</translation>
     </message>
@@ -2744,22 +2744,22 @@ You can redownload it later if you have Internet access.</source>
 刪除后在有網絡連接時可以重新下載的。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3569"/>
+        <location filename="dialogs/_prefs.py" line="3861"/>
         <source>Reload dictionary caches</source>
         <translation>刷新辭書的緩存</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3742"/>
+        <location filename="dialogs/_prefs.py" line="4034"/>
         <source>recommended for English</source>
         <translation>使用英文的同學推薦</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2327"/>
+        <location filename="dialogs/_prefs.py" line="2581"/>
         <source>Infoseek.ne.jp multilingual translation service</source>
         <translation>Infoseek.ne.jp的多國語言翻譯服務</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2342"/>
+        <location filename="dialogs/_prefs.py" line="2596"/>
         <source>Excite.co.jp multilingual translation service</source>
         <translation>Excite.co.jp的多國語言翻譯服務</translation>
     </message>
@@ -2830,7 +2830,7 @@ VNR can also uninstall it later if you want.</source>
 你以后也可以通過VNR來卸載它。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3995"/>
+        <location filename="dialogs/_prefs.py" line="4289"/>
         <source>Microsoft AppLocale is required to change the game locale to Japanese.
 It is not needed if you have already changed your Windows locale to Japanese.
 &lt;br/&gt;
@@ -2855,37 +2855,37 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>修改編碼的工具</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="50"/>
+        <location filename="dialogs/_prefs.py" line="52"/>
         <source>New Japanese-Chinese dictionary</source>
         <translation>新日漢大辭典</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="53"/>
+        <location filename="dialogs/_prefs.py" line="55"/>
         <source>Naver Japanese-Korean dictionary</source>
         <translation>Naver日韓辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="54"/>
+        <location filename="dialogs/_prefs.py" line="56"/>
         <source>OVDP Japanese-Vietnamese dictionary</source>
         <translation>OVDP日文-越南文字典</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="52"/>
+        <location filename="dialogs/_prefs.py" line="54"/>
         <source>Vicon Japanese-English dictionary</source>
         <translation>Vicon日英辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="66"/>
+        <location filename="dialogs/_prefs.py" line="68"/>
         <source>JMDict Japanese-French dictionary</source>
         <translation>JMDict日法辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="67"/>
+        <location filename="dialogs/_prefs.py" line="69"/>
         <source>JMDict Japanese-Russian dictionary</source>
         <translation>JMDict日俄辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="68"/>
+        <location filename="dialogs/_prefs.py" line="70"/>
         <source>JMDict Japanese-Dutch dictionary</source>
         <translation>JMDict日文-荷蘭文辭書</translation>
     </message>
@@ -2895,7 +2895,7 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>添加詞條</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3555"/>
+        <location filename="dialogs/_prefs.py" line="3847"/>
         <source>Dictionaries for looking up Japanese phrases</source>
         <translation>查詢日文詞語解釋的辭書</translation>
     </message>
@@ -2905,32 +2905,32 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>如果EDICT有裝，VNR的更新程序每月都會去更新EDICT的。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="26"/>
+        <location filename="dialogs/_prefs.py" line="28"/>
         <source>UniDic modern Japanese dictionary</source>
         <translation>UniDic現代日本語辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="28"/>
+        <location filename="dialogs/_prefs.py" line="30"/>
         <source>IPAdic Japanese dictionary</source>
         <translation>IPAdic日本語辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3335"/>
+        <location filename="dialogs/_prefs.py" line="3624"/>
         <source>MeCab dictionaries for parsing Japanese</source>
         <translation>用于日文分詞的MeCab辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2585"/>
+        <location filename="dialogs/_prefs.py" line="2874"/>
         <source>Preferred MeCab dictionary for parsing Japanese</source>
         <translation>用于日文分詞的MeCab字典</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2592"/>
+        <location filename="dialogs/_prefs.py" line="2881"/>
         <source>Do not parse Japanese to furigana</source>
         <translation>不對日文分詞</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3520"/>
+        <location filename="dialogs/_prefs.py" line="3812"/>
         <source>Using phrase dictionaries requires at least one MeCab dictionary to be installed.</source>
         <translation>使用單詞字典需要安裝至少一個MeCab辭書。</translation>
     </message>
@@ -2940,47 +2940,47 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>不要忘記最大化遊戲文本的速度（參看幫助）。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2359"/>
+        <location filename="dialogs/_prefs.py" line="2613"/>
         <source>LEC.com multilingual translation service</source>
         <translation>LEC.com的多國語言翻譯服務</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2360"/>
+        <location filename="dialogs/_prefs.py" line="2614"/>
         <source>recommended for European</source>
         <translation>使用歐洲語言的同學推薦</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="437"/>
+        <location filename="dialogs/_prefs.py" line="445"/>
         <source>Peer status</source>
         <translation>其他同學的動態</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="443"/>
+        <location filename="dialogs/_prefs.py" line="451"/>
         <source>Display online user counter on the Spring Board</source>
         <translation>在Spring Board上顯示在線的同學數</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="815"/>
+        <location filename="dialogs/_prefs.py" line="823"/>
         <source>Global shortcuts are not supported in Wine.</source>
         <translation>Wine上不支持全局快捷鍵呢。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="917"/>
+        <location filename="dialogs/_prefs.py" line="926"/>
         <source>Speak the current game text using TTS</source>
         <translation>用語音合成讀出當前的遊戲對話</translation>
     </message>
     <message>
-        <location filename="dialogs/prefs.py" line="225"/>
+        <location filename="dialogs/prefs.py" line="219"/>
         <source>Mouse and keyboard shortcuts</source>
         <translation>鼠標和鍵盤的快捷鍵</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="844"/>
+        <location filename="dialogs/_prefs.py" line="852"/>
         <source>These shortcuts can only be enabled when the game is running.</source>
         <translation>這些快捷鍵只有在遊戲運行時才可以開啟的。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="847"/>
+        <location filename="dialogs/_prefs.py" line="855"/>
         <source>Global game shortcuts</source>
         <translation>全局的遊戲快捷鍵</translation>
     </message>
@@ -2990,42 +2990,42 @@ VNR可以自動從台灣大學下載並安裝pAppLocale。
         <translation>這是日文名字后的稱謂</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2283"/>
+        <location filename="dialogs/_prefs.py" line="2479"/>
         <source>Online translators</source>
         <translation>在線翻譯服務</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2294"/>
+        <location filename="dialogs/_prefs.py" line="2513"/>
         <source>Offline translators</source>
         <translation>離線翻譯軟件</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2382"/>
+        <location filename="dialogs/_prefs.py" line="2636"/>
         <source>Translate.Ru multilingual translation service</source>
         <translation>Translate.Ru的多國語言翻譯服務</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2383"/>
+        <location filename="dialogs/_prefs.py" line="2637"/>
         <source>recommended for Russian</source>
         <translation>使用俄文的同學推薦</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2384"/>
+        <location filename="dialogs/_prefs.py" line="2638"/>
         <source>including {0}</source>
         <translation>包括{0}</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2830"/>
+        <location filename="dialogs/_prefs.py" line="3119"/>
         <source>recommended for Japanese learners</source>
         <translation>學習日文的同學推薦</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2785"/>
+        <location filename="dialogs/_prefs.py" line="3074"/>
         <source>Download required</source>
         <translation>需要下載</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2805"/>
+        <location filename="dialogs/_prefs.py" line="3094"/>
         <source>Manual installation required</source>
         <translation>需要手動安裝</translation>
     </message>
@@ -3089,7 +3089,7 @@ VNR默認會使用TTS讀出遊戲的原始文本。
 推薦使用VoiceText的TTS軟件。它不但支持日文，還支持中文、英文等其他語言。</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6381"/>
+        <location filename="managers/dataman.py" line="6388"/>
         <source>VNR&apos;s game profile (%s) was corrupted. Recovered from backup.</source>
         <translation>VNR的遊戲設定（%s）損壞了呢。恢复到過去備份的設定。</translation>
     </message>
@@ -3104,7 +3104,7 @@ VNR默認會使用TTS讀出遊戲的原始文本。
         <translation>這個遊戲要求一定要在先載入遊戲，再打開VNR</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2687"/>
+        <location filename="dialogs/_prefs.py" line="2976"/>
         <source>require MeCab dictionaries</source>
         <translation>需要MeCab辭書</translation>
     </message>
@@ -3119,47 +3119,47 @@ VNR默認會使用TTS讀出遊戲的原始文本。
         <translation>這個遊戲也許需要打開去除重复的選項</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6007"/>
+        <location filename="dialogs/_prefs.py" line="6307"/>
         <source>Preferred game text extraction method</source>
         <translation>提取遊戲文本的方法</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6016"/>
+        <location filename="dialogs/_prefs.py" line="6316"/>
         <source>Use VNR&apos;s built-in hook instead of ITH if possible</source>
         <translation>如果可能的話，用VNR自己的提取方法而不使用ITH</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6024"/>
+        <location filename="dialogs/_prefs.py" line="6324"/>
         <source>Changing the text extraction method requires restarting the game.</source>
         <translation>修改文本提取方法需要重新啟動遊戲才會生效。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6107"/>
+        <location filename="dialogs/_prefs.py" line="6407"/>
         <source>Translation wait time</source>
         <translation>翻譯超時時間</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6112"/>
+        <location filename="dialogs/_prefs.py" line="6412"/>
         <source>Embedding options</source>
         <translation>嵌入文字的選項</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6140"/>
+        <location filename="dialogs/_prefs.py" line="6440"/>
         <source>A large wait time might also slow down the game when your machine translator is slow.</source>
         <translation>當超時時間很長而你的機翻工具又很慢時，可能會讓遊戲一卡一卡的。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6147"/>
+        <location filename="dialogs/_prefs.py" line="6447"/>
         <source>Disable text extraction when Ctrl is pressed</source>
         <translation>當按下Ctrl鍵時，暫停提取文本</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6157"/>
+        <location filename="dialogs/_prefs.py" line="6457"/>
         <source>Preferred text to embed in the game</source>
         <translation>要內嵌的文本</translation>
     </message>
     <message>
-        <location filename="dialogs/prefs.py" line="243"/>
+        <location filename="dialogs/prefs.py" line="237"/>
         <source>Embedded subtitles</source>
         <translation>內嵌字幕</translation>
     </message>
@@ -3174,22 +3174,22 @@ VNR默認會使用TTS讀出遊戲的原始文本。
         <translation>用VNR自己的文本提取方法而不使用ITH</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="535"/>
+        <location filename="managers/textman.py" line="537"/>
         <source>Failed to encode text</source>
         <translation>轉碼失敗了</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="808"/>
+        <location filename="managers/textman.py" line="810"/>
         <source>Translating window text ...</source>
         <translation>正在翻譯窗口的文字...</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="824"/>
+        <location filename="managers/textman.py" line="826"/>
         <source>Updating window text ...</source>
         <translation>正在刷新窗口的文字...</translation>
     </message>
     <message>
-        <location filename="managers/textman.py" line="828"/>
+        <location filename="managers/textman.py" line="830"/>
         <source>Not found machine translation</source>
         <translation>沒有找到機器翻譯</translation>
     </message>
@@ -3257,12 +3257,12 @@ D. 日文無交集：泰文&lt;br/&gt;
 如果這個功能會讓你的遊戲崩潰掉，那麼可以嘗試運行Debug VNR，然后將VNR文件夾下的vnragent.log和崩潰遊戲的名字一起發給我。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6025"/>
+        <location filename="dialogs/_prefs.py" line="6325"/>
         <source>This feature is currently under development, and only supports a small portion of the games that ITH supports.</source>
         <translation>和ITH比起來現在只有很少的遊戲是支持的。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6026"/>
+        <location filename="dialogs/_prefs.py" line="6326"/>
         <source>The current supported game engines are: {0}</source>
         <translation>當前支持的遊戲引擎是：{0}</translation>
     </message>
@@ -3272,7 +3272,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>未知的遊戲引擎。改為使用ITH提取文本。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4927"/>
+        <location filename="dialogs/_prefs.py" line="5221"/>
         <source>You have non-ascii characters in the path which might work as expected</source>
         <translation>在路徑中不可以有中文之類的非ASCII字符才好呢</translation>
     </message>
@@ -3282,7 +3282,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>文本提取：VNR</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5796"/>
+        <location filename="dialogs/_prefs.py" line="6094"/>
         <source>Clear the specified location</source>
         <translation>清除選定的位置</translation>
     </message>
@@ -3307,7 +3307,7 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>你想要永久的移除{0}個選定的條目嗎？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9083"/>
+        <location filename="managers/dataman.py" line="9090"/>
         <source>Editing other&apos;s entry is not allowed</source>
         <translation>不可以編輯其他人的條目的</translation>
     </message>
@@ -3332,12 +3332,12 @@ D. 日文無交集：泰文&lt;br/&gt;
         <translation>你想要禁用{0}個選定的條目嗎？</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="9097"/>
+        <location filename="managers/dataman.py" line="9104"/>
         <source>{0} items updated</source>
         <translation>修改了{0}個條目</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6492"/>
+        <location filename="managers/dataman.py" line="6499"/>
         <source>Automatically correct text settings</source>
         <translation>自動修正文本設定</translation>
     </message>
@@ -3432,27 +3432,27 @@ VNR的提取方法支持內嵌翻譯到遊戲中去，但是支持的遊戲比IT
 如果VNR會導致遊戲崩潰，在那個文件中也許可以找到崩潰的原因。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2751"/>
+        <location filename="dialogs/_prefs.py" line="3040"/>
         <source>require EDICT</source>
         <translation>需要EDICT辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="39"/>
+        <location filename="dialogs/_prefs.py" line="41"/>
         <source>CaboCha model for {0} dictionary</source>
         <translation>{0}辭書的CaboCha模型</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2637"/>
+        <location filename="dialogs/_prefs.py" line="2926"/>
         <source>Syntax highlighting Japanese using CaboCha</source>
         <translation>使用CaboCha對日文做語法加亮</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3432"/>
+        <location filename="dialogs/_prefs.py" line="3723"/>
         <source>CaboCha models for highlighting Japanese</source>
         <translation>用于日文語法加亮的CaboCha模型</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2580"/>
+        <location filename="dialogs/_prefs.py" line="2869"/>
         <source>Changing the MeCab dictionary after it is used might require restarting VNR (always needed on Windows XP).</source>
         <translation>在使用了MeCab辭書后修改它也許需要重新啟動VNR（在Windows XP上一定需要重新啟動）。</translation>
     </message>
@@ -3467,12 +3467,12 @@ VNR的提取方法支持內嵌翻譯到遊戲中去，但是支持的遊戲比IT
         <translation>如你所願禁止連接到網絡</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="957"/>
+        <location filename="dialogs/_prefs.py" line="967"/>
         <source>Toggle visiblility of the text box</source>
         <translation>顯示或隱藏文本框框</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="968"/>
+        <location filename="dialogs/_prefs.py" line="979"/>
         <source>Toggle text box</source>
         <translation>顯示或隱藏文本框框</translation>
     </message>
@@ -3482,19 +3482,19 @@ VNR的提取方法支持內嵌翻譯到遊戲中去，但是支持的遊戲比IT
         <translation>你想要啟用{0}個選定的條目嗎？</translation>
     </message>
     <message utf8="true">
-        <location filename="dialogs/_prefs.py" line="2829"/>
+        <location filename="dialogs/_prefs.py" line="3118"/>
         <source>Daijirin (大辞林) Japanese-Japanese/English dictionary</source>
         <translation>大辞林日日/和英字典</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5242"/>
+        <location filename="dialogs/_prefs.py" line="5540"/>
         <source>Sanseido Daijirin dictionary is used by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese and English&lt;/span&gt; word translation.&lt;br/&gt;
 Daijirin is detected on your system at the above location.</source>
         <translation>三省堂的大辞林辭書可以為日文詞語提供&lt;span style=&quot;color:purple&quot;&gt;日文和英文解釋&lt;/span&gt;。&lt;br/&gt;
 大辞林設定在了上面的地方。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5246"/>
+        <location filename="dialogs/_prefs.py" line="5544"/>
         <source>Sanseido Daijirin is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Japanese and English&lt;/span&gt; word translation.&lt;br/&gt;
 It is a ja-ja/ja-en dictionary distributed in &lt;a href=&quot;%s&quot;&gt;EPWING&lt;/a&gt; format DVD.&lt;br/&gt;
 Daijirin is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from Sanseido:
@@ -3505,17 +3505,17 @@ Daijirin is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, an
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2447"/>
+        <location filename="dialogs/_prefs.py" line="2713"/>
         <source>Han Viet Chinese-Vietnamese translator</source>
         <translation>Hán Việt漢越辭書（將中文翻譯為越南文）</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3142"/>
+        <location filename="dialogs/_prefs.py" line="3431"/>
         <source>Since context menu would break full screen in most games, you normally don&apos;t want to enable this unless you have a very small screen size.</source>
         <translation>由于右鍵菜單會讓很多遊戲離開全屏狀態，除非你因為筆記本屏幕太小迫不得已，否則不要打開這選項。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3151"/>
+        <location filename="dialogs/_prefs.py" line="3440"/>
         <source>Force enabling context menu in full screen</source>
         <translation>在遊戲全屏后，強行開啟右鍵菜單</translation>
     </message>
@@ -3530,12 +3530,12 @@ Daijirin is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, an
         <translation>下載YouTube的動畫</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="51"/>
+        <location filename="dialogs/_prefs.py" line="53"/>
         <source>GBK Japanese-Chinese dictionary</source>
         <translation>GBK和漢簡明字典</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2063"/>
+        <location filename="dialogs/_prefs.py" line="2257"/>
         <source>You can select your preferred machine translators and look-up dictionaries here. The translators and dictionaries are independent that do not require each other. Look-up dictionaries require downloading at least one offline MeCab dictionary.</source>
         <translation>你可以在這裡選擇想用的機器翻譯軟件和分詞查詞的字典。機翻和詞典是獨立的。另外，要使用字典查詞的功能，至少需要安裝一個離線的MeCab分詞辭書才好。</translation>
     </message>
@@ -3550,12 +3550,12 @@ Daijirin is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, an
         <translation>想用的分詞和查詞的字典</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1550"/>
+        <location filename="dialogs/_prefs.py" line="1744"/>
         <source>Start OCR screen reader for Japanese</source>
         <translation>運行日文光學文字識別</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5929"/>
+        <location filename="dialogs/_prefs.py" line="6229"/>
         <source>Microsoft MODI OCR from Office 2007 is needed by VNR&apos;s &lt;span style=&quot;color:purple&quot;&gt;optical character recognition&lt;/span&gt;.
 You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or download MODI from the following page:
 &lt;center&gt;&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;&lt;/center&gt;</source>
@@ -3579,12 +3579,12 @@ You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or d
         <translation>停止光學文字識別</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1567"/>
+        <location filename="dialogs/_prefs.py" line="1761"/>
         <source>OCR requires starting VNR as administrator to work.</source>
         <translation>OCR需要用管理員權限運行VNR才可以正常工作的。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1559"/>
+        <location filename="dialogs/_prefs.py" line="1753"/>
         <source>OCR requires MODI OCR from Microsoft Office 2007 to be installed.</source>
         <translation>OCR需要安裝微軟Office 2007中的MODI OCR組件。</translation>
     </message>
@@ -3594,7 +3594,7 @@ You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or d
         <translation>沒有找到Ntleas的程序</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4301"/>
+        <location filename="dialogs/_prefs.py" line="4595"/>
         <source>Ntleas is an application that could help change Japanese game to your locale.&lt;br/&gt;
 It is a descendant of NTLEA whose development has stopped.
 Ntleas is &lt;span style=&quot;color:purple&quot;&gt;free&lt;/span&gt; and open source. You could get the latest version here:
@@ -3634,7 +3634,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <translation>匹配的文本很長。請不要把人工字幕加入共享辭書。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3055"/>
+        <location filename="dialogs/_prefs.py" line="3344"/>
         <source>Internet connection</source>
         <translation>網絡連接</translation>
     </message>
@@ -3669,17 +3669,17 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <translation>編輯帖子失敗了</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1459"/>
+        <location filename="dialogs/_prefs.py" line="1653"/>
         <source>Characters are matched in the same order as the selected languages.</source>
         <translation>識別文字是會按照選定語言的順序。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1451"/>
+        <location filename="dialogs/_prefs.py" line="1645"/>
         <source>Text character languages</source>
         <translation>識別字符的語言</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1423"/>
+        <location filename="dialogs/_prefs.py" line="1617"/>
         <source>Text transformation settings</source>
         <translation>文本變換設定</translation>
     </message>
@@ -3689,22 +3689,22 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <translation>使用TAH日英翻譯規則</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2201"/>
+        <location filename="dialogs/_prefs.py" line="2395"/>
         <source>TAH script for Japanese-English machine translators</source>
         <translation>TAH日英翻譯規則</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2208"/>
+        <location filename="dialogs/_prefs.py" line="2402"/>
         <source>ATLAS offline machine translation</source>
         <translation>ATLAS離線機器翻譯</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2219"/>
+        <location filename="dialogs/_prefs.py" line="2413"/>
         <source>LEC online and offline machine translation</source>
         <translation>LEC在線和離線機器翻譯</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2246"/>
+        <location filename="dialogs/_prefs.py" line="2440"/>
         <source>TAH script is a set of &lt;a href=&quot;http://en.wikipedia.org/wiki/Regular_expression&quot;&gt;regular expression&lt;/a&gt; rules originally written by @errzotl sensei to enhance Japanese-English translation quality.
 You can report the bugs to &lt;a href=&quot;mailto:{0}&quot;&gt;{0}&lt;/a&gt;.</source>
         <translation>TAH腳本是一組由@errzotl大先生所寫的改善日英機器翻譯質量的&lt;a href=&quot;http://en.wikipedia.org/wiki/Regular_expression&quot;&gt;正則表達式&lt;/a&gt;。
@@ -3772,22 +3772,22 @@ Check this wiki for what to do if there is no correct text.
         <translation>如果沒有正確的文本，請查看這個&lt;a href=&quot;http://sakuradite.com/wiki/zh/VNR/Game_Settings&quot;&gt;Game Settings&lt;/a&gt;的wiki該如何做。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1393"/>
+        <location filename="dialogs/_prefs.py" line="1587"/>
         <source>Screen capture options</source>
         <translation>屏幕截圖的選項</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1388"/>
+        <location filename="dialogs/_prefs.py" line="1582"/>
         <source>sec. &lt;= Refresh interval to capture the screen</source>
         <translation>秒 &lt;= 屏幕截圖刷新的時間</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1401"/>
+        <location filename="dialogs/_prefs.py" line="1595"/>
         <source>When the interval is smaller, you will wait less time to get the new OCR text. But it will also require more CPU usage.</source>
         <translation>當間隔很短時，等待文本出現的時間會減少；但這樣也會佔用更多的CPU。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="876"/>
+        <location filename="dialogs/_prefs.py" line="884"/>
         <source>Take a screenshot of the game window</source>
         <translation>對遊戲窗口截取圖片</translation>
     </message>
@@ -3797,34 +3797,34 @@ Check this wiki for what to do if there is no correct text.
         <translation>可重用的正則表達式定義</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1483"/>
+        <location filename="dialogs/_prefs.py" line="1677"/>
         <source>Combine with mouse to select OCR region</source>
         <translation>和鼠標一起按下來劃定識別區域</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1500"/>
+        <location filename="dialogs/_prefs.py" line="1694"/>
         <source>Keyboard shortcuts</source>
         <translation>鍵盤快捷鍵</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1558"/>
+        <location filename="dialogs/_prefs.py" line="1752"/>
         <source>When enabled, you can press HotKey+Mouse to select the text to read.</source>
         <translation>開啟時，你可以使用快捷鍵+鼠標左鍵來選定需要閱讀的文本。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2432"/>
+        <location filename="dialogs/_prefs.py" line="2692"/>
         <source>FastAIT Chinese-Japanese/English translator</source>
         <translation>金山快譯中日、中英翻譯軟件</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4587"/>
+        <location filename="dialogs/_prefs.py" line="4881"/>
         <source>Kingsoft FastAIT All Professional Edition is used by &lt;span style=&quot;color:purple&quot;&gt;offline Chinese-Japanese/English&lt;/span&gt; translation.&lt;br/&gt;
 FastAIT is detected on your system at the above location.</source>
         <translation>金山快譯個人版可以提供&lt;span style=&quot;color:purple&quot;&gt;離線中日和中英&lt;/span&gt;翻譯。&lt;br/&gt;
 金山快譯設定在上邊的位置。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4590"/>
+        <location filename="dialogs/_prefs.py" line="4884"/>
         <source>Kingsoft FastAIT All Professional Edition is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Chinese-Japanese/English&lt;/span&gt; translation.&lt;br/&gt;
 FastAIT is &lt;span style=&quot;color:green&quot;&gt;free&lt;/span&gt;, and you can download one here from iCIBA:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
@@ -3834,7 +3834,7 @@ FastAIT is &lt;span style=&quot;color:green&quot;&gt;free&lt;/span&gt;, and you 
 &lt;span style=&quot;color:red&quot;&gt;注：金山詞霸的路徑中不可以包含中文字符的。&lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="4683"/>
+        <location filename="dialogs/_prefs.py" line="4977"/>
         <source>Inventec Dr.eye v9.0 is needed by &lt;span style=&quot;color:purple&quot;&gt;offline Chinese-Japanese/English&lt;/span&gt; translation.&lt;br/&gt;
 Dr.eye is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from Inventec:
 &lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
@@ -3844,32 +3844,32 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，
 &lt;span style=&quot;color:red&quot;&gt;注：Dr.eye的路徑中不可以包含中文字符的。&lt;/span&gt;</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="853"/>
+        <location filename="managers/_trman.py" line="854"/>
         <source>FastAIT Japanese-Chinese translator is loaded</source>
         <translation>加載金山快譯日中翻譯引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="879"/>
+        <location filename="managers/_trman.py" line="880"/>
         <source>FastAIT English-Chinese translator is loaded</source>
         <translation>加載金山快譯英中翻譯引擎</translation>
     </message>
     <message>
-        <location filename="managers/_trman.py" line="905"/>
+        <location filename="managers/_trman.py" line="906"/>
         <source>FastAIT Chinese-English translator is loaded</source>
         <translation>加載金山快譯中英翻譯引擎</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6046"/>
+        <location filename="dialogs/_prefs.py" line="6346"/>
         <source>Convert Simplified Chinese to Traditional Chinese or Japanese kanji in the embedded translation. Otherwise, Chinese characters might be shown as question marks.</source>
         <translation>將簡體中文的內嵌翻譯轉換為正體中文或日本漢字。否則，一些漢字會變成問號。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="6059"/>
+        <location filename="dialogs/_prefs.py" line="6359"/>
         <source>Use Traditional Chinese or Japanese kanji</source>
         <translation>使用正體中文或日本漢字</translation>
     </message>
     <message>
-        <location filename="managers/dataman.py" line="6463"/>
+        <location filename="managers/dataman.py" line="6470"/>
         <source>Disable keeping space for Kanji language</source>
         <translation>禁止為漢字語言的遊戲保存空格</translation>
     </message>
@@ -3949,27 +3949,27 @@ Dr.eye是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，
         <translation>日文語法</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1684"/>
+        <location filename="dialogs/_prefs.py" line="1878"/>
         <source>Machine translation option</source>
         <translation>機器翻譯的選項</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1690"/>
+        <location filename="dialogs/_prefs.py" line="1885"/>
         <source>Underline the text modified by the Shared Dictionary if possible</source>
         <translation>下劃線被詞條修改了的文字</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1711"/>
+        <location filename="dialogs/_prefs.py" line="1907"/>
         <source>require {0}</source>
         <translation>需要{0}</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1710"/>
+        <location filename="dialogs/_prefs.py" line="1906"/>
         <source>VNR&apos;s machine translation system</source>
         <translation>VNR自己的機器翻譯系統</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1722"/>
+        <location filename="dialogs/_prefs.py" line="1918"/>
         <source>Enable Japanese syntax terms to enhance machine translation quality</source>
         <translation>開啟基于語法的日文翻譯系統來善翻譯質量</translation>
     </message>
@@ -4006,7 +4006,7 @@ Do you want to continue?</source>
         <translation>缺少MeCab、CaboCha或者UniDic辭書</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5507"/>
+        <location filename="dialogs/_prefs.py" line="5805"/>
         <source>Windows Media Player is needed by &lt;span style=&quot;color:purple&quot;&gt;Online TTS&lt;/span&gt;.&lt;br/&gt;
 Genuine Windows already have it installed by default, unless you have explicitly removed it by yourself.
 It is detected on your system at the above location.</source>
@@ -4015,7 +4015,7 @@ It is detected on your system at the above location.</source>
 它被設定在了上邊的地方。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="5511"/>
+        <location filename="dialogs/_prefs.py" line="5809"/>
         <source>Windows Media Player is needed by &lt;span style=&quot;color:purple&quot;&gt;Online TTS&lt;/span&gt;.&lt;br/&gt;
 Genuine Windows already have it installed by default, unless you have explicitly removed it by yourself.
 You can reinistall Windows Media Player here from Microsoft for free:
@@ -4026,34 +4026,68 @@ You can reinistall Windows Media Player here from Microsoft for free:
 &lt;center&gt;&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="341"/>
+        <location filename="managers/_ttsman.py" line="415"/>
         <source>Missing Windows Media Player needed by text-to-speech</source>
         <translation>缺少語音合成需要的Windows Media Player</translation>
     </message>
     <message>
-        <location filename="managers/_ttsman.py" line="322"/>
+        <location filename="managers/_ttsman.py" line="391"/>
         <source>Load {0} for TTS</source>
         <translation>為語音合成載入{0}</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1738"/>
+        <location filename="dialogs/_prefs.py" line="1934"/>
         <source>This feature is under development. Please &lt;span style=&quot;color:red&quot;&gt;DO NOT&lt;/span&gt; enable this option unless you are familiar with Japanese and the Shared Dictionary.</source>
         <translation>這個功能還在開發中。除非你對日語和共享辭書非常熟悉，否則暫時&lt;span style=&quot;color:red&quot;&gt;不要&lt;/span&gt;開啟這個選項才好。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1739"/>
+        <location filename="dialogs/_prefs.py" line="1935"/>
         <source>VNR&apos;s machine translator is based on the syntax terms in the Shared Dictionary. Currently, the existing syntax terms are insufficient to translate most Japanese sentences. When there is no matched syntax for a sentence, the selected 3rd machine translators will be used as alternative.</source>
         <translation>VNR的機器翻譯是基于共享辭書中的語法詞條的。不過，現在已有的語法詞條還不足以獨立的翻譯絕大部分日文。當沒有找到匹配的語法時，VNR會使用選定的第三方的機器翻譯器來進行翻譯。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="1175"/>
+        <location filename="dialogs/_prefs.py" line="1305"/>
         <source>SAPI TTS won&apos;t work when VNR is launched as Administrator.</source>
         <translation>SAPI TTS在VNR使用管理員權限啟動時就無法工作了。</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="2271"/>
+        <location filename="dialogs/_prefs.py" line="2465"/>
         <source>Convert Mandarin Chinese machine translation to Yue Chinese (using Baidu)</source>
         <translation>將國語的機器翻譯轉換為粵語（使用百度）</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="6142"/>
+        <source>Voiceroid+ Zunko from AHS is used by &lt;span style=&quot;color:purple&quot;&gt;offline text-to-speech&lt;/span&gt;.&lt;br/&gt;
+Zunko is a Japanese female TTS app.&lt;br/&gt;
+VNR does &lt;span style=&quot;color:purple&quot;&gt;NOT&lt;/span&gt; need .NET to work with Zunko.&lt;br/&gt;
+Voiceroid is detected on your system at the above location.</source>
+        <translation>VOICEROID+東北ずん子可以幫助&lt;span style=&quot;color:purple&quot;&gt;離線語音合成&lt;/span&gt;。&lt;br/&gt;
+東北ずん子是一個女聲的日文TTS軟件。&lt;br/&gt;
+VNR&lt;span style=&quot;color:purple&quot;&gt;不需要&lt;/span&gt;.NET來支持東北ずん子。&lt;br/&gt;
+東北ずん子設定在了上邊的地方。</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="6147"/>
+        <source>Voiceroid+ Zunko could be used for &lt;span style=&quot;color:purple&quot;&gt;offline text-to-speech&lt;/span&gt;.&lt;br/&gt;
+Zunko is a Japanese female TTS app.&lt;br/&gt;
+VNR does &lt;span style=&quot;color:purple&quot;&gt;NOT&lt;/span&gt; need .NET to work with Zunko.&lt;br/&gt;
+Zunko is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, and you can purchase one here from AHS:
+&lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</source>
+        <translation>VOICEROID+東北ずん子可以幫助&lt;span style=&quot;color:purple&quot;&gt;離線語音合成&lt;/span&gt;。&lt;br/&gt;
+東北ずん子是一個女聲的日文TTS軟件。&lt;br/&gt;
+VNR&lt;span style=&quot;color:purple&quot;&gt;不需要&lt;/span&gt;.NET來支持東北ずん子。&lt;br/&gt;
+東北ずん子是&lt;span style=&quot;color:purple&quot;&gt;付費軟件&lt;/span&gt;，你可以到AHS的官網購買：
+&lt;center&gt;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&lt;/center&gt;</translation>
+    </message>
+    <message>
+        <location filename="managers/_ttsman.py" line="219"/>
+        <source>Load {0}</source>
+        <translation>載入{0}</translation>
+    </message>
+    <message>
+        <location filename="managers/_ttsman.py" line="221"/>
+        <source>Failed to load {0}. Please check Preferences/Location</source>
+        <translation>加載{0}失敗了。請再檢查下使用偏好中程序的位置。</translation>
     </message>
 </context>
 </TS>

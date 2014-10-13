@@ -21,6 +21,7 @@ HEADERS += \
     $$AITALKED_SRC/aitalk/aitalkconf.h \
     $$AITALKED_SRC/aitalk/aitalkdef.h \
     $$AITALKED_SRC/aitalk/aitalkmarshal.h \
+    $$AITALKED_SRC/aitalk/aitalksettings.h \
     $$AITALKED_SRC/aitalk/aitalkutil.h
 SOURCES += \
     $$PWD/aitalked.cc \
