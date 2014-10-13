@@ -17,6 +17,7 @@ class AITalkUtil
   AITalkAPI _talk;
   AIAudioAPI _audio;
   bool _valid;
+  bool _synthesizing; // is currently synthesizing text
   char _voicePath[MAX_PATH];    // C:\Program Files\AHS\VOICEROID+\zunko\voice
   char _langPath[MAX_PATH];     // C:\Program Files\AHS\VOICEROID+\zunko\lang
   char _licensePath[MAX_PATH];  // C:\Program Files\AHS\VOICEROID+\zunko\aitalked.lic
@@ -26,7 +27,7 @@ class AITalkUtil
   AITalkUtil(const AITalkUtil &) {} // disable copy constructor
 public:
   AITalkUtil::AITalkUtil()
-    : _valid(false), _waveBuf(nullptr), _waveBufLength(0)
+    : _valid(false), _synthesizing(false), _waveBuf(nullptr), _waveBufLength(0)
   { _instance = this; }
 
   ~AITalkUtil()
@@ -56,13 +57,15 @@ public:
   }
 
 private:
+  AITalkResultCode InitParam();
+
   // AITalkUtil.cs: public AITalkResultCode GetStatus(int jobID, out AITalkStatusCode status)
-  AITalkResultCode GetStatus(int jobID, _Out_ AITalkStatusCode *status) const
-  { return _talk.GetStatus(jobID, status); }
+  //AITalkResultCode GetStatus(int jobID, _Out_ AITalkStatusCode *status) const
+  //{ return _talk.GetStatus(jobID, status); }
 
   // AITalkUtil.cs: public AITalkResultCode SetParam(ref AITalk_TTtsParam param)
-  AITalkResultCode SetParam(const AITalk_TTtsParam &param)
-  { return _talk.SetParam(&param); }
+  //AITalkResultCode SetParam(const AITalk_TTtsParam &param)
+  //{ return _talk.SetParam(&param); }
 
   // AITalkUtil.cs: public virtual AITalkResultCode SynthAsync(ref AITalk_TJobParam jobparam, string text)
   AITalkResultCode SynthSync(_Out_ int *jobID, const AITalk_TJobParam &jobparam, const char *text);
@@ -96,16 +99,25 @@ private:
   static int __stdcall MyAITalkProcTextBuf(AITalkEventReasonCode reasonCode, int jobID, const int *userData);
 
 public:
+  bool IsSynthesizing() const { return _synthesizing; }
+
   // AITalkUtil::SynthSync: while ((this._playing && (res == AITalkResultCode.AITALKERR_SUCCESS)) && (code != AITalkStatusCode.AITALKSTAT_DONE));
-  bool IsPlaying(int jobID) const
-  {
-    AITalkStatusCode code;
-    AITalkResultCode res = this->GetStatus(jobID, &code);
-    return res == AITALKERR_SUCCESS && code == AITALKSTAT_DONE;
-  }
+  //bool IsPlaying(int jobID) const
+  //{
+  //  AITalkStatusCode code;
+  //  AITalkResultCode res = this->GetStatus(jobID, &code);
+  //  return res == AITALKERR_SUCCESS && code == AITALKSTAT_DONE;
+  //}
 
   AITalkResultCode CloseSpeech(int jobID)
-  { return _talk.CloseSpeech(jobID, 0); } // eventId is 0
+  {
+    if (!_synthesizing)
+      return AITALKERR_SUCCESS;
+
+    AITalkResultCode code = _talk.CloseSpeech(jobID, 0);
+    _synthesizing = false;
+    return code;
+  }
 
   // AITalkUtil.cs: public AITalkResultCode TextToSpeech(string text)
   AITalkResultCode TextToSpeech(_Out_ int *jobID, const char *text)
@@ -115,6 +127,9 @@ public:
     param.userData = nullptr;
     return this->SynthSync(jobID, param, text);
   }
+
+  AIAudioResultCode Suspend() { return _audio.Suspend(); }
+  AIAudioResultCode Resume() { return _audio.Resume(); }
 };
 
 } // namespace AITalk

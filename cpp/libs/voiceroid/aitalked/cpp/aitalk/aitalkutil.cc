@@ -77,6 +77,11 @@ AITalkResultCode AITalk::AITalkUtil::Init(HMODULE h)
     if (code != AIAUDIOERR_SUCCESS)
       return AITALKERR_INTERNAL_ERROR;
   }
+
+  code = InitParam();
+  if (code != AITALKERR_SUCCESS)
+    return code;
+
   _valid = true;
   return AITALKERR_SUCCESS;
 }
@@ -85,10 +90,10 @@ AITalkResultCode AITalk::AITalkUtil::Init(HMODULE h)
 
 AIAudioResultCode AITalk::AITalkUtil::PushData(short wave[], size_t size, bool loop)
 {
-  //if (!this._playing)
-  //  return AIAudioResultCode.AIAUDIOERR_NO_PLAYING;
-  if (!wave)
-    return AIAUDIOERR_INVALID_ARGUMENT;
+  if (!_synthesizing)
+    return AIAUDIOERR_NO_PLAYING;
+  //if (!wave)
+  //  return AIAUDIOERR_INVALID_ARGUMENT;
   size_t dstlen = size * 2; // 2 = sizeof(short)
   char *dst = new char[dstlen];
   if (dstlen)
@@ -99,9 +104,7 @@ AIAudioResultCode AITalk::AITalkUtil::PushData(short wave[], size_t size, bool l
   return code;
 }
 
-// Speech synthesize
-
-AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobParam &jobparam, const char *text)
+AITalkResultCode AITalk::AITalkUtil::InitParam()
 {
   //_talk.ReloadSymbolDic(nullptr);
   //_audio.ClearData();
@@ -117,19 +120,17 @@ AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobPara
   code = _talk.GetParam(data, &num);
   if (code != AITALKERR_SUCCESS) {
     delete data;
+    _synthesizing = false;
     return code;
   }
   AITalk_TTtsParam param;
   AITalkMarshal::ReadTtsParam(&param, data);
 
   param.procRawBuf = this->MyAITalkProcRawBuf;
-  //param.procTextBuf = this->MyAITalkProcTextBuf;  // TTS Kana is disabled
-  //param.procEventTts = this->MyAITalkProcEventTTS;    // events are diabled
+  //param.procTextBuf = this->MyAITalkProcTextBuf;   // TTS Kana is disabled
+  //param.procEventTts = this->MyAITalkProcEventTTS; // events are diabled
 
   AITalkMarshal::WriteTtsParam(data, param);
-
-  AITalk_TTtsParam param2;
-  AITalkMarshal::ReadTtsParam(&param2, data);
 
   code = _talk.SetParam(data);
   if (code != AITALKERR_SUCCESS)
@@ -137,8 +138,20 @@ AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobPara
 
   _waveBufLength = param.lenRawBufBytes / 2;
   _waveBuf = new short[_waveBufLength];
+  return AITALKERR_SUCCESS;
+}
 
-  return _talk.TextToSpeech(jobID, &jobparam, text);
+// Speech synthesize
+
+AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobParam &jobparam, const char *text)
+{
+  if (_synthesizing)
+    return AITALKERR_TOO_MANY_JOBS;
+  _synthesizing = true;
+  AITalkResultCode code = _talk.TextToSpeech(jobID, &jobparam, text);
+  if (code != AITALKERR_SUCCESS)
+    _synthesizing = false;
+  return code;
 }
 
 // Hooks
@@ -174,8 +187,7 @@ int AITalk::AITalkUtil::MyAITalkProcTextBuf(AITalkEventReasonCode reasonCode, in
 int AITalk::AITalkUtil::MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int jobID, unsigned long tick, const int *userData)
 {
   CC_UNUSED(userData);
-  CC_UNUSED(jobID);
-  if (!_instance)
+  if (!_instance || !_instance->_synthesizing)
     return 0;
   size_t size = 0;
   switch (reasonCode) {
@@ -188,13 +200,13 @@ int AITalk::AITalkUtil::MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int
       _instance->CloseSpeech(jobID);
     }
     break;
-  case AITALKEVENT_RAWBUF_CLOSE:
+  case AITALKEVENT_RAWBUF_CLOSE: // not reachable
     _instance->PushEvent(tick, 3);
-    //_instance->PushData(new short[0], 0);
+    _instance->PushData(nullptr, 0);
     _instance->CloseSpeech(jobID);
     break;
   }
-  return 0;
+  return 0; // not reachable
 }
 
 // EOF
