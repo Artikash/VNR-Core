@@ -125,28 +125,20 @@ if __name__ == '__main__':
     a.exec_()
 
   def test_zunko():
-    def run():
-      from voiceroid.zunko import ZunkoTalk
-      from sakurakit import skpaths
-      path = r'Z:\Local\Windows\Applications\AHS\VOICEROID+\zunko'
-      #skpaths.append_path(path) # crash
-      skpaths.prepend_path(path)
-      ai = ZunkoTalk()
-      ai.setVolume(2)
-      ok = ai.load()
-      print ok
-      #t = u"こんにちは"
-      t = "hello"
-      ok = ai.speak(t)
-      print ok
+    from sakurakit import skpaths
+    path = r'Z:\Local\Windows\Applications\AHS\VOICEROID+\zunko'
+    #skpaths.append_path(path) # crash
+    skpaths.prepend_path(path)
 
-    a = app()
+    from voiceroid.zunko import ZunkoTalk
+    ai = ZunkoTalk()
+    print ai.load()
+    t = "hello world"
+    print ai.speak(t)
+
     #from PySide.QtCore import QCoreApplication
     #a = QCoreApplication(sys.argv)
-
-    #from sakurakit import skthreads
-    #skthreads.runasync(run)
-    run()
+    a = app()
     a.exec_()
 
   test_zunko()

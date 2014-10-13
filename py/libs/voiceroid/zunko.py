@@ -2,9 +2,18 @@
 # zunko.py
 # 10/12/2014 jichi
 
-from sakurakit import skos
+#from sakurakit import skos
+import os
 
-if skos.WIN:
+if __name__ == '__main__':
+  import sys
+  sys.path.append('../../../bin')
+  os.environ['PATH'] += os.pathsep + os.pathsep.join((
+    '../../../../Python',
+    '../../../../Qt/PySide',
+  ))
+
+if os.name == 'nt':
   from pyzunko import AITalkSynthesizer
 
   class _ZunkoTalk:
@@ -21,10 +30,10 @@ if skos.WIN:
     def __init__(self):
       self.__d =_ZunkoTalk()
 
-    def load(self, path=DLL): # -> bool
+    def load(self, path=None): # -> bool
       d = self.__d
       if not d.valid:
-        d.valid = d.ai.init(path)
+        d.valid = d.ai.init(path or self.DLL)
       return d.valid
 
     def isValid(self): return self.__d.valid # -> bool
@@ -56,5 +65,18 @@ else:
     def stop(self): pass
     def volume(self): return 1.0
     def setVolume(self, v): pass
+
+if __name__ == '__main__':
+  path = "Z:/Local/Windows/Applications/AHS/VOICEROID+/zunko"
+  os.environ['PATH'] += os.pathsep + path
+
+  ai = ZunkoTalk()
+  print ai.load()
+  t = "hello world"
+  print ai.speak(t)
+
+  from PySide.QtCore import QCoreApplication
+  a = QCoreApplication(sys.argv)
+  a.exec_()
 
 # EOF
