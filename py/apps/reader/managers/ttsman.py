@@ -169,9 +169,9 @@ class _TtsManager(object):
   @property
   def zunkoEngine(self):
     if not self._zunkoEngine:
-      ss = settings.global_()
-      eng = self._zunkoEngine = _ttsman.ZunkoEngine()
-      ss.zunkoLocationChanged.connect(eng.setPath)
+      eng = self._zunkoEngine = _ttsman.ZunkoEngine(
+          volume=self.getVolume(_ttsman.ZunkoEngine.key))
+      settings.global_().zunkoLocationChanged.connect(eng.setPath)
       #growl.msg(' '.join((
       #  my.tr("Load TTS"),
       #  eng.name,

@@ -7,6 +7,7 @@
 #include "cc/ccmacro.h"
 #include <windows.h>
 #include <cstring>
+//#include <iostream>
 
 using namespace AITalk;
 
@@ -89,16 +90,17 @@ AITalkResultCode AITalk::AITalkUtil::Init(HMODULE h, const AITalkSettings *setti
 
 // APIs wrappers
 
-AIAudioResultCode AITalk::AITalkUtil::PushData(short wave[], size_t size, bool loop)
+AIAudioResultCode AITalk::AITalkUtil::PushData(const short wave[], size_t size, bool loop)
 {
   if (!_synthesizing)
     return AIAUDIOERR_NO_PLAYING;
   //if (!wave)
   //  return AIAUDIOERR_INVALID_ARGUMENT;
   size_t dstlen = size * 2; // 2 = sizeof(short)
-  char *dst = new char[dstlen];
-  if (dstlen)
-    ::memcpy(dst, wave, dstlen);
+  //char *dst = new char[dstlen];
+  //if (dstlen)
+  //  ::memcpy(dst, wave, dstlen);
+  const char *dst = reinterpret_cast<const char *>(wave);
   AIAudioResultCode code = _audio.PushData(dst, dstlen, loop ? 0 : 1);
   //if (code != AIAudioResultCode.AIAUDIOERR_SUCCESS)
   //  this._playing = false;
@@ -245,14 +247,15 @@ int AITalk::AITalkUtil::MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int
       if (reasonCode == AITALKEVENT_RAWBUF_FLUSH)
         _instance->PushEvent(tick, 2);
       _instance->PushData(_instance->_waveBuf, size);
-      _instance->CloseSpeech(jobID);
+      if (reasonCode == AITALKEVENT_RAWBUF_FLUSH && _instance->_synthesizing)
+        _instance->CloseSpeech(jobID);
     }
     break;
-  case AITALKEVENT_RAWBUF_CLOSE: // not reachable
-    _instance->PushEvent(tick, 3);
-    _instance->PushData(nullptr, 0);
-    _instance->CloseSpeech(jobID);
-    break;
+  //case AITALKEVENT_RAWBUF_CLOSE: // not reachable
+  //  _instance->PushEvent(tick, 3);
+  //  _instance->PushData(nullptr, 0);
+  //  _instance->CloseSpeech(jobID);
+  //  break;
   }
   return 0; // not reachable
 }

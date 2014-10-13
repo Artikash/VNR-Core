@@ -212,9 +212,9 @@ class ZunkoEngine(VoiceEngine):
 
   @classmethod
   def createengine(cls):
-    #import settings
-    #from sakurakit import skpaths
-    #skpaths.prepend_path(settings.global_().zunkoLocation())
+    import settings
+    from sakurakit import skpaths
+    skpaths.prepend_path(settings.global_().zunkoLocation())
 
     from voiceroid.zunko import ZunkoTalk
     ret = ZunkoTalk()

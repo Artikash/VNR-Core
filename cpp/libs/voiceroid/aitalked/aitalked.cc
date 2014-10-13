@@ -90,7 +90,8 @@ bool AITalkSynthesizer::play(const char *text)
 {
   if (!d_->ai.IsValid())
     return false;
-  if (d_->ai.IsSynthesizing() && d_->jobId)
+  //if (d_->ai.IsSynthesizing() && d_->jobId)
+  if (d_->jobId) // always close in the main thread no matter synthesizing or not
     d_->ai.CloseSpeech(d_->jobId);
   d_->jobId = 0;
   try {

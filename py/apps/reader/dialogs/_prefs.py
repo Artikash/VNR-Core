@@ -92,8 +92,8 @@ REGISTER_URL = "http://sakuradite.com"
 
 ICON_BUTTON_SIZE = QtCore.QSize(16, 16)
 
-def create_cell_button(): # QPushButton ->
-  ret = QtWidgets.QPushButton()
+def create_cell_button(*args, **kwargs): # -> QPushButton
+  ret = QtWidgets.QPushButton(*args, **kwargs)
   ret.setMaximumWidth(18)
   ret.setMaximumHeight(18)
   skqss.class_(ret, 'btn btn-default btn-sm')
@@ -1039,6 +1039,7 @@ class _TtsTab(object):
   def testButton(self):
     ret = QtWidgets.QPushButton()
     ret.setText(tr_("Test"))
+    #ret.setText(u"▶")
     ret.setToolTip(my.tr("Read using the selected TTS engine"))
     skqss.class_(ret, 'btn btn-success')
     ret.clicked.connect(self._test)
@@ -1071,11 +1072,13 @@ class _TtsTab(object):
     @param  engine  str
     @return  QPushButton
     """
-    ret = QtWidgets.QPushButton(parent or self.q)
-    ret.setText(tr_("Test"))
+    ret = create_cell_button(parent or self.q)
+    #ret = QtWidgets.QPushButton(parent or self.q)
+    #ret.setText(tr_("Test"))
+    ret.setText(u"▶")
     ret.setToolTip(my.tr("Read using this TTS"))
     #skqss.class_(ret, 'btn btn-success')
-    skqss.class_(ret, 'btn btn-default')
+    #skqss.class_(ret, 'btn btn-default')
     ret.clicked.connect(partial(self._test, engine))
     return ret
 
@@ -1086,6 +1089,7 @@ class _TtsTab(object):
     ret = QtWidgets.QPushButton(parent or self.q)
     ret.setText(tr_("Launch"))
     ret.setToolTip(tr_("Launch"))
+    ret.setHeight(18) # thinner, the same as cell button
     #skqss.class_(ret, 'btn btn-success')
     skqss.class_(ret, 'btn btn-default')
     run = getattr(ttsman.manager(), 'run' + engine.capitalize())
@@ -1100,6 +1104,87 @@ class _TtsTab(object):
 
     r = 0
     grid.addWidget(self.disableButton, r, 1)
+
+    # SAPI
+    if not self.sapiButtons:
+      r += 1
+      grid.addWidget(QtWidgets.QLabel("SAPI (%s)" % mytr_("not installed")), r, 0, 1, 2)
+    else:
+      r += 1
+      label = QtWidgets.QLabel("SAPI (%s):" % tr_("offline"))
+      if features.ADMIN:
+        skqss.class_(label, 'text-error')
+      grid.addWidget(label, r, 0, 1, 2)
+      for k,b in self.sapiButtons:
+        r += 1
+        c = 1
+        if features.ADMIN:
+          skqss.class_(b, 'text-error')
+        grid.addWidget(b, r, c)
+        w = self.createTestButton(k)
+
+        c += 1
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createVolumeEdit(k)
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createSpeedEdit(k)
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createPitchEdit(k)
+        grid.addWidget(w, r, c)
+
+    # VOICEROID
+    r += 1
+    grid.addWidget(QtWidgets.QLabel("VOICEROID+ (%s):" % tr_("offline")), r, 0, 1, 2)
+
+    for k,b,bb in ((
+        ('zunkooffline', self.zunkoButton, self.zunkoBrowseButton),
+      )):
+      r += 1
+      c = 0
+      self.onlineWidgets.append(bb)
+      grid.addWidget(bb, r, c)
+
+      c += 1
+      grid.addWidget(b, r, c)
+
+      c += 1
+      w = self.createTestButton(k)
+      self.zunkoWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createVolumeEdit(k)
+      self.zunkoWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+    for k,b,bb in ((
+        ('yukari', self.yukariButton, self.yukariBrowseButton),
+        #('zunko', self.zunkoButton, self.zunkoBrowseButton),
+      )):
+      koffline = k + 'offline'
+      r += 1
+      c = 0
+      self.onlineWidgets.append(bb)
+      grid.addWidget(bb, r, c)
+
+      c += 1
+      grid.addWidget(b, r, c)
+
+      c += 1
+      w = self.createTestButton(koffline)
+      setattr(self, k + 'TestButton', w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createVoiceroidLaunchButton(k)
+      setattr(self, k + 'LaunchButton', w)
+      grid.addWidget(w, r, c)
 
     # Multilingual
     r += 1
@@ -1216,87 +1301,7 @@ class _TtsTab(object):
         self.onlineWidgets.append(w)
         grid.addWidget(w, r, c)
 
-    # SAPI
-    if not self.sapiButtons:
-      r += 1
-      grid.addWidget(QtWidgets.QLabel("SAPI (%s)" % mytr_("not installed")), r, 0, 1, 2)
-    else:
-      r += 1
-      label = QtWidgets.QLabel("SAPI (%s):" % tr_("offline"))
-      if features.ADMIN:
-        skqss.class_(label, 'text-error')
-      grid.addWidget(label, r, 0, 1, 2)
-      for k,b in self.sapiButtons:
-        r += 1
-        c = 1
-        if features.ADMIN:
-          skqss.class_(b, 'text-error')
-        grid.addWidget(b, r, c)
-        w = self.createTestButton(k)
-
-        c += 1
-        grid.addWidget(w, r, c)
-
-        c += 1
-        w = self.createVolumeEdit(k)
-        grid.addWidget(w, r, c)
-
-        c += 1
-        w = self.createSpeedEdit(k)
-        grid.addWidget(w, r, c)
-
-        c += 1
-        w = self.createPitchEdit(k)
-        grid.addWidget(w, r, c)
-
-    # VOICEROID
-    r += 1
-    grid.addWidget(QtWidgets.QLabel("VOICEROID+ (%s):" % tr_("offline")), r, 0, 1, 2)
-
-    for k,b,bb in ((
-        ('zunkooffline', self.zunkoButton, self.zunkoBrowseButton),
-      )):
-      r += 1
-      c = 0
-      self.onlineWidgets.append(bb)
-      grid.addWidget(bb, r, c)
-
-      c += 1
-      grid.addWidget(b, r, c)
-
-      c += 1
-      w = self.createTestButton(k)
-      self.zunkoWidgets.append(w)
-      grid.addWidget(w, r, c)
-
-      c += 1
-      w = self.createVolumeEdit(k)
-      self.zunkoWidgets.append(w)
-      grid.addWidget(w, r, c)
-
-
-    for k,b,bb in ((
-        ('yukari', self.yukariButton, self.yukariBrowseButton),
-        #('zunko', self.zunkoButton, self.zunkoBrowseButton),
-      )):
-      koffline = k + 'offline'
-      r += 1
-      c = 0
-      self.onlineWidgets.append(bb)
-      grid.addWidget(bb, r, c)
-
-      c += 1
-      grid.addWidget(b, r, c)
-
-      c += 1
-      w = self.createTestButton(koffline)
-      setattr(self, k + 'TestButton', w)
-      grid.addWidget(w, r, c)
-
-      c += 1
-      w = self.createVoiceroidLaunchButton(k)
-      setattr(self, k + 'LaunchButton', w)
-      grid.addWidget(w, r, c)
+    # Information
 
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)

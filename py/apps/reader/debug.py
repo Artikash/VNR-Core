@@ -133,6 +133,7 @@ if __name__ == '__main__':
     from voiceroid.zunko import ZunkoTalk
     ai = ZunkoTalk()
     print ai.load()
+    #ai.setVolume(1)
     t = "hello world"
     print ai.speak(t)
 

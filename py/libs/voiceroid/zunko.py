@@ -75,6 +75,16 @@ if __name__ == '__main__':
   t = "hello world"
   print ai.speak(t)
 
+  sys.path.append('..')
+  from sakurakit.skprofiler import SkProfiler
+  import time
+  for i in range(5):
+    print "before sleep"
+    time.sleep(5)
+    print "after sleep"
+    with SkProfiler(): # 0.002 seconds
+      print ai.speak(t)
+
   from PySide.QtCore import QCoreApplication
   a = QCoreApplication(sys.argv)
   a.exec_()
