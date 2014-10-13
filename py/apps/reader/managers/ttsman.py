@@ -24,8 +24,8 @@ class _TtsManager(object):
     self._online = True     # bool
     self._speakTask = None   # partial function object
 
-    self._yukariEngine = None # _ttsman.YukariEngine
     self._zunkoEngine = None  # _ttsman.ZunkoEngine
+    self._yukariEngine = None # _ttsman.YukariEngine
     self._sapiEngines = {}    # {str key:_ttsman.SapiEngine}
     self._onlineEngines = {}  # {str key:_ttsman.OnlineEngine}
     self._voiceroidEngines = {}  # {str key:_ttsman.VoiceroidEngine}
@@ -50,8 +50,8 @@ class _TtsManager(object):
     @return  unicode
     """
     ret = text.replace(u'…', '.') # てんてんてん
-    if key == 'zunko.offline':
-      ret = textutil.repair_zunko_text(ret)
+    #if key == 'zunko.offline':
+    #  ret = textutil.repair_zunko_text(ret)
     return ret
 
   def iterActiveEngines(self):
@@ -68,7 +68,7 @@ class _TtsManager(object):
       for it in self._voicetextEngines.itervalues():
         if it.isValid():
           yield it
-    for it in self._yukariEngine, self._zunkoEngine:
+    for it in self._zunkoEngine, self._yukariEngine:
       if it and it.isValid():
         yield it
     for it in self._sapiEngines.itervalues():
@@ -132,7 +132,7 @@ class _TtsManager(object):
     # Even if text is empty, trigger stop tts
     #if not text:
     #  return
-    text = self._repairText(text, eng.key)
+    text = self._repairText(text, eng.key) # always apply no matter terms are enabled or not
 
     #if eng.type == 'sapi':
     #  eng.speak(text, async=True)
@@ -169,13 +169,13 @@ class _TtsManager(object):
   @property
   def zunkoEngine(self):
     if not self._zunkoEngine:
-      ss = settings.global_()
-      eng = self._zunkoEngine = _ttsman.ZunkoEngine(path=ss.zunkoLocation())
-      ss.zunkoLocationChanged.connect(eng.setPath)
-      growl.msg(' '.join((
-        my.tr("Load TTS"),
-        eng.name,
-      )))
+      eng = self._zunkoEngine = _ttsman.ZunkoEngine(
+          volume=self.getVolume(_ttsman.ZunkoEngine.key))
+      settings.global_().zunkoLocationChanged.connect(eng.setPath)
+      #growl.msg(' '.join((
+      #  my.tr("Load TTS"),
+      #  eng.name,
+      #)))
     return self._zunkoEngine
 
   # Online
@@ -396,22 +396,22 @@ class TtsManager(QObject):
     return self.getEngineLanguage(self.__d.defaultEngineKey)
 
   def yukariLocation(self): return self.__d.yukariEngine.getPath()
-  def zunkoLocation(self): return self.__d.zunkoEngine.getPath()
+  #def zunkoLocation(self): return self.__d.zunkoEngine.getPath()
 
   def runYukari(self): return self.__d.yukariEngine.run()
-  def runZunko(self): return self.__d.zunkoEngine.run()
+  #def runZunko(self): return self.__d.zunkoEngine.run()
 
   def availableEngines(self):
     """
     @return  [unicode]
     """
-    ret = list(_ttsman.ONLINE_ENGINES)
     d = self.__d
-    for it in d.yukariEngine, d.zunkoEngine:
+    import sapiman
+    ret = [it.key for it in sapiman.voices()]
+    for it in d.zunkoEngine, d.yukariEngine:
       if it.isValid():
         ret.append(it.key)
-    import sapiman
-    ret.extend(it.key for it in sapiman.voices())
+    ret.extend(_ttsman.ONLINE_ENGINES)
     return ret
 
 @memoized

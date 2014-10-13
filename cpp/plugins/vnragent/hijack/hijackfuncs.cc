@@ -2,9 +2,9 @@
 // 1/27/2013 jichi
 #include "hijack/hijackfuncs.h"
 #include "hijack/hijackfuncs_p.h"
-#include "util/pathutil.h"
 #include "windbg/hijack.h"
 #include "winiter/winiterps.h"
+#include "cpputil/cpppath.h"
 #include <boost/foreach.hpp>
 
 #ifdef _MSC_VER
@@ -19,18 +19,18 @@ const Hijack::FunctionInfo HIJACK_FUNCTIONS[] = { HIJACK_FUNCTIONS_INITIALIZER }
 
 inline LPCWSTR applicationPathW()
 {
-  static WCHAR ret[MAX_PATH];
+  static WCHAR r[MAX_PATH];
   if (!*ret)
-    ::GetModuleFileNameW(nullptr, ret, MAX_PATH);
-  return ret;
+    ::GetModuleFileNameW(nullptr, r, MAX_PATH);
+  return r;
 }
 
 inline LPCWSTR applicationNameW()
 {
-  static LPCWSTR ret = nullptr;
-  if (!ret && (ret = wcsrchr(applicationPathW(), Util::path_sep)))
-    ret++;  // skip the path seperator
-  return ret;
+  static LPCWSTR r = nullptr;
+  if (!r && (r = applicationPathW()))
+    r = ::cpp_wbasename(r);
+  return r;
 }
 
 } // unnamed namespace
@@ -87,7 +87,7 @@ LPVOID Hijack::getOverridingFunctionAddress(HMODULE hModule, LPCSTR lpProcName)
 {
   char modulePath[MAX_PATH];
   if (::GetModuleFileNameA(hModule, modulePath, MAX_PATH))
-    if (const char *moduleName = Util::basename(modulePath))
+    if (const char *moduleName = ::cpp_basename(modulePath))
       BOOST_FOREACH (const auto &fn, HIJACK_FUNCTIONS)
         if (!::stricmp(moduleName, fn.moduleName) && !::stricmp(lpProcName, fn.functionName))
           return fn.newFunctionAddress;

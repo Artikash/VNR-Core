@@ -124,6 +124,24 @@ if __name__ == '__main__':
     chatview.manager().showTopic('global')
     a.exec_()
 
-  test_wmp()
+  def test_zunko():
+    from sakurakit import skpaths
+    path = r'Z:\Local\Windows\Applications\AHS\VOICEROID+\zunko'
+    #skpaths.append_path(path) # crash
+    skpaths.prepend_path(path)
+
+    from voiceroid.zunko import ZunkoTalk
+    ai = ZunkoTalk()
+    print ai.load()
+    #ai.setVolume(1)
+    t = "hello world"
+    print ai.speak(t)
+
+    #from PySide.QtCore import QCoreApplication
+    #a = QCoreApplication(sys.argv)
+    a = app()
+    a.exec_()
+
+  test_zunko()
 
 # EOF

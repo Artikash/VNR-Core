@@ -111,10 +111,10 @@ def match_kata_hira_punc(text):
   return bool(__match_kata_hira_punc_re.match(text))
 
 # http://www.sakuradite.com/wiki/zh/VNR/Voice_Settings
-import config
-repair_zunko_text = skstr.multireplacer(
-  config.load_yaml_file(config.ZUNKO_YAML_LOCATION)['escape']
-)
+#import config
+#repair_zunko_text = skstr.multireplacer(
+#  config.load_yaml_file(config.ZUNKO_YAML_LOCATION)['escape']
+#)
 
 if __name__ == '__main__':
   t = u"かたがな"

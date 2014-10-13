@@ -1,5 +1,5 @@
-# ttstest.pro
-# 6/15/2014
+# fastaittest.pro
+# 9/17/2014
 
 CONFIG += console noqt
 include(../../../config.pri)
@@ -7,7 +7,7 @@ include(../../../config.pri)
 # Source
 
 TEMPLATE = app
-TARGET = dlltest
+TARGET = fastaittest
 
 DEPENDPATH += .
 INCLUDEPATH += .

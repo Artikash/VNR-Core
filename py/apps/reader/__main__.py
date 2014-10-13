@@ -232,6 +232,7 @@ def main():
     ss.jbeijingLocation(),
     ss.ezTransLocation(),
     ss.atlasLocation(),
+    ss.zunkoLocation(),
     ss.localeEmulatorLocation(),
     ss.ntleasLocation(),
     os.path.join(ss.lecLocation(), r"Nova\JaEn") if ss.lecLocation() else "",
@@ -373,6 +374,14 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
+    if ss_version <= 1413181339:
+      path = ss.zunkoLocation()
+      if path and os.path.exists(path):
+        path = os.path.dirname(path)
+        ss.setValue('ZunkoLocation', path)
+        from sakurakit import skpaths
+        skpaths.append_path(path)
+
     if ss_version <= 1412817938:
       self.setValue('TermMarked', True) # enable underline by default
 

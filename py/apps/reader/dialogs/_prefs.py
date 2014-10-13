@@ -92,13 +92,6 @@ REGISTER_URL = "http://sakuradite.com"
 
 ICON_BUTTON_SIZE = QtCore.QSize(16, 16)
 
-def create_cell_button(): # QPushButton ->
-  ret = QtWidgets.QPushButton()
-  ret.setMaximumWidth(18)
-  ret.setMaximumHeight(18)
-  skqss.class_(ret, 'btn btn-default btn-sm')
-  return ret
-
 class TabAdaptor(object):
   def save(self): pass
   def load(self): pass
@@ -243,7 +236,8 @@ class _UserTab(object):
 
   @memoizedproperty
   def resetUserColorButton(self):
-    ret = create_cell_button()
+    ret = QtWidgets.QPushButton()
+    skqss.class_(ret, 'btn btn-default btn-toggle')
     ret.setText(u"×") # ばつ
     ret.setToolTip(tr_("Reset"))
     ret.clicked.connect(self._resetUserColor)
@@ -1000,6 +994,7 @@ class _TtsTab(object):
 
   def __init__(self, q):
     self.onlineWidgets = [] # [QWidget] any widget that involves online TTS
+    self.zunkoWidgets = [] # [QWidget] any widgets that involves Zunko
     self._createUi(q)
 
   def _createUi(self, q):
@@ -1038,6 +1033,7 @@ class _TtsTab(object):
   def testButton(self):
     ret = QtWidgets.QPushButton()
     ret.setText(tr_("Test"))
+    #ret.setText(u"▶")
     ret.setToolTip(my.tr("Read using the selected TTS engine"))
     skqss.class_(ret, 'btn btn-success')
     ret.clicked.connect(self._test)
@@ -1071,10 +1067,13 @@ class _TtsTab(object):
     @return  QPushButton
     """
     ret = QtWidgets.QPushButton(parent or self.q)
-    ret.setText(tr_("Test"))
+    skqss.class_(ret, 'btn btn-default btn-toggle')
+    #ret = QtWidgets.QPushButton(parent or self.q)
+    #ret.setText(tr_("Test"))
+    ret.setText(u"▶")
     ret.setToolTip(my.tr("Read using this TTS"))
     #skqss.class_(ret, 'btn btn-success')
-    skqss.class_(ret, 'btn btn-default')
+    #skqss.class_(ret, 'btn btn-default')
     ret.clicked.connect(partial(self._test, engine))
     return ret
 
@@ -1086,12 +1085,12 @@ class _TtsTab(object):
     ret.setText(tr_("Launch"))
     ret.setToolTip(tr_("Launch"))
     #skqss.class_(ret, 'btn btn-success')
-    skqss.class_(ret, 'btn btn-default')
+    skqss.class_(ret, 'btn btn-default btn-xs')
     run = getattr(ttsman.manager(), 'run' + engine.capitalize())
     ret.clicked.connect(run)
     return ret
 
-  # TTS ##
+  ## TTS ##
 
   @memoizedproperty
   def engineGroup(self):
@@ -1099,6 +1098,87 @@ class _TtsTab(object):
 
     r = 0
     grid.addWidget(self.disableButton, r, 1)
+
+    # SAPI
+    if not self.sapiButtons:
+      r += 1
+      grid.addWidget(QtWidgets.QLabel("SAPI (%s)" % mytr_("not installed")), r, 0, 1, 2)
+    else:
+      r += 1
+      label = QtWidgets.QLabel("SAPI (%s):" % tr_("offline"))
+      if features.ADMIN:
+        skqss.class_(label, 'text-error')
+      grid.addWidget(label, r, 0, 1, 2)
+      for k,b in self.sapiButtons:
+        r += 1
+        c = 1
+        if features.ADMIN:
+          skqss.class_(b, 'text-error')
+        grid.addWidget(b, r, c)
+        w = self.createTestButton(k)
+
+        c += 1
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createVolumeEdit(k)
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createSpeedEdit(k)
+        grid.addWidget(w, r, c)
+
+        c += 1
+        w = self.createPitchEdit(k)
+        grid.addWidget(w, r, c)
+
+    # VOICEROID
+    r += 1
+    grid.addWidget(QtWidgets.QLabel("VOICEROID+ (%s):" % tr_("offline")), r, 0, 1, 2)
+
+    for k,b,bb in ((
+        ('zunkooffline', self.zunkoButton, self.zunkoBrowseButton),
+      )):
+      r += 1
+      c = 0
+      self.onlineWidgets.append(bb)
+      grid.addWidget(bb, r, c)
+
+      c += 1
+      grid.addWidget(b, r, c)
+
+      c += 1
+      w = self.createTestButton(k)
+      self.zunkoWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createVolumeEdit(k)
+      self.zunkoWidgets.append(w)
+      grid.addWidget(w, r, c)
+
+    for k,b,bb in ((
+        ('yukari', self.yukariButton, self.yukariBrowseButton),
+        #('zunko', self.zunkoButton, self.zunkoBrowseButton),
+      )):
+      koffline = k + 'offline'
+      r += 1
+      c = 0
+      self.onlineWidgets.append(bb)
+      grid.addWidget(bb, r, c)
+
+      c += 1
+      grid.addWidget(b, r, c)
+
+      c += 1
+      w = self.createTestButton(koffline)
+      setattr(self, k + 'TestButton', w)
+      grid.addWidget(w, r, c)
+
+      c += 1
+      w = self.createVoiceroidLaunchButton(k)
+      setattr(self, k + 'LaunchButton', w)
+      grid.addWidget(w, r, c)
 
     # Multilingual
     r += 1
@@ -1215,65 +1295,7 @@ class _TtsTab(object):
         self.onlineWidgets.append(w)
         grid.addWidget(w, r, c)
 
-    # SAPI
-    if not self.sapiButtons:
-      r += 1
-      grid.addWidget(QtWidgets.QLabel("SAPI (%s)" % mytr_("not installed")), r, 0, 1, 2)
-    else:
-      r += 1
-      label = QtWidgets.QLabel("SAPI (%s):" % tr_("offline"))
-      if features.ADMIN:
-        skqss.class_(label, 'text-error')
-      grid.addWidget(label, r, 0, 1, 2)
-      for k,b in self.sapiButtons:
-        r += 1
-        c = 1
-        if features.ADMIN:
-          skqss.class_(b, 'text-error')
-        grid.addWidget(b, r, c)
-        w = self.createTestButton(k)
-
-        c += 1
-        grid.addWidget(w, r, c)
-
-        c += 1
-        w = self.createVolumeEdit(k)
-        grid.addWidget(w, r, c)
-
-        c += 1
-        w = self.createSpeedEdit(k)
-        grid.addWidget(w, r, c)
-
-        c += 1
-        w = self.createPitchEdit(k)
-        grid.addWidget(w, r, c)
-
-    # VOICEROID
-    r += 1
-    grid.addWidget(QtWidgets.QLabel("VOICEROID+ (%s):" % tr_("offline")), r, 0, 1, 2)
-
-    for k,b,bb in ((
-        ('yukari', self.yukariButton, self.yukariBrowseButton),
-        ('zunko', self.zunkoButton, self.zunkoBrowseButton),
-      )):
-      koffline = k + 'offline'
-      r += 1
-      c = 0
-      self.onlineWidgets.append(bb)
-      grid.addWidget(bb, r, c)
-
-      c += 1
-      grid.addWidget(b, r, c)
-
-      c += 1
-      w = self.createTestButton(koffline)
-      setattr(self, k + 'TestButton', w)
-      grid.addWidget(w, r, c)
-
-      c += 1
-      w = self.createVoiceroidLaunchButton(k)
-      setattr(self, k + 'LaunchButton', w)
-      grid.addWidget(w, r, c)
+    # Information
 
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)
@@ -1291,8 +1313,8 @@ class _TtsTab(object):
     return ret
 
   def _createBrowseButton(self, path): # unicode or function -> QPushButton
-    ret = create_cell_button()
-    ret.setText("+")
+    ret = QtWidgets.QPushButton("+")
+    skqss.class_(ret, 'btn btn-default btn-toggle')
     if isinstance(path, str) or isinstance(path, unicode):
       ret.setToolTip("%s: %s" % (tr_("Browse"), path))
       open = osutil.open_url if path.startswith('http') else osutil.open_url
@@ -1322,10 +1344,13 @@ class _TtsTab(object):
   def zunkoButton(self):
     ret = QtWidgets.QRadioButton(u"東北ずん子 (♀, %s)" % tr_("ja"))
     ret.toggled.connect(self._saveEngine)
+    self.zunkoWidgets.append(ret)
     return ret
   @memoizedproperty
   def zunkoBrowseButton(self):
-    return self._createBrowseButton(ttsman.manager().zunkoLocation)
+    ret = self._createBrowseButton(settings.global_().zunkoLocation)
+    self.zunkoWidgets.append(ret)
+    return ret
 
   @memoizedproperty
   def googleButton(self):
@@ -1502,9 +1527,9 @@ class _TtsTab(object):
     for w in self.yukariButton, self.yukariTestButton, self.yukariLaunchButton, self.yukariBrowseButton:
       w.setEnabled(enabled)
 
-    path = settings.global_().zunkoLocation() or ttsman.manager().zunkoLocation()
+    path = settings.global_().zunkoLocation() #or ttsman.manager().zunkoLocation()
     enabled = bool(path)
-    for w in self.zunkoButton, self.zunkoTestButton, self.zunkoLaunchButton, self.zunkoBrowseButton:
+    for w in self.zunkoWidgets:
       w.setEnabled(enabled)
 
 class TtsTab(QtWidgets.QDialog):
@@ -1948,8 +1973,8 @@ class _TextTab(object):
 
   @staticmethod
   def _createResetFontButton(defval, sig=None):
-    ret = create_cell_button()
-    ret.setText(u"×") # ばつ
+    ret = QtWidgets.QPushButton(u"×") # ばつ
+    skqss.class_(ret, 'btn btn-default btn-toggle')
     ret.setToolTip(tr_("Reset") + ": " + defval)
     if sig:
       ret.clicked.connect(sig)
@@ -2037,8 +2062,8 @@ class _TextTab(object):
 
   @staticmethod
   def _createResetColorButton(sig=None):
-    ret = create_cell_button()
-    ret.setText(u"×") # ばつ
+    ret = QtWidgets.QPushButton(u"×") # ばつ
+    skqss.class_(ret, 'btn btn-default btn-toggle')
     ret.setToolTip(my.tr("Reset default color"))
     if sig:
       ret.clicked.connect(sig)
@@ -2523,8 +2548,8 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     return ret
 
   def _createBrowseButton(self, path): # unicode or function -> QPushButton
-    ret = create_cell_button()
-    ret.setText("+")
+    ret = QtWidgets.QPushButton("+")
+    skqss.class_(ret, 'btn btn-default btn-toggle')
     if isinstance(path, str) or isinstance(path, unicode):
       ret.setToolTip("%s: %s" % (tr_("Browse"), path))
       open = osutil.open_url if path.startswith('http') else osutil.open_url
@@ -5728,8 +5753,8 @@ class _TtsLibraryTab(object):
     layout.addWidget(self.showGroup)
     layout.addWidget(self.misakiGroup)
     # Voiceroid
-    layout.addWidget(self.yukariGroup)
     layout.addWidget(self.zunkoGroup)
+    layout.addWidget(self.yukariGroup)
     layout.addStretch()
     q.setLayout(layout)
 
@@ -6084,21 +6109,21 @@ Yukari is <span style="color:purple">not free</span>, and you can purchase one h
     self._refreshZunko()
 
   def _getZunkoLocation(self):
-    FILTERS = "%s (%s)" % (tr_("Executable"), "VOICEROID.exe")
-    path = settings.global_().zunkoLocation() or ttsman.manager().zunkoLocation()
-    path = path if path and os.path.exists(path) else skpaths.HOME
-    path, filter = QtWidgets.QFileDialog.getOpenFileName(self.q,
-        my.tr("Please select the location of {0}").format("VOICEROID.exe"), path, FILTERS)
+    path = settings.global_().zunkoLocation() or skpaths.HOME #or ttsman.manager().zunkoLocation()
+    path = QtWidgets.QFileDialog.getExistingDirectory(self.q,
+        my.tr("Please select the folder containing {0}").format("VOICEROID.exe"),
+        path, 0)
     if path:
-      if not os.path.exists(path):
-        growl.error(my.tr("Couldn't find {0} from the specified location").format('VOICEROID.exe'))
+      dll = "aitalked.dll"
+      if not os.path.exists(path) or not os.path.exists(os.path.join(path, dll)):
+        growl.error(my.tr("Couldn't find {0} from the specified location").format(dll))
       else:
         path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
         settings.global_().setZunkoLocation(path)
         self._refreshZunko()
 
   def _refreshZunko(self):
-    path = settings.global_().zunkoLocation() or ttsman.manager().zunkoLocation()
+    path = settings.global_().zunkoLocation() #or ttsman.manager().zunkoLocation()
     if path:
       path = QtCore.QDir.toNativeSeparators(path).rstrip(os.path.sep)
     ok = bool(path) and os.path.exists(path)
@@ -6110,11 +6135,13 @@ Yukari is <span style="color:purple">not free</span>, and you can purchase one h
     url = "http://www.ah-soft.com/voiceroid/zunko"
     self.zunkoInfoEdit.setHtml(my.tr(
 """Voiceroid+ Zunko from AHS is used by <span style="color:purple">offline text-to-speech</span>.<br/>
-Yukari is a Japanese female TTS app.<br/>
+Zunko is a Japanese female TTS app.<br/>
+VNR does <span style="color:purple">NOT</span> need .NET to work with Zunko.<br/>
 Voiceroid is detected on your system at the above location.""")
     if ok else my.tr(
 """Voiceroid+ Zunko could be used for <span style="color:purple">offline text-to-speech</span>.<br/>
 Zunko is a Japanese female TTS app.<br/>
+VNR does <span style="color:purple">NOT</span> need .NET to work with Zunko.<br/>
 Zunko is <span style="color:purple">not free</span>, and you can purchase one here from AHS:
 <center><a href="%s">%s</a></center>""") % (url, url))
 

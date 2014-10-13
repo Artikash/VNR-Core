@@ -16,12 +16,13 @@ SUBDIRS += \
 
 win32: SUBDIRS += \
   ceviotest \
-  dlltest \
+  fastaittest \
   ocrtest \
   sehtest \
   srtest \
   ttstest \
   vertest \
-  wmptest
+  wmptest \
+  zunkotest
 
 # EOF
