@@ -212,6 +212,10 @@ class ZunkoEngine(VoiceEngine):
 
   @classmethod
   def createengine(cls):
+    #import settings
+    #from sakurakit import skpaths
+    #skpaths.prepend_path(settings.global_().zunkoLocation())
+
     from voiceroid.zunko import ZunkoTalk
     ret = ZunkoTalk()
     ok = ret.load()
@@ -236,9 +240,10 @@ class ZunkoEngine(VoiceEngine):
     """"@reimp"""
     return self.engine.stop()
 
-  def setLocation(self, path):
+  def setPath(self, path):
     if path and os.path.exists(path):
       from sakurakit import skpaths
+      #skpaths.append_path(path)
       skpaths.append_path(path)
       if not self.engine.isValid():
         self.engine.load()
