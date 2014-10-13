@@ -92,13 +92,6 @@ REGISTER_URL = "http://sakuradite.com"
 
 ICON_BUTTON_SIZE = QtCore.QSize(16, 16)
 
-def create_cell_button(*args, **kwargs): # -> QPushButton
-  ret = QtWidgets.QPushButton(*args, **kwargs)
-  ret.setMaximumWidth(18)
-  ret.setMaximumHeight(18)
-  skqss.class_(ret, 'btn btn-default btn-sm')
-  return ret
-
 class TabAdaptor(object):
   def save(self): pass
   def load(self): pass
@@ -243,7 +236,8 @@ class _UserTab(object):
 
   @memoizedproperty
   def resetUserColorButton(self):
-    ret = create_cell_button()
+    ret = QtWidgets.QPushButton()
+    skqss.class_(ret, 'btn btn-default btn-toggle')
     ret.setText(u"×") # ばつ
     ret.setToolTip(tr_("Reset"))
     ret.clicked.connect(self._resetUserColor)
@@ -1072,7 +1066,8 @@ class _TtsTab(object):
     @param  engine  str
     @return  QPushButton
     """
-    ret = create_cell_button(parent or self.q)
+    ret = QtWidgets.QPushButton(parent or self.q)
+    skqss.class_(ret, 'btn btn-default btn-toggle')
     #ret = QtWidgets.QPushButton(parent or self.q)
     #ret.setText(tr_("Test"))
     ret.setText(u"▶")
@@ -1089,14 +1084,13 @@ class _TtsTab(object):
     ret = QtWidgets.QPushButton(parent or self.q)
     ret.setText(tr_("Launch"))
     ret.setToolTip(tr_("Launch"))
-    ret.setHeight(18) # thinner, the same as cell button
     #skqss.class_(ret, 'btn btn-success')
-    skqss.class_(ret, 'btn btn-default')
+    skqss.class_(ret, 'btn btn-default btn-xs')
     run = getattr(ttsman.manager(), 'run' + engine.capitalize())
     ret.clicked.connect(run)
     return ret
 
-  # TTS ##
+  ## TTS ##
 
   @memoizedproperty
   def engineGroup(self):
@@ -1319,8 +1313,8 @@ class _TtsTab(object):
     return ret
 
   def _createBrowseButton(self, path): # unicode or function -> QPushButton
-    ret = create_cell_button()
-    ret.setText("+")
+    ret = QtWidgets.QPushButton("+")
+    skqss.class_(ret, 'btn btn-default btn-toggle')
     if isinstance(path, str) or isinstance(path, unicode):
       ret.setToolTip("%s: %s" % (tr_("Browse"), path))
       open = osutil.open_url if path.startswith('http') else osutil.open_url
@@ -1979,8 +1973,8 @@ class _TextTab(object):
 
   @staticmethod
   def _createResetFontButton(defval, sig=None):
-    ret = create_cell_button()
-    ret.setText(u"×") # ばつ
+    ret = QtWidgets.QPushButton(u"×") # ばつ
+    skqss.class_(ret, 'btn btn-default btn-toggle')
     ret.setToolTip(tr_("Reset") + ": " + defval)
     if sig:
       ret.clicked.connect(sig)
@@ -2068,8 +2062,8 @@ class _TextTab(object):
 
   @staticmethod
   def _createResetColorButton(sig=None):
-    ret = create_cell_button()
-    ret.setText(u"×") # ばつ
+    ret = QtWidgets.QPushButton(u"×") # ばつ
+    skqss.class_(ret, 'btn btn-default btn-toggle')
     ret.setToolTip(my.tr("Reset default color"))
     if sig:
       ret.clicked.connect(sig)
@@ -2554,8 +2548,8 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     return ret
 
   def _createBrowseButton(self, path): # unicode or function -> QPushButton
-    ret = create_cell_button()
-    ret.setText("+")
+    ret = QtWidgets.QPushButton("+")
+    skqss.class_(ret, 'btn btn-default btn-toggle')
     if isinstance(path, str) or isinstance(path, unicode):
       ret.setToolTip("%s: %s" % (tr_("Browse"), path))
       open = osutil.open_url if path.startswith('http') else osutil.open_url
