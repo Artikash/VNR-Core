@@ -7,6 +7,7 @@
 #include "cc/ccmacro.h"
 #include <windows.h>
 #include <cstring>
+//#include <iostream>
 
 using namespace AITalk;
 
@@ -125,14 +126,31 @@ AITalkResultCode AITalk::AITalkUtil::InitParam()
   }
   AITalk_TTtsParam param;
   AITalkMarshal::ReadTtsParam(&param, data);
-
   param.procRawBuf = this->MyAITalkProcRawBuf;
   //param.procTextBuf = this->MyAITalkProcTextBuf;   // TTS Kana is disabled
   //param.procEventTts = this->MyAITalkProcEventTTS; // events are diabled
 
+  // FIXME: Why numSpeakers is null?!
+  //if (!param.numSpeakers) {
+  //  delete data;
+  //  param.numSpeakers = 1;
+  //  param.Speaker = new AITalk_TTtsParam::TSpeakerParam[1];
+  //  auto sp = param.Speaker[0];
+  //  ::strcpy(sp.voiceName, param.voiceName);
+  //  sp.volume = 2.0;
+  //  sp.speed = 2.0;
+  //  sp.pitch = 2.0;
+  //  sp.range = 2.0;
+  //  sp.pauseMiddle = param.Jeita.pauseMiddle;
+  //  sp.pauseLong = param.Jeita.pauseLong;
+  //  sp.pauseSentence = param.Jeita.pauseSentence;
+  //  data = new char[param.TotalSize()];
+  //}
+
   AITalkMarshal::WriteTtsParam(data, param);
 
   code = _talk.SetParam(data);
+  delete data;
   if (code != AITALKERR_SUCCESS)
     return code;
 
@@ -148,6 +166,7 @@ AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobPara
   if (_synthesizing)
     return AITALKERR_TOO_MANY_JOBS;
   _synthesizing = true;
+  _audio.ClearData();
   AITalkResultCode code = _talk.TextToSpeech(jobID, &jobparam, text);
   if (code != AITALKERR_SUCCESS)
     _synthesizing = false;

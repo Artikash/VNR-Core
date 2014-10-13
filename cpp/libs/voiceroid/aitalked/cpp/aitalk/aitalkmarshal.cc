@@ -34,16 +34,16 @@ const void *AITalk::AITalkMarshal::ReadTtsParam(_Out_ AITalk_TTtsParam *param, c
   if (param->numSpeakers <= 0)
     param->Speaker = nullptr;
   else {
-    auto a = param->Speaker = new AITalk_TTtsParam::TSpeakerParam[param->numSpeakers];
+    auto sp = param->Speaker = new AITalk_TTtsParam::TSpeakerParam[param->numSpeakers];
     for (size_t i = 0; i < param->numSpeakers; i++) {
-      get(nstr, a[i].voiceName, AITALK_MAX_NAME);
-      get(float, &a[i].volume);
-      get(float, &a[i].speed);
-      get(float, &a[i].pitch);
-      get(float, &a[i].range);
-      get(int, &a[i].pauseMiddle);
-      get(int, &a[i].pauseLong);
-      get(int, &a[i].pauseSentence);
+      get(nstr, sp[i].voiceName, AITALK_MAX_NAME);
+      get(float, &sp[i].volume);
+      get(float, &sp[i].speed);
+      get(float, &sp[i].pitch);
+      get(float, &sp[i].range);
+      get(int, &sp[i].pauseMiddle);
+      get(int, &sp[i].pauseLong);
+      get(int, &sp[i].pauseSentence);
     }
   }
   return p;
