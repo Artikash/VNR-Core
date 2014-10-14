@@ -148,6 +148,9 @@ AITalkResultCode AITalk::AITalkUtil::InitParam(const AITalkSettings *settings)
   //  data = new char[param.TotalSize()];
   //}
 
+  // Small value would crash for long text
+  param.lenRawBufBytes = 0x158880; // the same as AITalkEditor/MainPresenter.cs, default is 176400
+
   if (settings)
     param.volume = settings->volume;
 

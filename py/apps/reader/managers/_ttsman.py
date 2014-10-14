@@ -6,7 +6,7 @@ import os
 from time import time
 from functools import partial
 from PySide.QtCore import QThread, Signal, Qt, QMutex
-from sakurakit import skfileio, skthreads, skwincom
+from sakurakit import skfileio, skwincom
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
 from zhszht.zhszht import zht2zhs
@@ -204,7 +204,7 @@ class YukariEngine(VocalroidEngine):
 #    super(ZunkoEngine, self).__init__(v, **kwargs)
 
 class ZunkoEngine(VoiceEngine):
-  key = 'zunkooffline'          # str
+  key = 'zunkooffline' # str
   name = u"東北ずん子" # unicode
 
   def __init__(self, volume=100, mutex=None):

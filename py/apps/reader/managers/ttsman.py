@@ -334,7 +334,7 @@ class _TtsManager(object):
 
   def _doSpeakTask(self):
     if self._speakTask:
-      try: apply(self._speakTask)
+      try: self._speakTask()
       except Exception, e: dwarn(e)
       self._speakTask = None
 
