@@ -9,8 +9,9 @@ namespace AITalk {
 struct AITalkSettings
 {
   float volume;
+  unsigned int audioBufferSize; // maximum size of the audio buffer
 
-  AITalkSettings() : volume(1.0) {}
+  AITalkSettings() : volume(1.0), audioBufferSize(0) {}
 };
 
 } // namespace AITalk

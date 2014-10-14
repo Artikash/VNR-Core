@@ -208,19 +208,18 @@ class ZunkoEngine(VoiceEngine):
   name = u"東北ずん子" # unicode
 
   def __init__(self, volume=100, mutex=None):
-    self.engine = self.createengine()
+    self.engine = self.createengine(volume/100.0)
     self.mutex = mutex or QMutex() # speak mutex
-    #self.setVolume(volume)
-    self.engine.setVolume(volume/100.0)
 
   @classmethod
-  def createengine(cls):
+  def createengine(cls, volume):
     #import settings
     #from sakurakit import skpaths
     #skpaths.prepend_path(settings.global_().zunkoLocation())
 
     from voiceroid.zunko import ZunkoTalk
-    ret = ZunkoTalk()
+    AUDIO_BUFFER_SIZE = 0x200000 # 2MB, default is 0x158880
+    ret = ZunkoTalk(volume=volume, audioBufferSize=AUDIO_BUFFER_SIZE)
     ok = ret.load()
     if ok:
       growl.msg(my.tr("Load {0}").format(cls.name))
@@ -250,7 +249,7 @@ class ZunkoEngine(VoiceEngine):
   def stop(self):
     """"@reimp"""
     if self.mutex.tryLock():
-      ret = self.engine.stop()
+      self.engine.stop()
       self.mutex.unlock()
     else:
       dwarn("ignored due to thread contention")

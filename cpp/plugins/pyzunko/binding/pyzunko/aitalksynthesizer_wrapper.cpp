@@ -23,14 +23,69 @@ Sbk_AITalkSynthesizer_Init(PyObject* self, PyObject* args, PyObject* kwds)
         return -1;
 
     ::AITalkSynthesizer* cptr = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp[] = { 0, 0 };
+    SBK_UNUSED(pythonToCpp)
+    int numNamedArgs = (kwds ? PyDict_Size(kwds) : 0);
+    int numArgs = PyTuple_GET_SIZE(args);
+    PyObject* pyArgs[] = {0, 0};
+
+    // invalid argument lengths
+    if (numArgs + numNamedArgs > 2) {
+        PyErr_SetString(PyExc_TypeError, "pyzunko.AITalkSynthesizer(): too many arguments");
+        return -1;
+    }
+
+    if (!PyArg_ParseTuple(args, "|OO:AITalkSynthesizer", &(pyArgs[0]), &(pyArgs[1])))
+        return -1;
+
+
+    // Overloaded function decisor
+    // 0: AITalkSynthesizer(float,uint)
+    if (numArgs == 0) {
+        overloadId = 0; // AITalkSynthesizer(float,uint)
+    } else if ((pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<float>(), (pyArgs[0])))) {
+        if (numArgs == 1) {
+            overloadId = 0; // AITalkSynthesizer(float,uint)
+        } else if ((pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<unsigned int>(), (pyArgs[1])))) {
+            overloadId = 0; // AITalkSynthesizer(float,uint)
+        }
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_AITalkSynthesizer_Init_TypeError;
 
     // Call function/method
     {
+        if (kwds) {
+            PyObject* value = PyDict_GetItemString(kwds, "volume");
+            if (value && pyArgs[0]) {
+                PyErr_SetString(PyExc_TypeError, "pyzunko.AITalkSynthesizer(): got multiple values for keyword argument 'volume'.");
+                return -1;
+            } else if (value) {
+                pyArgs[0] = value;
+                if (!(pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<float>(), (pyArgs[0]))))
+                    goto Sbk_AITalkSynthesizer_Init_TypeError;
+            }
+            value = PyDict_GetItemString(kwds, "audioBufferSize");
+            if (value && pyArgs[1]) {
+                PyErr_SetString(PyExc_TypeError, "pyzunko.AITalkSynthesizer(): got multiple values for keyword argument 'audioBufferSize'.");
+                return -1;
+            } else if (value) {
+                pyArgs[1] = value;
+                if (!(pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<unsigned int>(), (pyArgs[1]))))
+                    goto Sbk_AITalkSynthesizer_Init_TypeError;
+            }
+        }
+        float cppArg0 = 1;
+        if (pythonToCpp[0]) pythonToCpp[0](pyArgs[0], &cppArg0);
+        unsigned int cppArg1 = 0;
+        if (pythonToCpp[1]) pythonToCpp[1](pyArgs[1], &cppArg1);
 
         if (!PyErr_Occurred()) {
-            // AITalkSynthesizer()
+            // AITalkSynthesizer(float,uint)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            cptr = new ::AITalkSynthesizer();
+            cptr = new ::AITalkSynthesizer(cppArg0, cppArg1);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
         }
     }
@@ -39,11 +94,18 @@ Sbk_AITalkSynthesizer_Init(PyObject* self, PyObject* args, PyObject* kwds)
         delete cptr;
         return -1;
     }
+    if (!cptr) goto Sbk_AITalkSynthesizer_Init_TypeError;
+
     Shiboken::Object::setValidCpp(sbkSelf, true);
     Shiboken::BindingManager::instance().registerWrapper(sbkSelf, cptr);
 
 
     return 1;
+
+    Sbk_AITalkSynthesizer_Init_TypeError:
+        const char* overloads[] = {"float = 1, unsigned int = 0", 0};
+        Shiboken::setErrorAboutWrongArguments(args, "pyzunko.AITalkSynthesizer", overloads);
+        return -1;
 }
 
 static PyObject* Sbk_AITalkSynthesizerFunc_init(PyObject* self, PyObject* args, PyObject* kwds)

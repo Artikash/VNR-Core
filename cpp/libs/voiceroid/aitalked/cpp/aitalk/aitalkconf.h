@@ -25,7 +25,9 @@
 #define AITALK_CONFIG_CODEAUTHSEED  "NqKN148elpuO2tmdCMCU" // AITalk_TConfig::codeAuthSeed, see: zunko.cs
 #define AITALK_CONFIG_LENAUTHSEED   0               // AITalk_TConfig::lenAuthSeed
 #define AITALK_CONFIG_LICENSE       "aitalk.lic"    // relative path of the license file
-#define AITALK_CONFIG_VOICENAME     "zunko_22"      // voice/zunko_22
+#define AITALK_CONFIG_VOICENAME     "zunko_22"      // directory "voice/zunko_22"
+
+#define AITALK_CONFIG_BUFFERLENGTH  0x158880        // AITalk_TConfig::lenRawBufBytes, this value comes from AITalkEditor/MainPresenter.cs, default is 176400
 
 // Audio api config, see:  AITalkEditorCore/AITalkEditor/AppSettings.cs
 #define AIAUDIO_CONFIG_BUFFERLATENCY    50  // AppSettings.SoundBufferLatency
