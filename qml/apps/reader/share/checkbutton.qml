@@ -15,6 +15,7 @@ Share.TextButton {
   height: 25
   backgroundColor: !enabled ? '#aabebebe' : checked ? '#aa00ff00' : '#aa434343'  // gray : green : black
 
-  radius: 5
+  //radius: 5
+  radius: 0 // flat
   onClicked: if (enabled) checked = !checked
 }

@@ -132,7 +132,8 @@ Item { id: root_
         height: listView_.childrenRect.height
         color: '#55000000'
         z: -1
-        radius: 15
+        //radius: 15
+        radius: 0 // flat
 
       }
       Share.CloseButton {

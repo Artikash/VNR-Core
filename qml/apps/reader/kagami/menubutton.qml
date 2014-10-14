@@ -22,7 +22,8 @@ Share.TextButton { id: root_ // blue button
   toolTip: qsTr("Right click to show menu")
            //qsTr("Accessing the Internet") + " (" + qsTr("{0} thread").replace('{0}', threadPool_.threadCount) + ")"
 
-  radius: 17
+  //radius: 17
+  radius: 0 // flat
 
   width: 35; height: 35
   font.pixelSize: 14

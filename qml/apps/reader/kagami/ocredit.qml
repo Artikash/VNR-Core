@@ -143,7 +143,8 @@ Rectangle { id: root_
         + rightButtonRow_.height
         + _ROOT_MARGIN
 
-  radius: 9 // the same as ocrpopup
+  //radius: 9 // the same as ocrpopup
+  radius: 0 // flat
 
   color: '#99000000' // black
   //color: hover ? '#99000000' : '#55000000' // black
@@ -208,7 +209,8 @@ Rectangle { id: root_
       margins: _ROOT_MARGIN
     }
     color: '#aaffffff' // white
-    radius: 4
+    //radius: 4
+    radius: 0 // flat
     //height: 100
     //height: 60
     height: root_.width ? Math.max(70, 30000/root_.width) : 100 // 70 ~ 100

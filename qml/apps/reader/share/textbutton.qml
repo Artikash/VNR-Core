@@ -52,8 +52,9 @@ MouseArea { id: root_
     //width: text_.width + 25; height: text_.height + 15
     z: -1
     anchors.fill: parent
-    radius: 15
     smooth: true
+    //radius: 15
+    radius: 0 // flat
 
     border.width: hover ? 2 : 0
     //border.color: '#aa00bfff'
