@@ -148,6 +148,9 @@ AITalkResultCode AITalk::AITalkUtil::InitParam(const AITalkSettings *settings)
   //  data = new char[param.TotalSize()];
   //}
 
+  // Small value would crash for long text
+  param.lenRawBufBytes = 0x158880; // the same as AITalkEditor/MainPresenter.cs, default is 176400
+
   if (settings)
     param.volume = settings->volume;
 
@@ -198,6 +201,7 @@ AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobPara
     return AITALKERR_TOO_MANY_JOBS;
   _synthesizing = true;
   _audio.ClearData();
+
   AITalkResultCode code = _talk.TextToSpeech(jobID, &jobparam, text);
   if (code != AITALKERR_SUCCESS)
     _synthesizing = false;
@@ -234,6 +238,15 @@ int AITalk::AITalkUtil::MyAITalkProcTextBuf(AITalkEventReasonCode reasonCode, in
   return 0;
 }
 
+AITalkResultCode AITalk::AITalkUtil::CloseSpeech(int jobID)
+{
+  //if (!_synthesizing)
+  //  return AITALKERR_SUCCESS;
+  AITalkResultCode code = _talk.CloseSpeech(jobID, 0);
+  _synthesizing = false;
+  return code;
+}
+
 int AITalk::AITalkUtil::MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int jobID, unsigned long tick, const int *userData)
 {
   CC_UNUSED(userData);
@@ -247,8 +260,10 @@ int AITalk::AITalkUtil::MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int
       if (reasonCode == AITALKEVENT_RAWBUF_FLUSH)
         _instance->PushEvent(tick, 2);
       _instance->PushData(_instance->_waveBuf, size);
-      if (reasonCode == AITALKEVENT_RAWBUF_FLUSH) // && _instance->_synthesizing)
-        _instance->CloseSpeech(jobID);
+      //if (reasonCode == AITALKEVENT_RAWBUF_FLUSH) // && _instance->_synthesizing)
+      //  _instance->CloseSpeech(jobID);
+      //::Sleep(1000);
+      _instance->CloseSpeech(jobID);
     }
     break;
   //case AITALKEVENT_RAWBUF_CLOSE: // not reachable
@@ -257,7 +272,7 @@ int AITalk::AITalkUtil::MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int
   //  _instance->CloseSpeech(jobID);
   //  break;
   }
-  return 0; // not reachable
+  return 0;
 }
 
 // EOF

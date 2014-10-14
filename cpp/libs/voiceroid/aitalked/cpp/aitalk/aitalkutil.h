@@ -74,17 +74,18 @@ private:
   AITalkResultCode SynthSync(_Out_ int *jobID, const AITalk_TJobParam &jobparam, const char *text);
 
   // AITalkUtil.cs: public AITalkResultCode GetParam(ref AITalk_TTtsParam param)
-  AITalkResultCode GetParam(_Out_ AITalk_TTtsParam *param)
-  {
-    unsigned int num;
-    return _talk.GetParam(param, &num);
-  }
+  //AITalkResultCode GetParam(_Out_ AITalk_TTtsParam *param)
+  //{
+  //  unsigned int num;
+  //  return _talk.GetParam(param, &num);
+  //}
 
   // Convert short[] got from talkAPI to byte[] and pass to audio API
   // AITalkUtil.cs: public AIAudioResultCode PushData(short[] wave, int size, int stop)
   AIAudioResultCode PushData(const short wave[], size_t size, bool loop = false);
 
-  // AITalkUtil.cs: public AIAudioResultCode PushEvent(ulong tick, IntPtr userData)
+  //AITalkUtil.cs: public AIAudioResultCode PushEvent(ulong tick, IntPtr userData)
+  //AIAudioResultCode PushEvent(unsigned long tick, unsigned long userData)
   AIAudioResultCode PushEvent(unsigned long, unsigned long)
   {
     //return _audio.PushEvent(tick, reinterpret_cast<const int *>(userData));
@@ -112,15 +113,15 @@ public:
   //  return res == AITALKERR_SUCCESS && code == AITALKSTAT_DONE;
   //}
 
-  AITalkResultCode CloseSpeech(int jobID)
-  {
-    //if (!_synthesizing)
-    //  return AITALKERR_SUCCESS;
+  AITalkResultCode CloseSpeech(int jobID);
+  //{
+  //  //if (!_synthesizing)
+  //  //  return AITALKERR_SUCCESS;
 
-    AITalkResultCode code = _talk.CloseSpeech(jobID, 0);
-    _synthesizing = false;
-    return code;
-  }
+  //  AITalkResultCode code = _talk.CloseSpeech(jobID, 0);
+  //  _synthesizing = false;
+  //  return code;
+  //}
 
   // AITalkUtil.cs: public AITalkResultCode TextToSpeech(string text)
   AITalkResultCode TextToSpeech(_Out_ int *jobID, const char *text)
