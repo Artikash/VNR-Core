@@ -276,12 +276,12 @@ struct AITalk_TTtsParam
 
   struct TJeitaParam
   {
-    char femaleName[MAX_VOICENAME_];
-    char maleName[MAX_VOICENAME_];
-    int pauseMiddle;
-    int pauseLong;
-    int pauseSentence;
-    char control[12]; // the length is used in AITalkMarshal.cs
+    char femaleName[MAX_VOICENAME_];    // default: ""
+    char maleName[MAX_VOICENAME_];      // default ""
+    int pauseMiddle;    // default 0
+    int pauseLong;      // default 0
+    int pauseSentence;  // default 0
+    char control[12];   // default ""  the length is used in AITalkMarshal.cs
   };
 
   struct TSpeakerParam
