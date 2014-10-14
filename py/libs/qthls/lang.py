@@ -1,47 +1,10 @@
 # coding: utf8
-# skhls.py
+# lang.py
 # 11/10/2012 jichi
 
-import re
 from PySide.QtCore import Qt, QRegExp
 from PySide.QtGui import QColor, QFont, QTextCharFormat
 from Qt5.QtWidgets import QSyntaxHighlighter
-
-class SkYouTubeHighlighter(QSyntaxHighlighter):
-
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject or QTextDocument or QTextEdit or None
-    """
-    super(SkYouTubeHighlighter, self).__init__(parent)
-
-    self._format = QTextCharFormat()
-    self._format.setForeground(Qt.blue)
-    #self._format.setFontWeight(QFont.Bold)
-    self._format.setFontUnderline(True)
-    self._format.setUnderlineColor(Qt.red)
-    self._format.setUnderlineStyle(QTextCharFormat.DashUnderline)
-
-  def highlightBlock(self, text):
-    """@reimp @protected"""
-    for vid in self._itervids(text):
-      index = text.index(vid)
-      length = len(vid)
-      self.setFormat(index, length, self._format)
-
-  @staticmethod
-  def _itervids(text):
-    """
-    @param  text  unicode
-    @yield  str
-    """
-    if text:
-      for it in 'http://', 'www.', 'youtu.be', 'youtube.com':
-        text = text.replace(it, '')
-      for word in re.split(r'\s', text):
-        vid = re.sub(r'.*v=([0-9a-zA-Z_-]+).*', r'\1', word)
-        if re.match(r'[0-9a-zA-Z_-]+', vid):
-          yield vid
 
 HLS_COMMENT_COLOR = Qt.darkGreen
 HLS_PRAGMA_COLOR = QColor('purple')
@@ -64,7 +27,7 @@ HLS_TODO_PATTERNS = (
 )
 
 # See: http://qt.gitorious.org/pyside/pyside-examples
-class SkCppHighlighter(QSyntaxHighlighter):
+class CppHighlighter(QSyntaxHighlighter):
 
   KEYWORD_PATTERNS = (
     r"\bcase\b",
@@ -120,24 +83,24 @@ class SkCppHighlighter(QSyntaxHighlighter):
     """
     @param  parent  QObject or QTextDocument or QTextEdit or None
     """
-    super(SkCppHighlighter, self).__init__(parent)
+    super(CppHighlighter, self).__init__(parent)
 
     keywordFormat = QTextCharFormat()
     keywordFormat.setForeground(HLS_KEYWORD_COLOR)
     keywordFormat.setFontWeight(QFont.Bold)
     self.highlightingRules = [(QRegExp(pattern), keywordFormat)
-        for pattern in SkCppHighlighter.KEYWORD_PATTERNS]
+        for pattern in self.KEYWORD_PATTERNS]
 
     typeFormat = QTextCharFormat()
     typeFormat.setForeground(HLS_TYPE_COLOR)
     typeFormat.setFontWeight(QFont.Bold)
     self.highlightingRules.extend([(QRegExp(pattern), typeFormat)
-        for pattern in SkCppHighlighter.TYPE_PATTERNS])
+        for pattern in self.TYPE_PATTERNS])
 
     constantFormat = QTextCharFormat()
     constantFormat.setForeground(HLS_LITERAL_COLOR)
     self.highlightingRules.extend([(QRegExp(pattern), constantFormat)
-        for pattern in SkCppHighlighter.CONSTANT_PATTERNS])
+        for pattern in self.CONSTANT_PATTERNS])
 
     classFormat = QTextCharFormat()
     classFormat.setFontWeight(QFont.Bold)
@@ -202,7 +165,7 @@ class SkCppHighlighter(QSyntaxHighlighter):
       startIndex = self.commentStartExpression.indexIn(text,
           startIndex + commentLength);
 
-class SkJsHighlighter(QSyntaxHighlighter):
+class JsHighlighter(QSyntaxHighlighter):
 
   KEYWORD_PATTERNS = (
     r"\bbreak\b",
@@ -240,24 +203,24 @@ class SkJsHighlighter(QSyntaxHighlighter):
     """
     @param  parent  QObject or QTextDocument or QTextEdit or None
     """
-    super(SkJsHighlighter, self).__init__(parent)
+    super(JsHighlighter, self).__init__(parent)
 
     keywordFormat = QTextCharFormat()
     keywordFormat.setForeground(HLS_KEYWORD_COLOR)
     keywordFormat.setFontWeight(QFont.Bold)
     self.highlightingRules = [(QRegExp(pattern), keywordFormat)
-        for pattern in SkJsHighlighter.KEYWORD_PATTERNS]
+        for pattern in self.KEYWORD_PATTERNS]
 
     typeFormat = QTextCharFormat()
     typeFormat.setForeground(HLS_TYPE_COLOR)
     typeFormat.setFontWeight(QFont.Bold)
     self.highlightingRules.extend([(QRegExp(pattern), typeFormat)
-        for pattern in SkJsHighlighter.TYPE_PATTERNS])
+        for pattern in self.TYPE_PATTERNS])
 
     constantFormat = QTextCharFormat()
     constantFormat.setForeground(HLS_LITERAL_COLOR)
     self.highlightingRules.extend([(QRegExp(pattern), constantFormat)
-        for pattern in SkJsHighlighter.CONSTANT_PATTERNS])
+        for pattern in self.CONSTANT_PATTERNS])
 
     classFormat = QTextCharFormat()
     classFormat.setFontWeight(QFont.Bold)
@@ -336,7 +299,7 @@ class SkJsHighlighter(QSyntaxHighlighter):
         self.setFormat(index, length, format)
         index = expression.indexIn(text, index + length)
 
-class SkPyHighlighter(QSyntaxHighlighter):
+class PyHighlighter(QSyntaxHighlighter):
 
   KEYWORD_PATTERNS = (
     r"\bbreak\b",
@@ -377,24 +340,24 @@ class SkPyHighlighter(QSyntaxHighlighter):
     """
     @param  parent  QObject or QTextDocument or QTextEdit or None
     """
-    super(SkPyHighlighter, self).__init__(parent)
+    super(PyHighlighter, self).__init__(parent)
 
     keywordFormat = QTextCharFormat()
     keywordFormat.setForeground(HLS_KEYWORD_COLOR)
     keywordFormat.setFontWeight(QFont.Bold)
     self.highlightingRules = [(QRegExp(pattern), keywordFormat)
-        for pattern in SkPyHighlighter.KEYWORD_PATTERNS]
+        for pattern in self.KEYWORD_PATTERNS]
 
     typeFormat = QTextCharFormat()
     typeFormat.setForeground(HLS_TYPE_COLOR)
     typeFormat.setFontWeight(QFont.Bold)
     self.highlightingRules.extend([(QRegExp(pattern), typeFormat)
-        for pattern in SkPyHighlighter.TYPE_PATTERNS])
+        for pattern in self.TYPE_PATTERNS])
 
     constantFormat = QTextCharFormat()
     constantFormat.setForeground(HLS_LITERAL_COLOR)
     self.highlightingRules.extend([(QRegExp(pattern), constantFormat)
-        for pattern in SkPyHighlighter.CONSTANT_PATTERNS])
+        for pattern in self.CONSTANT_PATTERNS])
 
     classFormat = QTextCharFormat()
     classFormat.setFontWeight(QFont.Bold)

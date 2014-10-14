@@ -59,15 +59,15 @@ class _YouTubeInput(object):
 
   @memoizedproperty
   def textEdit(self):
-    placeholder = "lmOZEAAEMK0" # http://youtube.com/watch?v=lmOZEAAEMK0
+    placeholder = "http://youtube.com/watch?v=lmOZEAAEMK0"
     #ret = QtWidgets.QPlainTextEdit(placeholder)
     ret = QtWidgets.QTextEdit(placeholder) # QTextEdit is needed for syntax highlighter
     ret.setToolTip(my.tr("Text contains YouTube video IDs"))
     ret.setAcceptRichText(False)
     # Not enabled for performance reason
     #ret.textChanged.connect(self._refreshSaveButton)
-    from sakurakit.skhls import SkYouTubeHighlighter
-    SkYouTubeHighlighter(ret)
+    from qthls.youtube import YouTubeHighlighter
+    YouTubeHighlighter(ret)
     return ret
 
   @memoizedproperty
