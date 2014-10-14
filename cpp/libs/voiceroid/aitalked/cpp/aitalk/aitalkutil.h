@@ -82,7 +82,7 @@ private:
 
   // Convert short[] got from talkAPI to byte[] and pass to audio API
   // AITalkUtil.cs: public AIAudioResultCode PushData(short[] wave, int size, int stop)
-  AIAudioResultCode PushData(const short wave[], size_t size, bool loop = false);
+  AIAudioResultCode PushAudioData(const short wave[], size_t size, bool loop = false);
 
   //AITalkUtil.cs: public AIAudioResultCode PushEvent(ulong tick, IntPtr userData)
   //AIAudioResultCode PushEvent(unsigned long tick, unsigned long userData)
@@ -113,7 +113,7 @@ public:
   //  return res == AITALKERR_SUCCESS && code == AITALKSTAT_DONE;
   //}
 
-  AIAudioResultCode ClearData() // clear audio
+  AIAudioResultCode ClearAudioData() // clear audio
   { return _audio.ClearData(); }
 
   AITalkResultCode CloseSpeech(int jobID);

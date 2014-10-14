@@ -65,8 +65,8 @@ AITalkResultCode AITalk::AITalkUtil::Init(HMODULE h, const AITalkSettings *setti
 
   code =_talk.VoiceLoad(AITALK_CONFIG_VOICENAME);
   if (code != AITALKERR_SUCCESS)
-
     return code;
+
   // Initialize audio API
   {
     AIAudio_TConfig config;
@@ -80,17 +80,18 @@ AITalkResultCode AITalk::AITalkUtil::Init(HMODULE h, const AITalkSettings *setti
       return AITALKERR_INTERNAL_ERROR;
   }
 
+  _valid = true; // _valid so that end/close will be invoked on destruction
+
   code = InitParam(settings);
   if (code != AITALKERR_SUCCESS)
     return code;
 
-  _valid = true;
   return AITALKERR_SUCCESS;
 }
 
 // APIs wrappers
 
-AIAudioResultCode AITalk::AITalkUtil::PushData(const short wave[], size_t size, bool loop)
+AIAudioResultCode AITalk::AITalkUtil::PushAudioData(const short wave[], size_t size, bool loop)
 {
   if (!_synthesizing)
     return AIAUDIOERR_NO_PLAYING;
@@ -261,7 +262,7 @@ int AITalk::AITalkUtil::MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int
     if (AITALKERR_SUCCESS == _instance->_talk.GetData(jobID, _instance->_waveBuf, _instance->_waveBufLength, &size) && size > 0) {
       if (reasonCode == AITALKEVENT_RAWBUF_FLUSH)
         _instance->PushEvent(tick, 2);
-      _instance->PushData(_instance->_waveBuf, size);
+      _instance->PushAudioData(_instance->_waveBuf, size);
       //if (reasonCode == AITALKEVENT_RAWBUF_FLUSH) // && _instance->_synthesizing)
       //  _instance->CloseSpeech(jobID);
       //::Sleep(1000);
