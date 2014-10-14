@@ -22,7 +22,7 @@ public:
 
   // Settings
 
-  float volume() const;
+  float volume() const; // [0, 5], default 1.0
   void setVolume(float v);
 
   //unsigned int audioBufferSize() const;
