@@ -207,9 +207,9 @@ class ZunkoEngine(VoiceEngine):
   key = 'zunkooffline'          # str
   name = u"東北ずん子" # unicode
 
-  def __init__(self, volume=100):
+  def __init__(self, volume=100, mutex=None):
     self.engine = self.createengine()
-    self.mutex = QMutex() # speak mutex
+    self.mutex = mutex or QMutex() # speak mutex
     #self.setVolume(volume)
     self.engine.setVolume(volume/100.0)
 

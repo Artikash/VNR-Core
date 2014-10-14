@@ -60,6 +60,7 @@ MouseArea { id: root_
     width: boxSize
     height: boxSize
     radius: boxSize/2 + 1
+    //radius: 0 // flat
 
     // ベースのグラデ
     gradient: Gradient {

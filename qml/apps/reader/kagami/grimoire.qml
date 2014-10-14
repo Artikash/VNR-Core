@@ -379,6 +379,7 @@ Item { id: root_
         verticalCenter: parent.verticalCenter
         left: parent.left
         //leftMargin: header_.radius
+        leftMargin: 1
       }
 
       spacing: 2

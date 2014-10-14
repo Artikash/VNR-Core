@@ -26,7 +26,9 @@ Rectangle { id: root_
   property int textLeftMargin: 8
   property int textRightMargin: 8
 
-  radius: 10
+  //radius: 10
+  radius: 0 // flat
+
   //radius: 12
   //radius: 4
 
