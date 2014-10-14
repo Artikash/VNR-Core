@@ -22,6 +22,13 @@ def parent_window(): # replace self.q to make sure windows is always visible
   import windows
   return windows.top()
 
+def create_toggle_button(*args, **kwargs):
+  ret = QtWidgets.QPushButton(*args, **kwargs)
+  skqss.class_(ret, 'btn btn-default btn-toggle')
+  ret.setMaximumWidth(18)   # qss sometimes does not work, bug?
+  ret.setMaximumHeight(18)  # qss sometimes does not work, bug?
+  return ret
+
 DOWNLOAD_REFRESH_INTERVAL = 3000 # 3 seconds
 
 MECAB_DICT_NAMES = {
@@ -236,9 +243,7 @@ class _UserTab(object):
 
   @memoizedproperty
   def resetUserColorButton(self):
-    ret = QtWidgets.QPushButton()
-    skqss.class_(ret, 'btn btn-default btn-toggle')
-    ret.setText(u"×") # ばつ
+    ret = create_toggle_button(u"×") # ばつ
     ret.setToolTip(tr_("Reset"))
     ret.clicked.connect(self._resetUserColor)
     return ret
@@ -1066,8 +1071,7 @@ class _TtsTab(object):
     @param  engine  str
     @return  QPushButton
     """
-    ret = QtWidgets.QPushButton(parent or self.q)
-    skqss.class_(ret, 'btn btn-default btn-toggle')
+    ret = create_toggle_button(parent or self.q)
     #ret = QtWidgets.QPushButton(parent or self.q)
     #ret.setText(tr_("Test"))
     ret.setText(u"▶")
@@ -1313,8 +1317,7 @@ class _TtsTab(object):
     return ret
 
   def _createBrowseButton(self, path): # unicode or function -> QPushButton
-    ret = QtWidgets.QPushButton("+")
-    skqss.class_(ret, 'btn btn-default btn-toggle')
+    ret = create_toggle_button("+")
     if isinstance(path, str) or isinstance(path, unicode):
       ret.setToolTip("%s: %s" % (tr_("Browse"), path))
       open = osutil.open_url if path.startswith('http') else osutil.open_url
@@ -1973,8 +1976,7 @@ class _TextTab(object):
 
   @staticmethod
   def _createResetFontButton(defval, sig=None):
-    ret = QtWidgets.QPushButton(u"×") # ばつ
-    skqss.class_(ret, 'btn btn-default btn-toggle')
+    ret = create_toggle_button(u"×") # ばつ
     ret.setToolTip(tr_("Reset") + ": " + defval)
     if sig:
       ret.clicked.connect(sig)
@@ -2062,8 +2064,7 @@ class _TextTab(object):
 
   @staticmethod
   def _createResetColorButton(sig=None):
-    ret = QtWidgets.QPushButton(u"×") # ばつ
-    skqss.class_(ret, 'btn btn-default btn-toggle')
+    ret = create_toggle_button(u"×") # ばつ
     ret.setToolTip(my.tr("Reset default color"))
     if sig:
       ret.clicked.connect(sig)
@@ -2548,8 +2549,7 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
     return ret
 
   def _createBrowseButton(self, path): # unicode or function -> QPushButton
-    ret = QtWidgets.QPushButton("+")
-    skqss.class_(ret, 'btn btn-default btn-toggle')
+    ret = create_toggle_button("+")
     if isinstance(path, str) or isinstance(path, unicode):
       ret.setToolTip("%s: %s" % (tr_("Browse"), path))
       open = osutil.open_url if path.startswith('http') else osutil.open_url
