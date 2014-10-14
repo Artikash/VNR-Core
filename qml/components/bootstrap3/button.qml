@@ -39,7 +39,10 @@ MouseArea { id: root_
   Rectangle { id: background_
     z: -1
     anchors.fill: parent
-    radius: 4 // bootstrap: 4px
+
+    //radius: 4 // bootstrap: 4px
+    radius: 0 // change to flat style
+
     smooth: true
 
     // rgba(82, 168, 236, 0.8) = '#cc52a8ec'
