@@ -247,7 +247,7 @@ int AITalk::AITalkUtil::MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int
       if (reasonCode == AITALKEVENT_RAWBUF_FLUSH)
         _instance->PushEvent(tick, 2);
       _instance->PushData(_instance->_waveBuf, size);
-      if (reasonCode == AITALKEVENT_RAWBUF_FLUSH && _instance->_synthesizing)
+      if (reasonCode == AITALKEVENT_RAWBUF_FLUSH) // && _instance->_synthesizing)
         _instance->CloseSpeech(jobID);
     }
     break;
