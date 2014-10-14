@@ -1153,7 +1153,7 @@ class _TtsTab(object):
       grid.addWidget(w, r, c)
 
       c += 1
-      w = self.createVolumeEdit(k)
+      w = self.createVolumeEdit(k, max=500) # maximum volume is 5x
       self.zunkoWidgets.append(w)
       grid.addWidget(w, r, c)
 
@@ -1470,10 +1470,10 @@ class _TtsTab(object):
     ret.valueChanged[int].connect(partial(tm.setPitch, key))
     return ret
 
-  def createVolumeEdit(self, key, parent=None):
+  def createVolumeEdit(self, key, max=100, parent=None):
     ret = QtWidgets.QSpinBox(parent or self.q)
-    ret.setToolTip("%s [0,100]" % tr_("Volume"))
-    ret.setRange(0, 100)
+    ret.setToolTip("%s [0,%s]" % (tr_("Volume"), max))
+    ret.setRange(0, max)
     ret.setSingleStep(10)
     ret.setPrefix(tr_("Volume") + " ")
     ret.setSuffix("%")
