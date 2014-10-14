@@ -58,9 +58,9 @@ class Voice:
     self.url = url # str
 
 VOICES = ( # unicode key -> int id
+  Voice(994, 'zunko',  'f', u"東北ずん子", "http://www.ah-soft.com/voiceroid/zunko/"),
   Voice(2,   'yukari', 'f', u"結月ゆかり", "http://www.ah-soft.com/voiceroid/yukari/"),
   Voice(3,   'maki',   'f', u"民安ともえ", "http://www.ah-soft.com/voiceroid/maki/"),
-  Voice(994, 'zunko',  'f', u"東北ずん子", "http://www.ah-soft.com/voiceroid/zunko/"),
   Voice(992, 'aoi',    'f', u"琴葉 葵",    "http://www.ah-soft.com/voiceroid/kotonoha/"),
   Voice(999, 'akane',  'f', u"琴葉 茜",    "http://www.ah-soft.com/voiceroid/kotonoha/"),
   Voice(995, 'ai',     'f', u"月読アイ",   "http://www.ah-soft.com/voiceroid/ai/"),
