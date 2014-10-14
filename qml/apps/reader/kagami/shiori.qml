@@ -53,7 +53,8 @@ Rectangle { id: root_
   width: scrollArea_.width + _CONTENT_MARGIN * 2
   height: scrollArea_.height + _CONTENT_MARGIN * 2
 
-  radius: 10
+  //radius: 10
+  radius: 0 // flat
   opacity: 0 // initial opacity is zero
 
   property real zoomStep: 0.05

@@ -243,7 +243,9 @@ Item { id: root_
       Component.onCompleted: console.log("ocrpopup.qml:onCompleted: pass")
       Component.onDestruction: console.log("ocrpopup.qml:onDestruction: pass")
 
-      radius: 9
+      //radius: 9
+      radius: 0 // flat
+
       color: '#99000000' // black
 
       property int _CONTENT_MARGIN: 10
@@ -508,7 +510,8 @@ Item { id: root_
           bottom: parent.top
           //bottomMargin: -_HEADER_MARGIN*2
         }
-        radius: 7
+        //radius: 7
+        radius: 0 // flat
 
         width: headerRow_.width + _HEADER_MARGIN * 2 + _HEADER_MARGIN * 8
         height: headerRow_.height + _HEADER_MARGIN * 2

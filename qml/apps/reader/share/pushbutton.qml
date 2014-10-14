@@ -19,7 +19,8 @@ Share.TextButton {
   width: 50
   height: 25
 
-  radius: 5
+  //radius: 5
+  radius: 0 // flat
 
   color: style.textColor
   backgroundColor: enabled ? style.activeColor : style.disabledColor

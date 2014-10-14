@@ -314,7 +314,8 @@ Item { id: root_
       left: listView_.left; leftMargin: -9
       bottom: listView_.top; bottomMargin: 4
     }
-    radius: 9
+    //radius: 9
+    radius: 0 // flat
     height: 20
     //width: 50
     width: buttonRow_.width + 30
@@ -546,7 +547,8 @@ Item { id: root_
     z: -1
     //radius: 18
     //radius: 8 * root_.zoomFactor
-    radius: 8
+    //radius: 8
+    radius: 0 // flat
 
     //Share.CloseButton {
     //  anchors { left: parent.left; top: parent.top; margins: 2 }
@@ -628,7 +630,8 @@ Item { id: root_
 
     highlight: Rectangle { //id: highlight_
       width: listView_.width
-      radius: 5
+      //radius: 5
+      radius: 0 // flat
       color: root_.shadowEnabled ? '#33000000' : 'transparent'
       visible: root_.highlightVisible && root_.containsVisibleText
 

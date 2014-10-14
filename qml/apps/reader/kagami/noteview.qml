@@ -83,7 +83,8 @@ Item { id: root_
 
   Rectangle { // shadow
     anchors.fill: parent
-    radius: 10
+    //radius: 10
+    radius: 0 // flat
     color: root_.hover ? '#aa000000' : '#88000000'
   }
 
