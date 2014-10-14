@@ -113,6 +113,9 @@ public:
   //  return res == AITALKERR_SUCCESS && code == AITALKSTAT_DONE;
   //}
 
+  AIAudioResultCode ClearData() // clear audio
+  { return _audio.ClearData(); }
+
   AITalkResultCode CloseSpeech(int jobID);
   //{
   //  //if (!_synthesizing)

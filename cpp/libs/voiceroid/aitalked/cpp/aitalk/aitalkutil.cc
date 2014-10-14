@@ -149,10 +149,12 @@ AITalkResultCode AITalk::AITalkUtil::InitParam(const AITalkSettings *settings)
   //}
 
   // Small value would crash for long text
-  param.lenRawBufBytes = 0x158880; // the same as AITalkEditor/MainPresenter.cs, default is 176400
+  param.lenRawBufBytes = AITALK_CONFIG_BUFFERLENGTH;
 
-  if (settings)
+  if (settings) {
     param.volume = settings->volume;
+    param.lenRawBufBytes = settings->audioBufferSize ? settings->audioBufferSize : AITALK_CONFIG_BUFFERLENGTH;
+  }
 
   AITalkMarshal::WriteTtsParam(data, param);
 

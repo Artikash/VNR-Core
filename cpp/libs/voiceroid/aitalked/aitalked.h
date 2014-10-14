@@ -14,15 +14,19 @@ class AITalkSynthesizer
   SK_DECLARE_PRIVATE(AITalkSynthesizerPrivate)
 
 public:
-  AITalkSynthesizer();
+  explicit AITalkSynthesizer(float volume = 1, unsigned int audioBufferSize = 0);
   ~AITalkSynthesizer();
 
   bool init(const std::wstring &path = L"aitalked.dll");
   bool isValid() const;
 
   // Settings
+
   float volume() const;
   void setVolume(float v);
+
+  //unsigned int audioBufferSize() const;
+  //void setAudioBufferSize(unsigned int v);
 
   // Actions
 

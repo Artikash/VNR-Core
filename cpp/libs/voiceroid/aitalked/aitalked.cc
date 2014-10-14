@@ -24,9 +24,12 @@ public:
 
 /** Public class */
 
-AITalkSynthesizer::AITalkSynthesizer()
+AITalkSynthesizer::AITalkSynthesizer(float volume, unsigned int audioBufferSize)
   : d_(new D)
-{}
+{
+  d_->settings.volume = volume;
+  d_->settings.audioBufferSize = audioBufferSize;
+}
 
 AITalkSynthesizer::~AITalkSynthesizer()
 {
@@ -83,6 +86,7 @@ void AITalkSynthesizer::stop()
   if (d_->ai.IsValid() && d_->ai.IsSynthesizing() && d_->jobId) {
     d_->ai.CloseSpeech(d_->jobId);
     d_->jobId = 0;
+    d_->ai.ClearData();
   }
 }
 

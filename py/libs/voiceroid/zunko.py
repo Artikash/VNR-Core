@@ -17,18 +17,18 @@ if os.name == 'nt':
   from pyzunko import AITalkSynthesizer
 
   class _ZunkoTalk:
-    def __init__(self):
-      self.ai = AITalkSynthesizer()
+    def __init__(self, volume, audioBufferSize):
+      self.ai = AITalkSynthesizer(volume, audioBufferSize)
       self.valid = False # bool
       self.played = False # bool
-      self.volume = 1.0 # float
+      self.volume = volume # float
 
   class ZunkoTalk:
     DLL = "aitalked.dll"
     ENCODING = 'sjis'
 
-    def __init__(self):
-      self.__d =_ZunkoTalk()
+    def __init__(self, volume=1.0, audioBufferSize=0):
+      self.__d =_ZunkoTalk(volume, audioBufferSize)
 
     def load(self, path=None): # -> bool
       d = self.__d
@@ -59,7 +59,8 @@ if os.name == 'nt':
 else:
 
   class ZunkoTalk:
-    def load(self, path=''): return False
+    def __init__(self, *args, **kwargs): pass
+    def load(self, path): return False
     def isValid(self): return False
     def speak(self, text): return False
     def stop(self): pass
