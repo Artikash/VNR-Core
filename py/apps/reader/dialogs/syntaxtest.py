@@ -11,6 +11,7 @@ if __name__ == '__main__':
   debug.initenv()
 
 import re
+from functools import partial
 from PySide.QtCore import Qt
 from Qt5 import QtWidgets
 from sakurakit import skqss
@@ -143,18 +144,43 @@ class _SyntaxTester(object):
 
   @memoizedproperty
   def syntaxView(self):
-    ret = QtWidgets.QPlainTextEdit(my.tr("Missing MeCab, CaboCha, or UniDic"))
+    ret = QtWidgets.QTextEdit(my.tr("Missing MeCab, CaboCha, or UniDic"))
     ret.setReadOnly(True)
     skqss.class_(ret, 'texture')
     ret.setToolTip(my.tr("Syntax parse tree"))
+
+    from qthls.bracket import ParenthesisHighlighter
+    hls = ParenthesisHighlighter(ret)
+    ret.cursorPositionChanged.connect(
+        partial(self._highlight, ret, hls))
     return ret
+
+  def _highlight(self, edit, hls):
+    """
+    @param  edit  QTextEdit
+    @param  hls  QSyntaxHighlighter
+    """
+    cur = edit.textCursor()
+    if cur.hasSelection():
+      hls.setStartPosition(cur.selectionStart())
+      hls.setStopPosition(cur.selectionEnd())
+    else:
+      pos = cur.position()
+      hls.setStartPosition(pos)
+      hls.setStopPosition(pos)
+    hls.rehighlight()
 
   @memoizedproperty
   def targetView(self):
-    ret = QtWidgets.QPlainTextEdit(my.tr("Missing MeCab, CaboCha, or UniDic"))
+    ret = QtWidgets.QTextEdit(my.tr("Missing MeCab, CaboCha, or UniDic"))
     ret.setReadOnly(True)
     skqss.class_(ret, 'texture')
     ret.setToolTip(mytr_("Output"))
+
+    from qthls.bracket import ParenthesisHighlighter
+    hls = ParenthesisHighlighter(ret)
+    ret.cursorPositionChanged.connect(
+        partial(self._highlight, ret, hls))
     return ret
 
   @memoizedproperty
