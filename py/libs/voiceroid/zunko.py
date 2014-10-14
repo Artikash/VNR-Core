@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
   ai = ZunkoTalk()
   print ai.load()
-  t = "hello world"
+  t = u"憎しみ？憎しみ。"
   print ai.speak(t)
 
   sys.path.append('..')
