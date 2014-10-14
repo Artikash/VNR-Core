@@ -1283,7 +1283,6 @@ Item { id: root_
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40
-        handleWidth: 15
         toolTip: qsTr("The maximum length of allowed game text. Text longer than that will be ignored.")
         sliderToolTip: qsTr("Maximum number of allowed characters in the game text is {0}").replace('{0}', Math.round(value / 2))
 
@@ -1303,7 +1302,6 @@ Item { id: root_
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40
-        handleWidth: 15
         toolTip: qsTr("Zoom font size")
         sliderToolTip: Math.round(value * 100) + "%"
 
@@ -1321,7 +1319,6 @@ Item { id: root_
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40
-        handleWidth: 15
         toolTip: qsTr("Text box width")
         sliderToolTip: Math.round(value * 100) + "%"
 
@@ -1341,7 +1338,6 @@ Item { id: root_
       //  font.pixelSize: parent.pixelSize
       //  font.bold: true
       //  labelWidth: 40
-      //  handleWidth: 15
       //  toolTip: qsTr("Zoom popup size")
       //  sliderToolTip: Math.round(value * 100) + "%"
       //  //value: 1.0
@@ -1359,7 +1355,6 @@ Item { id: root_
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40
-        handleWidth: 15
         toolTip: qsTr("Text background shadow transparency")
         sliderToolTip: Math.round(value * 100 / maximumValue) + "%"
 
@@ -1379,7 +1374,6 @@ Item { id: root_
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40
-        handleWidth: 15
         toolTip: qsTr("Text glowing intensity")
         sliderToolTip: Math.round(value * 100 / maximumValue) + "%"
 
@@ -1397,7 +1391,6 @@ Item { id: root_
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40
-        handleWidth: 15
         toolTip: qsTr("Text glowing range")
         sliderToolTip: Math.round(value * 100 / maximumValue) + "%"
 

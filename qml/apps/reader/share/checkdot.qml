@@ -34,6 +34,7 @@ MouseArea { id: root_
   Rectangle { id: box_
     anchors.fill: parent
     radius: root_.size/2 + 1
+    //radius: 0 // flat
 
     // ベースのグラデ
     gradient: Gradient {

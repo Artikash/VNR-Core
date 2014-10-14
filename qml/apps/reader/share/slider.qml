@@ -8,9 +8,11 @@ import '.' as Share
 
 Rectangle { id: root_
   height: 16
-  radius: 8
   opacity: 0.7
   smooth: true
+
+  radius: 8
+  //radius: 0 // flat
 
   property alias toolTip: toolTip_.text
 
@@ -76,9 +78,13 @@ Rectangle { id: root_
 
   Share.FadingRectangle { id: handle_
     anchors.verticalCenter: parent.verticalCenter
-    y: 1; width: 30; height: 14
     x: 0
-    radius: 6
+    y: 1
+    height: 14
+    width: height / 2
+    radius: 3
+    //radius: 7
+    //radius: 0 // flat
     smooth: true
     gradient: Gradient {
       GradientStop { position: 0.0; color: mouse_.pressed ? 'black' : '#555555' }

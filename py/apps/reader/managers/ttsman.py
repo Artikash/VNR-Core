@@ -7,7 +7,7 @@ __all__ = 'TtsQmlBean', 'TtsCoffeeBean'
 #from sakurakit.skprofiler import SkProfiler
 
 from functools import partial
-from PySide.QtCore import QObject, Slot, QTimer
+from PySide.QtCore import QObject, Slot, QTimer, QMutex
 #from sakurakit import skevents, skthreads
 from sakurakit.skdebug import dwarn, dprint
 from sakurakit.skclass import memoized
@@ -25,6 +25,8 @@ class _TtsManager(object):
     self._speakTask = None   # partial function object
 
     self._zunkoEngine = None  # _ttsman.ZunkoEngine
+    self._zunkoMutex = QMutex()
+
     self._yukariEngine = None # _ttsman.YukariEngine
     self._sapiEngines = {}    # {str key:_ttsman.SapiEngine}
     self._onlineEngines = {}  # {str key:_ttsman.OnlineEngine}
@@ -169,13 +171,18 @@ class _TtsManager(object):
   @property
   def zunkoEngine(self):
     if not self._zunkoEngine:
-      eng = self._zunkoEngine = _ttsman.ZunkoEngine(
-          volume=self.getVolume(_ttsman.ZunkoEngine.key))
-      settings.global_().zunkoLocationChanged.connect(eng.setPath)
-      #growl.msg(' '.join((
-      #  my.tr("Load TTS"),
-      #  eng.name,
-      #)))
+      if self._zunkoMutex.tryLock():
+        eng = self._zunkoEngine = _ttsman.ZunkoEngine(
+            mutex = self._zunkoMutex,
+            volume=self.getVolume(_ttsman.ZunkoEngine.key))
+        settings.global_().zunkoLocationChanged.connect(eng.setPath)
+        #growl.msg(' '.join((
+        #  my.tr("Load TTS"),
+        #  eng.name,
+        #)))
+        self._zunkoMutex.unlock()
+      else:
+        dwarn("ignored due to thread contention")
     return self._zunkoEngine
 
   # Online

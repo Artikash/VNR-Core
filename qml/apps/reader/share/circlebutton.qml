@@ -11,7 +11,8 @@ Share.TextButton {
 
   width: diameter; height: diameter
 
-  radius: diameter * 0.6
+  //radius: diameter * 0.6
+  radius: 0 // flat
 
   font.pixelSize: diameter / 2
 }
