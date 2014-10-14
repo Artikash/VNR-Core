@@ -411,17 +411,26 @@ class TranslatorManager(QObject):
     @param  fr  unicode  language
     @param  to  unicode  language
     @param  async  bool
-    @return  unicode not None
+    @return  unicode or None
     """
     #if not features.MACHINE_TRANSLATION or not text:
     if not text:
       return ''
     d = self.__d
+    kw = {
+      'fr': fr,
+      'to': d.language,
+      'async': async,
+    }
+    #text = d.normalizeText(text)
     e = d.getTranslator(engine)
     if e:
-      return e.translateTest(text, fr=fr, to=d.language, async=async) or ''
-    dwarn("invalid translator: %s" % engine)
-    return ''
+      return e.translateTest(text, **kw)
+    #dwarn("invalid translator: %s" % engine)
+    for it in d.iterOfflineTranslators():
+      return it.translateTest(text, **kw)
+    for it in d.iterOnlineTranslators():
+      return it.translateTest(text, **kw)
 
   def translateOne(self, text, fr='ja', engine='', online=True, async=False, cached=True, emit=False, scriptEnabled=True):
     """Translate using any translator
@@ -438,7 +447,6 @@ class TranslatorManager(QObject):
     if not features.MACHINE_TRANSLATION or not text:
       return None, None, None
     d = self.__d
-
     kw = {
       'fr': fr,
       'to': d.language,
@@ -446,13 +454,12 @@ class TranslatorManager(QObject):
       'emit': emit,
       'scriptEnabled': scriptEnabled,
     }
-
     text = d.normalizeText(text)
     if engine:
       e = d.getTranslator(engine)
       if e:
         return e.translate(text, **kw)
-      dwarn("invalid translator: %s" % engine)
+      #dwarn("invalid translator: %s" % engine)
     for it in d.iterOfflineTranslators():
       return it.translate(text, **kw)
     for it in d.iterOnlineTranslators():
@@ -507,7 +514,8 @@ class TranslatorCoffeeBean(QObject):
   def translate(self, text, engine):
     # I should not hardcode fr = 'ja' here
     # Force async
-    return manager().translate(text, engine=engine, async=True) or ''
+    # Translate direct to disable Shared Dictionary
+    return manager().translateDirect(text, engine=engine, async=True) or ''
 
 class TranslatorQmlBean(QObject):
   def __init__(self, parent=None):
