@@ -62,17 +62,77 @@ class RuleMatchedList(object):
 
 class Rule(object):
   __slots__ = (
-    'source',
-    'target',
-    'sourceLanguage',
-    'targetLanguage',
+    'source', 'target',
+    'sourceType', 'targetType',
+    'sourceLanguage', 'targetLanguage',
   )
+
+  LIST_TYPE = 'list'
+  STRING_TYPE = 'str'
+  NONE_TYPE = ''
 
   def __init__(self, sourceLanguage, targetLanguage, source, target):
     self.source = source # list or unicode
     self.target = target # list or unicode
+    self.sourceType = self.typeName(source)
+    self.targetType = self.typeName(target)
     self.sourceLanguage = sourceLanguage # str
     self.targetLanguage = targetLanguage # str
+
+  @classmethod
+  def typeName(cls, x):
+    """
+    @param  x  list or str or unicode
+    @return  str
+    """
+    if not x:
+      return cls.NONE_TYPE
+    if isinstance(x, str) or isinstance(x, unicode):
+      return cls.STRING_TYPE
+    if isinstance(x, list):
+      return cls.LIST_TYPE
+
+  def translate(self, x):
+    """
+    @param  x  Node
+    @return  Node
+    """
+    return self._translate(x)
+
+  def _translate(self, x):
+    """
+    @param  x  Node
+    @return  Node
+    """
+    if not x or x.language != self.sourceLanguage:
+      return x
+    if x.token:
+      if self.sourceType == self.STRING_TYPE:
+        if self.source == x.token.text:
+          x.language = self.targetLanguage
+          if self.targetType == self.NONE_TYPE:
+            x.token = x.children = None
+          elif self.targetType == self.STRING_TYPE:
+            x.token.text = self.target
+          elif self.targetType == self.LIST_TYPE:
+            pass
+    return x
+
+    #  for c in x.token, x.children:
+    #    if c:
+    #      return self._translate(source, c)
+    #  return
+
+    #if isinstance(source, str) or isinstance(source, unicode):
+    #  if isinstance(x, Token):
+    #    return self._matchSourceString(source, x)
+    #  return
+
+    #if isinstance(x, list):
+    #  if source.exactMatching or len(source) == len(x):
+    #    return self._exactMatchSourceList(source, x)
+    #  elif len(source) < len(x):
+    #    return self._matchSourceList(source, x)
 
   def matchSource(self, x):
     """

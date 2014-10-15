@@ -100,19 +100,20 @@ class _MachineTranslator:
     stree = self.parser.parse(stream)
     if not stree:
       return self.directTranslate(source)
-    #print tree.dumpTree()
+    #print stree.dumpTree()
 
     ttree = self.rt.translate(stree)
-    stree.clearTree() # release memory
     if not ttree:
+      stree.clearTree()
       return self.directTranslate(source)
-    #print tree.dumpTree()
+    #print ttree.dumpTree()
 
     if ttree.language == self.language:
       target = ttree.unparseTree(self.sep)
     else:
       target = self.mt.translate(ttree, tr=tr)
 
+    stree.clearTree()
     ttree.clearTree()
 
     return target
@@ -287,7 +288,7 @@ if __name__ == '__main__':
 
   rules = [createrule(k, v, to)
   for k,v in (
-    #(u"顔", u"表情"),
+    (u"顔", u"表情"),
     #(u"(分から ない の 。)", u"不知道的。"),
     (u"(分から ない の 。)", u"(不 知道 的 。)"),
     #(u"どんな", u"怎样的"),
