@@ -7,7 +7,7 @@
 #include "cc/ccmacro.h"
 #include <windows.h>
 #include <cstring>
-//#include <iostream>
+#include <iostream>
 
 using namespace AITalk;
 
@@ -164,7 +164,7 @@ AITalkResultCode AITalk::AITalkUtil::InitParam(const AITalkSettings *settings)
   if (code != AITALKERR_SUCCESS)
     return code;
 
-  _waveBufLength = param.lenRawBufBytes / 2;
+  _waveBufLength = param.lenRawBufBytes / 2; // sizeof(short) == 2
   _waveBuf = new short[_waveBufLength];
   return AITALKERR_SUCCESS;
 }
