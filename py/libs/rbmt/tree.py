@@ -36,6 +36,12 @@ class Node(object): # tree node
 
   # Children
 
+  def setChildren(self, l):
+    self.children = l
+    if l:
+      for it in l:
+        it.parent = self
+
   def appendChild(self, node):
     """
     @param  node  Node
@@ -83,12 +89,29 @@ class Node(object): # tree node
     self.children = None
     self.parent = None
     self.token = None
+    self.language = ''
 
   def clearTree(self): # recursively clear all children
     if self.children:
       for it in self.children:
         it.clearTree()
     self.clear()
+
+  # Copy
+
+  def copy(self):
+    return Node(
+      token=self.token,
+      children=self.children,
+      parent=self.parent,
+      language=self.language,
+    )
+
+  def copyTree(self):
+    ret = self.copy()
+    if ret.children:
+      ret.setChildren([it.copyTree() for it in ret.children])
+    return ret
 
   # Output
 
