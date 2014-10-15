@@ -66,9 +66,9 @@ def gameinfo(start=0, count=100, sort=None, reverse=None, filters=None):
           searchDate = search
         elif search.startswith('#') and search[1:].isdigit():
           searchId = int(search[1:])
-        elif search == 'GB':
+        elif search in ('GB', 'gb'):
           searchLargeSize = True
-        elif search == 'MB':
+        elif search in ('MB', 'mb'):
           searchLargeSize = False
         if not searchDate and not searchId and searchLargeSize is None:
           try: searchRe = re.compile(search, re.IGNORECASE)
