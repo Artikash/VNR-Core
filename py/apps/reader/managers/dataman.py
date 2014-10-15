@@ -802,7 +802,7 @@ class GameInfo(object):
     r = self.scape
     if r and r.okazu == True:
       return True
-    if self.dmm and not self.amazon:
+    if (self.dmm or self.dlsite) and not self.amazon:
       return True
     title = self.title
     for it in defs.OKAZU_TAGS:
