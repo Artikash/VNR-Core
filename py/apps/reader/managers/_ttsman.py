@@ -218,7 +218,9 @@ class ZunkoEngine(VoiceEngine):
     #skpaths.prepend_path(settings.global_().zunkoLocation())
 
     from voiceroid.zunko import ZunkoTalk
-    AUDIO_BUFFER_SIZE = 0x200000 # 2MB, default is 0x158880
+    #AUDIO_BUFFER_SIZE = 0x1000000 # 1MB, default is 0x158880 == 159k
+    #AUDIO_BUFFER_SIZE = 0x500000 # 0.5MB
+    AUDIO_BUFFER_SIZE = 0x300000 # 0.3MB
     ret = ZunkoTalk(volume=volume, audioBufferSize=AUDIO_BUFFER_SIZE)
     ok = ret.load()
     if ok:
