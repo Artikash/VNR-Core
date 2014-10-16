@@ -74,7 +74,7 @@ class _SkRunnableFunctionWithReturn(QObject, QRunnable):
     self.trigger = trigger
     self.value = None # return value
 
-  finished = Signal()
+  finished = Signal() # QObject is needed to support Signal
 
   def run(self):
     """@reimp @public"""
