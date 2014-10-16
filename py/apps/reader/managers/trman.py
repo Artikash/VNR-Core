@@ -22,9 +22,8 @@ import _trman
 #@Q_Q
 class _TranslatorManager(object):
 
-  def __init__(self, q):
-    self.parent = q # QObject
-    self.abortSignal = q.onlineAbortionRequested # signal
+  def __init__(self, abortSignal):
+    self.abortSignal = abortSignal # signal
 
     #self.convertsChinese = False
     self.online = False
@@ -52,7 +51,7 @@ class _TranslatorManager(object):
     True # bool
 
     from PySide.QtNetwork import QNetworkAccessManager
-    nam = QNetworkAccessManager(q)
+    nam = QNetworkAccessManager() # parent is not assigned
     from qtrequests import qtrequests
     self.session = qtrequests.Session(nam, abortSignal=self.abortSignal)
 
@@ -83,50 +82,50 @@ class _TranslatorManager(object):
   def hanVietTranslator(self): return self._newtr(_trman.HanVietTranslator())
 
   @memoizedproperty
-  def atlasTranslator(self): return self._newtr(_trman.AtlasTranslator(parent=self.parent))
+  def atlasTranslator(self): return self._newtr(_trman.AtlasTranslator())
 
   @memoizedproperty
-  def lecTranslator(self): return self._newtr(_trman.LecTranslator(parent=self.parent))
+  def lecTranslator(self): return self._newtr(_trman.LecTranslator())
 
   @memoizedproperty
-  def ezTranslator(self): return self._newtr(_trman.EzTranslator(parent=self.parent))
+  def ezTranslator(self): return self._newtr(_trman.EzTranslator())
 
   @memoizedproperty
-  def fastaitTranslator(self): return self._newtr(_trman.FastAITTranslator(parent=self.parent, postprocess=self.postprocess))
+  def fastaitTranslator(self): return self._newtr(_trman.FastAITTranslator(postprocess=self.postprocess))
 
   @memoizedproperty
-  def dreyeTranslator(self): return self._newtr(self._newtr(_trman.DreyeTranslator(parent=self.parent, postprocess=self.postprocess)))
+  def dreyeTranslator(self): return self._newtr(self._newtr(_trman.DreyeTranslator(postprocess=self.postprocess)))
 
   @memoizedproperty
-  def jbeijingTranslator(self): return self._newtr(_trman.JBeijingTranslator(parent=self.parent, postprocess=self.postprocess))
+  def jbeijingTranslator(self): return self._newtr(_trman.JBeijingTranslator(postprocess=self.postprocess))
 
   @memoizedproperty
   def googleTranslator(self):
-    return self._newtr(_trman.GoogleTranslator(parent=self.parent, abortSignal=self.abortSignal, postprocess=self.postprocess)) # , session=self.session # not work sync https redirect
+    return self._newtr(_trman.GoogleTranslator(abortSignal=self.abortSignal, postprocess=self.postprocess)) # , session=self.session # not work sync https redirect
 
   @memoizedproperty
   def baiduTranslator(self):
-    return self._newtr(_trman.BaiduTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session, postprocess=self.postprocess))
+    return self._newtr(_trman.BaiduTranslator(abortSignal=self.abortSignal, session=self.session, postprocess=self.postprocess))
 
   @memoizedproperty
   def bingTranslator(self):
-    return self._newtr(_trman.BingTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session, postprocess=self.postprocess))
+    return self._newtr(_trman.BingTranslator(abortSignal=self.abortSignal, session=self.session, postprocess=self.postprocess))
 
   @memoizedproperty
   def lecOnlineTranslator(self):
-    return self._newtr(_trman.LecOnlineTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session))
+    return self._newtr(_trman.LecOnlineTranslator(abortSignal=self.abortSignal, session=self.session))
 
   @memoizedproperty
   def transruTranslator(self):
-    return self._newtr(_trman.TransruTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session))
+    return self._newtr(_trman.TransruTranslator(abortSignal=self.abortSignal, session=self.session))
 
   @memoizedproperty
   def infoseekTranslator(self):
-    return self._newtr(_trman.InfoseekTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session))
+    return self._newtr(_trman.InfoseekTranslator(abortSignal=self.abortSignal, session=self.session))
 
   @memoizedproperty
   def exciteTranslator(self):
-    return self._newtr(_trman.ExciteTranslator(parent=self.parent, abortSignal=self.abortSignal, session=self.session))
+    return self._newtr(_trman.ExciteTranslator(abortSignal=self.abortSignal, session=self.session))
 
   @staticmethod
   def translateAndApply(func, kw, tr, *args, **kwargs):
@@ -142,8 +141,7 @@ class _TranslatorManager(object):
     #if async:
     #  kwargs['async'] = False
     #  r = skthreads.runsync(partial(tr, *args, **kwargs),
-    #      abortSignal=self.abortSignal,
-    #      parent=self.parent)
+    #      abortSignal=self.abortSignal)
     #else:
     r = tr(*args, **kwargs)
     if r and r[0]: func(*r, **kw)
@@ -214,7 +212,7 @@ class TranslatorManager(QObject):
 
   def __init__(self, parent=None):
     super(TranslatorManager, self).__init__(parent)
-    self.__d = _TranslatorManager(self)
+    self.__d = _TranslatorManager(abortSignal=self.onlineAbortionRequested)
 
     self.clearCacheRequested.connect(self.clearCache, Qt.QueuedConnection)
 
@@ -469,8 +467,8 @@ class TranslatorManager(QObject):
         if async:
           kw['async'] = False # use single thread
         return skthreads.runsync(partial(it.translate, text, **kw),
-            abortSignal=self.onlineAbortionRequested,
-            parent=self) or (None, None, None)
+          abortSignal=self.onlineAbortionRequested,
+        ) or (None, None, None)
     return None, None, None
 
   def translateApply(self, func, text, fr='ja', **kwargs):
@@ -543,8 +541,8 @@ class TranslatorQmlBean(QObject):
 #    text = self._prepareEscapeTerms(text, lang)
 #    text = self._prepareSentenceTransformation(text)
 #    sub = skthreads.runsync(partial(
-#        bingtrans.translate, text, to=lang),
-#        parent=self.parent)
+#      bingtrans.translate, text, to=lang),
+#    )
 #    if sub:
 #      if bingtrans.bad_translation(sub):
 #        growl.error(self.parent.tr(

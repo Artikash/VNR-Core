@@ -32,7 +32,7 @@
 # Non-node group:   (?:A B C)  the "(?:" means it is not groupped??
 
 __all__ = (
-  'PatternList', 'RuleMatchedList',
+  'PatternList',
   'Rule',
   'RuleBuilder',
 )
@@ -49,7 +49,7 @@ class PatternList(list):
     super(PatternList, self).__init__(*args, **kwargs)
     self.exactMatching = False # bool
 
-class RuleMatchedList(object):
+class RuleMatchedObject(object):
   __slots__ = (
     'nodes',
     'captureCount', 'captureStarts', 'captureStops',
@@ -62,61 +62,136 @@ class RuleMatchedList(object):
 
 class Rule(object):
   __slots__ = (
-    'source',
-    'target',
-    'sourceLanguage',
-    'targetLanguage',
+    'source', 'target',
+    'sourceType', 'targetType',
+    'sourceLanguage', 'targetLanguage',
   )
+
+  TYPE_LIST = 'list'
+  TYPE_STRING = 'str'
+  TYPE_NONE = ''
 
   def __init__(self, sourceLanguage, targetLanguage, source, target):
     self.source = source # list or unicode
     self.target = target # list or unicode
+    self.sourceType = self.typeName(source)
+    self.targetType = self.typeName(target)
     self.sourceLanguage = sourceLanguage # str
     self.targetLanguage = targetLanguage # str
 
+  @classmethod
+  def typeName(cls, x):
+    """
+    @param  x  list or str or unicode
+    @return  str
+    """
+    if not x:
+      return cls.TYPE_NONE
+    if isinstance(x, str) or isinstance(x, unicode):
+      return cls.TYPE_STRING
+    if isinstance(x, list):
+      return cls.TYPE_LIST
+
+  def translate(self, x):
+    """
+    @param  x  Node
+    @return  Node
+    """
+    return self._translate(x)
+
+  def _translate(self, x):
+    """
+    @param  x  Node
+    @return  Node
+    """
+    if not x or x.language != self.sourceLanguage:
+      return x
+    if self.sourceType == self.TYPE_STRING:
+      if x.token and self.source == x.token.text:
+        self._updateTarget(x)
+    elif self.sourceType == self.TYPE_LIST:
+      if x.children:
+        m = self.matchSource(x)
+        if m:
+          self._updateTarget(x, m)
+    return x
+
+    #  for c in x.token, x.children:
+    #    if c:
+    #      return self._translate(source, c)
+    #  return
+
+    #if isinstance(source, str) or isinstance(source, unicode):
+    #  if isinstance(x, Token):
+    #    return self._matchSourceString(source, x)
+    #  return
+
+    #if isinstance(x, list):
+    #  if source.exactMatching or len(source) == len(x):
+    #    return self._exactMatchSourceList(source, x)
+    #  elif len(source) < len(x):
+    #    return self._matchSourceList(source, x)
+
+  def _updateTarget(self, x, m=None):
+    """
+    @param  x  Node
+    @param* m  bool or RuleMatchedObject or None
+    """
+    if m is not None:
+      if isinstance(m, RuleMatchedObject):
+        if m.captureCount:
+          fragment = (self.sourceType == self.TYPE_LIST and self.targetType == self.TYPE_LIST
+                      and self.source.exactMatching)
+          for i in range(m.captureCount - 1, -1, -1):
+            start = m.captureStarts[i]
+            stop = m.captureStops[i]
+            x.removeChildren(start, stop)
+            if self.target:
+              if fragment:
+                x.insertChildren(start, self.createTargetList())
+              else:
+                x.insertChild(start, self.createTarget())
+          return
+
+    x.language = self.targetLanguage
+    if self.targetType == self.TYPE_NONE:
+      x.clearTree() # delete this node
+    elif self.targetType == self.TYPE_STRING:
+      x.clearChildren()
+      if x.token:
+        x.token.text = self.target
+      else:
+        x.token = Token(self.target)
+
+    elif self.targetType == self.TYPE_LIST:
+      x.token = None
+      if not self.target.exactMatching:
+        x.fragment = True
+      x.setChildren(self.createTargetList())
+
   def matchSource(self, x):
     """
-    @param  x  Node or token or list
-    @return  bool or RuleMatchedList
+    @param  x
+    @return  bool or RuleMatchedObject or None
     """
-    if self.source:
-      return self._matchSource(self.source, x)
+    return bool(self.source) and self._matchSource(self.source, x)
 
   def _matchSource(self, source, x):
     """
     @param  source  list or unicode
     @param  x  Node or Token or list
-    @return  bool
+    @return  bool or RuleMatchedObject or None
     """
-    if not x:
+    if not x or x.language != self.sourceLanguage:
       return
-    if isinstance(x, Node):
-      if x.language != self.sourceLanguage:
-        return
-      for c in x.token, x.children:
-        if c:
-          return self._matchSource(source, c)
-      return
-
     if isinstance(source, str) or isinstance(source, unicode):
-      if isinstance(x, Token):
-        return self._matchSourceString(source, x)
-      return
-
-    if isinstance(x, list):
-      if source.exactMatching or len(source) == len(x):
-        return self._exactMatchSourceList(source, x)
-      elif len(source) < len(x):
-        return self._matchSourceList(source, x)
-
-  @staticmethod
-  def _matchSourceString(source, token):
-    """
-    @param  source  unicode
-    @param  token  Token
-    @return  bool
-    """
-    return source == token.text
+      if x.token:
+        return source == x.token.text
+    elif isinstance(source, list) and x.children:
+      if source.exactMatching or len(source) == len(x.children):
+        return self._exactMatchSourceList(source, x.children)
+      elif len(source) < len(x.children):
+        return self._matchSourceList(source, x.children)
 
   def _exactMatchSourceList(self, source, nodes):
     """
@@ -129,12 +204,13 @@ class Rule(object):
         if not self._matchSource(s, c):
           return False
       return True
+    return False
 
   def _matchSourceList(self, source, nodes):
-    """
+    """Non-exact match.
     @param  source  list
     @param  nodes  list
-    @return  RuleMatchedList or None
+    @return  RuleMatchedObject or None
     """
     starts = []
     sourceIndex = 0
@@ -150,33 +226,44 @@ class Rule(object):
       else:
         sourceIndex += 1
     if starts:
-      m = RuleMatchedList(nodes)
+      m = RuleMatchedObject(nodes)
       m.captureCount = len(starts)
       m.captureStarts = starts
       m.captureStops = [it + len(source) for it in starts]
       return m
 
-  def createTarget(self, m=None):
+  def createTarget(self):
     """
-    @param* m  matched object
-    @return  Node or None
+    @return  Node
     """
-    return self._createTarget(self.target, m)
+    ret = self._createTarget(self.target)
+    ret.fragment = bool(self.targetType == self.TYPE_LIST) and not self.target.exactMatching
+    return ret
 
-  def _createTarget(self, target, m=None):
+  def createTargetList(self):
+    """
+    @return  [Node]
+    """
+    if self.target:
+      if self.targetType == self.TYPE_LIST:
+        return map(self._createTarget, self.target)
+      if self.targetType == self.TYPE_STRING:
+        return [self._createTarget(self.target)]
+    return []
+
+  def _createTarget(self, target):
     """
     @param  target  list or unicode
-    @param* m  matched object
-    @return  Node or None
+    @return  Node
     """
     if target:
       if isinstance(target, str) or isinstance(target, unicode):
-        return Node(Token(target), language=self.targetLanguage)
-      else:
-        l = map(self._createTarget, target)
-        if l:
-          return l[0] if len(l) == 1 else Node(children=l, language=self.targetLanguage)
-    return Node() # Represent deleted node, TODO: skip empty node
+        return Node(Token(target),
+            language=self.targetLanguage)
+      if isinstance(target, list):
+        return Node(children=map(self._createTarget, target),
+            language=self.targetLanguage)
+    return Node()
 
 class RuleBuilder:
 

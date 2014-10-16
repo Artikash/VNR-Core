@@ -233,7 +233,6 @@ class YueTranslator(Translator):
       ret = skthreads.runsync(partial(
         self.engne.translate, text, to=to, fr=fr),
         abortSignal=self.abortSignal,
-        #parent=self.parent, # save memory?
       ) if async else self.engine.translate(text, to=to, fr=fr)
       if ret:
         if fr != 'zhs':
@@ -253,11 +252,10 @@ class MachineTranslator(Translator):
   #_DELIM_SET = _PARAGRAPH_SET # set of deliminators
   #_DELIM_RE = _PARAGRAPH_RE   # rx of deliminators
 
-  def __init__(self, parent=None, abortSignal=None, preprocess=None, postprocess=None):
+  def __init__(self, abortSignal=None, preprocess=None, postprocess=None):
     super(MachineTranslator, self).__init__()
     self.cache = TranslationCache()  # public overall translation cache
     self._cache = TranslationCache() # private translation cache for internal translation
-    self.parent = parent  # QObject, not used though
     self.abortSignal = abortSignal # QtCore.Signal abort translation
     self.preprocess = preprocess # function unicode text, str fr -> text
     self.postprocess = postprocess # function unicode text, str to -> text
@@ -278,9 +276,9 @@ class MachineTranslator(Translator):
     """
     #if len(text) > self._CACHE_LENGTH:
     #  return skthreads.runsync(partial(
-    #       tr, text, **kwargs),
-    #       abortSignal=self.abortSignal,
-    #       parent=self.parent) if async else tr(text, **kwargs)
+    #    tr, text, **kwargs),
+    #    abortSignal=self.abortSignal,
+    #  ) if async else tr(text, **kwargs)
     ret = self._cache.get(text)
     if ret:
       return ret
@@ -296,7 +294,6 @@ class MachineTranslator(Translator):
     ret = skthreads.runsync(partial(
       tr, text, to=to, fr=fr),
       abortSignal=self.abortSignal,
-      #parent=self.parent, # save memory?
     ) if async and self.asyncSupported else tr(text, to=to, fr=fr)
 
     if ret:

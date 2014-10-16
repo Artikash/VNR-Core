@@ -20,13 +20,15 @@ class Node(object): # tree node
     'parent',
     'token',
     'language',
+    'fragment',
   )
 
-  def __init__(self, token=None, children=None, parent=None, language=''):
+  def __init__(self, token=None, children=None, parent=None, language='', fragment=False):
     self.children = children # [Node] or None
     self.parent = parent # Node
     self.token = token # token
     self.language = language # str
+    self.fragment = fragment # bool # inncomplete node
 
     if children:
       for it in children:
@@ -34,9 +36,51 @@ class Node(object): # tree node
 
   def isEmpty(self): return not self.token and not self.children
 
+  # Delete
+
+  def clear(self):
+    self.children = None
+    self.parent = None
+    self.token = None
+    self.fragment = False
+    self.language = ''
+
+  def clearTree(self): # recursively clear all children
+    if self.children:
+      for it in self.children:
+        it.clearTree()
+    self.clear()
+
+  # Update
+
+  def update(self, **kwargs):
+    for k,v in kwargs.iteritems():
+      setattr(self, k, v)
+      if k == 'children' and v:
+        for it in v:
+          it.parent = self
+
+  # Copy
+
+  def copy(self, **kwargs):
+    kw = {it:getattr(self, it) for it in self.__slots__}
+    kw.update(kwargs)
+    return Node(**kw)
+
+  def copyTree(self):
+    return self.copy(children=[it.copyTree() for it in self.children]) if self.children else self.copy()
+
   # Children
 
+  def clearChildren(self):
+    if self.children:
+      for it in self.children:
+        if it.parent is self:
+          it.parent = None
+    self.children = None
+
   def setChildren(self, l):
+    self.clearChildren()
     self.children = l
     if l:
       for it in l:
@@ -70,48 +114,50 @@ class Node(object): # tree node
     for it in l:
       self.prependChild(it)
 
-  def compactAppend(self, x):
+  def insertChild(self, i, node):
     """
-    @param  node  Node or list
+    @param  i  int
+    @param  node  Node
     """
-    if isinstance(x, Node):
-      if not x.isEmpty():
-        self.appendChild(x)
-    elif x:
-      if len(x) == 1:
-        self.appendChild(x[0])
-      else:
-        self.appendChildren(x)
+    self.children.insert(i, node)
+    node.parent = self
 
-  # Delete
+  def insertChildren(self, i, l):
+    """
+    @param  i  int
+    @param  node  Node
+    """
+    for it in reversed(l):
+      self.insertChild(i, it)
 
-  def clear(self):
-    self.children = None
-    self.parent = None
-    self.token = None
-    self.language = ''
+  def removeChild(self, i):
+    """
+    @param  i  int
+    """
+    node = self.children.pop(i)
+    if node.parent is self:
+      node.parent = None
 
-  def clearTree(self): # recursively clear all children
-    if self.children:
-      for it in self.children:
-        it.clearTree()
-    self.clear()
+  def removeChildren(self, start, stop):
+    """
+    @param  start  int
+    @param  stop  int
+    """
+    for i in range(start, stop):
+      self.removeChild(start)
 
-  # Copy
-
-  def copy(self):
-    return Node(
-      token=self.token,
-      children=self.children,
-      parent=self.parent,
-      language=self.language,
-    )
-
-  def copyTree(self):
-    ret = self.copy()
-    if ret.children:
-      ret.setChildren([it.copyTree() for it in ret.children])
-    return ret
+  #def compactAppend(self, x):
+  #  """
+  #  @param  node  Node or list
+  #  """
+  #  if isinstance(x, Node):
+  #    if not x.isEmpty():
+  #      self.appendChild(x)
+  #  elif x:
+  #    if len(x) == 1:
+  #      self.appendChild(x[0])
+  #    else:
+  #      self.appendChildren(x)
 
   # Output
 

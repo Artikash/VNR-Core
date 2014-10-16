@@ -47,6 +47,7 @@ class _Session:
     @param  reply  QNetworkReply
     @param* abortSignal  Signal
     """
+    #loop = QEventLoop(self.nam) # prevent loop from being deleted by accident
     loop = QEventLoop()
     if self.abortSignal:
       self.abortSignal.connect(loop.quit)
@@ -56,6 +57,13 @@ class _Session:
 
     reply.finished.connect(loop.quit)
     loop.exec_()
+
+    if self.abortSignal:
+      self.abortSignal.disconnect(loop.quit)
+    qApp.aboutToQuit.disconnect(loop.quit)
+    reply.finished.disconnect(loop.quit)
+
+    #loop.setParent(None)
 
   def _createRequest(self, url, params=None, headers=None):
     """

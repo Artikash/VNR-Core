@@ -6,6 +6,7 @@
 __all__ = 'CaboChaParser',
 
 import os
+#from PySide.QtCore import QMutex
 from sakurakit.skdebug import dprint, dwarn
 from cconv import cconv
 from jptraits import jpchars
@@ -34,6 +35,7 @@ class CaboChaParser(object):
   #  self.parser = CaboCha.Parser()
 
   def __init__(self):
+    #self.mutex = QMutex() # parse mutex
     self.enabled = False # bool
     self.dic = '' # str
     self.rcfile = '' # unicode

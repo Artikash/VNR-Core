@@ -279,7 +279,8 @@ Item { id: root_
 
   //Component.onCompleted: console.log("growl.qml: pass")
 
-  property bool modelLocked: false
+  property bool modelLocked: false // otherwise, VNR might crash when switching fullscreen
+
   property string lastText // previous showed message text
 
   function appendItem(item) {

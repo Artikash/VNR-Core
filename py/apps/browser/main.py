@@ -41,7 +41,7 @@ class MainObject(QObject):
     dprint("show root window")
     w = d.mainWindow
 
-    d.ttsManager.setParentWidget(w)
+    #d.ttsManager.setParentWidget(w)
 
     urls = [it for it in args if not it.startswith('-')]
     args_offset = 2 if skos.WIN else 1
@@ -147,7 +147,7 @@ class _MainObject(object):
     dprint("create cache manager")
     import cacheman
     ret = cacheman.manager()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
 
     #ret.setEnabled(self.networkManager.isOnline())
     #self.networkManager.onlineChanged.connect(ret.setEnabled)

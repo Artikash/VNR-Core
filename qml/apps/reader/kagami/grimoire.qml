@@ -171,6 +171,10 @@ Item { id: root_
 
   //property int _FADE_DURATION: 400
 
+  // 10/15/2014: whether listmodel is locked. otherwise, VNR might crash when RBMT is turned on
+  // Lock the insert/append/clear methods.
+  property bool modelLocked: false
+
   property real _zoomFactor: zoomFactor * globalZoomFactor // actual zoom factor
 
   property real zoomStep: 0.05
@@ -1161,9 +1165,13 @@ Item { id: root_
   }
 
   function addText(text, lang, type, provider, comment) {
+    if (modelLocked)
+      return
+    modelLocked = true
     var item = createTextItem.apply(this, arguments)
     listModel_.append(item) // I assume the text always comes before translation
     listView_.currentIndex = _pageIndex
+    modelLocked = false
   }
 
   function showText(text, lang, timestamp) {
@@ -1181,23 +1189,32 @@ Item { id: root_
     //  pageBreak()
     if  (!root_.nameVisible)
       return
+    if (modelLocked)
+      return
+    modelLocked = true
 
     text = "【" + text + "】"
     var item = createTextItem(text, lang, 'name')
     var index = _pageIndex + 1 // fix index
+
     if (index <= listModel_.count)
       listModel_.insert(index, item)
     else
       listModel_.append(item)
+
     listView_.currentIndex = _pageIndex
     //if (_pageIndex + 1 < listView_.count) {
     //  listView_.positionViewAtIndex(_pageIndex +1, ListView.Beginning)
     //}
+    modelLocked = false
   }
 
   function showTranslation(text, lang, provider, timestamp) {
     if  (!root_.translationVisible)
       return
+    if (modelLocked)
+      return
+    modelLocked = true
 
     //if (!listModel_.count)
     //  pageBreak()
@@ -1211,6 +1228,7 @@ Item { id: root_
     else // this should never happen
       listModel_.append(item)
     listView_.currentIndex = _pageIndex
+    modelLocked = false
   }
 
   function showNameTranslation(text, lang, provider) {
@@ -1218,6 +1236,9 @@ Item { id: root_
       return
     //if (!listModel_.count)
     //  pageBreak()
+    if (modelLocked)
+      return
+    modelLocked = true
 
     text = "【" + text + "】"
     var item = createTextItem(text, lang, 'name.tr', provider)
@@ -1227,6 +1248,7 @@ Item { id: root_
     else
       listModel_.append(item)
     listView_.currentIndex = _pageIndex
+    modelLocked = false
   }
 
   function showComment(c) { // actually subtitle rather than comment
@@ -1253,11 +1275,15 @@ Item { id: root_
     // 1 paragraph is around 4 tr + 1 game text + 1 game name + 1 pagebreak = 7
     // 30 < 5 * 7
     if (listModel_.count > 30) {   // if the list size is greater than 30
+      if (modelLocked)
+        return
+      modelLocked = true
       //console.log("grimoire.qml:slimList: enter: count =", listModel_.count)
       while (listModel_.count > 20) // remove the first 10 items
         listModel_.remove(0)
       if (listView_.currentIndex >= 10) // 10 = 30 - 20
         listView_.currentIndex -= 10
+      modelLocked = false
       //console.log("grimoire.qml:slimList: leave: count =", listModel_.count)
       //console.log("grimoire.qml:slimList: pass")
     }
@@ -1272,10 +1298,14 @@ Item { id: root_
   }
 
   function clear() {
+    if (modelLocked)
+      return
+    modelLocked = true
     _pageIndex = 0
     listModel_.clear()
     //highlight_.visible = false
     root_.highlightVisible = false
+    modelLocked = false
     console.log("grimoire.qml:clear: pass")
   }
 

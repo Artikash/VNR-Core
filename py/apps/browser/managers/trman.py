@@ -20,9 +20,8 @@ import _trman
 #@Q_Q
 class _TranslatorManager(object):
 
-  def __init__(self, q):
-    self.parent = q # QObject
-    self.abortSignal = q.onlineAbortionRequested # Signal
+  def __init__(self, abortSignal):
+    self.abortSignal = abortSignal # Signal
 
     #self.convertsChinese = False
     #self.enabled = True
@@ -50,50 +49,50 @@ class _TranslatorManager(object):
   def hanVietTranslator(self): return _trman.HanVietTranslator()
 
   @memoizedproperty
-  def atlasTranslator(self): return _trman.AtlasTranslator(parent=self.parent)
+  def atlasTranslator(self): return _trman.AtlasTranslator()
 
   @memoizedproperty
-  def lecTranslator(self): return _trman.LecTranslator(parent=self.parent)
+  def lecTranslator(self): return _trman.LecTranslator()
 
   @memoizedproperty
-  def ezTranslator(self): return _trman.EzTranslator(parent=self.parent)
+  def ezTranslator(self): return _trman.EzTranslator()
 
   @memoizedproperty
-  def fastaitTranslator(self): return _trman.FastAITTranslator(parent=self.parent)
+  def fastaitTranslator(self): return _trman.FastAITTranslator()
 
   @memoizedproperty
-  def dreyeTranslator(self): return _trman.DreyeTranslator(parent=self.parent)
+  def dreyeTranslator(self): return _trman.DreyeTranslator()
 
   @memoizedproperty
-  def jbeijingTranslator(self): return _trman.JBeijingTranslator(parent=self.parent)
+  def jbeijingTranslator(self): return _trman.JBeijingTranslator()
 
   @memoizedproperty
   def baiduTranslator(self):
-    return _trman.BaiduTranslator(parent=self.parent, abortSignal=self.abortSignal)
+    return _trman.BaiduTranslator(abortSignal=self.abortSignal)
 
   @memoizedproperty
   def googleTranslator(self):
-    return _trman.GoogleTranslator(parent=self.parent, abortSignal=self.abortSignal)
+    return _trman.GoogleTranslator(abortSignal=self.abortSignal)
 
   @memoizedproperty
   def bingTranslator(self):
-    return _trman.BingTranslator(parent=self.parent, abortSignal=self.abortSignal)
+    return _trman.BingTranslator(abortSignal=self.abortSignal)
 
   @memoizedproperty
   def lecOnlineTranslator(self):
-    return _trman.LecOnlineTranslator(parent=self.parent, abortSignal=self.abortSignal)
+    return _trman.LecOnlineTranslator(abortSignal=self.abortSignal)
 
   @memoizedproperty
   def transruTranslator(self):
-    return _trman.TransruTranslator(parent=self.parent, abortSignal=self.abortSignal)
+    return _trman.TransruTranslator(abortSignal=self.abortSignal)
 
   @memoizedproperty
   def infoseekTranslator(self):
-    return _trman.InfoseekTranslator(parent=self.parent, abortSignal=self.abortSignal)
+    return _trman.InfoseekTranslator(abortSignal=self.abortSignal)
 
   @memoizedproperty
   def exciteTranslator(self):
-    return _trman.ExciteTranslator(parent=self.parent, abortSignal=self.abortSignal)
+    return _trman.ExciteTranslator(abortSignal=self.abortSignal)
 
   def getTranslator(self, key):
     """
@@ -148,7 +147,7 @@ class TranslatorManager(QObject):
 
   def __init__(self, parent=None):
     super(TranslatorManager, self).__init__(parent)
-    self.__d = _TranslatorManager(self)
+    self.__d = _TranslatorManager(abortSignal=self.onlineAbortionRequested)
 
   ## Signals ##
 
@@ -309,9 +308,9 @@ class TranslatorManager(QObject):
     for it in d.iterOnlineTranslators():
       #return it.translate(text, fr=fr, to=to, async=True)
       return skthreads.runsync(partial(
-          it.translate, text, fr=fr, to=to, async=False),
-          abortSignal=self.onlineAbortionRequested,
-          parent=self) or (None, None, None)
+        it.translate, text, fr=fr, to=to, async=False),
+        abortSignal=self.onlineAbortionRequested,
+      ) or (None, None, None)
     return None, None, None
 
 @memoized

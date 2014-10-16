@@ -100,19 +100,20 @@ class _MachineTranslator:
     stree = self.parser.parse(stream)
     if not stree:
       return self.directTranslate(source)
-    #print tree.dumpTree()
+    #print stree.dumpTree()
 
     ttree = self.rt.translate(stree)
-    stree.clearTree() # release memory
     if not ttree:
+      stree.clearTree()
       return self.directTranslate(source)
-    #print tree.dumpTree()
+    #print ttree.dumpTree()
 
     if ttree.language == self.language:
       target = ttree.unparseTree(self.sep)
     else:
       target = self.mt.translate(ttree, tr=tr)
 
+    stree.clearTree()
     ttree.clearTree()
 
     return target
@@ -242,8 +243,8 @@ if __name__ == '__main__':
   #text = u"あたしは日本人です。"
 
   #text = u"【綾波レイ】「ごめんなさい。こう言う時どんな顔すればいいのか分からないの。」"
-  #text = u"ごめんなさい。こう言う時どんな顔すればいいのか分からないの。"
-  text = u"こう言う時どんな顔すればいいのか分からないの。"
+  text = u"ごめんなさい。こう言う時どんな顔すればいいのか分からないの。"
+  #text = u"こう言う時どんな顔すればいいのか分からないの。"
   #text = u"こう言う時どんな顔すればいいのか分からないのか？"
   #text = u"こう言う時どんな顔すればいいのか分からないのか？"
 
@@ -281,16 +282,19 @@ if __name__ == '__main__':
   import CaboCha
   cabocha = CaboCha.Parser()
 
-  ma = MachineAnalyzer(cabocha) #, tr=tr)
+  ma = MachineAnalyzer(cabocha)
 
-  mt = MachineTranslator(cabocha, language=to, underline=False) #, tr=tr)
+  mt = MachineTranslator(cabocha, language=to, underline=False, escape=True) #, tr=tr)
 
   rules = [createrule(k, v, to)
   for k,v in (
-    #(u"顔", u"表情"),
-    #(u"(分から ない の 。)", u"不知道的。"),
-    (u"(分から ない の 。)", u"(不 知道 的 。)"),
+    #(u"顔", u"(表情)"),
     #(u"どんな", u"怎样的"),
+    #(u"(分から ない の 。)", u"(不 知道 的 。)"),
+    #(u"(分から ない の 。)", u"不 知道 的 。"),
+    (u"(分から ない の 。)", u"不知道的。"),
+    #(u"ない の 。", u"(不 知道 的 。)"),
+    #(u"ない の 。", u"不知道的。"),
   )]
   mt.setRules(rules)
 

@@ -13,7 +13,7 @@
 from ctypes import c_longlong
 from functools import partial
 from PySide.QtCore import Signal, Slot, Property, QObject, QTimer
-from sakurakit import skclip, skdatetime, skevents, skthreads
+from sakurakit import skclip, skdatetime, skevents
 from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dwarn
 #from sakurakit.skqml import QmlObject

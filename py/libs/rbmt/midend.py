@@ -5,7 +5,6 @@
 __all__ = 'TreeBuilder', 'RuleBasedTranslator'
 
 from tree import Node, Token
-from rule import RuleMatchedList
 from defs import ANY_LANGUAGE
 
 # Parser
@@ -58,79 +57,101 @@ class RuleBasedTranslator:
     self._updateLanguage(ret)
     return ret
 
-  def _translate(self, x):
-    """
-    @param  x  Node or token or list
-    @return  Node not None
-    """
-    for rule in self.rules:
-      m = rule.matchSource(x)
-      if m:
-        if isinstance(m, RuleMatchedList):
-          return self._translateMatchedList(rule, m)
-        else:
-          return rule.createTarget()
-    if isinstance(x, list):
-      return Node(children=map(self._translate, x))
-    if isinstance(x, Token):
-      return Node(token=x)
-    if isinstance(x, Node):
-      if x.token:
-        return Node(token=x.token)
-      elif x.children:
-        return Node(children=map(self._translate, x.children))
-    return Node()
-
-  def _translateMatchedList(self, rule, m):
-    """
-    @param  rule  Rule
-    @param  m  RuleMatchedList
-    @return  Node
-    """
-    ret = Node(children=[])
-    for i in xrange(m.captureCount):
-      if not i:
-        start = m.captureStarts[i]
-        if start > 0:
-          left = m.nodes[:start]
-          if left:
-            left = self._translate(left)
-            if left.children:
-              left = left.children
-            ret.compactAppend(left)
-      ret.compactAppend(rule.createTarget())
-      if i == m.captureCount - 1:
-        stop = m.captureStops[i]
-        if stop < len(m.nodes):
-          right = m.nodes[stop:]
-          if right:
-            right = self._translate(right)
-            if right.children:
-              right = right.children
-            ret.compactAppend(right)
-    return ret
-
   def _updateLanguage(self, node):
     """
     @param  node  Node
     """
-    if not node.language:
-      if node.token:
-        node.language = self.fr
-      elif node.children:
-        language = None
+    if node.language == self.fr:
+      if node.children:
+        translated = untranslated = True
         for it in node.children:
           self._updateLanguage(it)
           if not it.language:
-            language = ''
-          elif language is None:
-            language = it.language
-          elif language != it.language:
-            if language == ANY_LANGUAGE:
-              language = it.language
-            elif it.language != ANY_LANGUAGE:
-              language = ''
-        if language:
-          node.language = language
+            translated = untranslated = False
+          elif it.language == self.fr:
+            translated = False
+          elif it.language == self.to:
+            untranslated = False
+        if not translated and not untranslated:
+          node.language = '' # hybrid
+        elif translated:
+          node.language = self.to
+
+  def _translate(self, x):
+    """
+    @param  x  Node
+    @return  Node
+    """
+    for rule in self.rules:
+      x = rule.translate(x)
+    if isinstance(x, Node) and x.children:
+      for i,it in enumerate(reversed(x.children)):
+        i = len(x.children) - i - 1
+        r = self._translate(it)
+        if r is not it:
+          if r.isEmpty():
+            del x.children[i]
+          elif r.fragment and r.children:
+            del x.children[i]
+            x.insertChildren(i, r.children)
+          else:
+            x.children[i] = r
+            r.parent = x
+        elif r.fragment and r.children:
+          del x.children[i]
+          x.insertChildren(i, r.children)
+    return x
 
 # EOF
+
+#  def _translate(self, x):
+#    """
+#    @param  x  Node or token or list
+#    @return  Node not None
+#    """
+#    for rule in self.rules:
+#      m = rule.matchSource(x)
+#      if m:
+#        if isinstance(m, RuleMatchedList):
+#          return self._translateMatchedList(rule, m)
+#        else:
+#          return rule.createTarget()
+#    if isinstance(x, list):
+#      return Node(children=map(self._translate, x))
+#    if isinstance(x, Token):
+#      return Node(token=x)
+#    if isinstance(x, Node):
+#      if x.token:
+#        return Node(token=x.token)
+#      elif x.children:
+#        return Node(children=map(self._translate, x.children))
+#    return Node()
+#
+#  def _translateMatchedList(self, rule, m):
+#    """
+#    @param  rule  Rule
+#    @param  m  RuleMatchedList
+#    @return  Node
+#    """
+#    ret = Node(children=[])
+#    for i in xrange(m.captureCount):
+#      if not i:
+#        start = m.captureStarts[i]
+#        if start > 0:
+#          left = m.nodes[:start]
+#          if left:
+#            left = self._translate(left)
+#            if left.children:
+#              left = left.children
+#            ret.compactAppend(left)
+#      ret.compactAppend(rule.createTarget())
+#      if i == m.captureCount - 1:
+#        stop = m.captureStops[i]
+#        if stop < len(m.nodes):
+#          right = m.nodes[stop:]
+#          if right:
+#            right = self._translate(right)
+#            if right.children:
+#              right = right.children
+#            ret.compactAppend(right)
+#    return ret

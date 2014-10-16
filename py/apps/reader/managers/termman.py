@@ -375,8 +375,7 @@ class _TermManager:
 
     saveTime = time()
     skthreads.runsync(partial(
-        self._saveTerms, saveTime),
-        parent=self.q)
+        self._saveTerms, saveTime))
     self.saveMutex.unlock()
 
   def _saveTerms(self, createTime):

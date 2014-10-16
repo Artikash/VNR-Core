@@ -28,25 +28,23 @@ class _ReadLocker():
     if self.locked:
       READ_MUTEX.unlock()
 
-def readtext(path, lang, async=False, parent=None):
+def readtext(path, lang, async=False):
   """
   @param  path  unicode
   @param  lang  unicode
   @param* async  bool
-  @param* parent  QObject
   @return  unicode
   """
-  return skthreads.runsync(partial(_readtext_async, path, lang), parent=parent) if async else _readtext_sync(path, lang)
+  return skthreads.runsync(partial(_readtext_async, path, lang)) if async else _readtext_sync(path, lang)
 
-def readtexts(path, lang, async=False, parent=None):
+def readtexts(path, lang, async=False):
   """
   @param  path  unicode
   @param  lang  unicode
   @param* async  bool
-  @param* parent  QObject
   @return  [unicode]
   """
-  return skthreads.runsync(partial(_readtexts_async, path, lang), parent=parent) if async else _readtexts_sync(path, lang)
+  return skthreads.runsync(partial(_readtexts_async, path, lang)) if async else _readtexts_sync(path, lang)
 
 def _readtext_async(*args, **kwargs):
   with SkCoInitializer():
