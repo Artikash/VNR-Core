@@ -348,7 +348,7 @@ class RuleBuilder:
     if not text:
       return None
 
-    if '(' not in text and ')' not in text:
+    if '(' not in text and ')' not in text and '$' not in text:
       if ' ' not in text:
         return text
       l = text.split()
@@ -381,7 +381,7 @@ class RuleBuilder:
           return
         y = l.popleft()
         s.append(PatternVariable(y,
-            PatternVariable.signType(y)))
+            PatternVariable.signType(x)))
       elif x != ')':
         s.append(x)
       else:
