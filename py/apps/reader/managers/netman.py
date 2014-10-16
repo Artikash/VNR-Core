@@ -831,8 +831,7 @@ class _NetworkManager(object):
       else:
         r = skthreads.runsync(partial(
             session.post,
-            XML_API + '/ref/submit', data=params, headers=XML_POST_HEADERS),
-            parent=self.q)
+            XML_API + '/ref/submit', data=params, headers=XML_POST_HEADERS))
 
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
@@ -918,8 +917,7 @@ class _NetworkManager(object):
       else:
         r = skthreads.runsync(partial(
             session.post,
-            XML_API + '/ref/update', data=params, headers=XML_POST_HEADERS),
-            parent=self.q)
+            XML_API + '/ref/update', data=params, headers=XML_POST_HEADERS))
 
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
@@ -1164,8 +1162,7 @@ class _NetworkManager(object):
       else:
         r = skthreads.runsync(partial(
             session.post,
-            XML_API + '/comment/submit', data=params, headers=XML_POST_HEADERS),
-            parent=self.q)
+            XML_API + '/comment/submit', data=params, headers=XML_POST_HEADERS))
 
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
@@ -1261,8 +1258,7 @@ class _NetworkManager(object):
       else:
         r = skthreads.runsync(partial(
             session.post,
-            XML_API + '/comment/update', data=params, headers=XML_POST_HEADERS),
-            parent=self.q)
+            XML_API + '/comment/update', data=params, headers=XML_POST_HEADERS))
 
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
@@ -1433,8 +1429,7 @@ class _NetworkManager(object):
       else:
         r = skthreads.runsync(partial(
             session.post,
-            XML_API + '/term/submit', data=params, headers=XML_POST_HEADERS),
-            parent=self.q)
+            XML_API + '/term/submit', data=params, headers=XML_POST_HEADERS))
 
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
@@ -1518,8 +1513,7 @@ class _NetworkManager(object):
       else:
         r = skthreads.runsync(partial(
             session.post,
-            XML_API + '/term/update', data=params, headers=XML_POST_HEADERS),
-            parent=self.q)
+            XML_API + '/term/update', data=params, headers=XML_POST_HEADERS))
 
       if r.ok and _response_is_xml(r):
         root = etree.fromstring(r.content)
@@ -1640,8 +1634,7 @@ class NetworkManager(QObject):
     """
     if self.isOnline() and lang:
       return skthreads.runsync(partial(
-          self.__d.getUpdateMessage, lang),
-          parent=self)
+          self.__d.getUpdateMessage, lang))
 
   ## User ##
 
@@ -1654,8 +1647,7 @@ class NetworkManager(QObject):
     if self.isOnline() and userName and password:
       return self.__d.queryUser(userName, password)
       #return skthreads.runsync(partial(
-      #    self.__d.queryUser, userName, password),
-      #    parent=self)
+      #    self.__d.queryUser, userName, password))
 
   def updateUser(self, userName, password, language=None, gender=None, avatar=None, color=None, homepage=None):
     """
@@ -1668,8 +1660,7 @@ class NetworkManager(QObject):
           language=language, gender=gender, avatar=avatar, color=color, homepage=homepage)
       #return skthreads.runsync(partial(
       #    self.__d.updateUser, userName, password,
-      #    language=language, gender=gender, avatar=avatar, color=color, homepage=homepage),
-      #    parent=self)
+      #    language=language, gender=gender, avatar=avatar, color=color, homepage=homepage))
     return False
 
   def getUsers(self):
@@ -1677,7 +1668,7 @@ class NetworkManager(QObject):
     @return {long id:dataman.UserDigest} or None
     """
     if self.isOnline():
-      return skthreads.runsync(self.__d.getUsers, parent=self)
+      return skthreads.runsync(self.__d.getUsers)
 
   ## Games ##
 
@@ -1686,7 +1677,7 @@ class NetworkManager(QObject):
     @return {long id:dataman.GameFile} or None
     """
     if self.isOnline():
-      return skthreads.runsync(self.__d.getGameFiles, parent=self)
+      return skthreads.runsync(self.__d.getGameFiles)
 
   def queryGame(self, id=0, md5=None, cached=True):
     """Either id or digest should be specified
@@ -1708,8 +1699,7 @@ class NetworkManager(QObject):
 
     if self.isOnline():
       ret = skthreads.runsync(partial(
-          d.queryGame, id, md5),
-          parent=self)
+          d.queryGame, id, md5))
       if ret:
         d.cachedGamesById[ret.id] = ret
         d.cachedGamesById[ret.md5] = ret
@@ -1725,8 +1715,7 @@ class NetworkManager(QObject):
     """
     if self.isOnline() and (game.id or game.md5) and userName and password:
       return skthreads.runsync(partial(
-          self.__d.updateGame, game, userName, password, deleteHook=deleteHook),
-          parent=self)
+          self.__d.updateGame, game, userName, password, deleteHook=deleteHook))
     return False
 
   ## Items ##
@@ -1736,7 +1725,7 @@ class NetworkManager(QObject):
     @return {long itemId:dataman.GameItem} or None
     """
     if self.isOnline():
-      return skthreads.runsync(self.__d.getGameItems, parent=self)
+      return skthreads.runsync(self.__d.getGameItems)
 
   ## References ##
 
@@ -1745,7 +1734,7 @@ class NetworkManager(QObject):
   #  @return {long itemId:[dataman.ReferenceDigest]} or None
   #  """
   #  if self.isOnline():
-  #    return skthreads.runsync(self.__d.getReferenceDigests, parent=self)
+  #    return skthreads.runsync(self.__d.getReferenceDigests)
 
   def queryReferences(self, gameId=0, md5=None, init=True):
     """Either gameid or digest should be specified
@@ -1756,8 +1745,7 @@ class NetworkManager(QObject):
     """
     if self.isOnline() and (gameId or md5):
       ret = skthreads.runsync(partial(
-          self.__d.queryReferences, gameId, md5, init=False),
-          parent=self)
+          self.__d.queryReferences, gameId, md5, init=False))
       if ret and init:
         #map(dataman.Reference.init, ret)   # for loop is faster
         for it in ret: it.init()
@@ -1794,8 +1782,7 @@ class NetworkManager(QObject):
     """
     if self.isOnline() and (gameId or md5):
       ret = skthreads.runsync(partial(
-          self.__d.queryComments, gameId, md5, init=False, hash=hash),
-          parent=self)
+          self.__d.queryComments, gameId, md5, init=False, hash=hash))
       if ret:
         if hash:
           for l in ret.itervalues():
@@ -1814,8 +1801,7 @@ class NetworkManager(QObject):
     Thread-safe.
     """
     #return (skthreads.runsync(partial(
-    #    self.__d.submitComment, comment, userName, password, md5),
-    #    parent=self)
+    #    self.__d.submitComment, comment, userName, password, md5))
     #    if self.isOnline() and (comment.gameId or md5) and userName and password
     #    else 0)
     if self.isOnline() and (comment.d.gameId or md5) and userName and password:
@@ -1830,8 +1816,7 @@ class NetworkManager(QObject):
     Thread-safe.
     """
     #return (skthreads.runsync(partial(
-    #    self.__d.updateComment, comment, userName, password),
-    #    parent=self)
+    #    self.__d.updateComment, comment, userName, password))
     #    if self.isOnline() and comment.id and userName and password
     #    else False)
     if self.isOnline() and comment.d.id and userName and password:
@@ -1845,7 +1830,7 @@ class NetworkManager(QObject):
   #  @return  {str key:unicode contents} or None
   #  """
   #  if self.isOnline():
-  #    return skthreads.runsync(self.__d.getTranslationScripts, parent=self)
+  #    return skthreads.runsync(self.__d.getTranslationScripts)
 
   ## Terms ##
 
@@ -1859,8 +1844,7 @@ class NetworkManager(QObject):
     """
     if self.isOnline():
       ret = skthreads.runsync(partial(
-          self.__d.getTerms, userName, password, init=False),
-          parent=self)
+          self.__d.getTerms, userName, password, init=False))
       if ret:
         if init:
           #map(dataman.Term.init, ret) # for is faster

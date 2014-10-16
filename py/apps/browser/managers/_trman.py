@@ -120,11 +120,10 @@ class MachineTranslator(Translator):
   #_DELIM_SET = _PARAGRAPH_SET # set of deliminators
   #_DELIM_RE = _PARAGRAPH_RE   # rx of deliminators
 
-  def __init__(self, parent=None, abortSignal=None):
+  def __init__(self, abortSignal=None):
     super(MachineTranslator, self).__init__()
     self.cache = TranslationCache()  # public overall translation cache
     self._cache = TranslationCache() # private translation cache for internal translation
-    self.parent = parent  # QObject
     self.abortSignal = abortSignal # QtCore.Signal abort translation
 
   def clearCache(self):
@@ -148,8 +147,7 @@ class MachineTranslator(Translator):
         skthreads.runsync(partial(
           tr, text, **kwargs),
           abortSignal=self.abortSignal,
-          parent=self.parent) if async else
-        tr(text, **kwargs)))
+        ) if async else tr(text, **kwargs)))
 
   def __tr(self, text, *args, **kwargs):
     """

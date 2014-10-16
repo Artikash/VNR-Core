@@ -1041,7 +1041,7 @@ class GameManager(QtCore.QObject):
         # exec event loop until the process is refreshed
 
         skevents.runlater(g.updateProcess)
-        skevents.waitsignal(g.processUpdated, parent=self)
+        skevents.waitsignal(g.processUpdated)
 
         if not g.hasProcess():
           growl.error(my.tr("Cannot find game process. Please retry after game start."))

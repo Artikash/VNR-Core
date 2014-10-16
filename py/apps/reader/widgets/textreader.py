@@ -7,7 +7,7 @@
 
 import re
 from PySide.QtCore import Signal, Slot, QObject #, QTimer
-from sakurakit import skdatetime, skevents, skstr, skthreads
+from sakurakit import skdatetime, skevents, skstr
 from sakurakit.skclass import Q_Q, memoized
 #from sakurakit.skqml import QmlObject
 from sakurakit.skdebug import dwarn

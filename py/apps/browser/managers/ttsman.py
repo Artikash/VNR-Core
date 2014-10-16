@@ -26,9 +26,6 @@ class TtsManager(QObject):
   def isEnabled(self): return self.__d.enabled
   def setEnabled(self, t): self.__d.enabled = t
 
-  def parentWidget(self): return self.__d.parentWidget # QWidget
-  def setParentWidget(self, v): self.__d.parentWidget = v
-
   def defaultEngine(self): return self.__d.defaultEngineKey
   def setDefaultEngine(self, key):
     """
@@ -98,7 +95,6 @@ class _TtsManager(object):
 
   def __init__(self, q):
     self.enabled = True
-    self.parentWidget = None  # QWidget
     self.defaultEngineKey = '' # str
     self._speakTask = None   # partial function object
 
@@ -196,7 +192,7 @@ class _TtsManager(object):
   def googleEngine(self):
     if not self._googleEngine:
       ss = settings.global_()
-      self._googleEngine = _ttsman.GoogleEngine(parent=self.parentWidget)
+      self._googleEngine = _ttsman.GoogleEngine()
           #online=self._online,
           #language='ja', # force Japanese language at this point
       #ss.googleTtsLanguageChanged.connect(self._googleEngine.setLanguage)

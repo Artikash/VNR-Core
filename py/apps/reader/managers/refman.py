@@ -11,7 +11,6 @@ if __name__ == '__main__':
 import re
 from datetime import datetime
 from functools import partial
-from PySide.QtCore import QObject
 from sakurakit import skdatetime, skthreads
 from sakurakit.skclass import memoized, memoizedproperty, hasmemoizedproperty
 #from sakurakit.skcontainer import uniquelist
@@ -1351,9 +1350,8 @@ class DmmApi(object):
 ## API Wrapper ##
 
 class AsyncApi:
-  def __init__(self, parent=None, api=None):
+  def __init__(self, api=None):
     self.api = api
-    self.parent = parent # QObject
 
   def setOnline(self, v): self.api.setOnline(v)
 
@@ -1369,8 +1367,8 @@ class AsyncApi:
     #  dwarn("missing both search text and key")
     #  return []
     return skthreads.runsync(partial(
-        self.api.query, **kwargs),
-        parent=self.parent) if async else self.api.query(**kwargs)
+      self.api.query, **kwargs),
+    ) if async else self.api.query(**kwargs)
 
   def cache(self, async=True, **kwargs):
     """
@@ -1388,13 +1386,11 @@ class _ReferenceManager(object):
   # The same as dataman.Reference.TYPES
   API_TYPES = frozenset(('trailers', 'scape', 'holyseal', 'getchu', 'gyutto', 'amazon', 'dmm', 'dlsite', 'digiket'))
 
-  def __init__(self, parent):
-    self.parent = None
+  def __init__(self):
     self.online = True
 
   def _createApi(self, cls):
-    return AsyncApi(parent=self.parent,
-        api=cls(online=self.online))
+    return AsyncApi(api=cls(online=self.online))
 
   @memoizedproperty
   def amazonApi(self): return self._createApi(AmazonApi)
@@ -1436,10 +1432,9 @@ class _ReferenceManager(object):
     if type in self.API_TYPES:
       return getattr(self, type + 'Api')
 
-class ReferenceManager(QObject):
-  def __init__(self, parent=None):
-    super(ReferenceManager, self).__init__(parent)
-    self.__d = _ReferenceManager(self)
+class ReferenceManager:
+  def __init__(self):
+    self.__d = _ReferenceManager()
 
   # FIXME: parent is not broadcast to apis
   # Other wise, it will raise the following error:
@@ -1532,14 +1527,8 @@ class _TrailersManager(object):
 
 class TrailersManager:
 
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
+  def __init__(self):
     self.__d = _TrailersManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
 
   def isOnline(self): return self.__d.online
   def setOnline(self, v):
@@ -1556,8 +1545,8 @@ class TrailersManager:
     @return  {kw}
     """
     return skthreads.runsync(partial(
-        self.__d.query, id),
-        parent=self.parent) if async else self.__d.query(id)
+      self.__d.query, id),
+    ) if async else self.__d.query(id)
 
 ## Getchu review manager ##
 
@@ -1575,14 +1564,8 @@ class _GetchuManager(object):
 
 class GetchuManager:
 
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
+  def __init__(self):
     self.__d = _GetchuManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
 
   def isOnline(self): return self.__d.online
   def setOnline(self, v):
@@ -1599,8 +1582,8 @@ class GetchuManager:
     @return  unicode or None
     """
     return skthreads.runsync(partial(
-        self.__d.reviewApi.query, id),
-        parent=self.parent) if async else self.__d.reviewApi.query(id)
+      self.__d.reviewApi.query, id),
+    ) if async else self.__d.reviewApi.query(id)
 
 ## Amazon review manager ##
 
@@ -1619,14 +1602,8 @@ class _AmazonManager(object):
 
 class AmazonManager:
 
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
+  def __init__(self):
     self.__d = _AmazonManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
 
   def isOnline(self): return self.__d.online
   def setOnline(self, v):
@@ -1643,8 +1620,8 @@ class AmazonManager:
     @return  unicode or None
     """
     return skthreads.runsync(partial(
-        self.__d.reviewApi.query, url),
-        parent=self.parent) if async else self.__d.reviewApi.query(url)
+      self.__d.reviewApi.query, url),
+    ) if async else self.__d.reviewApi.query(url)
 
 ## Gyutto review manager ##
 
@@ -1662,14 +1639,8 @@ class _GyuttoManager(object):
 
 class GyuttoManager:
 
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
+  def __init__(self):
     self.__d = _GyuttoManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
 
   def isOnline(self): return self.__d.online
   def setOnline(self, v):
@@ -1686,8 +1657,8 @@ class GyuttoManager:
     @return  unicode or None
     """
     return skthreads.runsync(partial(
-        self.__d.reviewApi.query, id),
-        parent=self.parent) if async else self.__d.reviewApi.query(id)
+      self.__d.reviewApi.query, id),
+    ) if async else self.__d.reviewApi.query(id)
 
 # Specific to DMM
 
@@ -1705,14 +1676,8 @@ class _DmmManager(object):
 
 class DmmManager:
 
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
+  def __init__(self):
     self.__d = _DmmManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
 
   def isOnline(self): return self.__d.online
   def setOnline(self, v):
@@ -1729,16 +1694,16 @@ class DmmManager:
     @return  {kw}
     """
     return skthreads.runsync(partial(
-        self.__d.api.query, url),
-        parent=self.parent) if async else self.__d.api.query(url)
+      self.__d.api.query, url),
+    ) if async else self.__d.api.query(url)
 
   #def cache(self, url, async=True):
   #  """
   #  @param  id  int or str  Getchu soft ID
   #  """
   #  skthreads.runasync(partial(
-  #      self.__d.api.cache, id),
-  #      parent=self.parent) if async else self.__d.api.cache(id)
+  #    self.__d.api.cache, id),
+  #  ) if async else self.__d.api.cache(id)
 
 # Erogame Tokuten
 
@@ -1762,14 +1727,8 @@ class _TokutenManager(object):
 
 class TokutenManager:
 
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
+  def __init__(self):
     self.__d = _TokutenManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
 
   def isOnline(self): return self.__d.online
   def setOnline(self, v):
@@ -1786,16 +1745,16 @@ class TokutenManager:
     @return  {kw}
     """
     return skthreads.runsync(partial(
-        self.__d.query, key),
-        parent=self.parent) if async else self.__d.query(key)
+      self.__d.query, key),
+    ) if async else self.__d.query(key)
 
   #def cache(self, url, async=True):
   #  """
   #  @param  id  int or str  Getchu soft ID
   #  """
   #  skthreads.runasync(partial(
-  #      self.__d.api.cache, id),
-  #      parent=self.parent) if async else self.__d.api.cache(id)
+  #    self.__d.api.cache, id),
+  #  ) if async else self.__d.api.cache(id)
 
 if __name__ == '__main__':
   #from amazonproduct.api import API
@@ -1998,14 +1957,8 @@ if __name__ == '__main__':
 #
 #class HolysealManager:
 #
-#  def __init__(self, parent=None):
-#    """
-#    @param  parent  QObject
-#    """
+#  def __init__(self):
 #    self.__d = _HolysealManager()
-#    self.parent = parent
-#
-#  def setParent(self, v): self.parent = v
 #
 #  def isOnline(self): return self.__d.online
 #  def setOnline(self, v):
@@ -2023,8 +1976,8 @@ if __name__ == '__main__':
 #    """
 #    self.__d.warmup()
 #    return skthreads.runsync(partial(
-#        self.__d.query, id),
-#        parent=self.parent) if async else self.__d.query(id)
+#      self.__d.query, id),
+#    ) if async else self.__d.query(id)
 
 ## ErogameScape review ##
 
@@ -2047,14 +2000,8 @@ class _ScapeManager(object):
 
 class ScapeManager:
 
-  def __init__(self, parent=None):
-    """
-    @param  parent  QObject
-    """
+  def __init__(self):
     self.__d = _ScapeManager()
-    self.parent = parent
-
-  def setParent(self, v): self.parent = v
 
   def isOnline(self): return self.__d.online
   def setOnline(self, v): self.__d.online = v
@@ -2075,16 +2022,16 @@ class ScapeManager:
     if not self.__d.online:
       return []
     return skthreads.runsync(partial(
-        self.__d.reviewApi.query, id, **kwargs),
-        parent=self.parent) if async else self.__d.reviewApi.query(id, **kwargs)
+      self.__d.reviewApi.query, id, **kwargs),
+    ) if async else self.__d.reviewApi.query(id, **kwargs)
 
   #def cache(self, id, async=True):
   #  """
   #  @param  id  int or str  ID
   #  """
   #  skthreads.runasync(partial(
-  #      self.__d.api.cache, id),
-  #      parent=self.parent) if async else self.__d.api.cache(id)
+  #    self.__d.api.cache, id),
+  #  ) if async else self.__d.api.cache(id)
 
 # Specific to Getchu
 
@@ -2102,14 +2049,8 @@ class ScapeManager:
 #
 #class GetchuManager:
 #
-#  def __init__(self, parent=None):
-#    """
-#    @param  parent  QObject
-#    """
+#  def __init__(self):
 #    self.__d = _GetchuManager()
-#    self.parent = parent
-#
-#  def setParent(self, v): self.parent = v
 #
 #  def isOnline(self): return self.__d.online
 #  def setOnline(self, v):
@@ -2126,16 +2067,16 @@ class ScapeManager:
 #    @return  {kw}
 #    """
 #    return skthreads.runsync(partial(
-#        self.__d.api.query, id),
-#        parent=self.parent) if async else self.__d.api.query(id)
+#      self.__d.api.query, id),
+#    ) if async else self.__d.api.query(id)
 
   #def cache(self, id, async=True):
   #  """
   #  @param  id  int or str  Getchu soft ID
   #  """
   #  skthreads.runasync(partial(
-  #      self.__d.api.cache, id),
-  #      parent=self.parent) if async else self.__d.api.cache(id)
+  #    self.__d.api.cache, id),
+  #  ) if async else self.__d.api.cache(id)
 
 ## Getchu ##
 

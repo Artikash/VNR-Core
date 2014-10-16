@@ -51,8 +51,7 @@ class ShioriBean(QObject):
     mutex = self.__d.renderMutex
     if mutex.tryLock():
       ret = skthreads.runsync(partial(
-          dictman.manager().render, text, *args),
-          parent=self)
+          dictman.manager().render, text, *args))
       mutex.unlock()
       return ret
     else:

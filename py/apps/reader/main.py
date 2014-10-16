@@ -249,7 +249,7 @@ class _MainObject(object):
     dprint("create cache manager")
     import cacheman
     ret = cacheman.manager()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
 
     ret.setEnabled(self.networkManager.isOnline())
     self.networkManager.onlineChanged.connect(ret.setEnabled)
@@ -487,7 +487,7 @@ class _MainObject(object):
     dprint("create reference manager")
     import refman
     ret = refman.manager()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)

@@ -15,16 +15,15 @@ def runlater(slot, interval=0):
   QtCore.QTimer.singleShot(interval, slot)
 
 @debugfunc
-def waitsignal(signal, type=Qt.AutoConnection, parent=None,
+def waitsignal(signal, type=Qt.AutoConnection,
     abortSignal=None, autoQuit=True):
   """
   @param  signal  Signal not None
   @param* type  Qt.ConnectionType
-  @param* parent  QObject or None  parent of eventloop
   @param* abortSignal  Signal or None  signal with auto type
   @param* autoQuit  bool  if quit eventloop when qApp.aboutToQuit
   """
-  loop = QtCore.QEventLoop(parent)
+  loop = QtCore.QEventLoop()
   signal.connect(loop.quit, type)
 
   if abortSignal:
@@ -32,52 +31,62 @@ def waitsignal(signal, type=Qt.AutoConnection, parent=None,
 
   # Make sure the eventloop quit before closing
   if autoQuit:
-    QtCore.QCoreApplication.instance().aboutToQuit.connect(loop.quit)
+    qApp = QtCore.QCoreApplication.instance()
+    qApp.aboutToQuit.connect(loop.quit)
 
   loop.exec_()
-  if parent:
-    runlater(loop.deleteLater)
+
+  signal.disconnect(loop.quit)
+  if abortSignal:
+    abortSignal.disconnect(loop.quit)
+  if autoQuit:
+    qApp.aboutToQuit.disconnect(loop.quit)
+
+  #if parent:
+  #  runlater(loop.deleteLater)
 
 @debugfunc
-def waitsignals(signals, type=Qt.AutoConnection, parent=None, autoQuit=True):
+def waitsignals(signals, type=Qt.AutoConnection, autoQuit=True):
   """
   @param  signals  [Signal] or None
   @param* type  Qt.ConnectionType
-  @param* parent  QObject or None  parent of eventloop
   @param* autoQuit  bool  if quit eventloop when qApp.aboutToQuit
   """
   if not signals:
     return
 
-  loop = QtCore.QEventLoop(parent)
+  loop = QtCore.QEventLoop()
   #if isinstance(signals, QtCore.Signal):
   #  signals.connect(loop.quit, type)
   for sig in signals:
     sig.connect(loop.quit, type)
-
-  # Make sure the eventloop quit before closing
   if autoQuit:
-    QtCore.QCoreApplication.instance().aboutToQuit.connect(loop.quit)
+    qApp = QtCore.QCoreApplication.instance()
+    qApp.aboutToQuit.connect(loop.quit)
 
   loop.exec_()
 
-  if parent:
-    runlater(loop.deleteLater)
+  for sig in signals:
+    sig.disconnect(loop.quit)
+  if autoQuit:
+    qApp.aboutToQuit.disconnect(loop.quit)
+
+  #if parent:
+  #  runlater(loop.deleteLater)
 
 @debugfunc
-def sleep(timeout, parent=None,
+def sleep(timeout,
     signals=None, type=Qt.AutoConnection, autoQuit=True):
   """
   @param  signals  [Signal] or None
-  @param* parent  QObject or None  parent of eventloop
   @param* signals  [Signal] or None
   @param* type  Qt.ConnectionType
   @param* autoQuit  bool  if quit eventloop when qApp.aboutToQuit
   """
 
-  loop = QtCore.QEventLoop(parent)
+  loop = QtCore.QEventLoop()
 
-  timer = QtCore.QTimer(parent)
+  timer = QtCore.QTimer()
   timer.setSingleShot(True)
   timer.timeout.connect(loop.quit, type)
 
@@ -87,14 +96,22 @@ def sleep(timeout, parent=None,
 
   # Make sure the eventloop quit before closing
   if autoQuit:
-    QtCore.QCoreApplication.instance().aboutToQuit.connect(loop.quit)
+    qApp = QtCore.QCoreApplication.instance()
+    qApp.aboutToQuit.connect(loop.quit)
 
   timer.start(timeout)
   loop.exec_()
 
-  if parent:
-    runlater(loop.deleteLater)
-    runlater(timer.deleteLater)
+  timer.timeout.disconnect(loop.quit)
+  if signals:
+    for sig in signals:
+      sig.disconnect(loop.quit)
+  if autoQuit:
+    qApp.aboutToQuit.disconnect(loop.quit)
+
+  #if parent:
+  #  runlater(loop.deleteLater)
+  #  runlater(timer.deleteLater)
 
 if __name__ == '__main__':
   def f():
