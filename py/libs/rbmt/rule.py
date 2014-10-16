@@ -356,7 +356,9 @@ class RuleBuilder:
 
     return self._parse(self._tokenize(text))
 
-  re_split = re.compile(r'([()$])|\s')
+  SPECIAL_CHARS = '()$'
+
+  re_split = re.compile(r'([%s])|\s' % SPECIAL_CHARS)
   def _tokenize(self, text):
     """
     @param  text
@@ -380,6 +382,9 @@ class RuleBuilder:
           dwarn("error: dangle character: %s" % x)
           return
         y = l.popleft()
+        if y in self.SPECIAL_CHARS:
+          dwarn("error: using special characters as variable name is not allowed: %s" % y)
+          return
         s.append(PatternVariable(y,
             PatternVariable.signType(x)))
       elif x != ')':
