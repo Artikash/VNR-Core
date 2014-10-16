@@ -498,7 +498,7 @@ class _MainObject(object):
     dprint("create trailers manager")
     import refman
     ret = refman.trailers()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)
@@ -520,7 +520,7 @@ class _MainObject(object):
     dprint("create gyutto manager")
     import refman
     ret = refman.gyutto()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)
@@ -531,7 +531,7 @@ class _MainObject(object):
     dprint("create getchu manager")
     import refman
     ret = refman.getchu()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)
@@ -542,7 +542,7 @@ class _MainObject(object):
     dprint("create amazon manager")
     import refman
     ret = refman.amazon()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)
@@ -553,7 +553,7 @@ class _MainObject(object):
     dprint("create scape manager")
     import refman
     ret = refman.scape()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)
@@ -564,7 +564,7 @@ class _MainObject(object):
     import refman
     dprint("create dmm manager")
     ret = refman.dmm()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)
@@ -575,7 +575,7 @@ class _MainObject(object):
     import refman
     dprint("create tokuten manager")
     ret = refman.tokuten()
-    ret.setParent(self.q)
+    #ret.setParent(self.q)
     nm = self.networkManager
     ret.setOnline(nm.isOnline())
     nm.onlineChanged.connect(ret.setOnline)

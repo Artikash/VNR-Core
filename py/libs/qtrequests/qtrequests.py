@@ -57,10 +57,10 @@ class _Session:
     reply.finished.connect(loop.quit)
     loop.exec_()
 
-    if self.abortSignal:
-      self.abortSignal.disconnect(loop.quit)
-    qApp.aboutToQuit.disconnect(loop.quit)
-    reply.finished.disconnect(loop.quit)
+    #if self.abortSignal:
+    #  self.abortSignal.disconnect(loop.quit)
+    #qApp.aboutToQuit.disconnect(loop.quit)
+    #reply.finished.disconnect(loop.quit)
 
   def _createRequest(self, url, params=None, headers=None):
     """

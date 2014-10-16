@@ -36,11 +36,11 @@ def waitsignal(signal, type=Qt.AutoConnection,
 
   loop.exec_()
 
-  signal.disconnect(loop.quit)
-  if abortSignal:
-    abortSignal.disconnect(loop.quit)
-  if autoQuit:
-    qApp.aboutToQuit.disconnect(loop.quit)
+  #signal.disconnect(loop.quit)
+  #if abortSignal:
+  #  abortSignal.disconnect(loop.quit)
+  #if autoQuit:
+  #  qApp.aboutToQuit.disconnect(loop.quit)
 
   #if parent:
   #  runlater(loop.deleteLater)
@@ -66,10 +66,10 @@ def waitsignals(signals, type=Qt.AutoConnection, autoQuit=True):
 
   loop.exec_()
 
-  for sig in signals:
-    sig.disconnect(loop.quit)
-  if autoQuit:
-    qApp.aboutToQuit.disconnect(loop.quit)
+  #for sig in signals:
+  #  sig.disconnect(loop.quit)
+  #if autoQuit:
+  #  qApp.aboutToQuit.disconnect(loop.quit)
 
   #if parent:
   #  runlater(loop.deleteLater)
@@ -102,12 +102,12 @@ def sleep(timeout,
   timer.start(timeout)
   loop.exec_()
 
-  timer.timeout.disconnect(loop.quit)
-  if signals:
-    for sig in signals:
-      sig.disconnect(loop.quit)
-  if autoQuit:
-    qApp.aboutToQuit.disconnect(loop.quit)
+  #timer.timeout.disconnect(loop.quit)
+  #if signals:
+  #  for sig in signals:
+  #    sig.disconnect(loop.quit)
+  #if autoQuit:
+  #  qApp.aboutToQuit.disconnect(loop.quit)
 
   #if parent:
   #  runlater(loop.deleteLater)

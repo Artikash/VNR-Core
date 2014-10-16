@@ -51,7 +51,7 @@ class _TranslatorManager(object):
     True # bool
 
     from PySide.QtNetwork import QNetworkAccessManager
-    nam = QNetworkAccessManager(q)
+    nam = QNetworkAccessManager() # parent is not assigned
     from qtrequests import qtrequests
     self.session = qtrequests.Session(nam, abortSignal=self.abortSignal)
 
