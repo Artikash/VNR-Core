@@ -57,6 +57,9 @@ class PatternVariable(object):
   TYPE_SCALAR = 0   # such as $x
   TYPE_LIST = 1     # such as @x
 
+  SIGN_SCALAR = '$'
+  SIGN_LIST = '@'
+
   def __init__(self, name="", type=TYPE_SCALAR):
     self.name = name # str
     self.type = type # int
@@ -65,7 +68,14 @@ class PatternVariable(object):
     """
     @return  str
     """
-    return ('@' if self.type == self.TYPE_LIST else '$') + self.name
+    return (self.SIGN_LIST if self.type == self.TYPE_LIST else self.SIGN_SCALAR) + self.name
+
+  @classmethod
+  def signType(cls, c): # str -> int or None
+    if c == cls.SIGN_SCALAR:
+      return cls.TYPE_SCALAR
+    if c == cls.SIGN_LIST:
+      return cls.TYPE_LIST
 
 # Matchers
 
@@ -224,6 +234,10 @@ class Rule(object):
           return self._matchSourceList(source, x.children, obj)
     elif sourceType == self.TYPE_VAR:
       if x.token:
+        oldnode = obj.variables.get(source.name)
+        if oldnode:
+          oldnode.clearTree()
+          dwarn("warning: duplicate variable definition: %s" % source.name)
         obj.variables[source.name] = x.copyTree()
         return True
 
@@ -283,10 +297,14 @@ class Rule(object):
     @return  [Node]
     """
     if self.target:
-      if self.targetType == self.TYPE_LIST:
+      islist = self.targetType == self.TYPE_LIST
+      if islist:
         ret = [self._createTarget(it, obj) for it in self.target]
         return ret
-      if self.targetType == self.TYPE_STRING or self.targetType == self.TYPE_VAR and self.target.type == PatternVariable.TYPE_SCALAR:
+      isscalar = (
+          self.targetType == self.TYPE_STRING
+          or self.targetType == self.TYPE_VAR and self.target.type == PatternVariable.TYPE_SCALAR)
+      if isscalar:
         return [self._createTarget(self.target, obj)]
     return []
 
@@ -338,7 +356,7 @@ class RuleBuilder:
 
     return self._parse(self._tokenize(text))
 
-  re_split = re.compile(r'([()])|\s')
+  re_split = re.compile(r'([()$])|\s')
   def _tokenize(self, text):
     """
     @param  text
@@ -357,7 +375,14 @@ class RuleBuilder:
     s = [] # stack
     while l:
       x = l.popleft()
-      if x != ')':
+      if x in ('$', '@'):
+        if not l:
+          dwarn("error: dangle character: %s" % x)
+          return
+        y = l.popleft()
+        s.append(PatternVariable(y,
+            PatternVariable.signType(y)))
+      elif x != ')':
         s.append(x)
       else:
         # reduce until '('

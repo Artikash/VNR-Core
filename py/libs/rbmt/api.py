@@ -278,13 +278,14 @@ if __name__ == '__main__':
   from sakurakit.skprofiler import SkProfiler
   from kingsoft import iciba
   tr = iciba.translate
+  tr = None
 
   import CaboCha
   cabocha = CaboCha.Parser()
 
   ma = MachineAnalyzer(cabocha)
 
-  mt = MachineTranslator(cabocha, language=to, underline=False, escape=True) #, tr=tr)
+  mt = MachineTranslator(cabocha, language=to, underline=False, escape=True, tr=tr)
 
   rules = [createrule(k, v, to)
   for k,v in (
@@ -292,19 +293,20 @@ if __name__ == '__main__':
     #(u"どんな", u"怎样的"),
     #(u"(分から ない の 。)", u"(不 知道 的 。)"),
     #(u"(分から ない の 。)", u"不 知道 的 。"),
-    (u"(分から ない の 。)", u"不知道的。"),
+    #(u"(分から ない の 。)", u"不知道的。"),
+    (u"($x 言う)", u"这么说的"),
     #(u"ない の 。", u"(不 知道 的 。)"),
     #(u"ない の 。", u"不知道的。"),
   )]
 
   # ("($x 言う)", u"($x 说的)"),
-  import rule
-  rules.append(rule.Rule('ja', 'zhs',
-    rule.PatternList((rule.PatternVariable(u"x"), u"言う")),
-    rule.PatternList((rule.PatternVariable(u"x"), u"说的")),
-  ))
+  #import rule
+  #rules.append(rule.Rule('ja', 'zhs',
+  #  rule.PatternList((rule.PatternVariable(u"x"), u"言う")),
+  #  rule.PatternList((rule.PatternVariable(u"x"), u"说的")),
+  #))
 
-  rules.append(createrule(u"こう", u"这样", 'zhs'))
+  #rules.append(createrule(u"こう", u"这样", 'zhs'))
 
   mt.setRules(rules)
 
