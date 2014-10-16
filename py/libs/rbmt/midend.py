@@ -90,10 +90,21 @@ class RuleBasedTranslator:
     for rule in self.rules:
       x = rule.translate(x)
     if isinstance(x, Node) and x.children:
-      for i,it in enumerate(x.children):
+      for i,it in enumerate(reversed(x.children)):
+        i = len(x.children) - i - 1
         r = self._translate(it)
         if r is not it:
-          x.children[i] = r # TODO: Allow the logic to merge the list
+          if r.isEmpty():
+            del x.children[i]
+          elif r.fragment and r.children:
+            del x.children[i]
+            x.insertChildren(i, r.children)
+          else:
+            x.children[i] = r
+            r.parent = x
+        elif r.fragment and r.children:
+          del x.children[i]
+          x.insertChildren(i, r.children)
     return x
 
 # EOF

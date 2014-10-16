@@ -106,18 +106,12 @@ class Rule(object):
     """
     if not x or x.language != self.sourceLanguage:
       return x
-    if x.token:
-      if self.sourceType == self.TYPE_STRING:
-        if self.source == x.token.text:
-          x.language = self.targetLanguage
-          if self.targetType == self.TYPE_NONE:
-            x.clearTree() # delete this node
-          elif self.targetType == self.TYPE_STRING:
-            x.token.text = self.target
-          elif self.targetType == self.TYPE_LIST:
-            x.fragment = not self.target.exactMatching
-            x.token = None
-            x.setChildren(self.createTargetList())
+    if self.sourceType == self.TYPE_STRING:
+      if x.token and self.source == x.token.text:
+        self._updateTarget(x)
+    elif self.sourceType == self.TYPE_LIST:
+      if x.children and self.matchSource(x):
+        self._updateTarget(x)
     return x
 
     #  for c in x.token, x.children:
@@ -136,13 +130,31 @@ class Rule(object):
     #  elif len(source) < len(x):
     #    return self._matchSourceList(source, x)
 
+  def _updateTarget(self, x):
+    """
+    @param  x  Node
+    """
+    x.language = self.targetLanguage
+    if self.targetType == self.TYPE_NONE:
+      x.clearTree() # delete this node
+    elif self.targetType == self.TYPE_STRING:
+      x.clearChildren()
+      if self.token:
+        x.token.text = self.target
+      else:
+        x.token = Token(self.target)
+    elif self.targetType == self.TYPE_LIST:
+      if not self.target.exactMatching:
+        x.fragment = True
+      x.token = None
+      x.setChildren(self.createTargetList())
+
   def matchSource(self, x):
     """
-    @param  x  Node or token or list
-    @return  bool or RuleMatchedList
+    @param  x
+    @return  bool
     """
-    if self.source:
-      return self._matchSource(self.source, x)
+    return bool(self.source) and self._matchSource(self.source, x)
 
   def _matchSource(self, source, x):
     """
@@ -150,35 +162,17 @@ class Rule(object):
     @param  x  Node or Token or list
     @return  bool
     """
-    if not x:
-      return
-    if isinstance(x, Node):
-      if x.language != self.sourceLanguage:
-        return
-      for c in x.token, x.children:
-        if c:
-          return self._matchSource(source, c)
-      return
-
+    if not x or x.language != self.sourceLanguage:
+      return False
     if isinstance(source, str) or isinstance(source, unicode):
-      if isinstance(x, Token):
-        return self._matchSourceString(source, x)
-      return
-
-    if isinstance(x, list):
+      if x.token:
+        return source == x.token.text
+    elif isinstance(source, list) and x.children:
       if source.exactMatching or len(source) == len(x):
-        return self._exactMatchSourceList(source, x)
+        return self._exactMatchSourceList(source, x.children)
       elif len(source) < len(x):
-        return self._matchSourceList(source, x)
-
-  @staticmethod
-  def _matchSourceString(source, token):
-    """
-    @param  source  unicode
-    @param  token  Token
-    @return  bool
-    """
-    return source == token.text
+        return self._matchSourceList(source, x.children)
+    return False
 
   def _exactMatchSourceList(self, source, nodes):
     """
@@ -198,25 +192,28 @@ class Rule(object):
     @param  nodes  list
     @return  RuleMatchedList or None
     """
-    starts = []
-    sourceIndex = 0
-    for i,c in enumerate(nodes):
-      s = source[sourceIndex]
-      if sourceIndex == 0 and i + len(source) > len(nodes):
-        break
-      if not self._matchSource(s, c):
-        sourceIndex = 0
-      elif sourceIndex == len(source) - 1:
-        starts.append(i - sourceIndex)
-        sourceIndex = 0
-      else:
-        sourceIndex += 1
-    if starts:
-      m = RuleMatchedList(nodes)
-      m.captureCount = len(starts)
-      m.captureStarts = starts
-      m.captureStops = [it + len(source) for it in starts]
-      return m
+    # CHECKPOINT
+    pass
+
+    #starts = []
+    #sourceIndex = 0
+    #for i,c in enumerate(nodes):
+    #  s = source[sourceIndex]
+    #  if sourceIndex == 0 and i + len(source) > len(nodes):
+    #    break
+    #  if not self._matchSource(s, c):
+    #    sourceIndex = 0
+    #  elif sourceIndex == len(source) - 1:
+    #    starts.append(i - sourceIndex)
+    #    sourceIndex = 0
+    #  else:
+    #    sourceIndex += 1
+    #if starts:
+    #  m = RuleMatchedList(nodes)
+    #  m.captureCount = len(starts)
+    #  m.captureStarts = starts
+    #  m.captureStops = [it + len(source) for it in starts]
+    #  return m
 
   def createTarget(self):
     """

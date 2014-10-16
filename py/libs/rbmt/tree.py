@@ -72,7 +72,15 @@ class Node(object): # tree node
 
   # Children
 
+  def clearChildren(self):
+    if self.children:
+      for it in self.children:
+        if it.parent is self:
+          it.parent = None
+    self.children = None
+
   def setChildren(self, l):
+    self.clearChildren()
     self.children = l
     if l:
       for it in l:
@@ -106,18 +114,34 @@ class Node(object): # tree node
     for it in l:
       self.prependChild(it)
 
-  def compactAppend(self, x):
+  def insertChild(self, i, node):
     """
-    @param  node  Node or list
+    @param  i  int
+    @param  node  Node
     """
-    if isinstance(x, Node):
-      if not x.isEmpty():
-        self.appendChild(x)
-    elif x:
-      if len(x) == 1:
-        self.appendChild(x[0])
-      else:
-        self.appendChildren(x)
+    self.children.insert(i, node)
+    node.parent = self
+
+  def insertChildren(self, i, l):
+    """
+    @param  i  int
+    @param  node  Node
+    """
+    for it in reversed(l):
+      self.insertChild(i, it)
+
+  #def compactAppend(self, x):
+  #  """
+  #  @param  node  Node or list
+  #  """
+  #  if isinstance(x, Node):
+  #    if not x.isEmpty():
+  #      self.appendChild(x)
+  #  elif x:
+  #    if len(x) == 1:
+  #      self.appendChild(x[0])
+  #    else:
+  #      self.appendChildren(x)
 
   # Output
 
