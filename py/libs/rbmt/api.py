@@ -282,9 +282,9 @@ if __name__ == '__main__':
   import CaboCha
   cabocha = CaboCha.Parser()
 
-  ma = MachineAnalyzer(cabocha) #, tr=tr)
+  ma = MachineAnalyzer(cabocha)
 
-  mt = MachineTranslator(cabocha, language=to, underline=False) #, tr=tr)
+  mt = MachineTranslator(cabocha, language=to, underline=False, escape=True) #, tr=tr)
 
   rules = [createrule(k, v, to)
   for k,v in (

@@ -55,32 +55,26 @@ class RuleBasedTranslator:
     @return  Node
     """
     ret = self._translate(tree)
-    if ret:
-      self._updateLanguage(ret)
-      return ret
+    self._updateLanguage(ret)
+    return ret
 
   def _updateLanguage(self, node):
     """
     @param  node  Node
     """
-    if not node.language:
-      if node.token:
-        node.language = self.fr
-      elif node.children:
-        language = None
+    if node.language == self.fr:
+      if node.children:
+        translated = untranslated = True
         for it in node.children:
           self._updateLanguage(it)
-          if not it.language:
-            language = ''
-          elif language is None:
-            language = it.language
-          elif language != it.language:
-            if language == ANY_LANGUAGE:
-              language = it.language
-            elif it.language != ANY_LANGUAGE:
-              language = ''
-        if language:
-          node.language = language
+          if it.language == self.fr:
+            translated = False
+          elif it.language == self.to:
+            untranslated = False
+        if not translated and not untranslated:
+          node.language = '' # hybrid
+        elif translated:
+          node.language = self.to
 
   def _translate(self, x):
     """
