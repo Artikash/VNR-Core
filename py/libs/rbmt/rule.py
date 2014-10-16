@@ -67,9 +67,9 @@ class Rule(object):
     'sourceLanguage', 'targetLanguage',
   )
 
-  TYPE_LIST = 'list'
-  TYPE_STRING = 'str'
   TYPE_NONE = ''
+  TYPE_STRING = 'str' # single node
+  TYPE_LIST = 'list'  # normal tree
 
   def __init__(self, sourceLanguage, targetLanguage, source, target):
     self.source = source # list or unicode
@@ -184,10 +184,11 @@ class Rule(object):
     """
     if not x or x.language != self.sourceLanguage:
       return
-    if isinstance(source, str) or isinstance(source, unicode):
+    sourceType = self.typeName(source)
+    if sourceType == self.TYPE_STRING:
       if x.token:
         return source == x.token.text
-    elif isinstance(source, list) and x.children:
+    elif sourceType == self.TYPE_LIST and x.children:
       if source.exactMatching or len(source) == len(x.children):
         return self._exactMatchSourceList(source, x.children)
       elif len(source) < len(x.children):
@@ -257,10 +258,11 @@ class Rule(object):
     @return  Node
     """
     if target:
-      if isinstance(target, str) or isinstance(target, unicode):
+      targetType = self.typeName(target)
+      if targetType == self.TYPE_STRING:
         return Node(Token(target),
             language=self.targetLanguage)
-      if isinstance(target, list):
+      if targetType == self.TYPE_LIST:
         return Node(children=map(self._createTarget, target),
             language=self.targetLanguage)
     return Node()
