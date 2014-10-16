@@ -5,7 +5,6 @@
 __all__ = 'TreeBuilder', 'RuleBasedTranslator'
 
 from tree import Node, Token
-from rule import RuleMatchedList
 from defs import ANY_LANGUAGE
 
 # Parser

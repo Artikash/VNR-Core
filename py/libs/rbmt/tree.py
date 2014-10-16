@@ -130,6 +130,22 @@ class Node(object): # tree node
     for it in reversed(l):
       self.insertChild(i, it)
 
+  def removeChild(self, i):
+    """
+    @param  i  int
+    """
+    node = self.children.pop(i)
+    if node.parent is self:
+      node.parent = None
+
+  def removeChildren(self, start, stop):
+    """
+    @param  start  int
+    @param  stop  int
+    """
+    for i in range(start, stop):
+      self.removeChild(start)
+
   #def compactAppend(self, x):
   #  """
   #  @param  node  Node or list
