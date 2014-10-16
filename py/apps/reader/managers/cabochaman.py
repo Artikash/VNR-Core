@@ -11,6 +11,7 @@ if __name__ == '__main__':
 import os, re, weakref
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint
+#from sakurakit.skthreads import SkMutexLocker
 from cabochajlp import cabochadef
 from mecabjlp import mecabfmt
 import defs, rc
@@ -21,13 +22,24 @@ import _cabochaman
 _CP = _cabochaman.CaboChaParser()
 
 parse = _CP.parse
-#def parse(*args, **kwargs): return _CP.parse(*args, **kwargs)
+#def parse(*args, **kwargs):
+#  with SkMutexLocker(_CP.mutex):
+#    return _CP.parse(*args, **kwargs)
 
 def cabochaparser():
   """
   @return  CaboCha.Parser or None
   """
   return _CP.parser()
+
+#def cabochaparse(*args, **kwargs):
+#  """"
+#  @param  text  unicode
+#  @param* sync  bool
+#  @return   CaboCha.Tree
+#  """
+#  with SkMutexLocker(_CP.mutex):
+#    return cabochaparser().parse(*args, **kwargs)
 
 def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colorize=False, center=True, furiType=defs.FURI_HIRA, **kwargs):
   """
