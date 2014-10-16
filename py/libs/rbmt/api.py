@@ -296,7 +296,16 @@ if __name__ == '__main__':
     #(u"ない の 。", u"(不 知道 的 。)"),
     #(u"ない の 。", u"不知道的。"),
   )]
+
+  # ("($x 言う)", u"($x 说的)"),
+  import rule
+  rules.append(rule.Rule('ja', 'zhs',
+    rule.PatternList((rule.PatternVariable(u"x"), u"言う")),
+    rule.PatternList((rule.PatternVariable(u"x"), u"说的")),
+  ))
   mt.setRules(rules)
+
+  #sys.setrecursionlimit(0x1000)
 
   #for s in mt.splitSentences(text):
   if True:

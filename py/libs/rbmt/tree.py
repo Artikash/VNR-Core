@@ -64,7 +64,8 @@ class Node(object): # tree node
 
   def copy(self, **kwargs):
     kw = {it:getattr(self, it) for it in self.__slots__}
-    kw.update(kwargs)
+    if kwargs:
+      kw.update(kwargs)
     return Node(**kw)
 
   def copyTree(self):
