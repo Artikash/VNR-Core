@@ -36,6 +36,7 @@ def waitsignal(signal, type=Qt.AutoConnection,
 
   loop.exec_()
 
+  # FIXME 10/14/2014: Why disconnect will cause crash?!
   #signal.disconnect(loop.quit)
   #if abortSignal:
   #  abortSignal.disconnect(loop.quit)
