@@ -66,7 +66,9 @@ class RuleBasedTranslator:
         translated = untranslated = True
         for it in node.children:
           self._updateLanguage(it)
-          if it.language == self.fr:
+          if not it.language:
+            translated = untranslated = False
+          elif it.language == self.fr:
             translated = False
           elif it.language == self.to:
             untranslated = False
