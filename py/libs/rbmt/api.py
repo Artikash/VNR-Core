@@ -303,6 +303,9 @@ if __name__ == '__main__':
     rule.PatternList((rule.PatternVariable(u"x"), u"言う")),
     rule.PatternList((rule.PatternVariable(u"x"), u"说的")),
   ))
+
+  rules.append(createrule(u"こう", u"这样", 'zhs'))
+
   mt.setRules(rules)
 
   #sys.setrecursionlimit(0x1000)

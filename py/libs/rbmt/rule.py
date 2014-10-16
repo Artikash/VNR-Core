@@ -65,7 +65,7 @@ class PatternVariable(object):
     """
     @return  str
     """
-    return ('@' if self.type == TYPE_LIST else '$') + self.name
+    return ('@' if self.type == self.TYPE_LIST else '$') + self.name
 
 # Matchers
 
