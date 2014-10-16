@@ -164,7 +164,7 @@ class MachineTranslator(object):
     if d.underline != t:
       d.underline = d.mt.underline = t
 
-  def isEscape(self): return self.__d.escap # -> bool
+  def isEscape(self): return self.__d.escape # -> bool
   def setEscape(self, t):
     d = self.__d
     if d.escape != t:
