@@ -67,9 +67,9 @@ class Rule(object):
     'sourceLanguage', 'targetLanguage',
   )
 
-  LIST_TYPE = 'list'
-  STRING_TYPE = 'str'
-  NONE_TYPE = ''
+  TYPE_LIST = 'list'
+  TYPE_STRING = 'str'
+  TYPE_NONE = ''
 
   def __init__(self, sourceLanguage, targetLanguage, source, target):
     self.source = source # list or unicode
@@ -86,11 +86,11 @@ class Rule(object):
     @return  str
     """
     if not x:
-      return cls.NONE_TYPE
+      return cls.TYPE_NONE
     if isinstance(x, str) or isinstance(x, unicode):
-      return cls.STRING_TYPE
+      return cls.TYPE_STRING
     if isinstance(x, list):
-      return cls.LIST_TYPE
+      return cls.TYPE_LIST
 
   def translate(self, x):
     """
@@ -107,15 +107,17 @@ class Rule(object):
     if not x or x.language != self.sourceLanguage:
       return x
     if x.token:
-      if self.sourceType == self.STRING_TYPE:
+      if self.sourceType == self.TYPE_STRING:
         if self.source == x.token.text:
           x.language = self.targetLanguage
-          if self.targetType == self.NONE_TYPE:
-            x.token = x.children = None
-          elif self.targetType == self.STRING_TYPE:
+          if self.targetType == self.TYPE_NONE:
+            x.clearTree() # delete this node
+          elif self.targetType == self.TYPE_STRING:
             x.token.text = self.target
-          elif self.targetType == self.LIST_TYPE:
-            pass
+          elif self.targetType == self.TYPE_LIST:
+            x.fragment = not self.target.exactMatching
+            x.token = None
+            x.setChildren(self.createTargetList())
     return x
 
     #  for c in x.token, x.children:
@@ -216,27 +218,38 @@ class Rule(object):
       m.captureStops = [it + len(source) for it in starts]
       return m
 
-  def createTarget(self, m=None):
+  def createTarget(self):
     """
-    @param* m  matched object
-    @return  Node or None
+    @return  Node
     """
-    return self._createTarget(self.target, m)
+    ret = self._createTarget(self.target)
+    ret.fragment = bool(self.targetType == self.TYPE_LIST) and not self.target.exactMatching
+    return ret
 
-  def _createTarget(self, target, m=None):
+  def createTargetList(self):
+    """
+    @return  [Node]
+    """
+    if self.target:
+      if self.targetType == self.TYPE_LIST:
+        return map(self._createTarget, self.target)
+      if self.targetType == self.TYPE_STRING:
+        return [self._createTarget(self.target)]
+    return []
+
+  def _createTarget(self, target):
     """
     @param  target  list or unicode
-    @param* m  matched object
-    @return  Node or None
+    @return  Node
     """
     if target:
       if isinstance(target, str) or isinstance(target, unicode):
-        return Node(Token(target), language=self.targetLanguage)
-      else:
-        l = map(self._createTarget, target)
-        if l:
-          return l[0] if len(l) == 1 else Node(children=l, language=self.targetLanguage)
-    return Node() # Represent deleted node, TODO: skip empty node
+        return Node(Token(target),
+            language=self.targetLanguage)
+      if isinstance(target, list):
+        return Node(children=map(self._createTarget, target),
+            language=self.targetLanguage)
+    return Node()
 
 class RuleBuilder:
 

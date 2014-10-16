@@ -20,19 +20,55 @@ class Node(object): # tree node
     'parent',
     'token',
     'language',
+    'fragment',
   )
 
-  def __init__(self, token=None, children=None, parent=None, language=''):
+  def __init__(self, token=None, children=None, parent=None, language='', fragment=False):
     self.children = children # [Node] or None
     self.parent = parent # Node
     self.token = token # token
     self.language = language # str
+    self.fragment = fragment # bool # inncomplete node
 
     if children:
       for it in children:
         it.parent = self
 
   def isEmpty(self): return not self.token and not self.children
+
+  # Delete
+
+  def clear(self):
+    self.children = None
+    self.parent = None
+    self.token = None
+    self.fragment = False
+    self.language = ''
+
+  def clearTree(self): # recursively clear all children
+    if self.children:
+      for it in self.children:
+        it.clearTree()
+    self.clear()
+
+  # Update
+
+  def update(self, **kwargs):
+    for k,v in kwargs.iteritems():
+      setattr(self, k, v)
+      if k == 'children' and v:
+        for it in v:
+          it.parent = self
+
+  # Copy
+
+  def copy(self, **kwargs):
+    kw = {it:getattr(self, it) for it in self.__slots__}
+    kw.update(kwargs)
+    return Node(**kw)
+
+  def copyTree(self):
+    return self.copy(children=[it.copyTree() for it in self.children]) if self.children else self.copy()
 
   # Children
 
@@ -82,36 +118,6 @@ class Node(object): # tree node
         self.appendChild(x[0])
       else:
         self.appendChildren(x)
-
-  # Delete
-
-  def clear(self):
-    self.children = None
-    self.parent = None
-    self.token = None
-    self.language = ''
-
-  def clearTree(self): # recursively clear all children
-    if self.children:
-      for it in self.children:
-        it.clearTree()
-    self.clear()
-
-  # Copy
-
-  def copy(self):
-    return Node(
-      token=self.token,
-      children=self.children,
-      parent=self.parent,
-      language=self.language,
-    )
-
-  def copyTree(self):
-    ret = self.copy()
-    if ret.children:
-      ret.setChildren([it.copyTree() for it in ret.children])
-    return ret
 
   # Output
 
