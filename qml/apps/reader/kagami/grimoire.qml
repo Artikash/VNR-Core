@@ -171,7 +171,9 @@ Item { id: root_
 
   //property int _FADE_DURATION: 400
 
-  property bool modelLocked: false // 10/15/2014: whether listmodel is locked. otherwise, VNR might crash when RBMT is turned on
+  // 10/15/2014: whether listmodel is locked. otherwise, VNR might crash when RBMT is turned on
+  // Lock the insert/append/clear methods.
+  property bool modelLocked: false
 
   property real _zoomFactor: zoomFactor * globalZoomFactor // actual zoom factor
 
