@@ -41,7 +41,7 @@ import re
 from collections import deque
 from sakurakit.skdebug import dwarn
 
-from tree import Node, Token
+from tree import Node, Token, EMPTY_NODE
 
 # Patterns
 
@@ -81,6 +81,7 @@ class MatchedObject(object):
         elif isinstance(value, list):
           for it in value:
             it.clearTree()
+      self.variables = {}
 
 class MatchedList(object): # for matching PatternList
   __slots__ = (
@@ -190,41 +191,8 @@ class Rule(object):
                 x.insertChild(start, self.createTarget(obj))
           return x
 
-    x.language = self.targetLanguage
-    if self.targetType == self.TYPE_NONE:
-      x.clearTree() # delete this node
-
-    elif self.targetType == self.TYPE_STRING:
-      x.clearChildren()
-      if x.token:
-        x.token.text = self.target
-      else:
-        x.token = Token(self.target)
-
-    elif self.targetType == self.TYPE_VAR:
-      if self.target.type == PatternVariable.TYPE_SCALAR:
-        value = obj.variables.get(self.target.name)
-        if value is None:
-          x.clearChildren()
-          text = self.target.dump() # replace with dump on error
-          if x.token:
-            x.token.text = text
-          else:
-            x.token = Token(text)
-        elif isinstance(value, Node):
-          x.token = value.token
-          x.setChildren(value.children)
-          x.language = value.language
-        #elif isinstance(value, list): # not reachable
-        #  x.token = None
-        #  x.setChildren(value)
-        #  x.language = self.sourceLanguage
-
-    elif self.targetType == self.TYPE_LIST:
-      x.token = None
-      if not self.target.exactMatching:
-        x.fragment = True
-      x.setChildren(self.createTargetList(obj))
+    y = self.createTarget(obj)
+    x.assign(y, skip='parent')
     return x
 
   def matchSource(self, x, obj):
@@ -338,13 +306,13 @@ class Rule(object):
           value = obj.variables.get(target.name)
           if value is None:
             text = target.dump()
-            return Node(Token(text), language=self.targetLanguage)
+            return Node(Token(text), language=self.sourceLanguage)
           if isinstance(value, Node):
             return value.copyTree()
       if targetType == self.TYPE_LIST:
         return Node(children=[self._createTarget(it, obj) for it in target],
             language=self.targetLanguage)
-    return Node()
+    return EMPTY_NODE
 
 class RuleBuilder:
 
