@@ -31,11 +31,7 @@
 #
 # Non-node group:   (?:A B C)  the "(?:" means it is not groupped??
 
-__all__ = (
-  'PatternList',
-  'Rule',
-  'RuleBuilder',
-)
+__all__ = 'Rule', 'RuleBuilder'
 
 import re
 from collections import deque
@@ -110,6 +106,19 @@ class MatchedList(object): # for matching PatternList
     self.captureCount = 0 # int
     self.captureStarts = None # [int]
     self.captureStops = None # [int]  excluding
+    self.captureVariables = [] # [{str name:list or Node}]
+
+  def clearTree(self):
+    if self.captureVariables:
+      for d in self.captureVariables:
+        if d:
+          for value in d.itervalues():
+            if isinstance(value, Node):
+              value.clearTree()
+            elif isinstance(value, list):
+              for it in value:
+                it.clearTree()
+      self.captureVariables = []
 
 # Rule
 
@@ -163,17 +172,19 @@ class Rule(object):
     if not x or x.language != self.sourceLanguage:
       return x
     obj = MatchedObject()
-    m = self.matchSource(x, obj)
+    m = self.matchSource(x, obj.variables)
     if m:
-      x = self.updateTarget(x, m, obj)
+      x = self.updateTarget(x, m, obj.variables)
+      if isinstance(m, MatchedList):
+        m.clearTree()
     obj.clearTree()
     return x
 
-  def updateTarget(self, x, m, obj):
+  def updateTarget(self, x, m, vars):
     """
     @param  x  Node
     @param* m  bool or MatchedList or None
-    @param* obj  MatchedObject
+    @param* vars  {str name:list or Node}
     @return  Node
     """
     if m is not None:
@@ -186,29 +197,30 @@ class Rule(object):
             stop = m.captureStops[i]
             x.removeChildren(start, stop)
             if self.target:
+              v = m.captureVariables[i] if m.captureVariables else vars
               if fragment:
-                x.insertChildren(start, self.createTargetList(obj))
+                x.insertChildren(start, self.createTargetList(v))
               else:
-                x.insertChild(start, self.createTarget(obj))
+                x.insertChild(start, self.createTarget(v))
           return x
 
-    y = self.createTarget(obj)
+    y = self.createTarget(vars)
     x.assign(y, skip='parent')
     return x
 
-  def matchSource(self, x, obj):
+  def matchSource(self, x, vars):
     """
     @param  x
-    @param* obj  MatchedObject
+    @param  vars  {str name:list or Node}
     @return  bool or MatchedList or None
     """
-    return bool(self.source) and self._matchSource(self.source, x, obj)
+    return bool(self.source) and self._matchSource(self.source, x, vars)
 
-  def _matchSource(self, source, x, obj):
+  def _matchSource(self, source, x, vars):
     """
     @param  source  list or unicode
     @param  x  Node
-    @param  m  MatchedObject
+    @param  vars  {str name:list or Node}
     @return  bool or MatchedList or None
     """
     if not x or x.language != self.sourceLanguage:
@@ -221,80 +233,37 @@ class Rule(object):
       if x.children:
         if source.lengthFixed:
           if source.exactMatching or len(source) == len(x.children):
-            return self._exactMatchFixedSourceList(source, x.children, obj)
+            return self._exactMatchFixedSourceList(source, x.children, vars)
           elif len(source) < len(x.children):
-            return self._matchFixedSourceList(source, x.children, obj)
+            return self._matchFixedSourceList(source, x.children, vars)
         else:
           if source.exactMatching:
-            return self._exactMatchVariantSourceList(source, x.children, obj)
+            return self._exactMatchVariantSourceList(source, x.children, vars)
           else:
-            return self._matchVariantSourceList(source, x.children, obj)
+            return self._matchVariantSourceList(source, x.children, vars)
     elif sourceType == self.TYPE_VAR:
       if source.type == PatternVariable.TYPE_SCALAR:
         if x.token:
-          value = obj.variables.get(source.name)
+          value = vars.get(source.name)
           if value:
             dwarn("warning: duplicate variable definition: %s" % source.name)
             value.clearTree()
-          obj.variables[source.name] = x.copyTree()
+          vars[source.name] = x.copyTree()
           return True
       elif source.type == PatternVariable.TYPE_LIST:
         if x.children:
-          value = obj.variables.get(source.name)
+          value = vars.get(source.name)
           if value:
             dwarn("warning: duplicate variable definition: %s" % source.name)
             value.clearTree()
-          obj.variables[source.name] = [it.copyTree() for it in x.children]
+          vars[source.name] = [it.copyTree() for it in x.children]
           return True
-
-  def _exactMatchVariantSourceList(self, source, nodes, obj):
-    """Exact match list with fixed length.
-    @param  source  list
-    @param  nodes  list
-    @param* obj  MatchedObject
-    @return  bool
-    """
-    if not nodes or not source or len(source) > len(nodes):
-      return False
-
-    nodes = deque(nodes)
-    source = deque(source)
-
-    while source and nodes:
-      # right to left
-      while source and nodes and not (
-          isinstance(source[-1], PatternVariable) and source[-1].type == PatternVariable.TYPE_LIST):
-        s = source.pop()
-        n = nodes.pop()
-        if not self._matchSource(s, n, obj):
-          return False
-      while source and nodes and not (
-          isinstance(source[0], PatternVariable) and source[0].type == PatternVariable.TYPE_LIST):
-        s = source.popleft()
-        n = nodes.popleft()
-        if not self._matchSource(s, n, obj):
-          return False
-      if (source
-          and isinstance(source[0], PatternVariable) and source[0].type == PatternVariable.TYPE_LIST
-          and isinstance(source[-1], PatternVariable) and source[-1].type == PatternVariable.TYPE_LIST):
-        if not nodes:
-          return False
-        s = source.pop()
-        if source:
-          return False
-        value = obj.variables.get(s.name)
-        if value:
-          dwarn("warning: duplicate variable definition: %s" % s.name)
-          value.clearTree()
-        obj.variables[s.name] = [it.copyTree() for it in nodes]
-        return True
-    return not source and not nodes
 
   def _exactMatchFixedSourceList(self, source, nodes, *args):
     """Exact match list with fixed length.
     @param  source  list
     @param  nodes  list
-    @param* m  MatchedObject
+    @param* vars  {str name:list or Node}
     @return  bool
     """
     if len(source) == len(nodes):
@@ -308,16 +277,16 @@ class Rule(object):
     """Non-exact match list with fixed length.
     @param  source  list
     @param  nodes  list
-    @param* m  MatchedObject
+    @param* vars  {str name:list or Node}
     @return  MatchedList or None
     """
     starts = []
     sourceIndex = 0
-    for i,c in enumerate(nodes):
-      s = source[sourceIndex]
+    for i,n in enumerate(nodes):
       if sourceIndex == 0 and i + len(source) > len(nodes):
         break
-      if not self._matchSource(s, c, *args):
+      s = source[sourceIndex]
+      if not self._matchSource(s, n, *args):
         sourceIndex = 0
       elif sourceIndex == len(source) - 1:
         starts.append(i - sourceIndex)
@@ -331,41 +300,123 @@ class Rule(object):
       m.captureStops = [it + len(source) for it in starts]
       return m
 
-  def createTarget(self, obj):
+  def _exactMatchVariantSourceList(self, source, nodes, vars):
+    """Exact match list with variant length.
+    @param  source  list
+    @param  nodes  list
+    @param  vars  {str name:list or Node}
+    @return  bool
     """
-    @param* obj  MatchedObject
+    if not nodes or not source or len(source) > len(nodes):
+      return False
+
+    nodes = deque(nodes)
+    source = deque(source)
+
+    # TODO: match allow backtrack
+    while source and nodes:
+      # right to left
+      while source and nodes and not (
+          isinstance(source[-1], PatternVariable) and source[-1].type == PatternVariable.TYPE_LIST):
+        s = source.pop()
+        n = nodes.pop()
+        if not self._matchSource(s, n, vars):
+          return False
+      # left to right
+      while source and nodes and not (
+          isinstance(source[0], PatternVariable) and source[0].type == PatternVariable.TYPE_LIST):
+        s = source.popleft()
+        n = nodes.popleft()
+        if not self._matchSource(s, n, vars):
+          return False
+      if (source
+          and isinstance(source[0], PatternVariable) and source[0].type == PatternVariable.TYPE_LIST
+          and isinstance(source[-1], PatternVariable) and source[-1].type == PatternVariable.TYPE_LIST):
+        if not nodes:
+          return False
+        s = source.pop()
+        if source:
+          return False
+        value = vars.get(s.name)
+        if value:
+          dwarn("warning: duplicate variable definition: %s" % s.name)
+          value.clearTree()
+        vars[s.name] = [it.copyTree() for it in nodes]
+        return True
+    return not source and not nodes
+
+  def _matchVariantSourceList(self, source, nodes, *args):
+    """Non-exact match list with variant length.
+    @param  source  list
+    @param  nodes  list
+    @param* vars  {str name:list or Node}
+    @return  MatchedList or None
+    """
+    if not nodes or not source or len(source) > len(nodes):
+      return
+
+    starts = []
+    varslist = []
+    sourceIndex = 0
+    vars = {}
+    for i,n in enumerate(nodes):
+      if sourceIndex == 0 and i + len(source) > len(nodes):
+        break
+      s = source[sourceIndex]
+      # CHECKPOINT: not implemented
+      if not self._matchSource(s, n, vars):
+        sourceIndex = 0
+        vars.clear()
+      elif sourceIndex == len(source) - 1:
+        starts.append(i - sourceIndex)
+        sourceIndex = 0
+        varslist.append(vars)
+        vars = {}
+      else:
+        sourceIndex += 1
+    if starts:
+      m = MatchedList(nodes)
+      m.captureCount = len(starts)
+      m.captureStarts = starts
+      m.captureStops = [it + len(source) for it in starts]
+      m.captureVariables = varslist
+      return m
+
+  def createTarget(self, vars):
+    """
+    @param  vars  {str name:list or Node}
     @return  Node
     """
-    ret = self._createTarget(self.target, obj)
+    ret = self._createTarget(self.target, vars)
     ret.fragment = bool(self.targetType == self.TYPE_LIST) and not self.target.exactMatching
     return ret
 
-  def createTargetList(self, obj):
+  def createTargetList(self, vars):
     """
-    @param  obj  MatchedObject
+    @param  vars  {str name:list or Node}
     @return  [Node]
     """
     if self.target:
       islist = self.targetType == self.TYPE_LIST
       if islist:
-        return self._createTargetList(self.target, obj)
+        return self._createTargetList(self.target, vars)
       isscalar = (
           self.targetType == self.TYPE_STRING
           or self.targetType == self.TYPE_VAR and self.target.type == PatternVariable.TYPE_SCALAR)
       if isscalar:
-        return [self._createTarget(self.target, obj)]
+        return [self._createTarget(self.target, vars)]
     return []
 
-  def _createTargetList(self, target, obj):
+  def _createTargetList(self, target, vars):
     """
     @param  target  list
-    @param* obj  MatchedObject
+    @param  vars  {str name:list or Node}
     @return  [Node]
     """
-    #return [self._createTarget(it, obj) for it in target]
+    #return [self._createTarget(it, vars) for it in target]
     ret = []
     for it in target:
-      node = self._createTarget(it, obj)
+      node = self._createTarget(it, vars)
       if not node.isEmpty():
         if node.children and self.typeName(it) == self.TYPE_VAR and it.type == PatternVariable.TYPE_LIST:
           ret.extend(node.children)
@@ -373,10 +424,10 @@ class Rule(object):
           ret.append(node)
     return ret
 
-  def _createTarget(self, target, obj):
+  def _createTarget(self, target, vars):
     """
     @param  target  list or unicode
-    @param* obj  MatchedObject
+    @param  vars  {str name:list or Node}
     @return  Node
     """
     if target:
@@ -385,10 +436,10 @@ class Rule(object):
         return Node(Token(target),
             language=self.targetLanguage)
       if targetType == self.TYPE_LIST:
-        return Node(children=self._createTargetList(target, obj),
+        return Node(children=self._createTargetList(target, vars),
             language=self.targetLanguage)
       if targetType == self.TYPE_VAR:
-        value = obj.variables.get(target.name)
+        value = vars.get(target.name)
         if value is None:
           text = target.dump()
           return Node(Token(text), language=self.sourceLanguage)
