@@ -82,42 +82,66 @@ class PatternVariable(object):
 
 # Matchers
 
-class MatchedObject(object):
-  def __init__(self):
-    self.variables = {} # {str name, Node or [Node]}
+class MatchedVariables(dict): # {str name, Node or [Node]}
+
+  __slots__ = tuple()
 
   def clearTree(self):
-    if self.variables:
-      for value in self.variables.itervalues():
-        if isinstance(value, Node):
-          value.clearTree()
-        elif isinstance(value, list):
-          for it in value:
-            it.clearTree()
-      self.variables = {}
+    if self:
+      for it in self.itervalues():
+        self._clearValue(it)
+      self.clear()
+
+  def addCopy(self, k, v):
+    """
+    @param  k  str
+    @param  v  Node or [Node]
+    """
+    old = self.get(k)
+    if old:
+      dwarn("warning: duplicate variable definition: %s" % k)
+      sefl._clearValue(v)
+    self[k] = self._copyValue(v)
+
+  @staticmethod
+  def _clearValue(v):
+    """
+    @param  v  Node or [Node]
+    """
+    if v:
+      if isinstance(v, Node):
+        v.clearTree()
+      else:
+        for it in v:
+          it.clearTree()
+
+  @staticmethod
+  def _copyValue(v):
+    """
+    @param  v  Node or [Node]
+    @return  Node or [Node]
+    """
+    if isinstance(v, Node):
+      return v.copyTree()
+    else:
+      return [it.copyTree() for it in v]
 
 class MatchedList(object): # for matching PatternList
   __slots__ = (
     'nodes',
-    'captureCount', 'captureStarts', 'captureStops',
+    'captureCount', 'captureStarts', 'captureStops', 'captureVariables',
   )
-  def __init__(self, nodes=[]):
+  def __init__(self, nodes):
     self.nodes = nodes # [Node]
     self.captureCount = 0 # int
-    self.captureStarts = None # [int]
-    self.captureStops = None # [int]  excluding
-    self.captureVariables = [] # [{str name:list or Node}]
+    self.captureStarts = [] # [int]
+    self.captureStops = [] # [int]  excluding
+    self.captureVariables = [] # [MatchedVariables]
 
   def clearTree(self):
     if self.captureVariables:
-      for d in self.captureVariables:
-        if d:
-          for value in d.itervalues():
-            if isinstance(value, Node):
-              value.clearTree()
-            elif isinstance(value, list):
-              for it in value:
-                it.clearTree()
+      for it in self.captureVariables:
+        it.clearTree()
       self.captureVariables = []
 
 # Rule
@@ -171,47 +195,19 @@ class Rule(object):
     """
     if not x or x.language != self.sourceLanguage:
       return x
-    obj = MatchedObject()
-    m = self.matchSource(x, obj.variables)
+    vars = MatchedVariables()
+    m = self.matchSource(x, vars)
     if m:
-      x = self.updateTarget(x, m, obj.variables)
+      x = self.updateTarget(x, m, vars)
       if isinstance(m, MatchedList):
         m.clearTree()
-    obj.clearTree()
-    return x
-
-  def updateTarget(self, x, m, vars):
-    """
-    @param  x  Node
-    @param* m  bool or MatchedList or None
-    @param* vars  {str name:list or Node}
-    @return  Node
-    """
-    if m is not None:
-      if isinstance(m, MatchedList):
-        if m.captureCount:
-          fragment = (self.sourceType == self.TYPE_LIST and self.targetType == self.TYPE_LIST
-              and self.source.exactMatching)
-          for i in range(m.captureCount - 1, -1, -1):
-            start = m.captureStarts[i]
-            stop = m.captureStops[i]
-            x.removeChildren(start, stop)
-            if self.target:
-              v = m.captureVariables[i] if m.captureVariables else vars
-              if fragment:
-                x.insertChildren(start, self.createTargetList(v))
-              else:
-                x.insertChild(start, self.createTarget(v))
-          return x
-
-    y = self.createTarget(vars)
-    x.assign(y, skip='parent')
+    vars.clearTree()
     return x
 
   def matchSource(self, x, vars):
     """
     @param  x
-    @param  vars  {str name:list or Node}
+    @param  vars  MatchedVariables
     @return  bool or MatchedList or None
     """
     return bool(self.source) and self._matchSource(self.source, x, vars)
@@ -220,7 +216,7 @@ class Rule(object):
     """
     @param  source  list or unicode
     @param  x  Node
-    @param  vars  {str name:list or Node}
+    @param  vars  MatchedVariables
     @return  bool or MatchedList or None
     """
     if not x or x.language != self.sourceLanguage:
@@ -244,26 +240,18 @@ class Rule(object):
     elif sourceType == self.TYPE_VAR:
       if source.type == PatternVariable.TYPE_SCALAR:
         if x.token:
-          value = vars.get(source.name)
-          if value:
-            dwarn("warning: duplicate variable definition: %s" % source.name)
-            value.clearTree()
-          vars[source.name] = x.copyTree()
+          vars.addCopy(source.name, x.copy)
           return True
       elif source.type == PatternVariable.TYPE_LIST:
         if x.children:
-          value = vars.get(source.name)
-          if value:
-            dwarn("warning: duplicate variable definition: %s" % source.name)
-            value.clearTree()
-          vars[source.name] = [it.copyTree() for it in x.children]
+          vars.addCopy(source.name, x.children)
           return True
 
   def _exactMatchFixedSourceList(self, source, nodes, *args):
     """Exact match list with fixed length.
     @param  source  list
     @param  nodes  list
-    @param* vars  {str name:list or Node}
+    @param* vars  MatchedVariables
     @return  bool
     """
     if len(source) == len(nodes):
@@ -277,7 +265,7 @@ class Rule(object):
     """Non-exact match list with fixed length.
     @param  source  list
     @param  nodes  list
-    @param* vars  {str name:list or Node}
+    @param* vars  MatchedVariables
     @return  MatchedList or None
     """
     starts = []
@@ -304,7 +292,7 @@ class Rule(object):
     """Exact match list with variant length.
     @param  source  list
     @param  nodes  list
-    @param  vars  {str name:list or Node}
+    @param  vars  MatchedVariables
     @return  bool
     """
     if not nodes or not source or len(source) > len(nodes):
@@ -313,7 +301,6 @@ class Rule(object):
     nodes = deque(nodes)
     source = deque(source)
 
-    # TODO: match allow backtrack
     while source and nodes:
       # right to left
       while source and nodes and not (
@@ -332,59 +319,170 @@ class Rule(object):
       if (source
           and isinstance(source[0], PatternVariable) and source[0].type == PatternVariable.TYPE_LIST
           and isinstance(source[-1], PatternVariable) and source[-1].type == PatternVariable.TYPE_LIST):
+        # This branch will always exist
         if not nodes:
           return False
-        s = source.pop()
-        if source:
+        right = source.pop()
+        if not source: # s is the only PatternVariable
+          vars.addCopy(right.name, nodes)
+          return True
+        else:
+          if len(nodes) < 2:
+            return False
+          # Recursive match
+          left = source.popleft()
+          if not source:
+            if len(nodes) == 2:
+              vars.addCopy(left.name, [nodes[0]])
+              vars.addCopy(right.name, [nodes[-1]])
+              return True
+            else:
+              dwarn("warning: ambiguous list variable capture: %s, %s" % (left.name, right.name))
+              vars.addCopy(left.name, [nodes[0]])
+              del nodes[0]
+              vars.addCopy(right.name, nodes)
+              return True
+          if len(nodes) < 3:
+            return False
+          leftnodes = [nodes.popleft()]
+          rightnodes = [nodes.pop()]
+          m = self._matchFirstSourceList(list(source), list(nodes))
+          if m:
+            start = m.captureStarts[0]
+            stop = m.captureStops[0]
+
+            newvars = m.captureVariables[0]
+            vars.update(newvars) # memory might leak here if multiple vars having the same name
+            #m.clearTree() # tree is not cleared as new vars takes the ownership of the copied nodes
+
+            if start:
+              for i in range(start):
+                leftnodes.append(nodes[i])
+            if stop < len(nodes):
+              for i in range(len(nodes) - 1, stop - 1, -1):
+                rightnodes.insert(0, nodes[i])
+            vars.addCopy(left.name, leftnodes)
+            vars.addCopy(right.name, rightnodes)
+            return True
           return False
-        value = vars.get(s.name)
-        if value:
-          dwarn("warning: duplicate variable definition: %s" % s.name)
-          value.clearTree()
-        vars[s.name] = [it.copyTree() for it in nodes]
-        return True
     return not source and not nodes
+
+  def _matchFirstSourceList(self, source, nodes, *args):
+    """Non-exact match list with fixed or variant length.
+    @param  source  list
+    @param  nodes  list
+    @param* vars  MatchedVariables  ignored
+    @return  MatchedList or None
+    """
+    if not nodes or not source or len(source) > len(nodes):
+      return
+    matchedStart = 0
+    matchedStop = -1
+    sourceIndex = 0
+    vars = MatchedVariables()
+    for i,n in enumerate(nodes):
+      if sourceIndex == 0 and i + len(source) > len(nodes):
+        break
+      s = source[sourceIndex]
+      # List
+      if self.typeName(s) == self.TYPE_VAR and s.type == PatternVariable.TYPE_LIST:
+        if sourceIndex == len(source) - 1: # the list variable is at the end
+          if i < len(nodes) - 1: # more nodes
+            vars.addCopy(s.name, nodes[i:])
+            matchedStop = len(nodes)
+          break
+        # Look ahead
+        snext = source[sourceIndex+1]
+        if self.typeName(snext) == self.TYPE_VAR and snext.type == PatternVariable.TYPE_LIST:
+          dwarn("warning: adjacent list variables is not supported")
+          break
+        m = self._matchFirstSourceList(source[sourceIndex+1:], nodes[i+1:], *args) # recursion
+        if m: # successful
+          matchedStop = i + m.captureStops[0] + 1
+          vars.update(m.captureVariables[0])
+          vars.addCopy(s.name, nodes[i:i + m.captureStarts[0] + 1])
+          break
+        # reset search
+        sourceIndex = 0
+        matchedStart = i + 1
+        vars.clearTree()
+      # Scalar
+      elif not self._matchSource(s, n, vars): # reset search
+        sourceIndex = 0
+        matchedStart = i + 1
+        vars.clearTree()
+      elif sourceIndex == len(source) - 1: # successful
+        matchedStop = i + 1
+        break
+      else:
+        sourceIndex += 1
+    if matchedStop >= 0:
+      m = MatchedList(nodes)
+      m.captureCount = 1
+      m.captureStarts = matchedStart,
+      m.captureStops = matchedStop,
+      m.captureVariables = vars,
+      return m
+
+    vars.clearTree()
 
   def _matchVariantSourceList(self, source, nodes, *args):
     """Non-exact match list with variant length.
     @param  source  list
     @param  nodes  list
-    @param* vars  {str name:list or Node}
+    @param* vars  MatchedVariables
     @return  MatchedList or None
     """
-    if not nodes or not source or len(source) > len(nodes):
-      return
-
-    starts = []
-    varslist = []
-    sourceIndex = 0
-    vars = {}
-    for i,n in enumerate(nodes):
-      if sourceIndex == 0 and i + len(source) > len(nodes):
+    ret = MatchedList(nodes)
+    nodeIndex = 0
+    while nodes and source and len(source) <= len(nodes):
+      m = self._matchFirstSourceList(source, nodes, *args)
+      if not m:
         break
-      s = source[sourceIndex]
-      # CHECKPOINT: not implemented
-      if not self._matchSource(s, n, vars):
-        sourceIndex = 0
-        vars.clear()
-      elif sourceIndex == len(source) - 1:
-        starts.append(i - sourceIndex)
-        sourceIndex = 0
-        varslist.append(vars)
-        vars = {}
-      else:
-        sourceIndex += 1
-    if starts:
-      m = MatchedList(nodes)
-      m.captureCount = len(starts)
-      m.captureStarts = starts
-      m.captureStops = [it + len(source) for it in starts]
-      m.captureVariables = varslist
-      return m
+      start = m.captureStarts[0]
+      stop = m.captureStops[0]
+      vars = m.captureVariables[0]
+      ret.captureCount += 1
+      ret.captureStarts.append(nodeIndex + start)
+      ret.captureStops.append(nodeIndex + stop)
+      ret.captureVariables.append(vars)
+      nodeIndex += stop
+      nodes = nodes[stop:]
+
+    if ret.captureCount:
+      return ret
+
+  def updateTarget(self, x, m, vars):
+    """
+    @param  x  Node
+    @param* m  bool or MatchedList or None
+    @param* vars  MatchedVariables
+    @return  Node
+    """
+    if m is not None:
+      if isinstance(m, MatchedList):
+        if m.captureCount:
+          fragment = (self.sourceType == self.TYPE_LIST and self.targetType == self.TYPE_LIST
+              and self.source.exactMatching)
+          for i in range(m.captureCount - 1, -1, -1):
+            start = m.captureStarts[i]
+            stop = m.captureStops[i]
+            x.removeChildren(start, stop)
+            if self.target:
+              v = m.captureVariables[i] if m.captureVariables else vars
+              if fragment:
+                x.insertChildren(start, self.createTargetList(v))
+              else:
+                x.insertChild(start, self.createTarget(v))
+          return x
+
+    y = self.createTarget(vars)
+    x.assign(y, skip='parent')
+    return x
 
   def createTarget(self, vars):
     """
-    @param  vars  {str name:list or Node}
+    @param  vars  MatchedVariables
     @return  Node
     """
     ret = self._createTarget(self.target, vars)
@@ -393,7 +491,7 @@ class Rule(object):
 
   def createTargetList(self, vars):
     """
-    @param  vars  {str name:list or Node}
+    @param  vars  MatchedVariables
     @return  [Node]
     """
     if self.target:
@@ -410,7 +508,7 @@ class Rule(object):
   def _createTargetList(self, target, vars):
     """
     @param  target  list
-    @param  vars  {str name:list or Node}
+    @param  vars  MatchedVariables
     @return  [Node]
     """
     #return [self._createTarget(it, vars) for it in target]
@@ -427,7 +525,7 @@ class Rule(object):
   def _createTarget(self, target, vars):
     """
     @param  target  list or unicode
-    @param  vars  {str name:list or Node}
+    @param  vars  MatchedVariables
     @return  Node
     """
     if target:
@@ -451,6 +549,8 @@ class Rule(object):
             return Node(children=[it.copyTree() for it in value],
                 language=self.sourceLanguage)
     return EMPTY_NODE
+
+# Rule parser
 
 class RuleBuilder:
 
