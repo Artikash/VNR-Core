@@ -240,7 +240,7 @@ class Rule(object):
     elif sourceType == self.TYPE_VAR:
       if source.type == PatternVariable.TYPE_SCALAR:
         if x.token:
-          vars.addCopy(source.name, x.copy)
+          vars.addCopy(source.name, x)
           return True
       elif source.type == PatternVariable.TYPE_LIST:
         if x.children:
