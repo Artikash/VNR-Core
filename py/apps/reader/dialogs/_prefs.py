@@ -2968,8 +2968,8 @@ class _DictionaryTranslationTab(object):
       layout.addWidget(self.hangulButton)
     if 'th' not in blans:
       layout.addWidget(self.thaiButton)
-    if 'zh' not in blans:
-      layout.addWidget(self.kanjiButton)
+    #if 'zh' not in blans:
+    #  layout.addWidget(self.kanjiButton)
     ret = QtWidgets.QGroupBox("%s (%s)" % (
         my.tr("Preferred Japanese furigana characters"),
         my.tr("require MeCab dictionaries")))
@@ -3023,13 +3023,13 @@ class _DictionaryTranslationTab(object):
     ret.toggled.connect(self._saveFurigana)
     return ret
 
-  @memoizedproperty
-  def kanjiButton(self):
-    ret = QtWidgets.QRadioButton(
-      "%s, %s: %s" %
-      (tr_("Kanji"), my.tr("like this"), u"可愛い（卡哇伊）"))
-    ret.toggled.connect(self._saveFurigana)
-    return ret
+  #@memoizedproperty
+  #def kanjiButton(self):
+  #  ret = QtWidgets.QRadioButton(
+  #    "%s, %s: %s" %
+  #    (tr_("Kanji"), my.tr("like this"), u"可愛い（卡哇伊）"))
+  #  ret.toggled.connect(self._saveFurigana)
+  #  return ret
 
   @memoizedproperty
   def trButton(self):
@@ -3046,7 +3046,7 @@ class _DictionaryTranslationTab(object):
          self.hangulButton if t == defs.FURI_HANGUL else
          self.thaiButton if t == defs.FURI_THAI else
          self.trButton if t == defs.FURI_TR else
-         self.kanjiButton if t == defs.FURI_KANJI else
+         #self.kanjiButton if t == defs.FURI_KANJI else
          self.kataganaButton if t == defs.FURI_KATA else
          self.hiraganaButton)
     if not b.isChecked():
@@ -3057,7 +3057,7 @@ class _DictionaryTranslationTab(object):
          defs.FURI_HANGUL if self.hangulButton.isChecked() else
          defs.FURI_THAI if self.thaiButton.isChecked() else
          defs.FURI_TR if self.trButton.isChecked() else
-         defs.FURI_KANJI if self.kanjiButton.isChecked() else
+         #defs.FURI_KANJI if self.kanjiButton.isChecked() else
          defs.FURI_KATA if self.kataganaButton.isChecked() else
          defs.FURI_HIRA)
     settings.global_().setRubyType(t)

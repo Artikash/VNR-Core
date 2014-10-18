@@ -2547,9 +2547,9 @@ class Term(QObject):
 #    yomi = self.yomi or self.text
 #    if not textutil.match_kata_hira_punc(yomi):
 #      return ''
-#    if lang == 'ko': return cconv.yomi2hangul(yomi)
-#    if lang == 'th': return cconv.yomi2thai(yomi)
-#    return cconv.yomi2romaji(yomi).title()
+#    if lang == 'ko': return cconv.kana2hangul(yomi)
+#    if lang == 'th': return cconv.kana2thai(yomi)
+#    return cconv.kana2romaji(yomi).title()
 #
 #  @memoizedproperty
 #  def replace(self):

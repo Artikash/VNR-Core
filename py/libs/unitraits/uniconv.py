@@ -32,6 +32,8 @@ def transpose(text, *args):
     except UnicodeDecodeError: return text
   return ''.join(_itertranspose(text, *args)) # joining is much faster than appending
 
+## Instantiation
+
 def thin2wide(text): return transpose(text, unichars.DIST_THIN_WIDE, unichars.ORD_THIN_FIRST, unichars.ORD_THIN_LAST).replace(u' ', u'\u3000')
 def wide2thin(text): return transpose(text, -unichars.DIST_THIN_WIDE, unichars.ORD_WIDE_FIRST, unichars.ORD_WIDE_LAST).replace(u'\u3000', u' ')
 def hira2kata(text): return transpose(text, unichars.DIST_HIRA_KATA, unichars.ORD_HIRA_FIRST, unichars.ORD_HIRA_LAST)

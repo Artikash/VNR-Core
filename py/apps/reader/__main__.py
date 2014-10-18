@@ -374,6 +374,10 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
+    if ss_version <= 1413611470:
+      if ss.value('FuriganaType') == 'kanji':
+        ss.remove('FuriganaType')
+
     if ss_version <= 1413181339:
       path = ss.zunkoLocation()
       if path and os.path.exists(path):

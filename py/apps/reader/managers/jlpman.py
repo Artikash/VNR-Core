@@ -15,7 +15,7 @@ _MECABRUBY = {
   defs.FURI_KATA: mecabdef.RB_KATA,
   defs.FURI_HIRA: mecabdef.RB_HIRA,
   defs.FURI_ROMAJI: mecabdef.RB_ROMAJI,
-  defs.FURI_KANJI: mecabdef.RB_KANJI,
+  #defs.FURI_KANJI: mecabdef.RB_KANJI,
   defs.FURI_HANGUL: mecabdef.RB_HANGUL,
   defs.FURI_THAI: mecabdef.RB_THAI,
   defs.FURI_TR: mecabdef.RB_TR,

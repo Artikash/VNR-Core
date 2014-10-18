@@ -126,10 +126,10 @@ class MeCabParser:
       return ''
     furitrans = (convutil.kata2hira if furiType == defs.FURI_HIRA else
                  convutil.hira2kata if furiType == defs.FURI_KATA else
-                 convutil.yomi2romaji if furiType == defs.FURI_ROMAJI else
-                 convutil.yomi2hangul if furiType == defs.FURI_HANGUL else
-                 convutil.yomi2thai if furiType == defs.FURI_THAI else
-                 convutil.yomi2kanji if furiType == defs.FURI_KANJI else
+                 convutil.kana2romaji if furiType == defs.FURI_ROMAJI else
+                 convutil.kana2hangul if furiType == defs.FURI_HANGUL else
+                 convutil.kana2thai if furiType == defs.FURI_THAI else
+                 #convutil.kana2kanji if furiType == defs.FURI_KANJI else
                  convutil.kata2hira)
     # Add space between words
     return ' '.join(furigana or furitrans(surface) for surface,furigana in
@@ -177,16 +177,16 @@ class MeCabParser:
       katatrans = (convutil.kata2hira if furiType == defs.FURI_HIRA else
                    convutil.kata2hangul if furiType == defs.FURI_HANGUL else
                    convutil.kata2thai if furiType == defs.FURI_THAI else
-                   convutil.kata2kanji if furiType == defs.FURI_KANJI else
+                   #convutil.kata2kanji if furiType == defs.FURI_KANJI else
                    convutil.kata2romaji if furiType in (defs.FURI_ROMAJI, defs.FURI_TR) else
                    None)
       if termEnabled:
         furitrans = (convutil.kata2hira if furiType == defs.FURI_HIRA else
                      convutil.hira2kata if furiType == defs.FURI_KATA else
-                     convutil.yomi2hangul if furiType == defs.FURI_HANGUL else
-                     convutil.yomi2thai if furiType == defs.FURI_THAI else
-                     convutil.yomi2romaji)
-      if furiType in (defs.FURI_ROMAJI, defs.FURI_HANGUL, defs.FURI_THAI, defs.FURI_KANJI):
+                     convutil.kana2hangul if furiType == defs.FURI_HANGUL else
+                     convutil.kana2thai if furiType == defs.FURI_THAI else
+                     convutil.kana2romaji)
+      if furiType in (defs.FURI_ROMAJI, defs.FURI_HANGUL, defs.FURI_THAI): # , defs.FURI_KANJI
         readingTypes = None
     encoding = mecabdef.DICT_ENCODING
     feature2katana = fmt.getkata
@@ -242,8 +242,8 @@ class MeCabParser:
                               unknownYomi = False
                           elif furiType == defs.FURI_HANGUL:
                             yomigana = convutil.kata2hangul(yomigana)
-                          elif furiType == defs.FURI_KANJI:
-                            yomigana = convutil.kata2kanji(yomigana)
+                          #elif furiType == defs.FURI_KANJI:
+                          #  yomigana = convutil.kata2kanji(yomigana)
                     if not yomigana and unknownYomi and readingTypes:
                       yomigana = '?'
                   else:
