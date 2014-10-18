@@ -9,8 +9,7 @@ if __name__ == '__main__': # DEBUG
 #import re
 import MeCab
 from sakurakit import skstr
-from cconv import cconv
-from unitraits import jpchars
+from unitraits.uniconv import kata2hira
 import mecabdef, mecabfmt, mecabparse
 
 ## Parse plain text
@@ -65,7 +64,7 @@ def renderfeature(feature, fmt):
   try:
     surface = l[fmt.COL_SURFACE]
     kata = l[fmt.COL_KATA]
-    hira = cconv.kata2hira(kata)
+    hira = kata2hira(kata)
 
     if hasattr(fmt, 'COL_KANJI'):
       kanji = l[fmt.COL_KANJI]

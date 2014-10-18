@@ -39,7 +39,7 @@ if __name__ == '__main__': # DEBUG
 #import re
 import MeCab
 from sakurakit import skos
-from cconv import cconv
+from cconv import jaconv
 from unitraits import uniconv
 from mecabjlp import mecabdef, mecabfmt
 import cabochadef
@@ -77,10 +77,10 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, wordtr=None, grou
     #if ruby == mecabdef.RB_TR:
     #  wordtr = None
     katatrans = (uniconv.kata2hira if ruby == mecabdef.RB_HIRA else
-                 cconv.kata2hangul if ruby == mecabdef.RB_HANGUL else
-                 cconv.kata2thai if ruby == mecabdef.RB_THAI else
-                 #cconv.kata2kanji if ruby == mecabdef.RB_KANJI else
-                 cconv.kata2romaji if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_TR) else
+                 jaconv.kata2hangul if ruby == mecabdef.RB_HANGUL else
+                 jaconv.kata2thai if ruby == mecabdef.RB_THAI else
+                 #jaconv.kata2kanji if ruby == mecabdef.RB_KANJI else
+                 jaconv.kata2romaji if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_TR) else
                  None)
     if ruby in (mecabdef.RB_ROMAJI, mecabdef.RB_HANGUL, mecabdef.RB_THAI): # , mecabdef.RB_KANJI
       readingTypes = None
@@ -137,14 +137,14 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, wordtr=None, grou
                     if ruby == mecabdef.RB_HIRA:
                       pass
                     elif ruby == mecabdef.RB_ROMAJI:
-                      yomigana = uniconv.wide2thin(cconv.kata2romaji(yomigana))
+                      yomigana = uniconv.wide2thin(jaconv.kata2romaji(yomigana))
                       if yomigana == surface:
                         yomigana = None
                         unknownYomi = False
                     elif ruby == mecabdef.RB_HANGUL:
-                      yomigana = cconv.kata2hangul(yomigana)
+                      yomigana = jaconv.kata2hangul(yomigana)
                     #elif ruby == mecabdef.RB_KANJI:
-                    #  yomigana = cconv.kata2kanji(yomigana)
+                    #  yomigana = jaconv.kata2kanji(yomigana)
               if not yomigana and unknownYomi and readingTypes:
                 yomigana = '?'
             else:
