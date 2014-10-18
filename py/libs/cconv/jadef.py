@@ -19,7 +19,7 @@ HIRA = u"""
 や        ゆ        よ
 ら   り   る   れ   ろ
 わ                  を
-     ゐ             ゑ
+     ゐ        ゑ
 ん
 
 が   ぎ   ぐ   げ   ご
@@ -90,6 +90,7 @@ n
  ba  bi  bu  be  bo
  pa  pi  pu  pe  po
 
+             ye
 wha whi     whe who
 swa swi swu swe swo
 tsa tsi tsu the tho
@@ -109,7 +110,6 @@ fya     fyu     fyo
 mya myi myu mye myo
 rya ryi ryu rye ryo
 
-             ye
 vya     vyu     vyo
 gya gyi gyu gye gyo
  ja  ji  ju  je  jo
@@ -143,7 +143,7 @@ HANGUL = u"""
 야        유        요
 라   리   루   레   로
 와                  로
-     이             에
+     이        에
 ㄴ
 
 가   기   구   게   고
@@ -152,6 +152,7 @@ HANGUL = u"""
 바   비   부   메   보
 파   피   푸   페   포
 
+               이에
 우아 우이      우에 우오
 사   시   스   세   소
 두아 두이 두   두에 두오
@@ -171,7 +172,6 @@ HANGUL = u"""
 먀   미   뮤   메   묘
 랴   리   류   레   료
 
-               이에
 부야      부유      부요
 갸   기   규   게   교
 자   지   주   제   조
@@ -212,6 +212,7 @@ THAI = u"""
 บะ	บิ	บุ	เบะ	โบะ
 พะ	พิ	พุ	เพะ	โพะ
 
+			อิเอะ
 อุอะ	อุอิ		อุเอะ	อุโอะ
 สะ	ฉิ	สุ	เสะ	โสะ
 สึอะ	สึอิ	สึ	สึเอะ	สึโอะ
@@ -231,7 +232,6 @@ THAI = u"""
 เมียะ	หมิ	หมึ	เหมะ	มิโอะ
 เรียะ	หลิ	ริว	แหละ	เรียว
 
-			อิเอะ
 บุหยะ		บุหยุ		บุโหยะ
 เกียะ	กิ	กอึ	เกะ	โกอะ
 จะ	จิ	จึ	เสะ	โจะ
@@ -251,6 +251,7 @@ THAI = u"""
 TABLES = {
   'hira': HIRA,
   'kata': KATA,
+  'romaji': ROMAJI,
   'hangul': HANGUL,
   'thai': THAI,
 }

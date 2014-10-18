@@ -34,13 +34,14 @@ def _makeconverter(fr, to):
   @return  function or None
   """
   if fr == _TYPE_KANA:
-    olist = chain(_DEFS[to], _DEFS[to])
-    ilist = chain(_DEFS[_TYPE_HIRA], _DEFS[_TYPE_KATA])
+    olist = _DEFS[to].split()
+    olist = chain(olist, olist)
+    ilist = chain(_DEFS[_TYPE_HIRA].split(), _DEFS[_TYPE_KATA].split())
   else:
-    olist = _DEFS[to]
-    ilist = _DEFS[fr]
+    olist = _DEFS[to].split()
+    ilist = _DEFS[fr].split()
   table = dict(izip(ilist, olist))
-  return multireplacer(table, escape=True)
+  return multireplacer(table, escape=True) # escape is needed to get rid of '-'
 
 _CONVERTERS = {}
 def _convert(text, fr, to):
@@ -75,18 +76,22 @@ def kana2thai(text): return _convert(text, _TYPE_KANA, _TYPE_THAI)
 
 if __name__ == '__main__':
   #t = u"ウェブサイトツール"
-  t = u"ウ"
-  print kata2hira(t)
-  print hira2kata(t)
-  print kata2hangul(t)
+  t = u"うぇぶさいとつーる"
+  print hira2romaji(t)
+  #print kata2romaji(t)
+  #print kata2hira(t)
+  #print hira2kata(t)
+  #print kata2hangul(t)
   print kana2hangul(t)
+
+  from jTransliterate import JapaneseTransliterator
+  def test(text):
+    return JapaneseTransliterator(text).transliterate_from_hrkt_to_latn()
+  print test(t)
 
 # EOF
 
 ## See: http://pypi.python.org/pypi/jTransliterate
-#from jTransliterate import JapaneseTransliterator
-#def kana2romaji(text):
-#  return JapaneseTransliterator(text).transliterate_from_hrkt_to_latn()
 #
 #kata2romaji = kana2romaji
 #hira2romaji = kana2romaji
