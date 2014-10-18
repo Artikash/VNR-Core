@@ -7,61 +7,82 @@ if __name__ == '__main__':
   sys.path.append("..")
 
 import re
-from itertools import imap
+from itertools import chain, imap, izip
+from sakurakit.skstr import multireplacer
 import jadef
 
-def __make_table(f_list, t_list):
-  assert len(f_list) == len(t_list), "list size mismatch"
-  return dict(zip(f_list, t_list))
+_TYPE_KANA = 0
+_TYPE_HIRA = 1
+_TYPE_KATA = 2
+_TYPE_ROMAJI = 3
+_TYPE_HANGUL = 4
+_TYPE_THAI = 5
 
-def __merge_dict(x, y): return dict(x.items() + y.items())
+_DEFS = { # {int type:unicode}
+  _TYPE_HIRA: jadef.HIRA,
+  _TYPE_KATA: jadef.KATA,
+  #_TYPE_KANA: jadef.KANA,
+  _TYPE_ROMAJI: jadef.ROMAJI,
+  _TYPE_HANGUL: jadef.HANGUL,
+  _TYPE_THAI: jadef.THAI,
+}
 
-@memoized
-def _hira_hangul_table(): return __make_table(_hira_list(), _hangul_list())
-@memoized
-def _kata_hangul_table(): return __make_table(_kata_list(), _hangul_list())
-@memoized
-def _kana_hangul_table(): return __merge_dict(_hira_hangul_table(), _kata_hangul_table())
+def _makeconverter(fr, to):
+  """
+  @param  fr  int
+  @param  to  int
+  @return  function or None
+  """
+  if fr == _TYPE_KANA:
+    olist = chain(_DEFS[to], _DEFS[to])
+    ilist = chain(_DEFS[_TYPE_HIRA], _DEFS[_TYPE_KATA])
+  else:
+    olist = _DEFS[to]
+    ilist = _DEFS[fr]
+  table = dict(izip(ilist, olist))
+  return multireplacer(table, escape=True)
 
-@memoized
-def _hira_thai_table(): return __make_table(_hira_list(), _thai_list())
-@memoized
-def _kata_thai_table(): return __make_table(_kata_list(), _thai_list())
-@memoized
-def _kana_thai_table(): return __merge_dict(_hira_thai_table(), _kata_thai_table())
+_CONVERTERS = {}
+def _convert(text, fr, to):
+  """
+  @param  text  unicode
+  @param  fr  int
+  @param  to  int
+  @return  unicode
+  """
+  key = fr * 10 + to
+  conv = _CONVERTERS.get(key)
+  if not conv:
+    conv = _CONVERTERS[key] = _makeconverter(fr, to)
+  return conv(text)
 
-## Functions ##
+# unicode -> unicode
 
-__regex_storage = {} # {long id: re}, cached regex
-def _multiple_replace(text, table):
-  key = id(table) # so that the table itself will not be saved
-  rx = __regex_storage.get(key)
-  if not rx:
-    pattern = '|'.join(imap(re.escape, table))
-    rx = re.compile(pattern)
-    __regex_storage[key] = rx
-  def proc_one(match):
-    return table[match.group()]
-  return rx.sub(proc_one, text)
+def hira2kata(text): return _convert(text, _TYPE_HIRA, _TYPE_KATA)
+def kata2hira(text): return _convert(text, _TYPE_KATA, _TYPE_HIRA)
 
-def convert(text, table, encoding='utf8'):
-  uflag = isinstance(text, unicode)
+def hira2romaji(text): return _convert(text, _TYPE_HIRA, _TYPE_ROMAJI)
+def kata2romaji(text): return _convert(text, _TYPE_KATA, _TYPE_ROMAJI)
+def kana2romaji(text): return _convert(text, _TYPE_KANA, _TYPE_ROMAJI)
 
-  ret = uflag and text or text.decode(encoding, errors='ignore') # enforce unicode
-  if not ret:
-    return text
+def hira2hangul(text): return _convert(text, _TYPE_HIRA, _TYPE_HANGUL)
+def kata2hangul(text): return _convert(text, _TYPE_KATA, _TYPE_HANGUL)
+def kana2hangul(text): return _convert(text, _TYPE_KANA, _TYPE_HANGUL)
 
-  ret = _multiple_replace(ret, table)
-  return uflag and ret or ret.encode(encoding)
+def hira2thai(text): return _convert(text, _TYPE_HIRA, _TYPE_THAI)
+def kata2thai(text): return _convert(text, _TYPE_KATA, _TYPE_THAI)
+def kana2thai(text): return _convert(text, _TYPE_KANA, _TYPE_THAI)
 
-def hira2hangul(text): return _template(text, 'hira', 'hangul')
+if __name__ == '__main__':
+  #t = u"ウェブサイトツール"
+  t = u"ウ"
+  print kata2hira(t)
+  print hira2kata(t)
+  print kata2hangul(t)
+  print kana2hangul(t)
 
-#def kata2hangul(text): return convert(text, _kata_hangul_table())
-#def kana2hangul(text): return convert(text, _kana_hangul_table())
-#def hira2thai(text): return convert(text, _hira_thai_table())
-#def kata2thai(text): return convert(text, _kata_thai_table())
-#def kana2thai(text): return convert(text, _kana_thai_table())
-#
+# EOF
+
 ## See: http://pypi.python.org/pypi/jTransliterate
 #from jTransliterate import JapaneseTransliterator
 #def kana2romaji(text):
@@ -69,45 +90,3 @@ def hira2hangul(text): return _template(text, 'hira', 'hangul')
 #
 #kata2romaji = kana2romaji
 #hira2romaji = kana2romaji
-
-if __name__ == '__main__':
-  print kata2hira(u'バカだ?')
-  print hira2kata(u'バカだ?')
-  #print kata2kanji(u'ワタシハ!')
-  #print zhs2zht(u'可爱!!')
-
-  print wide2thin(u'あの１２３４５０９ｂ！！［[。、')
-  print thin2wide(u'あの12344０９ｂ?！')
-
-  print wide2thin_digit(u'あの12344０９ｂ?！')
-
-  print hira2thai(u'バカだ?')
-  print kata2thai(u'バカだ?')
-  print kana2thai(u'バカだ?')
-
-  print hira2hangul(u'バカだ?')
-  print kata2hangul(u'バカだ?')
-  print kana2hangul(u'バカだ?')
-
-  #print kana2kanji(u'かわいい?')
-  print kana2hangul(u'かわいい?')
-  print kana2thai(u'かわいい?')
-
-# EOF
-
-#def hira_list(): # meaningless kanji > <
-#  return u"""\
-#が ぎ ぐ げ ご ざ じ ず ぜ ぞ だ ぢ づ で ど ば び ぶ べ ぼ ぱ ぴ ぷ ぺ ぽ
-#あ い う え お か き く け こ さ し す せ そ た ち つ て と
-#な に ぬ ね の は ひ ふ へ ほ ま み む め も や ゆ よ ら り る れ ろ
-#わ を ん ぁ ぃ ぅ ぇ ぉ ゃ ゅ ょ っ
-#""".split()
-
-# Consistent with jpchars
-#def _kanji_list(): # meaningless kanji > <
-#  return u"""\
-#咖 鸡 古 给 沟 杂 鸡 足 则 走 大 鸡 度 的 多 扒 比 不 被 波 啪 屁 扑 配 破
-#啊 伊 无 诶 哦 卡 其 库 可 口 萨 西 苏 塞 搜 他 气 子 太 脱
-#哪 泥 奴 捏 诺 哈 西 夫 黑 后 马 米 木 美 摸 压 由 有 啦 里 撸 累 落
-#瓦 欧 恩 啊 衣 乌 诶 偶 呀 由 有 -
-#""".split()

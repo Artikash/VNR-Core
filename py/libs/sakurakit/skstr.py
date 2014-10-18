@@ -2,6 +2,7 @@
 # sktr.py
 # 11/1/2012 jichi
 import re
+from functools import partial
 from skdebug import dwarn
 
 # http://stackoverflow.com/questions/196345/how-to-check-if-a-string-in-python-is-in-ascii
@@ -19,6 +20,13 @@ def signed_ord(c):
   """
   ret = ord(c)
   return ret if ret < 128 else ret - 256
+
+def _multireplacer_lookup(table, match):
+  """
+  @param  table  {unicode fr:unicode to}
+  @param  match  re.match
+  """
+  return table[match.group(1)]
 
 # http://stackoverflow.com/questions/6609895/efficiently-replace-bad-characters
 def multireplacer(table, flags=0, escape=False, prefix=None, suffix=None):
@@ -42,12 +50,8 @@ def multireplacer(table, flags=0, escape=False, prefix=None, suffix=None):
       prefix = re.escape(prefix)
     pat = prefix + pat
   rx = re.compile(pat, flags)
-  def ret(text):
-    def replace(match):
-      char = match.group(1)
-      return table[char]
-    return rx.sub(replace, text)
-  return ret
+  return partial(rx.sub,
+      partial(_multireplacer_lookup, table))
 
 def removebr(t):
   """Remove leading and trailing br
