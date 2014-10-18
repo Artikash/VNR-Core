@@ -36,7 +36,7 @@ __all__ = 'Rule', 'RuleBuilder'
 import re
 from collections import deque
 from sakurakit.skdebug import dwarn
-
+from defs import ANY_LANGUAGE
 from tree import Node, Token, EMPTY_NODE
 
 # Patterns
@@ -196,7 +196,7 @@ class Rule(object):
     @param  x  Node
     @return  Node
     """
-    if not x or x.language != self.sourceLanguage:
+    if not x or (self.sourceType != self.TYPE_VAR and x.language in (self.targetLanguage, ANY_LANGUAGE)):
       return x
     vars = MatchedVariables()
     m = self.matchSource(x, vars)
@@ -222,9 +222,11 @@ class Rule(object):
     @param  vars  MatchedVariables
     @return  bool or MatchedList or None
     """
-    if not x or x.language != self.sourceLanguage:
+    if not x:
       return
     sourceType = self.typeName(source)
+    if sourceType != self.TYPE_VAR and x.language in (self.targetLanguage, ANY_LANGUAGE):
+      return
     if sourceType == self.TYPE_STRING:
       if x.token:
         return source == x.token.text
