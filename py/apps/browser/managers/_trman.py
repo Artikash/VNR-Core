@@ -20,7 +20,7 @@ from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
 from i18n import i18n
 import config, growl, textutil, trman
-from convutil import wide2thin, wide2thin_digit
+from unitraits.uniconv import wide2thin, wide2thin_digit
 
 #from sakurakit.skprofiler import SkProfiler
 
