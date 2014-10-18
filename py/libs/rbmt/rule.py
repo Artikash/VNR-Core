@@ -100,7 +100,7 @@ class MatchedVariables(dict): # {str name, Node or [Node]}
     old = self.get(k)
     if old:
       dwarn("warning: duplicate variable definition: %s" % k)
-      sefl._clearValue(v)
+      self._clearValue(v)
     self[k] = self._copyValue(v)
 
   @staticmethod
@@ -242,12 +242,15 @@ class Rule(object):
             return self._matchVariantSourceList(source, x.children, vars)
     elif sourceType == self.TYPE_VAR:
       if source.type == PatternVariable.TYPE_SCALAR:
-        if x.token:
+        if not x.isEmpty():
           vars.addCopy(source.name, x)
           return True
       elif source.type == PatternVariable.TYPE_LIST:
         if x.children:
           vars.addCopy(source.name, x.children)
+          return True
+        elif x.token:
+          vars.addCopy(source.name, [x])
           return True
 
   def _exactMatchFixedSourceList(self, source, nodes, *args):
