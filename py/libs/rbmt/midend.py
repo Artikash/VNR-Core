@@ -84,7 +84,7 @@ class RuleBasedTranslator:
     """
     for rule in self.rules:
       x = rule.translate(x)
-    if isinstance(x, Node) and x.children:
+    if x.children:
       for i,it in enumerate(reversed(x.children)):
         i = len(x.children) - i - 1
         r = self._translate(it)

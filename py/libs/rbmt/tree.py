@@ -60,11 +60,24 @@ class Node(object): # tree node
         for it in v:
           it.parent = self
 
+  def assign(self, that, skip=[]):
+    """
+    @param  that  Node
+    """
+    for k in self.__slots__:
+      if not skip or k not in skip:
+        v = getattr(that, k)
+        setattr(self, k, v)
+        if k == 'children' and v:
+          for it in v:
+            it.parent = self
+
   # Copy
 
   def copy(self, **kwargs):
     kw = {it:getattr(self, it) for it in self.__slots__}
-    kw.update(kwargs)
+    if kwargs:
+      kw.update(kwargs)
     return Node(**kw)
 
   def copyTree(self):
@@ -183,5 +196,7 @@ class Node(object): # tree node
       return sep.join((it.unparseTree(sep) for it in self.children))
     else:
       return ''
+
+EMPTY_NODE = Node()
 
 # EOF

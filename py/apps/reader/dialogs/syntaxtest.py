@@ -41,8 +41,8 @@ class _SyntaxTester(object):
 
   def _createUi(self, q):
     self.sourceView.setPlainText(u"【綾波レイ】「ごめんなさい。こう言う時どんな顔すればいいのか分からないの。」")
-    self.patternEdit.setText(u"(分から ない の 。)")
-    self.replaceEdit.setText(u"(不 知道 的 。)")
+    self.patternEdit.setText(u"($x ない の 。)")
+    self.replaceEdit.setText(u"(不 $x 的 。)")
 
     self.sourceView.textChanged.connect(self._refreshSyntaxView)
     self.sourceView.textChanged.connect(self._refreshTargetView)

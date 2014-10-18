@@ -264,6 +264,8 @@ if __name__ == '__main__':
   #text = u"憎しみは憎しみしか生まない。"
   #text = u"あなたは誰ですか？"
 
+  text = u"私のもの"
+
   #self.rules = [rp.createRule(fr, to, *it) for it in (
   #  (u"顔", u"表情"),
   #  (u"(分から ない の 。)", u"不知道的。"),
@@ -278,13 +280,14 @@ if __name__ == '__main__':
   from sakurakit.skprofiler import SkProfiler
   from kingsoft import iciba
   tr = iciba.translate
+  tr = None
 
   import CaboCha
   cabocha = CaboCha.Parser()
 
   ma = MachineAnalyzer(cabocha)
 
-  mt = MachineTranslator(cabocha, language=to, underline=False, escape=True) #, tr=tr)
+  mt = MachineTranslator(cabocha, language=to, underline=False, escape=True, tr=tr)
 
   rules = [createrule(k, v, to)
   for k,v in (
@@ -292,11 +295,33 @@ if __name__ == '__main__':
     #(u"どんな", u"怎样的"),
     #(u"(分から ない の 。)", u"(不 知道 的 。)"),
     #(u"(分から ない の 。)", u"不 知道 的 。"),
-    (u"(分から ない の 。)", u"不知道的。"),
+    #(u"(分から ない の 。)", u"不知道的。"),
+    #(u"分から @x 。", u"不知道的。 @x"),
+    #(u"(分から @x 。)", u"不知道的。 @x"),
+    (u"顔", u"表情"),
+    (u"(@x すれ ば いい の か)", u"不知道的。"),
+    #(u"(顔 すれ ば いい の か)", u"不知道的。"),
+    #(u"(@x すれ @y いい @z か)", u"不知道的。 @z"),
+    #(u"@x すれ @y いい @z か", u"不知道的。 @z"),
+    #(u"(こう $x)", u"这么 $x"),
     #(u"ない の 。", u"(不 知道 的 。)"),
     #(u"ない の 。", u"不知道的。"),
+
+    (u"((@x の) $y)", u"((@x 的) $y)"),
   )]
+
+  # ("($x 言う)", u"($x 说的)"),
+  #import rule
+  #rules.append(rule.Rule('ja', 'zhs',
+  #  rule.PatternList((rule.PatternVariable(u"x"), u"言う")),
+  #  rule.PatternList((rule.PatternVariable(u"x"), u"说的")),
+  #))
+
+  #rules.append(createrule(u"こう", u"这样", 'zhs'))
+
   mt.setRules(rules)
+
+  #sys.setrecursionlimit(0x1000)
 
   #for s in mt.splitSentences(text):
   if True:
