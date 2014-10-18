@@ -448,6 +448,7 @@ class _TermManager:
       if createTime < self.updateTime:
         dwarn("leave: cancel saving out-of-date syntax terms")
         return
+      rules.sort(key=lambda it:-it.priority())
       mt.setRules(rules)
       times[language] = createTime
       dprint("lang = %s, count = %s" % (language, mt.ruleCount()))

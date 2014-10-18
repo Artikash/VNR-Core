@@ -166,6 +166,9 @@ class Rule(object):
     self.sourceLanguage = sourceLanguage # str
     self.targetLanguage = targetLanguage # str
 
+  def priority(self): # -> int  the larger the higher priority
+    return len(self.source) if self.sourceType == self.TYPE_LIST else 0
+
   @classmethod
   def typeName(cls, x):
     """
@@ -535,7 +538,7 @@ class Rule(object):
             language=self.targetLanguage)
       if targetType == self.TYPE_LIST:
         return Node(children=self._createTargetList(target, vars),
-            language=self.targetLanguage)
+            language='' if vars else self.targetLanguage)
       if targetType == self.TYPE_VAR:
         value = vars.get(target.name)
         if value is None:
