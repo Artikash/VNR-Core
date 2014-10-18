@@ -13,7 +13,7 @@ if __name__ == '__main__': # DEBUG
 import MeCab
 from sakurakit import skos, skstr
 from cconv import cconv
-from jptraits import jpchars
+from unitraits import jpchars, uniconv
 import mecabdef, mecabfmt
 
 if skos.WIN:
@@ -55,7 +55,7 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
   if reading:
     #if ruby == mecabdef.RB_TR:
     #  wordtr = None
-    katatrans = (cconv.kata2hira if ruby == mecabdef.RB_HIRA else
+    katatrans = (uniconv.kata2hira if ruby == mecabdef.RB_HIRA else
                  cconv.kata2hangul if ruby == mecabdef.RB_HANGUL else
                  cconv.kata2thai if ruby == mecabdef.RB_THAI else
                  cconv.kata2kanji if ruby == mecabdef.RB_KANJI else
@@ -106,7 +106,7 @@ def parse(text, tagger=None, type=False, fmt=mecabfmt.DEFAULT, reading=False, wo
                       if ruby == mecabdef.RB_HIRA:
                         pass
                       elif ruby == mecabdef.RB_ROMAJI:
-                        yomigana = cconv.wide2thin(cconv.kata2romaji(yomigana))
+                        yomigana = uniconv.wide2thin(cconv.kata2romaji(yomigana))
                         if yomigana == surface:
                           yomigana = None
                           unknownYomi = False
@@ -151,13 +151,13 @@ def toyomi(text, ruby=mecabdef.RB_HIRA, sep='', **kwargs):
   @param* sep  unicode
   @return  unicode
   """
-  furitrans = (cconv.kata2hira if ruby == mecabdef.RB_HIRA else
-               cconv.hira2kata if ruby == mecabdef.RB_KATA else
+  furitrans = (uniconv.kata2hira if ruby == mecabdef.RB_HIRA else
+               uniconv.hira2kata if ruby == mecabdef.RB_KATA else
                cconv.yomi2romaji if ruby == mecabdef.RB_ROMAJI else
                cconv.yomi2hangul if ruby == mecabdef.RB_HANGUL else
                cconv.yomi2thai if ruby == mecabdef.RB_THAI else
                cconv.yomi2kanji if ruby == mecabdef.RB_KANJI else
-               cconv.kata2hira)
+               uniconv.kata2hira)
   # Add space between words
   return sep.join(furigana or furitrans(surface) for surface,furigana in
       parse(text, reading=True, ruby=ruby, **kwargs))

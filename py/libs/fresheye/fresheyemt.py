@@ -11,7 +11,7 @@ import requests
 from sakurakit import skstr
 from sakurakit.skdebug import dwarn, derror
 #from sakurakit.sknetio import GZIP_HEADERS
-from cconv.cconv import wide2thin
+from unitraits.uniconv import wide2thin
 
 session = requests # global session
 

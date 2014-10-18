@@ -5,7 +5,7 @@
 import re
 from sakurakit import skstr
 from sakurakit.skunicode import u
-from jptraits import jpchars
+from unitraits import jpchars
 
 ## Encoding ##
 

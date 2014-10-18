@@ -6,7 +6,7 @@ import os, re
 from sakurakit import skdatetime, skfileio
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.skclass import memoized
-from jptraits import jpchars
+from unitraits import jpchars
 from mecabjlp import mecabcsv, mecabdic, mecabfmt
 import config, dataman, os, rc
 

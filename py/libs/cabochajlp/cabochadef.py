@@ -2,8 +2,7 @@
 # cabochadef.py
 # 6/13/2014 jichi
 
-from jptraits import jpchars
-from unitraits import unichars
+from unitraits import jpchars, unichars
 
 # ipadic encoding, either SHIFT-JIS or UTF-8
 DICT_ENCODING = 'utf8'

@@ -21,9 +21,9 @@ from sakurakit.skdebug import dprint, dwarn, derror
 from sakurakit.sktr import tr_, notr_
 from sakurakit.skunicode import sjis_encodable
 from zhszht.zhszht import zhs2zht
-from cconv import cconv
 from mytr import my, mytr_
 import cacheman, config, csvutil, defs, features, growl, hashutil, i18n, main, mecabman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
+from convutil import wide2thin
 
 SUBMIT_INTERVAL = 5000 # 5 seconds
 REF_SUBMIT_INTERVAL = 1000 # 1 second
@@ -1170,7 +1170,7 @@ class GameInfo(object):
   def slogan(self): # str or None
     for r in self.scape, self.holyseal, self.getchu, self.digiket, self.gyutto:
       if r and r.slogan:
-        return cconv.wide2thin(r.slogan)
+        return wide2thin(r.slogan)
 
   @property
   def tags0(self): # unicode not None

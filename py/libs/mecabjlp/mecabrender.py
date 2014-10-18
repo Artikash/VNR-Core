@@ -10,7 +10,7 @@ if __name__ == '__main__': # DEBUG
 import MeCab
 from sakurakit import skstr
 from cconv import cconv
-from jptraits import jpchars
+from unitraits import jpchars
 import mecabdef, mecabfmt, mecabparse
 
 ## Parse plain text

@@ -14,14 +14,13 @@ from functools import partial
 from itertools import ifilter, imap
 from time import time
 from PySide.QtCore import QMutex
-from cconv.cconv import wide2thin, wide2thin_digit
 from zhszht.zhszht import zhs2zht, zht2zhs
 from sakurakit import skthreads
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
 from i18n import i18n
-import config, growl, textutil
-import trman
+import config, growl, textutil, trman
+from convutil import wide2thin, wide2thin_digit
 
 #from sakurakit.skprofiler import SkProfiler
 

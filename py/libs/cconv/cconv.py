@@ -8,8 +8,7 @@ if __name__ == '__main__':
 
 import re
 from itertools import imap
-from jptraits import jpchars
-from unitraits import unichars
+from unitraits import jpchars, unichars
 from sakurakit.skclass import memoized
 
 ## Kanji lists ##

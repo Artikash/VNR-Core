@@ -40,6 +40,7 @@ if __name__ == '__main__': # DEBUG
 import MeCab
 from sakurakit import skos
 from cconv import cconv
+from unitraits import uniconv
 from mecabjlp import mecabdef, mecabfmt
 import cabochadef
 
@@ -75,7 +76,7 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, wordtr=None, grou
   if reading:
     #if ruby == mecabdef.RB_TR:
     #  wordtr = None
-    katatrans = (cconv.kata2hira if ruby == mecabdef.RB_HIRA else
+    katatrans = (uniconv.kata2hira if ruby == mecabdef.RB_HIRA else
                  cconv.kata2hangul if ruby == mecabdef.RB_HANGUL else
                  cconv.kata2thai if ruby == mecabdef.RB_THAI else
                  cconv.kata2kanji if ruby == mecabdef.RB_KANJI else
@@ -136,7 +137,7 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, wordtr=None, grou
                     if ruby == mecabdef.RB_HIRA:
                       pass
                     elif ruby == mecabdef.RB_ROMAJI:
-                      yomigana = cconv.wide2thin(cconv.kata2romaji(yomigana))
+                      yomigana = uniconv.wide2thin(cconv.kata2romaji(yomigana))
                       if yomigana == surface:
                         yomigana = None
                         unknownYomi = False
