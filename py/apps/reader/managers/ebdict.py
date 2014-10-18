@@ -12,11 +12,11 @@ if __name__ == '__main__':
 
 import os, re
 import eblib
-from cconv.cconv import wide2thin
 from zhszht.zhszht import zhs2zht
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dwarn
 import rc
+from convutil import wide2thin
 
 def init():
   eblib.eb_initialize_library()

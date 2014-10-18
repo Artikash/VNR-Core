@@ -16,14 +16,13 @@ from functools import partial
 from itertools import ifilter, imap
 from time import time
 from PySide.QtCore import QMutex
-from cconv.cconv import wide2thin, wide2thin_digit
 from zhszht.zhszht import zhs2zht, zht2zhs
 from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
 from mytr import my, mytr_
-import config, growl, mecabman, termman, textutil
-import trman, trcache, tahscript
+import config, growl, mecabman, termman, textutil, trman, trcache, tahscript
+from convutil import wide2thin, wide2thin_digit
 
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()

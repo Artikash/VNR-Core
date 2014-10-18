@@ -7,7 +7,6 @@
 import textwrap
 from functools import partial
 from PySide.QtCore import Signal, Slot, Property, QObject, QTimer
-from cconv.cconv import wide2thin
 from zhszht.zhszht import zhs2zht
 from mecabjlp import mecabfmt
 from sakurakit import skdatetime

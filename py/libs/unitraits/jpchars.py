@@ -2,7 +2,7 @@
 # jpchars.py
 # 12/30/2012 jichi
 
-from unitraits import unichars
+import unichars
 
 ## Character traits ##
 
@@ -56,8 +56,5 @@ def containspunc(text):
   @return  bool
   """
   return bool(re_punc.search(text))
-
-if __name__ == '__main__':
-  print containshira(u"ひらがな hello")
 
 # EOF

@@ -8,11 +8,10 @@ __all__ = 'CaboChaParser',
 import os
 #from PySide.QtCore import QMutex
 from sakurakit.skdebug import dprint, dwarn
-from cconv import cconv
-from jptraits import jpchars
+from unitraits import jpchars
 from cabochajlp import cabochadef, cabocharc
 from mecabjlp import mecabfmt
-import defs, dicts, termman
+import convutil, defs, dicts, termman
 
 from msime import msime
 HAS_MSIME = msime.ja_valid() # cached
@@ -100,19 +99,19 @@ class CaboChaParser(object):
       fmt = self.fmt # mecabfmt
     if reading:
       wordtrans = _wordtrans if furiType == defs.FURI_TR else None
-      katatrans = (cconv.kata2hira if furiType == defs.FURI_HIRA else
-                   cconv.kata2hangul if furiType == defs.FURI_HANGUL else
-                   cconv.kata2thai if furiType == defs.FURI_THAI else
-                   cconv.kata2kanji if furiType == defs.FURI_KANJI else
-                   cconv.kata2romaji if furiType in (defs.FURI_ROMAJI, defs.FURI_TR) else
+      katatrans = (convutil.kata2hira if furiType == defs.FURI_HIRA else
+                   convutil.kata2hangul if furiType == defs.FURI_HANGUL else
+                   convutil.kata2thai if furiType == defs.FURI_THAI else
+                   #convutil.kata2kanji if furiType == defs.FURI_KANJI else
+                   convutil.kata2romaji if furiType in (defs.FURI_ROMAJI, defs.FURI_TR) else
                    None)
       if termEnabled:
-        furitrans = (cconv.kata2hira if furiType == defs.FURI_HIRA else
-                     cconv.hira2kata if furiType == defs.FURI_KATA else
-                     cconv.yomi2hangul if furiType == defs.FURI_HANGUL else
-                     cconv.yomi2thai if furiType == defs.FURI_THAI else
-                     cconv.yomi2romaji)
-      if furiType in (defs.FURI_ROMAJI, defs.FURI_HANGUL, defs.FURI_THAI, defs.FURI_KANJI):
+        furitrans = (convutil.kata2hira if furiType == defs.FURI_HIRA else
+                     convutil.hira2kata if furiType == defs.FURI_KATA else
+                     convutil.kana2hangul if furiType == defs.FURI_HANGUL else
+                     convutil.kana2thai if furiType == defs.FURI_THAI else
+                     convutil.kana2romaji)
+      if furiType in (defs.FURI_ROMAJI, defs.FURI_HANGUL, defs.FURI_THAI): #, defs.FURI_KANJI
         readingTypes = None
     encoding = cabochadef.DICT_ENCODING
     feature2katana = fmt.getkata
@@ -167,14 +166,14 @@ class CaboChaParser(object):
                       if furiType == defs.FURI_HIRA:
                         pass
                       elif furiType == defs.FURI_ROMAJI:
-                        yomigana = cconv.wide2thin(cconv.kata2romaji(yomigana))
+                        yomigana = convutil.wide2thin(convutil.kata2romaji(yomigana))
                         if yomigana == surface:
                           yomigana = None
                           unknownYomi = False
                       elif furiType == defs.FURI_HANGUL:
-                        yomigana = cconv.kata2hangul(yomigana)
-                      elif furiType == defs.FURI_KANJI:
-                        yomigana = cconv.kata2kanji(yomigana)
+                        yomigana = convutil.kata2hangul(yomigana)
+                      #elif furiType == defs.FURI_KANJI:
+                      #  yomigana = convutil.kata2kanji(yomigana)
                 if not yomigana and unknownYomi and readingTypes:
                   yomigana = '?'
               else:

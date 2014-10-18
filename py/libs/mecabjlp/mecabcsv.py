@@ -17,7 +17,7 @@ if __name__ == '__main__': # DEBUG
 
 import codecs
 from sakurakit.skdebug import dwarn
-from cconv import cconv
+from unitraits.uniconv import kata2hira, hira2kata
 import mecabfmt
 
 def costof(surf):
@@ -37,8 +37,8 @@ def writecsv(dic, path, mode='w', encoding='utf8', fmt=mecabfmt.DEFAULT):
     fout = codecs.open(path, mode, encoding) # enforce utf8 encoding
     for surf,yomi in dic:
       cost = costof(surf)
-      hira = cconv.kata2hira(yomi)
-      kata = cconv.hira2kata(yomi)
+      hira = kata2hira(yomi)
+      kata = hira2kata(yomi)
       line = fmt.csv(surf, cost, hira, kata) + '\n'
       fout.write(line)
     fout.close()

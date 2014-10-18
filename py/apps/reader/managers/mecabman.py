@@ -32,7 +32,6 @@ from sakurakit import skstr
 #from sakurakit.skqml import QmlObject
 from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dprint
-from cconv import cconv
 from mecabjlp import mecabdef, mecabfmt, mecabrender
 import defs, rc
 import _mecabman
