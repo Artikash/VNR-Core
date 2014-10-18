@@ -62,9 +62,9 @@ def _convert(text, fr, to):
 def hira2kata(text): return _convert(text, _TYPE_HIRA, _TYPE_KATA)
 def kata2hira(text): return _convert(text, _TYPE_KATA, _TYPE_HIRA)
 
-def hira2romaji(text): return _convert(text, _TYPE_HIRA, _TYPE_ROMAJI)
-def kata2romaji(text): return _convert(text, _TYPE_KATA, _TYPE_ROMAJI)
-def kana2romaji(text): return _convert(text, _TYPE_KANA, _TYPE_ROMAJI)
+def hira2romaji(text): return _repair_romaji(_convert(text, _TYPE_HIRA, _TYPE_ROMAJI))
+def kata2romaji(text): return _repair_romaji(_convert(text, _TYPE_KATA, _TYPE_ROMAJI))
+def kana2romaji(text): return _repair_romaji(_convert(text, _TYPE_KANA, _TYPE_ROMAJI))
 
 def hira2hangul(text): return _convert(text, _TYPE_HIRA, _TYPE_HANGUL)
 def kata2hangul(text): return _convert(text, _TYPE_KATA, _TYPE_HANGUL)
@@ -74,9 +74,19 @@ def hira2thai(text): return _convert(text, _TYPE_HIRA, _TYPE_THAI)
 def kata2thai(text): return _convert(text, _TYPE_KATA, _TYPE_THAI)
 def kana2thai(text): return _convert(text, _TYPE_KANA, _TYPE_THAI)
 
+# repair romaji
+import re
+_re_romaji = re.compile(ur"っ([a-z])")
+def _repair_romaji(text): # unicode -> unicode  repair xtu
+  """
+  @param  text
+  """
+  return _re_romaji.sub(r'\1\1', text).replace(u'っ', u'-')
+
 if __name__ == '__main__':
   #t = u"ウェブサイトツール"
-  t = u"うぇぶさいとつーる"
+  #t = u"うぇぶさいとつーる"
+  t = u"わかってる"
   print hira2romaji(t)
   #print kata2romaji(t)
   #print kata2hira(t)
