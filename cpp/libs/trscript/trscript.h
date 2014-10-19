@@ -7,7 +7,6 @@
 #include "sakurakit/skglobal.h"
 #include <string>
 
-// All functions in this class are thread-safe to Qt threads
 class TranslationScriptManagerPrivate;
 class TranslationScriptManager
 {
@@ -31,7 +30,7 @@ public:
   ///  Clear the loaded script
   void clear();
 
-  ///  Clear script from file
+  ///  Add script from file
   bool loadFile(const std::wstring &path);
 
   // Replacement
