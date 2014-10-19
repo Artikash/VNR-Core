@@ -6,6 +6,6 @@ from unitraits.uniconv import hira2kata, kata2hira, thin2wide, wide2thin, wide2t
 from jaconv.jaconv import kata2romaji, kata2hangul, kata2thai \
                         , hira2romaji, hira2hangul, hira2thai
 from opencc.opencc import zht2zhs
-from ccman import zhs2zht
+from ccman import zhs2zht, zht2zhx
 
 # EOF

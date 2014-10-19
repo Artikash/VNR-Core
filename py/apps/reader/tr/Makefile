@@ -1,6 +1,8 @@
 # Makefile
 # 8/8/2013 jichi
 
+#ZHSZHT = opencc -c zhs2zhtw_vp.ini -i
+
 .PHONY: all release clean
 
 all: Makefile release

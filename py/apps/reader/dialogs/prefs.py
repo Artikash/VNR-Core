@@ -69,6 +69,7 @@ class _PrefsDialog(object):
     self.translationTab = _prefs.TranslationTab()
     self.machineTranslationTab = _prefs.MachineTranslationTab()
     self.dictionaryTranslationTab = _prefs.DictionaryTranslationTab()
+    self.chineseTranslationTab = _prefs.ChineseTranslationTab()
     #self.translationScriptTab = _prefs.TranslationScriptTab()
 
     self.termTab = _prefs.TermTab()
@@ -179,6 +180,12 @@ class _PrefsDialog(object):
               'decoration': rc.icon('pref-dict'),
               'display': tr_("Dictionaries"),
               'toolTip': my.tr("Preferred look-up dictionaries"),
+            },
+            { 'widget': self.chineseTranslationTab,
+              'user': self._indexWidget(self.chineseTranslationTab),
+              'decoration': rc.icon('pref-zh'),
+              'display': tr_("Chinese"),
+              'toolTip': my.tr("Preferred Chinese variant"),
             },
             #{ 'widget': self.translationScriptTab,
             #  'user': self._indexWidget(self.translationScriptTab),
@@ -305,6 +312,7 @@ class _PrefsDialog(object):
     yield self.translationTab
     yield self.machineTranslationTab
     yield self.dictionaryTranslationTab
+    yield self.chineseTranslationTab
     #yield self.translationScriptTab
 
     yield self.downloadsTab
@@ -339,7 +347,7 @@ class PrefsDialog(QtWidgets.QSplitter):
       skqss.class_(self.widget(i), 'texture')
 
     #self.resize(500,480)
-    self.resize(550,485) # large enough that there is no vertical scroll bar
+    self.resize(550,500) # large enough that there is no vertical scroll bar
     self.setSizes([170,380]) # 170 + 380 = 550
     dprint("pass")
 

@@ -13,7 +13,7 @@ TYPE_JA = 5
 
 DIC_NAMES = { # {(int fr,int to):str}
   (TYPE_ZHS, TYPE_ZHT): "STCharacters.txt",
-  (TYPE_ZHS, TYPE_ZHT): "TSCharacters.txt",
+  (TYPE_ZHT, TYPE_ZHS): "TSCharacters.txt",
   (TYPE_ZHT, TYPE_TW):  "TWVariants.txt",
   (TYPE_ZHT, TYPE_HK):  "HKVariants.txt",
   (TYPE_ZHT, TYPE_JA):  "JPVariants.txt",
@@ -54,6 +54,7 @@ def makeconverter(fr, to):
     txt = DIC_NAMES.get((to, fr))
     reverse = True
   if txt:
+    #print txt, reverse
     path = os.path.join(OPENCC_DICDIR, txt)
     if os.path.exists(path):
       #from sakurakit.skprofiler import SkProfiler

@@ -2356,8 +2356,6 @@ class _MachineTranslationTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.honyakuGroup)
     #layout.addWidget(self.correctionGroup)
-    if 'zh' not in blans:
-      layout.addWidget(self.chineseGroup)
     if 'en' not in blans:
       layout.addWidget(self.tahGroup)
     layout.addStretch()
@@ -2438,33 +2436,6 @@ class _MachineTranslationTab(object):
 """TAH script is a set of <a href="http://en.wikipedia.org/wiki/Regular_expression">regular expression</a> rules originally written by @errzotl sensei to enhance Japanese-English translation quality.
 You can report the bugs to <a href="mailto:{0}">{0}</a>."""
 ).format(email))
-    return ret
-
-  # Chinese group
-
-  @memoizedproperty
-  def chineseGroup(self):
-    layout = QtWidgets.QVBoxLayout()
-    layout.addWidget(self.chineseButton)
-    layout.addWidget(self.yueButton)
-    ret = QtWidgets.QGroupBox(my.tr("Preferred Chinese characters"))
-    ret.setLayout(layout)
-    return ret
-
-  @memoizedproperty
-  def chineseButton(self):
-    ret = QtWidgets.QCheckBox(my.tr(
-        "Convert Simplified Chinese subtitles to Traditional Chinese"))
-    ret.setChecked(settings.global_().convertsChinese())
-    ret.toggled.connect(settings.global_().setConvertsChinese)
-    return ret
-
-  @memoizedproperty
-  def yueButton(self):
-    ret = QtWidgets.QCheckBox(my.tr(
-        "Convert Mandarin Chinese machine translation to Yue Chinese (using Baidu)"))
-    ret.setChecked(settings.global_().isYueEnabled())
-    ret.toggled.connect(settings.global_().setYueEnabled)
     return ret
 
   # Machine translator
@@ -2781,6 +2752,114 @@ class MachineTranslationTab(QtWidgets.QDialog):
   def save(self): pass
   def load(self): pass
   def refresh(self): self.__d.refresh()
+
+#@Q_Q
+class _ChineseTranslationTab(object):
+
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    blans = settings.global_().blockedLanguages()
+    if 'zh' not in blans:
+      layout = QtWidgets.QVBoxLayout()
+      layout.addWidget(self.dialectGroup)
+      layout.addWidget(self.optionGroup)
+      layout.addStretch()
+      q.setLayout(layout)
+
+  # Dialect group
+
+  @memoizedproperty
+  def dialectGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.disableButton)
+    layout.addWidget(self.twButton)
+    layout.addWidget(self.hkButton)
+    layout.addWidget(self.jaButton)
+    layout.addWidget(self.yueButton)
+    ret = QtWidgets.QGroupBox(my.tr("Preferred Chinese variants for machine translation"))
+    ret.setLayout(layout)
+
+    self._loadVariant()
+    return ret
+
+  @memoizedproperty
+  def disableButton(self):
+    ret = QtWidgets.QRadioButton(my.tr("Do not convert Chinese"))
+    ret.toggled.connect(self._saveVariant)
+    return ret
+
+  @memoizedproperty
+  def twButton(self):
+    ret = QtWidgets.QRadioButton("%s (%s)" % (mytr_("Taiwan Standard Chinese"), tr_("default")))
+    ret.toggled.connect(self._saveVariant)
+    return ret
+
+  @memoizedproperty
+  def hkButton(self):
+    ret = QtWidgets.QRadioButton(mytr_("Hong Kong Traditional Chinese"))
+    ret.toggled.connect(self._saveVariant)
+    return ret
+
+  @memoizedproperty
+  def jaButton(self):
+    ret = QtWidgets.QRadioButton(mytr_("Japanese Kanji"))
+    ret.toggled.connect(self._saveVariant)
+    return ret
+
+  @memoizedproperty
+  def yueButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+        "Convert Mandarin Chinese machine translation to Yue Chinese (using Baidu)"))
+    ret.setChecked(settings.global_().isYueEnabled())
+    ret.toggled.connect(settings.global_().setYueEnabled)
+    return ret
+
+  def _loadVariant(self):
+    t = settings.global_().chineseVariant()
+    b = (self.twButton if t == 'tw' else
+         self.hkButton if t == 'hk' else
+         self.jaButton if t == 'ja' else
+         self.disableButton)
+    if not b.isChecked():
+      b.setChecked(True)
+
+  def _saveVariant(self):
+    t = ('tw' if self.twButton.isChecked() else
+         'hk' if self.hkButton.isChecked() else
+         'ja' if self.jaButton.isChecked() else
+         '')
+    settings.global_().setChineseVariant(t)
+
+  # Option group
+
+  @memoizedproperty
+  def optionGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.chineseButton)
+    ret = QtWidgets.QGroupBox(my.tr("Preferred Chinese variants for community subtitles"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def chineseButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+        "Convert Simplified Chinese subtitles to Standard Chinese"))
+    ret.setChecked(settings.global_().convertsChinese())
+    ret.toggled.connect(settings.global_().setConvertsChinese)
+    return ret
+
+class ChineseTranslationTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(ChineseTranslationTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _ChineseTranslationTab(self)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): pass
 
 #@Q_Q
 class _DictionaryTranslationTab(object):

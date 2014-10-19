@@ -732,6 +732,7 @@ class _MainObject(object):
         ss.machineTranslatorChanged,
         ss.termEnabledChanged,
         ss.yueEnabledChanged,
+        ss.chineseVariantChanged,
       ):
       sig.connect(ret.clearCache)
 

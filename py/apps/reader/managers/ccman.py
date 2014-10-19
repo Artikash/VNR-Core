@@ -30,17 +30,26 @@ class ChineseConversionManager:
       else:
         d.variantConvert = None
 
-  def convert(self, text):
+  def convertTraditionalChinese(self, text):
     """
     @param  text  unicode
     @return  unicode
     """
-    d = self.__d
-    ret = opencc.zhs2zht(text)
-    if d.variantConvert:
-      ret = d.variantConvert(text)
-    return ret
+    if self.__d.variantConvert:
+      text = self.__d.variantConvert(text)
+    return text
 
-def zhs2zht(text): return manager().convert(text)
+  def convertSimplifiedChinese(self, text):
+    """
+    @param  text  unicode
+    @return  unicode
+    """
+    text = opencc.zhs2zht(text)
+    if self.__d.variantConvert:
+      text = self.__d.variantConvert(text)
+    return text
+
+def zht2zhx(text): return manager().convertTraditionalChinese(text)
+def zhs2zht(text): return manager().convertSimplifiedChinese(text)
 
 # EOF

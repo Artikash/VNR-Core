@@ -1226,9 +1226,9 @@ class Settings(QSettings):
       self.setValue('ConvertsChinese', value)
       self.convertsChineseChanged.emit(value)
 
-  chineseVariantChanged = Signal(bool)
+  chineseVariantChanged = Signal(str)
   def chineseVariant(self):
-    return to_bool(self.value('ChineseVariant', 'tw')) # Taiwan by default
+    return to_unicode(self.value('ChineseVariant', 'tw')) # Taiwan by default
   def setChineseVariant(self, value):
     if value != self.chineseVariant():
       self.setValue('ChineseVariant', value)

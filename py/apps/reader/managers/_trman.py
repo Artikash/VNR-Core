@@ -19,7 +19,7 @@ from PySide.QtCore import QMutex
 from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
-from convutil import wide2thin, wide2thin_digit, zhs2zht, zht2zhs
+from convutil import wide2thin, wide2thin_digit, zhs2zht, zht2zhs, zht2zhx
 from mytr import my, mytr_
 import config, growl, mecabman, termman, textutil, trman, trcache, tahscript
 
@@ -429,6 +429,10 @@ class MachineTranslator(Translator):
     tm = termman.manager()
     if emit:
       self.emitJointTranslation(text)
+
+    if to == 'zht':
+      text = zht2zhx(text)
+
     #text = self.__google_repl_after(text)
     t = text
     #with SkProfiler(): # 9/26/2014: 0.08 seconds, Python: 0.06 seconds
