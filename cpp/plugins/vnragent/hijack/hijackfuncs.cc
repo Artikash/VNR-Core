@@ -20,7 +20,7 @@ const Hijack::FunctionInfo HIJACK_FUNCTIONS[] = { HIJACK_FUNCTIONS_INITIALIZER }
 inline LPCWSTR applicationPathW()
 {
   static WCHAR r[MAX_PATH];
-  if (!*ret)
+  if (!*r)
     ::GetModuleFileNameW(nullptr, r, MAX_PATH);
   return r;
 }

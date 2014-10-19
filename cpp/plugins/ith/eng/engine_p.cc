@@ -965,6 +965,730 @@ void InsertRealliveHook()
  *  - split: 0
  *  - split_ind: 0
  *  - type: 66   (0x42)
+ *
+ *  013aac6c   cc               int3
+ *  013aac6d   cc               int3
+ *  013aac6e   cc               int3
+ *  013aac6f   cc               int3
+ *  013aac70   55               push ebp    ; jichi: vnragent hooked here
+ *  013aac71   8bec             mov ebp,esp
+ *  013aac73   6a ff            push -0x1
+ *  013aac75   68 d8306101      push .016130d8
+ *  013aac7a   64:a1 00000000   mov eax,dword ptr fs:[0]
+ *  013aac80   50               push eax
+ *  013aac81   81ec dc020000    sub esp,0x2dc
+ *  013aac87   a1 90f46a01      mov eax,dword ptr ds:[0x16af490]
+ *  013aac8c   33c5             xor eax,ebp
+ *  013aac8e   8945 f0          mov dword ptr ss:[ebp-0x10],eax
+ *  013aac91   53               push ebx
+ *  013aac92   56               push esi
+ *  013aac93   57               push edi
+ *  013aac94   50               push eax
+ *  013aac95   8d45 f4          lea eax,dword ptr ss:[ebp-0xc]
+ *  013aac98   64:a3 00000000   mov dword ptr fs:[0],eax
+ *  013aac9e   8b45 0c          mov eax,dword ptr ss:[ebp+0xc]
+ *  013aaca1   8b5d 08          mov ebx,dword ptr ss:[ebp+0x8]
+ *  013aaca4   8bf9             mov edi,ecx
+ *  013aaca6   8b77 10          mov esi,dword ptr ds:[edi+0x10]
+ *  013aaca9   89bd 20fdffff    mov dword ptr ss:[ebp-0x2e0],edi
+ *  013aacaf   8985 18fdffff    mov dword ptr ss:[ebp-0x2e8],eax
+ *  013aacb5   85f6             test esi,esi
+ *  013aacb7   0f84 77040000    je .013ab134
+ *  013aacbd   8b93 18010000    mov edx,dword ptr ds:[ebx+0x118]
+ *  013aacc3   2b93 14010000    sub edx,dword ptr ds:[ebx+0x114]
+ *  013aacc9   8d8b 14010000    lea ecx,dword ptr ds:[ebx+0x114]
+ *  013aaccf   b8 67666666      mov eax,0x66666667
+ *  013aacd4   f7ea             imul edx
+ *  013aacd6   c1fa 08          sar edx,0x8
+ *  013aacd9   8bc2             mov eax,edx
+ *  013aacdb   c1e8 1f          shr eax,0x1f
+ *  013aacde   03c2             add eax,edx
+ *  013aace0   03c6             add eax,esi
+ *  013aace2   50               push eax
+ *  013aace3   e8 5896fcff      call .01374340
+ *  013aace8   837f 14 08       cmp dword ptr ds:[edi+0x14],0x8
+ *  013aacec   72 04            jb short .013aacf2
+ *  013aacee   8b07             mov eax,dword ptr ds:[edi]
+ *  013aacf0   eb 02            jmp short .013aacf4
+ *  013aacf2   8bc7             mov eax,edi
+ *  013aacf4   8985 24fdffff    mov dword ptr ss:[ebp-0x2dc],eax
+ *  013aacfa   8b57 14          mov edx,dword ptr ds:[edi+0x14]
+ *  013aacfd   83fa 08          cmp edx,0x8
+ *  013aad00   72 04            jb short .013aad06
+ *  013aad02   8b0f             mov ecx,dword ptr ds:[edi]
+ *  013aad04   eb 02            jmp short .013aad08
+ *  013aad06   8bcf             mov ecx,edi
+ *  013aad08   8b47 10          mov eax,dword ptr ds:[edi+0x10]
+ *  013aad0b   8bb5 24fdffff    mov esi,dword ptr ss:[ebp-0x2dc]
+ *  013aad11   03c0             add eax,eax
+ *  013aad13   03c8             add ecx,eax
+ *  013aad15   3bf1             cmp esi,ecx
+ *  013aad17   0f84 17040000    je .013ab134
+ *  013aad1d   c785 34fdffff 00>mov dword ptr ss:[ebp-0x2cc],0x0
+ *  013aad27   c785 2cfdffff ff>mov dword ptr ss:[ebp-0x2d4],-0x1
+ *  013aad31   89b5 1cfdffff    mov dword ptr ss:[ebp-0x2e4],esi
+ *  013aad37   83fa 08          cmp edx,0x8
+ *  013aad3a   72 04            jb short .013aad40
+ *  013aad3c   8b0f             mov ecx,dword ptr ds:[edi]
+ *  013aad3e   eb 02            jmp short .013aad42
+ *  013aad40   8bcf             mov ecx,edi
+ *  013aad42   03c1             add eax,ecx
+ *  013aad44   8d8d 2cfdffff    lea ecx,dword ptr ss:[ebp-0x2d4]
+ *  013aad4a   51               push ecx
+ *  013aad4b   8d95 34fdffff    lea edx,dword ptr ss:[ebp-0x2cc]
+ *  013aad51   52               push edx
+ *  013aad52   50               push eax
+ *  013aad53   8d85 24fdffff    lea eax,dword ptr ss:[ebp-0x2dc]
+ *  013aad59   50               push eax
+ *  013aad5a   e8 b183faff      call .01353110
+ *  013aad5f   8bb5 2cfdffff    mov esi,dword ptr ss:[ebp-0x2d4]
+ *  013aad65   83c4 10          add esp,0x10
+ *  013aad68   83fe 0a          cmp esi,0xa
+ *  013aad6b   75 09            jnz short .013aad76
+ *  013aad6d   8bcb             mov ecx,ebx
+ *  013aad6f   e8 ac050000      call .013ab320
+ *  013aad74  ^eb 84            jmp short .013aacfa
+ *  013aad76   83fe 07          cmp esi,0x7
+ *  013aad79   75 2a            jnz short .013aada5
+ *  013aad7b   33c9             xor ecx,ecx
+ *  013aad7d   33c0             xor eax,eax
+ *  013aad7f   66:898b ec000000 mov word ptr ds:[ebx+0xec],cx
+ *  013aad86   8bcb             mov ecx,ebx
+ *  013aad88   8983 e8000000    mov dword ptr ds:[ebx+0xe8],eax
+ *  013aad8e   8983 f0000000    mov dword ptr ds:[ebx+0xf0],eax
+ *  013aad94   e8 87050000      call .013ab320
+ *  013aad99   c683 f9000000 01 mov byte ptr ds:[ebx+0xf9],0x1
+ *  013aada0  ^e9 55ffffff      jmp .013aacfa
+ *  013aada5   8b85 34fdffff    mov eax,dword ptr ss:[ebp-0x2cc]
+ *  013aadab   85c0             test eax,eax
+ *  013aadad   75 37            jnz short .013aade6
+ *  013aadaf   85f6             test esi,esi
+ *  013aadb1  ^0f84 43ffffff    je .013aacfa
+ *  013aadb7   85c0             test eax,eax
+ *  013aadb9   75 2b            jnz short .013aade6
+ *  013aadbb   f605 c0be9f05 01 test byte ptr ds:[0x59fbec0],0x1
+ *  013aadc2   75 0c            jnz short .013aadd0
+ *  013aadc4   830d c0be9f05 01 or dword ptr ds:[0x59fbec0],0x1
+ *  013aadcb   e8 f02a0b00      call .0145d8c0
+ *  013aadd0   0fb7d6           movzx edx,si
+ *  013aadd3   80ba c0be9e05 01 cmp byte ptr ds:[edx+0x59ebec0],0x1
+ *  013aadda   75 0a            jnz short .013aade6
+ *  013aaddc   8b43 68          mov eax,dword ptr ds:[ebx+0x68]
+ *  013aaddf   99               cdq
+ *  013aade0   2bc2             sub eax,edx
+ *  013aade2   d1f8             sar eax,1
+ *  013aade4   eb 03            jmp short .013aade9
+ *  013aade6   8b43 68          mov eax,dword ptr ds:[ebx+0x68]
+ *  013aade9   8b8b a0000000    mov ecx,dword ptr ds:[ebx+0xa0]
+ *  013aadef   8b53 18          mov edx,dword ptr ds:[ebx+0x18]
+ *  013aadf2   8985 30fdffff    mov dword ptr ss:[ebp-0x2d0],eax
+ *  013aadf8   0343 58          add eax,dword ptr ds:[ebx+0x58]
+ *  013aadfb   03d1             add edx,ecx
+ *  013aadfd   3bc2             cmp eax,edx
+ *  013aadff   7f 0f            jg short .013aae10
+ *  013aae01   3bc1             cmp eax,ecx
+ *  013aae03   7e 30            jle short .013aae35
+ *  013aae05   8bc6             mov eax,esi
+ *  013aae07   e8 94faffff      call .013aa8a0
+ *  013aae0c   84c0             test al,al
+ *  013aae0e   75 25            jnz short .013aae35
+ *  013aae10   8bcb             mov ecx,ebx
+ *  013aae12   e8 09050000      call .013ab320
+ *  013aae17   83bd 34fdffff 00 cmp dword ptr ss:[ebp-0x2cc],0x0
+ *  013aae1e   75 15            jnz short .013aae35
+ *  013aae20   83fe 20          cmp esi,0x20
+ *  013aae23  ^0f84 d1feffff    je .013aacfa
+ *  013aae29   81fe 00300000    cmp esi,0x3000
+ *  013aae2f  ^0f84 c5feffff    je .013aacfa
+ *  013aae35   8b43 5c          mov eax,dword ptr ds:[ebx+0x5c]
+ *  013aae38   3b83 a4000000    cmp eax,dword ptr ds:[ebx+0xa4]
+ *  013aae3e   0f8d 7e020000    jge .013ab0c2
+ *  013aae44   8d8d 38fdffff    lea ecx,dword ptr ss:[ebp-0x2c8]
+ *  013aae4a   51               push ecx
+ *  013aae4b   e8 30e4ffff      call .013a9280
+ *  013aae50   c745 fc 01000000 mov dword ptr ss:[ebp-0x4],0x1
+ *  013aae57   8b43 74          mov eax,dword ptr ds:[ebx+0x74]
+ *  013aae5a   8b0d 88b26c01    mov ecx,dword ptr ds:[0x16cb288]
+ *  013aae60   83f8 ff          cmp eax,-0x1
+ *  013aae63   74 04            je short .013aae69
+ *  013aae65   8bd0             mov edx,eax
+ *  013aae67   eb 19            jmp short .013aae82
+ *  013aae69   80b9 60010000 00 cmp byte ptr ds:[ecx+0x160],0x0
+ *  013aae70   74 0d            je short .013aae7f
+ *  013aae72   8b83 e0000000    mov eax,dword ptr ds:[ebx+0xe0]
+ *  013aae78   8bd0             mov edx,eax
+ *  013aae7a   83f8 ff          cmp eax,-0x1
+ *  013aae7d   75 03            jnz short .013aae82
+ *  013aae7f   8b53 24          mov edx,dword ptr ds:[ebx+0x24]
+ *  013aae82   8b43 78          mov eax,dword ptr ds:[ebx+0x78]
+ *  013aae85   83f8 ff          cmp eax,-0x1
+ *  013aae88   75 17            jnz short .013aaea1
+ *  013aae8a   80b9 60010000 00 cmp byte ptr ds:[ecx+0x160],0x0
+ *  013aae91   74 0b            je short .013aae9e
+ *  013aae93   8b83 e4000000    mov eax,dword ptr ds:[ebx+0xe4]
+ *  013aae99   83f8 ff          cmp eax,-0x1
+ *  013aae9c   75 03            jnz short .013aaea1
+ *  013aae9e   8b43 28          mov eax,dword ptr ds:[ebx+0x28]
+ *  013aaea1   8b4b 60          mov ecx,dword ptr ds:[ebx+0x60]
+ *  013aaea4   8bb5 34fdffff    mov esi,dword ptr ss:[ebp-0x2cc]
+ *  013aaeaa   034b 58          add ecx,dword ptr ds:[ebx+0x58]
+ *  013aaead   8b7b 68          mov edi,dword ptr ds:[ebx+0x68]
+ *  013aaeb0   8985 28fdffff    mov dword ptr ss:[ebp-0x2d8],eax
+ *  013aaeb6   8b43 5c          mov eax,dword ptr ds:[ebx+0x5c]
+ *  013aaeb9   0343 64          add eax,dword ptr ds:[ebx+0x64]
+ *  013aaebc   83fe 01          cmp esi,0x1
+ *  013aaebf   75 02            jnz short .013aaec3
+ *  013aaec1   33d2             xor edx,edx
+ *  013aaec3   80bb fa000000 00 cmp byte ptr ds:[ebx+0xfa],0x0
+ *  013aaeca   89b5 38fdffff    mov dword ptr ss:[ebp-0x2c8],esi
+ *  013aaed0   8bb5 2cfdffff    mov esi,dword ptr ss:[ebp-0x2d4]
+ *  013aaed6   8995 44fdffff    mov dword ptr ss:[ebp-0x2bc],edx
+ *  013aaedc   8b95 28fdffff    mov edx,dword ptr ss:[ebp-0x2d8]
+ *  013aaee2   89b5 3cfdffff    mov dword ptr ss:[ebp-0x2c4],esi
+ *  013aaee8   89bd 40fdffff    mov dword ptr ss:[ebp-0x2c0],edi
+ *  013aaeee   8995 48fdffff    mov dword ptr ss:[ebp-0x2b8],edx
+ *  013aaef4   898d 4cfdffff    mov dword ptr ss:[ebp-0x2b4],ecx
+ *  013aaefa   8985 50fdffff    mov dword ptr ss:[ebp-0x2b0],eax
+ *  013aaf00   74 19            je short .013aaf1b
+ *  013aaf02   8b43 58          mov eax,dword ptr ds:[ebx+0x58]
+ *  013aaf05   8b4b 5c          mov ecx,dword ptr ds:[ebx+0x5c]
+ *  013aaf08   8983 fc000000    mov dword ptr ds:[ebx+0xfc],eax
+ *  013aaf0e   898b 00010000    mov dword ptr ds:[ebx+0x100],ecx
+ *  013aaf14   c683 fa000000 00 mov byte ptr ds:[ebx+0xfa],0x0
+ *  013aaf1b   8b53 6c          mov edx,dword ptr ds:[ebx+0x6c]
+ *  013aaf1e   0395 30fdffff    add edx,dword ptr ss:[ebp-0x2d0]
+ *  013aaf24   33ff             xor edi,edi
+ *  013aaf26   0153 58          add dword ptr ds:[ebx+0x58],edx
+ *  013aaf29   8b95 34fdffff    mov edx,dword ptr ss:[ebp-0x2cc]
+ *  013aaf2f   8b43 58          mov eax,dword ptr ds:[ebx+0x58]
+ *  013aaf32   3bd7             cmp edx,edi             ; jichi: hook here
+ *  013aaf34   75 4b            jnz short .013aaf81
+ *  013aaf36   81fe 0c300000    cmp esi,0x300c  ; jichi 10/18/2014: searched here found the new siglus function
+ *  013aaf3c   74 10            je short .013aaf4e
+ *  013aaf3e   81fe 0e300000    cmp esi,0x300e
+ *  013aaf44   74 08            je short .013aaf4e
+ *  013aaf46   81fe 08ff0000    cmp esi,0xff08
+ *  013aaf4c   75 33            jnz short .013aaf81
+ *  013aaf4e   80bb f9000000 00 cmp byte ptr ds:[ebx+0xf9],0x0
+ *  013aaf55   74 19            je short .013aaf70
+ *  013aaf57   8983 e8000000    mov dword ptr ds:[ebx+0xe8],eax
+ *  013aaf5d   66:89b3 ec000000 mov word ptr ds:[ebx+0xec],si
+ *  013aaf64   c783 f0000000 01>mov dword ptr ds:[ebx+0xf0],0x1
+ *  013aaf6e   eb 11            jmp short .013aaf81
+ *  013aaf70   0fb783 ec000000  movzx eax,word ptr ds:[ebx+0xec]
+ *  013aaf77   3bf0             cmp esi,eax
+ *  013aaf79   75 06            jnz short .013aaf81
+ *  013aaf7b   ff83 f0000000    inc dword ptr ds:[ebx+0xf0]
+ *  013aaf81   8b8b f0000000    mov ecx,dword ptr ds:[ebx+0xf0]
+ *  013aaf87   3bcf             cmp ecx,edi
+ *  013aaf89   7e 71            jle short .013aaffc
+ *  013aaf8b   3bd7             cmp edx,edi
+ *  013aaf8d   75 50            jnz short .013aafdf
+ *  013aaf8f   0fb783 ec000000  movzx eax,word ptr ds:[ebx+0xec]
+ *  013aaf96   ba 0c300000      mov edx,0x300c
+ *  013aaf9b   66:3bc2          cmp ax,dx
+ *  013aaf9e   75 0f            jnz short .013aafaf
+ *  013aafa0   81fe 0d300000    cmp esi,0x300d
+ *  013aafa6   75 07            jnz short .013aafaf
+ *  013aafa8   49               dec ecx
+ *  013aafa9   898b f0000000    mov dword ptr ds:[ebx+0xf0],ecx
+ *  013aafaf   b9 0e300000      mov ecx,0x300e
+ *  013aafb4   66:3bc1          cmp ax,cx
+ *  013aafb7   75 0e            jnz short .013aafc7
+ *  013aafb9   81fe 0f300000    cmp esi,0x300f
+ *  013aafbf   75 06            jnz short .013aafc7
+ *  013aafc1   ff8b f0000000    dec dword ptr ds:[ebx+0xf0]
+ *  013aafc7   ba 08ff0000      mov edx,0xff08
+ *  013aafcc   66:3bc2          cmp ax,dx
+ *  013aafcf   75 0e            jnz short .013aafdf
+ *  013aafd1   81fe 09ff0000    cmp esi,0xff09
+ *  013aafd7   75 06            jnz short .013aafdf
+ *  013aafd9   ff8b f0000000    dec dword ptr ds:[ebx+0xf0]
+ *  013aafdf   39bb f0000000    cmp dword ptr ds:[ebx+0xf0],edi
+ *  013aafe5   75 15            jnz short .013aaffc
+ *  013aafe7   33c0             xor eax,eax
+ *  013aafe9   89bb e8000000    mov dword ptr ds:[ebx+0xe8],edi
+ *  013aafef   66:8983 ec000000 mov word ptr ds:[ebx+0xec],ax
+ *  013aaff6   89bb f0000000    mov dword ptr ds:[ebx+0xf0],edi
+ *  013aaffc   8d8d 38fdffff    lea ecx,dword ptr ss:[ebp-0x2c8]
+ *  013ab002   8dbb 14010000    lea edi,dword ptr ds:[ebx+0x114]
+ *  013ab008   e8 b390fcff      call .013740c0
+ *  013ab00d   33ff             xor edi,edi
+ *  013ab00f   39bd 34fdffff    cmp dword ptr ss:[ebp-0x2cc],edi
+ *  013ab015   75 0e            jnz short .013ab025
+ *  013ab017   56               push esi
+ *  013ab018   8d83 a8000000    lea eax,dword ptr ds:[ebx+0xa8]
+ *  013ab01e   e8 5d080000      call .013ab880
+ *  013ab023   eb 65            jmp short .013ab08a
+ *  013ab025   8b85 1cfdffff    mov eax,dword ptr ss:[ebp-0x2e4]
+ *  013ab02b   33c9             xor ecx,ecx
+ *  013ab02d   66:894d d4       mov word ptr ss:[ebp-0x2c],cx
+ *  013ab031   8b8d 24fdffff    mov ecx,dword ptr ss:[ebp-0x2dc]
+ *  013ab037   c745 e8 07000000 mov dword ptr ss:[ebp-0x18],0x7
+ *  013ab03e   897d e4          mov dword ptr ss:[ebp-0x1c],edi
+ *  013ab041   3bc1             cmp eax,ecx
+ *  013ab043   74 0d            je short .013ab052
+ *  013ab045   2bc8             sub ecx,eax
+ *  013ab047   d1f9             sar ecx,1
+ *  013ab049   51               push ecx
+ *  013ab04a   8d75 d4          lea esi,dword ptr ss:[ebp-0x2c]
+ *  013ab04d   e8 de72f2ff      call .012d2330
+ *  013ab052   6a ff            push -0x1
+ *  013ab054   57               push edi
+ *  013ab055   8d55 d4          lea edx,dword ptr ss:[ebp-0x2c]
+ *  013ab058   52               push edx
+ *  013ab059   8db3 a8000000    lea esi,dword ptr ds:[ebx+0xa8]
+ *  013ab05f   c645 fc 02       mov byte ptr ss:[ebp-0x4],0x2
+ *  013ab063   e8 3879f2ff      call .012d29a0
+ *  013ab068   837d e8 08       cmp dword ptr ss:[ebp-0x18],0x8
+ *  013ab06c   72 0c            jb short .013ab07a
+ *  013ab06e   8b45 d4          mov eax,dword ptr ss:[ebp-0x2c]
+ *  013ab071   50               push eax
+ *  013ab072   e8 5fbe1900      call .01546ed6
+ *  013ab077   83c4 04          add esp,0x4
+ *  013ab07a   33c9             xor ecx,ecx
+ *  013ab07c   c745 e8 07000000 mov dword ptr ss:[ebp-0x18],0x7
+ *  013ab083   897d e4          mov dword ptr ss:[ebp-0x1c],edi
+ *  013ab086   66:894d d4       mov word ptr ss:[ebp-0x2c],cx
+ *  013ab08a   8bbd 20fdffff    mov edi,dword ptr ss:[ebp-0x2e0]
+ *  013ab090   c683 f9000000 00 mov byte ptr ds:[ebx+0xf9],0x0
+ *  013ab097   8d95 88feffff    lea edx,dword ptr ss:[ebp-0x178]
+ *  013ab09d   52               push edx
+ *  013ab09e   c745 fc 03000000 mov dword ptr ss:[ebp-0x4],0x3
+ *  013ab0a5   e8 d6c70800      call .01437880
+ *  013ab0aa   8d85 58fdffff    lea eax,dword ptr ss:[ebp-0x2a8]
+ *  013ab0b0   50               push eax
+ *  013ab0b1   c745 fc ffffffff mov dword ptr ss:[ebp-0x4],-0x1
+ *  013ab0b8   e8 c3c70800      call .01437880
+ *  013ab0bd  ^e9 38fcffff      jmp .013aacfa
+ *  013ab0c2   8b9d 18fdffff    mov ebx,dword ptr ss:[ebp-0x2e8]
+ *  013ab0c8   85db             test ebx,ebx
+ *  013ab0ca   74 68            je short .013ab134
+ *  013ab0cc   837f 14 08       cmp dword ptr ds:[edi+0x14],0x8
+ *  013ab0d0   72 04            jb short .013ab0d6
+ *  013ab0d2   8b07             mov eax,dword ptr ds:[edi]
+ *  013ab0d4   eb 02            jmp short .013ab0d8
+ *  013ab0d6   8bc7             mov eax,edi
+ *  013ab0d8   8b4f 10          mov ecx,dword ptr ds:[edi+0x10]
+ *  013ab0db   8d0448           lea eax,dword ptr ds:[eax+ecx*2]
+ *  013ab0de   8b8d 1cfdffff    mov ecx,dword ptr ss:[ebp-0x2e4]
+ *  013ab0e4   33d2             xor edx,edx
+ *  013ab0e6   c745 cc 07000000 mov dword ptr ss:[ebp-0x34],0x7
+ *  013ab0ed   c745 c8 00000000 mov dword ptr ss:[ebp-0x38],0x0
+ *  013ab0f4   66:8955 b8       mov word ptr ss:[ebp-0x48],dx
+ *  013ab0f8   3bc8             cmp ecx,eax
+ *  013ab0fa   74 0f            je short .013ab10b
+ *  013ab0fc   2bc1             sub eax,ecx
+ *  013ab0fe   d1f8             sar eax,1
+ *  013ab100   50               push eax
+ *  013ab101   8bc1             mov eax,ecx
+ *  013ab103   8d75 b8          lea esi,dword ptr ss:[ebp-0x48]
+ *  013ab106   e8 2572f2ff      call .012d2330
+ *  013ab10b   6a 00            push 0x0
+ *  013ab10d   8d45 b8          lea eax,dword ptr ss:[ebp-0x48]
+ *  013ab110   50               push eax
+ *  013ab111   83c8 ff          or eax,0xffffffff
+ *  013ab114   8bcb             mov ecx,ebx
+ *  013ab116   c745 fc 00000000 mov dword ptr ss:[ebp-0x4],0x0
+ *  013ab11d   e8 2e6ef2ff      call .012d1f50
+ *  013ab122   837d cc 08       cmp dword ptr ss:[ebp-0x34],0x8
+ *  013ab126   72 0c            jb short .013ab134
+ *  013ab128   8b4d b8          mov ecx,dword ptr ss:[ebp-0x48]
+ *  013ab12b   51               push ecx
+ *  013ab12c   e8 a5bd1900      call .01546ed6
+ *  013ab131   83c4 04          add esp,0x4
+ *  013ab134   8b4d f4          mov ecx,dword ptr ss:[ebp-0xc]
+ *  013ab137   64:890d 00000000 mov dword ptr fs:[0],ecx
+ *  013ab13e   59               pop ecx
+ *  013ab13f   5f               pop edi
+ *  013ab140   5e               pop esi
+ *  013ab141   5b               pop ebx
+ *  013ab142   8b4d f0          mov ecx,dword ptr ss:[ebp-0x10]
+ *  013ab145   33cd             xor ecx,ebp
+ *  013ab147   e8 6ab30e00      call .014964b6
+ *  013ab14c   8be5             mov esp,ebp
+ *  013ab14e   5d               pop ebp
+ *  013ab14f   c2 0800          retn 0x8
+ *  013ab152   cc               int3
+ *  013ab153   cc               int3
+ *  013ab154   cc               int3
+ *
+ *  10/18/2014
+ *  リア充クラスメイト孕ませ催眠
+ *
+ *  01140edb   cc               int3
+ *  01140edc   cc               int3
+ *  01140edd   cc               int3
+ *  01140ede   cc               int3
+ *  01140edf   cc               int3
+ *  01140ee0   55               push ebp
+ *  01140ee1   8bec             mov ebp,esp
+ *  01140ee3   6a ff            push -0x1
+ *  01140ee5   68 c6514a01      push .014a51c6
+ *  01140eea   64:a1 00000000   mov eax,dword ptr fs:[0]
+ *  01140ef0   50               push eax
+ *  01140ef1   81ec dc020000    sub esp,0x2dc
+ *  01140ef7   a1 10745501      mov eax,dword ptr ds:[0x1557410]
+ *  01140efc   33c5             xor eax,ebp
+ *  01140efe   8945 f0          mov dword ptr ss:[ebp-0x10],eax
+ *  01140f01   53               push ebx
+ *  01140f02   56               push esi
+ *  01140f03   57               push edi
+ *  01140f04   50               push eax
+ *  01140f05   8d45 f4          lea eax,dword ptr ss:[ebp-0xc]
+ *  01140f08   64:a3 00000000   mov dword ptr fs:[0],eax
+ *  01140f0e   8bd9             mov ebx,ecx
+ *  01140f10   8b7d 08          mov edi,dword ptr ss:[ebp+0x8]
+ *  01140f13   837f 10 00       cmp dword ptr ds:[edi+0x10],0x0
+ *  01140f17   8b45 0c          mov eax,dword ptr ss:[ebp+0xc]
+ *  01140f1a   8985 1cfdffff    mov dword ptr ss:[ebp-0x2e4],eax
+ *  01140f20   8d47 10          lea eax,dword ptr ds:[edi+0x10]
+ *  01140f23   89bd 38fdffff    mov dword ptr ss:[ebp-0x2c8],edi
+ *  01140f29   8985 20fdffff    mov dword ptr ss:[ebp-0x2e0],eax
+ *  01140f2f   0f84 2a050000    je .0114145f
+ *  01140f35   8b8b 10010000    mov ecx,dword ptr ds:[ebx+0x110]
+ *  01140f3b   b8 67666666      mov eax,0x66666667
+ *  01140f40   2b8b 0c010000    sub ecx,dword ptr ds:[ebx+0x10c]
+ *  01140f46   f7e9             imul ecx
+ *  01140f48   8b85 20fdffff    mov eax,dword ptr ss:[ebp-0x2e0]
+ *  01140f4e   8b8b 14010000    mov ecx,dword ptr ds:[ebx+0x114]
+ *  01140f54   2b8b 0c010000    sub ecx,dword ptr ds:[ebx+0x10c]
+ *  01140f5a   c1fa 08          sar edx,0x8
+ *  01140f5d   8bf2             mov esi,edx
+ *  01140f5f   c1ee 1f          shr esi,0x1f
+ *  01140f62   03f2             add esi,edx
+ *  01140f64   0330             add esi,dword ptr ds:[eax]
+ *  01140f66   b8 67666666      mov eax,0x66666667
+ *  01140f6b   f7e9             imul ecx
+ *  01140f6d   c1fa 08          sar edx,0x8
+ *  01140f70   8bc2             mov eax,edx
+ *  01140f72   c1e8 1f          shr eax,0x1f
+ *  01140f75   03c2             add eax,edx
+ *  01140f77   3bc6             cmp eax,esi
+ *  01140f79   73 1e            jnb short .01140f99
+ *  01140f7b   81fe 66666600    cmp esi,0x666666                         ; unicode "s the data.
+ *  01140f81   76 0a            jbe short .01140f8d
+ *  01140f83   68 c00f4f01      push .014f0fc0                           ; ascii "vector<t> too long"
+ *  01140f88   e8 b1a30e00      call .0122b33e
+ *  01140f8d   56               push esi
+ *  01140f8e   8d8b 0c010000    lea ecx,dword ptr ds:[ebx+0x10c]
+ *  01140f94   e8 67acfcff      call .0110bc00
+ *  01140f99   837f 14 08       cmp dword ptr ds:[edi+0x14],0x8
+ *  01140f9d   72 04            jb short .01140fa3
+ *  01140f9f   8b37             mov esi,dword ptr ds:[edi]
+ *  01140fa1   eb 02            jmp short .01140fa5
+ *  01140fa3   8bf7             mov esi,edi
+ *  01140fa5   89b5 34fdffff    mov dword ptr ss:[ebp-0x2cc],esi
+ *  01140fab   eb 03            jmp short .01140fb0
+ *  01140fad   8d49 00          lea ecx,dword ptr ds:[ecx]
+ *  01140fb0   8b57 14          mov edx,dword ptr ds:[edi+0x14]
+ *  01140fb3   83fa 08          cmp edx,0x8
+ *  01140fb6   72 04            jb short .01140fbc
+ *  01140fb8   8b07             mov eax,dword ptr ds:[edi]
+ *  01140fba   eb 02            jmp short .01140fbe
+ *  01140fbc   8bc7             mov eax,edi
+ *  01140fbe   8b8d 20fdffff    mov ecx,dword ptr ss:[ebp-0x2e0]
+ *  01140fc4   8b09             mov ecx,dword ptr ds:[ecx]
+ *  01140fc6   03c9             add ecx,ecx
+ *  01140fc8   03c1             add eax,ecx
+ *  01140fca   3bf0             cmp esi,eax
+ *  01140fcc   0f84 8d040000    je .0114145f
+ *  01140fd2   8b85 38fdffff    mov eax,dword ptr ss:[ebp-0x2c8]
+ *  01140fd8   8bfe             mov edi,esi
+ *  01140fda   c785 3cfdffff 00>mov dword ptr ss:[ebp-0x2c4],0x0
+ *  01140fe4   c785 2cfdffff ff>mov dword ptr ss:[ebp-0x2d4],-0x1
+ *  01140fee   83fa 08          cmp edx,0x8
+ *  01140ff1   72 02            jb short .01140ff5
+ *  01140ff3   8b00             mov eax,dword ptr ds:[eax]
+ *  01140ff5   03c1             add eax,ecx
+ *  01140ff7   8d95 3cfdffff    lea edx,dword ptr ss:[ebp-0x2c4]
+ *  01140ffd   8d8d 2cfdffff    lea ecx,dword ptr ss:[ebp-0x2d4]
+ *  01141003   51               push ecx
+ *  01141004   50               push eax
+ *  01141005   8d8d 34fdffff    lea ecx,dword ptr ss:[ebp-0x2cc]
+ *  0114100b   e8 e033fbff      call .010f43f0
+ *  01141010   8bb5 2cfdffff    mov esi,dword ptr ss:[ebp-0x2d4]
+ *  01141016   83c4 08          add esp,0x8
+ *  01141019   83fe 0a          cmp esi,0xa
+ *  0114101c   75 18            jnz short .01141036
+ *  0114101e   8bcb             mov ecx,ebx
+ *  01141020   e8 2b060000      call .01141650
+ *  01141025   8bb5 34fdffff    mov esi,dword ptr ss:[ebp-0x2cc]
+ *  0114102b   8bbd 38fdffff    mov edi,dword ptr ss:[ebp-0x2c8]
+ *  01141031  ^e9 7affffff      jmp .01140fb0
+ *  01141036   83fe 07          cmp esi,0x7
+ *  01141039   75 38            jnz short .01141073
+ *  0114103b   33c0             xor eax,eax
+ *  0114103d   c783 e0000000 00>mov dword ptr ds:[ebx+0xe0],0x0
+ *  01141047   8bcb             mov ecx,ebx
+ *  01141049   66:8983 e4000000 mov word ptr ds:[ebx+0xe4],ax
+ *  01141050   8983 e8000000    mov dword ptr ds:[ebx+0xe8],eax
+ *  01141056   e8 f5050000      call .01141650
+ *  0114105b   8bb5 34fdffff    mov esi,dword ptr ss:[ebp-0x2cc]
+ *  01141061   8bbd 38fdffff    mov edi,dword ptr ss:[ebp-0x2c8]
+ *  01141067   c683 f1000000 01 mov byte ptr ds:[ebx+0xf1],0x1
+ *  0114106e  ^e9 3dffffff      jmp .01140fb0
+ *  01141073   8b85 3cfdffff    mov eax,dword ptr ss:[ebp-0x2c4]
+ *  01141079   85c0             test eax,eax
+ *  0114107b   75 36            jnz short .011410b3
+ *  0114107d   85f6             test esi,esi
+ *  0114107f   74 7f            je short .01141100
+ *  01141081   85c0             test eax,eax
+ *  01141083   75 2e            jnz short .011410b3
+ *  01141085   a1 00358905      mov eax,dword ptr ds:[0x5893500]
+ *  0114108a   a8 01            test al,0x1
+ *  0114108c   75 0d            jnz short .0114109b
+ *  0114108e   83c8 01          or eax,0x1
+ *  01141091   a3 00358905      mov dword ptr ds:[0x5893500],eax
+ *  01141096   e8 65160b00      call .011f2700
+ *  0114109b   0fb7c6           movzx eax,si
+ *  0114109e   80b8 10358905 01 cmp byte ptr ds:[eax+0x5893510],0x1
+ *  011410a5   75 0c            jnz short .011410b3
+ *  011410a7   8b43 68          mov eax,dword ptr ds:[ebx+0x68]
+ *  011410aa   99               cdq
+ *  011410ab   2bc2             sub eax,edx
+ *  011410ad   8bc8             mov ecx,eax
+ *  011410af   d1f9             sar ecx,1
+ *  011410b1   eb 03            jmp short .011410b6
+ *  011410b3   8b4b 68          mov ecx,dword ptr ds:[ebx+0x68]
+ *  011410b6   8b43 18          mov eax,dword ptr ds:[ebx+0x18]
+ *  011410b9   8b93 a0000000    mov edx,dword ptr ds:[ebx+0xa0]
+ *  011410bf   03c2             add eax,edx
+ *  011410c1   898d 28fdffff    mov dword ptr ss:[ebp-0x2d8],ecx
+ *  011410c7   034b 58          add ecx,dword ptr ds:[ebx+0x58]
+ *  011410ca   3bc8             cmp ecx,eax
+ *  011410cc   7f 0f            jg short .011410dd
+ *  011410ce   3bca             cmp ecx,edx
+ *  011410d0   7e 3f            jle short .01141111
+ *  011410d2   8bce             mov ecx,esi
+ *  011410d4   e8 37faffff      call .01140b10
+ *  011410d9   84c0             test al,al
+ *  011410db   75 34            jnz short .01141111
+ *  011410dd   8bcb             mov ecx,ebx
+ *  011410df   e8 6c050000      call .01141650
+ *  011410e4   83bd 3cfdffff 00 cmp dword ptr ss:[ebp-0x2c4],0x0
+ *  011410eb   75 24            jnz short .01141111
+ *  011410ed   83fe 20          cmp esi,0x20
+ *  011410f0   74 0e            je short .01141100
+ *  011410f2   81fe 00300000    cmp esi,0x3000
+ *  011410f8   75 17            jnz short .01141111
+ *  011410fa   8d9b 00000000    lea ebx,dword ptr ds:[ebx]
+ *  01141100   8bb5 34fdffff    mov esi,dword ptr ss:[ebp-0x2cc]
+ *  01141106   8bbd 38fdffff    mov edi,dword ptr ss:[ebp-0x2c8]
+ *  0114110c  ^e9 9ffeffff      jmp .01140fb0
+ *  01141111   8b43 5c          mov eax,dword ptr ds:[ebx+0x5c]
+ *  01141114   3b83 a4000000    cmp eax,dword ptr ds:[ebx+0xa4]
+ *  0114111a   0f8d cb020000    jge .011413eb
+ *  01141120   8d8d 40fdffff    lea ecx,dword ptr ss:[ebp-0x2c0]
+ *  01141126   e8 d5e3ffff      call .0113f500
+ *  0114112b   c745 fc 01000000 mov dword ptr ss:[ebp-0x4],0x1
+ *  01141132   8b4b 74          mov ecx,dword ptr ds:[ebx+0x74]
+ *  01141135   8b15 98285701    mov edx,dword ptr ds:[0x1572898]
+ *  0114113b   898d 30fdffff    mov dword ptr ss:[ebp-0x2d0],ecx
+ *  01141141   83f9 ff          cmp ecx,-0x1
+ *  01141144   75 23            jnz short .01141169
+ *  01141146   80ba 58010000 00 cmp byte ptr ds:[edx+0x158],0x0
+ *  0114114d   74 11            je short .01141160
+ *  0114114f   8b8b d8000000    mov ecx,dword ptr ds:[ebx+0xd8]
+ *  01141155   898d 30fdffff    mov dword ptr ss:[ebp-0x2d0],ecx
+ *  0114115b   83f9 ff          cmp ecx,-0x1
+ *  0114115e   75 09            jnz short .01141169
+ *  01141160   8b43 24          mov eax,dword ptr ds:[ebx+0x24]
+ *  01141163   8985 30fdffff    mov dword ptr ss:[ebp-0x2d0],eax
+ *  01141169   8b43 78          mov eax,dword ptr ds:[ebx+0x78]
+ *  0114116c   8985 24fdffff    mov dword ptr ss:[ebp-0x2dc],eax
+ *  01141172   83f8 ff          cmp eax,-0x1
+ *  01141175   75 23            jnz short .0114119a
+ *  01141177   80ba 58010000 00 cmp byte ptr ds:[edx+0x158],0x0
+ *  0114117e   74 11            je short .01141191
+ *  01141180   8b83 dc000000    mov eax,dword ptr ds:[ebx+0xdc]
+ *  01141186   8985 24fdffff    mov dword ptr ss:[ebp-0x2dc],eax
+ *  0114118c   83f8 ff          cmp eax,-0x1
+ *  0114118f   75 09            jnz short .0114119a
+ *  01141191   8b43 28          mov eax,dword ptr ds:[ebx+0x28]
+ *  01141194   8985 24fdffff    mov dword ptr ss:[ebp-0x2dc],eax
+ *  0114119a   8b53 64          mov edx,dword ptr ds:[ebx+0x64]
+ *  0114119d   0353 5c          add edx,dword ptr ds:[ebx+0x5c]
+ *  011411a0   8b4b 60          mov ecx,dword ptr ds:[ebx+0x60]
+ *  011411a3   034b 58          add ecx,dword ptr ds:[ebx+0x58]
+ *  011411a6   83bd 3cfdffff 01 cmp dword ptr ss:[ebp-0x2c4],0x1
+ *  011411ad   8bb5 30fdffff    mov esi,dword ptr ss:[ebp-0x2d0]
+ *  011411b3   8b43 68          mov eax,dword ptr ds:[ebx+0x68]
+ *  011411b6   c785 18fdffff 00>mov dword ptr ss:[ebp-0x2e8],0x0
+ *  011411c0   0f44b5 18fdffff  cmove esi,dword ptr ss:[ebp-0x2e8]
+ *  011411c7   80bb f2000000 00 cmp byte ptr ds:[ebx+0xf2],0x0
+ *  011411ce   89b5 30fdffff    mov dword ptr ss:[ebp-0x2d0],esi
+ *  011411d4   8bb5 3cfdffff    mov esi,dword ptr ss:[ebp-0x2c4]
+ *  011411da   8985 48fdffff    mov dword ptr ss:[ebp-0x2b8],eax
+ *  011411e0   8b85 30fdffff    mov eax,dword ptr ss:[ebp-0x2d0]
+ *  011411e6   89b5 40fdffff    mov dword ptr ss:[ebp-0x2c0],esi
+ *  011411ec   8bb5 2cfdffff    mov esi,dword ptr ss:[ebp-0x2d4]
+ *  011411f2   8985 4cfdffff    mov dword ptr ss:[ebp-0x2b4],eax
+ *  011411f8   8b85 24fdffff    mov eax,dword ptr ss:[ebp-0x2dc]
+ *  011411fe   89b5 44fdffff    mov dword ptr ss:[ebp-0x2bc],esi
+ *  01141204   8985 50fdffff    mov dword ptr ss:[ebp-0x2b0],eax
+ *  0114120a   898d 54fdffff    mov dword ptr ss:[ebp-0x2ac],ecx
+ *  01141210   8995 58fdffff    mov dword ptr ss:[ebp-0x2a8],edx
+ *  01141216   74 19            je short .01141231
+ *  01141218   8b43 58          mov eax,dword ptr ds:[ebx+0x58]
+ *  0114121b   8983 f4000000    mov dword ptr ds:[ebx+0xf4],eax
+ *  01141221   8b43 5c          mov eax,dword ptr ds:[ebx+0x5c]
+ *  01141224   8983 f8000000    mov dword ptr ds:[ebx+0xf8],eax
+ *  0114122a   c683 f2000000 00 mov byte ptr ds:[ebx+0xf2],0x0
+ *  01141231   8b43 6c          mov eax,dword ptr ds:[ebx+0x6c]
+ *  01141234   0385 28fdffff    add eax,dword ptr ss:[ebp-0x2d8]
+ *  0114123a   0143 58          add dword ptr ds:[ebx+0x58],eax
+ *  0114123d   8b85 3cfdffff    mov eax,dword ptr ss:[ebp-0x2c4]
+ *  01141243   8b4b 58          mov ecx,dword ptr ds:[ebx+0x58]
+ *  01141246   85c0             test eax,eax
+ *  01141248   75 51            jnz short .0114129b
+ *  0114124a   81fe 0c300000    cmp esi,0x300c  ; jichi: hook here, utf16 character is in esi
+ *  01141250   74 10            je short .01141262
+ *  01141252   81fe 0e300000    cmp esi,0x300e
+ *  01141258   74 08            je short .01141262
+ *  0114125a   81fe 08ff0000    cmp esi,0xff08
+ *  01141260   75 39            jnz short .0114129b
+ *  01141262   80bb f1000000 00 cmp byte ptr ds:[ebx+0xf1],0x0
+ *  01141269   74 19            je short .01141284
+ *  0114126b   898b e0000000    mov dword ptr ds:[ebx+0xe0],ecx
+ *  01141271   66:89b3 e4000000 mov word ptr ds:[ebx+0xe4],si
+ *  01141278   c783 e8000000 01>mov dword ptr ds:[ebx+0xe8],0x1
+ *  01141282   eb 17            jmp short .0114129b
+ *  01141284   0fb783 e4000000  movzx eax,word ptr ds:[ebx+0xe4]
+ *  0114128b   3bf0             cmp esi,eax
+ *  0114128d   8b85 3cfdffff    mov eax,dword ptr ss:[ebp-0x2c4]
+ *  01141293   75 06            jnz short .0114129b
+ *  01141295   ff83 e8000000    inc dword ptr ds:[ebx+0xe8]
+ *  0114129b   8b93 e8000000    mov edx,dword ptr ds:[ebx+0xe8]
+ *  011412a1   85d2             test edx,edx
+ *  011412a3   7e 78            jle short .0114131d
+ *  011412a5   85c0             test eax,eax
+ *  011412a7   75 52            jnz short .011412fb
+ *  011412a9   0fb78b e4000000  movzx ecx,word ptr ds:[ebx+0xe4]
+ *  011412b0   b8 0c300000      mov eax,0x300c
+ *  011412b5   66:3bc8          cmp cx,ax
+ *  011412b8   75 11            jnz short .011412cb
+ *  011412ba   81fe 0d300000    cmp esi,0x300d
+ *  011412c0   75 09            jnz short .011412cb
+ *  011412c2   8d42 ff          lea eax,dword ptr ds:[edx-0x1]
+ *  011412c5   8983 e8000000    mov dword ptr ds:[ebx+0xe8],eax
+ *  011412cb   b8 0e300000      mov eax,0x300e
+ *  011412d0   66:3bc8          cmp cx,ax
+ *  011412d3   75 0e            jnz short .011412e3
+ *  011412d5   81fe 0f300000    cmp esi,0x300f
+ *  011412db   75 06            jnz short .011412e3
+ *  011412dd   ff8b e8000000    dec dword ptr ds:[ebx+0xe8]
+ *  011412e3   b8 08ff0000      mov eax,0xff08
+ *  011412e8   66:3bc8          cmp cx,ax
+ *  011412eb   75 0e            jnz short .011412fb
+ *  011412ed   81fe 09ff0000    cmp esi,0xff09
+ *  011412f3   75 06            jnz short .011412fb
+ *  011412f5   ff8b e8000000    dec dword ptr ds:[ebx+0xe8]
+ *  011412fb   83bb e8000000 00 cmp dword ptr ds:[ebx+0xe8],0x0
+ *  01141302   75 19            jnz short .0114131d
+ *  01141304   33c0             xor eax,eax
+ *  01141306   c783 e0000000 00>mov dword ptr ds:[ebx+0xe0],0x0
+ *  01141310   66:8983 e4000000 mov word ptr ds:[ebx+0xe4],ax
+ *  01141317   8983 e8000000    mov dword ptr ds:[ebx+0xe8],eax
+ *  0114131d   8d85 40fdffff    lea eax,dword ptr ss:[ebp-0x2c0]
+ *  01141323   50               push eax
+ *  01141324   8d8b 0c010000    lea ecx,dword ptr ds:[ebx+0x10c]
+ *  0114132a   e8 31a6fcff      call .0110b960
+ *  0114132f   83bd 3cfdffff 00 cmp dword ptr ss:[ebp-0x2c4],0x0
+ *  01141336   8bb5 34fdffff    mov esi,dword ptr ss:[ebp-0x2cc]
+ *  0114133c   75 13            jnz short .01141351
+ *  0114133e   ffb5 2cfdffff    push dword ptr ss:[ebp-0x2d4]
+ *  01141344   8d8b a8000000    lea ecx,dword ptr ds:[ebx+0xa8]
+ *  0114134a   e8 010a0000      call .01141d50
+ *  0114134f   eb 64            jmp short .011413b5
+ *  01141351   33c0             xor eax,eax
+ *  01141353   c745 ec 07000000 mov dword ptr ss:[ebp-0x14],0x7
+ *  0114135a   c745 e8 00000000 mov dword ptr ss:[ebp-0x18],0x0
+ *  01141361   66:8945 d8       mov word ptr ss:[ebp-0x28],ax
+ *  01141365   3bfe             cmp edi,esi
+ *  01141367   74 10            je short .01141379
+ *  01141369   8bc6             mov eax,esi
+ *  0114136b   8d4d d8          lea ecx,dword ptr ss:[ebp-0x28]
+ *  0114136e   2bc7             sub eax,edi
+ *  01141370   d1f8             sar eax,1
+ *  01141372   50               push eax
+ *  01141373   57               push edi
+ *  01141374   e8 b7daf2ff      call .0106ee30
+ *  01141379   6a ff            push -0x1
+ *  0114137b   6a 00            push 0x0
+ *  0114137d   8d45 d8          lea eax,dword ptr ss:[ebp-0x28]
+ *  01141380   c645 fc 02       mov byte ptr ss:[ebp-0x4],0x2
+ *  01141384   50               push eax
+ *  01141385   8d8b a8000000    lea ecx,dword ptr ds:[ebx+0xa8]
+ *  0114138b   e8 205cf3ff      call .01076fb0
+ *  01141390   837d ec 08       cmp dword ptr ss:[ebp-0x14],0x8
+ *  01141394   72 0b            jb short .011413a1
+ *  01141396   ff75 d8          push dword ptr ss:[ebp-0x28]
+ *  01141399   e8 fccb0e00      call .0122df9a
+ *  0114139e   83c4 04          add esp,0x4
+ *  011413a1   33c0             xor eax,eax
+ *  011413a3   c745 ec 07000000 mov dword ptr ss:[ebp-0x14],0x7
+ *  011413aa   c745 e8 00000000 mov dword ptr ss:[ebp-0x18],0x0
+ *  011413b1   66:8945 d8       mov word ptr ss:[ebp-0x28],ax
+ *  011413b5   c683 f1000000 00 mov byte ptr ds:[ebx+0xf1],0x0
+ *  011413bc   8d8d 90feffff    lea ecx,dword ptr ss:[ebp-0x170]
+ *  011413c2   c745 fc 03000000 mov dword ptr ss:[ebp-0x4],0x3
+ *  011413c9   e8 42bb0800      call .011ccf10
+ *  011413ce   8d8d 60fdffff    lea ecx,dword ptr ss:[ebp-0x2a0]
+ *  011413d4   c745 fc ffffffff mov dword ptr ss:[ebp-0x4],-0x1
+ *  011413db   e8 30bb0800      call .011ccf10
+ *  011413e0   8bbd 38fdffff    mov edi,dword ptr ss:[ebp-0x2c8]
+ *  011413e6  ^e9 c5fbffff      jmp .01140fb0
+ *  011413eb   8b9d 1cfdffff    mov ebx,dword ptr ss:[ebp-0x2e4]
+ *  011413f1   85db             test ebx,ebx
+ *  011413f3   74 6a            je short .0114145f
+ *  011413f5   8b8d 38fdffff    mov ecx,dword ptr ss:[ebp-0x2c8]
+ *  011413fb   8379 14 08       cmp dword ptr ds:[ecx+0x14],0x8
+ *  011413ff   72 02            jb short .01141403
+ *  01141401   8b09             mov ecx,dword ptr ds:[ecx]
+ *  01141403   8b85 20fdffff    mov eax,dword ptr ss:[ebp-0x2e0]
+ *  01141409   c745 d4 07000000 mov dword ptr ss:[ebp-0x2c],0x7
+ *  01141410   c745 d0 00000000 mov dword ptr ss:[ebp-0x30],0x0
+ *  01141417   8b00             mov eax,dword ptr ds:[eax]
+ *  01141419   8d0441           lea eax,dword ptr ds:[ecx+eax*2]
+ *  0114141c   33c9             xor ecx,ecx
+ *  0114141e   66:894d c0       mov word ptr ss:[ebp-0x40],cx
+ *  01141422   3bf8             cmp edi,eax
+ *  01141424   74 0e            je short .01141434
+ *  01141426   2bc7             sub eax,edi
+ *  01141428   8d4d c0          lea ecx,dword ptr ss:[ebp-0x40]
+ *  0114142b   d1f8             sar eax,1
+ *  0114142d   50               push eax
+ *  0114142e   57               push edi
+ *  0114142f   e8 fcd9f2ff      call .0106ee30
+ *  01141434   8d45 c0          lea eax,dword ptr ss:[ebp-0x40]
+ *  01141437   c745 fc 00000000 mov dword ptr ss:[ebp-0x4],0x0
+ *  0114143e   3bd8             cmp ebx,eax
+ *  01141440   74 0c            je short .0114144e
+ *  01141442   6a ff            push -0x1
+ *  01141444   6a 00            push 0x0
+ *  01141446   50               push eax
+ *  01141447   8bcb             mov ecx,ebx
+ *  01141449   e8 c2def2ff      call .0106f310
+ *  0114144e   837d d4 08       cmp dword ptr ss:[ebp-0x2c],0x8
+ *  01141452   72 0b            jb short .0114145f
+ *  01141454   ff75 c0          push dword ptr ss:[ebp-0x40]
+ *  01141457   e8 3ecb0e00      call .0122df9a
+ *  0114145c   83c4 04          add esp,0x4
+ *  0114145f   8b4d f4          mov ecx,dword ptr ss:[ebp-0xc]
+ *  01141462   64:890d 00000000 mov dword ptr fs:[0],ecx
+ *  01141469   59               pop ecx
+ *  0114146a   5f               pop edi
+ *  0114146b   5e               pop esi
+ *  0114146c   5b               pop ebx
+ *  0114146d   8b4d f0          mov ecx,dword ptr ss:[ebp-0x10]
+ *  01141470   33cd             xor ecx,ebp
+ *  01141472   e8 14cb0e00      call .0122df8b
+ *  01141477   8be5             mov esp,ebp
+ *  01141479   5d               pop ebp
+ *  0114147a   c2 0800          retn 0x8
+ *  0114147d   cc               int3
+ *  0114147e   cc               int3
  */
 bool InsertSiglus2Hook()
 {
@@ -976,22 +1700,37 @@ bool InsertSiglus2Hook()
   //};
   //enum { cur_ins_size = 2 };
   //enum { hook_offset = sizeof(bytes) - cur_ins_size }; // = 14 - 2  = 12, current inst is the last one
-  const BYTE bytes[] = {
-    0x3b,0xd7,  // cmp edx,edi ; hook here
-    0x75,0x4b   // jnz short
-  };
-  //enum { hook_offset = 0 };
+
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
+  ULONG addr;
+  { // type 1
+    const BYTE bytes[] = {
+      0x3b,0xd7,  // cmp edx,edi ; hook here
+      0x75,0x4b   // jnz short
+    };
+    //enum { hook_offset = 0 };
+    addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
+    if (addr)
+      ConsoleOutput("vnreng:Siglus2: type 1 pattern found");
+  }
   if (!addr) {
-    ConsoleOutput("vnreng:Siglus2: pattern not found");
-    //ConsoleOutput("Not SiglusEngine2");
+    const BYTE bytes[] = {
+      0x81,0xfe, 0x0c,0x30,0x00,0x00 // 0114124a   81fe 0c300000    cmp esi,0x300c  ; jichi: hook here
+    };
+    //enum { hook_offset = 0 };
+    addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
+    if (addr)
+      ConsoleOutput("vnreng:Siglus2: type 2 pattern found");
+  }
+
+  if (!addr) {
+    ConsoleOutput("vnreng:Siglus2: both type1 and type2 patterns not found");
     return false;
   }
 
   HookParam hp = {};
   hp.addr = addr;
-  hp.off = -0x20;
+  hp.off = pusha_esi_off - 4; // -0x20
   hp.type = USING_UNICODE|FIXING_SPLIT; // jichi 6/1/2014: fixing the split value
   hp.length_offset = 1;
 

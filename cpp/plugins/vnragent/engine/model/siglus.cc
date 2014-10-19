@@ -80,8 +80,16 @@ struct HookStruct
   DWORD size,         // 0x10
         capacity;     // 0x14
 
+  // 01140f8d   56               push esi
+  // 01140f8e   8d8b 0c010000    lea ecx,dword ptr ds:[ebx+0x10c]
+  // 01140f94   e8 67acfcff      call .0110bc00
+  // 01140f99   837f 14 08       cmp dword ptr ds:[edi+0x14],0x8
+  // 01140f9d   72 04            jb short .01140fa3
+  // 01140f9f   8b37             mov esi,dword ptr ds:[edi]
+  // 01140fa1   eb 02            jmp short .01140fa5
+  //
   // According to the assembly code, this[0x14] should be larger than 8
-  // 004DACFA   mov     edx, [edi+14h] ; sub_4DAC70+130j ...
+  // 004DACFA   mov     edx, [edi+14h] ; sub_4DAC70+130 ...
   // 004DACFD   cmp     edx, 8
   //            jb      short loc_4DAD06
   LPCWSTR text() const
@@ -161,32 +169,31 @@ int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
  */
 ulong SiglusEngine::search(ulong startAddress, ulong stopAddress)
 {
-  //const BYTE bytes[] = { // size = 14
-  //  0x01,0x53, 0x58,                // 0153 58          add dword ptr ds:[ebx+58],edx
-  //  0x8b,0x95, 0x34,0xfd,0xff,0xff, // 8b95 34fdffff    mov edx,dword ptr ss:[ebp-2cc]
-  //  0x8b,0x43, 0x58,                // 8b43 58          mov eax,dword ptr ds:[ebx+58]
-  //  0x3b,0xd7                       // 3bd7             cmp edx,edi ; hook here
-  //};
-  //enum { cur_ins_size = 2 };
-  //enum { hook_offset = sizeof(bytes) - cur_ins_size }; // = 14 - 2  = 12, current inst is the last one
-  const BYTE bytes1[] = {
-    0x3b,0xd7, // 013baf32  |. 3bd7       |cmp edx,edi ; jichi: ITH hook here, char saved in edi
-    0x75,0x4b  // 013baf34  |. 75 4b      |jnz short siglusen.013baf81
-  };
-  //enum { hook_offset = 0 };
-  //ulong range1 = min(stopAddress - startAddress, Engine::MaximumMemoryRange);
-  ulong addr = MemDbg::findBytes(bytes1, sizeof(bytes1), startAddress, stopAddress);
-  if (!addr)
-    //ConsoleOutput("vnreng:Siglus2: pattern not found");
-    return 0;
+  ulong addr;
+  {
+    const BYTE bytes1[] = {
+      0x3b,0xd7, // 013baf32  |. 3bd7       |cmp edx,edi ; jichi: ITH hook here, char saved in edi
+      0x75,0x4b  // 013baf34  |. 75 4b      |jnz short siglusen.013baf81
+    };
+    addr = MemDbg::findBytes(bytes1, sizeof(bytes1), startAddress, stopAddress);
 
-  const BYTE bytes2[] = {
+    const BYTE bytes2[] = {
+      0x81,0xfe, 0x0c,0x30,0x00,0x00 // 0114124a   81fe 0c300000    cmp esi,0x300c  ; jichi: hook here
+    };
+    if (!addr)
+      addr = MemDbg::findBytes(bytes2, sizeof(bytes2), startAddress, stopAddress);
+    if (!addr)
+      return 0;
+  }
+
+  const BYTE bytes[] = {
     0x55,      // 013bac70  /$ 55       push ebp ; jichi: function starts
     0x8b,0xec, // 013bac71  |. 8bec     mov ebp,esp
     0x6a,0xff  // 013bac73  |. 6a ff    push -0x1
   };
-  enum { range = 0x300 }; // 0x013baf32  -0x013bac70 = 706 = 0x2c2
-  return MemDbg::findBytes(bytes2, sizeof(bytes2), addr - range, addr);
+  //enum { range = 0x300 }; // 0x013baf32  -0x013bac70 = 706 = 0x2c2
+  enum { range = 0x400 };   // 0x013baf32  -0x013bac70 = 0x36a
+  return MemDbg::findBytes(bytes, sizeof(bytes), addr - range, addr);
   //if (!reladdr)
   //  //ConsoleOutput("vnreng:Siglus2: pattern not found");
   //  return 0;
