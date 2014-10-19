@@ -12,7 +12,7 @@ if __name__ == '__main__': # DEBUG
 #import re
 import MeCab
 from sakurakit import skos, skstr
-from cconv import jaconv
+from jaconv import jaconv
 from unitraits import jpchars, uniconv
 import mecabdef, mecabfmt
 
