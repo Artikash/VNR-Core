@@ -9,9 +9,9 @@ from PySide.QtCore import QThread, Signal, Qt, QMutex
 from sakurakit import skfileio, skwincom
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
+from opencc.opencc import ja2zht, zht2zhs
 import voiceroid.online as vrapi
 import voicetext.online as vtapi
-from convutil import zht2zhs
 from mytr import my, mytr_
 import growl, rc
 
@@ -111,8 +111,10 @@ class SapiEngine(OfflineEngine):
         e.stop()
       else:
         self._speaking = True
-      if language == 'zht':
-        text = zht2zhs(text)
+      if language and language.startswith('zh'):
+        text = ja2zht(text)
+        if language == 'zht':
+          text = zht2zhs(text)
       e.speak(text)
 
   def stop(self):

@@ -44,18 +44,22 @@ def makeconverter(fr, to):
   """
   @param  fr  int
   @param  to  int
-  @return  SimpleChineseConverter
+  @return  SimpleChineseConverter or None
   """
   from pycc import SimpleChineseConverter
   ret = SimpleChineseConverter()
+  reverse = False
   txt = DIC_NAMES.get((fr, to))
+  if not txt:
+    txt = DIC_NAMES.get((to, fr))
+    reverse = True
   if txt:
     path = os.path.join(OPENCC_DICDIR, txt)
     if os.path.exists(path):
       #from sakurakit.skprofiler import SkProfiler
       #with SkProfiler(): # 10/19/2014: 0.006 seconds for zhs2zht
-      ret.addFile(path)
-  return ret
+      ret.addFile(path, reverse)
+      return ret
 
 # Conversion
 
@@ -66,7 +70,8 @@ def convert(text, fr, to):
   @param  to  int
   @return  unicode
   """
-  return getconverter(fr, to).convert(text)
+  try: return getconverter(fr, to).convert(text)
+  except: return text
 
 def zht2zhs(text): return convert(text, TYPE_ZHT, TYPE_ZHS)
 def zht2tw(text): return convert(text, TYPE_ZHT, TYPE_TW)
@@ -74,11 +79,17 @@ def zht2hk(text): return convert(text, TYPE_ZHT, TYPE_HK)
 def zht2ja(text): return convert(text, TYPE_ZHT, TYPE_JA)
 
 def zhs2zht(text): return convert(text, TYPE_ZHS, TYPE_ZHT)
+def tw2zht(text): return convert(text, TYPE_TW, TYPE_ZHT)
+def hk2zht(text): return convert(text, TYPE_HK, TYPE_ZHT)
+def ja2zht(text): return convert(text, TYPE_JA, TYPE_ZHT)
 
 # Following are for convenient usage
+
 def zhs2tw(text): return zht2hw(zhs2zht(text))
 def zhs2hk(text): return zht2hk(zhs2zht(text))
 def zhs2ja(text): return zht2ja(zhs2zht(text))
+
+# Aliases
 
 zh2zht = zhs2zht
 zh2zhs = zht2zhs
