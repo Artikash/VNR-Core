@@ -9,9 +9,9 @@ from PySide.QtCore import QThread, Signal, Qt, QMutex
 from sakurakit import skfileio, skwincom
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
-from zhszht.zhszht import zht2zhs
 import voiceroid.online as vrapi
 import voicetext.online as vtapi
+from convutil import zht2zhs
 from mytr import my, mytr_
 import growl, rc
 

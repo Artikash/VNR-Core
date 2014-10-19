@@ -473,6 +473,9 @@ fonts:
 font:
   location:         $PWD/../../Fonts
 
+opencc:
+  location:         $PWD/../../Dictionaries/opencc
+
 # Module options
 
 jinja:

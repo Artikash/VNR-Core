@@ -20,10 +20,9 @@ from sakurakit.skdebug import dprint, dwarn, derror
 #from sakurakit.skqml import QmlObject
 from sakurakit.sktr import tr_, notr_
 from sakurakit.skunicode import sjis_encodable
-from zhszht.zhszht import zhs2zht
+from convutil import wide2thin, zhs2zht
 from mytr import my, mytr_
 import cacheman, config, csvutil, defs, features, growl, hashutil, i18n, main, mecabman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
-from convutil import wide2thin
 
 SUBMIT_INTERVAL = 5000 # 5 seconds
 REF_SUBMIT_INTERVAL = 1000 # 1 second

@@ -108,6 +108,9 @@ def main():
   #  from sakurakit import skwin
   #  skwin.enable_drop_event()
 
+  from opencc import opencc
+  opencc.setdicdir(config.OPENCC_LOCATION)
+
   dprint("create app")
   import app
   a = app.Application(sys.argv)

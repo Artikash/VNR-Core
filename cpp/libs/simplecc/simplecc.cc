@@ -43,8 +43,11 @@ bool SimpleChineseConverter::addFile(const std::wstring &path, bool reverse)
 
   if (reverse) {
     for (std::wstring line; std::getline(fin, line);)
-      if (line.size() >= 3)
+      if (line.size() >= 3) {
         d_->map[line[2]] = line[0];
+        if (line.size() >= 5)
+          d_->map[line[4]] = line[0];
+      }
   } else {
     for (std::wstring line; std::getline(fin, line);)
       if (line.size() >= 3)

@@ -20,7 +20,7 @@ from sakurakit.skdebug import dwarn
 #from sakurakit.skunicode import u
 from memcache.container import SizeLimitedList
 from zhszht.zhja import zht2ja
-from zhszht.zhszht import zhs2zht
+from convutil import zhs2zht
 from mytr import my
 from texthook import texthook
 import config, dataman, defs, features, growl, hashutil, i18n, settings, termman, textutil, trman, ttsman
