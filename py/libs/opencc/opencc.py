@@ -11,6 +11,11 @@ def setdicdir(path):
   OPENCC_DICDIR = path
 
 def getconverter(fr, to):
+  """
+  @param  fr  int
+  @param  to  int
+  @return  SimpleChineseConverter
+  """
   from pycc import SimpleChineseConverter
   ret = SimpleChineseConverter()
   return ret
