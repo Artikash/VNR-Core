@@ -1226,6 +1226,14 @@ class Settings(QSettings):
       self.setValue('ConvertsChinese', value)
       self.convertsChineseChanged.emit(value)
 
+  chineseVariantChanged = Signal(bool)
+  def chineseVariant(self):
+    return to_bool(self.value('ChineseVariant', 'tw')) # Taiwan by default
+  def setChineseVariant(self, value):
+    if value != self.chineseVariant():
+      self.setValue('ChineseVariant', value)
+      self.chineseVariantChanged.emit(value)
+
   yueEnabledChanged = Signal(bool)
   def isYueEnabled(self):
     return to_bool(self.value('YueEnabled'))

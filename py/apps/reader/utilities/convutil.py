@@ -5,6 +5,7 @@
 from unitraits.uniconv import hira2kata, kata2hira, thin2wide, wide2thin, wide2thin_digit
 from jaconv.jaconv import kata2romaji, kata2hangul, kata2thai \
                         , hira2romaji, hira2hangul, hira2thai
-from opencc.opencc import zhs2zht, zht2zhs
+from opencc.opencc import zht2zhs
+from ccman import zhs2zht
 
 # EOF

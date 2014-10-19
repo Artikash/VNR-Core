@@ -25,7 +25,6 @@ class _TranslatorManager(object):
   def __init__(self, abortSignal):
     self.abortSignal = abortSignal # signal
 
-    #self.convertsChinese = False
     self.online = False
     self.language = 'en' # str, user language
 
