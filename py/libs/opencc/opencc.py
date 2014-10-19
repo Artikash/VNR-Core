@@ -4,8 +4,16 @@
 
 # Initialization
 
-def init(path):
-  pass
+OPENCC_DICDIR = ""
+
+def setdicdir(path):
+  global OPENCC_DICDIR
+  OPENCC_DICDIR = path
+
+def getconverter(fr, to):
+  from pycc import SimpleChineseConverter
+  ret = SimpleChineseConverter()
+  return ret
 
 # Conversion
 
