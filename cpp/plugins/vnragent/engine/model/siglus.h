@@ -9,9 +9,11 @@
 class SiglusEngine : public EngineModel
 {
   SK_EXTEND_CLASS(SiglusEngine, EngineModel)
+
   static bool attach();
-  static ulong search(ulong startAddress, ulong stopAddress);
+  static ulong search(ulong startAddress, ulong stopAddress, int *type);
 public:
+
   SiglusEngine()
   {
     name = "SiglusEngine";

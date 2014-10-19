@@ -21,6 +21,12 @@
 
 namespace { // unnamed
 
+enum Type {
+  Type1    // Old SiglusEngine2, self in ecx
+  , Type2  // New SiglusENgine2, self in arg1, since リア充クラスメイト孕ませ催眠 in 9/26/2014
+};
+int type_; // static
+
 /**
  *  Sample game: 聖娼女 体験版
  *
@@ -101,24 +107,22 @@ struct HookStruct
  *  - thiscall: this is in ecx and the first argument
  *  - fastcall: the first two parameters map to ecx and edx
  */
-int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
+int __fastcall newHookFun(void *ecx, void *edx, DWORD arg1, DWORD arg2)
 {
   Q_UNUSED(edx);
+  HookStruct *self = reinterpret_cast<HookStruct *>(
+      type_ == Type1 ? (DWORD)ecx : arg1);
+  if (!self)
+    return oldHookFun(ecx, arg1, arg2); // ret = size * 2
+
   enum { role = Engine::ScenarioRole, signature = Engine::ScenarioThreadSignature };
   //return oldHookFun(self, arg1, arg2);
-#ifdef DEBUG
-  if (self->size < 8)
-    qDebug() << QString::fromWCharArray(self->texts[0]) << ":"
-             << (self->text[0] == self->text[1]) << ":"
-             << (DWORD)(*self->flag) << ":"
-             << self->size << ";"
-             << arg1 << ","
-             << arg2 << ";"
-             << " signature: " << QString::number(signature, 16);
-#endif // DEBUG
   auto q = EngineController::instance();
 
   QString text = QString::fromWCharArray(self->text(), self->size);
+#ifdef DEBUG
+  qDebug() << self->size << ":" << text;
+#endif // DEBUG
   text = q->dispatchTextW(text, signature, role);
   if (text.isEmpty())
     return self->size * 2; // estimated painted bytes
@@ -130,7 +134,7 @@ int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
   self->size = text.size();
   self->capacity = max(8, text.size()); // prevent using smaller size
 
-  int ret = oldHookFun(self, arg1, arg2); // ret = size * 2
+  int ret = oldHookFun(ecx, arg1, arg2); // ret = size * 2
 
   // Restoring is indispensible, and as a result, the default hook does not work
   self->texts[0] = oldText0;
@@ -167,24 +171,31 @@ int __fastcall newHookFun(HookStruct *self, void *edx, DWORD arg1, DWORD arg2)
  *  013baf32  |. 3bd7           |cmp edx,edi ; jichi: ITH hook here, char saved in edi
  *  013baf34  |. 75 4b          |jnz short siglusen.013baf81
  */
-ulong SiglusEngine::search(ulong startAddress, ulong stopAddress)
+ulong SiglusEngine::search(ulong startAddress, ulong stopAddress, int *type)
 {
   ulong addr;
+
   {
     const BYTE bytes1[] = {
       0x3b,0xd7, // 013baf32  |. 3bd7       |cmp edx,edi ; jichi: ITH hook here, char saved in edi
       0x75,0x4b  // 013baf34  |. 75 4b      |jnz short siglusen.013baf81
     };
     addr = MemDbg::findBytes(bytes1, sizeof(bytes1), startAddress, stopAddress);
+    if (addr && type)
+      *type = Type1;
+  }
 
+  if (!addr) {
     const BYTE bytes2[] = {
       0x81,0xfe, 0x0c,0x30,0x00,0x00 // 0114124a   81fe 0c300000    cmp esi,0x300c  ; jichi: hook here
     };
-    if (!addr)
-      addr = MemDbg::findBytes(bytes2, sizeof(bytes2), startAddress, stopAddress);
-    if (!addr)
-      return 0;
+    addr = MemDbg::findBytes(bytes2, sizeof(bytes2), startAddress, stopAddress);
+    if (addr && type)
+      *type = Type2;
   }
+
+  if (!addr)
+    return 0;
 
   const BYTE bytes[] = {
     0x55,      // 013bac70  /$ 55       push ebp ; jichi: function starts
@@ -207,7 +218,7 @@ bool SiglusEngine::attach()
         stopAddress;
   if (!Engine::getCurrentMemoryRange(&startAddress, &stopAddress))
     return false;
-  ulong addr = search(startAddress, stopAddress);
+  ulong addr = search(startAddress, stopAddress, &type_);
   //ulong addr = startAddress + 0xdb140; // 聖娼女
   //ulong addr = startAddress + 0xdaf32; // 聖娼女 体験版
   //dmsg(addr - startAddress);
