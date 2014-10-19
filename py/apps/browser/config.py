@@ -126,6 +126,8 @@ def language2locale(lang):
 
 ## Locations ##
 
+OPENCC_LOCATION = parse_path(SHARE_YAML['opencc']['location']) # unicode abspath
+
 APP_LOCATIONS = {k: parse_path(v)   # {str name:unicode path}
     for k,v in SHARE_YAML['apps'].iteritems()}
 

@@ -39,7 +39,7 @@ if __name__ == '__main__': # DEBUG
 #import re
 import MeCab
 from sakurakit import skos
-from cconv import jaconv
+from jaconv import jaconv
 from unitraits import uniconv
 from mecabjlp import mecabdef, mecabfmt
 import cabochadef

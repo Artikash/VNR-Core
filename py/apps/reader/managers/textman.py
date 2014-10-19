@@ -19,8 +19,7 @@ from sakurakit.skdebug import dwarn
 #from sakurakit.skqml import QmlObject
 #from sakurakit.skunicode import u
 from memcache.container import SizeLimitedList
-from zhszht.zhja import zht2ja
-from zhszht.zhszht import zhs2zht
+from convutil import zhs2zht
 from mytr import my
 from texthook import texthook
 import config, dataman, defs, features, growl, hashutil, i18n, settings, termman, textutil, trman, ttsman
@@ -1027,6 +1026,7 @@ class TextManager(QObject):
           if convertsKanji and d.language == 'zhs':
             sub = zhs2zht(sub)
           if convertsKanji:
+            from kanjiconv.zhja import zht2ja # this is the only place this library is used
             sub = zht2ja(sub)
         #elif d.language == 'zhs' and lang.startswith('zh'):
         #  sub = zht2zhs(sub)

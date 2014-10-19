@@ -12,6 +12,7 @@ SUBDIRS += qmlhelperplugin
 SUBDIRS += qmltexscriptplugin
 SUBDIRS += qmltextplugin
 
+SUBDIRS += pycc
 SUBDIRS += pytahscript
 SUBDIRS += pytrscript
 SUBDIRS += pyvnrmem

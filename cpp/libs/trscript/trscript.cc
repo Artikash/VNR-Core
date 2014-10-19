@@ -168,7 +168,7 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
 {
   std::wifstream fin(path);
   if(!fin.is_open()) {
-    DOUT("Unable to open file");
+    DOUT("unable to open file");
     return false;
   }
   fin.imbue(UTF8_LOCALE);

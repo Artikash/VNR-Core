@@ -582,6 +582,17 @@ class _MainObject(object):
     return ret
 
   @memoizedproperty
+  def chineseManager(self):
+    dprint("create chinese manager")
+    import ccman
+    ret = ccman.manager()
+
+    ss = settings.global_()
+    ret.setVariant(ss.chineseVariant())
+    ss.chineseVariantChanged.connect(ret.setVariant)
+    return ret
+
+  @memoizedproperty
   def termManager(self):
     dprint("create term manager")
     import termman
@@ -617,9 +628,6 @@ class _MainObject(object):
     #for sig in ss.hentaiEnabledChanged, ss.termMarkedChanged:
     #  sig.connect(self.translatorManager.clearCache)
     #ret.cacheChanged.connect(self.translatorManager.clearCache)
-
-    #ret.setConvertsChinese(ss.convertsChinese())
-    #ss.convertsChineseChanged.connect(ret.setConvertsChinese)
     return ret
 
   #@memoizedproperty
@@ -724,6 +732,7 @@ class _MainObject(object):
         ss.machineTranslatorChanged,
         ss.termEnabledChanged,
         ss.yueEnabledChanged,
+        ss.chineseVariantChanged,
       ):
       sig.connect(ret.clearCache)
 
@@ -1534,6 +1543,7 @@ class MainObject(QObject):
     gm = d.gameManager
     d.gameAgent
 
+    d.chineseManager
     d.termManager
     #d.translationScriptManager
     #d.tahScriptManager

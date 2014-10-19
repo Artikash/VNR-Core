@@ -7,7 +7,6 @@
 import textwrap
 from functools import partial
 from PySide.QtCore import Signal, Slot, Property, QObject, QTimer
-from zhszht.zhszht import zhs2zht
 from mecabjlp import mecabfmt
 from sakurakit import skdatetime
 from sakurakit.skclass import classproperty, staticproperty
@@ -15,6 +14,7 @@ from sakurakit.skdebug import dprint, dwarn
 #from sakurakit.skqml import QmlObject
 #from sakurakit.sktr import tr_
 #from msime import msime
+from convutil import zhs2zht
 from mytr import my
 import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, ocrman, qmldialog, rc, settings
 

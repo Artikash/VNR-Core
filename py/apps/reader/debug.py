@@ -142,6 +142,21 @@ if __name__ == '__main__':
     a = app()
     a.exec_()
 
-  test_zunko()
+  def test_cc():
+    from opencc import opencc
+    import config
+    opencc.setdicdir(config.OPENCC_LOCATION)
+
+    t = u"里面"
+    t = opencc.zhs2zht(t)
+    t = opencc.zht2tw(t)
+
+    a = app()
+    from Qt5.QtWidgets import QLabel
+    w = QLabel(t)
+    w.show()
+    a.exec_()
+
+  test_cc()
 
 # EOF

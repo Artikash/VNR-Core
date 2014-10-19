@@ -473,6 +473,9 @@ fonts:
 font:
   location:         $PWD/../../Fonts
 
+opencc:
+  location:         $PWD/../../Dictionaries/opencc
+
 # Module options
 
 jinja:
@@ -647,6 +650,7 @@ icons:
   pref-ui:          $PWD/images/window.png
   pref-tts:         $PWD/images/music.png
   pref-tts-path:    $PWD/images/sound.png
+  pref-zh:          $PWD/images/china.png
   window-bbcode:    $PWD/images/dock/bb.png
   window-chat:      $PWD/images/dock/messages.png
   window-dict:      $PWD/images/dock/dict.png

@@ -16,13 +16,12 @@ from functools import partial
 from itertools import ifilter, imap
 from time import time
 from PySide.QtCore import QMutex
-from zhszht.zhszht import zhs2zht, zht2zhs
 from sakurakit import skstr, skthreads, sktypes
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn
+from convutil import wide2thin, wide2thin_digit, zhs2zht, zht2zhs, zht2zhx
 from mytr import my, mytr_
 import config, growl, mecabman, termman, textutil, trman, trcache, tahscript
-from convutil import wide2thin, wide2thin_digit
 
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()
@@ -430,6 +429,10 @@ class MachineTranslator(Translator):
     tm = termman.manager()
     if emit:
       self.emitJointTranslation(text)
+
+    if to == 'zht':
+      text = zht2zhx(text)
+
     #text = self.__google_repl_after(text)
     t = text
     #with SkProfiler(): # 9/26/2014: 0.08 seconds, Python: 0.06 seconds
@@ -1431,6 +1434,7 @@ class BaiduTranslator(OnlineMachineTranslator):
           to, fr, async)
       if repl:
         if to == 'zht':
+          #with SkProfiler(): # 10/19/2014: 1.34e-05 with python, 2.06-e5 with opencc
           repl = zhs2zht(repl)
         repl = self.__baidu_repl_after(repl)
         repl = self._unescapeTranslation(repl, to=to, emit=emit)
