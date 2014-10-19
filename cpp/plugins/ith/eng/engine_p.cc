@@ -1702,8 +1702,7 @@ bool InsertSiglus2Hook()
   //enum { hook_offset = sizeof(bytes) - cur_ins_size }; // = 14 - 2  = 12, current inst is the last one
 
   ULONG range = min(module_limit_ - module_base_, MAX_REL_ADDR);
-  ULONG addr = 0;
-
+  ULONG addr;
   { // type 1
     const BYTE bytes[] = {
       0x3b,0xd7,  // cmp edx,edi ; hook here
