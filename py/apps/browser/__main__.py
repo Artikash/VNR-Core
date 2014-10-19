@@ -71,6 +71,10 @@ def main():
       except OSError:
         dwarn("warning: failed to create directory: %s" % it)
 
+  dprint("init opencc")
+  from opencc import opencc
+  opencc.setdicdir(config.OPENCC_LOCATION)
+
   dprint("create app")
   import app
   a = app.Application(sys.argv)

@@ -14,7 +14,7 @@ from functools import partial
 from itertools import ifilter, imap
 from time import time
 from PySide.QtCore import QMutex
-from zhszht.zhszht import zhs2zht, zht2zhs
+from opencc.opencc import zhs2zht, zht2zhs
 from sakurakit import skthreads
 from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dwarn

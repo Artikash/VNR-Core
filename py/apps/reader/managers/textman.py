@@ -19,7 +19,7 @@ from sakurakit.skdebug import dwarn
 #from sakurakit.skqml import QmlObject
 #from sakurakit.skunicode import u
 from memcache.container import SizeLimitedList
-from zhszht.zhja import zht2ja
+from kanjiconv.zhja import zht2ja
 from convutil import zhs2zht
 from mytr import my
 from texthook import texthook

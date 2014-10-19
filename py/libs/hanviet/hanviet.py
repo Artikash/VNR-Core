@@ -1,5 +1,5 @@
 # coding: utf8
-# zhszht.py
+# hanviet.py
 # 12/22/2014: jichi
 #
 # See: ChinesePhienAmWords.txt in QuickTranslator_TAO

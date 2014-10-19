@@ -108,6 +108,7 @@ def main():
   #  from sakurakit import skwin
   #  skwin.enable_drop_event()
 
+  dprint("init opencc")
   from opencc import opencc
   opencc.setdicdir(config.OPENCC_LOCATION)
 
