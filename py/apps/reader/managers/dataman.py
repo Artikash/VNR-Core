@@ -22,7 +22,7 @@ from sakurakit.sktr import tr_, notr_
 from sakurakit.skunicode import sjis_encodable
 from convutil import wide2thin, zhs2zht
 from mytr import my, mytr_
-import cacheman, config, csvutil, defs, features, growl, hashutil, i18n, main, mecabman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
+import cacheman, config, csvutil, defs, features, gameman, growl, hashutil, i18n, main, mecabman, netman, osutil, prompt, proxy, refman, rc, settings, termman, textutil
 
 SUBMIT_INTERVAL = 5000 # 5 seconds
 REF_SUBMIT_INTERVAL = 1000 # 1 second
@@ -9299,6 +9299,16 @@ class DataManagerProxy(QObject):
     #    self.gameIdChanged.emit(self.gameId))
     dm.currentGameChanged.connect(lambda:
         self.gameItemIdChanged.emit(self.gameItemId))
+
+    gm = gameman.manager()
+    gm.focusEnabledChanged.connect(self.currentGameFocusEnabledChanged)
+
+  # Game thread
+
+  currentGameFocusEnabledChanged = Signal(bool)
+  currentGameFocusEnabled = Property(bool,
+      lambda _: gameman.manager().isFocusEnabled(),
+      notify=currentGameFocusEnabledChanged)
 
   ## Translation scripts ##
 

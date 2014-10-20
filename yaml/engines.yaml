@@ -404,4 +404,15 @@ utf8:
   - Imageepoch2 PSP
   - YukaSystem2
 
+# List of game engine that allows focus
+focus:
+  - SiglusEngine2
+# TODO:
+  #- CIRCUS
+# No focus:
+  #- Majiro
+  #- KiriKiri1
+  #- KiriKiri2
+  #- ScenarioPlayerW
+
 # EOF

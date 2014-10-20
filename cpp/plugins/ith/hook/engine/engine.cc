@@ -584,7 +584,7 @@ DWORD DetermineNoHookEngine()
   // jichi 3/19/2014: Escude game
   // Example: bgm.bin gfx.bin maou.bin script.bin snd.bin voc.bin
   if (IthCheckFile(L"gfx.bin") && IthCheckFile(L"snd.bin") && IthCheckFile(L"voc.bin")) {
-    ConsoleOutput("vnreng: IGNORE Escudo");
+    ConsoleOutput("vnreng: IGNORE Escude");
     return yes;
   }
 
