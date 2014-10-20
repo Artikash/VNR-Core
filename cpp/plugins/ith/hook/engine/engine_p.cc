@@ -259,10 +259,15 @@ static void SpecialHookKiriKiri(DWORD esp_base, HookParam *hp, DWORD *data, DWOR
 }
 #endif // 0
 
+/** 10/20/2014 jichi: New KiriKiri hook
+ *  Sample game: [141128] Venus Blood -HYPNO- ヴィーナスブラッド・ヒュプノ 体験版
+ *
+ */
 void FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag)
 {
+  enum { fun = 0xec8b55 }; // jichi 10/20/2014: mov ebp,esp, sub esp,*
   //WCHAR str[0x40];
-  DWORD sig = flag ? 0x575653 : 0xec8b55;
+  DWORD sig = flag ? 0x575653 : fun;
   DWORD t = 0;
   for (DWORD i = 0x1000; i < size - 4; i++)
     if (*(WORD *)(pt + i) == 0x15ff) {
@@ -2884,9 +2889,10 @@ void InsertTinkerBellHook()
 //void InsertLuneHook()
 bool InsertMBLHook()
 {
+  enum { fun = 0xec8b55 }; // jichi 10/20/2014: mov ebp,esp, sub esp,*
   bool ret = false;
   if (DWORD c = Util::FindCallOrJmpAbs((DWORD)::ExtTextOutA, module_limit_ - module_base_, module_base_, true))
-    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, 0xec8b55)) {
+    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, fun)) {
       HookParam hp = {};
       hp.addr = addr;
       hp.off = 4;
@@ -2896,7 +2902,7 @@ bool InsertMBLHook()
       ret = true;
     }
   if (DWORD c = Util::FindCallOrJmpAbs((DWORD)::GetGlyphOutlineA, module_limit_ - module_base_, module_base_, true))
-    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, 0xec8b55)) {
+    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, fun)) {
       HookParam hp = {};
       hp.addr = addr;
       hp.off = 4;
