@@ -68,7 +68,7 @@
         %ul.option-set(data-option-key="filter",data-option-group="year")
           %li: %a.selected(href="#",title="#{tr('All')}")
             年
-          -for year in py.range(2014,1998,-1)
+          -for year in py.range(2015,1998,-1)
             %li: %a(href="#",data-option-value="#{year}",title="#{year}年")
               -if year >= 2013
                 #{year}

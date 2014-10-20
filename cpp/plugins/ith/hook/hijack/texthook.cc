@@ -650,7 +650,8 @@ int TextHook::ModifyHook(const HookParam &hp)
 {
   //WCHAR name[0x40];
   DWORD len = 0;
-  if (hook_name) len = wcslen(hook_name);
+  if (hook_name)
+    len = wcslen(hook_name);
   LPWSTR name = 0;
   if (len) {
     name = new wchar_t[len + 1];
