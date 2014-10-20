@@ -203,13 +203,23 @@ DWORD WINAPI RecvThread(LPVOID lpThreadParameter)
   enum { PipeBufferSize = 0x1000 };
   buff = new BYTE[PipeBufferSize];
   ITH_MEMSET_HEAP(buff, 0, PipeBufferSize); // jichi 8/27/2013: zero memory, or it will crash wine on start up
-  NtReadFile(hTextPipe, 0, 0, 0, &ios, buff, 16, 0, 0);
+
+  // 10/19/2014 jichi: there are totally three words received
+  // See: hook/rpc/pipe.cc
+  // struct {
+  //   DWORD pid;
+  //   TextHook *man;
+  //   DWORD module;
+  //   //DWORD engine;
+  // } u;
+  enum { module_struct_size = 12 };
+  NtReadFile(hTextPipe, 0, 0, 0, &ios, buff, module_struct_size, 0, 0);
 
   DWORD pid = *(DWORD *)buff,
         hookman = *(DWORD *)(buff + 0x4),
-        module = *(DWORD *)(buff + 0x8),
-        engine = *(DWORD *)(buff + 0xc);
-  man->RegisterProcess(pid, hookman, module, engine);
+        module = *(DWORD *)(buff + 0x8);
+        //engine = *(DWORD *)(buff + 0xc);
+  man->RegisterProcess(pid, hookman, module);
 
   // jichi 9/27/2013: why recursion?
   CreateNewPipe();

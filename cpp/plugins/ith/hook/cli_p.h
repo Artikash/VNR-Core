@@ -11,7 +11,7 @@
 //#include <windows.h>
 //#define IHF
 #include "config.h"
-#include "cli.h"
+#include "hook.h"
 
 // jichi 12/25/2013: Header in each message sent to vnrsrv
 #define HEADER_SIZE 0xc

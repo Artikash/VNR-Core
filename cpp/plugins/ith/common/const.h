@@ -190,10 +190,8 @@ enum { FIXED_SPLIT_VALUE = 0x10001 };
   , L"msvcp110.dll" /* VC rutime 11 */ \
   \
   /* VNR */ \
-  , L"vnrcli.dll" \
-  , L"vnrclixp.dll" \
-  , L"vnreng.dll" \
-  , L"vnrengxp.dll" \
+  , L"vnrhook.dll" \
+  , L"vnrhookxp.dll" \
   \
   /* Sogou IME */ \
   , L"sogoupy.ime" \

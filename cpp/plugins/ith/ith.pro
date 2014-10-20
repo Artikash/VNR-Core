@@ -10,8 +10,7 @@ TEMPLATE = subdirs
 # - eng <= cli + sys
 SUBDIRS += \
   sys \
-  cli clixp \
-  eng engxp \
+  hook hookxp \
   srv
 
 OTHER_FILES += dllconfig.pri

@@ -9,12 +9,14 @@
 #endif // _MSC_VER
 
 #include "cli_p.h"
-#include "avl_p.h"
+#include "tree/avl.h"
+#include "engine/engine.h"
 #include "ith/common/const.h"
 #include "ith/common/defs.h"
 #include "ith/common/except.h"
 //#include "ith/common/growl.h"
 #include "ith/sys/sys.h"
+#include "cc/ccmacro.h"
 //#include "ntinspect/ntinspect.h"
 //#include "winseh/winseh.h"
 //#include <boost/foreach.hpp>
@@ -161,8 +163,10 @@ DWORD IHFAPI GetFunctionAddr(const char *name, DWORD *addr, DWORD *base, DWORD *
     return FALSE;
 }
 
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
 {
+  CC_UNUSED(lpReserved);
+
   //static WCHAR dll_exist[] = L"ITH_DLL_RUNNING";
   static WCHAR dll_exist[] = ITH_CLIENT_MUTEX;
   static HANDLE hDllExist;
@@ -175,9 +179,9 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
   {
   case DLL_PROCESS_ATTACH:
     {
-      LdrDisableThreadCalloutsForDll(hinstDLL);
+      LdrDisableThreadCalloutsForDll(hModule);
       IthBreak();
-      module_base = (DWORD)hinstDLL;
+      module_base = (DWORD)hModule;
       IthInitSystemService();
       swprintf(hm_section, ITH_SECTION_ L"%d", current_process_id);
 
@@ -214,7 +218,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
         return FALSE;
 
       hDllExist = IthCreateMutex(dll_exist, 0);
-      hDLL = hinstDLL;
+      hDLL = hModule;
       running = true;
       ::current_available = ::hookman;
       ::tree = new AVLTree<char, FunctionInfo, SCMP, SCPY, SLEN>;
@@ -223,7 +227,10 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
       //InitDefaultHook(); // jichi 7/17/2014: Disabled by default
       hSendThread = IthCreateThread(WaitForPipe, 0);
       hCmdThread = IthCreateThread(CommandPipe, 0);
-    } break;
+
+      Engine::init(hModule);
+    }
+    break;
   case DLL_PROCESS_DETACH:
     {
       // jichi 10/2/2103: Cannot use __try in functions that require object unwinding

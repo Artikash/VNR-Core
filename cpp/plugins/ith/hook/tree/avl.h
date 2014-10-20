@@ -1,6 +1,6 @@
 #pragma once
 
-// avl_p.h
+// avl.h
 // 8/23/2013 jichi
 // Branch: ITH/AVL.h, rev 133
 // 8/24/2013 TODO: Clean up this file

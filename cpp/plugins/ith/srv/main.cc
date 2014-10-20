@@ -95,14 +95,14 @@ void GetDebugPriv()
 //  return FALSE;
 //}
 
-DWORD Inject(HANDLE hProc, LPCWSTR engine)
+DWORD Inject(HANDLE hProc)
 {
   enum : DWORD { error = (DWORD)-1 };
   LPVOID lpvAllocAddr = 0;
   DWORD dwWrite = 0x1000; //, len = 0;
   HANDLE hTH;
   //LPWSTR dllname = (IthIsWindowsXp() && !IthIsWine()) ? DllNameXp : DllName;
-  LPCWSTR dllname = ITH_USE_XP_DLLS ? ITH_CLIENT_XP_DLL : ITH_CLIENT_DLL;
+  LPCWSTR dllname = ITH_USE_XP_DLLS ? ITH_DLL_XP : ITH_DLL;
   //if (!IthCheckFile(dllname))
   //  return error;
   wchar_t path[MAX_PATH];
@@ -147,24 +147,26 @@ DWORD Inject(HANDLE hProc, LPCWSTR engine)
   THREAD_BASIC_INFORMATION info;
   NtQueryInformationThread(hTH, ThreadBasicInformation, &info, sizeof(info), &dwWrite);
   NtClose(hTH);
-  if (info.ExitStatus) {
-    //IthCoolDown();
-    wcscpy(p, engine);
-    //if (IthIsWine())
-    //  WriteProcessMemory(hProc, lpvAllocAddr, path, MAX_PATH << 1, &dwWrite);
-    //else
-    NtWriteVirtualMemory(hProc, lpvAllocAddr, path, MAX_PATH << 1, &dwWrite);
-    hTH = IthCreateThread(LoadLibraryW, (DWORD)lpvAllocAddr, hProc);
-    if (hTH == 0 || hTH == INVALID_HANDLE_VALUE) {
-      //ConsoleOutput(ErrorRemoteThread);
-      ConsoleOutput("vnrsrv:inject: ERROR: failed to create remote eng thread");
-      return error;
-    }
 
-    // jichi 9/28/2013: no wait as it will not blocked
-    NtWaitForSingleObject(hTH, 0, nullptr);
-    NtClose(hTH);
-  }
+  // jichi 10/19/2014: Disable inject the second dll
+  //if (info.ExitStatus) {
+  //  //IthCoolDown();
+  //  wcscpy(p, engine);
+  //  //if (IthIsWine())
+  //  //  WriteProcessMemory(hProc, lpvAllocAddr, path, MAX_PATH << 1, &dwWrite);
+  //  //else
+  //  NtWriteVirtualMemory(hProc, lpvAllocAddr, path, MAX_PATH << 1, &dwWrite);
+  //  hTH = IthCreateThread(LoadLibraryW, (DWORD)lpvAllocAddr, hProc);
+  //  if (hTH == 0 || hTH == INVALID_HANDLE_VALUE) {
+  //    //ConsoleOutput(ErrorRemoteThread);
+  //    ConsoleOutput("vnrsrv:inject: ERROR: failed to create remote eng thread");
+  //    return error;
+  //  }
+  //
+  //  // jichi 9/28/2013: no wait as it will not blocked
+  //  NtWaitForSingleObject(hTH, 0, nullptr);
+  //  NtClose(hTH);
+  //}
 
   dwWrite = 0;
   //if (IthIsWine())
@@ -336,7 +338,7 @@ _end:
   return dwPid;
 }
 
-IHFSERVICE DWORD IHFAPI IHF_InjectByPID(DWORD pid, LPCWSTR engine)
+IHFSERVICE DWORD IHFAPI IHF_InjectByPID(DWORD pid)
 {
   WCHAR str[0x80];
   if (!running)
@@ -374,9 +376,9 @@ IHFSERVICE DWORD IHFAPI IHF_InjectByPID(DWORD pid, LPCWSTR engine)
     return -1;
   }
 
-  if (!engine)
-    engine = ITH_USE_XP_DLLS ? ITH_ENGINE_XP_DLL : ITH_ENGINE_DLL;
-  DWORD module = Inject(hProc, engine);
+  //if (!engine)
+  //  engine = ITH_USE_XP_DLLS ? ITH_ENGINE_XP_DLL : ITH_ENGINE_DLL;
+  DWORD module = Inject(hProc);
   NtClose(hProc);
   if (module == -1)
     return -1;
@@ -413,7 +415,7 @@ IHFSERVICE DWORD IHFAPI IHF_ActiveDetachProcess(DWORD pid)
 {
   ITH_SYNC_HOOK;
 
-  DWORD module, engine, dwWrite;
+  DWORD module;
   HANDLE hProc, hThread;
   IO_STATUS_BLOCK ios;
   //man->LockHookman();
@@ -434,8 +436,9 @@ IHFSERVICE DWORD IHFAPI IHF_ActiveDetachProcess(DWORD pid)
     return FALSE;
   }
 
-  engine = pr->engine_register;
-  engine &= ~0xff;
+  // jichi 10/19/2014: Disable the second dll
+  //engine = pr->engine_register;
+  //engine &= ~0xff;
 
   SendParam sp = {};
   sp.type = 4;
@@ -445,19 +448,18 @@ IHFSERVICE DWORD IHFAPI IHF_ActiveDetachProcess(DWORD pid)
   ConsoleOutput("vnrsrv:IHF_ActiveDetachProcess: cmd sent");
 
   //cmdq->AddRequest(sp, pid);
-  dwWrite = 0x1000;
-//#ifdef ITH_WINE // Nt series crash on wine
-//  hThread = IthCreateThread(FreeLibrary, engine, hProc);
-//#else
-  hThread = IthCreateThread(LdrUnloadDll, engine, hProc);
-//#endif // ITH_WINE
-  if (hThread == 0 || hThread == INVALID_HANDLE_VALUE)
-    return FALSE;
-  // jichi 10/22/2013: Timeout might crash vnrsrv
-  //const LONGLONG timeout = HOOK_TIMEOUT;
-  //NtWaitForSingleObject(hThread, 0, (PLARGE_INTEGER)&timeout);
-  NtWaitForSingleObject(hThread, 0, nullptr);
-  NtClose(hThread);
+////#ifdef ITH_WINE // Nt series crash on wine
+////  hThread = IthCreateThread(FreeLibrary, engine, hProc);
+////#else
+//  hThread = IthCreateThread(LdrUnloadDll, engine, hProc);
+////#endif // ITH_WINE
+//  if (hThread == 0 || hThread == INVALID_HANDLE_VALUE)
+//    return FALSE;
+//  // jichi 10/22/2013: Timeout might crash vnrsrv
+//  //const LONGLONG timeout = HOOK_TIMEOUT;
+//  //NtWaitForSingleObject(hThread, 0, (PLARGE_INTEGER)&timeout);
+//  NtWaitForSingleObject(hThread, 0, nullptr);
+//  NtClose(hThread);
 
   // jichi 7/15/2014: Process already closed
   if (isProcessTerminated(hProc)) {
@@ -483,7 +485,6 @@ IHFSERVICE DWORD IHFAPI IHF_ActiveDetachProcess(DWORD pid)
   NtSetEvent(hPipeExist, 0);
   FreeThreadStart(hProc);
   NtClose(hProc);
-  dwWrite = 0x1000;
   return info.ExitStatus;
 }
 
