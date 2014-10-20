@@ -966,6 +966,20 @@ void InsertRealliveHook()
  *  - split_ind: 0
  *  - type: 66   (0x42)
  *
+ *  10/19/2014: There are currently two patterns to find the function to render scenario text.
+ *  In the future, if both of them do not work again, try the following pattern instead.
+ *  It is used to infer SiglusEngine2's logic in vnragent.
+ *
+ *  01140f8d   56               push esi
+ *  01140f8e   8d8b 0c010000    lea ecx,dword ptr ds:[ebx+0x10c]
+ *  01140f94   e8 67acfcff      call .0110bc00
+ *  01140f99   837f 14 08       cmp dword ptr ds:[edi+0x14],0x8
+ *  01140f9d   72 04            jb short .01140fa3
+ *  01140f9f   8b37             mov esi,dword ptr ds:[edi]
+ *  01140fa1   eb 02            jmp short .01140fa5
+ *
+ *  Type1 (聖娼女):
+ *
  *  013aac6c   cc               int3
  *  013aac6d   cc               int3
  *  013aac6e   cc               int3
@@ -1313,8 +1327,7 @@ void InsertRealliveHook()
  *  013ab153   cc               int3
  *  013ab154   cc               int3
  *
- *  10/18/2014
- *  リア充クラスメイト孕ませ催眠
+ *  10/18/2014 Type2: リア充クラスメイト孕ませ催眠
  *
  *  01140edb   cc               int3
  *  01140edc   cc               int3

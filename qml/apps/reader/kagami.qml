@@ -28,8 +28,8 @@ Item { id: root_
   property bool ignoresFocus:
       gameWindowTracker_.fullScreen
       && !gameWindowTracker_.stretched
-      && !currentGameIsEmulator
       && !settings_.kagamiFocusEnabled
+      && !currentGameIsEmulator
 
   // 8/3/2014 TODO: Remove focus restriction for CIRCUS game as well
   property int currentGameId: datamanPlugin_.gameItemId // cached
