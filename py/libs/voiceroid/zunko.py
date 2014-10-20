@@ -45,7 +45,6 @@ if os.name == 'nt':
     return t
 
   class _ZunkoTalk:
-    ENCODING = 'sjis'
 
     def __init__(self, parent, volume, audioBufferSize):
       self.ai = AITalkSynthesizer(volume, audioBufferSize)
@@ -59,11 +58,11 @@ if os.name == 'nt':
       #t.timeout.connect(self._playSentences)
       #self.sentences = [] # [unicode]
 
-    def speak(self, text):
-      if isinstance(text, unicode):
-        text = text.encode(self.ENCODING, errors='ignore')
-      self.played = self.ai.speak(text) if text else False
-      return self.played
+    #def _speak(self, text):
+    #  if isinstance(text, unicode):
+    #    text = text.encode(self.ENCODING, errors='ignore')
+    #  self.played = self.ai.speak(text) if text else False
+    #  return self.played
 
     #def _clearTimer(self):
     #  if self.speakTimer.isActive():
@@ -91,16 +90,17 @@ if os.name == 'nt':
     #    self.speakTimer.stop()
     #  self._speak(first)
 
-    def stop(self):
-      self._clearTimer()
-      if self.played:
-        self.ai.stop()
+    #def stop(self):
+    #  self._clearTimer()
+    #  if self.played:
+    #    self.ai.stop()
 
     #def isPlaying(self): # -> bool
     #  return self.played and self.ai.isPlaying()
 
   class ZunkoTalk:
     DLL = "aitalked.dll"
+    ENCODING = 'sjis'
 
     def __init__(self, parent=None, volume=1.0, audioBufferSize=0):
       self.__d =_ZunkoTalk(parent, volume, audioBufferSize)
@@ -114,12 +114,16 @@ if os.name == 'nt':
     def isValid(self): return self.__d.valid # -> bool
 
     def speak(self, text): # unicode -> bool
+      d = self.__d
       text = repairtext(text)
+      if isinstance(text, unicode):
+        text = text.encode(self.ENCODING, errors='ignore')
       if not text:
         self.stop()
-        return True
       else:
-        return self.__d.speak(text)
+        d.played = d.ai.speak(text)
+      return d.played
+
       #d = self.__d
       #l = splitSentences(text)
       #l = filter(jpchars.notallpunct, l)
@@ -135,7 +139,10 @@ if os.name == 'nt':
       return bool(self.__d.sentences) or self.__d.isPlaying()
 
     def stop(self):
-      self.__d.stop()
+      d = self.__d
+      if d.played:
+        d.ai.stop()
+        d.played = False
 
     def volume(self): return self.__d.volume # -> float
     def setVolume(self, v): # float ->
