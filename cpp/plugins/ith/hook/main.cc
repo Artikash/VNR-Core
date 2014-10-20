@@ -228,7 +228,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
       hSendThread = IthCreateThread(WaitForPipe, 0);
       hCmdThread = IthCreateThread(CommandPipe, 0);
 
-      Engine::init(hModule);
+      Engine::init();
     }
     break;
   case DLL_PROCESS_DETACH:

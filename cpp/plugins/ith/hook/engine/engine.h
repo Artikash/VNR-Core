@@ -7,7 +7,7 @@
 
 namespace Engine {
 
-void init(HANDLE hModule);
+void init();
 
 } // namespace Engine
 

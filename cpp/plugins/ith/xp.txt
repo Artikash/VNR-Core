@@ -1,6 +1,6 @@
 12/16/2013
 
-Differences between xp.dll and non-xp.dll for vnrcli and vnreng.
+Differences between xp.dll and non-xp.dll for vnrhook.
 
 non-xp:
   CONFIG += eh
