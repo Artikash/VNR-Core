@@ -355,7 +355,7 @@ class _ReferenceInput(object):
     if item: #and item.get('type') == self._selectedType():
       dprint("key: %s, title: %s" % (item['key'], item['title']))
       type = item['type']
-      if type in ('digiket', 'holyseal'):
+      if type in ('digiket', 'gyutto', 'holyseal'):
         skevents.runlater(partial(self._saveNew, item), 200) # runlater so that it won't block GUI
       else:
         self.q.itemSelected.emit(item)

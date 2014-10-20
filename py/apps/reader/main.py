@@ -1721,7 +1721,7 @@ class MainObject(QObject):
     dprint("leave")
 
     #skevents.runlater(d.ocrManager.start, 5000) # 5 seconds
-    #self.showReferenceView()
+    self.showReferenceView(18356)
     #  import jsonapi
     #  jsonapi.gameinfo()
     #  d.dump()
