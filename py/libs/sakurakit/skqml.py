@@ -3,9 +3,6 @@
 # 10/5/2012 jichi
 
 __all__ = (
-  'QmlItem',
-  'QmlObject',
-  'QmlObjectInit',
   'SkClipboardProxy',
   'SkDeclarativeDragDropEventFilter',
   'SkDeclarativeView',
@@ -312,21 +309,15 @@ class SkDesktopProxy(QObject):
 
 # EOF
 
-# Helpers -
-
-#from functools import partial, wraps
-#import shiboken
-#from PySide import shiboken
-#
 #def QmlObjectInit(init):
 #  """
 #  @param  init  must be __init__(self, ...)
 #  """
 #  # wraps is disabled, because it is only used to get __doc__, and could cause trouble when no __init__ is defined
-#  @wraps(init)
-#  def retain(self):
-#    if shiboken.isValid(self):
-#      self.setParent(QCoreApplication.instance())
+#  #@wraps(init)
+#  #def retain(self):
+#  #  if shiboken.isValid(self):
+#  #    self.setParent(QCoreApplication.instance())
 #
 #  def newinit(*args, **kwargs):
 #    assert args, "the first argument of a class must be self"
@@ -334,16 +325,24 @@ class SkDesktopProxy(QObject):
 #    self = args[0]
 #    assert isinstance(self, QObject), "qmlobject must be an qobject"
 #    if not QObject.parent(self):
-#      QCoreApplication.instance().aboutToQuit.connect(partial(retain, self))
+#      qApp = QCoreApplication.instance()
+#      self.setParent(qApp)
+#    #  QCoreApplication.instance().aboutToQuit.connect(partial(retain, self))
 #  return newinit
 #
-#def QmlObject(cls):
+#def QmlPersistentObject(cls):
 #  """
 #  @param  cls  QObject
 #  """
 #  assert issubclass(cls, QObject), "qmlobject must be a qobject"
 #  cls.__init__ = QmlObjectInit(cls.__init__)
 #  return cls
+
+# Helpers -
+
+#from functools import partial, wraps
+#import shiboken
+#from PySide import shiboken
 #
 #def QmlItem(cls):
 #  """

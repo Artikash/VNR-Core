@@ -9,7 +9,7 @@ from PySide.QtCore import Signal, Slot, Property, Qt
 from sakurakit import skcursor, skdatetime, skevents, skos, skpaths, skwin
 from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dprint, dwarn
-#from sakurakit.skqml import QmlObject
+#from sakurakit.skqml import QmlPersistentObject
 from sakurakit.sktr import tr_, notr_
 from sakurakit.skunicode import sjis_encodable, u_sjis
 from sakurakit.skwinobj import SkWindowObject #, SkTaskBarObject
@@ -795,11 +795,18 @@ class _GameManager:
     self.locked = False # bool
     #self.windowHookConnected = False # bool
 
+    # Cached properties
+    self.focusEnabled = False
+
 class GameManager(QtCore.QObject):
 
   def __init__(self, parent=None):
     super(GameManager, self).__init__(parent)
     self.__d = _GameManager()
+
+    for sig in self.cleared, self.threadChanged:
+      sig.connect(self._onThreadChanged)
+
     dprint("pass")
 
   ## Signals ##
@@ -818,6 +825,8 @@ class GameManager(QtCore.QObject):
   encodingChanged = Signal(unicode) # text encoding, won't emit when game closed
   windowChanged = Signal(long) # wid, won't emit when game closed
   processChanged = Signal(long, unicode) # pid, path, won't emit when game closed
+
+  focusEnabledChanged = Signal(bool)
 
   nameThreadChanged = Signal(long, unicode) # signature, name, won't emit when game closed
   nameThreadDisabled = Signal() # signature, name, won't emit when game closed
@@ -838,6 +847,39 @@ class GameManager(QtCore.QObject):
     @return  long
     """
     return self.__d.game.pid if self.__d.game else 0
+
+  def currentGameThreadName(self):
+    """
+    @return  str or ''
+    """
+    return self.__d.game.threadName if self.__d.game else ''
+
+  def isFocusEnabled(self):
+    """
+    @return  bool
+    """
+    return self.__d.focusEnabled
+
+  def _onThreadChanged(self): # invoked whenever the thread name is invoked
+    self._updateFocusEnabled()
+
+  def _updateFocusEnabled(self):
+    d = self.__d
+    t = False
+    g = d.game
+    threadName = ""
+    if g:
+      threadName = g.threadName
+      if threadName:
+        t = threadName in config.FOCUS_GAME_ENGINES
+    if t != d.focusEnabled:
+      d.focusEnabled = t
+      self.focusEnabledChanged.emit(t)
+      #if t:
+      #  growl.msg(": ".join((
+      #    my.tr("Game engine allows full screen"),
+      #    threadName,
+      #  )))
 
   ## Actions ##
 
@@ -1517,10 +1559,40 @@ def manager(): return GameManager()
 
 ## QML game launcher ##
 
-#@QmlObject
+#@Q_Q
+#class _GameManagerProxy(object):
+#
+#  def __init__(self):
+#    m = manager()
+#    for sig in m.cleared, m.threadChanged:
+#      sig.connect(self.onThreadChanged)
+#
+#  def onThreadChanged(self):
+#    q = self.q
+#    t = q.currentGameFocusEnabled
+#    dprint("game thread allows focus: %s" % t)
+#    q.currentGameFocusEnabledChanged.emit(t)
+
+#@QmlPersistentObject # 10/19/2014: otherwise, it will crash in kagami.qml after the game is closed
 class GameManagerProxy(QtCore.QObject):
+
   def __init__(self, parent=None):
     super(GameManagerProxy, self).__init__(parent)
+    #self.__d = _GameManagerProxy(self)
+
+  # Thread name
+
+  #threadNameChanged = Signal(str)
+  #threadName = Property(str,
+  #    lambda _: manager().currentGame() ? manager().currentGame().threadName : "",
+  #    notify=threadNameChanged)
+
+  #currentGameFocusEnabledChanged = Signal(bool)
+  #currentGameFocusEnabled = Property(bool,
+  #    lambda _: manager().isCurrentGameFocusEnabled(),
+  #    notify=currentGameFocusEnabledChanged)
+
+  # Open
 
   @Slot(unicode, unicode)
   def openLocation(self, path, launchPath):

@@ -28,12 +28,14 @@ Item { id: root_
   property bool ignoresFocus:
       gameWindowTracker_.fullScreen
       && !gameWindowTracker_.stretched
-      && !settings_.kagamiFocusEnabled
       && !currentGameIsEmulator
+      && !currentGameFocusEnabled
+      && !settings_.kagamiFocusEnabled
 
   // 8/3/2014 TODO: Remove focus restriction for CIRCUS game as well
   property int currentGameId: datamanPlugin_.gameItemId // cached
   property bool currentGameIsEmulator: currentGameId > 50 && currentGameId < 60
+  property bool currentGameFocusEnabled: datamanPlugin_.currentGameFocusEnabled // cached
 
   property bool mirageVisible: false
 
@@ -230,10 +232,12 @@ Item { id: root_
   //}
 
   Plugin.MainObjectProxy { id: mainPlugin_
-    windowRefreshInterval: root_.ignoresFocus ? 1000 : 20000 // 1 sec, 20 sec
+    windowRefreshInterval: (gameWindowTracker_.fullScreen && !gameWindowTracker_.stretched) ? 1000 : 20000 // 1 sec, 20 sec
   }
 
   Plugin.DataManagerProxy { id: datamanPlugin_ }
+
+  //Plugin.GameManagerProxy { id: gamemanPlugin_ }
 
   Plugin.TranslatorBean { id: trPlugin_ }
 
