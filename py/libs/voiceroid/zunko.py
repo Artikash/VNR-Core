@@ -15,21 +15,34 @@ if __name__ == '__main__':
   ))
 
 if os.name == 'nt':
-  import re
-  from PySide.QtCore import QTimer
-  from unitraits import jpchars
+  #from PySide.QtCore import QTimer
+  #from unitraits import jpchars
   from pyzunko import AITalkSynthesizer
 
-  SENTENCE_INTERVAL = 100 # the same as Zunko's TextToSpeech thread
+  #SENTENCE_INTERVAL = 100 # the same as Zunko's TextToSpeech thread
 
-  SENTENCE_RE = re.compile(ur"([。？！「」【】])(?![。！？）」\n]|$)")
+  #SENTENCE_RE = re.compile(ur"([。？！「」【】])(?![。！？）」\n]|$)")
 
-  def splitSentences(text):
+  #def splitSentences(text):
+  #  """
+  #  @param  text  unicode
+  #  @return  [unicode]
+  #  """
+  #  return SENTENCE_RE.sub(r"\1\n", text).split("\n")
+
+  import re
+  RE_PUNCT = re.compile(ur"[。？！?!](?=[^」])") # any punctuation not at the end of a sentence
+  STOP_PUNCT = u"」"
+  def repairtext(t):
     """
     @param  text  unicode
-    @return  [unicode]
+    @return  unicode
     """
-    return SENTENCE_RE.sub(r"\1\n", text).split("\n")
+    t = t.replace("\n", STOP_PUNCT)
+    t = RE_PUNCT.sub(STOP_PUNCT, t)
+    while t and t[0] == STOP_PUNCT: # remove leading stop punctuation
+      t = t[1:]
+    return t
 
   class _ZunkoTalk:
     ENCODING = 'sjis'
@@ -40,51 +53,51 @@ if os.name == 'nt':
       self.played = False # bool
       self.volume = volume # float
 
-      t = self.speakTimer = QTimer(parent)
-      t.setSingleShot(False)
-      t.setInterval(SENTENCE_INTERVAL)
-      t.timeout.connect(self._playSentences)
-      self.sentences = [] # [unicode]
+      #t = self.speakTimer = QTimer(parent)
+      #t.setSingleShot(False)
+      #t.setInterval(SENTENCE_INTERVAL)
+      #t.timeout.connect(self._playSentences)
+      #self.sentences = [] # [unicode]
 
-    def _speak(self, text):
+    def speak(self, text):
       if isinstance(text, unicode):
         text = text.encode(self.ENCODING, errors='ignore')
       self.played = self.ai.speak(text) if text else False
       return self.played
 
-    def _clearTimer(self):
-      if self.speakTimer.isActive():
-        self.speakTimer.stop()
-      if self.sentences:
-        self.sentences.clear()
+    #def _clearTimer(self):
+    #  if self.speakTimer.isActive():
+    #    self.speakTimer.stop()
+    #  if self.sentences:
+    #    self.sentences.clear()
 
-    def playOne(self, text): # unicode -> bool
-      self._clearTimer()
-      return self._speak(text)
+    #def playOne(self, text): # unicode -> bool
+    #  self._clearTimer()
+    #  return self._speak(text)
 
-    def playList(self, l): # [unicode] -> bool
-      self._clearTimer()
-      l.reverse()
-      self.sentences = l
-      first = l.pop()
-      self.speakTimer.start()
-      return self._speak(first)
+    #def playList(self, l): # [unicode] -> bool
+    #  self._clearTimer()
+    #  l.reverse()
+    #  self.sentences = l
+    #  first = l.pop()
+    #  self.speakTimer.start()
+    #  return self._speak(first)
 
-    def _playSentences(self):
-      if self.isPlaying():
-        return
-      first = self.sentences.pop()
-      if not self.sentences:
-        self.speakTimer.stop()
-      self._speak(first)
+    #def _playSentences(self):
+    #  if self.isPlaying():
+    #    return
+    #  first = self.sentences.pop()
+    #  if not self.sentences:
+    #    self.speakTimer.stop()
+    #  self._speak(first)
 
     def stop(self):
       self._clearTimer()
       if self.played:
         self.ai.stop()
 
-    def isPlaying(self): # -> bool
-      return self.played and self.ai.isPlaying()
+    #def isPlaying(self): # -> bool
+    #  return self.played and self.ai.isPlaying()
 
   class ZunkoTalk:
     DLL = "aitalked.dll"
@@ -100,17 +113,23 @@ if os.name == 'nt':
 
     def isValid(self): return self.__d.valid # -> bool
 
-    def speak(self, text):
-      d = self.__d
-      l = splitSentences(text)
-      l = filter(jpchars.notallpunct, l)
-      if not l:
-        d.stop()
+    def speak(self, text): # unicode -> bool
+      text = repairtext(text)
+      if not text:
+        self.stop()
         return True
-      elif len(l) == 1:
-        return d.playOne(text)
       else:
-        return d.playList(l)
+        return self.__d.speak(text)
+      #d = self.__d
+      #l = splitSentences(text)
+      #l = filter(jpchars.notallpunct, l)
+      #if not l:
+      #  d.stop()
+      #  return True
+      #elif len(l) == 1:
+      #  return d.playOne(text)
+      #else:
+      #  return d.playList(l)
 
     def isPlaying(self):
       return bool(self.__d.sentences) or self.__d.isPlaying()
