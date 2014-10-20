@@ -81,7 +81,7 @@ void AITalkSynthesizer::stop()
   }
 }
 
-bool AITalkSynthesizer::play(const char *text)
+bool AITalkSynthesizer::speak(const char *text)
 {
   if (!d_->ai.IsValid())
     return false;
@@ -91,5 +91,8 @@ bool AITalkSynthesizer::play(const char *text)
   d_->jobId = 0;
   return d_->ai.TextToSpeech(&d_->jobId, text) == 0;
 }
+
+bool AITalkSynthesizer::isPlaying() const
+{ return d_->ai.IsSynthesizing() || d_->jobId && d_->ai.IsPlaying(d_->jobId); }
 
 // EOF

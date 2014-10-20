@@ -30,7 +30,9 @@ public:
 
   // Actions
 
-  bool play(const char *text); // it MUST be sjis text
+  bool isPlaying() const;
+  bool speak(const char *text); // it MUST be sjis text
+
   void stop();
   bool pause();
   bool resume();

@@ -181,6 +181,34 @@ static PyObject* Sbk_AITalkSynthesizerFunc_init(PyObject* self, PyObject* args, 
         return 0;
 }
 
+static PyObject* Sbk_AITalkSynthesizerFunc_isPlaying(PyObject* self)
+{
+    ::AITalkSynthesizer* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::AITalkSynthesizer*)Shiboken::Conversions::cppPointer(SbkpyzunkoTypes[SBK_AITALKSYNTHESIZER_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+
+    // Call function/method
+    {
+
+        if (!PyErr_Occurred()) {
+            // isPlaying()const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            bool cppResult = const_cast<const ::AITalkSynthesizer*>(cppSelf)->isPlaying();
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+}
+
 static PyObject* Sbk_AITalkSynthesizerFunc_isValid(PyObject* self)
 {
     ::AITalkSynthesizer* cppSelf = 0;
@@ -235,53 +263,6 @@ static PyObject* Sbk_AITalkSynthesizerFunc_pause(PyObject* self)
         return 0;
     }
     return pyResult;
-}
-
-static PyObject* Sbk_AITalkSynthesizerFunc_play(PyObject* self, PyObject* pyArg)
-{
-    ::AITalkSynthesizer* cppSelf = 0;
-    SBK_UNUSED(cppSelf)
-    if (!Shiboken::Object::isValid(self))
-        return 0;
-    cppSelf = ((::AITalkSynthesizer*)Shiboken::Conversions::cppPointer(SbkpyzunkoTypes[SBK_AITALKSYNTHESIZER_IDX], (SbkObject*)self));
-    PyObject* pyResult = 0;
-    int overloadId = -1;
-    PythonToCppFunc pythonToCpp;
-    SBK_UNUSED(pythonToCpp)
-
-    // Overloaded function decisor
-    // 0: play(const char*)
-    if (Shiboken::String::check(pyArg) && (pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<const char*>(), (pyArg)))) {
-        overloadId = 0; // play(const char*)
-    }
-
-    // Function signature not found.
-    if (overloadId == -1) goto Sbk_AITalkSynthesizerFunc_play_TypeError;
-
-    // Call function/method
-    {
-        const char* cppArg0;
-        pythonToCpp(pyArg, &cppArg0);
-
-        if (!PyErr_Occurred()) {
-            // play(const char*)
-            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            bool cppResult = cppSelf->play(cppArg0);
-            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
-        }
-    }
-
-    if (PyErr_Occurred() || !pyResult) {
-        Py_XDECREF(pyResult);
-        return 0;
-    }
-    return pyResult;
-
-    Sbk_AITalkSynthesizerFunc_play_TypeError:
-        const char* overloads[] = {"" SBK_STR_NAME "", 0};
-        Shiboken::setErrorAboutWrongArguments(pyArg, "pyzunko.AITalkSynthesizer.play", overloads);
-        return 0;
 }
 
 static PyObject* Sbk_AITalkSynthesizerFunc_resume(PyObject* self)
@@ -356,6 +337,53 @@ static PyObject* Sbk_AITalkSynthesizerFunc_setVolume(PyObject* self, PyObject* p
         return 0;
 }
 
+static PyObject* Sbk_AITalkSynthesizerFunc_speak(PyObject* self, PyObject* pyArg)
+{
+    ::AITalkSynthesizer* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::AITalkSynthesizer*)Shiboken::Conversions::cppPointer(SbkpyzunkoTypes[SBK_AITALKSYNTHESIZER_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: speak(const char*)
+    if (Shiboken::String::check(pyArg) && (pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<const char*>(), (pyArg)))) {
+        overloadId = 0; // speak(const char*)
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_AITalkSynthesizerFunc_speak_TypeError;
+
+    // Call function/method
+    {
+        const char* cppArg0;
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // speak(const char*)
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            bool cppResult = cppSelf->speak(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+
+    Sbk_AITalkSynthesizerFunc_speak_TypeError:
+        const char* overloads[] = {"" SBK_STR_NAME "", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyzunko.AITalkSynthesizer.speak", overloads);
+        return 0;
+}
+
 static PyObject* Sbk_AITalkSynthesizerFunc_stop(PyObject* self)
 {
     ::AITalkSynthesizer* cppSelf = 0;
@@ -411,11 +439,12 @@ static PyObject* Sbk_AITalkSynthesizerFunc_volume(PyObject* self)
 
 static PyMethodDef Sbk_AITalkSynthesizer_methods[] = {
     {"init", (PyCFunction)Sbk_AITalkSynthesizerFunc_init, METH_VARARGS|METH_KEYWORDS},
+    {"isPlaying", (PyCFunction)Sbk_AITalkSynthesizerFunc_isPlaying, METH_NOARGS},
     {"isValid", (PyCFunction)Sbk_AITalkSynthesizerFunc_isValid, METH_NOARGS},
     {"pause", (PyCFunction)Sbk_AITalkSynthesizerFunc_pause, METH_NOARGS},
-    {"play", (PyCFunction)Sbk_AITalkSynthesizerFunc_play, METH_O},
     {"resume", (PyCFunction)Sbk_AITalkSynthesizerFunc_resume, METH_NOARGS},
     {"setVolume", (PyCFunction)Sbk_AITalkSynthesizerFunc_setVolume, METH_O},
+    {"speak", (PyCFunction)Sbk_AITalkSynthesizerFunc_speak, METH_O},
     {"stop", (PyCFunction)Sbk_AITalkSynthesizerFunc_stop, METH_NOARGS},
     {"volume", (PyCFunction)Sbk_AITalkSynthesizerFunc_volume, METH_NOARGS},
 

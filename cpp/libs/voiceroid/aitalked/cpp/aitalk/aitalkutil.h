@@ -106,12 +106,12 @@ public:
   bool IsSynthesizing() const { return _synthesizing; }
 
   // AITalkUtil::SynthSync: while ((this._playing && (res == AITalkResultCode.AITALKERR_SUCCESS)) && (code != AITalkStatusCode.AITALKSTAT_DONE));
-  //bool IsPlaying(int jobID) const
-  //{
-  //  AITalkStatusCode code;
-  //  AITalkResultCode res = this->GetStatus(jobID, &code);
-  //  return res == AITALKERR_SUCCESS && code == AITALKSTAT_DONE;
-  //}
+  bool IsPlaying(int jobID) const
+  {
+    AITalkStatusCode code;
+    AITalkResultCode res = _talk.GetStatus(jobID, &code);
+    return res == AITALKERR_SUCCESS && code != AITALKSTAT_DONE;
+  }
 
   AIAudioResultCode ClearAudioData() // clear audio
   { return _audio.ClearData(); }

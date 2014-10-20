@@ -42,8 +42,11 @@ if os.name == 'nt':
       d = self.__d
       if isinstance(text, unicode):
         text = text.encode(self.ENCODING, errors='ignore')
-      d.played = d.ai.play(text) if text else False
+      d.played = d.ai.speak(text) if text else False
       return d.played
+
+    def isPlaying(self): # -> bool
+      return self.__d.played and self.__d.ai.isPlaying()
 
     def stop(self): # ->
       if self.__d.played:
@@ -62,6 +65,7 @@ else:
     def __init__(self, *args, **kwargs): pass
     def load(self, path): return False
     def isValid(self): return False
+    def isPlaying(self): return False
     def speak(self, text): return False
     def stop(self): pass
     def volume(self): return 1.0
