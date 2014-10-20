@@ -12,6 +12,7 @@ from PySide.QtCore import QObject, Slot, QTimer, QMutex
 from sakurakit.skdebug import dwarn, dprint
 from sakurakit.skclass import memoized
 #from sakurakit.skqml import QmlObject
+from unitraits import jpchars
 from mytr import my
 import features, growl, settings, termman, textutil
 import _ttsman
@@ -95,7 +96,8 @@ class _TtsManager(object):
     @param* verbose  bool  whether warn on error
     """
     #if not features.TEXT_TO_SPEECH:
-    if not text:
+    if not text or jpchars.allpunct(text):
+      self.stop()
       return
 
     eng = self.getEngine(engine)

@@ -40,21 +40,37 @@ import re
 s_punc = u"\
 、。？！…‥：・／\
 ―＝＄￥\
-【】「」『』（）｛｝〈〉［］＜＞\
+【】「」『』（）｛｝〈〉［］＜＞””\
 ●◯■□◆◇★☆♥♡\
 ー─～〜\
 ×\
 　\
 "
 
-set_punc = frozenset(s_punc)
-re_punc = re.compile(r"[%s]" % s_punc)
+set_punct = frozenset(s_punc)
+re_punct = re.compile(r"[%s]" % ''.join(s_punc))
+re_all_punct = re.compile(r"^[%s]+$" % ''.join(s_punc))
+re_not_punct = re.compile(r"[^%s]" % ''.join(s_punc))
 
-def containspunc(text):
+def anypunct(text):
   """
   @param  text  unicode
   @return  bool
   """
-  return bool(re_punc.search(text))
+  return bool(re_punct.search(text))
+
+def notallpunct(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  return bool(re_not_punct.search(text))
+
+def allpunct(text):
+  """
+  @param  text  unicode
+  @return  bool
+  """
+  return bool(re_all_punct.match(text))
 
 # EOF

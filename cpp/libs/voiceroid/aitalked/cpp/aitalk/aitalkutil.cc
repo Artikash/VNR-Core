@@ -7,7 +7,7 @@
 #include "cc/ccmacro.h"
 #include <windows.h>
 #include <cstring>
-#include <iostream>
+//#include <iostream>
 
 using namespace AITalk;
 
@@ -70,6 +70,8 @@ AITalkResultCode AITalk::AITalkUtil::Init(HMODULE h, const AITalkSettings *setti
   // Initialize audio API
   {
     AIAudio_TConfig config;
+    //config.procNotify = this->MyAIAudioProcNotify;
+    config.procNotify = nullptr; // not used
     config.msecLatency = AIAUDIO_CONFIG_BUFFERLATENCY;
     config.lenBufferBytes = AITALK_CONFIG_FREQUENCY * 2 * AIAUDIO_CONFIG_BUFFERLENGTH;
     config.hzSamplesPerSec = AITALK_CONFIG_FREQUENCY;
@@ -213,6 +215,12 @@ AITalkResultCode AITalk::AITalkUtil::SynthSync(int *jobID, const AITalk_TJobPara
 
 // Hooks
 
+void AITalk::AITalkUtil::MyAIAudioProcNotify(unsigned long tick, const int *userData)
+{
+  CC_UNUSED(tick);
+  CC_UNUSED(userData);
+}
+
 int AITalk::AITalkUtil::MyAITalkProcEventTTS(AITalkEventReasonCode reasonCode, int jobID, unsigned long tick, const char *name, const int *userData)
 {
   CC_UNUSED(jobID);
@@ -266,15 +274,16 @@ int AITalk::AITalkUtil::MyAITalkProcRawBuf(AITalkEventReasonCode reasonCode, int
       //if (reasonCode == AITALKEVENT_RAWBUF_FLUSH) // && _instance->_synthesizing)
       //  _instance->CloseSpeech(jobID);
       //::Sleep(1000);
-      _instance->CloseSpeech(jobID);
+      //_instance->CloseSpeech(jobID);
     }
     break;
   //case AITALKEVENT_RAWBUF_CLOSE: // not reachable
   //  _instance->PushEvent(tick, 3);
-  //  _instance->PushData(nullptr, 0);
+  //  _instance->PushAudioData(nullptr, 0);
   //  _instance->CloseSpeech(jobID);
   //  break;
   }
+  _instance->CloseSpeech(jobID);
   return 0;
 }
 
