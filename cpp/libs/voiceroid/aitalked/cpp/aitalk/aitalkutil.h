@@ -89,7 +89,7 @@ private:
   AIAudioResultCode PushEvent(unsigned long, unsigned long)
   {
     //return _audio.PushEvent(tick, reinterpret_cast<const int *>(userData));
-    // Audio event is disabled
+    // Audio event is disabled, which crashes
     return AIAUDIOERR_SUCCESS;
   }
 
@@ -101,6 +101,8 @@ private:
 
   // AITalkUtil.cs: pprotected virtual int MyAITalkProcTextBuf(AITalkEventReasonCode reasonCode, int jobID, IntPtr userData)
   static int __stdcall MyAITalkProcTextBuf(AITalkEventReasonCode reasonCode, int jobID, const int *userData);
+
+  static void __stdcall MyAIAudioProcNotify(unsigned long tick, const int *userData);
 
 public:
   bool IsSynthesizing() const { return _synthesizing; }

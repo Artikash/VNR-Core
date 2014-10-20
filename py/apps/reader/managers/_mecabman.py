@@ -197,7 +197,7 @@ class MeCabParser:
         surface = surface.decode(encoding, errors='ignore')
         #surface = surface.encode('sjis')
         if surface:
-          if len(surface) == 1 and surface in jpchars.set_punc:
+          if len(surface) == 1 and surface in jpchars.set_punct:
             char_type = mecabdef.TYPE_PUNCT
           else:
             char_type = node.char_type

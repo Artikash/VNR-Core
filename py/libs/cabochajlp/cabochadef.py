@@ -52,7 +52,7 @@ def surface_type(text):
   @param  text  unicode
   @return  int
   """
-  if len(text) == 1 and text in jpchars.set_punc:
+  if len(text) == 1 and text in jpchars.set_punct:
     return TYPE_PUNCT
   elif is_ruby_surface(text):
     return TYPE_RUBY
