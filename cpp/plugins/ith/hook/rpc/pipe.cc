@@ -30,8 +30,10 @@ LARGE_INTEGER wait_time={-100*10000,-1};
 LARGE_INTEGER sleep_time={-20*10000,-1};
 
 DWORD engine_type;
-DWORD engine_base;
 DWORD module_base;
+
+//DWORD engine_base;
+bool engine_registered; // 10/19/2014 jichi: disable engine dll
 
 HANDLE hPipe,
        hCommand,
@@ -81,7 +83,7 @@ DWORD WINAPI WaitForPipe(LPVOID lpThreadParameter) // Dynamically detect ITH mai
     DWORD pid;
     TextHook *man;
     DWORD module;
-    DWORD engine;
+    //DWORD engine;
   } u;
   HANDLE hMutex,
          hPipeExist;
@@ -91,13 +93,13 @@ DWORD WINAPI WaitForPipe(LPVOID lpThreadParameter) // Dynamically detect ITH mai
   //hEngine=IthCreateEvent(engine_event);
   //NtWaitForSingleObject(hEngine,0,0);
   //NtClose(hEngine);
-  while (!engine_base)
+  while (!engine_registered)
     NtDelayExecution(0, &wait_time);
   //LoadEngine(L"ITH_Engine.dll");
   u.module = module_base;
   u.pid = current_process_id;
   u.man = hookman;
-  u.engine = engine_base;
+  //u.engine = engine_base; // jichi 10/19/2014: disable the second dll
   hPipeExist = IthOpenEvent(exist);
   IO_STATUS_BLOCK ios;
   //hLose=IthCreateEvent(lose_event,0,0);
@@ -120,7 +122,7 @@ DWORD WINAPI WaitForPipe(LPVOID lpThreadParameter) // Dynamically detect ITH mai
     }
     //NtClearEvent(hLose);
     CliLockPipe();
-    NtWriteFile(hPipe, 0, 0, 0, &ios, &u, 16, 0, 0);
+    NtWriteFile(hPipe, 0, 0, 0, &ios, &u, sizeof(u), 0, 0);
     CliUnlockPipe();
     live = true;
     for (man = hookman, i = 0; i < current_hook; man++)
@@ -131,7 +133,7 @@ DWORD WINAPI WaitForPipe(LPVOID lpThreadParameter) // Dynamically detect ITH mai
     //OutputDWORD(tree->Count());
     NtReleaseMutant(hMutex,0);
     NtClose(hMutex);
-    if (!hook_inserted && engine_base) {
+    if (!hook_inserted && engine_registered) {
       hook_inserted = true;
       IdentifyEngine();
     }
@@ -314,11 +316,11 @@ void IHFAPI ConsoleOutput(LPCSTR text)
 //  ConsoleOutput(str);
 //  return 0;
 //}
-DWORD IHFAPI RegisterEngineModule(DWORD base, DWORD idEngine, DWORD dnHook)
+DWORD IHFAPI RegisterEngineModule(DWORD idEngine, DWORD dnHook)
 {
-  IdentifyEngine = (IdentifyEngineFun)idEngine;
-  InsertDynamicHook = (InsertDynamicHookFun)dnHook;
-  engine_base = base;
+  ::IdentifyEngine = (IdentifyEngineFun)idEngine;
+  ::InsertDynamicHook = (InsertDynamicHookFun)dnHook;
+  ::engine_registered = true;
   return 0;
 }
 DWORD IHFAPI NotifyHookInsert(DWORD addr)

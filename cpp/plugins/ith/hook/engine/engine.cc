@@ -7,11 +7,11 @@
 //# pragma warning (disable:4733)   // C4733: Inline asm assigning to 'FS:0' : handler not registered as safe handler
 #endif // _MSC_VER
 
-#include "engine.h"
-#include "engine_p.h"
-#include "pchooks.h"
-#include "util.h"
-#include "ith/cli/cli.h"
+#include "engine/engine.h"
+#include "engine/engine_p.h"
+#include "engine/pchooks.h"
+#include "engine/util.h"
+#include "hook.h"
 #include "ith/sys/sys.h"
 #include "ith/common/except.h"
 #include "ith/common/growl.h"
@@ -29,8 +29,6 @@ WCHAR process_name_[MAX_PATH], // cached
 
 DWORD module_base_,
       module_limit_;
-
-bool processAttached_;
 
 //LPVOID trigger_addr;
 trigger_fun_t trigger_fun_;
@@ -718,7 +716,7 @@ void Engine::init(HANDLE hModule)
 {
   Util::GetProcessName(process_name_); // Initialize process name
   Util::GetProcessPath(process_path_); // Initialize process path
-  ::RegisterEngineModule((DWORD)hModule, (DWORD)IdentifyEngine, (DWORD)InsertDynamicHook);
+  ::RegisterEngineModule((DWORD)IdentifyEngine, (DWORD)InsertDynamicHook);
 }
 
 // EOF

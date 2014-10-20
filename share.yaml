@@ -33,10 +33,8 @@ env:
   #  - $PWD/bin/xp
 
   integritypath:
-  - $PWD/bin/vnrcli.dll
-  - $PWD/bin/vnrclixp.dll
-  - $PWD/bin/vnreng.dll
-  - $PWD/bin/vnrengxp.dll  # recognized as virus
+  - $PWD/bin/vnrhook.dll
+  - $PWD/bin/vnrhookxp.dll  # recognized as virus
   - $PWD/bin/vnrsrv.dll
   - $PWD/../Python/Lib/site-packages/pydasm.pyd
   - $PWD/../Qt/translations/qt_ko.qm

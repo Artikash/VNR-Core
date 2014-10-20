@@ -13,7 +13,6 @@
 #else
 # define IHFSERVICE __declspec(dllimport)
 #endif
-#define ITH_DEFAULT_ENGINE 0
 
 struct Settings;
 struct HookParam;
@@ -24,7 +23,7 @@ IHFSERVICE DWORD IHFAPI IHF_Init();
 IHFSERVICE DWORD IHFAPI IHF_Start();
 IHFSERVICE DWORD IHFAPI IHF_Cleanup();
 IHFSERVICE DWORD IHFAPI IHF_GetPIDByName(LPCWSTR pwcTarget);
-IHFSERVICE DWORD IHFAPI IHF_InjectByPID(DWORD pid, LPCWSTR engine);
+IHFSERVICE DWORD IHFAPI IHF_InjectByPID(DWORD pid);
 IHFSERVICE DWORD IHFAPI IHF_ActiveDetachProcess(DWORD pid);
 IHFSERVICE DWORD IHFAPI IHF_GetHookManager(HookManager **hookman);
 IHFSERVICE DWORD IHFAPI IHF_GetSettings(Settings **settings);

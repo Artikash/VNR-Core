@@ -15,7 +15,7 @@ struct ProcessRecord {
   DWORD pid_register;
   DWORD hookman_register;
   DWORD module_register;
-  DWORD engine_register;
+  //DWORD engine_register; // jichi 10/19/2014: removed
   HANDLE process_handle;
   HANDLE hookman_mutex;
   HANDLE hookman_section;
@@ -66,7 +66,7 @@ public:
   void RemoveSingleHook(DWORD pid, DWORD addr);
   void RegisterThread(TextThread*, DWORD);
   void RegisterPipe(HANDLE text, HANDLE cmd, HANDLE thread);
-  void RegisterProcess(DWORD pid, DWORD hookman, DWORD module, DWORD engine);
+  void RegisterProcess(DWORD pid, DWORD hookman, DWORD module);
   void UnRegisterProcess(DWORD pid);
   //void SetName(DWORD);
 

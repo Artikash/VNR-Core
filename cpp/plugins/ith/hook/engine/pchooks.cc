@@ -1,8 +1,8 @@
 // pchooks.cc
 // 8/1/2014 jichi
 
-#include "pchooks.h"
-#include "ith/cli/cli.h"
+#include "engine/pchooks.h"
+#include "hook.h"
 
 #define DEBUG "vnrcli"
 #define DPRINT(cstr) ConsoleOutput(DEBUG ":" __FUNCTION__ ":" cstr) // defined in vnrcli

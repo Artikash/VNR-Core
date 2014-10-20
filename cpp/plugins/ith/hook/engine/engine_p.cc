@@ -6,11 +6,11 @@
 # pragma warning (disable:4100)   // C4100: unreference formal parameter
 #endif // _MSC_VER
 
-#include "engine_p.h"
-#include "engine.h"
-#include "hookdefs.h"
-#include "util.h"
-#include "ith/cli/cli.h"
+#include "engine/engine_p.h"
+#include "engine/engine.h"
+#include "engine/hookdefs.h"
+#include "engine/util.h"
+#include "hook.h"
 #include "ith/sys/sys.h"
 #include "ith/common/except.h"
 #include "memdbg/memsearch.h"
@@ -152,7 +152,7 @@ ULONG SafeMatchBytes(LPCVOID pattern, DWORD patternSize, DWORD lowerBound, DWORD
 ULONG _SafeMatchBytesInMappedMemory(LPCVOID pattern, DWORD patternSize, BYTE wildcard,
                                    ULONG start, ULONG stop, ULONG step)
 {
-  for (ULONG i = start; i < stop && Engine::processAttached_; i += step) // + patternSize to avoid overlap
+  for (ULONG i = start; i < stop; i += step) // + patternSize to avoid overlap
     if (ULONG r = SafeMatchBytes(pattern, patternSize, i, i + step + patternSize + 1, wildcard))
       return r;
   return 0;

@@ -283,7 +283,7 @@ void Ihf::updateLinkedDelegate(TextThreadDelegate *d)
 bool Ihf::attachProcess(DWORD pid)
 {
   DOUT("enter: pid =" << pid);
-  DWORD module = ::IHF_InjectByPID(pid, ITH_DEFAULT_ENGINE);
+  DWORD module = ::IHF_InjectByPID(pid);
 
   enum { AttachDelay = 500 }; // in msec
   ::Sleep(AttachDelay);
