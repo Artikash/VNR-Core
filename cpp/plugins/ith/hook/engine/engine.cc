@@ -712,7 +712,7 @@ DWORD IdentifyEngine()
 
 // - Initialization -
 
-void Engine::init(HANDLE hModule)
+void Engine::init()
 {
   Util::GetProcessName(process_name_); // Initialize process name
   Util::GetProcessPath(process_path_); // Initialize process path
