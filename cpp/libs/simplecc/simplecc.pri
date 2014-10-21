@@ -5,6 +5,8 @@ DEFINES += WITH_LIB_SIMPLECC
 
 DEPENDPATH += $$PWD
 
+INCLUDEPATH += $$UTF8_HOME/include
+
 #QT += core
 
 HEADERS += $$PWD/simplecc.h
