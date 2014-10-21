@@ -18,6 +18,7 @@ if os.name == 'nt':
   #from PySide.QtCore import QTimer
   #from unitraits import jpchars
   from pyzunko import AITalkSynthesizer
+  from unitraits import jpchars
 
   #SENTENCE_INTERVAL = 100 # the same as Zunko's TextToSpeech thread
 
@@ -116,7 +117,9 @@ if os.name == 'nt':
     def speak(self, text): # unicode -> bool
       d = self.__d
       text = repairtext(text)
-      if isinstance(text, unicode):
+      if jpchars.allpunct(text): # otherwise, it could crash zunko
+        text = None
+      elif isinstance(text, unicode):
         text = text.encode(self.ENCODING, errors='ignore')
       if not text:
         self.stop()
@@ -176,6 +179,7 @@ if __name__ == '__main__':
   #t = u"憎しみ！！憎しみ。"
   t = u"「あ、自分は島津秀隆と言います。この中でも新人中の新人ですので、どうぞお手柔らかに」"
   #t = u"あ、自分は島津秀隆と言います、この中でも新人中の新人ですので、どうぞお手柔らかに"
+  #t = u"】「……」"
   print ai.speak(t)
 
   a.exec_()
