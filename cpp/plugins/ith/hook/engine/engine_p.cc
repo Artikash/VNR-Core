@@ -27,7 +27,7 @@
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 
-#define DEBUG "engine_p.h"
+//#define DEBUG "engine_p.h"
 
 enum { VNR_TEXT_CAPACITY = 1500 }; // estimated max number of bytes allowed in VNR, slightly larger than VNR's text limit (1000)
 
@@ -259,25 +259,45 @@ static void SpecialHookKiriKiri(DWORD esp_base, HookParam *hp, DWORD *data, DWOR
 }
 #endif // 0
 
-void FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag)
+bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/20/2014: change return value to bool
 {
+  enum : DWORD {
+    // jichi 10/20/2014: mov ebp,esp, sub esp,*
+    kirikiri1_sig = 0xec8b55,
+
+    // jichi 10/20/2014:
+    // 00e01542   53               push ebx
+    // 00e01543   56               push esi
+    // 00e01544   57               push edi
+    kirikiri2_sig = 0x575653
+  };
+  enum : DWORD { StartAddress = 0x1000 };
+  enum : DWORD { StartRange = 0x6000, StopRange = 0x8000 }; // jichi 10/20/2014: ITH original pattern range
+
+  // jichi 10/20/2014: The KiriKiri patterns exist in multiple places of the game.
+  //enum : DWORD { StartRange = 0x8000, StopRange = 0x9000 }; // jichi 10/20/2014: change to a different range
+
   //WCHAR str[0x40];
-  DWORD sig = flag ? 0x575653 : 0xec8b55;
+  DWORD sig = flag ? kirikiri2_sig : kirikiri1_sig;
   DWORD t = 0;
-  for (DWORD i = 0x1000; i < size - 4; i++)
-    if (*(WORD *)(pt + i) == 0x15ff) {
+  for (DWORD i = StartAddress; i < size - 4; i++)
+    if (*(WORD *)(pt + i) == 0x15ff) { // jichi 10/20/2014: call dword ptr ds
       DWORD addr = *(DWORD *)(pt + i + 2);
+
+      // jichi 10/20/2014: There are multiple function calls. The flag+1 one is selected.
+      // i.e. KiriKiri1: The first call to GetGlyphOutlineW is selected
+      //      KiriKiri2: The second call to GetTextExtentPoint32W is selected
       if (addr >= pt && addr <= pt + size - 4
           && *(DWORD *)addr == fun)
         t++;
       if (t == flag + 1)  // We find call to GetGlyphOutlineW or GetTextExtentPoint32W.
         //swprintf(str, L"CALL addr:0x%.8X",i+pt);
         //ConsoleOutput(str);
-        for (DWORD j = i; j > i - 0x1000; j--)
+        for (DWORD j = i; j > i - StartAddress; j--)
           if (((*(DWORD *)(pt + j)) & 0xffffff) == sig) {
             if (flag)  { // We find the function entry. flag indicate 2 hooks.
               t = 0;  //KiriKiri2, we need to find call to this function.
-              for (DWORD k = j + 0x6000; k < j + 0x8000; k++) // Empirical range.
+              for (DWORD k = j + StartRange; k < j + StopRange; k++) // Empirical range.
                 if (*(BYTE *)(pt + k) == 0xe8) {
                   if (k + 5 + *(DWORD *)(pt + k + 1) == j)
                     t++;
@@ -294,7 +314,7 @@ void FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag)
                     hp.type |= USING_UNICODE|NO_CONTEXT|USING_SPLIT|DATA_INDIRECT;
                     ConsoleOutput("vnreng: INSERT KiriKiri2");
                     NewHook(hp, L"KiriKiri2");
-                    return;
+                    return true;
                   }
                 }
             } else {
@@ -309,19 +329,148 @@ void FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag)
               hp.type |= USING_UNICODE|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
               ConsoleOutput("vnreng: INSERT KiriKiri1");
               NewHook(hp, L"KiriKiri1");
+              return true;
             }
-            return;
+            return false;
           }
         //ConsoleOutput("vnreng:KiriKiri: FAILED to find function entry");
     }
-  ConsoleOutput("vnreng:KiriKiri: failed");
+  if (flag)
+    ConsoleOutput("vnreng:KiriKiri2: failed");
+  else
+    ConsoleOutput("vnreng:KiriKiri1: failed");
+  return false;
 }
 
-void InsertKiriKiriHook()
+#if 0
+/** 10/20/2014 jichi: New KiriKiri hook
+ *  Sample game: [141128] Venus Blood -HYPNO- ヴィーナスブラッド・ヒュプノ 体験版
+ *
+ *  KiriKiriZ:
+ *  https://github.com/krkrz/krkrz
+ *  http://krkrz.github.io
+ *
+ *  KiriKiri API: http://devdoc.kikyou.info/tvp/docs/kr2doc/contents/f_Layer.html
+ *
+ *  See: krkrz/src/core/visual/LayerIntf.cpp
+ *  API: http://devdoc.kikyou.info/tvp/docs/kr2doc/contents/f_Layer_drawText.html
+ *
+ *  タイプ
+ *      Layerクラスのメソッド
+ *  構文
+ *      drawText(x, y, text, color, opa=255, aa=true, shadowlevel=0, shadowcolor=0x000000, shadowwidth=0, shadowofsx=0, shadowofsy=0)
+ *  引数
+ *      x 	　文字描画を開始する原点の ( 画像位置における ) x 座標をピクセル単位で指定します。
+ *      y 	　文字描画を開始する原点の ( 画像位置における ) y 座標をピクセル単位で指定します。
+ *      text 	　描画する文字を指定します。
+ *      color 	　描画する文字の色を 0xRRGGBB 形式で指定します。
+ *      opa 	　描画する文字の不透明度 ( -255 ～ 0 ～ 255 ) を指定します。
+ *      　負の数の指定は Layer.face が dfAlpha の場合のみに有効で、 この場合は文字の形に不透明度が取り除かれる事になります ( 値が小さいほど 効果が大きくなります )。
+ *      aa 	　アンチエイリアスを行うかどうかを指定します。
+ *      　真を指定するとアンチエイリアスが行われます。偽を指定すると行われません。
+ *      shadowlevel 	　影の不透明度を指定します。shadowwidth 引数の値によって適切な値は変動します。
+ *      0 を指定すると影は描画されません。
+ *      shadowcolor 	　影の色を 0xRRGGBB 形式で指定します。
+ *      shadowwidth 	　影の幅 ( ぼけ ) を指定します。 0 がもっともシャープ ( ぼけない ) で、値を大きく すると影をぼかすことができます。
+ *      shadowofsx 	　影の位置の x 座標の値をピクセル単位で指定します。 0 を指定すると影は真下に描画されます。
+ *      shadowofsy 	　影の位置の y 座標の値をピクセル単位で指定します。 0 を指定すると影は真下に描画されます。
+ *  戻り値
+ *      なし (void)
+ *  説明
+ *      　レイヤに文字を描画します。Layer.face が dfAlpha (または dfBoth) か dfAddAlpha か dfOpaque (または dfMain) の場合のみ描画することができます。
+ *      　dfOpaque (またはdfMain) を指定した場合、描画先のマスクが破壊されるか保護されるかは Layer.holdAlpha プロパティによります。
+ *      　フォントは Layer.font で指定したものが用いられます。
+ *
+ *  void tTJSNI_BaseLayer::DrawText(tjs_int x, tjs_int y, const ttstr &text,
+ *  	tjs_uint32 color, tjs_int opa, bool aa, tjs_int shadowlevel,
+ *  		tjs_uint32 shadowcolor, tjs_int shadowwidth, tjs_int shadowofsx,
+ *  		tjs_int shadowofsy)
+ *  {
+ *  	// draw text
+ *  	if(!MainImage) TVPThrowExceptionMessage(TVPNotDrawableLayerType);
+ *
+ *  	tTVPBBBltMethod met;
+ *
+ *  	switch(DrawFace)
+ *  	{
+ *  	case dfAlpha:
+ *  		met = bmAlphaOnAlpha;
+ *  		break;
+ *  	case dfAddAlpha:
+ *  		if(opa<0) TVPThrowExceptionMessage(TVPNegativeOpacityNotSupportedOnThisFace);
+ *  		met = bmAlphaOnAddAlpha;
+ *  		break;
+ *  	case dfOpaque:
+ *  		met = bmAlpha;
+ *  		break;
+ *  	default:
+ *  		TVPThrowExceptionMessage(TVPNotDrawableFaceType, TJS_W("drawText"));
+ *  	}
+ *
+ *  	ApplyFont();
+ *
+ *  	tTVPComplexRect r;
+ *
+ *  	color = TVPToActualColor(color);
+ *
+ *  	MainImage->DrawText(ClipRect, x, y, text, color, met,
+ *  		opa, HoldAlpha, aa, shadowlevel, shadowcolor, shadowwidth,
+ *  		shadowofsx, shadowofsy, &r);
+ *
+ *  	if(r.GetCount()) ImageModified = true;
+ *
+ *  	if(ImageLeft != 0 || ImageTop != 0)
+ *  	{
+ *  		r.AddOffsets(ImageLeft, ImageTop);
+ *  	}
+ *  	Update(r);
+ *  }
+ */
+static bool InsertKiriKiriZHook()
 {
-  FindKiriKiriHook((DWORD)GetGlyphOutlineW,      module_limit_ - module_base_, module_base_, 0); // KiriKiri1
-  FindKiriKiriHook((DWORD)GetTextExtentPoint32W, module_limit_ - module_base_, module_base_, 1); // KiriKiri2
+  ULONG startAddress, stopAddress;
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+    ConsoleOutput("vnreng:KiriKiriZ: failed to get memory range");
+    return false;
+  }
+  const wchar_t *pattern = L"drawText";
+  ULONG addr = MemDbg::findBytes(pattern, ::wcslen(pattern) * 2, startAddress, stopAddress);
+
+  // KiriKiriZ: 00ddbc10, 00b20000, 00f45000
+  ITH_GROWL_DWORD3(addr, startAddress, stopAddress);
+
+
+  // 00C14769   6A 01            PUSH 0x1
+  // 00C1476B   68 C8BADD00      PUSH .00DDBAC8                           ; UNICODE "ImageFunction"
+  // 00C14770   50               PUSH EAX
+  // 00C14771   68 10BCDD00      PUSH .00DDBC10                           ; UNICODE "drawText"
+  // 00C14776   8BCF             MOV ECX,EDI
+  if (addr
+      //&& (addr = MemDbg::findPushAddress(addr, startAddress, stopAddress))
+      //&& (addr = SafeFindEnclosingAlignedFunction(addr, 0x200)) // range = 0x200, use the safe version or it might raise
+     ) {
+     //hp.addr = addr;
+     //hp.type = it.hookType;
+     //hp.off = 4 * it.argIndex;
+     //hp.split = it.hookSplit;
+     //if (hp.split)
+     //  hp.type |= USING_SPLIT;
+     //NewHook(hp, it.hookName);
+  }
+  ITH_GROWL_DWORD3(addr, startAddress, stopAddress);
+  return true;
+}
+#endif // 0
+
+bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
+{
+  //InsertKiriKiriZHook();
+
+  bool ret = false;
+  ret = FindKiriKiriHook((DWORD)GetGlyphOutlineW,      module_limit_ - module_base_, module_base_, 0) && ret; // KiriKiri1
+  ret = FindKiriKiriHook((DWORD)GetTextExtentPoint32W, module_limit_ - module_base_, module_base_, 1) && ret; // KiriKiri2
   //RegisterEngineType(ENGINE_KIRIKIRI);
+  return ret;
 }
 
 /********************************************************************************************
@@ -2884,9 +3033,10 @@ void InsertTinkerBellHook()
 //void InsertLuneHook()
 bool InsertMBLHook()
 {
+  enum : DWORD { fun = 0xec8b55 }; // jichi 10/20/2014: mov ebp,esp, sub esp,*
   bool ret = false;
   if (DWORD c = Util::FindCallOrJmpAbs((DWORD)::ExtTextOutA, module_limit_ - module_base_, module_base_, true))
-    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, 0xec8b55)) {
+    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, fun)) {
       HookParam hp = {};
       hp.addr = addr;
       hp.off = 4;
@@ -2896,7 +3046,7 @@ bool InsertMBLHook()
       ret = true;
     }
   if (DWORD c = Util::FindCallOrJmpAbs((DWORD)::GetGlyphOutlineA, module_limit_ - module_base_, module_base_, true))
-    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, 0xec8b55)) {
+    if (DWORD addr = Util::FindCallAndEntryRel(c, module_limit_ - module_base_, module_base_, fun)) {
       HookParam hp = {};
       hp.addr = addr;
       hp.off = 4;
@@ -3014,7 +3164,7 @@ bool InsertCotophaHook()
     ConsoleOutput("vnreng:Cotopha: failed to get memory range");
     return false;
   }
-  enum { ins = 0xec8b55 }; // mov ebp,esp, sub esp,*  ; jichi 7/12/2014
+  enum : DWORD { ins = 0xec8b55 }; // mov ebp,esp, sub esp,*  ; jichi 7/12/2014
   ULONG addr = MemDbg::findCallerAddress((ULONG)::GetTextMetricsA, ins, startAddress, stopAddress);
   if (!addr) {
     ConsoleOutput("vnreng:Cotopha: pattern not exist");
@@ -4068,7 +4218,7 @@ bool InsertDebonosuHook()
     ConsoleOutput("vnreng:Debonosu: lstrcatA is not called");
     return false;
   }
-  DWORD search = 0x15ff | (addr << 16);
+  DWORD search = 0x15ff | (addr << 16); // jichi 10/20/2014: call dword ptr ds
   addr >>= 16;
   for (DWORD i = module_base_; i < module_limit_ - 4; i++)
     if (*(DWORD *)i == search &&
@@ -4138,7 +4288,7 @@ bool InsertSofthouseDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
   for (; i < j; i += 4) {
     k = *(DWORD*)i;
     if (k > low && k < high &&
-        ((*(WORD *)(k - 6) == 0x15ff) || *(BYTE *)(k - 5) == 0xe8)) {
+        ((*(WORD *)(k - 6) == 0x15ff) || *(BYTE *)(k - 5) == 0xe8)) { // jichi 10/20/2014: call dword ptr ds
       HookParam hp = {};
       hp.off = 0x4;
       hp.extern_fun = SpecialHookSofthouse;

@@ -244,7 +244,7 @@ _detach:
   NtClose(hCommand);
   return 0;
 }
-extern "C" {
+//extern "C" {
 void IHFAPI ConsoleOutput(LPCSTR text)
 { // jichi 12/25/2013: Rewrite the implementation
   if (!live || !text)
@@ -338,6 +338,6 @@ DWORD IHFAPI NotifyHookInsert(DWORD addr)
   }
   return 0;
 }
-}
+//} // extern "C"
 
 // EOF

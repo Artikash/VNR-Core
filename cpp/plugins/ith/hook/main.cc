@@ -66,8 +66,7 @@ bool running,
 int current_hook = 0,
     user_hook_count = 0;
 DWORD trigger = 0;
-HANDLE hSendThread,
-    hCmdThread,
+HANDLE
     hFile,
     hMutex,
     hmMutex;
@@ -135,7 +134,7 @@ void GetFunctionNames()
 
 void RequestRefreshProfile()
 {
-  if (live) {
+  if (::live) {
     BYTE buffer[0x80] = {}; // 11/14/2013: reset to zero. Shouldn't it be 0x8 instead of 0x80?
     *(DWORD *)buffer = -1;
     *(DWORD *)(buffer + 4) = 1;
@@ -165,6 +164,12 @@ DWORD IHFAPI GetFunctionAddr(const char *name, DWORD *addr, DWORD *base, DWORD *
 
 BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
 {
+
+  static HANDLE hSendThread,
+                hCmdThread,
+                hEngineThread;
+
+
   CC_UNUSED(lpReserved);
 
   //static WCHAR dll_exist[] = L"ITH_DLL_RUNNING";
@@ -180,8 +185,8 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
   case DLL_PROCESS_ATTACH:
     {
       LdrDisableThreadCalloutsForDll(hModule);
-      IthBreak();
-      module_base = (DWORD)hModule;
+      //IthBreak();
+      ::module_base = (DWORD)hModule;
       IthInitSystemService();
       swprintf(hm_section, ITH_SECTION_ L"%d", current_process_id);
 
@@ -219,7 +224,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
 
       hDllExist = IthCreateMutex(dll_exist, 0);
       hDLL = hModule;
-      running = true;
+      ::running = true;
       ::current_available = ::hookman;
       ::tree = new AVLTree<char, FunctionInfo, SCMP, SCPY, SLEN>;
       GetFunctionNames();
@@ -227,21 +232,33 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
       //InitDefaultHook(); // jichi 7/17/2014: Disabled by default
       hSendThread = IthCreateThread(WaitForPipe, 0);
       hCmdThread = IthCreateThread(CommandPipe, 0);
-
-      Engine::init();
+      hEngineThread = IthCreateThread(Engine::init, 0);
     }
     break;
   case DLL_PROCESS_DETACH:
     {
       // jichi 10/2/2103: Cannot use __try in functions that require object unwinding
       //ITH_TRY {
-      running = false;
-      live = false;
+      ::running = false;
+      ::live = false;
+
       const LONGLONG timeout = -50000000; // in nanoseconds = 5 seconds
-      NtWaitForSingleObject(hSendThread, 0, (PLARGE_INTEGER)&timeout);
-      NtWaitForSingleObject(hCmdThread, 0, (PLARGE_INTEGER)&timeout);
-      NtClose(hCmdThread);
-      NtClose(hSendThread);
+
+      if (hEngineThread) {
+        NtWaitForSingleObject(hEngineThread, 0, (PLARGE_INTEGER)&timeout);
+        NtClose(hEngineThread);
+      }
+
+      if (hSendThread) {
+        NtWaitForSingleObject(hSendThread, 0, (PLARGE_INTEGER)&timeout);
+        NtClose(hSendThread);
+      }
+
+      if (hCmdThread) {
+        NtWaitForSingleObject(hCmdThread, 0, (PLARGE_INTEGER)&timeout);
+        NtClose(hCmdThread);
+      }
+
       for (TextHook *man = ::hookman; man->RemoveHook(); man++);
       //LARGE_INTEGER lint = {-10000, -1};
       while (::enter_count)
@@ -266,7 +283,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
   return TRUE;
 }
 
-extern "C" {
+//extern "C" {
 DWORD IHFAPI NewHook(const HookParam &hp, LPCWSTR name, DWORD flag)
 {
   //WCHAR str[0x80];
@@ -311,7 +328,7 @@ DWORD IHFAPI SwitchTrigger(DWORD t)
   return 0;
 }
 
-} // extern "C"
+//} // extern "C"
 
 
 namespace { // unnamed
