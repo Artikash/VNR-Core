@@ -27,7 +27,7 @@
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 
-#define DEBUG "engine_p.h"
+//#define DEBUG "engine_p.h"
 
 enum { VNR_TEXT_CAPACITY = 1500 }; // estimated max number of bytes allowed in VNR, slightly larger than VNR's text limit (1000)
 
@@ -259,10 +259,6 @@ static void SpecialHookKiriKiri(DWORD esp_base, HookParam *hp, DWORD *data, DWOR
 }
 #endif // 0
 
-/** 10/20/2014 jichi: New KiriKiri hook
- *  Sample game: [141128] Venus Blood -HYPNO- ヴィーナスブラッド・ヒュプノ 体験版
- *
- */
 bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/20/2014: change return value to bool
 {
   enum : DWORD {
@@ -346,8 +342,128 @@ bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/2
   return false;
 }
 
+/** 10/20/2014 jichi: New KiriKiri hook
+ *  Sample game: [141128] Venus Blood -HYPNO- ヴィーナスブラッド・ヒュプノ 体験版
+ *
+ *  KiriKiriZ:
+ *  https://github.com/krkrz/krkrz
+ *  http://krkrz.github.io
+ *
+ *  KiriKiri API: http://devdoc.kikyou.info/tvp/docs/kr2doc/contents/f_Layer.html
+ *
+ *  See: krkrz/src/core/visual/LayerIntf.cpp
+ *  API: http://devdoc.kikyou.info/tvp/docs/kr2doc/contents/f_Layer_drawText.html
+ *
+ *  タイプ
+ *      Layerクラスのメソッド
+ *  構文
+ *      drawText(x, y, text, color, opa=255, aa=true, shadowlevel=0, shadowcolor=0x000000, shadowwidth=0, shadowofsx=0, shadowofsy=0)
+ *  引数
+ *      x 	　文字描画を開始する原点の ( 画像位置における ) x 座標をピクセル単位で指定します。
+ *      y 	　文字描画を開始する原点の ( 画像位置における ) y 座標をピクセル単位で指定します。
+ *      text 	　描画する文字を指定します。
+ *      color 	　描画する文字の色を 0xRRGGBB 形式で指定します。
+ *      opa 	　描画する文字の不透明度 ( -255 ～ 0 ～ 255 ) を指定します。
+ *      　負の数の指定は Layer.face が dfAlpha の場合のみに有効で、 この場合は文字の形に不透明度が取り除かれる事になります ( 値が小さいほど 効果が大きくなります )。
+ *      aa 	　アンチエイリアスを行うかどうかを指定します。
+ *      　真を指定するとアンチエイリアスが行われます。偽を指定すると行われません。
+ *      shadowlevel 	　影の不透明度を指定します。shadowwidth 引数の値によって適切な値は変動します。
+ *      0 を指定すると影は描画されません。
+ *      shadowcolor 	　影の色を 0xRRGGBB 形式で指定します。
+ *      shadowwidth 	　影の幅 ( ぼけ ) を指定します。 0 がもっともシャープ ( ぼけない ) で、値を大きく すると影をぼかすことができます。
+ *      shadowofsx 	　影の位置の x 座標の値をピクセル単位で指定します。 0 を指定すると影は真下に描画されます。
+ *      shadowofsy 	　影の位置の y 座標の値をピクセル単位で指定します。 0 を指定すると影は真下に描画されます。
+ *  戻り値
+ *      なし (void)
+ *  説明
+ *      　レイヤに文字を描画します。Layer.face が dfAlpha (または dfBoth) か dfAddAlpha か dfOpaque (または dfMain) の場合のみ描画することができます。
+ *      　dfOpaque (またはdfMain) を指定した場合、描画先のマスクが破壊されるか保護されるかは Layer.holdAlpha プロパティによります。
+ *      　フォントは Layer.font で指定したものが用いられます。
+ *
+ *  void tTJSNI_BaseLayer::DrawText(tjs_int x, tjs_int y, const ttstr &text,
+ *  	tjs_uint32 color, tjs_int opa, bool aa, tjs_int shadowlevel,
+ *  		tjs_uint32 shadowcolor, tjs_int shadowwidth, tjs_int shadowofsx,
+ *  		tjs_int shadowofsy)
+ *  {
+ *  	// draw text
+ *  	if(!MainImage) TVPThrowExceptionMessage(TVPNotDrawableLayerType);
+ *
+ *  	tTVPBBBltMethod met;
+ *
+ *  	switch(DrawFace)
+ *  	{
+ *  	case dfAlpha:
+ *  		met = bmAlphaOnAlpha;
+ *  		break;
+ *  	case dfAddAlpha:
+ *  		if(opa<0) TVPThrowExceptionMessage(TVPNegativeOpacityNotSupportedOnThisFace);
+ *  		met = bmAlphaOnAddAlpha;
+ *  		break;
+ *  	case dfOpaque:
+ *  		met = bmAlpha;
+ *  		break;
+ *  	default:
+ *  		TVPThrowExceptionMessage(TVPNotDrawableFaceType, TJS_W("drawText"));
+ *  	}
+ *
+ *  	ApplyFont();
+ *
+ *  	tTVPComplexRect r;
+ *
+ *  	color = TVPToActualColor(color);
+ *
+ *  	MainImage->DrawText(ClipRect, x, y, text, color, met,
+ *  		opa, HoldAlpha, aa, shadowlevel, shadowcolor, shadowwidth,
+ *  		shadowofsx, shadowofsy, &r);
+ *
+ *  	if(r.GetCount()) ImageModified = true;
+ *
+ *  	if(ImageLeft != 0 || ImageTop != 0)
+ *  	{
+ *  		r.AddOffsets(ImageLeft, ImageTop);
+ *  	}
+ *  	Update(r);
+ *  }
+ */
+static bool InsertKiriKiriZHook()
+{
+  ULONG startAddress, stopAddress;
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+    ConsoleOutput("vnreng:KiriKiriZ: failed to get memory range");
+    return false;
+  }
+  const wchar_t *pattern = L"drawText";
+  ULONG addr = MemDbg::findBytes(pattern, ::wcslen(pattern) * 2, startAddress, stopAddress);
+
+  // KiriKiriZ: 00ddbc10, 00b20000, 00f45000
+  ITH_GROWL_DWORD3(addr, startAddress, stopAddress);
+
+
+  // 00C14769   6A 01            PUSH 0x1
+  // 00C1476B   68 C8BADD00      PUSH .00DDBAC8                           ; UNICODE "ImageFunction"
+  // 00C14770   50               PUSH EAX
+  // 00C14771   68 10BCDD00      PUSH .00DDBC10                           ; UNICODE "drawText"
+  // 00C14776   8BCF             MOV ECX,EDI
+  if (addr
+      //&& (addr = MemDbg::findPushAddress(addr, startAddress, stopAddress))
+      //&& (addr = SafeFindEnclosingAlignedFunction(addr, 0x200)) // range = 0x200, use the safe version or it might raise
+     ) {
+     //hp.addr = addr;
+     //hp.type = it.hookType;
+     //hp.off = 4 * it.argIndex;
+     //hp.split = it.hookSplit;
+     //if (hp.split)
+     //  hp.type |= USING_SPLIT;
+     //NewHook(hp, it.hookName);
+  }
+  ITH_GROWL_DWORD3(addr, startAddress, stopAddress);
+  return true;
+}
+
 bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
 {
+  //InsertKiriKiriZHook();
+
   bool ret = false;
   ret = FindKiriKiriHook((DWORD)GetGlyphOutlineW,      module_limit_ - module_base_, module_base_, 0) && ret; // KiriKiri1
   ret = FindKiriKiriHook((DWORD)GetTextExtentPoint32W, module_limit_ - module_base_, module_base_, 1) && ret; // KiriKiri2
