@@ -15,6 +15,7 @@
 #include "ith/sys/sys.h"
 #include "ith/common/except.h"
 #include "ith/common/growl.h"
+#include "cc/ccmacro.h"
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 
@@ -712,8 +713,9 @@ DWORD IdentifyEngine()
 
 // - Initialization -
 
-void Engine::init()
+void Engine::init(LPVOID lpThreadParameter)
 {
+  CC_UNUSED(lpThreadParameter);
   Util::GetProcessName(process_name_); // Initialize process name
   Util::GetProcessPath(process_path_); // Initialize process path
   ::RegisterEngineModule((DWORD)IdentifyEngine, (DWORD)InsertDynamicHook);

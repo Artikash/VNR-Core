@@ -7,7 +7,7 @@
 
 namespace Engine {
 
-void init();
+void init(LPVOID lpThreadParameter);
 
 } // namespace Engine
 
