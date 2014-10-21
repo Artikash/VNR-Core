@@ -96,6 +96,7 @@ bool InsertEushullyHook();      // Eushully: AGERC.DLL
 bool InsertExpHook();           // EXP: http://www.exp-inc.jp
 bool InsertGesen18Hook();       // Gsen18: *.szs
 bool InsertGXPHook();           // GXP: *.gxp
+bool InsertKiriKiriHook();      // KiriKiri: *.xp3, resource string
 bool InsertLiveHook();          // Live: live.dll
 bool InsertMalieHook();         // Malie@light: malie.ini
 bool InsertMajiroHook();        // Majiro: *.arc
@@ -131,7 +132,6 @@ bool InsertWillPlusHook();      // WillPlus: Rio.arc
 bool InsertWolfHook();          // Wolf: Data.wolf
 
 void InsertBrunsHook();         // Bruns: bruns.exe
-void InsertKiriKiriHook();      // KiriKiri: *.xp3, resource string
 void InsertIronGameSystemHook();// IroneGameSystem: igs_sample.exe
 void InsertLucifenHook();       // Lucifen@Navel: *.lpk
 void InsertRyokuchaHook();      // Ryokucha: _checksum.exe
