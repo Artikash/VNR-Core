@@ -2,18 +2,13 @@
 // 9/20/2014 jichi
 
 #include "trscript/trscript.h"
-
-#include <list> // instead of QList which is slow that stores pointers instead of elements
-#include <fstream>
-
-//#include <tuple>
-#include <boost/tuple/tuple.hpp>
-
+#include "cpputil/cpplocale.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
-
-#include "cpputil/cpplocale.h"
+#include <boost/tuple/tuple.hpp>
+#include <list> // instead of QList which is slow that stores pointers instead of elements
+#include <fstream>
 
 #define SK_NO_QT
 #define DEBUG "trscript.cc"

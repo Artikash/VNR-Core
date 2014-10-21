@@ -147,9 +147,10 @@ if __name__ == '__main__':
     import config
     opencc.setdicdir(config.OPENCC_LOCATION)
 
-    t = u"里面"
+    #t = u"里面"
+    t = u"我方"
     t = opencc.zhs2zht(t)
-    t = opencc.zht2tw(t)
+    #t = opencc.zht2tw(t)
 
     a = app()
     from Qt5.QtWidgets import QLabel

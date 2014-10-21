@@ -10,6 +10,7 @@ HEADERS += \
     $$PWD/cppmarshal.h \
     $$PWD/cpppath.h \
     $$PWD/cppstring.h \
-    $$PWD/cpptype.h
+    $$PWD/cpptype.h \
+    $$PWD/cppunicode.h
 
 # EOF

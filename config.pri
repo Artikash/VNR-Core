@@ -87,19 +87,21 @@ win32 {
   QT_SRC        = c:/qt
   SAPI_HOME     = "$$PROGRAMFILES/Microsoft Speech SDK 5.1"
   #WMSDK_HOME    = c:/wmsdk/wmpsdk9
-
   WDK_HOME      = c:/winddk/7600.16385.1
+  UTF8_HOME     = z:/users/jichi/opt/utf8
 }
 mac {
   MACPORTS_HOME = /opt/local
   BOOST_HOME    = $$MACPORTS_HOME
+  DEV_HOME      = ${HOME}/opt
   #ITH_HOME      = ${HOME}/opt/ith
-  MSIME_HOME    = ${HOME}/opt/msime
+  MSIME_HOME    = $$DEV_HOME/msime
   PYSIDE_HOME   = $$MACPORTS_HOME
   PYTHON_HOME   = $$MACPORTS_HOME/Library/Frameworks/Python.framework/Versions/Current
   #QT_HOME      = ${HOME}/opt/qt
   QT_HOME       = $$MACPORTS_HOME
   QT_SRC        = ${HOME}/src
+  UTF8_HOME     = $$DEV_HOME/utf8
 }
 
 INCLUDEPATH     += $$BOOST_HOME $$BOOST_HOME/include

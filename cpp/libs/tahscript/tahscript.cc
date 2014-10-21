@@ -141,7 +141,7 @@ bool TahScriptManager::loadFile(const QString &path)
   QTextStream in(&file);
   in.setCodec("UTF-8"); // enforce UTF-8
   while (!in.atEnd()) {
-    QString line = in.readLine(); //.trimmed(); // trim the spaces
+    QString line = in.readLine(); // including the trailing \n
     if (!line.isEmpty())
       switch (line[0].unicode()) {
       case TAHSCRIPT_COMMENT_CHAR1:
