@@ -97,7 +97,7 @@ class _TtsManager(object):
     """
     #if not features.TEXT_TO_SPEECH:
     if not text or jpchars.allpunct(text):
-      self.stop()
+      #self.stop() # stop is not needed for games
       return
 
     eng = self.getEngine(engine)
