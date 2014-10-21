@@ -342,6 +342,7 @@ bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/2
   return false;
 }
 
+#if 0
 /** 10/20/2014 jichi: New KiriKiri hook
  *  Sample game: [141128] Venus Blood -HYPNO- ヴィーナスブラッド・ヒュプノ 体験版
  *
@@ -459,6 +460,7 @@ static bool InsertKiriKiriZHook()
   ITH_GROWL_DWORD3(addr, startAddress, stopAddress);
   return true;
 }
+#endif // 0
 
 bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
 {
