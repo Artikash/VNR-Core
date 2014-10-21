@@ -2,9 +2,10 @@
 // 10/18/2014 jichi
 
 #include "simplecc/simplecc.h"
-#include <fstream>
-#include <boost/unordered_map.hpp>
 #include "cpputil/cpplocale.h"
+#include <boost/unordered_map.hpp>
+#include <fstream>
+#include <iostream>
 
 //#define DELIM   '\t' // deliminator of the rule pair
 
