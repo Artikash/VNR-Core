@@ -371,20 +371,20 @@ bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
  *  構文
  *      drawText(x, y, text, color, opa=255, aa=true, shadowlevel=0, shadowcolor=0x000000, shadowwidth=0, shadowofsx=0, shadowofsy=0)
  *  引数
- *      x 	　文字描画を開始する原点の ( 画像位置における ) x 座標をピクセル単位で指定します。
- *      y 	　文字描画を開始する原点の ( 画像位置における ) y 座標をピクセル単位で指定します。
- *      text 	　描画する文字を指定します。
- *      color 	　描画する文字の色を 0xRRGGBB 形式で指定します。
- *      opa 	　描画する文字の不透明度 ( -255 ～ 0 ～ 255 ) を指定します。
+ *      x  　文字描画を開始する原点の ( 画像位置における ) x 座標をピクセル単位で指定します。
+ *      y  　文字描画を開始する原点の ( 画像位置における ) y 座標をピクセル単位で指定します。
+ *      text  　描画する文字を指定します。
+ *      color  　描画する文字の色を 0xRRGGBB 形式で指定します。
+ *      opa  　描画する文字の不透明度 ( -255 ～ 0 ～ 255 ) を指定します。
  *      　負の数の指定は Layer.face が dfAlpha の場合のみに有効で、 この場合は文字の形に不透明度が取り除かれる事になります ( 値が小さいほど 効果が大きくなります )。
- *      aa 	　アンチエイリアスを行うかどうかを指定します。
+ *      aa  　アンチエイリアスを行うかどうかを指定します。
  *      　真を指定するとアンチエイリアスが行われます。偽を指定すると行われません。
- *      shadowlevel 	　影の不透明度を指定します。shadowwidth 引数の値によって適切な値は変動します。
+ *      shadowlevel  　影の不透明度を指定します。shadowwidth 引数の値によって適切な値は変動します。
  *      0 を指定すると影は描画されません。
- *      shadowcolor 	　影の色を 0xRRGGBB 形式で指定します。
- *      shadowwidth 	　影の幅 ( ぼけ ) を指定します。 0 がもっともシャープ ( ぼけない ) で、値を大きく すると影をぼかすことができます。
- *      shadowofsx 	　影の位置の x 座標の値をピクセル単位で指定します。 0 を指定すると影は真下に描画されます。
- *      shadowofsy 	　影の位置の y 座標の値をピクセル単位で指定します。 0 を指定すると影は真下に描画されます。
+ *      shadowcolor  　影の色を 0xRRGGBB 形式で指定します。
+ *      shadowwidth  　影の幅 ( ぼけ ) を指定します。 0 がもっともシャープ ( ぼけない ) で、値を大きく すると影をぼかすことができます。
+ *      shadowofsx  　影の位置の x 座標の値をピクセル単位で指定します。 0 を指定すると影は真下に描画されます。
+ *      shadowofsy  　影の位置の y 座標の値をピクセル単位で指定します。 0 を指定すると影は真下に描画されます。
  *  戻り値
  *      なし (void)
  *  説明
@@ -410,7 +410,7 @@ bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
  *  6e5622a0   ffd1             call ecx
  *  6e5622a2   8b4e 50          mov ecx,dword ptr ds:[esi+0x50]
  *  6e5622a5   8b46 54          mov eax,dword ptr ds:[esi+0x54]
- *  6e5622a8   66:833c48 5b     cmp word ptr ds:[eax+ecx*2],0x5b	; jichi: hook here
+ *  6e5622a8   66:833c48 5b     cmp word ptr ds:[eax+ecx*2],0x5b ; jichi: hook here
  *  6e5622ad   75 06            jnz short kagparse.6e5622b5
  *  6e5622af   8d41 01          lea eax,dword ptr ds:[ecx+0x1]
  *  6e5622b2   8946 50          mov dword ptr ds:[esi+0x50],eax
@@ -493,7 +493,7 @@ static bool InsertKAGParserHook(const wchar_t *module) // either KAGParser.dll o
   }
 
   const BYTE ins[] = {
-    0x66,0x83,0x3c,0x48, 0x5b // 6e5622a8   66:833c48 5b   cmp word ptr ds:[eax+ecx*2],0x5b	; jichi: hook here
+    0x66,0x83,0x3c,0x48, 0x5b // 6e5622a8   66:833c48 5b   cmp word ptr ds:[eax+ecx*2],0x5b ; jichi: hook here
   };
   enum { range = 0x20 }; // 0x6e5622a8 - 0x6e562297 = 17
   addr = MemDbg::findBytes(ins, sizeof(ins), addr, addr + range);
@@ -5280,7 +5280,7 @@ bool InsertNextonHook()
  *  00419758   8d78 01          lea edi,dword ptr ds:[eax+0x1]
  *  0041975b   eb 03            jmp short inrakutr.00419760
  *  0041975d   8d49 00          lea ecx,dword ptr ds:[ecx]
- *  00419760   8a10             mov dl,byte ptr ds:[eax]	; jichi: eax is the text
+ *  00419760   8a10             mov dl,byte ptr ds:[eax] ; jichi: eax is the text
  *  00419762   83c0 01          add eax,0x1
  *  00419765   84d2             test dl,dl
  *  00419767  ^75 f7            jnz short inrakutr.00419760
@@ -5309,7 +5309,7 @@ bool InsertNextonHook()
  *  00460cc6   8360 70 fd       and dword ptr ds:[eax+0x70],0xfffffffd
  *  00460cca   33c0             xor eax,eax
  *  00460ccc   eb 2c            jmp short inrakutr.00460cfa
- *  00460cce   0fb601           movzx eax,byte ptr ds:[ecx]	; jichi: here, ecx
+ *  00460cce   0fb601           movzx eax,byte ptr ds:[ecx] ; jichi: here, ecx
  *  00460cd1   8b55 f4          mov edx,dword ptr ss:[ebp-0xc]
  *  00460cd4   f64410 1d 04     test byte ptr ds:[eax+edx+0x1d],0x4
  *  00460cd9   74 0e            je short inrakutr.00460ce9
@@ -5340,7 +5340,7 @@ bool InsertNextonHook()
  *  00460d4c   c3               retn
  *  00460d4d   56               push esi
  *  00460d4e   8b7424 08        mov esi,dword ptr ss:[esp+0x8]
- *  00460d52   0fb606           movzx eax,byte ptr ds:[esi]	; jichi: esi & ebp
+ *  00460d52   0fb606           movzx eax,byte ptr ds:[esi] ; jichi: esi & ebp
  *  00460d55   50               push eax
  *  00460d56   e8 80fcffff      call inrakutr.004609db
  *  00460d5b   85c0             test eax,eax
@@ -5363,7 +5363,7 @@ bool InsertNextonHook()
  *  00460d2d   83c4 14          add esp,0x14
  *  00460d30   33c0             xor eax,eax
  *  00460d32   eb 16            jmp short inrakutr.00460d4a
- *  00460d34   0fb606           movzx eax,byte ptr ds:[esi]	; jichi: esi, ebp
+ *  00460d34   0fb606           movzx eax,byte ptr ds:[esi] ; jichi: esi, ebp
  *  00460d37   50               push eax
  *  00460d38   e8 9efcffff      call inrakutr.004609db
  *  00460d3d   46               inc esi
@@ -5387,7 +5387,7 @@ bool InsertNextonHook()
  *  0042c5ba   8bc7             mov eax,edi
  *  0042c5bc   8d50 01          lea edx,dword ptr ds:[eax+0x1]
  *  0042c5bf   90               nop
- *  0042c5c0   8a08             mov cl,byte ptr ds:[eax]	; jichi: here eax
+ *  0042c5c0   8a08             mov cl,byte ptr ds:[eax] ; jichi: here eax
  *  0042c5c2   83c0 01          add eax,0x1
  *  0042c5c5   84c9             test cl,cl
  *  0042c5c7  ^75 f7            jnz short inrakutr.0042c5c0
@@ -5430,7 +5430,7 @@ bool InsertNextonHook()
  *  00419758   8d78 01          lea edi,dword ptr ds:[eax+0x1]
  *  0041975b   eb 03            jmp short inrakutr.00419760
  *  0041975d   8d49 00          lea ecx,dword ptr ds:[ecx]
- *  00419760   8a10             mov dl,byte ptr ds:[eax]	; jichi: eax
+ *  00419760   8a10             mov dl,byte ptr ds:[eax] ; jichi: eax
  *  00419762   83c0 01          add eax,0x1
  *  00419765   84d2             test dl,dl
  *  00419767  ^75 f7            jnz short inrakutr.00419760
@@ -5451,7 +5451,7 @@ bool InsertNextonHook()
  *  0042c734   8bc7             mov eax,edi
  *  0042c736   8d50 01          lea edx,dword ptr ds:[eax+0x1]
  *  0042c739   8da424 00000000  lea esp,dword ptr ss:[esp]
- *  0042c740   8a08             mov cl,byte ptr ds:[eax]	; jichi: eax
+ *  0042c740   8a08             mov cl,byte ptr ds:[eax] ; jichi: eax
  *  0042c742   83c0 01          add eax,0x1
  *  0042c745   84c9             test cl,cl
  *  0042c747  ^75 f7            jnz short inrakutr.0042c740
@@ -5484,7 +5484,7 @@ bool InsertNexton1Hook()
     0x8d,0x78, 0x01,       // 00419758   8d78 01          lea edi,dword ptr ds:[eax+0x1]
     0xeb, 0x03,            // 0041975b   eb 03            jmp short inrakutr.00419760
     0x8d,0x49, 0x00,       // 0041975d   8d49 00          lea ecx,dword ptr ds:[ecx]
-    0x8a,0x10,             // 00419760   8a10             mov dl,byte ptr ds:[eax]	; jichi: eax is the text
+    0x8a,0x10,             // 00419760   8a10             mov dl,byte ptr ds:[eax] ; jichi: eax is the text
     0x83,0xc0, 0x01,       // 00419762   83c0 01          add eax,0x1
     0x84,0xd2,             // 00419765   84d2             test dl,dl
     0x75, 0xf7,            // 00419767  ^75 f7            jnz short inrakutr.00419760
@@ -9566,7 +9566,7 @@ bool InsertImageepoch2PSPHook()
  *  138cfbe9   893d f4b12b11    mov dword ptr ds:[0x112bb1f4],edi
  *  138cfbef   8bc6             mov eax,esi
  *  138cfbf1   81e0 ffffff3f    and eax,0x3fffffff
- *  138cfbf7   0fb6a8 00008007  movzx ebp,byte ptr ds:[eax+0x7800000] 	; jichi: hook here
+ *  138cfbf7   0fb6a8 00008007  movzx ebp,byte ptr ds:[eax+0x7800000]  ; jichi: hook here
  *  138cfbfe   81fd 00000000    cmp ebp,0x0
  *  138cfc04   c705 70a71001 00>mov dword ptr ds:[0x110a770],0x9ac0000
  *  138cfc0e   c705 74a71001 00>mov dword ptr ds:[0x110a774],0x8890000
@@ -9655,7 +9655,7 @@ bool InsertImageepoch2PSPHook()
  *  138112fd   0fb6b0 00008007  movzx esi,byte ptr ds:[eax+0x7800000] ; jichi: hook here
  *  13811304   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
  *  1381130a   81e0 ffffff3f    and eax,0x3fffffff
- *  13811310   0fbeb8 00008007  movsx edi,byte ptr ds:[eax+0x7800000]	; jichi: hook here
+ *  13811310   0fbeb8 00008007  movsx edi,byte ptr ds:[eax+0x7800000] ; jichi: hook here
  *  13811317   8bc6             mov eax,esi
  *  13811319   0fbee8           movsx ebp,al
  *  1381131c   3bef             cmp ebp,edi
@@ -9684,7 +9684,7 @@ bool InsertImageepoch2PSPHook()
  *  13811370  -e9 8fecb4f3      jmp 07360004
  *  13811375   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
  *  1381137b   81e0 ffffff3f    and eax,0x3fffffff
- *  13811381   0fb6b0 00008007  movzx esi,byte ptr ds:[eax+0x7800000]	; jichi: hook here
+ *  13811381   0fb6b0 00008007  movzx esi,byte ptr ds:[eax+0x7800000] ; jichi: hook here
  *  13811388   81e6 ff000000    and esi,0xff
  *  1381138e   8b3d 80a71001    mov edi,dword ptr ds:[0x110a780]
  *  13811394   81e7 ff000000    and edi,0xff
@@ -9752,7 +9752,7 @@ bool InsertImageepoch2PSPHook()
  *  138125d8  -e9 27dab4f3      jmp 07360004
  *  138125dd   8b05 88a71001    mov eax,dword ptr ds:[0x110a788]
  *  138125e3   81e0 ffffff3f    and eax,0x3fffffff
- *  138125e9   0fb6b0 00008007  movzx esi,byte ptr ds:[eax+0x7800000]	; jichi: hook here
+ *  138125e9   0fb6b0 00008007  movzx esi,byte ptr ds:[eax+0x7800000] ; jichi: hook here
  *  138125f0   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
  *  138125f6   81e0 ffffff3f    and eax,0x3fffffff
  *  138125fc   0fb6b8 00008007  movzx edi,byte ptr ds:[eax+0x7800000]
@@ -9898,7 +9898,7 @@ bool InsertYetiPSPHook()
     0x8b,0xa8, XX4,                 // 14e49f40   8ba8 14deff07    mov ebp,dword ptr ds:[eax+0x7ffde14]
     0x8b,0xc5,                      // 14e49f46   8bc5             mov eax,ebp
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 14e49f48   81e0 ffffff3f    and eax,0x3fffffff
-    0x0f,0xb6,0xb0 //, XX4,         // 14e49f4e   0fb6b0 00000008  movzx esi,byte ptr ds:[eax+0x8000000]	; jichi: hook here
+    0x0f,0xb6,0xb0 //, XX4,         // 14e49f4e   0fb6b0 00000008  movzx esi,byte ptr ds:[eax+0x8000000] ; jichi: hook here
   };
   enum { memory_offset = 3 }; // 14e49f4e   0fb6b0 00000008  movzx esi,byte ptr ds:[eax+0x8000000]
   enum { hook_offset = sizeof(bytes) - memory_offset };
@@ -10093,7 +10093,7 @@ bool InsertKidPSPHook()
  *  0ed8bea8   8b05 d0491301    mov eax,dword ptr ds:[0x11349d0]
  *  0ed8beae   81e0 ffffff3f    and eax,0x3fffffff
  *  0ed8beb4   8bd7             mov edx,edi
- *  0ed8beb6   8890 00008009    mov byte ptr ds:[eax+0x9800000],dl	; jichi: hook here, write text here
+ *  0ed8beb6   8890 00008009    mov byte ptr ds:[eax+0x9800000],dl ; jichi: hook here, write text here
  *  0ed8bebc   8b05 c8491301    mov eax,dword ptr ds:[0x11349c8]
  *  0ed8bec2   81e0 ffffff3f    and eax,0x3fffffff
  *  0ed8bec8   0fb6a8 00008009  movzx ebp,byte ptr ds:[eax+0x9800000]
@@ -10125,7 +10125,7 @@ bool InsertKidPSPHook()
  *  0ed8cf20  -e9 df30b4f4      jmp 038d0004
  *  0ed8cf25   8b05 98491301    mov eax,dword ptr ds:[0x1134998]
  *  0ed8cf2b   81e0 ffffff3f    and eax,0x3fffffff
- *  0ed8cf31   0fb6b0 00008009  movzx esi,byte ptr ds:[eax+0x9800000]	; jichi: hook here
+ *  0ed8cf31   0fb6b0 00008009  movzx esi,byte ptr ds:[eax+0x9800000] ; jichi: hook here
  *  0ed8cf38   81fe 00000000    cmp esi,0x0
  *  0ed8cf3e   8935 90491301    mov dword ptr ds:[0x1134990],esi
  *  0ed8cf44   0f85 2f000000    jnz 0ed8cf79
@@ -10169,7 +10169,7 @@ bool InsertCyberfrontPSPHook()
     0xe9, XX4,                      // 0ed8cf20  -e9 df30b4f4      jmp 038d0004
     0x8b,0x05, XX4,                 // 0ed8cf25   8b05 98491301    mov eax,dword ptr ds:[0x1134998]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 0ed8cf2b   81e0 ffffff3f    and eax,0x3fffffff
-    0x0f,0xb6,0xb0, XX4,            // 0ed8cf31   0fb6b0 00008009  movzx esi,byte ptr ds:[eax+0x9800000]	; jichi: hook here
+    0x0f,0xb6,0xb0, XX4,            // 0ed8cf31   0fb6b0 00008009  movzx esi,byte ptr ds:[eax+0x9800000] ; jichi: hook here
     0x81,0xfe, 0x00,0x00,0x00,0x00, // 0ed8cf38   81fe 00000000    cmp esi,0x0
     0x89,0x35, XX4,                 // 0ed8cf3e   8935 90491301    mov dword ptr ds:[0x1134990],esi
     0x0f,0x85, 0x2f,0x00,0x00,0x00, // 0ed8cf44   0f85 2f000000    jnz 0ed8cf79
@@ -10242,7 +10242,7 @@ bool InsertCyberfrontPSPHook()
  *  1428984f   8bb8 84004007    mov edi,dword ptr ds:[eax+0x7400084]
  *  14289855   8b05 aca71001    mov eax,dword ptr ds:[0x110a7ac]
  *  1428985b   81e0 ffffff3f    and eax,0x3fffffff
- *  14289861   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000]	; jichi: hook here
+ *  14289861   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000] ; jichi: hook here
  *  14289868   81ff 00000000    cmp edi,0x0
  *  1428986e   8935 70a71001    mov dword ptr ds:[0x110a770],esi
  *  14289874   893d 74a71001    mov dword ptr ds:[0x110a774],edi
@@ -10268,7 +10268,7 @@ bool InsertCyberfrontPSPHook()
  *  14287907   8b05 b0a71001    mov eax,dword ptr ds:[0x110a7b0]
  *  1428790d   81e0 ffffff3f    and eax,0x3fffffff
  *  14287913   8bd6             mov edx,esi
- *  14287915   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl	; jichi: hook here
+ *  14287915   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl ; jichi: hook here
  *  1428791b   8b05 a8a71001    mov eax,dword ptr ds:[0x110a7a8]
  *  14287921   81e0 ffffff3f    and eax,0x3fffffff
  *  14287927   0fb6b8 00004007  movzx edi,byte ptr ds:[eax+0x7400000]
@@ -10316,7 +10316,7 @@ bool InsertCyberfrontPSPHook()
  *  14289a92   66:89b0 c0034007 mov word ptr ds:[eax+0x74003c0],si
  *  14289a99   8b05 aca71001    mov eax,dword ptr ds:[0x110a7ac]
  *  14289a9f   81e0 ffffff3f    and eax,0x3fffffff
- *  14289aa5   0fb6b0 00004007  movzx esi,byte ptr ds:[eax+0x7400000]	; jichi: hook here
+ *  14289aa5   0fb6b0 00004007  movzx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
  *  14289aac   81e6 ff000000    and esi,0xff
  *  14289ab2   892d 70a71001    mov dword ptr ds:[0x110a770],ebp
  *  14289ab8   893d 74a71001    mov dword ptr ds:[0x110a774],edi
@@ -10415,7 +10415,7 @@ bool InsertYeti2PSPHook()
     0x8b,0xb8, XX4,                 // 1428984f   8bb8 84004007    mov edi,dword ptr ds:[eax+0x7400084]
     0x8b,0x05, XX4,                 // 14289855   8b05 aca71001    mov eax,dword ptr ds:[0x110a7ac]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1428985b   81e0 ffffff3f    and eax,0x3fffffff
-    0x0f,0xb6,0xa8 //, XX4          // 14289861   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000]	; jichi: hook here
+    0x0f,0xb6,0xa8 //, XX4          // 14289861   0fb6a8 00004007  movzx ebp,byte ptr ds:[eax+0x7400000] ; jichi: hook here
                                     // 14289b10   8935 70a71001    mov dword ptr ds:[0x110a770],esi
                                     // 14289b16   832d c4aa1001 02 sub dword ptr ds:[0x110aac4],0x2
   };
@@ -10839,7 +10839,7 @@ bool InsertNippon1PSPHook()
  *  13d13f06   81c5 e8cd9a08    add ebp,0x89acde8
  *  13d13f0c   8bc5             mov eax,ebp
  *  13d13f0e   81e0 ffffff3f    and eax,0x3fffffff
- *  13d13f14   66:89b0 2000c007 mov word ptr ds:[eax+0x7c00020],si	; jichi: hook here
+ *  13d13f14   66:89b0 2000c007 mov word ptr ds:[eax+0x7c00020],si ; jichi: hook here
  *  13d13f1b   8d7f 01          lea edi,dword ptr ds:[edi+0x1]
  *  13d13f1e   893d fccd5a10    mov dword ptr ds:[0x105acdfc],edi
  *  13d13f24   8b15 dca71001    mov edx,dword ptr ds:[0x110a7dc]
@@ -10883,7 +10883,7 @@ bool InsertNippon2PSPHook()
     0x81,0xc5, XX4,                 // 13d13f06   81c5 e8cd9a08    add ebp,0x89acde8
     0x8b,0xc5,                      // 13d13f0c   8bc5             mov eax,ebp
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 13d13f0e   81e0 ffffff3f    and eax,0x3fffffff
-    0x66,0x89,0xb0 //, XX4          // 13d13f14   66:89b0 2000c007 mov word ptr ds:[eax+0x7c00020],si	; jichi: hook here
+    0x66,0x89,0xb0 //, XX4          // 13d13f14   66:89b0 2000c007 mov word ptr ds:[eax+0x7c00020],si ; jichi: hook here
   };
   enum { memory_offset = 3 };
   enum { hook_offset = sizeof(bytes) - memory_offset };
@@ -11498,7 +11498,7 @@ bool InsertIntensePSPHook()
  *  14178f80  -e9 7f7071ef      jmp 03890004
  *  14178f85   8b05 c8491301    mov eax,dword ptr ds:[0x11349c8]
  *  14178f8b   81e0 ffffff3f    and eax,0x3fffffff
- *  14178f91   0fbeb0 00000008  movsx esi,byte ptr ds:[eax+0x8000000]	; jichi: hook here, loop
+ *  14178f91   0fbeb0 00000008  movsx esi,byte ptr ds:[eax+0x8000000] ; jichi: hook here, loop
  *  14178f98   81fe 40000000    cmp esi,0x40
  *  14178f9e   8935 98491301    mov dword ptr ds:[0x1134998],esi
  *  14178fa4   c705 9c491301 40>mov dword ptr ds:[0x113499c],0x40
@@ -11523,7 +11523,7 @@ bool InsertIntensePSPHook()
  *  1417a198  -e9 675e71ef      jmp 03890004
  *  1417a19d   8b05 c8491301    mov eax,dword ptr ds:[0x11349c8]
  *  1417a1a3   81e0 ffffff3f    and eax,0x3fffffff
- *  1417a1a9   0fbeb0 00000008  movsx esi,byte ptr ds:[eax+0x8000000]	; jichi: hook here, loop
+ *  1417a1a9   0fbeb0 00000008  movsx esi,byte ptr ds:[eax+0x8000000] ; jichi: hook here, loop
  *  1417a1b0   81fe 0a000000    cmp esi,0xa
  *  1417a1b6   8935 98491301    mov dword ptr ds:[0x1134998],esi
  *  1417a1bc   c705 9c491301 0a>mov dword ptr ds:[0x113499c],0xa
@@ -11561,7 +11561,7 @@ bool InsertIntensePSPHook()
  *  1417a336   0f84 2f000000    je 1417a36b
  *  1417a33c   8b05 c8491301    mov eax,dword ptr ds:[0x11349c8]
  *  1417a342   81e0 ffffff3f    and eax,0x3fffffff
- *  1417a348   0fbeb0 00000008  movsx esi,byte ptr ds:[eax+0x8000000]	; jichi: hook here, loop
+ *  1417a348   0fbeb0 00000008  movsx esi,byte ptr ds:[eax+0x8000000] ; jichi: hook here, loop
  *  1417a34f   8935 98491301    mov dword ptr ds:[0x1134998],esi
  *  1417a355   832d e44c1301 03 sub dword ptr ds:[0x1134ce4],0x3
  *  1417a35c   e9 23000000      jmp 1417a384
@@ -11613,7 +11613,7 @@ bool InsertKonamiPSPHook()
     0xe9, XX4,                           // 14178f80  -e9 7f7071ef      jmp 03890004
     0x8b,0x05, XX4,                      // 14178f85   8b05 c8491301    mov eax,dword ptr ds:[0x11349c8]
     0x81,0xe0, 0xff,0xff,0xff,0x3f,      // 14178f8b   81e0 ffffff3f    and eax,0x3fffffff
-    0x0f,0xbe,0xb0, XX4,                 // 14178f91   0fbeb0 00000008  movsx esi,byte ptr ds:[eax+0x8000000]	; jichi: hook here, loop
+    0x0f,0xbe,0xb0, XX4,                 // 14178f91   0fbeb0 00000008  movsx esi,byte ptr ds:[eax+0x8000000] ; jichi: hook here, loop
     0x81,0xfe, 0x40,0x00,0x00,0x00,      // 14178f98   81fe 40000000    cmp esi,0x40
     0x89,0x35 //, XX4,                      // 14178f9e   8935 98491301    mov dword ptr ds:[0x1134998],esi
     //0xc7,0x05, XX4, 0x40,0x00,0x00,0x00,  // 14178fa4   c705 9c491301 40>mov dword ptr ds:[0x113499c],0x40
@@ -11660,7 +11660,7 @@ bool InsertKonamiPSPHook()
  *  1348d7ac  -e9 532844f0      jmp 038d0004
  *  1348d7b1   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
  *  1348d7b7   81e0 ffffff3f    and eax,0x3fffffff
- *  1348d7bd   0fb6b0 00004007  movzx esi,byte ptr ds:[eax+0x7400000]	; jichi: hook here
+ *  1348d7bd   0fb6b0 00004007  movzx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
  *  1348d7c4   81fe 00000000    cmp esi,0x0
  *  1348d7ca   8935 70a71001    mov dword ptr ds:[0x110a770],esi
  *  1348d7d0   0f85 2f000000    jnz 1348d805
@@ -11775,7 +11775,7 @@ bool InsertKadokawaNamePSPHook()
     0xe9, XX4,                      // 1348d7ac  -e9 532844f0      jmp 038d0004
     0x8b,0x05, XX4,                 // 1348d7b1   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1348d7b7   81e0 ffffff3f    and eax,0x3fffffff
-    0x0f,0xb6,0xb0, XX4,            // 1348d7bd   0fb6b0 00004007  movzx esi,byte ptr ds:[eax+0x7400000]	; jichi: hook here
+    0x0f,0xb6,0xb0, XX4,            // 1348d7bd   0fb6b0 00004007  movzx esi,byte ptr ds:[eax+0x7400000] ; jichi: hook here
     0x81,0xfe, 0x00,0x00,0x00,0x00, // 1348d7c4   81fe 00000000    cmp esi,0x0
     0x89,0x35, XX4,                 // 1348d7ca   8935 70a71001    mov dword ptr ds:[0x110a770],esi
     0x0f,0x85, 0x2f,0x00,0x00,0x00, // 1348d7d0   0f85 2f000000    jnz 1348d805
@@ -12040,7 +12040,7 @@ bool InsertKadokawaPSPHook()
  *  1351e13c  -e9 c31e27f0      jmp 03790004
  *  1351e141   8b05 aca71001    mov eax,dword ptr ds:[0x110a7ac]
  *  1351e147   81e0 ffffff3f    and eax,0x3fffffff
- *  1351e14d   0fbeb0 01004007  movsx esi,byte ptr ds:[eax+0x7400001]	; or jichi: hook here
+ *  1351e14d   0fbeb0 01004007  movsx esi,byte ptr ds:[eax+0x7400001] ; or jichi: hook here
  *  1351e154   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
  *  1351e15a   81e0 ffffff3f    and eax,0x3fffffff
  *  1351e160   8bb8 50004007    mov edi,dword ptr ds:[eax+0x7400050]
@@ -12073,7 +12073,7 @@ bool InsertKadokawaPSPHook()
  *  13513f51   8b05 78a71001    mov eax,dword ptr ds:[0x110a778]
  *  13513f57   81e0 ffffff3f    and eax,0x3fffffff
  *  13513f5d   8bd6             mov edx,esi
- *  13513f5f   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl	; jichi: bad hook
+ *  13513f5f   8890 00004007    mov byte ptr ds:[eax+0x7400000],dl ; jichi: bad hook
  *  13513f65   8b2d 78a71001    mov ebp,dword ptr ds:[0x110a778]
  *  13513f6b   8d6d 01          lea ebp,dword ptr ss:[ebp+0x1]
  *  13513f6e   33c0             xor eax,eax
@@ -12127,7 +12127,7 @@ bool InsertTypeMoonPSPHook()
     0xe9, XX4,                      // 1351e13c  -e9 c31e27f0      jmp 03790004
     0x8b,0x05, XX4,                 // 1351e141   8b05 aca71001    mov eax,dword ptr ds:[0x110a7ac]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1351e147   81e0 ffffff3f    and eax,0x3fffffff
-    0x0f,0xbe,0xb0, XX4,            // 1351e14d   0fbeb0 01004007  movsx esi,byte ptr ds:[eax+0x7400001]	;  jichi: hook here
+    0x0f,0xbe,0xb0, XX4,            // 1351e14d   0fbeb0 01004007  movsx esi,byte ptr ds:[eax+0x7400001] ;  jichi: hook here
     0x8b,0x05, XX4,                 // 1351e154   8b05 dca71001    mov eax,dword ptr ds:[0x110a7dc]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 1351e15a   81e0 ffffff3f    and eax,0x3fffffff
     0x8b,0xb8, XX4,                 // 1351e160   8bb8 50004007    mov edi,dword ptr ds:[eax+0x7400050]
@@ -12171,7 +12171,7 @@ bool InsertTypeMoonPSPHook()
  *  134598f0  -e9 0f67fbef      jmp 03410004
  *  134598f5   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
  *  134598fb   81e0 ffffff3f    and eax,0x3fffffff
- *  13459901   8bb0 00004007    mov esi,dword ptr ds:[eax+0x7400000]	; jichi: hook here
+ *  13459901   8bb0 00004007    mov esi,dword ptr ds:[eax+0x7400000] ; jichi: hook here
  *  13459907   8b3d 7ca71001    mov edi,dword ptr ds:[0x110a77c]
  *  1345990d   8d7f 04          lea edi,dword ptr ds:[edi+0x4]
  *  13459910   8b05 84a71001    mov eax,dword ptr ds:[0x110a784]
@@ -12206,7 +12206,7 @@ bool InsertTecmoPSPHook()
     0xe9, XX4,                      // 134598f0  -e9 0f67fbef      jmp 03410004
     0x8b,0x05, XX4,                 // 134598f5   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 134598fb   81e0 ffffff3f    and eax,0x3fffffff
-    0x8b,0xb0, XX4,                 // 13459901   8bb0 00004007    mov esi,dword ptr ds:[eax+0x7400000]	; jichi: hook here
+    0x8b,0xb0, XX4,                 // 13459901   8bb0 00004007    mov esi,dword ptr ds:[eax+0x7400000] ; jichi: hook here
     0x8b,0x3d, XX4,                 // 13459907   8b3d 7ca71001    mov edi,dword ptr ds:[0x110a77c]
     0x8d,0x7f, 0x04,                // 1345990d   8d7f 04          lea edi,dword ptr ds:[edi+0x4]
     0x8b,0x05, XX4,                 // 13459910   8b05 84a71001    mov eax,dword ptr ds:[0x110a784]
@@ -12279,7 +12279,7 @@ bool InsertPCSX2Hooks()
  *  305a5447   bb 57545a30      mov ebx,0x305a5457
  *  305a544c   01c1             add ecx,eax
  *  305a544e  -0f88 ecbcd7d1    js pcsx2.02321140
- *  305a5454   0fbe01           movsx eax,byte ptr ds:[ecx]	; jichi: hook here
+ *  305a5454   0fbe01           movsx eax,byte ptr ds:[ecx] ; jichi: hook here
  *  305a5457   99               cdq
  *  305a5458   a3 f0ab9600      mov dword ptr ds:[0x96abf0],eax
  *  305a545d   8915 f4ab9600    mov dword ptr ds:[0x96abf4],edx
@@ -12307,7 +12307,7 @@ bool InsertPCSX2Hooks()
  *  3038c7a8   bb b8c73830      mov ebx,0x3038c7b8
  *  3038c7ad   01c1             add ecx,eax
  *  3038c7af  -0f88 8b49f9d1    js pcsx2.02321140
- *  3038c7b5   0fbe01           movsx eax,byte ptr ds:[ecx]	; jichi: or hook here
+ *  3038c7b5   0fbe01           movsx eax,byte ptr ds:[ecx] ; jichi: or hook here
  *  3038c7b8   99               cdq
  *  3038c7b9   a3 e0ab9600      mov dword ptr ds:[0x96abe0],eax
  *  3038c7be   8915 e4ab9600    mov dword ptr ds:[0x96abe4],edx
@@ -12328,7 +12328,7 @@ bool InsertPCSX2Hooks()
  *  304e1a1c   bb 2c1a4e30      mov ebx,0x304e1a2c
  *  304e1a21   01c1             add ecx,eax
  *  304e1a23  -0f88 17f7e3d1    js pcsx2.02321140
- *  304e1a29   0fbe01           movsx eax,byte ptr ds:[ecx]	; jichi: or hook here
+ *  304e1a29   0fbe01           movsx eax,byte ptr ds:[ecx] ; jichi: or hook here
  *  304e1a2c   99               cdq
  *  304e1a2d   a3 f0ab9600      mov dword ptr ds:[0x96abf0],eax
  *  304e1a32   8915 f4ab9600    mov dword ptr ds:[0x96abf4],edx
@@ -12534,7 +12534,7 @@ bool InsertTypeMoonPS2Hook()
  *  3026e289   bb 99e22630      mov ebx,0x3026e299
  *  3026e28e   01c1             add ecx,eax
  *  3026e290  -0f88 6a2dd7d2    js pcsx2.02fe1000
- *  3026e296   0fb601           movzx eax,byte ptr ds:[ecx]	; jichi: hook here
+ *  3026e296   0fb601           movzx eax,byte ptr ds:[ecx] ; jichi: hook here
  *  3026e299   a3 60ab6201      mov dword ptr ds:[0x162ab60],eax
  *  3026e29e   c705 64ab6201 00>mov dword ptr ds:[0x162ab64],0x0
  *  3026e2a8   a1 60ab6201      mov eax,dword ptr ds:[0x162ab60]
@@ -12687,7 +12687,7 @@ bool InsertMarvelousPS2Hook()
     0xbb, XX4,                          // 3026e289   bb 99e22630      mov ebx,0x3026e299
     0x01,0xc1,                          // 3026e28e   01c1             add ecx,eax
     0x0f,0x88, XX4,                     // 3026e290  -0f88 6a2dd7d2    js pcsx2.02fe1000
-    0x0f,0xb6,0x01,                     // 3026e296   0fb601           movzx eax,byte ptr ds:[ecx]	; jichi: hook here
+    0x0f,0xb6,0x01,                     // 3026e296   0fb601           movzx eax,byte ptr ds:[ecx] ; jichi: hook here
     0xa3, XX4,                          // 3026e299   a3 60ab6201      mov dword ptr ds:[0x162ab60],eax
     0xc7,0x05, XX4, 0x00,0x00,0x00,0x00,// 3026e29e   c705 64ab6201 00>mov dword ptr ds:[0x162ab64],0x0
     0xa1, XX4,                          // 3026e2a8   a1 60ab6201      mov eax,dword ptr ds:[0x162ab60]
@@ -12959,7 +12959,7 @@ bool InsertNamcoPS2Hook()
  *  13513484  -e9 7bcb4ff0      jmp 03a10004
  *  13513489   8b05 7ca71001    mov eax,dword ptr ds:[0x110a77c]
  *  1351348f   81e0 ffffff3f    and eax,0x3fffffff
- *  13513495   8bb0 00004007    mov esi,dword ptr ds:[eax+0x7400000]	; jichi: there are too many garbage here
+ *  13513495   8bb0 00004007    mov esi,dword ptr ds:[eax+0x7400000] ; jichi: there are too many garbage here
  *  1351349b   8b3d 7ca71001    mov edi,dword ptr ds:[0x110a77c]
  *  135134a1   8d7f 04          lea edi,dword ptr ds:[edi+0x4]
  *  135134a4   8b05 84a71001    mov eax,dword ptr ds:[0x110a784]
@@ -13017,7 +13017,7 @@ bool InsertSegaPSPHook()
     0x8d,0x7f, 0x04,                // 135134a1   8d7f 04          lea edi,dword ptr ds:[edi+0x4]
     0x8b,0x05, XX4,                 // 135134a4   8b05 84a71001    mov eax,dword ptr ds:[0x110a784]
     0x81,0xe0, 0xff,0xff,0xff,0x3f, // 135134aa   81e0 ffffff3f    and eax,0x3fffffff
-    0x89,0xb0   //, XX4,            // 135134b0   89b0 00004007    mov dword ptr ds:[eax+0x7400000],esi	; jichi: hook here, get text in esi
+    0x89,0xb0   //, XX4,            // 135134b0   89b0 00004007    mov dword ptr ds:[eax+0x7400000],esi ; jichi: hook here, get text in esi
   };
   enum { memory_offset = 2 };
   enum { hook_offset = sizeof(bytes) - memory_offset };
