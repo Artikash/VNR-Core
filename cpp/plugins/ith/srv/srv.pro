@@ -29,9 +29,9 @@ TARGET   = vnrsrv
 #CONFIG += staticlib
 
 HEADERS += \
+  avl_p.h \
   config.h \
   hookman.h \
-  hookman_p.h \
   settings.h \
   srv.h \
   srv_p.h \

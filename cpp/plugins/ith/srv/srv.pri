@@ -8,8 +8,8 @@ DEPENDPATH  += $$PWD
 LIBS        += -lvnrsrv
 
 HEADERS += \
+  $$PWD/avl_p.h \
   $$PWD/hookman.h \
-  $$PWD/hookman_p.h \
   $$PWD/settings.h \
   $$PWD/srv.h \
   $$PWD/textthread.h \
