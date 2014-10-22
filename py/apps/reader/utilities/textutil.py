@@ -102,7 +102,7 @@ normalize_punct = skstr.multireplacer({
   #u"\n": u" ", # JBeijing cannot handle multiple lines
 })
 
-__match_kata_hira_punc_re = re.compile(r"[%s]+" % ''.join((jpchars.s_kata, jpchars.s_hira, jpchars.s_punc)))
+__match_kata_hira_punc_re = re.compile(r"[%s]+" % ''.join((jpchars.s_kata, jpchars.s_hira, jpchars.s_punct)))
 def match_kata_hira_punc(text):
   """
   @param  text  unicode
