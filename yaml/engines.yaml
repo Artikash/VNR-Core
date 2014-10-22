@@ -408,9 +408,8 @@ utf8:
 
 # List of game engine that allows focus
 focus:
+  - KAGParser
   - SiglusEngine2
-# TODO:
-  #- CIRCUS
 # No focus:
   #- Majiro
   #- KiriKiri1
