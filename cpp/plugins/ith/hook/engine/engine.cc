@@ -633,7 +633,8 @@ bool UnsafeDetermineEngineType()
     || DetermineEngineOther()
     || DetermineEngineAtLast()
     || DetermineEngineGeneric()
-    || DetermineNoHookEngine();
+    || DetermineNoHookEngine()
+  ;
 }
 
 // jichi 10/21/2014: Return whether found the game engine
@@ -689,7 +690,6 @@ bool DetermineEngineType()
 }} // namespace Engine unnamed
 
 // - API -
-
 
 bool Engine::IdentifyEngine()
 {
