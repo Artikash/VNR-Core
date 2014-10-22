@@ -6,7 +6,17 @@ __all__ = 'Lexer',
 
 import re
 from itertools import imap
+from unitraits import jpchars
+from defs import ANY_LANGUAGE
 from tree import Token
+
+# Text processing
+
+ANY_LANGUAGE_CHARS = r"0-9a-zA-Z０-９ａ-ｚＡ-Ｚ" + jpchars.s_kanji + jpchars.s_punct
+ANY_LANGUAGE_RE = re.compile(ur"^[%s]$" % ANY_LANGUAGE_CHARS)
+def guess_text_language(text): # unicode -> unicode or None
+  if ANY_LANGUAGE_RE.match(text):
+    return ANY_LANGUAGE
 
 # Lexer
 

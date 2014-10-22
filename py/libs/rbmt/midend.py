@@ -6,6 +6,7 @@ __all__ = 'TreeBuilder', 'RuleBasedTranslator'
 
 from tree import Node, Token
 from defs import ANY_LANGUAGE
+from frontend import guess_text_language
 
 # Parser
 
@@ -62,7 +63,11 @@ class RuleBasedTranslator:
     @param  node  Node
     """
     if node.language == self.fr:
-      if node.children:
+      if node.token:
+        lang = guess_text_language(node.token.text)
+        if lang:
+          node.language = lang
+      elif node.children:
         translated = untranslated = True
         for it in node.children:
           self._updateLanguage(it)
