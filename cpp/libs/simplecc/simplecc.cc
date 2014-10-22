@@ -61,7 +61,7 @@ bool SimpleChineseConverter::addFile(const std::wstring &path, bool reverse)
           d_->map[u32line[4]] = u32line[0];
       } else
         if (!cpp_u32high(u32line[2]))
-        d_->map[u32line[0]] = u32line[2];
+          d_->map[u32line[0]] = u32line[2];
 
     }
     u32line.clear();

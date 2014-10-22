@@ -17,7 +17,7 @@ typedef std::basic_fstream<char16_t, std::char_traits<char16_t> > cpp_u16fstream
 typedef std::basic_fstream<char32_t, std::char_traits<char32_t> > cpp_u32fstream;
 #endif // <fstream>
 
-inline char16_t cpp_u32low(char32_t c) { return c & 0x0000ffff; }
-inline char32_t cpp_u32high(char32_t c) { return c & 0xffff0000; }
+inline char16_t cpp_u32low(char32_t c) { return c; }
+inline char16_t cpp_u32high(char32_t c) { return c >> 16; }
 
 #endif // CPPUNICODE_H

@@ -27,7 +27,7 @@
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 
-//#define DEBUG "engine_p.h"
+#define DEBUG "engine_p.h"
 
 enum { VNR_TEXT_CAPACITY = 1500 }; // estimated max number of bytes allowed in VNR, slightly larger than VNR's text limit (1000)
 
@@ -342,9 +342,20 @@ bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/2
   return false;
 }
 
-#if 0
+bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
+{
+  bool ret = false;
+  ret = FindKiriKiriHook((DWORD)GetGlyphOutlineW,      module_limit_ - module_base_, module_base_, 0) && ret; // KiriKiri1
+  ret = FindKiriKiriHook((DWORD)GetTextExtentPoint32W, module_limit_ - module_base_, module_base_, 1) && ret; // KiriKiri2
+  //RegisterEngineType(ENGINE_KIRIKIRI);
+  return ret;
+}
+
 /** 10/20/2014 jichi: New KiriKiri hook
  *  Sample game: [141128] Venus Blood -HYPNO- ヴィーナスブラッド・ヒュプノ 体験版
+ *
+ *  drawText and drawGlyph seem to be the right function to look at.
+ *  However, the latest source code does not match VenusBlood.
  *
  *  KiriKiriZ:
  *  https://github.com/krkrz/krkrz
@@ -381,96 +392,138 @@ bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/2
  *      　dfOpaque (またはdfMain) を指定した場合、描画先のマスクが破壊されるか保護されるかは Layer.holdAlpha プロパティによります。
  *      　フォントは Layer.font で指定したものが用いられます。
  *
- *  void tTJSNI_BaseLayer::DrawText(tjs_int x, tjs_int y, const ttstr &text,
- *  	tjs_uint32 color, tjs_int opa, bool aa, tjs_int shadowlevel,
- *  		tjs_uint32 shadowcolor, tjs_int shadowwidth, tjs_int shadowofsx,
- *  		tjs_int shadowofsy)
- *  {
- *  	// draw text
- *  	if(!MainImage) TVPThrowExceptionMessage(TVPNotDrawableLayerType);
+ *  Debug method:
+ *  Pre-compute: hexstr 視界のきかない utf16, got: 96894c756e304d304b306a304430
+ *  Use ollydbg to insert hardware break point before the scene is entered.
+ *  It found several places either in game or KAGParser, and the last one is as follows.
+ *  It tries to find "[" (0x5b) in the memory.
  *
- *  	tTVPBBBltMethod met;
+ *  6e562270   75 0a            jnz short kagparse.6e56227c
+ *  6e562272   c705 00000000 00>mov dword ptr ds:[0],0x0
+ *  6e56227c   ffb424 24010000  push dword ptr ss:[esp+0x124]
+ *  6e562283   ff9424 24010000  call dword ptr ss:[esp+0x124]
+ *  6e56228a   8b8c24 20010000  mov ecx,dword ptr ss:[esp+0x120]
+ *  6e562291   890d 14ed576e    mov dword ptr ds:[0x6e57ed14],ecx
+ *  6e562297   68 3090576e      push kagparse.6e579030                   ; unicode "[r]"
+ *  6e56229c   8d46 74          lea eax,dword ptr ds:[esi+0x74]
+ *  6e56229f   50               push eax
+ *  6e5622a0   ffd1             call ecx
+ *  6e5622a2   8b4e 50          mov ecx,dword ptr ds:[esi+0x50]
+ *  6e5622a5   8b46 54          mov eax,dword ptr ds:[esi+0x54]
+ *  6e5622a8   66:833c48 5b     cmp word ptr ds:[eax+ecx*2],0x5b	; jichi: hook here
+ *  6e5622ad   75 06            jnz short kagparse.6e5622b5
+ *  6e5622af   8d41 01          lea eax,dword ptr ds:[ecx+0x1]
+ *  6e5622b2   8946 50          mov dword ptr ds:[esi+0x50],eax
+ *  6e5622b5   ff46 50          inc dword ptr ds:[esi+0x50]
+ *  6e5622b8  ^e9 aebcffff      jmp kagparse.6e55df6b
+ *  6e5622bd   8d8c24 88030000  lea ecx,dword ptr ss:[esp+0x388]
+ *  6e5622c4   e8 b707ffff      call kagparse.6e552a80
+ *  6e5622c9   84c0             test al,al
+ *  6e5622cb   75 0f            jnz short kagparse.6e5622dc
+ *  6e5622cd   8d8424 88030000  lea eax,dword ptr ss:[esp+0x388]
+ *  6e5622d4   50               push eax
+ *  6e5622d5   8bce             mov ecx,esi
+ *  6e5622d7   e8 149bffff      call kagparse.6e55bdf0
+ *  6e5622dc   8d8c24 80030000  lea ecx,dword ptr ss:[esp+0x380]
+ *  6e5622e3   e8 9807ffff      call kagparse.6e552a80
+ *  6e5622e8   84c0             test al,al
+ *  6e5622ea   75 0f            jnz short kagparse.6e5622fb
+ *  6e5622ec   8d8424 80030000  lea eax,dword ptr ss:[esp+0x380]
+ *  6e5622f3   50               push eax
+ *  6e5622f4   8bce             mov ecx,esi
+ *  6e5622f6   e8 35a0ffff      call kagparse.6e55c330
+ *  6e5622fb   8d8c24 c0030000  lea ecx,dword ptr ss:[esp+0x3c0]
+ *  6e562302   c68424 c0040000 >mov byte ptr ss:[esp+0x4c0],0x3c
+ *  6e56230a   e8 81edfeff      call kagparse.6e551090
+ *  6e56230f   8d8c24 80030000  lea ecx,dword ptr ss:[esp+0x380]
+ *  6e562316   c68424 c0040000 >mov byte ptr ss:[esp+0x4c0],0x3b
+ *  6e56231e   e8 8deefeff      call kagparse.6e5511b0
+ *  6e562323   8d8c24 88030000  lea ecx,dword ptr ss:[esp+0x388]
+ *  6e56232a   e9 d7000000      jmp kagparse.6e562406
+ *  6e56232f   66:837c24 20 00  cmp word ptr ss:[esp+0x20],0x0
+ *  6e562335   75 10            jnz short kagparse.6e562347
+ *  6e562337   ff46 4c          inc dword ptr ds:[esi+0x4c]
+ *  6e56233a   c746 50 00000000 mov dword ptr ds:[esi+0x50],0x0
+ *  6e562341   c646 5c 00       mov byte ptr ds:[esi+0x5c],0x0
  *
- *  	switch(DrawFace)
- *  	{
- *  	case dfAlpha:
- *  		met = bmAlphaOnAlpha;
- *  		break;
- *  	case dfAddAlpha:
- *  		if(opa<0) TVPThrowExceptionMessage(TVPNegativeOpacityNotSupportedOnThisFace);
- *  		met = bmAlphaOnAddAlpha;
- *  		break;
- *  	case dfOpaque:
- *  		met = bmAlpha;
- *  		break;
- *  	default:
- *  		TVPThrowExceptionMessage(TVPNotDrawableFaceType, TJS_W("drawText"));
- *  	}
+ *  Runtime regisers:
+ *  EAX 09C1A626    text address
+ *  ECX 00000000    0 or other offset
+ *  EDX 025F1368    this value seems does not change. it is always pointed to 0
+ *  EBX 0000300C
+ *  ESP 0029EB7C
+ *  EBP 0029F044
+ *  ESI 04EE4150
+ *  EDI 0029F020
  *
- *  	ApplyFont();
- *
- *  	tTVPComplexRect r;
- *
- *  	color = TVPToActualColor(color);
- *
- *  	MainImage->DrawText(ClipRect, x, y, text, color, met,
- *  		opa, HoldAlpha, aa, shadowlevel, shadowcolor, shadowwidth,
- *  		shadowofsx, shadowofsy, &r);
- *
- *  	if(r.GetCount()) ImageModified = true;
- *
- *  	if(ImageLeft != 0 || ImageTop != 0)
- *  	{
- *  		r.AddOffsets(ImageLeft, ImageTop);
- *  	}
- *  	Update(r);
- *  }
+ *  FIXME:
+ *  1. It cannot find character name.
+ *  2. It will extract [r].
  */
-static bool InsertKiriKiriZHook()
+static void SpecialHookKAGParser(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  // 6e5622a8   66:833c48 5b     cmp word ptr ds:[eax+ecx*2],0x5b
+  CC_UNUSED(hp);
+  DWORD eax = regof(eax, esp_base),
+        ecx = regof(ecx, esp_base);
+  if (eax && !ecx) {
+    *data = eax;
+    *len = ::wcslen((LPCWSTR)eax) * 2; // * 2 for wchar_t
+    *split = FIXED_SPLIT_VALUE; // merge all threads
+  }
+}
+static bool InsertKAGParserHook(const wchar_t *module) // either KAGParser.dll or KAGParserEx.dll
 {
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
-    ConsoleOutput("vnreng:KiriKiriZ: failed to get memory range");
+  if (!NtInspect::getModuleMemoryRange(module, &startAddress, &stopAddress)) {
+    ConsoleOutput("vnreng:KAGParser: failed to get memory range");
     return false;
   }
-  const wchar_t *pattern = L"drawText";
-  ULONG addr = MemDbg::findBytes(pattern, ::wcslen(pattern) * 2, startAddress, stopAddress);
-
-  // KiriKiriZ: 00ddbc10, 00b20000, 00f45000
-  ITH_GROWL_DWORD3(addr, startAddress, stopAddress);
-
-
-  // 00C14769   6A 01            PUSH 0x1
-  // 00C1476B   68 C8BADD00      PUSH .00DDBAC8                           ; UNICODE "ImageFunction"
-  // 00C14770   50               PUSH EAX
-  // 00C14771   68 10BCDD00      PUSH .00DDBC10                           ; UNICODE "drawText"
-  // 00C14776   8BCF             MOV ECX,EDI
-  if (addr
-      //&& (addr = MemDbg::findPushAddress(addr, startAddress, stopAddress))
-      //&& (addr = SafeFindEnclosingAlignedFunction(addr, 0x200)) // range = 0x200, use the safe version or it might raise
-     ) {
-     //hp.addr = addr;
-     //hp.type = it.hookType;
-     //hp.off = 4 * it.argIndex;
-     //hp.split = it.hookSplit;
-     //if (hp.split)
-     //  hp.type |= USING_SPLIT;
-     //NewHook(hp, it.hookName);
+  const wchar_t *globalString = L"[r]";
+  ULONG addr = MemDbg::findBytes(globalString, ::wcslen(globalString) * 2, startAddress, stopAddress);
+  if (!addr) {
+    ConsoleOutput("vnreng:KAGParser: [r] global string not found");
+    return false;
   }
-  ITH_GROWL_DWORD3(addr, startAddress, stopAddress);
+  // Find where it is used as function parameter
+  addr = MemDbg::findPushAddress(addr, startAddress, stopAddress);
+  if (!addr) {
+    ConsoleOutput("vnreng:KAGParser: push address not found");
+    return false;
+  }
+
+  const BYTE ins[] = {
+    0x66,0x83,0x3c,0x48, 0x5b // 6e5622a8   66:833c48 5b   cmp word ptr ds:[eax+ecx*2],0x5b	; jichi: hook here
+  };
+  enum { range = 0x20 }; // 0x6e5622a8 - 0x6e562297 = 17
+  addr = MemDbg::findBytes(ins, sizeof(ins), addr, addr + range);
+  if (!addr) {
+    ConsoleOutput("vnreng:KAGParser: instruction pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr;
+  hp.extern_fun = SpecialHookKAGParser;
+  hp.type = EXTERN_HOOK|USING_UNICODE|FIXING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
+  ConsoleOutput("vnreng: INSERT KAGParser");
+  NewHook(hp, L"KAGParser");
   return true;
 }
-#endif // 0
 
-bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
+bool InsertKiriKiriZHook()
 {
-  //InsertKiriKiriZHook();
-
-  bool ret = false;
-  ret = FindKiriKiriHook((DWORD)GetGlyphOutlineW,      module_limit_ - module_base_, module_base_, 0) && ret; // KiriKiri1
-  ret = FindKiriKiriHook((DWORD)GetTextExtentPoint32W, module_limit_ - module_base_, module_base_, 1) && ret; // KiriKiri2
-  //RegisterEngineType(ENGINE_KIRIKIRI);
-  return ret;
+  const wchar_t *module = nullptr;
+  if (IthCheckFile(L"plugin\\KAGParser.dll"))
+    module = L"KAGParser.dll";
+  else if (IthCheckFile(L"plugin\\KAGParserEx.dll"))
+    module = L"KAGParserEx.dll";
+  if (module)
+    return InsertKAGParserHook(module);
+  else {
+    ConsoleOutput("vnreng:KiriKiriZ: KAGParser not found");
+    return false;
+  }
 }
 
 /********************************************************************************************
