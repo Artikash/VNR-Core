@@ -83,7 +83,8 @@ DWORD DetermineEngineByFile1()
 {
   enum : DWORD { yes = 0, no = 1 }; // return value
   if (IthFindFile(L"*.xp3") || Util::SearchResourceString(L"TVP(KIRIKIRI)")) {
-    InsertKiriKiriHook();
+    bool z = Util::SearchResourceString(L"TVP(KIRIKIRI) Z "); // TVP(KIRIKIRI) Z CORE
+    (z && InsertKiriKiriZHook()) || InsertKiriKiriHook();
     return yes;
   }
   // 8/2/2014 jichi: Game name shown as 2RM - Adventure Engine

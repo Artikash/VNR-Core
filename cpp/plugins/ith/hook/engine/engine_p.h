@@ -97,6 +97,7 @@ bool InsertExpHook();           // EXP: http://www.exp-inc.jp
 bool InsertGesen18Hook();       // Gsen18: *.szs
 bool InsertGXPHook();           // GXP: *.gxp
 bool InsertKiriKiriHook();      // KiriKiri: *.xp3, resource string
+bool InsertKiriKiriZHook();     // KiriKiri: *.xp3, resource string
 bool InsertLiveHook();          // Live: live.dll
 bool InsertMalieHook();         // Malie@light: malie.ini
 bool InsertMajiroHook();        // Majiro: *.arc
