@@ -1,6 +1,6 @@
 #pragma once
 
-// cli_p.h
+// cli.h
 // 8/24/2013 jichi
 // Branch: IHF_DLL/IHF_CLIENT.h, rev 133
 //
@@ -82,12 +82,11 @@ DWORD WINAPI CommandPipe(LPVOID lpThreadParameter);
 
 //void RequestRefreshProfile();
 
-typedef DWORD (*IdentifyEngineFun)();
-typedef DWORD (*InsertHookFun)(DWORD);
-typedef DWORD (*InsertDynamicHookFun)(LPVOID addr, DWORD frame, DWORD stack);
-
-extern IdentifyEngineFun IdentifyEngine;
-extern InsertDynamicHookFun InsertDynamicHook;
+//typedef DWORD (*InsertHookFun)(DWORD);
+//typedef DWORD (*IdentifyEngineFun)();
+//typedef DWORD (*InsertDynamicHookFun)(LPVOID addr, DWORD frame, DWORD stack);
+//extern IdentifyEngineFun IdentifyEngine;
+//extern InsertDynamicHookFun InsertDynamicHook;
 
 // jichi 9/28/2013: Protect pipeline in wine
 void CliLockPipe();

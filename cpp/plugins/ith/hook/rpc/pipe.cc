@@ -7,7 +7,8 @@
 # pragma warning (disable:4100)   // C4100: unreference formal parameter
 #endif // _MSC_VER
 
-#include "cli_p.h"
+#include "cli.h"
+#include "engine/engine.h"
 #include "ith/common/defs.h"
 //#include "ith/common/growl.h"
 #include "ith/sys/sys.h"
@@ -38,9 +39,9 @@ bool engine_registered; // 10/19/2014 jichi: disable engine dll
 HANDLE hPipe,
        hCommand,
        hDetach; //,hLose;
-IdentifyEngineFun IdentifyEngine;
-InsertHookFun InsertHook;
-InsertDynamicHookFun InsertDynamicHook;
+//InsertHookFun InsertHook;
+//IdentifyEngineFun IdentifyEngine;
+//InsertDynamicHookFun InsertDynamicHook;
 
 bool hook_inserted = false;
 
@@ -135,7 +136,7 @@ DWORD WINAPI WaitForPipe(LPVOID lpThreadParameter) // Dynamically detect ITH mai
     NtClose(hMutex);
     if (!hook_inserted && engine_registered) {
       hook_inserted = true;
-      IdentifyEngine();
+      Engine::IdentifyEngine();
     }
     hDetach = IthCreateMutex(detach_mutex,1);
     while (running && NtWaitForSingleObject(hPipeExist,0,&sleep_time)==WAIT_OBJECT_0)
@@ -316,13 +317,13 @@ void IHFAPI ConsoleOutput(LPCSTR text)
 //  ConsoleOutput(str);
 //  return 0;
 //}
-DWORD IHFAPI RegisterEngineModule(DWORD idEngine, DWORD dnHook)
-{
-  ::IdentifyEngine = (IdentifyEngineFun)idEngine;
-  ::InsertDynamicHook = (InsertDynamicHookFun)dnHook;
-  ::engine_registered = true;
-  return 0;
-}
+//DWORD IHFAPI RegisterEngineModule(DWORD idEngine, DWORD dnHook)
+//{
+//  ::IdentifyEngine = (IdentifyEngineFun)idEngine;
+//  ::InsertDynamicHook = (InsertDynamicHookFun)dnHook;
+//  ::engine_registered = true;
+//  return 0;
+//}
 DWORD IHFAPI NotifyHookInsert(DWORD addr)
 {
   if (live) {
