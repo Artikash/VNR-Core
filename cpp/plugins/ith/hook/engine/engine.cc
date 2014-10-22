@@ -466,9 +466,9 @@ static void SpecialHookKAGParser(DWORD esp_base, HookParam *hp, DWORD *data, DWO
   CC_UNUSED(hp);
   DWORD eax = regof(eax, esp_base),
         ecx = regof(ecx, esp_base);
-  if (eax && !ecx) {
+  if (eax && !ecx) { // skip string when ecx is not zero
     *data = eax;
-    *len = ::wcslen((LPCWSTR)eax) * 2; // * 2 for wchar_t
+    *len = ::wcslen((LPCWSTR)eax) * 2; // 2 == sizeof(wchar_t)
     *split = FIXED_SPLIT_VALUE; // merge all threads
   }
 }
@@ -521,10 +521,8 @@ bool InsertKiriKiriZHook()
     module = L"KAGParserEx.dll";
   if (module)
     return InsertKAGParserHook(module);
-  else {
-    ConsoleOutput("vnreng:KiriKiriZ: KAGParser not found");
-    return false;
-  }
+  ConsoleOutput("vnreng:KiriKiriZ: KAGParser not found");
+  return false;
 }
 
 /********************************************************************************************
