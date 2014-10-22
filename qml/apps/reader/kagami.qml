@@ -1017,9 +1017,9 @@ Item { id: root_
           rightMargin: 12
         }
 
-        visible: !root_.ignoresFocus && dock_.slimChecked
+        visible: dock_.slimChecked && !root_.ignoresFocus
 
-        fadingEnabled: !checked && (gameWindowTracker_.stretched || gamePanel_.paddingVisible)
+        fadingEnabled: !checked && (gameWindowTracker_.stretched || gamePanel_.paddingVisible || gameWindowTracker_.fullScreen)
 
         //hoverEnabled: dock_.slimChecked
         //hoverEnabled: true
