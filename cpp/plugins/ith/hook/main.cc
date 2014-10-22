@@ -10,7 +10,7 @@
 
 #include "cli.h"
 #include "tree/avl.h"
-#include "engine/engine.h"
+#include "engine/match.h"
 #include "ith/common/const.h"
 #include "ith/common/defs.h"
 #include "ith/common/except.h"
@@ -232,7 +232,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
       //InitDefaultHook(); // jichi 7/17/2014: Disabled by default
       hSendThread = IthCreateThread(WaitForPipe, 0);
       hCmdThread = IthCreateThread(CommandPipe, 0);
-      hEngineThread = IthCreateThread(Engine::init, 0);
+      hEngineThread = IthCreateThread(Engine::match, 0);
     }
     break;
   case DLL_PROCESS_DETACH:
