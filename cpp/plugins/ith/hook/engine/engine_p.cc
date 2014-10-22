@@ -2471,9 +2471,8 @@ bool InsertRUGP2Hook()
 } // unnamed namespace
 
 bool InsertRUGPHook()
-{
-  return InsertRUGP1Hook() ||  InsertRUGP2Hook();
-}
+{ return InsertRUGP1Hook() || InsertRUGP2Hook(); }
+
 /********************************************************************************************
 Lucifen hook:
   Game folder contains *.lpk. Used by Navel games.

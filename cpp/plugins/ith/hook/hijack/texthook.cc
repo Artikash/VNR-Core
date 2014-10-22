@@ -9,7 +9,8 @@
 //# pragma warning (disable:4733)   // C4733: Inline asm assigning to 'FS:0' : handler not registered as safe handler
 #endif // _MSC_VER
 
-#include "cli_p.h"
+#include "cli.h"
+#include "engine/engine.h"
 #include "ith/common/except.h"
 //#include "ith/common/growl.h"
 #include "ith/sys/sys.h"
@@ -303,12 +304,15 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
   if ((dwType & NO_CONTEXT) == 0 && HookFilter(dwRetn))
     return 0;
   dwAddr = hp.addr;
-  if (trigger) {
-    if (InsertDynamicHook)
-      trigger = InsertDynamicHook((LPVOID)dwAddr, *(DWORD *)(dwDataBase - 0x1c), *(DWORD *)(dwDataBase-0x18));
-    else
-      trigger = 0;
-  }
+  if (trigger)
+    trigger = Engine::InsertDynamicHook((LPVOID)dwAddr, *(DWORD *)(dwDataBase - 0x1c), *(DWORD *)(dwDataBase-0x18));
+  // jichi 10/21/2014: Directly invoke engine functions.
+  //if (trigger) {
+  //  if (InsertDynamicHook)
+  //    trigger = InsertDynamicHook((LPVOID)dwAddr, *(DWORD *)(dwDataBase - 0x1c), *(DWORD *)(dwDataBase-0x18));
+  //  else
+  //    trigger = 0;
+  //}
 #if 0 // diasble HOOK_AUXILIARY
   // jichi 12/13/2013: None of known hooks are auxiliary
   if (dwType & HOOK_AUXILIARY) {

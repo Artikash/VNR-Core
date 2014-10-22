@@ -8,7 +8,7 @@
 //# pragma warning (disable:4733)   // C4733: Inline asm assigning to 'FS:0' : handler not registered as safe handler
 #endif // _MSC_VER
 
-#include "cli_p.h"
+#include "cli.h"
 #include "tree/avl.h"
 #include "engine/engine.h"
 #include "ith/common/const.h"

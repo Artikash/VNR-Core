@@ -32,7 +32,7 @@ TARGET   = vnrhook
 
 HEADERS += \
   config.h \
-  cli_p.h \
+  cli.h \
   hook.h \
   engine/engine.h \
   engine/engine_p.h \
