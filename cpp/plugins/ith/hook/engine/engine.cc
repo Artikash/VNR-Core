@@ -479,8 +479,9 @@ static bool InsertKAGParserHook(const wchar_t *module) // either KAGParser.dll o
     ConsoleOutput("vnreng:KAGParser: failed to get memory range");
     return false;
   }
-  const wchar_t *globalString = L"[r]";
-  ULONG addr = MemDbg::findBytes(globalString, ::wcslen(globalString) * 2, startAddress, stopAddress);
+  const wchar_t *patternString = L"[r]";
+  const size_t patternStringSize = ::wcslen(patternString) * 2;
+  ULONG addr = MemDbg::findBytes(patternString, patternStringSize, startAddress, stopAddress);
   if (!addr) {
     ConsoleOutput("vnreng:KAGParser: [r] global string not found");
     return false;
