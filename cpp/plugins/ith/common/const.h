@@ -66,6 +66,7 @@ enum IhfNotificationType {
 // jichi 9/8/2013: The meaning are gussed
 enum HookParamType : unsigned long {
   USING_STRING      = 0x1     // type(data) is char* or wchar_t* and has length
+  , USING_UTF8 = USING_STRING // jichi 10/21/2014: temporarily handled the same way as USING_STRING
   , USING_UNICODE     = 0x2     // type(data) is wchar_t or wchar_t*
   , BIG_ENDIAN        = 0x4     // type(data) is char
   , DATA_INDIRECT     = 0x8

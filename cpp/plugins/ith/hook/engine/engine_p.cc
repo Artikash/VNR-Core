@@ -7406,7 +7406,7 @@ bool InsertYukaSystem2Hook()
 
   HookParam hp = {};
   hp.addr = addr;
-  hp.type = EXTERN_HOOK|NO_CONTEXT|USING_STRING; // UTF-8, though
+  hp.type = EXTERN_HOOK|NO_CONTEXT|USING_STRING|USING_UTF8; // UTF-8, though
   hp.extern_fun = SpecialHookYukaSystem2;
   ConsoleOutput("vnreng: INSERT YukaSystem2");
   NewHook(hp, L"YukaSystem2");
@@ -8249,7 +8249,7 @@ bool InsertAdobeFlash10Hook()
 
   HookParam hp = {};
   hp.addr = addr + hook_offset;
-  hp.type = NO_CONTEXT|USING_STRING|EXTERN_HOOK; // NO_CONTEXT to get rid of floating address
+  hp.type = NO_CONTEXT|USING_STRING|EXTERN_HOOK|USING_UTF8; // NO_CONTEXT to get rid of floating address
   //hp.type = USING_STRING|EXTERN_HOOK; // This will cause floating text address
   hp.extern_fun = SpecialHookAdobeFlash10;
   ConsoleOutput("vnreng: INSERT Adobe Flash 10");
@@ -8548,13 +8548,13 @@ struct PPSSPPFunction
 // Text is at arg2, using arg1 as split
 #define PPSSPP_FUNCTIONS_INITIALIZER \
     { L"sceCccStrlenSJIS",  1, USING_STRING,  0, "sceCccStrlenSJIS(" } \
-  , { L"sceCccStrlenUTF8",  1, USING_STRING,  0, "sceCccStrlenUTF8(" } \
+  , { L"sceCccStrlenUTF8",  1, USING_UTF8,    0, "sceCccStrlenUTF8(" } \
   , { L"sceCccStrlenUTF16", 1, USING_UNICODE, 0, "sceCccStrlenUTF16(" } \
 \
-  , { L"sceCccSJIStoUTF8",  3, USING_STRING,  0, "sceCccSJIStoUTF8(" } \
+  , { L"sceCccSJIStoUTF8",  3, USING_UTF8,    0, "sceCccSJIStoUTF8(" } \
   , { L"sceCccSJIStoUTF16", 3, USING_STRING,  0, "sceCccSJIStoUTF16(" } \
-  , { L"sceCccUTF8toSJIS",  3, USING_STRING,  0, "sceCccUTF8toSJIS(" } \
-  , { L"sceCccUTF8toUTF16", 3, USING_STRING,  0, "sceCccUTF8toUTF16(" } \
+  , { L"sceCccUTF8toSJIS",  3, USING_UTF8,    0, "sceCccUTF8toSJIS(" } \
+  , { L"sceCccUTF8toUTF16", 3, USING_UTF8,    0, "sceCccUTF8toUTF16(" } \
   , { L"sceCccUTF16toSJIS", 3, USING_UNICODE, 0, "sceCccUTF16toSJIS(" } \
   , { L"sceCccUTF16toUTF8", 3, USING_UNICODE, 0, "sceCccUTF16toUTF8(" } \
 \
@@ -8573,7 +8573,7 @@ struct PPSSPPFunction
 
   // Disabled as I am not sure how to deal with the source string
   //, { L"sceCccEncodeSJIS", 2, USING_STRING, 0, "sceCccEncodeSJIS(" }
-  //, { L"sceCccEncodeUTF8", 2, USING_STRING, 0, "sceCccEncodeUTF8(" }
+  //, { L"sceCccEncodeUTF8", 2, USING_UTF8,   0, "sceCccEncodeUTF8(" }
   //, { L"sceCccEncodeUTF16", 2, USING_UNICODE, 0, "sceCccEncodeUTF16(" }
   //, { L"sysclib_strcmp", 2, USING_STRING, 0, "Untested sysclib_strcmp(" }
 
@@ -11926,7 +11926,7 @@ bool InsertFelistellaPSPHook()
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
-    hp.type = EXTERN_HOOK|USING_STRING|USING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
+    hp.type = EXTERN_HOOK|USING_STRING|USING_UTF8|USING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
     //hp.extern_fun = SpecialPSPHook;
     hp.extern_fun = SpecialPSPHookFelistella;
     hp.off = pusha_eax_off - 4;
