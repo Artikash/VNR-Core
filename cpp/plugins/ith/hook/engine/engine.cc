@@ -2852,10 +2852,10 @@ int GetShinaRioVersion()
   int ret = 0;
   HANDLE hFile = IthCreateFile(L"RIO.INI", FILE_READ_DATA, FILE_SHARE_READ, FILE_OPEN);
   if (hFile == INVALID_HANDLE_VALUE)  {
-    size_t len = wcslen(process_name_);
+    size_t len = ::wcslen(process_name_);
     if (len > 3) {
       wchar_t fname[MAX_PATH];
-      wcscpy(fname, process_name_);
+      ::wcscpy(fname, process_name_);
       fname[len -1] = 'i';
       fname[len -2] = 'n';
       fname[len -3] = 'i';
@@ -2872,8 +2872,8 @@ int GetShinaRioVersion()
     NtClose(hFile);
     if (buffer[0] == '[') {
       buffer[0x3f] = 0; // jichi 8/24/2013: prevent strstr from overflow
-      if (char *version = strstr(buffer, "v2."))
-        sscanf(version + 3, "%d", &ret); // +3 to skip "v2."
+      if (char *version = ::strstr(buffer, "v2."))
+        ::sscanf(version + 3, "%d", &ret); // +3 to skip "v2."
     }
   }
   return ret;
@@ -2932,7 +2932,7 @@ bool InsertWaffleDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
     BYTE *ib;
     DWORD *id;
   };
-  // jichi 9/30/2013: Fix the bug in ITH logic where j is unintialized
+  // jichi 9/30/2013: Fix the bug in ITH logic where j is uninitialized
   for (i = module_base_ + 0x1000; i < module_limit_ - 4; i++)
     if (*id == handler && *(ib - 1) == 0x68)
       if (DWORD t = SafeFindEntryAligned(i, 0x40)) {
