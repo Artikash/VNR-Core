@@ -702,7 +702,7 @@ bool Engine::IdentifyEngine()
 DWORD Engine::InsertDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
 { return trigger_fun_ ? !trigger_fun_(addr,frame,stack) : 0; }
 
-void Engine::init(LPVOID lpThreadParameter)
+void Engine::match(LPVOID lpThreadParameter)
 {
   CC_UNUSED(lpThreadParameter);
   Util::GetProcessName(process_name_); // Initialize process name

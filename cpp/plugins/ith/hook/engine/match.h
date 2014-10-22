@@ -2,12 +2,16 @@
 
 // engine/match.h
 // 8/23/2013 jichi
+// TODO: Clean up the interface to match game engines.
+// Split the engine match logic out of hooks.
+// Modify the game hook to allow replace functions for arbitary purpose
+// instead of just extracting text.
 
 #include "config.h"
 
 namespace Engine {
 
-void init(LPVOID lpThreadParameter);
+void match(LPVOID lpThreadParameter);
 
 // jichi 10/21/2014: Return whether found the engine
 bool IdentifyEngine();
