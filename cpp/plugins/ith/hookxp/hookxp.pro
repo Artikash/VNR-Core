@@ -38,8 +38,8 @@ HEADERS += \
   cli.h \
   hook.h \
   engine/engine.h \
-  engine/engine_p.h \
   engine/hookdefs.h \
+  engine/match.h \
   engine/pchooks.h \
   engine/util.h \
   tree/avl.h
@@ -49,7 +49,7 @@ SOURCES += \
   rpc/pipe.cc \
   hijack/texthook.cc \
   engine/engine.cc \
-  engine/engine_p.cc \
+  engine/match.cc \
   engine/pchooks.cc \
   engine/util.cc
 

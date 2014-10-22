@@ -10,7 +10,7 @@
 #endif // _MSC_VER
 
 #include "cli.h"
-#include "engine/engine.h"
+#include "engine/match.h"
 #include "ith/common/except.h"
 //#include "ith/common/growl.h"
 #include "ith/sys/sys.h"

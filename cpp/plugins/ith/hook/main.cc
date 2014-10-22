@@ -10,7 +10,7 @@
 
 #include "cli.h"
 #include "tree/avl.h"
-#include "engine/engine.h"
+#include "engine/match.h"
 #include "ith/common/const.h"
 #include "ith/common/defs.h"
 #include "ith/common/except.h"
