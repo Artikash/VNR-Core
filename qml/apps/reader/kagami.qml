@@ -232,7 +232,7 @@ Item { id: root_
   //}
 
   Plugin.MainObjectProxy { id: mainPlugin_
-    windowRefreshInterval: (gameWindowTracker_.fullScreen && !gameWindowTracker_.stretched) ? 1000 : 20000 // 1 sec, 20 sec
+    windowRefreshInterval: ignoresFocus ? 1000 : 10000 // 1 sec, 10 sec
   }
 
   Plugin.DataManagerProxy { id: datamanPlugin_ }
