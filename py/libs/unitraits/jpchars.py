@@ -37,7 +37,9 @@ def allkata(text): return unichars.ordall(text, unichars.ORD_KATA_FIRST, unichar
 
 import re
 
-s_punc = u"\
+s_kanji = ur"一-龠"
+
+s_punct = u"\
 、。？！…‥：・／\
 ―＝＄￥\
 【】「」『』（）｛｝〈〉［］＜＞””\
@@ -47,10 +49,10 @@ s_punc = u"\
 　\
 "
 
-set_punct = frozenset(s_punc)
-re_punct = re.compile(r"[%s]" % ''.join(s_punc))
-re_all_punct = re.compile(r"^[%s]+$" % ''.join(s_punc))
-re_not_punct = re.compile(r"[^%s]" % ''.join(s_punc))
+set_punct = frozenset(s_punct)
+re_punct = re.compile(r"[%s]" % ''.join(s_punct))
+re_all_punct = re.compile(r"^[%s]+$" % ''.join(s_punct))
+re_not_punct = re.compile(r"[^%s]" % ''.join(s_punct))
 
 def anypunct(text):
   """

@@ -572,11 +572,8 @@ struct SCMP
   }
 };
 
-struct SCPY
-{ char *operator()(char *dest, const char *src) { return strcpy(dest, src); } };
-
-struct SLEN
-{ int operator()(const char *str) { return strlen(str); } };
+struct SCPY { char *operator()(char *dest, const char *src) { return strcpy(dest, src); } };
+struct SLEN { int operator()(const char *str) { return strlen(str); } };
 
 struct WCMP
 {
@@ -587,10 +584,7 @@ struct WCMP
   }
 };
 
-struct WCPY
-{ wchar_t *operator()(wchar_t *dest, const wchar_t *src) { return wcscpy(dest,src); } };
-
-struct WLEN
-{ int operator()(const wchar_t *str) { return wcslen(str); } };
+struct WCPY { wchar_t *operator()(wchar_t *dest, const wchar_t *src) { return wcscpy(dest,src); } };
+struct WLEN { int operator()(const wchar_t *str) { return wcslen(str); } };
 
 // EOF

@@ -5797,10 +5797,15 @@ Zhongri is <span style="color:purple">not free</span>, and you can purchase one 
 )
 
   def refresh(self):
+    blans = settings.global_().blockedLanguages()
+
     self._refreshMsime()
     self._refreshDaijirin()
     self._refreshKojien()
-    self._refreshZhongri()
+
+    if 'zh' not in blans:
+      self._refreshZhongri()
+
     #self._refreshWadoku()
 
 class DictionaryLibraryTab(QtWidgets.QDialog):
