@@ -328,7 +328,8 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
   }
 #endif // 0
   dwDataIn = *(DWORD *)(dwDataBase + hp.off); // default value
-  if (dwType & EXTERN_HOOK) {
+  //if (dwType & EXTERN_HOOK) {
+  if (hp.extern_fun) {  // jichi 10/24/2014: remove EXTERN_HOOK
     //DataFun fun=(DataFun)hp.extern_fun;
     //auto fun = hp.extern_fun;
     hp.extern_fun(dwDataBase, &hp, &dwDataIn, &dwSplit, &dwCount);
@@ -368,16 +369,18 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
   // jichi 12/25/2013: validate data size
   if (dwCount == 0 || dwCount > MAX_DATA_SIZE)
     return 0;
+
   size_t sz = dwCount + HEADER_SIZE;
-  if (sz >= SMALL_BUFF_SIZE) {
+  if (sz >= SMALL_BUFF_SIZE)
     pbData = new BYTE[sz];
-    ITH_MEMSET_HEAP(pbData, 0, sz * sizeof(BYTE)); // jichi 9/26/2013: zero memory
-  } else
+    //ITH_MEMSET_HEAP(pbData, 0, sz * sizeof(BYTE)); // jichi 9/26/2013: zero memory
+  else
     pbData = pbSmallBuff;
+
   if (hp.length_offset == 1) {
     if (dwType & STRING_LAST_CHAR) {
       LPWSTR ts = (LPWSTR)dwDataIn;
-      dwDataIn = ts[wcslen(ts) -1];
+      dwDataIn = ts[::wcslen(ts) -1];
     }
     dwDataIn &= 0xffff;
     if ((dwType & BIG_ENDIAN) && (dwDataIn >> 8))
@@ -387,9 +390,17 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
     *(WORD *)(pbData + HEADER_SIZE) = dwDataIn & 0xffff;
   }
   else
-    memcpy(pbData + HEADER_SIZE, (void *)dwDataIn, dwCount);
+    ::memcpy(pbData + HEADER_SIZE, (void *)dwDataIn, dwCount);
+
+  // jichi 10/14/2014: Add filter function
+  if (hp.filter_fun && (!hp.filter_fun(pbData + HEADER_SIZE, &dwCount, &hp) || dwCount <= 0)) {
+    if (pbData != pbSmallBuff)
+      delete[] pbData;
+    return 0;
+  }
+
   *(DWORD *)pbData = dwAddr;
-  if (dwType & (NO_CONTEXT | FIXING_SPLIT))
+  if (dwType & (NO_CONTEXT|FIXING_SPLIT))
     dwRetn = 0;
   else if (dwRetn && (dwType & RELATIVE_SPLIT))
     dwRetn -= ::processStartAddress;
