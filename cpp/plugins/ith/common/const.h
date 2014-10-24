@@ -77,7 +77,7 @@ enum HookParamType : unsigned long {
   , PRINT_DWORD       = 0x100
   , STRING_LAST_CHAR  = 0x200
   , NO_CONTEXT        = 0x400
-  , EXTERN_HOOK       = 0x800   // use external hook function
+  //, EXTERN_HOOK       = 0x800   // jichi 10/24/2014: Removed
   //, HOOK_AUXILIARY    = 0x2000  // jichi 12/13/2013: None of known hooks are auxiliary
   , HOOK_ENGINE       = 0x4000
   , HOOK_ADDITIONAL   = 0x8000

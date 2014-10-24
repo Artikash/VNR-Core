@@ -14,6 +14,10 @@
 #include "hook.h"
 
 // jichi 12/25/2013: Header in each message sent to vnrsrv
+// There are totally three elements
+// - 0x0 dwAddr  hook address
+// - 0x4 dwRetn  return address
+// - 0x8 dwSplit split value
 #define HEADER_SIZE 0xc
 
 extern int current_hook;
