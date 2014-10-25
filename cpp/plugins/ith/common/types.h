@@ -24,6 +24,9 @@ struct HookParam { // size: 0x24
   // jichi 10/24/2014: Add filter function. Return the if skip the text
   typedef bool (*filter_fun_t)(LPVOID str, DWORD *len, HookParam *hp);
 
+  // jichi 10/24/2014: Add generic hook function.
+  typedef void (*hook_fun_t)(DWORD esp, HookParam *hp);
+
   DWORD addr;   // absolute or relative address
   DWORD off,    // offset of the data in the memory
         ind,    // ?
@@ -33,6 +36,7 @@ struct HookParam { // size: 0x24
         function;
   extern_fun_t extern_fun;
   filter_fun_t filter_fun;
+  hook_fun_t hook_fun;
   DWORD type;   // flags
   WORD length_offset; // index of the string length
   BYTE hook_len, // ?

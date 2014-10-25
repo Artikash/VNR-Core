@@ -29,6 +29,23 @@ enum HookFunType {
   , HookFunCount // 14
 };
 
+// jichi 10/14/2014
+#define HOOK_GDI_FUNCTION_LIST \
+  GetTextExtentPoint32A \
+  , GetGlyphOutlineA \
+  , ExtTextOutA \
+  , TextOutA \
+  , GetCharABCWidthsA \
+  , GetTextExtentPoint32W \
+  , GetGlyphOutlineW \
+  , ExtTextOutW \
+  , TextOutW \
+  , GetCharABCWidthsW \
+  , DrawTextA \
+  , DrawTextExA \
+  , DrawTextW \
+  , DrawTextExW
+
 enum { HOOK_FUN_COUNT = HookFunCount };
 enum { MAX_HOOK = 32 }; // must be larger than HookFunCount
 
@@ -82,6 +99,8 @@ enum HookParamType : unsigned long {
   , HOOK_ENGINE       = 0x4000
   , HOOK_ADDITIONAL   = 0x8000
 
+  // jichi 10/24/2014: Only trigger the dynamic function, do not return any data
+  , HOOK_EMPTY        = 0x800
   // jichi 6/1/2014: fix the split value to 0x10001
   , FIXING_SPLIT      = 0x1000
   , RELATIVE_SPLIT    = 0x2000 // relative split return address
