@@ -503,8 +503,8 @@ bool InsertKAGParserHook(const wchar_t *module) // either KAGParser.dll or KAGPa
 /** 10/24/2014 jichi: New KiriKiri hook
  *  Sample game: [141128] Venus Blood -HYPNO- ヴィーナスブラッド・ヒュプノ 体験版
  *
- *  drawText and drawGlyph seem to be the right function to look at.
- *  However, the latest source code does not match VenusBlood.
+ *  This engine will hook to the caller of caller of the first GetGlyphOutlineW (totally three).
+ *  The logic is quite similar to KiriKiri1 except it backtrack twice to get the function call.
  *
  *  KiriKiriZ:
  *  https://github.com/krkrz/krkrz
@@ -515,34 +515,7 @@ bool InsertKAGParserHook(const wchar_t *module) // either KAGParser.dll or KAGPa
  *  See: krkrz/src/core/visual/LayerIntf.cpp
  *  API: http://devdoc.kikyou.info/tvp/docs/kr2doc/contents/f_Layer_drawText.html
  *
- *  タイプ
- *      Layerクラスのメソッド
- *  構文
- *      drawText(x, y, text, color, opa=255, aa=true, shadowlevel=0, shadowcolor=0x000000, shadowwidth=0, shadowofsx=0, shadowofsy=0)
- *  引数
- *      x  　文字描画を開始する原点の ( 画像位置における ) x 座標をピクセル単位で指定します。
- *      y  　文字描画を開始する原点の ( 画像位置における ) y 座標をピクセル単位で指定します。
- *      text  　描画する文字を指定します。
- *      color  　描画する文字の色を 0xRRGGBB 形式で指定します。
- *      opa  　描画する文字の不透明度 ( -255 ～ 0 ～ 255 ) を指定します。
- *      　負の数の指定は Layer.face が dfAlpha の場合のみに有効で、 この場合は文字の形に不透明度が取り除かれる事になります ( 値が小さいほど 効果が大きくなります )。
- *      aa  　アンチエイリアスを行うかどうかを指定します。
- *      　真を指定するとアンチエイリアスが行われます。偽を指定すると行われません。
- *      shadowlevel  　影の不透明度を指定します。shadowwidth 引数の値によって適切な値は変動します。
- *      0 を指定すると影は描画されません。
- *      shadowcolor  　影の色を 0xRRGGBB 形式で指定します。
- *      shadowwidth  　影の幅 ( ぼけ ) を指定します。 0 がもっともシャープ ( ぼけない ) で、値を大きく すると影をぼかすことができます。
- *      shadowofsx  　影の位置の x 座標の値をピクセル単位で指定します。 0 を指定すると影は真下に描画されます。
- *      shadowofsy  　影の位置の y 座標の値をピクセル単位で指定します。 0 を指定すると影は真下に描画されます。
- *  戻り値
- *      なし (void)
- *  説明
- *      　レイヤに文字を描画します。Layer.face が dfAlpha (または dfBoth) か dfAddAlpha か dfOpaque (または dfMain) の場合のみ描画することができます。
- *      　dfOpaque (またはdfMain) を指定した場合、描画先のマスクが破壊されるか保護されるかは Layer.holdAlpha プロパティによります。
- *      　フォントは Layer.font で指定したものが用いられます。
- *
  *  Debug method:
- *  The logic is quite similar to KiriKiri1 except it backtrack twice to get the function call:
  *  - Find function calls to GetGlyphOutlineW (totally three)
  *
  *  - Find the caller of the first GetGlyphOutlineW
