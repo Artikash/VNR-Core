@@ -33,7 +33,8 @@ if os.name == 'nt':
 
   import re
   RE_PUNCT = re.compile(ur"[。？！?!](?=[^」])") # any punctuation not at the end of a sentence
-  STOP_PUNCT = u"」"
+  #STOP_PUNCT = u"」"
+  STOP_PUNCT = u"、"
   def repairtext(t):
     """
     @param  text  unicode

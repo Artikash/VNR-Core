@@ -516,6 +516,9 @@ bool InsertKAGParserHook(const wchar_t *module) // either KAGParser.dll or KAGPa
  *  API: http://devdoc.kikyou.info/tvp/docs/kr2doc/contents/f_Layer_drawText.html
  *
  *  Debug method:
+ *  Backtrack from GetGlyphOutlineW, and find the first function that is invoked more
+ *  times than (cached) GetGlyphOutlineW.
+ *
  *  - Find function calls to GetGlyphOutlineW (totally three)
  *
  *  - Find the caller of the first GetGlyphOutlineW
