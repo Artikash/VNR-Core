@@ -566,6 +566,7 @@ static void KiriKiriZHook(DWORD esp_base, HookParam *hp)
     ConsoleOutput("vnreng: INSERT KiriKiriZ");
     NewHook(hp, L"KiriKiriZ");
 
+    ConsoleOutput("vnreng:KiriKiriZ: disable GDI hooks");
     DisableGDIHooks();
   }
 }
@@ -8019,6 +8020,9 @@ bool InsertExpHook()
   hp.extern_fun = SpecialHookExp;
   ConsoleOutput("vnreng: INSERT EXP");
   NewHook(hp, L"EXP");
+
+  ConsoleOutput("vnreng:EXP: disable GDI hooks");
+  DisableGDIHooks();
   return true;
 }
 
