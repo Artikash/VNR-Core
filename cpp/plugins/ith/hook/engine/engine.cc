@@ -351,52 +351,20 @@ bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
   return ret;
 }
 
-/** 10/20/2014 jichi: New KiriKiri hook
+/** 10/20/2014 jichi: KAGParser
  *  Sample game: [141128] Venus Blood -HYPNO- ヴィーナスブラッド・ヒュプノ 体験版
  *
  *  drawText and drawGlyph seem to be the right function to look at.
  *  However, the latest source code does not match VenusBlood.
- *
- *  KiriKiriZ:
- *  https://github.com/krkrz/krkrz
- *  http://krkrz.github.io
- *
- *  KiriKiri API: http://devdoc.kikyou.info/tvp/docs/kr2doc/contents/f_Layer.html
- *
- *  See: krkrz/src/core/visual/LayerIntf.cpp
- *  API: http://devdoc.kikyou.info/tvp/docs/kr2doc/contents/f_Layer_drawText.html
- *
- *  タイプ
- *      Layerクラスのメソッド
- *  構文
- *      drawText(x, y, text, color, opa=255, aa=true, shadowlevel=0, shadowcolor=0x000000, shadowwidth=0, shadowofsx=0, shadowofsy=0)
- *  引数
- *      x  　文字描画を開始する原点の ( 画像位置における ) x 座標をピクセル単位で指定します。
- *      y  　文字描画を開始する原点の ( 画像位置における ) y 座標をピクセル単位で指定します。
- *      text  　描画する文字を指定します。
- *      color  　描画する文字の色を 0xRRGGBB 形式で指定します。
- *      opa  　描画する文字の不透明度 ( -255 ～ 0 ～ 255 ) を指定します。
- *      　負の数の指定は Layer.face が dfAlpha の場合のみに有効で、 この場合は文字の形に不透明度が取り除かれる事になります ( 値が小さいほど 効果が大きくなります )。
- *      aa  　アンチエイリアスを行うかどうかを指定します。
- *      　真を指定するとアンチエイリアスが行われます。偽を指定すると行われません。
- *      shadowlevel  　影の不透明度を指定します。shadowwidth 引数の値によって適切な値は変動します。
- *      0 を指定すると影は描画されません。
- *      shadowcolor  　影の色を 0xRRGGBB 形式で指定します。
- *      shadowwidth  　影の幅 ( ぼけ ) を指定します。 0 がもっともシャープ ( ぼけない ) で、値を大きく すると影をぼかすことができます。
- *      shadowofsx  　影の位置の x 座標の値をピクセル単位で指定します。 0 を指定すると影は真下に描画されます。
- *      shadowofsy  　影の位置の y 座標の値をピクセル単位で指定します。 0 を指定すると影は真下に描画されます。
- *  戻り値
- *      なし (void)
- *  説明
- *      　レイヤに文字を描画します。Layer.face が dfAlpha (または dfBoth) か dfAddAlpha か dfOpaque (または dfMain) の場合のみ描画することができます。
- *      　dfOpaque (またはdfMain) を指定した場合、描画先のマスクが破壊されるか保護されるかは Layer.holdAlpha プロパティによります。
- *      　フォントは Layer.font で指定したものが用いられます。
  *
  *  Debug method:
  *  Pre-compute: hexstr 視界のきかない utf16, got: 96894c756e304d304b306a304430
  *  Use ollydbg to insert hardware break point before the scene is entered.
  *  It found several places either in game or KAGParser, and the last one is as follows.
  *  It tries to find "[" (0x5b) in the memory.
+ *
+ *  1. It cannot find character name.
+ *  2. It will extract [r].
  *
  *  6e562270   75 0a            jnz short kagparse.6e56227c
  *  6e562272   c705 00000000 00>mov dword ptr ds:[0],0x0
@@ -455,10 +423,6 @@ bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
  *  EBP 0029F044
  *  ESI 04EE4150
  *  EDI 0029F020
- *
- *  FIXME:
- *  1. It cannot find character name.
- *  2. It will extract [r].
  */
 
 namespace { // unnamed
@@ -536,6 +500,74 @@ bool InsertKAGParserHook(const wchar_t *module) // either KAGParser.dll or KAGPa
   return true;
 }
 
+/** 10/24/2014 jichi: New KiriKiri hook
+ *  Sample game: [141128] Venus Blood -HYPNO- ヴィーナスブラッド・ヒュプノ 体験版
+ *
+ *  drawText and drawGlyph seem to be the right function to look at.
+ *  However, the latest source code does not match VenusBlood.
+ *
+ *  KiriKiriZ:
+ *  https://github.com/krkrz/krkrz
+ *  http://krkrz.github.io
+ *
+ *  KiriKiri API: http://devdoc.kikyou.info/tvp/docs/kr2doc/contents/f_Layer.html
+ *
+ *  See: krkrz/src/core/visual/LayerIntf.cpp
+ *  API: http://devdoc.kikyou.info/tvp/docs/kr2doc/contents/f_Layer_drawText.html
+ *
+ *  タイプ
+ *      Layerクラスのメソッド
+ *  構文
+ *      drawText(x, y, text, color, opa=255, aa=true, shadowlevel=0, shadowcolor=0x000000, shadowwidth=0, shadowofsx=0, shadowofsy=0)
+ *  引数
+ *      x  　文字描画を開始する原点の ( 画像位置における ) x 座標をピクセル単位で指定します。
+ *      y  　文字描画を開始する原点の ( 画像位置における ) y 座標をピクセル単位で指定します。
+ *      text  　描画する文字を指定します。
+ *      color  　描画する文字の色を 0xRRGGBB 形式で指定します。
+ *      opa  　描画する文字の不透明度 ( -255 ～ 0 ～ 255 ) を指定します。
+ *      　負の数の指定は Layer.face が dfAlpha の場合のみに有効で、 この場合は文字の形に不透明度が取り除かれる事になります ( 値が小さいほど 効果が大きくなります )。
+ *      aa  　アンチエイリアスを行うかどうかを指定します。
+ *      　真を指定するとアンチエイリアスが行われます。偽を指定すると行われません。
+ *      shadowlevel  　影の不透明度を指定します。shadowwidth 引数の値によって適切な値は変動します。
+ *      0 を指定すると影は描画されません。
+ *      shadowcolor  　影の色を 0xRRGGBB 形式で指定します。
+ *      shadowwidth  　影の幅 ( ぼけ ) を指定します。 0 がもっともシャープ ( ぼけない ) で、値を大きく すると影をぼかすことができます。
+ *      shadowofsx  　影の位置の x 座標の値をピクセル単位で指定します。 0 を指定すると影は真下に描画されます。
+ *      shadowofsy  　影の位置の y 座標の値をピクセル単位で指定します。 0 を指定すると影は真下に描画されます。
+ *  戻り値
+ *      なし (void)
+ *  説明
+ *      　レイヤに文字を描画します。Layer.face が dfAlpha (または dfBoth) か dfAddAlpha か dfOpaque (または dfMain) の場合のみ描画することができます。
+ *      　dfOpaque (またはdfMain) を指定した場合、描画先のマスクが破壊されるか保護されるかは Layer.holdAlpha プロパティによります。
+ *      　フォントは Layer.font で指定したものが用いられます。
+ *
+ *  Debug method:
+ *  The logic is quite similar to KiriKiri1 except it backtrack twice to get the function call:
+ *  - Find function calls to GetGlyphOutlineW (totally three)
+ *
+ *  - Find the caller of the first GetGlyphOutlineW
+ *    Using MemDbg::findCallerAddressAfterInt3()
+ *
+ *  - Find the caller of the above caller
+ *    SInce the function address is dynamic, the function is found using KiriKiriZHook
+ *
+ *    00377c44   8b01             mov eax,dword ptr ds:[ecx]
+ *    00377c46   ff75 10          push dword ptr ss:[ebp+0x10]
+ *    00377c49   ff75 0c          push dword ptr ss:[ebp+0xc]
+ *    00377c4c   53               push ebx
+ *    00377c4d   ff50 1c          call dword ptr ds:[eax+0x1c] ; jichi: called here
+ *    00377c50   8bf0             mov esi,eax
+ *    00377c52   8975 e4          mov dword ptr ss:[ebp-0x1c],esi
+ *    00377c55   ff46 04          inc dword ptr ds:[esi+0x4]
+ *    00377c58   c745 fc 04000000 mov dword ptr ss:[ebp-0x4],0x4
+ *
+ *  Then, the UTF8 two-byte character is at [ecx]+0x14
+ *    0017E950  16 00 00 00 00 02 00 00 00 00 00 00 98 D2 76 02
+ *    0017E960  E0 8E 90 D9 42 7D 00 00 00 02 00 00 01 00 00 00
+ *                          up: text here
+ *    0017E970  01 00 01 FF 00 00 00 00 00 00 00 00 C8
+ */
+
 static void KiriKiriZHook(DWORD esp_base, HookParam *hp)
 {
   CC_UNUSED(hp);
@@ -555,7 +587,7 @@ static void KiriKiriZHook(DWORD esp_base, HookParam *hp)
     hp.addr = funaddr;
     hp.off = pusha_ecx_off - 4;
     hp.ind = 0x14;        // the same as KiriKiri1
-    hp.split = hp.off;      // the same logic but diff value as KiriKiri1
+    hp.split = hp.off;    // the same logic but diff value as KiriKiri1, use [ecx] as split
     hp.length_offset = 1; // the same as KiriKiri1
     hp.type |= USING_UNICODE|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
     ConsoleOutput("vnreng: INSERT KiriKiriZ");
