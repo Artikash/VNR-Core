@@ -354,8 +354,6 @@ Item { id: root_
         radius: parent.cellRadius
         font.family: parent.cellFont
 
-        visible: !root_.ignoresFocus
-
         property bool checked: speakTextButton_.checked || speakTranslationButton_.checked
         //  if (checked)
         //    stretchRect_.visible = false
