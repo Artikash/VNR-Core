@@ -21,6 +21,20 @@
 
 // - Global variables -
 
+// 10/14/2014 jichi: disable GDI hooks
+static bool gdi_hook_disabled_ = false;
+void DisableGDIHooks()
+{ ::gdi_hook_disabled_ = true; }
+
+static bool IsGDIFunction(LPCVOID addr)
+{
+  static LPVOID funcs[] = { HOOK_GDI_FUNCTION_LIST };
+  for (size_t i = 0; i < sizeof(funcs)/sizeof(*funcs); i++)
+    if (addr == funcs[i])
+      return true;
+  return false;
+}
+
 //FilterRange filter[8];
 
 DWORD flag,
@@ -303,6 +317,11 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
     return 0;
   if ((dwType & NO_CONTEXT) == 0 && HookFilter(dwRetn))
     return 0;
+
+  // jichi 10/24/2014: Skip GDI functions
+  if (::gdi_hook_disabled_ && ::IsGDIFunction((LPCVOID)hp.addr))
+    return 0;
+
   dwAddr = hp.addr;
   if (trigger)
     trigger = Engine::InsertDynamicHook((LPVOID)dwAddr, *(DWORD *)(dwDataBase - 0x1c), *(DWORD *)(dwDataBase-0x18));
@@ -328,6 +347,13 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
   }
 #endif // 0
   dwDataIn = *(DWORD *)(dwDataBase + hp.off); // default value
+
+  if (hp.hook_fun) // jichi 10/24/2014: generic hook function
+    hp.hook_fun(dwDataBase, &hp);
+
+  if (dwType & HOOK_EMPTY) // jichi 10/24/2014: dummy hook only for dynamic hook
+    return 0;
+
   //if (dwType & EXTERN_HOOK) {
   if (hp.extern_fun) {  // jichi 10/24/2014: remove EXTERN_HOOK
     //DataFun fun=(DataFun)hp.extern_fun;

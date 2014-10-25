@@ -20,7 +20,7 @@
 #include "cc/ccmacro.h"
 
 // jichi 7/6/2014: read esp_base
-//#define retof(esp_base)  *(DWORD *)(esp_base) // not used
+#define retof(esp_base)         *(DWORD *)(esp_base) // return address
 #define regof(name, esp_base)   *(DWORD *)((esp_base) + pusha_##name##_off - 4)
 #define argof(count, esp_base)  *(DWORD *)((esp_base) + 4 * (count)) // starts from 1 instead of 0
 #define arg1of(esp_base)    argof(1, esp_base)
@@ -296,7 +296,7 @@ bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/2
         for (DWORD j = i; j > i - StartAddress; j--)
           if (((*(DWORD *)(pt + j)) & 0xffffff) == sig) {
             if (flag)  { // We find the function entry. flag indicate 2 hooks.
-              t = 0;  //KiriKiri2, we need to find call to this function.
+              t = 0;  // KiriKiri2, we need to find call to this function.
               for (DWORD k = j + StartRange; k < j + StopRange; k++) // Empirical range.
                 if (*(BYTE *)(pt + k) == 0xe8) {
                   if (k + 5 + *(DWORD *)(pt + k + 1) == j)
@@ -494,6 +494,7 @@ void SpecialHookKAGParser(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *spl
     *split = FIXED_SPLIT_VALUE; // merge all threads
   }
 }
+} // unnamed namespace
 bool InsertKAGParserHook(const wchar_t *module) // either KAGParser.dll or KAGParserEx.dll
 {
   ULONG startAddress, stopAddress;
@@ -535,19 +536,56 @@ bool InsertKAGParserHook(const wchar_t *module) // either KAGParser.dll or KAGPa
   return true;
 }
 
-} // unnamed namespace
+static void KiriKiriZHook(DWORD esp_base, HookParam *hp)
+{
+  CC_UNUSED(hp);
+  static bool once = true;
+  if (once) {
+    once = false;
+    DWORD retaddr = retof(esp_base);
+    DWORD funaddr = MemDbg::findEnclosingAlignedFunction(retaddr, 0x400); // range is around 0x377c50 - 0x377a40 = 0x210
+    if (!funaddr) {
+      ConsoleOutput("vnreng:KiriKiriZ: failed to find enclosing function");
+      return;
+    }
+
+    //ITH_GROWL_DWORD2(retaddr, funaddr);
+
+    HookParam hp = {};
+    hp.addr = funaddr;
+    hp.off = pusha_ecx_off - 4;
+    hp.ind = 0x14;        // the same as KiriKiri1
+    hp.split = hp.off;      // the same logic but diff value as KiriKiri1
+    hp.length_offset = 1; // the same as KiriKiri1
+    hp.type |= USING_UNICODE|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
+    ConsoleOutput("vnreng: INSERT KiriKiriZ");
+    NewHook(hp, L"KiriKiriZ");
+
+    DisableGDIHooks();
+  }
+}
 
 bool InsertKiriKiriZHook()
 {
-  const wchar_t *module = nullptr;
-  if (IthCheckFile(L"plugin\\KAGParser.dll"))
-    module = L"KAGParser.dll";
-  else if (IthCheckFile(L"plugin\\KAGParserEx.dll"))
-    module = L"KAGParserEx.dll";
-  if (module)
-    return InsertKAGParserHook(module);
-  ConsoleOutput("vnreng:KiriKiriZ: KAGParser not found");
-  return false;
+  ULONG startAddress, stopAddress;
+  if (!NtInspect::getCurrentMemoryRange(&startAddress, &stopAddress)) { // need accurate stopAddress
+    ConsoleOutput("vnreng:KiriKiriZ: failed to get memory range");
+    return false;
+  }
+
+  ULONG addr = MemDbg::findCallerAddressAfterInt3((DWORD)::GetGlyphOutlineW, startAddress, stopAddress);
+  if (!addr) {
+    ConsoleOutput("vnreng:KiriKiriZ: could not find caller of GetGlyphOutlineW");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr;
+  hp.type = HOOK_EMPTY;
+  hp.hook_fun = KiriKiriZHook;
+  ConsoleOutput("vnreng: INSERT KiriKiriZ empty hook");
+  NewHook(hp, L"KiriKiriZ Hook");
+  return true;
 }
 
 /********************************************************************************************
@@ -1145,7 +1183,7 @@ bool InsertRealliveDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
         hp.off = 0x14;
         hp.split = -0x18;
         hp.length_offset = 1;
-        hp.type |= BIG_ENDIAN|USING_SPLIT;
+        hp.type = BIG_ENDIAN|USING_SPLIT;
         NewHook(hp, L"RealLive");
         //RegisterEngineType(ENGINE_REALLIVE);
         return true;;

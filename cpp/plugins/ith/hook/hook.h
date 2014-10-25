@@ -31,4 +31,8 @@ DWORD IHFAPI GetFunctionAddr(const char *name, DWORD *addr, DWORD *base, DWORD *
 // Defined in pipe.cc
 extern bool engine_registered;
 
+
+// 10/14/2014 jichi: disable GDI hooks
+void DisableGDIHooks();
+
 // EOF

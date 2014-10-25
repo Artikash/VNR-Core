@@ -140,6 +140,7 @@ simple:
   - KAGParser
   - KiriKiri1
   - KiriKiri2
+  - KiriKiriZ
   #- KONAMI PSP # KONAMI could have both repeat and float text
   - Live
   - MAJIRO # renamed
@@ -382,6 +383,7 @@ wchar:
   - KAGParser
   - KiriKiri1
   - KiriKiri2
+  - KiriKiriZ
   - Malie
   - Malie2
   - Malie3
@@ -409,6 +411,7 @@ utf8:
 # List of game engine that allows focus
 focus:
   - KAGParser
+  - KiriKiriZ
   - SiglusEngine2
 # No focus:
   #- Majiro

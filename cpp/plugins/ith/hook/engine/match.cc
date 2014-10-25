@@ -78,8 +78,17 @@ bool DeterminePCEngine()
 bool DetermineEngineByFile1()
 {
   if (IthFindFile(L"*.xp3") || Util::SearchResourceString(L"TVP(KIRIKIRI)")) {
-    bool z = Util::SearchResourceString(L"TVP(KIRIKIRI) Z "); // TVP(KIRIKIRI) Z CORE
-    (z && InsertKiriKiriZHook()) || InsertKiriKiriHook();
+    if (Util::SearchResourceString(L"TVP(KIRIKIRI) Z ")) { // TVP(KIRIKIRI) Z CORE
+      bool ok = false;
+      if (IthCheckFile(L"plugin\\KAGParser.dll"))
+        ok = InsertKAGParserHook(L"KAGParser.dll");
+      else if (IthCheckFile(L"plugin\\KAGParserEx.dll"))
+        ok = InsertKAGParserHook(L"KAGParserEx.dll");
+      ok = InsertKiriKiriZHook() || ok;
+      if (ok)
+        return true;
+    }
+    InsertKiriKiriHook();
     return true;
   }
   // 8/2/2014 jichi: Game name shown as 2RM - Adventure Engine
@@ -700,7 +709,7 @@ bool Engine::IdentifyEngine()
 }
 
 DWORD Engine::InsertDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
-{ return trigger_fun_ ? !trigger_fun_(addr,frame,stack) : 0; }
+{ return trigger_fun_ ? !trigger_fun_(addr, frame, stack) : 0; }
 
 void Engine::match(LPVOID lpThreadParameter)
 {

@@ -118,6 +118,7 @@ processes:
   - mpcstar.exe         # MPC
   - ntleac.exe          # NTLER
   - NtleaGUI.exe        # NTLER
+  - NK-Frontend.exe     # Android emulator
   - opera.exe           # Opera
   - perl.exe            # Perl
   - python.exe          # Python
