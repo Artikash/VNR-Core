@@ -7252,7 +7252,7 @@ class _DataManager(object):
           ok = nm.updateReference(t, self.user.name, self.user.password, async=async)
         elif not t.deleted:
           ok = nm.submitReference(t, self.user.name, self.user.password, async=async)
-        if ok:
+        if ok and isinstance(ok, tuple):
           t.clearDirtyProperties()
           gameId, itemId = ok
           if gameId:
