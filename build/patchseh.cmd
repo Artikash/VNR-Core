@@ -3,9 +3,10 @@
 @echo off
 setlocal
 
-for %%i in (vnr*xp.dll) do (
-  echo sehpatcher %%i
-  sehpatcher %%i
-)
+echo "sehpatcher is disabled"
+::for %%i in (vnr*xp.dll) do (
+::  echo sehpatcher %%i
+::  sehpatcher %%i
+::)
 
 :: EOF

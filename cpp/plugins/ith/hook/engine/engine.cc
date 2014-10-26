@@ -344,10 +344,14 @@ bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/2
 
 bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
 {
-  bool ok = FindKiriKiriHook((DWORD)GetGlyphOutlineW,      module_limit_ - module_base_, module_base_, 0);  // KiriKiri1
-  ok = FindKiriKiriHook((DWORD)GetTextExtentPoint32W, module_limit_ - module_base_, module_base_, 1) || ok; // KiriKiri2
+  bool k1 = FindKiriKiriHook((DWORD)GetGlyphOutlineW,      module_limit_ - module_base_, module_base_, 0),  // KiriKiri1
+       k2 = FindKiriKiriHook((DWORD)GetTextExtentPoint32W, module_limit_ - module_base_, module_base_, 1); // KiriKiri2
   //RegisterEngineType(ENGINE_KIRIKIRI);
-  return ok;
+  if (k1 && k2) {
+    ConsoleOutput("vnreng:KiriKiri1: disable GDI hooks");
+    DisableGDIHooks();
+  }
+  return k1 || k2;
 }
 
 /** 10/20/2014 jichi: KAGParser
