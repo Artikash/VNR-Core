@@ -83,6 +83,11 @@ gui:
   - sceFontGetShadowGlyphImage
   - sceFontGetShadowGlyphImage_Clip
 
+optgui:
+  - KiriKiri2
+  - KiriKiriZ # KAGParser is better
+  - SiglusEngine3 # SiglusEngine2 is better
+
 nongui:
   # PC
   - lstrlenA
@@ -164,6 +169,7 @@ simple:
   - SideB
   - SiglusEngine
   - SiglusEngine2
+  - SiglusEngine3
   - ScenarioPlayerA
   - ScenarioPlayerW
   - Silkys # renamed
@@ -392,6 +398,7 @@ wchar:
   - ShinyDays
   - SiglusEngine
   - SiglusEngine2
+  - SiglusEngine3
   - SofthouseChara # renamed
   - SystemAoi
   - Unity # removed
@@ -413,6 +420,7 @@ focus:
   - KAGParser
   - KiriKiriZ
   - SiglusEngine2
+  - SiglusEngine3
 # No focus:
   #- Majiro
   #- KiriKiri1

@@ -344,11 +344,10 @@ bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/2
 
 bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
 {
-  bool ret = false;
-  ret = FindKiriKiriHook((DWORD)GetGlyphOutlineW,      module_limit_ - module_base_, module_base_, 0) && ret; // KiriKiri1
-  ret = FindKiriKiriHook((DWORD)GetTextExtentPoint32W, module_limit_ - module_base_, module_base_, 1) && ret; // KiriKiri2
+  bool ok = FindKiriKiriHook((DWORD)GetGlyphOutlineW,      module_limit_ - module_base_, module_base_, 0);  // KiriKiri1
+  ok = FindKiriKiriHook((DWORD)GetTextExtentPoint32W, module_limit_ - module_base_, module_base_, 1) || ok; // KiriKiri2
   //RegisterEngineType(ENGINE_KIRIKIRI);
-  return ret;
+  return ok;
 }
 
 /** 10/20/2014 jichi: KAGParser
@@ -852,7 +851,6 @@ bool InsertBGI1Hook()
  *  011d4d3e  |. 77 6a          ja short sekachu.011d4daa
  *  011d4d40  |. ff2485 38691d0>jmp dword ptr ds:[eax*4+0x11d6938]
  *
- *
  *  蒼の彼方 体験版 (8/6/2014)
  *  01312cce     cc             int3    ; jichi: reladdr = 0x32cd0
  *  01312ccf     cc             int3
@@ -1207,12 +1205,118 @@ void InsertRealliveHook()
   trigger_fun_ = InsertRealliveDynamicHook;
   SwitchTrigger(true);
 }
+
+namespace { // unnamed
+
 /**
  *  jichi 8/17/2013:  SiglusEngine from siglusengine.exe
  *  The old hook does not work for new games.
  *  The new hook cannot recognize character names.
  *  Insert old first. As the pattern could also be found in the old engine.
  */
+
+/** jichi 10/25/2014: new SiglusEngine2 that can extract character name
+ *
+ *  Sample game: リア充クラスメイト孕ませ催眠 -- /HW-4@F67DC:SiglusEngine.exe
+ *  The character is in [edx+ecx*2]. Text in edx, and offset in ecx.
+ *
+ *  002667be   cc               int3
+ *  002667bf   cc               int3
+ *  002667c0   55               push ebp ; jichi: hook here
+ *  002667c1   8bec             mov ebp,esp
+ *  002667c3   8bd1             mov edx,ecx
+ *  002667c5   8b4d 0c          mov ecx,dword ptr ss:[ebp+0xc]
+ *  002667c8   83f9 01          cmp ecx,0x1
+ *  002667cb   75 17            jnz short .002667e4
+ *  002667cd   837a 14 08       cmp dword ptr ds:[edx+0x14],0x8
+ *  002667d1   72 02            jb short .002667d5
+ *  002667d3   8b12             mov edx,dword ptr ds:[edx]
+ *  002667d5   8b4d 08          mov ecx,dword ptr ss:[ebp+0x8]
+ *  002667d8   66:8b45 10       mov ax,word ptr ss:[ebp+0x10]
+ *  002667dc   66:89044a        mov word ptr ds:[edx+ecx*2],ax  ; jichi: wchar_t is in ax
+ *  002667e0   5d               pop ebp
+ *  002667e1   c2 0c00          retn 0xc
+ *  002667e4   837a 14 08       cmp dword ptr ds:[edx+0x14],0x8
+ *  002667e8   72 02            jb short .002667ec
+ *  002667ea   8b12             mov edx,dword ptr ds:[edx]
+ *  002667ec   8b45 08          mov eax,dword ptr ss:[ebp+0x8]
+ *  002667ef   57               push edi
+ *  002667f0   8d3c42           lea edi,dword ptr ds:[edx+eax*2]
+ *  002667f3   85c9             test ecx,ecx
+ *  002667f5   74 16            je short .0026680d
+ *  002667f7   8b45 10          mov eax,dword ptr ss:[ebp+0x10]
+ *  002667fa   0fb7d0           movzx edx,ax
+ *  002667fd   8bc2             mov eax,edx
+ *  002667ff   c1e2 10          shl edx,0x10
+ *  00266802   0bc2             or eax,edx
+ *  00266804   d1e9             shr ecx,1
+ *  00266806   f3:ab            rep stos dword ptr es:[edi]
+ *  00266808   13c9             adc ecx,ecx
+ *  0026680a   66:f3:ab         rep stos word ptr es:[edi]
+ *  0026680d   5f               pop edi
+ *  0026680e   5d               pop ebp
+ *  0026680f   c2 0c00          retn 0xc
+ *  00266812   cc               int3
+ *  00266813   cc               int3
+ *
+ *  Stack when enter function call:
+ *  04cee270   00266870  return to .00266870 from .002667c0
+ *  04cee274   00000002  jichi: arg1, ecx
+ *  04cee278   00000001  jichi: arg2, always 1
+ *  04cee27c   000050ac  jichi: arg3, wchar_t
+ *  04cee280   04cee4fc  jichi: text address
+ *  04cee284   0ead055c  arg5
+ *  04cee288   0ead0568  arg6, last text when arg6 = arg5 = 2
+ *  04cee28c  /04cee2c0
+ *  04cee290  |00266969  return to .00266969 from .00266820
+ *  04cee294  |00000001
+ *  04cee298  |000050ac
+ *  04cee29c  |e1466fb2
+ *  04cee2a0  |072f45f0
+ *
+ *  Target address (edx) is at [[ecx]] when enter function.
+ */
+
+// jichi: 8/17/2013: Change return type to bool
+bool InsertSiglus3Hook()
+{
+  const BYTE bytes[] = {
+    0x8b,0x12,             // 002667d3   8b12             mov edx,dword ptr ds:[edx]
+    0x8b,0x4d, 0x08,       // 002667d5   8b4d 08          mov ecx,dword ptr ss:[ebp+0x8]
+    0x66,0x8b,0x45, 0x10,  // 002667d8   66:8b45 10       mov ax,word ptr ss:[ebp+0x10]
+    0x66,0x89,0x04,0x4a    // 002667dc   66:89044a        mov word ptr ds:[edx+ecx*2],ax ; jichi: wchar_t in ax
+                           // 002667e0   5d               pop ebp
+                           // 002667e1   c2 0c00          retn 0xc
+  };
+  enum { hook_offset = sizeof(bytes) - 4 };
+  ULONG range = max(module_limit_ - module_base_, MAX_REL_ADDR);
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
+  if (!addr) { // jichi 8/17/2013: Add "== 0" check to prevent breaking new games
+    //ConsoleOutput("Unknown SiglusEngine");
+    ConsoleOutput("vnreng:Siglus3: pattern not found");
+    return false;
+  }
+
+  //addr = MemDbg::findEnclosingAlignedFunction(addr, 50); // 0x002667dc - 0x002667c0 = 28
+  //if (!addr) {
+  //  ConsoleOutput("vnreng:Siglus3: enclosing function not found");
+  //  return false;
+  //}
+
+  HookParam hp = {};
+  hp.addr = addr + hook_offset;
+  hp.off = pusha_eax_off - 4;
+  hp.type = USING_UNICODE;
+  hp.length_offset = 1;
+  //hp.extern_fun = SpecialHookSiglus3;
+
+  ConsoleOutput("vnreng: INSERT Siglus3");
+  NewHook(hp, L"SiglusEngine3");
+
+  ConsoleOutput("vnreng:Siglus3: disable GDI hooks");
+  DisableGDIHooks();
+  return true;
+}
 
 /**
  *  jichi 8/16/2013: Insert new siglus hook
@@ -2026,7 +2130,7 @@ bool InsertSiglus2Hook()
   return true;
 }
 
-static void SpecialHookSiglus(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+void SpecialHookSiglus1(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   __asm
   {
@@ -2047,7 +2151,7 @@ static void SpecialHookSiglus(DWORD esp_base, HookParam* hp, DWORD* data, DWORD*
 // jichi: 8/17/2013: Change return type to bool
 bool InsertSiglus1Hook()
 {
-  const BYTE bytes[]={0x33,0xc0,0x8b,0xf9,0x89,0x7c,0x24};
+  const BYTE bytes[] = {0x33,0xc0,0x8b,0xf9,0x89,0x7c,0x24};
   ULONG range = max(module_limit_ - module_base_, MAX_REL_ADDR);
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_base_ + range);
   if (!addr) { // jichi 8/17/2013: Add "== 0" check to prevent breaking new games
@@ -2061,7 +2165,7 @@ bool InsertSiglus1Hook()
     if (*(WORD*)addr == 0xff6a) {
       HookParam hp = {};
       hp.addr = addr;
-      hp.extern_fun = SpecialHookSiglus;
+      hp.extern_fun = SpecialHookSiglus1;
       hp.type = USING_UNICODE;
       ConsoleOutput("vnreng: INSERT Siglus");
       NewHook(hp, L"SiglusEngine");
@@ -2074,9 +2178,17 @@ bool InsertSiglus1Hook()
   return false;
 }
 
+} // unnamed namespace
+
 // jichi 8/17/2013: Insert old first. As the pattern could also be found in the old engine.
 bool InsertSiglusHook()
-{ return InsertSiglus1Hook() || InsertSiglus2Hook(); }
+{
+  if (InsertSiglus1Hook())
+    return true;
+  bool ok = InsertSiglus2Hook();
+  ok = InsertSiglus3Hook() || ok;
+  return ok;
+}
 
 /********************************************************************************************
 MAJIRO hook:

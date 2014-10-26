@@ -108,6 +108,7 @@ PSP_098_TEXT_THREADS = frozenset(ENGINES_YAML['psp']['0.9.8']) # [str name]
 PSP_099_TEXT_THREADS = frozenset(ENGINES_YAML['psp']['0.9.9']) # [str name]
 
 GUI_TEXT_THREADS = frozenset(ENGINES_YAML['gui']) # [str name]
+OPT_GUI_TEXT_THREADS = frozenset(ENGINES_YAML['optgui']) # [str name]
 NON_GUI_TEXT_THREADS = frozenset(ENGINES_YAML['nongui']) # [str name]
 
 SLOW_GAME_ENGINES = frozenset(ENGINES_YAML['slow']) # [str name]
