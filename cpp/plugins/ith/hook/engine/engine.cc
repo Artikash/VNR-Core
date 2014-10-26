@@ -311,7 +311,7 @@ bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/2
                     hp.ind = -0x2;
                     hp.split = -0xc;
                     hp.length_offset = 1;
-                    hp.type |= USING_UNICODE|NO_CONTEXT|USING_SPLIT|DATA_INDIRECT;
+                    hp.type = USING_UNICODE|NO_CONTEXT|USING_SPLIT|DATA_INDIRECT;
                     ConsoleOutput("vnreng: INSERT KiriKiri2");
                     NewHook(hp, L"KiriKiri2");
                     return true;
@@ -326,7 +326,7 @@ bool FindKiriKiriHook(DWORD fun, DWORD size, DWORD pt, DWORD flag) // jichi 10/2
               hp.ind = 0x14;
               hp.split = -0x8;
               hp.length_offset = 1;
-              hp.type |= USING_UNICODE|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
+              hp.type = USING_UNICODE|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
               ConsoleOutput("vnreng: INSERT KiriKiri1");
               NewHook(hp, L"KiriKiri1");
               return true;
@@ -553,9 +553,9 @@ static void KiriKiriZHook(DWORD esp_base, HookParam *hp)
   static bool once = true;
   if (once) {
     once = false;
-    DWORD retaddr = retof(esp_base);
-    DWORD funaddr = MemDbg::findEnclosingAlignedFunction(retaddr, 0x400); // range is around 0x377c50 - 0x377a40 = 0x210
-    if (!funaddr) {
+    DWORD addr = retof(esp_base); // retaddr
+    DWORD addr = MemDbg::findEnclosingAlignedFunction(addr, 0x400); // range is around 0x377c50 - 0x377a40 = 0x210
+    if (!addr) {
       ConsoleOutput("vnreng:KiriKiriZ: failed to find enclosing function");
       return;
     }
@@ -563,12 +563,12 @@ static void KiriKiriZHook(DWORD esp_base, HookParam *hp)
     //ITH_GROWL_DWORD2(retaddr, funaddr);
 
     HookParam hp = {};
-    hp.addr = funaddr;
+    hp.addr = addr;
     hp.off = pusha_ecx_off - 4;
     hp.ind = 0x14;        // the same as KiriKiri1
     hp.split = hp.off;    // the same logic but diff value as KiriKiri1, use [ecx] as split
     hp.length_offset = 1; // the same as KiriKiri1
-    hp.type |= USING_UNICODE|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
+    hp.type = USING_UNICODE|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
     ConsoleOutput("vnreng: INSERT KiriKiriZ");
     NewHook(hp, L"KiriKiriZ");
 
@@ -3496,7 +3496,7 @@ bool InsertNitroPlusHook()
   hp.addr = addr;
   hp.off = -0x14+ (b << 2);
   hp.length_offset = 1;
-  hp.type |= BIG_ENDIAN;
+  hp.type = BIG_ENDIAN;
   ConsoleOutput("vnreng: INSERT NitroPlus");
   NewHook(hp, L"NitroPlus");
   //RegisterEngineType(ENGINE_NITROPLUS);
@@ -3891,7 +3891,6 @@ bool InsertRREHook()
   hp.type = NO_CONTEXT|DATA_INDIRECT;
   if ((*(WORD *)(addr-2) != sig)) {
     hp.extern_fun = SpecialRunrunEngine;
-    //hp.type |= EXTERN_HOOK;
     ConsoleOutput("vnreng: INSERT Runrun#1");
     NewHook(hp, L"RunrunEngine Old");
   } else {
@@ -3968,7 +3967,7 @@ bool InsertLiveDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
     hp.addr = j;
     hp.off = -0x10;
     hp.length_offset = 1;
-    hp.type |= BIG_ENDIAN;
+    hp.type = BIG_ENDIAN;
     ConsoleOutput("vnreng: INSERT DynamicLive");
     NewHook(hp, L"Live");
     //RegisterEngineType(ENGINE_LIVE);
@@ -3995,7 +3994,7 @@ bool InsertLiveHook()
   hp.addr = addr;
   hp.off = -0x10;
   hp.length_offset = 1;
-  hp.type |= BIG_ENDIAN;
+  hp.type = BIG_ENDIAN;
   ConsoleOutput("vnreng: INSERT Live");
   NewHook(hp, L"Live");
   //RegisterEngineType(ENGINE_LIVE);
@@ -4548,9 +4547,7 @@ bool InsertSofthouseDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
       HookParam hp = {};
       hp.off = 0x4;
       hp.extern_fun = SpecialHookSofthouse;
-      hp.type = USING_STRING;
-      if (addr == ::DrawTextExW)
-        hp.type |= USING_UNICODE;
+      hp.type = addr == ::DrawTextExW ? USING_UNICODE : USING_STRING;
       i = *(DWORD *)(k - 4);
       if (*(DWORD *)(k - 5) == 0xe8)
         hp.addr = i + k;
@@ -4932,7 +4929,7 @@ bool InsertC4Hook()
   HookParam hp = {};
   hp.addr = addr;
   hp.off = -0x8;
-  hp.type |= DATA_INDIRECT|NO_CONTEXT;
+  hp.type = DATA_INDIRECT|NO_CONTEXT;
   hp.length_offset = 1;
   ConsoleOutput("vnreng: INSERT C4");
   NewHook(hp, L"C4");
