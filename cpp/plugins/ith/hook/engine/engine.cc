@@ -554,7 +554,7 @@ static void KiriKiriZHook(DWORD esp_base, HookParam *hp)
   if (once) {
     once = false;
     DWORD addr = retof(esp_base); // retaddr
-    DWORD addr = MemDbg::findEnclosingAlignedFunction(addr, 0x400); // range is around 0x377c50 - 0x377a40 = 0x210
+    addr = MemDbg::findEnclosingAlignedFunction(addr, 0x400); // range is around 0x377c50 - 0x377a40 = 0x210
     if (!addr) {
       ConsoleOutput("vnreng:KiriKiriZ: failed to find enclosing function");
       return;
