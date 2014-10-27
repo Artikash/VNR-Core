@@ -6,6 +6,7 @@ TEMPLATE = subdirs
 SUBDIRS += test
 
 SUBDIRS += \
+  avtest \
   hashtest \
   jsontest \
   pytest \

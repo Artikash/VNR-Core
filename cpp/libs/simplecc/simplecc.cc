@@ -44,7 +44,12 @@ void SimpleChineseConverter::clear() { d_->map.clear(); }
 // Initialization
 bool SimpleChineseConverter::addFile(const std::wstring &path, bool reverse)
 {
+#ifdef _MSC_VER
   std::ifstream fin(path);
+#else
+  std::string spath(path.begin(), path.end());
+  std::ifstream fin(spath.c_str());
+#endif // _MSC_VER
   if(!fin.is_open())
     return false;
   //fin.imbue(UTF8_LOCALE);
