@@ -10,7 +10,26 @@
 class Recorder : public QDialog
 {
   Q_OBJECT
+
+  QTimer *videoTimer_;
 public:
+  Recorder()
+  {
+    videoTimer_ = new QTimer(this);
+    videoTimer_->setSingleShot(false);
+    videoTimer_->setInterval(1000/24.); // 24 per second
+    connect(videoTimer_, SIGNAL(timeout()), SLOT(recordVideo()));
+  }
+
+  void startRecordingVideo() { videoTimer_->start(); }
+
+private slots:
+  void recordVideo()
+  {
+    QWidget *w = qApp->desktop();
+    QPixmap pm = QPixmap::grabWidget(w);
+    pm.save("avtest.png");
+  }
 };
 
 

@@ -8,6 +8,7 @@ int main(int argc, char *argv[])
   QApplication a(argc, argv);
   Recorder w;
   w.show();
+  w.startRecordingVideo();
   return a.exec();
 }
 
