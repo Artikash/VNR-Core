@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
   Recorder w;
   w.show();
   w.startRecordingVideo();
+  QObject::connect(&a, SIGNAL(aboutToQuit()), &w, SLOT(stop()));
   return a.exec();
 }
 

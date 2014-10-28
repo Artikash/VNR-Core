@@ -158,7 +158,6 @@ if __name__ == '__main__':
     w.show()
     a.exec_()
 
-
   def test_phonon():
     from PySide.phonon import Phonon
     a = app()
