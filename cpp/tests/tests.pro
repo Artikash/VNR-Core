@@ -12,7 +12,6 @@ SUBDIRS += \
   pytest \
   socktest \
   tahtest \
-  trtest \
   uitest
 
 win32: SUBDIRS += \
@@ -21,6 +20,7 @@ win32: SUBDIRS += \
   ocrtest \
   sehtest \
   srtest \
+  trtest \
   ttstest \
   vertest \
   wmptest \
