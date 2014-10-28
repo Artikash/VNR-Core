@@ -84,14 +84,17 @@ public:
 
     //m_videoCodecContext->width = videoSize().width();
     //m_videoCodecContext->height = videoSize().height();
-    m_videoCodecContext->width = 1280;
-    m_videoCodecContext->height = 720;
+    //m_videoCodecContext->width = 1280;
+    //m_videoCodecContext->height = 720;
+
+    m_videoCodecContext->width = 720;
+    m_videoCodecContext->height = 480;
 
     //m_videoCodecContext->pix_fmt = (PixelFormat)outputPixelFormat();
     m_videoCodecContext->pix_fmt = AV_PIX_FMT_YUV420P;
     //m_videoCodecContext->time_base.den = fixedFrameRate() != -1 ? fixedFrameRate() : 1000;
-    m_videoCodecContext->time_base.den = 1000;
-    m_videoCodecContext->time_base.num = 1;
+    m_videoStream->time_base.den = 1000;
+    m_videoStream->time_base.num = 1;
 
     //applyVideoCodecSettings();
     // http://stackoverflow.com/questions/3553003/encoding-h-264-with-libavcodec-x264
@@ -161,6 +164,10 @@ public:
     }
 
     // Finalize format
+
+    // See: ffmpeg/doc/examples/muxing.c
+    if (m_formatContext->oformat->flags & AVFMT_GLOBALHEADER)
+        m_videoCodecContext->flags |= CODEC_FLAG_GLOBAL_HEADER;
     avformat_write_header(m_formatContext, 0);
 
     qDebug() << "success";
@@ -172,13 +179,12 @@ public:
 public slots:
   void stop()
   {
-
     av_write_trailer(m_formatContext);
-        avcodec_close(m_videoCodecContext);
-        av_free(m_videoCodecContext);
-        av_free(m_videoStream);
-        sws_freeContext(m_imageConvertContext);
-        avio_close(m_formatContext->pb);
+    avcodec_close(m_videoCodecContext);
+    av_free(m_videoCodecContext);
+    av_free(m_videoStream);
+    sws_freeContext(m_imageConvertContext);
+    avio_close(m_formatContext->pb);
   }
 
 private slots:
@@ -190,13 +196,13 @@ private slots:
     if (convertImage(frame)) {
       int outSize = avcodec_encode_video(m_videoCodecContext, m_videoBuffer->data, m_videoBufferSize, m_videoPicture);
       if (outSize > 0) {
+        // http://stackoverflow.com/questions/6603979/ffmpegavcodec-encode-video-setting-pts-h264
         //if (!isFixedFrameRate())
-        //  m_videoCodecContext->coded_frame->pts = pts;
-
         AVPacket pkt;
         av_init_packet(&pkt);
 
-        pkt.pts = m_videoCodecContext->coded_frame->pts;
+        static int64_t pts = 0;
+        pkt.pts = m_videoCodecContext->coded_frame->pts =  ++pts;
 
         if(m_videoCodecContext->coded_frame->key_frame)
           pkt.flags |= AV_PKT_FLAG_KEY;
