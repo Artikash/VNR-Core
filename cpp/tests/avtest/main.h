@@ -281,8 +281,15 @@ public:
     c->width = 1280;                    // resolution must be a multiple of two (1280x720),(1900x1080),(720x480)
     c->height = 720;
     c->time_base.num = 1;                   // framerate numerator
-    c->time_base.den = 25 * 1000;            // framerate denominator
-    c->gop_size = 10;                     // emit one intra frame every ten frames
+    c->time_base.den = FRAME_RATE;                 // framerate denominator
+    // http://forum.videohelp.com/threads/249602-How-does-GOP-size-affect-recording
+    // https://en.wikipedia.org/wiki/MPEG-2
+    //  For PAL the maximum length of a GOP is 15 frames, for NTSC is it 18. Longer GOPs can provide better compression.
+    //c->gop_size = 10;                     // emit one intra frame every ten frames
+    //c->gop_size = 18; // use NTSC standard, 30fps = 0.625 second
+    c->gop_size = 15; // use PAL standard, 25fps, 0.625 second = 1/24*15
+
+    //c->gop_size = 40;
     c->max_b_frames = 1;                  // maximum number of b-frames between non b-frames
     c->keyint_min = 1;                    // minimum GOP size
     c->i_quant_factor = (float)0.71;            // qscale factor between P and I frames
