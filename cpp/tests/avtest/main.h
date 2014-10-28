@@ -287,9 +287,8 @@ public:
     //  For PAL the maximum length of a GOP is 15 frames, for NTSC is it 18. Longer GOPs can provide better compression.
     //c->gop_size = 10;                     // emit one intra frame every ten frames
     //c->gop_size = 18; // use NTSC standard, 30fps = 0.625 second
-    c->gop_size = 15; // use PAL standard, 25fps, 0.625 second = 1/24*15
+    c->gop_size = 15; // use PAL standard, 25fps, 0.625 second = 1/24*15, a wrong value would result in non monotonic DTS warning
 
-    //c->gop_size = 40;
     c->max_b_frames = 1;                  // maximum number of b-frames between non b-frames
     c->keyint_min = 1;                    // minimum GOP size
     c->i_quant_factor = (float)0.71;            // qscale factor between P and I frames
@@ -379,7 +378,6 @@ private slots:
         static int64_t frame_count = -1;
         frame_count++;
 
-
         //pkt.pts = m_videoCodecContext->coded_frame->pts = 1000 * pts;
         //int64_t pts = (float) frame_count * (1000.0/(float)(FRAME_RATE)) * 90;
         int64_t pts = frame_count * 1000;
@@ -420,8 +418,12 @@ private slots:
       return false;
     }
 
-    m_imageConvertContext = sws_getCachedContext(m_imageConvertContext, image.width(), image.height(),
-                           (AVPixelFormat)inputFormat, image.width(), image.height(), m_videoCodecContext->pix_fmt, SWS_BICUBIC, NULL, NULL, NULL);
+    //m_imageConvertContext = sws_getContext(image.width(), image.height(),
+    m_imageConvertContext = sws_getCachedContext(m_imageConvertContext, image.width(), image.height(), (AVPixelFormat)inputFormat,
+                                                 m_videoCodecContext->width, m_videoCodecContext->height, m_videoCodecContext->pix_fmt,
+                                                 SWS_BICUBIC, NULL, NULL, NULL);
+    //m_imageConvertContext = sws_getCachedContext(m_imageConvertContext, image.width(), image.height(),
+    //                       AV_PIX_FMT_BGRA, image.width(), image.height(), AV_PIX_FMT_YUV420P, SWS_BICUBIC, NULL, NULL, NULL);
 
     if (m_imageConvertContext == NULL) {
       //q_ptr->setError(Encoder::InvalidConversionContext, tr("Could not initialize conversion context."));
