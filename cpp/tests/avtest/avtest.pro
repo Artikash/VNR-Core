@@ -4,7 +4,7 @@
 include(../../../config.pri)
 
 QT += core gui
-LIBS += -lavcodec -lavformat
+LIBS += -lavcodec -lavformat -lavutil
 
 # Source
 

@@ -10,7 +10,7 @@
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-//#include <libswscale/swscale.h>
+#include <libswscale/swscale.h>
 } // extern "C"
 
 
@@ -30,6 +30,7 @@ public:
     connect(videoTimer_, SIGNAL(timeout()), SLOT(recordVideo()));
   }
 
+  // See: qtmel/src/encoder/encoder.cpp
   bool startRecordingVideo()
   {
     // Init ffmpeg stuff
@@ -60,22 +61,81 @@ public:
     AVCodecContext *m_videoCodecContext = m_videoStream->codec;
 
     //m_videoCodecContext->codec_id = (videoCodec() == EncoderGlobal::DEFAULT_VIDEO_CODEC) ? m_outputFormat->video_codec : static_cast<CodecID>(videoCodec());
-    m_videoCodecContext->codec_id = m_outputFormat->video_codec;
+    //m_videoCodecContext->codec_id = m_outputFormat->video_codec;
+    //qDebug() << "video codec id" << m_videoCodecContext->codec_id;
+    m_videoCodecContext->codec_id =  AV_CODEC_ID_H264;
 
     m_videoCodecContext->codec_type = AVMEDIA_TYPE_VIDEO;
 
     //m_videoCodecContext->width = videoSize().width();
     //m_videoCodecContext->height = videoSize().height();
-    m_videoCodecContext->width = 1440;
-    m_videoCodecContext->height = 900;
+    m_videoCodecContext->width = 1280;
+    m_videoCodecContext->height = 720;
 
     //m_videoCodecContext->pix_fmt = (PixelFormat)outputPixelFormat();
-    m_videoCodecContext->pix_fmt = AV_PIX_FMT_RGBA;
+    m_videoCodecContext->pix_fmt = AV_PIX_FMT_YUV420P;
     //m_videoCodecContext->time_base.den = fixedFrameRate() != -1 ? fixedFrameRate() : 1000;
     m_videoCodecContext->time_base.den = 1000;
     m_videoCodecContext->time_base.num = 1;
 
     //applyVideoCodecSettings();
+    // http://stackoverflow.com/questions/3553003/encoding-h-264-with-libavcodec-x264
+    m_videoCodecContext->bit_rate = 5000 * 1000;
+    auto ctx = m_videoCodecContext;
+    ctx->bit_rate_tolerance;
+    ctx->rc_max_rate = 0;
+    ctx->rc_buffer_size = 0;
+    ctx->gop_size = 40;
+    ctx->max_b_frames = 3;
+    ctx->b_frame_strategy = 1;
+    ctx->coder_type = 1;
+    ctx->me_cmp = 1;
+    ctx->me_range = 16;
+    ctx->qmin = 10;
+    ctx->qmax = 51;
+    ctx->scenechange_threshold = 40;
+    ctx->flags |= CODEC_FLAG_LOOP_FILTER;
+    ctx->me_method = ME_HEX;
+    ctx->me_subpel_quality = 5;
+    ctx->i_quant_factor = 0.71;
+    ctx->qcompress = 0.6;
+    ctx->max_qdiff = 4;
+    //ctx->directpred = 1;
+    //ctx->flags2 |= CODEC_FLAG2_FASTPSKIP;
+
+    // Open video stream
+    AVCodec *m_videoCodec = avcodec_find_encoder(m_videoCodecContext->codec_id);
+    if (!m_videoCodec) {
+      //q_ptr->setError(Encoder::VideoEncoderNotFoundError, tr("Unable to find video encoder by codec id."));
+      qDebug() << "Unable to find video encoder by codec id.";
+      return false;
+    }
+
+    // open the codec
+    if (avcodec_open2(m_videoCodecContext, m_videoCodec, NULL) < 0) {
+      //q_ptr->setError(Encoder::InvalidVideoCodecError, tr("Unable to open video codec."));
+      qDebug() << "Unable to open video codec.";
+      return false;
+    }
+
+    //allocate frame buffer
+    //int m_videoBufferSize = videoSize().width() * videoSize().height() * 1.5;
+    int m_videoBufferSize = m_videoCodecContext->width * m_videoCodecContext->height * 1.5;
+    //AVBuffer *m_videoBuffer = new AVBuffer[m_videoBufferSize];
+    AVBufferRef *m_videoBuffer = av_buffer_alloc(m_videoBufferSize);
+
+    //init frame
+    AVFrame *m_videoPicture = avcodec_alloc_frame();
+
+    int size = avpicture_get_size(m_videoCodecContext->pix_fmt, m_videoCodecContext->width, m_videoCodecContext->height);
+    //AVBuffer *m_pictureBuffer = new AVBuffer[size];
+    AVBufferRef *m_pictureBuffer = av_buffer_alloc(size);
+
+    // Setup the planes
+    avpicture_fill((AVPicture *)m_videoPicture, m_pictureBuffer->data, m_videoCodecContext->pix_fmt, m_videoCodecContext->width, m_videoCodecContext->height);
+
+    // Finalize format
+    avformat_write_header(m_formatContext, 0);
 
     // Start timing
     //videoTimer_->start();
