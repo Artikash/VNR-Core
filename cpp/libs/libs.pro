@@ -6,6 +6,7 @@ TEMPLATE = subdirs
 SUBDIRS += qtprivate
 win32: SUBDIRS += disasm wintimer
 
+include(avrec/avrec.pri)
 include(cc/cc.pri)
 include(cpputil/cpputil.pri)
 include(disasm/disasm.pri)
