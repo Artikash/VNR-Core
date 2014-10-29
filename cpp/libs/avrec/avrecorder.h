@@ -2,10 +2,13 @@
 #define AVRECORDER_H
 
 // avrecorder.h
-// 9/20/2014 jichi
+// 10/28/2014 jichi
 
 #include "sakurakit/skglobal.h"
+#include <libavutil/pixfmt.h>
+#include <cstdint>
 
+class AVRecorderSettings;
 class AVRecorderPrivate;
 class AVRecorder
 {
@@ -15,8 +18,20 @@ class AVRecorder
 
   // - Construction -
 public:
+  static bool init();
+
   explicit AVRecorder();
   ~AVRecorder();
+  AVRecorderSettings *settings() const;
+
+  const wchar_t *path() const;
+  void setPath(const wchar_t *path);
+
+  bool start();
+  bool stop();
+
+  bool addImageData(const uint8_t *data, int64_t size, AVPixelFormat fmt);
+  bool addAudioData(const uint8_t *data, int64_t size);
 };
 
 #endif // AVRECORDER_H

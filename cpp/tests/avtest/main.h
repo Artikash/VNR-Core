@@ -287,7 +287,7 @@ public:
     //  For PAL the maximum length of a GOP is 15 frames, for NTSC is it 18. Longer GOPs can provide better compression.
     //c->gop_size = 10;                     // emit one intra frame every ten frames
     //c->gop_size = 18; // use NTSC standard, 30fps = 0.625 second
-    c->gop_size = 15; // use PAL standard, 25fps, 0.625 second = 1/24*15, a wrong value would result in non monotonic DTS warning
+    c->gop_size = 15; // use PAL standard, 25fps, 0.6 second = 1/25*15, a wrong value would result in non monotonic DTS warning
 
     c->max_b_frames = 1;                  // maximum number of b-frames between non b-frames
     c->keyint_min = 1;                    // minimum GOP size

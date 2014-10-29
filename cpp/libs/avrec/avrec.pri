@@ -9,7 +9,11 @@ LIBS += -lavcodec -lavformat -lavutil -lswscale
 
 #QT += core
 
-HEADERS += $$PWD/avrecorder.h
-SOURCES += $$PWD/avrecorder.cc
+HEADERS += \
+  $$PWD/avrecorder.h \
+  $$PWD/avsettings.h
+
+SOURCES += \
+  $$PWD/avrecorder.cc
 
 # EOF
