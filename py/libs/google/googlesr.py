@@ -3,9 +3,9 @@
 # See: https://www.google.com/intl/ja/chrome/demos/speech.html
 # See: https://pypi.python.org/pypi/SpeechRecognition/
 
-import io, os, subprocess, wave
-import math, audioop, collections
-import json
+import io, os, subprocess
+import audioop, collections, math, json, wave
+import pyaudio
 
 try: # try to use python2 module
   from urllib2 import Request, urlopen
@@ -22,7 +22,6 @@ class AudioSource(object):
   def __enter__(self): self.open(); return self
   def __exit__(self, *err): self.close()
 
-import pyaudio
 class Microphone(AudioSource):
   def __init__(self, device_index = None):
     self.device_index = device_index

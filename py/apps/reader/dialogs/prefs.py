@@ -158,7 +158,7 @@ class _PrefsDialog(object):
             { 'widget': self.ocrLibraryTab,
               'user': self._indexWidget(self.ocrLibraryTab),
               'decoration': rc.icon('pref-ocr-path'),
-              'display': mytr_("Recognition"),
+              'display': mytr_("OCR"),
               'toolTip': my.tr("Locations of external OCR libraries"),
             },
           ]
@@ -204,7 +204,7 @@ class _PrefsDialog(object):
         { 'widget': self.ocrTab,
           'user': self._indexWidget(self.ocrTab),
           'decoration': rc.icon('pref-ocr'),
-          'display': u"%s (α)" % mytr_("Recognition"),
+          'display': u"%s (α)" % mytr_("OCR"),
           'toolTip': mytr_("Optical character recognition") + " (OCR)",
         },
         { 'widget': self.textTab,
