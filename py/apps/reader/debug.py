@@ -158,6 +158,23 @@ if __name__ == '__main__':
     w.show()
     a.exec_()
 
-  test_cc()
+  def test_phonon():
+    from PySide.phonon import Phonon
+    a = app()
+
+    # http://qt-project.org/doc/qt-4.8/phonon-overview.html#audio
+    url = "z:/Users/jichi/tmp/test.mp3"
+    print os.path.exists(url)
+    mo = Phonon.MediaObject()
+    audioOutput = Phonon.AudioOutput(Phonon.MusicCategory)
+    path = Phonon.createPath(mo, audioOutput)
+
+    #mo.setCurrentSource(Phonon.MediaSource(url))
+    mo.setCurrentSource(url)
+    print mo.play()
+
+    a.exec_()
+
+  test_phonon()
 
 # EOF

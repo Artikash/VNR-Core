@@ -118,6 +118,7 @@ simple:
   - 5pb PSP
   - AB2Try
   - Adobe AIR
+  - Adobe Flash 10
   - Alchemist PSP
   - Alchemist2 PSP
   - AMUSE CRAFT
@@ -379,6 +380,7 @@ wchar:
   - sceFontGetShadowGlyphImage_Clip
   # Engines
   - Adobe AIR
+  - Adobe Flash 10
   - ApRicot # renamed
   - ApRicoT
   - BALDR # removed

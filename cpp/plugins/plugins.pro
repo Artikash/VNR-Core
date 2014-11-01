@@ -12,9 +12,7 @@ SUBDIRS += qmlhelperplugin
 SUBDIRS += qmltexscriptplugin
 SUBDIRS += qmltextplugin
 
-SUBDIRS += pycc
 SUBDIRS += pytahscript
-SUBDIRS += pytrscript
 SUBDIRS += pyvnrmem
 #SUBDIRS += pyreader
 #SUBDIRS += pyqthelper
@@ -22,6 +20,9 @@ SUBDIRS += pyvnrmem
 #SUBDIRS += pytexscript
 
 #win32: SUBDIRS += mousehook #pymousehook
+
+win32: SUBDIRS += pycc
+win32: SUBDIRS += pytrscript
 
 win32: SUBDIRS += ith
 win32: SUBDIRS += texthook pytexthook
