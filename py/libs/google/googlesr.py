@@ -1,47 +1,63 @@
 # coding: utf8
 # googlesr.py 11/1/2014
 # See: https://www.google.com/intl/ja/chrome/demos/speech.html
+# See: http://qiita.com/ysk_1031/items/8b8990a65bc586f33a20
+# See: https://github.com/gillesdemey/google-speech-v2
 # See: https://pypi.python.org/pypi/SpeechRecognition/
+#
+# Alternative: AT&T recognition: http://www.wilsonmar.com/speech_to_text.htm
 
-import io, os, subprocess
-import audioop, collections, math, json, wave
+import audioop, collections, io, json, math, wave
+#try: from urllib2 import Request, urlopen # try to use python2 module
+#except ImportError: from urllib.request import Request, urlopen # otherwise, use python3 module
+from urllib2 import Request, urlopen
 import pyaudio
 
-try: # try to use python2 module
-  from urllib2 import Request, urlopen
-except ImportError: # otherwise, use python3 module
-  from urllib.request import Request, urlopen
+# Example: "http://www.google.com/speech-api/v2/recognize?client=chromium&lang=%s&key=%s" % (self.language, self.key)
+GOOGLE_SR_API = "http://www.google.com/speech-api/v2/recognize"
+GOOGLE_API_KEY = "AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw" # See: https://pypi.python.org/pypi/SpeechRecognition/
+
+MIMETYPE_WAV = 'audio/l16' # See: http://qiita.com/ysk_1031/items/8b8990a65bc586f33a20
+MIMETYPE_FLAC = 'audio/x-flac'
 
 #wip: filter out clicks and other too short parts
 
-class AudioSource(object):
-
-  def open(self): pass
-  def close(self): pass
+class AudioSource(object): # abstract
 
   def __enter__(self): self.open(); return self
   def __exit__(self, *err): self.close()
 
-class Microphone(AudioSource):
-  def __init__(self, device_index = None):
-    self.device_index = device_index
-    self.format = pyaudio.paInt16 # 16-bit int sampling
-    self.SAMPLE_WIDTH = pyaudio.get_sample_size(self.format)
-    self.RATE = 16000 # sampling rate in Hertz
-    self.CHANNELS = 1 # mono audio
-    self.CHUNK = 1024 # number of frames stored in each buffer
+  def open(self): pass
+  def close(self): pass
 
-    self.audio = None
-    self.stream = None
+class Microphone(AudioSource):
+
+  MIMETYPE = MIMETYPE_WAV # str
+  RATE = 16000 # int  sampling rate in Hertz
+  CHANNELS = 1 # int  mono audio
+  CHUNK = 1024 # int  number of frames stored in each buffer
+
+  FORMAT = pyaudio.paInt16 # 16-bit int sampling
+  SAMPLE_WIDTH = pyaudio.get_sample_size(FORMAT)
+
+  def __init__(self, device_index=None):
+    """
+    @param  device_index  int or None  device index of pyaudio.PyAudio
+    """
+    self.device_index = device_index # int or None
+    self.audio = None # pyaudio.PyAudio
+    self.stream = None # pyaudio stream
 
   def open(self):
     """@reimp"""
     self.audio = pyaudio.PyAudio()
     self.stream = self.audio.open(
-      input_device_index = self.device_index,
-      format = self.format, rate = self.RATE, channels = self.CHANNELS, frames_per_buffer = self.CHUNK,
-      input = True, # stream is an input stream
-    )
+        input_device_index=self.device_index,
+        format=self.FORMAT,
+        rate=self.RATE,
+        channels=self.CHANNELS,
+        frames_per_buffer=self.CHUNK,
+        input=True) # stream is an input stream
 
   def close(self):
     """@reimp"""
@@ -52,6 +68,9 @@ class Microphone(AudioSource):
 
 class WavFile(AudioSource):
   def __init__(self, filename_or_fileobject):
+    """
+    @param  filename_or_fileobject  unicode or file
+    """
     if isinstance(filename_or_fileobject, str):
       self.filename = filename_or_fileobject
     else:
@@ -85,21 +104,26 @@ class WavFile(AudioSource):
       return self.wav_reader.readframes(size)
 
 class AudioData(object):
-  def __init__(self, rate, data):
-    self.rate = rate
-    self.data = data
+  def __init__(self, type, rate, data):
+    self.type = type # str
+    self.rate = rate # int
+    self.data = data # str
 
 class Recognizer(object):
-  def __init__(self, language = "en-US", key = "AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw"):
-    self.key = key
-    self.language = language
+  def __init__(self, language="en-US", key=GOOGLE_API_KEY):
+    self.key = key # unicode
+    self.language = language # str  such as en-US, ja-JP
 
     self.energy_threshold = 100 # minimum audio energy to consider for recording
     self.pause_threshold = 0.8 # seconds of quiet time before a phrase is considered complete
     self.quiet_duration = 0.5 # amount of quiet time to keep on both sides of the recording
 
-  def samples_to_flac(self, source, frame_data):
-    import platform, os
+  def encode(self, source, frame_data):
+    """Save wav file.
+    @param  source  str
+    @param  frame_data  str
+    @return  str
+    """
     with io.BytesIO() as wav_file:
       wav_writer = wave.open(wav_file, "wb")
       try:
@@ -110,25 +134,28 @@ class Recognizer(object):
       finally:  # make sure resources are cleaned up
         wav_writer.close()
       wav_data = wav_file.getvalue()
+      return wav_data
 
-    # determine which converter executable to use
-    system = platform.system()
-    path = os.path.dirname(os.path.abspath(__file__)) # directory of the current module file, where all the FLAC bundled binaries are stored
-    flac_converter = shutil_which("flac") # check for installed version first
-    if flac_converter is None: # flac utility is not installed
-      if system == "Windows" and platform.machine() in {"i386", "x86", "x86_64", "AMD64"}: # Windows NT, use the bundled FLAC conversion utility
-        flac_converter = os.path.join(path, "flac-win32.exe")
-      elif system == "Linux" and platform.machine() in {"i386", "x86", "x86_64", "AMD64"}:
-        flac_converter = os.path.join(path, "flac-linux-i386")
-      else:
-        raise ChildProcessError("FLAC conversion utility not available - consider installing the FLAC command line application")
-    process = subprocess.Popen("\"%s\" --stdout --totally-silent --best -" % flac_converter, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
-    flac_data, stderr = process.communicate(wav_data)
-    return flac_data
+    #import platform, os
+    ## determine which converter executable to use
+    #system = platform.system()
+    #path = os.path.dirname(os.path.abspath(__file__)) # directory of the current module file, where all the FLAC bundled binaries are stored
+    #flac_converter = shutil_which("flac") # check for installed version first
+    #if flac_converter is None: # flac utility is not installed
+    #  if system == "Windows" and platform.machine() in {"i386", "x86", "x86_64", "AMD64"}: # Windows NT, use the bundled FLAC conversion utility
+    #    flac_converter = os.path.join(path, "flac-win32.exe")
+    #  elif system == "Linux" and platform.machine() in {"i386", "x86", "x86_64", "AMD64"}:
+    #    flac_converter = os.path.join(path, "flac-linux-i386")
+    #  else:
+    #    raise ChildProcessError("FLAC conversion utility not available - consider installing the FLAC command line application")
+    #process = subprocess.Popen("\"%s\" --stdout --totally-silent --best -" % flac_converter, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
+    #flac_data, stderr = process.communicate(wav_data)
+    #return flac_data
 
-  def record(self, source, duration = None):
+  def record(self, source, duration=0):
     """
     @param  source  AudioSource
+    @param* duration  float
     """
     assert source.stream
 
@@ -145,7 +172,7 @@ class Recognizer(object):
 
     frame_data = frames.getvalue()
     frames.close()
-    return AudioData(source.RATE, self.samples_to_flac(source, frame_data))
+    return AudioData(source.MIMETYPE, source.RATE, self.encode(source, frame_data))
 
   def listen(self, source, timeout = None):
     """
@@ -199,18 +226,17 @@ class Recognizer(object):
     for i in range(quiet_buffer_count, pause_buffer_count): frames.pop() # remove extra quiet frames at the end
     frame_data = b"".join(list(frames))
 
-    return AudioData(source.RATE, self.samples_to_flac(source, frame_data))
+    return AudioData(source.MIMETYPE, source.RATE, self.encode(source, frame_data))
 
   def recognize(self, audio_data, show_all = False):
     assert isinstance(audio_data, AudioData)
 
-    url = "http://www.google.com/speech-api/v2/recognize?client=chromium&lang=%s&key=%s" % (self.language, self.key)
-    self.request = Request(url, data = audio_data.data, headers = {"Content-Type": "audio/x-flac; rate=%s" % audio_data.rate})
+    url = "%s?client=chromium&lang=%s&key=%s" % (GOOGLE_SR_API, self.language, self.key)
+    #self.request = Request(url, data = audio_data.data, headers = {"Content-Type": "audio/x-flac; rate=%s" % audio_data.rate})
+    self.request = Request(url, data = audio_data.data, headers = {"Content-Type": "audio/l16; rate=%s" % audio_data.rate})
     # check for invalid key response from the server
-    try:
-      response = urlopen(self.request)
-    except:
-      raise KeyError("Server wouldn't respond (invalid key or quota has been maxed out)")
+    try: response = urlopen(self.request)
+    except: raise KeyError("Server wouldn't respond (invalid key or quota has been maxed out)")
     response_text = response.read().decode("utf-8")
 
     # ignore any blank blocks
@@ -246,18 +272,7 @@ class Recognizer(object):
         spoken_text.append({"text":prediction["transcript"],"confidence":default_confidence})
     return spoken_text
 
-
 # helper functions
-
-def shutil_which(pgm):
-  """
-  python2 backport of python3's shutil.which()
-  """
-  path = os.getenv('PATH')
-  for p in path.split(os.path.pathsep):
-    p = os.path.join(p, pgm)
-    if os.path.exists(p) and os.access(p, os.X_OK):
-      return p
 
 if __name__ == '__main__':
   from pyaudio import PyAudio
@@ -284,3 +299,13 @@ if __name__ == '__main__':
     print("Could not understand audio")
 
 # EOF
+
+#def shutil_which(pgm):
+#  """
+#  python2 backport of python3's shutil.which()
+#  """
+#  path = os.getenv('PATH')
+#  for p in path.split(os.path.pathsep):
+#    p = os.path.join(p, pgm)
+#    if os.path.exists(p) and os.access(p, os.X_OK):
+#      return p
