@@ -269,7 +269,7 @@ class _MainObject(object):
     self.gameManager.windowChanged.connect(ret.setSelectedWindow)
     self.gameManager.processDetached.connect(ret.clearRegionItems)
 
-    ret.textRecognized.connect(self.textManager.addOcrText)
+    ret.textRecognized.connect(self.textManager.addRecognizedText)
 
     ss = settings.global_()
     ret.setEnabled(features.ADMIN != False and ss.isOcrEnabled() and ret.isInstalled())

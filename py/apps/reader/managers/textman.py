@@ -760,7 +760,7 @@ class _TextManager(object):
         skclip.settext(text)
       self._translateTextAndShow(text, timestamp)
 
-  def showOcrText(self, text):
+  def showRecognizedText(self, text):
     """
     @param  text  unicode
     """
@@ -953,14 +953,14 @@ class TextManager(QObject):
     """
     return self.__d.currentContextSize()
 
-  def addOcrText(self, text):
-    """
+  def addRecognizedText(self, text):
+    """OCR or speech recognition
     @param  text  string
     """
     d = self.__d
     if not d.enabled:
       return
-    d.showOcrText(text)
+    d.showRecognizedText(text)
 
   def addIthText(self, rawData, renderedData, signature, name):
     """
