@@ -121,9 +121,10 @@ class _OcrManager(object):
 
   @memoizedproperty
   def mouseSelector(self):
+    import defs
     from mousesel import mousesel
     ret = mousesel.MouseSelector()
-    ret.setRefreshInterval(5000) # refresh every 5 seconds
+    ret.setRefreshInterval(defs.HK_REHOOK_INTERVAL)
     ret.setRefreshEnabled(True)
     ret.pressed.connect(self._onMousePressed, Qt.QueuedConnection)
     ret.selected.connect(self._onMouseSelected) # already queued
