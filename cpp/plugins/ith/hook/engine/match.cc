@@ -523,11 +523,16 @@ bool DetermineEngineAtLast()
   if (IthCheckFile(L"arc.dat") // jichi 9/27/2014: too common
       && InsertApricoTHook())
     return true;
-#if 0
-  if (IthFindFile(L"swf\\*.swf") // jichi 9/28/2014: Adobe Flash Player
-      && InsertAdobeFlash10Hook()) // only v10 might be supported. Otherwise, fallback to Lstr hooks
+  // jichi 10/31/2014
+  // File description: Adobe Flash Player 10.2r153
+  // Product name: Shockwave Flash
+  // Original filename: SAFlashPlayer.exe
+  // Legal trademarks: Adobe Flash Player
+  // No idea why, this must appear at last or it will crash
+  if (Util::SearchResourceString(L"Adobe Flash Player 10")) {
+    InsertAdobeFlash10Hook(); // only v10 might be supported. Otherwise, fallback to Lstr hooks
     return true;
-#endif // 0
+  }
   return false;
 }
 
