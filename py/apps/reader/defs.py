@@ -36,6 +36,9 @@ MAX_NAME_LENGTH *= 3 # increased due to repetition removal
 MAX_TEXT_LENGTH = 255
 MD5_HEX_LENGTH = 32
 
+# Mouse/keyboard rehook interval
+HK_REHOOK_INTERVAL = 5000
+
 # Special game ID
 MIN_NORMAL_GAME_ITEM_ID = 100 # no game id < 100 except emulators
 

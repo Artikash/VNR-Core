@@ -180,6 +180,8 @@ simple:
   - System43
   - SystemAoi
   - Taskforce2
+  - TinkerBell1
+  - TinkerBell2
   - Tenco
   - TypeMoon PS2
   - YU-RIS
@@ -343,7 +345,8 @@ char:
   - TanukiSoft
   - Taskforce2
   - Tenco
-  - TinkerBell
+  - TinkerBell1
+  - TinkerBell2
   - Triangle
   - TypeMoon PS2
   - Vanillaware GC

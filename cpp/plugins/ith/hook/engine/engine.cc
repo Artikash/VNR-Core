@@ -8393,6 +8393,7 @@ bool InsertAdobeFlash10Hook()
   ConsoleOutput("vnreng: INSERT Adobe Flash 10");
   NewHook(hp, L"Adobe Flash 10");
 
+  ConsoleOutput("vnreng:AdobeFlash10: disable GDI hooks");
   DisableGDIHooks();
   return true;
 }
