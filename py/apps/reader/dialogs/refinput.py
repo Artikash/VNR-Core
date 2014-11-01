@@ -439,7 +439,7 @@ class _ReferenceInput(object):
 class ReferenceInput(QtWidgets.QDialog):
 
   def __init__(self, parent=None, readonly=False):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(ReferenceInput, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.__d = _ReferenceInput(self, readonly=readonly)

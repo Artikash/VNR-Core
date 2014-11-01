@@ -208,7 +208,7 @@ class _SyntaxTester(object):
 class SyntaxTester(QtWidgets.QDialog):
 
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(SyntaxTester, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.__d = _SyntaxTester(self)

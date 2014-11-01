@@ -1073,7 +1073,7 @@ Especially if you would like to translate this game.""") % (mail, mail))
 
 class GameWizard(QtWidgets.QWizard):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(GameWizard, self).__init__(parent, WINDOW_FLAGS)
     self.setWindowIcon(rc.icon('window-gamewiz'))
     self.setWindowTitle(mytr_("Game Wizard"))

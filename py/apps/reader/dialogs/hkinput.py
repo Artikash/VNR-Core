@@ -25,7 +25,7 @@ class HotkeyInputDialog(QtWidgets.QDialog):
   valueChanged = Signal(str) # hotkey
 
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(HotkeyInputDialog, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.setWindowTitle(mytr_("Shortcuts"))

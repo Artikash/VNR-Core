@@ -34,7 +34,7 @@ def _itervids(text):
 
 class YouTubeInput(QtWidgets.QDialog):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(YouTubeInput, self).__init__(parent, WINDOW_FLAGS)
     self.setWindowTitle(mytr_("Download YouTube Videos"))
     self.setWindowIcon(rc.icon('logo-youtube'))

@@ -74,7 +74,7 @@ class VirtualKeyInputDialog(QtWidgets.QDialog):
   valueChanged = Signal(int) # vk
 
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(VirtualKeyInputDialog, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.setWindowTitle(mytr_("Shortcuts"))

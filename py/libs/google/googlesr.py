@@ -13,8 +13,18 @@ import audioop, collections, io, json, math, wave
 from urllib2 import Request, urlopen
 import pyaudio
 
+#def defaultapi(): return 'http://translate.google.com/m' # this will redirect to https
+def defaultapi(): return "http://www.google.com/speech-api/v2/recognize"
+def setapi(url):
+  """
+  @param  url  str
+  """
+  global GOOGLE_SR_API
+  GOOGLE_SR_API = url
+
 # Example: "http://www.google.com/speech-api/v2/recognize?client=chromium&lang=%s&key=%s" % (self.language, self.key)
-GOOGLE_SR_API = "http://www.google.com/speech-api/v2/recognize"
+GOOGLE_SR_API = defaultapi()
+#GOOGLE_SR_API = "http://sakuradite.org/proxy/gg/speech/v2/recognize"
 GOOGLE_API_KEY = "AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw" # See: https://pypi.python.org/pypi/SpeechRecognition/
 
 MIMETYPE_WAV = 'audio/l16' # See: http://qiita.com/ysk_1031/items/8b8990a65bc586f33a20

@@ -335,7 +335,7 @@ class TermInput(QtWidgets.QDialog):
   #termEntered = Signal(QtCore.QObject) # Term
 
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(TermInput, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.setWindowTitle(my.tr("Create dictionary entry"))

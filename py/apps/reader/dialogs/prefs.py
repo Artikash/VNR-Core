@@ -334,7 +334,7 @@ class _PrefsDialog(object):
 
 class PrefsDialog(QtWidgets.QSplitter):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(PrefsDialog, self).__init__(Qt.Horizontal, parent)
     self.setWindowFlags(WINDOW_FLAGS)
     self.setWindowIcon(rc.icon('window-prefs'))

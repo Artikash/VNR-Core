@@ -204,6 +204,9 @@ class reader(QObject):
       #self.tr("Recognition"),
       self.tr("Optical character recognition"),
 
+      self.tr("Speech recognition"),
+      self.tr("Speech Recognition"),
+
       self.tr("Open in external browser"),
       self.tr("Open in external window"),
 

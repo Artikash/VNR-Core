@@ -47,7 +47,7 @@ def setMainlandChina(value):
     dprint(value)
     MAINLAND_CHINA = value
 
-    from google import googletts, googletrans
+    from google import googlesr, googletts, googletrans
     import erogamescape.api
     import getchu.search, getchu.soft
     import dlsite.search
@@ -59,6 +59,7 @@ def setMainlandChina(value):
         it.resethost()
     else:
       import config
+      googlesr.setapi(config.PROXY_GOOGLE_SR)
       googletts.setapi(config.PROXY_GOOGLE_TTS)
       googletrans.setapi(config.PROXY_GOOGLE_TRANS)
       erogamescape.api.sethost(config.PROXY_EROGAMESCAPE)
