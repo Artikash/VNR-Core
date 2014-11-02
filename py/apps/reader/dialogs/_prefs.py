@@ -1838,6 +1838,7 @@ class _SrTab(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.aboutGroup)
+    layout.addWidget(self.languageGroup)
     layout.addWidget(self.deviceGroup)
     layout.addStretch()
     q.setLayout(layout)
@@ -1883,6 +1884,31 @@ You can specify some keyboard shortcuts in Preferences/Shortcuts."""))
       if btn.isChecked():
         settings.global_().setAudioDeviceIndex(index)
         break
+
+  @memoizedproperty
+  def languageGroup(self):
+    import settings
+    ss = settings.global_()
+
+    layout = QtWidgets.QHBoxLayout()
+    layout.addWidget(self.languageEdit)
+    layout.addStretch()
+    ret = QtWidgets.QGroupBox(my.tr("Language of the speech to recognize"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def languageEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.language_name2, config.LANGUAGES))
+    ret.setMaxVisibleItems(ret.count())
+    ret.currentIndexChanged.connect(self._saveLanguage)
+    return ret
+
+  def _saveLanguage(self):
+    lang = config.LANGUAGES[self.languageEdit.currentIndex()]
+    self.manager.setLanguage(lang)
 
 class SrTab(QtWidgets.QDialog):
 

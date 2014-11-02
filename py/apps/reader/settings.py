@@ -673,6 +673,14 @@ class Settings(QSettings):
       self.setValue('AudioDeviceIndex', value)
       self.audioDeviceIndexChanged.emit(value)
 
+  speechRecognitionLanguageChanged = Signal(str)
+  def speechRecognitionLanguage(self):
+    return self.value('SpeechRecognitionLanguage', 'ja')
+  def setSpeechRecognitionLanguage(self, value):
+    if value != self.speechRecognitionLanguage():
+      self.setValue('SpeechRecognitionLanguage', value)
+      self.speechRecognitionLanguageChanged.emit(value)
+
   ## TTS ##
 
   speaksGameTextChanged = Signal(bool)

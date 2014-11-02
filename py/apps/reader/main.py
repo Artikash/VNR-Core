@@ -855,6 +855,9 @@ class _MainObject(object):
       ss.setAudioDeviceIndex(dev)
     ret.setDeviceIndex(dev)
     ss.audioDeviceIndexChanged.connect(ret.setDeviceIndex)
+
+    ret.setLanguage(ss.speechRecognitionLanguage)
+    ss.speechRecognitionLanguageChanged.connect(ret.setLanguage)
     return ret
 
   @memoizedproperty
