@@ -471,7 +471,7 @@ By default it is the same as the executable of the game process."""))
 
 class GameEditor(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(GameEditor, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     #self.setWindowTitle(self.tr("Edit Game Properties"))

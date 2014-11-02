@@ -426,7 +426,7 @@ class _GameView(object):
 
 class GameView(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(GameView, self).__init__(parent, WINDOW_FLAGS)
     #self.setWindowIcon(rc.icon('window-game'))
     self.__d = _GameView(self)

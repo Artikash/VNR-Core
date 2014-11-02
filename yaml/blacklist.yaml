@@ -69,6 +69,8 @@ processes:
   - Evernote.exe        # Evernote
   - EvernoteTray.exe    # Evernote
   - EXCEL.EXE           # Microsoft Office
+  - iesandbox.exe       # Kuwo
+  - IESandBox.exe       # Kuwo
   - firefox.exe         # Mozilla
   - flashget.exe        # Flashget
   - "Foxit Reader.exe"  # Foxit Reader

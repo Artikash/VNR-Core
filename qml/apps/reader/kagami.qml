@@ -268,6 +268,7 @@ Item { id: root_
 
   Plugin.ClipboardProxy { id: clipboardPlugin_ }
   Plugin.Tts { id: ttsPlugin_ }
+  Plugin.SpeechRecognition { id: srPlugin_ }
 
   Plugin.GameProxy { id: gamePlugin_ }
 

@@ -251,7 +251,7 @@ class ChartDialog(QtWidgets.QMainWindow):
     async = True
     cursor = skcursor.SkAutoBusyCursor() if async else skcursor.SkAutoWaitCursor()
 
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(ChartDialog, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.resize(*_ChartDialog.SIZE)

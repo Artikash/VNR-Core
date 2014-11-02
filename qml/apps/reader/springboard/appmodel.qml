@@ -77,6 +77,13 @@ Plugin.MainObjectProxy { \
       , qml: qmlrun('showJapaneseSyntaxTester')
     })
 
+    append({ name: My.tr("Speech Recognition")
+      , searchText: "Speech Recognition" + "\n" + My.tr("Speech Recognition")
+      , icon: 'image://rc/dock-srtest'
+      , toolTip: My.tr("Test speech recognition")
+      , qml: qmlrun('showSpeechRecognitionTester')
+    })
+
     append({ name: My.tr("Japanese Dictionary")
       , searchText: "Japanese Dictionary" + "\n" + Sk.tr("Japanese Dictionary")
       , icon: 'image://rc/dock-jdict'

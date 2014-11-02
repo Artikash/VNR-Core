@@ -180,6 +180,9 @@ Item { id: root_
       growlButton_.hover ||
       shadowButton_.hover ||
       glowButton_.hover ||
+      srButton_.hover ||
+      speechAutoButton_.hover ||
+      speechRecognizeButton_.hover ||
       speakButton_.hover ||
       speakTextButton_.hover ||
       speakTranslationButton_.hover ||
@@ -432,6 +435,100 @@ Item { id: root_
         }
       }
 
+      Share.TextButton { id: srButton_
+        height: parent.cellHeight; width: parent.cellWidth
+        text: slimChecked ? "音" : "SR"
+        font.pixelSize: parent.pixelSize
+        //font.bold: true
+        backgroundColor: !enabled ? parent.buttonDisabledColor :
+                         srRect_.visible ? parent.buttonPopupColor :
+                         checked ? parent.buttonCheckedColor :
+                         parent.buttonColor
+        radius: parent.cellRadius
+        font.family: parent.cellFont
+
+        property bool enabled: statusPlugin_.online
+
+        property bool checked: speechAutoButton_.checked
+        //  if (checked)
+        //    stretchRect_.visible = false
+
+        //property bool enabled: statusPlugin_.online && statusPlugin_.login
+        //onEnabledChanged:
+        //  if (!enabled) checked = false
+
+        toolTip: qsTr("Recognize text from game speech")
+        onClicked:
+          if (enabled)
+            srRect_.visible = !srRect_.visible
+
+        Share.FadingRectangle { id: srRect_
+          visible: false
+
+          anchors {
+            left: parent.right
+            verticalCenter: parent.verticalCenter
+            leftMargin: 6
+          }
+          height: srRow_.height + 10
+          width: srRow_.width + 10
+          radius: floatingRect_.radius
+
+          color: floatingRect_.color
+
+          Row { id: srRow_
+            anchors.centerIn: parent
+            spacing: 4
+
+            Share.TextButton { id: speechRecognizeButton_
+              height: buttonCol_.cellHeight
+              width: buttonCol_.cellWidth
+              text: slimChecked ? qsTr("Recognize").charAt(0) : qsTr("Recognize")
+              font.pixelSize: buttonCol_.pixelSize
+              backgroundColor: buttonCol_.buttonColor
+              radius: buttonCol_.cellRadius
+              font.family: buttonCol_.cellFont
+
+              onClicked:
+                if (srPlugin_.active) {
+                  if (!srPlugin_.singleShot)
+                    srPlugin_.stop()
+                } else {
+                  srPlugin_.singleShot = true
+                  srPlugin_.active = true
+                }
+
+              toolTip: qsTr("Immediately recognize game speech")
+            }
+
+            Share.TextButton { id: speechAutoButton_
+              height: buttonCol_.cellHeight; width: buttonCol_.cellWidth
+              text: slimChecked ? qsTr("Auto").charAt(0) : qsTr("Auto")
+              font.pixelSize: buttonCol_.pixelSize
+              backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
+              radius: buttonCol_.cellRadius
+              font.family: buttonCol_.cellFont
+
+              property bool checked: srPlugin_.active && !srPlugin_.singleShot // cached
+              onClicked:
+                if (checked) {
+                  srPlugin_.singleShot = true
+                  srPlugin_.active = false
+                } else {
+                  srPlugin_.singleShot = false
+                  srPlugin_.active = true
+                }
+
+              toolTip: qsTr("Automatically recognize game speech")
+            }
+          }
+
+          Share.CloseButton { //id: closeButton_
+            anchors { left: parent.left; top: parent.top; margins: -9 }
+            onClicked: srRect_.visible = false
+          }
+        }
+      }
 
       Share.TextButton { id: ocrButton_
         height: parent.cellHeight; width: parent.cellWidth
@@ -856,7 +953,7 @@ Item { id: root_
   onIgnoresFocusChanged: hidePopups()
 
   function hidePopups() {
-    stretchRect_.visible = ocrRect_.visible = ttsRect_.visible = false
+    stretchRect_.visible = ocrRect_.visible = ttsRect_.visible = srRect_.visible = false
   }
 
   Share.FadingRectangle { id: panel_

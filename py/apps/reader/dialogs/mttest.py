@@ -21,6 +21,20 @@ from sakurakit.sktr import tr_
 from mytr import my, mytr_
 import config, i18n, rc, settings, textutil, termman, trman, trtraits
 
+class MTTester(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
+    super(MTTester, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.setWindowFlags(WINDOW_FLAGS)
+    self.setWindowTitle(mytr_("Test Machine Translation"))
+    self.setWindowIcon(rc.icon('window-mttest'))
+    self.__d = _MTTester(self)
+    #self.setContentsMargins(9, 9, 9, 9)
+    self.resize(800, 300)
+    dprint("pass")
+
 # http://www.alanwood.net/unicode/arrows.html
 _LEFTARROW = u'<span style="color:blue">←</span>'
 _RIGHTARROW = u'<span style="color:blue">→</span>'
@@ -606,20 +620,6 @@ class _MTTester(object):
   @memoizedproperty
   def splitTranslationEdit(self):
     return self._createTextView(my.tr("Translations for split texts"), rich=True)
-
-class MTTester(QtWidgets.QDialog):
-
-  def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
-    super(MTTester, self).__init__(parent)
-    skqss.class_(self, 'texture')
-    self.setWindowFlags(WINDOW_FLAGS)
-    self.setWindowTitle(mytr_("Test Machine Translation"))
-    self.setWindowIcon(rc.icon('window-mttest'))
-    self.__d = _MTTester(self)
-    #self.setContentsMargins(9, 9, 9, 9)
-    self.resize(800, 300)
-    dprint("pass")
 
 if __name__ == '__main__':
   a = debug.app()

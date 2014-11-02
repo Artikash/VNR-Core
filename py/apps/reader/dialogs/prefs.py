@@ -57,6 +57,7 @@ class _PrefsDialog(object):
     self.textTab = _prefs.TextTab()
     self.ttsTab = _prefs.TtsTab()
     self.ocrTab = _prefs.OcrTab()
+    self.srTab = _prefs.SrTab()
     self.gameTab = _prefs.GameTab()
     self.shortcutsTab = _prefs.ShortcutsTab()
     self.uiTab = _prefs.UiTab()
@@ -158,7 +159,7 @@ class _PrefsDialog(object):
             { 'widget': self.ocrLibraryTab,
               'user': self._indexWidget(self.ocrLibraryTab),
               'decoration': rc.icon('pref-ocr-path'),
-              'display': mytr_("Recognition"),
+              'display': mytr_("OCR"),
               'toolTip': my.tr("Locations of external OCR libraries"),
             },
           ]
@@ -201,10 +202,16 @@ class _PrefsDialog(object):
           'display': mytr_("Text-To-Speech"),
           'toolTip': mytr_("Text-To-Speech") + " (TTS)",
         },
+        { 'widget': self.srTab,
+          'user': self._indexWidget(self.srTab),
+          'decoration': rc.icon('pref-sr'),
+          'display': u"%s (α)" % mytr_("SR"),
+          'toolTip': mytr_("Speech recognition") + " (SR)",
+        },
         { 'widget': self.ocrTab,
           'user': self._indexWidget(self.ocrTab),
           'decoration': rc.icon('pref-ocr'),
-          'display': u"%s (α)" % mytr_("Recognition"),
+          'display': u"%s (α)" % mytr_("OCR"),
           'toolTip': mytr_("Optical character recognition") + " (OCR)",
         },
         { 'widget': self.textTab,
@@ -301,6 +308,7 @@ class _PrefsDialog(object):
     yield self.uiTab
     yield self.ttsTab
     yield self.ocrTab
+    yield self.srTab
     yield self.gameTab
     yield self.shortcutsTab
     yield self.i18nTab
@@ -334,7 +342,7 @@ class _PrefsDialog(object):
 
 class PrefsDialog(QtWidgets.QSplitter):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(PrefsDialog, self).__init__(Qt.Horizontal, parent)
     self.setWindowFlags(WINDOW_FLAGS)
     self.setWindowIcon(rc.icon('window-prefs'))
@@ -347,7 +355,7 @@ class PrefsDialog(QtWidgets.QSplitter):
       skqss.class_(self.widget(i), 'texture')
 
     #self.resize(500,480)
-    self.resize(550,500) # large enough that there is no vertical scroll bar
+    self.resize(550,520) # large enough that there is no vertical scroll bar
     self.setSizes([170,380]) # 170 + 380 = 550
     dprint("pass")
 

@@ -744,7 +744,7 @@ class _TextTab(object):
 # Use main window for status bar
 class TextPrefsDialog(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(TextPrefsDialog, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.setWindowTitle("%s (%s)" % (

@@ -212,6 +212,7 @@ proxies:
 
   twittersearch: http://websearch.excite.co.jp/
   googlesearch: http://websearch.excite.co.jp/
+  googlesr:     http://153.121.52.138/proxy/gg/speech/v2/recognize
   googletrans:  http://153.121.52.138/proxy/gg/trans/m
   googletts:    http://153.121.52.138/proxy/gg/trans/translate_tts
   ytimg:
@@ -642,8 +643,9 @@ icons:
   pref-ocr-path:    $PWD/images/dock/camera.png
   pref-share:       $PWD/images/share.png
   pref-shortcuts:   $PWD/images/passage.png
-  pref-tr-path:     $PWD/images/dock/yaku.png
+  pref-sr:          $PWD/images/music.png
   pref-tr:          $PWD/images/people.png
+  pref-tr-path:     $PWD/images/dock/yaku.png
   pref-user:        $PWD/images/user.png
   pref-ui:          $PWD/images/window.png
   pref-tts:         $PWD/images/music.png
@@ -662,8 +664,9 @@ icons:
   window-refinput:  $PWD/images/reader.png
   window-refview:   $PWD/images/dock/edit.png
   window-regexp:    $PWD/images/dock/exp.png
-  window-syntax:    $PWD/images/dock/tree.png
+  window-srtest:    $PWD/images/dock/speech.png
   window-shortcuts: $PWD/images/passage.png
+  window-syntax:    $PWD/images/dock/tree.png
   window-submaker:  $PWD/images/dock/edit.png
   window-subview:   $PWD/images/dock/edit.png
   window-textedit:  $PWD/images/dock/edit.png
@@ -691,6 +694,7 @@ images:
   dock-mttest:      $PWD/images/dock/yaku.png
   dock-prefs:       $PWD/images/dock/prefs.png
   dock-regexp:      $PWD/images/dock/exp.png
+  dock-srtest:      $PWD/images/dock/speech.png
   dock-syntax:      $PWD/images/dock/tree.png
   dock-textedit:    $PWD/images/dock/edit.png
   dock-textreader:  $PWD/images/dock/magnifier.png

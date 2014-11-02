@@ -646,6 +646,41 @@ class Settings(QSettings):
       self.setValue('GrabHotkey', value)
       self.grabHotkeyChanged.emit(value)
 
+  # Speech recognition
+  srHotkeyEnabledChanged = Signal(bool)
+  def isSrHotkeyEnabled(self):
+    return to_bool(self.value('SpeechRecognitionHotkeyEnabled', True))
+  def setSrHotkeyEnabled(self, value):
+    if value != self.isSrHotkeyEnabled():
+      self.setValue('SpeechRecognitionHotkeyEnabled', value)
+      self.srHotkeyEnabledChanged.emit(value)
+
+  srHotkeyChanged = Signal(str)
+  def srHotkey(self):
+    return self.value('SpeechRecognitionHotkey', 'Alt\nR') # alt + r, \n = hkman.HOTKEY_DELIM
+  def setSrHotkey(self, value):
+    if value != self.srHotkey():
+      self.setValue('SpeechRecognitionHotkey', value)
+      self.srHotkeyChanged.emit(value)
+
+  ## Speech recognition ##
+
+  audioDeviceIndexChanged = Signal(int)
+  def audioDeviceIndex(self):
+    return to_int(self.value('AudioDeviceIndex', 0))
+  def setAudioDeviceIndex(self, value):
+    if value != self.audioDeviceIndex():
+      self.setValue('AudioDeviceIndex', value)
+      self.audioDeviceIndexChanged.emit(value)
+
+  speechRecognitionLanguageChanged = Signal(str)
+  def speechRecognitionLanguage(self):
+    return self.value('SpeechRecognitionLanguage', 'ja')
+  def setSpeechRecognitionLanguage(self, value):
+    if value != self.speechRecognitionLanguage():
+      self.setValue('SpeechRecognitionLanguage', value)
+      self.speechRecognitionLanguageChanged.emit(value)
+
   ## TTS ##
 
   speaksGameTextChanged = Signal(bool)

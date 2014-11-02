@@ -43,11 +43,13 @@ class reader(QObject):
       self.tr("Test Regular Expression"), self.tr("Test regular expression"),
       self.tr("Test BBCode"), #self.tr("Test BBCode"),
       self.tr("Test Machine Translation"), self.tr("Test machine translation"),
+      self.tr("Test Speech Recognition"), self.tr("Test speech recognition"),
       self.tr("Test Japanese Syntax Tree"), self.tr("Test Japanese syntax tree"),
       self.tr("Test Japanese Syntax"),
       self.tr("Japanese Syntax Tree"),
 
       self.tr("Note"),
+      self.tr("Replay"),
 
       # Messages
 
@@ -172,6 +174,7 @@ class reader(QObject):
 
       self.tr("TTS"),
       self.tr("OCR"),
+      self.tr("SR"),
 
       self.tr("Input"),
       self.tr("Output"),
@@ -201,8 +204,11 @@ class reader(QObject):
 
       self.tr("Capture"),
 
-      self.tr("Recognition"),
+      #self.tr("Recognition"),
       self.tr("Optical character recognition"),
+
+      self.tr("Speech recognition"),
+      self.tr("Speech Recognition"),
 
       self.tr("Open in external browser"),
       self.tr("Open in external window"),

@@ -13,7 +13,7 @@ import config, info
 class HelpDialog(QTextBrowser):
 
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(HelpDialog, self).__init__(parent)
     self.setWindowFlags(WINDOW_FLAGS)
     skqss.class_(self, 'texture')

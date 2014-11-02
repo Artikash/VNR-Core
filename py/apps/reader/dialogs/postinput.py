@@ -153,7 +153,7 @@ class PostInput(QtWidgets.QDialog):
   postReceived = Signal(unicode) # json
 
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(PostInput, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.setWindowTitle(mytr_("New Post"))

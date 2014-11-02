@@ -269,7 +269,7 @@ class _MainObject(object):
     self.gameManager.windowChanged.connect(ret.setSelectedWindow)
     self.gameManager.processDetached.connect(ret.clearRegionItems)
 
-    ret.textRecognized.connect(self.textManager.addOcrText)
+    ret.textRecognized.connect(self.textManager.addRecognizedText)
 
     ss = settings.global_()
     ret.setEnabled(features.ADMIN != False and ss.isOcrEnabled() and ret.isInstalled())
@@ -835,6 +835,32 @@ class _MainObject(object):
     return ret
 
   @memoizedproperty
+  def speechRecognitionManager(self):
+    dprint("create speech recognition manager")
+    import srman
+    ret = srman.manager()
+    ret.setParent(self.q)
+
+    ret.setOnline(self.networkManager.isOnline())
+    self.networkManager.onlineChanged.connect(ret.setOnline)
+
+    self.gameManager.processDetached.connect(ret.abort)
+
+    ret.textRecognized.connect(self.textManager.addRecognizedText)
+
+    import audioinfo, settings
+    ss = settings.global_()
+    dev = ss.audioDeviceIndex()
+    if dev >= audioinfo.HOST_DEVICE_COUNT:
+      ss.setAudioDeviceIndex(dev)
+    ret.setDeviceIndex(dev)
+    ss.audioDeviceIndexChanged.connect(ret.setDeviceIndex)
+
+    ret.setLanguage(ss.speechRecognitionLanguage)
+    ss.speechRecognitionLanguageChanged.connect(ret.setLanguage)
+    return ret
+
+  @memoizedproperty
   def ttsManager(self):
     dprint("create tts manager")
     import ttsman
@@ -1054,6 +1080,13 @@ class _MainObject(object):
   def machineTranslationTesterDialog(self):
     import mttest
     ret = mttest.MTTester(self.normalWindow)
+    self.widgets.append(ret)
+    return ret
+
+  @memoizedproperty
+  def speechRecognitionTesterDialog(self):
+    import srtest
+    ret = srtest.SpeechRecognitionTester(self.normalWindow)
     self.widgets.append(ret)
     return ret
 
@@ -1570,6 +1603,7 @@ class MainObject(QObject):
     #d.postEditorManager
     d.hotkeyManager
     d.ttsManager
+    d.speechRecognitionManager
 
     #d.ocrManager
     skevents.runlater(d.initializeOCR, 3000) # delay start OCR
@@ -1850,6 +1884,7 @@ class MainObject(QObject):
   def showYouTubeInput(self): _MainObject.showWindow(self.__d.youTubeInputDialog)
   def showDictionaryTester(self): _MainObject.showWindow(self.__d.dictionaryTesterDialog)
   def showMachineTranslationTester(self): _MainObject.showWindow(self.__d.machineTranslationTesterDialog)
+  def showSpeechRecognitionTester(self): _MainObject.showWindow(self.__d.speechRecognitionTesterDialog)
   def showJapaneseSyntaxTester(self): _MainObject.showWindow(self.__d.syntaxTesterDialog)
   def showBBCodeTester(self): _MainObject.showWindow(self.__d.bbcodeTesterDialog)
   def showRegExpTester(self): _MainObject.showWindow(self.__d.regExpTesterDialog)
@@ -2188,6 +2223,8 @@ class MainObjectProxy(QObject):
   def showDictionaryTester(self): manager().showDictionaryTester()
   @Slot()
   def showMachineTranslationTester(self): manager().showMachineTranslationTester()
+  @Slot()
+  def showSpeechRecognitionTester(self): manager().showSpeechRecognitionTester()
   @Slot()
   def showJapaneseSyntaxTester(self): manager().showJapaneseSyntaxTester()
   @Slot()

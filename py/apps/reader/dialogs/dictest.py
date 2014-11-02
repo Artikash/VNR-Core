@@ -133,7 +133,7 @@ class DictionaryTester(QtWidgets.QDialog):
   #termEntered = Signal(QtCore.QObject) # Term
 
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(DictionaryTester, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.setWindowTitle(mytr_("Japanese Dictionary"))

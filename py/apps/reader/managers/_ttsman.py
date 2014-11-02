@@ -274,7 +274,7 @@ class _OnlineThread:
     self.downloadCount = 0 # int
     self.time = 0 # float
 
-  def init(self, q):
+  def run(self, q):
     from pywmp import WindowsMediaPlayer
     self.wmp = WindowsMediaPlayer()
 
@@ -352,7 +352,7 @@ class OnlineThread(QThread):
   def run(self):
     """@reimp"""
     skwincom.coinit(threading=True) # critical to use WMP
-    self.__d.init(self)
+    self.__d.run(self)
     self.exec_()
 
   def destroy(self):
@@ -364,7 +364,6 @@ class OnlineThread(QThread):
 
   def requestPlay(self, engine, text, language): # OnlineTask ->
     now = time()
-
     d = self.__d
     d.time = now
     if d.downloadCount > 0:

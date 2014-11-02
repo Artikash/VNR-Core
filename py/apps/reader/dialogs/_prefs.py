@@ -16,7 +16,7 @@ from dataman import GUEST
 from mytr import my, mytr_
 import voiceroid.online as vrapi
 import voicetext.online as vtapi
-import config, cacheman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, ocrman, osutil, rc, res, sapiman, settings, ttsman
+import audioinfo, config, cacheman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, ocrman, osutil, rc, res, sapiman, settings, ttsman
 
 def parent_window(): # replace self.q to make sure windows is always visible
   import windows
@@ -845,6 +845,9 @@ class _ShortcutsTab(object):
     grid.addWidget(self.grabButton, r, 0)
     grid.addWidget(self.grabCheckBox, r, 1)
     r += 1
+    grid.addWidget(self.srButton, r, 0)
+    grid.addWidget(self.srCheckBox, r, 1)
+    r += 1
 
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)
@@ -937,6 +940,48 @@ class _ShortcutsTab(object):
       ret.windowTitle(), mytr_("Text-to-speech")))
     ss = settings.global_()
     ret.valueChanged.connect(ss.setTtsHotkey)
+    return ret
+
+  # Speech recognition
+
+  @memoizedproperty
+  def srButton(self):
+    ret = QtWidgets.QPushButton()
+    ret.setToolTip(mytr_("Shortcuts"))
+    ss = settings.global_()
+
+    def _refresh():
+      t = ss.srHotkey()
+      ret.setText(i18n.combined_key_name(t) if t else tr_("Not specified"))
+      skqss.class_(ret, 'btn btn-default' if t else 'btn btn-danger')
+    _refresh()
+    ss.srHotkeyChanged.connect(_refresh)
+
+    ret.clicked.connect(lambda: (
+        self.srDialog.setValue(ss.srHotkey()),
+        self.srDialog.show()))
+
+    ret.setEnabled(self.srCheckBox.isChecked())
+    self.srCheckBox.toggled.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def srCheckBox(self):
+    ret = QtWidgets.QCheckBox(my.tr("Immediately recognize current speech"))
+    ss = settings.global_()
+    ret.setChecked(ss.isSrHotkeyEnabled())
+    ret.toggled.connect(ss.setSrHotkeyEnabled)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+    return ret
+
+  @memoizedproperty
+  def srDialog(self):
+    import hkinput
+    ret = hkinput.HotkeyInputDialog(self.q)
+    ret.setWindowTitle("%s - %s" % (
+      ret.windowTitle(), mytr_("Speech recognition")))
+    ss = settings.global_()
+    ret.valueChanged.connect(ss.setSrHotkey)
     return ret
 
   # Textbox visible toggler
@@ -1780,6 +1825,102 @@ class OcrTab(QtWidgets.QDialog):
   def save(self): pass
   def load(self): pass
   def refresh(self): self.__d.refresh()
+
+## SR ##
+
+@Q_Q
+class _SrTab(object):
+
+  def __init__(self, q):
+    self.deviceButtons = {} # {int index:QRadioButton}
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.aboutGroup)
+    layout.addWidget(self.languageGroup)
+    layout.addWidget(self.deviceGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+
+  # About
+
+  @memoizedproperty
+  def aboutGroup(self):
+    label = QtWidgets.QLabel(my.tr(
+"""VNR supports recognizing speech using Google free online service.
+You can specify some keyboard shortcuts in Preferences/Shortcuts."""))
+
+    layout = skwidgets.SkWidgetLayout(label)
+    ret = QtWidgets.QGroupBox(tr_("About"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def deviceGroup(self):
+    import settings
+    ss = settings.global_()
+
+    layout = QtWidgets.QVBoxLayout()
+    for info in audioinfo.inputdevices():
+      name = info['name']
+      index = info['index']
+      text = name
+      if not index:
+        text += " (%s)" % tr_("default")
+      w = QtWidgets.QRadioButton(text)
+      self.deviceButtons[index] = w
+      if index == ss.audioDeviceIndex():
+        w.setChecked(True)
+      w.toggled.connect(self._saveDevice)
+      layout.addWidget(w)
+
+    ret = QtWidgets.QGroupBox(my.tr("Audio device to record"))
+    ret.setLayout(layout)
+    return ret
+
+  def _saveDevice(self):
+    for index,btn in self.deviceButtons.iteritems():
+      if btn.isChecked():
+        settings.global_().setAudioDeviceIndex(index)
+        break
+
+  @memoizedproperty
+  def languageGroup(self):
+    import settings
+    ss = settings.global_()
+
+    layout = QtWidgets.QHBoxLayout()
+    layout.addWidget(self.languageEdit)
+    layout.addStretch()
+    ret = QtWidgets.QGroupBox(my.tr("Language of the speech to recognize"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def languageEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.language_name2, config.LANGUAGES))
+    ret.setMaxVisibleItems(ret.count())
+    ret.currentIndexChanged.connect(self._saveLanguage)
+    return ret
+
+  def _saveLanguage(self):
+    lang = config.LANGUAGES[self.languageEdit.currentIndex()]
+    self.manager.setLanguage(lang)
+
+class SrTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(SrTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _SrTab(self)
+    #self.setMinimumWidth(330)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): pass
 
 ## i18n ##
 

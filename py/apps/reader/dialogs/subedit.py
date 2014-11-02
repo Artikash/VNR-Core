@@ -310,7 +310,7 @@ class _SubtitleEditor(object):
 
 class SubtitleEditor(QtWidgets.QDialog):
   def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog | Qt.WindowMinMaxButtonsHint
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(SubtitleEditor, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
     self.setWindowTitle(mytr_("Subtitle Editor"))

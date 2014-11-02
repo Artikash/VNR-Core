@@ -8150,7 +8150,7 @@ bool InsertExpHook()
  *    21:51 3110% hexstr 『何よ utf16
  *    0e30554f8830
  *
- *  There are lots of matches. One of the is selected. Then, the enclosing function is selected.
+ *  There are lots of matches. One is selected. Then, the enclosing function is selected.
  *  arg1 is the UNICODE text.
  *
  *  Pattern:
@@ -8331,8 +8331,8 @@ bool InsertExpHook()
  *  01612b1f   cc               int3
  *
  *  Runtime stack:
- *  0019e974   0161640e  return to ron2.0161640e from ron2.01612940
- *  0019e978   1216c180  unicode "dat/chr/hal_061.swf"
+ *  0019e974   0161640e  return to Ron2.0161640e from Ron2.01612940
+ *  0019e978   1216c180  UNICODE "Dat/Chr/HAL_061.swf"
  *  0019e97c   00000013
  *  0019e980   12522838
  *  0019e984   00000013
@@ -8356,6 +8356,7 @@ bool InsertExpHook()
 // Skip ASCII garbage such as: Dat/Chr/HAL_061.swf
 static bool AdobeFlashFilter(LPVOID data, DWORD *size, HookParam *hp)
 {
+  // TODO: Remove [0-9a-zA-Z./]{4,} as garbage
   CC_UNUSED(hp);
   LPCWSTR p = reinterpret_cast<LPCWSTR>(data);
   size_t len = *size / 2;
