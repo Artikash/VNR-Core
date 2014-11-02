@@ -663,6 +663,16 @@ class Settings(QSettings):
       self.setValue('SpeechRecognitionHotkey', value)
       self.srHotkeyChanged.emit(value)
 
+  ## Speech recognition ##
+
+  audioDeviceIndexChanged = Signal(int)
+  def audioDeviceIndex(self):
+    return to_int(self.value('AudioDeviceIndex', 0))
+  def setAudioDeviceIndex(self, value):
+    if value != self.audioDeviceIndex():
+      self.setValue('AudioDeviceIndex', value)
+      self.audioDeviceIndexChanged.emit(value)
+
   ## TTS ##
 
   speaksGameTextChanged = Signal(bool)

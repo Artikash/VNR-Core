@@ -848,6 +848,13 @@ class _MainObject(object):
 
     ret.textRecognized.connect(self.textManager.addRecognizedText)
 
+    import audioinfo, settings
+    ss = settings.global_()
+    dev = ss.audioDeviceIndex()
+    if dev >= audioinfo.HOST_DEVICE_COUNT:
+      ss.setAudioDeviceIndex(dev)
+    ret.setDeviceIndex(dev)
+    ss.audioDeviceIndexChanged.connect(ret.setDeviceIndex)
     return ret
 
   @memoizedproperty

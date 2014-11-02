@@ -16,7 +16,7 @@ from dataman import GUEST
 from mytr import my, mytr_
 import voiceroid.online as vrapi
 import voicetext.online as vtapi
-import config, cacheman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, ocrman, osutil, rc, res, sapiman, settings, ttsman
+import audioinfo, config, cacheman, defs, dicts, ebdict, features, growl, hkman, i18n, info, libman, netman, prompt, ocrman, osutil, rc, res, sapiman, settings, ttsman
 
 def parent_window(): # replace self.q to make sure windows is always visible
   import windows
@@ -1832,25 +1832,57 @@ class OcrTab(QtWidgets.QDialog):
 class _SrTab(object):
 
   def __init__(self, q):
+    self.deviceButtons = {} # {int index:QRadioButton}
     self._createUi(q)
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.aboutGroup)
+    layout.addWidget(self.deviceGroup)
     layout.addStretch()
     q.setLayout(layout)
+
+  # About
 
   @memoizedproperty
   def aboutGroup(self):
     label = QtWidgets.QLabel(my.tr(
 """VNR supports recognizing speech using Google free online service.
-Currently, no option can be configured.
 You can specify some keyboard shortcuts in Preferences/Shortcuts."""))
 
     layout = skwidgets.SkWidgetLayout(label)
     ret = QtWidgets.QGroupBox(tr_("About"))
     ret.setLayout(layout)
     return ret
+
+  @memoizedproperty
+  def deviceGroup(self):
+    import settings
+    ss = settings.global_()
+
+    layout = QtWidgets.QVBoxLayout()
+    for info in audioinfo.inputdevices():
+      name = info['name']
+      index = info['index']
+      text = name
+      if not index:
+        text += " (%s)" % tr_("default")
+      w = QtWidgets.QRadioButton(text)
+      self.deviceButtons[index] = w
+      if index == ss.audioDeviceIndex():
+        w.setChecked(True)
+      w.toggled.connect(self._saveDevice)
+      layout.addWidget(w)
+
+    ret = QtWidgets.QGroupBox(my.tr("Audio device to record"))
+    ret.setLayout(layout)
+    return ret
+
+  def _saveDevice(self):
+    for index,btn in self.deviceButtons.iteritems():
+      if btn.isChecked():
+        settings.global_().setAudioDeviceIndex(index)
+        break
 
 class SrTab(QtWidgets.QDialog):
 

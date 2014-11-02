@@ -86,10 +86,17 @@ class SpeechRecognitionManager(QObject):
     if t != self.__d.online:
       self.__d.setOnline(t)
 
+  def deviceIndex(self): return self.__d.deviceIndex
+  def setDeviceIndex(self, v):
+    if v != self.__d.deviceIndex:
+      self.__d.setDeviceIndex(v)
+      dprint(v)
+
   def language(self): return self.__d.language
   def setLanguage(self, v):
     if v != self.__d.language:
       self.__d.setLanguage(v)
+      dprint(v)
 
   def detectsQuiet(self): return self.__d.detectsQuiet
   def setDetectsQuiet(self, t):
@@ -101,6 +108,7 @@ class SpeechRecognitionManager(QObject):
     if t != self.__d.singleShot:
       self.__d.setSingleShot(t)
       self.singleShotChanged.emit(t)
+      dprint(t)
 
 @Q_Q
 class _SpeechRecognitionManager:
@@ -110,6 +118,7 @@ class _SpeechRecognitionManager:
     self.singleShot = True # bool
     self.online = True # bool
     self.language = 'ja' # str
+    self.deviceIndex = 0 # int
     self._thread = None # SpeechRecognitionThread
 
   def thread(self): # -> QThread
@@ -117,6 +126,7 @@ class _SpeechRecognitionManager:
       t = self._thread = SpeechRecognitionThread()
       t.setOnline(self.online)
       t.setLanguage(self.language)
+      t.setDeviceIndex(self.deviceIndex)
       t.setDetectsQuiet(self.detectsQuiet)
 
       q = self.q
@@ -158,6 +168,11 @@ class _SpeechRecognitionManager:
     if self._thread:
       self._thread.setSingleShot(t)
 
+  def setDeviceIndex(self, v):
+    self.deviceIndex = v
+    if self._thread:
+      self._thread.setDeviceIndex(v)
+
 class SpeechRecognitionThread(QThread):
   listenRequested = Signal(float) # time
   textRecognized = Signal(unicode) # text
@@ -197,6 +212,9 @@ class SpeechRecognitionThread(QThread):
   def setOnline(self, t):
     self.__d.enabled = t
 
+  def setDeviceIndex(self, v):
+    self.__d.deviceIndex = v
+
   def setLanguage(self, v):
     self.__d.recognizer.language = v[:2] # trim language
 
@@ -214,8 +232,7 @@ class _SpeechRecognitionThread:
     self.recognizer = sr.Recognizer()
     self.singleShot = True
     self.aborted = False
-
-    self.device = None # int or None  pyaudio device index
+    self.deviceIndex = 0 # int or None
 
   def listen(self, time):
     if time < self.time: # aborted
@@ -224,7 +241,7 @@ class _SpeechRecognitionThread:
     r = self.recognizer
     while self.enabled:
       try:
-        with sr.Microphone(device_index=self.device) as source:
+        with sr.Microphone(device_index=self.deviceIndex) as source:
           dprint("listen start")
           r.stopped = False
           audio = r.listen(source)

@@ -18,7 +18,7 @@ from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
 from mytr import my, mytr_
-import config, i18n, rc
+import audioinfo, config, i18n, rc
 
 class SpeechRecognitionTester(QtWidgets.QDialog):
 
@@ -57,7 +57,12 @@ class _SpeechRecognitionTester:
     row.addWidget(self.ttsButton)
     layout.addLayout(row)
 
-    layout.addWidget(self.autoStopButton)
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.autoStopButton)
+    row.addStretch()
+    row.addWidget(self.deviceEdit)
+    layout.addLayout(row)
+
     layout.addWidget(self.textEdit)
 
     q.setLayout(layout)
@@ -70,6 +75,9 @@ class _SpeechRecognitionTester:
     ret.setSingleShot(True)
     ret.textRecognized.connect(self.textEdit.setPlainText)
     ret.recognitionFinished.connect(self.stop)
+
+    ret.setDeviceIndex(self.deviceEdit.currentIndex())
+    self.deviceEdit.currentIndexChanged.connect(ret.setDeviceIndex)
 
     import netman
     nm = netman.manager()
@@ -107,6 +115,18 @@ class _SpeechRecognitionTester:
     ret.addItems(map(i18n.language_name2, config.LANGUAGES))
     ret.setMaxVisibleItems(ret.count())
     ret.currentIndexChanged.connect(self._saveLanguage)
+    return ret
+
+  @memoizedproperty
+  def deviceEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setToolTip(my.tr("Audio device to record"))
+    ret.setEditable(False)
+    ret.addItems([it['name'] for it in audioinfo.inputdevices()])
+    #ret.setMaxVisibleItems(ret.count())
+
+    import settings
+    ret.setCurrentIndex(settings.global_().audioDeviceIndex())
     return ret
 
   def _saveLanguage(self):
