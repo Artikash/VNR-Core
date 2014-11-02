@@ -835,6 +835,14 @@ class _MainObject(object):
     return ret
 
   @memoizedproperty
+  def speechRecognitionManager(self):
+    dprint("create speech recognition manager")
+    import srman
+    ret = srman.manager()
+    ret.setParent(self.q)
+    return ret
+
+  @memoizedproperty
   def ttsManager(self):
     dprint("create tts manager")
     import ttsman
@@ -1570,6 +1578,7 @@ class MainObject(QObject):
     #d.postEditorManager
     d.hotkeyManager
     d.ttsManager
+    d.speechRecognitionManager
 
     #d.ocrManager
     skevents.runlater(d.initializeOCR, 3000) # delay start OCR

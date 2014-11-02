@@ -75,6 +75,7 @@ class Microphone(AudioSource):
     self.stream.close()
     self.stream = None
     self.audio.terminate()
+    self.audio = None
 
 class WavFile(AudioSource):
   def __init__(self, filename_or_fileobject):
@@ -120,22 +121,33 @@ class AudioData(object):
     self.data = data # str
 
 class Recognizer(object):
-  def __init__(self, language="en-US", key=GOOGLE_API_KEY):
-    self.key = key # unicode
-    self.language = language # str  such as en-US, ja-JP
 
-    self.energy_threshold = 100 # minimum audio energy to consider for recording
-    self.pause_threshold = 0.8 # seconds of quiet time before a phrase is considered complete
-    self.quiet_duration = 0.5 # amount of quiet time to keep on both sides of the recording
+  key = GOOGLE_API_KEY # str
+
+  energy_threshold = 100 # minimum audio energy to consider for recording
+  pause_threshold = 0.8 # seconds of quiet time before a phrase is considered complete
+  quiet_duration = 0.5 # amount of quiet time to keep on both sides of the recording
+
+  def __init__(self, language="en-US"):
+    self.language = language # str  such as en-US, ja-JP
+    self.aborted = False
+    self.stopped = False
+    self.detects_quiet = True
+
+  def open_file(self):
+    """
+    @return  file
+    """
+    return io.BytesIO()
 
   def encode(self, source, frame_data):
     """Save wav file.
-    @param  source  str
+    @param  source  AudioSource
     @param  frame_data  str
     @return  str
     """
-    with io.BytesIO() as wav_file:
-      wav_writer = wave.open(wav_file, "wb")
+    with self.open_file() as wav_file:
+      wav_writer = wave.open(wav_file, 'wb')
       try:
         wav_writer.setsampwidth(source.SAMPLE_WIDTH)
         wav_writer.setnchannels(source.CHANNELS)
@@ -167,7 +179,7 @@ class Recognizer(object):
     @param  source  AudioSource
     @param* duration  float
     """
-    assert source.stream
+    assert isinstance(source, AudioSource) and source.stream
 
     frames = io.BytesIO()
     seconds_per_buffer = (source.CHUNK + 0.0) / source.RATE
@@ -182,13 +194,16 @@ class Recognizer(object):
 
     frame_data = frames.getvalue()
     frames.close()
-    return AudioData(source.MIMETYPE, source.RATE, self.encode(source, frame_data))
+    data = self.encode(source, frame_data)
+    return AudioData(source.MIMETYPE, source.RATE, data)
 
-  def listen(self, source, timeout = None):
+  def listen(self, source, timeout=0):
     """
     @param  source  AudioSource
+    @param* timeout  int
+    @return AudioData or None
     """
-    assert source.stream
+    assert isinstance(source, AudioSource) and source.stream
 
     # record audio data as raw samples
     frames = collections.deque()
@@ -199,46 +214,69 @@ class Recognizer(object):
     elapsed_time = 0
 
     # store audio input until the phrase starts
-    while True:
+    while not self.stopped:
+      if self.aborted:
+        return
       elapsed_time += seconds_per_buffer
       if timeout and elapsed_time > timeout: # handle timeout if specified
-        raise TimeoutError("listening timed out")
+        #raise TimeoutError("listening timed out")
+        break
 
       buffer = source.stream.read(source.CHUNK)
       if len(buffer) == 0: break # reached end of the stream
       frames.append(buffer)
 
-      # check if the audio input has stopped being quiet
-      energy = audioop.rms(buffer, source.SAMPLE_WIDTH) # energy of the audio signal
-      if energy > self.energy_threshold:
-        break
+      if self.detects_quiet:
+        # check if the audio input has stopped being quiet
+        energy = audioop.rms(buffer, source.SAMPLE_WIDTH) # energy of the audio signal
+        if energy > self.energy_threshold:
+          break
 
-      if len(frames) > quiet_buffer_count: # ensure we only keep the needed amount of quiet buffers
-        frames.popleft()
+        if len(frames) > quiet_buffer_count: # ensure we only keep the needed amount of quiet buffers
+          frames.popleft()
 
     # read audio input until the phrase ends
     pause_count = 0
-    while True:
+    while not self.stopped:
+      if self.aborted:
+        return
       buffer = source.stream.read(source.CHUNK)
       if len(buffer) == 0: break # reached end of the stream
       frames.append(buffer)
 
-      # check if the audio input has gone quiet for longer than the pause threshold
-      energy = audioop.rms(buffer, source.SAMPLE_WIDTH) # energy of the audio signal
-      if energy > self.energy_threshold:
-        pause_count = 0
-      else:
-        pause_count += 1
-      if pause_count > pause_buffer_count: # end of the phrase
-        break
+      if self.detects_quiet:
+        # check if the audio input has gone quiet for longer than the pause threshold
+        energy = audioop.rms(buffer, source.SAMPLE_WIDTH) # energy of the audio signal
+        if energy > self.energy_threshold:
+          pause_count = 0
+        else:
+          pause_count += 1
+        if pause_count > pause_buffer_count: # end of the phrase
+          pause_count = pause_buffer_count
+          break
 
-     # obtain frame data
-    for i in range(quiet_buffer_count, pause_buffer_count): frames.pop() # remove extra quiet frames at the end
+    # remove extra quiet frames at the end
+    if self.detects_quiet:
+      for i in range(quiet_buffer_count, pause_count):
+        if frames:
+          frames.pop()
+
+    if not frames:
+      return
+
+    # obtain frame data
     frame_data = b"".join(list(frames))
 
+    if self.aborted:
+      return
     return AudioData(source.MIMETYPE, source.RATE, self.encode(source, frame_data))
 
-  def recognize(self, audio_data, show_all = False):
+  def recognize(self, audio_data, show_all=False):
+    """
+    @param  audio_data  AudioData
+    @param* show_all  bool
+    @return  unicode or None
+    """
     assert isinstance(audio_data, AudioData)
 
     url = "%s?client=chromium&lang=%s&key=%s" % (GOOGLE_SR_API, self.language, self.key)
@@ -259,14 +297,16 @@ class Recognizer(object):
 
     # make sure we have a list of transcriptions
     if "alternative" not in actual_result:
-      raise LookupError("Speech is unintelligible")
+      #raise LookupError("Speech is unintelligible")
+      return None
 
     # return the best guess unless told to do otherwise
     if not show_all:
       for prediction in actual_result["alternative"]:
         if "confidence" in prediction:
           return prediction["transcript"]
-      raise LookupError("Speech is unintelligible")
+      #raise LookupError("Speech is unintelligible")
+      return None
 
     spoken_text = []
 
@@ -277,9 +317,9 @@ class Recognizer(object):
     # return all the possibilities
     for prediction in actual_result["alternative"]:
       if "confidence" in prediction:
-        spoken_text.append({"text":prediction["transcript"],"confidence":prediction["confidence"]})
+        spoken_text.append({"text":prediction["transcript"], "confidence":prediction["confidence"]})
       else:
-        spoken_text.append({"text":prediction["transcript"],"confidence":default_confidence})
+        spoken_text.append({"text":prediction["transcript"], "confidence":default_confidence})
     return spoken_text
 
 # helper functions
@@ -303,10 +343,11 @@ if __name__ == '__main__':
     audio = r.listen(source)                   # listen for the first phrase and extract it into audio data
     print "listen stop"
 
-  try:
-    print("You said " + r.recognize(audio))    # recognize speech using Google Speech Recognition
-  except LookupError:                            # speech is unintelligible
+  t = r.recognize(audio)
+  if t is None:
     print("Could not understand audio")
+  else:
+    print("You said " + t)    # recognize speech using Google Speech Recognition
 
 # EOF
 
