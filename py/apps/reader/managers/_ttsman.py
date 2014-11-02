@@ -364,7 +364,6 @@ class OnlineThread(QThread):
 
   def requestPlay(self, engine, text, language): # OnlineTask ->
     now = time()
-
     d = self.__d
     d.time = now
     if d.downloadCount > 0:
