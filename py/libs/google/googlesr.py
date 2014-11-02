@@ -43,7 +43,10 @@ class AudioSource(object): # abstract
 class Microphone(AudioSource):
 
   MIMETYPE = MIMETYPE_WAV # str
+
+  #RATE = 44100 # lower sample rate to make the sound smaller
   RATE = 16000 # int  sampling rate in Hertz
+
   CHANNELS = 1 # int  mono audio
   CHUNK = 1024 # int  number of frames stored in each buffer
 
@@ -155,7 +158,11 @@ class Recognizer(object):
         wav_writer.writeframes(frame_data)
       finally:  # make sure resources are cleaned up
         wav_writer.close()
-      wav_data = wav_file.getvalue()
+      if isinstance(wav_file, file):
+        wav_file.seek(0)
+        wav_data = wav_file.read()
+      else:
+        wav_data = wav_file.getvalue()
       return wav_data
 
     #import platform, os
@@ -174,28 +181,29 @@ class Recognizer(object):
     #flac_data, stderr = process.communicate(wav_data)
     #return flac_data
 
-  def record(self, source, duration=0):
-    """
-    @param  source  AudioSource
-    @param* duration  float
-    """
-    assert isinstance(source, AudioSource) and source.stream
+  # Not implemented
+  #def record(self, source, duration=0):
+  #  """
+  #  @param  source  AudioSource
+  #  @param* duration  float
+  #  """
+  #  assert isinstance(source, AudioSource) and source.stream
 
-    frames = io.BytesIO()
-    seconds_per_buffer = (source.CHUNK + 0.0) / source.RATE
-    elapsed_time = 0
-    while True: # loop for the total number of chunks needed
-      elapsed_time += seconds_per_buffer
-      if duration and elapsed_time > duration: break
+  #  frames = io.BytesIO()
+  #  seconds_per_buffer = (source.CHUNK + 0.0) / source.RATE
+  #  elapsed_time = 0
+  #  while True: # loop for the total number of chunks needed
+  #    elapsed_time += seconds_per_buffer
+  #    if duration and elapsed_time > duration: break
 
-      buffer = source.stream.read(source.CHUNK)
-      if len(buffer) == 0: break
-      frames.write(buffer)
+  #    buffer = source.stream.read(source.CHUNK)
+  #    if len(buffer) == 0: break
+  #    frames.write(buffer)
 
-    frame_data = frames.getvalue()
-    frames.close()
-    data = self.encode(source, frame_data)
-    return AudioData(source.MIMETYPE, source.RATE, data)
+  #  frame_data = frames.getvalue()
+  #  frames.close()
+  #  data = self.encode(source, frame_data)
+  #  return AudioData(source.MIMETYPE, source.RATE, data)
 
   def listen(self, source, timeout=0):
     """
@@ -208,7 +216,7 @@ class Recognizer(object):
     # record audio data as raw samples
     frames = collections.deque()
     assert self.pause_threshold >= self.quiet_duration >= 0
-    seconds_per_buffer = (source.CHUNK + 0.0) / source.RATE
+    seconds_per_buffer = source.CHUNK / float(source.RATE)
     pause_buffer_count = int(math.ceil(self.pause_threshold / seconds_per_buffer)) # number of buffers of quiet audio before the phrase is complete
     quiet_buffer_count = int(math.ceil(self.quiet_duration / seconds_per_buffer)) # maximum number of buffers of quiet audio to retain before and after
     elapsed_time = 0
@@ -223,17 +231,19 @@ class Recognizer(object):
         break
 
       buffer = source.stream.read(source.CHUNK)
-      if len(buffer) == 0: break # reached end of the stream
+      if len(buffer) == 0:
+        break # reached end of the stream
       frames.append(buffer)
 
-      if self.detects_quiet:
-        # check if the audio input has stopped being quiet
-        energy = audioop.rms(buffer, source.SAMPLE_WIDTH) # energy of the audio signal
-        if energy > self.energy_threshold:
-          break
+      # Always detects quiet
+      #if self.detects_quiet:
+      # check if the audio input has stopped being quiet
+      energy = audioop.rms(buffer, source.SAMPLE_WIDTH) # energy of the audio signal
+      if energy > self.energy_threshold:
+        break
 
-        if len(frames) > quiet_buffer_count: # ensure we only keep the needed amount of quiet buffers
-          frames.popleft()
+      if len(frames) > quiet_buffer_count: # ensure we only keep the needed amount of quiet buffers
+        frames.popleft()
 
     # read audio input until the phrase ends
     pause_count = 0
@@ -241,7 +251,8 @@ class Recognizer(object):
       if self.aborted:
         return
       buffer = source.stream.read(source.CHUNK)
-      if len(buffer) == 0: break # reached end of the stream
+      if len(buffer) == 0:
+        break # reached end of the stream
       frames.append(buffer)
 
       if self.detects_quiet:
@@ -256,7 +267,7 @@ class Recognizer(object):
           break
 
     # remove extra quiet frames at the end
-    if self.detects_quiet:
+    if pause_count:
       for i in range(quiet_buffer_count, pause_count):
         if frames:
           frames.pop()
@@ -284,7 +295,7 @@ class Recognizer(object):
     self.request = Request(url, data = audio_data.data, headers = {"Content-Type": "audio/l16; rate=%s" % audio_data.rate})
     # check for invalid key response from the server
     try: response = urlopen(self.request)
-    except: raise KeyError("Server wouldn't respond (invalid key or quota has been maxed out)")
+    except: raise KeyError("Server wouldn't respond (or invalid key or quota has been maxed out or network error)")
     response_text = response.read().decode("utf-8")
 
     # ignore any blank blocks
@@ -325,19 +336,29 @@ class Recognizer(object):
 # helper functions
 
 if __name__ == '__main__':
+
+  class DebugRecognizer(Recognizer):
+    def __init__(self, *args, **kwargs):
+      super(DebugRecognizer, self).__init__(*args, **kwargs)
+    def open_file(self):
+      """@reimp"""
+      path = "test.wav"
+      return open(path, 'w+b')
+
   from pyaudio import PyAudio
   a = PyAudio()
   for i in range(a.get_device_count()):
     info = a.get_device_info_by_index(i)
-    print i, '------'
-    print info
+    if info['maxInputChannels'] > 0:
+      print i, '------'
+      print info
 
-  dev = None
   #dev = None # Microphone
-  #dev = 4 # Primary Sound Capture Driver
+  dev = 4 # Primary Sound Capture Driver
   #dev = 5 # Parallels Audio Controller
 
-  r = Recognizer(language='ja')
+  r = DebugRecognizer(language='ja')
+  #r.detects_quiet = False
   with Microphone(device_index=dev) as source:                # use the default microphone as the audio source
     print "listen start"
     audio = r.listen(source)                   # listen for the first phrase and extract it into audio data

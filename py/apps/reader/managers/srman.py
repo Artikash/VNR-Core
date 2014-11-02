@@ -212,13 +212,15 @@ class _SpeechRecognitionThread:
     self.time = 0 # float
     self.enabled = True
     self.recognizer = sr.Recognizer()
-    self.device = None # int or None  pyaudio device index
     self.singleShot = True
     self.aborted = False
+
+    self.device = None # int or None  pyaudio device index
 
   def listen(self, time):
     if time < self.time: # aborted
       return
+    q = self.q
     r = self.recognizer
     while self.enabled:
       try:
@@ -229,13 +231,13 @@ class _SpeechRecognitionThread:
           dprint("listen stop")
       except Exception, e:
         dwarn("audio device error", e)
+        q.recognitionFinished.emit()
         return
 
       if time < self.time or self.aborted or not self.enabled: # aborted
         return
 
       if audio and len(audio.data) < MAX_AUDIO_SIZE:
-        print len(audio.data)
         skthreads.runasync(partial(self.recognize, audio))
       else:
         q.recognitionFinished.emit()
@@ -269,6 +271,7 @@ class _SpeechRecognitionThread:
       return
 
     if not text and self.singleShot:
+      dwarn("nothing recognized")
       growl.msg(my.tr("Failed to recognize speech"), async=True)
 
 # EOF
