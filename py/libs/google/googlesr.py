@@ -345,8 +345,7 @@ if __name__ == '__main__':
       path = "test.wav"
       return open(path, 'w+b')
 
-  from pyaudio import PyAudio
-  a = PyAudio()
+  a = pyaudio.PyAudio()
 
   print '==== host info'
   for i in range(a.get_host_api_count()):
@@ -361,7 +360,13 @@ if __name__ == '__main__':
       print i, '------'
       print info
 
+  #print devinfo['index']
+  #print devinfo['maxInputChannels']
+  #import sys
+  #sys.exit(0)
+
   dev = None # Microphone
+  #dev = 1 # Microphone
   #dev = 4 # Primary Sound Capture Driver
   #dev = 5 # Parallels Audio Controller
 
