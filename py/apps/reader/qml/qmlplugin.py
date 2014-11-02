@@ -45,6 +45,9 @@ qmlRegisterType(trman.TranslatorQmlBean, QML_PLUGIN, 1, 0, 'TranslatorBean')
 import ttsman
 qmlRegisterType(ttsman.TtsQmlBean, QML_PLUGIN, 1, 0, 'Tts')
 
+import srman
+qmlRegisterType(srman.SpeechRecognitionBean, QML_PLUGIN, 1, 0, 'SpeechRecognition')
+
 import settings
 qmlRegisterType(settings.SettingsProxy, QML_PLUGIN, 1, 0, 'Settings')
 

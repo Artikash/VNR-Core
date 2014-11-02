@@ -49,6 +49,7 @@ class reader(QObject):
       self.tr("Japanese Syntax Tree"),
 
       self.tr("Note"),
+      self.tr("Replay"),
 
       # Messages
 
@@ -173,6 +174,7 @@ class reader(QObject):
 
       self.tr("TTS"),
       self.tr("OCR"),
+      self.tr("SR"),
 
       self.tr("Input"),
       self.tr("Output"),

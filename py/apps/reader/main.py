@@ -843,6 +843,8 @@ class _MainObject(object):
 
     ret.setOnline(self.networkManager.isOnline())
     self.networkManager.onlineChanged.connect(ret.setOnline)
+
+    self.gameManager.processDetached.connect(ret.abort)
     return ret
 
   @memoizedproperty

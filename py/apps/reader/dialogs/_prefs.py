@@ -1781,6 +1781,44 @@ class OcrTab(QtWidgets.QDialog):
   def load(self): pass
   def refresh(self): self.__d.refresh()
 
+## SR ##
+
+@Q_Q
+class _SrTab(object):
+
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.aboutGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+
+  @memoizedproperty
+  def aboutGroup(self):
+    label = QtWidgets.QLabel(my.tr(
+"""VNR supports recognizing speech using Google free online service.
+Currently, no option can be configured.
+You can specify some keyboard shortcuts in Preferences/Shortcuts."""))
+
+    layout = skwidgets.SkWidgetLayout(label)
+    ret = QtWidgets.QGroupBox(tr_("About"))
+    ret.setLayout(layout)
+    return ret
+
+class SrTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(SrTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _SrTab(self)
+    #self.setMinimumWidth(330)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): pass
+
 ## i18n ##
 
 #@Q_Q

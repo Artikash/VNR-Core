@@ -4,7 +4,7 @@
 
 from functools import partial
 from time import time
-from PySide.QtCore import Qt, QObject, QThread, Signal
+from PySide.QtCore import Qt, QObject, QThread, Signal, Property
 from sakurakit import skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
@@ -13,24 +13,57 @@ from google import googlesr as sr
 @memoized
 def manager(): return SpeechRecognitionManager()
 
+#QmlObject
+class SpeechRecognitionBean(QObject):
+  def __init__(self, parent=None):
+    super(SpeechRecognitionBean, self).__init__(parent)
+    manager().activeChanged.connect(self.activeChanged)
+
+  activeChanged = Signal(bool)
+  active = Property(bool,
+      lambda _: manager().isActive(),
+      lambda _, t: manager().setActive(t),
+      notify=activeChanged)
+
 class SpeechRecognitionManager(QObject):
 
   def __init__(self, parent=None):
     super(SpeechRecognitionManager, self).__init__(parent)
     self.__d = _SpeechRecognitionManager(self)
 
+  activeChanged = Signal(bool)
   textReceived = Signal(unicode)
   recognitionFinished = Signal()
 
-  def start(self): self.__d.thread().requestListen()
+  def isActive(self): return self.__d.active
+  def setActive(self, t):
+    if t:
+      self.start()
+    else:
+      self.stop()
+
+  def start(self):
+    d = self.__d
+    if not d.active:
+      d.active = True
+      self.activeChanged.emit(True)
+      d.thread().requestListen()
 
   def stop(self):
-    if self.__d._thread:
-      self.__d._thread.stop()
+    d = self.__d
+    if d.active:
+      d.active = False
+      self.activeChanged.emit(False)
+      if d._thread:
+        d._thread.stop()
 
   def abort(self):
-    if self.__d._thread:
-      self.__d._thread.abort()
+    d = self.__d
+    if d.active:
+      d.active = False
+      if d._thread:
+        d._thread.abort()
+      self.activeChanged.emit(False)
 
   def isOnline(self): return self.__d.online
   def setOnline(self, t):
@@ -55,6 +88,7 @@ class SpeechRecognitionManager(QObject):
 @Q_Q
 class _SpeechRecognitionManager:
   def __init__(self):
+    self.active = False
     self.detectsQuiet = True # bool
     self.singleShot = True # bool
     self.online = True # bool
