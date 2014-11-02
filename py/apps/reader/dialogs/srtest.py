@@ -18,12 +18,33 @@ from sakurakit.skclass import memoizedproperty
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
 from mytr import my, mytr_
-import config, i18n,rc
+import config, i18n, rc
+
+class SpeechRecognitionTester(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
+    super(SpeechRecognitionTester, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.setWindowFlags(WINDOW_FLAGS)
+    self.setWindowTitle(mytr_("Test Speech Recognition"))
+    self.setWindowIcon(rc.icon('window-srtest'))
+    self.__d = _SpeechRecognitionTester(self)
+    #self.setContentsMargins(9, 9, 9, 9)
+    self.resize(400, 200)
+    dprint("pass")
+
+  def setVisible(self, t):
+    """@reimp"""
+    if t != self.isVisible() and not t:
+       self.__d.abort()
+    super(SpeechRecognitionTester, self).setVisible(t)
 
 class _SpeechRecognitionTester:
   def __init__(self, q):
     self.recording = False # bool
     self.createUi(q)
+    self.manager.setParent(q)
 
   def createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
@@ -40,6 +61,21 @@ class _SpeechRecognitionTester:
     layout.addWidget(self.textEdit)
 
     q.setLayout(layout)
+
+  @memoizedproperty
+  def manager(self):
+    import srman
+    ret = srman.SpeechRecognitionManager()
+    ret.setDetectsQuiet(True)
+    ret.setSingleShot(True)
+    ret.textReceived.connect(self.textEdit.setPlainText)
+    ret.recognitionFinished.connect(self.stop)
+
+    import netman
+    nm = netman.manager()
+    ret.setOnline(nm.isOnline())
+    nm.onlineChanged.connect(ret.setOnline)
+    return ret
 
   @staticmethod
   def createButton(text="", tip="", styleClass="btn btn-default", click=None):
@@ -60,7 +96,8 @@ class _SpeechRecognitionTester:
   @memoizedproperty
   def autoStopButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Automatically stop when silent"))
-    ret.setChecked(True)
+    ret.setChecked(self.manager.detectsQuiet())
+    ret.toggled.connect(self.manager.setDetectsQuiet)
     return ret
 
   @memoizedproperty
@@ -69,7 +106,11 @@ class _SpeechRecognitionTester:
     ret.setEditable(False)
     ret.addItems(map(i18n.language_name2, config.LANGUAGES))
     ret.setMaxVisibleItems(ret.count())
+    ret.currentIndexChanged.connect(self._saveLanguage)
     return ret
+
+  def _saveLanguage(self):
+    self.manager.setLanguage(self._getLanguage())
 
   @memoizedproperty
   def startButton(self):
@@ -101,6 +142,8 @@ class _SpeechRecognitionTester:
       self.recording = True
       self.startButton.setEnabled(False)
       self.stopButton.setEnabled(True)
+
+      self.manager.start()
       dprint("pass")
 
   def stop(self):
@@ -108,6 +151,17 @@ class _SpeechRecognitionTester:
       self.recording = False
       self.startButton.setEnabled(True)
       self.stopButton.setEnabled(False)
+
+      self.manager.stop()
+      dprint("pass")
+
+  def abort(self):
+    if self.recording:
+      self.recording = False
+      self.startButton.setEnabled(True)
+      self.stopButton.setEnabled(False)
+
+      self.manager.abort()
       dprint("pass")
 
   def _tts(self):
@@ -115,30 +169,10 @@ class _SpeechRecognitionTester:
     if text:
       lang = self._getLanguage()
       import ttsman
-      ttsman.speak(text, lang, termEnabled=False)
+      ttsman.speak(text, language=lang, termEnabled=False)
 
   def _getText(self): return self.textEdit.toPlainText()
   def _getLanguage(self): return config.LANGUAGES[self.languageEdit.currentIndex()]
-
-class SpeechRecognitionTester(QtWidgets.QDialog):
-
-  def __init__(self, parent=None):
-    WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
-    super(SpeechRecognitionTester, self).__init__(parent)
-    skqss.class_(self, 'texture')
-    self.setWindowFlags(WINDOW_FLAGS)
-    self.setWindowTitle(mytr_("Speech Recognition"))
-    self.setWindowIcon(rc.icon('window-srtest'))
-    self.__d = _SpeechRecognitionTester(self)
-    #self.setContentsMargins(9, 9, 9, 9)
-    self.resize(400, 300)
-    dprint("pass")
-
-  def setVisible(self, t):
-    """@reimp"""
-    if t != self.isVisible() and not t:
-       self.__d.stop()
-    super(SpeechRecognitionTester, self).setVisible(t)
 
 if __name__ == '__main__':
   a = debug.app()

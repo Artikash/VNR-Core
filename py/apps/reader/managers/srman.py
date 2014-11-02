@@ -20,18 +20,22 @@ class SpeechRecognitionManager(QObject):
     self.__d = _SpeechRecognitionManager(self)
 
   textReceived = Signal(unicode)
+  recognitionFinished = Signal()
 
-  def start(self): self.__d.thread.requestListen()
+  def start(self): self.__d.thread().requestListen()
 
   def stop(self):
     if self.__d._thread:
       self.__d._thread.stop()
 
-  def restart(self):
+  def abort(self):
     if self.__d._thread:
-      self.__d._thread.restart()
-    else:
-      self.start()
+      self.__d._thread.abort()
+
+  def isOnline(self): return self.__d.online
+  def setOnline(self, t):
+    if t != self.__d.online:
+      self.__d.setOnline(t)
 
   def language(self): return self.__d.language
   def setLanguage(self, v):
@@ -53,15 +57,20 @@ class _SpeechRecognitionManager:
   def __init__(self):
     self.detectsQuiet = True # bool
     self.singleShot = True # bool
-    self.language = 'ja'
+    self.online = True # bool
+    self.language = 'ja' # str
     self._thread = None # SpeechRecognitionThread
 
   def thread(self): # -> QThread
     if not self._thread:
       t = self._thread = SpeechRecognitionThread()
+      t.setOnline(self.online)
       t.setLanguage(self.language)
       t.setDetectsQuiet(self.detectsQuiet)
-      t.textReceived.connect(self.q, Qt.QueuedConnection)
+
+      q = self.q
+      t.textReceived.connect(q.textReceived, Qt.QueuedConnection)
+      t.recognitionFinished.connect(q.recognitionFinished, Qt.QueuedConnection)
 
       from PySide.QtCore import QCoreApplication
       qApp = QCoreApplication.instance()
@@ -70,6 +79,11 @@ class _SpeechRecognitionManager:
       t.start()
       dprint("create thread")
     return self._thread
+
+  def setOnline(self, t):
+    self.online = t
+    if self._thread:
+      self._thread.setOnline(t)
 
   def setLanguage(self, v):
     self.language = v
@@ -89,10 +103,11 @@ class _SpeechRecognitionManager:
 class SpeechRecognitionThread(QThread):
   listenRequested = Signal(float) # time
   textReceived = Signal(unicode) # text
+  recognitionFinished = Signal()
 
   def __init__(self, parent=None):
     super(SpeechRecognitionThread, self).__init__(parent)
-    self.__d = _SpeechRecognitionThread()
+    self.__d = _SpeechRecognitionThread(self)
 
   def run(self):
     """@reimp"""
@@ -104,22 +119,28 @@ class SpeechRecognitionThread(QThread):
     now = time()
     d = self.__d
     d.time = now
+    d.aborted = False
     self.listenRequested.emit(now)
 
   def stop(self):
     d = self.__d
-    d.time = time()
+    #d.time = time()
     d.recognizer.stopped = True
 
-  def restart(self):
-    self.__d.recognizer.stopped = True
+  def abort(self):
+    d = self.__d
+    d.time = time()
+    d.aborted = d.recognizer.stopped = True
 
   def destroy(self):
-    self.__d.recognizer.aborted = True
+    self.abort()
     self.quit()
 
+  def setOnline(self, t):
+    self.__d.recognitionEnabled = t
+
   def setLanguage(self, v):
-    self.__d.recognizer.language = v
+    self.__d.recognizer.language = v[:2] # trim language
 
   def setDetectsQuiet(self, t):
     self.__d.recognizer.detects_quiet = t
@@ -129,11 +150,13 @@ class SpeechRecognitionThread(QThread):
 
 @Q_Q
 class _SpeechRecognitionThread:
-  def __init__(self, q):
+  def __init__(self):
     self.time = 0 # float
-    self.recognizer = sr.Recognizer
+    self.recognitionEnabled = True
+    self.recognizer = sr.Recognizer()
     self.device = None # int or None  pyaudio device index
     self.singleShot = True
+    self.aborted = False
 
   def listen(self, time):
     if time < self.time: # aborted
@@ -150,23 +173,34 @@ class _SpeechRecognitionThread:
         dwarn("audio device error", e)
         return
 
-      if time < self.time: # aborted
+      if time < self.time or self.aborted: # aborted
         return
 
-      if audio:
-        try:
-          dprint("recognize start")
-          text = skthreads.runsync(partial(r.recognize, audio))
-          dprint("recognize stop")
+      if audio and self.recognitionEnabled:
+         skthreads.runasync(partial(self.recognize, audio))
 
-          if time < self.time: # aborted
-            return
-          if text:
-            self.q.textReceived.emit(text)
-        except Exception, e:
-          dwarn("network error", e)
-
-      if self.singleShot:
+      if time < self.time or self.aborted or self.singleShot:
         return
+
+  def recognize(self, audio):
+    """
+    @param  audio  googlesr.AudioData
+    """
+    if time < self.time or self.aborted or not self.recognitionEnabled: # aborted
+      return
+    q = self.q
+    dprint("recognize start")
+    try:
+      text = self.recognizer.recognize(audio)
+
+      if time < self.time or self.aborted or not self.recognitionEnabled: # aborted
+        return
+      if text:
+        q.textReceived.emit(text)
+    except Exception, e:
+      dwarn("network error", e)
+    dprint("recognize stop")
+
+    q.recognitionFinished.emit()
 
 # EOF

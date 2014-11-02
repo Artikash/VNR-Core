@@ -840,6 +840,9 @@ class _MainObject(object):
     import srman
     ret = srman.manager()
     ret.setParent(self.q)
+
+    ret.setOnline(self.networkManager.isOnline())
+    self.networkManager.onlineChanged.connect(ret.setOnline)
     return ret
 
   @memoizedproperty
@@ -1062,6 +1065,13 @@ class _MainObject(object):
   def machineTranslationTesterDialog(self):
     import mttest
     ret = mttest.MTTester(self.normalWindow)
+    self.widgets.append(ret)
+    return ret
+
+  @memoizedproperty
+  def speechRecognitionTesterDialog(self):
+    import srtest
+    ret = srtest.SpeechRecognitionTester(self.normalWindow)
     self.widgets.append(ret)
     return ret
 
@@ -1859,6 +1869,7 @@ class MainObject(QObject):
   def showYouTubeInput(self): _MainObject.showWindow(self.__d.youTubeInputDialog)
   def showDictionaryTester(self): _MainObject.showWindow(self.__d.dictionaryTesterDialog)
   def showMachineTranslationTester(self): _MainObject.showWindow(self.__d.machineTranslationTesterDialog)
+  def showSpeechRecognitionTester(self): _MainObject.showWindow(self.__d.speechRecognitionTesterDialog)
   def showJapaneseSyntaxTester(self): _MainObject.showWindow(self.__d.syntaxTesterDialog)
   def showBBCodeTester(self): _MainObject.showWindow(self.__d.bbcodeTesterDialog)
   def showRegExpTester(self): _MainObject.showWindow(self.__d.regExpTesterDialog)
@@ -2197,6 +2208,8 @@ class MainObjectProxy(QObject):
   def showDictionaryTester(self): manager().showDictionaryTester()
   @Slot()
   def showMachineTranslationTester(self): manager().showMachineTranslationTester()
+  @Slot()
+  def showSpeechRecognitionTester(self): manager().showSpeechRecognitionTester()
   @Slot()
   def showJapaneseSyntaxTester(self): manager().showJapaneseSyntaxTester()
   @Slot()
