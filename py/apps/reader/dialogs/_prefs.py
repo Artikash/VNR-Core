@@ -845,6 +845,9 @@ class _ShortcutsTab(object):
     grid.addWidget(self.grabButton, r, 0)
     grid.addWidget(self.grabCheckBox, r, 1)
     r += 1
+    grid.addWidget(self.srButton, r, 0)
+    grid.addWidget(self.srCheckBox, r, 1)
+    r += 1
 
     layout = QtWidgets.QVBoxLayout()
     layout.addLayout(grid)
@@ -937,6 +940,48 @@ class _ShortcutsTab(object):
       ret.windowTitle(), mytr_("Text-to-speech")))
     ss = settings.global_()
     ret.valueChanged.connect(ss.setTtsHotkey)
+    return ret
+
+  # Speech recognition
+
+  @memoizedproperty
+  def srButton(self):
+    ret = QtWidgets.QPushButton()
+    ret.setToolTip(mytr_("Shortcuts"))
+    ss = settings.global_()
+
+    def _refresh():
+      t = ss.srHotkey()
+      ret.setText(i18n.combined_key_name(t) if t else tr_("Not specified"))
+      skqss.class_(ret, 'btn btn-default' if t else 'btn btn-danger')
+    _refresh()
+    ss.srHotkeyChanged.connect(_refresh)
+
+    ret.clicked.connect(lambda: (
+        self.srDialog.setValue(ss.srHotkey()),
+        self.srDialog.show()))
+
+    ret.setEnabled(self.srCheckBox.isChecked())
+    self.srCheckBox.toggled.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def srCheckBox(self):
+    ret = QtWidgets.QCheckBox(my.tr("Immediately recognize current speech"))
+    ss = settings.global_()
+    ret.setChecked(ss.isSrHotkeyEnabled())
+    ret.toggled.connect(ss.setSrHotkeyEnabled)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+    return ret
+
+  @memoizedproperty
+  def srDialog(self):
+    import hkinput
+    ret = hkinput.HotkeyInputDialog(self.q)
+    ret.setWindowTitle("%s - %s" % (
+      ret.windowTitle(), mytr_("Speech recognition")))
+    ss = settings.global_()
+    ret.valueChanged.connect(ss.setSrHotkey)
     return ret
 
   # Textbox visible toggler

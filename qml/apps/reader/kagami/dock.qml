@@ -489,8 +489,14 @@ Item { id: root_
               radius: buttonCol_.cellRadius
               font.family: buttonCol_.cellFont
 
-              onClicked: {
-              }
+              onClicked:
+                if (srPlugin_.active) {
+                  if (!srPlugin_.singleShot)
+                    srPlugin_.stop()
+                } else {
+                  srPlugin_.singleShot = true
+                  srPlugin_.active = true
+                }
 
               toolTip: qsTr("Immediately recognize game speech")
             }
@@ -503,10 +509,15 @@ Item { id: root_
               radius: buttonCol_.cellRadius
               font.family: buttonCol_.cellFont
 
-              property bool checked
-              onClicked: {
-                checked = !checked
-              }
+              property bool checked: srPlugin_.active && !srPlugin_.singleShot // cached
+              onClicked:
+                if (checked) {
+                  srPlugin_.singleShot = true
+                  srPlugin_.active = false
+                } else {
+                  srPlugin_.singleShot = false
+                  srPlugin_.active = true
+                }
 
               toolTip: qsTr("Automatically recognize game speech")
             }
@@ -942,7 +953,7 @@ Item { id: root_
   onIgnoresFocusChanged: hidePopups()
 
   function hidePopups() {
-    stretchRect_.visible = ocrRect_.visible = ttsRect_.visible = false
+    stretchRect_.visible = ocrRect_.visible = ttsRect_.visible = srRect_.visible = false
   }
 
   Share.FadingRectangle { id: panel_

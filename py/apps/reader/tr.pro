@@ -33,6 +33,7 @@ SOURCES = \
   managers/netman.py \
   managers/ocrman.py \
   managers/rpcman.py \
+  managers/srman.py \
   managers/textman.py \
   managers/_trman.py \
   managers/_ttsman.py \

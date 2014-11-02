@@ -75,6 +75,11 @@ class _HotkeyManager(object):
         'on': ss.isTtsHotkeyEnabled(), # bool
         'key': ss.ttsHotkey(), # string
       },
+      'sr': { # string task name
+        'do': self._onSr, # function
+        'on': ss.isSrHotkeyEnabled(), # bool
+        'key': ss.srHotkey(), # string
+      },
       'text': { # string task name
         'do': self._onText, # function
         'on': ss.isTextHotkeyEnabled(), # bool
@@ -89,6 +94,9 @@ class _HotkeyManager(object):
 
     ss.ttsHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'tts'))
     ss.ttsHotkeyChanged.connect(partial(self.setMappingKey, 'tts'))
+
+    ss.srHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'sr'))
+    ss.srHotkeyChanged.connect(partial(self.setMappingKey, 'sr'))
 
     ss.textHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'text'))
     ss.textHotkeyChanged.connect(partial(self.setMappingKey, 'text'))
@@ -194,6 +202,18 @@ class _HotkeyManager(object):
   def _onGrab():
     import gameman
     gameman.manager().captureWindow()
+    dprint("pass")
+
+  @staticmethod
+  def _onSr():
+    import srman
+    sr = srman.manager()
+    if sr.isActive():
+      if not sr.isSingleShot():
+        sr.stop()
+    else:
+      sr.setSingleShot(True)
+      sr.start()
     dprint("pass")
 
 #@QmlObject

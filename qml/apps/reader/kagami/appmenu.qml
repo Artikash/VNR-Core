@@ -67,11 +67,6 @@ Item {
     }
 
     Desktop.MenuItem {
-      text: My.tr("Speech Recognition")
-      onTriggered: mainPlugin_.showSpeechRecognitionTester()
-    }
-
-    Desktop.MenuItem {
       text: My.tr("Test Machine Translation")
       onTriggered: mainPlugin_.showMachineTranslationTester()
     }
@@ -79,6 +74,11 @@ Item {
     Desktop.MenuItem {
       text: My.tr("Test Japanese Syntax")
       onTriggered: mainPlugin_.showJapaneseSyntaxTester()
+    }
+
+    Desktop.MenuItem {
+      text: My.tr("Speech Recognition")
+      onTriggered: mainPlugin_.showSpeechRecognitionTester()
     }
 
     Desktop.Separator {}

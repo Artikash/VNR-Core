@@ -646,6 +646,23 @@ class Settings(QSettings):
       self.setValue('GrabHotkey', value)
       self.grabHotkeyChanged.emit(value)
 
+  # Speech recognition
+  srHotkeyEnabledChanged = Signal(bool)
+  def isSrHotkeyEnabled(self):
+    return to_bool(self.value('SpeechRecognitionHotkeyEnabled', True))
+  def setSrHotkeyEnabled(self, value):
+    if value != self.isSrHotkeyEnabled():
+      self.setValue('SpeechRecognitionHotkeyEnabled', value)
+      self.srHotkeyEnabledChanged.emit(value)
+
+  srHotkeyChanged = Signal(str)
+  def srHotkey(self):
+    return self.value('SpeechRecognitionHotkey', 'Alt\nR') # alt + r, \n = hkman.HOTKEY_DELIM
+  def setSrHotkey(self, value):
+    if value != self.srHotkey():
+      self.setValue('SpeechRecognitionHotkey', value)
+      self.srHotkeyChanged.emit(value)
+
   ## TTS ##
 
   speaksGameTextChanged = Signal(bool)

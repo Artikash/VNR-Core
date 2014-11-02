@@ -4,14 +4,18 @@
 
 from functools import partial
 from time import time
-from PySide.QtCore import Qt, QObject, QThread, Signal, Property
+from PySide.QtCore import Qt, QObject, QThread, Signal, Slot, Property
 from sakurakit import skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
 from google import googlesr as sr
+from mytr import my
+import growl
 
 @memoized
 def manager(): return SpeechRecognitionManager()
+
+MAX_AUDIO_SIZE = 2000 * 1000 # max is 2MB, a sentence is normally 100k
 
 #QmlObject
 class SpeechRecognitionBean(QObject):
@@ -21,6 +25,9 @@ class SpeechRecognitionBean(QObject):
     m = manager()
     m.activeChanged.connect(self.activeChanged)
     m.singleShotChanged.connect(self.singleShotChanged)
+
+  @Slot()
+  def stop(self): manager().stop()
 
   activeChanged = Signal(bool)
   active = Property(bool,
@@ -50,7 +57,7 @@ class SpeechRecognitionManager(QObject):
     if t:
       self.start()
     else:
-      self.stop()
+      self.abort()
 
   def start(self):
     d = self.__d
@@ -58,14 +65,12 @@ class SpeechRecognitionManager(QObject):
       d.active = True
       self.activeChanged.emit(True)
       d.thread().requestListen()
+      dprint("pass")
 
   def stop(self):
-    d = self.__d
-    if d.active:
-      d.active = False
-      self.activeChanged.emit(False)
-      if d._thread:
-        d._thread.stop()
+    if self.__d._thread:
+      self.__d._thread.stop()
+    dprint("pass")
 
   def abort(self):
     d = self.__d
@@ -74,6 +79,7 @@ class SpeechRecognitionManager(QObject):
       if d._thread:
         d._thread.abort()
       self.activeChanged.emit(False)
+      dprint("pass")
 
   def isOnline(self): return self.__d.online
   def setOnline(self, t):
@@ -115,7 +121,7 @@ class _SpeechRecognitionManager:
 
       q = self.q
       t.textRecognized.connect(q.textRecognized, Qt.QueuedConnection)
-      t.recognitionFinished.connect(q.recognitionFinished, Qt.QueuedConnection)
+      t.recognitionFinished.connect(self.onRecognitionFinished, Qt.QueuedConnection)
 
       from PySide.QtCore import QCoreApplication
       qApp = QCoreApplication.instance()
@@ -124,6 +130,13 @@ class _SpeechRecognitionManager:
       t.start()
       dprint("create thread")
     return self._thread
+
+  def onRecognitionFinished(self):
+    q = self.q
+    if self.singleShot and self.active:
+      self.active = False
+      q.activeChanged.emit(False)
+    q.recognitionFinished.emit()
 
   def setOnline(self, t):
     self.online = t
@@ -182,7 +195,7 @@ class SpeechRecognitionThread(QThread):
     self.quit()
 
   def setOnline(self, t):
-    self.__d.recognitionEnabled = t
+    self.__d.enabled = t
 
   def setLanguage(self, v):
     self.__d.recognizer.language = v[:2] # trim language
@@ -197,7 +210,7 @@ class SpeechRecognitionThread(QThread):
 class _SpeechRecognitionThread:
   def __init__(self):
     self.time = 0 # float
-    self.recognitionEnabled = True
+    self.enabled = True
     self.recognizer = sr.Recognizer()
     self.device = None # int or None  pyaudio device index
     self.singleShot = True
@@ -207,7 +220,7 @@ class _SpeechRecognitionThread:
     if time < self.time: # aborted
       return
     r = self.recognizer
-    while True:
+    while self.enabled:
       try:
         with sr.Microphone(device_index=self.device) as source:
           dprint("listen start")
@@ -218,11 +231,14 @@ class _SpeechRecognitionThread:
         dwarn("audio device error", e)
         return
 
-      if time < self.time or self.aborted: # aborted
+      if time < self.time or self.aborted or not self.enabled: # aborted
         return
 
-      if audio and self.recognitionEnabled:
-         skthreads.runasync(partial(self.recognize, audio))
+      if audio and len(audio.data) < MAX_AUDIO_SIZE:
+        print len(audio.data)
+        skthreads.runasync(partial(self.recognize, audio))
+      else:
+        q.recognitionFinished.emit()
 
       if time < self.time or self.aborted or self.singleShot:
         return
@@ -231,14 +247,15 @@ class _SpeechRecognitionThread:
     """
     @param  audio  googlesr.AudioData
     """
-    if time < self.time or self.aborted or not self.recognitionEnabled: # aborted
+    if time < self.time or self.aborted or not self.enabled: # aborted
       return
     q = self.q
     dprint("recognize start")
+    text = None
     try:
       text = self.recognizer.recognize(audio)
 
-      if time < self.time or self.aborted or not self.recognitionEnabled: # aborted
+      if time < self.time or self.aborted or not self.enabled: # aborted
         return
       if text:
         q.textRecognized.emit(text)
@@ -247,5 +264,11 @@ class _SpeechRecognitionThread:
     dprint("recognize stop")
 
     q.recognitionFinished.emit()
+
+    if time < self.time or self.aborted or not self.enabled: # aborted
+      return
+
+    if not text and self.singleShot:
+      growl.msg(my.tr("Failed to recognize speech"), async=True)
 
 # EOF
