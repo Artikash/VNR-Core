@@ -347,14 +347,22 @@ if __name__ == '__main__':
 
   from pyaudio import PyAudio
   a = PyAudio()
+
+  print '==== host info'
+  for i in range(a.get_host_api_count()):
+    info = a.get_host_api_info_by_index(i)
+    print i, '------'
+    print info
+
+  print '==== device info'
   for i in range(a.get_device_count()):
     info = a.get_device_info_by_index(i)
     if info['maxInputChannels'] > 0:
       print i, '------'
       print info
 
-  #dev = None # Microphone
-  dev = 4 # Primary Sound Capture Driver
+  dev = None # Microphone
+  #dev = 4 # Primary Sound Capture Driver
   #dev = 5 # Parallels Audio Controller
 
   r = DebugRecognizer(language='ja')
