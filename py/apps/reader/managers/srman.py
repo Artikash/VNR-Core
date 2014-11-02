@@ -17,13 +17,22 @@ def manager(): return SpeechRecognitionManager()
 class SpeechRecognitionBean(QObject):
   def __init__(self, parent=None):
     super(SpeechRecognitionBean, self).__init__(parent)
-    manager().activeChanged.connect(self.activeChanged)
+
+    m = manager()
+    m.activeChanged.connect(self.activeChanged)
+    m.singleShotChanged.connect(self.singleShotChanged)
 
   activeChanged = Signal(bool)
   active = Property(bool,
       lambda _: manager().isActive(),
       lambda _, t: manager().setActive(t),
       notify=activeChanged)
+
+  singleShotChanged = Signal(bool)
+  singleShot = Property(bool,
+      lambda _: manager().isSingleShot(),
+      lambda _, t: manager().setSingleShot(t),
+      notify=singleShotChanged)
 
 class SpeechRecognitionManager(QObject):
 
@@ -32,7 +41,8 @@ class SpeechRecognitionManager(QObject):
     self.__d = _SpeechRecognitionManager(self)
 
   activeChanged = Signal(bool)
-  textReceived = Signal(unicode)
+  singleShotChanged = Signal(bool)
+  textRecognized = Signal(unicode)
   recognitionFinished = Signal()
 
   def isActive(self): return self.__d.active
@@ -84,6 +94,7 @@ class SpeechRecognitionManager(QObject):
   def setSingleShot(self, t):
     if t != self.__d.singleShot:
       self.__d.setSingleShot(t)
+      self.singleShotChanged.emit(t)
 
 @Q_Q
 class _SpeechRecognitionManager:
@@ -103,7 +114,7 @@ class _SpeechRecognitionManager:
       t.setDetectsQuiet(self.detectsQuiet)
 
       q = self.q
-      t.textReceived.connect(q.textReceived, Qt.QueuedConnection)
+      t.textRecognized.connect(q.textRecognized, Qt.QueuedConnection)
       t.recognitionFinished.connect(q.recognitionFinished, Qt.QueuedConnection)
 
       from PySide.QtCore import QCoreApplication
@@ -136,7 +147,7 @@ class _SpeechRecognitionManager:
 
 class SpeechRecognitionThread(QThread):
   listenRequested = Signal(float) # time
-  textReceived = Signal(unicode) # text
+  textRecognized = Signal(unicode) # text
   recognitionFinished = Signal()
 
   def __init__(self, parent=None):
@@ -230,7 +241,7 @@ class _SpeechRecognitionThread:
       if time < self.time or self.aborted or not self.recognitionEnabled: # aborted
         return
       if text:
-        q.textReceived.emit(text)
+        q.textRecognized.emit(text)
     except Exception, e:
       dwarn("network error", e)
     dprint("recognize stop")

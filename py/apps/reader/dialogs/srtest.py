@@ -68,7 +68,7 @@ class _SpeechRecognitionTester:
     ret = srman.SpeechRecognitionManager()
     ret.setDetectsQuiet(True)
     ret.setSingleShot(True)
-    ret.textReceived.connect(self.textEdit.setPlainText)
+    ret.textRecognized.connect(self.textEdit.setPlainText)
     ret.recognitionFinished.connect(self.stop)
 
     import netman

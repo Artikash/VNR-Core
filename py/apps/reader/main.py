@@ -845,6 +845,9 @@ class _MainObject(object):
     self.networkManager.onlineChanged.connect(ret.setOnline)
 
     self.gameManager.processDetached.connect(ret.abort)
+
+    ret.textRecognized.connect(self.textManager.addRecognizedText)
+
     return ret
 
   @memoizedproperty
