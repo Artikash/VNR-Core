@@ -249,7 +249,7 @@ class Recognizer(object):
       # Always detects quiet
       #if self.detects_quiet:
       # check if the audio input has stopped being quiet
-      energy = audioop.rms(buffer, source.SAMPLE_WIDTH) # energy of the audio signal
+      energy = audioop.rms(buffer, source.SAMPLE_WIDTH) # energy of the audio signal, https://en.wikipedia.org/wiki/Root_mean_square
       if energy > self.energy_threshold:
         break
 
