@@ -12,19 +12,9 @@ if __name__ == '__main__':
 import requests
 from sakurakit.skdebug import dwarn, derror
 from sakurakit.skstr import unescapehtml
+import googledef
 
 session = requests # global session
-
-_LOCALES = {
-  'zht': 'zh-TW',
-  'zhs': 'zh-CN',
-}
-def _locale(lang):
-  """
-  @param  lang  unicode
-  @return  unicode
-  """
-  return _LOCALES.get(lang) or lang
 
 #def defaultapi(): return 'http://translate.google.com/m' # this will redirect to https
 def defaultapi(): return 'https://translate.google.com/m'
@@ -53,8 +43,8 @@ def translate(t, to='auto', fr='auto'):
   """
   try:
     r = session.get(GOOGLE_TRANS_API, headers=GOOGLE_HEADERS, params={
-      'hl': _locale(to),
-      'sl': _locale(fr),
+      'hl': googledef.lang2locale(to),
+      'sl': googledef.lang2locale(fr),
       'q': t,
     })
 

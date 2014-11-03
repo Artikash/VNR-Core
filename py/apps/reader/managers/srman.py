@@ -8,7 +8,7 @@ from PySide.QtCore import Qt, QObject, QThread, Signal, Slot, Property
 from sakurakit import skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
-from google import googlesr as sr
+from google import googledef, googlesr
 from mytr import my
 import growl
 
@@ -217,7 +217,7 @@ class SpeechRecognitionThread(QThread):
     self.__d.deviceIndex = v
 
   def setLanguage(self, v):
-    self.__d.recognizer.language = v[:2] # trim language
+    self.__d.recognizer.language = googledef.lang2locale(v)
 
   def setDetectsQuiet(self, t):
     self.__d.recognizer.detects_quiet = t
@@ -230,7 +230,7 @@ class _SpeechRecognitionThread(object):
   def __init__(self):
     self.time = 0 # float
     self.enabled = True
-    self.recognizer = sr.Recognizer()
+    self.recognizer = googlesr.Recognizer()
     self.singleShot = True
     self.aborted = False
     self.deviceIndex = 0 # int or None
@@ -242,7 +242,7 @@ class _SpeechRecognitionThread(object):
     r = self.recognizer
     while self.enabled:
       try:
-        with sr.Microphone(device_index=self.deviceIndex) as source:
+        with googlesr.Microphone(device_index=self.deviceIndex) as source:
           dprint("listen start")
           r.stopped = False
           audio = r.listen(source)
