@@ -114,6 +114,12 @@ class _SpeechRecognitionTester:
     ret.setEditable(False)
     ret.addItems(map(i18n.language_name2, config.LANGUAGES))
     ret.setMaxVisibleItems(ret.count())
+
+    import settings
+    try: langIndex = config.LANGUAGES.index(settings.global_().speechRecognitionLanguage())
+    except ValueError: langIndex = 0 # 'ja'
+    ret.setCurrentIndex(langIndex)
+
     ret.currentIndexChanged.connect(self._saveLanguage)
     return ret
 
