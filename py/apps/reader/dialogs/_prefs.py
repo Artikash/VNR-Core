@@ -1904,12 +1904,17 @@ You can specify some keyboard shortcuts in Preferences/Shortcuts."""))
     ret.setEditable(False)
     ret.addItems(map(i18n.language_name2, config.LANGUAGES))
     ret.setMaxVisibleItems(ret.count())
+
+    try: langIndex = config.LANGUAGES.index(settings.global_().speechRecognitionLanguage())
+    except ValueError: langIndex = 0 # 'ja'
+    ret.setCurrentIndex(langIndex)
+
     ret.currentIndexChanged.connect(self._saveLanguage)
     return ret
 
   def _saveLanguage(self):
     lang = config.LANGUAGES[self.languageEdit.currentIndex()]
-    self.manager.setLanguage(lang)
+    settings.global_().setSpeechRecognitionLanguage(lang)
 
 class SrTab(QtWidgets.QDialog):
 
