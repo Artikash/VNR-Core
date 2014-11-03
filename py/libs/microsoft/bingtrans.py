@@ -11,22 +11,11 @@ import json, re, requests
 from sakurakit.skdebug import dprint, dwarn, derror
 from sakurakit.sknetio import GZIP_HEADERS
 from sakurakit.skstr import unescapehtml
+import bingdef
 
 session = requests # global session
 
 API = "http://api.microsofttranslator.com/v2/ajax.svc/TranslateArray2"
-
-# See: http://msdn.microsoft.com/en-us/library/hh456380.aspx
-MS_LCODE = {
-  'zht': 'zh-CHT',
-  'zhs': 'zh-CHS',
-}
-def _lcode(lang):
-  """
-  @param  lang  unicode
-  @return  unicode
-  """
-  return MS_LCODE.get(lang) or lang
 
 def translate(appId, text, to='en', fr='ja'):
   """Return translated text, which is NOT in unicode format
@@ -51,8 +40,8 @@ def translate(appId, text, to='en', fr='ja'):
       #headers=GZIP_HEADERS,
       params={
         'appId': '"%s"' % appId,
-        'from': '"%s"' % _lcode(fr),
-        'to': '"%s"' % _lcode(to),
+        'from': '"%s"' % bingdef.lang2locale(fr),
+        'to': '"%s"' % bingdef.lang2locale(to),
         'texts': '["%s"]' % '","'.join(text.replace('\\', '\\\\').replace('"', '\\"').split('\n')),
       }
     )
