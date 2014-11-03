@@ -98,6 +98,7 @@ processes:
   - KHALMNPR.exe        # Logitech
   - KuGou.exe           # Kugou
   - MacDrive.exe        # MacDrive
+  #- MangaMeeya.exe      # Manga reader
   - mousegesture.exe    # Sogou
   - netbeans.exe        # NetBeans
   - notepad++.exe       # Notepad++
