@@ -7,11 +7,18 @@
 #
 # Alternative: AT&T recognition: http://www.wilsonmar.com/speech_to_text.htm
 
+__all__ = 'Microphone', 'Recognizer'
+
+if __name__ == '__main__':
+  import sys
+  sys.path.append('..')
+
 import audioop, collections, io, json, math, wave
 #try: from urllib2 import Request, urlopen # try to use python2 module
 #except ImportError: from urllib.request import Request, urlopen # otherwise, use python3 module
 from urllib2 import Request, urlopen
 import pyaudio
+from sakurakit.skdebug import dprint
 
 #def defaultapi(): return 'http://translate.google.com/m' # this will redirect to https
 def defaultapi(): return "http://www.google.com/speech-api/v2/recognize"
@@ -128,6 +135,8 @@ class Recognizer(object):
   key = GOOGLE_API_KEY # str
 
   energy_threshold = 100 # minimum audio energy to consider for recording
+  #energy_threshold = 0 # 11/2/2014: Tuned for Soundflower
+
   pause_threshold = 0.8 # seconds of quiet time before a phrase is considered complete
   quiet_duration = 0.5 # amount of quiet time to keep on both sides of the recording
 
@@ -221,6 +230,8 @@ class Recognizer(object):
     quiet_buffer_count = int(math.ceil(self.quiet_duration / seconds_per_buffer)) # maximum number of buffers of quiet audio to retain before and after
     elapsed_time = 0
 
+    dprint("start")
+
     # store audio input until the phrase starts
     while not self.stopped:
       if self.aborted:
@@ -245,6 +256,8 @@ class Recognizer(object):
       if len(frames) > quiet_buffer_count: # ensure we only keep the needed amount of quiet buffers
         frames.popleft()
 
+    dprint("recording")
+
     # read audio input until the phrase ends
     pause_count = 0
     while not self.stopped:
@@ -265,6 +278,8 @@ class Recognizer(object):
         if pause_count > pause_buffer_count: # end of the phrase
           pause_count = pause_buffer_count
           break
+
+    dprint("stop")
 
     # remove extra quiet frames at the end
     if pause_count:
@@ -371,7 +386,14 @@ if __name__ == '__main__':
   #dev = 5 # Parallels Audio Controller
 
   r = DebugRecognizer(language='ja')
-  #r.detects_quiet = False
+
+  import sys, signal
+  def signal_handler(signal, frame):
+    print('You pressed Ctrl+C!')
+    r.stopped = True
+  signal.signal(signal.SIGINT, signal_handler)
+
+  r.detects_quiet = False
   with Microphone(device_index=dev) as source:                # use the default microphone as the audio source
     print "listen start"
     audio = r.listen(source)                   # listen for the first phrase and extract it into audio data
