@@ -54,6 +54,7 @@ class SpeechRecognitionManager(QObject):
 
   def isActive(self): return self.__d.active
   def setActive(self, t):
+    dprint(t)
     if t:
       self.start()
     else:
@@ -111,7 +112,7 @@ class SpeechRecognitionManager(QObject):
       dprint(t)
 
 @Q_Q
-class _SpeechRecognitionManager:
+class _SpeechRecognitionManager(object):
   def __init__(self):
     self.active = False
     self.detectsQuiet = True # bool
@@ -225,7 +226,7 @@ class SpeechRecognitionThread(QThread):
     self.__d.singleShot = t
 
 @Q_Q
-class _SpeechRecognitionThread:
+class _SpeechRecognitionThread(object):
   def __init__(self):
     self.time = 0 # float
     self.enabled = True
