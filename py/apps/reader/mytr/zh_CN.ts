@@ -34,22 +34,22 @@
         <translation>社区评论</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="219"/>
+        <location filename="mytr.py" line="220"/>
         <source>Auto Hide</source>
         <translation>自动隐藏</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="220"/>
+        <location filename="mytr.py" line="221"/>
         <source>Edit Subtitle</source>
         <translation>编辑字幕</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="222"/>
+        <location filename="mytr.py" line="223"/>
         <source>New subtitle</source>
         <translation>新字幕</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="221"/>
+        <location filename="mytr.py" line="222"/>
         <source>New comment</source>
         <translation>新评论</translation>
     </message>
@@ -99,7 +99,7 @@
         <translation>文本序列</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="228"/>
+        <location filename="mytr.py" line="229"/>
         <source>Sync with Running Game</source>
         <translation>与运行中的游戏同步</translation>
     </message>
@@ -109,22 +109,22 @@
         <translation>背景阴影</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="223"/>
+        <location filename="mytr.py" line="224"/>
         <source>Add comment</source>
         <translation>添加评论</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="223"/>
+        <location filename="mytr.py" line="224"/>
         <source>add comment</source>
         <translation>添加评论</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="224"/>
+        <location filename="mytr.py" line="225"/>
         <source>Add subtitle</source>
         <translation>添加字幕</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="224"/>
+        <location filename="mytr.py" line="225"/>
         <source>add subtitle</source>
         <translation>添加字幕</translation>
     </message>
@@ -164,7 +164,7 @@
         <translation>语音</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="226"/>
+        <location filename="mytr.py" line="227"/>
         <source>Read Sentence</source>
         <translation>读出句子</translation>
     </message>
@@ -234,17 +234,17 @@
         <translation>{0}本游戏</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="229"/>
+        <location filename="mytr.py" line="230"/>
         <source>Update Shared Dictionary</source>
         <translation>更新共享辞书</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="230"/>
+        <location filename="mytr.py" line="231"/>
         <source>Update Shared Subtitles</source>
         <translation>更新人工字幕</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="231"/>
+        <location filename="mytr.py" line="232"/>
         <source>Update Game Database</source>
         <translation>更新游戏数据</translation>
     </message>
@@ -404,12 +404,12 @@
         <translation>对话</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="216"/>
+        <location filename="mytr.py" line="217"/>
         <source>Monitor mouse</source>
         <translation>监视鼠标移动</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="217"/>
+        <location filename="mytr.py" line="218"/>
         <source>Monitor clipboard</source>
         <translation>监视剪贴板</translation>
     </message>
@@ -574,12 +574,12 @@
         <translation>{0}人正在浏览这个页面</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="213"/>
+        <location filename="mytr.py" line="214"/>
         <source>Open in external browser</source>
         <translation>用外部的浏览器打开</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="214"/>
+        <location filename="mytr.py" line="215"/>
         <source>Open in external window</source>
         <translation>用外部的窗口打开</translation>
     </message>
@@ -644,19 +644,14 @@
         <translation>易懂</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="232"/>
+        <location filename="mytr.py" line="233"/>
         <source>Update Translation Scripts</source>
         <translation>更新翻译脚本</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="233"/>
+        <location filename="mytr.py" line="234"/>
         <source>Reload Translation Scripts</source>
         <translation>重新载入翻译脚本</translation>
-    </message>
-    <message>
-        <location filename="mytr.py" line="204"/>
-        <source>Recognition</source>
-        <translation type="obsolete">光学识别</translation>
     </message>
     <message>
         <location filename="mytr.py" line="208"/>
@@ -789,12 +784,12 @@
         <translation>日本汉字</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="210"/>
+        <location filename="mytr.py" line="211"/>
         <source>Speech recognition</source>
         <translation>语音识别</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="211"/>
+        <location filename="mytr.py" line="212"/>
         <source>Speech Recognition</source>
         <translation>语音识别</translation>
     </message>
@@ -809,14 +804,19 @@
         <translation>测试语音识别</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="177"/>
-        <source>SR</source>
-        <translation>语音识别</translation>
-    </message>
-    <message>
         <location filename="mytr.py" line="52"/>
         <source>Replay</source>
         <translation>再生</translation>
+    </message>
+    <message>
+        <location filename="mytr.py" line="177"/>
+        <source>ASR</source>
+        <translation>语音识别</translation>
+    </message>
+    <message>
+        <location filename="mytr.py" line="210"/>
+        <source>Automatic speech recognition</source>
+        <translation>自动语音识别</translation>
     </message>
 </context>
 </TS>

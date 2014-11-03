@@ -174,7 +174,7 @@ class reader(QObject):
 
       self.tr("TTS"),
       self.tr("OCR"),
-      self.tr("SR"),
+      self.tr("ASR"),
 
       self.tr("Input"),
       self.tr("Output"),
@@ -207,6 +207,7 @@ class reader(QObject):
       #self.tr("Recognition"),
       self.tr("Optical character recognition"),
 
+      self.tr("Automatic speech recognition"),
       self.tr("Speech recognition"),
       self.tr("Speech Recognition"),
 
