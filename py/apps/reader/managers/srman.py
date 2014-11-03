@@ -129,6 +129,7 @@ class _SpeechRecognitionManager(object):
       t.setLanguage(self.language)
       t.setDeviceIndex(self.deviceIndex)
       t.setDetectsQuiet(self.detectsQuiet)
+      t.setSingleShot(self.singleShot)
 
       q = self.q
       t.textRecognized.connect(q.textRecognized, Qt.QueuedConnection)
