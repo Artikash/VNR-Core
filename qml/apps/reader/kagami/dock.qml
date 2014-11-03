@@ -437,7 +437,7 @@ Item { id: root_
 
       Share.TextButton { id: srButton_
         height: parent.cellHeight; width: parent.cellWidth
-        text: slimChecked ? "音" : "SR"
+        text: slimChecked ? "音" : "ASR"
         font.pixelSize: parent.pixelSize
         //font.bold: true
         backgroundColor: !enabled ? parent.buttonDisabledColor :
@@ -457,7 +457,7 @@ Item { id: root_
         //onEnabledChanged:
         //  if (!enabled) checked = false
 
-        toolTip: qsTr("Recognize text from game speech")
+        toolTip: qsTr("Automatic speech recognition from game audio")
         onClicked:
           if (enabled)
             srRect_.visible = !srRect_.visible
