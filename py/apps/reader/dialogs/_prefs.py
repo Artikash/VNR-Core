@@ -1839,7 +1839,8 @@ class _SrTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.aboutGroup)
     layout.addWidget(self.languageGroup)
-    layout.addWidget(self.deviceGroup)
+    if audioinfo.inputdevices():
+      layout.addWidget(self.deviceGroup)
     layout.addStretch()
     q.setLayout(layout)
 
