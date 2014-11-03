@@ -51,7 +51,7 @@ class SearchApi(object):
   def _fetch(self, url):
     """
     @param  url  str
-    @return  str not int
+    @return  str
     """
     return sknetio.getdata(url, gzip=True, session=self.session) #, cookies=self.COOKIES)
 
