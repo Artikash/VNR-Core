@@ -856,7 +856,7 @@ class _MainObject(object):
     ret.setDeviceIndex(dev)
     ss.audioDeviceIndexChanged.connect(ret.setDeviceIndex)
 
-    ret.setLanguage(ss.speechRecognitionLanguage)
+    ret.setLanguage(ss.speechRecognitionLanguage())
     ss.speechRecognitionLanguageChanged.connect(ret.setLanguage)
     return ret
 
