@@ -489,7 +489,7 @@ class GameManager
 
     scoreColor = (
       unless g.scapeMedian then '' # gray
-      else if g.scapeCount < 10 then 'b' # black
+      else if g.scapeCount < 5 then 'b' # black
       else if g.scapeMedian >= 90 or g.scapeCount > 500 then 'o' # orange
       else if g.scapeMedian >= 80 or g.scapeCount > 300 then 'r' # red
       else if g.scapeMedian >= 70 or g.scapeCount > 100 then 'g' # green
