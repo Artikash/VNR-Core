@@ -424,6 +424,7 @@ utf8:
 
 # List of game engine that allows focus
 focus:
+  - Adobe Flash 10
   - KAGParser
   - KiriKiriZ
   - SiglusEngine2
