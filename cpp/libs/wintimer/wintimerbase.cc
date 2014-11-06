@@ -7,7 +7,7 @@
 #else
 # include <windows.h>
 #endif // QT_CORE_LIB
-#include "cc/ccmacro.h"
+#include "ccutil/ccmacro.h"
 
 //#define DEBUG "wintimerbase.cc"
 #include "sakurakit/skdebug.h"

@@ -15,7 +15,7 @@
 #include "ith/sys/sys.h"
 #include "ith/common/except.h"
 #include "ith/common/growl.h"
-#include "cc/ccmacro.h"
+#include "ccutil/ccmacro.h"
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 

@@ -6,7 +6,7 @@
 #include "modiocr/modiocr.h"
 #include "wincom/wincomptr.h"
 #include "modi/mdivwctl.h"
-#include "cc/ccmacro.h"
+#include "ccutil/ccmacro.h"
 
 //#import "C:\\Program Files\\Common Files\\Microsoft Shared\\MODI\\11.0\\MDIVWCTL.DLL"
 //#import "C:\\Program Files\\Common Files\\Microsoft Shared\\MODI\\12.0\\MDIVWCTL.DLL"

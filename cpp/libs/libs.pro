@@ -7,7 +7,7 @@ SUBDIRS += qtprivate
 win32: SUBDIRS += disasm wintimer
 
 include(avrec/avrec.pri)
-include(cc/cc.pri)
+include(ccutil/ccutil.pri)
 include(cpputil/cpputil.pri)
 include(disasm/disasm.pri)
 include(htmldefs/htmldefs.pri)

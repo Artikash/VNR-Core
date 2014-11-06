@@ -18,7 +18,7 @@
 #include "ith/common/types.h"
 #include "ith/sys/sys.h"
 #include "winmaker/winmaker.h"
-#include "cc/ccmacro.h"
+#include "ccutil/ccmacro.h"
 //#include <commctrl.h>
 
 //#define ITH_WINE

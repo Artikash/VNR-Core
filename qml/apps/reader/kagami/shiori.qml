@@ -293,18 +293,23 @@ Rectangle { id: root_
     //textEdit_.width = _DEFAULT_WIDTH
   }
 
+  property bool locked: false
   function popup(text, x, y) {
-    if (!root_.enabled)
+    if (!root_.enabled || root_.locked)
       return
+    root_.locked = true
     var html = bean_.render(text)
-    if (!html) // thread contention, ignore
+    if (!html) { // thread contention, ignore
+      root_.locked = false
       return
+    }
     reset()
     root_.x = x + _X_OFFSET; root_.y = y + _Y_OFFSET
     textEdit_.text = html
     //textEdit_.text = bean_.render(text)
     ensureVisible()
     show()
+    root_.locked = false
   }
 
   // So that the popup will not be out of screen

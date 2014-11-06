@@ -4,7 +4,7 @@
 #include "wintts/wintts.h"
 #include <windows.h>
 #include <sapi.h>
-#include "cc/ccmacro.h"
+#include "ccutil/ccmacro.h"
 
 wintts_t *wintts_create()
 {

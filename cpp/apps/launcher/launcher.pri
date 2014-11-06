@@ -6,7 +6,6 @@ INCLUDEPATH += $$PWD/include
 DEPENDPATH  += $$PWD/include
 
 HEADERS += \
-  $$PWD/include/cc/ccmacro.h \
   $$PWD/include/main.tcc \
   $$PWD/include/pymain.tcc
 

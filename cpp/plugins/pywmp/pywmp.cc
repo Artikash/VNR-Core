@@ -3,7 +3,7 @@
 
 #include "pywmp/pywmp.h"
 #include "wmpcli/wmpcli.h"
-#include "cc/ccmacro.h"
+#include "ccutil/ccmacro.h"
 
 /** Private class */
 

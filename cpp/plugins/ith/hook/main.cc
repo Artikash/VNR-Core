@@ -16,7 +16,7 @@
 #include "ith/common/except.h"
 //#include "ith/common/growl.h"
 #include "ith/sys/sys.h"
-#include "cc/ccmacro.h"
+#include "ccutil/ccmacro.h"
 //#include "ntinspect/ntinspect.h"
 //#include "winseh/winseh.h"
 //#include <boost/foreach.hpp>

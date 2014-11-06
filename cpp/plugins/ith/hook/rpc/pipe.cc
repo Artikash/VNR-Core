@@ -12,7 +12,7 @@
 #include "ith/common/defs.h"
 //#include "ith/common/growl.h"
 #include "ith/sys/sys.h"
-#include "cc/ccmacro.h"
+#include "ccutil/ccmacro.h"
 
 //#include <ITH\AVL.h>
 //#include <ITH\ntdll.h>
