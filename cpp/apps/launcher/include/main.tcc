@@ -1,6 +1,6 @@
 // main.tcc
 // 9/3/2011 jichi
-#include "cc/ccmacro.h"
+#include "ccutil/ccmacro.h"
 #include <windows.h>
 #include <string>
 #include <memory>

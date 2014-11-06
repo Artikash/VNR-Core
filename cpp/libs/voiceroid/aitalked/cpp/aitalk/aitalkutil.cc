@@ -4,7 +4,7 @@
 #include "aitalk/aitalkapi.h"
 #include "aitalk/aitalkmarshal.h"
 #include "cpputil/cpppath.h"
-#include "cc/ccmacro.h"
+#include "ccutil/ccmacro.h"
 #include <windows.h>
 #include <cstring>
 //#include <iostream>

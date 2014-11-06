@@ -165,6 +165,8 @@ Item { id: root_
 
   // - Private -
 
+  property bool mouseLocked: false // click locked
+
   function removeHtmlTags(text) { // string ->  string  remove HTML tags
     return text.replace(/<[0-9a-zA-Z: "/:=-]+>/g, '')
   }
@@ -989,6 +991,9 @@ Item { id: root_
           }
 
           onClicked: {
+            if (root_.mouseLocked)
+              return
+            root_.mouseLocked = true
             if (model.language) {
               textEdit_.cursorPosition = textEdit_.positionAt(mouse.x, mouse.y)
               textEdit_.selectWord()
@@ -1007,9 +1012,13 @@ Item { id: root_
                   ttsPlugin_.speak(t, model.language)
               }
             }
+            root_.mouseLocked = false
           }
 
-          onDoubleClicked:
+          onDoubleClicked: {
+            if (root_.mouseLocked)
+              return
+            root_.mouseLocked = true
             if (model.language) {
               var t = model.text
               if (t) {
@@ -1021,6 +1030,8 @@ Item { id: root_
                 ttsPlugin_.speak(t, model.language)
               }
             }
+            root_.mouseLocked = false
+          }
         }
 
         Desktop.TooltipArea { id: toolTip_

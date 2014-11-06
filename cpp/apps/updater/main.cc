@@ -1,6 +1,6 @@
 // main.cc
 // 10/6/2012 jichi
-#include "cc/ccmacro.h"
+#include "ccutil/ccmacro.h"
 #include <windows.h>
 #include <string>
 #include <memory>

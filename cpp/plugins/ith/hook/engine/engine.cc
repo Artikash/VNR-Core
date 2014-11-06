@@ -17,7 +17,8 @@
 #include "ntinspect/ntinspect.h"
 #include "disasm/disasm.h"
 #include "winversion/winversion.h"
-#include "cc/ccmacro.h"
+#include "cpputil/cppstring.h"
+#include "ccutil/ccmacro.h"
 
 // jichi 7/6/2014: read esp_base
 #define retof(esp_base)         *(DWORD *)(esp_base) // return address
@@ -213,6 +214,63 @@ bool all_ascii(const char *s)
   return true;
 }
 
+// String filters
+
+bool CharFilter(char *str, size_t *size, char ch)
+{
+  size_t len = *size;
+  char *cur = cpp_strnchr(str, len, ch);
+  while (cur) {
+    len--;
+    // Shift array
+    ::memmove(cur, cur + 1, (len - (cur - str) + 1)); // +1 to copy \0
+    cur = cpp_strnchr(cur, len, ch);
+  }
+  *size = len;
+  return true;
+}
+
+bool WideCharFilter(wchar_t *str, size_t *size, wchar_t ch)
+{
+  size_t len = *size / 2;
+  wchar_t *cur = cpp_wcsnchr(str, len, ch);
+  while (cur) {
+    len--;
+    // Shift array
+    ::memmove(cur, cur + 1, 2 * (len - (cur - str) + 1)); // +1 to copy \0
+    cur = cpp_wcsnchr(cur, len, ch);
+  }
+  *size = len * 2;
+  return true;
+}
+
+bool StringFilter(char *str, size_t *size, const char *remove, size_t removelen)
+{
+  size_t len = *size;
+  char *cur = cpp_strnstr(str, len, remove);
+  while (cur) {
+    len -= removelen;
+    // Shift array
+    ::memmove(cur, cur + removelen, (len - (cur - str) + 1)); // +1 to copy \0
+    cur = cpp_strnstr(cur, len, remove);
+  }
+  *size = len;
+  return true;
+}
+
+bool WideStringFilter(wchar_t *str, size_t *size, const wchar_t *remove, size_t removelen)
+{
+  size_t len = *size / 2;
+  wchar_t *cur = cpp_wcsnstr(str, len, remove);
+  while (cur) {
+    len -= removelen;
+    // Shift array
+    ::memmove(cur, cur + removelen, 2 * (len - (cur - str) + 1)); // +1 to copy \0
+    cur = cpp_wcsnstr(cur, len, remove);
+  }
+  *size = len * 2;
+  return true;
+}
 } // unnamed namespace
 
 namespace Engine {
@@ -433,20 +491,8 @@ namespace { // unnamed
 bool KAGParserFilter(LPVOID data, DWORD *size, HookParam *hp)
 {
   CC_UNUSED(hp);
-  const LPCWSTR GARBAGE = L"[r]";
-  enum { GARBAGE_LEN = 3 };
-  LPWSTR str = reinterpret_cast<LPWSTR>(data);
-
-  LPWSTR cur = ::wcsstr(str, GARBAGE);
-  size_t len = *size / 2;
-  while (cur) {
-    len -= GARBAGE_LEN;
-    // Shift array
-    ::memmove(cur, cur + GARBAGE_LEN, 2 * (len - (cur - str) + 1)); // +1 to copy \0
-    cur = ::wcsstr(cur, GARBAGE);
-  }
-  *size = len * 2;
-  return true;
+  return WideStringFilter(reinterpret_cast<LPWSTR>(data), reinterpret_cast<size_t *>(size),
+                          L"[r]", 3);
 }
 
 void SpecialHookKAGParser(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
@@ -2953,22 +2999,12 @@ bool InsertCircusHook1() // jichi 10/2/2013: Change return type to bool
  *  004201fd  \. c3             retn
  */
 // jichi 10/24/2014: Remove '\n' for CIRCUS game
-static bool NewLineFilter(LPVOID data, DWORD *size, HookParam *hp)
-{
-  CC_UNUSED(hp);
-  enum : wchar_t { GARBAGE = L'\n' };
-  LPWSTR str = reinterpret_cast<LPWSTR>(data);
-  LPWSTR cur = ::wcschr(str, GARBAGE);
-  size_t len = *size / 2;
-  while (cur) {
-    len--;
-    // Shift array
-    ::memmove(cur, cur + 1, 2 * (len - (cur - str) + 1)); // +1 to copy \0
-    cur = ::wcschr(cur, GARBAGE);
-  }
-  *size = len * 2;
-  return true;
-}
+// Disabled as the garbage could be "\n " instead of '\n'
+//static bool CircusNewLineFilter(LPVOID data, DWORD *size, HookParam *hp)
+//{
+//  CC_UNUSED(hp);
+//  return CharFilter(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size), '\n');
+//}
 bool InsertCircusHook2() // jichi 10/2/2013: Change return type to bool
 {
   for (DWORD i = module_base_ + 0x1000; i < module_limit_ -4; i++)
@@ -2977,7 +3013,7 @@ bool InsertCircusHook2() // jichi 10/2/2013: Change return type to bool
         HookParam hp = {};
         hp.addr = j;
         hp.off = 0x8;
-        hp.filter_fun = NewLineFilter;
+        //hp.filter_fun = CircusNewLineFilter;
         hp.type = USING_STRING;
         ConsoleOutput("vnreng: INSERT CIRCUS#2");
         //ITH_GROWL_DWORD(hp.addr); // jichi 6/5/2014: 0x4201d0 for DC3
