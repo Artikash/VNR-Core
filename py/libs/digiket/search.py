@@ -61,7 +61,8 @@ class SearchApi(object):
     @param  path  str  such as 'game', 'b' (BL)
     @yield  {kw}
     """
-    text = text.encode(self.ENCODING, errors='ignore')
+    #text = text.encode(self.ENCODING, errors='ignore')
+    text = sknetio.topercentencoding(text, encoding=self.ENCODING)
     if text and path:
       url = self._makeurl(text=text, path=path, limit=limit, sort=sort)
       h = self._fetch(url)

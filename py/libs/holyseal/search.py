@@ -46,7 +46,8 @@ class SearchApi(object):
     @param  text  unicode
     @return  {kw} or None
     """
-    text = text.encode(self.ENCODING, errors='ignore')
+    #text = text.encode(self.ENCODING, errors='ignore')
+    text = sknetio.topercentencoding(text, encoding=self.ENCODING)
     if text:
       url = self._makeurl(text)
       h = self._fetch(url)
