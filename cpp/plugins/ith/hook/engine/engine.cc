@@ -606,8 +606,6 @@ static void KiriKiriZHook(DWORD esp_base, HookParam *hp)
       return;
     }
 
-    //ITH_GROWL_DWORD2(retaddr, funaddr);
-
     HookParam hp = {};
     hp.addr = addr;
     hp.off = pusha_ecx_off - 4;
@@ -1121,6 +1119,10 @@ bool InsertBGI2Hook()
 
   ConsoleOutput("vnreng: INSERT BGI2");
   NewHook(hp, L"BGI2");
+
+  // Disable TextOutA, which is cached and hence missing characters.
+  ConsoleOutput("vnreng:BGI2: disable GDI hooks");
+  DisableGDIHooks();
   return true;
 }
 
@@ -8185,6 +8187,9 @@ bool InsertExpHook()
  *  Debug method: Hex utf16 text, then insert hw breakpoints
  *    21:51 3110% hexstr 『何よ utf16
  *    0e30554f8830
+ *
+ *  There are also UTF-8 strings in the memory. I could not find a good place to hook
+ *  using hw breakpoints.
  *
  *  There are lots of matches. One is selected. Then, the enclosing function is selected.
  *  arg1 is the UNICODE text.
