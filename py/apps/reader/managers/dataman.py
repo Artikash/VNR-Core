@@ -7301,7 +7301,7 @@ class _DataManager(object):
     try: self._saveTermsTimer.start()
     except AttributeError:
       t = self._saveTermsTimer = QTimer(self.q)
-      t.setInterval(60 * 1000) # in 1 minute
+      t.setInterval(30 * 1000) # in 30 seconds
       t.setSingleShot(True)
       t.timeout.connect(self.saveTerms)
       t.start()
