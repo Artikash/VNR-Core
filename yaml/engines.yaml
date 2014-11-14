@@ -140,6 +140,7 @@ simple:
   - Elf
   - Eushully
   - FELISTELLA PSP
+  - HorkEye
   - Intense PSP
   - Imageepoch2 PSP
   - KID PSP
@@ -199,6 +200,7 @@ simple:
 single: # single thread
   - AB2Try
   - Eushully
+  - HorkEye
   - Rejet
   - SiglusEngine2
   # PSP
@@ -308,6 +310,7 @@ char:
   - Eushully
   - EXP
   - Gesen18
+  - HorkEye
   - Intense PSP
   - KONAMI PSP
   - KID PSP
@@ -428,6 +431,7 @@ utf8:
 # List of game engine that allows focus
 focus:
   - Adobe Flash 10
+  - HorkEye
   - KAGParser
   - KiriKiriZ
   - SiglusEngine2

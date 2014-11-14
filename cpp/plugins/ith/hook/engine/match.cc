@@ -517,6 +517,11 @@ bool DetermineEngineAtLast()
     InsertScenarioPlayerHook();
     return true;
   }
+  //if (IthCheckFile(L"arc0.dat") && IthCheckFile(L"script.dat") // jichi 11/14/2014: too common
+  if (Util::SearchResourceString(L"HorkEye")) { // appear in copyright: Copyright (C) HorkEye, http://horkeye.com
+    InsertHorkEyeHook();
+    return true;
+  }
   if (IthCheckFile(L"comnArc.arc") // jichi 8/17/2014: this file might exist in multiple files
       && InsertNexton1Hook()) // old nexton game
     return true;

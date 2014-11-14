@@ -86,7 +86,7 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.1.4/imagesloaded.min.js
   #jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.1.0/imagesloaded.min.js
   jquery.imagesloaded: http://cdn.jsdelivr.net/imagesloaded/3.0.4/imagesloaded.pkgd.min.js
-  jquery.ui: http://cdn.jsdelivr.net/jquery.ui/1.11.0/jquery-ui.min.js
+  jquery.ui: http://cdn.jsdelivr.net/jquery.ui/1.11.2/jquery-ui.min.js
 
   bootstrap.growl: $PWD/../AJAX/github/bootstrap-growl.min.js
 

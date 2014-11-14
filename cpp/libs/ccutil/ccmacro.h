@@ -15,4 +15,7 @@
 # define CC_UNLIKELY(x) (x)
 #endif
 
+#define CC_MIN(x, y)    ((x) < (y) ? (x) : (y))
+#define CC_MAX(x, y)    ((x) < (y) ? (y) : (x))
+
 #endif // CCMACRO_H

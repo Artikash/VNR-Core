@@ -5,6 +5,8 @@
 // 10/12/2014 jichi
 
 #include <cstddef> // for size_t
+//#include <algorithm> // for std::min
+#include "ccutil/ccmacro.h"
 
 // strlen
 
@@ -32,7 +34,7 @@ inline size_t cpp_wstrnlen(const wchar_t *s, size_t n) { return cpp_basic_strnle
 
 // strnchr
 
-#define cpp_basic_strnchr_(s, n, c) \
+#define cpp_basic_strnchr_(s, c, n) \
   { \
     while (*s && n) { \
       if (*s == c) \
@@ -42,40 +44,41 @@ inline size_t cpp_wstrnlen(const wchar_t *s, size_t n) { return cpp_basic_strnle
     return nullptr; \
   }
 template <typename charT>
-inline charT *cpp_basic_strnchr(charT *s, size_t n, charT c) cpp_basic_strnchr_(s, n, c)
+inline charT *cpp_basic_strnchr(charT *s, charT c, size_t n) cpp_basic_strnchr_(s, c, n)
 template <typename charT>
-inline const charT *cpp_basic_strnchr(const charT *s, size_t n, charT c) cpp_basic_strnchr_(s, n, c)
+inline const charT *cpp_basic_strnchr(const charT *s, charT c, size_t n) cpp_basic_strnchr_(s, c, n)
 
-inline char *cpp_strnchr(char *s, size_t n, char c) { return cpp_basic_strnchr<char>(s, n, c); }
-inline const char *cpp_strnchr(const char *s, size_t n, char c) { return cpp_basic_strnchr<char>(s, n, c); }
-inline wchar_t *cpp_wcsnchr(wchar_t *s, size_t n, wchar_t c) { return cpp_basic_strnchr<wchar_t>(s, n, c); }
-inline const wchar_t *cpp_wcsnchr(const wchar_t *s, size_t n, wchar_t c) { return cpp_basic_strnchr<wchar_t>(s, n, c); }
+// The same as memchr
+inline char *cpp_strnchr(char *s, char c, size_t n) { return cpp_basic_strnchr<char>(s, c, n); }
+inline const char *cpp_strnchr(const char *s, char c, size_t n) { return cpp_basic_strnchr<char>(s, c, n); }
+inline wchar_t *cpp_wcsnchr(wchar_t *s, wchar_t c, size_t n) { return cpp_basic_strnchr<wchar_t>(s, c, n); }
+inline const wchar_t *cpp_wcsnchr(const wchar_t *s, wchar_t c, size_t n) { return cpp_basic_strnchr<wchar_t>(s, c, n); }
 
 // strnstr
 
-#define cpp_basic_strnstr_(s, n, r, ncmp) \
+#define cpp_basic_strnstr_(s, slen, r, rlen, ncmp) \
   { \
-    while (*s && n) { \
-      if (ncmp(s, r, n) == 0) \
+    while (*s && slen >= rlen) { \
+      if (ncmp(s, r, CC_MIN(slen, rlen)) == 0) \
         return s; \
-      s++, n--; \
+      s++, slen--; \
     } \
     return nullptr; \
   }
 
 template <typename charT>
-inline charT *cpp_basic_strnstr(charT *s, size_t n, const charT *r) cpp_basic_strnstr_(s, n, r, ::strncmp)
+inline charT *cpp_basic_strnstr(charT *s, const charT *r, size_t n) cpp_basic_strnstr_(s, n, r, ::strlen(r), ::strncmp)
 template <typename charT>
-inline const charT *cpp_basic_strnstr(const charT *s, size_t n, const charT *r) cpp_basic_strnstr_(s, n, r, ::strncmp)
+inline const charT *cpp_basic_strnstr(const charT *s, const charT *r, size_t n) cpp_basic_strnstr_(s, n, r, ::strlen(r), ::strncmp)
 
 template <>
-inline wchar_t *cpp_basic_strnstr<wchar_t>(wchar_t *s, size_t n, const wchar_t *r) cpp_basic_strnstr_(s, n, r, ::wcsncmp)
+inline wchar_t *cpp_basic_strnstr<wchar_t>(wchar_t *s, const wchar_t *r, size_t n) cpp_basic_strnstr_(s, n, r, ::wcslen(r), ::wcsncmp)
 template <>
-inline const wchar_t *cpp_basic_strnstr<wchar_t>(const wchar_t *s, size_t n, const wchar_t *r) cpp_basic_strnstr_(s, n, r, ::wcsncmp)
+inline const wchar_t *cpp_basic_strnstr<wchar_t>(const wchar_t *s, const wchar_t *r, size_t n) cpp_basic_strnstr_(s, n, r, ::wcslen(r), ::wcsncmp)
 
-inline char *cpp_strnstr(char *s, size_t n, const char *r) { return cpp_basic_strnstr<char>(s, n, r); }
-inline const char *cpp_strnstr(const char *s, size_t n, const char *r) { return cpp_basic_strnstr<char>(s, n, r); }
-inline wchar_t *cpp_wcsnstr(wchar_t *s, size_t n, const wchar_t *r) { return cpp_basic_strnstr<wchar_t>(s, n, r); }
-inline const wchar_t *cpp_wcsnstr(const wchar_t *s, size_t n, const wchar_t *r) { return cpp_basic_strnstr<wchar_t>(s, n, r); }
+inline char *cpp_strnstr(char *s, const char *r, size_t n) { return cpp_basic_strnstr<char>(s, r, n); }
+inline const char *cpp_strnstr(const char *s, const char *r, size_t n) { return cpp_basic_strnstr<char>(s, r, n); }
+inline wchar_t *cpp_wcsnstr(wchar_t *s, const wchar_t *r, size_t n) { return cpp_basic_strnstr<wchar_t>(s, r, n); }
+inline const wchar_t *cpp_wcsnstr(const wchar_t *s, const wchar_t *r, size_t n) { return cpp_basic_strnstr<wchar_t>(s, r, n); }
 
 #endif // CPPSTRING_H

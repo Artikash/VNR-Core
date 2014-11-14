@@ -96,6 +96,7 @@ bool InsertEushullyHook();      // Eushully: AGERC.DLL
 bool InsertExpHook();           // EXP: http://www.exp-inc.jp
 bool InsertGesen18Hook();       // Gsen18: *.szs
 bool InsertGXPHook();           // GXP: *.gxp
+bool InsertHorkEyeHook();       // HorkEye: resource string
 bool InsertKAGParserHook(const wchar_t *dllname);  // plugin/KAGParser.dll or plugin/KAGParserEx.dll
 bool InsertKiriKiriHook();      // KiriKiri: *.xp3, resource string
 bool InsertKiriKiriZHook();     // KiriKiri: *.xp3, resource string
