@@ -117,8 +117,6 @@ DELAY_GAME_ENGINES = frozenset(ENGINES_YAML['delay']) # [str name]
 
 REPEAT_GAME_ENGINES = frozenset(ENGINES_YAML['repeat']) # [str name]
 
-SINGLE_GAME_ENGINES = frozenset(ENGINES_YAML['single']) # [str name]
-
 FOCUS_GAME_ENGINES = frozenset(ENGINES_YAML['focus']) # [str name]
 
 NOREPEAT_GAME_ENGINES = frozenset(ENGINES_YAML['simple'] + ENGINES_YAML['norepeat']) # [str name]

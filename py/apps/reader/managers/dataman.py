@@ -6491,14 +6491,14 @@ class _DataManager(object):
           g.hookDisabled = None
           #g.hookKept = None
 
-        if g.threadName in config.SINGLE_GAME_ENGINES and g.threadSignature != defs.SINGLE_ENGINE_SIGNATURE:
-          g.threadSignature = defs.SINGLE_ENGINE_SIGNATURE
-          dwarn("correct signature for single game engine: %s" % g.threadName)
-          growl.notify('<br/>'.join((
-            my.tr("Automatically correct text settings"),
-            "%s: %s" % (tr_("Engine"), g.threadName),
-            "%s: %s" % (tr_("Game"), g.name),
-          )))
+        #if g.threadName in config.SINGLE_GAME_ENGINES and g.threadSignature != defs.SINGLE_ENGINE_SIGNATURE:
+        #  g.threadSignature = defs.SINGLE_ENGINE_SIGNATURE
+        #  dwarn("correct signature for single game engine: %s" % g.threadName)
+        #  growl.notify('<br/>'.join((
+        #    my.tr("Automatically correct text settings"),
+        #    "%s: %s" % (tr_("Engine"), g.threadName),
+        #    "%s: %s" % (tr_("Game"), g.name),
+        #  )))
 
         if (g.removesRepeat or g.ignoresRepeat) and g.threadName in config.NOREPEAT_GAME_ENGINES:
           g.removesRepeat = g.ignoresRepeat = None
@@ -7301,7 +7301,7 @@ class _DataManager(object):
     try: self._saveTermsTimer.start()
     except AttributeError:
       t = self._saveTermsTimer = QTimer(self.q)
-      t.setInterval(60 * 1000) # in 1 minute
+      t.setInterval(30 * 1000) # in 30 seconds
       t.setSingleShot(True)
       t.timeout.connect(self.saveTerms)
       t.start()
