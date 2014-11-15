@@ -301,43 +301,20 @@ class _WebBrowser(object):
     ret.setGraphicsEffect(ui.glowEffect(ret))
     skqss.class_(ret, 'webkit toolbar toolbar-opt')
 
-    ss = settings.global_()
+    a = ret.addAction(u"遊")
+    a.setToolTip(i18n.tr("Game site specific settings"))
+    a.setMenu(self.gameMenu)
+    btn = ret.widgetForAction(a)
+    btn.setPopupMode(QtWidgets.QToolButton.InstantPopup)
 
-    a = ret.addAction(u"あ")
-    a.setCheckable(True)
-    a.setToolTip(i18n.tr("Toggle Japanese furigana"))
-    a.setEnabled(self._jlpAvailable)
-    a.setChecked(self._rubyEnabled)
-    a.triggered[bool].connect(ss.setRubyEnabled)
-    a.triggered[bool].connect(self._setRubyEnabled)
-
-    a = self.fullTranslationAct = ret.addAction(u"訳")
-    a.setCheckable(True)
-    a.setToolTip(i18n.tr("Translate all texts"))
-    a.setEnabled(self._translatorAvailable)
-    a.setChecked(self._fullTranslationEnabled)
-    a.triggered[bool].connect(ss.setFullTranslationEnabled)
-    a.triggered[bool].connect(self._setFullTranslationEnabled)
-
-    a = self.translationTipAct = ret.addAction(u"示")
-    a.setCheckable(True)
-    a.setToolTip(i18n.tr("Pop up translation tooltip when hover"))
-    a.setEnabled(self._translatorAvailable)
-    a.setChecked(self._translationTipEnabled)
-    a.triggered[bool].connect(ss.setTranslationTipEnabled)
-    a.triggered[bool].connect(self._setTranslationTipEnabled)
-
-    a = self.ttsAct = ret.addAction(u"♪") # おんぷ
-    a.setCheckable(True)
-    a.setToolTip("%s (TTS)" % i18n.tr("Toggle text-to-speech") )
-    a.setEnabled(self._ttsAvailable)
-    a.setChecked(self._ttsEnabled)
-    a.triggered[bool].connect(ss.setTtsEnabled)
-    a.triggered[bool].connect(self._setTtsEnabled)
-    a.setVisible(skos.WIN) # only enabled on Windows
+    a = ret.addAction(u"訳")
+    a.setToolTip(i18n.tr("Settings for all sites"))
+    a.setMenu(self.trMenu)
+    btn = ret.widgetForAction(a)
+    btn.setPopupMode(QtWidgets.QToolButton.InstantPopup)
 
     a = ret.addAction(u"≡") # U+226, three lines; alternative: "⌘", U+2318 コマンド記号
-    a.setToolTip(tr_("Menu"))
+    a.setToolTip(i18n.tr("Global settings"))
     a.setMenu(self.optionMenu)
     #a.triggered.connect(a.menu().exec_)
     # https://bugreports.qt-project.org/browse/QTBUG-1453
@@ -363,6 +340,64 @@ class _WebBrowser(object):
     a.triggered.connect(self._openAboutPage)
     a.setToolTip("about:version")
     return ret
+
+  @memoizedproperty
+  def trMenu(self):
+    ret = QtWidgets.QMenu(self.q)
+
+    ss = settings.global_()
+
+    a = ret.addAction(i18n.tr("Display furigana"))
+    a.setCheckable(True)
+    a.setEnabled(self._jlpAvailable)
+    a.setChecked(self._rubyEnabled)
+    a.triggered[bool].connect(ss.setRubyEnabled)
+    a.triggered[bool].connect(self._setRubyEnabled)
+
+    a = self.fullTranslationAct = ret.addAction(i18n.tr("Display translation"))
+    a.setCheckable(True)
+    a.setEnabled(self._translatorAvailable)
+    a.setChecked(self._fullTranslationEnabled)
+    a.triggered[bool].connect(ss.setFullTranslationEnabled)
+    a.triggered[bool].connect(self._setFullTranslationEnabled)
+
+    a = self.translationTipAct = ret.addAction(i18n.tr("Popup translation when hover"))
+    a.setCheckable(True)
+    a.setEnabled(self._translatorAvailable)
+    a.setChecked(self._translationTipEnabled)
+    a.triggered[bool].connect(ss.setTranslationTipEnabled)
+    a.triggered[bool].connect(self._setTranslationTipEnabled)
+
+    ret.addSeparator()
+
+    a = self.ttsAct = ret.addAction(i18n.tr("Text-to-speech when click")) # おんぷ
+    a.setCheckable(True)
+    a.setEnabled(self._ttsAvailable)
+    a.setChecked(self._ttsEnabled)
+    a.triggered[bool].connect(ss.setTtsEnabled)
+    a.triggered[bool].connect(self._setTtsEnabled)
+    a.setVisible(skos.WIN) # only enabled on Windows
+
+    return ret
+
+  @memoizedproperty
+  def gameMenu(self):
+    ret = QtWidgets.QMenu(self.q)
+
+    ss = settings.global_()
+
+    a = self.subtitleAct = ret.addAction(i18n.tr("Display subtitles"))
+    a.setCheckable(True)
+    a.triggered.connect(self._injectSubtitle)
+
+    return ret
+
+  ## Site-specific inject ##
+
+  def _injectSubtitle(self):
+    t = self.subtitleAct.isChecked()
+    dprint("enabled = %s" % t)
+
 
   ## Inject ##
 
