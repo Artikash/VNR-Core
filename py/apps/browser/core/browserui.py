@@ -19,7 +19,7 @@ from network import *
 from tabui import *
 from webkit import *
 from i18n import i18n
-import config, proxy, rc, settings, textutil, ui
+import config, proxy, rc, settings, siteman, textutil, ui
 
 BLANK_URL = "about:blank"
 
@@ -64,6 +64,13 @@ class WebBrowser(SkDraggableMainWindow):
 
   def loadTabs(self): # -> bool
     return self.__d.loadTabs()
+
+  def closeEvent(self, e):
+    ss = settings.global_()
+    ss.setWindowWidth(self.width())
+    ss.setWindowHeight(self.height())
+
+    super(WebBrowser, self).closeEvent(e)
 
 @Q_Q
 class _WebBrowser(object):
@@ -219,6 +226,8 @@ class _WebBrowser(object):
     ret.currentChanged.connect(self.refreshWindowTitle)
     ret.currentChanged.connect(self.refreshWindowIcon)
     ret.doubleClicked.connect(self.newTabAtLastWithBlankPage)
+
+    ret.currentChanged.connect(self.refreshSiteStatus)
     return ret
 
   @memoizedproperty
@@ -301,43 +310,25 @@ class _WebBrowser(object):
     ret.setGraphicsEffect(ui.glowEffect(ret))
     skqss.class_(ret, 'webkit toolbar toolbar-opt')
 
-    ss = settings.global_()
-
-    a = ret.addAction(u"あ")
+    a = self.siteAct = ret.addAction(u"遊")
     a.setCheckable(True)
-    a.setToolTip(i18n.tr("Toggle Japanese furigana"))
-    a.setEnabled(self._jlpAvailable)
-    a.setChecked(self._rubyEnabled)
-    a.triggered[bool].connect(ss.setRubyEnabled)
-    a.triggered[bool].connect(self._setRubyEnabled)
+    a.setEnabled(False) # disable on startup
+    a.setToolTip(i18n.tr("Game site specific settings"))
+    #a.setMenu(self.siteMenu)
+    a.triggered.connect(self._injectSite)
+    btn = ret.widgetForAction(a)
+    btn.setPopupMode(QtWidgets.QToolButton.InstantPopup)
 
-    a = self.fullTranslationAct = ret.addAction(u"訳")
+    a = self.annotAct = ret.addAction(u"訳")
     a.setCheckable(True)
-    a.setToolTip(i18n.tr("Translate all texts"))
-    a.setEnabled(self._translatorAvailable)
-    a.setChecked(self._fullTranslationEnabled)
-    a.triggered[bool].connect(ss.setFullTranslationEnabled)
-    a.triggered[bool].connect(self._setFullTranslationEnabled)
-
-    a = self.translationTipAct = ret.addAction(u"示")
-    a.setCheckable(True)
-    a.setToolTip(i18n.tr("Pop up translation tooltip when hover"))
-    a.setEnabled(self._translatorAvailable)
-    a.setChecked(self._translationTipEnabled)
-    a.triggered[bool].connect(ss.setTranslationTipEnabled)
-    a.triggered[bool].connect(self._setTranslationTipEnabled)
-
-    a = self.ttsAct = ret.addAction(u"♪") # おんぷ
-    a.setCheckable(True)
-    a.setToolTip("%s (TTS)" % i18n.tr("Toggle text-to-speech") )
-    a.setEnabled(self._ttsAvailable)
-    a.setChecked(self._ttsEnabled)
-    a.triggered[bool].connect(ss.setTtsEnabled)
-    a.triggered[bool].connect(self._setTtsEnabled)
-    a.setVisible(skos.WIN) # only enabled on Windows
+    a.setToolTip(i18n.tr("Settings for all sites"))
+    a.setMenu(self.annotMenu)
+    btn = ret.widgetForAction(a)
+    btn.setPopupMode(QtWidgets.QToolButton.InstantPopup)
+    a.setChecked(self.isAnnotEnabled())
 
     a = ret.addAction(u"≡") # U+226, three lines; alternative: "⌘", U+2318 コマンド記号
-    a.setToolTip(tr_("Menu"))
+    a.setToolTip(i18n.tr("Global settings"))
     a.setMenu(self.optionMenu)
     #a.triggered.connect(a.menu().exec_)
     # https://bugreports.qt-project.org/browse/QTBUG-1453
@@ -364,6 +355,85 @@ class _WebBrowser(object):
     a.setToolTip("about:version")
     return ret
 
+  @memoizedproperty
+  def annotMenu(self):
+    ret = QtWidgets.QMenu(self.q)
+
+    ss = settings.global_()
+
+    a = ret.addAction(i18n.tr("Display furigana"))
+    a.setCheckable(True)
+    a.setEnabled(self._jlpAvailable)
+    a.setChecked(self._rubyEnabled)
+    a.triggered[bool].connect(ss.setRubyEnabled)
+    a.triggered[bool].connect(self._setRubyEnabled)
+    a.triggered.connect(self._refreshAnnotAct)
+
+    a = self.fullTranslationAct = ret.addAction(i18n.tr("Display translation"))
+    a.setCheckable(True)
+    a.setEnabled(self._translatorAvailable)
+    a.setChecked(self._fullTranslationEnabled)
+    a.triggered[bool].connect(ss.setFullTranslationEnabled)
+    a.triggered[bool].connect(self._setFullTranslationEnabled)
+    a.triggered.connect(self._refreshAnnotAct)
+
+    a = self.translationTipAct = ret.addAction(i18n.tr("Popup translation when hover"))
+    a.setCheckable(True)
+    a.setEnabled(self._translatorAvailable)
+    a.setChecked(self._translationTipEnabled)
+    a.triggered[bool].connect(ss.setTranslationTipEnabled)
+    a.triggered[bool].connect(self._setTranslationTipEnabled)
+    a.triggered.connect(self._refreshAnnotAct)
+
+    ret.addSeparator()
+
+    a = self.ttsAct = ret.addAction(i18n.tr("Text-to-speech when click")) # おんぷ
+    a.setCheckable(True)
+    a.setEnabled(self._ttsAvailable)
+    a.setChecked(self._ttsEnabled)
+    a.triggered[bool].connect(ss.setTtsEnabled)
+    a.triggered[bool].connect(self._setTtsEnabled)
+    a.setVisible(skos.WIN) # only enabled on Windows
+    a.triggered.connect(self._refreshAnnotAct)
+
+    return ret
+
+  #@memoizedproperty
+  #def siteMenu(self):
+  #  ret = QtWidgets.QMenu(self.q)
+
+  #  ss = settings.global_()
+
+  #  a = self.siteSubtitleAct = ret.addAction(i18n.tr("Display subtitles"))
+  #  a.setCheckable(True)
+  #  a.triggered.connect(self._injectSite)
+
+  #  return ret
+
+  ## Site-specific inject ##
+
+  def refreshSiteStatus(self):
+    enabled = False
+    checked = False
+    v = self.tabWidget.currentWidget()
+    if v:
+      checked = v.isSiteEnabled()
+      url = v.url()
+      if not url.isEmpty():
+        site = siteman.manager().matchSite(url)
+        if site:
+          enabled = True
+    self.siteAct.setEnabled(enabled)
+    self.siteAct.setChecked(enabled and checked)
+
+  def _injectSite(self):
+    t = self.siteAct.isChecked()
+    v = self.tabWidget.currentWidget()
+    if v:
+      dprint(t)
+      v.setSiteEnabled(t)
+      v.injectSite()
+
   ## Inject ##
 
   # Combinations:
@@ -371,34 +441,37 @@ class _WebBrowser(object):
   # trful, trful+tts, trful+tts, trful+ruby+tts
   # ruby, ruby+tts, ruby+trtip, ruby+trtip+tts
 
-  def isInjectEnabled(self):
+  def isAnnotEnabled(self):
     return self._fullTranslationEnabled or self._translationTipEnabled or self._rubyEnabled or self._ttsEnabled
+
+  def _refreshAnnotAct(self):
+    self.annotAct.setChecked(self.isAnnotEnabled())
 
   def _setRubyEnabled(self, t): # bool ->
     if self._rubyEnabled != t:
       self._rubyEnabled = t
-      self._reinject()
+      self._reinjectAnnot()
 
   def _setTtsEnabled(self, t): # bool ->
     if self._ttsEnabled != t:
       self._ttsEnabled = t
-      self._reinject()
+      self._reinjectAnnot()
 
   def _setFullTranslationEnabled(self, t): # bool ->
     if self._fullTranslationEnabled != t:
       self._fullTranslationEnabled = t
-      self._reinject()
+      self._reinjectAnnot()
 
   def _setTranslationTipEnabled(self, t): # bool ->
     if self._translationTipEnabled != t:
       self._translationTipEnabled = t
-      self._reinject()
+      self._reinjectAnnot()
 
-  def _reinject(self):
-    t = self.isInjectEnabled()
+  def _reinjectAnnot(self):
+    t = self.isAnnotEnabled()
     for w in self._iterTabWidgets():
-      w.setInjectEnabled(t)
-      w.inject()
+      w.setAnnotEnabled(t)
+      w.injectAnnot()
 
   ## Load/save ##
 
@@ -636,6 +709,8 @@ class _WebBrowser(object):
     ret.linkClicked.connect(lambda url:
         url.isEmpty() or self.setDisplayAddress(url))
 
+    ret.urlChanged.connect(self.refreshSiteStatus)
+
     ref = weakref.ref(ret)
 
     ret.urlChanged.connect(partial(lambda ref, value:
@@ -664,7 +739,7 @@ class _WebBrowser(object):
         ref() == self.tabWidget.currentWidget() and self.refreshLoadProgress(),
         ref))
 
-    ret.setInjectEnabled(self.isInjectEnabled())
+    ret.setAnnotEnabled(self.isAnnotEnabled())
 
     ret.installEventFilter(self.gestureFilter)
 

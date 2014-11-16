@@ -85,14 +85,10 @@ isalphapunct = (ch) -> /[a-zA-Zａ-ｚＡ-Ｚ'"?!,\.]/.test ch # string ->bool
 
 ## Handlers
 
-isRubyEnabled = -> # -> bool
-  document.body.classList.contains 'annot-opt-ruby'
-isTtsEnabled = -> # -> bool
-  document.body.classList.contains 'annot-opt-tts'
-isTranslationTipEnabled = -> # -> bool
-  document.body.classList.contains 'annot-opt-tr-tip'
-isFullTranslationEnabled = -> # -> bool
-  document.body.classList.contains 'annot-opt-tr'
+isRubyEnabled = -> document.body.classList.contains 'annot-opt-ruby'
+isTtsEnabled = -> document.body.classList.contains 'annot-opt-tts'
+isTranslationTipEnabled = -> document.body.classList.contains 'annot-opt-tr-tip'
+isFullTranslationEnabled = -> document.body.classList.contains 'annot-opt-tr'
 
 onSpeak = -> # this = element
   ttsBean.speak @getAttribute 'annot-text' if isTtsEnabled()

@@ -1,4 +1,4 @@
-# inject.coffee
+# inject-annot.coffee
 # 3/28/2014 jichi
 # Invoked by QWebFrame::evaluaeJavaScript
 # Beans:
@@ -29,8 +29,8 @@
 ).apply document.body
 
 # Make sure this script is only evaluated once
-unless @injected
-  @injected = true
+unless @ANNOT_INJECTED
+  @ANNOT_INJECTED = true
 
   linkcss = (url) -> # string -> el  return the inserted element
     el = document.createElement 'link'
@@ -46,8 +46,8 @@ unless @injected
     document.body.appendChild el
     el
 
-  linkcss cdnBean.url 'browser.css'
-  linkjs cdnBean.url 'browser'
+  linkcss cdnBean.url 'client-annot.css'
+  linkjs cdnBean.url 'client-annot'
 
 # EOF
 
