@@ -178,7 +178,7 @@ def html_data(url): # QUrl|str -> unicode|None
     if key:
       from sakurakit.sktr import tr_
       params = {
-        #'cache': cacheman,
+        'cache': cacheman.CacheApi,
         'tr': tr_,
         'rc': sys.modules[__name__],
       }

@@ -301,9 +301,11 @@ class _WebBrowser(object):
     ret.setGraphicsEffect(ui.glowEffect(ret))
     skqss.class_(ret, 'webkit toolbar toolbar-opt')
 
-    a = ret.addAction(u"遊")
+    a = self.siteAct = ret.addAction(u"遊")
+    a.setCheckable(True)
+    a.setEnabled(False) # disable on startup
     a.setToolTip(i18n.tr("Game site specific settings"))
-    a.setMenu(self.gameMenu)
+    a.setMenu(self.siteMenu)
     btn = ret.widgetForAction(a)
     btn.setPopupMode(QtWidgets.QToolButton.InstantPopup)
 
@@ -381,12 +383,12 @@ class _WebBrowser(object):
     return ret
 
   @memoizedproperty
-  def gameMenu(self):
+  def siteMenu(self):
     ret = QtWidgets.QMenu(self.q)
 
     ss = settings.global_()
 
-    a = self.subtitleAct = ret.addAction(i18n.tr("Display subtitles"))
+    a = self.siteSubtitleAct = ret.addAction(i18n.tr("Display subtitles"))
     a.setCheckable(True)
     a.triggered.connect(self._injectSubtitle)
 
@@ -395,8 +397,9 @@ class _WebBrowser(object):
   ## Site-specific inject ##
 
   def _injectSubtitle(self):
-    t = self.subtitleAct.isChecked()
+    t = self.siteSubtitleAct.isChecked()
     dprint("enabled = %s" % t)
+    self.siteAct.setChecked(t)
 
 
   ## Inject ##

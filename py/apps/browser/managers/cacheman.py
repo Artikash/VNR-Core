@@ -19,6 +19,14 @@ def manager(): return CacheManager()
 def cache_url(url): return manager().cacheUrl(url) # cache url
 #url = cache_url
 
+cache_image = cache_url # temporarily not distinguished
+
+class CacheApi:
+  @staticmethod
+  def url(url): return cache_url(url)
+  @staticmethod
+  def image(url): return cache_image(url)
+
 def _getdata(url, path, tmppath=None, touchbad=False, mimefilter=None, **kwargs):
   """
   @param  token  unicode

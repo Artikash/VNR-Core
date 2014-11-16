@@ -1,8 +1,7 @@
 ; start.haml
 ; 3/21/2014 jichi
-; @param  cache  cacheman.CacheApi
 ; @param  tr  i18n.tr
-; @param  rc  rc
+; @param  rc
 !!! 5
 %html
   %head
@@ -33,8 +32,9 @@
         margin-top: -20px;
       }
       .site { margin-bottom: 15px; }
-      .col-2 { width: 50%; display: inline-block; float: left }
-      .col-1 { width: 25%; display: inline-block; float: right }
+      .col { width: 25%; display: inline-block; }
+      .col-1,.col-2 { float: left }
+      .col-3,.col-4 { float: right }
       .background {
         position: fixed;
         z-index: -999;
@@ -44,35 +44,52 @@
       /* text-minor */
       .title { color: #888 }
       .title:hover { color: #555 }
-      /* img-shadow */
-      .img-shadow:hover {
-        -webkit-box-shadow: 0 0 6px blue;
-        -moz-box-shadow: 0 0 6px blue;
-        box-shadow: 0 0 6px blue;
-      }
-      .img-shadow {
-        -webkit-box-shadow: 0 0 6px #333;
-        -moz-box-shadow: 0 0 6px #333;
-        box-shadow: 0 0 6px #333;
-      }
-      /* game */
-      .game img { max-width: 100%; margin: 10px }
   %body
     .background
     .container
       ; http://stackoverflow.com/questions/1964297/split-div-into-2-columns-using-css
       %br(style="clear:both")
-      .col-2
+      .col.col-1
         %section
-          %h3.title Game
-          -for url,name,img in \
-              ("www.dmm.co.jp/netgame/social/-/gadgets/=/app_id=534991/1st=1/", "対魔忍アサギ～決戦アリーナ～ (DMM.jp)", "http://153.121.52.138/proxy/blogimg/hiroji162/imgs/9/4/94ea9f89.png"),
-            %div(class="game")
+          %h3.title Wikipedia
+          ; Candidates:
+          ; http://ja.wikipedia.org/wiki/ちよれん
+          ; http://ja.wikipedia.org/wiki/埼玉連合
+          ; http://ja.wikipedia.org/wiki/Category:北海道えろげー組合
+          -for url,name in \
+              ("ja.wikipedia.org/wiki/Category:2014年のアダルトゲーム", "2014年のゲーム"), \
+              ("ja.wikipedia.org/wiki/Category:2013年のアダルトゲーム", "2013年のゲーム"), \
+              ("ja.wikipedia.org/wiki/Category:2012年のアダルトゲーム", "2012年のゲーム"), \
+              ("ja.wikipedia.org/wiki/Category:未発売のアダルトゲーム", "未発売のゲーム"), \
+              ("ja.wikipedia.org/wiki/Category:各年のアダルトゲーム", "各年のゲーム一覧"), \
+              ("ja.wikipedia.org/wiki/Category:テレビアニメ化されたアダルトゲーム", "アニメ化されたゲーム"), \
+              ("ja.wikipedia.org/wiki/アダルトゲームメーカー一覧", "ゲームメーカー"), \
+              ("ja.wikipedia.org/wiki/Category:アダルトゲームブランドの歴史", "解散されたブランド"), \
+              ("ja.wikipedia.org/wiki/アダルトゲーム関連人物一覧", "関連人物一覧"), \
+              ("ja.wikipedia.org/wiki/Category:アダルトゲームライター", "ライター"), \
+              ("ja.wikipedia.org/wiki/Category:ゲームのグラフィッカー・原画家", "原画家"), \
+              ("ja.wikipedia.org/wiki/Category:ゲーム音楽グループ", "音楽グループ"),
+            %div(class="site")
               %a(href="http://#{url}",title="#{url}") #{name}
-              -if img
-                %a(href="http://#{url}")
-                  %img(class="img-shadow",src="#{cache.image(img)}",alt="画像",title="#{name}")
-      .col-1
+      .col.col-2
+        %section
+          %h3.title Getchu
+          -for url,name in \
+              ("www.getchu.com/pc/salesranking2013.html", "セールス2013"), \
+              ("www.getchu.com/pc/2013_g_ranking/", "ランキング2013"), \
+              ("www.getchu.com/pc/2012_g_ranking/", "ランキング2012"), \
+              ("www.getchu.com/pc/2011_g_ranking/", "ランキング2011"), \
+              ("www.getchu.com/pc/2010_g_ranking/", "ランキング2010"), \
+              ("www.getchu.com/pc/2009_g_ranking/", "ランキング2009"), \
+              ("www.getchu.com/pc/2008_g_ranking/", "ランキング2008"), \
+              ("www.getchu.com/pc/2007_g_ranking/2007_g_ranking_all.html", "ランキング2007"), \
+              ("www.getchu.com/pc/2006_g_ranking/result/2006_ur_result_all.html", "ランキング2006"), \
+              ("www.getchu.com/pc/ranking2005/all.html", "ランキング2005"), \
+              ("www.getchu.com/pc/rank.phtml?rank_flag=1", "ランキング2004"), \
+              ("www.getchu.com/ranking/2003sougou.html", "ランキング2003"),
+            %div(class="site")
+              %a(href="http://#{url}",title="#{url}") #{name}
+      .col.col-4
         %section
           %h3.title AKABEiSOFT2
           -for url,name in \
@@ -90,7 +107,7 @@
               ("www.nostalgicchord.com/top.html", "NostalgicChord"),
             %div(class="site")
               %a(href="http://#{url}",title="#{url}") #{name}
-      .col-1
+      .col.col-3
         %section
           %h3.title ErogameScape
           -for url,name in \
