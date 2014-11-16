@@ -7,7 +7,7 @@ __all__ = 'WbNetworkAccessManager',
 import os
 from PySide.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkDiskCache
 from sakurakit import skfileio, sknetwork
-#from sakurakit.skdebug import dprint
+from sakurakit.skdebug import dprint
 import proxy, rc
 
 ## Cookie ##
@@ -77,16 +77,29 @@ class WbNetworkAccessManager(QNetworkAccessManager):
   # QNetworkReply *createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData = nullptr) override;
   def createRequest(self, op, req, outgoingData=None): # override
     url = req.url()
-    newurl = proxy.toproxyurl(url)
-    #print url, newurl
+    newurl = self._getBlockedUrl(url)
     if newurl:
-      req = QNetworkRequest(req) # since request tis constent
-      req.setUrl(newurl)
-      reply = super(WbNetworkAccessManager, self).createRequest(op, req, outgoingData)
-      #if url.host().lower().endswith('dmm.co.jp'):
-      reply.setUrl(url) # restore the old url
-      return reply
+      req = QNetworkRequest(newurl)
+    else:
+      newurl = proxy.toproxyurl(url)
+      if newurl:
+        req = QNetworkRequest(req) # since request tis constent
+        req.setUrl(newurl)
+        reply = super(WbNetworkAccessManager, self).createRequest(op, req, outgoingData)
+        #if url.host().lower().endswith('dmm.co.jp'):
+        reply.setUrl(url) # restore the old url
+        return reply
     return super(WbNetworkAccessManager, self).createRequest(op, req, outgoingData)
+
+  @staticmethod
+  def _getBlockedUrl(url):
+    """
+    @param  url  QUrl
+    @return  unicode or QUrl or None
+    """
+    if url.path() == '/js/localize_welcome.js': # for DMM
+      dprint("block dmm localize welcome")
+      return rc.DMM_LOCALIZED_WELCOME_URL
 
 class _WbNetworkAccessManager:
 

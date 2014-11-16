@@ -57,6 +57,8 @@ def image_url(name):
   return QUrl.fromLocalFile(
       os.path.abspath(image_path(name))).toString()
 
+NULL_IMAGE_URL = image_url('empty')
+
 def wallpaper_url():
   import settings
   return settings.reader().wallpaperUrl() or image_url('wallpaper')
@@ -100,6 +102,8 @@ def cdn_url(name):
     return 'file:///' + url.replace('$PWD', config.root_abspath())
   else:
     return cacheman.cache_url(url)
+
+DMM_LOCALIZED_WELCOME_URL = cdn_url('dmm/localized_welcome')
 
 CDN_DATA = {} # {str name:unicode data}
 def cdn_data(name):
