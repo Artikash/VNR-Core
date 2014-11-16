@@ -54,13 +54,13 @@ class WbWebView(skwebkit.SkWebView):
 
   # Injection
 
-  def inject(self):
+  def injectAnnot(self):
     #url = self.url()
     #if url.isEmpty():
-    self.page().inject()
+    self.page().injectAnnot()
 
-  def isInjectEnabled(self): return self.page().injectEnabled
-  def setInjectEnabled(self, t): self.page().setInjectEnabled(t)
+  def isAnnotEnabled(self): return self.page().annotEnabled
+  def setAnnotEnabled(self, t): self.page().setAnnotEnabled(t)
     #page = self.page()
     #if page.isInjectEnabled() != t:
     #  page.setInjectEnabled(t)
@@ -125,12 +125,12 @@ class WbWebPage(skwebkit.SkWebPage):
   def isLoading(self): return self.__d.progress < 100
   def isFinished(self): return self.__d.progress == 100
 
-  def inject(self):
+  def injectAnnot(self):
     if self.__d.canInject():
-      self.__d.injectJavaScript() # Force inject
+      self.__d.injectAnnotJavaScript() # Force inject
 
-  def isInjectEnabled(self): return self.__d.injectEnabled
-  def setInjectEnabled(self, t): self.__d.injectEnabled = t
+  def isAnnotEnabled(self): return self.__d.annotEnabled
+  def setAnnotEnabled(self, t): self.__d.annotEnabled = t
     #d = self.__d
     #if d.injectEnabled != t:
     #  d.injectEnabled = t
@@ -202,8 +202,8 @@ class _WbWebPage(object):
 
     self.progress = 100 # int [0,100]
 
-    self.injectEnabled = False # bool
-    self._beansInjected = False # bool
+    self.annotEnabled = False # bool
+    self._annotBeansInjected = False # bool
 
     q.loadProgress.connect(self._onLoadProgress)
     q.loadStarted.connect(self._onLoadStarted)
@@ -220,8 +220,8 @@ class _WbWebPage(object):
     self.progress = 0
   def _onLoadFinished(self, success): # bool ->
     self.progress = 100
-    if success and self.injectEnabled and self.canInject():
-      self.injectJavaScript()
+    if success and self.annotEnabled and self.canInject():
+      self.injectAnnotJavaScript()
 
   ## JavaScript
 
@@ -230,27 +230,27 @@ class _WbWebPage(object):
     return not (url.isEmpty() or url.toString().startswith('about:'))
 
   def _onJavaScriptCleared(self):
-    self._beansInjected = False
-    if self.injectEnabled:
-      self.injectBeans()
+    self._annotBeansInjected = False
+    if self.annotEnabled:
+      self.injectAnnotBeans()
 
-  def injectJavaScript(self):
+  def injectAnnotJavaScript(self):
     #if not self.q.parent().url().isEmpty():
-    self.injectBeans()
+    self.injectAnnotBeans()
     f = self.q.mainFrame()
     f.evaluateJavaScript(rc.cdn_data('inject-annot'))
 
-  def injectBeans(self):
-    if not self._beansInjected: # and not self.q.parent().url().isEmpty():
-      self._beansInjected = True
+  def injectAnnotBeans(self):
+    if not self._annotBeansInjected: # and not self.q.parent().url().isEmpty():
+      self._annotBeansInjected = True
 
       f = self.q.mainFrame()
       #f.addToJavaScriptWindowObject('bean', self._webBean)
-      for name,obj in self._iterbeans():
+      for name,obj in self._iterAnnotBeans():
         f.addToJavaScriptWindowObject(name, obj)
 
   @staticmethod
-  def _iterbeans():
+  def _iterAnnotBeans():
     """
     return  [(unicode name, QObject bean)]
     """

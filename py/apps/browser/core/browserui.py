@@ -421,34 +421,34 @@ class _WebBrowser(object):
   # trful, trful+tts, trful+tts, trful+ruby+tts
   # ruby, ruby+tts, ruby+trtip, ruby+trtip+tts
 
-  def isInjectEnabled(self):
+  def isAnnotEnabled(self):
     return self._fullTranslationEnabled or self._translationTipEnabled or self._rubyEnabled or self._ttsEnabled
 
   def _setRubyEnabled(self, t): # bool ->
     if self._rubyEnabled != t:
       self._rubyEnabled = t
-      self._reinject()
+      self._reinjectAnnot()
 
   def _setTtsEnabled(self, t): # bool ->
     if self._ttsEnabled != t:
       self._ttsEnabled = t
-      self._reinject()
+      self._reinjectAnnot()
 
   def _setFullTranslationEnabled(self, t): # bool ->
     if self._fullTranslationEnabled != t:
       self._fullTranslationEnabled = t
-      self._reinject()
+      self._reinjectAnnot()
 
   def _setTranslationTipEnabled(self, t): # bool ->
     if self._translationTipEnabled != t:
       self._translationTipEnabled = t
-      self._reinject()
+      self._reinjectAnnot()
 
-  def _reinject(self):
-    t = self.isInjectEnabled()
+  def _reinjectAnnot(self):
+    t = self.isInjectAnnotEnabled()
     for w in self._iterTabWidgets():
-      w.setInjectEnabled(t)
-      w.inject()
+      w.setAnnotEnabled(t)
+      w.injectAnnot()
 
   ## Load/save ##
 
@@ -716,7 +716,7 @@ class _WebBrowser(object):
         ref() == self.tabWidget.currentWidget() and self.refreshLoadProgress(),
         ref))
 
-    ret.setInjectEnabled(self.isInjectEnabled())
+    ret.setAnnotEnabled(self.isAnnotEnabled())
 
     ret.installEventFilter(self.gestureFilter)
 
