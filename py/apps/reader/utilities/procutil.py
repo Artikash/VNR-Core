@@ -82,7 +82,7 @@ def iterprocess():
       except: continue
       name = u(p.name)
       lpath = path.lower()
-      if (name in config.PROCESS_BLACKLIST or
+      if (is_blocked_process_name(name) or
           lpath.startswith(windir) or
           lpath.startswith(appdata) or
           lpath.startswith(localappdata)):
@@ -148,7 +148,7 @@ def may_be_game_window(wid):
     return False
 
   exe = os.path.basename(path)
-  if exe in config.PROCESS_BLACKLIST:
+  if is_blocked_process_name(exe):
     return False
 
   if (path.startswith(skpaths.WINDIR) or
