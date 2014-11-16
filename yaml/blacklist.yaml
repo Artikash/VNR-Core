@@ -114,6 +114,8 @@ processes:
   - liebao.exe          # LieBao Browser
   - LIEBAO.EXE          # LieBao Browser
   - LEGUI.exe           # Locale Emulator
+  - LocaleSwitch.exe    # Locale Switch
+  - LSC.exe             # Locale Switch
   - Maxthon.exe         # Maxthon
   - MediaInfo.exe       # MediaInfo
   - mpc-be.exe          # MPC
@@ -123,6 +125,8 @@ processes:
   - NtleaGUI.exe        # NTLER
   - NK-Frontend.exe     # Android emulator
   - opera.exe           # Opera
+  - osu!.exe            # Osu!
+  - OSU!.EXE            # Osu!
   - perl.exe            # Perl
   - python.exe          # Python
   - pythonw.exe         # Python
