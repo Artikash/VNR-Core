@@ -3,6 +3,7 @@
 
 @import main/cursor
 @import compass/css3/box-shadow
+@import compass/css3/text-shadow
 
 $base-z-index: 9999
 
@@ -52,11 +53,21 @@ body:not(.site-enabled) #sk-main
 
       //overflow-y: auto // display scroll bar
       .text
-        font-size: 120%
+        font-size: 150%
+        line-height: 150%
+        font-weight: bold
         color: $text-color
+        +text-shadow(purple 1px 1px 5px)
+        &:hover
+          +text-shadow(red 1px 1px 5px)
       .tr
         margin-top: 10px
-        font-size: 120%
+        font-size: 150%
+        line-height: 150%
+        font-weight: bold
         color: $tr-color
+        +text-shadow(blue 1px 1px 5px)
+        &:hover
+          +text-shadow(red 1px 1px 5px)
 
 // EOF
