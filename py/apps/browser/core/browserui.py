@@ -398,27 +398,34 @@ class _WebBrowser(object):
 
     a = self.siteSubtitleAct = ret.addAction(i18n.tr("Display subtitles"))
     a.setCheckable(True)
-    a.triggered.connect(self._injectSubtitle)
+    a.triggered.connect(self._injectSite)
 
     return ret
 
   ## Site-specific inject ##
 
-  def _injectSubtitle(self):
-    t = self.siteSubtitleAct.isChecked()
-    dprint("enabled = %s" % t)
-    self.siteAct.setChecked(t)
-
   def refreshSiteStatus(self):
     enabled = False
+    checked = False
     v = self.tabWidget.currentWidget()
     if v:
+      checked = v.isSiteEnabled()
       url = v.url()
       if not url.isEmpty():
         site = siteman.manager().matchSite(url)
         if site:
           enabled = True
+    self.siteSubtitleAct.setChecked(checked)
     self.siteAct.setEnabled(enabled)
+
+  def _injectSite(self):
+    t = self.siteSubtitleAct.isChecked()
+    self.siteAct.setChecked(t)
+
+    v = self.tabWidget.currentWidget()
+    if v:
+      v.setSiteEnabled(t)
+      v.injectSite()
 
   ## Inject ##
 

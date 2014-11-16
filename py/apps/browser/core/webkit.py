@@ -133,11 +133,11 @@ class WbWebView(skwebkit.SkWebView):
     super(WbWebView, self).load(url)
 
   def injectAnnot(self): self.page().injectAnnot()
-  def isAnnotEnabled(self): return self.page().annotEnabled
+  def isAnnotEnabled(self): return self.page().isAnnotEnabled()
   def setAnnotEnabled(self, t): self.page().setAnnotEnabled(t)
 
   def injectSite(self): self.page().injectSite()
-  def isSiteEnabled(self): return self.page().siteEnabled
+  def isSiteEnabled(self): return self.page().isSiteEnabled()
   def setSiteEnabled(self, t): self.page().setSiteEnabled(t)
 
 @Q_Q
