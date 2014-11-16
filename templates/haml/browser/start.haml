@@ -65,12 +65,17 @@
       .col-2
         %section
           %h3.title Game
-          -for url,name,img in \
-              ("www.dmm.co.jp/netgame/social/-/gadgets/=/app_id=534991", "対魔忍アサギ～決戦アリーナ～ (DMM.jp)", "http://153.121.52.138/proxy/blogimg/hiroji162/imgs/9/4/94ea9f89.png"),
-            %div(class="game")
+          -for url,name in \
+              ("www.dmm.co.jp/netgame/game/-/ranking", "Online Game Ranking"),
+            %div(class="site")
               %a(href="http://#{url}",title="#{url}") #{name}
+          -for url,name,img in \
+              (534991, "対魔忍アサギ～決戦アリーナ～ (DMM.jp)", "http://153.121.52.138/proxy/blogimg/hiroji162/imgs/9/4/94ea9f89.png"),
+            -set url = "http://www.dmm.co.jp/netgame/social/-/gadgets/=/app_id=%s" % 534991
+            %div(class="game")
+              %a(href="#{url}",title="#{url}") #{name}
               -if img
-                %a(href="http://#{url}")
+                %a(href="#{url}")
                   %img(class="img-shadow",src="#{cache.image(img)}",alt="画像",title="#{name}")
       .col-1
         %section
