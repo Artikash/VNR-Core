@@ -81,19 +81,21 @@ class MainObject
   addText: (text) => # string ->
     @pageBreak()
     h = @_renderText text
-    $ h
-      .hide()
-      .appendTo @$text
-      .fadeIn()
+    @$text.append h
+    #$ h
+    #  .hide()
+    #  .appendTo @$text
+    #  .fadeIn()
 
     @_translate text
 
   addTr: (text, key) => # string, string ->
     h = @_renderTr text, key
-    $ h
-      .hide()
-      .appendTo @$text
-      .fadeIn()
+    @$text.append h
+    #$ h
+    #  .hide()
+    #  .appendTo @$text
+    #  .fadeIn()
 
   # Render
 
@@ -110,6 +112,7 @@ class MainObject
   _translate: (text) =>
     s = trBean.translators()
     if s
+      l = []
       for key in s.split ','
         tr = trBean.translate text, key
         if tr
