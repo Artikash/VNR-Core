@@ -55,7 +55,8 @@ class MainObject(QObject):
     ss = settings.global_()
     width = ss.windowWidth()
     height = ss.windowHeight()
-    if width < 200 or height < 200:
+    desktop = QCoreApplication.instance().desktop()
+    if width < 200 or width > desktop.width() or height < 200 or height > desktop.height():
       width, height = 1000, 600
     w.resize(width, height)
 
