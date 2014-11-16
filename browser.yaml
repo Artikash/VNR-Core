@@ -10,7 +10,7 @@ version:
   name: browser
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1416133777
+  timestamp: 1416156576
 
 app:
   debug: false

@@ -16,9 +16,10 @@ def itercookies():
       config.PROXY_TORANOANA_IMG_URL, "http://img.toranoana.jp",
     )),
 
-    # FIXME: Not working for proxy
-
-    ({'cklg':'ja', 'ckcy':'2'}, (config.PROXY_DMM_URL, "http://www.dmm.co.jp")), # DMM
+    ({'cklg':'ja', 'ckcy':'2'}, ( # dmm
+      config.PROXY_DMM_JP_URL, "http://www.dmm.co.jp",
+      config.PROXY_DMM_COM_URL, "http://www.dmm.com",
+    )),
 
     # Optional
 
