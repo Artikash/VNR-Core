@@ -14,6 +14,42 @@ from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
 import beans, rc
 
+## WebFrame injectors ##
+
+class AnnotInjector:
+  def __init__(self, frame):
+    self.frame = frame # QWebFrame
+    self.enabled = False # bool
+    self.injected = False # bool  whether beans have been injected
+
+  def injectJavaScript(self):
+    if self.enabled:
+      self.injectBeans()
+      self.frame.evaluateJavaScript(rc.cdn_data('inject-annot'))
+
+  def injectBeans(self):
+    if self.enabled and not self.injected: # and not self.q.parent().url().isEmpty():
+      self.injected = True
+
+      for name,obj in self.iterBeans():
+        self.frame.addToJavaScriptWindowObject(name, obj)
+
+  @staticmethod
+  def iterBeans():
+    """
+    return  [(unicode name, QObject bean)]
+    """
+    import beans
+    m = beans.manager()
+    return (
+      ('cdnBean', m.cdnBean),
+      ('clipBean', m.clipBean),
+      ('jlpBean', m.jlpBean),
+      ('settingsBean', m.settingsBean),
+      ('trBean', m.trBean),
+      ('ttsBean', m.ttsBean),
+    )
+
 ## WbWebView ##
 
 class WbWebView(skwebkit.SkWebView):
@@ -127,10 +163,10 @@ class WbWebPage(skwebkit.SkWebPage):
 
   def injectAnnot(self):
     if self.__d.canInject():
-      self.__d.injectAnnotJavaScript() # Force inject
+      self.__d.annot.injectJavaScript() # Force inject
 
-  def isAnnotEnabled(self): return self.__d.annotEnabled
-  def setAnnotEnabled(self, t): self.__d.annotEnabled = t
+  def isAnnotEnabled(self): return self.__d.annot.enabled
+  def setAnnotEnabled(self, t): self.__d.annot.enabled = t
     #d = self.__d
     #if d.injectEnabled != t:
     #  d.injectEnabled = t
@@ -202,8 +238,7 @@ class _WbWebPage(object):
 
     self.progress = 100 # int [0,100]
 
-    self.annotEnabled = False # bool
-    self._annotBeansInjected = False # bool
+    self.annot = AnnotInjector(q.mainFrame())
 
     q.loadProgress.connect(self._onLoadProgress)
     q.loadStarted.connect(self._onLoadStarted)
@@ -220,8 +255,8 @@ class _WbWebPage(object):
     self.progress = 0
   def _onLoadFinished(self, success): # bool ->
     self.progress = 100
-    if success and self.annotEnabled and self.canInject():
-      self.injectAnnotJavaScript()
+    if success and self.canInject():
+      self.annot.injectJavaScript()
 
   ## JavaScript
 
@@ -230,39 +265,7 @@ class _WbWebPage(object):
     return not (url.isEmpty() or url.toString().startswith('about:'))
 
   def _onJavaScriptCleared(self):
-    self._annotBeansInjected = False
-    if self.annotEnabled:
-      self.injectAnnotBeans()
-
-  def injectAnnotJavaScript(self):
-    #if not self.q.parent().url().isEmpty():
-    self.injectAnnotBeans()
-    f = self.q.mainFrame()
-    f.evaluateJavaScript(rc.cdn_data('inject-annot'))
-
-  def injectAnnotBeans(self):
-    if not self._annotBeansInjected: # and not self.q.parent().url().isEmpty():
-      self._annotBeansInjected = True
-
-      f = self.q.mainFrame()
-      #f.addToJavaScriptWindowObject('bean', self._webBean)
-      for name,obj in self._iterAnnotBeans():
-        f.addToJavaScriptWindowObject(name, obj)
-
-  @staticmethod
-  def _iterAnnotBeans():
-    """
-    return  [(unicode name, QObject bean)]
-    """
-    import beans
-    m = beans.manager()
-    return (
-      ('cdnBean', m.cdnBean),
-      ('clipBean', m.clipBean),
-      ('jlpBean', m.jlpBean),
-      ('settingsBean', m.settingsBean),
-      ('trBean', m.trBean),
-      ('ttsBean', m.ttsBean),
-    )
+    self.annot.injected = False
+    self.annot.injectBeans()
 
 # EOF

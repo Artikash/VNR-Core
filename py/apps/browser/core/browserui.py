@@ -311,11 +311,13 @@ class _WebBrowser(object):
     btn = ret.widgetForAction(a)
     btn.setPopupMode(QtWidgets.QToolButton.InstantPopup)
 
-    a = ret.addAction(u"訳")
+    a = self.annotAct = ret.addAction(u"訳")
+    a.setCheckable(True)
     a.setToolTip(i18n.tr("Settings for all sites"))
     a.setMenu(self.annotMenu)
     btn = ret.widgetForAction(a)
     btn.setPopupMode(QtWidgets.QToolButton.InstantPopup)
+    a.setChecked(self.isAnnotEnabled())
 
     a = ret.addAction(u"≡") # U+226, three lines; alternative: "⌘", U+2318 コマンド記号
     a.setToolTip(i18n.tr("Global settings"))
@@ -357,6 +359,7 @@ class _WebBrowser(object):
     a.setChecked(self._rubyEnabled)
     a.triggered[bool].connect(ss.setRubyEnabled)
     a.triggered[bool].connect(self._setRubyEnabled)
+    a.triggered.connect(self._refreshAnnotAct)
 
     a = self.fullTranslationAct = ret.addAction(i18n.tr("Display translation"))
     a.setCheckable(True)
@@ -364,6 +367,7 @@ class _WebBrowser(object):
     a.setChecked(self._fullTranslationEnabled)
     a.triggered[bool].connect(ss.setFullTranslationEnabled)
     a.triggered[bool].connect(self._setFullTranslationEnabled)
+    a.triggered.connect(self._refreshAnnotAct)
 
     a = self.translationTipAct = ret.addAction(i18n.tr("Popup translation when hover"))
     a.setCheckable(True)
@@ -371,6 +375,7 @@ class _WebBrowser(object):
     a.setChecked(self._translationTipEnabled)
     a.triggered[bool].connect(ss.setTranslationTipEnabled)
     a.triggered[bool].connect(self._setTranslationTipEnabled)
+    a.triggered.connect(self._refreshAnnotAct)
 
     ret.addSeparator()
 
@@ -381,6 +386,7 @@ class _WebBrowser(object):
     a.triggered[bool].connect(ss.setTtsEnabled)
     a.triggered[bool].connect(self._setTtsEnabled)
     a.setVisible(skos.WIN) # only enabled on Windows
+    a.triggered.connect(self._refreshAnnotAct)
 
     return ret
 
@@ -423,6 +429,9 @@ class _WebBrowser(object):
 
   def isAnnotEnabled(self):
     return self._fullTranslationEnabled or self._translationTipEnabled or self._rubyEnabled or self._ttsEnabled
+
+  def _refreshAnnotAct(self):
+    self.annotAct.setChecked(self.isAnnotEnabled())
 
   def _setRubyEnabled(self, t): # bool ->
     if self._rubyEnabled != t:
