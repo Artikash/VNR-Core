@@ -277,6 +277,8 @@ proxies:
     dmm: dmm.co.jp
     dmmcom/www: dmm.com
     dmmcom/p: p.dmm.com
+    dmmcom/make: make.dmm.com
+    dmmcom/chariloto: chariloto.dmm.com
     #dlsite
     #dlsite_img
     #getchu: getchu.com
