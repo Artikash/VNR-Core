@@ -78,6 +78,7 @@ class WbNetworkAccessManager(QNetworkAccessManager):
   def createRequest(self, op, req, outgoingData=None): # override
     url = req.url()
     newurl = proxy.toproxyurl(url)
+    #print url, newurl
     if newurl:
       req = QNetworkRequest(req) # since request tis constent
       req.setUrl(newurl)
