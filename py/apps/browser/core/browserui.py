@@ -313,7 +313,7 @@ class _WebBrowser(object):
     a = self.siteAct = ret.addAction(u"遊")
     a.setCheckable(True)
     a.setEnabled(False) # disable on startup
-    a.setToolTip(i18n.tr("Game site specific settings"))
+    a.setToolTip(i18n.tr("Display subtitles for the game site"))
     #a.setMenu(self.siteMenu)
     a.triggered.connect(self._injectSite)
     btn = ret.widgetForAction(a)
