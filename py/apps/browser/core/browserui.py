@@ -454,7 +454,7 @@ class _WebBrowser(object):
       self._reinjectAnnot()
 
   def _reinjectAnnot(self):
-    t = self.isInjectAnnotEnabled()
+    t = self.isAnnotEnabled()
     for w in self._iterTabWidgets():
       w.setAnnotEnabled(t)
       w.injectAnnot()
