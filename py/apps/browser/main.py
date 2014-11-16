@@ -9,7 +9,7 @@ from sakurakit import skevents, skos
 from sakurakit.skdebug import dprint, dwarn, debugmethod
 from sakurakit.skclass import Q_Q, memoizedproperty
 from i18n import i18n
-import config
+import config, settings
 
 #def global_(): return MainObject.instance
 
@@ -52,9 +52,13 @@ class MainObject(QObject):
     elif not w.loadTabs():
       w.openDefaultPage()
 
-    # TODO: Remember the last close size
-    #w.resize(800, 600)
-    w.resize(1000, 600)
+    ss = settings.global_()
+    width = ss.windowWidth()
+    height = ss.windowHeight()
+    if width < 200 or height < 200:
+      width, height = 1000, 600
+    w.resize(width, height)
+
     w.show()
 
     dprint("leave")
@@ -136,7 +140,7 @@ class _MainObject(object):
   @memoizedproperty
   def jlpManager(self):
     dprint("create jlp manager")
-    import jlpman, settings
+    import jlpman
     ret = jlpman.manager()
 
     reader = settings.reader()
@@ -166,7 +170,7 @@ class _MainObject(object):
   @memoizedproperty
   def translatorManager(self):
     dprint("create translator manager")
-    import trman, settings
+    import trman
     ret = trman.manager()
     ret.setParent(self.q)
 
@@ -243,7 +247,7 @@ class _MainObject(object):
   @memoizedproperty
   def ttsManager(self):
     dprint("create tts manager")
-    import ttsman, settings
+    import ttsman
     ret = ttsman.manager()
     ret.setParent(self.q)
     #ret.setParentWidget(self.mainWindow)

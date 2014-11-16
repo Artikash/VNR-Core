@@ -65,6 +65,13 @@ class WebBrowser(SkDraggableMainWindow):
   def loadTabs(self): # -> bool
     return self.__d.loadTabs()
 
+  def closeEvent(self, e):
+    ss = settings.global_()
+    ss.setWindowWidth(self.width())
+    ss.setWindowHeight(self.height())
+
+    super(WebBrowser, self).closeEvent(e)
+
 @Q_Q
 class _WebBrowser(object):
   def __init__(self, q):
