@@ -85,10 +85,12 @@ class WbNetworkAccessManager(QNetworkAccessManager):
       if newurl:
         req = QNetworkRequest(req) # since request tis constent
         req.setUrl(newurl)
+        #req.setRawHeader('User-Agent', config.USER_AGENT)
         reply = super(WbNetworkAccessManager, self).createRequest(op, req, outgoingData)
         #if url.host().lower().endswith('dmm.co.jp'):
         reply.setUrl(url) # restore the old url
         return reply
+    #req.setRawHeader('User-Agent', config.USER_AGENT)
     return super(WbNetworkAccessManager, self).createRequest(op, req, outgoingData)
 
   @staticmethod

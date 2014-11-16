@@ -90,6 +90,10 @@ ADDRESS_HISTORY_SIZE = APP_YAML['app']['addressHistorySize'] # int
 # Paths are in str, but will be converted to unicode in rc.py as DIR_USER.
 USER_PROFILES = APP_YAML['user']['profiles']
 
+## WebKit ##
+
+USER_AGENT = SHARE_YAML['webkit']['useragent']
+
 ## Translations ##
 
 TR_LOCALES = APP_YAML['tr']['locales'] # [str locale_name]
