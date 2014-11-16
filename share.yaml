@@ -226,7 +226,7 @@ proxies:
     pbs:        http://153.121.52.138/proxy/twimg/pbs
   erogamescape: http://153.121.52.138/proxy/scape/~ap2/ero/toukei_kaiseki
   dmm_jp:       http://153.121.52.138/proxy/dmm
-  dmm_com:      http://153.121.52.138/proxy/dmm
+  dmm_com:      http://153.121.52.138/proxy/dmmcom
   dlsite:       http://153.121.52.138/proxy/dlsite/www
   dlsite_img:   http://153.121.52.138/proxy/dlsite/img
   toranoana:    http://153.121.52.138/proxy/toranoana/www
