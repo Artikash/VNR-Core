@@ -173,6 +173,8 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #dmm.css: $PWD/rb/compass/web/css/sites/dmm.min.css
 
   # Browser
+  dmm/localized_welcome: $PWD/coffee/dmm/localized_welcome.min.js
+
   inject-annot: $PWD/coffee/browser/inject-annot.min.js
   client-annot: $PWD/coffee/browser/client-annot.min.js
   client-annot.css: $PWD/rb/compass/web/css/browser-annot.min.css
@@ -682,6 +684,7 @@ icons:
   window-voice:     $PWD/images/sound.png
 
 images:
+  empty:            $PWD/images/null.png
   logo-browser:     $PWD/images/browser.png
   logo-reader:      $PWD/images/reader.png
   app-update:       $PWD/images/updater.png

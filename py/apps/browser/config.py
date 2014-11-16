@@ -168,7 +168,7 @@ GETCHU_HOST = SHARE_YAML['proxies']['getchu'].replace('http://', '')
 PROXY_GETCHU_URL = SHARE_YAML['proxies']['getchu']
 PROXY_DMM_JP_URL = SHARE_YAML['proxies']['dmm_jp']
 PROXY_DMM_COM_URL = SHARE_YAML['proxies']['dmm_com']
-PROXY_DMM_COM_P_URL = SHARE_YAML['proxies']['dmm_com_p']
+#PROXY_DMM_COM_P_URL = SHARE_YAML['proxies']['dmm_com_p']
 
 PROXY_DLSITE_URL = SHARE_YAML['proxies']['dlsite']
 PROXY_DLSITE_IMG_URL = SHARE_YAML['proxies']['dlsite_img']

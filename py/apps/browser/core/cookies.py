@@ -16,7 +16,13 @@ def itercookies():
       config.PROXY_TORANOANA_IMG_URL, "http://img.toranoana.jp",
     )),
 
-    ({'cklg':'ja', 'ckcy':'2'}, ( # dmm
+    # See: dmm.com/js/localized_welcome.js
+    # $("div#welcome").click ($) ->
+    #   expDayCklg.setTime expDayCklg.getTime() + (365 * 1000 * 60 * 60 * 24)
+    #   document.cookie = "cklg=welcome;domain=" + localizeDomain + ";path=/;expires=" + expDayCklg.toGMTString()
+    #   return
+    #({'cklg':'welcome', 'ckcy':'2'}, (
+    ({'cklg':'ja', 'ckcy':'2'}, (
       config.PROXY_DMM_JP_URL, "http://www.dmm.co.jp",
       config.PROXY_DMM_COM_URL, "http://www.dmm.com",
       #config.PROXY_DMM_COM_P_URL, "http://p.dmm.com",
