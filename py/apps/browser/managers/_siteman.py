@@ -8,8 +8,12 @@ class Site: # Abstract
 class DmmSite(Site):
   def match(self, url):
     """@override"""
-    print url
-    return True
+    host = url.host()
+    if host:
+      path = url.path()
+      if path:
+        return "dmm.co.jp" in host and path.startswith("/netgame/social/")
+    return False
 
 SITES = DmmSite,
 

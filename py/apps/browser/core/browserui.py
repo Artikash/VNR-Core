@@ -19,7 +19,7 @@ from network import *
 from tabui import *
 from webkit import *
 from i18n import i18n
-import config, proxy, rc, settings, textutil, ui
+import config, proxy, rc, settings, siteman, textutil, ui
 
 BLANK_URL = "about:blank"
 
@@ -219,6 +219,8 @@ class _WebBrowser(object):
     ret.currentChanged.connect(self.refreshWindowTitle)
     ret.currentChanged.connect(self.refreshWindowIcon)
     ret.doubleClicked.connect(self.newTabAtLastWithBlankPage)
+
+    ret.currentChanged.connect(self.refreshSiteStatus)
     return ret
 
   @memoizedproperty
@@ -401,6 +403,16 @@ class _WebBrowser(object):
     dprint("enabled = %s" % t)
     self.siteAct.setChecked(t)
 
+  def refreshSiteStatus(self):
+    enabled = False
+    v = self.tabWidget.currentWidget()
+    if v:
+      url = v.url()
+      if not url.isEmpty():
+        site = siteman.manager().matchSite(url)
+        if site:
+          enabled = True
+    self.siteAct.setEnabled(enabled)
 
   ## Inject ##
 
@@ -673,6 +685,8 @@ class _WebBrowser(object):
     ret.linkClicked.connect(self.addRecentUrl)
     ret.linkClicked.connect(lambda url:
         url.isEmpty() or self.setDisplayAddress(url))
+
+    ret.urlChanged.connect(self.refreshSiteStatus)
 
     ref = weakref.ref(ret)
 

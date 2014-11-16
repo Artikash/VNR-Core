@@ -37,6 +37,7 @@ class MainObject(QObject):
     d.beanManager
     d.jlpManager
     d.cacheManager
+    d.siteManager
 
     dprint("show root window")
     w = d.mainWindow
@@ -154,6 +155,12 @@ class _MainObject(object):
 
     ret.clearTemporaryFiles()
     return ret
+
+  @memoizedproperty
+  def siteManager(self):
+    dprint("create site manager")
+    import siteman
+    return siteman.manager()
 
   @memoizedproperty
   def translatorManager(self):
