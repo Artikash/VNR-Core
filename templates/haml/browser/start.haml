@@ -66,11 +66,11 @@
         %section
           %h3.title Game
           -for url,name in \
-              ("www.dmm.co.jp/netgame/game/-/ranking", "Online Game Ranking"),
+              ("www.dmm.co.jp/netgame/game/-/ranking", "DMM Online Games"),
             %div(class="site")
               %a(href="http://#{url}",title="#{url}") #{name}
           -for url,name,img in \
-              (534991, "対魔忍アサギ～決戦アリーナ～ (DMM.jp)", "http://153.121.52.138/proxy/blogimg/hiroji162/imgs/9/4/94ea9f89.png"),
+              (534991, "対魔忍アサギ～決戦アリーナ～ (DMM)", "http://153.121.52.138/proxy/blogimg/hiroji162/imgs/9/4/94ea9f89.png"),
             -set url = "http://www.dmm.co.jp/netgame/social/-/gadgets/=/app_id=%s" % 534991
             %div(class="game")
               %a(href="#{url}",title="#{url}") #{name}
