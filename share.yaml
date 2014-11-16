@@ -173,10 +173,13 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   #dmm.css: $PWD/rb/compass/web/css/sites/dmm.min.css
 
   # Browser
-  browser/inject: $PWD/coffee/browser/inject.min.js
-  #browser: $PWD/coffee/browser/browser.js
-  browser: $PWD/coffee/browser/browser.min.js
-  browser.css: $PWD/rb/compass/web/css/browser.min.css
+  inject-annot: $PWD/coffee/browser/inject-annot.min.js
+  client-annot: $PWD/coffee/browser/client-annot.min.js
+  client-annot.css: $PWD/rb/compass/web/css/browser-annot.min.css
+
+  inject-site: $PWD/coffee/browser/inject-site.min.js
+  client-site: $PWD/coffee/browser/client-site.min.js
+  client-site.css: $PWD/rb/compass/web/css/browser-site.min.css
 
 # Qt
 

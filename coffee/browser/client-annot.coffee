@@ -1,4 +1,4 @@
-# browser.coffee
+# client-annot.coffee
 # 3/28/2014 jichi
 # This file must be merged with annot.coffee.
 ## Main

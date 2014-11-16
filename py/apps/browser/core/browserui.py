@@ -313,7 +313,7 @@ class _WebBrowser(object):
 
     a = ret.addAction(u"訳")
     a.setToolTip(i18n.tr("Settings for all sites"))
-    a.setMenu(self.trMenu)
+    a.setMenu(self.annotMenu)
     btn = ret.widgetForAction(a)
     btn.setPopupMode(QtWidgets.QToolButton.InstantPopup)
 
@@ -346,7 +346,7 @@ class _WebBrowser(object):
     return ret
 
   @memoizedproperty
-  def trMenu(self):
+  def annotMenu(self):
     ret = QtWidgets.QMenu(self.q)
 
     ss = settings.global_()

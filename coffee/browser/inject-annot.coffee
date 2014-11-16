@@ -1,4 +1,4 @@
-# inject.coffee
+# inject-annot.coffee
 # 3/28/2014 jichi
 # Invoked by QWebFrame::evaluaeJavaScript
 # Beans:
@@ -46,8 +46,8 @@ unless @injected
     document.body.appendChild el
     el
 
-  linkcss cdnBean.url 'browser.css'
-  linkjs cdnBean.url 'browser'
+  linkcss cdnBean.url 'client-annot.css'
+  linkjs cdnBean.url 'client-annot'
 
 # EOF
 
