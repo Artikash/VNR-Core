@@ -60,10 +60,13 @@ class WbNetworkCookieJar(sknetwork.SkNetworkCookieJar):
 
 ## Network ##
 
+REQ_PROXY_URL = 'proxy'
+
 class WbNetworkAccessManager(QNetworkAccessManager):
   def __init__(self, parent=None):
     super(WbNetworkAccessManager, self).__init__(parent)
     self.sslErrors.connect(_WbNetworkAccessManager.onSslErrors)
+    self.finished.connect(_WbNetworkAccessManager.onFinished)
 
     # Enable offline cache
     cache = QNetworkDiskCache(self)
@@ -77,24 +80,44 @@ class WbNetworkAccessManager(QNetworkAccessManager):
   # QNetworkReply *createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData = nullptr) override;
   def createRequest(self, op, req, outgoingData=None): # override
     url = req.url()
-    newurl = self._getBlockedUrl(url)
+    newurl = _WbNetworkAccessManager.getBlockedUrl(url)
     if newurl:
       req = QNetworkRequest(newurl)
     else:
       newurl = proxy.toproxyurl(url)
-      if newurl:
+      if newurl and newurl != url:
         req = QNetworkRequest(req) # since request tis constent
         req.setUrl(newurl)
         #req.setRawHeader('User-Agent', config.USER_AGENT)
         reply = super(WbNetworkAccessManager, self).createRequest(op, req, outgoingData)
         #if url.host().lower().endswith('dmm.co.jp'):
         reply.setUrl(url) # restore the old url
+        reply.setProperty(REQ_PROXY_URL, url)
         return reply
     #req.setRawHeader('User-Agent', config.USER_AGENT)
     return super(WbNetworkAccessManager, self).createRequest(op, req, outgoingData)
 
+class _WbNetworkAccessManager:
+
   @staticmethod
-  def _getBlockedUrl(url):
+  def onFinished(reply):
+    """
+    @param  reply  QNetworkReply
+    """
+    proxyUrl = reply.property(REQ_PROXY_URL)
+    if proxyUrl:
+      #statusCode = reply.attribute(QNetworkRequest.HttpStatusCodeAttribute)
+      redirectUrl = reply.attribute(QNetworkRequest.RedirectionTargetAttribute)
+      if redirectUrl:
+        if not redirectUrl.host() and redirectUrl != reply.url() and redirectUrl != proxyUrl:
+          redirectUrl.setHost(proxyUrl.host())
+        else:
+          redirectUrl = proxy.fromproxyurl(redirectUrl)
+        if redirectUrl:
+          reply.setAttribute(QNetworkRequest.RedirectionTargetAttribute, redirectUrl)
+
+  @staticmethod
+  def getBlockedUrl(url):
     """
     @param  url  QUrl
     @return  unicode or QUrl or None
@@ -102,8 +125,6 @@ class WbNetworkAccessManager(QNetworkAccessManager):
     if url.path() == '/js/localize_welcome.js': # for DMM
       dprint("block dmm localize welcome")
       return rc.DMM_LOCALIZED_WELCOME_URL
-
-class _WbNetworkAccessManager:
 
   # http://stackoverflow.com/questions/8362506/qwebview-qt-webkit-wont-open-some-ssl-pages-redirects-not-allowed
   @staticmethod
