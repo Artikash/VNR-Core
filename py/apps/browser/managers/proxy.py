@@ -67,6 +67,7 @@ def toproxyurl(url): # QUrl -> QUrl or None
     return url
 
 _re_proxy_key = re.compile(r'/proxy/([^/]+)(.*)')
+_re_proxy_key2 = re.compile(r'/proxy/([^/]+/[^/]+)(.*)') # up to two levels of regex
 def fromproxyurl(url): # QUrl -> QUrl or None
   if not isinstance(url, QUrl):
     url = QUrl(url)
@@ -74,19 +75,20 @@ def fromproxyurl(url): # QUrl -> QUrl or None
     host = url.host()
     if host == config.PROXY_HOST:
       path = url.path()
-      m = _re_proxy_key.match(path)
-      if m:
-        key = m.group(1)
-        if key:
-          host = config.PROXY_SITES.get(key)
-          if host:
-            url = QUrl(url)
-            url.setHost(host)
-            path = m.group(2) or '/'
-            if path[0] != '/':
-              path = '/' + path
-            url.setPath(path)
-            return url
+      for rx in _re_proxy_key, _re_proxy_key2:
+        m = rx.match(path)
+        if m:
+          key = m.group(1)
+          if key:
+            host = config.PROXY_SITES.get(key)
+            if host:
+              url = QUrl(url)
+              url.setHost(host)
+              path = m.group(2) or '/'
+              if path[0] != '/':
+                path = '/' + path
+              url.setPath(path)
+              return url
           #elif _MAINLAND and key == 'dlsite':
           #  host = None
           #  path = m.group(2) or '/'
