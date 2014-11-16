@@ -26,6 +26,9 @@
 %	if it.image
 			<image>{{it.image|e}}</image>
 %	endif
+%	if it.banner
+			<banner>{{it.banner|e}}</banner>
+%	endif
 %	if it.wiki
 			<wiki>{{it.wiki|e}}</wiki>
 %	endif
