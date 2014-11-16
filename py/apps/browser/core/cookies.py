@@ -19,6 +19,7 @@ def itercookies():
     ({'cklg':'ja', 'ckcy':'2'}, ( # dmm
       config.PROXY_DMM_JP_URL, "http://www.dmm.co.jp",
       config.PROXY_DMM_COM_URL, "http://www.dmm.com",
+      #config.PROXY_DMM_COM_P_URL, "http://p.dmm.com",
     )),
 
     # Optional
