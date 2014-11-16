@@ -240,7 +240,8 @@ PROXY_TWIMG_A = _PROXY['twimg']['a']
 PROXY_TWIMG_PBS = _PROXY['twimg']['pbs']
 
 PROXY_EROGAMESCAPE = _PROXY['erogamescape']
-PROXY_DMM = _PROXY['dmm']
+PROXY_DMM_JP = _PROXY['dmm_jp']
+PROXY_DMM_COM = _PROXY['dmm_com']
 PROXY_GETCHU = _PROXY['getchu']
 #PROXY_GETCHU_IP = _PROXY['getchu_ip']
 

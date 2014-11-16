@@ -225,7 +225,8 @@ proxies:
     a:          http://153.121.52.138/proxy/twimg/a0
     pbs:        http://153.121.52.138/proxy/twimg/pbs
   erogamescape: http://153.121.52.138/proxy/scape/~ap2/ero/toukei_kaiseki
-  dmm:          http://153.121.52.138/proxy/dmm
+  dmm_jp:       http://153.121.52.138/proxy/dmm
+  dmm_com:      http://153.121.52.138/proxy/dmm
   dlsite:       http://153.121.52.138/proxy/dlsite/www
   dlsite_img:   http://153.121.52.138/proxy/dlsite/img
   toranoana:    http://153.121.52.138/proxy/toranoana/www
@@ -271,6 +272,7 @@ proxies:
     # http://www.dmm.co.jp/mono/pcgame/-/detail/=/cid=1715apc10593/
     # http://sakuradite.org/proxy/dmm/mono/pcgame/-/detail/=/cid=1715apc10593/
     dmm: dmm.co.jp
+    dmmcom: dmm.com
     #dlsite
     #dlsite_img
     #getchu: getchu.com
