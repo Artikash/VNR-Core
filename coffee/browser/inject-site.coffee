@@ -5,15 +5,16 @@
 # - cdnBean: coffeebean.CdnBean
 # - settingsBean: coffeebean.SettingsBean
 
+@SITE_ENABLED = if @SITE_ENABLED? then not @SITE_ENABLED else true
+
 (->
   toggleclass = (el, cls, t) -> # element, string, booleaan
     if t then el.classList.add cls else el.classList.remove cls
-
-  toggleclass @, 'site-opt-tr', true
+  toggleclass @, 'site-enabled', SITE_ENABLED
 ).apply document.body
 
-unless @siteInjected
-  @siteInjected = true
+unless @SITE_INJECTED
+  @SITE_INJECTED = true
 
   linkcss = (url) -> # string -> el  return the inserted element
     el = document.createElement 'link'

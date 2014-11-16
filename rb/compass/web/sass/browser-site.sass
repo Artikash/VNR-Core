@@ -14,6 +14,9 @@ $header-btn-size: 18px
 $header-height: 2px + $header-btn-size
 $header-width: $header-height * 2
 
+body:not(.site-enabled) #sk-main
+  display: none
+
 #sk-main
   z-index: $base-z-index // top-most
   position: fixed
@@ -29,7 +32,7 @@ $header-width: $header-height * 2
     margin-bottom: 5px
     &:hover
       +box-shadow(0 0 20px yellow)
-    .close
+    .btn-close
       @extend .cursor-pointer
       color: snow
       margin: auto

@@ -19,7 +19,7 @@ LAYOUT_ID = 'sk-text'
 LAYOUT_HAML = '''\
 #sk-main
   .header(title="Draggable")
-    .button.close(title="Close") &times;
+    .btn-close(title="Close") &times;
   .body
     .content
 '''
@@ -38,6 +38,8 @@ class MainObject
   id: LAYOUT_ID
 
   constructor: ->
+    @visible = false
+
     h = Haml.render LAYOUT_HAML
     @$el = $ h
       .hide()
@@ -52,14 +54,29 @@ class MainObject
     @hamlText = Haml HAML_TEXT
     @hamlTr = Haml HAML_TR
 
+    # bind
+    $header.find('.btn-close').click ->
+      setEnabled false
+
+  isVisible: => @visible and @$el.is ':visible'
+
+  show: =>
+    unless @visible
+      @visible = true
+      @$el.fadeIn()
+
+  hide: =>
+    if @visible
+      @visible = false
+      @$el.fadeOut()
+
+  # Add text
+
   pageBreak: =>
-    if @$el.is ':visible'
+    if @visible
       @$text.empty()
     else
       @show()
-
-  show: => @$el.fadeIn()
-  hide: => @$el.fadeOut()
 
   addText: (text) => # string ->
     @pageBreak()
@@ -100,10 +117,18 @@ class MainObject
 
 ## Options ##
 
-isTranslationEnabled = -> document.body.classList.contains 'site-opt-tr'
+isEnabled = -> document.body.classList.contains 'site-enabled'
+setEnabled = (t) ->
+  el = document.body
+  cls = 'site-enabled'
+  if t
+    el.classList.add cls
+  else
+    el.classList.remove cls
 
 ## Main ##
 
+MAIN = null
 run = ->
   $iframe = $(SEL_IFRAME).contents()
   unless $iframe.length
@@ -119,8 +144,12 @@ run = ->
   MAIN = new MainObject
   # http://stackoverflow.com/questions/15657686/jquery-event-detect-changes-to-the-html-text-of-a-div
   $text.bind 'DOMSubtreeModified', -> # invoked when HTML content is changed
-    t = $.trim @textContent
-    MAIN.addText t if t
+    if isEnabled()
+      t = $.trim @textContent
+      if t
+        MAIN.show()
+        MAIN.addText t
+    true
 
 init = ->
   if @$ and @$.ui and @Haml # wait until needed modules are available

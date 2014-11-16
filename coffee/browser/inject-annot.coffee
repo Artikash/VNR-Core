@@ -29,8 +29,8 @@
 ).apply document.body
 
 # Make sure this script is only evaluated once
-unless @annotInjected
-  @annotInjected = true
+unless @ANNOT_INJECTED
+  @ANNOT_INJECTED = true
 
   linkcss = (url) -> # string -> el  return the inserted element
     el = document.createElement 'link'
