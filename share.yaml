@@ -47,6 +47,11 @@ env:
   #- $PWD/../../Dictionaries/lingoes/ja-zh.ld2
   #- $PWD/../NTLEA/ntleac.exe # do not work on Code Ultra
 
+webkit:
+  # Default: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/534.34 (KHTML, like Gecko) Website Reader/1416161842 Safari/534.34
+  # Use Chrome: http://www.useragentstring.com/pages/Browserlist/
+  useragent: Mozilla/5.0 (Windows NT 6.3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36
+
 # CDN
 cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as qrc://
 

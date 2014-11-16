@@ -12,7 +12,7 @@ from sakurakit import skwebkit
 from sakurakit.skclass import Q_Q
 from sakurakit.skdebug import dprint
 from sakurakit.sktr import tr_
-import beans, rc
+import beans, config, rc
 
 ## WebFrame injectors ##
 
@@ -252,10 +252,12 @@ class WbWebPage(skwebkit.SkWebPage):
   # See: WebKit/qt/Api/qwebpage.cpp
   # Example: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/534.34 (KHTML, like Gecko) MYAPP/MYVERSION Safari/534.34
   # QString userAgentForUrl(const QUrl &url) const
-  #def userAgentForUrl(self, url): # override
-  #  # Get rid of app name from user agent
-  #  ret = super(WbWebPage, self).userAgentForUrl(url)
-  #  return re.sub(r" \\S+ Safari/", " Safari/", ret)
+  def userAgentForUrl(self, url):
+    """@override"""
+    return config.USER_AGENT
+    # Get rid of app name from user agent
+    #ret = super(WbWebPage, self).userAgentForUrl(url)
+    #return re.sub(r" \\S+ Safari/", " Safari/", ret)
 
 @Q_Q
 class _WbWebPage(object):
