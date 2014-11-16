@@ -942,6 +942,9 @@ class GameInfo(object):
     """
     @return  bool
     """
+    g = self.gameItem
+    if g and g.banner:
+      return True
     r = self.scape
     if r and r.bannerUrl:
       return True
@@ -958,6 +961,9 @@ class GameInfo(object):
     return False
 
   def iterBannerImageUrls(self): # str or None
+    g = self.gameItem
+    if g and g.banner:
+      yield cacheman.cache_image_url(proxy.get_image_url(g.banner))
     # Trailers banner is usually larger
     trailersBanner = scapeBanner = None
     r = self.trailersItem
@@ -1345,6 +1351,7 @@ class GameItem(object):
     'brand',
     'series',
     'image',
+    'banner',
     'wiki',
     'fileSize',
     'timestamp',
@@ -1368,7 +1375,7 @@ class GameItem(object):
   )
 
   def __init__(self, id=0,
-      title="", romajiTitle="", brand="", series="", image="", wiki="",
+      title="", romajiTitle="", brand="", series="", image="", banner="", wiki="",
       timestamp=0, fileSize=0, date=None, artists='', sdartists='', writers='', musicians='',
       otome=False, okazu=False, scapeMedian=0, scapeCount=0, tags='',
       overallScoreSum=0, overallScoreCount=0, ecchiScoreSum=0, ecchiScoreCount=0, easyScoreSum=0, easyScoreCount=0,
@@ -1379,6 +1386,7 @@ class GameItem(object):
     self.brand = brand # unicode
     self.series = series # unicode
     self.image = image # str
+    self.banner = banner # str
     self.wiki = wiki # unicode
     self.fileSize = fileSize # int
     self.timestamp = timestamp # int
@@ -6199,7 +6207,7 @@ class _DataManager(object):
           if path == 3: # grimoire/references/reference
             tag = elem.tag
             text = elem.text
-            if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'wiki', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
+            if tag in ('title', 'romajiTitle', 'brand', 'series', 'image', 'banner', 'wiki', 'tags', 'artists', 'sdartists', 'writers', 'musicians'):
               setattr(e, tag, text)
             elif tag == 'keywords': # backward compatibility since 1386059148
               e.tags = text

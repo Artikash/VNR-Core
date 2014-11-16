@@ -80,6 +80,7 @@ class WbNetworkAccessManager(QNetworkAccessManager):
   # QNetworkReply *createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData = nullptr) override;
   def createRequest(self, op, req, outgoingData=None): # override
     url = req.url()
+    #print url
     newurl = _WbNetworkAccessManager.getBlockedUrl(url)
     if newurl:
       req = QNetworkRequest(newurl)
@@ -101,7 +102,7 @@ class _WbNetworkAccessManager:
 
   @staticmethod
   def onFinished(reply):
-    """
+    """Fix the redirect URL
     @param  reply  QNetworkReply
     """
     proxyUrl = reply.property(REQ_PROXY_URL)
