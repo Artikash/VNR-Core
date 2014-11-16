@@ -307,7 +307,8 @@ class _WebBrowser(object):
     a.setCheckable(True)
     a.setEnabled(False) # disable on startup
     a.setToolTip(i18n.tr("Game site specific settings"))
-    a.setMenu(self.siteMenu)
+    #a.setMenu(self.siteMenu)
+    a.triggered.connect(self._injectSite)
     btn = ret.widgetForAction(a)
     btn.setPopupMode(QtWidgets.QToolButton.InstantPopup)
 
@@ -390,17 +391,17 @@ class _WebBrowser(object):
 
     return ret
 
-  @memoizedproperty
-  def siteMenu(self):
-    ret = QtWidgets.QMenu(self.q)
+  #@memoizedproperty
+  #def siteMenu(self):
+  #  ret = QtWidgets.QMenu(self.q)
 
-    ss = settings.global_()
+  #  ss = settings.global_()
 
-    a = self.siteSubtitleAct = ret.addAction(i18n.tr("Display subtitles"))
-    a.setCheckable(True)
-    a.triggered.connect(self._injectSite)
+  #  a = self.siteSubtitleAct = ret.addAction(i18n.tr("Display subtitles"))
+  #  a.setCheckable(True)
+  #  a.triggered.connect(self._injectSite)
 
-    return ret
+  #  return ret
 
   ## Site-specific inject ##
 
@@ -415,15 +416,14 @@ class _WebBrowser(object):
         site = siteman.manager().matchSite(url)
         if site:
           enabled = True
-    self.siteSubtitleAct.setChecked(checked)
     self.siteAct.setEnabled(enabled)
+    self.siteAct.setChecked(enabled and checked)
 
   def _injectSite(self):
-    t = self.siteSubtitleAct.isChecked()
-    self.siteAct.setChecked(t)
-
+    t = self.siteAct.isChecked()
     v = self.tabWidget.currentWidget()
     if v:
+      dprint(t)
       v.setSiteEnabled(t)
       v.injectSite()
 
