@@ -30,7 +30,7 @@ LOCALES = \
 release: $(wildcard *.qm)
 
 zh_TW.ts: zh_CN.ts
-	$(ZHSZHT) $^ | sed 's/zh_CN/zh_TW/g' > $@
+	$(ZHSZHT) $^ | sed 's/zh_CN/zh_TW/g' | sed 's/指令碼/脚本/g' > $@
 
 $(addsuffix .ts,$(LOCALES)): ja_JP.ts
 	python ../../../scripts/tsupdate.py $@ $^

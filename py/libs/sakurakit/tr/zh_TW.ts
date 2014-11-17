@@ -370,12 +370,12 @@
     <message>
         <location filename="sktr.py" line="346"/>
         <source>Script</source>
-        <translation>指令碼</translation>
+        <translation>脚本</translation>
     </message>
     <message>
         <location filename="sktr.py" line="347"/>
         <source>Scripts</source>
-        <translation>指令碼</translation>
+        <translation>脚本</translation>
     </message>
     <message>
         <location filename="sktr.py" line="348"/>
@@ -2170,7 +2170,7 @@
     <message>
         <location filename="sktr.py" line="217"/>
         <source>Scenario</source>
-        <translation>指令碼</translation>
+        <translation>脚本</translation>
     </message>
     <message>
         <location filename="sktr.py" line="218"/>
