@@ -484,6 +484,32 @@ bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
  *  EBP 0029F044
  *  ESI 04EE4150
  *  EDI 0029F020
+ *
+ *  とな恋 KAGParserEx.dll
+ *  10013948   68 14830210      push _3.10028314                         ; UNICODE "[r]"
+ *  1001394d   83c2 7c          add edx,0x7c
+ *  10013950   52               push edx
+ *  10013951   ffd0             call eax
+ *  10013953   8b75 08          mov esi,dword ptr ss:[ebp+0x8]
+ *  10013956   eb 02            jmp short _3.1001395a
+ *  10013958   8bf2             mov esi,edx
+ *  1001395a   8b46 58          mov eax,dword ptr ds:[esi+0x58]
+ *  1001395d   8b4e 5c          mov ecx,dword ptr ds:[esi+0x5c]
+ *  10013960   66:833c41 5b     cmp word ptr ds:[ecx+eax*2],0x5b    ; jichi: hook here
+ *  10013965   75 06            jnz short _3.1001396d
+ *  10013967   83c0 01          add eax,0x1
+ *  1001396a   8946 58          mov dword ptr ds:[esi+0x58],eax
+ *  1001396d   8346 58 01       add dword ptr ds:[esi+0x58],0x1
+ *  10013971   807e 7a 00       cmp byte ptr ds:[esi+0x7a],0x0
+ *  10013975  ^0f85 b5a7ffff    jnz _3.1000e130
+ *  1001397b   8b45 08          mov eax,dword ptr ss:[ebp+0x8]
+ *  1001397e   83b8 90000000 ff cmp dword ptr ds:[eax+0x90],-0x1
+ *  10013985   0f84 68040000    je _3.10013df3
+ *  1001398b   8bd8             mov ebx,eax
+ *  1001398d  ^e9 a1a7ffff      jmp _3.1000e133
+ *  10013992   8d7c24 78        lea edi,dword ptr ss:[esp+0x78]
+ *  10013996   8d7424 54        lea esi,dword ptr ss:[esp+0x54]
+ *  1001399a   e8 e16fffff      call _3.1000a980
  */
 
 namespace { // unnamed
@@ -507,11 +533,24 @@ void SpecialHookKAGParser(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *spl
     *split = FIXED_SPLIT_VALUE; // merge all threads
   }
 }
+
+void SpecialHookKAGParserEx(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  // 10013960   66:833c41 5b     cmp word ptr ds:[ecx+eax*2],0x5b
+  CC_UNUSED(hp);
+  DWORD eax = regof(eax, esp_base),
+        ecx = regof(ecx, esp_base);
+  if (ecx && !eax) { // skip string when ecx is not zero
+    *data = ecx;
+    *len = ::wcslen((LPCWSTR)ecx) * 2; // 2 == sizeof(wchar_t)
+    *split = FIXED_SPLIT_VALUE; // merge all threads
+  }
+}
 } // unnamed namespace
-bool InsertKAGParserHook(const wchar_t *module) // either KAGParser.dll or KAGParserEx.dll
+bool InsertKAGParserHook()
 {
   ULONG startAddress, stopAddress;
-  if (!NtInspect::getModuleMemoryRange(module, &startAddress, &stopAddress)) {
+  if (!NtInspect::getModuleMemoryRange(L"KAGParser.dll", &startAddress, &stopAddress)) {
     ConsoleOutput("vnreng:KAGParser: failed to get memory range");
     return false;
   }
@@ -546,6 +585,46 @@ bool InsertKAGParserHook(const wchar_t *module) // either KAGParser.dll or KAGPa
   hp.type = USING_UNICODE|FIXING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
   ConsoleOutput("vnreng: INSERT KAGParser");
   NewHook(hp, L"KAGParser");
+  return true;
+}
+bool InsertKAGParserExHook()
+{
+  ULONG startAddress, stopAddress;
+  if (!NtInspect::getModuleMemoryRange(L"KAGParserEx.dll", &startAddress, &stopAddress)) {
+    ConsoleOutput("vnreng:KAGParserEx: failed to get memory range");
+    return false;
+  }
+  const wchar_t *patternString = L"[r]";
+  const size_t patternStringSize = ::wcslen(patternString) * 2;
+  ULONG addr = MemDbg::findBytes(patternString, patternStringSize, startAddress, stopAddress);
+  if (!addr) {
+    ConsoleOutput("vnreng:KAGParserEx: [r] global string not found");
+    return false;
+  }
+  // Find where it is used as function parameter
+  addr = MemDbg::findPushAddress(addr, startAddress, stopAddress);
+  if (!addr) {
+    ConsoleOutput("vnreng:KAGParserEx: push address not found");
+    return false;
+  }
+
+  const BYTE ins[] = {
+    0x66,0x83,0x3c,0x41, 0x5b // 10013960   66:833c41 5b     cmp word ptr ds:[ecx+eax*2],0x5b    ; jichi: hook here
+  };
+  enum { range = 0x20 }; // 0x10013960 - 0x10013948 = 24
+  addr = MemDbg::findBytes(ins, sizeof(ins), addr, addr + range);
+  if (!addr) {
+    ConsoleOutput("vnreng:KAGParserEx: instruction pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr;
+  hp.extern_fun = SpecialHookKAGParserEx;
+  hp.filter_fun = KAGParserFilter;
+  hp.type = USING_UNICODE|FIXING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
+  ConsoleOutput("vnreng: INSERT KAGParserEx");
+  NewHook(hp, L"KAGParserEx");
   return true;
 }
 

@@ -145,6 +145,7 @@ simple:
   - Imageepoch2 PSP
   - KID PSP
   - KAGParser
+  - KAGParserEx
   - KiriKiri1
   - KiriKiri2
   - KiriKiriZ
@@ -400,6 +401,7 @@ wchar:
   - GXP
   - IronGameSystem
   - KAGParser
+  - KAGParserEx
   - KiriKiri1
   - KiriKiri2
   - KiriKiriZ
@@ -433,6 +435,7 @@ focus:
   - Adobe Flash 10
   - HorkEye
   - KAGParser
+  - KAGParserEx
   - KiriKiriZ
   - SiglusEngine2
   - SiglusEngine3
