@@ -92,6 +92,7 @@ processes:
   - ITH.exe             # ITH
   - iTunes.exe          # Apple
   - iTunesHelper.exe    # Apple
+  - Jane2ch.exe         # 2ch
   - JCT.exe             # JBeijing
   - jct.exe             # JBeijing
   - JCTchs.exe          # JBeijing
