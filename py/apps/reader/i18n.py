@@ -76,7 +76,7 @@ SITE_NAMES = {
 def site_name(t): return SITE_NAMES.get(t) or ''
 
 SCORE_NAMES = {
-  'overall': mytr_("Serious"),
+  'overall': mytr_("Overall"),
   'ecchi': mytr_("Ecchi"),
   'easy': mytr_("Easy"),
 }

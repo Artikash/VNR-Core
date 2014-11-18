@@ -105,7 +105,7 @@ class reader(QObject):
       self.tr('Discussion'),
       self.tr('Game Discussion'),
 
-      self.tr('Serious'),
+      self.tr('Overall'),
       self.tr('Ecchi'),
       self.tr('Easy'),
 
