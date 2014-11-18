@@ -629,11 +629,6 @@
         <translation>レスの編集</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="108"/>
-        <source>Serious</source>
-        <translation>シリアス</translation>
-    </message>
-    <message>
         <location filename="mytr.py" line="109"/>
         <source>Ecchi</source>
         <translation>えっち</translation>
@@ -817,6 +812,11 @@
         <location filename="mytr.py" line="210"/>
         <source>Automatic speech recognition</source>
         <translation>自動音声認識</translation>
+    </message>
+    <message>
+        <location filename="mytr.py" line="108"/>
+        <source>Overall</source>
+        <translation>総合</translation>
     </message>
 </context>
 </TS>

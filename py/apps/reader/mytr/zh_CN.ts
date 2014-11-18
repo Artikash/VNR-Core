@@ -629,11 +629,6 @@
         <translation>编辑帖子</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="108"/>
-        <source>Serious</source>
-        <translation>剧情</translation>
-    </message>
-    <message>
         <location filename="mytr.py" line="109"/>
         <source>Ecchi</source>
         <translation>H</translation>
@@ -817,6 +812,11 @@
         <location filename="mytr.py" line="210"/>
         <source>Automatic speech recognition</source>
         <translation>自动语音识别</translation>
+    </message>
+    <message>
+        <location filename="mytr.py" line="108"/>
+        <source>Overall</source>
+        <translation type="unfinished">综合</translation>
     </message>
 </context>
 </TS>
