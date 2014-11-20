@@ -5,16 +5,19 @@
 
 // Images
 
+$img-shadow-blur: 6px
+
 .img-shadow
-  +box-shadow(0 0 6px #333)
+  +box-shadow(0 0 $img-shadow-blur #333)
   &:hover
-    +box-shadow(0 0 6px red)
+    +box-shadow(0 0 $img-shadow-blur red)
 
 .img-shadow-hover:hover
-  +box-shadow(0 0 6px red)
+  +box-shadow(0 0 $img-shadow-blur red)
 
 .avatar-shadow
-  +single-box-shadow
+  //+single-box-shadow // broken in new version
+  +box-shadow(0 0 $img-shadow-blur #333)
   &:hover
     @extend .img-shadow-hover
 
