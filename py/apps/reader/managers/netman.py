@@ -204,7 +204,7 @@ class _NetworkManager(object):
 
   ## AJAX #
 
-  def ajax(self, path, data):
+  def ajax(self, path, data, params=None):
     """
     @param  path  unicode
     @param  data  kw or str
@@ -216,6 +216,7 @@ class _NetworkManager(object):
         data = json.dumps(data)
       r = self.qtSession.post(JSON_API + path,
           data=data,
+          params=param,
           headers=JSON_HEADERS) #, headers=GZIP_HEADERS)
       if r.ok:
         res = json.loads(r.content)
@@ -1892,6 +1893,24 @@ class NetworkManager(QObject):
     Thread-safe.
     """
     return self.isOnline() and self.__d.ajax('post/update', data)
+
+  def submitImage(self, data, params):
+    """
+    @param  data  image data
+    @param  params  kw
+    @return  bool
+    Thread-safe.
+    """
+    return self.isOnline() and self.__d.ajax('upload/image', data, params)
+
+  def submitAudio(self, data, params):
+    """
+    @param  data  image data
+    @param  params  kw
+    @return  bool
+    Thread-safe.
+    """
+    return self.isOnline() and self.__d.ajax('upload/audio', data, params)
 
 @memoized
 def manager(): return NetworkManager()
