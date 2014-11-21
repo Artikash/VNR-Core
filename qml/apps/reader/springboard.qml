@@ -171,6 +171,7 @@ Item { id: root_
     }
 
     visible: !!game
+
     game: gameDashboard_.currentObject
 
     SpringBoard.CometCounter { //id: counter_

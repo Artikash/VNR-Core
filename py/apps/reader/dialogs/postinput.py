@@ -10,21 +10,22 @@ if __name__ == '__main__':
   import debug
   debug.initenv()
 
-import json
-from PySide.QtCore import Qt, Signal, Slot, QObject
+import json, os
+from PySide.QtCore import Qt, Signal, Slot, Property, QObject
 from Qt5 import QtWidgets
-from sakurakit import skqss, skwidgets
+from sakurakit import skfileio, skqss, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
 from mytr import mytr_, my
-import config, growl, i18n, rc
+import config, defs, growl, i18n, rc
 
 TEXTEDIT_MINIMUM_HEIGHT = 50
 
 @Q_Q
 class _PostInput(object):
   def __init__(self, q):
+    self.imageEnabled = True
     self.clear()
 
     self._createUi(q)
@@ -34,6 +35,7 @@ class _PostInput(object):
   def clear(self):
     self.replyId = 0 # long
     self.postContent = '' # str
+    self.imagePath = '' # unicode
 
     import dataman
     self.postLanguage = dataman.manager().user().language
@@ -50,6 +52,9 @@ class _PostInput(object):
     layout.addWidget(self.contentEdit)
 
     row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.browseImageButton)
+    row.addWidget(self.removeImageButton)
+    row.addWidget(self.imageTitleEdit)
     row.addStretch()
     #row.addWidget(self.cancelButton)
     row.addWidget(self.saveButton)
@@ -77,6 +82,30 @@ class _PostInput(object):
     return ret
 
   @memoizedproperty
+  def browseImageButton(self):
+    ret = QtWidgets.QPushButton(tr_("Image"))
+    skqss.class_(ret, 'btn btn-info')
+    ret.setToolTip(tr_("Upload"))
+    ret.clicked.connect(self._browseImage)
+    return ret
+
+  @memoizedproperty
+  def removeImageButton(self):
+    ret = QtWidgets.QPushButton(tr_("Remove"))
+    skqss.class_(ret, 'btn btn-danger')
+    ret.setToolTip(tr_("Remove"))
+    ret.clicked.connect(self._removeImage)
+    return ret
+
+  @memoizedproperty
+  def imageTitleEdit(self):
+    ret = QtWidgets.QLineEdit()
+    skqss.class_(ret, 'editable')
+    ret.setToolTip(tr_("Title"))
+    ret.textChanged.connect(self._refreshSaveButton)
+    return ret
+
+  @memoizedproperty
   def contentEdit(self):
     ret = QtWidgets.QTextEdit()
     #skqss.class_(ret, 'texture')
@@ -84,7 +113,7 @@ class _PostInput(object):
     ret.setToolTip(tr_("Content"))
     ret.setAcceptRichText(False)
     ret.setMinimumHeight(TEXTEDIT_MINIMUM_HEIGHT)
-    ret.textChanged.connect(self._onContentChanged)
+    ret.textChanged.connect(self._refreshSaveButton)
     return ret
 
   @memoizedproperty
@@ -105,16 +134,58 @@ class _PostInput(object):
     return config.language2htmllocale(config.LANGUAGES[self.languageEdit.currentIndex()])
   def _getContent(self):
     return self.contentEdit.toPlainText().strip()
+  def _getImageTitle(self):
+    return self.imageTitleEdit.text().strip()
 
-  def _onContentChanged(self):
+  def _refreshSaveButton(self):
     self.saveButton.setEnabled(self._canSave())
 
   def _canSave(self): # -> bool
     t = self._getContent()
-    return len(t) >= config.POST_CONTENT_MIN_LENGTH and len(t) <= config.POST_CONTENT_MAX_LENGTH
+    if len(t) < config.POST_CONTENT_MIN_LENGTH or len(t) > config.POST_CONTENT_MAX_LENGTH:
+      return False
+    if self.imagePath and not self._getImageTitle():
+      return False
+    return True
 
   def _onLanguageChanged(self):
     self.spellHighlighter.setLanguage(self._getLanguage())
+
+  def _removeImage(self):
+    self.imagePath = ''
+    self._refreshImage()
+
+  def _browseImage(self):
+    FILTERS = "%s (%s)" % (tr_("Image"), defs.UPLOAD_IMAGE_FILTER)
+    path, filter = QtWidgets.QFileDialog.getOpenFileName(self.q,
+        my.tr("Select the file to upload"),
+        "", FILTERS)
+    if path:
+      sz = skfileio.filesize(path)
+      if sz > defs.MAX_UPLOAD_IMAGE_SIZE:
+        growl.warn(my.tr("File to upload is too large")
+            + " &gt;= %s" % defs.MAX_UPLOAD_IMAGE_SIZE)
+      elif sz:
+        self.imagePath = path
+        self._refreshImage()
+
+  def _iterImageWidgets(self):
+    yield self.browseImageButton
+    yield self.removeImageButton
+    yield self.imageTitleEdit
+
+  def _refreshImage(self):
+    for w in self._iterImageWidgets():
+      w.setEnabled(self.imageEnabled)
+    if self.imageEnabled:
+      self.removeImageButton.setVisible(bool(self.imagePath))
+      if self.imagePath:
+        name = os.path.basename(self.imagePath)
+        title = os.path.splitext(name)[0]
+      else:
+        title = ''
+      self.imageTitleEdit.setText(title)
+      self.imageTitleEdit.setVisible(bool(title))
 
   def _save(self):
     post = {}
@@ -127,12 +198,24 @@ class _PostInput(object):
     #post['pasword'] = user.password
 
     if post['content']:
+      imageData = ''
+      if self.imagePath:
+        imageTitle = self._getImageTitle()
+        if imageTitle:
+          image = {
+            'filename': self.imagePath,
+            'title': imageTitle,
+            'size': skfileio.filesize(self.imagePath),
+          }
+          imageData = json.dumps(image)
+
       if self.replyId:
         post['type'] = 'reply'
         post['reply'] = self.replyId
       else:
         post['type'] = 'post'
-      self.q.postReceived.emit(json.dumps(post))
+      postData = json.dumps(post)
+      self.q.postReceived.emit(postData, imageData)
       #self.postContent = '' # clear content but leave language
 
       growl.msg(my.tr("Edit submitted"))
@@ -148,9 +231,11 @@ class _PostInput(object):
 
     self.spellHighlighter.setLanguage(self.postLanguage) # must after lang
 
+    self._refreshImage()
+
 class PostInput(QtWidgets.QDialog):
 
-  postReceived = Signal(unicode) # json
+  postReceived = Signal(unicode, unicode) # json post, json image
 
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
@@ -166,8 +251,14 @@ class PostInput(QtWidgets.QDialog):
     import dataman
     dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
 
+  def imageEnabled(self): return self.__d.imageEnabled
+  def setImageEnabled(self, t): self.__d.imageEnabled = t
+
   def replyId(self): return self.__d.replyId
   def setReplyId(self, v): self.__d.replyId = v
+
+  def imagePath(self): return self.__d.imagePath
+  def setImagePath(self, v): self.__d.imagePath = v
 
   #def clear(self): self.__d.clear()
 
@@ -180,21 +271,24 @@ class PostInput(QtWidgets.QDialog):
 class _PostInputManager:
   def __init__(self):
     self.dialogs = []
+    self.imageEnabled = True
 
   @staticmethod
   def _createDialog():
     import windows
     parent = windows.top()
     ret = PostInput(parent)
-    ret.resize(300, 200)
+    ret.resize(400, 200)
     return ret
 
   def getDialog(self, q): # QObject -> QWidget
     for w in self.dialogs:
       if not w.isVisible():
         #w.clear() # use last input
+        w.setImageEnabled(self.imageEnabled)
         return w
     ret = self._createDialog()
+    ret.setImageEnabled(self.imageEnabled)
     self.dialogs.append(ret)
     ret.postReceived.connect(q.postReceived)
     return ret
@@ -213,7 +307,7 @@ class PostInputManager(QObject):
     netman.manager().onlineChanged.connect(lambda t: t or self.hide())
     dataman.manager().loginChanged.connect(lambda t: t or self.hide())
 
-  postReceived = Signal(unicode) # json
+  postReceived = Signal(unicode, unicode) # json post, json image
 
   #def clear(self): self.hide()
 
@@ -230,10 +324,14 @@ class PostInputManager(QObject):
         if w.isVisible():
           w.hide()
 
-  def newPost(self, replyId=0): # long ->
+  def newPost(self, replyId=0, imagePath=''): # long, unicode ->
     w = self.__d.getDialog(self)
     w.setReplyId(replyId)
+    w.setImagePath(imagePath)
     w.show()
+
+  def isImageEnabled(self): return self.__d.imageEnabled
+  def setImageEnabled(self, t): self.__d.imageEnabled = t
 
 #@memoized
 #def manager(): return PostInputManager()
@@ -245,13 +343,19 @@ class PostInputManagerBean(QObject):
     self.manager = manager or PostInputManager(self)
     self.manager.postReceived.connect(self.postReceived)
 
-  postReceived = Signal(unicode) # json
+  postReceived = Signal(unicode, unicode) # json post, json image
 
   @Slot()
   def newPost(self): self.manager.newPost()
 
   @Slot(int)
   def replyPost(self, postId): self.manager.newPost(replyId=postId)
+
+  imageEnabledChanged = Signal(bool)
+  imageEnabled = Property(bool,
+      lambda self: self.manager.isImageEnabled(),
+      lambda self, t: self.manager.setImageEnabled(t),
+      notify=imageEnabledChanged)
 
 if __name__ == '__main__':
   a = debug.app()

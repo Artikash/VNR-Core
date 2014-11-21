@@ -20,10 +20,11 @@ Item { id: root_
   // - Private -
 
   Plugin.PostInputManager { id: editor_
+    imageEnabled: false
     Component.onCompleted: postReceived.connect(root_.submit)
   }
 
-  function submit(postString) {
+  function submit(postString, imageString) { // image string is ignored
     console.log(postString)
     var post = JSON.parse(postString)
     var user = statusPlugin_.userName

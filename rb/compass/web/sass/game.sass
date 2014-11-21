@@ -30,8 +30,10 @@
 //.img-rounded // the same as bootstrap
 //  border-radius: 6px
 
-.bootstrap-switch // bootstrap-switch bug
-  max-height: 30px // for min size
+// bootstrap-switch bug
+.bootstrap-switch
+  // for min size
+  max-height: 30px
   margin-top: -5px
 
 // search button
@@ -55,7 +57,8 @@ $yt-img-scale: 1.0
 .contents > .review
   margin: 9px
   *
-    border: 0 !important // disable all borders
+    // disable all borders
+    border: 0 !important
 
 // ErogameScape reviews
 .scape.review .entry
@@ -95,7 +98,8 @@ $yt-img-scale: 1.0
     top: 18px
     right: 18px
     img
-      width: 230px // getchu image width
+      // getchu image width
+      width: 230px
       //margin: 0 0 4px 9px
       @extend .img-shadow
     //.close
@@ -201,7 +205,8 @@ $yt-img-scale: 1.0
               width: 100%
       &.stats
         position: relative
-        .rating // .raty
+        // .raty
+        .rating
           // display:block + float-left is needed to use margin-top, see: http://stackoverflow.com/questions/16570110/add-margin-top-or-padding-top-to-a-series-of-display-inline-div-tags
           float: left
           margin-top: -5px
@@ -276,7 +281,7 @@ $post-avatar-width: $topic-avatar-width * 0.8
 .post
   img.avatar
     width: $topic-avatar-width
-    height: $topic-avatar-width
+    //height: $topic-avatar-width
     @extend .avatar-shadow
 
   padding-top: 9px // include the height of footer
@@ -334,7 +339,7 @@ $post-avatar-width: $topic-avatar-width * 0.8
       min-height: $post-avatar-width
       img.avatar // smaller
         width: $post-avatar-width
-        height: $post-avatar-width
+        //height: $post-avatar-width
       > .right
         margin-left: $post-avatar-width + 9px
 

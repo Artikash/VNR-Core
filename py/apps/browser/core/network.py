@@ -66,7 +66,7 @@ class WbNetworkAccessManager(QNetworkAccessManager):
   def __init__(self, parent=None):
     super(WbNetworkAccessManager, self).__init__(parent)
     self.sslErrors.connect(_WbNetworkAccessManager.onSslErrors)
-    self.finished.connect(_WbNetworkAccessManager.onFinished)
+    self.finished.connect(_WbNetworkAccessManager.onReplyFinished)
 
     # Enable offline cache
     cache = QNetworkDiskCache(self)
@@ -89,19 +89,32 @@ class WbNetworkAccessManager(QNetworkAccessManager):
       if newurl and newurl != url:
         req = QNetworkRequest(req) # since request tis constent
         req.setUrl(newurl)
-        #req.setRawHeader('User-Agent', config.USER_AGENT)
+        _WbNetworkAccessManager.setRequestHeaders(req)
         reply = super(WbNetworkAccessManager, self).createRequest(op, req, outgoingData)
         #if url.host().lower().endswith('dmm.co.jp'):
         reply.setUrl(url) # restore the old url
         reply.setProperty(REQ_PROXY_URL, url)
         return reply
-    #req.setRawHeader('User-Agent', config.USER_AGENT)
+
+    _WbNetworkAccessManager.setRequestHeaders(req)
     return super(WbNetworkAccessManager, self).createRequest(op, req, outgoingData)
 
 class _WbNetworkAccessManager:
 
   @staticmethod
-  def onFinished(reply):
+  def setRequestHeaders(req):
+    """Set the http header
+    @param  req  QNetworkRequest
+    """
+    pass
+    #req.setRawHeader('User-Agent', config.USER_AGENT) # handled in WebKit
+    #IP = '153.121.52.138'
+    #keys = 'X-Forwarded-For', 'Client-IP', 'X-Client-IP', 'Real-IP', 'X-Real-IP'
+    #for k in keys:
+    #  req.setRawHeader(k, IP)
+
+  @staticmethod
+  def onReplyFinished(reply):
     """Fix the redirect URL
     @param  reply  QNetworkReply
     """

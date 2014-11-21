@@ -204,11 +204,12 @@ class _NetworkManager(object):
 
   ## AJAX #
 
-  def ajax(self, path, data):
+  def ajax(self, path, data, params=None, returndict=False):
     """
     @param  path  unicode
     @param  data  kw or str
-    @return  bool
+    @param* returndict  bool
+    @return  bool or kw
     """
     #data['ver'] = self.version
     try:
@@ -216,17 +217,30 @@ class _NetworkManager(object):
         data = json.dumps(data)
       r = self.qtSession.post(JSON_API + path,
           data=data,
+          params=params,
           headers=JSON_HEADERS) #, headers=GZIP_HEADERS)
       if r.ok:
         res = json.loads(r.content)
+        if returndict:
+          return res
         return res['status'] == 0
     except Exception, e:
       derror(e)
 
     dwarn("failed data follow")
-    try: dwarn(path, data)
+    try: dwarn(path, params or data)
     except: pass
     return False
+
+  def upload(self, path, data, params):
+    """
+    @param  path  unicode
+    @param  data  kw or str
+    @param  params  kw
+    @return  long or None
+    """
+    r = self.ajax(path, data, params, returndict=True)
+    return r and r.get('id')
 
   ## User #
 
@@ -1892,6 +1906,26 @@ class NetworkManager(QObject):
     Thread-safe.
     """
     return self.isOnline() and self.__d.ajax('post/update', data)
+
+  def submitImage(self, data, params):
+    """
+    @param  data  str  image data
+    @param  params  kw
+    @return  long or None
+    Thread-safe.
+    """
+    if self.isOnline():
+      return self.__d.upload('upload/image', data, params)
+
+  #def submitAudio(self, data, params):
+  #  """
+  #  @param  data  image data
+  #  @param  params  kw
+  #  @return  bool
+  #  Thread-safe.
+  #  """
+  #  if self.isOnline():
+  #    self.__d.upload('upload/audio', data, params)
 
 @memoized
 def manager(): return NetworkManager()
