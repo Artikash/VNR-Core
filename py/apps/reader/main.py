@@ -2293,7 +2293,7 @@ class MainObjectProxy(QObject):
   @Slot()
   def showGlobalChatView(self): manager().showChatView(config.GLOBAL_TOPIC_ID)
   @Slot(result=bool)
-  def isGlobalChatViewVisible(self): manager().isChatViewVisible() # global id not used
+  def isGlobalChatViewVisible(self): return manager().isChatViewVisible() # global id not used
 
   @Slot(QObject) # dataman.GameObject
   def showGameObjectSubtitles(self, g): manager().showSubtitleView(game=g)
