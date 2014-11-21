@@ -147,7 +147,7 @@ simple:
   - KAGParser
   - KAGParserEx
   - KiriKiri1
-  - KiriKiri2
+  #- KiriKiri2 http://sakuradite.com/game/4633
   - KiriKiriZ
   #- KONAMI PSP # KONAMI could have both repeat and float text
   - Live
@@ -224,6 +224,7 @@ norepeat:
   - EXP # there could be different type of threads, but it is OK to merge them
   - Gesen18
   - GXP # I am not sure if it float or not
+  - KiriKiri2  # might float, http://sakuradite.com/game/4633
   - QLIE
   - QLIE2
   - NEXTON
