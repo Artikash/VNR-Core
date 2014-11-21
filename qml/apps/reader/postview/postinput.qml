@@ -20,6 +20,7 @@ Item { id: root_
   // - Private -
 
   Plugin.PostInputManager { id: editor_
+    imageEnabled: false
     Component.onCompleted: postReceived.connect(root_.submit)
   }
 

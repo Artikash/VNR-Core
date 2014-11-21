@@ -11,7 +11,7 @@ if __name__ == '__main__':
   debug.initenv()
 
 import json, os
-from PySide.QtCore import Qt, Signal, Slot, QObject
+from PySide.QtCore import Qt, Signal, Slot, Property, QObject
 from Qt5 import QtWidgets
 from sakurakit import skfileio, skqss, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty
@@ -25,6 +25,8 @@ TEXTEDIT_MINIMUM_HEIGHT = 50
 @Q_Q
 class _PostEditor(object):
   def __init__(self, q):
+    self.imageEnabled = True
+
     self.postId = 0 # long
     self.userName = '' # unicode
     #self.userName = '' # unicode
@@ -51,7 +53,7 @@ class _PostEditor(object):
     layout.addWidget(self.contentEdit)
 
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(self.imageButton)
+    row.addWidget(self.browseImageButton)
     row.addWidget(self.removeImageButton)
     row.addWidget(self.imageTitleEdit)
     row.addStretch()
@@ -81,7 +83,7 @@ class _PostEditor(object):
     return ret
 
   @memoizedproperty
-  def imageButton(self):
+  def browseImageButton(self):
     ret = QtWidgets.QPushButton(tr_("Image"))
     skqss.class_(ret, 'btn btn-info')
     ret.setToolTip(tr_("Upload"))
@@ -191,18 +193,26 @@ class _PostEditor(object):
         self.imagePath = path
         self._refreshImage()
 
-  def _refreshImage(self):
-    enabled = bool(self.imagePath or self.imageId)
-    self.removeImageButton.setVisible(enabled)
-    self.imageTitleEdit.setVisible(enabled)
+  def _iterImageWidgets(self):
+    yield self.browseImageButton
+    yield self.removeImageButton
+    yield self.imageTitleEdit
 
-    if not self.imageTitle and self.imagePath:
-      name = os.path.basename(self.imagePath)
-      title = os.path.splitext(name)[0]
-      self.imageTitleEdit.setText(title)
-    #else:
-    #  self.imageTitleEdit.setText('')
-    self._refreshSaveButton()
+  def _refreshImage(self):
+    for w in self._iterImageWidgets():
+      w.setEnabled(self.imageEnabled)
+    if self.imageEnabled:
+      enabled = bool(self.imagePath or self.imageId)
+      self.removeImageButton.setVisible(enabled)
+      self.imageTitleEdit.setVisible(enabled)
+
+      if not self.imageTitle and self.imagePath:
+        name = os.path.basename(self.imagePath)
+        title = os.path.splitext(name)[0]
+        self.imageTitleEdit.setText(title)
+      #else:
+      #  self.imageTitleEdit.setText('')
+      self._refreshSaveButton()
 
   def _save(self):
     v = self._getContent()
@@ -257,6 +267,9 @@ class _PostEditor(object):
 
     self.spellHighlighter.setLanguage(self.postLanguage) # must after lang
 
+    for w in self._iterImageWidgets():
+      w.setEnabled(self.imageEnabled)
+
 class PostEditor(QtWidgets.QDialog):
 
   postChanged = Signal(unicode, unicode) # json post, json image
@@ -299,9 +312,13 @@ class PostEditor(QtWidgets.QDialog):
       self.__d.refresh()
     super(PostEditor, self).setVisible(value)
 
+  def imageEnabled(self): return self.__d.imageEnabled
+  def setImageEnabled(self, t): self.__d.imageEnabled = t
+
 class _PostEditorManager:
   def __init__(self):
     self.dialogs = []
+    self.imageEnabled = True
 
   @staticmethod
   def _createDialog():
@@ -314,8 +331,10 @@ class _PostEditorManager:
   def getDialog(self, q): # QObject -> QWidget
     for w in self.dialogs:
       if not w.isVisible():
+        w.setImageEnabled(self.imageEnabled)
         return w
     ret = self._createDialog()
+    ret.setImageEnabled(self.imageEnabled)
     self.dialogs.append(ret)
     ret.postChanged.connect(q.postChanged)
     return ret
@@ -356,6 +375,9 @@ class PostEditorManager(QObject):
     w.setPost(**post)
     w.show()
 
+  def isImageEnabled(self): return self.__d.imageEnabled
+  def setImageEnabled(self, t): self.__d.imageEnabled = t
+
 #@memoized
 #def manager(): return PostEditorManager()
 
@@ -367,6 +389,12 @@ class PostEditorManagerBean(QObject):
     self.manager.postChanged.connect(self.postChanged)
 
   postChanged = Signal(unicode, unicode) # json post, json image
+
+  imageEnabledChanged = Signal(bool)
+  imageEnabled = Property(bool,
+      lambda self: self.manager.isImageEnabled(),
+      lambda self, t: self.manager.setImageEnabled(t),
+      notify=imageEnabledChanged)
 
   @Slot(unicode)
   def editPost(self, data): # json ->

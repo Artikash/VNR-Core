@@ -11,7 +11,7 @@ if __name__ == '__main__':
   debug.initenv()
 
 import json, os
-from PySide.QtCore import Qt, Signal, Slot, QObject
+from PySide.QtCore import Qt, Signal, Slot, Property, QObject
 from Qt5 import QtWidgets
 from sakurakit import skfileio, skqss, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty
@@ -25,6 +25,7 @@ TEXTEDIT_MINIMUM_HEIGHT = 50
 @Q_Q
 class _PostInput(object):
   def __init__(self, q):
+    self.imageEnabled = True
     self.clear()
 
     self._createUi(q)
@@ -51,7 +52,7 @@ class _PostInput(object):
     layout.addWidget(self.contentEdit)
 
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(self.imageButton)
+    row.addWidget(self.browseImageButton)
     row.addWidget(self.removeImageButton)
     row.addWidget(self.imageTitleEdit)
     row.addStretch()
@@ -81,7 +82,7 @@ class _PostInput(object):
     return ret
 
   @memoizedproperty
-  def imageButton(self):
+  def browseImageButton(self):
     ret = QtWidgets.QPushButton(tr_("Image"))
     skqss.class_(ret, 'btn btn-info')
     ret.setToolTip(tr_("Upload"))
@@ -168,15 +169,23 @@ class _PostInput(object):
         self.imagePath = path
         self._refreshImage()
 
+  def _iterImageWidgets(self):
+    yield self.browseImageButton
+    yield self.removeImageButton
+    yield self.imageTitleEdit
+
   def _refreshImage(self):
-    self.removeImageButton.setVisible(bool(self.imagePath))
-    if self.imagePath:
-      name = os.path.basename(self.imagePath)
-      title = os.path.splitext(name)[0]
-    else:
-      title = ''
-    self.imageTitleEdit.setText(title)
-    self.imageTitleEdit.setVisible(bool(title))
+    for w in self._iterImageWidgets():
+      w.setEnabled(self.imageEnabled)
+    if self.imageEnabled:
+      self.removeImageButton.setVisible(bool(self.imagePath))
+      if self.imagePath:
+        name = os.path.basename(self.imagePath)
+        title = os.path.splitext(name)[0]
+      else:
+        title = ''
+      self.imageTitleEdit.setText(title)
+      self.imageTitleEdit.setVisible(bool(title))
 
   def _save(self):
     post = {}
@@ -242,6 +251,9 @@ class PostInput(QtWidgets.QDialog):
     import dataman
     dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
 
+  def imageEnabled(self): return self.__d.imageEnabled
+  def setImageEnabled(self, t): self.__d.imageEnabled = t
+
   def replyId(self): return self.__d.replyId
   def setReplyId(self, v): self.__d.replyId = v
 
@@ -259,6 +271,7 @@ class PostInput(QtWidgets.QDialog):
 class _PostInputManager:
   def __init__(self):
     self.dialogs = []
+    self.imageEnabled = True
 
   @staticmethod
   def _createDialog():
@@ -272,8 +285,10 @@ class _PostInputManager:
     for w in self.dialogs:
       if not w.isVisible():
         #w.clear() # use last input
+        w.setImageEnabled(self.imageEnabled)
         return w
     ret = self._createDialog()
+    ret.setImageEnabled(self.imageEnabled)
     self.dialogs.append(ret)
     ret.postReceived.connect(q.postReceived)
     return ret
@@ -315,6 +330,9 @@ class PostInputManager(QObject):
     w.setImagePath(imagePath)
     w.show()
 
+  def isImageEnabled(self): return self.__d.imageEnabled
+  def setImageEnabled(self, t): self.__d.imageEnabled = t
+
 #@memoized
 #def manager(): return PostInputManager()
 
@@ -332,6 +350,12 @@ class PostInputManagerBean(QObject):
 
   @Slot(int)
   def replyPost(self, postId): self.manager.newPost(replyId=postId)
+
+  imageEnabledChanged = Signal(bool)
+  imageEnabled = Property(bool,
+      lambda self: self.manager.isImageEnabled(),
+      lambda self, t: self.manager.setImageEnabled(t),
+      notify=imageEnabledChanged)
 
 if __name__ == '__main__':
   a = debug.app()

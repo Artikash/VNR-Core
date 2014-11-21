@@ -19,6 +19,7 @@ Item { id: root_
   // - Private -
 
   Plugin.PostEditorManager { id: editor_
+    imageEnabled: false
     Component.onCompleted: postChanged.connect(root_.submit)
   }
 
