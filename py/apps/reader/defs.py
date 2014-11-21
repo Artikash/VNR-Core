@@ -97,6 +97,25 @@ FURI_HANGUL = 'hangul'
 FURI_THAI = 'thai'
 FURI_TR = 'tr'
 
+# Upload
+UPLOAD_IMAGE_SUFFICES = (
+  'jpg',
+  'jpeg',
+  'png',
+  'bmp',
+  'gif',
+  'tif',
+  'tiff',
+  'avg',
+  'ico',
+)
+
+UPLOAD_IMAGE_FILTER = "*." + " *.".join(UPLOAD_IMAGE_SUFFICES)
+
+MAX_UPLOAD_IMAGE_SIZE = 2 * 1024 * 1024 # 2MB
+
+#MAX_UPLOAD_AUDIO_SIZE = 15 * 1024 * 1024 # 15MB
+
 # Translations
 
 #TERM_ESCAPE = "9%i.67" # ESCAPE of escaped terms.

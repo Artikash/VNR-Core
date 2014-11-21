@@ -436,6 +436,8 @@ Item { id: root_
       }
 
       Share.TextButton { id: srButton_
+        visible: false // This button is disabled
+
         height: parent.cellHeight; width: parent.cellWidth
         text: slimChecked ? "音" : "ASR"
         font.pixelSize: parent.pixelSize

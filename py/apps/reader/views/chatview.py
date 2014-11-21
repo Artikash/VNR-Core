@@ -12,7 +12,7 @@ import json
 from functools import partial
 from PySide.QtCore import Qt, Slot, QObject
 from Qt5 import QtWidgets
-from sakurakit import skevents, skqss
+from sakurakit import skevents, skfileio, skqss
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
 from sakurakit.skdebug import dprint, dwarn
 from sakurakit.sktr import tr_
@@ -172,9 +172,10 @@ class _ChatView(object):
     ret.postReceived.connect(self._submit)
     return ret
 
-  def _submit(self, postData):
+  def _submit(self, postData, imageData):
     """
     @param  postData  unicode json
+    @param  imageData  unicode
     """
     if self.topicId:
       user = dataman.manager().user()
@@ -183,18 +184,36 @@ class _ChatView(object):
         post['topic'] = self.topicId
         post['login'] = user.name
         post['password'] = user.password
-        skevents.runlater(partial(self._submitPost, post))
+        if imageData:
+          image = json.loads(imageData)
+          image['login'] = user.name
+          image['password'] = user.password
+        else:
+          image = None
+        skevents.runlater(partial(self._submitPost, post, image))
 
-  def _submitPost(self, post):
-    if not netman.manager().submitPost(post):
+  def _submitPost(self, post, image):
+    """
+    @param  post  kw
+    @param  image  kw or None
+    """
+    dprint("enter")
+    if image:
+      data = skfileio.readdata(image['filename'])
+      if data:
+        post['image'] = netman.manager().submitImage(data, image)
+
+    if image and not post.get('image') or not netman.manager().submitPost(post):
       growl.warn("<br/>".join((
         my.tr("Failed to submit post"),
         my.tr("Please try again"),
       )))
+    dprint("leave")
 
-  def _update(self, postData):
+  def _update(self, postData, imageData):
     """
     @param  postData  unicode json
+    @param  imageData  unicode json
     """
     if self.topicId:
       user = dataman.manager().user()
@@ -203,14 +222,32 @@ class _ChatView(object):
         #post['topic'] = self.topicId
         post['login'] = user.name
         post['password'] = user.password
-        skevents.runlater(partial(self._updatePost, post))
 
-  def _updatePost(self, post):
-    if not netman.manager().updatePost(post):
+        if imageData:
+          image = json.loads(imageData)
+          image['login'] = user.name
+          image['password'] = user.password
+        else:
+          image = None
+        skevents.runlater(partial(self._updatePost, post, image))
+
+  def _updatePost(self, post, image):
+    """
+    @param  post  kw
+    @param  image  kw or None
+    """
+    dprint("enter")
+    if image:
+      data = skfileio.readdata(image['filename'])
+      if data:
+        post['image'] = netman.manager().submitImage(data, image)
+
+    if image and not post.get('image') or not netman.manager().updatePost(post):
       growl.warn("<br/>".join((
         my.tr("Failed to update post"),
         my.tr("Please try again"),
       )))
+    dprint("leave")
 
   def _new(self): self.postInputManager.newPost()
 
