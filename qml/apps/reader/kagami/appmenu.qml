@@ -15,6 +15,7 @@ import '../../../js/reader.min.js' as My
 Item {
 
   property alias growlChecked: growlAct_.checked
+  property alias autoHideChecked: autoHideAct_.checked
 
   function showPopup(x, y) {
     //updateDictionaryAct_.enabled = updateCommentAct_.enabled = updateDatabaseAct_.enabled = statusPlugin_.online
@@ -152,6 +153,12 @@ Item {
       onTriggered:
         if (checked)
           growl_.show()
+    }
+
+    Desktop.MenuItem { id: autoHideAct_
+      text: My.tr("Auto Hide")
+      checkable: true
+      checked: true
     }
 
     //Desktop.MenuItem {

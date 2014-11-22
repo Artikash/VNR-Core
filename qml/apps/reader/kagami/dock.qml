@@ -26,6 +26,7 @@ Item { id: root_
   property real zoomFactor: 1.0
 
   property bool ignoresFocus
+  property alias autoHide: appMenu_.autoHideChecked
 
   //property alias ignoresFocusChecked: focusButton_.checked
 
