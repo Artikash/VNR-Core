@@ -103,6 +103,7 @@ Item { id: root_
     //dock_.windowHookChecked = settings_.windowHookEnabled
     //dock_.windowTextChecked = settings_.windowTextVisible
 
+    dock_.autoHide = settings_.grimoireAutoHideDock
     dock_.speaksTextChecked = settings_.speaksGameText && !settings_.subtitleVoiceEnabled
     dock_.speaksTranslationChecked = settings_.speaksGameText && settings_.subtitleVoiceEnabled
 
@@ -167,6 +168,7 @@ Item { id: root_
     settings_.glowIntensity = dock_.glowIntensity
     settings_.glowRadius = dock_.glowRadius
 
+    settings_.grimoireAutoHideDock = dock_.autoHide
     //settings_.gameTextCapacity = dock_.gameTextCapacity
 
     settings_.hotkeyEnabled = dock_.hotkeyChecked
@@ -831,7 +833,7 @@ Item { id: root_
             if (dock_.hover) // || dockSensorArea_.containsMouse)
               //start()
               ;
-            else
+            else if (dock_.autoHide)
               dock_.hide()
         }
 

@@ -1993,6 +1993,8 @@ class SettingsProxy(QObject):
   grimoireWidthFactor = float_property('GrimoireWidthFactor', config.SETTINGS_WIDTH_FACTOR)
   grimoireShadowOpacity = float_property('GrimoireShadowOpacity', config.SETTINGS_SHADOW_OPACITY)
 
+  grimoireAutoHideDock = bool_property('GrimoireAutoHideDock', True)
+
   shioriWidth = int_property('DictionaryPopupWidth', config.SETTINGS_DICT_POPUP_WIDTH)
 
   mirageZoomFactor = float_property('MirageZoomFactor', config.SETTINGS_ZOOM_FACTOR)
