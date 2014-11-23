@@ -79,19 +79,23 @@ class Helper(object):
 
   def login(self, account, password, token):
     """
+    @param  account  str
+    @param  password  str
+    @param  token  dict
     @return bool
     """
-    data = {
-      token.get('login_id') : account,
-      token.get('password') : password,
-      'login_id' : account,
-      'password' : password,
-      'path' : '',
-      'save_login_id' : '0',
-      'save_password' : '0',
-      'token' : token.get('token'),
-    }
     try:
+      data = {
+        token['login_id'] : account,
+        token['password'] : password,
+        'login_id' : account,
+        'password' : password,
+        'token' : token['token'],
+        'path' : '', # Sg__
+        'save_login_id': 1,
+        'save_password': 1,
+        'use_auto_login':	1,
+      }
       r = self.session.post(self.config.post_url, data=data)
       #print r.text
       return True
