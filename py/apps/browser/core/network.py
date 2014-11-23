@@ -84,6 +84,7 @@ class WbNetworkAccessManager(QNetworkAccessManager):
   # QNetworkReply *createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData = nullptr) override;
   def createRequest(self, op, req, outgoingData=None): # override
     url = req.url()
+    #print url
     #if url.scheme() == 'https' and url.host() in ('www.dmm.com', 'dmm.com'):
     #  path = url.path()
     #  if path.startswith('/js/') or path.startswith('/css/'):
