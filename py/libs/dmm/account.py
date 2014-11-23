@@ -38,8 +38,8 @@ class Config:
     self.login_url = 'https://www.dmm.com/my/-/login/'
     self.token_url = 'https://www.dmm.com/my/-/login/ajax-get-token/'
     self.post_url = 'https://www.dmm.com/my/-/login/auth/'
-    #self.game_url = 'http://www.dmm.com/netgame/social/-/gadgets/=/app_id=854854/'
-    self.game_url = 'http://www.dmm.com/netgame/social/application/-/detail/=/app_id=854854/notification=on/myapp=on/act=install/'
+    self.game_url = 'http://www.dmm.com/netgame/social/-/gadgets/=/app_id=854854/'
+    #self.game_url = 'http://www.dmm.com/netgame/social/application/-/detail/=/app_id=854854/notification=on/myapp=on/act=install/'
     self.headers = {
       'User-Agent' : "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:26.0) Gecko/20100101 Firefox/26.0",
       'Host' : "www.dmm.com", # not needed, though
