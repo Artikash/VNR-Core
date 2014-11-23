@@ -70,6 +70,7 @@ def toproxyurl(url): # QUrl -> QUrl or None
         url.setHost(config.PROXY_HOST)
         path = proxy + key + url.path()
         url.setPath(path)
+    #print url
     return url
 
 _re_proxy_key = re.compile(r'/proxy/([^/]+)(.*)')
