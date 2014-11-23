@@ -65,9 +65,10 @@ class _Session:
 
     #loop.setParent(None)
 
-  def _createRequest(self, url, params=None, headers=None):
+  def _createRequest(self, url, params=None, headers=None, verify=True):
     """
     @param  url  unicode
+    @param* verify  whether check SSL, ignored
     @param* headers  {unicode key:unicode value}
     @param* params  {unicode key:unicode value}
     """
