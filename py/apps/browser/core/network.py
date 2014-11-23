@@ -46,6 +46,10 @@ class WbNetworkCookieJar(sknetwork.SkNetworkCookieJar):
           domain = url.replace("http://www", '') # such as .dmm.co.jp
           for c in l:
             c.setDomain(domain)
+        #elif url.startswith("https://www."):
+        #  domain = url.replace("https://www", '') # such as .dmm.co.jp
+        #  for c in l:
+        #    c.setDomain(domain)
         self.setCookiesFromUrl(l, QUrl(url))
 
   # Proxy
