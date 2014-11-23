@@ -51,7 +51,7 @@ _TORANOANA_PROXY_SITES = {
 
 _SCHEME_PROXY = {
   'http': '/proxy/',
-  'https': '/proxyssl/',
+  #'https': '/proxyssl/',
 }
 
 def toproxyurl(url): # QUrl -> QUrl or None
