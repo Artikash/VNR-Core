@@ -108,6 +108,10 @@ class Helper(object):
     try:
       r = self.session.get(self.config.game_url)
       html = r.content
+      m = re.search('<img src="([^"]*)" width="1" height="1" />', html)
+      if not m:
+        dwarn("failed to login")
+        return None
       if html:
         m = re.search('URL\W+:\W+"(.*)",', html)
         if m:
@@ -126,7 +130,7 @@ if __name__ == '__main__':
 
   token = h.get_token()
   print token
-  h.login(name, passwd, token)
+  print h.login(name, passwd, token)
   print h.get_play_url()
 
 # EOF
