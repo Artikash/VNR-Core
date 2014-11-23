@@ -42,8 +42,8 @@ class Config:
     #self.game_url = 'http://www.dmm.com/netgame/social/application/-/detail/=/app_id=854854/notification=on/myapp=on/act=install/'
     self.headers = {
       'User-Agent' : "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:26.0) Gecko/20100101 Firefox/26.0",
-      'Host' : "www.dmm.com", # not needed, though
-      'Referer': "https://www.dmm.com/my/-/login/", # not needed, though
+      #'Host' : "www.dmm.com", # not needed, though
+      #'Referer': "https://www.dmm.com/my/-/login/", # not needed, though
       #'X-Forwarded-For': IPADDR,
     }
 
