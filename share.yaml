@@ -219,7 +219,8 @@ emails:
   help: "annotcloud@gmail.com"
 
 proxies:
-  host: 153.121.52.138
+  host: 153.121.52.138 # sakuradite.org
+  #host: 153.121.54.194 # sakuradite.com
 
   twittersearch: http://websearch.excite.co.jp/
   googlesearch: http://websearch.excite.co.jp/

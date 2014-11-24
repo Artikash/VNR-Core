@@ -46,6 +46,10 @@ class WbNetworkCookieJar(sknetwork.SkNetworkCookieJar):
           domain = url.replace("http://www", '') # such as .dmm.co.jp
           for c in l:
             c.setDomain(domain)
+        #elif url.startswith("https://www."):
+        #  domain = url.replace("https://www", '') # such as .dmm.co.jp
+        #  for c in l:
+        #    c.setDomain(domain)
         self.setCookiesFromUrl(l, QUrl(url))
 
   # Proxy
@@ -80,6 +84,13 @@ class WbNetworkAccessManager(QNetworkAccessManager):
   # QNetworkReply *createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData = nullptr) override;
   def createRequest(self, op, req, outgoingData=None): # override
     url = req.url()
+    #print url
+    #if url.scheme() == 'https' and url.host() in ('www.dmm.com', 'dmm.com'):
+    #  path = url.path()
+    #  if path.startswith('/js/') or path.startswith('/css/'):
+    #    url.setScheme('http') # downgrade to http
+    #    req.setUrl(url)
+    #    dprint("downgrade https to http:", url)
     #print url
     newurl = _WbNetworkAccessManager.getBlockedUrl(url)
     if newurl:
@@ -145,5 +156,6 @@ class _WbNetworkAccessManager:
   def onSslErrors(reply, errors): # QNetworkReply, [QSslError] ->
     reply.ignoreSslErrors()
     #dprint("ignore ssl error")
+    #print errors
 
 # EOF

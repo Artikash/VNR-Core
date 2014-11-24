@@ -120,12 +120,12 @@ if __name__ == '__main__':
     #print t
 
     session = requests
-    with SkProfiler():
-      for i in range(1):
-        t = translate(s, to=to, fr=fr)
-    print t
+    #with SkProfiler():
+    #  for i in range(1):
+    #    t = translate(s, to=to, fr=fr)
+    #print t
 
-    setapi("http://153.121.52.138:443/proxy/gg/trans/m")
+    setapi("https://153.121.52.138/proxy/gg/trans/m")
 
     with SkProfiler():
       for i in range(1):

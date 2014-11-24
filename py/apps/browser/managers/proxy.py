@@ -49,8 +49,14 @@ _TORANOANA_PROXY_SITES = {
 
 ## Functions ##
 
+_SCHEME_PROXY = {
+  'http': '/proxy/',
+  #'https': '/proxyssl/',
+}
+
 def toproxyurl(url): # QUrl -> QUrl or None
-  if url.scheme() == 'http':
+  proxy = _SCHEME_PROXY.get(url.scheme())
+  if proxy:
     url = QUrl(url) # Avoid modifying the original URL
     host = _normalize_host(url.host())
     ip = _PROXY_DOMAINS.get(host) if _MAINLAND else None
@@ -62,8 +68,9 @@ def toproxyurl(url): # QUrl -> QUrl or None
         key = _DLSITE_PROXY_SITES.get(host) or _TORANOANA_PROXY_SITES.get(host)
       if key:
         url.setHost(config.PROXY_HOST)
-        path = '/proxy/' + key + url.path()
+        path = proxy + key + url.path()
         url.setPath(path)
+    #print url
     return url
 
 _re_proxy_key = re.compile(r'/proxy/([^/]+)(.*)')
@@ -71,7 +78,7 @@ _re_proxy_key2 = re.compile(r'/proxy/([^/]+/[^/]+)(.*)') # up to two levels of r
 def fromproxyurl(url): # QUrl -> QUrl or None
   if not isinstance(url, QUrl):
     url = QUrl(url)
-  if url.scheme() == 'http':
+  if url.scheme() in ('http', 'https'):
     host = url.host()
     if host == config.PROXY_HOST:
       path = url.path()

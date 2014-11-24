@@ -112,10 +112,10 @@ class TextReader(QObject):
     if text == d.lastText:
       return
     d.lastText = text
-    if len(text) > defs.MIRAGE_MAX_TEXT_LENGTH:
-      growl.msg(my.tr("Game text is ignored for being too long"))
-    else:
-      d.showText(text)
+    #if len(text) > defs.MIRAGE_MAX_TEXT_LENGTH:
+    #  growl.msg(my.tr("Game text is ignored for being too long"))
+    #else:
+    d.showText(text)
 
 @memoized
 def manager(): return TextReader()
