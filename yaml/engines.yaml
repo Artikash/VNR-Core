@@ -85,7 +85,7 @@ gui:
 
 optgui:
   - KiriKiri2
-  - KiriKiriZ # KAGParser is better
+  #- KiriKiriZ # KAGParser is better
   - SiglusEngine3 # SiglusEngine2 is better
 
 nongui:
