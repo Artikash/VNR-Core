@@ -87,6 +87,8 @@ USER_DEFAULT_COLOR = '#006400' # darkgreen
 
 GENDERS = '', 'm', 'f'
 
+GAME_SCORE_TYPES = 'overall', 'ecchi'
+
 # Furigana
 
 FURI_KATA = 'katagana'
