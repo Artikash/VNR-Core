@@ -1374,15 +1374,15 @@ class GameItem(object):
     'overallScoreCount',
     'ecchiScoreSum',
     'ecchiScoreCount',
-    'easyScoreSum',
-    'easyScoreCount',
+    #'easyScoreSum',
+    #'easyScoreCount',
   )
 
   def __init__(self, id=0,
       title="", romajiTitle="", brand="", series="", image="", banner="", wiki="",
       timestamp=0, fileSize=0, date=None, artists='', sdartists='', writers='', musicians='',
       otome=False, okazu=False, scapeMedian=0, scapeCount=0, tags='',
-      overallScoreSum=0, overallScoreCount=0, ecchiScoreSum=0, ecchiScoreCount=0, easyScoreSum=0, easyScoreCount=0,
+      overallScoreSum=0, overallScoreCount=0, ecchiScoreSum=0, ecchiScoreCount=0, #easyScoreSum=0, easyScoreCount=0,
     ):
     self.id = id # int
     self.title = title # unicode
@@ -1409,8 +1409,8 @@ class GameItem(object):
     self.overallScoreCount = overallScoreCount
     self.ecchiScoreSum = ecchiScoreSum
     self.ecchiScoreCount = ecchiScoreCount
-    self.easyScoreSum = easyScoreSum
-    self.easyScoreCount = easyScoreCount
+    #self.easyScoreSum = easyScoreSum
+    #self.easyScoreCount = easyScoreCount
 
 class Game(object):
   NAME_TYPES = 'window', 'file', 'link', 'folder', 'brand'
@@ -6216,7 +6216,7 @@ class _DataManager(object):
               e.tags = text
             elif tag in ('otome', 'okazu'):
               setattr(e, tag, text == 'true')
-            elif tag in ('timestamp', 'fileSize', 'scapeMedian', 'scapeCount', 'overallScoreSum', 'overallScoreCount', 'ecchiScoreSum', 'ecchiScoreCount', 'easyScoreSum', 'easyScoreCount'):
+            elif tag in ('timestamp', 'fileSize', 'scapeMedian', 'scapeCount', 'overallScoreSum', 'overallScoreCount', 'ecchiScoreSum', 'ecchiScoreCount'):
               setattr(e, tag, int(text))
             elif tag == 'date':
               e.date = datetime.strptime(text, '%Y%m%d')
