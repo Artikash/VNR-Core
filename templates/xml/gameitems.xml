@@ -77,12 +77,6 @@
 %	if it.ecchiScoreSum
 			<ecchiScoreSum>{{it.ecchiScoreSum}}</ecchiScoreSum>>
 %	endif
-%	if it.easyScoreCount
-			<easyScoreCount>{{it.easyScoreCount}}</easyScoreCount>>
-%	endif
-%	if it.easyScoreSum
-			<easyScoreSum>{{it.easyScoreSum}}</easyScoreSum>>
-%	endif
 		</item>
 %endfor
 	</items>

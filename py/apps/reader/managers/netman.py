@@ -398,7 +398,7 @@ class _NetworkManager(object):
                 for it in el:
                   if it.tag == 'score':
                     t = it.get('type')
-                    if t:
+                    if t in defs.GAME_SCORE_TYPES:
                       setattr(e, t + 'ScoreCount', int(it.get('count')))
                       setattr(e, t + 'ScoreSum', int(it.get('sum')))
             ret[e.id] = e
