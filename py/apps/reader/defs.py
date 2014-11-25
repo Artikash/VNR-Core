@@ -28,7 +28,7 @@ OTHER_TEXT_ROLE = 3
 
 # Text constraints
 
-MIRAGE_MAX_TEXT_LENGTH = 512
+#MIRAGE_MAX_TEXT_LENGTH = 512
 
 MAX_NAME_LENGTH = 64
 MAX_NAME_LENGTH *= 3 # increased due to repetition removal

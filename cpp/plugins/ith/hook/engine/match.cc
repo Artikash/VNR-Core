@@ -79,10 +79,11 @@ bool DetermineEngineByFile1()
 {
   if (IthFindFile(L"*.xp3") || Util::SearchResourceString(L"TVP(KIRIKIRI)")) {
     if (Util::SearchResourceString(L"TVP(KIRIKIRI) Z ")) { // TVP(KIRIKIRI) Z CORE
-      if (IthCheckFile(L"plugin\\KAGParser.dll"))
-        InsertKAGParserHook();
-      else if (IthCheckFile(L"plugin\\KAGParserEx.dll"))
-        InsertKAGParserExHook();
+      // jichi 11/24/2014: Disabled that might crash VBH
+      //if (IthCheckFile(L"plugin\\KAGParser.dll"))
+      //  InsertKAGParserHook();
+      //else if (IthCheckFile(L"plugin\\KAGParserEx.dll"))
+      //  InsertKAGParserExHook();
       if (InsertKiriKiriZHook())
         return true;
     }
