@@ -8,7 +8,7 @@ from PySide.QtCore import Qt, QObject, QThread, Signal, Slot, Property
 from sakurakit import skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
-from google import googledef, googlesr
+from google import googledef
 from mytr import my
 import growl
 
@@ -217,24 +217,45 @@ class SpeechRecognitionThread(QThread):
   def setDeviceIndex(self, v):
     self.__d.deviceIndex = v
 
-  def setLanguage(self, v):
-    self.__d.recognizer.language = googledef.lang2locale(v)
-
-  def setDetectsQuiet(self, t):
-    self.__d.recognizer.detects_quiet = t
-
   def setSingleShot(self, t):
     self.__d.singleShot = t
+
+  def setLanguage(self, v):
+    d = self.__d
+    if d.language != v:
+      d.language = v
+      if d._recognizer:
+        d._recognizer.language = googledef.lang2locale(v)
+
+  def setDetectsQuiet(self, t):
+    d = self.__d
+    if d.detectsQuiet != t:
+      d.detectsQuiet = t
+      if d._recognizer:
+        d._recognizer.detects_quiet = t
 
 @Q_Q
 class _SpeechRecognitionThread(object):
   def __init__(self):
     self.time = 0 # float
     self.enabled = True
-    self.recognizer = googlesr.Recognizer()
     self.singleShot = True
     self.aborted = False
     self.deviceIndex = 0 # int or None
+
+    self._recognizer = None # googlesr.Recognizer
+    self.language = 'en'
+    self.detectsQuiet = True
+
+  @property
+  def recognizer(self):
+    if not self._recognizer:
+      dprint("create speech recognizer")
+      from google import googlesr
+      r = self._recognizer = googlesr.Recognizer()
+      r.language = googledef.lang2locale(self.language)
+      r.detects_quiet = self.detectsQuiet
+    return self._recognizer
 
   def listen(self, time):
     if time < self.time: # aborted
@@ -243,6 +264,7 @@ class _SpeechRecognitionThread(object):
     r = self.recognizer
     while self.enabled:
       try:
+        from google import googlesr
         with googlesr.Microphone(device_index=self.deviceIndex) as source:
           dprint("listen start")
           r.stopped = False
