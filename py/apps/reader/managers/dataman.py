@@ -1585,6 +1585,10 @@ class _GameObject(object):
       #if l:
       #  return ','.join(l)
 
+  def getGameItemProperty(self, key): # str ->
+    try: return getattr(self.info.gameItem, key)
+    except AttributeError: pass
+
 class GameObject(QObject):
   def __init__(self, parent=None, game=None):
     """
@@ -1685,10 +1689,25 @@ class GameObject(QObject):
     lambda self: self.__d.date,
     notify=dateChanged)
 
-  #styleHintChanged = Signal(unicode)
-  #styleHint = Property(unicode,
-  #  lambda self: self.__d.gameType,
-  #  notify=styleHintChanged)
+  overallScoreSumChanged = Signal(int)
+  overallScoreSum = Property(int,
+    lambda self: self.__d.getGameItemProperty('overallScoreSum') or 0,
+    notify=overallScoreSumChanged)
+
+  overallScoreCountChanged = Signal(int)
+  overallScoreCount = Property(int,
+    lambda self: self.__d.getGameItemProperty('overallScoreCount') or 0,
+    notify=overallScoreCountChanged)
+
+  ecchiScoreSumChanged = Signal(int)
+  ecchiScoreSum = Property(int,
+    lambda self: self.__d.getGameItemProperty('ecchiScoreSum') or 0,
+    notify=ecchiScoreSumChanged)
+
+  ecchiScoreCountChanged = Signal(int)
+  ecchiScoreCount = Property(int,
+    lambda self: self.__d.getGameItemProperty('ecchiScoreCount') or 0,
+    notify=ecchiScoreCountChanged)
 
   #@Slot(result=QIcon)
   def icon(self):
