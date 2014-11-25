@@ -646,9 +646,8 @@ class GameInfo(object):
     try: return max(it.fileSize for it in (self.digiket, self.gyutto, self.dlsite) if it)
     except ValueError: return 0
 
-  @memoizedproperty
-  def fileSizeString(self): # -> str
-    size = self.fileSize
+  @staticmethod
+  def _unparseFileSize(size): # int -> str
     if not size:
       return '0 B'
     elif size < 1024:
@@ -659,6 +658,11 @@ class GameInfo(object):
       return "%s MB" % (size / (1024 * 1024))
     else: # size >= 1024 * 1024 * 1024:
       return "%.2f GB" % (float(size) / (1024 * 1024 * 1024))
+
+  @memoizedproperty
+  def fileSizeString(self): return self._unparseFileSize(self.fileSize)
+  @memoizedproperty
+  def fileSizeString0(self): return self._unparseFileSize(self.fileSize0)
 
   @memoizedproperty
   def date0(self): # long not None
@@ -1553,11 +1557,10 @@ class _GameObject(object):
       return 'otome' if info.otome0 else 'junai' if not info.okazu0 else 'nuki'
     return ''
 
-  # Need file size 0
-  #@memoizedproperty
-  #def fileSizeString(self): # str
-  #  info = self.info
-  #  return info.fileSizeString if info and info.fileSize else ''
+  @memoizedproperty
+  def fileSizeString(self): # str
+    info = self.info
+    return info.fileSizeString0 if info and info.fileSize0 else ''
 
   @memoizedproperty
   def tags(self): # unicode or None
@@ -1672,10 +1675,10 @@ class GameObject(QObject):
     lambda self: self.__d.tags,
     notify=tagsChanged)
 
-  #fileSizeStringChanged = Signal(unicode)
-  #fileSizeString = Property(unicode,
-  #  lambda self: self.__d.fileSizeString,
-  #  notify=fileSizeStringChanged)
+  fileSizeStringChanged = Signal(unicode)
+  fileSizeString = Property(unicode,
+    lambda self: self.__d.fileSizeString,
+    notify=fileSizeStringChanged)
 
   dateChanged = Signal(long)
   date = Property(long,

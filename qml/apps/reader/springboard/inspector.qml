@@ -104,15 +104,18 @@ Rectangle { id: root_
       //font.bold: root_.containsMouse
       //color: root_.containsMouse ? 'snow' : 'black'
       effect: Share.TextEffect {} // highlight: root_.containsMouse }
-      text: !game ? '' : renderGame(game)
-
       wrapMode: Text.WordWrap
       textFormat: Text.RichText
-      function renderGame(g) { // param game, return string
+      text: !game ? '' : renderGame(game)
+
+      function renderGame(g) { // game -> string
         var ret = g.name
         if (!g.known)
           ret += " <span style='color:red'>(" + Sk.tr('Unknown') + ")</span>"
         else {
+          var sz = g.fileSizeString
+          if (sz)
+            ret += " <span style='color:darkgreen'>" + sz.replace(' ', '') + "</span>"
           var brand = g.brand
           if (g.language && g.language !== 'ja')
             ret += " <span style='color:crimson'>(" + Sk.tr(g.language) + ")</span>"
@@ -127,9 +130,6 @@ Rectangle { id: root_
             ts = Util.datestampToString(ts)
             ret += " <span style='color:brown'>" + ts + "</span>"
           }
-          //var sz = g.fileSizeString
-          //if (sz)
-          //  ret += ' ' + sz
         }
         return ret
       }
