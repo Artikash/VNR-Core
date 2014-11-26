@@ -6,7 +6,7 @@
 # - cacheBean: cacheman.CacheCoffeeBean
 # - i18nBean: coffeebean.I18nBean
 # - mainBean: coffeebean.MainBean
-# - postInputBean: postInput.PostInputManagerBean
+# - postInputBean: postinput.PostInputManagerBean
 # - postEditBean: postedit.PostEditorManagerBean
 
 dprint = -> console.log.apply console, arguments
@@ -285,7 +285,7 @@ bind = ->
 
 ## Main ##
 
-@READY = false
+@READY = false # needed by chatview.py
 @addPost = addPost
 @updatePost = updatePost
 
