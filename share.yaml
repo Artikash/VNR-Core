@@ -169,6 +169,8 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   reader/game.css: $PWD/rb/compass/web/css/game.min.css
   reader/gameboard: $PWD/coffee/reader/gameboard.min.js
   reader/gameboard.css: $PWD/rb/compass/web/css/gameboard.min.css
+  reader/reviewlist: $PWD/coffee/reader/reviewlist.min.js
+  reader/reviewlist.css: $PWD/rb/compass/web/css/reviewlist.min.css
 
   #amazon.css: $PWD/rb/compass/web/css/sites/amazon.min.css
   #getchu.css: $PWD/rb/compass/web/css/sites/getchu.min.css
@@ -539,6 +541,7 @@ templates:
     haml/reader/help:       haml/reader/help.haml
     haml/reader/game:       haml/reader/game.haml
     haml/reader/gameboard:  haml/reader/gameboard.haml
+    haml/reader/reviewlist: haml/reader/reviewlist.haml
     haml/reader/user:       haml/reader/user.haml
 
     haml/browser/about:     haml/browser/about.haml
@@ -681,6 +684,7 @@ icons:
   window-refinput:  $PWD/images/reader.png
   window-refview:   $PWD/images/dock/edit.png
   window-regexp:    $PWD/images/dock/exp.png
+  window-review:    $PWD/images/dock/messages.png
   window-srtest:    $PWD/images/dock/speech.png
   window-shortcuts: $PWD/images/passage.png
   window-syntax:    $PWD/images/dock/tree.png

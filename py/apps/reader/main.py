@@ -811,9 +811,9 @@ class _MainObject(object):
     return chatview.manager()
 
   @property
-  def reviewViewManager(self):
-    import reviewview
-    return reviewview.manager()
+  def reviewListManager(self):
+    import reviewlist
+    return reviewlist.manager()
 
   @memoizedproperty
   def aboutDialog(self):
@@ -1842,7 +1842,7 @@ class MainObject(QObject):
   def showChatView(self, topicId): self.__d.chatViewManager.showTopic(topicId) # long ->
   def isChatViewVisible(self): return self.__d.chatViewManager.isVisible()
 
-  def showGameReview(self, topicId): self.__d.reviewViewManager.showTopic(topicId) # long ->
+  def showGameReview(self, itemId): self.__d.reviewListManager.showGame(itemId) # long ->
 
   def showSubtitleEditor(self, comment): # dataman.Comment
     self.__d.subtitleEditorManager.showComment(comment)
@@ -2173,7 +2173,7 @@ class MainObject(QObject):
         'userViewManager',
         'gameViewManager',
         'chatViewManager',
-        'reviewViewManager',
+        'reviewListManager',
       ):
       if hasmemoizedproperty(self, p):
         getattr(self, p).hide()

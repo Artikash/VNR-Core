@@ -1,5 +1,5 @@
 # coding: utf8
-# reviewview.py
+# reviewlist.py
 # 11/25/2014 jichi
 
 if __name__ == '__main__':
@@ -23,7 +23,7 @@ from mytr import my, mytr_
 import dataman, growl, netman, osutil, rc
 
 @Q_Q
-class _ReviewView(object):
+class _ReviewList(object):
 
   def __init__(self, q):
     self.clear()
@@ -43,7 +43,7 @@ class _ReviewView(object):
     q.addDockWidget(Qt.BottomDockWidgetArea, dock)
 
   def clear(self):
-    self.topicId = 0 # long
+    self.gameId = 0 # long
 
   def _injectBeans(self):
     h = self.webView.page().mainFrame()
@@ -107,7 +107,7 @@ class _ReviewView(object):
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/chat').render({
       'title': mytr_("Messages"),
-      'topicId': self.topicId,
+      'gameId': self.gameId,
       'userName': user.name,
       'userPassword': user.password,
       'rc': rc,
@@ -147,7 +147,7 @@ class _ReviewView(object):
     ret.setToolTip(tr_("Launch"))
     #ret.setStatusTip(ret.toolTip())
     ret.clicked.connect(lambda:
-        osutil.open_url("http://sakuradite.com/topic/%s" % self.topicId))
+        osutil.open_url("http://sakuradite.com/game/%s" % self.gameId))
     return ret
 
   @memoizedproperty
@@ -178,11 +178,11 @@ class _ReviewView(object):
     @param  postData  unicode json
     @param  imageData  unicode
     """
-    if self.topicId:
+    if self.gameId:
       user = dataman.manager().user()
       if user.name and user.password:
         post = json.loads(postData)
-        post['topic'] = self.topicId
+        post['topic'] = self.gameId
         post['login'] = user.name
         post['password'] = user.password
         if imageData:
@@ -216,11 +216,11 @@ class _ReviewView(object):
     @param  postData  unicode json
     @param  imageData  unicode json
     """
-    if self.topicId:
+    if self.gameId:
       user = dataman.manager().user()
       if user.name and user.password:
         post = json.loads(postData)
-        #post['topic'] = self.topicId
+        #post['topic'] = self.gameId
         post['login'] = user.name
         post['password'] = user.password
 
@@ -262,25 +262,25 @@ class _ReviewView(object):
     js = 'if (window.READY) updatePost(%s); null' % data
     self.webView.evaljs(js)
 
-class ReviewView(QtWidgets.QMainWindow):
+class ReviewList(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
-    super(ReviewView, self).__init__(parent, WINDOW_FLAGS)
+    super(ReviewList, self).__init__(parent, WINDOW_FLAGS)
     self.setWindowIcon(rc.icon('window-chat'))
     self.setWindowTitle(mytr_("Messages"))
-    self.__d = _ReviewView(self)
+    self.__d = _ReviewList(self)
 
   def refresh(self): self.__d.refresh()
   def clear(self): self.__d.clear()
 
-  def topicId(self): return self.__d.topicId
-  def setTopicId(self, topicId): self.__d.topicId = topicId
+  def gameId(self): return self.__d.gameId
+  def setGameId(self, gameId): self.__d.gameId = gameId
 
   def setVisible(self, value):
     """@reimp @public"""
     if value and not self.isVisible():
       self.__d.refresh()
-    super(ReviewView, self).setVisible(value)
+    super(ReviewList, self).setVisible(value)
     if not value:
       self.__d.webView.clear()
 
@@ -290,7 +290,7 @@ class ReviewView(QtWidgets.QMainWindow):
   def updatePost(self, data): # unicode json ->
     self.__d.updatePost(data)
 
-class _ReviewViewManager:
+class _ReviewListManager:
   def __init__(self):
     self.dialogs = []
 
@@ -304,7 +304,7 @@ class _ReviewViewManager:
   def _createDialog(self):
     import windows
     parent = windows.normal()
-    ret = ReviewView(parent=parent)
+    ret = ReviewList(parent=parent)
     ret.resize(550, 580)
     return ret
 
@@ -328,13 +328,13 @@ class _ReviewViewManager:
     except Exception, e:
       dwarn(e)
 
-  def getDialog(self, topicId=0):
+  def getDialog(self, gameId=0):
     """
-    @param  topicId  long
+    @param  gameId  long
     """
-    if topicId:
+    if gameId:
       for w in self.dialogs:
-        if w.isVisible() and topicId == w.topicId():
+        if w.isVisible() and gameId == w.gameId():
           return w
     for w in self.dialogs:
       if not w.isVisible():
@@ -343,9 +343,9 @@ class _ReviewViewManager:
     self.dialogs.append(ret)
     return ret
 
-class ReviewViewManager:
+class ReviewListManager:
   def __init__(self):
-    self.__d = _ReviewViewManager()
+    self.__d = _ReviewListManager()
 
   #def clear(self): self.hide()
 
@@ -362,16 +362,16 @@ class ReviewViewManager:
         if w.isVisible():
           w.hide()
 
-  def showTopic(self, topicId):
+  def showGame(self, gameId):
     """
-    @param  topicId  long
+    @param  gameId  long
     """
-    w = self.__d.getDialog(topicId)
-    if w.topicId() == topicId:
+    w = self.__d.getDialog(gameId)
+    if w.gameId() == gameId:
       w.refresh()
     else:
       w.clear()
-      w.setTopicId(topicId)
+      w.setGameId(gameId)
     w.show()
     w.raise_()
 
@@ -379,22 +379,21 @@ class ReviewViewManager:
 def manager():
   import webrc
   webrc.init()
-  return ReviewViewManager()
+  return ReviewListManager()
 
 #@QmlObject
-class ReviewViewManagerProxy(QObject):
+class ReviewListManagerProxy(QObject):
   def __init__(self, parent=None):
-    super(ReviewViewManagerProxy, self).__init__(parent)
+    super(ReviewListManagerProxy, self).__init__(parent)
 
   @Slot(int)
-  def showTopic(self, id):
-    manager().showTopic(id)
+  def showGame(self, id):
+    manager().showGame(id)
 
 if __name__ == '__main__':
   import config
   a = debug.app()
-  #manager().showTopic('global')
-  manager().showTopic(config.GLOBAL_TOPIC_ID)
+  manager().showGame(101)
   a.exec_()
 
 # EOF
