@@ -278,12 +278,12 @@ Rectangle { id: root_
           var ret = "<span style='color:darkblue'>%1 %3&times;%2</span>"
             .replace('%1', Sk.tr("Score"))
             .replace('%2', g.overallScoreCount)
-            .replace('%3', g.overallScoreCount == 0 ? 0 : (g.overallScoreSum/g.overallScoreCount).toFixed(2))
+            .replace('%3', g.overallScoreCount == 0 ? 0 : (g.overallScoreSum/g.overallScoreCount).toFixed(1))
           if (g.ecchiScoreCount)
             ret += " <span style='color:purple'>%1 %3&times;%2</span>"
               .replace('%1', My.tr("Ecchi"))
               .replace('%2', g.ecchiScoreCount)
-              .replace('%3', (g.ecchiScoreSum/g.ecchiScoreCount).toFixed(2))
+              .replace('%3', (g.ecchiScoreSum/g.ecchiScoreCount).toFixed(1))
           return ret
         }
       }

@@ -61,6 +61,7 @@ class _ChatView(object):
     return (
       ('cacheBean', m.cacheBean),
       ('i18nBean', m.i18nBean),
+      ('mainBean', m.mainBean),
       ('postEditBean', self.postEditBean),
       ('postInputBean', self.postInputBean),
     )

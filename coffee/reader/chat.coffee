@@ -5,6 +5,7 @@
 # Beans:
 # - cacheBean: cacheman.CacheCoffeeBean
 # - i18nBean: coffeebean.I18nBean
+# - mainBean: coffeebean.MainBean
 # - postInputBean: postInput.PostInputManagerBean
 # - postEditBean: postedit.PostEditorManagerBean
 
@@ -42,7 +43,7 @@ createTemplates = ->
       %img.img-circle.avatar(src="${userAvatarUrl}")
   .right
     .header
-      .user(style="${userStyle}") @${userName}
+      %a.user(style="${userStyle}") @${userName}
       .time.text-minor = createTime
       .lang = lang
       .time.text-success = updateTime
@@ -100,11 +101,15 @@ bindNewPosts = ->
     postId = $post.data 'id'
     post = findPost postId
 
+    $header = $post.find '> .right > .header'
     $footer = $post.find '> .right > .footer'
 
+    $header.find('a.user').click ->
+      mainBean.showUser post.userName if post?.userName
+      false
+
     $footer.find('.btn-edit').click ->
-      if post
-        editPost post
+      editPost post if post
       false
 
     $footer.find('.btn-reply').click ->

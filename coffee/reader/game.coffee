@@ -232,7 +232,7 @@ createTemplates = ->
       %img.img-circle.avatar(src="${userAvatarUrl}")
   .right
     .header(style="${userStyle}")
-      .user @${userName}
+      %a.user @${userName}
       :if scores
         :if scores.overall != undefined
           .score.score-overall.text-danger ${scores.overall}/10
@@ -288,7 +288,7 @@ createTemplates = ->
       %img.img-circle.avatar(src="${userAvatarUrl}")
   .right
     .header
-      .user(style="${userStyle}") @${userName}
+      %a.user(style="${userStyle}") @${userName}
       .time.text-minor = createTime
       .lang = lang
       .time.text-success = updateTime
@@ -811,7 +811,12 @@ bindNewReviewTopics = ->
     topicId = $topic.data 'id'
     topic = findTopic topicId
 
+    $header = $topic.find '> .right > .header'
     $footer = $topic.find '> .right > .footer'
+
+    $header.find('a.user').click ->
+      mainBean.showUser topic.userName if topic?.userName
+      false
 
     $footer.find('.btn-edit').click ->
       if topic
@@ -934,11 +939,15 @@ bindNewPosts = ->
     postId = $this.data 'id'
     post = findPost postId
 
+    $header = $this.find '> .right > .header'
     $footer = $this.find '> .right > .footer'
 
+    $header.find('a.user').click ->
+      mainBean.showUser post.userName if post?.userName
+      false
+
     $footer.find('.btn-edit').click ->
-      if post
-        editPost post
+      editPost post if post
       false
 
     $footer.find('.btn-reply').click ->

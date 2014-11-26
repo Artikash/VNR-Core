@@ -5,6 +5,7 @@
 @import bootstrap/fa
 @import main/bbcode
 @import main/color
+@import main/cursor
 @import main/shadow
 @import main/transition
 
@@ -29,8 +30,9 @@ img.avatar
     margin-left: $avatar-width + 9px
     > .header
       .user
-        color: darkblue // TODO: Use linke instead
-        display: inline
+        @extend .cursor-pointer
+      //  color: darkblue // TODO: Use linke instead
+      //  display: inline
       .time
         //@extend .text-minor
         display: inline
