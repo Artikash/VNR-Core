@@ -29,11 +29,11 @@ Rectangle { id: root_
   height: topRegion_.height + bottomRegion_.height
   color: '#ddced0d6' // opacity: 0xdd/0xff = 87%
 
-  property bool containsMouse:
-    toolTip_.containsMouse ||
-    openButton_.hover || editButton_.hover || subButton_.hover ||
-    infoButton_.hover || browseButton_.hover || removeButton_.hover ||
-    allButton_.hover || junaiButton_.hover || nukiButton_.hover || otomeButton_.hover
+  //property bool containsMouse:
+  //  toolTip_.containsMouse ||
+  //  openButton_.hover || editButton_.hover || subButton_.hover ||
+  //  infoButton_.hover || browseButton_.hover || removeButton_.hover ||
+  //  allButton_.hover || junaiButton_.hover || nukiButton_.hover || otomeButton_.hover
 
   //Plugin.MainObjectProxy { id: mainPlugin_ }
   Plugin.GameManagerProxy { id: gameman_ }
@@ -232,7 +232,62 @@ Rectangle { id: root_
     }
     height: 27
 
-    ButtonGroup.ButtonRow { //id: typeSelector_
+    Item { //id: scoreRow_
+      anchors {
+        top: parent.top; bottom: parent.bottom
+        right: typeRow_.left
+        rightMargin: 90 // large enough to skip
+      }
+
+      width: scoreText_.width
+
+      Desktop.TooltipArea { id: scoreTip_
+        anchors.fill: parent
+        text: Sk.tr("Review")
+      }
+
+      MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton
+        //onPressed:
+      }
+
+      Text { id: scoreText_
+        //anchors.fill: parent
+        anchors {
+          top: parent.top; bottom: parent.bottom
+          right: parent.right
+        }
+        visible: !!root_.game && root_.game.itemId > 0
+        wrapMode: Text.NoWrap
+        textFormat: Text.RichText
+
+        horizontalAlignment: Text.AlignRight
+        verticalAlignment: Text.AlignVCenter
+
+        font.pixelSize: 12
+        effect: Share.TextEffect {
+          highlight: scoreTip_.containsMouse
+          highlightColor: 'yellow'
+        }
+        text: !visible ? "" : renderGame(game)
+
+        function renderGame(g) { // game -> string
+          var ret = "<span style='color:darkblue'>%1 %3&times;%2</span>"
+            .replace('%1', Sk.tr("Score"))
+            .replace('%2', g.overallScoreCount)
+            .replace('%3', g.overallScoreCount == 0 ? 0 : (g.overallScoreSum/g.overallScoreCount).toFixed(2))
+          if (g.ecchiScoreCount)
+            ret += " <span style='color:purple'>%1 %3&times;%2</span>"
+              .replace('%1', My.tr("Ecchi"))
+              .replace('%2', g.ecchiScoreCount)
+              .replace('%3', (g.ecchiScoreSum/g.ecchiScoreCount).toFixed(2))
+          return ret
+        }
+      }
+    }
+
+    ButtonGroup.ButtonRow { id: typeRow_
       //spacing: 5
       anchors {
         verticalCenter: parent.verticalCenter

@@ -8,8 +8,10 @@ Effects.TextShadow {
   blurRadius: 8; offset: '1,1'
 
   property bool highlight: false
+  property color highlightColor: 'red'
+
   //property bool visible: true
   color: //!visible ? 'transparent' :
-         highlight ? 'red' :
+         highlight ? highlightColor :
          '#2d5f5f' // dark green
 }
