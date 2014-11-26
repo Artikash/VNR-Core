@@ -249,7 +249,9 @@ Rectangle { id: root_
       MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton
-        //onPressed:
+        onPressed:
+          if (root_.game && root_.game.itemId)
+            mainPlugin_.showGameReview(root_.game.itemId)
       }
 
       Text { id: scoreText_
