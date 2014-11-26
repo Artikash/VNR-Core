@@ -1,6 +1,6 @@
-; chat.haml
-; 8/29/2014 jichi
-; @param  topicId  long
+; reviewlist.haml
+; 11/25/2014 jichi
+; @param  gameId  long
 ; @param  userName  string
 ; @param  userPassword  string
 ; @param  title  unicode
@@ -13,7 +13,7 @@
     %title #{title}
 
     ; Stylesheets
-    -for it in 'bootstrap3.css', 'font-awesome4.css', 'reader/chat.css'
+    -for it in 'bootstrap3.css', 'font-awesome4.css', 'reader/reviewlist.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
 
     :css
@@ -23,15 +23,15 @@
       }
 
   %body
-    .topic.portal(data-id="#{topicId}")
-      .posts
+    .game.portal(data-id="#{gameId}")
+      .topics
       .footer
         %a.btn.btn-link.btn-more(role="button")
           #{tr('More')}
     #spin
 
     :javascript
-      window.TOPIC_ID = #{topicId};
+      window.GAME_ID = #{gameId};
       window.USER_NAME = "#{userName}";
       window.USER_PASSWORD = "#{userPassword}";
 
@@ -43,7 +43,7 @@
         'bbcode', 'haml', 'moment', \
         'libs/linkify', \
         'share/defs', 'share/growl', 'share/rest', 'share/util', \
-        'reader/chat'
+        'reader/reviewlist'
       %script(src="#{rc.cdn_url(it)}")
 
 ; EOF

@@ -102,11 +102,14 @@ class _ReviewList(object):
     baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy
     #baseUrl = 'http://localhost:8080'
 
-    user = dataman.manager().user()
+    dm = dataman.manager()
+    user = dm.user()
+    info = dm.queryGameInfo(itemId=self.gameId)
+    title = info.title0 or tr_("Game")
 
     w = self.webView
-    w.setHtml(rc.haml_template('haml/reader/chat').render({
-      'title': mytr_("Messages"),
+    w.setHtml(rc.haml_template('haml/reader/reviewlist').render({
+      'title': title,
       'gameId': self.gameId,
       'userName': user.name,
       'userPassword': user.password,
@@ -266,8 +269,8 @@ class ReviewList(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(ReviewList, self).__init__(parent, WINDOW_FLAGS)
-    self.setWindowIcon(rc.icon('window-chat'))
-    self.setWindowTitle(mytr_("Messages"))
+    self.setWindowIcon(rc.icon('window-review'))
+    self.setWindowTitle(tr_("Review"))
     self.__d = _ReviewList(self)
 
   def refresh(self): self.__d.refresh()
