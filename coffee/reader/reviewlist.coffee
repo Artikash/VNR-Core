@@ -53,11 +53,11 @@ createTemplates = ->
         .pp-table.dock
           :if scores.overall != undefined
             .pp-row(data-type='overall')
-              .pp-name #{tr 'Overall'}:
+              .pp-name #{tr 'Score'}:
               .pp-value ${scores.overall}/10
           :if scores.ecchi != undefined
             .pp-row(data-type='ecchi')
-              .pp-name #{tr 'Ecchi'}:
+              .pp-name H:
               .pp-value ${scores.ecchi}/10
     .content.bbcode = content
     .footer
