@@ -251,7 +251,7 @@ Rectangle { id: root_
         acceptedButtons: Qt.LeftButton
         onPressed:
           if (statusPlugin_.online && root_.game && root_.game.itemId)
-            mainPlugin_.showGameReview(root_.game.itemId)
+            mainPlugin_.showGameTopics(root_.game.itemId)
       }
 
       Text { id: scoreText_

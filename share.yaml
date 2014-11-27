@@ -169,8 +169,8 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   reader/game.css: $PWD/rb/compass/web/css/game.min.css
   reader/gameboard: $PWD/coffee/reader/gameboard.min.js
   reader/gameboard.css: $PWD/rb/compass/web/css/gameboard.min.css
-  reader/reviewlist: $PWD/coffee/reader/reviewlist.min.js
-  reader/reviewlist.css: $PWD/rb/compass/web/css/reviewlist.min.css
+  reader/topicsview: $PWD/coffee/reader/topicsview.min.js
+  reader/topicsview.css: $PWD/rb/compass/web/css/topicsview.min.css
 
   #amazon.css: $PWD/rb/compass/web/css/sites/amazon.min.css
   #getchu.css: $PWD/rb/compass/web/css/sites/getchu.min.css
@@ -541,7 +541,7 @@ templates:
     haml/reader/help:       haml/reader/help.haml
     haml/reader/game:       haml/reader/game.haml
     haml/reader/gameboard:  haml/reader/gameboard.haml
-    haml/reader/reviewlist: haml/reader/reviewlist.haml
+    haml/reader/topicsview: haml/reader/topicsview.haml
     haml/reader/user:       haml/reader/user.haml
 
     haml/browser/about:     haml/browser/about.haml

@@ -1,5 +1,5 @@
 # coding: utf8
-# reviewlist.py
+# topicsview.py
 # 11/25/2014 jichi
 
 if __name__ == '__main__':
@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
 import json
 from functools import partial
-from PySide.QtCore import Qt, Slot, QObject
+from PySide.QtCore import Qt, QObject
 from Qt5 import QtWidgets
 from sakurakit import skevents, skfileio, skqss
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
@@ -23,7 +23,7 @@ from mytr import my, mytr_
 import dataman, growl, netman, osutil, rc
 
 @Q_Q
-class _ReviewList(object):
+class _TopicsView(object):
 
   def __init__(self, q):
     self.gameId = 0 # long
@@ -51,7 +51,7 @@ class _ReviewList(object):
   def _createDialog(self):
     import windows
     parent = windows.normal()
-    ret = ReviewList(parent=parent)
+    ret = TopicsView(parent=parent)
     ret.resize(550, 580)
     return ret
 
@@ -145,7 +145,7 @@ class _ReviewList(object):
     image = info.imageUrl0 if info.hasGoodImage0() else None
 
     w = self.webView
-    w.setHtml(rc.haml_template('haml/reader/reviewlist').render({
+    w.setHtml(rc.haml_template('haml/reader/topicsview').render({
       'title': title,
       'gameId': self.gameId,
       'userName': user.name,
@@ -297,13 +297,13 @@ class _ReviewList(object):
 
   def _new(self): self.postInputManager.newPost()
 
-class ReviewList(QtWidgets.QMainWindow):
+class TopicsView(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
-    super(ReviewList, self).__init__(parent, WINDOW_FLAGS)
+    super(TopicsView, self).__init__(parent, WINDOW_FLAGS)
     self.setWindowIcon(rc.icon('window-review'))
     self.setWindowTitle(tr_("Review"))
-    self.__d = _ReviewList(self)
+    self.__d = _TopicsView(self)
 
   def refresh(self): self.__d.refresh()
   def clear(self): self.__d.clear()
@@ -315,7 +315,7 @@ class ReviewList(QtWidgets.QMainWindow):
     """@reimp @public"""
     if value and not self.isVisible():
       self.__d.refresh()
-    super(ReviewList, self).setVisible(value)
+    super(TopicsView, self).setVisible(value)
     if not value:
       self.clear()
 
@@ -325,7 +325,7 @@ class ReviewList(QtWidgets.QMainWindow):
   #def updatePost(self, data): # unicode json ->
   #  self.__d.updatePost(data)
 
-class _ReviewListManager:
+class _TopicsViewManager:
   def __init__(self):
     self.dialogs = []
 
@@ -339,7 +339,7 @@ class _ReviewListManager:
   def _createDialog(self):
     import windows
     parent = windows.normal()
-    ret = ReviewList(parent=parent)
+    ret = TopicsView(parent=parent)
     ret.resize(550, 580)
     return ret
 
@@ -378,9 +378,9 @@ class _ReviewListManager:
     self.dialogs.append(ret)
     return ret
 
-class ReviewListManager:
+class TopicsViewManager:
   def __init__(self):
-    self.__d = _ReviewListManager()
+    self.__d = _TopicsViewManager()
 
   #def clear(self): self.hide()
 
@@ -414,16 +414,16 @@ class ReviewListManager:
 def manager():
   import webrc
   webrc.init()
-  return ReviewListManager()
+  return TopicsViewManager()
 
 #@QmlObject
-class ReviewListManagerProxy(QObject):
-  def __init__(self, parent=None):
-    super(ReviewListManagerProxy, self).__init__(parent)
-
-  @Slot(int)
-  def showGame(self, id):
-    manager().showGame(id)
+#class TopicsViewManagerProxy(QObject):
+#  def __init__(self, parent=None):
+#    super(TopicsViewManagerProxy, self).__init__(parent)
+#
+#  @Slot(int)
+#  def showGame(self, id):
+#    manager().showGame(id)
 
 if __name__ == '__main__':
   import config

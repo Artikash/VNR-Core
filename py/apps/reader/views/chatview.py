@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
 import json
 from functools import partial
-from PySide.QtCore import Qt, Slot, QObject
+from PySide.QtCore import Qt, QObject
 from Qt5 import QtWidgets
 from sakurakit import skevents, skfileio, skqss
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
@@ -382,13 +382,13 @@ def manager():
   return ChatViewManager()
 
 #@QmlObject
-class ChatViewManagerProxy(QObject):
-  def __init__(self, parent=None):
-    super(ChatViewManagerProxy, self).__init__(parent)
-
-  @Slot(int)
-  def showTopic(self, id):
-    manager().showTopic(id)
+#class ChatViewManagerProxy(QObject):
+#  def __init__(self, parent=None):
+#    super(ChatViewManagerProxy, self).__init__(parent)
+#
+#  @Slot(int)
+#  def showTopic(self, id):
+#    manager().showTopic(id)
 
 if __name__ == '__main__':
   import config
