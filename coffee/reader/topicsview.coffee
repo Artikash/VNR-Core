@@ -112,7 +112,9 @@ findTopic = (id) -> _.findWhere TOPICS, id:id # long -> object
 
 editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
 
-replyTopic = (topicId) ->  topicInputBean.replyTopic topicId # long ->
+newTopic = -> topicInputBean.newTopic()
+
+replyTopic = (topicId) -> topicInputBean.replyTopic topicId # long ->
 
 bindNewTopics = ->
   $('.topic.topic-new').each ->
@@ -251,14 +253,9 @@ updateTopic = (topic) -> # object topic ->
 repaintUserTopic = ->
   return unless USER_TOPIC
   h = renderTopic USER_TOPIC
-  $h = $ h
+  $ h
     .addClass '.topic-user'
-  $el = $ '.topic.topic-user'
-  if $el.length
-    $el.replaceWith $h
-  else
-    #$('.topics > .middle').insertBefore $h # does not work?!
-    $h.prependTo '.topics'
+    .replaceAll '.topic-user'
 
 repaintMoreButton = ->
   if TOPICS.length < TOPIC_LIMIT or TOPICS.length % TOPIC_LIMIT > (if USER_TOPIC then 1 else 0)
@@ -337,6 +334,10 @@ bind = ->
       $this.data 'lock', true
       more()
       $this.data 'lock', false
+    false
+
+  $('.sec-topic .btn-new').click ->
+    newTopic()
     false
 
   $('.sec-btn').click ->

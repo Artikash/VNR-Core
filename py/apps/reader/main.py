@@ -777,8 +777,8 @@ class _MainObject(object):
   #@memoizedproperty
   #def postInputManager(self):
   #  dprint("create post Input manager")
-  #  import postedit
-  #  ret = postedit.manager()
+  #  import postinput
+  #  ret = postinput.manager()
   #  ret.setParent(self.q)
   #  return ret
 
@@ -1760,7 +1760,7 @@ class MainObject(QObject):
     dprint("leave")
 
     #skevents.runlater(d.ocrManager.start, 5000) # 5 seconds
-    #self.showReferenceView()
+    #=self.showReferenceView()
     #  import jsonapi
     #  jsonapi.gameinfo()
     #  d.dump()

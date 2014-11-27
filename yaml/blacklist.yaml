@@ -150,7 +150,8 @@ processes:
   - SogouCloud.exe      # Sogou
   - SogouExplorer.exe   # Sogou
   - sogouexplorer.exe   # Sogou
-  - splayer.exe         # SPlayer
+  #- splayer.exe         # SPlayer
+  #- Splayer.exe         # SPlayer # conflict with 真姫裸
   - StormPlayer.exe     # Storm player
   - sttray.exe          # Dell
   - sublime_text.exe    # Sublime Text

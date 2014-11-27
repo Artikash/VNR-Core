@@ -412,9 +412,6 @@ JMDICT_LANGS = SHARE_YAML['jmdict'] # [str lang]
 GLOBAL_TOPIC_ID = SHARE_YAML['forum']['topics']['global']
 TERM_TOPIC_ID = SHARE_YAML['forum']['topics']['term']
 
-POST_CONTENT_MAX_LENGTH = 1024 * 32 - 1 # the same as server side
-POST_CONTENT_MIN_LENGTH = 2 # the same as server side
-
 ## Locations ##
 
 AVATARS_LOCATION = os.path.abspath(parse_path(SHARE_YAML['avatars']['location'])) # unicode abspath

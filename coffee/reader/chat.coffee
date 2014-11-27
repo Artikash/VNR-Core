@@ -91,7 +91,7 @@ findPost = (id) -> _.findWhere POSTS, id:id # long -> object
 
 editPost = (post) -> postEditBean.editPost JSON.stringify post # long ->
 
-replyPost = (postId) ->  postInputBean.replyPost postId # long ->
+replyPost = (postId) -> postInputBean.replyPost postId # long ->
 
 bindNewPosts = ->
   $('.post.post-new').each ->

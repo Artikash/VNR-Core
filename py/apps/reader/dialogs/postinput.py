@@ -142,7 +142,7 @@ class _PostInput(object):
 
   def _canSave(self): # -> bool
     t = self._getContent()
-    if len(t) < config.POST_CONTENT_MIN_LENGTH or len(t) > config.POST_CONTENT_MAX_LENGTH:
+    if len(t) < defs.POST_CONTENT_MIN_LENGTH or len(t) > defs.POST_CONTENT_MAX_LENGTH:
       return False
     if self.imagePath and not self._getImageTitle():
       return False

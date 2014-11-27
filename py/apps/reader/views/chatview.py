@@ -56,7 +56,7 @@ class _ChatView(object):
     """
     return  [(unicode name, QObject bean)]
     """
-    import coffeebean, postedit, postinput
+    import coffeebean
     m = coffeebean.manager()
     return (
       ('cacheBean', m.cacheBean),

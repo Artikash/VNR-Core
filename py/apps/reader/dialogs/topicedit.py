@@ -1,8 +1,8 @@
 # coding: utf8
-# postedit.py
-# 6/30/2014 jichi
+# topicedit.py
+# 11/27/2014 jichi
 
-__all__ = 'PostEditorManager', 'PostEditorManagerBean'
+__all__ = 'TopicEditorManager', 'TopicEditorManagerBean'
 
 if __name__ == '__main__':
   import sys
@@ -23,15 +23,15 @@ import config, defs, growl, i18n, rc
 TEXTEDIT_MINIMUM_HEIGHT = 50
 
 @Q_Q
-class _PostEditor(object):
+class _TopicEditor(object):
   def __init__(self, q):
     self.imageEnabled = True
 
-    self.postId = 0 # long
+    self.topicId = 0 # long
     self.userName = '' # unicode
     #self.userName = '' # unicode
-    self.postLanguage = ''
-    self.postContent = ''
+    self.topicLanguage = ''
+    self.topicContent = ''
 
     self.imageId = 0
     self.imageTitle = ''
@@ -140,7 +140,7 @@ class _PostEditor(object):
 
   def _isChanged(self):
     t = self._getContent()
-    return bool(t) and t != self.postContent or self.postLanguage != self._getLanguage()
+    return bool(t) and t != self.topicContent or self.topicLanguage != self._getLanguage()
 
   def _refreshSaveButton(self):
     self.saveButton.setEnabled(self._canSave())
@@ -149,9 +149,9 @@ class _PostEditor(object):
     changed = False
 
     t = self._getContent()
-    if len(t) < defs.POST_CONTENT_MIN_LENGTH or len(t) > defs.POST_CONTENT_MAX_LENGTH:
+    if len(t) < defs.TOPIC_CONTENT_MIN_LENGTH or len(t) > defs.TOPIC_CONTENT_MAX_LENGTH:
       return False
-    if not changed and t != self.postContent:
+    if not changed and t != self.topicContent:
       changed = True
 
     if (self.imagePath or self.imageId):
@@ -161,7 +161,7 @@ class _PostEditor(object):
       if not changed and imageTitle != self.imageTitle:
         changed = True
 
-    if not changed and self.postLanguage != self._getLanguage():
+    if not changed and self.topicLanguage != self._getLanguage():
       changed = True
     if not changed and bool(self.imageTitle) != bool(self.imageId):
       changed = True
@@ -216,13 +216,13 @@ class _PostEditor(object):
 
   def _save(self):
     v = self._getContent()
-    post = {}
-    if v and v != self.postContent:
-      post['content'] = self.postContent = v
+    topic = {}
+    if v and v != self.topicContent:
+      topic['content'] = self.topicContent = v
 
     v = self._getLanguage()
-    if v != self.postLanguage:
-      post['lang'] = self.postLanguage = v
+    if v != self.topicLanguage:
+      topic['lang'] = self.topicLanguage = v
 
     imageData = ''
     if self.imagePath:
@@ -238,49 +238,49 @@ class _PostEditor(object):
       if self.imageId:
         v = self._getImageTitle()
         if v and v != self.imageTitle:
-          post['imageTitle'] = v
+          topic['imageTitle'] = v
       else:
-        post['image'] = 0
+        topic['image'] = 0
 
-    if post or imageData:
-      post['id'] = self.postId
-      post['userName'] = self.userName
+    if topic or imageData:
+      topic['id'] = self.topicId
+      topic['userName'] = self.userName
 
-      postData = json.dumps(post)
-      self.q.postChanged.emit(postData, imageData)
+      topicData = json.dumps(topic)
+      self.q.topicChanged.emit(topicData, imageData)
 
       growl.msg(my.tr("Edit submitted"))
 
   def refresh(self):
     self.saveButton.setEnabled(False)
 
-    self.contentEdit.setPlainText(self.postContent)
+    self.contentEdit.setPlainText(self.topicContent)
     self.imageTitleEdit.setText(self.imageTitle)
 
     enabled = bool(self.imageId)
     self.removeImageButton.setVisible(enabled)
     self.imageTitleEdit.setVisible(enabled)
 
-    try: langIndex = config.LANGUAGES.index(config.htmllocale2language(self.postLanguage))
+    try: langIndex = config.LANGUAGES.index(config.htmllocale2language(self.topicLanguage))
     except ValueError: langIndex = 1 # 'en'
     self.languageEdit.setCurrentIndex(langIndex)
 
-    self.spellHighlighter.setLanguage(self.postLanguage) # must after lang
+    self.spellHighlighter.setLanguage(self.topicLanguage) # must after lang
 
     for w in self._iterImageWidgets():
       w.setEnabled(self.imageEnabled)
 
-class PostEditor(QtWidgets.QDialog):
+class TopicEditor(QtWidgets.QDialog):
 
-  postChanged = Signal(unicode, unicode) # json post, json image
+  topicChanged = Signal(unicode, unicode) # json topic, json image
 
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
-    super(PostEditor, self).__init__(parent, WINDOW_FLAGS)
+    super(TopicEditor, self).__init__(parent, WINDOW_FLAGS)
     skqss.class_(self, 'texture')
-    self.setWindowTitle(mytr_("Post Editor"))
+    self.setWindowTitle(mytr_("Topic Editor"))
     self.setWindowIcon(rc.icon('window-textedit'))
-    self.__d = _PostEditor(self)
+    self.__d = _TopicEditor(self)
     #self.statusBar() # show status bar
 
     import netman
@@ -288,12 +288,12 @@ class PostEditor(QtWidgets.QDialog):
     import dataman
     dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
 
-  def setPost(self, id, userName='', language='', lang='', content='', image=None, **ignored):
+  def setTopic(self, id, userName='', language='', lang='', content='', image=None, **ignored):
     d = self.__d
-    d.postId = id
+    d.topicId = id
     d.userName = userName
-    d.postLanguage = language or lang
-    d.postContent = content
+    d.topicLanguage = language or lang
+    d.topicContent = content
 
     if image:
       d.imageId = image.get('id')
@@ -310,12 +310,12 @@ class PostEditor(QtWidgets.QDialog):
     """@reimp @public"""
     if value and not self.isVisible():
       self.__d.refresh()
-    super(PostEditor, self).setVisible(value)
+    super(TopicEditor, self).setVisible(value)
 
   def imageEnabled(self): return self.__d.imageEnabled
   def setImageEnabled(self, t): self.__d.imageEnabled = t
 
-class _PostEditorManager:
+class _TopicEditorManager:
   def __init__(self):
     self.dialogs = []
     self.imageEnabled = True
@@ -324,7 +324,7 @@ class _PostEditorManager:
   def _createDialog():
     import windows
     parent = windows.top()
-    ret = PostEditor(parent)
+    ret = TopicEditor(parent)
     ret.resize(400, 200)
     return ret
 
@@ -336,14 +336,14 @@ class _PostEditorManager:
     ret = self._createDialog()
     ret.setImageEnabled(self.imageEnabled)
     self.dialogs.append(ret)
-    ret.postChanged.connect(q.postChanged)
+    ret.topicChanged.connect(q.topicChanged)
     return ret
 
 #@Q_Q
-class PostEditorManager(QObject):
+class TopicEditorManager(QObject):
   def __init__(self, parent=None):
-    super(PostEditorManager, self).__init__(parent)
-    self.__d = _PostEditorManager()
+    super(TopicEditorManager, self).__init__(parent)
+    self.__d = _TopicEditorManager()
 
     from PySide.QtCore import QCoreApplication
     qApp = QCoreApplication.instance()
@@ -353,7 +353,7 @@ class PostEditorManager(QObject):
     netman.manager().onlineChanged.connect(lambda t: t or self.hide())
     dataman.manager().loginChanged.connect(lambda t: t or self.hide())
 
-  postChanged = Signal(unicode, unicode) # json post, json image
+  topicChanged = Signal(unicode, unicode) # json topic, json image
 
   #def clear(self): self.hide()
 
@@ -370,25 +370,25 @@ class PostEditorManager(QObject):
         if w.isVisible():
           w.hide()
 
-  def editPost(self, **post):
+  def editTopic(self, **topic):
     w = self.__d.getDialog(self)
-    w.setPost(**post)
+    w.setTopic(**topic)
     w.show()
 
   def isImageEnabled(self): return self.__d.imageEnabled
   def setImageEnabled(self, t): self.__d.imageEnabled = t
 
 #@memoized
-#def manager(): return PostEditorManager()
+#def manager(): return TopicEditorManager()
 
 #@QmlObject
-class PostEditorManagerBean(QObject):
+class TopicEditorManagerBean(QObject):
   def __init__(self, parent=None, manager=None):
-    super(PostEditorManagerBean, self).__init__(parent)
-    self.manager = manager or PostEditorManager(self)
-    self.manager.postChanged.connect(self.postChanged)
+    super(TopicEditorManagerBean, self).__init__(parent)
+    self.manager = manager or TopicEditorManager(self)
+    self.manager.topicChanged.connect(self.topicChanged)
 
-  postChanged = Signal(unicode, unicode) # json post, json image
+  topicChanged = Signal(unicode, unicode) # json topic, json image
 
   imageEnabledChanged = Signal(bool)
   imageEnabled = Property(bool,
@@ -397,17 +397,17 @@ class PostEditorManagerBean(QObject):
       notify=imageEnabledChanged)
 
   @Slot(unicode)
-  def editPost(self, data): # json ->
+  def editTopic(self, data): # json ->
     try:
-      post = json.loads(data)
-      post['id'] = long(post['id'])
-      self.manager.editPost(**post)
+      topic = json.loads(data)
+      topic['id'] = long(topic['id'])
+      self.manager.editTopic(**topic)
     except Exception, e: dwarn(e)
 
 if __name__ == '__main__':
   a = debug.app()
-  m = PostEditorManager()
-  m.editPost(id=123, content="123", lang='en')
+  m = TopicEditorManager()
+  m.editTopic(id=123, content="123", lang='en')
   a.exec_()
 
 # EOF

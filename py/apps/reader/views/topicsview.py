@@ -38,7 +38,7 @@ class _TopicsView(object):
 
     self._createUi(q)
 
-    shortcut('ctrl+n', self._new, parent=q)
+    #shortcut('ctrl+n', self._new, parent=q)
 
   def _createUi(self, q):
     q.setCentralWidget(self.webView)
@@ -92,26 +92,26 @@ class _TopicsView(object):
     """
     return  [(unicode name, QObject bean)]
     """
-    import coffeebean, postedit, postinput
+    import coffeebean, topicedit, topicinput
     m = coffeebean.manager()
     return (
       ('cacheBean', m.cacheBean),
       ('i18nBean', m.i18nBean),
       ('mainBean', m.mainBean),
-      ('postEditBean', self.postEditBean),
-      ('postInputBean', self.postInputBean),
+      ('topicEditBean', self.topicEditBean),
+      ('topicInputBean', self.topicInputBean),
     )
 
   @memoizedproperty
-  def postEditBean(self):
-    import postedit
-    ret = postedit.PostEditorManagerBean(parent=self.q, manager=self.postEditorManager)
+  def topicEditBean(self):
+    import topicedit
+    ret = topicedit.TopicEditorManagerBean(parent=self.q, manager=self.topicEditorManager)
     return ret
 
   @memoizedproperty
-  def postInputBean(self):
-    import postinput
-    ret = postinput.PostInputManagerBean(parent=self.q, manager=self.postInputManager)
+  def topicInputBean(self):
+    import topicinput
+    ret = topicinput.TopicInputManagerBean(parent=self.q, manager=self.topicInputManager)
     return ret
 
   @memoizedproperty
@@ -165,7 +165,7 @@ class _TopicsView(object):
     ret = SkStyleView()
     skqss.class_(ret, 'texture')
     layout = QtWidgets.QHBoxLayout()
-    layout.addWidget(self.newButton)
+    #layout.addWidget(self.newButton) # not enabled
     layout.addStretch()
     layout.addWidget(self.browseButton)
     layout.addWidget(self.refreshButton)
@@ -205,69 +205,70 @@ class _TopicsView(object):
     return ret
 
   @memoizedproperty
-  def postEditorManager(self):
-    import postedit
-    ret = postedit.PostEditorManager(self.q)
-    ret.postChanged.connect(self._update)
+  def topicEditorManager(self):
+    import topicedit
+    ret = topicedit.TopicEditorManager(self.q)
+    ret.topicChanged.connect(self._update)
     return ret
 
   @memoizedproperty
-  def postInputManager(self):
-    import postinput
-    ret = postinput.PostInputManager(self.q)
-    ret.postReceived.connect(self._submit)
+  def topicInputManager(self):
+    import topicinput
+    ret = topicinput.TopicInputManager(self.q)
+    ret.topicReceived.connect(self._submit)
     return ret
 
-  def _submit(self, postData, imageData):
+  def _submit(self, topicData, imageData):
     """
-    @param  postData  unicode json
+    @param  topicData  unicode json
     @param  imageData  unicode
     """
     if self.gameId:
       user = dataman.manager().user()
       if user.name and user.password:
-        post = json.loads(postData)
-        post['topic'] = self.gameId
-        post['login'] = user.name
-        post['password'] = user.password
+        topic = json.loads(topicData)
+        topic['subjectId'] = self.gameId
+        topic['subjectType'] = 'game'
+        topic['login'] = user.name
+        topic['password'] = user.password
         if imageData:
           image = json.loads(imageData)
           image['login'] = user.name
           image['password'] = user.password
         else:
           image = None
-        skevents.runlater(partial(self._submitPost, post, image))
+        skevents.runlater(partial(self._submitTopic, topic, image))
 
-  def _submitPost(self, post, image):
+  def _submitTopic(self, topic, image):
     """
-    @param  post  kw
+    @param  topic  kw
     @param  image  kw or None
     """
     dprint("enter")
     if image:
       data = skfileio.readdata(image['filename'])
       if data:
-        post['image'] = netman.manager().submitImage(data, image)
+        topic['image'] = netman.manager().submitImage(data, image)
 
-    if image and not post.get('image') or not netman.manager().submitPost(post):
+    if image and not topic.get('image') or not netman.manager().submitTopic(topic):
       growl.warn("<br/>".join((
-        my.tr("Failed to submit post"),
+        my.tr("Failed to submit topic"),
         my.tr("Please try again"),
       )))
     dprint("leave")
 
-  def _update(self, postData, imageData):
+  def _update(self, topicData, imageData):
     """
-    @param  postData  unicode json
+    @param  topicData  unicode json
     @param  imageData  unicode json
     """
     if self.gameId:
       user = dataman.manager().user()
       if user.name and user.password:
-        post = json.loads(postData)
-        #post['topic'] = self.gameId
-        post['login'] = user.name
-        post['password'] = user.password
+        topic = json.loads(topicData)
+        #topic['subjectId'] = self.gameId
+        topic['login'] = user.name
+        topic['password'] = user.password
 
         if imageData:
           image = json.loads(imageData)
@@ -275,27 +276,27 @@ class _TopicsView(object):
           image['password'] = user.password
         else:
           image = None
-        skevents.runlater(partial(self._updatePost, post, image))
+        skevents.runlater(partial(self._updateTopic, topic, image))
 
-  def _updatePost(self, post, image):
+  def _updateTopic(self, topic, image):
     """
-    @param  post  kw
+    @param  topic  kw
     @param  image  kw or None
     """
     dprint("enter")
     if image:
       data = skfileio.readdata(image['filename'])
       if data:
-        post['image'] = netman.manager().submitImage(data, image)
+        topic['image'] = netman.manager().submitImage(data, image)
 
-    if image and not post.get('image') or not netman.manager().updatePost(post):
+    if image and not topic.get('image') or not netman.manager().updateTopic(topic):
       growl.warn("<br/>".join((
-        my.tr("Failed to update post"),
+        my.tr("Failed to update topic"),
         my.tr("Please try again"),
       )))
     dprint("leave")
 
-  def _new(self): self.postInputManager.newPost()
+  def _new(self): self.topicInputManager.newTopic()
 
 class TopicsView(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
@@ -319,22 +320,9 @@ class TopicsView(QtWidgets.QMainWindow):
     if not value:
       self.clear()
 
-  #def addPost(self, data): # unicode json ->
-  #  self.__d.addPost(data)
-
-  #def updatePost(self, data): # unicode json ->
-  #  self.__d.updatePost(data)
-
 class _TopicsViewManager:
   def __init__(self):
     self.dialogs = []
-
-    #import comets
-    #comet = comets.globalComet()
-    ##assert comet
-    #if comet: # for debug purpose when comet is empty
-    #  comet.postDataReceived.connect(self._onPostReceived)
-    #  comet.postDataUpdated.connect(self._onPostUpdated)
 
   def _createDialog(self):
     import windows
@@ -342,26 +330,6 @@ class _TopicsViewManager:
     ret = TopicsView(parent=parent)
     ret.resize(550, 580)
     return ret
-
-  #def _onPostReceived(self, data):
-  #  try:
-  #    obj = json.loads(data)
-  #    topicId = obj['topicId']
-  #    for w in self.dialogs:
-  #      if w.isVisible() and w.topicId() == topicId:
-  #        w.addPost(data)
-  #  except Exception, e:
-  #    dwarn(e)
-
-  #def _onPostUpdated(self, data):
-  #  try:
-  #    obj = json.loads(data)
-  #    topicId = obj['topicId']
-  #    for w in self.dialogs:
-  #      if w.isVisible() and w.topicId() == topicId:
-  #        w.updatePost(data)
-  #  except Exception, e:
-  #    dwarn(e)
 
   def getDialog(self, gameId=0):
     """
