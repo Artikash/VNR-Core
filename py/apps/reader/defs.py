@@ -15,6 +15,9 @@ INTERNET_CONNECTION_OFF = 'off'
 
 # Forum
 
+TOPIC_TITLE_MAX_LENGTH = 255 # the same as server side
+TOPIC_TITLE_MIN_LENGTH = 2 # the same as server side
+
 POST_CONTENT_MAX_LENGTH = 1024 * 32 - 1 # the same as server side
 POST_CONTENT_MIN_LENGTH = 2 # the same as server side
 

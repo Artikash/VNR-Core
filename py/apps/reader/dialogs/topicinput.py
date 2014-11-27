@@ -33,7 +33,7 @@ class _TopicInput(object):
     skwidgets.shortcut('ctrl+s', self._save, parent=q)
 
   def clear(self):
-    self.replyId = 0 # long
+    self.topicType = 'review' # str
     self.topicContent = '' # str
     self.imagePath = '' # unicode
 
@@ -49,6 +49,7 @@ class _TopicInput(object):
     row.addStretch()
     layout.addLayout(row)
 
+    layout.addWidget(self.titleEdit)
     layout.addWidget(self.contentEdit)
 
     row = QtWidgets.QHBoxLayout()
@@ -101,6 +102,16 @@ class _TopicInput(object):
   def imageTitleEdit(self):
     ret = QtWidgets.QLineEdit()
     skqss.class_(ret, 'editable')
+    ret.setPlaceholderText(tr_("Title"))
+    ret.setToolTip(tr_("Title"))
+    ret.textChanged.connect(self._refreshSaveButton)
+    return ret
+
+  @memoizedproperty
+  def titleEdit(self):
+    ret = QtWidgets.QLineEdit()
+    skqss.class_(ret, 'editable')
+    ret.setPlaceholderText(tr_("Title"))
     ret.setToolTip(tr_("Title"))
     ret.textChanged.connect(self._refreshSaveButton)
     return ret
@@ -134,6 +145,8 @@ class _TopicInput(object):
     return config.language2htmllocale(config.LANGUAGES[self.languageEdit.currentIndex()])
   def _getContent(self):
     return self.contentEdit.toPlainText().strip()
+  def _getTitle(self):
+    return self.titleEdit.text().strip()
   def _getImageTitle(self):
     return self.imageTitleEdit.text().strip()
 
@@ -141,6 +154,9 @@ class _TopicInput(object):
     self.saveButton.setEnabled(self._canSave())
 
   def _canSave(self): # -> bool
+    t = self._getTitle()
+    if len(t) < defs.TOPIC_TITLE_MIN_LENGTH or len(t) > defs.TOPIC_TITLE_MAX_LENGTH:
+      return False
     t = self._getContent()
     if len(t) < defs.TOPIC_CONTENT_MIN_LENGTH or len(t) > defs.TOPIC_CONTENT_MAX_LENGTH:
       return False
@@ -189,6 +205,7 @@ class _TopicInput(object):
 
   def _save(self):
     topic = {}
+    topic['title'] = self.topicContent = self._getTitle()
     topic['content'] = self.topicContent = self._getContent()
     topic['lang'] = self.topicLanguage = self._getLanguage()
 
@@ -197,7 +214,7 @@ class _TopicInput(object):
     #topic['login'] = user.name
     #topic['pasword'] = user.password
 
-    if topic['content']:
+    if topic['content'] and topic['title']:
       imageData = ''
       if self.imagePath:
         imageTitle = self._getImageTitle()
@@ -209,11 +226,7 @@ class _TopicInput(object):
           }
           imageData = json.dumps(image)
 
-      if self.replyId:
-        topic['type'] = 'reply'
-        topic['reply'] = self.replyId
-      else:
-        topic['type'] = 'post'
+      topic['type'] = self.topicType
       topicData = json.dumps(topic)
       self.q.topicReceived.emit(topicData, imageData)
       #self.topicContent = '' # clear content but leave language
@@ -254,8 +267,8 @@ class TopicInput(QtWidgets.QDialog):
   def imageEnabled(self): return self.__d.imageEnabled
   def setImageEnabled(self, t): self.__d.imageEnabled = t
 
-  def replyId(self): return self.__d.replyId
-  def setReplyId(self, v): self.__d.replyId = v
+  def type(self): return self.__d.topicType
+  def setType(self, v): self.__d.topicType = v
 
   def imagePath(self): return self.__d.imagePath
   def setImagePath(self, v): self.__d.imagePath = v
@@ -324,9 +337,9 @@ class TopicInputManager(QObject):
         if w.isVisible():
           w.hide()
 
-  def newTopic(self, replyId=0, imagePath=''): # long, unicode ->
+  def newTopic(self, type='review', imagePath=''): # long, unicode ->
     w = self.__d.getDialog(self)
-    w.setReplyId(replyId)
+    w.setType(type)
     w.setImagePath(imagePath)
     w.show()
 
