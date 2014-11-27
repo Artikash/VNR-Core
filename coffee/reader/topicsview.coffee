@@ -339,6 +339,19 @@ bind = ->
       $this.data 'lock', false
     false
 
+  $('.sec-btn').click ->
+    $this = $ @
+    $sec = $this.parent '.sec'
+    if $sec.length
+      $target = $sec.find '.sec-content'
+      unless $target.is(':empty') and $this.hasClass('checked')
+        $this.toggleClass 'checked'
+        #effect = $this.data('effect') or 'blind'
+        unless $target.is ':empty'
+          $target.toggle 'blind'
+          $sec.find('.sec-footer').toggle 'blind'
+    true
+
 ## Main ##
 
 @READY = false # needed by the python view
