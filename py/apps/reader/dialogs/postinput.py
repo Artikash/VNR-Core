@@ -29,6 +29,7 @@ class _PostInput(object):
     self.clear()
 
     self._createUi(q)
+    self.contentEdit.setFocus()
 
     skwidgets.shortcut('ctrl+s', self._save, parent=q)
 
@@ -44,9 +45,9 @@ class _PostInput(object):
     layout = QtWidgets.QVBoxLayout()
 
     row = QtWidgets.QHBoxLayout()
+    row.addStretch()
     row.addWidget(QtWidgets.QLabel(tr_("Language") + ":"))
     row.addWidget(self.languageEdit)
-    row.addStretch()
     layout.addLayout(row)
 
     layout.addWidget(self.contentEdit)

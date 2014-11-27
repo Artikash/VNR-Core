@@ -29,6 +29,7 @@ class _TopicInput(object):
     self.clear()
 
     self._createUi(q)
+    self.contentEdit.setFocus()
 
     skwidgets.shortcut('ctrl+s', self._save, parent=q)
 
@@ -44,12 +45,10 @@ class _TopicInput(object):
     layout = QtWidgets.QVBoxLayout()
 
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(QtWidgets.QLabel(tr_("Language") + ":"))
+    row.addWidget(self.titleEdit)
     row.addWidget(self.languageEdit)
-    row.addStretch()
     layout.addLayout(row)
 
-    layout.addWidget(self.titleEdit)
     layout.addWidget(self.contentEdit)
 
     row = QtWidgets.QHBoxLayout()

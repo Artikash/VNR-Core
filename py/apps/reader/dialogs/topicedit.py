@@ -38,6 +38,7 @@ class _TopicEditor(object):
     self.imagePath = ''
 
     self._createUi(q)
+    self.contentEdit.setFocus()
 
     skwidgets.shortcut('ctrl+s', self._save, parent=q)
 
