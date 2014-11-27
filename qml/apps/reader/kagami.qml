@@ -42,9 +42,18 @@ Item { id: root_
   property bool wine: statusPlugin_.wine // cached
   property int admin: statusPlugin_.admin // cached  xp: -1; otherwise 1 or 0
 
+  function createPostComet() {
+    return postCometComp_.createObject(root_)
+  }
+
   // - Private -
 
   clip: true // maybe, this could save some CPU cycles when grimoire goes out of screen
+
+
+  Component { id: postCometComp_
+    Comet.PostDataComet {}
+  }
 
   // cached
 

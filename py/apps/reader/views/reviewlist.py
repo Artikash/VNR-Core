@@ -26,7 +26,9 @@ import dataman, growl, netman, osutil, rc
 class _ReviewList(object):
 
   def __init__(self, q):
-    self.clear()
+    import comets
+    self.comet = comets.createPostComet()
+    self.gameId = 0 # long
 
     #self._viewBean = SkWebViewBean(self.webView)
 
@@ -42,8 +44,19 @@ class _ReviewList(object):
     #dock.setAllowedAreas(Qt.BottomDockWidgetArea)
     q.addDockWidget(Qt.BottomDockWidgetArea, dock)
 
-  def clear(self):
-    self.gameId = 0 # long
+  def setGameId(self, gameId): # long ->
+    if self.gameId != gameId:
+      self.gameId = gameId
+
+      path = '/game/%s' % gameId if gameId else ''
+      if path:
+        self.comet.setPath(path)
+        self.comet.setActive(True)
+      else:
+        self.comet.setActive(False)
+        self.comet.setPath('')
+
+  def clear(self): self.setGameId(0)
 
   def _injectBeans(self):
     h = self.webView.page().mainFrame()
@@ -279,7 +292,7 @@ class ReviewList(QtWidgets.QMainWindow):
   def clear(self): self.__d.clear()
 
   def gameId(self): return self.__d.gameId
-  def setGameId(self, gameId): self.__d.gameId = gameId
+  def setGameId(self, gameId): self.__d.setGameId(gameId)
 
   def setVisible(self, value):
     """@reimp @public"""

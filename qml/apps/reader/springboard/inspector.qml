@@ -250,7 +250,7 @@ Rectangle { id: root_
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton
         onPressed:
-          if (root_.game && root_.game.itemId)
+          if (statusPlugin_.online && root_.game && root_.game.itemId)
             mainPlugin_.showGameReview(root_.game.itemId)
       }
 
@@ -269,7 +269,7 @@ Rectangle { id: root_
 
         font.pixelSize: 12
         effect: Share.TextEffect {
-          highlight: scoreTip_.containsMouse
+          highlight: scoreTip_.containsMouse && statusPlugin_.online
           highlightColor: 'yellow'
         }
         text: !visible ? "" : renderGame(game)

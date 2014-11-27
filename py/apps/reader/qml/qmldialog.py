@@ -23,9 +23,11 @@ class Kagami(SkDeclarativeView):
       #  (qmlrc.ResourceImageProvider.PROVIDER_ID, qmlrc.ResourceImageProvider()),
       #))
 
+    root = self.rootObject()
+
     ctx = 'globalComet', 'gameComet'
     for k in ctx:
-      obj = self.rootObject().findChild(QObject, k)
+      obj = root.findChild(QObject, k)
       assert obj
       setattr(self, k, obj)
 
@@ -34,15 +36,6 @@ class Kagami(SkDeclarativeView):
     # Not used ...
     #self._createShortcuts()
     dprint("pass")
-
-  def comets(self):
-    return self.globalComet, self.gameComet
-
-  def stopComets(self):
-    for it in self.comets():
-      if it.property('active'):
-        it.setProperty('active', False)
-      #it.stop()
 
   def _createShortcuts(self):
     from functools import partial
@@ -60,6 +53,22 @@ class Kagami(SkDeclarativeView):
     #shortcut('alt+r', m.confirmRestart, parent=self)
     #shortcut('alt+o', m.showPreferences, parent=self) # Does not work on windows?!
     #shortcut('alt+f', m.showGameBoard, parent=self)
+
+  def comets(self):
+    return self.globalComet, self.gameComet
+
+  def stopComets(self):
+    for it in self.comets():
+      if it.property('active'):
+        it.setProperty('active', False)
+      #it.stop()
+
+  def createPostComet(self):
+    """
+    @return  QObject
+    """
+    root = self.rootObject()
+    return root.createPostComet()
 
   def setMirageVisible(self, value):
     """
