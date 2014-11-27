@@ -11,6 +11,7 @@ if __name__ == '__main__':
   debug.initenv()
 
 import json, os
+from collections import OrderedDict
 from PySide.QtCore import Qt, Signal, Slot, Property, QObject
 from Qt5 import QtWidgets
 from sakurakit import skfileio, skqss, skwidgets
@@ -44,6 +45,8 @@ class _TopicInput(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
 
+    layout.addLayout(self.scoreRow)
+
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.titleEdit)
     row.addWidget(self.languageEdit)
@@ -62,6 +65,38 @@ class _TopicInput(object):
 
     layout.setContentsMargins(5, 5, 5, 5)
     q.setLayout(layout)
+
+  @memoizedproperty
+  def scoreRow(self):
+    row = QtWidgets.QHBoxLayout()
+    for w in self.scoreEdits.itervalues():
+      row.addWidget(w)
+    row.addStretch()
+    return row
+
+  @memoizedproperty
+  def scoreEdits(self):
+    return OrderedDict((
+      ('overall', self._createScoreEdit(tr_("Score"))),
+      ('ecchi', self._createScoreEdit(mytr_("Ecchi"))),
+     ))
+
+  def _createScoreEdit(self, name):
+    ret = QtWidgets.QSpinBox()
+    ret.setToolTip("%s [0,10]" % name)
+    ret.setRange(0, 10)
+    ret.setSingleStep(1)
+    ret.setPrefix(name + " ")
+    return ret
+
+  @memoizedproperty
+  def languageEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.language_name2, config.LANGUAGES))
+    ret.setMaxVisibleItems(ret.count())
+    ret.currentIndexChanged.connect(self._onLanguageChanged)
+    return ret
 
   @memoizedproperty
   def saveButton(self):
