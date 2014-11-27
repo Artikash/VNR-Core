@@ -43,9 +43,9 @@ createTemplates = ->
       %img.img-circle.avatar(src="${userAvatarUrl}" alt="#{tr 'Avatar'}")
   .right
     .header
-      %a.item.title(title="#{tr 'Browse'}") ${title}
+      %a.item.title(href='javascript:' title="#{tr 'Browse'}") ${title}
       %span.pull-right
-        %a.item @${userName}
+        %a.item.user(href="javascript:") @${userName}
         .item.text-minor = lang
         .item.text-minor = createTime
         .item.text-success = updateTime
@@ -112,32 +112,35 @@ editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
 replyTopic = (topicId) ->  topicInputBean.replyTopic topicId # long ->
 
 bindNewTopics = ->
-  $('.post.post-new').each ->
-    $post = $ @
-      .removeClass 'post-new'
+  $('.topic.topic-new').each ->
+    $topic = $ @
+      .removeClass 'topic-new'
 
-    postId = $post.data 'id'
-    post = findPost postId
+    topicId = $topic.data 'id'
+    topic = findTopic topicId
 
-    $header = $post.find '> .right > .header'
-    $footer = $post.find '> .right > .footer'
+    $header = $topic.find '> .right > .header'
+    $footer = $topic.find '> .right > .footer'
 
     $header.find('a.user').click ->
-      mainBean.showUser post.userName if post?.userName
+      mainBean.showUser topic.userName if topic?.userName
       false
 
     $footer.find('.btn-edit').click ->
-      editPost post if post
+      editTopic topic if topic
       false
 
     $footer.find('.btn-reply').click ->
-      replyPost postId
+      replyTopic topic
+      false
+    $header.find('.title').click ->
+      replyTopic topic
       false
 
-    $footer.find('.like-group').removeClass 'fade-in' if post?.likeCount or post?.dislikeCount
+    $footer.find('.like-group').removeClass 'fade-in' if topic?.likeCount or topic?.dislikeCount
 
     $footer.find('.btn.like').click ->
-      if post and post.userName != USER_NAME
+      if topic and USER_NAME and USER_NAME isnt topic.userName
         $that = $footer.find '.btn.dislike.selected'
         if $that.length
           $that.removeClass 'selected'
@@ -151,8 +154,8 @@ bindNewTopics = ->
           data:
             login: USER_NAME
             password: USER_PASSWORD
-            targetType: 'post'
-            targetId: postId
+            targetType: 'topic'
+            targetId: topicId
             type: 'like'
             value: value
           success: =>
@@ -162,7 +165,7 @@ bindNewTopics = ->
       false
 
     $footer.find('.btn.dislike').click ->
-      if post and post.userName != USER_NAME
+      if topic and USER_NAME and USER_NAME isnt topic.userName
         $that = $footer.find '.btn.like.selected'
         if $that.length
           $that.removeClass 'selected'
@@ -176,8 +179,8 @@ bindNewTopics = ->
           data:
             login: USER_NAME
             password: USER_PASSWORD
-            targetType: 'post'
-            targetId: postId
+            targetType: 'topic'
+            targetId: topicId
             type: 'like'
             value: value
           success: =>
@@ -192,7 +195,7 @@ addTopics = (topics) -> # [object topic] ->
   h = (renderTopic it for it in topics when it.type is 'review').join ''
   $('.topics').append h
   #$(h).hide().appendTo('.topics').fadeIn()
-  bindNewToipcs()
+  bindNewTopics()
 
 highlightNewTopics = -> $('.topic.topic-new').effect 'highlight', HIGHLIGHT_INTERVAL
 

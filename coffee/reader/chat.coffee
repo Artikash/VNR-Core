@@ -43,7 +43,7 @@ createTemplates = ->
       %img.img-circle.avatar(src="${userAvatarUrl}" alt="#{tr 'Avatar'}")
   .right
     .header
-      %a.user(style="${userStyle}") @${userName}
+      %a.user(href="javascript:" style="${userStyle}") @${userName}
       .time.text-minor = createTime
       .lang = lang
       .time.text-success = updateTime
@@ -119,7 +119,7 @@ bindNewPosts = ->
     $footer.find('.like-group').removeClass 'fade-in' if post?.likeCount or post?.dislikeCount
 
     $footer.find('.btn.like').click ->
-      if post and post.userName != USER_NAME
+      if post and USER_NAME and USER_NAME isnt post.userName
         $that = $footer.find '.btn.dislike.selected'
         if $that.length
           $that.removeClass 'selected'
@@ -144,7 +144,7 @@ bindNewPosts = ->
       false
 
     $footer.find('.btn.dislike').click ->
-      if post and post.userName != USER_NAME
+      if post and USER_NAME and USER_NAME isnt post.userName
         $that = $footer.find '.btn.like.selected'
         if $that.length
           $that.removeClass 'selected'
