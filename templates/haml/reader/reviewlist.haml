@@ -4,6 +4,7 @@
 ; @param  userName  string
 ; @param  userPassword  string
 ; @param  title  unicode
+; @param  image  unicode url
 ; @param  rc  rc
 ; @param  tr  sktr.tr_
 ;!!! 5
@@ -18,7 +19,7 @@
 
     :css
       body {
-        background-image: url("#{rc.wallpaper_url()}");
+        background-image: url("#{image or rc.wallpaper_url()}");
         background-size: cover;
       }
 

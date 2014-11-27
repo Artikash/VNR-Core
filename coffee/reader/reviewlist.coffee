@@ -254,7 +254,7 @@ paint = ->
       if data.length
         addTopics data
       else
-        growl.warn tr 'Internet error'
+        growl tr('Empty') + ' > <'
 
 more = ->
   spin true
@@ -278,7 +278,7 @@ more = ->
         growl tr "No more"
 
 bind = ->
-  $('.topic > .footer > .btn-more').click ->
+  $('.game > .footer > .btn-more').click ->
     $this = $ @
     unless $this.data 'locked'
       $this.data 'lock', true

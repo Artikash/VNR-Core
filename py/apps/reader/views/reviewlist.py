@@ -106,6 +106,7 @@ class _ReviewList(object):
     user = dm.user()
     info = dm.queryGameInfo(itemId=self.gameId)
     title = info.title0 or tr_("Game")
+    image = info.imageUrl0 if info.hasGoodImage0() else None
 
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/reviewlist').render({
@@ -113,6 +114,7 @@ class _ReviewList(object):
       'gameId': self.gameId,
       'userName': user.name,
       'userPassword': user.password,
+      'image': image, # background image
       'rc': rc,
       'tr': tr_,
     }), baseUrl)
