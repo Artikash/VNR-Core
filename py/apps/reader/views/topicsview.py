@@ -264,7 +264,7 @@ class _TopicsView(object):
     nm = netman.manager()
     if tickets:
       for data in tickets:
-        nm.submitTicket(data) # error not checked
+        nm.updateTicket(data) # error not checked
     if image:
       data = skfileio.readdata(image['filename'])
       if data:

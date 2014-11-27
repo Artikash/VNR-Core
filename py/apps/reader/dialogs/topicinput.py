@@ -45,7 +45,7 @@ class _TopicInput(object):
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
 
-    layout.addLayout(self.scoreRow)
+    layout.addWidget(self.scoreRow)
 
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.titleEdit)
@@ -72,7 +72,8 @@ class _TopicInput(object):
     for w in self.scoreEdits.itervalues():
       row.addWidget(w)
     row.addStretch()
-    return row
+    row.setContentsMargins(0, 0, 0, 0)
+    return skwidgets.SkLayoutWidget(row)
 
   @memoizedproperty
   def scoreEdits(self):

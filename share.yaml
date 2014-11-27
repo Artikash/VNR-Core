@@ -203,6 +203,7 @@ apis:
   #rest: http://localhost:5000/api/xml
   ajax: http://153.121.54.194/api/json/ # must end with '/'
   #ajax: http://localhost:8080/api/json/
+  #ajax: http://localhost:8080/json/
   #ajax: http://localhost:5000/json/
   push: http://153.121.54.194/push/ # must end with '/'
   #push: http://sakuradite.com/push/

@@ -195,6 +195,9 @@ bindNewTopics = ->
       false
 
 addTopics = (topics) -> # [object topic] ->
+  topics = _.filter topics, (it) -> it.type is 'review'
+  return unless topics.length
+
   TOPICS.push.apply TOPICS, topics
   document.title = "#{PAGE_TITLE} (#{TOPICS.length})"
 
