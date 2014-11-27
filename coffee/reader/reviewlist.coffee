@@ -39,7 +39,8 @@ createTemplates = ->
   @HAML_TOPIC = Haml """\
 .topic.topic-new(data-id="${id}" data-type="${type}")
   :if userAvatarUrl
-    %img.img-circle.avatar(src="${userAvatarUrl}")
+    %a(href="${userAvatarUrl}" title="#{tr 'Avatar'}")
+      %img.img-circle.avatar(src="${userAvatarUrl}" alt="#{tr 'Avatar'}")
   .right
     .header
       %a.item.title(title="#{tr 'Browse'}") ${title}

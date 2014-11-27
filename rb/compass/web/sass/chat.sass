@@ -23,9 +23,11 @@ img.avatar
 .post
   padding-top: 9px // include the height of footer
   min-height: $avatar-width
-  > .left
+  > a > img.avatar
     float: left
-    width: 0px
+    width: $avatar-width
+    //height: $topic-avatar-width
+    @extend .avatar-shadow
   > .right
     margin-left: $avatar-width + 9px
     > .header

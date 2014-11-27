@@ -38,9 +38,9 @@ createTemplates = ->
   # - dislikeCount  int
   @HAML_POST = Haml """\
 .post.post-new(data-id="${id}" data-type="${type}")
-  .left
-    :if userAvatarUrl
-      %img.img-circle.avatar(src="${userAvatarUrl}")
+  :if userAvatarUrl
+    %a(href="${userAvatarUrl}" title="#{tr 'Avatar'}")
+      %img.img-circle.avatar(src="${userAvatarUrl}" alt="#{tr 'Avatar'}")
   .right
     .header
       %a.user(style="${userStyle}") @${userName}
