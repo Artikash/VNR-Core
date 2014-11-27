@@ -84,6 +84,7 @@ createTemplates = ->
 """.replace /\$/g, '#'
 
 TOPICS = [] # [object topic]
+USER_TOPIC = null # object
 
 renderTopic = (data) -> # object topic -> string
   HAML_TOPIC
@@ -196,9 +197,10 @@ addTopics = (topics) -> # [object topic] ->
   if USER_NAME
     userTopic = _.findWhere topics, userName:USER_NAME
     if userTopic
+      USER_TOPIC = userTopic
       console.log 'addTopics: found user topic'
       topics = _.without topics, userTopic
-      paintUserTopic userTopic
+      repaintUserTopic()
 
   if topics.length
     h = (renderTopic it for it in topics when it.type is 'review').join ''
@@ -209,16 +211,19 @@ addTopics = (topics) -> # [object topic] ->
 highlightNewTopics = -> $('.topic.topic-new').effect 'highlight', HIGHLIGHT_INTERVAL
 
 addTopic = (topic) -> # object topic ->
+  return unless topic.type is 'review'
+
   TOPICS.push topic
   document.title = "#{PAGE_TITLE} (#{TOPICS.length})"
-  if topic.type is 'review'
-    h = renderTopic topic
-    $(h).prependTo '.topics'
-        #.effect 'highlight', HIGHLIGHT_INTERVAL
-    highlightNewTopics()
-    bindNewTopics()
+
+  if topic.userName is USER_NAME
+    USER_TOPIC = topic
+    repaintUserTopic()
   else
-    dprint 'addTopic: error: unknown topic type'
+    h = renderTopic topic
+    $('.topics > .middle').after h
+  highlightNewTopics()
+  bindNewTopics()
 
 updateTopic = (topic) -> # object topic ->
   oldtopic = findTopic topic.id
@@ -240,8 +245,9 @@ updateTopic = (topic) -> # object topic ->
 
   dprint 'updateTopic: error: topic lost'
 
-paintUserTopic = (topic) ->
-  h = renderTopic topic
+repaintUserTopic = ->
+  return unless USER_TOPIC
+  h = renderTopic USER_TOPIC
   $h = $ h
     .addClass '.topic-user'
   $el = $ '.topic.topic-user'
@@ -249,7 +255,7 @@ paintUserTopic = (topic) ->
     $el.html $h
   else
     #$('.topics > .middle').insertBefore $h # does not work?!
-    $('.topics').prepend $h
+    $h.prependTo '.topics'
 
 # AJAX actions
 
@@ -273,10 +279,32 @@ paint = -> # invoked only once
       spin false
       if data.length
         addTopics data
+        _paintUserTopic if USER_NAME and not USER_TOPIC
       else
         growl tr('Empty') + ' > <'
 
+_paintUserTopic = ->
+  spin true
+  rest.forum.list 'topic',
+    data:
+      subjectId: GAME_ID
+      subjectType: 'game'
+      userName: USER_NAME
+      type: 'review'
+      limit: 1
+      complete: true
+    error: ->
+      spin false
+      growl.warn tr 'Internet error'
+    success: (data) ->
+      spin false
+      addTopic data[0] if data.length is 1
+
 more = ->
+  rem = TOPICS.length % TOPIC_LIMIT
+  if TOPICS.length < TOPIC_LIMIT or rem > (if USER_TOPIC then 1 else 0)
+    growl tr "No more"
+    return
   spin true
   rest.forum.list 'topic',
     data:
@@ -285,7 +313,7 @@ more = ->
       sort: 'updateTime'
       asc: false
       complete: true
-      first: TOPICS.length
+      first:TOPICS.length - rem
       limit: TOPIC_LIMIT
     error: ->
       spin false

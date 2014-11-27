@@ -195,16 +195,14 @@ addPost = (post) -> # object post ->
   document.title = "#{PAGE_TITLE} (#{POSTS.length})"
   if post.type is 'post'
     h = renderPost post
-    $(h).prependTo '.topic > .posts'
-        #.effect 'highlight', HIGHLIGHT_INTERVAL
+    $('.topic > .posts').prepend h
     highlightNewPosts()
     bindNewPosts()
   else if post.type is 'reply'
     $ref = $getPost post.replyId
     if $ref.length
       h = renderPost post
-      $(h).appendTo($ref.children('.reply'))
-          #.effect 'highlight', HIGHLIGHT_INTERVAL
+      $ref.children('.reply').append h
       highlightNewPosts()
       bindNewPosts()
     else
