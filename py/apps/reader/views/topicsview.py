@@ -195,14 +195,14 @@ class _TopicsView(object):
         osutil.open_url("http://sakuradite.com/game/%s" % self.gameId))
     return ret
 
-  @memoizedproperty
-  def newButton(self):
-    ret = QtWidgets.QPushButton(tr_("New"))
-    skqss.class_(ret, 'btn btn-success')
-    ret.setToolTip(tr_("New") + " (Ctrl+N)")
-    #ret.setStatusTip(ret.toolTip())
-    ret.clicked.connect(self._new)
-    return ret
+  #@memoizedproperty
+  #def newButton(self):
+  #  ret = QtWidgets.QPushButton(tr_("New"))
+  #  skqss.class_(ret, 'btn btn-success')
+  #  ret.setToolTip(tr_("New") + " (Ctrl+N)")
+  #  #ret.setStatusTip(ret.toolTip())
+  #  ret.clicked.connect(self._new)
+  #  return ret
 
   @memoizedproperty
   def topicEditorManager(self):
@@ -218,10 +218,11 @@ class _TopicsView(object):
     ret.topicReceived.connect(self._submit)
     return ret
 
-  def _submit(self, topicData, imageData):
+  def _submit(self, topicData, imageData, ticketData):
     """
     @param  topicData  unicode json
-    @param  imageData  unicode
+    @param  imageData  unicode json
+    @param  ticketData  unicode json
     """
     if self.gameId:
       user = dataman.manager().user()
@@ -237,20 +238,39 @@ class _TopicsView(object):
           image['password'] = user.password
         else:
           image = None
-        skevents.runlater(partial(self._submitTopic, topic, image))
+        if ticketData:
+          tickets = []
+          a = json.loads(ticketData)
+          for k,v in a.iteritems():
+            tickets.append({
+              'type': k,
+              'value': v,
+              'targetId': self.gameId,
+              'targetType': 'game',
+              'login': user.name,
+              'password': user.password,
+            })
+        else:
+          tickets = None
+        skevents.runlater(partial(self._submitTopic, topic, image, tickets))
 
-  def _submitTopic(self, topic, image):
+  def _submitTopic(self, topic, image, tickets):
     """
     @param  topic  kw
     @param  image  kw or None
+    @param  tickets [kw]
     """
     dprint("enter")
+    nm = netman.manager()
+    if tickets:
+      for data in tickets:
+        nm.submitTicket(data) # error not checked
     if image:
       data = skfileio.readdata(image['filename'])
       if data:
-        topic['image'] = netman.manager().submitImage(data, image)
+        topic['image'] = nm.submitImage(data, image)
 
-    if image and not topic.get('image') or not netman.manager().submitTopic(topic):
+    if image and not topic.get('image') or not nm.submitTopic(topic):
       growl.warn("<br/>".join((
         my.tr("Failed to submit topic"),
         my.tr("Please try again"),
@@ -296,7 +316,7 @@ class _TopicsView(object):
       )))
     dprint("leave")
 
-  def _new(self): self.topicInputManager.newTopic()
+  #def _new(self): self.topicInputManager.newTopic()
 
 class TopicsView(QtWidgets.QMainWindow):
   def __init__(self, parent=None):

@@ -262,12 +262,24 @@ class _TopicInput(object):
 
       topic['type'] = self.topicType
       topicData = json.dumps(topic)
-      self.q.topicReceived.emit(topicData, imageData)
+
+      ticketData = ''
+      if self.topicType == 'review':
+        tickets = {}
+        for k,v in self.scoreEdits.iteritems():
+          score = v.value()
+          if score:
+            tickets[k] = score
+        if tickets:
+          ticketData = json.dumps(tickets)
+      self.q.topicReceived.emit(topicData, imageData, ticketData)
       #self.topicContent = '' # clear content but leave language
 
       growl.msg(my.tr("Edit submitted"))
 
   def refresh(self):
+    self.scoreRow.setVisible(self.topicType == 'review')
+
     self.saveButton.setEnabled(False)
 
     self.contentEdit.setPlainText(self.topicContent)
@@ -282,7 +294,7 @@ class _TopicInput(object):
 
 class TopicInput(QtWidgets.QDialog):
 
-  topicReceived = Signal(unicode, unicode) # json topic, json image
+  topicReceived = Signal(unicode, unicode, unicode) # json topic, json image, json tickets
 
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
@@ -354,7 +366,7 @@ class TopicInputManager(QObject):
     netman.manager().onlineChanged.connect(lambda t: t or self.hide())
     dataman.manager().loginChanged.connect(lambda t: t or self.hide())
 
-  topicReceived = Signal(unicode, unicode) # json topic, json image
+  topicReceived = Signal(unicode, unicode, unicode) # json topic, json image, json tickets
 
   #def clear(self): self.hide()
 
@@ -371,7 +383,7 @@ class TopicInputManager(QObject):
         if w.isVisible():
           w.hide()
 
-  def newTopic(self, type='review', imagePath=''): # long, unicode ->
+  def newTopic(self, type, imagePath=''): # str, unicode ->
     w = self.__d.getDialog(self)
     w.setType(type)
     w.setImagePath(imagePath)
@@ -392,8 +404,8 @@ class TopicInputManagerBean(QObject):
 
   topicReceived = Signal(unicode, unicode) # json topic, json image
 
-  @Slot()
-  def newTopic(self): self.manager.newTopic()
+  @Slot(str)
+  def newTopic(self, type): self.manager.newTopic(type)
 
   imageEnabledChanged = Signal(bool)
   imageEnabled = Property(bool,

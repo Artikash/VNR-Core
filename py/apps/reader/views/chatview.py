@@ -238,12 +238,13 @@ class _ChatView(object):
     @param  image  kw or None
     """
     dprint("enter")
+    nm = netman.manager()
     if image:
       data = skfileio.readdata(image['filename'])
       if data:
-        post['image'] = netman.manager().submitImage(data, image)
+        post['image'] = nm.submitImage(data, image)
 
-    if image and not post.get('image') or not netman.manager().updatePost(post):
+    if image and not post.get('image') or not nm.updatePost(post):
       growl.warn("<br/>".join((
         my.tr("Failed to update post"),
         my.tr("Please try again"),

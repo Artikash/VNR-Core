@@ -1923,6 +1923,14 @@ class NetworkManager(QObject):
     """
     return self.isOnline() and self.__d.ajax('topic/update', data)
 
+  def updateTicket(self, data):
+    """
+    @param  data  kw or str
+    @return  bool
+    Thread-safe.
+    """
+    return self.isOnline() and self.__d.ajax('ticket/update', data)
+
   def submitImage(self, data, params):
     """
     @param  data  str  image data

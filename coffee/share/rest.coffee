@@ -118,7 +118,7 @@ growl =
     #else
     #  LOCKED = true # prevent massive ticket
     postJSON
-      url: "/json/#{ID}/update"
+      url: "#{HOST}/api/json/#{ID}/update"
       data: data
       success: (res) ->
         #LOCKED = false
@@ -140,7 +140,7 @@ growl =
   list: (data:data, success:success, error:error) ->
     ID = 'ticket'
     postJSON
-      url: "/json/#{ID}/list"
+      url: "#{HOST}/api/json/#{ID}/list"
       data: data
       success: (res) ->
         if res.status is 0 and res.data

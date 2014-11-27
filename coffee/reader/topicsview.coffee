@@ -112,7 +112,7 @@ findTopic = (id) -> _.findWhere TOPICS, id:id # long -> object
 
 editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
 
-newTopic = -> topicInputBean.newTopic()
+newTopic = (type) -> topicInputBean.newTopic type # string ->
 
 replyTopic = (topicId) -> topicInputBean.replyTopic topicId # long ->
 
@@ -337,7 +337,7 @@ bind = ->
     false
 
   $('.sec-topic .btn-new').click ->
-    newTopic()
+    newTopic 'review' # hard code type is review
     false
 
   $('.sec-btn').click ->
