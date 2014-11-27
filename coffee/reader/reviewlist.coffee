@@ -22,6 +22,8 @@ PAGE_TITLE = document.title
 # Render
 
 createTemplates = ->
+  @HTML_EMPTY = "<div class='empty'>(#{tr 'Empty'})</div>"
+  @HTML_NOMORE = "<div class='empty'>(#{tr 'No more'})</div>"
 
   # HAML for topic
   # - id
@@ -207,6 +209,7 @@ addTopics = (topics) -> # [object topic] ->
     $('.topics').append h
   #$(h).hide().appendTo('.topics').fadeIn()
   bindNewTopics()
+  repaintMoreButton()
 
 highlightNewTopics = -> $('.topic.topic-new').effect 'highlight', HIGHLIGHT_INTERVAL
 
@@ -252,16 +255,21 @@ repaintUserTopic = ->
     .addClass '.topic-user'
   $el = $ '.topic.topic-user'
   if $el.length
-    $el.html $h
+    $el.replaceWith $h
   else
     #$('.topics > .middle').insertBefore $h # does not work?!
     $h.prependTo '.topics'
+
+repaintMoreButton = ->
+  if TOPICS.length < TOPIC_LIMIT or TOPICS.length % TOPIC_LIMIT > (if USER_TOPIC then 1 else 0)
+    h = if TOPICS.length then HTML_NOMORE else HTML_EMPTY
+    $('.game > .footer .btn-more').replaceWith h
 
 # AJAX actions
 
 spin = (t) -> $('#spin').spin if t then 'large' else false
 
-paint = -> # invoked only once
+show = -> # invoked only once
   spin true
   rest.forum.list 'topic',
     data:
@@ -279,11 +287,12 @@ paint = -> # invoked only once
       spin false
       if data.length
         addTopics data
-        _paintUserTopic if USER_NAME and not USER_TOPIC
+        _showUserTopic if USER_NAME and not USER_TOPIC and TOPICS.length is TOPIC_LIMIT
       else
-        growl tr('Empty') + ' > <'
+        repaintMoreButton()
+        #growl tr('Empty') + ' > <'
 
-_paintUserTopic = ->
+_showUserTopic = ->
   spin true
   rest.forum.list 'topic',
     data:
@@ -301,10 +310,6 @@ _paintUserTopic = ->
       addTopic data[0] if data.length is 1
 
 more = ->
-  rem = TOPICS.length % TOPIC_LIMIT
-  if TOPICS.length < TOPIC_LIMIT or rem > (if USER_TOPIC then 1 else 0)
-    growl tr "No more"
-    return
   spin true
   rest.forum.list 'topic',
     data:
@@ -313,7 +318,7 @@ more = ->
       sort: 'updateTime'
       asc: false
       complete: true
-      first:TOPICS.length - rem
+      first:TOPICS.length - (TOPICS.length % TOPIC_LIMIT)
       limit: TOPIC_LIMIT
     error: ->
       spin false
@@ -354,7 +359,7 @@ init = ->
     createTemplates()
 
     bind()
-    paint()
+    show()
 
     @READY = true
 

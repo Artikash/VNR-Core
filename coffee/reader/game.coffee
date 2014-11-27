@@ -36,8 +36,8 @@ HIGHLIGHT_INTERVAL = 1000 # int msecs
 
 # Delay template creation until i18nBean becomes available
 createTemplates = ->
-  @HTML_EMPTY = Haml.render ".empty #{'(' + tr('Empty') + ')'}"
-  @HTML_NOMORE = Haml.render ".empty #{'(' + tr('No more') + ')'}"
+  @HTML_EMPTY = "<div class='empty'>(#{tr 'Empty'})</div>"
+  @HTML_NOMORE = "<div class='empty'>(#{tr 'No more'})</div>"
   @HTML_MORE = Haml.render """%button.btn-more.btn.btn-info(type="button" title="#{tr 'More'}") #{tr 'More'}"""
 
   # HAML for sample images
