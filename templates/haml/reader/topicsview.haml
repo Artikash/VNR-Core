@@ -25,11 +25,13 @@
 
   %body
     .game.portal(data-id="#{gameId}")
-      .topics
-        %hr.middle
-      .footer
-        %a.btn.btn-link.btn-more(role="button")
-          #{tr('More')}
+      .sec.sec-topic
+        .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Review')}
+        .sec-content.topics
+          %hr.middle
+        .sec-footer
+          %a.btn.btn-link.btn-more(role="button")
+            #{tr('More')}
     #spin
 
     :javascript

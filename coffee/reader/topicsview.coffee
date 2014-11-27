@@ -263,7 +263,7 @@ repaintUserTopic = ->
 repaintMoreButton = ->
   if TOPICS.length < TOPIC_LIMIT or TOPICS.length % TOPIC_LIMIT > (if USER_TOPIC then 1 else 0)
     h = if TOPICS.length then HTML_NOMORE else HTML_EMPTY
-    $('.game > .footer .btn-more').replaceWith h
+    $('.sec-topic .btn-more').replaceWith h
 
 # AJAX actions
 
@@ -331,7 +331,7 @@ more = ->
         growl tr "No more"
 
 bind = ->
-  $('.game > .footer > .btn-more').click ->
+  $('.sec-topic .btn-more').click ->
     $this = $ @
     unless $this.data 'locked'
       $this.data 'lock', true
