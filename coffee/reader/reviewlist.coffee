@@ -192,8 +192,17 @@ bindNewTopics = ->
 addTopics = (topics) -> # [object topic] ->
   TOPICS.push.apply TOPICS, topics
   document.title = "#{PAGE_TITLE} (#{TOPICS.length})"
-  h = (renderTopic it for it in topics when it.type is 'review').join ''
-  $('.topics').append h
+
+  if USER_NAME
+    userTopic = _.findWhere topics, userName:USER_NAME
+    if userTopic
+      console.log 'addTopics: found user topic'
+      topics = _.without topics, userTopic
+      paintUserTopic userTopic
+
+  if topics.length
+    h = (renderTopic it for it in topics when it.type is 'review').join ''
+    $('.topics').append h
   #$(h).hide().appendTo('.topics').fadeIn()
   bindNewTopics()
 
@@ -231,11 +240,22 @@ updateTopic = (topic) -> # object topic ->
 
   dprint 'updateTopic: error: topic lost'
 
+paintUserTopic = (topic) ->
+  h = renderTopic topic
+  $h = $ h
+    .addClass '.topic-user'
+  $el = $ '.topic.topic-user'
+  if $el.length
+    $el.html $h
+  else
+    #$('.topics > .middle').insertBefore $h # does not work?!
+    $('.topics').prepend $h
+
 # AJAX actions
 
 spin = (t) -> $('#spin').spin if t then 'large' else false
 
-paint = ->
+paint = -> # invoked only once
   spin true
   rest.forum.list 'topic',
     data:

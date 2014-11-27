@@ -42,10 +42,10 @@ createTemplates = ->
 
   # HAML for sample images
   # - param  url
-  @HAML_SAMPLE_IMAGE = Haml '''\
-%a(href="#{url}" title="#{url}")
-  %img.img-rounded.zoom.zoom-cg(src="#{url}")
-'''
+  @HAML_SAMPLE_IMAGE = Haml """\
+%a(href="${url}" title="#{tr 'Draggable'}")
+  %img.img-rounded.zoom.zoom-cg(src="${url}" alt="#{tr 'Image'}")
+""".replace /\$/g, '#'
 
   # HAML for youtube video
   # - param  vid
@@ -1396,17 +1396,19 @@ initCGPills = -> # Sample images
                 #.imagesLoaded ->
                 #  $container.find('img').width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
                 #  $container.masonry() # refresh after images are loaded
-                .find('img').load ->
-                  counter.dec()
-                  # Sample bad DMM image: http://pics.dmm.com/mono/movie/n/now_printing/now_printing.jpg
-                  if ~@src.indexOf('pics.dmm.') and @naturalWidth is 90 and @naturalHeight is 122
-                    pauser = new MasonryAniPauser $div unless pauser?
-                    pauser.pause()
-                    #@parentNode.removeChild @ # remove this
-                    $div.masonry 'remove', @ # remove this
-                  else
-                    $(@).width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
-                  $div.masonry() # refresh after images are loaded
+                .find 'img'
+                  .draggable()
+                  .load ->
+                    counter.dec()
+                    # Sample bad DMM image: http://pics.dmm.com/mono/movie/n/now_printing/now_printing.jpg
+                    if ~@src.indexOf('pics.dmm.') and @naturalWidth is 90 and @naturalHeight is 122
+                      pauser = new MasonryAniPauser $div unless pauser?
+                      pauser.pause()
+                      #@parentNode.removeChild @ # remove this
+                      $div.masonry 'remove', @ # remove this
+                    else
+                      $(@).width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
+                    $div.masonry() # refresh after images are loaded
           ) $ el
     false
 
