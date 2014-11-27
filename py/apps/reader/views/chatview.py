@@ -308,7 +308,7 @@ class _ChatViewManager:
     ret.resize(550, 580)
     return ret
 
-  def _onPostReceived(self, data):
+  def _onPostReceived(self, data): # str ->
     try:
       obj = json.loads(data)
       topicId = obj['topicId']
@@ -318,7 +318,7 @@ class _ChatViewManager:
     except Exception, e:
       dwarn(e)
 
-  def _onPostUpdated(self, data):
+  def _onPostUpdated(self, data): # str ->
     try:
       obj = json.loads(data)
       topicId = obj['topicId']

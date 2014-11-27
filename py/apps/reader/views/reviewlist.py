@@ -26,9 +26,13 @@ import dataman, growl, netman, osutil, rc
 class _ReviewList(object):
 
   def __init__(self, q):
+    self.gameId = 0 # long
+
     import comets
     self.comet = comets.createPostComet()
-    self.gameId = 0 # long
+    qml = self.comet.q
+    qml.topicDataReceived.connect(self._onTopicReceived)
+    qml.topicDataUpdated.connect(self._onTopicUpdated)
 
     #self._viewBean = SkWebViewBean(self.webView)
 
@@ -44,6 +48,23 @@ class _ReviewList(object):
     #dock.setAllowedAreas(Qt.BottomDockWidgetArea)
     q.addDockWidget(Qt.BottomDockWidgetArea, dock)
 
+  def _createDialog(self):
+    import windows
+    parent = windows.normal()
+    ret = ReviewList(parent=parent)
+    ret.resize(550, 580)
+    return ret
+
+  # append ;null for better performance
+  def _onTopicReceived(self, data): # unicode json ->
+    js = 'if (window.READY) addTopic(%s); null' % data
+    self.webView.evaljs(js)
+
+  # append ;null for better performance
+  def _onTopicUpdated(self, data): # unicode json ->
+    js = 'if (window.READY) updateTopic(%s); null' % data
+    self.webView.evaljs(js)
+
   def setGameId(self, gameId): # long ->
     if self.gameId != gameId:
       self.gameId = gameId
@@ -56,7 +77,9 @@ class _ReviewList(object):
         self.comet.setActive(False)
         self.comet.setPath('')
 
-  def clear(self): self.setGameId(0)
+  def clear(self):
+    self.setGameId(0)
+    self.webView.clear()
 
   def _injectBeans(self):
     h = self.webView.page().mainFrame()
@@ -132,6 +155,10 @@ class _ReviewList(object):
       'tr': tr_,
     }), baseUrl)
     self._injectBeans()
+
+    if not self.comet.isActive():
+      dprint("reactivate comet")
+      self.comet.setActive(True)
 
   @memoizedproperty
   def inspector(self):
@@ -270,16 +297,6 @@ class _ReviewList(object):
 
   def _new(self): self.postInputManager.newPost()
 
-  # append ;null for better performance
-  def addPost(self, data): # unicode json ->
-    js = 'if (window.READY) addPost(%s); null' % data
-    self.webView.evaljs(js)
-
-  # append ;null for better performance
-  def updatePost(self, data): # unicode json ->
-    js = 'if (window.READY) updatePost(%s); null' % data
-    self.webView.evaljs(js)
-
 class ReviewList(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
@@ -300,24 +317,24 @@ class ReviewList(QtWidgets.QMainWindow):
       self.__d.refresh()
     super(ReviewList, self).setVisible(value)
     if not value:
-      self.__d.webView.clear()
+      self.clear()
 
-  def addPost(self, data): # unicode json ->
-    self.__d.addPost(data)
+  #def addPost(self, data): # unicode json ->
+  #  self.__d.addPost(data)
 
-  def updatePost(self, data): # unicode json ->
-    self.__d.updatePost(data)
+  #def updatePost(self, data): # unicode json ->
+  #  self.__d.updatePost(data)
 
 class _ReviewListManager:
   def __init__(self):
     self.dialogs = []
 
-    import comets
-    comet = comets.globalComet()
-    #assert comet
-    if comet: # for debug purpose when comet is empty
-      comet.postDataReceived.connect(self._onPostReceived)
-      comet.postDataUpdated.connect(self._onPostUpdated)
+    #import comets
+    #comet = comets.globalComet()
+    ##assert comet
+    #if comet: # for debug purpose when comet is empty
+    #  comet.postDataReceived.connect(self._onPostReceived)
+    #  comet.postDataUpdated.connect(self._onPostUpdated)
 
   def _createDialog(self):
     import windows
@@ -326,25 +343,25 @@ class _ReviewListManager:
     ret.resize(550, 580)
     return ret
 
-  def _onPostReceived(self, data):
-    try:
-      obj = json.loads(data)
-      topicId = obj['topicId']
-      for w in self.dialogs:
-        if w.isVisible() and w.topicId() == topicId:
-          w.addPost(data)
-    except Exception, e:
-      dwarn(e)
+  #def _onPostReceived(self, data):
+  #  try:
+  #    obj = json.loads(data)
+  #    topicId = obj['topicId']
+  #    for w in self.dialogs:
+  #      if w.isVisible() and w.topicId() == topicId:
+  #        w.addPost(data)
+  #  except Exception, e:
+  #    dwarn(e)
 
-  def _onPostUpdated(self, data):
-    try:
-      obj = json.loads(data)
-      topicId = obj['topicId']
-      for w in self.dialogs:
-        if w.isVisible() and w.topicId() == topicId:
-          w.updatePost(data)
-    except Exception, e:
-      dwarn(e)
+  #def _onPostUpdated(self, data):
+  #  try:
+  #    obj = json.loads(data)
+  #    topicId = obj['topicId']
+  #    for w in self.dialogs:
+  #      if w.isVisible() and w.topicId() == topicId:
+  #        w.updatePost(data)
+  #  except Exception, e:
+  #    dwarn(e)
 
   def getDialog(self, gameId=0):
     """
