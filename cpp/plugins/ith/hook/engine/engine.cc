@@ -688,8 +688,8 @@ static void KiriKiriZHook(DWORD esp_base, HookParam *hp)
     HookParam hp = {};
     hp.addr = addr;
     hp.off = pusha_ecx_off - 4;
-    hp.ind = 0x14;        // the same as KiriKiri1
     hp.split = hp.off;    // the same logic but diff value as KiriKiri1, use [ecx] as split
+    hp.ind = 0x14;        // the same as KiriKiri1
     hp.length_offset = 1; // the same as KiriKiri1
     hp.type = USING_UNICODE|DATA_INDIRECT|USING_SPLIT|SPLIT_INDIRECT;
     ConsoleOutput("vnreng: INSERT KiriKiriZ");
