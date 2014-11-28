@@ -75,6 +75,7 @@ processes:
   - flashget.exe        # Flashget
   - "Foxit Reader.exe"  # Foxit Reader
   - foobar2000.exe      # foobar
+  - GarenaMessenger.exe # Garena, http://sakuradite.com/topic/525
   - googledrivesync.exe # Google
   - GoogleIMEJaConverter.exe # Google
   - GoogleIMEJaRenderer.exe  # Google
