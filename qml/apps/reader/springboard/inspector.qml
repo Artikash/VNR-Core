@@ -239,6 +239,8 @@ Rectangle { id: root_
         rightMargin: 90 // large enough to skip
       }
 
+      visible: false // temporarily disabled
+
       width: scoreText_.width
 
       Desktop.TooltipArea { id: scoreTip_
