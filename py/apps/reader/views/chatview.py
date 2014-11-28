@@ -20,7 +20,7 @@ from sakurakit.skwebkit import SkWebView #, SkWebViewBean
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
 #from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
-import dataman, growl, netman, osutil, rc
+import config, dataman, growl, netman, osutil, rc
 
 @Q_Q
 class _ChatView(object):
@@ -96,21 +96,20 @@ class _ChatView(object):
 
   def refresh(self):
     """@reimp"""
-    #baseUrl = 'http://sakuradite.com'
-    baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy
-    #baseUrl = 'http://localhost:8080'
+    host = config.API_HOST # must be the same as rest.coffee for the same origin policy
 
     user = dataman.manager().user()
 
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/chat').render({
+      'host': host,
       'title': mytr_("Messages"),
       'topicId': self.topicId,
       'userName': user.name,
       'userPassword': user.password,
       'rc': rc,
       'tr': tr_,
-    }), baseUrl)
+    }), host)
     self._injectBeans()
 
   @memoizedproperty
@@ -392,7 +391,6 @@ def manager():
 #    manager().showTopic(id)
 
 if __name__ == '__main__':
-  import config
   a = debug.app()
   #manager().showTopic('global')
   manager().showTopic(config.GLOBAL_TOPIC_ID)

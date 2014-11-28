@@ -217,6 +217,7 @@ ENV_INTEGRITYPATH = map(parse_path, SHARE_YAML['env']['integritypath']) # [unico
 APP_PYTHONPATH = map(parse_path, APP_YAML['env']['pythonpath']) # [unicode abspath]
 
 ## URLs ##
+API_HOST = SHARE_YAML['apis']['host']
 API_REST = SHARE_YAML['apis']['rest']
 API_PUSH = SHARE_YAML['apis']['push']
 API_AJAX = SHARE_YAML['apis']['ajax']

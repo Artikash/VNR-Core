@@ -1,5 +1,6 @@
 ; topicsview.haml
 ; 11/25/2014 jichi
+; @param  host  str
 ; @param  gameId  long
 ; @param  userName  string
 ; @param  userPassword  string
@@ -37,6 +38,7 @@
     #spin
 
     :javascript
+      window.HOST = "#{host}";
       window.GAME_ID = #{gameId};
       window.USER_NAME = "#{userName}";
       window.USER_PASSWORD = "#{userPassword}";
@@ -48,7 +50,7 @@
         'spin', 'jquery.spin', \
         'bbcode', 'haml', 'moment', \
         'libs/linkify', \
-        'share/defs', 'share/growl', 'share/rest', 'share/util', \
+        'share/growl', 'share/rest', 'share/util', \
         'reader/topicsview'
       %script(src="#{rc.cdn_url(it)}")
 

@@ -1,5 +1,6 @@
 ; chat.haml
 ; 8/29/2014 jichi
+; @param  host  str
 ; @param  topicId  long
 ; @param  userName  string
 ; @param  userPassword  string
@@ -31,6 +32,7 @@
     #spin
 
     :javascript
+      window.HOST = "#{host}";
       window.TOPIC_ID = #{topicId};
       window.USER_NAME = "#{userName}";
       window.USER_PASSWORD = "#{userPassword}";
@@ -42,7 +44,7 @@
         'spin', 'jquery.spin', \
         'bbcode', 'haml', 'moment', \
         'libs/linkify', \
-        'share/defs', 'share/growl', 'share/rest', 'share/util', \
+        'share/growl', 'share/rest', 'share/util', \
         'reader/chat'
       %script(src="#{rc.cdn_url(it)}")
 

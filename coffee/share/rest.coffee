@@ -14,6 +14,7 @@ AGENT = 'vnr'
 postJSON = (data:data, url:url, success:success, error:error) ->
   data.version = VERSION
   data.agent = AGENT
+  console.log url
   $.ajax
     type: 'POST'
     contentType: 'application/json;charset=utf-8'

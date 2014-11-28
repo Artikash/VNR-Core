@@ -3,7 +3,7 @@
 # 8/23/2014 jichi
 # Python requests implemented using QtNetwork.
 
-__all__ = 'Session',
+__all__ = 'Session', 'AsyncSession'
 
 import json, urllib, zlib
 from PySide.QtCore import QUrl, QEventLoop, QCoreApplication
@@ -269,6 +269,18 @@ class Session(object):
     ok = data is not None
     content = data or ''
     return Response(ok=ok, content=content, url=url)
+
+from functools import partial
+from sakurakit import skthreads
+class AsyncSession(object):
+  def __init__(self, session):
+    self.session = session
+
+  def get(self, *args, **kwargs):
+    return skthreads.runsync(partial(self.session.get, *args, **kwargs))
+
+  def post(self, *args, **kwargs):
+    return skthreads.runsync(partial(self.session.post, *args, **kwargs))
 
 if __name__ == '__main__':
   import sys

@@ -61,7 +61,10 @@ class _NetworkManager(object):
     self.cachedGamesByMd5 = {} # {str id:dataman.Game}
     self.blockedLanguages = set() # set(str) not None
 
-    self.qtSession = qtrequests.Session(QNetworkAccessManager(q))
+    if features.WINE:
+      self.qtSession = qtrequests.AsyncSession(session) # qtSession is very slow on wine
+    else:
+      self.qtSession = qtrequests.Session(QNetworkAccessManager(q))
 
     # Track online status when network is down
     #self._onlineTimer = QTimer(self.q)
@@ -215,6 +218,7 @@ class _NetworkManager(object):
     try:
       if not isinstance(data, str) and not isinstance(data, unicode):
         data = json.dumps(data)
+      #r = session.post(JSON_API + path,
       r = self.qtSession.post(JSON_API + path,
           data=data,
           params=params,

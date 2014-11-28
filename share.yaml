@@ -154,7 +154,6 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   libs/linkify: $PWD/coffee/libs/linkify.min.js
 
   share/annot: $PWD/coffee/share/annot.min.js
-  share/defs: $PWD/coffee/share/defs.min.js
   share/growl: $PWD/coffee/share/growl.min.js
   share/nogrowl: $PWD/coffee/share/nogrowl.min.js
   share/rest: $PWD/coffee/share/rest.min.js
@@ -198,13 +197,18 @@ qt:
 # urls
 
 apis:
+  host: http://153.121.54.194
+  #host: http://localhost:8080
+  #
   rest: http://153.121.54.194/api/xml
   #rest: http://sakuradite.com/api/xml
   #rest: http://localhost:5000/api/xml
+  #
   ajax: http://153.121.54.194/api/json/ # must end with '/'
   #ajax: http://localhost:8080/api/json/
   #ajax: http://localhost:8080/json/
   #ajax: http://localhost:5000/json/
+  #
   push: http://153.121.54.194/push/ # must end with '/'
   #push: http://sakuradite.com/push/
   #push: http://localhost:8080/push/

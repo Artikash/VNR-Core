@@ -20,7 +20,7 @@ from sakurakit.skwebkit import SkWebView #, SkWebViewBean
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
 #from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
-import dataman, growl, netman, osutil, rc
+import config, dataman, growl, netman, osutil, rc
 
 @Q_Q
 class _TopicsView(object):
@@ -134,9 +134,7 @@ class _TopicsView(object):
 
   def refresh(self):
     """@reimp"""
-    #baseUrl = 'http://sakuradite.com'
-    baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy
-    #baseUrl = 'http://localhost:8080'
+    host = config.API_HOST # must be the same as rest.coffee for the same origin policy
 
     dm = dataman.manager()
     user = dm.user()
@@ -151,6 +149,7 @@ class _TopicsView(object):
 
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/topicsview').render({
+      'host': host,
       'title': title,
       'gameId': self.gameId,
       'userName': user.name,
@@ -158,7 +157,7 @@ class _TopicsView(object):
       'image': image, # background image
       'rc': rc,
       'tr': tr_,
-    }), baseUrl)
+    }), host)
     self._injectBeans()
 
     if not self.comet.isActive():
@@ -423,7 +422,6 @@ def manager():
 #    manager().showGame(id)
 
 if __name__ == '__main__':
-  import config
   a = debug.app()
   manager().showGame(101)
   a.exec_()

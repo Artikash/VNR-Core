@@ -16,7 +16,7 @@ from sakurakit.skwebkit import SkWebView, SkWebViewBean
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
 #from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
-import cacheman, dataman, defs, features, growl, i18n, jsonutil, main, mecabman, netman, osutil, prompt, proxy, py, rc
+import cacheman, config, dataman, defs, features, growl, i18n, jsonutil, main, mecabman, netman, osutil, prompt, proxy, py, rc
 
 def _getimage(url, path):
   """
@@ -316,7 +316,7 @@ class _GameView(object):
     needsPost = info and info.gameItem and (info.gameItem.overallScoreCount or info.gameItem.ecchiScoreCount)
     online = netman.manager().isOnline()
     if online and needsPost:
-      baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy, but this would break getchu
+      baseUrl = config.API_HOST # must be the same as rest.coffee for the same origin policy, but this would break getchu
     else:
       baseUrl = 'qrc:///_'    # any place is fine
 
@@ -324,6 +324,7 @@ class _GameView(object):
 
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/game').render({
+      'host': config.API_HOST,
       'userName': user.name,
       'userPassword': user.password,
       'title': title,
@@ -454,7 +455,6 @@ class GameView(QtWidgets.QMainWindow):
         if g:
           t = g.refsUpdateTime
           now = skdatetime.current_unixtime()
-          import config
           if t + config.APP_UPDATE_REFS_INTERVAL < now:
             g.refsUpdateTime = now
             skevents.runlater(d.updateAndRefresh, 2000) # 2 seconds
