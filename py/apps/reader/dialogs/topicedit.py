@@ -11,6 +11,7 @@ if __name__ == '__main__':
   debug.initenv()
 
 import json, os
+from collections import OrderedDict
 from PySide.QtCore import Qt, Signal, Slot, Property, QObject
 from Qt5 import QtWidgets
 from sakurakit import skfileio, skqss, skwidgets
@@ -28,10 +29,12 @@ class _TopicEditor(object):
     self.imageEnabled = True
 
     self.topicId = 0 # long
+    self.topicType = 'review' # str
     self.userName = '' # unicode
     self.topicLanguage = ''
     self.topicTitle = ''
     self.topicContent = ''
+    self.scores = {} # {str key:int value}
 
     self.imageId = 0
     self.imageTitle = ''
@@ -44,6 +47,8 @@ class _TopicEditor(object):
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
+
+    layout.addWidget(self.scoreRow)
 
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.titleEdit)
@@ -63,6 +68,31 @@ class _TopicEditor(object):
 
     layout.setContentsMargins(5, 5, 5, 5)
     q.setLayout(layout)
+
+  @memoizedproperty
+  def scoreRow(self):
+    row = QtWidgets.QHBoxLayout()
+    for w in self.scoreEdits.itervalues():
+      row.addWidget(w)
+    row.addStretch()
+    row.setContentsMargins(0, 0, 0, 0)
+    return skwidgets.SkLayoutWidget(row)
+
+  @memoizedproperty
+  def scoreEdits(self):
+    return OrderedDict((
+      ('overall', self._createScoreEdit(tr_("Score"))),
+      ('ecchi', self._createScoreEdit(mytr_("Ecchi"))),
+     ))
+
+  def _createScoreEdit(self, name):
+    ret = QtWidgets.QSpinBox()
+    ret.setToolTip("%s [0,10]" % name)
+    ret.setRange(0, 10)
+    ret.setSingleStep(1)
+    ret.setPrefix(name + " ")
+    ret.valueChanged.connect(self._refreshSaveButton)
+    return ret
 
   @memoizedproperty
   def saveButton(self):
@@ -140,14 +170,21 @@ class _TopicEditor(object):
     ret.currentIndexChanged.connect(self._onLanguageChanged)
     return ret
 
-  def _getLanguage(self):
+  def _getLanguage(self): # -> str
     return config.language2htmllocale(config.LANGUAGES[self.languageEdit.currentIndex()])
-  def _getContent(self):
+  def _getContent(self): # -> unicode
     return self.contentEdit.toPlainText().strip()
-  def _getTitle(self):
+  def _getTitle(self): # -> unicode
     return self.titleEdit.text().strip()
-  def _getImageTitle(self):
+  def _getImageTitle(self): # -> unicode
     return self.imageTitleEdit.text().strip()
+  def _getScores(self): # -> {str k:int v}
+    ret = {}
+    for k,v in self.scoreEdits.iteritems():
+      score = v.value()
+      if score:
+        ret[k] = score
+    return ret
 
   def _isChanged(self):
     t = self._getContent()
@@ -157,6 +194,8 @@ class _TopicEditor(object):
     if bool(t) and t != self.topicTitle:
       return True
     if self.topicLanguage != self._getLanguage():
+      return True
+    if self.topicType == 'review' and self.scores != self._getScores():
       return True
     return False
 
@@ -190,6 +229,8 @@ class _TopicEditor(object):
     if not changed and bool(self.imageTitle) != bool(self.imageId):
       changed = True
     if not changed and self.imagePath:
+      changed = True
+    if not changed and self.topicType == 'review' and self.scores != self._getScores():
       changed = True
     return changed
 
@@ -271,13 +312,27 @@ class _TopicEditor(object):
       else:
         topic['image'] = 0
 
-    if topic or imageData:
+    ticketData = ''
+    if self.topicType == 'review':
+      scores = self._getScores()
+      if scores and scores != self.scores:
+        ticketData = json.dumps(scores)
+
+        topic['updateScore'] = True
+        try:
+          for k in scores.iterkeys():
+            if not self.scores or not self.scores.get(k):
+              topic['newScore'] = True
+              break
+        except Exception, e:
+          dwarn(e)
+
+    if topic or imageData or ticketData:
       topic['id'] = self.topicId
       topic['userName'] = self.userName
 
       topicData = json.dumps(topic)
 
-      ticketData = ''
       self.q.topicChanged.emit(topicData, imageData, ticketData)
 
       growl.msg(my.tr("Edit submitted"))
@@ -300,6 +355,21 @@ class _TopicEditor(object):
     for w in self._iterImageWidgets():
       w.setEnabled(self.imageEnabled)
 
+    scoreEdits = self.scoreEdits
+    for v in scoreEdits.itervalues():
+      v.setValue(0)
+
+    scoreEnabled = self.topicType == 'review'
+    self.scoreRow.setVisible(scoreEnabled)
+    if scoreEnabled and self.scores:
+      try:
+        for k,v in self.scores.iteritems():
+          w = scoreEdits.get(k)
+          if w:
+            w.setValue(v)
+      except Exception, e:
+        dwarn(e)
+
     self.saveButton.setEnabled(False)
 
 class TopicEditor(QtWidgets.QDialog):
@@ -320,13 +390,15 @@ class TopicEditor(QtWidgets.QDialog):
     import dataman
     dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
 
-  def setTopic(self, id, userName='', language='', lang='', title='', content='', image=None, **ignored):
+  def setTopic(self, id, scores=None, type='', userName='', language='', lang='', title='', content='', image=None, **ignored):
     d = self.__d
     d.topicId = id
+    d.topicType = type
     d.userName = userName
     d.topicLanguage = language or lang
     d.topicTitle = title
     d.topicContent = content
+    d.scores = scores or {}
 
     if image:
       d.imageId = image.get('id')

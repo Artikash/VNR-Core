@@ -242,21 +242,28 @@ class _TopicsView(object):
           image['password'] = user.password
         else:
           image = None
-        if ticketData:
-          tickets = []
-          a = json.loads(ticketData)
-          for k,v in a.iteritems():
-            tickets.append({
-              'type': k,
-              'value': v,
-              'targetId': self.gameId,
-              'targetType': 'game',
-              'login': user.name,
-              'password': user.password,
-            })
-        else:
-          tickets = None
+        tickets = self._parseTicketData(ticketData) if ticketData else None
         skevents.runlater(partial(self._submitTopic, topic, image, tickets))
+
+  def _parseTicketData(self, data): # string -> [{kw}]
+    ret = []
+    user = dataman.manager().user()
+    a = json.loads(data)
+    for k,v in a.iteritems():
+      ret.append({
+        'type': k,
+        'value': v,
+        'targetId': self.gameId,
+        'targetType': 'game',
+        'login': user.name,
+        'password': user.password,
+      })
+    return ret
+
+  def _submitTickets(self, tickets): # [{kw}] ->
+    nm = netman.manager()
+    for data in tickets:
+      nm.updateTicket(data) # error not checked
 
   def _submitTopic(self, topic, image, tickets):
     """
@@ -267,8 +274,7 @@ class _TopicsView(object):
     dprint("enter")
     nm = netman.manager()
     if tickets:
-      for data in tickets:
-        nm.updateTicket(data) # error not checked
+      self._submitTickets(tickets)
     if image:
       data = skfileio.readdata(image['filename'])
       if data:
@@ -302,7 +308,7 @@ class _TopicsView(object):
         else:
           image = None
 
-        tickets = None
+        tickets = self._parseTicketData(ticketData) if ticketData else None
         skevents.runlater(partial(self._updateTopic, topic, image, tickets))
 
   def _updateTopic(self, topic, image, tickets):
@@ -312,6 +318,8 @@ class _TopicsView(object):
     @param  tickets  [kw] or None
     """
     dprint("enter")
+    if tickets:
+      self._submitTickets(tickets)
     if image:
       data = skfileio.readdata(image['filename'])
       if data:

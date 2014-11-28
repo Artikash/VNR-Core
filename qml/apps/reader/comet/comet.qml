@@ -65,7 +65,7 @@ QtObject { id: root_
   }
 
   function createComet() {
-    console.log("comet.qml:createComet: path =", root_.path)
+    //console.log("comet.qml:createComet: path =", root_.path)
     var comet = Local.comet = Atmosphere.subscribe(root_.url)
     comet.reconnectTimer = reconnectTimer
     comet.onMessage = function (xhr, data) {

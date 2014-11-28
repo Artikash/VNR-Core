@@ -176,13 +176,13 @@ class _TopicInput(object):
     ret.currentIndexChanged.connect(self._onLanguageChanged)
     return ret
 
-  def _getLanguage(self):
+  def _getLanguage(self): # -> str
     return config.language2htmllocale(config.LANGUAGES[self.languageEdit.currentIndex()])
-  def _getContent(self):
+  def _getContent(self): # -> unicode
     return self.contentEdit.toPlainText().strip()
-  def _getTitle(self):
+  def _getTitle(self): # -> unicode
     return self.titleEdit.text().strip()
-  def _getImageTitle(self):
+  def _getImageTitle(self): # -> unicode
     return self.imageTitleEdit.text().strip()
 
   def _refreshSaveButton(self):
