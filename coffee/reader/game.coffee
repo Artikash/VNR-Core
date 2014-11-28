@@ -36,16 +36,16 @@ HIGHLIGHT_INTERVAL = 1000 # int msecs
 
 # Delay template creation until i18nBean becomes available
 createTemplates = ->
-  @HTML_EMPTY = Haml.render ".empty #{'(' + tr('Empty') + ')'}"
-  @HTML_NOMORE = Haml.render ".empty #{'(' + tr('No more') + ')'}"
+  @HTML_EMPTY = "<div class='empty'>(#{tr 'Empty'})</div>"
+  @HTML_NOMORE = "<div class='empty'>(#{tr 'No more'})</div>"
   @HTML_MORE = Haml.render """%button.btn-more.btn.btn-info(type="button" title="#{tr 'More'}") #{tr 'More'}"""
 
   # HAML for sample images
   # - param  url
-  @HAML_SAMPLE_IMAGE = Haml '''\
-%a(href="#{url}" title="#{url}")
-  %img.img-rounded.zoom.zoom-cg(src="#{url}")
-'''
+  @HAML_SAMPLE_IMAGE = Haml """\
+%a(href="${url}" title="#{tr 'Draggable'}")
+  %img.img-rounded.zoom.zoom-cg(src="${url}" alt="#{tr 'Image'}")
+""".replace /\$/g, '#'
 
   # HAML for youtube video
   # - param  vid
@@ -232,7 +232,7 @@ createTemplates = ->
       %img.img-circle.avatar(src="${userAvatarUrl}")
   .right
     .header(style="${userStyle}")
-      .user @${userName}
+      %a.user @${userName}
       :if scores
         :if scores.overall != undefined
           .score.score-overall.text-danger ${scores.overall}/10
@@ -288,7 +288,7 @@ createTemplates = ->
       %img.img-circle.avatar(src="${userAvatarUrl}")
   .right
     .header
-      .user(style="${userStyle}") @${userName}
+      %a.user(style="${userStyle}") @${userName}
       .time.text-minor = createTime
       .lang = lang
       .time.text-success = updateTime
@@ -811,7 +811,12 @@ bindNewReviewTopics = ->
     topicId = $topic.data 'id'
     topic = findTopic topicId
 
+    $header = $topic.find '> .right > .header'
     $footer = $topic.find '> .right > .footer'
+
+    $header.find('a.user').click ->
+      mainBean.showUser topic.userName if topic?.userName
+      false
 
     $footer.find('.btn-edit').click ->
       if topic
@@ -934,11 +939,15 @@ bindNewPosts = ->
     postId = $this.data 'id'
     post = findPost postId
 
+    $header = $this.find '> .right > .header'
     $footer = $this.find '> .right > .footer'
 
+    $header.find('a.user').click ->
+      mainBean.showUser post.userName if post?.userName
+      false
+
     $footer.find('.btn-edit').click ->
-      if post
-        editPost post
+      editPost post if post
       false
 
     $footer.find('.btn-reply').click ->
@@ -1387,17 +1396,19 @@ initCGPills = -> # Sample images
                 #.imagesLoaded ->
                 #  $container.find('img').width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
                 #  $container.masonry() # refresh after images are loaded
-                .find('img').load ->
-                  counter.dec()
-                  # Sample bad DMM image: http://pics.dmm.com/mono/movie/n/now_printing/now_printing.jpg
-                  if ~@src.indexOf('pics.dmm.') and @naturalWidth is 90 and @naturalHeight is 122
-                    pauser = new MasonryAniPauser $div unless pauser?
-                    pauser.pause()
-                    #@parentNode.removeChild @ # remove this
-                    $div.masonry 'remove', @ # remove this
-                  else
-                    $(@).width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
-                  $div.masonry() # refresh after images are loaded
+                .find 'img'
+                  .draggable()
+                  .load ->
+                    counter.dec()
+                    # Sample bad DMM image: http://pics.dmm.com/mono/movie/n/now_printing/now_printing.jpg
+                    if ~@src.indexOf('pics.dmm.') and @naturalWidth is 90 and @naturalHeight is 122
+                      pauser = new MasonryAniPauser $div unless pauser?
+                      pauser.pause()
+                      #@parentNode.removeChild @ # remove this
+                      $div.masonry 'remove', @ # remove this
+                    else
+                      $(@).width DEFAULT_SAMPLE_IMAGE_WIDTH * ZOOM_FACTOR
+                    $div.masonry() # refresh after images are loaded
           ) $ el
     false
 

@@ -3,11 +3,13 @@
    See: http://isotope.metafizzy.co/css/style.css
 
 @import bootstrap/fa
+@import bootstrap/pill
 @import main/bbcode
 @import main/color
 @import main/cursor
 @import main/shadow
 @import main/transition
+@import widgets/layout
 
 $avatar-width: 40px
 
@@ -16,11 +18,23 @@ img.avatar
   //height: $avatar-width
   @extend .avatar-shadow
 
-.topic.portal
+.game.portal
   padding: 9px 18px
   background-color: rgba(255,255,255,0.9)
+  > .sec-topic
+    .btn-new
+      margin-top: 10px
 
-.post
+.empty
+  @extend .text-minor
+  font-size: 90%
+
+.dock
+  display: inline-block
+  border: 1px dashed #7b85c9 // the same as <code> in bbcode
+  padding: 5px
+
+.topic
   padding-top: 9px // include the height of footer
   min-height: $avatar-width
   > a > img.avatar
@@ -31,19 +45,23 @@ img.avatar
   > .right
     margin-left: $avatar-width + 9px
     > .header
-      //  color: darkblue // TODO: Use linke instead
-      //  display: inline
-      .time
-        //@extend .text-minor
+      font-size: 90%
+      background-color: rgba(128,0,128,0.05) // purple
+      padding: 3px 0 3px 10px
+      .item
         display: inline
-        margin-left: 9px
-        font-size: 90%
-      .lang
-        //@extend .text-minor
-        color: purple
+        margin-right: 10px
+    > .score
+      margin-top: 5px
+      margin-bottom: 5px
+      font-size: 90%
+      .pp-row
         display: inline
-        margin-left: 9px
-        font-size: 90%
+        margin-right: 10px
+        &[data-type="overall"] [class^="pp-"]
+          color: blue
+        &[data-type="ecchi"] [class^="pp-"]
+          color: crimson
     > .image
       margin: 5px
       > a > img
@@ -61,21 +79,5 @@ img.avatar
         opacity: 0
   &:hover > .right > .footer .fade-in
     opacity: 1
-
-  // only highlight the first post
-  &:not([data-type='reply']) > .right > .header
-    background-color: rgba(0,0,255,0.05) // blue
-
-$reply-avatar-width: $avatar-width * 0.8
-.post .reply
-  margin-top: 9px
-  > .post
-    margin-left: 5%
-    min-height: $reply-avatar-width
-    img.avatar // smaller
-      width: $reply-avatar-width
-      //height: $reply-avatar-width
-    > .right
-      margin-left: $reply-avatar-width + 9px
 
 // EOF

@@ -137,6 +137,7 @@ simple:
   - CMVS2
   - Cotopha
   - CYBERFRONT PSP
+  - Debonosu
   - EAGLS
   - Elf
   - Eushully
@@ -436,6 +437,7 @@ utf8:
 # List of game engine that allows focus
 focus:
   - Adobe Flash 10
+  - EAGLS
   - HorkEye
   - KAGParser
   - KAGParserEx

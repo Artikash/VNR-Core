@@ -7,7 +7,7 @@ var RE_LINK = /(^|[^=\]])(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A
 
 function parse(str) { // string -> string
   return str.replace(RE_LINK, function (all, prefix, url) {
-    return prefix + '<a target="_blank" href="' + url + '">' + url + '</a>'
+    return prefix + '<a target="_blank" href="' + url + '">' + url + '</a>';
   });
 }
 

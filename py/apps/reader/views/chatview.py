@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
 import json
 from functools import partial
-from PySide.QtCore import Qt, Slot, QObject
+from PySide.QtCore import Qt, QObject
 from Qt5 import QtWidgets
 from sakurakit import skevents, skfileio, skqss
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty
@@ -20,7 +20,7 @@ from sakurakit.skwebkit import SkWebView #, SkWebViewBean
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
 #from sakurakit.skqml import QmlObject
 from mytr import my, mytr_
-import dataman, growl, netman, osutil, rc
+import config, dataman, growl, netman, osutil, rc
 
 @Q_Q
 class _ChatView(object):
@@ -56,11 +56,12 @@ class _ChatView(object):
     """
     return  [(unicode name, QObject bean)]
     """
-    import coffeebean, postedit, postinput
+    import coffeebean
     m = coffeebean.manager()
     return (
       ('cacheBean', m.cacheBean),
       ('i18nBean', m.i18nBean),
+      ('mainBean', m.mainBean),
       ('postEditBean', self.postEditBean),
       ('postInputBean', self.postInputBean),
     )
@@ -68,14 +69,12 @@ class _ChatView(object):
   @memoizedproperty
   def postEditBean(self):
     import postedit
-    ret = postedit.PostEditorManagerBean(parent=self.q, manager=self.postEditorManager)
-    return ret
+    return postedit.PostEditorManagerBean(parent=self.q, manager=self.postEditorManager)
 
   @memoizedproperty
   def postInputBean(self):
     import postinput
-    ret = postinput.PostInputManagerBean(parent=self.q, manager=self.postInputManager)
-    return ret
+    return postinput.PostInputManagerBean(parent=self.q, manager=self.postInputManager)
 
   @memoizedproperty
   def webView(self):
@@ -97,21 +96,20 @@ class _ChatView(object):
 
   def refresh(self):
     """@reimp"""
-    #baseUrl = 'http://sakuradite.com'
-    baseUrl = 'http://153.121.54.194' # must be the same as rest.coffee for the same origin policy
-    #baseUrl = 'http://localhost:8080'
+    host = config.API_HOST # must be the same as rest.coffee for the same origin policy
 
     user = dataman.manager().user()
 
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/chat').render({
+      'host': host,
       'title': mytr_("Messages"),
       'topicId': self.topicId,
       'userName': user.name,
       'userPassword': user.password,
       'rc': rc,
       'tr': tr_,
-    }), baseUrl)
+    }), host)
     self._injectBeans()
 
   @memoizedproperty
@@ -237,12 +235,13 @@ class _ChatView(object):
     @param  image  kw or None
     """
     dprint("enter")
+    nm = netman.manager()
     if image:
       data = skfileio.readdata(image['filename'])
       if data:
-        post['image'] = netman.manager().submitImage(data, image)
+        post['image'] = nm.submitImage(data, image)
 
-    if image and not post.get('image') or not netman.manager().updatePost(post):
+    if image and not post.get('image') or not nm.updatePost(post):
       growl.warn("<br/>".join((
         my.tr("Failed to update post"),
         my.tr("Please try again"),
@@ -307,23 +306,25 @@ class _ChatViewManager:
     ret.resize(550, 580)
     return ret
 
-  def _onPostReceived(self, data):
+  def _onPostReceived(self, data): # str ->
     try:
       obj = json.loads(data)
       topicId = obj['topicId']
       for w in self.dialogs:
         if w.isVisible() and w.topicId() == topicId:
           w.addPost(data)
+      dprint("pass")
     except Exception, e:
       dwarn(e)
 
-  def _onPostUpdated(self, data):
+  def _onPostUpdated(self, data): # str ->
     try:
       obj = json.loads(data)
       topicId = obj['topicId']
       for w in self.dialogs:
         if w.isVisible() and w.topicId() == topicId:
           w.updatePost(data)
+      dprint("pass")
     except Exception, e:
       dwarn(e)
 
@@ -381,16 +382,15 @@ def manager():
   return ChatViewManager()
 
 #@QmlObject
-class ChatViewManagerProxy(QObject):
-  def __init__(self, parent=None):
-    super(ChatViewManagerProxy, self).__init__(parent)
-
-  @Slot(int)
-  def showTopic(self, id):
-    manager().showTopic(id)
+#class ChatViewManagerProxy(QObject):
+#  def __init__(self, parent=None):
+#    super(ChatViewManagerProxy, self).__init__(parent)
+#
+#  @Slot(int)
+#  def showTopic(self, id):
+#    manager().showTopic(id)
 
 if __name__ == '__main__':
-  import config
   a = debug.app()
   #manager().showTopic('global')
   manager().showTopic(config.GLOBAL_TOPIC_ID)

@@ -296,8 +296,9 @@ $post-avatar-width: $topic-avatar-width * 0.8
       padding-left: 5px
       padding-right: 5px
       .user
-        color: darkblue // TODO: Use linke instead
-        display: inline
+        @extend .cursor-pointer
+        //color: darkblue // TODO: Use linke instead
+        //display: inline
       .score
         display: inline
         margin-left: 9px

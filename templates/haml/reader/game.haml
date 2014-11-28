@@ -1,5 +1,6 @@
 ; game.haml
 ; 6/29/2013 jichi
+; @param  host  str
 ; @param  title  unicode
 ; @param  userName  string
 ; @param  userPassword  string
@@ -475,7 +476,7 @@
             'bootstrap.switch', 'dragdealer', \
             'bbcode', 'haml', 'masonry', 'moment', 'sprintf', \
             'libs/linkify', \
-            'share/defs', 'share/annot', 'share/rest', 'share/util', \
+            'share/annot', 'share/rest', 'share/util', \
             'reader/widgets', 'reader/game'
           %script(src="#{rc.cdn_url(it)}")
 
@@ -486,6 +487,8 @@
         -if not mainland and game.hasTwitterWidgets()
           %script(src="#{rc.cdn_url('twitter.widgets')}")
 
+        :javascript
+          window.HOST = "#{host}";
         -if game.image
           :javascript
             $(function() {

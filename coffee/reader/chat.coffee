@@ -5,7 +5,8 @@
 # Beans:
 # - cacheBean: cacheman.CacheCoffeeBean
 # - i18nBean: coffeebean.I18nBean
-# - postInputBean: postInput.PostInputManagerBean
+# - mainBean: coffeebean.MainBean
+# - postInputBean: postinput.PostInputManagerBean
 # - postEditBean: postedit.PostEditorManagerBean
 
 dprint = -> console.log.apply console, arguments
@@ -37,12 +38,12 @@ createTemplates = ->
   # - dislikeCount  int
   @HAML_POST = Haml """\
 .post.post-new(data-id="${id}" data-type="${type}")
-  .left
-    :if userAvatarUrl
-      %img.img-circle.avatar(src="${userAvatarUrl}")
+  :if userAvatarUrl
+    %a(href="${userAvatarUrl}" title="#{tr 'Avatar'}")
+      %img.img-circle.avatar(src="${userAvatarUrl}" alt="#{tr 'Avatar'}")
   .right
     .header
-      .user(style="${userStyle}") @${userName}
+      %a.user(href="javascript:" style="${userStyle}") @${userName}
       .time.text-minor = createTime
       .lang = lang
       .time.text-success = updateTime
@@ -90,7 +91,7 @@ findPost = (id) -> _.findWhere POSTS, id:id # long -> object
 
 editPost = (post) -> postEditBean.editPost JSON.stringify post # long ->
 
-replyPost = (postId) ->  postInputBean.replyPost postId # long ->
+replyPost = (postId) -> postInputBean.replyPost postId # long ->
 
 bindNewPosts = ->
   $('.post.post-new').each ->
@@ -100,11 +101,15 @@ bindNewPosts = ->
     postId = $post.data 'id'
     post = findPost postId
 
+    $header = $post.find '> .right > .header'
     $footer = $post.find '> .right > .footer'
 
+    $header.find('a.user').click ->
+      mainBean.showUser post.userName if post?.userName
+      false
+
     $footer.find('.btn-edit').click ->
-      if post
-        editPost post
+      editPost post if post
       false
 
     $footer.find('.btn-reply').click ->
@@ -114,7 +119,7 @@ bindNewPosts = ->
     $footer.find('.like-group').removeClass 'fade-in' if post?.likeCount or post?.dislikeCount
 
     $footer.find('.btn.like').click ->
-      if post and post.userName != USER_NAME
+      if post and USER_NAME and USER_NAME isnt post.userName
         $that = $footer.find '.btn.dislike.selected'
         if $that.length
           $that.removeClass 'selected'
@@ -139,7 +144,7 @@ bindNewPosts = ->
       false
 
     $footer.find('.btn.dislike').click ->
-      if post and post.userName != USER_NAME
+      if post and USER_NAME and USER_NAME isnt post.userName
         $that = $footer.find '.btn.like.selected'
         if $that.length
           $that.removeClass 'selected'
@@ -190,16 +195,14 @@ addPost = (post) -> # object post ->
   document.title = "#{PAGE_TITLE} (#{POSTS.length})"
   if post.type is 'post'
     h = renderPost post
-    $(h).prependTo '.topic > .posts'
-        #.effect 'highlight', HIGHLIGHT_INTERVAL
+    $('.topic > .posts').prepend h
     highlightNewPosts()
     bindNewPosts()
   else if post.type is 'reply'
     $ref = $getPost post.replyId
     if $ref.length
       h = renderPost post
-      $(h).appendTo($ref.children('.reply'))
-          #.effect 'highlight', HIGHLIGHT_INTERVAL
+      $ref.children('.reply').append h
       highlightNewPosts()
       bindNewPosts()
     else
@@ -280,7 +283,7 @@ bind = ->
 
 ## Main ##
 
-@READY = false
+@READY = false # needed by chatview.py
 @addPost = addPost
 @updatePost = updatePost
 

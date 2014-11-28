@@ -122,7 +122,7 @@ Item { id: root_
     Bootstrap.Button {
       styleClass: 'btn btn-primary'
       //width: 40
-      text: Sk.tr("Reply")
+      text: Sk.tr("New")
       toolTip: Sk.tr("Reply")
       onClicked: postInput_.newPost()
     }

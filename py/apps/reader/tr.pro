@@ -13,16 +13,18 @@ SOURCES = \
   dialogs/prompt.py \
   dialogs/info.py \
   dialogs/mttest.py \
+  dialogs/_prefs.py \
+  dialogs/prefs.py \
+  dialogs/postedit.py \
+  dialogs/postinput.py \
   dialogs/refinput.py \
   dialogs/srtest.py \
   dialogs/subedit.py \
   dialogs/syntaxtest.py \
-  dialogs/postedit.py \
-  dialogs/postinput.py \
-  dialogs/_prefs.py \
-  dialogs/prefs.py \
   dialogs/terminput.py \
   dialogs/textprefs.py \
+  dialogs/topicedit.py \
+  dialogs/topicinput.py \
   dialogs/ytinput.py \
   managers/coffeebean.py \
   managers/dataman.py \
@@ -40,6 +42,7 @@ SOURCES = \
   managers/ttsman.py \
   views/chatview.py \
   views/gameview.py \
+  views/topicsview.py \
   views/userview.py \
   qml/kagami.py \
   widgets/textspy.py \

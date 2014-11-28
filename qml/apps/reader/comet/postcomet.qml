@@ -9,6 +9,8 @@ Comet.Comet { id: root_
   property int connectionCount
   signal postReceived(variant obj)
   signal postUpdated(variant obj)
+  signal topicReceived(variant obj)
+  signal topicUpdated(variant obj)
 
   // - Private -
 
@@ -28,7 +30,13 @@ Comet.Comet { id: root_
     } else if (obj.type === 'post/update') {
       if (obj.data.id)
         root_.postUpdated(obj.data)
+    } else if (obj.type === 'topic') {
+      if (obj.data.id)
+        root_.topicReceived(obj.data)
+    } else if (obj.type === 'topic/update') {
+      if (obj.data.id)
+        root_.topicUpdated(obj.data)
     } else
-      console.log("termcomet.qml:onMessage: unknown data type:", obj.type)
+      console.log("postcomet.qml:onMessage: unknown data type:", obj.type)
   }
 }

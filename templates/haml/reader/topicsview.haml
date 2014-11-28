@@ -1,10 +1,11 @@
-; chat.haml
-; 8/29/2014 jichi
+; topicsview.haml
+; 11/25/2014 jichi
 ; @param  host  str
-; @param  topicId  long
+; @param  gameId  long
 ; @param  userName  string
 ; @param  userPassword  string
 ; @param  title  unicode
+; @param  image  unicode url
 ; @param  rc  rc
 ; @param  tr  sktr.tr_
 ;!!! 5
@@ -14,26 +15,31 @@
     %title #{title}
 
     ; Stylesheets
-    -for it in 'bootstrap3.css', 'font-awesome4.css', 'reader/chat.css'
+    -for it in 'bootstrap3.css', 'font-awesome4.css', 'reader/topicsview.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
 
     :css
       body {
-        background-image: url("#{rc.wallpaper_url()}");
+        background-image: url("#{image or rc.wallpaper_url()}");
         background-size: cover;
       }
 
   %body
-    .topic.portal(data-id="#{topicId}")
-      .posts
-      .footer
-        %a.btn.btn-link.btn-more(role="button")
-          #{tr('More')}
+    .game.portal(data-id="#{gameId}")
+      .sec.sec-topic
+        .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Review')}
+        .sec-content.topics
+          .topic-user
+            .btn.btn-sm.btn-success.btn-new #{tr('New')}
+          %hr.middle
+        .sec-footer
+          %a.btn.btn-xs.btn-link.btn-more(role="button",style="display:none")
+            #{tr('More')}
     #spin
 
     :javascript
       window.HOST = "#{host}";
-      window.TOPIC_ID = #{topicId};
+      window.GAME_ID = #{gameId};
       window.USER_NAME = "#{userName}";
       window.USER_PASSWORD = "#{userPassword}";
 
@@ -45,7 +51,7 @@
         'bbcode', 'haml', 'moment', \
         'libs/linkify', \
         'share/growl', 'share/rest', 'share/util', \
-        'reader/chat'
+        'reader/topicsview'
       %script(src="#{rc.cdn_url(it)}")
 
 ; EOF

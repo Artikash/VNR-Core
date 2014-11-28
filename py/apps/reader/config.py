@@ -217,6 +217,7 @@ ENV_INTEGRITYPATH = map(parse_path, SHARE_YAML['env']['integritypath']) # [unico
 APP_PYTHONPATH = map(parse_path, APP_YAML['env']['pythonpath']) # [unicode abspath]
 
 ## URLs ##
+API_HOST = SHARE_YAML['apis']['host']
 API_REST = SHARE_YAML['apis']['rest']
 API_PUSH = SHARE_YAML['apis']['push']
 API_AJAX = SHARE_YAML['apis']['ajax']
@@ -411,9 +412,6 @@ JMDICT_LANGS = SHARE_YAML['jmdict'] # [str lang]
 
 GLOBAL_TOPIC_ID = SHARE_YAML['forum']['topics']['global']
 TERM_TOPIC_ID = SHARE_YAML['forum']['topics']['term']
-
-POST_CONTENT_MAX_LENGTH = 1024 * 32 - 1 # the same as server side
-POST_CONTENT_MIN_LENGTH = 2 # the same as server side
 
 ## Locations ##
 

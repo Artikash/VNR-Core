@@ -777,8 +777,8 @@ class _MainObject(object):
   #@memoizedproperty
   #def postInputManager(self):
   #  dprint("create post Input manager")
-  #  import postedit
-  #  ret = postedit.manager()
+  #  import postinput
+  #  ret = postinput.manager()
   #  ret.setParent(self.q)
   #  return ret
 
@@ -809,6 +809,11 @@ class _MainObject(object):
   def chatViewManager(self):
     import chatview
     return chatview.manager()
+
+  @property
+  def topicsViewManager(self):
+    import topicsview
+    return topicsview.manager()
 
   @memoizedproperty
   def aboutDialog(self):
@@ -1837,6 +1842,8 @@ class MainObject(QObject):
   def showChatView(self, topicId): self.__d.chatViewManager.showTopic(topicId) # long ->
   def isChatViewVisible(self): return self.__d.chatViewManager.isVisible()
 
+  def showGameTopics(self, itemId): self.__d.topicsViewManager.showGame(itemId) # long ->
+
   def showSubtitleEditor(self, comment): # dataman.Comment
     self.__d.subtitleEditorManager.showComment(comment)
 
@@ -2166,6 +2173,7 @@ class MainObject(QObject):
         'userViewManager',
         'gameViewManager',
         'chatViewManager',
+        'topicsViewManager',
       ):
       if hasmemoizedproperty(self, p):
         getattr(self, p).hide()
@@ -2294,6 +2302,9 @@ class MainObjectProxy(QObject):
   def showGlobalChatView(self): manager().showChatView(config.GLOBAL_TOPIC_ID)
   @Slot(result=bool)
   def isGlobalChatViewVisible(self): return manager().isChatViewVisible() # global id not used
+
+  @Slot(long)
+  def showGameTopics(self, gameId): manager().showGameTopics(gameId)
 
   @Slot(QObject) # dataman.GameObject
   def showGameObjectSubtitles(self, g): manager().showSubtitleView(game=g)

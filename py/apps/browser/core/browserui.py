@@ -19,7 +19,7 @@ from network import *
 from tabui import *
 from webkit import *
 from i18n import i18n
-import config, proxy, rc, settings, siteman, textutil, ui
+import config, defs, proxy, rc, settings, siteman, textutil, ui
 
 BLANK_URL = "about:blank"
 
@@ -479,7 +479,8 @@ class _WebBrowser(object):
     ret = False
     data = skfileio.readfile(rc.TABS_LOCATION)
     if data:
-      urls = data.split('\n')
+      #urls = data.split('\n')
+      urls = [it for it in data.split('\n') if it and len(it) < defs.MAX_HISTORY_URL_SIZE]
       for url in urls:
         self.openUnknownAfterCurrent(url)
       ret = True
@@ -505,7 +506,8 @@ class _WebBrowser(object):
   def loadVisitedUrls(self):
     data = skfileio.readfile(rc.VISIT_HISTORY_LOCATION)
     if data:
-      self.visitedUrls = data.split('\n')
+      #self.visitedUrls = data.split('\n')
+      self.visitedUrls = [it for it in data.split('\n') if it and len(it) < defs.MAX_HISTORY_URL_SIZE]
       for url in reversed(self.visitedUrls):
         icon = rc.url_icon(url)
         self.addressEdit.addItem(icon, url)
@@ -528,7 +530,8 @@ class _WebBrowser(object):
   def loadClosedUrls(self):
     data = skfileio.readfile(rc.CLOSE_HISTORY_LOCATION)
     if data:
-      self.closedUrls = data.split('\n')
+      #self.closedUrls = data.split('\n')
+      self.closedUrls = [it for it in data.split('\n') if it and len(it) < defs.MAX_HISTORY_URL_SIZE]
     dprint("pass")
 
   def saveClosedUrls(self):
