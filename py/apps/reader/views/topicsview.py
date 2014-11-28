@@ -59,17 +59,19 @@ class _TopicsView(object):
   def _onTopicReceived(self, data): # unicode json ->
     js = 'if (window.READY) addTopic(%s); null' % data
     self.webView.evaljs(js)
+    dprint("pass")
 
   # append ;null for better performance
   def _onTopicUpdated(self, data): # unicode json ->
     js = 'if (window.READY) updateTopic(%s); null' % data
     self.webView.evaljs(js)
+    dprint("pass")
 
   def setGameId(self, gameId): # long ->
     if self.gameId != gameId:
       self.gameId = gameId
 
-      path = '/game/%s' % gameId if gameId else ''
+      path = 'game/%s' % gameId if gameId else ''
       if path:
         self.comet.setPath(path)
         self.comet.setActive(True)
@@ -92,7 +94,7 @@ class _TopicsView(object):
     """
     return  [(unicode name, QObject bean)]
     """
-    import coffeebean, topicedit, topicinput
+    import coffeebean
     m = coffeebean.manager()
     return (
       ('cacheBean', m.cacheBean),
@@ -105,14 +107,12 @@ class _TopicsView(object):
   @memoizedproperty
   def topicEditBean(self):
     import topicedit
-    ret = topicedit.TopicEditorManagerBean(parent=self.q, manager=self.topicEditorManager)
-    return ret
+    return topicedit.TopicEditorManagerBean(parent=self.q, manager=self.topicEditorManager)
 
   @memoizedproperty
   def topicInputBean(self):
     import topicinput
-    ret = topicinput.TopicInputManagerBean(parent=self.q, manager=self.topicInputManager)
-    return ret
+    return topicinput.TopicInputManagerBean(parent=self.q, manager=self.topicInputManager)
 
   @memoizedproperty
   def webView(self):
@@ -141,8 +141,13 @@ class _TopicsView(object):
     dm = dataman.manager()
     user = dm.user()
     info = dm.queryGameInfo(itemId=self.gameId)
-    title = info.title0 or tr_("Game")
-    image = info.imageUrl0 if info.hasGoodImage0() else None
+    if info:
+      title = info.title0 or tr_("Game")
+      image = info.imageUrl0 if info.hasGoodImage0() else None
+      icon = info.icon
+    else:
+      title = image = icon = None
+    self.q.setWindowIcon(icon or rc.icon('window-review'))
 
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/topicsview').render({
@@ -277,10 +282,11 @@ class _TopicsView(object):
       )))
     dprint("leave")
 
-  def _update(self, topicData, imageData):
+  def _update(self, topicData, imageData, ticketData):
     """
-    @param  topicData  unicode json
-    @param  imageData  unicode json
+    @param  topicData  unicode  json
+    @param  imageData  unicode  json
+    @param  ticketData  unicode  json
     """
     if self.gameId:
       user = dataman.manager().user()
@@ -296,12 +302,15 @@ class _TopicsView(object):
           image['password'] = user.password
         else:
           image = None
-        skevents.runlater(partial(self._updateTopic, topic, image))
 
-  def _updateTopic(self, topic, image):
+        tickets = None
+        skevents.runlater(partial(self._updateTopic, topic, image, tickets))
+
+  def _updateTopic(self, topic, image, tickets):
     """
     @param  topic  kw
     @param  image  kw or None
+    @param  tickets  [kw] or None
     """
     dprint("enter")
     if image:

@@ -29,8 +29,8 @@ class _TopicEditor(object):
 
     self.topicId = 0 # long
     self.userName = '' # unicode
-    #self.userName = '' # unicode
     self.topicLanguage = ''
+    self.topicTitle = ''
     self.topicContent = ''
 
     self.imageId = 0
@@ -46,9 +46,8 @@ class _TopicEditor(object):
     layout = QtWidgets.QVBoxLayout()
 
     row = QtWidgets.QHBoxLayout()
-    row.addWidget(QtWidgets.QLabel(tr_("Language") + ":"))
+    row.addWidget(self.titleEdit)
     row.addWidget(self.languageEdit)
-    row.addStretch()
     layout.addLayout(row)
 
     layout.addWidget(self.contentEdit)
@@ -108,6 +107,15 @@ class _TopicEditor(object):
     return ret
 
   @memoizedproperty
+  def titleEdit(self):
+    ret = QtWidgets.QLineEdit()
+    skqss.class_(ret, 'editable')
+    ret.setPlaceholderText(tr_("Title"))
+    ret.setToolTip(tr_("Title"))
+    ret.textChanged.connect(self._refreshSaveButton)
+    return ret
+
+  @memoizedproperty
   def contentEdit(self):
     ret = QtWidgets.QTextEdit()
     #skqss.class_(ret, 'texture')
@@ -136,18 +144,33 @@ class _TopicEditor(object):
     return config.language2htmllocale(config.LANGUAGES[self.languageEdit.currentIndex()])
   def _getContent(self):
     return self.contentEdit.toPlainText().strip()
+  def _getTitle(self):
+    return self.titleEdit.text().strip()
   def _getImageTitle(self):
     return self.imageTitleEdit.text().strip()
 
   def _isChanged(self):
     t = self._getContent()
-    return bool(t) and t != self.topicContent or self.topicLanguage != self._getLanguage()
+    if bool(t) and t != self.topicContent:
+      return True
+    t = self._getTitle()
+    if bool(t) and t != self.topicTitle:
+      return True
+    if self.topicLanguage != self._getLanguage():
+      return True
+    return False
 
   def _refreshSaveButton(self):
     self.saveButton.setEnabled(self._canSave())
 
   def _canSave(self): # -> bool
     changed = False
+
+    t = self._getTitle()
+    if len(t) < defs.TOPIC_TITLE_MIN_LENGTH or len(t) > defs.TOPIC_TITLE_MAX_LENGTH:
+      return False
+    if not changed and t != self.topicTitle:
+      changed = True
 
     t = self._getContent()
     if len(t) < defs.TOPIC_CONTENT_MIN_LENGTH or len(t) > defs.TOPIC_CONTENT_MAX_LENGTH:
@@ -216,8 +239,13 @@ class _TopicEditor(object):
       self._refreshSaveButton()
 
   def _save(self):
-    v = self._getContent()
     topic = {}
+
+    v = self._getTitle()
+    if v and v != self.topicTitle:
+      topic['title'] = self.topicTitle = v
+
+    v = self._getContent()
     if v and v != self.topicContent:
       topic['content'] = self.topicContent = v
 
@@ -248,13 +276,14 @@ class _TopicEditor(object):
       topic['userName'] = self.userName
 
       topicData = json.dumps(topic)
-      self.q.topicChanged.emit(topicData, imageData)
+
+      ticketData = ''
+      self.q.topicChanged.emit(topicData, imageData, ticketData)
 
       growl.msg(my.tr("Edit submitted"))
 
   def refresh(self):
-    self.saveButton.setEnabled(False)
-
+    self.titleEdit.setText(self.topicTitle)
     self.contentEdit.setPlainText(self.topicContent)
     self.imageTitleEdit.setText(self.imageTitle)
 
@@ -271,9 +300,11 @@ class _TopicEditor(object):
     for w in self._iterImageWidgets():
       w.setEnabled(self.imageEnabled)
 
+    self.saveButton.setEnabled(False)
+
 class TopicEditor(QtWidgets.QDialog):
 
-  topicChanged = Signal(unicode, unicode) # json topic, json image
+  topicChanged = Signal(unicode, unicode, unicode) # json topic, json image, json tickets
 
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
@@ -289,11 +320,12 @@ class TopicEditor(QtWidgets.QDialog):
     import dataman
     dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
 
-  def setTopic(self, id, userName='', language='', lang='', content='', image=None, **ignored):
+  def setTopic(self, id, userName='', language='', lang='', title='', content='', image=None, **ignored):
     d = self.__d
     d.topicId = id
     d.userName = userName
     d.topicLanguage = language or lang
+    d.topicTitle = title
     d.topicContent = content
 
     if image:
@@ -354,7 +386,7 @@ class TopicEditorManager(QObject):
     netman.manager().onlineChanged.connect(lambda t: t or self.hide())
     dataman.manager().loginChanged.connect(lambda t: t or self.hide())
 
-  topicChanged = Signal(unicode, unicode) # json topic, json image
+  topicChanged = Signal(unicode, unicode, unicode) # json topic, json image, json tickets
 
   #def clear(self): self.hide()
 
@@ -389,7 +421,7 @@ class TopicEditorManagerBean(QObject):
     self.manager = manager or TopicEditorManager(self)
     self.manager.topicChanged.connect(self.topicChanged)
 
-  topicChanged = Signal(unicode, unicode) # json topic, json image
+  topicChanged = Signal(unicode, unicode, unicode) # json topic, json image, json tickets
 
   imageEnabledChanged = Signal(bool)
   imageEnabled = Property(bool,
@@ -408,7 +440,7 @@ class TopicEditorManagerBean(QObject):
 if __name__ == '__main__':
   a = debug.app()
   m = TopicEditorManager()
-  m.editTopic(id=123, content="123", lang='en')
+  m.editTopic(id=123, title="hello", content="123", lang='en')
   a.exec_()
 
 # EOF

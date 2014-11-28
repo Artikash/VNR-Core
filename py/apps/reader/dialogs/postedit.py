@@ -253,8 +253,6 @@ class _PostEditor(object):
       growl.msg(my.tr("Edit submitted"))
 
   def refresh(self):
-    self.saveButton.setEnabled(False)
-
     self.contentEdit.setPlainText(self.postContent)
     self.imageTitleEdit.setText(self.imageTitle)
 
@@ -270,6 +268,8 @@ class _PostEditor(object):
 
     for w in self._iterImageWidgets():
       w.setEnabled(self.imageEnabled)
+
+    self.saveButton.setEnabled(False)
 
 class PostEditor(QtWidgets.QDialog):
 

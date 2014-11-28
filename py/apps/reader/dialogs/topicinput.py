@@ -16,7 +16,7 @@ from PySide.QtCore import Qt, Signal, Slot, Property, QObject
 from Qt5 import QtWidgets
 from sakurakit import skfileio, skqss, skwidgets
 from sakurakit.skclass import Q_Q, memoizedproperty
-from sakurakit.skdebug import dwarn
+#from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
 from mytr import mytr_, my
 import config, defs, growl, i18n, rc

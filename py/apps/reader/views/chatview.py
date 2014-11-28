@@ -69,14 +69,12 @@ class _ChatView(object):
   @memoizedproperty
   def postEditBean(self):
     import postedit
-    ret = postedit.PostEditorManagerBean(parent=self.q, manager=self.postEditorManager)
-    return ret
+    return postedit.PostEditorManagerBean(parent=self.q, manager=self.postEditorManager)
 
   @memoizedproperty
   def postInputBean(self):
     import postinput
-    ret = postinput.PostInputManagerBean(parent=self.q, manager=self.postInputManager)
-    return ret
+    return postinput.PostInputManagerBean(parent=self.q, manager=self.postInputManager)
 
   @memoizedproperty
   def webView(self):
@@ -316,6 +314,7 @@ class _ChatViewManager:
       for w in self.dialogs:
         if w.isVisible() and w.topicId() == topicId:
           w.addPost(data)
+      dprint("pass")
     except Exception, e:
       dwarn(e)
 
@@ -326,6 +325,7 @@ class _ChatViewManager:
       for w in self.dialogs:
         if w.isVisible() and w.topicId() == topicId:
           w.updatePost(data)
+      dprint("pass")
     except Exception, e:
       dwarn(e)
 

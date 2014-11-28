@@ -45,6 +45,7 @@ createTemplates = ->
       %img.img-circle.avatar(src="${userAvatarUrl}" alt="#{tr 'Avatar'}")
   .right
     .header
+      .item.type.text-warning = tr(type)
       %a.item.title(href='javascript:' title="#{tr 'Browse'}") ${title}
       %span.pull-right
         %a.item.user(href="javascript:") @${userName}
@@ -288,6 +289,7 @@ show = -> # invoked only once
       if data.length
         addTopics data
         _showUserTopic if USER_NAME and not USER_TOPIC and TOPICS.length is TOPIC_LIMIT
+        $('.sec-topic .btn-more').show()
       else
         repaintMoreButton()
         #growl tr('Empty') + ' > <'
