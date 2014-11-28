@@ -29,6 +29,11 @@ img.avatar
   @extend .text-minor
   font-size: 90%
 
+.dock
+  display: inline-block
+  border: 1px dashed #7b85c9 // the same as <code> in bbcode
+  padding: 5px
+
 .topic
   padding-top: 9px // include the height of footer
   min-height: $avatar-width
@@ -47,7 +52,8 @@ img.avatar
         display: inline
         margin-right: 10px
     > .score
-      margin-top: 9px
+      margin-top: 5px
+      margin-bottom: 5px
       font-size: 90%
       .pp-row
         display: inline
