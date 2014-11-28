@@ -146,6 +146,7 @@ processes:
   - QuickTime.exe       # Apple
   - saayaa.exe          # Baidu
   - Safari.exe          # Apple
+  - ScreenshotReaderPortable.exe # http://sakuradite.com/topic/524
   - SetPoint.exe        # Logitech
   - sidebar.exe         # Microsoft Windows
   - SogouCloud.exe      # Sogou
