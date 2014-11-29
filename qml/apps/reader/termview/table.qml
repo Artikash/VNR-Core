@@ -19,6 +19,7 @@ Item { id: root_
   property int userId
   property int userLevel
   property alias filterText: model_.filterText
+  property alias filterColumn: model_.filterColumn
   property alias currentCount: model_.currentCount
   property alias count: model_.count
 

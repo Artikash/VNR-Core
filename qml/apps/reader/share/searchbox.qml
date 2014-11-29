@@ -23,9 +23,11 @@ Share.InputBox { id: root_
 
   Text { // item count
     anchors {
-      right: clearButton_.left
-      top: parent.top
-      topMargin: 4
+      right: buttonRow_.left
+      //top: parent.top
+      //topMargin: 4
+      verticalCenter: parent.verticalCenter
+      rightMargin: 3
     }
     color: root_.text ? 'blue' : '#7f8185'
     font.pixelSize: 12
@@ -33,14 +35,29 @@ Share.InputBox { id: root_
     text: totalCount ? root_.currentCount + "/" + root_.totalCount : String(root_.currentCount)
   }
 
-  Share.ClearButton { id: clearButton_
+  Row { id: buttonRow_
     anchors {
       right: parent.right
       verticalCenter: parent.verticalCenter
     }
-    onClicked: {
-      root_.text = ""
-      root_.accepted()
+
+    Share.CloseButton {
+      color: '#555'
+      //text: "☓" // ばつ
+      toolTip: Sk.tr("Clear")
+      onClicked: {
+        root_.text = ""
+        root_.accepted()
+      }
     }
+
+    Share.CloseButton {
+      color: '#777'
+      text: "◯" // まる
+      toolTip: Sk.tr("Submit") + " [enter]"
+      onClicked:
+        root_.accepted()
+    }
+
   }
 }

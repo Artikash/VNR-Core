@@ -2,7 +2,7 @@
  *  2/20/2013 jichi
  */
 import QtQuick 1.1
-//import QtDesktop 0.1 as Desktop
+import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
 import '../../js/sakurakit.min.js' as Sk
 import '../../js/reader.min.js' as My
@@ -84,6 +84,8 @@ Item { id: root_
 
     displaysDuplicateRows: searchToolBar_.displaysDuplicateRows
 
+    filterColumn: searchCol_.value
+
     Share.Blocker {
       anchors.fill: parent
       visible: table_.currentCount <= 0 || !mainToolBar_.enabled
@@ -118,6 +120,8 @@ Item { id: root_
     model: table_.model
   }
 
+  // Middle row
+
   Share.Paginator { id: paginator_
     anchors {
       left: parent.left
@@ -130,13 +134,41 @@ Item { id: root_
         table_.pageNumber = value
   }
 
+  Desktop.ComboBox { id: searchCol_
+    anchors {
+      verticalCenter: searchBox_.verticalCenter
+      left: paginator_.right
+      leftMargin: 5
+    }
+    width: 72
+
+    tooltip: Sk.tr("Column")
+
+    model: ListModel {
+      Component.onCompleted: {
+        append({text:Sk.tr("All"), value:''})
+        append({text:Sk.tr("User"), value:'user'})
+        append({text:Sk.tr("Game"), value:'game'})
+        append({text:Sk.tr("Type"), value:'type'})
+        append({text:Sk.tr("Language"), value:'language'})
+        append({text:Sk.tr("Pattern"), value:'pattern'})
+        append({text:Sk.tr("Translation"), value:'text'})
+        append({text:Sk.tr("Comment"), value:'comment'})
+      }
+    }
+
+    property string value
+    onSelectedIndexChanged: value = model.get(selectedIndex).value
+  }
+
   Share.SearchBox { id: searchBox_
     anchors {
-      left: paginator_.right
+      left: searchCol_.right
       //left: parent.left
       right: searchToolBar_.left
       bottom: inspector_.top
-      leftMargin: 5
+      leftMargin: 2
+      rightMargin: 2
       bottomMargin: 5
     }
     totalCount: table_.count
@@ -163,6 +195,8 @@ Item { id: root_
     }
   }
 
+  // Bottom row
+
   // Inspector at the bottom
   TermView.Inspector { id: inspector_
     anchors {
@@ -172,6 +206,7 @@ Item { id: root_
     }
     currentItem: table_.currentItem
   }
+}
 
   //TermView.OptionPanel { id: option_
   //  anchors {
@@ -187,4 +222,3 @@ Item { id: root_
   //  onHentaiEnabledChanged: if (settings_.hentai != hentaiEnabled) settings_.hentai = hentaiEnabled
   //  onMarkEnabledChanged: if (settings_.termMarked != markEnabled) settings_.termMarked = markEnabled
   //}
-}
