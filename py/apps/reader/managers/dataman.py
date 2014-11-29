@@ -4152,6 +4152,7 @@ class _TermModel(object):
   DEFAULT_SORTING_COLUMN = COLUMNS.index('modifiedTimestamp') # int = 1, the second column
 
   def __init__(self):
+    self.filterColumn = "" # str
     self._filterText = "" # unicode
     self._filterRe = None # compiled re
     self._filterData = None # [Term]
@@ -4299,25 +4300,45 @@ class _TermModel(object):
     dm = manager()
     td = term.d
     try:
-      if len(t) > 1:
-        if t[0] == '@':
-          t = t[1:]
-          rx = re.compile(t, re.IGNORECASE)
-          for it in term.userName, term.updateUserName:
-            if it and rx.match(it):
+      q = None # [str] or None
+      if self.filterColumn:
+        col = self.filterColumn
+        if col == 'user':
+          q = term.userName,
+        elif col == 'game':
+          q = term.gameSeries, term.gameName
+        elif col == 'language':
+          q = td.language, i18n.language_name(td.language)
+        elif col == 'type':
+          q = td.type, Term.typeName(td.type)
+        elif col == 'pattern':
+          q = td.pattern,
+        elif col == 'text':
+          q = td.text,
+        elif col == 'comment':
+          q = td.comment,
+      else: # search all columns
+        if len(t) > 1:
+          if t[0] == '@':
+            t = t[1:]
+            rx = re.compile(t, re.IGNORECASE)
+            for it in term.userName, term.updateUserName:
+              if it and rx.match(it):
+                return True
+            return False
+          if t[0] == '#':
+            t = t[1:]
+            if t == str(td.gameId):
               return True
-          return False
-        if t[0] == '#':
-          t = t[1:]
-          if t == str(td.gameId):
+            rx = re.compile(t, re.IGNORECASE)
+            it = term.gameSeries or term.gameName
+            return bool(it and (t in it or rx.search(it))) # check t in it in case of escape
+        q = td.pattern, td.text, td.language, i18n.language_name(td.language), term.userName, term.updateUserName, Term.typeName(td.type), td.comment, td.updateComment, term.gameSeries, term.gameName
+      if q:
+        rx = self.filterRe
+        for it in q:
+          if it and (t in it or rx.search(it)): # check t in it in case of escape
             return True
-          rx = re.compile(t, re.IGNORECASE)
-          it = term.gameSeries or term.gameName
-          return bool(it and (t in it or rx.search(it))) # check t in it in case of escape
-      rx = self.filterRe
-      for it in td.pattern, td.text, i18n.language_name(td.language), term.userName, term.updateUserName, Term.typeName(td.type), td.comment, td.updateComment, term.gameSeries, term.gameName:
-        if it and (t in it or rx.search(it)): # check t in it in case of escape
-          return True
     except Exception, e:
       dwarn(e)
       #message = e.message or "%s" % e
@@ -4383,6 +4404,16 @@ class TermModel(QAbstractListModel):
   currentCount = Property(int,
       lambda self: len(self.__d.data),
       notify=currentCountChanged)
+
+  def setFilterColumn(self, value):
+    if value != self.__d.filterColumn:
+      self.__d.filterColumn = value
+      self.filterColumnChanged.emit(value)
+  filterColumnChanged = Signal(str)
+  filterColumn = Property(str,
+      lambda self: self.__d.filterColumn,
+      setFilterColumn,
+      notify=filterColumnChanged)
 
   def setFilterText(self, value):
     if value != self.__d.filterText:
