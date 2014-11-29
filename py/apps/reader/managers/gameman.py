@@ -934,8 +934,9 @@ class GameManager(QtCore.QObject):
 
   def captureWindow(self):
     import grab
+    g = grab.manager()
     hwnd = self.__d.game.wid if self.__d.game else 0
-    ok = grab.window(hwnd) if hwnd else grab.desktop()
+    ok = g.grabWindow(hwnd) if hwnd else g.grabDesktop()
     if ok:
       growl.msg(my.tr("Screenshot saved to clipboard and desktop"))
     else:

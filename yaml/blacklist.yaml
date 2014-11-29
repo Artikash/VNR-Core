@@ -122,6 +122,7 @@ processes:
   - MediaInfo.exe       # MediaInfo
   - mpc-be.exe          # MPC
   - mpc-hc.exe          # MPC
+  - mpc-hc_nvo.exe      # MPC
   - mpcstar.exe         # MPC
   - ntleac.exe          # NTLER
   - NtleaGUI.exe        # NTLER
