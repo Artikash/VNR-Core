@@ -440,11 +440,11 @@ utf8:
 focus:
   - Adobe Flash 10
   - EAGLS
-  - Majiro2
   - HorkEye
   - KAGParser
   - KAGParserEx
   - KiriKiriZ
+  - Majiro2
   - SiglusEngine2
   - SiglusEngine3
 # No focus:

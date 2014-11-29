@@ -232,7 +232,7 @@ Item { id: root_
       //property color buttonPopupColor: '#aaffff00' // yellow
       //property color buttonPopupColor: '#aaaa007f' // purple-like
 
-      property string cellFont: 'DFGirl'
+      //property string cellFont: 'DFGirl'
 
       Share.TextButton { id: menuButton_
         height: parent.cellHeight; width: parent.cellWidth
@@ -247,7 +247,7 @@ Item { id: root_
         //property alias checked: appMenu_.visible
 
         //language: root_.language
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
 
         onClicked: if (!root_.ignoresFocus) {
           var gp = mapToItem(null, x + mouse.x, y + mouse.y)
@@ -266,7 +266,7 @@ Item { id: root_
         backgroundColor: checked ? parent.buttonPopupColor : parent.buttonColor // gray
 
         //language: root_.language
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
 
         property alias checked: panel_.visible
         //property bool enabled: root_.visibleChecked
@@ -286,7 +286,7 @@ Item { id: root_
         backgroundColor: checked ? parent.buttonCheckedColor : parent.buttonColor
 
         //language: root_.language
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
         toolTip: qsTr("Toggle slim UI")
 
         onClicked: checked = !checked
@@ -327,7 +327,7 @@ Item { id: root_
         //color: enabled ? 'snow' : 'silver'
         backgroundColor: !enabled ? parent.buttonDisabledColor : checked ? parent.buttonCheckedColor : parent.buttonColor
         radius: parent.cellRadius
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
 
         visible: !root_.ignoresFocus && !slimChecked //|| root_.stretchedChecked)
 
@@ -356,7 +356,7 @@ Item { id: root_
                          checked ? parent.buttonCheckedColor :
                          parent.buttonColor
         radius: parent.cellRadius
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
 
         property bool checked: speakTextButton_.checked || speakTranslationButton_.checked
         //  if (checked)
@@ -397,7 +397,7 @@ Item { id: root_
               font.pixelSize: buttonCol_.pixelSize
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               property bool checked
               onClicked: {
@@ -416,7 +416,7 @@ Item { id: root_
               font.pixelSize: buttonCol_.pixelSize
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               property bool checked
               onClicked: {
@@ -448,7 +448,7 @@ Item { id: root_
                          checked ? parent.buttonCheckedColor :
                          parent.buttonColor
         radius: parent.cellRadius
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
 
         property bool enabled: statusPlugin_.online
 
@@ -490,7 +490,7 @@ Item { id: root_
               font.pixelSize: buttonCol_.pixelSize
               backgroundColor: buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               onClicked:
                 if (srPlugin_.active) {
@@ -510,7 +510,7 @@ Item { id: root_
               font.pixelSize: buttonCol_.pixelSize
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               property bool checked: srPlugin_.active && !srPlugin_.singleShot // cached
               onClicked:
@@ -546,7 +546,7 @@ Item { id: root_
                          checked ? parent.buttonCheckedColor :
                          parent.buttonColor
         radius: parent.cellRadius
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
 
         //visible: !root_.ignoresFocus
 
@@ -603,7 +603,7 @@ Item { id: root_
               //color: enabled ? 'snow' : 'silver'
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               property bool checked
               onClicked: checked = !checked
@@ -620,7 +620,7 @@ Item { id: root_
               //color: enabled ? 'snow' : 'silver'
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               property bool checked
               onClicked: checked = !checked
@@ -637,7 +637,7 @@ Item { id: root_
               //color: enabled ? 'snow' : 'silver'
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               property bool checked
               onClicked: checked = !checked
@@ -665,7 +665,7 @@ Item { id: root_
         backgroundColor: parent.buttonColor
 
         //language: root_.language
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
         //toolTip: qsTr("Read current Japanese game text using TTS")
         toolTip: qsTr("Take a screen shot, and save to the desktop and the clipboard")
 
@@ -685,7 +685,7 @@ Item { id: root_
         backgroundColor: checked ? parent.buttonCheckedColor : parent.buttonColor
 
         //language: root_.language
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
         toolTip: qsTr("Toggle background shadow")
         onClicked: checked = !checked
       }
@@ -702,7 +702,7 @@ Item { id: root_
         property bool checked
         backgroundColor: checked ? parent.buttonCheckedColor : parent.buttonColor
 
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
         toolTip: qsTr("Toggle mouse and keyboard shortcuts")
         onClicked: checked = !checked
       }
@@ -719,7 +719,7 @@ Item { id: root_
                          checked ? parent.buttonCheckedColor :
                          parent.buttonColor
         radius: parent.cellRadius
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
 
         visible: !root_.ignoresFocus
 
@@ -768,7 +768,7 @@ Item { id: root_
               //color: enabled ? 'snow' : 'silver'
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               property bool checked
               onClicked: {
@@ -791,7 +791,7 @@ Item { id: root_
               //color: enabled ? 'snow' : 'silver'
               backgroundColor: (checked && !displayRatioButton_.checked) ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               visible: !root_.wine
 
@@ -822,7 +822,7 @@ Item { id: root_
               //color: enabled ? 'snow' : 'silver'
               backgroundColor: (checked && stretchDisplayButton_.checked) ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               visible: !root_.wine
 
@@ -853,7 +853,7 @@ Item { id: root_
               //color: enabled ? 'snow' : 'silver'
               backgroundColor: checked ? buttonCol_.buttonCheckedColor : buttonCol_.buttonColor
               radius: buttonCol_.cellRadius
-              font.family: buttonCol_.cellFont
+              //font.family: buttonCol_.cellFont
 
               property bool checked: false
               onClicked: checked = !checked
@@ -880,7 +880,7 @@ Item { id: root_
         //language: root_.language
         backgroundColor: checked ? parent.buttonColor : parent.buttonUncheckedColor
         radius: parent.cellRadius
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
 
         property bool checked: true
         toolTip: checked ? qsTr("Hide subtitles") : qsTr("Show subtitles")
@@ -935,7 +935,7 @@ Item { id: root_
         pauseColor: '#aa555555' // black
 
         //language: root_.language
-        font.family: parent.cellFont
+        //font.family: parent.cellFont
         //toolTip: qsTr("Read current Japanese game text using TTS")
         toolTip: qsTr("{0} out of {1} online users are playing this game now")
             .replace('{0}', count)
@@ -1468,7 +1468,7 @@ Item { id: root_
       Share.LabeledSlider { id: glowIntensitySlider_
         height: parent.cellHeight
         width: parent.cellWidth
-        text: qsTr("Lightness")
+        text: qsTr("Light")
         font.pixelSize: parent.pixelSize
         font.bold: true
         labelWidth: 40

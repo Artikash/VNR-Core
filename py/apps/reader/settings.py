@@ -988,6 +988,16 @@ class Settings(QSettings):
     elif name == 'ja-en':
       self.setLingoesJaEnEnabled(v)
 
+  # Locations
+
+  grabLocationChanged = Signal(unicode)
+  def grabLocation(self):
+    return to_unicode(self.value('GrabLocation'))
+  def setGrabLocation(self, path):
+    if value != self.grabLocation():
+      self.setValue('GrabLocation', value)
+      self.grabLocationChanged.emit(value)
+
   # JMDict
 
   def isJMDictFrEnabled(self): return to_bool(self.value('JMDictFr'))
