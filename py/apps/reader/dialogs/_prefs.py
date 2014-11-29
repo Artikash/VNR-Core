@@ -808,6 +808,85 @@ class GameTab(QtWidgets.QDialog):
   def load(self): pass
   def refresh(self): self.__d.refresh()
 
+## Recordings ##
+
+@Q_Q
+class _RecordingsTab(object):
+
+  def __init__(self, q):
+    self._createUi(q)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.locationGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+
+  ## Screenshots ##
+
+  @memoizedproperty
+  def locationGroup(self):
+    grid = QtWidgets.QGridLayout()
+
+    r = 0
+    grid.addWidget(QtWidgets.QLabel(tr_("Screenshot")), r, 0)
+    grid.addWidget(self.grabLocationEdit, r, 1)
+    grid.addWidget(self.grabLocationButton, r, 2)
+    r += 1
+
+    ret = QtWidgets.QGroupBox(my.tr("Locations to save recorded files"))
+    ret.setLayout(grid)
+    return ret
+
+  @memoizedproperty
+  def grabLocationEdit(self):
+    ret = QtWidgets.QLineEdit()
+    ret.setReadOnly(True)
+    return ret
+
+  @memoizedproperty
+  def grabLocationButton(self):
+    ret = QtWidgets.QPushButton(tr_("Browse"))
+    skqss.class_(ret, BROWSE_BTN_CLASS)
+    ret.setToolTip(my.tr("Select the location"))
+    ret.clicked.connect(self._getGrabLocation)
+    return ret
+
+  def _getGrabLocation(self):
+    path = settings.global_().grabLocation() or skpaths.DESKTOP
+    path = QtWidgets.QFileDialog.getExistingDirectory(self.q,
+        my.tr("Please select the folder to save {0}").format(my.tr('game screenshot')),
+        path, 0)
+    if path:
+      path = QtCore.QDir.toNativeSeparators(path)
+      settings.global_().setGrabLocation(path)
+      self._refreshGrabLocation()
+
+  def _refreshGrabLocation(self):
+    path = settings.global_().grabLocation() or skpaths.DESKTOP
+    edit = self.grabLocationEdit
+    edit.setText(path)
+    exists = path and os.path.exists(path)
+    skqss.toggleclass(edit, 'text-error', not exists)
+    edit.setToolTip(
+        my.tr("Location to save {0}").format(my.tr('game screenshot'))
+        if exists else my.tr("Location does not exist"))
+
+  def load(self):
+    self._refreshGrabLocation()
+
+class RecordingsTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(RecordingsTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _RecordingsTab(self)
+    #self.setMinimumWidth(330)
+
+  def save(self): pass
+  def load(self): self.__d.load()
+  def refresh(self): pass
+
 ## Shortcuts ##
 
 @Q_Q

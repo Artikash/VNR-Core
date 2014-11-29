@@ -993,7 +993,7 @@ class Settings(QSettings):
   grabLocationChanged = Signal(unicode)
   def grabLocation(self):
     return to_unicode(self.value('GrabLocation'))
-  def setGrabLocation(self, path):
+  def setGrabLocation(self, value):
     if value != self.grabLocation():
       self.setValue('GrabLocation', value)
       self.grabLocationChanged.emit(value)
