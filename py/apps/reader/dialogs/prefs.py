@@ -61,6 +61,7 @@ class _PrefsDialog(object):
     self.gameTab = _prefs.GameTab()
     self.shortcutsTab = _prefs.ShortcutsTab()
     self.uiTab = _prefs.UiTab()
+    self.recordingsTab = _prefs.RecordingsTab()
     self.i18nTab = _prefs.I18nTab()
     self.engineTab = _prefs.EngineTab()
     self.internetTab = _prefs.InternetTab()
@@ -232,6 +233,12 @@ class _PrefsDialog(object):
           'display': mytr_("Shortcuts"),
           'toolTip': my.tr("Mouse and keyboard shortcuts"),
         },
+        { 'widget': self.recordingsTab,
+          'user': self._indexWidget(self.recordingsTab),
+          'decoration': rc.icon('pref-rec'),
+          'display': mytr_("Recordings"),
+          'toolTip': my.tr("Game recordings"),
+        },
         { 'widget': self.uiTab,
           'user': self._indexWidget(self.uiTab),
           'decoration': rc.icon('pref-ui'),
@@ -311,6 +318,7 @@ class _PrefsDialog(object):
     yield self.srTab
     yield self.gameTab
     yield self.shortcutsTab
+    yield self.recordingsTab
     yield self.i18nTab
     yield self.internetTab
     yield self.featureTab
@@ -354,8 +362,7 @@ class PrefsDialog(QtWidgets.QSplitter):
     for i in xrange(self.count()):
       skqss.class_(self.widget(i), 'texture')
 
-    #self.resize(500,480)
-    self.resize(550,520) # large enough that there is no vertical scroll bar
+    self.resize(550,540) # large enough that there is no vertical scroll bar
     self.setSizes([170,380]) # 170 + 380 = 550
     dprint("pass")
 

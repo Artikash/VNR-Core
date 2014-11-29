@@ -66,6 +66,8 @@ class reader(QObject):
 
       self.tr("Game engine"),
 
+      self.tr("Recordings"),
+
       self.tr("Matched text"),
       self.tr("Replaced text"),
 
