@@ -2337,6 +2337,9 @@ MAJIRO hook:
   just do memory comparisons and get the value working for current release.
 
 ********************************************************************************************/
+// jichi 11/28/2014: Disable original Majiro special hook that does not work for new Majiro games, such as: 流され妻
+// In the new Majiro engine, arg1 could be zero
+#if 0
 static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   // jichi 5/12/2014
@@ -2364,6 +2367,111 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
     mov [ecx],edx
   }
 }
+#endif // 0
+
+/** jichi 12/28/2014: new Majiro hook pattern
+ *
+ *  Different function starts:
+ *
+ *  Old Majiro:
+ *  enum { sub_esp = 0xec81 }; // caller pattern: sub esp = 0x81,0xec byte
+ *
+ *  New Majiro since [141128] [アトリエさくら] 流され妻、綾乃の“ネトラレ”報告 体験版
+ *  003e9230   55               push ebp
+ *  003e9231   8bec             mov ebp,esp
+ *  003e9233   83ec 64          sub esp,0x64
+ *
+ *  Also, function addresses are fixed in old majiro, but floating in new majiro.
+ *  In the old Majiro game, caller's address could be used as split.
+ *  In the new Majiro game, the hooked function is invoked by the same caller.
+ *  Use a split instead.
+ *  Sample stack values are as follows.
+ *
+ *  Name:
+ *  0038f164   003e8163  return to .003e8163 from .003e9230
+ *  0038f168   00000000
+ *  0038f16c   00000000
+ *  0038f170   08b04dbc
+ *  0038f174   006709f0
+ *  0038f178   006dace8
+ *  0038f17c   00000000
+ *  0038f180   00000013
+ *  0038f184   006fcba8
+ *  0038f188   00000078 ; jichi: 0x24, alternative split
+ *  0038f18c   00000078
+ *  0038f190   00000018
+ *  0038f194   00000002
+ *  0038f198   08b04dbc
+ *  0038f19c   006709f0
+ *  0038f1a0   00000000
+ *  0038f1a4   00000000
+ *  0038f1a8   00000078
+ *  0038f1ac   00000018
+ *  0038f1b0   08aa0130
+ *  0038f1b4   01b6b6c0
+ *  0038f1b8   beff26e4
+ *  0038f1bc   0038f1fc
+ *  0038f1c0   004154af  return to .004154af from .00415400 ; jichi: 0x52, could be used as split
+ *  0038f1c4   0000000e
+ *  0038f1c8   000001ae
+ *  0038f1cc   00000158
+ *  0038f1d0   00000023
+ *  0038f1d4   beff2680
+ *  0038f1d8   0038f208
+ *  0038f1dc   003ecfda  return to .003ecfda from .00415400
+ *
+ *  Scenario:
+ *  0038e57c   003e8163  return to .003e8163 from .003e9230
+ *  0038e580   00000000
+ *  0038e584   00000000
+ *  0038e588   0038ee4c
+ *  0038e58c   004d5400  .004d5400
+ *  0038e590   006dace8
+ *  0038e594   0038ee6d
+ *  0038e598   004d7549  .004d7549
+ *  0038e59c   00000000
+ *  0038e5a0   00000180 ; jichi: 0x24, alternative hook
+ *  0038e5a4   00000180
+ *  0038e5a8   00000018
+ *  0038e5ac   00000002
+ *  0038e5b0   0038ee4c
+ *  0038e5b4   004d5400  .004d5400
+ *  0038e5b8   00000000
+ *  0038e5bc   00000000
+ *  0038e5c0   00000180
+ *  0038e5c4   00000018
+ *  0038e5c8   006a0180
+ *  0038e5cc   0038e5f8
+ *  0038e5d0   0041fc87  return to .0041fc87 from .0041fc99
+ *  0038e5d4   0038e5f8
+ *  0038e5d8   00418165  return to .00418165 from .0041fc81 ; jichi: used as split
+ *  0038e5dc   004d7549  .004d7549
+ *  0038e5e0   0038ee6d
+ *  0038e5e4   0038e608
+ *  0038e5e8   00419555  return to .00419555 from .0041814e
+ *  0038e5ec   00000000
+ *  0038e5f0   004d7549  .004d7549
+ *  0038e5f4   0038ee6d
+ */
+
+namespace { // unnamed
+
+inline DWORD MajiroHashFontName(const DWORD *arg) // arg is supposed to be a string, though
+{ return (arg[10] & 0xff) | ((arg[18] >> 1) & 0xffffff00); }
+
+static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  DWORD arg3 = argof(3, esp_base); // text
+  *data = arg3;
+  *len = ::strlen((LPCSTR)arg3);
+  // IsBadReadPtr is not needed for old Majiro game.
+  // I am not sure if it is needed by new Majiro game.
+  if (hp->userValue) // new majiro
+    *split = *(DWORD *)(esp_base + 0x5c); // = 4 * 23, caller's caller
+  else if (DWORD arg1 = argof(1, esp_base)) // old majiro
+    *split = MajiroHashFontName((LPDWORD)arg1);
+}
+} // unnamed namespace
 bool InsertMajiroHook()
 {
   // jichi 7/12/2014: Change to accurate memory ranges
@@ -2374,12 +2482,21 @@ bool InsertMajiroHook()
   }
   // jichi 4/19/2014: There must be a function in Majiro game which contains 6 TextOutA.
   // That function draws all texts.
-  enum { sub_esp = 0xec81 }; // caller pattern: sub esp = 0x81,0xec byte
-  ULONG addr = MemDbg::findCallerAddress((ULONG)::TextOutA, sub_esp, startAddress, stopAddress);
+  //
+  // jichi 11/28/2014: Add new function signature
+  const DWORD funcs[] = { // caller patterns
+    0xec81,     // sub esp = 0x81,0xec byte old majiro
+    0x83ec8b55  // mov ebp,esp, sub esp,*  new majiro
+  };
+  enum { FuncCount = sizeof(funcs) / sizeof(*funcs) };
+  ULONG addr = MemDbg::findMultiCallerAddress((ULONG)::TextOutA, funcs, FuncCount, startAddress, stopAddress);
+  //ULONG addr = MemDbg::findCallerAddress((ULONG)::TextOutA, 0x83ec8b55, startAddress, stopAddress);
   if (!addr) {
     ConsoleOutput("vnreng:Majiro: failed");
     return false;
   }
+
+  bool newMajiro = 0x55 == *(BYTE *)addr;
 
   HookParam hp = {};
   //hp.off=0xc;
@@ -2388,9 +2505,15 @@ bool InsertMajiroHook()
   //hp.type|=USING_STRING|USING_SPLIT|SPLIT_INDIRECT;
   hp.addr = addr;
   hp.extern_fun = SpecialHookMajiro;
-  ConsoleOutput("vnreng: INSERT Majiro");
-  //NewHook(hp, L"MAJIRO");
-  NewHook(hp, L"Majiro"); // jichi 7/8/2014: rename MAJIRO to Majiro
+  hp.userValue = newMajiro;
+  if (newMajiro) {
+    hp.type = NO_CONTEXT; // do not use return address for new majiro
+    ConsoleOutput("vnreng: INSERT Majiro2");
+    NewHook(hp, L"Majiro2");
+  } else {
+    ConsoleOutput("vnreng: INSERT Majiro");
+    NewHook(hp, L"Majiro");
+  }
   //RegisterEngineType(ENGINE_MAJIRO);
   return true;
 }
