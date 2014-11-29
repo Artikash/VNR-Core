@@ -155,6 +155,7 @@ simple:
   - Live
   - MAJIRO # renamed
   - Majiro
+  - Majiro2
   - Malie2
   - Malie3
   - Marvelous PS2
@@ -323,6 +324,7 @@ char:
   - Lucifen
   - MAJIRO # renamed
   - Majiro
+  - Majiro2
   - MarineHeart
   - Marvelous PS2
   - Marvelous2 PS2
@@ -438,6 +440,7 @@ utf8:
 focus:
   - Adobe Flash 10
   - EAGLS
+  - Majiro2
   - HorkEye
   - KAGParser
   - KAGParserEx
