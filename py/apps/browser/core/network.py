@@ -39,6 +39,7 @@ class WbNetworkCookieJar(sknetwork.SkNetworkCookieJar):
     from PySide.QtNetwork import QNetworkCookie
     import cookies
 
+    # Use parent cookie
     setCookiesFromUrl = super(WbNetworkCookieJar, self).setCookiesFromUrl
 
     for kvdict,urls in cookies.itercookies():
@@ -50,8 +51,7 @@ class WbNetworkCookieJar(sknetwork.SkNetworkCookieJar):
           l = [QNetworkCookie(it) for it in l] # copy l
           for c in l:
             c.setDomain(domain)
-        setCookiesFromUrl(l, url)
-
+        self.setCookiesFromOriginalUrl(l, url)
 
     # See: http://kancolle.wikia.com/wiki/Tutorial:_Proxy_Connection
     #c = QNetworkCookie('ckcy', '1')
@@ -64,11 +64,17 @@ class WbNetworkCookieJar(sknetwork.SkNetworkCookieJar):
   # Proxy
 
   def cookiesForUrl(self, url): # override
+    """@reimp"""
     url = proxy.fromproxyurl(url) or url
     return super(WbNetworkCookieJar, self).cookiesForUrl(url)
 
-  def setCookiesFromUrl(self, cookies, url): # override
+  def setCookiesFromUrl(self, cookies, url):
+    """@reimp"""
     url = proxy.fromproxyurl(url) or url
+    return super(WbNetworkCookieJar, self).setCookiesFromUrl(cookies, url)
+
+  # Expose API to set cookies without proxy
+  def setCookiesFromOriginalUrl(self, cookies, url):
     return super(WbNetworkCookieJar, self).setCookiesFromUrl(cookies, url)
 
 ## Network ##
