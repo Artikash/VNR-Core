@@ -34,6 +34,7 @@ junai:
   - SkyFish
   - SkyFish poco
   - Sphere
+  - sprite
   - Sugar Pot
   - Sugar Pot+
   #- TEATIME
@@ -57,13 +58,53 @@ junai:
   - 枕
   - 戯画
 
+# No hentai image
+junaiimage:
+  # yuri
+  - 10mile
+  # seminuki
+  - エウシュリー
+  - エスクード
+  # junai
+  - 07th Expansion
+  - Aries
+  - ETERNAL
+  - Innocent Grey
+  - light
+  - PULLTOP
+  #- PULLTOP LATTE
+  - Navel
+  - sweet light
+  - sprite
+  - Sugar Pot
+  - Sugar Pot+
+  - あかべぇそふとすりぃ
+  - アージュ
+  - 枕
+  # other junai
+  - 3rdEye
+  - BaseSon
+  - CROSS†CHANNEL
+  - Favorite
+  - FrontWing
+  - key
+  - La'cryma
+  - Qoobrand
+  - Ricotta
+  - Rosebleu
+  - ruf
+  - SagaPlanets
+  - アンサンブル
+  - オーガスト
+  - ニトロプラス
+
 seminuki:
   # Supposed to be nuki but junai at server side
-  #- Iris
   #- Astronauts
   - bootUP!
   - Digital Cute
   - Galette
+  - Iris
   - Mink
   - Mink EGO
   - ぷちぱるふぇ
