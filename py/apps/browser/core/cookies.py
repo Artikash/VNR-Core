@@ -22,7 +22,9 @@ def itercookies():
     #   document.cookie = "cklg=welcome;domain=" + localizeDomain + ";path=/;expires=" + expDayCklg.toGMTString()
     #   return
     #({'cklg':'welcome', 'ckcy':'2'}, (
-    ({'cklg':'ja', 'ckcy':'2'}, (
+
+    # This will get dmm blocked
+    ({'cklg':'ja', 'ckcy':'1'}, (
       config.PROXY_DMM_JP_URL, "http://www.dmm.co.jp",
       config.PROXY_DMM_COM_URL, "http://www.dmm.com",
       #config.PROXY_DMM_COM_P_URL, "http://p.dmm.com",
