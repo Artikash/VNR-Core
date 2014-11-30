@@ -39,10 +39,10 @@ def _getdata(url, path, tmppath=None, touchbad=False, mimefilter=None, **kwargs)
   if not tmppath:
     tmppath = path + TMP_SUFFIX
   data = sknetio.getdata(url, mimefilter=mimefilter, **kwargs)
-  if not data:
-    url = _fixtwimg(url)
-    if url:
-      return _getdata(url, path, tmppath=tmppath, mimefilter=mimefilter, **kwargs)
+  #if not data:
+  #  url = _fixtwimg(url)
+  #  if url:
+  #    return _getdata(url, path, tmppath=tmppath, mimefilter=mimefilter, **kwargs)
   ok = bool(data) and skfileio.writedata(tmppath, data)
   if ok and skfileio.rename(tmppath, path):
     return True

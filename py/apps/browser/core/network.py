@@ -105,7 +105,10 @@ class WbNetworkAccessManager(QNetworkAccessManager):
         #if url.host().lower().endswith('dmm.co.jp'):
         reply.setUrl(url) # restore the old url
         reply.setProperty(REQ_PROXY_URL, url)
+        #print newurl
         return reply
+      #else:
+      #  print url
 
     _WbNetworkAccessManager.setRequestHeaders(req)
     return super(WbNetworkAccessManager, self).createRequest(op, req, outgoingData)
