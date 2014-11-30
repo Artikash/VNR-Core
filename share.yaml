@@ -290,12 +290,8 @@ proxies:
     # http://sakuradite.org/proxy/dmm/mono/pcgame/-/detail/=/cid=1715apc10593/
     dmm: dmm.co.jp
     dmmcom/www: dmm.com
-    #dmmcom/p: p.dmm.com
     dmmcom/make: make.dmm.com
     dmmcom/chariloto: chariloto.dmm.com
-    #dlsite
-    #dlsite_img
-    #getchu: getchu.com
     scape: erogamescape.dyndns.org
 
 google:

@@ -23,11 +23,14 @@ def itercookies():
     #   return
     #({'cklg':'welcome', 'ckcy':'2'}, (
 
-    # This will get dmm blocked
+    # See: http://kancolle.wikia.com/wiki/Tutorial:_Proxy_Connection
     ({'cklg':'ja', 'ckcy':'1'}, (
       config.PROXY_DMM_JP_URL, "http://www.dmm.co.jp",
       config.PROXY_DMM_COM_URL, "http://www.dmm.com",
-      #config.PROXY_DMM_COM_P_URL, "http://p.dmm.com",
+
+      #config.PROXY_DMM_COM_URL + "/netgame", "http://www.dmm.com/netgame",
+      "http://osapi.dmm.com", "http://log-netgame.dmm.com", # not needed
+      "http://203.104.209.7",
     )),
 
     # Optional
