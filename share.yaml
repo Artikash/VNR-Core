@@ -253,6 +253,9 @@ proxies:
   # http://9gal.com/read.php?tid=417812&page=e
   getchu:       http://210.155.150.152
 
+  # http://kancolle.wikia.com/wiki/Tutorial:_Proxy_Connection
+  kancolle:     http://203.104.209.7
+
   domains:
     annot.me:       153.121.54.194
     sakuradite.com: 153.121.54.194
@@ -290,13 +293,12 @@ proxies:
     # http://sakuradite.org/proxy/dmm/mono/pcgame/-/detail/=/cid=1715apc10593/
     dmm: dmm.co.jp
     dmmcom/www: dmm.com
-    #dmmcom/p: p.dmm.com
     dmmcom/make: make.dmm.com
     dmmcom/chariloto: chariloto.dmm.com
-    #dlsite
-    #dlsite_img
-    #getchu: getchu.com
-    scape: erogamescape.dyndns.org
+    #dmmcom/log-netgame: log-netgame.dmm.com
+    #dmmcom/osapi: osapi.dmm.com
+    kancolle:   203.104.209.7
+    scape:      erogamescape.dyndns.org
 
 google:
   search:       https://google.co.jp/search

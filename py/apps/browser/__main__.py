@@ -65,7 +65,7 @@ def main():
       rc.DIR_CACHE_HISTORY,
       rc.DIR_CACHE_NETMAN,
       rc.DIR_CACHE_WEBKIT,
-      ):
+    ):
     if not os.path.exists(it):
       try: os.makedirs(it)
       except OSError:
@@ -101,6 +101,19 @@ def main():
 
     if ss_version:
       from sakurakit import skfileio
+
+      if ss_version <= 1417339268:
+        for it in (
+            #rc.DIR_CACHE_DATA,
+            rc.DIR_CACHE_HISTORY,
+            rc.DIR_CACHE_NETMAN,
+            rc.DIR_CACHE_WEBKIT,
+          ):
+          if os.path.exists(it):
+            skfileio.removetree(it)
+            try: os.makedirs(it)
+            except OSError:
+              dwarn("warning: failed to create directory: %s" % it)
 
       if ss_version <= 1396371158:
         skfileio.removefile(rc.COOKIES_LOCATION)

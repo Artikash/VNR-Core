@@ -35,31 +35,46 @@ class WbNetworkCookieJar(sknetwork.SkNetworkCookieJar):
     return bool(self.path) and skfileio.writedata(self.path, self.marshal())
 
   def _injectCookies(self):
-    from PySide.QtCore import QUrl
+    #from PySide.QtCore import QUrl
     from PySide.QtNetwork import QNetworkCookie
     import cookies
 
-    for cookies,urls in cookies.itercookies():
-      l = [QNetworkCookie(k,v) for k,v in cookies.iteritems()]
+    # Use parent cookie
+    setCookiesFromUrl = super(WbNetworkCookieJar, self).setCookiesFromUrl
+
+    for kvdict,urls in cookies.itercookies():
+      cookies = [QNetworkCookie(k,v) for k,v in kvdict.iteritems()]
       for url in urls:
+        l = cookies
         if url.startswith("http://www."):
           domain = url.replace("http://www", '') # such as .dmm.co.jp
+          l = [QNetworkCookie(it) for it in l] # copy l
           for c in l:
             c.setDomain(domain)
-        #elif url.startswith("https://www."):
-        #  domain = url.replace("https://www", '') # such as .dmm.co.jp
-        #  for c in l:
-        #    c.setDomain(domain)
-        self.setCookiesFromUrl(l, QUrl(url))
+        self.setCookiesFromOriginalUrl(l, url)
+
+    # See: http://kancolle.wikia.com/wiki/Tutorial:_Proxy_Connection
+    #c = QNetworkCookie('ckcy', '1')
+    #c.setDomain("http://www.dmm.com")
+    #c.setPath("/netgame")
+    #self.setCookiesFromUrl([c], "http://www.dmm.com/netgame")
+    #c.setPath("/netgame_s")
+    #self.setCookiesFromUrl([c], "http://www.dmm.com/netgame_s")
 
   # Proxy
 
   def cookiesForUrl(self, url): # override
+    """@reimp"""
     url = proxy.fromproxyurl(url) or url
     return super(WbNetworkCookieJar, self).cookiesForUrl(url)
 
-  def setCookiesFromUrl(self, cookies, url): # override
+  def setCookiesFromUrl(self, cookies, url):
+    """@reimp"""
     url = proxy.fromproxyurl(url) or url
+    return super(WbNetworkCookieJar, self).setCookiesFromUrl(cookies, url)
+
+  # Expose API to set cookies without proxy
+  def setCookiesFromOriginalUrl(self, cookies, url):
     return super(WbNetworkCookieJar, self).setCookiesFromUrl(cookies, url)
 
 ## Network ##
