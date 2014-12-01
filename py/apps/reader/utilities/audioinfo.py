@@ -2,7 +2,6 @@
 # audioinfo.py
 # 11/2/2014 jichi
 
-from pyaudio import PyAudio
 from sakurakit.skdebug import dwarn
   #print '==== host info'
   #for i in range(a.get_host_api_count()):
@@ -18,6 +17,8 @@ from sakurakit.skdebug import dwarn
   #    print info
 
 try:
+  from pyaudio import PyAudio # Not sure if this might hang on Windows XP
+
   AUDIO = PyAudio()
   #AUDIO.terminate()
 
