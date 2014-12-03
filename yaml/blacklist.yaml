@@ -58,6 +58,7 @@ processes:
   - BingDesktop.exe     # Microsoft
   - BitComet.exe        # BitComet
   - Bootcamp.exe        # Apple
+  - CalendarMain.exe    # 160
   - chromeplus.exe      # Google?
   - chrome.exe          # Google
   - CHROME.EXE          # Google
