@@ -84,6 +84,7 @@ gui:
   - sceFontGetShadowGlyphImage_Clip
 
 optgui:
+  - 5pb2 # 5pb1 is better
   - KiriKiri2
   #- KiriKiriZ # KAGParser is better
   - SiglusEngine3 # SiglusEngine2 is better
@@ -116,6 +117,8 @@ nongui:
 simple:
   - 2RM
   - 5pb PSP
+  - 5pb1
+  - 5pb2
   - AB2Try
   - Adobe AIR
   - Adobe Flash 10
@@ -287,6 +290,8 @@ char:
   # Engines
   - 2RM
   - 5pb PSP
+  - 5pb1
+  - 5pb2
   - AB2Try
   - AbelSoftware
   - Alchemist PSP
@@ -438,6 +443,8 @@ utf8:
 
 # List of game engine that allows focus
 focus:
+  - 5pb1
+  - 5pb2
   - Adobe Flash 10
   - EAGLS
   - HorkEye

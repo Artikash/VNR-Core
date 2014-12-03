@@ -28,6 +28,7 @@ processes:
   - Unnstall.exe
   - uninstall.exe
   - 1ClickDownloader    # Download
+  - 2345Explorer        # 2345
   - 360Chrome.exe       # 360
   - 360chrome.exe       # 360
   - 360Desktop.exe      # 360
@@ -130,6 +131,7 @@ processes:
   - opera.exe           # Opera
   - osu!.exe            # Osu!
   - OSU!.EXE            # Osu!
+  - perfect dark.exe    # Perfect Dark
   - perl.exe            # Perl
   - python.exe          # Python
   - pythonw.exe         # Python

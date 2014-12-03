@@ -8765,6 +8765,225 @@ bool InsertAdobeFlash10Hook()
   return true;
 }
 
+/** jichi 12/2/2014 5pb
+ *
+ *  Sample game: [140924] CROSS†CHANNEL 〜FINAL COMPLETE〜
+ *  See: http://sakuradite.com/topic/528
+ *
+ *  Debugging method: insert breakpoint.
+ *  The first matched function cannot extract prelude text.
+ *  The second matched function can extract anything but contains garbage.
+ *
+ *  Function for scenario:
+ *  0016d90e   cc               int3
+ *  0016d90f   cc               int3
+ *  0016d910   8b15 782b6e06    mov edx,dword ptr ds:[0x66e2b78]         ; .00b43bfe
+ *  0016d916   8a0a             mov cl,byte ptr ds:[edx]	; jichi: hook here
+ *  0016d918   33c0             xor eax,eax
+ *  0016d91a   84c9             test cl,cl
+ *  0016d91c   74 41            je short .0016d95f
+ *  0016d91e   8bff             mov edi,edi
+ *  0016d920   80f9 25          cmp cl,0x25
+ *  0016d923   75 11            jnz short .0016d936
+ *  0016d925   8a4a 01          mov cl,byte ptr ds:[edx+0x1]
+ *  0016d928   42               inc edx
+ *  0016d929   80f9 4e          cmp cl,0x4e
+ *  0016d92c   74 05            je short .0016d933
+ *  0016d92e   80f9 6e          cmp cl,0x6e
+ *  0016d931   75 26            jnz short .0016d959
+ *  0016d933   42               inc edx
+ *  0016d934   eb 23            jmp short .0016d959
+ *  0016d936   80f9 81          cmp cl,0x81
+ *  0016d939   72 05            jb short .0016d940
+ *  0016d93b   80f9 9f          cmp cl,0x9f
+ *  0016d93e   76 0a            jbe short .0016d94a
+ *  0016d940   80f9 e0          cmp cl,0xe0
+ *  0016d943   72 0c            jb short .0016d951
+ *  0016d945   80f9 fc          cmp cl,0xfc
+ *  0016d948   77 07            ja short .0016d951
+ *  0016d94a   b9 02000000      mov ecx,0x2
+ *  0016d94f   eb 05            jmp short .0016d956
+ *  0016d951   b9 01000000      mov ecx,0x1
+ *  0016d956   40               inc eax
+ *  0016d957   03d1             add edx,ecx
+ *  0016d959   8a0a             mov cl,byte ptr ds:[edx]
+ *  0016d95b   84c9             test cl,cl
+ *  0016d95d  ^75 c1            jnz short .0016d920
+ *  0016d95f   c3               retn
+ *
+ *  Function for everything:
+ *  001e9a76   8bff             mov edi,edi
+ *  001e9a78   55               push ebp
+ *  001e9a79   8bec             mov ebp,esp
+ *  001e9a7b   51               push ecx
+ *  001e9a7c   8365 fc 00       and dword ptr ss:[ebp-0x4],0x0
+ *  001e9a80   53               push ebx
+ *  001e9a81   8b5d 10          mov ebx,dword ptr ss:[ebp+0x10]
+ *  001e9a84   85db             test ebx,ebx
+ *  001e9a86   75 07            jnz short .001e9a8f
+ *  001e9a88   33c0             xor eax,eax
+ *  001e9a8a   e9 9a000000      jmp .001e9b29
+ *  001e9a8f   56               push esi
+ *  001e9a90   83fb 04          cmp ebx,0x4
+ *  001e9a93   72 75            jb short .001e9b0a
+ *  001e9a95   8d73 fc          lea esi,dword ptr ds:[ebx-0x4]
+ *  001e9a98   85f6             test esi,esi
+ *  001e9a9a   74 6e            je short .001e9b0a
+ *  001e9a9c   8b4d 0c          mov ecx,dword ptr ss:[ebp+0xc]
+ *  001e9a9f   8b45 08          mov eax,dword ptr ss:[ebp+0x8]
+ *  001e9aa2   8a10             mov dl,byte ptr ds:[eax]
+ *  001e9aa4   83c0 04          add eax,0x4
+ *  001e9aa7   83c1 04          add ecx,0x4
+ *  001e9aaa   84d2             test dl,dl
+ *  001e9aac   74 52            je short .001e9b00
+ *  001e9aae   3a51 fc          cmp dl,byte ptr ds:[ecx-0x4]
+ *  001e9ab1   75 4d            jnz short .001e9b00
+ *  001e9ab3   8a50 fd          mov dl,byte ptr ds:[eax-0x3]
+ *  001e9ab6   84d2             test dl,dl
+ *  001e9ab8   74 3c            je short .001e9af6
+ *  001e9aba   3a51 fd          cmp dl,byte ptr ds:[ecx-0x3]
+ *  001e9abd   75 37            jnz short .001e9af6
+ *  001e9abf   8a50 fe          mov dl,byte ptr ds:[eax-0x2]
+ *  001e9ac2   84d2             test dl,dl
+ *  001e9ac4   74 26            je short .001e9aec
+ *  001e9ac6   3a51 fe          cmp dl,byte ptr ds:[ecx-0x2]
+ *  001e9ac9   75 21            jnz short .001e9aec
+ *  001e9acb   8a50 ff          mov dl,byte ptr ds:[eax-0x1]
+ *  001e9ace   84d2             test dl,dl
+ *  001e9ad0   74 10            je short .001e9ae2
+ *  001e9ad2   3a51 ff          cmp dl,byte ptr ds:[ecx-0x1]
+ *  001e9ad5   75 0b            jnz short .001e9ae2
+ *  001e9ad7   8345 fc 04       add dword ptr ss:[ebp-0x4],0x4
+ *  001e9adb   3975 fc          cmp dword ptr ss:[ebp-0x4],esi
+ *  001e9ade  ^72 c2            jb short .001e9aa2
+ *  001e9ae0   eb 2e            jmp short .001e9b10
+ *  001e9ae2   0fb640 ff        movzx eax,byte ptr ds:[eax-0x1]
+ *  001e9ae6   0fb649 ff        movzx ecx,byte ptr ds:[ecx-0x1]
+ *  001e9aea   eb 46            jmp short .001e9b32
+ *  001e9aec   0fb640 fe        movzx eax,byte ptr ds:[eax-0x2]
+ *  001e9af0   0fb649 fe        movzx ecx,byte ptr ds:[ecx-0x2]
+ *  001e9af4   eb 3c            jmp short .001e9b32
+ *  001e9af6   0fb640 fd        movzx eax,byte ptr ds:[eax-0x3]
+ *  001e9afa   0fb649 fd        movzx ecx,byte ptr ds:[ecx-0x3]
+ *  001e9afe   eb 32            jmp short .001e9b32
+ *  001e9b00   0fb640 fc        movzx eax,byte ptr ds:[eax-0x4]
+ *  001e9b04   0fb649 fc        movzx ecx,byte ptr ds:[ecx-0x4]
+ *  001e9b08   eb 28            jmp short .001e9b32
+ *  001e9b0a   8b4d 0c          mov ecx,dword ptr ss:[ebp+0xc]
+ *  001e9b0d   8b45 08          mov eax,dword ptr ss:[ebp+0x8]
+ *  001e9b10   8b75 fc          mov esi,dword ptr ss:[ebp-0x4]
+ *  001e9b13   eb 0d            jmp short .001e9b22
+ *  001e9b15   8a10             mov dl,byte ptr ds:[eax]    ; jichi: here, word by word
+ *  001e9b17   84d2             test dl,dl
+ *  001e9b19   74 11            je short .001e9b2c
+ *  001e9b1b   3a11             cmp dl,byte ptr ds:[ecx]
+ *  001e9b1d   75 0d            jnz short .001e9b2c
+ *  001e9b1f   40               inc eax
+ *  001e9b20   46               inc esi
+ *  001e9b21   41               inc ecx
+ *  001e9b22   3bf3             cmp esi,ebx
+ *  001e9b24  ^72 ef            jb short .001e9b15
+ *  001e9b26   33c0             xor eax,eax
+ *  001e9b28   5e               pop esi
+ *  001e9b29   5b               pop ebx
+ *  001e9b2a   c9               leave
+ *  001e9b2b   c3               retn
+ */
+namespace { // unnamed
+
+// Characters to ignore: [%0-9A-Z]
+bool Insert5pbHook1()
+{
+  const BYTE bytes[] = {
+    0xcc,           // 0016d90e   cc               int3
+    0xcc,           // 0016d90f   cc               int3
+    0x8b,0x15, XX4, // 0016d910   8b15 782b6e06    mov edx,dword ptr ds:[0x66e2b78]         ; .00b43bfe
+    0x8a,0x0a,      // 0016d916   8a0a             mov cl,byte ptr ds:[edx]	; jichi: hook here
+    0x33,0xc0,      // 0016d918   33c0             xor eax,eax
+    0x84,0xc9       // 0016d91a   84c9             test cl,cl
+  };
+  enum { hook_offset = 0x0016d916 - 0x0016d90e };
+
+  ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), module_base_, module_limit_);
+  //ITH_GROWL_DWORD3(addr+hook_offset, module_base_,module_limit_);
+  if (!addr) {
+    ConsoleOutput("vnreng:5pb1: pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr + hook_offset;
+  hp.off = pusha_edx_off - 4;
+  hp.type = USING_STRING;
+  ConsoleOutput("vnreng: INSERT 5pb1");
+  NewHook(hp, L"5pb1");
+
+  // GDI functions are not used by 5pb games anyway.
+  //ConsoleOutput("vnreng:5pb: disable GDI hooks");
+  //DisableGDIHooks();
+  return true;
+}
+
+// Characters to ignore: [%@A-z]
+inline bool _5pb2garbage_ch(char c)
+{ return c == '%' || c == '@' || c >= 'A' && c <= 'z'; }
+
+// 001e9b15   8a10             mov dl,byte ptr ds:[eax]    ; jichi: here, word by word
+void SpecialHook5pb2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  CC_UNUSED(hp);
+  static DWORD lasttext;
+  DWORD text = regof(eax, esp_base);
+  if (lasttext == text)
+    return;
+  BYTE c = *(BYTE *)text;
+  if (!c)
+    return;
+  BYTE size = ::LeadByteTable[c]; // 1, 2, or 3
+  if (size == 1 && _5pb2garbage_ch(*(LPCSTR)text))
+    return;
+  lasttext = text;
+  *data = text;
+  *len = size;
+}
+
+bool Insert5pbHook2()
+{
+  const BYTE bytes[] = {
+    0x8a,0x10, // 001e9b15   8a10             mov dl,byte ptr ds:[eax]    ; jichi: here, word by word
+    0x84,0xd2, // 001e9b17   84d2             test dl,dl
+    0x74,0x11  // 001e9b19   74 11            je short .001e9b2c
+  };
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
+  //ITH_GROWL_DWORD3(addr, module_base_,module_limit_);
+  if (!addr) {
+    ConsoleOutput("vnreng:6pb1: pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr;
+  hp.type = USING_STRING;
+  hp.extern_fun = SpecialHook5pb2;
+  //hp.off = pusha_eax_off - 4;
+  //hp.length_offset = 1;
+  ConsoleOutput("vnreng: INSERT 5pb2");
+  NewHook(hp, L"5pb2");
+
+  // GDI functions are not used by 5pb games anyway.
+  //ConsoleOutput("vnreng:5pb: disable GDI hooks");
+  //DisableGDIHooks();
+  return true;
+}
+
+} // unnamed namespace
+bool Insert5pbHook()
+{
+  bool ok = Insert5pbHook1();
+  ok = Insert5pbHook2() || ok;
+  return ok;
+}
+
 /** jichi 7/20/2014 Dolphin
  *  Tested with Dolphin 4.0
  */

@@ -71,6 +71,7 @@ bool InsertYeti2PSPHook();      // PSP Yetigame.jp
 // PC engines
 
 bool Insert2RMHook();           // 2RM - Adventure Engine
+bool Insert5pbHook();           // 5pb.jp, PSP/PS3 games ported to PC
 bool InsertAB2TryHook();        // Yane@AkabeiSoft2Try: YaneSDK.dll.
 bool InsertAbelHook();          // Abel
 bool InsertAdobeAirHook();      // Adobe AIR
