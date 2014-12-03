@@ -510,7 +510,7 @@ bool DetermineEngineOther()
 // Put the patterns that might break other games at last
 bool DetermineEngineAtLast()
 {
-  if (IthCheckFile(L"Data\\bg.cpk")) { // jichi 12/2/2014
+  if (IthFindFile(L"Data\\*.cpk")) { // jichi 12/2/2014
     Insert5pbHook();
     return true;
   }
