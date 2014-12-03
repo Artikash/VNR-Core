@@ -510,6 +510,10 @@ bool DetermineEngineOther()
 // Put the patterns that might break other games at last
 bool DetermineEngineAtLast()
 {
+  if (IthCheckFile(L"Data\\bg.cpk")) { // jichi 12/2/2014
+    Insert5pbHook();
+    return true;
+  }
   // jichi 7/6/2014: named as ScenarioPlayer since resource string could be: scenario player program for xxx
   // Do this at last as it is common
   if (IthFindFile(L"*.iar") && IthFindFile(L"*.sec5")) { // jichi 4/18/2014: Other game engine could also have *.iar such as Ryokucha
