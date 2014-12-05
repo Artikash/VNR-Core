@@ -242,6 +242,10 @@ Item { id: root_
   //  //onOnlineChanged: gossip_.avatarVisible = online
   //}
 
+  Plugin.KagamiBean { //id: kagami_
+    onOcrToggled: dock_.toggleOcrRegionEnabled()
+  }
+
   Plugin.MainObjectProxy { id: mainPlugin_
     windowRefreshInterval: ignoresFocus ? 1000 : 10000 // 1 sec, 10 sec
   }
@@ -855,6 +859,11 @@ Item { id: root_
         //furiganaEnabled: root_.rubyEnabled
 
         ocrEnabled: settings_.ocrEnabled && !!root_.admin
+
+        function toggleOcrRegionEnabled() {
+          if (ocrEnabled)
+            ocrRegionEnabledChecked = !ocrRegionEnabledChecked
+        }
 
         onTextCheckedChanged: settings_.grimoireTextVisible = textChecked
         onNameCheckedChanged: settings_.grimoireNameVisible = nameChecked
