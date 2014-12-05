@@ -22,13 +22,12 @@ ulong MajiroEngine::search(ulong startAddress, ulong stopAddress)
   //return addr && hookAddress(addr);
 }
 
-/**
- *  Compute ITH's split value from the first parameter of the hooked function.
- *  Let eax be arg1, the original logic in MajiroSpecialHook is:
- *      ([eax+0x28] & 0xff) | (([eax+0x48] >> 1) & 0xffffff00)
- */
-static inline DWORD MajiroHashFontName(const DWORD *arg) // arg is supposed to be a string, though
+static inline DWORD MajiroOldFontSplit(const DWORD *arg) // arg is supposed to be a string, though
 { return (arg[10] & 0xff) | ((arg[18] >> 1) & 0xffffff00); }
+
+static inline DWORD MajiroNewFontSplit(const DWORD *arg) // arg is supposed to be a string, though
+{ return (arg[12] & 0xff) | ((arg[16] >> 1) & 0xffffff00); }
+
 
 /**
  *  TODO: The current split cannot distinguish name and choices
@@ -64,15 +63,19 @@ void MajiroEngine::hook(HookStack *stack)
   DWORD split,
         returnAddress = stack->retaddr;
   LPDWORD arg1 = (LPDWORD)stack->args[0];
-  if (arg1 && !::IsBadReadPtr((LPCVOID)arg1, 1))
-    split = MajiroHashFontName(arg1);
-  else {
+  if (arg1 && !::IsBadReadPtr(arg1, 1)) // old majiro game
+    split = MajiroOldFontSplit(arg1);
+  else { // new majiro game
     returnAddress = 0;
-    split = stack->args[22];
+    LPDWORD arg4 = (LPDWORD)stack->args[3];
+    if (arg4 && !::IsBadReadPtr(arg4, 1))
+      split = MajiroNewFontSplit(arg4);
+    else
+      split = stack->args[22]; // last return address
   }
   auto sig = Engine::hashThreadSignature(returnAddress, split);
 
-  LPCSTR text3 = (LPCSTR)stack->args[2];
+  LPCSTR text3 = (LPCSTR)stack->args[2]; // arg3
   data_ = EngineController::instance()->dispatchTextA(text3, sig);
   //dmsg(QString::fromLocal8Bit(ret));
   stack->args[2] = (DWORD)data_.constData(); // reset arg3
