@@ -139,16 +139,16 @@ DWORD WINAPI WaitForPipe(LPVOID lpThreadParameter) // Dynamically detect ITH mai
       Engine::IdentifyEngine();
     }
     hDetach = IthCreateMutex(detach_mutex,1);
-    while (running && NtWaitForSingleObject(hPipeExist,0,&sleep_time)==WAIT_OBJECT_0)
-      NtDelayExecution(0,&sleep_time);
-    live=false;
+    while (running && NtWaitForSingleObject(hPipeExist, 0, &sleep_time) == WAIT_OBJECT_0)
+      NtDelayExecution(0, &sleep_time);
+    live = false;
     for (man = hookman, i = 0; i < current_hook; man++)
       if (man->RemoveHook())
         i++;
     if (!running) {
-      IthCoolDown(); // jichi 9/28/2013: Use cooldown instead of lock pipe to revent from hanging on exit
+      IthCoolDown(); // jichi 9/28/2013: Use cooldown instead of lock pipe to prevent from hanging on exit
       //CliLockPipe();
-      NtWriteFile(hPipe,0,0,0,&ios, man,4,0,0);
+      NtWriteFile(hPipe, 0, 0, 0, &ios, man, 4, 0, 0);
       //CliUnlockPipe();
       IthReleaseMutex(hDetach);
     }
@@ -224,8 +224,10 @@ DWORD WINAPI CommandPipe(LPVOID lpThreadParameter)
             HANDLE hModify = IthOpenEvent(ITH_MODIFYHOOK_EVENT);
             TextHook *in = hookman;
             for (int i = 0; i < current_hook; in++) {
-              if (in->Address()) i++;
-              if (in->Address() == rm_addr) break;
+              if (in->Address())
+                i++;
+              if (in->Address() == rm_addr)
+                break;
             }
             if (in->Address())
               in->ModifyHook(*(HookParam *)(buff + 4));
@@ -328,10 +330,10 @@ DWORD IHFAPI NotifyHookInsert(DWORD addr)
 {
   if (live) {
     BYTE buffer[0x10];
-    *(DWORD*)buffer=IHF_NOTIFICATION;
-    *(DWORD*)(buffer+4)=IHF_NOTIFICATION_NEWHOOK;
-    *(DWORD*)(buffer+8)=addr;
-    *(DWORD*)(buffer+0xc)=0;
+    *(DWORD *)buffer = IHF_NOTIFICATION;
+    *(DWORD *)(buffer + 4) = IHF_NOTIFICATION_NEWHOOK;
+    *(DWORD *)(buffer + 8) = addr;
+    *(DWORD *)(buffer + 0xc) = 0;
     IO_STATUS_BLOCK ios;
     CliLockPipe();
     NtWriteFile(hPipe,0,0,0,&ios,buffer,0x10,0,0);

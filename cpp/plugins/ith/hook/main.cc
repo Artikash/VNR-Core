@@ -180,8 +180,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
   // Whe set to false, do not map sections.
   //static bool ith_has_section = true;
 
-  switch (fdwReason)
-  {
+  switch (fdwReason) {
   case DLL_PROCESS_ATTACH:
     {
       LdrDisableThreadCalloutsForDll(hModule);
@@ -279,7 +278,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD fdwReason, LPVOID lpReserved)
       NtClose(hDllExist);
       //} ITH_EXCEPT {}
     } break;
-   }
+  }
   return TRUE;
 }
 

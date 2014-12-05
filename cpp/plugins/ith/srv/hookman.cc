@@ -853,7 +853,7 @@ HANDLE  GetCmdHandleByPID(DWORD pid) { return ::man->GetCmdHandleByPID(pid); }
 void AddLink(WORD from, WORD to) { ::man->AddLink(from, to); }
 
 // jichi 9/27/2013: Unparse to hook parameters /H code
-void GetCode(const HookParam& hp, LPWSTR buffer, DWORD pid)
+void GetCode(const HookParam &hp, LPWSTR buffer, DWORD pid)
 {
   WCHAR c;
   LPWSTR ptr = buffer;

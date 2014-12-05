@@ -798,10 +798,8 @@ EXCEPTION_DISPOSITION ExceptHandler(EXCEPTION_RECORD *ExceptionRecord,
 }
 
 
-// EOF
 //typedef void (*DataFun)(DWORD, const HookParam*, DWORD*, DWORD*, DWORD*);
 
-/*
 DWORD recv_esp, recv_addr;
 EXCEPTION_DISPOSITION ExceptHandler(EXCEPTION_RECORD *ExceptionRecord,
     void *EstablisherFrame, CONTEXT *ContextRecord, void *DispatcherContext)

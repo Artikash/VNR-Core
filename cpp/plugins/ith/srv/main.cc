@@ -201,7 +201,8 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
     //ChangeCurrentDirectory();
     break;
   case DLL_PROCESS_DETACH:
-    if (running) IHF_Cleanup();
+    if (::running)
+      IHF_Cleanup();
     DeleteCriticalSection(&cs);
     IthCloseSystemService();
     wm_destroy_window(hMainWnd);
@@ -215,28 +216,22 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 HANDLE IthOpenPipe(LPWSTR name, ACCESS_MASK direction)
 {
   UNICODE_STRING us;
-  RtlInitUnicodeString(&us,name);
-  SECURITY_DESCRIPTOR sd={1};
-  OBJECT_ATTRIBUTES oa={sizeof(oa),0,&us,OBJ_CASE_INSENSITIVE,&sd,0};
+  RtlInitUnicodeString(&us, name);
+  SECURITY_DESCRIPTOR sd = {1};
+  OBJECT_ATTRIBUTES oa = {sizeof(oa), 0, &us, OBJ_CASE_INSENSITIVE, &sd, 0};
   HANDLE hFile;
   IO_STATUS_BLOCK isb;
-  if (NT_SUCCESS(NtCreateFile(&hFile,direction,&oa,&isb,0,0,FILE_SHARE_READ,FILE_OPEN,0,0,0)))
+  if (NT_SUCCESS(NtCreateFile(&hFile, direction, &oa, &isb, 0, 0, FILE_SHARE_READ, FILE_OPEN, 0, 0, 0)))
     return hFile;
-  else return INVALID_HANDLE_VALUE;
+  else
+    return INVALID_HANDLE_VALUE;
 }
 
-void ConsoleOutput(LPCSTR text)
-{
-  // jichi 12/25/2013: Add console output
-  //CC_UNUSED(text);
-  //man->AddConsoleOutput(text);
-  man->ConsoleOutput(text);
-}
-void ConsoleOutputW(LPCWSTR text)
-{ man->ConsoleOutputW(text); }
+void ConsoleOutput(LPCSTR text) { man->ConsoleOutput(text); }
+void ConsoleOutputW(LPCWSTR text) { man->ConsoleOutputW(text); }
 
-#define IHS_SIZE 0x80
-#define IHS_BUFF_SIZE (IHS_SIZE - sizeof(HookParam))
+enum { IHS_SIZE = 0x80 };
+enum { IHS_BUFF_SIZE  = IHS_SIZE - sizeof(HookParam) };
 
 struct InsertHookStruct
 {
@@ -254,7 +249,7 @@ IHFSERVICE DWORD IHFAPI IHF_Init()
     //MessageBox(0,L"Already running.",0,0);
     // jichi 8/24/2013
     ITH_WARN(L"I am sorry that this game is attached by some other VNR ><\nPlease restart the game and try again!");
-  else if (!running) {
+  else if (!::running) {
     ::running = true;
     ::settings = new Settings;
     ::man = new HookManager;
@@ -282,8 +277,8 @@ IHFSERVICE DWORD IHFAPI IHF_Cleanup()
 {
   BOOL result = FALSE;
   EnterCriticalSection(&cs);
-  if (running) {
-    running = FALSE;
+  if (::running) {
+    ::running = FALSE;
     HANDLE hRecvPipe = IthOpenPipe(recv_pipe, GENERIC_WRITE);
     NtClose(hRecvPipe);
     NtClearEvent(hPipeExist);
@@ -341,7 +336,7 @@ _end:
 IHFSERVICE DWORD IHFAPI IHF_InjectByPID(DWORD pid)
 {
   WCHAR str[0x80];
-  if (!running)
+  if (!::running)
     return 0;
   if (pid == current_process_id) {
     //ConsoleOutput(SelfAttach);
@@ -490,23 +485,25 @@ IHFSERVICE DWORD IHFAPI IHF_ActiveDetachProcess(DWORD pid)
 
 IHFSERVICE DWORD IHFAPI IHF_GetHookManager(HookManager** hookman)
 {
-  if (running) {
+  if (::running) {
     *hookman = man;
     return 0;
   }
-  else return 1;
+  else
+    return 1;
 }
 
 IHFSERVICE DWORD IHFAPI IHF_GetSettings(Settings **p)
 {
-  if (running) {
+  if (::running) {
     *p = settings;
     return 0;
   }
-  else return 1;
+  else
+    return 1;
 }
 
-IHFSERVICE DWORD IHFAPI IHF_InsertHook(DWORD pid, HookParam* hp, LPWSTR name)
+IHFSERVICE DWORD IHFAPI IHF_InsertHook(DWORD pid, HookParam *hp, LPWSTR name)
 {
   ITH_SYNC_HOOK;
 
@@ -532,7 +529,7 @@ IHFSERVICE DWORD IHFAPI IHF_InsertHook(DWORD pid, HookParam* hp, LPWSTR name)
   return 0;
 }
 
-IHFSERVICE DWORD IHFAPI IHF_ModifyHook(DWORD pid, HookParam* hp)
+IHFSERVICE DWORD IHFAPI IHF_ModifyHook(DWORD pid, HookParam *hp)
 {
   ITH_SYNC_HOOK;
 
