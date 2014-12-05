@@ -2,7 +2,7 @@
 # userview.py
 # 6/29/2013 jichi
 
-__all__ = 'UserViewManager', 'UserViewManagerProxy'
+__all__ = 'UserViewManager' #, 'UserViewManagerProxy'
 
 from PySide.QtCore import Qt, Slot
 from PySide import QtCore
@@ -128,16 +128,16 @@ def manager():
   return UserViewManager()
 
 #@QmlObject
-class UserViewManagerProxy(QtCore.QObject):
-  def __init__(self, parent=None):
-    super(UserViewManagerProxy, self).__init__(parent)
-
-  @Slot(int)
-  def showUser(self, id):
-    manager().showUser(id)
-
-  @Slot(int, int)
-  def showUserWithHash(self, id, hash):
-    manager().showUser(id, hash)
+#class UserViewManagerProxy(QtCore.QObject):
+#  def __init__(self, parent=None):
+#    super(UserViewManagerProxy, self).__init__(parent)
+#
+#  @Slot(int)
+#  def showUser(self, id):
+#    manager().showUser(id)
+#
+#  @Slot(int, int)
+#  def showUserWithHash(self, id, hash):
+#    manager().showUser(id, hash)
 
 # EOF

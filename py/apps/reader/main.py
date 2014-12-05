@@ -2306,6 +2306,15 @@ class MainObjectProxy(QObject):
   @Slot(long)
   def showGameTopics(self, gameId): manager().showGameTopics(gameId)
 
+  #@Slot(long, long, unicode)
+  #def showUserView(self, id, hash, name): manager().showUserView(id, hash, name)
+  @Slot(unicode)
+  def showUserWithName(self, name): manager().showUserView(name=id)
+  @Slot(long)
+  def showUserWithId(self, id): manager().showUserView(id=id)
+  @Slot(long, long)
+  def showUserWithHash(self, id, hash): manager().showUserView(id=id, hash=hash)
+
   @Slot(QObject) # dataman.GameObject
   def showGameObjectSubtitles(self, g): manager().showSubtitleView(game=g)
 

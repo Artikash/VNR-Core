@@ -34,7 +34,7 @@ Item { id: root_
   //Plugin.DataManagerProxy { id: datamanPlugin_ }
   //Plugin.GameViewManagerProxy { id: gameview_ }
   //Plugin.SubtitleEditorManagerProxy { id: subedit_ }
-  Plugin.UserViewManagerProxy { id: userview_ }
+  //Plugin.UserViewManagerProxy { id: userview_ }
 
   Desktop.ToolBar {
     anchors.fill: parent
@@ -84,7 +84,7 @@ Item { id: root_
         onClicked: {
           var item = root_.currentItem
           if (item)
-            userview_.showUserWithHash(item.userId, item.userHash)
+            mainPlugin_.showUserWithHash(item.userId, item.userHash)
         }
       }
       Desktop.ToolButton {

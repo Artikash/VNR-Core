@@ -18,6 +18,26 @@ from convutil import zhs2zht
 from mytr import my
 import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, ocrman, qmldialog, rc, settings
 
+## Kagami ##
+
+class KagamiBean(QObject):
+
+  instance = None
+
+  def __init__(self, parent=None):
+    super(KagamiBean, self).__init__(parent)
+    KagamiBean.instance = self
+    dprint("pass")
+
+  ocrToggled = Signal()
+
+class KagamiController:
+
+  @staticmethod
+  def toggleOcr():
+    if KagamiBean.instance: # width & height are ignored
+      KagamiBean.instance.ocrToggled.emit()
+
 ## OCR region ##
 
 class _OcrRegionBean:
@@ -79,7 +99,8 @@ class OcrRegionBean(QObject):
 
 class OcrRegionController:
 
-  def showRegion(self, x, y, width, height): # int, int, int, int
+  @staticmethod
+  def showRegion(x, y, width, height): # int, int, int, int
     if OcrRegionBean.instance: # width & height are ignored
       OcrRegionBean.instance.regionRequested.emit(x, y, width, height)
 
@@ -98,7 +119,8 @@ class OcrPopupBean(QObject):
 
 class OcrPopupController:
 
-  def showPopup(self, x, y, width, height, imgobj, winobj, text, language): # int, int, int, int, QObject, QObject, unicode, unicode
+  @staticmethod
+  def showPopup(x, y, width, height, imgobj, winobj, text, language): # int, int, int, int, QObject, QObject, unicode, unicode
     if OcrPopupBean.instance: # width & height are ignored
       OcrPopupBean.instance.popupRequested.emit(x, y, imgobj, winobj, text, language)
 

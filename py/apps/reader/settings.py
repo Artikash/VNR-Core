@@ -646,10 +646,27 @@ class Settings(QSettings):
       self.setValue('GrabHotkey', value)
       self.grabHotkeyChanged.emit(value)
 
+  # OCR
+  ocrHotkeyEnabledChanged = Signal(bool)
+  def isOcrHotkeyEnabled(self):
+    return to_bool(self.value('OCRHotkeyEnabled')) # disable hotkey by default
+  def setOcrHotkeyEnabled(self, value):
+    if value != self.isOcrHotkeyEnabled():
+      self.setValue('OCRHotkeyEnabled', value)
+      self.ocrHotkeyEnabledChanged.emit(value)
+
+  ocrHotkeyChanged = Signal(str)
+  def ocrHotkey(self):
+    return self.value('OCRHotkey', 'Alt\nO') # alt + o, \n = hkman.HOTKEY_DELIM
+  def setOcrHotkey(self, value):
+    if value != self.ocrHotkey():
+      self.setValue('OCRHotkey', value)
+      self.ocrHotkeyChanged.emit(value)
+
   # Speech recognition
   srHotkeyEnabledChanged = Signal(bool)
   def isSrHotkeyEnabled(self):
-    return to_bool(self.value('SpeechRecognitionHotkeyEnabled', True))
+    return to_bool(self.value('SpeechRecognitionHotkeyEnabled')) # disable hotkey by default
   def setSrHotkeyEnabled(self, value):
     if value != self.isSrHotkeyEnabled():
       self.setValue('SpeechRecognitionHotkeyEnabled', value)
