@@ -2531,8 +2531,9 @@ namespace { // unnamed
 inline DWORD MajiroOldFontSplit(const DWORD *arg) // arg is supposed to be a string, though
 { return (arg[10] & 0xff) | ((arg[18] >> 1) & 0xffffff00); }
 
+// Remove lower bytes use 0xffffff00, which are different for furigana
 inline DWORD MajiroNewFontSplit(const DWORD *arg) // arg is supposed to be a string, though
-{ return (arg[12] & 0xff) | ((arg[16] >> 1) & 0xffffff00); }
+{ return (arg[12] & 0xff) | (arg[16] & 0xffffff00); }
 
 static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
