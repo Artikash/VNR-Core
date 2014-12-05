@@ -27,6 +27,7 @@ processes:
   - install.exe
   - Unnstall.exe
   - uninstall.exe
+  - 115Chrome.exe       # 115
   - 1ClickDownloader    # Download
   - 2345Explorer        # 2345
   - 360Chrome.exe       # 360

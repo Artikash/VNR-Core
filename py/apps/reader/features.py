@@ -28,7 +28,13 @@ def isadmin():
     return
   from sakurakit import skwinsec
   return skwinsec.is_elevated()
-ADMIN = isadmin()
+ADMIN = isadmin() # bool
+
+# http://stackoverflow.com/questions/196930/how-to-check-if-os-is-vista-in-python
+def iswinxp():
+  import platform
+  return platform.release() == 'XP'
+WINXP = iswinxp() # bool
 
 INTERNET_CONNECTION = settings.global_().internetConnection()
 MACHINE_TRANSLATION = settings.global_().allowsMachineTranslation()
