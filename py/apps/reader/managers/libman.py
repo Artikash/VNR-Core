@@ -200,7 +200,8 @@ class LocaleEmulator(Library):
   #URL = "http://www.hongfire.com/forum/showthread.php/418962-Locale-Emulator-another-tool-for-japanese-locale-emulation"
   #URL = "https://github.com/xupefei/Locale-Emulator"
   #URL = "http://bbs.sumisora.org/read.php?tid=11045407"
-  URL = "https://app.box.com/LocaleEmulator"
+  #URL = "https://app.box.com/LocaleEmulator"
+  URL = "https://github.com/xupefei/Locale-Emulator/releases"
 
   def location(self):
     """@reimp"""
