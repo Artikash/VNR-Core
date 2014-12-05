@@ -37,7 +37,6 @@ Item { id: root_
   //}
 
   Plugin.MainObjectProxy { id: main_ }
-  Plugin.UserViewManagerProxy { id: userview_ }
 
   Plugin.ReferenceInput { id: refinput_ }
 
@@ -109,7 +108,7 @@ Item { id: root_
         onClicked: {
           var item = root_.currentItem
           if (item)
-            userview_.showUserWithHash(item.userId, item.userHash)
+            main_.showUserWithHash(item.userId, item.userHash)
         }
       }
     }

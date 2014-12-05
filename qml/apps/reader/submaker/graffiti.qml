@@ -725,8 +725,6 @@ Item { id: root_
 
   Plugin.DataManagerProxy { id: dataman_ }
 
-  //Plugin.UserViewManagerProxy { id: userview_ }
-
   Plugin.GraffitiBean { id: bean_
     Component.onCompleted: {
       bean_.clear.connect(root_.clear)

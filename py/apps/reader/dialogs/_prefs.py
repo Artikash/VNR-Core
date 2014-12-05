@@ -924,6 +924,9 @@ class _ShortcutsTab(object):
     grid.addWidget(self.grabButton, r, 0)
     grid.addWidget(self.grabCheckBox, r, 1)
     r += 1
+    grid.addWidget(self.ocrButton, r, 0)
+    grid.addWidget(self.ocrCheckBox, r, 1)
+    r += 1
     grid.addWidget(self.srButton, r, 0)
     grid.addWidget(self.srCheckBox, r, 1)
     r += 1
@@ -1019,6 +1022,48 @@ class _ShortcutsTab(object):
       ret.windowTitle(), mytr_("Text-to-speech")))
     ss = settings.global_()
     ret.valueChanged.connect(ss.setTtsHotkey)
+    return ret
+
+  # OCR
+
+  @memoizedproperty
+  def ocrButton(self):
+    ret = QtWidgets.QPushButton()
+    ret.setToolTip(mytr_("Shortcuts"))
+    ss = settings.global_()
+
+    def _refresh():
+      t = ss.ocrHotkey()
+      ret.setText(i18n.combined_key_name(t) if t else tr_("Not specified"))
+      skqss.class_(ret, 'btn btn-default' if t else 'btn btn-danger')
+    _refresh()
+    ss.ocrHotkeyChanged.connect(_refresh)
+
+    ret.clicked.connect(lambda: (
+        self.ocrDialog.setValue(ss.ocrHotkey()),
+        self.ocrDialog.show()))
+
+    ret.setEnabled(self.ocrCheckBox.isChecked())
+    self.ocrCheckBox.toggled.connect(ret.setEnabled)
+    return ret
+
+  @memoizedproperty
+  def ocrCheckBox(self):
+    ret = QtWidgets.QCheckBox(my.tr("Toggle monitoring game window to OCR"))
+    ss = settings.global_()
+    ret.setChecked(ss.isOcrHotkeyEnabled())
+    ret.toggled.connect(ss.setOcrHotkeyEnabled)
+    ret.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+    return ret
+
+  @memoizedproperty
+  def ocrDialog(self):
+    import hkinput
+    ret = hkinput.HotkeyInputDialog(self.q)
+    ret.setWindowTitle("%s - %s" % (
+      ret.windowTitle(), mytr_("OCR")))
+    ss = settings.global_()
+    ret.valueChanged.connect(ss.setOcrHotkey)
     return ret
 
   # Speech recognition

@@ -75,6 +75,11 @@ class _HotkeyManager(object):
         'on': ss.isTtsHotkeyEnabled(), # bool
         'key': ss.ttsHotkey(), # string
       },
+      'ocr': { # string task name
+        'do': self._onOcr, # function
+        'on': ss.isOcrHotkeyEnabled(), # bool
+        'key': ss.ocrHotkey(), # string
+      },
       'sr': { # string task name
         'do': self._onSr, # function
         'on': ss.isSrHotkeyEnabled(), # bool
@@ -94,6 +99,9 @@ class _HotkeyManager(object):
 
     ss.ttsHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'tts'))
     ss.ttsHotkeyChanged.connect(partial(self.setMappingKey, 'tts'))
+
+    ss.ocrHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'ocr'))
+    ss.ocrHotkeyChanged.connect(partial(self.setMappingKey, 'ocr'))
 
     ss.srHotkeyEnabledChanged.connect(partial(self.setMappingEnabled, 'sr'))
     ss.srHotkeyChanged.connect(partial(self.setMappingKey, 'sr'))
@@ -189,6 +197,12 @@ class _HotkeyManager(object):
   def _onTts():
     import textman
     textman.manager().speakCurrentText()
+    dprint("pass")
+
+  @staticmethod
+  def _onOcr():
+    import kagami
+    kagami.KagamiController.toggleOcr()
     dprint("pass")
 
   @staticmethod

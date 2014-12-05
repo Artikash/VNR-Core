@@ -86,7 +86,7 @@ GAME_HAML = Haml '''\
         .label.label-success(title="容量GB" data-text="GB") #{sizeTag}
       :if sizeColor === 'b'
         .label.label-inverse(title="容量MB" data-text="MB") #{sizeTag}
-  %img.img-rounded(src="#{g.imageUrl}" title="#{tip}")
+  %img(src="#{g.imageUrl}" title="#{tip}")
   .footer
     :if g.artists
       :for it in g.artists.split(',')

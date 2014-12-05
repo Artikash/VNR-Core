@@ -332,7 +332,9 @@ Item { id: root_
 
     Desktop.MenuItem { //id: editAct_
       text: Sk.tr("Edit")
-      onTriggered: if (comment) mainPlugin_.showSubtitleEditor(comment)
+      onTriggered:
+        if (comment)
+          mainPlugin_.showSubtitleEditor(comment)
     }
 
     Desktop.MenuItem {
@@ -346,7 +348,9 @@ Item { id: root_
 
     Desktop.MenuItem {
       text: Sk.tr("User information")
-      onTriggered: if (comment) userViewPlugin_.showUser(comment.userId)
+      onTriggered:
+        if (comment)
+          mainPlugin_.showUser(comment.userId)
     }
 
     //Desktop.MenuItem {

@@ -436,7 +436,7 @@ Item { id: root_
       onTriggered: {
         var item = listModel_.get(popupIndex())
         if (item && item.comment)
-          userViewPlugin_.showUser(item.comment.userId)
+          mainPlugin_.showUser(item.comment.userId)
       }
     }
 

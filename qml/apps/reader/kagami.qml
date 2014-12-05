@@ -242,6 +242,10 @@ Item { id: root_
   //  //onOnlineChanged: gossip_.avatarVisible = online
   //}
 
+  Plugin.KagamiBean { //id: kagami_
+    onOcrToggled: dock_.toggleOcrRegionEnabled()
+  }
+
   Plugin.MainObjectProxy { id: mainPlugin_
     windowRefreshInterval: ignoresFocus ? 1000 : 10000 // 1 sec, 10 sec
   }
@@ -275,7 +279,7 @@ Item { id: root_
   Plugin.BBCodeParser { id: bbcodePlugin_ }
 
   //Plugin.SubtitleEditorManagerProxy { id: subeditPlugin_ }
-  Plugin.UserViewManagerProxy { id: userViewPlugin_ }
+  //Plugin.UserViewManagerProxy { id: userViewPlugin_ }
 
   Plugin.ClipboardProxy { id: clipboardPlugin_ }
   Plugin.Tts { id: ttsPlugin_ }
@@ -788,7 +792,6 @@ Item { id: root_
 
       Kagami.OcrRegion { //id: ocrRegion_
         anchors.fill: gameWindowTracker_
-
         anchors.topMargin: gameWindowTracker_.fullScreen ? 0 : gameWindowTracker_.titleBarHeight // skip header of the window
 
         enabled: dock_.ocrRegionEnabledChecked && gamePanel_.visible && dock_.visibleChecked
@@ -856,6 +859,11 @@ Item { id: root_
         //furiganaEnabled: root_.rubyEnabled
 
         ocrEnabled: settings_.ocrEnabled && !!root_.admin
+
+        function toggleOcrRegionEnabled() {
+          if (ocrEnabled)
+            ocrRegionEnabledChecked = !ocrRegionEnabledChecked
+        }
 
         onTextCheckedChanged: settings_.grimoireTextVisible = textChecked
         onNameCheckedChanged: settings_.grimoireNameVisible = nameChecked
