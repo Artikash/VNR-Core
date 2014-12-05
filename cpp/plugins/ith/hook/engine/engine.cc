@@ -2384,15 +2384,18 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
  *  Also, function addresses are fixed in old majiro, but floating in new majiro.
  *  In the old Majiro game, caller's address could be used as split.
  *  In the new Majiro game, the hooked function is invoked by the same caller.
+ *
  *  Use a split instead.
  *  Sample stack values are as follows.
+ *  - Old majiro: arg3 is text, arg1 is font name
+ *  - New majiro: arg3 is text, arg4 is font name
  *
  *  Name:
  *  0038f164   003e8163  return to .003e8163 from .003e9230
  *  0038f168   00000000
  *  0038f16c   00000000
- *  0038f170   08b04dbc
- *  0038f174   006709f0
+ *  0038f170   08b04dbc ; jichi: arg3, text
+ *  0038f174   006709f0 ; jichi: arg4, font name
  *  0038f178   006dace8
  *  0038f17c   00000000
  *  0038f180   00000013
@@ -2424,8 +2427,8 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
  *  0038e57c   003e8163  return to .003e8163 from .003e9230
  *  0038e580   00000000
  *  0038e584   00000000
- *  0038e588   0038ee4c
- *  0038e58c   004d5400  .004d5400
+ *  0038e588   0038ee4c  ; jichi: arg3, text
+ *  0038e58c   004d5400  .004d5400 ; jichi: arg4, font name
  *  0038e590   006dace8
  *  0038e594   0038ee6d
  *  0038e598   004d7549  .004d7549
@@ -2452,12 +2455,84 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
  *  0038e5ec   00000000
  *  0038e5f0   004d7549  .004d7549
  *  0038e5f4   0038ee6d
+ *
+ *  12/4/2014: Add add split for furigana.
+ *  Sample game: [141128] [チュアブルソフト] 残念な俺達の青春事情
+ *  Following are memory values after arg4 (font name)
+ *
+ *  Surface: 傍
+ *  00EC5400  82 6C 82 72 20 82 6F 83 53 83 56 83 62 83 4E 00  ＭＳ Ｐゴシック.
+ *  00EC5410  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ *  00EC5420  01 00 00 00 00 00 00 00 1C 00 00 00 0D 00 00 00   ....... .......
+ *  00EC5430  2D 00 00 00 FF FF FF 00 00 00 00 02 00 00 00 00  -....... .... ; jichi: first word as split
+ *  00EC5440  00 00 00 00 60 F7 3F 00 F0 D8 FF FF 00 00 00 00  ....`・.   ....  ; jichi: first word as split
+ *
+ *  00EC5450  32 01 00 00 0C 00 00 00 A0 02 00 00 88 00 00 00  2 ...... ..・..
+ *  00EC5460  00 00 00 00 01 00 00 00 00 00 00 00 32 01 00 00  .... .......2 ..
+ *  00EC5470  14 00 00 00 01 00 00 00 82 6C 82 72 20 82 6F 83   ... ...ＭＳ Ｐ・
+ *  00EC5480  53                                               S
+ *
+ *  Furigana: そば
+ *  00EC5400  82 6C 82 72 20 83 53 83 56 83 62 83 4E 00 4E 00  ＭＳ ゴシック.N.
+ *  00EC5410  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ *  00EC5420  01 00 00 00 00 00 00 00 0E 00 00 00 06 00 00 00   ....... ... ...
+ *  00EC5430  16 00 00 00 FF FF FF 00 00 00 00 02 00 00 00 00   ....... ....
+ *  00EC5440  00 00 00 00 60 F7 3F 00 F0 D8 FF FF 00 00 00 00  ....`・.   ....
+ *
+ *  00EC5450  32 01 00 00 0C 00 00 00 A0 02 00 00 88 00 00 00  2 ...... ..・..
+ *  00EC5460  00 00 00 00 00 00 00 00 00 00 00 00 32 01 00 00  ............2 ..
+ *  00EC5470  14 00 00 00 01 00 00 00 82 6C 82 72 20 82 6F 83   ... ...ＭＳ Ｐ・
+ *  00EC5480  53                                               S
+ *
+ *  Furigana: そば
+ *  00EC5400  82 6C 82 72 20 82 6F 83 53 83 56 83 62 83 4E 00  ＭＳ Ｐゴシック.
+ *  00EC5410  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ *  00EC5420  01 00 00 00 00 00 00 00 0E 00 00 00 06 00 00 00   ....... ... ...
+ *  00EC5430  2D 00 00 00 FF FF FF 00 00 00 00 02 00 00 00 00  -....... ....
+ *  00EC5440  00 00 00 00 60 F7 3F 00 2B 01 00 00 06 00 00 00  ....`・.+ .. ...
+ *
+ *  00EC5450  32 01 00 00 0C 00 00 00 A0 02 00 00 88 00 00 00  2 ...... ..・..
+ *  00EC5460  00 00 00 00 00 00 00 00 00 00 00 00 32 01 00 00  ............2 ..
+ *  00EC5470  14 00 00 00 01 00 00 00 82 6C 82 72 20 82 6F 83   ... ...ＭＳ Ｐ・
+ *  00EC5480  53                                               S
+ *
+ *  ---- need to split the above and below case
+ *
+ *  Text: 傍
+ *  00EC5400  82 6C 82 72 20 82 6F 83 53 83 56 83 62 83 4E 00  ＭＳ Ｐゴシック.
+ *  00EC5410  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ *  00EC5420  01 00 00 00 00 00 00 00 1C 00 00 00 0D 00 00 00   ....... .......
+ *  00EC5430  2D 00 00 00 FF FF FF 00 00 00 00 02 00 00 00 00  -....... .... ; jichi: first word as split
+ *  00EC5440  FF FF FF FF 60 F7 3F 00 32 01 00 00 14 00 00 00  `・.2 .. ... ; jichi: first word as split
+ *
+ *  00EC5450  32 01 00 00 0C 00 00 00 A0 02 00 00 88 00 00 00  2 ...... ..・..
+ *  00EC5460  00 00 00 00 01 00 00 00 00 00 00 00 32 01 00 00  .... .......2 ..
+ *  00EC5470  14 00 00 00 00 00 00 00 82 6C 82 72 20 82 6F 83   .......ＭＳ Ｐ・
+ *  00EC5480  53                                               S
+ *
+ *  Text: らには、一人の少女。
+ *  00EC5400  82 6C 82 72 20 82 6F 83 53 83 56 83 62 83 4E 00  ＭＳ Ｐゴシック.
+ *  00EC5410  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+ *  00EC5420  01 00 00 00 00 00 00 00 1C 00 00 00 0D 00 00 00   ....... .......
+ *  00EC5430  2D 00 00 00 FF FF FF 00 00 00 00 02 00 00 00 00  -....... ....
+ *  00EC5440  FF FF FF FF 60 F7 3F 00 4D 01 00 00 14 00 00 00  `・.M .. ...
+ *
+ *  00EC5450  32 01 00 00 0C 00 00 00 A0 02 00 00 88 00 00 00  2 ...... ..・..
+ *  00EC5460  00 00 00 00 01 00 00 00 00 00 00 00 32 01 00 00  .... .......2 ..
+ *  00EC5470  14 00 00 00 00 00 00 00 82 6C 82 72 20 82 6F 83   .......ＭＳ Ｐ・
+ *  00EC5480  53                                               S
  */
 
 namespace { // unnamed
 
-inline DWORD MajiroHashFontName(const DWORD *arg) // arg is supposed to be a string, though
+// These values are the same as the assembly logic of ITH:
+//     ([eax+0x28] & 0xff) | (([eax+0x48] >> 1) & 0xffffff00)
+// 0x28 = 10 * 4, 0x48 = 18 / 4
+inline DWORD MajiroOldFontSplit(const DWORD *arg) // arg is supposed to be a string, though
 { return (arg[10] & 0xff) | ((arg[18] >> 1) & 0xffffff00); }
+
+inline DWORD MajiroNewFontSplit(const DWORD *arg) // arg is supposed to be a string, though
+{ return (arg[12] & 0xff) | ((arg[16] >> 1) & 0xffffff00); }
 
 static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
@@ -2466,10 +2541,13 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
   *len = ::strlen((LPCSTR)arg3);
   // IsBadReadPtr is not needed for old Majiro game.
   // I am not sure if it is needed by new Majiro game.
-  if (hp->userValue) // new majiro
-    *split = *(DWORD *)(esp_base + 0x5c); // = 4 * 23, caller's caller
-  else if (DWORD arg1 = argof(1, esp_base)) // old majiro
-    *split = MajiroHashFontName((LPDWORD)arg1);
+  if (hp->userValue) { // new majiro
+    if (DWORD arg4 = argof(4, esp_base)) // old majiro
+      *split = MajiroNewFontSplit((LPDWORD)arg4);
+    else
+      *split = *(DWORD *)(esp_base + 0x5c); // = 4 * 23, caller's caller
+  } else if (DWORD arg1 = argof(1, esp_base)) // old majiro
+    *split = MajiroOldFontSplit((LPDWORD)arg1);
 }
 } // unnamed namespace
 bool InsertMajiroHook()
