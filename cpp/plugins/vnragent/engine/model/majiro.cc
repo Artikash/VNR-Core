@@ -26,7 +26,7 @@ static inline DWORD MajiroOldFontSplit(const DWORD *arg) // arg is supposed to b
 { return (arg[10] & 0xff) | ((arg[18] >> 1) & 0xffffff00); }
 
 static inline DWORD MajiroNewFontSplit(const DWORD *arg) // arg is supposed to be a string, though
-{ return (arg[12] & 0xff) | ((arg[16] >> 1) & 0xffffff00); }
+{ return (arg[12] & 0xff) | (arg[16] & 0xffffff00); }
 
 
 /**
