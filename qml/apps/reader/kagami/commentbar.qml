@@ -29,7 +29,7 @@ Share.InputBar { id: root_
   textRightMargin: enterButton_.width + submitButton_.width + helpButton_.width + typeEdit_.width + buttonMargin * 5
   property int buttonMargin: 4
 
-  property bool opaque: active || !fullScreen
+  property bool opaque: active || !fullScreen //|| !!text
   states: [
     State { // active
       when: root_.visible && root_.opaque
