@@ -93,6 +93,7 @@ processes:
   - IEXPLORE.EXE        # Windows
   - IMJPDUS.EXE         # Microsoft
   - imjpdus.exe         # Microsoft
+  - ineter_ex.exe       # Microsoft
   - ITH.exe             # ITH
   - iTunes.exe          # Apple
   - iTunesHelper.exe    # Apple
