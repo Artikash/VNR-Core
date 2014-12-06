@@ -1009,6 +1009,8 @@ Item { id: root_
         //  //    (graffiti_.alignment & Qt.AlignTop ? 0 : root_.taskBarHeight)
         //}
 
+        fullScreen: gameWindowTracker_.fullScreenOrStretched
+
         property int relativeY: gameWindowTracker_.fullScreen ? (-8 - height) : 4
         y: Math.min(
             parent.height - height - 5 - (gameWindowTracker_.stretched ? 0 : taskBarHeight),

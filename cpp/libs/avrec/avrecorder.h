@@ -3,10 +3,11 @@
 
 // avrecorder.h
 // 10/28/2014 jichi
+// All string must be in UTF-8 encoding.
 
 #include "sakurakit/skglobal.h"
 #include <libavutil/pixfmt.h>
-#include <cstdint>
+#include <stdint.h>
 
 class AVRecorderSettings;
 class AVRecorderPrivate;
@@ -24,13 +25,14 @@ public:
   ~AVRecorder();
   AVRecorderSettings *settings() const;
 
-  const wchar_t *path() const;
-  void setPath(const wchar_t *path);
+  const char *path() const; // path in UTF-8 encoding
+  void setPath(const char *path);
 
   bool start();
   bool stop();
 
-  bool addImageData(const uint8_t *data, int64_t size, AVPixelFormat fmt);
+  bool addImageData(const uint8_t *data, int64_t size,
+                    int bytesPerLine, int width, int height, AVPixelFormat fmt);
   bool addAudioData(const uint8_t *data, int64_t size);
 };
 

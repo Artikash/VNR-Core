@@ -12,6 +12,8 @@ import '../share' as Share
 
 Share.InputBar { id: root_
 
+  property bool fullScreen: false
+
   // - Private -
 
   function selectedType() {
@@ -27,11 +29,18 @@ Share.InputBar { id: root_
   textRightMargin: enterButton_.width + submitButton_.width + helpButton_.width + typeEdit_.width + buttonMargin * 5
   property int buttonMargin: 4
 
+  property bool opaque: active || !fullScreen
   states: [
-    State { // visible
-      when: root_.visible
+    State { // active
+      when: root_.visible && root_.opaque
       PropertyChanges { target: root_
         opacity: 1
+      }
+    }
+    , State { // inactive
+      when: root_.visible && !root_.opaque
+      PropertyChanges { target: root_
+        opacity: 0.6
       }
     }
     , State { // hidden

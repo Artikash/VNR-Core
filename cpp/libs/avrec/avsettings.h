@@ -4,9 +4,9 @@
 // avsettings.h
 // 10/29/2014 jichi
 
-#include <cstdint>
+#include <stdint.h>
 
-class AVRecorderSettings;
+class AVRecorderSettings
 {
 public:
   int fps; // frame per second

@@ -2,6 +2,7 @@
 // 9/20/2014 jichi
 
 #include "avrec/avrecorder.h"
+#include "avrec/avsettings.h"
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -20,17 +21,25 @@ extern "C" {
 class AVRecorderPrivate
 {
 public:
-  std::wstring path;
+  std::string path;
   AVRecorderSettings settings;
+  int64_t frameCount;
 
+  // constant
   AVFormatContext *formatContext;
   AVStream *videoStream;
   AVCodecContext *videoCodecContext;
   AVCodec *videoCodec;
   AVBufferRef *videoBuffer;
   size_t videoBufferSize;
+  AVBufferRef *pictureBuffer;
+  size_t pictureBufferSize;
   AVFrame *videoPicture;
   SwsContext *imageConvertContext;
+
+  AVRecorderPrivate()
+    : frameCount(0)
+  {}
 };
 
 /** Public class */
@@ -40,10 +49,10 @@ AVRecorder::~AVRecorder() { delete d_; }
 
 // Properties
 
-AVRecorder *AVRecorder::settings() const { return d_->settings; }
+AVRecorderSettings *AVRecorder::settings() const { return &d_->settings; }
 
-const wchar_t *AVRecorder::path() const { return d_->path.c_str(); }
-void AVRecorder::setPath(const wchar_t *path) { d_.path = path; }
+const char *AVRecorder::path() const { return d_->path.c_str(); }
+void AVRecorder::setPath(const char *path) { d_->path = path; }
 
 // Prepare
 
@@ -54,7 +63,7 @@ bool AVRecorder::init()
   return true;
 }
 
-void AVRecorder::start()
+bool AVRecorder::start()
 {
   DOUT("enter");
   // Init ffmpeg stuff
@@ -192,14 +201,13 @@ void AVRecorder::start()
   //init frame
   d_->videoPicture = avcodec_alloc_frame();
 
-  int size = avpicture_get_size(d_->videoCodecContext->pix_fmt, d_->videoCodecContext->width, d_->videoCodecContext->height);
-  //AVBuffer *d_->pictureBuffer = new AVBuffer[size];
-  AVBufferRef *d_->pictureBuffer = av_buffer_alloc(size);
+  d_->pictureBufferSize = avpicture_get_size(d_->videoCodecContext->pix_fmt, d_->videoCodecContext->width, d_->videoCodecContext->height);
+  d_->pictureBuffer = av_buffer_alloc(d_->pictureBufferSize);
 
   // Setup the planes
   avpicture_fill((AVPicture *)d_->videoPicture, d_->pictureBuffer->data, d_->videoCodecContext->pix_fmt, d_->videoCodecContext->width, d_->videoCodecContext->height);
 
-  if (avio_open(&d_->formatContext->pb, path_.toUtf8().constData(), AVIO_FLAG_WRITE) < 0) {
+  if (avio_open(&d_->formatContext->pb, d_->path.c_str(), AVIO_FLAG_WRITE) < 0) {
     //q_ptr->setError(Encoder::FileOpenError, QString(tr("Unable to open: %1")).arg(filePath()));
     DOUT("leave: unable to open:" << d_->path);
     return false;
@@ -218,21 +226,71 @@ void AVRecorder::start()
 
 // Finalize
 
-void AVRecorder::stop()
+bool AVRecorder::stop()
 {
-  return false;
+  DOUT("enter");
+  av_write_trailer(d_->formatContext);
+  avcodec_close(d_->videoCodecContext);
+  av_free(d_->videoCodecContext);
+  av_free(d_->videoStream);
+  sws_freeContext(d_->imageConvertContext);
+  avio_close(d_->formatContext->pb);
+  DOUT("leave");
+  return true;
 }
 
 // Video
 
-bool addImageData(const uint8_t *data, int64_t size, AVPixelFormat fmt)
+bool AVRecorder::addImageData(const uint8_t *data, int64_t size, int bytesPerLine, int width, int height, AVPixelFormat fmt)
 {
-  return false;
+  DOUT("enter");
+  if (fmt == AV_PIX_FMT_NONE) {
+    DOUT("leave: invalid image format");
+    return false;
+  }
+
+  d_->imageConvertContext = sws_getCachedContext(d_->imageConvertContext, width, height, fmt,
+                                                 d_->videoCodecContext->width, d_->videoCodecContext->height, d_->videoCodecContext->pix_fmt,
+                                                 SWS_BICUBIC, NULL, NULL, NULL);
+  if (!d_->imageConvertContext) {
+    DOUT("leave: unable to initialize conversion context");
+    return false;
+  }
+
+   const uint8_t *srcplanes[3] = { data, 0, 0 };
+   int srcstride[3] = { bytesPerLine, 0, 0 };
+   sws_scale(d_->imageConvertContext, srcplanes, srcstride, 0, height, d_->videoPicture->data, d_->videoPicture->linesize);
+
+   //pkt.pts = m_videoCodecContext->coded_frame->pts = 1000 * pts;
+   //int64_t pts = (float) frame_count * (1000.0/(float)(FRAME_RATE)) * 90;
+   int64_t pts = 1000 * d_->frameCount++;
+
+   d_->videoPicture->pts = pts;
+
+   int outSize = avcodec_encode_video(d_->videoCodecContext, d_->videoBuffer->data, d_->videoBufferSize, d_->videoPicture);
+   if (outSize > 0) {
+     // http://stackoverflow.com/questions/6603979/ffmpegavcodec-encode-video-setting-pts-h264
+     //if (!isFixedFrameRate())
+     AVPacket pkt;
+     av_init_packet(&pkt);
+     pkt.pts = pts;
+
+     // This determine th speed;
+
+     if(d_->videoCodecContext->coded_frame->key_frame)
+       pkt.flags |= AV_PKT_FLAG_KEY;
+
+     pkt.stream_index = d_->videoStream->index;
+     pkt.data = d_->videoBuffer->data;
+     pkt.size = outSize;
+     av_write_frame(d_->formatContext, &pkt);
+  }
+  return true;
 }
 
 // Audio
 
-bool addAudioData(const uint8_t *data, int64_t size)
+bool AVRecorder::addAudioData(const uint8_t *data, int64_t size)
 {
   return false;
 }

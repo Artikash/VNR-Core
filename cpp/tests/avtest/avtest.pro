@@ -2,6 +2,7 @@
 # 10/27/2014
 
 include(../../../config.pri)
+include($$LIBDIR/avrec/avrec.pri)
 
 QT += core gui
 LIBS += -lavcodec -lavformat -lavutil -lswscale
