@@ -1980,21 +1980,21 @@ class MainObject(QObject):
     growl.notify(my.tr("Update released"))
 
     # TTS
-    f = [
-      u"ソフトを更新しますか？姉さま？",
-      u"ソフトを更新しますか？姉うえ？",
-    ]
-    m = [
-      u"ソフトを更新しますか？ニー様？",
-      u"ソフトを更新しますか？お兄ちゃん？",
-    ]
-    if d.dataManager.user().isFemale():
-      t = f[now % len(f)]
-    elif d.dataManager.user().gender:
-      t = m[now % len(m)]
-    else:
-      t = (f+m)[now % (len(f)+len(m))]
-    d.ttsManager.speak(t, verbose=False)
+    #f = [
+    #  u"ソフトを更新しますか？姉さま？",
+    #  u"ソフトを更新しますか？姉うえ？",
+    #]
+    #m = [
+    #  u"ソフトを更新しますか？ニー様？",
+    #  u"ソフトを更新しますか？お兄ちゃん？",
+    #]
+    #if d.dataManager.user().isFemale():
+    #  t = f[now % len(f)]
+    #elif d.dataManager.user().gender:
+    #  t = m[now % len(m)]
+    #else:
+    #  t = (f+m)[now % (len(f)+len(m))]
+    #d.ttsManager.speak(t, verbose=False)
 
     if msg:
       ss.setUpdateTime(0)
@@ -2007,10 +2007,9 @@ class MainObject(QObject):
     self.showUpdate()
 
   def showUpdate(self):
-    d = self.__d
-    if d.springBoardDialog.isVisible():
-      d.springBoardDialog.showMinimized()
-
+    #d = self.__d
+    #if d.springBoardDialog.isVisible():
+    #  d.springBoardDialog.showMinimized()
     import osutil
     osutil.open_location(rc.app_path('updater'))
 

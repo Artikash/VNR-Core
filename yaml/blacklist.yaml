@@ -131,6 +131,8 @@ processes:
   - ntleac.exe          # NTLER
   - NtleaGUI.exe        # NTLER
   - NK-Frontend.exe     # Android emulator
+  - ONENOTE.EXE         # Microsoft Office
+  - onenote.exe         # Microsoft Office
   - opera.exe           # Opera
   - osu!.exe            # Osu!
   - OSU!.EXE            # Osu!
