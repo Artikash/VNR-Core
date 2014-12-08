@@ -27,8 +27,8 @@ WCHAR detach_mutex[0x20];
 wchar_t recv_pipe[] = ITH_TEXT_PIPE;
 wchar_t command[] = ITH_COMMAND_PIPE;
 
-LARGE_INTEGER wait_time={-100*10000,-1};
-LARGE_INTEGER sleep_time={-20*10000,-1};
+LARGE_INTEGER wait_time = {-100*10000, -1};
+LARGE_INTEGER sleep_time = {-20*10000, -1};
 
 DWORD engine_type;
 DWORD module_base;
