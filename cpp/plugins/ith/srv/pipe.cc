@@ -171,7 +171,7 @@ void DetachFromProcess(DWORD pid)
   //}
 
   //NtSetEvent(hDetachEvent, 0);
-  if (running)
+  if (::running)
     NtSetEvent(hPipeExist, 0);
 }
 
@@ -193,7 +193,7 @@ DWORD WINAPI RecvThread(LPVOID lpThreadParameter)
      &ios,
      CTL_CODE(FILE_DEVICE_NAMED_PIPE, NAMED_PIPE_CONNECT, 0, 0),
      0, 0, 0, 0);
-  if (!running) {
+  if (!::running) {
     NtClose(hTextPipe);
     return 0;
   }
@@ -225,7 +225,7 @@ DWORD WINAPI RecvThread(LPVOID lpThreadParameter)
   CreateNewPipe();
 
   //NtClose(IthCreateThread(UpdateWindows,0));
-  while (running) {
+  while (::running) {
     if (!NT_SUCCESS(NtReadFile(hTextPipe,
         0, 0, 0,
         &ios,
@@ -308,10 +308,10 @@ DWORD WINAPI RecvThread(LPVOID lpThreadParameter)
   LeaveCriticalSection(&detach_cs);
   delete[] buff;
 
-  if (running)
+  if (::running)
     ConsoleOutput("vnrsrv:DetachFromProcess: detached");
 
-  //if (running) {
+  //if (::running) {
   //  swprintf((LPWSTR)buff, FormatDetach, pid);
   //  ConsoleOutput((LPWSTR)buff);
   //  NtClose(IthCreateThread(UpdateWindows, 0));

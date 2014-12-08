@@ -91,7 +91,7 @@ enum HookParamType : unsigned long {
   , SPLIT_INDIRECT    = 0x20
   , MODULE_OFFSET     = 0x40    // do hash module, and the address is relative to module
   , FUNCTION_OFFSET   = 0x80    // do hash function, and the address is relative to funccion
-  , PRINT_DWORD       = 0x100
+  //, PRINT_DWORD       = 0x100 // jichi 12/7/2014: Removed
   , STRING_LAST_CHAR  = 0x200
   , NO_CONTEXT        = 0x400
   //, EXTERN_HOOK       = 0x800   // jichi 10/24/2014: Removed

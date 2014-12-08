@@ -385,10 +385,10 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
       else
         return 0;
     }
-    if (dwType & PRINT_DWORD) {
-      swprintf((WCHAR *)(pbSmallBuff + HEADER_SIZE), L"%.8X ", dwDataIn);
-      dwDataIn = (DWORD)pbSmallBuff + HEADER_SIZE;
-    }
+    //if (dwType & PRINT_DWORD) {
+    //  swprintf((WCHAR *)(pbSmallBuff + HEADER_SIZE), L"%.8X ", dwDataIn);
+    //  dwDataIn = (DWORD)pbSmallBuff + HEADER_SIZE;
+    //}
     dwCount = GetLength(dwDataBase, dwDataIn);
   }
 

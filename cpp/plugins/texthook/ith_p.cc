@@ -189,9 +189,10 @@ bool Parse(_In_ LPWSTR cmd, _Out_ HookParam &hp)
   case L'B':
     hp.length_offset = 1;
     break;
-  case L'h':
-  case L'H':
-    hp.type |= PRINT_DWORD;
+  // jichi 12/7/2014: Disabled
+  //case L'h':
+  //case L'H':
+  //  hp.type |= PRINT_DWORD;
   case L'q':
   case L'Q':
     hp.type |= USING_STRING | USING_UNICODE;

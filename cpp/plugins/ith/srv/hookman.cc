@@ -857,9 +857,10 @@ void GetCode(const HookParam &hp, LPWSTR buffer, DWORD pid)
 {
   WCHAR c;
   LPWSTR ptr = buffer;
-  if (hp.type&PRINT_DWORD)
-    c = L'H';
-  else if (hp.type&USING_UNICODE) {
+  // jichi 12/7/2014: disabled
+  //if (hp.type&PRINT_DWORD)
+  //  c = L'H';
+  if (hp.type&USING_UNICODE) {
     if (hp.type&USING_STRING)
       c = L'Q';
     else if (hp.type&STRING_LAST_CHAR)
