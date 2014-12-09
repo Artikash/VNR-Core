@@ -5746,6 +5746,7 @@ class _DataManager(object):
     self._termsDirty = False
     self.dirtyTerms = set()         # set(Term)
     self.dirtyTermsLocked = False   # bool
+    self.updateTermsLocked = False  # bool
 
     self.termsEditable = False # disable editable by default
     self.termsInitialized = False # if the terms has initialized
@@ -8097,10 +8098,13 @@ class DataManager(QObject):
       self.termsEditableChanged.emit(t)
 
   def updateTerms(self):
-    if netman.manager().isOnline():
+    d = self.__d
+    if d.updateTermsLocked:
+      growl.notify(my.tr("Waiting for updating dictionary") + " ...")
+    elif netman.manager().isOnline():
+      d.updateTermsLocked = True
       dprint("enter")
       growl.msg(my.tr("Updating dictionary terms online") + " ...")
-      d = self.__d
 
       editable = d.termsEditable
       l = netman.manager().getTerms(d.user.name, d.user.password,
@@ -8124,6 +8128,8 @@ class DataManager(QObject):
           my.tr("Failed to download terms online"),
           my.tr("Something might be wrong with the Internet connection"),
         )))
+
+      d.updateTermsLocked = False
       dprint("leave")
 
   #def updateTranslationScripts(self):
