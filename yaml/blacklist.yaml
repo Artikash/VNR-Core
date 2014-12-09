@@ -184,6 +184,7 @@ processes:
   - WINWORD.EXE         # Microsoft Office
   - wmplayer.exe        # Windows media player
   - XMP.exe             # Xunlei KanKan
+  - YahooMessenger.exe  # Yahoo
   - YoukuDesktop.exe    # Youku
   # Unsupported games
   - KanColleViewer.exe  # http://grabacr.net/kancolleviewer
