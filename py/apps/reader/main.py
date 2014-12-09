@@ -1227,6 +1227,13 @@ class _MainObject(object):
   # This function could take lots of time depending on how many games you have
   @memoizedproperty
   def springBoardDialog(self):
+    try:
+      if self.springBoardDialogLocked:
+        dwarn("springboard locked")
+        return
+    except AttributeError:
+      self.springBoardDialogLocked = True
+
     dprint("enter")
     import spring
     ret = spring.SpringBoard(self.normalWindow)
@@ -1239,6 +1246,8 @@ class _MainObject(object):
     gm.openingGame.connect(ret.hide)
     gm.openGameFailed.connect(ret.show)
     dprint("leave")
+
+    self.springBoardDialogLocked = False
     return ret
 
   #@memoizedproperty
@@ -1361,29 +1370,31 @@ class _MainObject(object):
     """
     @param  w  QWidget
     """
-    if w.isMaximized() and w.isMinimized():
-      w.showMaximized()
-    elif w.isMinimized():
-      w.showNormal()
-    else:
-      w.show()
-    if not features.WINE:
-      w.raise_()
-      winutil.set_foreground_widget(w)
+    if w:
+      if w.isMaximized() and w.isMinimized():
+        w.showMaximized()
+      elif w.isMinimized():
+        w.showNormal()
+      else:
+        w.show()
+      if not features.WINE:
+        w.raise_()
+        winutil.set_foreground_widget(w)
 
   @staticmethod
   def showQmlWindow(w):
     """
     @param  w  QDeclarativeView
     """
-    w.show()
-    if w.isMaximized() and w.isMinimized():
-      w.showMaximized()
-    elif w.isMinimized():
-      w.showNormal()
-    if not features.WINE:
-      w.raise_()
-      winutil.set_foreground_widget(w)
+    if w:
+      w.show()
+      if w.isMaximized() and w.isMinimized():
+        w.showMaximized()
+      elif w.isMinimized():
+        w.showNormal()
+      if not features.WINE:
+        w.raise_()
+        winutil.set_foreground_widget(w)
 
   #def updateDialogParent(self, w):
   #  """
