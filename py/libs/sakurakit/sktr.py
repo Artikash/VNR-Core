@@ -89,8 +89,8 @@ class sakurakit(QObject):
 
       self.tr("Space"),
 
-      self.tr("About {0}"),
       self.tr("About"),
+      self.tr("About {0}"),
       self.tr("Add"),
       self.tr("Advanced"),
       self.tr("Append"),
@@ -161,6 +161,7 @@ class sakurakit(QObject):
       self.tr("Recommend"), self.tr("recommend"),
       self.tr("Recommended"), self.tr("recommended"),
       self.tr("Refresh"),
+      self.tr("Recent Changes"), self.tr("Recent changes"),
       self.tr("Register"),
       self.tr("Remove"),
       self.tr("Reset"), self.tr("reset"),
@@ -190,6 +191,7 @@ class sakurakit(QObject):
       self.tr("Type"),
       self.tr("Quit"),
       self.tr("Update"),
+      self.tr("Update {0}"),
 
       self.tr("Less"),
       self.tr("More"),

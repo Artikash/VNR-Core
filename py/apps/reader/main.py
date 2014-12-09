@@ -823,6 +823,13 @@ class _MainObject(object):
     return ret
 
   @memoizedproperty
+  def updateDialog(self):
+    import update
+    ret = update.UpdateDialog(self.topWindow)
+    self.widgets.append(ret)
+    return ret
+
+  @memoizedproperty
   def gameBoardDialog(self):
     import webrc
     webrc.init()
@@ -2018,11 +2025,7 @@ class MainObject(QObject):
     self.showUpdate()
 
   def showUpdate(self):
-    #d = self.__d
-    #if d.springBoardDialog.isVisible():
-    #  d.springBoardDialog.showMinimized()
-    import osutil
-    osutil.open_location(rc.app_path('updater'))
+    _MainObject.showWindow(self.__d.updateDialog)
 
   def confirmUpdateGameDatabase(self):
     if prompt.confirmUpdateGameFiles():
