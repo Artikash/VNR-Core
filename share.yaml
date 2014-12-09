@@ -702,6 +702,7 @@ icons:
   window-topicview: $PWD/images/dock/reader.png # TODO: Change to a different image
   window-hookprefs: $PWD/images/dock/edit.png
   window-user:      $PWD/images/contact.png
+  window-update:    $PWD/images/updater.png
   window-voice:     $PWD/images/sound.png
 
 images:

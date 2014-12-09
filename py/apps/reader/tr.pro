@@ -25,6 +25,7 @@ SOURCES = \
   dialogs/textprefs.py \
   dialogs/topicedit.py \
   dialogs/topicinput.py \
+  dialogs/update.py \
   dialogs/ytinput.py \
   managers/coffeebean.py \
   managers/dataman.py \
