@@ -2456,7 +2456,7 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
  *  0038e5f0   004d7549  .004d7549
  *  0038e5f4   0038ee6d
  *
- *  12/4/2014: Add add split for furigana.
+ *  12/4/2014: Add split for furigana.
  *  Sample game: [141128] [チュアブルソフト] 残念な俺達の青春事情
  *  Following are memory values after arg4 (font name)
  *
@@ -2469,7 +2469,7 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
  *
  *  00EC5450  32 01 00 00 0C 00 00 00 A0 02 00 00 88 00 00 00  2 ...... ..・..
  *  00EC5460  00 00 00 00 01 00 00 00 00 00 00 00 32 01 00 00  .... .......2 ..
- *  00EC5470  14 00 00 00 01 00 00 00 82 6C 82 72 20 82 6F 83   ... ...ＭＳ Ｐ・
+ *  00EC5470  14 00 00 00 01 00 00 00 82 6C 82 72 20 82 6F 83   ... ...ＭＳ Ｐ・ ; MS P Gothic
  *  00EC5480  53                                               S
  *
  *  Furigana: そば
@@ -2481,7 +2481,7 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
  *
  *  00EC5450  32 01 00 00 0C 00 00 00 A0 02 00 00 88 00 00 00  2 ...... ..・..
  *  00EC5460  00 00 00 00 00 00 00 00 00 00 00 00 32 01 00 00  ............2 ..
- *  00EC5470  14 00 00 00 01 00 00 00 82 6C 82 72 20 82 6F 83   ... ...ＭＳ Ｐ・
+ *  00EC5470  14 00 00 00 01 00 00 00 82 6C 82 72 20 82 6F 83   ... ...ＭＳ Ｐ・ ; MS P Gothic
  *  00EC5480  53                                               S
  *
  *  Furigana: そば
@@ -2493,7 +2493,7 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
  *
  *  00EC5450  32 01 00 00 0C 00 00 00 A0 02 00 00 88 00 00 00  2 ...... ..・..
  *  00EC5460  00 00 00 00 00 00 00 00 00 00 00 00 32 01 00 00  ............2 ..
- *  00EC5470  14 00 00 00 01 00 00 00 82 6C 82 72 20 82 6F 83   ... ...ＭＳ Ｐ・
+ *  00EC5470  14 00 00 00 01 00 00 00 82 6C 82 72 20 82 6F 83   ... ...ＭＳ Ｐ・ ; MS P Gothic
  *  00EC5480  53                                               S
  *
  *  ---- need to split the above and below case
@@ -2507,7 +2507,7 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
  *
  *  00EC5450  32 01 00 00 0C 00 00 00 A0 02 00 00 88 00 00 00  2 ...... ..・..
  *  00EC5460  00 00 00 00 01 00 00 00 00 00 00 00 32 01 00 00  .... .......2 ..
- *  00EC5470  14 00 00 00 00 00 00 00 82 6C 82 72 20 82 6F 83   .......ＭＳ Ｐ・
+ *  00EC5470  14 00 00 00 00 00 00 00 82 6C 82 72 20 82 6F 83   .......ＭＳ Ｐ・ ; MS P Gothic
  *  00EC5480  53                                               S
  *
  *  Text: らには、一人の少女。
@@ -2519,7 +2519,7 @@ static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD 
  *
  *  00EC5450  32 01 00 00 0C 00 00 00 A0 02 00 00 88 00 00 00  2 ...... ..・..
  *  00EC5460  00 00 00 00 01 00 00 00 00 00 00 00 32 01 00 00  .... .......2 ..
- *  00EC5470  14 00 00 00 00 00 00 00 82 6C 82 72 20 82 6F 83   .......ＭＳ Ｐ・
+ *  00EC5470  14 00 00 00 00 00 00 00 82 6C 82 72 20 82 6F 83   .......ＭＳ Ｐ・ ; MS P Gothic
  *  00EC5480  53                                               S
  */
 
@@ -2535,7 +2535,7 @@ inline DWORD MajiroOldFontSplit(const DWORD *arg) // arg is supposed to be a str
 inline DWORD MajiroNewFontSplit(const DWORD *arg) // arg is supposed to be a string, though
 { return (arg[12] & 0xff) | (arg[16] & 0xffffff00); }
 
-static void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+void SpecialHookMajiro(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   DWORD arg3 = argof(3, esp_base); // text
   *data = arg3;
