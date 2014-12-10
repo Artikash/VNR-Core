@@ -378,6 +378,10 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
+    if ss_version <= 1418169959:
+      xmlfile = rc.xml_path('terms')
+      skfileio.removefile(xmlfile)
+
     if ss_version <= 1413611470:
       if ss.value('FuriganaType') == 'kanji':
         ss.remove('FuriganaType')
