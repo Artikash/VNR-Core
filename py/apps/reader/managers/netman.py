@@ -1307,11 +1307,12 @@ class _NetworkManager(object):
 
   ## Terminology ##
 
-  def getTerms(self, userName, password, init=True):
+  def getTerms(self, userName, password, init=True, difftime=0):
     """
     @param  userName  str
     @param  password  str
     @param* init  bool  whether init term object
+    @param* difftime  long  timestamp
     """
     params = {
       'ver': self.version,
@@ -1320,7 +1321,12 @@ class _NetworkManager(object):
     }
     self._addBlockedLanguages(params)
     try:
-      r = session.get(XML_API + '/term/list', params=params, headers=GZIP_HEADERS)
+      if difftime:
+        path = '/term/diff'
+        params['mintime'] = difftime
+      else:
+        path = '/term/list'
+      r = session.get(XML_API + path, params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
         context = etree.iterparse(StringIO(r.content), events=('start','end'))
 
@@ -1334,6 +1340,7 @@ class _NetworkManager(object):
               kw = {
                 'id': int(elem.get('id')),
                 'type': elem.get('type'),
+                'deleted': elem.get('deleted') == 'true',
               }
           else:
             path -= 1
@@ -1347,7 +1354,7 @@ class _NetworkManager(object):
               else:
                 kw[tag] = text or ''
 
-            elif path == 2 and kw['type'] in TYPES:
+            elif path == 2 and (difftime or kw['type'] in TYPES):
               #if not kw.get('userHash'):
               #  kw['userHash'] = kw['userId']
               ret.append(dataman.Term(init=init, **kw))
@@ -1850,9 +1857,19 @@ class NetworkManager(QObject):
     if self.isOnline():
       return skthreads.runsync(partial(
           self.__d.getTerms, userName, password, init=init))
-      #if ret and init:
-      #  for it in ret:
-      #    it.init(parent)
+
+  def getModifiedTerms(self, time, userName='', password='', init=True, parent=None):
+    """
+    @param  time  long  timestamp
+    @param* userName  str
+    @param* password  str
+    @param* init  bool  whether initialize QObject
+    @param* parent  QObject  to init
+    @return  [dataman.Term] or None
+    """
+    if self.isOnline():
+      return skthreads.runsync(partial(
+          self.__d.getTerms, userName, password, init=init, difftime=time))
 
   def submitTerm(self, term, userName, password, async=False):
     """Either id or digest should be specified.
