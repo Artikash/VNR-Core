@@ -1307,6 +1307,15 @@ class _NetworkManager(object):
 
   ## Terminology ##
 
+  def mergeTerms(self, terms, *args, **kwargs):
+    """
+    @param  terms  [dataman.Term]
+    @return  [dataman.Term] or None
+    """
+    l = self.getTerms()
+    if l:
+      return l
+
   def getTerms(self, userName, password, init=True, difftime=0):
     """
     @param  userName  str
@@ -1858,8 +1867,9 @@ class NetworkManager(QObject):
       return skthreads.runsync(partial(
           self.__d.getTerms, userName, password, init=init))
 
-  def getModifiedTerms(self, time, userName='', password='', init=True, parent=None):
+  def mergeTerms(self, terms, time, userName='', password='', init=True, parent=None):
     """
+    @param  terms  [dataman.Term]  current term
     @param  time  long  timestamp
     @param* userName  str
     @param* password  str
@@ -1869,7 +1879,7 @@ class NetworkManager(QObject):
     """
     if self.isOnline():
       return skthreads.runsync(partial(
-          self.__d.getTerms, userName, password, init=init, difftime=time))
+          self.__d.mergeTerms, terms, userName, password, init=init, difftime=time))
 
   def submitTerm(self, term, userName, password, async=False):
     """Either id or digest should be specified.

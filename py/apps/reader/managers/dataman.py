@@ -8107,8 +8107,15 @@ class DataManager(QObject):
       growl.msg(my.tr("Updating dictionary terms online") + " ...")
 
       editable = d.termsEditable
-      l = netman.manager().getTerms(d.user.name, d.user.password,
-          init=editable, parent=self)
+      updateTime = settings.global_().termsTime()
+      l = d.terms
+
+      nm = netman.manager()
+      if updateTime and l:
+        l = nm.mergeTerms(l, updateTime,
+            d.user.name, d.user.password, init=editable, parent=self)
+      else:
+        l = nm.getTerms(d.user.name, d.user.password, init=editable, parent=self)
       if l:
         if not editable and editable != d.termsEditable:
           for it in l:
