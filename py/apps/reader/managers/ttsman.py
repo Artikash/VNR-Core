@@ -4,7 +4,7 @@
 
 __all__ = 'TtsQmlBean', 'TtsCoffeeBean'
 
-#from sakurakit.skprofiler import SkProfiler
+#from sakurakit.skprof import SkProfiler
 
 from functools import partial
 from PySide.QtCore import QObject, Slot, QTimer, QMutex

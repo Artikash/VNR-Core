@@ -281,7 +281,7 @@ if __name__ == '__main__':
 
   to = 'zhs'
 
-  from sakurakit.skprofiler import SkProfiler
+  from sakurakit.skprof import SkProfiler
   from kingsoft import iciba
   tr = iciba.translate
   tr = None

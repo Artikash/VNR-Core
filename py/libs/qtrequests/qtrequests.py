@@ -297,7 +297,7 @@ if __name__ == '__main__':
 
     s = Session(nam)
 
-    from sakurakit.skprofiler import SkProfiler
+    from sakurakit.skprof import SkProfiler
     #url = "http://www.google.com"
     url = "http://localhost:8080/json/post/create"
     data = {'lang':'ja'}

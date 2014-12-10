@@ -57,7 +57,7 @@ def makeconverter(fr, to):
     #print txt, reverse
     path = os.path.join(OPENCC_DICDIR, txt)
     if os.path.exists(path):
-      #from sakurakit.skprofiler import SkProfiler
+      #from sakurakit.skprof import SkProfiler
       #with SkProfiler(): # 10/19/2014: 0.006 seconds for zhs2zht
       ret.addFile(path, reverse)
       return ret

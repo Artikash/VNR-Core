@@ -72,10 +72,11 @@ Item {
       onTriggered: mainPlugin_.showMachineTranslationTester()
     }
 
-    Desktop.MenuItem {
-      text: My.tr("Test Japanese Syntax")
-      onTriggered: mainPlugin_.showJapaneseSyntaxTester()
-    }
+    // Temporarily disabled
+    //Desktop.MenuItem {
+    //  text: My.tr("Test Japanese Syntax")
+    //  onTriggered: mainPlugin_.showJapaneseSyntaxTester()
+    //}
 
     Desktop.MenuItem {
       text: My.tr("Speech Recognition")
