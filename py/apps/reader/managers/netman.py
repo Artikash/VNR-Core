@@ -1319,6 +1319,7 @@ class _NetworkManager(object):
     if l == []: # not modified
       return l
     if l:
+      dprint("number of modified terms: %s" % len(l))
       if init:
         mainThread = QCoreApplication.instance().thread()
         for it in terms:

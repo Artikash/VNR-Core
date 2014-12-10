@@ -4,6 +4,8 @@
 #
 # Always use long for unixtimestamp, as after year 2038 int32 will overflow.
 
+from sakurakit.skprof import SkProfiler
+
 import itertools, operator, os, re #, shutil
 from collections import OrderedDict
 from ctypes import c_longlong
@@ -1807,9 +1809,9 @@ class _Comment(object):
     'dirtyProperties',
   )
 
-  def __init__(self, q, init,
+  def __init__(self, q,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, hash, context, contextSize, comment, updateComment, disabled, deleted, locked):
-    self.init = init            # bool
+    self.init = False           # bool
     self.id = id                # long
     self.gameId = gameId        # long
     self._gameMd5 = gameMd5     # str
@@ -1908,7 +1910,7 @@ class Comment(QObject):
       disabled=False, deleted=False, locked=False,
       updateUserId=0, updateTimestamp=0,
       **ignored):
-    self.__d = _Comment(self, init,
+    self.__d = _Comment(self,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, hash, context, contextSize, comment, updateComment, disabled, deleted, locked)
     if init:
       self.init(parent)
@@ -1919,10 +1921,12 @@ class Comment(QObject):
     """Invoke super __init__
     @param  parent  QObject
     """
-    super(Comment, self).__init__(parent)
-    self.__d.init = True
-    self.updateUserIdChanged.connect(lambda:
-        self.updateUserNameChanged.emit(self.updateUserName))
+    d = self.__d
+    if not d.init:
+      d.init = True
+      super(Comment, self).__init__(parent)
+      self.updateUserIdChanged.connect(lambda:
+          self.updateUserNameChanged.emit(self.updateUserName))
 
   #def isInitialized(self): return self.__d.init  # not used
 
@@ -2097,10 +2101,10 @@ class _Term(object):
     '_gameItemId',
   )
 
-  def __init__(self, q, init,
+  def __init__(self, q,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax):
     #self.priority = 0 # int  assigned after sorting
-    self.init = init            # bool
+    self.init = False           # bool
     self.id = id                # long
     self.gameId = gameId        # long
     self._gameMd5 = gameMd5     # str
@@ -2237,7 +2241,7 @@ class Term(QObject):
       regex=False,
       disabled=False, deleted=False, special=False, private=False, hentai=False, syntax=False,
       **ignored):
-    self.__d = _Term(self, init,
+    self.__d = _Term(self,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax)
     if init:
       self.init(parent)
@@ -2248,11 +2252,12 @@ class Term(QObject):
     """Invoke super __init__
     @param  parent  QObject
     """
-    #assert not self.__d.init
-    super(Term, self).__init__(parent)
-    self.__d.init = True
-    self.updateUserIdChanged.connect(lambda:
-        self.updateUserNameChanged.emit(self.updateUserName))
+    d = self.__d
+    if not d.init:
+      d.init = True
+      super(Term, self).__init__(parent)
+      self.updateUserIdChanged.connect(lambda:
+          self.updateUserNameChanged.emit(self.updateUserName))
 
   def isInitialized(self): return self.__d.init # -> bool
 
@@ -2690,9 +2695,9 @@ class _Reference(object):
     'dirtyProperties',
   )
 
-  def __init__(self, q, init,
+  def __init__(self, q,
       id, itemId, gameId, gameMd5, userId, userHash, type, timestamp, updateTimestamp, updateUserId, key, title, brand, url, date, comment, updateComment, disabled, deleted):
-    self.init = init            # bool
+    self.init = False           # bool
     self.id = id                # long
     self.itemId = itemId        # long
     self.gameId = gameId        # long
@@ -2789,7 +2794,7 @@ class Reference(QObject):
       updateUserId=0, updateTimestamp=0,
       disabled=False, deleted=False,
       **ignored):
-    self.__d = _Reference(self, init,
+    self.__d = _Reference(self,
         id, itemId, gameId, gameMd5, userId, userHash, type, timestamp, updateTimestamp, updateUserId, key, title, brand, url, date, comment, updateComment, disabled, deleted)
     if init:
       self.init(parent)
@@ -2832,10 +2837,12 @@ class Reference(QObject):
     """Invoke super __init__
     @param  parent  QObject
     """
-    super(Reference, self).__init__(parent)
-    self.__d.init = True
-    self.updateUserIdChanged.connect(lambda:
-        self.updateUserNameChanged.emit(self.updateUserName))
+    d = self.__d
+    if not d.init:
+      super(Reference, self).__init__(parent)
+      d.init = True
+      self.updateUserIdChanged.connect(lambda:
+          self.updateUserNameChanged.emit(self.updateUserName))
 
   #def isInitialized(self): return self.__d.init  # not used
 
@@ -7425,13 +7432,13 @@ class _DataManager(object):
       self.dirtyTermsLocked = False
     dprint("leave")
 
-  def saveTerms(self):
+  def saveTerms(self): # -> bool
     if not self._termsDirty or not self.terms:
-      return
+      return False
     if self.dirtyTermsLocked:
       dprint("warning: dirty terms are locked, save later")
       self._saveTermsLater()
-      return
+      return False
     xmlfile = rc.xml_path('terms')
     data = rc.jinja_template('xml/terms').render({
       'now': datetime.now(),
@@ -7439,10 +7446,10 @@ class _DataManager(object):
     })
     ok = skfileio.writefile(xmlfile, data)
     if ok:
-      settings.global_().setTermsTime(skdatetime.current_unixtime())
       dprint("pass: xml = %s" % xmlfile)
     else:
       dwarn("failed: xml = %s" % xmlfile)
+    return ok
 
   def reloadTerms(self):
     xmlfile = rc.xml_path('terms')
@@ -8147,6 +8154,9 @@ class DataManager(QObject):
         dprint("term count = %i" % len(d.terms))
         d.touchTerms()
         d.invalidateTerms()
+        #with SkProfiler(): # 12/8/2014: 0.7240298 seconds
+        if d.saveTerms():
+          ss.setTermsTime(now)
         growl.msg(my.tr("Found {0} terms").format(len(d.terms)))
       elif incremental and l == []:
         growl.msg(my.tr("No new terms found for Shared Dictionary"))
@@ -8156,7 +8166,6 @@ class DataManager(QObject):
           my.tr("Failed to download terms online"),
           my.tr("Something might be wrong with the Internet connection"),
         )))
-
       d.updateTermsLocked = False
       dprint("leave")
 
