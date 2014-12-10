@@ -13,6 +13,7 @@ import config, growl, i18n, netman, settings #ttsman
 
 Yes = QMessageBox.Yes
 No = QMessageBox.No
+Reset = QMessageBox.Reset
 
 def _parent():
   """
@@ -336,23 +337,27 @@ It might take a couple of seconds to complete."""),
 
 def confirmUpdateTerms():
   """
-  @return  bool
+  @return  {reset=bool} or None
   """
   if not netman.manager().isOnline():
     growl.warn(my.tr("Cannot perform update when offline"))
     return
   #_speak(u"今すぐ辞書を更新しますか？")
   t = settings.global_().termsTime() or config.VERSION_TIMESTAMP
-  return Yes == QMessageBox.question(_parent(),
+  sel = QMessageBox.question(_parent(),
       my.tr("Update user-contributed dictionary"),
       "\n\n".join((
-my.tr("""Dictionary terms are updated on: {0}.
-The dictionary might enhance machine translation quality.
-VNR will check for automatically updates."""),
-my.tr("""Do you want to update now?
-It might take a couple of seconds to complete."""),
+my.tr("""Dictionary terms for machine translation are updated on: {0}.
+VNR will check for automatically updates. Do you want to update now?"""),
+my.tr("""
+VNR will do incremental update by default.
+But if you press Reset, VNR will redownload the entire data, which is slow."""),
 )).format(i18n.timestamp2datetime(t)),
-      Yes|No, No)
+      Yes|No|Reset, No)
+  if sel == Yes:
+    return {'reset':False}
+  elif sel == Reset:
+    return {'reset':True}
 
 #def confirmUpdateTranslationScripts():
 #  """

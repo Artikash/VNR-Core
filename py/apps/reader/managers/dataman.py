@@ -1928,7 +1928,7 @@ class Comment(QObject):
       self.updateUserIdChanged.connect(lambda:
           self.updateUserNameChanged.emit(self.updateUserName))
 
-  #def isInitialized(self): return self.__d.init  # not used
+  def isInitialized(self): return self.__d.init  # not used
 
   def clone(self, id=0, userId=0, userHash=None, timestamp=0, disabled=None, deleted=None, updateUserId=None, updateTimestamp=None):
     d = self.__d
@@ -2844,7 +2844,7 @@ class Reference(QObject):
       self.updateUserIdChanged.connect(lambda:
           self.updateUserNameChanged.emit(self.updateUserName))
 
-  #def isInitialized(self): return self.__d.init  # not used
+  def isInitialized(self): return self.__d.init  # not used
 
   def clone(self, id=0, userId=0, userHash=None, timestamp=0, disabled=None, deleted=None, updateUserId=None, updateTimestamp=None):
     d = self.__d
@@ -5842,10 +5842,14 @@ class _DataManager(object):
 
   def clearTerms(self):
     if self.terms:
-      if self.termsInitialized:
-        for t in self.terms:
-          if t.parent():
-            t.setParent(None)
+      #if self.termsInitialized:
+      #  for t in self.terms:
+      #    if t.isInitialized():
+      #      try:
+      #        if t.parent():
+      #          t.setParent(None) # might raise if QObject has been deleted
+      #      except Exception, e:
+      #        dwarn(e)
       self.terms = []                 # [Term], not None
       #self.sortedTerms = None
 
@@ -8119,28 +8123,34 @@ class DataManager(QObject):
           it.init(self)
       self.termsEditableChanged.emit(t)
 
-  def updateTerms(self):
+  def updateTerms(self, reset=False):
+    """
+    @param* reset  whether do incremental update
+    """
     d = self.__d
     if d.updateTermsLocked:
-      growl.notify(my.tr("Waiting for updating dictionary") + " ...")
+      growl.notify(my.tr("Waiting for dictionary update") + " ...")
     elif netman.manager().isOnline():
       d.updateTermsLocked = True
       dprint("enter")
-      growl.msg(my.tr("Updating dictionary terms online") + " ...")
+      if reset:
+        growl.msg(my.tr("Redownload the entire dictionary terms") + " ...")
+      else:
+        growl.msg(my.tr("Update dictionary terms incrementally") + " ...")
 
       editable = d.termsEditable
       ss = settings.global_()
       updateTime = ss.termsTime()
       now = skdatetime.current_unixtime()
-      l = d.terms
 
+      l = d.terms
       nm = netman.manager()
-      incremental = updateTime and l # bool
+      incremental = not reset and updateTime and l # bool
       if incremental:
         l = nm.mergeTerms(l, updateTime,
-            d.user.name, d.user.password, init=editable, parent=self)
+            d.user.name, d.user.password, init=editable) #, parent=self)
       else:
-        l = nm.getTerms(d.user.name, d.user.password, init=editable, parent=self)
+        l = nm.getTerms(d.user.name, d.user.password, init=editable) #, parent=self)
       if l:
         if not editable and editable != d.termsEditable:
           for it in l:
@@ -8159,7 +8169,7 @@ class DataManager(QObject):
           ss.setTermsTime(now)
         growl.msg(my.tr("Found {0} terms").format(len(d.terms)))
       elif incremental and l == []:
-        growl.msg(my.tr("No new terms found for Shared Dictionary"))
+        growl.msg(my.tr("No changes found for Shared Dictionary"))
         ss.setTermsTime(now)
       else:
         growl.warn('<br/>'.join((
@@ -9034,8 +9044,13 @@ class DataManager(QObject):
     #term.deleted = True
     #try: d._sortedTerms.remove(term)
     #except: pass
-    if term.parent():
-      skevents.runlater(partial(term.setParent, None), 90000) # after 1.5 min
+
+    #if term.isInitialized():
+    #  try:
+    #    if term.parent():
+    #      skevents.runlater(partial(term.setParent, None), 90000) # after 1.5 min
+    #  except Exception, e:
+    #    dwarn(e)
 
     d.invalidateTerms()
     d.touchTerms()
@@ -9077,8 +9092,12 @@ class DataManager(QObject):
             td.updateComment and td.updateComment != updateComment and not td.updateComment.startswith(updateComment + ' //')
           ) else updateComment
         t.deleted = True
-        if t.parent():
-          skevents.runlater(partial(t.setParent, None), 120000) # after 2 min
+        #if t.isInitialized():
+        #  try:
+        #    if t.parent():
+        #      skevents.runlater(partial(t.setParent, None), 120000) # after 2 min
+        #  except Exception, e:
+        #    dwarn(e)
 
     if count:
       d.terms = [t for t in d.terms if not (t.d.selected and t.d.deleted)]
@@ -9584,9 +9603,10 @@ class DataManagerProxy(QObject):
 
   @Slot()
   def updateTerms(self):
-    if prompt.confirmUpdateTerms():
+    sel = prompt.confirmUpdateTerms()
+    if sel:
       manager().submitDirtyTerms()
-      manager().updateTerms()
+      manager().updateTerms(**sel)
 
   @Slot(QObject)
   def duplicateTerm(self, term):
