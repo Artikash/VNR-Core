@@ -9,7 +9,7 @@ if __name__ == '__main__':
 
 import os
 from sakurakit.skdebug import dprint, dwarn
-from sakurakit.skprofiler import SkProfiler
+from sakurakit.skprof import SkProfiler
 
 import initdefs
 TARGET_DIR = initdefs.CACHE_IPADIC_RELPATH

@@ -75,7 +75,7 @@ def createdb(dbpath): # unicode path -> bool
   return False
 
 if __name__ == '__main__':
-  from sakurakit.skprofiler import SkProfiler
+  from sakurakit.skprof import SkProfiler
   import os
   path = 'test.db'
   if os.path.exists(path):

@@ -17,7 +17,7 @@ import ocrutil, termman
 # TODO: Move to colorutil
 # http://www.had2know.com/technology/hsi-rgb-color-converter-equations.html
 
-#from sakurakit.skprofiler import SkProfiler
+#from sakurakit.skprof import SkProfiler
 
 OCR_MIN_WIDTH = 3
 OCR_MIN_HEIGHT = 3

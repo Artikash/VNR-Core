@@ -99,7 +99,7 @@ if __name__ == '__main__':
     #s = u"What are you doing?"
     #fr = "en"
 
-    from sakurakit.skprofiler import SkProfiler
+    from sakurakit.skprof import SkProfiler
 
     # Does not work because
     # 1. need GZIP

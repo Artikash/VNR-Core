@@ -11,6 +11,8 @@
 # Some of the expensive requests that will parse large data are using session
 # Some cheap requests are using Qt session
 
+#from sakurakit.skprof import SkProfiler
+
 import json, operator
 import requests
 from datetime import datetime
@@ -18,7 +20,7 @@ from functools import partial
 from cStringIO import StringIO
 #import xml.etree.cElementTree as etree
 from lxml import etree
-from PySide.QtCore import Signal, QObject
+from PySide.QtCore import Signal, QObject, QCoreApplication
 from PySide.QtNetwork import QNetworkAccessManager, QNetworkConfigurationManager
 from sakurakit import skthreads, skstr
 from sakurakit.skclass import Q_Q, memoized, memoizedproperty, memoizedmethod_filter
@@ -773,6 +775,10 @@ class _NetworkManager(object):
               #  kw['userHash'] = kw['userId']
               ret.append(dataman.Reference(init=init, **kw))
 
+        if init:
+          mainThread = QCoreApplication.instance().thread()
+          for it in ret:
+            it.moveToThread(mainThread)
         dprint("reference count = %i" % len(ret))
         return ret
 
@@ -991,6 +997,8 @@ class _NetworkManager(object):
       if r.ok and _response_is_xml(r):
         #root = etree.fromstring(r.content)
 
+        mainThread = QCoreApplication.instance().thread()
+
         ret = {} if hash else []
 
         context = etree.iterparse(StringIO(r.content), events=('start','end'))
@@ -1001,12 +1009,6 @@ class _NetworkManager(object):
             path += 1
             if path == 3: # grimoire/comments/comment
               kw = {
-                #'comment': "",
-                #'updateComment': "",
-                #'updateTimestamp':  0,
-                #'updateUserId': 0,
-                #'disabled': False,
-                #'locked': False,
                 'id': int(elem.get('id')),
                 'type': elem.get('type'),
               }
@@ -1027,15 +1029,10 @@ class _NetworkManager(object):
                 kw['contextSize'] = int(elem.get('size'))
 
             elif path == 2 and kw['type'] in TYPES: # grimoire/comments
-              #c = dataman.Comment(init=init,
-              #  id=p['id'], type=p['type'], gameId=p['gameId'], userId=p['userId'],
-              #  language=p['language'], timestamp=p['timestamp'], disabled=p['disabled'], locked=p['locked'],
-              #  updateTimestamp=p['updateTimestamp'], updateUserId=p['updateUserId'],
-              #  text=p['text'], context=p['context'], hash=p['hash'], contextSize=p['contextSize'],
-              #  comment=p['comment'], updateComment=p['updateComment'])
-              #if not kw.get('userHash'):
-              #  kw['userHash'] = kw['userId']
               c = dataman.Comment(init=init, **kw)
+              if init:
+                c.moveToThread(mainThread)
+
               if not hash:
                 ret.append(c)
               else:
@@ -1335,18 +1332,6 @@ class _NetworkManager(object):
             path += 1
             if path == 3: # grimoire/terms/term
               kw = {
-                #'gameId': 0,
-                #'text': "",
-                #'pattern': "",
-                #'disabled': False,
-                #'special': False,
-                #'regex': False,
-                ##'ignoresCase': False,
-                ##'bbcode': False,
-                #'comment': "",
-                #'updateComment': "",
-                #'updateTimestamp':  0,
-                #'updateUserId': 0,
                 'id': int(elem.get('id')),
                 'type': elem.get('type'),
               }
@@ -1366,7 +1351,13 @@ class _NetworkManager(object):
               #if not kw.get('userHash'):
               #  kw['userHash'] = kw['userId']
               ret.append(dataman.Term(init=init, **kw))
-
+        if ret:
+          ret.sort(key=operator.attrgetter('modifiedTimestamp'))
+          if init:
+            mainThread = QCoreApplication.instance().thread()
+            #with SkProfiler(): # 12/8/2014: 0.213 seconds
+            for it in ret:
+              it.moveToThread(mainThread)
         dprint("term count = %i" % len(ret))
         return ret
 
@@ -1762,12 +1753,8 @@ class NetworkManager(QObject):
     @return  [dataman.Reference] or None
     """
     if self.isOnline() and (gameId or md5):
-      ret = skthreads.runsync(partial(
-          self.__d.queryReferences, gameId, md5, init=False))
-      if ret and init:
-        #map(dataman.Reference.init, ret)   # for loop is faster
-        for it in ret: it.init()
-      return ret
+      return skthreads.runsync(partial(
+          self.__d.queryReferences, gameId, md5, init=init))
 
   def submitReference(self, ref, userName, password, md5=None, async=False):
     """Either id or digest should be specified.
@@ -1791,7 +1778,7 @@ class NetworkManager(QObject):
 
   ## Comments ##
 
-  def queryComments(self, gameId=0, md5=None, hash=True):
+  def queryComments(self, gameId=0, md5=None, hash=True, init=True):
     """Either gameid or digest should be specified
     @param  gameId  long or 0
     @param  md5  str or None
@@ -1799,17 +1786,17 @@ class NetworkManager(QObject):
     @return  ({long:[dataman.Comment] if hash else [dataman.Comment]) or None
     """
     if self.isOnline() and (gameId or md5):
-      ret = skthreads.runsync(partial(
-          self.__d.queryComments, gameId, md5, init=False, hash=hash))
-      if ret:
-        if hash:
-          for l in ret.itervalues():
-            #map(dataman.Comment.init, l) # for loop is faster
-            for it in l: it.init()
-        else:
-          #map(dataman.Comment.init, ret) # for loop is faster
-          for it in ret: it.init()
-      return ret
+      return skthreads.runsync(partial(
+          self.__d.queryComments, gameId, md5, init=init, hash=hash))
+      #if ret:
+      #  if hash:
+      #    for l in ret.itervalues():
+      #      #map(dataman.Comment.init, l) # for loop is faster
+      #      for it in l: it.init()
+      #  else:
+      #    #map(dataman.Comment.init, ret) # for loop is faster
+      #    for it in ret: it.init()
+      #return ret
 
   def submitComment(self, comment, userName, password, md5=None, async=False):
     """Either id or digest should be specified.
@@ -1861,15 +1848,11 @@ class NetworkManager(QObject):
     @return  [dataman.Term] or None
     """
     if self.isOnline():
-      ret = skthreads.runsync(partial(
-          self.__d.getTerms, userName, password, init=False))
-      if ret:
-        if init:
-          #map(dataman.Term.init, ret) # for is faster
-          for it in ret:
-            it.init(parent)
-        ret.sort(key=operator.attrgetter('modifiedTimestamp'))
-      return ret
+      return skthreads.runsync(partial(
+          self.__d.getTerms, userName, password, init=init))
+      #if ret and init:
+      #  for it in ret:
+      #    it.init(parent)
 
   def submitTerm(self, term, userName, password, async=False):
     """Either id or digest should be specified.

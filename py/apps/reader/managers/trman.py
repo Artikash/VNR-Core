@@ -8,7 +8,7 @@
 # - translation: machine translation
 # - comment: user's subtitle or comment
 
-#from sakurakit.skprofiler import SkProfiler
+#from sakurakit.skprof import SkProfiler
 
 import itertools
 from functools import partial

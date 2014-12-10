@@ -1,5 +1,5 @@
 # coding: utf8
-# skprofiler.py
+# skprof.py
 # 1/16/2014 jichi
 #
 # http://preshing.com/20110924/timing-your-code-using-pythons-with-statement/

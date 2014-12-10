@@ -22,7 +22,7 @@ from i18n import i18n
 import config, growl, textutil, trman
 from unitraits.uniconv import wide2thin, wide2thin_digit
 
-#from sakurakit.skprofiler import SkProfiler
+#from sakurakit.skprof import SkProfiler
 
 __NO_DELIM = '' # no deliminators
 _NO_SET = frozenset()

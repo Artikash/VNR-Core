@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
 import os
 from sakurakit.skdebug import dprint, dwarn
-from sakurakit.skprofiler import SkProfiler
+from sakurakit.skprof import SkProfiler
 
 import initdefs
 INST_DIR = initdefs.INST_RELPATH + '/AppLocale'

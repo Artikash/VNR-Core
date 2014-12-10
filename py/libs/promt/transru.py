@@ -122,7 +122,7 @@ if __name__ == '__main__':
     #s = u"What are you doing?"
     #fr = "en"
 
-    from sakurakit.skprofiler import SkProfiler
+    from sakurakit.skprof import SkProfiler
 
     from qtrequests import qtrequests
     from PySide.QtNetwork import QNetworkAccessManager
