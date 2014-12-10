@@ -1307,20 +1307,55 @@ class _NetworkManager(object):
 
   ## Terminology ##
 
-  def mergeTerms(self, terms, *args, **kwargs):
-    """
+  def mergeTerms(self, userId, terms, init, **kwargs):
+    """Return [] if no changes, None if error, or list of terms if succeed
+    @param  userId  long
     @param  terms  [dataman.Term]
-    @return  [dataman.Term] or None
+    @param* init  bool
+    @param* kwargs  passed to getTerms
+    @return  [dataman.Term] or [] or None
     """
-    l = self.getTerms()
-    if l:
+    l = self.getTerms(sort=False, init=init, **kwargs)
+    if l == []: # not modified
       return l
+    if l:
+      if init:
+        mainThread = QCoreApplication.instance().thread()
+        for it in terms:
+          if not it.isInitialized():
+            it.init()
+            it.moveToThread(mainThread)
 
-  def getTerms(self, userName, password, init=True, difftime=0):
+      index = {} # {long id:dataman.Term}
+      for it in l:
+        index[it.d.id] = it
+
+      TYPES = dataman.Term.TYPES
+      def _good_term_data(td): # dataman._Term -> bool
+        return not td.deleted and td.type in TYPES and (userId == td.userId or not td.private)
+
+      ret = []
+      for it in terms:
+        t = index.get(it.d.id)
+        if not t:
+          ret.append(it)
+        else:
+          del index[it.d.id]
+          if _good_term_data(t.d):
+            ret.append(t)
+      if index:
+        for t in index.itervalues():
+          if _good_term_data(t.d):
+            ret.append(t)
+      ret.sort(key=operator.attrgetter('modifiedTimestamp'))
+      return ret
+
+  def getTerms(self, userName, password, sort=True, init=True, difftime=0):
     """
     @param  userName  str
     @param  password  str
     @param* init  bool  whether init term object
+    @param* sort  bool  whether sort the result list
     @param* difftime  long  timestamp
     """
     params = {
@@ -1368,7 +1403,8 @@ class _NetworkManager(object):
               #  kw['userHash'] = kw['userId']
               ret.append(dataman.Term(init=init, **kw))
         if ret:
-          ret.sort(key=operator.attrgetter('modifiedTimestamp'))
+          if sort:
+            ret.sort(key=operator.attrgetter('modifiedTimestamp'))
           if init:
             mainThread = QCoreApplication.instance().thread()
             #with SkProfiler(): # 12/8/2014: 0.213 seconds
@@ -1861,7 +1897,7 @@ class NetworkManager(QObject):
     @param* password  str
     @param* init  bool  whether initialize QObject
     @param* parent  QObject  to init
-    @return  [dataman.Term] or None
+    @return  [dataman.Term] or [] or None
     """
     if self.isOnline():
       return skthreads.runsync(partial(
@@ -1875,11 +1911,13 @@ class NetworkManager(QObject):
     @param* password  str
     @param* init  bool  whether initialize QObject
     @param* parent  QObject  to init
-    @return  [dataman.Term] or None
+    @return  [dataman.Term] or [] or None
     """
     if self.isOnline():
+      userId = dataman.manager().user().id # bad pattern
       return skthreads.runsync(partial(
-          self.__d.mergeTerms, terms, userName, password, init=init, difftime=time))
+          self.__d.mergeTerms, userId, terms,
+            userName=userName, password=password, init=init, difftime=time))
 
   def submitTerm(self, term, userName, password, async=False):
     """Either id or digest should be specified.

@@ -1781,6 +1781,7 @@ class _Comment(object):
   __slots__ = (
     'q', 'qref', # Q_Q
 
+    'init',
     'id',
     'gameId',
     '_gameMd5',
@@ -1806,8 +1807,9 @@ class _Comment(object):
     'dirtyProperties',
   )
 
-  def __init__(self, q,
+  def __init__(self, q, init,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, hash, context, contextSize, comment, updateComment, disabled, deleted, locked):
+    self.init = init            # bool
     self.id = id                # long
     self.gameId = gameId        # long
     self._gameMd5 = gameMd5     # str
@@ -1906,7 +1908,7 @@ class Comment(QObject):
       disabled=False, deleted=False, locked=False,
       updateUserId=0, updateTimestamp=0,
       **ignored):
-    self.__d = _Comment(self,
+    self.__d = _Comment(self, init,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, hash, context, contextSize, comment, updateComment, disabled, deleted, locked)
     if init:
       self.init(parent)
@@ -1918,12 +1920,15 @@ class Comment(QObject):
     @param  parent  QObject
     """
     super(Comment, self).__init__(parent)
+    self.__d.init = True
     self.updateUserIdChanged.connect(lambda:
         self.updateUserNameChanged.emit(self.updateUserName))
 
+  #def isInitialized(self): return self.__d.init  # not used
+
   def clone(self, id=0, userId=0, userHash=None, timestamp=0, disabled=None, deleted=None, updateUserId=None, updateTimestamp=None):
     d = self.__d
-    return Comment(parent=self.parent(),
+    return Comment(parent=self.parent(), init=d.init,
       id=id if id else d.id,
       userId=userId if userId else d.userId,
       userHash=userHash if userHash is not None else userId,
@@ -2062,6 +2067,7 @@ class _Term(object):
   __slots__ = (
     'q', 'qref', # Q_Q
 
+    'init',
     'id',
     'gameId',
     '_gameMd5',
@@ -2091,10 +2097,10 @@ class _Term(object):
     '_gameItemId',
   )
 
-  def __init__(self, q,
+  def __init__(self, q, init,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax):
     #self.priority = 0 # int  assigned after sorting
-
+    self.init = init            # bool
     self.id = id                # long
     self.gameId = gameId        # long
     self._gameMd5 = gameMd5     # str
@@ -2231,7 +2237,7 @@ class Term(QObject):
       regex=False,
       disabled=False, deleted=False, special=False, private=False, hentai=False, syntax=False,
       **ignored):
-    self.__d = _Term(self,
+    self.__d = _Term(self, init,
       id, gameId, gameMd5, userId, userHash, type, language, timestamp, updateTimestamp, updateUserId, text, pattern, comment, updateComment, regex, disabled, deleted, special, private, hentai, syntax)
     if init:
       self.init(parent)
@@ -2242,13 +2248,17 @@ class Term(QObject):
     """Invoke super __init__
     @param  parent  QObject
     """
+    #assert not self.__d.init
     super(Term, self).__init__(parent)
+    self.__d.init = True
     self.updateUserIdChanged.connect(lambda:
         self.updateUserNameChanged.emit(self.updateUserName))
 
+  def isInitialized(self): return self.__d.init # -> bool
+
   def clone(self, id=0, userId=0, userHash=None, timestamp=0, disabled=None, deleted=None, updateUserId=None, updateTimestamp=None):
     d = self.__d
-    return Term(parent=self.parent(),
+    return Term(parent=self.parent(), init=d.init,
       id=id if id else d.id,
       userId=userId if userId else d.userId,
       userHash=userHash if userHash is not None else userId,
@@ -2655,6 +2665,7 @@ class _Reference(object):
   __slots__ = (
     'q', 'qref',  # Q_Q
 
+    'init',
     'id',
     'itemId',
     'gameId',
@@ -2679,8 +2690,9 @@ class _Reference(object):
     'dirtyProperties',
   )
 
-  def __init__(self, q,
+  def __init__(self, q, init,
       id, itemId, gameId, gameMd5, userId, userHash, type, timestamp, updateTimestamp, updateUserId, key, title, brand, url, date, comment, updateComment, disabled, deleted):
+    self.init = init            # bool
     self.id = id                # long
     self.itemId = itemId        # long
     self.gameId = gameId        # long
@@ -2777,7 +2789,7 @@ class Reference(QObject):
       updateUserId=0, updateTimestamp=0,
       disabled=False, deleted=False,
       **ignored):
-    self.__d = _Reference(self,
+    self.__d = _Reference(self, init,
         id, itemId, gameId, gameMd5, userId, userHash, type, timestamp, updateTimestamp, updateUserId, key, title, brand, url, date, comment, updateComment, disabled, deleted)
     if init:
       self.init(parent)
@@ -2821,12 +2833,15 @@ class Reference(QObject):
     @param  parent  QObject
     """
     super(Reference, self).__init__(parent)
+    self.__d.init = True
     self.updateUserIdChanged.connect(lambda:
         self.updateUserNameChanged.emit(self.updateUserName))
 
+  #def isInitialized(self): return self.__d.init  # not used
+
   def clone(self, id=0, userId=0, userHash=None, timestamp=0, disabled=None, deleted=None, updateUserId=None, updateTimestamp=None):
     d = self.__d
-    return Reference(parent=self.parent(),
+    return Reference(parent=self.parent(), init=d.init,
       id=id if id else d.id,
       userId=userId if userId else d.userId,
       userHash=userHash if userHash is not None else userId,
@@ -8107,11 +8122,14 @@ class DataManager(QObject):
       growl.msg(my.tr("Updating dictionary terms online") + " ...")
 
       editable = d.termsEditable
-      updateTime = settings.global_().termsTime()
+      ss = settings.global_()
+      updateTime = ss.termsTime()
+      now = skdatetime.current_unixtime()
       l = d.terms
 
       nm = netman.manager()
-      if updateTime and l:
+      incremental = updateTime and l # bool
+      if incremental:
         l = nm.mergeTerms(l, updateTime,
             d.user.name, d.user.password, init=editable, parent=self)
       else:
@@ -8130,6 +8148,9 @@ class DataManager(QObject):
         d.touchTerms()
         d.invalidateTerms()
         growl.msg(my.tr("Found {0} terms").format(len(d.terms)))
+      elif incremental and l == []:
+        growl.msg(my.tr("No new terms found for Shared Dictionary"))
+        ss.setTermsTime(now)
       else:
         growl.warn('<br/>'.join((
           my.tr("Failed to download terms online"),
