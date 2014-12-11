@@ -14,7 +14,12 @@ from sakurakit.sknetio import GZIP_HEADERS
 session = requests
 
 APPID_RE = re.compile(r'rttAppId:"(.*?)"')
-APPID_URL = "http://www.bing.com/translator/dynamic/js/LandingPage.js"
+#APPID_URL = "http://www.bing.com/translator/dynamic/js/LandingPage.js"
+
+# 12/10/2014
+# See: http://hawkee.com/snippet/6925/
+#APPID_URL = "http://www.bing.com/translator/dynamic/210010/js/LandingPage.js?loc=en&phenabled=&rttenabled=&v=210010"
+APPID_URL = "http://www.bing.com/translator/dynamic/210010/js/LandingPage.js"
 
 # Sample appID: TphQfI95DB7hNLTaOBJRGppiDD8NkTpAFuP3x1GNfDvxn89JVANAvwJrfSDlAPfXa
 #
