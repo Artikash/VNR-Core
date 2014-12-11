@@ -28,20 +28,18 @@
         height: 80px;
         margin-left: 20px;
       }
-      hr {
-        margin: 10px 0;
-      }
-      label {
-        text-align: right;
-      }
-      .links a.first {
-        margin-right: 10px;
-      }
+      hr { margin: 10px 0 }
+      label { text-align: right }
+      .head a { margin-left: 20px }
+      .links a.first { margin-right: 10px }
   %body
     .portal
       .row.head
         %img.logo(src="#{rc.image_url('logo-browser')}")
         #{tr('About')}
+        -set url = "http://sakuradite.com/app/vnr/changes"
+        %a(target="_blank",href="#{url}",title="#{url}")
+          #{tr('Recent Changes')}
       %hr
       .body.form-horizontal
         .form-group
