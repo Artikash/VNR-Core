@@ -64,6 +64,7 @@ processes:
   - chromeplus.exe      # Google?
   - chrome.exe          # Google
   - CHROME.EXE          # Google
+  - ComicsViewer.exe    # ComicsViewer
   - DTLite.exe          # Daemon Tools
   - Dwm.exe             # Windows
   - dwm.exe             # Windows
@@ -173,6 +174,7 @@ processes:
   - Thunder.exe         # Xunlei
   - thunder.exe         # Xunlei
   - TranEdit.exe        # Dr.eye
+  - TTPlayer.exe        # TTPlayer
   - TTraveler.exe       # Tencent
   - TTSReader.exe       # TextAloud TTS
   - vlc.exe             # VLC
