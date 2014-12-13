@@ -239,7 +239,8 @@ proxies:
   twimg:
     a:          http://153.121.52.138/proxy/twimg/a0
     pbs:        http://153.121.52.138/proxy/twimg/pbs
-  erogamescape: http://153.121.52.138/proxy/scape/~ap2/ero/toukei_kaiseki
+  # See: http://erogamescape.dyndns.org/usage/usage_201411.html
+  erogamescape: http://122.219.66.141/~ap2/ero/toukei_kaiseki
   dmm_jp:       http://153.121.52.138/proxy/dmm
   dmm_com:      http://153.121.52.138/proxy/dmmcom/www
   #dmm_com_p:    http://153.121.52.138/proxy/dmmcom/p
@@ -260,6 +261,7 @@ proxies:
     sakuradite.com: 153.121.54.194
     sakuradite.org: 153.121.52.138
     getchu.com:     210.155.150.152
+    erogamescape.dyndns.org: 122.219.66.141
 
   sites:
     #adlib-software: www.adlib-software.com
