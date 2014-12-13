@@ -159,6 +159,7 @@ processes:
   - ScreenshotReaderPortable.exe # http://sakuradite.com/topic/524
   - SetPoint.exe        # Logitech
   - sidebar.exe         # Microsoft Windows
+  - Skype.exe           # Microsoft Skype
   - SogouCloud.exe      # Sogou
   - SogouExplorer.exe   # Sogou
   - sogouexplorer.exe   # Sogou
