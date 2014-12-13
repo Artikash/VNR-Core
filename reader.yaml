@@ -10,7 +10,7 @@ version:
   name: reader
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1418275155
+  timestamp: 1418496188
 
 app:
   #debug: true

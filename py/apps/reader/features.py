@@ -68,7 +68,7 @@ def setMainlandChina(value):
       googlesr.setapi(config.PROXY_GOOGLE_SR)
       googletts.setapi(config.PROXY_GOOGLE_TTS)
       googletrans.setapi(config.PROXY_GOOGLE_TRANS)
-      erogamescape.api.sethost(config.PROXY_EROGAMESCAPE)
+      #erogamescape.api.sethost(config.PROXY_EROGAMESCAPE) # temporarily disabled
       dmm.game.sethost(config.PROXY_DMM_JP)
       dlsite.search.sethost(config.PROXY_DLSITE)
       for it in getchu.soft, getchu.search:

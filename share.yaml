@@ -297,7 +297,7 @@ proxies:
     #dmmcom/log-netgame: log-netgame.dmm.com
     #dmmcom/osapi: osapi.dmm.com
     kancolle:   203.104.209.7
-    scape:      erogamescape.dyndns.org
+    #scape:      erogamescape.dyndns.org
 
 google:
   search:       https://google.co.jp/search
