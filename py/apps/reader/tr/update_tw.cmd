@@ -3,7 +3,7 @@
 @setlocal
 @echo off
 
-set zhs2zht=opencc -c zhs2zhtw_vp.ini -i
+set zhs2zht=opencc -c s2twp.json -i
 
 call :zhs2zht zh_CN.ts zh_TW.ts
 

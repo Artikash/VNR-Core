@@ -31,7 +31,7 @@
     <message>
         <location filename="mytr.py" line="78"/>
         <source>User comment</source>
-        <translation>社羣評論</translation>
+        <translation>社群評論</translation>
     </message>
     <message>
         <location filename="mytr.py" line="224"/>
@@ -111,22 +111,22 @@
     <message>
         <location filename="mytr.py" line="228"/>
         <source>Add comment</source>
-        <translation>添加評論</translation>
+        <translation>新增評論</translation>
     </message>
     <message>
         <location filename="mytr.py" line="228"/>
         <source>add comment</source>
-        <translation>添加評論</translation>
+        <translation>新增評論</translation>
     </message>
     <message>
         <location filename="mytr.py" line="229"/>
         <source>Add subtitle</source>
-        <translation>添加字幕</translation>
+        <translation>新增字幕</translation>
     </message>
     <message>
         <location filename="mytr.py" line="229"/>
         <source>add subtitle</source>
-        <translation>添加字幕</translation>
+        <translation>新增字幕</translation>
     </message>
     <message>
         <location filename="mytr.py" line="128"/>
@@ -191,7 +191,7 @@
     <message>
         <location filename="mytr.py" line="79"/>
         <source>User danmaku</source>
-        <translation>社羣彈幕</translation>
+        <translation>社群彈幕</translation>
     </message>
     <message>
         <location filename="mytr.py" line="120"/>
@@ -266,12 +266,12 @@
     <message>
         <location filename="mytr.py" line="45"/>
         <source>Test Regular Expression</source>
-        <translation>測試正規表示式</translation>
+        <translation>測試正則表示式</translation>
     </message>
     <message>
         <location filename="mytr.py" line="45"/>
         <source>Test regular expression</source>
-        <translation>測試正規表示式</translation>
+        <translation>測試正則表示式</translation>
     </message>
     <message>
         <location filename="mytr.py" line="46"/>

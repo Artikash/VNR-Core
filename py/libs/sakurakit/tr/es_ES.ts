@@ -216,7 +216,7 @@
     <message>
         <location filename="sktr.py" line="192"/>
         <source>Quit</source>
-        <translation>Dejar de</translation>
+        <translation>Dejar</translation>
     </message>
     <message>
         <location filename="sktr.py" line="193"/>
@@ -446,12 +446,12 @@
     <message>
         <location filename="sktr.py" line="391"/>
         <source>Yes</source>
-        <translation>Si</translation>
+        <translation>Sí</translation>
     </message>
     <message>
         <location filename="sktr.py" line="392"/>
         <source>yes</source>
-        <translation>si</translation>
+        <translation>sí</translation>
     </message>
     <message>
         <location filename="sktr.py" line="393"/>

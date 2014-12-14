@@ -54,6 +54,7 @@ def is_illegal_text(text):
   """
   return bool(__illegal_re.search(text))
 
+# At most 16 characters
 __name_re = re.compile(ur'【(.*?)】|(.*?)「')
 def guess_text_name(text):
   """
@@ -62,7 +63,7 @@ def guess_text_name(text):
   """
   m = __name_re.match(text)
   if m:
-    return m.group(1) or m.group(2)
+    return m.group(1).strip() or m.group(2).strip()
   #return m.group(1) or m.group(2) or "" if m else ""
 
 __beauty_text_re = re.compile(ur'([。？！」】])(?![。！？」]|$)')

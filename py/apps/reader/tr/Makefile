@@ -1,7 +1,7 @@
 # Makefile
 # 8/8/2013 jichi
 
-#ZHSZHT = opencc -c zhs2zhtw_vp.ini -i
+#ZHSZHT = opencc -c s2twp.json -i
 
 .PHONY: all release clean
 

@@ -57,7 +57,7 @@
         <source>You can specify a different executable to launch the game process.
 By default it is the same as the executable of the game process.</source>
         <translation>你可以選擇其他程式來啟動遊戲。
-默認的啟動程式和遊戲程序相同。</translation>
+預設的啟動程式和遊戲程序相同。</translation>
     </message>
     <message>
         <location filename="dialogs/gameedit.py" line="234"/>
@@ -97,7 +97,7 @@ It is recommended that you have the Internet access now, so that VNR will delete
 But other users might revert your deletion later.
 If the hook code appear here again, please delete it here again.</source>
         <translation>真的要刪除這個特殊碼嗎？
-最好能連線網路，使得VNR可以一併禁用雲端存儲的特殊碼。
+最好能連線網路，使得VNR可以一併禁用雲端儲存的特殊碼。
 
 但是，其他的同學可能會取消你的刪除行為。
 如果相同特殊碼再次出現，請在這裡重新刪除。</translation>
@@ -200,7 +200,7 @@ If the hook code appear here again, please delete it here again.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="2339"/>
         <source>Reset default color</source>
-        <translation>恢復默認的顏色</translation>
+        <translation>恢復預設的顏色</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="6704"/>
@@ -260,7 +260,7 @@ If the hook code appear here again, please delete it here again.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="510"/>
         <source>Reset to the default wallpaper</source>
-        <translation>恢復默認的桌布</translation>
+        <translation>恢復預設的桌布</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="6469"/>
@@ -290,7 +290,7 @@ If the hook code appear here again, please delete it here again.</source>
     <message>
         <location filename="dialogs/gamewiz.py" line="50"/>
         <source>Add a new visual novel</source>
-        <translation>添加新遊戲</translation>
+        <translation>新增新遊戲</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="72"/>
@@ -309,16 +309,16 @@ if the target game is launched with &lt;b&gt;admin privilege&lt;/b&gt;
 &lt;br/&gt;&lt;br/&gt;
 
 Here&apos;s a &lt;a href=&quot;%s&quot;&gt;demo on youtube&lt;/a&gt; that might be helpful.</source>
-        <translation>這個嚮導會幫助你一步一步的完成添加視覺小說。
+        <translation>這個嚮導會幫助你一步一步的完成新增視覺小說。
 &lt;br/&gt;&lt;br/&gt;
 
-添加過程中最好有網路連線。
+新增過程中最好有網路連線。
 這樣，嚮導就可以在網上搜索遊戲的資訊，也許會為你節省一些設定遊戲的時間。
 &lt;br/&gt;&lt;br/&gt;
 
 注：
 在Windows Vista或Windows 7上當UAC開啟時，
-如果要添加的遊戲是以&lt;b&gt;管理員許可權&lt;/b&gt;開啟的，
+如果要新增的遊戲是以&lt;b&gt;管理員許可權&lt;/b&gt;開啟的，
 (即：當你開啟遊戲時，Windows會黑屏，提示你這樣這樣那樣那樣，然後問你是否繼續),
 &lt;b&gt;那麼請同樣以管理員的身份開啟VNR&lt;/b&gt;！
 &lt;br/&gt;&lt;br/&gt;
@@ -353,7 +353,7 @@ Here&apos;s a &lt;a href=&quot;%s&quot;&gt;demo on youtube&lt;/a&gt; that might 
     <message>
         <location filename="dialogs/gamewiz.py" line="130"/>
         <source>Select the game executable file on the hard drive</source>
-        <translation>選擇硬碟上遊戲的可執行檔案</translation>
+        <translation>選擇硬碟上游戲的可執行檔案</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="140"/>
@@ -368,7 +368,7 @@ Here&apos;s a &lt;a href=&quot;%s&quot;&gt;demo on youtube&lt;/a&gt; that might 
     <message>
         <location filename="dialogs/gamewiz.py" line="181"/>
         <source>Press START and  CLICK the game window, or press the STOP button to cancel.</source>
-        <translation>請在按下【開始】按鈕後點選遊戲視窗，或者按下【停止】按鈕取消。</translation>
+        <translation>請在按下【開始】按鈕後點擊遊戲視窗，或者按下【停止】按鈕取消。</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="299"/>
@@ -408,7 +408,7 @@ Here&apos;s a &lt;a href=&quot;%s&quot;&gt;demo on youtube&lt;/a&gt; that might 
     <message>
         <location filename="dialogs/gamewiz.py" line="495"/>
         <source>Is this the visual novel you would like to play?</source>
-        <translation>這個是你想要添加的視覺小說嗎？</translation>
+        <translation>這個是你想要新增的視覺小說嗎？</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="501"/>
@@ -498,7 +498,7 @@ Here&apos;s a &lt;a href=&quot;%s&quot;&gt;demo on youtube&lt;/a&gt; that might 
     <message>
         <location filename="dialogs/gamewiz.py" line="1017"/>
         <source>Complete adding visual novel!</source>
-        <translation>添加視覺小說完成！</translation>
+        <translation>新增視覺小說完成！</translation>
     </message>
     <message>
         <location filename="dialogs/gamewiz.py" line="1064"/>
@@ -577,12 +577,12 @@ Especially if you would like to translate this game.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="682"/>
         <source>Game detection</source>
-        <translation>遊戲搜索</translation>
+        <translation>遊戲搜尋</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="690"/>
         <source>Automatically detect running game</source>
-        <translation>自動搜索正在運行中的遊戲</translation>
+        <translation>自動搜尋正在運行中的遊戲</translation>
     </message>
     <message>
         <location filename="dialogs/prefs.py" line="228"/>
@@ -687,7 +687,7 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
     <message>
         <location filename="managers/gameman.py" line="974"/>
         <source>Could not found game online, and please manually add game by Game Wizard</source>
-        <translation>沒有在網路上找到文字設定，請手動在遊戲嚮導中添加</translation>
+        <translation>沒有在網路上找到文字設定，請手動在遊戲嚮導中新增</translation>
     </message>
     <message>
         <location filename="managers/gameman.py" line="1090"/>
@@ -697,12 +697,12 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
     <message>
         <location filename="managers/gameman.py" line="1139"/>
         <source>Cannot sync with game. Try restarting the game or using Game Wizard to set up connection</source>
-        <translation>無法與遊戲同步。請重新啟動遊戲，或者使用遊戲嚮導添加</translation>
+        <translation>無法與遊戲同步。請重新啟動遊戲，或者使用遊戲嚮導新增</translation>
     </message>
     <message>
         <location filename="managers/gameman.py" line="1149"/>
         <source>Cannot find game thread. Try using Game Wizard to set up connection</source>
-        <translation>沒有找到遊戲文字。請使用遊戲嚮導添加</translation>
+        <translation>沒有找到遊戲文字。請使用遊戲嚮導新增</translation>
     </message>
     <message>
         <location filename="managers/gameman.py" line="1164"/>
@@ -757,7 +757,7 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
     <message>
         <location filename="dialogs/gameedit.py" line="337"/>
         <source>Launch the game with DEFAULT loader in Preferences</source>
-        <translation>用使用偏好中默認的方式開啟遊戲</translation>
+        <translation>用使用偏好中預設的方式開啟遊戲</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="724"/>
@@ -767,7 +767,7 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="2089"/>
         <source>Block these languages as much as possible.</source>
-        <translation>VNR會儘可能的遮蔽選定的語言。</translation>
+        <translation>VNR會盡可能的遮蔽選定的語言。</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="2090"/>
@@ -982,7 +982,7 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
     <message>
         <location filename="main.py" line="1741"/>
         <source>Because you are offline, please manually add game using Game Wizard</source>
-        <translation>因為沒有網路連線，請在遊戲嚮導中手動添加遊戲</translation>
+        <translation>因為沒有網路連線，請在遊戲嚮導中手動新增遊戲</translation>
     </message>
     <message>
         <location filename="main.py" line="1549"/>
@@ -1027,7 +1027,7 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
     <message>
         <location filename="dialogs/prompt.py" line="161"/>
         <source>If VNR is taking too much memory, restarting it might help reduce its memory usage.</source>
-        <translation>如果VNR佔用了很多內存，重新啟動它可能會幫助釋放多餘的內存。</translation>
+        <translation>如果VNR佔用了很多記憶體，重新啟動它可能會幫助釋放多餘的記憶體。</translation>
     </message>
     <message>
         <location filename="managers/gameman.py" line="513"/>
@@ -1047,7 +1047,7 @@ But if you have a slow laptop, enabling it might slow down Windows.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="479"/>
         <source>But Drag-and-Drop does not work when VNR has admin privilege T_T</source>
-        <translation>但是，當VNR以管理員身份啟動時，無法通過拖動添加T_T</translation>
+        <translation>但是，當VNR以管理員身份啟動時，無法通過拖動新增T_T</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="521"/>
@@ -1240,7 +1240,7 @@ Kojien is detected on your system at the above location.</source>
     <message>
         <location filename="main.py" line="1560"/>
         <source>It seems to be an unknown game. Please add it using Game Wizard</source>
-        <translation>未知的遊戲，請在遊戲嚮導中手動添加</translation>
+        <translation>未知的遊戲，請在遊戲嚮導中手動新增</translation>
     </message>
     <message>
         <location filename="main.py" line="1558"/>
@@ -1250,15 +1250,15 @@ Kojien is detected on your system at the above location.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="644"/>
         <source>Launch the game (*.exe/*.lnk) dropped onto the Spring Board</source>
-        <translation>添加並運行拖曳到SpringBoard上的遊戲（*.exe或*.lnk）</translation>
+        <translation>新增並運行拖曳到SpringBoard上的遊戲（*.exe或*.lnk）</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="631"/>
         <source>When enabled, VNR will launch the game dropped onto the Spring Board.
 When disabled, VNR will only add the new game without launching it.
 Drag-drop does not work when VNR is launched with admin privileges.</source>
-        <translation>開啟時，VNR會添加並運行拖動到SpringBoard上的遊戲。
-禁用時，VNR僅會添加遊戲到SpringBoard，而不會運行它。
+        <translation>開啟時，VNR會新增並運行拖動到SpringBoard上的遊戲。
+禁用時，VNR僅會新增遊戲到SpringBoard，而不會運行它。
 拖曳的功能在以管理員身份運行VNR時是無效的。</translation>
     </message>
     <message>
@@ -1471,7 +1471,7 @@ Note: This function does not work well for all games &gt;&lt;</source>
     <message>
         <location filename="main.py" line="1873"/>
         <source>Unknown game. Please try updating the database.</source>
-        <translation>未知的遊戲。請更新下遊戲資料庫。</translation>
+        <translation>未知的遊戲。請更新下游戲資料庫。</translation>
     </message>
     <message>
         <location filename="managers/dataman.py" line="8821"/>
@@ -1496,7 +1496,7 @@ For example, you can put in &quot;typo&quot;, &quot;inaccurate&quot;, or &quot;s
     <message>
         <location filename="views/gameview.py" line="264"/>
         <source>The game title it not specified. You can click the Edit button to add one.</source>
-        <translation>遊戲的名字還沒有指定呢。可以點選編輯來為遊戲添加名字。</translation>
+        <translation>遊戲的名字還沒有指定呢。可以點選編輯來為遊戲新增名字。</translation>
     </message>
     <message>
         <location filename="dialogs/refinput.py" line="586"/>
@@ -1592,7 +1592,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
         <translation>&lt;h4&gt;關於賬戶&lt;/h4&gt;
 只使用機翻功能的話並不需要賬戶。&lt;br/&gt;
 &lt;br/&gt;
-這個賬戶是用來儲存人工翻譯和社羣評論的。
+這個賬戶是用來儲存人工翻譯和社群評論的。
 其他的同學將不能修改和刪除你的翻譯和評論，
 儘管他們仍可以改進你的字幕（如果沒有加鎖）。
 如果你希望發表自己的字幕和評論，可以到這裡註冊一個賬戶：
@@ -1687,7 +1687,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
 1. 線上更新遊戲資料庫
 2. 拖動lnk或exe到SpringBoard
 3. 以管理員許可權重新開啟VNR
-4. 在遊戲嚮導中手動添加遊戲</translation>
+4. 在遊戲嚮導中手動新增遊戲</translation>
     </message>
     <message>
         <location filename="dialogs/gameedit.py" line="429"/>
@@ -1697,7 +1697,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
     <message>
         <location filename="dialogs/gameedit.py" line="436"/>
         <source>Launch the game under DEFAULT time zone in Preferences</source>
-        <translation>用使用偏好中默認的時區設定開啟遊戲</translation>
+        <translation>用使用偏好中預設的時區設定開啟遊戲</translation>
     </message>
     <message>
         <location filename="dialogs/gameedit.py" line="444"/>
@@ -1761,7 +1761,7 @@ VNR is standing on the shoulder of a large amount of user-shared contributions.
 2. Add the game using Game Wizard</source>
         <translation>未知的遊戲。你可以嘗試：
 1. 線上更新遊戲資料庫
-2. 在遊戲嚮導中手動添加遊戲</translation>
+2. 在遊戲嚮導中手動新增遊戲</translation>
     </message>
     <message>
         <location filename="dialogs/prompt.py" line="452"/>
@@ -1784,17 +1784,17 @@ If only some of the game text repeat while some not,
 it is better to add some regular expressions to Shared Dictionary
 than turning on global repetition filters here.</source>
         <translation>你真的決定要過濾文字中的重複嗎？
-除非文字中真的布滿了重複，否則千萬不要開啟這個選項。
+除非文字中真的佈滿了重複，否則千萬不要開啟這個選項。
 極少有遊戲真的需要開啟全局過濾重複。
 
 這個選項僅僅會除去既有的文字中的重複。
 如果文字壓根就不正確，那麼這個選項絲毫幫不上忙。
 
-警告：如果提取的文字本身並沒有重複，而你卻開啟了這個選項，
+警告：如果提取的文字本身並沒有重複，而你卻打開了這個選項，
 那麼它很可能會嚴重的降低文字翻譯的質量。
 
 如果文字僅僅只有一部分有重複而一部分沒有，
-那麼最好通過向共享辭書添加正規表示式來去除重複，
+那麼最好通過向共享辭書新增正則表示式來去除重複，
 而不要在這裡開啟全局的重複過濾。</translation>
     </message>
     <message>
@@ -1871,7 +1871,7 @@ You can add games from different sites. Some differences are as follows:
 &lt;br/&gt;
 * ErogeTrailers has the information of amazon and dmm, so that you don&apos;t have to add other sites manually.
 &lt;br/&gt;
-* Amazon has popular games, but no 同人 games and no latest 独占 games.
+* Amazon has popular games, but no 同人 games and no latest 獨佔 games.
 &lt;br/&gt;
 DMM covers most of recent games, but is missing old games (say, before 2008).
 &lt;br/&gt;
@@ -1895,15 +1895,15 @@ If you don&apos;t like the translation for certain names, you can create a new t
 &lt;span style=&quot;color:purple&quot;&gt;具有相同的名字的不同的遊戲之間，將會共享人工翻譯和字幕。&lt;/span&gt;
 
 &lt;h3&gt;編輯遊戲的名字&lt;/h3&gt;
-在SpringBoard中開啟遊戲情報，點選&lt;span style=&quot;color:green&quot;&gt;【編輯】&lt;/span&gt;按鈕，最後點選【添加】並選擇遊戲正確的名稱就可以了。
+在SpringBoard中開啟遊戲情報，點選&lt;span style=&quot;color:green&quot;&gt;【編輯】&lt;/span&gt;按鈕，最後點選【新增】並選擇遊戲正確的名稱就可以了。
 &lt;br/&gt;&lt;br/&gt;
-完成後，重新整理下遊戲情報的視窗，就可以看到有關遊戲的資訊了。
+完成後，重新整理下游戲情報的視窗，就可以看到有關遊戲的資訊了。
 
 &lt;h3&gt;侷限性&lt;/h3&gt;
 * VNR僅支援在&lt;a href=&quot;http://erogetrailers.com&quot;&gt;ErogeTrailers.com&lt;/a&gt;，&lt;a href=&quot;http://amazon.co.jp&quot;&gt;Amazon.co.jp&lt;/a&gt;，或者&lt;a href=&quot;http://dmm.co.jp&quot;&gt;DMM.co.jp&lt;/a&gt;上可以找到的企業級的遊戲。
 VNR還不能識別其他網站上的遊戲，比如&lt;a href=&quot;http://dlsite.com&quot;&gt;DLsite.com&lt;/a&gt;上的同人遊戲。
 &lt;br/&gt;
-* 每個網站上最多只可以有一個遊戲和本地遊戲關聯。
+* 每個網站上最多隻可以有一個遊戲和本地遊戲關聯。
 &lt;br/&gt;
 * 有時，在相同的網站上存在好多版本的相同遊戲。
 讓我們不妨來約定一下，保留哪個版本吧！
@@ -1915,29 +1915,29 @@ VNR還不能識別其他網站上的遊戲，比如&lt;a href=&quot;http://dlsit
 -「限定版」over「通常版」over「廉価版」etc.
 
 &lt;h3&gt;不同網站的區別&lt;/h3&gt;
-VNR可以添加不同網站上的遊戲。它們的不同如下：
+VNR可以新增不同網站上的遊戲。它們的不同如下：
 &lt;br/&gt;
-* ErogeTrailers上已包含Amazon和DMM的資訊。添加了ErogeTrailers就不需要添加其他連結了。
+* ErogeTrailers上已包含Amazon和DMM的資訊。添加了ErogeTrailers就不需要新增其他連結了。
 &lt;br/&gt;
-* Amazon上包含很多名作，但是沒有同人遊戲，也沒有一些剛剛發售的独占遊戲。
+* Amazon上包含很多名作，但是沒有同人遊戲，也沒有一些剛剛發售的獨佔遊戲。
 &lt;br/&gt;
 DMM上幾乎可以找到近期發售的全部遊戲，但是不缺少很老的遊戲，比如2008年之前的。
 &lt;br/&gt;
 * DMM上包含比Amazon上更多的關於遊戲的資訊，比如遊戲的畫師和CG。
 &lt;br/&gt;
-* DMM的網頁僅限日本國內纔可以訪問。
+* DMM的網頁僅限日本國內才可以訪問。
 
 &lt;h3&gt;使用線上資訊改善日文分詞和機器翻譯&lt;/h3&gt;
 在指定遊戲的資訊後，VNR會嘗試去在網路上搜索遊戲中人物的名字。
-搜索到的名字會被用來改善日文分詞和機器翻譯的質量。
+搜尋到的名字會被用來改善日文分詞和機器翻譯的質量。
 現在，還不可以手動指定和編輯遊戲中人物的名字。
-如果你不喜歡自動生成的對人物角色的翻譯，你可以在【共享辭書】中添加相同的姓名來覆蓋掉自動生成的翻譯。
+如果你不喜歡自動生成的對人物角色的翻譯，你可以在【共享辭書】中新增相同的姓名來覆蓋掉自動生成的翻譯。
 </translation>
     </message>
     <message>
         <location filename="views/gameview.py" line="145"/>
         <source>Please try updating game database first</source>
-        <translation>請先手動更新下遊戲資料庫</translation>
+        <translation>請先手動更新下游戲資料庫</translation>
     </message>
     <message>
         <location filename="views/gameview.py" line="147"/>
@@ -2020,7 +2020,7 @@ This might result in redundant spaces for Japanese games.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="1483"/>
         <source>Preferred text-to-speech voice</source>
-        <translation>默認的語音合成引擎</translation>
+        <translation>預設的語音合成引擎</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="5701"/>
@@ -2273,7 +2273,7 @@ Show是&lt;span style=&quot;color:purple&quot;&gt;付費軟體&lt;/span&gt;，�
     <message>
         <location filename="dialogs/mttest.py" line="622"/>
         <source>Translations for split texts</source>
-        <translation>對分割後文字的翻譯</translation>
+        <translation>對分割後文本的翻譯</translation>
     </message>
     <message>
         <location filename="dialogs/mttest.py" line="558"/>
@@ -2299,7 +2299,7 @@ Show是&lt;span style=&quot;color:purple&quot;&gt;付費軟體&lt;/span&gt;，�
         <location filename="dialogs/_prefs.py" line="4728"/>
         <source>Some of the features of VNR need external applications to be installed.
 You can specify the locations of external libraries here.</source>
-        <translation>一些VNR的功能需要安裝其他的軟體纔好呢。
+        <translation>一些VNR的功能需要安裝其他的軟體才好呢。
 你可以在這裡調整其他的軟體的位置。</translation>
     </message>
     <message>
@@ -2409,7 +2409,7 @@ But you can also press &quot;Refresh&quot; to run the update manually.</source>
 共享辭書是用於改進對遊戲文字和窗體的機器翻譯質量的。
 它的內容不會影響到人工翻譯。
 辭書中定義的條目可以在機器翻譯之前或之後應用到文字中。
-人工定義詞條可以是一把雙刃劍，請小心不要讓它傷到你纔好&amp;gt;_&amp;lt;
+人工定義詞條可以是一把雙刃劍，請小心不要讓它傷到你才好&amp;gt;_&amp;lt;
 
 更多的幫助可以在Wiki上找到：
 &lt;center&gt;
@@ -2418,7 +2418,7 @@ But you can also press &quot;Refresh&quot; to run the update manually.</source>
 
 &lt;h3&gt;基本用法&lt;/h3&gt;
 &lt;span style=&quot;color:green&quot;&gt;
-點選【添加】來新增詞條，然後編輯【形態】和【翻譯】就好了。
+點選【新增】來新增詞條，然後編輯【形態】和【翻譯】就好了。
 完成後，VNR會將於【形態】匹配的文字置換為【翻譯】。
 &lt;/span&gt;
 可編輯的詞條會變成&lt;span style=&quot;color:green&quot;&gt;綠色&lt;/span&gt;。
@@ -2480,7 +2480,7 @@ VNR中可以共享對遊戲內容的&lt;span style=&apos;color:purple&apos;&gt;�
 整個過程並不需要修改任何遊戲的檔案。
 &lt;br/&gt;&lt;br/&gt;
 和使用補丁方式的翻譯比較起來， VNR中的彈幕更像動畫的外掛字幕， 而補丁則為內嵌字幕。
-相對於翻譯的質量，彈幕的機制很像由社羣支撐的維基百科，而補丁翻譯則更像由精英小組出版的書籍。
+相對於翻譯的質量，彈幕的機制很像由社群支撐的維基百科，而補丁翻譯則更像由精英小組出版的書籍。
 
 更多的資訊可以在Wiki上找到：
 &lt;center&gt;
@@ -2488,17 +2488,17 @@ VNR中可以共享對遊戲內容的&lt;span style=&apos;color:purple&apos;&gt;�
 &lt;/center&gt;
 
 &lt;h3&gt;開啟和禁止彈幕&lt;/h3&gt;
-人工彈幕默認是開啟的。
+人工彈幕預設是開啟的。
 如果有字幕或者評論，它們會自動顯示出來。
 &lt;br/&gt;&lt;br/&gt;
 如果你並不需要這個功能，
 你可以在左邊的浮動視窗中選擇隱藏彈幕，或者在【使用偏好/功能】中禁止彈幕。
 
-&lt;h3&gt;添加、編輯、和匯出彈幕&lt;/h3&gt;
+&lt;h3&gt;新增、編輯、和匯出彈幕&lt;/h3&gt;
 提交新的彈幕，可以開啟遊戲， 然後&lt;span style=&quot;color:green&quot;&gt;在遊戲視窗下方的評論欄中輸入文字，並按下回車&lt;/span&gt;就可以了。
-你也可以在【字幕創建器】中為之前的遊戲文字添加彈幕。
+你也可以在【字幕創建器】中為之前的遊戲文字新增彈幕。
 &lt;span style=&quot;color:red&quot;&gt;
-添加和修改彈幕需要網路連線。
+新增和修改彈幕需要網路連線。
 &lt;/span&gt;
 &lt;br/&gt;&lt;br/&gt;
 編輯已經存在的彈幕，可以直接右鍵點選它，並且選擇編輯。
@@ -2566,7 +2566,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
         <translation>&lt;h3&gt;簡介&lt;/h3&gt;
 在【文字設定】和【遊戲嚮導】中，
 可以選擇想要顯示和翻譯的遊戲文字。
-如果在添加遊戲後，沒有遊戲文字出現，
+如果在新增遊戲後，沒有遊戲文字出現，
 這通常是因為你的文字設定並不正確。
 
 更多的資訊可以在Wiki上找到：
@@ -2602,7 +2602,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
 文字速度的選項通常是一個標記為&lt;span style=&quot;color:purple&quot;&gt;「テキスト速度」&lt;/span&gt;的滑動條。
 
 &lt;h3&gt;遊戲字型&lt;/h3&gt;
-如果沒有任何文字出現，調整下遊戲的字型也許可以解決這個問題。
+如果沒有任何文字出現，調整下游戲的字型也許可以解決這個問題。
 比如&lt;span style=&quot;color:purple&quot;&gt;「時計仕掛けのレイライン」&lt;/span&gt;，只有在將遊戲設定中的字型從MS Mincho（MS明朝）變更為&lt;span style=&quot;color:red&quot;&gt;MS Gothic（MSゴシック）&lt;/span&gt;，VNR才能夠提取到正確的文字。
 
 &lt;h3&gt;特殊碼&lt;/h3&gt;
@@ -2664,7 +2664,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
     <message>
         <location filename="main.py" line="1855"/>
         <source>Unknown game. Please try editing the game information.</source>
-        <translation>未知的遊戲。請嘗試編輯下遊戲情報。</translation>
+        <translation>未知的遊戲。請嘗試編輯下游戲情報。</translation>
     </message>
     <message>
         <location filename="dialogs/prompt.py" line="564"/>
@@ -2682,7 +2682,7 @@ Please click the &quot;Edit Hook Code&quot; button, and delete the criminal hook
 So, these resources are not distributed together with VNR by default.
 You can select only the resources you need to download here.</source>
         <translation>一些免費的資源很大而又不是所有同學都需要的。
-這樣的資源默認時並沒有和VNR一起下載。
+這樣的資源預設時並沒有和VNR一起下載。
 你可以在這裡選擇你需要的資源來下載。
 </translation>
     </message>
@@ -2857,7 +2857,7 @@ VNR可以自動從臺灣大學下載並安裝pAppLocale。
     <message>
         <location filename="dialogs/terminput.py" line="291"/>
         <source>Add new term</source>
-        <translation>添加詞條</translation>
+        <translation>新增詞條</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="4196"/>
@@ -2942,7 +2942,7 @@ VNR可以自動從臺灣大學下載並安裝pAppLocale。
     <message>
         <location filename="dialogs/_prefs.py" line="936"/>
         <source>These shortcuts can only be enabled when the game is running.</source>
-        <translation>這些快捷鍵只有在遊戲運行時纔可以開啟的。</translation>
+        <translation>這些快捷鍵只有在遊戲運行時才可以開啟的。</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="939"/>
@@ -3039,16 +3039,16 @@ VNR會僅為你指定的角色配音，而不會讀出其他的遊戲文字。
 &lt;/center&gt;
 
 &lt;h3&gt;基本用法&lt;/h3&gt;
-語音合成配音的功能默認時是沒有開啟的。
+語音合成配音的功能預設時是沒有開啟的。
 要開啟配音功能，首先在【使用偏好/語音】中選擇不同性別使用的TTS聲音，
 再在【語音設定】中點選&lt;span style=&quot;color:green&quot;&gt;有效&lt;/span&gt;按鈕就好了。
 
 &lt;h3&gt;讀出原文與讀出翻譯&lt;/h3&gt;
-VNR默認會使用TTS讀出遊戲的原始文字。
+VNR預設會使用TTS讀出遊戲的原始文字。
 但是，當選擇的TTS的語言和遊戲的語言不同時，VNR會轉而讀出翻譯的文字。
 翻譯的文字既可以是人工字幕（如果有的話），也可以是機翻的字幕。
 
-比方說，如果你有裝中文的TTS，設定中文TTS為默認後，VNR會使用這個TTS讀出中文的字幕。
+比方說，如果你有裝中文的TTS，設定中文TTS為預設後，VNR會使用這個TTS讀出中文的字幕。
 
 &lt;h3&gt;推薦的TTS軟體&lt;/h3&gt;
 推薦使用VoiceText的TTS軟體。它不但支援日文，還支援中文、英文等其他語言。</translation>
@@ -3061,7 +3061,7 @@ VNR默認會使用TTS讀出遊戲的原始文字。
     <message>
         <location filename="managers/gameman.py" line="1265"/>
         <source>This game requires the text speed to be either Normal or Slow instead of Fast to work</source>
-        <translation>這個遊戲要求文字速度必須是Normal或者是Slow而不能是Fast纔可以工作</translation>
+        <translation>這個遊戲要求文字速度必須是Normal或者是Slow而不能是Fast才可以工作</translation>
     </message>
     <message>
         <location filename="managers/gameman.py" line="1270"/>
@@ -3076,7 +3076,7 @@ VNR默認會使用TTS讀出遊戲的原始文字。
     <message>
         <location filename="managers/gameman.py" line="1267"/>
         <source>This game requires the text speed to be Fast to work</source>
-        <translation>這個遊戲要求文字速度必須是Fast纔可以工作</translation>
+        <translation>這個遊戲要求文字速度必須是Fast才可以工作</translation>
     </message>
     <message>
         <location filename="managers/gameman.py" line="1262"/>
@@ -3096,7 +3096,7 @@ VNR默認會使用TTS讀出遊戲的原始文字。
     <message>
         <location filename="dialogs/_prefs.py" line="6678"/>
         <source>Changing the text extraction method requires restarting the game.</source>
-        <translation>修改文字提取方法需要重新啟動遊戲纔會生效。</translation>
+        <translation>修改文字提取方法需要重新啟動遊戲才會生效。</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="6761"/>
@@ -3216,7 +3216,7 @@ D. 日文無交集：泰文&lt;br/&gt;
 對D類型的語言，現在無法支援內嵌翻譯。&lt;br/&gt;
 內嵌翻譯B或者C類型的語言，需要遊戲用你自己的編碼啟動而不能用日文編碼啟動&lt;br/&gt;
 對B類型的語言，如果啟動成功，那麼內嵌翻譯就不會有任何問題了。&lt;br/&gt;
-對C類型的語言，即使啟動成功，仍舊會有編碼的問題，需要將全部文字都翻譯成你的語言纔可以。&lt;br/&gt;
+對C類型的語言，即使啟動成功，仍舊會有編碼的問題，需要將全部文字都翻譯成你的語言才可以。&lt;br/&gt;
 
 &lt;h3&gt;Debug&lt;/h3&gt;
 如果這個功能會讓你的遊戲崩潰掉，那麼可以嘗試運行Debug VNR，然後將VNR資料夾下的vnragent.log和崩潰遊戲的名字一起發給我。</translation>
@@ -3239,7 +3239,7 @@ D. 日文無交集：泰文&lt;br/&gt;
     <message>
         <location filename="dialogs/_prefs.py" line="5570"/>
         <source>You have non-ascii characters in the path which might work as expected</source>
-        <translation>在路徑中不可以有中文之類的非ASCII字元纔好呢</translation>
+        <translation>在路徑中不可以有中文之類的非ASCII字元才好呢</translation>
     </message>
     <message>
         <location filename="dialogs/embedprefs.py" line="785"/>
@@ -3349,14 +3349,14 @@ If VNR is launched from &quot;Debug VNR.cmd&quot;, VNR&apos;s text hook will sav
 If the game crashes because of VNR, you might be able to find the reason of the crash in that log file.</source>
         <translation>&lt;h3&gt;簡介&lt;/h3&gt;
 在【文字設定】中，可以選擇想要顯示和翻譯的遊戲文字。
-如果在添加遊戲後，沒有遊戲文字出現，這通常是因為你的文字設定並不正確。
+如果在新增遊戲後，沒有遊戲文字出現，這通常是因為你的文字設定並不正確。
 &lt;br/&gt;&lt;br/&gt;
 
 這個是VNR提取文字的文字設定，而不是ITH的文字設定。
 VNR的提取方法支援內嵌翻譯到遊戲中去，但是支援的遊戲比ITH要少很多。
 另外，&lt;span style=&quot;color:red&quot;&gt;VNR的提取方法不支援特殊碼。&lt;/span&gt;
 你可以在【使用偏好/內嵌翻譯】中切換回ITH。
-改變文字提取方法需要重新啟動下遊戲。
+改變文字提取方法需要重新啟動下游戲。
 
 &lt;h3&gt;遊戲文字&lt;/h3&gt;
 一個遊戲有時會有一個或者幾個不同的遊戲文字。
@@ -3497,7 +3497,7 @@ Daijirin is &lt;span style=&quot;color:purple&quot;&gt;not free&lt;/span&gt;, an
     <message>
         <location filename="dialogs/_prefs.py" line="2528"/>
         <source>You can select your preferred machine translators and look-up dictionaries here. The translators and dictionaries are independent that do not require each other. Look-up dictionaries require downloading at least one offline MeCab dictionary.</source>
-        <translation>你可以在這裡選擇想用的機器翻譯軟體和分詞查詞的字典。機翻和詞典是獨立的。另外，要使用字典查詞的功能，至少需要安裝一個離線的MeCab分詞辭書纔好。</translation>
+        <translation>你可以在這裡選擇想用的機器翻譯軟體和分詞查詞的字典。機翻和詞典是獨立的。另外，要使用字典查詞的功能，至少需要安裝一個離線的MeCab分詞辭書才好。</translation>
     </message>
     <message>
         <location filename="dialogs/prefs.py" line="178"/>
@@ -3541,7 +3541,7 @@ You can either purchase Microsoft Office 2007 and enable Japanese MODI OCR, or d
     <message>
         <location filename="dialogs/_prefs.py" line="1932"/>
         <source>OCR requires starting VNR as administrator to work.</source>
-        <translation>OCR需要用管理員許可權運行VNR纔可以正常工作的。</translation>
+        <translation>OCR需要用管理員許可權運行VNR才可以正常工作的。</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="1924"/>
@@ -3636,7 +3636,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
     <message>
         <location filename="dialogs/_prefs.py" line="1816"/>
         <source>Text character languages</source>
-        <translation>識別字元的語言</translation>
+        <translation>識別字符的語言</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="1788"/>
@@ -3667,7 +3667,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <location filename="dialogs/_prefs.py" line="2709"/>
         <source>TAH script is a set of &lt;a href=&quot;http://en.wikipedia.org/wiki/Regular_expression&quot;&gt;regular expression&lt;/a&gt; rules originally written by @errzotl sensei to enhance Japanese-English translation quality.
 You can report the bugs to &lt;a href=&quot;mailto:{0}&quot;&gt;{0}&lt;/a&gt;.</source>
-        <translation>TAH指令碼是一組由@errzotl大先生所寫的改善日英機器翻譯質量的&lt;a href=&quot;http://en.wikipedia.org/wiki/Regular_expression&quot;&gt;正規表示式&lt;/a&gt;。
+        <translation>TAH指令碼是一組由@errzotl大先生所寫的改善日英機器翻譯質量的&lt;a href=&quot;http://en.wikipedia.org/wiki/Regular_expression&quot;&gt;正則表示式&lt;/a&gt;。
 它並不會影響到中文的機器翻譯。
 你可以將使用中遇到的問題報道到&lt;a href=&quot;mailto:{0}&quot;&gt;{0}&lt;/a&gt;。</translation>
     </message>
@@ -3722,7 +3722,7 @@ Check this wiki for what to do if there is no correct text.
 空格後面的內容會自動被VNR忽略掉。
 &lt;br/&gt;&lt;br/&gt;
 
-另外，有些遊戲其實並不需要特殊碼。但是需要調整下遊戲的設定纔可以工作。
+另外，有些遊戲其實並不需要特殊碼。但是需要調整下游戲的設定才可以工作。
 如果你找不到正確的文字，下邊的Wiki也許可以有些幫助。
 &lt;center&gt;&lt;a href=&quot;http://sakuradite.com/wiki/zh/VNR/Game_Settings&quot;&gt;http://sakuradite.com/wiki/zh/VNR/Game_Settings&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
@@ -3754,7 +3754,7 @@ Check this wiki for what to do if there is no correct text.
     <message>
         <location filename="dialogs/terminput.py" line="161"/>
         <source>reusable regular expression pattern</source>
-        <translation>可重用的正規表示式定義</translation>
+        <translation>可重用的正則表示式定義</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="1848"/>
@@ -3971,7 +3971,7 @@ Do you want to continue?</source>
 Genuine Windows already have it installed by default, unless you have explicitly removed it by yourself.
 It is detected on your system at the above location.</source>
         <translation>Windows Media Player可以提供朗讀&lt;span style=&quot;color:purple&quot;&gt;線上語音合成&lt;/span&gt;的功能。&lt;br/&gt;
-正版的Windows默認是有安裝的，除非你手動移除了它。
+正版的Windows預設是有安裝的，除非你手動移除了它。
 它被設定在了上邊的地方。</translation>
     </message>
     <message>
@@ -3981,7 +3981,7 @@ Genuine Windows already have it installed by default, unless you have explicitly
 You can reinistall Windows Media Player here from Microsoft for free:
 &lt;center&gt;&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;&lt;/center&gt;</source>
         <translation>Windows Media Player可以提供朗讀&lt;span style=&quot;color:purple&quot;&gt;線上語音合成&lt;/span&gt;的功能。&lt;br/&gt;
-正版的Windows默認是有安裝的，除非你手動移除了它。
+正版的Windows預設是有安裝的，除非你手動移除了它。
 你可以在下邊微軟的網站重新安裝它：
 &lt;center&gt;&lt;a href=&quot;{0}&quot;&gt;{0}&lt;/a&gt;&lt;/center&gt;</translation>
     </message>
@@ -3998,7 +3998,7 @@ You can reinistall Windows Media Player here from Microsoft for free:
     <message>
         <location filename="dialogs/_prefs.py" line="2207"/>
         <source>This feature is under development. Please &lt;span style=&quot;color:red&quot;&gt;DO NOT&lt;/span&gt; enable this option unless you are familiar with Japanese and the Shared Dictionary.</source>
-        <translation>這個功能還在開發中。除非你對日語和共享辭書非常熟悉，否則暫時&lt;span style=&quot;color:red&quot;&gt;不要&lt;/span&gt;開啟這個選項纔好。</translation>
+        <translation>這個功能還在開發中。除非你對日語和共享辭書非常熟悉，否則暫時&lt;span style=&quot;color:red&quot;&gt;不要&lt;/span&gt;開啟這個選項才好。</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="2208"/>
@@ -4139,7 +4139,7 @@ You can specify some keyboard shortcuts in Preferences/Shortcuts.</source>
     <message>
         <location filename="dialogs/_prefs.py" line="837"/>
         <source>Locations to save recorded files</source>
-        <translation>儲存錄製檔案的位置</translation>
+        <translation>保存錄制檔案的位置</translation>
     </message>
     <message>
         <location filename="dialogs/_prefs.py" line="851"/>
@@ -4202,7 +4202,7 @@ VNR會自動檢查更新的。你現在要更新嗎？</translation>
         <source>
 VNR will do incremental update by default.
 But if you press Reset, VNR will redownload the entire data, which is slow.</source>
-        <translation>VNR默認只會做增量更新，速度很快的。
+        <translation>VNR預設只會做增量更新，速度很快的。
 但是如果你選擇【重置】，VNR會重新下載全部資料，會很慢。</translation>
     </message>
     <message>

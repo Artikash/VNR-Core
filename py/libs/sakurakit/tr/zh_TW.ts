@@ -101,12 +101,12 @@
     <message>
         <location filename="sktr.py" line="280"/>
         <source>Default</source>
-        <translation>默認</translation>
+        <translation>預設</translation>
     </message>
     <message>
         <location filename="sktr.py" line="280"/>
         <source>default</source>
-        <translation>默認</translation>
+        <translation>預設</translation>
     </message>
     <message>
         <location filename="sktr.py" line="111"/>
@@ -521,7 +521,7 @@
     <message>
         <location filename="sktr.py" line="94"/>
         <source>Add</source>
-        <translation>添加</translation>
+        <translation>新增</translation>
     </message>
     <message>
         <location filename="sktr.py" line="107"/>
@@ -2031,7 +2031,7 @@
     <message>
         <location filename="sktr.py" line="142"/>
         <source>Lookup</source>
-        <translation>查找</translation>
+        <translation>查詢</translation>
     </message>
     <message>
         <location filename="sktr.py" line="102"/>
