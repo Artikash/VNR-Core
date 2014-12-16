@@ -232,7 +232,8 @@ class reader(QObject):
 
       self.tr("Sync with Running Game"),
       self.tr("Update Shared Dictionary"),
-      self.tr("Update Shared Subtitles"),
+      self.tr("Update Subtitles"),
+      self.tr("Update Danmaku"),
       self.tr("Update Game Database"),
       self.tr("Update Translation Scripts"),
       self.tr("Reload Translation Scripts"),

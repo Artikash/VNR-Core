@@ -241,10 +241,10 @@
     <message>
         <location filename="mytr.py" line="235"/>
         <source>Update Shared Subtitles</source>
-        <translation>更新人工字幕</translation>
+        <translation type="obsolete">更新人工字幕</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="236"/>
+        <location filename="mytr.py" line="237"/>
         <source>Update Game Database</source>
         <translation>更新遊戲資料</translation>
     </message>
@@ -639,12 +639,12 @@
         <translation>易懂</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="237"/>
+        <location filename="mytr.py" line="238"/>
         <source>Update Translation Scripts</source>
         <translation>更新翻譯指令碼</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="238"/>
+        <location filename="mytr.py" line="239"/>
         <source>Reload Translation Scripts</source>
         <translation>重新載入翻譯指令碼</translation>
     </message>
@@ -832,6 +832,16 @@
         <location filename="mytr.py" line="69"/>
         <source>Recordings</source>
         <translation>錄製</translation>
+    </message>
+    <message>
+        <location filename="mytr.py" line="235"/>
+        <source>Update Subtitles</source>
+        <translation>更新字幕</translation>
+    </message>
+    <message>
+        <location filename="mytr.py" line="236"/>
+        <source>Update Danmaku</source>
+        <translation>更新彈幕</translation>
     </message>
 </context>
 </TS>

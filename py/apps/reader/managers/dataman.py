@@ -6891,6 +6891,66 @@ class _DataManager(object):
     self.comments2 = d
     dprint("leave: len = %i" % len(d))
 
+  # Subtitles
+
+  def updateSubtitles(self, itemId):
+    """
+    @param  itemId  long
+    """
+    #self.resetSubtitles()
+    if self.subtitles:
+      subTimestamp = self.subtitleTimestamp
+    else:
+      subTimestamp = 0
+    now = self.subtitleTimestamp = skdatetime.current_unixtime()
+    self.subtitleItemId = itemId
+    skthreads.runasynclater(
+        partial(self._updateSubtitles, itemId, now, self.subtitles.values(), subTimestamp),
+        100) # reload subtitles after 100 ms
+
+  def _updateSubtitles(self, itemId, timestamp, subs, subTimestamp):
+    """This function runs in parallel
+    @param  itemId  long
+    @param  timestamp  long  now
+    @param  subs  [Subtitle]
+    @param  subTimestamp  long
+    @return  {long:Subtitle}
+    """
+    if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+      return
+
+    lang = self.user.language
+    langs = ('zht', 'zhs') if lang.startswith('zh') else (lang,)
+
+    gameLang = 'ja' # TODO: allow change gamelang
+
+    changed = False
+    if not subTimestamp:
+      subs = netman.querySubtitles(itemId=itemId, langs=langs, async=False)
+      if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+        return
+      changed = True
+      subTimestamp = timestamp
+    else:
+      newsubs = netman.querySubtitles(itemId=itemId, langs=langs, time=subTimestamp, async=False)
+      if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+        return
+      if newsubs:
+        changed = True
+        subTimestamp = timestamp
+        self._mergeSubtitles(subs, newsubs)
+
+    if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+      return
+
+    if subs:
+      self.subtitles = {hashutil.hashtext(s.text):s for s in sub}
+      growl.msg(my.tr("Found {0} subtitles").format(len(subs)), async=True)
+    else:
+      growl.msg(my.tr("Subtitles not found"), async=True)
+    if changed:
+      self._saveSubtitles(subs, timestamp, itemId, lang, gameLang)
+
   def reloadSubtitles(self, itemId):
     """
     @param  itemId  long
@@ -6929,12 +6989,14 @@ class _DataManager(object):
       if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
         return
       changed = True
+      subTimestamp = timestamp
     elif timestamp > config.APP_UPDATE_SUBS_INTERVAL + subTimestamp:
       newsubs = netman.querySubtitles(itemId=itemId, langs=langs, time=subTimestamp, async=False)
       if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
         return
       if newsubs:
         changed = True
+        subTimestamp = timestamp
         self._mergeSubtitles(subs, newsubs)
 
     if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
@@ -6944,7 +7006,12 @@ class _DataManager(object):
       self.subtitles = {}
     else:
       self.subtitles = {hashutil.hashtext(s.text):s for s in sub}
-    self._saveSubtitles(subs, timestamp, itemId, lang, gameLang)
+    self.subtitleTimestamp = subTimestamp
+
+    if subs:
+      growl.msg(my.tr("Found {0} subtitles").format(len(subs)), async=True)
+    if changed:
+      self._saveSubtitles(subs, subTimestamp, itemId, lang, gameLang)
 
   @staticmethod
   def _saveSubtitles(subs, timestamp, itemId, subLang, gameLang):
@@ -6961,7 +7028,7 @@ class _DataManager(object):
     else:
       try:
         with open(path, 'w') as f:
-          subs.insert(0 {
+          subs.insert(0, {
             'gameId': itemId,
             'gameLang': gameLang,
             'lang': subLang,
@@ -7958,8 +8025,14 @@ class DataManager(QObject):
     if self.__d.subtitles:
       return self.__d.subtitles.get(hash)
 
-  def updateSubtitles(self):
-    pass
+  def updateSubtitles(self, reset=False):
+    itemId = self.currentGameItemId()
+    if itemId:
+      item = self.queryGameItem(id=itemId)
+      if item and item.subtitleCount:
+        self.__d.updateSubtitles(itemId)
+        return
+    growl.notify(my.tr("Subtitles not found"))
 
   # Users
 
@@ -9783,6 +9856,14 @@ class DataManagerProxy(QObject):
         hash=ctxhash, context=ctx, contextSize=ctxsize)
     dm.submitComment(ret, commit=False)
     return ret
+
+  ## Subtitles ##
+
+  @Slot()
+  def updateSubtitles(self):
+    sel = prompt.confirmUpdateSubs()
+    if sel:
+      manager().updateSubtitles(**sel)
 
   ## Terms ##
 
