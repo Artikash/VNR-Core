@@ -37,4 +37,7 @@ DOMAIN_ORG = '153.121.52.138'
 DOWNLOAD_GOOGLE_URL = "http://goo.gl/t31MqY"
 DOWNLOAD_MAINLAND_URL = "https://mega.co.nz/#F!g00SQJZS!pm3bAcS6qHotPzJQUT596Q"
 
+# Parameters
+HELP_FLAGS = '--help', '-h', '-?'
+
 # EOF

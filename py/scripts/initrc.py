@@ -20,7 +20,6 @@ def chcwd():
   cwd = os.path.dirname(__file__)
   os.chdir(cwd)
 
-
 APP_MUTEX = None
 def lock(name): # unicode  file naem
   global APP_MUTEX
