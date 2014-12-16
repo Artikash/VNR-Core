@@ -7144,11 +7144,12 @@ class _DataManager(object):
             s = Subtitle(
               textId=it.get('id') or 0,
               text=it.get('text') or '',
-              textName=it.get('name') or '',
+              textName=it.get('textName') or '',
               sub=it.get('sub') or '',
               subName=it.get('subName') or '',
               userId=it.get('userId') or 0,
               subLang=it.get('subLang') or '',
+              textLang=it.get('textLang') or '',
             )
             if s.text and s.sub:
               subs.append(s)
