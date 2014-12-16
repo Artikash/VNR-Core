@@ -537,7 +537,7 @@ class _NetworkManager(object):
     try:
       r = session.get(XML_API + '/user/list', params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
-        context = etree.iterparse(StringIO(r.content), events=('start','end'))
+        context = etree.iterparse(StringIO(r.content), events=('start', 'end'))
 
         ret = {}
         path = 0
@@ -736,7 +736,7 @@ class _NetworkManager(object):
         #root = etree.fromstring(r.content)
         GUEST_ID = dataman.GUEST.id
 
-        context = etree.iterparse(StringIO(r.content), events=('start','end'))
+        context = etree.iterparse(StringIO(r.content), events=('start', 'end'))
 
         ret = []
         path = 0
@@ -975,6 +975,83 @@ class _NetworkManager(object):
     try: dwarn(r.url, params)
     except: pass
 
+  # Subtitles
+
+  def querySubtitles(self, itemId, gameLang, langs, mintime):
+    """
+    @param  itemId  long
+    @param* gameLang  str
+    @param* langs  [str]
+    @param* mintime  long
+    @return  [dataman.Subtitle] or None
+    """
+    params = {
+      'ver': self.version,
+      'gameid': itemId,
+    }
+    if gameLang:
+      params['gamelang'] = gameLang
+    if langs:
+      params['lang'] = ','.join(langs)
+    if mintime:
+      params['mintime'] = mintime
+
+    try:
+      r = session.get(XML_API + '/sub/query', params=params, headers=GZIP_HEADERS)
+      if r.ok and _response_is_xml(r):
+        #root = etree.fromstring(r.content)
+
+        context = etree.iterparse(StringIO(r.content), events=('start', 'end'))
+        path = 0
+        for event, elem in context:
+          if event == 'start':
+            path += 1
+            if path == 3: # grimoire/texts/text
+              kw = {
+                'textId': int(elem.get('id')),
+              }
+            elif path == 4: # grimoire/texts/text/subs
+              kw['lang'] == elem.get('lang')
+          else:
+            path -= 1
+            if path == 3: # grimoire/texts/text
+              tag = elem.tag
+              text = elem.text
+              if tag == 'content':
+                kw['text'] = text
+              elif tag == 'name':
+                kw['textName'] = text
+            if path == 5: # grimoire/texts/text/subs/sub
+              tag = elem.tag
+              text = elem.text
+              if tag == 'content':
+                kw['sub'] = text
+              elif tag == 'name':
+                kw['subName'] = text
+            elif path == 2: # grimoire/texts
+              s = dataman.Subtitle(**kw)
+              ret.append(s)
+
+        dprint("subtitle count = %i" % len(ret))
+        return ret
+
+    except requests.ConnectionError, e:
+      dwarn("connection error", e.args)
+    except requests.HTTPError, e:
+      dwarn("http error", e.args)
+    except etree.ParseError, e:
+      dwarn("xml parse error", e.args)
+    except KeyError, e:
+      dwarn("invalid response header", e.args)
+    except (TypeError, ValueError, AttributeError), e:
+      dwarn("xml malformat", e.args)
+    except Exception, e:
+      derror(e)
+
+    dwarn("failed URL follows")
+    try: dwarn(r.url, params)
+    except: pass
+
   ## Comment ##
 
   def queryComments(self, gameId=None, md5=None, init=True, hash=True):
@@ -1001,7 +1078,7 @@ class _NetworkManager(object):
 
         ret = {} if hash else []
 
-        context = etree.iterparse(StringIO(r.content), events=('start','end'))
+        context = etree.iterparse(StringIO(r.content), events=('start', 'end'))
         path = 0
         TYPES = dataman.Comment.TYPES
         for event, elem in context:
@@ -1373,7 +1450,7 @@ class _NetworkManager(object):
         path = '/term/list'
       r = session.get(XML_API + path, params=params, headers=GZIP_HEADERS)
       if r.ok and _response_is_xml(r):
-        context = etree.iterparse(StringIO(r.content), events=('start','end'))
+        context = etree.iterparse(StringIO(r.content), events=('start', 'end'))
 
         ret = []
         path = 0
@@ -1880,6 +1957,15 @@ class NetworkManager(QObject):
     if self.isOnline() and comment.d.id and userName and password:
       return self.__d.updateComment(comment, userName, password, async=async)
     return False
+
+  def querySubtitles(self, itemId):
+    """
+    @param  itemId  long
+    @return  [dataman.Subtitle] or None
+    """
+    if self.isOnline() and itemId:
+      return skthreads.runsync(partial(
+          self.__d.querySubtitles, itemId))
 
   ## Wiki ##
 

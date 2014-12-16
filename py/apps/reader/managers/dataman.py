@@ -1780,6 +1780,32 @@ class Character(QObject):
   ttsEnabled, ttsEnabledChanged = __D.synthesize('ttsEnabled', bool)
   timestamp, timestampChanged = __D.synthesize('timestamp', int)
 
+class Subtitle(object):
+  __slots__ = (
+    'textId',
+    'text',
+    'textName',
+    'sub',
+    'subName',
+    'userId',
+    'lang',
+    #'gameLang',
+  )
+  def __init__(self,
+      textId=0, text='', textName='',
+      sub='', subName='',
+      userId=0, lang=''):
+    self.textId = textId # long
+    self.text = text # unicode
+    self.textName = textName # unicode
+    self.sub = sub # unicode
+    self.subName = subName # unicode
+    self.userId = userId # long
+    self.lang = lang # str
+
+  @property
+  def userName(self): return manager().queryUserName(self.userId)
+
 @Q_Q
 class _Comment(object):
 
@@ -7781,16 +7807,31 @@ class DataManager(QObject):
     @return  User or None
     """
     d = self.__d
-    if id and id == d.user.id or name and name == d.user.name:
-      return d.user
-    elif id == GUEST_USER_ID:
+    if id == GUEST_USER_ID:
       return GUEST
+    elif id and id == d.user.id or name and name == d.user.name:
+      return d.user
     elif id:
       return d.users.get(id)
     elif name:
       for it in d.users.itervalues():
         if it.name == name:
           return it
+
+  def queryUserName(self, id):
+    """
+    @param* id  int
+    @return  name  str or None
+    """
+    d = self.__d
+    if id == GUEST_USER_ID:
+      return GUEST.name
+    elif id and id == d.user.id:
+      return d.user.name
+    else:
+      u = d.users.get(id)
+      if u:
+        return u.name
 
   def queryUserColor(self, *args, **kwargs):
     """
