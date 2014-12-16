@@ -1811,8 +1811,38 @@ class Subtitle(object):
     self.userId = userId # long
     self.lang = lang # str
 
+    self._userName = '' # str
+
   @property
-  def userName(self): return manager().queryUserName(self.userId)
+  def userName(self):
+    if not self._userName:
+      self._userName = manager().queryUserName(self.userId)
+    return self._userName
+
+def SubtitleObject(QObject):
+  def __init__(self, d, parent=None):
+    self.d = d
+    super(SubtitleObject, self).__init__(parent)
+
+  languageChanged = Signal(unicode)
+  language = Property(unicode,
+      lambda self: self.d.lang,
+      notify=languageChanged)
+
+  textChanged = Signal(unicode)
+  text = Property(unicode,
+      lambda self: self.d.sub,
+      notify=textChanged)
+
+  userNameChanged = Signal(unicode)
+  userName = Property(unicode,
+      lambda self: self.d.userName,
+      notify=userNameChanged)
+
+  colorChanged = Signal(unicode)
+  color = Property(unicode,
+      lambda self: manager().queryUserColor(self.d.userId),
+      notify=colorChanged)
 
 @Q_Q
 class _Comment(object):
@@ -5846,9 +5876,7 @@ class _DataManager(object):
     #self.nameItems = [] # [NameItem]
 
     # Subtitles for the current game
-    self.subtitles = {} # [long hash:Subtitle]
-    self.subtitleItemId = 0 # long
-    self.subtitleTimestamp = 0 # long
+    self.resetSubtitles()
 
     # Users
     self.users = {} # {long id:UserDigest}
@@ -5857,9 +5885,10 @@ class _DataManager(object):
     self._loadUser()
 
   def resetSubtitles(self):
-    self.subtitles = {}
-    self.subtitleItemId = 0
-    self.subtitleTimestamp = 0
+    self.subtitles = [] # [Subtitle]
+    self.subtitleIndex = {} # {long hash:[Subtitle]}
+    self.subtitleItemId = 0 # long
+    self.subtitleTimestamp = 0 # long
 
   def resetCharacters(self):
     self.characters = {'':Character(parent=self.q, ttsEnabled=True)}
@@ -6905,7 +6934,7 @@ class _DataManager(object):
     now = self.subtitleTimestamp = skdatetime.current_unixtime()
     self.subtitleItemId = itemId
     skthreads.runasynclater(
-        partial(self._updateSubtitles, itemId, now, self.subtitles.values(), subTimestamp),
+        partial(self._updateSubtitles, itemId, now, self.subtitles, subTimestamp),
         100) # reload subtitles after 100 ms
 
   def _updateSubtitles(self, itemId, timestamp, subs, subTimestamp):
@@ -6947,7 +6976,8 @@ class _DataManager(object):
       return
 
     if subs:
-      self.subtitles = {hashutil.hashtext(s.text):s for s in sub}
+      self.subtitles = subs
+      self.subtitleIndex = self._createSubtitleIndex(subs)
       growl.msg(my.tr("Found {0} subtitles").format(len(subs)), async=True)
     else:
       growl.msg(my.tr("Subtitles not found"), async=True)
@@ -7008,16 +7038,36 @@ class _DataManager(object):
     if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
       return
 
-    if not subs:
-      self.subtitles = {}
-    else:
-      self.subtitles = {hashutil.hashtext(s.text):s for s in sub}
+    subIndex = self._createSubtitleIndex(subs)
+
+    if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+      return
+
+    self.subtitles = subs or []
+    self.subtitleIndex = subIndex
     self.subtitleTimestamp = subTimestamp
 
     if subs:
       growl.msg(my.tr("Found {0} subtitles").format(len(subs)), async=True)
     if changed:
       self._saveSubtitles(subs, subTimestamp, itemId, lang, gameLang)
+
+  @staticmethod
+  def _createSubtitleIndex(subs):
+    """
+    @param  subs  [Subtitle]
+    @return  {long hash:[Subtitle]}
+    """
+    ret = {}
+    if subs:
+      for s in subs:
+        h = hashutil.hashtext(s.text)
+        l = ret.get(h)
+        if l:
+          l.append(s)
+        else:
+          ret[h] = [s]
+    return ret
 
   @staticmethod
   def _saveSubtitles(subs, timestamp, itemId, subLang, gameLang):
@@ -7032,15 +7082,27 @@ class _DataManager(object):
     if not subs:
       skfileio.removefile(path)
     else:
+      lines = [{
+        'gameId': itemId,
+        'gameLang': gameLang,
+        'lang': subLang,
+        'timestamp': timestamp,
+      }]
+      for s in subs:
+        l = OrderedDict() # enforce order
+        l['id'] = s.textId
+        l['text'] = s.text
+        if s.textName:
+          l['name'] = s.textName
+        l['sub'] = s.sub
+        if s.subName:
+          l['subName'] = s.subName
+        l['userId'] = s.userId
+        l['userName'] = s.userName
+        lines.append(l)
       try:
         with open(path, 'w') as f:
-          subs.insert(0, {
-            'gameId': itemId,
-            'gameLang': gameLang,
-            'lang': subLang,
-            'timestamp': timestamp,
-          })
-          yaml.dump(subs, f, default_flow_style=False)
+          yaml.dump(lines, f, default_flow_style=False)
       except Exception, e:
         dwarn(e)
 
@@ -8023,13 +8085,15 @@ class DataManager(QObject):
   def clearSubtitles(self):
     self.__d.resetSubtitles()
 
-  def querySubtitle(self, hash):
+  def querySubtitles(self, hash):
     """
     @param  hash  long
-    @return  Subtitle or None
+    @return  [Subtitle] or None
     """
-    if self.__d.subtitles:
-      return self.__d.subtitles.get(hash)
+    return self.__d.subtitleIndex.get(hash)
+
+  def hasSubtitles(self): # -> bool
+    return bool(self.__d.subtitleIndex)
 
   def updateSubtitles(self, reset=False):
     itemId = self.currentGameItemId()

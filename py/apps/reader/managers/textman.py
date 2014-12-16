@@ -376,6 +376,13 @@ class _TextManager(object):
     if not self.blockedLanguages or c.d.language[:2] not in self.blockedLanguages:
       self.q.commentReceived.emit(c)
 
+  def _showSubtitle(self, s):
+    """
+    @param  s  Subtitle
+    """
+    if not self.blockedLanguages or s.lang[:2] not in self.blockedLanguages:
+      self.q.subtitleReceived.emit(dataman.SubtitleObject(s))
+
   def _showTranslation(self, sub, language, provider, time=0):
     """
     @param  sub  unicode
@@ -479,8 +486,17 @@ class _TextManager(object):
     lang2 = self.language[:2]
 
     if text:
+      h = hashutil.hashtext(text)
+      l = dm.querySubtitles(hash=h)
+      if l:
+        if len(l) > 1:
+          for it in l:
+            if it.lang.startswith(lang2):
+              return it.text
+        return l[0].text
+
       # Calculate hash2
-      hashes2 = [hashutil.hashtext(text)]
+      hashes2 = [h]
       for h in self.hashes2:
         if h:
           hashes2.append(hashutil.hashtext(text, h))
@@ -618,6 +634,15 @@ class _TextManager(object):
       q.rawTextReceived.emit(text, self.gameLanguage, h, sz)
 
     q.contextChanged.emit()
+
+    if dm.hasSubtitles():
+      h = self.hashes2[0]
+      l = dm.querySubtitles(hash=h)
+      if l:
+        for s in l:
+           self._showSubtitle(s)
+           self._onGameSubtitle(s.text, s.lang)
+           self._updateTtsSubtitle(s.text, s.lang)
 
     # Profiler: 1e-4
 
@@ -865,6 +890,7 @@ class TextManager(QObject):
   translationReceived = Signal(unicode, unicode, unicode, long) # text, language, provider, timestamp
 
   commentReceived = Signal(QObject)  # dataman.Comment
+  subtitleReceived = Signal(QObject)  # dataman.SubtitleObject
 
   nameTextReceived = Signal(unicode, unicode)  # text, lang
   nameTranslationReceived = Signal(unicode, unicode, unicode)  # text, lang, provider

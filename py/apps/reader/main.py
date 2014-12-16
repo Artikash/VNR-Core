@@ -421,6 +421,7 @@ class _MainObject(object):
     ret.textReceived.connect(grimoire.showText)
     ret.translationReceived.connect(grimoire.showTranslation)
     ret.commentReceived.connect(grimoire.showComment)
+    ret.subtitleReceived.connect(grimoire.showSubtitle)
 
     ret.nameTextReceived.connect(grimoire.showNameText)
     ret.nameTranslationReceived.connect(grimoire.showNameTranslation)
