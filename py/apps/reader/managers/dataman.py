@@ -5856,7 +5856,7 @@ class _DataManager(object):
     # Load user profile
     self._loadUser()
 
-  def resetSubtitles():
+  def resetSubtitles(self):
     self.subtitles = {}
     self.subtitleItemId = 0
     self.subtitleTimestamp = 0
@@ -6920,7 +6920,10 @@ class _DataManager(object):
       return
 
     lang = self.user.language
-    langs = ('zht', 'zhs') if lang.startswith('zh') else (lang,)
+
+    langs = ['zht', 'zhs'] if lang.startswith('zh') else [lang]
+    if langs[0] != 'en' and 'en' not in settings.global_().blockedLanguages():
+      langs.append('en')
 
     gameLang = 'ja' # TODO: allow change gamelang
 
@@ -6957,7 +6960,7 @@ class _DataManager(object):
     """
     self.resetSubtitles()
     if itemId:
-      item = manager().queryGameItem(id=self.itemId)
+      item = manager().queryGameItem(id=itemId)
       if item and item.subtitleCount:
         now = self.subtitleTimestamp = skdatetime.current_unixtime()
         self.subtitleItemId = itemId
@@ -6975,7 +6978,10 @@ class _DataManager(object):
       return
 
     lang = self.user.language
-    langs = ('zht', 'zhs') if lang.startswith('zh') else (lang,)
+
+    langs = ['zht', 'zhs'] if lang.startswith('zh') else [lang]
+    if langs[0] != 'en' and 'en' not in settings.global_().blockedLanguages():
+      langs.append('en')
 
     gameLang = 'ja' # TODO: allow change gamelang
 
