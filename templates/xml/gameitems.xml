@@ -59,6 +59,9 @@
 %	if it.okazu
 			<okazu>true</okazu>
 %	endif
+%	if it.subtitleCount
+			<subtitleCount>{{it.subtitleCount}}</subtitleCount>
+%	endif
 %	if it.scapeMedian
 			<scapeMedian>{{it.scapeMedian}}</scapeMedian>
 %	endif

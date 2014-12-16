@@ -1366,6 +1366,7 @@ class GameItem(object):
     'okazu',
     'scapeMedian',
     'scapeCount',
+    'subtitleCount',
     'tags',
     'artists',
     'sdartists',
@@ -1384,6 +1385,7 @@ class GameItem(object):
       title="", romajiTitle="", brand="", series="", image="", banner="", wiki="",
       timestamp=0, fileSize=0, date=None, artists='', sdartists='', writers='', musicians='',
       otome=False, okazu=False, scapeMedian=0, scapeCount=0, tags='',
+      subtitleCount=0,
       overallScoreSum=0, overallScoreCount=0, ecchiScoreSum=0, ecchiScoreCount=0, #easyScoreSum=0, easyScoreCount=0,
     ):
     self.id = id # int
@@ -1401,6 +1403,7 @@ class GameItem(object):
     self.okazu = okazu # int
     self.scapeMedian = scapeMedian # int
     self.scapeCount = scapeCount # int
+    self.subtitleCount = subtitleCount # int
     self.tags = tags # unicode not None
     self.artists = artists # unicode not None
     self.sdartists = sdartists # unicode not None
@@ -6293,7 +6296,7 @@ class _DataManager(object):
               e.tags = text
             elif tag in ('otome', 'okazu'):
               setattr(e, tag, text == 'true')
-            elif tag in ('timestamp', 'fileSize', 'scapeMedian', 'scapeCount', 'overallScoreSum', 'overallScoreCount', 'ecchiScoreSum', 'ecchiScoreCount'):
+            elif tag in ('timestamp', 'fileSize', 'subtitleCount', 'scapeMedian', 'scapeCount', 'overallScoreSum', 'overallScoreCount', 'ecchiScoreSum', 'ecchiScoreCount'):
               setattr(e, tag, int(text))
             elif tag == 'date':
               e.date = datetime.strptime(text, '%Y%m%d')
