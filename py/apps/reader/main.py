@@ -330,8 +330,8 @@ class _MainObject(object):
 
     ret.removesRepeatChanged.connect(tm.setRemovesRepeatText)
 
-    #dm = self.dataManager
-    #ret.processChanged.connect(dm.clearMacroCache)
+    dm = self.dataManager
+    ret.processDetached.connect(dm.clearSubtitles)
 
     agent = self.gameAgent
     agent.processDetached.connect(ret.processDetached)

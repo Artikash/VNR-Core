@@ -392,7 +392,7 @@ class _NetworkManager(object):
                 setattr(e, tag, text)
               elif tag in ('otome', 'okazu'):
                 setattr(e, tag, text == 'true')
-              elif tag in ('timestamp', 'fileSize', 'subtitleCount'):
+              elif tag in ('timestamp', 'fileSize', 'annotCount', 'subtitleCount'):
                 setattr(e, tag, int(text))
               elif tag == 'date':
                 e.date = datetime.strptime(text, '%Y%m%d')
@@ -977,12 +977,12 @@ class _NetworkManager(object):
 
   # Subtitles
 
-  def querySubtitles(self, itemId, gameLang, langs, mintime):
+  def querySubtitles(self, itemId, gameLang, langs, difftime):
     """
     @param  itemId  long
     @param* gameLang  str
     @param* langs  [str]
-    @param* mintime  long
+    @param* difftime  long
     @return  [dataman.Subtitle] or None
     """
     params = {
@@ -993,8 +993,8 @@ class _NetworkManager(object):
       params['gamelang'] = gameLang
     if langs:
       params['lang'] = ','.join(langs)
-    if mintime:
-      params['mintime'] = mintime
+    if difftime:
+      params['mintime'] = difftime
 
     try:
       r = session.get(XML_API + '/sub/query', params=params, headers=GZIP_HEADERS)
@@ -1958,14 +1958,20 @@ class NetworkManager(QObject):
       return self.__d.updateComment(comment, userName, password, async=async)
     return False
 
-  def querySubtitles(self, itemId):
+  def querySubtitles(self, itemId, langs=(), gameLang='ja', time=0, async=True):
     """
     @param  itemId  long
+    @param* langs  [str]
+    @param* gameLang  str
+    @param* time  long
     @return  [dataman.Subtitle] or None
     """
     if self.isOnline() and itemId:
-      return skthreads.runsync(partial(
-          self.__d.querySubtitles, itemId))
+      if async:
+        return skthreads.runsync(partial(
+          self.__d.querySubtitles, itemId, langs=langs, gameLang=gameLang, difftime=time))
+      else:
+        return self.__d.querySubtitles(itemId, langs=langs, gameLang=gameLang, difftime=time)
 
   ## Wiki ##
 

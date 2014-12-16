@@ -12,6 +12,7 @@ from ctypes import c_longlong
 from datetime import datetime
 from functools import partial
 #import xml.etree.cElementTree as etree
+import yaml
 from lxml import etree
 from PySide.QtCore import Signal, Slot, Property, Qt, QObject, QDir, QTimer, QCoreApplication, \
                           QAbstractListModel, QModelIndex
@@ -1280,6 +1281,11 @@ class GameInfo(object):
     except TypeError: return 0
 
   @memoizedproperty
+  def subtitleCount(self):
+    try: return self.gameItem.subtitleCount
+    except AttributeError: return 0
+
+  @memoizedproperty
   def timestamp(self):
     try: return self.gameItem.timestamp
     except AttributeError: return 0
@@ -1366,6 +1372,7 @@ class GameItem(object):
     'okazu',
     'scapeMedian',
     'scapeCount',
+    'annotCount',
     'subtitleCount',
     'tags',
     'artists',
@@ -1385,7 +1392,7 @@ class GameItem(object):
       title="", romajiTitle="", brand="", series="", image="", banner="", wiki="",
       timestamp=0, fileSize=0, date=None, artists='', sdartists='', writers='', musicians='',
       otome=False, okazu=False, scapeMedian=0, scapeCount=0, tags='',
-      subtitleCount=0,
+      annotCount=0, subtitleCount=0,
       overallScoreSum=0, overallScoreCount=0, ecchiScoreSum=0, ecchiScoreCount=0, #easyScoreSum=0, easyScoreCount=0,
     ):
     self.id = id # int
@@ -1403,6 +1410,7 @@ class GameItem(object):
     self.okazu = okazu # int
     self.scapeMedian = scapeMedian # int
     self.scapeCount = scapeCount # int
+    self.annotCount = annotCount # int
     self.subtitleCount = subtitleCount # int
     self.tags = tags # unicode not None
     self.artists = artists # unicode not None
@@ -5792,6 +5800,7 @@ class _DataManager(object):
     self.dirtyCommentsLocked = False  # bool
     #self.dirtyCommentsMutex = QMutex()
 
+    # Terms
     self.terms = []                 # [Term], not None
     #self._sortedTerms = None
     self._termsDirty = False
@@ -5836,10 +5845,21 @@ class _DataManager(object):
 
     #self.nameItems = [] # [NameItem]
 
+    # Subtitles for the current game
+    self.subtitles = {} # [long hash:Subtitle]
+    self.subtitleItemId = 0 # long
+    self.subtitleTimestamp = 0 # long
+
+    # Users
     self.users = {} # {long id:UserDigest}
 
     # Load user profile
     self._loadUser()
+
+  def resetSubtitles():
+    self.subtitles = {}
+    self.subtitleItemId = 0
+    self.subtitleTimestamp = 0
 
   def resetCharacters(self):
     self.characters = {'':Character(parent=self.q, ttsEnabled=True)}
@@ -6322,7 +6342,7 @@ class _DataManager(object):
               e.tags = text
             elif tag in ('otome', 'okazu'):
               setattr(e, tag, text == 'true')
-            elif tag in ('timestamp', 'fileSize', 'subtitleCount', 'scapeMedian', 'scapeCount', 'overallScoreSum', 'overallScoreCount', 'ecchiScoreSum', 'ecchiScoreCount'):
+            elif tag in ('timestamp', 'fileSize', 'annotCount', 'subtitleCount', 'scapeMedian', 'scapeCount', 'overallScoreSum', 'overallScoreCount', 'ecchiScoreSum', 'ecchiScoreCount'):
               setattr(e, tag, int(text))
             elif tag == 'date':
               e.date = datetime.strptime(text, '%Y%m%d')
@@ -6871,6 +6891,132 @@ class _DataManager(object):
     self.comments2 = d
     dprint("leave: len = %i" % len(d))
 
+  def reloadSubtitles(self, itemId):
+    """
+    @param  itemId  long
+    """
+    self.resetSubtitles()
+    if itemId:
+      item = manager().queryGameItem(id=self.itemId)
+      if item and item.subtitleCount:
+        now = self.subtitleTimestamp = skdatetime.current_unixtime()
+        self.subtitleItemId = itemId
+        skthreads.runasynclater(
+            partial(self._reloadSubtitles, itemId, now),
+            3000) # reload subtitles after 3 seconds
+
+  def _reloadSubtitles(self, itemId, timestamp):
+    """This function runs in parallel
+    @param  itemId  long
+    @param  timestamp  long
+    @return  {long:Subtitle}
+    """
+    if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+      return
+
+    lang = self.user.language
+    langs = ('zht', 'zhs') if lang.startswith('zh') else (lang,)
+
+    gameLang = 'ja' # TODO: allow change gamelang
+
+    subs, subTimestamp = self._loadOfflineSubtitles(itemId, lang, gameLang)
+    if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+      return
+
+    changed = False
+    if not subs or not subTimestamp:
+      subs = netman.querySubtitles(itemId=itemId, langs=langs, async=False)
+      if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+        return
+      changed = True
+    elif timestamp > config.APP_UPDATE_SUBS_INTERVAL + subTimestamp:
+      newsubs = netman.querySubtitles(itemId=itemId, langs=langs, time=subTimestamp, async=False)
+      if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+        return
+      if newsubs:
+        changed = True
+        self._mergeSubtitles(subs, newsubs)
+
+    if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
+      return
+
+    if not subs:
+      self.subtitles = {}
+    else:
+      self.subtitles = {hashutil.hashtext(s.text):s for s in sub}
+    self._saveSubtitles(subs, timestamp, itemId, lang, gameLang)
+
+  @staticmethod
+  def _saveSubtitles(subs, timestamp, itemId, subLang, gameLang):
+    """
+    @param  subs  [Subtitle]
+    @param  itemId  long
+    @param  subLang  str
+    @param* gameLang  str
+    @return  [Subtitle], timestamp
+    """
+    path = rc.subs_yaml_path(itemId, subLang, gameLang)
+    if not subs:
+      skfileio.removefile(path)
+    else:
+      try:
+        with open(path, 'w') as f:
+          subs.insert(0 {
+            'gameId': itemId,
+            'gameLang': gameLang,
+            'lang': subLang,
+            'timestamp': timestamp,
+          })
+          yaml.dump(subs, f, default_flow_style=False)
+      except Exception, e:
+        dwarn(e)
+
+  @staticmethod
+  def _mergeSubtitles(subs, newsubs):
+    """
+    @param  subs  [Subtitle]
+    @param  newsubs  [Subtitle]
+    """
+    index = {it.textId:(i, it) for i,it in enumerate(subs)}
+    for s in newsubs:
+      t = index.get(s.textId)
+      if t:
+        subs[t[0]] = s
+      else:
+        subs.append(s)
+
+  @staticmethod
+  def _loadOfflineSubtitles(itemId, subLang, gameLang):
+    """
+    @param  itemId  long
+    @param  subLang  str
+    @param* gameLang  str
+    @return  [Subtitle], timestamp
+    """
+    path = rc.subs_yaml_path(itemId, subLang, gameLang)
+    if os.path.exists(path):
+      try:
+        with open(path, 'r') as f:
+          l = yaml.load(f)
+          options = l.pop(0)
+          subs = []
+          for it in l:
+            s = Subtitle(
+              textId=it.get('id') or 0,
+              text=it.get('text') or '',
+              textName=it.get('name') or '',
+              sub=it.get('sub') or '',
+              subName=it.get('subName') or '',
+              userId=it.get('userId') or 0,
+              lang=it.get('lang') or '',
+            )
+            if s.text and s.sub:
+              subs.append(s)
+          return subs, options.get('timestamp') or 0
+      except Exception, e:
+        dwarn(e)
+    return (), 0
+
   def reloadComments(self, online=True):
     self.contexts = {}
     self.comments = {}
@@ -7035,7 +7181,6 @@ class _DataManager(object):
   def saveGameItems(self):
     if not self.gameItems: #or not self._gameItemsDirty:
       return
-
     xmlfile = rc.xml_path('gameitems')
     data = rc.jinja_template('xml/gameitems').render({
       'now': datetime.now(),
@@ -7800,6 +7945,24 @@ class DataManager(QObject):
   #    #  it.imageUrl
   #  dprint("leave")
 
+  # Subtitles
+
+  def clearSubtitles(self):
+    self.__d.resetSubtitles()
+
+  def querySubtitle(self, hash):
+    """
+    @param  hash  long
+    @return  Subtitle or None
+    """
+    if self.__d.subtitles:
+      return self.__d.subtitles.get(hash)
+
+  def updateSubtitles(self):
+    pass
+
+  # Users
+
   def queryUser(self, id=0, name=''):
     """
     @param* id  int
@@ -8532,6 +8695,7 @@ class DataManager(QObject):
     dprint("load comment online = %s" % online)
     d.reloadCharacters()
     d.reloadComments(online=online)
+    d.reloadSubtitles(g.itemId)
     self.currentGameChanged.emit()
 
     #gid = self.currentGameId()

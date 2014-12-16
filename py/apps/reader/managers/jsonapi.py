@@ -12,7 +12,7 @@ KEYS = (
   'itemId',
   'timestamp',
   'local',
-  'visitCount', 'commentCount',
+  'visitCount', 'commentCount', 'subtitleCount',
 
   'title0',
   'romajiTitle0',

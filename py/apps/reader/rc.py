@@ -74,6 +74,7 @@ DIR_DICT_MECAB = DIR_CACHE_DICT + '/MeCab'      # $app/Caches/Dictionaries/MeCab
 
 #DIR_XML_COMMENT = DIR_USER_XML + '/comments'   # $user/xml/1/comments, unicode
 DIR_XML_COMMENT = DIR_APP_CACHE + '/Subtitles'  # $user/xml/1/comments, unicode
+DIR_YAML_SUBTITLE = DIR_XML_COMMENT
 
 # Apps
 
@@ -155,6 +156,16 @@ def refs_xml_path(gameId):
   @nothrow
   """
   return "%s/%s.xml" % (DIR_XML_REF, gameId)
+
+def subs_yaml_path(itemId, subLang, gameLang='ja'):
+  """
+  @param  itemId  long
+  @param  subLang  str
+  @param  gameLang  str
+  @return  unicode  path
+  @nothrow
+  """
+  return "%s/%s.%s-%s.yaml" % (DIR_XML_COMMENT, gameLang[:2], subLang[:2])
 
 # Terms
 
