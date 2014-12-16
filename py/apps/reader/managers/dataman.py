@@ -1796,22 +1796,23 @@ class Subtitle(object):
     'sub',
     'subName',
     'userId',
-    'lang',
-    #'gameLang',
+    'subLang',
+    'textLang',
   )
   def __init__(self,
       textId=0, text='', textName='',
       sub='', subName='',
-      userId=0, lang=''):
+      userId=0, subLang='', textLang=''):
     self.textId = textId # long
     self.text = text # unicode
     self.textName = textName # unicode
     self.sub = sub # unicode
     self.subName = subName # unicode
     self.userId = userId # long
-    self.lang = lang # str
+    self.subLang = subLang # str
+    self.textLang = textLang # str
 
-    self._userName = '' # str
+    self._userName = '' # str  cached
 
   @property
   def userName(self):
@@ -1826,7 +1827,7 @@ def SubtitleObject(QObject):
 
   languageChanged = Signal(unicode)
   language = Property(unicode,
-      lambda self: self.d.lang,
+      lambda self: self.d.subLang,
       notify=languageChanged)
 
   textChanged = Signal(unicode)
@@ -7084,8 +7085,8 @@ class _DataManager(object):
     else:
       lines = [{
         'gameId': itemId,
-        'gameLang': gameLang,
-        'lang': subLang,
+        'textLang': gameLang,
+        'subLang': subLang,
         'timestamp': timestamp,
       }]
       for s in subs:
@@ -7093,10 +7094,14 @@ class _DataManager(object):
         l['id'] = s.textId
         l['text'] = s.text
         if s.textName:
-          l['name'] = s.textName
+          l['textName'] = s.textName
         l['sub'] = s.sub
         if s.subName:
           l['subName'] = s.subName
+        if s.subLang:
+          l['subLang'] = s.subLang
+        if s.textLang:
+          l['textLang'] = s.textLang
         l['userId'] = s.userId
         l['userName'] = s.userName
         lines.append(l)
@@ -7143,7 +7148,7 @@ class _DataManager(object):
               sub=it.get('sub') or '',
               subName=it.get('subName') or '',
               userId=it.get('userId') or 0,
-              lang=it.get('lang') or '',
+              subLang=it.get('subLang') or '',
             )
             if s.text and s.sub:
               subs.append(s)

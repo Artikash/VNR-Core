@@ -491,7 +491,7 @@ class _TextManager(object):
       if l:
         if len(l) > 1:
           for it in l:
-            if it.lang.startswith(lang2):
+            if it.subLang.startswith(lang2):
               return it.text
         return l[0].text
 

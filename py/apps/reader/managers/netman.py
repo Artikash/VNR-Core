@@ -1011,7 +1011,7 @@ class _NetworkManager(object):
                 'textId': int(elem.get('id')),
               }
             elif path == 4: # grimoire/texts/text/subs
-              kw['lang'] == elem.get('lang')
+              kw['subLang'] == elem.get('lang')
           else:
             path -= 1
             if path == 3: # grimoire/texts/text
