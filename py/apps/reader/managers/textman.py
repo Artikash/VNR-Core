@@ -486,16 +486,18 @@ class _TextManager(object):
     lang2 = self.language[:2]
 
     if text:
-      h = hashutil.hashtext(text)
-      l = dm.querySubtitles(hash=h)
-      if l:
-        if len(l) > 1:
-          for it in l:
-            if it.subLang.startswith(lang2):
-              return it.text
-        return l[0].text
+      if dm.hasSubtitles():
+        h = hashutil.hashtext(textutil.remove_text_name(text))
+        l = dm.querySubtitles(hash=h)
+        if l:
+          if len(l) > 1:
+            for it in l:
+              if it.subLang.startswith(lang2):
+                return it.text
+          return l[0].text
 
       # Calculate hash2
+      h = hashutil.hashtext(text)
       hashes2 = [h]
       for h in self.hashes2:
         if h:
@@ -636,7 +638,7 @@ class _TextManager(object):
     q.contextChanged.emit()
 
     if dm.hasSubtitles():
-      h = self.hashes2[0]
+      h = hashutil.hashtext(textutil.remove_text_name(text))
       l = dm.querySubtitles(hash=h)
       if l:
         for s in l:
@@ -775,6 +777,13 @@ class _TextManager(object):
     q.textReceived.emit(textutil.beautify_text(text), self.gameLanguage, timestamp)
     dm.updateContext(h, text)
     q.rawTextReceived.emit(text, self.gameLanguage, h, 1) # context size is 1
+
+    if dm.hasSubtitles():
+      h = hashutil.hashtext(textutil.remove_text_name(text))
+      l = dm.querySubtitles(hash=h)
+      if l:
+        for s in l:
+           self._showSubtitle(s)
 
     if dm.hasComments():
       for c in dm.queryComments(hash=h):

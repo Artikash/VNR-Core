@@ -66,6 +66,14 @@ def guess_text_name(text):
     return m.group(1).strip() or m.group(2).strip()
   #return m.group(1) or m.group(2) or "" if m else ""
 
+__noname_re = re.compile(ur'^(?:【.{0,16}?】|.{0,16}?(?=「))(.*)$')
+def remove_text_name(text):
+  """
+  @param  text  unicode
+  @return  unicode not None
+  """
+  return __noname_re.sub('\\1', text)
+
 __beauty_text_re = re.compile(ur'([。？！」】])(?![。！？」]|$)')
 def beautify_text(text):
   """
