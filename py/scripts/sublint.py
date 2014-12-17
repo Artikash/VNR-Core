@@ -5,7 +5,7 @@
 
 if __name__ == '__main__':
   import initrc
-  initrc.chcwd()
+  #initrc.chcwd()
   initrc.initenv()
 
 import os, sys
