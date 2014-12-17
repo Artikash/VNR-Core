@@ -161,7 +161,7 @@ class TrailersApi(object):
     dprint("enter")
     if text and not key and (
         isinstance(text, int) or isinstance(text, long) or
-        (isinstance(text, str) or isinstance(text, unicode)) and text.isdigit()
+        isinstance(text, basestring) and text.isdigit()
       ):
       key = text
       text = None
@@ -568,7 +568,7 @@ class GyuttoApi(object):
     """
     dprint("key, text =", key, text)
     if key:
-      if (isinstance(key, str) or isinstance(key, unicode)) and key.startswith('http://'):
+      if isinstance(key, basestring) and key.startswith('http://'):
         kw = self.cachingItemApi.query(url=key)
       else:
         kw = self.cachingItemApi.query(key)

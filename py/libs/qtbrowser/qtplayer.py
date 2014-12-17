@@ -51,7 +51,7 @@ class HiddenPlayer(object):
       url = QUrl(url)
     for k,v in kwargs.iteritems():
       #url.addQueryItem(k, v)
-      if not isinstance(v, str) and not isinstance(v, unicode):
+      if not isinstance(v, basestring):
         v = "%s" % v
       url.addEncodedQueryItem(k, QUrl.toPercentEncoding(v))
     self.__d.webView.load(url)

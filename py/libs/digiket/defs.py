@@ -17,7 +17,7 @@ def fromitemkey(key):
   """
   if isinstance(key, int) or isinstance(key, long):
     return key
-  elif isinstance(key, str) or isinstance(key, unicode):
+  elif isinstance(key, basestring):
     if key.startswith('ITM'):
       key = key[3:]
     key = key.lstrip('0')

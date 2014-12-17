@@ -218,7 +218,7 @@ class _NetworkManager(object):
     """
     #data['ver'] = self.version
     try:
-      if not isinstance(data, str) and not isinstance(data, unicode):
+      if not isinstance(data, basestring):
         data = json.dumps(data)
       #r = session.post(JSON_API + path,
       r = self.qtSession.post(JSON_API + path,

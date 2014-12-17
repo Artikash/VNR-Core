@@ -14,18 +14,54 @@ from sakurakit.skdebug import dprint, dwarn
 #from sakurakit.skprof import SkProfiler
 import initdefs
 
+KEY_TYPES = {
+  'id': int,
+  'gameId': int,
+  'userId': int,
+  'userName': basestring,
+  'sub': basestring,
+  'subName': basestring,
+  'subLang': basestring,
+  'subTime': int,
+  'text': basestring,
+  'textName': basestring,
+  'textLang': basestring,
+  'textTime': int,
+  'comment': basestring,
+  'revision': int,
+  'timestamp': int,
+}
+
 def lint(path): # unicode -> bool
   print "process:", path
   ok = False
   try:
     with open(path, 'r') as f:
-      l = yaml.load(f)
-      if not l or not isinstance(l, list):
-        raise TypeError("yaml root is not a valid list")
-      options = l.pop(0)
+      lines = yaml.load(f)
+      if not lines or not isinstance(lines, list):
+        raise ValueError("yaml root is not a valid list")
+      for i,l in enumerate(lines):
+        if not isinstance(l, dict):
+          raise ValueError("#%s: record is not a dict: %s" % (i, l))
+        for k,v in l.iteritems():
+          t = KEY_TYPES.get(k)
+          if not t:
+            raise ValueError("#%s: unrecognized dict key: %s: %s" % (i, k, l))
+          elif not isinstance(v, t):
+            raise ValueError("#%s: invalid value type: %s: %s" % (i, k, l))
+        if i:
+          if not l.get('text'):
+            raise ValueError("#%s: missing text: %s" % (i, l))
+          if not l.get('sub'):
+            raise ValueError("#%s: missing sub: %s" % (i, l))
+      options = lines[0]
+      if not options.get('textLang'):
+        print "missing global textLang, assume 'ja'"
+      if not options.get('subLang'):
+        print "missing global subLang, use selected language when submit"
       ok = True
   except Exception, e:
-    dwarn(e)
+    print e
   if ok:
     print "pass"
   else:
@@ -51,7 +87,9 @@ def main(argv):
   #dprint("enter")
 
   errorCount = 0
-  for path in argv:
+  for i,path in enumerate(argv):
+    if i:
+      print
     ok = lint(path)
     if not ok:
       errorCount += 1
