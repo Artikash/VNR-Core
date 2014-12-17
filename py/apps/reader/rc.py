@@ -73,8 +73,11 @@ DIR_CACHE_INST = DIR_APP_CACHE + '/Installers'# $app/Caches/Installers
 DIR_DICT_MECAB = DIR_CACHE_DICT + '/MeCab'      # $app/Caches/Dictionaries/MeCab
 
 #DIR_XML_COMMENT = DIR_USER_XML + '/comments'   # $user/xml/1/comments, unicode
-DIR_XML_COMMENT = DIR_APP_CACHE + '/Subtitles'  # $user/xml/1/comments, unicode
-DIR_YAML_SUBTITLE = DIR_XML_COMMENT
+
+DIR_CACHE_SUB = DIR_APP_CACHE + '/Subtitles'    # $app/Caches/Subtitles
+
+DIR_XML_COMMENT = DIR_CACHE_SUB + '/xml'        # $app/Caches/Subtitles/xml
+DIR_YAML_SUB = DIR_CACHE_SUB + '/yaml'          # $app/Caches/Subtitles/yaml
 
 # Apps
 
@@ -165,7 +168,7 @@ def subs_yaml_path(itemId, subLang, gameLang='ja'):
   @return  unicode  path
   @nothrow
   """
-  return "%s/%s.%s-%s.yaml" % (DIR_XML_COMMENT, gameLang[:2], subLang[:2])
+  return "%s/%s.%s-%s.yaml" % (DIR_YAML_SUB, gameLang[:2], subLang[:2])
 
 # Terms
 
