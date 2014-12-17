@@ -1089,9 +1089,9 @@ Item { id: root_
             var lang = s.language
             //var lang = Sk.tr(c.language) // too long orz
             lang = "(" + lang + ")"
-            //var sec = c.updateTimestamp > 0 ? c.updateTimestamp : c.timestamp
-            //var ts = Util.timestampToString(sec)
-            return us + lang //+ ' ' + ts
+            var sec = s.updateTime > 0 ? s.updateTime : s.createTime
+            var ts = Util.timestampToString(sec)
+            return us + lang + ' ' + ts
           }
         }
 

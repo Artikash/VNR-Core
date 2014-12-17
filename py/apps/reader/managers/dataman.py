@@ -1793,24 +1793,29 @@ class Subtitle(object):
     'textId',
     'text',
     'textName',
+    'textTime',
+    'textLang',
     'sub',
     'subName',
-    'userId',
+    'subTime',
     'subLang',
-    'textLang',
+    'userId',
   )
   def __init__(self,
       textId=0, text='', textName='',
+      textTime=0, subTime=0,
       sub='', subName='',
       userId=0, subLang='', textLang=''):
     self.textId = textId # long
     self.text = text # unicode
     self.textName = textName # unicode
+    self.textLang = textLang # str
+    self.textTime = textTime
     self.sub = sub # unicode
     self.subName = subName # unicode
     self.userId = userId # long
     self.subLang = subLang # str
-    self.textLang = textLang # str
+    self.subTime = subTime
 
     self._userName = '' # str  cached
 
@@ -1844,6 +1849,16 @@ def SubtitleObject(QObject):
   color = Property(unicode,
       lambda self: manager().queryUserColor(self.d.userId),
       notify=colorChanged)
+
+  createTimeChanged = Signal(int)
+  createTime = Property(int,
+      lambda self: self.d.textTime,
+      notify=createTimeChanged)
+
+  updateTimeChanged = Signal(int)
+  updateTime = Property(int,
+      lambda self: self.d.subTime,
+      notify=updateTimeChanged)
 
 @Q_Q
 class _Comment(object):
@@ -7092,18 +7107,14 @@ class _DataManager(object):
       for s in subs:
         l = OrderedDict() # enforce order
         l['id'] = s.textId
-        l['text'] = s.text
-        if s.textName:
-          l['textName'] = s.textName
-        l['sub'] = s.sub
-        if s.subName:
-          l['subName'] = s.subName
-        if s.subLang:
-          l['subLang'] = s.subLang
-        if s.textLang:
-          l['textLang'] = s.textLang
-        l['userId'] = s.userId
-        l['userName'] = s.userName
+        for k in (
+            'text', 'textName', 'textLang', 'textTime',
+            'sub', 'subName', 'subLang', 'subTime',
+            'userId', 'userName',
+          ):
+          v = getattr(s, k)
+          if v:
+            l[k] = v
         lines.append(l)
       try:
         with open(path, 'w') as f:
@@ -7142,14 +7153,16 @@ class _DataManager(object):
           subs = []
           for it in l:
             s = Subtitle(
+              userId=it.get('userId') or 0,
               textId=it.get('id') or 0,
               text=it.get('text') or '',
               textName=it.get('textName') or '',
+              textLang=it.get('textLang') or '',
+              textTime=it.get('textTime') or 0,
               sub=it.get('sub') or '',
               subName=it.get('subName') or '',
-              userId=it.get('userId') or 0,
               subLang=it.get('subLang') or '',
-              textLang=it.get('textLang') or '',
+              subTime=it.get('subTime') or 0,
             )
             if s.text and s.sub:
               subs.append(s)

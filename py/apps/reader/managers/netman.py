@@ -990,9 +990,9 @@ class _NetworkManager(object):
       'gameid': itemId,
     }
     if gameLang:
-      params['gamelang'] = gameLang
+      params['textlang'] = gameLang
     if langs:
-      params['lang'] = ','.join(langs)
+      params['sublang'] = ','.join(langs)
     if difftime:
       params['mintime'] = difftime
 
@@ -1010,8 +1010,15 @@ class _NetworkManager(object):
               kw = {
                 'textId': int(elem.get('id')),
               }
+              v = elem.get('time')
+              if v:
+                kw['textTime'] = int(v)
             elif path == 4: # grimoire/texts/text/subs
-              kw['subLang'] == elem.get('lang')
+              kw['subLang'] = elem.get('lang') or ''
+            elif path == 5: # grimoire/texts/text/subs/sub
+              v = elem.get('time')
+              if v:
+                kw['subTime'] = int(v)
           else:
             path -= 1
             if path == 3: # grimoire/texts/text
