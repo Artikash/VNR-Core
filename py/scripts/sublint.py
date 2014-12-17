@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
 import os, sys
 import yaml
-from sakurakit.skdebug import dprint, dwarn
+#from sakurakit.skdebug import dprint, dwarn
 #from sakurakit.skprof import SkProfiler
 import initdefs
 
@@ -72,14 +72,16 @@ def lint(path): # unicode -> bool
 
 def usage():
   cmd = os.path.basename(sys.argv[0])
+  VERSION = 1418779573
   print """\
 usage: %s yamlfile1 [yamlfile2] ...
-Check syntax errors in yaml subtitles.""" % cmd
+version: %s
+Check syntax errors in yaml subtitles.""" % (cmd, VERSION)
 
 def main(argv):
   """
   @param  argv  [unicode]
-  @return  int
+  @return  int  error file count
   """
   if len(argv) == 0 or argv[0] in initdefs.HELP_FLAGS:
     usage()

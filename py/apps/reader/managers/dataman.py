@@ -7,7 +7,7 @@
 from sakurakit.skprof import SkProfiler
 
 import itertools, operator, os, re #, shutil
-from collections import OrderedDict
+#from collections import OrderedDict
 from ctypes import c_longlong
 from datetime import datetime
 from functools import partial
@@ -16,7 +16,7 @@ import yaml
 from lxml import etree
 from PySide.QtCore import Signal, Slot, Property, Qt, QObject, QDir, QTimer, QCoreApplication, \
                           QAbstractListModel, QModelIndex
-from sakurakit import skcursor, skdatetime, skevents, skfileio, sknetio, skpaths, skstr, skthreads
+from sakurakit import skcursor, skdatetime, skevents, skfileio, sknetio, skpaths, skstr, skthreads, skyaml
 from sakurakit.skclass import Q_Q, staticproperty, memoized, memoizedproperty
 from sakurakit.skcontainer import uniquelist
 from sakurakit.skdebug import dprint, dwarn, derror
@@ -7105,7 +7105,7 @@ class _DataManager(object):
         'timestamp': timestamp,
       }]
       for s in subs:
-        l = OrderedDict() # enforce order
+        l = {} # enforce order
         l['id'] = s.textId
         for k in (
             'text', 'textName', 'textLang', 'textTime',
@@ -7116,11 +7116,7 @@ class _DataManager(object):
           if v:
             l[k] = v
         lines.append(l)
-      try:
-        with open(path, 'w') as f:
-          yaml.dump(lines, f, default_flow_style=False)
-      except Exception, e:
-        dwarn(e)
+      skyaml.writefile(lines, path)
 
   @staticmethod
   def _mergeSubtitles(subs, newsubs):
