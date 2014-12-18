@@ -35,10 +35,8 @@ ENGINES_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/engines.yaml")
 ROOT_LOCATION_U = u(ROOT_LOCATION)
 
 def load_yaml_file(path):
-  with open(path, 'r') as f:
-    import yaml
-    return yaml.load(f)
-    #return yaml.load(f.read().decode('utf8'))
+  import yaml
+  return yaml.load(file(path, 'r'))
 
 SHARE_YAML = load_yaml_file(SHARE_YAML_LOCATION)
 APP_YAML = load_yaml_file(APP_YAML_LOCATION)

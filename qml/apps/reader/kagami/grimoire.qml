@@ -1296,7 +1296,7 @@ Item { id: root_
     addText(c.text, c.language, 'comment', undefined, c)
   }
 
-  function showSubtitle(c) {
+  function showSubtitle(s) {
     addText(s.text, s.language, 'sub', undefined, s)
   }
 

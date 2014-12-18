@@ -544,6 +544,9 @@ templates:
     xml/users:      xml/users.xml
     xml/voices:     xml/voices.xml
 
+    xml/subs:       xml/subs.xml
+    yaml/subs:      yaml/subs.yaml
+
     haml/reader/credits:    haml/reader/credits.haml
     haml/reader/chat:       haml/reader/chat.haml
     haml/reader/help:       haml/reader/help.haml

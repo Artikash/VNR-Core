@@ -380,8 +380,8 @@ class _TextManager(object):
     """
     @param  s  Subtitle
     """
-    if not self.blockedLanguages or s.lang[:2] not in self.blockedLanguages:
-      self.q.subtitleReceived.emit(dataman.SubtitleObject(s))
+    if not self.blockedLanguages or s.subLang[:2] not in self.blockedLanguages:
+      self.q.subtitleReceived.emit(s.getObject())
 
   def _showTranslation(self, sub, language, provider, time=0):
     """
@@ -638,13 +638,16 @@ class _TextManager(object):
     q.contextChanged.emit()
 
     if dm.hasSubtitles():
+      subs = set()
       h = hashutil.hashtext(textutil.remove_text_name(text))
       l = dm.querySubtitles(hash=h)
       if l:
         for s in l:
-           self._showSubtitle(s)
-           self._onGameSubtitle(s.text, s.lang)
-           self._updateTtsSubtitle(s.text, s.lang)
+          if s.sub not in subs:
+            subs.add(s.sub)
+            self._showSubtitle(s)
+            self._onGameSubtitle(s.text, s.subLang)
+            self._updateTtsSubtitle(s.text, s.subLang)
 
     # Profiler: 1e-4
 
@@ -779,11 +782,14 @@ class _TextManager(object):
     q.rawTextReceived.emit(text, self.gameLanguage, h, 1) # context size is 1
 
     if dm.hasSubtitles():
+      subs = set()
       h = hashutil.hashtext(textutil.remove_text_name(text))
       l = dm.querySubtitles(hash=h)
       if l:
         for s in l:
-           self._showSubtitle(s)
+          if s.sub not in subs:
+            subs.add(s.sub)
+            self._showSubtitle(s)
 
     if dm.hasComments():
       for c in dm.queryComments(hash=h):

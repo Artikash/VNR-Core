@@ -160,7 +160,7 @@ def refs_xml_path(gameId):
   """
   return "%s/%s.xml" % (DIR_XML_REF, gameId)
 
-def subs_yaml_path(itemId, subLang, gameLang='ja'):
+def subs_yaml_path(itemId, subLang, gameLang='ja', fmt='yaml'):
   """
   @param  itemId  long
   @param  subLang  str
@@ -168,7 +168,7 @@ def subs_yaml_path(itemId, subLang, gameLang='ja'):
   @return  unicode  path
   @nothrow
   """
-  return "%s/%s.%s-%s.yaml" % (DIR_YAML_SUB, gameLang[:2], subLang[:2])
+  return "%s/%s.%s-%s.%s" % (DIR_YAML_SUB, itemId, gameLang[:2], subLang[:2], fmt)
 
 # Terms
 

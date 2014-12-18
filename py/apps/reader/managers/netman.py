@@ -1001,6 +1001,7 @@ class _NetworkManager(object):
       if r.ok and _response_is_xml(r):
         #root = etree.fromstring(r.content)
 
+        ret = []
         context = etree.iterparse(StringIO(r.content), events=('start', 'end'))
         path = 0
         for event, elem in context:
@@ -1019,6 +1020,9 @@ class _NetworkManager(object):
               v = elem.get('time')
               if v:
                 kw['subTime'] = int(v)
+              v = elem.get('userId')
+              if v:
+                kw['userId'] = int(v)
           else:
             path -= 1
             if path == 3: # grimoire/texts/text

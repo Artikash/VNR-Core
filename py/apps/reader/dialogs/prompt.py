@@ -369,7 +369,7 @@ def confirmUpdateSubs(timestamp=0):
     return
   ts = i18n.timestamp2datetime(timestamp) if timestamp else tr_('empty')
   sel = QMessageBox.question(_parent(),
-      my.tr("Update user-contributed dictionary"),
+      my.tr("Update user-contributed subtitles"),
       "\n\n".join((
 "\n".join((my.tr("Shared subtitles are updated on: {0}."),
            my.tr("VNR will check for automatically updates. Do you want to update now?"))),

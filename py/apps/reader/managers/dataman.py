@@ -6,7 +6,7 @@
 
 from sakurakit.skprof import SkProfiler
 
-import itertools, operator, os, re #, shutil
+import itertools, operator, os, re #, weakref #, shutil
 #from collections import OrderedDict
 from ctypes import c_longlong
 from datetime import datetime
@@ -1790,6 +1790,8 @@ class Character(QObject):
 
 class Subtitle(object):
   __slots__ = (
+    #'__weakref__',
+
     'textId',
     'text',
     'textName',
@@ -1800,6 +1802,9 @@ class Subtitle(object):
     'subTime',
     'subLang',
     'userId',
+
+    '_userName',
+    '_q',
   )
   def __init__(self,
       textId=0, text='', textName='',
@@ -1817,18 +1822,41 @@ class Subtitle(object):
     self.subLang = subLang # str
     self.subTime = subTime
 
-    self._userName = '' # str  cached
+    self._userName = None # str  cached
+    self._q = None # Qt
 
   @property
   def userName(self):
-    if not self._userName:
-      self._userName = manager().queryUserName(self.userId)
+    if self._userName is None:
+      self._userName = manager().queryUserName(self.userId) or ''
     return self._userName
 
-def SubtitleObject(QObject):
-  def __init__(self, d, parent=None):
+  def getObject(self):
+    if not self._q:
+      self._q = SubtitleObject(self)
+    return SubtitleObject(self)
+
+  def releaseObject(self):
+    q = self._q
+    self._q = None
+    if q and q.parent():
+      q.setParent(None)
+
+  def releaseObjectLater(self, interval=30000): # release aftre 30min
+    q = self._q
+    self._q = None
+    if q and q.parent():
+      #q.setParent(None)
+      skevents.runlater(partial(q.setParent, None), interval)
+
+class SubtitleObject(QObject):
+  def __init__(self, d=None, parent=None):
+    super(SubtitleObject, self).__init__(parent or manager()) # force having parent or it might crash after copy in QML
     self.d = d
-    super(SubtitleObject, self).__init__(parent)
+    #self.dref = weakref.ref(d)
+
+  #@property
+  #def d(self): return self.dref()
 
   languageChanged = Signal(unicode)
   language = Property(unicode,
@@ -5892,7 +5920,12 @@ class _DataManager(object):
     #self.nameItems = [] # [NameItem]
 
     # Subtitles for the current game
-    self.resetSubtitles()
+    #self.resetSubtitles()
+    self.subtitles = [] # [Subtitle]
+    self.subtitleIndex = {} # {long hash:[Subtitle]}
+    self.subtitleItemId = 0 # long
+    self.subtitleTimestamp = 0 # long
+
 
     # Users
     self.users = {} # {long id:UserDigest}
@@ -5901,10 +5934,18 @@ class _DataManager(object):
     self._loadUser()
 
   def resetSubtitles(self):
-    self.subtitles = [] # [Subtitle]
     self.subtitleIndex = {} # {long hash:[Subtitle]}
     self.subtitleItemId = 0 # long
     self.subtitleTimestamp = 0 # long
+    self._clearSubtitles()
+
+  def _clearSubtitles(self):
+    if self.subtitles:
+      l = self.subtitles
+      self.subtitles = [] # [Subtitle]
+      if l:
+        for it in l:
+          it.releaseObject()
 
   def resetCharacters(self):
     self.characters = {'':Character(parent=self.q, ttsEnabled=True)}
@@ -6368,7 +6409,7 @@ class _DataManager(object):
       return
 
     try:
-      context = etree.iterparse(xmlfile, events=('start','end'))
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
       items = {} # {long itemId:GameItem}
       path = 0
       for event, elem in context:
@@ -6417,7 +6458,7 @@ class _DataManager(object):
   #    return
 
   #  try:
-  #    context = etree.iterparse(xmlfile, events=('start','end'))
+  #    context = etree.iterparse(xmlfile, events=('start', 'end'))
   #    digests = {} # {long itemId:ReferenceDigest}
   #    path = 0
   #    for event, elem in context:
@@ -6464,7 +6505,7 @@ class _DataManager(object):
       return
 
     try:
-      context = etree.iterparse(xmlfile, events=('start','end'))
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
       files = {}
       path = 0
       for event, elem in context:
@@ -6746,7 +6787,7 @@ class _DataManager(object):
       return
 
     try:
-      context = etree.iterparse(xmlfile, events=('start','end'))
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
 
       users = {}
       path = 0
@@ -6938,9 +6979,10 @@ class _DataManager(object):
 
   # Subtitles
 
-  def updateSubtitles(self, itemId):
+  def updateSubtitles(self, itemId, reset=False):
     """
     @param  itemId  long
+    @param* reset  bool
     """
     #self.resetSubtitles()
     if self.subtitles:
@@ -6950,15 +6992,16 @@ class _DataManager(object):
     now = self.subtitleTimestamp = skdatetime.current_unixtime()
     self.subtitleItemId = itemId
     skthreads.runasynclater(
-        partial(self._updateSubtitles, itemId, now, self.subtitles, subTimestamp),
+        partial(self._updateSubtitles, itemId, now, self.subtitles, subTimestamp, reset),
         100) # reload subtitles after 100 ms
 
-  def _updateSubtitles(self, itemId, timestamp, subs, subTimestamp):
+  def _updateSubtitles(self, itemId, timestamp, subs, subTimestamp, reset):
     """This function runs in parallel
     @param  itemId  long
     @param  timestamp  long  now
     @param  subs  [Subtitle]
     @param  subTimestamp  long
+    @param  reset bool
     @return  {long:Subtitle}
     """
     if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
@@ -6973,14 +7016,16 @@ class _DataManager(object):
     gameLang = 'ja' # TODO: allow change gamelang
 
     changed = False
-    if not subTimestamp:
-      subs = netman.querySubtitles(itemId=itemId, langs=langs, async=False)
+    if reset or not subTimestamp:
+      growl.msg(my.tr("Updating online subtitles") + " ...", async=True)
+      subs = netman.manager().querySubtitles(itemId=itemId, langs=langs, async=False)
       if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
         return
       changed = True
       subTimestamp = timestamp
     else:
-      newsubs = netman.querySubtitles(itemId=itemId, langs=langs, time=subTimestamp, async=False)
+      growl.msg(my.tr("Updating online subtitles") + " ...", async=True)
+      newsubs = netman.manager().querySubtitles(itemId=itemId, langs=langs, time=subTimestamp, async=False)
       if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
         return
       if newsubs:
@@ -6992,13 +7037,15 @@ class _DataManager(object):
       return
 
     if subs:
+      self._clearSubtitles()
       self.subtitles = subs
       self.subtitleIndex = self._createSubtitleIndex(subs)
       growl.msg(my.tr("Found {0} subtitles").format(len(subs)), async=True)
     else:
       growl.msg(my.tr("Subtitles not found"), async=True)
     if changed:
-      self._saveSubtitles(subs, timestamp, itemId, lang, gameLang)
+      self._saveXmlSubtitles(subs, subTimestamp, itemId, lang, gameLang)
+      self._saveYamlSubtitles(subs, timestamp, itemId, lang, gameLang)
 
   def reloadSubtitles(self, itemId):
     """
@@ -7010,9 +7057,7 @@ class _DataManager(object):
       if item and item.subtitleCount:
         now = self.subtitleTimestamp = skdatetime.current_unixtime()
         self.subtitleItemId = itemId
-        skthreads.runasynclater(
-            partial(self._reloadSubtitles, itemId, now),
-            3000) # reload subtitles after 3 seconds
+        skthreads.runasync(partial(self._reloadSubtitles, itemId, now))
 
   def _reloadSubtitles(self, itemId, timestamp):
     """This function runs in parallel
@@ -7031,19 +7076,21 @@ class _DataManager(object):
 
     gameLang = 'ja' # TODO: allow change gamelang
 
-    subs, subTimestamp = self._loadOfflineSubtitles(itemId, lang, gameLang)
+    subs, subTimestamp = self._loadXmlSubtitles(itemId, lang, gameLang)
     if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
       return
 
     changed = False
     if not subs or not subTimestamp:
-      subs = netman.querySubtitles(itemId=itemId, langs=langs, async=False)
+      growl.msg(my.tr("Updating online subtitles") + " ...", async=True)
+      subs = netman.manager().querySubtitles(itemId=itemId, langs=langs, async=False)
       if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
         return
       changed = True
       subTimestamp = timestamp
     elif timestamp > config.APP_UPDATE_SUBS_INTERVAL + subTimestamp:
-      newsubs = netman.querySubtitles(itemId=itemId, langs=langs, time=subTimestamp, async=False)
+      growl.msg(my.tr("Updating online subtitles") + " ...", async=True)
+      newsubs = netman.manager().querySubtitles(itemId=itemId, langs=langs, time=subTimestamp, async=False)
       if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
         return
       if newsubs:
@@ -7059,14 +7106,18 @@ class _DataManager(object):
     if itemId != self.subtitleItemId or timestamp != self.subtitleTimestamp:
       return
 
+    self._clearSubtitles()
     self.subtitles = subs or []
     self.subtitleIndex = subIndex
     self.subtitleTimestamp = subTimestamp
 
     if subs:
       growl.msg(my.tr("Found {0} subtitles").format(len(subs)), async=True)
-    if changed:
-      self._saveSubtitles(subs, subTimestamp, itemId, lang, gameLang)
+    else:
+      growl.msg(my.tr("Subtitles not found"), async=True)
+    if changed and subs:
+      self._saveXmlSubtitles(subs, subTimestamp, itemId, lang, gameLang)
+      self._saveYamlSubtitles(subs, subTimestamp, itemId, lang, gameLang)
 
   @staticmethod
   def _createSubtitleIndex(subs):
@@ -7086,7 +7137,7 @@ class _DataManager(object):
     return ret
 
   @staticmethod
-  def _saveSubtitles(subs, timestamp, itemId, subLang, gameLang):
+  def _saveXmlSubtitles(subs, timestamp, itemId, subLang, gameLang):
     """
     @param  subs  [Subtitle]
     @param  itemId  long
@@ -7094,29 +7145,72 @@ class _DataManager(object):
     @param* gameLang  str
     @return  [Subtitle], timestamp
     """
-    path = rc.subs_yaml_path(itemId, subLang, gameLang)
-    if not subs:
-      skfileio.removefile(path)
+    xmlfile = rc.subs_yaml_path(itemId, subLang, gameLang, fmt='xml')
+    dprint("save modified subtitles to %s" % xmlfile)
+
+    data = rc.jinja_template('xml/subs').render({
+      'subs': subs,
+      'timestamp': timestamp,
+      'now': skdatetime.timestamp2datetime(timestamp),
+    })
+    ok = skfileio.writefile(xmlfile, data)
+    if ok:
+      dprint("pass: xml = %s" % xmlfile)
     else:
-      lines = [{
-        'gameId': itemId,
-        'textLang': gameLang,
+      dwarn("failed: xml = %s" % xmlfile)
+
+  @staticmethod
+  def _saveYamlSubtitles(subs, timestamp, itemId, subLang, gameLang):
+    """
+    @param  subs  [Subtitle]
+    @param  itemId  long
+    @param  subLang  str
+    @param* gameLang  str
+    @return  [Subtitle], timestamp
+    """
+    from jinjay.escape import ystr
+    yamlfile = rc.subs_yaml_path(itemId, subLang, gameLang)
+    dprint("save modified subtitles to %s" % yamlfile)
+
+    data = rc.jinja_template('yaml/subs').render({
+      'ys': ystr,
+      'subs': subs,
+      'subCount': len(subs),
+      'timestamp': timestamp,
+      'now': skdatetime.timestamp2datetime(timestamp),
+      'gameId': itemId,
+      'options': {
         'subLang': subLang,
-        'timestamp': timestamp,
-      }]
-      for s in subs:
-        l = {} # enforce order
-        l['id'] = s.textId
-        for k in (
-            'text', 'textName', 'textLang', 'textTime',
-            'sub', 'subName', 'subLang', 'subTime',
-            'userId', 'userName',
-          ):
-          v = getattr(s, k)
-          if v:
-            l[k] = v
-        lines.append(l)
-      skyaml.writefile(lines, path)
+        'textLang': gameLang,
+      }
+    })
+    ok = skfileio.writefile(yamlfile, data)
+    if ok:
+      dprint("pass: yaml = %s" % yamlfile)
+    else:
+      dwarn("failed: yaml = %s" % yamlfile)
+
+    # Python yaml is using too many memory +100MB
+
+    #lines = [{
+    #  'gameId': itemId,
+    #  'textLang': gameLang,
+    #  'subLang': subLang,
+    #  'timestamp': timestamp,
+    #}]
+    #for s in subs:
+    #  l = {} # enforce order
+    #  l['id'] = s.textId
+    #  for k in (
+    #      'text', 'textName', 'textLang', 'textTime',
+    #      'sub', 'subName', 'subLang', 'subTime',
+    #      'userId', 'userName',
+    #    ):
+    #    v = getattr(s, k)
+    #    if v:
+    #      l[k] = v
+    #  lines.append(l)
+    #skyaml.writefile(lines, path)
 
   @staticmethod
   def _mergeSubtitles(subs, newsubs):
@@ -7124,48 +7218,110 @@ class _DataManager(object):
     @param  subs  [Subtitle]
     @param  newsubs  [Subtitle]
     """
-    index = {it.textId:(i, it) for i,it in enumerate(subs)}
+    index = {it.textId:i for i,it in enumerate(subs)}
     for s in newsubs:
-      t = index.get(s.textId)
-      if t:
-        subs[t[0]] = s
+      i = index.get(s.textId)
+      if i:
+        t = subs[i]
+        subs[i] = s
+        t.releaseObjectLater()
       else:
         subs.append(s)
 
   @staticmethod
-  def _loadOfflineSubtitles(itemId, subLang, gameLang):
+  def _loadXmlSubtitles(itemId, subLang, gameLang):
     """
     @param  itemId  long
     @param  subLang  str
     @param* gameLang  str
     @return  [Subtitle], timestamp
     """
-    path = rc.subs_yaml_path(itemId, subLang, gameLang)
-    if os.path.exists(path):
-      try:
-        with open(path, 'r') as f:
-          l = yaml.load(f)
-          options = l.pop(0)
-          subs = []
-          for it in l:
-            s = Subtitle(
-              userId=it.get('userId') or 0,
-              textId=it.get('id') or 0,
-              text=it.get('text') or '',
-              textName=it.get('textName') or '',
-              textLang=it.get('textLang') or '',
-              textTime=it.get('textTime') or 0,
-              sub=it.get('sub') or '',
-              subName=it.get('subName') or '',
-              subLang=it.get('subLang') or '',
-              subTime=it.get('subTime') or 0,
-            )
-            if s.text and s.sub:
-              subs.append(s)
-          return subs, options.get('timestamp') or 0
-      except Exception, e:
-        dwarn(e)
+    xmlfile = rc.subs_yaml_path(itemId, subLang, gameLang, fmt='xml')
+    if not os.path.exists(xmlfile):
+      #dprint("pass: xml not found, %s" % xmlfile)
+      dprint("pass: xml not found")
+      return (), 0
+
+    try:
+      timestamp = 0
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
+      ret = []
+      path = 0
+      for event, elem in context:
+        if event == 'start':
+          path += 1
+          if path == 2: # grimoire/trs
+            timestamp = elem.get('timestamp')
+            if not timestamp:
+              raise ValueError("missing xml timestamp")
+            timestamp = int(timestamp)
+          elif path == 3: # grimoire/trs/tr
+            kw = {}
+        else:
+          path -= 1
+          if path == 3: # grimoire/trs/tr
+            tag = elem.tag
+            text = elem.text
+            if tag in ('text', 'textName', 'textLang', 'sub', 'subName', 'subLang'):
+              kw[tag] = text or ''
+            elif tag in ('userId', 'textId', 'textTime', 'subTime'):
+              kw[tag] = int(text)
+            #else:
+            #  kw[tag] = text or ''
+
+          elif path == 2: # grimoire/trs
+            s = Subtitle(**kw)
+            ret.append(s)
+
+      #self.comments, self.context = comments, contexts
+      dprint("pass: load %i characters from %s" % (len(ret), xmlfile))
+      return ret, timestamp
+
+    except etree.ParseError, e:
+      dwarn("xml parse error", e.args)
+    except (TypeError, ValueError, AttributeError), e:
+      dwarn("xml malformat", e.args)
+    except Exception, e:
+      derror(e)
+
+    dwarn("warning: failed to load xml from %s" % xmlfile)
     return (), 0
+
+  #@staticmethod
+  #def _loadYamlSubtitles(itemId, subLang, gameLang): # too slow to use
+  #  """
+  #  @param  itemId  long
+  #  @param  subLang  str
+  #  @param* gameLang  str
+  #  @return  [Subtitle], timestamp
+  #  """
+  #  path = rc.subs_yaml_path(itemId, subLang, gameLang)
+  #  if os.path.exists(path):
+  #    try:
+  #      l = yaml.load(file(path, 'r'))
+  #      options = l.pop(0)
+  #      subs = []
+  #      for it in l:
+  #        s = Subtitle(
+  #          userId=it.get('userId') or 0,
+  #          textId=it.get('id') or 0,
+  #          text=it.get('text') or '',
+  #          textName=it.get('textName') or '',
+  #          textLang=it.get('textLang') or '',
+  #          textTime=it.get('textTime') or 0,
+  #          sub=it.get('sub') or '',
+  #          subName=it.get('subName') or '',
+  #          subLang=it.get('subLang') or '',
+  #          subTime=it.get('subTime') or 0,
+  #        )
+  #        if s.text and s.sub:
+  #          subs.append(s)
+  #
+  #      dprint("pass: load %i subs from %s" % (len(subs), path))
+  #      return subs, options.get('timestamp') or 0
+  #    except Exception, e:
+  #      dwarn(e)
+  #  return (), 0
 
   def reloadComments(self, online=True):
     self.contexts = {}
@@ -7280,7 +7436,7 @@ class _DataManager(object):
       return
 
     try:
-      context = etree.iterparse(xmlfile, events=('start','end'))
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
 
       ret = {} #if hash else []
       path = 0
@@ -7375,7 +7531,7 @@ class _DataManager(object):
       return
 
     try:
-      context = etree.iterparse(xmlfile, events=('start','end'))
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
 
       ret = [] #if hash else []
       path = 0
@@ -7479,7 +7635,7 @@ class _DataManager(object):
     @return ({long hash:Comment} if hash else [Comment]) or None
     """
     try:
-      context = etree.iterparse(xmlfile, events=('start','end'))
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
 
       ret = {} if hash else []
       path = 0
@@ -7794,7 +7950,7 @@ class _DataManager(object):
       #root = tree.getroot()
       init = self.termsEditable # bool
 
-      context = etree.iterparse(xmlfile, events=('start','end'))
+      context = etree.iterparse(xmlfile, events=('start', 'end'))
 
       terms = []
       path = 0
@@ -8115,7 +8271,7 @@ class DataManager(QObject):
     if itemId:
       item = self.queryGameItem(id=itemId)
       if item and item.subtitleCount:
-        self.__d.updateSubtitles(itemId)
+        self.__d.updateSubtitles(itemId, reset=reset)
         return
     growl.notify(my.tr("Subtitles not found"))
 

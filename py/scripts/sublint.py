@@ -36,30 +36,29 @@ def lint(path): # unicode -> bool
   print "process:", path
   ok = False
   try:
-    with open(path, 'r') as f:
-      lines = yaml.load(f)
-      if not lines or not isinstance(lines, list):
-        raise ValueError("yaml root is not a valid list")
-      for i,l in enumerate(lines):
-        if not isinstance(l, dict):
-          raise ValueError("#%s: record is not a dict: %s" % (i, l))
-        for k,v in l.iteritems():
-          t = KEY_TYPES.get(k)
-          if not t:
-            raise ValueError("#%s: unrecognized dict key: %s: %s" % (i, k, l))
-          elif not isinstance(v, t):
-            raise ValueError("#%s: invalid value type: %s: %s" % (i, k, l))
-        if i:
-          if not l.get('text'):
-            raise ValueError("#%s: missing text: %s" % (i, l))
-          if not l.get('sub'):
-            raise ValueError("#%s: missing sub: %s" % (i, l))
-      options = lines[0]
-      if not options.get('textLang'):
-        print "missing global textLang, assume 'ja'"
-      if not options.get('subLang'):
-        print "missing global subLang, use selected language when submit"
-      ok = True
+    lines = yaml.load(file(path, 'r'))
+    if not lines or not isinstance(lines, list):
+      raise ValueError("yaml root is not a valid list")
+    for i,l in enumerate(lines):
+      if not isinstance(l, dict):
+        raise ValueError("#%s: record is not a dict: %s" % (i, l))
+      for k,v in l.iteritems():
+        t = KEY_TYPES.get(k)
+        if not t:
+          raise ValueError("#%s: unrecognized dict key: %s: %s" % (i, k, l))
+        elif not isinstance(v, t):
+          raise ValueError("#%s: invalid value type: %s: %s" % (i, k, l))
+      if i:
+        if not l.get('text'):
+          raise ValueError("#%s: missing text: %s" % (i, l))
+        if not l.get('sub'):
+          raise ValueError("#%s: missing sub: %s" % (i, l))
+    options = lines[0]
+    if not options.get('textLang'):
+      print "missing global textLang, assume 'ja'"
+    if not options.get('subLang'):
+      print "missing global subLang, use selected language when submit"
+    ok = True
   except Exception, e:
     print e
   if ok:

@@ -14,8 +14,7 @@ def _load(): # -> dict
   #    x, s, y = line.encode('utf8').partition(':')
   #    HANVIET[x] = y.strip()
   import yaml
-  with open(path, 'r') as f:
-    return yaml.load(f.read().decode('utf8'))
+  return yaml.load(file(path, 'r'))
 HANVIET = _load()
 
 # For performance reason, redundant spaces after the last Chinese word is not checked
