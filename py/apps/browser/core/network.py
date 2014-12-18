@@ -135,7 +135,8 @@ class _WbNetworkAccessManager:
     """Set the http header
     @param  req  QNetworkRequest
     """
-    pass
+    if req.hasRawHeader('Referer'): # Delete Referer so that it will not get tracked
+      req.setRawHeader('Referer', '')
     #req.setRawHeader('User-Agent', config.USER_AGENT) # handled in WebKit
     #IP = '153.121.52.138'
     #keys = 'X-Forwarded-For', 'Client-IP', 'X-Client-IP', 'Real-IP', 'X-Real-IP'

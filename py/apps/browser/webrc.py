@@ -15,6 +15,7 @@ def update_web_settings(settings=None):
   dprint("disable same origin principal")
   for scheme in 'http', 'https':
     QWebSecurityOrigin.addLocalScheme(scheme)
+  #QWebSecurityOrigin.removeLocalScheme('qrc')
   #dprint("local security origin schemes:", QWebSecurityOrigin.localSchemes())
 
   ws = settings or QWebSettings.globalSettings()
