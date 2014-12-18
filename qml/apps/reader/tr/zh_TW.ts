@@ -20,7 +20,7 @@
     <message>
         <location filename="../springboard/appmodel.qml" line="55"/>
         <source>Add new game step by step</source>
-        <translation>一步一步添加新的遊戲</translation>
+        <translation>一步一步新增新的遊戲</translation>
     </message>
     <message>
         <location filename="../springboard/appmodel.qml" line="62"/>
@@ -58,7 +58,7 @@
     <message>
         <location filename="../springboard/cometcounter.qml" line="48"/>
         <source>{0} people are online now</source>
-        <translation>{0}個同學正線上上</translation>
+        <translation>{0}個同學正在線上</translation>
     </message>
 </context>
 <context>
@@ -66,7 +66,7 @@
     <message>
         <location filename="../kagami/commentbar.qml" line="48"/>
         <source>Enter to submit, or Shift+Enter to submit and forward the game</source>
-        <translation>按下回車提交評論，或者Shift+回車提交併發送回車到遊戲</translation>
+        <translation>按下回車提交評論，或者Shift+回車提交併傳送回車到遊戲</translation>
     </message>
     <message>
         <location filename="../kagami/commentbar.qml" line="49"/>
@@ -76,7 +76,7 @@
     <message>
         <location filename="../kagami/commentbar.qml" line="110"/>
         <source>Send &quot;Enter&quot; to the game process (no effect for some games)</source>
-        <translation>發送回車到遊戲程序（對某些遊戲沒有效果）</translation>
+        <translation>傳送回車到遊戲程序（對某些遊戲沒有效果）</translation>
     </message>
     <message>
         <location filename="../kagami/commentbar.qml" line="125"/>
@@ -377,7 +377,7 @@
     <message>
         <location filename="../kagami/dock.qml" line="1247"/>
         <source>Popup translation while hovering instead of clicking the game text</source>
-        <translation>彈出滑鼠指向的日文詞語的翻譯（禁用時需要點選文字纔會彈出）</translation>
+        <translation>彈出滑鼠指向的日文詞語的翻譯（禁用時需要點選文字才會彈出）</translation>
     </message>
     <message>
         <location filename="../kagami/dock.qml" line="1267"/>
@@ -440,7 +440,7 @@
     <message>
         <location filename="../springboard/dockmodel.qml" line="37"/>
         <source>Add new game from my computer</source>
-        <translation>添加電腦中的遊戲</translation>
+        <translation>新增電腦中的遊戲</translation>
     </message>
     <message>
         <location filename="../springboard/dockmodel.qml" line="48"/>
@@ -478,7 +478,7 @@
     <message>
         <location filename="../submaker/footer.qml" line="159"/>
         <source>Send &quot;Enter&quot; to the game process (no effect for some games)</source>
-        <translation>發送回車到遊戲程序（對某些遊戲沒有效果）</translation>
+        <translation>傳送回車到遊戲程序（對某些遊戲沒有效果）</translation>
     </message>
     <message>
         <location filename="../submaker/footer.qml" line="173"/>
@@ -633,7 +633,7 @@
     <message>
         <location filename="../kagami/grimoire.qml" line="1406"/>
         <source>Add to the Shared Dictionary</source>
-        <translation>添加到共享辭書</translation>
+        <translation>新增到共享辭書</translation>
     </message>
     <message>
         <location filename="../kagami/grimoire.qml" line="1534"/>
@@ -1040,7 +1040,7 @@
     <message>
         <location filename="../voiceview/optionbar.qml" line="42"/>
         <source>Dub voices for newly discovered characters (disabled by default)</source>
-        <translation>為新發現的人物姓名配音（默認無效）</translation>
+        <translation>為新發現的人物姓名配音（預設無效）</translation>
     </message>
 </context>
 <context>
@@ -1087,7 +1087,7 @@
     <message>
         <location filename="../refview.qml" line="116"/>
         <source>Type part of the title, user, etc.</source>
-        <translation>輸入需要查找的文字、使用者名等。</translation>
+        <translation>輸入需要查詢的文字、使用者名等。</translation>
     </message>
 </context>
 <context>
@@ -1096,13 +1096,13 @@
         <location filename="../subview/searchtoolbar.qml" line="26"/>
         <location filename="../termview/searchtoolbar.qml" line="26"/>
         <source>Search your editing</source>
-        <translation>搜索你的編輯</translation>
+        <translation>搜尋你的編輯</translation>
     </message>
     <message>
         <location filename="../subview/searchtoolbar.qml" line="54"/>
         <location filename="../termview/searchtoolbar.qml" line="55"/>
         <source>Search your language</source>
-        <translation>搜索你的語言</translation>
+        <translation>搜尋你的語言</translation>
     </message>
     <message>
         <location filename="../subview/searchtoolbar.qml" line="67"/>
@@ -1119,7 +1119,7 @@
     <message>
         <location filename="../termview/searchtoolbar.qml" line="40"/>
         <source>Search current game</source>
-        <translation>搜索當前遊戲</translation>
+        <translation>搜尋當前遊戲</translation>
     </message>
     <message>
         <location filename="../termview/searchtoolbar.qml" line="54"/>
@@ -1201,7 +1201,7 @@
     <message>
         <location filename="../submaker/subedit.qml" line="167"/>
         <source>Shift+Enter to submit and forward game</source>
-        <translation>按下Shift+回車來提交並且繼續遊戲</translation>
+        <translation>按下Shift+回車來提交併且繼續遊戲</translation>
     </message>
     <message>
         <location filename="../submaker/subedit.qml" line="169"/>
@@ -1214,7 +1214,7 @@
     <message>
         <location filename="../submaker.qml" line="158"/>
         <source>Type part of text, user, language, date, etc.</source>
-        <translation>輸入需要查找的文字，翻譯，使用者名，語言等。</translation>
+        <translation>輸入需要查詢的文字，翻譯，使用者名，語言等。</translation>
     </message>
 </context>
 <context>
@@ -1222,7 +1222,7 @@
     <message>
         <location filename="../subview.qml" line="165"/>
         <source>Type part of the text, context, user, language, etc, and press Enter to search</source>
-        <translation>輸入需要查找的文字，語境，使用者名，語言等，然後按下回車搜索</translation>
+        <translation>輸入需要查詢的文字，語境，使用者名，語言等，然後按下回車搜尋</translation>
     </message>
 </context>
 <context>
@@ -1243,7 +1243,7 @@
     <message>
         <location filename="../termview.qml" line="144"/>
         <source>Type part of the pattern, text, user, language, etc, and press Enter to search</source>
-        <translation>輸入需要查找的文字，翻譯，使用者名，語言等，然後按下回車搜索</translation>
+        <translation>輸入需要查詢的文字，翻譯，使用者名，語言等，然後按下回車搜尋</translation>
     </message>
 </context>
 <context>

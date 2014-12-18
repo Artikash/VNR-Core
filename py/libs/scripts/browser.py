@@ -13,7 +13,7 @@ def open(urls=[], debug=False):
 
   Example: python . -o "C:\Users\jichi\Desktop\%(title)s.%(ext)s" C9mjluSx40s
   """
-  if isinstance(urls, str) or isinstance(urls, unicode):
+  if isinstance(urls, basestring):
     urls = [urls]
   import rc
   return rc.runapp('browser', urls, debug=debug)

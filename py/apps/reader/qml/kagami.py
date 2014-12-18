@@ -179,6 +179,7 @@ class GrimoireBean(QObject):
   showText = Signal(unicode, unicode, long)  # text, lang, timestamp
   showTranslation = Signal(unicode, unicode, unicode, long)  # text, lang, provider, timestamp
   showComment = Signal(QObject) # dataman.Comment
+  showSubtitle = Signal(QObject) # dataman.SubtitleObject
 
   showNameText = Signal(unicode, unicode)  # text, lang
   showNameTranslation = Signal(unicode, unicode, unicode)  # text, lang, provider
@@ -306,6 +307,11 @@ class GrimoireController(QObject):
         c.type == 'subtitle' and not c.disabled and not c.deleted):
       self.__d.append(partial(GrimoireBean.instance.showComment.emit,
           c))
+
+  def showSubtitle(self, s):
+    if settings.global_().isGrimoireSubtitleVisible():
+      self.__d.append(partial(GrimoireBean.instance.showSubtitle.emit,
+          s))
 
   # Always send name text, this could help flush the text
   def showNameText(self, text, language):

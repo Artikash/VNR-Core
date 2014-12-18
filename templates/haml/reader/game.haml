@@ -260,15 +260,20 @@
                     %a(href="#{game.scape.url}",title="#{game.scape.url}")
                       #{game.scape.median}&times;#{game.scape.medianCount or 1}
               -if game.visitCount
-              .row
-                %label.control-label.col-xs-2 #{tr('Play')}
-                .form-control-static.col-xs-10
-                  %span.count #{game.visitCount or 1}
+                .row
+                  %label.control-label.col-xs-2 #{tr('Play')}
+                  .form-control-static.col-xs-10
+                    %span.count #{game.visitCount or 1}
               -if game.commentCount
-              .row
-                %label.control-label.col-xs-2 #{tr('Subtitle')}
-                .form-control-static.col-xs-10
-                  %span.count #{game.commentCount or 0}
+                .row
+                  %label.control-label.col-xs-2 #{tr('Danmaku')}
+                  .form-control-static.col-xs-10
+                    %span.count #{game.commentCount or 0}
+              -if game.subtitleCount
+                .row
+                  %label.control-label.col-xs-2 #{tr('Subtitle')}
+                  .form-control-static.col-xs-10
+                    %span.count #{game.subtitleCount or 0}
           -if game.hasBannerImages()
             %section.banner
               -for it in game.iterBannerImageUrls()
@@ -364,7 +369,7 @@
               .title
                 .col-xs-2
                   .spin
-                  .title-content #{tr('Subtitles')}
+                  .title-content #{tr('Danmaku')}
                 .switch-group
                   -if online
                     %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")

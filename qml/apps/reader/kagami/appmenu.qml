@@ -18,9 +18,7 @@ Item {
   property alias autoHideChecked: autoHideAct_.checked
 
   function showPopup(x, y) {
-    //updateDictionaryAct_.enabled = updateCommentAct_.enabled = updateDatabaseAct_.enabled = statusPlugin_.online
-    //updateDictionaryAct_.enabled =
-    updateCommentAct_.enabled = statusPlugin_.online
+    updateSubtitleAct_.enabled = updateCommentAct_.enabled = statusPlugin_.online
     visible = true
     contextMenu_.showPopup(x, y)
     visible = false
@@ -131,8 +129,13 @@ Item {
     //}
 
     Desktop.MenuItem { id: updateCommentAct_
-      text: My.tr("Update Shared Subtitles")
+      text: My.tr("Update Danmaku")
       onTriggered: textmanPlugin_.reload()
+    }
+
+    Desktop.MenuItem { id: updateSubtitleAct_
+      text: My.tr("Update Subtitles")
+      onTriggered: datamanPlugin_.updateSubtitles()
     }
 
     //Desktop.MenuItem { id: updateDatabaseAct_

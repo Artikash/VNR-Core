@@ -228,6 +228,16 @@ Item { id: root_
       return ~t.indexOf("\\") ? tex_.toHtml(t) : t
   }
 
+  function renderSub(s) {
+    var t = s.text
+    if (convertsChinese && s.language === 'zhs')
+      t = bean_.convertChinese(t)
+
+    return ~t.indexOf('[') ? bbcodePlugin_.parse(t) :
+           ~t.indexOf("\n") ? t.replace(/\n/g, '<br/>') :
+           t
+  }
+
   Plugin.GrimoireBean { id: bean_
     //width: root_.width; height: root_.heigh
     Component.onCompleted: {
@@ -236,6 +246,7 @@ Item { id: root_
       bean_.showText.connect(root_.showText)
       bean_.showTranslation.connect(root_.showTranslation)
       bean_.showComment.connect(root_.showComment)
+      bean_.showSubtitle.connect(root_.showSubtitle)
 
       bean_.showNameText.connect(root_.showNameText)
       bean_.showNameTranslation.connect(root_.showNameTranslation)
@@ -907,6 +918,7 @@ Item { id: root_
           case 'tr': return root_.translationVisible
           case 'name.tr': return root_.nameVisible && root_.translationVisible
           case 'comment': return root_.commentVisible
+          case 'sub': return root_.commentVisible
           default: return true
         }
       }
@@ -923,6 +935,7 @@ Item { id: root_
         case 'text':
         case 'name': return root_.textColor
         case 'comment': return model.comment.color || root_.commentColor
+        case 'sub': return model.sub.color || root_.commentColor
         case 'tr':
         case 'name.tr':
           switch(model.provider) {
@@ -1041,6 +1054,7 @@ Item { id: root_
 
           text: !textItem_.visible ? '' :
                 model.comment ? commentSummary(model.comment) :
+                model.sub ? subSummary(model.sub) :
                 model.provider ? translationSummary() :
                 model.type === 'name' ? My.tr("Character name") :
                 My.tr("Game text")
@@ -1066,6 +1080,16 @@ Item { id: root_
             //var lang = Sk.tr(c.language) // too long orz
             lang = "(" + lang + ")"
             var sec = c.updateTimestamp > 0 ? c.updateTimestamp : c.timestamp
+            var ts = Util.timestampToString(sec)
+            return us + lang + ' ' + ts
+          }
+
+          function subSummary(s) {
+            var us = '@' + s.userName
+            var lang = s.language
+            //var lang = Sk.tr(c.language) // too long orz
+            lang = "(" + lang + ")"
+            var sec = s.updateTime > 0 ? s.updateTime : s.createTime
             var ts = Util.timestampToString(sec)
             return us + lang + ' ' + ts
           }
@@ -1125,6 +1149,8 @@ Item { id: root_
           var t
           if (model.comment)
             t = root_.renderComment(model.comment)
+          else if (model.sub)
+            t = root_.renderSub(model.sub)
           else if (model.text) {
             t = root_.nameVisible ? model.text : removeName(model.text)
             if (model.language === 'ja' && (model.type === 'text' || model.type === 'name')) {
@@ -1166,7 +1192,8 @@ Item { id: root_
 
   function createTextItem(text, lang, type, provider, comment) {
     return {
-      comment: comment
+      comment: type === 'sub' ? null : comment
+      , sub: type === 'sub' ? comment : null
       , language: lang
       , text: text
       , type: type // text, tr, comment, name, or name.tr
@@ -1267,6 +1294,10 @@ Item { id: root_
     //  pageBreak()
 
     addText(c.text, c.language, 'comment', undefined, c)
+  }
+
+  function showSubtitle(s) {
+    addText(s.text, s.language, 'sub', undefined, s)
   }
 
   // Insert a page break

@@ -10,7 +10,7 @@ version:
   name: reader
   organization: sakuradite
   domain: sakuradite.org
-  timestamp: 1418496188
+  timestamp: 1418885265
 
 app:
   #debug: true
@@ -23,6 +23,7 @@ app:
   updateInterval:           3600 * 24   # every 1 day
   updateCommentsInterval:   86400 * 1   # every 1 day
   updateRefsInterval:       86400 * 1   # every 1 day
+  updateSubsInterval:       86400 * 5   # every 5 day
   nameExpireTime:           86400 * 5   # every 5 days, mecab name
   refExpireTime:            86400 * 7   # every 7 days, reference
 

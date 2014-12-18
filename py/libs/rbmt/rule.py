@@ -177,7 +177,7 @@ class Rule(object):
     """
     if not x:
       return cls.TYPE_NONE
-    if isinstance(x, str) or isinstance(x, unicode):
+    if isinstance(x, basestring):
       return cls.TYPE_STRING
     if isinstance(x, list):
       return cls.TYPE_LIST

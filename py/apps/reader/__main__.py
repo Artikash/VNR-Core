@@ -197,6 +197,7 @@ def main():
       skfileio.removetree(it)
 
   map(skfileio.makedirs, (
+    rc.DIR_YAML_SUB,
     rc.DIR_XML_COMMENT,
     rc.DIR_XML_VOICE,
     rc.DIR_XML_REF,
@@ -369,6 +370,7 @@ def main():
 
 def migrate(ss_version): # long ->
   import os
+  from glob import glob
   from sakurakit import skfileio
   from sakurakit.skdebug import dprint, dwarn
   import config, rc, settings
@@ -378,6 +380,17 @@ def migrate(ss_version): # long ->
   ss = settings.global_()
 
   try: # this try is in case I forgot certain rc directories for update
+    if ss_version <= 1418719123:
+      path = rc.DIR_XML_COMMENT
+      try:
+        for it in glob(os.path.join(rc.DIR_CACHE_SUB, '*.xml')):
+          os.rename(it,
+              os.path.join(rc.DIR_XML_COMMENT, os.path.basename(it)))
+      except Exception, e:
+        dwarn(e)
+    if ss_version <= 1418496188:
+      xmlfile = rc.xml_path('gameitems')
+      skfileio.removefile(xmlfile)
     if ss_version <= 1418169959:
       xmlfile = rc.xml_path('terms')
       skfileio.removefile(xmlfile)

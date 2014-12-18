@@ -1487,7 +1487,7 @@ class _TtsTab(object):
 
   def _createBrowseButton(self, path): # unicode or function -> QPushButton
     ret = create_toggle_button("+")
-    if isinstance(path, str) or isinstance(path, unicode):
+    if isinstance(path, basestring):
       ret.setToolTip("%s: %s" % (tr_("Browse"), path))
       open = osutil.open_url if path.startswith('http') else osutil.open_url
       slot = partial(open, path)
@@ -2792,7 +2792,7 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
 
   def _createBrowseButton(self, path): # unicode or function -> QPushButton
     ret = create_toggle_button("+")
-    if isinstance(path, str) or isinstance(path, unicode):
+    if isinstance(path, basestring):
       ret.setToolTip("%s: %s" % (tr_("Browse"), path))
       open = osutil.open_url if path.startswith('http') else osutil.open_url
       slot = partial(open, path)

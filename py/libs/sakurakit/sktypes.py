@@ -37,7 +37,7 @@ def is_float(v):
 #  @param  v  any
 #  @return  bool
 #  """
-#  if isinstance(v, str) or isinstance(v, unicode):
+#  if isinstance(v, basestring):
 #    return v.isdigit() # or isnumeric for unicode
 #  else:
 #    try: int(v); return True

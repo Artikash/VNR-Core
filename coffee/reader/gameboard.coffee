@@ -32,35 +32,15 @@ GAME_HAML = Haml '''\
         .label.label-inverse(title="ブランド: #{it}") = it
     :if g.visitCount
       :if visitColor === ''
-        .badge(title="字幕数/再生数")
-          :if g.commentCount
-            #{g.commentCount}/#{g.visitCount}
-          :else
-            = g.visitCount
+        .badge(title="字幕数/弾幕数/再生数") = g.countString
       :if visitColor === 'o'
-        .badge.badge-warning(title="字幕数/再生数")
-          :if g.commentCount
-            #{g.commentCount}/#{g.visitCount}
-          :else
-            = g.visitCount
+        .badge.badge-warning(title="字幕数/弾幕数/再生数") = g.countString
       :if visitColor === 'r'
-        .badge.badge-important(title="字幕数/再生数")
-          :if g.commentCount
-            #{g.commentCount}/#{g.visitCount}
-          :else
-            = g.visitCount
+        .badge.badge-important(title="字幕数/弾幕数/再生数") = g.countString
       :if visitColor === 'g'
-        .badge.badge-success(title="字幕数/再生数")
-          :if g.commentCount
-            #{g.commentCount}/#{g.visitCount}
-          :else
-            = g.visitCount
+        .badge.badge-success(title="字幕数/弾幕数/再生数") = g.countString
       :if visitColor === 'b'
-        .badge.badge-inverse(title="字幕数/再生数")
-          :if g.commentCount
-            #{g.commentCount}/#{g.visitCount}
-          :else
-            = g.visitCount
+        .badge.badge-inverse(title="字幕数/弾幕数/再生数") = g.countString
     :if scoreColor
       :if scoreColor === 'o'
         .badge.badge-warning(title="得点×点数") #{g.scapeMedian}x#{g.scapeCount}
@@ -208,6 +188,11 @@ class GameManager
       for g in l
         g.moment = moment(g.date * 1000)
         g.fileSize = Math.floor(g.fileSize / (1024 * 1024)) if g.fileSize > 0 # fileSize is in MB
+
+        s = g.visitCount or 1
+        s = g.commentCount + '/' + s if g.commentCount
+        s = g.subtitleCount + '/' + s if g.subtitleCount
+        g.countString = s
     l
 
   ## Tags ##
@@ -497,7 +482,9 @@ class GameManager
     )
 
     visitColor = (
-      if g.visitCount < 6000 and g.commentCount > 5000 then 'o' # orange
+      if g.subtitleCount > 5000 then 'o' # orange
+
+      else if g.visitCount < 6000 and g.commentCount > 5000 then 'o' # orange
       else if g.visitCount < 3000 and g.commentCount > 500 then 'r' # red
 
       else if g.visitCount < 300 then '' # gray

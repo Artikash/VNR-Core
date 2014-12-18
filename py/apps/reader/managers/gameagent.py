@@ -134,7 +134,7 @@ class GameAgent(QObject):
     @param  hash  str or int64
     @param  role  int
     """
-    if isinstance(hash, str) or isinstance(hash, unicode):
+    if isinstance(hash, basestring):
       hash = long(hash)
     m = self.__d.mem
     if m.isAttached(): # and m.lock():

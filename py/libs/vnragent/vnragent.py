@@ -15,9 +15,8 @@ ENGINE_YAML = os.path.join(os.path.dirname(__file__), 'engines.yaml')
 
 @memoized
 def get_engine_data():
-  with open(ENGINE_YAML, 'r') as f:
-    import yaml
-    return yaml.load(f.read().decode('utf8'))
+  import yaml
+  return yaml.load(file(ENGINE_YAML, 'r'))
 
 def match(pid=0, path=''):
   """

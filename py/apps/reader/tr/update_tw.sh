@@ -6,7 +6,7 @@ set +x
 s=zh_CN.ts
 t=zh_TW.ts
 
-ZHSZHT="opencc -c zhs2zhtw_vp.ini -i"
+ZHSZHT="opencc -c s2twp.json -i"
 
 echo "$ZHSZHT '$s' > '$t'"
 $ZHSZHT "$s" | sed 's/zh_CN/zh_TW/g' >"$t"

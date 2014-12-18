@@ -127,7 +127,7 @@ class GameDebugger(object):
     """
     if isinstance(pattern, int) or isinstance(pattern, long):
       return self.search_memory_long(pattern, *args, **kwargs)
-    elif isinstance(pattern, str) or isinstance(pattern, unicode):
+    elif isinstance(pattern, basestring):
       return self.search_memory_string(pattern, *args, **kwargs)
     elif isinstance(pattern, list):
       return self.search_memory_list(pattern, *args, **kwargs)

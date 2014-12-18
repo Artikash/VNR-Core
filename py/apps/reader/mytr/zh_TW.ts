@@ -31,7 +31,7 @@
     <message>
         <location filename="mytr.py" line="78"/>
         <source>User comment</source>
-        <translation>社羣評論</translation>
+        <translation>社群評論</translation>
     </message>
     <message>
         <location filename="mytr.py" line="224"/>
@@ -111,22 +111,22 @@
     <message>
         <location filename="mytr.py" line="228"/>
         <source>Add comment</source>
-        <translation>添加評論</translation>
+        <translation>新增評論</translation>
     </message>
     <message>
         <location filename="mytr.py" line="228"/>
         <source>add comment</source>
-        <translation>添加評論</translation>
+        <translation>新增評論</translation>
     </message>
     <message>
         <location filename="mytr.py" line="229"/>
         <source>Add subtitle</source>
-        <translation>添加字幕</translation>
+        <translation>新增字幕</translation>
     </message>
     <message>
         <location filename="mytr.py" line="229"/>
         <source>add subtitle</source>
-        <translation>添加字幕</translation>
+        <translation>新增字幕</translation>
     </message>
     <message>
         <location filename="mytr.py" line="128"/>
@@ -191,7 +191,7 @@
     <message>
         <location filename="mytr.py" line="79"/>
         <source>User danmaku</source>
-        <translation>社羣彈幕</translation>
+        <translation>社群彈幕</translation>
     </message>
     <message>
         <location filename="mytr.py" line="120"/>
@@ -241,10 +241,10 @@
     <message>
         <location filename="mytr.py" line="235"/>
         <source>Update Shared Subtitles</source>
-        <translation>更新人工字幕</translation>
+        <translation type="obsolete">更新人工字幕</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="236"/>
+        <location filename="mytr.py" line="237"/>
         <source>Update Game Database</source>
         <translation>更新遊戲資料</translation>
     </message>
@@ -266,12 +266,12 @@
     <message>
         <location filename="mytr.py" line="45"/>
         <source>Test Regular Expression</source>
-        <translation>測試正規表示式</translation>
+        <translation>測試正則表示式</translation>
     </message>
     <message>
         <location filename="mytr.py" line="45"/>
         <source>Test regular expression</source>
-        <translation>測試正規表示式</translation>
+        <translation>測試正則表示式</translation>
     </message>
     <message>
         <location filename="mytr.py" line="46"/>
@@ -639,12 +639,12 @@
         <translation>易懂</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="237"/>
+        <location filename="mytr.py" line="238"/>
         <source>Update Translation Scripts</source>
         <translation>更新翻譯指令碼</translation>
     </message>
     <message>
-        <location filename="mytr.py" line="238"/>
+        <location filename="mytr.py" line="239"/>
         <source>Reload Translation Scripts</source>
         <translation>重新載入翻譯指令碼</translation>
     </message>
@@ -832,6 +832,16 @@
         <location filename="mytr.py" line="69"/>
         <source>Recordings</source>
         <translation>錄製</translation>
+    </message>
+    <message>
+        <location filename="mytr.py" line="235"/>
+        <source>Update Subtitles</source>
+        <translation>更新字幕</translation>
+    </message>
+    <message>
+        <location filename="mytr.py" line="236"/>
+        <source>Update Danmaku</source>
+        <translation>更新彈幕</translation>
     </message>
 </context>
 </TS>

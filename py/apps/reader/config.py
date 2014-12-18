@@ -35,10 +35,8 @@ ENGINES_YAML_LOCATION = os.path.join(ROOT_LOCATION, "yaml/engines.yaml")
 ROOT_LOCATION_U = u(ROOT_LOCATION)
 
 def load_yaml_file(path):
-  with open(path, 'r') as f:
-    import yaml
-    return yaml.load(f)
-    #return yaml.load(f.read().decode('utf8'))
+  import yaml
+  return yaml.load(file(path, 'r'))
 
 SHARE_YAML = load_yaml_file(SHARE_YAML_LOCATION)
 APP_YAML = load_yaml_file(APP_YAML_LOCATION)
@@ -157,6 +155,7 @@ APP_GREETING_INTERVAL = parse_int(_APP['greetingInterval'])
 APP_SAVE_SETTINGS_INTERVAL = parse_int(_APP['saveSettingsInterval'])
 APP_UPDATE_COMMENTS_INTERVAL = parse_int(_APP['updateCommentsInterval'])
 APP_UPDATE_REFS_INTERVAL = parse_int(_APP['updateRefsInterval'])
+APP_UPDATE_SUBS_INTERVAL = parse_int(_APP['updateSubsInterval'])
 APP_UPDATE_TERMS_INTERVAL = parse_int(_APP['updateTermsInterval'])
 APP_UPDATE_GAMES_INTERVAL = parse_int(_APP['updateGamesInterval'])
 #APP_UPDATE_TAH_INTERVAL = parse_int(_APP['updateTAHInterval'])

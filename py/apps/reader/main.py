@@ -330,8 +330,8 @@ class _MainObject(object):
 
     ret.removesRepeatChanged.connect(tm.setRemovesRepeatText)
 
-    #dm = self.dataManager
-    #ret.processChanged.connect(dm.clearMacroCache)
+    dm = self.dataManager
+    ret.processDetached.connect(dm.clearSubtitles)
 
     agent = self.gameAgent
     agent.processDetached.connect(ret.processDetached)
@@ -421,6 +421,7 @@ class _MainObject(object):
     ret.textReceived.connect(grimoire.showText)
     ret.translationReceived.connect(grimoire.showTranslation)
     ret.commentReceived.connect(grimoire.showComment)
+    ret.subtitleReceived.connect(grimoire.showSubtitle)
 
     ret.nameTextReceived.connect(grimoire.showNameText)
     ret.nameTranslationReceived.connect(grimoire.showNameTranslation)
