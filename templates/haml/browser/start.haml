@@ -33,8 +33,8 @@
         margin-top: -20px;
       }
       .site { margin-bottom: 15px; }
-      .col-2 { width: 50%; display: inline-block; float: left }
-      .col-1 { width: 25%; display: inline-block; float: right }
+      .col-1 { width: 25%; display: inline-block; float: left }
+      .col-2 { width: 50%; display: inline-block; float: right }
       .background {
         position: fixed;
         z-index: -999;
@@ -62,21 +62,6 @@
     .container
       ; http://stackoverflow.com/questions/1964297/split-div-into-2-columns-using-css
       %br(style="clear:both")
-      .col-2
-        %section
-          %h3.title Game
-          -for url,name in \
-              ("www.dmm.co.jp/netgame/game/-/ranking", "DMM Online Games"),
-            %div(class="site")
-              %a(href="http://#{url}",title="#{url}") #{name}
-          -for url,name,img in \
-              (534991, "対魔忍アサギ～決戦アリーナ～ (DMM)", "http://153.121.52.138/proxy/blogimg/hiroji162/imgs/9/4/94ea9f89.png"),
-            -set url = "http://www.dmm.co.jp/netgame/social/-/gadgets/=/app_id=%s" % 534991
-            %div(class="game")
-              %a(href="#{url}",title="#{url}") #{name}
-              -if img
-                %a(href="#{url}")
-                  %img(class="img-shadow",src="#{cache.image(img)}",alt="画像",title="#{name}")
       .col-1
         %section
           %h3.title AKABEiSOFT2
@@ -119,4 +104,19 @@
               ("www.minori.ph/index_02.html", "minori"),
             %div(class="site")
               %a(href="http://#{url}",title="#{url}") #{name}
+      .col-2
+        %section
+          %h3.title Game
+          -for url,name in \
+              ("www.dmm.co.jp/netgame/game/-/ranking", "DMM Online Games"),
+            %div(class="site")
+              %a(href="http://#{url}",title="#{url}") #{name}
+          -for url,name,img in \
+              (534991, "対魔忍アサギ～決戦アリーナ～ (DMM)", "http://153.121.52.138/proxy/blogimg/hiroji162/imgs/9/4/94ea9f89.png"),
+            -set url = "http://www.dmm.co.jp/netgame/social/-/gadgets/=/app_id=%s" % 534991
+            %div(class="game")
+              %a(href="#{url}",title="#{url}") #{name}
+              -if img
+                %a(href="#{url}")
+                  %img(class="img-shadow",src="#{cache.image(img)}",alt="画像",title="#{name}")
 ; EOF
