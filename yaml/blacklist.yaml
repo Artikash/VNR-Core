@@ -184,6 +184,7 @@ processes:
   - Translation Aggregator.exe
   - TranslationAggregator.exe
   - TXPlatform.exe      # Tencent
+  - Uedit32.exe         # UltraEdit
   - WinRAR.exe          # WinRAR
   - WINWORD.EXE         # Microsoft Office
   - wmplayer.exe        # Windows media player
