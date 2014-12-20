@@ -149,6 +149,8 @@ class _TermInput(object):
       t = my.tr("transform text in output language after translation")
     elif tt == 'name':
       t = my.tr("a character name")
+    elif tt == 'yomi':
+      t = my.tr("katagana or hiragana of a name")
     elif tt == 'title':
       t = my.tr("a title after names")
     elif tt == 'speech':
@@ -237,7 +239,7 @@ class _TermInput(object):
 
   def _isUseless(self): # -> bool  has no effect
     pattern = self.patternEdit.text().strip()
-    if self._getType() not in ('escape', 'title', 'name'):
+    if self._getType() not in ('escape', 'title', 'name', 'yomi'):
       text = self.textEdit.text().strip()
       if pattern == text:
         return True
