@@ -100,7 +100,9 @@ class TermWriter:
             raise Exception("cancel saving out-of-date terms")
           z = convertsChinese and td.language == 'zhs'
           # no padding space for Chinese names
-          padding = td.language not in ('ja', 'zhs', 'zht') and td.type in ('name', 'translation')
+          padding = escape_source or (
+              td.language not in ('ja', 'zhs', 'zht')
+              and td.type in ('name', 'translation'))
 
           regex = td.regex and not escape_target
 
@@ -109,7 +111,7 @@ class TermWriter:
             key = defs.TERM_ESCAPE % priority
 
           if escape_source:
-            repl = key + " " # always pad space
+            repl = key
           else:
             repl = td.text
             if repl and z:
@@ -118,8 +120,6 @@ class TermWriter:
               #  repl += " "
               #if marksChanges:
               #  repl = self._markText(repl)
-            if padding:
-              repl += " "
 
           if escape_target:
             pattern = key
@@ -193,6 +193,8 @@ class TermWriter:
               for it in titles:
                 f.write(self._renderLine(pattern + it.pattern, repl + it.text + " ", regex)) # padding space for Japanese names
 
+          if padding:
+            repl += " "
           f.write(self._renderLine(pattern, repl, regex))
 
           empty = False
@@ -317,7 +319,7 @@ class TermWriter:
         regex=td.regex,
       ))
     l.sort(reverse=True, key=lambda it:
-        (not it.regex, len(it.pattern), it.id)) # non regex come at first, longer terms come at first, newer come at first
+        (it.regex, len(it.pattern), it.id)) # regex terms come at first, longer terms come at first, newer come at first
     #for id,pat,repl,regex in l:
     #  ret[pat] = TermTitle(repl, regex)
     return l
