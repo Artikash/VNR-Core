@@ -63,8 +63,9 @@ def guess_text_name(text):
   """
   m = __name_re.match(text)
   if m:
-    return m.group(1).strip() or m.group(2).strip()
-  #return m.group(1) or m.group(2) or "" if m else ""
+    r = m.group(1) or m.group(2)
+    if r:
+      return r.strip()
 
 __noname_re = re.compile(ur'^(?:【.{0,16}?】|.{0,16}?(?=「))(.*)$')
 def remove_text_name(text):
