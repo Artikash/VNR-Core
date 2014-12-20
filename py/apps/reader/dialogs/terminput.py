@@ -137,7 +137,8 @@ class _TermInput(object):
     user = dataman.manager().user()
 
     tt = self._getType()
-    self.regexButton.setEnabled(tt not in ('title', 'macro'))
+    #self.regexButton.setEnabled(tt not in ('title', 'macro'))
+    self.regexButton.setEnabled(tt != 'macro')
     self.syntaxButton.setEnabled(tt == 'escape' and not user.isGuest())
 
     if tt == 'escape':
@@ -271,7 +272,8 @@ class _TermInput(object):
       pattern = self.patternEdit.text().strip()
       comment = self.commentEdit.text().strip()
       text = self.textEdit.text().strip()
-      regex = type == 'macro' or (self.regexButton.isChecked() and type != 'title')
+      #regex = type == 'macro' or (self.regexButton.isChecked() and type != 'title')
+      regex = type == 'macro' or self.regexButton.isChecked() #and type != 'title')
       syntax = type == 'escape' and self.syntaxButton.isChecked() and not user.isGuest()
       special = self.specialButton.isChecked() and bool(gameId or md5)
       ret = dataman.Term(gameId=gameId, gameMd5=md5,
