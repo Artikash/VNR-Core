@@ -11,7 +11,7 @@
 #from sakurakit.skprof import SkProfiler
 
 import os, re
-from collections import OrderedDict
+#from collections import OrderedDict
 from functools import partial
 from time import time
 from PySide.QtCore import Signal, QObject, QTimer, QMutex, Qt
@@ -32,6 +32,14 @@ _re_marks = re.compile(r'<[0-9a-zA-Z: "/:=-]+?>')
 def _remove_marks(text): return _re_marks.sub('', text)
 
 SCRIPT_KEY_SEP = ',' # Separator of script manager key
+
+class TermTitle(object):
+  __slots__ = 'id', 'pattern', 'text', 'regex'
+  def __init__(self, id, pattern, text, regex):
+    self.id = id # long
+    self.pattern = pattern # unicode
+    self.text = text # unicode
+    self.regex = regex # bool
 
 class TermTranslator(rbmt.MachineTranslator):
   def __init__(self, cabocha, language, underline=True):
@@ -68,7 +76,7 @@ class TermWriter:
     @param  type  str  term type
     @param  language  str  target text language
     @param  macros  {unicode pattern:unicode repl}
-    @param  titles  {unicode from:unicode to} not None not empty
+    @param  titles  [TermTitle] not None not empty
     @return  bool
     """
     #marksChanges = self.marked and type in ('target', 'escape_target')
@@ -91,6 +99,8 @@ class TermWriter:
           if self.isOutdated():
             raise Exception("cancel saving out-of-date terms")
           z = convertsChinese and td.language == 'zhs'
+          # no padding space for Chinese names
+          padding = td.language not in ('ja', 'zhs', 'zht') and td.type in ('name', 'translation')
 
           regex = td.regex and not escape_target
 
@@ -99,7 +109,7 @@ class TermWriter:
             key = defs.TERM_ESCAPE % priority
 
           if escape_source:
-            repl = key
+            repl = key + " " # always pad space
           else:
             repl = td.text
             if repl and z:
@@ -108,6 +118,8 @@ class TermWriter:
               #  repl += " "
               #if marksChanges:
               #  repl = self._markText(repl)
+            if padding:
+              repl += " "
 
           if escape_target:
             pattern = key
@@ -163,15 +175,23 @@ class TermWriter:
           if titleCount and td.type == 'name':
             if escape_source:
               esc = defs.NAME_ESCAPE + " " # padding space
-              for i,k in enumerate(titles.iterkeys()):
-                f.write(self._renderLine(pattern + k, esc % (priority, titleCount - i), regex))
+              for i,it in enumerate(titles):
+                f.write(self._renderLine(
+                    (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
+                    esc % (priority, titleCount - i),
+                    regex or it.regex))
             elif escape_target:
               esc = defs.NAME_ESCAPE
-              for i,v in enumerate(titles.itervalues()):
-                f.write(self._renderLine(esc % (priority, titleCount - i), repl + v, regex)) # no padding space for Chinese names
+              for i,it in enumerate(titles):
+                f.write(self._renderLine(
+                    esc % (priority, titleCount - i),
+                    repl + it.text + (" " if padding else ""), # it will be escaped in C++
+                    #(re.escape(repl) if not regex and it.regex else repl) + it.text + (" " if padding else ""),
+                    regex)) # no padding space for Chinese names
             else:
-              for k,v in titles.iteritems():
-                f.write(self._renderLine(pattern + k, repl + v + " ", regex)) # padding space for Japanese names
+              #assert padding # this is supposed to be always true
+              for it in titles:
+                f.write(self._renderLine(pattern + it.pattern, repl + it.text + " ", regex)) # padding space for Japanese names
 
           f.write(self._renderLine(pattern, repl, regex))
 
@@ -271,28 +291,36 @@ class TermWriter:
       dwarn("recursive macro definition")
     return {k:v for k,v in ret.iteritems() if v is not None}
 
-  def queryTermTitles(self, language):
+  def queryTermTitles(self, language, macros):
     """Terms sorted by length and id
     @param  language
-    @return  OrderedDict{unicode from:unicode to}
+    @param  macros  {unicode pattern:unicode repl}
+    @return  [TermTitle]
     """
     zht = language == 'zht'
-    l = [] # [long id, unicode pattern, unicode replacement]
+    l = [] # [long id, unicode pattern, unicode replacement, bool regex]
     #ret = OrderedDict({'':''})
-    ret = OrderedDict()
+    #ret = OrderedDict()
     for td in self._iterTermData('title', language):
       pat = td.pattern
+      if td.regex:
+        pat = self._applyMacros(pat, macros)
       repl = td.text
       if zht and td.language == 'zhs':
         pat = zhs2zht(pat)
         if repl: # and self.convertsChinese:
           repl = zhs2zht(repl)
-      l.append((td.id, pat, repl))
+      l.append(TermTitle(
+        id=td.id,
+        pattern=pat,
+        text=repl,
+        regex=td.regex,
+      ))
     l.sort(reverse=True, key=lambda it:
-        (len(it[1]), it[0])) # longer terms come at first, newer come at first
-    for id,pat,repl in l:
-      ret[pat] = repl
-    return ret
+        (not it.regex, len(it.pattern), it.id)) # non regex come at first, longer terms come at first, newer come at first
+    #for id,pat,repl,regex in l:
+    #  ret[pat] = TermTitle(repl, regex)
+    return l
 
   def _applyMacros(self, text, macros):
     """
@@ -476,7 +504,7 @@ class _TermManager:
       if ts < self.updateTime: # skip language that does not out of date
         type, lang = scriptKey.split(SCRIPT_KEY_SEP)
         macros = w.queryTermMacros(lang)
-        titles = w.queryTermTitles(lang)
+        titles = w.queryTermTitles(lang, macros)
 
         if w.isOutdated():
           dwarn("leave: cancel saving out-of-date terms")
