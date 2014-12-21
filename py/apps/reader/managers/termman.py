@@ -176,7 +176,7 @@ class TermWriter:
           #    pattern += r")"
           #    repl += " " # padding space
 
-          if titleCount and td.type == 'name':
+          if titleCount and td.type in ('name', 'yomi'):
             if escape_source:
               esc = defs.NAME_ESCAPE + " " # padding space
               for i,it in enumerate(titles):
