@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="ru_RU">
+<!DOCTYPE TS><TS version="1.1" language="ru_RU">
 <context>
     <name>sakurakit</name>
     <message>
@@ -811,7 +810,7 @@
     <message>
         <location filename="sktr.py" line="360"/>
         <source>Text encoding</source>
-        <translation>Кодирования Текст</translation>
+        <translation>Кодировка текста</translation>
     </message>
     <message>
         <location filename="sktr.py" line="382"/>
@@ -912,11 +911,6 @@
         <location filename="sktr.py" line="281"/>
         <source>Draft</source>
         <translation>Проект</translation>
-    </message>
-    <message>
-        <location filename="sktr.py" line="278"/>
-        <source>Scratch</source>
-        <translation type="obsolete">下書き</translation>
     </message>
     <message>
         <location filename="sktr.py" line="104"/>
@@ -1141,7 +1135,7 @@
     <message>
         <location filename="sktr.py" line="109"/>
         <source>Create</source>
-        <translation>Создавать</translation>
+        <translation>Создать</translation>
     </message>
     <message>
         <location filename="sktr.py" line="109"/>
@@ -1472,11 +1466,6 @@
         <location filename="sktr.py" line="251"/>
         <source>Visit</source>
         <translation>Визит</translation>
-    </message>
-    <message>
-        <location filename="sktr.py" line="161"/>
-        <source>Visit count</source>
-        <translation type="obsolete">訪問数</translation>
     </message>
     <message>
         <location filename="sktr.py" line="137"/>
