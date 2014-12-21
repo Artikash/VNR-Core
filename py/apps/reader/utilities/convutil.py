@@ -9,4 +9,17 @@ from jaconv.jaconv import hira2romaji, hira2hangul, hira2thai \
 from opencc.opencc import zht2zhs
 from ccman import zhs2zht, zht2zhx
 
+def kana2yomi(text, lang):
+  """
+  @param  text  unicode
+  @param  lang  str
+  @return  unicode or None
+  """
+  if lang == 'ko':
+    return kana2hangul(text)
+  elif lang == 'th':
+    return kana2thai(text)
+  else:
+    return kana2romaji(text)
+
 # EOF

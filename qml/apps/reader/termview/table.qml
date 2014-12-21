@@ -275,12 +275,13 @@ Item { id: root_
             case 'source': selectedIndex = 1; break
             case 'target': selectedIndex = 2; break
             case 'name': selectedIndex = 3; break
-            case 'title': selectedIndex = 4; break
-            case 'origin': selectedIndex = 5; break
-            case 'speech': selectedIndex = 6; break
-            case 'ocr': selectedIndex = 7; break
-            case 'macro': selectedIndex = 8; break
-            default: selectedIndex = 0
+            case 'yomi': selectedIndex = 4; break
+            case 'title': selectedIndex = 5; break
+            case 'origin': selectedIndex = 6; break
+            case 'speech': selectedIndex = 7; break
+            case 'ocr': selectedIndex = 8; break
+            case 'macro': selectedIndex = 9; break
+            default: selectedIndex = 0 // this should never happend
             }
           }
         }

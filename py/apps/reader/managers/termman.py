@@ -19,7 +19,7 @@ from rbmt import api as rbmt
 from sakurakit import skfileio, skos, skthreads
 from sakurakit.skclass import memoized, Q_Q
 from sakurakit.skdebug import dprint, dwarn
-from convutil import zhs2zht
+from convutil import kana2yomi, zhs2zht
 import config, cabochaman, dataman, defs, i18n, rc
 
 if skos.WIN:
@@ -114,8 +114,12 @@ class TermWriter:
             repl = key
           else:
             repl = td.text
-            if repl and z:
-              repl = zhs2zht(repl)
+            if repl:
+              if z:
+                repl = zhs2zht(repl)
+              if td.type == 'yomi':
+                repl = kana2yomi(repl, language) or repl
+
               #elif config.is_latin_language(td.language):
               #  repl += " "
               #if marksChanges:
@@ -241,18 +245,22 @@ class TermWriter:
     @param* syntax  bool
     @yield  _Term
     """
-    type2 = type3 = ''
+    types = [type]
     if type.startswith('escape'):
-      type = 'escape'
+      types[0] = 'escape' # override type
       if config.is_kanji_language(language):
-        type2 = 'name'
+        types.append('name')
+        if language == 'ko':
+          types.append('yomi')
     elif type == 'source' and not config.is_kanji_language(language):
-      type2 = 'name'
-      type3 = 'escape'
+      types.append('escape')
+      types.append('name')
+      types.append('yomi')
 
+    types = frozenset(types)
     for td in self.termData:
       if (#not td.disabled and not td.deleted and td.pattern # in case pattern is deleted
-          (td.type == type or type2 and td.type == type2 or type3 and td.type == type3)
+          td.type in types
           and (not td.special or self.gameIds and td.gameId and td.gameId in self.gameIds)
           and (not td.hentai or self.hentai)
           and i18n.language_compatible_to(td.language, language)
