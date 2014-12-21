@@ -21,7 +21,7 @@
     <message>
         <location filename="sktr.py" line="30"/>
         <source>English</source>
-        <translation>Inggris</translation>
+        <translation>Bahasa Inggris</translation>
     </message>
     <message>
         <location filename="sktr.py" line="31"/>
@@ -46,7 +46,7 @@
     <message>
         <location filename="sktr.py" line="37"/>
         <source>French</source>
-        <translation>Perancis</translation>
+        <translation>Bahasa Prancis</translation>
     </message>
     <message>
         <location filename="sktr.py" line="38"/>
@@ -86,12 +86,12 @@
     <message>
         <location filename="sktr.py" line="100"/>
         <source>Cancel</source>
-        <translation>Membatalkan</translation>
+        <translation>Tidak Jadi</translation>
     </message>
     <message>
         <location filename="sktr.py" line="103"/>
         <source>Clear</source>
-        <translation>Jelas</translation>
+        <translation>Yang Jelas</translation>
     </message>
     <message>
         <location filename="sktr.py" line="106"/>
@@ -156,7 +156,7 @@
     <message>
         <location filename="sktr.py" line="133"/>
         <source>Ignore</source>
-        <translation>Mengabaikan</translation>
+        <translation>Tidak Menghiraukan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="139"/>
@@ -166,7 +166,7 @@
     <message>
         <location filename="sktr.py" line="147"/>
         <source>OK</source>
-        <translation>Oke</translation>
+        <translation>OKE</translation>
     </message>
     <message>
         <location filename="sktr.py" line="148"/>
@@ -301,7 +301,7 @@
     <message>
         <location filename="sktr.py" line="294"/>
         <source>Gender</source>
-        <translation>Jenis kelamin</translation>
+        <translation>Jenis Kelamin</translation>
     </message>
     <message>
         <location filename="sktr.py" line="296"/>
@@ -346,7 +346,7 @@
     <message>
         <location filename="sktr.py" line="327"/>
         <source>Password</source>
-        <translation>Kata sandi</translation>
+        <translation>Kata Sandi</translation>
     </message>
     <message>
         <location filename="sktr.py" line="329"/>
@@ -426,12 +426,12 @@
     <message>
         <location filename="sktr.py" line="376"/>
         <source>Username</source>
-        <translation>Nama</translation>
+        <translation>Nama Pengguna</translation>
     </message>
     <message>
         <location filename="sktr.py" line="378"/>
         <source>Wallpaper</source>
-        <translation>Kertas dinding</translation>
+        <translation>Wallpaper Dinding</translation>
     </message>
     <message>
         <location filename="sktr.py" line="379"/>
@@ -446,27 +446,27 @@
     <message>
         <location filename="sktr.py" line="391"/>
         <source>Yes</source>
-        <translation>Ya</translation>
+        <translation>Iya Nih</translation>
     </message>
     <message>
         <location filename="sktr.py" line="392"/>
         <source>yes</source>
-        <translation>ya</translation>
+        <translation>iya nih</translation>
     </message>
     <message>
         <location filename="sktr.py" line="393"/>
         <source>No</source>
-        <translation>Tidak</translation>
+        <translation>Tak Ada</translation>
     </message>
     <message>
         <location filename="sktr.py" line="394"/>
         <source>no</source>
-        <translation>tidak</translation>
+        <translation>tak ada</translation>
     </message>
     <message>
         <location filename="sktr.py" line="395"/>
         <source>Online</source>
-        <translation>Secara online</translation>
+        <translation>On Line</translation>
     </message>
     <message>
         <location filename="sktr.py" line="396"/>
@@ -476,12 +476,12 @@
     <message>
         <location filename="sktr.py" line="397"/>
         <source>Read-only</source>
-        <translation>Read-only</translation>
+        <translation>Hanya membaca</translation>
     </message>
     <message>
         <location filename="sktr.py" line="397"/>
         <source>read-only</source>
-        <translation>read-only</translation>
+        <translation>hanya membaca</translation>
     </message>
     <message>
         <location filename="sktr.py" line="398"/>
@@ -511,7 +511,7 @@
     <message>
         <location filename="sktr.py" line="332"/>
         <source>Property</source>
-        <translation>Milik</translation>
+        <translation>Harta Benda</translation>
     </message>
     <message>
         <location filename="sktr.py" line="333"/>
@@ -821,7 +821,7 @@
     <message>
         <location filename="sktr.py" line="420"/>
         <source>Not specified</source>
-        <translation>Tidak ditentukan</translation>
+        <translation>Belum ditentukan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="426"/>
@@ -926,17 +926,17 @@
     <message>
         <location filename="sktr.py" line="169"/>
         <source>Restart</source>
-        <translation>Restart</translation>
+        <translation>Mulai Lagi</translation>
     </message>
     <message>
         <location filename="sktr.py" line="429"/>
         <source>For example</source>
-        <translation>Misalnya</translation>
+        <translation>Sebagai contoh</translation>
     </message>
     <message>
         <location filename="sktr.py" line="429"/>
         <source>for example</source>
-        <translation>misalnya</translation>
+        <translation>sebagai contoh</translation>
     </message>
     <message>
         <location filename="sktr.py" line="157"/>
@@ -1021,7 +1021,7 @@
     <message>
         <location filename="sktr.py" line="124"/>
         <source>Escape</source>
-        <translation>Melarikan diri</translation>
+        <translation>Melarikan Diri</translation>
     </message>
     <message>
         <location filename="sktr.py" line="190"/>
@@ -1061,12 +1061,12 @@
     <message>
         <location filename="sktr.py" line="155"/>
         <source>Pause</source>
-        <translation>Berhenti sebentar</translation>
+        <translation>Jeda Waktu</translation>
     </message>
     <message>
         <location filename="sktr.py" line="170"/>
         <source>Resume</source>
-        <translation>Ringkasan</translation>
+        <translation>Lanjut</translation>
     </message>
     <message>
         <location filename="sktr.py" line="442"/>
@@ -1281,7 +1281,7 @@
     <message>
         <location filename="sktr.py" line="365"/>
         <source>Time zone</source>
-        <translation>Wilayah waktu</translation>
+        <translation>Zona waktu</translation>
     </message>
     <message>
         <location filename="sktr.py" line="310"/>
@@ -1311,7 +1311,7 @@
     <message>
         <location filename="sktr.py" line="160"/>
         <source>Read</source>
-        <translation>Membaca</translation>
+        <translation>Baca Baca</translation>
     </message>
     <message>
         <location filename="sktr.py" line="290"/>
@@ -1336,7 +1336,7 @@
     <message>
         <location filename="sktr.py" line="48"/>
         <source>Indonesian</source>
-        <translation>Indonesia</translation>
+        <translation>Bahasa Indonesia</translation>
     </message>
     <message>
         <location filename="sktr.py" line="261"/>
@@ -1351,7 +1351,7 @@
     <message>
         <location filename="sktr.py" line="298"/>
         <source>Homepage</source>
-        <translation>Homepage</translation>
+        <translation>Halaman Awal</translation>
     </message>
     <message>
         <location filename="sktr.py" line="264"/>
@@ -1361,17 +1361,17 @@
     <message>
         <location filename="sktr.py" line="150"/>
         <source>Other</source>
-        <translation>Lain</translation>
+        <translation>Yang Lainnya</translation>
     </message>
     <message>
         <location filename="sktr.py" line="150"/>
         <source>other</source>
-        <translation>lain</translation>
+        <translation>yang lainnya</translation>
     </message>
     <message>
         <location filename="sktr.py" line="133"/>
         <source>ignore</source>
-        <translation>mengabaikan</translation>
+        <translation>tidak menghiraukan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="275"/>
@@ -1426,7 +1426,7 @@
     <message>
         <location filename="sktr.py" line="420"/>
         <source>not specified</source>
-        <translation>tidak ditentukan</translation>
+        <translation>belum ditentukan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="127"/>
@@ -1436,12 +1436,12 @@
     <message>
         <location filename="sktr.py" line="424"/>
         <source>Unknown</source>
-        <translation>Diketahui</translation>
+        <translation>Tidak Dikenal</translation>
     </message>
     <message>
         <location filename="sktr.py" line="424"/>
         <source>unknown</source>
-        <translation>diketahui</translation>
+        <translation>tidak dikenal</translation>
     </message>
     <message>
         <location filename="sktr.py" line="267"/>
@@ -1481,7 +1481,7 @@
     <message>
         <location filename="sktr.py" line="137"/>
         <source>Link</source>
-        <translation>Link</translation>
+        <translation>Mata Rantai</translation>
     </message>
     <message>
         <location filename="sktr.py" line="138"/>
@@ -1511,12 +1511,12 @@
     <message>
         <location filename="sktr.py" line="145"/>
         <source>None</source>
-        <translation>Tak satupun</translation>
+        <translation>Tidak Satupun</translation>
     </message>
     <message>
         <location filename="sktr.py" line="145"/>
         <source>none</source>
-        <translation>tak satupun</translation>
+        <translation>tidak satupun</translation>
     </message>
     <message>
         <location filename="sktr.py" line="263"/>
@@ -1531,7 +1531,7 @@
     <message>
         <location filename="sktr.py" line="309"/>
         <source>Keywords</source>
-        <translation>Kata kunci</translation>
+        <translation>Kata Kunci</translation>
     </message>
     <message>
         <location filename="sktr.py" line="246"/>
@@ -1566,7 +1566,7 @@
     <message>
         <location filename="sktr.py" line="276"/>
         <source>Date</source>
-        <translation>Tanggal</translation>
+        <translation>Buah Kurma</translation>
     </message>
     <message>
         <location filename="sktr.py" line="324"/>
@@ -1681,7 +1681,7 @@
     <message>
         <location filename="sktr.py" line="276"/>
         <source>date</source>
-        <translation>tanggal</translation>
+        <translation>buah kurma</translation>
     </message>
     <message>
         <location filename="sktr.py" line="293"/>
@@ -1801,12 +1801,12 @@
     <message>
         <location filename="sktr.py" line="211"/>
         <source>Blue</source>
-        <translation>Biru</translation>
+        <translation>Warna Biru</translation>
     </message>
     <message>
         <location filename="sktr.py" line="212"/>
         <source>Purple</source>
-        <translation>Ungu</translation>
+        <translation>Warna Ungu</translation>
     </message>
     <message>
         <location filename="sktr.py" line="214"/>
@@ -1931,7 +1931,7 @@
     <message>
         <location filename="sktr.py" line="395"/>
         <source>online</source>
-        <translation>secara online</translation>
+        <translation>on line</translation>
     </message>
     <message>
         <location filename="sktr.py" line="396"/>
@@ -1966,7 +1966,7 @@
     <message>
         <location filename="sktr.py" line="265"/>
         <source>Background</source>
-        <translation>Latar belakang</translation>
+        <translation>Latar Belakang</translation>
     </message>
     <message>
         <location filename="sktr.py" line="326"/>
@@ -2051,7 +2051,7 @@
     <message>
         <location filename="sktr.py" line="90"/>
         <source>Space</source>
-        <translation>Ruang</translation>
+        <translation>Ruang Angkasa</translation>
     </message>
     <message>
         <location filename="sktr.py" line="307"/>
@@ -2066,7 +2066,7 @@
     <message>
         <location filename="sktr.py" line="234"/>
         <source>Down</source>
-        <translation>Turun</translation>
+        <translation>Ke Bawah</translation>
     </message>
     <message>
         <location filename="sktr.py" line="235"/>
@@ -2076,7 +2076,7 @@
     <message>
         <location filename="sktr.py" line="236"/>
         <source>Right</source>
-        <translation>Benar</translation>
+        <translation>Yang Tepat</translation>
     </message>
     <message>
         <location filename="sktr.py" line="415"/>
@@ -2086,12 +2086,12 @@
     <message>
         <location filename="sktr.py" line="97"/>
         <source>Back</source>
-        <translation>Kembali</translation>
+        <translation>Bagian Belakang</translation>
     </message>
     <message>
         <location filename="sktr.py" line="128"/>
         <source>Forward</source>
-        <translation>Depan</translation>
+        <translation>Ke Depan</translation>
     </message>
     <message>
         <location filename="sktr.py" line="402"/>
@@ -2166,7 +2166,7 @@
     <message>
         <location filename="sktr.py" line="301"/>
         <source>Images</source>
-        <translation>Images</translation>
+        <translation>Gambar Gambar</translation>
     </message>
     <message>
         <location filename="sktr.py" line="219"/>
@@ -2176,7 +2176,7 @@
     <message>
         <location filename="sktr.py" line="220"/>
         <source>Music</source>
-        <translation>Musik</translation>
+        <translation>Musik Musik</translation>
     </message>
     <message>
         <location filename="sktr.py" line="400"/>
@@ -2206,12 +2206,12 @@
     <message>
         <location filename="sktr.py" line="197"/>
         <source>More</source>
-        <translation>Lebih</translation>
+        <translation>Lebih Banyak</translation>
     </message>
     <message>
         <location filename="sktr.py" line="198"/>
         <source>No more</source>
-        <translation>Tidak ada lagi</translation>
+        <translation>Tidak lagi</translation>
     </message>
     <message>
         <location filename="sktr.py" line="283"/>
@@ -2221,12 +2221,12 @@
     <message>
         <location filename="sktr.py" line="196"/>
         <source>Less</source>
-        <translation>Kurang</translation>
+        <translation>Lebih Sedikit</translation>
     </message>
     <message>
         <location filename="sktr.py" line="49"/>
         <source>Arabic</source>
-        <translation>Arab</translation>
+        <translation>Bahasa Arab</translation>
     </message>
     <message>
         <location filename="sktr.py" line="63"/>
@@ -2332,6 +2332,11 @@
         <location filename="sktr.py" line="164"/>
         <source>Recent changes</source>
         <translation>Perubahan baru-baru ini</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="243"/>
+        <source>romaji</source>
+        <translation>romaji</translation>
     </message>
 </context>
 </TS>

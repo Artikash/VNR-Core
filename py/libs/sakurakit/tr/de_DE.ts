@@ -801,7 +801,7 @@
     <message>
         <location filename="sktr.py" line="186"/>
         <source>stop</source>
-        <translation>aufhören</translation>
+        <translation>stopp</translation>
     </message>
     <message>
         <location filename="sktr.py" line="186"/>
@@ -881,12 +881,12 @@
     <message>
         <location filename="sktr.py" line="410"/>
         <source>Case-sensitive</source>
-        <translation>Groß- / Kleinschreibung-unterscheidend</translation>
+        <translation>Groß- und Kleinschreibung</translation>
     </message>
     <message>
         <location filename="sktr.py" line="410"/>
         <source>case-sensitive</source>
-        <translation>groß- / kleinschreibung-unterscheidend</translation>
+        <translation>Groß- und Kleinschreibung</translation>
     </message>
     <message>
         <location filename="sktr.py" line="269"/>
@@ -2332,6 +2332,11 @@
         <location filename="sktr.py" line="164"/>
         <source>Recent changes</source>
         <translation>Letzte Änderungen</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="243"/>
+        <source>romaji</source>
+        <translation>romaji</translation>
     </message>
 </context>
 </TS>

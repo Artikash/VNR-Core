@@ -18,7 +18,7 @@ from sakurakit import skdatetime, skevents, skqss
 from sakurakit.skclass import Q_Q, memoizedproperty
 from sakurakit.sktr import tr_
 from mytr import my, mytr_
-import config, dataman, growl, i18n, rc
+import config, convutil, dataman, growl, i18n, rc
 
 #COMBOBOX_MAXWIDTH = 100
 COMBOBOX_MAXWIDTH = 80
@@ -67,6 +67,10 @@ class _TermInput(object):
 
     grid.addWidget(QtWidgets.QLabel(tr_("Comment") + ":"), r, 0)
     grid.addWidget(self.commentEdit, r, 1)
+    r += 1
+
+    grid.addWidget(QtWidgets.QLabel(mytr_("Yomi") + ":"), r, 0)
+    grid.addWidget(self.yomiLabel, r, 1, 2, 1) # span for two rows
     r += 1
 
     #grid.addWidget(QtWidgets.QLabel(tr_("Status") + ":"), r, 0)
@@ -183,6 +187,9 @@ class _TermInput(object):
 
     index = config.LANGUAGES.index(dataman.manager().user().language)
     ret.setCurrentIndex(index)
+
+    ret.currentIndexChanged.connect(self._refreshStatus)
+    ret.currentIndexChanged.connect(self._refreshYomi)
     return ret
 
   @memoizedproperty
@@ -204,6 +211,13 @@ class _TermInput(object):
   def statusLabel(self):
     ret = QtWidgets.QLabel()
     ret.setToolTip(tr_("Status"))
+    ret.setWordWrap(True)
+    return ret
+
+  @memoizedproperty
+  def yomiLabel(self):
+    ret = QtWidgets.QLabel()
+    ret.setToolTip(mytr_("Yomi"))
     ret.setWordWrap(True)
     return ret
 
@@ -308,6 +322,7 @@ class _TermInput(object):
   def refresh(self):
     self.saveButton.setEnabled(self._canSave())
     self._refreshTypeLabel()
+    self._refreshYomi()
     self._refreshStatus()
 
   def _refreshStatus(self):
@@ -331,9 +346,29 @@ class _TermInput(object):
     elif len(pattern) > 10 and not (self.regexButton.isChecked() or self.syntaxButton.isChecked()):
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is long. Please DO NOT add subtitles to Shared Dictionary.")))
+    elif self._getType() == 'yomi' and self._getLanguage().startswith('zh'):
+      w.setText("%s: %s" % (tr_("Warning"), my.tr("Yomi type is useless for Chinese translation.")))
     else:
       skqss.class_(w, 'text-success')
       w.setText("%s: %s" % (tr_("Note"), my.tr("Everything looks OK")))
+
+  def _refreshYomi(self):
+    w = self.yomiLabel
+    if self._getType() == 'yomi':
+      text = self.textEdit.text().strip()
+      if text:
+        skqss.class_(w, 'text-info')
+        w.setEnabled(True)
+        t = ', '.join((
+          "%s (%s)" % (convutil.kana2yomi(text, lang), tr_(lang))
+          for lang in ('romaji', 'ko', 'th')
+        ))
+        w.setText(t)
+        return
+
+    skqss.removeclass(w)
+    w.setEnabled(False)
+    w.setText("(%s)" % tr_("Empty"))
 
 class TermInput(QtWidgets.QDialog):
   #termEntered = Signal(QtCore.QObject) # Term
@@ -346,7 +381,8 @@ class TermInput(QtWidgets.QDialog):
     self.setWindowIcon(rc.icon('window-dict'))
     self.__d = _TermInput(self)
     #self.__d.autofill()
-    self.resize(300, 250)
+    #self.resize(300, 270)
+    self.resize(300, 300)
     #self.statusBar() # show status bar
 
     import netman

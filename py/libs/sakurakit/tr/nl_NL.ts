@@ -296,7 +296,7 @@
     <message>
         <location filename="sktr.py" line="286"/>
         <source>Features</source>
-        <translation>Functies</translation>
+        <translation>Kenmerken</translation>
     </message>
     <message>
         <location filename="sktr.py" line="294"/>
@@ -356,7 +356,7 @@
     <message>
         <location filename="sktr.py" line="334"/>
         <source>Plug-in</source>
-        <translation>Plug-in</translation>
+        <translation>Inpluggen</translation>
     </message>
     <message>
         <location filename="sktr.py" line="335"/>
@@ -476,12 +476,12 @@
     <message>
         <location filename="sktr.py" line="397"/>
         <source>Read-only</source>
-        <translation>Alleen-lezen</translation>
+        <translation>Alleen lezen</translation>
     </message>
     <message>
         <location filename="sktr.py" line="397"/>
         <source>read-only</source>
-        <translation>alleen-lezen</translation>
+        <translation>alleen lezen</translation>
     </message>
     <message>
         <location filename="sktr.py" line="398"/>
@@ -631,7 +631,7 @@
     <message>
         <location filename="sktr.py" line="176"/>
         <source>Select All</source>
-        <translation>Selecteert u Alle</translation>
+        <translation>Selecteer Alles</translation>
     </message>
     <message>
         <location filename="sktr.py" line="181"/>
@@ -926,22 +926,22 @@
     <message>
         <location filename="sktr.py" line="169"/>
         <source>Restart</source>
-        <translation>Restart</translation>
+        <translation>Herstarten</translation>
     </message>
     <message>
         <location filename="sktr.py" line="429"/>
         <source>For example</source>
-        <translation>Bij voorbeeld</translation>
+        <translation>Bijvoorbeeld</translation>
     </message>
     <message>
         <location filename="sktr.py" line="429"/>
         <source>for example</source>
-        <translation>bij voorbeeld</translation>
+        <translation>bijvoorbeeld</translation>
     </message>
     <message>
         <location filename="sktr.py" line="157"/>
         <source>Pop-up</source>
-        <translation>Pop-up</translation>
+        <translation>Pop up</translation>
     </message>
     <message>
         <location filename="sktr.py" line="161"/>
@@ -986,7 +986,7 @@
     <message>
         <location filename="sktr.py" line="81"/>
         <source>Double Click</source>
-        <translation>Double Click</translation>
+        <translation>Dubbelklik</translation>
     </message>
     <message>
         <location filename="sktr.py" line="81"/>
@@ -996,17 +996,17 @@
     <message>
         <location filename="sktr.py" line="81"/>
         <source>double click</source>
-        <translation>dubbelklikken</translation>
+        <translation>dubbelklik</translation>
     </message>
     <message>
         <location filename="sktr.py" line="82"/>
         <source>Double-click</source>
-        <translation>Dubbelklik op</translation>
+        <translation>Dubbelklik</translation>
     </message>
     <message>
         <location filename="sktr.py" line="82"/>
         <source>double-click</source>
-        <translation>dubbelklikken</translation>
+        <translation>dubbelklik</translation>
     </message>
     <message>
         <location filename="sktr.py" line="108"/>
@@ -1276,7 +1276,7 @@
     <message>
         <location filename="sktr.py" line="157"/>
         <source>pop-up</source>
-        <translation>pop-up</translation>
+        <translation>pop up</translation>
     </message>
     <message>
         <location filename="sktr.py" line="365"/>
@@ -1411,12 +1411,12 @@
     <message>
         <location filename="sktr.py" line="344"/>
         <source>Release Date</source>
-        <translation>Releasedatum</translation>
+        <translation>Release Datum</translation>
     </message>
     <message>
         <location filename="sktr.py" line="344"/>
         <source>Release date</source>
-        <translation>Releasedatum</translation>
+        <translation>Release datum</translation>
     </message>
     <message>
         <location filename="sktr.py" line="363"/>
@@ -1496,7 +1496,7 @@
     <message>
         <location filename="sktr.py" line="129"/>
         <source>Full screen</source>
-        <translation>Het volledige scherm</translation>
+        <translation>Volledig scherm</translation>
     </message>
     <message>
         <location filename="sktr.py" line="348"/>
@@ -2026,12 +2026,12 @@
     <message>
         <location filename="sktr.py" line="158"/>
         <source>Popup</source>
-        <translation>Popup</translation>
+        <translation>Pop Up</translation>
     </message>
     <message>
         <location filename="sktr.py" line="142"/>
         <source>Lookup</source>
-        <translation>Lookup</translation>
+        <translation>Kijk Omhoog</translation>
     </message>
     <message>
         <location filename="sktr.py" line="102"/>
@@ -2246,12 +2246,12 @@
     <message>
         <location filename="sktr.py" line="387"/>
         <source>Zoom In</source>
-        <translation>Inzoomen</translation>
+        <translation>In Zoomen</translation>
     </message>
     <message>
         <location filename="sktr.py" line="387"/>
         <source>Zoom in</source>
-        <translation>Zoom in</translation>
+        <translation>In zoomen</translation>
     </message>
     <message>
         <location filename="sktr.py" line="388"/>
@@ -2332,6 +2332,11 @@
         <location filename="sktr.py" line="164"/>
         <source>Recent changes</source>
         <translation>Recente wijzigingen</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="243"/>
+        <source>romaji</source>
+        <translation>romaji</translation>
     </message>
 </context>
 </TS>

@@ -801,7 +801,7 @@
     <message>
         <location filename="sktr.py" line="186"/>
         <source>stop</source>
-        <translation>Stop</translation>
+        <translation>stop</translation>
     </message>
     <message>
         <location filename="sktr.py" line="186"/>
@@ -1411,7 +1411,7 @@
     <message>
         <location filename="sktr.py" line="344"/>
         <source>Release Date</source>
-        <translation>Data di rilascio</translation>
+        <translation>Data Di Rilascio</translation>
     </message>
     <message>
         <location filename="sktr.py" line="344"/>
@@ -2332,6 +2332,11 @@
         <location filename="sktr.py" line="164"/>
         <source>Recent changes</source>
         <translation>Ultime modifiche</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="243"/>
+        <source>romaji</source>
+        <translation>romaji</translation>
     </message>
 </context>
 </TS>

@@ -83,6 +83,25 @@ def _repair_romaji(text): # unicode -> unicode  repair xtu
   """
   return _re_romaji.sub(r'\1\1', text).replace(u'っ', u'-')
 
+from sakurakit import skstr
+_re_capitalize = skstr.multireplacer({
+  #' Da ': ' da ',
+  ' De ': ' de ',
+  ' Ha ': ' ha ',
+  ' Na ': ' na ',
+  ' No ': ' no ',
+  ' Ni ': ' ni ',
+  ' To ': ' to ',
+  #' O ': ' o ',
+  ' Wo ': ' wo ',
+})
+def capitalizeromaji(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  return _re_capitalize(text.title())
+
 if __name__ == '__main__':
   #t = u"ウェブサイトツール"
   #t = u"うぇぶさいとつーる"
