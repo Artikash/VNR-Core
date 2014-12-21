@@ -3,6 +3,10 @@
 
 CODECFORTR = UTF-8
 SOURCES = mytr.py
-TRANSLATIONS = mytr/ja_JP.ts mytr/zh_CN.ts mytr/zh_TW.ts
+TRANSLATIONS = \
+  mytr/ja_JP.ts \
+  mytr/ko_KR.ts \
+  mytr/zh_CN.ts \
+  mytr/zh_TW.ts
 
 # EOF

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="es_ES">
+<!DOCTYPE TS><TS version="1.1" language="es_ES">
 <context>
     <name>sakurakit</name>
     <message>
@@ -914,11 +913,6 @@
         <translation>Borrador</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="278"/>
-        <source>Scratch</source>
-        <translation type="obsolete">下書き</translation>
-    </message>
-    <message>
         <location filename="sktr.py" line="104"/>
         <source>Close</source>
         <translation>Cerca</translation>
@@ -1472,11 +1466,6 @@
         <location filename="sktr.py" line="251"/>
         <source>Visit</source>
         <translation>Visita</translation>
-    </message>
-    <message>
-        <location filename="sktr.py" line="161"/>
-        <source>Visit count</source>
-        <translation type="obsolete">訪問数</translation>
     </message>
     <message>
         <location filename="sktr.py" line="137"/>
