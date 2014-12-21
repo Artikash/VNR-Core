@@ -166,7 +166,7 @@
     <message>
         <location filename="sktr.py" line="147"/>
         <source>OK</source>
-        <translation>Está bem</translation>
+        <translation>ESTÁ BEM</translation>
     </message>
     <message>
         <location filename="sktr.py" line="148"/>
@@ -801,12 +801,12 @@
     <message>
         <location filename="sktr.py" line="186"/>
         <source>stop</source>
-        <translation>Pare</translation>
+        <translation>pare</translation>
     </message>
     <message>
         <location filename="sktr.py" line="186"/>
         <source>STOP</source>
-        <translation>Pare</translation>
+        <translation>PARE</translation>
     </message>
     <message>
         <location filename="sktr.py" line="360"/>
@@ -1411,7 +1411,7 @@
     <message>
         <location filename="sktr.py" line="344"/>
         <source>Release Date</source>
-        <translation>Data de lançamento</translation>
+        <translation>Data De Lançamento</translation>
     </message>
     <message>
         <location filename="sktr.py" line="344"/>
@@ -2332,6 +2332,11 @@
         <location filename="sktr.py" line="164"/>
         <source>Recent changes</source>
         <translation>Mudanças recentes</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="243"/>
+        <source>romaji</source>
+        <translation>romaji</translation>
     </message>
 </context>
 </TS>

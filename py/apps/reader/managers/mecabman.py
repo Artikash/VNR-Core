@@ -33,6 +33,7 @@ from sakurakit import skstr
 from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dprint
 from mecabjlp import mecabdef, mecabfmt, mecabrender
+from convutil import capitalizeromaji
 import defs, rc
 import _mecabman
 
@@ -58,24 +59,6 @@ tolou = _MP.tolou
 #  @return  unicode  plan text
 #  """
 #  return _MP.tolou(text, **kwargs)
-
-_repl_capitalize = skstr.multireplacer({
-  #' Da ': ' da ',
-  ' De ': ' de ',
-  ' Ha ': ' ha ',
-  ' Na ': ' na ',
-  ' No ': ' no ',
-  ' Ni ': ' ni ',
-  ' To ': ' to ',
-  #' O ': ' o ',
-  ' Wo ': ' wo ',
-})
-def capitalizeromaji(text):
-  """
-  @param  text  unicode
-  @return  unicode
-  """
-  return _repl_capitalize(text.title())
 
 #toyomi = _MP.toyomi
 def toyomi(text, space=True, capital=False, **kwargs):

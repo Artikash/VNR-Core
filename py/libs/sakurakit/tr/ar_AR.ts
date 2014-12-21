@@ -2333,5 +2333,10 @@
         <source>Recent changes</source>
         <translation>أحدث التغييرات</translation>
     </message>
+    <message>
+        <location filename="sktr.py" line="243"/>
+        <source>romaji</source>
+        <translation>روماجي</translation>
+    </message>
 </context>
 </TS>

@@ -222,6 +222,7 @@ Item { id: root_
             case 'source': return My.tr("Input")
             case 'target': return My.tr("Output")
             case 'name': return My.tr("Name")
+            case 'yomi': return My.tr("Yomi")
             case 'title': return My.tr("Suffix")
             case 'origin': return Sk.tr("Game")
             case 'speech': return My.tr("TTS")
@@ -243,6 +244,7 @@ Item { id: root_
               append({value:'source', text:My.tr("Input")})
               append({value:'target', text:My.tr("Output")})
               append({value:'name', text:My.tr("Name")})
+              append({value:'yomi', text:My.tr("Yomi")})
               append({value:'title', text:My.tr("Suffix")})
               append({value:'origin', text:Sk.tr("Game")})
               append({value:'speech', text:My.tr("TTS")})
@@ -273,12 +275,13 @@ Item { id: root_
             case 'source': selectedIndex = 1; break
             case 'target': selectedIndex = 2; break
             case 'name': selectedIndex = 3; break
-            case 'title': selectedIndex = 4; break
-            case 'origin': selectedIndex = 5; break
-            case 'speech': selectedIndex = 6; break
-            case 'ocr': selectedIndex = 7; break
-            case 'macro': selectedIndex = 8; break
-            default: selectedIndex = 0
+            case 'yomi': selectedIndex = 4; break
+            case 'title': selectedIndex = 5; break
+            case 'origin': selectedIndex = 6; break
+            case 'speech': selectedIndex = 7; break
+            case 'ocr': selectedIndex = 8; break
+            case 'macro': selectedIndex = 9; break
+            default: selectedIndex = 0 // this should never happend
             }
           }
         }

@@ -166,7 +166,7 @@
     <message>
         <location filename="sktr.py" line="147"/>
         <source>OK</source>
-        <translation>Хорошо</translation>
+        <translation>ХОРОШО</translation>
     </message>
     <message>
         <location filename="sktr.py" line="148"/>
@@ -811,7 +811,7 @@
     <message>
         <location filename="sktr.py" line="360"/>
         <source>Text encoding</source>
-        <translation>Кодировка текста</translation>
+        <translation>Кодирования Текст</translation>
     </message>
     <message>
         <location filename="sktr.py" line="382"/>
@@ -1141,7 +1141,7 @@
     <message>
         <location filename="sktr.py" line="109"/>
         <source>Create</source>
-        <translation>Создать</translation>
+        <translation>Создавать</translation>
     </message>
     <message>
         <location filename="sktr.py" line="109"/>
@@ -1411,7 +1411,7 @@
     <message>
         <location filename="sktr.py" line="344"/>
         <source>Release Date</source>
-        <translation>Дата выпуска</translation>
+        <translation>Дата Выпуска</translation>
     </message>
     <message>
         <location filename="sktr.py" line="344"/>
@@ -2271,7 +2271,7 @@
     <message>
         <location filename="sktr.py" line="304"/>
         <source>Internet error</source>
-        <translation>Ошибка в Интернет</translation>
+        <translation>Ошибка Интернет</translation>
     </message>
     <message>
         <location filename="sktr.py" line="200"/>
@@ -2332,6 +2332,11 @@
         <location filename="sktr.py" line="164"/>
         <source>Recent changes</source>
         <translation>Последние изменения</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="243"/>
+        <source>romaji</source>
+        <translation>ромадзи</translation>
     </message>
 </context>
 </TS>

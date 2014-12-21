@@ -63,17 +63,20 @@ def hasclass(q, value):
       return True
   return False
 
-def removeclass(q, value):
+def removeclass(q, value=None):
   """
   @param  q  QObject
-  @param  value  unicode
+  @param* value  unicode or None
   @return  QObject  q
   """
   c = class_(q)
   if c:
-    # value is not escaped to improve performance
-    c = re.sub(r'\b%s\b\s*' % value, '', c)
-    class_(q, c)
+    if value is None:
+      class_(q, '')
+    else:
+      # value is not escaped to improve performance
+      c = re.sub(r'\b%s\b\s*' % value, '', c)
+      class_(q, c)
   return q
 
 def addclass(q, value):

@@ -11,6 +11,8 @@
 # Note: This file has reached 50 limits of qml plugins.
 # I have to disable existing plugins before adding new one.
 # This can be done by merging plugin manager with main plugin
+#
+# Two extra plugins can be added.
 
 from Qt5.QtQml import qmlRegisterType
 import features
@@ -26,13 +28,12 @@ def reg(cls, name, ns=QML_PLUGIN):
   """
   qmlRegisterType(cls, ns, 1, 0, name)
 
-
 # See: http://stackoverflow.com/questions/8894244/qml-and-blurring-image
 from Qt5 import QtWidgets
-reg(QtWidgets.QGraphicsBlurEffect, 'Blur', QML_EFFECT)
-reg(QtWidgets.QGraphicsColorizeEffect, 'Colorize', QML_EFFECT)
+#reg(QtWidgets.QGraphicsBlurEffect, 'Blur', QML_EFFECT)
+#reg(QtWidgets.QGraphicsColorizeEffect, 'Colorize', QML_EFFECT)
+#reg(QtWidgets.QGraphicsOpacityEffect, 'Opacity', QML_EFFECT)
 reg(QtWidgets.QGraphicsDropShadowEffect, 'DropShadow', QML_EFFECT)
-reg(QtWidgets.QGraphicsOpacityEffect, 'Opacity', QML_EFFECT)
 
 from sakurakit import skqml
 reg(skqml.SkDesktopProxy, 'DesktopProxy')
@@ -62,6 +63,7 @@ reg(settings.SettingsProxy, 'Settings')
 
 import qmlutil
 reg(qmlutil.QmlUtil, 'Util')
+reg(qmlutil.JlpUtil, 'JlpUtil')
 reg(qmlutil.BBCodeParser, 'BBCodeParser')
 
 #import qmlbeans
