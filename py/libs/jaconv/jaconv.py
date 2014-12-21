@@ -105,13 +105,15 @@ def capitalizeromaji(text):
 if __name__ == '__main__':
   #t = u"ウェブサイトツール"
   #t = u"うぇぶさいとつーる"
-  t = u"わかってる"
+  #t = u"わかってる"
+  t = u'さくらこうじ'
   print hira2romaji(t)
   #print kata2romaji(t)
   #print kata2hira(t)
   #print hira2kata(t)
   #print kata2hangul(t)
   print kana2hangul(t)
+  print kana2thai(t)
 
   from jTransliterate import JapaneseTransliterator
   def test(text):
