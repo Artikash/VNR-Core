@@ -40,7 +40,7 @@ class _TermInput(object):
     grid.addWidget(self.languageEdit, r, 1)
     r += 1
 
-    grid.addWidget(QtWidgets.QLabel(tr_("Target") + ":"), r, 0)
+    grid.addWidget(QtWidgets.QLabel(tr_("Type") + ":"), r, 0)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.typeEdit)
     row.addWidget(self.typeLabel)
