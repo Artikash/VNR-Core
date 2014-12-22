@@ -16,6 +16,20 @@ from lxml import etree
 #from sakurakit.skprof import SkProfiler
 import initdefs
 
+def sametext(text): return text
+
+# 「バッチリなのよさ」【蒔菜】
+def inverttext(text):
+  import re
+  return re.sub(u"(.*)(【.*】)", r'\2\1', text)
+
+#normalizetext = inverttext
+normalizetext = sametext
+
+MAX_TEXT_LENGTH = 255
+MAX_SUB_LENGTH = 384
+#MAX_NAME_LENGTH = 64
+
 CONTEXT_SEP = "||"
 def convert(userId=0, type='', text='', language='', context="", contextSize=0, comment='', updateComment='', disabled=False, **kwargs):
   """
@@ -29,13 +43,21 @@ def convert(userId=0, type='', text='', language='', context="", contextSize=0, 
       t = context.split(CONTEXT_SEP)[-1]
     else:
       t = context
-    ret['text'] = t
+    ret['text'] = normalizetext(t)
     ret['sub'] = text
     #if userId:
     #  ret['userId'] = userId
     c = comment or updateComment
     if c:
       ret['comment'] = c
+
+    t = ret['text']
+    if len(t) > MAX_TEXT_LENGTH:
+      print "text too long (%s):" % len(t), t
+
+    t = ret['sub']
+    if len(t) > MAX_SUB_LENGTH:
+      print "sub too long (%s):" % len(t), t
     return ret
 
 # Fields
