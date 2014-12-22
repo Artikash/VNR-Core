@@ -840,7 +840,7 @@
     <message>
         <location filename="mytr.py" line="177"/>
         <source>Yomi</source>
-        <translation>読み方</translation>
+        <translation>読み仮名</translation>
     </message>
 </context>
 </TS>
