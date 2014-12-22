@@ -33,8 +33,9 @@
         margin-top: -20px;
       }
       .site { margin-bottom: 15px; }
-      .col-1 { width: 25%; display: inline-block; float: left }
-      .col-2 { width: 50%; display: inline-block; float: right }
+      .col { width: 25%; display: inline-block; }
+      .col-1,.col-2 { float: left }
+      .col-3,.col-4 { float: right }
       .background {
         position: fixed;
         z-index: -999;
@@ -50,19 +51,12 @@
         -moz-box-shadow: 0 0 6px blue;
         box-shadow: 0 0 6px blue;
       }
-      .img-shadow {
-        -webkit-box-shadow: 0 0 6px #333;
-        -moz-box-shadow: 0 0 6px #333;
-        box-shadow: 0 0 6px #333;
-      }
-      /* game */
-      .game img { max-width: 100%; margin: 10px }
   %body
     .background
     .container
       ; http://stackoverflow.com/questions/1964297/split-div-into-2-columns-using-css
       %br(style="clear:both")
-      .col-1
+      .col.col-1
         %section
           %h3.title AKABEiSOFT2
           -for url,name in \
@@ -80,7 +74,7 @@
               ("www.nostalgicchord.com/top.html", "NostalgicChord"),
             %div(class="site")
               %a(href="http://#{url}",title="#{url}") #{name}
-      .col-1
+      .col.col-2
         %section
           %h3.title ErogameScape
           -for url,name in \
@@ -104,19 +98,30 @@
               ("www.minori.ph/index_02.html", "minori"),
             %div(class="site")
               %a(href="http://#{url}",title="#{url}") #{name}
-      .col-2
+      .col.col-4
         %section
           %h3.title Game
           -for url,name in \
-              ("www.dmm.co.jp/netgame/game/-/ranking", "DMM Online Games"),
-            %div(class="site")
-              %a(href="http://#{url}",title="#{url}") #{name}
-          -for url,name,img in \
-              (534991, "対魔忍アサギ～決戦アリーナ～ (DMM)", "http://153.121.52.138/proxy/blogimg/hiroji162/imgs/9/4/94ea9f89.png"),
+              (534991, "対魔忍アサギ～決戦アリーナ～ (DMM)"),
             -set url = "http://www.dmm.co.jp/netgame/social/-/gadgets/=/app_id=%s" % 534991
             %div(class="game")
               %a(href="#{url}",title="#{url}") #{name}
-              -if img
-                %a(href="#{url}")
-                  %img(class="img-shadow",src="#{cache.image(img)}",alt="画像",title="#{name}")
+      .col.col-3
+        %section
+          %h3.title Getchu
+          -for url,name in \
+              ("www.getchu.com/pc/salesranking2013.html", "セールス2013"), \
+              ("www.getchu.com/pc/2013_g_ranking/", "ランキング2013"), \
+              ("www.getchu.com/pc/2012_g_ranking/", "ランキング2012"), \
+              ("www.getchu.com/pc/2011_g_ranking/", "ランキング2011"), \
+              ("www.getchu.com/pc/2010_g_ranking/", "ランキング2010"), \
+              ("www.getchu.com/pc/2009_g_ranking/", "ランキング2009"), \
+              ("www.getchu.com/pc/2008_g_ranking/", "ランキング2008"), \
+              ("www.getchu.com/pc/2007_g_ranking/2007_g_ranking_all.html", "ランキング2007"), \
+              ("www.getchu.com/pc/2006_g_ranking/result/2006_ur_result_all.html", "ランキング2006"), \
+              ("www.getchu.com/pc/ranking2005/all.html", "ランキング2005"), \
+              ("www.getchu.com/pc/rank.phtml?rank_flag=1", "ランキング2004"), \
+              ("www.getchu.com/ranking/2003sougou.html", "ランキング2003"),
+            %div(class="site")
+              %a(href="http://#{url}",title="#{url}") #{name}
 ; EOF
