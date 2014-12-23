@@ -147,7 +147,7 @@ bool DetermineEngineByFile1()
     return true;
   }
   if (IthFindFile(L"*.int")) {
-    InsertCatSystem2Hook();
+    InsertCatSystemHook();
     return true;
   }
   if (IthCheckFile(L"message.dat")) {
