@@ -8,7 +8,7 @@ if __name__ == '__main__':
   #initrc.chcwd()
   initrc.initenv()
 
-import os, sys
+import os, re, sys
 from datetime import datetime
 from sakurakit import skyaml
 from lxml import etree
@@ -16,19 +16,14 @@ from lxml import etree
 #from sakurakit.skprof import SkProfiler
 import initdefs
 
-def sametext(text): return text
-
-# 「バッチリなのよさ」【蒔菜】
-def inverttext(text):
-  import re
-  return re.sub(u"(.*)(【.*】)", r'\2\1', text)
-
-#normalizetext = inverttext
-normalizetext = sametext
-
 MAX_TEXT_LENGTH = 255
 MAX_SUB_LENGTH = 384
 #MAX_NAME_LENGTH = 64
+
+def sametext(text): return text
+normalizetext = sametext
+#def inverttext(text): return re.sub(u"(.*)(【.*】)", r'\2\1', text) # 「バッチリなのよさ」【蒔菜】
+#normalizetext = inverttext
 
 CONTEXT_SEP = "||"
 def convert(userId=0, type='', text='', language='', context="", contextSize=0, comment='', updateComment='', disabled=False, **kwargs):
