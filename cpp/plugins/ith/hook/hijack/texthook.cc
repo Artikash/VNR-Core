@@ -355,10 +355,10 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
     return 0;
 
   //if (dwType & EXTERN_HOOK) {
-  if (hp.extern_fun) {  // jichi 10/24/2014: remove EXTERN_HOOK
-    //DataFun fun=(DataFun)hp.extern_fun;
-    //auto fun = hp.extern_fun;
-    hp.extern_fun(dwDataBase, &hp, &dwDataIn, &dwSplit, &dwCount);
+  if (hp.text_fun) {  // jichi 10/24/2014: remove EXTERN_HOOK
+    //DataFun fun=(DataFun)hp.text_fun;
+    //auto fun = hp.text_fun;
+    hp.text_fun(dwDataBase, &hp, &dwDataIn, &dwSplit, &dwCount);
     //if (dwCount == 0 || dwCount > MAX_DATA_SIZE)
     //  return 0;
     if (dwSplit && (dwType & RELATIVE_SPLIT) && dwSplit > ::processStartAddress)

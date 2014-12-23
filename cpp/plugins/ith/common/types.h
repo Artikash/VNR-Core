@@ -19,7 +19,7 @@
   */
 struct HookParam { // size: 0x24
   // jichi 8/24/2013: For special hooks. Orignial name: DataFun
-  typedef void (*extern_fun_t)(DWORD esp, HookParam *hp, DWORD *data, DWORD *split, DWORD *len);
+  typedef void (*text_fun_t)(DWORD esp, HookParam *hp, DWORD *data, DWORD *split, DWORD *len);
 
   // jichi 10/24/2014: Add filter function. Return the if skip the text
   typedef bool (*filter_fun_t)(LPVOID str, DWORD *len, HookParam *hp);
@@ -34,7 +34,7 @@ struct HookParam { // size: 0x24
         split_ind;  // ?
   DWORD module, // hash of the module
         function;
-  extern_fun_t extern_fun;
+  text_fun_t text_fun;
   filter_fun_t filter_fun;
   hook_fun_t hook_fun;
   DWORD type;   // flags

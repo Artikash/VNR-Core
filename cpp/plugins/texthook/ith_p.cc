@@ -21,7 +21,7 @@
 //         split_ind;    // 20
 //   DWORD module,       // 24
 //         function;     // 28
-//   DataFun extern_fun; // 32, jichi: is this the same in x86 and x86_64?
+//   DataFun text_fun; // 32, jichi: is this the same in x86 and x86_64?
 //   DWORD type;         // 36
 //   WORD length_offset; // 38
 //   BYTE hook_len,      // 39
@@ -237,7 +237,7 @@ bool Ith::parseHookCode(const QString &code, HookParam *hp)
   if (ret)
     qDebug()
       << "addr:" << hp->addr
-      << ", extern_fun:" << hp->extern_fun
+      << ", text_fun:" << hp->text_fun
       << ", function:"<< hp->function
       << ", hook_len:" << hp->hook_len
       << ", ind:" << hp->ind

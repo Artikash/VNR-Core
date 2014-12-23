@@ -580,7 +580,7 @@ bool InsertKAGParserHook()
 
   HookParam hp = {};
   hp.addr = addr;
-  hp.extern_fun = SpecialHookKAGParser;
+  hp.text_fun = SpecialHookKAGParser;
   hp.filter_fun = KAGParserFilter;
   hp.type = USING_UNICODE|FIXING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
   ConsoleOutput("vnreng: INSERT KAGParser");
@@ -620,7 +620,7 @@ bool InsertKAGParserExHook()
 
   HookParam hp = {};
   hp.addr = addr;
-  hp.extern_fun = SpecialHookKAGParserEx;
+  hp.text_fun = SpecialHookKAGParserEx;
   hp.filter_fun = KAGParserFilter;
   hp.type = USING_UNICODE|FIXING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
   ConsoleOutput("vnreng: INSERT KAGParserEx");
@@ -1439,7 +1439,7 @@ bool InsertSiglus3Hook()
   hp.off = pusha_eax_off - 4;
   hp.type = USING_UNICODE;
   hp.length_offset = 1;
-  //hp.extern_fun = SpecialHookSiglus3;
+  //hp.text_fun = SpecialHookSiglus3;
 
   ConsoleOutput("vnreng: INSERT Siglus3");
   NewHook(hp, L"SiglusEngine3");
@@ -1462,7 +1462,7 @@ bool InsertSiglus3Hook()
  *
  *  /HW-1C@D9DB2:SiglusEngine.exe
  *  - addr: 892338 (0xd9db2)
- *  - extern_fun: 0x0
+ *  - text_fun: 0x0
  *  - function: 0
  *  - hook_len: 0
  *  - ind: 0
@@ -2296,7 +2296,7 @@ bool InsertSiglus1Hook()
     if (*(WORD*)addr == 0xff6a) {
       HookParam hp = {};
       hp.addr = addr;
-      hp.extern_fun = SpecialHookSiglus1;
+      hp.text_fun = SpecialHookSiglus1;
       hp.type = USING_UNICODE;
       ConsoleOutput("vnreng: INSERT Siglus");
       NewHook(hp, L"SiglusEngine");
@@ -2583,7 +2583,7 @@ bool InsertMajiroHook()
   //hp.split_ind=0x28;
   //hp.type|=USING_STRING|USING_SPLIT|SPLIT_INDIRECT;
   hp.addr = addr;
-  hp.extern_fun = SpecialHookMajiro;
+  hp.text_fun = SpecialHookMajiro;
   hp.userValue = newMajiro;
   if (newMajiro) {
     hp.type = NO_CONTEXT; // do not use return address for new majiro
@@ -2798,7 +2798,7 @@ void SpecialHookRUGP1(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, 
     hp->off = i << 2;
     *data = val;
     *len = 2;
-    hp->extern_fun = nullptr;
+    hp->text_fun = nullptr;
     //hp->type &= ~EXTERN_HOOK;
   }
   else
@@ -2827,7 +2827,7 @@ bool InsertRUGP1Hook()
       hp.addr = i;
       //hp.off= -8;
       hp.length_offset = 1;
-      hp.extern_fun = SpecialHookRUGP1;
+      hp.text_fun = SpecialHookRUGP1;
       hp.type = BIG_ENDIAN;
       ConsoleOutput("vnreng: INSERT rUGP#1");
       NewHook(hp, L"rUGP");
@@ -3409,7 +3409,7 @@ bool InsertShinaHook()
   if (ver >= 48) { // v2.48, v2.49
     HookParam hp = {};
     hp.addr = (DWORD)::GetTextExtentPoint32A;
-    hp.extern_fun = SpecialHookShina;
+    hp.text_fun = SpecialHookShina;
     hp.type = USING_STRING;
     ConsoleOutput("vnreng: INSERT ShinaRio > 2.47");
     NewHook(hp, L"ShinaRio");
@@ -3758,7 +3758,148 @@ bool InsertCotophaHook()
 
 // jichi 5/10/2014
 // See also: http://bbs.sumisora.org/read.php?tid=11044704&fpage=2
-bool InsertCatSystem2Hook()
+//
+// Old engine:  グリザイアの迷宮
+// 0053cc4e   cc               int3
+// 0053cc4f   cc               int3
+// 0053cc50   6a ff            push -0x1    ; jichi: hook here
+// 0053cc52   68 6b486000      push .0060486b
+// 0053cc57   64:a1 00000000   mov eax,dword ptr fs:[0]
+// 0053cc5d   50               push eax
+// 0053cc5e   81ec 24020000    sub esp,0x224
+// 0053cc64   a1 f8647600      mov eax,dword ptr ds:[0x7664f8]
+// 0053cc69   33c4             xor eax,esp
+// 0053cc6b   898424 20020000  mov dword ptr ss:[esp+0x220],eax
+// 0053cc72   53               push ebx
+// 0053cc73   55               push ebp
+// 0053cc74   56               push esi
+// 0053cc75   57               push edi
+//
+// Stack:
+// 0544e974   0053d593  return to .0053d593 from .0053cc50
+// 0544e978   045cc820
+// 0544e97c   00008dc5  : jichi: text
+// 0544e980   00000016
+// 0544e984   0452f2e4
+// 0544e988   00000000
+// 0544e98c   00000001
+// 0544e990   0544ea94
+// 0544e994   04513840
+// 0544e998   0452f2b8
+// 0544e99c   04577638
+// 0544e9a0   04620450
+// 0544e9a4   00000080
+// 0544e9a8   00000080
+// 0544e9ac   004914f3  return to .004914f3 from .0055c692
+//
+// Registers:
+// edx 0
+// ebx 00000016
+//
+//
+// New engine: イノセントガール
+// Stack:
+// 051ae508   0054e9d1  return to .0054e9d1 from .0054e310
+// 051ae50c   04361650
+// 051ae510   00008ca9  ; jichi: text
+// 051ae514   0000001a
+// 051ae518   04343864
+// 051ae51c   00000000
+// 051ae520   00000001
+// 051ae524   051ae62c
+// 051ae528   041edc20
+// 051ae52c   04343830
+// 051ae530   0434a8b0
+// 051ae534   0434a7f0
+// 051ae538   00000080
+// 051ae53c   00000080
+// 051ae540   3f560000
+// 051ae544   437f8000
+// 051ae548   4433e000
+// 051ae54c   16f60c00
+// 051ae550   051ae650
+// 051ae554   042c4c20
+// 051ae558   0000002c
+// 051ae55c   00439bc5  return to .00439bc5 from .0043af60
+//
+// Registers & stack:
+// Scenario:
+// eax 04361650
+// ecx 04357640
+// edx 04343864
+// ebx 0000001a
+// esp 051ae508
+// ebp 00008169
+// esi 04357640
+// edi 051ae62c
+// eip 0054e310 .0054e310
+//
+// 051ae508   0054e9d1  return to .0054e9d1 from .0054e310
+// 051ae50c   04361650
+// 051ae510   00008169
+// 051ae514   0000001a
+// 051ae518   04343864
+// 051ae51c   00000000
+// 051ae520   00000001
+// 051ae524   051ae62c
+// 051ae528   041edc20
+// 051ae52c   04343830
+// 051ae530   0434a8b0
+// 051ae534   0434a7f0
+// 051ae538   00000080
+// 051ae53c   00000080
+// 051ae540   3f560000
+// 051ae544   437f8000
+// 051ae548   4433e000
+// 051ae54c   16f60c00
+// 051ae550   051ae650
+// 051ae554   042c4c20
+// 051ae558   0000002c
+//
+// Name:
+//
+// eax 04362430
+// ecx 17025230
+// edx 0430b6e4
+// ebx 0000001a
+// esp 051ae508
+// ebp 00008179
+// esi 17025230
+// edi 051ae62c
+// eip 0054e310 .0054e310
+//
+// 051ae508   0054e9d1  return to .0054e9d1 from .0054e310
+// 051ae50c   04362430
+// 051ae510   00008179
+// 051ae514   0000001a
+// 051ae518   0430b6e4
+// 051ae51c   00000000
+// 051ae520   00000001
+// 051ae524   051ae62c
+// 051ae528   041edae0
+// 051ae52c   0430b6b0
+// 051ae530   0434a790
+// 051ae534   0434a910
+// 051ae538   00000080
+// 051ae53c   00000080
+// 051ae540   3efa0000
+// 051ae544   4483f000
+// 051ae548   44322000
+// 051ae54c   16f60aa0
+// 051ae550   051ae650
+// 051ae554   042c4c20
+// 051ae558   0000002c
+
+void SpecialHookCatSystem3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  CC_UNUSED(hp);
+  //DWORD ch = *data = *(DWORD *)(esp_base + hp->off); // arg2
+  DWORD ch = *data = argof(2, esp_base);
+  *len = LeadByteTable[(ch >> 8) & 0xff];  // BIG_ENDIAN
+  *split = regof(edx, esp_base) >> 16;
+}
+
+bool InsertCatSystemHook()
 {
   //DWORD search=0x95EB60F;
   //DWORD j,i=SearchPattern(module_base_,module_limit_-module_base_,&search,4);
@@ -3782,19 +3923,30 @@ bool InsertCatSystem2Hook()
     return false;
   }
   enum { beg = 0xff6acccc }; // jichi 7/12/2014: beginning of the function
+  enum { hook_offset = 2 }; // skip two leading 0xcc
   ULONG addr = MemDbg::findCallerAddress((ULONG)::GetTextMetricsA, beg, startAddress, stopAddress);
   if (!addr) {
     ConsoleOutput("vnreng:CatSystem2: pattern not exist");
     return false;
   }
+
   HookParam hp = {};
-  hp.addr = addr + 2; // skip 1 push?
-  hp.off = 8;
-  hp.split = -0x10;
-  hp.length_offset = 1;
+  hp.addr = addr + hook_offset; // skip 1 push?
+  hp.off = 4 * 2; // text character is in arg2
+  hp.length_offset = 1; // only 1 character
   hp.type = BIG_ENDIAN|USING_SPLIT;
-  ConsoleOutput("vnreng: INSERT CatSystem2");
-  NewHook(hp, L"CatSystem2");
+
+  // jichi 12/23/2014: Modify split for new catsystem
+  bool newEngine = IthCheckFile(L"cs2conf.dll");
+  if (newEngine) {
+    hp.text_fun = SpecialHookCatSystem3;
+    NewHook(hp, L"CatSystem3");
+    ConsoleOutput("vnreng: INSERT CatSystem3");
+  } else {
+    hp.split = pusha_edx_off - 4; // -0x10
+    NewHook(hp, L"CatSystem2");
+    ConsoleOutput("vnreng: INSERT CatSystem2");
+  }
   //RegisterEngineType(ENGINE_CATSYSTEM);
   return true;
 }
@@ -3930,7 +4082,7 @@ bool InsertMalieHook2() // jichi 8/20/2013: Change return type to boolean
   hp.addr = (DWORD)ptr + 4;
   hp.off = -8;
   hp.length_offset = 1;
-  hp.extern_fun = SpecialHookMalie;
+  hp.text_fun = SpecialHookMalie;
   hp.type = USING_SPLIT|USING_UNICODE|NO_CONTEXT;
   ConsoleOutput("vnreng: INSERT MalieHook2");
   NewHook(hp, L"Malie");
@@ -3966,7 +4118,7 @@ void SpecialHookMalie2(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split,
  *
  *  BRAVA!! /H code: "/HWN-4:C@1A3DF4:malie.exe"
  *  - addr: 1719796 = 0x1a3df4
- *  - extern_fun: 0x0
+ *  - text_fun: 0x0
  *  - function: 0
  *  - hook_len: 0
  *  - ind: 0
@@ -4022,7 +4174,7 @@ bool InsertMalie2Hook()
   // jichi 12/17/2013: Need extern func for Electro Arms
   // Though the hook parameter is quit similar to Malie, the original extern function does not work
   hp.type = USING_SPLIT|USING_UNICODE|NO_CONTEXT;
-  hp.extern_fun = SpecialHookMalie2;
+  hp.text_fun = SpecialHookMalie2;
   ConsoleOutput("vnreng: INSERT Malie2");
   NewHook(hp, L"Malie2");
 
@@ -4128,7 +4280,7 @@ bool InsertMalie3Hook()
   //hp.addr = 0x5b51ed;
   //hp.addr = 0x5b51f1;
   //hp.addr = 0x5b51f2;
-  hp.extern_fun = SpecialHookMalie3;
+  hp.text_fun = SpecialHookMalie3;
   hp.type = USING_UNICODE|NO_CONTEXT;
   ConsoleOutput("vnreng: INSERT Malie3");
   NewHook(hp, L"Malie3");
@@ -4209,7 +4361,7 @@ bool InsertRREHook()
   hp.length_offset = 1;
   hp.type = NO_CONTEXT|DATA_INDIRECT;
   if ((*(WORD *)(addr-2) != sig)) {
-    hp.extern_fun = SpecialRunrunEngine;
+    hp.text_fun = SpecialRunrunEngine;
     ConsoleOutput("vnreng: INSERT Runrun#1");
     NewHook(hp, L"RunrunEngine Old");
   } else {
@@ -4417,7 +4569,7 @@ namespace { // unnamed QLIE
  *
  * /HBN14*0@4CC2C4
  * - addr: 5030596  (0x4cc2c4)
- * - extern_fun: 0x0
+ * - text_fun: 0x0
  * - function: 0
  * - hook_len: 0
  * - ind: 0
@@ -4678,7 +4830,7 @@ bool InsertApricoTHook()
         if ((*(DWORD *)j & 0xffffff) == 0x4c2) { // retn 4
           HookParam hp = {};
           hp.addr = j + 3;
-          hp.extern_fun = SpecialHookApricoT;
+          hp.text_fun = SpecialHookApricoT;
           hp.type = USING_STRING|USING_UNICODE|NO_CONTEXT;
           ConsoleOutput("vnreng: INSERT ApricoT");
           NewHook(hp, L"ApRicoT");
@@ -4776,7 +4928,7 @@ static void SpecialHookDebonosu(DWORD esp_base, HookParam* hp, DWORD* data, DWOR
   else
     hp->off = -0x8;
   //hp->type ^= EXTERN_HOOK;
-  hp->extern_fun = nullptr;
+  hp->text_fun = nullptr;
   *data = *(DWORD*)(esp_base + hp->off);
   *len = ::strlen((char*)*data);
 }
@@ -4805,7 +4957,7 @@ bool InsertDebonosuHook()
           if (DWORD hook_addr = SafeFindEntryAligned(i, 0x200)) {
             HookParam hp = {};
             hp.addr = hook_addr;
-            hp.extern_fun = SpecialHookDebonosu;
+            hp.text_fun = SpecialHookDebonosu;
             hp.type = USING_STRING;
             ConsoleOutput("vnreng: INSERT Debonosu");
             NewHook(hp, L"Debonosu");
@@ -4865,7 +5017,7 @@ bool InsertSofthouseDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
         ((*(WORD *)(k - 6) == 0x15ff) || *(BYTE *)(k - 5) == 0xe8)) { // jichi 10/20/2014: call dword ptr ds
       HookParam hp = {};
       hp.off = 0x4;
-      hp.extern_fun = SpecialHookSofthouse;
+      hp.text_fun = SpecialHookSofthouse;
       hp.type = addr == ::DrawTextExW ? USING_UNICODE : USING_STRING;
       i = *(DWORD *)(k - 4);
       if (*(DWORD *)(k - 5) == 0xe8)
@@ -4949,7 +5101,7 @@ bool InsertCaramelBoxHook()
         if ((*(DWORD *)j & 0xffff00ff) == 0x1000b8) { // mov eax,10??
           HookParam hp = {};
           hp.addr = j & ~0xf;
-          hp.extern_fun = SpecialHookCaramelBox;
+          hp.text_fun = SpecialHookCaramelBox;
           hp.type = USING_STRING ;
           for (i &= ~0xffff; i < module_limit_ - 4; i++)
             if (pb[0] == 0xe8) {
@@ -5195,7 +5347,7 @@ BOOL FindCharacteristInstruction(MEMORY_WORKING_SET_LIST *list)
               if (*(WORD*)(j + 4) == 0x890c) { // movzx eax, word ptr [edx*2 + eax + 0xC]; wchar = string[i];
                 HookParam hp = {};
                 hp.addr = j;
-                hp.extern_fun = SpecialHookAB2Try;
+                hp.text_fun = SpecialHookAB2Try;
                 hp.type = USING_STRING|USING_UNICODE|NO_CONTEXT;
                 ConsoleOutput("vnreng: INSERT AB2Try");
                 NewHook(hp, L"AB2Try");
@@ -5277,7 +5429,7 @@ static void SpecialHookWillPlus(DWORD esp_base, HookParam* hp, DWORD* data, DWOR
   if (*pw == 0xc483) {
     hp->off = *(pb + 2) - 8;
     //hp->type ^= EXTERN_HOOK;
-    hp->extern_fun = nullptr;
+    hp->text_fun = nullptr;
     char* str = *(char**)(esp_base + hp->off);
     *data = (DWORD)str;
     *len = strlen(str);
@@ -5298,7 +5450,7 @@ bool InsertWillPlusHook()
 
   HookParam hp = {};
   hp.addr = addr;
-  hp.extern_fun = SpecialHookWillPlus;
+  hp.text_fun = SpecialHookWillPlus;
   hp.type = USING_STRING;
   ConsoleOutput("vnreng: INSERT WillPlus");
   NewHook(hp, L"WillPlus");
@@ -5314,7 +5466,7 @@ bool InsertWillPlusHook()
  *  微少女: /HSN4@004983E0
  *  This is the same hook as ITH
  *  - addr: 4817888 (0x4983e0)
- *  - extern_fun: 0x0
+ *  - text_fun: 0x0
  *  - off: 4
  *  - type: 1025 (0x401)
  *
@@ -5355,7 +5507,7 @@ static void SpecialHookRyokucha(DWORD esp_base, HookParam* hp, DWORD* data, DWOR
       *data = j;
       *len = 2;
       //hp->type &= ~EXTERN_HOOK;
-      hp->extern_fun = nullptr;
+      hp->text_fun = nullptr;
       return;
     }
   }
@@ -5384,7 +5536,7 @@ bool InsertRyokuchaDynamicHook(LPVOID addr, DWORD frame, DWORD stack)
     HookParam hp = {};
     hp.addr = insert_addr;
     hp.length_offset = 1;
-    hp.extern_fun = SpecialHookRyokucha;
+    hp.text_fun = SpecialHookRyokucha;
     hp.type = BIG_ENDIAN;
     ConsoleOutput("vnreng: INSERT StudioRyokucha");
     NewHook(hp, L"StudioRyokucha");
@@ -5624,7 +5776,7 @@ bool InsertAnex86Hook()
       if (*(DWORD *)(i + 4) == dwords[1]) {
         HookParam hp = {};
         hp.addr = i;
-        hp.extern_fun = SpecialHookAnex86;
+        hp.text_fun = SpecialHookAnex86;
         //hp.type = EXTERN_HOOK;
         hp.length_offset = 1;
         ConsoleOutput("vnreng: INSERT Anex86");
@@ -5685,7 +5837,7 @@ bool InsertShinyDaysHook()
 
   HookParam hp = {};
   hp.addr = 0x42ad9c;
-  hp.extern_fun = SpecialHookShinyDays;
+  hp.text_fun = SpecialHookShinyDays;
   hp.type = USING_UNICODE|USING_STRING|NO_CONTEXT;
   ConsoleOutput("vnreng: INSERT ShinyDays");
   NewHook(hp, L"ShinyDays 1.00");
@@ -6093,7 +6245,7 @@ bool InsertGesen18Hook()
  *  Example: ツゴウノイイ家族 Trial /HBN-8*0:14@650A2F
  *  Note: 0x650a2f > 40000(base) + 20000(limit)
  *  - addr: 0x650a2f
- *  - extern_fun: 0x0
+ *  - text_fun: 0x0
  *  - function: 0
  *  - hook_len: 0
  *  - ind: 0
@@ -7384,7 +7536,7 @@ bool InsertElfHook()
 
       HookParam hp = {};
       hp.addr = addr;
-      hp.extern_fun = SpecialHookElf;
+      hp.text_fun = SpecialHookElf;
       hp.type = USING_STRING|NO_CONTEXT; // = 9
 
       ConsoleOutput("vnreng: INSERT Elf");
@@ -7927,7 +8079,7 @@ bool InsertYukaSystem2Hook()
   HookParam hp = {};
   hp.addr = addr;
   hp.type = NO_CONTEXT|USING_STRING|USING_UTF8; // UTF-8, though
-  hp.extern_fun = SpecialHookYukaSystem2;
+  hp.text_fun = SpecialHookYukaSystem2;
   ConsoleOutput("vnreng: INSERT YukaSystem2");
   NewHook(hp, L"YukaSystem2");
   return true;
@@ -8452,7 +8604,7 @@ bool InsertExpHook()
   HookParam hp = {};
   hp.addr = addr + hook_offset;
   hp.type = NO_CONTEXT|USING_STRING; // NO_CONTEXT to get rid of floating address
-  hp.extern_fun = SpecialHookExp;
+  hp.text_fun = SpecialHookExp;
   ConsoleOutput("vnreng: INSERT EXP");
   NewHook(hp, L"EXP");
 
@@ -9053,7 +9205,7 @@ bool Insert5pbHook2()
   HookParam hp = {};
   hp.addr = addr;
   hp.type = USING_STRING;
-  hp.extern_fun = SpecialHook5pb2;
+  hp.text_fun = SpecialHook5pb2;
   //hp.off = pusha_eax_off - 4;
   //hp.length_offset = 1;
   ConsoleOutput("vnreng: INSERT 5pb2");
@@ -9250,7 +9402,7 @@ bool InsertVanillawareGCHook()
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
-    hp.extern_fun = SpecialGCHookVanillaware;
+    hp.text_fun = SpecialGCHookVanillaware;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Vanillaware GC: INSERT");
     NewHook(hp, L"Vanillaware GC");
@@ -9663,7 +9815,7 @@ bool InsertAlchemistPSPHook()
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
-    hp.extern_fun = SpecialPSPHookAlchemist;
+    hp.text_fun = SpecialPSPHookAlchemist;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Alchemist PSP: INSERT");
     NewHook(hp, L"Alchemist PSP");
@@ -9762,7 +9914,7 @@ bool InsertAlchemist2PSPHook()
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
-    hp.extern_fun = SpecialPSPHookAlchemist2;
+    hp.text_fun = SpecialPSPHookAlchemist2;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Alchemist2 PSP: INSERT");
     NewHook(hp, L"Alchemist2 PSP");
@@ -10006,7 +10158,7 @@ bool Insert5pbPSPHook()
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
-    hp.extern_fun = SpecialPSPHook5pb;
+    hp.text_fun = SpecialPSPHook5pb;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: 5pb PSP: INSERT");
     NewHook(hp, L"5pb PSP");
@@ -10115,8 +10267,8 @@ bool InsertImageepochPSPHook()
     hp.off = pusha_eax_off - 4;
     hp.split = pusha_ecx_off - 4;
     hp.userFlags = HPF_IgnoreSameAddress;
-    //hp.extern_fun = SpecialPSPHook;
-    hp.extern_fun = SpecialPSPHookImageepoch; // since this function is common, use its own static lasttext for HPF_IgnoreSameAddress
+    //hp.text_fun = SpecialPSPHook;
+    hp.text_fun = SpecialPSPHookImageepoch; // since this function is common, use its own static lasttext for HPF_IgnoreSameAddress
     ConsoleOutput("vnreng: Imageepoch PSP: INSERT");
     NewHook(hp, L"Imageepoch PSP");
   }
@@ -10199,7 +10351,7 @@ bool InsertImageepoch2PSPHook()
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT; // UTF-8, though
     hp.off = pusha_eax_off - 4;
     hp.split = pusha_ecx_off - 4;
-    hp.extern_fun = SpecialPSPHook;
+    hp.text_fun = SpecialPSPHook;
     ConsoleOutput("vnreng: Imageepoch2 PSP: INSERT");
     NewHook(hp, L"Imageepoch2 PSP");
   }
@@ -10724,7 +10876,7 @@ bool InsertYetiPSPHook()
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|USING_SPLIT|FIXING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
-    hp.extern_fun = SpecialPSPHook;
+    hp.text_fun = SpecialPSPHook;
     hp.off = pusha_eax_off - 4;
     ConsoleOutput("vnreng: Yeti PSP: INSERT");
     NewHook(hp, L"Yeti PSP");
@@ -10865,7 +11017,7 @@ bool InsertKidPSPHook()
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
-    hp.extern_fun = SpecialPSPHookKid;
+    hp.text_fun = SpecialPSPHookKid;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
 
     //HookParam hp = {};
@@ -10874,7 +11026,7 @@ bool InsertKidPSPHook()
     //hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
     //hp.off = pusha_eax_off - 4;
     //hp.split = pusha_ecx_off - 4;
-    //hp.extern_fun = SpecialPSPHook;
+    //hp.text_fun = SpecialPSPHook;
 
     ConsoleOutput("vnreng: KID PSP: INSERT");
     NewHook(hp, L"KID PSP");
@@ -11007,7 +11159,7 @@ bool InsertCyberfrontPSPHook()
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
     //hp.off = pusha_eax_off - 4;
     //hp.split = pusha_edi_off - 4;
-    hp.extern_fun = SpecialPSPHookCyberfront;
+    hp.text_fun = SpecialPSPHookCyberfront;
     ConsoleOutput("vnreng: CYBERFRONT PSP: INSERT");
     NewHook(hp, L"CYBERFRONT PSP");
   }
@@ -11247,7 +11399,7 @@ bool InsertYeti2PSPHook()
     //hp.off = pusha_eax_off - 4;
     //hp.split = pusha_ecx_off - 4; // this would split scenario thread
     //hp.split = hp.off; // directly use text address to split
-    hp.extern_fun = SpecialPSPHookYeti2;
+    hp.text_fun = SpecialPSPHookYeti2;
     ConsoleOutput("vnreng: Yeti2 PSP: INSERT");
     NewHook(hp, L"Yeti2 PSP");
   }
@@ -11428,7 +11580,7 @@ bool InsertBandaiNamePSPHook()
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
     hp.off = pusha_eax_off - 4;
     hp.split = pusha_ebx_off - 4;
-    hp.extern_fun = SpecialPSPHook;
+    hp.text_fun = SpecialPSPHook;
     ConsoleOutput("vnreng: BANDAI Name PSP: INSERT");
     NewHook(hp, L"BANDAI Name PSP");
   }
@@ -11520,7 +11672,7 @@ bool InsertBandaiPSPHook()
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
     //hp.off = pusha_eax_off - 4;
     //hp.split = pusha_ecx_off - 4;
-    hp.extern_fun = SpecialPSPHookBandai;
+    hp.text_fun = SpecialPSPHookBandai;
     ConsoleOutput("vnreng: BANDAI PSP: INSERT");
     NewHook(hp, L"BANDAI PSP");
   }
@@ -11608,7 +11760,7 @@ bool InsertNippon1PSPHook()
     hp.addr = addr + hook_offset;
     hp.off = pusha_ebp_off - 4; // ebp
     hp.type = USING_STRING|NO_CONTEXT;
-    hp.extern_fun = SpecialPSPHookNippon1;
+    hp.text_fun = SpecialPSPHookNippon1;
     ConsoleOutput("vnreng: Nippon1 PSP: INSERT");
     NewHook(hp, L"Nippon1 PSP");
   }
@@ -11709,7 +11861,7 @@ bool InsertNippon2PSPHook()
     hp.addr = addr + hook_offset;
     hp.off = pusha_esi_off - 4; // esi
     hp.type = USING_STRING|NO_CONTEXT;
-    hp.extern_fun = SpecialPSPHookNippon1;
+    hp.text_fun = SpecialPSPHookNippon1;
     ConsoleOutput("vnreng: Nippon2 PSP: INSERT");
     NewHook(hp, L"Nippon2 PSP");
   }
@@ -11852,7 +12004,7 @@ bool InsertBroccoliPSPHook()
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
-    hp.extern_fun = SpecialPSPHookBroccoli;
+    hp.text_fun = SpecialPSPHookBroccoli;
     //ITH_GROWL_DWORD(hp.addr);
     ConsoleOutput("vnreng: Broccoli PSP: INSERT");
     NewHook(hp, L"Broccoli PSP");
@@ -11957,7 +12109,7 @@ bool InsertOtomatePSPHook()
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|NO_CONTEXT;
-    hp.extern_fun = SpecialPSPHookOtomate;
+    hp.text_fun = SpecialPSPHookOtomate;
     ConsoleOutput("vnreng: Otomate PSP: INSERT");
     NewHook(hp, L"Otomate PSP");
   }
@@ -12049,7 +12201,7 @@ bool InsertOtomatePPSSPPHook()
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(addr + ds_offset); // this is the address after ds:[]
     hp.type = USING_STRING|NO_CONTEXT;
-    hp.extern_fun = SpecialPPSSPPHookOtomate;
+    hp.text_fun = SpecialPPSSPPHookOtomate;
     ConsoleOutput("vnreng: Otomate PPSSPP: INSERT");
     NewHook(hp, L"Otomate PPSSPP");
   }
@@ -12160,7 +12312,7 @@ bool InsertOtomate2PSPHook()
   HookParam hp = {};
   hp.addr = addr;
   hp.type = USING_STRING|NO_CONTEXT;
-  hp.extern_fun = SpecialPSPHookOtomate2;
+  hp.text_fun = SpecialPSPHookOtomate2;
   ConsoleOutput("vnreng: Otomate2 PSP: INSERT");
   NewHook(hp, L"Otomate PSP");
 
@@ -12281,7 +12433,7 @@ bool InsertIntensePSPHook()
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|NO_CONTEXT;
-    hp.extern_fun = SpecialPSPHookIntense;
+    hp.text_fun = SpecialPSPHookIntense;
     ConsoleOutput("vnreng: Intense PSP: INSERT");
     NewHook(hp, L"Intense PSP");
   }
@@ -12444,7 +12596,7 @@ bool InsertKonamiPSPHook()
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|NO_CONTEXT;
-    hp.extern_fun = SpecialPSPHookKonami;
+    hp.text_fun = SpecialPSPHookKonami;
     ConsoleOutput("vnreng: KONAMI PSP: INSERT");
     NewHook(hp, L"KONAMI PSP");
   }
@@ -12610,7 +12762,7 @@ bool InsertKadokawaNamePSPHook()
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
     hp.off = pusha_eax_off - 4;
     hp.split = pusha_edx_off - 4; // use edx to split repetition
-    hp.extern_fun = SpecialPSPHook;
+    hp.text_fun = SpecialPSPHook;
 
     //ITH_GROWL_DWORD2(hp.addr, hp.userValue);
     ConsoleOutput("vnreng: Kadokawa Name PSP: INSERT");
@@ -12741,8 +12893,8 @@ bool InsertFelistellaPSPHook()
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|USING_UTF8|USING_SPLIT|NO_CONTEXT; // Fix the split value to merge all threads
-    //hp.extern_fun = SpecialPSPHook;
-    hp.extern_fun = SpecialPSPHookFelistella;
+    //hp.text_fun = SpecialPSPHook;
+    hp.text_fun = SpecialPSPHookFelistella;
     hp.off = pusha_eax_off - 4;
     //hp.split = pusha_ecx_off - 4; // cause main thread to split
     //hp.split = pusha_edx_off - 4; // cause main thread to split for different lines
@@ -12805,7 +12957,7 @@ bool InsertKadokawaPSPHook()
     hp.off = pusha_eax_off - 4;
     hp.split = pusha_ecx_off - 4; // use edx to split repetition
     hp.length_offset = 1; // byte by byte
-    hp.extern_fun = SpecialPSPHook;
+    hp.text_fun = SpecialPSPHook;
 
     //ITH_GROWL_DWORD2(hp.addr, hp.userValue);
     ConsoleOutput("vnreng: Kadokawa PSP: INSERT");
@@ -12962,7 +13114,7 @@ bool InsertTypeMoonPSPHook()
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
     hp.type = USING_STRING|NO_CONTEXT;
-    hp.extern_fun = SpecialPSPHookTypeMoon;
+    hp.text_fun = SpecialPSPHookTypeMoon;
     ConsoleOutput("vnreng: TypeMoon PSP: INSERT");
     NewHook(hp, L"TypeMoon PSP");
   }
@@ -13043,7 +13195,7 @@ bool InsertTecmoPSPHook()
     hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT;
     hp.off = pusha_eax_off - 4;
     hp.split = pusha_ecx_off - 4;
-    hp.extern_fun = SpecialPSPHook;
+    hp.text_fun = SpecialPSPHook;
     ConsoleOutput("vnreng: Tecmo PSP: INSERT");
     NewHook(hp, L"Tecmo PSP");
   }
@@ -13270,7 +13422,7 @@ bool InsertTypeMoonPS2Hook()
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.type = USING_STRING|NO_CONTEXT; // no context to get rid of return address
-    hp.extern_fun = SpecialPS2HookTypeMoon;
+    hp.text_fun = SpecialPS2HookTypeMoon;
     //hp.off = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
     //hp.length_offset = 1;
     ConsoleOutput("vnreng: TypeMoon PS2: INSERT");
@@ -13519,7 +13671,7 @@ bool InsertMarvelousPS2Hook()
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.type = USING_STRING|NO_CONTEXT; // no context to get rid of return address
-    hp.extern_fun = SpecialPS2HookMarvelous;
+    hp.text_fun = SpecialPS2HookMarvelous;
     //hp.off = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
     //hp.length_offset = 1;
     ConsoleOutput("vnreng: Marvelous PS2: INSERT");
@@ -13706,7 +13858,7 @@ bool InsertMarvelous2PS2Hook()
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.type = USING_STRING|NO_CONTEXT; // no context to get rid of return address
-    hp.extern_fun = SpecialPS2HookMarvelous2;
+    hp.text_fun = SpecialPS2HookMarvelous2;
     //hp.off = pusha_ecx_off - 4; // ecx, get text in ds:[ecx]
     //hp.length_offset = 1;
     ConsoleOutput("vnreng: Marvelous2 PS2: INSERT");
@@ -13843,7 +13995,7 @@ bool InsertSegaPSPHook()
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.type = USING_STRING|NO_CONTEXT; // UTF-8
-    hp.extern_fun = SpecialPSPHookSega;
+    hp.text_fun = SpecialPSPHookSega;
     ConsoleOutput("vnreng: SEGA PSP: INSERT");
     NewHook(hp, L"SEGA PSP");
   }
@@ -13967,7 +14119,7 @@ bool InsertShadePSPHook()
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset);
-    hp.extern_fun = SpecialPSPHookShade;
+    hp.text_fun = SpecialPSPHookShade;
     hp.type = USING_STRING;
     ConsoleOutput("vnreng: Shade PSP: INSERT");
 
@@ -14087,7 +14239,7 @@ bool InsertAlchemist3PSPHook()
     HookParam hp = {};
     hp.addr = addr + hook_offset;
     hp.userValue = *(DWORD *)(hp.addr + memory_offset); // use module to pass membase
-    hp.extern_fun = SpecialPSPHookAlchemist3;
+    hp.text_fun = SpecialPSPHookAlchemist3;
     hp.type = USING_STRING|NO_CONTEXT; // no context is needed to get rid of variant retaddr
     ConsoleOutput("vnreng: Alchemist3 PSP: INSERT");
     NewHook(hp, L"Alchemist3 PSP");
