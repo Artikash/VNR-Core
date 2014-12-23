@@ -419,7 +419,7 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
     ::memcpy(pbData + HEADER_SIZE, (void *)dwDataIn, dwCount);
 
   // jichi 10/14/2014: Add filter function
-  if (hp.filter_fun && (!hp.filter_fun(pbData + HEADER_SIZE, &dwCount, &hp) || dwCount <= 0)) {
+  if (hp.filter_fun && !hp.filter_fun(pbData + HEADER_SIZE, &dwCount, &hp) || dwCount <= 0) {
     if (pbData != pbSmallBuff)
       delete[] pbData;
     return 0;

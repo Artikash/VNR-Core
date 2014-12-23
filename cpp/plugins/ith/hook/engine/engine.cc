@@ -8541,22 +8541,32 @@ bool InsertExpHook()
  *
  *  There are garbage in character name.
  */
-// Skip text between "," and "】"
+// Skip text between "," and "】", and remove [n]
 // ex:【夏凜,S005_B_0002】「バーテック
 static bool HorkEyeFilter(LPVOID data, DWORD *size, HookParam *hp)
 {
   CC_UNUSED(hp);
   size_t len = *size;
-  LPSTR str = reinterpret_cast<LPSTR>(data);
-  if (char *start = (char *)::memchr(str, ',', len)) {
-    ConsoleOutput("found start");
-    if (char *stop = cpp_strnstr(start, "\x81\x7a", len - (start - str))) { // = u'】'.encode('sjis')
-    ConsoleOutput("found stop");
-      ::memmove(start, stop, len - (stop - str));
-      len -= stop - start;
-      *size = len;
-    }
+  char *str = reinterpret_cast<char *>(data),
+       *start,
+       *stop;
+
+  // Remove text between , and ]
+  if ((start = (char *)::memchr(str, ',', len)) &&
+      (stop = cpp_strnstr(start, "\x81\x7a", len - (start - str)))) { // = u'】'.encode('sjis')
+    len -= stop - start;
+    ::memmove(start, stop, len - (start - str));
   }
+
+  // Remove [n]
+  enum { skip_len = 3 }; // = length of "[n]"
+  while (len > skip_len &&
+         (start = ::cpp_strnstr(str, "[n]", len))) {
+    len -= skip_len;
+    ::memmove(start, start + skip_len, len - (start - str));
+  }
+
+  *size = len;
   return true;
 }
 bool InsertHorkEyeHook()
