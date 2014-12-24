@@ -3212,6 +3212,7 @@ class _DictionaryTranslationTab(object):
     layout.addWidget(self.ipadicButton)
 
     layout.addWidget(self.caboChaButton)
+    layout.addWidget(self.invertRubyButton)
 
     infoLabel = QtWidgets.QLabel(my.tr(
       "Changing the MeCab dictionary after it is used might require restarting VNR (always needed on Windows XP)."
@@ -3279,6 +3280,14 @@ class _DictionaryTranslationTab(object):
     ret.setChecked(ss.isCaboChaEnabled())
     ret.toggled.connect(ss.setCaboChaEnabled)
     ret.toggled.connect(self._checkRBMT)
+    return ret
+
+  @memoizedproperty
+  def invertRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display kanji above instead of below ruby"))
+    ss = settings.global_()
+    ret.setChecked(ss.isRubyInverted())
+    ret.toggled.connect(ss.setRubyInverted)
     return ret
 
   def refreshCaboCha(self):

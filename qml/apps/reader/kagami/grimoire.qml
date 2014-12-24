@@ -136,6 +136,7 @@ Item { id: root_
   property alias shadowOpacity: shadow_.opacity
 
   property string rubyType: 'hiragana'
+  property bool rubyInverted
   property string rubyDic
   property bool caboChaEnabled
 
@@ -1133,17 +1134,20 @@ Item { id: root_
 
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 
-        font.family: root_.fontFamily(model.language)
-        font.bold: fontPixelSize < 23  && model.language === 'ja' // i.e. MS Gothic
-
         //font.bold: Util.isAsianLanguage(model.language)
         //font.italic: Util.isLatinLanguage(model.language)
 
         //color: root_.revertsColor ? '#050500' : 'snow'
         color: root_.fontColor
 
-        property int fontPixelSize: 18 * root_._zoomFactor // prevent loop binding issue
+        property int fontPixelSize:
+            (root_.rubyInverted && (model.type === 'text' || model.type === 'name')) ?
+            14 * root_._zoomFactor :
+            18 * root_._zoomFactor
         font.pixelSize: fontPixelSize
+
+        font.family: root_.fontFamily(model.language)
+        font.bold: fontPixelSize < 23  && model.language === 'ja' // i.e. MS Gothic
 
         function renderText() {
           var t
@@ -1163,8 +1167,9 @@ Item { id: root_
                   //root_.msimeParserEnabled,
                   root_.rubyType,
                   root_.rubyDic,
-                  Math.round(root_.width / (20 * root_._zoomFactor)), // char per line
-                  Math.round(10 * root_._zoomFactor) + 'px', // ruby size of furigana
+                  Math.round(root_.width / (20 * root_._zoomFactor) * (root_.rubyInverted ? 0.8 : 1)), // char per line
+                  10 * root_._zoomFactor, // ruby size of furigana
+                  root_.rubyInverted,
                   textItem_.hover, // colorize
                   root_.alignCenter
                 )

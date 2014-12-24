@@ -184,8 +184,8 @@ class GrimoireBean(QObject):
   showNameText = Signal(unicode, unicode)  # text, lang
   showNameTranslation = Signal(unicode, unicode, unicode)  # text, lang, provider
 
-  @Slot(unicode, bool, unicode, unicode, int, unicode, bool, bool, result=unicode)
-  def renderJapanese(self, text, caboChaEnabled, furiType, meCabDic, charPerLine, rubySize, colorize, center):
+  @Slot(unicode, bool, unicode, unicode, int, float, bool, bool, bool, result=unicode)
+  def renderJapanese(self, text, caboChaEnabled, furiType, meCabDic, charPerLine, rubySize, invertRuby, colorize, center):
     """
     @return  unicode  html
     """
@@ -197,7 +197,7 @@ class GrimoireBean(QObject):
     render = cabochaman.rendertable if caboChaEnabled else mecabman.rendertable
     return ''.join(
         render(t, termEnabled=True, features=d.features if feature else None,
-            fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
+            fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
         for t in text.split('\n') if t)
 
   @Slot(unicode, result=unicode)
@@ -521,8 +521,8 @@ class MirageBean(QObject):
   showText = Signal(unicode, unicode, long)  # text, lang, timestamp
   showTranslation = Signal(unicode, unicode, unicode, long)  # text, lang, provider, timestamp
 
-  @Slot(unicode, bool, unicode, unicode, int, unicode, bool, bool, result=unicode)
-  def renderJapanese(self, text, caboChaEnabled, furiType, meCabDic, charPerLine, rubySize, colorize, center):
+  @Slot(unicode, bool, unicode, unicode, int, float, bool, bool, bool, result=unicode)
+  def renderJapanese(self, text, caboChaEnabled, furiType, meCabDic, charPerLine, rubySize, invertRuby, colorize, center):
     """
     @return  unicode  html
     """
@@ -534,7 +534,7 @@ class MirageBean(QObject):
     fmt = mecabfmt.getfmt(meCabDic)
     return ''.join( # disable term by default
         render(t, termEnabled=False, features=d.features if feature else None,
-            furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, colorize=colorize, center=center)
+            furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
         for t in text.split('\n') if t) or text # return the original text if failed
 
   @Slot(unicode, result=unicode)

@@ -598,6 +598,7 @@ Item { id: root_
         //outlineEnabled: !shadowEnabled
         //outlineEnabled: false
 
+        rubyInverted: settings_.rubyInverted
         rubyType: settings_.rubyType
         rubyDic: settings_.meCabDictionary
         caboChaEnabled: settings_.caboChaEnabled
