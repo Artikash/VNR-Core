@@ -3284,7 +3284,7 @@ class _DictionaryTranslationTab(object):
 
   @memoizedproperty
   def invertRubyButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("Display kanji above instead of below ruby"))
+    ret = QtWidgets.QCheckBox(my.tr("Display yomigana below instead of above kanji"))
     ss = settings.global_()
     ret.setChecked(ss.isRubyInverted())
     ret.toggled.connect(ss.setRubyInverted)
