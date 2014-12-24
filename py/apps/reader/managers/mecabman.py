@@ -137,7 +137,7 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize=10, colorize
       lineCount = 0
     group = None # group is none
     if invertRuby and yomi:
-      if furiType == defs.FURI_ROMAJI and len(yomi) != 2:
+      if furiType == defs.FURI_ROMAJI and len(yomi) > 2:
         yomi = yomi.title()
       t = yomi, surface, color, group
     else:
