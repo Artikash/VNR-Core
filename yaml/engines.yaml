@@ -136,6 +136,8 @@ simple:
   - BGI1
   - BGI2
   - Broccoli PSP
+  - CatSystem2
+  - CatSystem3
   - CIRCUS
   - CMVS
   - CMVS2
@@ -166,6 +168,7 @@ simple:
   - Marvelous2 PS2
   - MBL
   - MED
+  - Mink
   - Mono
   - NeXAS
   - Nippon1 PSP
@@ -340,6 +343,7 @@ char:
   - NeXAS
   - NEXTON
   - NEXTON1
+  - Mink
   - Nippon1 PSP
   - Nippon2 PSP
   - NitroPlus
@@ -461,6 +465,7 @@ focus:
 # No focus:
   #- AOS
   #- Majiro
+  #- Mink
   #- KiriKiri1
   #- KiriKiri2
   #- ScenarioPlayerW

@@ -323,8 +323,15 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
     return 0;
 
   dwAddr = hp.addr;
-  if (trigger)
-    trigger = Engine::InsertDynamicHook((LPVOID)dwAddr, *(DWORD *)(dwDataBase - 0x1c), *(DWORD *)(dwDataBase-0x18));
+
+  /** jichi 12/24/2014
+   *  @param  addr  function address
+   *  @param  frame  real address of the function, supposed to be the same as addr
+   *  @param  stack  address of current stack - 4
+   *  @return  If success, which is reverted
+   */
+  if (::trigger)
+    ::trigger = Engine::InsertDynamicHook((LPVOID)dwAddr, *(DWORD *)(dwDataBase - 0x1c), *(DWORD *)(dwDataBase-0x18));
   // jichi 10/21/2014: Directly invoke engine functions.
   //if (trigger) {
   //  if (InsertDynamicHook)
@@ -348,8 +355,9 @@ DWORD TextHook::UnsafeSend(DWORD dwDataBase, DWORD dwRetn)
 #endif // 0
   dwDataIn = *(DWORD *)(dwDataBase + hp.off); // default value
 
-  if (hp.hook_fun) // jichi 10/24/2014: generic hook function
-    hp.hook_fun(dwDataBase, &hp);
+  // jichi 10/24/2014: generic hook function
+  if (hp.hook_fun && !hp.hook_fun(dwDataBase, &hp))
+    hp.hook_fun = nullptr;
 
   if (dwType & HOOK_EMPTY) // jichi 10/24/2014: dummy hook only for dynamic hook
     return 0;

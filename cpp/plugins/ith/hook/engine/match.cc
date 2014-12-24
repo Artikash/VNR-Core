@@ -340,6 +340,10 @@ bool DetermineEngineByFile4()
     InsertAOSHook();
     return true;
   }
+  if (IthFindFile(L"*.at2")) { // jichi 12/23/2014: Mink, sample files: voice.at2, voice.det, voice.nme
+    InsertMinkHook();
+    return true;
+  }
   if (IthFindFile(L"*.ykc")) { // jichi 7/15/2014: YukaSystem1 is not supported, though
     //ConsoleOutput("vnreng: IGNORE YKC:Feng/HookSoft(SMEE)");
     InsertYukaSystem2Hook();
