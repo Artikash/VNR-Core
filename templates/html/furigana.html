@@ -1,6 +1,7 @@
 {# furigana.html 11/28/2012 jichi
  # @param  tuples  [unicode surface, unicode yomigana, str color, int groupId or None]
- # @param* rubySize  str  yomigana font size
+ # @param  rubySize  int  yomigana font size
+ # @param* paddingSize  int  padding space size
  # @param* center  bool  align ment
  # @param* groupColor  str  group color
  #
@@ -13,8 +14,14 @@
 		<style type="text/css">
 .ruby {
 	font-weight: bold;
-	font-size: {{rubySize or '10px'}};
+	font-size: {{rubySize}}px;
 }
+%if paddingSize
+td {
+	padding-left: {{paddingSize}}px;
+	padding-right: {{paddingSize}}px;
+}
+%endif
 		</style>
 	</head>
 	<body>

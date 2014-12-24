@@ -82,13 +82,14 @@ def toromaji(text, **kwargs):
   """
   return toyomi(text, furiType=defs.FURI_ROMAJI, **kwargs)
 
-def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colorize=False, center=True, furiType=defs.FURI_HIRA, **kwargs):
+def _iterrendertable(text, features=None, charPerLine=100, rubySize=10, colorize=False, center=True, invertRuby=False, furiType=defs.FURI_HIRA, **kwargs):
   """
   @param  text  unicode
   @param* charPerLine  int  maximum number of characters per line
-  @param* rubySize  str
+  @param* rubySize  float
   @param* colorsize  bool
   @param* center  bool
+  @param* invertRuby  bool
   @param* features  {unicode surface:(unicode feature, fmt)} or None
   @yield  unicode  HTML table
   """
@@ -98,6 +99,7 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colo
   hasfeature = features is not None
   color = None
 
+  PADDING_FACTOR = 0.3
   LATIN_YOMI_WIDTH = 0.33 # = 2/6
   KANJI_YOMI_WIDTH = 0.55 # = 1/2
   # yomi size / surface size
@@ -127,17 +129,26 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize='10px', colo
     elif line:
       yield rc.jinja_template('html/furigana').render({
         'tuples': line,
-        'rubySize': rubySize,
+        'rubySize': int(round(rubySize)) or 1,
+        'paddingSize': int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0,
         'center': center,
       })
       line = []
       lineCount = 0
-    line.append((surface, yomi, color, None)) # group is none
+    group = None # group is none
+    if invertRuby and yomi:
+      if furiType == defs.FURI_ROMAJI and len(yomi) != 2:
+        yomi = yomi.title()
+      t = yomi, surface, color, group
+    else:
+      t = surface, yomi, color, group
+    line.append(t)
     lineCount += width
   if line:
     yield rc.jinja_template('html/furigana').render({
       'tuples': line,
-      'rubySize': rubySize,
+      'rubySize': int(round(rubySize)) or 1,
+      'paddingSize': int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0,
       'center': center,
     })
 

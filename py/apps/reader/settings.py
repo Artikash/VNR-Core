@@ -1081,6 +1081,14 @@ class Settings(QSettings):
       self.setValue('FuriganaType', value)
       self.rubyTypeChanged.emit(value)
 
+  rubyInvertedChanged = Signal(bool)
+  def isRubyInverted(self):
+    return to_bool(self.value('InvertRuby'))
+  def setRubyInverted(self, t):
+    if t != self.isRubyInverted():
+      self.setValue('InvertRuby', t)
+      self.rubyInvertedChanged.emit(t)
+
   def jbeijingLocation(self):
     return to_unicode(self.value('JBeijingLocation'))
   def setJBeijingLocation(self, path):
@@ -1728,6 +1736,7 @@ class SettingsProxy(QObject):
     g.lecColorChanged.connect(self.lecColorChanged)
 
     g.rubyTypeChanged.connect(self.rubyTypeChanged)
+    g.rubyInvertedChanged.connect(self.rubyInvertedChanged)
     g.convertsChineseChanged.connect(self.convertsChineseChanged)
 
     #g.msimeParserEnabledChanged.connect(self.msimeParserEnabledChanged)
@@ -1911,6 +1920,9 @@ class SettingsProxy(QObject):
 
   rubyTypeChanged = Signal(unicode)
   rubyType = unicode_property('FuriganaType', 'hiragana', notify=rubyTypeChanged)
+
+  rubyInvertedChanged = Signal(bool)
+  rubyInverted = bool_property('InvertRuby', False, notify=rubyInvertedChanged)
 
   springBoardWallpaperUrlChanged = Signal(unicode)
   springBoardWallpaperUrl = unicode_property('SpringBoardWallpaperUrl', notify=springBoardWallpaperUrlChanged)
