@@ -459,6 +459,7 @@ focus:
   - SiglusEngine2
   - SiglusEngine3
 # No focus:
+  #- AOS
   #- Majiro
   #- KiriKiri1
   #- KiriKiri2
