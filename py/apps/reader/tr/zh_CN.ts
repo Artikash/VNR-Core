@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="zh_CN">
+<!DOCTYPE TS><TS version="1.1" language="zh_CN">
 <context>
     <name>my</name>
     <message>
@@ -550,7 +549,7 @@ Especially if you would like to translate this game.</source>
 如果可能的话，强烈建议你&lt;b&gt;调整游戏文本速度到最快&lt;/b&gt;。
 特别是当你打算翻译这个游戏的时候。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="3484"/>
         <source>Kojien (広辞苑) Japanese-Japanese dictionary</source>
         <translation>広辞苑日日字典</translation>
@@ -1087,7 +1086,7 @@ It might take a couple of seconds to complete.</source>
         <translation>你希望现在就更新吗？
 这会花费几秒钟来完成。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="3498"/>
         <source>Zhongri (日中) Japanese-Chinese dictionary</source>
         <translation>日中统合辞典</translation>
@@ -1276,7 +1275,7 @@ If yes, VNR will block all settings for this language.</source>
 它和你当前的用户语言是相同的呢。
 如果屏蔽它，VNR会屏蔽所有与这个语言有关的设定。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="4245"/>
         <source>Wadoku (和独) Japanese-German dictionary</source>
         <translation>和独日德辞书</translation>
@@ -1562,7 +1561,7 @@ VNR will automatically check for updates.</source>
 数据库可以用来帮助识别新的游戏。
 VNR会自动检查更新的。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="60"/>
         <source>&lt;h4&gt;About the account&lt;/h4&gt;
 You don&apos;t need an account to access machine translations and subtitles from others.&lt;br/&gt;
@@ -1832,7 +1831,7 @@ This will result in LARGE AMOUNT OF GARBAGE, which is NOT what you want!</source
 那么，如果你打开这个选项，VNR将会翻译全部KiriKiri的文本。
 这样将会产生大量的垃圾文本，而这不会是你想要达到的！</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="200"/>
         <source>&lt;h3&gt;Motivation&lt;/h3&gt;
 In VNR, game settings including user-contributed subtitles and series-specific dictionary terms
@@ -2509,7 +2508,7 @@ VNR中可以共享对游戏内容的&lt;span style=&apos;color:purple&apos;&gt;�
 需要导出字幕到XML文件，可以在【字幕编辑器】中点击【导出】按钮。
 </translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="330"/>
         <source>&lt;h3&gt;Introduction&lt;/h3&gt;
 In Text Settings and Game Wizard,
@@ -3442,7 +3441,7 @@ VNR的提取方法支持内嵌翻译到游戏中去，但是支持的游戏比IT
         <source>Do you want to enable the selected {0} items?</source>
         <translation>你想要启用{0}个选定的条目吗？</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/_prefs.py" line="3476"/>
         <source>Daijirin (大辞林) Japanese-Japanese/English dictionary</source>
         <translation>大辞林日日/和英字典</translation>
@@ -3672,7 +3671,7 @@ You can report the bugs to &lt;a href=&quot;mailto:{0}&quot;&gt;{0}&lt;/a&gt;.</
 它并不会影响到中文的机器翻译。
 你可以将使用中遇到的问题报道到&lt;a href=&quot;mailto:{0}&quot;&gt;{0}&lt;/a&gt;。</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="dialogs/info.py" line="365"/>
         <source>The hook code is a &lt;i&gt;hash string&lt;/i&gt; encoded by the information needed to sync with specific game.
 It is not required by all the games, but is essential for some ones.
@@ -4260,14 +4259,14 @@ But if you press Reset, VNR will redownload the entire data, which is slow.</sou
         <translation>日文姓名的平假名或片假名</translation>
     </message>
     <message>
-        <location filename="dialogs/_prefs.py" line="3287"/>
-        <source>Display kanji above instead of below ruby</source>
-        <translation>上下颠倒汉字和读音的位置，在读音上边显示汉字</translation>
-    </message>
-    <message>
         <location filename="dialogs/terminput.py" line="350"/>
         <source>Yomi type is useless for Chinese translation.</source>
         <translation>读音类型对中文翻译是没有用的。</translation>
+    </message>
+    <message>
+        <location filename="dialogs/_prefs.py" line="3287"/>
+        <source>Display yomigana below instead of above kanji</source>
+        <translation>上下颠倒汉字和读音的位置，在读音上边显示汉字</translation>
     </message>
 </context>
 </TS>
