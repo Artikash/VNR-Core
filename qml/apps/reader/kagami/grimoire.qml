@@ -1167,7 +1167,7 @@ Item { id: root_
                   //root_.msimeParserEnabled,
                   root_.rubyType,
                   root_.rubyDic,
-                  Math.round(root_.width / (20 * root_._zoomFactor) * (root_.rubyInverted ? 0.8 : 1)), // char per line
+                  Math.round(root_.width / (22 * root_._zoomFactor) * (root_.rubyInverted ? 0.85 : 1)), // char per line
                   10 * root_._zoomFactor, // ruby size of furigana
                   root_.rubyInverted,
                   textItem_.hover, // colorize
