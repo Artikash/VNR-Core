@@ -217,7 +217,7 @@ bool all_ascii(const char *s)
 
 // String filters
 
-bool CharFilter(char *str, size_t *size, char ch)
+void CharFilter(char *str, size_t *size, char ch)
 {
   size_t len = *size;
   char *cur = (char *)::memchr(str, ch, len);
@@ -228,10 +228,9 @@ bool CharFilter(char *str, size_t *size, char ch)
     cur = (char *)::memchr(cur, ch, len);
   }
   *size = len;
-  return true;
 }
 
-bool WideCharFilter(wchar_t *str, size_t *size, wchar_t ch)
+void WideCharFilter(wchar_t *str, size_t *size, wchar_t ch)
 {
   size_t len = *size / 2;
   wchar_t *cur = cpp_wcsnchr(str, ch, len);
@@ -242,10 +241,9 @@ bool WideCharFilter(wchar_t *str, size_t *size, wchar_t ch)
     cur = cpp_wcsnchr(cur, ch, len);
   }
   *size = len * 2;
-  return true;
 }
 
-bool StringFilter(char *str, size_t *size, const char *remove, size_t removelen)
+void StringFilter(char *str, size_t *size, const char *remove, size_t removelen)
 {
   size_t len = *size;
   char *cur = cpp_strnstr(str, remove, len);
@@ -256,10 +254,9 @@ bool StringFilter(char *str, size_t *size, const char *remove, size_t removelen)
     cur = cpp_strnstr(cur, remove, len);
   }
   *size = len;
-  return true;
 }
 
-bool WideStringFilter(wchar_t *str, size_t *size, const wchar_t *remove, size_t removelen)
+void WideStringFilter(wchar_t *str, size_t *size, const wchar_t *remove, size_t removelen)
 {
   size_t len = *size / 2;
   wchar_t *cur = cpp_wcsnstr(str, remove, len);
@@ -270,6 +267,27 @@ bool WideStringFilter(wchar_t *str, size_t *size, const wchar_t *remove, size_t 
     cur = cpp_wcsnstr(cur, remove, len);
   }
   *size = len * 2;
+}
+// Not used
+//bool NewLineCharFilter(LPVOID data, DWORD *size, HookParam *hp)
+//{
+//  CC_UNUSED(hp);
+//  CharFilter(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size),
+//      '\n');
+//  return true;
+//}
+//bool NewLineWideCharFilter(LPVOID data, DWORD *size, HookParam *hp)
+//{
+//  CC_UNUSED(hp);
+//  WideCharFilter(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size),
+//      L'\n');
+//  return true;
+//}
+bool NewLineStringFilter(LPVOID data, DWORD *size, HookParam *hp)
+{
+  CC_UNUSED(hp);
+  StringFilter(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size),
+      "\\n", 2);
   return true;
 }
 } // unnamed namespace
@@ -513,13 +531,15 @@ bool InsertKiriKiriHook() // 9/20/2014 jichi: change return type to bool
  *  1001399a   e8 e16fffff      call _3.1000a980
  */
 
+#if 0 // not used
 namespace { // unnamed
 
 bool KAGParserFilter(LPVOID data, DWORD *size, HookParam *hp)
 {
   CC_UNUSED(hp);
-  return WideStringFilter(reinterpret_cast<LPWSTR>(data), reinterpret_cast<size_t *>(size),
+  WideStringFilter(reinterpret_cast<LPWSTR>(data), reinterpret_cast<size_t *>(size),
                           L"[r]", 3);
+  return true;
 }
 
 void SpecialHookKAGParser(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
@@ -628,6 +648,7 @@ bool InsertKAGParserExHook()
   NewHook(hp, L"KAGParserEx");
   return true;
 }
+#endif // 0
 
 /** 10/24/2014 jichi: New KiriKiri hook
  *  Sample game: [141128] Venus Blood -HYPNO- ヴィーナスブラッド・ヒュプノ 体験版
@@ -9415,6 +9436,100 @@ bool InsertMinkHook()
   NewHook(hp, L"Mink");
 
   //ConsoleOutput("vnreng:Mink: disable GDI hooks");
+  //DisableGDIHooks();
+  return true;
+}
+
+/** jichi 12/25/2014: Leaf/AQUAPLUS
+ *  Sample game: [141224] [AQUAPLUS] WHITE ALBUM2 ミニアフターストーリー
+ *  Debug method: hardware break found text
+ *  The text address is fixed.
+ *  There are three matched functions.
+ *  It can find both character name and scenario.
+ *
+ *  The scenario text contains "\n".
+ *
+ *  Instructions:
+ *
+ *  00451650   5b               pop ebx
+ *  00451651   5f               pop edi
+ *  00451652   8bc6             mov eax,esi
+ *  00451654   5e               pop esi
+ *  00451655   c2 0400          retn 0x4
+ *  00451658   8b90 c08c0000    mov edx,dword ptr ds:[eax+0x8cc0]
+ *  0045165e   8b8497 14080000  mov eax,dword ptr ds:[edi+edx*4+0x814]
+ *  00451665   8d58 01          lea ebx,dword ptr ds:[eax+0x1] ; jichi: hook here would crash
+ *  00451668   8a10             mov dl,byte ptr ds:[eax]    ; jichi: text accessed here in eax
+ *  0045166a   40               inc eax
+ *  0045166b   84d2             test dl,dl
+ *  0045166d  ^75 f9            jnz short .00451668
+ *  0045166f   2bc3             sub eax,ebx     ; jichi: hook here, text in ebx-1
+ *  00451671   8d58 01          lea ebx,dword ptr ds:[eax+0x1]
+ *  00451674   53               push ebx
+ *  00451675   6a 00            push 0x0
+ *  00451677   53               push ebx
+ *  00451678   6a 00            push 0x0
+ *  0045167a   ff15 74104a00    call dword ptr ds:[0x4a1074]             ; kernel32.getprocessheap
+ *  00451680   50               push eax
+ *  00451681   ff15 b4104a00    call dword ptr ds:[0x4a10b4]             ; ntdll.rtlallocateheap
+ *  00451687   50               push eax
+ *  00451688   e8 233e0200      call .004754b0
+ *
+ *  EAX 00000038
+ *  ECX 00000004 ; jichi: fixed
+ *  EDX 00000000 ; jichi: fixed
+ *  EBX 00321221
+ *  ESP 0012FD98
+ *  EBP 00000002
+ *  ESI 0012FDC4
+ *  EDI 079047E0
+ *  EIP 00451671 .00451671
+ */
+static void SpecialHookLeaf(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  CC_UNUSED(hp);
+  DWORD text = regof(ebx, esp_base) - 1; // = ebx -1
+  *data = text;
+  *len = ::strlen((LPCSTR)text);
+  *split = FIXED_SPLIT_VALUE; // only caller's address use as split
+}
+bool InsertLeafHook()
+{
+  const BYTE bytes[] = {
+    0x8b,0x90, XX4,      // 00451658   8b90 c08c0000    mov edx,dword ptr ds:[eax+0x8cc0]
+    0x8b,0x84,0x97, XX4, // 0045165e   8b8497 14080000  mov eax,dword ptr ds:[edi+edx*4+0x814]
+    // The above is needed as there are other matches
+    0x8d,0x58, 0x01,     // 00451665   8d58 01          lea ebx,dword ptr ds:[eax+0x1] ; jichi: hook here would crash because of jump
+    0x8a,0x10,           // 00451668   8a10             mov dl,byte ptr ds:[eax]    ; jichi: text accessed here in eax
+    0x40,                // 0045166a   40               inc eax
+    0x84,0xd2,           // 0045166b   84d2             test dl,dl
+    0x75, 0xf9,          // 0045166d  ^75 f9            jnz short .00451668
+    0x2b,0xc3,           // 0045166f   2bc3             sub eax,ebx     ; jichi: hook here, text in ebx-1
+    0x8d,0x58, 0x01      // 00451671   8d58 01           lea ebx,dword ptr ds:[eax+0x1]
+    //0x53,               // 00451674   53               push ebx
+    //0x6a, 0x00,         // 00451675   6a 00            push 0x0
+    //0x53,               // 00451677   53               push ebx
+    //0x6a, 0x00,         // 00451678   6a 00            push 0x0
+    //0xff,0x15           // 0045167a   ff15 74104a00    call dword ptr ds:[0x4a1074]             ; kernel32.getprocessheap
+  };
+  ULONG addr = MemDbg::matchBytes(bytes, sizeof(bytes), module_base_, module_limit_);
+  enum { hook_offset = 0x0045166f - 0x00451658 };
+  //ITH_GROWL_DWORD(addr);
+  if (!addr) {
+    ConsoleOutput("vnreng:Leaf: pattern not found");
+    return false;
+  }
+
+  HookParam hp = {};
+  hp.addr = addr + hook_offset;
+  //hp.off = pusha_eax_off - 4;
+  hp.type = USING_STRING|USING_SPLIT;
+  hp.text_fun = SpecialHookLeaf;
+  hp.filter_fun = NewLineStringFilter; // remove two characters of "\\n"
+  ConsoleOutput("vnreng: INSERT Leaf");
+  NewHook(hp, L"Leaf");
+
+  //ConsoleOutput("vnreng:Leaf: disable GDI hooks");
   //DisableGDIHooks();
   return true;
 }
