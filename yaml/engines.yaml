@@ -158,6 +158,7 @@ simple:
   #- KiriKiri2 http://sakuradite.com/game/4633
   - KiriKiriZ
   #- KONAMI PSP # KONAMI could have both repeat and float text
+  - Leaf
   - Live
   - MAJIRO # renamed
   - Majiro
@@ -330,6 +331,7 @@ char:
   - Intense PSP
   - KONAMI PSP
   - KID PSP
+  - Leaf
   - Live
   - Lucifen
   - MAJIRO # renamed
@@ -459,6 +461,7 @@ focus:
   - KAGParser
   - KAGParserEx
   - KiriKiriZ
+  - Leaf
   - Majiro2
   - SiglusEngine2
   - SiglusEngine3

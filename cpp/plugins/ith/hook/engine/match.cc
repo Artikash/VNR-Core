@@ -535,6 +535,9 @@ bool DetermineEngineAtLast()
   if (IthCheckFile(L"arc.dat") // jichi 9/27/2014: too common
       && InsertApricoTHook())
     return true;
+  if (IthFindFile(L"*.pak") // jichi 12/25/2014: too common
+      && InsertLeafHook())
+    return true;
   // jichi 10/31/2014
   // File description: Adobe Flash Player 10.2r153
   // Product name: Shockwave Flash
