@@ -33,7 +33,7 @@ from sakurakit import skstr
 from sakurakit.skclass import Q_Q, memoized
 from sakurakit.skdebug import dprint
 from mecabjlp import mecabdef, mecabfmt, mecabrender
-from convutil import capitalizeromaji
+from convutil import capitalizeromaji #, wide2thin
 import defs, rc
 import _mecabman
 
@@ -137,6 +137,8 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize=10, colorize
       lineCount = 0
     group = None # group is none
     if invertRuby and yomi:
+      #if surface:
+      #  surface = wide2thin(surface)
       if furiType == defs.FURI_ROMAJI and len(yomi) > 2:
         yomi = yomi.title()
       t = yomi, surface, color, group
