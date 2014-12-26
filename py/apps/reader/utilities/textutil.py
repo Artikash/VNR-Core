@@ -126,6 +126,28 @@ def match_kata_hira_punc(text):
 #  config.load_yaml_file(config.ZUNKO_YAML_LOCATION)['escape']
 #)
 
+def __capitalize_sentence_s(m): # with space
+  ch = m.group(2)
+  if ch.isdigit():
+    return m.group(1) + m.group(2) # do not change
+  else:
+    return ' ' + ch.upper()
+def __capitalize_sentence_ns(m): # without space
+  return m.group(1).upper()
+__capitalize_suffix = r"(\s)*(\w)"
+__capitalize_period_re = re.compile(r"(?<=\w\.)(\s)*(\w)") # space
+__capitalize_punct_re = re.compile(r"(?<=[?!])(\s)*(\w)") # space
+__capitalize_paragraph_re = re.compile(ur"(?:^|(?<=[「」【】]))(\w)") # no space
+def capitalize_sentence(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  text = __capitalize_paragraph_re.sub(__capitalize_sentence_ns, text)
+  text = __capitalize_punct_re.sub(__capitalize_sentence_s, text)
+  text = __capitalize_period_re.sub(__capitalize_sentence_s, text)
+  return text
+
 if __name__ == '__main__':
   t = u"かたがな"
   print match_kata_hira_punc(t)

@@ -446,9 +446,12 @@ class MachineTranslator(Translator):
       self.emitTargetTranslation(text)
     #text = text.replace("( ", '(')
     #text = text.replace(u"\n】", u"】\n")
-    if self.postprocess:
-      text = self.postprocess(text, to)
-    text = textutil.beautify_subtitle(text)
+    if text:
+      if self.postprocess:
+        text = self.postprocess(text, to)
+      if config.is_latin_language(to):
+        text = textutil.capitalize_sentence(text)
+      text = textutil.beautify_subtitle(text)
     return text.strip() # escape could produce trailing " "
 
 class OfflineMachineTranslator(MachineTranslator):
