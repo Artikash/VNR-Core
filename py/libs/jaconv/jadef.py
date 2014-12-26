@@ -131,7 +131,7 @@ ha	hi	fu	he	ho
 ma	mi	mu	me	mo
 ya		yu		yo
 ra	ri	ru	re	ro
-wa			wo
+wa				wo
 	wyi		wye
 n
 
@@ -177,6 +177,7 @@ ka			ke
 -
 """
 
+# http://blog.naver.com/thinkstart/120072326990
 # http://www.geocities.jp/p451640/moji/skm/gjo/utfgjo_02.html
 # http://www.geocities.jp/p451640/moji/skm/gjo/gjo_02.html
 # Ambiguity:
@@ -193,9 +194,9 @@ HANGUL = u"""
 마	미	무	메	모
 야		유		요
 라	리	루	레	로
-와				로
+와				오
 	이		에
-ㄴ
+응
 
 가	기	구	게	고
 자	지	즈	제	조
