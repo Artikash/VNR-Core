@@ -195,7 +195,10 @@ class TermWriter:
             else:
               #assert padding # this is supposed to be always true
               for it in titles:
-                f.write(self._renderLine(pattern + it.pattern, repl + it.text + " ", regex)) # padding space for Japanese names
+                f.write(self._renderLine(
+                    (re.escape(pattern) if not regex and it.regex else pattern) + it.pattern,
+                    repl + it.text + " ",
+                    regex or it.regex)) # padding space for Japanese names
 
           if padding:
             repl += " "
