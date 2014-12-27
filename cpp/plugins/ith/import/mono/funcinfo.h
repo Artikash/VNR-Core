@@ -28,8 +28,9 @@
 // MonoString*    mono_string_new_wrapper    (const char *text);
 // gunichar2*     mono_string_chars          (MonoString *s);
 // int            mono_string_length         (MonoString *s);
-// gunichar2*     mono_unicode_from_external (const gchar *in,
-//                                            gsize *bytes);
+// gunichar2*     mono_unicode_from_external (const gchar *in, gsize *bytes);
+// gchar*         mono_unicode_to_external   (const gunichar2 *uni);
+// gchar*         mono_utf8_from_external    (const gchar *in);
 
 struct MonoFunction {
   const wchar_t *hookName;

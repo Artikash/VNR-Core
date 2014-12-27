@@ -3301,13 +3301,6 @@ bool InsertCircusHook1() // jichi 10/2/2013: Change return type to bool
  *  004201fa  |. c600 00        mov byte ptr ds:[eax],0x0
  *  004201fd  \. c3             retn
  */
-// jichi 10/24/2014: Remove '\n' for CIRCUS game
-// Disabled as the garbage could be "\n " instead of '\n'
-//static bool CircusNewLineFilter(LPVOID data, DWORD *size, HookParam *hp)
-//{
-//  CC_UNUSED(hp);
-//  return CharFilter(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size), '\n');
-//}
 bool InsertCircusHook2() // jichi 10/2/2013: Change return type to bool
 {
   for (DWORD i = module_base_ + 0x1000; i < module_limit_ -4; i++)
@@ -3316,7 +3309,7 @@ bool InsertCircusHook2() // jichi 10/2/2013: Change return type to bool
         HookParam hp = {};
         hp.addr = j;
         hp.off = 0x8;
-        //hp.filter_fun = CircusNewLineFilter;
+        //hp.filter_fun = CharNewLineFilter; // \n\s* is used to remove new line
         hp.type = USING_STRING;
         ConsoleOutput("vnreng: INSERT CIRCUS#2");
         //ITH_GROWL_DWORD(hp.addr); // jichi 6/5/2014: 0x4201d0 for DC3
@@ -9235,6 +9228,14 @@ static void SpecialHookLeaf(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *s
   *len = ::strlen((LPCSTR)text);
   *split = FIXED_SPLIT_VALUE; // only caller's address use as split
 }
+// Remove both \n and \k
+static bool LeafFilter(LPVOID data, DWORD *size, HookParam *hp)
+{
+  CC_UNUSED(hp);
+  StringFilter(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size), "\\n", 2);
+  StringFilter(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size), "\\k", 2);
+  return true;
+}
 bool InsertLeafHook()
 {
   const BYTE bytes[] = {
@@ -9267,7 +9268,8 @@ bool InsertLeafHook()
   //hp.off = pusha_eax_off - 4;
   hp.type = USING_STRING|USING_SPLIT;
   hp.text_fun = SpecialHookLeaf;
-  hp.filter_fun = NewLineStringFilter; // remove two characters of "\\n"
+  //hp.filter_fun = NewLineStringFilter; // remove two characters of "\\n"
+  hp.filter_fun = LeafFilter; // remove two characters
   ConsoleOutput("vnreng: INSERT Leaf");
   NewHook(hp, L"Leaf");
 
