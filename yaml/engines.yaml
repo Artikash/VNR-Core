@@ -479,12 +479,12 @@ focus:
   - KAGParserEx
   - KiriKiriZ
   - Leaf
-  - Lunasoft
   - Majiro2
   - SiglusEngine2
   - SiglusEngine3
 # No focus:
   #- AOS
+  #- Lunasoft
   #- Majiro
   #- Mink
   #- Mono
