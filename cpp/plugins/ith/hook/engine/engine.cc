@@ -13,7 +13,7 @@
 #include "hook.h"
 #include "ith/sys/sys.h"
 #include "ith/common/except.h"
-#include "ith/import/mono/funcs.h"
+#include "ith/import/mono/types.h"
 #include "ith/import/ppsspp/funcinfo.h"
 #include "memdbg/memsearch.h"
 #include "ntinspect/ntinspect.h"
@@ -27,7 +27,6 @@
 #define retof(esp_base)         *(DWORD *)(esp_base) // return address
 #define regof(name, esp_base)   *(DWORD *)((esp_base) + pusha_##name##_off - 4)
 #define argof(count, esp_base)  *(DWORD *)((esp_base) + 4 * (count)) // starts from 1 instead of 0
-#define arg1of(esp_base)    argof(1, esp_base)
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 
@@ -7439,7 +7438,7 @@ static void SpecialHookElf(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *sp
 {
   CC_UNUSED(hp);
   //DWORD arg1 = *(DWORD *)(esp_base + 0x4);
-  DWORD arg1 = arg1of(esp_base);
+  DWORD arg1 = argof(1, esp_base);
   DWORD arg2_scene = arg1 + 4*5,
         arg2_chara = arg1 + 4*10;
   DWORD text; //= 0; // This variable will be killed
@@ -9534,6 +9533,87 @@ bool InsertAdobeFlash10Hook()
   ConsoleOutput("vnreng:AdobeFlash10: disable GDI hooks");
   DisableGDIHooks();
   return true;
+}
+
+/** jichi 12/26/2014 Mono
+ *  Sample game: [141226] ハーレムめいと
+ */
+
+namespace { // unnamed
+
+struct MonoFunction {
+  const wchar_t *hookName;
+  const char *functionName;
+};
+
+void SpecialHookMonoString(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  CC_UNUSED(hp);
+  if (MonoString *s = (MonoString *)argof(1, esp_base)) {
+    *data = (DWORD)s->chars;
+    *len = s->length * 2; // for widechar
+    // Adding split is very dangerous which might create millions of threads
+    *split = regof(ecx, esp_base);
+    //*split = retof(esp_base);
+    //*split = argof(2, esp_base);
+  }
+}
+
+} // unnamed
+
+bool InsertMonoHooks()
+{
+  HMODULE h = ::GetModuleHandleA("mono.dll");
+  if (!h)
+    return false;
+
+  bool ret = true;
+
+  {
+    // mono_unichar2* mono_string_to_utf16       (MonoString *s);
+    // char*          mono_string_to_utf8        (MonoString *s);
+    const MonoFunction funcs[] = {
+      { L"mono_string_to_utf8", "mono_string_to_utf8" }
+      , { L"mono_string_to_utf16", "mono_string_to_utf16" }
+    };
+    enum { FuncCount = sizeof(funcs) / sizeof(*funcs) };
+
+    HookParam hp = {};
+    hp.type = USING_UNICODE; //|NO_CONTEXT;
+    hp.text_fun = SpecialHookMonoString;
+    for (int i = 0; i < FuncCount; i++)
+      if (FARPROC addr = ::GetProcAddress(h, funcs[i].functionName)) {
+        hp.addr = (DWORD)addr;
+        ConsoleOutput("vnreng: Mono: INSERT");
+        NewHook(hp, funcs[i].hookName);
+        ret = true;
+      }
+  }
+
+  // gunichar2*     mono_unicode_from_external (const gchar *in, gsize *bytes);
+  if (FARPROC addr = ::GetProcAddress(h, "mono_utf8_from_external")) {
+    HookParam hp = {};
+    hp.addr = (DWORD)addr;
+    hp.type = USING_STRING|USING_UTF8; //|NO_CONTEXT
+    hp.off = 1 * 4; // arg1
+    hp.length_offset = 2 * 4; // arg2
+    ConsoleOutput("vnreng: Mono: INSERT mono_utf8_from_external");
+    NewHook(hp, L"mono_utf8_from_external");
+    ret = true;
+  }
+  // MonoString*    mono_string_from_utf16     (gunichar2 *data);
+  if (FARPROC addr = ::GetProcAddress(h, "mono_string_from_utf16")) {
+    HookParam hp = {};
+    hp.addr = (DWORD)addr;
+    hp.type = USING_UNICODE; //|NO_CONTEXT
+    hp.off = 1 * 4; // arg1
+    ConsoleOutput("vnreng: Mono: INSERT mono_string_from_utf16");
+    NewHook(hp, L"mono_string_from_utf16");
+    ret = true;
+  }
+  if (!ret)
+    ConsoleOutput("vnreng: Mono: failed to find function address");
+  return ret;
 }
 
 /** jichi 7/20/2014 Dolphin

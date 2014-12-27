@@ -253,6 +253,11 @@ nofloat:
   - Otomate PPSSPP # could have repetitions
   - Imageepoch PSP # could have repetitions
   - Vanillaware GC # could have repetitions
+  # Mono
+  - mono_string_from_utf16
+  - mono_string_to_utf16
+  - mono_string_to_utf8
+  - mono_utf8_from_external
 
 float:
   - Gesen18
@@ -397,6 +402,10 @@ wchar:
   - TextOutW
   - lstrlenW
   - WideCharToMultiByte
+  # Mono
+  - mono_string_from_utf16
+  - mono_string_to_utf16
+  - mono_string_to_utf8
   # PSP
   - sceCccStrlenUTF16
   - sceCccUTF16toSJIS
@@ -439,6 +448,8 @@ wchar:
 
 # UTF-8
 utf8:
+  # Mono
+  - mono_utf8_from_external
   # PSP
   - sceCccStrlenUTF8
   - sceCccUTF8toSJIS
@@ -469,6 +480,7 @@ focus:
   #- AOS
   #- Majiro
   #- Mink
+  #- Mono
   #- KiriKiri1
   #- KiriKiri2
   #- ScenarioPlayerW

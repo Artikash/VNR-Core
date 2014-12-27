@@ -20,6 +20,8 @@ extern DWORD module_base_,
 typedef bool (* trigger_fun_t)(LPVOID addr, DWORD frame, DWORD stack);
 extern trigger_fun_t trigger_fun_;
 
+bool InsertMonoHooks(); // Mono
+
 // Wii engines
 
 bool InsertGCHooks(); // Dolphin
@@ -110,7 +112,7 @@ bool InsertMarineHeartHook();   // Marine Heart: SAISYS.exe
 bool InsertMBLHook();           // MBL: *.mbl
 bool InsertMEDHook();           // MED: *.med
 bool InsertMinkHook();          // Mink: *.at2
-bool InsertMonoHook();          // Mono (Unity3D): */Mono/mono.dll
+//bool InsertMonoHook();          // Mono (Unity3D): */Mono/mono.dll
 bool InsertNeXASHook();         // NeXAS: Thumbnail.pac
 bool InsertNextonHook();        // NEXTON: aInfo.db
 bool InsertNexton1Hook();

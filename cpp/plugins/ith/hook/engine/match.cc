@@ -70,6 +70,16 @@ bool DeterminePCEngine()
     return true;
   }
 
+  //if (IthFindFile(L"*\\Mono\\mono.dll")) { // jichi 4/21/2014: Mono
+  //if (IthCheckFile(L"bsz2_Data\\Mono\\mono.dll")) { // jichi 4/21/2014: Mono
+  //  InsertMonoHook();
+  //  return true;
+  //}
+  if (::GetModuleHandleA("mono.dll")) {
+    InsertMonoHooks();
+    return true;
+  }
+
   // PC games
   PcHooks::hookGDIFunctions();
   return false;
@@ -196,11 +206,6 @@ bool DetermineEngineByFile1()
     InsertAdobeAirHook();
     return true;
   }
-  //if (IthFindFile(L"*\\Mono\\mono.dll")) { // jichi 4/21/2014: Mono
-  //if (IthCheckFile(L"bsz2_Data\\Mono\\mono.dll")) { // jichi 4/21/2014: Mono
-  //  InsertMonoHook();
-  //  return true;
-  //}
   return false;
 }
 

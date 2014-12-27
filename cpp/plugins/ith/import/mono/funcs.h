@@ -5,8 +5,7 @@
 // https://github.com/mono/mono/blob/master/mono/metadata/object.h
 // http://api.xamarin.com/index.aspx?link=xhtml%3Adeploy%2Fmono-api-string.html
 
-#include "ith/import/mono/types.h"
-
+//#include "ith/import/mono/types.h"
 
 // MonoString*    mono_string_new            (MonoDomain *domain,
 //                                            const char *text);
@@ -31,8 +30,5 @@
 // int            mono_string_length         (MonoString *s);
 // gunichar2*     mono_unicode_from_external (const gchar *in,
 //                                            gsize *bytes);
-
-typedef mono_unichar2*  (* mono_string_to_utf16_fun_t)  (MonoString *s);
-typedef char*           (* mono_string_to_utf8_fun_t)   (MonoString *s);
 
 // EOF
