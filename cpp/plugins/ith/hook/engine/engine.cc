@@ -13,6 +13,8 @@
 #include "hook.h"
 #include "ith/sys/sys.h"
 #include "ith/common/except.h"
+#include "ith/import/mono/types.h"
+#include "ith/import/ppsspp/funcinfo.h"
 #include "memdbg/memsearch.h"
 #include "ntinspect/ntinspect.h"
 #include "disasm/disasm.h"
@@ -25,7 +27,6 @@
 #define retof(esp_base)         *(DWORD *)(esp_base) // return address
 #define regof(name, esp_base)   *(DWORD *)((esp_base) + pusha_##name##_off - 4)
 #define argof(count, esp_base)  *(DWORD *)((esp_base) + 4 * (count)) // starts from 1 instead of 0
-#define arg1of(esp_base)    argof(1, esp_base)
 
 //#define ConsoleOutput(...)  (void)0     // jichi 8/18/2013: I don't need ConsoleOutput
 
@@ -7437,7 +7438,7 @@ static void SpecialHookElf(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *sp
 {
   CC_UNUSED(hp);
   //DWORD arg1 = *(DWORD *)(esp_base + 0x4);
-  DWORD arg1 = arg1of(esp_base);
+  DWORD arg1 = argof(1, esp_base);
   DWORD arg2_scene = arg1 + 4*5,
         arg2_chara = arg1 + 4*10;
   DWORD text; //= 0; // This variable will be killed
@@ -9534,6 +9535,87 @@ bool InsertAdobeFlash10Hook()
   return true;
 }
 
+/** jichi 12/26/2014 Mono
+ *  Sample game: [141226] ハーレムめいと
+ */
+
+namespace { // unnamed
+
+struct MonoFunction {
+  const wchar_t *hookName;
+  const char *functionName;
+};
+
+void SpecialHookMonoString(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+{
+  CC_UNUSED(hp);
+  if (MonoString *s = (MonoString *)argof(1, esp_base)) {
+    *data = (DWORD)s->chars;
+    *len = s->length * 2; // for widechar
+    // Adding split is very dangerous which might create millions of threads
+    *split = regof(ecx, esp_base);
+    //*split = retof(esp_base);
+    //*split = argof(2, esp_base);
+  }
+}
+
+} // unnamed
+
+bool InsertMonoHooks()
+{
+  HMODULE h = ::GetModuleHandleA("mono.dll");
+  if (!h)
+    return false;
+
+  bool ret = true;
+
+  {
+    // mono_unichar2* mono_string_to_utf16       (MonoString *s);
+    // char*          mono_string_to_utf8        (MonoString *s);
+    const MonoFunction funcs[] = {
+      { L"mono_string_to_utf8", "mono_string_to_utf8" }
+      , { L"mono_string_to_utf16", "mono_string_to_utf16" }
+    };
+    enum { FuncCount = sizeof(funcs) / sizeof(*funcs) };
+
+    HookParam hp = {};
+    hp.type = USING_UNICODE; //|NO_CONTEXT;
+    hp.text_fun = SpecialHookMonoString;
+    for (int i = 0; i < FuncCount; i++)
+      if (FARPROC addr = ::GetProcAddress(h, funcs[i].functionName)) {
+        hp.addr = (DWORD)addr;
+        ConsoleOutput("vnreng: Mono: INSERT");
+        NewHook(hp, funcs[i].hookName);
+        ret = true;
+      }
+  }
+
+  // gunichar2*     mono_unicode_from_external (const gchar *in, gsize *bytes);
+  if (FARPROC addr = ::GetProcAddress(h, "mono_utf8_from_external")) {
+    HookParam hp = {};
+    hp.addr = (DWORD)addr;
+    hp.type = USING_STRING|USING_UTF8; //|NO_CONTEXT
+    hp.off = 1 * 4; // arg1
+    hp.length_offset = 2 * 4; // arg2
+    ConsoleOutput("vnreng: Mono: INSERT mono_utf8_from_external");
+    NewHook(hp, L"mono_utf8_from_external");
+    ret = true;
+  }
+  // MonoString*    mono_string_from_utf16     (gunichar2 *data);
+  if (FARPROC addr = ::GetProcAddress(h, "mono_string_from_utf16")) {
+    HookParam hp = {};
+    hp.addr = (DWORD)addr;
+    hp.type = USING_UNICODE; //|NO_CONTEXT
+    hp.off = 1 * 4; // arg1
+    ConsoleOutput("vnreng: Mono: INSERT mono_string_from_utf16");
+    NewHook(hp, L"mono_string_from_utf16");
+    ret = true;
+  }
+  if (!ret)
+    ConsoleOutput("vnreng: Mono: failed to find function address");
+  return ret;
+}
+
 /** jichi 7/20/2014 Dolphin
  *  Tested with Dolphin 4.0
  */
@@ -9723,57 +9805,6 @@ bool InsertVanillawareGCHook()
 
 /** jichi 7/12/2014 PPSSPP
  *  Tested with PPSSPP 0.9.8.
- *
- *  Core/HLE (High Level Emulator)
- *  - sceCcc
- *    #void sceCccSetTable(u32 jis2ucs, u32 ucs2jis)
- *    int sceCccUTF8toUTF16(u32 dstAddr, u32 dstSize, u32 srcAddr)
- *    int sceCccUTF8toSJIS(u32 dstAddr, u32 dstSize, u32 srcAddr)
- *    int sceCccUTF16toUTF8(u32 dstAddr, u32 dstSize, u32 srcAddr)
- *    int sceCccUTF16toSJIS(u32 dstAddr, u32 dstSize, u32 srcAddr)
- *    int sceCccSJIStoUTF8(u32 dstAddr, u32 dstSize, u32 srcAddr)
- *    int sceCccSJIStoUTF16(u32 dstAddr, u32 dstSize, u32 srcAddr)
- *    int sceCccStrlenUTF8(u32 strAddr)
- *    int sceCccStrlenUTF16(u32 strAddr)
- *    int sceCccStrlenSJIS(u32 strAddr)
- *    u32 sceCccEncodeUTF8(u32 dstAddrAddr, u32 ucs)
- *    void sceCccEncodeUTF16(u32 dstAddrAddr, u32 ucs)
- *    u32 sceCccEncodeSJIS(u32 dstAddrAddr, u32 jis)
- *    u32 sceCccDecodeUTF8(u32 dstAddrAddr)
- *    u32 sceCccDecodeUTF16(u32 dstAddrAddr)
- *    u32 sceCccDecodeSJIS(u32 dstAddrAddr)
- *    int sceCccIsValidUTF8(u32 c)
- *    int sceCccIsValidUTF16(u32 c)
- *    int sceCccIsValidSJIS(u32 c)
- *    int sceCccIsValidUCS2(u32 c)
- *    int sceCccIsValidUCS4(u32 c)
- *    int sceCccIsValidJIS(u32 c)
- *    int sceCccIsValidUnicode(u32 c)
- *    #u32 sceCccSetErrorCharUTF8(u32 c)
- *    #u32 sceCccSetErrorCharUTF16(u32 c)
- *    #u32 sceCccSetErrorCharSJIS(u32 c)
- *    u32 sceCccUCStoJIS(u32 c, u32 alt)
- *    u32 sceCccJIStoUCS(u32 c, u32 alt)
- *  - sceFont: search charCode
- *    int sceFontGetCharInfo(u32 fontHandle, u32 charCode, u32 charInfoPtr)
- *    int sceFontGetShadowInfo(u32 fontHandle, u32 charCode, u32 charInfoPtr)
- *    int sceFontGetCharImageRect(u32 fontHandle, u32 charCode, u32 charRectPtr)
- *    int sceFontGetShadowImageRect(u32 fontHandle, u32 charCode, u32 charRectPtr)
- *    int sceFontGetCharGlyphImage(u32 fontHandle, u32 charCode, u32 glyphImagePtr)
- *    int sceFontGetCharGlyphImage_Clip(u32 fontHandle, u32 charCode, u32 glyphImagePtr, int clipXPos, int clipYPos, int clipWidth, int clipHeight)
- *    #int sceFontSetAltCharacterCode(u32 fontLibHandle, u32 charCode)
- *    int sceFontGetShadowGlyphImage(u32 fontHandle, u32 charCode, u32 glyphImagePtr)
- *    int sceFontGetShadowGlyphImage_Clip(u32 fontHandle, u32 charCode, u32 glyphImagePtr, int clipXPos, int clipYPos, int clipWidth, int clipHeight)
- *  - sceKernelInterrupt
- *    u32 sysclib_strcat(u32 dst, u32 src)
- *    int sysclib_strcmp(u32 dst, u32 src)
- *    u32 sysclib_strcpy(u32 dst, u32 src)
- *    u32 sysclib_strlen(u32 src)
- *
- *  Sample debug string:
- *      006EFD8E   PUSH PPSSPPWi.00832188                    ASCII "sceCccEncodeSJIS(%08x, U+%04x)"
- *  Corresponding source code in sceCcc:
- *      ERROR_LOG(HLE, "sceCccEncodeSJIS(%08x, U+%04x): invalid pointer", dstAddrAddr, jis);
  */
 void SpecialPSPHook(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {

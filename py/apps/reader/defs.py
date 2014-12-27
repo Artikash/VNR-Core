@@ -165,7 +165,7 @@ def threadtype(name):
       NULL_THREAD_TYPE if not name else
       HOOK_THREAD_TYPE if name == USER_DEFINED_THREAD_NAME else
       GUI_THREAD_TYPE if name in config.GUI_TEXT_THREADS else
-      CUI_THREAD_TYPE if name in config.OPT_GUI_TEXT_THREADS or name in config.NON_GUI_TEXT_THREADS else
+      CUI_THREAD_TYPE if name in config.OPT_GUI_TEXT_THREADS or name in config.NON_GUI_TEXT_THREADS or name.startswith("mono_") else
       ENGINE_THREAD_TYPE)
 
 # EOF
