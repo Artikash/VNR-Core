@@ -160,6 +160,7 @@ simple:
   #- KONAMI PSP # KONAMI could have both repeat and float text
   - Leaf
   - Live
+  - Lunasoft
   - MAJIRO # renamed
   - Majiro
   - Majiro2
@@ -341,6 +342,7 @@ char:
   - Leaf
   - Live
   - Lucifen
+  - Lunasoft
   - MAJIRO # renamed
   - Majiro
   - Majiro2
@@ -477,6 +479,7 @@ focus:
   - KAGParserEx
   - KiriKiriZ
   - Leaf
+  - Lunasoft
   - Majiro2
   - SiglusEngine2
   - SiglusEngine3

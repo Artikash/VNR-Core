@@ -150,6 +150,7 @@ processes:
   - QQ.exe              # Tencent
   - QQBrowser.exe       # Tencent
   - QQDownload.exe      # Tencent
+  - QQImageViewer.exe   # Tencent
   - QQMusic.exe         # Tencent
   - QQPlayer.exe        # Tencent
   - qtcreator.exe       # Qt

@@ -106,6 +106,7 @@ bool InsertKiriKiriHook();      // KiriKiri: *.xp3, resource string
 bool InsertKiriKiriZHook();     // KiriKiri: *.xp3, resource string
 bool InsertLeafHook();          // Leaf: *.pak
 bool InsertLiveHook();          // Live: live.dll
+bool InsertLunasoftHook();      // Lunasoft: Pac/*.pac
 bool InsertMalieHook();         // Malie@light: malie.ini
 bool InsertMajiroHook();        // Majiro: *.arc
 bool InsertMarineHeartHook();   // Marine Heart: SAISYS.exe
