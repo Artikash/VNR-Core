@@ -9540,8 +9540,8 @@ bool InsertAdobeFlash10Hook()
   return true;
 }
 
-/** jichi 12/27/2014 Lunasoft
- * Sample game: [141226] [Lunasoft] 悪堕ラビリンス -- /hsn8@46C5EF
+/** jichi 12/27/2014 LunaSoft
+ * Sample game: [141226] [LunaSoft] 悪堕ラビリンス -- /hsn8@46C5EF
  *
  * /hsn8@46C5EF
  * - addr: 0x46C5EF
@@ -9594,7 +9594,7 @@ bool InsertAdobeFlash10Hook()
  * - 0046c5fb   50               push eax
  * - 0046c5fc   6a 10            push 0x10
  */
-bool InsertLunasoftHook()
+bool InsertLunaSoftHook()
 {
   const BYTE bytes[] = {
    0xcc,            // 0046c57e   cc               int3
@@ -9611,7 +9611,7 @@ bool InsertLunasoftHook()
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   //ITH_GROWL(addr);
   if (!addr) {
-    ConsoleOutput("vnreng:Lunasoft: pattern not found");
+    ConsoleOutput("vnreng:LunaSoft: pattern not found");
     return false;
   }
   HookParam hp = {};
@@ -9619,11 +9619,11 @@ bool InsertLunasoftHook()
   hp.off = 1 * 4; // arg1
   hp.type = USING_STRING;
   hp.filter_fun = NewLineCharFilter; // remove \n
-  ConsoleOutput("vnreng: INSERT Lunasoft");
-  NewHook(hp, L"Lunasoft");
+  ConsoleOutput("vnreng: INSERT LunaSoft");
+  NewHook(hp, L"LunaSoft");
 
   // There are no GDI functions anyway
-  //ConsoleOutput("vnreng:Lunasoft: disable GDI hooks");
+  //ConsoleOutput("vnreng:LunaSoft: disable GDI hooks");
   //DisableGDIHooks();
   return true;
 }
