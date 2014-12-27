@@ -4,7 +4,7 @@
 DEPENDPATH  += $$PWD
 
 HEADERS += \
-  $$PWD/funcs.h \
+  $$PWD/funcinfo.h \
   $$PWD/types.h
 
 # EOF

@@ -257,6 +257,8 @@ nofloat:
   - mono_string_from_utf16
   - mono_string_to_utf16
   - mono_string_to_utf8
+  - mono_unicode_from_external
+  - mono_unicode_to_external
   - mono_utf8_from_external
 
 float:
@@ -406,6 +408,8 @@ wchar:
   - mono_string_from_utf16
   - mono_string_to_utf16
   - mono_string_to_utf8
+  - mono_unicode_from_external
+  - mono_unicode_to_external
   # PSP
   - sceCccStrlenUTF16
   - sceCccUTF16toSJIS

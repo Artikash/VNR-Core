@@ -14,6 +14,7 @@
 #include "ith/sys/sys.h"
 #include "ith/common/except.h"
 #include "ith/import/mono/types.h"
+#include "ith/import/mono/funcinfo.h"
 #include "ith/import/ppsspp/funcinfo.h"
 #include "memdbg/memsearch.h"
 #include "ntinspect/ntinspect.h"
@@ -2586,8 +2587,8 @@ bool InsertMajiroHook()
     0xec81,     // sub esp = 0x81,0xec byte old majiro
     0x83ec8b55  // mov ebp,esp, sub esp,*  new majiro
   };
-  enum { FuncCount = sizeof(funcs) / sizeof(*funcs) };
-  ULONG addr = MemDbg::findMultiCallerAddress((ULONG)::TextOutA, funcs, FuncCount, startAddress, stopAddress);
+  enum { FunctionCount = sizeof(funcs) / sizeof(*funcs) };
+  ULONG addr = MemDbg::findMultiCallerAddress((ULONG)::TextOutA, funcs, FunctionCount, startAddress, stopAddress);
   //ULONG addr = MemDbg::findCallerAddress((ULONG)::TextOutA, 0x83ec8b55, startAddress, stopAddress);
   if (!addr) {
     ConsoleOutput("vnreng:Majiro: failed");
@@ -9539,14 +9540,7 @@ bool InsertAdobeFlash10Hook()
  *  Sample game: [141226] ハーレムめいと
  */
 
-namespace { // unnamed
-
-struct MonoFunction {
-  const wchar_t *hookName;
-  const char *functionName;
-};
-
-void SpecialHookMonoString(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookMonoString(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(hp);
   if (MonoString *s = (MonoString *)argof(1, esp_base)) {
@@ -9559,58 +9553,34 @@ void SpecialHookMonoString(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *sp
   }
 }
 
-} // unnamed
-
 bool InsertMonoHooks()
 {
   HMODULE h = ::GetModuleHandleA("mono.dll");
   if (!h)
     return false;
 
-  bool ret = true;
+  bool ret = false;
 
-  {
-    // mono_unichar2* mono_string_to_utf16       (MonoString *s);
-    // char*          mono_string_to_utf8        (MonoString *s);
-    const MonoFunction funcs[] = {
-      { L"mono_string_to_utf8", "mono_string_to_utf8" }
-      , { L"mono_string_to_utf16", "mono_string_to_utf16" }
-    };
-    enum { FuncCount = sizeof(funcs) / sizeof(*funcs) };
+  // mono_unichar2* mono_string_to_utf16       (MonoString *s);
+  // char*          mono_string_to_utf8        (MonoString *s);
+  const MonoFunction funcs[] = { MONO_FUNCTIONS_INITIALIZER };
+  enum { FunctionCount = sizeof(funcs) / sizeof(*funcs) };
 
-    HookParam hp = {};
-    hp.type = USING_UNICODE; //|NO_CONTEXT;
-    hp.text_fun = SpecialHookMonoString;
-    for (int i = 0; i < FuncCount; i++)
-      if (FARPROC addr = ::GetProcAddress(h, funcs[i].functionName)) {
-        hp.addr = (DWORD)addr;
-        ConsoleOutput("vnreng: Mono: INSERT");
-        NewHook(hp, funcs[i].hookName);
-        ret = true;
-      }
+  HookParam hp = {};
+  for (int i = 0; i < FunctionCount; i++) {
+    const auto &it = funcs[i];
+    if (FARPROC addr = ::GetProcAddress(h, it.functionName)) {
+      hp.addr = (DWORD)addr;
+      hp.type = it.hookType;
+      hp.off = it.textIndex * 4;
+      hp.length_offset = it.lengthIndex * 4;
+      hp.text_fun = (HookParam::text_fun_t)it.text_fun;
+      ConsoleOutput("vnreng: Mono: INSERT");
+      NewHook(hp, it.hookName);
+      ret = true;
+    }
   }
 
-  // gunichar2*     mono_unicode_from_external (const gchar *in, gsize *bytes);
-  if (FARPROC addr = ::GetProcAddress(h, "mono_utf8_from_external")) {
-    HookParam hp = {};
-    hp.addr = (DWORD)addr;
-    hp.type = USING_STRING|USING_UTF8; //|NO_CONTEXT
-    hp.off = 1 * 4; // arg1
-    hp.length_offset = 2 * 4; // arg2
-    ConsoleOutput("vnreng: Mono: INSERT mono_utf8_from_external");
-    NewHook(hp, L"mono_utf8_from_external");
-    ret = true;
-  }
-  // MonoString*    mono_string_from_utf16     (gunichar2 *data);
-  if (FARPROC addr = ::GetProcAddress(h, "mono_string_from_utf16")) {
-    HookParam hp = {};
-    hp.addr = (DWORD)addr;
-    hp.type = USING_UNICODE; //|NO_CONTEXT
-    hp.off = 1 * 4; // arg1
-    ConsoleOutput("vnreng: Mono: INSERT mono_string_from_utf16");
-    NewHook(hp, L"mono_string_from_utf16");
-    ret = true;
-  }
   if (!ret)
     ConsoleOutput("vnreng: Mono: failed to find function address");
   return ret;
@@ -9834,57 +9804,6 @@ void SpecialPSPHook(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DW
   }
 }
 
-namespace { // unnamed
-
-struct PPSSPPFunction
-{
-  const wchar_t *hookName; // hook name
-  size_t argIndex;      // argument index
-  ULONG hookType;       // hook parameter type
-  ULONG hookSplit;      // hook parameter split, positive: stack, negative: registers
-  const char *pattern;  // debug string used within the function
-};
-
-// jichi 7/14/2014: UTF-8 is treated as STRING
-// http://867258173.diandian.com/post/2014-06-26/40062099618
-// sceFontGetCharGlyphImage_Clip
-// Sample game: [KID] Monochrome: sceFontGetCharInfo, sceFontGetCharGlyphImage_Clip
-//
-// Example: { L"sceFontGetCharInfo", 2, USING_UNICODE, 4, "sceFontGetCharInfo(" }
-// Text is at arg2, using arg1 as split
-#define PPSSPP_FUNCTIONS_INITIALIZER \
-    { L"sceCccStrlenSJIS",  1, USING_STRING,  0, "sceCccStrlenSJIS(" } \
-  , { L"sceCccStrlenUTF8",  1, USING_UTF8,    0, "sceCccStrlenUTF8(" } \
-  , { L"sceCccStrlenUTF16", 1, USING_UNICODE, 0, "sceCccStrlenUTF16(" } \
-\
-  , { L"sceCccSJIStoUTF8",  3, USING_UTF8,    0, "sceCccSJIStoUTF8(" } \
-  , { L"sceCccSJIStoUTF16", 3, USING_STRING,  0, "sceCccSJIStoUTF16(" } \
-  , { L"sceCccUTF8toSJIS",  3, USING_UTF8,    0, "sceCccUTF8toSJIS(" } \
-  , { L"sceCccUTF8toUTF16", 3, USING_UTF8,    0, "sceCccUTF8toUTF16(" } \
-  , { L"sceCccUTF16toSJIS", 3, USING_UNICODE, 0, "sceCccUTF16toSJIS(" } \
-  , { L"sceCccUTF16toUTF8", 3, USING_UNICODE, 0, "sceCccUTF16toUTF8(" } \
-\
-  , { L"sceFontGetCharInfo",              2, USING_UNICODE, 4, "sceFontGetCharInfo(" } \
-  , { L"sceFontGetShadowInfo",            2, USING_UNICODE, 4, "sceFontGetShadowInfo("} \
-  , { L"sceFontGetCharImageRect",         2, USING_UNICODE, 4, "sceFontGetCharImageRect(" } \
-  , { L"sceFontGetShadowImageRect",       2, USING_UNICODE, 4, "sceFontGetShadowImageRect(" } \
-  , { L"sceFontGetCharGlyphImage",        2, USING_UNICODE, 4, "sceFontGetCharGlyphImage(" } \
-  , { L"sceFontGetCharGlyphImage_Clip",   2, USING_UNICODE, 4, "sceFontGetCharGlyphImage_Clip(" } \
-  , { L"sceFontGetShadowGlyphImage",      2, USING_UNICODE, 4, "sceFontGetShadowGlyphImage(" } \
-  , { L"sceFontGetShadowGlyphImage_Clip", 2, USING_UNICODE, 4, "sceFontGetShadowGlyphImage_Clip(" } \
-\
-  , { L"sysclib_strcat", 2, USING_STRING, 0, "Untested sysclib_strcat(" } \
-  , { L"sysclib_strcpy", 2, USING_STRING, 0, "Untested sysclib_strcpy(" } \
-  , { L"sysclib_strlen", 1, USING_STRING, 0, "Untested sysclib_strlen(" }
-
-  // Disabled as I am not sure how to deal with the source string
-  //, { L"sceCccEncodeSJIS", 2, USING_STRING, 0, "sceCccEncodeSJIS(" }
-  //, { L"sceCccEncodeUTF8", 2, USING_UTF8,   0, "sceCccEncodeUTF8(" }
-  //, { L"sceCccEncodeUTF16", 2, USING_UNICODE, 0, "sceCccEncodeUTF16(" }
-  //, { L"sysclib_strcmp", 2, USING_STRING, 0, "Untested sysclib_strcmp(" }
-
-} // unnamed namespace
-
 bool InsertPPSSPPHLEHooks()
 {
   ConsoleOutput("vnreng: PPSSPP HLE: enter");
@@ -9900,10 +9819,10 @@ bool InsertPPSSPPHLEHooks()
   HookParam hp = {};
   hp.length_offset = 1; // determine string length at runtime
 
-  const PPSSPPFunction l[] = { PPSSPP_FUNCTIONS_INITIALIZER };
-  enum { FunctionCount = sizeof(l)/sizeof(*l) };
+  const PPSSPPFunction funcs[] = { PPSSPP_FUNCTIONS_INITIALIZER };
+  enum { FunctionCount = sizeof(funcs)/sizeof(*funcs) };
   for (size_t i = 0; i < FunctionCount; i++) {
-    const auto &it = l[i];
+    const auto &it = funcs[i];
     ULONG addr = MemDbg::findBytes(it.pattern, ::strlen(it.pattern), startAddress, stopAddress);
     if (addr
         && (addr = MemDbg::findPushAddress(addr, startAddress, stopAddress))
