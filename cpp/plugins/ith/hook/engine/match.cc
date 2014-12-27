@@ -190,6 +190,11 @@ bool DetermineEngineByFile1()
       return true;
     }
   }
+  // jichi 12/27/2014: Lunasoft
+  if (IthFindFile(L"Pac\\*.pac")) {
+    InsertLunasoftHook();
+    return true;
+  }
   // jichi 9/16/2013: Add Gesen18
   if (IthFindFile(L"*.szs") || IthFindFile(L"Data\\*.szs")) {
     InsertGesen18Hook();
