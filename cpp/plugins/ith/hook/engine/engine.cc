@@ -9231,8 +9231,11 @@ static void SpecialHookLeaf(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *s
 static bool LeafFilter(LPVOID data, DWORD *size, HookParam *hp)
 {
   CC_UNUSED(hp);
-  StringFilter(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size), "\\n", 2);
-  StringFilter(reinterpret_cast<LPSTR>(data), reinterpret_cast<size_t *>(size), "\\k", 2);
+  LPSTR text = (LPSTR)data;
+  if (::memchr(text, '\\', *size)) {
+    StringFilter(text, reinterpret_cast<size_t *>(size), "\\n", 2);
+    StringFilter(text, reinterpret_cast<size_t *>(size), "\\k", 2);
+  }
   return true;
 }
 bool InsertLeafHook()
