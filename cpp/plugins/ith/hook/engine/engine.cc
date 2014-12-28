@@ -3750,7 +3750,6 @@ static bool InsertYuris1Hook()
   ConsoleOutput("vnreng: INSERT YU-RIS");
   //ITH_GROWL_DWORD(hp.addr);
   NewHook(hp, L"YU-RIS");
-  ConsoleOutput("66666");
   //RegisterEngineType(ENGINE_WHIRLPOOL);
   return true;
 }
