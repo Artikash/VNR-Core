@@ -3696,7 +3696,8 @@ YU-RIS hook:
   For a usual name this value is greater than 2.
 ********************************************************************************************/
 
-bool InsertWhirlpoolHook()
+//bool InsertWhirlpoolHook() // jichi: 12/27/2014: Renamed to YU-RIS
+static bool InsertYuris1Hook()
 {
   DWORD i,t;
   //IthBreak();
@@ -3714,18 +3715,28 @@ bool InsertWhirlpoolHook()
   }
   entry = Util::FindCallOrJmpRel(entry-4,module_limit_-module_base_-0x10000,module_base_+0x10000,false);
   //ITH_GROWL_DWORD(entry);
-  for (i = entry - 4; i > entry - 0x100; i--)
-    if (*(WORD *)i == 0xc085) {
-      t = *(WORD *)(i+2);
-      if ((t&0xff) == 0x76) {
-        t = 4;
-        break;
+  ITH_TRY { // jichi 12/27/2014
+    for (i = entry - 4; i > entry - 0x100; i--) {
+      if (::IsBadReadPtr((LPCVOID)i, 4)) { // 4 = sizeof(DWORD)
+        ConsoleOutput("vnreng:YU-RIS: do not have read permission");
+        return false;
       }
-      if ((t&0xffff) == 0x860f) {
-        t = 8;
-        break;
+      if (*(WORD *)i == 0xc085) {
+        t = *(WORD *)(i+2);
+        if ((t&0xff) == 0x76) {
+          t = 4;
+          break;
+        }
+        if ((t&0xffff) == 0x860f) {
+          t = 8;
+          break;
+        }
       }
     }
+  } ITH_EXCEPT {
+    ConsoleOutput("vnreng:YU-RIS: illegal access exception");
+    return false;
+  }
   if (i == entry - 0x100) {
     ConsoleOutput("vnreng:YU-RIS: pattern not exist");
     return false;
@@ -3739,9 +3750,133 @@ bool InsertWhirlpoolHook()
   ConsoleOutput("vnreng: INSERT YU-RIS");
   //ITH_GROWL_DWORD(hp.addr);
   NewHook(hp, L"YU-RIS");
+  ConsoleOutput("66666");
   //RegisterEngineType(ENGINE_WHIRLPOOL);
   return true;
 }
+
+/** jichi 12/27/2014
+ *
+ *  Sample game: [Whirlpool] [150217] 鯨神のティアスティラ
+ *  Call site of TextOutA.
+ *  00441811   90               nop
+ *  00441812   90               nop
+ *  00441813   90               nop
+ *  00441814   8b4424 04        mov eax,dword ptr ss:[esp+0x4]
+ *  00441818   8b5424 08        mov edx,dword ptr ss:[esp+0x8]
+ *  0044181c   8b4c24 0c        mov ecx,dword ptr ss:[esp+0xc]
+ *  00441820   57               push edi
+ *  00441821   56               push esi
+ *  00441822   55               push ebp
+ *  00441823   53               push ebx
+ *  00441824   83ec 50          sub esp,0x50
+ *  00441827   8bf9             mov edi,ecx
+ *  00441829   897c24 1c        mov dword ptr ss:[esp+0x1c],edi
+ *  0044182d   8bda             mov ebx,edx
+ *  0044182f   8be8             mov ebp,eax
+ *  00441831   8b349d 603f7b00  mov esi,dword ptr ds:[ebx*4+0x7b3f60]
+ *  00441838   807c24 74 01     cmp byte ptr ss:[esp+0x74],0x1
+ *  0044183d   b9 00000000      mov ecx,0x0
+ *  00441842   0f94c1           sete cl
+ *  00441845   8d041b           lea eax,dword ptr ds:[ebx+ebx]
+ *  00441848   03c3             add eax,ebx
+ *  0044184a   0fafc1           imul eax,ecx
+ *  0044184d   03c3             add eax,ebx
+ *  0044184f   894424 0c        mov dword ptr ss:[esp+0xc],eax
+ *  00441853   897424 10        mov dword ptr ss:[esp+0x10],esi
+ *  00441857   8bc3             mov eax,ebx
+ *  00441859   8bd7             mov edx,edi
+ *  0044185b   0fbe4c24 70      movsx ecx,byte ptr ss:[esp+0x70]
+ *  00441860   e8 0c030000      call .00441b71
+ *  00441865   0fbec8           movsx ecx,al
+ *  00441868   83f9 ff          cmp ecx,-0x1
+ *  0044186b   0f84 db020000    je .00441b4c
+ *  00441871   8bce             mov ecx,esi
+ *  00441873   0fafc9           imul ecx,ecx
+ *  00441876   a1 64365d00      mov eax,dword ptr ds:[0x5d3664]
+ *  0044187b   8bf9             mov edi,ecx
+ *  0044187d   c1ff 02          sar edi,0x2
+ *  00441880   c1ef 1d          shr edi,0x1d
+ *  00441883   03f9             add edi,ecx
+ *  00441885   c1ff 03          sar edi,0x3
+ *  00441888   68 ff000000      push 0xff
+ *  0044188d   57               push edi
+ *  0044188e   ff3485 70b48300  push dword ptr ds:[eax*4+0x83b470]
+ *  00441895   ff15 a4355d00    call dword ptr ds:[0x5d35a4]             ; .00401c88
+ *  0044189b   83c4 0c          add esp,0xc
+ *  0044189e   8b0d 64365d00    mov ecx,dword ptr ds:[0x5d3664]
+ *  004418a4   ff348d b4b48300  push dword ptr ds:[ecx*4+0x83b4b4]
+ *  004418ab   ff348d d4b48300  push dword ptr ds:[ecx*4+0x83b4d4]
+ *  004418b2   ff15 54e05800    call dword ptr ds:[0x58e054]             ; gdi32.selectobject
+ *  004418b8   a3 b0b48300      mov dword ptr ds:[0x83b4b0],eax
+ *  004418bd   8b0d 64365d00    mov ecx,dword ptr ds:[0x5d3664]
+ *  004418c3   ff348d 30b48300  push dword ptr ds:[ecx*4+0x83b430]
+ *  004418ca   ff348d d4b48300  push dword ptr ds:[ecx*4+0x83b4d4]
+ *  004418d1   ff15 54e05800    call dword ptr ds:[0x58e054]             ; gdi32.selectobject
+ *  004418d7   a3 2cb48300      mov dword ptr ds:[0x83b42c],eax
+ *  004418dc   8b3d 64365d00    mov edi,dword ptr ds:[0x5d3664]
+ *  004418e2   33c9             xor ecx,ecx
+ *  004418e4   880cbd f5b48300  mov byte ptr ds:[edi*4+0x83b4f5],cl
+ *  004418eb   880cbd f6b48300  mov byte ptr ds:[edi*4+0x83b4f6],cl
+ *  004418f2   0fb64d 00        movzx ecx,byte ptr ss:[ebp]
+ *  004418f6   0fb689 a0645b00  movzx ecx,byte ptr ds:[ecx+0x5b64a0]
+ *  004418fd   41               inc ecx
+ *  004418fe   0fbec9           movsx ecx,cl
+ *  00441901   51               push ecx
+ *  00441902   55               push ebp
+ *  00441903   33c9             xor ecx,ecx
+ *  00441905   51               push ecx
+ *  00441906   51               push ecx
+ *  00441907   ff34bd d4b48300  push dword ptr ds:[edi*4+0x83b4d4]
+ *  0044190e   ff15 74e05800    call dword ptr ds:[0x58e074]             ; gdi32.textouta, jichi: TextOutA here
+ *  00441914   0fb67d 00        movzx edi,byte ptr ss:[ebp]
+ *  00441918   0fb68f a0645b00  movzx ecx,byte ptr ds:[edi+0x5b64a0]
+ *  0044191f   41               inc ecx
+ *  00441920   0fbef9           movsx edi,cl
+ *  00441923   8b0d 64365d00    mov ecx,dword ptr ds:[0x5d3664]
+ *  00441929   03c9             add ecx,ecx
+ *  0044192b   8d8c09 f4b48300  lea ecx,dword ptr ds:[ecx+ecx+0x83b4f4]
+ *
+ *  Runtime stack: The first dword after arguments on the stack seems to be good split value.
+ */
+static bool InsertYuris2Hook()
+{
+  ULONG addr = MemDbg::findCallAddress((ULONG)::TextOutA, module_base_, module_limit_);
+  if (!addr) {
+    ConsoleOutput("vnreng:YU-RIS2: failed");
+    return false;
+  }
+
+  // BOOL TextOut(
+  //   _In_  HDC hdc,
+  //   _In_  int nXStart,
+  //   _In_  int nYStart,
+  //   _In_  LPCTSTR lpString,
+  //   _In_  int cchString
+  // );
+  enum stack { // current stack
+    arg1_hdc = 4 * 0 // starting from 0 before function call
+    , arg2_nXStart = 4 * 1
+    , arg3_nYStart = 4 * 2
+    , arg4_lpString = 4 * 3
+    , arg5_cchString = 4 * 4
+    , arg6_split = 4 * 5 // dummy argument
+  };
+
+  HookParam hp = {};
+  hp.addr = addr;
+  hp.type = USING_STRING|NO_CONTEXT|USING_SPLIT; // disable context that will cause thread split
+  //hp.type = USING_STRING|USING_SPLIT;
+  hp.off = arg4_lpString;
+  hp.split = arg6_split;
+
+  ConsoleOutput("vnreng: INSERT YU-RIS 2");
+  NewHook(hp, L"YU-RIS2");
+  return true;
+}
+
+bool InsertYurisHook()
+{ return InsertYuris1Hook() || InsertYuris2Hook(); }
 
 bool InsertCotophaHook()
 {

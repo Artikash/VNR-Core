@@ -137,7 +137,7 @@ bool InsertTencoHook();         // Tenco: Check.mdx
 bool InsertTriangleHook();      // Triangle: Execle.exe
 bool InsertScenarioPlayerHook();// sol-fa-soft: *.iar && *.sec5
 bool InsertYukaSystem2Hook();   // YukaSystem2: *.ykc
-bool InsertWhirlpoolHook();     // YU-RIS: *.ypf
+bool InsertYurisHook();         // YU-RIS: *.ypf
 bool InsertWillPlusHook();      // WillPlus: Rio.arc
 bool InsertWolfHook();          // Wolf: Data.wolf
 
