@@ -221,52 +221,64 @@ bool all_ascii(const char *s)
 
 void CharFilter(char *str, size_t *size, char ch)
 {
-  size_t len = *size;
+  size_t len = *size,
+         curlen = len;
   char *cur = (char *)::memchr(str, ch, len);
-  while (cur) {
+  while (cur && curlen) {
     len--;
-    // Shift array
-    ::memmove(cur, cur + 1, (len - (cur - str)));
-    cur = (char *)::memchr(cur, ch, len);
+    curlen = len - (cur - str);
+    if (curlen) {
+      ::memmove(cur, cur + 1, curlen);
+      cur = (char *)::memchr(cur, ch, curlen);
+    }
   }
   *size = len;
 }
 
 void WideCharFilter(wchar_t *str, size_t *size, wchar_t ch)
 {
-  size_t len = *size / 2;
+  size_t len = *size / 2,
+         curlen = len;
   wchar_t *cur = cpp_wcsnchr(str, ch, len);
-  while (cur) {
+  while (cur && curlen) {
     len--;
-    // Shift array
-    ::memmove(cur, cur + 1, 2 * (len - (cur - str)));
-    cur = cpp_wcsnchr(cur, ch, len);
+    curlen = len - (cur - str);
+    if (curlen) {
+      ::memmove(cur, cur + 1, 2 * curlen);
+      cur = cpp_wcsnchr(cur, ch, curlen);
+    }
   }
   *size = len * 2;
 }
 
 void StringFilter(char *str, size_t *size, const char *remove, size_t removelen)
 {
-  size_t len = *size;
+  size_t len = *size,
+         curlen = len;
   char *cur = cpp_strnstr(str, remove, len);
-  while (cur) {
+  while (cur && curlen) {
     len -= removelen;
-    // Shift array
-    ::memmove(cur, cur + removelen, (len - (cur - str)));
-    cur = cpp_strnstr(cur, remove, len);
+    curlen = len - (cur - str);
+    if (curlen) {
+      ::memmove(cur, cur + removelen, curlen);
+      cur = cpp_strnstr(cur, remove, curlen);
+    }
   }
   *size = len;
 }
 
 void WideStringFilter(wchar_t *str, size_t *size, const wchar_t *remove, size_t removelen)
 {
-  size_t len = *size / 2;
+  size_t len = *size / 2,
+         curlen = len;
   wchar_t *cur = cpp_wcsnstr(str, remove, len);
-  while (cur) {
+  while (cur && curlen) {
     len -= removelen;
-    // Shift array
-    ::memmove(cur, cur + removelen, 2 * (len - (cur - str)));
-    cur = cpp_wcsnstr(cur, remove, len);
+    curlen = len - (cur - str);
+    if (curlen) {
+      ::memmove(cur, cur + removelen, 2 * curlen);
+      cur = cpp_wcsnstr(cur, remove, curlen);
+    }
   }
   *size = len * 2;
 }
