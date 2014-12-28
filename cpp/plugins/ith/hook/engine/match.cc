@@ -257,7 +257,7 @@ bool DetermineEngineByFile2()
   if (IthFindFile(L"pac\\*.ypf") || IthFindFile(L"*.ypf")) {
     // jichi 8/14/2013: CLOCLUP: "ノーブレスオブリージュ" would crash the game.
     if (!IthCheckFile(L"noblesse.exe"))
-      InsertWhirlpoolHook();
+      InsertYurisHook();
     return true;
   }
   if (IthFindFile(L"*.npa")) {

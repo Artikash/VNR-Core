@@ -203,6 +203,7 @@ simple:
   - Tenco
   - TypeMoon PS2
   - YU-RIS
+  - YU-RIS2
   - Vanillaware GC
   - WAFFLE
   - Waffle
@@ -393,6 +394,7 @@ char:
   - Yeti PSP
   - Yeti2 PSP
   - YU-RIS
+  - YU-RIS2
 
 # Wide character, UTF-16
 wchar:
@@ -482,6 +484,7 @@ focus:
   - Majiro2
   - SiglusEngine2
   - SiglusEngine3
+  - YU-RIS2
 # No focus:
   #- AOS
   #- LunaSoft
