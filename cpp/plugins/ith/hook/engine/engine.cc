@@ -222,15 +222,12 @@ bool all_ascii(const char *s)
 void CharFilter(char *str, size_t *size, char ch)
 {
   size_t len = *size,
-         curlen = len;
+         curlen;
   char *cur = (char *)::memchr(str, ch, len);
-  while (cur && curlen) {
-    len--;
-    curlen = len - (cur - str);
-    if (curlen) {
-      ::memmove(cur, cur + 1, curlen);
-      cur = (char *)::memchr(cur, ch, curlen);
-    }
+  while (cur && --len &&
+      (curlen = len - (cur - str))) {
+    ::memmove(cur, cur + 1, curlen);
+    cur = (char *)::memchr(cur, ch, curlen);
   }
   *size = len;
 }
@@ -238,15 +235,12 @@ void CharFilter(char *str, size_t *size, char ch)
 void WideCharFilter(wchar_t *str, size_t *size, wchar_t ch)
 {
   size_t len = *size / 2,
-         curlen = len;
+         curlen;
   wchar_t *cur = cpp_wcsnchr(str, ch, len);
-  while (cur && curlen) {
-    len--;
-    curlen = len - (cur - str);
-    if (curlen) {
-      ::memmove(cur, cur + 1, 2 * curlen);
-      cur = cpp_wcsnchr(cur, ch, curlen);
-    }
+  while (cur && --len &&
+      (curlen = len - (cur - str))) {
+    ::memmove(cur, cur + 1, 2 * curlen);
+    cur = cpp_wcsnchr(cur, ch, curlen);
   }
   *size = len * 2;
 }
@@ -254,15 +248,13 @@ void WideCharFilter(wchar_t *str, size_t *size, wchar_t ch)
 void StringFilter(char *str, size_t *size, const char *remove, size_t removelen)
 {
   size_t len = *size,
-         curlen = len;
+         curlen;
   char *cur = cpp_strnstr(str, remove, len);
-  while (cur && curlen) {
-    len -= removelen;
-    curlen = len - (cur - str);
-    if (curlen) {
-      ::memmove(cur, cur + removelen, curlen);
-      cur = cpp_strnstr(cur, remove, curlen);
-    }
+  while (cur &&
+      (len -= removelen) &&
+      (curlen = len - (cur - str))) {
+    ::memmove(cur, cur + removelen, curlen);
+    cur = cpp_strnstr(cur, remove, curlen);
   }
   *size = len;
 }
@@ -270,15 +262,13 @@ void StringFilter(char *str, size_t *size, const char *remove, size_t removelen)
 void WideStringFilter(wchar_t *str, size_t *size, const wchar_t *remove, size_t removelen)
 {
   size_t len = *size / 2,
-         curlen = len;
+         curlen;
   wchar_t *cur = cpp_wcsnstr(str, remove, len);
-  while (cur && curlen) {
-    len -= removelen;
-    curlen = len - (cur - str);
-    if (curlen) {
-      ::memmove(cur, cur + removelen, 2 * curlen);
-      cur = cpp_wcsnstr(cur, remove, curlen);
-    }
+  while (cur &&
+      (len -= removelen) &&
+      (curlen = len - (cur - str))) {
+    ::memmove(cur, cur + removelen, 2 * curlen);
+    cur = cpp_wcsnstr(cur, remove, curlen);
   }
   *size = len * 2;
 }
@@ -8863,18 +8853,16 @@ static bool HorkEyeFilter(LPVOID data, DWORD *size, HookParam *hp)
 
   // Remove text between , and ]
   if ((start = (char *)::memchr(str, ',', len)) &&
-      (stop = cpp_strnstr(start, "\x81\x7a", len - (start - str)))) { // = u'】'.encode('sjis')
-    len -= stop - start;
+      (stop = cpp_strnstr(start, "\x81\x7a", len - (start - str))) &&
+      (len -= stop - start)) // = u'】'.encode('sjis')
     ::memmove(start, stop, len - (start - str));
-  }
 
   // Remove [n]
   enum { skip_len = 3 }; // = length of "[n]"
-  while (len > skip_len &&
-         (start = ::cpp_strnstr(str, "[n]", len))) {
-    len -= skip_len;
+  while (len >= skip_len &&
+         (start = ::cpp_strnstr(str, "[n]", len)) &&
+         (len -= skip_len))
     ::memmove(start, start + skip_len, len - (start - str));
-  }
 
   *size = len;
   return true;
@@ -9740,6 +9728,31 @@ bool InsertAdobeFlash10Hook()
  * - 0046c5fb   50               push eax
  * - 0046c5fc   6a 10            push 0x10
  */
+// Remove: \n\s*
+// This is dangerous since \n could appear within SJIS
+//static bool LunaSoftFilter(LPVOID data, DWORD *size, HookParam *hp)
+//{
+//  CC_UNUSED(hp);
+//  size_t len = *size;
+//  char *str = reinterpret_cast<char *>(data),
+//       *cur;
+//
+//  while (len &&
+//         (cur = ::memchr(str, '\n', len)) &&
+//         --len) {
+//    ::memmove(cur, cur + 1, len - (cur - str));
+//    while (cur < str + len)
+//      if (::isspace(*cur) && --len)
+//        ::memmove(cur, cur + 1, len - (cur - str));
+//      else if (len >= 2 && ::iswspace(*(LPCWSTR)cur) && (len-=2))
+//        ::memmove(cur, cur + 2, len - (cur - str));
+//      else
+//        break;
+//  }
+//
+//  *size = len;
+//  return true;
+//}
 bool InsertLunaSoftHook()
 {
   const BYTE bytes[] = {
@@ -9764,7 +9777,7 @@ bool InsertLunaSoftHook()
   hp.addr = addr + hook_offset;
   hp.off = 1 * 4; // arg1
   hp.type = USING_STRING;
-  hp.filter_fun = NewLineCharFilter; // remove \n
+  //hp.filter_fun = LunaSoftFilter; // remove \n
   ConsoleOutput("vnreng: INSERT LunaSoft");
   NewHook(hp, L"LunaSoft");
 
