@@ -9496,15 +9496,15 @@ bool InsertLeafHook()
 bool InsertLunaSoftHook()
 {
   const BYTE bytes[] = {
-   0xcc,            // 0046c57e   cc               int3
-   0xcc,            // 0046c57f   cc               int3
-   0x55,            // 0046c580   55               push ebp       ; jichi: text in arg1
-   0x8b,0xec,       // 0046c581   8bec             mov ebp,esp
-   0x83,0xec, 0x08, // 0046c583   83ec 08          sub esp,0x8
-   0x89,0x4d, 0xf8, // 0046c586   894d f8          mov dword ptr ss:[ebp-0x8],ecx
-   0x8b,0x4d, 0xf8, // 0046c589   8b4d f8          mov ecx,dword ptr ss:[ebp-0x8]
-   0x83,0xc1, 0x1c, // 0046c58c   83c1 1c          add ecx,0x1c
-   0xe8             // 0046c58f   e8 2cebf9ff      call .0040b0c0
+    0xcc,            // 0046c57e   cc               int3
+    0xcc,            // 0046c57f   cc               int3
+    0x55,            // 0046c580   55               push ebp       ; jichi: text in arg1
+    0x8b,0xec,       // 0046c581   8bec             mov ebp,esp
+    0x83,0xec, 0x08, // 0046c583   83ec 08          sub esp,0x8
+    0x89,0x4d, 0xf8, // 0046c586   894d f8          mov dword ptr ss:[ebp-0x8],ecx
+    0x8b,0x4d, 0xf8, // 0046c589   8b4d f8          mov ecx,dword ptr ss:[ebp-0x8]
+    0x83,0xc1, 0x1c, // 0046c58c   83c1 1c          add ecx,0x1c
+    0xe8             // 0046c58f   e8 2cebf9ff      call .0040b0c0
   };
   enum { hook_offset = 2 };
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
