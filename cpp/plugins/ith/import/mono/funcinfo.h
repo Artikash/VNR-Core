@@ -1,6 +1,6 @@
 #pragma once
 
-// mono/funcs.h
+// mono/funcinfo.h
 // 12/26/2014
 // https://github.com/mono/mono/blob/master/mono/metadata/object.h
 // http://api.xamarin.com/index.aspx?link=xhtml%3Adeploy%2Fmono-api-string.html

@@ -3701,7 +3701,6 @@ YU-RIS hook:
 //bool InsertWhirlpoolHook() // jichi: 12/27/2014: Renamed to YU-RIS
 static bool InsertYuris1Hook()
 {
-  DWORD i,t;
   //IthBreak();
   DWORD entry = Util::FindCallAndEntryBoth((DWORD)TextOutA, module_limit_ - module_base_, module_base_, 0xec83);
   //ITH_GROWL_DWORD(entry);
@@ -3715,26 +3714,26 @@ static bool InsertYuris1Hook()
     ConsoleOutput("vnreng:YU-RIS: function entry does not exist");
     return false;
   }
-  entry = Util::FindCallOrJmpRel(entry-4,module_limit_-module_base_-0x10000,module_base_+0x10000,false);
+  entry = Util::FindCallOrJmpRel(entry - 4,module_limit_ - module_base_ - 0x10000, module_base_ + 0x10000, false);
+  DWORD i,
+        t;
   //ITH_GROWL_DWORD(entry);
   ITH_TRY { // jichi 12/27/2014
-    for (i = entry - 4; i > entry - 0x100; i--) {
-      if (::IsBadReadPtr((LPCVOID)i, 4)) { // 4 = sizeof(DWORD)
+    for (i = entry - 4; i > entry - 0x100; i--)
+      if (::IsBadReadPtr((LPCVOID)i, 4)) { // jichi 12/27/2014: might raise in new YU-RIS, 4 = sizeof(DWORD)
         ConsoleOutput("vnreng:YU-RIS: do not have read permission");
         return false;
-      }
-      if (*(WORD *)i == 0xc085) {
-        t = *(WORD *)(i+2);
-        if ((t&0xff) == 0x76) {
+      } else if (*(WORD *)i == 0xc085) {
+        t = *(WORD *)(i + 2);
+        if ((t & 0xff) == 0x76) {
           t = 4;
           break;
-        }
-        if ((t&0xffff) == 0x860f) {
+        } else if ((t & 0xffff) == 0x860f) {
           t = 8;
           break;
         }
       }
-    }
+
   } ITH_EXCEPT {
     ConsoleOutput("vnreng:YU-RIS: illegal access exception");
     return false;
@@ -3745,7 +3744,7 @@ static bool InsertYuris1Hook()
   }
   //ITH_GROWL_DWORD2(i,t);
   HookParam hp = {};
-  hp.addr = i+t;
+  hp.addr = i + t;
   hp.off = -0x24;
   hp.split = -0x8;
   hp.type = USING_STRING|USING_SPLIT;
@@ -3866,8 +3865,7 @@ static bool InsertYuris2Hook()
 
   HookParam hp = {};
   hp.addr = addr;
-  hp.type = USING_STRING|NO_CONTEXT|USING_SPLIT; // disable context that will cause thread split
-  //hp.type = USING_STRING|USING_SPLIT;
+  hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT; // disable context that will cause thread split
   hp.off = arg4_lpString;
   hp.split = arg6_split;
 
@@ -9084,7 +9082,7 @@ bool Insert5pbHook2()
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   //ITH_GROWL_DWORD3(addr, module_base_,module_limit_);
   if (!addr) {
-    ConsoleOutput("vnreng:6pb1: pattern not found");
+    ConsoleOutput("vnreng:5pb2: pattern not found");
     return false;
   }
 
@@ -9259,7 +9257,7 @@ static void SpecialHookMink(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *s
   if (!IthGetMemoryRange((LPVOID)(addr), 0, 0))
     return;
   DWORD ch = *(DWORD *)addr;
-  DWORD size = LeadByteTable[ch & 0xff]; //Slightly faster than IsDBCSLeadByte
+  DWORD size = LeadByteTable[ch & 0xff]; // Slightly faster than IsDBCSLeadByte
   if (size == 1 && ::ispunct(ch & 0xff)) // skip ascii punctuations, since garbage is like ":text:"
     return;
 
@@ -9410,6 +9408,119 @@ bool InsertLeafHook()
   NewHook(hp, L"Leaf");
 
   //ConsoleOutput("vnreng:Leaf: disable GDI hooks");
+  //DisableGDIHooks();
+  return true;
+}
+
+/** jichi 12/27/2014 LunaSoft
+ * Sample game: [141226] [LunaSoft] 悪堕ラビリンス -- /hsn8@46C5EF
+ *
+ * /hsn8@46C5EF
+ * - addr: 0x46C5EF
+ * - off: 8
+ * - type: 1025 = 0x401
+ *
+ * - 0046c57e   cc               int3
+ * - 0046c57f   cc               int3
+ * - 0046c580   55               push ebp       ; jichi: text in arg1
+ * - 0046c581   8bec             mov ebp,esp
+ * - 0046c583   83ec 08          sub esp,0x8
+ * - 0046c586   894d f8          mov dword ptr ss:[ebp-0x8],ecx
+ * - 0046c589   8b4d f8          mov ecx,dword ptr ss:[ebp-0x8]
+ * - 0046c58c   83c1 1c          add ecx,0x1c
+ * - 0046c58f   e8 2cebf9ff      call .0040b0c0
+ * - 0046c594   8b00             mov eax,dword ptr ds:[eax]
+ * - 0046c596   8945 fc          mov dword ptr ss:[ebp-0x4],eax
+ * - 0046c599   837d fc 00       cmp dword ptr ss:[ebp-0x4],0x0
+ * - 0046c59d   75 21            jnz short .0046c5c0
+ * - 0046c59f   8b4d f8          mov ecx,dword ptr ss:[ebp-0x8]
+ * - 0046c5a2   83c1 28          add ecx,0x28
+ * - 0046c5a5   e8 16ebf9ff      call .0040b0c0
+ * - 0046c5aa   8b08             mov ecx,dword ptr ds:[eax]
+ * - 0046c5ac   894d fc          mov dword ptr ss:[ebp-0x4],ecx
+ * - 0046c5af   8b55 fc          mov edx,dword ptr ss:[ebp-0x4]
+ * - 0046c5b2   52               push edx
+ * - 0046c5b3   8b4d f8          mov ecx,dword ptr ss:[ebp-0x8]
+ * - 0046c5b6   83c1 28          add ecx,0x28
+ * - 0046c5b9   e8 82d9f9ff      call .00409f40
+ * - 0046c5be   eb 0f            jmp short .0046c5cf
+ * - 0046c5c0   8b45 fc          mov eax,dword ptr ss:[ebp-0x4]
+ * - 0046c5c3   50               push eax
+ * - 0046c5c4   8b4d f8          mov ecx,dword ptr ss:[ebp-0x8]
+ * - 0046c5c7   83c1 1c          add ecx,0x1c
+ * - 0046c5ca   e8 71d9f9ff      call .00409f40
+ * - 0046c5cf   837d fc 00       cmp dword ptr ss:[ebp-0x4],0x0
+ * - 0046c5d3   75 02            jnz short .0046c5d7
+ * - 0046c5d5   eb 61            jmp short .0046c638
+ * - 0046c5d7   8b4d fc          mov ecx,dword ptr ss:[ebp-0x4]
+ * - 0046c5da   e8 b1cdf9ff      call .00409390
+ * - 0046c5df   8b4d 08          mov ecx,dword ptr ss:[ebp+0x8]
+ * - 0046c5e2   51               push ecx                   ; jichi: text in ecx
+ * - 0046c5e3   68 38010000      push 0x138
+ * - 0046c5e8   8b55 fc          mov edx,dword ptr ss:[ebp-0x4]
+ * - 0046c5eb   83c2 08          add edx,0x8
+ * - 0046c5ee   52               push edx
+ * - 0046c5ef   ff15 88b24c00    call dword ptr ds:[0x4cb288]  ; msvcr90.strcpy_s, jichi: text accessed here in arg2
+ * - 0046c5f5   83c4 0c          add esp,0xc
+ * - 0046c5f8   8b45 0c          mov eax,dword ptr ss:[ebp+0xc]
+ * - 0046c5fb   50               push eax
+ * - 0046c5fc   6a 10            push 0x10
+ */
+// Remove: \n\s*
+// This is dangerous since \n could appear within SJIS
+//static bool LunaSoftFilter(LPVOID data, DWORD *size, HookParam *hp)
+//{
+//  CC_UNUSED(hp);
+//  size_t len = *size;
+//  char *str = reinterpret_cast<char *>(data),
+//       *cur;
+//
+//  while (len &&
+//         (cur = ::memchr(str, '\n', len)) &&
+//         --len) {
+//    ::memmove(cur, cur + 1, len - (cur - str));
+//    while (cur < str + len)
+//      if (::isspace(*cur) && --len)
+//        ::memmove(cur, cur + 1, len - (cur - str));
+//      else if (len >= 2 && ::iswspace(*(LPCWSTR)cur) && (len-=2))
+//        ::memmove(cur, cur + 2, len - (cur - str));
+//      else
+//        break;
+//  }
+//
+//  *size = len;
+//  return true;
+//}
+bool InsertLunaSoftHook()
+{
+  const BYTE bytes[] = {
+    0xcc,            // 0046c57e   cc               int3
+    0xcc,            // 0046c57f   cc               int3
+    0x55,            // 0046c580   55               push ebp       ; jichi: text in arg1
+    0x8b,0xec,       // 0046c581   8bec             mov ebp,esp
+    0x83,0xec, 0x08, // 0046c583   83ec 08          sub esp,0x8
+    0x89,0x4d, 0xf8, // 0046c586   894d f8          mov dword ptr ss:[ebp-0x8],ecx
+    0x8b,0x4d, 0xf8, // 0046c589   8b4d f8          mov ecx,dword ptr ss:[ebp-0x8]
+    0x83,0xc1, 0x1c, // 0046c58c   83c1 1c          add ecx,0x1c
+    0xe8             // 0046c58f   e8 2cebf9ff      call .0040b0c0
+  };
+  enum { hook_offset = 2 };
+  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
+  //ITH_GROWL(addr);
+  if (!addr) {
+    ConsoleOutput("vnreng:LunaSoft: pattern not found");
+    return false;
+  }
+  HookParam hp = {};
+  hp.addr = addr + hook_offset;
+  hp.off = 1 * 4; // arg1
+  hp.type = USING_STRING;
+  //hp.filter_fun = LunaSoftFilter; // remove \n
+  ConsoleOutput("vnreng: INSERT LunaSoft");
+  NewHook(hp, L"LunaSoft");
+
+  // There are no GDI functions anyway
+  //ConsoleOutput("vnreng:LunaSoft: disable GDI hooks");
   //DisableGDIHooks();
   return true;
 }
@@ -9671,119 +9782,6 @@ bool InsertAdobeFlash10Hook()
 
   ConsoleOutput("vnreng:AdobeFlash10: disable GDI hooks");
   DisableGDIHooks();
-  return true;
-}
-
-/** jichi 12/27/2014 LunaSoft
- * Sample game: [141226] [LunaSoft] 悪堕ラビリンス -- /hsn8@46C5EF
- *
- * /hsn8@46C5EF
- * - addr: 0x46C5EF
- * - off: 8
- * - type: 1025 = 0x401
- *
- * - 0046c57e   cc               int3
- * - 0046c57f   cc               int3
- * - 0046c580   55               push ebp       ; jichi: text in arg1
- * - 0046c581   8bec             mov ebp,esp
- * - 0046c583   83ec 08          sub esp,0x8
- * - 0046c586   894d f8          mov dword ptr ss:[ebp-0x8],ecx
- * - 0046c589   8b4d f8          mov ecx,dword ptr ss:[ebp-0x8]
- * - 0046c58c   83c1 1c          add ecx,0x1c
- * - 0046c58f   e8 2cebf9ff      call .0040b0c0
- * - 0046c594   8b00             mov eax,dword ptr ds:[eax]
- * - 0046c596   8945 fc          mov dword ptr ss:[ebp-0x4],eax
- * - 0046c599   837d fc 00       cmp dword ptr ss:[ebp-0x4],0x0
- * - 0046c59d   75 21            jnz short .0046c5c0
- * - 0046c59f   8b4d f8          mov ecx,dword ptr ss:[ebp-0x8]
- * - 0046c5a2   83c1 28          add ecx,0x28
- * - 0046c5a5   e8 16ebf9ff      call .0040b0c0
- * - 0046c5aa   8b08             mov ecx,dword ptr ds:[eax]
- * - 0046c5ac   894d fc          mov dword ptr ss:[ebp-0x4],ecx
- * - 0046c5af   8b55 fc          mov edx,dword ptr ss:[ebp-0x4]
- * - 0046c5b2   52               push edx
- * - 0046c5b3   8b4d f8          mov ecx,dword ptr ss:[ebp-0x8]
- * - 0046c5b6   83c1 28          add ecx,0x28
- * - 0046c5b9   e8 82d9f9ff      call .00409f40
- * - 0046c5be   eb 0f            jmp short .0046c5cf
- * - 0046c5c0   8b45 fc          mov eax,dword ptr ss:[ebp-0x4]
- * - 0046c5c3   50               push eax
- * - 0046c5c4   8b4d f8          mov ecx,dword ptr ss:[ebp-0x8]
- * - 0046c5c7   83c1 1c          add ecx,0x1c
- * - 0046c5ca   e8 71d9f9ff      call .00409f40
- * - 0046c5cf   837d fc 00       cmp dword ptr ss:[ebp-0x4],0x0
- * - 0046c5d3   75 02            jnz short .0046c5d7
- * - 0046c5d5   eb 61            jmp short .0046c638
- * - 0046c5d7   8b4d fc          mov ecx,dword ptr ss:[ebp-0x4]
- * - 0046c5da   e8 b1cdf9ff      call .00409390
- * - 0046c5df   8b4d 08          mov ecx,dword ptr ss:[ebp+0x8]
- * - 0046c5e2   51               push ecx                   ; jichi: text in ecx
- * - 0046c5e3   68 38010000      push 0x138
- * - 0046c5e8   8b55 fc          mov edx,dword ptr ss:[ebp-0x4]
- * - 0046c5eb   83c2 08          add edx,0x8
- * - 0046c5ee   52               push edx
- * - 0046c5ef   ff15 88b24c00    call dword ptr ds:[0x4cb288]  ; msvcr90.strcpy_s, jichi: text accessed here in arg2
- * - 0046c5f5   83c4 0c          add esp,0xc
- * - 0046c5f8   8b45 0c          mov eax,dword ptr ss:[ebp+0xc]
- * - 0046c5fb   50               push eax
- * - 0046c5fc   6a 10            push 0x10
- */
-// Remove: \n\s*
-// This is dangerous since \n could appear within SJIS
-//static bool LunaSoftFilter(LPVOID data, DWORD *size, HookParam *hp)
-//{
-//  CC_UNUSED(hp);
-//  size_t len = *size;
-//  char *str = reinterpret_cast<char *>(data),
-//       *cur;
-//
-//  while (len &&
-//         (cur = ::memchr(str, '\n', len)) &&
-//         --len) {
-//    ::memmove(cur, cur + 1, len - (cur - str));
-//    while (cur < str + len)
-//      if (::isspace(*cur) && --len)
-//        ::memmove(cur, cur + 1, len - (cur - str));
-//      else if (len >= 2 && ::iswspace(*(LPCWSTR)cur) && (len-=2))
-//        ::memmove(cur, cur + 2, len - (cur - str));
-//      else
-//        break;
-//  }
-//
-//  *size = len;
-//  return true;
-//}
-bool InsertLunaSoftHook()
-{
-  const BYTE bytes[] = {
-   0xcc,            // 0046c57e   cc               int3
-   0xcc,            // 0046c57f   cc               int3
-   0x55,            // 0046c580   55               push ebp       ; jichi: text in arg1
-   0x8b,0xec,       // 0046c581   8bec             mov ebp,esp
-   0x83,0xec, 0x08, // 0046c583   83ec 08          sub esp,0x8
-   0x89,0x4d, 0xf8, // 0046c586   894d f8          mov dword ptr ss:[ebp-0x8],ecx
-   0x8b,0x4d, 0xf8, // 0046c589   8b4d f8          mov ecx,dword ptr ss:[ebp-0x8]
-   0x83,0xc1, 0x1c, // 0046c58c   83c1 1c          add ecx,0x1c
-   0xe8             // 0046c58f   e8 2cebf9ff      call .0040b0c0
-  };
-  enum { hook_offset = 2 };
-  ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
-  //ITH_GROWL(addr);
-  if (!addr) {
-    ConsoleOutput("vnreng:LunaSoft: pattern not found");
-    return false;
-  }
-  HookParam hp = {};
-  hp.addr = addr + hook_offset;
-  hp.off = 1 * 4; // arg1
-  hp.type = USING_STRING;
-  //hp.filter_fun = LunaSoftFilter; // remove \n
-  ConsoleOutput("vnreng: INSERT LunaSoft");
-  NewHook(hp, L"LunaSoft");
-
-  // There are no GDI functions anyway
-  //ConsoleOutput("vnreng:LunaSoft: disable GDI hooks");
-  //DisableGDIHooks();
   return true;
 }
 
