@@ -615,7 +615,9 @@ bool DetermineNoEngine()
     return true;
   }
 
-  // jichi 12/28/2014: Chartreux Inc.
+  // jichi 12/28/2014: "Chartreux Inc." in Copyright.
+  // Sublimary brands include Rosebleu, MORE, etc.
+  // GetGlyphOutlineA already works.
   if (Util::SearchResourceString(L"Chartreux")) {
     ConsoleOutput("vnreng: IGNORE Chartreux");
     return true;

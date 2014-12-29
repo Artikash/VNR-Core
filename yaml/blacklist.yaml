@@ -164,6 +164,7 @@ processes:
   - SogouCloud.exe      # Sogou
   - SogouExplorer.exe   # Sogou
   - sogouexplorer.exe   # Sogou
+  - SpoilerAL.exe       # Game editor
   #- splayer.exe         # SPlayer
   #- Splayer.exe         # SPlayer # conflict with 真姫裸
   - StormPlayer.exe     # Storm player
