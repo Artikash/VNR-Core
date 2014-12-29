@@ -2772,11 +2772,6 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
       grid.addWidget(self.ezTransBrowseButton, r, 0)
       grid.addWidget(self.ezTransButton, r, 1)
 
-    if 'vi' not in blans: #and 'zh' not in blans:
-      r += 1
-      #grid.addWidget(self.hanVietBrowseButton, r, 0)
-      grid.addWidget(self.hanVietButton, r, 1)
-
     if 'en' not in blans:
       r += 1
       grid.addWidget(self.atlasBrowseButton, r, 0)
@@ -2785,6 +2780,11 @@ You can report the bugs to <a href="mailto:{0}">{0}</a>."""
       r += 1
       grid.addWidget(self.lecBrowseButton, r, 0)
       grid.addWidget(self.lecButton, r, 1)
+
+    if 'vi' not in blans: #and 'zh' not in blans:
+      r += 1
+      #grid.addWidget(self.hanVietBrowseButton, r, 0)
+      grid.addWidget(self.hanVietButton, r, 1)
 
     ret = QtWidgets.QGroupBox(my.tr("Preferred machine translation providers"))
     ret.setLayout(grid)
