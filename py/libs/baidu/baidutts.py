@@ -4,8 +4,12 @@
 #
 # Example: http://tts.baidu.com/text2audio?lan=jp&ie=UTF-8&text=hello
 
+if __name__ == '__main__':
+  import sys
+  sys.path.append('..')
+
 from sakurakit.sknetio import topercentencoding
-import baidudef
+#import baidudef
 
 API = "http://tts.baidu.com/text2audio"
 
@@ -19,12 +23,13 @@ def url(text, language, encoding='UTF-8'):
   if language:
     text = topercentencoding(text, encoding)
     if text:
-      language = baidudef.bdlang(language)
+      #language = baidudef.bdlang(language) # this is not needed by tts orz
       return API + "?ie=%s&lan=%s&text=%s" % (encoding, language, text)
   return ''
 
 if __name__ == '__main__':
   print url("hello", 'ja')
   print url(u"こんにちは", 'ja')
+  print url(u'모토쿠라 스구루「교제해 주세요」', 'ko')
 
 # EOF
