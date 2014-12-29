@@ -9,7 +9,7 @@ if __name__ == '__main__':
   sys.path.append('..')
 
 from sakurakit.sknetio import topercentencoding
-#import baidudef
+import baidudef
 
 API = "http://tts.baidu.com/text2audio"
 
@@ -23,7 +23,9 @@ def url(text, language, encoding='UTF-8'):
   if language:
     text = topercentencoding(text, encoding)
     if text:
-      #language = baidudef.bdlang(language) # this is not needed by tts orz
+      language = baidudef.bdlang(language)
+      # kor does not work for Korean orz
+      language = language[:2]
       return API + "?ie=%s&lan=%s&text=%s" % (encoding, language, text)
   return ''
 
