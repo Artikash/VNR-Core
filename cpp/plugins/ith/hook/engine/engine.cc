@@ -3719,23 +3719,21 @@ static bool InsertYuris1Hook()
         t;
   //ITH_GROWL_DWORD(entry);
   ITH_TRY { // jichi 12/27/2014
-    for (i = entry - 4; i > entry - 0x100; i--) {
+    for (i = entry - 4; i > entry - 0x100; i--)
       if (::IsBadReadPtr((LPCVOID)i, 4)) { // jichi 12/27/2014: might raise in new YU-RIS, 4 = sizeof(DWORD)
         ConsoleOutput("vnreng:YU-RIS: do not have read permission");
         return false;
-      }
-      if (*(WORD *)i == 0xc085) {
+      } else if (*(WORD *)i == 0xc085) {
         t = *(WORD *)(i + 2);
         if ((t & 0xff) == 0x76) {
           t = 4;
           break;
-        }
-        if ((t & 0xffff) == 0x860f) {
+        } else if ((t & 0xffff) == 0x860f) {
           t = 8;
           break;
         }
       }
-    }
+
   } ITH_EXCEPT {
     ConsoleOutput("vnreng:YU-RIS: illegal access exception");
     return false;
@@ -3867,8 +3865,7 @@ static bool InsertYuris2Hook()
 
   HookParam hp = {};
   hp.addr = addr;
-  hp.type = USING_STRING|NO_CONTEXT|USING_SPLIT; // disable context that will cause thread split
-  //hp.type = USING_STRING|USING_SPLIT;
+  hp.type = USING_STRING|USING_SPLIT|NO_CONTEXT; // disable context that will cause thread split
   hp.off = arg4_lpString;
   hp.split = arg6_split;
 
