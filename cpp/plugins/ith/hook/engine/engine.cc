@@ -3701,7 +3701,6 @@ YU-RIS hook:
 //bool InsertWhirlpoolHook() // jichi: 12/27/2014: Renamed to YU-RIS
 static bool InsertYuris1Hook()
 {
-  DWORD i,t;
   //IthBreak();
   DWORD entry = Util::FindCallAndEntryBoth((DWORD)TextOutA, module_limit_ - module_base_, module_base_, 0xec83);
   //ITH_GROWL_DWORD(entry);
@@ -3715,21 +3714,23 @@ static bool InsertYuris1Hook()
     ConsoleOutput("vnreng:YU-RIS: function entry does not exist");
     return false;
   }
-  entry = Util::FindCallOrJmpRel(entry-4,module_limit_-module_base_-0x10000,module_base_+0x10000,false);
+  entry = Util::FindCallOrJmpRel(entry - 4,module_limit_ - module_base_ - 0x10000, module_base_ + 0x10000, false);
+  DWORD i,
+        t;
   //ITH_GROWL_DWORD(entry);
   ITH_TRY { // jichi 12/27/2014
     for (i = entry - 4; i > entry - 0x100; i--) {
-      if (::IsBadReadPtr((LPCVOID)i, 4)) { // 4 = sizeof(DWORD)
+      if (::IsBadReadPtr((LPCVOID)i, 4)) { // jichi 12/27/2014: might raise in new YU-RIS, 4 = sizeof(DWORD)
         ConsoleOutput("vnreng:YU-RIS: do not have read permission");
         return false;
       }
       if (*(WORD *)i == 0xc085) {
-        t = *(WORD *)(i+2);
-        if ((t&0xff) == 0x76) {
+        t = *(WORD *)(i + 2);
+        if ((t & 0xff) == 0x76) {
           t = 4;
           break;
         }
-        if ((t&0xffff) == 0x860f) {
+        if ((t & 0xffff) == 0x860f) {
           t = 8;
           break;
         }
@@ -3745,7 +3746,7 @@ static bool InsertYuris1Hook()
   }
   //ITH_GROWL_DWORD2(i,t);
   HookParam hp = {};
-  hp.addr = i+t;
+  hp.addr = i + t;
   hp.off = -0x24;
   hp.split = -0x8;
   hp.type = USING_STRING|USING_SPLIT;
