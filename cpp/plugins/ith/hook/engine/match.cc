@@ -582,7 +582,7 @@ bool DetermineEngineGeneric()
   return ret;
 }
 
-bool DetermineNoHookEngine()
+bool DetermineNoEngine()
 {
   //if (IthFindFile(L"*\\Managed\\UnityEngine.dll")) { // jichi 12/3/2013: Unity (BALDRSKY ZERO)
   //  ConsoleOutput("vnreng: IGNORE Unity");
@@ -615,6 +615,11 @@ bool DetermineNoHookEngine()
     return true;
   }
 
+  // jichi 12/28/2014: Chartreux Inc.
+  if (Util::SearchResourceString(L"Chartreux")) {
+    ConsoleOutput("vnreng: IGNORE Chartreux");
+    return true;
+  }
 
   if (wcsstr(process_name_, L"lcsebody") || !wcsncmp(process_name_, L"lcsebo~", 7)) { // jichi 3/19/2014: LC-ScriptEngine, GetGlyphOutlineA
     ConsoleOutput("vnreng: IGNORE lcsebody");
@@ -672,7 +677,7 @@ bool UnsafeDetermineEngineType()
     || DetermineEngineOther()
     || DetermineEngineAtLast()
     || DetermineEngineGeneric()
-    || DetermineNoHookEngine()
+    || DetermineNoEngine()
   ;
 }
 
