@@ -9084,7 +9084,7 @@ bool Insert5pbHook2()
   ULONG addr = MemDbg::findBytes(bytes, sizeof(bytes), module_base_, module_limit_);
   //ITH_GROWL_DWORD3(addr, module_base_,module_limit_);
   if (!addr) {
-    ConsoleOutput("vnreng:6pb1: pattern not found");
+    ConsoleOutput("vnreng:5pb2: pattern not found");
     return false;
   }
 
@@ -9259,7 +9259,7 @@ static void SpecialHookMink(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *s
   if (!IthGetMemoryRange((LPVOID)(addr), 0, 0))
     return;
   DWORD ch = *(DWORD *)addr;
-  DWORD size = LeadByteTable[ch & 0xff]; //Slightly faster than IsDBCSLeadByte
+  DWORD size = LeadByteTable[ch & 0xff]; // Slightly faster than IsDBCSLeadByte
   if (size == 1 && ::ispunct(ch & 0xff)) // skip ascii punctuations, since garbage is like ":text:"
     return;
 
