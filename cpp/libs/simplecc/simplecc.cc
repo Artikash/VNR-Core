@@ -57,6 +57,7 @@ bool SimpleChineseConverter::addFile(const std::wstring &path, bool reverse)
   std::string line;
   cpp_u32string u32line;
   while (std::getline(fin, line)) {
+    u32line.clear();
     ::utf8to32(line, u32line);
     if (u32line.size() >= 3 && !cpp_u32high(u32line[0])) {
       if (reverse) {
@@ -69,7 +70,6 @@ bool SimpleChineseConverter::addFile(const std::wstring &path, bool reverse)
           d_->map[u32line[0]] = u32line[2];
 
     }
-    u32line.clear();
   }
 
   fin.close();
