@@ -298,8 +298,22 @@ proxies:
     dmmcom/chariloto: chariloto.dmm.com
     #dmmcom/log-netgame: log-netgame.dmm.com
     #dmmcom/osapi: osapi.dmm.com
+
+    twimg/pbs:  pbs.twimg.com
+    twimg/a0:   a0.twimg.com
+    twimg/a1:   a1.twimg.com
+    twimg/a2:   a2.twimg.com
+    twimg/a3:   a3.twimg.com
+
+    ytimg/s:    s.ytimg.com
+    ytimg/s1:   s1.ytimg.com
+    ytimg/s2:   s2.ytimg.com
+    ytimg/i:    i.ytimg.com
+    ytimg/i1:   i1.ytimg.com
+    ytimg/i2:   i2.ytimg.com
+
     kancolle:   203.104.209.7
-    #scape:      erogamescape.dyndns.org
+    #scape:     erogamescape.dyndns.org
 
 google:
   search:       https://google.co.jp/search
