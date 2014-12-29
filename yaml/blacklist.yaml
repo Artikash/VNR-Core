@@ -189,6 +189,9 @@ processes:
   - Uedit32.exe         # UltraEdit
   - WinRAR.exe          # WinRAR
   - WINWORD.EXE         # Microsoft Office
+  - XMP.EXE             # Xunlei
+  - XMP.exe             # Xunlei
+  - Xmp.exe             # Xunlei
   - wmplayer.exe        # Windows media player
   - XMP.exe             # Xunlei KanKan
   - YahooMessenger.exe  # Yahoo
