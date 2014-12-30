@@ -286,6 +286,10 @@ Rectangle { id: root_
               .replace('%1', My.tr("Ecchi"))
               .replace('%2', g.ecchiScoreCount)
               .replace('%3', (g.ecchiScoreSum/g.ecchiScoreCount).toFixed(1))
+          if (g.topicCount)
+            ret += " <span style='color:green'>%1 %2</span>"
+              .replace('%1', Sk.tr("Topic"))
+              .replace('%2', g.topicCount)
           return ret
         }
       }
