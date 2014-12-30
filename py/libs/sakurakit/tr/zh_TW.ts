@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="zh_TW">
+<!DOCTYPE TS>
+<TS version="2.0" language="zh_TW">
 <context>
     <name>sakurakit</name>
     <message>
@@ -2330,7 +2331,7 @@
     <message>
         <location filename="sktr.py" line="367"/>
         <source>Topic</source>
-        <translation type="unfinished"></translation>
+        <translation>話題</translation>
     </message>
 </context>
 </TS>
