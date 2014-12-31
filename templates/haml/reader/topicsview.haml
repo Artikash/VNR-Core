@@ -1,7 +1,8 @@
 ; topicsview.haml
 ; 8/29/2014 jichi
 ; @param  host  str
-; @param  topicId  long
+; @param  subjectId  long
+; @param  chatTopicId  long
 ; @param  userName  string
 ; @param  userPassword  string
 ; @param  title  unicode
@@ -26,7 +27,17 @@
 
   %body
     .view
-      .sec.sec-chat(data-topic-id="#{topicId}")
+      .sec.sec-topics(data-subject-id="#{subjectId}")
+        .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Topic')}
+        .btn.btn-sm.btn-default.new-chat(title="#{tr('New')}")
+          %span.fa.fa-plus
+          #{tr('Topic')}
+        .sec-content
+          .forum-topics
+          .footer
+            .btn.btn-sm.btn-link.btn-more(role="button")
+              #{tr('More')} ...
+      .sec.sec-chat(data-topic-id="#{chatTopicId}")
         .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Chat')}
         .btn.btn-sm.btn-default.new-chat(title="#{tr('New')}")
           %span.fa.fa-plus
@@ -34,13 +45,12 @@
         .sec-content
           .forum-posts
           .footer
-            .btn.btn-sm.btn-default.btn-more(role="button")
-              #{tr('More')}
+            .btn.btn-sm.btn-link.btn-more(role="button")
+              #{tr('More')} ...
     #spin
 
     :javascript
       window.HOST = "#{host}";
-      window.CHAT_TOPIC_ID = #{topicId};
       window.USER_NAME = "#{userName}";
       window.USER_PASSWORD = "#{userPassword}";
 

@@ -63,7 +63,7 @@ init = ->
     @chatView = new postsjs.PostList
       container: $ '.sec-chat > .sec-content > .forum-posts'
       more: $ '.sec-chat > .sec-content > .footer'
-      topicId: CHAT_TOPIC_ID
+      topicId: $('.sec-chat').data 'topic-id'
 
     bind()
 

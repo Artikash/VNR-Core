@@ -43,6 +43,7 @@ class _TopicsView(object):
     q.addDockWidget(Qt.BottomDockWidgetArea, dock)
 
   def clear(self):
+    self.subjectId = 0 # long
     self.topicId = 0 # long
 
   def _injectBeans(self):
@@ -104,7 +105,8 @@ class _TopicsView(object):
     w.setHtml(rc.haml_template('haml/reader/topicsview').render({
       'host': host,
       'title': mytr_("Messages"),
-      'topicId': self.topicId,
+      'subjectId': self.subjectId,
+      'chatTopicId': self.topicId,
       'userName': user.name,
       'userPassword': user.password,
       'rc': rc,
