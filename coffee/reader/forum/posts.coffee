@@ -89,7 +89,7 @@ renderPost = (data) -> # object post -> string
     dislikeCount: data.dislikeCount or 0
 
 editPost = (post) -> postEditBean.editPost JSON.stringify post # long ->
-replyPost = (postId) -> postInputBean.replyPost postId # long ->
+replyPost = (topicId, postId) -> postInputBean.replyPost topicId, postId # long, long ->
 
 # Classes
 #
@@ -136,7 +136,7 @@ class PostList
         false
 
       $footer.find('.btn-reply').click ->
-        replyPost postId
+        replyPost self.topicId, postId if self.topicId and postId
         false
 
       $footer.find('.like-group').removeClass 'fade-in' if post?.likeCount or post?.dislikeCount

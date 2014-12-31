@@ -149,7 +149,7 @@ class _TopicsView(object):
 
   @memoizedproperty
   def newButton(self):
-    ret = QtWidgets.QPushButton(tr_("New"))
+    ret = QtWidgets.QPushButton("+ " + tr_("Chat"))
     skqss.class_(ret, 'btn btn-success')
     ret.setToolTip(tr_("New") + " (Ctrl+N)")
     #ret.setStatusTip(ret.toolTip())
@@ -179,7 +179,8 @@ class _TopicsView(object):
       user = dataman.manager().user()
       if user.name and user.password:
         post = json.loads(postData)
-        post['topic'] = self.topicId
+        if not post.get('topic'):
+          post['topic'] = self.topicId
         post['login'] = user.name
         post['password'] = user.password
         if imageData:

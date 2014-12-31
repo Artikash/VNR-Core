@@ -15,7 +15,7 @@ Item { id: root_
   //property string postUrl: 'http://192.168.1.105:8080/api/json/post/create'
 
   // string json ->
-  function newPost() { editor_.newPost() }
+  function newPost() { editor_.newPost(0) }
 
   // - Private -
 

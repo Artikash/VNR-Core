@@ -34,6 +34,7 @@ class _PostInput(object):
     skwidgets.shortcut('ctrl+s', self._save, parent=q)
 
   def clear(self):
+    self.topicId = 0 # long
     self.replyId = 0 # long
     self.postContent = '' # str
     self.imagePath = '' # unicode
@@ -210,6 +211,8 @@ class _PostInput(object):
           }
           imageData = json.dumps(image)
 
+      if self.topicId:
+        post['topic'] = self.topicId
       if self.replyId:
         post['type'] = 'reply'
         post['reply'] = self.replyId
@@ -254,6 +257,9 @@ class PostInput(QtWidgets.QDialog):
 
   def imageEnabled(self): return self.__d.imageEnabled
   def setImageEnabled(self, t): self.__d.imageEnabled = t
+
+  def topicId(self): return self.__d.topicId
+  def setTopicId(self, v): self.__d.topicId = v
 
   def replyId(self): return self.__d.replyId
   def setReplyId(self, v): self.__d.replyId = v
@@ -325,8 +331,9 @@ class PostInputManager(QObject):
         if w.isVisible():
           w.hide()
 
-  def newPost(self, replyId=0, imagePath=''): # long, unicode ->
+  def newPost(self, topicId=0, replyId=0, imagePath=''): # long, unicode ->
     w = self.__d.getDialog(self)
+    w.setTopicId(topicId)
     w.setReplyId(replyId)
     w.setImagePath(imagePath)
     w.show()
@@ -346,11 +353,11 @@ class PostInputManagerBean(QObject):
 
   postReceived = Signal(unicode, unicode) # json post, json image
 
-  @Slot()
-  def newPost(self): self.manager.newPost()
+  @Slot(long)
+  def newPost(self, topicId): self.manager.newPost(topicId=topicId)
 
-  @Slot(int)
-  def replyPost(self, postId): self.manager.newPost(replyId=postId)
+  @Slot(long, long)
+  def replyPost(self, topicId, postId): self.manager.newPost(topicId=topicId, replyId=postId)
 
   imageEnabledChanged = Signal(bool)
   imageEnabled = Property(bool,

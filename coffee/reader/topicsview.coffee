@@ -17,7 +17,7 @@ dprint = ->
 @READY = false # needed by chatview.py
 @chatView = null
 
-newPost = (topicId) -> postInputBean.newPost() # topicId # long ->
+newPost = (topicId) -> postInputBean.newPost topicId # long ->
 
 # Export functions
 
