@@ -7,6 +7,8 @@ all: compress
 $(COMPASS_COMMANDS):
 	$(COMPASS) $@
 
-compress: compile $(wildcard css/*.min.css)
+SOURCE = $(wildcard css/*.min.css css/*/*.min.css)
+
+compress: compile $(SOURCE)
 
 # EOF

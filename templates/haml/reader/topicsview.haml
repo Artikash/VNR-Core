@@ -14,7 +14,8 @@
     %title #{title}
 
     ; Stylesheets
-    -for it in 'bootstrap3.css', 'font-awesome4.css', 'reader/topicsview.css'
+    -for it in 'bootstrap3.css', 'font-awesome4.css', \
+        'reader/forum/posts.css', 'reader/topicsview.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
 
     :css
@@ -45,7 +46,7 @@
         'bbcode', 'haml', 'moment', \
         'libs/linkify', \
         'share/growl', 'share/rest', 'share/util', \
-        'reader/topicsview'
+        'reader/forum/posts', 'reader/topicsview'
       %script(src="#{rc.cdn_url(it)}")
 
 ; EOF

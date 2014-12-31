@@ -168,6 +168,9 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   reader/topicsview: $PWD/coffee/reader/topicsview.min.js
   reader/topicsview.css: $PWD/rb/compass/web/css/topicsview.min.css
 
+  reader/forum/posts: $PWD/coffee/reader/forum/posts.min.js
+  reader/forum/posts.css: $PWD/rb/compass/web/css/forum/posts.min.css
+
   #amazon.css: $PWD/rb/compass/web/css/sites/amazon.min.css
   #getchu.css: $PWD/rb/compass/web/css/sites/getchu.min.css
   #gyutto.css: $PWD/rb/compass/web/css/sites/gyutto.min.css
