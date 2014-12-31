@@ -19,7 +19,8 @@ dprint = ->
 
 # Global variables
 
-POST_LIMIT = 20
+INIT_POST_COUNT = 10
+MORE_POST_COUNT = 20
 
 HIGHLIGHT_INTERVAL = 1500
 
@@ -265,7 +266,7 @@ class PostList
         topic: @topicId
         sort: 'updateTime'
         asc: false
-        limit: POST_LIMIT
+        limit: INIT_POST_COUNT
       error: ->
         spin false
         growl.warn tr 'Internet error'
@@ -285,7 +286,7 @@ class PostList
         sort: 'updateTime'
         asc: false
         first: @posts.length
-        limit: POST_LIMIT
+        limit: MORE_POST_COUNT
       error: ->
         spin false
         growl.warn tr 'Internet error'
