@@ -25,16 +25,22 @@
       }
 
   %body
-    .topic.portal(data-id="#{topicId}")
-      .posts
-      .footer
-        %a.btn.btn-link.btn-more(role="button")
-          #{tr('More')}
+    .view
+      .sec.sec-chat(data-topic-id="#{topicId}")
+        .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Chat')}
+        .btn.btn-sm.btn-default.new-chat
+          %span.fa.fa-plus
+          #{tr('Chat')}
+        .sec-content
+          .forum-posts
+          .footer
+            %a.btn.btn-link.btn-more(role="button")
+              #{tr('More')}
     #spin
 
     :javascript
       window.HOST = "#{host}";
-      window.TOPIC_ID = #{topicId};
+      window.CHAT_TOPIC_ID = #{topicId};
       window.USER_NAME = "#{userName}";
       window.USER_PASSWORD = "#{userPassword}";
 

@@ -60,7 +60,7 @@
         %button.btn.btn-default.btn-block.btn-xs.btn-refresh(type="button",title="#{tr('Refresh')}")
           %span.fa.fa-undo
 
-      .game.portal(data-id="#{game.itemId}")
+      .game.view(data-id="#{game.itemId}")
         .cover.draggable
           -if game.image
             %button.close.pull-left(type="button",title="#{tr('Close')}") &times;
