@@ -12,7 +12,10 @@
 # - postInputBean: postinput.PostInputManagerBean
 # - postEditBean: postedit.PostEditorManagerBean
 
-dprint = -> console.log.apply console, arguments
+dprint = ->
+  l = Array::slice.call arguments
+  l.unshift 'posts:'
+  console.log.apply console, l
 
 # Global variables
 
