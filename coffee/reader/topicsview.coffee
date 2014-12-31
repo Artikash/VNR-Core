@@ -10,10 +10,8 @@
 # - postEditBean: postedit.PostEditorManagerBean
 
 dprint = ->
-  #l = Array::slice arguments
-  l = Array::slice.call arguments
-  l.unshift 'topicsview:'
-  console.log.apply console, l
+  Array::unshift.call arguments, 'topicsview:'
+  console.log.apply console, arguments
 
 # Global variables
 @READY = false # needed by chatview.py

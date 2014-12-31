@@ -13,9 +13,8 @@
 # - postEditBean: postedit.PostEditorManagerBean
 
 dprint = ->
-  l = Array::slice.call arguments
-  l.unshift 'posts:'
-  console.log.apply console, l
+  Array::unshift.call arguments, 'posts:'
+  console.log.apply console, arguments
 
 # Global variables
 
