@@ -161,10 +161,8 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   # Reader
   reader/widgets: $PWD/coffee/reader/widgets.min.js
 
-  reader/chat: $PWD/coffee/reader/chat.min.js
-  reader/chat.css: $PWD/rb/compass/web/css/chat.min.css
-  reader/game: $PWD/coffee/reader/game.min.js
-  reader/game.css: $PWD/rb/compass/web/css/game.min.css
+  reader/gameview: $PWD/coffee/reader/gameview.min.js
+  reader/gameview.css: $PWD/rb/compass/web/css/gameview.min.css
   reader/gameboard: $PWD/coffee/reader/gameboard.min.js
   reader/gameboard.css: $PWD/rb/compass/web/css/gameboard.min.css
   reader/topicsview: $PWD/coffee/reader/topicsview.min.js
@@ -562,12 +560,11 @@ templates:
     yaml/subs:      yaml/subs.yaml
 
     haml/reader/credits:    haml/reader/credits.haml
-    haml/reader/chat:       haml/reader/chat.haml
     haml/reader/help:       haml/reader/help.haml
-    haml/reader/game:       haml/reader/game.haml
+    haml/reader/gameview:   haml/reader/gameview.haml
     haml/reader/gameboard:  haml/reader/gameboard.haml
     haml/reader/topicsview: haml/reader/topicsview.haml
-    haml/reader/user:       haml/reader/user.haml
+    haml/reader/userview:   haml/reader/userview.haml
 
     haml/browser/about:     haml/browser/about.haml
     haml/browser/help:      haml/browser/help.haml
@@ -698,9 +695,9 @@ icons:
   pref-tts-path:    $PWD/images/sound.png
   pref-zh:          $PWD/images/china.png
   window-bbcode:    $PWD/images/dock/bb.png
-  window-chat:      $PWD/images/dock/messages.png
   window-dict:      $PWD/images/dock/dict.png
   window-jdict:     $PWD/images/dock/jdict.png
+  window-forum:     $PWD/images/dock/messages.png
   window-gameboard: $PWD/images/dock/reader.png
   window-gamefinder: $PWD/images/dock/compass.png
   window-gameview:  $PWD/images/dock/reader.png

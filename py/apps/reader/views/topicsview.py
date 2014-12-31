@@ -1,6 +1,6 @@
 # coding: utf8
 # topicsview.py
-# 11/25/2014 jichi
+# 8/27/2014 jichi
 
 if __name__ == '__main__':
   import sys
@@ -26,19 +26,13 @@ import config, dataman, growl, netman, osutil, rc
 class _TopicsView(object):
 
   def __init__(self, q):
-    self.gameId = 0 # long
-
-    import comets
-    self.comet = comets.createPostComet()
-    qml = self.comet.q
-    qml.topicDataReceived.connect(self._onTopicReceived)
-    qml.topicDataUpdated.connect(self._onTopicUpdated)
+    self.clear()
 
     #self._viewBean = SkWebViewBean(self.webView)
 
     self._createUi(q)
 
-    #shortcut('ctrl+n', self._new, parent=q)
+    shortcut('ctrl+n', self._new, parent=q)
 
   def _createUi(self, q):
     q.setCentralWidget(self.webView)
@@ -48,40 +42,8 @@ class _TopicsView(object):
     #dock.setAllowedAreas(Qt.BottomDockWidgetArea)
     q.addDockWidget(Qt.BottomDockWidgetArea, dock)
 
-  def _createDialog(self):
-    import windows
-    parent = windows.normal()
-    ret = TopicsView(parent=parent)
-    ret.resize(550, 580)
-    return ret
-
-  # append ;null for better performance
-  def _onTopicReceived(self, data): # unicode json ->
-    js = 'if (window.READY) addTopic(%s); null' % data
-    self.webView.evaljs(js)
-    dprint("pass")
-
-  # append ;null for better performance
-  def _onTopicUpdated(self, data): # unicode json ->
-    js = 'if (window.READY) updateTopic(%s); null' % data
-    self.webView.evaljs(js)
-    dprint("pass")
-
-  def setGameId(self, gameId): # long ->
-    if self.gameId != gameId:
-      self.gameId = gameId
-
-      path = 'game/%s' % gameId if gameId else ''
-      if path:
-        self.comet.setPath(path)
-        self.comet.setActive(True)
-      else:
-        self.comet.setActive(False)
-        self.comet.setPath('')
-
   def clear(self):
-    self.setGameId(0)
-    self.webView.clear()
+    self.topicId = 0 # long
 
   def _injectBeans(self):
     h = self.webView.page().mainFrame()
@@ -100,19 +62,19 @@ class _TopicsView(object):
       ('cacheBean', m.cacheBean),
       ('i18nBean', m.i18nBean),
       ('mainBean', m.mainBean),
-      ('topicEditBean', self.topicEditBean),
-      ('topicInputBean', self.topicInputBean),
+      ('postEditBean', self.postEditBean),
+      ('postInputBean', self.postInputBean),
     )
 
   @memoizedproperty
-  def topicEditBean(self):
-    import topicedit
-    return topicedit.TopicEditorManagerBean(parent=self.q, manager=self.topicEditorManager)
+  def postEditBean(self):
+    import postedit
+    return postedit.PostEditorManagerBean(parent=self.q, manager=self.postEditorManager)
 
   @memoizedproperty
-  def topicInputBean(self):
-    import topicinput
-    return topicinput.TopicInputManagerBean(parent=self.q, manager=self.topicInputManager)
+  def postInputBean(self):
+    import postinput
+    return postinput.PostInputManagerBean(parent=self.q, manager=self.postInputManager)
 
   @memoizedproperty
   def webView(self):
@@ -136,40 +98,26 @@ class _TopicsView(object):
     """@reimp"""
     host = config.API_HOST # must be the same as rest.coffee for the same origin policy
 
-    dm = dataman.manager()
-    user = dm.user()
-    info = dm.queryGameInfo(itemId=self.gameId)
-    if info:
-      title = info.title0 or tr_("Game")
-      image = info.imageUrl0 if info.hasGoodImage0() else None
-      icon = info.icon
-    else:
-      title = image = icon = None
-    self.q.setWindowIcon(icon or rc.icon('window-review'))
+    user = dataman.manager().user()
 
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/topicsview').render({
       'host': host,
-      'title': title,
-      'gameId': self.gameId,
+      'title': mytr_("Messages"),
+      'topicId': self.topicId,
       'userName': user.name,
       'userPassword': user.password,
-      'image': image, # background image
       'rc': rc,
       'tr': tr_,
     }), host)
     self._injectBeans()
-
-    if not self.comet.isActive():
-      dprint("reactivate comet")
-      self.comet.setActive(True)
 
   @memoizedproperty
   def inspector(self):
     ret = SkStyleView()
     skqss.class_(ret, 'texture')
     layout = QtWidgets.QHBoxLayout()
-    #layout.addWidget(self.newButton) # not enabled
+    layout.addWidget(self.newButton)
     layout.addStretch()
     layout.addWidget(self.browseButton)
     layout.addWidget(self.refreshButton)
@@ -196,110 +144,82 @@ class _TopicsView(object):
     ret.setToolTip(tr_("Launch"))
     #ret.setStatusTip(ret.toolTip())
     ret.clicked.connect(lambda:
-        osutil.open_url("http://sakuradite.com/game/%s" % self.gameId))
-    return ret
-
-  #@memoizedproperty
-  #def newButton(self):
-  #  ret = QtWidgets.QPushButton(tr_("New"))
-  #  skqss.class_(ret, 'btn btn-success')
-  #  ret.setToolTip(tr_("New") + " (Ctrl+N)")
-  #  #ret.setStatusTip(ret.toolTip())
-  #  ret.clicked.connect(self._new)
-  #  return ret
-
-  @memoizedproperty
-  def topicEditorManager(self):
-    import topicedit
-    ret = topicedit.TopicEditorManager(self.q)
-    ret.topicChanged.connect(self._update)
+        osutil.open_url("http://sakuradite.com/topic/%s" % self.topicId))
     return ret
 
   @memoizedproperty
-  def topicInputManager(self):
-    import topicinput
-    ret = topicinput.TopicInputManager(self.q)
-    ret.topicReceived.connect(self._submit)
+  def newButton(self):
+    ret = QtWidgets.QPushButton(tr_("New"))
+    skqss.class_(ret, 'btn btn-success')
+    ret.setToolTip(tr_("New") + " (Ctrl+N)")
+    #ret.setStatusTip(ret.toolTip())
+    ret.clicked.connect(self._new)
     return ret
 
-  def _submit(self, topicData, imageData, ticketData):
+  @memoizedproperty
+  def postEditorManager(self):
+    import postedit
+    ret = postedit.PostEditorManager(self.q)
+    ret.postChanged.connect(self._update)
+    return ret
+
+  @memoizedproperty
+  def postInputManager(self):
+    import postinput
+    ret = postinput.PostInputManager(self.q)
+    ret.postReceived.connect(self._submit)
+    return ret
+
+  def _submit(self, postData, imageData):
     """
-    @param  topicData  unicode json
+    @param  postData  unicode json
+    @param  imageData  unicode
+    """
+    if self.topicId:
+      user = dataman.manager().user()
+      if user.name and user.password:
+        post = json.loads(postData)
+        post['topic'] = self.topicId
+        post['login'] = user.name
+        post['password'] = user.password
+        if imageData:
+          image = json.loads(imageData)
+          image['login'] = user.name
+          image['password'] = user.password
+        else:
+          image = None
+        skevents.runlater(partial(self._submitPost, post, image))
+
+  def _submitPost(self, post, image):
+    """
+    @param  post  kw
+    @param  image  kw or None
+    """
+    dprint("enter")
+    if image:
+      data = skfileio.readdata(image['filename'])
+      if data:
+        post['image'] = netman.manager().submitImage(data, image)
+
+    if image and not post.get('image') or not netman.manager().submitPost(post):
+      growl.warn("<br/>".join((
+        my.tr("Failed to submit post"),
+        my.tr("Please try again"),
+      )))
+    dprint("leave")
+
+  def _update(self, postData, imageData):
+    """
+    @param  postData  unicode json
     @param  imageData  unicode json
-    @param  ticketData  unicode json
     """
-    if self.gameId:
+    if self.topicId:
       user = dataman.manager().user()
       if user.name and user.password:
-        topic = json.loads(topicData)
-        topic['subjectId'] = self.gameId
-        topic['subjectType'] = 'game'
-        topic['login'] = user.name
-        topic['password'] = user.password
-        if imageData:
-          image = json.loads(imageData)
-          image['login'] = user.name
-          image['password'] = user.password
-        else:
-          image = None
-        tickets = self._parseTicketData(ticketData) if ticketData else None
-        skevents.runlater(partial(self._submitTopic, topic, image, tickets))
-
-  def _parseTicketData(self, data): # string -> [{kw}]
-    ret = []
-    user = dataman.manager().user()
-    a = json.loads(data)
-    for k,v in a.iteritems():
-      ret.append({
-        'type': k,
-        'value': v,
-        'targetId': self.gameId,
-        'targetType': 'game',
-        'login': user.name,
-        'password': user.password,
-      })
-    return ret
-
-  def _submitTickets(self, tickets): # [{kw}] ->
-    nm = netman.manager()
-    for data in tickets:
-      nm.updateTicket(data) # error not checked
-
-  def _submitTopic(self, topic, image, tickets):
-    """
-    @param  topic  kw
-    @param  image  kw or None
-    @param  tickets [kw]
-    """
-    dprint("enter")
-    nm = netman.manager()
-    if tickets:
-      self._submitTickets(tickets)
-    if image:
-      data = skfileio.readdata(image['filename'])
-      if data:
-        topic['image'] = nm.submitImage(data, image)
-
-    if image and not topic.get('image') or not nm.submitTopic(topic):
-      growl.warn("<br/>".join((
-        my.tr("Failed to submit topic"),
-        my.tr("Please try again"),
-      )))
-    dprint("leave")
-
-  def _update(self, topicData, imageData, ticketData):
-    """
-    @param  topicData  unicode  json
-    @param  imageData  unicode  json
-    @param  ticketData  unicode  json
-    """
-    if self.gameId:
-      user = dataman.manager().user()
-      if user.name and user.password:
-        topic = json.loads(topicData)
-        #topic['subjectId'] = self.gameId
-        topic['login'] = user.name
-        topic['password'] = user.password
+        post = json.loads(postData)
+        #post['topic'] = self.topicId
+        post['login'] = user.name
+        post['password'] = user.password
 
         if imageData:
           image = json.loads(imageData)
@@ -307,46 +227,52 @@ class _TopicsView(object):
           image['password'] = user.password
         else:
           image = None
+        skevents.runlater(partial(self._updatePost, post, image))
 
-        tickets = self._parseTicketData(ticketData) if ticketData else None
-        skevents.runlater(partial(self._updateTopic, topic, image, tickets))
-
-  def _updateTopic(self, topic, image, tickets):
+  def _updatePost(self, post, image):
     """
-    @param  topic  kw
+    @param  post  kw
     @param  image  kw or None
-    @param  tickets  [kw] or None
     """
     dprint("enter")
-    if tickets:
-      self._submitTickets(tickets)
+    nm = netman.manager()
     if image:
       data = skfileio.readdata(image['filename'])
       if data:
-        topic['image'] = netman.manager().submitImage(data, image)
+        post['image'] = nm.submitImage(data, image)
 
-    if image and not topic.get('image') or not netman.manager().updateTopic(topic):
+    if image and not post.get('image') or not nm.updatePost(post):
       growl.warn("<br/>".join((
-        my.tr("Failed to update topic"),
+        my.tr("Failed to update post"),
         my.tr("Please try again"),
       )))
     dprint("leave")
 
-  #def _new(self): self.topicInputManager.newTopic()
+  def _new(self): self.postInputManager.newPost()
+
+  # append ;null for better performance
+  def addPost(self, data): # unicode json ->
+    js = 'if (window.READY) addPost(%s); null' % data
+    self.webView.evaljs(js)
+
+  # append ;null for better performance
+  def updatePost(self, data): # unicode json ->
+    js = 'if (window.READY) updatePost(%s); null' % data
+    self.webView.evaljs(js)
 
 class TopicsView(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
     super(TopicsView, self).__init__(parent, WINDOW_FLAGS)
-    self.setWindowIcon(rc.icon('window-review'))
-    self.setWindowTitle(tr_("Review"))
+    self.setWindowIcon(rc.icon('window-forum'))
+    self.setWindowTitle(mytr_("Messages"))
     self.__d = _TopicsView(self)
 
   def refresh(self): self.__d.refresh()
   def clear(self): self.__d.clear()
 
-  def gameId(self): return self.__d.gameId
-  def setGameId(self, gameId): self.__d.setGameId(gameId)
+  def topicId(self): return self.__d.topicId
+  def setTopicId(self, topicId): self.__d.topicId = topicId
 
   def setVisible(self, value):
     """@reimp @public"""
@@ -354,11 +280,24 @@ class TopicsView(QtWidgets.QMainWindow):
       self.__d.refresh()
     super(TopicsView, self).setVisible(value)
     if not value:
-      self.clear()
+      self.__d.webView.clear()
+
+  def addPost(self, data): # unicode json ->
+    self.__d.addPost(data)
+
+  def updatePost(self, data): # unicode json ->
+    self.__d.updatePost(data)
 
 class _TopicsViewManager:
   def __init__(self):
     self.dialogs = []
+
+    import comets
+    comet = comets.globalComet()
+    #assert comet
+    if comet: # for debug purpose when comet is empty
+      comet.postDataReceived.connect(self._onPostReceived)
+      comet.postDataUpdated.connect(self._onPostUpdated)
 
   def _createDialog(self):
     import windows
@@ -367,13 +306,35 @@ class _TopicsViewManager:
     ret.resize(550, 580)
     return ret
 
-  def getDialog(self, gameId=0):
-    """
-    @param  gameId  long
-    """
-    if gameId:
+  def _onPostReceived(self, data): # str ->
+    try:
+      obj = json.loads(data)
+      topicId = obj['topicId']
       for w in self.dialogs:
-        if w.isVisible() and gameId == w.gameId():
+        if w.isVisible() and w.topicId() == topicId:
+          w.addPost(data)
+      dprint("pass")
+    except Exception, e:
+      dwarn(e)
+
+  def _onPostUpdated(self, data): # str ->
+    try:
+      obj = json.loads(data)
+      topicId = obj['topicId']
+      for w in self.dialogs:
+        if w.isVisible() and w.topicId() == topicId:
+          w.updatePost(data)
+      dprint("pass")
+    except Exception, e:
+      dwarn(e)
+
+  def getDialog(self, topicId=0):
+    """
+    @param  topicId  long
+    """
+    if topicId:
+      for w in self.dialogs:
+        if w.isVisible() and topicId == w.topicId():
           return w
     for w in self.dialogs:
       if not w.isVisible():
@@ -401,16 +362,16 @@ class TopicsViewManager:
         if w.isVisible():
           w.hide()
 
-  def showGame(self, gameId):
+  def showTopic(self, topicId):
     """
-    @param  gameId  long
+    @param  topicId  long
     """
-    w = self.__d.getDialog(gameId)
-    if w.gameId() == gameId:
+    w = self.__d.getDialog(topicId)
+    if w.topicId() == topicId:
       w.refresh()
     else:
       w.clear()
-      w.setGameId(gameId)
+      w.setTopicId(topicId)
     w.show()
     w.raise_()
 
@@ -426,12 +387,13 @@ def manager():
 #    super(TopicsViewManagerProxy, self).__init__(parent)
 #
 #  @Slot(int)
-#  def showGame(self, id):
-#    manager().showGame(id)
+#  def showTopic(self, id):
+#    manager().showTopic(id)
 
 if __name__ == '__main__':
   a = debug.app()
-  manager().showGame(101)
+  #manager().showTopic('global')
+  manager().showTopic(config.GLOBAL_TOPIC_ID)
   a.exec_()
 
 # EOF

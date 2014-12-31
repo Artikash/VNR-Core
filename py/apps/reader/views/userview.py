@@ -53,7 +53,7 @@ class UserView(WebDialog):
     self.userId = user.id
     self.userName = user.name
     av = dm.queryUserAvatarUrl(self.userId, hash=self.userHash, cache=True)
-    self.setHtml(rc.haml_template('haml/reader/user').render({
+    self.setHtml(rc.haml_template('haml/reader/userview').render({
       'user': user,
       'avatar': av,
       'i18n': i18n,

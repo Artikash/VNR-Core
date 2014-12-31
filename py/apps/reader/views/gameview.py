@@ -323,7 +323,7 @@ class _GameView(object):
     user = dataman.manager().user()
 
     w = self.webView
-    w.setHtml(rc.haml_template('haml/reader/game').render({
+    w.setHtml(rc.haml_template('haml/reader/gameview').render({
       'host': config.API_HOST,
       'userName': user.name,
       'userPassword': user.password,

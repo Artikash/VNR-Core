@@ -6,14 +6,14 @@
 # - cacheBean: cacheman.CacheCoffeeBean
 # - i18nBean: coffeebean.I18nBean
 # - mainBean: coffeebean.MainBean
-# - topicInputBean: topicinput.TopicInputManagerBean
-# - topicEditBean: topicedit.TopicEditorManagerBean
+# - postInputBean: postinput.PostInputManagerBean
+# - postEditBean: postedit.PostEditorManagerBean
 
 dprint = -> console.log.apply console, arguments
 #dprint = ->
 timer = -> new choco.Timer arguments ...
 
-TOPIC_LIMIT = 20
+POST_LIMIT = 20
 
 HIGHLIGHT_INTERVAL = 1500
 
@@ -22,8 +22,6 @@ PAGE_TITLE = document.title
 # Render
 
 createTemplates = ->
-  @HTML_EMPTY = "<div class='empty'>(#{tr 'Empty'})</div>"
-  @HTML_NOMORE = "<div class='empty'>(#{tr 'No more'})</div>"
 
   # HAML for topic
   # - id
@@ -38,115 +36,90 @@ createTemplates = ->
   # - image  url or null
   # - likeCount  int
   # - dislikeCount  int
-  @HAML_TOPIC = Haml """\
-.topic.topic-new(data-id="${id}" data-type="${type}")
+  @HAML_POST = Haml """\
+.post.post-new(data-id="${id}" data-type="${type}")
   :if userAvatarUrl
     %a(href="${userAvatarUrl}" title="#{tr 'Avatar'}")
       %img.img-circle.avatar(src="${userAvatarUrl}" alt="#{tr 'Avatar'}")
   .right
     .header
-      .item.type.text-warning = tr(type)
-      %a.item.title(href='javascript:' title="#{tr 'Browse'}") ${title}
-      %span.pull-right
-        %a.item.user(href="javascript:") @${userName}
-        .item.text-minor = lang
-        .item.text-minor = createTime
-        .item.text-success = updateTime
-    :if scores
-      .score
-        .pp-table.dock
-          :if scores.overall != undefined
-            .pp-row(data-type='overall')
-              .pp-name #{tr 'Score'}:
-              .pp-value ${scores.overall}/10
-          :if scores.ecchi != undefined
-            .pp-row(data-type='ecchi')
-              .pp-name H:
-              .pp-value ${scores.ecchi}/10
+      %a.user(href="javascript:" style="${userStyle}") @${userName}
+      .time.text-minor = createTime
+      .lang = lang
+      .time.text-success = updateTime
     .content.bbcode = content
-    .footer
-      .btn-group.like-group
-        %a.like.btn.btn-link.btn-sm(role="button" title="#{tr 'Like'}" data-value="${likeCount}")
-          %span.fa.fa-thumbs-up
-          %span.value = likeCount
-        %a.dislike.btn.btn-link.btn-sm(role="button" title="#{tr 'Dislike'}" data-value="${dislikeCount}")
-          %span.fa.fa-thumbs-down
-          %span.value = dislikeCount
-      .btn-group
-        %a.btn-reply.btn.btn-link.btn-sm(role="button" title="#{tr 'Reply'}" title="#{tr 'Browse'}")
-          #{tr 'Reply'}
-          :if postCount
-            = ' (' + postCount + ')'
-      :if userName == USER_NAME
-        .btn-group.pull-right
-          %a.btn-edit.btn.btn-link.btn-sm(role="button" title="#{tr('Edit')}") = tr('Edit')
+    :if USER_NAME && USER_NAME != 'guest'
+      .footer
+        .btn-group.like-group.fade-in
+          %a.like.btn.btn-link.btn-sm(role="button" title="#{tr 'Like'}")
+            %span.fa.fa-thumbs-up
+            %span.value = likeCount
+          %a.dislike.btn.btn-link.btn-sm(role="button" title="#{tr 'Dislike'}")
+            %span.fa.fa-thumbs-down
+            %span.value = dislikeCount
+        .btn-group.pull-right.fade-in
+          :if userName == USER_NAME
+            %a.btn.btn-link.btn-sm.btn-edit(role="button" title="#{tr 'Edit'}") #{tr 'Edit'}
+          %a.btn.btn-link.btn-sm.btn-reply(role="button" title="#{tr 'Reply'}") #{tr 'Reply'}
     :if image
       .image
-        %a(href="${image.url}" title="${image.url}")
+        %a(href="${image.url}" title="${image.title}")
           %img(src="${image.url}" alt="${image.title}")
+  .reply
 """.replace /\$/g, '#'
 
-TOPICS = [] # [object topic]
-USER_TOPIC = null # object
+POSTS = [] # [object post]
 
-renderTopic = (data) -> # object topic -> string
-  HAML_TOPIC
+renderPost = (data) -> # object post -> string
+  HAML_POST
     id: data.id
     type: data.type
     userName: data.userName
     userStyle: if data.userColor then "color:#{data.userColor}" else ''
     lang: util.getLangName data.lang
     userAvatarUrl: util.getAvatarUrl data.userAvatar
-    title: data.title
     content: util.renderContent data.content
     createTime: util.formatDate data.createTime
     updateTime: if data.updateTime > data.createTime then util.formatDate data.updateTime else ''
     image: if data.image then {title:data.image.title, url:util.getImageUrl data.image} else null
     likeCount: data.likeCount or 0
     dislikeCount: data.dislikeCount or 0
-    postCount: data.postCount
-    scores: data.scores
 
-$getTopic = (topicId) ->  $ ".topic[data-id=#{topicId}]" # long -> $el
+$getPost = (postId) ->  $ ".post[data-id=#{postId}]" # long -> $el
 
-findTopic = (id) -> _.findWhere TOPICS, id:id # long -> object
+findPost = (id) -> _.findWhere POSTS, id:id # long -> object
 
-editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
+editPost = (post) -> postEditBean.editPost JSON.stringify post # long ->
 
-newTopic = (type) -> topicInputBean.newTopic type # string ->
+replyPost = (postId) -> postInputBean.replyPost postId # long ->
 
-replyTopic = (topicId) -> topicInputBean.replyTopic topicId # long ->
+bindNewPosts = ->
+  $('.post.post-new').each ->
+    $post = $ @
+      .removeClass 'post-new'
 
-bindNewTopics = ->
-  $('.topic.topic-new').each ->
-    $topic = $ @
-      .removeClass 'topic-new'
+    postId = $post.data 'id'
+    post = findPost postId
 
-    topicId = $topic.data 'id'
-    topic = findTopic topicId
-
-    $header = $topic.find '> .right > .header'
-    $footer = $topic.find '> .right > .footer'
+    $header = $post.find '> .right > .header'
+    $footer = $post.find '> .right > .footer'
 
     $header.find('a.user').click ->
-      mainBean.showUser topic.userName if topic?.userName
+      mainBean.showUser post.userName if post?.userName
       false
 
     $footer.find('.btn-edit').click ->
-      editTopic topic if topic
+      editPost post if post
       false
 
     $footer.find('.btn-reply').click ->
-      replyTopic topic
-      false
-    $header.find('.title').click ->
-      replyTopic topic
+      replyPost postId
       false
 
-    $footer.find('.like-group').removeClass 'fade-in' if topic?.likeCount or topic?.dislikeCount
+    $footer.find('.like-group').removeClass 'fade-in' if post?.likeCount or post?.dislikeCount
 
     $footer.find('.btn.like').click ->
-      if topic and USER_NAME and USER_NAME isnt topic.userName
+      if post and USER_NAME and USER_NAME isnt post.userName
         $that = $footer.find '.btn.dislike.selected'
         if $that.length
           $that.removeClass 'selected'
@@ -160,8 +133,8 @@ bindNewTopics = ->
           data:
             login: USER_NAME
             password: USER_PASSWORD
-            targetType: 'topic'
-            targetId: topicId
+            targetType: 'post'
+            targetId: postId
             type: 'like'
             value: value
           success: =>
@@ -171,7 +144,7 @@ bindNewTopics = ->
       false
 
     $footer.find('.btn.dislike').click ->
-      if topic and USER_NAME and USER_NAME isnt topic.userName
+      if post and USER_NAME and USER_NAME isnt post.userName
         $that = $footer.find '.btn.like.selected'
         if $that.length
           $that.removeClass 'selected'
@@ -185,8 +158,8 @@ bindNewTopics = ->
           data:
             login: USER_NAME
             password: USER_PASSWORD
-            targetType: 'topic'
-            targetId: topicId
+            targetType: 'post'
+            targetId: postId
             type: 'like'
             value: value
           success: =>
@@ -195,145 +168,112 @@ bindNewTopics = ->
             $value.text (if selected then -1 else 1) + Number $value.text()
       false
 
-addTopics = (topics) -> # [object topic] ->
-  topics = _.filter topics, (it) -> it.type is 'review'
-  return unless topics.length
+addPosts = (posts) -> # [object post] ->
+  POSTS.push.apply POSTS, posts
+  document.title = "#{PAGE_TITLE} (#{POSTS.length})"
+  h = (renderPost it for it in posts when it.type is 'post').join ''
+  $('.topic > .posts').append h
+  #$(h).hide().appendTo('.topic > .posts').fadeIn()
 
-  TOPICS.push.apply TOPICS, topics
-  document.title = "#{PAGE_TITLE} (#{TOPICS.length})"
+  replies = (it for it in posts when it.type is 'reply')
+  if replies.length
+    replies = _.sortBy replies, (it) -> it.createTime
+    for it in replies
+      $ref = $getPost it.replyId
+      if $ref.length
+        h = renderPost it
+        $ref.children('.reply').append h
+      else
+        dprint 'addPosts: error: post lost'
 
-  if USER_NAME
-    userTopic = _.findWhere topics, userName:USER_NAME
-    if userTopic
-      USER_TOPIC = userTopic
-      console.log 'addTopics: found user topic'
-      topics = _.without topics, userTopic
-      repaintUserTopic()
+  bindNewPosts()
 
-  if topics.length
-    h = (renderTopic it for it in topics when it.type is 'review').join ''
-    $('.topics').append h
-  #$(h).hide().appendTo('.topics').fadeIn()
-  bindNewTopics()
-  repaintMoreButton()
+highlightNewPosts = -> $('.post.post-new').effect 'highlight', HIGHLIGHT_INTERVAL
 
-highlightNewTopics = -> $('.topic.topic-new').effect 'highlight', HIGHLIGHT_INTERVAL
-
-addTopic = (topic) -> # object topic ->
-  return unless topic.type is 'review'
-
-  TOPICS.push topic
-  document.title = "#{PAGE_TITLE} (#{TOPICS.length})"
-
-  if topic.userName is USER_NAME
-    USER_TOPIC = topic
-    repaintUserTopic()
+addPost = (post) -> # object post ->
+  POSTS.push post
+  document.title = "#{PAGE_TITLE} (#{POSTS.length})"
+  if post.type is 'post'
+    h = renderPost post
+    $('.topic > .posts').prepend h
+    highlightNewPosts()
+    bindNewPosts()
+  else if post.type is 'reply'
+    $ref = $getPost post.replyId
+    if $ref.length
+      h = renderPost post
+      $ref.children('.reply').append h
+      highlightNewPosts()
+      bindNewPosts()
+    else
+      dprint 'addPost: error: post lost'
   else
-    h = renderTopic topic
-    $('.topics > .middle').after h
-  highlightNewTopics()
-  bindNewTopics()
+    dprint 'addPost: error: unknown post type'
 
-updateTopic = (topic) -> # object topic ->
-  oldtopic = findTopic topic.id
-  if oldtopic
-    util.fillObject oldtopic, topic
-    $topic = $getTopic topic.id
-    if $topic.length
-      $h = $ renderTopic topic
+updatePost = (post) -> # object post ->
+  oldpost = findPost post.id
+  if oldpost
+    util.fillObject oldpost, post
+    $post = $getPost post.id
+    if $post.length
+      $h = $ renderPost post
+      $h.children('.reply').replaceWith $post.children '.reply'
 
-      $topic.replaceWith $h
+      $post.replaceWith $h
 
-      #$topic = $getTopic topic.id
-      #$topic.children('reply').replaceWith $reply
+      #$post = $getPost post.id
+      #$post.children('reply').replaceWith $reply
 
       #$h.effect 'highlight', HIGHLIGHT_INTERVAL
-      highlightNewTopics()
-      bindNewTopics()
+      highlightNewPosts()
+      bindNewPosts()
       return
 
-  dprint 'updateTopic: error: topic lost'
-
-repaintUserTopic = ->
-  return unless USER_TOPIC
-  h = renderTopic USER_TOPIC
-  $ h
-    .addClass '.topic-user'
-    .replaceAll '.topic-user'
-
-repaintMoreButton = ->
-  if TOPICS.length < TOPIC_LIMIT or TOPICS.length % TOPIC_LIMIT > (if USER_TOPIC then 1 else 0)
-    h = if TOPICS.length then HTML_NOMORE else HTML_EMPTY
-    $('.sec-topic .btn-more').replaceWith h
+  dprint 'updatePost: error: post lost'
 
 # AJAX actions
 
 spin = (t) -> $('#spin').spin if t then 'large' else false
 
-show = -> # invoked only once
+paint = ->
   spin true
-  rest.forum.list 'topic',
+  rest.forum.list 'post',
     data:
-      subjectId: GAME_ID
-      subjectType: 'game'
-      type: 'review'
+      topic: TOPIC_ID
       sort: 'updateTime'
       asc: false
-      limit: TOPIC_LIMIT
-      complete: true
+      limit: POST_LIMIT
     error: ->
       spin false
       growl.warn tr 'Internet error'
     success: (data) ->
       spin false
       if data.length
-        addTopics data
-        _showUserTopic if USER_NAME and not USER_TOPIC and TOPICS.length is TOPIC_LIMIT
-        $('.sec-topic .btn-more').show()
+        addPosts data
       else
-        repaintMoreButton()
-        #growl tr('Empty') + ' > <'
-
-_showUserTopic = ->
-  spin true
-  rest.forum.list 'topic',
-    data:
-      subjectId: GAME_ID
-      subjectType: 'game'
-      userName: USER_NAME
-      type: 'review'
-      limit: 1
-      complete: true
-    error: ->
-      spin false
-      growl.warn tr 'Internet error'
-    success: (data) ->
-      spin false
-      addTopic data[0] if data.length is 1
+        growl.warn tr 'Internet error'
 
 more = ->
   spin true
-  rest.forum.list 'topic',
+  rest.forum.list 'post',
     data:
-      subjectId: GAME_ID
-      subjectType: 'game'
+      topic: TOPIC_ID
       sort: 'updateTime'
       asc: false
-      complete: true
-      first:TOPICS.length - (TOPICS.length % TOPIC_LIMIT)
-      limit: TOPIC_LIMIT
+      first: POSTS.length
+      limit: POST_LIMIT
     error: ->
       spin false
       growl.warn tr 'Internet error'
     success: (data) ->
       spin false
       if data.length
-        addTopics data
+        addPosts data
       else
         growl tr "No more"
 
 bind = ->
-  $('.sec-topic .btn-more').click ->
+  $('.topic > .footer > .btn-more').click ->
     $this = $ @
     unless $this.data 'locked'
       $this.data 'lock', true
@@ -341,28 +281,11 @@ bind = ->
       $this.data 'lock', false
     false
 
-  $('.sec-topic .btn-new').click ->
-    newTopic 'review' # hard code type is review
-    false
-
-  $('.sec-btn').click ->
-    $this = $ @
-    $sec = $this.parent '.sec'
-    if $sec.length
-      $target = $sec.find '.sec-content'
-      unless $target.is(':empty') and $this.hasClass('checked')
-        $this.toggleClass 'checked'
-        #effect = $this.data('effect') or 'blind'
-        unless $target.is ':empty'
-          $target.toggle 'blind'
-          $sec.find('.sec-footer').toggle 'blind'
-    true
-
 ## Main ##
 
-@READY = false # needed by the python view
-@addTopic = addTopic
-@updateTopic = updateTopic
+@READY = false # needed by chatview.py
+@addPost = addPost
+@updatePost = updatePost
 
 init = ->
   unless @i18nBean? # the last injected bean
@@ -378,7 +301,7 @@ init = ->
     createTemplates()
 
     bind()
-    show()
+    paint()
 
     @READY = true
 

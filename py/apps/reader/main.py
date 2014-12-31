@@ -807,11 +807,6 @@ class _MainObject(object):
     return gameview.manager()
 
   @property
-  def chatViewManager(self):
-    import chatview
-    return chatview.manager()
-
-  @property
   def topicsViewManager(self):
     import topicsview
     return topicsview.manager()
@@ -1858,8 +1853,8 @@ class MainObject(QObject):
       import osutil
       osutil.open_url("http://sakuradite.com/game/%s" % itemId)
 
-  def showChatView(self, topicId): self.__d.chatViewManager.showTopic(topicId) # long ->
-  def isChatViewVisible(self): return self.__d.chatViewManager.isVisible()
+  def showChatView(self, topicId): self.__d.topicsViewManager.showTopic(topicId) # long ->
+  def isChatViewVisible(self): return self.__d.topicsViewManager.isVisible()
 
   def showGameTopics(self, itemId): self.__d.topicsViewManager.showGame(itemId) # long ->
 
@@ -2186,7 +2181,6 @@ class MainObject(QObject):
         'gameEditorManager',
         'userViewManager',
         'gameViewManager',
-        'chatViewManager',
         'topicsViewManager',
       ):
       if hasmemoizedproperty(self, p):

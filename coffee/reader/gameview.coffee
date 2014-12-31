@@ -1,4 +1,4 @@
-# game.coffee
+# gameview.coffee
 # 8/15/2013 jichi
 # Required by game.haml
 #
