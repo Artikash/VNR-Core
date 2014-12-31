@@ -1,4 +1,4 @@
-; game.haml
+; gameview.haml
 ; 6/29/2013 jichi
 ; @param  host  str
 ; @param  title  unicode
@@ -20,7 +20,7 @@
 %html(lang="ja")
   %head
     ; Stylesheets
-    -for it in 'bootstrap3.css', 'font-awesome4.css', 'bootstrap.switch.css', 'dragdealer.css', 'reader/game.css'
+    -for it in 'bootstrap3.css', 'font-awesome4.css', 'bootstrap.switch.css', 'dragdealer.css', 'reader/gameview.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
 
     :css
@@ -482,7 +482,7 @@
             'bbcode', 'haml', 'masonry', 'moment', 'sprintf', \
             'libs/linkify', \
             'share/annot', 'share/rest', 'share/util', \
-            'reader/widgets', 'reader/game'
+            'reader/widgets', 'reader/gameview'
           %script(src="#{rc.cdn_url(it)}")
 
         -if game.dmm and game.dmm.hasSampleImages()

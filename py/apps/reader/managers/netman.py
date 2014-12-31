@@ -392,7 +392,7 @@ class _NetworkManager(object):
                 setattr(e, tag, text)
               elif tag in ('otome', 'okazu'):
                 setattr(e, tag, text == 'true')
-              elif tag in ('timestamp', 'fileSize', 'annotCount', 'subtitleCount'):
+              elif tag in ('timestamp', 'fileSize', 'topicCount', 'annotCount', 'subtitleCount'):
                 setattr(e, tag, int(text))
               elif tag == 'date':
                 e.date = datetime.strptime(text, '%Y%m%d')

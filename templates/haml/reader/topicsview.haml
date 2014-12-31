@@ -1,11 +1,10 @@
 ; topicsview.haml
-; 11/25/2014 jichi
+; 8/29/2014 jichi
 ; @param  host  str
-; @param  gameId  long
+; @param  topicId  long
 ; @param  userName  string
 ; @param  userPassword  string
 ; @param  title  unicode
-; @param  image  unicode url
 ; @param  rc  rc
 ; @param  tr  sktr.tr_
 ;!!! 5
@@ -20,26 +19,21 @@
 
     :css
       body {
-        background-image: url("#{image or rc.wallpaper_url()}");
+        background-image: url("#{rc.wallpaper_url()}");
         background-size: cover;
       }
 
   %body
-    .game.portal(data-id="#{gameId}")
-      .sec.sec-topic
-        .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Review')}
-        .sec-content.topics
-          .topic-user
-            .btn.btn-sm.btn-success.btn-new #{tr('New')}
-          %hr.middle
-        .sec-footer
-          %a.btn.btn-xs.btn-link.btn-more(role="button",style="display:none")
-            #{tr('More')}
+    .topic.portal(data-id="#{topicId}")
+      .posts
+      .footer
+        %a.btn.btn-link.btn-more(role="button")
+          #{tr('More')}
     #spin
 
     :javascript
       window.HOST = "#{host}";
-      window.GAME_ID = #{gameId};
+      window.TOPIC_ID = #{topicId};
       window.USER_NAME = "#{userName}";
       window.USER_PASSWORD = "#{userPassword}";
 

@@ -59,6 +59,12 @@
 %	if it.okazu
 			<okazu>true</okazu>
 %	endif
+%	if it.topicCount
+			<topicCount>{{it.topicCount}}</topicCount>
+%	endif
+%	if it.annotCount
+			<annotCount>{{it.annotCount}}</annotCount>
+%	endif
 %	if it.subtitleCount
 			<subtitleCount>{{it.subtitleCount}}</subtitleCount>
 %	endif

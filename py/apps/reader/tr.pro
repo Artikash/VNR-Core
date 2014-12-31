@@ -2,7 +2,10 @@
 # 2/17/2013 jichi
 
 CODECFORTR = UTF-8
-TRANSLATIONS = tr/zh_CN.ts tr/zh_TW.ts
+TRANSLATIONS = \
+  tr/ko_KR.ts \
+  tr/zh_CN.ts \
+  tr/zh_TW.ts
 SOURCES = \
   dialogs/chart.py \
   dialogs/embedprefs.py \
@@ -41,7 +44,6 @@ SOURCES = \
   managers/_trman.py \
   managers/_ttsman.py \
   managers/ttsman.py \
-  views/chatview.py \
   views/gameview.py \
   views/topicsview.py \
   views/userview.py \

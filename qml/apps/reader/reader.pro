@@ -47,6 +47,9 @@ SOURCES = \
   voiceview.qml
 
 #TRANSLATIONS = tr/ja_JP.ts tr/zh_CN.ts tr/zh_TW.ts
-TRANSLATIONS = tr/zh_CN.ts tr/zh_TW.ts
+TRANSLATIONS = \
+  tr/ko_KR.ts \
+  tr/zh_CN.ts \
+  tr/zh_TW.ts
 
 # EOF

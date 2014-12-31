@@ -1372,6 +1372,7 @@ class GameItem(object):
     'okazu',
     'scapeMedian',
     'scapeCount',
+    'topicCount',
     'annotCount',
     'subtitleCount',
     'tags',
@@ -1392,7 +1393,7 @@ class GameItem(object):
       title="", romajiTitle="", brand="", series="", image="", banner="", wiki="",
       timestamp=0, fileSize=0, date=None, artists='', sdartists='', writers='', musicians='',
       otome=False, okazu=False, scapeMedian=0, scapeCount=0, tags='',
-      annotCount=0, subtitleCount=0,
+      topicCount=0, annotCount=0, subtitleCount=0,
       overallScoreSum=0, overallScoreCount=0, ecchiScoreSum=0, ecchiScoreCount=0, #easyScoreSum=0, easyScoreCount=0,
     ):
     self.id = id # int
@@ -1410,6 +1411,7 @@ class GameItem(object):
     self.okazu = okazu # int
     self.scapeMedian = scapeMedian # int
     self.scapeCount = scapeCount # int
+    self.topicCount = topicCount # int
     self.annotCount = annotCount # int
     self.subtitleCount = subtitleCount # int
     self.tags = tags # unicode not None
@@ -1721,6 +1723,11 @@ class GameObject(QObject):
   ecchiScoreCount = Property(int,
     lambda self: self.__d.getGameItemProperty('ecchiScoreCount') or 0,
     notify=ecchiScoreCountChanged)
+
+  topicCountChanged = Signal(int)
+  topicCount = Property(int,
+    lambda self: self.__d.getGameItemProperty('topicCount') or 0,
+    notify=topicCountChanged)
 
   #@Slot(result=QIcon)
   def icon(self):
@@ -6428,7 +6435,7 @@ class _DataManager(object):
               e.tags = text
             elif tag in ('otome', 'okazu'):
               setattr(e, tag, text == 'true')
-            elif tag in ('timestamp', 'fileSize', 'annotCount', 'subtitleCount', 'scapeMedian', 'scapeCount', 'overallScoreSum', 'overallScoreCount', 'ecchiScoreSum', 'ecchiScoreCount'):
+            elif tag in ('timestamp', 'fileSize', 'topicCount', 'annotCount', 'subtitleCount', 'scapeMedian', 'scapeCount', 'overallScoreSum', 'overallScoreCount', 'ecchiScoreSum', 'ecchiScoreCount'):
               setattr(e, tag, int(text))
             elif tag == 'date':
               e.date = datetime.strptime(text, '%Y%m%d')
