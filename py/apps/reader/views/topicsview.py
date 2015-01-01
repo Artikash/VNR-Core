@@ -247,6 +247,8 @@ class _TopicsView(object):
 
   def refresh(self):
     """@reimp"""
+    self.newPostButton.setVisible(bool(self.topicId))
+
     host = config.API_HOST # must be the same as rest.coffee for the same origin policy
 
     user = dataman.manager().user()

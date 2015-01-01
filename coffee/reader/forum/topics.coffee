@@ -282,8 +282,6 @@ class TopicList
         if data.length
           self.addTopics data
           self.$more.show()
-        else
-          growl.warn tr 'Internet error'
 
   more: =>
     self = @

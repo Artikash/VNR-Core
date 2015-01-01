@@ -284,8 +284,6 @@ class PostList
         if data.length
           self.addPosts data
           self.$more.show()
-        else
-          growl.warn tr 'Internet error'
 
   more: =>
     self = @
