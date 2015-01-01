@@ -29,11 +29,21 @@ newPost = (topicId) -> postInputBean.newPost topicId # long ->
   $('#spin').spin if @spin.count > 0 then 'large' else false
 @spin.count = 0
 
-@addTopic = (topic) -> @topicView.addTopic topic if READY
-@updateTopic = (topic) -> @topicView.updateTopic topic if READY
+@addTopic = (topic) ->
+  if READY
+    if topic.type is 'review'
+      @reviewView?.addTopic topic
+    else
+      @topicView?.addTopic topic
+@updateTopic = (topic) ->
+  if READY
+    if topic.type is 'review'
+      @reviewView?.updateTopic topic
+    else
+      @topicView?.updateTopic topic
 
-@addPost = (post) -> @chatView.addPost post if READY
-@updatePost = (post) -> @chatView.updatePost post if READY
+@addPost = (post) -> @chatView?.addPost post if READY
+@updatePost = (post) -> @chatView?.updatePost post if READY
 
 # Init
 
@@ -46,7 +56,7 @@ createObjects = ->
   if subjectId
     search.subjectId = subjectId
     search.subjectType = 'game'
-  @topicView = new topicsjs.TopicList
+  @reviewView = new topicsjs.TopicList
     container: $sec.find '> .sec-content > .forum-topics'
     more: $sec.find '> .sec-content > .footer'
     search: search
@@ -67,10 +77,11 @@ createObjects = ->
   # Posts
   $sec = $ '.sec-chat'
   topicId = $sec.data 'topic-id'
-  @chatView = new postsjs.PostList
-    container: $sec.find '> .sec-content > .forum-posts'
-    more: $sec.find '> .sec-content > .footer'
-    topicId: topicId
+  if topicId
+    @chatView = new postsjs.PostList
+      container: $sec.find '> .sec-content > .forum-posts'
+      more: $sec.find '> .sec-content > .footer'
+      topicId: topicId
 
 bind = ->
   $('.sec-btn').click ->
