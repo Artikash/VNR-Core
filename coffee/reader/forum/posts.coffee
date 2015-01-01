@@ -47,9 +47,11 @@ createTemplates = ->
   .right
     .header
       %a.user(href="javascript:" style="${userStyle}") @${userName}
-      .time.text-minor = createTime
+      :if createTime
+        .time.text-minor(title="${createTimeString}") = createTime.fromNow()
       .lang = lang
-      .time.text-success = updateTime
+      :if updateTime
+        .time.text-success(title="${updateTimeString}") = updateTime.fromNow()
     .content.bbcode = content
     :if USER_NAME && USER_NAME != 'guest'
       .footer
@@ -74,6 +76,11 @@ createTemplates = ->
 # Functions and classes
 
 renderPost = (data) -> # object post -> string
+  createTime = updateTime = null
+  if data.createTime
+    createTime = moment data.createTime * 1000
+  if data.updateTime > data.createTime
+    updateTime = moment data.updateTime * 1000
   HAML_POST
     id: data.id
     type: data.type
@@ -82,8 +89,10 @@ renderPost = (data) -> # object post -> string
     lang: util.getLangName data.lang
     userAvatarUrl: util.getAvatarUrl data.userAvatar
     content: util.renderContent data.content
-    createTime: util.formatDate data.createTime
-    updateTime: if data.updateTime > data.createTime then util.formatDate data.updateTime else ''
+    createTime: createTime
+    updateTime: updateTime
+    createTimeString: util.formatDate createTime
+    updateTimeString: util.formatDate updateTime
     image: if data.image then {title:data.image.title, url:util.getImageUrl data.image} else null
     likeCount: data.likeCount or 0
     dislikeCount: data.dislikeCount or 0

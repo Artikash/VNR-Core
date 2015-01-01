@@ -48,9 +48,11 @@ createTemplates = ->
     .header.line
       .type.text-warning = tr(type)
       %a.user(href="javascript:" style="${userStyle}") @${userName}
-      .time = createTime
+      :if createTime
+        .time.text-minor(title="${createTimeString}") = createTime.fromNow()
       .lang = lang
-      .time.text-success = updateTime
+      :if updateTime
+        .time.text-success(title="${updateTimeString}") = updateTime.fromNow()
     %a.title(title="#{tr 'Browse'}") ${title}
     :if scores
       .score
@@ -87,6 +89,11 @@ createTemplates = ->
 # Functions and classes
 
 renderTopic = (data) -> # object topic -> string
+  createTime = updateTime = null
+  if data.createTime
+    createTime = moment data.createTime * 1000
+  if data.updateTime > data.createTime
+    updateTime = moment data.updateTime * 1000
   su = data.subupload
   if su
     su.ignoreCount = (su.totalCount or 0) - (su.createCount or 0) - (su.updateCount or 0) - (su.errorCount or 0)
@@ -102,8 +109,10 @@ renderTopic = (data) -> # object topic -> string
     userStyle: if data.userColor then "color:#{data.userColor}" else ''
     title: data.title
     content: util.renderContent data.content
-    createTime: util.formatDate data.createTime
-    updateTime: if data.updateTime > data.createTime then util.formatDate data.updateTime else ''
+    createTime: createTime
+    updateTime: updateTime
+    createTimeString: util.formatDate createTime
+    updateTimeString: util.formatDate updateTime
     userName: data.userName
     image: if data.image then {title:data.image.title, url:util.getImageUrl data.image} else null
     postCount: data.postCount

@@ -6,12 +6,13 @@
 ; @param  chatTopicId  long
 ; @param  userName  string
 ; @param  userPassword  string
+; @param  locale  string
 ; @param  title  unicode
 ; @param  rc  rc
 ; @param  tr  sktr.tr_
 ;!!! 5
 
-%html(lang="ja")
+%html(lang="#{locale}")
   %head
     %title #{title}
 
@@ -39,6 +40,7 @@
           .footer
             .btn.btn-link.btn-more(role="button")
               #{tr('More')} ...
+      %hr
       .sec.sec-topics(data-subject-id="#{subjectId}",data-subject-type="#{subjectType}")
         .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Topic')}
         -if userName and userName != 'guest'
@@ -66,6 +68,7 @@
 
     :javascript
       window.HOST = "#{host}";
+      window.LOCALE = "#{locale}";
       window.USER_NAME = "#{userName}";
       window.USER_PASSWORD = "#{userPassword}";
 

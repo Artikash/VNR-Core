@@ -105,6 +105,7 @@ class _TopicsView(object):
     w = self.webView
     w.setHtml(rc.haml_template('haml/reader/topicsview').render({
       'host': host,
+      'locale': config.language2htmllocale(user.language),
       'title': mytr_("Messages"),
       'subjectId': self.subjectId,
       'subjectType': self.subjectType,

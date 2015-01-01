@@ -117,7 +117,7 @@ init = ->
   else
     dprint 'init: enter'
 
-    moment.locale 'ja'
+    moment.locale LOCALE
 
     topicsjs.init()
     postsjs.init()
