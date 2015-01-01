@@ -54,6 +54,8 @@ createTemplates = ->
       :if updateTime
         .time.text-success(title="${updateTimeString}") = updateTime.fromNow()
     %a.title(title="#{tr 'Browse'}") ${title}
+    :if content
+      .content.bbcode = content
     :if scores
       .score
         .pp-table.dock
@@ -88,7 +90,7 @@ createTemplates = ->
 
 # Functions and classes
 
-renderTopic = (data) -> # object topic -> string
+renderTopic = (data, complete) -> # object topic, bool -> string
   createTime = updateTime = null
   if data.createTime
     createTime = moment data.createTime * 1000
@@ -108,7 +110,7 @@ renderTopic = (data) -> # object topic -> string
     userAvatarUrl: util.getAvatarUrl data.userAvatar
     userStyle: if data.userColor then "color:#{data.userColor}" else ''
     title: data.title
-    content: util.renderContent data.content
+    content: if complete then util.renderContent data.content else ''
     createTime: createTime
     updateTime: updateTime
     createTimeString: util.formatDate createTime
@@ -127,7 +129,7 @@ editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
 #
 class TopicList
 
-  constructor: (container: @$sel, more:@$more, search:search) ->
+  constructor: (container: @$sel, more:@$more, complete:@complete, search:search) ->
     @topics = [] # [object topic]
 
     @search = # {string:string}  search criteria
@@ -225,7 +227,7 @@ class TopicList
     @topics.push.apply @topics, topics
     #document.title = "#{PAGE_TITLE} (#{@topics.length})"
     # TODO: review
-    h = (renderTopic it for it in topics).join ''
+    h = (renderTopic(it, @complete) for it in topics).join ''
     @$sel.append h
     @_bindNewTopics()
 
@@ -236,7 +238,7 @@ class TopicList
   addTopic: (topic) => # object topic ->
     @topics.push topic
     #document.title = "#{PAGE_TITLE} (#{@topics.length})"
-    h = renderTopic topic
+    h = renderTopic topic, @complete
     @$sel.prepend h
     @_highlightNewTopics()
     @_bindNewTopics()
@@ -247,7 +249,7 @@ class TopicList
       util.fillObject oldtopic, topic
       $topic = @$getTopic topic.id
       if $topic.length
-        h = renderTopic topic
+        h = renderTopic topic, @complete
         $topic.replaceWith h
 
         @_highlightNewTopics()

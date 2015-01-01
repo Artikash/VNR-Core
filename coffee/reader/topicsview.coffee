@@ -52,7 +52,6 @@ createObjects = ->
   $sec = $ '.sec-reviews'
   search =
     type: 'review'
-  subjectId = $sec.data 'subject-id'
   if SUBJECT_ID
     search.subjectId = SUBJECT_ID
     search.subjectType = 'game'
@@ -60,6 +59,7 @@ createObjects = ->
     container: $sec.find '> .sec-content > .forum-topics'
     more: $sec.find '> .sec-content > .footer'
     search: search
+    complete: not TOPIC_ID
 
   # Topics
   $sec = $ '.sec-topics'
@@ -71,6 +71,7 @@ createObjects = ->
     container: $sec.find '> .sec-content > .forum-topics'
     more: $sec.find '> .sec-content > .footer'
     search: search
+    complete: not TOPIC_ID
 
   # Posts
   $sec = $ '.sec-posts'
