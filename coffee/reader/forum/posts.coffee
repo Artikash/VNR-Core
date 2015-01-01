@@ -95,20 +95,11 @@ replyPost = (topicId, postId) -> postInputBean.replyPost topicId, postId # long,
 #
 class PostList
 
-  constructor: (container: @$sel, more:$more, topicId:@topicId) ->
+  constructor: (container: @$sel, more:@$more, topicId:@topicId) ->
     @posts = [] # [object post]
 
-    # bind
-    self = @
-    $more?.click ->
-      $this = $ @
-      unless $this.data 'locked'
-        $this.data 'lock', true
-        self.more()
-        $this.data 'lock', false
-      false
-
-    @paint()
+    @bind()
+    @show()
 
   # Helper functions
 
@@ -257,7 +248,17 @@ class PostList
 
   # AJAX actions
 
-  paint: =>
+  bind: =>
+    self = @
+    @$more.hide().click ->
+      $this = $ @
+      unless $this.data 'locked'
+        $this.data 'lock', true
+        self.more()
+        $this.data 'lock', false
+      false
+
+  show: =>
     self = @
     spin true
     rest.forum.list 'post',
@@ -273,6 +274,7 @@ class PostList
         spin false
         if data.length
           self.addPosts data
+          self.$more.show()
         else
           growl.warn tr 'Internet error'
 
