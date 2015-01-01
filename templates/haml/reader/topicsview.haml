@@ -16,7 +16,7 @@
 
     ; Stylesheets
     -for it in 'bootstrap3.css', 'font-awesome4.css', \
-        'reader/forum/posts.css', 'reader/topicsview.css'
+        'reader/forum/posts.css', 'reader/forum/topics.css', 'reader/topicsview.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
 
     :css
@@ -29,19 +29,21 @@
     .view
       .sec.sec-topics(data-subject-id="#{subjectId}")
         .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Topic')}
-        .btn.btn-default.new-chat(title="#{tr('New')}")
-          %span.fa.fa-plus
-          #{tr('Topic')}
+        -if userName and userName != 'guest'
+          .btn.btn-sm.btn-default.new-topic(title="#{tr('New')}")
+            %span.fa.fa-plus
+            #{tr('Topic')}
         .sec-content
           .forum-topics
           .footer
-            .btn.btn-sm.btn-link.btn-more(role="button")
+            .btn.btn-link.btn-more(role="button")
               #{tr('More')} ...
       .sec.sec-chat(data-topic-id="#{chatTopicId}")
         .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Chat')}
-        .btn.btn-sm.btn-default.new-chat(title="#{tr('New')}")
-          %span.fa.fa-plus
-          #{tr('Chat')}
+        -if userName and userName != 'guest'
+          .btn.btn-sm.btn-default.new-chat(title="#{tr('New')}")
+            %span.fa.fa-plus
+            #{tr('Chat')}
         .sec-content
           .forum-posts
           .footer
@@ -62,7 +64,7 @@
         'bbcode', 'haml', 'moment', \
         'libs/linkify', \
         'share/growl', 'share/rest', 'share/util', \
-        'reader/forum/posts', 'reader/topicsview'
+        'reader/forum/posts', 'reader/forum/topics', 'reader/topicsview'
       %script(src="#{rc.cdn_url(it)}")
 
 ; EOF

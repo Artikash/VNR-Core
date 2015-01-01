@@ -15,19 +15,40 @@ dprint = ->
 
 # Global variables
 @READY = false # needed by chatview.py
-@chatView = null
 
+newTopic = (subjectId) -> topicInputBean.newTopic subjectId # long ->
 newPost = (topicId) -> postInputBean.newPost topicId # long ->
 
 # Export functions
 
-@addPost = (post) -> @chatView?.addPost post if READY
-@updatePost = (post) -> @chatView?.updatePost post if READY
-
 @spin = (t) -> # bool ->
-  $('#spin').spin if t then 'large' else false
+  if t
+    @spin.count += 1
+  else
+    @spin.count -= 1
+  $('#spin').spin if @spin.count > 0 then 'large' else false
+@spin.count = 0
+
+@addTopic = (topic) -> @topicView.addTopic topic if READY
+@updateTopic = (topic) -> @topicView.updateTopic topic if READY
+
+@addPost = (post) -> @chatView.addPost post if READY
+@updatePost = (post) -> @chatView.updatePost post if READY
 
 # Init
+
+createObjects = ->
+  topicsjs.init()
+  @topicView = new topicsjs.TopicList
+    container: $ '.sec-topics > .sec-content > .forum-topics'
+    more: $ '.sec-topics > .sec-content > .footer'
+    subjectId: $('.sec-topics').data 'subject-id'
+
+  postsjs.init()
+  @chatView = new postsjs.PostList
+    container: $ '.sec-chat > .sec-content > .forum-posts'
+    more: $ '.sec-chat > .sec-content > .footer'
+    topicId: $('.sec-chat').data 'topic-id'
 
 bind = ->
   $('.sec-btn').click ->
@@ -44,6 +65,12 @@ bind = ->
     false
 
   # Chat
+  $sec = $('.sec.sec-topic')
+  $sec.find('.new-topic').click ->
+    subjectId = $(@).parent().data 'subject-id'
+    newTopic subjectId
+    false
+
   $sec = $('.sec.sec-chat')
   $sec.find('.new-chat').click ->
     topicId = $(@).parent().data 'topic-id'
@@ -59,11 +86,7 @@ init = ->
 
     moment.locale 'ja'
 
-    postsjs.init()
-    @chatView = new postsjs.PostList
-      container: $ '.sec-chat > .sec-content > .forum-posts'
-      more: $ '.sec-chat > .sec-content > .footer'
-      topicId: $('.sec-chat').data 'topic-id'
+    createObjects()
 
     bind()
 

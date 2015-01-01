@@ -1,4 +1,4 @@
-# posts.coffee
+# forum/posts.coffee
 # 12/30/2014 jichi
 # Required by chat.haml
 #
