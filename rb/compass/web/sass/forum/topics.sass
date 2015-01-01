@@ -30,10 +30,21 @@ $avatar-width: 40px
       margin-left: $avatar-width + 9px
       > .line
         font-size: 90%
-        padding: 3px 0 3px 10px
         .item
           display: inline
           margin-right: 10px
+        padding: 3px 0 3px 10px
+        .type
+          display: inline
+        .time
+          //@extend .text-minor
+          display: inline
+          margin-left: 9px
+        .lang
+          //@extend .text-minor
+          color: purple
+          display: inline
+          margin-left: 9px
       > .header
         background-color: rgba(128,0,128,0.05) // purple
       //> .header
@@ -65,13 +76,16 @@ $avatar-width: 40px
         > a > img
           @extend .img-shadow
           max-width: 100%
-      > .content
+      > .title
+        margin: 9px 5px 0
         font-size: 95%
-        img
-          @extend .img-shadow
-          max-width: 100%
+      //> .content
+      //  font-size: 95%
+      //  img
+      //    @extend .img-shadow
+      //    max-width: 100%
       >.footer
-        margin-top: -5px
+        margin: -5px 0 0
         height: 18px // larger than the height of buttons
         .fade-in
           opacity: 0

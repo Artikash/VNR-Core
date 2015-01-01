@@ -17,8 +17,8 @@ dprint = ->
 
 # Global variables
 
-INIT_TOPIC_COUNT = 10
-MORE_TOPIC_COUNT = 20
+INIT_TOPIC_COUNT = 5
+MORE_TOPIC_COUNT = 10
 
 HIGHLIGHT_INTERVAL = 1500
 
@@ -46,13 +46,12 @@ createTemplates = ->
       %img.img-circle.avatar(src="${userAvatarUrl}" alt="#{tr 'Avatar'}")
   .right
     .header.line
-      .item.type.text-warning = tr(type)
-      %span.pull-right
-        %a.item(href="javascript:" style="${userStyle}") @${userName}
-        .item.text-minor = lang
-        .item.text-minor = createTime
-        .item.text-success = updateTime
-    %a.item.title(title="#{tr 'Browse'}") ${title}
+      .type.text-warning = tr(type)
+      %a(href="javascript:" style="${userStyle}") @${userName}
+      .time = createTime
+      .lang = lang
+      .time.text-success = updateTime
+    %a.title(title="#{tr 'Browse'}") ${title}
     :if scores
       .score
         .pp-table.dock
@@ -65,14 +64,14 @@ createTemplates = ->
               .pp-name #{tr 'Ecchi'}:
               .pp-value ${scores.ecchi}/10
     .footer
-      .btn-group.like-group
+      .btn-group.like-group.fade-in
         %a.like.btn.btn-link.btn-sm(role="button" title="#{tr 'Like'}" data-value="${likeCount}")
           %span.fa.fa-thumbs-up
           %span.value = likeCount
         %a.dislike.btn.btn-link.btn-sm(role="button" title="#{tr 'Dislike'}" data-value="${dislikeCount}")
           %span.fa.fa-thumbs-down
           %span.value = dislikeCount
-      .btn-group
+      .btn-group.fade-in.pull-right
         %a.btn-reply.btn.btn-link.btn-sm(role="button" title="#{tr 'Reply'}")
           #{tr 'Reply'}
           :if postCount
@@ -286,7 +285,7 @@ class TopicList
     rest.forum.list 'topic',
       data:
         subjectId: @subjectId
-        subjectId: @subjectType
+        subjectType: @subjectType
         sort: 'updateTime'
         asc: false
         complete: true
