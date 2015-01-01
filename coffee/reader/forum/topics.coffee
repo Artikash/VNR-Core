@@ -47,7 +47,7 @@ createTemplates = ->
   .right
     .header.line
       .type.text-warning = tr(type)
-      %a(href="javascript:" style="${userStyle}") @${userName}
+      %a.user(href="javascript:" style="${userStyle}") @${userName}
       .time = createTime
       .lang = lang
       .time.text-success = updateTime
@@ -117,10 +117,15 @@ editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
 # Classes
 #
 class TopicList
-  subjectType: 'game'
 
-  constructor: (container: @$sel, more:@$more, subjectId:@subjectId) ->
+  constructor: (container: @$sel, more:@$more, search:search) ->
     @topics = [] # [object topic]
+
+    @search = # {string:string}  search criteria
+      asc: false
+      sort: 'updateTime'
+      complete: true
+    _.extend @search, search if search?
 
     @bind()
     @show()
@@ -260,14 +265,9 @@ class TopicList
   show: =>
     self = @
     spin true
+    @search.limit = INIT_TOPIC_COUNT
     rest.forum.list 'topic',
-      data:
-        subjectId: @subjectId
-        subjectType: @subjectType
-        sort: 'updateTime'
-        asc: false
-        complete: true
-        limit: INIT_TOPIC_COUNT
+      data: @search
       error: ->
         spin false
         growl.warn tr 'Internet error'
@@ -282,15 +282,10 @@ class TopicList
   more: =>
     self = @
     spin true
+    @search.first = @topics.length
+    @search.limit = MORE_TOPIC_COUNT
     rest.forum.list 'topic',
-      data:
-        subjectId: @subjectId
-        subjectType: @subjectType
-        sort: 'updateTime'
-        asc: false
-        complete: true
-        first: @topics.length
-        limit: MORE_TOPIC_COUNT
+      data: @search
       error: ->
         spin false
         growl.warn tr 'Internet error'

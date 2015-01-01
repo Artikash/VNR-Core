@@ -44,6 +44,7 @@ class _TopicsView(object):
 
   def clear(self):
     self.subjectId = 0 # long
+    self.subjectType = 'game' # str
     self.topicId = 0 # long
 
   def _injectBeans(self):
@@ -106,6 +107,7 @@ class _TopicsView(object):
       'host': host,
       'title': mytr_("Messages"),
       'subjectId': self.subjectId,
+      'subjectType': self.subjectType,
       'chatTopicId': self.topicId,
       'userName': user.name,
       'userPassword': user.password,

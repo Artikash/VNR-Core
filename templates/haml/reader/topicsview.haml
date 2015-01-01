@@ -2,6 +2,7 @@
 ; 8/29/2014 jichi
 ; @param  host  str
 ; @param  subjectId  long
+; @param  subjectType  str
 ; @param  chatTopicId  long
 ; @param  userName  string
 ; @param  userPassword  string
@@ -27,7 +28,18 @@
 
   %body
     .view
-      .sec.sec-topics(data-subject-id="#{subjectId}")
+      .sec.sec-reviews(data-subject-id="#{subjectId}",data-subject-type="game")
+        .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Review')}
+        -if userName and userName != 'guest'
+          .btn.btn-sm.btn-default.new-topic(title="#{tr('New')}")
+            %span.fa.fa-plus
+            #{tr('Review')}
+        .sec-content
+          .forum-topics
+          .footer
+            .btn.btn-link.btn-more(role="button")
+              #{tr('More')} ...
+      .sec.sec-topics(data-subject-id="#{subjectId}",data-subject-type="#{subjectType}")
         .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Topic')}
         -if userName and userName != 'guest'
           .btn.btn-sm.btn-default.new-topic(title="#{tr('New')}")

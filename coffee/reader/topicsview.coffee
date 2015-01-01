@@ -38,17 +38,39 @@ newPost = (topicId) -> postInputBean.newPost topicId # long ->
 # Init
 
 createObjects = ->
-  topicsjs.init()
+  # Reviews
+  $sec = $ '.sec-reviews'
+  search =
+    type: 'review'
+  subjectId = $sec.data 'subject-id'
+  if subjectId
+    search.subjectId = subjectId
+    search.subjectType = 'game'
   @topicView = new topicsjs.TopicList
-    container: $ '.sec-topics > .sec-content > .forum-topics'
-    more: $ '.sec-topics > .sec-content > .footer'
-    subjectId: $('.sec-topics').data 'subject-id'
+    container: $sec.find '> .sec-content > .forum-topics'
+    more: $sec.find '> .sec-content > .footer'
+    search: search
 
-  postsjs.init()
+  # Topics
+  $sec = $ '.sec-topics'
+  search =
+    notype: 'review'
+  subjectId = $sec.data 'subject-id'
+  if subjectId
+    search.subjectId = subjectId
+    search.subjectType = $sec.data 'subject-type'
+  @topicView = new topicsjs.TopicList
+    container: $sec.find '> .sec-content > .forum-topics'
+    more: $sec.find '> .sec-content > .footer'
+    search: search
+
+  # Posts
+  $sec = $ '.sec-chat'
+  topicId = $sec.data 'topic-id'
   @chatView = new postsjs.PostList
-    container: $ '.sec-chat > .sec-content > .forum-posts'
-    more: $ '.sec-chat > .sec-content > .footer'
-    topicId: $('.sec-chat').data 'topic-id'
+    container: $sec.find '> .sec-content > .forum-posts'
+    more: $sec.find '> .sec-content > .footer'
+    topicId: topicId
 
 bind = ->
   $('.sec-btn').click ->
@@ -85,6 +107,9 @@ init = ->
     dprint 'init: enter'
 
     moment.locale 'ja'
+
+    topicsjs.init()
+    postsjs.init()
 
     createObjects()
 
