@@ -14,9 +14,9 @@ dprint = ->
   console.log.apply console, arguments
 
 # Global variables
-@READY = false # needed by chatview.py
+@READY = false # needed by postView.py
 
-newTopic = (subjectId) -> topicInputBean.newTopic subjectId # long ->
+newTopic = (subjectId, type) -> topicInputBean.newTopic subjectId, type # long, string ->
 newPost = (topicId) -> postInputBean.newPost topicId # long ->
 
 # Export functions
@@ -42,8 +42,8 @@ newPost = (topicId) -> postInputBean.newPost topicId # long ->
     else
       @topicView?.updateTopic topic
 
-@addPost = (post) -> @chatView?.addPost post if READY
-@updatePost = (post) -> @chatView?.updatePost post if READY
+@addPost = (post) -> @postView?.addPost post if READY
+@updatePost = (post) -> @postView?.updatePost post if READY
 
 # Init
 
@@ -53,8 +53,8 @@ createObjects = ->
   search =
     type: 'review'
   subjectId = $sec.data 'subject-id'
-  if subjectId
-    search.subjectId = subjectId
+  if SUBJECT_ID
+    search.subjectId = SUBJECT_ID
     search.subjectType = 'game'
   @reviewView = new topicsjs.TopicList
     container: $sec.find '> .sec-content > .forum-topics'
@@ -65,23 +65,20 @@ createObjects = ->
   $sec = $ '.sec-topics'
   search =
     notype: 'review'
-  subjectId = $sec.data 'subject-id'
-  if subjectId
-    search.subjectId = subjectId
-    search.subjectType = $sec.data 'subject-type'
+  if SUBJECT_ID
+    search.subjectId = SUBJECT_ID
   @topicView = new topicsjs.TopicList
     container: $sec.find '> .sec-content > .forum-topics'
     more: $sec.find '> .sec-content > .footer'
     search: search
 
   # Posts
-  $sec = $ '.sec-chat'
-  topicId = $sec.data 'topic-id'
-  if topicId
-    @chatView = new postsjs.PostList
+  $sec = $ '.sec-posts'
+  if TOPIC_ID
+    @postView = new postsjs.PostList
       container: $sec.find '> .sec-content > .forum-posts'
       more: $sec.find '> .sec-content > .footer'
-      topicId: topicId
+      topicId: TOPIC_ID
 
 bind = ->
   $('.sec-btn').click ->
@@ -98,16 +95,19 @@ bind = ->
     false
 
   # Chat
-  $sec = $('.sec.sec-topic')
+  $sec = $('.sec.sec-topics')
   $sec.find('.new-topic').click ->
-    subjectId = $(@).parent().data 'subject-id'
-    newTopic subjectId
+    newTopic SUBJECT_ID
     false
 
-  $sec = $('.sec.sec-chat')
-  $sec.find('.new-chat').click ->
-    topicId = $(@).parent().data 'topic-id'
-    newPost topicId
+  $sec = $('.sec.sec-reviews')
+  $sec.find('.new-topic').click ->
+    newTopic SUBJECT_ID, 'review'
+    false
+
+  $sec = $('.sec.sec-posts')
+  $sec.find('.new-posts').click ->
+    newPost TOPIC_ID
     false
 
 init = ->

@@ -3,7 +3,7 @@
 ; @param  host  str
 ; @param  subjectId  long
 ; @param  subjectType  str
-; @param  chatTopicId  long
+; @param  topicId  long
 ; @param  userName  string
 ; @param  userPassword  string
 ; @param  locale  string
@@ -29,7 +29,7 @@
 
   %body
     .view
-      .sec.sec-reviews(data-subject-id="#{subjectId}",data-subject-type="game")
+      .sec.sec-reviews
         .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Review')}
         -if userName and userName != 'guest'
           .btn.btn-sm.btn-default.new-topic(title="#{tr('New')}")
@@ -41,7 +41,7 @@
             .btn.btn-link.btn-more(role="button")
               #{tr('More')} ...
       %hr
-      .sec.sec-topics(data-subject-id="#{subjectId}",data-subject-type="#{subjectType}")
+      .sec.sec-topics
         .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Topic')}
         -if userName and userName != 'guest'
           .btn.btn-sm.btn-default.new-topic(title="#{tr('New')}")
@@ -53,7 +53,7 @@
             .btn.btn-link.btn-more(role="button")
               #{tr('More')} ...
       %hr
-      .sec.sec-chat(data-topic-id="#{chatTopicId}")
+      .sec.sec-posts
         .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Chat')}
         -if userName and userName != 'guest'
           .btn.btn-sm.btn-default.new-chat(title="#{tr('New')}")
@@ -71,6 +71,9 @@
       window.LOCALE = "#{locale}";
       window.USER_NAME = "#{userName}";
       window.USER_PASSWORD = "#{userPassword}";
+      window.TOPIC_ID = #{topicId};
+      window.SUBJECT_ID = #{subjectId};
+      window.SUBJECT_TYPE = "#{subjectType}";
 
     -for it in \
         'jquery', 'jquery.ui', \

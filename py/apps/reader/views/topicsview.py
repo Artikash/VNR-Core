@@ -109,7 +109,7 @@ class _TopicsView(object):
       'title': mytr_("Messages"),
       'subjectId': self.subjectId,
       'subjectType': self.subjectType,
-      'chatTopicId': self.topicId,
+      'topicId': self.topicId,
       'userName': user.name,
       'userPassword': user.password,
       'rc': rc,
@@ -277,6 +277,9 @@ class TopicsView(QtWidgets.QMainWindow):
   def refresh(self): self.__d.refresh()
   def clear(self): self.__d.clear()
 
+  def subjectId(self): return self.__d.subjectId
+  def setSubjectId(self, subjectId): self.__d.subjectId = subjectId
+
   def topicId(self): return self.__d.topicId
   def setTopicId(self, topicId): self.__d.topicId = topicId
 
@@ -334,26 +337,47 @@ class _TopicsViewManager:
     except Exception, e:
       dwarn(e)
 
-  def getDialog(self, topicId=0):
+  def getDialog(self, subjectId=0, topicId=0):
     """
-    @param  topicId  long
+    @param* subjectId  long
+    @param* topicId  long
+    @return  TopicsView or None
     """
-    if topicId:
-      for w in self.dialogs:
-        if w.isVisible() and topicId == w.topicId():
-          return w
+    for w in self.dialogs:
+      if w.isVisible() and (subjectId, topicId) == (w.subjectId(), w.topicId()):
+        return w
+
+  def createDialog(self, subjectId=0, topicId=0):
+    """
+    @param* subjectId  long
+    @param* topicId  long
+    @return  TopicsView
+    """
+    w = self.getDialog(subjectId, topicId)
+    if w:
+      w.refresh()
+      return w
     for w in self.dialogs:
       if not w.isVisible():
+        w.clear()
+        w.setSubjectId(subjectId)
+        w.setTopicId(topicId)
         return w
-    ret = self._createDialog()
-    self.dialogs.append(ret)
-    return ret
+    w = self._createDialog()
+    w.setSubjectId(subjectId)
+    w.setTopicId(topicId)
+
+    self.dialogs.append(w)
+    return w
 
 class TopicsViewManager:
   def __init__(self):
     self.__d = _TopicsViewManager()
 
   #def clear(self): self.hide()
+
+  def isViewVisible(self, *args, **kwargs):
+    return bool(self.__d.getDialog(*args, **kwargs))
 
   def isVisible(self):
     if self.__d.dialogs:
@@ -368,16 +392,12 @@ class TopicsViewManager:
         if w.isVisible():
           w.hide()
 
-  def showTopic(self, topicId):
+  def show(self, subjectId=0, topicId=0):
     """
-    @param  topicId  long
+    @param* subjectId  long  subject ID
+    @param* topicId  long  chatroom topicId
     """
-    w = self.__d.getDialog(topicId)
-    if w.topicId() == topicId:
-      w.refresh()
-    else:
-      w.clear()
-      w.setTopicId(topicId)
+    w = self.__d.createDialog(subjectId, topicId)
     w.show()
     w.raise_()
 
