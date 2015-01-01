@@ -216,7 +216,7 @@ class TopicList
     @topics.push.apply @topics, topics
     #document.title = "#{PAGE_TITLE} (#{@topics.length})"
     # TODO: review
-    h = (renderTopic it for it in topics when it.type isnt 'review').join ''
+    h = (renderTopic it for it in topics).join ''
     @$sel.append h
     @_bindNewTopics()
 
@@ -227,13 +227,10 @@ class TopicList
   addTopic: (topic) => # object topic ->
     @topics.push topic
     #document.title = "#{PAGE_TITLE} (#{@topics.length})"
-    if topic.type isnt 'review'
-      h = renderTopic topic
-      @$sel.prepend h
-      @_highlightNewTopics()
-      @_bindNewTopics()
-    else
-      dprint 'addTopic: error: unknown topic type'
+    h = renderTopic topic
+    @$sel.prepend h
+    @_highlightNewTopics()
+    @_bindNewTopics()
 
   updateTopic: (topic) => # object topic ->
     oldtopic = @getTopic topic.id
