@@ -219,6 +219,8 @@ forum:
   topics:
     global: 50
     term: 51
+  subjects:
+    global: 101
 
 urls:
   reader_demo: "http://www.youtube.com/watch?v=KxRGwS4gkW4"

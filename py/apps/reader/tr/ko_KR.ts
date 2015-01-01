@@ -3610,12 +3610,12 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <translation>수정 등록완료</translation>
     </message>
     <message>
-        <location filename="views/topicsview.py" line="206"/>
+        <location filename="managers/forumapi.py" line="206"/>
         <source>Failed to submit post</source>
         <translation>게시물 등록 실패</translation>
     </message>
     <message>
-        <location filename="views/topicsview.py" line="247"/>
+        <location filename="managers/forumapi.py" line="247"/>
         <source>Please try again</source>
         <translation>나중에 다시 시도해주세요</translation>
     </message>
@@ -3625,7 +3625,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <translation>TAH 일ㆍ영 기계번역 규칙을 사용해서 일본어 다시쓰기</translation>
     </message>
     <message>
-        <location filename="views/topicsview.py" line="246"/>
+        <location filename="managers/forumapi.py" line="246"/>
         <source>Failed to update post</source>
         <translation>게시물 수정 실패</translation>
     </message>
@@ -4168,12 +4168,12 @@ You can specify some keyboard shortcuts in Preferences/Shortcuts.</source>
         <translation>게임기록</translation>
     </message>
     <message>
-        <location filename="views/topicsview.py" line="285"/>
+        <location filename="managers/forumapi.py" line="285"/>
         <source>Failed to submit topic</source>
         <translation type="obsolete">화제 등록실패</translation>
     </message>
     <message>
-        <location filename="views/topicsview.py" line="330"/>
+        <location filename="managers/forumapi.py" line="330"/>
         <source>Failed to update topic</source>
         <translation type="obsolete">화제 저장실패</translation>
     </message>

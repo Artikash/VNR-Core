@@ -34,6 +34,7 @@ SOURCES = \
   managers/dataman.py \
   managers/dictman.py \
   managers/dicts.py \
+  managers/forumapi.py \
   managers/gameagent.py \
   managers/gameman.py \
   managers/netman.py \
@@ -45,7 +46,6 @@ SOURCES = \
   managers/_ttsman.py \
   managers/ttsman.py \
   views/gameview.py \
-  views/topicsview.py \
   views/userview.py \
   qml/kagami.py \
   widgets/textspy.py \

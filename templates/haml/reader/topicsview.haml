@@ -2,7 +2,6 @@
 ; 8/29/2014 jichi
 ; @param  host  str
 ; @param  subjectId  long
-; @param  subjectType  str
 ; @param  topicId  long
 ; @param  userName  string
 ; @param  userPassword  string
@@ -73,7 +72,6 @@
       window.USER_PASSWORD = "#{userPassword}";
       window.TOPIC_ID = #{topicId};
       window.SUBJECT_ID = #{subjectId};
-      window.SUBJECT_TYPE = "#{subjectType}";
 
     -for it in \
         'jquery', 'jquery.ui', \

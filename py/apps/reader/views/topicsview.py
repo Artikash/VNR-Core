@@ -19,20 +19,25 @@ from sakurakit.sktr import tr_
 from sakurakit.skwebkit import SkWebView #, SkWebViewBean
 from sakurakit.skwidgets import SkTitlelessDockWidget, SkStyleView, shortcut
 #from sakurakit.skqml import QmlObject
-from mytr import my, mytr_
-import config, dataman, growl, netman, osutil, rc
+from mytr import mytr_
+import comets, config, dataman, growl, netman, osutil, rc
 
 @Q_Q
 class _TopicsView(object):
 
   def __init__(self, q):
-    self.clear()
+    #self.clear()
+    self.subjectId = None # long
+    self.topicId = None # long
+
+    self.topicComet = None
+    self.subjectComet = None
 
     #self._viewBean = SkWebViewBean(self.webView)
 
     self._createUi(q)
 
-    shortcut('ctrl+n', self._new, parent=q)
+    #shortcut('ctrl+n', self._new, parent=q)
 
   def _createUi(self, q):
     q.setCentralWidget(self.webView)
@@ -43,9 +48,41 @@ class _TopicsView(object):
     q.addDockWidget(Qt.BottomDockWidgetArea, dock)
 
   def clear(self):
-    self.subjectId = 0 # long
-    self.subjectType = 'game' # str
-    self.topicId = 0 # long
+    self.setSubjectId(0)
+    self.setTopicId(0)
+
+  def setSubjectId(self, subjectId): # long ->
+    if self.subjectId != subjectId:
+      self.subjectId = subjectId
+
+      if not subjectId:
+        if self.subjectComet:
+          self.subjectComet.setActive(False)
+      else:
+        if not self.subjectComet:
+          self.subjectComet = comets.createPostComet()
+          qml = self.subjectComet.q
+          qml.topicDataReceived.connect(self._onTopicReceived)
+          qml.topicDataUpdated.connect(self._onTopicUpdated)
+        path = 'game/%s' % subjectId
+        self.subjectComet.setPath(path)
+        if netman.manager().isOnline():
+          self.subjectComet.setActive(True)
+
+  def setTopicId(self, topicId): # long ->
+    if self.topicId != topicId:
+      if topicId:
+        if not self.topicComet:
+          self.topicComet = comets.globalComet()
+        if not self.topicId:
+          self.topicComet.postDataReceived.connect(self._onPostReceived)
+          self.topicComet.postDataUpdated.connect(self._onPostUpdated)
+        if netman.manager().isOnline():
+          self.topicComet.setProperty('active', True)
+      elif self.topicComet:
+        self.topicComet.postDataReceived.disconnect(self._onPostReceived)
+        self.topicComet.postDataUpdated.disconnect(self._onPostUpdated)
+      self.topicId = topicId
 
   def _injectBeans(self):
     h = self.webView.page().mainFrame()
@@ -64,6 +101,8 @@ class _TopicsView(object):
       ('cacheBean', m.cacheBean),
       ('i18nBean', m.i18nBean),
       ('mainBean', m.mainBean),
+      ('topicEditBean', self.topicEditBean),
+      ('topicInputBean', self.topicInputBean),
       ('postEditBean', self.postEditBean),
       ('postInputBean', self.postInputBean),
     )
@@ -77,6 +116,116 @@ class _TopicsView(object):
   def postInputBean(self):
     import postinput
     return postinput.PostInputManagerBean(parent=self.q, manager=self.postInputManager)
+
+  @memoizedproperty
+  def topicEditBean(self):
+    import topicedit
+    return topicedit.TopicEditorManagerBean(parent=self.q, manager=self.topicEditorManager)
+
+  @memoizedproperty
+  def topicInputBean(self):
+    import topicinput
+    return topicinput.TopicInputManagerBean(parent=self.q, manager=self.topicInputManager)
+
+  @memoizedproperty
+  def postEditorManager(self):
+    import postedit
+    ret = postedit.PostEditorManager(self.q)
+    ret.postChanged.connect(self._updatePost)
+    return ret
+
+  @memoizedproperty
+  def postInputManager(self):
+    import postinput
+    ret = postinput.PostInputManager(self.q)
+    ret.postReceived.connect(self._submitPost)
+    return ret
+
+  @memoizedproperty
+  def topicEditorManager(self):
+    import topicedit
+    ret = topicedit.TopicEditorManager(self.q)
+    ret.topicChanged.connect(self._updateTopic)
+    return ret
+
+  @memoizedproperty
+  def topicInputManager(self):
+    import topicinput
+    ret = topicinput.TopicInputManager(self.q)
+    ret.topicReceived.connect(self._submitTopic)
+    return ret
+
+  def _submitPost(self, postData, imageData):
+    if self.topicId and netman.manager().isOnline():
+      import forumapi
+      skevents.runlater(partial(forumapi.manager().submitPost,
+          postData, imageData,
+          topicId=self.topicId))
+
+  def _updatePost(self, postData, imageData):
+    if self.topicId and netman.manager().isOnline():
+      import forumapi
+      skevents.runlater(partial(forumapi.manager().updatePost,
+          postData, imageData))
+
+  def _submitTopic(self, topicData, imageData, ticketData):
+    subjectId = self.subjectId
+    if subjectId:
+      subjectType = 'game'
+    else:
+      subjectId = config.GLOBAL_SUBJECT_ID
+      subjectType = 'subject'
+    if netman.manager().isOnline():
+      import forumapi
+      skevents.runlater(partial(forumapi.manager().submitTopic,
+          topicData, imageData, ticketData,
+          subjectId=subjectId, subjectType=subjectType))
+
+  def _updateTopic(self, topicData, imageData, ticketData):
+    if netman.manager().isOnline():
+      import forumapi
+      skevents.runlater(partial(forumapi.manager().updateTopic,
+          topicData, imageData, ticketData))
+
+  def _onPostReceived(self, data): # str ->
+    try:
+      obj = json.loads(data)
+      topicId = obj['topicId']
+      if topicId == self.topicId and self.q.isVisible():
+        self.addPost(data)
+      dprint("pass")
+    except Exception, e:
+      dwarn(e)
+
+  def _onPostUpdated(self, data): # str ->
+    try:
+      obj = json.loads(data)
+      topicId = obj['topicId']
+      if topicId == self.topicId and self.q.isVisible():
+        self.updatePost(data)
+      dprint("pass")
+    except Exception, e:
+      dwarn(e)
+
+  def _onTopicReceived(self, data): # str ->
+    try:
+      obj = json.loads(data)
+      subjectId = obj['subjectId']
+      if subjectId == self.subjectId and self.q.isVisible():
+        self.addTopic(data)
+      dprint("pass")
+    except Exception, e:
+      dwarn(e)
+
+  def _onTopicUpdated(self, data): # str ->
+    try:
+      obj = json.loads(data)
+      subjectId = obj['subjectId']
+      if subjectId == self.subjectId and self.q.isVisible():
+        self.updateTopic(data)
+      dprint("pass")
+    except Exception, e:
+      dwarn(e)
 
   @memoizedproperty
   def webView(self):
@@ -108,7 +257,7 @@ class _TopicsView(object):
       'locale': config.language2htmllocale(user.language),
       'title': mytr_("Messages"),
       'subjectId': self.subjectId,
-      'subjectType': self.subjectType,
+      #'subjectType': self.subjectType,
       'topicId': self.topicId,
       'userName': user.name,
       'userPassword': user.password,
@@ -122,7 +271,8 @@ class _TopicsView(object):
     ret = SkStyleView()
     skqss.class_(ret, 'texture')
     layout = QtWidgets.QHBoxLayout()
-    layout.addWidget(self.newButton)
+    layout.addWidget(self.newPostButton)
+    layout.addWidget(self.newTopicButton)
     layout.addStretch()
     layout.addWidget(self.browseButton)
     layout.addWidget(self.refreshButton)
@@ -153,108 +303,25 @@ class _TopicsView(object):
     return ret
 
   @memoizedproperty
-  def newButton(self):
+  def newPostButton(self):
     ret = QtWidgets.QPushButton("+ " + tr_("Chat"))
     skqss.class_(ret, 'btn btn-success')
     ret.setToolTip(tr_("New") + " (Ctrl+N)")
     #ret.setStatusTip(ret.toolTip())
-    ret.clicked.connect(self._new)
+    ret.clicked.connect(self._newPost)
     return ret
 
   @memoizedproperty
-  def postEditorManager(self):
-    import postedit
-    ret = postedit.PostEditorManager(self.q)
-    ret.postChanged.connect(self._update)
+  def newTopicButton(self):
+    ret = QtWidgets.QPushButton("+ " + tr_("Topic"))
+    skqss.class_(ret, 'btn btn-default')
+    ret.setToolTip(tr_("New") + " (Ctrl+N)")
+    #ret.setStatusTip(ret.toolTip())
+    ret.clicked.connect(self._newTopic)
     return ret
 
-  @memoizedproperty
-  def postInputManager(self):
-    import postinput
-    ret = postinput.PostInputManager(self.q)
-    ret.postReceived.connect(self._submit)
-    return ret
-
-  def _submit(self, postData, imageData):
-    """
-    @param  postData  unicode json
-    @param  imageData  unicode
-    """
-    if self.topicId:
-      user = dataman.manager().user()
-      if user.name and user.password:
-        post = json.loads(postData)
-        if not post.get('topic'):
-          post['topic'] = self.topicId
-        post['login'] = user.name
-        post['password'] = user.password
-        if imageData:
-          image = json.loads(imageData)
-          image['login'] = user.name
-          image['password'] = user.password
-        else:
-          image = None
-        skevents.runlater(partial(self._submitPost, post, image))
-
-  def _submitPost(self, post, image):
-    """
-    @param  post  kw
-    @param  image  kw or None
-    """
-    dprint("enter")
-    if image:
-      data = skfileio.readdata(image['filename'])
-      if data:
-        post['image'] = netman.manager().submitImage(data, image)
-
-    if image and not post.get('image') or not netman.manager().submitPost(post):
-      growl.warn("<br/>".join((
-        my.tr("Failed to submit post"),
-        my.tr("Please try again"),
-      )))
-    dprint("leave")
-
-  def _update(self, postData, imageData):
-    """
-    @param  postData  unicode json
-    @param  imageData  unicode json
-    """
-    if self.topicId:
-      user = dataman.manager().user()
-      if user.name and user.password:
-        post = json.loads(postData)
-        #post['topic'] = self.topicId
-        post['login'] = user.name
-        post['password'] = user.password
-
-        if imageData:
-          image = json.loads(imageData)
-          image['login'] = user.name
-          image['password'] = user.password
-        else:
-          image = None
-        skevents.runlater(partial(self._updatePost, post, image))
-
-  def _updatePost(self, post, image):
-    """
-    @param  post  kw
-    @param  image  kw or None
-    """
-    dprint("enter")
-    nm = netman.manager()
-    if image:
-      data = skfileio.readdata(image['filename'])
-      if data:
-        post['image'] = nm.submitImage(data, image)
-
-    if image and not post.get('image') or not nm.updatePost(post):
-      growl.warn("<br/>".join((
-        my.tr("Failed to update post"),
-        my.tr("Please try again"),
-      )))
-    dprint("leave")
-
-  def _new(self): self.postInputManager.newPost()
+  def _newPost(self): self.postInputManager.newPost(self.topicId)
+  def _newTopic(self): self.topicInputManager.newTopic(self.gameId)
 
   # append ;null for better performance
   def addPost(self, data): # unicode json ->
@@ -264,6 +331,16 @@ class _TopicsView(object):
   # append ;null for better performance
   def updatePost(self, data): # unicode json ->
     js = 'if (window.READY) updatePost(%s); null' % data
+    self.webView.evaljs(js)
+
+  # append ;null for better performance
+  def addTopic(self, data): # unicode json ->
+    js = 'if (window.READY) addTopic(%s); null' % data
+    self.webView.evaljs(js)
+
+  # append ;null for better performance
+  def updateTopic(self, data): # unicode json ->
+    js = 'if (window.READY) updateTopic(%s); null' % data
     self.webView.evaljs(js)
 
 class TopicsView(QtWidgets.QMainWindow):
@@ -278,10 +355,10 @@ class TopicsView(QtWidgets.QMainWindow):
   def clear(self): self.__d.clear()
 
   def subjectId(self): return self.__d.subjectId
-  def setSubjectId(self, subjectId): self.__d.subjectId = subjectId
+  def setSubjectId(self, subjectId): self.__d.setSubjectId(subjectId)
 
   def topicId(self): return self.__d.topicId
-  def setTopicId(self, topicId): self.__d.topicId = topicId
+  def setTopicId(self, topicId): self.__d.setTopicId(topicId)
 
   def setVisible(self, value):
     """@reimp @public"""
@@ -290,23 +367,11 @@ class TopicsView(QtWidgets.QMainWindow):
     super(TopicsView, self).setVisible(value)
     if not value:
       self.__d.webView.clear()
-
-  def addPost(self, data): # unicode json ->
-    self.__d.addPost(data)
-
-  def updatePost(self, data): # unicode json ->
-    self.__d.updatePost(data)
+      self.__d.clear()
 
 class _TopicsViewManager:
   def __init__(self):
     self.dialogs = []
-
-    import comets
-    comet = comets.globalComet()
-    #assert comet
-    if comet: # for debug purpose when comet is empty
-      comet.postDataReceived.connect(self._onPostReceived)
-      comet.postDataUpdated.connect(self._onPostUpdated)
 
   def _createDialog(self):
     import windows
@@ -314,28 +379,6 @@ class _TopicsViewManager:
     ret = TopicsView(parent=parent)
     ret.resize(550, 580)
     return ret
-
-  def _onPostReceived(self, data): # str ->
-    try:
-      obj = json.loads(data)
-      topicId = obj['topicId']
-      for w in self.dialogs:
-        if w.isVisible() and w.topicId() == topicId:
-          w.addPost(data)
-      dprint("pass")
-    except Exception, e:
-      dwarn(e)
-
-  def _onPostUpdated(self, data): # str ->
-    try:
-      obj = json.loads(data)
-      topicId = obj['topicId']
-      for w in self.dialogs:
-        if w.isVisible() and w.topicId() == topicId:
-          w.updatePost(data)
-      dprint("pass")
-    except Exception, e:
-      dwarn(e)
 
   def getDialog(self, subjectId=0, topicId=0):
     """

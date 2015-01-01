@@ -3609,12 +3609,12 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <translation>編輯已提交</translation>
     </message>
     <message>
-        <location filename="views/topicsview.py" line="206"/>
+        <location filename="managers/forumapi.py" line="206"/>
         <source>Failed to submit post</source>
         <translation>儲存內容失敗了</translation>
     </message>
     <message>
-        <location filename="views/topicsview.py" line="247"/>
+        <location filename="managers/forumapi.py" line="247"/>
         <source>Please try again</source>
         <translation>請再重試下吧</translation>
     </message>
@@ -3624,7 +3624,7 @@ Instead, cloning will result in duplicate entries that makes it more difficult t
         <translation>使用TAH指令碼中的規則改寫日英機器翻譯</translation>
     </message>
     <message>
-        <location filename="views/topicsview.py" line="246"/>
+        <location filename="managers/forumapi.py" line="246"/>
         <source>Failed to update post</source>
         <translation>編輯帖子失敗了</translation>
     </message>
@@ -4167,12 +4167,12 @@ You can specify some keyboard shortcuts in Preferences/Shortcuts.</source>
         <translation>錄製遊戲</translation>
     </message>
     <message>
-        <location filename="views/topicsview.py" line="285"/>
+        <location filename="managers/forumapi.py" line="285"/>
         <source>Failed to submit topic</source>
         <translation type="obsolete">儲存主題失敗了</translation>
     </message>
     <message>
-        <location filename="views/topicsview.py" line="330"/>
+        <location filename="managers/forumapi.py" line="330"/>
         <source>Failed to update topic</source>
         <translation type="obsolete">儲存主題失敗了</translation>
     </message>
