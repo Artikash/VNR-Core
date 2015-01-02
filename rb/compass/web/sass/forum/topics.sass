@@ -10,14 +10,12 @@
 $avatar-width: 40px
 
 .forum-topics
+  a[class*="link-"]
+    @extend .cursor-pointer
   img.avatar
     width: $avatar-width
     //height: $avatar-width
     @extend .avatar-shadow
-  .dock
-    display: inline-block
-    border: 1px dashed #7b85c9 // the same as <code> in bbcode
-    padding: 5px
   .topic
     padding-top: 9px // include the height of footer
     min-height: $avatar-width
@@ -30,6 +28,8 @@ $avatar-width: 40px
       margin-left: $avatar-width + 9px
       > .line
         font-size: 90%
+        //[class*="text-"]
+        //  display: inline
         .item
           display: inline
           margin-right: 10px
@@ -45,6 +45,9 @@ $avatar-width: 40px
           color: purple
       > .header
         background-color: rgba(128,0,128,0.05) // purple
+        .score
+          display: inline
+          float: right
       //> .header
       //  //  color: darkblue // TODO: Use linke instead
       //  //  display: inline
@@ -59,16 +62,6 @@ $avatar-width: 40px
       //    display: inline
       //    margin-left: 9px
       //    font-size: 90%
-      > .score
-        margin-top: 9px
-        font-size: 90%
-        .pp-row
-          display: inline
-          margin-right: 10px
-          &[data-type="overall"] [class^="pp-"]
-            color: blue
-          &[data-type="ecchi"] [class^="pp-"]
-            color: crimson
       > .image
         margin: 5px
         > a > img

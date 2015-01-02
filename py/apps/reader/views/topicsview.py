@@ -248,6 +248,7 @@ class _TopicsView(object):
   def refresh(self):
     """@reimp"""
     self.newPostButton.setVisible(bool(self.topicId))
+    self.gameButton.setVisible(bool(self.subjectId))
 
     host = config.API_HOST # must be the same as rest.coffee for the same origin policy
 
@@ -277,6 +278,7 @@ class _TopicsView(object):
     layout.addWidget(self.newTopicButton)
     layout.addStretch()
     layout.addWidget(self.browseButton)
+    layout.addWidget(self.gameButton)
     layout.addWidget(self.refreshButton)
     ret.setLayout(layout)
     layout.setContentsMargins(4, 4, 4, 4)
@@ -285,7 +287,7 @@ class _TopicsView(object):
   @memoizedproperty
   def refreshButton(self):
     ret = QtWidgets.QPushButton(tr_("Refresh"))
-    skqss.class_(ret, 'btn btn-info')
+    skqss.class_(ret, 'btn btn-primary')
     ret.setToolTip(tr_("Refresh") + " (Ctrl+R)")
     #ret.setStatusTip(ret.toolTip())
     ret.clicked.connect(self.refresh)
@@ -295,10 +297,23 @@ class _TopicsView(object):
     return ret
 
   @memoizedproperty
+  def gameButton(self):
+    ret = QtWidgets.QPushButton(tr_("Game"))
+    skqss.class_(ret, 'btn btn-info')
+    ret.setToolTip(tr_("Game"))
+    #ret.setStatusTip(ret.toolTip())
+    ret.clicked.connect(self._showGame)
+    return ret
+
+  def _showGame(self):
+    import main
+    main.manager().showGameView(itemId=self.subjectId)
+
+  @memoizedproperty
   def browseButton(self):
     ret = QtWidgets.QPushButton(tr_("Browse"))
     skqss.class_(ret, 'btn btn-default')
-    ret.setToolTip(tr_("Launch"))
+    ret.setToolTip(tr_("Browse"))
     #ret.setStatusTip(ret.toolTip())
     ret.clicked.connect(lambda:
         osutil.open_url("http://sakuradite.com/topic/%s" % self.topicId))
@@ -308,7 +323,7 @@ class _TopicsView(object):
   def newPostButton(self):
     ret = QtWidgets.QPushButton("+ " + tr_("Chat"))
     skqss.class_(ret, 'btn btn-success')
-    ret.setToolTip(tr_("New") + " (Ctrl+N)")
+    ret.setToolTip(tr_("New"))
     #ret.setStatusTip(ret.toolTip())
     ret.clicked.connect(self._newPost)
     return ret
@@ -317,7 +332,7 @@ class _TopicsView(object):
   def newTopicButton(self):
     ret = QtWidgets.QPushButton("+ " + tr_("Topic"))
     skqss.class_(ret, 'btn btn-default')
-    ret.setToolTip(tr_("New") + " (Ctrl+N)")
+    ret.setToolTip(tr_("New"))
     #ret.setStatusTip(ret.toolTip())
     ret.clicked.connect(self._newTopic)
     return ret

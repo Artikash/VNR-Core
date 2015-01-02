@@ -53,20 +53,19 @@ createTemplates = ->
       .lang = lang
       :if updateTime
         .time.text-success(title="${updateTimeString}") = updateTime.fromNow()
-    %a.title(title="#{tr 'Browse'}") ${title}
+      :if scores
+        .score
+          .item.text-danger
+            #{tr 'Score'}: ${scores.overall != undefined ? scores.overall : '-'}/10
+          .item.text-warning
+            H: ${scores.ecchi != undefined ? scores.ecchi : '-'}/10
+    .line.title
+      %a(title="#{tr 'Show'}") ${title}
+      :if gameTitle
+        %a.pull-right.link-game(data-id="${subjectId}" title="#{tr 'Show'}")
+          ーー ${gameTitle}
     :if content
       .content.bbcode = content
-    :if scores
-      .score
-        .pp-table.dock
-          :if scores.overall != undefined
-            .pp-row(data-type='overall')
-              .pp-name #{tr 'Overall'}:
-              .pp-value ${scores.overall}/10
-          :if scores.ecchi != undefined
-            .pp-row(data-type='ecchi')
-              .pp-name #{tr 'Ecchi'}:
-              .pp-value ${scores.ecchi}/10
     .footer
       .btn-group.like-group.fade-in
         %a.like.btn.btn-link.btn-sm(role="button" title="#{tr 'Like'}" data-value="${likeCount}")
@@ -105,6 +104,8 @@ renderTopic = (data, complete) -> # object topic, bool -> string
     id: data.id
     type: data.type
     lang: util.getLangName data.lang
+    subjectId: data.subjectId
+    gameTitle: if data.subjectType is 'game' then data.subjectTitle else ''
     #userStyle: if data.userColor then "color:#{data.userColor}" else ''
     #userStyle: ''
     userAvatarUrl: util.getAvatarUrl data.userAvatar
@@ -157,6 +158,10 @@ class TopicList
 
       $header = $topic.find '> .right > .header'
       $footer = $topic.find '> .right > .footer'
+
+      $topic.find('a.link-game').click ->
+        mainBean.showGame @dataset.id
+        false
 
       $header.find('a.user').click ->
         mainBean.showUser topic.userName if topic?.userName

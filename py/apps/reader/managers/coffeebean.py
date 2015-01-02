@@ -20,6 +20,16 @@ class MainBean(QObject):
     import main
     main.manager().showUserView(name=name)
 
+  @Slot(long)
+  def showGame(self, itemId): # long ->
+    import main
+    main.manager().showGameView(itemId=itemId)
+
+  @Slot(long)
+  def showGameTopics(self, itemId): # long ->
+    import main
+    main.manager().showGameTopics(itemId)
+
 class YoutubeBean(QObject):
   def __init__(self, parent=None):
     super(YoutubeBean, self).__init__(parent)

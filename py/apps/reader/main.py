@@ -1864,14 +1864,16 @@ class MainObject(QObject):
   def showSubtitleEditor(self, comment): # dataman.Comment
     self.__d.subtitleEditorManager.showComment(comment)
 
-  def showGameView(self, gameId=None): # long ->
+  def showGameView(self, gameId=None, itemId=None): # long, long ->
     d = self.__d
-    if not gameId:
+    if itemId:
+      d.gameViewManager.showItem(itemId)
+    elif not gameId:
       gameId = d.dataManager.currentGameId()
-    if not gameId:
-      growl.notify(my.tr("Unknown game. Please try updating the database."))
-    else:
-      d.gameViewManager.showGame(gameId)
+      if not gameId:
+        growl.notify(my.tr("Unknown game. Please try updating the database."))
+      else:
+        d.gameViewManager.showGame(gameId)
 
   def showUserView(self, *args, **kwargs):
     """
