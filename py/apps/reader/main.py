@@ -1868,8 +1868,9 @@ class MainObject(QObject):
     d = self.__d
     if itemId:
       d.gameViewManager.showItem(itemId)
-    elif not gameId:
-      gameId = d.dataManager.currentGameId()
+    else:
+      if not gameId:
+        gameId = d.dataManager.currentGameId()
       if not gameId:
         growl.notify(my.tr("Unknown game. Please try updating the database."))
       else:
