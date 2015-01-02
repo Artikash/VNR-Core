@@ -8,6 +8,7 @@
 # - mainBean: coffeebean.MainBean
 # - postInputBean: postinput.PostInputManagerBean
 # - postEditBean: postedit.PostEditorManagerBean
+# - topicEditBean: topicedit.TopicEditorManagerBean
 
 dprint = ->
   Array::unshift.call arguments, 'topicsview:'
@@ -16,7 +17,7 @@ dprint = ->
 # Global variables
 @READY = false # needed by postView.py
 
-newTopic = (topicType, subjectId, subjectType) -> topicInputBean.newTopic topicType, subjectId, subjectType # long, string ->
+#newTopic = (topicType, subjectId, subjectType) -> topicInputBean.newTopic topicType, subjectId, subjectType # long, string ->
 newPost = (topicId) -> postInputBean.newPost topicId # long ->
 
 # Export functions
@@ -48,76 +49,22 @@ newPost = (topicId) -> postInputBean.newPost topicId # long ->
 # Init
 
 createObjects = ->
-  # Reviews
-  $sec = $ '.sec-reviews'
-  search =
-    type: 'review'
-  if SUBJECT_ID
-    search.subjectId = SUBJECT_ID
-    search.subjectType = 'game'
-  @reviewView = new topicsjs.TopicList
-    container: $sec.find '> .sec-content > .forum-topics'
-    more: $sec.find '> .sec-content > .footer'
-    search: search
-    complete: not TOPIC_ID
-
-  # Topics
-  $sec = $ '.sec-topics'
-  search =
-    notype: 'review'
-  if SUBJECT_ID
-    search.subjectId = SUBJECT_ID
-  @topicView = new topicsjs.TopicList
-    container: $sec.find '> .sec-content > .forum-topics'
-    more: $sec.find '> .sec-content > .footer'
-    search: search
-    complete: not TOPIC_ID
+  # Topic
+  #$sec = $ '.forum-topic'
+  #@topicView = new topicsjs.Topic
+  #  container: $sec.find '> .sec-content > .forum-topics'
+  #  more: $sec.find '> .sec-content > .footer'
+  #  search: search
+  #  complete: not TOPIC_ID
 
   # Posts
   $sec = $ '.sec-posts'
-  if TOPIC_ID
-    @postView = new postsjs.PostList
-      container: $sec.find '> .sec-content > .forum-posts'
-      more: $sec.find '> .sec-content > .footer'
-      topicId: TOPIC_ID
+  @postView = new postsjs.PostList
+    container: $sec.children '.forum-posts'
+    more: $sec.find '> .footer > .btn-more'
+    topicId: TOPIC_ID
 
 bind = ->
-  $('.sec-btn').click ->
-    $this = $ @
-    $sec = $this.parent '.sec'
-    if $sec.length
-      $target = $sec.find '.sec-content'
-      unless $target.is(':empty') and $this.hasClass('checked')
-        $this.toggleClass 'checked'
-        #effect = $this.data('effect') or 'blind'
-        #effect = $this.data('effect') or 'fade'
-        #$target.toggle effect unless $target.is ':empty'
-        $target.toggle 'fade' unless $target.is ':empty'
-    false
-
-  # Chat
-  $sec = $('.sec.sec-topics')
-  $sec.find('.new-topic').click ->
-    if SUBJECT_ID
-      id = SUBJECT_ID
-      type = 'game'
-    else
-      id = 101 # VNR subject
-      type = 'subject'
-    newTopic 'chat', id, type
-    false
-
-  $sec = $('.sec.sec-reviews')
-  $sec.find('.new-topic').click ->
-    if SUBJECT_ID
-      id = SUBJECT_ID
-      type = 'game'
-    else
-      id = 101 # VNR subject
-      type = 'subject'
-    newTopic 'review', id, type
-    false
-
   $sec = $('.sec.sec-posts')
   $sec.find('.new-post').click ->
     newPost TOPIC_ID
@@ -132,7 +79,7 @@ init = ->
 
     moment.locale LOCALE
 
-    topicsjs.init()
+    topicjs.init()
     postsjs.init()
 
     createObjects()

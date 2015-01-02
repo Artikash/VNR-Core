@@ -30,7 +30,7 @@
     .view
       .sec.sec-reviews
         .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Review')}
-        -if userName
+        -if not topicId and userName
           .btn.btn-sm.btn-default.new-topic(title="#{tr('New')}")
             %span.fa.fa-plus
             #{tr('Review')}

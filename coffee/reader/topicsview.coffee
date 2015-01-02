@@ -8,6 +8,8 @@
 # - mainBean: coffeebean.MainBean
 # - postInputBean: postinput.PostInputManagerBean
 # - postEditBean: postedit.PostEditorManagerBean
+# - topicInputBean: topicinput.TopicInputManagerBean
+# - topicEditBean: topicedit.TopicEditorManagerBean
 
 dprint = ->
   Array::unshift.call arguments, 'topicsview:'
@@ -57,7 +59,7 @@ createObjects = ->
     search.subjectType = 'game'
   @reviewView = new topicsjs.TopicList
     container: $sec.find '> .sec-content > .forum-topics'
-    more: $sec.find '> .sec-content > .footer'
+    more: $sec.find '> .sec-content > .footer > .btn-more'
     search: search
     complete: not TOPIC_ID
 
@@ -69,7 +71,7 @@ createObjects = ->
     search.subjectId = SUBJECT_ID
   @topicView = new topicsjs.TopicList
     container: $sec.find '> .sec-content > .forum-topics'
-    more: $sec.find '> .sec-content > .footer'
+    more: $sec.find '> .sec-content > .footer > .btn-more'
     search: search
     complete: not TOPIC_ID
 
@@ -78,7 +80,7 @@ createObjects = ->
   if TOPIC_ID
     @postView = new postsjs.PostList
       container: $sec.find '> .sec-content > .forum-posts'
-      more: $sec.find '> .sec-content > .footer'
+      more: $sec.find '> .sec-content > .footer > .btn-more'
       topicId: TOPIC_ID
 
 bind = ->

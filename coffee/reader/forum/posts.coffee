@@ -101,7 +101,6 @@ editPost = (post) -> postEditBean.editPost JSON.stringify post # long ->
 replyPost = (topicId, postId) -> postInputBean.replyPost topicId, postId # long, long ->
 
 # Classes
-#
 class PostList
 
   constructor: (container: @$sel, more:@$more, topicId:@topicId) ->

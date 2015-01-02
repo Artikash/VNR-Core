@@ -16,7 +16,7 @@
 
     ; Stylesheets
     -for it in 'bootstrap3.css', 'font-awesome4.css', \
-        'reader/forum/posts.css', 'reader/topicview.css'
+        'reader/forum/posts.css', 'reader/forum/topic.css', 'reader/topicview.css'
       %link(rel="stylesheet",href="#{rc.cdn_url(it)}")
 
     :css
@@ -31,16 +31,10 @@
         .forum-topic
       %hr
       .sec.sec-posts
-        .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Post')}
-        -if userName
-          .btn.btn-sm.btn-default.new-post(title="#{tr('New')}")
-            %span.fa.fa-plus
-            #{tr('Reply')}
-        .sec-content
-          .forum-posts
-          .footer
-            .btn.btn-link.btn-more(role="button")
-              #{tr('More')} ...
+        .forum-posts
+        .footer
+          .btn.btn-link.btn-more(role="button")
+            #{tr('More')} ...
     #spin
 
     :javascript
@@ -58,7 +52,7 @@
         'bbcode', 'haml', 'moment', \
         'libs/linkify', \
         'share/growl', 'share/rest', 'share/util', \
-        'reader/forum/posts', 'reader/topicview'
+        'reader/forum/posts', 'reader/forum/topic', 'reader/topicview'
       %script(src="#{rc.cdn_url(it)}")
 
 ; EOF

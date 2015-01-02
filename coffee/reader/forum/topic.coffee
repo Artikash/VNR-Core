@@ -1,5 +1,5 @@
-# forum/topics.coffee
-# 12/31/2014 jichi
+# forum/topic.coffee
+# 1/2/2015 jichi
 # Required by chat.haml
 #
 # Require
@@ -130,7 +130,7 @@ renderTopic = (data, index, complete) -> # object topic, bool -> string
 editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
 
 # Classes
-class TopicList
+class Topic
 
   constructor: (container: @$sel, more:@$more, complete:@complete, search:search) ->
     @topics = [] # [object topic]
@@ -314,8 +314,8 @@ class TopicList
 init = ->
   createTemplates()
 
-@topicsjs =
+@topicjs =
   init: init
-  TopicList: TopicList
+  Topic: Topic
 
 # EOF

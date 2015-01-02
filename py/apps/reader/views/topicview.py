@@ -238,7 +238,7 @@ class _TopicView(object):
     w.setHtml(rc.haml_template('haml/reader/topicview').render({
       'host': host,
       'locale': config.language2htmllocale(user.language),
-      'title': mytr_("Messages"),
+      'title': tr_("Topic"),
       'topicId': self.topicId,
       'userName': user.name if user.name != 'guest' else '',
       'userPassword': user.password,
