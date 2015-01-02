@@ -107,7 +107,6 @@ class PostList
     @posts = [] # [object post]
 
     @bind()
-    @show()
 
   # Helper functions
 

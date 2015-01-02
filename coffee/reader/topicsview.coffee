@@ -75,6 +75,10 @@ createObjects = ->
     search: search
     complete: not TOPIC_ID
 
+
+  @reviewView.show()
+  @topicView.show()
+
   # Posts
   $sec = $ '.sec-posts'
   if TOPIC_ID
@@ -82,6 +86,7 @@ createObjects = ->
       container: $sec.find '> .sec-content > .forum-posts'
       more: $sec.find '> .sec-content > .footer > .btn-more'
       topicId: TOPIC_ID
+    @postView.show()
 
 bind = ->
   $('.sec-btn').click ->

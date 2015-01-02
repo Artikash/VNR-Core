@@ -96,11 +96,11 @@ renderTopic = (data, index, complete) -> # object topic, bool -> string
     createTime = moment data.createTime * 1000
   if data.updateTime > data.createTime
     updateTime = moment data.updateTime * 1000
-  su = data.subupload
-  if su
-    su.ignoreCount = (su.totalCount or 0) - (su.createCount or 0) - (su.updateCount or 0) - (su.errorCount or 0)
-    su.createTimeString = util.formatDate su.createTime
-    su.updateTimeString = util.formatDate su.updateTime
+  #su = data.subupload
+  #if su
+  #  su.ignoreCount = (su.totalCount or 0) - (su.createCount or 0) - (su.updateCount or 0) - (su.errorCount or 0)
+  #  su.createTimeString = util.formatDate su.createTime
+  #  su.updateTimeString = util.formatDate su.updateTime
   HAML_TOPIC
     index: index + 1
     id: data.id
@@ -125,7 +125,7 @@ renderTopic = (data, index, complete) -> # object topic, bool -> string
     likeCount: data.likeCount or 0
     dislikeCount: data.dislikeCount or 0
     scores: data.scores # {overall:int score, ecchi:int score}
-    su: su
+    #su: su
 
 editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
 
@@ -142,7 +142,6 @@ class TopicList
     _.extend @search, search if search?
 
     @bind()
-    @show()
 
   # Helper functions
 

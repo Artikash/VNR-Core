@@ -30,19 +30,7 @@ newPost = (topicId) -> postInputBean.newPost topicId # long ->
   $('#spin').spin if @spin.count > 0 then 'large' else false
 @spin.count = 0
 
-@addTopic = (topic) ->
-  if READY
-    if topic.type is 'review'
-      @reviewView?.addTopic topic
-    else
-      @topicView?.addTopic topic
-@updateTopic = (topic) ->
-  if READY
-    if topic.type is 'review'
-      @reviewView?.updateTopic topic
-    else
-      @topicView?.updateTopic topic
-
+@updateTopic = (topic) -> @topicView?.updateTopic topic if READY
 @addPost = (post) -> @postView?.addPost post if READY
 @updatePost = (post) -> @postView?.updatePost post if READY
 
@@ -50,12 +38,8 @@ newPost = (topicId) -> postInputBean.newPost topicId # long ->
 
 createObjects = ->
   # Topic
-  #$sec = $ '.forum-topic'
-  #@topicView = new topicsjs.Topic
-  #  container: $sec.find '> .sec-content > .forum-topics'
-  #  more: $sec.find '> .sec-content > .footer'
-  #  search: search
-  #  complete: not TOPIC_ID
+  @topicView = new topicjs.Topic TOPIC_ID,
+    container: $ '.forum-topic'
 
   # Posts
   $sec = $ '.sec-posts'
@@ -63,6 +47,9 @@ createObjects = ->
     container: $sec.children '.forum-posts'
     more: $sec.find '> .footer > .btn-more'
     topicId: TOPIC_ID
+
+  @topicView.show
+    success: @postView.show()
 
 bind = ->
   $sec = $('.sec.sec-posts')
