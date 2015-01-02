@@ -26,6 +26,11 @@ class MainBean(QObject):
     main.manager().showGameView(itemId=itemId)
 
   @Slot(long)
+  def showTopic(self, topicId): # long ->
+    import main
+    main.manager().showTopic(topicId)
+
+  @Slot(long)
   def showGameTopics(self, itemId): # long ->
     import main
     main.manager().showGameTopics(itemId)

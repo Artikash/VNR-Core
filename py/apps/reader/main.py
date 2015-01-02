@@ -807,6 +807,11 @@ class _MainObject(object):
     return gameview.manager()
 
   @property
+  def topicViewManager(self):
+    import topicview
+    return topicview.manager()
+
+  @property
   def topicsViewManager(self):
     import topicsview
     return topicsview.manager()
@@ -1861,6 +1866,9 @@ class MainObject(QObject):
   def showGameTopics(self, itemId):
     self.__d.topicsViewManager.show(subjectId=itemId)
 
+  def showTopic(self, topicId):
+    self.__d.topicViewManager.show(topicId)
+
   def showSubtitleEditor(self, comment): # dataman.Comment
     self.__d.subtitleEditorManager.showComment(comment)
 
@@ -2187,6 +2195,7 @@ class MainObject(QObject):
         'gameEditorManager',
         'userViewManager',
         'gameViewManager',
+        'topicViewManager',
         'topicsViewManager',
       ):
       if hasmemoizedproperty(self, p):
@@ -2317,6 +2326,8 @@ class MainObjectProxy(QObject):
   @Slot(result=bool)
   def isGlobalChatViewVisible(self): return manager().isChatViewVisible(config.GLOBAL_TOPIC_ID)
 
+  @Slot(long)
+  def showTopic(self, topicId): manager().showTopic(topicId)
   @Slot(long)
   def showGameTopics(self, gameId): manager().showGameTopics(gameId)
 

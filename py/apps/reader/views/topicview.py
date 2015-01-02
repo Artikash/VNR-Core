@@ -1,6 +1,6 @@
 # coding: utf8
-# topicsview.py
-# 8/27/2014 jichi
+# topicview.py
+# 1/2/2015 jichi
 
 if __name__ == '__main__':
   import sys
@@ -23,17 +23,11 @@ from mytr import mytr_
 import comets, config, dataman, netman, osutil, rc
 
 @Q_Q
-class _TopicsView(object):
+class _TopicView(object):
 
   def __init__(self, q):
-    #self.clear()
-    self.subjectId = None # long
-    self.topicId = None # long
-
+    self.topicId = 0 # long
     self.topicComet = None
-    self.subjectComet = None
-
-    #self._viewBean = SkWebViewBean(self.webView)
 
     self._createUi(q)
 
@@ -48,41 +42,27 @@ class _TopicsView(object):
     q.addDockWidget(Qt.BottomDockWidgetArea, dock)
 
   def clear(self):
-    self.setSubjectId(0)
     self.setTopicId(0)
-
-  def setSubjectId(self, subjectId): # long ->
-    if self.subjectId != subjectId:
-      self.subjectId = subjectId
-
-      if not subjectId:
-        if self.subjectComet:
-          self.subjectComet.setActive(False)
-      else:
-        if not self.subjectComet:
-          self.subjectComet = comets.createPostComet()
-          qml = self.subjectComet.q
-          qml.topicDataReceived.connect(self._onTopicReceived)
-          qml.topicDataUpdated.connect(self._onTopicUpdated)
-        path = 'game/%s' % subjectId
-        self.subjectComet.setPath(path)
-        if netman.manager().isOnline():
-          self.subjectComet.setActive(True)
 
   def setTopicId(self, topicId): # long ->
     if self.topicId != topicId:
-      if topicId:
-        if not self.topicComet:
-          self.topicComet = comets.globalComet()
-        if not self.topicId:
-          self.topicComet.postDataReceived.connect(self._onPostReceived)
-          self.topicComet.postDataUpdated.connect(self._onPostUpdated)
-        if netman.manager().isOnline():
-          self.topicComet.setProperty('active', True)
-      elif self.topicComet:
-        self.topicComet.postDataReceived.disconnect(self._onPostReceived)
-        self.topicComet.postDataUpdated.disconnect(self._onPostUpdated)
       self.topicId = topicId
+
+      if not topicId:
+        if self.topicComet:
+          self.topicComet.setActive(False)
+      else:
+        if not self.topicComet:
+          self.topicComet = comets.createPostComet()
+          qml = self.topicComet.q
+          #qml.topicDataReceived.connect(self._onTopicReceived)
+          qml.topicDataUpdated.connect(self._onTopicUpdated)
+          qml.postDataUpdated.connect(self._onPostUpdated)
+          qml.postDataReceived.connect(self._onPostReceived)
+        path = 'topic/%s' % topicId
+        self.topicComet.setPath(path)
+        if netman.manager().isOnline():
+          self.topicComet.setActive(True)
 
   def _injectBeans(self):
     h = self.webView.page().mainFrame()
@@ -102,7 +82,7 @@ class _TopicsView(object):
       ('i18nBean', m.i18nBean),
       ('mainBean', m.mainBean),
       ('topicEditBean', self.topicEditBean),
-      ('topicInputBean', self.topicInputBean),
+      #('topicInputBean', self.topicInputBean),
       ('postEditBean', self.postEditBean),
       ('postInputBean', self.postInputBean),
     )
@@ -122,10 +102,10 @@ class _TopicsView(object):
     import topicedit
     return topicedit.TopicEditorManagerBean(parent=self.q, manager=self.topicEditorManager)
 
-  @memoizedproperty
-  def topicInputBean(self):
-    import topicinput
-    return topicinput.TopicInputManagerBean(parent=self.q, manager=self.topicInputManager)
+  #@memoizedproperty
+  #def topicInputBean(self):
+  #  import topicinput
+  #  return topicinput.TopicInputManagerBean(parent=self.q, manager=self.topicInputManager)
 
   @memoizedproperty
   def postEditorManager(self):
@@ -148,12 +128,12 @@ class _TopicsView(object):
     ret.topicChanged.connect(self._updateTopic)
     return ret
 
-  @memoizedproperty
-  def topicInputManager(self):
-    import topicinput
-    ret = topicinput.TopicInputManager(self.q)
-    ret.topicReceived.connect(self._submitTopic)
-    return ret
+  #@memoizedproperty
+  #def topicInputManager(self):
+  #  import topicinput
+  #  ret = topicinput.TopicInputManager(self.q)
+  #  ret.topicReceived.connect(self._submitTopic)
+  #  return ret
 
   def _submitPost(self, postData, imageData):
     if self.topicId and netman.manager().isOnline():
@@ -168,18 +148,18 @@ class _TopicsView(object):
       skevents.runlater(partial(forumapi.manager().updatePost,
           postData, imageData))
 
-  def _submitTopic(self, topicData, imageData, ticketData):
-    subjectId = self.subjectId
-    if subjectId:
-      subjectType = 'game'
-    else:
-      subjectId = config.GLOBAL_SUBJECT_ID
-      subjectType = 'subject'
-    if netman.manager().isOnline():
-      import forumapi
-      skevents.runlater(partial(forumapi.manager().submitTopic,
-          topicData, imageData, ticketData,
-          subjectId=subjectId, subjectType=subjectType))
+  #def _submitTopic(self, topicData, imageData, ticketData):
+  #  subjectId = self.subjectId
+  #  if subjectId:
+  #    subjectType = 'game'
+  #  else:
+  #    subjectId = config.GLOBAL_SUBJECT_ID
+  #    subjectType = 'subject'
+  #  if netman.manager().isOnline():
+  #    import forumapi
+  #    skevents.runlater(partial(forumapi.manager().submitTopic,
+  #        topicData, imageData, ticketData,
+  #        subjectId=subjectId, subjectType=subjectType))
 
   def _updateTopic(self, topicData, imageData, ticketData):
     if netman.manager().isOnline():
@@ -207,15 +187,15 @@ class _TopicsView(object):
     except Exception, e:
       dwarn(e)
 
-  def _onTopicReceived(self, data): # str ->
-    try:
-      obj = json.loads(data)
-      subjectId = obj['subjectId']
-      if subjectId == self.subjectId and self.q.isVisible():
-        self.addTopic(data)
-      dprint("pass")
-    except Exception, e:
-      dwarn(e)
+  #def _onTopicReceived(self, data): # str ->
+  #  try:
+  #    obj = json.loads(data)
+  #    subjectId = obj['subjectId']
+  #    if subjectId == self.subjectId and self.q.isVisible():
+  #      self.addTopic(data)
+  #    dprint("pass")
+  #  except Exception, e:
+  #    dwarn(e)
 
   def _onTopicUpdated(self, data): # str ->
     try:
@@ -248,19 +228,17 @@ class _TopicsView(object):
   def refresh(self):
     """@reimp"""
     self.newPostButton.setVisible(bool(self.topicId))
-    self.gameButton.setVisible(bool(self.subjectId))
+    #self.gameButton.setVisible(bool(self.subjectId))
 
     host = config.API_HOST # must be the same as rest.coffee for the same origin policy
 
     user = dataman.manager().user()
 
     w = self.webView
-    w.setHtml(rc.haml_template('haml/reader/topicsview').render({
+    w.setHtml(rc.haml_template('haml/reader/topicview').render({
       'host': host,
       'locale': config.language2htmllocale(user.language),
       'title': mytr_("Messages"),
-      'subjectId': self.subjectId,
-      #'subjectType': self.subjectType,
       'topicId': self.topicId,
       'userName': user.name if user.name != 'guest' else '',
       'userPassword': user.password,
@@ -275,10 +253,10 @@ class _TopicsView(object):
     skqss.class_(ret, 'texture')
     layout = QtWidgets.QHBoxLayout()
     layout.addWidget(self.newPostButton)
-    layout.addWidget(self.newTopicButton)
+    #layout.addWidget(self.newTopicButton)
     layout.addStretch()
     layout.addWidget(self.browseButton)
-    layout.addWidget(self.gameButton)
+    #layout.addWidget(self.gameButton)
     layout.addWidget(self.refreshButton)
     ret.setLayout(layout)
     layout.setContentsMargins(4, 4, 4, 4)
@@ -296,18 +274,18 @@ class _TopicsView(object):
     #nm.onlineChanged.connect(ret.setEnabled)
     return ret
 
-  @memoizedproperty
-  def gameButton(self):
-    ret = QtWidgets.QPushButton(tr_("Game"))
-    skqss.class_(ret, 'btn btn-info')
-    ret.setToolTip(tr_("Game"))
-    #ret.setStatusTip(ret.toolTip())
-    ret.clicked.connect(self._showGame)
-    return ret
+  #@memoizedproperty
+  #def gameButton(self):
+  #  ret = QtWidgets.QPushButton(tr_("Game"))
+  #  skqss.class_(ret, 'btn btn-info')
+  #  ret.setToolTip(tr_("Game"))
+  #  #ret.setStatusTip(ret.toolTip())
+  #  ret.clicked.connect(self._showGame)
+  #  return ret
 
-  def _showGame(self):
-    import main
-    main.manager().showGameView(itemId=self.subjectId)
+  #def _showGame(self):
+  #  import main
+  #  main.manager().showGameView(itemId=self.subjectId)
 
   @memoizedproperty
   def browseButton(self):
@@ -315,46 +293,21 @@ class _TopicsView(object):
     skqss.class_(ret, 'btn btn-default')
     ret.setToolTip(tr_("Browse"))
     #ret.setStatusTip(ret.toolTip())
-    ret.clicked.connect(self._browse)
+    ret.clicked.connect(lambda:
+        osutil.open_url("http://sakuradite.com/topic/%s" % self.topicId))
     return ret
-
-  def _browse(self):
-    host = "http://sakuradite.com"
-    if self.topicId:
-      url = host + "/topic/%s" % self.topicId
-      osutil.open_url(url)
-    elif self.subjectId:
-      url = host + "/game/%s" % self.subjectId
-      osutil.open_url(url)
 
   @memoizedproperty
   def newPostButton(self):
-    ret = QtWidgets.QPushButton("+ " + tr_("Chat"))
+    ret = QtWidgets.QPushButton("+ " + tr_("Reply"))
     skqss.class_(ret, 'btn btn-info')
     ret.setToolTip(tr_("New"))
     #ret.setStatusTip(ret.toolTip())
     ret.clicked.connect(self._newPost)
     return ret
 
-  @memoizedproperty
-  def newTopicButton(self):
-    ret = QtWidgets.QPushButton("+ " + tr_("Topic"))
-    skqss.class_(ret, 'btn btn-success')
-    ret.setToolTip(tr_("New"))
-    #ret.setStatusTip(ret.toolTip())
-    ret.clicked.connect(self._newTopic)
-    return ret
-
   def _newPost(self):
     self.postInputManager.newPost(self.topicId)
-  def _newTopic(self):
-    subjectId = self.subjectId
-    if subjectId:
-      subjectType = 'game'
-    else:
-      subjectId = GLOBAL_SUBJECT_ID
-      subjectType = 'subject'
-    self.topicInputManager.newTopic(subjectId=subjectId, subjectType=subjectType)
 
   # append ;null for better performance
   def addPost(self, data): # unicode json ->
@@ -367,22 +320,22 @@ class _TopicsView(object):
     self.webView.evaljs(js)
 
   # append ;null for better performance
-  def addTopic(self, data): # unicode json ->
-    js = 'if (window.READY) addTopic(%s); null' % data
-    self.webView.evaljs(js)
+  #def addTopic(self, data): # unicode json ->
+  #  js = 'if (window.READY) addTopic(%s); null' % data
+  #  self.webView.evaljs(js)
 
   # append ;null for better performance
   def updateTopic(self, data): # unicode json ->
     js = 'if (window.READY) updateTopic(%s); null' % data
     self.webView.evaljs(js)
 
-class TopicsView(QtWidgets.QMainWindow):
+class TopicView(QtWidgets.QMainWindow):
   def __init__(self, parent=None):
     WINDOW_FLAGS = Qt.Dialog|Qt.WindowMinMaxButtonsHint
-    super(TopicsView, self).__init__(parent, WINDOW_FLAGS)
+    super(TopicView, self).__init__(parent, WINDOW_FLAGS)
     self.setWindowIcon(rc.icon('window-forum'))
-    self.setWindowTitle(mytr_("Messages"))
-    self.__d = _TopicsView(self)
+    self.setWindowTitle(tr_("Topic"))
+    self.__d = _TopicView(self)
 
   def refresh(self): self.__d.refresh()
   def clear(self): self.__d.clear()
@@ -397,58 +350,56 @@ class TopicsView(QtWidgets.QMainWindow):
     """@reimp @public"""
     if value and not self.isVisible():
       self.__d.refresh()
-    super(TopicsView, self).setVisible(value)
+    super(TopicView, self).setVisible(value)
     if not value:
       self.__d.webView.clear()
       self.__d.clear()
 
-class _TopicsViewManager:
+class _TopicViewManager:
   def __init__(self):
     self.dialogs = []
 
   def _createDialog(self):
     import windows
     parent = windows.normal()
-    ret = TopicsView(parent=parent)
+    ret = TopicView(parent=parent)
     ret.resize(550, 580)
     return ret
 
-  def getDialog(self, subjectId=0, topicId=0):
+  def getDialog(self, topicId=0):
     """
     @param* subjectId  long
     @param* topicId  long
-    @return  TopicsView or None
+    @return  TopicView or None
     """
     for w in self.dialogs:
-      if w.isVisible() and (subjectId, topicId) == (w.subjectId(), w.topicId()):
+      if w.isVisible() and topicId == w.topicId():
         return w
 
-  def createDialog(self, subjectId=0, topicId=0):
+  def createDialog(self, topicId=0):
     """
     @param* subjectId  long
     @param* topicId  long
-    @return  TopicsView
+    @return  TopicView
     """
-    w = self.getDialog(subjectId, topicId)
+    w = self.getDialog(topicId)
     if w:
       w.refresh()
       return w
     for w in self.dialogs:
       if not w.isVisible():
         w.clear()
-        w.setSubjectId(subjectId)
         w.setTopicId(topicId)
         return w
     w = self._createDialog()
-    w.setSubjectId(subjectId)
     w.setTopicId(topicId)
 
     self.dialogs.append(w)
     return w
 
-class TopicsViewManager:
+class TopicViewManager:
   def __init__(self):
-    self.__d = _TopicsViewManager()
+    self.__d = _TopicViewManager()
 
   #def clear(self): self.hide()
 
@@ -468,12 +419,12 @@ class TopicsViewManager:
         if w.isVisible():
           w.hide()
 
-  def show(self, subjectId=0, topicId=0):
+  def show(self, topicId):
     """
     @param* subjectId  long  subject ID
     @param* topicId  long  chatroom topicId
     """
-    w = self.__d.createDialog(subjectId, topicId)
+    w = self.__d.createDialog(topicId)
     w.show()
     w.raise_()
 
@@ -481,12 +432,12 @@ class TopicsViewManager:
 def manager():
   import webrc
   webrc.init()
-  return TopicsViewManager()
+  return TopicViewManager()
 
 #@QmlObject
-#class TopicsViewManagerProxy(QObject):
+#class TopicViewManagerProxy(QObject):
 #  def __init__(self, parent=None):
-#    super(TopicsViewManagerProxy, self).__init__(parent)
+#    super(TopicViewManagerProxy, self).__init__(parent)
 #
 #  @Slot(int)
 #  def showTopic(self, id):

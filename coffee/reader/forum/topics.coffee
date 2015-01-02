@@ -40,7 +40,7 @@ createTemplates = ->
   # - dislikeCount  int
 
   HAML_TOPIC = Haml """\
-.topic.topic-new(data-id="${id}" data-type="${type}")
+.topic.topic-new(data-id="${id}" data-type="${type}" data-subject-id="${subjectId}")
   :if userAvatarUrl
     %a(href="${userAvatarUrl}" title="#{tr 'Avatar'}")
       %img.img-circle.avatar(src="${userAvatarUrl}" alt="#{tr 'Avatar'}")
@@ -61,9 +61,9 @@ createTemplates = ->
           .item.text-warning
             H: ${scores.ecchi != undefined ? scores.ecchi : '-'}/10
     .line.title
-      %a(title="#{tr 'Show'}") ${title}
+      %a.btn.btn-link.link-topic(title="#{tr 'Show'}") ${title}
       :if gameTitle
-        %a.pull-right.link-game(data-id="${subjectId}" title="#{tr 'Show'}")
+        %a.pull-right.link-game.btn.btn-link(title="#{tr 'Show'}")
           –– ${gameTitle}
     :if content
       .content.bbcode = content
@@ -76,7 +76,7 @@ createTemplates = ->
           %span.fa.fa-thumbs-down
           %span.value = dislikeCount
       .btn-group.fade-in.pull-right
-        %a.btn-reply.btn.btn-link.btn-sm(role="button" title="#{tr 'Reply'}")
+        %a.btn-reply.btn.btn-link.btn-sm.link-topic(role="button" title="#{tr 'Reply'}")
           #{tr 'Reply'}
           :if postCount
             = ' (' + postCount + ')'
@@ -157,13 +157,18 @@ class TopicList
         .removeClass 'topic-new'
 
       topicId = $topic.data 'id'
+      subjectId = $topic.data 'subject-id'
       topic = self.getTopic topicId
 
       $header = $topic.find '> .right > .header'
       $footer = $topic.find '> .right > .footer'
 
       $topic.find('a.link-game').click ->
-        mainBean.showGame @dataset.id
+        mainBean.showGame subjectId if subjectId
+        false
+
+      $topic.find('a.link-topic').click ->
+        mainBean.showTopic topicId
         false
 
       $header.find('a.user').click ->
@@ -172,11 +177,6 @@ class TopicList
 
       $footer.find('.btn-edit').click ->
         editTopic topic if topic
-        false
-
-      $footer.find('.btn-reply').click ->
-        # TODO
-        #replyPost self.topicId, postId if self.topicId and postId
         false
 
       $footer.find('.like-group').removeClass 'fade-in' if topic?.likeCount or topic?.dislikeCount
