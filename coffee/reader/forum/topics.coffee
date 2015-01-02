@@ -63,7 +63,8 @@ createTemplates = ->
       %a(title="#{tr 'Show'}") ${title}
       :if gameTitle
         %a.pull-right.link-game(data-id="${subjectId}" title="#{tr 'Show'}")
-          ーー ${gameTitle}
+          = '-- '
+          ${gameTitle}
     :if content
       .content.bbcode = content
     .footer

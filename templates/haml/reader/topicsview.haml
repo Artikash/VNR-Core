@@ -51,18 +51,19 @@
           .footer
             .btn.btn-link.btn-more(role="button")
               #{tr('More')} ...
-      %hr
-      .sec.sec-posts
-        .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Chat')}
-        -if userName and userName != 'guest'
-          .btn.btn-sm.btn-default.new-chat(title="#{tr('New')}")
-            %span.fa.fa-plus
-            #{tr('Chat')}
-        .sec-content
-          .forum-posts
-          .footer
-            .btn.btn-link.btn-more(role="button")
-              #{tr('More')} ...
+      -if topicId
+        %hr
+        .sec.sec-posts
+          .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Chat')}
+          -if userName and userName != 'guest'
+            .btn.btn-sm.btn-default.new-chat(title="#{tr('New')}")
+              %span.fa.fa-plus
+              #{tr('Chat')}
+          .sec-content
+            .forum-posts
+            .footer
+              .btn.btn-link.btn-more(role="button")
+                #{tr('More')} ...
     #spin
 
     :javascript
