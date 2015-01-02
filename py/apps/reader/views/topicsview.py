@@ -262,7 +262,7 @@ class _TopicsView(object):
       'subjectId': self.subjectId,
       #'subjectType': self.subjectType,
       'topicId': self.topicId,
-      'userName': user.name,
+      'userName': user.name if user.name != 'guest' else '',
       'userPassword': user.password,
       'rc': rc,
       'tr': tr_,
@@ -322,7 +322,7 @@ class _TopicsView(object):
   @memoizedproperty
   def newPostButton(self):
     ret = QtWidgets.QPushButton("+ " + tr_("Chat"))
-    skqss.class_(ret, 'btn btn-success')
+    skqss.class_(ret, 'btn btn-info')
     ret.setToolTip(tr_("New"))
     #ret.setStatusTip(ret.toolTip())
     ret.clicked.connect(self._newPost)
@@ -331,7 +331,7 @@ class _TopicsView(object):
   @memoizedproperty
   def newTopicButton(self):
     ret = QtWidgets.QPushButton("+ " + tr_("Topic"))
-    skqss.class_(ret, 'btn btn-default')
+    skqss.class_(ret, 'btn btn-success')
     ret.setToolTip(tr_("New"))
     #ret.setStatusTip(ret.toolTip())
     ret.clicked.connect(self._newTopic)

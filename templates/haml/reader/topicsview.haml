@@ -3,8 +3,8 @@
 ; @param  host  str
 ; @param  subjectId  long
 ; @param  topicId  long
-; @param  userName  string
-; @param  userPassword  string
+; @param  userName  str  not 'guest'
+; @param  userPassword  str
 ; @param  locale  string
 ; @param  title  unicode
 ; @param  rc  rc
@@ -30,7 +30,7 @@
     .view
       .sec.sec-reviews
         .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Review')}
-        -if userName and userName != 'guest'
+        -if userName
           .btn.btn-sm.btn-default.new-topic(title="#{tr('New')}")
             %span.fa.fa-plus
             #{tr('Review')}
@@ -42,7 +42,7 @@
       %hr
       .sec.sec-topics
         .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Topic')}
-        -if userName and userName != 'guest'
+        -if userName
           .btn.btn-sm.btn-default.new-topic(title="#{tr('New')}")
             %span.fa.fa-plus
             #{tr('Topic')}
@@ -55,8 +55,8 @@
         %hr
         .sec.sec-posts
           .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Chat')}
-          -if userName and userName != 'guest'
-            .btn.btn-sm.btn-default.new-chat(title="#{tr('New')}")
+          -if userName
+            .btn.btn-sm.btn-default.new-post(title="#{tr('New')}")
               %span.fa.fa-plus
               #{tr('Chat')}
           .sec-content

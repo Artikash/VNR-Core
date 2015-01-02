@@ -107,7 +107,7 @@ bind = ->
     false
 
   $sec = $('.sec.sec-posts')
-  $sec.find('.new-posts').click ->
+  $sec.find('.new-post').click ->
     newPost TOPIC_ID
     false
 

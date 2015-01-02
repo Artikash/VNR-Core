@@ -17,7 +17,7 @@ $avatar-width: 40px
     //height: $avatar-width
     @extend .avatar-shadow
   .topic
-    padding-top: 9px // include the height of footer
+    padding-top: 15px // include the height of footer
     min-height: $avatar-width
     > a > img.avatar
       float: left
@@ -34,6 +34,9 @@ $avatar-width: 40px
           display: inline
           margin-right: 10px
         padding: 3px 0 3px 10px
+        .index
+          display: inline
+          margin-right: 5px
         .type
           display: inline
         .user,
@@ -68,8 +71,9 @@ $avatar-width: 40px
           @extend .img-shadow
           max-width: 100%
       > .title
-        margin: 9px 5px 0
-        font-size: 95%
+        font-size: 100%
+        a.link-game
+          @extend .text-minor
       > .content
         margin-left: 5px
         font-size: 95%
@@ -77,7 +81,7 @@ $avatar-width: 40px
           @extend .img-shadow
           max-width: 100%
       >.footer
-        margin: -5px 0 0
+        //margin: -5px 0 0
         height: 18px // larger than the height of buttons
         .fade-in
           opacity: 0

@@ -46,6 +46,7 @@ createTemplates = ->
       %img.img-circle.avatar(src="${userAvatarUrl}" alt="#{tr 'Avatar'}")
   .right
     .header.line
+      .index.text-minor ${index}.
       .type.text-warning = tr(type)
       %a.user(href="javascript:" style="${userStyle}") @${userName}
       :if createTime
@@ -63,8 +64,7 @@ createTemplates = ->
       %a(title="#{tr 'Show'}") ${title}
       :if gameTitle
         %a.pull-right.link-game(data-id="${subjectId}" title="#{tr 'Show'}")
-          = '-- '
-          ${gameTitle}
+          –– ${gameTitle}
     :if content
       .content.bbcode = content
     .footer
@@ -90,7 +90,7 @@ createTemplates = ->
 
 # Functions and classes
 
-renderTopic = (data, complete) -> # object topic, bool -> string
+renderTopic = (data, index, complete) -> # object topic, bool -> string
   createTime = updateTime = null
   if data.createTime
     createTime = moment data.createTime * 1000
@@ -102,6 +102,7 @@ renderTopic = (data, complete) -> # object topic, bool -> string
     su.createTimeString = util.formatDate su.createTime
     su.updateTimeString = util.formatDate su.updateTime
   HAML_TOPIC
+    index: index + 1
     id: data.id
     type: data.type
     lang: util.getLangName data.lang
@@ -230,10 +231,10 @@ class TopicList
         false
 
   addTopics: (topics) => # [object topic] ->
-    @topics.push.apply @topics, topics
     #document.title = "#{PAGE_TITLE} (#{@topics.length})"
     # TODO: review
-    h = (renderTopic(it, @complete) for it in topics).join ''
+    h = (renderTopic(it, index + @topics.length, @complete) for it,index in topics).join ''
+    @topics.push.apply @topics, topics
     @$sel.append h
     @_bindNewTopics()
 
@@ -242,9 +243,9 @@ class TopicList
       .effect 'highlight', HIGHLIGHT_INTERVAL
 
   addTopic: (topic) => # object topic ->
-    @topics.push topic
     #document.title = "#{PAGE_TITLE} (#{@topics.length})"
-    h = renderTopic topic, @complete
+    h = renderTopic topic, @topics.length, @complete
+    @topics.push topic
     @$sel.prepend h
     @_highlightNewTopics()
     @_bindNewTopics()

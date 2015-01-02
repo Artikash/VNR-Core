@@ -53,7 +53,7 @@ createTemplates = ->
       :if updateTime
         .time.text-success(title="${updateTimeString}") = updateTime.fromNow()
     .content.bbcode = content
-    :if USER_NAME && USER_NAME != 'guest'
+    :if USER_NAME
       .footer
         .btn-group.like-group.fade-in
           %a.like.btn.btn-link.btn-sm(role="button" title="#{tr 'Like'}")
