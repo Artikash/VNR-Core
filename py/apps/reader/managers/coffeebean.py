@@ -81,6 +81,15 @@ class I18nBean(QObject):
     ret = config.htmllocale2language(lang)
     return i18n.language_name2(ret) or ret or lang
 
+  @Slot(unicode, result=unicode)
+  def getTopicTypeName(self, type):
+    """
+    @param  type  unicode
+    @return  unicode
+    """
+    import i18n
+    return i18n.topic_type_name(type)
+
 class JlpBean(QObject):
   def __init__(self, parent):
     super(JlpBean, self).__init__(parent)

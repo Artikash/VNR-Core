@@ -337,8 +337,16 @@ class _TopicsView(object):
     ret.clicked.connect(self._newTopic)
     return ret
 
-  def _newPost(self): self.postInputManager.newPost(self.topicId)
-  def _newTopic(self): self.topicInputManager.newTopic(self.gameId)
+  def _newPost(self):
+    self.postInputManager.newPost(self.topicId)
+  def _newTopic(self):
+    subjectId = self.subjectId
+    if subjectId:
+      subjectType = 'game'
+    else:
+      subjectId = GLOBAL_SUBJECT_ID
+      subjectType = 'subject'
+    self.topicInputManager.newTopic(subjectId=subjectId, subjectType=subjectType)
 
   # append ;null for better performance
   def addPost(self, data): # unicode json ->

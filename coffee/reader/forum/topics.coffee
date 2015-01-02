@@ -47,7 +47,7 @@ createTemplates = ->
   .right
     .header.line
       .index.text-minor ${index}.
-      .type.text-warning = tr(type)
+      .type.text-warning = typeName
       %a.user(href="javascript:" style="${userStyle}") @${userName}
       :if createTime
         .time.text-minor(title="${createTimeString}") = createTime.fromNow()
@@ -105,6 +105,7 @@ renderTopic = (data, index, complete) -> # object topic, bool -> string
     index: index + 1
     id: data.id
     type: data.type
+    typeName: util.getTopicTypeName data.type
     lang: util.getLangName data.lang
     subjectId: data.subjectId
     gameTitle: if data.subjectType is 'game' then data.subjectTitle else ''

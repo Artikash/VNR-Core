@@ -32,6 +32,7 @@ HOST = 'http://153.121.54.194'
       dst[k] = src[k]
 
   getLangName: (lang) -> i18nBean.getLangShortName lang # string -> string
+  getTopicTypeName: (type) -> i18nBean.getTopicTypeName type # string -> string
 
   getImageUrl: (data) -> # object -> string
     cacheimg "#{HOST}/upload/image/#{data.id}.#{data.suffix}"

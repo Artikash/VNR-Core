@@ -107,22 +107,24 @@ class _ForumApi:
     @param  imageData  unicode json
     @param  ticketData  unicode json
     """
-    if subjectId and subjectType:
-      user = dataman.manager().user()
-      if user.name and user.password:
-        topic = json.loads(topicData)
+    user = dataman.manager().user()
+    if user.name and user.password:
+      topic = json.loads(topicData)
+      if not topic.get('subjectId') or not topic.get('subjectType'):
+        if not subjectId or not subjectType:
+          return
         topic['subjectId'] = subjectId
         topic['subjectType'] = subjectType
-        topic['login'] = user.name
-        topic['password'] = user.password
-        if imageData:
-          image = json.loads(imageData)
-          image['login'] = user.name
-          image['password'] = user.password
-        else:
-          image = None
-        tickets = self._parseTicketData(ticketData) if ticketData else None
-        self._submitTopic(topic, image, tickets)
+      topic['login'] = user.name
+      topic['password'] = user.password
+      if imageData:
+        image = json.loads(imageData)
+        image['login'] = user.name
+        image['password'] = user.password
+      else:
+        image = None
+      tickets = self._parseTicketData(ticketData) if ticketData else None
+      self._submitTopic(topic, image, tickets)
 
   def _parseTicketData(self, data): # string -> [{kw}]
     ret = []

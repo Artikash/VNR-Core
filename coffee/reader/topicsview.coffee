@@ -16,7 +16,7 @@ dprint = ->
 # Global variables
 @READY = false # needed by postView.py
 
-newTopic = (subjectId, type) -> topicInputBean.newTopic subjectId, type # long, string ->
+newTopic = (topicType, subjectId, subjectType) -> topicInputBean.newTopic topicType, subjectId, subjectType # long, string ->
 newPost = (topicId) -> postInputBean.newPost topicId # long ->
 
 # Export functions
@@ -98,12 +98,24 @@ bind = ->
   # Chat
   $sec = $('.sec.sec-topics')
   $sec.find('.new-topic').click ->
-    newTopic SUBJECT_ID
+    if SUBJECT_ID
+      id = SUBJECT_ID
+      type = 'game'
+    else
+      id = 101 # VNR subject
+      type = 'subject'
+    newTopic 'chat', id, type
     false
 
   $sec = $('.sec.sec-reviews')
   $sec.find('.new-topic').click ->
-    newTopic SUBJECT_ID, 'review'
+    if SUBJECT_ID
+      id = SUBJECT_ID
+      type = 'game'
+    else
+      id = 101 # VNR subject
+      type = 'subject'
+    newTopic 'review', id, type
     false
 
   $sec = $('.sec.sec-posts')
