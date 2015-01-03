@@ -722,6 +722,7 @@ icons:
   window-gameview:  $PWD/images/dock/reader.png
   window-gamewiz:   $PWD/images/dock/spotlight.png
   window-mttest:    $PWD/images/dock/yaku.png
+  window-name:      $PWD/images/dock/yaku.png
   window-prefs:     $PWD/images/dock/prefs.png
   window-refinput:  $PWD/images/reader.png
   window-refview:   $PWD/images/dock/edit.png

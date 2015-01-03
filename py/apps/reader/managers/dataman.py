@@ -3403,6 +3403,14 @@ class GetchuReference(Reference): #(object):
       t = t.replace('vertical-align:middle', 'vertical-align:top')
     return cacheman.cache_html(t)
 
+  def iterNameYomi(self):
+    """
+    yield (unicode name, unicode yomi)
+    """
+    if self.characters:
+      for it in self.characters:
+        yield it['name'], it['yomi']
+
 class DiGiketReference(Reference): #(object):
   def __init__(self, parent=None,
       type='digiket',

@@ -143,8 +143,8 @@ class SoftApi(object):
           'videos': uniquelist(self._iterparsevideos(h)),   # [kw]
 
           # Disabled
-          #'characters': list(self._iterparsecharacters(h)) or list(self._iterparsecharacters2(h)), # [kw]
-          'characters': [],
+          'characters': list(self._iterparsecharacters(h)) or list(self._iterparsecharacters2(h)), # [kw]
+          #'characters': [],
         }
 
   def _fixtitle(self, t):
@@ -625,15 +625,15 @@ if __name__ == '__main__':
   k = 809466 # ちぇ～んじ！
   print '-' * 10
   q = api.query(k)
-  #for it in q['characters']:
-  #  for k,v in it.iteritems():
-  #    print k,':',v
+  for it in q['characters']:
+    for k,v in it.iteritems():
+      print k,':',v
 
   #for it in q['descriptions']:
   #  print it
   #print q['characterDescription']
-  for it in q['sampleImages']:
-    print it
+  #for it in q['sampleImages']:
+  #  print it
 
   #print q['price']
   #print q['otome']
