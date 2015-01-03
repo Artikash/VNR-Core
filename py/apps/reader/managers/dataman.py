@@ -452,7 +452,8 @@ class GameInfo(object):
       return True
     return False
 
-  @memoizedproperty
+  #@memoizedproperty
+  @property
   def scapeCount0(self):
     """
     @return  int not None
@@ -460,7 +461,8 @@ class GameInfo(object):
     g = self.gameItem
     return g.scapeCount if g else 0
 
-  @memoizedproperty
+  #@memoizedproperty
+  @property
   def scapeMedian0(self):
     """
     @return  int not None
@@ -1279,6 +1281,12 @@ class GameInfo(object):
   def commentCount(self):
     try: return sum(it.commentCount for it in self.gameFiles)
     except TypeError: return 0
+
+  #@memoizedproperty
+  @property
+  def topicCount(self):
+    try: return self.gameItem.topicCount
+    except AttributeError: return 0
 
   @memoizedproperty
   def subtitleCount(self):

@@ -301,10 +301,11 @@ class _GameView(object):
     icon = info.icon if info else None
     q.setWindowIcon(icon or rc.icon('window-gameview'))
 
+    online = netman.manager().isOnline()
     self.editButton.setEnabled(bool(self.gameId))
     self.launchButton.setEnabled(bool(info and info.local))
-    self.browseButton.setEnabled(bool(info and info.itemId))
-    self.topicButton.setEnabled(bool(info and info.itemId))
+    self.browseButton.setEnabled(online and bool(info and info.itemId))
+    self.topicButton.setEnabled(online and bool(info and info.itemId))
 
     # Fake base addr that twitter javascript can access document.cookie
     #baseUrl = ''
@@ -315,7 +316,6 @@ class _GameView(object):
     #baseUrl = 'file:///'    # would crash QByteArray when refresh
     #baseUrl = 'file:///any' # any place that is local
     needsPost = info and info.gameItem and (info.gameItem.overallScoreCount or info.gameItem.ecchiScoreCount)
-    online = netman.manager().isOnline()
     if online and needsPost:
       baseUrl = config.API_HOST # must be the same as rest.coffee for the same origin policy, but this would break getchu
     else:
