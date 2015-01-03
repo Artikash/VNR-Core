@@ -31,6 +31,9 @@
 //.img-rounded // the same as bootstrap
 //  border-radius: 6px
 
+a[class*="link-"]
+  @extend .cursor-pointer
+
 // bootstrap-switch bug
 .bootstrap-switch
   // for min size
@@ -81,9 +84,9 @@ $yt-img-scale: 1.0
       &.inactive
         display: none
 
-// Game portal
+// Game view
 
-.game.portal
+.game.view
   //margin: 6px
   //padding: 12px
   //border-radius: 4px

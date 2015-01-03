@@ -29,6 +29,8 @@ class _TopicEditor(object):
     self.imageEnabled = True
 
     self.topicId = 0 # long
+    self.subjectId = 0 # long
+    self.subjectType = 'subject' # str
     self.topicType = 'review' # str
     self.userName = '' # unicode
     self.topicLanguage = ''
@@ -51,6 +53,7 @@ class _TopicEditor(object):
     layout.addWidget(self.scoreRow)
 
     row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.typeEdit)
     row.addWidget(self.titleEdit)
     row.addWidget(self.languageEdit)
     layout.addLayout(row)
@@ -170,6 +173,17 @@ class _TopicEditor(object):
     ret.currentIndexChanged.connect(self._onLanguageChanged)
     return ret
 
+  @memoizedproperty
+  def typeEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.topic_type_name, defs.TOPIC_TYPES))
+    ret.setMaxVisibleItems(ret.count())
+    ret.currentIndexChanged.connect(self._refreshSaveButton)
+    return ret
+
+  def _getType(self): # -> str
+    return defs.TOPIC_TYPES[self.typeEdit.currentIndex()]
   def _getLanguage(self): # -> str
     return config.language2htmllocale(config.LANGUAGES[self.languageEdit.currentIndex()])
   def _getContent(self): # -> unicode
@@ -196,6 +210,8 @@ class _TopicEditor(object):
     if self.topicLanguage != self._getLanguage():
       return True
     if self.topicType == 'review' and self.scores != self._getScores():
+      return True
+    if self.topicType != 'review' and self.topicType != self._getType():
       return True
     return False
 
@@ -231,6 +247,8 @@ class _TopicEditor(object):
     if not changed and self.imagePath:
       changed = True
     if not changed and self.topicType == 'review' and self.scores != self._getScores():
+      changed = True
+    if not changed and self.topicType != 'review' and self.topicType != self._getType():
       changed = True
     return changed
 
@@ -294,6 +312,11 @@ class _TopicEditor(object):
     if v != self.topicLanguage:
       topic['lang'] = self.topicLanguage = v
 
+    if self.topicType != 'review':
+      v = self._getType()
+      if v != self.topicType:
+        topic['type'] = self.topicType = v
+
     imageData = ''
     if self.imagePath:
       imageTitle = self._getImageTitle()
@@ -330,6 +353,8 @@ class _TopicEditor(object):
     if topic or imageData or ticketData:
       topic['id'] = self.topicId
       topic['userName'] = self.userName
+      topic['subjectId'] = self.subjectId
+      topic['subjectType'] = self.subjectType
 
       topicData = json.dumps(topic)
 
@@ -350,6 +375,11 @@ class _TopicEditor(object):
     except ValueError: langIndex = 1 # 'en'
     self.languageEdit.setCurrentIndex(langIndex)
 
+    if self.topicType != 'review':
+      try: typeIndex = defs.TOPIC_TYPES.index(self.topicType)
+      except ValueError: typeIndex = 0 # 'chat'
+      self.typeEdit.setCurrentIndex(typeIndex)
+
     self.spellHighlighter.setLanguage(self.topicLanguage) # must after lang
 
     for w in self._iterImageWidgets():
@@ -361,6 +391,7 @@ class _TopicEditor(object):
 
     scoreEnabled = self.topicType == 'review'
     self.scoreRow.setVisible(scoreEnabled)
+    self.typeEdit.setVisible(not scoreEnabled)
     if scoreEnabled and self.scores:
       try:
         for k,v in self.scores.iteritems():
@@ -390,10 +421,12 @@ class TopicEditor(QtWidgets.QDialog):
     import dataman
     dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
 
-  def setTopic(self, id, scores=None, type='', userName='', language='', lang='', title='', content='', image=None, **ignored):
+  def setTopic(self, id, subjectId=0, subjectType='subject', scores=None, type='', userName='', language='', lang='', title='', content='', image=None, **ignored):
     d = self.__d
     d.topicId = id
     d.topicType = type
+    d.subjectId = subjectId
+    d.subjectType = subjectType
     d.userName = userName
     d.topicLanguage = language or lang
     d.topicTitle = title

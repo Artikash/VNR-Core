@@ -165,8 +165,17 @@ cdn: # Note: the http:// prefix is indispensable, or it will be interpreted as q
   reader/gameview.css: $PWD/rb/compass/web/css/gameview.min.css
   reader/gameboard: $PWD/coffee/reader/gameboard.min.js
   reader/gameboard.css: $PWD/rb/compass/web/css/gameboard.min.css
+  reader/topicview: $PWD/coffee/reader/topicview.min.js
+  reader/topicview.css: $PWD/rb/compass/web/css/topicview.min.css
   reader/topicsview: $PWD/coffee/reader/topicsview.min.js
   reader/topicsview.css: $PWD/rb/compass/web/css/topicsview.min.css
+
+  reader/forum/posts: $PWD/coffee/reader/forum/posts.min.js
+  reader/forum/posts.css: $PWD/rb/compass/web/css/forum/posts.min.css
+  reader/forum/topics: $PWD/coffee/reader/forum/topics.min.js
+  reader/forum/topics.css: $PWD/rb/compass/web/css/forum/topics.min.css
+  reader/forum/topic: $PWD/coffee/reader/forum/topic.min.js
+  reader/forum/topic.css: $PWD/rb/compass/web/css/forum/topic.min.css
 
   #amazon.css: $PWD/rb/compass/web/css/sites/amazon.min.css
   #getchu.css: $PWD/rb/compass/web/css/sites/getchu.min.css
@@ -214,6 +223,8 @@ forum:
   topics:
     global: 50
     term: 51
+  subjects:
+    global: 101
 
 urls:
   reader_demo: "http://www.youtube.com/watch?v=KxRGwS4gkW4"
@@ -563,6 +574,7 @@ templates:
     haml/reader/help:       haml/reader/help.haml
     haml/reader/gameview:   haml/reader/gameview.haml
     haml/reader/gameboard:  haml/reader/gameboard.haml
+    haml/reader/topicview:  haml/reader/topicview.haml
     haml/reader/topicsview: haml/reader/topicsview.haml
     haml/reader/userview:   haml/reader/userview.haml
 

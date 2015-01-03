@@ -1505,6 +1505,8 @@ initRatings = ->
 ## Bindings ##
 
 bindButtons = ->
+  $('.link-topic,.btn-review').click -> mainBean.showGameTopics GAME_ID
+
   $('.btn-dl-img').click -> gameBean.saveImages(); false
   $('.btn-dl-yt').click -> gameBean.saveVideos(); false
 

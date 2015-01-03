@@ -34,8 +34,10 @@ class _PostInput(object):
     skwidgets.shortcut('ctrl+s', self._save, parent=q)
 
   def clear(self):
+    self.topicId = 0 # long
     self.replyId = 0 # long
     self.postContent = '' # str
+    self.postType = 'post' # str
     self.imagePath = '' # unicode
 
     import dataman
@@ -210,11 +212,11 @@ class _PostInput(object):
           }
           imageData = json.dumps(image)
 
+      if self.topicId:
+        post['topic'] = self.topicId
       if self.replyId:
-        post['type'] = 'reply'
         post['reply'] = self.replyId
-      else:
-        post['type'] = 'post'
+      post['type'] = self.postType
       postData = json.dumps(post)
       self.q.postReceived.emit(postData, imageData)
       #self.postContent = '' # clear content but leave language
@@ -255,8 +257,14 @@ class PostInput(QtWidgets.QDialog):
   def imageEnabled(self): return self.__d.imageEnabled
   def setImageEnabled(self, t): self.__d.imageEnabled = t
 
+  def topicId(self): return self.__d.topicId
+  def setTopicId(self, v): self.__d.topicId = v
+
   def replyId(self): return self.__d.replyId
   def setReplyId(self, v): self.__d.replyId = v
+
+  def type(self): return self.__d.postType
+  def setType(self, v): self.__d.postType = v
 
   def imagePath(self): return self.__d.imagePath
   def setImagePath(self, v): self.__d.imagePath = v
@@ -325,8 +333,10 @@ class PostInputManager(QObject):
         if w.isVisible():
           w.hide()
 
-  def newPost(self, replyId=0, imagePath=''): # long, unicode ->
+  def newPost(self, topicId=0, replyId=0, type='post', imagePath=''): # long, unicode ->
     w = self.__d.getDialog(self)
+    w.setType(type)
+    w.setTopicId(topicId)
     w.setReplyId(replyId)
     w.setImagePath(imagePath)
     w.show()
@@ -346,11 +356,13 @@ class PostInputManagerBean(QObject):
 
   postReceived = Signal(unicode, unicode) # json post, json image
 
-  @Slot()
-  def newPost(self): self.manager.newPost()
+  @Slot(long, str)
+  def newPost(self, topicId, postType):
+    self.manager.newPost(topicId=topicId, type=postType)
 
-  @Slot(int)
-  def replyPost(self, postId): self.manager.newPost(replyId=postId)
+  @Slot(long, long)
+  def replyPost(self, topicId, postId):
+    self.manager.newPost(topicId=topicId, replyId=postId, type='reply')
 
   imageEnabledChanged = Signal(bool)
   imageEnabled = Property(bool,

@@ -60,7 +60,7 @@
         %button.btn.btn-default.btn-block.btn-xs.btn-refresh(type="button",title="#{tr('Refresh')}")
           %span.fa.fa-undo
 
-      .game.portal(data-id="#{game.itemId}")
+      .game.view(data-id="#{game.itemId}")
         .cover.draggable
           -if game.image
             %button.close.pull-left(type="button",title="#{tr('Close')}") &times;
@@ -259,6 +259,11 @@
                   .form-control-static.col-xs-10
                     %a(href="#{game.scape.url}",title="#{game.scape.url}")
                       #{game.scape.median}&times;#{game.scape.medianCount or 1}
+              -if game.itemId
+                .row
+                  %label.control-label.col-xs-2 #{tr('Topic')}
+                  .form-control-static.col-xs-10
+                    %a.count.link-topic #{game.topicCount}
               -if game.visitCount
                 .row
                   %label.control-label.col-xs-2 #{tr('Play')}
@@ -330,15 +335,14 @@
             -if game.gameItem
               .footer
                 .col-xs-2
-                  ;-if online
-                  ;  %button.btn-review.btn.btn-primary.btn-sm(type="button")
-                  ;    %span.fa.fa-star
-                  ;    #{tr('Review')}
-                  ;-else
-                  ;  %button.btn-review.btn.btn-primary.btn-sm(disabled="true",type="button",title="#{tr('Offline')}")
-                  ;    %span.fa.fa-star
-                  ;    #{tr('Review')}
-                  .title-content #{tr('Review')}
+                  -if online
+                    %button.btn-review.btn.btn-primary.btn-sm(type="button")
+                      %span.fa.fa-star
+                      #{tr('Review')}
+                  -else
+                    %button.btn-review.btn.btn-primary.btn-sm(disabled="true",type="button",title="#{tr('Offline')}")
+                      %span.fa.fa-star
+                      #{tr('Review')}
                 .switch-group
                   -if online
                     %input.switch(type="checkbox",data-size="small",data-on-text="#{tr('Show')}",data-off-text="#{tr('Hide')}")

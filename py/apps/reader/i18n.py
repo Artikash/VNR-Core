@@ -48,6 +48,17 @@ def language_name2(lang):
     return utr_(lang)
   return ''
 
+def topic_type_name(type):
+  """
+  @param  type  str
+  @return  unicode
+  """
+  if isinstance(type, str):
+    return tr_(type)
+  if isinstance(type, unicode):
+    return utr_(type)
+  return ''
+
 def font_family(lang):
   return config.FONTS.get(lang) or ''
 

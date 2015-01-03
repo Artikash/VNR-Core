@@ -29,6 +29,12 @@ growl =
   showSignInError: ->
   showDupError: ->
 
+defs =
+  STATUS_OK: 0
+  STATUS_ERR: 1      # unknown error
+  STATUS_USER_ERR: 2 # user does not exist
+  STATUS_DUP_ERR: 3  # duplicate entry
+
 # HOST is defined in defs.coffee
 #HOST = 'http://sakuradite.com'
 #HOST = 'http://localhost:8080'

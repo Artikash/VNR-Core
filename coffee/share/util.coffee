@@ -32,6 +32,7 @@ HOST = 'http://153.121.54.194'
       dst[k] = src[k]
 
   getLangName: (lang) -> i18nBean.getLangShortName lang # string -> string
+  getTopicTypeName: (type) -> i18nBean.getTopicTypeName type # string -> string
 
   getImageUrl: (data) -> # object -> string
     cacheimg "#{HOST}/upload/image/#{data.id}.#{data.suffix}"
@@ -50,12 +51,29 @@ HOST = 'http://153.121.54.194'
       .replace /<li><\/li>/g, '<li>'
 
   formatDate: (t, fmt='H:mm M/D/YY ddd') -> # long, string -> string
+    return '' unless t
     try
-      t *= 1000 if typeof(t) in ['number', 'string']
-      if t then moment(t).format fmt else ''
-      #date = @dateFromUnixTime date if typeof(date) in ['number', 'string']
-      #dateformat date, fmt
+      type = typeof t
+      if type isnt 'object'
+        if type is 'number' or type is 'string'
+          t *= 1000
+        t = moment t
+      t.format fmt
     catch
       ''
+
+  TOPIC_TYPES: [
+    'review'
+    'chat'
+    'question'
+    'solved'
+    'news'
+    'article'
+    #'slides'
+    #'music'
+    #'review'
+    #'subupload'
+    #'talk'
+  ]
 
 # EOF

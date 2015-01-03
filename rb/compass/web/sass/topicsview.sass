@@ -1,81 +1,20 @@
-/* chat.sass
+/* topicsview.sass
    8/29/2014 jichi
    See: http://isotope.metafizzy.co/css/style.css
 
 @import bootstrap/fa
+@import bootstrap/pill
 @import main/bbcode
-@import main/color
-@import main/cursor
-@import main/shadow
-@import main/transition
 
-$avatar-width: 40px
-
-img.avatar
-  width: $avatar-width
-  //height: $avatar-width
-  @extend .avatar-shadow
-
-.topic.portal
+.view
   padding: 9px 18px
   background-color: rgba(255,255,255,0.9)
-
-.post
-  padding-top: 9px // include the height of footer
-  min-height: $avatar-width
-  > a > img.avatar
-    float: left
-    width: $avatar-width
-    //height: $topic-avatar-width
-    @extend .avatar-shadow
-  > .right
-    margin-left: $avatar-width + 9px
-    > .header
-      //  color: darkblue // TODO: Use linke instead
-      //  display: inline
-      .time
-        //@extend .text-minor
-        display: inline
-        margin-left: 9px
-        font-size: 90%
-      .lang
-        //@extend .text-minor
-        color: purple
-        display: inline
-        margin-left: 9px
-        font-size: 90%
-    > .image
-      margin: 5px
-      > a > img
-        @extend .img-shadow
-        max-width: 100%
-    > .content
-      font-size: 95%
-      img
-        @extend .img-shadow
-        max-width: 100%
-    >.footer
-      margin-top: -5px
-      height: 18px // larger than the height of buttons
-      .fade-in
-        opacity: 0
-  &:hover > .right > .footer .fade-in
-    opacity: 1
-
-  // only highlight the first post
-  &:not([data-type='reply']) > .right > .header
-    background-color: rgba(0,0,255,0.05) // blue
-
-$reply-avatar-width: $avatar-width * 0.8
-.post .reply
-  margin-top: 9px
-  > .post
-    margin-left: 5%
-    min-height: $reply-avatar-width
-    img.avatar // smaller
-      width: $reply-avatar-width
-      //height: $reply-avatar-width
-    > .right
-      margin-left: $reply-avatar-width + 9px
+  .sec-btn
+    margin: 10px 10px 10px 0
+    min-width: 50px
+  hr
+    margin: 5px
+  //.sec-content > .footer
+  //  margin-top: 10px
 
 // EOF

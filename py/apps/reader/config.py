@@ -409,6 +409,7 @@ JMDICT_LANGS = SHARE_YAML['jmdict'] # [str lang]
 
 # Forum
 
+GLOBAL_SUBJECT_ID = SHARE_YAML['forum']['subjects']['global']
 GLOBAL_TOPIC_ID = SHARE_YAML['forum']['topics']['global']
 TERM_TOPIC_ID = SHARE_YAML['forum']['topics']['term']
 

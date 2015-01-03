@@ -301,9 +301,11 @@ class _GameView(object):
     icon = info.icon if info else None
     q.setWindowIcon(icon or rc.icon('window-gameview'))
 
+    online = netman.manager().isOnline()
     self.editButton.setEnabled(bool(self.gameId))
     self.launchButton.setEnabled(bool(info and info.local))
-    self.discussButton.setEnabled(bool(info and info.itemId))
+    self.browseButton.setEnabled(online and bool(info and info.itemId))
+    self.topicButton.setEnabled(online and bool(info and info.itemId))
 
     # Fake base addr that twitter javascript can access document.cookie
     #baseUrl = ''
@@ -314,7 +316,6 @@ class _GameView(object):
     #baseUrl = 'file:///'    # would crash QByteArray when refresh
     #baseUrl = 'file:///any' # any place that is local
     needsPost = info and info.gameItem and (info.gameItem.overallScoreCount or info.gameItem.ecchiScoreCount)
-    online = netman.manager().isOnline()
     if online and needsPost:
       baseUrl = config.API_HOST # must be the same as rest.coffee for the same origin policy, but this would break getchu
     else:
@@ -349,10 +350,11 @@ class _GameView(object):
     skqss.class_(ret, 'texture')
     layout = QtWidgets.QHBoxLayout()
     layout.addWidget(self.launchButton)
-    layout.addWidget(self.discussButton)
+    layout.addWidget(self.topicButton)
     layout.addWidget(self.subButton)
     layout.addStretch()
     layout.addWidget(self.helpButton)
+    layout.addWidget(self.browseButton)
     #layout.addWidget(self.refreshButton) # disabled
     layout.addWidget(self.editButton)
     ret.setLayout(layout)
@@ -371,14 +373,24 @@ class _GameView(object):
     return ret
 
   @memoizedproperty
-  def discussButton(self):
-    ret = QtWidgets.QPushButton(mytr_("Discuss"))
+  def browseButton(self):
+    ret = QtWidgets.QPushButton(tr_("Browse"))
     skqss.class_(ret, 'btn btn-default')
-    ret.setToolTip(mytr_("Game Discussion"))
+    ret.setToolTip(tr_("Browse"))
     #ret.setStatusTip(ret.toolTip())
     ret.setEnabled(False)
     ret.clicked.connect(lambda:
         self.itemId and osutil.open_url("http://sakuradite.com/game/%s" % self.itemId))
+    return ret
+
+  @memoizedproperty
+  def topicButton(self):
+    ret = QtWidgets.QPushButton(tr_("Topic"))
+    skqss.class_(ret, 'btn btn-success')
+    ret.setToolTip(tr_("Topic"))
+    ret.setEnabled(False)
+    ret.clicked.connect(lambda:
+        self.itemId and main.manager().showGameTopics(itemId=self.itemId))
     return ret
 
   @memoizedproperty

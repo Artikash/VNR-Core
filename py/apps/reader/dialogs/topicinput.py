@@ -35,6 +35,8 @@ class _TopicInput(object):
     skwidgets.shortcut('ctrl+s', self._save, parent=q)
 
   def clear(self):
+    self.subjectId = 0
+    self.subjectType = 'subject'
     self.topicType = 'review' # str
     self.topicContent = '' # str
     self.imagePath = '' # unicode
@@ -48,6 +50,7 @@ class _TopicInput(object):
     layout.addWidget(self.scoreRow)
 
     row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.typeEdit)
     row.addWidget(self.titleEdit)
     row.addWidget(self.languageEdit)
     layout.addLayout(row)
@@ -97,6 +100,15 @@ class _TopicInput(object):
     ret.addItems(map(i18n.language_name2, config.LANGUAGES))
     ret.setMaxVisibleItems(ret.count())
     ret.currentIndexChanged.connect(self._onLanguageChanged)
+    return ret
+
+  @memoizedproperty
+  def typeEdit(self):
+    ret = QtWidgets.QComboBox()
+    ret.setEditable(False)
+    ret.addItems(map(i18n.topic_type_name, defs.TOPIC_TYPES))
+    ret.setMaxVisibleItems(ret.count())
+    #ret.currentIndexChanged.connect(self._onTypeChanged)
     return ret
 
   @memoizedproperty
@@ -176,6 +188,8 @@ class _TopicInput(object):
     ret.currentIndexChanged.connect(self._onLanguageChanged)
     return ret
 
+  def _getType(self): # -> str
+    return defs.TOPIC_TYPES[self.typeEdit.currentIndex()]
   def _getLanguage(self): # -> str
     return config.language2htmllocale(config.LANGUAGES[self.languageEdit.currentIndex()])
   def _getContent(self): # -> unicode
@@ -239,10 +253,17 @@ class _TopicInput(object):
       self.imageTitleEdit.setVisible(bool(title))
 
   def _save(self):
+    if not self.subjectId or not self.subjectType:
+      return
     topic = {}
     topic['title'] = self.topicContent = self._getTitle()
     topic['content'] = self.topicContent = self._getContent()
     topic['lang'] = self.topicLanguage = self._getLanguage()
+
+    if self.topicType == 'review':
+      topic['type'] = self.topicType
+    else:
+      topic['type'] = self._getType()
 
     #import dataman
     #user = dataman.manager().user()
@@ -261,7 +282,9 @@ class _TopicInput(object):
           }
           imageData = json.dumps(image)
 
-      topic['type'] = self.topicType
+      topic['subjectId'] = self.subjectId
+      topic['subjectType'] = self.subjectType
+
       topicData = json.dumps(topic)
 
       ticketData = ''
@@ -279,11 +302,17 @@ class _TopicInput(object):
       growl.msg(my.tr("Edit submitted"))
 
   def refresh(self):
-    self.scoreRow.setVisible(self.topicType == 'review')
+    scoreEnabled = self.topicType == 'review'
+    self.scoreRow.setVisible(scoreEnabled)
+    self.typeEdit.setVisible(not scoreEnabled)
 
     self.saveButton.setEnabled(False)
 
     self.contentEdit.setPlainText(self.topicContent)
+
+    try: typeIndex = defs.TOPIC_TYPES.index(self.topicType)
+    except ValueError: typeIndex = 0
+    self.typeEdit.setCurrentIndex(typeIndex)
 
     try: langIndex = config.LANGUAGES.index(config.htmllocale2language(self.topicLanguage))
     except ValueError: langIndex = 1 # 'en'
@@ -313,6 +342,10 @@ class TopicInput(QtWidgets.QDialog):
 
   def imageEnabled(self): return self.__d.imageEnabled
   def setImageEnabled(self, t): self.__d.imageEnabled = t
+
+  def setSubject(self, subjectId, subjectType):
+    self.__d.subjectId = subjectId
+    self.__d.subjectType = subjectType
 
   def type(self): return self.__d.topicType
   def setType(self, v): self.__d.topicType = v
@@ -384,8 +417,15 @@ class TopicInputManager(QObject):
         if w.isVisible():
           w.hide()
 
-  def newTopic(self, type, imagePath=''): # str, unicode ->
+  def newTopic(self, type='chat', subjectId=0, subjectType='', imagePath=''):
+    """
+    @param* type  str  topic type
+    @param* subjectId  long
+    @param* subjectType  str
+    @param* imagePath  unicode
+    """
     w = self.__d.getDialog(self)
+    w.setSubject(subjectId, subjectType)
     w.setType(type)
     w.setImagePath(imagePath)
     w.show()
@@ -405,8 +445,9 @@ class TopicInputManagerBean(QObject):
 
   topicReceived = Signal(unicode, unicode) # json topic, json image
 
-  @Slot(str)
-  def newTopic(self, type): self.manager.newTopic(type)
+  @Slot(str, long, str)
+  def newTopic(self, topicType, subjectId, subjectType):
+    self.manager.newTopic(topicType, subjectId=subjectId, subjectType=subjectType)
 
   imageEnabledChanged = Signal(bool)
   imageEnabled = Property(bool,

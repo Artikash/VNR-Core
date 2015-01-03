@@ -99,7 +99,7 @@ class sakurakit(QObject):
       self.tr("Buy"),
       self.tr("Cancel"),
       self.tr("Category"),
-      self.tr("Chat"),
+      self.tr("Chat"), self.tr("chat"),
       self.tr("Clear"),
       self.tr("Close"),
       self.tr("Cluster"),
@@ -216,6 +216,9 @@ class sakurakit(QObject):
 
       self.tr("Comiket"),
 
+      self.tr("Article"), self.tr("article"),
+      self.tr("Solved"), self.tr("solved"),
+
       self.tr("Scenario"),
       self.tr("Music"),
 
@@ -314,6 +317,7 @@ class sakurakit(QObject):
       self.tr("Locations"),
       self.tr("Macro"),
       self.tr("Menu"),
+      self.tr("News"), self.tr("news"),
       self.tr("Method"),
       self.tr("Name"),
       self.tr("Mouse"),
@@ -333,7 +337,7 @@ class sakurakit(QObject):
       self.tr("Properties"),
       self.tr("Plug-in"),
       self.tr("Plug-ins"),
-      self.tr("Question"),
+      self.tr("Question"), self.tr("question"),
       self.tr("Reference"),
       self.tr("References"),
       self.tr("Regular Expression"), self.tr("Regular expression"), self.tr("regular expression"),
@@ -342,7 +346,7 @@ class sakurakit(QObject):
       self.tr("Rating"),
       self.tr("Release"),
       self.tr("Release Date"), self.tr("Release date"),
-      self.tr("Review"),
+      self.tr("Review"), self.tr("review"),
       self.tr("Row"),
       #self.tr("Scratch"),
       #self.tr("Subject"),
@@ -364,7 +368,7 @@ class sakurakit(QObject):
       self.tr("Title"), self.tr("title"),
       self.tr("Timestamp"),
       self.tr("Time zone"),
-      self.tr("Topic"),
+      self.tr("Topic"), self.tr("topic"),
       self.tr("Translation"),
       self.tr("Translator"),
       self.tr("Translators"),
@@ -400,6 +404,9 @@ class sakurakit(QObject):
       self.tr("Editable"), self.tr("editable"),
 
       self.tr("Draggable"),
+
+      self.tr("Recent"),
+      self.tr("Like"),
 
       self.tr("Slow"),
       self.tr("slow"),

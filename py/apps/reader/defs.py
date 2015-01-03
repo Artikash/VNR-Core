@@ -127,6 +127,17 @@ UPLOAD_IMAGE_FILTER = "*." + " *.".join(UPLOAD_IMAGE_SUFFICES)
 
 MAX_UPLOAD_IMAGE_SIZE = 2 * 1024 * 1024 # 2MB
 
+TOPIC_TYPES = (
+  'chat',
+  'question',
+  'solved',
+  'news',
+  'article',
+  #'slides',
+  #'music',
+  #'review',
+)
+
 #MAX_UPLOAD_AUDIO_SIZE = 15 * 1024 * 1024 # 15MB
 
 # Translations

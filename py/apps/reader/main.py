@@ -807,6 +807,11 @@ class _MainObject(object):
     return gameview.manager()
 
   @property
+  def topicViewManager(self):
+    import topicview
+    return topicview.manager()
+
+  @property
   def topicsViewManager(self):
     import topicsview
     return topicsview.manager()
@@ -1853,22 +1858,31 @@ class MainObject(QObject):
       import osutil
       osutil.open_url("http://sakuradite.com/game/%s" % itemId)
 
-  def showChatView(self, topicId): self.__d.topicsViewManager.showTopic(topicId) # long ->
-  def isChatViewVisible(self): return self.__d.topicsViewManager.isVisible()
+  def showChatView(self, topicId):
+    self.__d.topicsViewManager.show(topicId=topicId)
+  def isChatViewVisible(self, topicId):
+    return self.__d.topicsViewManager.isViewVisible(topicId=topicId)
 
-  def showGameTopics(self, itemId): self.__d.topicsViewManager.showGame(itemId) # long ->
+  def showGameTopics(self, itemId):
+    self.__d.topicsViewManager.show(subjectId=itemId)
+
+  def showTopic(self, topicId):
+    self.__d.topicViewManager.show(topicId)
 
   def showSubtitleEditor(self, comment): # dataman.Comment
     self.__d.subtitleEditorManager.showComment(comment)
 
-  def showGameView(self, gameId=None): # long ->
+  def showGameView(self, gameId=None, itemId=None): # long, long ->
     d = self.__d
-    if not gameId:
-      gameId = d.dataManager.currentGameId()
-    if not gameId:
-      growl.notify(my.tr("Unknown game. Please try updating the database."))
+    if itemId:
+      d.gameViewManager.showItem(itemId)
     else:
-      d.gameViewManager.showGame(gameId)
+      if not gameId:
+        gameId = d.dataManager.currentGameId()
+      if not gameId:
+        growl.notify(my.tr("Unknown game. Please try updating the database."))
+      else:
+        d.gameViewManager.showGame(gameId)
 
   def showUserView(self, *args, **kwargs):
     """
@@ -2181,6 +2195,7 @@ class MainObject(QObject):
         'gameEditorManager',
         'userViewManager',
         'gameViewManager',
+        'topicViewManager',
         'topicsViewManager',
       ):
       if hasmemoizedproperty(self, p):
@@ -2309,8 +2324,10 @@ class MainObjectProxy(QObject):
   @Slot()
   def showGlobalChatView(self): manager().showChatView(config.GLOBAL_TOPIC_ID)
   @Slot(result=bool)
-  def isGlobalChatViewVisible(self): return manager().isChatViewVisible() # global id not used
+  def isGlobalChatViewVisible(self): return manager().isChatViewVisible(config.GLOBAL_TOPIC_ID)
 
+  @Slot(long)
+  def showTopic(self, topicId): manager().showTopic(topicId)
   @Slot(long)
   def showGameTopics(self, gameId): manager().showGameTopics(gameId)
 
