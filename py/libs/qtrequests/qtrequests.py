@@ -1,5 +1,5 @@
 # coding: utf8
-# qtrequests
+# qtrequests.py
 # 8/23/2014 jichi
 # Python requests implemented using QtNetwork.
 

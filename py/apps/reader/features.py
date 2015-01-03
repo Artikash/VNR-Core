@@ -59,20 +59,45 @@ def setMainlandChina(value):
     import dlsite.search
     import dmm.game
     if not value:
-      for it in googletts, googletrans:
+      for it in googlesr, googletts:
         it.setapi(it.defaultapi())
       for it in  getchu.soft, getchu.search, dlsite.search, dmm.game, erogamescape.api:
         it.resethost()
+      import requests
+      googletrans.session = requests
+
+      if PROXY_CONFIG:
+        from proxyrequests import proxyconfig
+        PROXY_CONFIG['host'] = proxyconfig.WEBPROXY_CONFIG['host']
+
     else:
       import config
       googlesr.setapi(config.PROXY_GOOGLE_SR)
       googletts.setapi(config.PROXY_GOOGLE_TTS)
-      googletrans.setapi(config.PROXY_GOOGLE_TRANS)
+      #googletrans.setapi(config.PROXY_GOOGLE_TRANS)
       erogamescape.api.sethost(config.PROXY_EROGAMESCAPE) # temporarily disabled
       dmm.game.sethost(config.PROXY_DMM_JP)
       dlsite.search.sethost(config.PROXY_DLSITE)
       for it in getchu.soft, getchu.search:
         it.sethost(config.PROXY_GETCHU)
+
+      if PROXY_CONFIG:
+        PROXY_CONFIG['host'] = config.PROXY_WEBPROXY
+
+      from proxyrequests import proxyrequests
+      config = get_proxy_config()
+      googletrans.session = proxyrequests.Session(config, allows_caching=True)
+
+PROXY_CONFIG = None
+def get_proxy_config():
+  global PROXY_CONFIG
+  if not PROXY_CONFIG:
+    from proxyrequests import proxyconfig
+    PROXY_CONFIG = dict(proxyconfig.WEBPROXY_CONFIG)
+    if MAINLAND_CHINA:
+      import config
+      PROXY_CONFIG['host'] = config.PROXY_WEBPROXY
+  return PROXY_CONFIG
 
 def init():
   ss = settings.global_()

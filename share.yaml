@@ -237,6 +237,9 @@ proxies:
   host: 153.121.52.138 # sakuradite.org
   #host: 153.121.54.194 # sakuradite.com
 
+  webproxy: http://153.121.52.138/proxy/webproxy
+  webserver: http://153.121.52.138/proxy/webserver
+
   twittersearch: http://websearch.excite.co.jp/
   googlesearch: http://websearch.excite.co.jp/
   googlesr:     http://153.121.52.138/proxy/gg/speech/v2/recognize
