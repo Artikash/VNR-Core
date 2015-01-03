@@ -85,6 +85,7 @@ Item { id: root_
     displaysDuplicateRows: searchToolBar_.displaysDuplicateRows
 
     filterColumn: searchCol_.value
+    filterTypes: filterToolBar_.values
 
     Share.Blocker {
       anchors.fill: parent
@@ -149,7 +150,7 @@ Item { id: root_
         append({text:Sk.tr("All"), value:''})
         append({text:Sk.tr("User"), value:'user'})
         append({text:Sk.tr("Game"), value:'game'})
-        append({text:Sk.tr("Type"), value:'type'})
+        //append({text:Sk.tr("Type"), value:'type'})
         append({text:Sk.tr("Language"), value:'language'})
         append({text:Sk.tr("Pattern"), value:'pattern'})
         append({text:Sk.tr("Translation"), value:'text'})
@@ -195,6 +196,15 @@ Item { id: root_
     }
   }
 
+  TermView.FilterToolBar { id: filterToolBar_
+    anchors {
+      right: parent.right
+      rightMargin: 2
+      bottom: parent.bottom
+      bottomMargin: 5
+    }
+  }
+
   // Bottom row
 
   // Inspector at the bottom
@@ -202,11 +212,14 @@ Item { id: root_
     anchors {
       bottom: parent.bottom
       left: parent.left
-      right: parent.right
+      right: filterToolBar_.left
+      rightMargin: 5
     }
     currentItem: table_.currentItem
   }
 }
+
+// EOF
 
   //TermView.OptionPanel { id: option_
   //  anchors {

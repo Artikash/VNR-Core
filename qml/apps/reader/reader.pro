@@ -35,6 +35,7 @@ SOURCES = \
   subview/searchtoolbar.qml \
   subview/selecttoolbar.qml \
   subview.qml \
+  termview/filtertoolbar.qml \
   termview/maintoolbar.qml \
   termview/searchtoolbar.qml \
   termview/selecttoolbar.qml \
