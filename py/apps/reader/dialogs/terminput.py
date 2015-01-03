@@ -47,6 +47,10 @@ class _TermInput(object):
     grid.addLayout(row, r, 1)
     r += 1
 
+    grid.addWidget(QtWidgets.QLabel(tr_("Private") + ":"), r, 0)
+    grid.addWidget(self.privateButton, r, 1)
+    r += 1
+
     grid.addWidget(QtWidgets.QLabel(tr_("Options") + ":"), r, 0)
     grid.addWidget(self.specialButton, r, 1)
     r += 1
@@ -208,6 +212,12 @@ class _TermInput(object):
     return ret
 
   @memoizedproperty
+  def privateButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Only visible to yourself"))
+    ret.toggled.connect(self._refreshStatus)
+    return ret
+
+  @memoizedproperty
   def statusLabel(self):
     ret = QtWidgets.QLabel()
     ret.setToolTip(tr_("Status"))
@@ -292,9 +302,10 @@ class _TermInput(object):
       regex = type == 'macro' or self.regexButton.isChecked() #and type != 'title')
       syntax = type == 'escape' and self.syntaxButton.isChecked() and not user.isGuest()
       special = self.specialButton.isChecked() and bool(gameId or md5)
+      private = self.privateButton.isChecked() and not user.isGuest()
       ret = dataman.Term(gameId=gameId, gameMd5=md5,
           userId=user.id,
-          language=lang, type=type,
+          language=lang, type=type, private=private,
           special=special, regex=regex, syntax=syntax,
           timestamp=skdatetime.current_unixtime(),
           pattern=pattern, text=text, comment=comment)
@@ -320,6 +331,9 @@ class _TermInput(object):
   #  self._setType(type)
 
   def refresh(self):
+    user = dataman.manager().user()
+    self.privateButton.setEnabled(not user.isGuest())
+
     self.saveButton.setEnabled(self._canSave())
     self._refreshTypeLabel()
     self._refreshYomi()
@@ -382,7 +396,7 @@ class TermInput(QtWidgets.QDialog):
     self.__d = _TermInput(self)
     #self.__d.autofill()
     #self.resize(300, 270)
-    self.resize(300, 300)
+    self.resize(300, 320)
     #self.statusBar() # show status bar
 
     import netman
