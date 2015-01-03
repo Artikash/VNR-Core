@@ -29,6 +29,8 @@ class _TopicEditor(object):
     self.imageEnabled = True
 
     self.topicId = 0 # long
+    self.subjectId = 0 # long
+    self.subjectType = 'subject' # str
     self.topicType = 'review' # str
     self.userName = '' # unicode
     self.topicLanguage = ''
@@ -351,6 +353,8 @@ class _TopicEditor(object):
     if topic or imageData or ticketData:
       topic['id'] = self.topicId
       topic['userName'] = self.userName
+      topic['subjectId'] = self.subjectId
+      topic['subjectType'] = self.subjectType
 
       topicData = json.dumps(topic)
 
@@ -412,10 +416,12 @@ class TopicEditor(QtWidgets.QDialog):
     import dataman
     dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
 
-  def setTopic(self, id, scores=None, type='', userName='', language='', lang='', title='', content='', image=None, **ignored):
+  def setTopic(self, id, subjectId=0, subjectType='subject', scores=None, type='', userName='', language='', lang='', title='', content='', image=None, **ignored):
     d = self.__d
     d.topicId = id
     d.topicType = type
+    d.subjectId = subjectId
+    d.subjectType = subjectType
     d.userName = userName
     d.topicLanguage = language or lang
     d.topicTitle = title

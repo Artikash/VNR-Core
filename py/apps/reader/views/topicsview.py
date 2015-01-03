@@ -169,17 +169,10 @@ class _TopicsView(object):
           postData, imageData))
 
   def _submitTopic(self, topicData, imageData, ticketData):
-    subjectId = self.subjectId
-    if subjectId:
-      subjectType = 'game'
-    else:
-      subjectId = config.GLOBAL_SUBJECT_ID
-      subjectType = 'subject'
     if netman.manager().isOnline():
       import forumapi
       skevents.runlater(partial(forumapi.manager().submitTopic,
-          topicData, imageData, ticketData,
-          subjectId=subjectId, subjectType=subjectType))
+          topicData, imageData, ticketData))
 
   def _updateTopic(self, topicData, imageData, ticketData):
     if netman.manager().isOnline():

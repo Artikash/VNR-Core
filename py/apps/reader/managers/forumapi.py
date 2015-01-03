@@ -2,6 +2,7 @@
 # forumapi.py
 # 1/1/2015 jichi
 
+import json
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dprint, dwarn
 from mytr import my
@@ -101,7 +102,7 @@ class _ForumApi:
       )))
     dprint("leave")
 
-  def submitTopic(self, topicData, imageData, ticketData, subjectId, subjectType):
+  def submitTopic(self, topicData, imageData, ticketData):
     """
     @param  topicData  unicode json
     @param  imageData  unicode json
@@ -110,11 +111,10 @@ class _ForumApi:
     user = dataman.manager().user()
     if user.name and user.password:
       topic = json.loads(topicData)
-      if not topic.get('subjectId') or not topic.get('subjectType'):
-        if not subjectId or not subjectType:
-          return
-        topic['subjectId'] = subjectId
-        topic['subjectType'] = subjectType
+      subjectId = topic.get('subjectId')
+      subjectType = topic.get('subjectType')
+      if not subjectId or not subjectType:
+        return
       topic['login'] = user.name
       topic['password'] = user.password
       if imageData:
@@ -123,10 +123,12 @@ class _ForumApi:
         image['password'] = user.password
       else:
         image = None
-      tickets = self._parseTicketData(ticketData) if ticketData else None
+      tickets = None
+      if ticketData and subjectType == 'game':
+        tickets = self._parseGameTicketData(ticketData, subjectId)
       self._submitTopic(topic, image, tickets)
 
-  def _parseTicketData(self, data): # string -> [{kw}]
+  def _parseGameTicketData(self, data, gameId): # string -> [{kw}]
     ret = []
     user = dataman.manager().user()
     a = json.loads(data)
@@ -134,7 +136,7 @@ class _ForumApi:
       ret.append({
         'type': k,
         'value': v,
-        'targetId': self.gameId,
+        'targetId': gameId,
         'targetType': 'game',
         'login': user.name,
         'password': user.password,
@@ -174,6 +176,7 @@ class _ForumApi:
   def _onTopicSubmitted(self, topic, tickets):
     """
     @param  topic  kw
+    @param  tickets  [kw]
     """
     if topic.get('subjectType') == 'game':
       itemId = topic.get('subjectId')
@@ -209,7 +212,13 @@ class _ForumApi:
       else:
         image = None
 
-      tickets = self._parseTicketData(ticketData) if ticketData else None
+      tickets = None
+      subjectId = topic.get('subjectId')
+      subjectType = topic.get('subjectType')
+      if subjectId and subjectType == 'game'
+        del topic['subjectId']
+        del topic['subjectType']
+        tickets = self._parseGameTicketData(ticketData, subjectId)
       self._updateTopic(topic, image, tickets)
 
   def _updateTopic(self, topic, image, tickets):
