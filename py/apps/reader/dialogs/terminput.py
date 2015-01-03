@@ -47,10 +47,6 @@ class _TermInput(object):
     grid.addLayout(row, r, 1)
     r += 1
 
-    grid.addWidget(QtWidgets.QLabel(tr_("Private") + ":"), r, 0)
-    grid.addWidget(self.privateButton, r, 1)
-    r += 1
-
     grid.addWidget(QtWidgets.QLabel(tr_("Options") + ":"), r, 0)
     grid.addWidget(self.specialButton, r, 1)
     r += 1
@@ -59,6 +55,9 @@ class _TermInput(object):
     r += 1
 
     grid.addWidget(self.syntaxButton, r, 1)
+    r += 1
+
+    grid.addWidget(self.privateButton, r, 1)
     r += 1
 
     grid.addWidget(QtWidgets.QLabel(tr_("Pattern") + ":"), r, 0)
