@@ -19,16 +19,16 @@ Grid { id: root_ // Theme refers to Bootstrap.label
 
   Component.onCompleted: {
     var m = [
-      {value:'escape',   text:qsTr("Trans")}
-      , {value:'source', text:My.tr("Input")}
-      , {value:'target', text:My.tr("Output")}
-      , {value:'name',   text:My.tr("Name")}
-      , {value:'yomi',   text:My.tr("Yomi")}
-      , {value:'title',  text:My.tr("Suffix")}
-      , {value:'origin', text:Sk.tr("Game")}
-      , {value:'speech', text:"TTS"}
-      , {value:'ocr',    text:"OCR"}
-      , {value:'macro',  text:Sk.tr("Macro")}
+      {value:'escape',   text:qsTr("Trans"),    toolTip:qsTr("Replace text matching pattern with translation")}
+      , {value:'source', text:My.tr("Input"),   toolTip:qsTr("Fix input text before translation")}
+      , {value:'target', text:My.tr("Output"),  toolTip:qsTr("Fix output text after translation")}
+      , {value:'name',   text:My.tr("Name"),    toolTip:qsTr("A Japanese first or last name")}
+      , {value:'yomi',   text:My.tr("Yomi"),    toolTip:qsTr("Yomigana of a Japanese name")}
+      , {value:'title',  text:My.tr("Suffix"),  toolTip:qsTr("Title after a Japanese name")}
+      , {value:'origin', text:Sk.tr("Game"),    toolTip:qsTr("Fix game text")}
+      , {value:'speech', text:"TTS",            toolTip:qsTr("Fix text to send to TTS")}
+      , {value:'ocr',    text:"OCR",            toolTip:qsTr("Fix text received from OCR")}
+      , {value:'macro',  text:Sk.tr("Macro"),   toolTip:qsTr("Reusable regular expression")}
     ]
     for (var i in m)
       buttonComp_.createObject(root_, m[i])
@@ -55,7 +55,6 @@ Grid { id: root_ // Theme refers to Bootstrap.label
       checkable: true
       property string value
       onClicked: root_.toggleValue(value, checked)
-      toolTip: Sk.tr("Type")
     }
   }
 }

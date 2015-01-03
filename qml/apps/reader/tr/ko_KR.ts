@@ -461,9 +461,59 @@
 <context>
     <name>filtertoolbar</name>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="20"/>
+        <location filename="../termview/filtertoolbar.qml" line="22"/>
         <source>Trans</source>
         <translation>번역</translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="22"/>
+        <source>Replace text matching pattern with translation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="23"/>
+        <source>Fix input text before translation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="24"/>
+        <source>Fix output text after translation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="25"/>
+        <source>A Japanese first or last name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="26"/>
+        <source>Yomigana of a Japanese name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="27"/>
+        <source>Title after a Japanese name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="28"/>
+        <source>Fix game text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="29"/>
+        <source>Fix text to send to TTS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="30"/>
+        <source>Fix text received from OCR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="31"/>
+        <source>Reusable regular expression</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1236,12 +1286,12 @@
 <context>
     <name>table</name>
     <message>
-        <location filename="../termview/table.qml" line="368"/>
+        <location filename="../termview/table.qml" line="369"/>
         <source>Regex</source>
         <translation>정규표현식</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="440"/>
+        <location filename="../termview/table.qml" line="441"/>
         <source>Series</source>
         <translation>시리즈</translation>
     </message>
@@ -1249,7 +1299,7 @@
 <context>
     <name>termview</name>
     <message>
-        <location filename="../termview.qml" line="176"/>
+        <location filename="../termview.qml" line="177"/>
         <source>Type part of the pattern, text, user, language, etc, and press Enter to search</source>
         <translation>패턴, 텍스트, 사용자이름, 언어 등을 입력하고 Enter를 눌러 찾기</translation>
     </message>

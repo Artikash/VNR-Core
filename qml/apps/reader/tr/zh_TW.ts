@@ -461,9 +461,59 @@
 <context>
     <name>filtertoolbar</name>
     <message>
-        <location filename="../termview/filtertoolbar.qml" line="20"/>
+        <location filename="../termview/filtertoolbar.qml" line="22"/>
         <source>Trans</source>
         <translation>翻譯</translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="22"/>
+        <source>Replace text matching pattern with translation</source>
+        <translation>替換匹配的文字為翻譯的文字</translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="23"/>
+        <source>Fix input text before translation</source>
+        <translation>在翻以前修正輸入的文字</translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="24"/>
+        <source>Fix output text after translation</source>
+        <translation>在翻譯後修正輸出的文字</translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="25"/>
+        <source>A Japanese first or last name</source>
+        <translation>日文的姓名</translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="26"/>
+        <source>Yomigana of a Japanese name</source>
+        <translation>日文姓名的讀法</translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="27"/>
+        <source>Title after a Japanese name</source>
+        <translation>日文姓名後邊的稱謂</translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="28"/>
+        <source>Fix game text</source>
+        <translation>修正遊戲的文字</translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="29"/>
+        <source>Fix text to send to TTS</source>
+        <translation>在語音合成前修正文字</translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="30"/>
+        <source>Fix text received from OCR</source>
+        <translation>在光學識別後修正文字</translation>
+    </message>
+    <message>
+        <location filename="../termview/filtertoolbar.qml" line="31"/>
+        <source>Reusable regular expression</source>
+        <translation>正則表示式的定義</translation>
     </message>
 </context>
 <context>
@@ -1236,12 +1286,12 @@
 <context>
     <name>table</name>
     <message>
-        <location filename="../termview/table.qml" line="368"/>
+        <location filename="../termview/table.qml" line="369"/>
         <source>Regex</source>
         <translation>正則表達</translation>
     </message>
     <message>
-        <location filename="../termview/table.qml" line="440"/>
+        <location filename="../termview/table.qml" line="441"/>
         <source>Series</source>
         <translation>系列專用</translation>
     </message>
@@ -1249,7 +1299,7 @@
 <context>
     <name>termview</name>
     <message>
-        <location filename="../termview.qml" line="176"/>
+        <location filename="../termview.qml" line="177"/>
         <source>Type part of the pattern, text, user, language, etc, and press Enter to search</source>
         <translation>輸入需要查詢的文字，翻譯，使用者名，語言等，然後按下回車搜尋</translation>
     </message>
