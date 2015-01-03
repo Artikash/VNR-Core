@@ -18,7 +18,7 @@ dprint = ->
 @READY = false # needed by postView.py
 
 #newTopic = (topicType, subjectId, subjectType) -> topicInputBean.newTopic topicType, subjectId, subjectType # long, string ->
-newPost = (topicId) -> postInputBean.newPost topicId # long ->
+newPost = (topicId) -> postInputBean.newPost topicId, 'post' # long ->
 
 # Export functions
 

@@ -300,7 +300,7 @@ class _TopicView(object):
   @memoizedproperty
   def newPostButton(self):
     ret = QtWidgets.QPushButton("+ " + tr_("Reply"))
-    skqss.class_(ret, 'btn btn-info')
+    skqss.class_(ret, 'btn btn-primary')
     ret.setToolTip(tr_("New"))
     #ret.setStatusTip(ret.toolTip())
     ret.clicked.connect(self._newPost)

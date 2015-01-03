@@ -72,12 +72,14 @@ createTemplates = ->
           %span.fa.fa-thumbs-down
           %span.value = dislikeCount
       .btn-group.pull-right
-        %a.btn-reply.btn.btn-link.btn-sm(role="button" title="#{tr 'Reply'}")
-          #{tr 'Reply'}
-          :if postCount
-            = ' (' + postCount + ')'
+        :if USER_NAME
+          %a.btn-reply.btn.btn-link.btn-sm(role="button" title="#{tr 'Reply'}")
+            #{tr 'Reply'}
+            :if postCount
+              = ' (' + postCount + ')'
         :if userName == USER_NAME
           %a.btn-edit.btn.btn-link.btn-sm(role="button" title="#{tr 'Edit'}") #{tr 'Edit'}
+          %a.btn-add.btn.btn-link.btn-sm(role="button" title="#{tr 'Add'}") #{tr 'Add'}
     :if image
       .image
         %a(href="${image.url}" title="${image.title}")
@@ -122,7 +124,7 @@ renderTopic = (data) -> # object topic, bool -> string
     scores: data.scores # {overall:int score, ecchi:int score}
     #su: su
 
-newPost = (topicId) -> postInputBean.newPost topicId # long ->
+newPost = (topicId, postType) -> postInputBean.newPost topicId, postType # long, string ->
 editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
 
 # Classes
@@ -152,11 +154,15 @@ class Topic
       false
 
     $footer.find('.btn-edit').click ->
-      editTopic topic if topic
+      editTopic topic
+      false
+
+    $footer.find('.btn-add').click ->
+      newPost topicId, 'topic'
       false
 
     $footer.find('.btn-reply').click ->
-      newPost topicId
+      newPost topicId, 'post'
       false
 
     #$footer.find('.like-group').removeClass 'fade-in' if topic?.likeCount or topic?.dislikeCount
