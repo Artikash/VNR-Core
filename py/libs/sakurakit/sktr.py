@@ -335,6 +335,7 @@ class sakurakit(QObject):
       self.tr("Primary"), self.tr("primary"),
       self.tr("Property"),
       self.tr("Properties"),
+      self.tr("Proxy"),
       self.tr("Plug-in"),
       self.tr("Plug-ins"),
       self.tr("Question"), self.tr("question"),
@@ -408,8 +409,7 @@ class sakurakit(QObject):
       self.tr("Recent"),
       self.tr("Like"),
 
-      self.tr("Slow"),
-      self.tr("slow"),
+      self.tr("Slow"), self.tr("slow"),
 
       self.tr("Public"),
       self.tr("Private"),
