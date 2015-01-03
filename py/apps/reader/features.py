@@ -3,7 +3,7 @@
 # 12/24/2012 jichi
 # Cached settings
 
-from sakurakit.skdebug import dprint
+from sakurakit.skdebug import dprint, dwarn
 import settings
 
 def underwine():
@@ -14,7 +14,6 @@ def underwine():
   from sakurakit import skpaths
   try: return os.path.exists(os.path.join(skpaths.SYSTEM32, 'winecfg.exe'))
   except Exception, e:
-    from sakurakit.skdebug import dwarn
     dwarn(e)
     return False
 WINE = underwine()
@@ -86,6 +85,8 @@ def setMainlandChina(value):
 
       googletrans.session = make_proxy_session(allows_caching=True)
 
+# Proxies
+
 PROXY_CONFIG = None
 def get_proxy_config():
   global PROXY_CONFIG
@@ -102,6 +103,23 @@ def make_proxy_session(*args, **kwargs):
   config = get_proxy_config()
   return proxyrequests.Session(config, *args, **kwargs)
 
+def setProxyBaidu(t):
+  dprint(t)
+  from baidu import baidutts, baidufanyi
+  from kingsoft import iciba
+  import config
+
+  url = config.PROXY_ICIBA if t else "http://jp.iciba.com"
+  iciba.API = url + '/api.php'
+
+  url = config.PROXY_BAIDU_TTS if t else "http://tts.baidu.com"
+  baidutts.API = url + '/text2audio'
+
+  url = config.PROXY_BAIDU_FANYI if t else "http://fanyi.baidu.com"
+  baidufanyi.API = url + '/transapi'
+
+# Init
+
 def init():
   ss = settings.global_()
   ss.internetConnectionChanged.connect(setInternetConnection)
@@ -112,6 +130,10 @@ def init():
   ss.mainlandChinaChanged.connect(setMainlandChina)
   if ss.isMainlandChina():
     setMainlandChina(True)
+
+  ss.proxyBaiduChanged.connect(setProxyBaidu)
+  if ss.proxyBaidu():
+    setProxyBaidu(True)
 
 init()
 

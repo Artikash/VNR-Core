@@ -240,6 +240,10 @@ proxies:
   webproxy: http://153.121.52.138/proxy/webproxy
   webserver: http://153.121.52.138/proxy/webserver
 
+  baidufanyi:   http://153.121.52.138/proxy/baidu/fanyi
+  baidutts:     http://153.121.52.138/proxy/baidu/tts
+  iciba:        http://153.121.52.138/proxy/iciba/jp
+
   twittersearch: http://websearch.excite.co.jp/
   googlesearch: http://websearch.excite.co.jp/
   googlesr:     http://153.121.52.138/proxy/gg/speech/v2/recognize
