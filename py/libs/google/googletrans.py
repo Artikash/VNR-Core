@@ -42,7 +42,8 @@ def translate(t, to='auto', fr='auto'):
   @return  unicode or None
   """
   try:
-    r = session.get(GOOGLE_TRANS_API, headers=GOOGLE_HEADERS, params={
+    #r = session.get(GOOGLE_TRANS_API, headers=GOOGLE_HEADERS, params={
+    r = session.post(GOOGLE_TRANS_API, headers=GOOGLE_HEADERS, data={
       'hl': googledef.lang2locale(to),
       'sl': googledef.lang2locale(fr),
       'q': t,
@@ -120,24 +121,29 @@ if __name__ == '__main__':
     #    t = translate(s, to=to, fr=fr)
     #print t
 
-    session = requests
+    from proxyrequests import proxyconfig, proxyrequests
+    config = proxyconfig.WEBPROXY_CONFIG
+    #config = proxyconfig.WEBSERVER_CONFIG
+    session = proxyrequests.Session(config, allows_caching=True)
+
     #with SkProfiler():
     #  for i in range(1):
     #    t = translate(s, to=to, fr=fr)
     #print t
 
-    setapi("https://153.121.52.138/proxyssl/gg/trans/m")
+    #setapi("https://153.121.52.138/proxyssl/gg/trans/m")
 
     with SkProfiler():
-      for i in range(1):
+      for i in range(10):
         t = translate(s, to=to, fr=fr)
     print t
 
-    app.quit()
+    #app.quit()
 
-  from PySide.QtCore import QCoreApplication, QTimer
-  app = QCoreApplication(sys.argv)
-  QTimer.singleShot(0, test)
-  app.exec_()
+  #from PySide.QtCore import QCoreApplication, QTimer
+  #app = QCoreApplication(sys.argv)
+  #QTimer.singleShot(0, test)
+  #app.exec_()
+  test()
 
 # EOF

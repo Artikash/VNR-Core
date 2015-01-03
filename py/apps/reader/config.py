@@ -229,6 +229,9 @@ _PROXY = SHARE_YAML['proxies']
 
 PROXY_HOST = _PROXY['host']
 
+#PROXY_WEBSERVER = _PROXY['webserver']
+PROXY_WEBPROXY = _PROXY['webproxy']
+
 PROXY_TWITTER_SEARCH = _PROXY['twittersearch']
 PROXY_GOOGLE_SEARCH = _PROXY['googlesearch']
 PROXY_GOOGLE_TRANS = _PROXY['googletrans']

@@ -1294,6 +1294,7 @@ class GoogleTranslator(OnlineMachineTranslator):
   #}))
   def translate(self, text, to='en', fr='ja', async=False, emit=False, **kwargs):
     """@reimp"""
+    async = True # force enable async
     if emit:
       self.emitLanguages(fr=fr, to=to)
     else:
@@ -1319,6 +1320,7 @@ class GoogleTranslator(OnlineMachineTranslator):
     @param* async  bool  ignored, always sync
     @return  unicode sub
     """
+    async = True # force enable async
     try: return self._translateTest(self.engine.translate,
             text, to=to, fr=fr, async=async) #.decode('utf8', errors='ignore')
     except Exception, e: dwarn(e); return ''

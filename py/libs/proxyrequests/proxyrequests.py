@@ -53,10 +53,16 @@ class Session(object):
     url = self._proxyurl(url, session)
     if not url:
       return requests.Response()
+
     #print url
-    headers = kwargs.get('headers') or {}
-    headers['referer'] = self.config.get('referer') or self.config['host']
-    return session.get(url, headers=headers, **kwargs)
+    referer = self.config.get('referer') or self.config['host']
+    headers = kwargs.get('headers')
+    if not headers:
+      kwargs['headers'] = {'Referer':referer}
+    else:
+      headers = kwargs['headers'] = dict(headers)
+      headers['Referer'] = referer
+    return session.get(url, *args, **kwargs)
 
   def post(self, url, *args, **kwargs):
     session = self._getsession()
@@ -66,7 +72,7 @@ class Session(object):
     #print url
     headers = kwargs.get('headers') or {}
     headers['referer'] = self.config.get('referer') or self.config['host']
-    return session.post(url, *args, **kwargs) if url else requests.Response()
+    return session.post(url, *args, **kwargs)
 
 if __name__ == '__main__':
   import sys
