@@ -47,15 +47,6 @@ Item { id: root_
     text: summary()
   }
 
-  TermView.Counter {
-    anchors {
-      top: parent.top; bottom: parent.bottom
-      right: parent.right
-      rightMargin: 9
-      bottomMargin: 5
-    }
-  }
-
   Plugin.JlpUtil { id: jlp_ }
 
   function summary() {
