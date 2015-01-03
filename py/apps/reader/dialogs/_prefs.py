@@ -3654,6 +3654,7 @@ class _InternetTab(object):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.connectionGroup)
     layout.addWidget(self.proxyGroup)
+    layout.addWidget(self.chinaGroup)
     layout.addStretch()
     q.setLayout(layout)
 
@@ -3662,11 +3663,32 @@ class _InternetTab(object):
   @memoizedproperty
   def proxyGroup(self):
     layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.scapeButton)
+    ret = QtWidgets.QGroupBox(my.tr("Website-specific proxies"))
+    ret.setLayout(layout)
+    self._updateChinaGroup()
+    return ret
+
+  @memoizedproperty
+  def scapeButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Proxy accesses to ErogameScape.com if you are blocked"
+    ))
+    ss = settings.global_()
+    ret.setChecked(ss.proxyScape())
+    ret.toggled.connect(ss.setProxyScape)
+    return ret
+
+  ## China group ##
+
+  @memoizedproperty
+  def chinaGroup(self):
+    layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.chinaButton)
     layout.addWidget(self.chinaLabel)
     ret = QtWidgets.QGroupBox(tr_("Mainland China"))
     ret.setLayout(layout)
-    self._updateProxyGroup()
+    self._updateChinaGroup()
     return ret
 
   @memoizedproperty
@@ -3687,10 +3709,10 @@ If you enable this option, VNR will try providing alternative services."""
     ss = settings.global_()
     ret.setChecked(ss.isMainlandChina())
     ret.toggled.connect(ss.setMainlandChina)
-    ret.toggled.connect(self._updateProxyGroup)
+    ret.toggled.connect(self._updateChinaGroup)
     return ret
 
-  def _updateProxyGroup(self):
+  def _updateChinaGroup(self):
     ok = self.chinaButton.isChecked()
     for it in self.chinaButton, self.chinaLabel:
       skqss.class_(it, 'normal' if ok else '')

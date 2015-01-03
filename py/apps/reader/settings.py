@@ -194,6 +194,15 @@ class Settings(QSettings):
       self.setValue('MainlandChina', value)
       self.mainlandChinaChanged.emit(value)
 
+  ## Proxies ##
+
+  proxyScapeChanged = Signal(bool)
+  def proxyScape(self): return to_bool(self.value('ProxyScape'))
+  def setProxyScape(self, value):
+    if value != self.proxyScape():
+      self.setValue('ProxyScape', value)
+      self.proxyScapeChanged.emit(value)
+
   ## i18n ##
 
   blockedLanguagesChanged = Signal(set)

@@ -212,12 +212,34 @@ class ScapeApi(object):
     @param* online  bool
     """
     self.online = online
+    self.proxyEnabled = False
+
+    import settings
+    ss = settings.global_()
+    self.setProxyEnabled(ss.proxyScape)
+    ss.proxyScapeChanged.connect(self.setProxyEnabled)
+
+  def setProxyEnabled(self, t):
+    if self.proxyEnabled != t:
+      dprint(t)
+      self.proxyEnabled = t
+      session = None
+      if t:
+        import features
+        session = features.make_proxy_session()
+      self.setSession(session)
 
   def setOnline(self, v):
     if self.online !=  v:
       self.online = v
       if hasmemoizedproperty(self, 'cachingApi'):
         self.cachingApi.online = v
+
+  def setSession(self, v): # requests.Session
+    if hasmemoizedproperty(self, 'cachingApi'):
+      self.cachingApi.session = v
+    if hasmemoizedproperty(self, 'api'):
+      self.api.session = v
 
   @memoizedproperty
   def cachingApi(self):

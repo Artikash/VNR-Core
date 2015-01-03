@@ -84,9 +84,7 @@ def setMainlandChina(value):
       if PROXY_CONFIG:
         PROXY_CONFIG['host'] = config.PROXY_WEBPROXY
 
-      from proxyrequests import proxyrequests
-      config = get_proxy_config()
-      googletrans.session = proxyrequests.Session(config, allows_caching=True)
+      googletrans.session = make_proxy_session(allows_caching=True)
 
 PROXY_CONFIG = None
 def get_proxy_config():
@@ -98,6 +96,11 @@ def get_proxy_config():
       import config
       PROXY_CONFIG['host'] = config.PROXY_WEBPROXY
   return PROXY_CONFIG
+
+def make_proxy_session(*args, **kwargs):
+  from proxyrequests import proxyrequests
+  config = get_proxy_config()
+  return proxyrequests.Session(config, *args, **kwargs)
 
 def init():
   ss = settings.global_()
