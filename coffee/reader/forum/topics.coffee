@@ -132,7 +132,7 @@ editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
 # Classes
 class TopicList
 
-  constructor: (container: @$sel, more:@$more, complete:@complete, search:search) ->
+  constructor: ($container: @$sel, $more:@$more, complete:@complete, search:search) ->
     @topics = [] # [object topic]
 
     @search = # {string:string}  search criteria

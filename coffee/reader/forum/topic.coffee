@@ -130,7 +130,7 @@ editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
 # Classes
 class Topic
 
-  constructor: (@id, container: @$sel) ->
+  constructor: (@id, $container: @$sel) ->
     @topic = {}
 
   # Helper functions

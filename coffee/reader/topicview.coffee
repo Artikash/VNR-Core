@@ -39,20 +39,22 @@ newPost = (topicId) -> postInputBean.newPost topicId, 'post' # long ->
 createObjects = ->
   # Topic
   @topicView = new topicjs.Topic TOPIC_ID,
-    container: $ '.forum-topic'
+    $container: $ '.forum-topic'
 
   # Posts
-  $sec = $ '.sec-posts'
+  $topicsec = $ '.sec-topic'
+  $postsec = $ '.sec-posts'
   @postView = new postsjs.PostList
-    container: $sec.children '.forum-posts'
-    more: $sec.find '> .footer > .btn-more'
+    $container: $postsec.children '.forum-posts'
+    $topicContainer: $topicsec.children '.forum-posts'
+    $more: $postsec.find '> .footer > .btn-more'
     topicId: TOPIC_ID
 
   @topicView.show
     success: @postView.show()
 
 bind = ->
-  $sec = $('.sec.sec-posts')
+  $sec = $ '.sec.sec-posts'
   $sec.find('.new-post').click ->
     newPost TOPIC_ID
     false

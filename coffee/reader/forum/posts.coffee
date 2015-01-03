@@ -103,7 +103,10 @@ replyPost = (topicId, postId) -> postInputBean.replyPost topicId, postId # long,
 # Classes
 class PostList
 
-  constructor: (container: @$sel, more:@$more, topicId:@topicId) ->
+  constructor: ($container:@$postContainer, $topicContainer:@$topicContainer, $more:@$more, $topic: @$topic, topicId:@topicId) ->
+    @$sel = @$postContainer
+    @$sel = @$sel.add @$topicContainer if @$topicContainer?
+
     @posts = [] # [object post]
 
     @bind()
@@ -191,9 +194,14 @@ class PostList
 
   addPosts: (posts) => # [object post] ->
     @posts.push.apply @posts, posts
+
     #document.title = "#{PAGE_TITLE} (#{@posts.length})"
     h = (renderPost it for it in posts when it.type is 'post').join ''
-    @$sel.append h
+    @$postContainer.append h if h
+
+    if @$topicContainer?
+      h = (renderPost it for it in posts when it.type is 'topic').join ''
+      @$topicContainer.append h if h
 
     replies = (it for it in posts when it.type is 'reply')
     if replies.length
@@ -217,9 +225,15 @@ class PostList
     #document.title = "#{PAGE_TITLE} (#{@posts.length})"
     if post.type is 'post'
       h = renderPost post
-      @$sel.prepend h
+      @$postContainer.prepend h
       @_highlightNewPosts()
       @_bindNewPosts()
+    else if post.type is 'topic'
+      if @$topicContainer?
+        h = renderPost post
+        @$topicContainer.append h
+        @_highlightNewPosts()
+        @_bindNewPosts()
     else if post.type is 'reply'
       $ref = @$getPost post.replyId
       if $ref.length

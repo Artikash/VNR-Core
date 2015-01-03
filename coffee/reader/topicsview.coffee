@@ -58,8 +58,8 @@ createObjects = ->
     search.subjectId = SUBJECT_ID
     search.subjectType = 'game'
   @reviewView = new topicsjs.TopicList
-    container: $sec.find '> .sec-content > .forum-topics'
-    more: $sec.find '> .sec-content > .footer > .btn-more'
+    $container: $sec.find '> .sec-content > .forum-topics'
+    $more: $sec.find '> .sec-content > .footer > .btn-more'
     search: search
     complete: not TOPIC_ID
 
@@ -70,8 +70,8 @@ createObjects = ->
   if SUBJECT_ID
     search.subjectId = SUBJECT_ID
   @topicView = new topicsjs.TopicList
-    container: $sec.find '> .sec-content > .forum-topics'
-    more: $sec.find '> .sec-content > .footer > .btn-more'
+    $container: $sec.find '> .sec-content > .forum-topics'
+    $more: $sec.find '> .sec-content > .footer > .btn-more'
     search: search
     complete: not TOPIC_ID
 
@@ -83,8 +83,8 @@ createObjects = ->
   $sec = $ '.sec-posts'
   if TOPIC_ID
     @postView = new postsjs.PostList
-      container: $sec.find '> .sec-content > .forum-posts'
-      more: $sec.find '> .sec-content > .footer > .btn-more'
+      $container: $sec.find '> .sec-content > .forum-posts'
+      $more: $sec.find '> .sec-content > .footer > .btn-more'
       topicId: TOPIC_ID
     @postView.show()
 
@@ -103,7 +103,7 @@ bind = ->
     false
 
   # Chat
-  $sec = $('.sec.sec-topics')
+  $sec = $ '.sec.sec-topics'
   $sec.find('.new-topic').click ->
     if SUBJECT_ID
       id = SUBJECT_ID
@@ -114,7 +114,7 @@ bind = ->
     newTopic 'chat', id, type
     false
 
-  $sec = $('.sec.sec-reviews')
+  $sec = $ '.sec.sec-reviews'
   $sec.find('.new-topic').click ->
     if SUBJECT_ID
       id = SUBJECT_ID
@@ -125,7 +125,7 @@ bind = ->
     newTopic 'review', id, type
     false
 
-  $sec = $('.sec.sec-posts')
+  $sec = $ '.sec.sec-posts'
   $sec.find('.new-post').click ->
     newPost TOPIC_ID
     false
