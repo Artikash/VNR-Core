@@ -47,6 +47,7 @@ def translate(t, to='auto', fr='auto'):
       'sl': googledef.lang2locale(fr),
       'q': t,
     })
+    #, verify=False)
 
     # Debug redirect
     # http://stackoverflow.com/questions/20475552/python-requests-library-redirect-new-url
@@ -125,7 +126,7 @@ if __name__ == '__main__':
     #    t = translate(s, to=to, fr=fr)
     #print t
 
-    setapi("https://153.121.52.138/proxy/gg/trans/m")
+    setapi("https://153.121.52.138/proxyssl/gg/trans/m")
 
     with SkProfiler():
       for i in range(1):
