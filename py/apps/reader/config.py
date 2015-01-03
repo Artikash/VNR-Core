@@ -232,6 +232,10 @@ PROXY_HOST = _PROXY['host']
 #PROXY_WEBSERVER = _PROXY['webserver']
 PROXY_WEBPROXY = _PROXY['webproxy']
 
+PROXY_BAIDU_FANYI = _PROXY['baidufanyi']
+PROXY_BAIDU_TTS = _PROXY['baidutts']
+PROXY_ICIBA = _PROXY['iciba']
+
 PROXY_TWITTER_SEARCH = _PROXY['twittersearch']
 PROXY_GOOGLE_SEARCH = _PROXY['googlesearch']
 PROXY_GOOGLE_TRANS = _PROXY['googletrans']

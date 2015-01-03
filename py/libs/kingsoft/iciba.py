@@ -16,8 +16,8 @@ session = requests # global session
 
 # Either of the two are OK.
 # But the difault type are different
-ICIBA_API = "http://jp.iciba.com/api.php"
-#ICIBA_API = "http://fy.iciba.com/api.php"
+API = "http://jp.iciba.com/api.php"
+#API = "http://fy.iciba.com/api.php"
 
 # Coffeescript extracted from the HTML:
 #  _query = ->
@@ -49,8 +49,7 @@ def translate(text, to='zhs', fr='ja'):
   @return  unicode or None
   """
   try:
-    api = ICIBA_API
-    r = session.post(api, data={
+    r = session.post(API, data={
       'q': text,
       'type': '-'.join((
         _lang(fr),

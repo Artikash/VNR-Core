@@ -3664,6 +3664,11 @@ class _InternetTab(object):
   def proxyGroup(self):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.scapeButton)
+    layout.addWidget(self.baiduButton)
+    layout.addWidget(QtWidgets.QLabel(my.tr(
+"""Certain websites might be blocked or slow to access in your area.
+Enabling proxy might make it better."""
+    )))
     ret = QtWidgets.QGroupBox(my.tr("Website-specific proxies"))
     ret.setLayout(layout)
     self._updateChinaGroup()
@@ -3672,11 +3677,21 @@ class _InternetTab(object):
   @memoizedproperty
   def scapeButton(self):
     ret = QtWidgets.QCheckBox(my.tr(
-      "Proxy accesses to ErogameScape.com if you are blocked"
+      "Proxy accesses to ErogameScape.com if you are blocked due to being outside of Japan"
     ))
     ss = settings.global_()
     ret.setChecked(ss.proxyScape())
     ret.toggled.connect(ss.setProxyScape)
+    return ret
+
+  @memoizedproperty
+  def baiduButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+      "Proxy accesses to Baidu.com if it is slow due to being outside of Mainland China"
+    ))
+    ss = settings.global_()
+    ret.setChecked(ss.proxyBaidu())
+    ret.toggled.connect(ss.setProxyBaidu)
     return ret
 
   ## China group ##
@@ -3693,13 +3708,10 @@ class _InternetTab(object):
 
   @memoizedproperty
   def chinaLabel(self):
-    ret = QtWidgets.QLabel(my.tr(
+    return QtWidgets.QLabel(my.tr(
 """Mainland China has blocked many international services including Google.
 If you enable this option, VNR will try providing alternative services."""
     ))
-    #ret.setWordWrap(True)
-    #skqss.class_(ret, 'error')
-    return ret
 
   @memoizedproperty
   def chinaButton(self):

@@ -203,6 +203,13 @@ class Settings(QSettings):
       self.setValue('ProxyScape', value)
       self.proxyScapeChanged.emit(value)
 
+  proxyBaiduChanged = Signal(bool)
+  def proxyBaidu(self): return to_bool(self.value('ProxyBaidu'))
+  def setProxyBaidu(self, value):
+    if value != self.proxyBaidu():
+      self.setValue('ProxyBaidu', value)
+      self.proxyBaiduChanged.emit(value)
+
   ## i18n ##
 
   blockedLanguagesChanged = Signal(set)
