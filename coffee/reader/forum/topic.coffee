@@ -12,7 +12,7 @@
 # - topicEditBean: topicedit.TopicEditorManagerBean
 
 dprint = ->
-  Array::unshift.call arguments, 'topics:'
+  Array::unshift.call arguments, 'topic:'
   console.log.apply console, arguments
 
 # Global variables
@@ -42,6 +42,7 @@ createTemplates = ->
     %a(href="${userAvatarUrl}" title="#{tr 'Avatar'}")
       %img.img-circle.avatar(src="${userAvatarUrl}" alt="#{tr 'Avatar'}")
   .right
+    .title ${title}
     .header.line
       .type.text-warning = typeName
       %a.user(href="javascript:" style="${userStyle}") @${userName}
@@ -56,9 +57,8 @@ createTemplates = ->
             #{tr 'Score'}: ${scores.overall != undefined ? scores.overall : '-'}/10
           .item.text-warning
             H: ${scores.ecchi != undefined ? scores.ecchi : '-'}/10
-    .line.title
-      %span.text-minor ${title}
-      :if gameTitle
+    :if gameTitle
+      .game-title
         %a.pull-right.link-game.btn.btn-link(title="#{tr 'Show'}")
           –– ${gameTitle}
     :if content
@@ -219,10 +219,14 @@ class Topic
 
   _highlightTopic: => @$sel.effect 'highlight', HIGHLIGHT_INTERVAL
 
-  showTopic: (topic) =>
-    @updateTopic topic, false
+  showTopic: (@topic) =>
+    @updateTopic @topic, false
 
-  updateTopic: (@topic, highlight=true) => # object topic ->
+  updateTopic: (topic, highlight=true) => # object topic ->
+    if topic.id isnt @topic.id
+      dprint 'different topic id'
+      return
+    @topic = topic
     h = renderTopic @topic
     @$sel.html h
 

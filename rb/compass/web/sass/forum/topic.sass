@@ -25,7 +25,12 @@ $avatar-width: 40px
     @extend .avatar-shadow
   > .right
     margin-left: $avatar-width + 9px
+    > .title
+      font-size: 120%
+      margin: 5px
+      color: #333 // gray
     > .line
+      display: block
       font-size: 90%
       //[class*="text-"]
       //  display: inline
@@ -33,13 +38,11 @@ $avatar-width: 40px
         display: inline
         margin-right: 10px
       padding: 3px 0 3px 10px
-      .index
-        display: inline
-        margin-right: 5px
       .type
         display: inline
-      .user,
       .time,
+      .user,
+      .title,
       .lang
         display: inline
         margin-left: 9px
@@ -69,7 +72,7 @@ $avatar-width: 40px
       > a > img
         @extend .img-shadow
         max-width: 100%
-    > .title
+    > .game-title
       font-size: 100%
       a.link-game
         @extend .text-minor

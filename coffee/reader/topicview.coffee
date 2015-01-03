@@ -63,8 +63,6 @@ refreshPosts = ->
   search.sort = $li.data 'sort-key'
   search.asc = $li.data 'sort-asc'
 
-  console.log 1111, JSON.stringify search
-
   @postView.refresh()
 
 bind = ->
