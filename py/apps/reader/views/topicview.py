@@ -240,7 +240,7 @@ class _TopicView(object):
       'locale': config.language2htmllocale(user.language),
       'title': tr_("Topic"),
       'topicId': self.topicId,
-      'userName': user.name if user.name != 'guest' else '',
+      'userName': user.name if not user.isGuest() else '',
       'userPassword': user.password,
       'rc': rc,
       'tr': tr_,

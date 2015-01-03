@@ -255,7 +255,7 @@ class _TopicsView(object):
       'subjectId': self.subjectId,
       #'subjectType': self.subjectType,
       'topicId': self.topicId,
-      'userName': user.name if user.name != 'guest' else '',
+      'userName': user.name if not user.isGuest() else '',
       'userPassword': user.password,
       'rc': rc,
       'tr': tr_,
