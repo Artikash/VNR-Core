@@ -65,10 +65,12 @@ Item { id: root_
     var ret = Sk.tr("Pattern") + ": " + currentItem.pattern
 
     ret += "\n" + Sk.tr("Translation") + ": "
-    if (currentItem.text)
-      ret += currentItem.text
+    if (!currentItem.text)
+      ret += "(" + Sk.tr("Delete") + ")"
+    else if (currentItem.text == currentItem.pattern)
+      ret += "(" + Sk.tr("Not changed") + ")"
     else
-      ret += "(" + Sk.tr("delete") + ")"
+      ret += currentItem.text
 
     if (currentItem.type == 'yomi' && currentItem.text)
       ret += "\n" + My.tr("Yomi") + ": " + renderYomi(currentItem.text)
