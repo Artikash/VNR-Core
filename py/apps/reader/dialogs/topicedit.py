@@ -179,7 +179,7 @@ class _TopicEditor(object):
     ret.setEditable(False)
     ret.addItems(map(i18n.topic_type_name, defs.TOPIC_TYPES))
     ret.setMaxVisibleItems(ret.count())
-    #ret.currentIndexChanged.connect(self._onTypeChanged)
+    ret.currentIndexChanged.connect(self._refreshSaveButton)
     return ret
 
   def _getType(self): # -> str
@@ -374,6 +374,11 @@ class _TopicEditor(object):
     try: langIndex = config.LANGUAGES.index(config.htmllocale2language(self.topicLanguage))
     except ValueError: langIndex = 1 # 'en'
     self.languageEdit.setCurrentIndex(langIndex)
+
+    if self.topicType != 'review':
+      try: typeIndex = defs.TOPIC_TYPES.index(self.topicType)
+      except ValueError: typeIndex = 0 # 'chat'
+      self.typeEdit.setCurrentIndex(typeIndex)
 
     self.spellHighlighter.setLanguage(self.topicLanguage) # must after lang
 

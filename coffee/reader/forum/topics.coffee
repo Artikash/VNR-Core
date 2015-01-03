@@ -80,7 +80,7 @@ createTemplates = ->
           #{tr 'Reply'}
           :if postCount
             = ' (' + postCount + ')'
-        :if userName == USER_NAME
+        :if editable
           %a.btn-edit.btn.btn-link.btn-sm(role="button" title="#{tr 'Edit'}") #{tr 'Edit'}
     :if image
       .image
@@ -106,6 +106,7 @@ renderTopic = (data, index, complete) -> # object topic, bool -> string
     id: data.id
     type: data.type
     typeName: util.getTopicTypeName data.type
+    editable: data.userName is USER_NAME and data.type in util.TOPIC_TYPES
     lang: util.getLangName data.lang
     subjectId: data.subjectId
     gameTitle: if data.subjectType is 'game' then data.subjectTitle else ''
@@ -303,6 +304,7 @@ class TopicList
             self.$more.show()
           if self.$userReview?
             self._checkUserReview()
+        self.$newReview?.show()
 
   more: =>
     self = @
@@ -324,14 +326,12 @@ class TopicList
   findUserReview: => _.findWhere @topics, userName:USER_NAME
 
   _checkUserReview: =>
-    #assert @$userReview
-    #assert USER_NAME
+    return unless data.length and USER_NAME and @$userReview
     topic = @findUserReview()
     if topic
       @$getTopic topic.id
         .appendTo @$userReview
-      @$newReview?.show()
-    else if SUBJECT_ID?
+    else if SUBJECT_ID? and data.length % INIT_TOPIC_COUNT is 0
       self = @
       spin true
       rest.forum.list 'topic',
@@ -341,12 +341,10 @@ class TopicList
           userName: USER_NAME
         error: ->
           spin false
-          self.$newReview?.show()
           #growl.warn tr 'Internet error'
         success: (data) ->
           spin false
           self._addUserReview data[0] if data.length
-          self.$newReview?.show()
 
 ## Export ##
 

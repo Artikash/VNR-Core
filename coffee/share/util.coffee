@@ -62,4 +62,18 @@ HOST = 'http://153.121.54.194'
     catch
       ''
 
+  TOPIC_TYPES: [
+    'review'
+    'chat'
+    'question'
+    'solved'
+    'news'
+    'article'
+    #'slides'
+    #'music'
+    #'review'
+    #'subupload'
+    #'talk'
+  ]
+
 # EOF

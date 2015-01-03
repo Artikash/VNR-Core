@@ -259,8 +259,11 @@ class _TopicInput(object):
     topic['title'] = self.topicContent = self._getTitle()
     topic['content'] = self.topicContent = self._getContent()
     topic['lang'] = self.topicLanguage = self._getLanguage()
-    topic['type'] = self._getType()
-    #topic['type'] = self.topicType
+
+    if self.topicType == 'review':
+      topic['type'] = self.topicType
+    else:
+      topic['type'] = self._getType()
 
     #import dataman
     #user = dataman.manager().user()

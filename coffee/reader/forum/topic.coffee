@@ -72,12 +72,12 @@ createTemplates = ->
           %span.fa.fa-thumbs-down
           %span.value = dislikeCount
       .btn-group.fade-in.pull-right
-        :if USER_NAME
+        :if
           %a.btn-reply.btn.btn-link.btn-sm(role="button" title="#{tr 'Reply'}")
             #{tr 'Reply'}
             :if postCount
               = ' (' + postCount + ')'
-        :if userName == USER_NAME
+        :if editable
           %a.btn-edit.btn.btn-link.btn-sm(role="button" title="#{tr 'Edit'}") #{tr 'Edit'}
           %a.btn-add.btn.btn-link.btn-sm(role="button" title="#{tr 'Add'}") #{tr 'Add'}
     :if image
@@ -103,6 +103,7 @@ renderTopic = (data) -> # object topic, bool -> string
     id: data.id
     type: data.type
     typeName: util.getTopicTypeName data.type
+    editable: data.userName is USER_NAME and data.type in util.TOPIC_TYPES
     lang: util.getLangName data.lang
     subjectId: data.subjectId
     gameTitle: if data.subjectType is 'game' then data.subjectTitle else ''
