@@ -15,7 +15,7 @@ Item { id: root_
 
   // - Private -
 
-  height: Math.max(50, text_.height + 10)
+  height: Math.max(60, text_.height + 10)
   //color: '#ced0d6'
 
   Share.CachedAvatarImage { id: avatar_
@@ -62,15 +62,19 @@ Item { id: root_
     if (!currentItem)
       return ""
 
-    var ret = ""
+    var ret = Sk.tr("Pattern") + ": " + currentItem.pattern
+
+    ret += "\n" + Sk.tr("Translation") + ": "
+    if (currentItem.text)
+      ret += currentItem.text
+    else
+      ret += "(" + Sk.tr("delete") + ")"
 
     if (currentItem.type == 'yomi' && currentItem.text)
-      ret += My.tr("Yomi") + ":" + renderYomi(currentItem.text)
+      ret += "\n" + My.tr("Yomi") + ": " + renderYomi(currentItem.text)
 
     var ts = Util.timestampToString(currentItem.timestamp)
-    if (ret)
-      ret += "\n"
-    ret += Sk.tr("Creation") + ": @" + currentItem.userName + " (" + ts + ")"
+    ret += "\n" + Sk.tr("Creation") + ": @" + currentItem.userName + " (" + ts + ")"
     if (currentItem.comment)
       ret += ": " + currentItem.comment
 
