@@ -82,8 +82,8 @@ createObjects = ->
     complete: not TOPIC_ID
 
 
-  @reviewView.show()
-  @topicView.show()
+  reviewView.show()
+  topicView.show()
 
   # Posts
   $sec = $ '.sec-posts'
@@ -95,7 +95,7 @@ createObjects = ->
       search:
         sort: 'updateTime'
         asc: false
-    @postView.show()
+    postView.show()
 
 bind = ->
   $('.sec-btn').click ->

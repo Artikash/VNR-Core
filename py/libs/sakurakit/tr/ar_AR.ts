@@ -394,7 +394,7 @@
         <translation>علامة التبويب</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="450"/>
+        <location filename="sktr.py" line="453"/>
         <source>Text</source>
         <translation>نص</translation>
     </message>
@@ -414,7 +414,7 @@
         <translation>الطابع الزمني</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="449"/>
+        <location filename="sktr.py" line="452"/>
         <source>Translation</source>
         <translation>ترجمة</translation>
     </message>
@@ -494,12 +494,12 @@
         <translation>للتحرير</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="424"/>
+        <location filename="sktr.py" line="427"/>
         <source>Found</source>
         <translation>أسس</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="425"/>
+        <location filename="sktr.py" line="428"/>
         <source>Not found</source>
         <translation>لم يتم العثور على</translation>
     </message>
@@ -704,12 +704,12 @@
         <translation>زوم</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="443"/>
+        <location filename="sktr.py" line="446"/>
         <source>Subtitle</source>
         <translation>عنوان فرعي</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="446"/>
+        <location filename="sktr.py" line="449"/>
         <source>Comment</source>
         <translation>تعليق</translation>
     </message>
@@ -819,17 +819,17 @@
         <translation>عنوان النافذة</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="426"/>
+        <location filename="sktr.py" line="429"/>
         <source>Not specified</source>
         <translation>غير محدد</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="432"/>
+        <location filename="sktr.py" line="435"/>
         <source>Administrator</source>
         <translation>مدير</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="433"/>
+        <location filename="sktr.py" line="436"/>
         <source>Not administrator</source>
         <translation>لا مسؤول</translation>
     </message>
@@ -859,32 +859,32 @@
         <translation>التعبير العادي</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="418"/>
+        <location filename="sktr.py" line="421"/>
         <source>Ignore Case</source>
         <translation>تجاهل حالة</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="418"/>
+        <location filename="sktr.py" line="421"/>
         <source>Ignore case</source>
         <translation>تجاهل القضية</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="417"/>
+        <location filename="sktr.py" line="420"/>
         <source>Case-insensitive</source>
         <translation>تحسس حالة الأحرف</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="417"/>
+        <location filename="sktr.py" line="420"/>
         <source>case-insensitive</source>
         <translation>تحسس حالة الأحرف</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="416"/>
+        <location filename="sktr.py" line="419"/>
         <source>Case-sensitive</source>
         <translation>حساسية الموضوع</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="416"/>
+        <location filename="sktr.py" line="419"/>
         <source>case-sensitive</source>
         <translation>حساسية الموضوع</translation>
     </message>
@@ -924,12 +924,12 @@
         <translation>إعادة تشغيل</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="435"/>
+        <location filename="sktr.py" line="438"/>
         <source>For example</source>
         <translation>مثلا</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="435"/>
+        <location filename="sktr.py" line="438"/>
         <source>for example</source>
         <translation>مثلا</translation>
     </message>
@@ -1039,7 +1039,7 @@
         <translation>I18N</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="437"/>
+        <location filename="sktr.py" line="440"/>
         <source>Check for updates</source>
         <translation>تحقق من وجود تحديثات</translation>
     </message>
@@ -1064,7 +1064,7 @@
         <translation>استئنف</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="448"/>
+        <location filename="sktr.py" line="451"/>
         <source>Danmaku</source>
         <translation>Danmaku</translation>
     </message>
@@ -1184,12 +1184,12 @@
         <translation>الوضع الانترنت</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="444"/>
+        <location filename="sktr.py" line="447"/>
         <source>Subtitles</source>
         <translation>عناوين فرعية</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="447"/>
+        <location filename="sktr.py" line="450"/>
         <source>Comments</source>
         <translation>تعليقات</translation>
     </message>
@@ -1234,37 +1234,37 @@
         <translation>ديل</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="443"/>
+        <location filename="sktr.py" line="446"/>
         <source>subtitle</source>
         <translation>عنوان فرعي</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="444"/>
+        <location filename="sktr.py" line="447"/>
         <source>subtitles</source>
         <translation>عناوين فرعية</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="446"/>
+        <location filename="sktr.py" line="449"/>
         <source>comment</source>
         <translation>تعليق</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="447"/>
+        <location filename="sktr.py" line="450"/>
         <source>comments</source>
         <translation>تعليقات</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="448"/>
+        <location filename="sktr.py" line="451"/>
         <source>danmaku</source>
         <translation>danmaku</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="449"/>
+        <location filename="sktr.py" line="452"/>
         <source>translation</source>
         <translation>ترجمة</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="450"/>
+        <location filename="sktr.py" line="453"/>
         <source>text</source>
         <translation>نص</translation>
     </message>
@@ -1419,7 +1419,7 @@
         <translation>لقب</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="426"/>
+        <location filename="sktr.py" line="429"/>
         <source>not specified</source>
         <translation>غير محدد</translation>
     </message>
@@ -1429,12 +1429,12 @@
         <translation>فلتر</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="430"/>
+        <location filename="sktr.py" line="433"/>
         <source>Unknown</source>
         <translation>غير معروف</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="430"/>
+        <location filename="sktr.py" line="433"/>
         <source>unknown</source>
         <translation>غير معروف</translation>
     </message>
@@ -1564,12 +1564,12 @@
         <translation>ترتيب</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="445"/>
+        <location filename="sktr.py" line="448"/>
         <source>Subs</source>
         <translation>الغواصات</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="445"/>
+        <location filename="sktr.py" line="448"/>
         <source>subs</source>
         <translation>الغواصات</translation>
     </message>
@@ -1619,7 +1619,7 @@
         <translation>محلي</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="428"/>
+        <location filename="sktr.py" line="431"/>
         <source>Press Enter to submit</source>
         <translation>اضغط على Enter لتقديم</translation>
     </message>
@@ -1939,7 +1939,7 @@
         <translation>الترجمة الآلية</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="414"/>
+        <location filename="sktr.py" line="417"/>
         <source>Not changed</source>
         <translation>لم يتغير</translation>
     </message>
@@ -1984,12 +1984,12 @@
         <translation>هانغول</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="411"/>
+        <location filename="sktr.py" line="414"/>
         <source>Public</source>
         <translation>جمهور</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="412"/>
+        <location filename="sktr.py" line="415"/>
         <source>Private</source>
         <translation>خاص</translation>
     </message>
@@ -2069,7 +2069,7 @@
         <translation>حق</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="421"/>
+        <location filename="sktr.py" line="424"/>
         <source>Network Error</source>
         <translation>خطأ في الشبكة</translation>
     </message>
@@ -2084,7 +2084,7 @@
         <translation>إلى الأمام</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="408"/>
+        <location filename="sktr.py" line="411"/>
         <source>Slow</source>
         <translation>بطيء</translation>
     </message>
@@ -2094,7 +2094,7 @@
         <translation>فيرت</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="409"/>
+        <location filename="sktr.py" line="412"/>
         <source>slow</source>
         <translation>بطيء</translation>
     </message>
@@ -2382,6 +2382,16 @@
         <location filename="sktr.py" line="349"/>
         <source>review</source>
         <translation>مراجعة</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="408"/>
+        <source>Recent</source>
+        <translation>آخر</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="409"/>
+        <source>Like</source>
+        <translation>مثل</translation>
     </message>
 </context>
 </TS>

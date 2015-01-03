@@ -405,6 +405,9 @@ class sakurakit(QObject):
 
       self.tr("Draggable"),
 
+      self.tr("Recent"),
+      self.tr("Like"),
+
       self.tr("Slow"),
       self.tr("slow"),
 

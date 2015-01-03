@@ -200,8 +200,8 @@ class _TopicView(object):
   def _onTopicUpdated(self, data): # str ->
     try:
       obj = json.loads(data)
-      subjectId = obj['subjectId']
-      if subjectId == self.subjectId and self.q.isVisible():
+      topicId = obj['id']
+      if topicId == self.topicId and self.q.isVisible():
         self.updateTopic(data)
       dprint("pass")
     except Exception, e:

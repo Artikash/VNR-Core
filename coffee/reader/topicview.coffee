@@ -50,11 +50,16 @@ createObjects = ->
     $more: $postsec.find '> .footer > .btn-more'
     topicId: TOPIC_ID
     search:
-      sort: 'updateTime'
-      asc: false
+      sort: 'createTime'
+      asc: true
 
-  @topicView.show
-    success: @postView.show()
+  topicView.show success: ->
+    if topicView.topic.type is 'talk'
+      $('ul.filter > li.active').removeClass 'active'
+      $('ul.filter > li[data-sort-key="updateTime"]').addClass 'active'
+      postView.search.sort = 'updateTime'
+      postView.search.asc = false
+    postView.show()
 
 refreshPosts = ->
   search = @postView.search
@@ -63,7 +68,7 @@ refreshPosts = ->
   search.sort = $li.data 'sort-key'
   search.asc = $li.data 'sort-asc'
 
-  @postView.refresh()
+  postView.refresh()
 
 bind = ->
   $('.new-post').click ->

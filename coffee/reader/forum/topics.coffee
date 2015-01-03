@@ -18,7 +18,7 @@ dprint = ->
 # Global variables
 
 INIT_TOPIC_COUNT = 5
-MORE_TOPIC_COUNT = 10
+MORE_TOPIC_COUNT = 20
 
 HIGHLIGHT_INTERVAL = 1500
 

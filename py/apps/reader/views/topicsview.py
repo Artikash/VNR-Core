@@ -345,7 +345,7 @@ class _TopicsView(object):
     if subjectId:
       subjectType = 'game'
     else:
-      subjectId = GLOBAL_SUBJECT_ID
+      subjectId = config.GLOBAL_SUBJECT_ID
       subjectType = 'subject'
     self.topicInputManager.newTopic(subjectId=subjectId, subjectType=subjectType)
 

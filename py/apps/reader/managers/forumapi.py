@@ -164,13 +164,18 @@ class _ForumApi:
         topic['image'] = nm.submitImage(data, image)
 
     if image and not topic.get('image'):
-      if nm.submitTopic(topic):
-        self._onTopicSubmitted(topic, tickets)
-      else:
-        growl.warn("<br/>".join((
-          my.tr("Failed to submit topic"),
-          my.tr("Please try again"),
-        )))
+      growl.warn("<br/>".join((
+        my.tr("Failed to submit topic"),
+        my.tr("Please try again"),
+      )))
+      return
+    if nm.submitTopic(topic):
+      self._onTopicSubmitted(topic, tickets)
+    else:
+      growl.warn("<br/>".join((
+        my.tr("Failed to submit topic"),
+        my.tr("Please try again"),
+      )))
     dprint("leave")
 
   def _onTopicSubmitted(self, topic, tickets):
@@ -212,13 +217,15 @@ class _ForumApi:
       else:
         image = None
 
-      tickets = None
       subjectId = topic.get('subjectId')
       subjectType = topic.get('subjectType')
-      if subjectId and subjectType == 'game'
-        del topic['subjectId']
-        del topic['subjectType']
+      tickets = None
+      if ticketData and subjectId and subjectType == 'game':
         tickets = self._parseGameTicketData(ticketData, subjectId)
+      if subjectId:
+        del topic['subjectId']
+      if subjectType:
+        del topic['subjectType']
       self._updateTopic(topic, image, tickets)
 
   def _updateTopic(self, topic, image, tickets):

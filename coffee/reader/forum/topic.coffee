@@ -64,14 +64,14 @@ createTemplates = ->
     :if content
       .content.bbcode = content
     .footer
-      .btn-group.like-group
+      .btn-group.like-group.fade-in
         %a.like.btn.btn-link.btn-sm(role="button" title="#{tr 'Like'}" data-value="${likeCount}")
           %span.fa.fa-thumbs-up
           %span.value = likeCount
         %a.dislike.btn.btn-link.btn-sm(role="button" title="#{tr 'Dislike'}" data-value="${dislikeCount}")
           %span.fa.fa-thumbs-down
           %span.value = dislikeCount
-      .btn-group.pull-right
+      .btn-group.fade-in.pull-right
         :if USER_NAME
           %a.btn-reply.btn.btn-link.btn-sm(role="button" title="#{tr 'Reply'}")
             #{tr 'Reply'}
@@ -165,7 +165,7 @@ class Topic
       newPost topicId, 'post'
       false
 
-    #$footer.find('.like-group').removeClass 'fade-in' if topic?.likeCount or topic?.dislikeCount
+    $footer.find('.like-group').removeClass 'fade-in' if topic?.likeCount or topic?.dislikeCount
 
     $footer.find('.btn.like').click ->
       if topic and USER_NAME and USER_NAME isnt topic.userName
@@ -175,7 +175,7 @@ class Topic
           $value = $that.find '.value'
           $value.text -1 + Number $value.text()
         $this = $ @
-        #$this.parent('.like-group').removeClass 'fade-in'
+        $this.parent('.like-group').removeClass 'fade-in'
         selected = $this.hasClass 'selected'
         value = if selected then 0 else 1
         ticket.update
@@ -200,7 +200,7 @@ class Topic
           $value = $that.find '.value'
           $value.text -1 + Number $value.text()
         $this = $ @
-        #$this.parent('.like-group').removeClass 'fade-in'
+        $this.parent('.like-group').removeClass 'fade-in'
         selected = $this.hasClass 'selected'
         value = if selected then 0 else -1
         ticket.update
