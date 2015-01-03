@@ -86,6 +86,9 @@ createObjects = ->
       $container: $sec.find '> .sec-content > .forum-posts'
       $more: $sec.find '> .sec-content > .footer > .btn-more'
       topicId: TOPIC_ID
+      search:
+        sort: 'updateTime'
+        asc: false
     @postView.show()
 
 bind = ->

@@ -103,7 +103,7 @@ replyPost = (topicId, postId) -> postInputBean.replyPost topicId, postId # long,
 # Classes
 class PostList
 
-  constructor: ($container:@$postContainer, $topicContainer:@$topicContainer, $more:@$more, $topic: @$topic, topicId:@topicId) ->
+  constructor: ($container:@$postContainer, $topicContainer:@$topicContainer, $more:@$more, $topic: @$topic, topicId:@topicId, search:@search) ->
     @$sel = @$postContainer
     @$sel = @$sel.add @$topicContainer if @$topicContainer?
 
@@ -279,15 +279,20 @@ class PostList
         $this.data 'lock', false
       false
 
+  refresh: =>
+    @$topicContainer.empty()
+    @$postContainer?.empty()
+    @show()
+
   show: =>
     self = @
     spin true
+    search =
+      topic: @topicId
+      limit: INIT_POST_COUNT
+    _.extend search, @search
     rest.forum.list 'post',
-      data:
-        topic: @topicId
-        sort: 'updateTime'
-        asc: false
-        limit: INIT_POST_COUNT
+      data: search
       error: ->
         spin false
         growl.warn tr 'Internet error'
@@ -300,13 +305,13 @@ class PostList
   more: =>
     self = @
     spin true
+    search =
+      topic: @topicId
+      first: @posts.length
+      limit: MORE_POST_COUNT
+    _.extend search, @search
     rest.forum.list 'post',
-      data:
-        topic: @topicId
-        sort: 'updateTime'
-        asc: false
-        first: @posts.length
-        limit: MORE_POST_COUNT
+      data: search
       error: ->
         spin false
         growl.warn tr 'Internet error'

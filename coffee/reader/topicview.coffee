@@ -49,14 +49,36 @@ createObjects = ->
     $topicContainer: $topicsec.children '.forum-posts'
     $more: $postsec.find '> .footer > .btn-more'
     topicId: TOPIC_ID
+    search:
+      sort: 'updateTime'
+      asc: false
 
   @topicView.show
     success: @postView.show()
 
+refreshPosts = ->
+  search = @postView.search
+
+  $li = $ 'ul.filter > li.active'
+  search.sort = $li.data 'sort-key'
+  search.asc = $li.data 'sort-asc'
+
+  console.log 1111, JSON.stringify search
+
+  @postView.refresh()
+
 bind = ->
-  $sec = $ '.sec.sec-posts'
-  $sec.find('.new-post').click ->
+  $('.new-post').click ->
     newPost TOPIC_ID
+    false
+
+  $('ul.filter > li > a').click ->
+    $this = $ @
+    $li = $this.parent 'li'
+    return false if $li.hasClass 'active'
+    $li.parent('ul').children('li.active').removeClass 'active'
+    $li.addClass 'active'
+    refreshPosts()
     false
 
 init = ->
