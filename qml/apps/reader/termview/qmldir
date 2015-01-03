@@ -1,6 +1,7 @@
 # termview/qmldir
 # 2/20/2013 jichi
 Counter         counter.qml
+FilterToolBar   filtertoolbar.qml
 Inspector       inspector.qml
 MainToolBar     maintoolbar.qml
 OptionPanel     optionpanel.qml

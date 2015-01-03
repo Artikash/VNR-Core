@@ -4300,6 +4300,7 @@ class _TermModel(object):
   DEFAULT_SORTING_COLUMN = COLUMNS.index('modifiedTimestamp') # int = 1, the second column
 
   def __init__(self):
+    self.filterTypes = "" # str
     self.filterColumn = "" # str
     self._filterText = "" # unicode
     self._filterRe = None # compiled re
@@ -4330,7 +4331,7 @@ class _TermModel(object):
     """
     @return  [Term]
     """
-    return self.sortedData if self.sortingReverse or self.sortingColumn != self.DEFAULT_SORTING_COLUMN else self.filterData if self.filterText else self.duplicateData if self.duplicate else self.sourceData
+    return self.sortedData if self.sortingReverse or self.sortingColumn != self.DEFAULT_SORTING_COLUMN else self.filterData if self.filterText or self.filterTypes else self.duplicateData if self.duplicate else self.sourceData
 
   @staticproperty
   def sourceData(): return manager().terms() # -> list not None
@@ -4393,7 +4394,7 @@ class _TermModel(object):
   @property
   def sortedData(self): # -> list not None
     if self._sortedData is None:
-      data = self.filterData if self.filterText else self.duplicateData if self.duplicate else self.sourceData
+      data = self.filterData if self.filterText or self.filterTypes else self.duplicateData if self.duplicate else self.sourceData
       if not data:
         self._sortedData = []
       elif self.sortingColumn == self.DEFAULT_SORTING_COLUMN:
@@ -4442,11 +4443,17 @@ class _TermModel(object):
     @param  term  Term
     @return  bool
     """
+    td = term.d
+    if self.filterTypes:
+      if td.type not in self.filterTypes:
+        return False
+      if not self.filterText:
+        return True
+
     t = self.filterText
     if not t:
       return False
     dm = manager()
-    td = term.d
     try:
       q = None # [str] or None
       if self.filterColumn:
@@ -4502,7 +4509,7 @@ class TermModel(QAbstractListModel):
     self.setRoleNames(TERM_ROLES)
     d = self.__d = _TermModel()
 
-    for sig in self.filterTextChanged, self.sortingColumnChanged, self.sortingReverseChanged, self.pageSizeChanged, self.pageNumberChanged, self.duplicateChanged:
+    for sig in self.filterTypesChanged, self.filterTextChanged, self.sortingColumnChanged, self.sortingReverseChanged, self.pageSizeChanged, self.pageNumberChanged, self.duplicateChanged:
       sig.connect(self.reset)
 
     manager().termsChanged.connect(lambda:
@@ -4552,6 +4559,18 @@ class TermModel(QAbstractListModel):
   currentCount = Property(int,
       lambda self: len(self.__d.data),
       notify=currentCountChanged)
+
+  def setFilterTypes(self, value):
+    if value != self.__d.filterTypes:
+      self.__d.filterTypes = value
+      d = self.__d
+      self.filterTypesChanged.emit(value)
+
+  filterTypesChanged = Signal(str)
+  filterTypes = Property(str,
+      lambda self: self.__d.filterTypes,
+      setFilterTypes,
+      notify=filterTypesChanged)
 
   def setFilterColumn(self, value):
     if value != self.__d.filterColumn:
