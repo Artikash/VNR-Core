@@ -28,6 +28,9 @@
 
   %body
     .view
+      -if not topicId and userName
+        .sec.sec-review
+          .forum-topics
       .sec.sec-reviews
         .sec-btn.btn.btn-sm.btn-pill.btn-checkable.checked #{tr('Review')}
         -if not topicId and userName

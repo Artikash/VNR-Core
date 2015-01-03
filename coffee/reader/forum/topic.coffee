@@ -42,7 +42,7 @@ createTemplates = ->
     %a(href="${userAvatarUrl}" title="#{tr 'Avatar'}")
       %img.img-circle.avatar(src="${userAvatarUrl}" alt="#{tr 'Avatar'}")
   .right
-    .title ${title}
+    .title.text-info(title="#{tr 'Title'}") ${title}
     .header.line
       .type.text-warning = typeName
       %a.user(href="javascript:" style="${userStyle}") @${userName}

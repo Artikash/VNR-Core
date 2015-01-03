@@ -18,8 +18,9 @@ dprint = ->
 # Global variables
 @READY = false # needed by postView.py
 
-newTopic = (topicType, subjectId, subjectType) -> topicInputBean.newTopic topicType, subjectId, subjectType # long, string ->
 newPost = (topicId) -> postInputBean.newPost topicId, 'post' # long ->
+newTopic = (topicType, subjectId, subjectType) -> topicInputBean.newTopic topicType, subjectId, subjectType # long, string ->
+editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
 
 # Export functions
 
@@ -50,6 +51,9 @@ newPost = (topicId) -> postInputBean.newPost topicId, 'post' # long ->
 # Init
 
 createObjects = ->
+  $userReview = $ '.sec.sec-review .forum-topics'
+  $userReview = undefined unless $userReview.length
+
   # Reviews
   $sec = $ '.sec-reviews'
   search =
@@ -60,6 +64,8 @@ createObjects = ->
   @reviewView = new topicsjs.TopicList
     $container: $sec.find '> .sec-content > .forum-topics'
     $more: $sec.find '> .sec-content > .footer > .btn-more'
+    $newReview: $sec.find '.new-topic'
+    $userReview: $userReview
     search: search
     complete: not TOPIC_ID
 
@@ -118,14 +124,13 @@ bind = ->
     false
 
   $sec = $ '.sec.sec-reviews'
-  $sec.find('.new-topic').click ->
+  $sec.find('.new-topic').hide().click -> # hide on startup
     if SUBJECT_ID
-      id = SUBJECT_ID
-      type = 'game'
-    else
-      id = 101 # VNR subject
-      type = 'subject'
-    newTopic 'review', id, type
+      topic = reviewView.findUserReview()
+      if topic
+        editTopic topic
+      else
+        newTopic 'review', SUBJECT_ID, 'game'
     false
 
   $sec = $ '.sec.sec-posts'

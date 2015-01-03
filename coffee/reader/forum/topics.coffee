@@ -132,7 +132,17 @@ editTopic = (topic) -> topicEditBean.editTopic JSON.stringify topic # long ->
 # Classes
 class TopicList
 
-  constructor: ($container: @$sel, $more:@$more, complete:@complete, search:search) ->
+  constructor: (
+      $container: @$container   # $  container of topics
+      $more: @$more             # $ or null  more button
+      $newReview: @$newReview   # $ or null  new review button
+      $userReview: @$userReview # $ or null  user review
+      complete: @complete       # bool  whether show all contents
+      search: search            # dict or null
+    ) ->
+    @$sel = @$container
+    @$sel = @$sel.add @$userReview if @$userReview?
+
     @topics = [] # [object topic]
 
     @search = # {string:string}  search criteria
@@ -234,20 +244,22 @@ class TopicList
     # TODO: review
     h = (renderTopic(it, index + @topics.length, @complete) for it,index in topics).join ''
     @topics.push.apply @topics, topics
-    @$sel.append h
+    @$container.append h
     @_bindNewTopics()
 
   _highlightNewTopics: =>
     @$sel.find '.topic.topic-new'
       .effect 'highlight', HIGHLIGHT_INTERVAL
 
-  addTopic: (topic) => # object topic ->
+  addTopic: (topic, $container, highlight=true) => # object topic, $container ->
     #document.title = "#{PAGE_TITLE} (#{@topics.length})"
     h = renderTopic topic, @topics.length, @complete
     @topics.push topic
-    @$sel.prepend h
-    @_highlightNewTopics()
+    ($container or  @$container).prepend h
+    @_highlightNewTopics() if highlight
     @_bindNewTopics()
+
+  _addUserReview: (topic) => @addTopic topic, @$userReview, false
 
   updateTopic: (topic) => # object topic ->
     oldtopic = @getTopic topic.id
@@ -263,8 +275,6 @@ class TopicList
         return
 
     dprint 'updateTopic: error: topic lost'
-
-  # AJAX actions
 
   bind: =>
     self = @
@@ -290,6 +300,8 @@ class TopicList
         if data.length
           self.addTopics data
           self.$more.show()
+          if self.$userReview?
+            self._checkUserReview()
 
   more: =>
     self = @
@@ -307,6 +319,33 @@ class TopicList
           self.addTopics data
         else
           growl tr "No more"
+
+  findUserReview: => _.findWhere @topics, userName:USER_NAME
+
+  _checkUserReview: =>
+    #assert @$userReview
+    #assert USER_NAME
+    topic = @findUserReview()
+    if topic
+      @$getTopic topic.id
+        .appendTo @$userReview
+      @$newReview?.show()
+    else if SUBJECT_ID?
+      self = @
+      spin true
+      rest.forum.list 'topic',
+        data:
+          subjectId: SUBJECT_ID
+          subjectType: 'game'
+          userName: USER_NAME
+        error: ->
+          spin false
+          self.$newReview?.show()
+          #growl.warn tr 'Internet error'
+        success: (data) ->
+          spin false
+          self._addUserReview data[0] if data.length
+          self.$newReview?.show()
 
 ## Export ##
 
