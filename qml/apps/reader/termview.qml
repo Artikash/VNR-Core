@@ -198,9 +198,18 @@ Item { id: root_
 
   TermView.FilterToolBar { id: filterToolBar_
     anchors {
+      top: searchToolBar_.bottom
       right: parent.right
+      topMargin: 5
       rightMargin: 2
+    }
+  }
+
+  TermView.Counter { id: counter_
+    anchors {
       bottom: parent.bottom
+      right: parent.right
+      rightMargin: 5
       bottomMargin: 5
     }
   }
