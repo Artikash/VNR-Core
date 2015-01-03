@@ -299,7 +299,8 @@ class TopicList
         spin false
         if data.length
           self.addTopics data
-          self.$more.show()
+          if data.length % INIT_TOPIC_COUNT is 0
+            self.$more.show()
           if self.$userReview?
             self._checkUserReview()
 

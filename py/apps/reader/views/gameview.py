@@ -303,7 +303,8 @@ class _GameView(object):
 
     self.editButton.setEnabled(bool(self.gameId))
     self.launchButton.setEnabled(bool(info and info.local))
-    self.discussButton.setEnabled(bool(info and info.itemId))
+    self.browseButton.setEnabled(bool(info and info.itemId))
+    self.topicButton.setEnabled(bool(info and info.itemId))
 
     # Fake base addr that twitter javascript can access document.cookie
     #baseUrl = ''
@@ -349,10 +350,11 @@ class _GameView(object):
     skqss.class_(ret, 'texture')
     layout = QtWidgets.QHBoxLayout()
     layout.addWidget(self.launchButton)
-    layout.addWidget(self.discussButton)
+    layout.addWidget(self.topicButton)
     layout.addWidget(self.subButton)
     layout.addStretch()
     layout.addWidget(self.helpButton)
+    layout.addWidget(self.browseButton)
     #layout.addWidget(self.refreshButton) # disabled
     layout.addWidget(self.editButton)
     ret.setLayout(layout)
@@ -371,14 +373,24 @@ class _GameView(object):
     return ret
 
   @memoizedproperty
-  def discussButton(self):
-    ret = QtWidgets.QPushButton(mytr_("Discuss"))
+  def browseButton(self):
+    ret = QtWidgets.QPushButton(tr_("Browse"))
     skqss.class_(ret, 'btn btn-default')
-    ret.setToolTip(mytr_("Game Discussion"))
+    ret.setToolTip(tr_("Browse"))
     #ret.setStatusTip(ret.toolTip())
     ret.setEnabled(False)
     ret.clicked.connect(lambda:
         self.itemId and osutil.open_url("http://sakuradite.com/game/%s" % self.itemId))
+    return ret
+
+  @memoizedproperty
+  def topicButton(self):
+    ret = QtWidgets.QPushButton(tr_("Topic"))
+    skqss.class_(ret, 'btn btn-info')
+    ret.setToolTip(tr_("Topic"))
+    ret.setEnabled(False)
+    ret.clicked.connect(lambda:
+        self.itemId and main.manager().showGameTopics(itemId=self.itemId))
     return ret
 
   @memoizedproperty
