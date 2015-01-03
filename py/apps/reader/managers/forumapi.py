@@ -161,12 +161,33 @@ class _ForumApi:
       if data:
         topic['image'] = nm.submitImage(data, image)
 
-    if image and not topic.get('image') or not nm.submitTopic(topic):
-      growl.warn("<br/>".join((
-        my.tr("Failed to submit topic"),
-        my.tr("Please try again"),
-      )))
+    if image and not topic.get('image'):
+      if nm.submitTopic(topic):
+        self._onTopicSubmitted(topic, tickets)
+      else:
+        growl.warn("<br/>".join((
+          my.tr("Failed to submit topic"),
+          my.tr("Please try again"),
+        )))
     dprint("leave")
+
+  def _onTopicSubmitted(self, topic, tickets):
+    """
+    @param  topic  kw
+    """
+    if topic.get('subjectType') == 'game':
+      itemId = topic.get('subjectId')
+      dm = dataman.manager()
+      dm.increaseGameTopicCount(itemId)
+      if topic.get('type') == 'review' and tickets:
+        scores = {}
+        for ticket in tickets:
+          if ticket.get('type') == 'ecchi':
+            scores['ecchiScore'] = ticket.get('value')
+          elif ticket.get('type') == 'overall':
+            scores['overallScore'] = ticket.get('value')
+        if scores:
+          dm.addGameScore(itemId, **scores)
 
   def updateTopic(self, topicData, imageData, ticketData):
     """

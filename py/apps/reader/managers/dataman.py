@@ -6339,7 +6339,7 @@ class _DataManager(object):
 
     self.q.gamesChanged.emit()
 
-  def _touchGameFiles(self):
+  def touchGameFiles(self):
     self._gameFilesDirty = True
     self._saveGameFilesLater()
 
@@ -7795,7 +7795,7 @@ class _DataManager(object):
     try:
       g = self.gameFiles[id]
       g.itemId = itemId
-      self._touchGameFiles()
+      self.touchGameFiles()
     except KeyError: pass
 
     if g:
@@ -8971,8 +8971,33 @@ class DataManager(QObject):
     d.games[md5] = g
     d.touchGames()
 
+  def increaseGameTopicCount(self, itemId):
+    """
+    @param  itemId  long
+    """
+    item = self.queryGameItem(id=itemId)
+    if item:
+      item.topicCount += 1
+      self.__d.touchGameFiles()
+
+  def addGameScore(self, itemId, ecchiScore=None, overallScore=None):
+    """
+    @param  itemId  long
+    @param* ecchiScore  int or None
+    @param* overallScore  int or None
+    """
+    item = self.queryGameItem(id=itemId)
+    if item:
+      if ecchiScore is not None:
+        item.ecchiScoreCount += 1
+        item.ecchiScoreSum += ecchiScore
+      if overallScore is not None:
+        item.overallScoreCount += 1
+        item.overallScoreSum += overallScore
+      self.__d.touchGameFiles()
+
   def loadGame(self, game):
-    d  = self.__d
+    d = self.__d
     d.saveComments()
     d.currentGame = None
     d.currentGameObject = None
