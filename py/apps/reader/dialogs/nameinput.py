@@ -82,6 +82,8 @@ class NameInputManager:
     if w and w.isVisible() and w.tokenId() == tokenId:
       w.raise_()
     else:
+      w.setGameName(info.title)
+      w.setWindowIcon(info.icon or rc.icon('window-name'))
       w.setTokenId(tokenId)
       w.setNames(info.iterNameYomi())
       w.show()
@@ -132,8 +134,11 @@ class NameInput(QtWidgets.QScrollArea):
     """
     @param  tokenId  long
     """
-    self.setWindowTitle("%s - %s" %
-        (my.tr("Create dictionary entry"), name))
+    title = my.tr("Create dictionary entry")
+    if name:
+      self.setWindowTitle("%s - %s" % (title, name))
+    else:
+      self.setWindowTitle(title)
 
   def tokenId(self): return self.__d.tokenId
   def setTokenId(self, tokenId):
@@ -164,12 +169,6 @@ class NameInput(QtWidgets.QScrollArea):
   #  if value and not self.isVisible():
   #    self.__d.refresh()
   #  super(NameInput, self).setVisible(value)
-
-  def showGameInfo(self, info):
-    """
-    @param  info  dataman.GameInfo
-    """
-    pass
 
 #@Q_Q
 class _NameInput(object):
