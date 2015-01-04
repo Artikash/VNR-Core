@@ -301,7 +301,7 @@ class _NameInput(object):
     ttsman.speak(name)
 
   def _createNameEdit(self):
-    return self._createLabel('text-info', mytr_("Kanji"), NAME_EDIT_MIN_WIDTH)
+    return self._createLabel('text-info', tr_("Kanji"), NAME_EDIT_MIN_WIDTH)
   def _createYomiEdit(self):
     return self._createLabel('text-success', mytr_("Yomi"), NAME_EDIT_MIN_WIDTH)
   def _createInfoEdit(self):
