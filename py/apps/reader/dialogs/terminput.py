@@ -61,11 +61,17 @@ class _TermInput(object):
     r += 1
 
     grid.addWidget(QtWidgets.QLabel(tr_("Pattern") + ":"), r, 0)
-    grid.addWidget(self.patternEdit, r, 1)
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.patternEdit)
+    row.addWidget(self.patternTtsButton)
+    grid.addLayout(row, r, 1)
     r += 1
 
     grid.addWidget(QtWidgets.QLabel(tr_("Translation") + ":"), r, 0)
-    grid.addWidget(self.textEdit, r, 1)
+    row = QtWidgets.QHBoxLayout()
+    row.addWidget(self.textEdit)
+    row.addWidget(self.textTtsButton)
+    grid.addLayout(row, r, 1)
     r += 1
 
     grid.addWidget(QtWidgets.QLabel(tr_("Comment") + ":"), r, 0)
@@ -238,6 +244,37 @@ class _TermInput(object):
     ret.setToolTip(ret.placeholderText())
     ret.textChanged.connect(self.refresh)
     return ret
+
+  @memoizedproperty
+  def patternTtsButton(self):
+    ret = self._createTtsButton()
+    ret.clicked.connect(self._speakPattern)
+    return ret
+  @memoizedproperty
+  def textTtsButton(self):
+    ret = self._createTtsButton()
+    ret.clicked.connect(self._speakText)
+    return ret
+
+  @staticmethod
+  def _createTtsButton():
+    ret = QtWidgets.QPushButton(u"♪") # おんぷ
+    skqss.class_(ret, 'btn btn-default btn-toggle')
+    ret.setToolTip(mytr_("TTS"))
+    ret.setMaximumWidth(18)
+    ret.setMaximumHeight(18)
+    return ret
+
+  def _speakPattern(self):
+    t = self.patternEdit.text().strip()
+    if t:
+      import ttsman
+      ttsman.speak(t)
+  def _speakText(self):
+    t = self.textEdit.text().strip()
+    if t:
+      import ttsman
+      ttsman.speak(t)
 
   @memoizedproperty
   def textEdit(self):

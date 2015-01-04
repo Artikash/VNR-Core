@@ -352,6 +352,7 @@ class _GameView(object):
     layout.addWidget(self.launchButton)
     layout.addWidget(self.topicButton)
     layout.addWidget(self.subButton)
+    layout.addWidget(self.nameButton)
     layout.addStretch()
     layout.addWidget(self.helpButton)
     layout.addWidget(self.browseButton)
@@ -415,6 +416,19 @@ class _GameView(object):
     return ret
 
   def _edit(self): main.manager().showReferenceView(gameId=self.gameId)
+
+  @memoizedproperty
+  def nameButton(self):
+    ret = QtWidgets.QPushButton(my.tr("Import Name"))
+    skqss.class_(ret, 'btn btn-warning')
+    ret.setToolTip(my.tr("Import Japanese names to Shared Dictionary"))
+    ret.setEnabled(False)
+    #ret.setStatusTip(ret.toolTip())
+    ret.clicked.connect(self._importName)
+    return ret
+
+  def _importName(self):
+    pass
 
   #@memoizedproperty
   #def refreshButton(self):

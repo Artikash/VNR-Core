@@ -356,6 +356,10 @@ class SubtitleEditorManager:
   def __init__(self):
     self.__d = _SubtitleEditorManager()
 
+    from PySide.QtCore import QCoreApplication
+    qApp = QCoreApplication.instance()
+    qApp.aboutToQuit.connect(self.hide)
+
   #def clear(self): self.hide()
 
   def isVisible(self):
