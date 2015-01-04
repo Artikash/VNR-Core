@@ -478,9 +478,6 @@ class GameEditor(QtWidgets.QMainWindow):
     self.__d = _GameEditor(self)
     self.setMinimumWidth(350)
 
-    #dataman.manager().loginChanged.connect(self.__d.refreshIfVisible)
-    #netman.manager().onlineChanged.connect(self.__d.refreshIfVisible)
-
   def game(self): return self.__d.game
 
   def setGame(self, g):
@@ -526,6 +523,12 @@ class GameEditorManager:
     from PySide.QtCore import QCoreApplication
     qApp = QCoreApplication.instance()
     qApp.aboutToQuit.connect(self.hide)
+
+    #import dataman
+    #dataman.manager().loginChanged.connect(lambda name: name or self.hide())
+
+    #import netman
+    #netman.manager().onlineChanged.connect(lambda t: t or self.hide())
 
   def clear(self):
     self.hide()

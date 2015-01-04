@@ -318,9 +318,6 @@ class SubtitleEditor(QtWidgets.QDialog):
     self.__d = _SubtitleEditor(self)
     #self.statusBar() # show status bar
 
-    dataman.manager().loginChanged.connect(self.__d.refreshIfVisible)
-    netman.manager().onlineChanged.connect(self.__d.refreshIfVisible)
-
   def setComment(self, c):
     self.__d.comment = c
     if self.isVisible():
@@ -359,6 +356,12 @@ class SubtitleEditorManager:
     from PySide.QtCore import QCoreApplication
     qApp = QCoreApplication.instance()
     qApp.aboutToQuit.connect(self.hide)
+
+    import dataman
+    dataman.manager().loginChanged.connect(lambda name: name or self.hide())
+
+    #import netman
+    #netman.manager().onlineChanged.connect(lambda t: t or self.hide())
 
   #def clear(self): self.hide()
 

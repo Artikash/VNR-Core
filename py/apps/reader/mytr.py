@@ -174,7 +174,6 @@ class reader(QObject):
       # Terms
       self.tr("Name"),
       self.tr("name"), # used in Text Settings
-      self.tr("Kanji"),
       self.tr("Yomi"),
       self.tr("Suffix"),
 

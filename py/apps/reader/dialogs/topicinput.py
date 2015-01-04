@@ -335,11 +335,6 @@ class TopicInput(QtWidgets.QDialog):
     self.__d = _TopicInput(self)
     #self.statusBar() # show status bar
 
-    import netman
-    netman.manager().onlineChanged.connect(lambda online: online or self.hide())
-    import dataman
-    dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
-
   def imageEnabled(self): return self.__d.imageEnabled
   def setImageEnabled(self, t): self.__d.imageEnabled = t
 
@@ -386,7 +381,6 @@ class _TopicInputManager:
     ret.topicReceived.connect(q.topicReceived)
     return ret
 
-#@Q_Q
 class TopicInputManager(QObject):
   def __init__(self, parent=None):
     super(TopicInputManager, self).__init__(parent)
@@ -396,9 +390,11 @@ class TopicInputManager(QObject):
     qApp = QCoreApplication.instance()
     qApp.aboutToQuit.connect(self.hide)
 
-    import dataman, netman
-    netman.manager().onlineChanged.connect(lambda t: t or self.hide())
-    dataman.manager().loginChanged.connect(lambda t: t or self.hide())
+    import dataman
+    dataman.manager().loginChanged.connect(lambda name: name or name == 'guest' or self.hide())
+
+    #import netman
+    #netman.manager().onlineChanged.connect(lambda t: t or self.hide())
 
   topicReceived = Signal(unicode, unicode, unicode) # json topic, json image, json tickets
 

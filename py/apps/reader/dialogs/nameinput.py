@@ -2,7 +2,7 @@
 # nameinput.py
 # 1/3/2015 jichi
 
-__all__ = 'NameInput',
+__all__ = 'NameInputManager',
 
 if __name__ == '__main__':
   import sys
@@ -11,13 +11,14 @@ if __name__ == '__main__':
   debug.initenv()
 
 import re
-#from functools import partial
+from functools import partial
 from PySide.QtCore import Qt #, Signal
 from Qt5 import QtWidgets
 from sakurakit import skqss
-from sakurakit.skclass import Q_Q, memoizedproperty
+from sakurakit.skclass import memoized, memoizedproperty
 from sakurakit.sktr import tr_
 from sakurakit.skwidgets import SkLayoutWidget
+from opencc import opencc
 from mytr import my, mytr_
 import rc
 
@@ -27,6 +28,88 @@ def _split_name(s): # unicode -> [unicode]
 
 NAME_EDIT_MIN_WIDTH = 100
 INFO_EDIT_MIN_WIDTH = 200
+
+@memoized
+def manager(): return NameInputManager()
+
+class NameInputManager:
+  def __init__(self, parent=None):
+    self.__d = _NameInputManager()
+
+    from PySide.QtCore import QCoreApplication
+    qApp = QCoreApplication.instance()
+    qApp.aboutToQuit.connect(self.hide)
+
+    import dataman
+    dataman.manager().loginChanged.connect(lambda name: name or self.hide())
+
+    #import netman
+    #netman.manager().onlineChanged.connect(lambda t: t or self.hide())
+
+  #def clear(self): self.hide()
+
+  def isVisible(self):
+    if self.__d.dialogs:
+      for w in self.__d.dialogs:
+        if w.isVisible():
+          return True
+    return False
+
+  def hide(self):
+    if self.__d.dialogs:
+      for w in self.__d.dialogs:
+        if w.isVisible():
+          w.hide()
+
+  def showGame(self, tokenId=0, itemId=0, info=None):
+    """
+    @param* tokenId  long
+    @param* itemId  long
+    @param* info  GameInfo
+    """
+    if not info:
+      import dataman
+      info = dataman.queryGameInfo(itemId=itemId, id=gameId, cache=True)
+      if info and not tokenId:
+        tokenId = info.gameId
+
+    if not info or not tokenId:
+      growl.notify(my.tr("Unknown game"))
+    if not info.hasNames():
+      growl.notify(my.tr("Game character names not found"))
+
+    w = self.__d.getDialog(tokenId)
+    if w and w.isVisible() and w.tokenId() == tokenId:
+      w.raise_()
+    else:
+      w.setTokenId(tokenId)
+      w.setNames(info.iterNameYomi())
+      w.show()
+
+#@Q_Q
+class _NameInputManager:
+  def __init__(self):
+    self.dialogs = []
+
+  @staticmethod
+  def _createDialog():
+    import windows
+    parent = windows.top()
+    ret = NameInput(parent)
+    ret.resize(640, 480)
+    return ret
+
+  def getDialog(self, tokenId): # long -> QWidget
+    for w in self.dialogs:
+      if w.isVisible() and w.tokenId() == tokenId:
+        return w
+    for w in self.dialogs:
+      if not w.isVisible():
+        #w.clear() # use last input
+        return w
+    ret = self._createDialog()
+    self.dialogs.append(ret)
+    return ret
 
 #class NameInput(QtWidgets.QDialog):
 class NameInput(QtWidgets.QScrollArea):
@@ -41,7 +124,6 @@ class NameInput(QtWidgets.QScrollArea):
     self.setWindowIcon(rc.icon('window-name'))
     self.setWidgetResizable(True) # automatically stretch widgets
     self.__d = _NameInput(self)
-    self.resize(600, 300)
 
   def clear(self):
     self.__d.clear()
@@ -53,7 +135,8 @@ class NameInput(QtWidgets.QScrollArea):
     self.setWindowTitle("%s - %s" %
         (my.tr("Create dictionary entry"), name))
 
-  def setGameTokenId(self, tokenId):
+  def tokenId(self): return self.__d.tokenId
+  def setTokenId(self, tokenId):
     """
     @param  tokenId  long
     """
@@ -93,7 +176,7 @@ class _NameInput(object):
   def __init__(self, q):
     self.tokenId = 0 # long
 
-    self.rows = [] # [{'name':unicode, 'yomi':unicode, 'info':unicode, 'nameButton':QPushButton, 'yomiButton':QPushButton, 'nameEdit':QLabel, 'yomiEdit':QLabel, 'infoEdit':QLabel}]
+    self.rows = [] # [{'name':unicode, 'yomi':unicode, 'info':unicode, 'nameButton':QPushButton, 'yomiButton':QPushButton, 'nameTtsButton':QPushButton, 'nameEdit':QLabel, 'yomiEdit':QLabel, 'infoEdit':QLabel}]
     self.visibleRowCount = 0 # int
 
     self.grid = QtWidgets.QGridLayout()
@@ -166,6 +249,8 @@ class _NameInput(object):
       nameButton = self._createNameButton(rowCount)
       yomiButton = self._createYomiButton(rowCount)
 
+      nameTtsButton = self._createNameTtsButton(rowCount)
+
       nameEdit = self._createNameEdit()
       yomiEdit = self._createYomiEdit()
       infoEdit = self._createInfoEdit()
@@ -174,6 +259,8 @@ class _NameInput(object):
       self.grid.addWidget(nameButton, rowCount, c)
       c += 1
       self.grid.addWidget(yomiButton, rowCount, c)
+      c += 1
+      self.grid.addWidget(nameTtsButton, rowCount, c)
       c += 1
       self.grid.addWidget(nameEdit, rowCount, c)
       c += 1
@@ -185,6 +272,7 @@ class _NameInput(object):
         'name': '',
         'yomi': '',
         'info': '',
+        'nameTtsButton': nameTtsButton,
         'nameButton': nameButton,
         'yomiButton': yomiButton,
         'nameEdit': nameEdit,
@@ -197,25 +285,27 @@ class _NameInput(object):
 
     return row
 
-  def _createNameButton(self, index):
-    return self._createButton(index, mytr_("Name"))
-  def _createYomiButton(self, index):
-    return self._createButton(index, mytr_("Yomi"))
-  def _createButton(self, index, text):
-    """
-    @param  index  int
-    @param  text  unicode
-    @return  QPushButton
-    """
-    ret = QtWidgets.QPushButton(text)
+  def _createNameTtsButton(self, index): # int ->
+    ret = QtWidgets.QPushButton(u"♪") # おんぷ
+    skqss.class_(ret, 'btn btn-default btn-toggle')
+    ret.setToolTip(mytr_("TTS"))
+    ret.setMaximumWidth(18)
+    ret.setMaximumHeight(18)
+    ret.clicked.connect(partial(self._speakName, index))
     return ret
+
+  def _speakName(self, index):
+    row = self.rows[index]
+    name = row['name']
+    import ttsman
+    ttsman.speak(name)
 
   def _createNameEdit(self):
     return self._createLabel('text-info', mytr_("Kanji"), NAME_EDIT_MIN_WIDTH)
   def _createYomiEdit(self):
     return self._createLabel('text-success', mytr_("Yomi"), NAME_EDIT_MIN_WIDTH)
   def _createInfoEdit(self):
-    return self._createLabel('text-muted', tr_("Comment"), INFO_EDIT_MIN_WIDTH)
+    return self._createLabel('text-error', tr_("Comment"), INFO_EDIT_MIN_WIDTH)
   def _createLabel(self, styleclass, tip, minwidth):
     """
     @param  styleClass  str
@@ -228,6 +318,48 @@ class _NameInput(object):
     ret.setToolTip(tip)
     skqss.class_(ret, styleclass)
     return ret
+
+  def _createNameButton(self, index): # int -> QPushButton
+    ret = QtWidgets.QPushButton(mytr_("Name"))
+    skqss.class_(ret, "btn btn-primary")
+    ret.setToolTip(my.tr("Add to Shared Dictionary"))
+    ret.clicked.connect(partial(self._newName, index))
+    return ret
+  def _createYomiButton(self, index): # int -> QPushButton
+    ret = QtWidgets.QPushButton(mytr_("Yomi"))
+    skqss.class_(ret, "btn btn-success")
+    ret.setToolTip(my.tr("Add to Shared Dictionary"))
+    ret.clicked.connect(partial(self._newYomi, index))
+    return ret
+
+  def _newYomi(self, index):
+    row = self.rows[index]
+    name = row['name']
+    yomi = row['yomi'] or name
+    info = row['info']
+
+    import main
+    main.manager().showTermInput(pattern=name, text=yomi, comment=info,
+        type='yomi', language='ja')
+
+  def _newName(self, index):
+    import dataman, main
+
+    row = self.rows[index]
+    name = row['name']
+    #yomi = row['yomi']
+    yomi = name
+    info = row['info']
+
+    lang = dataman.manager().user().language
+    if lang == 'zhs':
+      yomi = opencc.ja2zhs(yomi)
+    else:
+      lang = 'zht'
+      yomi = opencc.ja2zht(yomi)
+
+    main.manager().showTermInput(pattern=name, text=yomi, comment=info,
+        type='name', language=lang)
 
 if __name__ == '__main__':
   names = [

@@ -16,6 +16,7 @@ from PySide.QtCore import Qt #, Signal
 from Qt5 import QtWidgets
 from sakurakit import skdatetime, skevents, skqss
 from sakurakit.skclass import Q_Q, memoizedproperty
+from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
 from mytr import my, mytr_
 import config, convutil, dataman, growl, i18n, rc
@@ -67,6 +68,10 @@ class _TermInput(object):
     grid.addLayout(row, r, 1)
     r += 1
 
+    grid.addWidget(QtWidgets.QLabel(tr_("Kanji") + ":"), r, 0)
+    grid.addWidget(self.kanjiEdit, r, 1) # span for two rows
+    r += 1
+
     grid.addWidget(QtWidgets.QLabel(tr_("Translation") + ":"), r, 0)
     row = QtWidgets.QHBoxLayout()
     row.addWidget(self.textEdit)
@@ -74,12 +79,12 @@ class _TermInput(object):
     grid.addLayout(row, r, 1)
     r += 1
 
-    grid.addWidget(QtWidgets.QLabel(tr_("Comment") + ":"), r, 0)
-    grid.addWidget(self.commentEdit, r, 1)
+    grid.addWidget(QtWidgets.QLabel(mytr_("Yomi") + ":"), r, 0)
+    grid.addWidget(self.yomiEdit, r, 1) # span for two rows
     r += 1
 
-    grid.addWidget(QtWidgets.QLabel(mytr_("Yomi") + ":"), r, 0)
-    grid.addWidget(self.yomiLabel, r, 1, 2, 1) # span for two rows
+    grid.addWidget(QtWidgets.QLabel(tr_("Comment") + ":"), r, 0)
+    grid.addWidget(self.commentEdit, r, 1)
     r += 1
 
     #grid.addWidget(QtWidgets.QLabel(tr_("Status") + ":"), r, 0)
@@ -230,10 +235,21 @@ class _TermInput(object):
     return ret
 
   @memoizedproperty
-  def yomiLabel(self):
-    ret = QtWidgets.QLabel()
-    ret.setToolTip(mytr_("Yomi"))
-    ret.setWordWrap(True)
+  def yomiEdit(self):
+    ret = QtWidgets.QLineEdit()
+    #skqss(ret, 'text-info')
+    ret.setToolTip(my.tr("Yomigana of translation"))
+    ret.setReadOnly(True)
+    #ret.setWordWrap(True)
+    return ret
+
+  @memoizedproperty
+  def kanjiEdit(self):
+    ret = QtWidgets.QLineEdit()
+    #skqss(ret, 'text-info')
+    ret.setToolTip(my.tr("Guessed kanji of pattern using MSIME"))
+    ret.setReadOnly(True)
+    #ret.setWordWrap(True)
     return ret
 
   @memoizedproperty
@@ -308,16 +324,22 @@ class _TermInput(object):
   def _getLanguage(self): # -> str
     return config.LANGUAGES[self.languageEdit.currentIndex()]
 
-  def _setLanguage(self, v): # str
-    index = config.LANGUAGES.index(v)
-    self.languageEdit.setCurrentIndex(index)
+  def setLanguage(self, v): # str ->
+    try:
+      index = config.LANGUAGES.index(v)
+      self.languageEdit.setCurrentIndex(index)
+    except ValueError:
+      dwarn("unknown language: %s" % v)
 
   def _getType(self): # -> str
     return dataman.Term.TYPES[self.typeEdit.currentIndex()]
 
-  #def _setType(self, v): # str
-  #  index = dataman.Term.TYPES.index(v)
-  #  self.typeEdit.setCurrentIndex(index)
+  def setType(self, v): # str ->
+    try: index = dataman.Term.TYPES.index(v)
+    except ValueError:
+      dwarn("unknown term type: %s" % v)
+      index = 0
+    self.typeEdit.setCurrentIndex(index)
 
   def save(self):
     if self._canSave():
@@ -372,6 +394,7 @@ class _TermInput(object):
 
     self.saveButton.setEnabled(self._canSave())
     self._refreshTypeLabel()
+    self._refreshKanji()
     self._refreshYomi()
     self._refreshStatus()
 
@@ -403,7 +426,7 @@ class _TermInput(object):
       w.setText("%s: %s" % (tr_("Note"), my.tr("Everything looks OK")))
 
   def _refreshYomi(self):
-    w = self.yomiLabel
+    w = self.yomiEdit
     if self._getType() == 'yomi':
       text = self.textEdit.text().strip()
       if text:
@@ -411,7 +434,8 @@ class _TermInput(object):
         w.setEnabled(True)
         t = ', '.join((
           "%s (%s)" % (convutil.kana2yomi(text, lang), tr_(lang))
-          for lang in ('romaji', 'ko', 'th')
+          #for lang in ('romaji', 'ko', 'th')
+          for lang in ('romaji', 'ko')
         ))
         w.setText(t)
         return
@@ -419,6 +443,27 @@ class _TermInput(object):
     skqss.removeclass(w)
     w.setEnabled(False)
     w.setText("(%s)" % tr_("Empty"))
+    skqss.class_(w, 'text-muted')
+
+  def _refreshKanji(self):
+    w = self.kanjiEdit
+    if self._getType() not in ('macro', 'target'):
+      text = self.patternEdit.text().strip()
+      if text:
+        kanji = convutil.yomi2kanji(text)
+        if kanji:
+          if kanji != text:
+            w.setText(kanji)
+            skqss.class_(w, 'text-info')
+          else:
+            w.setText("(%s)" % tr_("Equal"))
+            skqss.class_(w, 'text-muted')
+          return
+
+    skqss.removeclass(w)
+    w.setEnabled(False)
+    w.setText("(%s)" % tr_("Empty"))
+    skqss.class_(w, 'text-muted')
 
 class TermInput(QtWidgets.QDialog):
   #termEntered = Signal(QtCore.QObject) # Term
@@ -435,15 +480,17 @@ class TermInput(QtWidgets.QDialog):
     self.resize(300, 320)
     #self.statusBar() # show status bar
 
-    import netman
-    netman.manager().onlineChanged.connect(lambda t: t or self.hide())
-    dataman.manager().loginChanged.connect(lambda t: t or self.hide())
+    import dataman
+    dataman.manager().loginChanged.connect(lambda name: name or self.hide())
 
-  def setPattern(self, v): # unicode
-    self.__d.patternEdit.setText(v)
+    #import netman
+    #netman.manager().onlineChanged.connect(lambda t: t or self.hide())
 
-  def setText(self, v): # unicode
-    self.__d.textEdit.setText(v)
+  def setPattern(self, v): self.__d.patternEdit.setText(v)
+  def setText(self, v): self.__d.textEdit.setText(v)
+  def setComment(self, v): self.__d.commentEdit.setText(v)
+  def setType(self, v): self.__d.setType(v)
+  def setLanguage(self, v): self.__d.setLanguage(v)
 
   #def autofill(self): self.__d.autofill()
 

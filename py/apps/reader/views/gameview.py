@@ -195,6 +195,7 @@ class _GameView(object):
     q.addDockWidget(Qt.BottomDockWidgetArea, dock)
 
   def clear(self):
+    self.gameInfo = None # gameInfo
     self.gameId = 0 # long
     self.itemId = 0 # long
 
@@ -276,7 +277,7 @@ class _GameView(object):
     """@reimp"""
     q = self.q
     dm = dataman.manager()
-    info = dm.queryGameInfo(itemId=self.itemId, id=self.gameId, cache=False)
+    info = self.gameInfo = dm.queryGameInfo(itemId=self.itemId, id=self.gameId, cache=False)
     self._gameBean.info = info
     if info:
       if not self.gameId:
@@ -306,6 +307,7 @@ class _GameView(object):
     self.launchButton.setEnabled(bool(info and info.local))
     self.browseButton.setEnabled(online and bool(info and info.itemId))
     self.topicButton.setEnabled(online and bool(info and info.itemId))
+    self.nameButton.setEnabled(bool(info) and info.hasCharacters())
 
     # Fake base addr that twitter javascript can access document.cookie
     #baseUrl = ''
@@ -350,14 +352,14 @@ class _GameView(object):
     skqss.class_(ret, 'texture')
     layout = QtWidgets.QHBoxLayout()
     layout.addWidget(self.launchButton)
-    layout.addWidget(self.topicButton)
     layout.addWidget(self.subButton)
+    layout.addWidget(self.topicButton)
     layout.addWidget(self.nameButton)
     layout.addStretch()
     layout.addWidget(self.helpButton)
     layout.addWidget(self.browseButton)
-    #layout.addWidget(self.refreshButton) # disabled
     layout.addWidget(self.editButton)
+    layout.addWidget(self.refreshButton) # disabled
     ret.setLayout(layout)
     layout.setContentsMargins(4, 4, 4, 4)
     return ret
@@ -387,7 +389,7 @@ class _GameView(object):
   @memoizedproperty
   def topicButton(self):
     ret = QtWidgets.QPushButton(tr_("Topic"))
-    skqss.class_(ret, 'btn btn-success')
+    skqss.class_(ret, 'btn btn-info')
     ret.setToolTip(tr_("Topic"))
     ret.setEnabled(False)
     ret.clicked.connect(lambda:
@@ -397,7 +399,7 @@ class _GameView(object):
   @memoizedproperty
   def subButton(self):
     ret = QtWidgets.QPushButton(tr_("Subtitle"))
-    skqss.class_(ret, 'btn btn-inverse')
+    skqss.class_(ret, 'btn btn-success')
     ret.setToolTip(tr_("Subtitles"))
     #ret.setStatusTip(ret.toolTip())
     #ret.setEnabled(False)
@@ -420,6 +422,7 @@ class _GameView(object):
   @memoizedproperty
   def nameButton(self):
     ret = QtWidgets.QPushButton(my.tr("Import Name"))
+    #skqss.class_(ret, 'btn btn-inverse')
     skqss.class_(ret, 'btn btn-warning')
     ret.setToolTip(my.tr("Import Japanese names to Shared Dictionary"))
     ret.setEnabled(False)
@@ -428,19 +431,20 @@ class _GameView(object):
     return ret
 
   def _importName(self):
-    pass
+    if self.gameInfo:
+      main.manager().showGameNames(tokenId=self.gameId, itemId=self.itemId, info=self.gameInfo)
 
-  #@memoizedproperty
-  #def refreshButton(self):
-  #  ret = QtWidgets.QPushButton(tr_("Refresh"))
-  #  skqss.class_(ret, 'btn btn-info')
-  #  ret.setToolTip(tr_("Refresh") + " (Ctrl+R)")
-  #  #ret.setStatusTip(ret.toolTip())
-  #  ret.clicked.connect(self.updateAndRefresh)
-  #  nm = netman.manager()
-  #  ret.setEnabled(nm.isOnline())
-  #  nm.onlineChanged.connect(ret.setEnabled)
-  #  return ret
+  @memoizedproperty
+  def refreshButton(self):
+    ret = QtWidgets.QPushButton(tr_("Refresh"))
+    skqss.class_(ret, 'btn btn-primary')
+    ret.setToolTip(tr_("Refresh") + " (Ctrl+R)")
+    #ret.setStatusTip(ret.toolTip())
+    ret.clicked.connect(self.updateAndRefresh)
+    nm = netman.manager()
+    ret.setEnabled(nm.isOnline())
+    nm.onlineChanged.connect(ret.setEnabled)
+    return ret
 
   @memoizedproperty
   def helpButton(self):

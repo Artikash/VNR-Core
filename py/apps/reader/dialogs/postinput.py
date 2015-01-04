@@ -249,11 +249,6 @@ class PostInput(QtWidgets.QDialog):
     self.__d = _PostInput(self)
     #self.statusBar() # show status bar
 
-    import netman
-    netman.manager().onlineChanged.connect(lambda online: online or self.hide())
-    import dataman
-    dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
-
   def imageEnabled(self): return self.__d.imageEnabled
   def setImageEnabled(self, t): self.__d.imageEnabled = t
 
@@ -312,9 +307,11 @@ class PostInputManager(QObject):
     qApp = QCoreApplication.instance()
     qApp.aboutToQuit.connect(self.hide)
 
-    import dataman, netman
-    netman.manager().onlineChanged.connect(lambda t: t or self.hide())
-    dataman.manager().loginChanged.connect(lambda t: t or self.hide())
+    import dataman
+    dataman.manager().loginChanged.connect(lambda name: name or name == 'guest' or self.hide())
+
+    #import netman
+    #netman.manager().onlineChanged.connect(lambda t: t or self.hide())
 
   postReceived = Signal(unicode, unicode) # json post, json image
 

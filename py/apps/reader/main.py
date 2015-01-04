@@ -775,6 +775,12 @@ class _MainObject(object):
     self.gameManager.processChanged.connect(ret.hide)
     return ret
 
+  @memoizedproperty
+  def nameInputManager(self):
+    dprint("create name input manager")
+    import nameinput
+    return nameinput.manager()
+
   #@memoizedproperty
   #def postInputManager(self):
   #  dprint("create post Input manager")
@@ -1073,7 +1079,7 @@ class _MainObject(object):
   @memoizedproperty
   def termInputDialog(self):
     import terminput
-    ret = terminput.TermInput(self.normalWindow)
+    ret = terminput.TermInput(self.topWindow)
     self.widgets.append(ret)
     return ret
 
@@ -1866,6 +1872,9 @@ class MainObject(QObject):
   def showGameTopics(self, itemId):
     self.__d.topicsViewManager.show(subjectId=itemId)
 
+  def showGameNames(self, itemId=0, tokenId=0, info=None): # long, long, GameInfo ->
+    self.__d.nameInputManager.showGame(itemId=itemId, tokenId=tokenId, info=info)
+
   def showTopic(self, topicId):
     self.__d.topicViewManager.show(topicId)
 
@@ -1892,11 +1901,22 @@ class MainObject(QObject):
     """
     self.__d.userViewManager.showUser(*args, **kwargs)
 
-  def showTermInput(self, text=''):
+  def showTermInput(self, pattern='', text='', comment='', type='', language=''):
     w = self.__d.termInputDialog
+    if not pattern:
+      pattern = text
+    if not text:
+      text = pattern
+    if pattern:
+      w.setPattern(pattern)
     if text:
-      w.setPattern(text)
       w.setText(text)
+    if comment:
+      w.setComment(comment)
+    if type:
+      w.setType(type)
+    if language:
+      w.setLanguage(language)
     _MainObject.showWindow(w)
 
   def showTextSettings(self):
@@ -2192,9 +2212,10 @@ class MainObject(QObject):
 
     for p in (
         'subtitleEditorManager',
+        'nameInputManager',
         'gameEditorManager',
-        'userViewManager',
         'gameViewManager',
+        'userViewManager',
         'topicViewManager',
         'topicsViewManager',
       ):
