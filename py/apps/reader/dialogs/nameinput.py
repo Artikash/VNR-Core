@@ -340,7 +340,7 @@ class _NameInput(object):
 
     import main
     main.manager().showTermInput(pattern=name, text=yomi, comment=info,
-        type='yomi', language='ja')
+        type='yomi', language='ja', tokenId=self.tokenId)
 
   def _newName(self, index):
     import dataman, main
@@ -359,7 +359,7 @@ class _NameInput(object):
       yomi = opencc.ja2zht(yomi)
 
     main.manager().showTermInput(pattern=name, text=yomi, comment=info,
-        type='name', language=lang)
+        type='name', language=lang, tokenId=self.tokenId)
 
 if __name__ == '__main__':
   names = [
