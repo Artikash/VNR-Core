@@ -121,6 +121,7 @@ class sakurakit(QObject):
       self.tr("Enter"),
       self.tr("Enable"), self.tr("enable"),
       self.tr("Enabled"), self.tr("enabled"),
+      self.tr("Equal"), self.tr("equal"),
       self.tr("Escape"),
       self.tr("Export"),
       self.tr("Extra"), self.tr("extra"),
@@ -414,7 +415,7 @@ class sakurakit(QObject):
       self.tr("Public"),
       self.tr("Private"),
 
-      self.tr("Not changed"),
+      self.tr("Not changed"), self.tr("not changed"),
 
       self.tr("Case-sensitive"), self.tr("case-sensitive"),
       self.tr("Case-insensitive"), self.tr("case-insensitive"),

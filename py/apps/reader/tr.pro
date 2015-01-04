@@ -16,6 +16,7 @@ SOURCES = \
   dialogs/prompt.py \
   dialogs/info.py \
   dialogs/mttest.py \
+  dialogs/nameinput.py \
   dialogs/_prefs.py \
   dialogs/prefs.py \
   dialogs/postedit.py \
