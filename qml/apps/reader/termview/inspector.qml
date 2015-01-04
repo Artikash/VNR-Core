@@ -53,18 +53,26 @@ Item { id: root_
     if (!currentItem)
       return ""
 
-    var ret = Sk.tr("Pattern") + ": " + currentItem.pattern
+    var pattern = currentItem.pattern // cached
+    var text = currentItem.text
+    var type = currentItem.type
+    var lang = currentItem.language
+
+    var ret = Sk.tr("Pattern") + ": " + pattern
 
     ret += "\n" + Sk.tr("Translation") + ": "
-    if (!currentItem.text)
+    if (!text)
       ret += "(" + Sk.tr("Delete") + ")"
-    else if (currentItem.text == currentItem.pattern)
+    else if (text == pattern)
       ret += "(" + Sk.tr("Not changed") + ")"
     else
-      ret += currentItem.text
+      ret += text
 
-    if (currentItem.type == 'yomi' && currentItem.text)
-      ret += "\n" + My.tr("Yomi") + ": " + renderYomi(currentItem.text)
+    if (text && type == 'yomi')
+      ret += "\n" + My.tr("Yomi") + ": " + renderYomi(text)
+
+    if (text && (type == 'escape' || type == 'target' || type == 'name') && lang != 'en' && lang != 'ja')
+      ret += "\n" + Sk.tr("Romaji") + ": " + jlp_.toromaji(text, lang)
 
     var ts = Util.timestampToString(currentItem.timestamp)
     ret += "\n" + Sk.tr("Creation") + ": @" + currentItem.userName + " (" + ts + ")"

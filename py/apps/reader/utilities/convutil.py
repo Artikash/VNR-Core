@@ -35,7 +35,14 @@ def yomi2kanji(text):
   if MSIME_VALID:
     return msime.to_kanji(text)
 
-def toromaji(text): # unicode -> unicode
-  return unidecode(text) if isinstance(text, unicode) else text
+def toromaji(text, language=''): # unicode, str -> unicode
+  if isinstance(text, str):
+    text = text.decode('utf8', errors='ignore')
+  if not text:
+    return u''
+  ret = unidecode(text)
+  if language in ('ko', 'ja') and ret != text:
+    ret = ret.title()
+  return ret
 
 # EOF

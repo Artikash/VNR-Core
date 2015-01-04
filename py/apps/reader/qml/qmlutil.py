@@ -52,4 +52,8 @@ class JlpUtil(QObject):
   def kana2yomi(self, text, lang):
     return convutil.kana2yomi(text, lang)
 
+  @Slot(unicode, unicode, result=unicode)
+  def toromaji(self, text, lang):
+    return convutil.toromaji(text, lang)
+
 # EOF
