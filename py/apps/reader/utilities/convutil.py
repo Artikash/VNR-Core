@@ -3,6 +3,7 @@
 # 10/18/2014 jichi
 
 from unitraits.uniconv import hira2kata, kata2hira, thin2wide, wide2thin, wide2thin_digit
+from unidecode import unidecode
 from jaconv.jaconv import hira2romaji, hira2hangul, hira2thai \
                         , kata2romaji, kata2hangul, kata2thai \
                         , kana2romaji, kana2hangul, kana2thai \
@@ -33,5 +34,8 @@ def yomi2kanji(text):
   """
   if MSIME_VALID:
     return msime.to_kanji(text)
+
+def toromaji(text): # unicode -> unicode
+  return unidecode(text) if isinstance(text, unicode) else text
 
 # EOF
