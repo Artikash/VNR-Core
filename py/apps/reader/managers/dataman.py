@@ -444,6 +444,20 @@ class GameInfo(object):
       if r and r.characters:
         yield r
 
+  def hasNames(self):
+    """Online
+    @return  bool
+    """
+    return bool(self.getchu and self.getchu.characters)
+
+  def iterNameYomi(self):
+    """Online
+    yield (unicode name, unicode yomi)
+    """
+    if self.getchu:
+      for name,yomi in self.getchu.iterNameYomi():
+        yield name, yomi
+
   def hasCharacters(self):
     """Online
     @return  bool
@@ -3402,6 +3416,14 @@ class GetchuReference(Reference): #(object):
       t = t.replace('valign="middle"', 'valign="top"')
       t = t.replace('vertical-align:middle', 'vertical-align:top')
     return cacheman.cache_html(t)
+
+  def iterNameYomi(self):
+    """
+    yield (unicode name, unicode yomi)
+    """
+    if self.characters:
+      for it in self.characters:
+        yield it['name'], it['yomi']
 
 class DiGiketReference(Reference): #(object):
   def __init__(self, parent=None,

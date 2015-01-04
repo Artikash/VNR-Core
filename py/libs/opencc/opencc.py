@@ -90,6 +90,8 @@ def zhs2tw(text): return zht2hw(zhs2zht(text))
 def zhs2hk(text): return zht2hk(zhs2zht(text))
 def zhs2ja(text): return zht2ja(zhs2zht(text))
 
+def ja2zhs(text): return zht2zhs(ja2zht(text))
+
 # Aliases
 
 zh2zht = zhs2zht

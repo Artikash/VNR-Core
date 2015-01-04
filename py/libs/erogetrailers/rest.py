@@ -47,6 +47,7 @@ _PATCHES = { # {long id:kw}
   10839: {'brand':u"Mink"},         # 夜勤病棟 復刻版+
   11992: {'amazon': ''}, # 廻る娼館街のリィナ -- delete wrong amazon
   12410: {'releaseDayNumber': '20141230'},
+  12712: {'releaseDayNumber': '20141128'},
 }
 
 # API is stateless

@@ -10,6 +10,9 @@ from jaconv.jaconv import hira2romaji, hira2hangul, hira2thai \
 from opencc.opencc import zht2zhs
 from ccman import zhs2zht, zht2zhx
 
+from msime import msime
+MSIME_VALID = msime.ja_valid() # cached
+
 def kana2yomi(text, lang):
   """
   @param  text  unicode
@@ -22,5 +25,13 @@ def kana2yomi(text, lang):
     return kana2thai(text)
   else:
     return capitalizeromaji(kana2romaji(text))
+
+def yomi2kanji(text):
+  """
+  @param  text  unicode
+  @return  unicode or None
+  """
+  if MSIME_VALID:
+    return msime.to_kanji(text)
 
 # EOF

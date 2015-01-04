@@ -416,11 +416,6 @@ class TopicEditor(QtWidgets.QDialog):
     self.__d = _TopicEditor(self)
     #self.statusBar() # show status bar
 
-    import netman
-    netman.manager().onlineChanged.connect(lambda online: online or self.hide())
-    import dataman
-    dataman.manager().loginChanged.connect(lambda name, password: name or self.hide())
-
   def setTopic(self, id, subjectId=0, subjectType='subject', scores=None, type='', userName='', language='', lang='', title='', content='', image=None, **ignored):
     d = self.__d
     d.topicId = id
@@ -487,9 +482,11 @@ class TopicEditorManager(QObject):
     qApp = QCoreApplication.instance()
     qApp.aboutToQuit.connect(self.hide)
 
-    import dataman, netman
-    netman.manager().onlineChanged.connect(lambda t: t or self.hide())
-    dataman.manager().loginChanged.connect(lambda t: t or self.hide())
+    import dataman
+    dataman.manager().loginChanged.connect(lambda name: name or name == 'guest' or self.hide())
+
+    #import netman
+    #netman.manager().onlineChanged.connect(lambda t: t or self.hide())
 
   topicChanged = Signal(unicode, unicode, unicode) # json topic, json image, json tickets
 
