@@ -389,7 +389,7 @@ class _GameView(object):
   @memoizedproperty
   def topicButton(self):
     ret = QtWidgets.QPushButton(tr_("Topic"))
-    skqss.class_(ret, 'btn btn-info')
+    skqss.class_(ret, 'btn btn-inverse')
     ret.setToolTip(tr_("Topic"))
     ret.setEnabled(False)
     ret.clicked.connect(lambda:

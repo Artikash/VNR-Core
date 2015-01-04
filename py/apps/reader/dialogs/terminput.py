@@ -440,7 +440,6 @@ class _TermInput(object):
         w.setText(t)
         return
 
-    skqss.removeclass(w)
     w.setEnabled(False)
     w.setText("(%s)" % tr_("Empty"))
     skqss.class_(w, 'text-muted')
@@ -455,12 +454,13 @@ class _TermInput(object):
           if kanji != text:
             w.setText(kanji)
             skqss.class_(w, 'text-info')
+            w.setEnabled(True)
           else:
             w.setText("(%s)" % tr_("Equal"))
             skqss.class_(w, 'text-muted')
+            w.setEnabled(False)
           return
 
-    skqss.removeclass(w)
     w.setEnabled(False)
     w.setText("(%s)" % tr_("Empty"))
     skqss.class_(w, 'text-muted')
