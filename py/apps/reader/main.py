@@ -1901,7 +1901,7 @@ class MainObject(QObject):
     """
     self.__d.userViewManager.showUser(*args, **kwargs)
 
-  def showTermInput(self, pattern='', text='', comment='', type='', language=''):
+  def showTermInput(self, pattern='', text='', comment='', type='', language='', tokenId=0):
     w = self.__d.termInputDialog
     if not pattern:
       pattern = text
@@ -1917,6 +1917,8 @@ class MainObject(QObject):
       w.setType(type)
     if language:
       w.setLanguage(language)
+
+    w.setTokenId(tokenId)
     _MainObject.showWindow(w)
 
   def showTextSettings(self):

@@ -29,6 +29,7 @@ RE_SHORT_HIRAGANA = re.compile(u'^[あ-ん]{1,3}$')
 @Q_Q
 class _TermInput(object):
   def __init__(self, q):
+    self.gameId = 0 # long
     self._createUi(q)
 
   def _createUi(self, q):
@@ -347,7 +348,7 @@ class _TermInput(object):
       user = dm.user()
       if not user.name:
         return
-      gameId = dm.currentGameId()
+      gameId = self.gameId or dm.currentGameId()
       md5 = dm.currentGameMd5()
       #if not gameId and not md5:
       #  return
@@ -491,6 +492,7 @@ class TermInput(QtWidgets.QDialog):
   def setComment(self, v): self.__d.commentEdit.setText(v)
   def setType(self, v): self.__d.setType(v)
   def setLanguage(self, v): self.__d.setLanguage(v)
+  def setTokenId(self, v): self.__d.gameId = v # long
 
   #def autofill(self): self.__d.autofill()
 
