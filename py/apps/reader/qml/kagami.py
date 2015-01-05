@@ -184,6 +184,16 @@ class GrimoireBean(QObject):
   showNameText = Signal(unicode, unicode)  # text, lang
   showNameTranslation = Signal(unicode, unicode, unicode)  # text, lang, provider
 
+  def lookupFeature(self, text):
+    """
+    @param  text  unicode
+    @return  unicode  or None
+    """
+    return self.__d.features.get(text)
+
+  @Slot(unicode, result=unicode)
+  def convertChinese(self, text): return zhs2zht(text)
+
   @Slot(unicode, bool, unicode, unicode, int, float, bool, bool, bool, result=unicode)
   def renderJapanese(self, text, caboChaEnabled, furiType, meCabDic, charPerLine, rubySize, invertRuby, colorize, center):
     """
@@ -200,15 +210,12 @@ class GrimoireBean(QObject):
             fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
         for t in text.split('\n') if t)
 
-  @Slot(unicode, result=unicode)
-  def convertChinese(self, text): return zhs2zht(text)
-
-  def lookupFeature(self, text):
+  @Slot(unicode, int, float, bool, bool, bool, result=unicode)
+  def romanize(self, text, charPerLine, rubySize, invertRuby, colorize, center):
     """
-    @param  text  unicode
-    @return  unicode  or None
+    @return  unicode  html
     """
-    return self.__d.features.get(text)
+    return text
 
 class _GrimoireController:
 
