@@ -4405,13 +4405,26 @@ class _TermModel(object):
     xd = x.d
     yd = y.d
     return (
-        xd.type == yd.type and
-        xd.regex == yd.regex and
-        xd.special == yd.special and
-        xd.language[:2] == yd.language[:2] and
-        xd.pattern == yd.pattern and
-        xd.text == yd.text and
-        (not xd.special or xd.gameItemId == yd.gameItemId or x.gameSeries and x.gameSeries == y.gameSeries))
+      xd.regex == yd.regex
+      #and xd.special == yd.special
+      and (
+        xd.type == yd.type
+        or xd.type == 'yomi' and yd.type in ('name', 'source', 'target', 'origin')
+        or yd.type == 'yomi' and xd.type in ('name', 'source', 'target', 'origin')
+      )
+      and (
+        xd.language == 'ja'
+        or yd.language == 'ja'
+        or xd.language[:2] == yd.language[:2]
+      )
+      and xd.pattern == yd.pattern
+      and xd.text == yd.text
+      and (
+        not xd.special
+        or xd.gameItemId == yd.gameItemId
+        or x.gameSeries and x.gameSeries == y.gameSeries
+      )
+   )
 
   @property
   def sortedData(self): # -> list not None
