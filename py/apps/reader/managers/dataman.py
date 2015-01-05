@@ -4416,6 +4416,8 @@ class _TermModel(object):
         xd.type == yd.type
         or xd.type in ('name', 'yomi', 'escape', 'source') and yd.type in ('name', 'yomi', 'escape', 'source')
       )
+      and not (xd.type == 'yomi' and yd.type == 'name' and yd.language.startswith('zh'))
+      and not (yd.type == 'yomi' and xd.type == 'name' and xd.language.startswith('zh'))
       and xd.pattern == yd.pattern
       #and xd.text == yd.text
       and (
