@@ -11,23 +11,25 @@
 
 namespace { // unnamed
 
+
 enum {
-  MSIME_MODE_FLAGS =
+  MSIME_ZH_FLAGS = WINIME_MODE_NOINVISIBLECHAR // remove invisible characters
+  , MSIME_KO_FLAGS = 0 // remove invisible characters
+  , MSIME_JA_FLAGS =
     WINIME_MODE_AUTOMATIC |
     WINIME_MODE_SINGLECONVERT |
     WINIME_MODE_PLAURALCLAUSE |
     WINIME_MODE_PHRASEPREDICT
-    //WINIME_MODE_NONE
 };
 
 inline ulong ruby2mode(int ruby)
 {
   switch (ruby) {
-  case Msime::Roman: return WINIME_MODE_ROMAN;
-  case Msime::Pinyin: return WINIME_MODE_PINYIN;
-  case Msime::Hiragana: return WINIME_MODE_HIRAGANA;
-  case Msime::Katagana: return WINIME_MODE_KATAGANA;
-  case Msime::Hangul: return WINIME_MODE_HANGUL;
+  case Msime::Pinyin: return WINIME_MODE_PINYIN | MSIME_ZH_FLAGS;
+  case Msime::Roman: return WINIME_MODE_ROMAN | MSIME_JA_FLAGS;
+  case Msime::Hiragana: return WINIME_MODE_HIRAGANA | MSIME_JA_FLAGS;
+  case Msime::Katagana: return WINIME_MODE_KATAGANA | MSIME_JA_FLAGS;
+  case Msime::Hangul: return WINIME_MODE_HANGUL | MSIME_KO_FLAGS;
   default: return 0;
   }
 }
@@ -83,7 +85,7 @@ QString Msime::toKanji(const QString &text, ulong flags) const
   if (d_->ime)
     ::winime_apply(d_->ime,
         flags & Autocorrect ? WINIME_REQ_RECONV : WINIME_REQ_CONV,
-        MSIME_MODE_FLAGS,
+        MSIME_JA_FLAGS,
         (const wchar_t *)text.utf16(),
         text.size(),
         ime_applier(&ret));
@@ -96,7 +98,7 @@ QList<QPair<QString, QString> > Msime::toKanjiList(const QString &text, ulong fl
   if (d_->ime)
     ::winime_collect(d_->ime,
         flags & Autocorrect ? WINIME_REQ_RECONV : WINIME_REQ_CONV,
-        MSIME_MODE_FLAGS,
+        MSIME_JA_FLAGS,
         (const wchar_t *)text.utf16(),
         text.size(),
         ime_collector(&ret));
@@ -109,7 +111,7 @@ QString Msime::toRuby(const QString &text, int ruby) const
   if (d_->ime)
     ::winime_apply(d_->ime,
         WINIME_REQ_REV,
-        MSIME_MODE_FLAGS | ::ruby2mode(ruby),
+        ::ruby2mode(ruby),
         (const wchar_t *)text.utf16(),
         text.size(),
         ime_applier(&ret));
@@ -122,7 +124,7 @@ QList<QPair<QString, QString> > Msime::toRubyList(const QString &text, int ruby)
   if (d_->ime)
     ::winime_collect(d_->ime,
         WINIME_REQ_REV,
-        MSIME_MODE_FLAGS | ::ruby2mode(ruby),
+        ::ruby2mode(ruby),
         (const wchar_t *)text.utf16(),
         text.size(),
         ime_collector(&ret));

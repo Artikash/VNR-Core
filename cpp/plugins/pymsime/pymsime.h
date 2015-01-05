@@ -22,7 +22,7 @@ public:
 
   enum Language { NoLanguage = 0, SimplifiedChinese, TraditionalChinese, Japanese, Korean };
 
-  enum Ruby { NoRuby = 0, Roman, Pinyin, Hiragana, Katagana, Hangul };
+  enum Ruby { NoRuby = 0, Pinyin, Roman, Hiragana, Katagana, Hangul };
 
   enum ConvertionFlag {
     NoFlag = 0

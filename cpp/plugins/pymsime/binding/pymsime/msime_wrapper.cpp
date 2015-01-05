@@ -556,10 +556,10 @@ void init_Msime(PyObject* module)
         &Sbk_Msime_Type, "NoRuby", (long) Msime::NoRuby))
         return ;
     if (!Shiboken::Enum::createScopedEnumItem(SbkpymsimeTypes[SBK_MSIME_RUBY_IDX],
-        &Sbk_Msime_Type, "Roman", (long) Msime::Roman))
+        &Sbk_Msime_Type, "Pinyin", (long) Msime::Pinyin))
         return ;
     if (!Shiboken::Enum::createScopedEnumItem(SbkpymsimeTypes[SBK_MSIME_RUBY_IDX],
-        &Sbk_Msime_Type, "Pinyin", (long) Msime::Pinyin))
+        &Sbk_Msime_Type, "Roman", (long) Msime::Roman))
         return ;
     if (!Shiboken::Enum::createScopedEnumItem(SbkpymsimeTypes[SBK_MSIME_RUBY_IDX],
         &Sbk_Msime_Type, "Hiragana", (long) Msime::Hiragana))

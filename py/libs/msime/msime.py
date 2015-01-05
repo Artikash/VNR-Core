@@ -133,13 +133,6 @@ def to_hira(text):
   ime = ja()
   return ime.toRuby(text, ime.Hiragana)
 
-def to_kata(text):
-  """
-  @param  text  unicode
-  @return  unicode
-  """
-  return ja().toRuby(text, ime.Katagana)
-
 def to_hira_list(text):
   """
   @param  text  unicode
@@ -150,6 +143,16 @@ def to_hira_list(text):
   ime = ja()
   return ime.toRubyList(text, ime.Hiragana)
 
+def to_kata(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  if len(text) > IME_MAX_SIZE:
+    return ""
+  ime = ja()
+  return ime.toRuby(text, ime.Katagana)
+
 def to_kata_list(text):
   """
   @param  text  unicode
@@ -159,6 +162,26 @@ def to_kata_list(text):
     return ""
   ime = ja()
   return ime.toRubyList(text, ime.Katagana)
+
+def to_roman(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  if len(text) > IME_MAX_SIZE:
+    return ""
+  ime = ja()
+  return ime.toRuby(text, ime.Roman)
+
+def to_roman_list(text):
+  """
+  @param  text  unicode
+  @return  [(unicode kanji,unicode ruby)]
+  """
+  if len(text) > IME_MAX_SIZE:
+    return ""
+  ime = ja()
+  return ime.toRubyList(text, ime.Roman)
 
 def to_hangul(text):
   """
@@ -215,7 +238,6 @@ if __name__ == '__main__':
   print zhs_valid()
   print zht_valid()
 
-  import pythoncom
   print "kanji:", to_kanji(u'すもももももももものうち') #
   for k,v in to_kanji_list(u'すもももももももものうち'):
     print k,v
@@ -223,13 +245,27 @@ if __name__ == '__main__':
 
   print "hangul:", to_hangul(u'計画通')
 
-  print "pinyin:", to_pinyin(u'計画通')
-
   print "hira:", to_hira(u'計画通り')
-  print to_hira_list(u'計画通り')
   print "kanji:", to_kanji(u'けいかくとおり')
   print to_kanji(u'かわいい')
   # IMJP 14 (windows 7): スモモも桃も桃のうち
   # IMJP 14 (office 2010): すもももももも桃のうち, because there is an anime called すもももももも
+
+  print "roman:", to_roman(u'計画通り')
+
+  #l = to_pinyin_list(u'計画通り 中文')
+  #l = to_pinyin_list(u'我是这样想的')
+  #l = to_hira_list(u'計画通り')
+  #l = to_roman_list(u'計画通り')
+  l = to_pinyin_list(u'分隔句子')
+  print len(l)
+  t = ','.join(("%s:%s" % it for it in l))
+  t = to_pinyin(u'分隔句子')
+  #t = to_pinyin(u'中文')
+  from PySide.QtGui import *
+  a = QApplication(sys.argv)
+  w = QLabel(t)
+  w.show()
+  a.exec_()
 
 # EOF
