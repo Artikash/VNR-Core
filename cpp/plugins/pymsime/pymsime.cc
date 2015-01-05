@@ -13,7 +13,8 @@ namespace { // unnamed
 
 
 enum {
-  MSIME_ZH_FLAGS = WINIME_MODE_NOINVISIBLECHAR // remove invisible characters
+  //MSIME_ZH_FLAGS = WINIME_MODE_NOINVISIBLECHAR // remove invisible characters
+  MSIME_ZH_FLAGS = 0
   , MSIME_KO_FLAGS = 0 // remove invisible characters
   , MSIME_JA_FLAGS =
     WINIME_MODE_AUTOMATIC |

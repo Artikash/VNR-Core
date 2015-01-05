@@ -257,10 +257,12 @@ if __name__ == '__main__':
   #l = to_pinyin_list(u'我是这样想的')
   #l = to_hira_list(u'計画通り')
   #l = to_roman_list(u'計画通り')
-  l = to_pinyin_list(u'分隔句子')
+  s = u'分隔句子'
+  #s = u'hello'
+  l = to_pinyin_list(s)
   print len(l)
-  t = ','.join(("%s:%s" % it for it in l))
-  t = to_pinyin(u'分隔句子')
+  #t = ','.join(("%s:%s" % it for it in l))
+  t = to_pinyin(s)
   #t = to_pinyin(u'中文')
   from PySide.QtGui import *
   a = QApplication(sys.argv)
