@@ -4408,17 +4408,16 @@ class _TermModel(object):
       xd.regex == yd.regex
       #and xd.special == yd.special
       and (
-        xd.type == yd.type
-        or xd.type == 'yomi' and yd.type in ('name', 'source', 'target', 'origin')
-        or yd.type == 'yomi' and xd.type in ('name', 'source', 'target', 'origin')
-      )
-      and (
         xd.language == 'ja'
         or yd.language == 'ja'
         or xd.language[:2] == yd.language[:2]
       )
+      and (
+        xd.type == yd.type
+        or xd.type in ('name', 'yomi', 'escape', 'source') and yd.type in ('name', 'yomi', 'escape', 'source')
+      )
       and xd.pattern == yd.pattern
-      and xd.text == yd.text
+      #and xd.text == yd.text
       and (
         not xd.special
         or xd.gameItemId == yd.gameItemId
