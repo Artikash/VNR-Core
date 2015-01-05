@@ -11,6 +11,7 @@
 #include "winime/winime.h"
 #include <windows.h>
 #include <msime.h>
+#include <QDebug>
 
 winime_t *winime_create(const wchar_t *cls) ///< create an im engine of given class
 {
@@ -30,12 +31,10 @@ winime_t *winime_create(const wchar_t *cls) ///< create an im engine of given cl
                                 reinterpret_cast<LPVOID *>(&ife))))
     return nullptr;
 
-  //Q_ASSERT(ife);
   if (SUCCEEDED(ife->Open())) {
     DWORD dwCaps;
     if(SUCCEEDED(ife->GetConversionModeCaps(&dwCaps)))
       return ife;
-  //Q_ASSERT(ife);
     ife->Close();
   }
   ife->Release();

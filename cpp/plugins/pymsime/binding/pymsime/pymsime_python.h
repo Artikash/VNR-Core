@@ -15,7 +15,7 @@
 #include <pyside_qtcore_python.h>
 
 // Binded library includes
-#include <msime_ja.h>
+#include <pymsime.h>
 // Conversion Includes - Primitive Types
 #include <QString>
 #include <signalmanager.h>
@@ -37,9 +37,9 @@
 #include <QLinkedList>
 
 // Type indices
-#define SBK_MSIME_JA_IDX                                             0
-#define SBK_MSIME_JA_TYPE_IDX                                        2
-#define SBK_MSIME_JA_FLAG_IDX                                        1
+#define SBK_MSIME_IDX                                                0
+#define SBK_MSIME_RUBY_IDX                                           2
+#define SBK_MSIME_LANGUAGE_IDX                                       1
 #define SBK_pymsime_IDX_COUNT                                        3
 
 // This variable stores all Python types exported by this module.
@@ -62,9 +62,9 @@ namespace Shiboken
 {
 
 // PyType functions, to get the PyObjectType for a type T
-template<> inline PyTypeObject* SbkType< ::Msime_ja::Type >() { return SbkpymsimeTypes[SBK_MSIME_JA_TYPE_IDX]; }
-template<> inline PyTypeObject* SbkType< ::Msime_ja::Flag >() { return SbkpymsimeTypes[SBK_MSIME_JA_FLAG_IDX]; }
-template<> inline PyTypeObject* SbkType< ::Msime_ja >() { return reinterpret_cast<PyTypeObject*>(SbkpymsimeTypes[SBK_MSIME_JA_IDX]); }
+template<> inline PyTypeObject* SbkType< ::Msime::Ruby >() { return SbkpymsimeTypes[SBK_MSIME_RUBY_IDX]; }
+template<> inline PyTypeObject* SbkType< ::Msime::Language >() { return SbkpymsimeTypes[SBK_MSIME_LANGUAGE_IDX]; }
+template<> inline PyTypeObject* SbkType< ::Msime >() { return reinterpret_cast<PyTypeObject*>(SbkpymsimeTypes[SBK_MSIME_IDX]); }
 
 } // namespace Shiboken
 

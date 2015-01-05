@@ -27,7 +27,7 @@ static PyMethodDef pymsime_methods[] = {
 };
 
 // Classes initialization functions ------------------------------------------------------------
-void init_Msime_ja(PyObject* module);
+void init_Msime(PyObject* module);
 
 // Required modules' type and converter arrays.
 PyTypeObject** SbkPySide_QtCoreTypes;
@@ -251,7 +251,7 @@ SBK_MODULE_INIT_FUNCTION_BEGIN(pymsime)
 #endif
 
     // Initialize classes in the type system
-    init_Msime_ja(module);
+    init_Msime(module);
 
     // Register converter for type 'QPair<QString,QString>'.
     SbkpymsimeTypeConverters[SBK_PYMSIME_QPAIR_QSTRING_QSTRING_IDX] = Shiboken::Conversions::createConverter(&PyList_Type, _QPair_QString_QString__CppToPython__QPair_QString_QString_);
