@@ -225,9 +225,9 @@ if __name__ == '__main__':
 
   print "pinyin:", to_pinyin(u'計画通')
 
-  print to_hira(u'計画通り')
+  print "hira:", to_hira(u'計画通り')
   print to_hira_list(u'計画通り')
-  print to_kanji(u'けいかくとおり')
+  print "kanji:", to_kanji(u'けいかくとおり')
   print to_kanji(u'かわいい')
   # IMJP 14 (windows 7): スモモも桃も桃のうち
   # IMJP 14 (office 2010): すもももももも桃のうち, because there is an anime called すもももももも
