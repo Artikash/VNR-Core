@@ -2,8 +2,8 @@
 # msime.py
 # 4/2/2013 jichi
 #
-# Debug on Windows:
-# set PATH=..\..\..\..\Qt\PySide;..\..\..\bin;%PATH%
+# Download IME 2010 for CJK, which seems to be wrong?
+# http://www.microsoft.com/en-US/download/details.aspx?id=30390
 
 if __name__ == '__main__': # DEBUG
   import os, sys
@@ -55,6 +55,9 @@ def ko_ime_location():
 
 #def ja_dll_location(): # such like IMJP14K.dll
 
+IME_INSTALL_URL = "http://www.microsoft.com/en-US/download/details.aspx?id=30390"
+
+ZHS_INSTALL_URL = "http://www.microsoft.com/china/pinyin/"
 JA_INSTALL_URL = "http://www.microsoft.com/ja-jp/office/2010/ime"
 JA_UPDATE_URL = "http://support.microsoft.com/kb/978478?ln=ja"
 
@@ -204,6 +207,8 @@ if __name__ == '__main__':
   sys.path.append("../../../bin")
   sys.path.append("../../../../Qt/PySide")
   sys.path.append("..")
+
+  import pythoncom # Make sure OleInitialzie is invoked
 
   print ja_valid()
   print ko_valid()
