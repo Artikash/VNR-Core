@@ -377,7 +377,7 @@ bool DetermineEngineByProcessName()
   wcscpy(str, process_name_);
   _wcslwr(str); // lower case
 
-  if (wcsstr(str,L"reallive")) {
+  if (wcsstr(str,L"reallive") || IthCheckFile(L"Reallive.exe")) {
     InsertRealliveHook();
     return true;
   }
@@ -389,12 +389,12 @@ bool DetermineEngineByProcessName()
   //}
 
   // jichi 8/17/2013: Handle "~"
-  if (wcsstr(str, L"siglusengine") || !wcsncmp(str, L"siglus~", 7)) {
+  if (wcsstr(str, L"siglusengine") || !wcsncmp(str, L"siglus~", 7) || IthCheckFile(L"SiglusEngine.exe")) {
     InsertSiglusHook();
     return true;
   }
 
-  if (wcsstr(str, L"taskforce2") || !wcsncmp(str, L"taskfo~", 7)) {
+  if (wcsstr(str, L"taskforce2") || !wcsncmp(str, L"taskfo~", 7) || IthCheckFile(L"Faskforce2.exe")) {
     InsertTaskforce2Hook();
     return true;
   }
@@ -405,23 +405,23 @@ bool DetermineEngineByProcessName()
   }
 
   // jichi 8/17/2013: Handle "~"
-  if (wcsstr(str, L"igs_sample") || !wcsncmp(str, L"igs_sa~", 7)) {
+  if (wcsstr(str, L"igs_sample") || !wcsncmp(str, L"igs_sa~", 7) || IthCheckFile(L"igs_sample.exe")) {
     InsertIronGameSystemHook();
     return true;
   }
 
-  if (wcsstr(str, L"bruns")) {
+  if (wcsstr(str, L"bruns") || IthCheckFile(L"bruns.exe")) {
     InsertBrunsHook();
     return true;
   }
 
-  if (wcsstr(str, L"anex86")) {
+  if (wcsstr(str, L"anex86") || IthCheckFile(L"anex86.exe")) {
     InsertAnex86Hook();
     return true;
   }
 
   // jichi 8/17/2013: Handle "~"
-  if (wcsstr(str, L"shinydays") || !wcsncmp(str, L"shinyd~", 7)) {
+  if (wcsstr(str, L"shinydays") || !wcsncmp(str, L"shinyd~", 7) || IthCheckFile(L"ShinyDays.exe")) {
     InsertShinyDaysHook();
     return true;
   }
@@ -433,7 +433,7 @@ bool DetermineEngineByProcessName()
   //  return true;
   //}
 
-  if (wcsstr(process_name_, L"SAISYS")) { // jichi 4/19/2014: Marine Heart
+  if (wcsstr(process_name_, L"SAISYS") || IthCheckFile(L"SaiSys.exe")) { // jichi 4/19/2014: Marine Heart
     InsertMarineHeartHook();
     return true;
   }
@@ -623,7 +623,7 @@ bool DetermineNoEngine()
     return true;
   }
 
-  if (wcsstr(process_name_, L"lcsebody") || !wcsncmp(process_name_, L"lcsebo~", 7)) { // jichi 3/19/2014: LC-ScriptEngine, GetGlyphOutlineA
+  if (wcsstr(process_name_, L"lcsebody") || !wcsncmp(process_name_, L"lcsebo~", 7) || IthCheckFile(L"lcsebody")) { // jichi 3/19/2014: LC-ScriptEngine, GetGlyphOutlineA
     ConsoleOutput("vnreng: IGNORE lcsebody");
     return true;
   }
