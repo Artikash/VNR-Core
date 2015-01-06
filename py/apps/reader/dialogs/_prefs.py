@@ -3158,7 +3158,7 @@ class _RomanTranslationTab(object):
   @memoizedproperty
   def infoLabel(self):
     ret = QtWidgets.QLabel(my.tr(
-"""This tab is for non-Japanese languages.
+"""This tab is for displaying ruby for non-Japanese non-English languages.
 Japanese romanization can be adjusted in the dictionary tab instead."""))
     ret.setWordWrap(True)
     skqss.class_(ret, 'text-info')
