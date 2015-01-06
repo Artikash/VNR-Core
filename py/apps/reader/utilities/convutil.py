@@ -41,6 +41,8 @@ def toromaji(text, language=''): # unicode, str -> unicode
   if not text:
     return u''
   ret = unidecode(text)
+  if ret[-1] == ' ':
+    ret = ret[:-1]
   if language in ('ko', 'ja') and ret != text:
     ret = ret.title()
   return ret

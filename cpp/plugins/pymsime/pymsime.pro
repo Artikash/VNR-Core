@@ -28,14 +28,15 @@ TEMPLATE = lib
 TARGET = pymsime
 
 HEADERS += \
-  msime_ja.h \
+  pymsime.h \
+  pymsime_p.h \
   pymsime_config.h \
-  $$SRCPATH/msime_ja_wrapper.h \
+  $$SRCPATH/msime_wrapper.h \
   $$SRCPATH/pymsime_python.h
 
 SOURCES += \
-  msime_ja.cc \
-  $$SRCPATH/msime_ja_wrapper.cpp \
+  pymsime.cc \
+  $$SRCPATH/msime_wrapper.cpp \
   $$SRCPATH/pymsime_module_wrapper.cpp
 
 #!wince*: LIBS += -lshell32

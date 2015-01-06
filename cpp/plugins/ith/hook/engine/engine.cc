@@ -2282,7 +2282,7 @@ bool InsertSiglus2Hook()
   return true;
 }
 
-void SpecialHookSiglus1(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookSiglus1(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   __asm
   {
@@ -4036,7 +4036,7 @@ bool InsertCotophaHook()
 // 051ae554   042c4c20
 // 051ae558   0000002c
 
-void SpecialHookCatSystem3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
+static void SpecialHookCatSystem3(DWORD esp_base, HookParam *hp, DWORD *data, DWORD *split, DWORD *len)
 {
   CC_UNUSED(hp);
   //DWORD ch = *data = *(DWORD *)(esp_base + hp->off); // arg2
@@ -4484,7 +4484,7 @@ bool InsertEMEHook()
   //else ConsoleOutput("Unknown EmonEngine engine");
   return true;
 }
-void SpecialRunrunEngine(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
+static void SpecialRunrunEngine(DWORD esp_base, HookParam* hp, DWORD* data, DWORD* split, DWORD* len)
 {
   CC_UNUSED(hp);
   CC_UNUSED(split);
@@ -9102,6 +9102,7 @@ bool Insert5pbHook2()
 }
 
 } // unnamed namespace
+
 bool Insert5pbHook()
 {
   bool ok = Insert5pbHook1();

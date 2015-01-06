@@ -130,9 +130,9 @@ def parse(text, parser=None, type=False, fmt=mecabfmt.DEFAULT, wordtr=None, grou
               unknownYomi = True
               if HAS_MSIME and len(surface) < msime.IME_MAX_SIZE:
                 if ruby == mecabdef.RB_HIRA:
-                  yomigana = msime.to_yomi_hira(surface)
+                  yomigana = msime.to_hira(surface)
                 else:
-                  yomigana = msime.to_yomi_kata(surface)
+                  yomigana = msime.to_kata(surface)
                   if yomigana:
                     if ruby == mecabdef.RB_HIRA:
                       pass
