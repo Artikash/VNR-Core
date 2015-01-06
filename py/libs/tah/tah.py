@@ -110,6 +110,8 @@ def parselines(lines):
   macros = {} # [(unicode name, unicode value)]  rules
   rules = []  # [(unicode pattern, unicode replacement)]  rules
 
+  rulekeys = set()
+
   for line in lines:
     first = line[0]
     if first in COMMENT_CHARS:
@@ -132,16 +134,25 @@ def parselines(lines):
     #  #continue
 
     if ismacro:
+      if left in macros:
+        dwarn("macro redefinition:", line)
       macros[left] = right
       _evalmacros(macros)
     else:
       left = _applymacros(macros, left)
+      if not left:
+        dwarn("missing pattern after applying macros:", line)
+        continue
       right = _applymacros(macros, right)
       if '{{' in left or '}}' in left:
         dwarn("macro not applied:", line)
       if '{{' in right or '}}' in right:
         dwarn("macro not applied:", line)
       if _verify(left, right):
+        if left in rulekeys:
+          dwarn("rule redefinition:", line)
+        else:
+          rulekeys.add(left)
         rules.append((left, right))
 
   return rules
