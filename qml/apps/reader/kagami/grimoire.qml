@@ -50,6 +50,8 @@ Item { id: root_
 
   property bool toolTipEnabled: true
 
+  property string userLanguage
+
   property color bingColor
   property color googleColor
   property color infoseekColor
@@ -176,8 +178,12 @@ Item { id: root_
     return text.replace(/<[0-9a-zA-Z: "/:=-]+>/g, '')
   }
 
+  function sameLanguageAsUser(lang) { // string -> bool
+    return lang.substr(0, 2) === root_.userLanguage.substr(0, 2)
+  }
+
   function isRubyLanguage(lang) { // string -> bool
-    if (lang.length == 3)
+    if (lang.length === 3)
       lang = lang.substr(0, 2)
     return !!~root_.rubyLanguages.indexOf(lang)
   }
@@ -1064,7 +1070,8 @@ Item { id: root_
                   root_.yakuAt(t, gp.x, gp.y)
                 }
                 //if (root_.readEnabled && model.language === 'ja')
-                if (model.type === 'text' || model.type !== 'name')
+                if ((model.type === 'text' || model.type !== 'name')
+                    && !root_.sameLanguageAsUser(model.language))
                   ttsPlugin_.speak(t, model.language)
               }
             }
@@ -1083,7 +1090,8 @@ Item { id: root_
                 textEdit_.deselect()
                 //if (root_.readEnabled)
                 //if (model.type === 'text' || model.type !== 'name')
-                ttsPlugin_.speak(t, model.language)
+                if (!root_.sameLanguageAsUser(model.language))
+                  ttsPlugin_.speak(t, model.language)
               }
             }
             root_.mouseLocked = false
