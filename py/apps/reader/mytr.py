@@ -141,6 +141,8 @@ class reader(QObject):
       self.tr("Built-in"),
       self.tr("built-in"),
 
+      self.tr("Romanize"),
+
       self.tr("Shortcuts"),
 
       self.tr("Multilingual"), self.tr("multilingual"),

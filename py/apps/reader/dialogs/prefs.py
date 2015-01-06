@@ -71,6 +71,7 @@ class _PrefsDialog(object):
     self.translationTab = _prefs.TranslationTab()
     self.machineTranslationTab = _prefs.MachineTranslationTab()
     self.dictionaryTranslationTab = _prefs.DictionaryTranslationTab()
+    self.romanTranslationTab = _prefs.RomanTranslationTab()
     self.chineseTranslationTab = _prefs.ChineseTranslationTab()
     #self.translationScriptTab = _prefs.TranslationScriptTab()
 
@@ -182,6 +183,12 @@ class _PrefsDialog(object):
               'decoration': rc.icon('pref-dict'),
               'display': tr_("Dictionaries"),
               'toolTip': my.tr("Preferred look-up dictionaries"),
+            },
+            { 'widget': self.romanTranslationTab,
+              'user': self._indexWidget(self.romanTranslationTab),
+              'decoration': rc.icon('pref-roman'),
+              'display': mytr_("Yomi"),
+              'toolTip': my.tr("Romanization of texts in non-Japanese languages"),
             },
             { 'widget': self.chineseTranslationTab,
               'user': self._indexWidget(self.chineseTranslationTab),
@@ -328,6 +335,7 @@ class _PrefsDialog(object):
     yield self.translationTab
     yield self.machineTranslationTab
     yield self.dictionaryTranslationTab
+    yield self.romanTranslationTab
     yield self.chineseTranslationTab
     #yield self.translationScriptTab
 
@@ -362,8 +370,8 @@ class PrefsDialog(QtWidgets.QSplitter):
     for i in xrange(self.count()):
       skqss.class_(self.widget(i), 'texture')
 
-    self.resize(550,540) # large enough that there is no vertical scroll bar
-    self.setSizes([170,380]) # 170 + 380 = 550
+    self.resize(550,555) # large enough that there is no vertical scroll bar
+    self.setSizes([170,380]) # 170 + 380 = 550 (width)
     dprint("pass")
 
   def setVisible(self, visible):

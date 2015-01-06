@@ -29,6 +29,8 @@ def create_toggle_button(*args, **kwargs):
   ret.setMaximumHeight(18)  # qss sometimes does not work, bug?
   return ret
 
+ALL_LANGUAGES = 'ja', 'en', 'zh', 'ko', 'th', 'vi', 'ms', 'id', 'ar', 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru'
+
 DOWNLOAD_REFRESH_INTERVAL = 3000 # 3 seconds
 
 MECAB_DICT_NAMES = {
@@ -2057,7 +2059,7 @@ class SrTab(QtWidgets.QDialog):
 #@Q_Q
 class _I18nTab(object):
 
-  LANGUAGES = 'en', 'zh', 'ko', 'th', 'vi', 'ms', 'id', 'ar', 'de', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru'
+  LANGUAGES = [it for it in ALL_LANGUAGES if it != 'ja']
 
   def __init__(self, q):
     self._createUi(q)
@@ -3127,6 +3129,116 @@ class ChineseTranslationTab(QtWidgets.QDialog):
     super(ChineseTranslationTab, self).__init__(parent)
     skqss.class_(self, 'texture')
     self.__d = _ChineseTranslationTab(self)
+
+  def save(self): pass
+  def load(self): pass
+  def refresh(self): pass
+
+#@Q_Q
+class _RomanTranslationTab(object):
+
+  LANGUAGES = [it for it in ALL_LANGUAGES if it != 'ja' and it != 'en']
+
+  def __init__(self, q):
+    self._createUi(q)
+
+    self._refreshLanguageEnabled()
+    ss = settings.global_()
+    ss.rubyTextEnabledChanged.connect(self._refreshLanguageEnabled)
+    ss.rubyTranslationEnabledChanged.connect(self._refreshLanguageEnabled)
+
+  def _createUi(self, q):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.infoLabel)
+    layout.addWidget(self.optionGroup)
+    layout.addWidget(self.languageGroup)
+    layout.addStretch()
+    q.setLayout(layout)
+
+  @memoizedproperty
+  def infoLabel(self):
+    ret = QtWidgets.QLabel(my.tr(
+"""This tab is for non-Japanese languages.
+Japanese romanization can be adjusted in the dictionary tab instead."""))
+    ret.setWordWrap(True)
+    skqss.class_(ret, 'text-info')
+    return ret
+
+  # Option group
+
+  @memoizedproperty
+  def optionGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.rubyTextButton)
+    layout.addWidget(self.rubyTranslationButton)
+    ret = QtWidgets.QGroupBox(my.tr("Display ruby for the selected text"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def rubyTextButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+        "Display ruby for game text"))
+    ret.setChecked(settings.global_().isRubyTextEnabled())
+    ret.toggled.connect(settings.global_().setRubyTextEnabled)
+    return ret
+
+  @memoizedproperty
+  def rubyTranslationButton(self):
+    ret = QtWidgets.QCheckBox(my.tr(
+        "Display ruby for translation"))
+    ret.setChecked(settings.global_().isRubyTranslationEnabled())
+    ret.toggled.connect(settings.global_().setRubyTranslationEnabled)
+    return ret
+
+  # Language group
+
+  @memoizedproperty
+  def languageGroup(self):
+    blans = settings.global_().blockedLanguages()
+    layout = QtWidgets.QVBoxLayout()
+    for lang in self.LANGUAGES:
+      if lang not in blans:
+        layout.addWidget(self._createLanguageButton(lang))
+    ret = QtWidgets.QGroupBox(my.tr("Languages to display ruby"))
+    ret.setLayout(layout)
+    return ret
+
+  def _refreshLanguageEnabled(self):
+    ss = settings.global_()
+    self.languageGroup.setEnabled(ss.isRubyTranslationEnabled() or ss.isRubyTextEnabled())
+
+  def _createLanguageButton(self, lang): # str ->
+    ret = QtWidgets.QCheckBox(i18n.language_name(lang))
+    ret.setChecked(lang in settings.global_().rubyLanguages())
+    ret.clicked[bool].connect(partial(lambda lang, value:
+        self._toggleLanguage(lang, value),
+        lang))
+    return ret
+
+  def _toggleLanguage(self, lang, t): # str, bool ->
+    ss = settings.global_()
+    langs = ss.rubyLanguages()
+    if t: # t == true
+      if lang not in langs:
+        if langs:
+          langs += ',' + lang
+        else:
+          langs = lang
+        ss.setRubyLanguages(langs)
+    else: # t == false
+      if lang in langs:
+        l = langs.split(',')
+        l.remove(lang)
+        langs = ','.join(l)
+        ss.setRubyLanguages(langs)
+
+class RomanTranslationTab(QtWidgets.QDialog):
+
+  def __init__(self, parent=None):
+    super(RomanTranslationTab, self).__init__(parent)
+    skqss.class_(self, 'texture')
+    self.__d = _RomanTranslationTab(self)
 
   def save(self): pass
   def load(self): pass
