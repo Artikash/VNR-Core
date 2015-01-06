@@ -129,7 +129,9 @@ class _TtsManager(object):
       #      my.tr("TTS languages mismatch"),
       #      "%s: %s != %s" % (eng.key, language, eng.language))))
       dprint("language mismatch: %s != %s" % (language, eng.language))
-      return
+      eng = self.getAvailableEngine(language)
+      if not eng:
+        return
 
     if termEnabled: #and (not language or language == 'ja'):
       text = termman.manager().applySpeechTerms(text)
@@ -148,6 +150,17 @@ class _TtsManager(object):
       eng.stop()
 
     #skevents.runlater(partial(eng.speak, text))
+
+  def getAvailableEngine(self, language):
+    """
+    @param  language  str
+    @return  _ttsman.VoiceEngine or None
+    """
+    if not self.online:
+      dprint("ignore when offline")
+      return None
+    key = 'baidu' if language == 'ja' or language.startswith('zh') else 'google'
+    return self.getEngine(key)
 
   @property
   def online(self): return self._online

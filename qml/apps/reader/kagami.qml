@@ -41,6 +41,7 @@ Item { id: root_
 
   property bool wine: statusPlugin_.wine // cached
   property int admin: statusPlugin_.admin // cached  xp: -1; otherwise 1 or 0
+  property string userLanguage: statusPlugin_.userLanguage // cached
 
   function createPostComet() {
     return postCometComp_.createObject(root_)
@@ -499,6 +500,8 @@ Item { id: root_
         //height: maxHeight < root_.height - y ? maxHeight : root_.height - y
 
         toolTipEnabled: !gameWindowTracker_.fullScreenOrStretched
+
+        userLanguage: root_.userLanguage
 
         japaneseFont: settings_.japaneseFont
         englishFont: settings_.englishFont
