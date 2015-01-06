@@ -145,7 +145,8 @@ TOPIC_TYPES = (
 #TERM_ESCAPE = "9%i.67" # ESCAPE of escaped terms.
 TERM_ESCAPE = "9%i.678" # ESCAPE of escaped terms. At least 3 digits so that youdao work well!
 
-NAME_ESCAPE = "9%i.%i58" # ESCAPE of escaped character name
+#NAME_ESCAPE = "9%i.%i58" # ESCAPE of escaped character name
+NAME_ESCAPE = "9%i.3%i8" # ESCAPE of escaped character name, avoid being 98.75%
 #NAME_ESCAPE_PREFIX = "9%i"
 #NAME_ESCAPE_SUFFIX = "58"
 
