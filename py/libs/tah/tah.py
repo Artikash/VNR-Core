@@ -14,7 +14,7 @@ import os, re
 from sakurakit.skdebug import dwarn
 
 COMMENT_CHARS = '#', '*'
-MACRO_CHAR = ':'
+MACRO_CHAR = '$'
 SPLIT_CHAR = '\t'
 
 def _iterreadfile(path):
@@ -43,7 +43,6 @@ def readfile(path):
   @param  path  unicode
   @return  the same as parselines
   """
-  return parselines(_iterreadfile(path))
   try: return parselines(_iterreadfile(path))
   except Exception, e: dwarn(e)
 
@@ -87,7 +86,7 @@ def _evalmacros(macros, limit=1000):
         ok = False
         for m in _RE_MACRO.finditer(text):
           macro = m.group(1)
-          repl = ret.get(macro)
+          repl = macros.get(macro)
           if repl:
             text = text.replace("{{%s}}" % macro, repl)
             ok = True
@@ -96,9 +95,9 @@ def _evalmacros(macros, limit=1000):
             ok = False
             break
         if ok:
-          ret[pattern] = text
+          macros[pattern] = text
         else:
-          ret[pattern] = None # delete this pattern
+          macros[pattern] = None # delete this pattern
     if not dirty:
       break
   if count == limit - 1:
@@ -136,7 +135,10 @@ def parselines(lines):
       macros[left] = right
       _evalmacros(macros)
     else:
+      left = _applymacros(macros, left)
       right = _applymacros(macros, right)
+      if '{{' in left or '}}' in left:
+        dwarn("macro not applied:", line)
       if '{{' in right or '}}' in right:
         dwarn("macro not applied:", line)
       if _verify(left, right):
@@ -161,11 +163,14 @@ def writefile(path, rules):
   """
   fmt = "%s" + SPLIT_CHAR + "%s\n"
   try:
+    if os.path.exists(path):
+      os.remove(path)
     with open(path, 'w') as f:
       line = _createheader()
       f.write(line)
       for k,v in rules:
         line = fmt % (k,v)
+        line = line.encode('utf8')
         f.write(line)
       return True
   except Exception, e:
@@ -220,6 +225,5 @@ if __name__ == '__main__':
   text = "hello"
   text = sub(rules, text)
   print text
-
 
 # EOF
