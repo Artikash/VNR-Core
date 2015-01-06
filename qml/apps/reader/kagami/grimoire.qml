@@ -142,6 +142,10 @@ Item { id: root_
 
   property bool convertsChinese // convert Simplified Chinese to Chinese
 
+  property bool rubyTextEnabled
+  property bool rubyTranslationEnabled
+  property string rubyLanguages
+
   //property bool msimeParserEnabled: false // whether use msime or mecab
   property bool furiganaEnabled: true
 
@@ -170,6 +174,39 @@ Item { id: root_
 
   function removeHtmlTags(text) { // string ->  string  remove HTML tags
     return text.replace(/<[0-9a-zA-Z: "/:=-]+>/g, '')
+  }
+
+  function isRubyLanguage(lang) { // string -> bool
+    if (lang.length == 3)
+      lang = lang.substr(0, 2)
+    return !!~root_.rubyLanguages.indexOf(lang)
+  }
+
+  function renderJapanese(text, colorize) { // string, bool -> string
+    return bean_.renderJapanese(
+      text,
+      root_.caboChaEnabled,
+      //root_.msimeParserEnabled,
+      root_.rubyType,
+      root_.rubyDic,
+      Math.round(root_.width / (22 * root_._zoomFactor) * (root_.rubyInverted ? 0.85 : 1)), // char per line
+      10 * root_._zoomFactor, // ruby size of furigana
+      root_.rubyInverted,
+      colorize, // colorize
+      root_.alignCenter
+    )
+  }
+
+  function renderRuby(text, lang, colorize) { // string, string, bool -> string
+    return bean_.renderRuby(
+      text,
+      lang,
+      Math.round(root_.width / (22 * root_._zoomFactor) * (root_.rubyInverted ? 0.85 : 1)), // char per line
+      10 * root_._zoomFactor, // ruby size of furigana
+      false, // ruby inverted
+      colorize, // colorize
+      root_.alignCenter
+    )
   }
 
   //property int _FADE_DURATION: 400
@@ -1161,22 +1198,18 @@ Item { id: root_
               if (root_.removesTextNewLine && ~t.indexOf("\n"))
                 t = t.replace(/\n/g, '')
               if (root_.furiganaEnabled)
-                t = bean_.renderJapanese(
-                  t,
-                  root_.caboChaEnabled,
-                  //root_.msimeParserEnabled,
-                  root_.rubyType,
-                  root_.rubyDic,
-                  Math.round(root_.width / (22 * root_._zoomFactor) * (root_.rubyInverted ? 0.85 : 1)), // char per line
-                  10 * root_._zoomFactor, // ruby size of furigana
-                  root_.rubyInverted,
-                  textItem_.hover, // colorize
-                  root_.alignCenter
-                )
+                t = root_.renderJapanese(t, textItem_.hover)
+              return t
             }
           }
+          if (!t)
+            return ""
           if (root_.splitsTranslation && model.type === 'tr')
             t = root_.splitTranslation(t, model.language)
+          if (root_.isRubyLanguage(model.language) &&
+              ((model.type === 'text' || model.type === 'name') ?
+               root_.rubyTextEnabled : root_.rubyTranslationEnabled))
+            t = root_.renderRuby(t, model.language, textItem_.hover)
           return t || ""
           //return !t ? "" : root_.shadowEnabled ? t :
           //  '<span style="background-color:rgba(0,0,0,10)">' + t + '</span>'

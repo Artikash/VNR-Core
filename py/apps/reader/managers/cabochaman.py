@@ -80,7 +80,7 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize=10, colorize
     if colorize:
       if ch == cabochadef.TYPE_KANJI:
         i += 1
-        color = 'rgba(255,0,0,40)' if i % 2 else 'rgba(255,255,0,40)'   # red or yellow
+        color = 'rgba(255,0,0,40)' if i % 2 else 'rgba(255,255,0,40)' # red or yellow
       elif ch == cabochadef.TYPE_RUBY:
         j += 1
         #color = "rgba(0,255,0,40)" if j % 2 else "rgba(255,0,255,40)" # green or magenta

@@ -16,7 +16,7 @@ from sakurakit.skdebug import dprint, dwarn
 #from msime import msime
 from convutil import zhs2zht
 from mytr import my
-import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, ocrman, qmldialog, rc, settings
+import bbcode, config, cabochaman, dataman, ebdict, features, growl, mecabman, ocrman, qmldialog, rc, settings, textutil
 
 ## Kagami ##
 
@@ -210,12 +210,14 @@ class GrimoireBean(QObject):
             fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
         for t in text.split('\n') if t)
 
-  @Slot(unicode, int, float, bool, bool, bool, result=unicode)
-  def romanize(self, text, charPerLine, rubySize, invertRuby, colorize, center):
+  @Slot(unicode, unicode, int, float, bool, bool, bool, result=unicode)
+  def renderRuby(self, text, language, charPerLine, rubySize, invertRuby, colorize, center):
     """
     @return  unicode  html
     """
-    return text
+    import uniroman
+    text = textutil.remove_html_tags(text).strip()
+    return uniroman.rendertable(text, language, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
 
 class _GrimoireController:
 

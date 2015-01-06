@@ -148,6 +148,14 @@ def capitalize_sentence(text):
   text = __capitalize_period_re.sub(__capitalize_sentence_s, text)
   return text
 
+__html_tag_re = re.compile(r'<[^>]*>')
+def remove_html_tags(text):
+  """
+  @param  text  unicode
+  @return  unicode
+  """
+  return __html_tag_re.sub('', text.replace('<br/>', '\n'))
+
 if __name__ == '__main__':
   t = u"かたがな"
   print match_kata_hira_punc(t)

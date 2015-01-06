@@ -519,6 +519,10 @@ Item { id: root_
         polishFont: settings_.polishFont
         dutchFont: settings_.dutchFont
 
+        rubyTextEnabled: settings_.rubyTextEnabled
+        rubyTranslationEnabled: settings_.rubyTranslationEnabled
+        rubyLanguages: settings_.rubyLanguages
+
         function ensureVisible() {
           if (x < gameWindowTracker_.x || x+width/2 > gameWindowTracker_.x+gameWindowTracker_.width) {
             if (locked) relativeX = (gameWindowTracker_.width - width) / 2

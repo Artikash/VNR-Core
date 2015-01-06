@@ -704,6 +704,7 @@ icons:
   pref-locale:      $PWD/images/dock/launch.png
   pref-ocr:         $PWD/images/camera.png
   pref-ocr-path:    $PWD/images/dock/camera.png
+  pref-roman:       $PWD/images/dock/yaku.png
   pref-rec:         $PWD/images/camera.png
   pref-share:       $PWD/images/share.png
   pref-shortcuts:   $PWD/images/passage.png

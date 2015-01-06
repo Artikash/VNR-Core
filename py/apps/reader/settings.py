@@ -225,6 +225,30 @@ class Settings(QSettings):
       self.setValue('BlockedLanguages', value)
       self.blockedLanguagesChanged.emit(value)
 
+  ## Romanize ##
+
+  rubyLanguagesChanged = Signal(str)
+  def rubyLanguages(self): # list of languages joined with ','
+    return self.value('RubyLanguages') or ''
+  def setRubyLanguages(self, value):
+    if value != self.rubyLanguages():
+      self.setValue('RubyLanguages', value)
+      self.rubyLanguagesChanged.emit(value)
+
+  rubyTextEnabledChanged = Signal(bool)
+  def isRubyTextEnabled(self): return to_bool(self.value('RubyText'))
+  def setRubyTextEnabled(self, value):
+    if value != self.isRubyTextEnabled():
+      self.setValue('RubyText', value)
+      self.rubyTextEnabledChanged.emit(value)
+
+  rubyTranslationEnabledChanged = Signal(bool)
+  def isRubyTranslationEnabled(self): return to_bool(self.value('RubyTranslation'))
+  def setRubyTranslationEnabled(self, value):
+    if value != self.isRubyTranslationEnabled():
+      self.setValue('RubyTranslation', value)
+      self.rubyTranslationEnabledChanged.emit(value)
+
   ## OCR ##
 
   ocrEnabledChanged = Signal(bool)
@@ -1801,6 +1825,10 @@ class SettingsProxy(QObject):
     g.voiceCharacterEnabledChanged.connect(self.voiceCharacterEnabledChanged)
     g.speaksGameTextChanged.connect(self.speaksGameTextChanged)
 
+    g.rubyTextEnabledChanged.connect(self.rubyTextEnabledChanged)
+    g.rubyTranslationEnabledChanged.connect(self.rubyTranslationEnabledChanged)
+    g.rubyLanguagesChanged.connect(self.rubyLanguagesChanged)
+
   def setHentai(self, value):
     if value != self.hentai:
       global_().setValue('Hentai', value)
@@ -1951,6 +1979,14 @@ class SettingsProxy(QObject):
 
   #timeZoneEnabledChanged = Signal(bool)
   #timeZoneEnabled = bool_property('TimeZoneEnabled', True, notify=timeZoneEnabledChanged)
+
+  rubyTextEnabledChanged = Signal(bool)
+  rubyTextEnabled = bool_property('RubyText', False, notify=rubyTextEnabledChanged)
+  rubyTranslationEnabledChanged = Signal(bool)
+  rubyTranslationEnabled = bool_property('RubyTranslation', False, notify=rubyTranslationEnabledChanged)
+
+  rubyLanguagesChanged = Signal(unicode)
+  rubyLanguages = unicode_property('RubyLanguages', '', notify=rubyLanguagesChanged)
 
   grimoireNormalizedXChanged = Signal(float)
   grimoireNormalizedX = float_property('GrimoireNormalizedX', 0.0, notify=grimoireNormalizedXChanged)
