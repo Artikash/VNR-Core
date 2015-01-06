@@ -357,12 +357,14 @@ dmm: # DMM
 
 # i18n
 
+# http://msdn.microsoft.com/en-us/library/windows/desktop/dd317756%28v=vs.85%29.aspx
 encodings:
- - shift-jis
+ - shift-jis    # cp932
  - utf-16
  - utf-8
- - gbk
- - big5
+ - gbk          # cp936
+ - big5         # cp950
+ - ks_c_5601    # cp949
 
 languages:
   all:
