@@ -198,10 +198,15 @@ Item { id: root_
   }
 
   function renderRuby(text, lang, colorize) { // string, string, bool -> string
+    var chwidth = lang == 'ko' ? 16
+                //: lang === 'ja' ? 22
+                : lang.indexOf('zh') === 0 ? 20
+                : 10
+    var chperline = Math.round(root_.width / (chwidth * root_._zoomFactor) * (root_.rubyInverted ? 0.85 : 1)) // char per line
     return bean_.renderRuby(
       text,
       lang,
-      Math.round(root_.width / (22 * root_._zoomFactor) * (root_.rubyInverted ? 0.85 : 1)), // char per line
+      chperline,
       10 * root_._zoomFactor, // ruby size of furigana
       false, // ruby inverted
       colorize, // colorize

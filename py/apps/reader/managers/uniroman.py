@@ -6,8 +6,9 @@ from unidecode import unidecode
 from unitraits import jpchars
 import rc
 
-_s_punct = jpchars.s_punct + u'.,() 　'
-_re_punct = re.compile(ur"([%s,\.\(\) 　])" % ''.join(jpchars.s_punct))
+__other_punct = u'《》“”‘’"\'，,? 　' # Chinese/English punctuations
+_s_punct = jpchars.s_punct + __other_punct + '.()'
+_re_punct = re.compile(ur"([%s\.\(\)])" % (''.join(jpchars.s_punct) + __other_punct))
 def _splittext(text, language):
   """
   @param  text  unicode
