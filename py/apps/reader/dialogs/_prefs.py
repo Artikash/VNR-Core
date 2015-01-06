@@ -3050,6 +3050,7 @@ class _ChineseTranslationTab(object):
     layout.addWidget(self.twButton)
     layout.addWidget(self.hkButton)
     layout.addWidget(self.jaButton)
+    layout.addWidget(self.koButton)
     layout.addWidget(self.yueButton)
     ret = QtWidgets.QGroupBox(my.tr("Preferred Chinese variants for machine translation"))
     ret.setLayout(layout)
@@ -3082,6 +3083,12 @@ class _ChineseTranslationTab(object):
     return ret
 
   @memoizedproperty
+  def koButton(self):
+    ret = QtWidgets.QRadioButton(mytr_("Korean Hanja"))
+    ret.toggled.connect(self._saveVariant)
+    return ret
+
+  @memoizedproperty
   def yueButton(self):
     ret = QtWidgets.QCheckBox(my.tr(
         "Convert Mandarin Chinese machine translation to Yue Chinese (using Baidu)"))
@@ -3094,6 +3101,7 @@ class _ChineseTranslationTab(object):
     b = (self.twButton if t == 'tw' else
          self.hkButton if t == 'hk' else
          self.jaButton if t == 'ja' else
+         self.koButton if t == 'ko' else
          self.disableButton)
     if not b.isChecked():
       b.setChecked(True)

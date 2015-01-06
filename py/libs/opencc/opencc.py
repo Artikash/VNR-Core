@@ -10,6 +10,7 @@ TYPE_ZHT = 2
 TYPE_TW = 3
 TYPE_HK = 4
 TYPE_JA = 5
+TYPE_KO = 6
 
 DIC_NAMES = { # {(int fr,int to):str}
   (TYPE_ZHS, TYPE_ZHT): "STCharacters.txt",
@@ -17,6 +18,8 @@ DIC_NAMES = { # {(int fr,int to):str}
   (TYPE_ZHT, TYPE_TW):  "TWVariants.txt",
   (TYPE_ZHT, TYPE_HK):  "HKVariants.txt",
   (TYPE_ZHT, TYPE_JA):  "JPVariants.txt",
+
+  (TYPE_ZHT, TYPE_KO):  "../hanja/dic0.txt",
 }
 
 # Initialization
@@ -78,19 +81,23 @@ def zht2zhs(text): return convert(text, TYPE_ZHT, TYPE_ZHS)
 def zht2tw(text): return convert(text, TYPE_ZHT, TYPE_TW)
 def zht2hk(text): return convert(text, TYPE_ZHT, TYPE_HK)
 def zht2ja(text): return convert(text, TYPE_ZHT, TYPE_JA)
+def zht2ko(text): return convert(text, TYPE_ZHT, TYPE_KO)
 
 def zhs2zht(text): return convert(text, TYPE_ZHS, TYPE_ZHT)
 def tw2zht(text): return convert(text, TYPE_TW, TYPE_ZHT)
 def hk2zht(text): return convert(text, TYPE_HK, TYPE_ZHT)
 def ja2zht(text): return convert(text, TYPE_JA, TYPE_ZHT)
+def ko2zht(text): return convert(text, TYPE_KO, TYPE_ZHT)
 
 # Following are for convenient usage
 
 def zhs2tw(text): return zht2hw(zhs2zht(text))
 def zhs2hk(text): return zht2hk(zhs2zht(text))
 def zhs2ja(text): return zht2ja(zhs2zht(text))
+def zhs2ko(text): return zht2ko(zhs2zht(text))
 
 def ja2zhs(text): return zht2zhs(ja2zht(text))
+def ko2zhs(text): return zht2zhs(ko2zht(text))
 
 # Aliases
 
@@ -99,5 +106,6 @@ zh2zhs = zht2zhs
 zh2tw = zhs2tw
 zh2hk = zhs2hk
 zh2ja = zhs2ja
+zh2ko = zhs2ko
 
 # EOF
