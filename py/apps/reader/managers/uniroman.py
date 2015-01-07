@@ -30,8 +30,13 @@ def _toroman(text, language=''):
   if not text or not isinstance(text, unicode):
     return text
   if language.startswith('zh'):
-    t = pinyinconv.to_pinyin(text, delim='', tone=True, capital=True)
-    text = unidecode(text) if t == text else t
+    if len(text) == 1:
+      t = pinyinconv.lookup(text, tone=True)
+      if t:
+        t = t.title()
+    else:
+      t = pinyinconv.to_pinyin(text, delim='', tone=True, capital=True)
+    text = t if t and t != text else unidecode(text)
   else:
     text = unidecode(text)
   if language == 'ko':

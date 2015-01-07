@@ -23,6 +23,17 @@ def converter():
     derror("dic path does not exist:", path)
   return ret
 
+def lookup(text, tone=True):
+  """
+  @param  text  unicode
+  @param* tone  bool
+  @return  unicode or None
+  """
+  if text and len(text) == 1:
+    i = ord(text[0])
+    if i <= 0xffff:
+      return converter().lookup(i, tone)
+
 def to_pinyin(text, delim=' ', tone=True, capital=True):
   """
   @param  text  unicode
