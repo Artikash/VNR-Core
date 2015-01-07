@@ -8,7 +8,7 @@
 #include <sstream>
 #include <unordered_map>
 //#include <iostream>
-#include <QDebug>
+//#include <QDebug>
 
 /** Helpers */
 
@@ -17,13 +17,14 @@ namespace { // unnamed
 // CH_DELIM = '\t'
 enum : char { CH_COMMENT = '#' }; // beginning of a comment
 
-// See: https://github.com/lxneng/xpinyin
-// aoeiv:
-// - aeiouü
-// - āēīōūǖ
-// - áéíóúǘ
-// - ǎěǐǒǔǚ
-// - àèìòùǜ
+/** See: https://github.com/lxneng/xpinyin
+ *  aoeiv:
+ *  - aeiouü
+ *  - āēīōūǖ
+ *  - áéíóúǘ
+ *  - ǎěǐǒǔǚ
+ *  - àèìòùǜ
+ */
 const wchar_t *TONE_MARKS[] = { // a, o, e, ui, i, iu, u
   L"aeiou\u00fc"
   , L"\u0101\u0113\u012b\u014d\u016b\u01d6"
@@ -40,17 +41,26 @@ struct PinyinEntry
   explicit PinyinEntry(const std::string &latin = std::string(), uint8_t tone = 0)
     : latin(latin), tone(tone) {}
 
-  wchar_t tone_char() const
+  std::wstring tone_text() const
   {
-    if (!latin.empty())
-      switch (latin[latin.size() - 1]) {
-      case 'a': return TONE_MARKS[tone][0];
-      case 'e': return TONE_MARKS[tone][1];
-      case 'i': return TONE_MARKS[tone][2];
-      case 'o': return TONE_MARKS[tone][3];
-      case 'u': return TONE_MARKS[tone][4];
-      }
-    return 0;
+    std::wstring ret(latin.begin(), latin.end());
+    size_t pos = latin.find_first_of("aeiouv");
+    if (pos != std::string::npos)
+      ret[pos] = tone_char_of(latin[pos], tone);
+    return ret;
+  }
+
+private:
+  static wchar_t tone_char_of(char c, uint8_t tone)
+  {
+    switch (c) {
+    case 'a': return TONE_MARKS[tone][0];
+    case 'e': return TONE_MARKS[tone][1];
+    case 'i': return TONE_MARKS[tone][2];
+    case 'o': return TONE_MARKS[tone][3];
+    case 'u': return TONE_MARKS[tone][4];
+    default: return 0;
+    }
   }
 };
 
@@ -112,7 +122,8 @@ bool PinyinConverter::addFile(const std::wstring &path)
 
 // Conversion
 
-std::wstring PinyinConverter::convert(const std::wstring &text, const std::wstring &delim, bool tone) const
+std::wstring PinyinConverter::convert(const std::wstring &text,
+    const std::wstring &delim, bool tone, bool capital) const
 {
   if (text.empty() || d_->map.empty())
     return text;
@@ -120,14 +131,23 @@ std::wstring PinyinConverter::convert(const std::wstring &text, const std::wstri
   std::wstring ret;
   for (size_t i = 0; i < text.size(); i++) {
     wchar_t ch = text[i];
-    if (!::isascii(ch)) {
+    if (!isascii(ch)) {
       auto p = d_->map.find(ch);
       if (p != d_->map.end()) {
         const auto &py = p->second;
-        ret.append(py.latin.begin(), py.latin.end());
-        if (tone)
-          if (wchar_t tc = py.tone_char())
-            ret[ret.size() - 1] = tc;
+        if (tone) {
+          std::wstring t = py.tone_text();
+          if (!t.empty()) {
+            if (capital)
+              t[0] = ::towupper(t[0]);
+            ret.append(t);
+          }
+        } else if (capital) {
+          ret.push_back(::toupper(py.latin.front()));
+          if (py.latin.size() > 1)
+            ret.append(py.latin.begin() + 1, py.latin.end());
+        } else // not tone and not capital
+          ret.append(py.latin.begin(), py.latin.end());
         if (!delim.empty())
           ret.append(delim);
         continue;

@@ -428,9 +428,11 @@ AVATARS_COUNT = parse_int(SHARE_YAML['avatars']['count'])
 
 FONT_LOCATION = parse_path(SHARE_YAML['font']['location']) # unicode abspath
 
-OPENCC_LOCATION = parse_path(SHARE_YAML['opencc']['location']) # unicode abspath
+OPENCC_DIC_LOCATION = parse_path(SHARE_YAML['opencc']['location']) # unicode abspath
 
-HANGUL_LOCATION = parse_path(SHARE_YAML['hangul']['location']) # unicode abspath
+HANGUL_DIC_LOCATION = parse_path(SHARE_YAML['hangul']['location']) # unicode abspath
+
+PINYIN_DIC_PATH = parse_path(SHARE_YAML['pinyin']['path']) # unicode abspath
 
 #IPADIC_LOCATION = parse_path(SHARE_YAML['dictionaries']['ipadic']) # unicode abspath
 #EDICT_LOCATION = parse_path(SHARE_YAML['dictionaries']['edict']) # unicode abspath

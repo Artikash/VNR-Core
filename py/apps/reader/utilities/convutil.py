@@ -8,9 +8,10 @@ from jaconv.jaconv import hira2romaji, hira2hangul, hira2thai \
                         , kata2romaji, kata2hangul, kata2thai \
                         , kana2romaji, kana2hangul, kana2thai \
                         , capitalizeromaji
-from opencc.opencc import zht2zhs
+from opencc.opencc import zht2zhs #, ja2zht
 from ccman import zhs2zht, zht2zhx
 from hangulconv import hangulconv
+#from pinyinconv import pinyinconv
 
 from msime import msime
 MSIME_VALID = msime.ja_valid() # cached
@@ -46,6 +47,11 @@ def toroman(text, language=''): # unicode, str -> unicode
     text = text.decode('utf8', errors='ignore')
   if not text:
     return u''
+  #if language.startswith('zh'):
+  #  ret = ja2zht(text)
+  #  #ret = ko2zht(ret)
+  #  ret = pinyinconv.to_pinyin(ret, capital=True)
+  #else:
   ret = unidecode(text)
   if ret[-1] == ' ':
     ret = ret[:-1]

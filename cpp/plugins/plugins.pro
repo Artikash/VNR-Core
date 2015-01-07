@@ -23,6 +23,7 @@ SUBDIRS += pyvnrmem
 #win32: SUBDIRS += mousehook #pymousehook
 
 win32: SUBDIRS += pycc
+win32: SUBDIRS += pypinyin
 win32: SUBDIRS += pytrscript
 
 win32: SUBDIRS += ith
