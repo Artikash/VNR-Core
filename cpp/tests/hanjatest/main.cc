@@ -49,7 +49,7 @@ public:
   void clear();
 
   ///  Add script from file
-  bool addFile(const QString &path);
+  bool loadFile(const QString &path);
 
   // Parse
 
@@ -79,8 +79,8 @@ bool HangulHanjaConverter::isEmpty() const { return d_->conv.isEmpty(); }
 
 void HangulHanjaConverter::clear() { d_->conv.clear(); }
 
-bool HangulHanjaConverter::addFile(const QString &path)
-{ return d_->conv.addFile(path.toStdWString()); }
+bool HangulHanjaConverter::loadFile(const QString &path)
+{ return d_->conv.loadFile(path.toStdWString()); }
 
 QString HangulHanjaConverter::convert(const QString &text) const
 { return QString::fromStdWString(d_->conv.convert(text.toStdWString())); }
@@ -152,7 +152,7 @@ int main()
 {
   QString path = "/Users/jichi/opt/stream/Library/Dictionaries/hanja/dic6.txt";
   HangulHanjaConverter conv;
-  conv.addFile(path);
+  conv.loadFile(path);
   //std::wstring ws = L"【오쿠라 리소나】「미나톤이";
   std::wstring ws = L"test";
   QString qs = QString::fromStdWString(ws);
@@ -194,7 +194,7 @@ int main()
   //qDebug() << ::ispunct(ch) << QChar(ch).isPunct();
 
   HanjaConverter conv;
-  bool ok = conv.addFile(path);
+  bool ok = conv.loadFile(path);
   qDebug() << ok;
 
   std::wstring t = conv.convert(s);

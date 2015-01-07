@@ -1,5 +1,5 @@
 # coding: utf8
-# hangulparse.py
+# hangulconv.py
 # 1/6/2015 jichi
 
 if __name__ == '__main__': # DEBUG

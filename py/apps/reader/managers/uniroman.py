@@ -4,7 +4,7 @@
 import re
 from unidecode import unidecode
 from unitraits import jpchars
-from hangulparse import hangulparse
+from hangulconv import hangulconv
 import rc
 
 __other_punct = u'《》“”‘’"\'，,? 　' # Chinese/English punctuations
@@ -66,7 +66,7 @@ def _iterparseruby_ko(text, romajaRubyEnabled=True, hanjaRubyEnabled=True):
   @param* hanjaRubyEnabled  bool
   @yield  (unicode surface, unicode yomi or None, int groupId or None)
   """
-  for group, l in enumerate(hangulparse.to_hanja_list(text)):
+  for group, l in enumerate(hangulconv.to_hanja_list(text)):
     for surface,yomi in l:
       if len(surface) == 1 and surface in _s_punct:
         group = None

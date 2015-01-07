@@ -10,7 +10,7 @@ from jaconv.jaconv import hira2romaji, hira2hangul, hira2thai \
                         , capitalizeromaji
 from opencc.opencc import zht2zhs
 from ccman import zhs2zht, zht2zhx
-from hangulparse import hangulparse
+from hangulconv import hangulconv
 
 from msime import msime
 MSIME_VALID = msime.ja_valid() # cached
@@ -57,6 +57,6 @@ def toroman(text, language=''): # unicode, str -> unicode
 @param  text  unicode
 @return  unicode or None
 """
-hangul2hanja = hangulparse.to_hanja
+hangul2hanja = hangulconv.to_hanja
 
 # EOF

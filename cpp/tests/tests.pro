@@ -10,6 +10,7 @@ SUBDIRS += \
   hanjatest \
   hashtest \
   jsontest \
+  pinyintest \
   pytest \
   socktest \
   tahtest \
