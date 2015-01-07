@@ -4,7 +4,9 @@
 // hanjachars.h
 // 1/6/2015 jichi
 
+#ifdef __clang__
 # pragma clang diagnostic ignored "-Wlogical-op-parentheses"
+#endif // __clang__
 
 inline bool is_hangul(int ch)
 {

@@ -105,6 +105,9 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize=10, colorize
   # yomi size / surface size
   yomiWidth = LATIN_YOMI_WIDTH if furiType in (defs.FURI_ROMAJI, defs.FURI_THAI, defs.FURI_TR) else KANJI_YOMI_WIDTH
 
+  roundRubySize = int(round(rubySize)) or 1
+  paddingSize = int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0
+
   for it in parse(text, type=True, feature=hasfeature, reading=True, furiType=furiType, **kwargs):
     if hasfeature:
       surface, ch, yomi, f, fmt = it
@@ -129,8 +132,8 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize=10, colorize
     elif line:
       yield rc.jinja_template('html/furigana').render({
         'tuples': line,
-        'rubySize': int(round(rubySize)) or 1,
-        'paddingSize': int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0,
+        'rubySize': roundRubySize,
+        'paddingSize': paddingSize,
         'center': center,
       })
       line = []
@@ -149,8 +152,8 @@ def _iterrendertable(text, features=None, charPerLine=100, rubySize=10, colorize
   if line:
     yield rc.jinja_template('html/furigana').render({
       'tuples': line,
-      'rubySize': int(round(rubySize)) or 1,
-      'paddingSize': int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0,
+      'rubySize': roundRubySize,
+      'paddingSize': paddingSize,
       'center': center,
     })
 

@@ -2,7 +2,7 @@
 
 // keyboardhook.h
 // 7/20/2011
-#include <boost/function.hpp>
+#include <functional>
 
 // Global instance
 
@@ -12,7 +12,7 @@ void kbhook_restart();
 bool kbhook_active();
 
 ///  Return true if eat the event
-typedef boost::function<bool (unsigned char)> kbhook_fun_t; // byte
+typedef std::function<bool (unsigned char)> kbhook_fun_t; // byte
 extern const kbhook_fun_t kbhook_fun_null;
 
 void kbhook_onkeydown(kbhook_fun_t callback);

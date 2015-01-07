@@ -5,6 +5,7 @@
 // 10/12/2014 jichi
 
 #include <cstddef> // for size_t
+#include <cstring>
 //#include <algorithm> // for std::min
 #include "ccutil/ccmacro.h"
 

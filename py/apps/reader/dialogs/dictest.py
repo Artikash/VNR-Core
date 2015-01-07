@@ -126,7 +126,7 @@ class _DictionaryTester(object):
   def submit(self):
     t = self._getInputText()
     if t:
-      h = dictman.manager().render(t)
+      h = dictman.manager().renderJapanese(t)
       self.resultEdit.setHtml(h)
 
 class DictionaryTester(QtWidgets.QDialog):

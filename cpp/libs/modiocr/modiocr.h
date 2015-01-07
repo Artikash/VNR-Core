@@ -3,7 +3,7 @@
 // modiocr.h
 // 8/11/2014 jichi
 
-#include <boost/function.hpp>
+#include <functional>
 
 // See: http://msdn.microsoft.com/en-us/library/office/aa167596%28v=office.11%29.aspx
 // Copied from mdivwctl.tlh
@@ -66,7 +66,7 @@ typedef unsigned long modiocr_flags;
 
 bool modiocr_available();
 
-typedef boost::function<void (const wchar_t *)> modiocr_collect_fun_t;
+typedef std::function<void (const wchar_t *)> modiocr_collect_fun_t;
 modiocr_lang modiocr_readfile(const wchar_t *path, modiocr_flags lang,
                               const modiocr_collect_fun_t &fun);
 

@@ -32,8 +32,8 @@ class WinTimer : protected WinTimerBase
 
   // - Construction -
 public:
-  //typedef boost::function<void ()> function_type;
-  using Base::function_type; ///< boost::function<void ()>
+  //typedef std::function<void ()> function_type;
+  using Base::function_type; ///< std::function<void ()>
 
   ///  Default parent window of all timers.
   static WId globalWindow() { return Base::globalWindow; }

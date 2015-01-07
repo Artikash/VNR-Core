@@ -7,7 +7,7 @@ from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
 from mytr import my
 #from kagami import GrimoireBean
-import config, dicts, ebdict, growl, mecabman, rc, settings
+import config, convutil, dicts, ebdict, growl, mecabman, rc, settings
 
 @memoized
 def manager(): return DictionaryManager()
@@ -166,7 +166,7 @@ class _DictionaryManager:
         .replace('<li>', '<br/>').replace('</li>', '<br/>')
         .replace('{', '').replace('}', ''))
 
-class DictionaryManager(object):
+class DictionaryManager:
 
   def __init__(self):
     self.enabled = True # bool
@@ -178,7 +178,21 @@ class DictionaryManager(object):
   def isEnabled(self): return self.enabled
   def setEnabled(self, v): self.enabled = v
 
-  def render(self, text, feature='', fmt=None): # unicode => unicode
+  def renderKorean(self, text):
+    """
+    @param  text  Korean phrase
+    @return  unicode not None  html
+    """
+    romaja = convutil.toroman(text, 'ko')
+    hanja = convutil.hangul2hanja(text)
+    feature = ', '.join(filter(bool, (romaja, hanja)))
+    return rc.jinja_template('html/shiori').render({
+      'language': 'ko',
+      'text': text,
+      'feature': feature,
+    })
+
+  def renderJapanese(self, text, feature='', fmt=None): # unicode => unicode
     """
     @param  text  Japanese phrase
     @return  unicode not None  html
@@ -195,6 +209,7 @@ class DictionaryManager(object):
         feature = mecabman.renderfeature(feature, fmt)
     try:
       ret = rc.jinja_template('html/shiori').render({
+        'language': 'ja',
         'text': text,
         'feature': feature,
         'edict_tuples': _DictionaryManager.lookupEdict(text),

@@ -1672,7 +1672,7 @@ $ -> init()
 #    y = e.pageY - $window.scrollTop() + viewBean.y()
 #    s.schedule interval, ->
 #      clipbean.text = t
-#      shioriBean.popup t, x, y
+#      shioriBean.popup t, 'ja', x, y
 #      ttsBean.speak t
 #
 #  CLICK_TIMEOUT = 150 # about half of double click interval on Windows (250 msecs)

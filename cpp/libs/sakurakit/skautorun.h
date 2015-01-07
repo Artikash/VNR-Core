@@ -5,14 +5,14 @@
 // 9/30/2012 jichi
 
 #include "sakurakit/skglobal.h"
-#include <boost/function.hpp>
+#include <functional>
 
 SK_BEGIN_NAMESPACE
 
 class SkAutoRun
 {
 public:
-  typedef boost::function<void ()> function_type;
+  typedef std::function<void ()> function_type;
   SkAutoRun(const function_type &start, const function_type &exit)
     : exit_(exit) { start(); }
   ~SkAutoRun() { exit_(); }

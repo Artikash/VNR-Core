@@ -40,27 +40,39 @@ class ShioriBean(QObject):
   enabledChanged = Signal(bool)
   enabled = Property(bool, isEnabled, setEnabled, notify=enabledChanged)
 
-  @Slot(unicode, result=unicode)
-  def render(self, text):
+  @Slot(unicode, unicode, result=unicode)
+  def render(self, text, language):
     """
     @param  text  Japanese phrase
+    @param  language
     @return  unicode not None  html
+    """
+    if language == 'ja':
+      return self._renderJapanese(text)
+    if language == 'ko':
+      return dictman.manager().renderKorean(text)
+    return ''
+
+  def _renderJapanese(self, text):
+    """
+    @param  text  unicode
+    @return  unicode
     """
     args = GrimoireBean.instance.lookupFeature(text) or []
     #return dictman.manager().render(text, *args)
     mutex = self.__d.renderMutex
     if mutex.tryLock():
       ret = skthreads.runsync(partial(
-          dictman.manager().render, text, *args))
+          dictman.manager().renderJapanese, text, *args))
       mutex.unlock()
       return ret
     else:
       dwarn("ignore thread contention")
       return ""
 
-  popup = Signal(unicode, int, int)  # text, x, y
+  popup = Signal(unicode, unicode, int, int)  # text, language, x, y
 
-def popupshiori(text, x, y):
+def popupshiori(text, language, x, y):
   """
   @param  text  unicode
   @param  x  int
@@ -69,23 +81,23 @@ def popupshiori(text, x, y):
   #dprint("x = %s, y = %s" % (x,y))
   if ShioriBean.instance.isEnabled():
     qmldialog.Kagami.instance.raise_()
-    ShioriBean.instance.popup.emit(text, x, y)
+    ShioriBean.instance.popup.emit(text, language, x, y)
 
 #@QmlObject
 class ShioriQmlProxy(QObject):
   def __init__(self, parent=None):
     super(ShioriQmlProxy, self).__init__(parent)
 
-  @Slot(unicode, int, int)
-  def popup(self, text, x, y):
+  @Slot(unicode, unicode, int, int)
+  def popup(self, language, text, x, y):
     popupshiori(text, x, y)
 
 class ShioriCoffeeProxy(QObject):
   def __init__(self, parent=None):
     super(ShioriCoffeeProxy, self).__init__(parent)
 
-  @Slot(unicode, int, int)
-  def popup(self, text, x, y):
-    popupshiori(text, x, y)
+  @Slot(unicode, unicode, int, int)
+  def popup(self, text, language, x, y):
+    popupshiori(text, language, x, y)
 
 # EOF

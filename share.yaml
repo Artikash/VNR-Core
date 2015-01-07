@@ -534,6 +534,9 @@ font:
 opencc:
   location:         $PWD/../../Dictionaries/opencc
 
+hangul:
+  location:         $PWD/../../Dictionaries/hanja
+
 # Module options
 
 jinja:

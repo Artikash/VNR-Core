@@ -1,7 +1,7 @@
 #ifndef PYMSIME_H
 #define PYMSIME_H
 
-// msime.h
+// pymsime.h
 // 4/1/2013 jichi
 // Qt is used instead of pure C++ to reduce memory copy of the returned containers.
 
