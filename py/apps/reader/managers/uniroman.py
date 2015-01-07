@@ -6,6 +6,7 @@ from unidecode import unidecode
 from unitraits import jpchars
 from hangulconv import hangulconv
 from pinyinconv import pinyinconv
+from opencc.opencc import ja2zht
 import rc
 
 __other_punct = u'《》“”‘’"\'，,? 　' # Chinese/English punctuations
@@ -30,10 +31,10 @@ def _toroman(text, language=''):
   if not text or not isinstance(text, unicode):
     return text
   if language.startswith('zh'):
+    text = ja2zht(text)
+    #text = ko2zht(text)
     if len(text) == 1:
       t = pinyinconv.lookup(text, tone=True)
-      #if t:
-      #  t = t.title()
     else:
       t = pinyinconv.to_pinyin(text, delim='', tone=True, capital=False)
     text = t if t and t != text else unidecode(text)
