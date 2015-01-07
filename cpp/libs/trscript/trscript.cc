@@ -6,8 +6,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
-#include <boost/tuple/tuple.hpp>
 #include <list> // instead of QList which is slow that stores pointers instead of elements
+#include <tuple>
 #include <fstream>
 
 #define SK_NO_QT
@@ -173,7 +173,7 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
   }
   fin.imbue(UTF8_LOCALE);
 
-  std::list<boost::tuple<std::wstring, std::wstring, bool> > lines; // pattern, text, regex
+  std::list<std::tuple<std::wstring, std::wstring, bool> > lines; // pattern, text, regex
 
   for (std::wstring line; std::getline(fin, line);)
     if (!line.empty()) {
@@ -192,7 +192,7 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
         right = line.substr(index + SCRIPT_RULE_DELIM_LEN);
       }
       if (!left.empty())
-        lines.push_back(boost::make_tuple(left, right, regex));
+        lines.push_back(std::make_tuple(left, right, regex));
     }
 
   fin.close();
@@ -207,7 +207,7 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
 
   int i = 0;
   BOOST_FOREACH (const auto &it, lines)
-    d_->rules[i++].init(boost::get<0>(it), boost::get<1>(it), boost::get<2>(it));
+    d_->rules[i++].init(std::get<0>(it), std::get<1>(it), std::get<2>(it));
 
   return true;
 }
