@@ -83,7 +83,7 @@ public:
   //QReadWriteLock lock;
 
   TahScriptRule *rules; // use array for performance reason
-  int ruleCount;
+  size_t ruleCount;
 
   TahScriptManagerPrivate() : rules(nullptr), ruleCount(0) {}
   ~TahScriptManagerPrivate() { if (rules) delete[] rules; }
@@ -97,14 +97,16 @@ public:
     }
   }
 
-  void reset(int size)
+  void reset(size_t size)
   {
     DOUT(size);
     Q_ASSERT(size > 0);
+    //if (ruleCount != size) {
     ruleCount = size;
     if (rules)
       delete[] rules;
     rules = new TahScriptRule[size];
+    //}
   }
 };
 
@@ -170,7 +172,7 @@ bool TahScriptManager::loadFile(const QString &path)
   //QWriteLocker locker(&d_->lock);
   d_->reset(lines.size());
 
-  int i = 0;
+  size_t i = 0;
   BOOST_FOREACH (const auto &it, lines)
     d_->rules[i++].init(it.first, it.second);
 
@@ -186,7 +188,7 @@ QString TahScriptManager::translate(const QString &text) const
   QString previous = text;
 #endif // DEBUG_RULE
   if (d_->ruleCount && d_->rules)
-    for (int i = 0; i < d_->ruleCount; i++) {
+    for (size_t i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
       if (rule.sourceRe) {
         if (rule.target.isEmpty())

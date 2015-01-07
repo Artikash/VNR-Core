@@ -52,53 +52,6 @@ Sbk_HangulHanjaConverter_Init(PyObject* self, PyObject* args, PyObject* kwds)
     return 1;
 }
 
-static PyObject* Sbk_HangulHanjaConverterFunc_addFile(PyObject* self, PyObject* pyArg)
-{
-    ::HangulHanjaConverter* cppSelf = 0;
-    SBK_UNUSED(cppSelf)
-    if (!Shiboken::Object::isValid(self))
-        return 0;
-    cppSelf = ((::HangulHanjaConverter*)Shiboken::Conversions::cppPointer(SbkpyhangulTypes[SBK_HANGULHANJACONVERTER_IDX], (SbkObject*)self));
-    PyObject* pyResult = 0;
-    int overloadId = -1;
-    PythonToCppFunc pythonToCpp;
-    SBK_UNUSED(pythonToCpp)
-
-    // Overloaded function decisor
-    // 0: addFile(QString)
-    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
-        overloadId = 0; // addFile(QString)
-    }
-
-    // Function signature not found.
-    if (overloadId == -1) goto Sbk_HangulHanjaConverterFunc_addFile_TypeError;
-
-    // Call function/method
-    {
-        ::QString cppArg0 = ::QString();
-        pythonToCpp(pyArg, &cppArg0);
-
-        if (!PyErr_Occurred()) {
-            // addFile(QString)
-            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            bool cppResult = cppSelf->addFile(cppArg0);
-            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
-            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
-        }
-    }
-
-    if (PyErr_Occurred() || !pyResult) {
-        Py_XDECREF(pyResult);
-        return 0;
-    }
-    return pyResult;
-
-    Sbk_HangulHanjaConverterFunc_addFile_TypeError:
-        const char* overloads[] = {"unicode", 0};
-        Shiboken::setErrorAboutWrongArguments(pyArg, "pyhangul.HangulHanjaConverter.addFile", overloads);
-        return 0;
-}
-
 static PyObject* Sbk_HangulHanjaConverterFunc_clear(PyObject* self)
 {
     ::HangulHanjaConverter* cppSelf = 0;
@@ -199,6 +152,53 @@ static PyObject* Sbk_HangulHanjaConverterFunc_isEmpty(PyObject* self)
     return pyResult;
 }
 
+static PyObject* Sbk_HangulHanjaConverterFunc_loadFile(PyObject* self, PyObject* pyArg)
+{
+    ::HangulHanjaConverter* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::HangulHanjaConverter*)Shiboken::Conversions::cppPointer(SbkpyhangulTypes[SBK_HANGULHANJACONVERTER_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp;
+    SBK_UNUSED(pythonToCpp)
+
+    // Overloaded function decisor
+    // 0: loadFile(QString)
+    if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(SbkPySide_QtCoreTypeConverters[SBK_QSTRING_IDX], (pyArg)))) {
+        overloadId = 0; // loadFile(QString)
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_HangulHanjaConverterFunc_loadFile_TypeError;
+
+    // Call function/method
+    {
+        ::QString cppArg0 = ::QString();
+        pythonToCpp(pyArg, &cppArg0);
+
+        if (!PyErr_Occurred()) {
+            // loadFile(QString)
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            bool cppResult = cppSelf->loadFile(cppArg0);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+
+    Sbk_HangulHanjaConverterFunc_loadFile_TypeError:
+        const char* overloads[] = {"unicode", 0};
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pyhangul.HangulHanjaConverter.loadFile", overloads);
+        return 0;
+}
+
 static PyObject* Sbk_HangulHanjaConverterFunc_parse(PyObject* self, PyObject* pyArg)
 {
     ::HangulHanjaConverter* cppSelf = 0;
@@ -275,10 +275,10 @@ static PyObject* Sbk_HangulHanjaConverterFunc_size(PyObject* self)
 }
 
 static PyMethodDef Sbk_HangulHanjaConverter_methods[] = {
-    {"addFile", (PyCFunction)Sbk_HangulHanjaConverterFunc_addFile, METH_O},
     {"clear", (PyCFunction)Sbk_HangulHanjaConverterFunc_clear, METH_NOARGS},
     {"convert", (PyCFunction)Sbk_HangulHanjaConverterFunc_convert, METH_O},
     {"isEmpty", (PyCFunction)Sbk_HangulHanjaConverterFunc_isEmpty, METH_NOARGS},
+    {"loadFile", (PyCFunction)Sbk_HangulHanjaConverterFunc_loadFile, METH_O},
     {"parse", (PyCFunction)Sbk_HangulHanjaConverterFunc_parse, METH_O},
     {"size", (PyCFunction)Sbk_HangulHanjaConverterFunc_size, METH_NOARGS},
 

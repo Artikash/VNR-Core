@@ -33,7 +33,7 @@ public:
   void clear();
 
   ///  Add script from file
-  bool addFile(const QString &path);
+  bool loadFile(const QString &path);
 
   // Parse
 

@@ -22,7 +22,7 @@ def converter():
   path = os.path.join(HANGUL_DIC_DIR, HANGUL_DIC_CONV)
   ret = HangulHanjaConverter()
   if os.path.exists(path):
-    ret.addFile(path)
+    ret.loadFile(path)
   else:
     from sakurakit.skdebug import derror
     derror("dic path does not exist:", path)
