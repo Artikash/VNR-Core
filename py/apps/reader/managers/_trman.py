@@ -682,6 +682,15 @@ class EzTranslator(OfflineMachineTranslator):
   def _translateApi(self, text, fr='', to=''): # unicode -> unicode
     return self.engine.translate(text)
 
+  __ez_repl_before = staticmethod(skstr.multireplacer({
+    u'『': u'『"『', # a double quote in the middle
+    u'』': u'』"』',
+
+  }))
+  __ez_repl_after = staticmethod(skstr.multireplacer({
+    u'「"「': u'『',
+    u'」"」': u'』',
+  }))
   def translate(self, text, to='ko', fr='ja', async=False, emit=False, **kwargs):
     """@reimp"""
     to = 'ko'
@@ -696,10 +705,12 @@ class EzTranslator(OfflineMachineTranslator):
     repl = self._escapeText(text, to, fr, emit)
     if repl:
       try:
+        repl = self.__ez_repl_before(repl)
         repl = self._translate(emit, repl,
             self._translateApi,
             to, fr, async)
         if repl:
+          repl = self.__ez_repl_after(repl)
           repl = self._unescapeTranslation(repl, to=to, emit=emit)
           self.cache.update(text, repl)
           return repl, to, self.key
