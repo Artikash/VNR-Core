@@ -161,7 +161,12 @@ void TranslationScriptManager::clear() { d_->clear(); }
 // Initialization
 bool TranslationScriptManager::loadFile(const std::wstring &path)
 {
+#ifdef _MSC_VER
   std::wifstream fin(path);
+#else
+  std::string spath(path.begin(), path.end());
+  std::wifstream fin(spath.c_str());
+#endif // _MSC_VER
   if(!fin.is_open()) {
     DOUT("unable to open file");
     return false;

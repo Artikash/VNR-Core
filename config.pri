@@ -45,12 +45,12 @@ mac:    CONFIG -= ppc ppc64 # disable compiling fat architectures
 # Enable C++11
 win32:  QMAKE_CXXFLAGS += -Zc:auto
 unix:   QMAKE_CXXFLAGS += -std=c++11
-#mac {
-#  # Enable TR1 such as tuple
-#  # Clang is required to take place of llvm gcc, which uses /usr/lib/libstdc++.dylib
-#  QMAKE_CXXFLAGS += -stdlib=libc++
-#  QMAKE_LFLAGS += -stdlib=libc++
-#}
+mac {
+  # Enable TR1 such as tuple
+  # Clang is required to take place of llvm gcc, which uses /usr/lib/libstdc++.dylib
+  QMAKE_CXXFLAGS += -stdlib=libc++
+  QMAKE_LFLAGS += -stdlib=libc++
+}
 
 # MSVC warnings
 win32 {
