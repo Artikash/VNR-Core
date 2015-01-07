@@ -1023,7 +1023,7 @@ Item { id: root_
       onTriggered: {
         var t = hoverText()
         if (t)
-          shiori_.popup(t,
+          shiori_.popup(t, 'ja',
             bean_.x() + popupX, bean_.y() + popupY)
       }
     }

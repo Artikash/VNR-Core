@@ -20,7 +20,7 @@ Rectangle { id: root_
   property bool ignoresFocus: false
   property bool toolTipEnabled: true
 
-  signal yakuAt(string text, int x, int y) // popup honyaku of text at (x, y)
+  signal yakuAt(string text, string language, int x, int y) // popup honyaku of text at (x, y)
 
   property real globalZoomFactor: 1.0
 
@@ -294,11 +294,11 @@ Rectangle { id: root_
   }
 
   property bool locked: false
-  function popup(text, x, y) {
+  function popup(text, language, x, y) { // string, string, int, int
     if (!root_.enabled || root_.locked)
       return
     root_.locked = true
-    var html = bean_.render(text)
+    var html = bean_.render(text, language)
     if (!html) { // thread contention, ignore
       root_.locked = false
       return
@@ -383,7 +383,7 @@ Rectangle { id: root_
       onTriggered: {
         var t = hoverText()
         if (t)
-          yakuAt(t, contextMenu_.popupX, contextMenu_.popupY)
+          yakuAt(t, 'ja', contextMenu_.popupX, contextMenu_.popupY)
       }
     }
 

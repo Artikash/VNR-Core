@@ -27,6 +27,8 @@ class ChineseConversionManager:
         d.variantConvert = opencc.zht2hk
       elif v == 'ja':
         d.variantConvert = opencc.zht2ja
+      elif v == 'ko':
+        d.variantConvert = opencc.zht2ko
       else:
         d.variantConvert = None
 

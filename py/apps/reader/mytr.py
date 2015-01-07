@@ -83,6 +83,7 @@ class reader(QObject):
       self.tr("Taiwan Standard Chinese"),
       self.tr("Hong Kong Traditional Chinese"),
       self.tr("Japanese Kanji"),
+      self.tr("Korean Hanja"),
 
       #self.tr("Original text"), self.tr("original text"),
       self.tr("Voice"),

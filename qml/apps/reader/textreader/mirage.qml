@@ -12,7 +12,7 @@ import '../../../components' as Components
 import '../share' as Share
 
 Item { id: root_
-  signal yakuAt(string text, int x, int y) // popup honyaku of text at (x, y)
+  signal yakuAt(string text, string language, int x, int y) // popup honyaku of text at (x, y)
 
   property int contentHeight: shadow_.y + shadow_.height
 
@@ -53,8 +53,8 @@ Item { id: root_
 
   //property bool revertsColor: false
 
+  property bool rubyInverted: settings_.rubyJaInverted
   property string rubyType: settings_.rubyType
-  property bool rubyInverted: settings_.rubyInverted
   property string rubyDic: settings_.meCabDictionary
   property bool rubyEnabled: !!settings_.meCabDictionary
   property bool caboChaEnabled: settings_.caboChaEnabled
@@ -805,7 +805,7 @@ Item { id: root_
               lastSelectedText = t
               //var gp = Util.itemGlobalPos(parent)
               var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-              root_.yakuAt(t, gp.x, gp.y)
+              root_.yakuAt(t, 'ja', gp.x, gp.y)
             }
           }
 
@@ -819,7 +819,7 @@ Item { id: root_
                 if (root_.popupEnabled && model.language === 'ja') {
                   //var gp = Util.itemGlobalPos(parent)
                   var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-                  root_.yakuAt(t, gp.x, gp.y)
+                  root_.yakuAt(t, 'ja', gp.x, gp.y)
                 }
                 if (root_.copyEnabled)
                   textEdit_.copy()

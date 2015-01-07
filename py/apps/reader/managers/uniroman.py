@@ -4,6 +4,7 @@
 import re
 from unidecode import unidecode
 from unitraits import jpchars
+from hangulparse import hangulparse
 import rc
 
 __other_punct = u'《》“”‘’"\'，,? 　' # Chinese/English punctuations
@@ -32,7 +33,61 @@ def _toroman(text, language=''):
     text = text.title()
   return text
 
-def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=False, center=True, invertRuby=False):
+def _iterparseruby(text, language, **kwargs):
+  """
+  @param  text  unicode
+  @param  language  str
+  @param* kwargs  passed to Korean
+  @yield  (unicode surface, unicode yomi or None, int groupId or None)
+  """
+  return _iterparseruby_ko(text, **kwargs) if language == 'ko' else _iterparseruby_default(text, language)
+  #return _iterparseruby_default(text, language)
+
+def _iterparseruby_default(text, language):
+  """
+  @param  text  unicode
+  @param  language  str
+  @yield  (unicode surface, unicode yomi or None, int groupId or None)
+  """
+  for group, surface in enumerate(_splittext(text, language)):
+    if len(surface) == 1 and surface in _s_punct:
+      group = None
+      yomi = None
+    else:
+      yomi = _toroman(surface, language)
+      if yomi == surface:
+        yomi = None
+    yield surface, yomi, group
+
+def _iterparseruby_ko(text, romajaRubyEnabled=True, hanjaRubyEnabled=True):
+  """
+  @param  text  unicode
+  @param* romajaRubyEnabled  bool
+  @param* hanjaRubyEnabled  bool
+  @yield  (unicode surface, unicode yomi or None, int groupId or None)
+  """
+  for group, l in enumerate(hangulparse.to_hanja_list(text)):
+    for surface,yomi in l:
+      if len(surface) == 1 and surface in _s_punct:
+        group = None
+        yomi = None
+      else:
+        if hanjaRubyEnabled and romajaRubyEnabled:
+          if not yomi:
+            yomi = _toroman(surface, 'ko')
+        elif romajaRubyEnabled:
+          yomi = _toroman(surface, 'ko')
+        elif hanjaRubyEnabled:
+          pass
+        else: # none is enabled
+          yomi = None
+        if yomi and yomi == surface:
+          yomi = None
+      if group is not None:
+        group /= 2
+      yield surface, yomi, group
+
+def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=False, center=True, invertRuby=False, **kwargs):
   """
   @param  text  unicode
   @param  language  unicode
@@ -42,8 +97,10 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
   @param* center  bool
   @param* invertRuby  bool
   @param* features  {unicode surface:(unicode feature, fmt)} or None
+  @param* kwargs  passed to Korean
   @yield  unicode  HTML table
   """
+
   i = j = 0
 
   line = []
@@ -62,17 +119,17 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
   LATIN_YOMI_WIDTH = 0.33 # = 2/6
   KANJI_YOMI_WIDTH = 0.55 # = 1/2
   # yomi size / surface size
-  yomiWidth = LATIN_YOMI_WIDTH #if else KANJI_YOMI_WIDTH
+
+  roundRubySize = int(round(rubySize)) or 1
+  paddingSize = int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0
+  if paddingSize and language == 'ko' and not kwargs.get('romajaRubyEnabled'):
+    paddingSize = 0
+
+  romaji = True # this value is not changed
+  yomiWidth = LATIN_YOMI_WIDTH if not romaji else KANJI_YOMI_WIDTH
 
   for paragraph in text.split('\n'):
-    for group, surface in enumerate(_splittext(paragraph, language)):
-      if len(surface) == 1 and surface in _s_punct:
-        group = None
-        yomi = None
-      else:
-        yomi = _toroman(surface, language)
-        if yomi == surface:
-          yomi = None
+    for surface, yomi, group in _iterparseruby(paragraph, language, **kwargs):
 
       if colorize:
         color = COLORS[group % len(COLORS)] if group is not None else None
@@ -92,8 +149,8 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
       elif line:
         yield rc.jinja_template('html/furigana').render({
           'tuples': line,
-          'rubySize': int(round(rubySize)) or 1,
-          'paddingSize': int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0,
+          'rubySize': roundRubySize,
+          'paddingSize': paddingSize,
           'center': center,
           'groupColor': groupColor,
         })
@@ -102,8 +159,8 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
       if invertRuby and yomi:
         #if surface:
         #  surface = wide2thin(surface)
-        if furiType == defs.FURI_ROMAJI and len(yomi) > 2:
-          yomi = yomi.title()
+        #if romaji and len(yomi) > 2:
+        #  yomi = yomi.title()
         t = yomi, surface, color, group
       else:
         t = surface, yomi, color, group
@@ -113,8 +170,8 @@ def _iterrendertable(text, language, charPerLine=100, rubySize=10, colorize=Fals
   if line:
     yield rc.jinja_template('html/furigana').render({
       'tuples': line,
-      'rubySize': int(round(rubySize)) or 1,
-      'paddingSize': int(round(rubySize * PADDING_FACTOR)) or 1 if invertRuby else 0,
+      'rubySize': roundRubySize,
+      'paddingSize': paddingSize,
       'center': center,
       'groupColor': groupColor,
     })

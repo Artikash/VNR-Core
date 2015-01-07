@@ -605,7 +605,12 @@ Item { id: root_
         //outlineEnabled: !shadowEnabled
         //outlineEnabled: false
 
+        rubyJaInverted: settings_.rubyJaInverted
         rubyInverted: settings_.rubyInverted
+
+        hanjaRubyEnabled: settings_.hanjaRubyEnabled
+        romajaRubyEnabled: settings_.romajaRubyEnabled
+
         rubyType: settings_.rubyType
         rubyDic: settings_.meCabDictionary
         caboChaEnabled: settings_.caboChaEnabled

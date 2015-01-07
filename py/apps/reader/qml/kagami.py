@@ -210,14 +210,16 @@ class GrimoireBean(QObject):
             fmt=fmt, furiType=furiType, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
         for t in text.split('\n') if t)
 
-  @Slot(unicode, unicode, int, float, bool, bool, bool, result=unicode)
-  def renderRuby(self, text, language, charPerLine, rubySize, invertRuby, colorize, center):
+  @Slot(unicode, unicode, int, float, bool, bool, bool, bool, bool, result=unicode)
+  def renderRuby(self, text, language, charPerLine, rubySize, invertRuby, colorize, center,
+      romajaRubyEnabled, hanjaRubyEnabled):
     """
     @return  unicode  html
     """
     import uniroman
     text = textutil.remove_html_tags(text).strip()
-    return uniroman.rendertable(text, language, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center)
+    return uniroman.rendertable(text, language, charPerLine=charPerLine, rubySize=rubySize, invertRuby=invertRuby, colorize=colorize, center=center,
+        hanjaRubyEnabled=hanjaRubyEnabled, romajaRubyEnabled=romajaRubyEnabled)
 
 class _GrimoireController:
 

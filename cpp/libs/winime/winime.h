@@ -3,7 +3,7 @@
 // winime.h
 // 4/1/2013 jichi
 
-#include <boost/function.hpp>
+#include <functional>
 
 // - Constants -
 
@@ -56,12 +56,12 @@ winime_t *winime_create(const wchar_t *cls); ///< create an im engine of given c
 void winime_destroy(winime_t *ife);            ///< destroy the im engine
 
 // Get the entire result. Return if succeed.
-typedef boost::function<void (const wchar_t *, size_t)> winime_apply_fun_t;
+typedef std::function<void (const wchar_t *, size_t)> winime_apply_fun_t;
 bool winime_apply(winime_t *ife, unsigned long req, unsigned long mode,
                   const wchar_t *src, size_t len, const winime_apply_fun_t &fun);
 
 // Get each result, similar to list.collect in groovy. Return if succeed.
-typedef boost::function<void (const wchar_t *, size_t, const wchar_t *, size_t)> winime_collect_fun_t;
+typedef std::function<void (const wchar_t *, size_t, const wchar_t *, size_t)> winime_collect_fun_t;
 bool winime_collect(winime_t *ife, unsigned long req, unsigned long mode,
                     const wchar_t *src, size_t len, const winime_collect_fun_t &fun);
 

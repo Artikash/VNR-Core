@@ -6,7 +6,7 @@
 # http://www.microsoft.com/en-US/download/details.aspx?id=30390
 
 if __name__ == '__main__': # DEBUG
-  import os, sys
+  import sys
   sys.path.append("..")
 
 from sakurakit.skclass import memoized
@@ -224,12 +224,11 @@ def to_pinyin_list(text):
   return ime.toRubyList(text, ime.Pinyin)
 
 if __name__ == '__main__':
-  import os, sys
+  import os
   os.environ['PATH'] += os.path.pathsep + "../../../bin"
   os.environ['PATH'] += os.path.pathsep + "../../../../Qt/PySide"
   sys.path.append("../../../bin")
   sys.path.append("../../../../Qt/PySide")
-  sys.path.append("..")
 
   import pythoncom # Make sure OleInitialzie is invoked
 

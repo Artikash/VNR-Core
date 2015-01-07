@@ -6,7 +6,7 @@
 // Internal header for wintimer base class.
 
 #include "sakurakit/skglobal.h"
-#include <boost/function.hpp>
+#include <functional>
 
 #ifdef QT_CORE_LIB
 # include <QtGui/qwindowdefs.h>
@@ -31,7 +31,7 @@ class WinTimerBase
 
   // - Types -
 public:
-  typedef boost::function<void ()> function_type;
+  typedef std::function<void ()> function_type;
 #ifndef QT_CORE_LIB
   typedef HWND WId;
 #endif // QT_CORE_LIB

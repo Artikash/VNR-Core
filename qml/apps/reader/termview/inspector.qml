@@ -72,7 +72,7 @@ Item { id: root_
       ret += "\n" + My.tr("Yomi") + ": " + renderYomi(text)
 
     if (text && (type == 'escape' || type == 'target' || type == 'name') && lang != 'en' && lang != 'ja')
-      ret += "\n" + Sk.tr("Romaji") + ": " + jlp_.toromaji(text, lang)
+      ret += "\n" + Sk.tr("Romaji") + ": " + jlp_.toroman(text, lang)
 
     var ts = Util.timestampToString(currentItem.timestamp)
     ret += "\n" + Sk.tr("Creation") + ": @" + currentItem.userName + " (" + ts + ")"

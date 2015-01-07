@@ -55,7 +55,7 @@ void winime_destroy(winime_t *ife)
 bool winime_apply(winime_t *ife, unsigned long req, unsigned long mode,
     const wchar_t *src, size_t len, const winime_apply_fun_t &fun)
 {
-  if (!ife || !src || fun.empty())
+  if (!ife || !src || !fun)
     return false;
   MORRSLT *mr = nullptr;
   if (FAILED(ife->GetJMorphResult(req, mode, len, src, nullptr, &mr)) || !mr)
@@ -70,7 +70,7 @@ bool winime_apply(winime_t *ife, unsigned long req, unsigned long mode,
 bool winime_collect(winime_t *ife, unsigned long req, unsigned long mode,
     const wchar_t *src, size_t len, const winime_collect_fun_t &fun)
 {
-  if (!ife || !src || fun.empty())
+  if (!ife || !src || !fun)
     return false;
   MORRSLT *mr = nullptr;
   if (FAILED(ife->GetJMorphResult(req, mode, len, src, nullptr, &mr)) || !mr)

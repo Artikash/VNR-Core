@@ -14,6 +14,8 @@
 
 namespace { // unnamed
 
+enum : char { CH_COMMENT = '#' }; // beginning of a comment
+
 // http://stackoverflow.com/questions/6140223/c-boost-encode-decode-utf-8
 inline void utf8to32(const std::string &src, cpp_u32string &target)
 { utf8::unchecked::utf8to32(src.begin(), src.end(), std::back_inserter(target)); }
@@ -25,7 +27,7 @@ inline void utf8to32(const std::string &src, cpp_u32string &target)
 class SimpleChineseConverterPrivate
 {
 public:
-  typedef boost::unordered_map<wchar_t, wchar_t>  map_type;
+  typedef boost::unordered_map<wchar_t, wchar_t> map_type;
   map_type map;
 };
 
@@ -59,7 +61,7 @@ bool SimpleChineseConverter::addFile(const std::wstring &path, bool reverse)
   while (std::getline(fin, line)) {
     u32line.clear();
     ::utf8to32(line, u32line);
-    if (u32line.size() >= 3 && !cpp_u32high(u32line[0])) {
+    if (u32line.size() >= 3 && u32line[0] != CH_COMMENT && !cpp_u32high(u32line[0])) {
       if (reverse) {
         if (!cpp_u32high(u32line[2]))
           d_->map[u32line[2]] = u32line[0];
@@ -68,7 +70,6 @@ bool SimpleChineseConverter::addFile(const std::wstring &path, bool reverse)
       } else
         if (!cpp_u32high(u32line[2]))
           d_->map[u32line[0]] = u32line[2];
-
     }
   }
 

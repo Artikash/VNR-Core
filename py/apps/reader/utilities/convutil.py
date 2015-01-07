@@ -10,6 +10,7 @@ from jaconv.jaconv import hira2romaji, hira2hangul, hira2thai \
                         , capitalizeromaji
 from opencc.opencc import zht2zhs
 from ccman import zhs2zht, zht2zhx
+from hangulparse import hangulparse
 
 from msime import msime
 MSIME_VALID = msime.ja_valid() # cached
@@ -35,7 +36,12 @@ def yomi2kanji(text):
   if MSIME_VALID:
     return msime.to_kanji(text)
 
-def toromaji(text, language=''): # unicode, str -> unicode
+def toroman(text, language=''): # unicode, str -> unicode
+  """
+  @param  text  unicode
+  @param* language  str
+  @return  unicode or None
+  """
   if isinstance(text, str):
     text = text.decode('utf8', errors='ignore')
   if not text:
@@ -46,5 +52,11 @@ def toromaji(text, language=''): # unicode, str -> unicode
   if language in ('ko', 'ja') and ret != text:
     ret = ret.title()
   return ret
+
+"""
+@param  text  unicode
+@return  unicode or None
+"""
+hangul2hanja = hangulparse.to_hanja
 
 # EOF

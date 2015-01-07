@@ -22,7 +22,7 @@ import '../share' as Share
 
 Item { id: root_
 
-  signal yakuAt(string text, int x, int y) // popup honyaku of text at (x, y)
+  signal yakuAt(string text, string language, int x, int y) // popup honyaku of text at (x, y)
   signal loadPosRequested
   signal savePosRequested
   //signal resetPosRequested
@@ -139,6 +139,7 @@ Item { id: root_
 
   property string rubyType: 'hiragana'
   property bool rubyInverted
+  property bool rubyJaInverted // only for Japanese language
   property string rubyDic
   property bool caboChaEnabled
 
@@ -147,6 +148,9 @@ Item { id: root_
   property bool rubyTextEnabled
   property bool rubyTranslationEnabled
   property string rubyLanguages
+
+  property bool hanjaRubyEnabled
+  property bool romajaRubyEnabled
 
   //property bool msimeParserEnabled: false // whether use msime or mecab
   property bool furiganaEnabled: true
@@ -189,34 +193,34 @@ Item { id: root_
   }
 
   function renderJapanese(text, colorize) { // string, bool -> string
-    return bean_.renderJapanese(
-      text,
-      root_.caboChaEnabled,
-      //root_.msimeParserEnabled,
-      root_.rubyType,
-      root_.rubyDic,
-      Math.round(root_.width / (22 * root_._zoomFactor) * (root_.rubyInverted ? 0.85 : 1)), // char per line
-      10 * root_._zoomFactor, // ruby size of furigana
-      root_.rubyInverted,
-      colorize, // colorize
-      root_.alignCenter
+    return bean_.renderJapanese(text
+      , root_.caboChaEnabled
+      //,root_.msimeParserEnabled
+      , root_.rubyType
+      , root_.rubyDic
+      , Math.round(root_.width / (22 * root_._zoomFactor) * (root_.rubyJaInverted ? 0.85 : 1)) // char per line
+      , 10 * root_._zoomFactor // ruby size of furigana
+      , root_.rubyJaInverted
+      , colorize // colorize
+      , root_.alignCenter
     )
   }
 
   function renderRuby(text, lang, colorize) { // string, string, bool -> string
-    var chwidth = lang == 'ko' ? 16
+    var chwidth = lang == 'ko' ? 14
                 //: lang === 'ja' ? 22
-                : lang.indexOf('zh') === 0 ? 20
+                : lang.indexOf('zh') === 0 ? 18
                 : 10
     var chperline = Math.round(root_.width / (chwidth * root_._zoomFactor) * (root_.rubyInverted ? 0.85 : 1)) // char per line
-    return bean_.renderRuby(
-      text,
-      lang,
-      chperline,
-      10 * root_._zoomFactor, // ruby size of furigana
-      false, // ruby inverted
-      colorize, // colorize
-      root_.alignCenter
+    return bean_.renderRuby(text
+      , lang
+      , chperline
+      , 10 * root_._zoomFactor // ruby size of furigana
+      , root_.rubyInverted // ruby inverted
+      , colorize // colorize
+      , root_.alignCenter
+      , root_.romajaRubyEnabled
+      , root_.hanjaRubyEnabled
     )
   }
 
@@ -958,6 +962,12 @@ Item { id: root_
 
       property bool hover: toolTip_.containsMouse || textCursor_.containsMouse
 
+      property bool canPopup:
+        model.language === 'ja' && root_.furiganaEnabled ||
+        model.language === 'ko' && (
+          (model.type === 'text' || model.type === 'name') ?
+            root_.rubyTextEnabled : root_.rubyTranslationEnabled)
+
       visible: {
         if (model.comment && (model.comment.disabled || model.comment.deleted))
           return false
@@ -1037,20 +1047,18 @@ Item { id: root_
           hoverEnabled: enabled //&& root_.hoverEnabled && model.language === 'ja'
 
           property string lastSelectedText
-          onPositionChanged: {
-            if (!root_.hoverEnabled || model.language !== 'ja' || !root_.furiganaEnabled)
-              return
-
-            textEdit_.cursorPosition = textEdit_.positionAt(mouse.x, mouse.y)
-            textEdit_.selectWord()
-            var t = textEdit_.selectedText
-            if (t && t !== lastSelectedText) {
-              lastSelectedText = t
-              //var gp = Util.itemGlobalPos(parent)
-              var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-              root_.yakuAt(t, gp.x, gp.y)
+          onPositionChanged:
+            if (root_.hoverEnabled && textItem_.canPopup) {
+              textEdit_.cursorPosition = textEdit_.positionAt(mouse.x, mouse.y)
+              textEdit_.selectWord()
+              var t = textEdit_.selectedText
+              if (t && t !== lastSelectedText) {
+                lastSelectedText = t
+                //var gp = Util.itemGlobalPos(parent)
+                var gp = mapToItem(null, x + mouse.x, y + mouse.y)
+                root_.yakuAt(t, model.language, gp.x, gp.y)
+              }
             }
-          }
 
           onClicked: {
             if (root_.mouseLocked)
@@ -1064,10 +1072,10 @@ Item { id: root_
                 lastSelectedText = t
                 //if (root_.copyEnabled)
                 textEdit_.copy()
-                if (!root_.hoverEnabled && root_.popupEnabled && model.language === 'ja' && root_.furiganaEnabled) {
+                if (!root_.hoverEnabled && root_.popupEnabled && textItem_.canPopup) {
                   //var gp = Util.itemGlobalPos(parent)
                   var gp = mapToItem(null, x + mouse.x, y + mouse.y)
-                  root_.yakuAt(t, gp.x, gp.y)
+                  root_.yakuAt(t, model.language, gp.x, gp.y)
                 }
                 //if (root_.readEnabled && model.language === 'ja')
                 if ((model.type === 'text' || model.type !== 'name')
@@ -1191,7 +1199,7 @@ Item { id: root_
         color: root_.fontColor
 
         property int fontPixelSize:
-            (root_.rubyInverted && (model.type === 'text' || model.type === 'name')) ?
+            (root_.rubyJaInverted && (model.type === 'text' || model.type === 'name')) ?
             14 * root_._zoomFactor :
             18 * root_._zoomFactor
         font.pixelSize: fontPixelSize
@@ -1578,7 +1586,7 @@ Item { id: root_
     //    if (e) {
     //      if (t) {
     //        var t = e.selectedText
-    //        yakuAt(t, popupX, popupY)
+    //        yakuAt(t, 'ja', popupX, popupY)
     //        console.log("grimoire.qml:lookup: pass")
     //      }
     //    }

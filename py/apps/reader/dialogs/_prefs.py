@@ -3050,6 +3050,7 @@ class _ChineseTranslationTab(object):
     layout.addWidget(self.twButton)
     layout.addWidget(self.hkButton)
     layout.addWidget(self.jaButton)
+    layout.addWidget(self.koButton)
     layout.addWidget(self.yueButton)
     ret = QtWidgets.QGroupBox(my.tr("Preferred Chinese variants for machine translation"))
     ret.setLayout(layout)
@@ -3082,6 +3083,12 @@ class _ChineseTranslationTab(object):
     return ret
 
   @memoizedproperty
+  def koButton(self):
+    ret = QtWidgets.QRadioButton(mytr_("Korean Hanja"))
+    ret.toggled.connect(self._saveVariant)
+    return ret
+
+  @memoizedproperty
   def yueButton(self):
     ret = QtWidgets.QCheckBox(my.tr(
         "Convert Mandarin Chinese machine translation to Yue Chinese (using Baidu)"))
@@ -3094,6 +3101,7 @@ class _ChineseTranslationTab(object):
     b = (self.twButton if t == 'tw' else
          self.hkButton if t == 'hk' else
          self.jaButton if t == 'ja' else
+         self.koButton if t == 'ko' else
          self.disableButton)
     if not b.isChecked():
       b.setChecked(True)
@@ -3142,15 +3150,26 @@ class _RomanTranslationTab(object):
   def __init__(self, q):
     self._createUi(q)
 
-    self._refreshLanguageEnabled()
     ss = settings.global_()
-    ss.rubyTextEnabledChanged.connect(self._refreshLanguageEnabled)
-    ss.rubyTranslationEnabledChanged.connect(self._refreshLanguageEnabled)
+
+    self._refreshEnabled()
+
+    for sig in ss.rubyTextEnabledChanged, ss.rubyTranslationEnabledChanged:
+      sig.connect(self._refreshEnabled)
+
+    blans = settings.global_().blockedLanguages()
+    if 'ko' not in blans:
+      self._refreshKoreanEnabled()
+      for sig in ss.rubyTextEnabledChanged, ss.rubyTranslationEnabledChanged, ss.rubyLanguagesChanged:
+        sig.connect(self._refreshKoreanEnabled)
 
   def _createUi(self, q):
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.infoLabel)
     layout.addWidget(self.optionGroup)
+    blans = settings.global_().blockedLanguages()
+    if 'ko' not in blans:
+      layout.addWidget(self.koreanGroup)
     layout.addWidget(self.languageGroup)
     layout.addStretch()
     q.setLayout(layout)
@@ -3171,8 +3190,17 @@ Japanese romanization can be adjusted in the dictionary tab instead."""))
     layout = QtWidgets.QVBoxLayout()
     layout.addWidget(self.rubyTextButton)
     layout.addWidget(self.rubyTranslationButton)
+    layout.addWidget(self.invertRubyButton)
     ret = QtWidgets.QGroupBox(my.tr("Display ruby for the selected text"))
     ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def invertRubyButton(self):
+    ret = QtWidgets.QCheckBox(my.tr("Display yomigana below instead of above kanji"))
+    ss = settings.global_()
+    ret.setChecked(ss.isRubyInverted())
+    ret.toggled.connect(ss.setRubyInverted)
     return ret
 
   @memoizedproperty
@@ -3191,6 +3219,37 @@ Japanese romanization can be adjusted in the dictionary tab instead."""))
     ret.toggled.connect(settings.global_().setRubyTranslationEnabled)
     return ret
 
+  # Korean group
+
+  @memoizedproperty
+  def koreanGroup(self):
+    layout = QtWidgets.QVBoxLayout()
+    layout.addWidget(self.romajaButton)
+    layout.addWidget(self.hanjaButton)
+    ret = QtWidgets.QGroupBox(my.tr("Preferred ruby for Korean text"))
+    ret.setLayout(layout)
+    return ret
+
+  @memoizedproperty
+  def romajaButton(self):
+    ret = QtWidgets.QCheckBox(
+      "%s, %s: %s" %
+      (tr_("Romaja"), my.tr("like this"), u"공주님(gongjunim)"))
+    ss = settings.global_()
+    ret.setChecked(ss.isRomajaRubyEnabled())
+    ret.toggled.connect(ss.setRomajaRubyEnabled)
+    return ret
+
+  @memoizedproperty
+  def hanjaButton(self):
+    ret = QtWidgets.QCheckBox(
+      "%s, %s: %s" %
+      (tr_("Hanja"), my.tr("like this"), u"공주(公主)님"))
+    ss = settings.global_()
+    ret.setChecked(ss.isHanjaRubyEnabled())
+    ret.toggled.connect(ss.setHanjaRubyEnabled)
+    return ret
+
   # Language group
 
   @memoizedproperty
@@ -3204,9 +3263,16 @@ Japanese romanization can be adjusted in the dictionary tab instead."""))
     ret.setLayout(layout)
     return ret
 
-  def _refreshLanguageEnabled(self):
+  def _refreshEnabled(self):
     ss = settings.global_()
-    self.languageGroup.setEnabled(ss.isRubyTranslationEnabled() or ss.isRubyTextEnabled())
+    t = ss.isRubyTranslationEnabled() or ss.isRubyTextEnabled()
+    for w in self.languageGroup, self.invertRubyButton:
+      w.setEnabled(t)
+
+  def _refreshKoreanEnabled(self):
+    ss = settings.global_()
+    t = (ss.isRubyTranslationEnabled() or ss.isRubyTextEnabled()) and 'ko' in ss.rubyLanguages()
+    self.koreanGroup.setEnabled(t)
 
   def _createLanguageButton(self, lang): # str ->
     ret = QtWidgets.QCheckBox(i18n.language_name(lang))
@@ -3398,8 +3464,8 @@ class _DictionaryTranslationTab(object):
   def invertRubyButton(self):
     ret = QtWidgets.QCheckBox(my.tr("Display yomigana below instead of above kanji"))
     ss = settings.global_()
-    ret.setChecked(ss.isRubyInverted())
-    ret.toggled.connect(ss.setRubyInverted)
+    ret.setChecked(ss.isRubyJaInverted())
+    ret.toggled.connect(ss.setRubyJaInverted)
     return ret
 
   def refreshCaboCha(self):

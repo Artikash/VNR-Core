@@ -7,9 +7,7 @@
 
 #include "htmldefs/htmltags.h"
 #include <stack>
-
-//#include <tuple>
-#include <boost/tuple/tuple.hpp> // for tie
+#include <tuple> // for tie
 
 //#define DEBUG "annothtmlparse"
 #include "sakurakit/skdebug.h"
@@ -126,7 +124,7 @@ std::pair<QString, QStringList> TexHtmlParserPrivate::parse(const QString &text)
 
   do {
     QString current;
-    boost::tie(current, unparsed) = parseNextToken(unparsed);
+    std::tie(current, unparsed) = parseNextToken(unparsed);
     if (current.isEmpty()) {
       // i.e. EOL
       // REDUCE until stack empty

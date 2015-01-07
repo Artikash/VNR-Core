@@ -249,6 +249,30 @@ class Settings(QSettings):
       self.setValue('RubyTranslation', value)
       self.rubyTranslationEnabledChanged.emit(value)
 
+  rubyInvertedChanged = Signal(bool)
+  def isRubyInverted(self):
+    return to_bool(self.value('InvertRuby'))
+  def setRubyInverted(self, t):
+    if t != self.isRubyInverted():
+      self.setValue('InvertRuby', t)
+      self.rubyInvertedChanged.emit(t)
+
+  # Ruby for Hangul
+
+  hanjaRubyEnabledChanged = Signal(bool)
+  def isHanjaRubyEnabled(self): return to_bool(self.value('HanjaRuby', True))
+  def setHanjaRubyEnabled(self, value):
+    if value != self.isHanjaRubyEnabled():
+      self.setValue('HanjaRuby', value)
+      self.hanjaRubyEnabledChanged.emit(value)
+
+  romajaRubyEnabledChanged = Signal(bool)
+  def isRomajaRubyEnabled(self): return to_bool(self.value('RomajaRuby', True))
+  def setRomajaRubyEnabled(self, value):
+    if value != self.isRomajaRubyEnabled():
+      self.setValue('RomajaRuby', value)
+      self.romajaRubyEnabledChanged.emit(value)
+
   ## OCR ##
 
   ocrEnabledChanged = Signal(bool)
@@ -1121,13 +1145,13 @@ class Settings(QSettings):
       self.setValue('FuriganaType', value)
       self.rubyTypeChanged.emit(value)
 
-  rubyInvertedChanged = Signal(bool)
-  def isRubyInverted(self):
-    return to_bool(self.value('InvertRuby'))
-  def setRubyInverted(self, t):
-    if t != self.isRubyInverted():
-      self.setValue('InvertRuby', t)
-      self.rubyInvertedChanged.emit(t)
+  rubyJaInvertedChanged = Signal(bool)
+  def isRubyJaInverted(self):
+    return to_bool(self.value('InvertRubyJa'))
+  def setRubyJaInverted(self, t):
+    if t != self.isRubyJaInverted():
+      self.setValue('InvertRubyJa', t)
+      self.rubyJaInvertedChanged.emit(t)
 
   def jbeijingLocation(self):
     return to_unicode(self.value('JBeijingLocation'))
@@ -1776,7 +1800,7 @@ class SettingsProxy(QObject):
     g.lecColorChanged.connect(self.lecColorChanged)
 
     g.rubyTypeChanged.connect(self.rubyTypeChanged)
-    g.rubyInvertedChanged.connect(self.rubyInvertedChanged)
+    g.rubyJaInvertedChanged.connect(self.rubyJaInvertedChanged)
     g.convertsChineseChanged.connect(self.convertsChineseChanged)
 
     #g.msimeParserEnabledChanged.connect(self.msimeParserEnabledChanged)
@@ -1825,9 +1849,13 @@ class SettingsProxy(QObject):
     g.voiceCharacterEnabledChanged.connect(self.voiceCharacterEnabledChanged)
     g.speaksGameTextChanged.connect(self.speaksGameTextChanged)
 
+    g.rubyInvertedChanged.connect(self.rubyInvertedChanged)
     g.rubyTextEnabledChanged.connect(self.rubyTextEnabledChanged)
     g.rubyTranslationEnabledChanged.connect(self.rubyTranslationEnabledChanged)
     g.rubyLanguagesChanged.connect(self.rubyLanguagesChanged)
+
+    g.romajaRubyEnabledChanged.connect(self.romajaRubyEnabledChanged)
+    g.hanjaRubyEnabledChanged.connect(self.hanjaRubyEnabledChanged)
 
   def setHentai(self, value):
     if value != self.hentai:
@@ -1965,8 +1993,8 @@ class SettingsProxy(QObject):
   rubyTypeChanged = Signal(unicode)
   rubyType = unicode_property('FuriganaType', 'hiragana', notify=rubyTypeChanged)
 
-  rubyInvertedChanged = Signal(bool)
-  rubyInverted = bool_property('InvertRuby', False, notify=rubyInvertedChanged)
+  rubyJaInvertedChanged = Signal(bool)
+  rubyJaInverted = bool_property('InvertRubyJa', False, notify=rubyJaInvertedChanged)
 
   springBoardWallpaperUrlChanged = Signal(unicode)
   springBoardWallpaperUrl = unicode_property('SpringBoardWallpaperUrl', notify=springBoardWallpaperUrlChanged)
@@ -1984,6 +2012,15 @@ class SettingsProxy(QObject):
   rubyTextEnabled = bool_property('RubyText', False, notify=rubyTextEnabledChanged)
   rubyTranslationEnabledChanged = Signal(bool)
   rubyTranslationEnabled = bool_property('RubyTranslation', False, notify=rubyTranslationEnabledChanged)
+
+  rubyInvertedChanged = Signal(bool)
+  rubyInverted = bool_property('InvertRuby', False, notify=rubyInvertedChanged)
+
+  romajaRubyEnabledChanged = Signal(bool)
+  romajaRubyEnabled = bool_property('RomajaRuby', True, notify=romajaRubyEnabledChanged)
+
+  hanjaRubyEnabledChanged = Signal(bool)
+  hanjaRubyEnabled = bool_property('HanjaRuby', True, notify=hanjaRubyEnabledChanged)
 
   rubyLanguagesChanged = Signal(unicode)
   rubyLanguages = unicode_property('RubyLanguages', '', notify=rubyLanguagesChanged)

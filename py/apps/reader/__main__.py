@@ -112,6 +112,10 @@ def main():
   from opencc import opencc
   opencc.setdicdir(config.OPENCC_LOCATION)
 
+  dprint("init hangul")
+  from hangulparse import hangulparse
+  hangulparse.setdicdir(config.HANGUL_LOCATION)
+
   dprint("create app")
   import app
   a = app.Application(sys.argv)

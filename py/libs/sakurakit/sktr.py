@@ -247,6 +247,9 @@ class sakurakit(QObject):
       self.tr("Romaji"), self.tr("romaji"),
       self.tr("Kanji"),
 
+      self.tr("Hanja"),
+      self.tr("Romaja"),
+
       self.tr("CG"),
       self.tr("Brand"), self.tr("brand"),
       self.tr("Label"), self.tr("label"),
