@@ -122,6 +122,17 @@ bool PinyinConverter::addFile(const std::wstring &path)
 
 // Conversion
 
+std::wstring PinyinConverter::lookup(int ch, bool tone) const
+{
+  auto p = d_->map.find(ch);
+  if (p != d_->map.end()) {
+    const auto &py = p->second;
+    return tone ? py.tone_text()
+                : std::wstring(py.latin.begin(), py.latin.end());
+  }
+  return std::wstring();
+}
+
 std::wstring PinyinConverter::convert(const std::wstring &text,
     const std::wstring &delim, bool tone, bool capital) const
 {

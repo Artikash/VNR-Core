@@ -256,6 +256,86 @@ static PyObject* Sbk_PinyinConverterFunc_isEmpty(PyObject* self)
     return pyResult;
 }
 
+static PyObject* Sbk_PinyinConverterFunc_lookup(PyObject* self, PyObject* args, PyObject* kwds)
+{
+    ::PinyinConverter* cppSelf = 0;
+    SBK_UNUSED(cppSelf)
+    if (!Shiboken::Object::isValid(self))
+        return 0;
+    cppSelf = ((::PinyinConverter*)Shiboken::Conversions::cppPointer(SbkpypinyinTypes[SBK_PINYINCONVERTER_IDX], (SbkObject*)self));
+    PyObject* pyResult = 0;
+    int overloadId = -1;
+    PythonToCppFunc pythonToCpp[] = { 0, 0 };
+    SBK_UNUSED(pythonToCpp)
+    int numNamedArgs = (kwds ? PyDict_Size(kwds) : 0);
+    int numArgs = PyTuple_GET_SIZE(args);
+    PyObject* pyArgs[] = {0, 0};
+
+    // invalid argument lengths
+    if (numArgs + numNamedArgs > 2) {
+        PyErr_SetString(PyExc_TypeError, "pypinyin.PinyinConverter.lookup(): too many arguments");
+        return 0;
+    } else if (numArgs < 1) {
+        PyErr_SetString(PyExc_TypeError, "pypinyin.PinyinConverter.lookup(): not enough arguments");
+        return 0;
+    }
+
+    if (!PyArg_ParseTuple(args, "|OO:lookup", &(pyArgs[0]), &(pyArgs[1])))
+        return 0;
+
+
+    // Overloaded function decisor
+    // 0: lookup(int,bool)const
+    if ((pythonToCpp[0] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<int>(), (pyArgs[0])))) {
+        if (numArgs == 1) {
+            overloadId = 0; // lookup(int,bool)const
+        } else if ((pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[1])))) {
+            overloadId = 0; // lookup(int,bool)const
+        }
+    }
+
+    // Function signature not found.
+    if (overloadId == -1) goto Sbk_PinyinConverterFunc_lookup_TypeError;
+
+    // Call function/method
+    {
+        if (kwds) {
+            PyObject* value = PyDict_GetItemString(kwds, "tone");
+            if (value && pyArgs[1]) {
+                PyErr_SetString(PyExc_TypeError, "pypinyin.PinyinConverter.lookup(): got multiple values for keyword argument 'tone'.");
+                return 0;
+            } else if (value) {
+                pyArgs[1] = value;
+                if (!(pythonToCpp[1] = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArgs[1]))))
+                    goto Sbk_PinyinConverterFunc_lookup_TypeError;
+            }
+        }
+        int cppArg0;
+        pythonToCpp[0](pyArgs[0], &cppArg0);
+        bool cppArg1 = true;
+        if (pythonToCpp[1]) pythonToCpp[1](pyArgs[1], &cppArg1);
+
+        if (!PyErr_Occurred()) {
+            // lookup(int,bool)const
+            PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
+            std::wstring cppResult = const_cast<const ::PinyinConverter*>(cppSelf)->lookup(cppArg0, cppArg1);
+            PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
+            pyResult = Shiboken::Conversions::copyToPython(SbkpypinyinTypeConverters[SBK_STD_WSTRING_IDX], &cppResult);
+        }
+    }
+
+    if (PyErr_Occurred() || !pyResult) {
+        Py_XDECREF(pyResult);
+        return 0;
+    }
+    return pyResult;
+
+    Sbk_PinyinConverterFunc_lookup_TypeError:
+        const char* overloads[] = {"int, bool = true", 0};
+        Shiboken::setErrorAboutWrongArguments(args, "pypinyin.PinyinConverter.lookup", overloads);
+        return 0;
+}
+
 static PyObject* Sbk_PinyinConverterFunc_size(PyObject* self)
 {
     ::PinyinConverter* cppSelf = 0;
@@ -289,6 +369,7 @@ static PyMethodDef Sbk_PinyinConverter_methods[] = {
     {"clear", (PyCFunction)Sbk_PinyinConverterFunc_clear, METH_NOARGS},
     {"convert", (PyCFunction)Sbk_PinyinConverterFunc_convert, METH_VARARGS|METH_KEYWORDS},
     {"isEmpty", (PyCFunction)Sbk_PinyinConverterFunc_isEmpty, METH_NOARGS},
+    {"lookup", (PyCFunction)Sbk_PinyinConverterFunc_lookup, METH_VARARGS|METH_KEYWORDS},
     {"size", (PyCFunction)Sbk_PinyinConverterFunc_size, METH_NOARGS},
 
     {0} // Sentinel

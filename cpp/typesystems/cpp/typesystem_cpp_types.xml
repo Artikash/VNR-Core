@@ -30,7 +30,10 @@ Built-in primitives.
   <primitive-type name="long" />
   <primitive-type name="unsigned long int" />
   <primitive-type name="unsigned long" />
-  <!--<primitive-type name="wchar_t" />-->
+
+  <!-- This would cause error due to missing _Check
+  <primitive-type name="wchar_t" />
+  -->
 
   <!-- I am not able to get the pointer type working as primitive-type
   <primitive-type name="unsigned short*" target-lang-api-name="PyUnicode">

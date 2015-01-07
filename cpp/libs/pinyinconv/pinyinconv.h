@@ -35,6 +35,8 @@ public:
 
   // Replacement
 
+  std::wstring lookup(int ch, bool tone = true) const;
+
   // Replace the characters according to the script, thread-safe
   std::wstring convert(const std::wstring &text,
                        const std::wstring &delim = L" ",
