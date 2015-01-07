@@ -49,7 +49,7 @@ int main()
   iterwords(s, [&ret, &s, &conv](size_t start, size_t stop) {
 
     std::wstring text = s.substr(start, stop);
-    qDebug() << "1111:" << start << ":"<<QString::fromStdWString(text);
+    qDebug() << "----:" << start << ":"<<QString::fromStdWString(text);
 
     ret.push_back(std::list<std::pair<std::wstring, std::wstring> >());
     auto &l = ret.back();
