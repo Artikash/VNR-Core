@@ -10,7 +10,7 @@ int main()
 
   const wchar_t *path = L"/Users/jichi/opt/stream/Library/Dictionaries/pinyin/Mandarin.dat";
   //std::wstring s = L"你好";
-  std::wstring s = L"梅尔·德·拉肯";
+  std::wstring s = L"女";
 
   PinyinConverter conv;
   bool ok = conv.addFile(path);
@@ -19,6 +19,7 @@ int main()
 
   std::wstring t = conv.convert(s);
   qDebug() << "input:" << QString::fromStdWString(s);
+  qDebug() << t.size();
   qDebug() << "output:" << QString::fromStdWString(t);
 
   qDebug() << "leave";

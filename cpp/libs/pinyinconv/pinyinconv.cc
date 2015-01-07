@@ -25,7 +25,7 @@ enum : char { CH_COMMENT = '#' }; // beginning of a comment
  *  - ǎěǐǒǔǚ
  *  - àèìòùǜ
  */
-const wchar_t *TONE_MARKS[] = { // a, o, e, ui, i, iu, u
+const wchar_t *TONE_MARKS[] = { // aeiouv
   L"aeiou\u00fc"
   , L"\u0101\u0113\u012b\u014d\u016b\u01d6"
   , L"\u00e1\u00e9\u00ed\u00f3\u00fa\u01d8"
@@ -59,6 +59,7 @@ private:
     case 'i': return TONE_MARKS[tone][2];
     case 'o': return TONE_MARKS[tone][3];
     case 'u': return TONE_MARKS[tone][4];
+    case 'v': return TONE_MARKS[tone][5];
     default: return 0;
     }
   }
