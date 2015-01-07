@@ -537,6 +537,9 @@ opencc:
 hangul:
   location:         $PWD/../../Dictionaries/hanja
 
+pinyin:
+  path:             $PWD/../../Dictionaries/pinyin/Mandarin.dat
+
 # Module options
 
 jinja:

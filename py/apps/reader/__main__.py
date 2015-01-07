@@ -108,13 +108,15 @@ def main():
   #  from sakurakit import skwin
   #  skwin.enable_drop_event()
 
-  dprint("init opencc")
+  dprint("init dic locations")
   from opencc import opencc
-  opencc.setdicdir(config.OPENCC_LOCATION)
+  opencc.setdicdir(config.OPENCC_DIC_LOCATION)
 
-  dprint("init hangul")
-  from hangulparse import hangulparse
-  hangulparse.setdicdir(config.HANGUL_LOCATION)
+  from hangulconv import hangulconv
+  hangulconv.setdicdir(config.HANGUL_DIC_LOCATION)
+
+  from pinyinconv import pinyinconv
+  pinyinconv.setdicpath(config.PINYIN_DIC_PATH)
 
   dprint("create app")
   import app

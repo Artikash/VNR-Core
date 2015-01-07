@@ -64,6 +64,9 @@ def makeconverter(fr, to):
       #with SkProfiler(): # 10/19/2014: 0.006 seconds for zhs2zht
       ret.addFile(path, reverse)
       return ret
+    else:
+      from sakurakit.skdebug import derror
+      derror("dic path does not exist:", path)
 
 # Conversion
 

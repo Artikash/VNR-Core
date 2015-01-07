@@ -4,8 +4,8 @@
 #include "simplecc/simplecc.h"
 #include "cpputil/cppunicode.h"
 #include <utf8.h>
-#include <boost/unordered_map.hpp>
 #include <fstream>
+#include <unordered_map>
 //#include <iostream>
 
 //#define DELIM   '\t' // deliminator of the rule pair
@@ -27,7 +27,7 @@ inline void utf8to32(const std::string &src, cpp_u32string &target)
 class SimpleChineseConverterPrivate
 {
 public:
-  typedef boost::unordered_map<wchar_t, wchar_t> map_type;
+  typedef std::unordered_map<wchar_t, wchar_t> map_type;
   map_type map;
 };
 
@@ -86,11 +86,12 @@ std::wstring SimpleChineseConverter::convert(const std::wstring &text) const
 
   std::wstring ret = text;
   D::map_type::iterator p;
-  for (size_t i = 0; i < text.size(); i++) {
-    p = d_->map.find(text[i]);
-    if (p != d_->map.end())
-      ret[i] = p->second;
-  }
+  for (size_t i = 0; i < text.size(); i++)
+    if (!isascii(text[i])) { // only convert kanji
+      p = d_->map.find(text[i]);
+      if (p != d_->map.end())
+        ret[i] = p->second;
+    }
   return ret;
 }
 

@@ -115,7 +115,7 @@ public:
   //QReadWriteLock lock;
 
   TranslationScriptRule *rules; // use array for performance reason
-  int ruleCount;
+  size_t ruleCount;
 
   bool underline;
 
@@ -131,15 +131,16 @@ public:
     }
   }
 
-  void reset(int size)
+  void reset(size_t size)
   {
     //DOUT(size);
     //Q_ASSERT(size > 0);
+    //if (ruleCount != size) {
     ruleCount = size;
     if (rules)
       delete[] rules;
     rules = new TranslationScriptRule[size];
-
+    //}
   }
 };
 
@@ -178,7 +179,7 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
   for (std::wstring line; std::getline(fin, line);)
     if (!line.empty()) {
       bool regex = false;
-      int textStartIndex = 1; // index of the text after flags, +1 to skip \t
+      size_t textStartIndex = 1; // index of the text after flags, +1 to skip \t
       switch (line[0]) {
       case SCRIPT_CH_COMMENT: continue;
       case SCRIPT_CH_REGEX: regex = true; textStartIndex++; break;
@@ -205,7 +206,7 @@ bool TranslationScriptManager::loadFile(const std::wstring &path)
   //QWriteLocker locker(&d_->lock);
   d_->reset(lines.size());
 
-  int i = 0;
+  size_t i = 0;
   BOOST_FOREACH (const auto &it, lines)
     d_->rules[i++].init(std::get<0>(it), std::get<1>(it), std::get<2>(it));
 
@@ -221,7 +222,7 @@ std::wstring TranslationScriptManager::translate(const std::wstring &text) const
   std::wstring previous = text;
 #endif // DEBUG_RULE
   if (d_->ruleCount && d_->rules)
-    for (int i = 0; i < d_->ruleCount; i++) {
+    for (size_t i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
       if (!rule.empty)
         rule.replace(ret, d_->underline);

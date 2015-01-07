@@ -4,7 +4,8 @@
 import re
 from unidecode import unidecode
 from unitraits import jpchars
-from hangulparse import hangulparse
+from hangulconv import hangulconv
+from pinyinconv import pinyinconv
 import rc
 
 __other_punct = u'《》“”‘’"\'，,? 　' # Chinese/English punctuations
@@ -28,7 +29,11 @@ def _toroman(text, language=''):
   """
   if not text or not isinstance(text, unicode):
     return text
-  text = unidecode(text)
+  if language.startswith('zh'):
+    t = pinyinconv.to_pinyin(text, delim='', tone=True, capital=True)
+    text = unidecode(text) if t == text else t
+  else:
+    text = unidecode(text)
   if language == 'ko':
     text = text.title()
   return text
@@ -66,7 +71,7 @@ def _iterparseruby_ko(text, romajaRubyEnabled=True, hanjaRubyEnabled=True):
   @param* hanjaRubyEnabled  bool
   @yield  (unicode surface, unicode yomi or None, int groupId or None)
   """
-  for group, l in enumerate(hangulparse.to_hanja_list(text)):
+  for group, l in enumerate(hangulconv.to_hanja_list(text)):
     for surface,yomi in l:
       if len(surface) == 1 and surface in _s_punct:
         group = None

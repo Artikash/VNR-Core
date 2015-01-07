@@ -145,7 +145,7 @@ if __name__ == '__main__':
   def test_cc():
     from opencc import opencc
     import config
-    opencc.setdicdir(config.OPENCC_LOCATION)
+    opencc.setdicdir(config.OPENCC_DIC_LOCATION)
 
     #t = u"里面"
     t = u"我方"
