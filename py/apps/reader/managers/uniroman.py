@@ -32,10 +32,10 @@ def _toroman(text, language=''):
   if language.startswith('zh'):
     if len(text) == 1:
       t = pinyinconv.lookup(text, tone=True)
-      if t:
-        t = t.title()
+      #if t:
+      #  t = t.title()
     else:
-      t = pinyinconv.to_pinyin(text, delim='', tone=True, capital=True)
+      t = pinyinconv.to_pinyin(text, delim='', tone=True, capital=False)
     text = t if t and t != text else unidecode(text)
   else:
     text = unidecode(text)
