@@ -421,6 +421,7 @@ class _TermInput(object):
       skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("The pattern is long. Please DO NOT add subtitles to Shared Dictionary.")))
     elif self._getType() == 'yomi' and self._getLanguage().startswith('zh'):
+      skqss.class_(w, 'text-error')
       w.setText("%s: %s" % (tr_("Warning"), my.tr("Yomi type is useless for Chinese translation.")))
     else:
       skqss.class_(w, 'text-success')
