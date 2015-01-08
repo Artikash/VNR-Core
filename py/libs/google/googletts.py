@@ -12,9 +12,6 @@ API = DEFAULT_API
 def defaultapi(): return DEFAULT_API
 def setapi(url): global API; API = url
 
-from PySide.QtGui import *
-w = QTextEdit()
-
 #def url(text, language, encoding='UTF-8'):
 def url(text, language, encoding=None): # encoding is not needed
   """
