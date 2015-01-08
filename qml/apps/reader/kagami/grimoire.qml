@@ -1207,7 +1207,7 @@ Item { id: root_
 
         font.family: root_.fontFamily(model.language)
         font.bold: fontPixelSize < 23 && model.language === 'ja' // MS Gothic
-                || fontPixelSize < 24 && model.language === 'ko' // DFGirl
+                || fontPixelSize < 24 && model.language === 'ko' && !root_.rubyInverted // DFGirl
 
         function renderText() {
           var t
