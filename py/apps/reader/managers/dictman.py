@@ -185,7 +185,12 @@ class DictionaryManager:
     """
     romaja = convutil.toroman(text, 'ko')
     hanja = convutil.hangul2hanja(text)
-    feature = ', '.join(filter(bool, (romaja, hanja)))
+    l = [text]
+    if romaji:
+      l.append(romaji)
+    if hanja and hanja != text:
+      l.append(hanja)
+    feature = ', '.join(l)
     return rc.jinja_template('html/shiori').render({
       'language': 'ko',
       'text': text,
