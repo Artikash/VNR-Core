@@ -183,9 +183,14 @@ class DictionaryManager:
     @param  text  Korean phrase
     @return  unicode not None  html
     """
+    l = [text]
     romaja = convutil.toroman(text, 'ko')
+    if romaja:
+      l.append(romaja)
     hanja = convutil.hangul2hanja(text)
-    feature = ', '.join(filter(bool, (romaja, hanja)))
+    if hanja and hanja != text:
+      l.append(hanja)
+    feature = ', '.join(l)
     return rc.jinja_template('html/shiori').render({
       'language': 'ko',
       'text': text,
