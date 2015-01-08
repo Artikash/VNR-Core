@@ -71,7 +71,7 @@ Item { id: root_
     if (text && type == 'yomi')
       ret += "\n" + My.tr("Yomi") + ": " + renderYomi(text)
 
-    if (text && (type == 'escape' || type == 'target' || type == 'name') && lang != 'en' && lang != 'ja')
+    if (text && (type == 'escape' || type == 'target' || type == 'name' || type == 'suffix') && lang != 'en' && lang != 'ja')
       ret += "\n" + Sk.tr("Romaji") + ": " + jlp_.toroman(text, lang)
 
     var ts = Util.timestampToString(currentItem.timestamp)
