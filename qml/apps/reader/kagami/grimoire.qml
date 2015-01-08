@@ -1202,10 +1202,12 @@ Item { id: root_
             (root_.rubyJaInverted && (model.type === 'text' || model.type === 'name')) ?
             14 * root_._zoomFactor :
             18 * root_._zoomFactor
+
         font.pixelSize: fontPixelSize
 
         font.family: root_.fontFamily(model.language)
-        font.bold: fontPixelSize < 23  && model.language === 'ja' // i.e. MS Gothic
+        font.bold: fontPixelSize < 23 && model.language === 'ja' // MS Gothic
+                || fontPixelSize < 24 && model.language === 'ko' // DFGirl
 
         function renderText() {
           var t
