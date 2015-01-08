@@ -178,12 +178,16 @@ Item { id: root_
 
   property bool mouseLocked: false // click locked
 
+  function sameLanguageAsUser(lang) { // string -> bool
+    return lang.substr(0, 2) === root_.userLanguage.substr(0, 2)
+  }
+
   function removeHtmlTags(text) { // string ->  string  remove HTML tags
     return text.replace(/<[0-9a-zA-Z: "/:=-]+>/g, '')
   }
 
-  function sameLanguageAsUser(lang) { // string -> bool
-    return lang.substr(0, 2) === root_.userLanguage.substr(0, 2)
+  function normalizeTtsText(text) { // string ->  string  remove HTML tags
+    return removeHtmlTags(text).replace(/^【[^】]+】/, '') // remove character name for tts
   }
 
   function isRubyLanguage(lang) { // string -> bool
@@ -1079,8 +1083,11 @@ Item { id: root_
                 }
                 //if (root_.readEnabled && model.language === 'ja')
                 if ((model.type === 'text' || model.type !== 'name')
-                    && !root_.sameLanguageAsUser(model.language))
-                  ttsPlugin_.speak(t, model.language)
+                    && !root_.sameLanguageAsUser(model.language)) {
+                  t = removeHtmlTags(t)
+                  if (t)
+                    ttsPlugin_.speak(t, model.language)
+                }
               }
             }
             root_.mouseLocked = false
@@ -1098,8 +1105,10 @@ Item { id: root_
                 textEdit_.deselect()
                 //if (root_.readEnabled)
                 //if (model.type === 'text' || model.type !== 'name')
-                if (!root_.sameLanguageAsUser(model.language))
+                if (!root_.sameLanguageAsUser(model.language)) {
+                  t = root_.normalizeTtsText(t) || t
                   ttsPlugin_.speak(t, model.language)
+                }
               }
             }
             root_.mouseLocked = false
@@ -1616,7 +1625,9 @@ Item { id: root_
       onTriggered: {
         var item = listModel_.get(popupIndex())
         if (item && item.text && item.language) {
-          ttsPlugin_.speak(item.text, item.language)
+          var t = item.text
+          t = root_.normalizeTtsText(t) || t
+          ttsPlugin_.speak(t, item.language)
           console.log("grimoire.qml:readAll: pass")
         }
       }
