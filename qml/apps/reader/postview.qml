@@ -131,7 +131,7 @@ Item { id: root_
     }
 
     Bootstrap.Button {
-      styleClass: 'btn btn-info'
+      styleClass: 'btn btn-success'
       //width: 40
       text: Sk.tr("Browse")
       toolTip: My.tr("Open in external browser")
