@@ -2,83 +2,19 @@
 # dictman.py
 # 10/10/2012 jichi
 
-import re
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
 from mytr import my
 #from kagami import GrimoireBean
 import config, convutil, dicts, ebdict, growl, mecabman, rc, settings
+import _dictman
 
 @memoized
 def manager(): return DictionaryManager()
 
 EMPTY_HTML = '<span style="font:youyuan">%s</span>' % (tr_("Not found") + u"!＞＜")
 MIN_HTML_LEN = 290 # empty html length
-
-def _render_edict(text):
-  """
-  @param  text  unicode
-  @return  unicode  html
-
-  Example: /(n,adj-no) (1) center/centre/middle/heart/core/focus/pivot/emphasis/balance/(suf) (2) -centered/-centred/-focussed/-oriented/centered on/focussed on/(P)/
-  """
-  if text.startswith('/'):
-    text = text[1:]
-  if text.endswith('/'):
-    text = text[:-1]
-  role = ''
-  if text.startswith('('): # extract leading word role
-    i = text.find(')')
-    if i != -1:
-      role = text[1:i]
-      text = text[i+1:]
-  popular = text.endswith('(P)') # deal with trailing (popular) mark
-  if popular:
-    text = text[:-3]
-  if text.endswith('/'): # replace (1) (2) ... by html list
-    text = text[:-1]
-  # Render list
-  t = re.sub(r'\s?\(\d+\)\s?', '<li>', text)
-  if t == text:
-    text = "<ul><li>%s</ul>" % text
-  else:
-    if not t.startswith('<li>'):
-      i = t.find('<li>')
-      if i != -1:
-        if role:
-          role += u' →' # space + みぎ
-        role += t[:i]
-        t = t[i:]
-    t = t.replace('/<', '<')
-    text = "<ol>%s</ol>" % t
-  # Render heading
-  head = ''
-  if role:
-    head = '<span class="role">[%s]</span>' % role
-  if popular:
-    if head:
-      head += ' '
-    head += '<span class="flag">(common phrase)</div>'
-  if head:
-    head = '<div class="head">%s</div>' % head
-    text = head + text
-  return text
-
-# Example Vietnamese dictionary:
-# ちょっと一杯
-# <C><F><H /><K><![CDATA[<ul><li><font color='#cc0000'><b> {ちょっといっぱい}</b></font></li></ul><ul><li><font color='#cc0000'><b> {let's have quick drink}</b></font></li></ul>]] > </K></F></C>
-def _simplify_ovdp_xml(text): # unicode -> unicode
-  """
-  @param  text  unicode
-  @return  unicode
-  """
-  return (text
-      .replace('<![CDATA[', '').replace(']] >', '').replace(']]>', '')
-      .replace("<font color='#cc0000'>", '').replace('</font>', '')
-      .replace('<ul>', '').replace('</ul>', '')
-      .replace('<li>', '<br/>').replace('</li>', '<br/>')
-      .replace('{', '').replace('}', ''))
 
 #@Q_Q
 class _DictionaryManager:
@@ -94,7 +30,7 @@ class _DictionaryManager:
     """
     if settings.global_().isEdictEnabled():
       for it in dicts.edict().lookup(text, limit=limit):
-        yield it.Headword, it.Reading, _render_edict(it.Translation)
+        yield it.Headword, it.Reading, _dictman.render_edict(it.Translation)
 
   def _iterEB(self):
     """
@@ -191,19 +127,19 @@ class _DictionaryManager:
 
   def _iterLD(self):
     """
-    @yield  LingoesDic
+    @yield  LingoesDic, str language, str category
     """
     ss = settings.global_()
     if ss.isLingoesJaZhGbkEnabled():
-      yield dicts.lingoes('ja-zh-gbk'), 'zh'
+      yield dicts.lingoes('ja-zh-gbk'), 'ja-zh', None
     if ss.isLingoesJaZhEnabled():
-      yield dicts.lingoes('ja-zh'), 'zh'
+      yield dicts.lingoes('ja-zh'), 'ja-zh', None
     if ss.isLingoesJaKoEnabled():
-      yield dicts.lingoes('ja-ko'), 'ko'
+      yield dicts.lingoes('ja-ko'), 'ja-ko', 'naver'
     if ss.isLingoesJaViEnabled():
-      yield dicts.lingoes('ja-vi'), 'vi'
+      yield dicts.lingoes('ja-vi'), 'ja-vi', 'ovdp'
     if ss.isLingoesJaEnEnabled():
-      yield dicts.lingoes('ja-en'), 'en'
+      yield dicts.lingoes('ja-en'), 'ja-en', 'vicon'
 
   def lookupLD(self, text, limit=3): # LD seems contains lots of wrong word, use smaller size
     """
@@ -211,12 +147,10 @@ class _DictionaryManager:
     @param  limit  int
     @yield  unicode source, [unicode xml]
     """
-    for db, lang in self._iterLD():
+    for db, lang, cat in self._iterLD():
       for word, xml in db.lookup(text, limit=limit):
-        if lang == 'vi':
-          yield word, _simplify_ovdp_xml(xml)
-        else:
-          yield word, xml
+        xml = _dictman.render_lingoes(xml, cat)
+        yield word, xml
 
 class DictionaryManager:
 

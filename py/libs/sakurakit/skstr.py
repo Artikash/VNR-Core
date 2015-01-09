@@ -21,6 +21,24 @@ def signed_ord(c):
   ret = ord(c)
   return ret if ret < 128 else ret - 256
 
+# http://stackoverflow.com/questions/2556108/how-to-replace-the-last-occurence-of-an-expression-in-a-string
+def rreplace(s, old, new, count):
+  """
+  @param  s  unicode
+  @param  old  unicode
+  @param  new  unicode
+  @param  count  int
+  """
+  if count == 1:
+    left, mid, right = s.rpartition(old)
+    if mid:
+      return new.join((left, right))
+  else:
+    l = s.rsplit(old, count)
+    if l:
+      return new.join(l)
+  return s
+
 def _multireplacer_lookup(table, match):
   """
   @param  table  {unicode fr:unicode to}
