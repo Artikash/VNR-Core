@@ -2,6 +2,8 @@
 # dictman.py
 # 10/10/2012 jichi
 
+#from sakurakit.skprof import SkProfiler
+
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
@@ -200,6 +202,7 @@ class DictionaryManager:
           text = surf
         feature = mecabman.renderfeature(feature, fmt)
     try:
+      #with SkProfiler("en-vi"): # 1/8/2014: take 7 seconds for OVDP
       ret = rc.jinja_template('html/shiori').render({
         'language': 'ja',
         'text': text,

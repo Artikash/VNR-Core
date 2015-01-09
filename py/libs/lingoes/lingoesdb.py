@@ -9,7 +9,11 @@ if __name__ == '__main__':
   sys.path.append("..")
 #from sakurakit.skprof import SkProfiler
 
+# For better performance
+#try: from pysqlite2 import dbapi2 as sqlite3
+#except ImportError: import sqlite3
 import sqlite3
+
 from sakurakit.skdebug import dprint, dwarn
 from dictdb import dictdb
 
