@@ -6,6 +6,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
+#include <cstdint>
 #include <list> // instead of QList which is slow that stores pointers instead of elements
 #include <tuple>
 #include <fstream>
@@ -15,6 +16,8 @@
 #include "sakurakit/skdebug.h"
 
 //#define DEBUG_RULE // output the rule that is applied
+
+#define SCRIPT_CACHE_REGEX // enable caching regex
 
 #define SCRIPT_CH_COMMENT   '#' // indicate the beginning of a line comment
 #define SCRIPT_CH_REGEX     'r'
@@ -36,36 +39,61 @@ const std::locale UTF8_LOCALE = ::cpp_utf8_locale<wchar_t>();
 #define render_text(text, underline) \
   ((text).empty() ? std::wstring(): (underline) ? _underline_text((text)) : (text))
 
-struct TranslationScriptRule
+class TranslationScriptRule
 {
-  mutable bool empty;
-  std::wstring source;
-  std::wstring target;
-  boost::wregex *sourceRe; // cached compiled regex
+  enum Flag : uint8_t { RegexFlag = 1 };
 
-  TranslationScriptRule() : empty(true), sourceRe(nullptr) {}
-  ~TranslationScriptRule() { if (sourceRe) delete sourceRe; }
+  uint8_t flags;
+  mutable bool valid;
+
+#ifdef SCRIPT_CACHE_REGEX
+  boost::wregex *sourceRe; // cached compiled regex
+#endif // SCRIPT_CACHE_REGEX;
+
+public:
+  std::wstring source,
+               target;
+
+  TranslationScriptRule()
+    : flags(0), valid(false)
+#ifdef SCRIPT_CACHE_REGEX
+    , sourceRe(nullptr)
+#endif // SCRIPT_CACHE_REGEX
+  {}
+
+#ifdef SCRIPT_CACHE_REGEX
+  ~TranslationScriptRule()
+  {
+    if (sourceRe) delete sourceRe;
+  }
+#endif // SCRIPT_CACHE_REGEX
+
+  bool isValid() const { return valid; }
 
   void init(const std::wstring &s, const std::wstring &t, bool regex)
   {
-    empty = false;
     if (regex) {
-      boost::wregex *re = nullptr;
+      flags |= RegexFlag;
       try {
-        re = new boost::wregex(s);
+#ifdef SCRIPT_CACHE_REGEX
+        sourceRe = new boost::wregex(s);
+#else
+        boost::wregex(s);
+#endif // SCRIPT_CACHE_REGEX
       } catch (...) { // boost::bad_pattern
         DWOUT("invalid regex pattern:" << s);
-        empty = true;
-        return;
+        valid = false;
       }
-
-      sourceRe = re;
-      target = t;
-      //target.replace('$', '\\'); // convert Javascript RegExp to Perl
-    } else {
-      source = s;
-      target = t;
     }
+
+#ifdef SCRIPT_CACHE_REGEX
+    if (!regex)
+#endif // SCRIPT_CACHE_REGEX
+      source = s;
+
+    target = t;
+
+    valid = true;
   }
 
   // Replacement
@@ -85,19 +113,24 @@ private:
       boost::wsmatch m; // search first, which has less opportunity to happen
       // match_default is the default value
       // format_all is needed to enable all features, but it is sligntly slower
-      if (boost::regex_search(ret, m, *sourceRe))
-        ret = boost::regex_replace(ret, *sourceRe, render_text(target, underline),
+#ifdef SCRIPT_CACHE_REGEX
+      const auto &re = *sourceRe;
+#else
+      boost::wregex re(source);
+#endif // SCRIPT_CACHE_REGEX
+      if (boost::regex_search(ret, m, re))
+        ret = boost::regex_replace(ret, re, render_text(target, underline),
             boost::match_default|boost::format_all);
     } catch (...) {
       DWOUT("invalid regex expression:" << target);
-      empty = true;
+      valid = false;
     }
   }
 
 public:
   void replace(std::wstring &ret, bool underline) const
   {
-    if (sourceRe)
+    if (flags & RegexFlag)
       regex_replace(ret, underline);
     else if (boost::algorithm::contains(ret, source)) // check exist first which is faster and could avoid rendering target
       string_replace(ret, underline);
@@ -224,16 +257,12 @@ std::wstring TranslationScriptManager::translate(const std::wstring &text) const
   if (d_->ruleCount && d_->rules)
     for (size_t i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
-      if (!rule.empty)
+      if (rule.isValid())
         rule.replace(ret, d_->underline);
 
 #ifdef DEBUG_RULE
-      if (previous != ret) {
-        if (rule.sourceRe)
-          DOUT(QString::fromStdWString(rule.target) << QString::fromStdWString(ret));
-        else
-          DOUT(QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target) << QString::fromStdWString(ret));
-      }
+      if (previous != ret)
+        DOUT(QString::fromStdWString(rule.source) << QString::fromStdWString(rule.target) << QString::fromStdWString(ret));
       previous = ret;
 #endif // DEBUG_RULE
     }
