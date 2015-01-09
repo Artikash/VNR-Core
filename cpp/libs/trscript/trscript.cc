@@ -98,15 +98,15 @@ public:
 
   // Replacement
 private:
-  void string_replace(std::wstring &ret, bool underline) const
+  void string_replace(std::wstring &ret, bool link) const
   {
     if (target.empty())
       boost::erase_all(ret, source);
     else
-      boost::replace_all(ret, source, render_text(target, underline));
+      boost::replace_all(ret, source, render_text(target, link));
   }
 
-  void regex_replace(std::wstring &ret, bool underline) const
+  void regex_replace(std::wstring &ret, bool link) const
   {
     //Q_ASSERT(sourceRe);
     try  {
@@ -119,7 +119,7 @@ private:
       boost::wregex re(source);
 #endif // SCRIPT_CACHE_REGEX
       if (boost::regex_search(ret, m, re))
-        ret = boost::regex_replace(ret, re, render_text(target, underline),
+        ret = boost::regex_replace(ret, re, render_text(target, link),
             boost::match_default|boost::format_all);
     } catch (...) {
       DWOUT("invalid regex expression:" << target);
@@ -128,12 +128,12 @@ private:
   }
 
 public:
-  void replace(std::wstring &ret, bool underline) const
+  void replace(std::wstring &ret, bool link) const
   {
     if (flags & RegexFlag)
-      regex_replace(ret, underline);
+      regex_replace(ret, link);
     else if (boost::algorithm::contains(ret, source)) // check exist first which is faster and could avoid rendering target
-      string_replace(ret, underline);
+      string_replace(ret, link);
   }
 };
 
@@ -150,9 +150,9 @@ public:
   TranslationScriptRule *rules; // use array for performance reason
   size_t ruleCount;
 
-  bool underline;
+  bool link;
 
-  TranslationScriptManagerPrivate() : rules(nullptr), ruleCount(0), underline(false) {}
+  TranslationScriptManagerPrivate() : rules(nullptr), ruleCount(0), link(false) {}
   ~TranslationScriptManagerPrivate() { if (rules) delete[] rules; }
 
   void clear()
@@ -187,8 +187,8 @@ TranslationScriptManager::~TranslationScriptManager() { delete d_; }
 int TranslationScriptManager::size() const { return d_->ruleCount; }
 bool TranslationScriptManager::isEmpty() const { return !d_->ruleCount; }
 
-bool TranslationScriptManager::isUnderline() const { return d_->underline; }
-void TranslationScriptManager::setUnderline(bool value) { d_->underline = value; }
+bool TranslationScriptManager::isLinkEnabled() const { return d_->link; }
+void TranslationScriptManager::setLinkEnabled(bool t) { d_->link = t; }
 
 void TranslationScriptManager::clear() { d_->clear(); }
 
@@ -258,7 +258,7 @@ std::wstring TranslationScriptManager::translate(const std::wstring &text) const
     for (size_t i = 0; i < d_->ruleCount; i++) {
       const auto &rule = d_->rules[i];
       if (rule.isValid())
-        rule.replace(ret, d_->underline);
+        rule.replace(ret, d_->link);
 
 #ifdef DEBUG_RULE
       if (previous != ret)

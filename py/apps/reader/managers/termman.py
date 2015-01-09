@@ -399,7 +399,7 @@ class _TermManager:
     ret = self.scripts.get(key)
     if not ret:
       ret = self.scripts[key] = TranslationScriptManager()
-      ret.setUnderline(self.marked and type in ('target', 'escape_target'))
+      ret.setLinkEnabled(self.marked and type in ('target', 'escape_target'))
     return ret
 
   #@classmethod
@@ -620,7 +620,7 @@ class TermManager(QObject):
       for key,man in d.scripts.iteritems():
         type = key.split(SCRIPT_KEY_SEP)[0]
         marked = t and type in ('target', 'escape_target')
-        man.setUnderline(marked)
+        man.setLinkEnabled(marked)
 
       for it in d.rbmt.itervalues():
         it.setUnderline(t and it.isEscape())
