@@ -5,7 +5,8 @@
 import re
 from sakurakit import skstr
 
-RIGHT_ARROW = u"→" # みぎ
+#RIGHT_ARROW = u"→" # みぎ
+RIGHT_ARROW = u"⇒" # みぎ
 
 def render_edict(text):
   """
