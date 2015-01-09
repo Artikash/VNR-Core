@@ -101,8 +101,8 @@ class TermWriter:
           z = convertsChinese and td.language == 'zhs'
           # no padding space for Chinese names
           padding = escape_source or (
-              td.language not in ('ja', 'zhs', 'zht')
-              and td.type in ('name', 'translation'))
+              td.language not in ('ja', 'ko', 'zhs', 'zht')
+              and td.type in ('name', 'yomi', 'translation'))
 
           regex = td.regex and not escape_target
 
