@@ -165,7 +165,10 @@ Item { id: root_
         // height is the same as painted height
         width: Math.max(0, listView_.width - 20)
 
-        onLinkActivated: Qt.openUrlExternally(link)
+        onLinkActivated: {
+          growl_.showMessage(My.tr("Open in external browser"))
+          Qt.openUrlExternally(link)
+        }
 
         effect: Share.TextEffect { highlight: mouse_.containsMouse }
 

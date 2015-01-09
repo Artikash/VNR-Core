@@ -4,15 +4,16 @@
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
+//import '../../../imports/qmlhelper' as Helper
 import '../../../js/sakurakit.min.js' as Sk
-import '../../../imports/qmlhelper' as Helper
 import '../../../components' as Components
+import '../../../components/qt5' as Qt5
 
 Item { id: root_
 
   // - Private -
 
-  Helper.QmlHelper { id: helper_ }
+  //Helper.QmlHelper { id: qmlhelper_ }
 
   Plugin.SubtitleContextBean { id: bean_
     onRefresh: root_.refresh()
@@ -55,7 +56,7 @@ Item { id: root_
       NumberAnimation { property: 'opacity'; duration: 400 }
     }
 
-    TextEdit { id: textEdit_
+    Qt5.TextEdit5 { id: textEdit_
       //anchors.centerIn: parent
       width: parent.width
       wrapMode: TextEdit.WordWrap
@@ -67,7 +68,7 @@ Item { id: root_
       onCursorRectangleChanged: scrollArea_.ensureVisible(cursorRectangle)
 
       Plugin.MeCabHighlighter {
-        document: helper_.textedit_document(textEdit_)
+        document: textEdit_.getTextDocument()
         enabled: root_.visible && toolTip_.containsMouse
       }
 

@@ -420,7 +420,10 @@ Item { id: root_
           // Not working, which cause textedit width to shrink
           //onTextChanged: width = Math.min(_MAX_WIDTH, paintedWidth)
 
-          onLinkActivated: Qt.openUrlExternally(link)
+          onLinkActivated: {
+            growl_.showMessage(My.tr("Open in external browser"))
+            Qt.openUrlExternally(link)
+          }
           //console.log("shiori.qml: link activated:", link)
 
           effect: Share.TextEffect {}

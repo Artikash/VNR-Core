@@ -33,7 +33,6 @@ Item { id: root_
   property color _HIGHLIGHT_COLOR: 'purple'
 
   //Plugin.DataManagerProxy { id: datamanPlugin_ }
-  //Plugin.Growl { id: growl_ }
 
   function canEdit(r) {
     return !!r && !!userId && (userId === _SUPER_USER_ID

@@ -17,6 +17,7 @@
 QT_FORWARD_DECLARE_CLASS(QDeclarativeTextEdit)
 QT_FORWARD_DECLARE_CLASS(QDeclarativeTextEditPrivate)
 QT_FORWARD_DECLARE_CLASS(QTextDocument)
+QT_FORWARD_DECLARE_CLASS(QTextControl)
 
 namespace QtPrivate {
 
@@ -27,6 +28,10 @@ inline QDeclarativeTextEditPrivate *d_qdeclarativetextedit(const QDeclarativeTex
 inline QTextDocument *d_qdeclarativetextedit_document(const QDeclarativeTextEdit *q)
 //{ return !q ? nullptr : d_qdeclarativetextedit(q)->control->document(); }
 { return !q ? nullptr : d_qdeclarativetextedit(q)->document; }
+
+inline QTextControl *d_qdeclarativetextedit_control(const QDeclarativeTextEdit *q)
+//{ return !q ? nullptr : d_qdeclarativetextedit(q)->control->document(); }
+{ return !q ? nullptr : d_qdeclarativetextedit(q)->control; }
 
 } // namespace QtPrivate
 

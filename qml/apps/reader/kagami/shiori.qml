@@ -8,6 +8,7 @@ import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
 //import '../../../js/util.min.js' as Util
 import '../../../components' as Components
+import '../../../components/qt5' as Qt5
 import '../share' as Share
 
 Rectangle { id: root_
@@ -38,7 +39,7 @@ Rectangle { id: root_
 
   //clip: true // to hide scroll bars, but the close button will also be clipped
 
-  property int _VISIBLE_DURATION: 4000   // 4 seconds
+  property int _VISIBLE_DURATION: 8000   // 8 seconds
   property int _X_OFFSET: 20
   property int _Y_OFFSET: 15
 
@@ -78,7 +79,11 @@ Rectangle { id: root_
   //  GradientStop { position: 0.77; color: '#9f3f3f3f' }
   //  GradientStop { position: 1.0;  color: '#ca6a6d6a' }
   //}
-  color: '#aa000000'
+
+  color: '#dd000000' // black
+  //color: '#aa000000' // black
+  //color: '#eeffffff' // white
+  //color: '#eef4f5fa' // light blue, the same as the website
 
   Plugin.ShioriBean { id: bean_
     Component.onCompleted:
@@ -190,26 +195,29 @@ Rectangle { id: root_
       NumberAnimation { property: 'opacity'; duration: 400 }
     }
 
-    TextEdit { id: textEdit_
+    Qt5.TextEdit5 { id: textEdit_
       anchors.centerIn: parent
       width: root_.defaultWidth * root_._zoomFactor
       //width: _DEFAULT_WIDTH // FIXME: automatically adjust width
 
       //selectByMouse: true // conflicts with flickable
+      color: 'white'
+      //color: 'snow'
+      //color: 'black'
 
       textFormat: TextEdit.RichText
       wrapMode: TextEdit.Wrap
       focus: true
-      color: 'snow'
       font.pixelSize: 12 * root_._zoomFactor
-      font.bold: true
+      //font.bold: true
       font.family: 'MS Mincho' // 明朝
 
       // Not working, which cause textedit width to shrink
       //onTextChanged: width = Math.min(_MAX_WIDTH, paintedWidth)
 
-      onLinkActivated: Qt.openUrlExternally(link)
-      //console.log("shiori.qml: link activated:", link)
+      // this does not work anyawy
+      // It erquires selectByMouse = true, and no MouseArea
+      //onLinkActivated: Qt.openUrlExternally(link)
 
       effect: Share.TextEffect {}
 
@@ -219,6 +227,14 @@ Rectangle { id: root_
         acceptedButtons: Qt.LeftButton
         //enabled: !!model.text
         //hoverEnabled: enabled
+
+        onClicked: {
+          var link = textEdit_.linkAt(mouse.x, mouse.y)
+          if (link) {
+            growl_.showMessage(My.tr("Open in external browser"))
+            Qt.openUrlExternally(link)
+          }
+        }
 
         onDoubleClicked: {
           textEdit_.cursorPosition = textEdit_.positionAt(mouse.x, mouse.y)

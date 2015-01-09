@@ -3,6 +3,7 @@
  */
 import QtQuick 1.1
 import '../../../js/sakurakit.min.js' as Sk
+import '../../../js/reader.min.js' as My
 import '../../../js/util.min.js' as Util
 import '../share' as Share
 
@@ -63,6 +64,11 @@ Item { id: root_
     return ret
   }
 
+  function openUrl(link) {
+    growlPlugin_.msg(My.tr("Open in external browser") + "<br/>" + link)
+    Qt.openUrlExternally(link)
+  }
+
   Row { id: footer_
     anchors {
       left: parent.left; right: parent.right
@@ -81,7 +87,7 @@ Item { id: root_
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
-      onLinkActivated: Qt.openUrlExternally(link)
+      onLinkActivated: root_.openUrl(link)
       text: root_.formatText('ErogeTrailers', 'erogetrailers.com', model.trailersItem)
     }
 
@@ -90,7 +96,7 @@ Item { id: root_
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
-      onLinkActivated: Qt.openUrlExternally(link)
+      onLinkActivated: root_.openUrl(link)
       text: root_.formatText('ErogameScape', 'erogamescape.dyndns.org/~ap2/ero/toukei_kaiseki', model.scapeItem)
     }
 
@@ -99,7 +105,7 @@ Item { id: root_
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
-      onLinkActivated: Qt.openUrlExternally(link)
+      onLinkActivated: root_.openUrl(link)
       text: root_.formatText('Holyseal', 'holyseal.net', model.holysealItem)
     }
 
@@ -108,7 +114,7 @@ Item { id: root_
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
-      onLinkActivated: Qt.openUrlExternally(link)
+      onLinkActivated: root_.openUrl(link)
       text: root_.formatText('Getchu', 'getchu.com', model.getchuItem)
     }
 
@@ -117,7 +123,7 @@ Item { id: root_
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
-      onLinkActivated: Qt.openUrlExternally(link)
+      onLinkActivated: root_.openUrl(link)
       text: root_.formatText('Amazon', 'amazon.co.jp', model.amazonItem)
     }
 
@@ -126,7 +132,7 @@ Item { id: root_
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
-      onLinkActivated: Qt.openUrlExternally(link)
+      onLinkActivated: root_.openUrl(link)
       text: root_.formatText('DMM', 'dmm.co.jp', model.dmmItem)
     }
 
@@ -135,7 +141,7 @@ Item { id: root_
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
-      onLinkActivated: Qt.openUrlExternally(link)
+      onLinkActivated: root_.openUrl(link)
       text: root_.formatText('DLsite', 'dlsite.co.jp', model.dlsiteItem)
     }
 
@@ -144,7 +150,7 @@ Item { id: root_
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
-      onLinkActivated: Qt.openUrlExternally(link)
+      onLinkActivated: root_.openUrl(link)
       text: root_.formatText('DiGiket', 'www.digiket.com', model.digiketItem)
     }
 
@@ -153,7 +159,7 @@ Item { id: root_
       font.pixelSize: parent.pixelSize
       textFormat: Text.RichText
       wrapMode: Text.NoWrap
-      onLinkActivated: Qt.openUrlExternally(link)
+      onLinkActivated: root_.openUrl(link)
       text: root_.formatText('Gyutto', 'gyutto.com', model.gyuttoItem)
     }
   }

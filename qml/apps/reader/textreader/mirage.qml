@@ -779,7 +779,10 @@ Item { id: root_
         //  z: -1
         //  radius: 15
         //}
-        onLinkActivated: Qt.openUrlExternally(link)
+        onLinkActivated: {
+          growl_.showMessage(My.tr("Open in external browser"))
+          Qt.openUrlExternally(link)
+        }
 
         MouseArea { id: textCursor_
           anchors.fill: parent
