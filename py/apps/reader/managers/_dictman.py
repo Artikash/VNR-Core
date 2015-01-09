@@ -4,6 +4,7 @@
 
 import re
 from sakurakit import skstr
+import convutil
 
 #RIGHT_ARROW = u"→" # みぎ
 RIGHT_ARROW = u"⇒" # みぎ
@@ -57,6 +58,13 @@ def render_edict(text):
     text = head + text
   return text
 
+def _sub_roman(m): # re.match -> unicode
+  t = m.group(2)
+  r = convutil.kana2romaji(t)
+  if r and r != t:
+    t = "%s, %s" % (t, r)
+  return '<span class="reading">(%s)</span>' % t
+
 def _render_lingoes(text, dic):
   """Render lingoes ja-zh dictionary.
   @param  text  unicode
@@ -86,10 +94,12 @@ def _render_lingoes(text, dic):
   #text = text.replace('<W>', '<div>').replace('</W>', '</div>') # example sentence text
   #text = text.replace('<X>', '<div>').replace('</X>', '</div>') # example sentence translation
   # Reading
-  text = text.replace('<M>', ' <span class="reading">(')
-  text = text.replace('</M>', ')</span> ')
-  text = text.replace('<g>', ' <span class="reading">(')
-  text = text.replace('</g>', ')</span> ')
+  #text = text.replace('<M>', ' <span class="reading">(')
+  #text = text.replace('</M>', ')</span> ')
+  #text = text.replace('<g>', ' <span class="reading">(')
+  #text = text.replace('</g>', ')</span> ')
+  if '<M>' in text or '<g>' in text:
+    text = re.sub(r'<([Mg])>(.+?)</\1>', _sub_roman, text)
   qc = text.count('<Q>')
   if qc > 1: # skip only 1 quote case
     text = text.replace('<Q>','<li>').replace('</Q>', '</li>') # quote => list

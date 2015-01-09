@@ -2,6 +2,8 @@
 # dictman.py
 # 10/10/2012 jichi
 
+#from sakurakit.skprof import SkProfiler
+
 from sakurakit.skclass import memoized
 from sakurakit.skdebug import dwarn
 from sakurakit.sktr import tr_
@@ -30,7 +32,16 @@ class _DictionaryManager:
     """
     if settings.global_().isEdictEnabled():
       for it in dicts.edict().lookup(text, limit=limit):
-        yield it.Headword, it.Reading, _dictman.render_edict(it.Translation)
+        trans = _dictman.render_edict(it.Translation)
+        surface = it.Headword
+        reading = it.Reading
+        if reading == surface:
+          reading = None
+        if reading:
+          roman = convutil.kana2romaji(reading)
+          if roman and roman != reading:
+            reading = "%s, %s" % (reading, roman)
+        yield surface, reading, trans
 
   def _iterEB(self):
     """
@@ -200,6 +211,7 @@ class DictionaryManager:
           text = surf
         feature = mecabman.renderfeature(feature, fmt)
     try:
+      #with SkProfiler("en-vi"): # 1/8/2014: take 7 seconds for OVDP
       ret = rc.jinja_template('html/shiori').render({
         'language': 'ja',
         'text': text,
