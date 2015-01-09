@@ -4,6 +4,7 @@
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
+//import '../../../imports/qmleffects' as Effects
 import '../../../js/sakurakit.min.js' as Sk
 import '../../../js/reader.min.js' as My
 //import '../../../js/util.min.js' as Util
@@ -80,8 +81,8 @@ Rectangle { id: root_
   //  GradientStop { position: 1.0;  color: '#ca6a6d6a' }
   //}
 
-  color: '#dd000000' // black
-  //color: '#aa000000' // black
+  //color: '#dd000000' // black
+  color: '#aa000000' // black
   //color: '#eeffffff' // white
   //color: '#eef4f5fa' // light blue, the same as the website
 
@@ -201,9 +202,9 @@ Rectangle { id: root_
       //width: _DEFAULT_WIDTH // FIXME: automatically adjust width
 
       //selectByMouse: true // conflicts with flickable
-      color: 'white'
-      //color: 'snow'
       //color: 'black'
+      //color: 'white'
+      color: 'snow'
 
       textFormat: TextEdit.RichText
       wrapMode: TextEdit.Wrap
@@ -219,7 +220,14 @@ Rectangle { id: root_
       // It erquires selectByMouse = true, and no MouseArea
       //onLinkActivated: Qt.openUrlExternally(link)
 
-      effect: Share.TextEffect {}
+      effect: Share.TextEffect {} //highlight: root_.hover
+
+      //effect: Effects.Glow {
+      //  offset: '1,1'
+      //  blurRadius: 8
+      //  blurIntensity: 4
+      //  color: '#2d5f5f' // dark green
+      //}
 
       MouseArea { //id: textCursor_
         anchors.fill: parent
