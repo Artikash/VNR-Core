@@ -47,8 +47,8 @@ def _render_edict(text):
       i = t.find('<li>')
       if i != -1:
         if role:
-          role += u' →'
-        role += t[:i]# みぎ
+          role += u' →' # space + みぎ
+        role += t[:i]
         t = t[i:]
     t = t.replace('/<', '<')
     text = "<ol>%s</ol>" % t
