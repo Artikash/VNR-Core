@@ -10,6 +10,7 @@ if __name__ == '__main__': # DEBUG
 import MeCab
 from sakurakit import skstr
 from unitraits.uniconv import kata2hira
+from jaconv.jaconv import hira2romaji
 import mecabdef, mecabfmt, mecabparse
 
 ## Parse plain text
@@ -77,6 +78,9 @@ def renderfeature(feature, fmt):
 
     #if surface not in (hira, kata):
     if hira != surface:
+      romaji = hira2romaji(hira)
+      if hira != romaji:
+        ret.insert(0, romaji)
       ret.insert(0, hira)
     ret.insert(0, surface)
   except IndexError: pass
