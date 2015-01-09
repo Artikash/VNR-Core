@@ -5,7 +5,8 @@
 import re
 from sakurakit import skstr
 
-RIGHT_ARROW = u"→" # みぎ
+#RIGHT_ARROW = u"→" # みぎ
+RIGHT_ARROW = u"⇒" # みぎ
 
 def render_edict(text):
   """
@@ -81,7 +82,7 @@ def _render_lingoes(text, dic):
     #  text = text.replace('ul>', 'ol>') # change to ordered list
   text = re.sub(r'(\[.*?\])', r'<span class="hl">\1</span> ', text) # highlight text in []
   text = text.replace('<T>', '<div>').replace('</T>', '</div>') # example sentence
-  text = text.replace('</W><X>', '</W>%s<X>' % RIGHT_ARROW)
+  text = text.replace('</W><X>', '</W> %s <X>' % RIGHT_ARROW)
   #text = text.replace('<W>', '<div>').replace('</W>', '</div>') # example sentence text
   #text = text.replace('<X>', '<div>').replace('</X>', '</div>') # example sentence translation
   # Reading
