@@ -1041,14 +1041,19 @@ Item { id: root_
         //  z: -1
         //  radius: 15
         //}
+
+        //selectByMouse: true // conflicts with Flickable
         onLinkActivated: Qt.openUrlExternally(link)
 
         MouseArea { id: textCursor_
           anchors.fill: parent
           //acceptedButtons: enabled ? Qt.LeftButton : Qt.NoButton
           acceptedButtons: Qt.LeftButton
+          //acceptedButtons: Qt.NoButton
           enabled: !!model.text
           hoverEnabled: enabled //&& root_.hoverEnabled && model.language === 'ja'
+
+          //preventStealing: true // no effect
 
           property string lastSelectedText
           onPositionChanged:
@@ -1065,6 +1070,7 @@ Item { id: root_
             }
 
           onClicked: {
+            //mouse.accepted = false // no effect due to Qt Bug
             if (root_.mouseLocked)
               return
             root_.mouseLocked = true
@@ -1197,7 +1203,6 @@ Item { id: root_
         verticalAlignment: TextEdit.AlignVCenter
         //horizontalAlignment: TextEdit.AlignHCenter
         horizontalAlignment: root_.alignCenter ? TextEdit.AlignHCenter : TextEdit.AlignLeft
-        //selectByMouse: true
 
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 
