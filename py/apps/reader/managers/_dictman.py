@@ -62,8 +62,23 @@ def _render_lingoes(text, dic):
   @param* dic  str  'ovdp', 'naver', 'vicon'
   @return  unicode  html
 
-  Example: <C><F><H /><I><N><P><U>否定助动</U></P><Q>[接动词及动词型活用的助动词 「れる·られる，せる·させる」的未然形， 「する」 后接 「ない」 时要变成 「し」。</Q><Q>「ない」 的活用形式与形容词相同，但未然形 「なかろ」+「う」 的用法不常见，一般表示否定的推测时用 「ないだろう」]</Q><Q>[表示对前面(动词所表示的)动作或作用(的状态)的否定]不，没。<T><W>押して開かなければ引いてごらん</W><X>如果推不开，拉拉看。</X></T></Q><Q>→「…てはいけない」、「…てはならない」。</Q><Q>→「なければならない」、「なくてはならない」、「ないといけない」。</Q><Q>→ 「なくてもよい」。</Q><Q>以 「…ないか」 的形式，或向对方询问，确认，或征求对方同意，或劝诱对方，或表示说话人的愿望(省略 「か」 时句尾读升调)。<T><W>早く雪が降らないかなあ</W><X>怎幺还不快点儿下雪啊!</X></T></Q><Q>[以 「…ないで」 的形式向对方表示说话人否定的愿望或委婉的禁止。</Q><Q>这种用法类似终助词，可以认为后面省略了 「くれ」 或 「ください」] 别。<T><W>約束の時間に遅れないでよ</W><X>约好的时间可别晚了啊!</X></T></Q></N></I></F></C><br class="xml"/><C><F><H /><I><N><Y>ある</Y><Q /></N></I></F></C>
+  Example ja-zh:
+  <C><F><H /><I><N><P><U>否定助动</U></P><Q>[接动词及动词型活用的助动词 「れる·られる，せる·させる」的未然形， 「する」 后接 「ない」 时要变成 「し」。</Q><Q>「ない」 的活用形式与形容词相同，但未然形 「なかろ」+「う」 的用法不常见，一般表示否定的推测时用 「ないだろう」]</Q><Q>[表示对前面(动词所表示的)动作或作用(的状态)的否定]不，没。<T><W>押して開かなければ引いてごらん</W><X>如果推不开，拉拉看。</X></T></Q><Q>→「…てはいけない」、「…てはならない」。</Q><Q>→「なければならない」、「なくてはならない」、「ないといけない」。</Q><Q>→ 「なくてもよい」。</Q><Q>以 「…ないか」 的形式，或向对方询问，确认，或征求对方同意，或劝诱对方，或表示说话人的愿望(省略 「か」 时句尾读升调)。<T><W>早く雪が降らないかなあ</W><X>怎幺还不快点儿下雪啊!</X></T></Q><Q>[以 「…ないで」 的形式向对方表示说话人否定的愿望或委婉的禁止。</Q><Q>这种用法类似终助词，可以认为后面省略了 「くれ」 或 「ください」] 别。<T><W>約束の時間に遅れないでよ</W><X>约好的时间可别晚了啊!</X></T></Q></N></I></F></C><br class="xml"/><C><F><H /><I><N><Y>ある</Y><Q /></N></I></F></C>
+
+  Example ja-vi:
+  <C><F><H /><K><![CDATA[<ul><li><font color='#cc0000'><b> {ちょっといっぱい}</b></font></li></ul><ul><li><font color='#cc0000'><b> {let's have quick drink}</b></font></li></ul>]] > </K></F></C>
   """
+  if dic == 'ovdp':
+    text = (text
+      .replace('<![CDATA[', '').replace(']] >', '').replace(']]>', '')
+      .replace('{', '').replace('}', '')
+      .replace("<font color='#cc0000'>", '').replace('</font>', '')
+      .replace('<b>', '').replace('</b>', '')
+      #.replace('<ul>', '').replace('</ul>', '')
+      #.replace('<li>', '<br/>').replace('</li>', '<br/>')
+    )
+    #if text.count('<li>') > 1:
+    #  text = text.replace('ul>', 'ol>') # change to ordered list
   text = re.sub(r'(\[.*?\])', r'<span class="hl">\1</span> ', text) # highlight text in []
   text = text.replace('<T>', '<div>').replace('</T>', '</div>') # example sentence
   text = text.replace('</W><X>', '</W>%s<X>' % RIGHT_ARROW)
@@ -98,30 +113,12 @@ def _render_lingoes(text, dic):
   return text
   #return skstr.escapehtml(text) + '<br/>' + text
 
-# Example Vietnamese dictionary:
-# ちょっと一杯
-# <C><F><H /><K><![CDATA[<ul><li><font color='#cc0000'><b> {ちょっといっぱい}</b></font></li></ul><ul><li><font color='#cc0000'><b> {let's have quick drink}</b></font></li></ul>]] > </K></F></C>
-def _simplify_ovdp_xml(text): # unicode -> unicode
-  """
-  @param  text  unicode
-  @return  unicode
-  """
-  return (text
-      .replace('<![CDATA[', '').replace(']] >', '').replace(']]>', '')
-      .replace("<font color='#cc0000'>", '').replace('</font>', '')
-      .replace('<ul>', '').replace('</ul>', '')
-      .replace('<li>', '<br/>').replace('</li>', '<br/>')
-      .replace('{', '').replace('}', ''))
-
 def render_lingoes(text, dic=None):
   """Render lingoes ja-zh dictionary.
   @param  text  unicode
   @param* dic  str
   @return  unicode  html
   """
-  if dic == 'ovdp':
-    return _simplify_ovdp_xml(text)
-  else:
-    return _render_lingoes(text, dic)
+  return _render_lingoes(text, dic)
 
 # EOF
