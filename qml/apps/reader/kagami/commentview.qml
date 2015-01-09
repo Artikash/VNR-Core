@@ -291,7 +291,10 @@ Item { id: root_
         textFormat: TextEdit.RichText
         //readOnly: true
 
-        onLinkActivated: Qt.openUrlExternally(link)
+        onLinkActivated: {
+          growl_.showMessage(My.tr("Open in external browser"))
+          Qt.openUrlExternally(link)
+        }
 
         wrapMode: TextEdit.Wrap
         verticalAlignment: TextEdit.AlignVCenter

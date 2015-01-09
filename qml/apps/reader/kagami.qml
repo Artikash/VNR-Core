@@ -5,6 +5,7 @@
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
+import '../../imports/qmlhelper' as Helper
 import '../../js/sakurakit.min.js' as Sk
 //import '../../js/reader.min.js' as My
 import 'comet' as Comet
@@ -51,6 +52,7 @@ Item { id: root_
 
   clip: true // maybe, this could save some CPU cycles when grimoire goes out of screen
 
+  Helper.QmlHelper { id: qmlhelper_ }
 
   Component { id: postCometComp_
     Comet.PostDataComet {}

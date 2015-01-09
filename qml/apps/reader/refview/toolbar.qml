@@ -5,6 +5,7 @@ import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
 import '../../../js/sakurakit.min.js' as Sk
+import '../../../js/reader.min.js' as My
 
 Item { id: root_
   height: 40
@@ -39,6 +40,7 @@ Item { id: root_
   Plugin.MainObjectProxy { id: main_ }
 
   Plugin.ReferenceInput { id: refinput_ }
+  Plugin.Growl { id: growlPlugin_ }
 
   function submitReference(ref) { model.submitItem(ref) } // as model is load delayed
 
@@ -83,11 +85,12 @@ Item { id: root_
         tooltip: qsTr("Open the selected entry")
         visible: !!root_.currentItem
         onClicked:
-          if (currentItem && currentItem.url)
+          if (currentItem && currentItem.url) {
+            growlPlugin_.msg(My.tr("Open in external browser"))
             Qt.openUrlExternally(currentItem.url)
             //'http://amazon.co.jp/gp/product/black-curtain-redirect.html?ie=UTF8&redirect=true&redirectUrl=%2Fgp%2Fproduct%2F'
             //'http://amazon.co.jp/dp/' + currentItem.key
-
+          }
       }
       //Desktop.ToolButton {
       //  text: Sk.tr("Duplicate")

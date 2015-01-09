@@ -4,6 +4,7 @@
 import QtQuick 1.1
 import QtDesktop 0.1 as Desktop
 import org.sakuradite.reader 1.0 as Plugin
+import '../../imports/qmlhelper' as Helper
 import '../../js/reader.min.js' as My
 import '../../js/util.min.js' as Util
 import 'share' as Share
@@ -70,6 +71,8 @@ Share.View { id: root_
     settings_.inputAcceptsShiftReturn = footer_.shiftReturnChecked
     //console.log("submaker.qml:saveSettings: pass")
   }
+
+  Helper.QmlHelper { id: qmlhelper_ }
 
   Plugin.Settings { id: settings_ }
 

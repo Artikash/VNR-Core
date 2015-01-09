@@ -21,7 +21,7 @@ class SkProfiler(object):
     self.interval = self.end - self.start
     if self.verbose:
       if self.text is not None:
-        print text, ":time:", self.interval
+        print self.text, ":time:", self.interval
       else:
         print "time:", self.interval
 

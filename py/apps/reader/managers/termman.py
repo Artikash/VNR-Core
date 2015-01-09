@@ -101,8 +101,8 @@ class TermWriter:
           z = convertsChinese and td.language == 'zhs'
           # no padding space for Chinese names
           padding = escape_source or (
-              td.language not in ('ja', 'zhs', 'zht')
-              and td.type in ('name', 'translation'))
+              td.language not in ('ja', 'ko', 'zhs', 'zht')
+              and td.type in ('name', 'yomi', 'translation'))
 
           regex = td.regex and not escape_target
 
@@ -767,7 +767,7 @@ class TermManager(QObject):
     # 9/25/2014: Qt 0.01 seconds
     # 9/26/2014: Boost 0.033 seconds, underline = True
     # 9/27/2014: Boost 0.007 seconds, by delay rendering underline
-    #with SkProfiler():
+    #with SkProfiler("prepare escape"): # 1/8/2014: 0.048 for Chinese, increase to 0.7 if no caching
     return d.applyTerms(text, 'escape_source', language) if d.enabled else text
 
   def applyEscapeTerms(self, text, language):
@@ -782,7 +782,7 @@ class TermManager(QObject):
     # 9/25/2014: Qt 0.009 seconds
     # 9/26/2014: Boost 0.05 seconds, underline = True
     # 9/27/2014: Boost 0.01 seconds, by delaying rendering underline
-    #with SkProfiler():
+    #with SkProfiler("apply escape"): # 1/8/2014: 0.051 for Chinese, increase to 0.7 if no caching
     ret = d.applyTerms(text, 'escape_target', language)
     if d.marked and language.startswith('zh'):
       ret = ret.replace("> ", ">")

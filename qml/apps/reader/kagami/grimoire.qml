@@ -18,6 +18,7 @@ import '../../../imports/qmleffects' as Effects
 //import '../../../imports/qmltext' as QmlText
 import '../../../imports/texscript' as TexScript
 import '../../../components' as Components
+import '../../../components/qt5' as Qt5
 import '../share' as Share
 
 Item { id: root_
@@ -1024,7 +1025,7 @@ Item { id: root_
       }
 
       //QmlText.ContouredTextEdit { id: textEdit_
-      TextEdit { id: textEdit_
+      Qt5.TextEdit5 { id: textEdit_
         Component.onCompleted:
           listModel_.setProperty(model.index, 'textEdit', textEdit_) // Needed for contextMenu event
 
@@ -1041,14 +1042,19 @@ Item { id: root_
         //  z: -1
         //  radius: 15
         //}
-        onLinkActivated: Qt.openUrlExternally(link)
+
+        //selectByMouse: true // conflicts with Flickable
+        //onLinkActivated: Qt.openUrlExternally(link)
 
         MouseArea { id: textCursor_
           anchors.fill: parent
           //acceptedButtons: enabled ? Qt.LeftButton : Qt.NoButton
           acceptedButtons: Qt.LeftButton
+          //acceptedButtons: Qt.NoButton
           enabled: !!model.text
           hoverEnabled: enabled //&& root_.hoverEnabled && model.language === 'ja'
+
+          //preventStealing: true // no effect
 
           property string lastSelectedText
           onPositionChanged:
@@ -1065,6 +1071,13 @@ Item { id: root_
             }
 
           onClicked: {
+            var link = textEdit_.linkAt(mouse.x, mouse.y)
+            if (link) { // CHECKPOINT: check if link starts with http
+              growl_.showMessage(My.tr("Open in external browser"))
+              Qt.openUrlExternally(link)
+              return
+            }
+            //mouse.accepted = false // no effect due to Qt Bug
             if (root_.mouseLocked)
               return
             root_.mouseLocked = true
@@ -1197,7 +1210,6 @@ Item { id: root_
         verticalAlignment: TextEdit.AlignVCenter
         //horizontalAlignment: TextEdit.AlignHCenter
         horizontalAlignment: root_.alignCenter ? TextEdit.AlignHCenter : TextEdit.AlignLeft
-        //selectByMouse: true
 
         //onCursorRectangleChanged: listView_.ensureVisible(cursorRectangle)
 

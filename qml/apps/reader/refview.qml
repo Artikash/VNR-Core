@@ -56,6 +56,7 @@ Share.View { id: root_
   //Plugin.Settings { id: settings_ }
 
   Plugin.SystemStatus { id: status_ }
+  Plugin.Growl { id: growlPlugin_ }
   property int userId: status_.online ? status_.userId : 0
 
   //function loadSettings() {

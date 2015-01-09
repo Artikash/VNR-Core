@@ -18,7 +18,21 @@ public:
    *  @param  q  QDeclarativeTextEditItem
    *  @return  QTextDocument
    */
-  Q_INVOKABLE static QObject *textedit_document(QDeclarativeItem *q);
+  Q_INVOKABLE static QObject *textEdit_document(QDeclarativeItem *q);
+
+  /**
+   *  @param  q  QDeclarativeTextEditItem
+   *  @return  QString  href of anchor
+   */
+  Q_INVOKABLE static QString textEdit_linkAtCursor(QDeclarativeItem *q);
+
+  /**
+   *  @param  q  QDeclarativeTextEditItem
+   *  @param  x  position
+   *  @param  y  position
+   *  @return  QString  href of anchor
+   */
+  Q_INVOKABLE static QString textEdit_linkAt(QDeclarativeItem *q, qreal x, qreal y);
 };
 
 #ifdef _MSC_VER

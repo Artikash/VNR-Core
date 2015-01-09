@@ -3643,7 +3643,9 @@ class _DictionaryTranslationTab(object):
 
   @memoizedproperty
   def edictButton(self):
-    ret = QtWidgets.QCheckBox(my.tr("EDICT Japanese-English dictionary"))
+    ret = QtWidgets.QCheckBox("%s (%s)" % (
+        my.tr("EDICT Japanese-English dictionary"),
+        my.tr("recommended for English")))
     ret.setChecked(settings.global_().isEdictEnabled())
     ret.toggled.connect(settings.global_().setEdictEnabled)
     return ret
@@ -3731,9 +3733,7 @@ class _DictionaryTranslationTab(object):
 
   @memoizedproperty
   def lingoesJaEnButton(self):
-    ret = QtWidgets.QCheckBox("%s (%s)" % (
-        LINGOES_DICT_NAMES['ja-en'],
-        my.tr("recommended for English")))
+    ret = QtWidgets.QCheckBox(LINGOES_DICT_NAMES['ja-en']) #my.tr("recommended for English")))
     ret.setChecked(settings.global_().isLingoesJaEnEnabled())
     ret.toggled.connect(settings.global_().setLingoesJaEnEnabled)
     return ret
@@ -4523,7 +4523,9 @@ class _DictionaryDownloadsTab(object):
 
   @memoizedproperty
   def edictIntroLabel(self):
-    return QtWidgets.QLabel(my.tr("EDICT Japanese-English dictionary") + " (30MB)")
+    return QtWidgets.QLabel("%s (30MB, %s" % (
+        my.tr("EDICT Japanese-English dictionary"),
+        my.tr("recommended for English")))
 
   def _getEdict(self):
     #if prompt.confirmDownloadDictionary('EDICT'):
@@ -4601,7 +4603,7 @@ class _DictionaryDownloadsTab(object):
       if name.startswith('ja-zh'):
         t = "%s (%s, %s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name], my.tr("recommended for Chinese"))
       elif name == 'ja-en':
-        t = "%s (%s, %s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name], my.tr("recommended for English"))
+        t = "%s (%s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name]) #my.tr("recommended for English")
       else:
         t = "%s (%s)" % (LINGOES_DICT_NAMES[name], LINGOES_DICT_SIZES[name])
       ret = self.lingoesIntroLabels[name] = QtWidgets.QLabel(t)
