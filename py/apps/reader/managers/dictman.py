@@ -32,7 +32,16 @@ class _DictionaryManager:
     """
     if settings.global_().isEdictEnabled():
       for it in dicts.edict().lookup(text, limit=limit):
-        yield it.Headword, it.Reading, _dictman.render_edict(it.Translation)
+        trans = _dictman.render_edict(it.Translation)
+        surface = it.Headword
+        reading = it.Reading
+        if reading == surface:
+          reading = None
+        if reading:
+          roman = convutil.kana2romaji(reading)
+          if roman and roman != reading:
+            reading = "%s, %s" % (reading, roman)
+        yield surface, reading, trans
 
   def _iterEB(self):
     """
