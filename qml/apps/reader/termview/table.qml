@@ -49,6 +49,9 @@ Item { id: root_
 
   //Plugin.DataManagerProxy { id: datamanPlugin_ }
 
+  property string _UNSAVED_RICH_TEXT: // cached
+       '<span style="background-color:red">' + Sk.tr("Unsaved") + '</span>'
+
   function canEdit(term) {
     return !!term && !!userId && (userId === _SUPER_USER_ID
         || term.userId === userId && !term.protected
@@ -165,9 +168,22 @@ Item { id: root_
       //}
     }
 
+    // Column: ID
     Desktop.TableColumn {
-      role: 'id'; title: "ID" // Sk.tr("ID")
+      role: 'object'; title: "ID" // Sk.tr("ID")
+      // role: 'id'; title: "ID" // Sk.tr("ID")
       width: 47
+      delegate: Text {
+        //anchors { fill: parent; leftMargin: table_.cellSpacing }
+        height: table_.cellHeight
+        textFormat: itemValue.id == 0 ? Text.RichText : Text.PlainText
+        clip: true
+        verticalAlignment: Text.AlignVCenter
+        color: (itemSelected || itemValue.id == 0) ? 'white' : itemColor(itemValue)
+        font.strikeout: !itemSelected && itemValue.disabled
+        font.bold: itemValue.regex || itemValue.syntax
+        text: itemValue.id == 0 ? root_._UNSAVED_RICH_TEXT : String(itemValue.id)
+      }
     }
 
     // Column: Disabled
