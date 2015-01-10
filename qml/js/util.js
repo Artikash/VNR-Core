@@ -267,6 +267,14 @@ function padZero(number, length) {
   return ret;
 }
 
+/**
+ *  @param  str  string
+ *  @return  string
+ */
+function removeHtmlTags(str) {
+  return str.replace(/<[^>]*>/g, '');
+}
+
 // - Datetime -
 
 // See: http://www.electrictoolbox.com/unix-timestamp-javascript/
