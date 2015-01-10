@@ -209,7 +209,7 @@
         <translation>翻譯</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="378"/>
+        <location filename="sktr.py" line="379"/>
         <source>Translator</source>
         <translation>翻譯</translation>
     </message>
@@ -224,7 +224,7 @@
         <translation>更新</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="396"/>
+        <location filename="sktr.py" line="397"/>
         <source>Version</source>
         <translation>版本</translation>
     </message>
@@ -369,82 +369,82 @@
         <translation>問題</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="360"/>
+        <location filename="sktr.py" line="361"/>
         <source>Script</source>
         <translation>脚本</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="361"/>
+        <location filename="sktr.py" line="362"/>
         <source>Scripts</source>
         <translation>脚本</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="362"/>
+        <location filename="sktr.py" line="363"/>
         <source>Settings</source>
         <translation>設定</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="365"/>
+        <location filename="sktr.py" line="366"/>
         <source>Status</source>
         <translation>狀態</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="367"/>
+        <location filename="sktr.py" line="368"/>
         <source>Tab</source>
         <translation>標籤</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="457"/>
+        <location filename="sktr.py" line="456"/>
         <source>Text</source>
         <translation>文字</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="371"/>
+        <location filename="sktr.py" line="372"/>
         <source>Theme</source>
         <translation>主題</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="372"/>
+        <location filename="sktr.py" line="373"/>
         <source>Themes</source>
         <translation>主題</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="374"/>
+        <location filename="sktr.py" line="375"/>
         <source>Timestamp</source>
         <translation>時間</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="456"/>
+        <location filename="sktr.py" line="455"/>
         <source>Translation</source>
         <translation>翻譯</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="384"/>
+        <location filename="sktr.py" line="385"/>
         <source>User</source>
         <translation>使用者</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="387"/>
+        <location filename="sktr.py" line="388"/>
         <source>Username</source>
         <translation>使用者名</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="389"/>
+        <location filename="sktr.py" line="390"/>
         <source>Wallpaper</source>
         <translation>桌布</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="390"/>
+        <location filename="sktr.py" line="391"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="392"/>
+        <location filename="sktr.py" line="393"/>
         <source>Window</source>
         <translation>視窗</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="402"/>
+        <location filename="sktr.py" line="403"/>
         <source>Yes</source>
         <translation>是</translation>
     </message>
@@ -459,47 +459,47 @@
         <translation>否</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="405"/>
+        <location filename="sktr.py" line="404"/>
         <source>no</source>
         <translation>否</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="406"/>
+        <location filename="sktr.py" line="405"/>
         <source>Online</source>
         <translation>線上</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="407"/>
+        <location filename="sktr.py" line="406"/>
         <source>Offline</source>
         <translation>離線</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="408"/>
+        <location filename="sktr.py" line="407"/>
         <source>Read-only</source>
         <translation>只讀</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="408"/>
+        <location filename="sktr.py" line="407"/>
         <source>read-only</source>
         <translation>只讀</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="409"/>
+        <location filename="sktr.py" line="408"/>
         <source>Editable</source>
         <translation>可編輯</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="409"/>
+        <location filename="sktr.py" line="408"/>
         <source>editable</source>
         <translation>可編輯</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="431"/>
+        <location filename="sktr.py" line="430"/>
         <source>Found</source>
         <translation>已找到</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="432"/>
+        <location filename="sktr.py" line="431"/>
         <source>Not found</source>
         <translation>未找到</translation>
     </message>
@@ -644,7 +644,7 @@
         <translation>提交</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="368"/>
+        <location filename="sktr.py" line="369"/>
         <source>Target</source>
         <translation>目標</translation>
     </message>
@@ -669,47 +669,47 @@
         <translation>選項</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="359"/>
+        <location filename="sktr.py" line="360"/>
         <source>Screenshot</source>
         <translation>截圖</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="381"/>
+        <location filename="sktr.py" line="382"/>
         <source>Unlock</source>
         <translation>解鎖</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="381"/>
+        <location filename="sktr.py" line="382"/>
         <source>unlock</source>
         <translation>解鎖</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="382"/>
+        <location filename="sktr.py" line="383"/>
         <source>Unlocked</source>
         <translation>未鎖定</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="382"/>
+        <location filename="sktr.py" line="383"/>
         <source>unlocked</source>
         <translation>未鎖定</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="391"/>
+        <location filename="sktr.py" line="392"/>
         <source>Width</source>
         <translation>寬度</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="397"/>
+        <location filename="sktr.py" line="398"/>
         <source>Zoom</source>
         <translation>縮放</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="450"/>
+        <location filename="sktr.py" line="449"/>
         <source>Subtitle</source>
         <translation>字幕</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="453"/>
+        <location filename="sktr.py" line="452"/>
         <source>Comment</source>
         <translation>評論</translation>
     </message>
@@ -724,7 +724,7 @@
         <translation>通知</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="364"/>
+        <location filename="sktr.py" line="365"/>
         <source>Statistics</source>
         <translation>統計</translation>
     </message>
@@ -809,27 +809,27 @@
         <translation>停止</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="370"/>
+        <location filename="sktr.py" line="371"/>
         <source>Text encoding</source>
         <translation>文字編碼</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="393"/>
+        <location filename="sktr.py" line="394"/>
         <source>Window title</source>
         <translation>視窗名稱</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="433"/>
+        <location filename="sktr.py" line="432"/>
         <source>Not specified</source>
         <translation>未指定</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="439"/>
+        <location filename="sktr.py" line="438"/>
         <source>Administrator</source>
         <translation>管理員</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="440"/>
+        <location filename="sktr.py" line="439"/>
         <source>Not administrator</source>
         <translation>非管理員</translation>
     </message>
@@ -859,32 +859,32 @@
         <translation>正則表達</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="425"/>
+        <location filename="sktr.py" line="424"/>
         <source>Ignore Case</source>
         <translation>忽略大小寫</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="425"/>
+        <location filename="sktr.py" line="424"/>
         <source>Ignore case</source>
         <translation>忽略大小寫</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="424"/>
+        <location filename="sktr.py" line="423"/>
         <source>Case-insensitive</source>
         <translation>忽略大小寫</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="424"/>
+        <location filename="sktr.py" line="423"/>
         <source>case-insensitive</source>
         <translation>忽略大小寫</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="423"/>
+        <location filename="sktr.py" line="422"/>
         <source>Case-sensitive</source>
         <translation>區別大小寫</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="423"/>
+        <location filename="sktr.py" line="422"/>
         <source>case-sensitive</source>
         <translation>區別大小寫</translation>
     </message>
@@ -899,12 +899,12 @@
         <translation>創建時間</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="383"/>
+        <location filename="sktr.py" line="384"/>
         <source>Update Time</source>
         <translation>更新時間</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="383"/>
+        <location filename="sktr.py" line="384"/>
         <source>Update time</source>
         <translation>更新時間</translation>
     </message>
@@ -924,12 +924,12 @@
         <translation>重新啟動</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="442"/>
+        <location filename="sktr.py" line="441"/>
         <source>For example</source>
         <translation>例如</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="442"/>
+        <location filename="sktr.py" line="441"/>
         <source>for example</source>
         <translation>例如</translation>
     </message>
@@ -974,7 +974,7 @@
         <translation>辭書</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="379"/>
+        <location filename="sktr.py" line="380"/>
         <source>Translators</source>
         <translation>翻譯</translation>
     </message>
@@ -1039,7 +1039,7 @@
         <translation>國際化</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="444"/>
+        <location filename="sktr.py" line="443"/>
         <source>Check for updates</source>
         <translation>檢查更新</translation>
     </message>
@@ -1064,7 +1064,7 @@
         <translation>恢復</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="455"/>
+        <location filename="sktr.py" line="454"/>
         <source>Danmaku</source>
         <translation>彈幕</translation>
     </message>
@@ -1084,7 +1084,7 @@
         <translation>正則表達</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="349"/>
+        <location filename="sktr.py" line="350"/>
         <source>regexp</source>
         <translation>正則表達</translation>
     </message>
@@ -1184,12 +1184,12 @@
         <translation>網路狀態</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="451"/>
+        <location filename="sktr.py" line="450"/>
         <source>Subtitles</source>
         <translation>字幕</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="454"/>
+        <location filename="sktr.py" line="453"/>
         <source>Comments</source>
         <translation>評論</translation>
     </message>
@@ -1234,37 +1234,37 @@
         <translation>刪除</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="450"/>
+        <location filename="sktr.py" line="449"/>
         <source>subtitle</source>
         <translation>字幕</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="451"/>
+        <location filename="sktr.py" line="450"/>
         <source>subtitles</source>
         <translation>字幕</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="453"/>
+        <location filename="sktr.py" line="452"/>
         <source>comment</source>
         <translation>評論</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="454"/>
+        <location filename="sktr.py" line="453"/>
         <source>comments</source>
         <translation>評論</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="455"/>
+        <location filename="sktr.py" line="454"/>
         <source>danmaku</source>
         <translation>彈幕</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="456"/>
+        <location filename="sktr.py" line="455"/>
         <source>translation</source>
         <translation>翻譯</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="457"/>
+        <location filename="sktr.py" line="456"/>
         <source>text</source>
         <translation>文字</translation>
     </message>
@@ -1274,7 +1274,7 @@
         <translation>彈出</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="375"/>
+        <location filename="sktr.py" line="376"/>
         <source>Time zone</source>
         <translation>時區</translation>
     </message>
@@ -1289,17 +1289,17 @@
         <translation>語言</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="384"/>
+        <location filename="sktr.py" line="385"/>
         <source>user</source>
         <translation>使用者</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="386"/>
+        <location filename="sktr.py" line="387"/>
         <source>Users</source>
         <translation>使用者</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="386"/>
+        <location filename="sktr.py" line="387"/>
         <source>users</source>
         <translation>使用者</translation>
     </message>
@@ -1339,7 +1339,7 @@
         <translation>旁白</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="385"/>
+        <location filename="sktr.py" line="386"/>
         <source>User information</source>
         <translation>使用者資訊</translation>
     </message>
@@ -1404,22 +1404,22 @@
         <translation>引用</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="353"/>
+        <location filename="sktr.py" line="354"/>
         <source>Release Date</source>
         <translation>發售日期</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="353"/>
+        <location filename="sktr.py" line="354"/>
         <source>Release date</source>
         <translation>發售日期</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="373"/>
+        <location filename="sktr.py" line="374"/>
         <source>Title</source>
         <translation>標題</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="433"/>
+        <location filename="sktr.py" line="432"/>
         <source>not specified</source>
         <translation>未指定</translation>
     </message>
@@ -1429,12 +1429,12 @@
         <translation>過濾</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="437"/>
+        <location filename="sktr.py" line="436"/>
         <source>Unknown</source>
         <translation>未知</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="437"/>
+        <location filename="sktr.py" line="436"/>
         <source>unknown</source>
         <translation>未知</translation>
     </message>
@@ -1479,7 +1479,7 @@
         <translation>連結</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="380"/>
+        <location filename="sktr.py" line="381"/>
         <source>UI</source>
         <translation>介面</translation>
     </message>
@@ -1489,7 +1489,7 @@
         <translation>全屏</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="358"/>
+        <location filename="sktr.py" line="359"/>
         <source>Screen</source>
         <translation>螢幕</translation>
     </message>
@@ -1564,12 +1564,12 @@
         <translation>順序</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="452"/>
+        <location filename="sktr.py" line="451"/>
         <source>Subs</source>
         <translation>字幕</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="452"/>
+        <location filename="sktr.py" line="451"/>
         <source>subs</source>
         <translation>字幕</translation>
     </message>
@@ -1594,7 +1594,7 @@
         <translation>降序</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="352"/>
+        <location filename="sktr.py" line="353"/>
         <source>Release</source>
         <translation>發售</translation>
     </message>
@@ -1619,7 +1619,7 @@
         <translation>本地</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="435"/>
+        <location filename="sktr.py" line="434"/>
         <source>Press Enter to submit</source>
         <translation>按下回車提交</translation>
     </message>
@@ -1639,7 +1639,7 @@
         <translation>遊戲情報</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="385"/>
+        <location filename="sktr.py" line="386"/>
         <source>user information</source>
         <translation>使用者資訊</translation>
     </message>
@@ -1664,7 +1664,7 @@
         <translation>系列</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="373"/>
+        <location filename="sktr.py" line="374"/>
         <source>title</source>
         <translation>標題</translation>
     </message>
@@ -1679,7 +1679,7 @@
         <translation>遊戲情報</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="385"/>
+        <location filename="sktr.py" line="386"/>
         <source>User Information</source>
         <translation>使用者資訊</translation>
     </message>
@@ -1919,12 +1919,12 @@
         <translation>再生</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="406"/>
+        <location filename="sktr.py" line="405"/>
         <source>online</source>
         <translation>線上</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="407"/>
+        <location filename="sktr.py" line="406"/>
         <source>offline</source>
         <translation>離線</translation>
     </message>
@@ -1939,7 +1939,7 @@
         <translation>機器翻譯</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="421"/>
+        <location filename="sktr.py" line="420"/>
         <source>Not changed</source>
         <translation>未改變</translation>
     </message>
@@ -1964,7 +1964,7 @@
         <translation>填充</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="394"/>
+        <location filename="sktr.py" line="395"/>
         <source>Wiki</source>
         <translation>維基</translation>
     </message>
@@ -1984,12 +1984,12 @@
         <translation>諺文</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="418"/>
+        <location filename="sktr.py" line="417"/>
         <source>Public</source>
         <translation>公開</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="419"/>
+        <location filename="sktr.py" line="418"/>
         <source>Private</source>
         <translation>非公開</translation>
     </message>
@@ -2069,7 +2069,7 @@
         <translation>右</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="428"/>
+        <location filename="sktr.py" line="427"/>
         <source>Network Error</source>
         <translation>網路錯誤</translation>
     </message>
@@ -2084,7 +2084,7 @@
         <translation>前進</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="416"/>
+        <location filename="sktr.py" line="415"/>
         <source>Slow</source>
         <translation>慢</translation>
     </message>
@@ -2094,7 +2094,7 @@
         <translation>轉碼</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="416"/>
+        <location filename="sktr.py" line="415"/>
         <source>slow</source>
         <translation>慢</translation>
     </message>
@@ -2144,7 +2144,7 @@
         <translation>漫展</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="395"/>
+        <location filename="sktr.py" line="396"/>
         <source>Wikipedia</source>
         <translation>維基百科</translation>
     </message>
@@ -2169,27 +2169,27 @@
         <translation>音樂</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="411"/>
+        <location filename="sktr.py" line="410"/>
         <source>Draggable</source>
         <translation>可拖動</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="363"/>
+        <location filename="sktr.py" line="364"/>
         <source>Size</source>
         <translation>大小</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="354"/>
+        <location filename="sktr.py" line="355"/>
         <source>Review</source>
         <translation>感想</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="350"/>
+        <location filename="sktr.py" line="351"/>
         <source>Rate</source>
         <translation>評價</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="351"/>
+        <location filename="sktr.py" line="352"/>
         <source>Rating</source>
         <translation>評價</translation>
     </message>
@@ -2234,22 +2234,22 @@
         <translation>改變大小</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="398"/>
+        <location filename="sktr.py" line="399"/>
         <source>Zoom In</source>
         <translation>放大</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="398"/>
+        <location filename="sktr.py" line="399"/>
         <source>Zoom in</source>
         <translation>放大</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="399"/>
+        <location filename="sktr.py" line="400"/>
         <source>Zoom Out</source>
         <translation>縮小</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="399"/>
+        <location filename="sktr.py" line="400"/>
         <source>Zoom out</source>
         <translation>縮小</translation>
     </message>
@@ -2284,7 +2284,7 @@
         <translation>宏</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="366"/>
+        <location filename="sktr.py" line="367"/>
         <source>Syntax</source>
         <translation>語法</translation>
     </message>
@@ -2294,7 +2294,7 @@
         <translation>音調</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="388"/>
+        <location filename="sktr.py" line="389"/>
         <source>Volume</source>
         <translation>音量</translation>
     </message>
@@ -2304,7 +2304,7 @@
         <translation>列</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="355"/>
+        <location filename="sktr.py" line="356"/>
         <source>Row</source>
         <translation>行</translation>
     </message>
@@ -2329,7 +2329,7 @@
         <translation>羅馬字</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="376"/>
+        <location filename="sktr.py" line="377"/>
         <source>Topic</source>
         <translation>話題</translation>
     </message>
@@ -2374,22 +2374,22 @@
         <translation>問題</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="376"/>
+        <location filename="sktr.py" line="377"/>
         <source>topic</source>
         <translation>話題</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="354"/>
+        <location filename="sktr.py" line="355"/>
         <source>review</source>
         <translation>感想</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="413"/>
+        <location filename="sktr.py" line="412"/>
         <source>Recent</source>
         <translation>最近</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="414"/>
+        <location filename="sktr.py" line="413"/>
         <source>Like</source>
         <translation>喜歡</translation>
     </message>
@@ -2404,7 +2404,7 @@
         <translation>相等</translation>
     </message>
     <message>
-        <location filename="sktr.py" line="421"/>
+        <location filename="sktr.py" line="420"/>
         <source>not changed</source>
         <translation>未改變</translation>
     </message>
@@ -2422,6 +2422,16 @@
         <location filename="sktr.py" line="251"/>
         <source>Romaja</source>
         <translation>羅馬字</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="349"/>
+        <source>Regex</source>
+        <translation>正則表達</translation>
+    </message>
+    <message>
+        <location filename="sktr.py" line="350"/>
+        <source>Regexp</source>
+        <translation>正則表達</translation>
     </message>
 </context>
 </TS>

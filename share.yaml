@@ -572,6 +572,7 @@ templates:
     qml/userplugin: qml/userplugin.qml
     html/furigana:  html/furigana.html
     html/shiori:    html/shiori.html
+    html/term:      html/term.html
     xml/comments:   xml/comments.xml
     xml/games:      xml/games.xml
     xml/gamefiles:  xml/gamefiles.xml

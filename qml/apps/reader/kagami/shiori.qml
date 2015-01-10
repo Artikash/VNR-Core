@@ -318,11 +318,11 @@ Rectangle { id: root_
   }
 
   property bool locked: false
-  function popup(text, language, x, y) { // string, string, int, int
+  function popup(text, language, x, y, json) { // string, string, int, int, string
     if (!root_.enabled || root_.locked)
       return
     root_.locked = true
-    var html = bean_.render(text, language)
+    var html = bean_.render(text, language, json)
     if (!html) { // thread contention, ignore
       root_.locked = false
       return

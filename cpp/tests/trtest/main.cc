@@ -7,17 +7,19 @@ int main()
 {
   qDebug() << "enter";
 
-  wchar_t ws[] = L"ABCABC";
+  wchar_t ws[] = L"ルナ様";
   //QString text = QString::fromWCharArray(ws);
   std::wstring text = ws;
 
-  std::wstring path = L"../cpp/libs/trscript/example.txt";
-  //path = "Z:\\Users\\jichi\\opt\\stream/Caches/tmp/reader/dict/zht/ocr.txt";
-  path = L"../../../../Caches/tmp/reader/dict/zhs/test.txt";
+  std::wstring path;
+  //path = L"../cpp/libs/trscript/example.txt";
+  path = L"/Users/jichi/stream/Caches/tmp/reader/dict/zhs/escape_input.txt";
+  //path = L"../../../../Caches/tmp/reader/dict/zhs/test.txt";
 
   TranslationScriptManager m;
-  m.setUnderline(true);
+  m.setLinkEnabled(true);
   m.loadFile(path);
+  qDebug() << m.size();
 
   if (!m.isEmpty()) {
     qDebug() << QString::fromStdWString(text);

@@ -9,6 +9,15 @@
 //#include <algorithm> // for std::min
 #include "ccutil/ccmacro.h"
 
+// Initializers
+
+template <typename charT>
+inline std::basic_string<charT> cpp_basic_string_of(const std::string &s)
+{ return std::basic_string<charT>(s.begin(), s.end()); }
+
+inline std::wstring cpp_wstring_of(const std::string &s)
+{ return std::wstring(s.begin(), s.end()); }
+
 // strlen
 
 template <typename charT>

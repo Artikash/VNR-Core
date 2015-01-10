@@ -8,6 +8,7 @@ win32: SUBDIRS += disasm wintimer
 
 include(avrec/avrec.pri)
 include(ccutil/ccutil.pri)
+include(cppjson/cppjson.pri)
 include(cpputil/cpputil.pri)
 include(disasm/disasm.pri)
 include(hanjaconv/hanjaconv.pri)

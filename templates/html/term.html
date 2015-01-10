@@ -1,0 +1,107 @@
+{# term.html 11/25/2012 jichi
+ # @param  td  _Term
+ # @param* userName  unicode
+ # @param* source  unicode
+ # @param* target  unicode
+ # @param  i18n  module
+ # @param  tr  function
+-#}
+<html>
+	<head>
+		<style type="text/css">
+a{color:lightblue}
+.pp-name{color:silver}
+		</style>
+	</head>
+	<body align="center">
+		<table class="pp-table">
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('ID')}}: </td>
+%if td.id
+				<td class="pp-value">{{td.id}}</td>
+%else
+				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
+%endif
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Pattern')}}: </td>
+%if td.pattern
+				<td class="pp-value">{{td.pattern|e}}</td>
+%else
+				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
+%endif
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Translation')}}: </td>
+%if not td.text
+				<td class="pp-value pp-empty">({{tr('delete')}})</td>
+%elif td.text == td.pattern
+				<td class="pp-value pp-empty">({{tr('equal')}})</td>
+%else
+				<td class="pp-value">{{td.text|e}}</td>
+%endif
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Type')}}: </td>
+				<td class="pp-value">{{i18n.term_type_name(td.type)}}</td>
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Regex')}}: </td>
+%if td.regex
+				<td class="pp-value">{{tr('yes')}}</td>
+%else
+				<td class="pp-value">{{tr('no')}}</td>
+%endif
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Game-specific')}}: </td>
+%if td.special
+				<td class="pp-value">{{tr('yes')}}</td>
+%else
+				<td class="pp-value">{{tr('no')}}</td>
+%endif
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('User')}}: </td>
+%if userName
+				<td class="pp-value">@{{userName|e}}</td>
+%else
+				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
+%endif
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Creation')}}: </td>
+%if td.timestamp
+				<td class="pp-value">{{i18n.timestamp2datetime(td.timestamp)}}</td>
+%else
+				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
+%endif
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Update')}}: </td>
+%if td.updateTimestamp
+				<td class="pp-value">{{i18n.timestamp2datetime(td.updateTimestamp)}}</td>
+%else
+				<td class="pp-value pp-empty">({{tr('none')}})</td>
+%endif
+			</tr>
+			<hr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Matched text')}}: </td>
+%if source
+				<td class="pp-value">{{source|e}}</td>
+%else
+				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
+%endif
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Replaced text')}}: </td>
+%if target
+				<td class="pp-value">{{target|e}}</td>
+%else
+				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
+%endif
+			</tr>
+		</table>
+	</body>
+</html>

@@ -42,6 +42,9 @@ public:
 
   bool isLinkEnabled() const;
   void setLinkEnabled(bool value);
+
+  std::wstring linkStyle() const;
+  void setLinkStyle(const std::wstring &css);
 };
 
 #endif // TRSCRIPT_H
