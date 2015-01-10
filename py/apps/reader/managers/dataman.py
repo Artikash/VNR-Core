@@ -4229,7 +4229,7 @@ class VoiceModel(QAbstractListModel):
       row = index.row()
       if row >= 0 and row < self.rowCount():
         if role == VOICE_NUM_ROLE:
-          return row +1
+          return row + 1
         elif role == VOICE_OBJECT_ROLE:
           return self.get(row)
 
@@ -4296,15 +4296,18 @@ class VoiceModel(QAbstractListModel):
 ## Term model ##
 
 TERM_OBJECT_ROLE = Qt.UserRole
-TERM_NUM_ROLE = Qt.UserRole +1
+TERM_NUM_ROLE = Qt.UserRole + 1
+TERM_ID_ROLE = Qt.UserRole + 2
 TERM_ROLES = {
   TERM_OBJECT_ROLE: 'object', # Term, object
   TERM_NUM_ROLE: 'number', # int, 番号
+  TERM_ID_ROLE: 'id', # object id
 }
 class _TermModel(object):
   COLUMNS = [ # MUST BE CONSISTENT WITH termtable.qml
     'selected',
     'modifiedTimestamp', # row, default
+    'id',
     'disabled',
     'private',
     'type',
@@ -4351,6 +4354,11 @@ class _TermModel(object):
     return commentinput.CommentInputDialog(parent)
 
   def pageIndex(self): return max(0, self.pageSize * (self.pageNumber - 1)) # -> int
+
+  def get(self, row): # int -> QObject
+    try: return self.data[- # Revert the list
+        (self.pageIndex() + row +1)]
+    except IndexError: pass
 
   @property
   def data(self):
@@ -4498,7 +4506,10 @@ class _TermModel(object):
       q = None # [str] or None
       if self.filterColumn:
         col = self.filterColumn
-        if col == 'user':
+        if col == 'id':
+          try: return int(t) == td.id
+          except ValueError: return False
+        elif col == 'user':
           q = term.userName,
         elif col == 'game':
           q = term.gameSeries, term.gameName
@@ -4513,6 +4524,13 @@ class _TermModel(object):
         elif col == 'comment':
           q = td.comment,
       else: # search all columns
+        if len(t) > 2:
+          try:
+            tid = int(t)
+            if tid and tid == td.id:
+              return True
+          except ValueError:
+            pass
         if len(t) > 1:
           if t[0] == '@':
             t = t[1:]
@@ -4582,13 +4600,14 @@ class TermModel(QAbstractListModel):
         if role == TERM_NUM_ROLE:
           return self.__d.pageIndex() + row +1
         elif role == TERM_OBJECT_ROLE:
-          return self.get(row)
+          return self.__d.get(row)
+        elif role == TERM_ID_ROLE:
+          obj = self.__d.get(row)
+          if obj:
+            return obj.d.id
 
   @Slot(int, result=QObject)
-  def get(self, row):
-    try: return self.__d.data[- # Revert the list
-        (self.__d.pageIndex() + row +1)]
-    except IndexError: pass
+  def get(self, row): return self.__d.get(row)
 
   countChanged = Signal(int)
   count = Property(int,
@@ -4749,7 +4768,7 @@ class TermModel(QAbstractListModel):
 ## Comment model ##
 
 COMMENT_OBJECT_ROLE = Qt.UserRole
-COMMENT_NUM_ROLE = Qt.UserRole +1
+COMMENT_NUM_ROLE = Qt.UserRole + 1
 COMMENT_ROLES = {
   COMMENT_OBJECT_ROLE: 'object', # Comment, object
   COMMENT_NUM_ROLE: 'number', # int, 番号
@@ -4817,6 +4836,12 @@ class _CommentModel(object):
     return commentinput.CommentInputDialog(parent)
 
   def pageIndex(self): return max(0, self.pageSize * (self.pageNumber - 1)) # -> int
+
+  # @Slot(int, result=QObject)
+  def get(self, row):
+    try: return self.data[- # Revert the list
+        (self.pageIndex() + row +1)]
+    except IndexError: pass
 
   def _addComment(self, c):
     try:
@@ -5258,13 +5283,10 @@ class CommentModel(QAbstractListModel):
         if role == COMMENT_NUM_ROLE:
           return self.__d.pageIndex() + row +1
         elif role == COMMENT_OBJECT_ROLE:
-          return self.get(row)
+          return self.__d.get(row)
 
   @Slot(int, result=QObject)
-  def get(self, row):
-    try: return self.__d.data[- # Revert the list
-        (self.__d.pageIndex() + row +1)]
-    except IndexError: pass
+  def get(self, row): return self.__d.get(row)
 
   @Slot()
   def update(self):
@@ -5714,7 +5736,7 @@ class ReferenceModel(QAbstractListModel):
       row = index.row()
       if row >= 0 and row < self.rowCount():
         if role == REF_NUM_ROLE:
-          return row +1
+          return row + 1
         elif role == REF_OBJECT_ROLE:
           return self.get(row)
 

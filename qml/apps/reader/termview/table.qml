@@ -165,6 +165,11 @@ Item { id: root_
       //}
     }
 
+    Desktop.TableColumn {
+      role: 'id'; title: "ID" // Sk.tr("ID")
+      width: 47
+    }
+
     // Column: Disabled
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Enable")
@@ -630,7 +635,7 @@ Item { id: root_
     // Column: Comment
     Desktop.TableColumn {
       role: 'object'; title: Sk.tr("Comment")
-      width: 160
+      width: 80
       delegate: Item {
         height: table_.cellHeight
         property bool editable: canEdit(itemValue)
@@ -757,7 +762,7 @@ Item { id: root_
 
     Desktop.TableColumn {
       role: 'object'; title: My.tr("Update reason")
-      width: 160
+      width: 200
       delegate: Item {
         height: table_.cellHeight
         property bool editable: itemValue.updateUserId === root_.userId
