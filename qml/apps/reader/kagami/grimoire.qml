@@ -186,12 +186,8 @@ Item { id: root_
     return lang.substr(0, 2) === root_.userLanguage.substr(0, 2)
   }
 
-  function removeHtmlTags(text) { // string ->  string  remove HTML tags
-    return text.replace(/<[0-9a-zA-Z: "/:=-]+>/g, '')
-  }
-
   function normalizeTtsText(text) { // string ->  string  remove HTML tags
-    return removeHtmlTags(text).replace(/^【[^】]+】/, '') // remove character name for tts
+    return Util.removeHtmlTags(text).replace(/^【[^】]+】/, '') // remove character name for tts
   }
 
   function isRubyLanguage(lang) { // string -> bool
@@ -1106,7 +1102,7 @@ Item { id: root_
                 //if (root_.readEnabled && model.language === 'ja')
                 if ((model.type === 'text' || model.type !== 'name')
                     && !root_.sameLanguageAsUser(model.language)) {
-                  t = removeHtmlTags(t)
+                  t = Util.removeHtmlTags(t)
                   if (t)
                     ttsPlugin_.speak(t, model.language)
                 }
@@ -1544,7 +1540,7 @@ Item { id: root_
       onTriggered: {
         var item = listModel_.get(popupIndex())
         if (item && item.text)
-          clipboardPlugin_.text = root_.removeHtmlTags(item.text)
+          clipboardPlugin_.text = Util.removeHtmlTags(item.text)
       }
     }
 
