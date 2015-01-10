@@ -764,11 +764,13 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
+    if not d.enabled or not config.is_kanji_language(language):
+      return text
     # 9/25/2014: Qt 0.01 seconds
     # 9/26/2014: Boost 0.033 seconds, underline = True
     # 9/27/2014: Boost 0.007 seconds, by delay rendering underline
     #with SkProfiler("prepare escape"): # 1/8/2014: 0.048 for Chinese, increase to 0.7 if no caching
-    return d.applyTerms(text, 'escape_source', language) if d.enabled else text
+    return d.applyTerms(text, 'escape_source', language)
 
   def applyEscapeTerms(self, text, language):
     """
@@ -777,7 +779,7 @@ class TermManager(QObject):
     @return  unicode
     """
     d = self.__d
-    if not d.enabled:
+    if not d.enabled or not config.is_kanji_language(language):
       return text
     # 9/25/2014: Qt 0.009 seconds
     # 9/26/2014: Boost 0.05 seconds, underline = True

@@ -414,6 +414,7 @@ class MachineTranslator(Translator):
     text = tm.prepareEscapeTerms(text, to)
     if emit and text != t:
       self.emitEscapedText(text)
+
     if emit:
       l = list(self._itertexts(text))
       self.emitSplitTexts(l)
