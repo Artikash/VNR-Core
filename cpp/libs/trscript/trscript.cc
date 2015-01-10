@@ -106,19 +106,30 @@ public:
 
   // Replacement
 private:
+  static std::wstring escape(const std::wstring &t)
+  {
+    std::wstring r = cpp_json::escape_basic_string(t);
+    boost::replace_all(r, "'", "\\'");
+    return r;
+  }
+
+  bool isRegex() const { return flags & RegexFlag; }
+
   std::wstring render_target() const
   {
     std::wstring ret = L"{\"type\":\"term\"";
     ret.append(L",\"id\":")
        .append(id);
-    if (!source.empty() && !::isdigit(source[0])) // do not save escaped floating number
-      ret.append(L",\"source\":\"")
-         .append(cpp_json::escape_basic_string(source))
-         .push_back('"');
-    if (!target.empty())
-      ret.append(L",\"target\":\"")
-         .append(cpp_json::escape_basic_string(target))
-         .push_back('"');
+    if (!isRegex()) { // regex pattern could mess up replacement
+      if (!source.empty() && !::isdigit(source[0])) // do not save escaped floating number
+        ret.append(L",\"source\":\"")
+           .append(escape(source))
+           .push_back('"');
+      if (!target.empty())
+        ret.append(L",\"target\":\"")
+           .append(escape(target))
+           .push_back('"');
+    }
     ret.push_back('}');
 
     ret.insert(0, L"<a href='json://");
@@ -168,7 +179,7 @@ private:
 public:
   void replace(std::wstring &ret, bool link) const
   {
-    if (flags & RegexFlag)
+    if (isRegex())
       regex_replace(ret, link);
     else if (boost::algorithm::contains(ret, source)) // check exist first which is faster and could avoid rendering target
       string_replace(ret, link);

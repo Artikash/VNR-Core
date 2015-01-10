@@ -14,95 +14,94 @@ a{color:lightblue}
 		</style>
 	</head>
 	<body align="center">
-		<p class="pp-table">
-			<div class="pp-row">
-				<span class="pp-name">{{tr('ID')}}: </span>
+		<table class="pp-table">
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('ID')}}: </td>
 %if td.id
-				<span class="pp-value">{{td.id}}</span>
+				<td class="pp-value">{{td.id}}</td>
 %else
-				<span class="pp-value pp-empty">({{tr('unknown')}})</span>
+				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
 %endif
-			</div>
-			<div class="pp-row">
-				<span class="pp-name">{{tr('Pattern')}}: </span>
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Pattern')}}: </td>
 %if td.pattern
-				<span class="pp-value">{{td.pattern|e}}</span>
+				<td class="pp-value">{{td.pattern|e}}</td>
 %else
-				<span class="pp-value pp-empty">({{tr('unknown')}})</span>
+				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
 %endif
-			</div>
-			<div class="pp-row">
-				<span class="pp-name">{{tr('Translation')}}: </span>
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Translation')}}: </td>
 %if not td.text
-				<span class="pp-value pp-empty">({{tr('delete')}})</span>
+				<td class="pp-value pp-empty">({{tr('delete')}})</td>
 %elif td.text == td.pattern
-				<span class="pp-value pp-empty">({{tr('equal')}})</span>
+				<td class="pp-value pp-empty">({{tr('equal')}})</td>
 %else
-				<span class="pp-value">{{td.text|e}}</span>
+				<td class="pp-value">{{td.text|e}}</td>
 %endif
-			</div>
-			<div class="pp-row">
-				<span class="pp-name">{{tr('Type')}}: </span>
-				<span class="pp-value">{{i18n.term_type_name(td.type)}}</span>
-			</div>
-			<div class="pp-row">
-				<span class="pp-name">{{tr('Regex')}}: </span>
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Type')}}: </td>
+				<td class="pp-value">{{i18n.term_type_name(td.type)}}</td>
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Regex')}}: </td>
 %if td.regex
-				<span class="pp-value">{{tr('yes')}}</span>
+				<td class="pp-value">{{tr('yes')}}</td>
 %else
-				<span class="pp-value">{{tr('no')}}</span>
+				<td class="pp-value">{{tr('no')}}</td>
 %endif
-			</div>
-			<div class="pp-row">
-				<span class="pp-name">{{tr('Game-specific')}}: </span>
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Game-specific')}}: </td>
 %if td.special
-				<span class="pp-value">{{tr('yes')}}</span>
+				<td class="pp-value">{{tr('yes')}}</td>
 %else
-				<span class="pp-value">{{tr('no')}}</span>
+				<td class="pp-value">{{tr('no')}}</td>
 %endif
-			</div>
-			<div class="pp-row">
-				<span class="pp-name">{{tr('User')}}: </span>
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('User')}}: </td>
 %if userName
-				<span class="pp-value">{{userName|e}}</span>
+				<td class="pp-value">{{userName|e}}</td>
 %else
-				<span class="pp-value pp-empty">({{tr('unknown')}})</span>
+				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
 %endif
-			</div>
-			<div class="pp-row">
-				<span class="pp-name">{{tr('Creation')}}: </span>
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Creation')}}: </td>
 %if td.timestamp
-				<span class="pp-value">{{i18n.timestamp2datetime(td.timestamp)}}</span>
+				<td class="pp-value">{{i18n.timestamp2datetime(td.timestamp)}}</td>
 %else
-				<span class="pp-value pp-empty">({{tr('unknown')}})</span>
+				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
 %endif
-			</div>
-			<div class="pp-row">
-				<span class="pp-name">{{tr('Update')}}: </span>
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Update')}}: </td>
 %if td.updateTimestamp
-				<span class="pp-value">{{i18n.timestamp2datetime(td.updateTimestamp)}}</span>
+				<td class="pp-value">{{i18n.timestamp2datetime(td.updateTimestamp)}}</td>
 %else
-				<span class="pp-value pp-empty">({{tr('none')}})</span>
+				<td class="pp-value pp-empty">({{tr('none')}})</td>
 %endif
-			</div>
-		</p>
-		<p class="pp-table">
-			<div class="pp-row">
-				<span class="pp-name">{{tr('Matched text')}}: </span>
+			</tr>
+			<hr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Matched text')}}: </td>
 %if source
-				<span class="pp-value">{{source|e}}</span>
+				<td class="pp-value">{{source|e}}</td>
 %else
-				<span class="pp-value pp-empty">({{tr('unknown')}})</span>
+				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
 %endif
-			</div>
-			<div class="pp-row">
-				<span class="pp-name">{{tr('Replaced text')}}: </span>
+			</tr>
+			<tr class="pp-row">
+				<td class="pp-name" align="right">{{tr('Replaced text')}}: </td>
 %if target
-				<span class="pp-value">{{target|e}}</span>
+				<td class="pp-value">{{target|e}}</td>
 %else
-				<span class="pp-value pp-empty">({{tr('unknown')}})</span>
+				<td class="pp-value pp-empty">({{tr('unknown')}})</td>
 %endif
-			</div>
-		</p>
+			</tr>
+		</table>
 	</body>
 </html>

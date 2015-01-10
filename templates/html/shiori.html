@@ -49,11 +49,13 @@ u,.edict .role{background-color:rgba(128,0,128,80%)}
 %	endfor
 %endif
 %if eb_strings
+		<hr/>
 %	for s in eb_strings
 		<p class="s">{{s}}</p>
 %	endfor
 %endif
 %if edict_tuples
+		<hr/>
 %	for word,reading,trans in edict_tuples
 		<p class="t">
 			<div class="q">
