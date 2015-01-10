@@ -40,7 +40,7 @@ Rectangle { id: root_
 
   //clip: true // to hide scroll bars, but the close button will also be clipped
 
-  property int _VISIBLE_DURATION: 8000   // 8 seconds
+  property int _VISIBLE_DURATION: 10000   // 10 seconds
   property int _X_OFFSET: 20
   property int _Y_OFFSET: 15
 

@@ -99,7 +99,7 @@ static PyObject* Sbk_TranslationScriptManagerFunc_isEmpty(PyObject* self)
     return pyResult;
 }
 
-static PyObject* Sbk_TranslationScriptManagerFunc_isUnderline(PyObject* self)
+static PyObject* Sbk_TranslationScriptManagerFunc_isLinkEnabled(PyObject* self)
 {
     ::TranslationScriptManager* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -112,9 +112,9 @@ static PyObject* Sbk_TranslationScriptManagerFunc_isUnderline(PyObject* self)
     {
 
         if (!PyErr_Occurred()) {
-            // isUnderline()const
+            // isLinkEnabled()const
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            bool cppResult = const_cast<const ::TranslationScriptManager*>(cppSelf)->isUnderline();
+            bool cppResult = const_cast<const ::TranslationScriptManager*>(cppSelf)->isLinkEnabled();
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
             pyResult = Shiboken::Conversions::copyToPython(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), &cppResult);
         }
@@ -174,7 +174,7 @@ static PyObject* Sbk_TranslationScriptManagerFunc_loadFile(PyObject* self, PyObj
         return 0;
 }
 
-static PyObject* Sbk_TranslationScriptManagerFunc_setUnderline(PyObject* self, PyObject* pyArg)
+static PyObject* Sbk_TranslationScriptManagerFunc_setLinkEnabled(PyObject* self, PyObject* pyArg)
 {
     ::TranslationScriptManager* cppSelf = 0;
     SBK_UNUSED(cppSelf)
@@ -186,13 +186,13 @@ static PyObject* Sbk_TranslationScriptManagerFunc_setUnderline(PyObject* self, P
     SBK_UNUSED(pythonToCpp)
 
     // Overloaded function decisor
-    // 0: setUnderline(bool)
+    // 0: setLinkEnabled(bool)
     if ((pythonToCpp = Shiboken::Conversions::isPythonToCppConvertible(Shiboken::Conversions::PrimitiveTypeConverter<bool>(), (pyArg)))) {
-        overloadId = 0; // setUnderline(bool)
+        overloadId = 0; // setLinkEnabled(bool)
     }
 
     // Function signature not found.
-    if (overloadId == -1) goto Sbk_TranslationScriptManagerFunc_setUnderline_TypeError;
+    if (overloadId == -1) goto Sbk_TranslationScriptManagerFunc_setLinkEnabled_TypeError;
 
     // Call function/method
     {
@@ -200,9 +200,9 @@ static PyObject* Sbk_TranslationScriptManagerFunc_setUnderline(PyObject* self, P
         pythonToCpp(pyArg, &cppArg0);
 
         if (!PyErr_Occurred()) {
-            // setUnderline(bool)
+            // setLinkEnabled(bool)
             PyThreadState* _save = PyEval_SaveThread(); // Py_BEGIN_ALLOW_THREADS
-            cppSelf->setUnderline(cppArg0);
+            cppSelf->setLinkEnabled(cppArg0);
             PyEval_RestoreThread(_save); // Py_END_ALLOW_THREADS
         }
     }
@@ -212,9 +212,9 @@ static PyObject* Sbk_TranslationScriptManagerFunc_setUnderline(PyObject* self, P
     }
     Py_RETURN_NONE;
 
-    Sbk_TranslationScriptManagerFunc_setUnderline_TypeError:
+    Sbk_TranslationScriptManagerFunc_setLinkEnabled_TypeError:
         const char* overloads[] = {"bool", 0};
-        Shiboken::setErrorAboutWrongArguments(pyArg, "pytrscript.TranslationScriptManager.setUnderline", overloads);
+        Shiboken::setErrorAboutWrongArguments(pyArg, "pytrscript.TranslationScriptManager.setLinkEnabled", overloads);
         return 0;
 }
 
@@ -296,9 +296,9 @@ static PyObject* Sbk_TranslationScriptManagerFunc_translate(PyObject* self, PyOb
 static PyMethodDef Sbk_TranslationScriptManager_methods[] = {
     {"clear", (PyCFunction)Sbk_TranslationScriptManagerFunc_clear, METH_NOARGS},
     {"isEmpty", (PyCFunction)Sbk_TranslationScriptManagerFunc_isEmpty, METH_NOARGS},
-    {"isUnderline", (PyCFunction)Sbk_TranslationScriptManagerFunc_isUnderline, METH_NOARGS},
+    {"isLinkEnabled", (PyCFunction)Sbk_TranslationScriptManagerFunc_isLinkEnabled, METH_NOARGS},
     {"loadFile", (PyCFunction)Sbk_TranslationScriptManagerFunc_loadFile, METH_O},
-    {"setUnderline", (PyCFunction)Sbk_TranslationScriptManagerFunc_setUnderline, METH_O},
+    {"setLinkEnabled", (PyCFunction)Sbk_TranslationScriptManagerFunc_setLinkEnabled, METH_O},
     {"size", (PyCFunction)Sbk_TranslationScriptManagerFunc_size, METH_NOARGS},
     {"translate", (PyCFunction)Sbk_TranslationScriptManagerFunc_translate, METH_O},
 

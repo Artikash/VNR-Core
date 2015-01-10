@@ -40,8 +40,8 @@ public:
 
   // Render option
 
-  bool isUnderline() const;
-  void setUnderline(bool value);
+  bool isLinkEnabled() const;
+  void setLinkEnabled(bool value);
 };
 
 #endif // TRSCRIPT_H
