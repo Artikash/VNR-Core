@@ -2,8 +2,9 @@
 // 9/20/2014 jichi
 
 #include "trscript/trscript.h"
-#include "cpputil/cpplocale.h"
 #include "cppjson/jsonescape.h"
+#include "cpputil/cpplocale.h"
+#include "cpputil/cppstring.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
@@ -106,11 +107,18 @@ public:
 
   // Replacement
 private:
+
   static std::wstring escape(const std::wstring &t)
   {
     std::wstring r = cpp_json::escape_basic_string(t);
     boost::replace_all(r, "'", "\\'");
     return r;
+  }
+
+  static bool requires_escape(const std::wstring &t)
+  {
+    static const std::wstring s = ::cpp_wstring_of(CPPJSON_ESCAPE_STRING).append(L"'");
+    return t.find_first_of(s) != std::wstring::npos;
   }
 
   bool isRegex() const { return flags & RegexFlag; }
@@ -123,11 +131,11 @@ private:
     if (!isRegex()) { // regex pattern could mess up replacement
       if (!source.empty() && !::isdigit(source[0])) // do not save escaped floating number
         ret.append(L",\"source\":\"")
-           .append(escape(source))
+           .append(requires_escape(source) ? escape(source) : source)
            .push_back('"');
       if (!target.empty())
         ret.append(L",\"target\":\"")
-           .append(escape(target))
+           .append(requires_escape(target) ? escape(target) : target)
            .push_back('"');
     }
     ret.push_back('}');

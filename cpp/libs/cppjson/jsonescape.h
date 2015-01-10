@@ -9,6 +9,12 @@
 
 CPPJSON_BEGIN_NAMESPACE
 
+#define CPPJSON_ESCAPE_STRING   "\\\"/\b\f\n\r\t"
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+inline bool requires_escape(const std::basic_string<_CharT, _Traits, _Alloc> &input)
+{ return input.find_first_of(CPPJSON_ESCAPE_STRING) != std::string::npos; }
+
 // See: http://stackoverflow.com/questions/7724448/simple-json-string-escape-for-c
 // UNICODE chars are not handled, and that's why it is called escape_basic_string instead of escape.
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -17,14 +23,14 @@ inline std::basic_string<_CharT, _Traits, _Alloc> escape_basic_string(const std:
   std::basic_ostringstream<_CharT, _Traits, _Alloc> is;
   for (auto it = input.cbegin(); it != input.cend(); ++it)
     switch (*it) {
-    case '\\':  is << "\\\\"; break;
-    case '"':   is << "\\\""; break;
-    case '/':   is << "\\/"; break;
-    case '\b':  is << "\\b"; break;
-    case '\f':  is << "\\f"; break;
-    case '\n':  is << "\\n"; break;
-    case '\r':  is << "\\r"; break;
-    case '\t':  is << "\\t"; break;
+    case '\\': is << "\\\\"; break;
+    case '"':  is << "\\\""; break;
+    case '/':  is << "\\/"; break;
+    case '\b': is << "\\b"; break;
+    case '\f': is << "\\f"; break;
+    case '\n': is << "\\n"; break;
+    case '\r': is << "\\r"; break;
+    case '\t': is << "\\t"; break;
     default: is << *it;
     }
   return is.str();
